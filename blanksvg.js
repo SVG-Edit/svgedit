@@ -1,4 +1,5 @@
 	SVGDocument = null;
+	SVGRoot = null;
 	var svgns = "http://www.w3.org/2000/svg";
 	var d_attr = "" ;
 	var signature_started = 0 ;
@@ -46,7 +47,14 @@ function SVGset_stroke_width(val){
 
 function Initialize(LoadEvent)
 {
-SVGDocument = LoadEvent.target.ownerDocument
+	SVGDocument = LoadEvent.target.ownerDocument;
+	SVGRoot = SVGDocument.documentElement ;
+	var Attr={
+		"onmouseup":"fun_mouseUP(evt)",
+		"onmousedown":"fun_mouseDOWN(evt)",
+		"onmousemove":"fun_mouseMOVE(evt)"
+	}
+	assignAttr(SVGRoot,Attr);
 }
 
 
@@ -54,7 +62,10 @@ SVGDocument = LoadEvent.target.ownerDocument
 function fun_mouseUP(evt)
 {
 
-signature_started = 0 ;
+	
+   if (signature_started == 1 )
+   {
+	signature_started = 0 ;
 
 	switch (current_draw_element)
 	{
@@ -73,7 +84,9 @@ signature_started = 0 ;
 		break
 	case "freehandcircle":
 		d_attr = 0 ;
-		path_num = path_num + 1 ;
+				
+		var element = SVGDocument.getElementById("path_" + path_num);
+		element.parentNode.removeChild(element); 
 		
 		create_svg_element_by_json({
 			"element": "ellipse",
@@ -88,9 +101,11 @@ signature_started = 0 ;
 				"stroke-width": current_draw_element_stroke_width
 				}
 		});
+		ellipse_num = ellipse_num + 1 ;
+		break;
 	}//switch
 
-
+    }//if
 
 }//function
 
@@ -193,7 +208,12 @@ function fun_mouseDOWN(evt)
 				"stroke-width": current_draw_element_stroke_width
 				}
 		});
-		break
+	break
+	case "delete":
+		var T=evt.target
+		if(SVGRoot == evt.target ) return ;
+		T.parentNode.removeChild(T);
+	break;
 	}//switch
 
 	
@@ -270,6 +290,7 @@ function fun_mouseMOVE(evt)
 }//function
 
 
+
 function min_of(a ,b){
 	if (a < b ) { return a ;}
 	else {return b ;}
@@ -283,28 +304,31 @@ function max_of(a ,b){
 function create_svg_element_by_json(data)
 {
 	var shape = SVGDocument.createElementNS(svgns, data.element);
-	for (i in data.Attr) {
-		shape.setAttributeNS(null, i, data.Attr[i]);
-	}
+	assignAttr(shape, data.Attr);
 	SVGDocument.documentElement.appendChild(shape);
 	
 }//function
+function assignAttr(Node,Attr){
+	for (i in Attr) {
+		Node.setAttributeNS(null, i, Attr[i]);
+	}
+}//function
 	   
 
-	   function SVGclear_svg()
-	   {
-	   	for(var i=1; i<path_num; i++){
-			var element = SVGDocument.getElementById("path_" + i);
-			if(element != null ) { element.parentNode.removeChild(element); } 
+function SVGclear_svg()
+{
+	for(var i=1; i<path_num; i++){
+	var element = SVGDocument.getElementById("path_" + i);
+	if(element != null ) { element.parentNode.removeChild(element); } 
 
-	        }
-	        path_num = 1 ;
-	   }
+	}
+	path_num = 1 ;
+}
 
-	var out = "", indent=0;
-	function SvgToString(elem)
+	
+	function SvgToString(elem , indent)
 	{
-		out = "" ;
+	var out = "" ;
 	   if (elem)
 	   {
 	      var attrs = elem.attributes;
@@ -331,7 +355,7 @@ function create_svg_element_by_json(data)
 	         for (i=0; i<childs.length; i++)
 	         {
 	            if (childs.item(i).nodeType == 1) // element node ..
-	               SvgToString(childs.item(i));
+	               out = out + SvgToString(childs.item(i) ,indent);
 	            else if (childs.item(i).nodeType == 3) // text node ..
 	            {
 	               for (j=0; j<indent; j++) out += "  ";
@@ -351,20 +375,11 @@ function create_svg_element_by_json(data)
 	   return out;
 	}
   
-	function SVGsubmit_svg(){
+function SVGsubmit_svg(){
+	var str = "<?xml version=\"1.0\" standalone=\"no\"?> \
+	<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \
+	\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"> \n"
+        str = str + SvgToString(SVGRoot , 0);
+	top.return_str_to_html(str);
+}
 
-		var str = "<?xml version=\"1.0\" standalone=\"no\"?> \
-<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \
-\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"> \n  \<svg width=\"100%\" height=\"100%\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\"> \n ";
-
-		for(var i=1; i<path_num; i++){
-			var element = SVGDocument.getElementById("path_" + i);
-			if(element != null ) { str = str  +  SvgToString(element);} 
-
-	        }
-	        str = str + "</svg>"
-	        	
-		top.return_str_to_html(str);
-
-	}
-	

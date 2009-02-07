@@ -39,7 +39,7 @@ function ApplyColorPicker(id , ini_col_hex , fun_var){
 
 
 function return_str_to_html(str){
-	//alert("This is svg image in string format \n This will be posted to server \n " + str)
+	alert("This is svg image in string format \n This will be posted to server \n " + str)
 	//posting the data to server
 	
 	//document.getElementById("hidden_svg_data").setAttribute("value", escape(str));
@@ -48,5 +48,4 @@ function return_str_to_html(str){
 		{svg_data: escape(str)
 	});
 }
-
 
