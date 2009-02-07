@@ -1,6 +1,6 @@
 	SVGDocument = null;
 	var svgns = "http://www.w3.org/2000/svg";
-	var d_attr = 0 ;
+	var d_attr = "" ;
 	var signature_started = 0 ;
 	var path_elememt = 0 ;
 	var path_num = 1 ;
@@ -77,20 +77,22 @@ signature_started = 0 ;
 		
 		create_svg_element_by_json({
 			"element": "ellipse",
-			"cx": (freehandcircle_min_x + freehandcircle_max_x ) / 2,
-			"cy": (freehandcircle_min_y + freehandcircle_max_y ) / 2,
-			"rx": (freehandcircle_max_x - freehandcircle_min_x ) / 2 + "px",
-			"ry": (freehandcircle_max_y - freehandcircle_min_y ) / 2 + "px",
-			"id": "ellipse_" + ellipse_num,
-			"fill": current_draw_element_fill,
-			"stroke": current_draw_element_stroke,
-			"strokeWidth": current_draw_element_stroke_width
+			"Attr": {
+				"cx": (freehandcircle_min_x + freehandcircle_max_x ) / 2,
+				"cy": (freehandcircle_min_y + freehandcircle_max_y ) / 2,
+				"rx": (freehandcircle_max_x - freehandcircle_min_x ) / 2 + "px",
+				"ry": (freehandcircle_max_y - freehandcircle_min_y ) / 2 + "px",
+				"id": "ellipse_" + ellipse_num,
+				"fill": current_draw_element_fill,
+				"stroke": current_draw_element_stroke,
+				"stroke-width": current_draw_element_stroke_width
+				}
 		});
 	}//switch
 
 
 
-}
+}//function
 
 
 function fun_mouseDOWN(evt)
@@ -104,14 +106,16 @@ function fun_mouseDOWN(evt)
 	case "freehandcircle":
 		d_attr = "M" + x + " " + y + " ";
 		signature_started = 1 ;
-		//SVG_insert_to_svg();//create element
+
 		create_svg_element_by_json({
 			"element": "path",
-			"d": d_attr,
-			"id": "path_" + path_num,
-			"fill": "none",
-			"stroke": current_draw_element_stroke,
-			"strokeWidth": current_draw_element_stroke_width
+			"Attr": {
+				"d": d_attr,
+				"id": "path_" + path_num,
+				"fill": "none",
+				"stroke": current_draw_element_stroke,
+				"stroke-width": current_draw_element_stroke_width
+				}
 		
 		});
 		
@@ -124,14 +128,16 @@ function fun_mouseDOWN(evt)
 	case "path":
 		d_attr = "M" + x + " " + y + " ";
 		signature_started = 1 ;
-		//SVG_insert_to_svg();//create element
+		
 		create_svg_element_by_json({
 			"element": "path",
-			"d": d_attr,
-			"id": "path_" + path_num,
-			"fill": "none",
-			"stroke": current_draw_element_stroke,
-			"strokeWidth": current_draw_element_stroke_width
+			"Attr": {
+				"d": d_attr,
+				"id": "path_" + path_num,
+				"fill": "none",
+				"stroke": current_draw_element_stroke,
+				"stroke-width": current_draw_element_stroke_width
+				}
 		
 		});
 		
@@ -142,14 +148,16 @@ function fun_mouseDOWN(evt)
 		rect_y = y ;
 		create_svg_element_by_json({
 			"element": "rect",
-			"x": x,
-			"y": y,
-			"width": "1px",
-			"height": "1px",
-			"id": "rect_" + rect_num,
-			"fill": current_draw_element_fill,
-			"stroke": current_draw_element_stroke,
-			"strokeWidth": current_draw_element_stroke_width
+			"Attr": {
+				"x": x,
+				"y": y,
+				"width": "1px",
+				"height": "1px",
+				"id": "rect_" + rect_num,
+				"fill": current_draw_element_fill,
+				"stroke": current_draw_element_stroke,
+				"stroke-width": current_draw_element_stroke_width
+				}
 		
 		});
 		break
@@ -158,13 +166,15 @@ function fun_mouseDOWN(evt)
 
 		create_svg_element_by_json({
 			"element": "line",
-			"x1": x,
-			"y1": y,
-			"x2": x + 1 + "px",
-			"y2": y + 1 + "px",
-			"id": "line_" + line_num,
-			"stroke": current_draw_element_stroke,
-			"strokeWidth": current_draw_element_stroke_width
+			"Attr":	{
+				"x1": x,
+				"y1": y,
+				"x2": x + 1 + "px",
+				"y2": y + 1 + "px",
+				"id": "line_" + line_num,
+				"stroke": current_draw_element_stroke,
+				"stroke-width": current_draw_element_stroke_width
+				}
 		
 		});
 		break
@@ -172,14 +182,16 @@ function fun_mouseDOWN(evt)
 		signature_started = 1 ;
 		create_svg_element_by_json({
 			"element": "ellipse",
-			"cx": x,
-			"cy": y,
-			"rx": 1 + "px",
-			"ry": 1 + "px",
-			"id": "ellipse_" + ellipse_num,
-			"fill": current_draw_element_fill,
-			"stroke": current_draw_element_stroke,
-			"strokeWidth": current_draw_element_stroke_width
+			"Attr": {
+				"cx": x,
+				"cy": y,
+				"rx": 1 + "px",
+				"ry": 1 + "px",
+				"id": "ellipse_" + ellipse_num,
+				"fill": current_draw_element_fill,
+				"stroke": current_draw_element_stroke,
+				"stroke-width": current_draw_element_stroke_width
+				}
 		});
 		break
 	}//switch
@@ -268,69 +280,15 @@ function max_of(a ,b){
 }
 
 
-	   function SVG_insert_to_svg()
-	   {
-	      
-		var shape = SVGDocument.createElementNS(svgns, "path");
-		shape.setAttributeNS(null, "d", d_attr);
-		shape.setAttributeNS(null, "id", "path_" + path_num);
-		shape.setAttributeNS(null, "fill", "none");
-		shape.setAttributeNS(null, "stroke", "green");
-		SVGDocument.documentElement.appendChild(shape);
-
-	   }
-	function create_svg_element_by_json(data)
-	{
-		var shape = SVGDocument.createElementNS(svgns, data.element);
-
-
-		switch (data.element)
-		{
-		case "freehandcircle":
-		case "path":
-			shape.setAttributeNS(null, "d", data.d_attr);
-			shape.setAttributeNS(null, "id", data.id);
-			shape.setAttributeNS(null, "fill", data.fill);
-			shape.setAttributeNS(null, "stroke", data.stroke);
-			shape.setAttributeNS(null, "stroke-width", data.strokeWidth);
-			SVGDocument.documentElement.appendChild(shape);
-			break
-		case "rect":
-			shape.setAttributeNS(null, "x", data.x);
-			shape.setAttributeNS(null, "y", data.y);
-			shape.setAttributeNS(null, "width", data.width);
-			shape.setAttributeNS(null, "height", data.height);
-			shape.setAttributeNS(null, "id", data.id);
-			shape.setAttributeNS(null, "fill", data.fill);
-			shape.setAttributeNS(null, "stroke", data.stroke);
-			shape.setAttributeNS(null, "stroke-width", data.strokeWidth);
-			SVGDocument.documentElement.appendChild(shape);
-			break
-		case "line":
-			shape.setAttributeNS(null, "x1", data.x1);
-			shape.setAttributeNS(null, "x2", data.x2);
-			shape.setAttributeNS(null, "y1", data.y1);
-			shape.setAttributeNS(null, "y2", data.y2);
-			shape.setAttributeNS(null, "id", data.id);
-			shape.setAttributeNS(null, "stroke", data.stroke);
-			shape.setAttributeNS(null, "stroke-width", data.strokeWidth);
-			SVGDocument.documentElement.appendChild(shape);
-			break
-		case "ellipse":
-			shape.setAttributeNS(null, "cx", data.cx);
-			shape.setAttributeNS(null, "cy", data.cy);
-			shape.setAttributeNS(null, "rx", data.rx);
-			shape.setAttributeNS(null, "ry", data.ry);
-			shape.setAttributeNS(null, "id", data.id);
-			shape.setAttributeNS(null, "fill", data.fill);
-			shape.setAttributeNS(null, "stroke", data.stroke);
-			shape.setAttributeNS(null, "stroke-width", data.strokeWidth);
-			SVGDocument.documentElement.appendChild(shape);
-			break
-		}//switch
-		
-	
+function create_svg_element_by_json(data)
+{
+	var shape = SVGDocument.createElementNS(svgns, data.element);
+	for (i in data.Attr) {
+		shape.setAttributeNS(null, i, data.Attr[i]);
 	}
+	SVGDocument.documentElement.appendChild(shape);
+	
+}//function
 	   
 
 	   function SVGclear_svg()
