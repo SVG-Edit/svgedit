@@ -4,17 +4,21 @@ $(document).ready(function(){
 	ApplyColorPicker("colorSelectorStroke" , "000000" , {
 		callback: function(hex){
 				window.set_stroke_color(hex);
+				$('#div_color1').css("backgroundColor", hex);
 			}
 	});
 	
 	ApplyColorPicker("colorSelectorFill" , "ffffff" , {
 			callback: function(hex){
 				window.set_fill_color(hex);
+				$('#div_color2').css("backgroundColor", hex);
 			}
 	});
 
 
-
+	$('#color1').colorPicker();
+	$('#color2').colorPicker();
+	
 });//end ready
 
 function ApplyColorPicker(id , ini_col_hex , fun_var){
@@ -49,3 +53,6 @@ function return_str_to_html(str){
 	});
 }
 
+function f1(col){
+	$('#colorSelectorStroke').ColorPickerSetColor(col);
+}
