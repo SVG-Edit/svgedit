@@ -319,63 +319,68 @@ function assignAttr(Node,Attr){
 
 function SVGclear_svg()
 {
-	for(var i=1; i<path_num; i++){
-	var element = SVGDocument.getElementById("path_" + i);
-	if(element != null ) { element.parentNode.removeChild(element); } 
-
-	}
-	path_num = 1 ;
+	var Nodes = SVGRoot.childNodes ;
+	var Length = SVGRoot.childNodes.length ;
+	var i = 0 ;
+	for(var Rep=0; Rep< Length; Rep++){
+		if(Nodes[i].nodeType == 1){
+			Nodes[i].parentNode.removeChild(Nodes[i]); 
+		}
+		else{
+			i++;	
+		}
+	}//for
 }
 
-	
-	function SvgToString(elem , indent)
-	{
+
+function SvgToString(elem , indent)
+{
 	var out = "" ;
-	   if (elem)
-	   {
-	      var attrs = elem.attributes;
-	      var attr;
-	      var i;
-	      var childs = elem.childNodes;
+   if (elem)
+   {
+      var attrs = elem.attributes;
+      var attr;
+      var i;
+      var childs = elem.childNodes;
 
-	      for (i=0; i<indent; i++) out += "  ";
-	      out += "<" + elem.nodeName;
-	
-
-	      for (i=attrs.length-1; i>=0; i--)
-	      {
-	         attr = attrs.item(i);
-	         out += " " + attr.nodeName + "=\"" + attr.nodeValue+ "\"";
-	      }
+      for (i=0; i<indent; i++) out += "  ";
+      out += "<" + elem.nodeName;
 
 
-	
-	      if (elem.hasChildNodes())
-	      {
-	         out += ">\n";
-	         indent++;
-	         for (i=0; i<childs.length; i++)
-	         {
-	            if (childs.item(i).nodeType == 1) // element node ..
-	               out = out + SvgToString(childs.item(i) ,indent);
-	            else if (childs.item(i).nodeType == 3) // text node ..
-	            {
-	               for (j=0; j<indent; j++) out += "  ";
-	               out += childs.item(i).nodeValue + "\n";
-	            }
-	         }
-	         indent--;
-	         for (i=0; i<indent; i++) out += "  ";
-	         out += "</" + elem.nodeName + ">\n";
-	      }
-	      else
-	      {
-	         out += " />\n";
-	      }
+      for (i=attrs.length-1; i>=0; i--)
+      {
+         attr = attrs.item(i);
+         out += " " + attr.nodeName + "=\"" + attr.nodeValue+ "\"";
+      }
 
-	   }
-	   return out;
-	}
+
+
+      if (elem.hasChildNodes())
+      {
+         out += ">\n";
+         indent++;
+         for (i=0; i<childs.length; i++)
+         {
+            if (childs.item(i).nodeType == 1) // element node ..
+               out = out + SvgToString(childs.item(i) ,indent);
+            else if (childs.item(i).nodeType == 3) // text node ..
+            {
+               for (j=0; j<indent; j++) out += "  ";
+               out += childs.item(i).nodeValue + "\n";
+            }
+         }
+         indent--;
+         for (i=0; i<indent; i++) out += "  ";
+         out += "</" + elem.nodeName + ">\n";
+      }
+      else
+      {
+         out += " />\n";
+      }
+
+   }
+   return out;
+}
   
 function SVGsubmit_svg(){
 	var str = "<?xml version=\"1.0\" standalone=\"no\"?> \
