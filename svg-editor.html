@@ -6,6 +6,9 @@
 <script type="text/javascript" src="colorpicker/js/colorpicker.js"></script>
 <script language="JavaScript" type="text/javascript" src="SvgEditor.js"></script>
 
+<script language="javascript" type="text/javascript" src="simple-colorpicker/jquery.colorPicker.js"/></script><link rel="stylesheet" href="simple-colorpicker/colorPicker.css" type="text/css" />
+
+
 </head>
 <body>
 
@@ -39,7 +42,7 @@
 
 Select Stroke Color 
 <input type="button" title="select stroke color" id="colorSelectorStroke">
-
+<input id="color1" type="text" name="color1" value="#333399" onchange="window.set_stroke_color(this.value); var col = this.value ; f1(col);"/></div>
 </br>
 Stroke Width <select onchange="window.set_stroke_width(this.options[this.selectedIndex].value )" id="linewidth">
       <option value="1px">1px</option>
@@ -52,9 +55,16 @@ Stroke Width <select onchange="window.set_stroke_width(this.options[this.selecte
 </br>
 Select Fill Color
 <div title="select fill color" id="colorSelectorFill"></div>
+<input id="color2" type="text" name="color2" value="#333399" onchange="window.set_fill_color(this.value); var col = this.value ; $('#colorSelectorFill').ColorPickerSetColor(col);" /></div>
 
 <input type="button" value="empty fill" onclick="window.set_fill_color('none'); $('#colorSelectorFill').css('backgroundColor', '#ffffff');">
 </div>
+
+</br>
+
+
+
+
 </td></tr></table>
 </body>
 </html>

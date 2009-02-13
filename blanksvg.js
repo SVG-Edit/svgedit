@@ -1,6 +1,15 @@
 	SVGDocument = null;
 	SVGRoot = null;
 	var svgns = "http://www.w3.org/2000/svg";
+	
+	top.clear_svg = SVGclear_svg ;
+	top.set_draw_mode = SVGset_draw_mode ;
+	top.submit_svg = SVGsubmit_svg ;
+	top.set_stroke_color = SVGset_stroke_color;
+	top.set_fill_color = SVGset_fill_color;
+	top.set_stroke_width = SVGset_stroke_width ;
+
+	
 	var d_attr = "" ;
 	var signature_started = 0 ;
 	var path_elememt = 0 ;
@@ -10,23 +19,16 @@
 	var ellipse_num = 1 ;
 	var rect_x = null ;
 	var rect_y = null ;
-	top.clear_svg = SVGclear_svg ;
-	top.set_draw_mode = SVGset_draw_mode ;
-	top.submit_svg = SVGsubmit_svg ;
-	top.set_stroke_color = SVGset_stroke_color;
-	top.set_fill_color = SVGset_fill_color;
-	top.set_stroke_width = SVGset_stroke_width ;
-
 	var current_draw_element = "path" ;
 	var current_draw_element_fill = "none" ;
 	var current_draw_element_stroke_width = "1px" ;
 	var current_draw_element_stroke = "black" ;
-
 	var freehandcircle_min_x = null ;	
 	var freehandcircle_max_x = null ;
 	var freehandcircle_min_y = null ;
 	var freehandcircle_max_y = null ;
-	
+
+
 function SVGset_draw_mode(ele_name) {
 	current_draw_element = ele_name;
 }
