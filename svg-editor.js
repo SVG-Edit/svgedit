@@ -8,7 +8,7 @@ $(document).ready(function(){
 	$('#palette').append(str);
 
 	$('#stroke_width').change(function(){
-		svgCanvas.setStrokeColor(this.options[this.selectedIndex].value);
+		SvgCanvas.setStrokeColor(this.options[this.selectedIndex].value);
 	});
 
 	$('.palette_item').click(function(){
@@ -19,7 +19,7 @@ $(document).ready(function(){
 		} else {
 			$('#fill_color').css('background', color);
 		}
-		svgCanvas.setFillColor(color);
+		SvgCanvas.setFillColor(color);
 	});
 
 	$('.palette_item').rightClick(function(){
@@ -30,59 +30,59 @@ $(document).ready(function(){
 		} else {
 			$('#stroke_color').css('background', color);
 		}
-		svgCanvas.setStrokeColor(color);
+		SvgCanvas.setStrokeColor(color);
 	});
 
 	$('#tool_select').click(function(){
-		svgCanvas.setMode('select');
+		SvgCanvas.setMode('select');
 	});
 
 	$('#tool_path').click(function(){
-		svgCanvas.setMode('path');
+		SvgCanvas.setMode('path');
 	});
 
 	$('#tool_line').click(function(){
-		svgCanvas.setMode('line');
+		SvgCanvas.setMode('line');
 	});
 
 	$('#tool_square').click(function(){
-		svgCanvas.setMode('square');
+		SvgCanvas.setMode('square');
 	});
 
 	$('#tool_rect').click(function(){
-		svgCanvas.setMode('rect');
+		SvgCanvas.setMode('rect');
 	});
 
 	$('#tool_fhrect').click(function(){
-		svgCanvas.setMode('fhrect');
+		SvgCanvas.setMode('fhrect');
 	});
 
 	$('#tool_circle').click(function(){
-		svgCanvas.setMode('circle');
+		SvgCanvas.setMode('circle');
 	});
 
 	$('#tool_ellipse').click(function(){
-		svgCanvas.setMode('ellipse');
+		SvgCanvas.setMode('ellipse');
 	});
 
 	$('#tool_fhellipse').click(function(){
-		svgCanvas.setMode('fhellipse');
+		SvgCanvas.setMode('fhellipse');
 	});
 
 	$('#tool_delete').click(function(){
-		svgCanvas.setMode('delete');
+		SvgCanvas.setMode('delete');
 	});
 
 	$('#tool_clear').click(function(){
-		svgCanvas.clear();
+		SvgCanvas.clear();
 	});
 
 	$('#tool_submit').click(function(){
-		svgCanvas.serialize(serializeHandler);
+		SvgCanvas.serialize(serializeHandler);
 	});
 
 })
 
-function serializeHandler(str){
-	alert(str);
+function serializeHandler(svg) {
+	alert(svg);
 }
