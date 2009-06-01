@@ -8,7 +8,11 @@ $(document).ready(function(){
 	$('#palette').append(str);
 
 	$('#stroke_width').change(function(){
-		SvgCanvas.setStrokeColor(this.options[this.selectedIndex].value);
+		SvgCanvas.setStrokeWidth(this.options[this.selectedIndex].value);
+	});
+
+	$('#stroke_style').change(function(){
+		SvgCanvas.setStrokeStyle(this.options[this.selectedIndex].value);
 	});
 
 	$('.palette_item').click(function(){
