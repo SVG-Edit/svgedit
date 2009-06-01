@@ -1,0 +1,55 @@
+#svg_editor .canvas {
+	width: 640px;
+	height: 480px;
+	border: 1px solid #808080;
+}
+
+#svg_editor div#palette_holder {
+	border: 1px solid #808080;
+	border-top: none;
+	float: left;
+	width: 640px;
+	overflow-x: scroll;
+	overflow-y: hidden;
+	height: 31px;
+}
+
+#fill_color, #stroke_color {
+	height: 16px;
+	width: 16px;
+	border: 1px solid #808080;
+}
+
+#fill_color {
+	background: url('none.png');
+}
+
+#stroke_color {
+	background: #000000;
+}
+
+#svg_editor div#palette {
+	float: left;
+	width: 6848px;
+	height: 16px;
+}
+
+#svg_editor div#tools {
+	float: left;
+}
+
+#svg_editor div#workarea {
+	float: left;
+}
+
+#svg_editor div.palette_item {
+	height: 16px;
+	width: 16px;
+	float: left;
+}
+
+.tool_button {
+	height: 16px;
+	width: 16px;
+	border: 4px solid #E8E8E4;
+}
