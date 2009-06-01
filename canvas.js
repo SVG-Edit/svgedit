@@ -21,8 +21,9 @@ function SvgCanvas(doc)
 	var rect_y = null;
 	var current_draw_element = "path";
 	var current_draw_element_fill = "none";
-	var current_draw_element_stroke_width = "1px";
 	var current_draw_element_stroke = "black";
+	var current_draw_element_stroke_width = "1px";
+	var current_draw_element_stroke_style = "0";
 	var freehand_min_x = null;
 	var freehand_max_x = null;
 	var freehand_min_y = null;
@@ -123,6 +124,7 @@ function SvgCanvas(doc)
 					"fill": "none",
 					"stroke": current_draw_element_stroke,
 					"stroke-width": current_draw_element_stroke_width,
+					"stroke-dasharray": current_draw_element_stroke_style,
 					"stroke-opacity": 0.5
 				}
 			});
@@ -142,6 +144,7 @@ function SvgCanvas(doc)
 					"fill": "none",
 					"stroke": current_draw_element_stroke,
 					"stroke-width": current_draw_element_stroke_width,
+					"stroke-dasharray": current_draw_element_stroke_style,
 					"stroke-opacity": 0.5
 				}
 			});
@@ -161,6 +164,7 @@ function SvgCanvas(doc)
 					"fill": "none",
 					"stroke": current_draw_element_stroke,
 					"stroke-width": current_draw_element_stroke_width,
+					"stroke-dasharray": current_draw_element_stroke_style,
 					"stroke-opacity": 0.5
 				}
 			});
@@ -181,6 +185,7 @@ function SvgCanvas(doc)
 					"fill": current_draw_element_fill,
 					"stroke": current_draw_element_stroke,
 					"stroke-width": current_draw_element_stroke_width,
+					"stroke-dasharray": current_draw_element_stroke_style,
 					"fill-opacity": 0.5,
 					"stroke-opacity": 0.5
 				}
@@ -198,6 +203,7 @@ function SvgCanvas(doc)
 					"id": "line_" + obj_num,
 					"stroke": current_draw_element_stroke,
 					"stroke-width": current_draw_element_stroke_width,
+					"stroke-dasharray": current_draw_element_stroke_style,
 					"stroke-opacity": 0.5
 				}
 			});
@@ -216,6 +222,7 @@ function SvgCanvas(doc)
 					"fill": current_draw_element_fill,
 					"stroke": current_draw_element_stroke,
 					"stroke-width": current_draw_element_stroke_width,
+					"stroke-dasharray": current_draw_element_stroke_style,
 					"fill-opacity": 0.5,
 					"stroke-opacity": 0.5
 				}
@@ -368,7 +375,8 @@ function SvgCanvas(doc)
 							"id": "ellipse_" + obj_num,
 							"fill": current_draw_element_fill,
 							"stroke": current_draw_element_stroke,
-							"stroke-width": current_draw_element_stroke_width
+							"stroke-width": current_draw_element_stroke_width,
+							"stroke-dasharray": current_draw_element_stroke_style
 						}
 					});
 					obj_num++;
@@ -387,7 +395,8 @@ function SvgCanvas(doc)
 							"id": "rect_" + obj_num,
 							"fill": current_draw_element_fill,
 							"stroke": current_draw_element_stroke,
-							"stroke-width": current_draw_element_stroke_width
+							"stroke-width": current_draw_element_stroke_width,
+							"stroke-dasharray": current_draw_element_stroke_style
 						}
 					});
 					obj_num++;
@@ -430,8 +439,12 @@ function SvgCanvas(doc)
 		current_draw_element_fill = color;
 	}
 
-	this.setStrokeColor = function(val) {
+	this.setStrokeWidth = function(val) {
 		current_draw_element_stroke_width = val;
+	}
+
+	this.setStrokeStyle = function(val) {
+		current_draw_element_stroke_style = val;
 	}
 
 	this.setup = function(evt) {
