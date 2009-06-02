@@ -53,3 +53,19 @@
 	width: 16px;
 	border: 4px solid #E8E8E4;
 }
+
+#color_pick {
+	position: absolute;
+	display: none;
+	background: white;
+	border: 1px solid #808080;
+	padding: 5px;
+}
+
+#color_pick_text, #color_pick_ok {
+	border: 1px solid #808080;
+	width: 90px;
+	height: 20px;
+	float: left;
+	margin: 5px;
+}

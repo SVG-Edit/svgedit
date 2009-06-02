@@ -86,7 +86,7 @@ function SvgCanvas(doc)
 		return out;
 	}
 
-// private events
+// public events
 
 	this.mouseDown = function(evt)
 	{
@@ -106,10 +106,10 @@ function SvgCanvas(doc)
 					"width": "1px",
 					"height": "1px",
 					"id": "rect_" + obj_num,
-					"fill": 'none',
-					"stroke": 'black',
+					"fill": '#DBEBF9',
+					"stroke": '#CEE2F7',
 					"stroke-width": '1px',
-					"stroke-dasharray": "2,2"
+					"fill-opacity": 0.5
 				}
 			});
 			break;
