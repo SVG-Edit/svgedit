@@ -35,6 +35,7 @@ $(document).ready(function(){
 			$('#stroke_color').css('background', color);
 		}
 		SvgCanvas.setStrokeColor(color);
+		alert('boo');
 	});
 
 	$('#tool_select').click(function(){
