@@ -14,16 +14,17 @@ function SvgCanvas(doc)
 	var svgdoc = doc;
 	var svgroot = svgdoc.documentElement;
 	var svgns = "http://www.w3.org/2000/svg";
-	var d_attr = "";
-	var signature_started = 0;
+	var d_attr = null;
+	var started = false;
 	var obj_num = 1;
-	var rect_x = null;
-	var rect_y = null;
-	var current_draw_element = "path";
-	var current_draw_element_fill = "none";
-	var current_draw_element_stroke = "black";
-	var current_draw_element_stroke_width = "1px";
-	var current_draw_element_stroke_style = "0";
+	var start_x = null;
+	var start_y = null;
+	var current_mode = "path";
+	var current_fill = "none";
+	var current_stroke = "black";
+	var current_stroke_width = 1;
+	var current_stroke_style = "none";
+	var current_opacity = 1;
 	var freehand_min_x = null;
 	var freehand_max_x = null;
 	var freehand_min_y = null;
@@ -37,9 +38,27 @@ function SvgCanvas(doc)
 		}
 	}
 
-	var createSvgElementFromJson = function(data) {
+	// remove unneeded attributes
+	// makes resulting SVG smaller
+	var cleanupElement = function(element) {
+		if (element.getAttribute('fill-opacity') == '1')
+			element.removeAttribute('fill-opacity');
+		if (element.getAttribute('opacity') == '1')
+			element.removeAttribute('opacity');
+		if (element.getAttribute('stroke') == 'none')
+			element.removeAttribute('stroke');
+		if (element.getAttribute('stroke-dasharray') == 'none')
+			element.removeAttribute('stroke-dasharray');
+		if (element.getAttribute('stroke-opacity') == '1')
+			element.removeAttribute('stroke-opacity');
+		if (element.getAttribute('stroke-width') == '1')
+			element.removeAttribute('stroke-width');
+	}
+
+	var addSvgElementFromJson = function(data) {
 		var shape = svgdoc.createElementNS(svgns, data.element);
 		assignAttributes(shape, data.attr);
+		cleanupElement(shape);
 		svgdoc.documentElement.appendChild(shape);
 	}
 
@@ -68,12 +87,11 @@ function SvgCanvas(doc)
 				indent++;
 				for (i=0; i<childs.length; i++)
 				{
-					if (childs.item(i).nodeType == 1) // element node
-					out = out + svgToString(childs.item(i), indent);
-					else if (childs.item(i).nodeType == 3) // text node
-					{
-					for (j=0; j<indent; j++) out += "  ";
-					out += childs.item(i).nodeValue + "\n";
+					if (childs.item(i).nodeType == 1) { // element node
+						out = out + svgToString(childs.item(i), indent);
+					} else if (childs.item(i).nodeType == 3) { // text node
+						for (j=0; j<indent; j++) out += "  ";
+						out += childs.item(i).nodeValue + "\n";
 					}
 				}
 				indent--;
@@ -92,13 +110,13 @@ function SvgCanvas(doc)
 	{
 		var x = evt.pageX;
 		var y = evt.pageY;
-		switch (current_draw_element)
+		switch (current_mode)
 		{
 		case "select":
-			signature_started = 1;
-			rect_x = x;
-			rect_y = y;
-			createSvgElementFromJson({
+			started = true;
+			start_x = x;
+			start_y = y;
+			addSvgElementFromJson({
 				"element": "rect",
 				"attr": {
 					"x": x,
@@ -108,73 +126,39 @@ function SvgCanvas(doc)
 					"id": "rect_" + obj_num,
 					"fill": '#DBEBF9',
 					"stroke": '#CEE2F7',
-					"stroke-width": '1px',
+					"stroke-width": 1,
 					"fill-opacity": 0.5
 				}
 			});
 			break;
 		case "fhellipse":
-			d_attr = "M" + x + " " + y + " ";
-			signature_started = 1;
-			createSvgElementFromJson({
-				"element": "path",
-				"attr": {
-					"d": d_attr,
-					"id": "path_" + obj_num,
-					"fill": "none",
-					"stroke": current_draw_element_stroke,
-					"stroke-width": current_draw_element_stroke_width,
-					"stroke-dasharray": current_draw_element_stroke_style,
-					"stroke-opacity": 0.5
-				}
-			});
-			freehand_min_x = x;
-			freehand_max_x = x;
-			freehand_min_y = y;
-			freehand_max_y = y;
-		break;
 		case "fhrect":
+		case "path":
+			started = true;
 			d_attr = "M" + x + " " + y + " ";
-			signature_started = 1;
-			createSvgElementFromJson({
+			addSvgElementFromJson({
 				"element": "path",
 				"attr": {
 					"d": d_attr,
 					"id": "path_" + obj_num,
 					"fill": "none",
-					"stroke": current_draw_element_stroke,
-					"stroke-width": current_draw_element_stroke_width,
-					"stroke-dasharray": current_draw_element_stroke_style,
-					"stroke-opacity": 0.5
+					"stroke": current_stroke,
+					"stroke-width": current_stroke_width,
+					"stroke-dasharray": current_stroke_style,
+					"opacity": 0.5
 				}
 			});
 			freehand_min_x = x;
 			freehand_max_x = x;
 			freehand_min_y = y;
 			freehand_max_y = y;
-		break;
-		case "path":
-			d_attr = "M" + x + " " + y + " ";
-			signature_started = 1;
-			createSvgElementFromJson({
-				"element": "path",
-				"attr": {
-					"d": d_attr,
-					"id": "path_" + obj_num,
-					"fill": "none",
-					"stroke": current_draw_element_stroke,
-					"stroke-width": current_draw_element_stroke_width,
-					"stroke-dasharray": current_draw_element_stroke_style,
-					"stroke-opacity": 0.5
-				}
-			});
-		break;
+			break;
 		case "square":
 		case "rect":
-			signature_started = 1;
-			rect_x = x;
-			rect_y = y;
-			createSvgElementFromJson({
+			started = true;
+			start_x = x;
+			start_y = y;
+			addSvgElementFromJson({
 				"element": "rect",
 				"attr": {
 					"x": x,
@@ -182,18 +166,17 @@ function SvgCanvas(doc)
 					"width": "1px",
 					"height": "1px",
 					"id": "rect_" + obj_num,
-					"fill": current_draw_element_fill,
-					"stroke": current_draw_element_stroke,
-					"stroke-width": current_draw_element_stroke_width,
-					"stroke-dasharray": current_draw_element_stroke_style,
-					"fill-opacity": 0.5,
-					"stroke-opacity": 0.5
+					"fill": current_fill,
+					"stroke": current_stroke,
+					"stroke-width": current_stroke_width,
+					"stroke-dasharray": current_stroke_style,
+					"opacity": 0.5
 				}
 			});
 			break;
 		case "line":
-			signature_started = 1;
-			createSvgElementFromJson({
+			started = true;
+			addSvgElementFromJson({
 				"element": "line",
 				"attr": {
 					"x1": x,
@@ -201,17 +184,17 @@ function SvgCanvas(doc)
 					"x2": x + 1 + "px",
 					"y2": y + 1 + "px",
 					"id": "line_" + obj_num,
-					"stroke": current_draw_element_stroke,
-					"stroke-width": current_draw_element_stroke_width,
-					"stroke-dasharray": current_draw_element_stroke_style,
-					"stroke-opacity": 0.5
+					"stroke": current_stroke,
+					"stroke-width": current_stroke_width,
+					"stroke-dasharray": current_stroke_style,
+					"opacity": 0.5
 				}
 			});
 			break;
 		case "circle":
 		case "ellipse":
-			signature_started = 1;
-			createSvgElementFromJson({
+			started = true;
+			addSvgElementFromJson({
 				"element": "ellipse",
 				"attr": {
 					"cx": x,
@@ -219,18 +202,17 @@ function SvgCanvas(doc)
 					"rx": 1 + "px",
 					"ry": 1 + "px",
 					"id": "ellipse_" + obj_num,
-					"fill": current_draw_element_fill,
-					"stroke": current_draw_element_stroke,
-					"stroke-width": current_draw_element_stroke_width,
-					"stroke-dasharray": current_draw_element_stroke_style,
-					"fill-opacity": 0.5,
-					"stroke-opacity": 0.5
+					"fill": current_fill,
+					"stroke": current_stroke,
+					"stroke-width": current_stroke_width,
+					"stroke-dasharray": current_stroke_style,
+					"opacity": 0.5
 				}
 			});
 		break;
 		case "delete":
 			var t = evt.target;
-			if(svgroot == evt.target) return;
+			if (t == svgroot) return;
 			t.parentNode.removeChild(t);
 			break;
 		}
@@ -238,170 +220,162 @@ function SvgCanvas(doc)
 
 	this.mouseMove = function(evt)
 	{
-		if (signature_started == 1)
+		if (!started) return;
+
+		var x = evt.pageX;
+		var y = evt.pageY;
+		switch (current_mode)
 		{
-			var x = evt.pageX;
-			var y = evt.pageY;
-			switch (current_draw_element)
-			{
-				case "path":
-					d_attr = d_attr + "L" + x + " " + y + " ";
-					var shape = svgdoc.getElementById("path_" + obj_num);
-					shape.setAttributeNS(null, "d", d_attr);
-					break;
-				case "line":
-					var shape = svgdoc.getElementById("line_" + obj_num);
-					shape.setAttributeNS(null, "x2", x);
-					shape.setAttributeNS(null, "y2", y);
-					break;
-				case "square":
-					var shape = svgdoc.getElementById("rect_" + obj_num);
-					var size = Math.max( Math.abs(x - rect_x), Math.abs(y - rect_y) );
-					shape.setAttributeNS(null, "width", size);
-					shape.setAttributeNS(null, "height", size);
-					if(rect_x < x) {
-						shape.setAttributeNS(null, "x", rect_x);
-					} else {
-						shape.setAttributeNS(null, "x", rect_x - size);
-					}
-					if(rect_y < y) {
-						shape.setAttributeNS(null, "y", rect_y);
-					} else {
-						shape.setAttributeNS(null, "y", rect_y - size);
-					}
-					break;
-				case "select":
-				case "rect":
-					var shape = svgdoc.getElementById("rect_" + obj_num);
-					if (rect_x < x) {
-						shape.setAttributeNS(null, "x", rect_x);
-						shape.setAttributeNS(null, "width", x - rect_x);
-					} else {
-						shape.setAttributeNS(null, "x", x);
-						shape.setAttributeNS(null, "width", rect_x - x);
-					}
-					if (rect_y < y) {
-						shape.setAttributeNS(null, "y", rect_y);
-						shape.setAttributeNS(null, "height", y - rect_y);
-					} else {
-						shape.setAttributeNS(null, "y", y);
-						shape.setAttributeNS(null, "height", rect_y - y);
-					}
-					break;
-				case "circle":
-					var shape = svgdoc.getElementById("ellipse_" + obj_num);
-					var cx = shape.getAttributeNS(null, "cx");
-					var cy = shape.getAttributeNS(null, "cy");
-					var rad = Math.sqrt( (x-cx)*(x-cx) + (y-cy)*(y-cy) );
-					shape.setAttributeNS(null, "rx", rad);
-					shape.setAttributeNS(null, "ry", rad);
-					break;
-				case "ellipse":
-					var shape = svgdoc.getElementById("ellipse_" + obj_num);
-					var cx = shape.getAttributeNS(null, "cx");
-					var cy = shape.getAttributeNS(null, "cy");
-					shape.setAttributeNS(null, "rx", Math.abs(x - cx) );
-					shape.setAttributeNS(null, "ry", Math.abs(y - cy) );
-					break;
-				case "fhellipse":
-					d_attr = d_attr + "L" + x + " " + y + " ";
-					var shape = svgdoc.getElementById("path_" + obj_num);
-					shape.setAttributeNS(null, "d", d_attr);
-					freehand_min_x = Math.min(x, freehand_min_x);
-					freehand_max_x = Math.max(x, freehand_max_x);
-					freehand_min_y = Math.min(y, freehand_min_y);
-					freehand_max_y = Math.max(y, freehand_max_y);
-					break;
-				case "fhrect":
-					d_attr = d_attr + "L" + x + " " + y + " ";
-					var shape = svgdoc.getElementById("path_" + obj_num);
-					shape.setAttributeNS(null, "d", d_attr);
-					freehand_min_x = Math.min(x, freehand_min_x);
-					freehand_max_x = Math.max(x, freehand_max_x);
-					freehand_min_y = Math.min(y, freehand_min_y);
-					freehand_max_y = Math.max(y, freehand_max_y);
-					break;
-			}
+			case "line":
+				var shape = svgdoc.getElementById("line_" + obj_num);
+				shape.setAttributeNS(null, "x2", x);
+				shape.setAttributeNS(null, "y2", y);
+				break;
+			case "square":
+				var shape = svgdoc.getElementById("rect_" + obj_num);
+				var size = Math.max( Math.abs(x - start_x), Math.abs(y - start_y) );
+				shape.setAttributeNS(null, "width", size);
+				shape.setAttributeNS(null, "height", size);
+				if(start_x < x) {
+					shape.setAttributeNS(null, "x", start_x);
+				} else {
+					shape.setAttributeNS(null, "x", start_x - size);
+				}
+				if(start_y < y) {
+					shape.setAttributeNS(null, "y", start_y);
+				} else {
+					shape.setAttributeNS(null, "y", start_y - size);
+				}
+				break;
+			case "select":
+			case "rect":
+				var shape = svgdoc.getElementById("rect_" + obj_num);
+				if (start_x < x) {
+					shape.setAttributeNS(null, "x", start_x);
+					shape.setAttributeNS(null, "width", x - start_x);
+				} else {
+					shape.setAttributeNS(null, "x", x);
+					shape.setAttributeNS(null, "width", start_x - x);
+				}
+				if (start_y < y) {
+					shape.setAttributeNS(null, "y", start_y);
+					shape.setAttributeNS(null, "height", y - start_y);
+				} else {
+					shape.setAttributeNS(null, "y", y);
+					shape.setAttributeNS(null, "height", start_y - y);
+				}
+				break;
+			case "circle":
+				var shape = svgdoc.getElementById("ellipse_" + obj_num);
+				var cx = shape.getAttributeNS(null, "cx");
+				var cy = shape.getAttributeNS(null, "cy");
+				var rad = Math.sqrt( (x-cx)*(x-cx) + (y-cy)*(y-cy) );
+				shape.setAttributeNS(null, "rx", rad);
+				shape.setAttributeNS(null, "ry", rad);
+				break;
+			case "ellipse":
+				var shape = svgdoc.getElementById("ellipse_" + obj_num);
+				var cx = shape.getAttributeNS(null, "cx");
+				var cy = shape.getAttributeNS(null, "cy");
+				shape.setAttributeNS(null, "rx", Math.abs(x - cx) );
+				shape.setAttributeNS(null, "ry", Math.abs(y - cy) );
+				break;
+			case "fhellipse":
+			case "fhrect":
+				freehand_min_x = Math.min(x, freehand_min_x);
+				freehand_max_x = Math.max(x, freehand_max_x);
+				freehand_min_y = Math.min(y, freehand_min_y);
+				freehand_max_y = Math.max(y, freehand_max_y);
+			// break missing on purpose
+			case "path":
+				d_attr += "L" + x + " " + y + " ";
+				var shape = svgdoc.getElementById("path_" + obj_num);
+				shape.setAttributeNS(null, "d", d_attr);
+				break;
 		}
 	}
 
 	this.mouseUp = function(evt)
 	{
-		if (signature_started == 1)
+		if (!started) return;
+
+		started = false;
+		var element = null;
+		switch (current_mode)
 		{
-			signature_started = 0;
-			switch (current_draw_element)
-			{
-				case "select":
-					var element = svgdoc.getElementById("rect_" + obj_num);
-					element.parentNode.removeChild(element);
-					break;
-				case "path":
-					d_attr = 0;
-					var element = svgdoc.getElementById("path_" + obj_num);
-					element.setAttribute("stroke-opacity", 1.0);
-					obj_num++;
-					break;
-				case "line":
-					var element = svgdoc.getElementById("line_" + obj_num);
-					element.setAttribute("stroke-opacity", 1.0);
-					obj_num++;
-					break;
-				case "square":
-				case "rect":
-					var element = svgdoc.getElementById("rect_" + obj_num);
-					element.setAttribute("fill-opacity", 1.0);
-					element.setAttribute("stroke-opacity", 1.0);
-					obj_num++;
-					break;
-				case "circle":
-				case "ellipse":
-					var element = svgdoc.getElementById("ellipse_" + obj_num);
-					element.setAttribute("fill-opacity", 1.0);
-					element.setAttribute("stroke-opacity", 1.0);
-					obj_num++;
-					break;
-				case "fhellipse":
-					d_attr = 0;
-					var element = svgdoc.getElementById("path_" + obj_num);
-					element.parentNode.removeChild(element);
-					createSvgElementFromJson({
-						"element": "ellipse",
-						"attr": {
-							"cx": (freehand_min_x + freehand_max_x) / 2,
-							"cy": (freehand_min_y + freehand_max_y) / 2,
-							"rx": (freehand_max_x - freehand_min_x) / 2 + "px",
-							"ry": (freehand_max_y - freehand_min_y) / 2 + "px",
-							"id": "ellipse_" + obj_num,
-							"fill": current_draw_element_fill,
-							"stroke": current_draw_element_stroke,
-							"stroke-width": current_draw_element_stroke_width,
-							"stroke-dasharray": current_draw_element_stroke_style
-						}
-					});
-					obj_num++;
-					break;
-				case "fhrect":
-					d_attr = 0;
-					var element = svgdoc.getElementById("path_" + obj_num);
-					element.parentNode.removeChild(element);
-					createSvgElementFromJson({
-						"element": "rect",
-						"attr": {
-							"x": freehand_min_x,
-							"y": freehand_min_y,
-							"width": (freehand_max_x - freehand_min_x) + "px",
-							"height": (freehand_max_y - freehand_min_y) + "px",
-							"id": "rect_" + obj_num,
-							"fill": current_draw_element_fill,
-							"stroke": current_draw_element_stroke,
-							"stroke-width": current_draw_element_stroke_width,
-							"stroke-dasharray": current_draw_element_stroke_style
-						}
-					});
-					obj_num++;
-					break;
-			}
+			case "select":
+				element = svgdoc.getElementById("rect_" + obj_num);
+				element.parentNode.removeChild(element);
+				element = null;
+				break;
+			case "path":
+				d_attr = null;
+				element = svgdoc.getElementById("path_" + obj_num);
+				element.setAttribute("opacity", current_opacity);
+				obj_num++;
+				break;
+			case "line":
+				element = svgdoc.getElementById("line_" + obj_num);
+				element.setAttribute("opacity", current_opacity);
+				obj_num++;
+				break;
+			case "square":
+			case "rect":
+				element = svgdoc.getElementById("rect_" + obj_num);
+				element.setAttribute("opacity", current_opacity);
+				obj_num++;
+				break;
+			case "circle":
+			case "ellipse":
+				element = svgdoc.getElementById("ellipse_" + obj_num);
+				element.setAttribute("opacity", current_opacity);
+				obj_num++;
+				break;
+			case "fhellipse":
+				d_attr = null;
+				element = svgdoc.getElementById("path_" + obj_num);
+				element.parentNode.removeChild(element);
+				addSvgElementFromJson({
+					"element": "ellipse",
+					"attr": {
+						"cx": (freehand_min_x + freehand_max_x) / 2,
+						"cy": (freehand_min_y + freehand_max_y) / 2,
+						"rx": (freehand_max_x - freehand_min_x) / 2 + "px",
+						"ry": (freehand_max_y - freehand_min_y) / 2 + "px",
+						"id": "ellipse_" + obj_num,
+						"fill": current_fill,
+						"stroke": current_stroke,
+						"stroke-width": current_stroke_width,
+						"stroke-dasharray": current_stroke_style,
+						"opacity": current_opacity
+					}
+				});
+				obj_num++;
+				break;
+			case "fhrect":
+				d_attr = null;
+				element = svgdoc.getElementById("path_" + obj_num);
+				element.parentNode.removeChild(element);
+				addSvgElementFromJson({
+					"element": "rect",
+					"attr": {
+						"x": freehand_min_x,
+						"y": freehand_min_y,
+						"width": (freehand_max_x - freehand_min_x) + "px",
+						"height": (freehand_max_y - freehand_min_y) + "px",
+						"id": "rect_" + obj_num,
+						"fill": current_fill,
+						"stroke": current_stroke,
+						"stroke-width": current_stroke_width,
+						"stroke-dasharray": current_stroke_style,
+						"opacity": current_opacity
+					}
+				});
+				obj_num++;
+				break;
+		}
+		if (element != null) {
+			cleanupElement(element);
 		}
 	}
 
@@ -419,7 +393,7 @@ function SvgCanvas(doc)
 		var len = svgroot.childNodes.length;
 		var i = 0;
 		for(var rep = 0; rep < len; rep++){
-			if (nodes[i].nodeType == 1) {	// element
+			if (nodes[i].nodeType == 1) { // element node
 				nodes[i].parentNode.removeChild(nodes[i]);
 			} else {
 				i++;
@@ -428,23 +402,23 @@ function SvgCanvas(doc)
 	}
 
 	this.setMode = function(name) {
-		current_draw_element = name;
+		current_mode = name;
 	}
 
 	this.setStrokeColor = function(color) {
-		current_draw_element_stroke = color;
+		current_stroke = color;
 	}
 
 	this.setFillColor = function(color) {
-		current_draw_element_fill = color;
+		current_fill = color;
 	}
 
 	this.setStrokeWidth = function(val) {
-		current_draw_element_stroke_width = val;
+		current_stroke_width = val;
 	}
 
 	this.setStrokeStyle = function(val) {
-		current_draw_element_stroke_style = val;
+		current_stroke_style = val;
 	}
 
 	this.setup = function(evt) {
