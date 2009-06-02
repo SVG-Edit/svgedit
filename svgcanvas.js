@@ -1,9 +1,9 @@
-var canvas = null;
+var svgcanvas = null;
 
 function svgCanvasInit(event) {
-	canvas = new SvgCanvas(event.target.ownerDocument);
-	canvas.setup(event);
-	top.SvgCanvas = canvas;
+	svgcanvas = new SvgCanvas(event.target.ownerDocument);
+	svgcanvas.setup(event);
+	top.SvgCanvas = svgcanvas;
 }
 
 function SvgCanvas(doc)
@@ -449,9 +449,9 @@ function SvgCanvas(doc)
 
 	this.setup = function(evt) {
 		assignAttributes(svgroot, {
-			"onmouseup":   "canvas.mouseUp(evt)",
-			"onmousedown": "canvas.mouseDown(evt)",
-			"onmousemove": "canvas.mouseMove(evt)"
+			"onmouseup":   "svgcanvas.mouseUp(evt)",
+			"onmousedown": "svgcanvas.mouseDown(evt)",
+			"onmousemove": "svgcanvas.mouseMove(evt)"
 		});
 	}
 
