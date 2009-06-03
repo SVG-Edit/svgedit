@@ -10,8 +10,8 @@ $(document).ready(function(){
 
 	var pos = $('#tools_rect_show').position();
 	$('#tools_rect').css({'left': pos.left+2, 'top': pos.top+2});
-	pos = $('#tools_circle_show').position();
-	$('#tools_circle').css({'left': pos.left+2, 'top': pos.top+2});
+	pos = $('#tools_ellipse_show').position();
+	$('#tools_ellipse').css({'left': pos.left+2, 'top': pos.top+2});
 
 	$('#stroke_width').change(function(){
 		SvgCanvas.setStrokeWidth(this.options[this.selectedIndex].value);
@@ -84,23 +84,23 @@ $(document).ready(function(){
 
 	$('#tool_circle').click(function(){
 		SvgCanvas.setMode('circle');
-		$('#tools_circle').hide();
+		$('#tools_ellipse').hide();
 		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
-		$('#tools_circle_show').addClass('tool_button_current');
+		$('#tools_ellipse_show').addClass('tool_button_current');
 	});
 
 	$('#tool_ellipse').click(function(){
 		SvgCanvas.setMode('ellipse');
-		$('#tools_circle').hide();
+		$('#tools_ellipse').hide();
 		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
-		$('#tools_circle_show').addClass('tool_button_current');
+		$('#tools_ellipse_show').addClass('tool_button_current');
 	});
 
 	$('#tool_fhellipse').click(function(){
 		SvgCanvas.setMode('fhellipse');
-		$('#tools_circle').hide();
+		$('#tools_ellipse').hide();
 		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
-		$('#tools_circle_show').addClass('tool_button_current');
+		$('#tools_ellipse_show').addClass('tool_button_current');
 	});
 
 	$('#tool_delete').click(function(){
@@ -163,12 +163,12 @@ $(document).ready(function(){
 		$('#tools_rect').hide();
 	});
 */
-	$('#tools_circle_show').click(function(){
-		$('#tools_circle').show();
+	$('#tools_ellipse_show').click(function(){
+		$('#tools_ellipse').show();
 	});
 /*
-	$('#tools_circle').mouseout(function(){
-		$('#tools_circle').hide();
+	$('#tools_ellipse').mouseout(function(){
+		$('#tools_ellipse').hide();
 	});
 */
 })

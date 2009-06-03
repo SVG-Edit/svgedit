@@ -116,7 +116,7 @@
 	border-bottom: 1px solid #808080;
 }
 
-#tools_rect, #tools_circle {
+#tools_rect, #tools_ellipse {
 	position: absolute;
 	display: none;
 	height: 28px;
@@ -126,9 +126,33 @@
 	float: left;
 }
 
-#tools_rect div, #tools_circle div {
+#tool_square {
+	background: 2px 2px url('images/square.png') no-repeat;
+}
+
+#tool_rect {
+	background: 2px 2px url('images/rect.png') no-repeat;
+}
+
+#tool_fhrect {
+	background: 2px 2px url('images/path.png') no-repeat;
+}
+
+#tool_circle {
+	background: 2px 2px url('images/circle.png') no-repeat;
+}
+
+#tool_ellipse {
+	background: 2px 2px url('images/ellipse.png') no-repeat;
+}
+
+#tool_fhellipse {
+	background: 2px 2px url('images/path.png') no-repeat;
+}
+
+#tools_rect div, #tools_ellipse div {
 	float: left;
-	background: #E8E8E8;
+	background-color: #E8E8E8;
 	border-left: 1px solid #FFFFFF;
 	border-top: 1px solid #FFFFFF;
 	border-right: 1px solid #808080;
