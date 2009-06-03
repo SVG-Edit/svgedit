@@ -10,40 +10,52 @@
 </head>
 <body>
 
+<div id="svg_editor">
+
 <div id="color_pick">
 <div id="color_pick_wheel"></div>
 <input type="text" id="color_pick_text" />
 <input type="button" id="color_pick_ok" value="OK" />
 </div>
 
-<div id="svg_editor">
+<div id="tools_rect">
+<div id="tool_square">square</div>
+<div id="tool_rect">rectangle</div>
+<div id="tool_fhrect">freehand</div>
+</div>
+
+<div id="tools_circle">
+<div id="tool_circle">circle</div>
+<div id="tool_ellipse">ellipse</div>
+<div id="tool_fhellipse">freehand</div>
+</div>
 
 <div id="tools">
 
 <div>
-<img class="tool_button" id="tool_select" src="images/select.png" />
-<img class="tool_button" id="tool_path" src="images/path.png" />
-<img class="tool_button" id="tool_line" src="images/line.png" />
-<br/>
-<img class="tool_button" id="tool_square" src="images/rect.png" />
-<img class="tool_button" id="tool_rect" src="images/rect.png" />
-<img class="tool_button" id="tool_fhrect" src="images/rect.png" />
-<br/>
-<img class="tool_button" id="tool_circle" src="images/circle.png" />
-<img class="tool_button" id="tool_ellipse" src="images/circle.png" />
-<img class="tool_button" id="tool_fhellipse" src="images/circle.png" />
-<br/>
-<img class="tool_button" id="tool_delete" src="images/delete.png" />
-<img class="tool_button" id="tool_clear" src="images/clear.png" />
-<img class="tool_button" id="tool_submit" src="images/submit.png" />
+<!--
+<img class="tool_button" id="tool_select" src="images/select.png" /><br/>
+-->
+<img class="tool_button_current" id="tool_path" src="images/path.png" /><br/>
+<img class="tool_button" id="tool_line" src="images/line.png" /><br/>
+<img class="tool_button" id="tools_rect_show" src="images/rect.png" /><br/>
+<img class="tool_button" id="tools_circle_show" src="images/circle.png" /><br/>
+<img class="tool_button" id="tool_delete" src="images/delete.png" /><hr/>
+<img class="tool_button" id="tool_clear" src="images/clear.png" /><br/>
+<img class="tool_button" id="tool_submit" src="images/submit.png" /><br/>
 </div>
 
-<div>Fill
+<hr/>
+
+<div>fill
 <div id="fill_color"></div>
 </div>
 
-<div>Stroke
+<hr/>
+
+<div>stroke
 <div id="stroke_color"></div>
+<div>
 <select id="stroke_width">
 <option selected="selected" value="1">1</option>
 <option value="2">2</option>
@@ -51,23 +63,24 @@
 <option value="5">5</option>
 <option value="7">7</option>
 </select>
+</div><div>
 <select id="stroke_style">
-<option selected="selected" value="none">-----</option>
-<option value="2,2">.....</option>
-<option value="5,5">- - -</option>
-<option value="5,2,2,2">- . -</option>
-<option value="5,2,2,2,2,2">- .. -</option>
+<option selected="selected" value="none">---</option>
+<option value="2,2">...</option>
+<option value="5,5">- -</option>
+<option value="5,2,2,2">- .</option>
+<option value="5,2,2,2,2,2">- ..</option>
 </select>
-
+</div>
 </div>
 
 </div>
 
 <div id="workarea">
 
-<div id="canvas">
-<object class="canvas" data="svgcanvas.svg" type="image/svg+xml">
-<embed class="canvas" src="svgcanvas.svg" type="image/svg+xml" />
+<div id="svgcanvas">
+<object class="svgcanvas" data="svgcanvas.svg" type="image/svg+xml">
+<embed class="svgcanvas" src="svgcanvas.svg" type="image/svg+xml" />
 </object>
 </div>
 

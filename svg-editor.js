@@ -8,6 +8,11 @@ $(document).ready(function(){
 	});
 	$('#palette').append(str);
 
+	var pos = $('#tools_rect_show').position();
+	$('#tools_rect').css({'left': pos.left+2, 'top': pos.top+2});
+	pos = $('#tools_circle_show').position();
+	$('#tools_circle').css({'left': pos.left+2, 'top': pos.top+2});
+
 	$('#stroke_width').change(function(){
 		SvgCanvas.setStrokeWidth(this.options[this.selectedIndex].value);
 	});
@@ -40,42 +45,68 @@ $(document).ready(function(){
 
 	$('#tool_select').click(function(){
 		SvgCanvas.setMode('select');
+		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
+		$(this).addClass('tool_button_current');
 	});
 
 	$('#tool_path').click(function(){
 		SvgCanvas.setMode('path');
+		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
+		$(this).addClass('tool_button_current');
 	});
 
 	$('#tool_line').click(function(){
 		SvgCanvas.setMode('line');
+		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
+		$(this).addClass('tool_button_current');
 	});
 
 	$('#tool_square').click(function(){
 		SvgCanvas.setMode('square');
+		$('#tools_rect').hide();
+		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
+		$('#tools_rect_show').addClass('tool_button_current');
 	});
 
 	$('#tool_rect').click(function(){
 		SvgCanvas.setMode('rect');
+		$('#tools_rect').hide();
+		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
+		$('#tools_rect_show').addClass('tool_button_current');
 	});
 
 	$('#tool_fhrect').click(function(){
 		SvgCanvas.setMode('fhrect');
+		$('#tools_rect').hide();
+		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
+		$('#tools_rect_show').addClass('tool_button_current');
 	});
 
 	$('#tool_circle').click(function(){
 		SvgCanvas.setMode('circle');
+		$('#tools_circle').hide();
+		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
+		$('#tools_circle_show').addClass('tool_button_current');
 	});
 
 	$('#tool_ellipse').click(function(){
 		SvgCanvas.setMode('ellipse');
+		$('#tools_circle').hide();
+		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
+		$('#tools_circle_show').addClass('tool_button_current');
 	});
 
 	$('#tool_fhellipse').click(function(){
 		SvgCanvas.setMode('fhellipse');
+		$('#tools_circle').hide();
+		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
+		$('#tools_circle_show').addClass('tool_button_current');
 	});
 
 	$('#tool_delete').click(function(){
 		SvgCanvas.setMode('delete');
+		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
+		$(this).addClass('tool_button_current');
 	});
 
 	$('#tool_clear').click(function(){
@@ -124,6 +155,22 @@ $(document).ready(function(){
 		picker.setColor($(this).attr('value'));
 	});
 
+	$('#tools_rect_show').click(function(){
+		$('#tools_rect').show();
+	});
+/*
+	$('#tools_rect').mouseout(function(){
+		$('#tools_rect').hide();
+	});
+*/
+	$('#tools_circle_show').click(function(){
+		$('#tools_circle').show();
+	});
+/*
+	$('#tools_circle').mouseout(function(){
+		$('#tools_circle').hide();
+	});
+*/
 })
 
 function serializeHandler(svg) {

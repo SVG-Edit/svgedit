@@ -1,4 +1,18 @@
-#svg_editor .canvas {
+#svg_editor {
+	font-size: 8pt;
+	font-family: Verdana, Helvetica, Arial;
+}
+
+#svg_editor hr {
+	border: none;
+	border-bottom: 1px solid #808080;
+}
+
+#svg_editor select {
+	margin-top: 4px;
+}
+
+#svg_editor .svgcanvas {
 	width: 640px;
 	height: 480px;
 	border: 1px solid #808080;
@@ -18,6 +32,7 @@
 	height: 16px;
 	width: 16px;
 	border: 1px solid #808080;
+	cursor: pointer;
 }
 
 #fill_color {
@@ -48,16 +63,39 @@
 	float: left;
 }
 
-.tool_button {
-	height: 16px;
-	width: 16px;
-	border: 4px solid #E8E8E4;
+#tools {
+	background: #E8E8E8;
+	height: 504px;
+	border: 1px solid #808080;
+	border-right: none;
+	padding: 4px;
+}
+
+.tool_button, .tool_button_current {
+	height: 24px;
+	width: 24px;
+	border: 1px solid red;
+	margin: 2px;
+	padding: 2px;
+	border-left: 1px solid #FFFFFF;
+	border-top: 1px solid #FFFFFF;
+	border-right: 1px solid #808080;
+	border-bottom: 1px solid #808080;
+	cursor: pointer;
+}
+
+.tool_button_current {
+	border-left: 1px solid #808080;
+	border-top: 1px solid #808080;
+	border-right: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	background-color: #B0B0B0;
 }
 
 #color_pick {
 	position: absolute;
 	display: none;
-	background: white;
+	background: #E8E8E8;
 	border: 1px solid #808080;
 	padding: 5px;
 }
@@ -68,4 +106,33 @@
 	height: 20px;
 	float: left;
 	margin: 5px;
+}
+
+#color_pick_ok {
+	background: #E8E8E8;
+	border-left: 1px solid #FFFFFF;
+	border-top: 1px solid #FFFFFF;
+	border-right: 1px solid #808080;
+	border-bottom: 1px solid #808080;
+}
+
+#tools_rect, #tools_circle {
+	position: absolute;
+	display: none;
+	height: 28px;
+	width: 90px;
+	background: red;
+	cursor: pointer;
+	float: left;
+}
+
+#tools_rect div, #tools_circle div {
+	float: left;
+	background: #E8E8E8;
+	border-left: 1px solid #FFFFFF;
+	border-top: 1px solid #FFFFFF;
+	border-right: 1px solid #808080;
+	border-bottom: 1px solid #808080;
+	height: 28px;
+	width: 28px;
 }
