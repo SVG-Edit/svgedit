@@ -1,0 +1,162 @@
+#svg_editor {
+	font-size: 8pt;
+	font-family: Verdana, Helvetica, Arial;
+}
+
+#svg_editor hr {
+	border: none;
+	border-bottom: 1px solid #808080;
+}
+
+#svg_editor select {
+	margin-top: 4px;
+}
+
+#svg_editor .svgcanvas {
+	width: 640px;
+	height: 480px;
+	border: 1px solid #808080;
+}
+
+#svg_editor div#palette_holder {
+	border: 1px solid #808080;
+	border-top: none;
+	float: left;
+	width: 640px;
+	overflow-x: scroll;
+	overflow-y: hidden;
+	height: 31px;
+}
+
+#fill_color, #stroke_color {
+	height: 16px;
+	width: 16px;
+	border: 1px solid #808080;
+	cursor: pointer;
+}
+
+#fill_color {
+	background: url('images/none.png');
+}
+
+#stroke_color {
+	background: #000000;
+}
+
+#svg_editor div#palette {
+	float: left;
+	width: 6848px;
+	height: 16px;
+}
+
+#svg_editor div#tools {
+	float: left;
+}
+
+#svg_editor div#workarea {
+	float: left;
+}
+
+#svg_editor div.palette_item {
+	height: 16px;
+	width: 16px;
+	float: left;
+}
+
+#tools {
+	background: #E8E8E8;
+	height: 504px;
+	border: 1px solid #808080;
+	border-right: none;
+	padding: 4px;
+}
+
+.tool_button, .tool_button_current {
+	height: 24px;
+	width: 24px;
+	border: 1px solid red;
+	margin: 2px;
+	padding: 2px;
+	border-left: 1px solid #FFFFFF;
+	border-top: 1px solid #FFFFFF;
+	border-right: 1px solid #808080;
+	border-bottom: 1px solid #808080;
+	cursor: pointer;
+}
+
+.tool_button_current {
+	border-left: 1px solid #808080;
+	border-top: 1px solid #808080;
+	border-right: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	background-color: #B0B0B0;
+}
+
+#color_pick {
+	position: absolute;
+	display: none;
+	background: #E8E8E8;
+	border: 1px solid #808080;
+	padding: 5px;
+}
+
+#color_pick_text, #color_pick_ok {
+	border: 1px solid #808080;
+	width: 90px;
+	height: 20px;
+	float: left;
+	margin: 5px;
+}
+
+#color_pick_ok {
+	background: #E8E8E8;
+	border-left: 1px solid #FFFFFF;
+	border-top: 1px solid #FFFFFF;
+	border-right: 1px solid #808080;
+	border-bottom: 1px solid #808080;
+}
+
+#tools_rect, #tools_ellipse {
+	position: absolute;
+	display: none;
+	height: 28px;
+	width: 90px;
+	background: red;
+	cursor: pointer;
+	float: left;
+}
+
+#tool_square {
+	background: 2px 2px url('images/square.png') no-repeat;
+}
+
+#tool_rect {
+	background: 2px 2px url('images/rect.png') no-repeat;
+}
+
+#tool_fhrect {
+	background: 2px 2px url('images/path.png') no-repeat;
+}
+
+#tool_circle {
+	background: 2px 2px url('images/circle.png') no-repeat;
+}
+
+#tool_ellipse {
+	background: 2px 2px url('images/ellipse.png') no-repeat;
+}
+
+#tool_fhellipse {
+	background: 2px 2px url('images/path.png') no-repeat;
+}
+
+#tools_rect div, #tools_ellipse div {
+	float: left;
+	background-color: #E8E8E8;
+	border-left: 1px solid #FFFFFF;
+	border-top: 1px solid #FFFFFF;
+	border-right: 1px solid #808080;
+	border-bottom: 1px solid #808080;
+	height: 28px;
+	width: 28px;
+}
