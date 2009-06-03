@@ -1,0 +1,99 @@
+<html>
+<head>
+<link rel="stylesheet" href="farbtastic.css" type="text/css"/>
+<link rel="stylesheet" href="svg-editor.css" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="jquery.rightClick.js"></script>
+<script type="text/javascript" src="farbtastic.js"></script>
+<script type="text/javascript" src="svg-editor.js"></script>
+<title>SVG-edit demo</title>
+</head>
+<body>
+
+<p>SVG-edit @ <a href="http://svg-edit.googlecode.com/">http://svg-edit.googlecode.com/</a></p>
+
+<div id="svg_editor">
+
+<div id="color_pick">
+<div id="color_pick_wheel"></div>
+<input type="text" id="color_pick_text" />
+<input type="button" id="color_pick_ok" value="OK" />
+</div>
+
+<div id="tools_rect">
+<div id="tool_square"></div>
+<div id="tool_rect"></div>
+<div id="tool_fhrect"></div>
+</div>
+
+<div id="tools_ellipse">
+<div id="tool_circle"></div>
+<div id="tool_ellipse"></div>
+<div id="tool_fhellipse"></div>
+</div>
+
+<div id="tools">
+
+<div>
+<!--
+<img class="tool_button" id="tool_select" src="images/select.png" /><br/>
+-->
+<img class="tool_button_current" id="tool_path" src="images/path.png" /><br/>
+<img class="tool_button" id="tool_line" src="images/line.png" /><br/>
+<img class="tool_button" id="tools_rect_show" src="images/square.png" /><br/>
+<img class="tool_button" id="tools_ellipse_show" src="images/circle.png" /><br/>
+<img class="tool_button" id="tool_delete" src="images/delete.png" /><hr/>
+<img class="tool_button" id="tool_clear" src="images/clear.png" /><br/>
+<img class="tool_button" id="tool_submit" src="images/submit.png" /><br/>
+</div>
+
+<hr/>
+
+<div>fill
+<div id="fill_color"></div>
+</div>
+
+<hr/>
+
+<div>stroke
+<div id="stroke_color"></div>
+<div>
+<select id="stroke_width">
+<option selected="selected" value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="5">5</option>
+<option value="7">7</option>
+</select>
+</div><div>
+<select id="stroke_style">
+<option selected="selected" value="none">---</option>
+<option value="2,2">...</option>
+<option value="5,5">- -</option>
+<option value="5,2,2,2">- .</option>
+<option value="5,2,2,2,2,2">- ..</option>
+</select>
+</div>
+</div>
+
+</div>
+
+<div id="workarea">
+
+<div id="svgcanvas">
+<object class="svgcanvas" data="svgcanvas.svg" type="image/svg+xml">
+<embed class="svgcanvas" src="svgcanvas.svg" type="image/svg+xml" />
+</object>
+</div>
+
+<div id="palette_holder">
+<div id="palette">
+</div>
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>
