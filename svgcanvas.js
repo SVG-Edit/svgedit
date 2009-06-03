@@ -194,6 +194,22 @@ function SvgCanvas(doc)
 				});
 				break;
 			case "circle":
+				started = true;
+				addSvgElementFromJson({
+					"element": "circle",
+					"attr": {
+						"cx": x,
+						"cy": y,
+						"r": 0,
+						"id": "circle_" + obj_num,
+						"fill": current_fill,
+						"stroke": current_stroke,
+						"stroke-width": current_stroke_width,
+						"stroke-dasharray": current_stroke_style,
+						"opacity": 0.5
+					}
+				});
+				break;
 			case "ellipse":
 				started = true;
 				addSvgElementFromJson({
@@ -211,7 +227,7 @@ function SvgCanvas(doc)
 						"opacity": 0.5
 					}
 				});
-			break;
+				break;
 			case "delete":
 				var t = evt.target;
 				if (t == svgroot) return;
@@ -268,12 +284,11 @@ function SvgCanvas(doc)
 				}
 				break;
 			case "circle":
-				var shape = svgdoc.getElementById("ellipse_" + obj_num);
+				var shape = svgdoc.getElementById("circle_" + obj_num);
 				var cx = shape.getAttributeNS(null, "cx");
 				var cy = shape.getAttributeNS(null, "cy");
 				var rad = Math.sqrt( (x-cx)*(x-cx) + (y-cy)*(y-cy) );
-				shape.setAttributeNS(null, "rx", rad);
-				shape.setAttributeNS(null, "ry", rad);
+				shape.setAttributeNS(null, "r", rad);
 				break;
 			case "ellipse":
 				var shape = svgdoc.getElementById("ellipse_" + obj_num);
@@ -348,6 +363,15 @@ function SvgCanvas(doc)
 				}
 				break;
 			case "circle":
+				element = svgdoc.getElementById("circle_" + obj_num);
+				if (element.getAttribute('r') == 0) {
+					element.parentNode.removeChild(element);
+					element = null;
+				} else {
+					element.setAttribute("opacity", current_opacity);
+					obj_num++;
+				}
+				break;
 			case "ellipse":
 				element = svgdoc.getElementById("ellipse_" + obj_num);
 				if (element.getAttribute('rx') == 0 &&
