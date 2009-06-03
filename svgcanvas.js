@@ -307,12 +307,12 @@ function SvgCanvas(doc)
 		{
 			case "select":
 				element = svgdoc.getElementById("rect_" + obj_num);
-				if (element.getFloatTrait('width') == 0 &&
-				if (element.getFloatTrait('height') == 0) {
+				if (element.getAttribute('width') == 0 &&
+				    element.getAttribute('height') == 0) {
 				// only one element is selected and stored in selected variable (or null)
 				} else {
-				// element.getFloatTrait('x')
-				// element.getFloatTrait('y')
+				// element.getAttribute('x')
+				// element.getAttribute('y')
 				// should scan elements which are in rect(x,y,width,height) and select them
 				}
 				element.parentNode.removeChild(element);
@@ -326,8 +326,8 @@ function SvgCanvas(doc)
 				break;
 			case "line":
 				element = svgdoc.getElementById("line_" + obj_num);
-				if (element.getFloatTrait('x1') == element.getFloatTrait('x2') &&
-				    element.getFloatTrait('y1') == element.getFloatTrait('y2')) {
+				if (element.getAttribute('x1') == element.getAttribute('x2') &&
+				    element.getAttribute('y1') == element.getAttribute('y2')) {
 					element.parentNode.removeChild(element);
 					element = null;
 				} else {
@@ -338,8 +338,8 @@ function SvgCanvas(doc)
 			case "square":
 			case "rect":
 				element = svgdoc.getElementById("rect_" + obj_num);
-				if (element.getFloatTrait('width') == 0 &&
-				    element.getFloatTrait('height') == 0) {
+				if (element.getAttribute('width') == 0 &&
+				    element.getAttribute('height') == 0) {
 					element.parentNode.removeChild(element);
 					element = null;
 				} else {
@@ -350,8 +350,8 @@ function SvgCanvas(doc)
 			case "circle":
 			case "ellipse":
 				element = svgdoc.getElementById("ellipse_" + obj_num);
-				if (element.getFloatTrait('rx') == 0 &&
-				    element.getFloatTrait('ry') == 0) {
+				if (element.getAttribute('rx') == 0 &&
+				    element.getAttribute('ry') == 0) {
 					element.parentNode.removeChild(element);
 					element = null;
 				} else {
