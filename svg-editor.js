@@ -21,6 +21,18 @@ $(document).ready(function(){
 		SvgCanvas.setStrokeStyle(this.options[this.selectedIndex].value);
 	});
 
+	$('#stroke_opacity').change(function(){
+		SvgCanvas.setStrokeOpacity(this.options[this.selectedIndex].value);
+	});
+
+	$('#fill_opacity').change(function(){
+		SvgCanvas.setFillOpacity(this.options[this.selectedIndex].value);
+	});
+
+	$('#group_opacity').change(function(){
+		SvgCanvas.setOpacity(this.options[this.selectedIndex].value);
+	});
+
 	$('.palette_item').click(function(){
 		color = $(this).css('background-color');
 		if (color == 'transparent') {
