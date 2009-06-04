@@ -1,0 +1,10 @@
+2.0.1 - ???? ??, ????
+---------------------
+* added tooltips (by codedread)
+* fix flyout menus (by codedread)
+* ask before clearing the drawing (by martin.vidner)
+
+2.0 - June 03, 2009
+------------------
+* rewritten SVG-edit, so now it uses OOP
+* created HTML interface similar to Inkscape

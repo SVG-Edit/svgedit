@@ -105,7 +105,9 @@ $(document).ready(function(){
 	});
 
 	$('#tool_clear').click(function(){
-		SvgCanvas.clear();
+		if( confirm('Do you want to clear the drawing?') ) {
+			SvgCanvas.clear();
+		}
 	});
 
 	$('#tool_submit').click(function(){
@@ -155,21 +157,12 @@ $(document).ready(function(){
 		$('.tools_flyout').hide();
 		$('#tools_rect').show();
 	});
-/*
-	$('#tools_rect').mouseout(function(){
-		$('#tools_rect').hide();
-	});
-*/
+
 	// This hides any flyouts and then shows the circle flyout
 	$('#tools_ellipse_show').click(function(){
 		$('.tools_flyout').hide();
 		$('#tools_ellipse').show();
 	});
-/*
-	$('#tools_ellipse').mouseout(function(){
-		$('#tools_ellipse').hide();
-	});
-*/
 })
 
 function serializeHandler(svg) {
