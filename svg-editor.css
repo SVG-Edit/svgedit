@@ -116,7 +116,7 @@
 	border-bottom: 1px solid #808080;
 }
 
-#tools_rect, #tools_ellipse {
+.tools_flyout {
 	position: absolute;
 	display: none;
 	height: 28px;

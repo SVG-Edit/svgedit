@@ -42,71 +42,66 @@ $(document).ready(function(){
 		}
 		SvgCanvas.setStrokeColor(color);
 	});
+	
+	// This is a common function used when a tool has been clicked (chosen)
+	// It does several common things:
+	// - hides any flyout menus
+	// - removes the tool_button_current class from whatever tool currently has it
+	// - adds the tool_button_current class to the button passed in
+	var toolButtonClick = function(button){
+		$('.tools_flyout').hide();
+		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
+		$(button).addClass('tool_button_current');
+	};
 
 	$('#tool_select').click(function(){
+		toolButtonClick(this);
 		SvgCanvas.setMode('select');
-		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
-		$(this).addClass('tool_button_current');
 	});
 
 	$('#tool_path').click(function(){
+		toolButtonClick(this);
 		SvgCanvas.setMode('path');
-		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
-		$(this).addClass('tool_button_current');
 	});
 
 	$('#tool_line').click(function(){
+		toolButtonClick(this);
 		SvgCanvas.setMode('line');
-		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
-		$(this).addClass('tool_button_current');
 	});
 
 	$('#tool_square').click(function(){
+		toolButtonClick('#tools_rect_show');
 		SvgCanvas.setMode('square');
-		$('#tools_rect').hide();
-		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
-		$('#tools_rect_show').addClass('tool_button_current');
 	});
 
 	$('#tool_rect').click(function(){
+		toolButtonClick('#tools_rect_show');
 		SvgCanvas.setMode('rect');
-		$('#tools_rect').hide();
-		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
-		$('#tools_rect_show').addClass('tool_button_current');
 	});
 
 	$('#tool_fhrect').click(function(){
+		toolButtonClick('#tools_rect_show');
 		SvgCanvas.setMode('fhrect');
-		$('#tools_rect').hide();
-		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
-		$('#tools_rect_show').addClass('tool_button_current');
 	});
 
 	$('#tool_circle').click(function(){
+		toolButtonClick('#tools_ellipse_show');
 		SvgCanvas.setMode('circle');
-		$('#tools_ellipse').hide();
-		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
-		$('#tools_ellipse_show').addClass('tool_button_current');
 	});
 
 	$('#tool_ellipse').click(function(){
+		toolButtonClick('#tools_ellipse_show');
 		SvgCanvas.setMode('ellipse');
-		$('#tools_ellipse').hide();
-		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
-		$('#tools_ellipse_show').addClass('tool_button_current');
 	});
 
 	$('#tool_fhellipse').click(function(){
+		toolButtonClick('#tools_ellipse_show');
 		SvgCanvas.setMode('fhellipse');
-		$('#tools_ellipse').hide();
-		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
-		$('#tools_ellipse_show').addClass('tool_button_current');
 	});
 
 	$('#tool_delete').click(function(){
+		toolButtonClick(this);
 		SvgCanvas.setMode('delete');
-		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
-		$(this).addClass('tool_button_current');
 	});
 
 	$('#tool_clear').click(function(){
@@ -155,7 +150,9 @@ $(document).ready(function(){
 		picker.setColor($(this).attr('value'));
 	});
 
+	// This hides any flyouts and then shows the rect flyout
 	$('#tools_rect_show').click(function(){
+		$('.tools_flyout').hide();
 		$('#tools_rect').show();
 	});
 /*
@@ -163,7 +160,9 @@ $(document).ready(function(){
 		$('#tools_rect').hide();
 	});
 */
+	// This hides any flyouts and then shows the circle flyout
 	$('#tools_ellipse_show').click(function(){
+		$('.tools_flyout').hide();
 		$('#tools_ellipse').show();
 	});
 /*
