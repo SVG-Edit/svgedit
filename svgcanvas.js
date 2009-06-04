@@ -347,7 +347,6 @@ function SvgCanvas(doc)
 				d_attr = null;
 				element = svgdoc.getElementById("path_" + obj_num);
 				element.setAttribute("opacity", current_opacity);
-				element.setAttribute("stroke-opacity", current_stroke_opacity);
 				obj_num++;
 				break;
 			case "line":
@@ -358,7 +357,6 @@ function SvgCanvas(doc)
 					element = null;
 				} else {
 					element.setAttribute("opacity", current_opacity);
-					element.setAttribute("stroke-opacity", current_stroke_opacity);
 					obj_num++;
 				}
 				break;
@@ -371,8 +369,6 @@ function SvgCanvas(doc)
 					element = null;
 				} else {
 					element.setAttribute("opacity", current_opacity);
-					element.setAttribute("stroke-opacity", current_stroke_opacity);
-					element.setAttribute("fill-opacity", current_fill_opacity);
 					obj_num++;
 				}
 				break;
@@ -383,8 +379,6 @@ function SvgCanvas(doc)
 					element = null;
 				} else {
 					element.setAttribute("opacity", current_opacity);
-					element.setAttribute("stroke-opacity", current_stroke_opacity);
-					element.setAttribute("fill-opacity", current_fill_opacity);
 					obj_num++;
 				}
 				break;
@@ -396,8 +390,6 @@ function SvgCanvas(doc)
 					element = null;
 				} else {
 					element.setAttribute("opacity", current_opacity);
-					element.setAttribute("stroke-opacity", current_stroke_opacity);
-					element.setAttribute("fill-opacity", current_fill_opacity);
 					obj_num++;
 				}
 				break;
