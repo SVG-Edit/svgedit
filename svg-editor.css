@@ -18,6 +18,11 @@
 	border: 1px solid #808080;
 }
 
+#svg_editor #svgcanvas {
+	width: 642px;
+	height: 482px;
+}
+
 #svg_editor div#palette_holder {
 	border: 1px solid #808080;
 	border-top: none;
