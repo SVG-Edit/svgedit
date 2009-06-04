@@ -1,8 +1,9 @@
 2.0.1 - ???? ??, ????
 ---------------------
-* added tooltips (by codedread)
-* fix flyout menus (by codedread)
-* ask before clearing the drawing (by martin.vidner)
+* added tooltips (patch by codedread)
+* fix flyout menus (patch by codedread)
+* ask before clearing the drawing (suggested by martin.vidner)
+* control group, fill and stroke opacity (suggested by coderead)
 
 2.0 - June 03, 2009
 ------------------

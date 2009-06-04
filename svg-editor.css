@@ -16,6 +16,7 @@
 	width: 640px;
 	height: 480px;
 	border: 1px solid #808080;
+	border-left: none;
 }
 
 #svg_editor #svgcanvas {
@@ -26,6 +27,7 @@
 #svg_editor div#palette_holder {
 	border: 1px solid #808080;
 	border-top: none;
+	border-left: none;
 	float: left;
 	width: 640px;
 	overflow-x: scroll;
@@ -70,9 +72,8 @@
 
 #tools {
 	background: #E8E8E8;
-	height: 504px;
+	height: 534px;
 	border: 1px solid #808080;
-	border-right: none;
 	padding: 4px;
 }
 
