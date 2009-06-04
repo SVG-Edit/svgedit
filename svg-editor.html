@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 <link rel="stylesheet" href="farbtastic.css" type="text/css"/>
@@ -21,15 +22,15 @@
 </div>
 
 <div id="tools_rect">
-<div id="tool_square"></div>
-<div id="tool_rect"></div>
-<div id="tool_fhrect"></div>
+<div id="tool_square" title="Square"></div>
+<div id="tool_rect" title="Rectangle"></div>
+<div id="tool_fhrect" title="Free-Hand Rectangle"></div>
 </div>
 
 <div id="tools_ellipse">
-<div id="tool_circle"></div>
-<div id="tool_ellipse"></div>
-<div id="tool_fhellipse"></div>
+<div id="tool_circle" title="Circle"></div>
+<div id="tool_ellipse" title="Ellipse"></div>
+<div id="tool_fhellipse" title="Free-Hand Ellipse"></div>
 </div>
 
 <div id="tools">
@@ -38,27 +39,27 @@
 <!--
 <img class="tool_button" id="tool_select" src="images/select.png" /><br/>
 -->
-<img class="tool_button_current" id="tool_path" src="images/path.png" /><br/>
-<img class="tool_button" id="tool_line" src="images/line.png" /><br/>
-<img class="tool_button" id="tools_rect_show" src="images/square.png" /><br/>
-<img class="tool_button" id="tools_ellipse_show" src="images/circle.png" /><br/>
-<img class="tool_button" id="tool_delete" src="images/delete.png" /><hr/>
-<img class="tool_button" id="tool_clear" src="images/clear.png" /><br/>
-<img class="tool_button" id="tool_submit" src="images/submit.png" /><br/>
+<img class="tool_button_current" id="tool_path" src="images/path.png" title="Pencil Tool" alt="Path"/><br/>
+<img class="tool_button" id="tool_line" src="images/line.png" title="Line Tool" alt="Line"/><br/>
+<img class="tool_button" id="tools_rect_show" src="images/square.png" title="Square/Rect Tool" alt="Square"/><br/>
+<img class="tool_button" id="tools_ellipse_show" src="images/circle.png" title="Circle/Ellipse Tool" alt="Circle"/><br/>
+<img class="tool_button" id="tool_delete" src="images/delete.png" title="Delete Element" alt="Delete"/><hr/>
+<img class="tool_button" id="tool_clear" src="images/clear.png" title="New Image" alt="Clear" /><br/>
+<img class="tool_button" id="tool_submit" src="images/submit.png" title="View SVG Source" alt="Source"/><br/>
 </div>
 
 <hr/>
 
 <div>fill
-<div id="fill_color"></div>
+<div id="fill_color" title="Change fill color"></div>
 </div>
 
 <hr/>
 
 <div>stroke
-<div id="stroke_color"></div>
+<div id="stroke_color" title="Change stroke color"></div>
 <div>
-<select id="stroke_width">
+<select id="stroke_width" title="Change stroke width">
 <option selected="selected" value="1">1</option>
 <option value="2">2</option>
 <option value="3">3</option>
@@ -66,7 +67,7 @@
 <option value="7">7</option>
 </select>
 </div><div>
-<select id="stroke_style">
+<select id="stroke_style" title="Change stroke dash style">
 <option selected="selected" value="none">---</option>
 <option value="2,2">...</option>
 <option value="5,5">- -</option>
