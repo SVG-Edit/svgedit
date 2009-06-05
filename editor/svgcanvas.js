@@ -34,6 +34,9 @@ function SvgCanvas(doc)
 	var selected = null;
 
 // private functions
+	var getId = function() {
+		return "svg_"+obj_num;
+	}
 
 	var assignAttributes = function(node, attrs) {
 		for (i in attrs) {
@@ -127,7 +130,7 @@ function SvgCanvas(doc)
 						"y": y,
 						"width": 0,
 						"height": 0,
-						"id": "rect_" + obj_num,
+						"id": getId(),
 						"fill": '#DBEBF9',
 						"stroke": '#CEE2F7',
 						"stroke-width": 1,
@@ -144,7 +147,7 @@ function SvgCanvas(doc)
 					"element": "path",
 					"attr": {
 						"d": d_attr,
-						"id": "path_" + obj_num,
+						"id": getId(),
 						"fill": "none",
 						"stroke": current_stroke,
 						"stroke-width": current_stroke_width,
@@ -190,7 +193,7 @@ function SvgCanvas(doc)
 						"y1": y,
 						"x2": x,
 						"y2": y,
-						"id": "line_" + obj_num,
+						"id": getId(),
 						"stroke": current_stroke,
 						"stroke-width": current_stroke_width,
 						"stroke-dasharray": current_stroke_style,
@@ -207,7 +210,7 @@ function SvgCanvas(doc)
 						"cx": x,
 						"cy": y,
 						"r": 0,
-						"id": "circle_" + obj_num,
+						"id": getId(),
 						"fill": current_fill,
 						"stroke": current_stroke,
 						"stroke-width": current_stroke_width,
@@ -252,15 +255,14 @@ function SvgCanvas(doc)
 
 		var x = evt.pageX;
 		var y = evt.pageY;
+		var shape = svgdoc.getElementById(getId());
 		switch (current_mode)
 		{
 			case "line":
-				var shape = svgdoc.getElementById("line_" + obj_num);
 				shape.setAttributeNS(null, "x2", x);
 				shape.setAttributeNS(null, "y2", y);
 				break;
 			case "square":
-				var shape = svgdoc.getElementById("rect_" + obj_num);
 				var size = Math.max( Math.abs(x - start_x), Math.abs(y - start_y) );
 				shape.setAttributeNS(null, "width", size);
 				shape.setAttributeNS(null, "height", size);
@@ -277,7 +279,6 @@ function SvgCanvas(doc)
 				break;
 			case "select":
 			case "rect":
-				var shape = svgdoc.getElementById("rect_" + obj_num);
 				if (start_x < x) {
 					shape.setAttributeNS(null, "x", start_x);
 					shape.setAttributeNS(null, "width", x - start_x);
@@ -294,14 +295,12 @@ function SvgCanvas(doc)
 				}
 				break;
 			case "circle":
-				var shape = svgdoc.getElementById("circle_" + obj_num);
 				var cx = shape.getAttributeNS(null, "cx");
 				var cy = shape.getAttributeNS(null, "cy");
 				var rad = Math.sqrt( (x-cx)*(x-cx) + (y-cy)*(y-cy) );
 				shape.setAttributeNS(null, "r", rad);
 				break;
 			case "ellipse":
-				var shape = svgdoc.getElementById("ellipse_" + obj_num);
 				var cx = shape.getAttributeNS(null, "cx");
 				var cy = shape.getAttributeNS(null, "cy");
 				shape.setAttributeNS(null, "rx", Math.abs(x - cx) );
@@ -316,7 +315,7 @@ function SvgCanvas(doc)
 			// break; missing on purpose
 			case "path":
 				d_attr += "L" + x + " " + y + " ";
-				var shape = svgdoc.getElementById("path_" + obj_num);
+				var shape = svgdoc.getElementById(getId());
 				shape.setAttributeNS(null, "d", d_attr);
 				break;
 		}
@@ -327,11 +326,11 @@ function SvgCanvas(doc)
 		if (!started) return;
 
 		started = false;
-		var element = null;
+		var element = svgdoc.getElementById(getId());
+
 		switch (current_mode)
 		{
 			case "select":
-				element = svgdoc.getElementById("rect_" + obj_num);
 				if (element.getAttribute('width') == 0 &&
 				    element.getAttribute('height') == 0) {
 				// only one element is selected and stored in selected variable (or null)
@@ -345,12 +344,10 @@ function SvgCanvas(doc)
 				break;
 			case "path":
 				d_attr = null;
-				element = svgdoc.getElementById("path_" + obj_num);
 				element.setAttribute("opacity", current_opacity);
 				obj_num++;
 				break;
 			case "line":
-				element = svgdoc.getElementById("line_" + obj_num);
 				if (element.getAttribute('x1') == element.getAttribute('x2') &&
 				    element.getAttribute('y1') == element.getAttribute('y2')) {
 					element.parentNode.removeChild(element);
@@ -362,7 +359,6 @@ function SvgCanvas(doc)
 				break;
 			case "square":
 			case "rect":
-				element = svgdoc.getElementById("rect_" + obj_num);
 				if (element.getAttribute('width') == 0 &&
 				    element.getAttribute('height') == 0) {
 					element.parentNode.removeChild(element);
@@ -373,7 +369,6 @@ function SvgCanvas(doc)
 				}
 				break;
 			case "circle":
-				element = svgdoc.getElementById("circle_" + obj_num);
 				if (element.getAttribute('r') == 0) {
 					element.parentNode.removeChild(element);
 					element = null;
@@ -383,7 +378,6 @@ function SvgCanvas(doc)
 				}
 				break;
 			case "ellipse":
-				element = svgdoc.getElementById("ellipse_" + obj_num);
 				if (element.getAttribute('rx') == 0 &&
 				    element.getAttribute('ry') == 0) {
 					element.parentNode.removeChild(element);
@@ -395,7 +389,6 @@ function SvgCanvas(doc)
 				break;
 			case "fhellipse":
 				d_attr = null;
-				element = svgdoc.getElementById("path_" + obj_num);
 				element.parentNode.removeChild(element);
 				if ((freehand_max_x - freehand_min_x) > 0 &&
 				    (freehand_max_y - freehand_min_y) > 0) {
@@ -406,7 +399,7 @@ function SvgCanvas(doc)
 							"cy": (freehand_min_y + freehand_max_y) / 2,
 							"rx": (freehand_max_x - freehand_min_x) / 2,
 							"ry": (freehand_max_y - freehand_min_y) / 2,
-							"id": "ellipse_" + obj_num,
+							"id": getId(),
 							"fill": current_fill,
 							"stroke": current_stroke,
 							"stroke-width": current_stroke_width,
@@ -421,7 +414,6 @@ function SvgCanvas(doc)
 				break;
 			case "fhrect":
 				d_attr = null;
-				element = svgdoc.getElementById("path_" + obj_num);
 				element.parentNode.removeChild(element);
 				if ((freehand_max_x - freehand_min_x) > 0 &&
 				    (freehand_max_y - freehand_min_y) > 0) {
@@ -432,7 +424,7 @@ function SvgCanvas(doc)
 							"y": freehand_min_y,
 							"width": (freehand_max_x - freehand_min_x),
 							"height": (freehand_max_y - freehand_min_y),
-							"id": "rect_" + obj_num,
+							"id": getId(),
 							"fill": current_fill,
 							"stroke": current_stroke,
 							"stroke-width": current_stroke_width,
