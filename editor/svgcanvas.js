@@ -230,7 +230,7 @@ function SvgCanvas(doc)
 						"cy": y,
 						"rx": 0,
 						"ry": 0,
-						"id": "ellipse_" + obj_num,
+						"id": getId(),
 						"fill": current_fill,
 						"stroke": current_stroke,
 						"stroke-width": current_stroke_width,
