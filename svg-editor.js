@@ -127,6 +127,7 @@ $(document).ready(function(){
 	});
 
 	$('#fill_color').click(function(){
+		$('.tools_flyout').hide();
 		var color = $(this).css('background-color');
 		if (color == 'transparent') color = '#ffffff';
 		picker.setColor(color);
@@ -136,6 +137,7 @@ $(document).ready(function(){
 	});
 
 	$('#stroke_color').click(function(){
+		$('.tools_flyout').hide();
 		var color = $(this).css('background-color');
 		if (color == 'transparent') color = '#ffffff';
 		picker.setColor(color);

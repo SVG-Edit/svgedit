@@ -125,9 +125,6 @@
 .tools_flyout {
 	position: absolute;
 	display: none;
-	height: 28px;
-	width: 90px;
-	background: red;
 	cursor: pointer;
 	float: left;
 }
