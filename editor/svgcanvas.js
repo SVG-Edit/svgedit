@@ -3,7 +3,7 @@ var svgcanvas = null;
 function svgCanvasInit(event) {
 	svgcanvas = new SvgCanvas(event.target.ownerDocument);
 	svgcanvas.setup(event);
-	top.SvgCanvas = svgcanvas;
+	parent.SvgCanvas = svgcanvas;
 }
 
 function SvgCanvas(doc)
