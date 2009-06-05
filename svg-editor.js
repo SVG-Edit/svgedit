@@ -131,6 +131,7 @@ $(document).ready(function(){
 		var oldbg = elem.css('background');
 		var color = elem.css('background-color');
 		if (color == 'transparent') {
+			color = new $.jPicker.Color({ hex: 'ffffff' });
 		} else {
 			if (color.length == 7 && color[0] == '#') { // #hheexx notation
 				color = new $.jPicker.Color( { hex: color.substring(1,7) } );
