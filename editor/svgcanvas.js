@@ -253,6 +253,7 @@ function SvgCanvas(doc)
 				var t = evt.target;
 				if (t == svgroot) return;
 				t.parentNode.removeChild(t);
+				call("deleted",t);
 				break;
 		}
 	}
