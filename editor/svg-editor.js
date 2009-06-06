@@ -130,8 +130,10 @@ $(document).ready(function(){
 		$('.tools_flyout').hide();
 		var oldbg = elem.css('background');
 		var color = elem.css('background-color');
+		var was_none = false;
 		if (color == 'transparent') {
 			color = new $.jPicker.Color({ hex: 'ffffff' });
+			was_none = true;
 		} else {
 			if (color.length == 7 && color[0] == '#') { // #hheexx notation
 				color = new $.jPicker.Color( { hex: color.substring(1,7) } );
@@ -158,6 +160,13 @@ $(document).ready(function(){
 		}
 		, null, function(){
 			elem.css('background', oldbg);
+			if (was_none) {
+				if (elem.attr('id') == 'stroke_color') {
+					SvgCanvas.setStrokeColor('none');
+				} else if (elem.attr('id') == 'fill_color') {
+					SvgCanvas.setFillColor('none');
+				}
+			}
 			$('#color_picker').hide();
 		});
 	}
