@@ -465,32 +465,64 @@ function SvgCanvas(doc)
 		}
 	}
 
+	this.getMode = function() {
+		return current_mode;
+	}
+
 	this.setMode = function(name) {
 		current_mode = name;
+	}
+
+	this.getStrokeColor = function() {
+		return current_stroke;
 	}
 
 	this.setStrokeColor = function(color) {
 		current_stroke = color;
 	}
 
+	this.getFillColor = function() {
+		return current_fill;
+	}
+
 	this.setFillColor = function(color) {
 		current_fill = color;
+	}
+
+	this.getStrokeWidth = function() {
+		return current_stroke_width;
 	}
 
 	this.setStrokeWidth = function(val) {
 		current_stroke_width = val;
 	}
 
+	this.getStrokeStyle = function() {
+		return current_stroke_style;
+	}
+
 	this.setStrokeStyle = function(val) {
 		current_stroke_style = val;
+	}
+
+	this.getOpacity = function() {
+		return current_opacity;
 	}
 
 	this.setOpacity = function(val) {
 		current_opacity = val;
 	}
 
+	this.getFillOpacity = function() {
+		return current_fill_opacity;
+	}
+
 	this.setFillOpacity = function(val) {
 		current_fill_opacity = val;
+	}
+
+	this.getStrokeOpacity = function() {
+		return current_stroke_opacity;
 	}
 
 	this.setStrokeOpacity = function(val) {
