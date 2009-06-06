@@ -408,11 +408,11 @@ function SvgCanvas(doc)
 
 // public functions
 
-	this.serialize = function(handler) {
+	this.save = function() {
 		var str = "<?xml version=\"1.0\" standalone=\"no\"?>\n"
 		str += "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
 		str += svgToString(svgroot, 0);
-		handler(str);
+		this.saveHandler(str);
 	}
 
 	this.clear = function() {
@@ -502,6 +502,10 @@ function SvgCanvas(doc)
 			"onmousedown": "svgcanvas.mouseDown(evt)",
 			"onmousemove": "svgcanvas.mouseMove(evt)"
 		});
+	}
+
+	this.saveHandler = function(svg) {
+		alert(svg);
 	}
 
 }
