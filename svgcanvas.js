@@ -266,33 +266,15 @@ function SvgCanvas(doc)
 				var size = Math.max( Math.abs(x - start_x), Math.abs(y - start_y) );
 				shape.setAttributeNS(null, "width", size);
 				shape.setAttributeNS(null, "height", size);
-				if(start_x < x) {
-					shape.setAttributeNS(null, "x", start_x);
-				} else {
-					shape.setAttributeNS(null, "x", start_x - size);
-				}
-				if(start_y < y) {
-					shape.setAttributeNS(null, "y", start_y);
-				} else {
-					shape.setAttributeNS(null, "y", start_y - size);
-				}
+				shape.setAttributeNS(null, "x", start_x < x ? start_x : start_x - size);
+				shape.setAttributeNS(null, "y", start_y < y ? start_y : start_y - size);
 				break;
 			case "select":
 			case "rect":
-				if (start_x < x) {
-					shape.setAttributeNS(null, "x", start_x);
-					shape.setAttributeNS(null, "width", x - start_x);
-				} else {
-					shape.setAttributeNS(null, "x", x);
-					shape.setAttributeNS(null, "width", start_x - x);
-				}
-				if (start_y < y) {
-					shape.setAttributeNS(null, "y", start_y);
-					shape.setAttributeNS(null, "height", y - start_y);
-				} else {
-					shape.setAttributeNS(null, "y", y);
-					shape.setAttributeNS(null, "height", start_y - y);
-				}
+				shape.setAttributeNS(null, "x", Math.min(start_x,x));
+				shape.setAttributeNS(null, "y", Math.min(start_y,y));
+				shape.setAttributeNS(null, "width", Math.abs(x-start_x));
+				shape.setAttributeNS(null, "height", Math.abs(y-start_y));
 				break;
 			case "circle":
 				var cx = shape.getAttributeNS(null, "cx");
