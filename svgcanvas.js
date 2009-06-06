@@ -173,7 +173,7 @@ function SvgCanvas(doc)
 						"y": y,
 						"width": 0,
 						"height": 0,
-						"id": "rect_" + obj_num,
+						"id": getId(),
 						"fill": current_fill,
 						"stroke": current_stroke,
 						"stroke-width": current_stroke_width,
