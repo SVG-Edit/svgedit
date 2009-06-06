@@ -32,10 +32,17 @@ function SvgCanvas(doc)
 	var freehand_min_y = null;
 	var freehand_max_y = null;
 	var selected = null;
+	var events = {};
 
 // private functions
 	var getId = function() {
 		return "svg_"+obj_num;
+	}
+
+	var call = function(event, arg) {
+		if (events[event]) {
+			return events[event](this,arg);
+		}
 	}
 
 	var assignAttributes = function(node, attrs) {
@@ -66,6 +73,7 @@ function SvgCanvas(doc)
 		assignAttributes(shape, data.attr);
 		cleanupElement(shape);
 		svgdoc.documentElement.appendChild(shape);
+		call("changed",shape);
 	}
 
 	var svgToString = function(elem, indent) {
@@ -393,6 +401,7 @@ function SvgCanvas(doc)
 		} else if (element != null) {
 			element.setAttribute("opacity", current_opacity);
 			cleanupElement(element);
+			call("changed",element);
 		}
 	}
 
@@ -480,6 +489,10 @@ function SvgCanvas(doc)
 
 	this.setStrokeOpacity = function(val) {
 		current_stroke_opacity = val;
+	}
+
+	this.bind = function(event, f) {
+		events[event] = f;
 	}
 
 	this.setup = function(evt) {
