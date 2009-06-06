@@ -73,7 +73,7 @@ function SvgCanvas(doc)
 		assignAttributes(shape, data.attr);
 		cleanupElement(shape);
 		svgdoc.documentElement.appendChild(shape);
-		call("changed",shape);
+		return shape;
 	}
 
 	var svgToString = function(elem, indent) {
@@ -352,7 +352,7 @@ function SvgCanvas(doc)
 			case "fhellipse":
 				if ((freehand_max_x - freehand_min_x) > 0 &&
 				    (freehand_max_y - freehand_min_y) > 0) {
-					addSvgElementFromJson({
+					call("changed",addSvgElementFromJson({
 						"element": "ellipse",
 						"attr": {
 							"cx": (freehand_min_x + freehand_max_x) / 2,
@@ -368,13 +368,13 @@ function SvgCanvas(doc)
 							"stroke-opacity": current_stroke_opacity,
 							"fill-opacity": current_fill_opacity
 						}
-					});
+					}));
 				}
 				break;
 			case "fhrect":
 				if ((freehand_max_x - freehand_min_x) > 0 &&
 				    (freehand_max_y - freehand_min_y) > 0) {
-					addSvgElementFromJson({
+					call("changed",addSvgElementFromJson({
 						"element": "rect",
 						"attr": {
 							"x": freehand_min_x,
@@ -390,7 +390,7 @@ function SvgCanvas(doc)
 							"stroke-opacity": current_stroke_opacity,
 							"fill-opacity": current_fill_opacity
 						}
-					});
+					}));
 				}
 				break;
 		}
