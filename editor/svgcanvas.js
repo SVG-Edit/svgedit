@@ -308,7 +308,7 @@ function SvgCanvas(doc)
 
 		started = false;
 		var element = svgdoc.getElementById(getId());
-
+		var keep = false;
 		switch (current_mode)
 		{
 			case "select":
@@ -320,57 +320,27 @@ function SvgCanvas(doc)
 				// element.getAttribute('y')
 				// should scan elements which are in rect(x,y,width,height) and select them
 				}
-				element.parentNode.removeChild(element);
-				element = null;
 				break;
 			case "path":
-				d_attr = null;
-				element.setAttribute("opacity", current_opacity);
-				obj_num++;
+				keep = true;
 				break;
 			case "line":
-				if (element.getAttribute('x1') == element.getAttribute('x2') &&
-				    element.getAttribute('y1') == element.getAttribute('y2')) {
-					element.parentNode.removeChild(element);
-					element = null;
-				} else {
-					element.setAttribute("opacity", current_opacity);
-					obj_num++;
-				}
+				keep = (element.getAttribute('x1') != element.getAttribute('x2') ||
+					    element.getAttribute('y1') == element.getAttribute('y2'));
 				break;
 			case "square":
 			case "rect":
-				if (element.getAttribute('width') == 0 &&
-				    element.getAttribute('height') == 0) {
-					element.parentNode.removeChild(element);
-					element = null;
-				} else {
-					element.setAttribute("opacity", current_opacity);
-					obj_num++;
-				}
+				keep = (element.getAttribute('width') != 0 ||
+					    element.getAttribute('height') != 0);
 				break;
 			case "circle":
-				if (element.getAttribute('r') == 0) {
-					element.parentNode.removeChild(element);
-					element = null;
-				} else {
-					element.setAttribute("opacity", current_opacity);
-					obj_num++;
-				}
+				keep = (element.getAttribute('r') != 0);
 				break;
 			case "ellipse":
-				if (element.getAttribute('rx') == 0 &&
-				    element.getAttribute('ry') == 0) {
-					element.parentNode.removeChild(element);
-					element = null;
-				} else {
-					element.setAttribute("opacity", current_opacity);
-					obj_num++;
-				}
+				keep = (element.getAttribute('rx') != 0 ||
+					    element.getAttribute('ry') != 0);
 				break;
 			case "fhellipse":
-				d_attr = null;
-				element.parentNode.removeChild(element);
 				if ((freehand_max_x - freehand_min_x) > 0 &&
 				    (freehand_max_y - freehand_min_y) > 0) {
 					addSvgElementFromJson({
@@ -390,12 +360,9 @@ function SvgCanvas(doc)
 							"fill-opacity": current_fill_opacity
 						}
 					});
-					obj_num++;
 				}
 				break;
 			case "fhrect":
-				d_attr = null;
-				element.parentNode.removeChild(element);
 				if ((freehand_max_x - freehand_min_x) > 0 &&
 				    (freehand_max_y - freehand_min_y) > 0) {
 					addSvgElementFromJson({
@@ -415,11 +382,16 @@ function SvgCanvas(doc)
 							"fill-opacity": current_fill_opacity
 						}
 					});
-					obj_num++;
 				}
 				break;
 		}
-		if (element != null) {
+		d_attr = null;
+		obj_num++;
+		if (!keep) {
+			element.parentNode.removeChild(element);
+			element = null;
+		} else if (element != null) {
+			element.setAttribute("opacity", current_opacity);
 			cleanupElement(element);
 		}
 	}
