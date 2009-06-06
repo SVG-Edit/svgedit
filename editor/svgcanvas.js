@@ -297,7 +297,6 @@ function SvgCanvas(doc)
 			// break; missing on purpose
 			case "path":
 				d_attr += "L" + x + " " + y + " ";
-				var shape = svgdoc.getElementById(getId());
 				shape.setAttributeNS(null, "d", d_attr);
 				break;
 		}
