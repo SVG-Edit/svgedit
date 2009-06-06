@@ -7,7 +7,6 @@ $(document).ready(function(){
 	});
 	$('#palette').append(str);
 
-
 	var pos = $('#tools_rect_show').position();
 	$('#tools_rect').css({'left': pos.left+2, 'top': pos.top+2});
 	pos = $('#tools_ellipse_show').position();
@@ -123,7 +122,7 @@ $(document).ready(function(){
 	});
 
 	$('#tool_submit').click(function(){
-		SvgCanvas.serialize(serializeHandler);
+		SvgCanvas.save();
 	});
 
 	var colorPicker = function(elem) {
@@ -191,20 +190,4 @@ $(document).ready(function(){
 		$('#tools_ellipse').show();
 	});
 
-})
-
-var serializeHandler = function(svg) {
-	//alert(svg);
-	submitSvgStr(svg);
-}
-
-function submitSvgStr(str){
-        //alert("This is svg image in string format \n This will be posted to server \n " + str)
-        //posting the data to server
-        $.post(
-                "save.php", 
-                {svg_data: escape(str)},
-                function(data){
-    			alert(data);
-  	});
-}
+});
