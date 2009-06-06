@@ -194,5 +194,17 @@ $(document).ready(function(){
 })
 
 var serializeHandler = function(svg) {
-	alert(svg);
+	//alert(svg);
+	submitSvgStr(svg);
+}
+
+function submitSvgStr(str){
+        //alert("This is svg image in string format \n This will be posted to server \n " + str)
+        //posting the data to server
+        $.post(
+                "save.php", 
+                {svg_data: escape(str)},
+                function(data){
+    			alert(data);
+  	});
 }
