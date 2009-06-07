@@ -155,7 +155,7 @@ function SvgCanvas(c)
 			current_stroke_style = selected.getAttribute("stroke-dasharray");
 		}
 		
-		call("selected",selected);
+		call("selected", selected);
 	}
 
 	var mouseDown = function(evt)
