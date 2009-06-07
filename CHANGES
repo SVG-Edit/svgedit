@@ -9,6 +9,7 @@
 * replaced Farbtastic with jPicker, because of the license issues
 * removed dependency on svgcanvas.svg, now created in JavaScript
 * added Select tool
+* using jQuery hosted by Google instead of local version
 
 2.0 - June 03, 2009
 ------------------
