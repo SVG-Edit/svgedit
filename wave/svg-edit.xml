@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Module>
+<ModulePrefs title="SVG Editor" height="300">
+    <Require feature="rpc" /> 
+  </ModulePrefs>
+<Content type="html">
+<![CDATA[ 
+
+<script type="text/javascript" src="http://wave-api.appspot.com/public/wave.js"></script>
+<link rel="stylesheet" href="http://svg-edit.googlecode.com/svn/trunk/editor/jpicker/jpicker.css" type="text/css"/>
+<link rel="stylesheet" href="http://svg-edit.googlecode.com/svn/trunk/editor/svg-editor.css" type="text/css"/>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+<script type="text/javascript" src="http://svg-edit.googlecode.com/svn/trunk/editor/jquery.rightClick.js"></script>
+<script type="text/javascript" src="http://svg-edit.googlecode.com/svn/trunk/editor/jpicker/jpicker.js"></script>
+<script type="text/javascript" src="http://svg-edit.googlecode.com/svn/trunk/editor/svgcanvas.js"></script>
+<script type="text/javascript" src="http://svg-edit.googlecode.com/svn/trunk/editor/svg-editor.js"></script>
+ 
+
+<p>SVG-edit Wave Gadget @ <a href="http://svg-edit.googlecode.com/">http://svg-edit.googlecode.com/</a></p>
+<div id="svg_editor">
+
+<div id="color_picker" class="tools_flyout"></div>
+
+<div id="tools_rect" class="tools_flyout">
+<div id="tool_square" title="Square"></div>
+<div id="tool_rect" title="Rectangle"></div>
+<div id="tool_fhrect" title="Free-Hand Rectangle"></div>
+</div>
+
+<div id="tools_ellipse" class="tools_flyout">
+<div id="tool_circle" title="Circle"></div>
+<div id="tool_ellipse" title="Ellipse"></div>
+<div id="tool_fhellipse" title="Free-Hand Ellipse"></div>
+</div>
+
+<div id="tools">
+
+<div>
+<img class="tool_button" id="tool_select" src="/static/svg-edit.svn/editor/images/select.png" title="Select Tool" alt="Select"/><br/>
+<img class="tool_button_current" id="tool_path" src="/static/svg-edit.svn/editor/images/path.png" title="Pencil Tool" alt="Path"/><br/>
+<img class="tool_button" id="tool_line" src="/static/svg-edit.svn/editor/images/line.png" title="Line Tool" alt="Line"/><br/>
+<img class="tool_button" id="tools_rect_show" src="/static/svg-edit.svn/editor/images/square.png" title="Square/Rect Tool" alt="Square"/><br/>
+<img class="tool_button" id="tools_ellipse_show" src="/static/svg-edit.svn/editor/images/circle.png" title="Circle/Ellipse Tool" alt="Circle"/><br/>
+<img class="tool_button" id="tool_delete" src="/static/svg-edit.svn/editor/images/delete.png" title="Delete Element" alt="Delete"/><hr/>
+<img class="tool_button" id="tool_clear" src="/static/svg-edit.svn/editor/images/clear.png" title="New Image" alt="Clear" /><br/>
+<img class="tool_button" id="tool_submit" src="/static/svg-edit.svn/editor/images/submit.png" title="Save Image to Server" alt="Source"/><br/>
+</div>
+
+<hr/>
+
+<div>fill
+<div id="fill_color" title="Change fill color"></div>
+<select id="fill_opacity" title="Change fill opacity">
+<option selected="selected" value="1">100 %</option>
+<option value="0.9">90 %</option>
+<option value="0.8">80 %</option>
+<option value="0.7">70 %</option>
+<option value="0.6">60 %</option>
+<option value="0.5">50 %</option>
+<option value="0.4">40 %</option>
+<option value="0.3">30 %</option>
+<option value="0.2">20 %</option>
+<option value="0.1">10 %</option>
+</select>
+</div>
+
+<hr/>
+
+<div>stroke
+<div id="stroke_color" title="Change stroke color"></div>
+<div>
+<select id="stroke_width" title="Change stroke width">
+<option selected="selected" value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="5">5</option>
+<option value="7">7</option>
+</select>
+</div><div>
+<select id="stroke_style" title="Change stroke dash style">
+<option selected="selected" value="none">---</option>
+<option value="2,2">...</option>
+<option value="5,5">- -</option>
+<option value="5,2,2,2">- .</option>
+<option value="5,2,2,2,2,2">- ..</option>
+</select>
+</div>
+<div>
+<select id="stroke_opacity" title="Change stroke opacity">
+<option selected="selected" value="1">100 %</option>
+<option value="0.9">90 %</option>
+<option value="0.8">80 %</option>
+<option value="0.7">70 %</option>
+<option value="0.6">60 %</option>
+<option value="0.5">50 %</option>
+<option value="0.4">40 %</option>
+<option value="0.3">30 %</option>
+<option value="0.2">20 %</option>
+<option value="0.1">10 %</option>
+</select>
+</div>
+<hr/>
+<div>
+<select id="group_opacity" title="Change group opacity">
+<option selected="selected" value="1">100 %</option>
+<option value="0.9">90 %</option>
+<option value="0.8">80 %</option>
+<option value="0.7">70 %</option>
+<option value="0.6">60 %</option>
+<option value="0.5">50 %</option>
+<option value="0.4">40 %</option>
+<option value="0.3">30 %</option>
+<option value="0.2">20 %</option>
+<option value="0.1">10 %</option>
+</select>
+</div>
+</div>
+
+</div>
+
+<div id="workarea">
+
+<div id="svgcanvas">
+</div>
+
+<div id="palette_holder">
+<div id="palette">
+</div>
+</div>
+
+</div>
+
+</div>
+
+<script type="text/javascript">
+    function stateUpdated() {
+	   SvgCanvas.updateState(wave.getState());
+    }
+
+    function main() {
+  	  svg_edit_setup();
+      if (wave && wave.isInWaveContainer()) {
+        wave.setStateCallback(stateUpdated);
+      }
+    }
+    gadgets.util.registerOnLoadHandler(main);
+
+</script>
+]]> 
+  </Content>
+</Module>
