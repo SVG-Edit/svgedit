@@ -2,17 +2,17 @@ var palette = ["#000000","#202020","#404040","#606060","#808080","#a0a0a0","#c0c
 
 $(document).ready(function(){
 	var svgCanvas = new SvgCanvas(document.getElementById("svgcanvas"));
-	
+
 	var selectedChanged = function(window,elem) {
 		if (elem != null) {
-		
+
 			// update fill color
 			var fillColor = elem.getAttribute("fill");
 			if (fillColor == null || fillColor == "" || fillColor == "none") {
 				fillColor = 'url(\'images/none.png\')';
 			}
 			$('#fill_color').css('background', fillColor);
-		
+
 			// update stroke color
 			var strokeColor = elem.getAttribute("stroke");
 			if (strokeColor == null || strokeColor == "" || strokeColor == "none") {
@@ -20,7 +20,7 @@ $(document).ready(function(){
 			}
 			$('#stroke_color').css('background', strokeColor);
 
-			// update fill opacity			
+			// update fill opacity
 			var fillOpacity = elem.getAttribute("fill-opacity");
 			if (fillOpacity == null || fillColor == "") {
 				fillOpacity = 1.0;
@@ -28,14 +28,22 @@ $(document).ready(function(){
 			fillOpacity = (fillOpacity*100)+" %";
 			$('#fill_opacity').val(fillOpacity);
 
-			// update stroke opacity			
+			// update stroke opacity
 			var strokeOpacity = elem.getAttribute("stroke-opacity");
 			if (strokeOpacity == null || strokeOpacity == "") {
 				strokeOpacity = 1.0;
 			}
 			strokeOpacity = (strokeOpacity*100)+" %";
 			$('#stroke_opacity').val(strokeOpacity);
-			
+
+			// update group opacity
+			var opacity = elem.getAttribute("opacity");
+			if (opacity == null || opacity == "") {
+				opacity = 1.0;
+			}
+			opacity = (opacity*100)+" %";
+			$('#group_opacity').val(opacity);
+
 			var strokeWidth = elem.getAttribute("stroke-width");
 			if (strokeWidth == null || strokeWidth == "") {
 				strokeWidth = 1;
@@ -49,7 +57,7 @@ $(document).ready(function(){
 			$('#stroke_dasharray').val(strokeDashArray);
 		}
 	}
-	
+
 	// bind the selected event to our function that handles updates to the UI
 	svgCanvas.bind("selected", selectedChanged);
 
@@ -105,7 +113,7 @@ $(document).ready(function(){
 		}
 		svgCanvas.setStrokeColor(color);
 	});
-	
+
 	// This is a common function used when a tool has been clicked (chosen)
 	// It does several common things:
 	// - hides any flyout menus

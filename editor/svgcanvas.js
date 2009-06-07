@@ -9,9 +9,9 @@ function SvgCanvas(c)
 
 	var svgdoc  = c.ownerDocument;
 	var svgroot = svgdoc.createElementNS(svgns, "svg");
-    svgroot.setAttribute("width",640);
-	svgroot.setAttribute("height",480);
-	svgroot.setAttributeNS(null,"id","svgroot");
+	svgroot.setAttribute("width", 640);
+	svgroot.setAttribute("height", 480);
+	svgroot.setAttributeNS(null, "id", "svgroot");
 	container.appendChild(svgroot);
 
 	var d_attr = null;
@@ -84,17 +84,10 @@ function SvgCanvas(c)
 			var attr;
 			var i;
 			var childs = elem.childNodes;
-			// don't include scripts in output svg
-			if (elem.nodeName == "script") return "";
 			for (i=0; i<indent; i++) out += "  ";
 			out += "<" + elem.nodeName;
 			for (i=attrs.length-1; i>=0; i--) {
 				attr = attrs.item(i);
-				// don't include events in output svg
-				if (attr.nodeName == "onload" ||
-					attr.nodeName == "onmousedown" ||
-					attr.nodeName == "onmousemove" ||
-					attr.nodeName == "onmouseup") continue;
 				out += " " + attr.nodeName + "=\"" + attr.nodeValue+ "\"";
 			}
 			if (elem.hasChildNodes()) {
@@ -307,7 +300,7 @@ function SvgCanvas(c)
 				shape.setAttributeNS(null, "x", start_x < x ? start_x : start_x - size);
 				shape.setAttributeNS(null, "y", start_y < y ? start_y : start_y - size);
 				break;
-			case "select":
+			// case "select":
 			case "rect":
 				shape.setAttributeNS(null, "x", Math.min(start_x,x));
 				shape.setAttributeNS(null, "y", Math.min(start_y,y));
@@ -349,6 +342,7 @@ function SvgCanvas(c)
 		var keep = false;
 		switch (current_mode)
 		{
+			/*
 			case "select":
 				if (element.getAttribute('width') == 0 &&
 				    element.getAttribute('height') == 0) {
@@ -359,24 +353,25 @@ function SvgCanvas(c)
 				// should scan elements which are in rect(x,y,width,height) and select them
 				}
 				break;
+			*/
 			case "path":
 				keep = true;
 				break;
 			case "line":
 				keep = (element.getAttribute('x1') != element.getAttribute('x2') ||
-					    element.getAttribute('y1') == element.getAttribute('y2'));
+				        element.getAttribute('y1') == element.getAttribute('y2'));
 				break;
 			case "square":
 			case "rect":
 				keep = (element.getAttribute('width') != 0 ||
-					    element.getAttribute('height') != 0);
+				        element.getAttribute('height') != 0);
 				break;
 			case "circle":
 				keep = (element.getAttribute('r') != 0);
 				break;
 			case "ellipse":
 				keep = (element.getAttribute('rx') != 0 ||
-					    element.getAttribute('ry') != 0);
+				        element.getAttribute('ry') != 0);
 				break;
 			case "fhellipse":
 				if ((freehand_max_x - freehand_min_x) > 0 &&
@@ -439,7 +434,7 @@ function SvgCanvas(c)
 
 	this.save = function() {
 		// remove the selected outline before serializing
-		this.selectElement(null);
+		this.selectNone();
 		var str = "<?xml version=\"1.0\" standalone=\"no\"?>\n"
 		str += "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
 		str += svgToString(svgroot, 0);
@@ -450,7 +445,7 @@ function SvgCanvas(c)
 		var nodes = svgroot.childNodes;
 		var len = svgroot.childNodes.length;
 		var i = 0;
-		this.setSelected(null);
+		this.selectNone();
 		for(var rep = 0; rep < len; rep++){
 			if (nodes[i].nodeType == 1) { // element node
 				nodes[i].parentNode.removeChild(nodes[i]);
@@ -522,6 +517,10 @@ function SvgCanvas(c)
 
 	this.setOpacity = function(val) {
 		current_opacity = val;
+		if (selected != null) {
+			selected.setAttribute("opacity", val);
+			call("changed", selected);
+		}
 	}
 
 	this.getFillOpacity = function() {
@@ -559,7 +558,7 @@ function SvgCanvas(c)
 	this.saveHandler = function(svg) {
 		alert(svg);
 	}
-		
+
 	this.selectNone = function() {
 		selectElement(null);
 	}
