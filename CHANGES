@@ -7,6 +7,8 @@
 * fix flyouts when using color picker
 * change license from GPLv2 to Apache License v2.0
 * replaced Farbtastic with jPicker, because of the license issues
+* removed dependency on svgcanvas.svg, now created in JavaScript
+* added Select tool
 
 2.0 - June 03, 2009
 ------------------
