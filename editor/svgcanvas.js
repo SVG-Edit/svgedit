@@ -1,19 +1,19 @@
 var svgcanvas = null;
 
-function svgCanvasInit(event) {
-	svgcanvas = new SvgCanvas(event.target.ownerDocument);
-	svgcanvas.setup(event);
-	parent.SvgCanvas = svgcanvas;
-}
-
-function SvgCanvas(doc)
+function SvgCanvas(c)
 {
 
 // private members
-
-	var svgdoc = doc;
-	var svgroot = svgdoc.documentElement;
+	var container = c;
 	var svgns = "http://www.w3.org/2000/svg";
+
+	var svgdoc  = c.ownerDocument;
+	var svgroot = svgdoc.createElementNS(svgns, "svg");
+    svgroot.setAttribute("width",640);
+	svgroot.setAttribute("height",480);
+	svgroot.setAttributeNS(null,"id","svgroot");
+	container.appendChild(svgroot);
+
 	var d_attr = null;
 	var started = false;
 	var obj_num = 1;
@@ -72,7 +72,7 @@ function SvgCanvas(doc)
 		var shape = svgdoc.createElementNS(svgns, data.element);
 		assignAttributes(shape, data.attr);
 		cleanupElement(shape);
-		svgdoc.documentElement.appendChild(shape);
+		svgroot.appendChild(shape);
 		return shape;
 	}
 
@@ -120,10 +120,10 @@ function SvgCanvas(doc)
 
 // public events
 
-	this.mouseDown = function(evt)
+	var mouseDown = function(evt)
 	{
-		var x = evt.pageX;
-		var y = evt.pageY;
+		var x = evt.pageX - container.offsetLeft;
+		var y = evt.pageY - container.offsetTop;
 		switch (current_mode) {
 			case "select":
 				started = true;
@@ -258,12 +258,11 @@ function SvgCanvas(doc)
 		}
 	}
 
-	this.mouseMove = function(evt)
+	var mouseMove = function(evt)
 	{
 		if (!started) return;
-
-		var x = evt.pageX;
-		var y = evt.pageY;
+		var x = evt.pageX - container.offsetLeft;
+		var y = evt.pageY - container.offsetTop;
 		var shape = svgdoc.getElementById(getId());
 		switch (current_mode)
 		{
@@ -311,7 +310,7 @@ function SvgCanvas(doc)
 		}
 	}
 
-	this.mouseUp = function(evt)
+	var mouseUp = function()
 	{
 		if (!started) return;
 
@@ -496,13 +495,9 @@ function SvgCanvas(doc)
 		events[event] = f;
 	}
 
-	this.setup = function(evt) {
-		assignAttributes(svgroot, {
-			"onmouseup":   "svgcanvas.mouseUp(evt)",
-			"onmousedown": "svgcanvas.mouseDown(evt)",
-			"onmousemove": "svgcanvas.mouseMove(evt)"
-		});
-	}
+	$(container).mouseup(mouseUp);
+	$(container).mousedown(mouseDown);
+	$(container).mousemove(mouseMove);
 
 	this.saveHandler = function(svg) {
 		alert(svg);
