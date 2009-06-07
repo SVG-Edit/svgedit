@@ -32,6 +32,7 @@ function SvgCanvas(c)
 	var freehand_min_y = null;
 	var freehand_max_y = null;
 	var selected = null;
+	var selectedOutline = null;
 	var events = {};
 
 // private functions
@@ -116,9 +117,53 @@ function SvgCanvas(c)
 			}
 		}
 		return out;
-	}
+	} // end svgToString()
 
 // public events
+	// call this function to set the selected element
+	// call this function with null to clear the selected element
+	var selectElement = function(newSelected) 
+	{
+		// remove selected outline from previously selected element
+		if (selected != null && selectedOutline != null) {
+			svgroot.removeChild(selectedOutline);
+			selectedOutline = null;
+		}
+		
+		selected = newSelected;
+		
+		if (selected != null) {
+			var bbox = selected.getBBox();
+			
+			// ideally we should create this element once during init, then remove from the DOM
+			// and re-append to end of documentElement.  This will also allow us to do some
+			// interesting things like animate the stroke-dashoffset using a SMIL <animate> child
+			selectedOutline = addSvgElementFromJson({
+					"element": "rect",
+					"attr": {
+						"id": "selectedBox",
+						"fill": "none",
+						"stroke": "blue",
+						"stroke-width": "1",
+						"stroke-dasharray": "5,5",
+						"x": bbox.x-1,
+						"y": bbox.y-1,
+						"width": bbox.width+2,
+						"height": bbox.height+2
+					}
+			});
+			
+			// set all our current styles to the selected styles
+			current_fill = selected.getAttribute("fill");
+			current_fill_opacity = selected.getAttribute("fill-opacity");
+			current_stroke = selected.getAttribute("stroke");
+			current_stroke_opacity = selected.getAttribute("stroke-opacity");
+			current_stroke_width = selected.getAttribute("stroke-width");
+			current_stroke_style = selected.getAttribute("stroke-dasharray");
+		}
+		
+		call("selected",selected);
+	}
 
 	var mouseDown = function(evt)
 	{
@@ -126,25 +171,10 @@ function SvgCanvas(c)
 		var y = evt.pageY - container.offsetTop;
 		switch (current_mode) {
 			case "select":
-				started = true;
-				start_x = x;
-				start_y = y;
-				if (evt.target != svgroot)
-					selected = evt.target;
-				addSvgElementFromJson({
-					"element": "rect",
-					"attr": {
-						"x": x,
-						"y": y,
-						"width": 0,
-						"height": 0,
-						"id": getId(),
-						"fill": '#DBEBF9',
-						"stroke": '#CEE2F7',
-						"stroke-width": 1,
-						"fill-opacity": 0.5
-					}
-				});
+				var t = evt.target;
+				if (t != svgroot) {
+					selectElement(t);
+				}
 				break;
 			case "fhellipse":
 			case "fhrect":
@@ -408,6 +438,8 @@ function SvgCanvas(c)
 // public functions
 
 	this.save = function() {
+		// remove the selected outline before serializing
+		this.selectElement(null);
 		var str = "<?xml version=\"1.0\" standalone=\"no\"?>\n"
 		str += "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
 		str += svgToString(svgroot, 0);
@@ -418,6 +450,7 @@ function SvgCanvas(c)
 		var nodes = svgroot.childNodes;
 		var len = svgroot.childNodes.length;
 		var i = 0;
+		this.setSelected(null);
 		for(var rep = 0; rep < len; rep++){
 			if (nodes[i].nodeType == 1) { // element node
 				nodes[i].parentNode.removeChild(nodes[i]);
@@ -441,6 +474,10 @@ function SvgCanvas(c)
 
 	this.setStrokeColor = function(color) {
 		current_stroke = color;
+		if (selected != null) {
+			selected.setAttribute("stroke", color);
+			call("changed", selected);
+		}
 	}
 
 	this.getFillColor = function() {
@@ -449,6 +486,10 @@ function SvgCanvas(c)
 
 	this.setFillColor = function(color) {
 		current_fill = color;
+		if (selected != null) {
+			selected.setAttribute("fill", color);
+			call("changed", selected);
+		}
 	}
 
 	this.getStrokeWidth = function() {
@@ -457,6 +498,10 @@ function SvgCanvas(c)
 
 	this.setStrokeWidth = function(val) {
 		current_stroke_width = val;
+		if (selected != null) {
+			selected.setAttribute("stroke-width", val);
+			call("changed", selected);
+		}
 	}
 
 	this.getStrokeStyle = function() {
@@ -465,6 +510,10 @@ function SvgCanvas(c)
 
 	this.setStrokeStyle = function(val) {
 		current_stroke_style = val;
+		if (selected != null) {
+			selected.setAttribute("stroke-dasharray", val);
+			call("changed", selected);
+		}
 	}
 
 	this.getOpacity = function() {
@@ -481,6 +530,10 @@ function SvgCanvas(c)
 
 	this.setFillOpacity = function(val) {
 		current_fill_opacity = val;
+		if (selected != null) {
+			selected.setAttribute("fill-opacity", val);
+			call("changed", selected);
+		}
 	}
 
 	this.getStrokeOpacity = function() {
@@ -489,6 +542,10 @@ function SvgCanvas(c)
 
 	this.setStrokeOpacity = function(val) {
 		current_stroke_opacity = val;
+		if (selected != null) {
+			selected.setAttribute("stroke-opacity", val);
+			call("changed", selected);
+		}
 	}
 
 	this.bind = function(event, f) {
@@ -501,6 +558,10 @@ function SvgCanvas(c)
 
 	this.saveHandler = function(svg) {
 		alert(svg);
+	}
+		
+	this.selectNone = function() {
+		selectElement(null);
 	}
 
 }
