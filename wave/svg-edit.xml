@@ -133,12 +133,14 @@
 </div>
 
 <script type="text/javascript">
+    var canvas=null;
+
     function stateUpdated() {
-	   SvgCanvas.updateState(wave.getState());
+	   canvas.updateState(wave.getState());
     }
 
     function main() {
-  	  svg_edit_setup();
+  	  canvas = svg_edit_setup();
       if (wave && wave.isInWaveContainer()) {
         wave.setStateCallback(stateUpdated);
       }

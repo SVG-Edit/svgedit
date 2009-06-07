@@ -251,4 +251,5 @@ function svg_edit_setup() {
 		$('#tools_ellipse').show();
 	});
 
+	return svgCanvas;
 };
