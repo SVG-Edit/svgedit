@@ -56,10 +56,6 @@
 	height: 16px;
 }
 
-#svg_editor div#tools {
-	float: left;
-}
-
 #svg_editor div#workarea {
 	float: left;
 }
@@ -70,11 +66,12 @@
 	float: left;
 }
 
-#tools {
+.tools_panel {
 	background: #E8E8E8;
-	height: 580px;
 	border: 1px solid #808080;
 	padding: 4px;
+	float:left;
+	clear:both;
 }
 
 .tool_button, .tool_button_current {
