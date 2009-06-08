@@ -3,8 +3,18 @@ var palette = ["#000000","#202020","#404040","#606060","#808080","#a0a0a0","#c0c
 function svg_edit_setup() {
 	var svgCanvas = new SvgCanvas(document.getElementById("svgcanvas"));
 
+	var setSelectMode = function() {
+		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
+		$('#tool_select').addClass('tool_button_current');
+		$('#styleoverrides').text('*{cursor:move;pointer-events:all} svg{cursor:default}');
+		svgCanvas.setMode('select');
+	}
+
 	var selectedChanged = function(window,elem) {
 		if (elem != null) {
+		
+			// set the mode of the editor to select
+			setSelectMode();
 
 			// update fill color
 			var fillColor = elem.getAttribute("fill");
@@ -56,6 +66,18 @@ function svg_edit_setup() {
 				strokeDashArray = "none";
 			}
 			$('#stroke_style').val(strokeDashArray);
+			
+			if (elem.tagName == "text") {
+				$('.text_tool').removeAttr('disabled');
+				$('#font_family').val(elem.getAttribute("font-family"));
+				$('#font_size').val(elem.getAttribute("font-size"));
+				$('#text').val(elem.textContent);
+				$('#text').focus();
+				$('#text').select();
+			}
+			else {
+				$('.text_tool').attr('disabled', "disabled");
+			}
 		}
 	}
 
@@ -91,6 +113,18 @@ function svg_edit_setup() {
 
 	$('#group_opacity').change(function(){
 		svgCanvas.setOpacity(this.options[this.selectedIndex].value);
+	});
+	
+	$('#font_size').change(function(){
+		svgCanvas.setFontSize(this.options[this.selectedIndex].value);
+	});
+	
+	$('#font_family').change(function(){
+		svgCanvas.setFontFamily(this.options[this.selectedIndex].value);
+	});
+	
+	$('#text').keyup(function(){
+		svgCanvas.setTextContent(this.value);
 	});
 
 	$('.palette_item').click(function(){
@@ -131,8 +165,7 @@ function svg_edit_setup() {
 
 	$('#tool_select').click(function(){
 		toolButtonClick(this);
-		svgCanvas.setMode('select');
-		$('#styleoverrides').text('*{cursor:move;pointer-events:all} svg{cursor:default}');
+		setSelectMode();
 	});
 
 	$('#tool_path').click(function(){
@@ -173,6 +206,11 @@ function svg_edit_setup() {
 	$('#tool_fhellipse').click(function(){
 		toolButtonClick('#tools_ellipse_show');
 		svgCanvas.setMode('fhellipse');
+	});
+
+	$('#tool_text').click(function(){
+		toolButtonClick(this);
+		svgCanvas.setMode('text');
 	});
 
 	$('#tool_delete').click(function(){
