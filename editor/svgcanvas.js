@@ -164,6 +164,9 @@ function SvgCanvas(c)
 		var y = evt.pageY - container.offsetTop;
 		switch (current_mode) {
 			case "select":
+				started = true;
+				start_x = x;
+				start_y = y;
 				var t = evt.target;
 				if (t != svgroot) {
 					selectElement(t);
@@ -173,7 +176,9 @@ function SvgCanvas(c)
 			case "fhrect":
 			case "path":
 				started = true;
-				d_attr = "M" + x + " " + y + " ";
+				start_x = x;
+				start_y = y;
+				d_attr = "M" + x + "," + y + " ";
 				addSvgElementFromJson({
 					"element": "path",
 					"attr": {
@@ -289,6 +294,17 @@ function SvgCanvas(c)
 		var shape = svgdoc.getElementById(getId());
 		switch (current_mode)
 		{
+			case "select":
+				// we temporarily use a translate on the element being dragged
+				// this transform is removed upon mouseUp and the element is relocated to the
+				// new location
+				if (selected != null && selectedOutline != null) {
+					var dx = x - start_x;
+					var dy = y - start_y;
+					selected.setAttributeNS(null, "transform", "translate(" + dx + "," + dy + ")");
+					selectedOutline.setAttributeNS(null, "transform", "translate(" + dx + "," + dy + ")");
+				}
+				break;		
 			case "line":
 				shape.setAttributeNS(null, "x2", x);
 				shape.setAttributeNS(null, "y2", y);
@@ -327,13 +343,17 @@ function SvgCanvas(c)
 				freehand_max_y = Math.max(y, freehand_max_y);
 			// break; missing on purpose
 			case "path":
-				d_attr += "L" + x + " " + y + " ";
+				var dx = x - start_x;
+				var dy = y - start_y;
+				start_x = x;
+				start_y = y;
+				d_attr += "l" + dx + "," + dy + " ";
 				shape.setAttributeNS(null, "d", d_attr);
 				break;
 		}
 	}
 
-	var mouseUp = function()
+	var mouseUp = function(evt)
 	{
 		if (!started) return;
 
@@ -342,18 +362,56 @@ function SvgCanvas(c)
 		var keep = false;
 		switch (current_mode)
 		{
-			/*
 			case "select":
-				if (element.getAttribute('width') == 0 &&
-				    element.getAttribute('height') == 0) {
-				// only one element is selected and stored in selected variable (or null)
-				} else {
-				// element.getAttribute('x')
-				// element.getAttribute('y')
-				// should scan elements which are in rect(x,y,width,height) and select them
+				if (selected != null) {
+					var dx = evt.pageX - container.offsetLeft - start_x;
+					var dy = evt.pageY - container.offsetTop - start_y;
+					selected.removeAttribute("transform");
+					selectedOutline.removeAttribute("transform");
+					switch (selected.tagName)
+					{
+						case "path":
+							// extract the x,y from the path, adjust it and write back the new path
+							var M = selected.pathSegList.getItem(0);
+							var newd = "M" + (M.x+dx) + "," + (M.y+dy);
+							for (var i = 1; i < selected.pathSegList.numberOfItems; ++i) {
+								var l = selected.pathSegList.getItem(i);
+								newd += " l" + l.x + "," + l.y;
+							}
+							selected.setAttributeNS(null, "d", newd);
+							break;
+						case "line":
+							var x1 = parseInt(selected.getAttributeNS(null, "x1"));
+							var y1 = parseInt(selected.getAttributeNS(null, "y1"));
+							var x2 = parseInt(selected.getAttributeNS(null, "x2"));
+							var y2 = parseInt(selected.getAttributeNS(null, "y2"));
+							selected.setAttributeNS(null, "x1", x1+dx);
+							selected.setAttributeNS(null, "y1", y1+dy);
+							selected.setAttributeNS(null, "x2", x2+dx);
+							selected.setAttributeNS(null, "y2", y2+dy);
+							break;
+						case "circle":
+						case "ellipse":
+							var cx = parseInt(selected.getAttributeNS(null, "cx"));
+							var cy = parseInt(selected.getAttributeNS(null, "cy"));
+							selected.setAttributeNS(null, "cx", cx+dx);
+							selected.setAttributeNS(null, "cy", cy+dy);
+							break;
+						default: // rect
+							var x = parseInt(selected.getAttributeNS(null, "x"));
+							var y = parseInt(selected.getAttributeNS(null, "y"));
+							selected.setAttributeNS(null, "x", x+dx);
+							selected.setAttributeNS(null, "y", y+dy);
+							break;
+					}
+					var sx = parseInt(selectedOutline.getAttributeNS(null, "x"));
+					var sy = parseInt(selectedOutline.getAttributeNS(null, "y"));
+					selectedOutline.setAttributeNS(null, "x", sx+dx);
+					selectedOutline.setAttributeNS(null, "y", sy+dy);
+					// we return immediately from select so that the obj_num is not incremented
+					return;
 				}
 				break;
-			*/
 			case "path":
 				keep = true;
 				break;
