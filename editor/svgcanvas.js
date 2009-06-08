@@ -11,7 +11,7 @@ function SvgCanvas(c)
 	var svgroot = svgdoc.createElementNS(svgns, "svg");
 	svgroot.setAttribute("width", 640);
 	svgroot.setAttribute("height", 480);
-	svgroot.setAttributeNS(null, "id", "svgroot");
+	svgroot.setAttribute("id", "svgroot");
 	svgroot.setAttribute("xmlns", svgns);
 	container.appendChild(svgroot);
 
