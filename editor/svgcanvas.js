@@ -129,9 +129,7 @@ function SvgCanvas(c)
 		selected = newSelected;
 		
 		if (selected != null) {
-try{
 			var bbox = selected.getBBox();
-}catch(e) { alert(selected); }
 			// ideally we should create this element once during init, then remove from the DOM
 			// and re-append to end of documentElement.  This will also allow us to do some
 			// interesting things like animate the stroke-dashoffset using a SMIL <animate> child
