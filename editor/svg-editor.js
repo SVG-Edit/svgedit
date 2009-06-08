@@ -130,7 +130,7 @@ function svg_edit_setup() {
 	$('#tool_select').click(function(){
 		toolButtonClick(this);
 		svgCanvas.setMode('select');
-		$('#styleoverrides').text('*{cursor:move} svg{cursor:auto}');
+		$('#styleoverrides').text('*{cursor:move;pointer-events:all} svg{cursor:default}');
 	});
 
 	$('#tool_path').click(function(){
