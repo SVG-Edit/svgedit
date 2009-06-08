@@ -119,6 +119,7 @@ function svg_edit_setup() {
 	// - removes the tool_button_current class from whatever tool currently has it
 	// - adds the tool_button_current class to the button passed in
 	var toolButtonClick = function(button){
+		$('#styleoverrides').text('');
 		$('.tools_flyout').hide();
 		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 		$(button).addClass('tool_button_current');
@@ -129,6 +130,7 @@ function svg_edit_setup() {
 	$('#tool_select').click(function(){
 		toolButtonClick(this);
 		svgCanvas.setMode('select');
+		$('#styleoverrides').text('*{cursor:move} svg{cursor:auto}');
 	});
 
 	$('#tool_path').click(function(){
