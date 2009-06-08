@@ -12,6 +12,7 @@ function SvgCanvas(c)
 	svgroot.setAttribute("width", 640);
 	svgroot.setAttribute("height", 480);
 	svgroot.setAttributeNS(null, "id", "svgroot");
+	svgroot.setAttribute("xmlns", "http://www.w3.org/2000/svg"); 
 	container.appendChild(svgroot);
 
 	var d_attr = null;
@@ -91,7 +92,7 @@ function SvgCanvas(c)
 				out += " " + attr.nodeName + "=\"" + attr.nodeValue+ "\"";
 			}
 			if (elem.hasChildNodes()) {
-				out += ">\n";
+				out += ">";
 				indent++;
 				for (i=0; i<childs.length; i++)
 				{
@@ -99,14 +100,14 @@ function SvgCanvas(c)
 						out = out + svgToString(childs.item(i), indent);
 					} else if (childs.item(i).nodeType == 3) { // text node
 						for (j=0; j<indent; j++) out += "  ";
-						out += childs.item(i).nodeValue + "\n";
+						out += childs.item(i).nodeValue + "";
 					}
 				}
 				indent--;
 				for (i=0; i<indent; i++) out += "  ";
-				out += "</" + elem.nodeName + ">\n";
+				out += "</" + elem.nodeName + ">";
 			} else {
-				out += " />\n";
+				out += " />";
 			}
 		}
 		return out;
@@ -493,8 +494,8 @@ function SvgCanvas(c)
 	this.save = function() {
 		// remove the selected outline before serializing
 		this.selectNone();
-		var str = "<?xml version=\"1.0\" standalone=\"no\"?>\n"
-		str += "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
+		var str = "<?xml version=\"1.0\" standalone=\"no\"?>"
+		str += "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">";
 		str += svgToString(svgroot, 0);
 		this.saveHandler(str);
 	}
@@ -614,7 +615,8 @@ function SvgCanvas(c)
 	$(container).mousemove(mouseMove);
 
 	this.saveHandler = function(svg) {
-		alert(svg);
+		//alert(svg);
+		window.open("data:image/svg+xml;base64," + encode64(svg));
 	}
 
 	this.selectNone = function() {
