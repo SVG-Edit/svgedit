@@ -118,6 +118,8 @@ function SvgCanvas(c)
 	// call this function with null to clear the selected element
 	var selectElement = function(newSelected) 
 	{
+		if (selected == newSelected) return;
+		
 		// remove selected outline from previously selected element
 		if (selected != null && selectedOutline != null) {
 			svgroot.removeChild(selectedOutline);
@@ -127,8 +129,9 @@ function SvgCanvas(c)
 		selected = newSelected;
 		
 		if (selected != null) {
+try{
 			var bbox = selected.getBBox();
-			
+}catch(e) { alert(selected); }
 			// ideally we should create this element once during init, then remove from the DOM
 			// and re-append to end of documentElement.  This will also allow us to do some
 			// interesting things like animate the stroke-dashoffset using a SMIL <animate> child
@@ -143,7 +146,9 @@ function SvgCanvas(c)
 						"x": bbox.x-1,
 						"y": bbox.y-1,
 						"width": bbox.width+2,
-						"height": bbox.height+2
+						"height": bbox.height+2,
+						// need to specify this style so that the selectedOutline is not selectable
+						"style": "pointer-events:none",
 					}
 			});
 			
