@@ -43,17 +43,19 @@ function svg_edit_setup() {
 			opacity = (opacity*100)+" %";
 			$('#group_opacity').val(opacity);
 
+			// update stroke-width
 			var strokeWidth = elem.getAttribute("stroke-width");
 			if (strokeWidth == null || strokeWidth == "") {
 				strokeWidth = 1;
 			}
 			$('#stroke_width').val(strokeWidth);
-			
+
+			// update stroke-style
 			var strokeDashArray = elem.getAttribute("stroke-dasharray");
 			if (strokeDashArray == null || strokeDashArray == "") {
 				strokeDashArray = "none";
 			}
-			$('#stroke_dasharray').val(strokeDashArray);
+			$('#stroke_style').val(strokeDashArray);
 		}
 	}
 
