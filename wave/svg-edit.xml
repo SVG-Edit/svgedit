@@ -136,14 +136,54 @@
     var canvas=null;
 
     function stateUpdated() {
-	   canvas.updateState(wave.getState());
+	   var state = wave.getState();
+	   var keys = state.getKeys();
+	   document.canvas.each(function(e) {
+	       if (e) {
+				var ob;
+				var v = state.get(e.nodeId);
+				eval("ob="+v); // FIXME: Yes, I'm using eval... Dirty, dirty..
+				if (ob) canvas.updateElementFromJson(data)
+				else {
+					var node = svgdoc.getElementById(k);
+					if (node) node.parentNode.removeChild(node);
+				}
+				keys.remove(e.nodeId);
+		   } else {
+		       e.parent().remove(e);
+		   }
+	   });
+
+	   // New nodes
+	   for (var k in keys) {
+			var ob;
+			var v = state.get(e.nodeId);
+			eval("ob="+v); // FIXME: Yes, I'm using eval... Dirty, dirty..
+			if (ob) canvas.updateElementFromJson(data)
+	   }
     }
+
+	function sendDelta(canvas, elem) {
+		if (wave) return;
+		var delta = {};
+		var attrs = {};
+		var a = elem.attributes;
+		for (var i = 0; i < a.length; i++) {
+			attrs[a.item(i).nodeName] = a.item(i).nodeValue;
+		};
+		var ob = { element: elem.nodeName,
+				   attr: attrs };
+		delta[elem.id] = wave.util.printJson(ob,false);
+		wave.getState().submitDelta(delta);
+	}
 
     function main() {
   	  canvas = svg_edit_setup();
       if (wave && wave.isInWaveContainer()) {
         wave.setStateCallback(stateUpdated);
       }
+
+	  canvas.bind("changed",sendDelta);
     }
     gadgets.util.registerOnLoadHandler(main);
 
