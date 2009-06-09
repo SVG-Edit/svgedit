@@ -138,8 +138,10 @@
     function stateUpdated() {
 	   var state = wave.getState();
 	   var keys = state.getKeys();
-	   document.canvas.each(function(e) {
-	       if (e) {
+	   canvas.each(function(e) {
+//alert(e);
+	       var v = state.get(e.nodeId);
+	       if (v) {
 				var ob;
 				var v = state.get(e.nodeId);
 				eval("ob="+v); // FIXME: Yes, I'm using eval... Dirty, dirty..
@@ -157,14 +159,14 @@
 	   // New nodes
 	   for (var k in keys) {
 			var ob;
-			var v = state.get(e.nodeId);
+			var v = state.get(k);
 			eval("ob="+v); // FIXME: Yes, I'm using eval... Dirty, dirty..
 			if (ob) canvas.updateElementFromJson(data)
 	   }
     }
 
 	function sendDelta(canvas, elem) {
-		if (wave) return;
+		if (!wave) return;
 		var delta = {};
 		var attrs = {};
 		var a = elem.attributes;
