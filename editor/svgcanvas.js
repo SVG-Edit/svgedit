@@ -4,6 +4,7 @@ function SvgCanvas(c)
 {
 
 // private members
+	var canvas = this;
 	var container = c;
 	var svgns = "http://www.w3.org/2000/svg";
 
@@ -71,11 +72,7 @@ function SvgCanvas(c)
 	}
 
 	var addSvgElementFromJson = function(data) {
-		var shape = svgdoc.createElementNS(svgns, data.element);
-		assignAttributes(shape, data.attr);
-		cleanupElement(shape);
-		svgroot.appendChild(shape);
-		return shape;
+		return canvas.updateElementFromJson(data)
 	}
 
 	var svgToString = function(elem, indent) {
@@ -296,6 +293,7 @@ function SvgCanvas(c)
 		var x = evt.pageX - container.offsetLeft;
 		var y = evt.pageY - container.offsetTop;
 		var shape = svgdoc.getElementById(getId());
+		if (!shape) return; // Error?
 		switch (current_mode)
 		{
 			case "select":
@@ -609,6 +607,20 @@ function SvgCanvas(c)
 			selected.setAttribute("stroke-opacity", val);
 			call("changed", selected);
 		}
+	}
+
+	this.updateElementFromJson = function(data) {
+		var shape = svgdoc.getElementById(data.id);
+		var newshape = !shape;
+		if (newshape) shape = svgdoc.createElementNS(svgns, data.element);
+		assignAttributes(shape, data.attr);
+		cleanupElement(shape);
+		if (newshape) svgroot.appendChild(shape);
+		return shape;
+	}
+
+	this.each = function(cb) {
+		$(svgroot).children().each(cb);
 	}
 
 	this.bind = function(event, f) {
