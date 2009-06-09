@@ -17,6 +17,7 @@
 	height: 480px;
 	border: 1px solid #808080;
 	border-left: none;
+	-moz-user-select: none;
 }
 
 #svg_editor #svgcanvas {
