@@ -129,65 +129,130 @@ function svg_edit_setup() {
 		svgCanvas.selectNone();
 	};
 
-	$('#tool_select').click(function(){
-		toolButtonClick(this);
+	var clickSelect = function() {
+		toolButtonClick('#tool_select');
 		svgCanvas.setMode('select');
 		$('#styleoverrides').text('*{cursor:move;pointer-events:all} svg{cursor:default}');
-	});
+	}
 
-	$('#tool_path').click(function(){
-		toolButtonClick(this);
+	var clickPath = function() {
+		toolButtonClick('#tool_path');
 		svgCanvas.setMode('path');
-	});
+	}
 
-	$('#tool_line').click(function(){
-		toolButtonClick(this);
+	var clickLine = function() {
+		toolButtonClick('#tool_line');
 		svgCanvas.setMode('line');
-	});
+	}
 
-	$('#tool_square').click(function(){
+	var clickSquare = function(){
 		toolButtonClick('#tools_rect_show');
 		svgCanvas.setMode('square');
-	});
+	}
 
-	$('#tool_rect').click(function(){
+	var clickRect = function(){
 		toolButtonClick('#tools_rect_show');
 		svgCanvas.setMode('rect');
-	});
+	}
 
-	$('#tool_fhrect').click(function(){
+	var clickFHRect = function(){
 		toolButtonClick('#tools_rect_show');
 		svgCanvas.setMode('fhrect');
-	});
+	}
 
-	$('#tool_circle').click(function(){
+	var clickCircle = function(){
 		toolButtonClick('#tools_ellipse_show');
 		svgCanvas.setMode('circle');
-	});
+	}
 
-	$('#tool_ellipse').click(function(){
+	var clickEllipse = function(){
 		toolButtonClick('#tools_ellipse_show');
 		svgCanvas.setMode('ellipse');
-	});
+	}
 
-	$('#tool_fhellipse').click(function(){
+	var clickFHEllipse = function(){
 		toolButtonClick('#tools_ellipse_show');
 		svgCanvas.setMode('fhellipse');
-	});
+	}
 
-	$('#tool_delete').click(function(){
-		toolButtonClick(this);
+	var clickDelete = function(){
+		toolButtonClick('#tool_delete');
 		svgCanvas.setMode('delete');
-	});
+	}
 
-	$('#tool_clear').click(function(){
+	var clickText = function(){
+		toolButtonClick('#tool_text');
+		svgCanvas.setMode('text');
+	}
+
+	var clickClear = function(){
 		if( confirm('Do you want to clear the drawing?') ) {
 			svgCanvas.clear();
 		}
-	});
+	}
 
-	$('#tool_submit').click(function(){
+	var clickSave = function(){
 		svgCanvas.save();
+	}
+
+	$('#tool_select').click(clickSelect);
+	$('#tool_path').click(clickPath);
+	$('#tool_line').click(clickLine);
+	$('#tool_square').click(clickSquare);
+	$('#tool_rect').click(clickRect);
+	$('#tool_fhrect').click(clickFHRect);
+	$('#tool_circle').click(clickCircle);
+	$('#tool_ellipse').click(clickEllipse);
+	$('#tool_fhellipse').click(clickFHEllipse);
+	$('#tool_text').click(clickText);
+	$('#tool_delete').click(clickDelete);
+	$('#tool_clear').click(clickClear);
+	$('#tool_save').click(clickSave);
+
+	$('#workarea').keyup(function(event){
+		switch (event.keyCode) {
+			case 37: // left-arrow
+				break;
+			case 38: // up-arrow
+				break;
+			case 39: // right-arrow
+				break;
+			case 40: // down-arrow
+				break;
+			case 49: // 1
+				clickSelect();
+				break;
+			case 50: // 2
+				clickPath();
+				break;
+			case 51: // 3
+				clickLine();
+				break;
+			case 52: // 4
+				if (event.shiftKey)
+					clickSquare();
+				else
+					clickRect();
+				break;
+			case 53: // 5
+				if (event.shiftKey)
+					clickCircle();
+				else
+					clickEllipse();
+				break;
+			case 54: // 6
+				clickText();
+				break;
+			case 78: // N
+				clickClear();
+				break;
+			case 83: // S
+				clickSave();
+				break;
+			case 88: // X
+				clickDelete();
+				break;
+		}
 	});
 
 	var colorPicker = function(elem) {

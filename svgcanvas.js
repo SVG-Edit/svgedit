@@ -482,13 +482,15 @@ function SvgCanvas(c)
 		}
 		d_attr = null;
 		obj_num++;
-		if (!keep) {
-			element.parentNode.removeChild(element);
-			element = null;
-		} else if (element != null) {
-			element.setAttribute("opacity", current_opacity);
-			cleanupElement(element);
-			call("changed",element);
+		if (element != null) {
+			if (!keep) {
+				element.parentNode.removeChild(element);
+				element = null;
+			} else {
+				element.setAttribute("opacity", current_opacity);
+				cleanupElement(element);
+				call("changed",element);
+			}
 		}
 	}
 
