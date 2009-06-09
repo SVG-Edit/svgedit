@@ -23,6 +23,7 @@
 #svg_editor #svgcanvas {
 	width: 642px;
 	height: 482px;
+	border: 1px solid #808080;
 }
 
 #svg_editor div#palette_holder {
