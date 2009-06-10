@@ -677,6 +677,19 @@ function SvgCanvas(c)
 		events[event] = f;
 	}
 
+	this.getFontFamily = function() {
+		return current_font_family;
+	}
+        
+	this.setFontFamily = function(val) {
+    	current_font_family = val;
+		if (selected != null) {
+			selected.setAttribute("font-family", val);
+			recalculateSelectedOutline();
+			call("changed", selected);
+		}
+	}
+
 	this.getFontSize = function() {
 		return current_font_size;
 	}

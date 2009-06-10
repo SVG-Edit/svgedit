@@ -9,6 +9,8 @@ function svg_edit_setup() {
 		$('#styleoverrides').text('*{cursor:move;pointer-events:all} svg{cursor:default}');
 		svgCanvas.setMode('select');
 	}
+	
+	var textBeingEntered = false;
 
 	var selectedChanged = function(window,elem) {
 		if (elem != null) {
@@ -80,6 +82,9 @@ function svg_edit_setup() {
 			}
 		}
 	}
+
+	$('#text').focus( function(){ textBeingEntered = true; } );
+	$('#text').blur( function(){ textBeingEntered = false; } );
 
 	// bind the selected event to our function that handles updates to the UI
 	svgCanvas.bind("selected", selectedChanged);
@@ -244,6 +249,7 @@ function svg_edit_setup() {
 	$('#tool_save').click(clickSave);
 
 	$('#workarea').keyup(function(event){
+		if( textBeingEntered ) { return; }
 		switch (event.keyCode) {
 			case 37: // left-arrow
 				break;
