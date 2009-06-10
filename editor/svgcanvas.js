@@ -29,6 +29,8 @@ function SvgCanvas(c)
 	var current_opacity = 1;
 	var current_stroke_opacity = 1;
 	var current_fill_opacity = 1;
+	var current_font_size = "12pt";
+	var current_font_family = "serif";
 	var freehand_min_x = null;
 	var freehand_max_x = null;
 	var freehand_min_y = null;
@@ -119,18 +121,16 @@ function SvgCanvas(c)
 		
 		// remove selected outline from previously selected element
 		if (selected != null && selectedOutline != null) {
-			svgroot.removeChild(selectedOutline);
-			selectedOutline = null;
+			// remove from DOM and store reference in JS
+			selectedOutline = svgroot.removeChild(selectedOutline);
 		}
 		
 		selected = newSelected;
 		
 		if (selected != null) {
-			var bbox = selected.getBBox();
-			// ideally we should create this element once during init, then remove from the DOM
-			// and re-append to end of documentElement.  This will also allow us to do some
-			// interesting things like animate the stroke-dashoffset using a SMIL <animate> child
-			selectedOutline = addSvgElementFromJson({
+			// we create this element for the first time here
+			if (selectedOutline == null) {
+				selectedOutline = addSvgElementFromJson({
 					"element": "rect",
 					"attr": {
 						"id": "selectedBox",
@@ -138,14 +138,17 @@ function SvgCanvas(c)
 						"stroke": "blue",
 						"stroke-width": "1",
 						"stroke-dasharray": "5,5",
-						"x": bbox.x-1,
-						"y": bbox.y-1,
-						"width": bbox.width+2,
-						"height": bbox.height+2,
+						"width": 1,
+						"height": 1,
 						// need to specify this style so that the selectedOutline is not selectable
 						"style": "pointer-events:none",
 					}
-			});
+				});
+				// TODO: add SMIL animate child on stroke-dashoffset here
+			}
+			// recalculate size and then re-append to bottom of document
+			recalculateSelectedOutline();
+			svgroot.appendChild(selectedOutline);
 			
 			// set all our current styles to the selected styles
 			current_fill = selected.getAttribute("fill");
@@ -154,9 +157,28 @@ function SvgCanvas(c)
 			current_stroke_opacity = selected.getAttribute("stroke-opacity");
 			current_stroke_width = selected.getAttribute("stroke-width");
 			current_stroke_style = selected.getAttribute("stroke-dasharray");
+			if (selected.tagName == "text") {
+				current_font_size = selected.getAttribute("font-size");
+				current_font_family = selected.getAttribute("font-family");
+			}
 		}
 		
 		call("selected", selected);
+	}
+	
+	var recalculateSelectedOutline = function() {
+		if (selected != null && selectedOutline != null) {
+			var bbox = selected.getBBox();
+			var sw = selected.getAttribute("stroke-width");
+			var offset = 1;
+			if (sw != null && sw != "") {
+				offset += parseInt(sw)/2;
+			}
+			selectedOutline.setAttribute("x", bbox.x-offset);
+			selectedOutline.setAttribute("y", bbox.y-offset);
+			selectedOutline.setAttribute("width", bbox.width+(offset<<1));
+			selectedOutline.setAttribute("height", bbox.height+(offset<<1));
+		}	
 	}
 
 	var mouseDown = function(evt)
@@ -278,6 +300,27 @@ function SvgCanvas(c)
 					}
 				});
 				break;
+			case "text":
+				started = true;
+				var newText = addSvgElementFromJson({
+					"element": "text",
+					"attr": {
+						"x": x,
+						"y": y,
+						"id": getId(),
+						"fill": current_fill,
+						"stroke": current_stroke,
+						"stroke-width": current_stroke_width,
+						"stroke-dasharray": current_stroke_style,
+						"stroke-opacity": current_stroke_opacity,
+						"fill-opacity": current_fill_opacity,
+						"opacity": current_opacity / 2,
+						"font-size": current_font_size,
+						"font-family": current_font_family,
+					}
+				});
+				newText.textContent = "text";
+				break;
 			case "delete":
 				var t = evt.target;
 				if (t == svgroot) return;
@@ -293,7 +336,6 @@ function SvgCanvas(c)
 		var x = evt.pageX - container.offsetLeft;
 		var y = evt.pageY - container.offsetTop;
 		var shape = svgdoc.getElementById(getId());
-		if (!shape) return; // Error?
 		switch (current_mode)
 		{
 			case "select":
@@ -306,7 +348,11 @@ function SvgCanvas(c)
 					selected.setAttributeNS(null, "transform", "translate(" + dx + "," + dy + ")");
 					selectedOutline.setAttributeNS(null, "transform", "translate(" + dx + "," + dy + ")");
 				}
-				break;		
+				break;
+			case "text":
+				shape.setAttribute("x", x);
+				shape.setAttribute("y", y);
+				break;
 			case "line":
 				shape.setAttributeNS(null, "x2", x);
 				shape.setAttributeNS(null, "y2", y);
@@ -477,18 +523,20 @@ function SvgCanvas(c)
 					}));
 				}
 				break;
+			case "text":
+				keep = true;
+				selectElement(element);
+				break;
 		}
 		d_attr = null;
 		obj_num++;
-		if (element != null) {
-			if (!keep) {
-				element.parentNode.removeChild(element);
-				element = null;
-			} else {
-				element.setAttribute("opacity", current_opacity);
-				cleanupElement(element);
-				call("changed",element);
-			}
+		if (!keep) {
+			element.parentNode.removeChild(element);
+			element = null;
+		} else if (element != null) {
+			element.setAttribute("opacity", current_opacity);
+			cleanupElement(element);
+			call("changed",element);
 		}
 	}
 
@@ -557,6 +605,7 @@ function SvgCanvas(c)
 		current_stroke_width = val;
 		if (selected != null) {
 			selected.setAttribute("stroke-width", val);
+			recalculateSelectedOutline();
 			call("changed", selected);
 		}
 	}
@@ -625,6 +674,45 @@ function SvgCanvas(c)
 
 	this.bind = function(event, f) {
 		events[event] = f;
+	}
+
+	this.getFontFamily = function() {
+		return current_font_family;
+	}
+        
+	this.setFontFamily = function(val) {
+    	current_font_family = val;
+		if (selected != null) {
+			selected.setAttribute("font-family", val);
+			recalculateSelectedOutline();
+			call("changed", selected);
+		}
+	}
+
+	this.getFontSize = function() {
+		return current_font_size;
+	}
+	
+	this.setFontSize = function(val) {
+		current_font_size = val;
+		if (selected != null) {
+			selected.setAttribute("font-size", val);
+			recalculateSelectedOutline();
+			call("changed", selected);
+		}
+	}
+	
+	this.getText = function() {
+		if (selected == null) { return ""; }
+		return selected.textContent;
+	}
+	
+	this.setTextContent = function(val) {
+		if (selected != null) {
+			selected.textContent = val;
+			recalculateSelectedOutline();
+			call("changed", selected);
+		}
 	}
 
 	$(container).mouseup(mouseUp);
