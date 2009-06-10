@@ -11,12 +11,26 @@ function svg_edit_setup() {
 	}
 	
 	var textBeingEntered = false;
-
+	var selectedElement = null;
 	var selectedChanged = function(window,elem) {
+		selectedElement = elem;
+		
 		if (elem != null) {
 		
-			// set the mode of the editor to select
+			// always set the mode of the editor to select because
+			// upon creation of a text element the editor is switched into
+			// select mode and this event fires - we need our UI to be in sync
 			setSelectMode();
+			
+			// update contextual tools here
+			$('#tool_delete').show();
+			if (elem.tagName == "text") {
+				// jquery's show() always sets display to block
+				$('#text_panel').show().css("display", "inline");
+			}
+			else {
+				$('#text_panel').hide();
+			}
 
 			// update fill color
 			var fillColor = elem.getAttribute("fill");
@@ -80,6 +94,12 @@ function svg_edit_setup() {
 			else {
 				$('.text_tool').attr('disabled', "disabled");
 			}
+		} // if (elem != null)
+		else {
+			// nothing is now selected
+			// update contextual tools here
+			$('#tool_delete').hide();
+			$('#text_panel').hide();
 		}
 	}
 
@@ -214,9 +234,12 @@ function svg_edit_setup() {
 		svgCanvas.setMode('fhellipse');
 	}
 
-	var clickDelete = function(){
-		toolButtonClick('#tool_delete');
-		svgCanvas.setMode('delete');
+	// Delete is a contextual tool that only appears in the ribbon if 
+	// an element has been selected
+	var deleteSelected = function() {
+		if (selectedElement != null) {
+			svgCanvas.deleteSelectedElement();
+		}
 	}
 
 	var clickText = function(){
@@ -244,9 +267,21 @@ function svg_edit_setup() {
 	$('#tool_ellipse').click(clickEllipse);
 	$('#tool_fhellipse').click(clickFHEllipse);
 	$('#tool_text').click(clickText);
-	$('#tool_delete').click(clickDelete);
 	$('#tool_clear').click(clickClear);
 	$('#tool_save').click(clickSave);
+	$('#tool_delete').click(deleteSelected);	
+
+	// added these event handlers for all the push buttons so they 
+	// behave more like buttons being pressed-in and not images
+	$('#tool_clear').mousedown(function(){$('#tool_clear').addClass('tool_button_current');});
+	$('#tool_clear').mouseup(function(){$('#tool_clear').removeClass('tool_button_current');});
+	$('#tool_clear').mouseout(function(){$('#tool_clear').removeClass('tool_button_current');});
+	$('#tool_save').mousedown(function(){$('#tool_save').addClass('tool_button_current');});
+	$('#tool_save').mouseup(function(){$('#tool_save').removeClass('tool_button_current');});
+	$('#tool_save').mouseout(function(){$('#tool_save').removeClass('tool_button_current');});
+	$('#tool_delete').mousedown(function(){$('#tool_delete').addClass('tool_button_current');});
+	$('#tool_delete').mouseup(function(){$('#tool_delete').removeClass('tool_button_current');});
+	$('#tool_delete').mouseout(function(){$('#tool_delete').removeClass('tool_button_current');});
 
 	$('#workarea').keyup(function(event){
 		if( textBeingEntered ) { return; }
