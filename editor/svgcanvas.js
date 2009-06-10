@@ -145,6 +145,20 @@ function SvgCanvas(c)
 					}
 				});
 				// TODO: add SMIL animate child on stroke-dashoffset here
+				// This only works in Opera, but it appears to cause some
+				// problem when more than one selected element is in the canvas?
+				/*
+				selectedOutline.appendChild( addSvgElementFromJson({
+					"element": "animate",
+					"attr": {
+						"attributeName": "stroke-dashoffset",
+						"repeatCount": "indefinite",
+						"dur": "500ms",
+						"from": "0",
+						"to": "10",
+					}
+				}) );
+				*/
 			}
 			// recalculate size and then re-append to bottom of document
 			recalculateSelectedOutline();
@@ -321,12 +335,14 @@ function SvgCanvas(c)
 				});
 				newText.textContent = "text";
 				break;
+/*
 			case "delete":
 				var t = evt.target;
 				if (t == svgroot) return;
 				t.parentNode.removeChild(t);
 				call("deleted",t);
 				break;
+*/
 		}
 	}
 
@@ -714,7 +730,7 @@ function SvgCanvas(c)
 			call("changed", selected);
 		}
 	}
-
+	
 	$(container).mouseup(mouseUp);
 	$(container).mousedown(mouseDown);
 	$(container).mousemove(mouseMove);
@@ -726,6 +742,19 @@ function SvgCanvas(c)
 
 	this.selectNone = function() {
 		selectElement(null);
+	}
+
+	this.deleteSelectedElement = function() {
+		if (selected != null) {
+			var t = selected;
+			// this will unselect the element (and remove the selectedOutline)
+			selectElement(null);
+			t.parentNode.removeChild(t);
+			call("deleted",t);
+		}
+		else {
+			alert("Error!  Nothing selected!");
+		}
 	}
 
 }

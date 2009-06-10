@@ -22,13 +22,11 @@
 	width: 640px;
 	height: 480px;
 	border: 1px solid #808080;
-	border-left: none;
 }
 
 #svg_editor div#palette_holder {
 	border: 1px solid #808080;
 	border-top: none;
-	border-left: none;
 	float: left;
 	width: 640px;
 	overflow-x: scroll;
@@ -75,10 +73,25 @@
 	clear:both;
 }
 
+#context_tools {
+	width: 800px;
+	height: 34px;
+}
+
+#tool_delete {
+	display: none;
+}
+
+#text_panel { 
+	display: none;
+}
+#text_panel .text_tool {
+	vertical-align:12px;
+}
+
 .tool_button, .tool_button_current {
 	height: 24px;
 	width: 24px;
-	border: 1px solid red;
 	margin: 2px;
 	padding: 2px;
 	border-left: 1px solid #FFFFFF;

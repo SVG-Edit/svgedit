@@ -13,6 +13,7 @@
 <body>
 
 <p>SVG-edit @ <a href="http://svg-edit.googlecode.com/">http://svg-edit.googlecode.com/</a></p>
+
 <div id="svg_editor">
 
 <div id="color_picker" class="tools_flyout"></div>
@@ -29,21 +30,53 @@
 <div id="tool_fhellipse" title="Free-Hand Ellipse"></div>
 </div>
 
+<div id="context_tools" class="tools_panel">
+	<!-- File-like buttons: New, Save -->
+	<img class="tool_button" id="tool_clear" src="images/clear.png" title="New Image [N]" alt="Clear" />
+	<img class="tool_button" id="tool_save" src="images/save.png" title="Save Image [S]" alt="Save"/>
+	
+	<!-- FIXME: need a separator image -->
+
+	<!-- Edit-like buttons: Delete -->
+	<img class="tool_button" id="tool_delete" src="images/delete.png" title="Delete Element [X]" alt="Delete"/>
+	
+	<!-- FIXME: need a separator image -->
+
+	<div id="text_panel">
+		<select id="font_family" class="text_tool" title="Change Font Family">
+			<option selected="selected" value="serif">serif</option>
+			<option value="sans-serif">sans-serif</option>
+			<option value="cursive">cursive</option>
+			<option value="fantasy">fantasy</option>
+			<option value="monospace">monospace</option>
+		</select>
+		<select id="font_size" class="text_tool" title="Change Font Size">
+			<option value="6pt">6pt</option>
+			<option value="8pt">8pt</option>
+			<option value="10pt">10pt</option>
+			<option selected="selected" value="12pt">12pt</option>
+			<option value="14pt">14pt</option>
+			<option value="16pt">16pt</option>
+			<option value="20pt">20pt</option>
+			<option value="24pt">24pt</option>
+			<option value="32pt">32pt</option>
+			<option value="48pt">48pt</option>
+			<option value="64pt">64pt</option>
+			<option value="80pt">80pt</option>
+			<option value="100pt">100pt</option>
+		</select>
+		<input id="text" class="text_tool" type="text" title="Change text contents" size="40"/>
+	</div>
+</div>
+
 <div id="tools" class="tools_panel">
 
-<div>
 <img class="tool_button" id="tool_select" src="images/select.png" title="Select Tool [1]" alt="Select"/><br/>
 <img class="tool_button_current" id="tool_path" src="images/path.png" title="Pencil Tool [2]" alt="Pencil"/><br/>
 <img class="tool_button" id="tool_line" src="images/line.png" title="Line Tool [3]" alt="Line"/><br/>
 <img class="tool_button" id="tools_rect_show" src="images/square.png" title="Square/Rect Tool [4/Shift+4]" alt="Square"/><br/>
 <img class="tool_button" id="tools_ellipse_show" src="images/circle.png" title="Circle/Ellipse Tool [5/Shift+5]" alt="Circle"/><br/>
-<img class="tool_button" id="tool_text" src="images/text.png" title="Text Tool [6]" alt="Text"/><br/>
-<img class="tool_button" id="tool_delete" src="images/delete.png" title="Delete Element [X]" alt="Delete"/><hr/>
-<img class="tool_button" id="tool_clear" src="images/clear.png" title="New Image [N]" alt="Clear" /><br/>
-<img class="tool_button" id="tool_save" src="images/save.png" title="Save Image [S]" alt="Save"/><br/>
-</div>
-
-<hr/>
+<img class="tool_button" id="tool_text" src="images/text.png" title="Text Tool [6]" alt="Text"/><hr/>
 
 <div>fill
 <div id="fill_color" title="Change fill color"></div>
@@ -123,33 +156,6 @@
 
 <div id="palette_holder">
 <div id="palette" title="Left-click to change fill color, right-click to change stroke color">
-</div>
-</div>
-
-<div id="text_panel" class="tools_panel">
-<div>text
-<select id="font_family" class="text_tool" title="Change Font Family" disabled>
-<option selected="selected" value="serif">serif</option>
-<option selected="selected" value="sans-serif">sans-serif</option>
-<option selected="selected" value="cursive">cursive</option>
-<option selected="selected" value="fantasy">fantasy</option>
-<option selected="selected" value="monospace">monospace</option>
-</select>
-<select id="font_size" class="text_tool" title="Change Font Size" disabled>
-<option selected="selected" value="6pt">6pt</option>
-<option selected="selected" value="8pt">8pt</option>
-<option selected="selected" value="10pt">10pt</option>
-<option selected="selected" value="12pt">12pt</option>
-<option selected="selected" value="14pt">14pt</option>
-<option selected="selected" value="16pt">16pt</option>
-<option selected="selected" value="24pt">24pt</option>
-<option selected="selected" value="32pt">32pt</option>
-<option selected="selected" value="48pt">48pt</option>
-<option selected="selected" value="64pt">64pt</option>
-<option selected="selected" value="80pt">80pt</option>
-<option selected="selected" value="100pt">100pt</option>
-</select>
-<input id="text" class="text_tool" type="text" title="Change text contents" size="60" disabled/>
 </div>
 </div>
 
