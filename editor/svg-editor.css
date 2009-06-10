@@ -1,6 +1,11 @@
 #svg_editor {
 	font-size: 8pt;
 	font-family: Verdana, Helvetica, Arial;
+	color: #000000;
+}
+
+#svg_editor a {
+	color: #0000FF;
 }
 
 #svg_editor hr {
@@ -34,18 +39,18 @@
 	height: 31px;
 }
 
-#fill_color, #stroke_color {
+#svg_editor #fill_color, #svg_editor #stroke_color {
 	height: 16px;
 	width: 16px;
 	border: 1px solid #808080;
 	cursor: pointer;
 }
 
-#fill_color {
+#svg_editor #fill_color {
 	background: url('images/none.png');
 }
 
-#stroke_color {
+#svg_editor #stroke_color {
 	background: #000000;
 }
 
@@ -65,7 +70,7 @@
 	float: left;
 }
 
-.tools_panel {
+#svg_editor .tools_panel {
 	background: #E8E8E8;
 	border: 1px solid #808080;
 	padding: 4px;
@@ -73,31 +78,31 @@
 	clear: both;
 }
 
-#context_tools {
+#svg_editor #context_tools {
 	width: 705px;
 	height: 34px;
 	border-bottom: none;
 }
 
-#tools {
+#svg_editor #tools {
 	border-right: none;
 	height: 504px;
 	width: 64px;
 }
 
-#tool_delete {
+#svg_editor #tool_delete {
 	display: none;
 }
 
-#text_panel {
+#svg_editor #text_panel {
 	display: none;
 }
 
-#text_panel .text_tool {
+#svg_editor #text_panel .text_tool {
 	vertical-align:12px;
 }
 
-.tool_button, .tool_button_current {
+#svg_editor .tool_button, #svg_editor .tool_button_current {
 	height: 24px;
 	width: 24px;
 	margin: 2px;
@@ -109,7 +114,7 @@
 	cursor: pointer;
 }
 
-.tool_button_current {
+#svg_editor .tool_button_current {
 	border-left: 1px solid #808080;
 	border-top: 1px solid #808080;
 	border-right: 1px solid #FFFFFF;
@@ -117,7 +122,7 @@
 	background-color: #B0B0B0;
 }
 
-#color_pick {
+#svg_editor #color_pick {
 	position: absolute;
 	display: none;
 	background: #E8E8E8;
@@ -125,38 +130,38 @@
 	padding: 5px;
 }
 
-.tools_flyout {
+#svg_editor .tools_flyout {
 	position: absolute;
 	display: none;
 	cursor: pointer;
 	float: left;
 }
 
-#tool_square {
+#svg_editor #tool_square {
 	background: 2px 2px url('images/square.png') no-repeat;
 }
 
-#tool_rect {
+#svg_editor #tool_rect {
 	background: 2px 2px url('images/rect.png') no-repeat;
 }
 
-#tool_fhrect {
+#svg_editor #tool_fhrect {
 	background: 2px 2px url('images/path.png') no-repeat;
 }
 
-#tool_circle {
+#svg_editor #tool_circle {
 	background: 2px 2px url('images/circle.png') no-repeat;
 }
 
-#tool_ellipse {
+#svg_editor #tool_ellipse {
 	background: 2px 2px url('images/ellipse.png') no-repeat;
 }
 
-#tool_fhellipse {
+#svg_editor #tool_fhellipse {
 	background: 2px 2px url('images/path.png') no-repeat;
 }
 
-#tools_rect div, #tools_ellipse div {
+#svg_editor #tools_rect div, #svg_editor #tools_ellipse div {
 	float: left;
 	background-color: #E8E8E8;
 	border-left: 1px solid #FFFFFF;
@@ -165,4 +170,10 @@
 	border-bottom: 1px solid #808080;
 	height: 28px;
 	width: 28px;
+}
+
+#svg_editor #footer {
+	width: 705px;
+	border-top: none;
+	text-align: right;
 }

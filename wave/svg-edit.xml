@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" ?> 
+<?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-<ModulePrefs title="SVG Editor" height="300">
-    <Require feature="rpc" /> 
-  </ModulePrefs>
+<ModulePrefs title="SVG-edit" height="600">
+<Require feature="rpc" />
+</ModulePrefs>
 <Content type="html">
-<![CDATA[ 
+<![CDATA[
 
 <script type="text/javascript" src="http://wave-api.appspot.com/public/wave.js"></script>
 <link rel="stylesheet" href="http://svg-edit.googlecode.com/svn/trunk/editor/jpicker/jpicker.css" type="text/css"/>
@@ -16,7 +16,6 @@
 <script type="text/javascript" src="http://svg-edit.googlecode.com/svn/trunk/editor/svg-editor.js"></script>
  
 
-<p>SVG-edit Wave Gadget @ <a href="http://svg-edit.googlecode.com/">http://svg-edit.googlecode.com/</a></p>
 <div id="svg_editor">
 
 <div id="color_picker" class="tools_flyout"></div>
@@ -33,17 +32,71 @@
 <div id="tool_fhellipse" title="Free-Hand Ellipse"></div>
 </div>
 
-<div id="tools">
+<div id="context_tools" class="tools_panel">
+	<!-- File-like buttons: New, Save -->
+	<img class="tool_button" id="tool_clear" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/clear.png" title="New Image [N]" alt="Clear" />
+	<img class="tool_button" id="tool_save" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/save.png" title="Save Image [S]" alt="Save"/>
+	
+	<!-- FIXME: need a separator image -->
 
-<div>
-<img class="tool_button" id="tool_select" src="/static/svg-edit.svn/editor/images/select.png" title="Select Tool" alt="Select"/><br/>
-<img class="tool_button_current" id="tool_path" src="/static/svg-edit.svn/editor/images/path.png" title="Pencil Tool" alt="Path"/><br/>
-<img class="tool_button" id="tool_line" src="/static/svg-edit.svn/editor/images/line.png" title="Line Tool" alt="Line"/><br/>
-<img class="tool_button" id="tools_rect_show" src="/static/svg-edit.svn/editor/images/square.png" title="Square/Rect Tool" alt="Square"/><br/>
-<img class="tool_button" id="tools_ellipse_show" src="/static/svg-edit.svn/editor/images/circle.png" title="Circle/Ellipse Tool" alt="Circle"/><br/>
-<img class="tool_button" id="tool_delete" src="/static/svg-edit.svn/editor/images/delete.png" title="Delete Element" alt="Delete"/><hr/>
-<img class="tool_button" id="tool_clear" src="/static/svg-edit.svn/editor/images/clear.png" title="New Image" alt="Clear" /><br/>
-<img class="tool_button" id="tool_submit" src="/static/svg-edit.svn/editor/images/submit.png" title="Save Image to Server" alt="Source"/><br/>
+	<!-- Edit-like buttons: Delete -->
+	<img class="tool_button" id="tool_delete" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/delete.png" title="Delete Element [X]" alt="Delete"/>
+	
+	<!-- FIXME: need a separator image -->
+
+	<div id="text_panel">
+		<select id="font_family" class="text_tool" title="Change Font Family">
+			<option selected="selected" value="serif">serif</option>
+			<option value="sans-serif">sans-serif</option>
+			<option value="cursive">cursive</option>
+			<option value="fantasy">fantasy</option>
+			<option value="monospace">monospace</option>
+		</select>
+		<select id="font_size" class="text_tool" title="Change Font Size">
+			<option value="6pt">6pt</option>
+			<option value="8pt">8pt</option>
+			<option value="10pt">10pt</option>
+			<option selected="selected" value="12pt">12pt</option>
+			<option value="14pt">14pt</option>
+			<option value="16pt">16pt</option>
+			<option value="20pt">20pt</option>
+			<option value="24pt">24pt</option>
+			<option value="32pt">32pt</option>
+			<option value="48pt">48pt</option>
+			<option value="64pt">64pt</option>
+			<option value="72pt">72pt</option>
+			<option value="80pt">80pt</option>
+			<option value="96pt">96pt</option>
+			<option value="120pt">120pt</option>
+		</select>
+		<input id="text" class="text_tool" type="text" title="Change text contents" size="40"/>
+	</div>
+</div>
+
+<div id="tools" class="tools_panel">
+
+<img class="tool_button" id="tool_select" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/select.png" title="Select Tool [1]" alt="Select"/><br/>
+<img class="tool_button_current" id="tool_path" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/path.png" title="Pencil Tool [2]" alt="Pencil"/><br/>
+<img class="tool_button" id="tool_line" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/line.png" title="Line Tool [3]" alt="Line"/><br/>
+<img class="tool_button" id="tools_rect_show" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/square.png" title="Square/Rect Tool [4/Shift+4]" alt="Square"/><br/>
+<img class="tool_button" id="tools_ellipse_show" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/circle.png" title="Circle/Ellipse Tool [5/Shift+5]" alt="Circle"/><br/>
+<img class="tool_button" id="tool_text" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/text.png" title="Text Tool [6]" alt="Text"/>
+
+<hr/>
+
+<div>opacity<br/>
+<select id="group_opacity" title="Change group opacity">
+<option selected="selected" value="1">100 %</option>
+<option value="0.9">90 %</option>
+<option value="0.8">80 %</option>
+<option value="0.7">70 %</option>
+<option value="0.6">60 %</option>
+<option value="0.5">50 %</option>
+<option value="0.4">40 %</option>
+<option value="0.3">30 %</option>
+<option value="0.2">20 %</option>
+<option value="0.1">10 %</option>
+</select>
 </div>
 
 <hr/>
@@ -99,97 +152,88 @@
 <option value="0.1">10 %</option>
 </select>
 </div>
-<hr/>
-<div>
-<select id="group_opacity" title="Change group opacity">
-<option selected="selected" value="1">100 %</option>
-<option value="0.9">90 %</option>
-<option value="0.8">80 %</option>
-<option value="0.7">70 %</option>
-<option value="0.6">60 %</option>
-<option value="0.5">50 %</option>
-<option value="0.4">40 %</option>
-<option value="0.3">30 %</option>
-<option value="0.2">20 %</option>
-<option value="0.1">10 %</option>
-</select>
-</div>
 </div>
 
 </div>
 
 <div id="workarea">
 
+<style id="styleoverrides" type="text/css"></style>
 <div id="svgcanvas">
 </div>
 
 <div id="palette_holder">
-<div id="palette">
+<div id="palette" title="Left-click to change fill color, right-click to change stroke color">
 </div>
 </div>
 
+</div>
+
+<div id="footer" class="tools_panel">
+SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/">http://svg-edit.googlecode.com/</a>
 </div>
 
 </div>
 
 <script type="text/javascript">
-    var canvas=null;
 
-    function stateUpdated() {
-	   var state = wave.getState();
-	   var keys = state.getKeys();
-	   canvas.each(function(e) {
+	var svgCanvas = null;
+
+	function stateUpdated() {
+		var state = wave.getState();
+		var keys = state.getKeys();
+		svgCanvas.each(function(e) {
 //alert(e);
-	       var v = state.get(e.nodeId);
-	       if (v) {
+			var v = state.get(e.nodeId);
+			if (v) {
 				var ob;
 				var v = state.get(e.nodeId);
-				eval("ob="+v); // FIXME: Yes, I'm using eval... Dirty, dirty..
-				if (ob) canvas.updateElementFromJson(data)
-				else {
+				eval("ob=" + v); // FIXME: Yes, I'm using eval... Dirty, dirty..
+				if (ob) {
+					svgCanvas.updateElementFromJson(data)
+				} else {
 					var node = svgdoc.getElementById(k);
 					if (node) node.parentNode.removeChild(node);
 				}
 				keys.remove(e.nodeId);
-		   } else {
-		       e.parent().remove(e);
-		   }
-	   });
+			} else {
+				e.parent().remove(e);
+			}
+		});
 
-	   // New nodes
-	   for (var k in keys) {
+		// New nodes
+		for (var k in keys) {
 			var ob;
 			var v = state.get(k);
-			eval("ob="+v); // FIXME: Yes, I'm using eval... Dirty, dirty..
-			if (ob) canvas.updateElementFromJson(data)
-	   }
-    }
+			eval("ob=" + v); // FIXME: Yes, I'm using eval... Dirty, dirty..
+			if (ob) svgCanvas.updateElementFromJson(data)
+		}
+	}
 
-	function sendDelta(canvas, elem) {
+	function sendDelta(svgCanvas, elem) {
 		if (!wave) return;
 		var delta = {};
 		var attrs = {};
 		var a = elem.attributes;
 		for (var i = 0; i < a.length; i++) {
 			attrs[a.item(i).nodeName] = a.item(i).nodeValue;
-		};
-		var ob = { element: elem.nodeName,
-				   attr: attrs };
-		delta[elem.id] = wave.util.printJson(ob,false);
+		}
+		var ob = { element: elem.nodeName, attr: attrs };
+		delta[elem.id] = wave.util.printJson(ob, false);
 		wave.getState().submitDelta(delta);
 	}
 
-    function main() {
-  	  canvas = svg_edit_setup();
-      if (wave && wave.isInWaveContainer()) {
-        wave.setStateCallback(stateUpdated);
-      }
+	function main() {
+		svgCanvas = svg_edit_setup();
+		if (wave && wave.isInWaveContainer()) {
+			wave.setStateCallback(stateUpdated);
+		}
+		svgCanvas.bind("changed", sendDelta);
+	}
 
-	  canvas.bind("changed",sendDelta);
-    }
-    gadgets.util.registerOnLoadHandler(main);
+	gadgets.util.registerOnLoadHandler(main);
 
 </script>
-]]> 
-  </Content>
+]]>
+</Content>
 </Module>
