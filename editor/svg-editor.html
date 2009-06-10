@@ -62,8 +62,10 @@
 			<option value="32pt">32pt</option>
 			<option value="48pt">48pt</option>
 			<option value="64pt">64pt</option>
+			<option value="72pt">72pt</option>
 			<option value="80pt">80pt</option>
-			<option value="100pt">100pt</option>
+			<option value="96pt">96pt</option>
+			<option value="120pt">120pt</option>
 		</select>
 		<input id="text" class="text_tool" type="text" title="Change text contents" size="40"/>
 	</div>
@@ -76,7 +78,27 @@
 <img class="tool_button" id="tool_line" src="images/line.png" title="Line Tool [3]" alt="Line"/><br/>
 <img class="tool_button" id="tools_rect_show" src="images/square.png" title="Square/Rect Tool [4/Shift+4]" alt="Square"/><br/>
 <img class="tool_button" id="tools_ellipse_show" src="images/circle.png" title="Circle/Ellipse Tool [5/Shift+5]" alt="Circle"/><br/>
-<img class="tool_button" id="tool_text" src="images/text.png" title="Text Tool [6]" alt="Text"/><hr/>
+<img class="tool_button" id="tool_text" src="images/text.png" title="Text Tool [6]" alt="Text"/>
+
+<hr/>
+
+<div>opacity<br/>
+<select id="group_opacity" title="Change group opacity">
+<option selected="selected" value="1">100 %</option>
+<option value="0.9">90 %</option>
+<option value="0.8">80 %</option>
+<option value="0.7">70 %</option>
+<option value="0.6">60 %</option>
+<option value="0.5">50 %</option>
+<option value="0.4">40 %</option>
+<option value="0.3">30 %</option>
+<option value="0.2">20 %</option>
+<option value="0.1">10 %</option>
+</select>
+</div>
+
+<hr/>
+
 
 <div>fill
 <div id="fill_color" title="Change fill color"></div>
@@ -117,21 +139,6 @@
 </div>
 <div>
 <select id="stroke_opacity" title="Change stroke opacity">
-<option selected="selected" value="1">100 %</option>
-<option value="0.9">90 %</option>
-<option value="0.8">80 %</option>
-<option value="0.7">70 %</option>
-<option value="0.6">60 %</option>
-<option value="0.5">50 %</option>
-<option value="0.4">40 %</option>
-<option value="0.3">30 %</option>
-<option value="0.2">20 %</option>
-<option value="0.1">10 %</option>
-</select>
-</div>
-<hr/>
-<div>opacity<br/>
-<select id="group_opacity" title="Change group opacity">
 <option selected="selected" value="1">100 %</option>
 <option value="0.9">90 %</option>
 <option value="0.8">80 %</option>

@@ -69,22 +69,30 @@
 	background: #E8E8E8;
 	border: 1px solid #808080;
 	padding: 4px;
-	float:left;
-	clear:both;
+	float: left;
+	clear: both;
 }
 
 #context_tools {
-	width: 800px;
+	width: 705px;
 	height: 34px;
+	border-bottom: none;
+}
+
+#tools {
+	border-right: none;
+	height: 504px;
+	width: 64px;
 }
 
 #tool_delete {
 	display: none;
 }
 
-#text_panel { 
+#text_panel {
 	display: none;
 }
+
 #text_panel .text_tool {
 	vertical-align:12px;
 }
