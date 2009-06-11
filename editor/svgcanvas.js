@@ -71,6 +71,10 @@ function SvgCanvas(c)
 			element.removeAttribute('stroke-opacity');
 		if (element.getAttribute('stroke-width') == '1')
 			element.removeAttribute('stroke-width');
+		if (element.getAttribute('rx') == '0')
+			element.removeAttribute('rx')
+		if (element.getAttribute('ry') == '0')
+			element.removeAttribute('ry')
 	}
 
 	var addSvgElementFromJson = function(data) {
@@ -328,21 +332,14 @@ function SvgCanvas(c)
 						"stroke-dasharray": current_stroke_style,
 						"stroke-opacity": current_stroke_opacity,
 						"fill-opacity": current_fill_opacity,
-						"opacity": current_opacity / 2,
+						// fix for bug where text elements were always 50% opacity
+						"opacity": current_opacity,
 						"font-size": current_font_size,
 						"font-family": current_font_family,
 					}
 				});
 				newText.textContent = "text";
 				break;
-/*
-			case "delete":
-				var t = evt.target;
-				if (t == svgroot) return;
-				t.parentNode.removeChild(t);
-				call("deleted",t);
-				break;
-*/
 		}
 	}
 
@@ -727,6 +724,14 @@ function SvgCanvas(c)
 		if (selected != null) {
 			selected.textContent = val;
 			recalculateSelectedOutline();
+			call("changed", selected);
+		}
+	}
+	
+	this.setRectRadius = function(val) {
+		if (selected != null && selected.tagName == "rect") {
+			selected.setAttribute("rx", val);
+			selected.setAttribute("rx", val);
 			call("changed", selected);
 		}
 	}
