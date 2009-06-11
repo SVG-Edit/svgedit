@@ -94,11 +94,19 @@
 	display: none;
 }
 
+#svg_editor #rect_panel {
+	display: none;
+}
+
 #svg_editor #text_panel {
 	display: none;
 }
 
 #svg_editor #text_panel .text_tool {
+	vertical-align:12px;
+}
+
+#svg_editor #rect_panel .rect_tool {
 	vertical-align:12px;
 }
 
