@@ -14,7 +14,6 @@ function svg_edit_setup() {
 	var selectedElement = null;
 	var selectedChanged = function(window,elem) {
 		selectedElement = elem;
-		
 		if (elem != null) {
 		
 			// always set the mode of the editor to select because
@@ -22,16 +21,6 @@ function svg_edit_setup() {
 			// select mode and this event fires - we need our UI to be in sync
 			setSelectMode();
 			
-			// update contextual tools here
-			$('#tool_delete').show();
-			if (elem.tagName == "text") {
-				// jquery's show() always sets display to block
-				$('#text_panel').show().css("display", "inline");
-			}
-			else {
-				$('#text_panel').hide();
-			}
-
 			// update fill color
 			var fillColor = elem.getAttribute("fill");
 			if (fillColor == null || fillColor == "" || fillColor == "none") {
@@ -81,28 +70,37 @@ function svg_edit_setup() {
 			if (strokeDashArray == null || strokeDashArray == "") {
 				strokeDashArray = "none";
 			}
-			$('#stroke_style').val(strokeDashArray);
-			
-			if (elem.tagName == "text") {
-				$('.text_tool').removeAttr('disabled');
-				$('#font_family').val(elem.getAttribute("font-family"));
-				$('#font_size').val(elem.getAttribute("font-size"));
-				$('#text').val(elem.textContent);
-				$('#text').focus();
-				$('#text').select();
-			}
-			else {
-				$('.text_tool').attr('disabled', "disabled");
-			}
+			$('#stroke_style').val(strokeDashArray);			
 		} // if (elem != null)
-		else {
-			// nothing is now selected
-			// update contextual tools here
-			$('#tool_delete').hide();
-			$('#text_panel').hide();
-		}
+		
+		updateContextPanel();
 	}
 
+	function updateContextPanel() {
+		var elem = selectedElement;
+		$('#tool_delete').hide();
+		$('#rect_panel').hide();
+		$('#text_panel').hide();
+		if (elem != null) {
+			$('#tool_delete').show();
+			// update contextual tools here
+			switch(elem.tagName) {
+				case "rect":
+					$('#rect_panel').show().css("display", "inline");
+					break;
+				case "text":
+					// jquery's show() always sets display to block
+					$('#text_panel').show().css("display", "inline");
+					$('#font_family').val(elem.getAttribute("font-family"));
+					$('#font_size').val(elem.getAttribute("font-size"));
+					$('#text').val(elem.textContent);
+					$('#text').focus();
+					$('#text').select();
+					break;
+			}
+		}	
+	}
+	
 	$('#text').focus( function(){ textBeingEntered = true; } );
 	$('#text').blur( function(){ textBeingEntered = false; } );
 
@@ -150,6 +148,10 @@ function svg_edit_setup() {
 	
 	$('#text').keyup(function(){
 		svgCanvas.setTextContent(this.value);
+	});
+	
+	$('#rect_radius').change(function(){
+		svgCanvas.setRectRadius(this.options[this.selectedIndex].value);
 	});
 
 	$('.palette_item').click(function(){
