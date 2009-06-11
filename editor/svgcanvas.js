@@ -192,6 +192,9 @@ function SvgCanvas(c)
 			if (sw != null && sw != "") {
 				offset += parseInt(sw)/2;
 			}
+			if (selected.tagName == "text") {
+				offset += 2;
+			}
 			selectedOutline.setAttribute("x", bbox.x-offset);
 			selectedOutline.setAttribute("y", bbox.y-offset);
 			selectedOutline.setAttribute("width", bbox.width+(offset<<1));
