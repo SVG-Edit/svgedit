@@ -258,7 +258,7 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/" target="
 	}
 	
 	function setupId() {
-		svgCanvas.setIdPrefix("svg_"+wave.getViewer().getId()+"_");
+		svgCanvas.setIdPrefix("svg_"+wave.Participant().getId()+"_");
 	}
 
 	function main() {
