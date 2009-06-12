@@ -187,7 +187,8 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/" target="
 		svgCanvas.each(function(e) {
 			// 'this' is the SVG DOM element node (ellipse, rect, etc)
 			// 'e' is an integer describing the position within the document
-			var v = state.get(this.nodeId);
+			var k = this.id;
+			var v = state.get(k);
 			if (v) {
 				var ob;
 				eval("ob=" + v); // FIXME: Yes, I'm using eval... Dirty, dirty..
@@ -197,7 +198,7 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/" target="
 					var node = svgdoc.getElementById(k);
 					if (node) node.parentNode.removeChild(node);
 				}
-				keys.remove(this.nodeId);
+				keys.remove(k);
 			} else {
 				this.parentNode.removeChild(this);
 			}
