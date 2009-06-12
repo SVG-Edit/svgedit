@@ -8,6 +8,7 @@ function SvgCanvas(c)
 	var container = c;
 	var svgns = "http://www.w3.org/2000/svg";
 
+	var idprefix = "svg_";
 	var svgdoc  = c.ownerDocument;
 	var svgroot = svgdoc.createElementNS(svgns, "svg");
 	svgroot.setAttribute("width", 640);
@@ -41,7 +42,7 @@ function SvgCanvas(c)
 
 // private functions
 	var getId = function() {
-		return "svg_"+obj_num;
+		return idprefix+obj_num;
 	}
 
 	var call = function(event, arg) {
@@ -692,6 +693,10 @@ function SvgCanvas(c)
 		events[event] = f;
 	}
 
+	this.setIdPrefix = function(p) {
+		idprefix = p;
+	}
+
 	this.getFontFamily = function() {
 		return current_font_family;
 	}
@@ -739,6 +744,7 @@ function SvgCanvas(c)
 		}
 	}
 	
+>>>>>>> .r109
 	$(container).mouseup(mouseUp);
 	$(container).mousedown(mouseDown);
 	$(container).mousemove(mouseMove);
