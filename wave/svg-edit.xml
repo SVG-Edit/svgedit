@@ -190,8 +190,8 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/" target="
 			var k = this.id;
 			var v = state.get(k);
 			if (v) {
-				var ob;
-				eval("ob=" + v); // FIXME: Yes, I'm using eval... Dirty, dirty..
+				var ob = v;
+//				eval("ob=" + v); // FIXME: Yes, I'm using eval... Dirty, dirty..
 				if (ob) {
 					svgCanvas.updateElementFromJson(ob);
 				} else {
@@ -206,9 +206,9 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/" target="
 
 		// New nodes
 		for (var k in keys) {
-			var ob;
 			var v = state.get(keys[k]);
-			eval("ob=" + v); // FIXME: Yes, I'm using eval... Dirty, dirty..
+			var ob = v;
+//			eval("ob=" + v); // FIXME: Yes, I'm using eval... Dirty, dirty..
 			if (ob) svgCanvas.updateElementFromJson(ob)
 		}
 	}
@@ -222,7 +222,8 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/" target="
 			attrs[a.item(i).nodeName] = a.item(i).nodeValue;
 		}
 		var ob = { element: elem.nodeName, attr: attrs };
-		delta[elem.id] = wave.util.printJson(ob, false);
+		// printJson seems to have a problem not quoting keys like 'stroke-width'
+		delta[elem.id] = ob; //wave.util.printJson(ob, true);
 		wave.getState().submitDelta(delta);
 	}
 	
