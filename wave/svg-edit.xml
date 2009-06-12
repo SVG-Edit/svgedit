@@ -184,6 +184,7 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/">http://s
 		var keys = state.getKeys();
 		svgCanvas.each(function(e) {
 //alert(e);
+			console.log(e);
 			var v = state.get(e.nodeId);
 			if (v) {
 				var ob;
@@ -220,6 +221,8 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/">http://s
 		}
 		var ob = { element: elem.nodeName, attr: attrs };
 		delta[elem.id] = wave.util.printJson(ob, false);
+		console.log(elem);
+		console.log(delta);
 		wave.getState().submitDelta(delta);
 	}
 
