@@ -253,7 +253,7 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/" target="
 		}
 		var ob = { element: elem.nodeName, attr: attrs };
 		// printJson seems to have a problem not quoting keys like 'stroke-width'
-		delta[elem.id] = wave.util.printJson(ob, true);
+		delta[elem.id] = myPrintJson(ob, true);
 		wave.getState().submitDelta(delta);
 	}
 	
