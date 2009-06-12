@@ -42,6 +42,7 @@ function SvgCanvas(c)
 
 // private functions
 	var getId = function() {
+	    if (events["getid"]) return call("getid",obj_num);
 		return idprefix+obj_num;
 	}
 
