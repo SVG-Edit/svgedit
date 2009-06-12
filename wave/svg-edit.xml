@@ -212,6 +212,36 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/" target="
 			if (ob) svgCanvas.updateElementFromJson(ob)
 		}
 	}
+	
+	function myPrintJson(a, b, e) {
+  		if(!a || typeof a.valueOf() != "object") {
+    		if(typeof a == "string")return"'" + a + "'";
+			else if(a instanceof Function)return"[function]";
+    		return"" + a
+  		}
+  		var c = [], f = wave.util.isArray_(a), d = f ? "[]" : "{}", h = b ? "\n" : "", k = b ? " " : "", l = 0, g = e || 1;
+  		b || (g = 0);
+  		c.push(d.charAt(0));
+		for(var i in a) {
+			var j = a[i];
+    		l++ > 0 && c.push(", ");
+    		if(f)
+    			c.push(myPrintJson(j, b, g + 1));
+    		else {
+      			c.push(h);
+      			c.push(wave.util.toSpaces_(g));
+      			c.push("'" + i + "'" + ": ");
+      			c.push(k);
+      			c.push(myPrintJson(j, b, g + 1))
+    		}
+  		}
+  		if(!f) {
+    		c.push(h);
+    		c.push(wave.util.toSpaces_(g - 1))
+  		}
+  		c.push(d.charAt(1));
+  		return c.join("")
+	}	
 
 	function sendDelta(svgCanvas, elem) {
 		if (!wave) return;
