@@ -744,7 +744,6 @@ function SvgCanvas(c)
 		}
 	}
 	
->>>>>>> .r109
 	$(container).mouseup(mouseUp);
 	$(container).mousedown(mouseDown);
 	$(container).mousemove(mouseMove);
