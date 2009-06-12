@@ -187,10 +187,9 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/">http://s
 		svgCanvas.each(function(e) {
 			// 'this' is the SVG DOM element node (ellipse, rect, etc)
 			// 'e' is an integer describing the position within the document
-			var v = state.get(e.nodeId);
+			var v = state.get(this.nodeId);
 			if (v) {
 				var ob;
-				var v = state.get(e.nodeId);
 				eval("ob=" + v); // FIXME: Yes, I'm using eval... Dirty, dirty..
 				if (ob) {
 					// FIXME: 'data' is a typo here, right?  should be 'obj'?
@@ -201,7 +200,7 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/">http://s
 				}
 				keys.remove(e.nodeId);
 			} else {
-				e.parent().remove(e);
+				this.parentNode.removeChild(e);
 			}
 		});
 
@@ -215,8 +214,6 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/">http://s
 		}
 	}
 
-	// one major problem is that each client's SvgCanvas has its own copy of the obj_num 
-	// so the first object I draw will overwrite the first object you drew in our shared state
 	function sendDelta(svgCanvas, elem) {
 		if (!wave) return;
 		var delta = {};
@@ -232,6 +229,7 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/">http://s
 
 	function main() {
 		svgCanvas = svg_edit_setup();
+		svgCanvas.setIdPrefix("svg_"+wave.getViewer().getId()+"_");
 		if (wave && wave.isInWaveContainer()) {
 			wave.setStateCallback(stateUpdated);
 		}
