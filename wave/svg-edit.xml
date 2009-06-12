@@ -180,20 +180,20 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/">http://s
 	var svgCanvas = null;
 
 	function stateUpdated() {
+		// 'state' is an object of key-value pairs that map ids to JSON serialization of SVG elements
+		// 'keys' is an array of all the keys in the state
 		var state = wave.getState();
 		var keys = state.getKeys();
-		console.log("this=");
-		console.log(this);
-		console.log("state=" + state);
-		console.log("keys=" + keys);
 		svgCanvas.each(function(e) {
-//alert(e);
+			// 'this' is the SVG DOM element node (ellipse, rect, etc)
+			// 'e' is an integer describing the position within the document
 			var v = state.get(e.nodeId);
 			if (v) {
 				var ob;
 				var v = state.get(e.nodeId);
 				eval("ob=" + v); // FIXME: Yes, I'm using eval... Dirty, dirty..
 				if (ob) {
+					// FIXME: 'data' is a typo here, right?  should be 'obj'?
 					svgCanvas.updateElementFromJson(data)
 				} else {
 					var node = svgdoc.getElementById(k);
@@ -210,10 +210,13 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/">http://s
 			var ob;
 			var v = state.get(k);
 			eval("ob=" + v); // FIXME: Yes, I'm using eval... Dirty, dirty..
+			// FIXME: 'data' is a typo here, right? should be 'obj'?
 			if (ob) svgCanvas.updateElementFromJson(data)
 		}
 	}
 
+	// one major problem is that each client's SvgCanvas has its own copy of the obj_num 
+	// so the first object I draw will overwrite the first object you drew in our shared state
 	function sendDelta(svgCanvas, elem) {
 		if (!wave) return;
 		var delta = {};
@@ -224,8 +227,6 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/">http://s
 		}
 		var ob = { element: elem.nodeName, attr: attrs };
 		delta[elem.id] = wave.util.printJson(ob, false);
-		console.log("elem="+elem);
-		console.log("delta="+delta);
 		wave.getState().submitDelta(delta);
 	}
 
