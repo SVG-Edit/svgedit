@@ -676,7 +676,7 @@ function SvgCanvas(c)
 	}
 
 	this.updateElementFromJson = function(data) {
-		var shape = svgdoc.getElementById(data.id);
+		var shape = svgdoc.getElementById(data.attr.id);
 		var newshape = !shape;
 		if (newshape) shape = svgdoc.createElementNS(svgns, data.element);
 		assignAttributes(shape, data.attr);
