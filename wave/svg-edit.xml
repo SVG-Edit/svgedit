@@ -210,8 +210,7 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/">http://s
 		}
 	}
 
-	// the 'changed' callback only takes one argument (the element that has changed)
-	function sendDelta(elem) {
+	function sendDelta(svgCanvas, elem) {
 		if (!wave) return;
 		var delta = {};
 		var attrs = {};
