@@ -232,6 +232,7 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/" target="
 			wave.setStateCallback(stateUpdated);
 		}
 		svgCanvas.bind("changed", sendDelta);
+		svgCanvas.bind("cleared", stateUpdated);
 	}
 
 	gadgets.util.registerOnLoadHandler(main);
