@@ -192,25 +192,23 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/">http://s
 				var ob;
 				eval("ob=" + v); // FIXME: Yes, I'm using eval... Dirty, dirty..
 				if (ob) {
-					// FIXME: 'data' is a typo here, right?  should be 'obj'?
-					svgCanvas.updateElementFromJson(data)
+					svgCanvas.updateElementFromJson(ob);
 				} else {
 					var node = svgdoc.getElementById(k);
 					if (node) node.parentNode.removeChild(node);
 				}
-				keys.remove(e.nodeId);
+				keys.remove(this.nodeId);
 			} else {
-				this.parentNode.removeChild(e);
+				this.parentNode.removeChild(this);
 			}
 		});
 
 		// New nodes
 		for (var k in keys) {
 			var ob;
-			var v = state.get(k);
+			var v = state.get(keys[k]);
 			eval("ob=" + v); // FIXME: Yes, I'm using eval... Dirty, dirty..
-			// FIXME: 'data' is a typo here, right? should be 'obj'?
-			if (ob) svgCanvas.updateElementFromJson(data)
+			if (ob) svgCanvas.updateElementFromJson(ob)
 		}
 	}
 
