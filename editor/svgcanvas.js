@@ -781,9 +781,9 @@ var Utils = {
 // public domain.  It would be nice if you left this header intact.
 // Base64 code from Tyler Akins -- http://rumkin.com
 
-	_keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+	"_keyStr" : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
 
-	encode64 : function(input) {
+	"encode64" : function(input) {
 		var output = "";
 		var chr1, chr2, chr3;
 		var enc1, enc2, enc3, enc4;
@@ -812,7 +812,7 @@ var Utils = {
 		return output;
 	},
 
-	decode64 : function(input) {
+	"decode64" : function(input) {
 		var output = "";
 		var chr1, chr2, chr3;
 		var enc1, enc2, enc3, enc4;
