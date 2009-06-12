@@ -580,6 +580,7 @@ function SvgCanvas(c)
 				i++;
 			}
 		}
+		call("cleared");
 	}
 
 	this.getMode = function() {
