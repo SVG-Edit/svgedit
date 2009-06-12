@@ -182,12 +182,13 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/">http://s
 	function stateUpdated() {
 		var state = wave.getState();
 		var keys = state.getKeys();
+		console.log("e="+e);
+		console.log("this=");
+		console.log(this);
+		console.log("state=" + state);
+		console.log("keys=" + keys);
 		svgCanvas.each(function(e) {
 //alert(e);
-			console.log("e="+e);
-			console.log("this=" + this);
-			console.log("state=" + state);
-			console.log("keys=" + keys);
 			var v = state.get(e.nodeId);
 			if (v) {
 				var ob;
