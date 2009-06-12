@@ -257,18 +257,18 @@ SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/" target="
 		wave.getState().submitDelta(delta);
 	}
 	
-	function setupId() {
-		svgCanvas.setIdPrefix("svg_"+wave.Participant().getId()+"_");
+	function getId(objnum) {
+		return "svg_"+wave.getViewer().getId()+"_"+objnum;
 	}
 
 	function main() {
 		svgCanvas = svg_edit_setup();
 		if (wave && wave.isInWaveContainer()) {
 			wave.setStateCallback(stateUpdated);
-			wave.setParticipantCallback(setupId);
 		}
 		svgCanvas.bind("changed", sendDelta);
 		svgCanvas.bind("cleared", stateUpdated);
+		svgCanvas.bind("getid", getId);
 	}
 
 	gadgets.util.registerOnLoadHandler(main);
