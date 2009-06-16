@@ -94,10 +94,12 @@ function SvgCanvas(c)
 			out += "<" + elem.nodeName;
 			for (i=attrs.length-1; i>=0; i--) {
 				attr = attrs.item(i);
-				out += " " + attr.nodeName + "=\"" + attr.nodeValue+ "\"";
+				if (attr.nodeValue != "") {
+					out += " " + attr.nodeName + "=\"" + attr.nodeValue+ "\"";
+				}
 			}
 			if (elem.hasChildNodes()) {
-				out += ">";
+				out += ">\n";
 				indent++;
 				for (i=0; i<childs.length; i++)
 				{
@@ -110,9 +112,9 @@ function SvgCanvas(c)
 				}
 				indent--;
 				for (i=0; i<indent; i++) out += "  ";
-				out += "</" + elem.nodeName + ">";
+				out += "</" + elem.nodeName + ">\n";
 			} else {
-				out += " />";
+				out += " />\n";
 			}
 		}
 		return out;
@@ -565,8 +567,8 @@ function SvgCanvas(c)
 	this.save = function() {
 		// remove the selected outline before serializing
 		this.selectNone();
-		var str = "<?xml version=\"1.0\" standalone=\"no\"?>"
-		str += "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">";
+		var str = "<?xml version=\"1.0\" standalone=\"no\"?>\n";
+		str += "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
 		str += svgToString(svgroot, 0);
 		this.saveHandler(str);
 	}
