@@ -684,7 +684,7 @@ function SvgCanvas(c)
 	this.updateElementFromJson = function(data) {
 		var shape = svgdoc.getElementById(data.attr.id);
 		// if shape is a path but we need to create a rect/ellipse, then remove the path
-		if (shape && data.element !== shape.tagName) {
+		if (shape && data.element != shape.tagName) {
 			svgroot.removeChild(shape);
 			shape = null;
 		}
@@ -792,10 +792,12 @@ var Utils = {
 // public domain.  It would be nice if you left this header intact.
 // Base64 code from Tyler Akins -- http://rumkin.com
 
+// schiller: Removed string concatenation in favour of Array.join() optimization
+
 	"_keyStr" : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
 
 	"encode64" : function(input) {
-		var output = "";
+		var output = [];
 		var chr1, chr2, chr3;
 		var enc1, enc2, enc3, enc4;
 		var i = 0;
@@ -816,11 +818,13 @@ var Utils = {
 				enc4 = 64;
 			}
 
-			output = output + this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
-				this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+			output.push(this._keyStr.charAt(enc1));
+			output.push(this._keyStr.charAt(enc2));
+			output.push(this._keyStr.charAt(enc3));
+			output.push(this._keyStr.charAt(enc4));
 		} while (i < input.length);
 
-		return output;
+		return output.join('');
 	}
 
 }
