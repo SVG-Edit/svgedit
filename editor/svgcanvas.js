@@ -517,6 +517,7 @@ function SvgCanvas(c)
 							"fill-opacity": current_fill_opacity
 						}
 					}));
+					keep = true;
 				}
 				break;
 			case "fhrect":
@@ -539,6 +540,7 @@ function SvgCanvas(c)
 							"fill-opacity": current_fill_opacity
 						}
 					}));
+					keep = true;
 				}
 				break;
 			case "text":
@@ -679,11 +681,17 @@ function SvgCanvas(c)
 
 	this.updateElementFromJson = function(data) {
 		var shape = svgdoc.getElementById(data.attr.id);
-		var newshape = !shape;
-		if (newshape) shape = svgdoc.createElementNS(svgns, data.element);
+		// if shape is a path but we need to create a rect/ellipse, then remove the path
+		if (shape && data.element !== shape.tagName) {
+			svgroot.removeChild(shape);
+			shape = null;
+		}
+		if (!shape) {
+			shape = svgdoc.createElementNS(svgns, data.element);
+			svgroot.appendChild(shape);
+		}
 		assignAttributes(shape, data.attr);
 		cleanupElement(shape);
-		if (newshape) svgroot.appendChild(shape);
 		return shape;
 	}
 
