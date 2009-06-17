@@ -812,7 +812,7 @@ var Utils = {
 
 	"encode64" : function(input) {
 		// base64 strings are 4/3 larger than the original string
-		var output = new Array(parseInt(input.length*4/3));
+		var output = new Array( Math.floor( (input.length + 2) / 3 ) * 4 );
 		var chr1, chr2, chr3;
 		var enc1, enc2, enc3, enc4;
 		var i = 0, p = 0;
