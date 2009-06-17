@@ -450,6 +450,7 @@ function SvgCanvas(c)
 								var x = l.x, y = l.y;
 								// webkit browsers normalize things and this becomes an absolute
 								// line segment!  we need to turn this back into a rel line segment
+								// see https://bugs.webkit.org/show_bug.cgi?id=26487
 								if (l.pathSegType == 4) {
 									x -= curx;
 									y -= cury;
