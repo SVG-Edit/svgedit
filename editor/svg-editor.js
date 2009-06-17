@@ -285,53 +285,19 @@ function svg_edit_setup() {
 	$('#tool_delete').mouseup(function(){$('#tool_delete').removeClass('tool_button_current');});
 	$('#tool_delete').mouseout(function(){$('#tool_delete').removeClass('tool_button_current');});
 
-	$('#workarea').keyup(function(event){
-		if( textBeingEntered ) { return; }
-		switch (event.keyCode) {
-			case 37: // left-arrow
-				break;
-			case 38: // up-arrow
-				break;
-			case 39: // right-arrow
-				break;
-			case 40: // down-arrow
-				break;
-			case 49: // 1
-				clickSelect();
-				break;
-			case 50: // 2
-				clickPath();
-				break;
-			case 51: // 3
-				clickLine();
-				break;
-			case 52: // 4
-				if (event.shiftKey)
-					clickSquare();
-				else
-					clickRect();
-				break;
-			case 53: // 5
-				if (event.shiftKey)
-					clickCircle();
-				else
-					clickEllipse();
-				break;
-			case 54: // 6
-				clickText();
-				break;
-			case 78: // N
-				clickClear();
-				break;
-			case 83: // S
-				clickSave();
-				break;
-			case 88: // X
-				clickDelete();
-				break;
-		}
-	});
-
+	// do keybindings using jquery-hotkeys plugin
+	$(document).bind('keydown', {combi:'1', disableInInput: true}, clickSelect);
+	$(document).bind('keydown', {combi:'2', disableInInput: true}, clickPath);
+	$(document).bind('keydown', {combi:'3', disableInInput: true}, clickLine);
+	$(document).bind('keydown', {combi:'Shift+4', disableInInput: true}, clickSquare);
+	$(document).bind('keydown', {combi:'4', disableInInput: true}, clickRect);
+	$(document).bind('keydown', {combi:'Shift+5', disableInInput: true}, clickCircle);
+	$(document).bind('keydown', {combi:'5', disableInInput: true}, clickEllipse);
+	$(document).bind('keydown', {combi:'6', disableInInput: true}, clickText);
+	$(document).bind('keydown', {combi:'N', disableInInput: true}, clickClear);
+	$(document).bind('keydown', {combi:'S', disableInInput: true}, clickSave);
+	$(document).bind('keydown', {combi:'X', disableInInput: true}, deleteSelected);
+	
 	var colorPicker = function(elem) {
 		$('.tools_flyout').hide();
 		var oldbg = elem.css('background');
