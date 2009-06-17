@@ -443,10 +443,20 @@ function SvgCanvas(c)
 						case "path":
 							// extract the x,y from the path, adjust it and write back the new path
 							var M = selected.pathSegList.getItem(0);
-							var newd = "M" + (M.x+dx) + "," + (M.y+dy);
+							var curx = M.x, cury = M.y;
+							var newd = "M" + (curx+dx) + "," + (cury+dy);
 							for (var i = 1; i < selected.pathSegList.numberOfItems; ++i) {
 								var l = selected.pathSegList.getItem(i);
-								newd += " l" + l.x + "," + l.y;
+								var x = l.x, y = l.y;
+								// webkit browsers normalize things and this becomes an absolute
+								// line segment!  we need to turn this back into a rel line segment
+								if (l.pathSegType == 4) {
+									x -= curx;
+									y -= cury;
+									curx += x;
+									cury += y;
+								}
+								newd += " l" + x + "," + y;
 							}
 							selected.setAttributeNS(null, "d", newd);
 							break;
