@@ -154,26 +154,16 @@ function svg_edit_setup() {
 		svgCanvas.setRectRadius(this.options[this.selectedIndex].value);
 	});
 
-	$('.palette_item').click(function(){
+	$('.palette_item').click(function(evt){
+		var id = (evt.shiftKey ? '#stroke_color' : '#fill_color');
 		color = $(this).css('background-color');
 		if (color == 'transparent') {
 			color = 'none';
-			$('#fill_color').css('background', 'url(\'images/none.png\')');
+			$(id).css('background', 'url(\'images/none.png\')');
 		} else {
-			$('#fill_color').css('background', color);
+			$(id).css('background', color);
 		}
 		svgCanvas.setFillColor(color);
-	});
-
-	$('.palette_item').rightClick(function(){
-		color = $(this).css('background-color');
-		if (color == 'transparent') {
-			color = 'none';
-			$('#stroke_color').css('background', 'url(\'images/none.png\')');
-		} else {
-			$('#stroke_color').css('background', color);
-		}
-		svgCanvas.setStrokeColor(color);
 	});
 
 	// This is a common function used when a tool has been clicked (chosen)
