@@ -163,7 +163,8 @@ function svg_edit_setup() {
 		} else {
 			$(id).css('background', color);
 		}
-		svgCanvas.setFillColor(color);
+		if (evt.shiftKey) svgCanvas.setStrokeColor(color);
+		else svgCanvas.setFillColor(color);
 	});
 
 	// This is a common function used when a tool has been clicked (chosen)
