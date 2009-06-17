@@ -9,21 +9,21 @@ function svg_edit_setup() {
 		$('#styleoverrides').text('*{cursor:move;pointer-events:all} svg{cursor:default}');
 		svgCanvas.setMode('select');
 	}
-	
+
 	var textBeingEntered = false;
 	var selectedElement = null;
 	var selectedChanged = function(window,elem) {
 		selectedElement = elem;
 		if (elem != null) {
-		
+
 			// always set the mode of the editor to select because
 			// upon creation of a text element the editor is switched into
 			// select mode and this event fires - we need our UI to be in sync
 			setSelectMode();
-			
+
 			// update fill color
 			var fillColor = elem.getAttribute("fill");
-			svgCanvas.setFillColor(fillColor);			
+			svgCanvas.setFillColor(fillColor);
 			if (fillColor == "none") {
 				fillColor = 'url(\'images/none.png\')';
 			}
@@ -83,11 +83,11 @@ function svg_edit_setup() {
 
 	function updateContextPanel() {
 		var elem = selectedElement;
-		$('#tool_delete').hide();
+		$('#selected_panel').hide();
 		$('#rect_panel').hide();
 		$('#text_panel').hide();
 		if (elem != null) {
-			$('#tool_delete').show();
+			$('#selected_panel').show();
 			// update contextual tools here
 			switch(elem.tagName) {
 				case "rect":
@@ -246,11 +246,23 @@ function svg_edit_setup() {
 		}
 	}
 
-	// Delete is a contextual tool that only appears in the ribbon if 
+	// Delete is a contextual tool that only appears in the ribbon if
 	// an element has been selected
 	var deleteSelected = function() {
 		if (selectedElement != null) {
 			svgCanvas.deleteSelectedElement();
+		}
+	}
+
+	var moveToTopSelected = function() {
+		if (selectedElement != null) {
+			svgCanvas.moveToTopSelectedElement();
+		}
+	}
+
+	var moveToBottomSelected = function() {
+		if (selectedElement != null) {
+			svgCanvas.moveToBottomSelectedElement();
 		}
 	}
 
@@ -281,7 +293,9 @@ function svg_edit_setup() {
 	$('#tool_text').click(clickText);
 	$('#tool_clear').click(clickClear);
 	$('#tool_save').click(clickSave);
-	$('#tool_delete').click(deleteSelected);	
+	$('#tool_delete').click(deleteSelected);
+	$('#tool_move_top').click(moveToTopSelected);
+	$('#tool_move_bottom').click(moveToBottomSelected);
 
 	// added these event handlers for all the push buttons so they 
 	// behave more like buttons being pressed-in and not images
@@ -294,6 +308,12 @@ function svg_edit_setup() {
 	$('#tool_delete').mousedown(function(){$('#tool_delete').addClass('tool_button_current');});
 	$('#tool_delete').mouseup(function(){$('#tool_delete').removeClass('tool_button_current');});
 	$('#tool_delete').mouseout(function(){$('#tool_delete').removeClass('tool_button_current');});
+	$('#tool_move_top').mousedown(function(){$('#tool_move_top').addClass('tool_button_current');});
+	$('#tool_move_top').mouseup(function(){$('#tool_move_top').removeClass('tool_button_current');});
+	$('#tool_move_top').mouseout(function(){$('#tool_move_top').removeClass('tool_button_current');});
+	$('#tool_move_bottom').mousedown(function(){$('#tool_move_bottom').addClass('tool_button_current');});
+	$('#tool_move_bottom').mouseup(function(){$('#tool_move_bottom').removeClass('tool_button_current');});
+	$('#tool_move_bottom').mouseout(function(){$('#tool_move_bottom').removeClass('tool_button_current');});
 
 	// do keybindings using jquery-hotkeys plugin
 	$(document).bind('keydown', {combi:'1', disableInInput: true}, clickSelect);
