@@ -30,18 +30,22 @@
 
 <div id="context_tools" class="tools_panel">
 	<!-- File-like buttons: New, Save -->
+	<div>
 	<img class="tool_button" id="tool_clear" src="images/clear.png" title="New Image [N]" alt="Clear" />
 	<img class="tool_button" id="tool_save" src="images/save.png" title="Save Image [S]" alt="Save"/>
-	
-	<!-- FIXME: need a separator image -->
+	</div>
 
-	<!-- Edit-like buttons: Delete -->
+	<!-- Buttons when something is selected -->
+	<div id="selected_panel">
+	<img class="tool_sep" src="images/sep.png" alt="|"/>
 	<img class="tool_button" id="tool_delete" src="images/delete.png" title="Delete Element [X]" alt="Delete"/>
-	
-	<!-- FIXME: need a separator image -->
+	<img class="tool_button" id="tool_move_top" src="images/move_top.png" title="Move to Top" alt="Top"/>
+	<img class="tool_button" id="tool_move_bottom" src="images/move_bottom.png" title="Move to Bottom" alt="Bottom"/>
+	</div>
 
 	<!-- TODO: also add x, y, width, height -->
 	<div id="rect_panel">
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<label class="rect_tool" >Radius:</label>
 		<!-- TODO: turn this into a spinner control! -->
 		<select id="rect_radius" class="rect_tool" title="Change Rectangle Corner Radius" alt="Corner Radius">
@@ -56,10 +60,11 @@
 			<option value="20">20</option>
 		</select>
 	</div>
-	
+
 	<!-- TODO: add a circle_panel, ellipse_panel, line_panel -->
 
 	<div id="text_panel">
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<select id="font_family" class="text_tool" title="Change Font Family">
 			<option selected="selected" value="serif">serif</option>
 			<option value="sans-serif">sans-serif</option>
@@ -93,7 +98,7 @@
 <img class="tool_button_current" id="tool_select" src="images/select.png" title="Select Tool [1]" alt="Select"/><br/>
 <img class="tool_button" id="tool_path" src="images/path.png" title="Pencil Tool [2]" alt="Pencil"/><br/>
 <img class="tool_button" id="tool_line" src="images/line.png" title="Line Tool [3]" alt="Line"/><br/>
-<img class="tool_button" id="tools_rect_show" src="images/square.png" title="Rect/Square Tool [4/Shift+4]" alt="Square"/><br/>
+<img class="tool_button" id="tools_rect_show" src="images/square.png" title="Square/Rect Tool [4/Shift+4]" alt="Square"/><br/>
 <img class="tool_button" id="tools_ellipse_show" src="images/circle.png" title="Ellipse/Circle Tool [5/Shift+5]" alt="Circle"/><br/>
 <img class="tool_button" id="tool_text" src="images/text.png" title="Text Tool [6]" alt="Text"/>
 
