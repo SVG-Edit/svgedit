@@ -84,13 +84,17 @@
 	border-bottom: none;
 }
 
+#svg_editor #context_tools div {
+	float: left;
+}
+
 #svg_editor #tools {
 	border-right: none;
 	height: 504px;
 	width: 64px;
 }
 
-#svg_editor #tool_delete {
+#svg_editor #selected_panel {
 	display: none;
 }
 
@@ -133,6 +137,14 @@
 #svg_editor .tool_button_disabled {
 	opacity: 0.5;
 	cursor: default;
+}
+
+#svg_editor .tool_sep {
+	width: 2px;
+	height: 24px;
+	margin: 2px;
+	margin-right: 0;
+	padding: 2px;
 }
 
 #svg_editor #color_pick {

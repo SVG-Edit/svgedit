@@ -795,6 +795,26 @@ function SvgCanvas(c)
 		}
 	}
 
+	this.moveToTopSelectedElement = function() {
+		if (selected != null) {
+			var t = selected;
+			t.parentNode.appendChild(t);
+		}
+		else {
+			alert("Error!  Nothing selected!");
+		}
+	}
+
+	this.moveToBottomSelectedElement = function() {
+		if (selected != null) {
+			var t = selected;
+			t.parentNode.insertBefore(t, t.parentNode.firstChild);
+		}
+		else {
+			alert("Error!  Nothing selected!");
+		}
+	}
+
 }
 
 // Static class for various utility functions
