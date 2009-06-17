@@ -157,7 +157,8 @@ function svg_edit_setup() {
 	$('.palette_item').click(function(evt){
 		var id = (evt.shiftKey ? '#stroke_color' : '#fill_color');
 		color = $(this).css('background-color');
-		if (color == 'transparent') {
+		// Webkit-based browsers returned 'initial' here for no stroke
+		if (color == 'transparent' || color == 'initial') {
 			color = 'none';
 			$(id).css('background', 'url(\'images/none.png\')');
 		} else {
