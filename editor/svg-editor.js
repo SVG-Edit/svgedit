@@ -23,17 +23,20 @@ function svg_edit_setup() {
 			
 			// update fill color
 			var fillColor = elem.getAttribute("fill");
-			if (fillColor == null || fillColor == "" || fillColor == "none") {
+			svgCanvas.setFillColor(fillColor);			
+			if (fillColor == "none") {
 				fillColor = 'url(\'images/none.png\')';
 			}
 			$('#fill_color').css('background', fillColor);
 
 			// update stroke color
 			var strokeColor = elem.getAttribute("stroke");
+			svgCanvas.setStrokeColor(strokeColor);
 			if (strokeColor == null || strokeColor == "" || strokeColor == "none") {
 				strokeColor = 'url(\'images/none.png\')';
 			}
 			$('#stroke_color').css('background', strokeColor);
+			
 			// update fill opacity
 			var fillOpacity = elem.getAttribute("fill-opacity");
 			if (fillOpacity == null || fillColor == "") {
@@ -70,7 +73,9 @@ function svg_edit_setup() {
 			if (strokeDashArray == null || strokeDashArray == "") {
 				strokeDashArray = "none";
 			}
-			$('#stroke_style').val(strokeDashArray);			
+			$('#stroke_style').val(strokeDashArray);
+			
+			updateToolButtonState();
 		} // if (elem != null)
 		
 		updateContextPanel();
@@ -166,6 +171,7 @@ function svg_edit_setup() {
 		}
 		if (evt.shiftKey) svgCanvas.setStrokeColor(color);
 		else svgCanvas.setFillColor(color);
+		updateToolButtonState();		
 	});
 
 	// This is a common function used when a tool has been clicked (chosen)
@@ -173,59 +179,71 @@ function svg_edit_setup() {
 	// - hides any flyout menus
 	// - removes the tool_button_current class from whatever tool currently has it
 	// - adds the tool_button_current class to the button passed in
-	var toolButtonClick = function(button){
+	var toolButtonClick = function(button) {
+		if ($(button).hasClass('tool_button_disabled')) return false;
+		
 		$('#styleoverrides').text('');
 		$('.tools_flyout').hide();
 		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 		$(button).addClass('tool_button_current');
 		// when a tool is selected, we should deselect the currently selected element
 		svgCanvas.selectNone();
+		return true;
 	};
 
 	var clickSelect = function() {
-		toolButtonClick('#tool_select');
-		svgCanvas.setMode('select');
-		$('#styleoverrides').text('*{cursor:move;pointer-events:all} svg{cursor:default}');
+		if (toolButtonClick('#tool_select')) {
+			svgCanvas.setMode('select');
+			$('#styleoverrides').text('*{cursor:move;pointer-events:all} svg{cursor:default}');
+		}
 	}
 
 	var clickPath = function() {
-		toolButtonClick('#tool_path');
-		svgCanvas.setMode('path');
+		if (toolButtonClick('#tool_path')) {
+			svgCanvas.setMode('path');
+		}
 	}
 
 	var clickLine = function() {
-		toolButtonClick('#tool_line');
-		svgCanvas.setMode('line');
+		if (toolButtonClick('#tool_line')) {
+			svgCanvas.setMode('line');
+		}
 	}
 
 	var clickSquare = function(){
-		toolButtonClick('#tools_rect_show');
-		svgCanvas.setMode('square');
+		if (toolButtonClick('#tools_rect_show')) {
+			svgCanvas.setMode('square');
+		}
 	}
 
 	var clickRect = function(){
-		toolButtonClick('#tools_rect_show');
-		svgCanvas.setMode('rect');
+		if (toolButtonClick('#tools_rect_show')) {
+			svgCanvas.setMode('rect');
+		}
 	}
 
 	var clickFHRect = function(){
-		toolButtonClick('#tools_rect_show');
-		svgCanvas.setMode('fhrect');
+		if (toolButtonClick('#tools_rect_show')) {
+			svgCanvas.setMode('fhrect');
+		}
 	}
 
 	var clickCircle = function(){
-		toolButtonClick('#tools_ellipse_show');
-		svgCanvas.setMode('circle');
+		if (toolButtonClick('#tools_ellipse_show')) {
+			svgCanvas.setMode('circle');
+		}
 	}
 
 	var clickEllipse = function(){
-		toolButtonClick('#tools_ellipse_show');
-		svgCanvas.setMode('ellipse');
+		if (toolButtonClick('#tools_ellipse_show')) {
+			svgCanvas.setMode('ellipse');
+		}
 	}
 
 	var clickFHEllipse = function(){
-		toolButtonClick('#tools_ellipse_show');
-		svgCanvas.setMode('fhellipse');
+		if (toolButtonClick('#tools_ellipse_show')) {
+			svgCanvas.setMode('fhellipse');
+		}
 	}
 
 	// Delete is a contextual tool that only appears in the ribbon if 
@@ -335,12 +353,52 @@ function svg_edit_setup() {
 		});
 	}
 
+	function updateToolButtonState() {
+		var bNoFill = (svgCanvas.getFillColor() == 'none');
+		var bNoStroke = (svgCanvas.getStrokeColor() == 'none');
+		var buttonsNeedingStroke = [ '#tool_path', '#tool_line' ];
+		var buttonsNeedingFillAndStroke = [ '#tools_rect_show', '#tools_ellipse_show', '#tool_text' ];
+		if (bNoStroke) {
+			for (index in buttonsNeedingStroke) {
+				var button = buttonsNeedingStroke[index];
+				if ($(button).hasClass('tool_button_current')) {
+					clickSelect();
+				}
+				$(button).removeClass('tool_button').addClass('tool_button_disabled');
+			}
+		}
+		else {
+			for (index in buttonsNeedingStroke) {
+				var button = buttonsNeedingStroke[index];
+				$(button).removeClass('tool_button_disabled').addClass('tool_button');
+			}
+		}
+		
+		if (bNoStroke && bNoFill) {
+			for (index in buttonsNeedingFillAndStroke) {
+				var button = buttonsNeedingFillAndStroke[index];
+				if ($(button).hasClass('tool_button_current')) {
+					clickSelect();
+				}
+				$(button).removeClass('tool_button').addClass('tool_button_disabled');
+			}
+		}
+		else {
+			for (index in buttonsNeedingFillAndStroke) {
+				var button = buttonsNeedingFillAndStroke[index];
+				$(button).removeClass('tool_button_disabled').addClass('tool_button');
+			}
+		}
+	}
+	
 	$('#fill_color').click(function(){
 		colorPicker($(this));
+		updateToolButtonState();
 	});
 
 	$('#stroke_color').click(function(){
 		colorPicker($(this));
+		updateToolButtonState();
 	});
 
 	// this hides any flyouts and then shows the rect flyout

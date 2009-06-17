@@ -283,6 +283,7 @@ function SvgCanvas(c)
 						"stroke-width": current_stroke_width,
 						"stroke-dasharray": current_stroke_style,
 						"stroke-opacity": current_stroke_opacity,
+						"fill": "none",
 						"opacity": current_opacity / 2
 					}
 				});
