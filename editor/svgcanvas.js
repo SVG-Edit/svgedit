@@ -84,6 +84,7 @@ function SvgCanvas(c)
 	}
 
 	var svgToString = function(elem, indent) {
+		// TODO: could use the array.join() optimization trick here too
 		var out = "";
 		if (elem) {
 			var attrs = elem.attributes;
@@ -792,15 +793,17 @@ var Utils = {
 // public domain.  It would be nice if you left this header intact.
 // Base64 code from Tyler Akins -- http://rumkin.com
 
-// schiller: Removed string concatenation in favour of Array.join() optimization
+// schiller: Removed string concatenation in favour of Array.join() optimization, 
+//           also precalculate the size of the array needed.
 
 	"_keyStr" : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
 
 	"encode64" : function(input) {
-		var output = [];
+		// base64 strings are 4/3 larger than the original string
+		var output = new Array(parseInt(input.length*4/3));
 		var chr1, chr2, chr3;
 		var enc1, enc2, enc3, enc4;
-		var i = 0;
+		var i = 0, p = 0;
 
 		do {
 			chr1 = input.charCodeAt(i++);
@@ -818,10 +821,10 @@ var Utils = {
 				enc4 = 64;
 			}
 
-			output.push(this._keyStr.charAt(enc1));
-			output.push(this._keyStr.charAt(enc2));
-			output.push(this._keyStr.charAt(enc3));
-			output.push(this._keyStr.charAt(enc4));
+			output[p++] = this._keyStr.charAt(enc1);
+			output[p++] = this._keyStr.charAt(enc2);
+			output[p++] = this._keyStr.charAt(enc3);
+			output[p++] = this._keyStr.charAt(enc4);
 		} while (i < input.length);
 
 		return output.join('');
