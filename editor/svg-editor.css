@@ -110,7 +110,7 @@
 	vertical-align:12px;
 }
 
-#svg_editor .tool_button, #svg_editor .tool_button_current {
+#svg_editor .tool_button, #svg_editor .tool_button_current, #svg_editor .tool_button_disabled {
 	height: 24px;
 	width: 24px;
 	margin: 2px;
@@ -128,6 +128,11 @@
 	border-right: 1px solid #FFFFFF;
 	border-bottom: 1px solid #FFFFFF;
 	background-color: #B0B0B0;
+}
+
+#svg_editor .tool_button_disabled {
+	opacity: 0.5;
+	cursor: default;
 }
 
 #svg_editor #color_pick {
