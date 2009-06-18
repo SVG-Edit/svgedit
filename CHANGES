@@ -1,6 +1,10 @@
-2.1 - ???? ??, 2009
----------------------
-* added tooltips
+2.2 - ???? ??, ????
+-------------------
+* 
+
+2.1 - June 17, 2009
+-------------------
+* tooltips added to all UI elements
 * fix flyout menus
 * ask before clearing the drawing (suggested by martin.vidner)
 * control group, fill and stroke opacity
@@ -11,10 +15,15 @@
 * added Select tool
 * using jQuery hosted by Google instead of local version
 * allow dragging of elements
+* save SVG file to separate tab
+* create and edit text elements
+* context panel tools
+* change rect radius, font-family, font-size
 * added keystroke shortcuts for all tools
 * move to top/bottom
 
 2.0 - June 03, 2009
-------------------
+-------------------
 * rewritten SVG-edit, so now it uses OOP
+* draw ellipse, square
 * created HTML interface similar to Inkscape
