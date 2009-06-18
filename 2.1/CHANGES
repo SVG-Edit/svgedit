@@ -1,0 +1,20 @@
+2.1 - ???? ??, 2009
+---------------------
+* added tooltips
+* fix flyout menus
+* ask before clearing the drawing (suggested by martin.vidner)
+* control group, fill and stroke opacity
+* fix flyouts when using color picker
+* change license from GPLv2 to Apache License v2.0
+* replaced Farbtastic with jPicker, because of the license issues
+* removed dependency on svgcanvas.svg, now created in JavaScript
+* added Select tool
+* using jQuery hosted by Google instead of local version
+* allow dragging of elements
+* added keystroke shortcuts for all tools
+* move to top/bottom
+
+2.0 - June 03, 2009
+------------------
+* rewritten SVG-edit, so now it uses OOP
+* created HTML interface similar to Inkscape
