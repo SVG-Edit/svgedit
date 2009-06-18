@@ -130,8 +130,11 @@ function SvgCanvas(c)
 		
 		// remove selected outline from previously selected element
 		if (selected != null && selectedOutline != null) {
-			// remove from DOM and store reference in JS
-			selectedOutline = svgroot.removeChild(selectedOutline);
+			// remove from DOM and store reference in JS (but only if it actually exists)
+			try {
+				var theOutline = svgroot.removeChild(selectedOutline);
+				selectedOutline = theOutline;
+			} catch(e) { }
 		}
 		
 		selected = newSelected;
@@ -567,7 +570,7 @@ function SvgCanvas(c)
 		}
 		d_attr = null;
 		obj_num++;
-		if (!keep) {
+		if (!keep && element != null) {
 			element.parentNode.removeChild(element);
 			element = null;
 		} else if (element != null) {
