@@ -3,9 +3,11 @@
 <head>
 <link rel="stylesheet" href="jpicker/jpicker.css" type="text/css"/>
 <link rel="stylesheet" href="svg-editor.css" type="text/css"/>
+<link rel="stylesheet" href="spinbtn/JQuerySpinBtn.css" type="text/css"/>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
 <script type="text/javascript" src="js-hotkeys/jquery.hotkeys.min.js"></script>
 <script type="text/javascript" src="jpicker/jpicker.js"></script>
+<script type="text/javascript" src="spinbtn/JQuerySpinBtn.js"></script>
 <script type="text/javascript" src="svgcanvas.js"></script>
 <script type="text/javascript" src="svg-editor.js"></script>
 <title>SVG-edit demo</title>
@@ -34,7 +36,7 @@
 	<img class="tool_button" id="tool_clear" src="images/clear.png" title="New Image [N]" alt="Clear" />
 	<img class="tool_button" id="tool_save" src="images/save.png" title="Save Image [S]" alt="Save"/>
 	</div>
-
+	
 	<!-- Buttons when something is selected -->
 	<div id="selected_panel">
 	<img class="tool_sep" src="images/sep.png" alt="|"/>
@@ -47,18 +49,7 @@
 	<div id="rect_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<label class="rect_tool" >Radius:</label>
-		<!-- TODO: turn this into a spinner control! -->
-		<select id="rect_radius" class="rect_tool" title="Change Rectangle Corner Radius" alt="Corner Radius">
-			<option selected="selected" value="0">0</option>
-			<option value="1">1</option>
-			<option value="2">2</option>
-			<option value="3">3</option>
-			<option value="5">5</option>
-			<option value="7">7</option>
-			<option value="10">10</option>
-			<option value="15">15</option>
-			<option value="20">20</option>
-		</select>
+		<input id="rect_radius" size="3" value="0" class="rect_tool" title="Change Rectangle Corner Radius" alt="Corner Radius"/>
 	</div>
 
 	<!-- TODO: add a circle_panel, ellipse_panel, line_panel -->

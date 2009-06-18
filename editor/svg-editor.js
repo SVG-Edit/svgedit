@@ -75,6 +75,15 @@ function svg_edit_setup() {
 			}
 			$('#stroke_style').val(strokeDashArray);
 			
+			// update rect radius if necessary
+			if (elem.tagName == "rect") {
+				// FIXME: currently we only allow one radius value 
+				// (rx/ry can never be different)
+				var rx = parseInt(elem.getAttribute("rx"));
+				if (isNaN(rx)) { rx = 0; }
+				$('#rect_radius').val(rx);
+			}
+			
 			updateToolButtonState();
 		} // if (elem != null)
 		
@@ -154,11 +163,11 @@ function svg_edit_setup() {
 	$('#text').keyup(function(){
 		svgCanvas.setTextContent(this.value);
 	});
-	
-	$('#rect_radius').change(function(){
-		svgCanvas.setRectRadius(this.options[this.selectedIndex].value);
-	});
 
+	function changeRectRadius(ctl) {
+		svgCanvas.setRectRadius(ctl.value);
+	}
+	
 	$('.palette_item').click(function(evt){
 		var id = (evt.shiftKey ? '#stroke_color' : '#fill_color');
 		color = $(this).css('background-color');
@@ -432,6 +441,9 @@ function svg_edit_setup() {
 		$('.tools_flyout').hide();
 		$('#tools_ellipse').show();
 	});
+	
+	var rectRadiusOptions = { min: 0, max: 1000, step: 1, callback: changeRectRadius };
+	$('#rect_radius').SpinButton(rectRadiusOptions);
 
 	return svgCanvas;
 };

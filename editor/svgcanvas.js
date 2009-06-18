@@ -70,22 +70,19 @@ function SvgCanvas(c)
 	// remove unneeded attributes
 	// makes resulting SVG smaller
 	var cleanupElement = function(element) {
-		if (element.getAttribute('fill-opacity') == '1')
-			element.removeAttribute('fill-opacity');
-		if (element.getAttribute('opacity') == '1')
-			element.removeAttribute('opacity');
-		if (element.getAttribute('stroke') == 'none')
-			element.removeAttribute('stroke');
-		if (element.getAttribute('stroke-dasharray') == 'none')
-			element.removeAttribute('stroke-dasharray');
-		if (element.getAttribute('stroke-opacity') == '1')
-			element.removeAttribute('stroke-opacity');
-		if (element.getAttribute('stroke-width') == '1')
-			element.removeAttribute('stroke-width');
-		if (element.getAttribute('rx') == '0')
-			element.removeAttribute('rx')
-		if (element.getAttribute('ry') == '0')
-			element.removeAttribute('ry')
+		var cleanAttrs = { 	'fill-opacity':'1',
+							'opacity': '1',
+							'stroke': 'none',
+							'stroke-dasharray': 'none',
+							'stroke-opacity': '1',
+							'stroke-width': '1',
+							'rx': '0', // lucky that this default is the same for ellipse/rect!
+							'ry': '0',
+						};
+		for (attr in cleanAttrs) {
+			if (element.getAttribute(attr) == cleanAttrs[attr])
+				element.removeAttribute(attr);
+		}
 	}
 
 	var addSvgElementFromJson = function(data) {
@@ -96,6 +93,7 @@ function SvgCanvas(c)
 		// TODO: could use the array.join() optimization trick here too
 		var out = "";
 		if (elem) {
+			cleanupElement(elem);
 			var attrs = elem.attributes;
 			var attr;
 			var i;
@@ -223,9 +221,9 @@ function SvgCanvas(c)
 			}
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
 			selectedBox.x.baseVal.value = l;
-			selectedBox.setAttribute("y", t);
-			selectedBox.setAttribute("width", w);
-			selectedBox.setAttribute("height", h);
+			selectedBox.y.baseVal.value = t;
+			selectedBox.width.baseVal.value = w;
+			selectedBox.height.baseVal.value = h;
 			selectedGrips.nw.cx.baseVal.value = l;
 			selectedGrips.nw.cy.baseVal.value = t;
 			selectedGrips.ne.cx.baseVal.value = l+w;
@@ -801,7 +799,7 @@ function SvgCanvas(c)
 	this.setRectRadius = function(val) {
 		if (selected != null && selected.tagName == "rect") {
 			selected.setAttribute("rx", val);
-			selected.setAttribute("rx", val);
+			selected.setAttribute("ry", val);
 			call("changed", selected);
 		}
 	}
