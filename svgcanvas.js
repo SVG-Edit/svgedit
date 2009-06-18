@@ -38,6 +38,15 @@ function SvgCanvas(c)
 	var freehand_max_y = null;
 	var selected = null;
 	var selectedOutline = null;
+	var selectedGrips = { 	"nw":null, 
+							"n":null,
+							"ne":null,
+							"w":null,
+							"e":null,
+							"sw":null,
+							"s":null,
+							"se":null,
+						};
 	var events = {};
 
 // private functions
@@ -130,8 +139,11 @@ function SvgCanvas(c)
 		
 		// remove selected outline from previously selected element
 		if (selected != null && selectedOutline != null) {
-			// remove from DOM and store reference in JS
-			selectedOutline = svgroot.removeChild(selectedOutline);
+			// remove from DOM and store reference in JS but only if it exists in the DOM
+			try {
+				var theOutline = svgroot.removeChild(selectedOutline);
+				selectedOutline = theOutline;
+			} catch(e) { }
 		}
 		
 		selected = newSelected;
@@ -139,7 +151,17 @@ function SvgCanvas(c)
 		if (selected != null) {
 			// we create this element for the first time here
 			if (selectedOutline == null) {
+				// create a group that will hold all the elements that make 
+				// up the selected outline
 				selectedOutline = addSvgElementFromJson({
+					"element": "g",
+					"attr": {
+						"id": "selectedGroup",
+					}
+				});
+				
+				// add the bounding box
+				selectedOutline.appendChild( addSvgElementFromJson({
 					"element": "rect",
 					"attr": {
 						"id": "selectedBox",
@@ -152,22 +174,20 @@ function SvgCanvas(c)
 						// need to specify this style so that the selectedOutline is not selectable
 						"style": "pointer-events:none",
 					}
-				});
-				// TODO: add SMIL animate child on stroke-dashoffset here
-				// This only works in Opera, but it appears to cause some
-				// problem when more than one selected element is in the canvas?
-				/*
-				selectedOutline.appendChild( addSvgElementFromJson({
-					"element": "animate",
-					"attr": {
-						"attributeName": "stroke-dashoffset",
-						"repeatCount": "indefinite",
-						"dur": "500ms",
-						"from": "0",
-						"to": "10",
-					}
 				}) );
-				*/
+
+				// add the corner grips
+				for (dir in selectedGrips) {
+					selectedGrips[dir] = selectedOutline.appendChild( addSvgElementFromJson({
+						"element": "circle",
+						"attr": {
+							"id": ("selected_"+dir+"_grip"),
+							"fill": "blue",
+							"r": 3,
+							"cursor": (dir+"-resize"),
+						}
+					}) );
+				}
 			}
 			// recalculate size and then re-append to bottom of document
 			recalculateSelectedOutline();
@@ -191,6 +211,7 @@ function SvgCanvas(c)
 	
 	var recalculateSelectedOutline = function() {
 		if (selected != null && selectedOutline != null) {
+			var selectedBox = selectedOutline.firstChild;
 			var bbox = selected.getBBox();
 			var sw = parseInt(selected.getAttribute("stroke-width"));
 			var offset = 1;
@@ -200,10 +221,27 @@ function SvgCanvas(c)
 			if (selected.tagName == "text") {
 				offset += 2;
 			}
-			selectedOutline.setAttribute("x", bbox.x-offset);
-			selectedOutline.setAttribute("y", bbox.y-offset);
-			selectedOutline.setAttribute("width", bbox.width+(offset<<1));
-			selectedOutline.setAttribute("height", bbox.height+(offset<<1));
+			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
+			selectedBox.x.baseVal.value = l;
+			selectedBox.setAttribute("y", t);
+			selectedBox.setAttribute("width", w);
+			selectedBox.setAttribute("height", h);
+			selectedGrips.nw.cx.baseVal.value = l;
+			selectedGrips.nw.cy.baseVal.value = t;
+			selectedGrips.ne.cx.baseVal.value = l+w;
+			selectedGrips.ne.cy.baseVal.value = t;
+			selectedGrips.sw.cx.baseVal.value = l;
+			selectedGrips.sw.cy.baseVal.value = t+h;
+			selectedGrips.se.cx.baseVal.value = l+w;
+			selectedGrips.se.cy.baseVal.value = t+h;
+			selectedGrips.n.cx.baseVal.value = l+w/2;
+			selectedGrips.n.cy.baseVal.value = t;
+			selectedGrips.w.cx.baseVal.value = l;
+			selectedGrips.w.cy.baseVal.value = t+h/2;
+			selectedGrips.e.cx.baseVal.value = l+w;
+			selectedGrips.e.cy.baseVal.value = t+h/2;
+			selectedGrips.s.cx.baseVal.value = l+w/2;
+			selectedGrips.s.cy.baseVal.value = t+h;
 		}	
 	}
 
@@ -487,10 +525,7 @@ function SvgCanvas(c)
 							selected.setAttributeNS(null, "y", y+dy);
 							break;
 					}
-					var sx = parseInt(selectedOutline.getAttributeNS(null, "x"));
-					var sy = parseInt(selectedOutline.getAttributeNS(null, "y"));
-					selectedOutline.setAttributeNS(null, "x", sx+dx);
-					selectedOutline.setAttributeNS(null, "y", sy+dy);
+					recalculateSelectedOutline();
 					// we return immediately from select so that the obj_num is not incremented
 					return;
 				}
@@ -567,7 +602,7 @@ function SvgCanvas(c)
 		}
 		d_attr = null;
 		obj_num++;
-		if (!keep) {
+		if (!keep && element != null) {
 			element.parentNode.removeChild(element);
 			element = null;
 		} else if (element != null) {
@@ -776,7 +811,6 @@ function SvgCanvas(c)
 	$(container).mousemove(mouseMove);
 
 	this.saveHandler = function(svg) {
-		//alert(svg);
 		window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
 	}
 
