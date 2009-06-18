@@ -192,10 +192,10 @@ function SvgCanvas(c)
 	var recalculateSelectedOutline = function() {
 		if (selected != null && selectedOutline != null) {
 			var bbox = selected.getBBox();
-			var sw = selected.getAttribute("stroke-width");
+			var sw = parseInt(selected.getAttribute("stroke-width"));
 			var offset = 1;
-			if (sw != null && sw != "") {
-				offset += parseInt(sw)/2;
+			if (!isNaN(sw)) {
+				offset += sw/2;
 			}
 			if (selected.tagName == "text") {
 				offset += 2;
@@ -217,9 +217,11 @@ function SvgCanvas(c)
 				start_x = x;
 				start_y = y;
 				var t = evt.target;
-				if (t != svgroot) {
-					selectElement(t);
+				// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
+				if (t.nodeName.toLowerCase() == "div" || t.nodeName.toLowerCase() == "svg") {
+					t = null;
 				}
+				selectElement(t);
 				break;
 			case "fhellipse":
 			case "fhrect":
@@ -790,9 +792,6 @@ function SvgCanvas(c)
 			t.parentNode.removeChild(t);
 			call("deleted",t);
 		}
-		else {
-			alert("Error!  Nothing selected!");
-		}
 	}
 
 	this.moveToTopSelectedElement = function() {
@@ -800,18 +799,12 @@ function SvgCanvas(c)
 			var t = selected;
 			t.parentNode.appendChild(t);
 		}
-		else {
-			alert("Error!  Nothing selected!");
-		}
 	}
 
 	this.moveToBottomSelectedElement = function() {
 		if (selected != null) {
 			var t = selected;
 			t.parentNode.insertBefore(t, t.parentNode.firstChild);
-		}
-		else {
-			alert("Error!  Nothing selected!");
 		}
 	}
 
