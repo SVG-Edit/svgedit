@@ -171,7 +171,7 @@
 }
 
 #svg_editor #tool_fhrect {
-	background: 2px 2px url('images/path.png') no-repeat;
+	background: 2px 2px url('images/freehand-square.png') no-repeat;
 }
 
 #svg_editor #tool_circle {
@@ -183,7 +183,7 @@
 }
 
 #svg_editor #tool_fhellipse {
-	background: 2px 2px url('images/path.png') no-repeat;
+	background: 2px 2px url('images/freehand-circle.png') no-repeat;
 }
 
 #svg_editor #tools_rect div, #svg_editor #tools_ellipse div {
