@@ -1,5 +1,12 @@
 var svgcanvas = null;
 
+if(!window.console) {
+  window.console = new function() {
+    this.log = function(str) {};
+    this.dir = function(str) {};
+  };
+}
+
 function SvgCanvas(c)
 {
 
@@ -23,6 +30,7 @@ function SvgCanvas(c)
 	var start_x = null;
 	var start_y = null;
 	var current_mode = "path";
+	var current_resize_mode = "none";
 	var current_fill = "none";
 	var current_stroke = "black";
 	var current_stroke_width = 1;
@@ -38,6 +46,7 @@ function SvgCanvas(c)
 	var freehand_max_y = null;
 	var selected = null;
 	var selectedOutline = null;
+	var selectedBBox = null;
 	var selectedGrips = { 	"nw":null, 
 							"n":null,
 							"ne":null,
@@ -130,6 +139,120 @@ function SvgCanvas(c)
 		return out;
 	} // end svgToString()
 
+	function recalculateSelectedDimensions() {
+		var box = selected.getBBox();
+		// normalize selectedBBox
+		if (selectedBBox.width < 0) {
+			selectedBBox.x += selectedBBox.width;
+			selectedBBox.width = -selectedBBox.width;
+		}
+		if (selectedBBox.height < 0) {
+			selectedBBox.y += selectedBBox.height;
+			selectedBBox.height = -selectedBBox.height;
+		}
+		var remapx = function(x) {return ((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x;}
+		var remapy = function(y) {return ((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y;}
+		var scalew = function(w) {return w*selectedBBox.width/box.width;}
+		var scaleh = function(h) {return h*selectedBBox.height/box.height;}
+		
+		selected.removeAttribute("transform");
+		switch (selected.tagName)
+		{
+			case "path":
+				// extract the x,y from the path, adjust it and write back the new path
+				var M = selected.pathSegList.getItem(0);
+				var curx = M.x, cury = M.y;
+				var newd = "M" + remapx(curx) + "," + remapy(cury);
+				for (var i = 1; i < selected.pathSegList.numberOfItems; ++i) {
+					var l = selected.pathSegList.getItem(i);
+					var x = l.x, y = l.y;
+					// webkit browsers normalize things and this becomes an absolute
+					// line segment!  we need to turn this back into a rel line segment
+					// see https://bugs.webkit.org/show_bug.cgi?id=26487
+					if (l.pathSegType == 4) {
+						x -= curx;
+						y -= cury;
+						curx += x;
+						cury += y;
+					}
+					// we only need to scale the relative coordinates (no need to translate)
+					newd += " l" + scalew(x) + "," + scaleh(y);
+				}
+				selected.setAttributeNS(null, "d", newd);
+				break;
+			case "line":
+				selected.x1.baseVal.value = remapx(selected.x1.baseVal.value);
+				selected.y1.baseVal.value = remapy(selected.y1.baseVal.value);
+				selected.x2.baseVal.value = remapx(selected.x2.baseVal.value);
+				selected.y2.baseVal.value = remapy(selected.y2.baseVal.value);
+				break;
+			case "circle":
+				selected.cx.baseVal.value = remapx(selected.cx.baseVal.value);
+				selected.cy.baseVal.value = remapy(selected.cy.baseVal.value);
+				// take the minimum of the new selected box's dimensions for the new circle radius
+				selected.r.baseVal.value = Math.min(selectedBBox.width/2,selectedBBox.height/2);
+				break;
+			case "ellipse":
+				selected.cx.baseVal.value = remapx(selected.cx.baseVal.value);
+				selected.cy.baseVal.value = remapy(selected.cy.baseVal.value);
+				selected.rx.baseVal.value = scalew(selected.rx.baseVal.value);
+				selected.ry.baseVal.value = scaleh(selected.ry.baseVal.value);
+				break;
+			case "text":
+				// cannot use x.baseVal.value here because x is a SVGLengthList
+				selected.setAttribute("x", remapx(selected.getAttribute("x")));
+				selected.setAttribute("y", remapy(selected.getAttribute("y")));
+				break;
+			case "rect":
+				selected.x.baseVal.value = remapx(selected.x.baseVal.value);
+				selected.y.baseVal.value = remapy(selected.y.baseVal.value);
+				selected.width.baseVal.value = scalew(selected.width.baseVal.value);
+				selected.height.baseVal.value = scaleh(selected.height.baseVal.value);
+				break;
+			default: // rect
+				console.log("Unknown shape type: " + selected.tagName);
+				break;
+		}
+		// fire changed event
+		call("changed", selected);
+	}
+
+	var recalculateSelectedOutline = function() {
+		if (selected != null && selectedOutline != null) {
+			var bbox = selectedBBox;
+			var selectedBox = selectedOutline.firstChild;
+			var sw = parseInt(selected.getAttribute("stroke-width"));
+			var offset = 1;
+			if (!isNaN(sw)) {
+				offset += sw/2;
+			}
+			if (selected.tagName == "text") {
+				offset += 2;
+			}
+			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
+			selectedBox.x.baseVal.value = l;
+			selectedBox.y.baseVal.value = t;
+			selectedBox.width.baseVal.value = w;
+			selectedBox.height.baseVal.value = h;
+			selectedGrips.nw.cx.baseVal.value = l;
+			selectedGrips.nw.cy.baseVal.value = t;
+			selectedGrips.ne.cx.baseVal.value = l+w;
+			selectedGrips.ne.cy.baseVal.value = t;
+			selectedGrips.sw.cx.baseVal.value = l;
+			selectedGrips.sw.cy.baseVal.value = t+h;
+			selectedGrips.se.cx.baseVal.value = l+w;
+			selectedGrips.se.cy.baseVal.value = t+h;
+			selectedGrips.n.cx.baseVal.value = l+w/2;
+			selectedGrips.n.cy.baseVal.value = t;
+			selectedGrips.w.cx.baseVal.value = l;
+			selectedGrips.w.cy.baseVal.value = t+h/2;
+			selectedGrips.e.cx.baseVal.value = l+w;
+			selectedGrips.e.cy.baseVal.value = t+h/2;
+			selectedGrips.s.cx.baseVal.value = l+w/2;
+			selectedGrips.s.cy.baseVal.value = t+h;
+		}	
+	}
+
 // public events
 	// call this function to set the selected element
 	// call this function with null to clear the selected element
@@ -149,6 +272,8 @@ function SvgCanvas(c)
 		selected = newSelected;
 		
 		if (selected != null) {
+			selectedBBox = selected.getBBox();
+			
 			// we create this element for the first time here
 			if (selectedOutline == null) {
 				// create a group that will hold all the elements that make 
@@ -178,15 +303,20 @@ function SvgCanvas(c)
 
 				// add the corner grips
 				for (dir in selectedGrips) {
+					var cursType = (dir+"-resize");
 					selectedGrips[dir] = selectedOutline.appendChild( addSvgElementFromJson({
 						"element": "circle",
 						"attr": {
-							"id": ("selected_"+dir+"_grip"),
+							"id": (dir+"_grip"),
 							"fill": "blue",
 							"r": 3,
-							"cursor": (dir+"-resize"),
+							"style": ("cursor:"+cursType),
 						}
 					}) );
+					$('#'+selectedGrips[dir].id).mousedown( function() { 
+						current_mode = "resize";
+						current_resize_mode = this.id.substr(0,this.id.indexOf("_"));
+					});
 				}
 			}
 			// recalculate size and then re-append to bottom of document
@@ -204,47 +334,17 @@ function SvgCanvas(c)
 				current_font_size = selected.getAttribute("font-size");
 				current_font_family = selected.getAttribute("font-family");
 			}
+			
+			// do now show resize grips on text elements
+			var gripDisplay = (selected.tagName == "text" ? "none" : "inline");
+			for (dir in selectedGrips) {
+				selectedGrips[dir].setAttribute("display", gripDisplay);
+			}
 		}
 		
 		call("selected", selected);
 	}
 	
-	var recalculateSelectedOutline = function() {
-		if (selected != null && selectedOutline != null) {
-			var selectedBox = selectedOutline.firstChild;
-			var bbox = selected.getBBox();
-			var sw = parseInt(selected.getAttribute("stroke-width"));
-			var offset = 1;
-			if (!isNaN(sw)) {
-				offset += sw/2;
-			}
-			if (selected.tagName == "text") {
-				offset += 2;
-			}
-			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
-			selectedBox.x.baseVal.value = l;
-			selectedBox.setAttribute("y", t);
-			selectedBox.setAttribute("width", w);
-			selectedBox.setAttribute("height", h);
-			selectedGrips.nw.cx.baseVal.value = l;
-			selectedGrips.nw.cy.baseVal.value = t;
-			selectedGrips.ne.cx.baseVal.value = l+w;
-			selectedGrips.ne.cy.baseVal.value = t;
-			selectedGrips.sw.cx.baseVal.value = l;
-			selectedGrips.sw.cy.baseVal.value = t+h;
-			selectedGrips.se.cx.baseVal.value = l+w;
-			selectedGrips.se.cy.baseVal.value = t+h;
-			selectedGrips.n.cx.baseVal.value = l+w/2;
-			selectedGrips.n.cy.baseVal.value = t;
-			selectedGrips.w.cx.baseVal.value = l;
-			selectedGrips.w.cy.baseVal.value = t+h/2;
-			selectedGrips.e.cx.baseVal.value = l+w;
-			selectedGrips.e.cy.baseVal.value = t+h/2;
-			selectedGrips.s.cx.baseVal.value = l+w/2;
-			selectedGrips.s.cy.baseVal.value = t+h;
-		}	
-	}
-
 	var mouseDown = function(evt)
 	{
 		var x = evt.pageX - container.offsetLeft;
@@ -260,6 +360,11 @@ function SvgCanvas(c)
 					t = null;
 				}
 				selectElement(t);
+				break;
+			case "resize":
+				started = true;
+				start_x = x;
+				start_y = y;
 				break;
 			case "fhellipse":
 			case "fhrect":
@@ -287,6 +392,8 @@ function SvgCanvas(c)
 				freehand_max_y = y;
 				break;
 			case "square":
+				// TODO: once we create the rect, we lose information that this was a square
+				// (for resizing purposes this is important)
 			case "rect":
 				started = true;
 				start_x = x;
@@ -407,10 +514,47 @@ function SvgCanvas(c)
 				if (selected != null && selectedOutline != null) {
 					var dx = x - start_x;
 					var dy = y - start_y;
-					selected.setAttributeNS(null, "transform", "translate(" + dx + "," + dy + ")");
-					selectedOutline.setAttributeNS(null, "transform", "translate(" + dx + "," + dy + ")");
+					selectedBBox = selected.getBBox();
+					selectedBBox.x += dx;
+					selectedBBox.y += dy;
+					var ts = "translate(" + dx + "," + dy + ")";
+					selected.setAttribute("transform", ts);
+					recalculateSelectedOutline();					
 				}
 				break;
+			case "resize":
+				// we track the resize bounding box and translate/scale the selected element
+				// while the mouse is down, when mouse goes up, we use this to recalculate
+				// the shape's coordinates
+				var box=selected.getBBox(), left=box.x, top=box.y, width=box.width, 
+					height=box.height, dx=(x-start_x), dy=(y-start_y);
+				var tx=0, ty=0, sx=1, sy=1;
+				var ts = null;
+				if(current_resize_mode.indexOf("n") != -1) {
+					ty = dy;
+					sy = (height-dy)/height;
+				}
+				else if(current_resize_mode.indexOf("s") != -1) {
+					sy = (height+dy)/height;
+				}
+				if(current_resize_mode.indexOf("e") != -1) {
+					sx = (width+dx)/width;
+				}
+				else if(current_resize_mode.indexOf("w") != -1) {
+					tx = dx;
+					sx = (width-dx)/width;
+				}
+				
+				selectedBBox.x = left+tx; 
+				selectedBBox.y = top+ty;
+				selectedBBox.width = width*sx;
+				selectedBBox.height = height*sy;
+				
+				ts = "translate(" + (left+tx) + "," + (top+ty) + ") scale(" + (sx) + "," + (sy) + 
+						") translate(" + (-left) + "," + (-top) + ")";
+				selected.setAttribute("transform", ts);
+				recalculateSelectedOutline();
+				break;				
 			case "text":
 				shape.setAttribute("x", x);
 				shape.setAttribute("y", y);
@@ -462,7 +606,7 @@ function SvgCanvas(c)
 				break;
 		}
 	}
-
+	
 	var mouseUp = function(evt)
 	{
 		if (!started) return;
@@ -472,59 +616,12 @@ function SvgCanvas(c)
 		var keep = false;
 		switch (current_mode)
 		{
+			// fall-through to select here
+			case "resize":
+				current_mode = "select";
 			case "select":
 				if (selected != null) {
-					var dx = evt.pageX - container.offsetLeft - start_x;
-					var dy = evt.pageY - container.offsetTop - start_y;
-					selected.removeAttribute("transform");
-					selectedOutline.removeAttribute("transform");
-					switch (selected.tagName)
-					{
-						case "path":
-							// extract the x,y from the path, adjust it and write back the new path
-							var M = selected.pathSegList.getItem(0);
-							var curx = M.x, cury = M.y;
-							var newd = "M" + (curx+dx) + "," + (cury+dy);
-							for (var i = 1; i < selected.pathSegList.numberOfItems; ++i) {
-								var l = selected.pathSegList.getItem(i);
-								var x = l.x, y = l.y;
-								// webkit browsers normalize things and this becomes an absolute
-								// line segment!  we need to turn this back into a rel line segment
-								// see https://bugs.webkit.org/show_bug.cgi?id=26487
-								if (l.pathSegType == 4) {
-									x -= curx;
-									y -= cury;
-									curx += x;
-									cury += y;
-								}
-								newd += " l" + x + "," + y;
-							}
-							selected.setAttributeNS(null, "d", newd);
-							break;
-						case "line":
-							var x1 = parseInt(selected.getAttributeNS(null, "x1"));
-							var y1 = parseInt(selected.getAttributeNS(null, "y1"));
-							var x2 = parseInt(selected.getAttributeNS(null, "x2"));
-							var y2 = parseInt(selected.getAttributeNS(null, "y2"));
-							selected.setAttributeNS(null, "x1", x1+dx);
-							selected.setAttributeNS(null, "y1", y1+dy);
-							selected.setAttributeNS(null, "x2", x2+dx);
-							selected.setAttributeNS(null, "y2", y2+dy);
-							break;
-						case "circle":
-						case "ellipse":
-							var cx = parseInt(selected.getAttributeNS(null, "cx"));
-							var cy = parseInt(selected.getAttributeNS(null, "cy"));
-							selected.setAttributeNS(null, "cx", cx+dx);
-							selected.setAttributeNS(null, "cy", cy+dy);
-							break;
-						default: // rect
-							var x = parseInt(selected.getAttributeNS(null, "x"));
-							var y = parseInt(selected.getAttributeNS(null, "y"));
-							selected.setAttributeNS(null, "x", x+dx);
-							selected.setAttributeNS(null, "y", y+dy);
-							break;
-					}
+					recalculateSelectedDimensions();
 					recalculateSelectedOutline();
 					// we return immediately from select so that the obj_num is not incremented
 					return;
