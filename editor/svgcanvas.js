@@ -47,7 +47,7 @@ function SvgCanvas(c)
 	var selected = null;
 	var selectedOutline = null;
 	var selectedBBox = null;
-	var selectedGrips = { 	"nw":null, 
+	var selectedGrips = { 	"nw":null,
 							"n":null,
 							"ne":null,
 							"w":null,
@@ -56,6 +56,7 @@ function SvgCanvas(c)
 							"s":null,
 							"se":null,
 						};
+	var selectedOperation = 'resize'; // could be {resize,rotate}
 	var events = {};
 
 // private functions
@@ -145,7 +146,7 @@ function SvgCanvas(c)
 		var remapy = function(y) {return ((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y;}
 		var scalew = function(w) {return w*selectedBBox.width/box.width;}
 		var scaleh = function(h) {return h*selectedBBox.height/box.height;}
-		
+
 		selected.removeAttribute("transform");
 		switch (selected.tagName)
 		{
@@ -225,32 +226,51 @@ function SvgCanvas(c)
 			selectedBox.y.baseVal.value = t;
 			selectedBox.width.baseVal.value = w;
 			selectedBox.height.baseVal.value = h;
-			selectedGrips.nw.cx.baseVal.value = l;
-			selectedGrips.nw.cy.baseVal.value = t;
-			selectedGrips.ne.cx.baseVal.value = l+w;
-			selectedGrips.ne.cy.baseVal.value = t;
-			selectedGrips.sw.cx.baseVal.value = l;
-			selectedGrips.sw.cy.baseVal.value = t+h;
-			selectedGrips.se.cx.baseVal.value = l+w;
-			selectedGrips.se.cy.baseVal.value = t+h;
-			selectedGrips.n.cx.baseVal.value = l+w/2;
-			selectedGrips.n.cy.baseVal.value = t;
-			selectedGrips.w.cx.baseVal.value = l;
-			selectedGrips.w.cy.baseVal.value = t+h/2;
-			selectedGrips.e.cx.baseVal.value = l+w;
-			selectedGrips.e.cy.baseVal.value = t+h/2;
-			selectedGrips.s.cx.baseVal.value = l+w/2;
-			selectedGrips.s.cy.baseVal.value = t+h;
-		}	
+			if (selectedOperation == 'resize') {
+				selectedGrips.nw.x.baseVal.value = l-3;
+				selectedGrips.nw.y.baseVal.value = t-3;
+				selectedGrips.ne.x.baseVal.value = l+w-3;
+				selectedGrips.ne.y.baseVal.value = t-3;
+				selectedGrips.sw.x.baseVal.value = l-3;
+				selectedGrips.sw.y.baseVal.value = t+h-3;
+				selectedGrips.se.x.baseVal.value = l+w-3;
+				selectedGrips.se.y.baseVal.value = t+h-3;
+				selectedGrips.n.x.baseVal.value = l+w/2-3;
+				selectedGrips.n.y.baseVal.value = t-3;
+				selectedGrips.w.x.baseVal.value = l-3;
+				selectedGrips.w.y.baseVal.value = t+h/2-3;
+				selectedGrips.e.x.baseVal.value = l+w-3;
+				selectedGrips.e.y.baseVal.value = t+h/2-3;
+				selectedGrips.s.x.baseVal.value = l+w/2-3;
+				selectedGrips.s.y.baseVal.value = t+h-3;
+			} else if (selectedOperation == 'rotate') {
+				selectedGrips.nw.cx.baseVal.value = l;
+				selectedGrips.nw.cy.baseVal.value = t;
+				selectedGrips.ne.cx.baseVal.value = l+w;
+				selectedGrips.ne.cy.baseVal.value = t;
+				selectedGrips.sw.cx.baseVal.value = l;
+				selectedGrips.sw.cy.baseVal.value = t+h;
+				selectedGrips.se.cx.baseVal.value = l+w;
+				selectedGrips.se.cy.baseVal.value = t+h;
+				selectedGrips.n.cx.baseVal.value = l+w/2;
+				selectedGrips.n.cy.baseVal.value = t;
+				selectedGrips.w.cx.baseVal.value = l;
+				selectedGrips.w.cy.baseVal.value = t+h/2;
+				selectedGrips.e.cx.baseVal.value = l+w;
+				selectedGrips.e.cy.baseVal.value = t+h/2;
+				selectedGrips.s.cx.baseVal.value = l+w/2;
+				selectedGrips.s.cy.baseVal.value = t+h;
+			}
+		}
 	}
 
 // public events
 	// call this function to set the selected element
 	// call this function with null to clear the selected element
-	var selectElement = function(newSelected) 
+	var selectElement = function(newSelected)
 	{
 		if (selected == newSelected) return;
-		
+
 		// remove selected outline from previously selected element
 		if (selected != null && selectedOutline != null) {
 			// remove from DOM and store reference in JS but only if it exists in the DOM
@@ -259,15 +279,15 @@ function SvgCanvas(c)
 				selectedOutline = theOutline;
 			} catch(e) { }
 		}
-		
+
 		selected = newSelected;
-		
+
 		if (selected != null) {
 			selectedBBox = selected.getBBox();
-			
+
 			// we create this element for the first time here
 			if (selectedOutline == null) {
-				// create a group that will hold all the elements that make 
+				// create a group that will hold all the elements that make
 				// up the selected outline
 				selectedOutline = addSvgElementFromJson({
 					"element": "g",
@@ -275,7 +295,7 @@ function SvgCanvas(c)
 						"id": "selectedGroup",
 					}
 				});
-				
+
 				// add the bounding box
 				selectedOutline.appendChild( addSvgElementFromJson({
 					"element": "rect",
@@ -294,17 +314,29 @@ function SvgCanvas(c)
 
 				// add the corner grips
 				for (dir in selectedGrips) {
-					var cursType = (dir+"-resize");
-					selectedGrips[dir] = selectedOutline.appendChild( addSvgElementFromJson({
-						"element": "circle",
-						"attr": {
-							"id": (dir+"_grip"),
-							"fill": "blue",
-							"r": 3,
-							"style": ("cursor:"+cursType),
-						}
-					}) );
-					$('#'+selectedGrips[dir].id).mousedown( function() { 
+					if (selectedOperation == 'resize') {
+						selectedGrips[dir] = selectedOutline.appendChild( addSvgElementFromJson({
+							"element": "rect",
+							"attr": {
+								"id": dir + "_grip",
+								"fill": "blue",
+								"width": 6,
+								"height": 6,
+								"style": ("cursor:" + dir + "-resize"),
+							}
+						}) );
+					} else if (selectedOperation == 'rotate') {
+						selectedGrips[dir] = selectedOutline.appendChild( addSvgElementFromJson({
+							"element": "circle",
+							"attr": {
+								"id": (dir + "_grip"),
+								"fill": "blue",
+								"r": 3,
+								"style": "cursor: crosshair",
+							}
+						}) );
+					}
+					$('#'+selectedGrips[dir].id).mousedown( function() {
 						current_mode = "resize";
 						current_resize_mode = this.id.substr(0,this.id.indexOf("_"));
 					});
@@ -313,7 +345,7 @@ function SvgCanvas(c)
 			// recalculate size and then re-append to bottom of document
 			recalculateSelectedOutline();
 			svgroot.appendChild(selectedOutline);
-			
+
 			// set all our current styles to the selected styles
 			current_fill = selected.getAttribute("fill");
 			current_fill_opacity = selected.getAttribute("fill-opacity");
@@ -325,17 +357,17 @@ function SvgCanvas(c)
 				current_font_size = selected.getAttribute("font-size");
 				current_font_family = selected.getAttribute("font-family");
 			}
-			
+
 			// do now show resize grips on text elements
 			var gripDisplay = (selected.tagName == "text" ? "none" : "inline");
 			for (dir in selectedGrips) {
 				selectedGrips[dir].setAttribute("display", gripDisplay);
 			}
 		}
-		
+
 		call("selected", selected);
 	}
-	
+
 	var mouseDown = function(evt)
 	{
 		var x = evt.pageX - container.offsetLeft;
@@ -510,14 +542,14 @@ function SvgCanvas(c)
 					selectedBBox.y += dy;
 					var ts = "translate(" + dx + "," + dy + ")";
 					selected.setAttribute("transform", ts);
-					recalculateSelectedOutline();					
+					recalculateSelectedOutline();
 				}
 				break;
 			case "resize":
 				// we track the resize bounding box and translate/scale the selected element
 				// while the mouse is down, when mouse goes up, we use this to recalculate
 				// the shape's coordinates
-				var box=selected.getBBox(), left=box.x, top=box.y, width=box.width, 
+				var box=selected.getBBox(), left=box.x, top=box.y, width=box.width,
 					height=box.height, dx=(x-start_x), dy=(y-start_y);
 				var tx=0, ty=0, sx=1, sy=1;
 				var ts = null;
@@ -535,8 +567,8 @@ function SvgCanvas(c)
 					tx = dx;
 					sx = (width-dx)/width;
 				}
-				
-				selectedBBox.x = left+tx; 
+
+				selectedBBox.x = left+tx;
 				selectedBBox.y = top+ty;
 				selectedBBox.width = width*sx;
 				selectedBBox.height = height*sy;
@@ -549,13 +581,13 @@ function SvgCanvas(c)
 					selectedBBox.y += selectedBBox.height;
 					selectedBBox.height = -selectedBBox.height;
 				}
-				
-				
-				ts = "translate(" + (left+tx) + "," + (top+ty) + ") scale(" + (sx) + "," + (sy) + 
+
+
+				ts = "translate(" + (left+tx) + "," + (top+ty) + ") scale(" + (sx) + "," + (sy) +
 						") translate(" + (-left) + "," + (-top) + ")";
 				selected.setAttribute("transform", ts);
 				recalculateSelectedOutline();
-				break;				
+				break;
 			case "text":
 				shape.setAttribute("x", x);
 				shape.setAttribute("y", y);
@@ -607,7 +639,7 @@ function SvgCanvas(c)
 				break;
 		}
 	}
-	
+
 	var mouseUp = function(evt)
 	{
 		if (!started) return;
@@ -860,7 +892,7 @@ function SvgCanvas(c)
 	this.getFontFamily = function() {
 		return current_font_family;
 	}
-        
+
 	this.setFontFamily = function(val) {
     	current_font_family = val;
 		if (selected != null) {
@@ -873,7 +905,7 @@ function SvgCanvas(c)
 	this.getFontSize = function() {
 		return current_font_size;
 	}
-	
+
 	this.setFontSize = function(val) {
 		current_font_size = val;
 		if (selected != null) {
@@ -882,12 +914,12 @@ function SvgCanvas(c)
 			call("changed", selected);
 		}
 	}
-	
+
 	this.getText = function() {
 		if (selected == null) { return ""; }
 		return selected.textContent;
 	}
-	
+
 	this.setTextContent = function(val) {
 		if (selected != null) {
 			selected.textContent = val;
@@ -895,7 +927,7 @@ function SvgCanvas(c)
 			call("changed", selected);
 		}
 	}
-	
+
 	this.setRectRadius = function(val) {
 		if (selected != null && selected.tagName == "rect") {
 			selected.setAttribute("rx", val);
@@ -903,7 +935,7 @@ function SvgCanvas(c)
 			call("changed", selected);
 		}
 	}
-	
+
 	$(container).mouseup(mouseUp);
 	$(container).mousedown(mouseDown);
 	$(container).mousemove(mouseMove);
@@ -950,7 +982,7 @@ var Utils = {
 // public domain.  It would be nice if you left this header intact.
 // Base64 code from Tyler Akins -- http://rumkin.com
 
-// schiller: Removed string concatenation in favour of Array.join() optimization, 
+// schiller: Removed string concatenation in favour of Array.join() optimization,
 //           also precalculate the size of the array needed.
 
 	"_keyStr" : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
