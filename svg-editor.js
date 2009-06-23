@@ -220,36 +220,42 @@ function svg_edit_setup() {
 		if (toolButtonClick('#tools_rect_show')) {
 			svgCanvas.setMode('square');
 		}
+		$('#tools_rect_show').attr('src', 'images/square.png');
 	}
 
 	var clickRect = function(){
 		if (toolButtonClick('#tools_rect_show')) {
 			svgCanvas.setMode('rect');
 		}
+		$('#tools_rect_show').attr('src', 'images/rect.png');
 	}
 
 	var clickFHRect = function(){
 		if (toolButtonClick('#tools_rect_show')) {
 			svgCanvas.setMode('fhrect');
 		}
+		$('#tools_rect_show').attr('src', 'images/freehand-square.png');
 	}
 
 	var clickCircle = function(){
 		if (toolButtonClick('#tools_ellipse_show')) {
 			svgCanvas.setMode('circle');
 		}
+		$('#tools_ellipse_show').attr('src', 'images/circle.png');
 	}
 
 	var clickEllipse = function(){
 		if (toolButtonClick('#tools_ellipse_show')) {
 			svgCanvas.setMode('ellipse');
 		}
+		$('#tools_ellipse_show').attr('src', 'images/ellipse.png');
 	}
 
 	var clickFHEllipse = function(){
 		if (toolButtonClick('#tools_ellipse_show')) {
 			svgCanvas.setMode('fhellipse');
 		}
+		$('#tools_ellipse_show').attr('src', 'images/freehand-circle.png');
 	}
 
 	// Delete is a contextual tool that only appears in the ribbon if
