@@ -18,6 +18,8 @@ function svg_edit_setup() {
 
 	var textBeingEntered = false;
 	var selectedElement = null;
+	
+	// called when we've selected a different element
 	var selectedChanged = function(window,elem) {
 		selectedElement = elem;
 		if (elem != null) {
@@ -27,8 +29,28 @@ function svg_edit_setup() {
 			// select mode and this event fires - we need our UI to be in sync
 			setSelectMode();
 
+			updateToolbar();
+		} // if (elem != null)
+
+		updateContextPanel();
+	}
+
+	// called when any element has changed	
+	var elementChanged = function(window,elem) {
+		// if the element that changed was teh selected element, we
+		// should update the contextual panel with potentially new
+		// positional/sizing information (we DON'T want to update the
+		// toolbar here as that creates an infinite loop)
+		if (elem == selectedElement) {
+			updateContextPanel();
+		}
+	}
+	
+	// updates the toolbar (colors, opacity, etc) based on the selected element
+	function updateToolbar() {
+		if (selectedElement != null) {
 			// update fill color
-			var fillColor = elem.getAttribute("fill");
+			var fillColor = selectedElement.getAttribute("fill");
 			svgCanvas.setFillColor(fillColor);
 			if (fillColor == "none") {
 				fillColor = 'url(\'images/none.png\')';
@@ -36,57 +58,24 @@ function svg_edit_setup() {
 			$('#fill_color').css('background', fillColor);
 
 			// update stroke color
-			var strokeColor = elem.getAttribute("stroke");
+			var strokeColor = selectedElement.getAttribute("stroke");
 			svgCanvas.setStrokeColor(strokeColor);
 			if (strokeColor == null || strokeColor == "" || strokeColor == "none") {
 				strokeColor = 'url(\'images/none.png\')';
 			}
 			$('#stroke_color').css('background', strokeColor);
 
-			// update fill opacity
-			var fillOpacity = elem.getAttribute("fill-opacity");
-			if (fillOpacity == null || fillColor == "") {
-				fillOpacity = 1.0;
-			}
-			fillOpacity = (fillOpacity*100)+" %";
-			$('#fill_opacity').val(fillOpacity);
-
-			// update stroke opacity
-			var strokeOpacity = elem.getAttribute("stroke-opacity");
-			if (strokeOpacity == null || strokeOpacity == "") {
-				strokeOpacity = 1.0;
-			}
-			strokeOpacity = (strokeOpacity*100)+" %";
-			$('#stroke_opacity').val(strokeOpacity);
-
-			// update group opacity
-			var opacity = elem.getAttribute("opacity");
-			if (opacity == null || opacity == "") {
-				opacity = 1.0;
-			}
-			opacity = (opacity*100)+" %";
-			$('#group_opacity').val(opacity);
-
-			// update stroke-width
-			var strokeWidth = elem.getAttribute("stroke-width");
-			if (strokeWidth == null || strokeWidth == "") {
-				strokeWidth = 1;
-			}
-			$('#stroke_width').val(strokeWidth);
-
-			// update stroke-style
-			var strokeDashArray = elem.getAttribute("stroke-dasharray");
-			if (strokeDashArray == null || strokeDashArray == "") {
-				strokeDashArray = "none";
-			}
-			$('#stroke_style').val(strokeDashArray);
-
-			updateToolButtonState();
-		} // if (elem != null)
-
-		updateContextPanel();
+			$('#fill_opacity').val(((selectedElement.getAttribute("fill-opacity")||1.0)*100)+" %");
+			$('#stroke_opacity').val(((selectedElement.getAttribute("stroke-opacity")||1.0)*100)+" %");
+			$('#group_opacity').val(((selectedElement.getAttribute("opacity")||1.0)*100)+" %");
+			$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1);
+			$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
+		}
+	
+		updateToolButtonState();
 	}
 
+	// updates the context panel tools based on the selected element
 	function updateContextPanel() {
 		var elem = selectedElement;
 		$('#selected_panel').hide();
@@ -122,6 +111,7 @@ function svg_edit_setup() {
 
 	// bind the selected event to our function that handles updates to the UI
 	svgCanvas.bind("selected", selectedChanged);
+	svgCanvas.bind("changed", elementChanged);
 
 	var str = '<div class="palette_item" style="background: url(\'images/none.png\');"></div>'
 	$.each(palette, function(i,item){
