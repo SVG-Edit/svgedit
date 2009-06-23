@@ -98,9 +98,7 @@ function svg_edit_setup() {
 			switch(elem.tagName) {
 				case "rect":
 					$('#rect_panel').show().css("display", "inline");
-					var rad = elem.getAttribute("rx");
-					if (!rad) { rad = "0"; }
-					$('#rect_radius').val(rad);
+					$('#rect_radius').val(elem.getAttribute("rx")||0);
 					break;
 				case "text":
 					// jquery's show() always sets display to block
