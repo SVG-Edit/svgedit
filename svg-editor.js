@@ -42,7 +42,7 @@ function svg_edit_setup() {
 				strokeColor = 'url(\'images/none.png\')';
 			}
 			$('#stroke_color').css('background', strokeColor);
-			
+
 			// update fill opacity
 			var fillOpacity = elem.getAttribute("fill-opacity");
 			if (fillOpacity == null || fillColor == "") {
@@ -80,10 +80,10 @@ function svg_edit_setup() {
 				strokeDashArray = "none";
 			}
 			$('#stroke_style').val(strokeDashArray);
-			
+
 			updateToolButtonState();
 		} // if (elem != null)
-		
+
 		updateContextPanel();
 	}
 
@@ -109,9 +109,9 @@ function svg_edit_setup() {
 					$('#text').select();
 					break;
 			}
-		}	
+		}
 	}
-	
+
 	$('#text').focus( function(){ textBeingEntered = true; } );
 	$('#text').blur( function(){ textBeingEntered = false; } );
 
@@ -148,19 +148,19 @@ function svg_edit_setup() {
 	$('#group_opacity').change(function(){
 		svgCanvas.setOpacity(this.options[this.selectedIndex].value);
 	});
-	
+
 	$('#font_size').change(function(){
 		svgCanvas.setFontSize(this.options[this.selectedIndex].value);
 	});
-	
+
 	$('#font_family').change(function(){
 		svgCanvas.setFontFamily(this.options[this.selectedIndex].value);
 	});
-	
+
 	$('#text').keyup(function(){
 		svgCanvas.setTextContent(this.value);
 	});
-	
+
 	$('#rect_radius').change(function(){
 		svgCanvas.setRectRadius(this.options[this.selectedIndex].value);
 	});
@@ -177,7 +177,7 @@ function svg_edit_setup() {
 		}
 		if (evt.shiftKey) svgCanvas.setStrokeColor(color);
 		else svgCanvas.setFillColor(color);
-		updateToolButtonState();		
+		updateToolButtonState();
 	});
 
 	// This is a common function used when a tool has been clicked (chosen)
@@ -187,7 +187,7 @@ function svg_edit_setup() {
 	// - adds the tool_button_current class to the button passed in
 	var toolButtonClick = function(button) {
 		if ($(button).hasClass('tool_button_disabled')) return false;
-		
+
 		$('#styleoverrides').text('');
 		$('.tools_flyout').hide();
 		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
@@ -303,7 +303,7 @@ function svg_edit_setup() {
 	$('#tool_move_top').click(moveToTopSelected);
 	$('#tool_move_bottom').click(moveToBottomSelected);
 
-	// added these event handlers for all the push buttons so they 
+	// added these event handlers for all the push buttons so they
 	// behave more like buttons being pressed-in and not images
 	$('#tool_clear').mousedown(function(){$('#tool_clear').addClass('tool_button_current');});
 	$('#tool_clear').mouseup(function(){$('#tool_clear').removeClass('tool_button_current');});
@@ -332,8 +332,10 @@ function svg_edit_setup() {
 	$(document).bind('keydown', {combi:'6', disableInInput: true}, clickText);
 	$(document).bind('keydown', {combi:'N', disableInInput: true}, clickClear);
 	$(document).bind('keydown', {combi:'S', disableInInput: true}, clickSave);
-	$(document).bind('keydown', {combi:'X', disableInInput: true}, deleteSelected);
-	
+	$(document).bind('keydown', {combi:'del', disableInInput: true}, deleteSelected);
+	$(document).bind('keydown', {combi:'pageup', disableInInput: true}, moveToTopSelected);
+	$(document).bind('keydown', {combi:'pagedown', disableInInput: true}, moveToBottomSelected);
+
 	var colorPicker = function(elem) {
 		$('.tools_flyout').hide();
 		var oldbg = elem.css('background');
@@ -399,7 +401,7 @@ function svg_edit_setup() {
 				$(button).removeClass('tool_button_disabled').addClass('tool_button');
 			}
 		}
-		
+
 		if (bNoStroke && bNoFill) {
 			for (index in buttonsNeedingFillAndStroke) {
 				var button = buttonsNeedingFillAndStroke[index];
@@ -416,7 +418,7 @@ function svg_edit_setup() {
 			}
 		}
 	}
-	
+
 	$('#fill_color').click(function(){
 		colorPicker($(this));
 		updateToolButtonState();
