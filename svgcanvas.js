@@ -638,6 +638,8 @@ function SvgCanvas(c)
 				shape.setAttributeNS(null, "d", d_attr);
 				break;
 		}
+		// fire changed event
+		call("changed", selected);		
 	}
 
 	var mouseUp = function(evt)
