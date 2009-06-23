@@ -37,7 +37,7 @@ function svg_edit_setup() {
 
 	// called when any element has changed	
 	var elementChanged = function(window,elem) {
-		// if the element that changed was teh selected element, we
+		// if the element that changed was the selected element, we
 		// should update the contextual panel with potentially new
 		// positional/sizing information (we DON'T want to update the
 		// toolbar here as that creates an infinite loop)
@@ -273,6 +273,12 @@ function svg_edit_setup() {
 		}
 	}
 
+	var moveSelected = function(dx,dy) {
+		if (selectedElement != null) {
+			svgCanvas.moveSelectedElement(dx,dy);
+		}
+	}
+
 	var clickText = function(){
 		toolButtonClick('#tool_text');
 		svgCanvas.setMode('text');
@@ -333,9 +339,14 @@ function svg_edit_setup() {
 	$(document).bind('keydown', {combi:'6', disableInInput: true}, clickText);
 	$(document).bind('keydown', {combi:'N', disableInInput: true}, clickClear);
 	$(document).bind('keydown', {combi:'S', disableInInput: true}, clickSave);
-	$(document).bind('keydown', {combi:'del', disableInInput: true}, deleteSelected);
-	$(document).bind('keydown', {combi:'pageup', disableInInput: true}, moveToTopSelected);
-	$(document).bind('keydown', {combi:'pagedown', disableInInput: true}, moveToBottomSelected);
+	$(document).bind('keydown', {combi:'del', disableInInput: true}, function(evt){deleteSelected();evt.preventDefault();});
+	$(document).bind('keydown', {combi:'backspace', disableInInput: true}, function(evt){deleteSelected();evt.preventDefault();});
+	$(document).bind('keydown', {combi:'shift+up', disableInInput: true}, moveToTopSelected);
+	$(document).bind('keydown', {combi:'shift+down', disableInInput: true}, moveToBottomSelected);
+	$(document).bind('keydown', {combi:'up', disableInInput: true}, function(evt){moveSelected(0,-1);evt.preventDefault();});
+	$(document).bind('keydown', {combi:'down', disableInInput: true}, function(evt){moveSelected(0,1);evt.preventDefault();});
+	$(document).bind('keydown', {combi:'left', disableInInput: true}, function(evt){moveSelected(-1,0);evt.preventDefault();});
+	$(document).bind('keydown', {combi:'right', disableInInput: true}, function(evt){moveSelected(1,0);evt.preventDefault();});
 
 	var colorPicker = function(elem) {
 		$('.tools_flyout').hide();

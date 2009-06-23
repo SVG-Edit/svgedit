@@ -973,6 +973,18 @@ function SvgCanvas(c)
 			t.parentNode.insertBefore(t, t.parentNode.firstChild);
 		}
 	}
+	
+	this.moveSelectedElement = function(dx,dy) {
+		if (selected != null) {
+			// TODO: move...
+			selectedBBox = selected.getBBox();
+			selectedBBox.x += dx;
+			selectedBBox.y += dy;
+			
+			recalculateSelectedDimensions();
+			recalculateSelectedOutline();
+		}
+	}
 
 }
 
