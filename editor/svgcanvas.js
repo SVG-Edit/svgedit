@@ -141,15 +141,6 @@ function SvgCanvas(c)
 
 	function recalculateSelectedDimensions() {
 		var box = selected.getBBox();
-		// normalize selectedBBox
-		if (selectedBBox.width < 0) {
-			selectedBBox.x += selectedBBox.width;
-			selectedBBox.width = -selectedBBox.width;
-		}
-		if (selectedBBox.height < 0) {
-			selectedBBox.y += selectedBBox.height;
-			selectedBBox.height = -selectedBBox.height;
-		}
 		var remapx = function(x) {return ((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x;}
 		var remapy = function(y) {return ((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y;}
 		var scalew = function(w) {return w*selectedBBox.width/box.width;}
@@ -549,6 +540,16 @@ function SvgCanvas(c)
 				selectedBBox.y = top+ty;
 				selectedBBox.width = width*sx;
 				selectedBBox.height = height*sy;
+				// normalize selectedBBox
+				if (selectedBBox.width < 0) {
+					selectedBBox.x += selectedBBox.width;
+					selectedBBox.width = -selectedBBox.width;
+				}
+				if (selectedBBox.height < 0) {
+					selectedBBox.y += selectedBBox.height;
+					selectedBBox.height = -selectedBBox.height;
+				}
+				
 				
 				ts = "translate(" + (left+tx) + "," + (top+ty) + ") scale(" + (sx) + "," + (sy) + 
 						") translate(" + (-left) + "," + (-top) + ")";
