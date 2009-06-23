@@ -99,6 +99,10 @@ function svg_edit_setup() {
 				case "rect":
 					$('#rect_panel').show().css("display", "inline");
 					$('#rect_radius').val(elem.getAttribute("rx")||0);
+					$('#rect_x').val(elem.getAttribute("x")||0);
+					$('#rect_y').val(elem.getAttribute("y")||0);
+					$('#rect_w').val(elem.getAttribute("width")||0);
+					$('#rect_h').val(elem.getAttribute("height")||0);
 					break;
 				case "text":
 					// jquery's show() always sets display to block
