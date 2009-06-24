@@ -937,6 +937,15 @@ function SvgCanvas(c)
 			call("changed", selected);
 		}
 	}
+	
+	this.changeSelectedAttribute = function(attr, val) {
+		if (selected != null && selected.getAttribute(attr) != val) {
+			selected.setAttribute(attr, val);
+			selectedBBox = selected.getBBox();
+			recalculateSelectedOutline();
+			call("changed", selected);
+		}
+	}
 
 	$(container).mouseup(mouseUp);
 	$(container).mousedown(mouseDown);
