@@ -306,10 +306,11 @@ function SvgCanvas(c)
 								// when we are in rotate mode, we will set rx/ry to 3
 //								"rx": 3,
 //								"ry": 3,
-								// this expands the mouse-able area of the grips
-								// works in Opera and WebKit, does not work in Firefox
+								// This expands the mouse-able area of the grips making them
+								// easier to grab with the mouse.
+								// This works in Opera and WebKit, but does not work in Firefox
 								// see https://bugzilla.mozilla.org/show_bug.cgi?id=500174
-								"stroke-width": 3,
+								"stroke-width": 2,
 								"pointer-events": "all",
 							}
 					}) );
