@@ -80,18 +80,41 @@ function svg_edit_setup() {
 		var elem = selectedElement;
 		$('#selected_panel').hide();
 		$('#rect_panel').hide();
+		$('#circle_panel').hide();
+		$('#ellipse_panel').hide();
+		$('#line_panel').hide();
 		$('#text_panel').hide();
 		if (elem != null) {
 			$('#selected_panel').show();
 			// update contextual tools here
 			switch(elem.tagName) {
 				case "rect":
-					$('#rect_panel').show().css("display", "inline");
+					$('#rect_panel').show();
 					$('#rect_radius').val(elem.getAttribute("rx")||0);
 					$('#rect_x').val(elem.getAttribute("x")||0);
 					$('#rect_y').val(elem.getAttribute("y")||0);
 					$('#rect_w').val(elem.getAttribute("width")||0);
 					$('#rect_h').val(elem.getAttribute("height")||0);
+					break;
+				case "circle":
+					$('#circle_panel').show();
+					$('#circle_cx').val(elem.getAttribute("cx")||0);
+					$('#circle_cy').val(elem.getAttribute("cy")||0);
+					$('#circle_r').val(elem.getAttribute("r")||0);
+					break;
+				case "ellipse":
+					$('#ellipse_panel').show();
+					$('#ellipse_cx').val(elem.getAttribute("cx")||0);
+					$('#ellipse_cy').val(elem.getAttribute("cy")||0);
+					$('#ellipse_rx').val(elem.getAttribute("rx")||0);
+					$('#ellipse_ry').val(elem.getAttribute("ry")||0);
+					break;
+				case "line":
+					$('#line_panel').show();
+					$('#line_x1').val(elem.getAttribute("x1")||0);
+					$('#line_y1').val(elem.getAttribute("y1")||0);
+					$('#line_x2').val(elem.getAttribute("x2")||0);
+					$('#line_y2').val(elem.getAttribute("y2")||0);
 					break;
 				case "text":
 					// jquery's show() always sets display to block
