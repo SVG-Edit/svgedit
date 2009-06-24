@@ -226,41 +226,22 @@ function SvgCanvas(c)
 			selectedBox.y.baseVal.value = t;
 			selectedBox.width.baseVal.value = w;
 			selectedBox.height.baseVal.value = h;
-			if (selectedOperation == 'resize') {
-				selectedGrips.nw.x.baseVal.value = l-3;
-				selectedGrips.nw.y.baseVal.value = t-3;
-				selectedGrips.ne.x.baseVal.value = l+w-3;
-				selectedGrips.ne.y.baseVal.value = t-3;
-				selectedGrips.sw.x.baseVal.value = l-3;
-				selectedGrips.sw.y.baseVal.value = t+h-3;
-				selectedGrips.se.x.baseVal.value = l+w-3;
-				selectedGrips.se.y.baseVal.value = t+h-3;
-				selectedGrips.n.x.baseVal.value = l+w/2-3;
-				selectedGrips.n.y.baseVal.value = t-3;
-				selectedGrips.w.x.baseVal.value = l-3;
-				selectedGrips.w.y.baseVal.value = t+h/2-3;
-				selectedGrips.e.x.baseVal.value = l+w-3;
-				selectedGrips.e.y.baseVal.value = t+h/2-3;
-				selectedGrips.s.x.baseVal.value = l+w/2-3;
-				selectedGrips.s.y.baseVal.value = t+h-3;
-			} else if (selectedOperation == 'rotate') {
-				selectedGrips.nw.cx.baseVal.value = l;
-				selectedGrips.nw.cy.baseVal.value = t;
-				selectedGrips.ne.cx.baseVal.value = l+w;
-				selectedGrips.ne.cy.baseVal.value = t;
-				selectedGrips.sw.cx.baseVal.value = l;
-				selectedGrips.sw.cy.baseVal.value = t+h;
-				selectedGrips.se.cx.baseVal.value = l+w;
-				selectedGrips.se.cy.baseVal.value = t+h;
-				selectedGrips.n.cx.baseVal.value = l+w/2;
-				selectedGrips.n.cy.baseVal.value = t;
-				selectedGrips.w.cx.baseVal.value = l;
-				selectedGrips.w.cy.baseVal.value = t+h/2;
-				selectedGrips.e.cx.baseVal.value = l+w;
-				selectedGrips.e.cy.baseVal.value = t+h/2;
-				selectedGrips.s.cx.baseVal.value = l+w/2;
-				selectedGrips.s.cy.baseVal.value = t+h;
-			}
+			selectedGrips.nw.x.baseVal.value = l-3;
+			selectedGrips.nw.y.baseVal.value = t-3;
+			selectedGrips.ne.x.baseVal.value = l+w-3;
+			selectedGrips.ne.y.baseVal.value = t-3;
+			selectedGrips.sw.x.baseVal.value = l-3;
+			selectedGrips.sw.y.baseVal.value = t+h-3;
+			selectedGrips.se.x.baseVal.value = l+w-3;
+			selectedGrips.se.y.baseVal.value = t+h-3;
+			selectedGrips.n.x.baseVal.value = l+w/2-3;
+			selectedGrips.n.y.baseVal.value = t-3;
+			selectedGrips.w.x.baseVal.value = l-3;
+			selectedGrips.w.y.baseVal.value = t+h/2-3;
+			selectedGrips.e.x.baseVal.value = l+w-3;
+			selectedGrips.e.y.baseVal.value = t+h/2-3;
+			selectedGrips.s.x.baseVal.value = l+w/2-3;
+			selectedGrips.s.y.baseVal.value = t+h-3;
 		}
 	}
 
@@ -314,8 +295,7 @@ function SvgCanvas(c)
 
 				// add the corner grips
 				for (dir in selectedGrips) {
-					if (selectedOperation == 'resize') {
-						selectedGrips[dir] = selectedOutline.appendChild( addSvgElementFromJson({
+					selectedGrips[dir] = selectedOutline.appendChild( addSvgElementFromJson({
 							"element": "rect",
 							"attr": {
 								"id": dir + "_grip",
@@ -323,19 +303,16 @@ function SvgCanvas(c)
 								"width": 6,
 								"height": 6,
 								"style": ("cursor:" + dir + "-resize"),
+								// when we are in rotate mode, we will set rx/ry to 3
+//								"rx": 3,
+//								"ry": 3,
+								// this expands the mouse-able area of the grips
+								// works in Opera and WebKit, does not work in Firefox
+								// see https://bugzilla.mozilla.org/show_bug.cgi?id=500174
+								"stroke-width": 3,
+								"pointer-events": "all",
 							}
-						}) );
-					} else if (selectedOperation == 'rotate') {
-						selectedGrips[dir] = selectedOutline.appendChild( addSvgElementFromJson({
-							"element": "circle",
-							"attr": {
-								"id": (dir + "_grip"),
-								"fill": "blue",
-								"r": 3,
-								"style": "cursor: crosshair",
-							}
-						}) );
-					}
+					}) );
 					$('#'+selectedGrips[dir].id).mousedown( function() {
 						current_mode = "resize";
 						current_resize_mode = this.id.substr(0,this.id.indexOf("_"));
