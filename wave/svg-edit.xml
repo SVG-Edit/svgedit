@@ -47,7 +47,6 @@
 	<img class="tool_button" id="tool_move_bottom" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/move_bottom.png" title="Move to Bottom" alt="Bottom"/>
 	</div>
 
-	<!-- TODO: also add x, y, width, height -->
 	<div id="rect_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<label class="rect_tool" >Radius:</label>
@@ -63,9 +62,49 @@
 			<option value="15">15</option>
 			<option value="20">20</option>
 		</select>
+		<label class="rect_tool">x:</label>
+		<input id="rect_x" class="rect_tool" title="Change rectangle X coordinate" alt="x" size="5" disabled/>
+		<label class="rect_tool">y:</label>
+		<input id="rect_y" class="rect_tool" title="Change rectangle Y coordinate" alt="y" size="5" disabled/>
+		<label class="rect_tool">width:</label>
+		<input id="rect_w" class="rect_tool" title="Change rectangle width" alt="width" size="5" disabled/>
+		<label class="rect_tool">height:</label>
+		<input id="rect_h" class="rect_tool" title="Change rectangle height" alt="height" size="5" disabled/>
 	</div>
 
-	<!-- TODO: add a circle_panel, ellipse_panel, line_panel -->
+	<div id="circle_panel">
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<label class="circle_tool">cx:</label>
+		<input id="circle_cx" class="circle_tool" title="Change circle's cx coordinate" alt="cx" size="5" disabled/>
+		<label class="circle_tool">cy:</label>
+		<input id="circle_cy" class="circle_tool" title="Change circle's cy coordinate" alt="cy" size="5" disabled/>
+		<label class="circle_tool">r:</label>
+		<input id="circle_r" class="circle_tool" title="Change circle's radius" alt="r" size="5" disabled/>
+	</div>
+	
+	<div id="ellipse_panel">
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<label class="ellipse_tool">cx:</label>
+		<input id="ellipse_cx" class="ellipse_tool" title="Change ellipse's cx coordinate" alt="cx" size="5" disabled/>
+		<label class="ellipse_tool">cy:</label>
+		<input id="ellipse_cy" class="ellipse_tool" title="Change ellipse's cy coordinate" alt="cy" size="5" disabled/>
+		<label class="ellipse_tool">rx:</label>
+		<input id="ellipse_rx" class="ellipse_tool" title="Change ellipse's x radius" alt="rx" size="5" disabled/>
+		<label class="ellipse_tool">ry:</label>
+		<input id="ellipse_ry" class="ellipse_tool" title="Change ellipse's y radius" alt="ry" size="5" disabled/>
+	</div>
+	
+	<div id="line_panel">
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<label class="line_tool">x1:</label>
+		<input id="line_x1" class="line_tool" title="Change line's starting x coordinate" alt="x1" size="5" disabled/>
+		<label class="line_tool">y1:</label>
+		<input id="line_y1" class="line_tool" title="Change line's starting y coordinate" alt="y1" size="5" disabled/>
+		<label class="line_tool">x2:</label>
+		<input id="line_x2" class="line_tool" title="Change line's ending x coordinate" alt="x2" size="5" disabled/>
+		<label class="line_tool">y2:</label>
+		<input id="line_y2" class="line_tool" title="Change line's ending y coordinate" alt="x1" size="5" disabled/>
+	</div>
 
 	<div id="text_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
