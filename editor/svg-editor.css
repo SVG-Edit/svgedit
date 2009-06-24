@@ -102,6 +102,18 @@
 	display: none;
 }
 
+#svg_editor #circle_panel {
+	display: none;
+}
+
+#svg_editor #ellipse_panel {
+	display: none;
+}
+
+#svg_editor #line_panel {
+	display: none;
+}
+
 #svg_editor #text_panel {
 	display: none;
 }
@@ -111,6 +123,18 @@
 }
 
 #svg_editor #rect_panel .rect_tool {
+	vertical-align:12px;
+}
+
+#svg_editor #circle_panel .circle_tool {
+	vertical-align:12px;
+}
+
+#svg_editor #ellipse_panel .ellipse_tool {
+	vertical-align:12px;
+}
+
+#svg_editor #line_panel .line_tool {
 	vertical-align:12px;
 }
 
