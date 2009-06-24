@@ -182,6 +182,10 @@ function svg_edit_setup() {
 	$('#rect_radius').change(function(){
 		svgCanvas.setRectRadius(this.options[this.selectedIndex].value);
 	});
+	
+	$('.attr_changer').change(function() {
+		svgCanvas.changeSelectedAttribute(this.getAttribute("alt"), this.value);
+	});
 
 	$('.palette_item').click(function(evt){
 		var id = (evt.shiftKey ? '#stroke_color' : '#fill_color');
