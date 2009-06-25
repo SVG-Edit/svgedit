@@ -1119,13 +1119,15 @@ function SvgCanvas(c)
 		}
 	}
 
-	this.getUndoStackSize = function() { return undoStack.length; }
+	this.getUndoStackSize = function() { return undoStackPointer; }
 	this.getRedoStackSize = function() { return undoStack.length - undoStackPointer; }
 	
 	this.undo = function() {
 		if (undoStackPointer > 0) { 
 			this.selectNone();
-			undoStack[--undoStackPointer].unapply(); 
+			var cmd = undoStack[--undoStackPointer];
+			cmd.unapply();
+			call("changed", cmd.elem);
 		}
 //		console.log("after undo, stackPointer=" + undoStackPointer);
 //		console.log(undoStack);		
@@ -1133,7 +1135,9 @@ function SvgCanvas(c)
 	this.redo = function() {
 		if (undoStackPointer < undoStack.length && undoStack.length > 0) {
 			this.selectNone();
-			undoStack[undoStackPointer++].apply();
+			var cmd = undoStack[undoStackPointer++];
+			cmd.apply();
+			call("changed", cmd.elem);
 		}
 //		console.log("after redo, stackPointer=" + undoStackPointer);
 //		console.log(undoStack);		

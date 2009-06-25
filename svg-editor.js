@@ -37,15 +37,14 @@ function svg_edit_setup() {
 
 	// called when any element has changed	
 	var elementChanged = function(window,elem) {
-		// if the element that changed was the selected element, we
-		// should update the contextual panel with potentially new
+		// we update the contextual panel with potentially new
 		// positional/sizing information (we DON'T want to update the
 		// toolbar here as that creates an infinite loop)
-		if (elem == selectedElement) {
-			// we tell it to skip focusing the text control if the 
-			// text element was previously in focus
-			updateContextPanel(false);
-		}
+		// also this updates the history buttons
+		
+		// we tell it to skip focusing the text control if the 
+		// text element was previously in focus
+		updateContextPanel(false);
 	}
 	
 	// updates the toolbar (colors, opacity, etc) based on the selected element
@@ -130,6 +129,20 @@ function svg_edit_setup() {
 					}
 					break;
 			}
+		}
+		
+		// update history buttons
+		if (svgCanvas.getUndoStackSize() > 0) {
+			$('#tool_undo').removeClass( 'tool_button_disabled');
+		}
+		else {
+			$('#tool_undo').addClass( 'tool_button_disabled');
+		}
+		if (svgCanvas.getRedoStackSize() > 0) {
+			$('#tool_redo').removeClass( 'tool_button_disabled');
+		}
+		else {
+			$('#tool_redo').addClass( 'tool_button_disabled');
 		}
 	}
 
@@ -364,6 +377,12 @@ function svg_edit_setup() {
 	$('#tool_delete').mousedown(function(){$('#tool_delete').addClass('tool_button_current');});
 	$('#tool_delete').mouseup(function(){$('#tool_delete').removeClass('tool_button_current');});
 	$('#tool_delete').mouseout(function(){$('#tool_delete').removeClass('tool_button_current');});
+	$('#tool_undo').mousedown(function(){ if (!$('#tool_undo').hasClass('tool_button_disabled')) $('#tool_undo').addClass('tool_button_current');});
+	$('#tool_undo').mouseup(function(){$('#tool_undo').removeClass('tool_button_current');});
+	$('#tool_undo').mouseout(function(){$('#tool_undo').removeClass('tool_button_current');});
+	$('#tool_redo').mousedown(function(){ if (!$('#tool_redo').hasClass('tool_button_disabled')) $('#tool_redo').addClass('tool_button_current');});
+	$('#tool_redo').mouseup(function(){$('#tool_redo').removeClass('tool_button_current');});
+	$('#tool_redo').mouseout(function(){$('#tool_redo').removeClass('tool_button_current');});
 	$('#tool_move_top').mousedown(function(){$('#tool_move_top').addClass('tool_button_current');});
 	$('#tool_move_top').mouseup(function(){$('#tool_move_top').removeClass('tool_button_current');});
 	$('#tool_move_top').mouseout(function(){$('#tool_move_top').removeClass('tool_button_current');});
