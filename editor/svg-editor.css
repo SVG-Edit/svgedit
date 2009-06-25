@@ -119,11 +119,11 @@
 }
 
 #svg_editor #text_panel .text_tool {
-	vertical-align:12px;
+	vertical-align: 12px;
 }
 
 #svg_editor #rect_panel .rect_tool {
-	vertical-align:12px;
+	vertical-align: 12px;
 }
 
 #svg_editor #circle_panel .circle_tool {
@@ -224,5 +224,12 @@
 #svg_editor #footer {
 	width: 705px;
 	border-top: none;
-	text-align: right;
+}
+
+#svg_editor #footer_left {
+	float: left;
+}
+
+#svg_editor #footer_right {
+	float: right;
 }
