@@ -388,9 +388,9 @@ function svg_edit_setup() {
 	$(document).bind('keydown', {combi:'down', disableInInput: true}, function(evt){moveSelected(0,1);evt.preventDefault();});
 	$(document).bind('keydown', {combi:'left', disableInInput: true}, function(evt){moveSelected(-1,0);evt.preventDefault();});
 	$(document).bind('keydown', {combi:'right', disableInInput: true}, function(evt){moveSelected(1,0);evt.preventDefault();});
-	$(document).bind('keydown', {combi:'ctrl+z', disableInInput: true}, clickUndo);
-	$(document).bind('keydown', {combi:'ctrl+shift+z', disableInInput: true}, clickRedo);
-	$(document).bind('keydown', {combi:'ctrl+y', disableInInput: true}, clickRedo);
+	$(document).bind('keydown', {combi:'z', disableInInput: true}, clickUndo);
+	$(document).bind('keydown', {combi:'shift+z', disableInInput: true}, clickRedo);
+	$(document).bind('keydown', {combi:'y', disableInInput: true}, clickRedo);
 
 	var colorPicker = function(elem) {
 		$('.tools_flyout').hide();
