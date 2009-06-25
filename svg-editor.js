@@ -32,7 +32,7 @@ function svg_edit_setup() {
 			updateToolbar();
 		} // if (elem != null)
 
-		updateContextPanel();
+		updateContextPanel(true);
 	}
 
 	// called when any element has changed	
@@ -42,7 +42,9 @@ function svg_edit_setup() {
 		// positional/sizing information (we DON'T want to update the
 		// toolbar here as that creates an infinite loop)
 		if (elem == selectedElement) {
-			updateContextPanel();
+			// we tell it to skip focusing the text control if the 
+			// text element was previously in focus
+			updateContextPanel(false);
 		}
 	}
 	
@@ -76,7 +78,7 @@ function svg_edit_setup() {
 	}
 
 	// updates the context panel tools based on the selected element
-	function updateContextPanel() {
+	function updateContextPanel(shouldHighlightText) {
 		var elem = selectedElement;
 		$('#selected_panel').hide();
 		$('#rect_panel').hide();
@@ -123,7 +125,9 @@ function svg_edit_setup() {
 					$('#font_size').val(elem.getAttribute("font-size"));
 					$('#text').val(elem.textContent);
 					$('#text').focus();
-					$('#text').select();
+					if (shouldHighlightText) {
+						$('#text').select();
+					}
 					break;
 			}
 		}
@@ -320,6 +324,16 @@ function svg_edit_setup() {
 	var clickSave = function(){
 		svgCanvas.save();
 	}
+	
+	var clickUndo = function(){
+		if (svgCanvas.getUndoStackSize() > 0) 
+			svgCanvas.undo();
+	}
+
+	var clickRedo = function(){
+		if (svgCanvas.getRedoStackSize() > 0) 
+			svgCanvas.redo();
+	}
 
 	$('#tool_select').click(clickSelect);
 	$('#tool_path').click(clickPath);
@@ -374,6 +388,9 @@ function svg_edit_setup() {
 	$(document).bind('keydown', {combi:'down', disableInInput: true}, function(evt){moveSelected(0,1);evt.preventDefault();});
 	$(document).bind('keydown', {combi:'left', disableInInput: true}, function(evt){moveSelected(-1,0);evt.preventDefault();});
 	$(document).bind('keydown', {combi:'right', disableInInput: true}, function(evt){moveSelected(1,0);evt.preventDefault();});
+	$(document).bind('keydown', {combi:'ctrl+z', disableInInput: true}, clickUndo);
+	$(document).bind('keydown', {combi:'ctrl+shift+z', disableInInput: true}, clickRedo);
+	$(document).bind('keydown', {combi:'ctrl+y', disableInInput: true}, clickRedo);
 
 	var colorPicker = function(elem) {
 		$('.tools_flyout').hide();
