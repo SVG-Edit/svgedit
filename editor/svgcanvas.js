@@ -94,6 +94,7 @@ function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 function SvgCanvas(c)
 {
 
+
 // private members
 	var canvas = this;
 	var container = c;
@@ -165,8 +166,8 @@ function SvgCanvas(c)
 
 // private functions
 	var getId = function() {
-	    if (events["getid"]) return call("getid",obj_num);
-		return idprefix+obj_num;
+		if (events["getid"]) return call("getid", obj_num);
+		return idprefix + obj_num;
 	}
 
 	var call = function(event, arg) {
@@ -901,6 +902,11 @@ function SvgCanvas(c)
 			}
 		}
 		call("cleared");
+	}
+
+	this.setResolution = function(x, y) {
+		svgroot.setAttribute("width", x);
+		svgroot.setAttribute("height", y);
 	}
 
 	this.getMode = function() {
