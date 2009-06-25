@@ -326,12 +326,12 @@ function svg_edit_setup() {
 	}
 	
 	var clickUndo = function(){
-		if (svgCanvas.getUndoStackSize() > 0) 
+		if (svgCanvas.getUndoStackSize() > 0)
 			svgCanvas.undo();
 	}
 
 	var clickRedo = function(){
-		if (svgCanvas.getRedoStackSize() > 0) 
+		if (svgCanvas.getRedoStackSize() > 0)
 			svgCanvas.redo();
 	}
 
@@ -350,6 +350,8 @@ function svg_edit_setup() {
 	$('#tool_delete').click(deleteSelected);
 	$('#tool_move_top').click(moveToTopSelected);
 	$('#tool_move_bottom').click(moveToBottomSelected);
+	$('#tool_undo').click(clickUndo);
+	$('#tool_redo').click(clickRedo);
 
 	// added these event handlers for all the push buttons so they
 	// behave more like buttons being pressed-in and not images
