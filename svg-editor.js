@@ -497,5 +497,17 @@ function svg_edit_setup() {
 		$('#tools_ellipse').show();
 	});
 
+	$('#resolution').change(function(){
+		var res = this.value.split('x');
+		var x = parseInt(res[0]), y = parseInt(res[1]);
+		svgCanvas.setResolution(x,y);
+		$('#svgroot').css( { 'width': x, 'height': y } );
+		$('#svgcanvas').css( { 'width': x, 'height': y } );
+		$('div#palette_holder').css('width',  x);
+		$('#context_tools').css('width', x + 65);
+		$('#tools').css('height', y + 24);
+		$('#footer').css('width', x + 65);
+	});
+
 	return svgCanvas;
 };
