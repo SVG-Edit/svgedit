@@ -1,3 +1,7 @@
+body {
+	background-color: #E8E8E8;
+}
+
 #svg_editor {
 	font-size: 8pt;
 	font-family: Verdana, Helvetica, Arial;
@@ -18,24 +22,26 @@
 }
 
 #svg_editor #svgroot {
-	width: 640px;
-	height: 480px;
 	-moz-user-select: none;
 }
 
 #svg_editor #svgcanvas {
+	background-color: #FFFFFF;
+	text-align: center;
+	vertical-align: middle;
 	width: 640px;
 	height: 480px;
-	border: 1px solid #808080;
 }
 
 #svg_editor div#palette_holder {
 	border: 1px solid #808080;
 	border-top: none;
-	float: left;
-	width: 640px;
 	overflow-x: scroll;
 	overflow-y: hidden;
+	position: absolute;
+	left: 75px;
+	right: 2px;
+	bottom: 22px;
 	height: 31px;
 }
 
@@ -61,7 +67,14 @@
 }
 
 #svg_editor div#workarea {
-	float: left;
+	position:absolute;
+	top: 36px;
+	left: 75px;
+	right: 2px;
+	bottom: 53px;
+	background-color: #E8E8E8;
+	border: 1px solid #808080;
+	overflow: auto;
 }
 
 #svg_editor div.palette_item {
@@ -73,13 +86,13 @@
 #svg_editor .tools_panel {
 	background: #E8E8E8;
 	border: 1px solid #808080;
-	padding: 4px;
-	float: left;
-	clear: both;
 }
 
 #svg_editor #context_tools {
-	width: 705px;
+	position: absolute;
+	left: 2px;
+	right: 2px;
+	top: 2px;
 	height: 34px;
 	border-bottom: none;
 }
@@ -88,10 +101,16 @@
 	float: left;
 }
 
+#svg_editor #tools_container {
+	position: absolute;
+	left: 2px;
+	top: 36px;
+	bottom: 22px;
+}
+
 #svg_editor #tools {
 	border-right: none;
-	height: 504px;
-	width: 64px;
+	width: 70px;
 }
 
 #svg_editor #selected_panel {
@@ -184,6 +203,7 @@
 	display: none;
 	cursor: pointer;
 	float: left;
+	width: 300px;
 }
 
 #svg_editor #tool_square {
@@ -222,12 +242,18 @@
 }
 
 #svg_editor #footer {
-	width: 705px;
+	position: absolute;
+	left: 2px;
+	right: 2px;
+	bottom: 2px;
+	height: 20px;
 	border-top: none;
 }
 
 #svg_editor #footer_left {
 	float: left;
+	position: absolute;
+	top: -2px;
 }
 
 #svg_editor #footer_right {

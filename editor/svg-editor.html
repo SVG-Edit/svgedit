@@ -14,18 +14,12 @@
 
 <div id="svg_editor">
 
-<div id="color_picker" class="tools_flyout"></div>
+<div id="workarea">
 
-<div id="tools_rect" class="tools_flyout">
-<div id="tool_square" title="Square"></div>
-<div id="tool_rect" title="Rectangle"></div>
-<div id="tool_fhrect" title="Free-Hand Rectangle"></div>
+<style id="styleoverrides" type="text/css"></style>
+<div id="svgcanvas">
 </div>
 
-<div id="tools_ellipse" class="tools_flyout">
-<div id="tool_circle" title="Circle"></div>
-<div id="tool_ellipse" title="Ellipse"></div>
-<div id="tool_fhellipse" title="Free-Hand Ellipse"></div>
 </div>
 
 <div id="context_tools" class="tools_panel">
@@ -139,6 +133,7 @@
 	</div>
 </div>
 
+<div id="tools_container">
 <div id="tools" class="tools_panel">
 
 <img class="tool_button_current" id="tool_select" src="images/select.png" title="Select Tool [1]" alt="Select"/><br/>
@@ -219,18 +214,27 @@
 </select>
 </div>
 </div>
-
 </div>
 
-<div id="workarea">
 
-<style id="styleoverrides" type="text/css"></style>
-<div id="svgcanvas">
+<div id="color_picker" class="tools_flyout"></div>
+
+<div id="tools_rect" class="tools_flyout">
+<div id="tool_square" title="Square"></div>
+<div id="tool_rect" title="Rectangle"></div>
+<div id="tool_fhrect" title="Free-Hand Rectangle"></div>
+</div>
+
+<div id="tools_ellipse" class="tools_flyout">
+<div id="tool_circle" title="Circle"></div>
+<div id="tool_ellipse" title="Ellipse"></div>
+<div id="tool_fhellipse" title="Free-Hand Ellipse"></div>
+</div>
+
 </div>
 
 <div id="palette_holder">
 <div id="palette" title="Click to change fill color, shift-click to change stroke color">
-</div>
 </div>
 
 </div>

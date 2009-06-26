@@ -165,6 +165,7 @@ function svg_edit_setup() {
 	});
 	$('#palette').append(str);
 
+	// TODO: fix the positioning of the flyouts and the color pickers
 	var pos = $('#tools_rect_show').position();
 	$('#tools_rect').css({'left': pos.left+2, 'top': pos.top+2});
 	pos = $('#tools_ellipse_show').position();
@@ -528,10 +529,6 @@ function svg_edit_setup() {
 		$('#resolution').val(x+'x'+y);
 		$('#svgroot').css( { 'width': x, 'height': y } );
 		$('#svgcanvas').css( { 'width': x, 'height': y } );
-		$('div#palette_holder').css('width',  x);
-		$('#context_tools').css('width', x + 65);
-		$('#tools').css('height', y + 24);
-		$('#footer').css('width', x + 65);
 	}
 	
 	$('#resolution').change(function(){
