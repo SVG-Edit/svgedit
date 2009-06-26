@@ -1,5 +1,3 @@
-var svgcanvas = null;
-
 if(!window.console) {
   window.console = new function() {
     this.log = function(str) {};
@@ -905,8 +903,12 @@ function SvgCanvas(c)
 	}
 
 	this.setResolution = function(x, y) {
+		var w = svgroot.getAttribute("width"),
+			h = svgroot.getAttribute("height");
 		svgroot.setAttribute("width", x);
 		svgroot.setAttribute("height", y);
+		addCommandToHistory(new ChangeElementCommand(svgroot, {"width":w,"height":h}, "resolution"));
+		call("changed", svgroot);
 	}
 
 	this.getMode = function() {

@@ -37,6 +37,12 @@ function svg_edit_setup() {
 
 	// called when any element has changed	
 	var elementChanged = function(window,elem) {
+		// if the element changed was the svg, then it must be a resolution change
+		if (elem && elem.tagName == "svg") {
+			changeResolution(parseInt(elem.getAttribute("width")), 
+							 parseInt(elem.getAttribute("height")));
+		}
+		
 		// we update the contextual panel with potentially new
 		// positional/sizing information (we DON'T want to update the
 		// toolbar here as that creates an infinite loop)
@@ -518,16 +524,20 @@ function svg_edit_setup() {
 		$('#tools_ellipse').show();
 	});
 
-	$('#resolution').change(function(){
-		var res = this.value.split('x');
-		var x = parseInt(res[0]), y = parseInt(res[1]);
-		svgCanvas.setResolution(x,y);
+	function changeResolution(x,y) {
+		$('#resolution').val(x+'x'+y);
 		$('#svgroot').css( { 'width': x, 'height': y } );
 		$('#svgcanvas').css( { 'width': x, 'height': y } );
 		$('div#palette_holder').css('width',  x);
 		$('#context_tools').css('width', x + 65);
 		$('#tools').css('height', y + 24);
 		$('#footer').css('width', x + 65);
+	}
+	
+	$('#resolution').change(function(){
+		var res = this.value.split('x');
+		var x = parseInt(res[0]), y = parseInt(res[1]);
+		svgCanvas.setResolution(x,y);
 	});
 
 	return svgCanvas;
