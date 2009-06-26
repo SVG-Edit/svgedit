@@ -165,7 +165,6 @@ function svg_edit_setup() {
 	});
 	$('#palette').append(str);
 
-	// TODO: fix the positioning of the flyouts and the color pickers
 	var pos = $('#tools_rect_show').position();
 	$('#tools_rect').css({'left': pos.left+2, 'top': pos.top+2});
 	pos = $('#tools_ellipse_show').position();
