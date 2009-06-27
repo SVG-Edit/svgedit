@@ -39,6 +39,10 @@ function SvgCanvas(c)
 	var selected = null;
 	var selectedOutline = null;
 	var events = {};
+	
+	var load_time = (new Date()).getTime();
+	var start_ele_time = null;
+	var end_ele_time = null;
 
 // private functions
 	var getId = function() {
@@ -214,6 +218,10 @@ function SvgCanvas(c)
 	{
 		var x = evt.pageX - container.offsetLeft;
 		var y = evt.pageY - container.offsetTop;
+		
+		var curr_time = (new Date()).getTime();
+		start_ele_time = curr_time - load_time;
+		
 		switch (current_mode) {
 			case "select":
 				started = true;
@@ -243,7 +251,9 @@ function SvgCanvas(c)
 						"stroke-width": current_stroke_width,
 						"stroke-dasharray": current_stroke_style,
 						"stroke-opacity": current_stroke_opacity,
-						"opacity": current_opacity / 2
+						"opacity": current_opacity / 2,
+						"start-dur": start_ele_time,
+						"end-dur": start_ele_time
 					}
 				});
 				freehand_min_x = x;
@@ -270,7 +280,9 @@ function SvgCanvas(c)
 						"stroke-dasharray": current_stroke_style,
 						"stroke-opacity": current_stroke_opacity,
 						"fill-opacity": current_fill_opacity,
-						"opacity": current_opacity / 2
+						"opacity": current_opacity / 2,
+						"start-dur": start_ele_time,
+						"end-dur": start_ele_time
 					}
 				});
 				break;
@@ -289,7 +301,9 @@ function SvgCanvas(c)
 						"stroke-dasharray": current_stroke_style,
 						"stroke-opacity": current_stroke_opacity,
 						"fill": "none",
-						"opacity": current_opacity / 2
+						"opacity": current_opacity / 2,
+						"start-dur": start_ele_time,
+						"end-dur": start_ele_time
 					}
 				});
 				break;
@@ -308,7 +322,9 @@ function SvgCanvas(c)
 						"stroke-dasharray": current_stroke_style,
 						"stroke-opacity": current_stroke_opacity,
 						"fill-opacity": current_fill_opacity,
-						"opacity": current_opacity / 2
+						"opacity": current_opacity / 2,
+						"start-dur": start_ele_time,
+						"end-dur": start_ele_time
 					}
 				});
 				break;
@@ -328,7 +344,9 @@ function SvgCanvas(c)
 						"stroke-dasharray": current_stroke_style,
 						"stroke-opacity": current_stroke_opacity,
 						"fill-opacity": current_fill_opacity,
-						"opacity": current_opacity / 2
+						"opacity": current_opacity / 2,
+						"start-dur": start_ele_time,
+						"end-dur": start_ele_time
 					}
 				});
 				break;
@@ -435,6 +453,10 @@ function SvgCanvas(c)
 		started = false;
 		var element = svgdoc.getElementById(getId());
 		var keep = false;
+		
+		var curr_time = (new Date()).getTime();
+		end_ele_time = curr_time - load_time;
+		
 		switch (current_mode)
 		{
 			case "select":
@@ -500,22 +522,27 @@ function SvgCanvas(c)
 				break;
 			case "path":
 				keep = true;
+				element.setAttribute("end-dur", end_ele_time);
 				break;
 			case "line":
 				keep = (element.getAttribute('x1') != element.getAttribute('x2') ||
 				        element.getAttribute('y1') == element.getAttribute('y2'));
+				element.setAttribute("end-dur", end_ele_time);
 				break;
 			case "square":
 			case "rect":
 				keep = (element.getAttribute('width') != 0 ||
 				        element.getAttribute('height') != 0);
+				element.setAttribute("end-dur", end_ele_time);
 				break;
 			case "circle":
 				keep = (element.getAttribute('r') != 0);
+				element.setAttribute("end-dur", end_ele_time);
 				break;
 			case "ellipse":
 				keep = (element.getAttribute('rx') != 0 ||
 				        element.getAttribute('ry') != 0);
+				element.setAttribute("end-dur", end_ele_time);
 				break;
 			case "fhellipse":
 				if ((freehand_max_x - freehand_min_x) > 0 &&
@@ -534,7 +561,9 @@ function SvgCanvas(c)
 							"stroke-dasharray": current_stroke_style,
 							"opacity": current_opacity,
 							"stroke-opacity": current_stroke_opacity,
-							"fill-opacity": current_fill_opacity
+							"fill-opacity": current_fill_opacity,
+							"start-dur": start_ele_time,
+							"end-dur": end_ele_time
 						}
 					}));
 					keep = true;
@@ -557,7 +586,9 @@ function SvgCanvas(c)
 							"stroke-dasharray": current_stroke_style,
 							"opacity": current_opacity,
 							"stroke-opacity": current_stroke_opacity,
-							"fill-opacity": current_fill_opacity
+							"fill-opacity": current_fill_opacity,
+							"start-dur": start_ele_time,
+							"end-dur": end_ele_time
 						}
 					}));
 					keep = true;
