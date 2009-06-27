@@ -112,7 +112,7 @@ function SvgCanvas(c)
 	var obj_num = 1;
 	var start_x = null;
 	var start_y = null;
-	var current_mode = "path";
+	var current_mode = "select";
 	var current_resize_mode = "none";
 	var current_fill = "none";
 	var current_stroke = "black";
