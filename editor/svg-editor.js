@@ -234,7 +234,7 @@ function svg_edit_setup() {
 		if ($(button).hasClass('tool_button_disabled')) return false;
 
 		$('#styleoverrides').text('');
-		$('.tools_flyout').hide();
+		$('.tools_flyout').hide("slow");
 		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 		$(button).addClass('tool_button_current');
 		// when a tool is selected, we should deselect the currently selected element
@@ -513,13 +513,13 @@ function svg_edit_setup() {
 	});
 
 	// this hides any flyouts and then shows the rect flyout
-	$('#tools_rect_show').click(function(){
+	$('#tools_rect_show').mouseover(function(){
 		$('.tools_flyout').hide();
 		$('#tools_rect').show();
 	});
 
 	// this hides any flyouts and then shows the circle flyout
-	$('#tools_ellipse_show').click(function(){
+	$('#tools_ellipse_show').mouseover(function(){
 		$('.tools_flyout').hide();
 		$('#tools_ellipse').show();
 	});
