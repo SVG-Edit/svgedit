@@ -213,7 +213,7 @@ function SvgCanvas(c)
 			var attr;
 			var i;
 			var childs = elem.childNodes;
-			for (i=0; i<indent; i++) out += "  ";
+			for (i=0; i<indent; i++) out += " ";
 			out += "<" + elem.nodeName;
 			for (i=attrs.length-1; i>=0; i--) {
 				attr = attrs.item(i);
@@ -222,22 +222,26 @@ function SvgCanvas(c)
 				}
 			}
 			if (elem.hasChildNodes()) {
-				out += ">\n";
+				out += ">";
 				indent++;
+				var bOneLine = false;
 				for (i=0; i<childs.length; i++)
 				{
 					if (childs.item(i).nodeType == 1) { // element node
-						out = out + svgToString(childs.item(i), indent);
+						out += "\n" + svgToString(childs.item(i), indent);
 					} else if (childs.item(i).nodeType == 3) { // text node
-						for (j=0; j<indent; j++) out += "  ";
+						bOneLine = true;
 						out += childs.item(i).nodeValue + "";
 					}
 				}
 				indent--;
-				for (i=0; i<indent; i++) out += "  ";
-				out += "</" + elem.nodeName + ">\n";
+				if (!bOneLine) { 
+					out += "\n"; 
+					for (i=0; i<indent; i++) out += " ";
+				}
+				out += "</" + elem.nodeName + ">";
 			} else {
-				out += " />\n";
+				out += "/>";
 			}
 		}
 		return out;
@@ -882,7 +886,8 @@ function SvgCanvas(c)
 		// remove the selected outline before serializing
 		this.selectNone();
 		var str = "<?xml version=\"1.0\" standalone=\"no\"?>\n";
-		str += "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
+		// see http://jwatt.org/svg/authoring/#doctype-declaration
+//		str += "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
 		str += svgToString(svgroot, 0);
 		this.saveHandler(str);
 	}
