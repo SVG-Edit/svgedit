@@ -227,14 +227,12 @@ function svg_edit_setup() {
 
 	// This is a common function used when a tool has been clicked (chosen)
 	// It does several common things:
-	// - hides any flyout menus
 	// - removes the tool_button_current class from whatever tool currently has it
 	// - adds the tool_button_current class to the button passed in
 	var toolButtonClick = function(button) {
 		if ($(button).hasClass('tool_button_disabled')) return false;
 
 		$('#styleoverrides').text('');
-		$('.tools_flyout').hide("slow");
 		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 		$(button).addClass('tool_button_current');
 		// when a tool is selected, we should deselect the currently selected element
@@ -420,7 +418,6 @@ function svg_edit_setup() {
 	$(document).bind('keydown', {combi:'y', disableInInput: true}, clickRedo);
 
 	var colorPicker = function(elem) {
-		$('.tools_flyout').hide();
 		var oldbg = elem.css('background');
 		var color = elem.css('background-color');
 		var was_none = false;
@@ -512,15 +509,19 @@ function svg_edit_setup() {
 		updateToolButtonState();
 	});
 
-	// this hides any flyouts and then shows the rect flyout
-	$('#tools_rect_show').mouseover(function(){
-		$('.tools_flyout').hide();
+	$('#tools_rect_show').mouseenter(function(){
 		$('#tools_rect').show();
 	});
 
-	// this hides any flyouts and then shows the circle flyout
-	$('#tools_ellipse_show').mouseover(function(){
-		$('.tools_flyout').hide();
+	$('#tools_rect').mouseleave(function() {
+		$('#tools_rect').hide();
+	});
+	
+	$('#tools_ellipse').mouseleave(function() {
+		$('#tools_ellipse').hide();
+	});
+	
+	$('#tools_ellipse_show').mouseenter(function(){
 		$('#tools_ellipse').show();
 	});
 
