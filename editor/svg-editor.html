@@ -14,18 +14,12 @@
 
 <div id="svg_editor">
 
-<div id="color_picker" class="tools_flyout"></div>
+<div id="workarea">
 
-<div id="tools_rect" class="tools_flyout">
-<div id="tool_square" title="Square"></div>
-<div id="tool_rect" title="Rectangle"></div>
-<div id="tool_fhrect" title="Free-Hand Rectangle"></div>
+<style id="styleoverrides" type="text/css"></style>
+<div id="svgcanvas">
 </div>
 
-<div id="tools_ellipse" class="tools_flyout">
-<div id="tool_circle" title="Circle"></div>
-<div id="tool_ellipse" title="Ellipse"></div>
-<div id="tool_fhellipse" title="Free-Hand Ellipse"></div>
 </div>
 
 <div id="context_tools" class="tools_panel">
@@ -139,113 +133,116 @@
 	</div>
 </div>
 
-<div id="tools" class="tools_panel">
-
-<img class="tool_button_current" id="tool_select" src="images/select.png" title="Select Tool [1]" alt="Select"/><br/>
-<img class="tool_button" id="tool_path" src="images/path.png" title="Pencil Tool [2]" alt="Pencil"/><br/>
-<img class="tool_button" id="tool_line" src="images/line.png" title="Line Tool [3]" alt="Line"/><br/>
-<img class="tool_button" id="tools_rect_show" src="images/square.png" title="Square/Rect Tool [4/Shift+4]" alt="Square"/><br/>
-<img class="tool_button" id="tools_ellipse_show" src="images/circle.png" title="Ellipse/Circle Tool [5/Shift+5]" alt="Circle"/><br/>
-<img class="tool_button" id="tool_text" src="images/text.png" title="Text Tool [6]" alt="Text"/>
-
-<hr/>
-
-<div>opacity<br/>
-<select id="group_opacity" title="Change group opacity">
-<option selected="selected" value="1">100 %</option>
-<option value="0.9">90 %</option>
-<option value="0.8">80 %</option>
-<option value="0.7">70 %</option>
-<option value="0.6">60 %</option>
-<option value="0.5">50 %</option>
-<option value="0.4">40 %</option>
-<option value="0.3">30 %</option>
-<option value="0.2">20 %</option>
-<option value="0.1">10 %</option>
-</select>
-</div>
-
-<hr/>
-
-<div>fill
-<div id="fill_color" title="Change fill color"></div>
-<select id="fill_opacity" title="Change fill opacity">
-<option selected="selected" value="1">100 %</option>
-<option value="0.9">90 %</option>
-<option value="0.8">80 %</option>
-<option value="0.7">70 %</option>
-<option value="0.6">60 %</option>
-<option value="0.5">50 %</option>
-<option value="0.4">40 %</option>
-<option value="0.3">30 %</option>
-<option value="0.2">20 %</option>
-<option value="0.1">10 %</option>
-</select>
-</div>
-
-<hr/>
-
-<div>stroke
-<div id="stroke_color" title="Change stroke color"></div>
-<div>
-<select id="stroke_width" title="Change stroke width">
-<option selected="selected" value="1">1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="5">5</option>
-<option value="7">7</option>
-</select>
-</div><div>
-<select id="stroke_style" title="Change stroke dash style">
-<option selected="selected" value="none">---</option>
-<option value="2,2">...</option>
-<option value="5,5">- -</option>
-<option value="5,2,2,2">- .</option>
-<option value="5,2,2,2,2,2">- ..</option>
-</select>
-</div>
-<div>
-<select id="stroke_opacity" title="Change stroke opacity">
-<option selected="selected" value="1">100 %</option>
-<option value="0.9">90 %</option>
-<option value="0.8">80 %</option>
-<option value="0.7">70 %</option>
-<option value="0.6">60 %</option>
-<option value="0.5">50 %</option>
-<option value="0.4">40 %</option>
-<option value="0.3">30 %</option>
-<option value="0.2">20 %</option>
-<option value="0.1">10 %</option>
-</select>
-</div>
-</div>
-
-</div>
-
-<div id="workarea">
-
-<style id="styleoverrides" type="text/css"></style>
-<div id="svgcanvas">
-</div>
-
 <div id="palette_holder">
-<div id="palette" title="Click to change fill color, shift-click to change stroke color">
-</div>
-</div>
-
+	<div id="palette" title="Click to change fill color, shift-click to change stroke color"></div>
 </div>
 
 <div id="footer" class="tools_panel">
-<div id="footer_left">
-<select id="resolution">
-<option selected="selected">640x480</option>
-<option>800x600</option>
-<option>1024x768</option>
-</select>
-</div><div id ="footer_right">
-SVG-edit v2.2-preAlpha @ <a href="http://svg-edit.googlecode.com/">http://svg-edit.googlecode.com/</a>
+	<div id="footer_left">
+		<select id="resolution">
+			<option selected="selected">640x480</option>
+			<option>800x600</option>
+			<option>1024x768</option>
+			<option>1280x960</option>
+			<option>1600x1200</option>
+		</select>
+	</div>
+	<div id ="footer_right">SVG-edit v2.2-preAlpha @ <a href="http://svg-edit.googlecode.com/">http://svg-edit.googlecode.com/</a>
+	</div>
 </div>
-</div>
+
+<div id="tools_container">
+	<div id="tools" class="tools_panel">
+		<img class="tool_button_current" id="tool_select" src="images/select.png" title="Select Tool [1]" alt="Select"/><br/>
+		<img class="tool_button" id="tool_path" src="images/path.png" title="Pencil Tool [2]" alt="Pencil"/><br/>
+		<img class="tool_button" id="tool_line" src="images/line.png" title="Line Tool [3]" alt="Line"/><br/>
+		<img class="tool_button" id="tools_rect_show" src="images/square.png" title="Square/Rect Tool [4/Shift+4]" alt="Square"/><br/>
+		<img class="tool_button" id="tools_ellipse_show" src="images/circle.png" title="Ellipse/Circle Tool [5/Shift+5]" alt="Circle"/><br/>
+		<img class="tool_button" id="tool_text" src="images/text.png" title="Text Tool [6]" alt="Text"/>
+
+		<hr/>
+
+		<div>opacity<br/>
+			<select id="group_opacity" title="Change group opacity">
+				<option selected="selected" value="1">100 %</option>
+				<option value="0.9">90 %</option>
+				<option value="0.8">80 %</option>
+				<option value="0.7">70 %</option>
+				<option value="0.6">60 %</option>
+				<option value="0.5">50 %</option>
+				<option value="0.4">40 %</option>
+				<option value="0.3">30 %</option>
+				<option value="0.2">20 %</option>
+				<option value="0.1">10 %</option>
+			</select>
+		</div> <!-- opacity -->
+
+		<hr/>
+
+		<div>fill<br/>
+			<div id="fill_color" class="color_block"  title="Change fill color"></div>
+			<select id="fill_opacity" title="Change fill opacity">
+				<option selected="selected" value="1">100 %</option>
+				<option value="0.9">90 %</option>
+				<option value="0.8">80 %</option>
+				<option value="0.7">70 %</option>
+				<option value="0.6">60 %</option>
+				<option value="0.5">50 %</option>
+				<option value="0.4">40 %</option>
+				<option value="0.3">30 %</option>
+				<option value="0.2">20 %</option>
+				<option value="0.1">10 %</option>
+			</select>
+		</div> <!-- fill -->
+
+		<hr/>
+
+		<div>stroke<br/>
+			<div id="stroke_color" class="color_block" title="Change stroke color"></div><br/>
+			<select id="stroke_width" title="Change stroke width">
+				<option selected="selected" value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="5">5</option>
+				<option value="7">7</option>
+			</select>
+			<select id="stroke_style" title="Change stroke dash style">
+				<option selected="selected" value="none">---</option>
+				<option value="2,2">...</option>
+				<option value="5,5">- -</option>
+				<option value="5,2,2,2">- .</option>
+				<option value="5,2,2,2,2,2">- ..</option>
+			</select>
+			<select id="stroke_opacity" title="Change stroke opacity">
+				<option selected="selected" value="1">100 %</option>
+				<option value="0.9">90 %</option>
+				<option value="0.8">80 %</option>
+				<option value="0.7">70 %</option>
+				<option value="0.6">60 %</option>
+				<option value="0.5">50 %</option>
+				<option value="0.4">40 %</option>
+				<option value="0.3">30 %</option>
+				<option value="0.2">20 %</option>
+				<option value="0.1">10 %</option>
+			</select>
+		</div> <!-- stroke -->
+	</div> <!-- tools -->
+
+	<div id="color_picker" class="tools_flyout"></div>
+
+	<div id="tools_rect" class="tools_flyout">
+		<div id="tool_square" title="Square"></div>
+		<div id="tool_rect" title="Rectangle"></div>
+		<div id="tool_fhrect" title="Free-Hand Rectangle"></div>
+	</div>
+
+	<div id="tools_ellipse" class="tools_flyout">
+		<div id="tool_circle" title="Circle"></div>
+		<div id="tool_ellipse" title="Ellipse"></div>
+		<div id="tool_fhellipse" title="Free-Hand Ellipse"></div>
+	</div>
+
+</div> <!-- tools_container -->
 
 </div>
 
