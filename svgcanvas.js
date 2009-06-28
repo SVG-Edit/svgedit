@@ -765,8 +765,11 @@ function SvgCanvas(c)
 				shape.setAttributeNS(null, "d", d_attr);
 				break;
 		}
+		// TODO: should we fire the change event here?  I'm thinking only fire
+		// this event when the user mouses up.  That's when the action (create, 
+		// move, resize, draw) has finished
 		// fire changed event
-		call("changed", selected);		
+//		call("changed", selected);		
 	}
 
 	// in mouseUp, this is where the command is stored for later undo:
@@ -817,7 +820,7 @@ function SvgCanvas(c)
 			case "fhellipse":
 				if ((freehand_max_x - freehand_min_x) > 0 &&
 				    (freehand_max_y - freehand_min_y) > 0) {
-					call("changed",addSvgElementFromJson({
+				    element = addSvgElementFromJson({
 						"element": "ellipse",
 						"attr": {
 							"cx": (freehand_min_x + freehand_max_x) / 2,
@@ -833,14 +836,15 @@ function SvgCanvas(c)
 							"stroke-opacity": current_stroke_opacity,
 							"fill-opacity": current_fill_opacity
 						}
-					}));
+					});
+					call("changed",element);
 					keep = true;
 				}
 				break;
 			case "fhrect":
 				if ((freehand_max_x - freehand_min_x) > 0 &&
 				    (freehand_max_y - freehand_min_y) > 0) {
-					call("changed",addSvgElementFromJson({
+				    element = addSvgElementFromJson({
 						"element": "rect",
 						"attr": {
 							"x": freehand_min_x,
@@ -856,7 +860,8 @@ function SvgCanvas(c)
 							"stroke-opacity": current_stroke_opacity,
 							"fill-opacity": current_fill_opacity
 						}
-					}));
+					});
+					call("changed",element);
 					keep = true;
 				}
 				break;
