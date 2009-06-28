@@ -228,10 +228,11 @@ function svg_edit_setup() {
 	// This is a common function used when a tool has been clicked (chosen)
 	// It does several common things:
 	// - removes the tool_button_current class from whatever tool currently has it
+	// - hides any flyouts
 	// - adds the tool_button_current class to the button passed in
 	var toolButtonClick = function(button) {
 		if ($(button).hasClass('tool_button_disabled')) return false;
-
+		$('.tools_flyout').hide();
 		$('#styleoverrides').text('');
 		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 		$(button).addClass('tool_button_current');
@@ -355,12 +356,12 @@ function svg_edit_setup() {
 	$('#tool_select').click(clickSelect);
 	$('#tool_path').click(clickPath);
 	$('#tool_line').click(clickLine);
-	$('#tool_square').click(clickSquare);
-	$('#tool_rect').click(clickRect);
-	$('#tool_fhrect').click(clickFHRect);
-	$('#tool_circle').click(clickCircle);
-	$('#tool_ellipse').click(clickEllipse);
-	$('#tool_fhellipse').click(clickFHEllipse);
+	$('#tool_square').mouseup(clickSquare);
+	$('#tool_rect').mouseup(clickRect);
+	$('#tool_fhrect').mouseup(clickFHRect);
+	$('#tool_circle').mouseup(clickCircle);
+	$('#tool_ellipse').mouseup(clickEllipse);
+	$('#tool_fhellipse').mouseup(clickFHEllipse);
 	$('#tool_text').click(clickText);
 	$('#tool_clear').click(clickClear);
 	$('#tool_save').click(clickSave);
@@ -369,6 +370,9 @@ function svg_edit_setup() {
 	$('#tool_move_bottom').click(moveToBottomSelected);
 	$('#tool_undo').click(clickUndo);
 	$('#tool_redo').click(clickRedo);
+	// these two lines are required to make Opera work properly with the new flyout mechanism
+	$('#tools_rect_show').click(clickSquare);
+	$('#tools_ellipse_show').click(clickCircle);
 
 	// added these event handlers for all the push buttons so they
 	// behave more like buttons being pressed-in and not images
@@ -509,22 +513,30 @@ function svg_edit_setup() {
 		updateToolButtonState();
 	});
 
-	$('#tools_rect_show').mouseenter(function(){
+	$('#tools_rect_show').mousedown(function(evt){
 		$('#tools_rect').show();
+		// this prevents the 'image drag' behavior in Firefox
+		evt.preventDefault();
 	});
-
 	$('#tools_rect').mouseleave(function() {
 		$('#tools_rect').hide();
 	});
 	
+	$('#tools_ellipse_show').mousedown(function(evt){
+		$('#tools_ellipse').show();
+		// this prevents the 'image drag' behavior in Firefox
+		evt.preventDefault();
+	});
 	$('#tools_ellipse').mouseleave(function() {
 		$('#tools_ellipse').hide();
 	});
 	
-	$('#tools_ellipse_show').mouseenter(function(){
-		$('#tools_ellipse').show();
+	$('.tool_flyout_button').mouseover(function() {
+		$(this).addClass('tool_flyout_button_current');
+	}).mouseout(function() {
+		$(this).removeClass('tool_flyout_button_current');
 	});
-
+	
 	function changeResolution(x,y) {
 		$('#resolution').val(x+'x'+y);
 		$('#svgroot').css( { 'width': x, 'height': y } );
