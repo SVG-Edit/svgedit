@@ -494,8 +494,8 @@ function SvgCanvas(c)
 	//   and do nothing else
 	var mouseDown = function(evt)
 	{
-		var x = evt.pageX - container.offsetLeft;
-		var y = evt.pageY - container.offsetTop;
+		var x = evt.pageX - container.parentNode.offsetLeft;
+		var y = evt.pageY - container.parentNode.offsetTop;
 		switch (current_mode) {
 			case "select":
 				started = true;
@@ -652,8 +652,8 @@ function SvgCanvas(c)
 	var mouseMove = function(evt)
 	{
 		if (!started) return;
-		var x = evt.pageX - container.offsetLeft;
-		var y = evt.pageY - container.offsetTop;
+		var x = evt.pageX - container.parentNode.offsetLeft;
+		var y = evt.pageY - container.parentNode.offsetTop;
 		var shape = svgdoc.getElementById(getId());
 		switch (current_mode)
 		{
