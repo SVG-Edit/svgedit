@@ -240,7 +240,7 @@ div.color_block {
 	background: 2px 2px url('images/freehand-circle.png') no-repeat;
 }
 
-#svg_editor #tools_rect div, #svg_editor #tools_ellipse div {
+#svg_editor #tools_rect .tool_flyout_button, #svg_editor #tools_ellipse .tool_flyout_button {
 	float: left;
 	background-color: #E8E8E8;
 	border-left: 1px solid #FFFFFF;
@@ -249,6 +249,14 @@ div.color_block {
 	border-bottom: 1px solid #808080;
 	height: 28px;
 	width: 28px;
+}
+
+#svg_editor #tools_rect .tool_flyout_button_current, #svg_editor #tools_ellipse .tool_flyout_button_current {
+	border-left: 1px solid #808080;
+	border-top: 1px solid #808080;
+	border-right: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	background-color: #B0B0B0;
 }
 
 #svg_editor #footer {
