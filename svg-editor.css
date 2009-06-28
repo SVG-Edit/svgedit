@@ -200,12 +200,12 @@ div.color_block {
 	padding: 2px;
 }
 
-#svg_editor #color_pick {
+#svg_editor #color_picker {
 	position: absolute;
 	display: none;
 	background: #E8E8E8;
-	border: 1px solid #808080;
-	padding: 5px;
+/*	border: 1px solid #808080;
+	padding: 5px;*/
 }
 
 #svg_editor .tools_flyout {
