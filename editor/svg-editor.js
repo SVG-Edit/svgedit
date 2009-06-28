@@ -232,7 +232,7 @@ function svg_edit_setup() {
 	// - adds the tool_button_current class to the button passed in
 	var toolButtonClick = function(button) {
 		if ($(button).hasClass('tool_button_disabled')) return false;
-		$('.tools_flyout').hide();
+		$('.tools_flyout').fadeOut();
 		$('#styleoverrides').text('');
 		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 		$(button).addClass('tool_button_current');
@@ -440,7 +440,7 @@ function svg_edit_setup() {
 		}
 		var pos = elem.position();
 		picker = 'stroke';
-		$('#color_picker').css({'left': pos.left, 'top': pos.top}).jPicker({
+		$('#color_picker').css({'left': pos.left, 'top': pos.top-300}).jPicker({
 			images: { clientPath: "jpicker/images/" },
 			color: { active: color }
 		}, function(color){
@@ -519,7 +519,7 @@ function svg_edit_setup() {
 		evt.preventDefault();
 	});
 	$('#tools_rect').mouseleave(function() {
-		$('#tools_rect').hide();
+		$('#tools_rect').fadeOut();
 	});
 	
 	$('#tools_ellipse_show').mousedown(function(evt){
@@ -528,7 +528,7 @@ function svg_edit_setup() {
 		evt.preventDefault();
 	});
 	$('#tools_ellipse').mouseleave(function() {
-		$('#tools_ellipse').hide();
+		$('#tools_ellipse').fadeOut();
 	});
 	
 	$('.tool_flyout_button').mouseover(function() {
