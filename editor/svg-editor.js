@@ -440,7 +440,7 @@ function svg_edit_setup() {
 		}
 		var pos = elem.position();
 		picker = 'stroke';
-		$('#color_picker').css({'left': pos.left + 40, 'bottom': 104 - pos.top}).jPicker({
+		$('#color_picker').css({'left': pos.left - 140, 'bottom': 104 - pos.top}).jPicker({
 			images: { clientPath: "jpicker/images/" },
 			color: { active: color }
 		}, function(color){
