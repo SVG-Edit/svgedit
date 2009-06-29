@@ -425,7 +425,7 @@ function svg_edit_setup() {
 		var oldbg = elem.css('background');
 		var color = elem.css('background-color');
 		var was_none = false;
-		if (color == 'transparent') {
+		if (color == 'transparent' || color == 'initial') {
 			color = new $.jPicker.Color({ hex: 'ffffff' });
 			was_none = true;
 		} else {
@@ -440,7 +440,7 @@ function svg_edit_setup() {
 		}
 		var pos = elem.position();
 		picker = 'stroke';
-		$('#color_picker').css({'left': pos.left, 'top': pos.top-300}).jPicker({
+		$('#color_picker').css({'left': pos.left + 40, 'bottom': 104 - pos.top}).jPicker({
 			images: { clientPath: "jpicker/images/" },
 			color: { active: color }
 		}, function(color){
@@ -452,7 +452,10 @@ function svg_edit_setup() {
 			}
 			$('#color_picker').hide();
 		}
-		, null, function(){
+		, function(color){
+			elem.css('background', '#' + this.settings.color.active.hex);
+		}
+		, function(){
 			elem.css('background', oldbg);
 			if (was_none) {
 				if (elem.attr('id') == 'stroke_color') {
