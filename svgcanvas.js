@@ -314,7 +314,10 @@ function SvgCanvas(c)
 	var freehand_max_x = null;
 	var freehand_min_y = null;
 	var freehand_max_y = null;
-	var selected = null;
+	// this will hold all the currently selected elements
+	// default size of 1 until it needs to grow bigger
+	var selectedElements = new Array(1); 
+//	var selected = null;
 	var selectedBBox = null;
 	var selectedOperation = 'resize'; // could be {resize,rotate}
 	var selectorManager = new SelectorManager();
@@ -426,6 +429,7 @@ function SvgCanvas(c)
 	} // end svgToString()
 
 	function recalculateSelectedDimensions() {
+		var selected = selectedElements[0];
 		var box = selected.getBBox();
 
 		// if we have not moved/resized, then immediately leave
@@ -529,6 +533,7 @@ function SvgCanvas(c)
 	}
 
 	var recalculateSelectedOutline = function() {
+		var selected = selectedElements[0];
 		if (selected != null && theSelector != null) {
 			theSelector.resize(selectedBBox);
 		}
@@ -539,6 +544,7 @@ function SvgCanvas(c)
 	// call this function with null to clear the selected element
 	var selectElement = function(newSelected)
 	{
+		var selected = selectedElements[0];	
 		if (selected == newSelected) return;
 
 		// remove selected outline from previously selected element
@@ -546,7 +552,8 @@ function SvgCanvas(c)
 			selectorManager.releaseSelector(theSelector);
 		}
 
-		selected = newSelected;
+		selectedElements[0] = newSelected;
+		selected = selectedElements[0];
 
 		if (selected != null) {
 			selectedBBox = selected.getBBox();
@@ -741,6 +748,7 @@ function SvgCanvas(c)
 	var mouseMove = function(evt)
 	{
 		if (!started) return;
+		var selected = selectedElements[0];
 		var x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
 		var y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
 		var shape = svgdoc.getElementById(getId());
@@ -871,6 +879,7 @@ function SvgCanvas(c)
 	{
 		if (!started) return;
 
+		var selected = selectedElements[0];
 		started = false;
 		var element = svgdoc.getElementById(getId());
 		var keep = false;
@@ -1128,6 +1137,7 @@ function SvgCanvas(c)
 	}
 
 	this.getText = function() {
+		var selected = selectedElements[0];
 		if (selected == null) { return ""; }
 		return selected.textContent;
 	}
@@ -1137,6 +1147,7 @@ function SvgCanvas(c)
 	}
 
 	this.setRectRadius = function(val) {
+		var selected = selectedElements[0];
 		if (selected != null && selected.tagName == "rect") {
 			var r = selected.getAttribute("rx");
 			if (r != val) {
@@ -1149,6 +1160,7 @@ function SvgCanvas(c)
 	}
 
 	this.changeSelectedAttribute = function(attr, val) {
+		var selected = selectedElements[0];
 		if (selected != null) {
 			var oldval = (attr == "#text" ? selected.textContent : selected.getAttribute(attr));
 			if (oldval != val) {
@@ -1177,6 +1189,7 @@ function SvgCanvas(c)
 	}
 
 	this.deleteSelectedElement = function() {
+		var selected = selectedElements[0];
 		if (selected != null) {
 			var parent = selected.parentNode;
 			var t = selected;
@@ -1188,6 +1201,7 @@ function SvgCanvas(c)
 	}
 
 	this.moveToTopSelectedElement = function() {
+		var selected = selectedElements[0];
 		if (selected != null) {
 			var t = selected;
 			var oldParent = t.parentNode;
@@ -1199,6 +1213,7 @@ function SvgCanvas(c)
 	}
 
 	this.moveToBottomSelectedElement = function() {
+		var selected = selectedElements[0];
 		if (selected != null) {
 			var t = selected;
 			var oldParent = t.parentNode;
@@ -1210,6 +1225,7 @@ function SvgCanvas(c)
 	}
 
 	this.moveSelectedElement = function(dx,dy) {
+		var selected = selectedElements[0];
 		if (selected != null) {
 			selectedBBox = selected.getBBox();
 			selectedBBox.x += dx;
