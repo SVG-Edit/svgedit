@@ -166,9 +166,9 @@ function svg_edit_setup() {
 	$('#palette').append(str);
 
 	var pos = $('#tools_rect_show').position();
-	$('#tools_rect').css({'left': pos.left+4, 'top': pos.top+40});
+	$('#tools_rect').css({'left': pos.left+4, 'top': pos.top+70});
 	pos = $('#tools_ellipse_show').position();
-	$('#tools_ellipse').css({'left': pos.left+4, 'top': pos.top+40});
+	$('#tools_ellipse').css({'left': pos.left+4, 'top': pos.top+70});
 
 	$('#stroke_width').change(function(){
 		svgCanvas.setStrokeWidth(this.options[this.selectedIndex].value);
