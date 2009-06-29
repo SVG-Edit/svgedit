@@ -65,7 +65,7 @@ body {
 
 #svg_editor div#workarea {
 	position:absolute;
-	top: 40px;
+	top: 70px;
 	left: 40px;
 	right: 2px;
 	bottom: 100px;
@@ -85,7 +85,7 @@ body {
 	left: 38px;
 	right: 2px;
 	top: 2px;
-	height: 36px;
+	height: 68px;
 	border-bottom: none;
 }
 
@@ -97,7 +97,7 @@ body {
 	position: absolute;
 	border-right: none;
 	width: 36px;
-	top: 38px;
+	top: 68px;
 	left: 2px;
 }
 
