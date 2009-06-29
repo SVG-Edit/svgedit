@@ -97,142 +97,190 @@ function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 // commands to (this will be useful for making changes to many elements in a 
 // multiselection at one, we don't want to have to undo each element's change)
 
-// **************************************************************************************
-// This section holds code that will be used for multi-select, it's basically abstracting
-// all of the selector creation/manipulation that is being used in SvgCanvas into its own
-// set of classes.  NOTE: This code is _NOT_ being used yet.
-
-// FIXME: what's the right way to make this 'class' private to the SelectorManager? 
-function Selector(id, elem) {
-	// this is the selector's unique number
-	this.id = id;
-	
-	// this holds a reference to the element for which this selector is being used
-	this.selectedElement = elem;
-	
-	// this is a flag used internally to track whether the selector is being used or not
-	this.locked = true;
-	
-	// this function is used to reset the id and element that the selector is attached to
-	this.reset = function(e) {
-		this.locked = true;
-		this.selectedElement = e;
-	};
-	
-	// this holds a reference to the <g> element that holds all visual elements of the selector
-	this.selectorGroup = addSvgElementFromJson({ "element": "g",
-													"attr": {
-														"id": ("selectorGroup"+this.id),
-													}
-												});
-	
-	// this holds a reference to <rect> element
-	this.selectorRect = this.selectorGroup.appendChild( addSvgElementFromJson({
-							"element": "rect",
-							"attr": {
-								"id": ("selectedBox"+this.id),
-								"fill": "none",
-								"stroke": "blue",
-								"stroke-width": "1",
-								"stroke-dasharray": "5,5",
-								"width": 1,
-								"height": 1,
-								// need to specify this style so that the selectedOutline is not selectable
-								"style": "pointer-events:none",
-							}
-						}) );
-	
-	// this holds a reference to the grip elements for this selector
-	this.selectorGrips = {	"nw":null,
-							"n":null,
-							"ne":null,
-							"w":null,
-							"e":null,
-							"sw":null,
-							"s":null,
-							"se":null,
-							};
-				
-	// add the corner grips
-	for (dir in selectedGrips) {
-		this.selectorGrips[dir] = this.selectorGroup.appendChild( addSvgElementFromJson({
-									"element": "rect",
-									"attr": {
-										"id": (dir + "_grip" + this.id),
-										"fill": "blue",
-										"width": 6,
-										"height": 6,
-										"style": ("cursor:" + dir + "-resize"),
-										// when we are in rotate mode, we will set rx/ry to 3
-//										"rx": 3,
-//										"ry": 3,
-										// This expands the mouse-able area of the grips making them
-										// easier to grab with the mouse.
-										// This works in Opera and WebKit, but does not work in Firefox
-										// see https://bugzilla.mozilla.org/show_bug.cgi?id=500174
-										"stroke-width": 2,
-										"pointer-events": "all",
-									}
-								}) );
-		$('#'+this.selectorGrips[dir].id).mousedown( function() {
-			current_mode = "resize";
-			current_resize_mode = this.id.substr(0,this.id.indexOf("_"));
-		});
-	}
-							
-};
-
-function SelectorManager() {
-	// this will hold the <g> element that contains all selector rects/grips
-	this.selectorParentGroup = null;
-	
-	// this will hold objects of type Selector (see above)
-	this.selectors = [];
-	
-	this.requestSelector = function(elem) {
-		var N = this.selectors.length;
-		
-		// if this is the first time a selector is being requested
-		// create the group, add it to the DOM and save a reference to it
-		if (this.selectorParentGroup == null) {
-			this.selectorParentGroup = addSvgElementFromJson({
-											"element": "g",
-											"attr": {
-												"id": "selectorParentGroup",
-											}
-										});
-		}
-		
-		for (var i = 0; i < N; ++i) {
-			if (this.selectors[i] && !this.selectors[i].locked) {
-				this.selectors[i].locked = true;
-				this.selectors[i].reset(elem);
-				return this.selectors[i];
-			}
-		}
-		// if we reached here, no available selectors were found, we create one
-		this.selectors[N] = new Selector(N, elem);
-		this.selectorParentGroup.appendChild(this.selectors[N].selectorGroup);
-		return this.selectors[N];
-	};
-	this.releaseSelector = function(sel) {
-		var N = this.selectors.length;
-		for (var i = 0; i < N; ++i) {
-			if (this.selectors[i] && this.selectors[i] == sel) {
-				if (sel.locked == false) {
-					console.log("WARNING! selector was released but was not unlocked");
-				}
-				sel.locked = false;
-				break;
-			}
-		}
-	};
-}
-// **************************************************************************************
-
 function SvgCanvas(c)
 {
 // private members
+
+	// **************************************************************************************
+	// FIXME: what's the right way to make this 'class' private to the SelectorManager? 
+	function Selector(id, elem) {
+		// this is the selector's unique number
+		this.id = id;
+	
+		// this holds a reference to the element for which this selector is being used
+		this.selectedElement = elem;
+	
+		// this is a flag used internally to track whether the selector is being used or not
+		this.locked = true;
+	
+		// this function is used to reset the id and element that the selector is attached to
+		this.reset = function(e) {
+			this.locked = true;
+			this.selectedElement = e;
+			this.selectorGroup.setAttribute("display", "inline");
+		};
+	
+		// this holds a reference to the <g> element that holds all visual elements of the selector
+		this.selectorGroup = addSvgElementFromJson({ "element": "g",
+													"attr": {"id": ("selectorGroup"+this.id)}
+													});
+	
+		// this holds a reference to <rect> element
+		this.selectorRect = this.selectorGroup.appendChild( addSvgElementFromJson({
+								"element": "rect",
+								"attr": {
+									"id": ("selectedBox"+this.id),
+									"fill": "none",
+									"stroke": "blue",
+									"stroke-width": "1",
+									"stroke-dasharray": "5,5",
+									"width": 1,
+									"height": 1,
+									// need to specify this so that the rect is not selectable
+									"style": "pointer-events:none",
+								}
+							}) );
+	
+		// this holds a reference to the grip elements for this selector
+		this.selectorGrips = {	"nw":null,
+								"n":null,
+								"ne":null,
+								"w":null,
+								"e":null,
+								"sw":null,
+								"s":null,
+								"se":null,
+								};
+				
+		// add the corner grips
+		for (dir in this.selectorGrips) {
+			this.selectorGrips[dir] = this.selectorGroup.appendChild( addSvgElementFromJson({
+										"element": "rect",
+										"attr": {
+											"id": (dir + "_grip" + this.id),
+											"fill": "blue",
+											"width": 6,
+											"height": 6,
+											"style": ("cursor:" + dir + "-resize"),
+											// when we are in rotate mode, we will set rx/ry to 3
+//											"rx": 3,
+//											"ry": 3,
+											// This expands the mouse-able area of the grips making them
+											// easier to grab with the mouse.
+											// This works in Opera and WebKit, but does not work in Firefox
+											// see https://bugzilla.mozilla.org/show_bug.cgi?id=500174
+											"stroke-width": 2,
+											"pointer-events": "all",
+										}
+									}) );
+			$('#'+this.selectorGrips[dir].id).mousedown( function() {
+				current_mode = "resize";
+				current_resize_mode = this.id.substr(0,this.id.indexOf("_"));
+			});
+		}
+	
+		this.showGrips = function(show) {
+			for (dir in this.selectorGrips) {
+				this.selectorGrips[dir].setAttribute("display", show ? "inline" : "none");
+			}
+		};
+		
+		this.resize = function(bbox) {
+			var selectedBox = this.selectorRect;
+			var selectedGrips = this.selectorGrips;
+			var selected = this.selectedElement;
+			var sw = parseInt(selected.getAttribute("stroke-width"));
+			var offset = 1;
+			if (!isNaN(sw)) {
+				offset += sw/2;
+			}
+			if (selected.tagName == "text") {
+				offset += 2;
+			}
+			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
+			selectedBox.x.baseVal.value = l;
+			selectedBox.y.baseVal.value = t;
+			selectedBox.width.baseVal.value = w;
+			selectedBox.height.baseVal.value = h;
+			selectedGrips.nw.x.baseVal.value = l-3;
+			selectedGrips.nw.y.baseVal.value = t-3;
+			selectedGrips.ne.x.baseVal.value = l+w-3;
+			selectedGrips.ne.y.baseVal.value = t-3;
+			selectedGrips.sw.x.baseVal.value = l-3;
+			selectedGrips.sw.y.baseVal.value = t+h-3;
+			selectedGrips.se.x.baseVal.value = l+w-3;
+			selectedGrips.se.y.baseVal.value = t+h-3;
+			selectedGrips.n.x.baseVal.value = l+w/2-3;
+			selectedGrips.n.y.baseVal.value = t-3;
+			selectedGrips.w.x.baseVal.value = l-3;
+			selectedGrips.w.y.baseVal.value = t+h/2-3;
+			selectedGrips.e.x.baseVal.value = l+w-3;
+			selectedGrips.e.y.baseVal.value = t+h/2-3;
+			selectedGrips.s.x.baseVal.value = l+w/2-3;
+			selectedGrips.s.y.baseVal.value = t+h-3;
+		};
+	};
+
+	// TODO: consider a map of SVG elements to their selectors in the manager for
+	// quick access to the selector in question (as opposed to looping through the array)
+	function SelectorManager() {
+		// this will hold the <g> element that contains all selector rects/grips
+		this.selectorParentGroup = null;
+	
+		// this will hold objects of type Selector (see above)
+		this.selectors = [];
+	
+		this.requestSelector = function(elem) {
+			var N = this.selectors.length;
+		
+			// if this is the first time a selector is being requested
+			// create the group, add it to the DOM and save a reference to it
+			if (this.selectorParentGroup == null) {
+				this.selectorParentGroup = addSvgElementFromJson({
+												"element": "g",
+												"attr": {"id": "selectorParentGroup"}
+											});
+			}
+
+			for (var i = 0; i < N; ++i) {
+				if (this.selectors[i] && !this.selectors[i].locked) {
+					this.selectors[i].locked = true;
+					this.selectors[i].reset(elem);					
+					return this.selectors[i];
+				}
+			}
+			// if we reached here, no available selectors were found, we create one
+			this.selectors[N] = new Selector(N, elem);
+			this.selectorParentGroup.appendChild(this.selectors[N].selectorGroup);
+			return this.selectors[N];
+		};
+		this.releaseSelector = function(sel) {
+			var N = this.selectors.length;
+			for (var i = 0; i < N; ++i) {
+				if (this.selectors[i] && this.selectors[i] == sel) {
+					if (sel.locked == false) {
+						console.log("WARNING! selector was released but was already unlocked");
+					}
+					sel.locked = false;
+					sel.selectedElement = null;
+
+					// remove from DOM and store reference in JS but only if it exists in the DOM
+					try {
+						sel.selectorGroup.setAttribute("display", "none");
+					} catch(e) { }
+					
+					break;
+				}
+			}
+		};
+		
+		// this keeps the selector groups as the last child in the document
+		this.update = function() {
+			this.selectorParentGroup = svgroot.appendChild(this.selectorParentGroup);
+		}
+	}
+	// **************************************************************************************
+
 	var canvas = this;
 	var container = c;
 	var svgns = "http://www.w3.org/2000/svg";
@@ -267,20 +315,11 @@ function SvgCanvas(c)
 	var freehand_min_y = null;
 	var freehand_max_y = null;
 	var selected = null;
-	var selectedOutline = null;
 	var selectedBBox = null;
-	var selectedGrips = { 	"nw":null,
-							"n":null,
-							"ne":null,
-							"w":null,
-							"e":null,
-							"sw":null,
-							"s":null,
-							"se":null,
-						};
 	var selectedOperation = 'resize'; // could be {resize,rotate}
+	var selectorManager = new SelectorManager();
+	var theSelector = null;
 	var events = {};
-
 	var undoStackPointer = 0;
 	var undoStack = [];
 	
@@ -490,38 +529,8 @@ function SvgCanvas(c)
 	}
 
 	var recalculateSelectedOutline = function() {
-		if (selected != null && selectedOutline != null) {
-			var bbox = selectedBBox;
-			var selectedBox = selectedOutline.firstChild;
-			var sw = parseInt(selected.getAttribute("stroke-width"));
-			var offset = 1;
-			if (!isNaN(sw)) {
-				offset += sw/2;
-			}
-			if (selected.tagName == "text") {
-				offset += 2;
-			}
-			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
-			selectedBox.x.baseVal.value = l;
-			selectedBox.y.baseVal.value = t;
-			selectedBox.width.baseVal.value = w;
-			selectedBox.height.baseVal.value = h;
-			selectedGrips.nw.x.baseVal.value = l-3;
-			selectedGrips.nw.y.baseVal.value = t-3;
-			selectedGrips.ne.x.baseVal.value = l+w-3;
-			selectedGrips.ne.y.baseVal.value = t-3;
-			selectedGrips.sw.x.baseVal.value = l-3;
-			selectedGrips.sw.y.baseVal.value = t+h-3;
-			selectedGrips.se.x.baseVal.value = l+w-3;
-			selectedGrips.se.y.baseVal.value = t+h-3;
-			selectedGrips.n.x.baseVal.value = l+w/2-3;
-			selectedGrips.n.y.baseVal.value = t-3;
-			selectedGrips.w.x.baseVal.value = l-3;
-			selectedGrips.w.y.baseVal.value = t+h/2-3;
-			selectedGrips.e.x.baseVal.value = l+w-3;
-			selectedGrips.e.y.baseVal.value = t+h/2-3;
-			selectedGrips.s.x.baseVal.value = l+w/2-3;
-			selectedGrips.s.y.baseVal.value = t+h-3;
+		if (selected != null && theSelector != null) {
+			theSelector.resize(selectedBBox);
 		}
 	}
 
@@ -533,12 +542,9 @@ function SvgCanvas(c)
 		if (selected == newSelected) return;
 
 		// remove selected outline from previously selected element
-		if (selected != null && selectedOutline != null) {
-			// remove from DOM and store reference in JS but only if it exists in the DOM
-			try {
-				var theOutline = svgroot.removeChild(selectedOutline);
-				selectedOutline = theOutline;
-			} catch(e) { }
+		if (selected != null && theSelector != null) {
+			selectorManager.releaseSelector(theSelector);
+			theSelector = selectorManager.requestSelector(selected);
 		}
 
 		selected = newSelected;
@@ -547,62 +553,12 @@ function SvgCanvas(c)
 			selectedBBox = selected.getBBox();
 
 			// we create this element lazily for the first time here
-			if (selectedOutline == null) {
-				// create a group that will hold all the elements that make
-				// up the selected outline
-				selectedOutline = addSvgElementFromJson({
-					"element": "g",
-					"attr": {
-						"id": "selectedGroup",
-					}
-				});
-
-				// add the bounding box
-				selectedOutline.appendChild( addSvgElementFromJson({
-					"element": "rect",
-					"attr": {
-						"id": "selectedBox",
-						"fill": "none",
-						"stroke": "blue",
-						"stroke-width": "1",
-						"stroke-dasharray": "5,5",
-						"width": 1,
-						"height": 1,
-						// need to specify this style so that the selectedOutline is not selectable
-						"style": "pointer-events:none",
-					}
-				}) );
-
-				// add the corner grips
-				for (dir in selectedGrips) {
-					selectedGrips[dir] = selectedOutline.appendChild( addSvgElementFromJson({
-							"element": "rect",
-							"attr": {
-								"id": dir + "_grip",
-								"fill": "blue",
-								"width": 6,
-								"height": 6,
-								"style": ("cursor:" + dir + "-resize"),
-								// when we are in rotate mode, we will set rx/ry to 3
-//								"rx": 3,
-//								"ry": 3,
-								// This expands the mouse-able area of the grips making them
-								// easier to grab with the mouse.
-								// This works in Opera and WebKit, but does not work in Firefox
-								// see https://bugzilla.mozilla.org/show_bug.cgi?id=500174
-								"stroke-width": 2,
-								"pointer-events": "all",
-							}
-					}) );
-					$('#'+selectedGrips[dir].id).mousedown( function() {
-						current_mode = "resize";
-						current_resize_mode = this.id.substr(0,this.id.indexOf("_"));
-					});
-				}
+			if (theSelector == null) {
+				theSelector = selectorManager.requestSelector(selected);
+				console.log(theSelector);
 			}
 			// recalculate size and then re-append to bottom of document
 			recalculateSelectedOutline();
-			svgroot.appendChild(selectedOutline);
 
 			// set all our current styles to the selected styles
 			current_fill = selected.getAttribute("fill");
@@ -616,11 +572,8 @@ function SvgCanvas(c)
 				current_font_family = selected.getAttribute("font-family");
 			}
 
-			// do now show resize grips on text elements
-			var gripDisplay = (selected.tagName == "text" ? "none" : "inline");
-			for (dir in selectedGrips) {
-				selectedGrips[dir].setAttribute("display", gripDisplay);
-			}
+			// do not show resize grips on text elements
+			theSelector.showGrips(selected.tagName != "text");
 		}
 
 		call("selected", selected);
@@ -800,7 +753,7 @@ function SvgCanvas(c)
 				// we temporarily use a translate on the element being dragged
 				// this transform is removed upon mouseUp and the element is relocated to the
 				// new location
-				if (selected != null && selectedOutline != null) {
+				if (selected != null && theSelector != null) {
 					var dx = x - start_x;
 					var dy = y - start_y;
 					selectedBBox = selected.getBBox();
@@ -1242,7 +1195,7 @@ function SvgCanvas(c)
 			var t = selected;
 			var oldParent = t.parentNode;
 			var oldNextSibling = t.nextSibling;
-			if (oldNextSibling == selectedOutline) oldNextSibling = null;
+			if (oldNextSibling == selectorManager.selectorParentGroup) oldNextSibling = null;
 			t = t.parentNode.appendChild(t);
 			addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, "top"));
 		}
@@ -1253,7 +1206,7 @@ function SvgCanvas(c)
 			var t = selected;
 			var oldParent = t.parentNode;
 			var oldNextSibling = t.nextSibling;
-			if (oldNextSibling == selectedOutline) oldNextSibling = null;
+			if (oldNextSibling == selectorManager.selectorParentGroup) oldNextSibling = null;
 			t = t.parentNode.insertBefore(t, t.parentNode.firstChild);
 			addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, "bottom"));
 		}
