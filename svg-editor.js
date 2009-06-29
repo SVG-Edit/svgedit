@@ -18,7 +18,7 @@ function svg_edit_setup() {
 
 	var textBeingEntered = false;
 	var selectedElement = null;
-	
+
 	// called when we've selected a different element
 	var selectedChanged = function(window,elem) {
 		selectedElement = elem;
@@ -35,24 +35,24 @@ function svg_edit_setup() {
 		updateContextPanel(true);
 	}
 
-	// called when any element has changed	
+	// called when any element has changed
 	var elementChanged = function(window,elem) {
 		// if the element changed was the svg, then it must be a resolution change
 		if (elem && elem.tagName == "svg") {
-			changeResolution(parseInt(elem.getAttribute("width")), 
+			changeResolution(parseInt(elem.getAttribute("width")),
 							 parseInt(elem.getAttribute("height")));
 		}
-		
+
 		// we update the contextual panel with potentially new
 		// positional/sizing information (we DON'T want to update the
 		// toolbar here as that creates an infinite loop)
 		// also this updates the history buttons
-		
-		// we tell it to skip focusing the text control if the 
+
+		// we tell it to skip focusing the text control if the
 		// text element was previously in focus
 		updateContextPanel(false);
 	}
-	
+
 	// updates the toolbar (colors, opacity, etc) based on the selected element
 	function updateToolbar() {
 		if (selectedElement != null) {
@@ -78,7 +78,7 @@ function svg_edit_setup() {
 			$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1);
 			$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
 		}
-	
+
 		updateToolButtonState();
 	}
 
@@ -136,7 +136,7 @@ function svg_edit_setup() {
 					break;
 			}
 		}
-		
+
 		// update history buttons
 		if (svgCanvas.getUndoStackSize() > 0) {
 			$('#tool_undo').removeClass( 'tool_button_disabled');
@@ -166,9 +166,9 @@ function svg_edit_setup() {
 	$('#palette').append(str);
 
 	var pos = $('#tools_rect_show').position();
-	$('#tools_rect').css({'left': pos.left+2, 'top': pos.top+2});
+	$('#tools_rect').css({'left': pos.left+4, 'top': pos.top+40});
 	pos = $('#tools_ellipse_show').position();
-	$('#tools_ellipse').css({'left': pos.left+2, 'top': pos.top+2});
+	$('#tools_ellipse').css({'left': pos.left+4, 'top': pos.top+40});
 
 	$('#stroke_width').change(function(){
 		svgCanvas.setStrokeWidth(this.options[this.selectedIndex].value);
@@ -205,7 +205,7 @@ function svg_edit_setup() {
 	$('#rect_radius').change(function(){
 		svgCanvas.setRectRadius(this.options[this.selectedIndex].value);
 	});
-	
+
 	$('.attr_changer').change(function() {
 		svgCanvas.changeSelectedAttribute(this.getAttribute("alt"), this.value);
 	});
@@ -342,7 +342,7 @@ function svg_edit_setup() {
 	var clickSave = function(){
 		svgCanvas.save();
 	}
-	
+
 	var clickUndo = function(){
 		if (svgCanvas.getUndoStackSize() > 0)
 			svgCanvas.undo();
@@ -521,7 +521,7 @@ function svg_edit_setup() {
 	$('#tools_rect').mouseleave(function() {
 		$('#tools_rect').fadeOut();
 	});
-	
+
 	$('#tools_ellipse_show').mousedown(function(evt){
 		$('#tools_ellipse').show();
 		// this prevents the 'image drag' behavior in Firefox
@@ -530,23 +530,19 @@ function svg_edit_setup() {
 	$('#tools_ellipse').mouseleave(function() {
 		$('#tools_ellipse').fadeOut();
 	});
-	
+
 	$('.tool_flyout_button').mouseover(function() {
 		$(this).addClass('tool_flyout_button_current');
 	}).mouseout(function() {
 		$(this).removeClass('tool_flyout_button_current');
 	});
-	
+
 	function changeResolution(x,y) {
 		$('#resolution').val(x+'x'+y);
 		$('#svgroot').css( { 'width': x, 'height': y } );
 		$('#svgcanvas').css( { 'width': x, 'height': y } );
-		$('div#palette_holder').css('width',  x);
-		$('#context_tools').css('width', x + 65);
-		$('#tools').css('height', y + 24);
-		$('#footer').css('width', x + 65);
 	}
-	
+
 	$('#resolution').change(function(){
 		var res = this.value.split('x');
 		var x = parseInt(res[0]), y = parseInt(res[1]);

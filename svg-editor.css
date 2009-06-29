@@ -1,5 +1,5 @@
 body {
-	background-color: #E8E8E8;
+	background: #E8E8E8;
 }
 
 #svg_editor {
@@ -31,22 +31,15 @@ body {
 	vertical-align: middle;
 	width: 640px;
 	height: 480px;
-	border-left: 1px solid #FFFFFF;
-	border-top: 1px solid #FFFFFF;
-	border-right: 1px solid #808080;
-	border-bottom: 1px solid #808080;	
 }
 
 #svg_editor div#palette_holder {
-	border: 2px solid #808080;
-	border-top: none;
 	overflow-x: scroll;
 	overflow-y: hidden;
-	position: absolute;
-	left: 75px;
-	right: 2px;
-	bottom: 22px;
 	height: 31px;
+	border: 1px solid #808080;
+	border-top: none;
+	margin-top: 2px;
 }
 
 #svg_editor #fill_color, #svg_editor #stroke_color {
@@ -72,12 +65,12 @@ body {
 
 #svg_editor div#workarea {
 	position:absolute;
-	top: 70px;
-	left: 75px;
+	top: 40px;
+	left: 40px;
 	right: 2px;
-	bottom: 53px;
-	background-color: #E8E8E8;
-	border: 2px solid #808080;
+	bottom: 100px;
+	background-color: #A0A0A0;
+	border: 1px solid #808080;
 	overflow: auto;
 }
 
@@ -87,40 +80,30 @@ body {
 	float: left;
 }
 
-#svg_editor .tools_panel {
-/*	background: #E8E8E8;*/
-/*	border: 1px solid #808080;*/
-}
-
-#svg_editor #context_tools {
+#svg_editor #tools_top {
 	position: absolute;
-	left: 19px;
+	left: 38px;
 	right: 2px;
 	top: 2px;
-	height: 68px;
+	height: 36px;
 	border-bottom: none;
 }
 
-#svg_editor #context_tools div {
+#svg_editor #tools_top div {
 	float: left;
 }
 
-#svg_editor #tools_container {
+#svg_editor #tools_left {
 	position: absolute;
-	left: 2px;
-	top: 70px;
-	bottom: 22px;
-}
-
-#svg_editor #tools {
 	border-right: none;
-	width: 70px;
-	text-align: center;
+	width: 36px;
+	top: 38px;
+	left: 2px;
 }
 
 /* TODO: fix this */
 div.color_block {
-	display:inline-block;
+	display: inline-block;
 }
 
 #svg_editor #selected_panel {
@@ -204,8 +187,6 @@ div.color_block {
 	position: absolute;
 	display: none;
 	background: #E8E8E8;
-/*	border: 1px solid #808080;
-	padding: 5px;*/
 }
 
 #svg_editor .tools_flyout {
@@ -259,21 +240,29 @@ div.color_block {
 	background-color: #B0B0B0;
 }
 
-#svg_editor #footer {
+#svg_editor #tools_bottom {
 	position: absolute;
-	left: 75px;
+	left: 40px;
 	right: 2px;
 	bottom: 2px;
-	height: 20px;
-	border-top: none;
+	height: 100px;
 }
 
-#svg_editor #footer_left {
+#svg_editor #tools_bottom_1 {
+	width: 100px;
+	height: 100px;
 	float: left;
-	position: absolute;
-	top: -2px;
 }
 
-#svg_editor #footer_right {
-	float: right;
+#svg_editor #tools_bottom_2 {
+	width: 250px;
+	height: 100px;
+	float: left;
+}
+
+#svg_editor #tools_bottom_3 {
+}
+
+#svg_editor #copyright {
+	text-align: right;
 }
