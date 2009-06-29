@@ -16,7 +16,7 @@ function ChangeElementCommand(elem, attrs, text) {
 		if (attr == "#text") this.newValues[attr] = elem.textContent;
 		else this.newValues[attr] = elem.getAttribute(attr);
 	}
-	
+
 	this.apply = function() {
 		for( attr in this.newValues ) {
 			if (this.newValues[attr]) {
@@ -30,7 +30,7 @@ function ChangeElementCommand(elem, attrs, text) {
 		}
 		return true;
 	};
-	
+
 	this.unapply = function() {
 		for( attr in this.oldValues ) {
 			if (this.oldValues[attr]) {
@@ -52,7 +52,7 @@ function InsertElementCommand(elem, text) {
 	this.parent = elem.parentNode;
 
 	this.apply = function() { this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); };
-	
+
 	this.unapply = function() {
 		this.parent = this.elem.parentNode;
 		this.elem = this.elem.parentNode.removeChild(this.elem);
@@ -66,7 +66,7 @@ function RemoveElementCommand(elem, parent, text) {
 
 	this.apply = function() {
 		this.parent = this.elem.parentNode;
-		this.elem = this.parent.removeChild(this.elem); 
+		this.elem = this.parent.removeChild(this.elem);
 	};
 
 	this.unapply = function() { this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); };
@@ -79,12 +79,12 @@ function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 	this.oldParent = oldParent;
 	this.newNextSibling = elem.nextSibling;
 	this.newParent = elem.parentNode;
-	
-	this.apply = function() { 
+
+	this.apply = function() {
 		this.elem = this.newParent.insertBefore(this.elem, this.newNextSibling);
 	};
-	
-	this.unapply = function() { 
+
+	this.unapply = function() {
 		this.elem = this.oldParent.insertBefore(this.elem, this.oldNextSibling);
 	};
 }
@@ -322,8 +322,8 @@ function SvgCanvas(c)
 	var events = {};
 	var undoStackPointer = 0;
 	var undoStack = [];
-	
-	// FIXME: we MUST compress consecutive text changes to the same element 
+
+	// FIXME: we MUST compress consecutive text changes to the same element
 	// (right now each keystroke is saved as a separate command that includes the
 	// entire text contents of the text element)
 	// TODO: consider limiting the history that we store here (need to do some slicing)
@@ -336,7 +336,7 @@ function SvgCanvas(c)
 		undoStack[undoStack.length] = cmd;
 		undoStackPointer = undoStack.length;
 //		console.log("after add command, stackPointer=" + undoStackPointer);
-//		console.log(undoStack);		
+//		console.log(undoStack);
 	}
 
 
@@ -413,8 +413,8 @@ function SvgCanvas(c)
 					}
 				}
 				indent--;
-				if (!bOneLine) { 
-					out += "\n"; 
+				if (!bOneLine) {
+					out += "\n";
 					for (i=0; i<indent; i++) out += " ";
 				}
 				out += "</" + elem.nodeName + ">";
@@ -427,20 +427,20 @@ function SvgCanvas(c)
 
 	function recalculateSelectedDimensions() {
 		var box = selected.getBBox();
-		
+
 		// if we have not moved/resized, then immediately leave
-		if (box.x == selectedBBox.x && box.y == selectedBBox.y && 
+		if (box.x == selectedBBox.x && box.y == selectedBBox.y &&
 			box.width == selectedBBox.width && box.height == selectedBBox.height) {
 			return;
 		}
-		
+
 		// after this point, we have some change
-		
+
 		var remapx = function(x) {return ((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x;}
 		var remapy = function(y) {return ((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y;}
 		var scalew = function(w) {return w*selectedBBox.width/box.width;}
 		var scaleh = function(h) {return h*selectedBBox.height/box.height;}
-		
+
 		var changes = {};
 
 		selected.removeAttribute("transform");
@@ -483,7 +483,7 @@ function SvgCanvas(c)
 			case "circle":
 				changes["cx"] = selected.cx.baseVal.value;
 				changes["cy"] = selected.cy.baseVal.value;
-				changes["r"] = selected.r.baseVal.value;			
+				changes["r"] = selected.r.baseVal.value;
 				selected.cx.baseVal.value = remapx(selected.cx.baseVal.value);
 				selected.cy.baseVal.value = remapy(selected.cy.baseVal.value);
 				// take the minimum of the new selected box's dimensions for the new circle radius
@@ -579,7 +579,7 @@ function SvgCanvas(c)
 	// in mouseDown :
 	// - when we are in a create mode, the element is added to the canvas
 	//   but the action is not recorded until mouseUp
-	// - when we are in select mode, select the element, remember the position 
+	// - when we are in select mode, select the element, remember the position
 	//   and do nothing else
 	var mouseDown = function(evt)
 	{
@@ -736,7 +736,7 @@ function SvgCanvas(c)
 		}
 	}
 
-	// in mouseMove we do not record any state changes yet (but we do update 
+	// in mouseMove we do not record any state changes yet (but we do update
 	// any elements that are still being created, moved or resized on the canvas)
 	var mouseMove = function(evt)
 	{
@@ -855,10 +855,10 @@ function SvgCanvas(c)
 				break;
 		}
 		// TODO: should we fire the change event here?  I'm thinking only fire
-		// this event when the user mouses up.  That's when the action (create, 
+		// this event when the user mouses up.  That's when the action (create,
 		// move, resize, draw) has finished
 		// fire changed event
-//		call("changed", selected);		
+//		call("changed", selected);
 	}
 
 	// in mouseUp, this is where the command is stored for later undo:
@@ -1115,7 +1115,7 @@ function SvgCanvas(c)
 
 	this.setFontFamily = function(val) {
     	current_font_family = val;
-		this.changeSelectedAttribute("font-family", val);    	
+		this.changeSelectedAttribute("font-family", val);
 	}
 
 	this.getFontSize = function() {
@@ -1147,7 +1147,7 @@ function SvgCanvas(c)
 			}
 		}
 	}
-	
+
 	this.changeSelectedAttribute = function(attr, val) {
 		if (selected != null) {
 			var oldval = (attr == "#text" ? selected.textContent : selected.getAttribute(attr));
@@ -1208,13 +1208,13 @@ function SvgCanvas(c)
 			addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, "bottom"));
 		}
 	}
-	
+
 	this.moveSelectedElement = function(dx,dy) {
 		if (selected != null) {
 			selectedBBox = selected.getBBox();
 			selectedBBox.x += dx;
 			selectedBBox.y += dy;
-			
+
 			recalculateSelectedDimensions();
 			recalculateSelectedOutline();
 		}
@@ -1222,16 +1222,16 @@ function SvgCanvas(c)
 
 	this.getUndoStackSize = function() { return undoStackPointer; }
 	this.getRedoStackSize = function() { return undoStack.length - undoStackPointer; }
-	
+
 	this.undo = function() {
-		if (undoStackPointer > 0) { 
+		if (undoStackPointer > 0) {
 			this.selectNone();
 			var cmd = undoStack[--undoStackPointer];
 			cmd.unapply();
 			call("changed", cmd.elem);
 		}
 //		console.log("after undo, stackPointer=" + undoStackPointer);
-//		console.log(undoStack);		
+//		console.log(undoStack);
 	}
 	this.redo = function() {
 		if (undoStackPointer < undoStack.length && undoStack.length > 0) {
@@ -1241,7 +1241,7 @@ function SvgCanvas(c)
 			call("changed", cmd.elem);
 		}
 //		console.log("after redo, stackPointer=" + undoStackPointer);
-//		console.log(undoStack);		
+//		console.log(undoStack);
 	}
 
 }
