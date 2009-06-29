@@ -542,9 +542,8 @@ function SvgCanvas(c)
 		if (selected == newSelected) return;
 
 		// remove selected outline from previously selected element
-		if (selected != null && theSelector != null) {
+		if (theSelector != null) {
 			selectorManager.releaseSelector(theSelector);
-			theSelector = selectorManager.requestSelector(selected);
 		}
 
 		selected = newSelected;
@@ -552,11 +551,9 @@ function SvgCanvas(c)
 		if (selected != null) {
 			selectedBBox = selected.getBBox();
 
-			// we create this element lazily for the first time here
-			if (theSelector == null) {
-				theSelector = selectorManager.requestSelector(selected);
-				console.log(theSelector);
-			}
+			// the manager gives us a selector
+			theSelector = selectorManager.requestSelector(selected);
+			
 			// recalculate size and then re-append to bottom of document
 			recalculateSelectedOutline();
 
