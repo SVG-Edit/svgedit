@@ -17,9 +17,13 @@ function Tick_Tock_Timer(){
 	
 	this.pauseTimer = function(){
 		if(!started) {
-			alert("not yet started");
+			alert("Click Start First");
 			return false;
-			}
+		}
+		if(paused) {
+			alert("Already Paused");
+			return false;
+		}
 		pause_time = (new Date()).getTime();
 		paused = true;
 	};
@@ -27,7 +31,7 @@ function Tick_Tock_Timer(){
 	this.resumeTimer = function(){
 	
 		if(!paused) {
-			alert("not yet paused");
+			alert("Not in Pause Mode");
 			return false;
 		}
 		var sleeptime = (new Date()).getTime() - pause_time;

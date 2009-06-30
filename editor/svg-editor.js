@@ -284,16 +284,29 @@ function svg_edit_setup() {
 	var clickMediaStart = function(){
 	
 		$('#media_start').hide();
+		$('#media_resume').hide();
 		$('#media_pause').show();
 		svgCanvas.startTimer();	
 	}
 	
 	var clickMediaPause = function(){
-		$('#media_start').show();
+		$('#media_start').hide();
+		$('#media_resume').show();
 		$('#media_pause').hide();
 		svgCanvas.pauseTimer();
 	}
+	
+	var clickMediaResume = function(){
+		$('#media_start').hide();
+		$('#media_resume').hide();
+		$('#media_pause').show();
+		svgCanvas.resumeTimer();
+	}
+	
 	var clickMediaStop = function(){
+		$('#media_start').show();
+		$('#media_resume').hide();
+		$('#media_pause').hide();
 		svgCanvas.stopTimer();
 	}
 	
@@ -317,7 +330,9 @@ function svg_edit_setup() {
 	$('#media_start').click(clickMediaStart);
 	$('#media_pause').click(clickMediaPause);
 	$('#media_pause').hide();
+	$('#media_resume').hide();
 	$('#media_stop').click(clickMediaStop);
+	$('#media_resume').click(clickMediaResume);
 	// added these event handlers for all the push buttons so they 
 	// behave more like buttons being pressed-in and not images
 	$('#tool_clear').mousedown(function(){$('#tool_clear').addClass('tool_button_current');});
