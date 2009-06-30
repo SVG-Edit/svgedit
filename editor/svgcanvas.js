@@ -247,7 +247,7 @@ function SvgCanvas(c)
 											"attr": {"id": "selectorParentGroup"}
 										});			
 		};
-					
+		
 		this.requestSelector = function(elem) {
 			var N = this.selectors.length;
 
@@ -255,6 +255,12 @@ function SvgCanvas(c)
 				initGroup();											
 			}
 
+			// if we've already acquired one for this element, return it
+			if (this.selectorMap[elem] ) {
+				this.selectorMap[elem].locked = true;
+				return this.selectorMap[elem];
+			}
+			
 			for (var i = 0; i < N; ++i) {
 				if (this.selectors[i] && !this.selectors[i].locked) {
 					this.selectors[i].locked = true;
@@ -569,6 +575,7 @@ function SvgCanvas(c)
 
 	var recalculateSelectedOutline = function() {
 		var selected = selectedElements[0];
+		var theSelector = selectorManager.requestSelector(selected);
 		if (selected != null && theSelector != null) {
 			theSelector.resize(selectedBBox);
 		}
@@ -577,16 +584,26 @@ function SvgCanvas(c)
 // public events
 	// call this function to set a single selected element
 	// call this function with null to clear the selected element
-	var selectElement = function(newSelected)
+	var selectElement = function(newSelected, multi)
 	{
-		var selected = selectedElements[0];	
-		if (selected == newSelected) return;
-
-		// remove selected outline from previously selected element
-		if (theSelector != null) {
-			selectorManager.releaseSelector(theSelector);
+		if (newSelected == selectorManager.getRubberBandBox()) {
+			return;
+		}
+		
+		var multi = multi || false;
+		for (var i = 0; i < selectedElements.length; ++i) {
+			if (selectedElements[i] == newSelected) {
+				return;
+			}
 		}
 
+		// this element is not in the selectedElements array
+		// if we're not in multi-mode, then clear the previous selector
+		var selected = selectedElements[0];
+		if (!multi && selected) {
+			selectorManager.releaseSelector(selected);
+		}
+		
 		selectedElements[0] = newSelected;
 		selected = selectedElements[0];
 
@@ -594,7 +611,7 @@ function SvgCanvas(c)
 			selectedBBox = selected.getBBox();
 
 			// the manager gives us a selector
-			theSelector = selectorManager.requestSelector(selected);
+			var theSelector = selectorManager.requestSelector(selected);
 			
 			// recalculate size and then re-append to bottom of document
 			recalculateSelectedOutline();
@@ -801,7 +818,7 @@ function SvgCanvas(c)
 				// we temporarily use a translate on the element being dragged
 				// this transform is removed upon mouseUp and the element is relocated to the
 				// new location
-				if (selected != null && theSelector != null) {
+				if (selected != null) {
 					var dx = x - start_x;
 					var dy = y - start_y;
 					selectedBBox = selected.getBBox();
@@ -822,6 +839,10 @@ function SvgCanvas(c)
 				// evt.target is the element that the mouse pointer is passing over
 				// TODO: add new targets to the selectedElements array, create a 
 				// selector for it, etc
+				var nodeName = evt.target.nodeName;
+				if (nodeName != "div" && nodeName != "svg") {
+					selectElement(evt.target);
+				}
 				break;
 			case "resize":
 				// we track the resize bounding box and translate/scale the selected element
@@ -881,7 +902,6 @@ function SvgCanvas(c)
 				shape.setAttributeNS(null, "x", start_x < x ? start_x : start_x - size);
 				shape.setAttributeNS(null, "y", start_y < y ? start_y : start_y - size);
 				break;
-			// case "select":
 			case "rect":
 				shape.setAttributeNS(null, "x", Math.min(start_x,x));
 				shape.setAttributeNS(null, "y", Math.min(start_y,y));
