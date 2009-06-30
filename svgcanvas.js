@@ -586,22 +586,25 @@ function SvgCanvas(c)
 	// call this function with null to clear the selected element
 	var selectElement = function(newSelected, multi)
 	{
+		// if the element to be selected is actually the rubber-band box
+		// then simply return (do not select it)
 		if (newSelected == selectorManager.getRubberBandBox()) {
 			return;
 		}
 		
+		// if we are not in multi-mode and newSelected is already selected
+		// then simply return
+		// otherwise clear all previous selectors
 		var multi = multi || false;
-		for (var i = 0; i < selectedElements.length; ++i) {
-			if (selectedElements[i] == newSelected) {
+		if (!multi) {
+			var selected = selectedElements[0];
+			if (selectedElements[0] == newSelected) {
 				return;
 			}
-		}
-
-		// this element is not in the selectedElements array
-		// if we're not in multi-mode, then clear the previous selector
-		var selected = selectedElements[0];
-		if (!multi && selected) {
-			selectorManager.releaseSelector(selected);
+		
+			for (var i = 0; i < selectedElements.length; ++i) {
+				selectorManager.releaseSelector(selectedElements[i]);
+			}
 		}
 		
 		selectedElements[0] = newSelected;
