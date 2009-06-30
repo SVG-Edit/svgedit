@@ -224,22 +224,31 @@ function SvgCanvas(c)
 	// TODO: consider a map of SVG elements to their selectors in the manager for
 	// quick access to the selector in question (as opposed to looping through the array)
 	function SelectorManager() {
+		
 		// this will hold the <g> element that contains all selector rects/grips
 		this.selectorParentGroup = null;
 	
+		// this is a special rect that is used for multi-select
+		this.rubberBandBox = null;
+	
 		// this will hold objects of type Selector (see above)
 		this.selectors = [];
-	
+
+		// local reference to this object
+		var mgr = this;
+		// private function
+		var initGroup = function() {
+			mgr.selectorParentGroup = addSvgElementFromJson({
+											"element": "g",
+											"attr": {"id": "selectorParentGroup"}
+										});			
+		};
+					
 		this.requestSelector = function(elem) {
 			var N = this.selectors.length;
-		
-			// if this is the first time a selector is being requested
-			// create the group, add it to the DOM and save a reference to it
+
 			if (this.selectorParentGroup == null) {
-				this.selectorParentGroup = addSvgElementFromJson({
-												"element": "g",
-												"attr": {"id": "selectorParentGroup"}
-											});
+				initGroup();											
 			}
 
 			for (var i = 0; i < N; ++i) {
@@ -277,6 +286,25 @@ function SvgCanvas(c)
 		// this keeps the selector groups as the last child in the document
 		this.update = function() {
 			this.selectorParentGroup = svgroot.appendChild(this.selectorParentGroup);
+		}
+		
+		this.getRubberBandBox = function() {
+			if (this.selectorParentGroup == null) {
+				initGroup();
+			}
+			
+			if (this.rubberBandBox == null) {
+				this.rubberBandBox = addSvgElementFromJson({ "element": "rect",
+															"attr": {
+																"id": "selectorRubberBand",
+																"fill": "blue",
+																"fill-opacity": 0.15,
+																"display": "none",
+																"pointer-events": "none",
+																}
+															});
+			}
+			return this.rubberBandBox;
 		}
 	}
 	// **************************************************************************************
@@ -317,11 +345,13 @@ function SvgCanvas(c)
 	// this will hold all the currently selected elements
 	// default size of 1 until it needs to grow bigger
 	var selectedElements = new Array(1); 
-//	var selected = null;
+	// this holds the selected's bbox
 	var selectedBBox = null;
-	var selectedOperation = 'resize'; // could be {resize,rotate}
+	// this object manages selectors for us
 	var selectorManager = new SelectorManager();
+	// this object holds the one-and-only selector (for now)
 	var theSelector = null;
+	var rubberBox = null;
 	var events = {};
 	var undoStackPointer = 0;
 	var undoStack = [];
@@ -330,7 +360,7 @@ function SvgCanvas(c)
 	// (right now each keystroke is saved as a separate command that includes the
 	// entire text contents of the text element)
 	// TODO: consider limiting the history that we store here (need to do some slicing)
-	function addCommandToHistory(cmd) {
+	var addCommandToHistory = function(cmd) {
 		// if our stack pointer is not at the end, then we have to remove
 		// all commands after the pointer and insert the new command
 		if (undoStackPointer < undoStack.length && undoStack.length > 0) {
@@ -340,26 +370,25 @@ function SvgCanvas(c)
 		undoStackPointer = undoStack.length;
 //		console.log("after add command, stackPointer=" + undoStackPointer);
 //		console.log(undoStack);
-	}
-
+	};
 
 // private functions
 	var getId = function() {
 		if (events["getid"]) return call("getid", obj_num);
 		return idprefix + obj_num;
-	}
+	};
 
 	var call = function(event, arg) {
 		if (events[event]) {
 			return events[event](this,arg);
 		}
-	}
+	};
 
 	var assignAttributes = function(node, attrs) {
 		for (i in attrs) {
 			node.setAttributeNS(null, i, attrs[i]);
 		}
-	}
+	};
 
 	// remove unneeded attributes
 	// makes resulting SVG smaller
@@ -380,11 +409,11 @@ function SvgCanvas(c)
 			element.removeAttribute('rx')
 		if (element.getAttribute('ry') == '0')
 			element.removeAttribute('ry')
-	}
+	};
 
 	var addSvgElementFromJson = function(data) {
 		return canvas.updateElementFromJson(data)
-	}
+	};
 
 	var svgToString = function(elem, indent) {
 		// TODO: could use the array.join() optimization trick here too
@@ -426,9 +455,9 @@ function SvgCanvas(c)
 			}
 		}
 		return out;
-	} // end svgToString()
+	}; // end svgToString()
 
-	function recalculateSelectedDimensions() {
+	var recalculateSelectedDimensions = function() {
 		var selected = selectedElements[0];
 		var box = selected.getBBox();
 
@@ -530,17 +559,17 @@ function SvgCanvas(c)
 			addCommandToHistory(new ChangeElementCommand(selected, changes, text));
 		}
 		call("changed", selected);
-	}
+	};
 
 	var recalculateSelectedOutline = function() {
 		var selected = selectedElements[0];
 		if (selected != null && theSelector != null) {
 			theSelector.resize(selectedBBox);
 		}
-	}
+	};
 
 // public events
-	// call this function to set the selected element
+	// call this function to set a single selected element
 	// call this function with null to clear the selected element
 	var selectElement = function(newSelected)
 	{
@@ -581,7 +610,7 @@ function SvgCanvas(c)
 		}
 
 		call("selected", selected);
-	}
+	};
 
 	// in mouseDown :
 	// - when we are in a create mode, the element is added to the canvas
@@ -600,10 +629,18 @@ function SvgCanvas(c)
 				current_resize_mode = "none";
 				var t = evt.target;
 				// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
-				if (t.nodeName.toLowerCase() == "div" || t.nodeName.toLowerCase() == "svg") {
-					t = null;
+				if (t.nodeName.toLowerCase() != "div" && t.nodeName.toLowerCase() != "svg") {
+					selectElement(t);
 				}
-				selectElement(t);
+				else {
+					current_mode = "multiselect";
+					rubberBox = selectorManager.getRubberBandBox();
+					rubberBox.x.baseVal.value = start_x;
+					rubberBox.y.baseVal.value = start_y;
+					rubberBox.width.baseVal.value = 0;
+					rubberBox.height.baseVal.value = 0;
+					rubberBox.setAttribute("display", "inline");
+				}
 				break;
 			case "resize":
 				started = true;
@@ -741,7 +778,7 @@ function SvgCanvas(c)
 				newText.textContent = "text";
 				break;
 		}
-	}
+	};
 
 	// in mouseMove we do not record any state changes yet (but we do update
 	// any elements that are still being created, moved or resized on the canvas)
@@ -768,6 +805,17 @@ function SvgCanvas(c)
 					selected.setAttribute("transform", ts);
 					recalculateSelectedOutline();
 				}
+				break;
+			case "multiselect":
+				if (rubberBox != null) {
+					rubberBox.x.baseVal.value = Math.min(start_x,x);
+					rubberBox.y.baseVal.value = Math.min(start_y,y);
+					rubberBox.width.baseVal.value = Math.abs(x-start_x);
+					rubberBox.height.baseVal.value = Math.abs(y-start_y);
+				}
+				// evt.target is the element that the mouse pointer is passing over
+				// TODO: add new targets to the selectedElements array, create a 
+				// selector for it, etc
 				break;
 			case "resize":
 				// we track the resize bounding box and translate/scale the selected element
@@ -867,7 +915,7 @@ function SvgCanvas(c)
 		// move, resize, draw) has finished
 		// fire changed event
 //		call("changed", selected);
-	}
+	};
 
 	// in mouseUp, this is where the command is stored for later undo:
 	// - in create mode, the element's opacity is set properly, we create an InsertElementCommand
@@ -896,6 +944,12 @@ function SvgCanvas(c)
 					return;
 				}
 				break;
+			case "multiselect":
+				if (rubberBox != null) {
+					rubberBox.setAttribute("display", "none");
+				}
+				current_mode = "select";
+				break;				
 			case "path":
 				keep = true;
 				break;
@@ -981,7 +1035,7 @@ function SvgCanvas(c)
 			addCommandToHistory(new InsertElementCommand(element));
 			call("changed",element);
 		}
-	}
+	};
 
 // public functions
 
@@ -993,7 +1047,7 @@ function SvgCanvas(c)
 //		str += "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
 		str += svgToString(svgroot, 0);
 		this.saveHandler(str);
-	}
+	};
 
 	this.clear = function() {
 		var nodes = svgroot.childNodes;
@@ -1008,7 +1062,7 @@ function SvgCanvas(c)
 			}
 		}
 		call("cleared");
-	}
+	};
 
 	this.setResolution = function(x, y) {
 		var w = svgroot.getAttribute("width"),
@@ -1017,78 +1071,78 @@ function SvgCanvas(c)
 		svgroot.setAttribute("height", y);
 		addCommandToHistory(new ChangeElementCommand(svgroot, {"width":w,"height":h}, "resolution"));
 		call("changed", svgroot);
-	}
+	};
 
 	this.getMode = function() {
 		return current_mode;
-	}
+	};
 
 	this.setMode = function(name) {
 		current_mode = name;
-	}
+	};
 
 	this.getStrokeColor = function() {
 		return current_stroke;
-	}
+	};
 
 	this.setStrokeColor = function(val) {
 		current_stroke = val;
 		this.changeSelectedAttribute("stroke", val);
-	}
+	};
 
 	this.getFillColor = function() {
 		return current_fill;
-	}
+	};
 
 	this.setFillColor = function(val) {
 		current_fill = val;
 		this.changeSelectedAttribute("fill", val);
-	}
+	};
 
 	this.getStrokeWidth = function() {
 		return current_stroke_width;
-	}
+	};
 
 	this.setStrokeWidth = function(val) {
 		current_stroke_width = val;
 		this.changeSelectedAttribute("stroke-width", val);
-	}
+	};
 
 	this.getStrokeStyle = function() {
 		return current_stroke_style;
-	}
+	};
 
 	this.setStrokeStyle = function(val) {
 		current_stroke_style = val;
 		this.changeSelectedAttribute("stroke-dasharray", val);
-	}
+	};
 
 	this.getOpacity = function() {
 		return current_opacity;
-	}
+	};
 
 	this.setOpacity = function(val) {
 		current_opacity = val;
 		this.changeSelectedAttribute("opacity", val);
-	}
+	};
 
 	this.getFillOpacity = function() {
 		return current_fill_opacity;
-	}
+	};
 
 	this.setFillOpacity = function(val) {
 		current_fill_opacity = val;
 		this.changeSelectedAttribute("fill-opacity", val);
-	}
+	};
 
 	this.getStrokeOpacity = function() {
 		return current_stroke_opacity;
-	}
+	};
 
 	this.setStrokeOpacity = function(val) {
 		current_stroke_opacity = val;
 		this.changeSelectedAttribute("stroke-opacity", val);
-	}
+	};
 
 	this.updateElementFromJson = function(data) {
 		var shape = svgdoc.getElementById(data.attr.id);
@@ -1104,47 +1158,47 @@ function SvgCanvas(c)
 		assignAttributes(shape, data.attr);
 		cleanupElement(shape);
 		return shape;
-	}
+	};
 
 	this.each = function(cb) {
 		$(svgroot).children().each(cb);
-	}
+	};
 
 	this.bind = function(event, f) {
 		events[event] = f;
-	}
+	};
 
 	this.setIdPrefix = function(p) {
 		idprefix = p;
-	}
+	};
 
 	this.getFontFamily = function() {
 		return current_font_family;
-	}
+	};
 
 	this.setFontFamily = function(val) {
     	current_font_family = val;
 		this.changeSelectedAttribute("font-family", val);
-	}
+	};
 
 	this.getFontSize = function() {
 		return current_font_size;
-	}
+	};
 
 	this.setFontSize = function(val) {
 		current_font_size = val;
 		this.changeSelectedAttribute("font-size", val);
-	}
+	};
 
 	this.getText = function() {
 		var selected = selectedElements[0];
 		if (selected == null) { return ""; }
 		return selected.textContent;
-	}
+	};
 
 	this.setTextContent = function(val) {
 		this.changeSelectedAttribute("#text", val);
-	}
+	};
 
 	this.setRectRadius = function(val) {
 		var selected = selectedElements[0];
@@ -1157,7 +1211,7 @@ function SvgCanvas(c)
 				call("changed", selected);
 			}
 		}
-	}
+	};
 
 	this.changeSelectedAttribute = function(attr, val) {
 		var selected = selectedElements[0];
@@ -1174,7 +1228,7 @@ function SvgCanvas(c)
 				call("changed", selected);
 			}
 		}
-	}
+	};
 
 	$(container).mouseup(mouseUp);
 	$(container).mousedown(mouseDown);
@@ -1182,11 +1236,11 @@ function SvgCanvas(c)
 
 	this.saveHandler = function(svg) {
 		window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
-	}
+	};
 
 	this.selectNone = function() {
 		selectElement(null);
-	}
+	};
 
 	this.deleteSelectedElement = function() {
 		var selected = selectedElements[0];
@@ -1198,7 +1252,7 @@ function SvgCanvas(c)
 			var elem = parent.removeChild(t);
 			addCommandToHistory(new RemoveElementCommand(elem, parent));
 		}
-	}
+	};
 
 	this.moveToTopSelectedElement = function() {
 		var selected = selectedElements[0];
@@ -1210,7 +1264,7 @@ function SvgCanvas(c)
 			t = t.parentNode.appendChild(t);
 			addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, "top"));
 		}
-	}
+	};
 
 	this.moveToBottomSelectedElement = function() {
 		var selected = selectedElements[0];
@@ -1222,7 +1276,7 @@ function SvgCanvas(c)
 			t = t.parentNode.insertBefore(t, t.parentNode.firstChild);
 			addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, "bottom"));
 		}
-	}
+	};
 
 	this.moveSelectedElement = function(dx,dy) {
 		var selected = selectedElements[0];
@@ -1234,7 +1288,7 @@ function SvgCanvas(c)
 			recalculateSelectedDimensions();
 			recalculateSelectedOutline();
 		}
-	}
+	};
 
 	this.getUndoStackSize = function() { return undoStackPointer; }
 	this.getRedoStackSize = function() { return undoStack.length - undoStackPointer; }
@@ -1258,7 +1312,7 @@ function SvgCanvas(c)
 		}
 //		console.log("after redo, stackPointer=" + undoStackPointer);
 //		console.log(undoStack);
-	}
+	};
 
 }
 
