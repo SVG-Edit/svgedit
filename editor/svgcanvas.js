@@ -43,6 +43,8 @@ function SvgCanvas(c)
 	var load_time = (new Date()).getTime();
 	var start_ele_time = null;
 	var end_ele_time = null;
+	var paused_time = load_time;
+	var started_time = null ;
 
 // private functions
 	var getId = function() {
@@ -126,6 +128,7 @@ function SvgCanvas(c)
 	} // end svgToString()
 
 // public events
+	//Timer Related Function
 	// call this function to set the selected element
 	// call this function with null to clear the selected element
 	var selectElement = function(newSelected) 
@@ -613,6 +616,23 @@ function SvgCanvas(c)
 
 // public functions
 
+	this.startTimer = function(){
+		started_time = (new Date()).getTime();
+		var diff_time = started_time - paused_time;
+		load_time = load_time - diff_time;
+	}
+	
+	this.pauseTimer = function(){
+		paused_time = (new Date()).getTime();
+	
+	}
+	this.stopTimer = function(){
+		load_time = (new Date()).getTime();
+		paused_time = load_time;
+	
+	}
+	
+	
 	this.save = function() {
 		// remove the selected outline before serializing
 		this.selectNone();
@@ -811,7 +831,11 @@ function SvgCanvas(c)
 
 	this.saveHandler = function(svg) {
 		//alert(svg);
-		window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
+		//window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
+		$.post(	"server/svg-editor-save.php", {svg_data: escape(svg)},
+			function(data){	//alert(data);
+			});
+		window.open("server/SavedImage.svg");
 	}
 
 	this.selectNone = function() {
