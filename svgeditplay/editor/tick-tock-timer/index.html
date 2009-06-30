@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>Timer Test</title>
+<script type="text/javascript" src="tick-tock-timer.js"></script>
+<script type="text/javascript">
+
+	TOB = new Tick_Tock_Timer();
+
+	window.onload = function load_timer_div(){
+		//alert("called");
+		document.getElementById("ticktime").innerHTML= TOB.getTickTime();
+		document.getElementById("tocktime").innerHTML= TOB.getTockTime();
+		document.getElementById("currtime").innerHTML= TOB.getCurrentTime();
+		window.setTimeout( function(){load_timer_div();}, 10);
+	}
+	TOB.startTimer();
+	TOB.tick();TOB.tock();
+</script>
+
+
+</head>
+
+<body>
+<input value="Start" onclick="TOB.startTimer()" type="button">
+<input value="Pause" onclick="TOB.pauseTimer()" type="button">
+<input value="Resume" onclick="TOB.resumeTimer()" type="button">
+<input value="Stop" onclick="TOB.stopTimer()" type="button">
+
+<input value="Tick" onclick="TOB.tick()" type="button">
+<input value="Tock" onclick="TOB.tock()" type="button">
+<hr/>
+Tick Time = <div id="ticktime">--</div><hr/>
+Tock time = <div id="tocktime">--</div><hr/>
+Current Time = <div id="currtime">--</div>
+</body>
+
+</html> 
