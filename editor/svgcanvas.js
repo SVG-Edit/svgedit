@@ -221,8 +221,9 @@ function SvgCanvas(c)
 		};
 	};
 
-	// TODO: consider a map of SVG elements to their selectors in the manager for
-	// quick access to the selector in question (as opposed to looping through the array)
+	// TODO: add accessor methods to determine number of currently selected elements
+	// TODO: move selectElement into SelectorManager and allow multiple selected elements
+	//       with each call
 	function SelectorManager() {
 		
 		// this will hold the <g> element that contains all selector rects/grips
@@ -233,6 +234,9 @@ function SvgCanvas(c)
 	
 		// this will hold objects of type Selector (see above)
 		this.selectors = [];
+		
+		// this holds a map of SVG elements to their Selector object
+		this.selectorMap = {};
 
 		// local reference to this object
 		var mgr = this;
@@ -261,6 +265,7 @@ function SvgCanvas(c)
 			// if we reached here, no available selectors were found, we create one
 			this.selectors[N] = new Selector(N, elem);
 			this.selectorParentGroup.appendChild(this.selectors[N].selectorGroup);
+			this.selectorMap[elem] = this.selectors[N];
 			return this.selectors[N];
 		};
 		this.releaseSelector = function(sel) {
@@ -270,6 +275,7 @@ function SvgCanvas(c)
 					if (sel.locked == false) {
 						console.log("WARNING! selector was released but was already unlocked");
 					}
+					delete this.selectorMap[sel.selectedElement];
 					sel.locked = false;
 					sel.selectedElement = null;
 
@@ -606,7 +612,7 @@ function SvgCanvas(c)
 			}
 
 			// do not show resize grips on text elements
-			theSelector.showGrips(selected.tagName != "text");
+			theSelector.showGrips(selected.tagName != "text" && current_mode != "multiselect");
 		}
 
 		call("selected", selected);
