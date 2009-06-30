@@ -27,7 +27,9 @@ function svg_edit_setup() {
 			// always set the mode of the editor to select because
 			// upon creation of a text element the editor is switched into
 			// select mode and this event fires - we need our UI to be in sync
-			setSelectMode();
+			if (svgCanvas.getMode() != "multiselect") {
+				setSelectMode();
+			}
 
 			updateToolbar();
 		} // if (elem != null)
