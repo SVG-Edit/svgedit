@@ -29,13 +29,14 @@ function Tick_Tock_Timer(){
 		if(!paused) {
 			alert("not yet paused");
 			return false;
-			}
+		}
 		var sleeptime = (new Date()).getTime() - pause_time;
 		reference_time = reference_time + sleeptime;
 		paused = false;
 	};
 	
 	this.stopTimer = function(){
+		paused = false;
 		started = false;
 	};
 	
