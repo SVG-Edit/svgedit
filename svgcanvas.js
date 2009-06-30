@@ -311,6 +311,8 @@ function SvgCanvas(c)
 																"id": "selectorRubberBand",
 																"fill": "blue",
 																"fill-opacity": 0.15,
+																"stroke": "blue",
+																"stroke-width": 0.5,
 																"display": "none",
 																"pointer-events": "none",
 																}
@@ -607,8 +609,15 @@ function SvgCanvas(c)
 			}
 		}
 		
-		selectedElements[0] = newSelected;
-		selected = selectedElements[0];
+		// find next slot in selectedElements array
+		var index = 0;
+		/* index = selectedElements.length;
+		for (var i = 0; i < selectedElements.length; ++i) {
+			if (selectedElements[i] == null) { index = i; break; }
+		}
+		*/
+		selectedElements[index] = newSelected;
+		selected = selectedElements[index];
 
 		if (selected != null) {
 			selectedBBox = selected.getBBox();
