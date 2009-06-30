@@ -306,7 +306,8 @@ function SvgCanvas(c)
 			}
 			
 			if (this.rubberBandBox == null) {
-				this.rubberBandBox = addSvgElementFromJson({ "element": "rect",
+				this.rubberBandBox = this.selectorParentGroup.appendChild(
+										addSvgElementFromJson({ "element": "rect",
 															"attr": {
 																"id": "selectorRubberBand",
 																"fill": "blue",
@@ -316,7 +317,7 @@ function SvgCanvas(c)
 																"display": "none",
 																"pointer-events": "none",
 																}
-															});
+															}));
 			}
 			return this.rubberBandBox;
 		}
@@ -451,11 +452,13 @@ function SvgCanvas(c)
 				var bOneLine = false;
 				for (i=0; i<childs.length; i++)
 				{
-					if (childs.item(i).nodeType == 1) { // element node
+					var child = childs.item(i);
+					if (child.id == "selectorParentGroup") continue;
+					if (child.nodeType == 1) { // element node
 						out += "\n" + svgToString(childs.item(i), indent);
-					} else if (childs.item(i).nodeType == 3) { // text node
+					} else if (child.nodeType == 3) { // text node
 						bOneLine = true;
-						out += childs.item(i).nodeValue + "";
+						out += child.nodeValue + "";
 					}
 				}
 				indent--;
@@ -955,7 +958,6 @@ function SvgCanvas(c)
 //		call("changed", selected);
 	};
 
-	// in mouseUp, this is where the command is stored for later undo:
 	// - in create mode, the element's opacity is set properly, we create an InsertElementCommand
 	//   and store it on the Undo stack
 	// - in move/resize mode, the element's attributes which were affected by the move/resize are
@@ -1068,6 +1070,7 @@ function SvgCanvas(c)
 		} else if (element != null) {
 			element.setAttribute("opacity", current_opacity);
 			cleanupElement(element);
+			selectorManager.update();
 			// we create the insert command that is stored on the stack
 			// undo means to call cmd.unapply(), redo means to call cmd.apply()
 			addCommandToHistory(new InsertElementCommand(element));
