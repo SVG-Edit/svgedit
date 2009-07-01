@@ -1351,16 +1351,22 @@ function SvgCanvas(c)
 		window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
 	};
 
-	this.deleteSelectedElement = function() {
-		var selected = selectedElements[0];
-		if (selected != null) {
+	this.deleteSelectedElements = function() {
+		for (var i = 0; i < selectedElements.length; ++i) {
+			var selected = selectedElements[i];
+			if (selected == null) break;
+
 			var parent = selected.parentNode;
 			var t = selected;
-			// this will unselect the element (and remove the selectedOutline)
-			this.removeFromSelection([t]);
+			// this will unselect the element and remove the selectedOutline
+			selectorManager.releaseSelector(t);
 			var elem = parent.removeChild(t);
+			selectedElements[i] = null;
+			// TODO: batch all element deletions up into a batch command
 			addCommandToHistory(new RemoveElementCommand(elem, parent));
 		}
+		// TODO: add batch command to history
+		call("selected", selectedElements);
 	};
 
 	this.moveToTopSelectedElement = function() {

@@ -18,11 +18,13 @@ function svg_edit_setup() {
 
 	var textBeingEntered = false;
 	var selectedElement = null;
+	var multiselected = false;
 
 	// called when we've selected a different element
 	var selectedChanged = function(window,elems) {
 		// if elems[1] is present, then we have more than one element
 		selectedElement = (elems.length == 1 || elems[1] == null ? elems[0] : null);
+		multiselected = (elems.length >= 2 && elems[1] != null);
 		if (selectedElement != null) {
 			// unless we're already in always set the mode of the editor to select because
 			// upon creation of a text element the editor is switched into
@@ -91,6 +93,7 @@ function svg_edit_setup() {
 	function updateContextPanel(shouldHighlightText) {
 		var elem = selectedElement;
 		$('#selected_panel').hide();
+		$('#multiselected_panel').hide();
 		$('#rect_panel').hide();
 		$('#circle_panel').hide();
 		$('#ellipse_panel').hide();
@@ -139,7 +142,10 @@ function svg_edit_setup() {
 						$('#text').select();
 					}
 					break;
-			}
+			} // switch
+		} // if (elem != null)
+		else if (multiselected) {
+			$('#multiselected_panel').show();
 		}
 
 		// update history buttons
@@ -310,8 +316,8 @@ function svg_edit_setup() {
 	// Delete is a contextual tool that only appears in the ribbon if
 	// an element has been selected
 	var deleteSelected = function() {
-		if (selectedElement != null) {
-			svgCanvas.deleteSelectedElement();
+		if (selectedElement != null || multiselected) {
+			svgCanvas.deleteSelectedElements();
 		}
 	}
 
@@ -371,6 +377,7 @@ function svg_edit_setup() {
 	$('#tool_clear').click(clickClear);
 	$('#tool_save').click(clickSave);
 	$('#tool_delete').click(deleteSelected);
+	$('#tool_delete_multi').click(deleteSelected);
 	$('#tool_move_top').click(moveToTopSelected);
 	$('#tool_move_bottom').click(moveToBottomSelected);
 	$('#tool_undo').click(clickUndo);
@@ -390,6 +397,9 @@ function svg_edit_setup() {
 	$('#tool_delete').mousedown(function(){$('#tool_delete').addClass('tool_button_current');});
 	$('#tool_delete').mouseup(function(){$('#tool_delete').removeClass('tool_button_current');});
 	$('#tool_delete').mouseout(function(){$('#tool_delete').removeClass('tool_button_current');});
+	$('#tool_delete_multi').mousedown(function(){$('#tool_delete_multi').addClass('tool_button_current');});
+	$('#tool_delete_multi').mouseup(function(){$('#tool_delete_multi').removeClass('tool_button_current');});
+	$('#tool_delete_multi').mouseout(function(){$('#tool_delete_multi').removeClass('tool_button_current');});
 	$('#tool_undo').mousedown(function(){ if (!$('#tool_undo').hasClass('tool_button_disabled')) $('#tool_undo').addClass('tool_button_current');});
 	$('#tool_undo').mouseup(function(){$('#tool_undo').removeClass('tool_button_current');});
 	$('#tool_undo').mouseout(function(){$('#tool_undo').removeClass('tool_button_current');});
