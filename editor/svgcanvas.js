@@ -159,7 +159,7 @@ function SvgCanvas(c)
 			this.selectorGrips[dir] = this.selectorGroup.appendChild( addSvgElementFromJson({
 										"element": "rect",
 										"attr": {
-											"id": (dir + "_grip" + this.id),
+											"id": ("selectorGrip_" + dir + "_" + this.id),
 											"fill": "blue",
 											"width": 6,
 											"height": 6,
@@ -172,12 +172,13 @@ function SvgCanvas(c)
 											// This works in Opera and WebKit, but does not work in Firefox
 											// see https://bugzilla.mozilla.org/show_bug.cgi?id=500174
 											"stroke-width": 2,
-											"pointer-events": "all",
+											"pointer-events":"all",
+											"display":"none"
 										}
 									}) );
 			$('#'+this.selectorGrips[dir].id).mousedown( function() {
 				current_mode = "resize";
-				current_resize_mode = this.id.substr(0,this.id.indexOf("_"));
+				current_resize_mode = this.id.substr(13,this.id.indexOf("_",13)-13);
 			});
 		}
 	
@@ -230,8 +231,6 @@ function SvgCanvas(c)
 	};
 
 	// TODO: add accessor methods to determine number of currently selected elements
-	// TODO: move selectElement into SelectorManager and allow multiple selected elements
-	//       with each call
 	function SelectorManager() {
 		
 		// this will hold the <g> element that contains all selector rects/grips
@@ -303,6 +302,7 @@ function SvgCanvas(c)
 					delete this.selectorMap[elem];
 					sel.locked = false;
 					sel.selectedElement = null;
+					sel.showGrips(false);
 
 					// remove from DOM and store reference in JS but only if it exists in the DOM
 					try {
@@ -329,17 +329,17 @@ function SvgCanvas(c)
 			
 			if (this.rubberBandBox == null) {
 				this.rubberBandBox = this.selectorParentGroup.appendChild(
-										addSvgElementFromJson({ "element": "rect",
-															"attr": {
-																"id": "selectorRubberBand",
-																"fill": "blue",
-																"fill-opacity": 0.15,
-																"stroke": "blue",
-																"stroke-width": 0.5,
-																"display": "none",
-																"pointer-events": "none",
-																}
-															}));
+						addSvgElementFromJson({ "element": "rect",
+							"attr": {
+								"id": "selectorRubberBand",
+								"fill": "blue",
+								"fill-opacity": 0.15,
+								"stroke": "blue",
+								"stroke-width": 0.5,
+								"display": "none",
+								"style": "pointer-events:none",
+							}
+						}));
 			}
 			return this.rubberBandBox;
 		}
@@ -383,7 +383,7 @@ function SvgCanvas(c)
 	// default size of 1 until it needs to grow bigger
 	var selectedElements = new Array(1); 
 	// this holds the selected's bbox
-	var selectedBBox = null;
+	var selectedBBoxes = new Array(1);
 	// this object manages selectors for us
 	var selectorManager = new SelectorManager();
 	// this object holds the one-and-only selector (for now)
@@ -395,6 +395,8 @@ function SvgCanvas(c)
 
 	// Since the only browser that supports getIntersectionList is Opera, we need to 
 	// provide an implementation here.  We brute-force it for now.
+	// Firefox does not implement getIntersectionList(), see https://bugzilla.mozilla.org/show_bug.cgi?id=501421
+	// Webkit does not implement getIntersectionList(), see https://bugs.webkit.org/show_bug.cgi?id=11274
 	var getIntersectionList = function(rect) {
 		var resultList = null;
 		try {
@@ -514,6 +516,7 @@ function SvgCanvas(c)
 
 	var recalculateSelectedDimensions = function() {
 		var selected = selectedElements[0];
+		var selectedBBox = selectedBBoxes[0];
 		var box = selected.getBBox();
 
 		// if we have not moved/resized, then immediately leave
@@ -618,6 +621,7 @@ function SvgCanvas(c)
 
 	var recalculateSelectedOutline = function() {
 		var selected = selectedElements[0];
+		var selectedBBox = selectedBBoxes[0]
 		var theSelector = selectorManager.requestSelector(selected);
 		if (selected != null && theSelector != null) {
 			theSelector.resize(selectedBBox);
@@ -627,81 +631,7 @@ function SvgCanvas(c)
 // public events
 
 	// TODO: grab code here and add to addSelection...
-	// TODO: use addSelection instead of selectElement throughout
 	
-	// call this function to set a single selected element
-	// call this function with null to clear the selected element
-	var selectElement = function(newSelected, multi)
-	{
-		var rubberBox = selectorManager.getRubberBandBox();
-		// if the element to be selected is actually the rubber-band box
-		// then simply return (do not select it)
-		if (newSelected == rubberBox) {
-			return;
-		}
-		
-		// if we are not in multi-mode and newSelected is already selected
-		// then simply return
-		// otherwise clear all previous selectors
-		var multi = multi || false;
-		if (!multi) {
-			var selected = selectedElements[0];
-			if (selectedElements[0] == newSelected) {
-				return;
-			}
-		
-			for (var i = 0; i < selectedElements.length; ++i) {
-				selectorManager.releaseSelector(selectedElements[i]);
-			}
-		}
-		
-		// Firefox does not implement getIntersectionList(), see
-		// https://bugzilla.mozilla.org/show_bug.cgi?id=501421
-		// Webkit does not implement getIntersectionList(), see
-		// https://bugs.webkit.org/show_bug.cgi?id=11274
-		// TODO: for these browsers we will need to brute force getIntersectionList()
-//		var nodes = svgroot.getIntersectionList(rubberBox.getBBox(), null);
-		
-		// find next slot in selectedElements array
-		var index = 0;
-		/* index = selectedElements.length;
-		for (var i = 0; i < selectedElements.length; ++i) {
-			if (selectedElements[i] == null) { index = i; break; }
-		}
-		*/
-		selectedElements[index] = newSelected;
-		selected = selectedElements[index];
-
-		if (selected != null) {
-			selectedBBox = selected.getBBox();
-
-			// the manager gives us a selector
-			var theSelector = selectorManager.requestSelector(selected);
-			
-			// recalculate size and then re-append to bottom of document
-			recalculateSelectedOutline();
-
-			// set all our current styles to the selected styles
-			current_fill = selected.getAttribute("fill");
-			current_fill_opacity = selected.getAttribute("fill-opacity");
-			current_stroke = selected.getAttribute("stroke");
-			current_stroke_opacity = selected.getAttribute("stroke-opacity");
-			current_stroke_width = selected.getAttribute("stroke-width");
-			current_stroke_style = selected.getAttribute("stroke-dasharray");
-			if (selected.tagName == "text") {
-				current_font_size = selected.getAttribute("font-size");
-				current_font_family = selected.getAttribute("font-family");
-			}
-
-			// do not show resize grips on text elements
-			theSelector.showGrips(selected.tagName != "text" && current_mode != "multiselect");
-		}
-
-		call("selected", selected);
-	};
-	
-	
-	// 
 	this.clearSelection = function() {
 		if (selectedElements[0] == null) { return; }
 //		console.log("clearSelection() with length=" + selectedElements.length);
@@ -711,14 +641,15 @@ function SvgCanvas(c)
 			if (elem == null) break;
 			selectorManager.releaseSelector(elem);
 			selectedElements[i] = null;
+			selectedBBoxes[i] = null;
 		}
-		call("selected", null);
-//		console.log(selectedElements);
+		call("selected", selectedElements);
 	};
 	
 	this.addToSelection = function(elemsToAdd) {
+//		console.log("addToSelection() with: " + elemsToAdd);
 		if (elemsToAdd.length == 0) { return; }
-		
+				
 		// find the first null in our selectedElements array
 		var j = 0;
 		while (j < selectedElements.length) {
@@ -727,18 +658,20 @@ function SvgCanvas(c)
 			}
 			++j;
 		}
-//		console.log("addToSelection() with j=" + j + " and # to add is " + elemsToAdd.length);
+//		console.log("  j=" + j + " and # to add is " + elemsToAdd.length);
 //		console.log(selectedElements);
 		
 		// now add each element consecutively
 		for (var i = 0; i < elemsToAdd.length; ++i) {
 			var elem = elemsToAdd[i];
+			// we ignore any selectors
+			if (elem.id.substr(0,13) == "selectorGrip_") continue;
 			// if it's not already there, add it
 			if (selectedElements.indexOf(elem) == -1) {
-				selectedElements[j++] = elem;
+				selectedElements[j] = elem;
+				selectedBBoxes[j++] = elem.getBBox();
 				selectorManager.requestSelector(elem);
-				selectedBBox = elem.getBBox();
-				call("selected", elem);
+				call("selected", selectedElements);
 //				console.log(selectorManager.selectors);
 //				console.log(selectorManager.selectorMap);
 			}
@@ -763,8 +696,8 @@ function SvgCanvas(c)
 					newSelectedItems[j++] = elem;
 				}
 				else { // remove the item and its selector
-					console.log(selectorManager.selectors);
-					console.log(selectorManager.selectorMap);
+//					console.log(selectorManager.selectors);
+//					console.log(selectorManager.selectorMap);
 					selectorManager.releaseSelector(elem);
 				}
 			}
@@ -775,13 +708,14 @@ function SvgCanvas(c)
 
 	// in mouseDown :
 	// - when we are in a create mode, the element is added to the canvas
-	//   but the action is not recorded until mouseUp
+	//   but the action is not recorded until mousing up
 	// - when we are in select mode, select the element, remember the position
 	//   and do nothing else
 	var mouseDown = function(evt)
 	{
 		var x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
 		var y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
+//		console.log("mouseDown, current_mode=" + current_mode);
 		switch (current_mode) {
 			case "select":
 				started = true;
@@ -795,8 +729,11 @@ function SvgCanvas(c)
 					canvas.addToSelection([t]);
 				}
 				else {
+					canvas.clearSelection();
 					current_mode = "multiselect";
-					rubberBox = selectorManager.getRubberBandBox();
+					if (rubberBox == null) {
+						rubberBox = selectorManager.getRubberBandBox();
+					}
 					rubberBox.x.baseVal.value = start_x;
 					rubberBox.y.baseVal.value = start_y;
 					rubberBox.width.baseVal.value = 0;
@@ -955,32 +892,31 @@ function SvgCanvas(c)
 		{
 			case "select":
 				// we temporarily use a translate on the element being dragged
-				// this transform is removed upon mouseUp and the element is relocated to the
-				// new location
+				// this transform is removed upon mousing up and the element is 
+				// relocated to the new location
 				if (selected != null) {
 					var dx = x - start_x;
 					var dy = y - start_y;
-					selectedBBox = selected.getBBox();
-					selectedBBox.x += dx;
-					selectedBBox.y += dy;
+					selectedBBoxes[0] = selected.getBBox();
+					selectedBBoxes[0].x += dx;
+					selectedBBoxes[0].y += dy;
 					var ts = "translate(" + dx + "," + dy + ")";
 					selected.setAttribute("transform", ts);
 					recalculateSelectedOutline();
 				}
 				break;
 			case "multiselect":
-				if (rubberBox != null) {
-					rubberBox.x.baseVal.value = Math.min(start_x,x);
-					rubberBox.y.baseVal.value = Math.min(start_y,y);
-					rubberBox.width.baseVal.value = Math.abs(x-start_x);
-					rubberBox.height.baseVal.value = Math.abs(y-start_y);
-				}
+				rubberBox.x.baseVal.value = Math.min(start_x,x);
+				rubberBox.y.baseVal.value = Math.min(start_y,y);
+				rubberBox.width.baseVal.value = Math.abs(x-start_x);
+				rubberBox.height.baseVal.value = Math.abs(y-start_y);
+				
 				// evt.target is the element that the mouse pointer is passing over
 				// TODO: add new targets to the selectedElements array, create a 
 				// selector for it, etc
 				var nodeName = evt.target.nodeName;
 				if (nodeName != "div" && nodeName != "svg") {
-					addToSelection([evt.target]);
+					canvas.addToSelection([evt.target]);
 				}
 				break;
 			case "resize":
@@ -1006,6 +942,7 @@ function SvgCanvas(c)
 					sx = (width-dx)/width;
 				}
 
+				var selectedBBox = selectedBBoxes[0];
 				selectedBBox.x = left+tx;
 				selectedBBox.y = top+ty;
 				selectedBBox.width = width*sx;
@@ -1019,7 +956,6 @@ function SvgCanvas(c)
 					selectedBBox.y += selectedBBox.height;
 					selectedBBox.height = -selectedBBox.height;
 				}
-
 
 				ts = "translate(" + (left+tx) + "," + (top+ty) + ") scale(" + (sx) + "," + (sy) +
 						") translate(" + (-left) + "," + (-top) + ")";
@@ -1090,30 +1026,45 @@ function SvgCanvas(c)
 	var mouseUp = function(evt)
 	{
 		if (!started) return;
+//		console.log("mouseUp, current_mode=" + current_mode);
 
-		var selected = selectedElements[0];
 		started = false;
 		var element = svgdoc.getElementById(getId());
 		var keep = false;
 		switch (current_mode)
 		{
-			// fall-through to select here
+			// intentionally fall-through to select here
 			case "resize":
-				current_mode = "select";
-			case "select":
-				if (selected != null) {
-					recalculateSelectedDimensions();
-					recalculateSelectedOutline();
-					// we return immediately from select so that the obj_num is not incremented
-					return;
-				}
-				break;
 			case "multiselect":
 				if (rubberBox != null) {
 					rubberBox.setAttribute("display", "none");
 				}
 				current_mode = "select";
-				break;				
+			case "select":
+				if (selectedElements[0] != null) {
+					// if we only have one selected element
+					if (selectedElements[1] == null) {
+						// set our current stroke/fill properties to the element's
+						var selected = selectedElements[0];
+						current_fill = selected.getAttribute("fill");
+						current_fill_opacity = selected.getAttribute("fill-opacity");
+						current_stroke = selected.getAttribute("stroke");
+						current_stroke_opacity = selected.getAttribute("stroke-opacity");
+						current_stroke_width = selected.getAttribute("stroke-width");
+						current_stroke_style = selected.getAttribute("stroke-dasharray");
+						if (selected.tagName == "text") {
+							current_font_size = selected.getAttribute("font-size");
+							current_font_family = selected.getAttribute("font-family");
+						}
+						
+						selectorManager.requestSelector(selected).showGrips(selected.tagName != "text");
+					}
+					recalculateSelectedDimensions();
+					recalculateSelectedOutline();
+					// we return immediately from select so that the obj_num is not incremented
+					return;
+				}				
+				break;
 			case "path":
 				keep = true;
 				break;
@@ -1183,7 +1134,8 @@ function SvgCanvas(c)
 				break;
 			case "text":
 				keep = true;
-				selectElement(element);
+				canvas.clearSelection();
+				canvas.addToSelection([element]);
 				break;
 		}
 		d_attr = null;
@@ -1385,7 +1337,7 @@ function SvgCanvas(c)
 			if (oldval != val) {
 				if (attr == "#text") selected.textContent = val;
 				else selected.setAttribute(attr, val);
-				selectedBBox = selected.getBBox();
+				selectedBBoxes[0] = selected.getBBox();
 				recalculateSelectedOutline();
 				var changes = {};
 				changes[attr] = oldval;
@@ -1442,9 +1394,9 @@ function SvgCanvas(c)
 	this.moveSelectedElement = function(dx,dy) {
 		var selected = selectedElements[0];
 		if (selected != null) {
-			selectedBBox = selected.getBBox();
-			selectedBBox.x += dx;
-			selectedBBox.y += dy;
+			selectedBBoxes[0] = selected.getBBox();
+			selectedBBoxes[0].x += dx;
+			selectedBBoxes[0].y += dy;
 
 			recalculateSelectedDimensions();
 			recalculateSelectedOutline();
