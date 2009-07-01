@@ -515,28 +515,29 @@ function SvgCanvas(c)
 	}; // end svgToString()
 
 	var recalculateSelectedDimensions = function() {
-		var selected = selectedElements[0];
-		var selectedBBox = selectedBBoxes[0];
-		var box = selected.getBBox();
+		for (var i = 0; i < selectedElements.length; ++i) {
+			var selected = selectedElements[i];
+			var selectedBBox = selectedBBoxes[i];
+			var box = selected.getBBox();
 
-		// if we have not moved/resized, then immediately leave
-		if (box.x == selectedBBox.x && box.y == selectedBBox.y &&
-			box.width == selectedBBox.width && box.height == selectedBBox.height) {
-			return;
-		}
+			// if we have not moved/resized, then immediately leave
+			if (box.x == selectedBBox.x && box.y == selectedBBox.y &&
+				box.width == selectedBBox.width && box.height == selectedBBox.height) {
+				return;
+			}
 
-		// after this point, we have some change
+			// after this point, we have some change
 
-		var remapx = function(x) {return ((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x;}
-		var remapy = function(y) {return ((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y;}
-		var scalew = function(w) {return w*selectedBBox.width/box.width;}
-		var scaleh = function(h) {return h*selectedBBox.height/box.height;}
+			var remapx = function(x) {return ((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x;}
+			var remapy = function(y) {return ((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y;}
+			var scalew = function(w) {return w*selectedBBox.width/box.width;}
+			var scaleh = function(h) {return h*selectedBBox.height/box.height;}
 
-		var changes = {};
+			var changes = {};
 
-		selected.removeAttribute("transform");
-		switch (selected.tagName)
-		{
+			selected.removeAttribute("transform");
+			switch (selected.tagName)
+			{
 			case "path":
 				// extract the x,y from the path, adjust it and write back the new path
 				// but first, save the old path
@@ -610,21 +611,26 @@ function SvgCanvas(c)
 			default: // rect
 				console.log("Unknown shape type: " + selected.tagName);
 				break;
+			}
+			// fire changed event
+			if (changes) {
+				var text = (current_resize_mode == "none" ? "position" : "size");
+				// TODO: store these changes in a batch command
+				addCommandToHistory(new ChangeElementCommand(selected, changes, text));
+			}
 		}
-		// fire changed event
-		if (changes) {
-			var text = (current_resize_mode == "none" ? "position" : "size");
-			addCommandToHistory(new ChangeElementCommand(selected, changes, text));
-		}
-		call("changed", selected);
+		// TODO: add the batch command to history
+		call("changed", selectedElements);
 	};
 
 	var recalculateSelectedOutline = function() {
-		var selected = selectedElements[0];
-		var selectedBBox = selectedBBoxes[0]
-		var theSelector = selectorManager.requestSelector(selected);
-		if (selected != null && theSelector != null) {
-			theSelector.resize(selectedBBox);
+		for (var i = 0; i < selectedElements.length; ++i) {
+			var selected = selectedElements[i];
+			var selectedBBox = selectedBBoxes[i]
+			var theSelector = selectorManager.requestSelector(selected);
+			if (selected != null && theSelector != null) {
+				theSelector.resize(selectedBBox);
+			}
 		}
 	};
 
@@ -725,8 +731,12 @@ function SvgCanvas(c)
 				var t = evt.target;
 				// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
 				if (t.nodeName.toLowerCase() != "div" && t.nodeName.toLowerCase() != "svg") {
-					canvas.clearSelection();
-					canvas.addToSelection([t]);
+					// if this element is not yet selected, clear selection and select it
+					if (selectedElements.indexOf(t) == -1) {
+						canvas.clearSelection();
+						canvas.addToSelection([t]);
+					}
+					// else the user is going to manipulate the selected elements
 				}
 				else {
 					canvas.clearSelection();
@@ -894,14 +904,18 @@ function SvgCanvas(c)
 				// we temporarily use a translate on the element being dragged
 				// this transform is removed upon mousing up and the element is 
 				// relocated to the new location
-				if (selected != null) {
+				if (selectedElements[0] != null) {
 					var dx = x - start_x;
 					var dy = y - start_y;
-					selectedBBoxes[0] = selected.getBBox();
-					selectedBBoxes[0].x += dx;
-					selectedBBoxes[0].y += dy;
 					var ts = "translate(" + dx + "," + dy + ")";
-					selected.setAttribute("transform", ts);
+					for (var i = 0; i < selectedElements.length; ++i) {
+						var selected = selectedElements[i];
+						if (selected == null) break;
+						selectedBBoxes[i] = selected.getBBox();
+						selectedBBoxes[i].x += dx;
+						selectedBBoxes[i].y += dy;
+						selected.setAttribute("transform", ts);
+					}
 					recalculateSelectedOutline();
 				}
 				break;
@@ -1104,7 +1118,7 @@ function SvgCanvas(c)
 							"fill-opacity": current_fill_opacity
 						}
 					});
-					call("changed",element);
+					call("changed",[element]);
 					keep = true;
 				}
 				break;
@@ -1128,7 +1142,7 @@ function SvgCanvas(c)
 							"fill-opacity": current_fill_opacity
 						}
 					});
-					call("changed",element);
+					call("changed",[element]);
 					keep = true;
 				}
 				break;
@@ -1150,7 +1164,7 @@ function SvgCanvas(c)
 			// we create the insert command that is stored on the stack
 			// undo means to call cmd.unapply(), redo means to call cmd.apply()
 			addCommandToHistory(new InsertElementCommand(element));
-			call("changed",element);
+			call("changed",[element]);
 		}
 	};
 
@@ -1187,7 +1201,7 @@ function SvgCanvas(c)
 		svgroot.setAttribute("width", x);
 		svgroot.setAttribute("height", y);
 		addCommandToHistory(new ChangeElementCommand(svgroot, {"width":w,"height":h}, "resolution"));
-		call("changed", svgroot);
+		call("changed", [svgroot]);
 	};
 
 	this.getMode = function() {
@@ -1325,7 +1339,7 @@ function SvgCanvas(c)
 				selected.setAttribute("rx", val);
 				selected.setAttribute("ry", val);
 				addCommandToHistory(new ChangeElementCommand(selected, {"rx":r, "ry":r}, "Radius"));
-				call("changed", selected);
+				call("changed", [selected]);
 			}
 		}
 	};
@@ -1342,7 +1356,7 @@ function SvgCanvas(c)
 				var changes = {};
 				changes[attr] = oldval;
 				addCommandToHistory(new ChangeElementCommand(selected, changes, attr));
-				call("changed", selected);
+				call("changed", [selected]);
 			}
 		}
 	};
@@ -1411,7 +1425,7 @@ function SvgCanvas(c)
 			this.clearSelection();
 			var cmd = undoStack[--undoStackPointer];
 			cmd.unapply();
-			call("changed", cmd.elem);
+			call("changed", [cmd.elem]);
 		}
 	}
 	this.redo = function() {
@@ -1419,7 +1433,7 @@ function SvgCanvas(c)
 			this.clearSelection();
 			var cmd = undoStack[undoStackPointer++];
 			cmd.apply();
-			call("changed", cmd.elem);
+			call("changed", [cmd.elem]);
 		}
 	};
 
