@@ -238,8 +238,8 @@ function svg_edit_setup() {
 		$('#styleoverrides').text('');
 		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 		$(button).addClass('tool_button_current');
-		// when a tool is selected, we should deselect the currently selected element
-		svgCanvas.selectNone();
+		// when a tool is selected, we should deselect any currently selected elements
+		svgCanvas.clearSelection();
 		return true;
 	};
 
