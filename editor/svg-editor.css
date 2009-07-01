@@ -110,6 +110,10 @@ div.color_block {
 	display: none;
 }
 
+#svg_editor #multiselected_panel {
+	display: none;
+}
+
 #svg_editor #rect_panel {
 	display: none;
 }
