@@ -184,26 +184,27 @@ function SvgCanvas(c)
 				
 		// add the corner grips
 		for (dir in this.selectorGrips) {
-			this.selectorGrips[dir] = this.selectorGroup.appendChild( addSvgElementFromJson({
-										"element": "rect",
-										"attr": {
-											"id": ("selectorGrip_" + dir + "_" + this.id),
-											"fill": "blue",
-											"width": 6,
-											"height": 6,
-											"style": ("cursor:" + dir + "-resize"),
-											// when we are in rotate mode, we will set rx/ry to 3
-//											"rx": 3,
-//											"ry": 3,
-											// This expands the mouse-able area of the grips making them
-											// easier to grab with the mouse.
-											// This works in Opera and WebKit, but does not work in Firefox
-											// see https://bugzilla.mozilla.org/show_bug.cgi?id=500174
-											"stroke-width": 2,
-											"pointer-events":"all",
-											"display":"none"
-										}
-									}) );
+			this.selectorGrips[dir] = this.selectorGroup.appendChild( 
+				addSvgElementFromJson({
+					"element": "rect",
+					"attr": {
+						"id": ("selectorGrip_" + dir + "_" + this.id),
+						"fill": "blue",
+						"width": 6,
+						"height": 6,
+						"style": ("cursor:" + dir + "-resize"),
+						// when we are in rotate mode, we will set rx/ry to 3
+//						"rx": 3,
+//						"ry": 3,
+						// This expands the mouse-able area of the grips making them
+						// easier to grab with the mouse.
+						// This works in Opera and WebKit, but does not work in Firefox
+						// see https://bugzilla.mozilla.org/show_bug.cgi?id=500174
+						"stroke-width": 2,
+						"pointer-events":"all",
+						"display":"none"
+					}
+				}) );
 			$('#'+this.selectorGrips[dir].id).mousedown( function() {
 				current_mode = "resize";
 				current_resize_mode = this.id.substr(13,this.id.indexOf("_",13)-13);
@@ -283,41 +284,42 @@ function SvgCanvas(c)
 		this.requestSelector = function(elem) {
 			if (elem == null) return null;
 			var N = this.selectors.length;
+			console.log("requestSelect() with elem=" + elem + " and N=" + N);
 
 			if (this.selectorParentGroup == null) {
 				initGroup();											
 			}
 
 			// if we've already acquired one for this element, return it
-			if (typeof(this.selectorMap[elem]) == "object") {
-				this.selectorMap[elem].locked = true;
-				return this.selectorMap[elem];
+			if (typeof(this.selectorMap[elem.id]) == "object") {
+				this.selectorMap[elem.id].locked = true;
+				return this.selectorMap[elem.id];
 			}
 			
 			for (var i = 0; i < N; ++i) {
 				if (this.selectors[i] && !this.selectors[i].locked) {
 					this.selectors[i].locked = true;
 					this.selectors[i].reset(elem);
-					this.selectorMap[elem] = this.selectors[i];
+					this.selectorMap[elem.id] = this.selectors[i];
 					return this.selectors[i];
 				}
 			}
 			// if we reached here, no available selectors were found, we create one
 			this.selectors[N] = new Selector(N, elem);
 			this.selectorParentGroup.appendChild(this.selectors[N].selectorGroup);
-			this.selectorMap[elem] = this.selectors[N];
+			this.selectorMap[elem.id] = this.selectors[N];
 			return this.selectors[N];
 		};
 		this.releaseSelector = function(elem) {
 			if (elem == null) return;
 			var N = this.selectors.length;
-			var sel = this.selectorMap[elem];
+			var sel = this.selectorMap[elem.id];
 			for (var i = 0; i < N; ++i) {
 				if (this.selectors[i] && this.selectors[i] == sel) {
 					if (sel.locked == false) {
 						console.log("WARNING! selector was released but was already unlocked");
 					}
-					delete this.selectorMap[elem];
+					delete this.selectorMap[elem.id];
 					sel.locked = false;
 					sel.selectedElement = null;
 					sel.showGrips(false);
@@ -441,7 +443,6 @@ function SvgCanvas(c)
 		}
 		undoStack[undoStack.length] = cmd;
 		undoStackPointer = undoStack.length;
-		console.log(undoStack);
 	};
 
 // private functions
@@ -670,7 +671,10 @@ function SvgCanvas(c)
 	
 	this.addToSelection = function(elemsToAdd) {
 		if (elemsToAdd.length == 0) { return; }
-				
+		
+		console.log("addToSelection()");
+		console.log(elemsToAdd);
+		
 		// find the first null in our selectedElements array
 		var j = 0;
 		while (j < selectedElements.length) {
@@ -736,7 +740,8 @@ function SvgCanvas(c)
 				current_resize_mode = "none";
 				var t = evt.target;
 				// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
-				if (t.nodeName.toLowerCase() != "div" && t.nodeName.toLowerCase() != "svg") {
+				var nodeName = t.nodeName.toLowerCase();
+				if (nodeName != "div" && nodeName != "svg") {
 					// if this element is not yet selected, clear selection and select it
 					if (selectedElements.indexOf(t) == -1) {
 						canvas.clearSelection();
@@ -934,7 +939,7 @@ function SvgCanvas(c)
 				// evt.target is the element that the mouse pointer is passing over
 				// TODO: add new targets to the selectedElements array, create a 
 				// selector for it, etc
-				var nodeName = evt.target.nodeName;
+				var nodeName = evt.target.nodeName.toLowerCase();
 				if (nodeName != "div" && nodeName != "svg") {
 					canvas.addToSelection([evt.target]);
 				}
