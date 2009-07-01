@@ -115,8 +115,10 @@ function SvgCanvas(c)
 	
 		// this function is used to reset the id and element that the selector is attached to
 		this.reset = function(e) {
+//			console.log("Selector.reset() with e=" + e.id);
 			this.locked = true;
 			this.selectedElement = e;
+			this.resize();
 			this.selectorGroup.setAttribute("display", "inline");
 		};
 	
@@ -186,6 +188,7 @@ function SvgCanvas(c)
 		};
 		
 		this.resize = function(bbox) {
+//			console.log("in Selector.resize()");
 			var selectedBox = this.selectorRect;
 			var selectedGrips = this.selectorGrips;
 			var selected = this.selectedElement;
@@ -197,6 +200,8 @@ function SvgCanvas(c)
 			if (selected.tagName == "text") {
 				offset += 2;
 			}
+			var bbox = bbox || this.selectedElement.getBBox();
+//			console.log("  bbox=" + bbox.x + "," + bbox.y + "," + bbox.width + "," + bbox.height);
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
 			selectedBox.x.baseVal.value = l;
 			selectedBox.y.baseVal.value = t;
@@ -219,6 +224,9 @@ function SvgCanvas(c)
 			selectedGrips.s.x.baseVal.value = l+w/2-3;
 			selectedGrips.s.y.baseVal.value = t+h-3;
 		};
+		
+		// now initialize the selector
+		this.reset(elem);
 	};
 
 	// TODO: add accessor methods to determine number of currently selected elements
@@ -249,22 +257,27 @@ function SvgCanvas(c)
 		};
 		
 		this.requestSelector = function(elem) {
+			if (elem == null) return null;
 			var N = this.selectors.length;
 
+//			console.log("requestSelector() with N=" + N);
 			if (this.selectorParentGroup == null) {
 				initGroup();											
 			}
 
 			// if we've already acquired one for this element, return it
-			if (this.selectorMap[elem] ) {
+			if (typeof(this.selectorMap[elem]) == "object") {
+//				console.log("-found elem in selectorMap");
 				this.selectorMap[elem].locked = true;
 				return this.selectorMap[elem];
 			}
+//			console.log(this.selectors);
 			
 			for (var i = 0; i < N; ++i) {
 				if (this.selectors[i] && !this.selectors[i].locked) {
 					this.selectors[i].locked = true;
-					this.selectors[i].reset(elem);					
+					this.selectors[i].reset(elem);
+					this.selectorMap[elem] = this.selectors[i];
 					return this.selectors[i];
 				}
 			}
@@ -274,14 +287,20 @@ function SvgCanvas(c)
 			this.selectorMap[elem] = this.selectors[N];
 			return this.selectors[N];
 		};
-		this.releaseSelector = function(sel) {
+		this.releaseSelector = function(elem) {
+//			console.log("releaseSelector() with N=" + N +", elem=" + elem.id);
+			if (elem == null) return;
 			var N = this.selectors.length;
+			var sel = this.selectorMap[elem];
+//			console.log("sel=" + sel);
+//			console.log(this.selectors);
 			for (var i = 0; i < N; ++i) {
 				if (this.selectors[i] && this.selectors[i] == sel) {
+//					console.log("found it");
 					if (sel.locked == false) {
 						console.log("WARNING! selector was released but was already unlocked");
 					}
-					delete this.selectorMap[sel.selectedElement];
+					delete this.selectorMap[elem];
 					sel.locked = false;
 					sel.selectedElement = null;
 
@@ -297,6 +316,9 @@ function SvgCanvas(c)
 		
 		// this keeps the selector groups as the last child in the document
 		this.update = function() {
+			if (this.selectorParentGroup == null) {
+				initGroup();
+			}
 			this.selectorParentGroup = svgroot.appendChild(this.selectorParentGroup);
 		}
 		
@@ -371,6 +393,22 @@ function SvgCanvas(c)
 	var undoStackPointer = 0;
 	var undoStack = [];
 
+	// Since the only browser that supports getIntersectionList is Opera, we need to 
+	// provide an implementation here.  We brute-force it for now.
+	var getIntersectionList = function(rect) {
+		var resultList = null;
+		try {
+			resultList = svgroot.getIntersectionList(rect, null);
+		} catch(e) { }
+		
+		if (resultList == null || typeof(resultList.item) != "function") 
+		{
+			// TODO: provide brute-force algorithm, looking at every element's bbox for intersection
+			console.log("brute force!");
+		}
+		return resultList;
+	};
+	
 	// FIXME: we MUST compress consecutive text changes to the same element
 	// (right now each keystroke is saved as a separate command that includes the
 	// entire text contents of the text element)
@@ -587,13 +625,18 @@ function SvgCanvas(c)
 	};
 
 // public events
+
+	// TODO: grab code here and add to addSelection...
+	// TODO: use addSelection instead of selectElement throughout
+	
 	// call this function to set a single selected element
 	// call this function with null to clear the selected element
 	var selectElement = function(newSelected, multi)
 	{
+		var rubberBox = selectorManager.getRubberBandBox();
 		// if the element to be selected is actually the rubber-band box
 		// then simply return (do not select it)
-		if (newSelected == selectorManager.getRubberBandBox()) {
+		if (newSelected == rubberBox) {
 			return;
 		}
 		
@@ -611,6 +654,13 @@ function SvgCanvas(c)
 				selectorManager.releaseSelector(selectedElements[i]);
 			}
 		}
+		
+		// Firefox does not implement getIntersectionList(), see
+		// https://bugzilla.mozilla.org/show_bug.cgi?id=501421
+		// Webkit does not implement getIntersectionList(), see
+		// https://bugs.webkit.org/show_bug.cgi?id=11274
+		// TODO: for these browsers we will need to brute force getIntersectionList()
+//		var nodes = svgroot.getIntersectionList(rubberBox.getBBox(), null);
 		
 		// find next slot in selectedElements array
 		var index = 0;
@@ -649,6 +699,79 @@ function SvgCanvas(c)
 
 		call("selected", selected);
 	};
+	
+	
+	// 
+	this.clearSelection = function() {
+		if (selectedElements[0] == null) { return; }
+//		console.log("clearSelection() with length=" + selectedElements.length);
+		
+		for (var i = 0; i < selectedElements.length; ++i) {
+			var elem = selectedElements[i];
+			if (elem == null) break;
+			selectorManager.releaseSelector(elem);
+			selectedElements[i] = null;
+		}
+		call("selected", null);
+//		console.log(selectedElements);
+	};
+	
+	this.addToSelection = function(elemsToAdd) {
+		if (elemsToAdd.length == 0) { return; }
+		
+		// find the first null in our selectedElements array
+		var j = 0;
+		while (j < selectedElements.length) {
+			if (selectedElements[j] == null) { 
+				break;
+			}
+			++j;
+		}
+//		console.log("addToSelection() with j=" + j + " and # to add is " + elemsToAdd.length);
+//		console.log(selectedElements);
+		
+		// now add each element consecutively
+		for (var i = 0; i < elemsToAdd.length; ++i) {
+			var elem = elemsToAdd[i];
+			// if it's not already there, add it
+			if (selectedElements.indexOf(elem) == -1) {
+				selectedElements[j++] = elem;
+				selectorManager.requestSelector(elem);
+				selectedBBox = elem.getBBox();
+				call("selected", elem);
+//				console.log(selectorManager.selectors);
+//				console.log(selectorManager.selectorMap);
+			}
+		}
+//		console.log(selectedElements);
+		// TODO: if there is only one element, then set the current fill/stroke properties to it
+	};
+	
+	// 
+	this.removeFromSelection = function(elemsToRemove) {
+		if (selectedElements[0] == null) { return; }
+		if (elemsToRemove.length == 0) { return; }
+
+		// find every element and remove it from our array copy		
+		var newSelectedItems = new Array(selectedElements.length);
+		var j = 0;
+		for (var i = 0; i < selectedElements.length; ++i) {
+			var elem = selectedElements[i];
+			if (elem) {
+				// keep the item
+				if (elemsToRemove.indexOf(elem) == -1) {
+					newSelectedItems[j++] = elem;
+				}
+				else { // remove the item and its selector
+					console.log(selectorManager.selectors);
+					console.log(selectorManager.selectorMap);
+					selectorManager.releaseSelector(elem);
+				}
+			}
+		}
+		// the copy becomes the master now
+		selectedElements = newSelectedItems;
+	};
 
 	// in mouseDown :
 	// - when we are in a create mode, the element is added to the canvas
@@ -668,7 +791,8 @@ function SvgCanvas(c)
 				var t = evt.target;
 				// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
 				if (t.nodeName.toLowerCase() != "div" && t.nodeName.toLowerCase() != "svg") {
-					selectElement(t);
+					canvas.clearSelection();
+					canvas.addToSelection([t]);
 				}
 				else {
 					current_mode = "multiselect";
@@ -856,7 +980,7 @@ function SvgCanvas(c)
 				// selector for it, etc
 				var nodeName = evt.target.nodeName;
 				if (nodeName != "div" && nodeName != "svg") {
-					selectElement(evt.target);
+					addToSelection([evt.target]);
 				}
 				break;
 			case "resize":
@@ -1082,7 +1206,7 @@ function SvgCanvas(c)
 
 	this.save = function() {
 		// remove the selected outline before serializing
-		this.selectNone();
+		this.clearSelection();
 		var str = "<?xml version=\"1.0\" standalone=\"no\"?>\n";
 		// see http://jwatt.org/svg/authoring/#doctype-declaration
 //		str += "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
@@ -1094,7 +1218,7 @@ function SvgCanvas(c)
 		var nodes = svgroot.childNodes;
 		var len = svgroot.childNodes.length;
 		var i = 0;
-		this.selectNone();
+		this.clearSelection();
 		for(var rep = 0; rep < len; rep++){
 			if (nodes[i].nodeType == 1) { // element node
 				nodes[i].parentNode.removeChild(nodes[i]);
@@ -1279,17 +1403,13 @@ function SvgCanvas(c)
 		window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
 	};
 
-	this.selectNone = function() {
-		selectElement(null);
-	};
-
 	this.deleteSelectedElement = function() {
 		var selected = selectedElements[0];
 		if (selected != null) {
 			var parent = selected.parentNode;
 			var t = selected;
 			// this will unselect the element (and remove the selectedOutline)
-			selectElement(null);
+			this.removeFromSelection([t]);
 			var elem = parent.removeChild(t);
 			addCommandToHistory(new RemoveElementCommand(elem, parent));
 		}
@@ -1336,23 +1456,19 @@ function SvgCanvas(c)
 
 	this.undo = function() {
 		if (undoStackPointer > 0) {
-			this.selectNone();
+			this.clearSelection();
 			var cmd = undoStack[--undoStackPointer];
 			cmd.unapply();
 			call("changed", cmd.elem);
 		}
-//		console.log("after undo, stackPointer=" + undoStackPointer);
-//		console.log(undoStack);
 	}
 	this.redo = function() {
 		if (undoStackPointer < undoStack.length && undoStack.length > 0) {
-			this.selectNone();
+			this.clearSelection();
 			var cmd = undoStack[undoStackPointer++];
 			cmd.apply();
 			call("changed", cmd.elem);
 		}
-//		console.log("after redo, stackPointer=" + undoStackPointer);
-//		console.log(undoStack);
 	};
 
 }
