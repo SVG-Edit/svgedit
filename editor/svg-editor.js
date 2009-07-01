@@ -20,11 +20,12 @@ function svg_edit_setup() {
 	var selectedElement = null;
 
 	// called when we've selected a different element
-	var selectedChanged = function(window,elem) {
-		selectedElement = elem;
-		if (elem != null) {
+	var selectedChanged = function(window,elems) {
+		// if elems[1] is present, then we have more than one element
+		selectedElement = (elems.length == 1 || elems[1] == null ? elems[0] : null);
+		if (selectedElement != null) {
 
-			// always set the mode of the editor to select because
+			// unless we're already in always set the mode of the editor to select because
 			// upon creation of a text element the editor is switched into
 			// select mode and this event fires - we need our UI to be in sync
 			if (svgCanvas.getMode() != "multiselect") {
