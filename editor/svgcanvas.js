@@ -115,7 +115,6 @@ function SvgCanvas(c)
 	
 		// this function is used to reset the id and element that the selector is attached to
 		this.reset = function(e) {
-//			console.log("Selector.reset() with e=" + e.id);
 			this.locked = true;
 			this.selectedElement = e;
 			this.resize();
@@ -189,7 +188,6 @@ function SvgCanvas(c)
 		};
 		
 		this.resize = function(bbox) {
-//			console.log("in Selector.resize()");
 			var selectedBox = this.selectorRect;
 			var selectedGrips = this.selectorGrips;
 			var selected = this.selectedElement;
@@ -202,7 +200,6 @@ function SvgCanvas(c)
 				offset += 2;
 			}
 			var bbox = bbox || this.selectedElement.getBBox();
-//			console.log("  bbox=" + bbox.x + "," + bbox.y + "," + bbox.width + "," + bbox.height);
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
 			selectedBox.x.baseVal.value = l;
 			selectedBox.y.baseVal.value = t;
@@ -259,18 +256,15 @@ function SvgCanvas(c)
 			if (elem == null) return null;
 			var N = this.selectors.length;
 
-//			console.log("requestSelector() with N=" + N);
 			if (this.selectorParentGroup == null) {
 				initGroup();											
 			}
 
 			// if we've already acquired one for this element, return it
 			if (typeof(this.selectorMap[elem]) == "object") {
-//				console.log("-found elem in selectorMap");
 				this.selectorMap[elem].locked = true;
 				return this.selectorMap[elem];
 			}
-//			console.log(this.selectors);
 			
 			for (var i = 0; i < N; ++i) {
 				if (this.selectors[i] && !this.selectors[i].locked) {
@@ -287,15 +281,11 @@ function SvgCanvas(c)
 			return this.selectors[N];
 		};
 		this.releaseSelector = function(elem) {
-//			console.log("releaseSelector() with N=" + N +", elem=" + elem.id);
 			if (elem == null) return;
 			var N = this.selectors.length;
 			var sel = this.selectorMap[elem];
-//			console.log("sel=" + sel);
-//			console.log(this.selectors);
 			for (var i = 0; i < N; ++i) {
 				if (this.selectors[i] && this.selectors[i] == sel) {
-//					console.log("found it");
 					if (sel.locked == false) {
 						console.log("WARNING! selector was released but was already unlocked");
 					}
@@ -423,8 +413,6 @@ function SvgCanvas(c)
 		}
 		undoStack[undoStack.length] = cmd;
 		undoStackPointer = undoStack.length;
-//		console.log("after add command, stackPointer=" + undoStackPointer);
-//		console.log(undoStack);
 	};
 
 // private functions
@@ -517,6 +505,7 @@ function SvgCanvas(c)
 	var recalculateSelectedDimensions = function() {
 		for (var i = 0; i < selectedElements.length; ++i) {
 			var selected = selectedElements[i];
+			if (selected == null) break;
 			var selectedBBox = selectedBBoxes[i];
 			var box = selected.getBBox();
 
@@ -626,6 +615,7 @@ function SvgCanvas(c)
 	var recalculateSelectedOutline = function() {
 		for (var i = 0; i < selectedElements.length; ++i) {
 			var selected = selectedElements[i];
+			if (selected == null) break;
 			var selectedBBox = selectedBBoxes[i]
 			var theSelector = selectorManager.requestSelector(selected);
 			if (selected != null && theSelector != null) {
@@ -640,7 +630,6 @@ function SvgCanvas(c)
 	
 	this.clearSelection = function() {
 		if (selectedElements[0] == null) { return; }
-//		console.log("clearSelection() with length=" + selectedElements.length);
 		
 		for (var i = 0; i < selectedElements.length; ++i) {
 			var elem = selectedElements[i];
@@ -653,7 +642,6 @@ function SvgCanvas(c)
 	};
 	
 	this.addToSelection = function(elemsToAdd) {
-//		console.log("addToSelection() with: " + elemsToAdd);
 		if (elemsToAdd.length == 0) { return; }
 				
 		// find the first null in our selectedElements array
@@ -664,8 +652,6 @@ function SvgCanvas(c)
 			}
 			++j;
 		}
-//		console.log("  j=" + j + " and # to add is " + elemsToAdd.length);
-//		console.log(selectedElements);
 		
 		// now add each element consecutively
 		for (var i = 0; i < elemsToAdd.length; ++i) {
@@ -678,12 +664,8 @@ function SvgCanvas(c)
 				selectedBBoxes[j++] = elem.getBBox();
 				selectorManager.requestSelector(elem);
 				call("selected", selectedElements);
-//				console.log(selectorManager.selectors);
-//				console.log(selectorManager.selectorMap);
 			}
 		}
-//		console.log(selectedElements);
-		// TODO: if there is only one element, then set the current fill/stroke properties to it
 	};
 	
 	// 
@@ -702,8 +684,6 @@ function SvgCanvas(c)
 					newSelectedItems[j++] = elem;
 				}
 				else { // remove the item and its selector
-//					console.log(selectorManager.selectors);
-//					console.log(selectorManager.selectorMap);
 					selectorManager.releaseSelector(elem);
 				}
 			}
@@ -721,7 +701,6 @@ function SvgCanvas(c)
 	{
 		var x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
 		var y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
-//		console.log("mouseDown, current_mode=" + current_mode);
 		switch (current_mode) {
 			case "select":
 				started = true;
@@ -1040,7 +1019,6 @@ function SvgCanvas(c)
 	var mouseUp = function(evt)
 	{
 		if (!started) return;
-//		console.log("mouseUp, current_mode=" + current_mode);
 
 		started = false;
 		var element = svgdoc.getElementById(getId());
@@ -1345,20 +1323,24 @@ function SvgCanvas(c)
 	};
 
 	this.changeSelectedAttribute = function(attr, val) {
-		var selected = selectedElements[0];
-		if (selected != null) {
+		for (var i = 0; i < selectedElements.length; ++i) {
+			var selected = selectedElements[i];
+			if (selected == null) break;
+			
 			var oldval = (attr == "#text" ? selected.textContent : selected.getAttribute(attr));
 			if (oldval != val) {
 				if (attr == "#text") selected.textContent = val;
 				else selected.setAttribute(attr, val);
-				selectedBBoxes[0] = selected.getBBox();
+				selectedBBoxes[i] = selected.getBBox();
 				recalculateSelectedOutline();
 				var changes = {};
 				changes[attr] = oldval;
+				// TODO: create a batch command here
 				addCommandToHistory(new ChangeElementCommand(selected, changes, attr));
-				call("changed", [selected]);
 			}
 		}
+		// TODO: add batch command to history here
+		call("changed", selectedElements);
 	};
 
 	$(container).mouseup(mouseUp);
