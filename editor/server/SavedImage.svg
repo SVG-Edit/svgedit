@@ -1,0 +1,10 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" id="svgroot" height="480" width="640">
+  <text end-dur="2495" start-dur="2401" font-family="serif" font-size="12pt" stroke="black" fill="none" id="svg_1" y="228" x="146">
+    hello work  </text>
+  <text end-dur="27939" start-dur="27881" font-family="serif" font-size="12pt" stroke="black" fill="none" id="svg_3" y="157" x="276">
+    text  </text>
+  <text end-dur="37710" start-dur="37664" font-family="serif" font-size="12pt" stroke="black" fill="none" id="svg_4" y="309" x="146">
+    hello world  </text>
+</svg>

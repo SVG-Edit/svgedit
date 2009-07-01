@@ -1,0 +1,15 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" id="svgroot" height="480" width="640">
+  <path end-dur="993" start-dur="625" stroke="black" fill="none" id="svg_1" d="M74,73 l-1,0 l0,0 l1,0 l1,0 l0,0 l3,0 l3,0 l4,0 l3,0 l6,2 l6,2 l10,3 l3,3 l2,1 l3,2 l3,1 l2,2 l1,0 l0,1 l0,0 l0,0 l0,0 l0,1 l0,0 " />
+  <path end-dur="1682" start-dur="1383" stroke="black" fill="none" id="svg_2" d="M133,111 l0,0 l0,0 l0,0 l1,0 l3,0 l6,1 l8,2 l4,0 l7,1 l6,1 l5,0 l5,1 l1,0 l1,0 l0,0 l1,1 l1,0 l0,0 l0,0 l0,0 " />
+  <path end-dur="2693" start-dur="2234" stroke="black" fill="none" id="svg_3" d="M205,122 l0,0 l0,0 l0,1 l0,0 l2,1 l1,1 l6,3 l4,4 l9,5 l7,4 l7,7 l4,4 l1,1 l4,4 l5,7 l2,6 l1,2 l0,2 l0,1 l0,2 l-1,0 l0,0 l0,0 l0,1 l-1,0 l0,0 l0,0 l0,0 l-1,0 l0,0 " />
+  <line end-dur="5828" start-dur="5448" fill="none" stroke="black" id="svg_4" y2="208" x2="127" y1="127" x1="64" />
+  <line end-dur="6840" start-dur="6264" fill="none" stroke="black" id="svg_5" y2="129" x2="345" y1="251" x1="144" />
+  <rect end-dur="10811" start-dur="10283" stroke="black" fill="none" id="svg_6" height="108" width="108" y="76" x="384" />
+  <rect end-dur="16036" start-dur="14577" stroke="black" fill="none" id="svg_7" height="56" width="193" y="226" x="398" />
+  <circle end-dur="19106" start-dur="18566" stroke="black" fill="none" id="svg_8" r="112.80514172678478" cy="261" cx="52" />
+  <ellipse ry="48" rx="54" end-dur="23448" start-dur="22933" stroke="black" fill="none" id="svg_9" cy="300" cx="252" />
+  <text font-family="serif" end-dur="25048" start-dur="24933" font-size="12pt" stroke="black" fill="none" id="svg_10" y="200" x="298">
+    You can see i am writing  </text>
+</svg>

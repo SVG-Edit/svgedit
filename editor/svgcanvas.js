@@ -367,6 +367,8 @@ function SvgCanvas(c)
 						"opacity": current_opacity,
 						"font-size": current_font_size,
 						"font-family": current_font_family,
+						"start-dur": 0,
+						"end-dur": 0
 					}
 				});
 				newText.textContent = "text";
@@ -600,6 +602,8 @@ function SvgCanvas(c)
 			case "text":
 				keep = true;
 				selectElement(element);
+				element.setAttribute("start-dur", TimerOb.getTickTime());
+				element.setAttribute("end-dur", TimerOb.getTockTime());
 				break;
 		}
 		d_attr = null;
