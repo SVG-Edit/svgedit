@@ -24,7 +24,6 @@ function svg_edit_setup() {
 		// if elems[1] is present, then we have more than one element
 		selectedElement = (elems.length == 1 || elems[1] == null ? elems[0] : null);
 		if (selectedElement != null) {
-
 			// unless we're already in always set the mode of the editor to select because
 			// upon creation of a text element the editor is switched into
 			// select mode and this event fires - we need our UI to be in sync
@@ -39,11 +38,14 @@ function svg_edit_setup() {
 	}
 
 	// called when any element has changed
-	var elementChanged = function(window,elem) {
-		// if the element changed was the svg, then it must be a resolution change
-		if (elem && elem.tagName == "svg") {
-			changeResolution(parseInt(elem.getAttribute("width")),
-							 parseInt(elem.getAttribute("height")));
+	var elementChanged = function(window,elems) {
+		for (var i = 0; i < elems.length; ++i) {
+			var elem = elems[i];
+			// if the element changed was the svg, then it must be a resolution change
+			if (elem && elem.tagName == "svg") {
+				changeResolution(parseInt(elem.getAttribute("width")),
+								 parseInt(elem.getAttribute("height")));
+			}
 		}
 
 		// we update the contextual panel with potentially new
