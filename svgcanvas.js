@@ -44,6 +44,8 @@ function ChangeElementCommand(elem, attrs, text) {
 		}
 		return true;
 	};
+	
+	this.elements = function() { return [this.elem]; }
 }
 
 function InsertElementCommand(elem, text) {
@@ -57,6 +59,8 @@ function InsertElementCommand(elem, text) {
 		this.parent = this.elem.parentNode;
 		this.elem = this.elem.parentNode.removeChild(this.elem);
 	};
+	
+	this.elements = function() { return [this.elem]; };
 }
 
 function RemoveElementCommand(elem, parent, text) {
@@ -70,6 +74,8 @@ function RemoveElementCommand(elem, parent, text) {
 	};
 
 	this.unapply = function() { this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); };
+
+	this.elements = function() { return [this.elem]; };
 }
 
 function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
@@ -87,15 +93,38 @@ function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 	this.unapply = function() {
 		this.elem = this.oldParent.insertBefore(this.elem, this.oldNextSibling);
 	};
+
+	this.elements = function() { return [this.elem]; };
 }
 
 // TODO: create a 'typing' command object that tracks changes in text
 // if a new Typing command is created and the top command on the stack is also a Typing
 // and they both affect the same element, then collapse the two commands into one
 
-// TODO: create a 'batch' command object that you can add an arbitrary number of 
-// commands to (this will be useful for making changes to many elements in a 
-// multiselection at one, we don't want to have to undo each element's change)
+// this command object acts an arbitrary number of subcommands 
+function BatchCommand(text) {
+	this.elems = [];
+	this.text = text || "Batch Command";
+	this.stack = [];
+	
+	this.apply = function() {
+		for (var i = 0; i < this.stack.length; ++i) {
+			this.stack[i].apply();
+		}
+	};
+	
+	this.unapply = function() {
+		for (var i = this.stack.length-1; i >= 0; i--) {
+			this.stack[i].unapply();
+		}
+	};
+	
+	this.elements = function() { return this.elems; };
+	
+	this.addSubCommand = function(cmd) { this.stack[this.stack.length] = cmd; };
+	
+	this.isEmpty = function() { return this.stack.length == 0; };
+}
 
 function SvgCanvas(c)
 {
@@ -227,7 +256,6 @@ function SvgCanvas(c)
 		this.reset(elem);
 	};
 
-	// TODO: add accessor methods to determine number of currently selected elements
 	function SelectorManager() {
 		
 		// this will hold the <g> element that contains all selector rects/grips
@@ -413,6 +441,7 @@ function SvgCanvas(c)
 		}
 		undoStack[undoStack.length] = cmd;
 		undoStackPointer = undoStack.length;
+		console.log(undoStack);
 	};
 
 // private functions
@@ -503,6 +532,8 @@ function SvgCanvas(c)
 	}; // end svgToString()
 
 	var recalculateSelectedDimensions = function() {
+		var text = (current_resize_mode == "none" ? "position" : "size");
+		var batchCmd = new BatchCommand(text);
 		for (var i = 0; i < selectedElements.length; ++i) {
 			var selected = selectedElements[i];
 			if (selected == null) break;
@@ -601,14 +632,12 @@ function SvgCanvas(c)
 				console.log("Unknown shape type: " + selected.tagName);
 				break;
 			}
-			// fire changed event
 			if (changes) {
-				var text = (current_resize_mode == "none" ? "position" : "size");
-				// TODO: store these changes in a batch command
-				addCommandToHistory(new ChangeElementCommand(selected, changes, text));
+				batchCmd.addSubCommand(new ChangeElementCommand(selected, changes, text));
 			}
-		}
-		// TODO: add the batch command to history
+		} // for each selected element
+		
+		if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
 		call("changed", selectedElements);
 	};
 
@@ -626,8 +655,6 @@ function SvgCanvas(c)
 
 // public events
 
-	// TODO: grab code here and add to addSelection...
-	
 	this.clearSelection = function() {
 		if (selectedElements[0] == null) { return; }
 		
@@ -1323,6 +1350,7 @@ function SvgCanvas(c)
 	};
 
 	this.changeSelectedAttribute = function(attr, val) {
+		var batchCmd = new BatchCommand("Change " + attr);
 		for (var i = 0; i < selectedElements.length; ++i) {
 			var selected = selectedElements[i];
 			if (selected == null) break;
@@ -1335,11 +1363,10 @@ function SvgCanvas(c)
 				recalculateSelectedOutline();
 				var changes = {};
 				changes[attr] = oldval;
-				// TODO: create a batch command here
-				addCommandToHistory(new ChangeElementCommand(selected, changes, attr));
+				batchCmd.addSubCommand(new ChangeElementCommand(selected, changes, attr));
 			}
 		}
-		// TODO: add batch command to history here
+		if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
 		call("changed", selectedElements);
 	};
 
@@ -1352,6 +1379,7 @@ function SvgCanvas(c)
 	};
 
 	this.deleteSelectedElements = function() {
+		var batchCmd = new BatchCommand("Delete Elements");
 		for (var i = 0; i < selectedElements.length; ++i) {
 			var selected = selectedElements[i];
 			if (selected == null) break;
@@ -1363,9 +1391,9 @@ function SvgCanvas(c)
 			var elem = parent.removeChild(t);
 			selectedElements[i] = null;
 			// TODO: batch all element deletions up into a batch command
-			addCommandToHistory(new RemoveElementCommand(elem, parent));
+			batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
 		}
-		// TODO: add batch command to history
+		if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
 		call("selected", selectedElements);
 	};
 
@@ -1413,7 +1441,7 @@ function SvgCanvas(c)
 			this.clearSelection();
 			var cmd = undoStack[--undoStackPointer];
 			cmd.unapply();
-			call("changed", [cmd.elem]);
+			call("changed", cmd.elements());
 		}
 	}
 	this.redo = function() {
@@ -1421,7 +1449,7 @@ function SvgCanvas(c)
 			this.clearSelection();
 			var cmd = undoStack[undoStackPointer++];
 			cmd.apply();
-			call("changed", [cmd.elem]);
+			call("changed", cmd.elements());
 		}
 	};
 
