@@ -115,6 +115,7 @@ div[class="jPicker_ColorBar"] {
 .jPicker_AlphaBar {
   border: 2px inset #eee;
   cursor: e-resize;
+  display: none;
   height: 24px; /* IE 6 incorrectly draws border inside the width and height instead of outside - We will fix this to 20px later */
   margin: 10px 5px 4px 5px;
   padding: 0px;
@@ -129,6 +130,9 @@ div[class="jPicker_AlphaBar"] {
   display: block;
   top: -10px; /* (arrow height / 2) - (element height / 2) - position arrows' center in elements' center */
   position: absolute;
+}
+.jPicker_EnableAlpha {
+  text-align: left;
 }
 .jPicker_Preview {
   font-size: x-small;
@@ -187,6 +191,9 @@ div[class="jPicker_AlphaBar"] {
 td.jPicker_OpacityCol {
   padding-top: 12px;
   text-indent: -8px;
+}
+td.jPicker_OpacityCol * {
+  display: none;
 }
 td.jPicker_HexCol {
   text-align: left;
