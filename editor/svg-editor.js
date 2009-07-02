@@ -79,8 +79,8 @@ function svg_edit_setup() {
 			}
 			$('#stroke_color').css('background', strokeColor);
 
-			$('#fill_opacity').val(((selectedElement.getAttribute("fill-opacity")||1.0)*100)+" %");
-			$('#stroke_opacity').val(((selectedElement.getAttribute("stroke-opacity")||1.0)*100)+" %");
+			$('#fill_opacity').html(((selectedElement.getAttribute("fill-opacity")||1.0)*100)+" %");
+			$('#stroke_opacity').html(((selectedElement.getAttribute("stroke-opacity")||1.0)*100)+" %");
 			$('#group_opacity').val(((selectedElement.getAttribute("opacity")||1.0)*100)+" %");
 			$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1);
 			$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
@@ -189,14 +189,6 @@ function svg_edit_setup() {
 		svgCanvas.setStrokeStyle(this.options[this.selectedIndex].value);
 	});
 
-	$('#stroke_opacity').change(function(){
-		svgCanvas.setStrokeOpacity(this.options[this.selectedIndex].value);
-	});
-
-	$('#fill_opacity').change(function(){
-		svgCanvas.setFillOpacity(this.options[this.selectedIndex].value);
-	});
-
 	$('#group_opacity').change(function(){
 		svgCanvas.setOpacity(this.options[this.selectedIndex].value);
 	});
@@ -222,17 +214,29 @@ function svg_edit_setup() {
 	});
 
 	$('.palette_item').click(function(evt){
-		var id = (evt.shiftKey ? '#stroke_color' : '#fill_color');
+		var id = (evt.shiftKey ? '#stroke_' : '#fill_');
 		color = $(this).css('background-color');
 		// Webkit-based browsers returned 'initial' here for no stroke
 		if (color == 'transparent' || color == 'initial') {
 			color = 'none';
-			$(id).css('background', 'url(\'images/none.png\')');
+			$(id + "color").css('background', 'url(\'images/none.png\')');
+			$(id + "opacity").html("N/A");
 		} else {
-			$(id).css('background', color);
+			$(id + "color").css('background', color);
 		}
-		if (evt.shiftKey) svgCanvas.setStrokeColor(color);
-		else svgCanvas.setFillColor(color);
+		if (evt.shiftKey) {
+			svgCanvas.setStrokeColor(color);
+			if (color != 'none' && $("#stroke_opacity").html() == 'N/A') {
+				svgCanvas.setStrokeOpacity(100);
+				$("#stroke_opacity").html("100 %");
+			}
+		} else {
+			svgCanvas.setFillColor(color);
+			if (color != 'none' && $("#fill_opacity").html() == 'N/A') {
+				svgCanvas.setFillOpacity(100);
+				$("#fill_opacity").html("100 %");
+			}
+		}
 		updateToolButtonState();
 	});
 
@@ -440,44 +444,66 @@ function svg_edit_setup() {
 	var colorPicker = function(elem) {
 		var oldbg = elem.css('background');
 		var color = elem.css('background-color');
+		var oldopacity = "100 %";
+		if (elem.attr('id') == 'stroke_color') {
+			oldopacity = $('#stroke_opacity').html();
+		}
+		if (elem.attr('id') == 'fill_color') {
+			oldopacity = $('#fill_opacity').html();
+		}
 		var was_none = false;
 		if (color == 'transparent' || color == 'initial') {
-			color = new $.jPicker.Color({ hex: 'ffffff' });
+			color = new $.jPicker.Color({ hex: 'ffffff', a: 0 });
 			was_none = true;
 		} else {
+			var alpha;
+			if (oldopacity == 'N/A') {
+				alpha = 0;
+			} else {
+				alpha = oldopacity.split(' ')[0];
+			}
 			if (color.length == 7 && color[0] == '#') { // #hheexx notation
-				color = new $.jPicker.Color( { hex: color.substring(1,7) } );
+				color = new $.jPicker.Color( { hex: color.substring(1,7) , a: alpha } );
 			} else if (color.substring(0,4) == 'rgb(' && color[color.length-1] == ')') { // rgb(r,g,b) notation
 				var rgb = color.substring(4,color.length-1).split(',');
-				color = new $.jPicker.Color({ r: rgb[0], g: rgb[1], b: rgb[2] });
+				color = new $.jPicker.Color({ r: rgb[0], g: rgb[1], b: rgb[2], a: alpha });
 			} else {
-				color = new $.jPicker.Color({ hex: 'ffffff' });
+				color = new $.jPicker.Color({ hex: 'ffffff', a: alpha });
 			}
 		}
 		var pos = elem.position();
 		picker = 'stroke';
 		$('#color_picker').css({'left': pos.left - 140, 'bottom': 104 - pos.top}).jPicker({
 			images: { clientPath: "jpicker/images/" },
-			color: { active: color }
+			color: { active: color, alphaSupport: true }
 		}, function(color){
 			elem.css('background', '#' + this.settings.color.active.hex);
 			if (elem.attr('id') == 'stroke_color') {
 				svgCanvas.setStrokeColor('#' + this.settings.color.active.hex);
+				svgCanvas.setStrokeOpacity(this.settings.color.active.a/100);
+				$('#stroke_opacity').html(this.settings.color.active.a+" %");
 			} else if (elem.attr('id') == 'fill_color') {
 				svgCanvas.setFillColor('#' + this.settings.color.active.hex);
+				svgCanvas.setFillOpacity(this.settings.color.active.a/100);
+				$('#fill_opacity').html(this.settings.color.active.a+" %");
 			}
 			$('#color_picker').hide();
 		}
-		, function(color){
-			elem.css('background', '#' + this.settings.color.active.hex);
-		}
+		, null
 		, function(){
 			elem.css('background', oldbg);
+			if (elem.attr('id') == 'stroke_color') {
+				$('#stroke_opacity').html(oldopacity);
+			} else if (elem.attr('id') == 'fill_color') {
+				$('#fill_opacity').html(oldopacity);
+			}
 			if (was_none) {
 				if (elem.attr('id') == 'stroke_color') {
 					svgCanvas.setStrokeColor('none');
+					$('#stroke_opacity').html('N/A');
 				} else if (elem.attr('id') == 'fill_color') {
 					svgCanvas.setFillColor('none');
+					$('#fill_opacity').html('N/A');
 				}
 			}
 			$('#color_picker').hide();
