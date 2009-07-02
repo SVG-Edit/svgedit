@@ -1202,6 +1202,10 @@ function SvgCanvas(c)
 				i++;
 			}
 		}
+		// clear the undo stack
+		console.log(undoStack);
+		resetUndoStack();
+		console.log(undoStack);
 		call("cleared");
 	};
 
@@ -1438,6 +1442,11 @@ function SvgCanvas(c)
 		}
 	};
 
+	var resetUndoStack = function() {
+		undoStack = [];
+		undoStackPointer = 0;
+	};
+	
 	this.getUndoStackSize = function() { return undoStackPointer; }
 	this.getRedoStackSize = function() { return undoStack.length - undoStackPointer; }
 

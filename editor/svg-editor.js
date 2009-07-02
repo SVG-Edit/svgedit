@@ -345,8 +345,9 @@ function svg_edit_setup() {
 	}
 
 	var clickClear = function(){
-		if( confirm('Do you want to clear the drawing?') ) {
+		if( confirm('Do you want to clear the drawing?\nThis will also erase your undo history!') ) {
 			svgCanvas.clear();
+			updateContextPanel();
 		}
 	}
 
