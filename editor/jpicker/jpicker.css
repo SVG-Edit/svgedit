@@ -34,10 +34,10 @@
   border: 1px outset #666;
   font-family: Arial, Helvetica, Sans-Serif;
   font-size: 12px;
-  height: 320px;
+  height: 330px;
   margin: 0px;
   padding: 5px;
-  width: 560px;
+  width: 550px;
 }
 .jPicker_table td {
   margin: 0px;
@@ -54,7 +54,7 @@
   border: 2px inset #eee;
   cursor: crosshair;
   height: 260px; /* IE 6 incorrectly draws border inside the width and height instead of outside - We will fix this to 256px later */
-  margin: 12px 5px;
+  margin: 12px 5px 0px 5px;
   overflow: hidden; /* hide the overdraw of the Color Map icon when at edge of viewing box */
   padding: 0px;
   position: relative; /* make this element an absolute positioning container */
@@ -64,7 +64,7 @@ div[class="jPicker_ColorMap"] {
   height: 256px; /* correct to 256px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
   width: 256px; /* correct to 256px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
 }
-.jPicker_ColorMap_l1, .jPicker_ColorMap_l2 {
+.jPicker_ColorMap_l1, .jPicker_ColorMap_l2, .jPicker_ColorMap_l3, .jPicker_ColorBar_l1, .jPicker_ColorBar_l2, .jPicker_ColorBar_l3, .jPicker_ColorBar_l4, .jPicker_AlphaBar_l1, .jPicker_AlphaBar_l2 {
   background-repeat: no-repeat;
   display: block;
   height: 100%;
@@ -80,6 +80,9 @@ div[class="jPicker_ColorMap"] {
 .jPicker_ColorMap_l2 {
   background-color: transparent;
 }
+.jPicker_ColorMap_l3 {
+  background-repeat: repeat;
+}
 .jPicker_ColorMap_Arrow {
   display: block;
   position: absolute;
@@ -88,7 +91,7 @@ div[class="jPicker_ColorMap"] {
   border: 2px inset #eee;
   cursor: n-resize;
   height: 260px; /* IE 6 incorrectly draws border inside the width and height instead of outside - We will fix this to 256px later */
-  margin: 12px 10px;
+  margin: 12px 10px 0px 5px;
   padding: 0px;
   position: relative;
   width: 24px; /* IE 6 incorrectly draws border inside the width and height instead of outside - We will fix this to 20px later */
@@ -96,15 +99,6 @@ div[class="jPicker_ColorMap"] {
 div[class="jPicker_ColorBar"] {
   height: 256px; /* correct to 256px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
   width: 20px; /* correct to 20px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
-}
-.jPicker_ColorBar_l1, .jPicker_ColorBar_l2, .jPicker_ColorBar_l3, .jPicker_ColorBar_l4 {
-  background-repeat: no-repeat;
-  display: block;
-  height: 100%;
-  left: 0px;
-  position: absolute;
-  top: 0px;
-  width: 100%;
 }
 .jPicker_ColorBar_l1, .jPicker_ColorBar_l2, .jPicker_ColorBar_l3 {
   background-color: transparent;
@@ -116,6 +110,24 @@ div[class="jPicker_ColorBar"] {
 .jPicker_ColorBar_Arrow {
   display: block;
   left: -10px; /* (arrow width / 2) - (element width / 2) - position arrows' center in elements' center */
+  position: absolute;
+}
+.jPicker_AlphaBar {
+  border: 2px inset #eee;
+  cursor: e-resize;
+  height: 24px; /* IE 6 incorrectly draws border inside the width and height instead of outside - We will fix this to 20px later */
+  margin: 10px 5px 4px 5px;
+  padding: 0px;
+  position: relative;
+  width: 260px; /* IE 6 incorrectly draws border inside the width and height instead of outside - We will fix this to 256px later */
+}
+div[class="jPicker_AlphaBar"] {
+  height: 20px; /* correct to 20px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
+  width: 256px; /* correct to 256px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
+}
+.jPicker_AlphaBar_Arrow {
+  display: block;
+  top: -10px; /* (arrow height / 2) - (element height / 2) - position arrows' center in elements' center */
   position: absolute;
 }
 .jPicker_Preview {
@@ -171,6 +183,13 @@ div[class="jPicker_ColorBar"] {
   border: 1px inset #aaa;
   margin: 0px 19px 0px 5px;
   width: 50px;
+}
+td.jPicker_OpacityCol {
+  padding-top: 12px;
+  text-indent: -8px;
+}
+td.jPicker_HexCol {
+  text-align: left;
 }
 .jPicker_Grid {
   text-align: center;
