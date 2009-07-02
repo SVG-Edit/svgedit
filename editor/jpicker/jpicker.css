@@ -64,7 +64,7 @@ div[class="jPicker_ColorMap"] {
   height: 256px; /* correct to 256px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
   width: 256px; /* correct to 256px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
 }
-.jPicker_ColorMap_l1, .jPicker_ColorMap_l2, .jPicker_ColorMap_l3, .jPicker_ColorBar_l1, .jPicker_ColorBar_l2, .jPicker_ColorBar_l3, .jPicker_ColorBar_l4, .jPicker_AlphaBar_l1, .jPicker_AlphaBar_l2 {
+.jPicker_ColorMap_l1, .jPicker_ColorMap_l2, .jPicker_ColorMap_l3, .jPicker_ColorBar_l1, .jPicker_ColorBar_l2, .jPicker_ColorBar_l3, .jPicker_ColorBar_l4, .jPicker_ColorBar_l5, .jPicker_AlphaBar_l1, .jPicker_AlphaBar_l2 {
   background-repeat: no-repeat;
   display: block;
   height: 100%;
@@ -103,9 +103,15 @@ div[class="jPicker_ColorBar"] {
 .jPicker_ColorBar_l1, .jPicker_ColorBar_l2, .jPicker_ColorBar_l3 {
   background-color: transparent;
   background-image: none;
+  background-repeat: repeat-x;
 }
 .jPicker_ColorBar_l4 {
   background-color: transparent;
+  background-repeat: repeat-x;
+}
+.jPicker_ColorBar_l5 {
+  background-color: transparent;
+  background-repeat: repeat;
 }
 .jPicker_ColorBar_Arrow {
   display: block;
@@ -173,7 +179,7 @@ div[class="jPicker_AlphaBar"] {
 .jPicker_Spacer {
   height: 10px;
 }
-.jPicker_RadioText {
+.jPicker_HueText, .jPicker_SaturationText, .jPicker_BrightnessText, .jPicker_RedText, .jPicker_GreenText, .jPicker_BlueText, .jPicker_AlphaText {
   background-color: #fff;
   border: 1px inset #aaa;
   margin: 0px 0px 0px 5px;
@@ -182,7 +188,7 @@ div[class="jPicker_AlphaBar"] {
 .jPicker_EnterHex {
   text-align: right;
 }
-.jPicker_Hex {
+.jPicker_HexText {
   background-color: #fff;
   border: 1px inset #aaa;
   margin: 0px 19px 0px 5px;
