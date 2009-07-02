@@ -453,12 +453,12 @@ function svg_edit_setup() {
 		}
 		var was_none = false;
 		if (color == 'transparent' || color == 'initial') {
-			color = new $.jPicker.Color({ hex: 'ffffff', a: 0 });
+			color = new $.jPicker.Color({ hex: 'ffffff', a: 100 });
 			was_none = true;
 		} else {
 			var alpha;
 			if (oldopacity == 'N/A') {
-				alpha = 0;
+				alpha = 100;
 			} else {
 				alpha = oldopacity.split(' ')[0];
 			}
