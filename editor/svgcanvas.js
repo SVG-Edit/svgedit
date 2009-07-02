@@ -121,7 +121,7 @@ function BatchCommand(text) {
 	
 	this.elements = function() { return this.elems; };
 	
-	this.addSubCommand = function(cmd) { this.stack[this.stack.length] = cmd; };
+	this.addSubCommand = function(cmd) { this.stack.push(cmd); };
 	
 	this.isEmpty = function() { return this.stack.length == 0; };
 }
@@ -284,7 +284,6 @@ function SvgCanvas(c)
 		this.requestSelector = function(elem) {
 			if (elem == null) return null;
 			var N = this.selectors.length;
-			console.log("requestSelect() with elem=" + elem + " and N=" + N);
 
 			if (this.selectorParentGroup == null) {
 				initGroup();											
@@ -413,11 +412,18 @@ function SvgCanvas(c)
 	var undoStackPointer = 0;
 	var undoStack = [];
 
-	// Since the only browser that supports getIntersectionList is Opera, we need to 
-	// provide an implementation here.  We brute-force it for now.
+	// This method sends back an array or a NodeList full of elements that
+	// intersect the multi-select rubber-band-box.
+	// 
+	// Since the only browser that supports the SVG DOM getIntersectionList is Opera, 
+	// we need to provide an implementation here.  We brute-force it for now.
+	// 
+	// Reference:
 	// Firefox does not implement getIntersectionList(), see https://bugzilla.mozilla.org/show_bug.cgi?id=501421
 	// Webkit does not implement getIntersectionList(), see https://bugs.webkit.org/show_bug.cgi?id=11274
 	var getIntersectionList = function(rect) {
+		if (rubberBox == null) { return null; }
+		
 		var resultList = null;
 		try {
 			resultList = svgroot.getIntersectionList(rect, null);
@@ -425,9 +431,22 @@ function SvgCanvas(c)
 		
 		if (resultList == null || typeof(resultList.item) != "function") 
 		{
-			// TODO: provide brute-force algorithm, looking at every element's bbox for intersection
-			console.log("brute force!");
+			resultList = [];
+			
+			var rubberBBox = rubberBox.getBBox();
+			var nodes = svgroot.childNodes;
+			var len = svgroot.childNodes.length;
+			for (var i = 0; i < len; ++i) {
+				if (nodes[i].id != "selectorParentGroup" &&
+					Utils.rectsIntersect(rubberBBox, nodes[i].getBBox())) 
+				{
+					resultList.push(nodes[i]);
+				}
+			}
 		}
+		// addToSelection expects an array, but it's ok to pass a NodeList 
+		// because using square-bracket notation is allowed: 
+		// http://www.w3.org/TR/DOM-Level-2-Core/ecma-script-binding.html
 		return resultList;
 	};
 	
@@ -441,7 +460,7 @@ function SvgCanvas(c)
 		if (undoStackPointer < undoStack.length && undoStack.length > 0) {
 			undoStack = undoStack.splice(0, undoStackPointer);
 		}
-		undoStack[undoStack.length] = cmd;
+		undoStack.push(cmd);
 		undoStackPointer = undoStack.length;
 	};
 
@@ -671,9 +690,6 @@ function SvgCanvas(c)
 	
 	this.addToSelection = function(elemsToAdd) {
 		if (elemsToAdd.length == 0) { return; }
-		
-		console.log("addToSelection()");
-		console.log(elemsToAdd);
 		
 		// find the first null in our selectedElements array
 		var j = 0;
@@ -935,14 +951,16 @@ function SvgCanvas(c)
 				rubberBox.y.baseVal.value = Math.min(start_y,y);
 				rubberBox.width.baseVal.value = Math.abs(x-start_x);
 				rubberBox.height.baseVal.value = Math.abs(y-start_y);
-				
-				// evt.target is the element that the mouse pointer is passing over
-				// TODO: add new targets to the selectedElements array, create a 
-				// selector for it, etc
-				var nodeName = evt.target.nodeName.toLowerCase();
-				if (nodeName != "div" && nodeName != "svg") {
-					canvas.addToSelection([evt.target]);
-				}
+
+				// this code will probably be faster than using getIntersectionList(), but
+				// not as accurate (only grabs an element if the mouse happens to pass over
+				// its bbox and elements would never be released from selection)
+//				var nodeName = evt.target.nodeName.toLowerCase();
+//				if (nodeName != "div" && nodeName != "svg") {
+//					canvas.addToSelection([evt.target]);
+//				}
+				canvas.clearSelection();
+				canvas.addToSelection(getIntersectionList());
 				break;
 			case "resize":
 				// we track the resize bounding box and translate/scale the selected element
@@ -1203,9 +1221,7 @@ function SvgCanvas(c)
 			}
 		}
 		// clear the undo stack
-		console.log(undoStack);
 		resetUndoStack();
-		console.log(undoStack);
 		call("cleared");
 	};
 
@@ -1399,7 +1415,6 @@ function SvgCanvas(c)
 			selectorManager.releaseSelector(t);
 			var elem = parent.removeChild(t);
 			selectedElements[i] = null;
-			// TODO: batch all element deletions up into a batch command
 			batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
 		}
 		if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
@@ -1512,6 +1527,12 @@ var Utils = {
 		} while (i < input.length);
 
 		return output.join('');
-	}
-
-}
+	},
+	
+	"rectsIntersect": function(r1, r2) {
+		return r2.x < (r1.x+r1.width) && 
+			(r2.x+r2.width) > r1.x &&
+			r2.y < (r1.y+r1.height) &&
+			(r2.y+r2.height) > r1.y;
+		},
+};
