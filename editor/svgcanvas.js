@@ -575,9 +575,8 @@ function SvgCanvas(c)
 
 			var changes = {};
 
-			// This fixes Firefox 2- behavior - for whatever reason, simply removing the transform
-			// attribute was not having the proper effect on the element, so we set it to an empty
-			// transform, then remove the attribute
+			// This fixes Firefox 2- behavior - which does not reset values when
+			// the attribute has been removed
 			// see https://bugzilla.mozilla.org/show_bug.cgi?id=320622
 			selected.setAttribute("transform", "");
 			selected.removeAttribute("transform");
