@@ -441,7 +441,12 @@ function SvgCanvas(c)
 				if (selected != null) {
 					var dx = evt.pageX - container.offsetLeft - start_x;
 					var dy = evt.pageY - container.offsetTop - start_y;
+					// This fixes Firefox 2- behavior - which does not reset values when
+					// the attribute has been removed
+					// see https://bugzilla.mozilla.org/show_bug.cgi?id=320622
+					selected.setAttribute("transform", "");
 					selected.removeAttribute("transform");
+					selectedOutline.setAttribute("transform", "");
 					selectedOutline.removeAttribute("transform");
 					switch (selected.tagName)
 					{
