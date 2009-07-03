@@ -68,7 +68,7 @@ body {
 	top: 70px;
 	left: 40px;
 	right: 2px;
-	bottom: 100px;
+	bottom: 60px;
 	background-color: #A0A0A0;
 	border: 1px solid #808080;
 	overflow: auto;
@@ -132,6 +132,10 @@ div.color_block {
 
 #svg_editor #text_panel {
 	display: none;
+}
+
+#svg_editor #selected_panel .selected_tool {
+	vertical-align: 12px;
 }
 
 #svg_editor #text_panel .text_tool {
@@ -249,7 +253,7 @@ div.color_block {
 	left: 40px;
 	right: 2px;
 	bottom: 2px;
-	height: 100px;
+	height: 60px;
 }
 
 #svg_editor #tools_bottom_1 {

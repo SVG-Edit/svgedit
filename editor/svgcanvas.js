@@ -435,8 +435,8 @@ function SvgCanvas(c)
 			
 			var rubberBBox = rubberBox.getBBox();
 			var nodes = svgroot.childNodes;
-			var len = svgroot.childNodes.length;
-			for (var i = 0; i < len; ++i) {
+			var i = svgroot.childNodes.length;
+			while (i--) {
 				if (nodes[i].id != "selectorParentGroup" &&
 					Utils.rectsIntersect(rubberBBox, nodes[i].getBBox())) 
 				{
@@ -585,8 +585,10 @@ function SvgCanvas(c)
 				var M = selected.pathSegList.getItem(0);
 				var curx = M.x, cury = M.y;
 				var newd = "M" + remapx(curx) + "," + remapy(cury);
-				for (var i = 1; i < selected.pathSegList.numberOfItems; ++i) {
-					var l = selected.pathSegList.getItem(i);
+				var segList = selected.pathSegList;
+				var len = segList.numberOfItems;
+				for (var i = 1; i < len; ++i) {
+					var l = segList.getItem(i);
 					var x = l.x, y = l.y;
 					// webkit browsers normalize things and this becomes an absolute
 					// line segment!  we need to turn this back into a rel line segment
@@ -662,14 +664,11 @@ function SvgCanvas(c)
 	};
 
 	var recalculateSelectedOutline = function() {
-		for (var i = 0; i < selectedElements.length; ++i) {
+		var len = selectedElements.length;
+		for (var i = 0; i < len; ++i) {
 			var selected = selectedElements[i];
 			if (selected == null) break;
-			var selectedBBox = selectedBBoxes[i]
-			var theSelector = selectorManager.requestSelector(selected);
-			if (selected != null && theSelector != null) {
-				theSelector.resize(selectedBBox);
-			}
+			selectorManager.requestSelector(selected).resize(selectedBBoxes[i]);
 		}
 	};
 
@@ -677,8 +676,8 @@ function SvgCanvas(c)
 
 	this.clearSelection = function() {
 		if (selectedElements[0] == null) { return; }
-		
-		for (var i = 0; i < selectedElements.length; ++i) {
+		var len = selectedElements.length;
+		for (var i = 0; i < len; ++i) {
 			var elem = selectedElements[i];
 			if (elem == null) break;
 			selectorManager.releaseSelector(elem);
@@ -701,7 +700,8 @@ function SvgCanvas(c)
 		}
 		
 		// now add each element consecutively
-		for (var i = 0; i < elemsToAdd.length; ++i) {
+		var i = elemsToAdd.length;
+		while (i--) {
 			var elem = elemsToAdd[i];
 			// we ignore any selectors
 			if (elem.id.substr(0,13) == "selectorGrip_") continue;
@@ -723,7 +723,8 @@ function SvgCanvas(c)
 		// find every element and remove it from our array copy		
 		var newSelectedItems = new Array(selectedElements.length);
 		var j = 0;
-		for (var i = 0; i < selectedElements.length; ++i) {
+		var len = selectedElements.length;
+		for (var i = 0; i < len; ++i) {
 			var elem = selectedElements[i];
 			if (elem) {
 				// keep the item
@@ -934,16 +935,17 @@ function SvgCanvas(c)
 				if (selectedElements[0] != null) {
 					var dx = x - start_x;
 					var dy = y - start_y;
-					var ts = "translate(" + dx + "," + dy + ")";
-					for (var i = 0; i < selectedElements.length; ++i) {
+					var ts = ["translate(",dx,",",dy,")"].join('');
+					var len = selectedElements.length;
+					for (var i = 0; i < len; ++i) {
 						var selected = selectedElements[i];
 						if (selected == null) break;
-						selectedBBoxes[i] = selected.getBBox();
-						selectedBBoxes[i].x += dx;
-						selectedBBoxes[i].y += dy;
 						selected.setAttribute("transform", ts);
+						var box = selected.getBBox();
+						box.x += dx; box.y += dy;
+						selectorManager.requestSelector(selected).resize(box);
+						selectedBBoxes[i] = box;
 					}
-					recalculateSelectedOutline();
 				}
 				break;
 			case "multiselect":
@@ -959,8 +961,31 @@ function SvgCanvas(c)
 //				if (nodeName != "div" && nodeName != "svg") {
 //					canvas.addToSelection([evt.target]);
 //				}
+
+				// clear out selection and set it to the new list
 				canvas.clearSelection();
 				canvas.addToSelection(getIntersectionList());
+				
+				/*
+				// for each selected:
+				// - if newList contains selected, do nothing
+				// - if newList doesn't contain selected, remove it from selected
+				// - for any newList that was not in selectedElements, add it to selected
+				var elemsToRemove = [];
+				var newList = getIntersectionList();
+				var len = selectedElements.length;
+				for (var i = 0; i < len; ++i) {
+					var ind = newList.indexOf(selectedElements[i]);
+					if (ind == -1) {
+						elemsToRemove.push(selectedElements[i]);
+					}
+					else {
+						newList[ind] = null;
+					}
+				}
+				if (elemsToRemove.length > 0) 
+					canvas.removeFromSelection(elemsToRemove);
+				*/
 				break;
 			case "resize":
 				// we track the resize bounding box and translate/scale the selected element
@@ -1000,9 +1025,8 @@ function SvgCanvas(c)
 					selectedBBox.height = -selectedBBox.height;
 				}
 
-				ts = "translate(" + (left+tx) + "," + (top+ty) + ") scale(" + (sx) + "," + (sy) +
-						") translate(" + (-left) + "," + (-top) + ")";
-				selected.setAttribute("transform", ts);
+				selected.setAttribute("transform", ("translate(" + (left+tx) + "," + (top+ty) + 
+					") scale(" + (sx) + "," + (sy) + ") translate(" + (-left) + "," + (-top) + ")"));
 				recalculateSelectedOutline();
 				break;
 			case "text":
@@ -1376,7 +1400,8 @@ function SvgCanvas(c)
 
 	this.changeSelectedAttribute = function(attr, val) {
 		var batchCmd = new BatchCommand("Change " + attr);
-		for (var i = 0; i < selectedElements.length; ++i) {
+		var len = selectedElements.length;
+		for (var i = 0; i < len; ++i) {
 			var selected = selectedElements[i];
 			if (selected == null) break;
 			
@@ -1385,6 +1410,7 @@ function SvgCanvas(c)
 				if (attr == "#text") selected.textContent = val;
 				else selected.setAttribute(attr, val);
 				selectedBBoxes[i] = selected.getBBox();
+				// TODO: do the select calculation in here directly
 				recalculateSelectedOutline();
 				var changes = {};
 				changes[attr] = oldval;
@@ -1405,7 +1431,8 @@ function SvgCanvas(c)
 
 	this.deleteSelectedElements = function() {
 		var batchCmd = new BatchCommand("Delete Elements");
-		for (var i = 0; i < selectedElements.length; ++i) {
+		var len = selectedElements.length;
+		for (var i = 0; i < len; ++i) {
 			var selected = selectedElements[i];
 			if (selected == null) break;
 
@@ -1445,6 +1472,7 @@ function SvgCanvas(c)
 		}
 	};
 
+	// TODO: get this to work with multiple selected elements
 	this.moveSelectedElement = function(dx,dy) {
 		var selected = selectedElements[0];
 		if (selected != null) {
