@@ -3,7 +3,8 @@
 <head>
 <link rel="stylesheet" href="jpicker/jpicker.css" type="text/css"/>
 <link rel="stylesheet" href="svg-editor.css" type="text/css"/>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+<script type="text/javascript" src="jquery.js"></script>
+<!--script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script-->
 <script type="text/javascript" src="js-hotkeys/jquery.hotkeys.min.js"></script>
 <script type="text/javascript" src="jpicker/jpicker.js"></script>
 <script type="text/javascript" src="svgcanvas.js"></script>
@@ -39,6 +40,18 @@
 		<img class="tool_button" id="tool_delete" src="images/delete.png" title="Delete Element [Delete/Backspace]" alt="Delete"/>
 		<img class="tool_button" id="tool_move_top" src="images/move_top.png" title="Move to Top [Shift+Up]" alt="Top"/>
 		<img class="tool_button" id="tool_move_bottom" src="images/move_bottom.png" title="Move to Bottom [Shift+Down]" alt="Bottom"/>
+		<select id="group_opacity" class="selected_tool" title="Change selected item opacity">
+			<option selected="selected" value="1">100 %</option>
+			<option value="0.9">90 %</option>
+			<option value="0.8">80 %</option>
+			<option value="0.7">70 %</option>
+			<option value="0.6">60 %</option>
+			<option value="0.5">50 %</option>
+			<option value="0.4">40 %</option>
+			<option value="0.3">30 %</option>
+			<option value="0.2">20 %</option>
+			<option value="0.1">10 %</option>
+		</select>		
 	</div>
 
 	<!-- Buttons when something a single element is selected -->
@@ -184,23 +197,6 @@
 				<option value="5,2,2,2">- .</option>
 				<option value="5,2,2,2,2,2">- ..</option>
 			</select>
-			</td>
-		</tr><tr>
-			<td>group:</td>
-			<td></td>
-			<td>
-				<select id="group_opacity" title="Change group opacity">
-				<option selected="selected" value="1">100 %</option>
-				<option value="0.9">90 %</option>
-				<option value="0.8">80 %</option>
-				<option value="0.7">70 %</option>
-				<option value="0.6">60 %</option>
-				<option value="0.5">50 %</option>
-				<option value="0.4">40 %</option>
-				<option value="0.3">30 %</option>
-				<option value="0.2">20 %</option>
-				<option value="0.1">10 %</option>
-				</select>
 			</td>
 		</tr>
 		</table>
