@@ -58,21 +58,6 @@ function svg_edit_setup(container_id) {
 		svgCanvas.setRectRadius(this.options[this.selectedIndex].value);
 	});
 
-	$('.palette_item').click(function(evt){
-		var id = (evt.shiftKey ? '#stroke_color' : '#fill_color');
-		color = $(this).css('background-color');
-		// Webkit-based browsers returned 'initial' here for no stroke
-		if (color == 'transparent' || color == 'initial') {
-			color = 'none';
-			$(id).css('background', 'url(\'images/none.png\')');
-		} else {
-			$(id).css('background', color);
-		}
-		if (evt.shiftKey) svgCanvas.setStrokeColor(color);
-		else svgCanvas.setFillColor(color);
-		updateToolButtonState();		
-	});
-
 	// This is a common function used when a tool has been clicked (chosen)
 	// It does several common things:
 	// - hides any flyout menus
@@ -159,9 +144,9 @@ function svg_edit_setup(container_id) {
 	}
 
 	var clickClear = function(){
-		if( confirm('Do you want to clear the this page?') ) {
+		//if( confirm('Do you want to clear the this page?') ) {
 			svgCanvas.rubberClear();
-		}
+		//}
 	}
 
 	var clickSave = function(){
