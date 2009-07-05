@@ -38,7 +38,7 @@ $(document).ready(
 		}
 		
 		
-		$.get("server/SavedImage1.svg", function(xmldata){
+		$.get("server/SavedImage.svg", function(xmldata){
 		    //alert("Data Loaded: " + xmldata);
 			SVGdoc  = document.getElementById("svg_player").ownerDocument;
 			

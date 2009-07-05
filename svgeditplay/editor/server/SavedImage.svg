@@ -1,10 +1,15 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg xmlns="http://www.w3.org/2000/svg" id="svgroot" height="480" width="640">
-  <text end-dur="2495" start-dur="2401" font-family="serif" font-size="12pt" stroke="black" fill="none" id="svg_1" y="228" x="146">
-    hello work  </text>
-  <text end-dur="27939" start-dur="27881" font-family="serif" font-size="12pt" stroke="black" fill="none" id="svg_3" y="157" x="276">
-    text  </text>
-  <text end-dur="37710" start-dur="37664" font-family="serif" font-size="12pt" stroke="black" fill="none" id="svg_4" y="309" x="146">
-    hello world  </text>
+  <line end-dur="1115" start-dur="526" fill="none" stroke="black" id="svg_1" y2="222" x2="295" y1="100" x1="186" />
+  <line end-dur="1907" start-dur="1568" fill="none" stroke="black" id="svg_2" y2="318" x2="163" y1="185" x1="349" />
+  <line end-dur="3009" start-dur="2569" fill="none" stroke="black" id="svg_3" y2="340" x2="308" y1="186" x1="133" />
+  <line end-dur="4216" start-dur="3682" fill="none" stroke="black" id="svg_4" y2="133" x2="304" y1="161" x1="187" />
+  <path end-dur="7332" start-dur="6888" stroke-width="20" stroke="white" fill="none" id="svg_5" d="M218,129 l-1,1 l0,1 l-2,4 l0,4 l-1,5 l-1,2 l0,5 l-1,4 l-1,4 l-1,5 l0,4 l0,3 l0,3 l0,3 l0,4 l0,2 l0,1 l0,1 l0,1 l0,1 l0,0 l0,1 l0,0 l0,0 l0,0 l0,1 l0,0 l0,0 l0,0 l0,0 l0,-1 " />
+  <path end-dur="11442" start-dur="7755" stroke-width="20" stroke="white" fill="none" id="svg_6" d="M257,151 l-2,5 l-2,4 l-4,9 l-1,3 l-2,5 l-2,5 l-1,4 l0,2 l-1,1 l-1,2 l0,5 l-1,3 l0,1 l0,3 l0,2 l0,1 l0,1 l0,2 l-1,0 l0,0 l0,0 l1,-2 l0,-2 l2,-8 l2,-5 l4,-7 l3,-6 l6,-8 l4,-3 l2,-2 l4,-1 l6,0 l10,-1 l4,0 l10,2 l6,1 l5,3 l0,4 l-1,5 l-2,5 l-2,5 l-4,8 l-2,4 l-5,8 l0,1 l-5,9 l-3,8 l-4,11 l-3,9 l-2,5 l-1,2 l0,1 l0,0 l0,-1 l1,-1 l0,-1 l1,-2 l1,-4 l2,-8 l5,-12 l6,-9 l5,-8 l4,-3 l18,-12 l9,-5 l14,-7 l1,-1 l1,0 l1,-1 l0,1 l-1,0 l0,1 l-1,1 l-1,3 l-11,15 l-8,10 l-10,11 l-29,28 l-26,24 l-24,21 l-10,8 l-7,4 l-4,2 l-7,5 l-3,0 l-1,0 l-1,0 l-1,0 l-2,0 l-9,2 l-8,0 l-2,0 l-3,-1 l-2,0 l0,-4 l6,-18 l5,-7 l9,-8 l5,-5 l12,-7 l8,-5 l14,-9 l4,-3 l0,0 l-2,-1 l-12,-3 l-23,-18 l-17,-11 l-19,-9 l-11,-4 l-5,-2 l-4,-1 l0,0 l-1,-1 l0,0 l-1,1 l1,1 l1,2 l3,2 l3,2 l8,7 l8,6 l20,17 l15,12 l10,11 l9,7 l8,8 l12,8 l17,12 l13,10 l6,5 l4,3 l2,0 l3,1 l2,1 l2,1 l0,0 l1,1 l0,0 l0,0 l13,15 l10,12 l3,3 l0,1 l0,0 l0,-1 l-1,-1 l0,-3 " />
+  <path end-dur="13364" start-dur="12285" stroke-width="20" stroke="white" fill="none" id="svg_7" d="M270,248 l0,0 l0,0 l0,0 l0,1 l-1,2 l-1,1 l-5,4 l-8,1 l-6,0 l-21,5 l-9,4 l-13,15 l-2,2 l0,1 l-1,3 l-2,3 l-2,3 l0,1 l0,2 l0,0 l0,2 l0,2 l0,0 l0,1 l-1,1 l-20,14 l-21,12 l-5,0 l-1,-2 l1,-2 l1,-5 " />
+  <path end-dur="14572" start-dur="14208" stroke-width="20" stroke="white" fill="none" id="svg_8" d="M304,131 l-8,9 l-11,13 l-19,24 l-21,28 l-11,16 l-4,7 l0,0 l0,0 l0,0 l1,-1 l0,-1 " />
+  <path end-dur="15379" start-dur="15010" stroke-width="20" stroke="white" fill="none" id="svg_9" d="M284,186 l-1,4 l-2,7 l-4,17 l-4,23 l-1,5 l-2,10 l-1,0 l0,0 l0,-1 l0,-11 " />
+  <path end-dur="17618" start-dur="15661" stroke-width="20" stroke="white" fill="none" id="svg_10" d="M263,169 l-2,0 l-3,-1 l-16,-8 l-27,-18 l-87,-69 l-21,-19 l-2,-3 l-2,-1 l0,0 l1,0 l0,-1 l2,0 l1,0 l3,1 l2,3 l3,3 l17,11 l37,18 l22,10 l14,7 l9,5 l10,6 l11,8 l8,6 l1,2 l0,0 l0,2 l-3,5 l0,1 l-1,2 l0,0 l2,1 l3,2 l32,17 l8,2 l4,-2 l3,-2 l2,-2 l0,-1 l0,0 l-8,0 l-21,0 l-98,0 l-45,0 l-5,2 l-1,1 l0,0 l0,0 l1,0 l3,-1 " />
+  <path end-dur="22252" start-dur="18357" stroke-width="20" stroke="white" fill="none" id="svg_11" d="M182,154 l0,-1 l0,-1 l1,-4 l5,-12 l8,-12 l13,-12 l22,-14 l21,-15 l0,1 l-8,12 l-10,12 l-12,13 l-24,24 l-16,19 l-3,5 l2,-2 l13,-14 l53,-21 l52,-19 l18,-3 l-1,1 l-10,17 l-17,29 l-16,25 l-4,6 l-7,12 l0,0 l9,-24 l14,-19 l15,-21 l-2,-2 l-3,1 l-25,22 l-27,22 l-13,9 l-1,-2 l4,-7 l17,-20 l13,-14 l4,-3 l2,-3 l0,-1 l-17,10 l-80,50 l-31,14 l-1,0 l1,-1 l15,-38 l24,-45 l16,-27 l0,-4 l0,-3 l-9,8 l-27,45 l-8,36 l0,11 l0,-1 l0,-4 l-1,-12 l-3,-27 l-3,4 l-6,11 l-8,14 l-1,3 l0,3 l2,7 l3,2 l5,2 l5,-2 " />
 </svg>

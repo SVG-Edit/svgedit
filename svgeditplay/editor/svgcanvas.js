@@ -42,7 +42,7 @@ function SvgCanvas(c)
 	var events = {};
 	
 	var TimerOb = new Tick_Tock_Timer();
-	
+	var recordingStarted = false;
 // private functions
 	var getId = function() {
 	    if (events["getid"]) return call("getid",obj_num);
@@ -61,6 +61,14 @@ function SvgCanvas(c)
 		}
 	}
 
+
+	var getFullHeight =function(){
+		return 480;
+	}
+	
+	var getFullWidth = function(){
+		return 640;
+	}
 	// remove unneeded attributes
 	// makes resulting SVG smaller
 	var cleanupElement = function(element) {
@@ -216,6 +224,10 @@ function SvgCanvas(c)
 
 	var mouseDown = function(evt)
 	{
+		if(!recordingStarted) {
+			alert("Recording not started");
+			return;
+			}
 		var x = evt.pageX - container.offsetLeft;
 		var y = evt.pageY - container.offsetTop;
 		
@@ -251,6 +263,31 @@ function SvgCanvas(c)
 						"stroke-dasharray": current_stroke_style,
 						"stroke-opacity": current_stroke_opacity,
 						"opacity": current_opacity / 2,
+						"start-dur": 0,
+						"end-dur": 0
+					}
+				});
+				freehand_min_x = x;
+				freehand_max_x = x;
+				freehand_min_y = y;
+				freehand_max_y = y;
+				break;
+			case "rubber":
+				started = true;
+				start_x = x;
+				start_y = y;
+				d_attr = "M" + x + "," + y + " ";
+				addSvgElementFromJson({
+					"element": "path",
+					"attr": {
+						"d": d_attr,
+						"id": getId(),
+						"fill": "none",
+						"stroke": "white",
+						"stroke-width": 20,
+						"stroke-dasharray": "none",
+						"stroke-opacity": 1,
+						"opacity": 1,
 						"start-dur": 0,
 						"end-dur": 0
 					}
@@ -378,6 +415,7 @@ function SvgCanvas(c)
 
 	var mouseMove = function(evt)
 	{
+		if(!recordingStarted) return;
 		if (!started) return;
 		var x = evt.pageX - container.offsetLeft;
 		var y = evt.pageY - container.offsetTop;
@@ -436,6 +474,7 @@ function SvgCanvas(c)
 				freehand_min_y = Math.min(y, freehand_min_y);
 				freehand_max_y = Math.max(y, freehand_max_y);
 			// break; missing on purpose
+			case "rubber":
 			case "path":
 				var dx = x - start_x;
 				var dy = y - start_y;
@@ -449,6 +488,7 @@ function SvgCanvas(c)
 
 	var mouseUp = function(evt)
 	{
+		if(!recordingStarted) return;
 		if (!started) return;
 
 		started = false;
@@ -467,6 +507,7 @@ function SvgCanvas(c)
 					selectedOutline.removeAttribute("transform");
 					switch (selected.tagName)
 					{
+						
 						case "path":
 							// extract the x,y from the path, adjust it and write back the new path
 							var M = selected.pathSegList.getItem(0);
@@ -520,6 +561,7 @@ function SvgCanvas(c)
 					return;
 				}
 				break;
+			case "rubber":
 			case "path":
 				keep = true;
 				element.setAttribute("start-dur", TimerOb.getTickTime());
@@ -622,18 +664,22 @@ function SvgCanvas(c)
 
 	this.startTimer = function(){
 		TimerOb.startTimer();
+		recordingStarted =true;
 	}
 	
 	this.pauseTimer = function(){
 		TimerOb.pauseTimer();
+		recordingStarted =false;
 	
 	}
 	this.resumeTimer = function(){
 		TimerOb.resumeTimer();
+		recordingStarted =true;
 	
 	}
 	this.stopTimer = function(){
-		TimerOb.stopTimer();	
+		TimerOb.stopTimer();
+		recordingStarted =false;
 	}
 	
 	
@@ -659,6 +705,24 @@ function SvgCanvas(c)
 			}
 		}
 		call("cleared");
+	}
+	this.rubberClear = function(){
+		TimerOb.tick();
+		TimerOb.tock();
+		addSvgElementFromJson({
+					"element": "rect",
+					"attr": {
+						"x": 0,
+						"y": 0,
+						"width": getFullWidth(),
+						"height": getFullHeight(),
+						"id": getId(),
+						"fill": "white",
+						"start-dur": TimerOb.getTickTime(),
+						"end-dur": TimerOb.getTockTime()+5 //tick tock is same. they must have some finite delay to animate work properly.
+					}
+		});
+		obj_num++;//this is needed , otherwise , object will be deleted,,
 	}
 
 	this.getMode = function() {
@@ -837,9 +901,11 @@ function SvgCanvas(c)
 		//alert(svg);
 		//window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
 		$.post(	"server/svg-editor-save.php", {svg_data: escape(svg)},
-			function(data){	//alert(data);
+			function(data){	//
+			alert(data);
 			});
-		window.open("server/SavedImage.svg");
+		//window.open("server/SavedImage.svg");
+		window.open("svg-player.html");
 	}
 
 	this.selectNone = function() {
@@ -853,20 +919,6 @@ function SvgCanvas(c)
 			selectElement(null);
 			t.parentNode.removeChild(t);
 			call("deleted",t);
-		}
-	}
-
-	this.moveToTopSelectedElement = function() {
-		if (selected != null) {
-			var t = selected;
-			t.parentNode.appendChild(t);
-		}
-	}
-
-	this.moveToBottomSelectedElement = function() {
-		if (selected != null) {
-			var t = selected;
-			t.parentNode.insertBefore(t, t.parentNode.firstChild);
 		}
 	}
 
