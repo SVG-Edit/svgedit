@@ -1377,7 +1377,7 @@ function SvgCanvas(c)
 		if (selected != null && selected.tagName  == "text" &&
 			selectedElements[1] == null) 
 		{
-			selected.setAttribute("font-weight", b ? "bold" : "normal");
+			this.changeSelectedAttribute("fill-weight", b ? "bold" : "normal");
 		}
 	};
 	
@@ -1396,7 +1396,7 @@ function SvgCanvas(c)
 		if (selected != null && selected.tagName  == "text" &&
 			selectedElements[1] == null) 
 		{
-			selected.setAttribute("font-style", i ? "italic" : "normal");
+			this.changeSelectedAttribute("font-style", i ? "italic" : "normal");
 		}
 	};
 
