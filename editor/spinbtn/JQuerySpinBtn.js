@@ -53,6 +53,8 @@
 $.fn.SpinButton = function(cfg){
 	return this.each(function(){
 
+		this.repeating = false;
+		
 		// Apply specified options or defaults:
 		// (Ought to refactor this some day to use $.extend() instead)
 		this.spinCfg = {
@@ -158,7 +160,26 @@ $.fn.SpinButton = function(cfg){
 				case 34: this.adjustValue(-this.spinCfg.page); break; // PageDown
 			}
 		})
-
+		
+		.keypress(function(e){
+			if (repeating ) {
+				// Respond to up/down arrow keys.
+				switch(e.keyCode){
+					case 38: this.adjustValue(this.spinCfg.step);  break; // Up
+					case 40: this.adjustValue(-this.spinCfg.step); break; // Down
+					case 33: this.adjustValue(this.spinCfg.page);  break; // PageUp
+					case 34: this.adjustValue(-this.spinCfg.page); break; // PageDown
+				}
+			} 
+			else {
+				repeating = true;
+			}
+		})
+		
+		.keyup(function(e) {
+			repeating = false;
+		})
+		
 		.bind("mousewheel", function(e){
 			// Respond to mouse wheel in IE. (It returns up/dn motion in multiples of 120)
 			if (e.wheelDelta >= 120)
