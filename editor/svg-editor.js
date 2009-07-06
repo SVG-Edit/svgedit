@@ -368,6 +368,7 @@ function svg_edit_setup() {
 	}
 	
 	var clickBold = function(){
+	alert('wah?')
 		svgCanvas.setBold( !svgCanvas.getBold() );
 		updateContextPanel();
 	};
