@@ -1377,7 +1377,7 @@ function SvgCanvas(c)
 		if (selected != null && selected.tagName  == "text" &&
 			selectedElements[1] == null) 
 		{
-			this.changeSelectedAttribute("fill-weight", b ? "bold" : "normal");
+			this.changeSelectedAttribute("font-weight", b ? "bold" : "normal");
 		}
 	};
 	
