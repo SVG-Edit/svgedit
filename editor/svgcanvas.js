@@ -1360,6 +1360,45 @@ function SvgCanvas(c)
 	this.setIdPrefix = function(p) {
 		idprefix = p;
 	};
+	
+	this.getBold = function() {
+		// should only have one element selected
+		var selected = selectedElements[0];
+		if (selected != null && selected.tagName  == "text" &&
+			selectedElements[1] == null) 
+		{
+			return (selected.getAttribute("font-weight") == "bold");
+		}
+		return false;
+	};
+	
+	this.setBold = function(b) {
+		var selected = selectedElements[0];
+		if (selected != null && selected.tagName  == "text" &&
+			selectedElements[1] == null) 
+		{
+			selected.setAttribute("font-weight", b ? "bold" : "normal");
+		}
+	};
+	
+	this.getItalic = function() {
+		var selected = selectedElements[0];
+		if (selected != null && selected.tagName  == "text" &&
+			selectedElements[1] == null) 
+		{
+			return (selected.getAttribute("font-style") == "italic");
+		}
+		return false;
+	};
+	
+	this.setItalic = function(i) {
+		var selected = selectedElements[0];
+		if (selected != null && selected.tagName  == "text" &&
+			selectedElements[1] == null) 
+		{
+			selected.setAttribute("font-style", i ? "italic" : "normal");
+		}
+	};
 
 	this.getFontFamily = function() {
 		return current_font_family;
