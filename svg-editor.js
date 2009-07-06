@@ -134,6 +134,18 @@ function svg_edit_setup() {
 				case "text":
 					// jquery's show() always sets display to block
 					$('#text_panel').show().css("display", "inline");
+					if (svgCanvas.getItalic()) {
+						$('#tool_italic').addClass('tool_button_current');
+					}
+					else {
+						$('#tool_italic').removeClass('tool_button_current');
+					}
+					if (svgCanvas.getBold()) {
+						$('#tool_bold').addClass('tool_button_current');
+					}
+					else {
+						$('#tool_bold').removeClass('tool_button_current');
+					}
 					$('#font_family').val(elem.getAttribute("font-family"));
 					$('#font_size').val(elem.getAttribute("font-size"));
 					$('#text').val(elem.textContent);
@@ -354,6 +366,16 @@ function svg_edit_setup() {
 			updateContextPanel();
 		}
 	}
+	
+	var clickBold = function(){
+		svgCanvas.setBold( !svgCanvas.getBold() );
+		updateContextPanel();
+	};
+	
+	var clickItalic = function(){
+		svgCanvas.setItalic( !svgCanvas.getItalic() );
+		updateContextPanel();
+	};
 
 	var clickSave = function(){
 		svgCanvas.save();
@@ -390,6 +412,8 @@ function svg_edit_setup() {
 	// these two lines are required to make Opera work properly with the new flyout mechanism
 	$('#tools_rect_show').click(clickSquare);
 	$('#tools_ellipse_show').click(clickCircle);
+	$('#tool_bold').mousedown(clickBold);
+	$('#tool_italic').mousedown(clickItalic);
 
 	// added these event handlers for all the push buttons so they
 	// behave more like buttons being pressed-in and not images
