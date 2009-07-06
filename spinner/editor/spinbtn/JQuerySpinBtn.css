@@ -23,7 +23,7 @@
 */
 
 INPUT.spin-button {
-	padding-right:20px;					/* Padding pevents text from covering the up/dn img. Works better in Firefox but also causes textbox to widen by 20px. Arrows can go wonky in IE when text is too long. Perhaps it could be fixed with script that monitored the horiz-scroll position? */
+	padding: 2px 20px 2px 2px;
 	background-repeat:no-repeat;		/* Warning: Img may disappear in Firefox if you use 'background-attachment:fixed' ! */
 	background-position:100% 0%;
 	background-image:url(spinbtn_updn.gif);
