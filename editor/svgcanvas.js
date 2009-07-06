@@ -1533,8 +1533,19 @@ function SvgCanvas(c)
 		undoStackPointer = 0;
 	};
 	
-	this.getUndoStackSize = function() { return undoStackPointer; }
-	this.getRedoStackSize = function() { return undoStack.length - undoStackPointer; }
+	this.getUndoStackSize = function() { return undoStackPointer; };	
+	this.getRedoStackSize = function() { return undoStack.length - undoStackPointer; };
+
+	this.getNextUndoCommandText = function() { 
+		if (undoStackPointer > 0) 
+			return undoStack[undoStackPointer-1].text;
+		return "";
+	};
+	this.getNextRedoCommandText = function() { 
+		if (undoStackPointer < undoStack.length) 
+			return undoStack[undoStackPointer].text;
+		return "";
+	};
 
 	this.undo = function() {
 		if (undoStackPointer > 0) {
@@ -1543,7 +1554,7 @@ function SvgCanvas(c)
 			cmd.unapply();
 			call("changed", cmd.elements());
 		}
-	}
+	};
 	this.redo = function() {
 		if (undoStackPointer < undoStack.length && undoStack.length > 0) {
 			this.clearSelection();
