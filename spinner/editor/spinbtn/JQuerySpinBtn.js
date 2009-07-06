@@ -22,6 +22,9 @@
  * Modifications by Jeff Schiller, June 2009:
  * - provide callback function for when the value changes based on the following
  *   http://www.mail-archive.com/jquery-en@googlegroups.com/msg36070.html
+ * Modifications by Jeff Schiller, July 2009:
+ * - improve styling for widget in Opera
+ * - consistent key-repeat handling cross-browser
  *
  * Tested in IE6, Opera9, Firefox 1.5
  * v1.0  11 Aug 2006 - George Adamson	- First release
@@ -161,8 +164,14 @@ $.fn.SpinButton = function(cfg){
 			}
 		})
 		
+		/*
+		http://unixpapa.com/js/key.html describes the current state-of-affairs for
+		key repeat events:
+		- Safari 3.1 changed their model so that keydown is reliably repeated going forward
+		- Firefox and Opera still only repeat the keypress event, not the keydown
+		*/
 		.keypress(function(e){
-			if (repeating ) {
+			if (repeating) {
 				// Respond to up/down arrow keys.
 				switch(e.keyCode){
 					case 38: this.adjustValue(this.spinCfg.step);  break; // Up
@@ -171,13 +180,16 @@ $.fn.SpinButton = function(cfg){
 					case 34: this.adjustValue(-this.spinCfg.page); break; // PageDown
 				}
 			} 
+			// we always ignore the first keypress event (use the keydown instead)
 			else {
 				repeating = true;
 			}
 		})
 		
+		// clear the 'repeating' flag
 		.keyup(function(e) {
 			repeating = false;
+			this.adjustValue(0);
 		})
 		
 		.bind("mousewheel", function(e){
