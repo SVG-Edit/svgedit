@@ -193,9 +193,9 @@ function svg_edit_setup() {
 	pos = $('#tools_ellipse_show').position();
 	$('#tools_ellipse').css({'left': pos.left+4, 'top': pos.top+70});
 
-	$('#stroke_width').change(function(){
-		svgCanvas.setStrokeWidth(this.options[this.selectedIndex].value);
-	});
+	function changeStrokeWidth(ctl) {
+		svgCanvas.setStrokeWidth(ctl.value);
+	}
 
 	$('#stroke_style').change(function(){
 		svgCanvas.setStrokeStyle(this.options[this.selectedIndex].value);
@@ -217,10 +217,10 @@ function svg_edit_setup() {
 		svgCanvas.setTextContent(this.value);
 	});
 
-	$('#rect_radius').change(function(){
-		svgCanvas.setRectRadius(this.options[this.selectedIndex].value);
-	});
-
+	function changeRectRadius(ctl) {
+		svgCanvas.setRectRadius(ctl.value);
+	}
+	
 	$('.attr_changer').change(function() {
 		svgCanvas.changeSelectedAttribute(this.getAttribute("alt"), this.value);
 	});
@@ -617,6 +617,9 @@ function svg_edit_setup() {
 		var x = parseInt(res[0]), y = parseInt(res[1]);
 		svgCanvas.setResolution(x,y);
 	});
+
+	$('#rect_radius').SpinButton({ min: 0, max: 1000, step: 1, callback: changeRectRadius });
+	$('#stroke_width').SpinButton({ min: 1, max: 99, step: 1, callback: changeStrokeWidth });
 
 	return svgCanvas;
 };
