@@ -3,9 +3,11 @@
 <head>
 <link rel="stylesheet" href="jpicker/jpicker.css" type="text/css"/>
 <link rel="stylesheet" href="svg-editor.css" type="text/css"/>
+<link rel="stylesheet" href="spinbtn/JQuerySpinBtn.css" type="text/css"/>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
 <script type="text/javascript" src="js-hotkeys/jquery.hotkeys.min.js"></script>
 <script type="text/javascript" src="jpicker/jpicker.js"></script>
+<script type="text/javascript" src="spinbtn/JQuerySpinBtn.js"></script>
 <script type="text/javascript" src="svgcanvas.js"></script>
 <script type="text/javascript" src="svg-editor.js"></script>
 <title>SVG-edit demo</title>
@@ -70,18 +72,7 @@
 		<label class="rect_tool">height:</label>
 		<input id="rect_h" class="rect_tool attr_changer" title="Change rectangle height" alt="height" size="3"/>
 		<label class="rect_tool">Corner Radius:</label>
-		<!-- TODO: turn this into a spinner control! -->
-		<select id="rect_radius" class="rect_tool" title="Change rectangle corner radius" alt="Corner Radius">
-			<option selected="selected" value="0">0</option>
-			<option value="1">1</option>
-			<option value="2">2</option>
-			<option value="3">3</option>
-			<option value="5">5</option>
-			<option value="7">7</option>
-			<option value="10">10</option>
-			<option value="15">15</option>
-			<option value="20">20</option>
-		</select>
+		<input id="rect_radius" size="3" value="0" class="rect_tool" type="text" title="Change Rectangle Corner Radius" alt="Corner Radius"/>
 	</div>
 
 	<div id="circle_panel">
@@ -182,22 +173,16 @@
 			<td><div id="stroke_color" class="color_block" title="Change stroke color"></div></td>
 			<td><div id="stroke_opacity">100 %</div></td>
 			<td>
-				<select id="stroke_width" title="Change stroke width">
-				<option selected="selected" value="1">1</option>
-				<option value="2">2</option>
-				<option value="3">3</option>
-				<option value="5">5</option>
-				<option value="7">7</option>
-				</select>
+				<input id="stroke_width" title="Change stroke width" alt="Stroke Width" size="2" value="1" type="text"/>
 			</td>
 			<td>
 				<select id="stroke_style" title="Change stroke dash style">
-				<option selected="selected" value="none">---</option>
-				<option value="2,2">...</option>
-				<option value="5,5">- -</option>
-				<option value="5,2,2,2">- .</option>
-				<option value="5,2,2,2,2,2">- ..</option>
-			</select>
+					<option selected="selected" value="none">---</option>
+					<option value="2,2">...</option>
+					<option value="5,5">- -</option>
+					<option value="5,2,2,2">- .</option>
+					<option value="5,2,2,2,2,2">- ..</option>
+				</select>
 			</td>
 		</tr>
 		</table>
