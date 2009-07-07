@@ -27,7 +27,7 @@ INPUT.spin-button {
 	padding: 2px 20px 2px 2px;
 	background-repeat:no-repeat;		/* Warning: Img may disappear in Firefox if you use 'background-attachment:fixed' ! */
 	background-position:100% 0%;
-	background-image:url(spinbtn_updn.gif);
+	background-image:url('spinbtn_updn.png');
 	background-color:white; /* Needed for Opera */
 }
 
