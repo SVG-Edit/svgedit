@@ -1292,7 +1292,17 @@ function SvgCanvas(c)
 
 	this.setFillColor = function(val) {
 		current_fill = val;
-		this.changeSelectedAttribute("fill", val);
+		// take out any path/line elements when setting fill
+		var elems = [];
+		var i = selectedElements.length;
+		while(i--) {
+			var elem = selectedElements[i];
+			if (elem && elem.tagName != "path" && elem.tagName != "line") {
+				elems.push(elem);
+			}
+		}
+		if (elems.length > 0) 
+			this.changeSelectedAttribute("fill", val, elems);
 	};
 
 	this.getStrokeWidth = function() {
@@ -1448,29 +1458,32 @@ function SvgCanvas(c)
 		}
 	};
 
-	// TODO: to prevent paths/lines from getting fill values set, we can special-case
-	// the fill attribute here and if tagName == "path" or "line" then ignore it?
-	// ^^^ is a hack though
-	this.changeSelectedAttribute = function(attr, val) {
+	// If you want to change all selectedElements, ignore the elems argument.
+	// If you want to change only a subset of selectedElements, then send the
+	// subset to this function in the elems argument.
+	this.changeSelectedAttribute = function(attr, val, elems) {
+		var elems = elems || selectedElements;
 		var batchCmd = new BatchCommand("Change " + attr);
-		var len = selectedElements.length;
-		for (var i = 0; i < len; ++i) {
-			var selected = selectedElements[i];
-			if (selected == null) break;
+		var i = elems.length;
+		while(i--) {
+			var elem = elems[i];
+			if (elem == null) continue;
 			
-			var oldval = (attr == "#text" ? selected.textContent : selected.getAttribute(attr));
+			var oldval = (attr == "#text" ? elem.textContent : elem.getAttribute(attr));
 			if (oldval != val) {
-				if (attr == "#text") selected.textContent = val;
-				else selected.setAttribute(attr, val);
-				selectedBBoxes[i] = selected.getBBox();
-				selectorManager.requestSelector(selected).resize(selectedBBoxes[i]);				
+				if (attr == "#text") elem.textContent = val;
+				else elem.setAttribute(attr, val);
+				selectedBBoxes[i] = elem.getBBox();
+				selectorManager.requestSelector(elem).resize(selectedBBoxes[i]);				
 				var changes = {};
 				changes[attr] = oldval;
-				batchCmd.addSubCommand(new ChangeElementCommand(selected, changes, attr));
+				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes, attr));
 			}
 		}
-		if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
-		call("changed", selectedElements);
+		if (!batchCmd.isEmpty()) { 
+			addCommandToHistory(batchCmd);
+			call("changed", elems);
+		}
 	};
 
 	$(container).mouseup(mouseUp);
