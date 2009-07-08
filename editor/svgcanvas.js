@@ -108,7 +108,8 @@ function BatchCommand(text) {
 	this.stack = [];
 	
 	this.apply = function() {
-		for (var i = 0; i < this.stack.length; ++i) {
+		var len = this.stack.length;
+		for (var i = 0; i < len; ++i) {
 			this.stack[i].apply();
 		}
 	};
@@ -551,128 +552,131 @@ function SvgCanvas(c)
 		return out;
 	}; // end svgToString()
 
-	var recalculateSelectedDimensions = function() {
+	var recalculateAllSelectedDimensions = function() {
 		var text = (current_resize_mode == "none" ? "position" : "size");
 		var batchCmd = new BatchCommand(text);
-		for (var i = 0; i < selectedElements.length; ++i) {
-			var selected = selectedElements[i];
-			if (selected == null) break;
-			var selectedBBox = selectedBBoxes[i];
-			var box = selected.getBBox();
 
-			// if we have not moved/resized, then immediately leave
-			if (box.x == selectedBBox.x && box.y == selectedBBox.y &&
-				box.width == selectedBBox.width && box.height == selectedBBox.height) {
-				return;
+		var i = selectedElements.length;
+		while(i--) {
+			var cmd = recalculateSelectedDimensions(i);
+			if (cmd) {
+				batchCmd.addSubCommand(cmd);
 			}
+		}
 
-			// after this point, we have some change
-
-			var remapx = function(x) {return ((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x;}
-			var remapy = function(y) {return ((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y;}
-			var scalew = function(w) {return w*selectedBBox.width/box.width;}
-			var scaleh = function(h) {return h*selectedBBox.height/box.height;}
-
-			var changes = {};
-
-			// This fixes Firefox 2- behavior - which does not reset values when
-			// the attribute has been removed
-			// see https://bugzilla.mozilla.org/show_bug.cgi?id=320622
-			selected.setAttribute("transform", "");
-			selected.removeAttribute("transform");
-			switch (selected.tagName)
-			{
-			case "path":
-				// extract the x,y from the path, adjust it and write back the new path
-				// but first, save the old path
-				changes["d"] = selected.getAttribute("d");
-				var M = selected.pathSegList.getItem(0);
-				var curx = M.x, cury = M.y;
-				var newd = "M" + remapx(curx) + "," + remapy(cury);
-				var segList = selected.pathSegList;
-				var len = segList.numberOfItems;
-				for (var i = 1; i < len; ++i) {
-					var l = segList.getItem(i);
-					var x = l.x, y = l.y;
-					// webkit browsers normalize things and this becomes an absolute
-					// line segment!  we need to turn this back into a rel line segment
-					// see https://bugs.webkit.org/show_bug.cgi?id=26487
-					if (l.pathSegType == 4) {
-						x -= curx;
-						y -= cury;
-						curx += x;
-						cury += y;
-					}
-					// we only need to scale the relative coordinates (no need to translate)
-					newd += " l" + scalew(x) + "," + scaleh(y);
-				}
-				selected.setAttributeNS(null, "d", newd);
-				break;
-			case "line":
-				changes["x1"] = selected.x1.baseVal.value;
-				changes["y1"] = selected.y1.baseVal.value;
-				changes["x2"] = selected.x2.baseVal.value;
-				changes["y2"] = selected.y2.baseVal.value;
-				selected.x1.baseVal.value = remapx(selected.x1.baseVal.value);
-				selected.y1.baseVal.value = remapy(selected.y1.baseVal.value);
-				selected.x2.baseVal.value = remapx(selected.x2.baseVal.value);
-				selected.y2.baseVal.value = remapy(selected.y2.baseVal.value);
-				break;
-			case "circle":
-				changes["cx"] = selected.cx.baseVal.value;
-				changes["cy"] = selected.cy.baseVal.value;
-				changes["r"] = selected.r.baseVal.value;
-				selected.cx.baseVal.value = remapx(selected.cx.baseVal.value);
-				selected.cy.baseVal.value = remapy(selected.cy.baseVal.value);
-				// take the minimum of the new selected box's dimensions for the new circle radius
-				selected.r.baseVal.value = Math.min(selectedBBox.width/2,selectedBBox.height/2);
-				break;
-			case "ellipse":
-				changes["cx"] = selected.cx.baseVal.value;
-				changes["cy"] = selected.cy.baseVal.value;
-				changes["rx"] = selected.rx.baseVal.value;
-				changes["ry"] = selected.ry.baseVal.value;
-				selected.cx.baseVal.value = remapx(selected.cx.baseVal.value);
-				selected.cy.baseVal.value = remapy(selected.cy.baseVal.value);
-				selected.rx.baseVal.value = scalew(selected.rx.baseVal.value);
-				selected.ry.baseVal.value = scaleh(selected.ry.baseVal.value);
-				break;
-			case "text":
-				// cannot use x.baseVal.value here because x is a SVGLengthList
-				changes["x"] = selected.getAttribute("x");
-				changes["y"] = selected.getAttribute("y");
-				selected.setAttribute("x", remapx(selected.getAttribute("x")));
-				selected.setAttribute("y", remapy(selected.getAttribute("y")));
-				break;
-			case "rect":
-				changes["x"] = selected.x.baseVal.value;
-				changes["y"] = selected.y.baseVal.value;
-				changes["width"] = selected.width.baseVal.value;
-				changes["height"] = selected.height.baseVal.value;
-				selected.x.baseVal.value = remapx(selected.x.baseVal.value);
-				selected.y.baseVal.value = remapy(selected.y.baseVal.value);
-				selected.width.baseVal.value = scalew(selected.width.baseVal.value);
-				selected.height.baseVal.value = scaleh(selected.height.baseVal.value);
-				break;
-			default: // rect
-				console.log("Unknown shape type: " + selected.tagName);
-				break;
-			}
-			if (changes) {
-				batchCmd.addSubCommand(new ChangeElementCommand(selected, changes, text));
-			}
-		} // for each selected element
-		
-		if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
-		call("changed", selectedElements);
+		if (!batchCmd.isEmpty()) {
+			addCommandToHistory(batchCmd);
+			call("changed", selectedElements);
+		}
 	};
+	
+	// this function returns the command which resulted from th selected change
+	var recalculateSelectedDimensions = function(i) {
+		var selected = selectedElements[i];
+		if (selected == null) return null;
+		var selectedBBox = selectedBBoxes[i];
+		var box = selected.getBBox();
 
-	var recalculateSelectedOutline = function() {
-		var len = selectedElements.length;
-		for (var i = 0; i < len; ++i) {
-			var selected = selectedElements[i];
-			if (selected == null) break;
-			selectorManager.requestSelector(selected).resize(selectedBBoxes[i]);
+		// if we have not moved/resized, then immediately leave
+		if (box.x == selectedBBox.x && box.y == selectedBBox.y &&
+			box.width == selectedBBox.width && box.height == selectedBBox.height) {
+			return null;
+		}
+
+		// after this point, we have some change to this element
+		
+		var remapx = function(x) {return ((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x;}
+		var remapy = function(y) {return ((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y;}
+		var scalew = function(w) {return w*selectedBBox.width/box.width;}
+		var scaleh = function(h) {return h*selectedBBox.height/box.height;}
+
+		var changes = {};
+
+		// This fixes Firefox 2- behavior - which does not reset values when
+		// the attribute has been removed
+		// see https://bugzilla.mozilla.org/show_bug.cgi?id=320622
+		selected.setAttribute("transform", "");
+		selected.removeAttribute("transform");
+		switch (selected.tagName)
+		{
+		case "path":
+			// extract the x,y from the path, adjust it and write back the new path
+			// but first, save the old path
+			changes["d"] = selected.getAttribute("d");
+			var M = selected.pathSegList.getItem(0);
+			var curx = M.x, cury = M.y;
+			var newd = "M" + remapx(curx) + "," + remapy(cury);
+			var segList = selected.pathSegList;
+			var len = segList.numberOfItems;
+			for (var i = 1; i < len; ++i) {
+				var l = segList.getItem(i);
+				var x = l.x, y = l.y;
+				// webkit browsers normalize things and this becomes an absolute
+				// line segment!  we need to turn this back into a rel line segment
+				// see https://bugs.webkit.org/show_bug.cgi?id=26487
+				if (l.pathSegType == 4) {
+					x -= curx;
+					y -= cury;
+					curx += x;
+					cury += y;
+				}
+				// we only need to scale the relative coordinates (no need to translate)
+				newd += " l" + scalew(x) + "," + scaleh(y);
+			}
+			selected.setAttributeNS(null, "d", newd);
+			break;
+		case "line":
+			changes["x1"] = selected.x1.baseVal.value;
+			changes["y1"] = selected.y1.baseVal.value;
+			changes["x2"] = selected.x2.baseVal.value;
+			changes["y2"] = selected.y2.baseVal.value;
+			selected.x1.baseVal.value = remapx(selected.x1.baseVal.value);
+			selected.y1.baseVal.value = remapy(selected.y1.baseVal.value);
+			selected.x2.baseVal.value = remapx(selected.x2.baseVal.value);
+			selected.y2.baseVal.value = remapy(selected.y2.baseVal.value);
+			break;
+		case "circle":
+			changes["cx"] = selected.cx.baseVal.value;
+			changes["cy"] = selected.cy.baseVal.value;
+			changes["r"] = selected.r.baseVal.value;
+			selected.cx.baseVal.value = remapx(selected.cx.baseVal.value);
+			selected.cy.baseVal.value = remapy(selected.cy.baseVal.value);
+			// take the minimum of the new selected box's dimensions for the new circle radius
+			selected.r.baseVal.value = Math.min(selectedBBox.width/2,selectedBBox.height/2);
+			break;
+		case "ellipse":
+			changes["cx"] = selected.cx.baseVal.value;
+			changes["cy"] = selected.cy.baseVal.value;
+			changes["rx"] = selected.rx.baseVal.value;
+			changes["ry"] = selected.ry.baseVal.value;
+			selected.cx.baseVal.value = remapx(selected.cx.baseVal.value);
+			selected.cy.baseVal.value = remapy(selected.cy.baseVal.value);
+			selected.rx.baseVal.value = scalew(selected.rx.baseVal.value);
+			selected.ry.baseVal.value = scaleh(selected.ry.baseVal.value);
+			break;
+		case "text":
+			// cannot use x.baseVal.value here because x is a SVGLengthList
+			changes["x"] = selected.getAttribute("x");
+			changes["y"] = selected.getAttribute("y");
+			selected.setAttribute("x", remapx(selected.getAttribute("x")));
+			selected.setAttribute("y", remapy(selected.getAttribute("y")));
+			break;
+		case "rect":
+			changes["x"] = selected.x.baseVal.value;
+			changes["y"] = selected.y.baseVal.value;
+			changes["width"] = selected.width.baseVal.value;
+			changes["height"] = selected.height.baseVal.value;
+			selected.x.baseVal.value = remapx(selected.x.baseVal.value);
+			selected.y.baseVal.value = remapy(selected.y.baseVal.value);
+			selected.width.baseVal.value = scalew(selected.width.baseVal.value);
+			selected.height.baseVal.value = scaleh(selected.height.baseVal.value);
+			break;
+		default: // rect
+			console.log("Unknown shape type: " + selected.tagName);
+			break;
+		}
+		if (changes) {
+			return new ChangeElementCommand(selected, changes);
 		}
 	};
 
@@ -1031,7 +1035,7 @@ function SvgCanvas(c)
 
 				selected.setAttribute("transform", ("translate(" + (left+tx) + "," + (top+ty) + 
 					") scale(" + (sx) + "," + (sy) + ") translate(" + (-left) + "," + (-top) + ")"));
-				recalculateSelectedOutline();
+				selectorManager.requestSelector(selected).resize(selectedBBox);
 				break;
 			case "text":
 				shape.setAttribute("x", x);
@@ -1085,7 +1089,8 @@ function SvgCanvas(c)
 		// TODO: should we fire the change event here?  I'm thinking only fire
 		// this event when the user mouses up.  That's when the action (create,
 		// move, resize, draw) has finished
-		// fire changed event
+		// Only question is whether in Wave Gadget mode whether we want to see the 
+		// person live-dragging the element around (for instance)
 //		call("changed", selected);
 	};
 
@@ -1093,7 +1098,7 @@ function SvgCanvas(c)
 	//   and store it on the Undo stack
 	// - in move/resize mode, the element's attributes which were affected by the move/resize are
 	//   identified, a ChangeElementCommand is created and stored on the stack for those attrs
-	//   this is done in recalculateSelectedDimensions()
+	//   this is done in when we recalculate the selected dimensions()
 	var mouseUp = function(evt)
 	{
 		if (!started) return;
@@ -1129,8 +1134,11 @@ function SvgCanvas(c)
 						
 						selectorManager.requestSelector(selected).showGrips(selected.tagName != "text");
 					}
-					recalculateSelectedDimensions();
-					recalculateSelectedOutline();
+					recalculateAllSelectedDimensions();
+					var i = selectedElements.length;
+					while(i--) {
+						selectorManager.requestSelector(selectedElements[i]).resize(selectedBBoxes[i]);
+					}
 					// we return immediately from select so that the obj_num is not incremented
 					return;
 				}				
@@ -1230,8 +1238,7 @@ function SvgCanvas(c)
 		// remove the selected outline before serializing
 		this.clearSelection();
 		var str = "<?xml version=\"1.0\" standalone=\"no\"?>\n";
-		// see http://jwatt.org/svg/authoring/#doctype-declaration
-//		str += "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
+		// no need for doctype, see http://jwatt.org/svg/authoring/#doctype-declaration
 		str += svgToString(svgroot, 0);
 		this.saveHandler(str);
 	};
@@ -1441,6 +1448,9 @@ function SvgCanvas(c)
 		}
 	};
 
+	// TODO: to prevent paths/lines from getting fill values set, we can special-case
+	// the fill attribute here and if tagName == "path" or "line" then ignore it?
+	// ^^^ is a hack though
 	this.changeSelectedAttribute = function(attr, val) {
 		var batchCmd = new BatchCommand("Change " + attr);
 		var len = selectedElements.length;
@@ -1453,8 +1463,7 @@ function SvgCanvas(c)
 				if (attr == "#text") selected.textContent = val;
 				else selected.setAttribute(attr, val);
 				selectedBBoxes[i] = selected.getBBox();
-				// TODO: do the select calculation in here directly
-				recalculateSelectedOutline();
+				selectorManager.requestSelector(selected).resize(selectedBBoxes[i]);				
 				var changes = {};
 				changes[attr] = oldval;
 				batchCmd.addSubCommand(new ChangeElementCommand(selected, changes, attr));
@@ -1515,16 +1524,25 @@ function SvgCanvas(c)
 		}
 	};
 
-	// TODO: get this to work with multiple selected elements
 	this.moveSelectedElement = function(dx,dy) {
-		var selected = selectedElements[0];
-		if (selected != null) {
-			selectedBBoxes[0] = selected.getBBox();
-			selectedBBoxes[0].x += dx;
-			selectedBBoxes[0].y += dy;
-
-			recalculateSelectedDimensions();
-			recalculateSelectedOutline();
+		var batchCmd = new BatchCommand("position");
+		var i = selectedElements.length;
+		while (i--) {
+			var selected = selectedElements[i];
+			if (selected != null) {
+				selectedBBoxes[i] = selected.getBBox();
+				selectedBBoxes[i].x += dx;
+				selectedBBoxes[i].y += dy;
+				var cmd = recalculateSelectedDimensions(i);
+				if (cmd) {
+					batchCmd.addSubCommand(cmd);
+				}
+				selectorManager.requestSelector(selected).resize(selectedBBoxes[i]);				
+			}
+		}
+		if (!batchCmd.isEmpty()) {
+			addCommandToHistory(batchCmd);
+			call("changed", selectedElements);
 		}
 	};
 
