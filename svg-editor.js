@@ -350,7 +350,7 @@ function svg_edit_setup() {
 	}
 
 	var moveSelected = function(dx,dy) {
-		if (selectedElement != null) {
+		if (selectedElement != null || multiselected) {
 			svgCanvas.moveSelectedElement(dx,dy);
 		}
 	}
