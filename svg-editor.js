@@ -63,11 +63,25 @@ function svg_edit_setup() {
 	// updates the toolbar (colors, opacity, etc) based on the selected element
 	function updateToolbar() {
 		if (selectedElement != null) {
+			// get opacity values
+			var fillOpacity = parseFloat(selectedElement.getAttribute("fill-opacity"));
+			if (isNaN(fillOpacity)) {
+				fillOpacity = 1.0;
+			}
+			fillOpacity = (fillOpacity*100)+" %";
+			
+			var strokeOpacity = parseFloat(selectedElement.getAttribute("stroke-opacity"));
+			if (isNaN(strokeOpacity)) {
+				strokeOpacity = 1.0;
+			}
+			strokeOpacity = (strokeOpacity*100)+" %";
+
 			// update fill color
 			var fillColor = selectedElement.getAttribute("fill");
 			svgCanvas.setFillColor(fillColor);
 			if (fillColor == "none") {
 				fillColor = 'url(\'images/none.png\')';
+				fillOpacity = "N/A";
 			}
 			$('#fill_color').css('background', fillColor);
 
@@ -76,11 +90,12 @@ function svg_edit_setup() {
 			svgCanvas.setStrokeColor(strokeColor);
 			if (strokeColor == null || strokeColor == "" || strokeColor == "none") {
 				strokeColor = 'url(\'images/none.png\')';
+				strokeOpacity = "N/A";
 			}
-			$('#stroke_color').css('background', strokeColor);
-
-			$('#fill_opacity').html(((selectedElement.getAttribute("fill-opacity")||1.0)*100)+" %");
-			$('#stroke_opacity').html(((selectedElement.getAttribute("stroke-opacity")||1.0)*100)+" %");
+			$('#stroke_color').css('background', strokeColor);			
+			
+			$('#fill_opacity').html(fillOpacity);
+			$('#stroke_opacity').html(strokeOpacity);
 			$('#group_opacity').val(((selectedElement.getAttribute("opacity")||1.0)*100)+" %");
 			$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1);
 			$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
@@ -239,13 +254,13 @@ function svg_edit_setup() {
 		if (evt.shiftKey) {
 			svgCanvas.setStrokeColor(color);
 			if (color != 'none' && $("#stroke_opacity").html() == 'N/A') {
-				svgCanvas.setStrokeOpacity(100);
+				svgCanvas.setStrokeOpacity(1.0);
 				$("#stroke_opacity").html("100 %");
 			}
 		} else {
 			svgCanvas.setFillColor(color);
 			if (color != 'none' && $("#fill_opacity").html() == 'N/A') {
-				svgCanvas.setFillOpacity(100);
+				svgCanvas.setFillOpacity(1.0);
 				$("#fill_opacity").html("100 %");
 			}
 		}
