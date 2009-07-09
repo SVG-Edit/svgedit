@@ -1,5 +1,9 @@
+2.2 - ???? ??, ????
+-------------------
+* 
+
 2.1 - June 17, 2009
----------------------
+-------------------
 * tooltips added to all UI elements
 * fix flyout menus
 * ask before clearing the drawing (suggested by martin.vidner)
@@ -19,7 +23,7 @@
 * move to top/bottom
 
 2.0 - June 03, 2009
-------------------
+-------------------
 * rewritten SVG-edit, so now it uses OOP
 * draw ellipse, square
 * created HTML interface similar to Inkscape
