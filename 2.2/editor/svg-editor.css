@@ -1,0 +1,274 @@
+body {
+	background: #E8E8E8;
+}
+
+#svg_editor {
+	font-size: 8pt;
+	font-family: Verdana, Helvetica, Arial;
+	color: #000000;
+}
+
+#svg_editor a {
+	color: #0000FF;
+}
+
+#svg_editor hr {
+	border: none;
+	border-bottom: 1px solid #808080;
+}
+
+#svg_editor select {
+	margin-top: 4px;
+}
+
+#svg_editor #svgroot {
+	-moz-user-select: none;
+}
+
+#svg_editor #svgcanvas {
+	background-color: #FFFFFF;
+	text-align: center;
+	vertical-align: middle;
+	width: 640px;
+	height: 480px;
+}
+
+#svg_editor div#palette_holder {
+	overflow-x: scroll;
+	overflow-y: hidden;
+	height: 31px;
+	border: 1px solid #808080;
+	border-top: none;
+	margin-top: 2px;
+}
+
+#svg_editor #fill_color, #svg_editor #stroke_color {
+	height: 16px;
+	width: 16px;
+	border: 1px solid #808080;
+	cursor: pointer;
+}
+
+#svg_editor #fill_color {
+	background: url('images/none.png');
+}
+
+#svg_editor #stroke_color {
+	background: #000000;
+}
+
+#svg_editor div#palette {
+	float: left;
+	width: 6848px;
+	height: 16px;
+}
+
+#svg_editor div#workarea {
+	position:absolute;
+	top: 70px;
+	left: 40px;
+	right: 2px;
+	bottom: 60px;
+	background-color: #A0A0A0;
+	border: 1px solid #808080;
+	overflow: auto;
+}
+
+#svg_editor div.palette_item {
+	height: 16px;
+	width: 16px;
+	float: left;
+}
+
+#svg_editor #tools_top {
+	position: absolute;
+	left: 38px;
+	right: 2px;
+	top: 2px;
+	height: 68px;
+	border-bottom: none;
+}
+
+#svg_editor #tools_top div {
+	float: left;
+}
+
+#svg_editor #tools_left {
+	position: absolute;
+	border-right: none;
+	width: 36px;
+	top: 68px;
+	left: 2px;
+}
+
+/* TODO: fix this */
+div.color_block {
+	display: inline-block;
+}
+
+#svg_editor #selected_panel {
+	display: none;
+}
+
+#svg_editor #multiselected_panel {
+	display: none;
+}
+
+#svg_editor #rect_panel {
+	display: none;
+}
+
+#svg_editor #circle_panel {
+	display: none;
+}
+
+#svg_editor #ellipse_panel {
+	display: none;
+}
+
+#svg_editor #line_panel {
+	display: none;
+}
+
+#svg_editor #text_panel {
+	display: none;
+}
+
+#svg_editor #selected_panel .selected_tool {
+	vertical-align: 12px;
+}
+
+#svg_editor #text_panel .text_tool {
+	vertical-align: 12px;
+}
+
+#svg_editor #rect_panel .rect_tool {
+	vertical-align: 12px;
+}
+
+#svg_editor #circle_panel .circle_tool {
+	vertical-align:12px;
+}
+
+#svg_editor #ellipse_panel .ellipse_tool {
+	vertical-align:12px;
+}
+
+#svg_editor #line_panel .line_tool {
+	vertical-align:12px;
+}
+
+#svg_editor .tool_button, #svg_editor .tool_button_current, #svg_editor .tool_button_disabled {
+	height: 24px;
+	width: 24px;
+	margin: 2px;
+	padding: 2px;
+	border-left: 1px solid #FFFFFF;
+	border-top: 1px solid #FFFFFF;
+	border-right: 1px solid #808080;
+	border-bottom: 1px solid #808080;
+	cursor: pointer;
+}
+
+#svg_editor .tool_button_current {
+	border-left: 1px solid #808080;
+	border-top: 1px solid #808080;
+	border-right: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	background-color: #B0B0B0;
+}
+
+#svg_editor .tool_button_disabled {
+	opacity: 0.5;
+	cursor: default;
+}
+
+#svg_editor .tool_sep {
+	width: 2px;
+	height: 24px;
+	margin: 2px;
+	margin-right: 0;
+	padding: 2px;
+}
+
+#svg_editor #color_picker {
+	position: absolute;
+	display: none;
+	background: #E8E8E8;
+}
+
+#svg_editor .tools_flyout {
+	position: absolute;
+	display: none;
+	cursor: pointer;
+	float: left;
+	width: 300px;
+}
+
+#svg_editor #tool_square {
+	background: 2px 2px url('images/square.png') no-repeat;
+}
+
+#svg_editor #tool_rect {
+	background: 2px 2px url('images/rect.png') no-repeat;
+}
+
+#svg_editor #tool_fhrect {
+	background: 2px 2px url('images/freehand-square.png') no-repeat;
+}
+
+#svg_editor #tool_circle {
+	background: 2px 2px url('images/circle.png') no-repeat;
+}
+
+#svg_editor #tool_ellipse {
+	background: 2px 2px url('images/ellipse.png') no-repeat;
+}
+
+#svg_editor #tool_fhellipse {
+	background: 2px 2px url('images/freehand-circle.png') no-repeat;
+}
+
+#svg_editor #tools_rect .tool_flyout_button, #svg_editor #tools_ellipse .tool_flyout_button {
+	float: left;
+	background-color: #E8E8E8;
+	border-left: 1px solid #FFFFFF;
+	border-top: 1px solid #FFFFFF;
+	border-right: 1px solid #808080;
+	border-bottom: 1px solid #808080;
+	height: 28px;
+	width: 28px;
+}
+
+#svg_editor #tools_rect .tool_flyout_button_current, #svg_editor #tools_ellipse .tool_flyout_button_current {
+	border-left: 1px solid #808080;
+	border-top: 1px solid #808080;
+	border-right: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	background-color: #B0B0B0;
+}
+
+#svg_editor #tools_bottom {
+	position: absolute;
+	left: 40px;
+	right: 2px;
+	bottom: 2px;
+	height: 60px;
+}
+
+#svg_editor #tools_bottom_1 {
+	width: 100px;
+	float: left;
+}
+
+#svg_editor #tools_bottom_2 {
+	width: 250px;
+	float: left;
+}
+
+#svg_editor #tools_bottom_3 {
+}
+
+#svg_editor #copyright {
+	text-align: right;
+}
