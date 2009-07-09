@@ -1,0 +1,1 @@
+INPUT.spin-button{padding:2px 20px 2px 2px;background-repeat:no-repeat;background-position:100% 0;background-image:url('spinbtn_updn.png');background-color:white;}INPUT.spin-button.up{cursor:pointer;background-position:100% -18px;}INPUT.spin-button.down{cursor:pointer;background-position:100% -36px;}
