@@ -5,6 +5,18 @@ if(!window.console) {
   };
 }
 
+// this defines which elements and attributes that we support
+var svgWhiteList = {
+	"circle": ["cx", "cy", "fill", "fill-opacity", "id", "stroke", "r", "stroke-opacity", "stroke-width", "stroke-dasharray"],
+	"ellipse": ["cx", "cy", "fill", "fill-opacity", "id", "stroke", "rx", "ry", "stroke-opacity", "stroke-width", "stroke-dasharray"],
+	"line": ["fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "x1", "x2", "y1", "y2"],
+	"path": ["d", "fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray"],
+	"rect": ["fill", "fill-opacity", "height", "id", "rx", "ry", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "width"],
+	"svg": ["id", "height", "width", "xmlns"],
+	"text": ["font-family", "font-size", "font-style", "font-weight", "id", "x", "y"],
+	};
+
+
 // These command objects are used for the Undo/Redo stack
 // attrs contains the values that the attributes had before the change
 function ChangeElementCommand(elem, attrs, text) {
@@ -103,7 +115,6 @@ function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 
 // this command object acts an arbitrary number of subcommands 
 function BatchCommand(text) {
-	this.elems = [];
 	this.text = text || "Batch Command";
 	this.stack = [];
 	
@@ -120,7 +131,19 @@ function BatchCommand(text) {
 		}
 	};
 	
-	this.elements = function() { return this.elems; };
+	this.elements = function() {
+		// iterate through all our subcommands and find all the elements we are changing
+		var elems = [];
+		var cmd = this.stack.length;
+		while (cmd--) {
+			var thisElems = this.stack[cmd].elements();
+			var elem = thisElems.length;
+			while (elem--) {
+				if (elems.indexOf(thisElems[elem]) == -1) elems.push(thisElems[elem]);
+			}
+		}
+		return elems; 
+	};
 	
 	this.addSubCommand = function(cmd) { this.stack.push(cmd); };
 	
@@ -507,25 +530,73 @@ function SvgCanvas(c)
 	var addSvgElementFromJson = function(data) {
 		return canvas.updateElementFromJson(data)
 	};
+	
+	// this function sanitizes the input node and its children
+	// this function only keeps what is allowed from our whitelist defined above
+	var sanitizeSvg = function(node) {
+		// we only care about element nodes
+		// automatically return for all text, comment, etc nodes
+		if (node.nodeType != 1) return;
+		
+		var doc = node.ownerDocument;
+		var parent = node.parentNode;
+		// can parent ever be null here?  I think the root node's parent is the document...
+		if (!doc || !parent) return;
+		
+		var allowedAttrs = svgWhiteList[node.nodeName];
+		// if this element is allowed
+		if (allowedAttrs != undefined) {
+			var i = node.attributes.length;
+			while (i--) {
+				// if the attribute is not in our whitelist, then remove it
+				// could use jQuery's inArray(), but I don't know if that's any better
+				var attrName = node.attributes.item(i).nodeName;
+				if (allowedAttrs.indexOf(attrName) == -1) {
+					// TODO: do I need to call setAttribute(..., "") here for Fx2?
+					node.removeAttribute(attrName);
+				}
+			}
+
+			// recurse to children
+			i = node.childNodes.length;
+			while (i--) { sanitizeSvg(node.childNodes.item(i)); }
+		}
+		// else, remove this element
+		else {
+			// remove all children from this node and insert them before this node
+			var children = [];
+			while (node.hasChildNodes()) {
+				children.push(parent.insertBefore(node.firstChild, node));
+			}
+			
+			// remove this node from the document altogether
+			parent.removeChild(node);
+			
+			// call sanitizeSvg on each of those children
+			var i = children.length;
+			while (i--) { sanitizeSvg(children[i]); }
+			
+		}
+	};
 
 	var svgToString = function(elem, indent) {
-		// TODO: could use the array.join() optimization trick here too
-		var out = "";
+		var out = new Array();
 		if (elem) {
 			var attrs = elem.attributes;
 			var attr;
 			var i;
 			var childs = elem.childNodes;
-			for (i=0; i<indent; i++) out += " ";
-			out += "<" + elem.nodeName;
+			for (i=0; i<indent; i++) out.push(" ");
+			out.push("<"); out.push(elem.nodeName);
 			for (i=attrs.length-1; i>=0; i--) {
 				attr = attrs.item(i);
 				if (attr.nodeValue != "") {
-					out += " " + attr.nodeName + "=\"" + attr.nodeValue+ "\"";
+					out.push(" "); out.push(attr.nodeName); out.push("=\""); 
+					out.push(attr.nodeValue); out.push("\"");
 				}
 			}
 			if (elem.hasChildNodes()) {
-				out += ">";
+				out.push(">");
 				indent++;
 				var bOneLine = false;
 				for (i=0; i<childs.length; i++)
@@ -533,23 +604,24 @@ function SvgCanvas(c)
 					var child = childs.item(i);
 					if (child.id == "selectorParentGroup") continue;
 					if (child.nodeType == 1) { // element node
-						out += "\n" + svgToString(childs.item(i), indent);
+						out.push("\n");
+						out.push(svgToString(childs.item(i), indent));
 					} else if (child.nodeType == 3) { // text node
 						bOneLine = true;
-						out += child.nodeValue + "";
+						out.push(child.nodeValue + "");
 					}
 				}
 				indent--;
 				if (!bOneLine) {
-					out += "\n";
+					out.push("\n");
 					for (i=0; i<indent; i++) out += " ";
 				}
-				out += "</" + elem.nodeName + ">";
+				out.push("</"); out.push(elem.nodeName); out.push(">");
 			} else {
-				out += "/>";
+				out.push("/>");
 			}
 		}
-		return out;
+		return out.join('');
 	}; // end svgToString()
 
 	var recalculateAllSelectedDimensions = function() {
@@ -927,6 +999,9 @@ function SvgCanvas(c)
 
 	// in mouseMove we do not record any state changes yet (but we do update
 	// any elements that are still being created, moved or resized on the canvas)
+	// TODO: svgcanvas should just retain a reference to the image being dragged instead
+	// of the getId() and getElementById() funkiness - this will help us customize the ids 
+	// a little bit for squares and polys
 	var mouseMove = function(evt)
 	{
 		if (!started) return;
@@ -1242,6 +1317,40 @@ function SvgCanvas(c)
 		str += svgToString(svgroot, 0);
 		this.saveHandler(str);
 	};
+	
+	this.getSvgString = function() {
+		return svgToString(svgroot, 0);
+	};
+
+	// this function returns false if the set was unsuccessful, true otherwise
+	// TODO: should this function keep throwing the exception?	
+	this.setSvgString = function(xmlString) {
+		try {
+			// convert string into XML document
+			var newDoc = Utils.text2xml(xmlString);
+
+			// run it through our sanitizer to remove anything we do not support
+	        sanitizeSvg(newDoc.documentElement);
+
+			var batchCmd = new BatchCommand("Change Source");
+
+        	// remove old root
+    	    var oldroot = container.removeChild(svgroot);
+			batchCmd.addSubCommand(new RemoveElementCommand(oldroot, container));
+        
+    	    // set new root
+        	svgroot = container.appendChild(svgdoc.importNode(newDoc.documentElement, true));
+			batchCmd.addSubCommand(new InsertElementCommand(svgroot));
+			
+			addCommandToHistory(batchCmd);
+			call("changed", [svgroot]);
+		} catch(e) {
+			console.log(e);
+			return false;
+		}
+		
+		return true;
+	};
 
 	this.clear = function() {
 		var nodes = svgroot.childNodes;
@@ -1260,6 +1369,9 @@ function SvgCanvas(c)
 		call("cleared");
 	};
 
+	this.getResolution = function() {
+		return [svgroot.getAttribute("width"), svgroot.getAttribute("height")];
+	};
 	this.setResolution = function(x, y) {
 		var w = svgroot.getAttribute("width"),
 			h = svgroot.getAttribute("height");
@@ -1647,5 +1759,24 @@ var Utils = {
 			(r2.x+r2.width) > r1.x &&
 			r2.y < (r1.y+r1.height) &&
 			(r2.y+r2.height) > r1.y;
-		},
+	},
+	
+	// found this function http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f
+	"text2xml": function(sXML) {
+	    // NOTE: I'd like to use jQuery for this, but jQuery makes all tags uppercase
+    	//return $(xml)[0];
+	    var out;
+    	try{
+        	var dXML = ($.browser.msie)?new ActiveXObject("Microsoft.XMLDOM"):new DOMParser();
+	        dXML.async = false;
+    	} catch(e){ 
+    		throw new Error("XML Parser could not be instantiated"); 
+    	};
+    	try{
+        	if($.browser.msie) out = (dXML.loadXML(sXML))?dXML:false;
+	        else out = dXML.parseFromString(sXML, "text/xml");
+    	}
+    	catch(e){ throw new Error("Error parsing XML string"); };
+    	return out;
+    },
 };

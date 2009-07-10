@@ -43,7 +43,7 @@ function svg_edit_setup() {
 	var elementChanged = function(window,elems) {
 		for (var i = 0; i < elems.length; ++i) {
 			var elem = elems[i];
-			// if the element changed was the svg, then it must be a resolution change
+			// if the element changed was the svg, then it could be a resolution change
 			if (elem && elem.tagName == "svg") {
 				changeResolution(parseInt(elem.getAttribute("width")),
 								 parseInt(elem.getAttribute("height")));
@@ -479,7 +479,18 @@ function svg_edit_setup() {
 	$(document).bind('keydown', {combi:'z', disableInInput: true}, clickUndo);
 	$(document).bind('keydown', {combi:'shift+z', disableInInput: true}, clickRedo);
 	$(document).bind('keydown', {combi:'y', disableInInput: true}, clickRedo);
+	// temporary binding to test setSvgString()
+	/* 
+	$(document).bind('keydown', {combi:'t', disableInInput: true}, function() {
+		if (svgCanvas.setSvgString(
+'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="foo" width="300" height="200"><bar><knuckle/><head/><rect width="200" height="100" fill="red" /></bar><circle cx="100" cy="100" r="40" fill="green" strike="blue"/><foo/></svg>')) {
+			updateContextPanel();
+			var dims = svgCanvas.getResolution();
+			changeResolution(dims[0],dims[1]);
 
+		}
+	});
+	*/
 	var colorPicker = function(elem) {
 		var oldbg = elem.css('background');
 		var color = elem.css('background-color');
@@ -623,8 +634,8 @@ function svg_edit_setup() {
 
 	function changeResolution(x,y) {
 		$('#resolution').val(x+'x'+y);
-		$('#svgroot').css( { 'width': x, 'height': y } );
-		$('#svgcanvas').css( { 'width': x, 'height': y } );
+		$('#svgroot').css( { 'width': x+'px', 'height': y+'px' } );
+		$('#svgcanvas').css( { 'width': x+'px', 'height': y+'px' } );
 	}
 
 	$('#resolution').change(function(){
