@@ -493,6 +493,18 @@ function SvgCanvas(c)
 		if (events["getid"]) return call("getid", obj_num);
 		return idprefix + obj_num;
 	};
+	
+	var getNextId = function() {
+		// ensure the ID does not exist
+		var id = getId();
+		while (svgdoc.getElementById(id)) {
+			obj_num++;
+			id = getId();
+		}
+		console.log(id);
+		return id;
+	
+	};
 
 	var call = function(event, arg) {
 		if (events[event]) {
@@ -875,7 +887,7 @@ function SvgCanvas(c)
 					"element": "path",
 					"attr": {
 						"d": d_attr,
-						"id": getId(),
+						"id": getNextId(),
 						"fill": "none",
 						"stroke": current_stroke,
 						"stroke-width": current_stroke_width,
@@ -903,7 +915,7 @@ function SvgCanvas(c)
 						"y": y,
 						"width": 0,
 						"height": 0,
-						"id": getId(),
+						"id": getNextId(),
 						"fill": current_fill,
 						"stroke": current_stroke,
 						"stroke-width": current_stroke_width,
@@ -923,7 +935,7 @@ function SvgCanvas(c)
 						"y1": y,
 						"x2": x,
 						"y2": y,
-						"id": getId(),
+						"id": getNextId(),
 						"stroke": current_stroke,
 						"stroke-width": current_stroke_width,
 						"stroke-dasharray": current_stroke_style,
@@ -941,7 +953,7 @@ function SvgCanvas(c)
 						"cx": x,
 						"cy": y,
 						"r": 0,
-						"id": getId(),
+						"id": getNextId(),
 						"fill": current_fill,
 						"stroke": current_stroke,
 						"stroke-width": current_stroke_width,
@@ -961,7 +973,7 @@ function SvgCanvas(c)
 						"cy": y,
 						"rx": 0,
 						"ry": 0,
-						"id": getId(),
+						"id": getNextId(),
 						"fill": current_fill,
 						"stroke": current_stroke,
 						"stroke-width": current_stroke_width,
@@ -979,7 +991,7 @@ function SvgCanvas(c)
 					"attr": {
 						"x": x,
 						"y": y,
-						"id": getId(),
+						"id": getNextId(),
 						"fill": current_fill,
 						"stroke": current_stroke,
 						"stroke-width": current_stroke_width,
@@ -1292,7 +1304,6 @@ function SvgCanvas(c)
 				break;
 		}
 		d_attr = null;
-		obj_num++;
 		if (!keep && element != null) {
 			element.parentNode.removeChild(element);
 			element = null;
@@ -1323,7 +1334,8 @@ function SvgCanvas(c)
 	};
 
 	// this function returns false if the set was unsuccessful, true otherwise
-	// TODO: should this function keep throwing the exception?	
+	// TODO: should this function keep throwing the exception?
+	// FIXME: after parsing in the new file, how do we synchronize getId()?
 	this.setSvgString = function(xmlString) {
 		try {
 			// convert string into XML document
