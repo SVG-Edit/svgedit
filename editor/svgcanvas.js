@@ -545,7 +545,11 @@ function SvgCanvas(c)
 	// this function only keeps what is allowed from our whitelist defined above
 	var sanitizeSvg = function(node) {
 		// we only care about element nodes
-		// automatically return for all text, comment, etc nodes
+		// automatically return for all comment, etc nodes
+		// for text, we do a whitespace trim
+		if (node.nodeType == 3) {
+			node.nodeValue = node.nodeValue.replace(/^\s+|\s+$/g, "");
+		}
 		if (node.nodeType != 1) return;
 		
 		var doc = node.ownerDocument;
@@ -617,9 +621,10 @@ function SvgCanvas(c)
 						out.push("\n");
 						out.push(svgToString(childs.item(i), indent));
 					} else if (child.nodeType == 3) { // text node
-						bOneLine = true;
-						if (child.nodeValue != "") {
-							out.push(child.nodeValue + "");
+						var str = child.nodeValue.replace(/^\s+|\s+$/g, "");
+						if (str != "") {
+							bOneLine = true;
+							out.push(str + "");
 						}
 					}
 				}
@@ -1338,7 +1343,6 @@ function SvgCanvas(c)
 	// FIXME: after parsing in the new file, how do we synchronize getId()?
 	this.setSvgString = function(xmlString) {
 		try {
-			console.log(xmlString);
 			// convert string into XML document
 			var newDoc = Utils.text2xml(xmlString);
 
