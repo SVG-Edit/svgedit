@@ -429,12 +429,12 @@ function SvgCanvas(c)
 	var selectedBBoxes = new Array(1);
 	// this object manages selectors for us
 	var selectorManager = new SelectorManager();
-	// this object holds the one-and-only selector (for now)
-	var theSelector = null;
 	var rubberBox = null;
 	var events = {};
 	var undoStackPointer = 0;
 	var undoStack = [];
+	// this holds all the currently copied elements
+	var copiedElements = new Array(1);
 
 	// This method sends back an array or a NodeList full of elements that
 	// intersect the multi-select rubber-band-box.
@@ -486,7 +486,6 @@ function SvgCanvas(c)
 		}
 		undoStack.push(cmd);
 		undoStackPointer = undoStack.length;
-		console.log(undoStack);
 	};
 
 // private functions
@@ -1238,8 +1237,9 @@ function SvgCanvas(c)
 						selectorManager.requestSelector(selected).showGrips(selected.tagName != "text");
 					}
 					recalculateAllSelectedDimensions();
-					var i = selectedElements.length;
-					while(i--) {
+					var len = selectedElements.length;
+					for(var i = 0; i < len; ++i) {
+						if (selectedElements[i] == null) break;
 						selectorManager.requestSelector(selectedElements[i]).resize(selectedBBoxes[i]);
 					}
 				}				
@@ -1677,7 +1677,9 @@ function SvgCanvas(c)
 		}
 	};
 
-	this.moveSelectedElement = function(dx,dy) {
+	this.moveSelectedElements = function(dx,dy,undoable) {
+		// if undoable is not sent, default to true
+		var undoable = undoable&&true;
 		var batchCmd = new BatchCommand("position");
 		var i = selectedElements.length;
 		while (i--) {
@@ -1694,7 +1696,8 @@ function SvgCanvas(c)
 			}
 		}
 		if (!batchCmd.isEmpty()) {
-			addCommandToHistory(batchCmd);
+			if (undoable)
+				addCommandToHistory(batchCmd);
 			call("changed", selectedElements);
 		}
 	};
@@ -1733,6 +1736,38 @@ function SvgCanvas(c)
 			cmd.apply();
 			call("changed", cmd.elements());
 		}
+	};
+	
+	// this creates deep DOM copies (clones) of all selected elements
+	this.copySelectedElements = function() {
+		copiedElements = [];
+		var len = selectedElements.length;
+		for (var i = 0; i < len; ++i) {
+			if (selectedElements[i] == null) break;
+			copiedElements.push(selectedElements[i].cloneNode(true));
+		}
+	};
+	
+	this.pasteElements = function() {
+		var batchCmd = new BatchCommand("Paste Elements");
+		this.clearSelection();
+		var len = copiedElements.length;
+		for (var i = 0; i < len; ++i) {
+			var elem = copiedElements[i];
+			elem.id = getNextId();
+			svgroot.appendChild(elem);
+			batchCmd.addSubCommand(new InsertElementCommand(elem));
+		}
+		
+		if (!batchCmd.isEmpty()) {
+			this.addToSelection(copiedElements);
+			this.moveSelectedElements(20,20,false);
+			addCommandToHistory(batchCmd);
+			// re-copy the elements so we can paste again
+			this.copySelectedElements();
+			call("selected", selectedElements);
+		}
+		
 	};
 
 }
