@@ -422,6 +422,7 @@ function svg_edit_setup() {
 		$('#svg_source_textarea').val(str);
 		$('#svg_source_editor').fadeIn();
 		properlySourceSizeTextArea();
+		$('#svg_source_textarea').focus();
 	};
 	
 	var properlySourceSizeTextArea = function(){
@@ -438,12 +439,12 @@ function svg_edit_setup() {
 		}
 		$('#svg_source_editor').hide();
 		editingsource = false;
+		$('#svg_source_textarea').blur();
 	};
 	
 	// TODO: add canvas-centering code in here
 	$(window).resize(function(evt) {
 		if (!editingsource) return;
-		
 		properlySourceSizeTextArea();
 	});
 
@@ -524,7 +525,7 @@ function svg_edit_setup() {
 	$(document).bind('keydown', {combi:'z', disableInInput: true}, clickUndo);
 	$(document).bind('keydown', {combi:'shift+z', disableInInput: true}, clickRedo);
 	$(document).bind('keydown', {combi:'y', disableInInput: true}, clickRedo);
-	$(document).bind('keydown', {combi:'u', disableInInput: true}, showSourceEditor);
+	$(document).bind('keydown', {combi:'u', disableInInput: true}, function(evt){showSourceEditor();evt.preventDefault();});
 	$(document).bind('keydown', {combi:'esc', disableInInput: false}, hideSourceEditor);
 	// temporary binding to test setSvgString()
 	/* 
