@@ -410,8 +410,6 @@ function svg_edit_setup() {
 			svgCanvas.redo();
 	};
 	
-	// TODO: create new button for Source Editor
-	// TODO: prevent creating an undo-able event if the source has not changed - how? -->
 	var showSourceEditor = function(){
 		if (editingsource) return;
 		editingsource = true;
@@ -423,7 +421,7 @@ function svg_edit_setup() {
 	};
 	
 	var properlySourceSizeTextArea = function(){
-		// TODO: remove magic numbers here
+		// TODO: remove magic numbers here and get values from CSS
 		var height = ($(window).height() - 120)+'px';
 		$('#svg_source_textarea').css('height', height);
 	};
@@ -431,11 +429,11 @@ function svg_edit_setup() {
 	var hideSourceEditor = function(){
 		if (!editingsource) return;
 		
-		if (svgCanvas.setSvgString($('#svg_source_textarea').val())) {
-			console.log('yo');
-		}
-		else {
-			alert('There were parsing errors in your SVG source.\nReverting back to original SVG source.');
+		var oldString = svgCanvas.getSvgString();
+		if (oldString != $('#svg_source_textarea').val()) {
+			if (!svgCanvas.setSvgString($('#svg_source_textarea').val())) {
+				alert('There were parsing errors in your SVG source.\nReverting back to original SVG source.');
+			}
 		}
 		$('#svg_source_editor').hide();
 		editingsource = false;
