@@ -17,8 +17,6 @@ function svg_edit_setup() {
 	}
 
 	// used to make the flyouts stay ont he screen longer the very first time
-	var ellipse_flyout_speed = 'slow';
-	var rect_flyout_speed = 'slow';
 	var textBeingEntered = false;
 	var selectedElement = null;
 	var multiselected = false;
@@ -665,24 +663,18 @@ function svg_edit_setup() {
 	});
 
 	$('#tools_rect_show').mousedown(function(evt){
-		$('#tools_rect').show(rect_flyout_speed);
-		rect_flyout_speed = '';
+		$('#tools_rect').show();
 		// this prevents the 'image drag' behavior in Firefox
 		evt.preventDefault();
 	});
-	$('#tools_rect').mouseleave(function() {
-		$('#tools_rect').fadeOut();
-	});
+	$('#tools_rect').mouseleave(function(){$('#tools_rect').fadeOut();});
 
 	$('#tools_ellipse_show').mousedown(function(evt){
-		$('#tools_ellipse').show(ellipse_flyout_speed);
-		ellipse_flyout_speed = '';
+		$('#tools_ellipse').show();
 		// this prevents the 'image drag' behavior in Firefox
 		evt.preventDefault();
 	});
-	$('#tools_ellipse').mouseleave(function() {
-		$('#tools_ellipse').fadeOut();
-	});
+	$('#tools_ellipse').mouseleave(function() {$('#tools_ellipse').fadeOut();});
 
 	$('.tool_flyout_button').mouseover(function() {
 		$(this).addClass('tool_flyout_button_current');
