@@ -411,7 +411,6 @@ function svg_edit_setup() {
 	};
 	
 	// TODO: prevent 'u' from showing up in the textarea
-	// TODO: prevent extra carriage returns
 	// TODO: properly size the text area during resize
 	// TODO: properly handle error conditions (error msg dialog)
 	// TODO: prevent @style showing up on the svg element
@@ -420,7 +419,6 @@ function svg_edit_setup() {
 		if (editingsource) return;
 		editingsource = true;
 		var str = svgCanvas.getSvgString();
-		console.log(str);
 		$('#svg_source_textarea').val(str);
 		$('#svg_source_editor').fadeIn();
 		properlySourceSizeTextArea();
