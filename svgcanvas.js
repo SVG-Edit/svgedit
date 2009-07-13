@@ -1242,9 +1242,9 @@ function SvgCanvas(c)
 					while(i--) {
 						selectorManager.requestSelector(selectedElements[i]).resize(selectedBBoxes[i]);
 					}
-					// we return immediately from select so that the obj_num is not incremented
-					return;
 				}				
+				// we return immediately from select so that the obj_num is not incremented
+				return;
 				break;
 			case "path":
 				keep = true;
