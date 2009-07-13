@@ -16,9 +16,13 @@ function svg_edit_setup() {
 		svgCanvas.setMode('select');
 	}
 
+	// used to make the flyouts stay ont he screen longer the very first time
+	var ellipse_flyout_speed = 'slow';
+	var rect_flyout_speed = 'slow';
 	var textBeingEntered = false;
 	var selectedElement = null;
 	var multiselected = false;
+	var editingsource = false;
 
 	// called when we've selected a different element
 	var selectedChanged = function(window,elems) {
@@ -288,61 +292,61 @@ function svg_edit_setup() {
 			svgCanvas.setMode('select');
 			$('#styleoverrides').text('*{cursor:move;pointer-events:all} svg{cursor:default}');
 		}
-	}
+	};
 
 	var clickPath = function() {
 		if (toolButtonClick('#tool_path')) {
 			svgCanvas.setMode('path');
 		}
-	}
+	};
 
 	var clickLine = function() {
 		if (toolButtonClick('#tool_line')) {
 			svgCanvas.setMode('line');
 		}
-	}
+	};
 
 	var clickSquare = function(){
 		if (toolButtonClick('#tools_rect_show')) {
 			svgCanvas.setMode('square');
 		}
 		$('#tools_rect_show').attr('src', 'images/square.png');
-	}
+	};
 
 	var clickRect = function(){
 		if (toolButtonClick('#tools_rect_show')) {
 			svgCanvas.setMode('rect');
 		}
 		$('#tools_rect_show').attr('src', 'images/rect.png');
-	}
+	};
 
 	var clickFHRect = function(){
 		if (toolButtonClick('#tools_rect_show')) {
 			svgCanvas.setMode('fhrect');
 		}
 		$('#tools_rect_show').attr('src', 'images/freehand-square.png');
-	}
+	};
 
 	var clickCircle = function(){
 		if (toolButtonClick('#tools_ellipse_show')) {
 			svgCanvas.setMode('circle');
 		}
 		$('#tools_ellipse_show').attr('src', 'images/circle.png');
-	}
+	};
 
 	var clickEllipse = function(){
 		if (toolButtonClick('#tools_ellipse_show')) {
 			svgCanvas.setMode('ellipse');
 		}
 		$('#tools_ellipse_show').attr('src', 'images/ellipse.png');
-	}
+	};
 
 	var clickFHEllipse = function(){
 		if (toolButtonClick('#tools_ellipse_show')) {
 			svgCanvas.setMode('fhellipse');
 		}
 		$('#tools_ellipse_show').attr('src', 'images/freehand-circle.png');
-	}
+	};
 
 	// Delete is a contextual tool that only appears in the ribbon if
 	// an element has been selected
@@ -350,37 +354,37 @@ function svg_edit_setup() {
 		if (selectedElement != null || multiselected) {
 			svgCanvas.deleteSelectedElements();
 		}
-	}
+	};
 
 	var moveToTopSelected = function() {
 		if (selectedElement != null) {
 			svgCanvas.moveToTopSelectedElement();
 		}
-	}
+	};
 
 	var moveToBottomSelected = function() {
 		if (selectedElement != null) {
 			svgCanvas.moveToBottomSelectedElement();
 		}
-	}
+	};
 
 	var moveSelected = function(dx,dy) {
 		if (selectedElement != null || multiselected) {
 			svgCanvas.moveSelectedElement(dx,dy);
 		}
-	}
+	};
 
 	var clickText = function(){
 		toolButtonClick('#tool_text');
 		svgCanvas.setMode('text');
-	}
+	};
 
 	var clickClear = function(){
 		if( confirm('Do you want to clear the drawing?\nThis will also erase your undo history!') ) {
 			svgCanvas.clear();
 			updateContextPanel();
 		}
-	}
+	};
 	
 	var clickBold = function(){
 		svgCanvas.setBold( !svgCanvas.getBold() );
@@ -394,17 +398,56 @@ function svg_edit_setup() {
 
 	var clickSave = function(){
 		svgCanvas.save();
-	}
+	};
 
 	var clickUndo = function(){
 		if (svgCanvas.getUndoStackSize() > 0)
 			svgCanvas.undo();
-	}
+	};
 
 	var clickRedo = function(){
 		if (svgCanvas.getRedoStackSize() > 0)
 			svgCanvas.redo();
-	}
+	};
+	
+	// TODO: prevent 'u' from showing up in the textarea
+	// TODO: prevent extra carriage returns
+	// TODO: properly size the text area during resize
+	// TODO: properly handle error conditions (error msg dialog)
+	// TODO: prevent @style showing up on the svg element
+	// TODO: create new button or Source Editor
+	var showSourceEditor = function(){
+		if (editingsource) return;
+		editingsource = true;
+		var str = svgCanvas.getSvgString();
+		console.log(str);
+		$('#svg_source_textarea').val(str);
+		$('#svg_source_editor').fadeIn();
+		properlySourceSizeTextArea();
+	};
+	
+	var properlySourceSizeTextArea = function(){
+		// TODO: remove magic numbers here
+		var height = ($(window).height() - 115)/(12*1.5);
+		$('#svg_source_textarea').attr('rows', height);
+	};
+	
+	var hideSourceEditor = function(){
+		if (!editingsource) return;
+		
+		if (svgCanvas.setSvgString($('#svg_source_textarea').val())) {
+			console.log('yo');
+		}
+		$('#svg_source_editor').hide();
+		editingsource = false;
+	};
+	
+	// TODO: add canvas-centering code in here
+	$(window).resize(function(evt) {
+		if (!editingsource) return;
+		
+		properlySourceSizeTextArea();
+	});
 
 	$('#tool_select').click(clickSelect);
 	$('#tool_path').click(clickPath);
@@ -418,13 +461,14 @@ function svg_edit_setup() {
 	$('#tool_text').click(clickText);
 	$('#tool_clear').click(clickClear);
 	$('#tool_save').click(clickSave);
+	$('#tool_source').click(showSourceEditor);
 	$('#tool_delete').click(deleteSelected);
 	$('#tool_delete_multi').click(deleteSelected);
 	$('#tool_move_top').click(moveToTopSelected);
 	$('#tool_move_bottom').click(moveToBottomSelected);
 	$('#tool_undo').click(clickUndo);
 	$('#tool_redo').click(clickRedo);
-	// these two lines are required to make Opera work properly with the new flyout mechanism
+	// these two lines are required to make Opera work properly with the flyout mechanism
 	$('#tools_rect_show').click(clickSquare);
 	$('#tools_ellipse_show').click(clickCircle);
 	$('#tool_bold').mousedown(clickBold);
@@ -438,6 +482,9 @@ function svg_edit_setup() {
 	$('#tool_save').mousedown(function(){$('#tool_save').addClass('tool_button_current');});
 	$('#tool_save').mouseup(function(){$('#tool_save').removeClass('tool_button_current');});
 	$('#tool_save').mouseout(function(){$('#tool_save').removeClass('tool_button_current');});
+	$('#tool_source').mousedown(function(){$('#tool_source').addClass('tool_button_current');});
+	$('#tool_source').mouseup(function(){$('#tool_source').removeClass('tool_button_current');});
+	$('#tool_source').mouseout(function(){$('#tool_source').removeClass('tool_button_current');});	
 	$('#tool_delete').mousedown(function(){$('#tool_delete').addClass('tool_button_current');});
 	$('#tool_delete').mouseup(function(){$('#tool_delete').removeClass('tool_button_current');});
 	$('#tool_delete').mouseout(function(){$('#tool_delete').removeClass('tool_button_current');});
@@ -479,6 +526,8 @@ function svg_edit_setup() {
 	$(document).bind('keydown', {combi:'z', disableInInput: true}, clickUndo);
 	$(document).bind('keydown', {combi:'shift+z', disableInInput: true}, clickRedo);
 	$(document).bind('keydown', {combi:'y', disableInInput: true}, clickRedo);
+	$(document).bind('keydown', {combi:'u', disableInInput: true}, showSourceEditor);
+	$(document).bind('keydown', {combi:'esc', disableInInput: false}, hideSourceEditor);
 	// temporary binding to test setSvgString()
 	/* 
 	$(document).bind('keydown', {combi:'t', disableInInput: true}, function() {
@@ -609,7 +658,8 @@ function svg_edit_setup() {
 	});
 
 	$('#tools_rect_show').mousedown(function(evt){
-		$('#tools_rect').show();
+		$('#tools_rect').show(rect_flyout_speed);
+		rect_flyout_speed = '';
 		// this prevents the 'image drag' behavior in Firefox
 		evt.preventDefault();
 	});
@@ -618,7 +668,8 @@ function svg_edit_setup() {
 	});
 
 	$('#tools_ellipse_show').mousedown(function(evt){
-		$('#tools_ellipse').show();
+		$('#tools_ellipse').show(ellipse_flyout_speed);
+		ellipse_flyout_speed = '';
 		// this prevents the 'image drag' behavior in Firefox
 		evt.preventDefault();
 	});

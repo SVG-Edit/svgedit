@@ -272,3 +272,37 @@ div.color_block {
 #svg_editor #copyright {
 	text-align: right;
 }
+
+#svg_source_editor {
+	display: none;
+}
+
+#svg_source_overlay {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	left: 0px;
+	bottom: 0px;
+	background-color: black;
+	opacity: 0.6;
+}
+
+#svg_source_container {
+	position: absolute;
+	top: 30px;
+	left: 30px;
+	right: 30px;
+	bottom: 30px;
+	background-color: #B0B0B0;
+	opacity: 1.0;
+	text-align: center;
+}
+
+#svg_source_textarea {
+	position: relative;
+	width: 95%;
+	top: 35px;
+	height: 90%;
+	padding: 5px;
+	font-size: 12px;
+}
