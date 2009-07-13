@@ -16,7 +16,8 @@ function svg_edit_setup() {
 		svgCanvas.setMode('select');
 	}
 
-	// used to make the flyouts stay ont he screen longer the very first time
+	// used to make the flyouts stay on the screen longer the very first time
+	var flyoutspeed = 1250;
 	var textBeingEntered = false;
 	var selectedElement = null;
 	var multiselected = false;
@@ -274,9 +275,10 @@ function svg_edit_setup() {
 	// - removes the tool_button_current class from whatever tool currently has it
 	// - hides any flyouts
 	// - adds the tool_button_current class to the button passed in
-	var toolButtonClick = function(button) {
+	var toolButtonClick = function(button, fadeFlyouts) {
 		if ($(button).hasClass('tool_button_disabled')) return false;
-		$('.tools_flyout').fadeOut();
+		var fadeFlyouts = fadeFlyouts || 'normal';
+		$('.tools_flyout').fadeOut(fadeFlyouts);
 		$('#styleoverrides').text('');
 		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 		$(button).addClass('tool_button_current');
@@ -305,7 +307,8 @@ function svg_edit_setup() {
 	};
 
 	var clickSquare = function(){
-		if (toolButtonClick('#tools_rect_show')) {
+		if (toolButtonClick('#tools_rect_show', flyoutspeed)) {
+			flyoutspeed = 'normal';
 			svgCanvas.setMode('square');
 		}
 		$('#tools_rect_show').attr('src', 'images/square.png');
@@ -326,7 +329,8 @@ function svg_edit_setup() {
 	};
 
 	var clickCircle = function(){
-		if (toolButtonClick('#tools_ellipse_show')) {
+		if (toolButtonClick('#tools_ellipse_show', flyoutspeed)) {
+			flyoutspeed = 'normal';
 			svgCanvas.setMode('circle');
 		}
 		$('#tools_ellipse_show').attr('src', 'images/circle.png');
