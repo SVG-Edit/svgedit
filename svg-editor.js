@@ -410,10 +410,8 @@ function svg_edit_setup() {
 			svgCanvas.redo();
 	};
 	
-	// TODO: properly size the text area during resize
-	// TODO: properly handle error conditions (error msg dialog)
-	// TODO: prevent @style showing up on the svg element
 	// TODO: create new button for Source Editor
+	// TODO: prevent creating an undo-able event if the source has not changed - how? -->
 	var showSourceEditor = function(){
 		if (editingsource) return;
 		editingsource = true;
@@ -426,8 +424,8 @@ function svg_edit_setup() {
 	
 	var properlySourceSizeTextArea = function(){
 		// TODO: remove magic numbers here
-		var height = ($(window).height() - 115)/(12*1.5);
-		$('#svg_source_textarea').attr('rows', height);
+		var height = ($(window).height() - 120)+'px';
+		$('#svg_source_textarea').css('height', height);
 	};
 	
 	var hideSourceEditor = function(){
