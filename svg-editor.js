@@ -410,11 +410,10 @@ function svg_edit_setup() {
 			svgCanvas.redo();
 	};
 	
-	// TODO: prevent 'u' from showing up in the textarea
 	// TODO: properly size the text area during resize
 	// TODO: properly handle error conditions (error msg dialog)
 	// TODO: prevent @style showing up on the svg element
-	// TODO: create new button or Source Editor
+	// TODO: create new button for Source Editor
 	var showSourceEditor = function(){
 		if (editingsource) return;
 		editingsource = true;
@@ -436,6 +435,9 @@ function svg_edit_setup() {
 		
 		if (svgCanvas.setSvgString($('#svg_source_textarea').val())) {
 			console.log('yo');
+		}
+		else {
+			alert('There were parsing errors in your SVG source.\nReverting back to original SVG source.');
 		}
 		$('#svg_source_editor').hide();
 		editingsource = false;
@@ -527,18 +529,7 @@ function svg_edit_setup() {
 	$(document).bind('keydown', {combi:'y', disableInInput: true}, clickRedo);
 	$(document).bind('keydown', {combi:'u', disableInInput: true}, function(evt){showSourceEditor();evt.preventDefault();});
 	$(document).bind('keydown', {combi:'esc', disableInInput: false}, hideSourceEditor);
-	// temporary binding to test setSvgString()
-	/* 
-	$(document).bind('keydown', {combi:'t', disableInInput: true}, function() {
-		if (svgCanvas.setSvgString(
-'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="foo" width="300" height="200"><bar><knuckle/><head/><rect width="200" height="100" fill="red" /></bar><circle cx="100" cy="100" r="40" fill="green" strike="blue"/><foo/></svg>')) {
-			updateContextPanel();
-			var dims = svgCanvas.getResolution();
-			changeResolution(dims[0],dims[1]);
 
-		}
-	});
-	*/
 	var colorPicker = function(elem) {
 		var oldbg = elem.css('background');
 		var color = elem.css('background-color');
@@ -684,7 +675,7 @@ function svg_edit_setup() {
 
 	function changeResolution(x,y) {
 		$('#resolution').val(x+'x'+y);
-		$('#svgroot').css( { 'width': x+'px', 'height': y+'px' } );
+//		$('#svgroot').css( { 'width': x+'px', 'height': y+'px' } );
 		$('#svgcanvas').css( { 'width': x+'px', 'height': y+'px' } );
 	}
 
