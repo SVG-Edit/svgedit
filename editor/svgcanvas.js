@@ -486,6 +486,7 @@ function SvgCanvas(c)
 		}
 		undoStack.push(cmd);
 		undoStackPointer = undoStack.length;
+		console.log(undoStack);
 	};
 
 // private functions
@@ -617,16 +618,26 @@ function SvgCanvas(c)
 				{
 					var child = childs.item(i);
 					if (child.id == "selectorParentGroup") continue;
-					if (child.nodeType == 1) { // element node
+					switch(child.nodeType) {
+					case 1: // element node
 						out.push("\n");
 						out.push(svgToString(childs.item(i), indent));
-					} else if (child.nodeType == 3) { // text node
+						break;
+					case 3: // text node
 						var str = child.nodeValue.replace(/^\s+|\s+$/g, "");
 						if (str != "") {
 							bOneLine = true;
 							out.push(str + "");
 						}
-					}
+						break;
+					case 8: // comment
+						out.push("\n");
+						out.push(new Array(indent+1).join(" "));
+						out.push("<!--");
+						out.push(child.data);
+						out.push("-->");
+						break;
+					} // switch on node type
 				}
 				indent--;
 				if (!bOneLine) {
