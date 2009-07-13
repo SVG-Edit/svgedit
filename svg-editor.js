@@ -370,7 +370,7 @@ function svg_edit_setup() {
 
 	var moveSelected = function(dx,dy) {
 		if (selectedElement != null || multiselected) {
-			svgCanvas.moveSelectedElement(dx,dy);
+			svgCanvas.moveSelectedElements(dx,dy);
 		}
 	};
 
@@ -408,6 +408,13 @@ function svg_edit_setup() {
 	var clickRedo = function(){
 		if (svgCanvas.getRedoStackSize() > 0)
 			svgCanvas.redo();
+	};
+	
+	var clickCopy = function(){
+		svgCanvas.copySelectedElements();
+	};
+	var clickPaste = function(){
+		svgCanvas.pasteElements();
 	};
 	
 	var showSourceEditor = function(){
@@ -465,6 +472,9 @@ function svg_edit_setup() {
 	$('#tool_move_bottom').click(moveToBottomSelected);
 	$('#tool_undo').click(clickUndo);
 	$('#tool_redo').click(clickRedo);
+	$('#tool_paste').click(clickPaste);
+	$('#tool_copy').click(clickCopy);
+	$('#tool_copy_multi').click(clickCopy);
 	// these two lines are required to make Opera work properly with the flyout mechanism
 	$('#tools_rect_show').click(clickSquare);
 	$('#tools_ellipse_show').click(clickCircle);
@@ -494,6 +504,15 @@ function svg_edit_setup() {
 	$('#tool_redo').mousedown(function(){ if (!$('#tool_redo').hasClass('tool_button_disabled')) $('#tool_redo').addClass('tool_button_current');});
 	$('#tool_redo').mouseup(function(){$('#tool_redo').removeClass('tool_button_current');});
 	$('#tool_redo').mouseout(function(){$('#tool_redo').removeClass('tool_button_current');});
+	$('#tool_paste').mousedown(function(){$('#tool_paste').addClass('tool_button_current');});
+	$('#tool_paste').mouseup(function(){$('#tool_paste').removeClass('tool_button_current');});
+	$('#tool_paste').mouseout(function(){$('#tool_paste').removeClass('tool_button_current');});
+	$('#tool_copy').mousedown(function(){$('#tool_copy').addClass('tool_button_current');});
+	$('#tool_copy').mouseup(function(){$('#tool_copy').removeClass('tool_button_current');});
+	$('#tool_copy').mouseout(function(){$('#tool_copy').removeClass('tool_button_current');});
+	$('#tool_copy_multi').mousedown(function(){$('#tool_copy').addClass('tool_button_current');});
+	$('#tool_copy_multi').mouseup(function(){$('#tool_copy').removeClass('tool_button_current');});
+	$('#tool_copy_multi').mouseout(function(){$('#tool_copy').removeClass('tool_button_current');});
 	$('#tool_move_top').mousedown(function(){$('#tool_move_top').addClass('tool_button_current');});
 	$('#tool_move_top').mouseup(function(){$('#tool_move_top').removeClass('tool_button_current');});
 	$('#tool_move_top').mouseout(function(){$('#tool_move_top').removeClass('tool_button_current');});
@@ -524,6 +543,8 @@ function svg_edit_setup() {
 	$(document).bind('keydown', {combi:'shift+z', disableInInput: true}, clickRedo);
 	$(document).bind('keydown', {combi:'y', disableInInput: true}, clickRedo);
 	$(document).bind('keydown', {combi:'u', disableInInput: true}, function(evt){showSourceEditor();evt.preventDefault();});
+	$(document).bind('keydown', {combi:'c', disableInInput: true}, clickCopy);
+	$(document).bind('keydown', {combi:'v', disableInInput: true}, clickPaste);
 	$(document).bind('keydown', {combi:'esc', disableInInput: false}, hideSourceEditor);
 
 	var colorPicker = function(elem) {
