@@ -11,7 +11,7 @@ var svgWhiteList = {
 	"ellipse": ["cx", "cy", "fill", "fill-opacity", "id", "stroke", "rx", "ry", "stroke-opacity", "stroke-width", "stroke-dasharray"],
 	"line": ["fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "x1", "x2", "y1", "y2"],
 	"path": ["d", "fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray"],
-	"rect": ["fill", "fill-opacity", "height", "id", "rx", "ry", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "width"],
+	"rect": ["fill", "fill-opacity", "height", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "width", "x", "y"],
 	"svg": ["id", "height", "width", "xmlns"],
 	"text": ["font-family", "font-size", "font-style", "font-weight", "id", "x", "y"],
 	};
@@ -501,9 +501,7 @@ function SvgCanvas(c)
 			obj_num++;
 			id = getId();
 		}
-		console.log(id);
-		return id;
-	
+		return id;	
 	};
 
 	var call = function(event, arg) {
@@ -620,7 +618,9 @@ function SvgCanvas(c)
 						out.push(svgToString(childs.item(i), indent));
 					} else if (child.nodeType == 3) { // text node
 						bOneLine = true;
-						out.push(child.nodeValue + "");
+						if (child.nodeValue != "") {
+							out.push(child.nodeValue + "");
+						}
 					}
 				}
 				indent--;
@@ -1338,6 +1338,7 @@ function SvgCanvas(c)
 	// FIXME: after parsing in the new file, how do we synchronize getId()?
 	this.setSvgString = function(xmlString) {
 		try {
+			console.log(xmlString);
 			// convert string into XML document
 			var newDoc = Utils.text2xml(xmlString);
 
