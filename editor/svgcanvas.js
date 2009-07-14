@@ -8,6 +8,7 @@ if(!window.console) {
 // this defines which elements and attributes that we support
 var svgWhiteList = {
 	"circle": ["cx", "cy", "fill", "fill-opacity", "id", "stroke", "r", "stroke-opacity", "stroke-width", "stroke-dasharray"],
+	"defs": [],
 	"ellipse": ["cx", "cy", "fill", "fill-opacity", "id", "stroke", "rx", "ry", "stroke-opacity", "stroke-width", "stroke-dasharray"],
 	"line": ["fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "x1", "x2", "y1", "y2"],
 	"path": ["d", "fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray"],
