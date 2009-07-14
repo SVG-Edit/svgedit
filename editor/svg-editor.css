@@ -191,6 +191,10 @@ div.color_block {
 	padding: 2px;
 }
 
+#svg_editor #paint_picker {
+	display: none;
+}
+
 #svg_editor #color_picker {
 	position: absolute;
 	display: none;
