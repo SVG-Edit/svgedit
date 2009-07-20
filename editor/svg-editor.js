@@ -581,6 +581,7 @@ function svg_edit_setup() {
 		}
 		var pos = elem.position();
 		picker = 'stroke';
+		console.log(color);
 		$('#color_picker').css({'left': pos.left - 140, 'bottom': 104 - pos.top}).jPicker({
 			images: { clientPath: "jpicker/images/" },
 			color: { active: color, alphaSupport: true }
@@ -672,6 +673,11 @@ function svg_edit_setup() {
 		evt.preventDefault();
 	});
 	$('#tools_rect').mouseleave(function(){$('#tools_rect').fadeOut();});
+
+	$('#tool_move_top').mousedown(function(evt){
+		$('#tools_stacking').show();
+		evt.preventDefault();
+	});
 
 	$('#tools_ellipse_show').mousedown(function(evt){
 		$('#tools_ellipse').show();
