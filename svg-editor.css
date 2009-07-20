@@ -205,34 +205,32 @@ div.color_block {
 	position: absolute;
 	display: none;
 	cursor: pointer;
-	float: left;
-	width: 300px;
 }
 
-#svg_editor #tool_square {
-	background: 2px 2px url('images/square.png') no-repeat;
+#svg_editor .tools_flyout_v {
+	position: absolute;
+	display: none;
+	cursor: pointer;
+	width: 30px;
 }
 
-#svg_editor #tool_rect {
-	background: 2px 2px url('images/rect.png') no-repeat;
-}
+#svg_editor #tool_square { background: 2px 2px url('images/square.png') no-repeat; }
+#svg_editor #tool_rect { background: 2px 2px url('images/rect.png') no-repeat; }
+#svg_editor #tool_fhrect { background: 2px 2px url('images/freehand-square.png') no-repeat; }
+#svg_editor #tool_circle { background: 2px 2px url('images/circle.png') no-repeat; }
+#svg_editor #tool_ellipse { background: 2px 2px url('images/ellipse.png') no-repeat; }
+#svg_editor #tool_fhellipse { background: 2px 2px url('images/freehand-circle.png') no-repeat; }
+#svg_editor #tool_stacktop { background: 2px 2px url('images/move_top.png') no-repeat; }
+#svg_editor #tool_stackbottom { background: 2px 2px url('images/move_bottom.png') no-repeat; }
+#svg_editor #tool_aligntop { background: 2px 2px url('images/align-vertical-top.png') no-repeat; }
+#svg_editor #tool_alignmiddle { background: 2px 2px url('images/align-vertical-middle.png') no-repeat; }
+#svg_editor #tool_alignbottom { background: 2px 2px url('images/align-vertical-bottom.png') no-repeat; }
+#svg_editor #tool_alignleft { background: 2px 2px url('images/align-horizontal-left.png') no-repeat; }
+#svg_editor #tool_aligncenter { background: 2px 2px url('images/align-horizontal-center.png') no-repeat; }
+#svg_editor #tool_alignright { background: 2px 2px url('images/align-horizontal-right.png') no-repeat; }
 
-#svg_editor #tool_fhrect {
-	background: 2px 2px url('images/freehand-square.png') no-repeat;
-}
-
-#svg_editor #tool_circle {
-	background: 2px 2px url('images/circle.png') no-repeat;
-}
-
-#svg_editor #tool_ellipse {
-	background: 2px 2px url('images/ellipse.png') no-repeat;
-}
-
-#svg_editor #tool_fhellipse {
-	background: 2px 2px url('images/freehand-circle.png') no-repeat;
-}
-
+/* TODO: figure out what more-specific selector causes me to write this atrocity and not
+         simply .tool_flyout_button */
 #svg_editor #tools_rect .tool_flyout_button, #svg_editor #tools_ellipse .tool_flyout_button {
 	float: left;
 	background-color: #E8E8E8;
