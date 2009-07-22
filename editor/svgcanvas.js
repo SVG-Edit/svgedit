@@ -11,8 +11,10 @@ var svgWhiteList = {
 	"defs": [],
 	"ellipse": ["cx", "cy", "fill", "fill-opacity", "id", "stroke", "rx", "ry", "stroke-opacity", "stroke-width", "stroke-dasharray"],
 	"line": ["fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "x1", "x2", "y1", "y2"],
+	"linearGradient": ["id", "x1", "x2", "y1", "y2"],
 	"path": ["d", "fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray"],
 	"rect": ["fill", "fill-opacity", "height", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "width", "x", "y"],
+	"stop": ["id", "stop-color", "stop-opacity"],
 	"svg": ["id", "height", "width", "xmlns"],
 	"text": ["font-family", "font-size", "font-style", "font-weight", "id", "x", "y"],
 	};
