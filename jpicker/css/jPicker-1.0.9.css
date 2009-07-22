@@ -1,0 +1,228 @@
+﻿/*[compact]*/
+.jPicker_Picker {
+  display: inline-block;
+  height: 24px; /* change this value if using a different sized color picker icon */
+  position: relative; /* make this element an absolute positioning container */
+  text-align: left; /* make the zero width children position to the left of container */
+  width: 25px; /* change this value if using a different sized color picker icon */
+}
+.jPicker_Color {
+  display: block;
+  height: 100%;
+  left: 0px;
+  position: absolute;
+  top: 0px;
+  width: 100%;
+}
+.jPicker_Icon {
+  background-repeat: no-repeat;
+  cursor: pointer;
+  display: block;
+  height: 100%;
+  left: 0px;
+  position: absolute;
+  top: 0px;
+  width: 100%;
+}
+.jPicker_Container {
+  display: none;
+  z-index: 10; /* make sure container draws above color picker icon in Firefox/Safari/Chrome/Opera/etc. -
+                  IE calculates z-index so this won't work - we will hide all color picker icons placed after the selected one in code when shown in IE */
+}
+.jPicker_table {
+  background-color: #efefef;
+  border: 1px outset #666;
+  font-family: Arial, Helvetica, Sans-Serif;
+  font-size: 12px;
+  height: 330px;
+  margin: 0px;
+  padding: 5px;
+  width: 550px;
+}
+.jPicker_table td {
+  margin: 0px;
+  padding: 0px;
+  vertical-align: top;
+}
+.jPicker_MoveBar {
+  background-color: #dddddd;
+  border: 1px outset #aaa;
+  cursor: move;
+  height: 12px;
+}
+.jPicker_Title {
+  font-size: 11px !important;
+  font-weight: bold;
+  margin: -2px 0px 0px 0px;
+  padding: 0px;
+  text-align: center;
+  width: 100%;
+}
+.jPicker_ColorMap {
+  border: 2px inset #eee;
+  cursor: crosshair;
+  height: 260px; /* IE 6 incorrectly draws border inside the width and height instead of outside - We will fix this to 256px later */
+  margin: 0px 5px 0px 5px;
+  overflow: hidden; /* hide the overdraw of the Color Map icon when at edge of viewing box */
+  padding: 0px;
+  position: relative; /* make this element an absolute positioning container */
+  width: 260px; /* IE 6 incorrectly draws border inside the width and height instead of outside - We will fix this to 256px later */
+}
+div[class="jPicker_ColorMap"] {
+  height: 256px; /* correct to 256px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
+  width: 256px; /* correct to 256px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
+}
+.jPicker_ColorMap_l1, .jPicker_ColorMap_l2, .jPicker_ColorMap_l3, .jPicker_ColorBar_l1, .jPicker_ColorBar_l2, .jPicker_ColorBar_l3, .jPicker_ColorBar_l4, .jPicker_ColorBar_l5, .jPicker_AlphaBar_l1, .jPicker_AlphaBar_l2 {
+  background-repeat: no-repeat;
+  display: block;
+  height: 100%;
+  left: 0px;
+  position: absolute;
+  top: 0px;
+  width: 100%;
+}
+.jPicker_ColorMap_l1 {
+  background-color: #000000;
+  background-image: none;
+}
+.jPicker_ColorMap_l2 {
+  background-color: transparent;
+}
+.jPicker_ColorMap_l3 {
+  background-repeat: repeat;
+}
+.jPicker_ColorMap_Arrow {
+  display: block;
+  position: absolute;
+}
+.jPicker_ColorBar {
+  border: 2px inset #eee;
+  cursor: n-resize;
+  height: 260px; /* IE 6 incorrectly draws border inside the width and height instead of outside - We will fix this to 256px later */
+  margin: 12px 10px 0px 5px;
+  padding: 0px;
+  position: relative;
+  width: 24px; /* IE 6 incorrectly draws border inside the width and height instead of outside - We will fix this to 20px later */
+}
+div[class="jPicker_ColorBar"] {
+  height: 256px; /* correct to 256px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
+  width: 20px; /* correct to 20px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
+}
+.jPicker_ColorBar_l1, .jPicker_ColorBar_l2, .jPicker_ColorBar_l3 {
+  background-color: transparent;
+  background-image: none;
+  background-repeat: repeat-x;
+}
+.jPicker_ColorBar_l4 {
+  background-color: transparent;
+  background-repeat: repeat-x;
+}
+.jPicker_ColorBar_l5 {
+  background-color: transparent;
+  background-repeat: repeat;
+}
+.jPicker_ColorBar_Arrow {
+  display: block;
+  left: -10px; /* (arrow width / 2) - (element width / 2) - position arrows' center in elements' center */
+  position: absolute;
+}
+.jPicker_AlphaBar {
+  border: 2px inset #eee;
+  cursor: e-resize;
+  display: none;
+  height: 24px; /* IE 6 incorrectly draws border inside the width and height instead of outside - We will fix this to 20px later */
+  margin: 10px 5px 4px 5px;
+  padding: 0px;
+  position: relative;
+  width: 260px; /* IE 6 incorrectly draws border inside the width and height instead of outside - We will fix this to 256px later */
+}
+div[class="jPicker_AlphaBar"] {
+  height: 20px; /* correct to 20px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
+  width: 256px; /* correct to 256px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
+}
+.jPicker_AlphaBar_Arrow {
+  display: block;
+  top: -10px; /* (arrow height / 2) - (element height / 2) - position arrows' center in elements' center */
+  position: absolute;
+}
+.jPicker_EnableAlpha {
+  text-align: left;
+}
+.jPicker_Preview {
+  font-size: x-small;
+  text-align: center;
+}
+.jPicker_Preview div {
+  border: 2px inset #eee;
+  height: 62px;
+  margin: 0px auto;
+  padding: 0px;
+  width: 62px;
+}
+.jPicker_Preview div span {
+  border: 1px solid #000;
+  display: block;
+  height: 30px;
+  margin: 0px auto;
+  padding: 0px;
+  width: 60px;
+}
+.jPicker_Preview div span.jPicker_Active {
+  border-bottom-width: 0px;
+}
+.jPicker_Preview div span.jPicker_Current {
+  border-top-width: 0px;
+  cursor: pointer;
+}
+.jPicker_OkCancel {
+  text-align: center;
+  width: 120px;
+}
+.jPicker_OkCancel input {
+  width: 100px;
+}
+.jPicker_OkCancel input.jPicker_Ok {
+  margin: 12px 0px 5px 0px;
+}
+.jPicker_Spacer {
+  height: 10px;
+}
+.jPicker_HueText, .jPicker_SaturationText, .jPicker_BrightnessText, .jPicker_RedText, .jPicker_GreenText, .jPicker_BlueText, .jPicker_AlphaText {
+  background-color: #fff;
+  border: 1px inset #aaa;
+  margin: 0px 0px 0px 5px;
+  width: 30px;
+}
+.jPicker_EnterHex {
+  text-align: right;
+}
+.jPicker_HexText {
+  background-color: #fff;
+  border: 1px inset #aaa;
+  margin: 0px 19px 0px 5px;
+  width: 50px;
+}
+td.jPicker_OpacityCol {
+  padding-top: 12px;
+  text-indent: -8px;
+}
+td.jPicker_OpacityCol * {
+  display: none;
+}
+td.jPicker_HexCol {
+  text-align: left;
+}
+.jPicker_Grid {
+  text-align: center;
+}
+.jPicker_QuickColor {
+  border: 1px inset #aaa;
+  cursor: pointer;
+  display: block;
+  float: left;
+  height: 12px;
+  line-height: 12px;
+  margin: 2px 3px 1px 3px;
+  padding: 0px;
+  width: 12px;
+}
