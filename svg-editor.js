@@ -581,7 +581,6 @@ function svg_edit_setup() {
 		}
 		var pos = elem.position();
 		picker = 'stroke';
-		console.log(color);
 		$('#color_picker').css({'left': pos.left - 140, 'bottom': 104 - pos.top}).jPicker({
 			images: { clientPath: "jpicker/images/" },
 			color: { active: color, alphaSupport: true }
