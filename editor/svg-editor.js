@@ -580,8 +580,9 @@ function svg_edit_setup() {
 			}
 		}
 		var pos = elem.position();
-		picker = 'stroke';
+		var picker = elem.attr('id') == 'stroke_color' ? 'stroke' : 'fill';
 		$('#color_picker').css({'left': pos.left - 140, 'bottom': 104 - pos.top}).jPicker({
+			window: { title: "Choose the " + picker + " color and opacity"},
 			images: { clientPath: "jpicker/images/" },
 			color: { active: color, alphaSupport: true }
 		}, function(color){
