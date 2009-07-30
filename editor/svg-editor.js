@@ -22,6 +22,9 @@ function svg_edit_setup() {
 	var selectedElement = null;
 	var multiselected = false;
 	var editingsource = false;
+	
+	var fillPaint = new $.jGraduate.Paint();
+	var strokePaint = new $.jGraduate.Paint();
 
 	// called when we've selected a different element
 	var selectedChanged = function(window,elems) {
@@ -81,21 +84,27 @@ function svg_edit_setup() {
 
 			// update fill color
 			var fillColor = selectedElement.getAttribute("fill");
+			// TODO: get a Paint from this and store in fillPaint ?
+			// TODO: call setFillPaint() ?
 			svgCanvas.setFillColor(fillColor);
 			if (fillColor == "none") {
-				fillColor = 'url(\'images/none.png\')';
+				fillColor = "none";
 				fillOpacity = "N/A";
 			}
-			$('#fill_color').css('background', fillColor);
+			// update the rect inside #fill_color
+			document.getElementById("gradbox_fill").parentNode.firstChild.setAttribute("fill", fillColor);
 
 			// update stroke color
 			var strokeColor = selectedElement.getAttribute("stroke");
+			// TODO: get a Paint from this and store in strokePaint ?
+			// TODO: call setStrokePaint() ?
 			svgCanvas.setStrokeColor(strokeColor);
 			if (strokeColor == null || strokeColor == "" || strokeColor == "none") {
-				strokeColor = 'url(\'images/none.png\')';
 				strokeOpacity = "N/A";
+				strokeColor = "none";
 			}
-			$('#stroke_color').css('background', strokeColor);			
+			// update the rect inside #fill_color
+			document.getElementById("gradbox_stroke").parentNode.firstChild.setAttribute("fill", strokeColor);
 			
 			$('#fill_opacity').html(fillOpacity);
 			$('#stroke_opacity').html(strokeOpacity);
@@ -200,9 +209,9 @@ function svg_edit_setup() {
 	svgCanvas.bind("selected", selectedChanged);
 	svgCanvas.bind("changed", elementChanged);
 
-	var str = '<div class="palette_item" style="background: url(\'images/none.png\');"></div>'
+	var str = '<div class="palette_item" style="background-image: url(\'images/none.png\');" data-rgb="none"></div>'
 	$.each(palette, function(i,item){
-		str += '<div class="palette_item" style="background: ' + item + ';"></div>';
+		str += '<div class="palette_item" style="background-color: ' + item + ';" data-rgb="' + item + '"></div>';
 	});
 	$('#palette').append(str);
 
@@ -244,17 +253,19 @@ function svg_edit_setup() {
 	});
 
 	$('.palette_item').click(function(evt){
+		var picker = (evt.shiftKey ? "stroke" : "fill");
 		var id = (evt.shiftKey ? '#stroke_' : '#fill_');
-		color = $(this).css('background-color');
+		var color = $(this).attr('data-rgb');
+		var rectbox = document.getElementById("gradbox_"+picker).parentNode.firstChild;
+
 		// Webkit-based browsers returned 'initial' here for no stroke
 		if (color == 'transparent' || color == 'initial') {
 			color = 'none';
-			$(id + "color").css('background', 'url(\'images/none.png\')');
 			$(id + "opacity").html("N/A");
-		} else {
-			$(id + "color").css('background', color);
 		}
-		if (evt.shiftKey) {
+		rectbox.setAttribute("fill", color);
+		
+		if (evt.shiftKey) {			
 			svgCanvas.setStrokeColor(color);
 			if (color != 'none' && $("#stroke_opacity").html() == 'N/A') {
 				svgCanvas.setStrokeOpacity(1.0);
@@ -550,18 +561,16 @@ function svg_edit_setup() {
 	$(document).bind('keydown', {combi:'esc', disableInInput: false}, hideSourceEditor);
 
 	var colorPicker = function(elem) {
-		var oldbg = elem.css('background');
-		var color = elem.css('background-color');
-		var oldopacity = "100 %";
-		if (elem.attr('id') == 'stroke_color') {
-			oldopacity = $('#stroke_opacity').html();
-		}
-		if (elem.attr('id') == 'fill_color') {
-			oldopacity = $('#fill_opacity').html();
-		}
+		var picker = elem.attr('id') == 'stroke_color' ? 'stroke' : 'fill';
+		var oldopacity = (picker == 'stroke' ? $('#stroke_opacity').html() : $('#fill_opacity').html());
+
+		var paint = (picker == 'stroke' ? strokePaint : fillPaint);
+		var title = (picker == 'stroke' ? 'Pick a Stroke Paint and Opacity' : 'Pick a Fill Paint and Opacity');
+		var oldPaint = new $.jGraduate.Paint(paint);
 		var was_none = false;
-		if (color == 'transparent' || color == 'initial') {
-			color = new $.jPicker.Color({ hex: 'ffffff', a: 100 });
+		
+		if (paint.solidColor == null && paint.linearGradient == null) {
+			paint = new $.jGraduate.Paint();
 			was_none = true;
 		} else {
 			var alpha;
@@ -570,53 +579,45 @@ function svg_edit_setup() {
 			} else {
 				alpha = oldopacity.split(' ')[0];
 			}
-			if (color.length == 7 && color[0] == '#') { // #hheexx notation
-				color = new $.jPicker.Color( { hex: color.substring(1,7) , a: alpha } );
-			} else if (color.substring(0,4) == 'rgb(' && color[color.length-1] == ')') { // rgb(r,g,b) notation
-				var rgb = color.substring(4,color.length-1).split(',');
-				color = new $.jPicker.Color({ r: rgb[0], g: rgb[1], b: rgb[2], a: alpha });
-			} else {
-				color = new $.jPicker.Color({ hex: 'ffffff', a: alpha });
-			}
 		}
 		var pos = elem.position();
-		var picker = elem.attr('id') == 'stroke_color' ? 'stroke' : 'fill';
-		$('#color_picker').css({'left': pos.left - 140, 'bottom': 104 - pos.top}).jPicker({
-			window: { title: "Choose the " + picker + " color and opacity"},
-			images: { clientPath: "jpicker/images/" },
-			color: { active: color, alphaSupport: true }
-		}, function(color){
-			elem.css('background', '#' + this.settings.color.active.hex);
-			if (elem.attr('id') == 'stroke_color') {
-				svgCanvas.setStrokeColor('#' + this.settings.color.active.hex);
-				svgCanvas.setStrokeOpacity(this.settings.color.active.a/100);
-				$('#stroke_opacity').html(this.settings.color.active.a+" %");
-			} else if (elem.attr('id') == 'fill_color') {
-				svgCanvas.setFillColor('#' + this.settings.color.active.hex);
-				svgCanvas.setFillOpacity(this.settings.color.active.a/100);
-				$('#fill_opacity').html(this.settings.color.active.a+" %");
-			}
-			$('#color_picker').hide();
-		}
-		, null
-		, function(){
-			elem.css('background', oldbg);
-			if (elem.attr('id') == 'stroke_color') {
-				$('#stroke_opacity').html(oldopacity);
-			} else if (elem.attr('id') == 'fill_color') {
-				$('#fill_opacity').html(oldopacity);
-			}
-			if (was_none) {
-				if (elem.attr('id') == 'stroke_color') {
-					svgCanvas.setStrokeColor('none');
-					$('#stroke_opacity').html('N/A');
-				} else if (elem.attr('id') == 'fill_color') {
-					svgCanvas.setFillColor('none');
-					$('#fill_opacity').html('N/A');
+		$('#color_picker').css({'left': pos.left - 140, 'bottom': 124 - pos.top}).jGraduate(
+			{ 
+				paint: paint,
+				window: { pickerTitle: title },
+				images: { clientPath: "jGraduate/images/" },
+			},
+			function(p) {
+				paint.solidColor = p.solidColor;
+				paint.linearGradient.grad = p.linearGradient.grad;
+				paint.linearGradient.a = p.linearGradient.a;
+				
+				var oldgrad = document.getElementById("gradbox_"+picker);
+				var svgbox = oldgrad.parentNode;
+				var rectbox = svgbox.firstChild;
+				
+				if (paint.linearGradient.grad) {
+					svgbox.removeChild(oldgrad);
+					var newgrad = svgbox.appendChild(document.importNode(paint.linearGradient.grad, true));
+					newgrad.id = "gradbox_"+picker;
+					rectbox.setAttribute("fill", "url(#gradbox_" + picker + ")");
 				}
-			}
-			$('#color_picker').hide();
-		});
+				else {
+					rectbox.setAttribute("fill", "#" + paint.solidColor.hex);
+				}
+
+				if (picker == 'stroke') {
+					svgCanvas.setStrokePaint(paint);
+				}
+				else {
+					svgCanvas.setFillPaint(paint);
+				}
+				
+				$('#color_picker').hide();
+			},
+			function(p) {
+				$('#color_picker').hide();
+			});
 	}
 
 	function updateToolButtonState() {
@@ -657,6 +658,22 @@ function svg_edit_setup() {
 		}
 	}
 
+	// set up gradients to be used for the buttons
+	var svgdocbox = new DOMParser().parseFromString(
+		'<svg xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="none"/>\
+		<linearGradient id="gradbox_">\
+				<stop stop-color="#000" offset="0.0"/>\
+				<stop stop-color="#FF0000" offset="1.0"/>\
+		</linearGradient></svg>', 'text/xml');
+
+	var boxgrad = svgdocbox.getElementById('gradbox_');
+	boxgrad.id = 'gradbox_fill';
+	$('#fill_color').append( document.importNode(svgdocbox.documentElement,true) );
+	
+	boxgrad.id = 'gradbox_stroke';	
+	$(svgdocbox.documentElement.firstChild).attr('fill', '#000');
+	$('#stroke_color').append( document.importNode(svgdocbox.documentElement,true) );
+		
 	$('#fill_color').click(function(){
 		colorPicker($(this));
 		updateToolButtonState();
