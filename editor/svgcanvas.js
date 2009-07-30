@@ -14,7 +14,7 @@ var svgWhiteList = {
 	"linearGradient": ["id", "x1", "x2", "y1", "y2"],
 	"path": ["d", "fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray"],
 	"rect": ["fill", "fill-opacity", "height", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "width", "x", "y"],
-	"stop": ["id", "stop-color", "stop-opacity"],
+	"stop": ["id", "offset", "stop-color", "stop-opacity"],
 	"svg": ["id", "height", "width", "xmlns"],
 	"text": ["font-family", "font-size", "font-style", "font-weight", "id", "x", "y"],
 	};
@@ -239,6 +239,7 @@ function SvgCanvas(c)
 		}
 	
 		this.showGrips = function(show) {
+			// TODO: use suspendRedraw() here
 			for (dir in this.selectorGrips) {
 				this.selectorGrips[dir].setAttribute("display", show ? "inline" : "none");
 			}
@@ -258,6 +259,7 @@ function SvgCanvas(c)
 			}
 			var bbox = bbox || this.selectedElement.getBBox();
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
+			// TODO: use suspendRedraw() here
 			selectedBox.x.baseVal.value = l;
 			selectedBox.y.baseVal.value = t;
 			selectedBox.width.baseVal.value = w;
@@ -414,6 +416,8 @@ function SvgCanvas(c)
 	var current_resize_mode = "none";
 	var current_fill = "none";
 	var current_stroke = "black";
+	var current_stroke_paint = null;
+	var current_fill_paint = null;
 	var current_stroke_width = 1;
 	var current_stroke_style = "none";
 	var current_opacity = 1;
@@ -464,10 +468,17 @@ function SvgCanvas(c)
 			var nodes = svgroot.childNodes;
 			var i = svgroot.childNodes.length;
 			while (i--) {
-				if (nodes[i].id != "selectorParentGroup" &&
-					Utils.rectsIntersect(rubberBBox, nodes[i].getBBox())) 
-				{
-					resultList.push(nodes[i]);
+				// need to do this since the defs has no bbox and causes an exception
+				// to be thrown in Mozilla
+				try {
+//					if (nodes[i].tagName == "defs") continue;				
+					if (nodes[i].id != "selectorParentGroup" &&
+						Utils.rectsIntersect(rubberBBox, nodes[i].getBBox())) 
+					{
+						resultList.push(nodes[i]);
+					}
+				} catch(e) {
+					// do nothing, this element did not have a bbox
 				}
 			}
 		}
@@ -514,14 +525,17 @@ function SvgCanvas(c)
 	};
 
 	var assignAttributes = function(node, attrs) {
+		var handle = svgroot.suspendRedraw(60);
 		for (i in attrs) {
 			node.setAttributeNS(null, i, attrs[i]);
 		}
+		svgroot.unsuspendRedraw(handle);
 	};
 
 	// remove unneeded attributes
 	// makes resulting SVG smaller
 	var cleanupElement = function(element) {
+		var handle = svgroot.suspendRedraw(60);
 		if (element.getAttribute('fill-opacity') == '1')
 			element.removeAttribute('fill-opacity');
 		if (element.getAttribute('opacity') == '1')
@@ -538,6 +552,7 @@ function SvgCanvas(c)
 			element.removeAttribute('rx')
 		if (element.getAttribute('ry') == '0')
 			element.removeAttribute('ry')
+		svgroot.unsuspendRedraw(handle);
 	};
 
 	var addSvgElementFromJson = function(data) {
@@ -644,7 +659,7 @@ function SvgCanvas(c)
 				indent--;
 				if (!bOneLine) {
 					out.push("\n");
-					for (i=0; i<indent; i++) out += " ";
+					for (i=0; i<indent; i++) out.push(" ");
 				}
 				out.push("</"); out.push(elem.nodeName); out.push(">");
 			} else {
@@ -732,46 +747,56 @@ function SvgCanvas(c)
 			changes["y1"] = selected.y1.baseVal.value;
 			changes["x2"] = selected.x2.baseVal.value;
 			changes["y2"] = selected.y2.baseVal.value;
+			var handle = svgroot.suspendRedraw(1000);			
 			selected.x1.baseVal.value = remapx(selected.x1.baseVal.value);
 			selected.y1.baseVal.value = remapy(selected.y1.baseVal.value);
 			selected.x2.baseVal.value = remapx(selected.x2.baseVal.value);
 			selected.y2.baseVal.value = remapy(selected.y2.baseVal.value);
+			svgroot.unsuspendRedraw(handle);			
 			break;
 		case "circle":
 			changes["cx"] = selected.cx.baseVal.value;
 			changes["cy"] = selected.cy.baseVal.value;
 			changes["r"] = selected.r.baseVal.value;
+			var handle = svgroot.suspendRedraw(1000);
 			selected.cx.baseVal.value = remapx(selected.cx.baseVal.value);
 			selected.cy.baseVal.value = remapy(selected.cy.baseVal.value);
 			// take the minimum of the new selected box's dimensions for the new circle radius
 			selected.r.baseVal.value = Math.min(selectedBBox.width/2,selectedBBox.height/2);
+			svgroot.unsuspendRedraw(handle);			
 			break;
 		case "ellipse":
 			changes["cx"] = selected.cx.baseVal.value;
 			changes["cy"] = selected.cy.baseVal.value;
 			changes["rx"] = selected.rx.baseVal.value;
 			changes["ry"] = selected.ry.baseVal.value;
+			var handle = svgroot.suspendRedraw(1000);
 			selected.cx.baseVal.value = remapx(selected.cx.baseVal.value);
 			selected.cy.baseVal.value = remapy(selected.cy.baseVal.value);
 			selected.rx.baseVal.value = scalew(selected.rx.baseVal.value);
 			selected.ry.baseVal.value = scaleh(selected.ry.baseVal.value);
+			svgroot.unsuspendRedraw(handle);			
 			break;
 		case "text":
 			// cannot use x.baseVal.value here because x is a SVGLengthList
 			changes["x"] = selected.getAttribute("x");
 			changes["y"] = selected.getAttribute("y");
+			var handle = svgroot.suspendRedraw(1000);
 			selected.setAttribute("x", remapx(selected.getAttribute("x")));
 			selected.setAttribute("y", remapy(selected.getAttribute("y")));
+			svgroot.unsuspendRedraw(handle);			
 			break;
 		case "rect":
 			changes["x"] = selected.x.baseVal.value;
 			changes["y"] = selected.y.baseVal.value;
 			changes["width"] = selected.width.baseVal.value;
 			changes["height"] = selected.height.baseVal.value;
+			var handle = svgroot.suspendRedraw(1000);
 			selected.x.baseVal.value = remapx(selected.x.baseVal.value);
 			selected.y.baseVal.value = remapy(selected.y.baseVal.value);
 			selected.width.baseVal.value = scalew(selected.width.baseVal.value);
 			selected.height.baseVal.value = scaleh(selected.height.baseVal.value);
+			svgroot.unsuspendRedraw(handle);			
 			break;
 		default: // rect
 			console.log("Unknown shape type: " + selected.tagName);
@@ -1143,25 +1168,33 @@ function SvgCanvas(c)
 				selectorManager.requestSelector(selected).resize(selectedBBox);
 				break;
 			case "text":
+				var handle = svgroot.suspendRedraw(1000);
 				shape.setAttribute("x", x);
 				shape.setAttribute("y", y);
+				svgroot.unsuspendRedraw(handle);			
 				break;
 			case "line":
+				var handle = svgroot.suspendRedraw(1000);
 				shape.setAttributeNS(null, "x2", x);
 				shape.setAttributeNS(null, "y2", y);
+				svgroot.unsuspendRedraw(handle);			
 				break;
 			case "square":
 				var size = Math.max( Math.abs(x - start_x), Math.abs(y - start_y) );
+				var handle = svgroot.suspendRedraw(1000);
 				shape.setAttributeNS(null, "width", size);
 				shape.setAttributeNS(null, "height", size);
 				shape.setAttributeNS(null, "x", start_x < x ? start_x : start_x - size);
 				shape.setAttributeNS(null, "y", start_y < y ? start_y : start_y - size);
+				svgroot.unsuspendRedraw(handle);			
 				break;
 			case "rect":
+				var handle = svgroot.suspendRedraw(1000);
 				shape.setAttributeNS(null, "x", Math.min(start_x,x));
 				shape.setAttributeNS(null, "y", Math.min(start_y,y));
 				shape.setAttributeNS(null, "width", Math.abs(x-start_x));
 				shape.setAttributeNS(null, "height", Math.abs(y-start_y));
+				svgroot.unsuspendRedraw(handle);			
 				break;
 			case "circle":
 				var cx = shape.getAttributeNS(null, "cx");
@@ -1172,8 +1205,10 @@ function SvgCanvas(c)
 			case "ellipse":
 				var cx = shape.getAttributeNS(null, "cx");
 				var cy = shape.getAttributeNS(null, "cy");
+				var handle = svgroot.suspendRedraw(1000);
 				shape.setAttributeNS(null, "rx", Math.abs(x - cx) );
 				shape.setAttributeNS(null, "ry", Math.abs(y - cy) );
+				svgroot.unsuspendRedraw(handle);			
 				break;
 			case "fhellipse":
 			case "fhrect":
@@ -1406,8 +1441,11 @@ function SvgCanvas(c)
 	this.setResolution = function(x, y) {
 		var w = svgroot.getAttribute("width"),
 			h = svgroot.getAttribute("height");
+
+		var handle = svgroot.suspendRedraw(1000);			
 		svgroot.setAttribute("width", x);
 		svgroot.setAttribute("height", y);
+		svgroot.unsuspendRedraw(handle);			
 		addCommandToHistory(new ChangeElementCommand(svgroot, {"width":w,"height":h}, "resolution"));
 		call("changed", [svgroot]);
 	};
@@ -1446,6 +1484,120 @@ function SvgCanvas(c)
 		}
 		if (elems.length > 0) 
 			this.changeSelectedAttribute("fill", val, elems);
+	};
+
+	var findDefs = function() {
+		var defs = svgroot.getElementsByTagNameNS(svgns, "defs");
+		if (defs.length > 0) {
+			defs = defs[0];
+		}
+		else {
+			defs = svgroot.insertBefore( svgdoc.createElementNS(svgns, "defs" ), svgroot.firstChild);
+		}
+		return defs;
+	};
+	
+	var findDuplicateGradient = function(grad) {
+		var defs = findDefs();
+		var existing_grads = defs.getElementsByTagNameNS(svgns, "linearGradient");
+		var i = existing_grads.length;
+		while (i--) {
+			var og = existing_grads.item(i);
+			if (grad.getAttribute('x1') != og.getAttribute('x1') ||
+				grad.getAttribute('y1') != og.getAttribute('y1') ||
+				grad.getAttribute('x2') != og.getAttribute('x2') ||
+				grad.getAttribute('y2') != og.getAttribute('y2')) 
+			{
+				continue;
+			}
+				
+			// else could be a duplicate, iterate through stops
+			var stops = grad.getElementsByTagNameNS(svgns, "stop");
+			var ostops = og.getElementsByTagNameNS(svgns, "stop");
+			
+			if (stops.length != ostops.length) {
+				continue;
+			}
+				
+			var j = stops.length;
+			while(j--) {
+				var stop = stops.item(j);
+				var ostop = ostops.item(j);
+					
+				if (stop.getAttribute('offset') != ostop.getAttribute('offset') ||
+					stop.getAttribute('stop-opacity') != ostop.getAttribute('stop-opacity') ||
+					stop.getAttribute('stop-color') != ostop.getAttribute('stop-color')) 
+				{
+					break;
+				}
+			}
+				
+			if (j == -1) {
+				return og;
+			}
+		} // for each gradient in defs
+		
+		return null;
+	};
+	
+	// TODO: what to do about the opacity in these functions?
+	
+	this.setStrokePaint = function(p) {
+		current_stroke_paint = p;
+		if (p.solidColor) {
+			this.setStrokeColor("#"+p.solidColor.hex);
+		}
+		else if(p.linearGradient.grad) {
+			// find out if there is a duplicate gradient already in the defs
+			var grad = p.linearGradient.grad;
+			var duplicate_grad = findDuplicateGradient(grad);
+			var defs = findDefs();
+			
+			// no duplicate found, so import gradient into defs
+			if (!duplicate_grad) {
+				grad = defs.appendChild( svgdoc.importNode(grad, true) );
+				
+				// get next id and set it on the grad
+				grad.id = getNextId();
+			}
+			else { // use existing gradient
+				grad = duplicate_grad;
+			}
+			
+			this.setStrokeColor("url(#" + grad.id + ")");
+		}
+		else {
+//			console.log("none!");
+		}
+	};
+
+	this.setFillPaint = function(p) {
+		current_fill_paint = p;
+		if (p.solidColor) {
+			this.setFillColor("#"+p.solidColor.hex);
+		}
+		else if(p.linearGradient.grad) {
+			// find out if there is a duplicate gradient already in the defs
+			var grad = p.linearGradient.grad;
+			var duplicate_grad = findDuplicateGradient(grad);
+			var defs = findDefs();
+			
+			// no duplicate found, so import gradient into defs
+			if (!duplicate_grad) {
+				grad = defs.appendChild( svgdoc.importNode(grad, true) );
+				
+				// get next id and set it on the grad
+				grad.id = getNextId();
+			}
+			else { // use existing gradient
+				grad = duplicate_grad;
+			}
+			
+			this.setFillColor("url(#" + grad.id + ")");
+		}
+		else {
+//			console.log("none!");
+		}
 	};
 
 	this.getStrokeWidth = function() {
@@ -1608,6 +1760,7 @@ function SvgCanvas(c)
 		var elems = elems || selectedElements;
 		var batchCmd = new BatchCommand("Change " + attr);
 		var i = elems.length;
+		var handle = svgroot.suspendRedraw(1000);
 		while(i--) {
 			var elem = elems[i];
 			if (elem == null) continue;
@@ -1623,6 +1776,7 @@ function SvgCanvas(c)
 				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes, attr));
 			}
 		}
+		svgroot.unsuspendRedraw(handle);
 		if (!batchCmd.isEmpty()) { 
 			addCommandToHistory(batchCmd);
 			call("changed", elems);
@@ -1675,7 +1829,11 @@ function SvgCanvas(c)
 			var oldParent = t.parentNode;
 			var oldNextSibling = t.nextSibling;
 			if (oldNextSibling == selectorManager.selectorParentGroup) oldNextSibling = null;
-			t = t.parentNode.insertBefore(t, t.parentNode.firstChild);
+			var firstChild = t.parentNode.firstChild;
+			if (firstChild.tagName == 'defs') {
+				firstChild = firstChild.nextSibling;
+			}
+			t = t.parentNode.insertBefore(t, firstChild);
 			addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, "bottom"));
 		}
 	};
