@@ -585,7 +585,7 @@ function svg_edit_setup() {
 			{ 
 				paint: paint,
 				window: { pickerTitle: title },
-				images: { clientPath: "jGraduate/images/" },
+				images: { clientPath: "jgraduate/images/" },
 			},
 			function(p) {
 				paint.solidColor = p.solidColor;
