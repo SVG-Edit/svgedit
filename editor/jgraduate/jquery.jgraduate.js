@@ -18,13 +18,18 @@ where options is an object literal:
 	}
  
 - the Paint object is:
-	{
-		// object describing the color picked used by jPicker
-		solidColor: { hex, },
-		// DOM node for the linear gradient 
-		linearGradient: { grad, a, 
+	Paint {
+		type: String, // one of "none", "solidColor", "linearGradient", "radialGradient"
+		alpha: Number representing opacity (0-100),
+		solidColor: String representing #RRGGBB hex of color,
+		linearGradient: object of interface SVGLinearGradientElement,
 	}
-- only one of solidColor and linearGradient must be non-null
+
+$.jGraduate.Paint() -> constructs a 'none' color
+$.jGraduate.Paint({copy: o}) -> creates a copy of the paint o
+$.jGraduate.Paint({hex: "#rrggbb"}) -> creates a solid color paint with hex = "#rrggbb"
+$.jGraduate.Paint({linearGradient: o, a: 50}) -> creates a linear gradient paint with opacity=0.5
+$.jGraduate.Paint({hex: "#rrggbb", linearGradient: o}) -> throws an exception?
 
 - picker accepts the following object as input:
 	{
@@ -46,21 +51,44 @@ if(!window.console) {
 }
 $.jGraduate = { 
 	Paint:
-		function(copy) {
-    		if (copy) {
-    			if (copy.solidColor) 
-    				this.solidColor = new $.jPicker.Color({ hex: copy.solidColor.hex, 
-    													a: copy.solidColor.a });
-
-				// FIXME: linearGradient can be an object, but .grad can still be null
-	    		if (copy.linearGradient)
-	    			// Opera throws NOT_SUPPORTED_ERROR if the cloneNode(null), the other browsers do not
-    				this.linearGradient = { grad: copy.linearGradient.grad ? document.cloneNode(copy.linearGradient.grad, true) : null, 
-    										a: copy.linearGradient.a };
+		function(opt) {
+			var options = opt || {};
+			this.alpha = options.alpha || 100;
+			// copy paint object
+    		if (options.copy) {
+    			this.type = options.copy.type;
+    			this.alpha = options.copy.alpha;
+    			switch(this.type) {
+    				case "none":
+    					this.solidColor = null;
+    					this.linearGradient = null;
+    					break;
+    				case "solidColor":
+    					this.solidColor = options.copy.solidColor;
+    					this.linearGradient = null;
+    					break;
+    				case "linearGradient":
+    					this.solidColor = null;
+    					this.linearGradient = options.copy.linearGradient.cloneNode(true);
+    					break;
+    			}
     		}
+    		// create linear gradient paint
+    		else if (options.linearGradient) {
+    			this.type = "linearGradient";
+    			this.solidColor = null;
+    			this.linearGradient = options.linearGradient.cloneNode(true);
+    		}
+    		// create solid color paint
+    		else if (options.solidColor) {
+    			this.type = "solidColor";
+    			this.solidColor = options.solidColor;
+    		}
+    		// create empty paint
 	    	else {
-    			this.solidColor = new $.jPicker.Color({ hex: '000000', a: 100 });
-    			this.linearGradient = { grad: null, a: 100 };
+	    		this.type = "none";
+    			this.solidColor = null;
+    			this.linearGradient = null;
 	    	}
 		}
 };
@@ -100,31 +128,19 @@ jQuery.fn.jGraduate =
 
             $.extend(true, $this, // public properties, methods, and callbacks
               {
-                paint: $settings.paint,
+              	// make a copy of the incoming paint
+                paint: new $.jGraduate.Paint({copy: $settings.paint}),
                 okCallback: $.isFunction($arguments[1]) && $arguments[1] || null,
                 cancelCallback: $.isFunction($arguments[2]) && $arguments[2] || null,
               });
 
-			var mode = "solidColor",
-				pos = $this.position(),
+			var pos = $this.position(),
 				color = null;
-			
-			if ($this.paint == null) {
-				$this.paint = { solidColor: new $.jPicker.Color({ hex: 'ffffff', a: 100 }), 
-						  		linearGradient: { grad: null, a: 100 } };
+
+			if ($this.paint.type == "none") {
+				$this.paint = $.jGraduate.Paint({solidColor: 'ffffff'});
 			}
 
-			if ($this.paint.linearGradient.grad != null) {
-				mode = "linearGradient";
-				$this.paint.solidColor = new $.jPicker.Color({ hex: 'ffffff', a: 100 });
-			}
-			else if ($this.paint.solidColor != null) {
-				$this.paint.linearGradient = { grad: null, a: 100 };
-			}
-			else {
-				return null;
-			}
-			
             $this.addClass('jGraduate_Picker');
             $this.html('<ul class="jGraduate_tabs">' +
             				'<li class="jGraduate_tab_color jGraduate_tab_current">Solid Color</li>' +
@@ -190,11 +206,12 @@ jQuery.fn.jGraduate =
             svg.setAttribute('height', MAX);
 			svg.setAttribute("xmlns", ns.svg);
 			
-			if ($this.paint.linearGradient.grad) {
-				$this.paint.linearGradient.grad = svg.appendChild( document.importNode($this.paint.linearGradient.grad, true) );
-				$this.paint.linearGradient.grad.id = id+'_jgraduate_grad';
+			// if we are sent a gradient, import it 
+			if ($this.paint.type == "linearGradient") {
+				$this.paint.linearGradient.id = id+'_jgraduate_grad';
+				$this.paint.linearGradient = svg.appendChild(document.importNode($this.paint.linearGradient, true));
 			}
-			else {
+			else { // we create a gradient
 				var grad = svg.appendChild(document.createElementNS(ns.svg, 'linearGradient'));
 				grad.id = id+'_jgraduate_grad';
 				grad.setAttribute('x1','0.0');
@@ -208,21 +225,21 @@ jQuery.fn.jGraduate =
 
 				var end = grad.appendChild(document.createElementNS(ns.svg, 'stop'));
 				end.setAttribute('offset', '1.0');
-				end.setAttribute('stop-color', '#ff0');
+				end.setAttribute('stop-color', '#ffff00');
 			
-				$this.paint.linearGradient.grad = grad;
+				$this.paint.linearGradient = grad;
 			}
 
-			var gradalpha = $this.paint.linearGradient.a;
+			var gradalpha = $this.paint.alpha;
             $('#' + id + '_jGraduate_OpacityInput').val(gradalpha);
 			var posx = parseInt(255*(gradalpha/100)) - 4.5;
             $('#' + id + '_jGraduate_AlphaArrows').css({'margin-left':posx});
             $('#' + id + '_jgraduate_rect').attr('fill-opacity', gradalpha/100);
 			
-			var x1 = parseFloat($this.paint.linearGradient.grad.getAttribute('x1')||0.0);
-			var y1 = parseFloat($this.paint.linearGradient.grad.getAttribute('y1')||0.0);
-			var x2 = parseFloat($this.paint.linearGradient.grad.getAttribute('x2')||1.0);
-			var y2 = parseFloat($this.paint.linearGradient.grad.getAttribute('y2')||0.0);
+			var x1 = parseFloat($this.paint.linearGradient.getAttribute('x1')||0.0);
+			var y1 = parseFloat($this.paint.linearGradient.getAttribute('y1')||0.0);
+			var x2 = parseFloat($this.paint.linearGradient.getAttribute('x2')||1.0);
+			var y2 = parseFloat($this.paint.linearGradient.getAttribute('y2')||0.0);
 			
             var rect = document.createElementNS(ns.svg, 'rect');
             rect.id = id + '_jgraduate_rect';
@@ -267,6 +284,7 @@ jQuery.fn.jGraduate =
             
             // bind GUI elements
             $('#'+id+'_jGraduate_Ok').bind('click', function() {
+            	$this.paint.type = "linearGradient";
 				$this.paint.solidColor = null;
             	okClicked();
             });
@@ -274,7 +292,7 @@ jQuery.fn.jGraduate =
             	cancelClicked();
             });
             
-            var x1 = $this.paint.linearGradient.grad.getAttribute('x1');
+            var x1 = $this.paint.linearGradient.getAttribute('x1');
             if(!x1) x1 = "0.0";
             x1Input = $('#'+id+'_jGraduate_x1');
             x1Input.val(x1);
@@ -282,11 +300,11 @@ jQuery.fn.jGraduate =
             	if (isNaN(parseFloat(this.value)) || this.value < 0.0 || this.value > 1.0) { 
             		this.value = 0.0; 
             	}
-            	$this.paint.linearGradient.grad.setAttribute('x1', this.value);
+            	$this.paint.linearGradient.setAttribute('x1', this.value);
             	beginStop.setAttribute('x', MARGINX + SIZEX*this.value - STOP_RADIUS);
             });
 
-            var y1 = $this.paint.linearGradient.grad.getAttribute('y1');
+            var y1 = $this.paint.linearGradient.getAttribute('y1');
             if(!y1) y1 = "0.0";
             y1Input = $('#'+id+'_jGraduate_y1');
             y1Input.val(y1);
@@ -294,11 +312,11 @@ jQuery.fn.jGraduate =
             	if (isNaN(parseFloat(this.value)) || this.value < 0.0 || this.value > 1.0) { 
             		this.value = 0.0; 
             	}
-            	$this.paint.linearGradient.grad.setAttribute('y1', this.value);
+            	$this.paint.linearGradient.setAttribute('y1', this.value);
             	beginStop.setAttribute('y', MARGINY + SIZEY*this.value - STOP_RADIUS);
             });
             
-            var x2 = $this.paint.linearGradient.grad.getAttribute('x2');
+            var x2 = $this.paint.linearGradient.getAttribute('x2');
             if(!x2) x2 = "1.0";
             x2Input = $('#'+id+'_jGraduate_x2');
             x2Input.val(x2);
@@ -306,11 +324,11 @@ jQuery.fn.jGraduate =
             	if (isNaN(parseFloat(this.value)) || this.value < 0.0 || this.value > 1.0) { 
             		this.value = 1.0;
             	}
-            	$this.paint.linearGradient.grad.setAttribute('x2', this.value);
+            	$this.paint.linearGradient.setAttribute('x2', this.value);
             	endStop.setAttribute('x', MARGINX + SIZEX*this.value - STOP_RADIUS);
             });
             
-            var y2 = $this.paint.linearGradient.grad.getAttribute('y2');
+            var y2 = $this.paint.linearGradient.getAttribute('y2');
             if(!y2) y2 = "0.0";
             y2Input = $('#'+id+'_jGraduate_y2');
             y2Input.val(y2);
@@ -318,19 +336,19 @@ jQuery.fn.jGraduate =
             	if (isNaN(parseFloat(this.value)) || this.value < 0.0 || this.value > 1.0) { 
             		this.value = 0.0;
             	}
-            	$this.paint.linearGradient.grad.setAttribute('y2', this.value);
+            	$this.paint.linearGradient.setAttribute('y2', this.value);
             	endStop.setAttribute('y', MARGINY + SIZEY*this.value - STOP_RADIUS);
             });            
             
-            var stops = $this.paint.linearGradient.grad.getElementsByTagNameNS(ns.svg, 'stop');
+            var stops = $this.paint.linearGradient.getElementsByTagNameNS(ns.svg, 'stop');
             var numstops = stops.length;
             // if there are not at least two stops, then 
             if (numstops < 2) {
 	            while (numstops < 2) {
-    	        	$this.paint.linearGradient.grad.appendChild( document.createElementNS(ns.svg, 'stop') );
+    	        	$this.paint.linearGradient.appendChild( document.createElementNS(ns.svg, 'stop') );
         	    	++numstops;
             	}
-            	stops = $this.paint.linearGradient.grad.getElementsByTagNameNS(ns.svg, 'stop');
+            	stops = $this.paint.linearGradient.getElementsByTagNameNS(ns.svg, 'stop');
             }
             
             var setOpacitySlider = function(e, div) {
@@ -344,7 +362,7 @@ jQuery.fn.jGraduate =
             	$('#' + id + '_jgraduate_rect').attr('fill-opacity', x);
             	x = parseInt(x*100);
             	$('#' + id + '_jGraduate_OpacityInput').val(x);
-            	$this.paint.linearGradient.a = x;
+            	$this.paint.alpha = x;
             };
             
             // handle dragging on the opacity slider
@@ -401,14 +419,14 @@ jQuery.fn.jGraduate =
             		if (draggingStop.id == (id+'_stop1')) {
             			x1Input.val(fracx);
             			y1Input.val(fracy);
-            			$this.paint.linearGradient.grad.setAttribute('x1', fracx);
-            			$this.paint.linearGradient.grad.setAttribute('y1', fracy);
+            			$this.paint.linearGradient.setAttribute('x1', fracx);
+            			$this.paint.linearGradient.setAttribute('y1', fracy);
             		}
             		else {
             			x2Input.val(fracx);
             			y2Input.val(fracy);
-            			$this.paint.linearGradient.grad.setAttribute('x2', fracx);
-            			$this.paint.linearGradient.grad.setAttribute('y2', fracy);
+            			$this.paint.linearGradient.setAttribute('x2', fracx);
+            			$this.paint.linearGradient.setAttribute('y2', fracy);
             		}
             		
             		evt.preventDefault();
@@ -482,16 +500,17 @@ jQuery.fn.jGraduate =
 			});            
             
 			// --------------
-            
 			colPicker.jPicker(
 				{
 					window: { title: $settings.window.pickerTitle },
 					images: { clientPath: $settings.images.clientPath },
-					color: { active: $this.paint.solidColor, alphaSupport: true }
+					color: { active: new $.jPicker.Color({hex:$this.paint.solidColor, a:$this.paint.alpha}), alphaSupport: true }
 				},
-				function(color) { 
-					$this.paint.solidColor = color;
-					$this.paint.linearGradient.grad = null;
+				function(color) {
+					$this.paint.type = "solidColor";
+					$this.paint.alpha = color.a;
+					$this.paint.solidColor = color.hex;
+					$this.paint.linearGradient = null;
 					okClicked(); 
 				},
 				null,
@@ -511,7 +530,7 @@ jQuery.fn.jGraduate =
 				lgPicker.show();
 			});
 			
-			if (mode == "linearGradient") {
+			if ($this.paint.type == "linearGradient") {
 				lgPicker.show();
 				colPicker.hide();
 				$(idref + ' .jGraduate_tab_color').removeClass('jGraduate_tab_current');

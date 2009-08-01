@@ -415,7 +415,7 @@ function SvgCanvas(c)
 	var current_mode = "select";
 	var current_resize_mode = "none";
 	var current_fill = "none";
-	var current_stroke = "black";
+	var current_stroke = "#000000";
 	var current_stroke_paint = null;
 	var current_fill_paint = null;
 	var current_stroke_width = 1;
@@ -1540,16 +1540,14 @@ function SvgCanvas(c)
 		return null;
 	};
 	
-	// TODO: what to do about the opacity in these functions?
-	
 	this.setStrokePaint = function(p) {
-		current_stroke_paint = p;
-		if (p.solidColor) {
-			this.setStrokeColor("#"+p.solidColor.hex);
+		current_stroke_paint = new $.jGraduate.Paint(p);
+		if (current_stroke_paint.type == "solidColor") {
+			this.setStrokeColor("#"+current_stroke_paint.solidColor);
 		}
-		else if(p.linearGradient.grad) {
+		else if(current_stroke_paint.type == "linearGradient") {
 			// find out if there is a duplicate gradient already in the defs
-			var grad = p.linearGradient.grad;
+			var grad = current_stroke_paint.linearGradient;
 			var duplicate_grad = findDuplicateGradient(grad);
 			var defs = findDefs();
 			
@@ -1569,16 +1567,22 @@ function SvgCanvas(c)
 		else {
 //			console.log("none!");
 		}
+		this.setStrokeOpacity(current_stroke_paint.alpha/100);		
 	};
 
+	// TODO: rework this so that we are not append elements into the SVG at this stage
+	// This should only be done at the actual creation stage or when we change a selected 
+	// element's fill paint - at that point, batch up the creation of the gradient element
+	// with the creation/change
 	this.setFillPaint = function(p) {
-		current_fill_paint = p;
-		if (p.solidColor) {
-			this.setFillColor("#"+p.solidColor.hex);
+		// copy the incoming paint object
+		current_fill_paint = new $.jGraduate.Paint(p);
+		if (current_fill_paint.type == "solidColor") {
+			this.setFillColor("#"+current_fill_paint.solidColor);
 		}
-		else if(p.linearGradient.grad) {
+		else if(current_fill_paint.type == "linearGradient") {
 			// find out if there is a duplicate gradient already in the defs
-			var grad = p.linearGradient.grad;
+			var grad = current_fill_paint.linearGradient;
 			var duplicate_grad = findDuplicateGradient(grad);
 			var defs = findDefs();
 			
@@ -1598,6 +1602,7 @@ function SvgCanvas(c)
 		else {
 //			console.log("none!");
 		}
+		this.setFillOpacity(current_fill_paint.alpha/100);
 	};
 
 	this.getStrokeWidth = function() {
