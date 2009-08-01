@@ -23,8 +23,8 @@ function svg_edit_setup() {
 	var multiselected = false;
 	var editingsource = false;
 	
-	var fillPaint = new $.jGraduate.Paint();
-	var strokePaint = new $.jGraduate.Paint();
+	var fillPaint = new $.jGraduate.Paint(); // a 'none' paint
+	var strokePaint = new $.jGraduate.Paint({solidColor: "000000"}); // solid black
 
 	// called when we've selected a different element
 	var selectedChanged = function(window,elems) {
@@ -74,35 +74,62 @@ function svg_edit_setup() {
 			if (isNaN(fillOpacity)) {
 				fillOpacity = 1.0;
 			}
-			fillOpacity = (fillOpacity*100)+" %";
 			
 			var strokeOpacity = parseFloat(selectedElement.getAttribute("stroke-opacity"));
 			if (isNaN(strokeOpacity)) {
 				strokeOpacity = 1.0;
 			}
-			strokeOpacity = (strokeOpacity*100)+" %";
+
+			// update fill color and opacity
+			var fillColor = selectedElement.getAttribute("fill");
+			svgCanvas.setFillColor(fillColor);
+			svgCanvas.setFillOpacity(fillOpacity);
+
+			// update stroke color and opacity
+			var strokeColor = selectedElement.getAttribute("stroke");
+			svgCanvas.setStrokeColor(strokeColor);
+			svgCanvas.setStrokeOpacity(strokeOpacity);
+
+			fillOpacity *= 100;
+			strokeOpacity *= 100;
+			
+			// update the editor's fill paint
+			if (fillColor.substr(0,5) == "url(#") {
+				fillPaint = new $.jGraduate.Paint({alpha: fillOpacity,
+					linearGradient: document.getElementById(fillColor.substr(5,fillColor.length-6))});
+			}
+			else if (fillColor.substr(0,1) == "#") {
+				fillPaint = new $.jGraduate.Paint({alpha: fillOpacity, solidColor: fillColor.substr(1)});
+			}
+			else {
+				fillPaint = new $.jGraduate.Paint();
+			}
+			
+			if (strokeColor.substr(0,5) == "url(#") {
+				strokePaint = new $.jGraduate.Paint({alpha: strokeOpacity,
+					linearGradient: document.getElementById(strokeColor.substr(5,strokeColor.length-6))});
+			}
+			else if (strokeColor.substr(0,1) == "#") {
+				strokePaint = new $.jGraduate.Paint({alpha: strokeOpacity, solidColor: strokeColor.substr(1)});
+			}
+			else {
+				strokePaint = new $.jGraduate.Paint();
+			}
+			
+			fillOpacity = fillOpacity + " %";
+			strokeOpacity = strokeOpacity + " %";
 
 			// update fill color
-			var fillColor = selectedElement.getAttribute("fill");
-			// TODO: get a Paint from this and store in fillPaint ?
-			// TODO: call setFillPaint() ?
-			svgCanvas.setFillColor(fillColor);
 			if (fillColor == "none") {
-				fillColor = "none";
 				fillOpacity = "N/A";
 			}
-			// update the rect inside #fill_color
 			document.getElementById("gradbox_fill").parentNode.firstChild.setAttribute("fill", fillColor);
 
-			// update stroke color
-			var strokeColor = selectedElement.getAttribute("stroke");
-			// TODO: get a Paint from this and store in strokePaint ?
-			// TODO: call setStrokePaint() ?
-			svgCanvas.setStrokeColor(strokeColor);
 			if (strokeColor == null || strokeColor == "" || strokeColor == "none") {
-				strokeOpacity = "N/A";
 				strokeColor = "none";
+				strokeOpacity = "N/A";
 			}
+			
 			// update the rect inside #fill_color
 			document.getElementById("gradbox_stroke").parentNode.firstChild.setAttribute("fill", strokeColor);
 			
@@ -257,23 +284,30 @@ function svg_edit_setup() {
 		var id = (evt.shiftKey ? '#stroke_' : '#fill_');
 		var color = $(this).attr('data-rgb');
 		var rectbox = document.getElementById("gradbox_"+picker).parentNode.firstChild;
+		var paint = null;
 
 		// Webkit-based browsers returned 'initial' here for no stroke
 		if (color == 'transparent' || color == 'initial') {
 			color = 'none';
 			$(id + "opacity").html("N/A");
+			paint = new $.jGraduate.Paint();
+		}
+		else {
+			paint = new $.jGraduate.Paint({alpha: 100, solidColor: color.substr(1)});
 		}
 		rectbox.setAttribute("fill", color);
 		
-		if (evt.shiftKey) {			
+		if (evt.shiftKey) {
+			strokePaint = paint;
 			svgCanvas.setStrokeColor(color);
-			if (color != 'none' && $("#stroke_opacity").html() == 'N/A') {
+			if (color != 'none') {
 				svgCanvas.setStrokeOpacity(1.0);
 				$("#stroke_opacity").html("100 %");
 			}
 		} else {
+			fillPaint = paint;
 			svgCanvas.setFillColor(color);
-			if (color != 'none' && $("#fill_opacity").html() == 'N/A') {
+			if (color != 'none') {
 				svgCanvas.setFillOpacity(1.0);
 				$("#fill_opacity").html("100 %");
 			}
@@ -560,25 +594,21 @@ function svg_edit_setup() {
 	$(document).bind('keydown', {combi:'v', disableInInput: true}, clickPaste);
 	$(document).bind('keydown', {combi:'esc', disableInInput: false}, hideSourceEditor);
 
+	// TODO: fix opacity being updated
+	// TODO: go back to the color boxes having white background-color and then setting
+	//       background-image to none.png (otherwise partially transparent gradients look weird)	
 	var colorPicker = function(elem) {
 		var picker = elem.attr('id') == 'stroke_color' ? 'stroke' : 'fill';
-		var oldopacity = (picker == 'stroke' ? $('#stroke_opacity').html() : $('#fill_opacity').html());
+		var opacity = (picker == 'stroke' ? $('#stroke_opacity') : $('#fill_opacity'));
 
 		var paint = (picker == 'stroke' ? strokePaint : fillPaint);
 		var title = (picker == 'stroke' ? 'Pick a Stroke Paint and Opacity' : 'Pick a Fill Paint and Opacity');
-		var oldPaint = new $.jGraduate.Paint(paint);
 		var was_none = false;
 		
-		if (paint.solidColor == null && paint.linearGradient == null) {
-			paint = new $.jGraduate.Paint();
+		if (paint.type == "none") {
+			// if it was none, then set to solid white
+			paint = new $.jGraduate.Paint({solidColor: 'ffffff'});
 			was_none = true;
-		} else {
-			var alpha;
-			if (oldopacity == 'N/A') {
-				alpha = 100;
-			} else {
-				alpha = oldopacity.split(' ')[0];
-			}
 		}
 		var pos = elem.position();
 		$('#color_picker').css({'left': pos.left - 140, 'bottom': 124 - pos.top}).jGraduate(
@@ -588,23 +618,22 @@ function svg_edit_setup() {
 				images: { clientPath: "jgraduate/images/" },
 			},
 			function(p) {
-				paint.solidColor = p.solidColor;
-				paint.linearGradient.grad = p.linearGradient.grad;
-				paint.linearGradient.a = p.linearGradient.a;
+				paint = new $.jGraduate.Paint(p);
 				
 				var oldgrad = document.getElementById("gradbox_"+picker);
 				var svgbox = oldgrad.parentNode;
 				var rectbox = svgbox.firstChild;
 				
-				if (paint.linearGradient.grad) {
+				if (paint.type == "linearGradient") {
 					svgbox.removeChild(oldgrad);
-					var newgrad = svgbox.appendChild(document.importNode(paint.linearGradient.grad, true));
+					var newgrad = svgbox.appendChild(document.importNode(paint.linearGradient, true));
 					newgrad.id = "gradbox_"+picker;
 					rectbox.setAttribute("fill", "url(#gradbox_" + picker + ")");
 				}
 				else {
-					rectbox.setAttribute("fill", "#" + paint.solidColor.hex);
+					rectbox.setAttribute("fill", "#" + paint.solidColor);
 				}
+				opacity.html(paint.alpha + " %");
 
 				if (picker == 'stroke') {
 					svgCanvas.setStrokePaint(paint);
