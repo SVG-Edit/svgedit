@@ -11,103 +11,116 @@
 <link rel="stylesheet" href="http://svg-edit.googlecode.com/svn/trunk/editor/svg-editor.css" type="text/css"/>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
 <script type="text/javascript" src="http://svg-edit.googlecode.com/svn/trunk/editor/js-hotkeys/jquery.hotkeys.min.js"></script>
-<script type="text/javascript" src="http://svg-edit.googlecode.com/svn/trunk/editor/jpicker/jpicker.js"></script>
+<script type="text/javascript" src="http://svg-edit.googlecode.com/svn/trunk/editor/jgraduate/jpicker-1.0.9.min.js"></script>
+<script type="text/javascript" src="http://svg-edit.googlecode.com/svn/trunk/editor/jgraduate/jquery.jgraduate.js"></script>
+<script type="text/javascript" src="http://svg-edit.googlecode.com/svn/trunk/editor/spinbtn/JQuerySpinBtn.js"></script>
 <script type="text/javascript" src="http://svg-edit.googlecode.com/svn/trunk/editor/svgcanvas.js"></script>
 <script type="text/javascript" src="http://svg-edit.googlecode.com/svn/trunk/editor/svg-editor.js"></script>
  
 
 <div id="svg_editor">
 
-<div id="color_picker" class="tools_flyout"></div>
-
-<div id="tools_rect" class="tools_flyout">
-<div id="tool_square" title="Square"></div>
-<div id="tool_rect" title="Rectangle"></div>
-<div id="tool_fhrect" title="Free-Hand Rectangle"></div>
+<div id="workarea">
+<style id="styleoverrides" type="text/css"></style>
+<div id="svgcanvas"></div>
 </div>
 
-<div id="tools_ellipse" class="tools_flyout">
-<div id="tool_circle" title="Circle"></div>
-<div id="tool_ellipse" title="Ellipse"></div>
-<div id="tool_fhellipse" title="Free-Hand Ellipse"></div>
-</div>
-
-<div id="context_tools" class="tools_panel">
-	<!-- File-like buttons: New, Save -->
+<div id="tools_top" class="tools_panel">
+	<!-- File-like buttons: New, Save, Source -->
 	<div>
-	<img class="tool_button" id="tool_clear" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/clear.png" title="New Image [N]" alt="Clear" />
-	<img class="tool_button" id="tool_save" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/save.png" title="Save Image [S]" alt="Save"/>
+		<img class="tool_button" id="tool_clear" src="images/clear.png" title="New Image [N]" alt="Clear" />
+		<img class="tool_button" id="tool_save" src="images/save.png" title="Save Image [S]" alt="Save"/>
+		<img class="tool_button" id="tool_source" src="images/source.png" title="Edit Source [U]" alt="Source"/>
 	</div>
 
-	<!-- Buttons when something is selected -->
+    <!-- History buttons -->
+	<div>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="tool_button tool_button_disabled" id="tool_undo" src="images/undo.png" title="Undo [Z]" alt="Undo" />
+		<img class="tool_button tool_button_disabled" id="tool_redo" src="images/redo.png" title="Redo [Shift+Z/Y]" alt="Redo"/>
+		<img class="tool_button" id="tool_paste" src="images/paste.png" title="Paste Element [V]" alt="Paste"/>
+	</div>
+
+	<!-- Buttons when something a single element is selected -->
 	<div id="selected_panel">
-	<img class="tool_sep" src="images/sep.png" alt="|"/>
-	<img class="tool_button" id="tool_delete" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/delete.png" title="Delete Element [X]" alt="Delete"/>
-	<img class="tool_button" id="tool_move_top" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/move_top.png" title="Move to Top" alt="Top"/>
-	<img class="tool_button" id="tool_move_bottom" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/move_bottom.png" title="Move to Bottom" alt="Bottom"/>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="tool_button" id="tool_copy" src="images/copy.png" title="Copy Element [C]" alt="Copy"/>
+		<img class="tool_button" id="tool_delete" src="images/delete.png" title="Delete Element [Delete/Backspace]" alt="Delete"/>
+		<img class="tool_button" id="tool_move_top" src="images/move_top.png" title="Move to Top [Shift+Up]" alt="Top"/>
+		<img class="tool_button" id="tool_move_bottom" src="images/move_bottom.png" title="Move to Bottom [Shift+Down]" alt="Bottom"/>
+		<select id="group_opacity" class="selected_tool" title="Change selected item opacity">
+			<option selected="selected" value="1">100 %</option>
+			<option value="0.9">90 %</option>
+			<option value="0.8">80 %</option>
+			<option value="0.7">70 %</option>
+			<option value="0.6">60 %</option>
+			<option value="0.5">50 %</option>
+			<option value="0.4">40 %</option>
+			<option value="0.3">30 %</option>
+			<option value="0.2">20 %</option>
+			<option value="0.1">10 %</option>
+		</select>		
+	</div>
+
+	<!-- Buttons when something a single element is selected -->
+	<div id="multiselected_panel">
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="tool_button" id="tool_copy_multi" src="images/copy.png" title="Copy Elements [C]" alt="Copy"/>
+		<img class="tool_button" id="tool_delete_multi" src="images/delete.png" title="Delete Selected Elements [Delete/Backspace]" alt="Delete"/>
 	</div>
 
 	<div id="rect_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<label class="rect_tool" >Radius:</label>
-		<!-- TODO: turn this into a spinner control! -->
-		<select id="rect_radius" class="rect_tool" title="Change Rectangle Corner Radius" alt="Corner Radius">
-			<option selected="selected" value="0">0</option>
-			<option value="1">1</option>
-			<option value="2">2</option>
-			<option value="3">3</option>
-			<option value="5">5</option>
-			<option value="7">7</option>
-			<option value="10">10</option>
-			<option value="15">15</option>
-			<option value="20">20</option>
-		</select>
 		<label class="rect_tool">x:</label>
-		<input id="rect_x" class="rect_tool" title="Change rectangle X coordinate" alt="x" size="5" disabled/>
+		<input id="rect_x" class="rect_tool attr_changer" title="Change rectangle X coordinate" alt="x" size="3"/>
 		<label class="rect_tool">y:</label>
-		<input id="rect_y" class="rect_tool" title="Change rectangle Y coordinate" alt="y" size="5" disabled/>
+		<input id="rect_y" class="rect_tool attr_changer" title="Change rectangle Y coordinate" alt="y" size="3"/>
 		<label class="rect_tool">width:</label>
-		<input id="rect_w" class="rect_tool" title="Change rectangle width" alt="width" size="5" disabled/>
+		<input id="rect_w" class="rect_tool attr_changer" title="Change rectangle width" alt="width" size="3"/>
 		<label class="rect_tool">height:</label>
-		<input id="rect_h" class="rect_tool" title="Change rectangle height" alt="height" size="5" disabled/>
+		<input id="rect_h" class="rect_tool attr_changer" title="Change rectangle height" alt="height" size="3"/>
+		<label class="rect_tool">Corner Radius:</label>
+		<input id="rect_radius" size="3" value="0" class="rect_tool" type="text" title="Change Rectangle Corner Radius" alt="Corner Radius"/>
 	</div>
 
 	<div id="circle_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<label class="circle_tool">cx:</label>
-		<input id="circle_cx" class="circle_tool" title="Change circle's cx coordinate" alt="cx" size="5" disabled/>
+		<input id="circle_cx" class="circle_tool attr_changer" title="Change circle's cx coordinate" alt="cx" size="3"/>
 		<label class="circle_tool">cy:</label>
-		<input id="circle_cy" class="circle_tool" title="Change circle's cy coordinate" alt="cy" size="5" disabled/>
+		<input id="circle_cy" class="circle_tool attr_changer" title="Change circle's cy coordinate" alt="cy" size="3"/>
 		<label class="circle_tool">r:</label>
-		<input id="circle_r" class="circle_tool" title="Change circle's radius" alt="r" size="5" disabled/>
+		<input id="circle_r" class="circle_tool attr_changer" title="Change circle's radius" alt="r" size="3"/>
 	</div>
-	
+
 	<div id="ellipse_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<label class="ellipse_tool">cx:</label>
-		<input id="ellipse_cx" class="ellipse_tool" title="Change ellipse's cx coordinate" alt="cx" size="5" disabled/>
+		<input id="ellipse_cx" class="ellipse_tool attr_changer" title="Change ellipse's cx coordinate" alt="cx" size="3"/>
 		<label class="ellipse_tool">cy:</label>
-		<input id="ellipse_cy" class="ellipse_tool" title="Change ellipse's cy coordinate" alt="cy" size="5" disabled/>
+		<input id="ellipse_cy" class="ellipse_tool attr_changer" title="Change ellipse's cy coordinate" alt="cy" size="3"/>
 		<label class="ellipse_tool">rx:</label>
-		<input id="ellipse_rx" class="ellipse_tool" title="Change ellipse's x radius" alt="rx" size="5" disabled/>
+		<input id="ellipse_rx" class="ellipse_tool attr_changer" title="Change ellipse's x radius" alt="rx" size="3"/>
 		<label class="ellipse_tool">ry:</label>
-		<input id="ellipse_ry" class="ellipse_tool" title="Change ellipse's y radius" alt="ry" size="5" disabled/>
+		<input id="ellipse_ry" class="ellipse_tool attr_changer" title="Change ellipse's y radius" alt="ry" size="3"/>
 	</div>
-	
+
 	<div id="line_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<label class="line_tool">x1:</label>
-		<input id="line_x1" class="line_tool" title="Change line's starting x coordinate" alt="x1" size="5" disabled/>
+		<input id="line_x1" class="line_tool attr_changer" title="Change line's starting x coordinate" alt="x1" size="3"/>
 		<label class="line_tool">y1:</label>
-		<input id="line_y1" class="line_tool" title="Change line's starting y coordinate" alt="y1" size="5" disabled/>
+		<input id="line_y1" class="line_tool attr_changer" title="Change line's starting y coordinate" alt="y1" size="3"/>
 		<label class="line_tool">x2:</label>
-		<input id="line_x2" class="line_tool" title="Change line's ending x coordinate" alt="x2" size="5" disabled/>
+		<input id="line_x2" class="line_tool attr_changer" title="Change line's ending x coordinate" alt="x2" size="3"/>
 		<label class="line_tool">y2:</label>
-		<input id="line_y2" class="line_tool" title="Change line's ending y coordinate" alt="x1" size="5" disabled/>
+		<input id="line_y2" class="line_tool attr_changer" title="Change line's ending y coordinate" alt="x1" size="3"/>
 	</div>
 
 	<div id="text_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="tool_button" id="tool_bold" src="images/bold.png" title="Bold Text [B]" alt="Bold"/>
+		<img class="tool_button" id="tool_italic" src="images/italic.png" title="Italic Text [I]" alt="Italic"/>
 		<select id="font_family" class="text_tool" title="Change Font Family">
 			<option selected="selected" value="serif">serif</option>
 			<option value="sans-serif">sans-serif</option>
@@ -132,110 +145,102 @@
 			<option value="96pt">96pt</option>
 			<option value="120pt">120pt</option>
 		</select>
-		<input id="text" class="text_tool" type="text" title="Change text contents" size="40"/>
+		<input id="text" class="text_tool" type="text" title="Change text contents" size="35"/>
+	</div>
+</div> <!-- tools_top -->
+
+<div id="tools_left" class="tools_panel">
+	<img class="tool_button_current" id="tool_select" src="images/select.png" title="Select Tool [1]" alt="Select"/><br/>
+	<img class="tool_button" id="tool_path" src="images/path.png" title="Pencil Tool [2]" alt="Pencil"/><br/>
+	<img class="tool_button" id="tool_line" src="images/line.png" title="Line Tool [3]" alt="Line"/><br/>
+	<img class="tool_button" id="tools_rect_show" src="images/square.png" title="Square/Rect Tool [4/Shift+4]" alt="Square"/><br/>
+	<img class="tool_button" id="tools_ellipse_show" src="images/circle.png" title="Ellipse/Circle Tool [5/Shift+5]" alt="Circle"/><br/>
+	<img class="tool_button" id="tool_text" src="images/text.png" title="Text Tool [6]" alt="Text"/>
+</div> <!-- tools_left -->
+
+<div id="tools_bottom" class="tools_panel">
+
+	<div id="tools_bottom_1">
+		<select id="resolution">
+			<option selected="selected">640x480</option>
+			<option>800x600</option>
+			<option>1024x768</option>
+			<option>1280x960</option>
+			<option>1600x1200</option>
+		</select>
+	</div>
+
+	<div id="tools_bottom_2">
+		<table>
+		<tr>
+			<td>fill:</td>
+			<td><div id="fill_color" class="color_block"  title="Change fill color"></div></td>
+			<td><div id="fill_opacity">N/A</div></td>
+		</tr><tr>
+			<td>stroke:</td>
+			<td><div id="stroke_color" class="color_block" title="Change stroke color"></div></td>
+			<td><div id="stroke_opacity">100 %</div></td>
+			<td>
+				<input id="stroke_width" title="Change stroke width" alt="Stroke Width" size="2" value="1" type="text"/>
+			</td>
+			<td>
+				<select id="stroke_style" title="Change stroke dash style">
+					<option selected="selected" value="none">---</option>
+					<option value="2,2">...</option>
+					<option value="5,5">- -</option>
+					<option value="5,2,2,2">- .</option>
+					<option value="5,2,2,2,2,2">- ..</option>
+				</select>
+			</td>
+		</tr>
+		</table>
+	</div>
+
+	<div id="tools_bottom_3">
+		<div id="palette_holder"><div id="palette" title="Click to change fill color, shift-click to change stroke color"></div></div>
+		<div id="copyright">Powered by <a href="http://svg-edit.googlecode.com/" target="_blank">SVG-edit v2.3-preAlpha</a></div>
 	</div>
 </div>
 
-<div id="tools" class="tools_panel">
+<!-- hidden divs -->
+<div id="color_picker"></div>
 
-<img class="tool_button_current" id="tool_select" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/select.png" title="Select Tool [1]" alt="Select"/><br/>
-<img class="tool_button" id="tool_path" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/path.png" title="Pencil Tool [2]" alt="Pencil"/><br/>
-<img class="tool_button" id="tool_line" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/line.png" title="Line Tool [3]" alt="Line"/><br/>
-<img class="tool_button" id="tools_rect_show" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/square.png" title="Square/Rect Tool [4/Shift+4]" alt="Square"/><br/>
-<img class="tool_button" id="tools_ellipse_show" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/circle.png" title="Ellipse/Circle Tool [5/Shift+5]" alt="Circle"/><br/>
-<img class="tool_button" id="tool_text" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/text.png" title="Text Tool [6]" alt="Text"/>
-
-<hr/>
-
-<div>opacity<br/>
-<select id="group_opacity" title="Change group opacity">
-<option selected="selected" value="1">100 %</option>
-<option value="0.9">90 %</option>
-<option value="0.8">80 %</option>
-<option value="0.7">70 %</option>
-<option value="0.6">60 %</option>
-<option value="0.5">50 %</option>
-<option value="0.4">40 %</option>
-<option value="0.3">30 %</option>
-<option value="0.2">20 %</option>
-<option value="0.1">10 %</option>
-</select>
+<div id="tools_rect" class="tools_flyout">
+	<div id="tool_square" class="tool_flyout_button" title="Square"></div>
+	<div id="tool_rect" class="tool_flyout_button" title="Rectangle"></div>
+	<div id="tool_fhrect" class="tool_flyout_button" title="Free-Hand Rectangle"></div>
 </div>
 
-<hr/>
-
-<div>fill
-<div id="fill_color" title="Change fill color"></div>
-<select id="fill_opacity" title="Change fill opacity">
-<option selected="selected" value="1">100 %</option>
-<option value="0.9">90 %</option>
-<option value="0.8">80 %</option>
-<option value="0.7">70 %</option>
-<option value="0.6">60 %</option>
-<option value="0.5">50 %</option>
-<option value="0.4">40 %</option>
-<option value="0.3">30 %</option>
-<option value="0.2">20 %</option>
-<option value="0.1">10 %</option>
-</select>
+<div id="tools_ellipse" class="tools_flyout">
+	<div id="tool_circle" class="tool_flyout_button" title="Circle"></div>
+	<div id="tool_ellipse" class="tool_flyout_button" title="Ellipse"></div>
+	<div id="tool_fhellipse" class="tool_flyout_button" title="Free-Hand Ellipse"></div>
 </div>
 
-<hr/>
-
-<div>stroke
-<div id="stroke_color" title="Change stroke color"></div>
-<div>
-<select id="stroke_width" title="Change stroke width">
-<option selected="selected" value="1">1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="5">5</option>
-<option value="7">7</option>
-</select>
-</div><div>
-<select id="stroke_style" title="Change stroke dash style">
-<option selected="selected" value="none">---</option>
-<option value="2,2">...</option>
-<option value="5,5">- -</option>
-<option value="5,2,2,2">- .</option>
-<option value="5,2,2,2,2,2">- ..</option>
-</select>
-</div>
-<div>
-<select id="stroke_opacity" title="Change stroke opacity">
-<option selected="selected" value="1">100 %</option>
-<option value="0.9">90 %</option>
-<option value="0.8">80 %</option>
-<option value="0.7">70 %</option>
-<option value="0.6">60 %</option>
-<option value="0.5">50 %</option>
-<option value="0.4">40 %</option>
-<option value="0.3">30 %</option>
-<option value="0.2">20 %</option>
-<option value="0.1">10 %</option>
-</select>
-</div>
+<div id="tools_stacking" class="tools_flyout_v">
+	<div id="tool_stacktop" class="tool_flyout_button" title="Move to Top [Shift+Up]"></div>
+	<div id="tool_stackbottom" class="tool_flyout_button" title="Move to Bottom [Shift+Down]"></div>
 </div>
 
+<div id="tools_align" class="tools_flyout_v">
+	<div id="tool_aligntop" class="tool_flyout_button" title="Align to Top"></div>
+	<div id="tool_alignbottom" class="tool_flyout_button" title="Align to Bottom"></div>
+	<div id="tool_alignmiddle" class="tool_flyout_button" title="Align to Middle"></div>
+	<div id="tool_alignleft" class="tool_flyout_button" title="Align to Left"></div>
+	<div id="tool_alignright" class="tool_flyout_button" title="Align to Right"></div>
+	<div id="tool_aligncenter" class="tool_flyout_button" title="Align to Center"></div>
 </div>
 
-<div id="workarea">
+</div> <!-- svg_editor -->
 
-<style id="styleoverrides" type="text/css"></style>
-<div id="svgcanvas">
-</div>
-
-<div id="palette_holder">
-<div id="palette" title="Click to change fill color, shift-click to change stroke color">
-</div>
-</div>
-
-</div>
-
-<div id="footer" class="tools_panel">
-SVG-edit Google Wave Gadget @ <a href="http://svg-edit.googlecode.com/" target="_blank">http://svg-edit.googlecode.com/</a>
-</div>
-
+<div id="svg_source_editor">
+	<div id="svg_source_overlay"></div>
+	<div id="svg_source_container">
+		<div id="tool_source_back" class="toolbar_button"></div>
+		<form>
+			<textarea id="svg_source_textarea"></textarea>
+		</form>
+	</div>
 </div>
 
 <script type="text/javascript">
