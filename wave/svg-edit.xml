@@ -28,26 +28,26 @@
 <div id="tools_top" class="tools_panel">
 	<!-- File-like buttons: New, Save, Source -->
 	<div>
-		<img class="tool_button" id="tool_clear" src="images/clear.png" title="New Image [N]" alt="Clear" />
-		<img class="tool_button" id="tool_save" src="images/save.png" title="Save Image [S]" alt="Save"/>
-		<img class="tool_button" id="tool_source" src="images/source.png" title="Edit Source [U]" alt="Source"/>
+		<img class="tool_button" id="tool_clear" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/clear.png" title="New Image [N]" alt="Clear" />
+		<img class="tool_button" id="tool_save" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/save.png" title="Save Image [S]" alt="Save"/>
+		<img class="tool_button" id="tool_source" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/source.png" title="Edit Source [U]" alt="Source"/>
 	</div>
 
     <!-- History buttons -->
 	<div>
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="tool_button tool_button_disabled" id="tool_undo" src="images/undo.png" title="Undo [Z]" alt="Undo" />
-		<img class="tool_button tool_button_disabled" id="tool_redo" src="images/redo.png" title="Redo [Shift+Z/Y]" alt="Redo"/>
-		<img class="tool_button" id="tool_paste" src="images/paste.png" title="Paste Element [V]" alt="Paste"/>
+		<img class="tool_sep" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/sep.png" alt="|"/>
+		<img class="tool_button tool_button_disabled" id="tool_undo" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/undo.png" title="Undo [Z]" alt="Undo" />
+		<img class="tool_button tool_button_disabled" id="tool_redo" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/redo.png" title="Redo [Shift+Z/Y]" alt="Redo"/>
+		<img class="tool_button" id="tool_paste" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/paste.png" title="Paste Element [V]" alt="Paste"/>
 	</div>
 
 	<!-- Buttons when something a single element is selected -->
 	<div id="selected_panel">
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="tool_button" id="tool_copy" src="images/copy.png" title="Copy Element [C]" alt="Copy"/>
-		<img class="tool_button" id="tool_delete" src="images/delete.png" title="Delete Element [Delete/Backspace]" alt="Delete"/>
-		<img class="tool_button" id="tool_move_top" src="images/move_top.png" title="Move to Top [Shift+Up]" alt="Top"/>
-		<img class="tool_button" id="tool_move_bottom" src="images/move_bottom.png" title="Move to Bottom [Shift+Down]" alt="Bottom"/>
+		<img class="tool_sep" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/sep.png" alt="|"/>
+		<img class="tool_button" id="tool_copy" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/copy.png" title="Copy Element [C]" alt="Copy"/>
+		<img class="tool_button" id="tool_delete" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/delete.png" title="Delete Element [Delete/Backspace]" alt="Delete"/>
+		<img class="tool_button" id="tool_move_top" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/move_top.png" title="Move to Top [Shift+Up]" alt="Top"/>
+		<img class="tool_button" id="tool_move_bottom" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/move_bottom.png" title="Move to Bottom [Shift+Down]" alt="Bottom"/>
 		<select id="group_opacity" class="selected_tool" title="Change selected item opacity">
 			<option selected="selected" value="1">100 %</option>
 			<option value="0.9">90 %</option>
@@ -64,13 +64,13 @@
 
 	<!-- Buttons when something a single element is selected -->
 	<div id="multiselected_panel">
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="tool_button" id="tool_copy_multi" src="images/copy.png" title="Copy Elements [C]" alt="Copy"/>
-		<img class="tool_button" id="tool_delete_multi" src="images/delete.png" title="Delete Selected Elements [Delete/Backspace]" alt="Delete"/>
+		<img class="tool_sep" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/sep.png" alt="|"/>
+		<img class="tool_button" id="tool_copy_multi" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/copy.png" title="Copy Elements [C]" alt="Copy"/>
+		<img class="tool_button" id="tool_delete_multi" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/delete.png" title="Delete Selected Elements [Delete/Backspace]" alt="Delete"/>
 	</div>
 
 	<div id="rect_panel">
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="tool_sep" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/sep.png" alt="|"/>
 		<label class="rect_tool">x:</label>
 		<input id="rect_x" class="rect_tool attr_changer" title="Change rectangle X coordinate" alt="x" size="3"/>
 		<label class="rect_tool">y:</label>
@@ -84,7 +84,7 @@
 	</div>
 
 	<div id="circle_panel">
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="tool_sep" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/sep.png" alt="|"/>
 		<label class="circle_tool">cx:</label>
 		<input id="circle_cx" class="circle_tool attr_changer" title="Change circle's cx coordinate" alt="cx" size="3"/>
 		<label class="circle_tool">cy:</label>
@@ -94,7 +94,7 @@
 	</div>
 
 	<div id="ellipse_panel">
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="tool_sep" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/sep.png" alt="|"/>
 		<label class="ellipse_tool">cx:</label>
 		<input id="ellipse_cx" class="ellipse_tool attr_changer" title="Change ellipse's cx coordinate" alt="cx" size="3"/>
 		<label class="ellipse_tool">cy:</label>
@@ -106,7 +106,7 @@
 	</div>
 
 	<div id="line_panel">
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="tool_sep" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/sep.png" alt="|"/>
 		<label class="line_tool">x1:</label>
 		<input id="line_x1" class="line_tool attr_changer" title="Change line's starting x coordinate" alt="x1" size="3"/>
 		<label class="line_tool">y1:</label>
@@ -118,9 +118,9 @@
 	</div>
 
 	<div id="text_panel">
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="tool_button" id="tool_bold" src="images/bold.png" title="Bold Text [B]" alt="Bold"/>
-		<img class="tool_button" id="tool_italic" src="images/italic.png" title="Italic Text [I]" alt="Italic"/>
+		<img class="tool_sep" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/sep.png" alt="|"/>
+		<img class="tool_button" id="tool_bold" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/bold.png" title="Bold Text [B]" alt="Bold"/>
+		<img class="tool_button" id="tool_italic" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/italic.png" title="Italic Text [I]" alt="Italic"/>
 		<select id="font_family" class="text_tool" title="Change Font Family">
 			<option selected="selected" value="serif">serif</option>
 			<option value="sans-serif">sans-serif</option>
@@ -150,12 +150,12 @@
 </div> <!-- tools_top -->
 
 <div id="tools_left" class="tools_panel">
-	<img class="tool_button_current" id="tool_select" src="images/select.png" title="Select Tool [1]" alt="Select"/><br/>
-	<img class="tool_button" id="tool_path" src="images/path.png" title="Pencil Tool [2]" alt="Pencil"/><br/>
-	<img class="tool_button" id="tool_line" src="images/line.png" title="Line Tool [3]" alt="Line"/><br/>
-	<img class="tool_button" id="tools_rect_show" src="images/square.png" title="Square/Rect Tool [4/Shift+4]" alt="Square"/><br/>
-	<img class="tool_button" id="tools_ellipse_show" src="images/circle.png" title="Ellipse/Circle Tool [5/Shift+5]" alt="Circle"/><br/>
-	<img class="tool_button" id="tool_text" src="images/text.png" title="Text Tool [6]" alt="Text"/>
+	<img class="tool_button_current" id="tool_select" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/select.png" title="Select Tool [1]" alt="Select"/><br/>
+	<img class="tool_button" id="tool_path" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/path.png" title="Pencil Tool [2]" alt="Pencil"/><br/>
+	<img class="tool_button" id="tool_line" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/line.png" title="Line Tool [3]" alt="Line"/><br/>
+	<img class="tool_button" id="tools_rect_show" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/square.png" title="Square/Rect Tool [4/Shift+4]" alt="Square"/><br/>
+	<img class="tool_button" id="tools_ellipse_show" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/circle.png" title="Ellipse/Circle Tool [5/Shift+5]" alt="Circle"/><br/>
+	<img class="tool_button" id="tool_text" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/text.png" title="Text Tool [6]" alt="Text"/>
 </div> <!-- tools_left -->
 
 <div id="tools_bottom" class="tools_panel">
