@@ -194,7 +194,7 @@ function SvgCanvas(c)
 									"width": 1,
 									"height": 1,
 									// need to specify this so that the rect is not selectable
-									"style": "pointer-events:none",
+									"style": "pointer-events:none"
 								}
 							}) );
 	
@@ -206,7 +206,7 @@ function SvgCanvas(c)
 								"e":null,
 								"sw":null,
 								"s":null,
-								"se":null,
+								"se":null
 								};
 				
 		// add the corner grips
@@ -385,7 +385,7 @@ function SvgCanvas(c)
 								"stroke": "blue",
 								"stroke-width": 0.5,
 								"display": "none",
-								"style": "pointer-events:none",
+								"style": "pointer-events:none"
 							}
 						}));
 			}
@@ -1044,7 +1044,7 @@ function SvgCanvas(c)
 						// fix for bug where text elements were always 50% opacity
 						"opacity": current_opacity,
 						"font-size": current_font_size,
-						"font-family": current_font_family,
+						"font-family": current_font_family
 					}
 				});
 				newText.textContent = "text";
@@ -2007,5 +2007,5 @@ var Utils = {
     	}
     	catch(e){ throw new Error("Error parsing XML string"); };
     	return out;
-    },
+    }
 };
