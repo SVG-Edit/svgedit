@@ -1905,17 +1905,14 @@ function SvgCanvas(c)
 	};
 	
 	// this creates deep DOM copies (clones) of all selected elements
-	this.copySelectedElements = function() {
+	this.cloneSelectedElements = function() {
+		var batchCmd = new BatchCommand("Clone Elements");
 		copiedElements = [];
 		var len = selectedElements.length;
 		for (var i = 0; i < len; ++i) {
 			if (selectedElements[i] == null) break;
 			copiedElements.push(selectedElements[i].cloneNode(true));
 		}
-	};
-	
-	this.pasteElements = function() {
-		var batchCmd = new BatchCommand("Paste Elements");
 		this.clearSelection();
 		var len = copiedElements.length;
 		for (var i = 0; i < len; ++i) {
@@ -1929,11 +1926,8 @@ function SvgCanvas(c)
 			this.addToSelection(copiedElements);
 			this.moveSelectedElements(20,20,false);
 			addCommandToHistory(batchCmd);
-			// re-copy the elements so we can paste again
-			this.copySelectedElements();
 			call("selected", selectedElements);
-		}
-		
+		}		
 	};
 
 }

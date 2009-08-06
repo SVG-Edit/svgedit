@@ -457,11 +457,8 @@ function svg_edit_setup() {
 			svgCanvas.redo();
 	};
 	
-	var clickCopy = function(){
-		svgCanvas.copySelectedElements();
-	};
-	var clickPaste = function(){
-		svgCanvas.pasteElements();
+	var clickClone = function(){
+		svgCanvas.cloneSelectedElements();
 	};
 	
 	var showSourceEditor = function(){
@@ -519,9 +516,8 @@ function svg_edit_setup() {
 	$('#tool_move_bottom').click(moveToBottomSelected);
 	$('#tool_undo').click(clickUndo);
 	$('#tool_redo').click(clickRedo);
-	$('#tool_paste').click(clickPaste);
-	$('#tool_copy').click(clickCopy);
-	$('#tool_copy_multi').click(clickCopy);
+	$('#tool_clone').click(clickClone);
+	$('#tool_clone_multi').click(clickClone);
 	// these two lines are required to make Opera work properly with the flyout mechanism
 	$('#tools_rect_show').click(clickSquare);
 	$('#tools_ellipse_show').click(clickCircle);
@@ -590,8 +586,7 @@ function svg_edit_setup() {
 	$(document).bind('keydown', {combi:'shift+z', disableInInput: true}, clickRedo);
 	$(document).bind('keydown', {combi:'y', disableInInput: true}, clickRedo);
 	$(document).bind('keydown', {combi:'u', disableInInput: true}, function(evt){showSourceEditor();evt.preventDefault();});
-	$(document).bind('keydown', {combi:'c', disableInInput: true}, clickCopy);
-	$(document).bind('keydown', {combi:'v', disableInInput: true}, clickPaste);
+	$(document).bind('keydown', {combi:'c', disableInInput: true}, clickClone);
 	$(document).bind('keydown', {combi:'esc', disableInInput: false}, hideSourceEditor);
 
 	// TODO: fix opacity being updated
