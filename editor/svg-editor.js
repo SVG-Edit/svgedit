@@ -23,7 +23,7 @@ function svg_edit_setup() {
 	var multiselected = false;
 	var editingsource = false;
 	
-	var fillPaint = new $.jGraduate.Paint(); // a 'none' paint
+	var fillPaint = new $.jGraduate.Paint({solidColor: "FF0000"}); // solid red
 	var strokePaint = new $.jGraduate.Paint({solidColor: "000000"}); // solid black
 
 	// called when we've selected a different element
@@ -691,7 +691,7 @@ function svg_edit_setup() {
 
 	// set up gradients to be used for the buttons
 	var svgdocbox = new DOMParser().parseFromString(
-		'<svg xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="none"/>\
+		'<svg xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#FF0000"/>\
 		<linearGradient id="gradbox_">\
 				<stop stop-color="#000" offset="0.0"/>\
 				<stop stop-color="#FF0000" offset="1.0"/>\
@@ -702,7 +702,7 @@ function svg_edit_setup() {
 	$('#fill_color').append( document.importNode(svgdocbox.documentElement,true) );
 	
 	boxgrad.id = 'gradbox_stroke';	
-	$(svgdocbox.documentElement.firstChild).attr('fill', '#000');
+	$(svgdocbox.documentElement.firstChild).attr('fill', '#000000');
 	$('#stroke_color').append( document.importNode(svgdocbox.documentElement,true) );
 		
 	$('#fill_color').click(function(){

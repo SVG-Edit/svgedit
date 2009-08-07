@@ -314,10 +314,6 @@ function SvgCanvas(c)
 			if (elem == null) return null;
 			var N = this.selectors.length;
 
-			if (this.selectorParentGroup == null) {
-				initGroup();											
-			}
-
 			// if we've already acquired one for this element, return it
 			if (typeof(this.selectorMap[elem.id]) == "object") {
 				this.selectorMap[elem.id].locked = true;
@@ -364,17 +360,10 @@ function SvgCanvas(c)
 		
 		// this keeps the selector groups as the last child in the document
 		this.update = function() {
-			if (this.selectorParentGroup == null) {
-				initGroup();
-			}
 			this.selectorParentGroup = svgroot.appendChild(this.selectorParentGroup);
-		}
+		};
 		
 		this.getRubberBandBox = function() {
-			if (this.selectorParentGroup == null) {
-				initGroup();
-			}
-			
 			if (this.rubberBandBox == null) {
 				this.rubberBandBox = this.selectorParentGroup.appendChild(
 						addSvgElementFromJson({ "element": "rect",
@@ -390,10 +379,63 @@ function SvgCanvas(c)
 						}));
 			}
 			return this.rubberBandBox;
-		}
+		};
+		
+		initGroup();
 	}
 	// **************************************************************************************
 
+	var addSvgElementFromJson = function(data) {
+		return canvas.updateElementFromJson(data)
+	};
+
+	var assignAttributes = function(node, attrs) {
+		var handle = svgroot.suspendRedraw(60);
+		for (i in attrs) {
+			node.setAttributeNS(null, i, attrs[i]);
+		}
+		svgroot.unsuspendRedraw(handle);
+	};
+	
+	// remove unneeded attributes
+	// makes resulting SVG smaller
+	var cleanupElement = function(element) {
+		var handle = svgroot.suspendRedraw(60);
+		if (element.getAttribute('fill-opacity') == '1')
+			element.removeAttribute('fill-opacity');
+		if (element.getAttribute('opacity') == '1')
+			element.removeAttribute('opacity');
+		if (element.getAttribute('stroke') == 'none')
+			element.removeAttribute('stroke');
+		if (element.getAttribute('stroke-dasharray') == 'none')
+			element.removeAttribute('stroke-dasharray');
+		if (element.getAttribute('stroke-opacity') == '1')
+			element.removeAttribute('stroke-opacity');
+		if (element.getAttribute('stroke-width') == '1')
+			element.removeAttribute('stroke-width');
+		if (element.getAttribute('rx') == '0')
+			element.removeAttribute('rx')
+		if (element.getAttribute('ry') == '0')
+			element.removeAttribute('ry')
+		svgroot.unsuspendRedraw(handle);
+	};	
+
+	this.updateElementFromJson = function(data) {
+		var shape = svgdoc.getElementById(data.attr.id);
+		// if shape is a path but we need to create a rect/ellipse, then remove the path
+		if (shape && data.element != shape.tagName) {
+			svgroot.removeChild(shape);
+			shape = null;
+		}
+		if (!shape) {
+			shape = svgdoc.createElementNS(svgns, data.element);
+			svgroot.appendChild(shape);
+		}
+		assignAttributes(shape, data.attr);
+		cleanupElement(shape);
+		return shape;
+	};
+	
 	var canvas = this;
 	var container = c;
 	var svgns = "http://www.w3.org/2000/svg";
@@ -414,11 +456,11 @@ function SvgCanvas(c)
 	var start_y = null;
 	var current_mode = "select";
 	var current_resize_mode = "none";
-	var current_fill = "none";
+	var current_fill = "#FF0000";
 	var current_stroke = "#000000";
 	var current_stroke_paint = null;
 	var current_fill_paint = null;
-	var current_stroke_width = 1;
+	var current_stroke_width = 5;
 	var current_stroke_style = "none";
 	var current_opacity = 1;
 	var current_stroke_opacity = 1;
@@ -429,6 +471,7 @@ function SvgCanvas(c)
 	var freehand_max_x = null;
 	var freehand_min_y = null;
 	var freehand_max_y = null;
+	var current_poly_pts = [];
 	// this will hold all the currently selected elements
 	// default size of 1 until it needs to grow bigger
 	var selectedElements = new Array(1); 
@@ -440,8 +483,6 @@ function SvgCanvas(c)
 	var events = {};
 	var undoStackPointer = 0;
 	var undoStack = [];
-	// this holds all the currently copied elements
-	var copiedElements = new Array(1);
 
 	// This method sends back an array or a NodeList full of elements that
 	// intersect the multi-select rubber-band-box.
@@ -524,41 +565,6 @@ function SvgCanvas(c)
 		}
 	};
 
-	var assignAttributes = function(node, attrs) {
-		var handle = svgroot.suspendRedraw(60);
-		for (i in attrs) {
-			node.setAttributeNS(null, i, attrs[i]);
-		}
-		svgroot.unsuspendRedraw(handle);
-	};
-
-	// remove unneeded attributes
-	// makes resulting SVG smaller
-	var cleanupElement = function(element) {
-		var handle = svgroot.suspendRedraw(60);
-		if (element.getAttribute('fill-opacity') == '1')
-			element.removeAttribute('fill-opacity');
-		if (element.getAttribute('opacity') == '1')
-			element.removeAttribute('opacity');
-		if (element.getAttribute('stroke') == 'none')
-			element.removeAttribute('stroke');
-		if (element.getAttribute('stroke-dasharray') == 'none')
-			element.removeAttribute('stroke-dasharray');
-		if (element.getAttribute('stroke-opacity') == '1')
-			element.removeAttribute('stroke-opacity');
-		if (element.getAttribute('stroke-width') == '1')
-			element.removeAttribute('stroke-width');
-		if (element.getAttribute('rx') == '0')
-			element.removeAttribute('rx')
-		if (element.getAttribute('ry') == '0')
-			element.removeAttribute('ry')
-		svgroot.unsuspendRedraw(handle);
-	};
-
-	var addSvgElementFromJson = function(data) {
-		return canvas.updateElementFromJson(data)
-	};
-	
 	// this function sanitizes the input node and its children
 	// this function only keeps what is allowed from our whitelist defined above
 	var sanitizeSvg = function(node) {
@@ -728,6 +734,11 @@ function SvgCanvas(c)
 			for (var i = 1; i < len; ++i) {
 				var l = segList.getItem(i);
 				var x = l.x, y = l.y;
+				// polys can now be closed, skip Z segments
+				if (l.pathSegType == 1) {
+					newd += "z";
+					continue;
+				}
 				// webkit browsers normalize things and this becomes an absolute
 				// line segment!  we need to turn this back into a rel line segment
 				// see https://bugs.webkit.org/show_bug.cgi?id=26487
@@ -1049,6 +1060,12 @@ function SvgCanvas(c)
 				});
 				newText.textContent = "text";
 				break;
+			case "poly":
+				started = true;
+				break;
+			default:
+				console.log("Unknown mode in mousedown: " + current_mode);
+				break;
 		}
 	};
 
@@ -1225,6 +1242,16 @@ function SvgCanvas(c)
 				d_attr += "l" + dx + "," + dy + " ";
 				shape.setAttributeNS(null, "d", d_attr);
 				break;
+			// TODO: update poly stretch line coordinates
+			case "poly":
+				var line = document.getElementById("poly_stretch_line");
+				if (line) {
+					line.setAttribute("x2", x);
+					line.setAttribute("y2", y);
+				}
+				break;
+			default:
+				break;
 		}
 		// TODO: should we fire the change event here?  I'm thinking only fire
 		// this event when the user mouses up.  That's when the action (create,
@@ -1356,8 +1383,110 @@ function SvgCanvas(c)
 				canvas.clearSelection();
 				canvas.addToSelection([element]);
 				break;
+			case "poly":
+				var x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
+				var y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
+				
+				// set element to null here so that it is not removed nor finalized
+				element = null;
+				// continue to be set to true so that mouseMove happens
+				started = true;
+				
+				var stretchy = document.getElementById("poly_stretch_line");
+				if (!stretchy) {
+					stretchy = document.createElementNS(svgns, "line");
+					stretchy.id = "poly_stretch_line";
+					stretchy.setAttribute("stroke-width", "0.5");
+					stretchy.setAttribute("stroke", "blue");
+					stretchy = document.getElementById("selectorParentGroup").appendChild(stretchy);
+				}
+				stretchy.setAttribute("display", "inline");
+				
+				// if pts array is empty, create path element with M at current point
+				if (current_poly_pts.length == 0) {
+					current_poly_pts.push(x);
+					current_poly_pts.push(y);
+					d_attr = "M" + x + "," + y + " ";
+					addSvgElementFromJson({
+						"element": "path",
+						"attr": {
+							"d": d_attr,
+							"id": getNextId(),
+							"fill": current_fill,
+							"fill-opacity": current_fill_opacity,
+							"stroke": current_stroke,
+							"stroke-width": current_stroke_width,
+							"stroke-dasharray": current_stroke_style,
+							"stroke-opacity": current_stroke_opacity,
+							"opacity": current_opacity / 2
+						}
+					});
+					// set stretchy line to first point
+					stretchy.setAttribute("x1", x);
+					stretchy.setAttribute("y1", y);
+					stretchy.setAttribute("x2", x);
+					stretchy.setAttribute("y2", y);
+				}
+				else {
+					// determine if we clicked on an existing point
+					var i = current_poly_pts.length;
+					var FUZZ = 6;
+					var clickOnPoint = false;
+					while(i) {
+						i -= 2;
+						var px = current_poly_pts[i], py = current_poly_pts[i+1];
+						// found a matching point
+						if ( x >= (px-FUZZ) && x <= (px+FUZZ) && y >= (py-FUZZ) && y <= (py+FUZZ) ) {
+							clickOnPoint = true;
+							break;
+						}
+					}
+
+					// get poly element that we are in the process of creating
+					var poly = svgdoc.getElementById(getId());
+					
+					// if we clicked on an existing point, then we are done this poly, commit it
+					// (i,i+1) are the x,y that were clicked on
+					if (clickOnPoint) {
+						// if clicked on any other point but the first OR
+						// the first point was clicked on and there are less than 3 points
+						// then leave the poly open
+						// otherwise, close the poly
+						if (i == 0 && current_poly_pts.length >= 6) {
+							poly.setAttribute("d", d_attr + "z");
+						}
+
+						// this will signal to commit the poly
+						element = poly;
+						current_poly_pts = [];
+						started = false;
+						document.getElementById("poly_stretch_line").setAttribute("display", "none");
+					}
+					// else, create a new point, append to pts array, update path element
+					else {
+						var len = current_poly_pts.length;
+						var lastx = current_poly_pts[len-2], lasty = current_poly_pts[len-1];
+						// we store absolute values in our poly points array for easy checking above
+						current_poly_pts.push(x);
+						current_poly_pts.push(y);
+						// but we store relative coordinates in the d string of the poly for easy
+						// translation around the canvas in move mode
+						d_attr += "l" + (x-lastx) + "," + (y-lasty) + " ";
+						poly.setAttribute("d", d_attr);
+						
+						// set stretchy line to latest point
+						stretchy.setAttribute("x1", x);
+						stretchy.setAttribute("y1", y);
+						stretchy.setAttribute("x2", x);
+						stretchy.setAttribute("y2", y);
+					}
+					keep = true;
+				}
+				break;
+			default:
+				console.log("Unknown mode in mouseup: " + current_mode);
+				break;
 		}
-		d_attr = null;
 		if (!keep && element != null) {
 			element.parentNode.removeChild(element);
 			element = null;
@@ -1455,7 +1584,12 @@ function SvgCanvas(c)
 	};
 
 	this.setMode = function(name) {
-		current_mode = name;
+		// toss out half-drawn poly
+		if (current_mode == "poly" && current_poly_pts.length > 0) {
+			element.parentNode.removeChild(svgdoc.getElementById(getId()));
+			current_poly_pts = [];
+		}
+		current_mode = name;		
 	};
 
 	this.getStrokeColor = function() {
@@ -1648,22 +1782,6 @@ function SvgCanvas(c)
 	this.setStrokeOpacity = function(val) {
 		current_stroke_opacity = val;
 		this.changeSelectedAttribute("stroke-opacity", val);
-	};
-
-	this.updateElementFromJson = function(data) {
-		var shape = svgdoc.getElementById(data.attr.id);
-		// if shape is a path but we need to create a rect/ellipse, then remove the path
-		if (shape && data.element != shape.tagName) {
-			svgroot.removeChild(shape);
-			shape = null;
-		}
-		if (!shape) {
-			shape = svgdoc.createElementNS(svgns, data.element);
-			svgroot.appendChild(shape);
-		}
-		assignAttributes(shape, data.attr);
-		cleanupElement(shape);
-		return shape;
 	};
 
 	this.each = function(cb) {
@@ -1907,7 +2025,7 @@ function SvgCanvas(c)
 	// this creates deep DOM copies (clones) of all selected elements
 	this.cloneSelectedElements = function() {
 		var batchCmd = new BatchCommand("Clone Elements");
-		copiedElements = [];
+		var copiedElements = [];
 		var len = selectedElements.length;
 		for (var i = 0; i < len; ++i) {
 			if (selectedElements[i] == null) break;
