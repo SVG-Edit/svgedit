@@ -72,6 +72,15 @@ body {
 	float: left;
 }
 
+#svg_editor #logo {
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	width: 30px;
+	height: 30px;
+	padding: 0px;
+}
+
 #svg_editor #tools_top {
 	position: absolute;
 	left: 38px;
