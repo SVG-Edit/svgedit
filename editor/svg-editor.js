@@ -395,6 +395,16 @@ function svg_edit_setup() {
 		$('#tools_ellipse_show').attr('src', 'images/freehand-circle.png');
 	};
 
+	var clickText = function(){
+		toolButtonClick('#tool_text');
+		svgCanvas.setMode('text');
+	};
+	
+	var clickPoly = function(){
+		toolButtonClick('#tool_poly');
+		svgCanvas.setMode('poly');
+	};
+	
 	// Delete is a contextual tool that only appears in the ribbon if
 	// an element has been selected
 	var deleteSelected = function() {
@@ -419,11 +429,6 @@ function svg_edit_setup() {
 		if (selectedElement != null || multiselected) {
 			svgCanvas.moveSelectedElements(dx,dy);
 		}
-	};
-
-	var clickText = function(){
-		toolButtonClick('#tool_text');
-		svgCanvas.setMode('text');
 	};
 
 	var clickClear = function(){
@@ -507,6 +512,7 @@ function svg_edit_setup() {
 	$('#tool_ellipse').mouseup(clickEllipse);
 	$('#tool_fhellipse').mouseup(clickFHEllipse);
 	$('#tool_text').click(clickText);
+	$('#tool_poly').click(clickPoly);
 	$('#tool_clear').click(clickClear);
 	$('#tool_save').click(clickSave);
 	$('#tool_source').click(showSourceEditor);
@@ -572,6 +578,7 @@ function svg_edit_setup() {
 	$(document).bind('keydown', {combi:'Shift+5', disableInInput: true}, clickCircle);
 	$(document).bind('keydown', {combi:'5', disableInInput: true}, clickEllipse);
 	$(document).bind('keydown', {combi:'6', disableInInput: true}, clickText);
+	$(document).bind('keydown', {combi:'7', disableInInput: true}, clickPoly);
 	$(document).bind('keydown', {combi:'N', disableInInput: true}, clickClear);
 	$(document).bind('keydown', {combi:'S', disableInInput: true}, clickSave);
 	$(document).bind('keydown', {combi:'del', disableInInput: true}, function(evt){deleteSelected();evt.preventDefault();});
