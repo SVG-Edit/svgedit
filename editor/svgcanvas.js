@@ -13,6 +13,7 @@ var svgWhiteList = {
 	"line": ["fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "x1", "x2", "y1", "y2"],
 	"linearGradient": ["id", "x1", "x2", "y1", "y2"],
 	"path": ["d", "fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray"],
+	"polyline": ["id", "points", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray"],
 	"rect": ["fill", "fill-opacity", "height", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "width", "x", "y"],
 	"stop": ["id", "offset", "stop-color", "stop-opacity"],
 	"svg": ["id", "height", "width", "xmlns"],
@@ -722,6 +723,21 @@ function SvgCanvas(c)
 		selected.removeAttribute("transform");
 		switch (selected.tagName)
 		{
+		case "polyline":
+			// extract the x,y from the path, adjust it and write back the new path
+			// but first, save the old path
+			changes["points"] = selected.getAttribute("points");
+			var list = selected.points;
+			var len = list.numberOfItems;
+			var newpoints = "";
+			for (var i = 0; i < len; ++i) {
+				var pt = list.getItem(i);
+				var x = remapx(pt.x), y = remapy(pt.y);
+				// we only need to scale the relative coordinates (no need to translate)
+				newpoints += x + "," + y + " ";
+			}
+			selected.setAttributeNS(null, "points", newpoints);
+			break;
 		case "path":
 			// extract the x,y from the path, adjust it and write back the new path
 			// but first, save the old path
@@ -936,11 +952,11 @@ function SvgCanvas(c)
 				started = true;
 				start_x = x;
 				start_y = y;
-				d_attr = "M" + x + "," + y + " ";
+				d_attr = x + "," + y + " ";
 				addSvgElementFromJson({
-					"element": "path",
+					"element": "polyline",
 					"attr": {
-						"d": d_attr,
+						"points": d_attr,
 						"id": getNextId(),
 						"fill": "none",
 						"stroke": current_stroke,
@@ -1235,14 +1251,14 @@ function SvgCanvas(c)
 				freehand_max_y = Math.max(y, freehand_max_y);
 			// break; missing on purpose
 			case "path":
-				var dx = x - start_x;
-				var dy = y - start_y;
+//				var dx = x - start_x;
+//				var dy = y - start_y;
 				start_x = x;
 				start_y = y;
-				d_attr += "l" + dx + "," + dy + " ";
-				shape.setAttributeNS(null, "d", d_attr);
+				d_attr += + x + "," + y + " ";
+				shape.setAttributeNS(null, "points", d_attr);
 				break;
-			// TODO: update poly stretch line coordinates
+			// update poly stretch line coordinates
 			case "poly":
 				var line = document.getElementById("poly_stretch_line");
 				if (line) {
@@ -1612,7 +1628,7 @@ function SvgCanvas(c)
 		var i = selectedElements.length;
 		while(i--) {
 			var elem = selectedElements[i];
-			if (elem && elem.tagName != "path" && elem.tagName != "line") {
+			if (elem && elem.tagName != "polyline" && elem.tagName != "line") {
 				elems.push(elem);
 			}
 		}
