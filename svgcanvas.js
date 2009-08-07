@@ -1471,7 +1471,7 @@ function SvgCanvas(c)
 						current_poly_pts.push(y);
 						// but we store relative coordinates in the d string of the poly for easy
 						// translation around the canvas in move mode
-						d_attr += "l" + (x-lastx) + "," + (y-lasty) + " ";
+						d_attr += "l" + parseInt(x-lastx) + "," + parseInt(y-lasty) + " ";
 						poly.setAttribute("d", d_attr);
 						
 						// set stretchy line to latest point
