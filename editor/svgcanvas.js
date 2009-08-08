@@ -1277,6 +1277,57 @@ function SvgCanvas(c)
 //		call("changed", selected);
 	};
 
+
+	// TODO: when a shape is moved via keystroke, it is not undo-able
+	// TODO: when a poly is selected, must loop through 'd' and populate current_poly_pts
+	// TODO: when a poly is selected, call addAllPointGripsToPoly
+	
+	var addAllPointGripsToPoly = function() {
+		// TODO: loop through all points in poly
+		// TODO: for each point, find the pointgrip element 
+		// TODO: set the pointgrip element's x,y
+		// TODO: set the pointgrip display to inline
+	};
+	
+	var addPointGripToPoly = function(x,y) {
+		// create the container of all the point grips
+		var pointGripContainer = document.getElementById("polypointgrip_container");
+		if (!pointGripContainer) {
+			var parent = document.getElementById("selectorParentGroup");
+			pointGripContainer = parent.appendChild(document.createElementNS(svgns, "g"));
+			pointGripContainer.id = "polypointgrip_container";
+		}
+		
+		// get index of this point
+		var index = current_poly_pts.length/2 - 1;
+
+		var pointGrip = document.getElementById("polypointgrip_"+index);
+		// create it
+		if (!pointGrip) {
+			pointGrip = document.createElementNS(svgns, "circle");
+			pointGrip.id = "polypointgrip_" + index;
+			pointGrip.setAttribute("display", "none");
+			pointGrip.setAttribute("r", 4);
+			pointGrip.setAttribute("fill", "#0F0");
+			pointGrip.setAttribute("stroke", "#00F");
+			pointGrip.setAttribute("stroke-width", 2);
+			pointGrip.setAttribute("cursor", "move");
+			pointGrip.setAttribute("pointer-events", "all");
+			pointGrip = pointGripContainer.appendChild(pointGrip);
+			
+			// TODO: set up mouse event handlers for dragging (mousedown to set polypoint drag mode)
+			var grip = $('#polypointgrip_'+index);
+			grip.mouseover( function() { console.log(this); this.setAttribute("stroke", "#F00"); } );
+			grip.mouseout( function() {this.setAttribute("stroke", "#00F"); } );
+//			grip.mousedown( function() 
+		}
+
+		// set up the point grip element and display it
+		pointGrip.setAttribute("cx", x);
+		pointGrip.setAttribute("cy", y);
+		pointGrip.setAttribute("display", "inline");
+	};
+
 	// - in create mode, the element's opacity is set properly, we create an InsertElementCommand
 	//   and store it on the Undo stack
 	// - in move/resize mode, the element's attributes which were affected by the move/resize are
@@ -1442,6 +1493,7 @@ function SvgCanvas(c)
 					stretchy.setAttribute("y1", y);
 					stretchy.setAttribute("x2", x);
 					stretchy.setAttribute("y2", y);
+					addPointGripToPoly(x,y);
 				}
 				else {
 					// determine if we clicked on an existing point
@@ -1472,11 +1524,18 @@ function SvgCanvas(c)
 							poly.setAttribute("d", d_attr + "z");
 						}
 
+						// loop through and hide all pointgrips
+						var i = current_poly_pts.length/2;
+						while(i--) {
+							console.log(i);
+							document.getElementById("polypointgrip_"+i).setAttribute("display", "none");
+						}
+
 						// this will signal to commit the poly
 						element = poly;
 						current_poly_pts = [];
 						started = false;
-						document.getElementById("poly_stretch_line").setAttribute("display", "none");
+						document.getElementById("poly_stretch_line").setAttribute("display", "none");						
 					}
 					// else, create a new point, append to pts array, update path element
 					else {
@@ -1495,6 +1554,7 @@ function SvgCanvas(c)
 						stretchy.setAttribute("y1", y);
 						stretchy.setAttribute("x2", x);
 						stretchy.setAttribute("y2", y);
+						addPointGripToPoly(x,y);						
 					}
 					keep = true;
 				}
@@ -1979,7 +2039,7 @@ function SvgCanvas(c)
 
 	this.moveSelectedElements = function(dx,dy,undoable) {
 		// if undoable is not sent, default to true
-		var undoable = undoable&&true;
+		var undoable = undoable || true;
 		var batchCmd = new BatchCommand("position");
 		var i = selectedElements.length;
 		while (i--) {
