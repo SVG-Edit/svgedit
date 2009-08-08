@@ -472,6 +472,7 @@ function SvgCanvas(c)
 	var freehand_max_x = null;
 	var freehand_min_y = null;
 	var freehand_max_y = null;
+	var current_poly = null;
 	var current_poly_pts = [];
 	// this will hold all the currently selected elements
 	// default size of 1 until it needs to grow bigger
@@ -926,7 +927,7 @@ function SvgCanvas(c)
 						canvas.clearSelection();
 						canvas.addToSelection([t]);
 					}
-					// else the user is going to manipulate the selected elements
+					// else if it's a poly, go into polyedit mode in mouseup
 				}
 				else {
 					canvas.clearSelection();
@@ -1079,6 +1080,9 @@ function SvgCanvas(c)
 			case "poly":
 				started = true;
 				break;
+			case "polyedit":
+				started = true;
+				break;
 			default:
 				console.log("Unknown mode in mousedown: " + current_mode);
 				break;
@@ -1106,16 +1110,18 @@ function SvgCanvas(c)
 				if (selectedElements[0] != null) {
 					var dx = x - start_x;
 					var dy = y - start_y;
-					var ts = ["translate(",dx,",",dy,")"].join('');
-					var len = selectedElements.length;
-					for (var i = 0; i < len; ++i) {
-						var selected = selectedElements[i];
-						if (selected == null) break;
-						selected.setAttribute("transform", ts);
-						var box = selected.getBBox();
-						box.x += dx; box.y += dy;
-						selectorManager.requestSelector(selected).resize(box);
-						selectedBBoxes[i] = box;
+					if (dx != 0 || dy != 0) {
+						var ts = ["translate(",dx,",",dy,")"].join('');
+						var len = selectedElements.length;
+						for (var i = 0; i < len; ++i) {
+							var selected = selectedElements[i];
+							if (selected == null) break;
+							selected.setAttribute("transform", ts);
+							var box = selected.getBBox();
+							box.x += dx; box.y += dy;
+							selectorManager.requestSelector(selected).resize(box);
+							selectedBBoxes[i] = box;
+						}
 					}
 				}
 				break;
@@ -1277,16 +1283,24 @@ function SvgCanvas(c)
 //		call("changed", selected);
 	};
 
-
-	// TODO: when a shape is moved via keystroke, it is not undo-able
-	// TODO: when a poly is selected, must loop through 'd' and populate current_poly_pts
-	// TODO: when a poly is selected, call addAllPointGripsToPoly
+	var removeAllPointGripsFromPoly = function() {
+		// loop through and hide all pointgrips
+		var i = current_poly_pts.length/2;
+		while(i--) {
+			document.getElementById("polypointgrip_"+i).setAttribute("display", "none");
+		}
+	};
 	
 	var addAllPointGripsToPoly = function() {
-		// TODO: loop through all points in poly
-		// TODO: for each point, find the pointgrip element 
-		// TODO: set the pointgrip element's x,y
-		// TODO: set the pointgrip display to inline
+		// loop through and hide all pointgrips
+		var i = current_poly_pts.length;
+		while(i) {
+			i -= 2;
+			var grip = document.getElementById("polypointgrip_"+i/2);
+			grip.setAttribute("cx", current_poly_pts[i]);
+			grip.setAttribute("cy", current_poly_pts[i+1]);
+			grip.setAttribute("display", "inline");
+		}
 	};
 	
 	var addPointGripToPoly = function(x,y) {
@@ -1317,7 +1331,7 @@ function SvgCanvas(c)
 			
 			// TODO: set up mouse event handlers for dragging (mousedown to set polypoint drag mode)
 			var grip = $('#polypointgrip_'+index);
-			grip.mouseover( function() { console.log(this); this.setAttribute("stroke", "#F00"); } );
+			grip.mouseover( function() { this.setAttribute("stroke", "#F00"); } );
 			grip.mouseout( function() {this.setAttribute("stroke", "#00F"); } );
 //			grip.mousedown( function() 
 		}
@@ -1336,6 +1350,9 @@ function SvgCanvas(c)
 	var mouseUp = function(evt)
 	{
 		if (!started) return;
+
+		var x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
+		var y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
 
 		started = false;
 		var element = svgdoc.getElementById(getId());
@@ -1368,11 +1385,57 @@ function SvgCanvas(c)
 						
 						selectorManager.requestSelector(selected).showGrips(selected.tagName != "text");
 					}
-					recalculateAllSelectedDimensions();
-					var len = selectedElements.length;
-					for(var i = 0; i < len; ++i) {
-						if (selectedElements[i] == null) break;
-						selectorManager.requestSelector(selectedElements[i]).resize(selectedBBoxes[i]);
+					// if it was being dragged/resized
+					if (x != start_x || y != start_y) {
+						recalculateAllSelectedDimensions();
+						var len = selectedElements.length;
+						for	(var i = 0; i < len; ++i) {
+							if (selectedElements[i] == null) break;
+							selectorManager.requestSelector(selectedElements[i]).resize(selectedBBoxes[i]);
+						}
+					}
+					// no change in position/size, so maybe we should move to polyedit
+					else {
+						// TODO: this causes a poly that was just going to be selected to go straight to polyedit
+						if (selectedElements[0].nodeName == "path" && selectedElements[1] == null) {
+							var t = evt.target;
+							if (current_poly == t) {
+								current_mode = "polyedit";
+
+								// recalculate current_poly_pts
+								current_poly_pts = [];
+								var segList = t.pathSegList;
+								var curx = segList.getItem(0).x, cury = segList.getItem(0).y;
+								current_poly_pts.push(curx);
+								current_poly_pts.push(cury);
+								var len = segList.numberOfItems;
+								for (var i = 1; i < len; ++i) {
+									var l = segList.getItem(i);
+									var x = l.x, y = l.y;
+									// polys can now be closed, skip Z segments
+									if (l.pathSegType == 1) {
+										break;
+									}
+									var type = l.pathSegType;
+									// current_poly_pts just holds the absolute coords
+									if (type == 4) {
+										curx = x;
+										cury = y;
+									} // type 4 (abs line)
+									else if (type == 5) {
+										curx += x;
+										cury += y;
+									} // type 5 (rel line)
+									current_poly_pts.push(curx);
+									current_poly_pts.push(cury);
+								} // for each segment
+								canvas.clearSelection();
+								addAllPointGripsToPoly();
+							} // going into polyedit mode
+							else {
+								current_poly = t;
+							}
+						} // no change in mouse position
 					}
 				}				
 				// we return immediately from select so that the obj_num is not incremented
@@ -1450,10 +1513,7 @@ function SvgCanvas(c)
 				canvas.clearSelection();
 				canvas.addToSelection([element]);
 				break;
-			case "poly":
-				var x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
-				var y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
-				
+			case "poly":				
 				// set element to null here so that it is not removed nor finalized
 				element = null;
 				// continue to be set to true so that mouseMove happens
@@ -1524,18 +1584,13 @@ function SvgCanvas(c)
 							poly.setAttribute("d", d_attr + "z");
 						}
 
-						// loop through and hide all pointgrips
-						var i = current_poly_pts.length/2;
-						while(i--) {
-							console.log(i);
-							document.getElementById("polypointgrip_"+i).setAttribute("display", "none");
-						}
+						removeAllPointGripsFromPoly();
+						document.getElementById("poly_stretch_line").setAttribute("display", "none");						
 
 						// this will signal to commit the poly
 						element = poly;
 						current_poly_pts = [];
 						started = false;
-						document.getElementById("poly_stretch_line").setAttribute("display", "none");						
 					}
 					// else, create a new point, append to pts array, update path element
 					else {
@@ -1558,6 +1613,13 @@ function SvgCanvas(c)
 					}
 					keep = true;
 				}
+				break;
+			case "polyedit":
+				keep = true;
+				element = null;
+				current_mode = "select";
+				removeAllPointGripsFromPoly();
+				canvas.addToSelection([evt.target]);
 				break;
 			default:
 				console.log("Unknown mode in mouseup: " + current_mode);
