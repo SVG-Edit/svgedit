@@ -926,6 +926,7 @@ function SvgCanvas(c)
 					if (selectedElements.indexOf(t) == -1) {
 						canvas.clearSelection();
 						canvas.addToSelection([t]);
+						current_poly = null;
 					}
 					// else if it's a poly, go into polyedit mode in mouseup
 				}
