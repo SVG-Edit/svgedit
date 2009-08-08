@@ -474,6 +474,7 @@ function SvgCanvas(c)
 	var freehand_max_y = null;
 	var current_poly = null;
 	var current_poly_pts = [];
+	var current_poly_pt_drag = -1;
 	// this will hold all the currently selected elements
 	// default size of 1 until it needs to grow bigger
 	var selectedElements = new Array(1); 
@@ -1083,6 +1084,10 @@ function SvgCanvas(c)
 				break;
 			case "polyedit":
 				started = true;
+				var id = evt.target.id;
+				if (id.substr(0,14) == "polypointgrip_") {
+					current_poly_pt_drag = parseInt(id.substr(14));
+				}
 				break;
 			default:
 				console.log("Unknown mode in mousedown: " + current_mode);
@@ -1273,6 +1278,42 @@ function SvgCanvas(c)
 					line.setAttribute("y2", y);
 				}
 				break;
+			case "polyedit":
+				// if we are dragging a point, let's move it
+				if (current_poly_pt_drag != -1 && current_poly) {
+					var i = current_poly_pt_drag * 2;
+					var dx = x - current_poly_pts[i],
+						dy = y - current_poly_pts[i+1];
+					current_poly_pts[i] = x;
+					current_poly_pts[i+1] = y;
+					
+					// reset the path's d attribute using current_poly_pts
+					var oldd = current_poly.getAttribute("d");
+					var closedPath = (oldd[oldd.length-1] == 'z' || oldd[oldd.length-1] == 'Z');
+					var len = current_poly_pts.length/2;
+					var arr = new Array(len+1);
+					var curx = current_poly_pts[0],
+						cury = current_poly_pts[1];
+					arr[0] = ["M", curx, ",", cury].join('');
+					for (var j = 1; j < len; ++j) {
+						var px = current_poly_pts[j*2], py = current_poly_pts[j*2+1];
+						arr[j] = ["l", (px-curx), ",", (py-cury)].join('');
+						curx = px;
+						cury = py;
+					}
+					if (closedPath) {
+						arr[len] = "z";
+					}
+					current_poly.setAttribute("d", arr.join(' '));
+					
+					// move the point grip
+					var grip = document.getElementById("polypointgrip_" + current_poly_pt_drag);
+					if (grip) {
+						grip.setAttribute("cx", x);
+						grip.setAttribute("cy", y);
+					}
+				}
+				break;
 			default:
 				break;
 		}
@@ -1330,11 +1371,9 @@ function SvgCanvas(c)
 			pointGrip.setAttribute("pointer-events", "all");
 			pointGrip = pointGripContainer.appendChild(pointGrip);
 			
-			// TODO: set up mouse event handlers for dragging (mousedown to set polypoint drag mode)
 			var grip = $('#polypointgrip_'+index);
 			grip.mouseover( function() { this.setAttribute("stroke", "#F00"); } );
 			grip.mouseout( function() {this.setAttribute("stroke", "#00F"); } );
-//			grip.mousedown( function() 
 		}
 
 		// set up the point grip element and display it
@@ -1618,9 +1657,16 @@ function SvgCanvas(c)
 			case "polyedit":
 				keep = true;
 				element = null;
-				current_mode = "select";
-				removeAllPointGripsFromPoly();
-				canvas.addToSelection([evt.target]);
+				// if we were dragging a poly point, stop it now
+				if (current_poly_pt_drag != -1) {
+					current_poly_pt_drag = -1;
+				}
+				// else, move back to select mode
+				else {
+					current_mode = "select";
+					removeAllPointGripsFromPoly();
+					canvas.addToSelection([evt.target]);
+				}
 				break;
 			default:
 				console.log("Unknown mode in mouseup: " + current_mode);
@@ -1726,6 +1772,7 @@ function SvgCanvas(c)
 		// toss out half-drawn poly
 		if (current_mode == "poly" && current_poly_pts.length > 0) {
 			element.parentNode.removeChild(svgdoc.getElementById(getId()));
+			current_poly = null;
 			current_poly_pts = [];
 		}
 		current_mode = name;		
