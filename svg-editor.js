@@ -190,6 +190,8 @@ function svg_edit_setup() {
 				case "text":
 					// jquery's show() always sets display to block
 					$('#text_panel').show().css("display", "inline");
+					$('#text_x').val(elem.getAttribute("x")||0);
+					$('#text_y').val(elem.getAttribute("y")||0);
 					if (svgCanvas.getItalic()) {
 						$('#tool_italic').addClass('tool_button_current');
 					}
@@ -205,8 +207,8 @@ function svg_edit_setup() {
 					$('#font_family').val(elem.getAttribute("font-family"));
 					$('#font_size').val(elem.getAttribute("font-size"));
 					$('#text').val(elem.textContent);
-					$('#text').focus();
 					if (shouldHighlightText) {
+						$('#text').focus();
 						$('#text').select();
 					}
 					break;
