@@ -2079,7 +2079,10 @@ function SvgCanvas(c)
 				if (attr == "#text") elem.textContent = val;
 				else elem.setAttribute(attr, val);
 				selectedBBoxes[i] = elem.getBBox();
-				selectorManager.requestSelector(elem).resize(selectedBBoxes[i]);				
+				// Timeout needed for Opera & Firefox
+				setTimeout(function() {
+					selectorManager.requestSelector(elem).resize(selectedBBoxes[i]);
+				},0);
 				var changes = {};
 				changes[attr] = oldval;
 				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes, attr));
@@ -2096,6 +2099,10 @@ function SvgCanvas(c)
 	$(container).mousedown(mouseDown);
 	$(container).mousemove(mouseMove);
 
+	// TODO: Unfortunately Mozilla does not handle internal references to gradients
+	// inside a data: URL document.  This means that any elements filled/stroked 
+	// with a gradient will appear black in Firefox, etc.  See bug 308590
+	// https://bugzilla.mozilla.org/show_bug.cgi?id=308590
 	this.saveHandler = function(svg) {
 		window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
 	};
