@@ -83,12 +83,12 @@ function svg_edit_setup() {
 			}
 
 			// update fill color and opacity
-			var fillColor = selectedElement.getAttribute("fill");
+			var fillColor = selectedElement.getAttribute("fill")||"none";
 			svgCanvas.setFillColor(fillColor);
 			svgCanvas.setFillOpacity(fillOpacity);
 
 			// update stroke color and opacity
-			var strokeColor = selectedElement.getAttribute("stroke");
+			var strokeColor = selectedElement.getAttribute("stroke")||"none";
 			svgCanvas.setStrokeColor(strokeColor);
 			svgCanvas.setStrokeOpacity(strokeOpacity);
 
