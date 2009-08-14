@@ -175,6 +175,7 @@ function SvgCanvas(c)
 			this.locked = true;
 			this.selectedElement = e;
 			this.resize();
+			selectorManager.update();
 			this.selectorGroup.setAttribute("display", "inline");
 		};
 	
