@@ -1331,6 +1331,7 @@ function SvgCanvas(c)
 		while(i--) {
 			document.getElementById("polypointgrip_"+i).setAttribute("display", "none");
 		}
+		document.getElementById("poly_stretch_line").setAttribute("display", "none");
 	};
 	
 	var addAllPointGripsToPoly = function() {
@@ -1625,7 +1626,6 @@ function SvgCanvas(c)
 						}
 
 						removeAllPointGripsFromPoly();
-						document.getElementById("poly_stretch_line").setAttribute("display", "none");						
 
 						// this will signal to commit the poly
 						element = poly;
@@ -1771,11 +1771,15 @@ function SvgCanvas(c)
 	this.setMode = function(name) {
 		// toss out half-drawn poly
 		if (current_mode == "poly" && current_poly_pts.length > 0) {
-			element.parentNode.removeChild(svgdoc.getElementById(getId()));
+			var elem = svgdoc.getElementById(getId());
+			elem.parentNode.removeChild(elem);
+			removeAllPointGripsFromPoly();
+			canvas.clearSelection();
+			started = false;
 			current_poly = null;
 			current_poly_pts = [];
 		}
-		current_mode = name;		
+		current_mode = name;
 	};
 
 	this.getStrokeColor = function() {
