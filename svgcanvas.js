@@ -6,6 +6,10 @@ if(!window.console) {
 }
 
 // this defines which elements and attributes that we support
+// TODO: add <g> elements to this
+// TODO: add <polygon> elements to this
+// TODO: add <a> elements to this
+// TODO: add xmlns:xlink attr to <svg> element
 var svgWhiteList = {
 	"circle": ["cx", "cy", "fill", "fill-opacity", "id", "stroke", "r", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform"],
 	"defs": [],
