@@ -7,17 +7,18 @@ if(!window.console) {
 
 // this defines which elements and attributes that we support
 var svgWhiteList = {
-	"circle": ["cx", "cy", "fill", "fill-opacity", "id", "stroke", "r", "stroke-opacity", "stroke-width", "stroke-dasharray"],
+	"circle": ["cx", "cy", "fill", "fill-opacity", "id", "stroke", "r", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform"],
 	"defs": [],
-	"ellipse": ["cx", "cy", "fill", "fill-opacity", "id", "stroke", "rx", "ry", "stroke-opacity", "stroke-width", "stroke-dasharray"],
-	"line": ["fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "x1", "x2", "y1", "y2"],
-	"linearGradient": ["id", "x1", "x2", "y1", "y2"],
-	"path": ["d", "fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray"],
-	"polyline": ["id", "points", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray"],
-	"rect": ["fill", "fill-opacity", "height", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "width", "x", "y"],
+	"ellipse": ["cx", "cy", "fill", "fill-opacity", "id", "stroke", "rx", "ry", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform"],
+	"line": ["fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform", "x1", "x2", "y1", "y2"],
+	"linearGradient": ["id", "gradientTransform", "gradientUnits", "spreadMethod", "x1", "x2", "y1", "y2"],
+	"path": ["d", "fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform"],
+	"polyline": ["id", "points", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform"],
+	"radialGradient": ["id", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "r", "spreadMethod"],
+	"rect": ["fill", "fill-opacity", "height", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform", "width", "x", "y"],
 	"stop": ["id", "offset", "stop-color", "stop-opacity"],
-	"svg": ["id", "height", "width", "xmlns"],
-	"text": ["font-family", "font-size", "font-style", "font-weight", "id", "x", "y"],
+	"svg": ["id", "height", "transform", "width", "xmlns"],
+	"text": ["font-family", "font-size", "font-style", "font-weight", "id", "transform", "x", "y"],
 	};
 
 
