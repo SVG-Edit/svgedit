@@ -251,8 +251,16 @@ function svg_edit_setup() {
 	pos = $('#tools_ellipse_show').position();
 	$('#tools_ellipse').css({'left': pos.left+4, 'top': pos.top+70});
 
-	function changeStrokeWidth(ctl) {
+	var changeRectRadius = function(ctl) {
+		svgCanvas.setRectRadius(ctl.value);
+	}
+	
+	var changeStrokeWidth = function(ctl) {
 		svgCanvas.setStrokeWidth(ctl.value);
+	}
+	
+	var changeRotationAngle = function(ctl) {
+		// TODO: change rotation angle
 	}
 
 	$('#stroke_style').change(function(){
@@ -275,10 +283,6 @@ function svg_edit_setup() {
 		svgCanvas.setTextContent(this.value);
 	});
 
-	function changeRectRadius(ctl) {
-		svgCanvas.setRectRadius(ctl.value);
-	}
-	
 	$('.attr_changer').change(function() {
 		svgCanvas.changeSelectedAttribute(this.getAttribute("alt"), this.value);
 	});
@@ -772,6 +776,7 @@ function svg_edit_setup() {
 
 	$('#rect_radius').SpinButton({ min: 0, max: 1000, step: 1, callback: changeRectRadius });
 	$('#stroke_width').SpinButton({ min: 1, max: 99, step: 1, callback: changeStrokeWidth });
+	$('#angle').SpinButton({ min: -359, max: 359, step: 1, callback: changeRotationAngle });
 
 	return svgCanvas;
 };
