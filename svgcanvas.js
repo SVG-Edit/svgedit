@@ -759,7 +759,6 @@ function SvgCanvas(c)
 		case "path":
 			// extract the x,y from the path, adjust it and write back the new path
 			// but first, save the old path
-			var handle = svgroot.suspendRedraw(1000);			
 			changes["d"] = selected.getAttribute("d");
 			var M = selected.pathSegList.getItem(0);
 			var curx = M.x, cury = M.y;
@@ -796,59 +795,48 @@ function SvgCanvas(c)
 					case 13: // relative horizontal line (h)
 					case 15: // relative vertical line (v)
 					case 19: // relative smooth quad (t)
-						x = scalew(x);
-						y = scaleh(y);
 						curx += x;
 						cury += y;
-						newd += [" ", pathMap[type], x, ",", y].join('');
+						newd += [" ", pathMap[type], scalew(x), ",", scaleh(y)].join('');
 						break;
 					case 6: // absolute cubic (C)
 						x -= curx; x1 -= curx; x2 -= curx;
 						y -= cury; y1 -= cury; y2 -= cury;
 					case 7: // relative cubic (c)
-						x = scalew(x);
-						y = scaleh(y);
 						curx += x;
 						cury += y;
 						newd += [" c", scalew(x1), ",", scaleh(y1), " ", scalew(x2), ",", scaleh(y2),
-									" ", x, ",", y].join('');
+									" ", scalew(x), ",", scaleh(y)].join('');
 						break;
 					case 8: // absolute quad (Q)
 						x -= curx; x1 -= curx;
 						y -= cury; y1 -= cury;
 					case 9: // relative quad (q) 
-						x = scalew(x);
-						y = scaleh(y);
 						curx += x;
 						cury += y;
-						newd += [" q", scalew(x1), ",", scaleh(y1), " ", x, ",", y].join('');
+						newd += [" q", scalew(x1), ",", scaleh(y1), " ", scalew(x), ",", scaleh(y)].join('');
 						break;
 					case 10: // absolute elliptical arc (A)
 						x -= curx;
 						y -= cury;
 					case 11: // relative elliptical arc (a)
-						x = scalew(x);
-						y = scaleh(y);
 						curx += x;
 						cury += y;
 						newd += [ "a", scalew(seg.r1), ",", scaleh(seg.r2), " ", seg.angle, " ", 
 									(seg.largeArcFlag ? 1 : 0), " ", (seg.sweepFlag ? 1 : 0), " ", 
-									x, ",", y ].join('')
+									scalew(x), ",", scaleh(y) ].join('')
 						break;
 					case 16: // absolute smooth cubic (S)
 						x -= curx; x2 -= curx;
 						y -= cury; y2 -= cury;
 					case 17: // relative smooth cubic (s)
-						x = scalew(x);
-						y = scaleh(y);
 						curx += x;
 						cury += y;
-						newd += [" s", scalew(x2), ",", scaleh(y2), " ", x, ",", y].join('');
+						newd += [" s", scalew(x2), ",", scaleh(y2), " ", scalew(x), ",", scaleh(y)].join('');
 						break;
 				} // switch on path segment type
 			} // for each segment
 			selected.setAttributeNS(null, "d", newd);
-			svgroot.unsuspendRedraw(handle);			
 			break;
 		case "line":
 			changes["x1"] = selected.x1.baseVal.value;
