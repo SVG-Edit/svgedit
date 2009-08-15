@@ -17,6 +17,7 @@ var svgWhiteList = {
 	"line": ["fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform", "x1", "x2", "y1", "y2"],
 	"linearGradient": ["id", "gradientTransform", "gradientUnits", "spreadMethod", "x1", "x2", "y1", "y2"],
 	"path": ["d", "fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform"],
+	"polygon": ["id", "fill", "fill-opacity", "points", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform"],
 	"polyline": ["id", "points", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform"],
 	"radialGradient": ["id", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "r", "spreadMethod"],
 	"rect": ["fill", "fill-opacity", "height", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform", "width", "x", "y"],
@@ -702,6 +703,11 @@ function SvgCanvas(c)
 		}
 	};
 	
+	// this is how we map paths to our preferred relative segment types
+	var pathMap = [ 0, 'z', 'm', 'm', 'l', 'l', 'c', 'c', 'q', 'q', 'a', 'a', 
+					'l', 'l', 'l', 'l', // TODO: be less lazy below and map them to h and v
+					's', 's', 't', 't' ];
+	
 	// this function returns the command which resulted from th selected change
 	var recalculateSelectedDimensions = function(i) {
 		var selected = selectedElements[i];
@@ -717,10 +723,10 @@ function SvgCanvas(c)
 
 		// after this point, we have some change to this element
 		
-		var remapx = function(x) {return ((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x;}
-		var remapy = function(y) {return ((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y;}
-		var scalew = function(w) {return w*selectedBBox.width/box.width;}
-		var scaleh = function(h) {return h*selectedBBox.height/box.height;}
+		var remapx = function(x) {return parseInt(((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x);}
+		var remapy = function(y) {return parseInt(((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y);}
+		var scalew = function(w) {return parseInt(w*selectedBBox.width/box.width);}
+		var scaleh = function(h) {return parseInt(h*selectedBBox.height/box.height);}
 
 		var changes = {};
 
@@ -731,6 +737,10 @@ function SvgCanvas(c)
 		selected.removeAttribute("transform");
 		switch (selected.tagName)
 		{
+		// NOTE: there's no way to create an actual polygon element except by editing source
+		// or importing from somewhere else
+		case "polygon": 
+		// polygon is handled identically as polyline
 		case "polyline":
 			// extract the x,y from the path, adjust it and write back the new path
 			// but first, save the old path
@@ -756,25 +766,88 @@ function SvgCanvas(c)
 			var segList = selected.pathSegList;
 			var len = segList.numberOfItems;
 			for (var i = 1; i < len; ++i) {
-				var l = segList.getItem(i);
-				var x = l.x, y = l.y;
-				// polys can now be closed, skip Z segments
-				if (l.pathSegType == 1) {
-					newd += "z";
-					continue;
-				}
-				// webkit browsers normalize things and this becomes an absolute
-				// line segment!  we need to turn this back into a rel line segment
-				// see https://bugs.webkit.org/show_bug.cgi?id=26487
-				if (l.pathSegType == 4) {
-					x -= curx;
-					y -= cury;
-					curx += x;
-					cury += y;
-				}
-				// we only need to scale the relative coordinates (no need to translate)
-				newd += " l" + scalew(x) + "," + scaleh(y);
-			}
+				var seg = segList.getItem(i);
+				// if these properties are not in the segment, set them to zero
+				var x = seg.x || 0,
+					y = seg.y || 0,
+					x1 = seg.x1 || 0,
+					y1 = seg.y1 || 0,
+					x2 = seg.x2 || 0,
+					y2 = seg.y2 || 0;
+
+				// This will let us drag/resize any path (currently we can only 
+				// drag/resize paths that contain line segments)
+				// Webkit browsers normalize things and all relative segments becomes absolute
+				// We turn them back into relative segments.  see https://bugs.webkit.org/show_bug.cgi?id=26487
+				var type = seg.pathSegType;
+				switch (type) {
+					case 1: // z,Z closepath (Z/z)
+						newd += "z";
+						continue;
+					// turn this into a relative segment by falling through
+					case 2: // absolute move (M)
+					case 4: // absolute line (L)
+					case 12: // absolute horizontal line (H)
+					case 14: // absolute vertical line (V)
+					case 18: // absolute smooth quad (T)
+						x -= curx;
+						y -= cury;
+					case 3: // relative move (m)
+					case 5: // relative line (l)
+					case 13: // relative horizontal line (h)
+					case 15: // relative vertical line (v)
+					case 19: // relative smooth quad (t)
+						x = scalew(x);
+						y = scaleh(y);
+						curx += x;
+						cury += y;
+						newd += [" ", pathMap[type], x, ",", y].join('');
+						break;
+					case 6: // absolute cubic (C)
+						x -= curx; x1 -= curx; x2 -= curx;
+						y -= cury; y1 -= cury; y2 -= cury;
+					case 7: // relative cubic (c)
+						x = scalew(x);
+						y = scaleh(y);
+						curx += x;
+						cury += y;
+						newd += [" c", scalew(x1), ",", scaleh(y1), " ", scalew(x2), ",", scaleh(y2),
+									" ", x, ",", y].join('');
+						break;
+					case 8: // absolute quad (Q)
+						x -= curx; x1 -= curx;
+						y -= cury; y1 -= cury;
+					case 9: // relative quad (q) 
+						x = scalew(x);
+						y = scaleh(y);
+						curx += x;
+						cury += y;
+						newd += [" q", scalew(x1), ",", scaleh(y1), " ", x, ",", y].join('');
+						break;
+					case 10: // absolute elliptical arc (A)
+						x -= curx;
+						y -= cury;
+					case 11: // relative elliptical arc (a)
+						x = scalew(x);
+						y = scaleh(y);
+						curx += x;
+						cury += y;
+						newd += [ "a", scalew(seg.r1), ",", scaleh(seg.r2), " ", seg.angle, " ", 
+									(seg.largeArcFlag ? 1 : 0), " ", (seg.sweepFlag ? 1 : 0), " ", 
+									x, ",", y ].join('')
+						break;
+					case 16: // absolute smooth cubic (S)
+						x -= curx; x2 -= curx;
+						y -= cury; y2 -= cury;
+					case 17: // relative smooth cubic (s)
+						x = scalew(x);
+						y = scaleh(y);
+						curx += x;
+						cury += y;
+						newd += [" s", scalew(x2), ",", scaleh(y2), " ", x, ",", y].join('');
+						break;
+				} // switch on path segment type
+			} // for each segment
 			selected.setAttributeNS(null, "d", newd);
 			break;
 		case "line":
