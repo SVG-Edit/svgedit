@@ -759,12 +759,15 @@ function SvgCanvas(c)
 		case "path":
 			// extract the x,y from the path, adjust it and write back the new path
 			// but first, save the old path
+			var handle = svgroot.suspendRedraw(1000);			
 			changes["d"] = selected.getAttribute("d");
 			var M = selected.pathSegList.getItem(0);
 			var curx = M.x, cury = M.y;
 			var newd = "M" + remapx(curx) + "," + remapy(cury);
 			var segList = selected.pathSegList;
 			var len = segList.numberOfItems;
+			// for all path segments in the path, we first turn them into relative path segments,
+			// then we remap the coordinates from the resize
 			for (var i = 1; i < len; ++i) {
 				var seg = segList.getItem(i);
 				// if these properties are not in the segment, set them to zero
@@ -775,10 +778,6 @@ function SvgCanvas(c)
 					x2 = seg.x2 || 0,
 					y2 = seg.y2 || 0;
 
-				// This will let us drag/resize any path (currently we can only 
-				// drag/resize paths that contain line segments)
-				// Webkit browsers normalize things and all relative segments becomes absolute
-				// We turn them back into relative segments.  see https://bugs.webkit.org/show_bug.cgi?id=26487
 				var type = seg.pathSegType;
 				switch (type) {
 					case 1: // z,Z closepath (Z/z)
@@ -849,6 +848,7 @@ function SvgCanvas(c)
 				} // switch on path segment type
 			} // for each segment
 			selected.setAttributeNS(null, "d", newd);
+			svgroot.unsuspendRedraw(handle);			
 			break;
 		case "line":
 			changes["x1"] = selected.x1.baseVal.value;
