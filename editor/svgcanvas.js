@@ -228,9 +228,6 @@ function SvgCanvas(c)
 						"width": 6,
 						"height": 6,
 						"style": ("cursor:" + dir + "-resize"),
-						// when we are in rotate mode, we will set rx/ry to 3
-//						"rx": 3,
-//						"ry": 3,
 						// This expands the mouse-able area of the grips making them
 						// easier to grab with the mouse.
 						// This works in Opera and WebKit, but does not work in Firefox
@@ -2073,7 +2070,39 @@ function SvgCanvas(c)
 	
 	this.getBBox = function(elem) {
 		var selected = elem || selectedElements[0];
-		return selected.getBBox();
+		var bbox = selected.getBBox();
+
+		// determine the bounding box if rotated (NOTE: this won't be
+		// the tightest possible bounding box, for it will do)
+		var angle = this.getRotationAngle(selected) * Math.PI / 180.0;
+		if (angle != null) {
+			var w2 = bbox.width/2, h2 = bbox.height/2,
+				cx = bbox.x + w2, cy = bbox.y + h2;
+			var pts = [ [-w2,-h2], [w2,-h2],
+						[w2,h2], [-w2,h2] ];
+			var r = Math.sqrt( w2*w2 + h2*h2 );
+			console.log(pts);
+			console.log(r);
+			var i = 4;
+			var MINX = Number.MAX_VALUE, MINY = Number.MAX_VALUE, 
+				MAXX = Number.MIN_VALUE, MAXY = Number.MIN_VALUE;
+			while (i--) {
+				var theta = angle + Math.atan2(pts[i][1],pts[i][0]);
+				var x = r * Math.cos(theta),
+					y = r * Math.sin(theta);
+				
+				if (MINX > x) { MINX = x; }
+				if (MINY > y) { MINY = y; }
+				if (MAXX < x) { MAXX = x; }
+				if (MAXY < y) { MAXY = y; }
+			}
+			bbox.x = cx + parseInt(MINX);
+			bbox.y = cy + parseInt(MINY);
+			bbox.width = parseInt(MAXX-MINX);
+			bbox.height = parseInt(MAXY-MINY);
+		}
+		
+		return bbox;
 	};
 	
 	this.getRotationAngle = function(elem) {
