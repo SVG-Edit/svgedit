@@ -16,7 +16,7 @@ function svg_edit_setup() {
 		$('#tool_select').addClass('tool_button_current');
 		$('#styleoverrides').text('*{cursor:move;pointer-events:all} svg{cursor:default}');
 		svgCanvas.setMode('select');
-	}
+	};
 
 	// used to make the flyouts stay on the screen longer the very first time
 	var flyoutspeed = 1250;
@@ -45,7 +45,7 @@ function svg_edit_setup() {
 		} // if (elem != null)
 
 		updateContextPanel(true);
-	}
+	};
 
 	// called when any element has changed
 	var elementChanged = function(window,elems) {
@@ -66,10 +66,10 @@ function svg_edit_setup() {
 		// we tell it to skip focusing the text control if the
 		// text element was previously in focus
 		updateContextPanel(false);
-	}
+	};
 
 	// updates the toolbar (colors, opacity, etc) based on the selected element
-	function updateToolbar() {
+	var updateToolbar = function() {
 		if (selectedElement != null) {
 			// get opacity values
 			var fillOpacity = parseFloat(selectedElement.getAttribute("fill-opacity"));
@@ -143,10 +143,10 @@ function svg_edit_setup() {
 		}
 
 		updateToolButtonState();
-	}
+	};
 
 	// updates the context panel tools based on the selected element
-	function updateContextPanel(shouldHighlightText) {
+	var updateContextPanel = function(shouldHighlightText) {
 		var elem = selectedElement;
 		$('#selected_panel').hide();
 		$('#multiselected_panel').hide();
@@ -232,7 +232,7 @@ function svg_edit_setup() {
 		else {
 			$('#tool_redo').addClass( 'tool_button_disabled');
 		}
-	}
+	};
 
 	$('#text').focus( function(){ textBeingEntered = true; } );
 	$('#text').blur( function(){ textBeingEntered = false; } );
@@ -261,7 +261,7 @@ function svg_edit_setup() {
 	}
 	
 	var changeRotationAngle = function(ctl) {
-		// TODO: change rotation angle
+		svgCanvas.setRotationAngle(ctl.value);
 	}
 
 	$('#stroke_style').change(function(){
@@ -672,9 +672,9 @@ function svg_edit_setup() {
 			function(p) {
 				$('#color_picker').hide();
 			});
-	}
+	};
 
-	function updateToolButtonState() {
+	var updateToolButtonState = function() {
 		var bNoFill = (svgCanvas.getFillColor() == 'none');
 		var bNoStroke = (svgCanvas.getStrokeColor() == 'none');
 		var buttonsNeedingStroke = [ '#tool_path', '#tool_line' ];
@@ -710,7 +710,7 @@ function svg_edit_setup() {
 				$(button).removeClass('tool_button_disabled').addClass('tool_button');
 			}
 		}
-	}
+	};
 
 	// set up gradients to be used for the buttons
 	var svgdocbox = new DOMParser().parseFromString(
@@ -777,7 +777,7 @@ function svg_edit_setup() {
 
 	$('#rect_radius').SpinButton({ min: 0, max: 1000, step: 1, callback: changeRectRadius });
 	$('#stroke_width').SpinButton({ min: 1, max: 99, step: 1, callback: changeStrokeWidth });
-	$('#angle').SpinButton({ min: -359, max: 359, step: 1, callback: changeRotationAngle });
+	$('#angle').SpinButton({ min: -359, max: 359, step: 5, callback: changeRotationAngle });
 
 	return svgCanvas;
 };
