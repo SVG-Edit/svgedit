@@ -11,19 +11,19 @@ if(!window.console) {
 // TODO: add <a> elements to this
 // TODO: add xmlns:xlink attr to <svg> element
 var svgWhiteList = {
-	"circle": ["cx", "cy", "fill", "fill-opacity", "id", "stroke", "r", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform"],
+	"circle": ["cx", "cy", "fill", "fill-opacity", "id", "r", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
 	"defs": [],
-	"ellipse": ["cx", "cy", "fill", "fill-opacity", "id", "stroke", "rx", "ry", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform"],
-	"line": ["fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform", "x1", "x2", "y1", "y2"],
+	"ellipse": ["cx", "cy", "fill", "fill-opacity", "id", "rx", "ry", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
+	"line": ["fill", "fill-opacity", "id", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-opacity", "stroke-width",  "transform", "x1", "x2", "y1", "y2"],
 	"linearGradient": ["id", "gradientTransform", "gradientUnits", "spreadMethod", "x1", "x2", "y1", "y2"],
-	"path": ["d", "fill", "fill-opacity", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform"],
-	"polygon": ["id", "fill", "fill-opacity", "points", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform"],
-	"polyline": ["id", "points", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform"],
+	"path": ["d", "fill", "fill-opacity", "id", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
+	"polygon": ["id", "fill", "fill-opacity", "points", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
+	"polyline": ["id", "points", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
 	"radialGradient": ["id", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "r", "spreadMethod"],
-	"rect": ["fill", "fill-opacity", "height", "id", "stroke", "stroke-opacity", "stroke-width", "stroke-dasharray", "transform", "width", "x", "y"],
+	"rect": ["fill", "fill-opacity", "height", "id", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "width", "x", "y"],
 	"stop": ["id", "offset", "stop-color", "stop-opacity"],
 	"svg": ["id", "height", "transform", "width", "xmlns"],
-	"text": ["font-family", "font-size", "font-style", "font-weight", "id", "transform", "x", "y"],
+	"text": ["fill", "fill-opacity", "font-family", "font-size", "font-style", "font-weight", "id", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "x", "y"],
 	};
 
 
@@ -268,26 +268,26 @@ function SvgCanvas(c)
 			var bbox = bbox || this.selectedElement.getBBox();
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
 			// TODO: use suspendRedraw() here
-			selectedBox.x.baseVal.value = l;
-			selectedBox.y.baseVal.value = t;
-			selectedBox.width.baseVal.value = w;
-			selectedBox.height.baseVal.value = h;
-			selectedGrips.nw.x.baseVal.value = l-3;
-			selectedGrips.nw.y.baseVal.value = t-3;
-			selectedGrips.ne.x.baseVal.value = l+w-3;
-			selectedGrips.ne.y.baseVal.value = t-3;
-			selectedGrips.sw.x.baseVal.value = l-3;
-			selectedGrips.sw.y.baseVal.value = t+h-3;
-			selectedGrips.se.x.baseVal.value = l+w-3;
-			selectedGrips.se.y.baseVal.value = t+h-3;
-			selectedGrips.n.x.baseVal.value = l+w/2-3;
-			selectedGrips.n.y.baseVal.value = t-3;
-			selectedGrips.w.x.baseVal.value = l-3;
-			selectedGrips.w.y.baseVal.value = t+h/2-3;
-			selectedGrips.e.x.baseVal.value = l+w-3;
-			selectedGrips.e.y.baseVal.value = t+h/2-3;
-			selectedGrips.s.x.baseVal.value = l+w/2-3;
-			selectedGrips.s.y.baseVal.value = t+h-3;
+			selectedBox.setAttribute("x", l);
+			selectedBox.setAttribute("y", t);
+			selectedBox.setAttribute("width", w);
+			selectedBox.setAttribute("height", h);
+			selectedGrips.nw.setAttribute("x", l-3);
+			selectedGrips.nw.setAttribute("y", t-3);
+			selectedGrips.ne.setAttribute("x", l+w-3);
+			selectedGrips.ne.setAttribute("y", t-3);
+			selectedGrips.sw.setAttribute("x", l-3);
+			selectedGrips.sw.setAttribute("y", t+h-3);
+			selectedGrips.se.setAttribute("x", l+w-3);
+			selectedGrips.se.setAttribute("y", t+h-3);
+			selectedGrips.n.setAttribute("x", l+w/2-3);
+			selectedGrips.n.setAttribute("y", t-3);
+			selectedGrips.w.setAttribute("x", l-3);
+			selectedGrips.w.setAttribute("y", t+h/2-3);
+			selectedGrips.e.setAttribute("x", l+w-3);
+			selectedGrips.e.setAttribute("y", t+h/2-3);
+			selectedGrips.s.setAttribute("x", l+w/2-3);
+			selectedGrips.s.setAttribute("y", t+h-3);
 		};
 		
 		// now initialize the selector
@@ -782,7 +782,7 @@ function SvgCanvas(c)
 					case 1: // z,Z closepath (Z/z)
 						newd += "z";
 						continue;
-					// turn this into a relative segment by falling through
+					// turn this into a relative segment then fall through
 					case 2: // absolute move (M)
 					case 4: // absolute line (L)
 					case 12: // absolute horizontal line (H)
@@ -839,59 +839,58 @@ function SvgCanvas(c)
 			selected.setAttributeNS(null, "d", newd);
 			break;
 		case "line":
-			changes["x1"] = selected.x1.baseVal.value;
-			changes["y1"] = selected.y1.baseVal.value;
-			changes["x2"] = selected.x2.baseVal.value;
-			changes["y2"] = selected.y2.baseVal.value;
+			changes["x1"] = selected.getAttribute("x1");
+			changes["y1"] = selected.getAttribute("y1");
+			changes["x2"] = selected.getAttribute("x2");
+			changes["y2"] = selected.getAttribute("y2");
 			var handle = svgroot.suspendRedraw(1000);			
-			selected.x1.baseVal.value = remapx(selected.x1.baseVal.value);
-			selected.y1.baseVal.value = remapy(selected.y1.baseVal.value);
-			selected.x2.baseVal.value = remapx(selected.x2.baseVal.value);
-			selected.y2.baseVal.value = remapy(selected.y2.baseVal.value);
+			selected.setAttribute("x1", remapx(changes["x1"]));
+			selected.setAttribute("y1", remapy(changes["y1"]));
+			selected.setAttribute("x2", remapx(changes["x2"]));
+			selected.setAttribute("y2", remapy(changes["y2"]));
 			svgroot.unsuspendRedraw(handle);			
 			break;
 		case "circle":
-			changes["cx"] = selected.cx.baseVal.value;
-			changes["cy"] = selected.cy.baseVal.value;
-			changes["r"] = selected.r.baseVal.value;
+			changes["cx"] = selected.getAttribute("cx");
+			changes["cy"] = selected.getAttribute("cy");
+			changes["r"] = selected.getAttribute("r");
 			var handle = svgroot.suspendRedraw(1000);
-			selected.cx.baseVal.value = remapx(selected.cx.baseVal.value);
-			selected.cy.baseVal.value = remapy(selected.cy.baseVal.value);
+			selected.setAttribute("cx", remapx(changes["cx"]));
+			selected.setAttribute("cy", remapy(changes["cy"]));
 			// take the minimum of the new selected box's dimensions for the new circle radius
-			selected.r.baseVal.value = Math.min(selectedBBox.width/2,selectedBBox.height/2);
+			selected.setAttribute("r", Math.min(selectedBBox.width/2,selectedBBox.height/2));
 			svgroot.unsuspendRedraw(handle);			
 			break;
 		case "ellipse":
-			changes["cx"] = selected.cx.baseVal.value;
-			changes["cy"] = selected.cy.baseVal.value;
-			changes["rx"] = selected.rx.baseVal.value;
-			changes["ry"] = selected.ry.baseVal.value;
+			changes["cx"] = selected.getAttribute("cx");
+			changes["cy"] = selected.getAttribute("cy");
+			changes["rx"] = selected.getAttribute("rx");
+			changes["ry"] = selected.getAttribute("ry");
 			var handle = svgroot.suspendRedraw(1000);
-			selected.cx.baseVal.value = remapx(selected.cx.baseVal.value);
-			selected.cy.baseVal.value = remapy(selected.cy.baseVal.value);
-			selected.rx.baseVal.value = scalew(selected.rx.baseVal.value);
-			selected.ry.baseVal.value = scaleh(selected.ry.baseVal.value);
+			selected.setAttribute("cx", remapx(changes["cx"]));
+			selected.setAttribute("cy", remapy(changes["cy"]));
+			selected.setAttribute("rx", scalew(changes["rx"]));
+			selected.setAttribute("ry", scaleh(changes["ry"]));
 			svgroot.unsuspendRedraw(handle);			
 			break;
 		case "text":
-			// cannot use x.baseVal.value here because x is a SVGLengthList
 			changes["x"] = selected.getAttribute("x");
 			changes["y"] = selected.getAttribute("y");
 			var handle = svgroot.suspendRedraw(1000);
-			selected.setAttribute("x", remapx(selected.getAttribute("x")));
-			selected.setAttribute("y", remapy(selected.getAttribute("y")));
-			svgroot.unsuspendRedraw(handle);			
+			selected.setAttribute("x", remapx(changes["x"]));
+			selected.setAttribute("y", remapy(changes["y"]));
+			svgroot.unsuspendRedraw(handle);
 			break;
 		case "rect":
-			changes["x"] = selected.x.baseVal.value;
-			changes["y"] = selected.y.baseVal.value;
-			changes["width"] = selected.width.baseVal.value;
-			changes["height"] = selected.height.baseVal.value;
+			changes["x"] = selected.getAttribute("x");
+			changes["y"] = selected.getAttribute("y");
+			changes["width"] = selected.getAttribute("width");
+			changes["height"] = selected.getAttribute("height");
 			var handle = svgroot.suspendRedraw(1000);
-			selected.x.baseVal.value = remapx(selected.x.baseVal.value);
-			selected.y.baseVal.value = remapy(selected.y.baseVal.value);
-			selected.width.baseVal.value = scalew(selected.width.baseVal.value);
-			selected.height.baseVal.value = scaleh(selected.height.baseVal.value);
+			selected.setAttribute("x", remapx(changes["x"]));
+			selected.setAttribute("y", remapy(changes["y"]));
+			selected.setAttribute("width", scalew(changes["width"]));
+			selected.setAttribute("height", scaleh(changes["height"]));
 			svgroot.unsuspendRedraw(handle);			
 			break;
 		default: // rect
@@ -1004,10 +1003,10 @@ function SvgCanvas(c)
 					if (rubberBox == null) {
 						rubberBox = selectorManager.getRubberBandBox();
 					}
-					rubberBox.x.baseVal.value = start_x;
-					rubberBox.y.baseVal.value = start_y;
-					rubberBox.width.baseVal.value = 0;
-					rubberBox.height.baseVal.value = 0;
+					rubberBox.setAttribute("x", start_x);
+					rubberBox.setAttribute("y", start_y);
+					rubberBox.setAttribute("width", 0);
+					rubberBox.setAttribute("height", 0);
 					rubberBox.setAttribute("display", "inline");
 				}
 				break;
@@ -1033,6 +1032,8 @@ function SvgCanvas(c)
 						"stroke-width": current_stroke_width,
 						"stroke-dasharray": current_stroke_style,
 						"stroke-opacity": current_stroke_opacity,
+						"stroke-linecap": "round",
+						"stroke-linejoin": "round",
 						"opacity": current_opacity / 2
 					}
 				});
@@ -1199,10 +1200,10 @@ function SvgCanvas(c)
 				}
 				break;
 			case "multiselect":
-				rubberBox.x.baseVal.value = Math.min(start_x,x);
-				rubberBox.y.baseVal.value = Math.min(start_y,y);
-				rubberBox.width.baseVal.value = Math.abs(x-start_x);
-				rubberBox.height.baseVal.value = Math.abs(y-start_y);
+				rubberBox.setAttribute("x", Math.min(start_x,x));
+				rubberBox.setAttribute("y", Math.min(start_y,y));
+				rubberBox.setAttribute("width", Math.abs(x-start_x));
+				rubberBox.setAttribute("height", Math.abs(y-start_y));
 
 				// this code will probably be faster than using getIntersectionList(), but
 				// not as accurate (only grabs an element if the mouse happens to pass over
@@ -2048,7 +2049,18 @@ function SvgCanvas(c)
 	};
 	
 	this.setRotationAngle = function(val) {
-		console.log(val);
+		var elem = selectedElements[0];
+		var bbox = elem.getBBox();
+		
+		this.changeSelectedAttribute("transform", "rotate(" + val + " " + 
+									(bbox.x+bbox.width/2) + "," +
+									(bbox.y+bbox.height/2) + ")");
+		
+		// TODO: map from this element's CTM to the viewport
+		// see http://www.w3.org/Graphics/SVG/WG/track/issues/2283 for one way to do this
+//		bbox = selectedBBoxes[0] =
+//		console.log(bbox.x + "," + bbox.y + " " + bbox.width + "," + bbox.height);
+//		setTimeout(function() {selectorManager.requestSelector(elem).resize(selectedBBoxes[i]);},0);
 	};
 
 	this.each = function(cb) {
