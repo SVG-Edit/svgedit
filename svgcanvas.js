@@ -730,7 +730,7 @@ function SvgCanvas(c)
 		// This fixes Firefox 2- behavior - which does not reset values when the attribute has
 		// been removed, see https://bugzilla.mozilla.org/show_bug.cgi?id=320622
 		var angle = canvas.getRotationAngle(selected);
-		if (angle != null) {
+		if (angle) {
 			var cx = remapx(box.x + box.width/2),
 				cy = remapy(box.y + box.height/2);
 			selected.setAttribute("transform", ["rotate(", angle, " ", cx, ",", cy, ")"].join(''));
@@ -1198,7 +1198,7 @@ function SvgCanvas(c)
 							
 							var box = canvas.getBBox(selected);
 							var angle = canvas.getRotationAngle(selected);
-							if (angle != null) {
+							if (angle) {
 								var cx = box.x + box.width/2,
 									cy = box.y + box.height/2;
 								ts += [" rotate(", angle, " ", cx, ",", cy, ")"].join('');
@@ -1251,6 +1251,8 @@ function SvgCanvas(c)
 				*/
 				break;
 			case "resize":
+				// TODO: update this to handle rotated elements
+				
 				// we track the resize bounding box and translate/scale the selected element
 				// while the mouse is down, when mouse goes up, we use this to recalculate
 				// the shape's coordinates
@@ -1292,7 +1294,7 @@ function SvgCanvas(c)
 				var ts = ["translate(", (left+tx), ",", (top+ty), ") scale(", sx, ",", sy,
 							") translate(", -left, ",", -top, ")"].join('');
 				var angle = canvas.getRotationAngle(selected);
-				if (angle != null) {
+				if (angle) {
 					var cx = selectedBBox.x + selectedBBox.width/2,
 						cy = selectedBBox.y + selectedBBox.height/2;
 					ts += [" rotate(", angle, " ", cx, ",", cy, ")"].join('')
@@ -2075,7 +2077,7 @@ function SvgCanvas(c)
 		// determine the bounding box if rotated (NOTE: this won't be
 		// the tightest possible bounding box, for it will do)
 		var angle = this.getRotationAngle(selected) * Math.PI / 180.0;
-		if (angle != null) {
+		if (angle) {
 			var w2 = bbox.width/2, h2 = bbox.height/2,
 				cx = bbox.x + w2, cy = bbox.y + h2;
 			var pts = [ [-w2,-h2], [w2,-h2],
@@ -2117,7 +2119,7 @@ function SvgCanvas(c)
 				return xform.angle;
 			}
 		}
-		return null;
+		return 0;
 	};
 	
 	this.setRotationAngle = function(val) {
