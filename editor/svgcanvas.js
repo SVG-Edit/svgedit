@@ -265,7 +265,7 @@ function SvgCanvas(c)
 			if (selected.tagName == "text") {
 				offset += 2;
 			}
-			var bbox = bbox || this.selectedElement.getBBox();
+			var bbox = bbox || canvas.getBBox(this.selectedElement);
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
 			// TODO: use suspendRedraw() here
 			selectedBox.setAttribute("x", l);
@@ -522,9 +522,8 @@ function SvgCanvas(c)
 				// need to do this since the defs has no bbox and causes an exception
 				// to be thrown in Mozilla
 				try {
-//					if (nodes[i].tagName == "defs") continue;				
 					if (nodes[i].id != "selectorParentGroup" &&
-						Utils.rectsIntersect(rubberBBox, nodes[i].getBBox())) 
+						Utils.rectsIntersect(rubberBBox, canvas.getBBox(nodes[i]))) 
 					{
 						resultList.push(nodes[i]);
 					}
@@ -713,7 +712,7 @@ function SvgCanvas(c)
 		var selected = selectedElements[i];
 		if (selected == null) return null;
 		var selectedBBox = selectedBBoxes[i];
-		var box = selected.getBBox();
+		var box = canvas.getBBox(selected);
 
 		// if we have not moved/resized, then immediately leave
 		if (box.x == selectedBBox.x && box.y == selectedBBox.y &&
@@ -947,7 +946,7 @@ function SvgCanvas(c)
 			// if it's not already there, add it
 			if (selectedElements.indexOf(elem) == -1) {
 				selectedElements[j] = elem;
-				selectedBBoxes[j++] = elem.getBBox();
+				selectedBBoxes[j++] = this.getBBox(elem);
 				selectorManager.requestSelector(elem);
 				call("selected", selectedElements);
 			}
@@ -1200,7 +1199,7 @@ function SvgCanvas(c)
 							var selected = selectedElements[i];
 							if (selected == null) break;
 							
-							var box = selected.getBBox();
+							var box = canvas.getBBox(selected);
 							var angle = canvas.getRotationAngle(selected);
 							if (angle != null) {
 								var cx = box.x + box.width/2,
@@ -1258,7 +1257,7 @@ function SvgCanvas(c)
 				// we track the resize bounding box and translate/scale the selected element
 				// while the mouse is down, when mouse goes up, we use this to recalculate
 				// the shape's coordinates
-				var box=selected.getBBox(), left=box.x, top=box.y, width=box.width,
+				var box=canvas.getBBox(selected), left=box.x, top=box.y, width=box.width,
 					height=box.height, dx=(x-start_x), dy=(y-start_y);
 				var tx=0, ty=0, sx=1, sy=1;
 				var ts = null;
@@ -2072,6 +2071,11 @@ function SvgCanvas(c)
 		this.changeSelectedAttribute("stroke-opacity", val);
 	};
 	
+	this.getBBox = function(elem) {
+		var selected = elem || selectedElements[0];
+		return selected.getBBox();
+	};
+	
 	this.getRotationAngle = function(elem) {
 		var selected = elem || selectedElements[0];
 		// find the rotation transform (if any) and set it
@@ -2089,7 +2093,7 @@ function SvgCanvas(c)
 	
 	this.setRotationAngle = function(val) {
 		var elem = selectedElements[0];
-		var bbox = elem.getBBox();
+		var bbox = this.getBBox(elem);
 		
 		this.changeSelectedAttribute("transform", "rotate(" + val + " " + 
 									(bbox.x+bbox.width/2) + "," +
@@ -2210,7 +2214,7 @@ function SvgCanvas(c)
 			if (oldval != val) {
 				if (attr == "#text") elem.textContent = val;
 				else elem.setAttribute(attr, val);
-				selectedBBoxes[i] = elem.getBBox();
+				selectedBBoxes[i] = this.getBBox(elem);
 				// Timeout needed for Opera & Firefox
 				setTimeout(function() {
 					selectorManager.requestSelector(elem).resize(selectedBBoxes[i]);
@@ -2294,7 +2298,7 @@ function SvgCanvas(c)
 		while (i--) {
 			var selected = selectedElements[i];
 			if (selected != null) {
-				selectedBBoxes[i] = selected.getBBox();
+				selectedBBoxes[i] = this.getBBox(selected);
 				selectedBBoxes[i].x += dx;
 				selectedBBoxes[i].y += dy;
 				var cmd = recalculateSelectedDimensions(i);
