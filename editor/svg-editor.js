@@ -156,7 +156,7 @@ function svg_edit_setup() {
 		$('#line_panel').hide();
 		$('#text_panel').hide();
 		if (elem != null) {
-			// TODO: get element's rotation value and set the angle spinner
+			$('#angle').val(svgCanvas.getRotationAngle(elem));
 			$('#selected_panel').show();
 			// update contextual tools here
 			switch(elem.tagName) {
