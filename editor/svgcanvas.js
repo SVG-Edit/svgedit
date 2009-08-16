@@ -1770,7 +1770,7 @@ function SvgCanvas(c)
 
 	// this function returns false if the set was unsuccessful, true otherwise
 	// TODO: should this function keep throwing the exception?
-	// FIXME: after parsing in the new file, how do we synchronize getId()?
+	// TODO: after parsing in the new text, do we need to synchronize getId()?
 	this.setSvgString = function(xmlString) {
 		try {
 			// convert string into XML document
@@ -1781,6 +1781,9 @@ function SvgCanvas(c)
 
 			var batchCmd = new BatchCommand("Change Source");
 
+			// save our old selectorParentGroup
+			selectorManager.selectorParentGroup = svgroot.removeChild(selectorManager.selectorParentGroup);
+			
         	// remove old root
     	    var oldroot = container.removeChild(svgroot);
 			batchCmd.addSubCommand(new RemoveElementCommand(oldroot, container));
@@ -1788,6 +1791,9 @@ function SvgCanvas(c)
     	    // set new root
         	svgroot = container.appendChild(svgdoc.importNode(newDoc.documentElement, true));
 			batchCmd.addSubCommand(new InsertElementCommand(svgroot));
+			
+			// add back in parentSelectorGroup
+			svgroot.appendChild(selectorManager.selectorParentGroup);
 			
 			addCommandToHistory(batchCmd);
 			call("changed", [svgroot]);
@@ -2039,6 +2045,10 @@ function SvgCanvas(c)
 	this.setStrokeOpacity = function(val) {
 		current_stroke_opacity = val;
 		this.changeSelectedAttribute("stroke-opacity", val);
+	};
+	
+	this.setRotationAngle = function(val) {
+		console.log(val);
 	};
 
 	this.each = function(cb) {
