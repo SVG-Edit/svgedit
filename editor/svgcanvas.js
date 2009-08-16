@@ -708,7 +708,7 @@ function SvgCanvas(c)
 					'l', 'l', 'l', 'l', // TODO: be less lazy below and map them to h and v
 					's', 's', 't', 't' ];
 	
-	// this function returns the command which resulted from th selected change
+	// this function returns the command which resulted from the selected change
 	var recalculateSelectedDimensions = function(i) {
 		var selected = selectedElements[i];
 		if (selected == null) return null;
@@ -730,11 +730,20 @@ function SvgCanvas(c)
 
 		var changes = {};
 
-		// This fixes Firefox 2- behavior - which does not reset values when
-		// the attribute has been removed
-		// see https://bugzilla.mozilla.org/show_bug.cgi?id=320622
-		selected.setAttribute("transform", "");
-		selected.removeAttribute("transform");
+		// if there was a rotation transform, re-set it, otherwise empty out the transform attribute
+		// This fixes Firefox 2- behavior - which does not reset values when the attribute has
+		// been removed, see https://bugzilla.mozilla.org/show_bug.cgi?id=320622
+		var angle = canvas.getRotationAngle(selected);
+		if (angle != null) {
+			var cx = remapx(box.x + box.width/2),
+				cy = remapy(box.y + box.height/2);
+			selected.setAttribute("transform", ["rotate(", angle, " ", cx, ",", cy, ")"].join(''));
+		}
+		else {
+			selected.setAttribute("transform", "");
+			selected.removeAttribute("transform");
+		}
+		
 		switch (selected.tagName)
 		{
 		// NOTE: there's no way to create an actual polygon element except by editing source
@@ -1190,8 +1199,15 @@ function SvgCanvas(c)
 						for (var i = 0; i < len; ++i) {
 							var selected = selectedElements[i];
 							if (selected == null) break;
-							selected.setAttribute("transform", ts);
+							
 							var box = selected.getBBox();
+							var angle = canvas.getRotationAngle(selected);
+							if (angle != null) {
+								var cx = box.x + box.width/2,
+									cy = box.y + box.height/2;
+								ts += [" rotate(", angle, " ", cx, ",", cy, ")"].join('');
+							}
+							selected.setAttribute("transform", ts);
 							box.x += dx; box.y += dy;
 							selectorManager.requestSelector(selected).resize(box);
 							selectedBBoxes[i] = box;
@@ -1276,8 +1292,16 @@ function SvgCanvas(c)
 					selectedBBox.height = -selectedBBox.height;
 				}
 
-				selected.setAttribute("transform", ("translate(" + (left+tx) + "," + (top+ty) + 
-					") scale(" + (sx) + "," + (sy) + ") translate(" + (-left) + "," + (-top) + ")"));
+				// find the rotation transform and prepend it
+				var ts = ["translate(", (left+tx), ",", (top+ty), ") scale(", sx, ",", sy,
+							") translate(", -left, ",", -top, ")"].join('');
+				var angle = canvas.getRotationAngle(selected);
+				if (angle != null) {
+					var cx = selectedBBox.x + selectedBBox.width/2,
+						cy = selectedBBox.y + selectedBBox.height/2;
+					ts += [" rotate(", angle, " ", cx, ",", cy, ")"].join('')
+				}
+				selected.setAttribute("transform", ts);
 				selectorManager.requestSelector(selected).resize(selectedBBox);
 				break;
 			case "text":
@@ -2046,6 +2070,21 @@ function SvgCanvas(c)
 	this.setStrokeOpacity = function(val) {
 		current_stroke_opacity = val;
 		this.changeSelectedAttribute("stroke-opacity", val);
+	};
+	
+	this.getRotationAngle = function(elem) {
+		var selected = elem || selectedElements[0];
+		// find the rotation transform (if any) and set it
+		var tlist = selected.transform.baseVal;
+		var t = tlist.numberOfItems;
+		var foundRot = false;
+		while (t--) {
+			var xform = tlist.getItem(t);
+			if (xform.type == 4) {
+				return xform.angle;
+			}
+		}
+		return null;
 	};
 	
 	this.setRotationAngle = function(val) {
