@@ -2521,7 +2521,7 @@ function SvgCanvas(c)
 						elem.setAttribute('y', (miny+maxy-parseInt(elem.getAttribute('height')))/2);
 						break;
 					case 'b': // bottom (vertical)
-						elem.setAttribute('y', maxx-parseInt(elem.getAttribute('height')));
+						elem.setAttribute('y', maxy-parseInt(elem.getAttribute('height')));
 						break;
 					}
 					break;
