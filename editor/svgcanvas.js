@@ -7,7 +7,6 @@ if(!window.console) {
 
 // this defines which elements and attributes that we support
 // TODO: add <g> elements to this
-// TODO: add <polygon> elements to this
 // TODO: add <a> elements to this
 // TODO: add xmlns:xlink attr to <svg> element
 var svgWhiteList = {
@@ -24,8 +23,7 @@ var svgWhiteList = {
 	"stop": ["id", "offset", "stop-color", "stop-opacity"],
 	"svg": ["id", "height", "transform", "width", "xmlns"],
 	"text": ["fill", "fill-opacity", "font-family", "font-size", "font-style", "font-weight", "id", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "x", "y"],
-	};
-
+};
 
 // These command objects are used for the Undo/Redo stack
 // attrs contains the values that the attributes had before the change
@@ -66,7 +64,7 @@ function ChangeElementCommand(elem, attrs, text) {
 		}
 		return true;
 	};
-	
+
 	this.elements = function() { return [this.elem]; }
 }
 
@@ -81,7 +79,7 @@ function InsertElementCommand(elem, text) {
 		this.parent = this.elem.parentNode;
 		this.elem = this.elem.parentNode.removeChild(this.elem);
 	};
-	
+
 	this.elements = function() { return [this.elem]; };
 }
 
@@ -127,20 +125,20 @@ function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 function BatchCommand(text) {
 	this.text = text || "Batch Command";
 	this.stack = [];
-	
+
 	this.apply = function() {
 		var len = this.stack.length;
 		for (var i = 0; i < len; ++i) {
 			this.stack[i].apply();
 		}
 	};
-	
+
 	this.unapply = function() {
 		for (var i = this.stack.length-1; i >= 0; i--) {
 			this.stack[i].unapply();
 		}
 	};
-	
+
 	this.elements = function() {
 		// iterate through all our subcommands and find all the elements we are changing
 		var elems = [];
@@ -154,9 +152,9 @@ function BatchCommand(text) {
 		}
 		return elems; 
 	};
-	
+
 	this.addSubCommand = function(cmd) { this.stack.push(cmd); };
-	
+
 	this.isEmpty = function() { return this.stack.length == 0; };
 }
 
@@ -169,13 +167,13 @@ function SvgCanvas(c)
 	function Selector(id, elem) {
 		// this is the selector's unique number
 		this.id = id;
-	
+
 		// this holds a reference to the element for which this selector is being used
 		this.selectedElement = elem;
-	
+
 		// this is a flag used internally to track whether the selector is being used or not
 		this.locked = true;
-	
+
 		// this function is used to reset the id and element that the selector is attached to
 		this.reset = function(e) {
 			this.locked = true;
@@ -184,12 +182,12 @@ function SvgCanvas(c)
 			selectorManager.update();
 			this.selectorGroup.setAttribute("display", "inline");
 		};
-	
+
 		// this holds a reference to the <g> element that holds all visual elements of the selector
 		this.selectorGroup = addSvgElementFromJson({ "element": "g",
 													"attr": {"id": ("selectorGroup"+this.id)}
 													});
-	
+
 		// this holds a reference to <rect> element
 		this.selectorRect = this.selectorGroup.appendChild( addSvgElementFromJson({
 								"element": "rect",
@@ -205,7 +203,7 @@ function SvgCanvas(c)
 									"style": "pointer-events:none"
 								}
 							}) );
-	
+
 		// this holds a reference to the grip elements for this selector
 		this.selectorGrips = {	"nw":null,
 								"n":null,
@@ -216,7 +214,7 @@ function SvgCanvas(c)
 								"s":null,
 								"se":null
 								};
-				
+
 		// add the corner grips
 		for (dir in this.selectorGrips) {
 			this.selectorGrips[dir] = this.selectorGroup.appendChild( 
@@ -242,14 +240,14 @@ function SvgCanvas(c)
 				current_resize_mode = this.id.substr(13,this.id.indexOf("_",13)-13);
 			});
 		}
-	
+
 		this.showGrips = function(show) {
 			// TODO: use suspendRedraw() here
 			for (dir in this.selectorGrips) {
 				this.selectorGrips[dir].setAttribute("display", show ? "inline" : "none");
 			}
 		};
-		
+
 		this.resize = function(bbox) {
 			var selectedBox = this.selectorRect;
 			var selectedGrips = this.selectorGrips;
@@ -286,22 +284,22 @@ function SvgCanvas(c)
 			selectedGrips.s.setAttribute("x", l+w/2-3);
 			selectedGrips.s.setAttribute("y", t+h-3);
 		};
-		
+
 		// now initialize the selector
 		this.reset(elem);
 	};
 
 	function SelectorManager() {
-		
+
 		// this will hold the <g> element that contains all selector rects/grips
 		this.selectorParentGroup = null;
-	
+
 		// this is a special rect that is used for multi-select
 		this.rubberBandBox = null;
-	
+
 		// this will hold objects of type Selector (see above)
 		this.selectors = [];
-		
+
 		// this holds a map of SVG elements to their Selector object
 		this.selectorMap = {};
 
@@ -312,9 +310,9 @@ function SvgCanvas(c)
 			mgr.selectorParentGroup = addSvgElementFromJson({
 											"element": "g",
 											"attr": {"id": "selectorParentGroup"}
-										});			
+										});
 		};
-		
+
 		this.requestSelector = function(elem) {
 			if (elem == null) return null;
 			var N = this.selectors.length;
@@ -324,7 +322,7 @@ function SvgCanvas(c)
 				this.selectorMap[elem.id].locked = true;
 				return this.selectorMap[elem.id];
 			}
-			
+
 			for (var i = 0; i < N; ++i) {
 				if (this.selectors[i] && !this.selectors[i].locked) {
 					this.selectors[i].locked = true;
@@ -357,17 +355,17 @@ function SvgCanvas(c)
 					try {
 						sel.selectorGroup.setAttribute("display", "none");
 					} catch(e) { }
-					
+
 					break;
 				}
 			}
 		};
-		
+
 		// this keeps the selector groups as the last child in the document
 		this.update = function() {
 			this.selectorParentGroup = svgroot.appendChild(this.selectorParentGroup);
 		};
-		
+
 		this.getRubberBandBox = function() {
 			if (this.rubberBandBox == null) {
 				this.rubberBandBox = this.selectorParentGroup.appendChild(
@@ -385,7 +383,7 @@ function SvgCanvas(c)
 			}
 			return this.rubberBandBox;
 		};
-		
+
 		initGroup();
 	}
 	// **************************************************************************************
@@ -401,7 +399,7 @@ function SvgCanvas(c)
 		}
 		svgroot.unsuspendRedraw(handle);
 	};
-	
+
 	// remove unneeded attributes
 	// makes resulting SVG smaller
 	var cleanupElement = function(element) {
@@ -423,7 +421,7 @@ function SvgCanvas(c)
 		if (element.getAttribute('ry') == '0')
 			element.removeAttribute('ry')
 		svgroot.unsuspendRedraw(handle);
-	};	
+	};
 
 	this.updateElementFromJson = function(data) {
 		var shape = svgdoc.getElementById(data.attr.id);
@@ -440,7 +438,7 @@ function SvgCanvas(c)
 		cleanupElement(shape);
 		return shape;
 	};
-	
+
 	var canvas = this;
 	var container = c;
 	var svgns = "http://www.w3.org/2000/svg";
@@ -502,16 +500,16 @@ function SvgCanvas(c)
 	// Webkit does not implement getIntersectionList(), see https://bugs.webkit.org/show_bug.cgi?id=11274
 	var getIntersectionList = function(rect) {
 		if (rubberBox == null) { return null; }
-		
+
 		var resultList = null;
 		try {
 			resultList = svgroot.getIntersectionList(rect, null);
 		} catch(e) { }
-		
+
 		if (resultList == null || typeof(resultList.item) != "function") 
 		{
 			resultList = [];
-			
+
 			var rubberBBox = rubberBox.getBBox();
 			var nodes = svgroot.childNodes;
 			var i = svgroot.childNodes.length;
@@ -534,7 +532,7 @@ function SvgCanvas(c)
 		// http://www.w3.org/TR/DOM-Level-2-Core/ecma-script-binding.html
 		return resultList;
 	};
-	
+
 	// FIXME: we MUST compress consecutive text changes to the same element
 	// (right now each keystroke is saved as a separate command that includes the
 	// entire text contents of the text element)
@@ -554,7 +552,7 @@ function SvgCanvas(c)
 		if (events["getid"]) return call("getid", obj_num);
 		return idprefix + obj_num;
 	};
-	
+
 	var getNextId = function() {
 		// ensure the ID does not exist
 		var id = getId();
@@ -562,7 +560,7 @@ function SvgCanvas(c)
 			obj_num++;
 			id = getId();
 		}
-		return id;	
+		return id;
 	};
 
 	var call = function(event, arg) {
@@ -581,12 +579,12 @@ function SvgCanvas(c)
 			node.nodeValue = node.nodeValue.replace(/^\s+|\s+$/g, "");
 		}
 		if (node.nodeType != 1) return;
-		
+
 		var doc = node.ownerDocument;
 		var parent = node.parentNode;
 		// can parent ever be null here?  I think the root node's parent is the document...
 		if (!doc || !parent) return;
-		
+
 		var allowedAttrs = svgWhiteList[node.nodeName];
 		// if this element is allowed
 		if (allowedAttrs != undefined) {
@@ -612,14 +610,14 @@ function SvgCanvas(c)
 			while (node.hasChildNodes()) {
 				children.push(parent.insertBefore(node.firstChild, node));
 			}
-			
+
 			// remove this node from the document altogether
 			parent.removeChild(node);
-			
+
 			// call sanitizeSvg on each of those children
 			var i = children.length;
 			while (i--) { sanitizeSvg(children[i]); }
-			
+
 		}
 	};
 
@@ -698,12 +696,12 @@ function SvgCanvas(c)
 			call("changed", selectedElements);
 		}
 	};
-	
+
 	// this is how we map paths to our preferred relative segment types
 	var pathMap = [ 0, 'z', 'm', 'm', 'l', 'l', 'c', 'c', 'q', 'q', 'a', 'a', 
 					'l', 'l', 'l', 'l', // TODO: be less lazy below and map them to h and v
 					's', 's', 't', 't' ];
-	
+
 	// this function returns the command which resulted from the selected change
 	var recalculateSelectedDimensions = function(i) {
 		var selected = selectedElements[i];
@@ -718,7 +716,7 @@ function SvgCanvas(c)
 		}
 
 		// after this point, we have some change to this element
-		
+
 		var remapx = function(x) {return parseInt(((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x);}
 		var remapy = function(y) {return parseInt(((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y);}
 		var scalew = function(w) {return parseInt(w*selectedBBox.width/box.width);}
@@ -739,7 +737,7 @@ function SvgCanvas(c)
 			selected.setAttribute("transform", "");
 			selected.removeAttribute("transform");
 		}
-		
+
 		switch (selected.tagName)
 		{
 		// NOTE: there's no way to create an actual polygon element except by editing source
@@ -848,12 +846,12 @@ function SvgCanvas(c)
 			changes["y1"] = selected.getAttribute("y1");
 			changes["x2"] = selected.getAttribute("x2");
 			changes["y2"] = selected.getAttribute("y2");
-			var handle = svgroot.suspendRedraw(1000);			
+			var handle = svgroot.suspendRedraw(1000);
 			selected.setAttribute("x1", remapx(changes["x1"]));
 			selected.setAttribute("y1", remapy(changes["y1"]));
 			selected.setAttribute("x2", remapx(changes["x2"]));
 			selected.setAttribute("y2", remapy(changes["y2"]));
-			svgroot.unsuspendRedraw(handle);			
+			svgroot.unsuspendRedraw(handle);
 			break;
 		case "circle":
 			changes["cx"] = selected.getAttribute("cx");
@@ -864,7 +862,7 @@ function SvgCanvas(c)
 			selected.setAttribute("cy", remapy(changes["cy"]));
 			// take the minimum of the new selected box's dimensions for the new circle radius
 			selected.setAttribute("r", Math.min(selectedBBox.width/2,selectedBBox.height/2));
-			svgroot.unsuspendRedraw(handle);			
+			svgroot.unsuspendRedraw(handle);
 			break;
 		case "ellipse":
 			changes["cx"] = selected.getAttribute("cx");
@@ -876,7 +874,7 @@ function SvgCanvas(c)
 			selected.setAttribute("cy", remapy(changes["cy"]));
 			selected.setAttribute("rx", scalew(changes["rx"]));
 			selected.setAttribute("ry", scaleh(changes["ry"]));
-			svgroot.unsuspendRedraw(handle);			
+			svgroot.unsuspendRedraw(handle);
 			break;
 		case "text":
 			changes["x"] = selected.getAttribute("x");
@@ -896,7 +894,7 @@ function SvgCanvas(c)
 			selected.setAttribute("y", remapy(changes["y"]));
 			selected.setAttribute("width", scalew(changes["width"]));
 			selected.setAttribute("height", scaleh(changes["height"]));
-			svgroot.unsuspendRedraw(handle);			
+			svgroot.unsuspendRedraw(handle);
 			break;
 		default: // rect
 			console.log("Unknown shape type: " + selected.tagName);
@@ -921,10 +919,10 @@ function SvgCanvas(c)
 		}
 		call("selected", selectedElements);
 	};
-	
+
 	this.addToSelection = function(elemsToAdd) {
 		if (elemsToAdd.length == 0) { return; }
-		
+
 		// find the first null in our selectedElements array
 		var j = 0;
 		while (j < selectedElements.length) {
@@ -933,7 +931,7 @@ function SvgCanvas(c)
 			}
 			++j;
 		}
-		
+
 		// now add each element consecutively
 		var i = elemsToAdd.length;
 		while (i--) {
@@ -949,13 +947,13 @@ function SvgCanvas(c)
 			}
 		}
 	};
-	
+
 	// 
 	this.removeFromSelection = function(elemsToRemove) {
 		if (selectedElements[0] == null) { return; }
 		if (elemsToRemove.length == 0) { return; }
 
-		// find every element and remove it from our array copy		
+		// find every element and remove it from our array copy
 		var newSelectedItems = new Array(selectedElements.length);
 		var j = 0;
 		var len = selectedElements.length;
@@ -1195,7 +1193,7 @@ function SvgCanvas(c)
 						for (var i = 0; i < len; ++i) {
 							var selected = selectedElements[i];
 							if (selected == null) break;
-							
+
 							var box = canvas.getBBox(selected);
 							var angle = canvas.getRotationAngle(selected);
 							if (angle) {
@@ -1228,7 +1226,7 @@ function SvgCanvas(c)
 				// clear out selection and set it to the new list
 				canvas.clearSelection();
 				canvas.addToSelection(getIntersectionList());
-				
+
 				/*
 				// for each selected:
 				// - if newList contains selected, do nothing
@@ -1252,7 +1250,7 @@ function SvgCanvas(c)
 				break;
 			case "resize":
 				// TODO: update this to handle rotated elements
-				
+
 				// we track the resize bounding box and translate/scale the selected element
 				// while the mouse is down, when mouse goes up, we use this to recalculate
 				// the shape's coordinates
@@ -1306,13 +1304,13 @@ function SvgCanvas(c)
 				var handle = svgroot.suspendRedraw(1000);
 				shape.setAttribute("x", x);
 				shape.setAttribute("y", y);
-				svgroot.unsuspendRedraw(handle);			
+				svgroot.unsuspendRedraw(handle);
 				break;
 			case "line":
 				var handle = svgroot.suspendRedraw(1000);
 				shape.setAttributeNS(null, "x2", x);
 				shape.setAttributeNS(null, "y2", y);
-				svgroot.unsuspendRedraw(handle);			
+				svgroot.unsuspendRedraw(handle);
 				break;
 			case "square":
 				var size = Math.max( Math.abs(x - start_x), Math.abs(y - start_y) );
@@ -1321,7 +1319,7 @@ function SvgCanvas(c)
 				shape.setAttributeNS(null, "height", size);
 				shape.setAttributeNS(null, "x", start_x < x ? start_x : start_x - size);
 				shape.setAttributeNS(null, "y", start_y < y ? start_y : start_y - size);
-				svgroot.unsuspendRedraw(handle);			
+				svgroot.unsuspendRedraw(handle);
 				break;
 			case "rect":
 				var handle = svgroot.suspendRedraw(1000);
@@ -1329,7 +1327,7 @@ function SvgCanvas(c)
 				shape.setAttributeNS(null, "y", Math.min(start_y,y));
 				shape.setAttributeNS(null, "width", Math.abs(x-start_x));
 				shape.setAttributeNS(null, "height", Math.abs(y-start_y));
-				svgroot.unsuspendRedraw(handle);			
+				svgroot.unsuspendRedraw(handle);
 				break;
 			case "circle":
 				var cx = shape.getAttributeNS(null, "cx");
@@ -1343,7 +1341,7 @@ function SvgCanvas(c)
 				var handle = svgroot.suspendRedraw(1000);
 				shape.setAttributeNS(null, "rx", Math.abs(x - cx) );
 				shape.setAttributeNS(null, "ry", Math.abs(y - cy) );
-				svgroot.unsuspendRedraw(handle);			
+				svgroot.unsuspendRedraw(handle);
 				break;
 			case "fhellipse":
 			case "fhrect":
@@ -1376,7 +1374,7 @@ function SvgCanvas(c)
 						dy = y - current_poly_pts[i+1];
 					current_poly_pts[i] = x;
 					current_poly_pts[i+1] = y;
-					
+
 					// reset the path's d attribute using current_poly_pts
 					var oldd = current_poly.getAttribute("d");
 					var closedPath = (oldd[oldd.length-1] == 'z' || oldd[oldd.length-1] == 'Z');
@@ -1395,7 +1393,7 @@ function SvgCanvas(c)
 						arr[len] = "z";
 					}
 					current_poly.setAttribute("d", arr.join(' '));
-					
+
 					// move the point grip
 					var grip = document.getElementById("polypointgrip_" + current_poly_pt_drag);
 					if (grip) {
@@ -1423,7 +1421,7 @@ function SvgCanvas(c)
 		}
 		document.getElementById("poly_stretch_line").setAttribute("display", "none");
 	};
-	
+
 	var addAllPointGripsToPoly = function() {
 		// loop through and hide all pointgrips
 		var i = current_poly_pts.length;
@@ -1435,7 +1433,7 @@ function SvgCanvas(c)
 			grip.setAttribute("display", "inline");
 		}
 	};
-	
+
 	var addPointGripToPoly = function(x,y) {
 		// create the container of all the point grips
 		var pointGripContainer = document.getElementById("polypointgrip_container");
@@ -1444,7 +1442,7 @@ function SvgCanvas(c)
 			pointGripContainer = parent.appendChild(document.createElementNS(svgns, "g"));
 			pointGripContainer.id = "polypointgrip_container";
 		}
-		
+
 		// get index of this point
 		var index = current_poly_pts.length/2 - 1;
 
@@ -1461,7 +1459,7 @@ function SvgCanvas(c)
 			pointGrip.setAttribute("cursor", "move");
 			pointGrip.setAttribute("pointer-events", "all");
 			pointGrip = pointGripContainer.appendChild(pointGrip);
-			
+
 			var grip = $('#polypointgrip_'+index);
 			grip.mouseover( function() { this.setAttribute("stroke", "#F00"); } );
 			grip.mouseout( function() {this.setAttribute("stroke", "#00F"); } );
@@ -1513,7 +1511,7 @@ function SvgCanvas(c)
 							current_font_size = selected.getAttribute("font-size");
 							current_font_family = selected.getAttribute("font-family");
 						}
-						
+
 						selectorManager.requestSelector(selected).showGrips(selected.tagName != "text");
 					}
 					// if it was being dragged/resized
@@ -1568,7 +1566,7 @@ function SvgCanvas(c)
 							}
 						} // no change in mouse position
 					}
-				}				
+				}
 				// we return immediately from select so that the obj_num is not incremented
 				return;
 				break;
@@ -1644,12 +1642,12 @@ function SvgCanvas(c)
 				canvas.clearSelection();
 				canvas.addToSelection([element]);
 				break;
-			case "poly":				
+			case "poly":
 				// set element to null here so that it is not removed nor finalized
 				element = null;
 				// continue to be set to true so that mouseMove happens
 				started = true;
-				
+
 				var stretchy = document.getElementById("poly_stretch_line");
 				if (!stretchy) {
 					stretchy = document.createElementNS(svgns, "line");
@@ -1659,7 +1657,7 @@ function SvgCanvas(c)
 					stretchy = document.getElementById("selectorParentGroup").appendChild(stretchy);
 				}
 				stretchy.setAttribute("display", "inline");
-				
+
 				// if pts array is empty, create path element with M at current point
 				if (current_poly_pts.length == 0) {
 					current_poly_pts.push(x);
@@ -1703,7 +1701,7 @@ function SvgCanvas(c)
 
 					// get poly element that we are in the process of creating
 					var poly = svgdoc.getElementById(getId());
-					
+
 					// if we clicked on an existing point, then we are done this poly, commit it
 					// (i,i+1) are the x,y that were clicked on
 					if (clickOnPoint) {
@@ -1733,13 +1731,13 @@ function SvgCanvas(c)
 						// translation around the canvas in move mode
 						d_attr += "l" + parseInt(x-lastx) + "," + parseInt(y-lasty) + " ";
 						poly.setAttribute("d", d_attr);
-						
+
 						// set stretchy line to latest point
 						stretchy.setAttribute("x1", x);
 						stretchy.setAttribute("y1", y);
 						stretchy.setAttribute("x2", x);
 						stretchy.setAttribute("y2", y);
-						addPointGripToPoly(x,y);						
+						addPointGripToPoly(x,y);
 					}
 					keep = true;
 				}
@@ -1786,7 +1784,7 @@ function SvgCanvas(c)
 		str += svgToString(svgroot, 0);
 		this.saveHandler(str);
 	};
-	
+
 	this.getSvgString = function() {
 		return svgToString(svgroot, 0);
 	};
@@ -1806,7 +1804,7 @@ function SvgCanvas(c)
 
 			// save our old selectorParentGroup
 			selectorManager.selectorParentGroup = svgroot.removeChild(selectorManager.selectorParentGroup);
-			
+
         	// remove old root
     	    var oldroot = container.removeChild(svgroot);
 			batchCmd.addSubCommand(new RemoveElementCommand(oldroot, container));
@@ -1814,17 +1812,17 @@ function SvgCanvas(c)
     	    // set new root
         	svgroot = container.appendChild(svgdoc.importNode(newDoc.documentElement, true));
 			batchCmd.addSubCommand(new InsertElementCommand(svgroot));
-			
+
 			// add back in parentSelectorGroup
 			svgroot.appendChild(selectorManager.selectorParentGroup);
-			
+
 			addCommandToHistory(batchCmd);
 			call("changed", [svgroot]);
 		} catch(e) {
 			console.log(e);
 			return false;
 		}
-		
+
 		return true;
 	};
 
@@ -1852,10 +1850,10 @@ function SvgCanvas(c)
 		var w = svgroot.getAttribute("width"),
 			h = svgroot.getAttribute("height");
 
-		var handle = svgroot.suspendRedraw(1000);			
+		var handle = svgroot.suspendRedraw(1000);
 		svgroot.setAttribute("width", x);
 		svgroot.setAttribute("height", y);
-		svgroot.unsuspendRedraw(handle);			
+		svgroot.unsuspendRedraw(handle);
 		addCommandToHistory(new ChangeElementCommand(svgroot, {"width":w,"height":h}, "resolution"));
 		call("changed", [svgroot]);
 	};
@@ -1921,7 +1919,7 @@ function SvgCanvas(c)
 		}
 		return defs;
 	};
-	
+
 	var findDuplicateGradient = function(grad) {
 		var defs = findDefs();
 		var existing_grads = defs.getElementsByTagNameNS(svgns, "linearGradient");
@@ -1935,20 +1933,20 @@ function SvgCanvas(c)
 			{
 				continue;
 			}
-				
+
 			// else could be a duplicate, iterate through stops
 			var stops = grad.getElementsByTagNameNS(svgns, "stop");
 			var ostops = og.getElementsByTagNameNS(svgns, "stop");
-			
+
 			if (stops.length != ostops.length) {
 				continue;
 			}
-				
+
 			var j = stops.length;
 			while(j--) {
 				var stop = stops.item(j);
 				var ostop = ostops.item(j);
-					
+
 				if (stop.getAttribute('offset') != ostop.getAttribute('offset') ||
 					stop.getAttribute('stop-opacity') != ostop.getAttribute('stop-opacity') ||
 					stop.getAttribute('stop-color') != ostop.getAttribute('stop-color')) 
@@ -1956,15 +1954,15 @@ function SvgCanvas(c)
 					break;
 				}
 			}
-				
+
 			if (j == -1) {
 				return og;
 			}
 		} // for each gradient in defs
-		
+
 		return null;
 	};
-	
+
 	this.setStrokePaint = function(p) {
 		current_stroke_paint = new $.jGraduate.Paint(p);
 		if (current_stroke_paint.type == "solidColor") {
@@ -1975,24 +1973,24 @@ function SvgCanvas(c)
 			var grad = current_stroke_paint.linearGradient;
 			var duplicate_grad = findDuplicateGradient(grad);
 			var defs = findDefs();
-			
+
 			// no duplicate found, so import gradient into defs
 			if (!duplicate_grad) {
 				grad = defs.appendChild( svgdoc.importNode(grad, true) );
-				
+
 				// get next id and set it on the grad
 				grad.id = getNextId();
 			}
 			else { // use existing gradient
 				grad = duplicate_grad;
 			}
-			
+
 			this.setStrokeColor("url(#" + grad.id + ")");
 		}
 		else {
 //			console.log("none!");
 		}
-		this.setStrokeOpacity(current_stroke_paint.alpha/100);		
+		this.setStrokeOpacity(current_stroke_paint.alpha/100);
 	};
 
 	// TODO: rework this so that we are not append elements into the SVG at this stage
@@ -2010,18 +2008,18 @@ function SvgCanvas(c)
 			var grad = current_fill_paint.linearGradient;
 			var duplicate_grad = findDuplicateGradient(grad);
 			var defs = findDefs();
-			
+
 			// no duplicate found, so import gradient into defs
 			if (!duplicate_grad) {
 				grad = defs.appendChild( svgdoc.importNode(grad, true) );
-				
+
 				// get next id and set it on the grad
 				grad.id = getNextId();
 			}
 			else { // use existing gradient
 				grad = duplicate_grad;
 			}
-			
+
 			this.setFillColor("url(#" + grad.id + ")");
 		}
 		else {
@@ -2074,7 +2072,7 @@ function SvgCanvas(c)
 		current_stroke_opacity = val;
 		this.changeSelectedAttribute("stroke-opacity", val);
 	};
-	
+
 	this.getBBox = function(elem) {
 		var selected = elem || selectedElements[0];
 		var bbox = selected.getBBox();
@@ -2095,7 +2093,7 @@ function SvgCanvas(c)
 				var theta = angle + Math.atan2(pts[i][1],pts[i][0]);
 				var x = r * Math.cos(theta),
 					y = r * Math.sin(theta);
-				
+
 				if (MINX > x) { MINX = x; }
 				if (MINY > y) { MINY = y; }
 				if (MAXX < x) { MAXX = x; }
@@ -2106,10 +2104,10 @@ function SvgCanvas(c)
 			bbox.width = parseInt(MAXX-MINX);
 			bbox.height = parseInt(MAXY-MINY);
 		}
-		
+
 		return bbox;
 	};
-	
+
 	this.getRotationAngle = function(elem) {
 		var selected = elem || selectedElements[0];
 		// find the rotation transform (if any) and set it
@@ -2124,11 +2122,11 @@ function SvgCanvas(c)
 		}
 		return 0;
 	};
-	
+
 	this.setRotationAngle = function(val) {
 		var elem = selectedElements[0];
 		var bbox = this.getBBox(elem);
-		
+
 		this.changeSelectedAttribute("transform", "rotate(" + val + " " + 
 									(bbox.x+bbox.width/2) + "," +
 									(bbox.y+bbox.height/2) + ")");
@@ -2145,7 +2143,7 @@ function SvgCanvas(c)
 	this.setIdPrefix = function(p) {
 		idprefix = p;
 	};
-	
+
 	this.getBold = function() {
 		// should only have one element selected
 		var selected = selectedElements[0];
@@ -2156,7 +2154,7 @@ function SvgCanvas(c)
 		}
 		return false;
 	};
-	
+
 	this.setBold = function(b) {
 		var selected = selectedElements[0];
 		if (selected != null && selected.tagName  == "text" &&
@@ -2165,7 +2163,7 @@ function SvgCanvas(c)
 			this.changeSelectedAttribute("font-weight", b ? "bold" : "normal");
 		}
 	};
-	
+
 	this.getItalic = function() {
 		var selected = selectedElements[0];
 		if (selected != null && selected.tagName  == "text" &&
@@ -2175,7 +2173,7 @@ function SvgCanvas(c)
 		}
 		return false;
 	};
-	
+
 	this.setItalic = function(i) {
 		var selected = selectedElements[0];
 		if (selected != null && selected.tagName  == "text" &&
@@ -2237,7 +2235,7 @@ function SvgCanvas(c)
 		while(i--) {
 			var elem = elems[i];
 			if (elem == null) continue;
-			
+
 			var oldval = (attr == "#text" ? elem.textContent : elem.getAttribute(attr));
 			if (oldval != val) {
 				if (attr == "#text") elem.textContent = val;
@@ -2333,7 +2331,7 @@ function SvgCanvas(c)
 				if (cmd) {
 					batchCmd.addSubCommand(cmd);
 				}
-				selectorManager.requestSelector(selected).resize(selectedBBoxes[i]);				
+				selectorManager.requestSelector(selected).resize(selectedBBoxes[i]);
 			}
 		}
 		if (!batchCmd.isEmpty()) {
@@ -2347,8 +2345,8 @@ function SvgCanvas(c)
 		undoStack = [];
 		undoStackPointer = 0;
 	};
-	
-	this.getUndoStackSize = function() { return undoStackPointer; };	
+
+	this.getUndoStackSize = function() { return undoStackPointer; };
 	this.getRedoStackSize = function() { return undoStack.length - undoStackPointer; };
 
 	this.getNextUndoCommandText = function() { 
@@ -2378,7 +2376,7 @@ function SvgCanvas(c)
 			call("changed", cmd.elements());
 		}
 	};
-	
+
 	// this creates deep DOM copies (clones) of all selected elements
 	this.cloneSelectedElements = function() {
 		var batchCmd = new BatchCommand("Clone Elements");
@@ -2396,13 +2394,185 @@ function SvgCanvas(c)
 			svgroot.appendChild(elem);
 			batchCmd.addSubCommand(new InsertElementCommand(elem));
 		}
-		
+
 		if (!batchCmd.isEmpty()) {
 			this.addToSelection(copiedElements);
 			this.moveSelectedElements(20,20,false);
 			addCommandToHistory(batchCmd);
 			call("selected", selectedElements);
-		}		
+		}
+	};
+
+	// aligns selected elements (type is a char - see switch below for explanation)
+	this.alignSelectedElements = function(type) {
+		var minx = 100000, maxx = -100000, miny = 100000, maxy = -100000;
+		var len = selectedElements.length;
+		if (!len) return;
+		for (var i = 0; i < len; ++i) {
+			if (selectedElements[i] == null) break;
+			var elem = selectedElements[i];
+			switch (elem.tagName) {
+				case 'circle':
+					if (parseInt(elem.getAttribute(('cx'))) - parseInt(elem.getAttribute(('r'))) < minx) minx = parseInt(elem.getAttribute(('cx'))) - parseInt(elem.getAttribute(('r')));
+					if (parseInt(elem.getAttribute(('cx'))) + parseInt(elem.getAttribute(('r'))) > maxx) maxx = parseInt(elem.getAttribute(('cx'))) + parseInt(elem.getAttribute(('r')));
+					if (parseInt(elem.getAttribute(('cy'))) - parseInt(elem.getAttribute(('r'))) < miny) miny = parseInt(elem.getAttribute(('cy'))) - parseInt(elem.getAttribute(('r')));
+					if (parseInt(elem.getAttribute(('cy'))) + parseInt(elem.getAttribute(('r'))) > maxy) maxy = parseInt(elem.getAttribute(('cy'))) + parseInt(elem.getAttribute(('r')));
+					break;
+				case 'ellipse':
+					if (parseInt(elem.getAttribute(('cx'))) - parseInt(elem.getAttribute(('rx'))) < minx) minx = parseInt(elem.getAttribute(('cx'))) - parseInt(elem.getAttribute(('rx')));
+					if (parseInt(elem.getAttribute(('cx'))) + parseInt(elem.getAttribute(('rx'))) > maxx) maxx = parseInt(elem.getAttribute(('cx'))) + parseInt(elem.getAttribute(('rx')));
+					if (parseInt(elem.getAttribute(('cy'))) - parseInt(elem.getAttribute(('ry'))) < miny) miny = parseInt(elem.getAttribute(('cy'))) - parseInt(elem.getAttribute(('ry')));
+					if (parseInt(elem.getAttribute(('cy'))) + parseInt(elem.getAttribute(('ry'))) > maxy) maxy = parseInt(elem.getAttribute(('cy'))) + parseInt(elem.getAttribute(('ry')));
+					break;
+				case 'rect':
+					if (parseInt(elem.getAttribute(('x')))                                           < minx) minx = parseInt(elem.getAttribute(('x')));
+					if (parseInt(elem.getAttribute(('x'))) + parseInt(elem.getAttribute(('width')))  > maxx) maxx = parseInt(elem.getAttribute(('x'))) + parseInt(elem.getAttribute(('width')));
+					if (parseInt(elem.getAttribute(('y')))                                           < minx) miny = parseInt(elem.getAttribute(('y')));
+					if (parseInt(elem.getAttribute(('y'))) + parseInt(elem.getAttribute(('height'))) > maxx) maxy = parseInt(elem.getAttribute(('y'))) + parseInt(elem.getAttribute(('height')));
+					break;
+				case 'line':
+					if (parseInt(elem.getAttribute(('x1'))) < minx) minx = parseInt(elem.getAttribute(('x1')));
+					if (parseInt(elem.getAttribute(('x2'))) < minx) minx = parseInt(elem.getAttribute(('x2')));
+					if (parseInt(elem.getAttribute(('x1'))) > maxx) maxx = parseInt(elem.getAttribute(('x1')));
+					if (parseInt(elem.getAttribute(('x2'))) > maxx) maxx = parseInt(elem.getAttribute(('x2')));
+					if (parseInt(elem.getAttribute(('y1'))) < miny) miny = parseInt(elem.getAttribute(('y1')));
+					if (parseInt(elem.getAttribute(('y2'))) < miny) miny = parseInt(elem.getAttribute(('y2')));
+					if (parseInt(elem.getAttribute(('y1'))) > maxy) maxy = parseInt(elem.getAttribute(('y1')));
+					if (parseInt(elem.getAttribute(('y2'))) > maxy) maxy = parseInt(elem.getAttribute(('y2')));
+					break;
+				case 'path':
+					// TODO: implement
+					break;
+				case 'polygon':
+					// TODO: implement
+					break;
+				case 'polyline':
+					// TODO: implement
+					break;
+				case 'text':
+					// TODO: how to handle text?
+					break;
+			}
+		}
+		var len = selectedElements.length;
+		for (var i = 0; i < len; ++i) {
+			if (selectedElements[i] == null) break;
+			var elem = selectedElements[i];
+			switch (elem.tagName) {
+				case 'circle':
+					switch (type) {
+					case 'l': // left (horizontal)
+						elem.setAttribute('cx', minx+parseInt(elem.getAttribute(('r'))));
+						break;
+					case 'c': // center (horizontal)
+						elem.setAttribute('cx', (minx+maxx)/2);
+						break;
+					case 'r': // right (horizontal)
+						elem.setAttribute('cx', maxx-parseInt(elem.getAttribute(('r'))));
+						break;
+					case 't': // top (vertical)
+						elem.setAttribute('cy', miny+parseInt(elem.getAttribute(('r'))));
+						break;
+					case 'm': // middle (vertical)
+						elem.setAttribute('cy', (miny+maxy)/2);
+						break;
+					case 'b': // bottom (vertical)
+						elem.setAttribute('cy', maxy-parseInt(elem.getAttribute(('r'))));
+						break;
+					}
+					break;
+				case 'ellipse':
+					switch (type) {
+					case 'l': // left (horizontal)
+						elem.setAttribute('cx', minx+parseInt(elem.getAttribute(('rx'))));
+						break;
+					case 'c': // center (horizontal)
+						elem.setAttribute('cx', (minx+maxx)/2);
+						break;
+					case 'r': // right (horizontal)
+						elem.setAttribute('cx', maxx-parseInt(elem.getAttribute(('rx'))));
+						break;
+					case 't': // top (vertical)
+						elem.setAttribute('cy', miny+parseInt(elem.getAttribute(('ry'))));
+						break;
+					case 'm': // middle (vertical)
+						elem.setAttribute('cy', (miny+maxy)/2);
+						break;
+					case 'b': // bottom (vertical)
+						elem.setAttribute('cy', maxy-parseInt(elem.getAttribute(('ry'))));
+						break;
+					}
+					break;
+				case 'rect':
+					switch (type) {
+					case 'l': // left (horizontal)
+						elem.setAttribute('x', minx);
+						break;
+					case 'c': // center (horizontal)
+						elem.setAttribute('x', (minx+maxx-parseInt(elem.getAttribute(('width'))))/2);
+						break;
+					case 'r': // right (horizontal)
+						elem.setAttribute('x', maxx-parseInt(elem.getAttribute(('width'))));
+						break;
+					case 't': // top (vertical)
+						elem.setAttribute('y', miny);
+						break;
+					case 'm': // middle (vertical)
+						elem.setAttribute('y', (miny+maxy-parseInt(elem.getAttribute(('width'))))/2);
+						break;
+					case 'b': // bottom (vertical)
+						elem.setAttribute('y', maxx-parseInt(elem.getAttribute(('width'))));
+						break;
+					}
+					break;
+				case 'line':
+					switch (type) {
+					case 'l': // left (horizontal)
+						var d = Math.min(parseInt(elem.getAttribute(('x1'))), parseInt(elem.getAttribute(('x2')))) - minx;
+						elem.setAttribute('x1', parseInt(elem.getAttribute(('x1'))) - d);
+						elem.setAttribute('x2', parseInt(elem.getAttribute(('x2'))) - d);
+						break;
+					case 'c': // center (horizontal)
+						var d = Math.abs(parseInt(elem.getAttribute(('x1'))) - parseInt(elem.getAttribute(('x2'))));
+						elem.setAttribute('x1', (minx+maxx-d)/2 );
+						elem.setAttribute('x2', (minx+maxx+d)/2 );
+						break;
+					case 'r': // right (horizontal)
+						var d = Math.max(parseInt(elem.getAttribute(('x1'))), parseInt(elem.getAttribute(('x2')))) - maxx;
+						elem.setAttribute('x1', parseInt(elem.getAttribute(('x1'))) - d);
+						elem.setAttribute('x2', parseInt(elem.getAttribute(('x2'))) - d);
+						break;
+					case 't': // top (vertical)
+						var d = Math.min(parseInt(elem.getAttribute(('y1'))), parseInt(elem.getAttribute(('y2')))) - miny;
+						elem.setAttribute('y1', parseInt(elem.getAttribute(('y1')))-d);
+						elem.setAttribute('y2', parseInt(elem.getAttribute(('y2')))-d);
+						break;
+					case 'm': // middle (vertical)
+						var d = Math.abs(parseInt(elem.getAttribute(('y1'))) - parseInt(elem.getAttribute(('y2'))));
+						elem.setAttribute('y1', (miny+maxy-d)/2 );
+						elem.setAttribute('y2', (miny+maxy+d)/2 );
+						break;
+					case 'b': // bottom (vertical)
+						var d = Math.max(parseInt(elem.getAttribute(('y1'))), parseInt(elem.getAttribute(('y2')))) - maxy;
+						elem.setAttribute('y1', parseInt(elem.getAttribute(('y1'))) - d);
+						elem.setAttribute('y2', parseInt(elem.getAttribute(('y2'))) - d);
+						break;
+					}
+					break;
+				case 'path':
+					// TODO: implement
+					break;
+				case 'polygon':
+					// TODO: implement
+					break;
+				case 'polyline':
+					// TODO: implement
+					break;
+				case 'text':
+					// TODO: how to handle text?
+					break;
+			}
+		}
 	};
 
 }
@@ -2451,30 +2621,30 @@ var Utils = {
 
 		return output.join('');
 	},
-	
+
 	"rectsIntersect": function(r1, r2) {
 		return r2.x < (r1.x+r1.width) && 
 			(r2.x+r2.width) > r1.x &&
 			r2.y < (r1.y+r1.height) &&
 			(r2.y+r2.height) > r1.y;
 	},
-	
+
 	// found this function http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f
 	"text2xml": function(sXML) {
-	    // NOTE: I'd like to use jQuery for this, but jQuery makes all tags uppercase
-    	//return $(xml)[0];
-	    var out;
-    	try{
-        	var dXML = ($.browser.msie)?new ActiveXObject("Microsoft.XMLDOM"):new DOMParser();
-	        dXML.async = false;
-    	} catch(e){ 
-    		throw new Error("XML Parser could not be instantiated"); 
-    	};
-    	try{
-        	if($.browser.msie) out = (dXML.loadXML(sXML))?dXML:false;
-	        else out = dXML.parseFromString(sXML, "text/xml");
-    	}
-    	catch(e){ throw new Error("Error parsing XML string"); };
-    	return out;
-    }
+		// NOTE: I'd like to use jQuery for this, but jQuery makes all tags uppercase
+		//return $(xml)[0];
+		var out;
+		try{
+			var dXML = ($.browser.msie)?new ActiveXObject("Microsoft.XMLDOM"):new DOMParser();
+			dXML.async = false;
+		} catch(e){ 
+			throw new Error("XML Parser could not be instantiated"); 
+		};
+		try{
+			if($.browser.msie) out = (dXML.loadXML(sXML))?dXML:false;
+			else out = dXML.parseFromString(sXML, "text/xml");
+		}
+		catch(e){ throw new Error("Error parsing XML string"); };
+		return out;
+	}
 };
