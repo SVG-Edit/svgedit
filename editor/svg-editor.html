@@ -53,13 +53,15 @@
 		<img class="tool_button tool_button_disabled" id="tool_redo" src="images/redo.png" title="Redo [Y]" alt="Redo"/>
 	</div>
 
-	<!-- Buttons when something a single element is selected -->
+	<!-- Buttons when a single element is selected -->
 	<div id="selected_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="tool_button" id="tool_clone" src="images/copy.png" title="Clone Element [C]" alt="Copy"/>
+		<img class="tool_button" id="tool_clone" src="images/clone.png" title="Clone Element [C]" alt="Copy"/>
 		<img class="tool_button" id="tool_delete" src="images/delete.png" title="Delete Element [Delete/Backspace]" alt="Delete"/>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<img class="tool_button" id="tool_move_top" src="images/move_top.png" title="Move to Top [Shift+Up]" alt="Top"/>
 		<img class="tool_button" id="tool_move_bottom" src="images/move_bottom.png" title="Move to Bottom [Shift+Down]" alt="Bottom"/>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<select id="group_opacity" class="selected_tool" title="Change selected item opacity">
 			<option selected="selected" value="1">100 %</option>
 			<option value="0.9">90 %</option>
@@ -76,11 +78,19 @@
 		<input id="angle" class="selected_tool" title="Change rotation angle" alt="Rotation Angle" size="2" value="0" type="text"/>
 	</div>
 
-	<!-- Buttons when something a single element is selected -->
+	<!-- Buttons when multiple elements are selected -->
 	<div id="multiselected_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="tool_button" id="tool_clone_multi" src="images/copy.png" title="Clone Elements [C]" alt="Clone"/>
+		<img class="tool_button" id="tool_clone_multi" src="images/clone.png" title="Clone Elements [C]" alt="Clone"/>
 		<img class="tool_button" id="tool_delete_multi" src="images/delete.png" title="Delete Selected Elements [Delete/Backspace]" alt="Delete"/>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="tool_button" id="tool_alignleft" src="images/align-left.png" title="Align Left" alt="Left"/>
+		<img class="tool_button" id="tool_aligncenter" src="images/align-center.png" title="Align Center" alt="Center"/>
+		<img class="tool_button" id="tool_alignright" src="images/align-right.png" title="Align Right" alt="Right"/>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="tool_button" id="tool_aligntop" src="images/align-top.png" title="Align Top" alt="Top"/>
+		<img class="tool_button" id="tool_alignmiddle" src="images/align-middle.png" title="Align Middle" alt="Middle"/>
+		<img class="tool_button" id="tool_alignbottom" src="images/align-bottom.png" title="Align Bottom" alt="Bottom"/>
 	</div>
 
 	<div id="rect_panel">
