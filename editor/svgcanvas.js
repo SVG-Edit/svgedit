@@ -2413,32 +2413,32 @@ function SvgCanvas(c)
 			var elem = selectedElements[i];
 			switch (elem.tagName) {
 				case 'circle':
-					if (parseInt(elem.getAttribute(('cx'))) - parseInt(elem.getAttribute(('r'))) < minx) minx = parseInt(elem.getAttribute(('cx'))) - parseInt(elem.getAttribute(('r')));
-					if (parseInt(elem.getAttribute(('cx'))) + parseInt(elem.getAttribute(('r'))) > maxx) maxx = parseInt(elem.getAttribute(('cx'))) + parseInt(elem.getAttribute(('r')));
-					if (parseInt(elem.getAttribute(('cy'))) - parseInt(elem.getAttribute(('r'))) < miny) miny = parseInt(elem.getAttribute(('cy'))) - parseInt(elem.getAttribute(('r')));
-					if (parseInt(elem.getAttribute(('cy'))) + parseInt(elem.getAttribute(('r'))) > maxy) maxy = parseInt(elem.getAttribute(('cy'))) + parseInt(elem.getAttribute(('r')));
+					if (parseInt(elem.getAttribute('cx')) - parseInt(elem.getAttribute('r')) < minx) minx = parseInt(elem.getAttribute('cx')) - parseInt(elem.getAttribute('r'));
+					if (parseInt(elem.getAttribute('cx')) + parseInt(elem.getAttribute('r')) > maxx) maxx = parseInt(elem.getAttribute('cx')) + parseInt(elem.getAttribute('r'));
+					if (parseInt(elem.getAttribute('cy')) - parseInt(elem.getAttribute('r')) < miny) miny = parseInt(elem.getAttribute('cy')) - parseInt(elem.getAttribute('r'));
+					if (parseInt(elem.getAttribute('cy')) + parseInt(elem.getAttribute('r')) > maxy) maxy = parseInt(elem.getAttribute('cy')) + parseInt(elem.getAttribute('r'));
 					break;
 				case 'ellipse':
-					if (parseInt(elem.getAttribute(('cx'))) - parseInt(elem.getAttribute(('rx'))) < minx) minx = parseInt(elem.getAttribute(('cx'))) - parseInt(elem.getAttribute(('rx')));
-					if (parseInt(elem.getAttribute(('cx'))) + parseInt(elem.getAttribute(('rx'))) > maxx) maxx = parseInt(elem.getAttribute(('cx'))) + parseInt(elem.getAttribute(('rx')));
-					if (parseInt(elem.getAttribute(('cy'))) - parseInt(elem.getAttribute(('ry'))) < miny) miny = parseInt(elem.getAttribute(('cy'))) - parseInt(elem.getAttribute(('ry')));
-					if (parseInt(elem.getAttribute(('cy'))) + parseInt(elem.getAttribute(('ry'))) > maxy) maxy = parseInt(elem.getAttribute(('cy'))) + parseInt(elem.getAttribute(('ry')));
+					if (parseInt(elem.getAttribute('cx')) - parseInt(elem.getAttribute('rx')) < minx) minx = parseInt(elem.getAttribute('cx')) - parseInt(elem.getAttribute('rx'));
+					if (parseInt(elem.getAttribute('cx')) + parseInt(elem.getAttribute('rx')) > maxx) maxx = parseInt(elem.getAttribute('cx')) + parseInt(elem.getAttribute('rx'));
+					if (parseInt(elem.getAttribute('cy')) - parseInt(elem.getAttribute('ry')) < miny) miny = parseInt(elem.getAttribute('cy')) - parseInt(elem.getAttribute('ry'));
+					if (parseInt(elem.getAttribute('cy')) + parseInt(elem.getAttribute('ry')) > maxy) maxy = parseInt(elem.getAttribute('cy')) + parseInt(elem.getAttribute('ry'));
 					break;
 				case 'rect':
-					if (parseInt(elem.getAttribute(('x')))                                           < minx) minx = parseInt(elem.getAttribute(('x')));
-					if (parseInt(elem.getAttribute(('x'))) + parseInt(elem.getAttribute(('width')))  > maxx) maxx = parseInt(elem.getAttribute(('x'))) + parseInt(elem.getAttribute(('width')));
-					if (parseInt(elem.getAttribute(('y')))                                           < minx) miny = parseInt(elem.getAttribute(('y')));
-					if (parseInt(elem.getAttribute(('y'))) + parseInt(elem.getAttribute(('height'))) > maxx) maxy = parseInt(elem.getAttribute(('y'))) + parseInt(elem.getAttribute(('height')));
+					if (parseInt(elem.getAttribute('x'))                                         < minx) minx = parseInt(elem.getAttribute('x'));
+					if (parseInt(elem.getAttribute('x')) + parseInt(elem.getAttribute('width'))  > maxx) maxx = parseInt(elem.getAttribute('x')) + parseInt(elem.getAttribute('width'));
+					if (parseInt(elem.getAttribute('y'))                                         < minx) miny = parseInt(elem.getAttribute('y'));
+					if (parseInt(elem.getAttribute('y')) + parseInt(elem.getAttribute('height')) > maxx) maxy = parseInt(elem.getAttribute('y')) + parseInt(elem.getAttribute('height'));
 					break;
 				case 'line':
-					if (parseInt(elem.getAttribute(('x1'))) < minx) minx = parseInt(elem.getAttribute(('x1')));
-					if (parseInt(elem.getAttribute(('x2'))) < minx) minx = parseInt(elem.getAttribute(('x2')));
-					if (parseInt(elem.getAttribute(('x1'))) > maxx) maxx = parseInt(elem.getAttribute(('x1')));
-					if (parseInt(elem.getAttribute(('x2'))) > maxx) maxx = parseInt(elem.getAttribute(('x2')));
-					if (parseInt(elem.getAttribute(('y1'))) < miny) miny = parseInt(elem.getAttribute(('y1')));
-					if (parseInt(elem.getAttribute(('y2'))) < miny) miny = parseInt(elem.getAttribute(('y2')));
-					if (parseInt(elem.getAttribute(('y1'))) > maxy) maxy = parseInt(elem.getAttribute(('y1')));
-					if (parseInt(elem.getAttribute(('y2'))) > maxy) maxy = parseInt(elem.getAttribute(('y2')));
+					if (parseInt(elem.getAttribute('x1')) < minx) minx = parseInt(elem.getAttribute('x1'));
+					if (parseInt(elem.getAttribute('x2')) < minx) minx = parseInt(elem.getAttribute('x2'));
+					if (parseInt(elem.getAttribute('x1')) > maxx) maxx = parseInt(elem.getAttribute('x1'));
+					if (parseInt(elem.getAttribute('x2')) > maxx) maxx = parseInt(elem.getAttribute('x2'));
+					if (parseInt(elem.getAttribute('y1')) < miny) miny = parseInt(elem.getAttribute('y1'));
+					if (parseInt(elem.getAttribute('y2')) < miny) miny = parseInt(elem.getAttribute('y2'));
+					if (parseInt(elem.getAttribute('y1')) > maxy) maxy = parseInt(elem.getAttribute('y1'));
+					if (parseInt(elem.getAttribute('y2')) > maxy) maxy = parseInt(elem.getAttribute('y2'));
 					break;
 				case 'path':
 					// TODO: implement
@@ -2462,44 +2462,44 @@ function SvgCanvas(c)
 				case 'circle':
 					switch (type) {
 					case 'l': // left (horizontal)
-						elem.setAttribute('cx', minx+parseInt(elem.getAttribute(('r'))));
+						elem.setAttribute('cx', minx+parseInt(elem.getAttribute('r')));
 						break;
 					case 'c': // center (horizontal)
 						elem.setAttribute('cx', (minx+maxx)/2);
 						break;
 					case 'r': // right (horizontal)
-						elem.setAttribute('cx', maxx-parseInt(elem.getAttribute(('r'))));
+						elem.setAttribute('cx', maxx-parseInt(elem.getAttribute('r')));
 						break;
 					case 't': // top (vertical)
-						elem.setAttribute('cy', miny+parseInt(elem.getAttribute(('r'))));
+						elem.setAttribute('cy', miny+parseInt(elem.getAttribute('r')));
 						break;
 					case 'm': // middle (vertical)
 						elem.setAttribute('cy', (miny+maxy)/2);
 						break;
 					case 'b': // bottom (vertical)
-						elem.setAttribute('cy', maxy-parseInt(elem.getAttribute(('r'))));
+						elem.setAttribute('cy', maxy-parseInt(elem.getAttribute('r')));
 						break;
 					}
 					break;
 				case 'ellipse':
 					switch (type) {
 					case 'l': // left (horizontal)
-						elem.setAttribute('cx', minx+parseInt(elem.getAttribute(('rx'))));
+						elem.setAttribute('cx', minx+parseInt(elem.getAttribute('rx')));
 						break;
 					case 'c': // center (horizontal)
 						elem.setAttribute('cx', (minx+maxx)/2);
 						break;
 					case 'r': // right (horizontal)
-						elem.setAttribute('cx', maxx-parseInt(elem.getAttribute(('rx'))));
+						elem.setAttribute('cx', maxx-parseInt(elem.getAttribute('rx')));
 						break;
 					case 't': // top (vertical)
-						elem.setAttribute('cy', miny+parseInt(elem.getAttribute(('ry'))));
+						elem.setAttribute('cy', miny+parseInt(elem.getAttribute('ry')));
 						break;
 					case 'm': // middle (vertical)
 						elem.setAttribute('cy', (miny+maxy)/2);
 						break;
 					case 'b': // bottom (vertical)
-						elem.setAttribute('cy', maxy-parseInt(elem.getAttribute(('ry'))));
+						elem.setAttribute('cy', maxy-parseInt(elem.getAttribute('ry')));
 						break;
 					}
 					break;
@@ -2509,53 +2509,53 @@ function SvgCanvas(c)
 						elem.setAttribute('x', minx);
 						break;
 					case 'c': // center (horizontal)
-						elem.setAttribute('x', (minx+maxx-parseInt(elem.getAttribute(('width'))))/2);
+						elem.setAttribute('x', (minx+maxx-parseInt(elem.getAttribute('width')))/2);
 						break;
 					case 'r': // right (horizontal)
-						elem.setAttribute('x', maxx-parseInt(elem.getAttribute(('width'))));
+						elem.setAttribute('x', maxx-parseInt(elem.getAttribute('width')));
 						break;
 					case 't': // top (vertical)
 						elem.setAttribute('y', miny);
 						break;
 					case 'm': // middle (vertical)
-						elem.setAttribute('y', (miny+maxy-parseInt(elem.getAttribute(('width'))))/2);
+						elem.setAttribute('y', (miny+maxy-parseInt(elem.getAttribute('height')))/2);
 						break;
 					case 'b': // bottom (vertical)
-						elem.setAttribute('y', maxx-parseInt(elem.getAttribute(('width'))));
+						elem.setAttribute('y', maxx-parseInt(elem.getAttribute('height')));
 						break;
 					}
 					break;
 				case 'line':
 					switch (type) {
 					case 'l': // left (horizontal)
-						var d = Math.min(parseInt(elem.getAttribute(('x1'))), parseInt(elem.getAttribute(('x2')))) - minx;
-						elem.setAttribute('x1', parseInt(elem.getAttribute(('x1'))) - d);
-						elem.setAttribute('x2', parseInt(elem.getAttribute(('x2'))) - d);
+						var d = Math.min(parseInt(elem.getAttribute('x1')), parseInt(elem.getAttribute('x2'))) - minx;
+						elem.setAttribute('x1', parseInt(elem.getAttribute('x1')) - d);
+						elem.setAttribute('x2', parseInt(elem.getAttribute('x2')) - d);
 						break;
 					case 'c': // center (horizontal)
-						var d = Math.abs(parseInt(elem.getAttribute(('x1'))) - parseInt(elem.getAttribute(('x2'))));
+						var d = Math.abs(parseInt(elem.getAttribute('x1')) - parseInt(elem.getAttribute('x2')));
 						elem.setAttribute('x1', (minx+maxx-d)/2 );
 						elem.setAttribute('x2', (minx+maxx+d)/2 );
 						break;
 					case 'r': // right (horizontal)
-						var d = Math.max(parseInt(elem.getAttribute(('x1'))), parseInt(elem.getAttribute(('x2')))) - maxx;
-						elem.setAttribute('x1', parseInt(elem.getAttribute(('x1'))) - d);
-						elem.setAttribute('x2', parseInt(elem.getAttribute(('x2'))) - d);
+						var d = Math.max(parseInt(elem.getAttribute('x1')), parseInt(elem.getAttribute('x2'))) - maxx;
+						elem.setAttribute('x1', parseInt(elem.getAttribute('x1')) - d);
+						elem.setAttribute('x2', parseInt(elem.getAttribute('x2')) - d);
 						break;
 					case 't': // top (vertical)
-						var d = Math.min(parseInt(elem.getAttribute(('y1'))), parseInt(elem.getAttribute(('y2')))) - miny;
-						elem.setAttribute('y1', parseInt(elem.getAttribute(('y1')))-d);
-						elem.setAttribute('y2', parseInt(elem.getAttribute(('y2')))-d);
+						var d = Math.min(parseInt(elem.getAttribute('y1')), parseInt(elem.getAttribute('y2'))) - miny;
+						elem.setAttribute('y1', parseInt(elem.getAttribute('y1'))-d);
+						elem.setAttribute('y2', parseInt(elem.getAttribute('y2'))-d);
 						break;
 					case 'm': // middle (vertical)
-						var d = Math.abs(parseInt(elem.getAttribute(('y1'))) - parseInt(elem.getAttribute(('y2'))));
+						var d = Math.abs(parseInt(elem.getAttribute('y1')) - parseInt(elem.getAttribute('y2')));
 						elem.setAttribute('y1', (miny+maxy-d)/2 );
 						elem.setAttribute('y2', (miny+maxy+d)/2 );
 						break;
 					case 'b': // bottom (vertical)
-						var d = Math.max(parseInt(elem.getAttribute(('y1'))), parseInt(elem.getAttribute(('y2')))) - maxy;
-						elem.setAttribute('y1', parseInt(elem.getAttribute(('y1'))) - d);
-						elem.setAttribute('y2', parseInt(elem.getAttribute(('y2'))) - d);
+						var d = Math.max(parseInt(elem.getAttribute('y1')), parseInt(elem.getAttribute('y2'))) - maxy;
+						elem.setAttribute('y1', parseInt(elem.getAttribute('y1')) - d);
+						elem.setAttribute('y2', parseInt(elem.getAttribute('y2')) - d);
 						break;
 					}
 					break;
