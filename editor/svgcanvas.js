@@ -1875,6 +1875,11 @@ function SvgCanvas(c)
 			current_poly = null;
 			current_poly_pts = [];
 		}
+		else if (current_mode == "polyedit") {
+			removeAllPointGripsFromPoly();
+			current_poly = null;
+			current_poly_pts = [];
+		}
 		current_mode = name;
 	};
 
