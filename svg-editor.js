@@ -475,6 +475,25 @@ function svg_edit_setup() {
 		svgCanvas.cloneSelectedElements();
 	};
 	
+	var clickAlignLeft = function(){
+		svgCanvas.alignSelectedElements('l');
+	};
+	var clickAlignCenter = function(){
+		svgCanvas.alignSelectedElements('c');
+	};
+	var clickAlignRight = function(){
+		svgCanvas.alignSelectedElements('r');
+	};
+	var clickAlignTop = function(){
+		svgCanvas.alignSelectedElements('t');
+	};
+	var clickAlignMiddle = function(){
+		svgCanvas.alignSelectedElements('m');
+	};
+	var clickAlignBottom = function(){
+		svgCanvas.alignSelectedElements('b');
+	};
+	
 	var showSourceEditor = function(){
 		if (editingsource) return;
 		editingsource = true;
@@ -533,6 +552,12 @@ function svg_edit_setup() {
 	$('#tool_redo').click(clickRedo);
 	$('#tool_clone').click(clickClone);
 	$('#tool_clone_multi').click(clickClone);
+	$('#tool_alignleft').click(clickAlignLeft);
+	$('#tool_aligncenter').click(clickAlignCenter);
+	$('#tool_alignright').click(clickAlignRight);
+	$('#tool_aligntop').click(clickAlignTop);
+	$('#tool_alignmiddle').click(clickAlignMiddle);
+	$('#tool_alignbottom').click(clickAlignBottom);
 	// these two lines are required to make Opera work properly with the flyout mechanism
 	$('#tools_rect_show').click(clickSquare);
 	$('#tools_ellipse_show').click(clickCircle);
@@ -565,12 +590,12 @@ function svg_edit_setup() {
 	$('#tool_paste').mousedown(function(){$('#tool_paste').addClass('tool_button_current');});
 	$('#tool_paste').mouseup(function(){$('#tool_paste').removeClass('tool_button_current');});
 	$('#tool_paste').mouseout(function(){$('#tool_paste').removeClass('tool_button_current');});
-	$('#tool_copy').mousedown(function(){$('#tool_copy').addClass('tool_button_current');});
-	$('#tool_copy').mouseup(function(){$('#tool_copy').removeClass('tool_button_current');});
-	$('#tool_copy').mouseout(function(){$('#tool_copy').removeClass('tool_button_current');});
-	$('#tool_copy_multi').mousedown(function(){$('#tool_copy').addClass('tool_button_current');});
-	$('#tool_copy_multi').mouseup(function(){$('#tool_copy').removeClass('tool_button_current');});
-	$('#tool_copy_multi').mouseout(function(){$('#tool_copy').removeClass('tool_button_current');});
+	$('#tool_clone').mousedown(function(){$('#tool_clone').addClass('tool_button_current');});
+	$('#tool_clone').mouseup(function(){$('#tool_clone').removeClass('tool_button_current');});
+	$('#tool_clone').mouseout(function(){$('#tool_clone').removeClass('tool_button_current');});
+	$('#tool_clone_multi').mousedown(function(){$('#tool_clone').addClass('tool_button_current');});
+	$('#tool_clone_multi').mouseup(function(){$('#tool_clone').removeClass('tool_button_current');});
+	$('#tool_clone_multi').mouseout(function(){$('#tool_clone').removeClass('tool_button_current');});
 	$('#tool_move_top').mousedown(function(){$('#tool_move_top').addClass('tool_button_current');});
 	$('#tool_move_top').mouseup(function(){$('#tool_move_top').removeClass('tool_button_current');});
 	$('#tool_move_top').mouseout(function(){$('#tool_move_top').removeClass('tool_button_current');});
