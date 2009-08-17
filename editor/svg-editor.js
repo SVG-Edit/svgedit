@@ -28,6 +28,14 @@ function svg_edit_setup() {
 	var fillPaint = new $.jGraduate.Paint({solidColor: "FF0000"}); // solid red
 	var strokePaint = new $.jGraduate.Paint({solidColor: "000000"}); // solid black
 
+	// TODO: Unfortunately Mozilla does not handle internal references to gradients
+	// inside a data: URL document.  This means that any elements filled/stroked 
+	// with a gradient will appear black in Firefox, etc.  See bug 308590
+	// https://bugzilla.mozilla.org/show_bug.cgi?id=308590
+	var saveHandler = function(window,svg) {
+		window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
+	};
+
 	// called when we've selected a different element
 	var selectedChanged = function(window,elems) {
 		// if elems[1] is present, then we have more than one element
@@ -240,6 +248,7 @@ function svg_edit_setup() {
 	// bind the selected event to our function that handles updates to the UI
 	svgCanvas.bind("selected", selectedChanged);
 	svgCanvas.bind("changed", elementChanged);
+	svgCanvas.bind("saved", saveHandler);
 
 	var str = '<div class="palette_item" style="background-image: url(\'images/none.png\');" data-rgb="none"></div>'
 	$.each(palette, function(i,item){
