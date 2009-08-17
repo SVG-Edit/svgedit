@@ -506,19 +506,34 @@ function svg_edit_setup() {
 	
 	var properlySourceSizeTextArea = function(){
 		// TODO: remove magic numbers here and get values from CSS
-		var height = ($(window).height() - 120)+'px';
+		var height = $('#svg_source_container').height() - 80;
 		$('#svg_source_textarea').css('height', height);
 	};
 	
-	var hideSourceEditor = function(){
+	var saveSourceEditor = function(){
 		if (!editingsource) return;
-		
-		var oldString = svgCanvas.getSvgString();
-		if (oldString != $('#svg_source_textarea').val()) {
-			if (!svgCanvas.setSvgString($('#svg_source_textarea').val())) {
-				alert('There were parsing errors in your SVG source.\nReverting back to original SVG source.');
+
+		if (!svgCanvas.setSvgString($('#svg_source_textarea').val())) {
+			if( !confirm('There were parsing errors in your SVG source.\nRevert back to original SVG source?') ) {
+				return false;
 			}
 		}
+		hideSourceEditor();
+	};
+
+	var cancelSourceEditor = function() {
+		if (!editingsource) return;
+
+		var oldString = svgCanvas.getSvgString();
+		if (oldString != $('#svg_source_textarea').val()) {
+			if( !confirm('Ignore changes made to SVG source?') ) {
+				return false;
+			}
+		}
+		hideSourceEditor();
+	};
+
+	var hideSourceEditor = function(){
 		$('#svg_source_editor').hide();
 		editingsource = false;
 		$('#svg_source_textarea').blur();
@@ -544,6 +559,8 @@ function svg_edit_setup() {
 	$('#tool_clear').click(clickClear);
 	$('#tool_save').click(clickSave);
 	$('#tool_source').click(showSourceEditor);
+	$('#tool_source_cancel,#svg_source_overlay').click(cancelSourceEditor);
+	$('#tool_source_save').click(saveSourceEditor);
 	$('#tool_delete').click(deleteSelected);
 	$('#tool_delete_multi').click(deleteSelected);
 	$('#tool_move_top').click(moveToTopSelected);
@@ -629,7 +646,7 @@ function svg_edit_setup() {
 	$(document).bind('keydown', {combi:'6', disableInInput: true}, clickText);
 	$(document).bind('keydown', {combi:'7', disableInInput: true}, clickPoly);
 	$(document).bind('keydown', {combi:modKey+'N', disableInInput: true}, function(evt){clickClear();evt.preventDefault();});
-	$(document).bind('keydown', {combi:modKey+'S', disableInInput: true}, function(evt){clickSave();evt.preventDefault();});
+	$(document).bind('keydown', {combi:modKey+'S', disableInInput: true}, function(evt){editingsource?saveSourceEditor():clickSave();evt.preventDefault();});
 	$(document).bind('keydown', {combi:'del', disableInInput: true}, function(evt){deleteSelected();evt.preventDefault();});
 	$(document).bind('keydown', {combi:'backspace', disableInInput: true}, function(evt){deleteSelected();evt.preventDefault();});
 	$(document).bind('keydown', {combi:'shift+up', disableInInput: true}, moveToTopSelected);
@@ -642,7 +659,7 @@ function svg_edit_setup() {
 	$(document).bind('keydown', {combi:modKey+'y', disableInInput: true}, function(evt){clickRedo();evt.preventDefault();});
 	$(document).bind('keydown', {combi:modKey+'u', disableInInput: true}, function(evt){showSourceEditor();evt.preventDefault();});
 	$(document).bind('keydown', {combi:modKey+'c', disableInInput: true}, function(evt){clickClone();evt.preventDefault();});
-	$(document).bind('keydown', {combi:'esc', disableInInput: false}, hideSourceEditor);
+	$(document).bind('keydown', {combi:'esc', disableInInput: false}, cancelSourceEditor);
 
 	// TODO: fix opacity being updated
 	// TODO: go back to the color boxes having white background-color and then setting
