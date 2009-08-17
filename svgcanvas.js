@@ -1782,7 +1782,7 @@ function SvgCanvas(c)
 		var str = "<?xml version=\"1.0\" standalone=\"no\"?>\n";
 		// no need for doctype, see http://jwatt.org/svg/authoring/#doctype-declaration
 		str += svgToString(svgroot, 0);
-		this.saveHandler(str);
+		call("saved", str);
 	};
 
 	this.getSvgString = function() {
@@ -2260,14 +2260,6 @@ function SvgCanvas(c)
 	$(container).mouseup(mouseUp);
 	$(container).mousedown(mouseDown);
 	$(container).mousemove(mouseMove);
-
-	// TODO: Unfortunately Mozilla does not handle internal references to gradients
-	// inside a data: URL document.  This means that any elements filled/stroked 
-	// with a gradient will appear black in Firefox, etc.  See bug 308590
-	// https://bugzilla.mozilla.org/show_bug.cgi?id=308590
-	this.saveHandler = function(svg) {
-		window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
-	};
 
 	this.deleteSelectedElements = function() {
 		var batchCmd = new BatchCommand("Delete Elements");
