@@ -301,8 +301,17 @@ div.color_block {
 #svg_source_textarea {
 	position: relative;
 	width: 95%;
-	top: 35px;
+	top: 5px;
 	height: 250px;
 	padding: 5px;
 	font-size: 12px;
+}
+
+#tool_source_back {
+	text-align: left;
+	padding-left: 20px;
+}
+
+#tool_source_back button {
+	margin: 10px;
 }
