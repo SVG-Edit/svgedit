@@ -1168,7 +1168,7 @@ function SvgCanvas(c)
 		}
 	};
 
-	// in mouseMove we do not record any state changes yet (but we do update
+	// in this function we do not record any state changes yet (but we do update
 	// any elements that are still being created, moved or resized on the canvas)
 	// TODO: svgcanvas should just retain a reference to the image being dragged instead
 	// of the getId() and getElementById() funkiness - this will help us customize the ids 
@@ -1291,13 +1291,13 @@ function SvgCanvas(c)
 				}
 
 				// find the rotation transform and prepend it
-				var ts = ["translate(", (left+tx), ",", (top+ty), ") scale(", sx, ",", sy,
+				var ts = [" translate(", (left+tx), ",", (top+ty), ") scale(", sx, ",", sy,
 							") translate(", -left, ",", -top, ")"].join('');
 				var angle = canvas.getRotationAngle(selected);
 				if (angle) {
 					var cx = selectedBBox.x + selectedBBox.width/2,
 						cy = selectedBBox.y + selectedBBox.height/2;
-					ts += [" rotate(", angle, " ", cx, ",", cy, ")"].join('')
+					ts = ["rotate(", angle, " ", cx, ",", cy, ")", ts].join('')
 				}
 				selected.setAttribute("transform", ts);
 				selectorManager.requestSelector(selected).resize(selectedBBox);
@@ -2083,8 +2083,6 @@ function SvgCanvas(c)
 			var pts = [ [-w2,-h2], [w2,-h2],
 						[w2,h2], [-w2,h2] ];
 			var r = Math.sqrt( w2*w2 + h2*h2 );
-			console.log(pts);
-			console.log(r);
 			var i = 4;
 			var MINX = Number.MAX_VALUE, MINY = Number.MAX_VALUE, 
 				MAXX = Number.MIN_VALUE, MAXY = Number.MIN_VALUE;
@@ -2129,12 +2127,6 @@ function SvgCanvas(c)
 		this.changeSelectedAttribute("transform", "rotate(" + val + " " + 
 									(bbox.x+bbox.width/2) + "," +
 									(bbox.y+bbox.height/2) + ")");
-		
-		// TODO: map from this element's CTM to the viewport
-		// see http://www.w3.org/Graphics/SVG/WG/track/issues/2283 for one way to do this
-//		bbox = selectedBBoxes[0] =
-//		console.log(bbox.x + "," + bbox.y + " " + bbox.width + "," + bbox.height);
-//		setTimeout(function() {selectorManager.requestSelector(elem).resize(selectedBBoxes[i]);},0);
 	};
 
 	this.each = function(cb) {
