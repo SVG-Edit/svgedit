@@ -728,14 +728,19 @@ function SvgCanvas(c)
 		// This fixes Firefox 2- behavior - which does not reset values when the attribute has
 		// been removed, see https://bugzilla.mozilla.org/show_bug.cgi?id=320622
 		var angle = canvas.getRotationAngle(selected);
+		var pointGripContainer = document.getElementById("polypointgrip_container");
 		if (angle) {
 			var cx = remapx(box.x + box.width/2),
 				cy = remapy(box.y + box.height/2);
-			selected.setAttribute("transform", ["rotate(", angle, " ", cx, ",", cy, ")"].join(''));
+			var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
+			selected.setAttribute("transform", rotate);
+			pointGripContainer.setAttribute("transform", rotate);
 		}
 		else {
 			selected.setAttribute("transform", "");
 			selected.removeAttribute("transform");
+			pointGripContainer.setAttribute("transform", "");
+			pointGripContainer.removeAttribute("transform");
 		}
 
 		switch (selected.tagName)
@@ -2130,6 +2135,11 @@ function SvgCanvas(c)
 		this.changeSelectedAttribute("transform", "rotate(" + val + " " + 
 									(bbox.x+bbox.width/2) + "," +
 									(bbox.y+bbox.height/2) + ")");
+		var pointGripContainer = document.getElementById("polypointgrip_container");
+		pointGripContainer.setAttribute("transform", "rotate(" + val + " " + 
+									(bbox.x+bbox.width/2) + "," +
+									(bbox.y+bbox.height/2) + ")");
+
 	};
 
 	this.each = function(cb) {
