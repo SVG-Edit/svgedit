@@ -734,13 +734,17 @@ function SvgCanvas(c)
 				cy = remapy(box.y + box.height/2);
 			var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
 			selected.setAttribute("transform", rotate);
-			pointGripContainer.setAttribute("transform", rotate);
+			if(pointGripContainer) {
+				pointGripContainer.setAttribute("transform", rotate);
+			}
 		}
 		else {
 			selected.setAttribute("transform", "");
 			selected.removeAttribute("transform");
-			pointGripContainer.setAttribute("transform", "");
-			pointGripContainer.removeAttribute("transform");
+			if(pointGripContainer) {
+				pointGripContainer.setAttribute("transform", "");
+				pointGripContainer.removeAttribute("transform");
+			}
 		}
 
 		switch (selected.tagName)
@@ -2131,14 +2135,14 @@ function SvgCanvas(c)
 	this.setRotationAngle = function(val) {
 		var elem = selectedElements[0];
 		var bbox = this.getBBox(elem);
-
-		this.changeSelectedAttribute("transform", "rotate(" + val + " " + 
+		var rotate = "rotate(" + val + " " + 
 									(bbox.x+bbox.width/2) + "," +
-									(bbox.y+bbox.height/2) + ")");
+									(bbox.y+bbox.height/2) + ")";
+		this.changeSelectedAttribute("transform", rotate);
 		var pointGripContainer = document.getElementById("polypointgrip_container");
-		pointGripContainer.setAttribute("transform", "rotate(" + val + " " + 
-									(bbox.x+bbox.width/2) + "," +
-									(bbox.y+bbox.height/2) + ")");
+		if(pointGripContainer) {
+			pointGripContainer.setAttribute("transform", rotate);
+		}
 
 	};
 
