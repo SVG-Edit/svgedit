@@ -527,6 +527,7 @@ function svg_edit_setup() {
 				return false;
 			}
 		}
+		svgCanvas.clearSelection();
 		hideSourceEditor();
 	};
 
