@@ -592,42 +592,29 @@ function svg_edit_setup() {
 
 	// added these event handlers for all the push buttons so they
 	// behave more like buttons being pressed-in and not images
-	$('#tool_clear').mousedown(function(){$('#tool_clear').addClass('tool_button_current');});
-	$('#tool_clear').mouseup(function(){$('#tool_clear').removeClass('tool_button_current');});
-	$('#tool_clear').mouseout(function(){$('#tool_clear').removeClass('tool_button_current');});
-	$('#tool_save').mousedown(function(){$('#tool_save').addClass('tool_button_current');});
-	$('#tool_save').mouseup(function(){$('#tool_save').removeClass('tool_button_current');});
-	$('#tool_save').mouseout(function(){$('#tool_save').removeClass('tool_button_current');});
-	$('#tool_source').mousedown(function(){$('#tool_source').addClass('tool_button_current');});
-	$('#tool_source').mouseup(function(){$('#tool_source').removeClass('tool_button_current');});
-	$('#tool_source').mouseout(function(){$('#tool_source').removeClass('tool_button_current');});	
-	$('#tool_delete').mousedown(function(){$('#tool_delete').addClass('tool_button_current');});
-	$('#tool_delete').mouseup(function(){$('#tool_delete').removeClass('tool_button_current');});
-	$('#tool_delete').mouseout(function(){$('#tool_delete').removeClass('tool_button_current');});
-	$('#tool_delete_multi').mousedown(function(){$('#tool_delete_multi').addClass('tool_button_current');});
-	$('#tool_delete_multi').mouseup(function(){$('#tool_delete_multi').removeClass('tool_button_current');});
-	$('#tool_delete_multi').mouseout(function(){$('#tool_delete_multi').removeClass('tool_button_current');});
-	$('#tool_undo').mousedown(function(){ if (!$('#tool_undo').hasClass('tool_button_disabled')) $('#tool_undo').addClass('tool_button_current');});
-	$('#tool_undo').mouseup(function(){$('#tool_undo').removeClass('tool_button_current');});
-	$('#tool_undo').mouseout(function(){$('#tool_undo').removeClass('tool_button_current');});
-	$('#tool_redo').mousedown(function(){ if (!$('#tool_redo').hasClass('tool_button_disabled')) $('#tool_redo').addClass('tool_button_current');});
-	$('#tool_redo').mouseup(function(){$('#tool_redo').removeClass('tool_button_current');});
-	$('#tool_redo').mouseout(function(){$('#tool_redo').removeClass('tool_button_current');});
-	$('#tool_paste').mousedown(function(){$('#tool_paste').addClass('tool_button_current');});
-	$('#tool_paste').mouseup(function(){$('#tool_paste').removeClass('tool_button_current');});
-	$('#tool_paste').mouseout(function(){$('#tool_paste').removeClass('tool_button_current');});
-	$('#tool_clone').mousedown(function(){$('#tool_clone').addClass('tool_button_current');});
-	$('#tool_clone').mouseup(function(){$('#tool_clone').removeClass('tool_button_current');});
-	$('#tool_clone').mouseout(function(){$('#tool_clone').removeClass('tool_button_current');});
-	$('#tool_clone_multi').mousedown(function(){$('#tool_clone').addClass('tool_button_current');});
-	$('#tool_clone_multi').mouseup(function(){$('#tool_clone').removeClass('tool_button_current');});
-	$('#tool_clone_multi').mouseout(function(){$('#tool_clone').removeClass('tool_button_current');});
-	$('#tool_move_top').mousedown(function(){$('#tool_move_top').addClass('tool_button_current');});
-	$('#tool_move_top').mouseup(function(){$('#tool_move_top').removeClass('tool_button_current');});
-	$('#tool_move_top').mouseout(function(){$('#tool_move_top').removeClass('tool_button_current');});
-	$('#tool_move_bottom').mousedown(function(){$('#tool_move_bottom').addClass('tool_button_current');});
-	$('#tool_move_bottom').mouseup(function(){$('#tool_move_bottom').removeClass('tool_button_current');});
-	$('#tool_move_bottom').mouseout(function(){$('#tool_move_bottom').removeClass('tool_button_current');});
+	function setPushButtons() {
+		var toolnames = ['clear','save','source','delete','delete_multi','paste','clone','clone_multi','move_top','move_bottom'];
+		var all_tools = '';
+		var cur_class = 'tool_button_current';
+		
+		$.each(toolnames, function(i,item) {
+			all_tools += '#tool_' + item + (i==toolnames.length-1?',':'');
+		});
+		
+		$(all_tools).mousedown(function() {
+			$(this).addClass(cur_class);
+		}).bind('mousedown mouseout', function() {
+			$(this).removeClass(cur_class);
+		});
+		
+		$('#tool_undo, #tool_redo').mousedown(function(){ 
+			if (!$(this).hasClass('tool_button_disabled')) $(this).addClass(cur_class);
+		}).bind('mousedown mouseout',function(){
+			$(this).removeClass(cur_class);}
+		);
+	}
+	
+	setPushButtons();
 
 	// switch modifier key in tooltips if mac
 	// NOTE: This code is not used yet until I can figure out how to successfully bind ctrl/meta
@@ -645,30 +632,41 @@ function svg_edit_setup() {
 	}
 	
 	// do keybindings using jquery-hotkeys plugin
-	$(document).bind('keydown', {combi:'1', disableInInput: true}, clickSelect);
-	$(document).bind('keydown', {combi:'2', disableInInput: true}, clickPath);
-	$(document).bind('keydown', {combi:'3', disableInInput: true}, clickLine);
-	$(document).bind('keydown', {combi:'Shift+4', disableInInput: true}, clickSquare);
-	$(document).bind('keydown', {combi:'4', disableInInput: true}, clickRect);
-	$(document).bind('keydown', {combi:'Shift+5', disableInInput: true}, clickCircle);
-	$(document).bind('keydown', {combi:'5', disableInInput: true}, clickEllipse);
-	$(document).bind('keydown', {combi:'6', disableInInput: true}, clickText);
-	$(document).bind('keydown', {combi:'7', disableInInput: true}, clickPoly);
-	$(document).bind('keydown', {combi:modKey+'N', disableInInput: true}, function(evt){clickClear();evt.preventDefault();});
-	$(document).bind('keydown', {combi:modKey+'S', disableInInput: true}, function(evt){editingsource?saveSourceEditor():clickSave();evt.preventDefault();});
-	$(document).bind('keydown', {combi:'del', disableInInput: true}, function(evt){deleteSelected();evt.preventDefault();});
-	$(document).bind('keydown', {combi:'backspace', disableInInput: true}, function(evt){deleteSelected();evt.preventDefault();});
-	$(document).bind('keydown', {combi:'shift+up', disableInInput: true}, moveToTopSelected);
-	$(document).bind('keydown', {combi:'shift+down', disableInInput: true}, moveToBottomSelected);
-	$(document).bind('keydown', {combi:'up', disableInInput: true}, function(evt){moveSelected(0,-1);evt.preventDefault();});
-	$(document).bind('keydown', {combi:'down', disableInInput: true}, function(evt){moveSelected(0,1);evt.preventDefault();});
-	$(document).bind('keydown', {combi:'left', disableInInput: true}, function(evt){moveSelected(-1,0);evt.preventDefault();});
-	$(document).bind('keydown', {combi:'right', disableInInput: true}, function(evt){moveSelected(1,0);evt.preventDefault();});
-	$(document).bind('keydown', {combi:modKey+'z', disableInInput: true}, function(evt){clickUndo();evt.preventDefault();});
-	$(document).bind('keydown', {combi:modKey+'y', disableInInput: true}, function(evt){clickRedo();evt.preventDefault();});
-	$(document).bind('keydown', {combi:modKey+'u', disableInInput: true}, function(evt){showSourceEditor();evt.preventDefault();});
-	$(document).bind('keydown', {combi:modKey+'c', disableInInput: true}, function(evt){clickClone();evt.preventDefault();});
-	$(document).bind('keydown', {combi:'esc', disableInInput: false}, cancelSourceEditor);
+	function setKeyBindings() {
+		var keys = [
+			['1', clickSelect],
+			['2', clickPath],
+			['3', clickLine],
+			['Shift+4', clickSquare],
+			['4', clickRect],
+			['Shift+5', clickCircle],
+			['5', clickEllipse],
+			['6', clickText],
+			['7', clickPoly],
+			[modKey+'N', function(evt){clickClear();evt.preventDefault();}],
+			[modKey+'S', function(evt){editingsource?saveSourceEditor():clickSave();evt.preventDefault();}],
+			['del', function(evt){deleteSelected();evt.preventDefault();}],
+			['backspace', function(evt){deleteSelected();evt.preventDefault();}],
+			['shift+up', moveToTopSelected],
+			['shift+down', moveToBottomSelected],
+			['up', function(evt){moveSelected(0,-1);evt.preventDefault();}],
+			['down', function(evt){moveSelected(0,1);evt.preventDefault();}],
+			['left', function(evt){moveSelected(-1,0);evt.preventDefault();}],
+			['right', function(evt){moveSelected(1,0);evt.preventDefault();}],
+			[modKey+'z', function(evt){clickUndo();evt.preventDefault();}],
+			[modKey+'y', function(evt){clickRedo();evt.preventDefault();}],
+			[modKey+'u', function(evt){showSourceEditor();evt.preventDefault();}],
+			[modKey+'c', function(evt){clickClone();evt.preventDefault();}],
+			['esc', cancelSourceEditor, false],
+		];
+		
+		$.each(keys,function(i,item) {
+			var disable = !(item.length > 2 && !item[2]);
+			$(document).bind('keydown', {combi:item[0], disableInInput: disable}, item[1]);
+		});
+	}
+	
+	setKeyBindings();
 
 	// TODO: fix opacity being updated
 	// TODO: go back to the color boxes having white background-color and then setting
