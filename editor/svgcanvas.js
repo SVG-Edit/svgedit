@@ -1360,8 +1360,6 @@ function SvgCanvas(c)
 				freehand_max_y = Math.max(y, freehand_max_y);
 			// break; missing on purpose
 			case "path":
-//				var dx = x - start_x;
-//				var dy = y - start_y;
 				start_x = x;
 				start_y = y;
 				d_attr += + x + "," + y + " ";
@@ -1379,8 +1377,29 @@ function SvgCanvas(c)
 				// if we are dragging a point, let's move it
 				if (current_poly_pt_drag != -1 && current_poly) {
 					var i = current_poly_pt_drag * 2;
-					var dx = x - current_poly_pts[i],
-						dy = y - current_poly_pts[i+1];
+					
+					// if the image is rotated, then we must modify the x,y mouse coordinates
+					// and rotate them into the shape's rotated coordinate system
+					
+					// FIXME: the problem is that the element's rotation is controlled by 
+					// two things: an angle and a rotation point (the center of the element).
+					// If the element's bbox is changed, its center changes.  In this case,
+					// we keep the rotation center where it is (parse it out from the transform
+					// attribute), and move the poly point appropriately).  This looks good while
+					// dragging, but looks funny when you subsequently rotate the element again.
+					if (angle) {
+						// extract the shape's (potentially) old 'center' from the transform attribute
+						var matched_numbers = current_poly.getAttribute('transform').match(/([\d\.\-\+]+)/g);
+						var cx = parseFloat(matched_numbers[1]), 
+							cy = parseFloat(matched_numbers[2]);
+						var bbox = canvas.getBBox(current_poly);
+						var dx = x - cx, dy = y - cy;
+ 						var r = Math.sqrt( dx*dx + dy*dy );
+						var theta = Math.atan2(dy,dx) - angle;						
+						x = cx + r * Math.cos(theta);
+						y = cy + r * Math.sin(theta);
+					}
+
 					current_poly_pts[i] = x;
 					current_poly_pts[i+1] = y;
 
@@ -1394,7 +1413,7 @@ function SvgCanvas(c)
 					arr[0] = ["M", curx, ",", cury].join('');
 					for (var j = 1; j < len; ++j) {
 						var px = current_poly_pts[j*2], py = current_poly_pts[j*2+1];
-						arr[j] = ["l", (px-curx), ",", (py-cury)].join('');
+						arr[j] = ["l", parseInt(px-curx), ",", parseInt(py-cury)].join('');
 						curx = px;
 						cury = py;
 					}
@@ -1784,6 +1803,40 @@ function SvgCanvas(c)
 	};
 
 // public functions
+
+	this.open = function() {
+		if(window.opera && window.opera.io && window.opera.io.filesystem)
+		{
+			try {
+				window.opera.io.filesystem.browseForFile(
+					new Date().getTime(), /* mountpoint name */
+					"", /* default location */
+					function(file) {
+						try {
+							if (file) {
+								fstream = file.open(file, "r");
+								var output = "";
+								while (!fstream.eof) {
+									output += fstream.readLine("UTF-16");
+								}
+								
+								canvas.setSvgString(output); /* 'this' is bound to the filestream object here */
+							}
+						}
+						catch(e) {
+							console.log("Reading file failed.");
+						}
+					},
+					false, /* not persistent */
+					false, /* no multiple selections */
+					"*.svg" /* file extension filter */
+				);
+			}
+			catch(e) {
+				console.log("Open file failed.");
+			}
+		}
+	};
 
 	this.save = function() {
 		// remove the selected outline before serializing

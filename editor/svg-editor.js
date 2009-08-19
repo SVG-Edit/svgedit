@@ -33,7 +33,35 @@ function svg_edit_setup() {
 	// with a gradient will appear black in Firefox, etc.  See bug 308590
 	// https://bugzilla.mozilla.org/show_bug.cgi?id=308590
 	var saveHandler = function(window,svg) {
-		window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
+		if(window.opera && window.opera.io && window.opera.io.filesystem)
+		{
+			try {
+				window.opera.io.filesystem.browseForSave(
+					new Date().getTime(), /* mountpoint name */
+					"", /* default location */
+					function(file) {
+						try {
+							if (file) {
+								var fstream = file.open(file, "w");
+								fstream.write(svg, "UTF-8");
+								fstream.close();
+							}
+						}
+						catch(e) {
+							console.log("Write to file failed.");
+						}
+					}, 
+					false /* not persistent */
+				);
+			}
+			catch(e) {
+				console.log("Save file failed.");
+			}
+		}
+		else
+		{
+			window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
+		}
 	};
 
 	// called when we've selected a different element
@@ -469,6 +497,10 @@ function svg_edit_setup() {
 	var clickSave = function(){
 		svgCanvas.save();
 	};
+	
+	var clickOpen = function(){
+		svgCanvas.open();
+	};
 
 	var clickUndo = function(){
 		if (svgCanvas.getUndoStackSize() > 0)
@@ -568,6 +600,7 @@ function svg_edit_setup() {
 	$('#tool_poly').click(clickPoly);
 	$('#tool_clear').click(clickClear);
 	$('#tool_save').click(clickSave);
+	$('#tool_open').click(clickOpen);
 	$('#tool_source').click(showSourceEditor);
 	$('#tool_source_cancel,#svg_source_overlay').click(cancelSourceEditor);
 	$('#tool_source_save').click(saveSourceEditor);
@@ -594,7 +627,7 @@ function svg_edit_setup() {
 	// added these event handlers for all the push buttons so they
 	// behave more like buttons being pressed-in and not images
 	function setPushButtons() {
-		var toolnames = ['clear','save','source','delete','delete_multi','paste','clone','clone_multi','move_top','move_bottom'];
+		var toolnames = ['clear','open','save','source','delete','delete_multi','paste','clone','clone_multi','move_top','move_bottom'];
 		var all_tools = '';
 		var cur_class = 'tool_button_current';
 		
@@ -646,6 +679,7 @@ function svg_edit_setup() {
 			['7', clickPoly],
 			[modKey+'N', function(evt){clickClear();evt.preventDefault();}],
 			[modKey+'S', function(evt){editingsource?saveSourceEditor():clickSave();evt.preventDefault();}],
+			[modKey+'O', function(evt){clickOpen();evt.preventDefault();}],
 			['del', function(evt){deleteSelected();evt.preventDefault();}],
 			['backspace', function(evt){deleteSelected();evt.preventDefault();}],
 			['shift+up', moveToTopSelected],
@@ -828,6 +862,14 @@ function svg_edit_setup() {
 	$('#rect_radius').SpinButton({ min: 0, max: 1000, step: 1, callback: changeRectRadius });
 	$('#stroke_width').SpinButton({ min: 1, max: 99, step: 1, callback: changeStrokeWidth });
 	$('#angle').SpinButton({ min: -359, max: 359, step: 5, callback: changeRotationAngle });
+
+	// if Opera and in widget form, enable the Open button
+	if (window.opera) {
+		opera.postError('opera.io=' + opera.io);
+		if(opera && opera.io && opera.io.filesystem) {
+			$('#tool_open').show();
+		}
+	}
 
 	return svgCanvas;
 };
