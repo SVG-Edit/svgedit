@@ -2137,34 +2137,77 @@ function SvgCanvas(c)
 
 	this.getBBox = function(elem) {
 		var selected = elem || selectedElements[0];
+		// get the bounding box from the DOM (which is in that element's coordinate system)
 		var bbox = selected.getBBox();
 
-		// determine the bounding box if rotated (NOTE: this won't be
-		// the tightest possible bounding box, for it will do)
+		// determine the bounding box if rotated 
 		var angle = this.getRotationAngle(selected) * Math.PI / 180.0;
 		if (angle) {
-			var w2 = bbox.width/2, h2 = bbox.height/2,
-				cx = bbox.x + w2, cy = bbox.y + h2;
-			var pts = [ [-w2,-h2], [w2,-h2],
-						[w2,h2], [-w2,h2] ];
-			var r = Math.sqrt( w2*w2 + h2*h2 );
-			var i = 4;
-			var MINX = Number.MAX_VALUE, MINY = Number.MAX_VALUE, 
-				MAXX = Number.MIN_VALUE, MAXY = Number.MIN_VALUE;
-			while (i--) {
-				var theta = angle + Math.atan2(pts[i][1],pts[i][0]);
-				var x = r * Math.cos(theta),
-					y = r * Math.sin(theta);
-
-				if (MINX > x) { MINX = x; }
-				if (MINY > y) { MINY = y; }
-				if (MAXX < x) { MAXX = x; }
-				if (MAXY < y) { MAXY = y; }
-			}
-			bbox.x = cx + parseInt(MINX);
-			bbox.y = cy + parseInt(MINY);
-			bbox.width = parseInt(MAXX-MINX);
-			bbox.height = parseInt(MAXY-MINY);
+			switch(selected.tagName) {
+				// rotating a circle has no effect on its bounding box
+				case "circle":
+					break;
+				case "ellipse":
+					// For ellipse, I'm completely following the math from here:
+					// http://stackoverflow.com/questions/87734/how-do-you-calculate-the-axis-aligned-bounding-box-of-an-ellipse
+					// x(t) = h + a*cos(t)*cos(angle) - b*sin(t)*sin(angle)
+					// y(t) = k + b*sin(t)*cos(angle) + a*cos(t)*sin(angle)
+					var a = parseFloat(selected.getAttribute("rx")),
+						b = parseFloat(selected.getAttribute("ry")),
+						h = parseFloat(selected.getAttribute("cx")),
+						k = parseFloat(selected.getAttribute("cy"));
+					var tx = Math.atan( -b * Math.tan(angle)/a ),
+						ty = Math.atan( b * (1.0 / Math.tan(angle))/a );
+					
+					var X = [], Y = [];
+					
+					X[0] = h + a*Math.cos(tx)*Math.cos(angle) - b*Math.sin(tx)*Math.sin(angle);
+					Y[0] = k + b*Math.sin(ty)*Math.cos(angle) + a*Math.cos(ty)*Math.sin(angle);
+					
+					// get other values
+					tx += Math.PI;
+					ty += Math.PI;
+					
+					X[1] = h + a*Math.cos(tx)*Math.cos(angle) - b*Math.sin(tx)*Math.sin(angle);
+					Y[1] = k + b*Math.sin(ty)*Math.cos(angle) + a*Math.cos(ty)*Math.sin(angle);
+					
+					if (X[1] < X[0]) { var temp = X[1]; X[1] = X[0]; X[0] = temp; }
+					if (Y[1] < Y[0]) { var temp = Y[1]; Y[1] = Y[0]; Y[0] = temp; }
+					
+					bbox.x = parseInt(X[0]);
+					bbox.y = parseInt(Y[0]);
+					bbox.width = parseInt( X[1] - X[0] );
+					bbox.height = parseInt( Y[1] - Y[0] );
+					
+					break;
+				
+				// TODO: handle path, polyline, polygon here by iterating through all points
+				// transforming each point into the rotated coordinate system and tracking
+				// the MINX, MAXX, MINY, MAXY
+				
+				// default case for rect, text, line is to just use the bbox from the DOM
+				default:
+					var w2 = bbox.width/2, h2 = bbox.height/2,
+						cx = bbox.x + w2, cy = bbox.y + h2;
+					var pts = [ [-w2,-h2], [w2,-h2], [w2,h2], [-w2,h2] ];
+					var r = Math.sqrt( w2*w2 + h2*h2 );
+					var i = 4;
+					var MINX = Number.MAX_VALUE, MINY = Number.MAX_VALUE, 
+						MAXX = Number.MIN_VALUE, MAXY = Number.MIN_VALUE;
+					while (i--) {
+						var theta = angle + Math.atan2(pts[i][1],pts[i][0]);
+						var x = r * Math.cos(theta), y = r * Math.sin(theta);
+						if (MINX > x) { MINX = x; }
+						if (MINY > y) { MINY = y; }
+						if (MAXX < x) { MAXX = x; }
+						if (MAXY < y) { MAXY = y; }
+					}
+					bbox.x = cx + parseInt(MINX);
+					bbox.y = cy + parseInt(MINY);
+					bbox.width = parseInt(MAXX-MINX);
+					bbox.height = parseInt(MAXY-MINY);
+					break;
+			} // switch on element type
 		}
 
 		return bbox;
