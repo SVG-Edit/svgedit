@@ -745,10 +745,10 @@ function svg_edit_setup() {
 				opacity.html(paint.alpha + " %");
 
 				if (picker == 'stroke') {
-					svgCanvas.setStrokePaint(paint);
+					svgCanvas.setStrokePaint(paint, true);
 				}
 				else {
-					svgCanvas.setFillPaint(paint);
+					svgCanvas.setFillPaint(paint, true);
 				}
 				
 				$('#color_picker').hide();
