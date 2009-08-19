@@ -621,6 +621,51 @@ function SvgCanvas(c)
 		}
 	};
 
+	var removeUnusedGrads = function() {
+		var defs = svgroot.getElementsByTagNameNS(svgns, "defs");
+		if(!defs.length) return;
+		
+		var all_els = svgroot.getElementsByTagNameNS(svgns, '*');
+		var grad_uses = [];
+		
+		$.each(all_els, function(i, el) {
+			var fill = el.getAttribute('fill');
+			if(fill && fill.indexOf('url(#') == 0) {
+				//found gradient
+				grad_uses.push(fill);
+			} 
+			
+			var stroke = el.getAttribute('stroke');
+			if(stroke && stroke.indexOf('url(#') == 0) {
+				//found gradient
+				grad_uses.push(stroke);
+			} 
+		});
+		
+		var lgrads = svgroot.getElementsByTagNameNS(svgns, "linearGradient");
+		var grad_ids = [];
+
+		var i = lgrads.length;
+		while (i--) {
+			var grad = lgrads[i];
+			var id = grad.getAttribute('id');
+			var url_id = 'url(#' + id + ')';
+			if($.inArray(url_id, grad_uses) == -1) {
+				// Not found, so remove
+				grad.parentNode.removeChild(grad);
+			}
+		}
+		
+		// Remove defs if empty
+		var i = defs.length;
+		while (i--) {
+			var def = defs[i];
+			if(!def.getElementsByTagNameNS(svgns,'*').length) {
+				def.parentNode.removeChild(def);
+			}
+		}
+	}
+
 	var svgToString = function(elem, indent) {
 		var out = new Array();
 		if (elem) {
@@ -991,6 +1036,11 @@ function SvgCanvas(c)
 	{
 		var x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
 		var y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
+		
+		if($.inArray(current_mode, ['select', 'resize']) == -1) {
+			addGradient();
+		}
+		
 		switch (current_mode) {
 			case "select":
 				started = true;
@@ -1841,6 +1891,10 @@ function SvgCanvas(c)
 	this.save = function() {
 		// remove the selected outline before serializing
 		this.clearSelection();
+		
+		// remove unused gradients
+		removeUnusedGrads();
+		
 		var str = "<?xml version=\"1.0\" standalone=\"no\"?>\n";
 		// no need for doctype, see http://jwatt.org/svg/authoring/#doctype-declaration
 		str += svgToString(svgroot, 0);
@@ -1848,6 +1902,7 @@ function SvgCanvas(c)
 	};
 
 	this.getSvgString = function() {
+		removeUnusedGrads();
 		return svgToString(svgroot, 0);
 	};
 
@@ -1982,6 +2037,34 @@ function SvgCanvas(c)
 		return defs;
 	};
 
+	var addGradient = function() {
+		$.each(['stroke','fill'],function(i,type) {
+			
+			if(type == 'stroke' && (!current_stroke_paint || current_stroke_paint.type == "solidColor")) return;
+			if(type == 'fill' && (!current_fill_paint || current_fill_paint.type == "solidColor")) return;
+			
+			var grad = canvas[type + 'Grad'];
+			
+			// find out if there is a duplicate gradient already in the defs
+			var duplicate_grad = findDuplicateGradient(grad);
+			var defs = findDefs();
+	
+			// no duplicate found, so import gradient into defs
+			if (!duplicate_grad) {
+				grad = defs.appendChild( svgdoc.importNode(grad, true) );
+	
+				// get next id and set it on the grad
+				grad.id = getNextId();
+			}
+			else { // use existing gradient
+				grad = duplicate_grad;
+			}
+			var functype = type=='fill'?'Fill':'Stroke';
+			
+			canvas['set'+ functype +'Color']("url(#" + grad.id + ")");
+		});
+	}
+
 	var findDuplicateGradient = function(grad) {
 		var defs = findDefs();
 		var existing_grads = defs.getElementsByTagNameNS(svgns, "linearGradient");
@@ -2025,29 +2108,14 @@ function SvgCanvas(c)
 		return null;
 	};
 
-	this.setStrokePaint = function(p) {
+	this.setStrokePaint = function(p, addGrad) {
 		current_stroke_paint = new $.jGraduate.Paint(p);
 		if (current_stroke_paint.type == "solidColor") {
 			this.setStrokeColor("#"+current_stroke_paint.solidColor);
 		}
 		else if(current_stroke_paint.type == "linearGradient") {
-			// find out if there is a duplicate gradient already in the defs
-			var grad = current_stroke_paint.linearGradient;
-			var duplicate_grad = findDuplicateGradient(grad);
-			var defs = findDefs();
-
-			// no duplicate found, so import gradient into defs
-			if (!duplicate_grad) {
-				grad = defs.appendChild( svgdoc.importNode(grad, true) );
-
-				// get next id and set it on the grad
-				grad.id = getNextId();
-			}
-			else { // use existing gradient
-				grad = duplicate_grad;
-			}
-
-			this.setStrokeColor("url(#" + grad.id + ")");
+			canvas.strokeGrad = current_stroke_paint.linearGradient;
+			if(addGrad) addGradient(); 
 		}
 		else {
 //			console.log("none!");
@@ -2055,34 +2123,15 @@ function SvgCanvas(c)
 		this.setStrokeOpacity(current_stroke_paint.alpha/100);
 	};
 
-	// TODO: rework this so that we are not append elements into the SVG at this stage
-	// This should only be done at the actual creation stage or when we change a selected 
-	// element's fill paint - at that point, batch up the creation of the gradient element
-	// with the creation/change
-	this.setFillPaint = function(p) {
+	this.setFillPaint = function(p, addGrad) {
 		// copy the incoming paint object
 		current_fill_paint = new $.jGraduate.Paint(p);
 		if (current_fill_paint.type == "solidColor") {
 			this.setFillColor("#"+current_fill_paint.solidColor);
 		}
 		else if(current_fill_paint.type == "linearGradient") {
-			// find out if there is a duplicate gradient already in the defs
-			var grad = current_fill_paint.linearGradient;
-			var duplicate_grad = findDuplicateGradient(grad);
-			var defs = findDefs();
-
-			// no duplicate found, so import gradient into defs
-			if (!duplicate_grad) {
-				grad = defs.appendChild( svgdoc.importNode(grad, true) );
-
-				// get next id and set it on the grad
-				grad.id = getNextId();
-			}
-			else { // use existing gradient
-				grad = duplicate_grad;
-			}
-
-			this.setFillColor("url(#" + grad.id + ")");
+			canvas.fillGrad = current_fill_paint.linearGradient;
+			if(addGrad) addGradient(); 
 		}
 		else {
 //			console.log("none!");
