@@ -848,14 +848,39 @@ function svg_edit_setup() {
 	});
 
 	function changeResolution(x,y) {
-		$('#resolution').val(x+'x'+y);
-//		$('#svgroot').css( { 'width': x+'px', 'height': y+'px' } );
+		var new_res = x+'x'+y;
+		var found = false;
+		$('#resolution option').each(function() {
+			if($(this).text() == new_res) {
+				$('#resolution').val(x+'x'+y);
+				found = true;
+			}
+		});
+		if(!found) $('#resolution').val('Custom');
+		
 		$('#svgcanvas').css( { 'width': x+'px', 'height': y+'px' } );
 	}
 
 	$('#resolution').change(function(){
-		var res = this.value.split('x');
-		var x = parseInt(res[0]), y = parseInt(res[1]);
+		if(this.value == 'Custom') {
+			var cust_val = prompt("Please enter custom size (i.e. 400x300)","");
+			var res_vals = cust_val.match(/(\d+)[x \/,](\d+)/);
+			if(!res_vals) {
+				alert('Invalid size. Please format it as WIDTHxHEIGHT (like 400x300)');
+				return false;
+			} else {
+				var x = res_vals[1], y = res_vals[2];
+				if(x == '0' || y == '0') {
+					alert('Invalid size. Width or height may not be 0.');
+					return false;
+				}
+			}
+		} else if(this.value == 'Fit to content'){
+			var x = '', y = '';
+		} else {
+			var res = this.value.split('x');
+			var x = parseInt(res[0]), y = parseInt(res[1]);
+		}
 		svgCanvas.setResolution(x,y);
 	});
 
