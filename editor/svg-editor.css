@@ -168,6 +168,7 @@ div.color_block {
 	position: relative;
 	top: -13px;
 	left: -5px;
+	margin-bottom: -13px;
 }
 
 #svg_editor .tool_button, #svg_editor .tool_button_current, #svg_editor .tool_button_disabled {
