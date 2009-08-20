@@ -468,6 +468,8 @@ function SvgCanvas(c)
 	var current_opacity = 1;
 	var current_stroke_opacity = 1;
 	var current_fill_opacity = 1;
+	var current_text_fill = "#000000";
+	var current_text_stroke_width = 0;
 	var current_font_size = "12pt";
 	var current_font_family = "serif";
 	var freehand_min_x = null;
@@ -1194,9 +1196,9 @@ function SvgCanvas(c)
 						"x": x,
 						"y": y,
 						"id": getNextId(),
-						"fill": current_fill,
+						"fill": current_text_fill,
 						"stroke": current_stroke,
-						"stroke-width": current_stroke_width,
+						"stroke-width": current_text_stroke_width,
 						"stroke-dasharray": current_stroke_style,
 						"stroke-opacity": current_stroke_opacity,
 						"fill-opacity": current_fill_opacity,
@@ -2011,7 +2013,12 @@ function SvgCanvas(c)
 	};
 
 	this.setFillColor = function(val) {
-		current_fill = val;
+		if(selectedElements.length && selectedElements[0].nodeName == 'text') {
+			current_text_fill = val;
+		} else {
+			current_fill = val;
+		}
+
 		// take out any path/line elements when setting fill
 		var elems = [];
 		var i = selectedElements.length;
@@ -2143,7 +2150,11 @@ function SvgCanvas(c)
 	};
 
 	this.setStrokeWidth = function(val) {
-		current_stroke_width = val;
+		if(selectedElements.length && selectedElements[0].nodeName == 'text') {
+			current_text_stroke_width = val;
+		} else {
+			current_stroke_width = val;
+		}
 		this.changeSelectedAttribute("stroke-width", val);
 	};
 
