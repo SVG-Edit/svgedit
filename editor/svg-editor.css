@@ -161,6 +161,15 @@ div.color_block {
 	vertical-align:12px;
 }
 
+/* TODO: figure out why there is a couple pixels between
+   the tools with a flyout arrow */
+#svg_editor .flyout_arrow_horiz {
+	float: right;
+	position: relative;
+	top: -13px;
+	left: -4px;
+}
+
 #svg_editor .tool_button, #svg_editor .tool_button_current, #svg_editor .tool_button_disabled {
 	height: 24px;
 	width: 24px;
