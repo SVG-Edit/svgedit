@@ -794,13 +794,13 @@ function SvgCanvas(c)
 
 		switch (selected.tagName)
 		{
-		// NOTE: there's no way to create an actual polygon element except by editing source
-		// or importing from somewhere else
+		// NOTE: at the moment, there's no way to create an actual polygon element except by 
+		// editing source or importing from somewhere else but we'll cover it here anyway
+		// polygon is handled just like polyline
 		case "polygon": 
-		// polygon is handled identically as polyline
 		case "polyline":
-			// extract the x,y from the path, adjust it and write back the new path
-			// but first, save the old path
+			// extract the points from the polygon/polyline, adjust it and write back the new points
+			// but first, save the old points
 			changes["points"] = selected.getAttribute("points");
 			var list = selected.points;
 			var len = list.numberOfItems;
@@ -808,7 +808,6 @@ function SvgCanvas(c)
 			for (var i = 0; i < len; ++i) {
 				var pt = list.getItem(i);
 				var x = remapx(pt.x), y = remapy(pt.y);
-				// we only need to scale the relative coordinates (no need to translate)
 				newpoints += x + "," + y + " ";
 			}
 			selected.setAttributeNS(null, "points", newpoints);
@@ -2208,7 +2207,7 @@ function SvgCanvas(c)
 					var tx = Math.atan( -b * Math.tan(angle)/a ),
 						ty = Math.atan( b * (1.0 / Math.tan(angle))/a );
 					
-					var X = [], Y = [];
+					var X = new Array(2), Y = new Array(2);
 					
 					X[0] = h + a*Math.cos(tx)*Math.cos(angle) - b*Math.sin(tx)*Math.sin(angle);
 					Y[0] = k + b*Math.sin(ty)*Math.cos(angle) + a*Math.cos(ty)*Math.sin(angle);
@@ -2229,8 +2228,101 @@ function SvgCanvas(c)
 					bbox.height = parseInt( Y[1] - Y[0] );
 					
 					break;
-				
-				// TODO: handle path, polyline, polygon here by iterating through all points
+
+				case "polygon":
+				case "polyline":
+					var MINX = Number.MAX_VALUE, MINY = Number.MAX_VALUE, 
+						MAXX = Number.MIN_VALUE, MAXY = Number.MIN_VALUE;
+					// calculate the cx,cy (pull from transform attr?)
+					var cx = bbox.x + bbox.width/2, 
+						cy = bbox.y + bbox.height/2;
+					console.log('cx=' + cx + ', cy=' + cy);
+					var list = selected.points;
+					var i = list.numberOfItems;
+					while (i--) {
+						var pt = list.getItem(i);
+						var dx = pt.x - cx, dy = pt.y - cy;
+						var r = Math.sqrt( dx*dx + dy*dy );
+						var theta = angle + Math.atan2(dy,dx);
+						var x = r * Math.cos(theta), y = r * Math.sin(theta);
+						if (MINX > x) { MINX = x; }
+						if (MINY > y) { MINY = y; }
+						if (MAXX < x) { MAXX = x; }
+						if (MAXY < y) { MAXY = y; }
+					}
+					bbox.x = parseInt(cx + MINX);
+					bbox.y = parseInt(cy + MINY);
+					bbox.width = parseInt(MAXX-MINX);
+					bbox.height = parseInt(MAXY-MINY);
+					break;
+
+				case "path":
+					var MINX = Number.MAX_VALUE, MINY = Number.MAX_VALUE, 
+						MAXX = Number.MIN_VALUE, MAXY = Number.MIN_VALUE;
+					// calculate the cx,cy (pull from transform attr?)
+					var cx = bbox.x + bbox.width/2, 
+						cy = bbox.y + bbox.height/2;
+					var segList = selected.pathSegList;
+					var len = segList.numberOfItems;
+					var curx = 0, cury = 0;
+					for (var i = 0; i < len; ++i) {
+						var seg = segList.getItem(i);
+						// if these properties are not in the segment, set them to zero
+						var x = seg.x || 0,
+							y = seg.y || 0;
+
+						var type = seg.pathSegType;
+						switch (type) {
+							case 1: // z,Z closepath (Z/z)
+								x = curx;
+								y = cury;
+								break;
+							// turn this into a relative segment then fall through
+							case 2: // absolute move (M)
+							case 4: // absolute line (L)
+							case 6: // absolute cubic (C)
+							case 8: // absolute quad (Q)
+							case 10: // absolute elliptical arc (A)
+							case 12: // absolute horizontal line (H)
+							case 14: // absolute vertical line (V)
+							case 16: // absolute smooth cubic (S)
+							case 18: // absolute smooth quad (T)
+								curx = x;
+								cury = y;
+								break;
+							case 3: // relative move (m)
+							case 5: // relative line (l)
+							case 7: // relative cubic (c)
+							case 9: // relative quad (q) 
+							case 13: // relative horizontal line (h)
+							case 15: // relative vertical line (v)
+							case 19: // relative smooth quad (t)
+							case 11: // relative elliptical arc (a)
+							case 17: // relative smooth cubic (s)
+								curx += x;
+								cury += y;
+								x = curx;
+								y = cury;
+								break;
+						}
+						
+						var dx = x - cx, dy = y - cy;
+						var r = Math.sqrt( dx*dx + dy*dy );
+						var theta = angle + Math.atan2(dy,dx);
+						x = r * Math.cos(theta);
+						y = r * Math.sin(theta);
+						if (MINX > x) { MINX = x; }
+						if (MINY > y) { MINY = y; }
+						if (MAXX < x) { MAXX = x; }
+						if (MAXY < y) { MAXY = y; }
+					}
+					bbox.x = parseInt(cx + MINX);
+					bbox.y = parseInt(cy + MINY);
+					bbox.width = parseInt(MAXX-MINX);
+					bbox.height = parseInt(MAXY-MINY);
+					break;
+					
+				// TODO: handle path here by iterating through all points
 				// transforming each point into the rotated coordinate system and tracking
 				// the MINX, MAXX, MINY, MAXY
 				
@@ -2251,8 +2343,8 @@ function SvgCanvas(c)
 						if (MAXX < x) { MAXX = x; }
 						if (MAXY < y) { MAXY = y; }
 					}
-					bbox.x = cx + parseInt(MINX);
-					bbox.y = cy + parseInt(MINY);
+					bbox.x = parseInt(cx + MINX);
+					bbox.y = parseInt(cy + MINY);
 					bbox.width = parseInt(MAXX-MINX);
 					bbox.height = parseInt(MAXY-MINY);
 					break;
@@ -2279,7 +2371,9 @@ function SvgCanvas(c)
 
 	this.setRotationAngle = function(val) {
 		var elem = selectedElements[0];
-		var bbox = this.getBBox(elem);
+		// we use the actual element's bbox (not the calculated one) since the 
+		// calculated bbox's center can change depending on the angle
+		var bbox = elem.getBBox(); //this.getBBox(elem);
 		var rotate = "rotate(" + val + " " + 
 									(bbox.x+bbox.width/2) + "," +
 									(bbox.y+bbox.height/2) + ")";
