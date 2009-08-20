@@ -1,0 +1,171 @@
+/* 
+ * jGraduate Default CSS
+ * 
+ * Copyright (c) 2009 Jeff Schiller
+ *
+ * Licensed under the Apache License Version 2
+ */
+
+h2.jGraduate_Title {
+  font-family: Arial, Helvetica, Sans-Serif;
+  font-size: 11px !important;
+  font-weight: bold;
+  margin: -13px 0px 0px 0px;
+  padding: 0px;
+  text-align: center;
+}
+
+.jGraduate_Picker {
+	font-family: Arial, Helvetica, Sans-Serif;
+	font-size: 12px;
+	border-style: solid;
+	border-color: lightgrey black black lightgrey;
+	border-width: 1px;
+	background-color: #EFEFEF;
+	position: absolute;
+	padding: 10px;
+}
+
+li.jGraduate_tab_color, li.jGraduate_tab_lingrad {
+	background-color: #ccc;
+	display: inline;
+	border: solid 1px grey;
+	padding: 3px;
+	margin: 2px;
+	cursor: pointer;
+}
+
+li.jGraduate_tab_current {
+	background-color: #EFEFEF;
+	display: inline;
+	padding: 3px;
+	margin: 2px;
+	border: solid 1px black;
+	cursor: pointer;
+}
+
+.jGraduate_colPick {
+	display: none;
+}
+
+.jGraduate_lgPick {	
+	display: none;
+	border: outset 1px #666;
+	padding: 10px 7px 5px 5px;
+}
+
+.jGraduate_tabs {
+	position: relative;
+	background-color: #EFEFEF;
+	padding: 0px;
+	margin: 0px;
+	margin-bottom: 5px;
+}
+
+div.jGraduate_Swatch {
+	display: inline-block;
+	margin: 8px;
+}
+div.jGraduate_GradContainer {
+	border: 2px inset #EEE;
+	background-image: url(../images/map-opacity.png); 
+	background-position: 0px 0px;
+	height: 256px;
+}
+
+.jGraduate_AlphaArrows {
+	position: absolute;
+	margin-top: -10px;
+	margin-left: 250.5px;
+}
+
+div.jGraduate_Opacity {
+	border: 2px inset #eee;
+	margin-top: 14px;
+	background-color: black;
+	background-image: url(../images/Maps.png);
+	background-position: 0px -2816px;
+	height: 20px;
+	cursor: ew-resize;
+}
+
+div.jGraduate_OpacityField {
+	margin-top: 110px;
+	margin-left: -10px;
+}
+
+div.jGraduate_Form {
+	display: inline-block;
+	vertical-align: top;
+	width: 140px;
+	margin: -3px 3px 0px 4px;
+}
+
+div.jGraduate_StopSection {
+	width: 120px;
+	text-align: center;
+}
+
+div.jGraduate_OkCancel {
+	display: inline-block;
+	vertical-align: top;	
+	width: 113px;
+}
+
+input.jGraduate_Ok, input.jGraduate_Cancel {
+	display: block;
+	width: 100px;
+	margin-left: -4px;
+	margin-right: -4px;
+}
+input.jGraduate_Ok {
+	margin: 9px -4px 5px -4px;
+}
+
+.colorBox {
+	display: inline-block;
+	height: 16px;
+	width: 16px;
+	border: 1px solid #808080;
+	vertical-align: -7px;
+	cursor: pointer;
+	margin: 4px;
+}
+
+label.jGraduate_Form_Heading {
+	position: relative;
+	top: 10px;
+	background-color: #EFEFEF;
+	padding: 2px;
+	font-weight: bold;
+	font-size: 13px;
+}
+
+div.jGraduate_Form_Section {
+	border-style: solid;
+	border-width: 1px;
+	border-color: grey;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	padding: 15px 5px 5px 5px;
+	margin: 2px;
+	width: 110px;
+	text-align: center;
+}
+
+div.jGraduate_LightBox {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	background-color: #000;
+	opacity: 0.5;
+	display: none;
+}
+
+div.jGraduate_stopPicker {
+	position: absolute;
+	display: none;
+	background: #E8E8E8;
+}

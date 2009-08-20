@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<widget>
+  <widgetname>SVG Edit</widgetname>
+  <description>
+    A simple SVG Editor. 
+  </description>
+  <width>800</width>
+  <height>600</height>
+  <id>
+    <name>SVG Edit</name>
+    <revised>2009-08</revised>
+  </id>
+  <feature name="http://xmlns.opera.com/fileio">
+    <param name="folderhint" value="home" />
+  </feature>
+</widget>
