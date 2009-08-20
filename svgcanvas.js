@@ -1969,8 +1969,25 @@ function SvgCanvas(c)
 			h = svgroot.getAttribute("height");
 
 		var handle = svgroot.suspendRedraw(1000);
+		
+		if(!x) {
+			canvas.clearSelection();
+
+			// Get bounding box
+			var bbox = svgroot.getBBox();
+			
+			if(bbox) {
+				x = bbox.x + bbox.width;
+				y = bbox.y + bbox.height;
+			} else {
+				alert('No content to fit to');
+				return;
+			}
+		}
+		
 		svgroot.setAttribute("width", x);
 		svgroot.setAttribute("height", y);
+
 		svgroot.unsuspendRedraw(handle);
 		addCommandToHistory(new ChangeElementCommand(svgroot, {"width":w,"height":h}, "resolution"));
 		call("changed", [svgroot]);
