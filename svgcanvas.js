@@ -248,6 +248,8 @@ function SvgCanvas(c)
 			}
 		};
 
+		// TODO: determine rotation angle
+		
 		this.resize = function(bbox) {
 			var selectedBox = this.selectorRect;
 			var selectedGrips = this.selectorGrips;
@@ -261,6 +263,7 @@ function SvgCanvas(c)
 				offset += 2;
 			}
 			var bbox = bbox || canvas.getBBox(this.selectedElement);
+			console.log(bbox);
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
 			// TODO: use suspendRedraw() here
 			selectedBox.setAttribute("x", l);
@@ -1107,7 +1110,7 @@ function SvgCanvas(c)
 				break;
 			case "square":
 				// FIXME: once we create the rect, we lose information that this was a square
-				// (for resizing purposes this is important)
+				// (for resizing purposes this could be important)
 			case "rect":
 				started = true;
 				start_x = x;
@@ -1436,14 +1439,14 @@ function SvgCanvas(c)
 					// two things: an angle and a rotation point (the center of the element).
 					// If the element's bbox is changed, its center changes.  In this case,
 					// we keep the rotation center where it is (parse it out from the transform
-					// attribute), and move the poly point appropriately).  This looks good while
+					// attribute), and move the poly point appropriately.  This looks good while
 					// dragging, but looks funny when you subsequently rotate the element again.
+					var angle = canvas.getRotationAngle(current_poly) * Math.PI / 180.0;
 					if (angle) {
 						// extract the shape's (potentially) old 'center' from the transform attribute
 						var matched_numbers = current_poly.getAttribute('transform').match(/([\d\.\-\+]+)/g);
 						var cx = parseFloat(matched_numbers[1]), 
 							cy = parseFloat(matched_numbers[2]);
-						var bbox = canvas.getBBox(current_poly);
 						var dx = x - cx, dy = y - cy;
  						var r = Math.sqrt( dx*dx + dy*dy );
 						var theta = Math.atan2(dy,dx) - angle;						
@@ -1832,6 +1835,7 @@ function SvgCanvas(c)
 				else {
 					current_mode = "select";
 					removeAllPointGripsFromPoly();
+					canvas.clearSelection();
 					canvas.addToSelection([evt.target]);
 				}
 				break;
