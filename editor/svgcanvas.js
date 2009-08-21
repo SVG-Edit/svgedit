@@ -1,8 +1,6 @@
 /*
 TODOs for Rotator:
 
-- Selector/SelectorManager must determine the rotation angle (get the transform from the DOM)
-- Selector group must be returned already rotated (same transform as the element)
 - move rotated elements must move the selector properly
 - resize rotated elements must work properly with the selector (aligned to the axis of rotation)
 - ensure this works for all element types
@@ -298,12 +296,13 @@ function SvgCanvas(c)
 			selectedGrips.s.setAttribute("y", t+h-3);
 			
 			// rotate selector group if element is rotated
-			// TODO: properly test if the element is rotated and only rotate the selector
-			// (do not stretch it)
 			var transform = this.selectedElement.getAttribute("transform");
-			if (transform && transform != "" && transform.indexOf("rotate(") != -1) {
-				console.log(transform);
-				this.selectorGroup.setAttribute("transform", transform);
+			if (transform && transform != "") {
+				var rotind = transform.indexOf("rotate(");
+				if (rotind != -1) {
+					var rotstr = transform.substr(rotind, transform.indexOf(')',rotind)+1);
+					this.selectorGroup.setAttribute("transform", rotstr);
+				}
 			}
 		};
 
@@ -2238,6 +2237,7 @@ function SvgCanvas(c)
 		// get the bounding box from the DOM (which is in that element's coordinate system)
 		var bbox = selected.getBBox();
 
+/*
 		// determine the bounding box if rotated 
 		var angle = this.getRotationAngle(selected) * Math.PI / 180.0;
 		if (angle) {
@@ -2400,6 +2400,7 @@ function SvgCanvas(c)
 					break;
 			} // switch on element type
 		}
+*/
 
 		return bbox;
 	};

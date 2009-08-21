@@ -886,7 +886,7 @@ function svg_edit_setup() {
 
 	$('#rect_radius').SpinButton({ min: 0, max: 1000, step: 1, callback: changeRectRadius });
 	$('#stroke_width').SpinButton({ min: 1, max: 99, step: 1, callback: changeStrokeWidth });
-	$('#angle').SpinButton({ min: -359, max: 359, step: 5, callback: changeRotationAngle });
+	$('#angle').SpinButton({ min: -180, max: 180, step: 5, callback: changeRotationAngle });
 
 	// if Opera and in widget form, enable the Open button
 	if (window.opera) {
