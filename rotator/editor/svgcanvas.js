@@ -3,9 +3,6 @@ TODOs for Rotator:
 
 - resize rotated elements must work properly with the selector (aligned to the axis of rotation)
 - show the proper resize cursor based on the rotation
-- ensure this works for all element types
-- in polyedit mode for mousemove, transform mouse event to rotated system, move point in poly
-- in polyedit mode when going back to select, ensure selector is proiperly re-sized and positioned
 - add a rotator line/handle to the selector group
 - respond to mouse down on the rotator handle to start 'rotate' mode
 - respond to mouse move in rotate mode to change the rotation of the element
