@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Ant-Version: Apache Ant 1.6.5
-Created-By: 1.5.0_07-b03 (Sun Microsystems Inc.)
-Main-Class: org.mozilla.javascript.tools.shell.Main
-Class-Path: xbean.jar
-
