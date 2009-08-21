@@ -80,7 +80,7 @@ function svg_edit_setup() {
 			updateToolbar();
 		} // if (elem != null)
 
-		updateContextPanel(true);
+		updateContextPanel(); 
 	};
 
 	// called when any element has changed
@@ -101,7 +101,7 @@ function svg_edit_setup() {
 
 		// we tell it to skip focusing the text control if the
 		// text element was previously in focus
-		updateContextPanel(false);
+		updateContextPanel();
 	};
 
 	// updates the toolbar (colors, opacity, etc) based on the selected element
@@ -182,7 +182,7 @@ function svg_edit_setup() {
 	};
 
 	// updates the context panel tools based on the selected element
-	var updateContextPanel = function(shouldHighlightText) {
+	var updateContextPanel = function() {
 		var elem = selectedElement;
 		$('#selected_panel').hide();
 		$('#multiselected_panel').hide();
@@ -244,7 +244,7 @@ function svg_edit_setup() {
 					$('#font_family').val(elem.getAttribute("font-family"));
 					$('#font_size').val(elem.getAttribute("font-size"));
 					$('#text').val(elem.textContent);
-					if (shouldHighlightText) {
+					if (svgCanvas.addedNew) {
 						$('#text').focus();
 						$('#text').select();
 					}
@@ -268,6 +268,8 @@ function svg_edit_setup() {
 		else {
 			$('#tool_redo').addClass( 'tool_button_disabled');
 		}
+		
+		svgCanvas.addedNew = false;
 	};
 
 	$('#text').focus( function(){ textBeingEntered = true; } );
@@ -476,6 +478,14 @@ function svg_edit_setup() {
 			svgCanvas.moveSelectedElements(dx,dy);
 		}
 	};
+	
+	var selectNext = function() {
+		svgCanvas.cycleElement(1);
+	}
+	
+	var selectPrev = function() {
+		svgCanvas.cycleElement(0);
+	}
 
 	var clickClear = function(){
 		if( confirm('Do you want to clear the drawing?\nThis will also erase your undo history!') ) {
@@ -684,6 +694,8 @@ function svg_edit_setup() {
 			['backspace', function(evt){deleteSelected();evt.preventDefault();}],
 			['shift+up', moveToTopSelected],
 			['shift+down', moveToBottomSelected],
+			['shift+9', selectPrev],
+			['shift+0', selectNext],
 			['up', function(evt){moveSelected(0,-1);evt.preventDefault();}],
 			['down', function(evt){moveSelected(0,1);evt.preventDefault();}],
 			['left', function(evt){moveSelected(-1,0);evt.preventDefault();}],
