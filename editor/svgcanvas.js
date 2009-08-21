@@ -1,3 +1,14 @@
+/*
+TODOs for Rotator:
+
+- resize rotated elements must work properly with the selector (aligned to the axis of rotation)
+- show the proper resize cursor based on the rotation
+- add a rotator line/handle to the selector group
+- respond to mouse down on the rotator handle to start 'rotate' mode
+- respond to mouse move in rotate mode to change the rotation of the element
+- upon mouse up in rotate mode go back to select mode
+
+*/
 if(!window.console) {
   window.console = new function() {
     this.log = function(str) {};
@@ -248,9 +259,7 @@ function SvgCanvas(c)
 			}
 		};
 
-		// TODO: determine rotation angle
-		
-		this.resize = function(bbox) {
+		this.resize = function(cur_bbox) {
 			var selectedBox = this.selectorRect;
 			var selectedGrips = this.selectorGrips;
 			var selected = this.selectedElement;
@@ -262,7 +271,7 @@ function SvgCanvas(c)
 			if (selected.tagName == "text") {
 				offset += 2;
 			}
-			var bbox = bbox || canvas.getBBox(this.selectedElement);
+			var bbox = cur_bbox || canvas.getBBox(this.selectedElement);
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
 			// TODO: use suspendRedraw() here
 			selectedBox.setAttribute("x", l);
@@ -285,6 +294,21 @@ function SvgCanvas(c)
 			selectedGrips.e.setAttribute("y", t+h/2-3);
 			selectedGrips.s.setAttribute("x", l+w/2-3);
 			selectedGrips.s.setAttribute("y", t+h-3);
+			
+			// empty out the transform attribute
+			this.selectorGroup.setAttribute("transform", "");
+			this.selectorGroup.removeAttribute("transform");
+			
+			// align selector group with element coordinate axes
+			var transform = this.selectedElement.getAttribute("transform");
+			if (transform && transform != "") {
+//				this.selectorGroup.setAttribute("transform", transform);
+				var rotind = transform.indexOf("rotate(");
+				if (rotind != -1) {
+					var rotstr = transform.substr(rotind, transform.indexOf(')',rotind)+1);
+					this.selectorGroup.setAttribute("transform", rotstr);
+				}
+			}
 		};
 
 		// now initialize the selector
@@ -1253,6 +1277,7 @@ function SvgCanvas(c)
 				if (selectedElements[0] != null) {
 					var dx = x - start_x;
 					var dy = y - start_y;
+					
 					if (dx != 0 || dy != 0) {
 						var ts = ["translate(",dx,",",dy,")"].join('');
 						var len = selectedElements.length;
@@ -1261,16 +1286,23 @@ function SvgCanvas(c)
 							if (selected == null) break;
 
 							var box = canvas.getBBox(selected);
+							selectedBBoxes[i].x = box.x + dx;
+							selectedBBoxes[i].y = box.y + dy;
 							var angle = canvas.getRotationAngle(selected);
 							if (angle) {
-								var cx = box.x + box.width/2,
-									cy = box.y + box.height/2;
+								var cx = box.x+box.width/2, 
+									cy = box.y+box.height/2;
 								ts += [" rotate(", angle, " ", cx, ",", cy, ")"].join('');
+
+ 								var r = Math.sqrt( dx*dx + dy*dy );
+								var theta = Math.atan2(dy,dx) - angle * Math.PI / 180.0;
+								dx = r * Math.cos(theta);
+								dy = r * Math.sin(theta);
 							}
 							selected.setAttribute("transform", ts);
+							// update our internal bbox that we're tracking while dragging
 							box.x += dx; box.y += dy;
 							selectorManager.requestSelector(selected).resize(box);
-							selectedBBoxes[i] = box;
 						}
 					}
 				}
@@ -1315,13 +1347,22 @@ function SvgCanvas(c)
 				*/
 				break;
 			case "resize":
-				// TODO: update this to handle rotated elements
-
 				// we track the resize bounding box and translate/scale the selected element
 				// while the mouse is down, when mouse goes up, we use this to recalculate
 				// the shape's coordinates
 				var box=canvas.getBBox(selected), left=box.x, top=box.y, width=box.width,
 					height=box.height, dx=(x-start_x), dy=(y-start_y);
+				
+				// if rotated, adjust the dx,dy values
+				console.log(box);
+				var angle = canvas.getRotationAngle(selected) * Math.PI / 180.0;
+				if (angle) {
+ 					var r = Math.sqrt( dx*dx + dy*dy );
+					var theta = Math.atan2(dy,dx) - angle;						
+					dx = r * Math.cos(theta);
+					dy = r * Math.sin(theta);
+				}
+				
 				var tx=0, ty=0, sx=1, sy=1;
 				var ts = null;
 				if(current_resize_mode.indexOf("n") != -1) {
@@ -2222,172 +2263,7 @@ function SvgCanvas(c)
 	this.getBBox = function(elem) {
 		var selected = elem || selectedElements[0];
 		// get the bounding box from the DOM (which is in that element's coordinate system)
-		var bbox = selected.getBBox();
-
-		// determine the bounding box if rotated 
-		var angle = this.getRotationAngle(selected) * Math.PI / 180.0;
-		if (angle) {
-			switch(selected.tagName) {
-				// rotating a circle has no effect on its bounding box
-				case "circle":
-					break;
-				case "ellipse":
-					// For ellipse, I'm completely following the math from here:
-					// http://stackoverflow.com/questions/87734/how-do-you-calculate-the-axis-aligned-bounding-box-of-an-ellipse
-					// x(t) = h + a*cos(t)*cos(angle) - b*sin(t)*sin(angle)
-					// y(t) = k + b*sin(t)*cos(angle) + a*cos(t)*sin(angle)
-					var a = parseFloat(selected.getAttribute("rx")),
-						b = parseFloat(selected.getAttribute("ry")),
-						h = parseFloat(selected.getAttribute("cx")),
-						k = parseFloat(selected.getAttribute("cy"));
-					var tx = Math.atan( -b * Math.tan(angle)/a ),
-						ty = Math.atan( b * (1.0 / Math.tan(angle))/a );
-					
-					var X = new Array(2), Y = new Array(2);
-					
-					X[0] = h + a*Math.cos(tx)*Math.cos(angle) - b*Math.sin(tx)*Math.sin(angle);
-					Y[0] = k + b*Math.sin(ty)*Math.cos(angle) + a*Math.cos(ty)*Math.sin(angle);
-					
-					// get other values
-					tx += Math.PI;
-					ty += Math.PI;
-					
-					X[1] = h + a*Math.cos(tx)*Math.cos(angle) - b*Math.sin(tx)*Math.sin(angle);
-					Y[1] = k + b*Math.sin(ty)*Math.cos(angle) + a*Math.cos(ty)*Math.sin(angle);
-					
-					if (X[1] < X[0]) { var temp = X[1]; X[1] = X[0]; X[0] = temp; }
-					if (Y[1] < Y[0]) { var temp = Y[1]; Y[1] = Y[0]; Y[0] = temp; }
-					
-					bbox.x = parseInt(X[0]);
-					bbox.y = parseInt(Y[0]);
-					bbox.width = parseInt( X[1] - X[0] );
-					bbox.height = parseInt( Y[1] - Y[0] );
-					
-					break;
-
-				case "polygon":
-				case "polyline":
-					var MINX = Number.MAX_VALUE, MINY = Number.MAX_VALUE, 
-						MAXX = Number.MIN_VALUE, MAXY = Number.MIN_VALUE;
-					// calculate the cx,cy (pull from transform attr?)
-					var cx = bbox.x + bbox.width/2, 
-						cy = bbox.y + bbox.height/2;
-					console.log('cx=' + cx + ', cy=' + cy);
-					var list = selected.points;
-					var i = list.numberOfItems;
-					while (i--) {
-						var pt = list.getItem(i);
-						var dx = pt.x - cx, dy = pt.y - cy;
-						var r = Math.sqrt( dx*dx + dy*dy );
-						var theta = angle + Math.atan2(dy,dx);
-						var x = r * Math.cos(theta), y = r * Math.sin(theta);
-						if (MINX > x) { MINX = x; }
-						if (MINY > y) { MINY = y; }
-						if (MAXX < x) { MAXX = x; }
-						if (MAXY < y) { MAXY = y; }
-					}
-					bbox.x = parseInt(cx + MINX);
-					bbox.y = parseInt(cy + MINY);
-					bbox.width = parseInt(MAXX-MINX);
-					bbox.height = parseInt(MAXY-MINY);
-					break;
-
-				case "path":
-					var MINX = Number.MAX_VALUE, MINY = Number.MAX_VALUE, 
-						MAXX = Number.MIN_VALUE, MAXY = Number.MIN_VALUE;
-					// calculate the cx,cy (pull from transform attr?)
-					var cx = bbox.x + bbox.width/2, 
-						cy = bbox.y + bbox.height/2;
-					var segList = selected.pathSegList;
-					var len = segList.numberOfItems;
-					var curx = 0, cury = 0;
-					for (var i = 0; i < len; ++i) {
-						var seg = segList.getItem(i);
-						// if these properties are not in the segment, set them to zero
-						var x = seg.x || 0,
-							y = seg.y || 0;
-
-						var type = seg.pathSegType;
-						switch (type) {
-							case 1: // z,Z closepath (Z/z)
-								x = curx;
-								y = cury;
-								break;
-							// turn this into a relative segment then fall through
-							case 2: // absolute move (M)
-							case 4: // absolute line (L)
-							case 6: // absolute cubic (C)
-							case 8: // absolute quad (Q)
-							case 10: // absolute elliptical arc (A)
-							case 12: // absolute horizontal line (H)
-							case 14: // absolute vertical line (V)
-							case 16: // absolute smooth cubic (S)
-							case 18: // absolute smooth quad (T)
-								curx = x;
-								cury = y;
-								break;
-							case 3: // relative move (m)
-							case 5: // relative line (l)
-							case 7: // relative cubic (c)
-							case 9: // relative quad (q) 
-							case 13: // relative horizontal line (h)
-							case 15: // relative vertical line (v)
-							case 19: // relative smooth quad (t)
-							case 11: // relative elliptical arc (a)
-							case 17: // relative smooth cubic (s)
-								curx += x;
-								cury += y;
-								x = curx;
-								y = cury;
-								break;
-						}
-						
-						var dx = x - cx, dy = y - cy;
-						var r = Math.sqrt( dx*dx + dy*dy );
-						var theta = angle + Math.atan2(dy,dx);
-						x = r * Math.cos(theta);
-						y = r * Math.sin(theta);
-						if (MINX > x) { MINX = x; }
-						if (MINY > y) { MINY = y; }
-						if (MAXX < x) { MAXX = x; }
-						if (MAXY < y) { MAXY = y; }
-					}
-					bbox.x = parseInt(cx + MINX);
-					bbox.y = parseInt(cy + MINY);
-					bbox.width = parseInt(MAXX-MINX);
-					bbox.height = parseInt(MAXY-MINY);
-					break;
-					
-				// TODO: handle path here by iterating through all points
-				// transforming each point into the rotated coordinate system and tracking
-				// the MINX, MAXX, MINY, MAXY
-				
-				// default case for rect, text, line is to just use the bbox from the DOM
-				default:
-					var w2 = bbox.width/2, h2 = bbox.height/2,
-						cx = bbox.x + w2, cy = bbox.y + h2;
-					var pts = [ [-w2,-h2], [w2,-h2], [w2,h2], [-w2,h2] ];
-					var r = Math.sqrt( w2*w2 + h2*h2 );
-					var i = 4;
-					var MINX = Number.MAX_VALUE, MINY = Number.MAX_VALUE, 
-						MAXX = Number.MIN_VALUE, MAXY = Number.MIN_VALUE;
-					while (i--) {
-						var theta = angle + Math.atan2(pts[i][1],pts[i][0]);
-						var x = r * Math.cos(theta), y = r * Math.sin(theta);
-						if (MINX > x) { MINX = x; }
-						if (MINY > y) { MINY = y; }
-						if (MAXX < x) { MAXX = x; }
-						if (MAXY < y) { MAXY = y; }
-					}
-					bbox.x = parseInt(cx + MINX);
-					bbox.y = parseInt(cy + MINY);
-					bbox.width = parseInt(MAXX-MINX);
-					bbox.height = parseInt(MAXY-MINY);
-					break;
-			} // switch on element type
-		}
-
-		return bbox;
+		return selected.getBBox();
 	};
 
 	this.getRotationAngle = function(elem) {
