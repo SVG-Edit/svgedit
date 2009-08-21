@@ -200,40 +200,45 @@ function svg_edit_setup() {
 			};
 			
 			var el_name = elem.tagName;
-			var cur_panel = panels[el_name];
-			$('#' + el_name + '_panel').show();
-
-			$.each(cur_panel, function(i, item) {
-				$('#' + el_name + '_' + item).val(elem.getAttribute(item) || 0);
-			});
 			
-			if(el_name == 'text') {
-				$('#text_panel').css("display", "inline");	
-				if (svgCanvas.getItalic()) {
-					$('#tool_italic').addClass('tool_button_current');
+			if(panels[el_name]) {
+			
+				var cur_panel = panels[el_name];
+				
+				
+				$('#' + el_name + '_panel').show();
+	
+				$.each(cur_panel, function(i, item) {
+					$('#' + el_name + '_' + item).val(elem.getAttribute(item) || 0);
+				});
+				
+				if(el_name == 'text') {
+					$('#text_panel').css("display", "inline");	
+					if (svgCanvas.getItalic()) {
+						$('#tool_italic').addClass('tool_button_current');
+					}
+					else {
+						$('#tool_italic').removeClass('tool_button_current');
+					}
+					if (svgCanvas.getBold()) {
+						$('#tool_bold').addClass('tool_button_current');
+					}
+					else {
+						$('#tool_bold').removeClass('tool_button_current');
+					}
+					$('#font_family').val(elem.getAttribute("font-family"));
+					$('#font_size').val(elem.getAttribute("font-size"));
+					$('#text').val(elem.textContent);
+					if (svgCanvas.addedNew) {
+						$('#text').focus().select();
+					}
 				}
-				else {
-					$('#tool_italic').removeClass('tool_button_current');
-				}
-				if (svgCanvas.getBold()) {
-					$('#tool_bold').addClass('tool_button_current');
-				}
-				else {
-					$('#tool_bold').removeClass('tool_button_current');
-				}
-				$('#font_family').val(elem.getAttribute("font-family"));
-				$('#font_size').val(elem.getAttribute("font-size"));
-				$('#text').val(elem.textContent);
-				if (svgCanvas.addedNew) {
-					$('#text').focus().select();
-				}
-
 			}
 		} // if (elem != null)
 		else if (multiselected) {
 			$('#multiselected_panel').show();
 		}
-
+		
 		// update history buttons
 		if (svgCanvas.getUndoStackSize() > 0) {
 			$('#tool_undo').removeClass( 'tool_button_disabled');
