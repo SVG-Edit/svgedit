@@ -1354,18 +1354,19 @@ function SvgCanvas(c)
 					height=box.height, dx=(x-start_x), dy=(y-start_y);
 				
 				// if rotated, adjust the dx,dy values
+				console.log(box);
 				var angle = canvas.getRotationAngle(selected) * Math.PI / 180.0;
 				if (angle) {
 					// extract the shape's (potentially) old 'center' from the transform attribute
 					// TODO: do we need cx,cy from the transform attribute of the bbox center?
 					var matched_numbers = selected.getAttribute('transform').match(/([\d\.\-\+]+)/g);
-					var cx = box.x+box.width/2, //parseFloat(matched_numbers[1]), 
-						cy = box.y+box.height/2; //parseFloat(matched_numbers[2]);
-					var dx = x - cx, dy = y - cy;
+//					var cx = box.x+box.width/2, //parseFloat(matched_numbers[1]), 
+//						cy = box.y+box.height/2; //parseFloat(matched_numbers[2]);
+//					var dx = x - cx, dy = y - cy;
  					var r = Math.sqrt( dx*dx + dy*dy );
 					var theta = Math.atan2(dy,dx) - angle;						
-					x = cx + r * Math.cos(theta);
-					y = cy + r * Math.sin(theta);
+					dx = r * Math.cos(theta);
+					dy = r * Math.sin(theta);
 				}
 				
 				var tx=0, ty=0, sx=1, sy=1;
