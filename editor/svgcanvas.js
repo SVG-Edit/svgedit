@@ -2262,8 +2262,17 @@ function SvgCanvas(c)
 
 	this.getBBox = function(elem) {
 		var selected = elem || selectedElements[0];
+		
+		if(selected.textContent == '') {
+			selected.textContent = 'a'; // Some character needed for the selector to use.
+			var ret = selected.getBBox();
+			selected.textContent = '';
+		} else {
+			var ret = selected.getBBox();
+		}
+
 		// get the bounding box from the DOM (which is in that element's coordinate system)
-		return selected.getBBox();
+		return ret;
 	};
 
 	this.getRotationAngle = function(elem) {
@@ -2400,7 +2409,7 @@ function SvgCanvas(c)
 		while(i--) {
 			var elem = elems[i];
 			if (elem == null) continue;
-
+			
 			var oldval = (attr == "#text" ? elem.textContent : elem.getAttribute(attr));
 			if (oldval != val) {
 				if (attr == "#text") elem.textContent = val;
