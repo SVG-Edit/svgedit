@@ -299,14 +299,20 @@ function SvgCanvas(c)
 			selectedGrips.s.setAttribute("x", l+w/2-3);
 			selectedGrips.s.setAttribute("y", t+h-3);
 			
-			// rotate selector group if element is rotated
+			// align selector group with element coordinate axes
 			var transform = this.selectedElement.getAttribute("transform");
 			if (transform && transform != "") {
-				var rotind = transform.indexOf("rotate(");
-				if (rotind != -1) {
-					var rotstr = transform.substr(rotind, transform.indexOf(')',rotind)+1);
-					this.selectorGroup.setAttribute("transform", rotstr);
-				}
+				this.selectorGroup.setAttribute("transform", transform);
+//				var rotind = transform.indexOf("rotate(");
+//				if (rotind != -1) {
+//					var rotstr = transform.substr(rotind, transform.indexOf(')',rotind)+1);
+//					this.selectorGroup.setAttribute("transform", rotstr);
+//				}
+			}
+			// empty out the transform attribute
+			else {
+				this.selectorGroup.setAttribute("transform", "");
+				this.selectorGroup.removeAttribute("transform");
 			}
 		};
 
@@ -1287,8 +1293,9 @@ function SvgCanvas(c)
 								ts += [" rotate(", angle, " ", cx, ",", cy, ")"].join('');
 							}
 							selected.setAttribute("transform", ts);
+							selectorManager.requestSelector(selected).resize();
+							// update our internal bbox that we're tracking while dragging
 							box.x += dx; box.y += dy;
-							selectorManager.requestSelector(selected).resize(box);
 							selectedBBoxes[i] = box;
 						}
 					}
@@ -1624,7 +1631,7 @@ function SvgCanvas(c)
 						var len = selectedElements.length;
 						for	(var i = 0; i < len; ++i) {
 							if (selectedElements[i] == null) break;
-							selectorManager.requestSelector(selectedElements[i]).resize(selectedBBoxes[i]);
+							selectorManager.requestSelector(selectedElements[i]).resize();//selectedBBoxes[i]);
 						}
 					}
 					// no change in position/size, so maybe we should move to polyedit
