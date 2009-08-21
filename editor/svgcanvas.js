@@ -1,3 +1,16 @@
+/*
+TODOs for Rotator:
+
+- Selector/SelectorManager must determine the rotation angle (get the transform from the DOM)
+- Selector group must be returned already rotated (same transform as the element)
+- move rotated elements must move the selector properly
+- resize rotated elements must work properly with the selector (aligned to the axis of rotation)
+- ensure this works for all element types
+- reduce/toss out lots of code from getBBox(), we just use the DOM's getBBox()
+- in polyedit mode for mousemove, transform mouse event to rotated system, move point in poly
+- in polyedit mode when going back to select, ensure selector is proiperly re-sized and positioned
+
+*/
 if(!window.console) {
   window.console = new function() {
     this.log = function(str) {};
@@ -283,6 +296,15 @@ function SvgCanvas(c)
 			selectedGrips.e.setAttribute("y", t+h/2-3);
 			selectedGrips.s.setAttribute("x", l+w/2-3);
 			selectedGrips.s.setAttribute("y", t+h-3);
+			
+			// rotate selector group if element is rotated
+			// TODO: properly test if the element is rotated and only rotate the selector
+			// (do not stretch it)
+			var transform = this.selectedElement.getAttribute("transform");
+			if (transform && transform != "" && transform.indexOf("rotate(") != -1) {
+				console.log(transform);
+				this.selectorGroup.setAttribute("transform", transform);
+			}
 		};
 
 		// now initialize the selector
