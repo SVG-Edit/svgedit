@@ -6,7 +6,7 @@ clean:
 	rm -f *.*~
 	rm -rf ./editor/
 
-widget: clean
+all: clean
 	rm -f $(PACKAGE).wgt
 	cp -r ../editor .
 	$(ZIP) $(PACKAGE).wgt -r . -i $(FILEMASK)
