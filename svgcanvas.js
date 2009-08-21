@@ -1891,10 +1891,10 @@ function SvgCanvas(c)
 			element = null;
 		} else if (element != null) {
 			canvas.addedNew = true;
-			canvas.addToSelection([element], true);
 			element.setAttribute("opacity", current_opacity);
 			cleanupElement(element);
 			selectorManager.update();
+			canvas.addToSelection([element], true);
 			// we create the insert command that is stored on the stack
 			// undo means to call cmd.unapply(), redo means to call cmd.apply()
 			addCommandToHistory(new InsertElementCommand(element));
