@@ -262,7 +262,7 @@ function SvgCanvas(c)
 			}
 		};
 
-		this.resize = function(bbox) {
+		this.resize = function(cur_bbox) {
 			var selectedBox = this.selectorRect;
 			var selectedGrips = this.selectorGrips;
 			var selected = this.selectedElement;
@@ -274,7 +274,7 @@ function SvgCanvas(c)
 			if (selected.tagName == "text") {
 				offset += 2;
 			}
-			var bbox = /*bbox ||*/ canvas.getBBox(this.selectedElement);
+			var bbox = cur_bbox || canvas.getBBox(this.selectedElement);
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
 			// TODO: use suspendRedraw() here
 			selectedBox.setAttribute("x", l);
@@ -298,20 +298,19 @@ function SvgCanvas(c)
 			selectedGrips.s.setAttribute("x", l+w/2-3);
 			selectedGrips.s.setAttribute("y", t+h-3);
 			
+			// empty out the transform attribute
+			this.selectorGroup.setAttribute("transform", "");
+			this.selectorGroup.removeAttribute("transform");
+			
 			// align selector group with element coordinate axes
 			var transform = this.selectedElement.getAttribute("transform");
 			if (transform && transform != "") {
-				this.selectorGroup.setAttribute("transform", transform);
-//				var rotind = transform.indexOf("rotate(");
-//				if (rotind != -1) {
-//					var rotstr = transform.substr(rotind, transform.indexOf(')',rotind)+1);
-//					this.selectorGroup.setAttribute("transform", rotstr);
-//				}
-			}
-			// empty out the transform attribute
-			else {
-				this.selectorGroup.setAttribute("transform", "");
-				this.selectorGroup.removeAttribute("transform");
+//				this.selectorGroup.setAttribute("transform", transform);
+				var rotind = transform.indexOf("rotate(");
+				if (rotind != -1) {
+					var rotstr = transform.substr(rotind, transform.indexOf(')',rotind)+1);
+					this.selectorGroup.setAttribute("transform", rotstr);
+				}
 			}
 		};
 
@@ -1137,7 +1136,7 @@ function SvgCanvas(c)
 				break;
 			case "square":
 				// FIXME: once we create the rect, we lose information that this was a square
-				// (for resizing purposes this is important)
+				// (for resizing purposes this could be important)
 			case "rect":
 				started = true;
 				start_x = x;
@@ -1277,6 +1276,7 @@ function SvgCanvas(c)
 				if (selectedElements[0] != null) {
 					var dx = x - start_x;
 					var dy = y - start_y;
+					
 					if (dx != 0 || dy != 0) {
 						var ts = ["translate(",dx,",",dy,")"].join('');
 						var len = selectedElements.length;
@@ -1285,17 +1285,23 @@ function SvgCanvas(c)
 							if (selected == null) break;
 
 							var box = canvas.getBBox(selected);
+							selectedBBoxes[i].x = box.x + dx;
+							selectedBBoxes[i].y = box.y + dy;
 							var angle = canvas.getRotationAngle(selected);
 							if (angle) {
-								var cx = box.x + box.width/2,
-									cy = box.y + box.height/2;
+								var cx = box.x+box.width/2, 
+									cy = box.y+box.height/2;
 								ts += [" rotate(", angle, " ", cx, ",", cy, ")"].join('');
+
+ 								var r = Math.sqrt( dx*dx + dy*dy );
+								var theta = Math.atan2(dy,dx) - angle * Math.PI / 180.0;
+								dx = r * Math.cos(theta);
+								dy = r * Math.sin(theta);
 							}
 							selected.setAttribute("transform", ts);
 							// update our internal bbox that we're tracking while dragging
 							box.x += dx; box.y += dy;
-							selectedBBoxes[i] = box;
-							selectorManager.requestSelector(selected).resize(selectedBBoxes[i]);
+							selectorManager.requestSelector(selected).resize(box);
 						}
 					}
 				}
@@ -1340,13 +1346,27 @@ function SvgCanvas(c)
 				*/
 				break;
 			case "resize":
-				// TODO: update this to handle rotated elements
-
 				// we track the resize bounding box and translate/scale the selected element
 				// while the mouse is down, when mouse goes up, we use this to recalculate
 				// the shape's coordinates
 				var box=canvas.getBBox(selected), left=box.x, top=box.y, width=box.width,
 					height=box.height, dx=(x-start_x), dy=(y-start_y);
+				
+				// if rotated, adjust the dx,dy values
+				var angle = canvas.getRotationAngle(selected) * Math.PI / 180.0;
+				if (angle) {
+					// extract the shape's (potentially) old 'center' from the transform attribute
+					// TODO: do we need cx,cy from the transform attribute of the bbox center?
+					var matched_numbers = selected.getAttribute('transform').match(/([\d\.\-\+]+)/g);
+					var cx = box.x+box.width/2, //parseFloat(matched_numbers[1]), 
+						cy = box.y+box.height/2; //parseFloat(matched_numbers[2]);
+					var dx = x - cx, dy = y - cy;
+ 					var r = Math.sqrt( dx*dx + dy*dy );
+					var theta = Math.atan2(dy,dx) - angle;						
+					x = cx + r * Math.cos(theta);
+					y = cy + r * Math.sin(theta);
+				}
+				
 				var tx=0, ty=0, sx=1, sy=1;
 				var ts = null;
 				if(current_resize_mode.indexOf("n") != -1) {
@@ -1467,14 +1487,14 @@ function SvgCanvas(c)
 					// two things: an angle and a rotation point (the center of the element).
 					// If the element's bbox is changed, its center changes.  In this case,
 					// we keep the rotation center where it is (parse it out from the transform
-					// attribute), and move the poly point appropriately).  This looks good while
+					// attribute), and move the poly point appropriately.  This looks good while
 					// dragging, but looks funny when you subsequently rotate the element again.
+					var angle = canvas.getRotationAngle(current_poly) * Math.PI / 180.0;					
 					if (angle) {
 						// extract the shape's (potentially) old 'center' from the transform attribute
 						var matched_numbers = current_poly.getAttribute('transform').match(/([\d\.\-\+]+)/g);
 						var cx = parseFloat(matched_numbers[1]), 
 							cy = parseFloat(matched_numbers[2]);
-						var bbox = canvas.getBBox(current_poly);
 						var dx = x - cx, dy = y - cy;
  						var r = Math.sqrt( dx*dx + dy*dy );
 						var theta = Math.atan2(dy,dx) - angle;						
