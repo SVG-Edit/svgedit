@@ -1001,7 +1001,7 @@ function SvgCanvas(c)
 		call("selected", selectedElements);
 	};
 
-	this.addToSelection = function(elemsToAdd) {
+	this.addToSelection = function(elemsToAdd, showGrips) {
 		if (elemsToAdd.length == 0) { return; }
 
 		// find the first null in our selectedElements array
@@ -1026,6 +1026,10 @@ function SvgCanvas(c)
 				selectorManager.requestSelector(elem);
 				call("selected", selectedElements);
 			}
+		}
+		
+		if(showGrips) {
+			selectorManager.requestSelector(selectedElements[0]).showGrips(elem.tagName != "text");
 		}
 	};
 
@@ -1767,7 +1771,6 @@ function SvgCanvas(c)
 			case "text":
 				keep = true;
 				canvas.clearSelection();
-				canvas.addToSelection([element]);
 				break;
 			case "poly":
 				// set element to null here so that it is not removed nor finalized
@@ -1891,6 +1894,8 @@ function SvgCanvas(c)
 			element.parentNode.removeChild(element);
 			element = null;
 		} else if (element != null) {
+			canvas.addedNew = true;
+			canvas.addToSelection([element], true);
 			element.setAttribute("opacity", current_opacity);
 			cleanupElement(element);
 			selectorManager.update();
@@ -2078,7 +2083,7 @@ function SvgCanvas(c)
 	};
 
 	this.setFillColor = function(val) {
-		if(selectedElements.length && selectedElements[0].nodeName == 'text') {
+		if(selectedElements[0] != null && selectedElements[0].nodeName == 'text') {
 			current_text_fill = val;
 		} else {
 			current_fill = val;
@@ -2215,7 +2220,7 @@ function SvgCanvas(c)
 	};
 
 	this.setStrokeWidth = function(val) {
-		if(selectedElements.length && selectedElements[0].nodeName == 'text') {
+		if(selectedElements[0] != null && selectedElements[0].nodeName == 'text') {
 			current_text_stroke_width = val;
 		} else {
 			current_stroke_width = val;
@@ -2496,6 +2501,37 @@ function SvgCanvas(c)
 			call("changed", selectedElements);
 		}
 	};
+
+	this.cycleElement = function(next) {
+		var cur_elem = selectedElements[0];
+		var elem = false;
+		if (cur_elem == null) {
+			if(next) {
+				var elem = svgroot.firstChild;
+				if (elem.tagName == 'defs') {
+					elem = elem.nextSibling;
+				}
+			} else {
+				var elem = svgroot.lastChild;
+				var id = elem.getAttribute('id');
+				if(!id || id.indexOf('svg_') != 0){
+					elem = elem.previousSibling;
+				}
+			}
+		} else {
+			var type = next?'next':'previous';
+			var elem = cur_elem[type + 'Sibling'];
+			if(!elem) return;
+			
+			var id = elem.getAttribute('id');
+			if(!id || id.indexOf('svg_') != 0) {
+				return;
+			}
+		}		
+		canvas.clearSelection();
+		canvas.addToSelection([elem], true);
+		call("selected", selectedElements);
+	}
 
 	var resetUndoStack = function() {
 		undoStack = [];
