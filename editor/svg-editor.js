@@ -471,6 +471,14 @@ function svg_edit_setup() {
 		svgCanvas.cycleElement(0);
 	}
 
+	var rotateSelected = function(cw) {
+		if (selectedElement == null || multiselected) return;
+		var step = 5;
+		if(!cw) step *= -1;
+		var new_angle = $('#angle').val()*1 + step;
+		svgCanvas.setRotationAngle(new_angle);
+	}
+	
 	var clickClear = function(){
 		if( confirm('Do you want to clear the drawing?\nThis will also erase your undo history!') ) {
 			svgCanvas.clear();
@@ -678,6 +686,8 @@ function svg_edit_setup() {
 			['backspace', function(evt){deleteSelected();evt.preventDefault();}],
 			['shift+up', moveToTopSelected],
 			['shift+down', moveToBottomSelected],
+			['shift+left', function(){rotateSelected(0)}],
+			['shift+right', function(){rotateSelected(1)}],
 			['shift+9', selectPrev],
 			['shift+0', selectNext],
 			['up', function(evt){moveSelected(0,-1);evt.preventDefault();}],
