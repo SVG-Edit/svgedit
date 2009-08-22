@@ -1352,59 +1352,67 @@ function SvgCanvas(c)
 				// the shape's coordinates
 				var box=canvas.getBBox(selected), left=box.x, top=box.y, width=box.width,
 					height=box.height, dx=(x-start_x), dy=(y-start_y);
-				
+								
 				// if rotated, adjust the dx,dy values
 				console.log(box);
-				var angle = canvas.getRotationAngle(selected) * Math.PI / 180.0;
+				var angle = canvas.getRotationAngle(selected);
 				if (angle) {
  					var r = Math.sqrt( dx*dx + dy*dy );
-					var theta = Math.atan2(dy,dx) - angle;						
+					var theta = Math.atan2(dy,dx) - angle * Math.PI / 180.0;
 					dx = r * Math.cos(theta);
 					dy = r * Math.sin(theta);
 				}
 				
-				var tx=0, ty=0, sx=1, sy=1;
+				// if not stretching in y direction, set dy to 0
+				// if not stretching in x direction, set dx to 0
+				if(current_resize_mode.indexOf("n")==-1 && current_resize_mode.indexOf("s")==-1) {
+					dy = 0;
+				}
+				if(current_resize_mode.indexOf("e")==-1 && current_resize_mode.indexOf("w")==-1) {
+					dx = 0;
+				}				
+				
 				var ts = null;
+				var tx = 0, ty = 0;
+				var sy = (height+dy)/height, sx = (width+dx)/width;
 				if(current_resize_mode.indexOf("n") != -1) {
-					ty = dy;
 					sy = (height-dy)/height;
+					ty = height;
 				}
-				else if(current_resize_mode.indexOf("s") != -1) {
-					sy = (height+dy)/height;
-				}
-				if(current_resize_mode.indexOf("e") != -1) {
-					sx = (width+dx)/width;
-				}
-				else if(current_resize_mode.indexOf("w") != -1) {
-					tx = dx;
+				if(current_resize_mode.indexOf("w") != -1) {
 					sx = (width-dx)/width;
+					tx = width;
 				}
+				
+				var selectedBBox = selectedBBoxes[0];				
 
-				var selectedBBox = selectedBBoxes[0];
-				selectedBBox.x = left+tx;
-				selectedBBox.y = top+ty;
+				// find the rotation transform and prepend it
+				var ts = [" translate(", (left+tx), ",", (top+ty), ") scale(", sx, ",", sy,
+							") translate(", -(left+tx), ",", -(top+ty), ")"].join('');
+				if (angle) {
+					var cx = left + width/2;//selectedBBox.x + selectedBBox.width/2,
+						cy = top + height/2;//selectedBBox.y + selectedBBox.height/2;
+					ts = ["rotate(", angle, " ", cx, ",", cy, ")", ts].join('')
+				}
+				selected.setAttribute("transform", ts);
+				
+				if (tx) {
+					selectedBBox.x = left+dx;
+				}
+				if (ty) {
+					selectedBBox.y = top+dy;
+				}
 				selectedBBox.width = width*sx;
 				selectedBBox.height = height*sy;
 				// normalize selectedBBox
 				if (selectedBBox.width < 0) {
 					selectedBBox.x += selectedBBox.width;
-					selectedBBox.width = -selectedBBox.width;
+					selectedBBox.width *= -1;//-selectedBBox.width;
 				}
 				if (selectedBBox.height < 0) {
 					selectedBBox.y += selectedBBox.height;
-					selectedBBox.height = -selectedBBox.height;
+					selectedBBox.height *= -1;//-selectedBBox.height;
 				}
-
-				// find the rotation transform and prepend it
-				var ts = [" translate(", (left+tx), ",", (top+ty), ") scale(", sx, ",", sy,
-							") translate(", -left, ",", -top, ")"].join('');
-				var angle = canvas.getRotationAngle(selected);
-				if (angle) {
-					var cx = selectedBBox.x + selectedBBox.width/2,
-						cy = selectedBBox.y + selectedBBox.height/2;
-					ts = ["rotate(", angle, " ", cx, ",", cy, ")", ts].join('')
-				}
-				selected.setAttribute("transform", ts);
 				selectorManager.requestSelector(selected).resize(selectedBBox);
 				break;
 			case "text":
