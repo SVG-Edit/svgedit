@@ -2515,8 +2515,17 @@ function SvgCanvas(c)
 			var selected = selectedElements[i];
 			if (selected != null) {
 				selectedBBoxes[i] = this.getBBox(selected);
-				selectedBBoxes[i].x += dx;
-				selectedBBoxes[i].y += dy;
+				// dx and dy could be arrays
+				if (dx.constructor == Array) {
+					selectedBBoxes[i].x += dx[i];
+				} else {
+					selectedBBoxes[i].x += dx;
+				}
+				if (dy.constructor == Array) {
+					selectedBBoxes[i].y += dy[i];
+				} else {
+					selectedBBoxes[i].y += dy;
+				}
 				var cmd = recalculateSelectedDimensions(i);
 				if (cmd) {
 					batchCmd.addSubCommand(cmd);
@@ -2627,7 +2636,7 @@ function SvgCanvas(c)
 	// aligns selected elements (type is a char - see switch below for explanation)
 	this.alignSelectedElements = function(type) {
 		var bbox;
-		var minx = 100000, maxx = -100000, miny = 100000, maxy = -100000;
+		var minx = Number.MAX_VALUE, maxx = Number.MIN_VALUE, miny = Number.MAX_VALUE, maxy = Number.MIN_VALUE;
 		var len = selectedElements.length;
 		if (!len) return;
 		for (var i = 0; i < len; ++i) {
@@ -2639,145 +2648,36 @@ function SvgCanvas(c)
 			if (bbox.x+bbox.width > maxx) maxx = bbox.x+bbox.width;
 			if (bbox.y+bbox.height > maxy) maxy = bbox.y+bbox.height;
 		}
-		var len = selectedElements.length;
+		var dx = new Array(len);
+		var dy = new Array(len);
 		for (var i = 0; i < len; ++i) {
 			if (selectedElements[i] == null) break;
 			var elem = selectedElements[i];
-			switch (elem.tagName) {
-				case 'circle':
-					switch (type) {
-					case 'l': // left (horizontal)
-						elem.setAttribute('cx', minx+parseInt(elem.getAttribute('r')));
-						break;
-					case 'c': // center (horizontal)
-						elem.setAttribute('cx', (minx+maxx)/2);
-						break;
-					case 'r': // right (horizontal)
-						elem.setAttribute('cx', maxx-parseInt(elem.getAttribute('r')));
-						break;
-					case 't': // top (vertical)
-						elem.setAttribute('cy', miny+parseInt(elem.getAttribute('r')));
-						break;
-					case 'm': // middle (vertical)
-						elem.setAttribute('cy', (miny+maxy)/2);
-						break;
-					case 'b': // bottom (vertical)
-						elem.setAttribute('cy', maxy-parseInt(elem.getAttribute('r')));
-						break;
-					}
+			var bbox = this.getBBox(elem);
+			dx[i] = 0;
+			dy[i] = 0;
+			switch (type) {
+				case 'l': // left (horizontal)
+					dx[i] = minx - bbox.x;
 					break;
-				case 'ellipse':
-					switch (type) {
-					case 'l': // left (horizontal)
-						elem.setAttribute('cx', minx+parseInt(elem.getAttribute('rx')));
-						break;
-					case 'c': // center (horizontal)
-						elem.setAttribute('cx', (minx+maxx)/2);
-						break;
-					case 'r': // right (horizontal)
-						elem.setAttribute('cx', maxx-parseInt(elem.getAttribute('rx')));
-						break;
-					case 't': // top (vertical)
-						elem.setAttribute('cy', miny+parseInt(elem.getAttribute('ry')));
-						break;
-					case 'm': // middle (vertical)
-						elem.setAttribute('cy', (miny+maxy)/2);
-						break;
-					case 'b': // bottom (vertical)
-						elem.setAttribute('cy', maxy-parseInt(elem.getAttribute('ry')));
-						break;
-					}
+				case 'c': // center (horizontal)
+					dx[i] = (minx+maxx)/2 - (bbox.x + bbox.width/2);
 					break;
-				case 'rect':
-					switch (type) {
-					case 'l': // left (horizontal)
-						elem.setAttribute('x', minx);
-						break;
-					case 'c': // center (horizontal)
-						elem.setAttribute('x', (minx+maxx-parseInt(elem.getAttribute('width')))/2);
-						break;
-					case 'r': // right (horizontal)
-						elem.setAttribute('x', maxx-parseInt(elem.getAttribute('width')));
-						break;
-					case 't': // top (vertical)
-						elem.setAttribute('y', miny);
-						break;
-					case 'm': // middle (vertical)
-						elem.setAttribute('y', (miny+maxy-parseInt(elem.getAttribute('height')))/2);
-						break;
-					case 'b': // bottom (vertical)
-						elem.setAttribute('y', maxy-parseInt(elem.getAttribute('height')));
-						break;
-					}
+				case 'r': // right (horizontal)
+					dx[i] = maxx - (bbox.x + bbox.width);
 					break;
-				case 'line':
-					switch (type) {
-					case 'l': // left (horizontal)
-						var d = Math.min(parseInt(elem.getAttribute('x1')), parseInt(elem.getAttribute('x2'))) - minx;
-						elem.setAttribute('x1', parseInt(elem.getAttribute('x1')) - d);
-						elem.setAttribute('x2', parseInt(elem.getAttribute('x2')) - d);
-						break;
-					case 'c': // center (horizontal)
-						var d = Math.abs(parseInt(elem.getAttribute('x1')) - parseInt(elem.getAttribute('x2')));
-						elem.setAttribute('x1', (minx+maxx-d)/2 );
-						elem.setAttribute('x2', (minx+maxx+d)/2 );
-						break;
-					case 'r': // right (horizontal)
-						var d = Math.max(parseInt(elem.getAttribute('x1')), parseInt(elem.getAttribute('x2'))) - maxx;
-						elem.setAttribute('x1', parseInt(elem.getAttribute('x1')) - d);
-						elem.setAttribute('x2', parseInt(elem.getAttribute('x2')) - d);
-						break;
-					case 't': // top (vertical)
-						var d = Math.min(parseInt(elem.getAttribute('y1')), parseInt(elem.getAttribute('y2'))) - miny;
-						elem.setAttribute('y1', parseInt(elem.getAttribute('y1'))-d);
-						elem.setAttribute('y2', parseInt(elem.getAttribute('y2'))-d);
-						break;
-					case 'm': // middle (vertical)
-						var d = Math.abs(parseInt(elem.getAttribute('y1')) - parseInt(elem.getAttribute('y2')));
-						elem.setAttribute('y1', (miny+maxy-d)/2 );
-						elem.setAttribute('y2', (miny+maxy+d)/2 );
-						break;
-					case 'b': // bottom (vertical)
-						var d = Math.max(parseInt(elem.getAttribute('y1')), parseInt(elem.getAttribute('y2'))) - maxy;
-						elem.setAttribute('y1', parseInt(elem.getAttribute('y1')) - d);
-						elem.setAttribute('y2', parseInt(elem.getAttribute('y2')) - d);
-						break;
-					}
+				case 't': // top (vertical)
+					dy[i] = miny - bbox.y;
 					break;
-				case 'path':
-					// TODO: implement
+				case 'm': // middle (vertical)
+					dy[i] = (miny+maxy)/2 - (bbox.y + bbox.height/2);
 					break;
-				case 'polygon':
-					// TODO: implement
-					break;
-				case 'polyline':
-					// TODO: implement
-					break;
-				case 'text':
-					var bbox = this.getBBox(elem);
-					switch (type) {
-					case 'l': // left (horizontal)
-						elem.setAttribute('x', minx);
-						break;
-					case 'c': // center (horizontal)
-						elem.setAttribute('x', (minx+maxx-bbox.width)/2);
-						break;
-					case 'r': // right (horizontal)
-						elem.setAttribute('x', maxx-bbox.width);
-						break;
-					case 't': // top (vertical)
-						elem.setAttribute('y', miny+bbox.height);
-						break;
-					case 'm': // middle (vertical)
-						elem.setAttribute('y', (miny+maxy+bbox.height)/2);
-						break;
-					case 'b': // bottom (vertical)
-						elem.setAttribute('y', maxy);
-						break;
-					}
+				case 'b': // bottom (vertical)
+					dy[i] = maxy - (bbox.y + bbox.height);
 					break;
 			}
 		}
+		this.moveSelectedElements(dx,dy);
 	};
 
 }
