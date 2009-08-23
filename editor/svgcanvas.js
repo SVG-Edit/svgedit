@@ -1,7 +1,8 @@
 /*
 TODOs for Rotator:
 
-- resize rotated elements must work properly with the selector (aligned to the axis of rotation)
+- resize with negative width/height causes problems with selector (and upon release, kablooie)
+- fix resize when mouseup
 - show the proper resize cursor based on the rotation
 - add a rotator line/handle to the selector group
 - respond to mouse down on the rotator handle to start 'rotate' mode
@@ -272,6 +273,7 @@ function SvgCanvas(c)
 				offset += 2;
 			}
 			var bbox = cur_bbox || canvas.getBBox(this.selectedElement);
+//			console.log({'cur_bbox':cur_bbox, 'bbox':bbox });
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
 			// TODO: use suspendRedraw() here
 			selectedBox.setAttribute("x", l);
@@ -1354,7 +1356,6 @@ function SvgCanvas(c)
 					height=box.height, dx=(x-start_x), dy=(y-start_y);
 								
 				// if rotated, adjust the dx,dy values
-				console.log(box);
 				var angle = canvas.getRotationAngle(selected);
 				if (angle) {
  					var r = Math.sqrt( dx*dx + dy*dy );
@@ -2429,6 +2430,21 @@ function SvgCanvas(c)
 				},0);
 				var changes = {};
 				changes[attr] = oldval;
+
+				// if this element was rotated, and we changed the position of this element
+				// we need to update the rotational transform attribute and store it as part
+				// of our changeset
+				var angle = canvas.getRotationAngle(elem);
+				if (angle) {
+					var cx = selectedBBoxes[i].x + selectedBBoxes[i].width/2,
+						cy = selectedBBoxes[i].y + selectedBBoxes[i].height/2;
+					var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
+					if (rotate != elem.getAttribute("transform")) {
+						elem.setAttribute("transform", rotate);
+						changes['transform'] = rotate;
+					}
+				}
+				
 				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes, attr));
 			}
 		}
