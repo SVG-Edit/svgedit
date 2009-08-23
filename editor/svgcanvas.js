@@ -2271,7 +2271,7 @@ function SvgCanvas(c)
 
 	this.getBBox = function(elem) {
 		var selected = elem || selectedElements[0];
-		
+
 		if(selected.textContent == '') {
 			selected.textContent = 'a'; // Some character needed for the selector to use.
 			var ret = selected.getBBox();
@@ -2626,54 +2626,18 @@ function SvgCanvas(c)
 
 	// aligns selected elements (type is a char - see switch below for explanation)
 	this.alignSelectedElements = function(type) {
+		var bbox;
 		var minx = 100000, maxx = -100000, miny = 100000, maxy = -100000;
 		var len = selectedElements.length;
 		if (!len) return;
 		for (var i = 0; i < len; ++i) {
 			if (selectedElements[i] == null) break;
 			var elem = selectedElements[i];
-			switch (elem.tagName) {
-				case 'circle':
-					if (parseInt(elem.getAttribute('cx')) - parseInt(elem.getAttribute('r')) < minx) minx = parseInt(elem.getAttribute('cx')) - parseInt(elem.getAttribute('r'));
-					if (parseInt(elem.getAttribute('cx')) + parseInt(elem.getAttribute('r')) > maxx) maxx = parseInt(elem.getAttribute('cx')) + parseInt(elem.getAttribute('r'));
-					if (parseInt(elem.getAttribute('cy')) - parseInt(elem.getAttribute('r')) < miny) miny = parseInt(elem.getAttribute('cy')) - parseInt(elem.getAttribute('r'));
-					if (parseInt(elem.getAttribute('cy')) + parseInt(elem.getAttribute('r')) > maxy) maxy = parseInt(elem.getAttribute('cy')) + parseInt(elem.getAttribute('r'));
-					break;
-				case 'ellipse':
-					if (parseInt(elem.getAttribute('cx')) - parseInt(elem.getAttribute('rx')) < minx) minx = parseInt(elem.getAttribute('cx')) - parseInt(elem.getAttribute('rx'));
-					if (parseInt(elem.getAttribute('cx')) + parseInt(elem.getAttribute('rx')) > maxx) maxx = parseInt(elem.getAttribute('cx')) + parseInt(elem.getAttribute('rx'));
-					if (parseInt(elem.getAttribute('cy')) - parseInt(elem.getAttribute('ry')) < miny) miny = parseInt(elem.getAttribute('cy')) - parseInt(elem.getAttribute('ry'));
-					if (parseInt(elem.getAttribute('cy')) + parseInt(elem.getAttribute('ry')) > maxy) maxy = parseInt(elem.getAttribute('cy')) + parseInt(elem.getAttribute('ry'));
-					break;
-				case 'rect':
-					if (parseInt(elem.getAttribute('x'))                                         < minx) minx = parseInt(elem.getAttribute('x'));
-					if (parseInt(elem.getAttribute('x')) + parseInt(elem.getAttribute('width'))  > maxx) maxx = parseInt(elem.getAttribute('x')) + parseInt(elem.getAttribute('width'));
-					if (parseInt(elem.getAttribute('y'))                                         < minx) miny = parseInt(elem.getAttribute('y'));
-					if (parseInt(elem.getAttribute('y')) + parseInt(elem.getAttribute('height')) > maxx) maxy = parseInt(elem.getAttribute('y')) + parseInt(elem.getAttribute('height'));
-					break;
-				case 'line':
-					if (parseInt(elem.getAttribute('x1')) < minx) minx = parseInt(elem.getAttribute('x1'));
-					if (parseInt(elem.getAttribute('x2')) < minx) minx = parseInt(elem.getAttribute('x2'));
-					if (parseInt(elem.getAttribute('x1')) > maxx) maxx = parseInt(elem.getAttribute('x1'));
-					if (parseInt(elem.getAttribute('x2')) > maxx) maxx = parseInt(elem.getAttribute('x2'));
-					if (parseInt(elem.getAttribute('y1')) < miny) miny = parseInt(elem.getAttribute('y1'));
-					if (parseInt(elem.getAttribute('y2')) < miny) miny = parseInt(elem.getAttribute('y2'));
-					if (parseInt(elem.getAttribute('y1')) > maxy) maxy = parseInt(elem.getAttribute('y1'));
-					if (parseInt(elem.getAttribute('y2')) > maxy) maxy = parseInt(elem.getAttribute('y2'));
-					break;
-				case 'path':
-					// TODO: implement
-					break;
-				case 'polygon':
-					// TODO: implement
-					break;
-				case 'polyline':
-					// TODO: implement
-					break;
-				case 'text':
-					// TODO: how to handle text?
-					break;
-			}
+			var bbox = this.getBBox(elem);
+			if (bbox.x < minx) minx = bbox.x;
+			if (bbox.y < miny) miny = bbox.y;
+			if (bbox.x+bbox.width > maxx) maxx = bbox.x+bbox.width;
+			if (bbox.y+bbox.height > maxy) maxy = bbox.y+bbox.height;
 		}
 		var len = selectedElements.length;
 		for (var i = 0; i < len; ++i) {
@@ -2790,7 +2754,27 @@ function SvgCanvas(c)
 					// TODO: implement
 					break;
 				case 'text':
-					// TODO: how to handle text?
+					var bbox = this.getBBox(elem);
+					switch (type) {
+					case 'l': // left (horizontal)
+						elem.setAttribute('x', minx);
+						break;
+					case 'c': // center (horizontal)
+						elem.setAttribute('x', (minx+maxx-bbox.width)/2);
+						break;
+					case 'r': // right (horizontal)
+						elem.setAttribute('x', maxx-bbox.width);
+						break;
+					case 't': // top (vertical)
+						elem.setAttribute('y', miny+bbox.height);
+						break;
+					case 'm': // middle (vertical)
+						elem.setAttribute('y', (miny+maxy+bbox.height)/2);
+						break;
+					case 'b': // bottom (vertical)
+						elem.setAttribute('y', maxy);
+						break;
+					}
 					break;
 			}
 		}
