@@ -1340,7 +1340,7 @@ function SvgCanvas(c)
 			case "multiselect":
 				assignAttributes(rubberBox, {
 					'x': Math.min(start_x,x),
-					'y': Math.min(start_y,y)),
+					'y': Math.min(start_y,y),
 					'width': Math.abs(x-start_x),
 					'height': Math.abs(y-start_y)
 				},100);
