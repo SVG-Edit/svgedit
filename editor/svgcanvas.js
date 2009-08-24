@@ -2272,7 +2272,7 @@ function SvgCanvas(c)
 	this.getBBox = function(elem) {
 		var selected = elem || selectedElements[0];
 
-		if(selected.textContent == '') {
+		if(elem.nodeName == 'text' && selected.textContent == '') {
 			selected.textContent = 'a'; // Some character needed for the selector to use.
 			var ret = selected.getBBox();
 			selected.textContent = '';
