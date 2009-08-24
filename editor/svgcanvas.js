@@ -1077,12 +1077,12 @@ function SvgCanvas(c)
 		if($.inArray(current_mode, ['select', 'resize']) == -1) {
 			addGradient();
 		}
+		start_x = x;
+		start_y = y;
 		
 		switch (current_mode) {
 			case "select":
 				started = true;
-				start_x = x;
-				start_y = y;
 				current_resize_mode = "none";
 				var t = evt.target;
 				// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
@@ -1255,6 +1255,20 @@ function SvgCanvas(c)
 				if (id.substr(0,14) == "polypointgrip_") {
 					current_poly_pt_drag = parseInt(id.substr(14));
 				}
+
+				if(current_poly_pt_drag == -1) {
+					canvas.clearSelection();
+					canvas.setMode("multiselect");
+					if (rubberBox == null) {
+						rubberBox = selectorManager.getRubberBandBox();
+					}
+					rubberBox.setAttribute("x", start_x);
+					rubberBox.setAttribute("y", start_y);
+					rubberBox.setAttribute("width", 0);
+					rubberBox.setAttribute("height", 0);
+					rubberBox.setAttribute("display", "inline");
+				}
+
 				break;
 			default:
 				console.log("Unknown mode in mousedown: " + current_mode);
