@@ -275,27 +275,27 @@ function SvgCanvas(c)
 			var bbox = cur_bbox || canvas.getBBox(this.selectedElement);
 //			console.log({'cur_bbox':cur_bbox, 'bbox':bbox });
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
-			// TODO: use suspendRedraw() here
-			selectedBox.setAttribute("x", l);
-			selectedBox.setAttribute("y", t);
-			selectedBox.setAttribute("width", w);
-			selectedBox.setAttribute("height", h);
-			selectedGrips.nw.setAttribute("x", l-3);
-			selectedGrips.nw.setAttribute("y", t-3);
-			selectedGrips.ne.setAttribute("x", l+w-3);
-			selectedGrips.ne.setAttribute("y", t-3);
-			selectedGrips.sw.setAttribute("x", l-3);
-			selectedGrips.sw.setAttribute("y", t+h-3);
-			selectedGrips.se.setAttribute("x", l+w-3);
-			selectedGrips.se.setAttribute("y", t+h-3);
-			selectedGrips.n.setAttribute("x", l+w/2-3);
-			selectedGrips.n.setAttribute("y", t-3);
-			selectedGrips.w.setAttribute("x", l-3);
-			selectedGrips.w.setAttribute("y", t+h/2-3);
-			selectedGrips.e.setAttribute("x", l+w-3);
-			selectedGrips.e.setAttribute("y", t+h/2-3);
-			selectedGrips.s.setAttribute("x", l+w/2-3);
-			selectedGrips.s.setAttribute("y", t+h-3);
+			assignAttributes(selectedBox, {
+				'x': l,
+				'y': t,
+				'width': w,
+				'height': h
+			});
+			var gripCoords = {
+				nw: [l-3, 		t-3],
+				ne: [l+w-3, 	t-3],
+				sw: [l-3, 		t+h-3],
+				se: [l+w-3, 	t+h-3],
+				n:  [l+w/2-3, 	t-3],
+				w:	[l-3, 		t+h/2-3],
+				e:	[l+w-3, 	t+h/2-3],
+				s:	[l+w/2-3, 	t+h-3]
+			};
+			$.each(gripCoords, function(dir, coords) {
+				assignAttributes(selectedGrips[dir], {
+					x: coords[0], y: coords[1]
+				});
+			});
 			
 			// empty out the transform attribute
 			this.selectorGroup.setAttribute("transform", "");
@@ -1262,11 +1262,13 @@ function SvgCanvas(c)
 					if (rubberBox == null) {
 						rubberBox = selectorManager.getRubberBandBox();
 					}
-					rubberBox.setAttribute("x", start_x);
-					rubberBox.setAttribute("y", start_y);
-					rubberBox.setAttribute("width", 0);
-					rubberBox.setAttribute("height", 0);
-					rubberBox.setAttribute("display", "inline");
+					assignAttributes(rubberBox, {
+						'x': start_x,
+						'y': start_y,
+						'width': 0,
+						'height': 0,
+						'display': 'inline'
+					});
 				}
 
 				break;
