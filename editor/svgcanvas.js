@@ -805,6 +805,10 @@ function SvgCanvas(c)
 		var angle = canvas.getRotationAngle(selected);
 		var pointGripContainer = document.getElementById("polypointgrip_container");
 		if (angle) {
+//			var xform = selected.getAttribute('transform');
+//			var matched_numbers = xform.substr(xform.indexOf('rotate(')).match(/([\d\.\-\+]+)/g);
+//			var cx = parseFloat(matched_numbers[1]), 
+//				cy = parseFloat(matched_numbers[2]);
 			var cx = remapx(box.x + box.width/2),
 				cy = remapy(box.y + box.height/2);
 			var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
@@ -1292,8 +1296,10 @@ function SvgCanvas(c)
 							selectedBBoxes[i].y = box.y + dy;
 							var angle = canvas.getRotationAngle(selected);
 							if (angle) {
-								var cx = box.x+box.width/2, 
-									cy = box.y+box.height/2;
+								var xform = selected.getAttribute('transform');
+								var matched_numbers = xform.substr(xform.indexOf('rotate(')).match(/([\d\.\-\+]+)/g);							
+								var cx = matched_numbers[1], //box.x+box.width/2, 
+									cy = matched_numbers[2]; //box.y+box.height/2;
 								ts += [" rotate(", angle, " ", cx, ",", cy, ")"].join('');
 
  								var r = Math.sqrt( dx*dx + dy*dy );
@@ -1391,8 +1397,10 @@ function SvgCanvas(c)
 				var ts = [" translate(", (left+tx), ",", (top+ty), ") scale(", sx, ",", sy,
 							") translate(", -(left+tx), ",", -(top+ty), ")"].join('');
 				if (angle) {
-					var cx = left + width/2;//selectedBBox.x + selectedBBox.width/2,
-						cy = top + height/2;//selectedBBox.y + selectedBBox.height/2;
+					var xform = selected.getAttribute('transform');
+					var matched_numbers = xform.substr(xform.indexOf('rotate(')).match(/([\d\.\-\+]+)/g);
+					var cx = matched_numbers[1], //left + width/2;//selectedBBox.x + selectedBBox.width/2,
+						cy = matched_numbers[2]; //top + height/2;//selectedBBox.y + selectedBBox.height/2;
 					ts = ["rotate(", angle, " ", cx, ",", cy, ")", ts].join('')
 				}
 				selected.setAttribute("transform", ts);
@@ -2635,25 +2643,64 @@ function SvgCanvas(c)
 
 	// aligns selected elements (type is a char - see switch below for explanation)
 	this.alignSelectedElements = function(type) {
-		var bbox;
+		var bboxes = [], angles = [];
 		var minx = Number.MAX_VALUE, maxx = Number.MIN_VALUE, miny = Number.MAX_VALUE, maxy = Number.MIN_VALUE;
 		var len = selectedElements.length;
 		if (!len) return;
 		for (var i = 0; i < len; ++i) {
 			if (selectedElements[i] == null) break;
 			var elem = selectedElements[i];
-			var bbox = this.getBBox(elem);
-			if (bbox.x < minx) minx = bbox.x;
-			if (bbox.y < miny) miny = bbox.y;
-			if (bbox.x+bbox.width > maxx) maxx = bbox.x+bbox.width;
-			if (bbox.y+bbox.height > maxy) maxy = bbox.y+bbox.height;
-		}
+			bboxes[i] = this.getBBox(elem);
+			
+			// TODO: could make the following code block as part of getBBox() and add a parameter 
+			//       to that function
+			// if element is rotated, get angle and rotate the 4 corners of the bbox and get
+			// the new axis-aligned bbox
+			angles[i] = this.getRotationAngle(elem) * Math.PI / 180.0;
+			if (angles[i]) {
+				var rminx = Number.MAX_VALUE, rminy = Number.MAX_VALUE, 
+					rmaxx = Number.MIN_VALUE, rmaxy = Number.MIN_VALUE;
+				var cx = bboxes[i].x + bboxes[i].width/2,
+					cy = bboxes[i].y + bboxes[i].height/2;
+				var pts = [ [bboxes[i].x - cx, bboxes[i].y - cy], 
+							[bboxes[i].x + bboxes[i].width - cx, bboxes[i].y - cy],
+							[bboxes[i].x + bboxes[i].width - cx, bboxes[i].y + bboxes[i].height - cy], 
+							[bboxes[i].x - cx, bboxes[i].y + bboxes[i].height - cy] ];
+				var j = 4;
+				while (j--) {
+					var x = pts[j][0], 
+						y = pts[j][1],
+						r = Math.sqrt( x*x + y*y );
+					var theta = Math.atan2(y,x) + angles[i];
+					x = r * Math.cos(theta) + cx;
+					y = r * Math.sin(theta) + cy;
+
+					// now set the bbox for the shape after it's been rotated
+					if (x < rminx) rminx = x;
+					if (y < rminy) rminy = y;
+					if (x > rmaxx) rmaxx = x;
+					if (y > rmaxy) rmaxy = y;
+				}
+				
+				bboxes[i].x = rminx;
+				bboxes[i].y = rminy;
+				bboxes[i].width = rmaxx - rminx;
+				bboxes[i].height = rmaxy - rminy;
+			}
+			
+			// now bbox is axis-aligned and handles rotation
+			if (bboxes[i].x < minx) minx = bboxes[i].x;
+			if (bboxes[i].y < miny) miny = bboxes[i].y;
+			if (bboxes[i].x+bboxes[i].width > maxx) maxx = bboxes[i].x+bboxes[i].width;
+			if (bboxes[i].y+bboxes[i].height > maxy) maxy = bboxes[i].y+bboxes[i].height;
+		} // loop for each element to find the bbox and adjust min/max
+		
 		var dx = new Array(len);
 		var dy = new Array(len);
 		for (var i = 0; i < len; ++i) {
 			if (selectedElements[i] == null) break;
 			var elem = selectedElements[i];
-			var bbox = this.getBBox(elem);
+			var bbox = bboxes[i];
 			dx[i] = 0;
 			dy[i] = 0;
 			switch (type) {
