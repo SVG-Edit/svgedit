@@ -275,12 +275,14 @@ function SvgCanvas(c)
 			var bbox = cur_bbox || canvas.getBBox(this.selectedElement);
 //			console.log({'cur_bbox':cur_bbox, 'bbox':bbox });
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
+			var sr_handle = svgroot.suspendRedraw(100);
 			assignAttributes(selectedBox, {
 				'x': l,
 				'y': t,
 				'width': w,
 				'height': h
 			});
+			
 			var gripCoords = {
 				nw: [l-3, 		t-3],
 				ne: [l+w-3, 	t-3],
@@ -311,6 +313,7 @@ function SvgCanvas(c)
 					this.selectorGroup.setAttribute("transform", rotstr);
 				}
 			}
+			svgroot.unsuspendRedraw(sr_handle);
 		};
 
 		// now initialize the selector
@@ -420,11 +423,14 @@ function SvgCanvas(c)
 		return canvas.updateElementFromJson(data)
 	};
 
-	var assignAttributes = function(node, attrs) {
-		var handle = svgroot.suspendRedraw(60);
+	var assignAttributes = function(node, attrs, suspendLength) {
+		if(!suspendLength) suspendLength = 0;
+		var handle = svgroot.suspendRedraw(suspendLength);
+
 		for (i in attrs) {
 			node.setAttributeNS(null, i, attrs[i]);
 		}
+		
 		svgroot.unsuspendRedraw(handle);
 	};
 
@@ -462,7 +468,7 @@ function SvgCanvas(c)
 			shape = svgdoc.createElementNS(svgns, data.element);
 			svgroot.appendChild(shape);
 		}
-		assignAttributes(shape, data.attr);
+		assignAttributes(shape, data.attr, 100);
 		cleanupElement(shape);
 		return shape;
 	};
@@ -1268,7 +1274,7 @@ function SvgCanvas(c)
 						'width': 0,
 						'height': 0,
 						'display': 'inline'
-					});
+					}, 100);
 				}
 
 				break;
@@ -1332,10 +1338,12 @@ function SvgCanvas(c)
 				}
 				break;
 			case "multiselect":
-				rubberBox.setAttribute("x", Math.min(start_x,x));
-				rubberBox.setAttribute("y", Math.min(start_y,y));
-				rubberBox.setAttribute("width", Math.abs(x-start_x));
-				rubberBox.setAttribute("height", Math.abs(y-start_y));
+				assignAttributes(rubberBox, {
+					'x': Math.min(start_x,x),
+					'y': Math.min(start_y,y)),
+					'width': Math.abs(x-start_x),
+					'height': Math.abs(y-start_y)
+				},100);
 
 				// this code will probably be faster than using getIntersectionList(), but
 				// not as accurate (only grabs an element if the mouse happens to pass over
@@ -1441,10 +1449,10 @@ function SvgCanvas(c)
 				selectorManager.requestSelector(selected).resize(selectedBBox);
 				break;
 			case "text":
-				var handle = svgroot.suspendRedraw(1000);
-				shape.setAttribute("x", x);
-				shape.setAttribute("y", y);
-				svgroot.unsuspendRedraw(handle);
+				assignAttributes(shape,{
+					'x': x,
+					'y': y
+				},1000);
 				break;
 			case "line":
 				var handle = svgroot.suspendRedraw(1000);
@@ -1454,20 +1462,20 @@ function SvgCanvas(c)
 				break;
 			case "square":
 				var size = Math.max( Math.abs(x - start_x), Math.abs(y - start_y) );
-				var handle = svgroot.suspendRedraw(1000);
-				shape.setAttributeNS(null, "width", size);
-				shape.setAttributeNS(null, "height", size);
-				shape.setAttributeNS(null, "x", start_x < x ? start_x : start_x - size);
-				shape.setAttributeNS(null, "y", start_y < y ? start_y : start_y - size);
-				svgroot.unsuspendRedraw(handle);
+				assignAttributes(shape,{
+					'width': size,
+					'height': size,
+					'x': start_x < x ? start_x : start_x - size,
+					'y': start_y < y ? start_y : start_y - size
+				},1000);
 				break;
 			case "rect":
-				var handle = svgroot.suspendRedraw(1000);
-				shape.setAttributeNS(null, "x", Math.min(start_x,x));
-				shape.setAttributeNS(null, "y", Math.min(start_y,y));
-				shape.setAttributeNS(null, "width", Math.abs(x-start_x));
-				shape.setAttributeNS(null, "height", Math.abs(y-start_y));
-				svgroot.unsuspendRedraw(handle);
+				assignAttributes(shape,{
+					'width': Math.abs(x-start_x),
+					'height': Math.abs(y-start_y),
+					'x': Math.min(start_x,x),
+					'y': Math.min(start_y,y)
+				},1000);
 				break;
 			case "circle":
 				var cx = shape.getAttributeNS(null, "cx");
