@@ -939,55 +939,56 @@ function SvgCanvas(c)
 			changes["y1"] = selected.getAttribute("y1");
 			changes["x2"] = selected.getAttribute("x2");
 			changes["y2"] = selected.getAttribute("y2");
-			var handle = svgroot.suspendRedraw(1000);
-			selected.setAttribute("x1", remapx(changes["x1"]));
-			selected.setAttribute("y1", remapy(changes["y1"]));
-			selected.setAttribute("x2", remapx(changes["x2"]));
-			selected.setAttribute("y2", remapy(changes["y2"]));
-			svgroot.unsuspendRedraw(handle);
+			assignAttributes(selected, {
+				'x1': remapx(changes["x1"]),
+				'y1': remapy(changes["y1"]),
+				'x2': remapx(changes["x2"]),
+				'y2': remapy(changes["y2"]),
+			}, 1000);
 			break;
 		case "circle":
 			changes["cx"] = selected.getAttribute("cx");
 			changes["cy"] = selected.getAttribute("cy");
 			changes["r"] = selected.getAttribute("r");
-			var handle = svgroot.suspendRedraw(1000);
-			selected.setAttribute("cx", remapx(changes["cx"]));
-			selected.setAttribute("cy", remapy(changes["cy"]));
-			// take the minimum of the new selected box's dimensions for the new circle radius
-			selected.setAttribute("r", Math.min(selectedBBox.width/2,selectedBBox.height/2));
-			svgroot.unsuspendRedraw(handle);
+			assignAttributes(selected, {
+				'cx': remapx(changes["cx"]),
+				'cy': remapy(changes["cy"]),
+	
+				// take the minimum of the new selected box's dimensions for the new circle radius
+				'r': Math.min(selectedBBox.width/2,selectedBBox.height/2)
+			}, 1000);
 			break;
 		case "ellipse":
 			changes["cx"] = selected.getAttribute("cx");
 			changes["cy"] = selected.getAttribute("cy");
 			changes["rx"] = selected.getAttribute("rx");
 			changes["ry"] = selected.getAttribute("ry");
-			var handle = svgroot.suspendRedraw(1000);
-			selected.setAttribute("cx", remapx(changes["cx"]));
-			selected.setAttribute("cy", remapy(changes["cy"]));
-			selected.setAttribute("rx", scalew(changes["rx"]));
-			selected.setAttribute("ry", scaleh(changes["ry"]));
-			svgroot.unsuspendRedraw(handle);
+			assignAttributes(selected, {
+				'cx': remapx(changes["cx"]),
+				'cy': remapy(changes["cy"]),
+				'rx': scalew(changes["rx"]),
+				'ry': scaleh(changes["ry"])
+			}, 1000);
 			break;
 		case "text":
 			changes["x"] = selected.getAttribute("x");
 			changes["y"] = selected.getAttribute("y");
-			var handle = svgroot.suspendRedraw(1000);
-			selected.setAttribute("x", remapx(changes["x"]));
-			selected.setAttribute("y", remapy(changes["y"]));
-			svgroot.unsuspendRedraw(handle);
+			assignAttributes(selected, {
+				'x': remapx(changes["x"]),
+				'y': remapy(changes["y"])
+			}, 1000);
 			break;
 		case "rect":
 			changes["x"] = selected.getAttribute("x");
 			changes["y"] = selected.getAttribute("y");
 			changes["width"] = selected.getAttribute("width");
 			changes["height"] = selected.getAttribute("height");
-			var handle = svgroot.suspendRedraw(1000);
-			selected.setAttribute("x", remapx(changes["x"]));
-			selected.setAttribute("y", remapy(changes["y"]));
-			selected.setAttribute("width", scalew(changes["width"]));
-			selected.setAttribute("height", scaleh(changes["height"]));
-			svgroot.unsuspendRedraw(handle);
+			assignAttributes(selected, {
+				'x': remapx(changes["x"]),
+				'y': remapy(changes["y"]),
+				'width': scalew(changes["width"]),
+				'height': scaleh(changes["height"])
+			}, 1000);
 			break;
 		default: // rect
 			console.log("Unknown shape type: " + selected.tagName);
@@ -1108,11 +1109,13 @@ function SvgCanvas(c)
 					if (rubberBox == null) {
 						rubberBox = selectorManager.getRubberBandBox();
 					}
-					rubberBox.setAttribute("x", start_x);
-					rubberBox.setAttribute("y", start_y);
-					rubberBox.setAttribute("width", 0);
-					rubberBox.setAttribute("height", 0);
-					rubberBox.setAttribute("display", "inline");
+					assignAttributes(rubberBox, {
+						'x': start_x,
+						'y': start_y,
+						'width': 0,
+						'height': 0,
+						'display': 'inline'
+					}, 100);
 				}
 				break;
 			case "resize":
@@ -1595,9 +1598,11 @@ function SvgCanvas(c)
 		while(i) {
 			i -= 2;
 			var grip = document.getElementById("polypointgrip_"+i/2);
-			grip.setAttribute("cx", current_poly_pts[i]);
-			grip.setAttribute("cy", current_poly_pts[i+1]);
-			grip.setAttribute("display", "inline");
+			assignAttributes(grip, {
+				'cx': current_poly_pts[i],
+				'cy': current_poly_pts[i+1],
+				'display': 'inline'
+			});
 		}
 	};
 
@@ -1617,14 +1622,16 @@ function SvgCanvas(c)
 		// create it
 		if (!pointGrip) {
 			pointGrip = document.createElementNS(svgns, "circle");
-			pointGrip.id = "polypointgrip_" + index;
-			pointGrip.setAttribute("display", "none");
-			pointGrip.setAttribute("r", 4);
-			pointGrip.setAttribute("fill", "#0F0");
-			pointGrip.setAttribute("stroke", "#00F");
-			pointGrip.setAttribute("stroke-width", 2);
-			pointGrip.setAttribute("cursor", "move");
-			pointGrip.setAttribute("pointer-events", "all");
+			assignAttributes(pointGrip, {
+				'id': "polypointgrip_" + index,
+				'display': "none",
+				'r': 4,
+				'fill': "#0F0",
+				'stroke': "#00F",
+				'stroke-width': 2,
+				'cursor': 'move',
+				"pointer-events": "all"
+			});
 			pointGrip = pointGripContainer.appendChild(pointGrip);
 
 			var grip = $('#polypointgrip_'+index);
@@ -1633,9 +1640,11 @@ function SvgCanvas(c)
 		}
 
 		// set up the point grip element and display it
-		pointGrip.setAttribute("cx", x);
-		pointGrip.setAttribute("cy", y);
-		pointGrip.setAttribute("display", "inline");
+		assignAttributes(pointGrip, {
+			'cx': x,
+			'cy': y,
+			'display': "inline",
+		});
 	};
 
 	// - in create mode, the element's opacity is set properly, we create an InsertElementCommand
@@ -1817,9 +1826,11 @@ function SvgCanvas(c)
 				var stretchy = document.getElementById("poly_stretch_line");
 				if (!stretchy) {
 					stretchy = document.createElementNS(svgns, "line");
-					stretchy.id = "poly_stretch_line";
-					stretchy.setAttribute("stroke-width", "0.5");
-					stretchy.setAttribute("stroke", "blue");
+					assignAttributes(stretchy, {
+						'id': "poly_stretch_line",
+						'stroke': "blue",
+						'stroke-width': "0.5"
+					});
 					stretchy = document.getElementById("selectorParentGroup").appendChild(stretchy);
 				}
 				stretchy.setAttribute("display", "inline");
@@ -1844,10 +1855,12 @@ function SvgCanvas(c)
 						}
 					});
 					// set stretchy line to first point
-					stretchy.setAttribute("x1", x);
-					stretchy.setAttribute("y1", y);
-					stretchy.setAttribute("x2", x);
-					stretchy.setAttribute("y2", y);
+					assignAttributes(stretchy, {
+						'x1': x,
+						'y1': y,
+						'x2': x,
+						'y2': y
+					});
 					addPointGripToPoly(x,y);
 				}
 				else {
@@ -1899,10 +1912,12 @@ function SvgCanvas(c)
 						poly.setAttribute("d", d_attr);
 
 						// set stretchy line to latest point
-						stretchy.setAttribute("x1", x);
-						stretchy.setAttribute("y1", y);
-						stretchy.setAttribute("x2", x);
-						stretchy.setAttribute("y2", y);
+						assignAttributes(stretchy, {
+							'x1': x,
+							'y1': y,
+							'x2': x,
+							'y2': y
+						});
 						addPointGripToPoly(x,y);
 					}
 					keep = true;
