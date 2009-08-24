@@ -25,6 +25,8 @@ function svg_edit_setup() {
 	var selectedElement = null;
 	var multiselected = false;
 	var editingsource = false;
+	var length_attrs = ['x','y','x1','x2','y1','y2','cx','cy','width','height','r','rx','ry','width','height','radius'];
+	var length_types = ['em','ex','px','cm','mm','in','pt','pc','%'];
 	
 	var fillPaint = new $.jGraduate.Paint({solidColor: "FF0000"}); // solid red
 	var strokePaint = new $.jGraduate.Paint({solidColor: "000000"}); // solid black
@@ -308,7 +310,31 @@ function svg_edit_setup() {
 	});
 
 	$('.attr_changer').change(function() {
-		svgCanvas.changeSelectedAttribute(this.getAttribute("alt"), this.value);
+		var attr = this.getAttribute("alt");
+		var val = this.value;
+		var valid = false;
+		if($.inArray(attr, length_attrs) != -1) {
+			if(!isNaN(val)) {
+				valid = true;
+			} else {
+				//TODO: Allow the values in length_types, then uncomment this:  
+// 				val = val.toLowerCase();
+// 				$.each(length_types, function(i, unit) {
+// 					if(valid) return;
+// 					var re = new RegExp('^-?[\\d\\.]+' + unit + '$');
+// 					if(re.test(val)) valid = true;
+// 				});
+			}
+		} else valid = true;
+		
+		if(!valid) {
+			alert('Invalid value given for' + $(this).attr('title').replace('Change','')
+				+ '.');
+			this.value = selectedElement.getAttribute(attr);
+			return false;
+		} 
+		
+		svgCanvas.changeSelectedAttribute(attr, val);
 	});
 
 	$('.palette_item').click(function(evt){
@@ -705,6 +731,10 @@ function svg_edit_setup() {
 			var disable = !(item.length > 2 && !item[2]);
 			$(document).bind('keydown', {combi:item[0], disableInInput: disable}, item[1]);
 		});
+		
+		$('.attr_changer').bind('keydown', {combi:'return', disableInInput: false}, 
+			function(evt) {$(this).change();evt.preventDefault();}
+		);
 	}
 	
 	setKeyBindings();
