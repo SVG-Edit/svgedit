@@ -36,35 +36,7 @@ function svg_edit_setup() {
 	// with a gradient will appear black in Firefox, etc.  See bug 308590
 	// https://bugzilla.mozilla.org/show_bug.cgi?id=308590
 	var saveHandler = function(window,svg) {
-		if(window.opera && window.opera.io && window.opera.io.filesystem)
-		{
-			try {
-				window.opera.io.filesystem.browseForSave(
-					new Date().getTime(), /* mountpoint name */
-					"", /* default location */
-					function(file) {
-						try {
-							if (file) {
-								var fstream = file.open(file, "w");
-								fstream.write(svg, "UTF-8");
-								fstream.close();
-							}
-						}
-						catch(e) {
-							console.log("Write to file failed.");
-						}
-					}, 
-					false /* not persistent */
-				);
-			}
-			catch(e) {
-				console.log("Save file failed.");
-			}
-		}
-		else
-		{
-			window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
-		}
+		window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
 	};
 
 	// called when we've selected a different element
@@ -924,13 +896,20 @@ function svg_edit_setup() {
 	$('#stroke_width').SpinButton({ min: 1, max: 99, step: 1, callback: changeStrokeWidth });
 	$('#angle').SpinButton({ min: -180, max: 180, step: 5, callback: changeRotationAngle });
 
-	// if Opera and in widget form, enable the Open button
-	if (window.opera) {
-		opera.postError('opera.io=' + opera.io);
-		if(opera && opera.io && opera.io.filesystem) {
+	svgCanvas.setCustomHandlers = function(opts) {
+		if(opts.open) {
 			$('#tool_open').show();
+			svgCanvas.bind("opened", opts.open);
+		}
+		if(opts.save) {
+			svgCanvas.bind("saved", opts.save);
 		}
 	}
 
 	return svgCanvas;
 };
+
+// This happens when the page is loaded
+$(function() {
+	svgCanvas = svg_edit_setup();
+});
