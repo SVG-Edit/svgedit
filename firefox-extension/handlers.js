@@ -1,4 +1,4 @@
-// Note: This JavaScript file must be included as the last script on the main HTML editor page to override the open/close handlers
+// Note: This JavaScript file must be included as the last script on the main HTML editor page to override the open/save handlers
 $(function() {
 	if(!window.Components) return;
 	
@@ -27,13 +27,13 @@ $(function() {
                         inputStream.init(file, 0x01, 00004, null);
                         var sInputStream = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance(Components.interfaces.nsIScriptableInputStream);                   
                         sInputStream.init(inputStream);
-                        canvas.setSvgString(sInputStream.
+                        svgCanvas.setSvgString(sInputStream.
 					    read(sInputStream.available()));
 		    } catch(e) {
                         console.log("Exception while attempting to load" + e);
 		    }
 		},
-		'save':function(svg) {
+		'save':function(svg, str) {
 			try {
 				var file = moz_file_picker(false);
 				if(!file)

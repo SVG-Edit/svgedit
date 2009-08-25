@@ -1,4 +1,4 @@
-// Note: This JavaScript file must be included as the last script on the main HTML editor page to override the open/close handlers
+// Note: This JavaScript file must be included as the last script on the main HTML editor page to override the open/save handlers
 $(function() {
 	if(window.opera && window.opera.io && window.opera.io.filesystem) {
 		svgCanvas.setCustomHandlers({
