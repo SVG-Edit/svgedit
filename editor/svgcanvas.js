@@ -1985,38 +1985,9 @@ function SvgCanvas(c)
 
 // public functions
 
-	this.open = function() {
-		if(window.opera && window.opera.io && window.opera.io.filesystem)
-		{
-			try {
-				window.opera.io.filesystem.browseForFile(
-					new Date().getTime(), /* mountpoint name */
-					"", /* default location */
-					function(file) {
-						try {
-							if (file) {
-								fstream = file.open(file, "r");
-								var output = "";
-								while (!fstream.eof) {
-									output += fstream.readLine("UTF-16");
-								}
-								
-								canvas.setSvgString(output); /* 'this' is bound to the filestream object here */
-							}
-						}
-						catch(e) {
-							console.log("Reading file failed.");
-						}
-					},
-					false, /* not persistent */
-					false, /* no multiple selections */
-					"*.svg" /* file extension filter */
-				);
-			}
-			catch(e) {
-				console.log("Open file failed.");
-			}
-		}
+	this.open = function(str) {
+		// Nothing by default, handled by optional widget/extention
+		call("opened", str);
 	};
 
 	this.save = function() {

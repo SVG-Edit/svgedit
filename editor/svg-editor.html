@@ -20,6 +20,8 @@
 <!--script type="text/javascript" src="svgcanvas.min.js"></script-->
 <script type="text/javascript" src="svg-editor.js"></script>
 <!--script type="text/javascript" src="svg-editor.min.js"></script-->
+
+<!-- Add script with custom handlers here -->
 <title>SVG-edit demo</title>
 </head>
 <body>
@@ -42,7 +44,7 @@
 	<div>
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<img class="tool_button" id="tool_clear" src="images/clear.png" title="New Image [N]" alt="Clear" />
-		<img style="display:none" eeclass="tool_button" id="tool_open" src="images/open.png" title="Open Image [O]" alt="Open"/>
+		<img style="display:none" class="tool_button" id="tool_open" src="images/open.png" title="Open Image [O]" alt="Open"/>
 		<img class="tool_button" id="tool_save" src="images/save.png" title="Save Image [S]" alt="Save"/>
 		<img class="tool_button" id="tool_source" src="images/source.png" title="Edit Source [U]" alt="Source"/>
 	</div>
@@ -285,10 +287,6 @@
 		</form>
 	</div>
 </div>
-
-<script type="text/javascript">
-$(document).ready(svg_edit_setup);
-</script>
 
 </body>
 </html>
