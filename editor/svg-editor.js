@@ -543,26 +543,26 @@ function svg_edit_setup() {
 	var clickClone = function(){
 		svgCanvas.cloneSelectedElements();
 	};
-	
+
 	var clickAlignLeft = function(){
-		svgCanvas.alignSelectedElements('l');
+		svgCanvas.alignSelectedElements('l', $('#align_relative_to option:selected').val() );
 	};
 	var clickAlignCenter = function(){
-		svgCanvas.alignSelectedElements('c');
+		svgCanvas.alignSelectedElements('c', $('#align_relative_to option:selected').val() );
 	};
 	var clickAlignRight = function(){
-		svgCanvas.alignSelectedElements('r');
+		svgCanvas.alignSelectedElements('r', $('#align_relative_to option:selected').val() );
 	};
 	var clickAlignTop = function(){
-		svgCanvas.alignSelectedElements('t');
+		svgCanvas.alignSelectedElements('t', $('#align_relative_to option:selected').val() );
 	};
 	var clickAlignMiddle = function(){
-		svgCanvas.alignSelectedElements('m');
+		svgCanvas.alignSelectedElements('m', $('#align_relative_to option:selected').val() );
 	};
 	var clickAlignBottom = function(){
-		svgCanvas.alignSelectedElements('b');
+		svgCanvas.alignSelectedElements('b', $('#align_relative_to option:selected').val() );
 	};
-	
+
 	var showSourceEditor = function(){
 		if (editingsource) return;
 		editingsource = true;
