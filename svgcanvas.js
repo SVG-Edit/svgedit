@@ -659,7 +659,7 @@ function SvgCanvas(c)
 
 	var removeUnusedGrads = function() {
 		var defs = svgroot.getElementsByTagNameNS(svgns, "defs");
-		if(!defs.length) return;
+		if(!defs || !defs.length) return;
 		
 		var all_els = svgroot.getElementsByTagNameNS(svgns, '*');
 		var grad_uses = [];
@@ -798,8 +798,8 @@ function SvgCanvas(c)
 
 		// after this point, we have some change to this element
 
-		var remapx = function(x) {return parseInt(((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x);}
-		var remapy = function(y) {return parseInt(((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y);}
+		var remapx = null;// function(x) {return parseInt(((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x);}
+		var remapy = null;//function(y) {return parseInt(((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y);}
 		var scalew = function(w) {return parseInt(w*selectedBBox.width/box.width);}
 		var scaleh = function(h) {return parseInt(h*selectedBBox.height/box.height);}
 
@@ -811,12 +811,34 @@ function SvgCanvas(c)
 		var angle = canvas.getRotationAngle(selected);
 		var pointGripContainer = document.getElementById("polypointgrip_container");
 		if (angle) {
-//			var xform = selected.getAttribute('transform');
-//			var matched_numbers = xform.substr(xform.indexOf('rotate(')).match(/([\d\.\-\+]+)/g);
-//			var cx = parseFloat(matched_numbers[1]), 
-//				cy = parseFloat(matched_numbers[2]);
-			var cx = remapx(box.x + box.width/2),
-				cy = remapy(box.y + box.height/2);
+			var xform = selected.getAttribute('transform');
+			var matched_numbers = xform.substr(xform.indexOf('rotate(')).match(/([\d\.\-\+]+)/g);
+			var tr_x = parseFloat(matched_numbers[1]), 
+				tr_y = parseFloat(matched_numbers[2]);
+			var cx = (selectedBBox.x + selectedBBox.width/2),
+				cy = (selectedBBox.y + selectedBBox.height/2);
+				
+			console.log({'tr_x':tr_x, 'try':tr_y, 'cx':cx, 'cy':cy});
+				
+			// remap with rotation
+			remapx = function(x) {
+				var newx = parseInt(((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x);
+				// map it back to old rotational axes
+				
+//				newx += tr_x;
+//				newx -= cx;
+				
+				return newx;
+			}
+			remapy = function(y) {
+				var newy = parseInt(((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y);
+				
+//				newy += tr_y;
+//				newy -= cy;
+				
+				return newy;
+			}
+			
 			var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
 			selected.setAttribute("transform", rotate);
 			if(pointGripContainer) {
@@ -824,6 +846,10 @@ function SvgCanvas(c)
 			}
 		}
 		else {
+			// standard remap functions
+			remapx = function(x) {return parseInt(((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x);}
+			remapy = function(y) {return parseInt(((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y);}
+			
 			selected.setAttribute("transform", "");
 			selected.removeAttribute("transform");
 			if(pointGripContainer) {
@@ -847,8 +873,7 @@ function SvgCanvas(c)
 			var newpoints = "";
 			for (var i = 0; i < len; ++i) {
 				var pt = list.getItem(i);
-				var x = remapx(pt.x), y = remapy(pt.y);
-				newpoints += x + "," + y + " ";
+				newpoints += remapx(pt.x) + "," + remapy(pt.y) + " ";
 			}
 			selected.setAttributeNS(null, "points", newpoints);
 			break;
@@ -2667,6 +2692,7 @@ function SvgCanvas(c)
 		var len = copiedElements.length;
 		for (var i = 0; i < len; ++i) {
 			var elem = copiedElements[i];
+			elem.removeAttribute("id");
 			elem.id = getNextId();
 			svgroot.appendChild(elem);
 			batchCmd.addSubCommand(new InsertElementCommand(elem));
