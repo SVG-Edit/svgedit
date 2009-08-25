@@ -16,10 +16,11 @@
 <script type="text/javascript" src="spinbtn/JQuerySpinBtn.js"></script>
 <!--script type="text/javascript" src="spinbtn/JQuerySpinBtn.min.js"></script-->
 <!--script type="text/javascript" src="jgraduate/jquery.jgraduate.min.js"></script-->
-<script type="text/javascript" src="svgcanvas.js"></script>
-<!--script type="text/javascript" src="svgcanvas.min.js"></script-->
-<script type="text/javascript" src="svg-editor.js"></script>
-<!--script type="text/javascript" src="svg-editor.min.js"></script-->
+
+
+<script type="text/javascript" src="../svgweb/svg.js" data-path="../svgweb"></script>
+
+
 <title>SVG-edit demo</title>
 </head>
 <body>
@@ -28,7 +29,11 @@
 
 <div id="workarea">
 <style id="styleoverrides" type="text/css"></style>
-<div id="svgcanvas"></div>
+<div id="svgcanvas">
+<script type="image/svg+xml">
+  <svg width="640" height="480" id="svgroot" xmlns="http://www.w3.org/2000/svg"></svg>
+</script>
+</div>
 </div>
 
 <div id="logo">
@@ -286,8 +291,15 @@
 	</div>
 </div>
 
+<script type="text/javascript" src="svgcanvas.js"></script>
+<!--script type="text/javascript" src="svgcanvas.min.js"></script-->
+<script type="text/javascript" src="svg-editor.js"></script>
+<!--script type="text/javascript" src="svg-editor.min.js"></script-->
+
 <script type="text/javascript">
+window.onload = function(){
 $(document).ready(svg_edit_setup);
+}
 </script>
 
 </body>

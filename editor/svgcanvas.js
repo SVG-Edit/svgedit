@@ -41,7 +41,7 @@ var svgWhiteList = {
 // attrs contains the values that the attributes had before the change
 function ChangeElementCommand(elem, attrs, text) {
 	this.elem = elem;
-	this.text = text ? ("Change " + elem.tagName + " " + text) : ("Change " + elem.tagName);
+	this.text = text ? ("Change " + elem.nodeName + " " + text) : ("Change " + elem.nodeName);
 	this.newValues = {};
 	this.oldValues = attrs;
 	for (attr in attrs) {
@@ -82,7 +82,7 @@ function ChangeElementCommand(elem, attrs, text) {
 
 function InsertElementCommand(elem, text) {
 	this.elem = elem;
-	this.text = text || ("Create " + elem.tagName);
+	this.text = text || ("Create " + elem.nodeName);
 	this.parent = elem.parentNode;
 
 	this.apply = function() { this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); };
@@ -97,7 +97,7 @@ function InsertElementCommand(elem, text) {
 
 function RemoveElementCommand(elem, parent, text) {
 	this.elem = elem;
-	this.text = text || ("Delete " + elem.tagName);
+	this.text = text || ("Delete " + elem.nodeName);
 	this.parent = parent;
 
 	this.apply = function() {
@@ -112,7 +112,7 @@ function RemoveElementCommand(elem, parent, text) {
 
 function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 	this.elem = elem;
-	this.text = text ? ("Move " + elem.tagName + " to " + text) : ("Move " + elem.tagName + "top/bottom");
+	this.text = text ? ("Move " + elem.nodeName + " to " + text) : ("Move " + elem.nodeName + "top/bottom");
 	this.oldNextSibling = oldNextSibling;
 	this.oldParent = oldParent;
 	this.newNextSibling = elem.nextSibling;
@@ -269,7 +269,7 @@ function SvgCanvas(c)
 			if (!isNaN(sw)) {
 				offset += sw/2;
 			}
-			if (selected.tagName == "text") {
+			if (selected.nodeName == "text") {
 				offset += 2;
 			}
 			var bbox = cur_bbox || canvas.getBBox(this.selectedElement);
@@ -460,12 +460,18 @@ function SvgCanvas(c)
 	this.updateElementFromJson = function(data) {
 		var shape = svgdoc.getElementById(data.attr.id);
 		// if shape is a path but we need to create a rect/ellipse, then remove the path
-		if (shape && data.element != shape.tagName) {
+		if (shape && data.element != shape.nodeName) {
 			svgroot.removeChild(shape);
 			shape = null;
 		}
 		if (!shape) {
 			shape = svgdoc.createElementNS(svgns, data.element);
+      if(shape.fake){
+        shape.addEventListener("mousedown",function(evt){
+          mouseDown(evt)
+          had_shape_event = true;
+        })
+      }
 			svgroot.appendChild(shape);
 		}
 		assignAttributes(shape, data.attr, 100);
@@ -477,14 +483,23 @@ function SvgCanvas(c)
 	var container = c;
 	var svgns = "http://www.w3.org/2000/svg";
 
+  var had_shape_event = false;
+
 	var idprefix = "svg_";
 	var svgdoc  = c.ownerDocument;
-	var svgroot = svgdoc.createElementNS(svgns, "svg");
-	svgroot.setAttribute("width", 640);
-	svgroot.setAttribute("height", 480);
-	svgroot.setAttribute("id", "svgroot");
-	svgroot.setAttribute("xmlns", svgns);
-	container.appendChild(svgroot);
+	
+	var svgroot = document.getElementById("svgroot")
+	
+	console.log(svgroot)
+	
+	//var svgroot = svgdoc.createElementNS(svgns, "svg");
+	//svgroot.setAttribute("width", 640);
+	//svgroot.setAttribute("height", 480);
+	//svgroot.setAttribute("id", "svgroot");
+	//svgroot.setAttribute("xmlns", svgns);
+	//container.appendChild(svgroot);
+	
+	//svgweb.appendChild(svgroot, container);
 
 	var d_attr = null;
 	var started = false;
@@ -546,7 +561,7 @@ function SvgCanvas(c)
 		{
 			resultList = [];
 
-			var rubberBBox = rubberBox.getBBox();
+			var rubberBBox = canvas.getBBox(rubberBox);
 			var nodes = svgroot.childNodes;
 			var i = svgroot.childNodes.length;
 			while (i--) {
@@ -858,7 +873,7 @@ function SvgCanvas(c)
 			}
 		}
 
-		switch (selected.tagName)
+		switch (selected.nodeName)
 		{
 		// NOTE: at the moment, there's no way to create an actual polygon element except by 
 		// editing source or importing from somewhere else but we'll cover it here anyway
@@ -1016,7 +1031,7 @@ function SvgCanvas(c)
 			}, 1000);
 			break;
 		default: // rect
-			console.log("Unknown shape type: " + selected.tagName);
+			console.log("Unknown shape type: " + selected.nodeName, selected);
 			break;
 		}
 		if (changes) {
@@ -1067,7 +1082,7 @@ function SvgCanvas(c)
 		}
 		
 		if(showGrips) {
-			selectorManager.requestSelector(selectedElements[0]).showGrips(elem.tagName != "text");
+			selectorManager.requestSelector(selectedElements[0]).showGrips(elem.nodeName != "text");
 		}
 	};
 
@@ -1103,6 +1118,13 @@ function SvgCanvas(c)
 	//   and do nothing else
 	var mouseDown = function(evt)
 	{
+	  console.log('mousedown',evt)
+    
+    if(had_shape_event){
+      had_shape_event = false;
+      return console.log('killed mousedown',evt)
+    }
+    
 		var x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
 		var y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
 		
@@ -1112,6 +1134,7 @@ function SvgCanvas(c)
 		start_x = x;
 		start_y = y;
 		
+		
 		switch (current_mode) {
 			case "select":
 				started = true;
@@ -1119,7 +1142,7 @@ function SvgCanvas(c)
 				var t = evt.target;
 				// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
 				var nodeName = t.nodeName.toLowerCase();
-				if (nodeName != "div" && nodeName != "svg") {
+				if (nodeName != "div" && nodeName != "svg" && nodeName != "embed") {
 					// if this element is not yet selected, clear selection and select it
 					if (selectedElements.indexOf(t) == -1) {
 						canvas.clearSelection();
@@ -1679,6 +1702,7 @@ function SvgCanvas(c)
 	//   this is done in when we recalculate the selected dimensions()
 	var mouseUp = function(evt)
 	{
+	  console.log("mouseup",evt)
 		if (!started) return;
 
 		var x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
@@ -1708,12 +1732,12 @@ function SvgCanvas(c)
 						current_stroke_opacity = selected.getAttribute("stroke-opacity");
 						current_stroke_width = selected.getAttribute("stroke-width");
 						current_stroke_style = selected.getAttribute("stroke-dasharray");
-						if (selected.tagName == "text") {
+						if (selected.nodeName == "text") {
 							current_font_size = selected.getAttribute("font-size");
 							current_font_family = selected.getAttribute("font-family");
 						}
 
-						selectorManager.requestSelector(selected).showGrips(selected.tagName != "text");
+						selectorManager.requestSelector(selected).showGrips(selected.nodeName != "text");
 					}
 					// if it was being dragged/resized
 					if (x != start_x || y != start_y) {
@@ -1968,6 +1992,7 @@ function SvgCanvas(c)
 				break;
 		}
 		if (!keep && element != null) {
+		  console.log("remove",element)
 			element.parentNode.removeChild(element);
 			element = null;
 		} else if (element != null) {
@@ -2044,7 +2069,7 @@ function SvgCanvas(c)
 		try {
 			// convert string into XML document
 			var newDoc = Utils.text2xml(xmlString);
-
+  
 			// run it through our sanitizer to remove anything we do not support
 	        sanitizeSvg(newDoc.documentElement);
 
@@ -2171,7 +2196,7 @@ function SvgCanvas(c)
 		var i = selectedElements.length;
 		while(i--) {
 			var elem = selectedElements[i];
-			if (elem && elem.tagName != "polyline" && elem.tagName != "line") {
+			if (elem && elem.nodeName != "polyline" && elem.nodeName != "line") {
 				elems.push(elem);
 			}
 		}
@@ -2344,13 +2369,35 @@ function SvgCanvas(c)
 	this.getBBox = function(elem) {
 		var selected = elem || selectedElements[0];
 
-		if(elem.nodeName == 'text' && selected.textContent == '') {
+		if(selected.nodeName == 'text' && selected.textContent == '') {
 			selected.textContent = 'a'; // Some character needed for the selector to use.
-			var ret = selected.getBBox();
-			selected.textContent = '';
-		} else {
-			var ret = selected.getBBox();
 		}
+		
+		if(selected.getBBox){
+			var ret = selected.getBBox();
+		}else{
+			console.log(selected)
+			//yay for crappy implementations?
+			var ret = {
+				x: parseInt(selected._getX().baseVal.value),
+				y: parseInt(selected._getY().baseVal.value),
+				width: selected._getWidth().baseVal.value,
+				height: selected._getHeight().baseVal.value
+			}
+		}
+		
+		if(selected.nodeName == 'text' && selected.textContent == '') {
+			selected.textContent = '';
+		}
+		
+		if(!ret.x && !ret.y && selected.lastret){
+		  ret.x = selected.lastret.x
+		  ret.y = selected.lastret.y
+		}
+		
+		selected.lastret = ret;
+		
+		console.log("bbox",ret)
 
 		// get the bounding box from the DOM (which is in that element's coordinate system)
 		return ret;
@@ -2402,7 +2449,7 @@ function SvgCanvas(c)
 	this.getBold = function() {
 		// should only have one element selected
 		var selected = selectedElements[0];
-		if (selected != null && selected.tagName  == "text" &&
+		if (selected != null && selected.nodeName  == "text" &&
 			selectedElements[1] == null) 
 		{
 			return (selected.getAttribute("font-weight") == "bold");
@@ -2412,7 +2459,7 @@ function SvgCanvas(c)
 
 	this.setBold = function(b) {
 		var selected = selectedElements[0];
-		if (selected != null && selected.tagName  == "text" &&
+		if (selected != null && selected.nodeName  == "text" &&
 			selectedElements[1] == null) 
 		{
 			this.changeSelectedAttribute("font-weight", b ? "bold" : "normal");
@@ -2421,7 +2468,7 @@ function SvgCanvas(c)
 
 	this.getItalic = function() {
 		var selected = selectedElements[0];
-		if (selected != null && selected.tagName  == "text" &&
+		if (selected != null && selected.nodeName  == "text" &&
 			selectedElements[1] == null) 
 		{
 			return (selected.getAttribute("font-style") == "italic");
@@ -2431,7 +2478,7 @@ function SvgCanvas(c)
 
 	this.setItalic = function(i) {
 		var selected = selectedElements[0];
-		if (selected != null && selected.tagName  == "text" &&
+		if (selected != null && selected.nodeName  == "text" &&
 			selectedElements[1] == null) 
 		{
 			this.changeSelectedAttribute("font-style", i ? "italic" : "normal");
@@ -2468,7 +2515,7 @@ function SvgCanvas(c)
 
 	this.setRectRadius = function(val) {
 		var selected = selectedElements[0];
-		if (selected != null && selected.tagName == "rect") {
+		if (selected != null && selected.nodeName == "rect") {
 			var r = selected.getAttribute("rx");
 			if (r != val) {
 				selected.setAttribute("rx", val);
@@ -2526,10 +2573,11 @@ function SvgCanvas(c)
 			call("changed", elems);
 		}
 	};
-
+  
 	$(container).mouseup(mouseUp);
 	$(container).mousedown(mouseDown);
 	$(container).mousemove(mouseMove);
+	
 
 	this.deleteSelectedElements = function() {
 		var batchCmd = new BatchCommand("Delete Elements");
@@ -2570,7 +2618,7 @@ function SvgCanvas(c)
 			var oldNextSibling = t.nextSibling;
 			if (oldNextSibling == selectorManager.selectorParentGroup) oldNextSibling = null;
 			var firstChild = t.parentNode.firstChild;
-			if (firstChild.tagName == 'defs') {
+			if (firstChild.nodeName == 'defs') {
 				firstChild = firstChild.nextSibling;
 			}
 			t = t.parentNode.insertBefore(t, firstChild);
@@ -2618,7 +2666,7 @@ function SvgCanvas(c)
 		if (cur_elem == null) {
 			if(next) {
 				var elem = svgroot.firstChild;
-				if (elem.tagName == 'defs') {
+				if (elem.nodeName == 'defs') {
 					elem = elem.nextSibling;
 				}
 			} else {
