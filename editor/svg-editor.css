@@ -75,11 +75,15 @@ body {
 
 #svg_editor #logo {
 	position: absolute;
-	top: 1px;
-	left: 1px;
-	width: 30px;
-	height: 30px;
+	top: 4px;
+	left: 4px;
 	padding: 0px;
+}
+
+#svg_editor #logo a img {
+	border: 0;
+	width: 32px;
+	height: 32px;
 }
 
 #svg_editor #tools_top {
@@ -292,7 +296,7 @@ div.color_block {
 	display: none;
 }
 
-#svg_source_overlay {
+#svg_source_editor #svg_source_overlay {
 	position: absolute;
 	top: 0px;
 	right: 0px;
@@ -302,7 +306,7 @@ div.color_block {
 	opacity: 0.6;
 }
 
-#svg_source_container {
+#svg_source_editor #svg_source_container {
 	position: absolute;
 	top: 30px;
 	left: 30px;
@@ -313,7 +317,7 @@ div.color_block {
 	text-align: center;
 }
 
-#svg_source_textarea {
+#svg_source_editor #svg_source_textarea {
 	position: relative;
 	width: 95%;
 	top: 5px;
@@ -322,11 +326,11 @@ div.color_block {
 	font-size: 12px;
 }
 
-#tool_source_back {
+#svg_source_editor #tool_source_back {
 	text-align: left;
 	padding-left: 20px;
 }
 
-#tool_source_back button {
+#svg_source_editor #tool_source_back button {
 	margin: 10px;
 }
