@@ -2681,16 +2681,17 @@ function SvgCanvas(c)
 	};
 
 	// aligns selected elements (type is a char - see switch below for explanation)
-	this.alignSelectedElements = function(type) {
+	// relative_to can be "selected", "largest", "smallest", "page"
+	this.alignSelectedElements = function(type, relative_to) {
 		var bboxes = [], angles = [];
 		var minx = Number.MAX_VALUE, maxx = Number.MIN_VALUE, miny = Number.MAX_VALUE, maxy = Number.MIN_VALUE;
+		var curwidth = Number.MIN_VALUE, curheight = Number.MIN_VALUE;
 		var len = selectedElements.length;
 		if (!len) return;
 		for (var i = 0; i < len; ++i) {
 			if (selectedElements[i] == null) break;
 			var elem = selectedElements[i];
 			bboxes[i] = this.getBBox(elem);
-			
 			// TODO: could make the following code block as part of getBBox() and add a parameter 
 			//       to that function
 			// if element is rotated, get angle and rotate the 4 corners of the bbox and get
@@ -2703,11 +2704,11 @@ function SvgCanvas(c)
 					cy = bboxes[i].y + bboxes[i].height/2;
 				var pts = [ [bboxes[i].x - cx, bboxes[i].y - cy], 
 							[bboxes[i].x + bboxes[i].width - cx, bboxes[i].y - cy],
-							[bboxes[i].x + bboxes[i].width - cx, bboxes[i].y + bboxes[i].height - cy], 
+							[bboxes[i].x + bboxes[i].width - cx, bboxes[i].y + bboxes[i].height - cy],
 							[bboxes[i].x - cx, bboxes[i].y + bboxes[i].height - cy] ];
 				var j = 4;
 				while (j--) {
-					var x = pts[j][0], 
+					var x = pts[j][0],
 						y = pts[j][1],
 						r = Math.sqrt( x*x + y*y );
 					var theta = Math.atan2(y,x) + angles[i];
@@ -2728,12 +2729,45 @@ function SvgCanvas(c)
 			}
 			
 			// now bbox is axis-aligned and handles rotation
-			if (bboxes[i].x < minx) minx = bboxes[i].x;
-			if (bboxes[i].y < miny) miny = bboxes[i].y;
-			if (bboxes[i].x+bboxes[i].width > maxx) maxx = bboxes[i].x+bboxes[i].width;
-			if (bboxes[i].y+bboxes[i].height > maxy) maxy = bboxes[i].y+bboxes[i].height;
+			switch (relative_to) {
+				case 'smallest':
+					if ( (type == 'l' || type == 'c' || type == 'r') && (curwidth == Number.MIN_VALUE || curwidth > bboxes[i].width) ||
+					     (type == 't' || type == 'm' || type == 'b') && (curheight == Number.MIN_VALUE || curheight > bboxes[i].height) ) {
+						minx = bboxes[i].x;
+						miny = bboxes[i].y;
+						maxx = bboxes[i].x + bboxes[i].width;
+						maxy = bboxes[i].y + bboxes[i].height;
+						curwidth = bboxes[i].width;
+						curheight = bboxes[i].height;
+					}
+					break;
+				case 'largest':
+					if ( (type == 'l' || type == 'c' || type == 'r') && (curwidth == Number.MIN_VALUE || curwidth < bboxes[i].width) ||
+					     (type == 't' || type == 'm' || type == 'b') && (curheight == Number.MIN_VALUE || curheight < bboxes[i].height) ) {
+						minx = bboxes[i].x;
+						miny = bboxes[i].y;
+						maxx = bboxes[i].x + bboxes[i].width;
+						maxy = bboxes[i].y + bboxes[i].height;
+						curwidth = bboxes[i].width;
+						curheight = bboxes[i].height;
+					}
+					break;
+				default: // 'selected'
+					if (bboxes[i].x < minx) minx = bboxes[i].x;
+					if (bboxes[i].y < miny) miny = bboxes[i].y;
+					if (bboxes[i].x + bboxes[i].width > maxx) maxx = bboxes[i].x + bboxes[i].width;
+					if (bboxes[i].y + bboxes[i].height > maxy) maxy = bboxes[i].y + bboxes[i].height;
+					break;
+			}
 		} // loop for each element to find the bbox and adjust min/max
-		
+
+		if (relative_to == 'page') {
+			minx = 0;
+			miny = 0;
+			maxx = svgroot.getAttribute('width');
+			maxy = svgroot.getAttribute('height');
+		}
+
 		var dx = new Array(len);
 		var dy = new Array(len);
 		for (var i = 0; i < len; ++i) {

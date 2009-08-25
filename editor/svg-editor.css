@@ -141,6 +141,10 @@ div.color_block {
 	vertical-align: 12px;
 }
 
+#svg_editor #multiselected_panel .selected_tool {
+	vertical-align: 12px;
+}
+
 #svg_editor #text_panel .text_tool {
 	vertical-align: 12px;
 }
