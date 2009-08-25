@@ -1,2 +1,2 @@
-content        SVG-edit        content/
-overlay        chrome://browser/content/browser.xul    chrome://SVG-edit/content/SVG-edit-overlay.xul
+content	SVG-edit	content/
+overlay	chrome://browser/content/browser.xul	chrome://SVG-edit/content/SVG-edit-overlay.xul
