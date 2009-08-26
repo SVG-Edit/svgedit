@@ -226,7 +226,25 @@ function SvgCanvas(c)
 								"sw":null,
 								"w":null
 								};
-
+		this.rotateGripConnector = this.selectorGroup.appendChild( addSvgElementFromJson({
+							"element": "line",
+							"attr": {
+								"id": ("selectorGrip_rotate_connector_" + this.id),
+								"stroke": "blue",
+								"stroke-width": "1",
+							}
+						}) );
+		this.rotateGrip = this.selectorGroup.appendChild( addSvgElementFromJson({
+							"element": "circle",
+							"attr": {
+								"id": ("selectorGrip_rotate_" + this.id),
+								"fill": "lime",
+								"r": 4,
+								"stroke": "blue",
+								"stroke-width": 2
+							}
+						}) );
+		
 		// add the corner grips
 		for (dir in this.selectorGrips) {
 			this.selectorGrips[dir] = this.selectorGroup.appendChild( 
@@ -255,9 +273,12 @@ function SvgCanvas(c)
 
 		this.showGrips = function(show) {
 			// TODO: use suspendRedraw() here
+			var bShow = show ? "inline" : "none";
 			for (dir in this.selectorGrips) {
-				this.selectorGrips[dir].setAttribute("display", show ? "inline" : "none");
+				this.selectorGrips[dir].setAttribute("display", bShow);
 			}
+			this.rotateGrip.setAttribute("display", bShow);
+			this.rotateGripConnector.setAttribute("display", bShow);
 		};
 		
 		// Updates cursors for corner grips on rotation so arrows point the right way
@@ -315,6 +336,9 @@ function SvgCanvas(c)
 					x: coords[0], y: coords[1]
 				});
 			});
+			
+			assignAttributes(this.rotateGripConnector, { x1: l+w/2, y1: t-20, x2: l+w/2, y2: t });
+			assignAttributes(this.rotateGrip, { cx: l+w/2, cy: t-20 });
 			
 			// empty out the transform attribute
 			this.selectorGroup.setAttribute("transform", "");
