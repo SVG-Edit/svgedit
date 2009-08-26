@@ -349,6 +349,10 @@ function SvgCanvas(c)
 			
 			// align selector group with element coordinate axes
 			var transform = this.selectedElement.getAttribute("transform");
+			// TODO: fix Issue 129 here (and other places).  For some reason, WebKit sometimes
+			// returns matrix(a,b,c,d,e,f) instead of the things that we've set 
+			// (like rotate(a,cx,cy) or translate(tx,ty))
+			// I haven't been able to create a reduced test case yet though
 			if (transform && transform != "") {
 //				this.selectorGroup.setAttribute("transform", transform);
 				var rotind = transform.indexOf("rotate(");
@@ -593,8 +597,9 @@ function SvgCanvas(c)
 				// need to do this since the defs has no bbox and causes an exception
 				// to be thrown in Mozilla
 				try {
-					if (nodes[i].id != "selectorParentGroup" && canvas.getBBox(nodes[i])) {
-						curBBoxes.push({'elem':nodes[i], 'bbox':canvas.getBBox(nodes[i])});
+					var box = canvas.getBBox(nodes[i]);
+					if (nodes[i].id != "selectorParentGroup" && box) {
+						curBBoxes.push({'elem':nodes[i], 'bbox':box});
 					}
 				} catch(e) {
 					// do nothing, this element did not have a bbox
