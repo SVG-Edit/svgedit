@@ -269,6 +269,9 @@ function SvgCanvas(c)
 				current_mode = "resize";
 				current_resize_mode = this.id.substr(13,this.id.indexOf("_",13)-13);
 			});
+			$('#selectorGrip_rotate_'+id).mousedown( function() {
+				current_mode = "rotate";
+			});
 		}
 
 		this.showGrips = function(show) {
@@ -1369,6 +1372,9 @@ function SvgCanvas(c)
 				}
 
 				break;
+			case "rotate":
+				started = true;
+				break;
 			default:
 				console.log("Unknown mode in mousedown: " + current_mode);
 				break;
@@ -1659,6 +1665,8 @@ function SvgCanvas(c)
 						grip.setAttribute("cy", y);
 					}
 				}
+				break;
+			case "rotate":
 				break;
 			default:
 				break;
@@ -2025,6 +2033,11 @@ function SvgCanvas(c)
 					canvas.clearSelection();
 					canvas.addToSelection([evt.target]);
 				}
+				break;
+			case "rotate":
+				keep = true;
+				element = null;
+				current_mode = "select";
 				break;
 			default:
 				console.log("Unknown mode in mouseup: " + current_mode);
