@@ -220,11 +220,11 @@ function SvgCanvas(c)
 		this.selectorGrips = {	"nw":null,
 								"n":null,
 								"ne":null,
-								"w":null,
 								"e":null,
-								"sw":null,
+								"se":null,
 								"s":null,
-								"se":null
+								"sw":null,
+								"w":null
 								};
 
 		// add the corner grips
@@ -259,7 +259,25 @@ function SvgCanvas(c)
 				this.selectorGrips[dir].setAttribute("display", show ? "inline" : "none");
 			}
 		};
-
+		
+		// Updates cursors for corner grips on rotation so arrows point the right way
+		this.updateGripCursors = function(angle) {
+			var dir_arr = [];
+			var steps = Math.round(angle / 45);
+			for (dir in this.selectorGrips) {
+				dir_arr.push(dir);
+			}
+			while(steps > 0) {
+				dir_arr.push(dir_arr.shift());
+				steps--;
+			}
+			var i = 0;
+			for (dir in this.selectorGrips) {
+				this.selectorGrips[dir].setAttribute('style', ("cursor:" + dir_arr[i] + "-resize"));
+				i++;
+			};
+		};
+		
 		this.resize = function(cur_bbox) {
 			var selectedBox = this.selectorRect;
 			var selectedGrips = this.selectorGrips;
@@ -2376,7 +2394,7 @@ function SvgCanvas(c)
 		if(pointGripContainer) {
 			pointGripContainer.setAttribute("transform", rotate);
 		}
-
+		selectorManager.requestSelector(selectedElements[0]).updateGripCursors(val);
 	};
 
 	this.each = function(cb) {
