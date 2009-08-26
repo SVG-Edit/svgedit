@@ -15,7 +15,7 @@ function svg_edit_setup() {
 	var setSelectMode = function() {
 		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 		$('#tool_select').addClass('tool_button_current');
-		$('#styleoverrides').text('*{cursor:move;pointer-events:all} svg{cursor:default}');
+		$('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all} #svgcanvas svg{cursor:default}');
 		svgCanvas.setMode('select');
 	};
 
@@ -365,7 +365,7 @@ function svg_edit_setup() {
 	var clickSelect = function() {
 		if (toolButtonClick('#tool_select')) {
 			svgCanvas.setMode('select');
-			$('#styleoverrides').text('*{cursor:move;pointer-events:all} svg{cursor:default}');
+			$('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all}, #svgcanvas svg{cursor:default}');
 		}
 	};
 
