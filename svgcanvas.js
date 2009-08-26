@@ -569,6 +569,8 @@ function SvgCanvas(c)
 	var undoStackPointer = 0;
 	var undoStack = [];
 
+	var curBBoxes = [];
+
 	// This method sends back an array or a NodeList full of elements that
 	// intersect the multi-select rubber-band-box.
 	// 
@@ -581,29 +583,38 @@ function SvgCanvas(c)
 	var getIntersectionList = function(rect) {
 		if (rubberBox == null) { return null; }
 
+		if(!curBBoxes.length) {
+			// Cache all bboxes
+
+			var nodes = svgroot.childNodes;
+			var i = svgroot.childNodes.length;
+			
+			while (i--) {
+				// need to do this since the defs has no bbox and causes an exception
+				// to be thrown in Mozilla
+				try {
+					if (nodes[i].id != "selectorParentGroup" && canvas.getBBox(nodes[i])) {
+						curBBoxes.push({'elem':nodes[i], 'bbox':canvas.getBBox(nodes[i])});
+					}
+				} catch(e) {
+					// do nothing, this element did not have a bbox
+				}
+			}
+		}
+		
 		var resultList = null;
 		try {
 			resultList = svgroot.getIntersectionList(rect, null);
 		} catch(e) { }
 
-		if (resultList == null || typeof(resultList.item) != "function") 
-		{
+		if (resultList == null || typeof(resultList.item) != "function") {
 			resultList = [];
 
 			var rubberBBox = rubberBox.getBBox();
-			var nodes = svgroot.childNodes;
-			var i = svgroot.childNodes.length;
+			var i = curBBoxes.length;
 			while (i--) {
-				// need to do this since the defs has no bbox and causes an exception
-				// to be thrown in Mozilla
-				try {
-					if (nodes[i].id != "selectorParentGroup" &&
-						Utils.rectsIntersect(rubberBBox, canvas.getBBox(nodes[i]))) 
-					{
-						resultList.push(nodes[i]);
-					}
-				} catch(e) {
-					// do nothing, this element did not have a bbox
+				if (Utils.rectsIntersect(rubberBBox, curBBoxes[i].bbox))  {
+					resultList.push(curBBoxes[i].elem);
 				}
 			}
 		}
@@ -1765,6 +1776,7 @@ function SvgCanvas(c)
 			case "multiselect":
 				if (rubberBox != null) {
 					rubberBox.setAttribute("display", "none");
+					curBBoxes = [];
 				}
 				current_mode = "select";
 			case "select":
