@@ -273,7 +273,6 @@ function SvgCanvas(c)
 				offset += 2;
 			}
 			var bbox = cur_bbox || canvas.getBBox(this.selectedElement);
-//			console.log({'cur_bbox':cur_bbox, 'bbox':bbox });
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
 			var sr_handle = svgroot.suspendRedraw(100);
 			assignAttributes(selectedBox, {
@@ -798,8 +797,12 @@ function SvgCanvas(c)
 
 		// after this point, we have some change to this element
 
-		var remapx = null;// function(x) {return parseInt(((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x);}
-		var remapy = null;//function(y) {return parseInt(((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y);}
+		var remap = function(x,y) {
+				return { 
+							'x':parseInt(((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x),
+							'y':parseInt(((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y)
+							};					
+			};
 		var scalew = function(w) {return parseInt(w*selectedBBox.width/box.width);}
 		var scaleh = function(h) {return parseInt(h*selectedBBox.height/box.height);}
 
@@ -813,30 +816,44 @@ function SvgCanvas(c)
 		if (angle) {
 			var xform = selected.getAttribute('transform');
 			var matched_numbers = xform.substr(xform.indexOf('rotate(')).match(/([\d\.\-\+]+)/g);
+			// this is our old center upon which we have rotated the shape
 			var tr_x = parseFloat(matched_numbers[1]), 
 				tr_y = parseFloat(matched_numbers[2]);
-			var cx = (selectedBBox.x + selectedBBox.width/2),
-				cy = (selectedBBox.y + selectedBBox.height/2);
+			var cx = null, cy = null;
 				
-			console.log({'tr_x':tr_x, 'try':tr_y, 'cx':cx, 'cy':cy});
-				
-			// remap with rotation
-			remapx = function(x) {
-				var newx = parseInt(((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x);
-				// map it back to old rotational axes
-				
-//				newx += tr_x;
-//				newx -= cx;
-				
-				return newx;
+			// if this was a resize, find the new cx,cy
+			if (xform.indexOf("scale(") != -1) {
+				var alpha = angle * Math.PI / 180.0;
+			
+				// rotate new opposite corners of bbox by angle at old center
+				var dx = selectedBBox.x - tr_x,
+					dy = selectedBBox.y - tr_y,
+					r = Math.sqrt(dx*dx + dy*dy),
+					theta = Math.atan2(dy,dx) + alpha;
+				var left = r * Math.cos(theta) + tr_x,
+					top = r * Math.sin(theta) + tr_y;
+			
+				dx += selectedBBox.width;
+				dy += selectedBBox.height;
+				r = Math.sqrt(dx*dx + dy*dy);
+				theta = Math.atan2(dy,dx) + alpha;			
+				var right = r * Math.cos(theta) + tr_x,
+					bottom = r * Math.sin(theta) + tr_y;
+			
+				// now find mid-point of line between top-left and bottom-right to find new center
+				cx = parseInt(left + (right-left)/2);
+				cy = parseInt(top + (bottom-top)/2);
+			
+				// now that we know the center and the axis-aligned width/height, calculate the x,y
+				selectedBBox.x = parseInt(cx - selectedBBox.width/2),
+				selectedBBox.y = parseInt(cy - selectedBBox.height/2);
 			}
-			remapy = function(y) {
-				var newy = parseInt(((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y);
-				
-//				newy += tr_y;
-//				newy -= cy;
-				
-				return newy;
+			// if it was not a resize, then it was a translation only
+			else {
+				var tx = selectedBBox.x - box.x,
+					ty = selectedBBox.y - box.y;
+				cx = tr_x + tx;
+				cy = tr_y + ty;
 			}
 			
 			var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
@@ -846,10 +863,6 @@ function SvgCanvas(c)
 			}
 		}
 		else {
-			// standard remap functions
-			remapx = function(x) {return parseInt(((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x);}
-			remapy = function(y) {return parseInt(((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y);}
-			
 			selected.setAttribute("transform", "");
 			selected.removeAttribute("transform");
 			if(pointGripContainer) {
@@ -873,7 +886,8 @@ function SvgCanvas(c)
 			var newpoints = "";
 			for (var i = 0; i < len; ++i) {
 				var pt = list.getItem(i);
-				newpoints += remapx(pt.x) + "," + remapy(pt.y) + " ";
+				pt = remap(pt.x,pt.y);
+				newpoints += pt.x + "," + pt.y + " ";
 			}
 			selected.setAttributeNS(null, "points", newpoints);
 			break;
@@ -883,7 +897,8 @@ function SvgCanvas(c)
 			changes["d"] = selected.getAttribute("d");
 			var M = selected.pathSegList.getItem(0);
 			var curx = M.x, cury = M.y;
-			var newd = "M" + remapx(curx) + "," + remapy(cury);
+			var pt = remap(curx,cury);
+			var newd = "M" + pt.x + "," + pt.y;
 			var segList = selected.pathSegList;
 			var len = segList.numberOfItems;
 			// for all path segments in the path, we first turn them into relative path segments,
@@ -964,20 +979,23 @@ function SvgCanvas(c)
 			changes["y1"] = selected.getAttribute("y1");
 			changes["x2"] = selected.getAttribute("x2");
 			changes["y2"] = selected.getAttribute("y2");
+			var pt1 = remap(changes["x1"],changes["y1"]),
+				pt2 = remap(changes["x2"],changes["y2"]);
 			assignAttributes(selected, {
-				'x1': remapx(changes["x1"]),
-				'y1': remapy(changes["y1"]),
-				'x2': remapx(changes["x2"]),
-				'y2': remapy(changes["y2"]),
+				'x1': pt1.x,
+				'y1': pt1.y,
+				'x2': pt2.x,
+				'y2': pt2.y,
 			}, 1000);
 			break;
 		case "circle":
 			changes["cx"] = selected.getAttribute("cx");
 			changes["cy"] = selected.getAttribute("cy");
 			changes["r"] = selected.getAttribute("r");
+			var pt = remap(changes["cx"], changes["cy"]);
 			assignAttributes(selected, {
-				'cx': remapx(changes["cx"]),
-				'cy': remapy(changes["cy"]),
+				'cx': pt.x,
+				'cy': pt.y,
 	
 				// take the minimum of the new selected box's dimensions for the new circle radius
 				'r': Math.min(selectedBBox.width/2,selectedBBox.height/2)
@@ -988,9 +1006,10 @@ function SvgCanvas(c)
 			changes["cy"] = selected.getAttribute("cy");
 			changes["rx"] = selected.getAttribute("rx");
 			changes["ry"] = selected.getAttribute("ry");
+			var pt = remap(changes["cx"], changes["cy"]);
 			assignAttributes(selected, {
-				'cx': remapx(changes["cx"]),
-				'cy': remapy(changes["cy"]),
+				'cx': pt.x,
+				'cy': pt.y,
 				'rx': scalew(changes["rx"]),
 				'ry': scaleh(changes["ry"])
 			}, 1000);
@@ -998,9 +1017,10 @@ function SvgCanvas(c)
 		case "text":
 			changes["x"] = selected.getAttribute("x");
 			changes["y"] = selected.getAttribute("y");
+			var pt = remap(changes["x"], changes["y"]);
 			assignAttributes(selected, {
-				'x': remapx(changes["x"]),
-				'y': remapy(changes["y"])
+				'x': pt.x,
+				'y': pt.y
 			}, 1000);
 			break;
 		case "rect":
@@ -1008,9 +1028,10 @@ function SvgCanvas(c)
 			changes["y"] = selected.getAttribute("y");
 			changes["width"] = selected.getAttribute("width");
 			changes["height"] = selected.getAttribute("height");
+			var pt = remap(changes["x"], changes["y"]);
 			assignAttributes(selected, {
-				'x': remapx(changes["x"]),
-				'y': remapy(changes["y"]),
+				'x': pt.x,
+				'y': pt.y,
 				'width': scalew(changes["width"]),
 				'height': scaleh(changes["height"])
 			}, 1000);
@@ -1348,8 +1369,8 @@ function SvgCanvas(c)
 							if (angle) {
 								var xform = selected.getAttribute('transform');
 								var matched_numbers = xform.substr(xform.indexOf('rotate(')).match(/([\d\.\-\+]+)/g);							
-								var cx = matched_numbers[1], //box.x+box.width/2, 
-									cy = matched_numbers[2]; //box.y+box.height/2;
+								var cx = matched_numbers[1],
+									cy = matched_numbers[2];
 								ts += [" rotate(", angle, " ", cx, ",", cy, ")"].join('');
 
  								var r = Math.sqrt( dx*dx + dy*dy );
@@ -1451,8 +1472,8 @@ function SvgCanvas(c)
 				if (angle) {
 					var xform = selected.getAttribute('transform');
 					var matched_numbers = xform.substr(xform.indexOf('rotate(')).match(/([\d\.\-\+]+)/g);
-					var cx = matched_numbers[1], //left + width/2;//selectedBBox.x + selectedBBox.width/2,
-						cy = matched_numbers[2]; //top + height/2;//selectedBBox.y + selectedBBox.height/2;
+					var cx = matched_numbers[1],
+						cy = matched_numbers[2];
 					ts = ["rotate(", angle, " ", cx, ",", cy, ")", ts].join('')
 				}
 				selected.setAttribute("transform", ts);
@@ -1463,8 +1484,8 @@ function SvgCanvas(c)
 				if (ty) {
 					selectedBBox.y = top+dy;
 				}
-				selectedBBox.width = width*sx;
-				selectedBBox.height = height*sy;
+				selectedBBox.width = parseInt(width*sx);
+				selectedBBox.height = parseInt(height*sy);
 				// normalize selectedBBox
 				if (selectedBBox.width < 0) {
 					selectedBBox.x += selectedBBox.width;
@@ -2709,8 +2730,8 @@ function SvgCanvas(c)
 						y = pts[j][1],
 						r = Math.sqrt( x*x + y*y );
 					var theta = Math.atan2(y,x) + angles[i];
-					x = r * Math.cos(theta) + cx;
-					y = r * Math.sin(theta) + cy;
+					x = parseInt(r * Math.cos(theta) + cx);
+					y = parseInt(r * Math.sin(theta) + cy);
 
 					// now set the bbox for the shape after it's been rotated
 					if (x < rminx) rminx = x;
