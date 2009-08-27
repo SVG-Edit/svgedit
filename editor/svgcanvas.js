@@ -1683,14 +1683,8 @@ function SvgCanvas(c)
 				}
 				break;
 			case "rotate":
-				// TODO: figure out cx,cy of rotated handle in absolute coords
-				// TODO: determine new angle that will minimize the distance from x,y to cx,cy
-				// TODO: rotate the shape by that angle, setRotationAngle()
-			
-				var angle = canvas.getRotationAngle(current_poly) * Math.PI / 180.0;
-				if (angle) {
-				}
-			
+				var box = canvas.getBBox(selected),cx = box.x + box.width/2, cy = box.y + box.height/2;
+				canvas.setRotationAngle(((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360);
 				break;
 			default:
 				break;
