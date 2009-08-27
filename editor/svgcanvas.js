@@ -277,11 +277,13 @@ function SvgCanvas(c)
 		this.showGrips = function(show) {
 			// TODO: use suspendRedraw() here
 			var bShow = show ? "inline" : "none";
+			this.rotateGrip.setAttribute("display", bShow);
+			this.rotateGripConnector.setAttribute("display", bShow);
+			var elem = this.selectedElement;
+			if(elem && elem.tagName == "text") bShow = "none";
 			for (dir in this.selectorGrips) {
 				this.selectorGrips[dir].setAttribute("display", bShow);
 			}
-			this.rotateGrip.setAttribute("display", bShow);
-			this.rotateGripConnector.setAttribute("display", bShow);
 		};
 		
 		// Updates cursors for corner grips on rotation so arrows point the right way
@@ -1155,7 +1157,7 @@ function SvgCanvas(c)
 		}
 		
 		if(showGrips) {
-			selectorManager.requestSelector(selectedElements[0]).showGrips(elem.tagName != "text");
+			selectorManager.requestSelector(selectedElements[0]).showGrips(true);
 		}
 	};
 
@@ -1805,7 +1807,7 @@ function SvgCanvas(c)
 							current_font_family = selected.getAttribute("font-family");
 						}
 
-						selectorManager.requestSelector(selected).showGrips(selected.tagName != "text");
+						selectorManager.requestSelector(selected).showGrips(true);
 					}
 					// if it was being dragged/resized
 					if (x != start_x || y != start_y) {
