@@ -2273,11 +2273,10 @@ function SvgCanvas(c)
 			// find out if there is a duplicate gradient already in the defs
 			var duplicate_grad = findDuplicateGradient(grad);
 			var defs = findDefs();
-	
+
 			// no duplicate found, so import gradient into defs
 			if (!duplicate_grad) {
 				grad = defs.appendChild( svgdoc.importNode(grad, true) );
-	
 				// get next id and set it on the grad
 				grad.id = getNextId();
 			}
@@ -2568,6 +2567,17 @@ function SvgCanvas(c)
 				if (attr == "#text") elem.textContent = val;
 				else elem.setAttribute(attr, val);
 				selectedBBoxes[i] = this.getBBox(elem);
+				if(elem.nodeName == 'text' && (val+'').indexOf('url') == 0) {
+					// Hack for Firefox new-gradient-on-text-bug
+					// Seems like the only way a new gradient is accepted is by creating a new elem
+					elem.setAttribute(attr, val);
+					var clone = elem.cloneNode(true)
+					elem.parentNode.insertBefore(clone, elem);
+					elem.parentNode.removeChild(elem);
+					elem = clone;
+					canvas.clearSelection();
+					canvas.addToSelection([elem],true);
+				}
 				// Timeout needed for Opera & Firefox
 				setTimeout(function() {
 					selectorManager.requestSelector(elem).resize(selectedBBoxes[i]);
