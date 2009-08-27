@@ -288,6 +288,7 @@ function SvgCanvas(c)
 		this.updateGripCursors = function(angle) {
 			var dir_arr = [];
 			var steps = Math.round(angle / 45);
+			if(steps < 0) steps += 8;
 			for (dir in this.selectorGrips) {
 				dir_arr.push(dir);
 			}
