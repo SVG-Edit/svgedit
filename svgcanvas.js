@@ -314,7 +314,8 @@ function SvgCanvas(c)
 			if (selected.tagName == "text") {
 				offset += 2;
 			}
-			var bbox = cur_bbox || canvas.getBBox(this.selectedElement);
+			var oldbox = canvas.getBBox(this.selectedElement);
+			var bbox = cur_bbox || oldbox;
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
 			var sr_handle = svgroot.suspendRedraw(100);
 			assignAttributes(selectedBox, {
@@ -348,18 +349,13 @@ function SvgCanvas(c)
 			this.selectorGroup.removeAttribute("transform");
 			
 			// align selector group with element coordinate axes
-			var transform = this.selectedElement.getAttribute("transform");
-			// TODO: fix Issue 129 here (and other places).  For some reason, WebKit sometimes
-			// returns matrix(a,b,c,d,e,f) instead of the things that we've set 
-			// (like rotate(a,cx,cy) or translate(tx,ty))
-			// I haven't been able to create a reduced test case yet though
-			if (transform && transform != "") {
-//				this.selectorGroup.setAttribute("transform", transform);
-				var rotind = transform.indexOf("rotate(");
-				if (rotind != -1) {
-					var rotstr = transform.substr(rotind, transform.indexOf(')',rotind)+1);
-					this.selectorGroup.setAttribute("transform", rotstr);
-				}
+			var elem = this.selectedElement;
+			var transform = elem.getAttribute("transform");
+			var angle = canvas.getRotationAngle(elem);
+			if (angle) {
+				var cx = oldbox.x + oldbox.width/2, //l + w/2, 
+					cy = oldbox.y + oldbox.height/2; //t + h/2;
+				this.selectorGroup.setAttribute("transform", "rotate("+angle+" " + cx + "," + cy + ")");
 			}
 			svgroot.unsuspendRedraw(sr_handle);
 		};
@@ -875,15 +871,24 @@ function SvgCanvas(c)
 		var angle = canvas.getRotationAngle(selected);
 		var pointGripContainer = document.getElementById("polypointgrip_container");
 		if (angle) {
-			var xform = selected.getAttribute('transform');
-			var matched_numbers = xform.substr(xform.indexOf('rotate(')).match(/([\d\.\-\+]+)/g);
 			// this is our old center upon which we have rotated the shape
-			var tr_x = parseFloat(matched_numbers[1]), 
-				tr_y = parseFloat(matched_numbers[2]);
+			var tr_x = box.x + box.width/2, 
+				tr_y = box.y + box.height/2;
 			var cx = null, cy = null;
-				
+			
+			var bFoundScale = false;
+			var tlist = selected.transform.baseVal;
+			var t = tlist.numberOfItems;
+			while (t--) {
+				var xform = tlist.getItem(t);
+				if (xform.type == 3) {
+					bFoundScale = true;
+					break;
+				}
+			}
+			
 			// if this was a resize, find the new cx,cy
-			if (xform.indexOf("scale(") != -1) {
+			if (bFoundScale) {
 				var alpha = angle * Math.PI / 180.0;
 			
 				// rotate new opposite corners of bbox by angle at old center
@@ -1431,10 +1436,8 @@ function SvgCanvas(c)
 							selectedBBoxes[i].y = box.y + dy;
 							var angle = canvas.getRotationAngle(selected);
 							if (angle) {
-								var xform = selected.getAttribute('transform');
-								var matched_numbers = xform.substr(xform.indexOf('rotate(')).match(/([\d\.\-\+]+)/g);							
-								var cx = matched_numbers[1],
-									cy = matched_numbers[2];
+								var cx = box.x + box.width/2,
+									cy = box.y + box.height/2;
 								ts += [" rotate(", angle, " ", cx, ",", cy, ")"].join('');
 
  								var r = Math.sqrt( dx*dx + dy*dy );
@@ -1534,10 +1537,8 @@ function SvgCanvas(c)
 				var ts = [" translate(", (left+tx), ",", (top+ty), ") scale(", sx, ",", sy,
 							") translate(", -(left+tx), ",", -(top+ty), ")"].join('');
 				if (angle) {
-					var xform = selected.getAttribute('transform');
-					var matched_numbers = xform.substr(xform.indexOf('rotate(')).match(/([\d\.\-\+]+)/g);
-					var cx = matched_numbers[1],
-						cy = matched_numbers[2];
+					var cx = left+width/2,
+						cy = top+height/2;
 					ts = ["rotate(", angle, " ", cx, ",", cy, ")", ts].join('')
 				}
 				selected.setAttribute("transform", ts);
@@ -1642,9 +1643,9 @@ function SvgCanvas(c)
 					var angle = canvas.getRotationAngle(current_poly) * Math.PI / 180.0;
 					if (angle) {
 						// extract the shape's (potentially) old 'center' from the transform attribute
-						var matched_numbers = current_poly.getAttribute('transform').match(/([\d\.\-\+]+)/g);
-						var cx = parseFloat(matched_numbers[1]), 
-							cy = parseFloat(matched_numbers[2]);
+						var box = canvas.getBBox(current_poly);
+						var cx = box.x + box.width/2, 
+							cy = box.y + box.height/2;
 						var dx = x - cx, dy = y - cy;
  						var r = Math.sqrt( dx*dx + dy*dy );
 						var theta = Math.atan2(dy,dx) - angle;						
