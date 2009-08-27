@@ -13,7 +13,7 @@ $(function() {
 									fstream = file.open(file, "r");
 									var output = "";
 									while (!fstream.eof) {
-										output += fstream.readLine("UTF-16");
+										output += fstream.readLine();
 									}
 									
 									svgCanvas.setSvgString(output); /* 'this' is bound to the filestream object here */
