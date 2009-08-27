@@ -1643,7 +1643,7 @@ function SvgCanvas(c)
 					var angle = canvas.getRotationAngle(current_poly) * Math.PI / 180.0;
 					if (angle) {
 						// extract the shape's (potentially) old 'center' from the transform attribute
-						var box = canvas.getBBox(current_poly);
+						var box = selectedBBoxes[0];
 						var cx = box.x + box.width/2, 
 							cy = box.y + box.height/2;
 						var dx = x - cx, dy = y - cy;
@@ -1851,6 +1851,8 @@ function SvgCanvas(c)
 									current_poly_pts.push(cury);
 								} // for each segment
 								canvas.clearSelection();
+								// save the poly's bbox
+								selectedBBoxes[0] = canvas.getBBox(current_poly);
 								addAllPointGripsToPoly();
 							} // going into polyedit mode
 							else {
