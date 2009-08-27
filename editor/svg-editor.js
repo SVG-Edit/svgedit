@@ -158,6 +158,13 @@ function svg_edit_setup() {
 	// updates the context panel tools based on the selected element
 	var updateContextPanel = function() {
 		var elem = selectedElement;
+		
+		// No need to update anything else in rotate mode
+		if (svgCanvas.getMode() == 'rotate' && elem != null) {
+			$('#angle').val(svgCanvas.getRotationAngle(elem));
+			return;
+		}
+		
 		$('#selected_panel, #multiselected_panel, #rect_panel, #circle_panel,\
 			#ellipse_panel, #line_panel, #text_panel').hide();
 		if (elem != null) {
