@@ -1525,17 +1525,18 @@ function SvgCanvas(c)
 				var ts = null;
 				var tx = 0, ty = 0;
 				var sy = (height+dy)/height, sx = (width+dx)/width;
+				// if we are dragging on the north side, then adjust the scale factor and ty
 				if(current_resize_mode.indexOf("n") != -1) {
 					sy = (height-dy)/height;
 					ty = height;
 				}
+				
+				// if we dragging on the east side, then adjust the scale factor and tx
 				if(current_resize_mode.indexOf("w") != -1) {
 					sx = (width-dx)/width;
 					tx = width;
 				}
 				
-				var selectedBBox = selectedBBoxes[0];				
-
 				// find the rotation transform and prepend it
 				var ts = [" translate(", (left+tx), ",", (top+ty), ") scale(", sx, ",", sy,
 							") translate(", -(left+tx), ",", -(top+ty), ")"].join('');
@@ -1545,24 +1546,48 @@ function SvgCanvas(c)
 					ts = ["rotate(", angle, " ", cx, ",", cy, ")", ts].join('')
 				}
 				selected.setAttribute("transform", ts);
+
+				var selectedBBox = selectedBBoxes[0];				
+
+				// reset selected bbox top-left position
+				selectedBBox.x = left;
+				selectedBBox.y = top;
 				
+				// if this is a translate, adjust the box position
 				if (tx) {
-					selectedBBox.x = left+dx;
+					selectedBBox.x += dx;
 				}
 				if (ty) {
-					selectedBBox.y = top+dy;
+					selectedBBox.y += dy;
 				}
+				
+				// update box width/height
 				selectedBBox.width = parseInt(width*sx);
 				selectedBBox.height = parseInt(height*sy);
+
 				// normalize selectedBBox
 				if (selectedBBox.width < 0) {
-					selectedBBox.x += selectedBBox.width;
-					selectedBBox.width *= -1;//-selectedBBox.width;
+					selectedBBox.width *= -1;
+					// if we are dragging on the east side and scaled negatively
+					if(current_resize_mode.indexOf("e") != -1 && sx < 0) {
+						selectedBBox.x = box.x - selectedBBox.width;
+					}
+					else {
+						selectedBBox.x -= selectedBBox.width;
+					}
 				}
 				if (selectedBBox.height < 0) {
-					selectedBBox.y += selectedBBox.height;
-					selectedBBox.height *= -1;//-selectedBBox.height;
+					selectedBBox.height *= -1;
+					// if we are dragging on the south side and scaled negatively
+					if(current_resize_mode.indexOf("s") != -1 && sy < 0) {
+						selectedBBox.y = box.y - selectedBBox.height;
+					}
+					else {
+						selectedBBox.y -= selectedBBox.height;
+					}
 				}
+				
+				
 				selectorManager.requestSelector(selected).resize(selectedBBox);
 				break;
 			case "text":
@@ -1636,16 +1661,9 @@ function SvgCanvas(c)
 					
 					// if the image is rotated, then we must modify the x,y mouse coordinates
 					// and rotate them into the shape's rotated coordinate system
-					
-					// FIXME: the problem is that the element's rotation is controlled by 
-					// two things: an angle and a rotation point (the center of the element).
-					// If the element's bbox is changed, its center changes.  In this case,
-					// we keep the rotation center where it is (parse it out from the transform
-					// attribute), and move the poly point appropriately.  This looks good while
-					// dragging, but looks funny when you subsequently rotate the element again.
 					var angle = canvas.getRotationAngle(current_poly) * Math.PI / 180.0;
 					if (angle) {
-						// extract the shape's (potentially) old 'center' from the transform attribute
+						// calculate the shape's old center that was used for rotation
 						var box = selectedBBoxes[0];
 						var cx = box.x + box.width/2, 
 							cy = box.y + box.height/2;
