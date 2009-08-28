@@ -590,22 +590,7 @@ function SvgCanvas(c)
 
 		if(!curBBoxes.length) {
 			// Cache all bboxes
-
-			var nodes = svgroot.childNodes;
-			var i = svgroot.childNodes.length;
-			
-			while (i--) {
-				// need to do this since the defs has no bbox and causes an exception
-				// to be thrown in Mozilla
-				try {
-					var box = canvas.getBBox(nodes[i]);
-					if (nodes[i].id != "selectorParentGroup" && box) {
-						curBBoxes.push({'elem':nodes[i], 'bbox':box});
-					}
-				} catch(e) {
-					// do nothing, this element did not have a bbox
-				}
-			}
+			curBBoxes = canvas.getVisibleElements(true);
 		}
 		
 		var resultList = null;
@@ -1142,7 +1127,7 @@ function SvgCanvas(c)
 			}
 			++j;
 		}
-
+		
 		// now add each element consecutively
 		var i = elemsToAdd.length;
 		while (i--) {
@@ -2724,30 +2709,44 @@ function SvgCanvas(c)
 		}
 	};
 
+	this.getVisibleElements = function(includeBBox) {
+		var nodes = svgroot.childNodes;
+		var i = nodes.length;
+		var contentElems = [];
+		
+		while (i--) {
+			var elem = nodes[i];
+			try {
+				var box = canvas.getBBox(elem);
+				if (elem.id != "selectorParentGroup" && box) {
+					var item = includeBBox?{'elem':elem, 'bbox':box}:elem;
+					contentElems.push(item);
+				}
+			} catch(e) {}
+		}
+		return contentElems;
+	}
+	
 	this.cycleElement = function(next) {
 		var cur_elem = selectedElements[0];
 		var elem = false;
+		var all_elems = this.getVisibleElements();
 		if (cur_elem == null) {
-			if(next) {
-				var elem = svgroot.firstChild;
-				if (elem.tagName == 'defs') {
-					elem = elem.nextSibling;
-				}
-			} else {
-				var elem = svgroot.lastChild;
-				var id = elem.getAttribute('id');
-				if(!id || id.indexOf('svg_') != 0){
-					elem = elem.previousSibling;
-				}
-			}
+			var num = next?all_elems.length-1:0;
+			elem = all_elems[num];
 		} else {
-			var type = next?'next':'previous';
-			var elem = cur_elem[type + 'Sibling'];
-			if(!elem) return;
-			
-			var id = elem.getAttribute('id');
-			if(!id || id.indexOf('svg_') != 0) {
-				return;
+			var i = all_elems.length;
+			while(i--) {
+				if(all_elems[i] == cur_elem) {
+					var num = next?i-1:i+1;
+					if(num >= all_elems.length || num < 0) {
+						elem = cur_elem;
+						break;
+					} else {
+						elem = all_elems[num];
+						break;
+					}
+				} 
 			}
 		}		
 		canvas.clearSelection();
