@@ -1878,7 +1878,7 @@ function SvgCanvas(c)
 				break;
 			case "line":
 				keep = (element.getAttribute('x1') != element.getAttribute('x2') ||
-				        element.getAttribute('y1') == element.getAttribute('y2'));
+				        element.getAttribute('y1') != element.getAttribute('y2'));
 				break;
 			case "square":
 			case "rect":
