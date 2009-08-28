@@ -22,19 +22,19 @@ if(!window.console) {
 // TODO: add <a> elements to this
 // TODO: add xmlns:xlink attr to <svg> element
 var svgWhiteList = {
-	"circle": ["cx", "cy", "fill", "fill-opacity", "id", "r", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
+	"circle": ["cx", "cy", "fill", "fill-opacity", "opacity", "id", "r", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
 	"defs": [],
-	"ellipse": ["cx", "cy", "fill", "fill-opacity", "id", "rx", "ry", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
-	"line": ["fill", "fill-opacity", "id", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-opacity", "stroke-width",  "transform", "x1", "x2", "y1", "y2"],
+	"ellipse": ["cx", "cy", "fill", "fill-opacity", "opacity", "id", "rx", "ry", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
+	"line": ["fill", "fill-opacity", "opacity", "id", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-opacity", "stroke-width",  "transform", "x1", "x2", "y1", "y2"],
 	"linearGradient": ["id", "gradientTransform", "gradientUnits", "spreadMethod", "x1", "x2", "y1", "y2"],
-	"path": ["d", "fill", "fill-opacity", "id", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
-	"polygon": ["id", "fill", "fill-opacity", "points", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
+	"path": ["d", "fill", "fill-opacity", "opacity", "id", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
+	"polygon": ["id", "fill", "fill-opacity", "opacity", "points", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
 	"polyline": ["id", "points", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
 	"radialGradient": ["id", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "r", "spreadMethod"],
-	"rect": ["fill", "fill-opacity", "height", "id", "rx", "ry", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "width", "x", "y"],
+	"rect": ["fill", "fill-opacity", "opacity", "height", "id", "rx", "ry", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "width", "x", "y"],
 	"stop": ["id", "offset", "stop-color", "stop-opacity"],
 	"svg": ["id", "height", "transform", "width", "xmlns"],
-	"text": ["fill", "fill-opacity", "font-family", "font-size", "font-style", "font-weight", "id", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "x", "y"],
+	"text": ["fill", "fill-opacity", "opacity", "font-family", "font-size", "font-style", "font-weight", "id", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "x", "y"],
 };
 
 // These command objects are used for the Undo/Redo stack
