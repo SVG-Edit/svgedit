@@ -2600,7 +2600,7 @@ function SvgCanvas(c)
 				else elem.setAttribute(attr, val);
 				selectedBBoxes[i] = this.getBBox(elem);
 				if(elem.nodeName == 'text') {
-					if((val+'').indexOf('url') == 0 || $.inArray(attr, ['font-size','x','y']) != -1) {
+					if((val+'').indexOf('url') == 0 || $.inArray(attr, ['font-size','font-family','x','y']) != -1) {
 						elem = canvas.quickClone(elem);
 					}
 				}
