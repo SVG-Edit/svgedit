@@ -532,6 +532,8 @@ function SvgCanvas(c)
 	svgroot.setAttribute("id", "svgroot");
 	svgroot.setAttribute("xmlns", svgns);
 	container.appendChild(svgroot);
+	var comment = svgdoc.createComment(" created with SVG-edit - http://svg-edit.googlecode.com/ ");
+	svgroot.appendChild(comment);
 
 	var d_attr = null;
 	var started = false;
@@ -2276,7 +2278,8 @@ function SvgCanvas(c)
 			defs = defs[0];
 		}
 		else {
-			defs = svgroot.insertBefore( svgdoc.createElementNS(svgns, "defs" ), svgroot.firstChild);
+			// first child is a comment, so call nextSibling
+			defs = svgroot.insertBefore( svgdoc.createElementNS(svgns, "defs" ), svgroot.firstChild.nextSibling);
 		}
 		return defs;
 	};
@@ -2677,7 +2680,8 @@ function SvgCanvas(c)
 			var oldParent = t.parentNode;
 			var oldNextSibling = t.nextSibling;
 			if (oldNextSibling == selectorManager.selectorParentGroup) oldNextSibling = null;
-			var firstChild = t.parentNode.firstChild;
+			// first child is a comment, so call nextSibling
+			var firstChild = t.parentNode.firstChild.nextSibling;
 			if (firstChild.tagName == 'defs') {
 				firstChild = firstChild.nextSibling;
 			}
