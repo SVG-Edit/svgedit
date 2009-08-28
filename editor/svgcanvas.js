@@ -1365,7 +1365,8 @@ function SvgCanvas(c)
 						// fix for bug where text elements were always 50% opacity
 						"opacity": current_opacity,
 						"font-size": current_font_size,
-						"font-family": current_font_family
+						"font-family": current_font_family,
+						"text-anchor": "middle"
 					}
 				});
 				newText.textContent = "text";
@@ -2598,8 +2599,10 @@ function SvgCanvas(c)
 				} 
 				else elem.setAttribute(attr, val);
 				selectedBBoxes[i] = this.getBBox(elem);
-				if(elem.nodeName == 'text' && (val+'').indexOf('url') == 0) {
-					elem = canvas.quickClone(elem);
+				if(elem.nodeName == 'text') {
+					if((val+'').indexOf('url') == 0 || $.inArray(attr, ['font-size','x','y']) != -1) {
+						elem = canvas.quickClone(elem);
+					}
 				}
 				// Timeout needed for Opera & Firefox
 				setTimeout(function() {
