@@ -2567,6 +2567,16 @@ function SvgCanvas(c)
 			}
 		}
 	};
+	
+	this.quickClone = function(elem) {
+		// Hack for Firefox bugs where text element features aren't updated
+		var clone = elem.cloneNode(true)
+		elem.parentNode.insertBefore(clone, elem);
+		elem.parentNode.removeChild(elem);
+		canvas.clearSelection();
+		canvas.addToSelection([clone],true);
+		return clone;
+	}
 
 	// If you want to change all selectedElements, ignore the elems argument.
 	// If you want to change only a subset of selectedElements, then send the
@@ -2582,19 +2592,14 @@ function SvgCanvas(c)
 			
 			var oldval = (attr == "#text" ? elem.textContent : elem.getAttribute(attr));
 			if (oldval != val) {
-				if (attr == "#text") elem.textContent = val;
+				if (attr == "#text") {
+					elem.textContent = val;
+					elem = canvas.quickClone(elem);
+				} 
 				else elem.setAttribute(attr, val);
 				selectedBBoxes[i] = this.getBBox(elem);
 				if(elem.nodeName == 'text' && (val+'').indexOf('url') == 0) {
-					// Hack for Firefox new-gradient-on-text-bug
-					// Seems like the only way a new gradient is accepted is by creating a new elem
-					elem.setAttribute(attr, val);
-					var clone = elem.cloneNode(true)
-					elem.parentNode.insertBefore(clone, elem);
-					elem.parentNode.removeChild(elem);
-					elem = clone;
-					canvas.clearSelection();
-					canvas.addToSelection([elem],true);
+					elem = canvas.quickClone(elem);
 				}
 				// Timeout needed for Opera & Firefox
 				setTimeout(function() {
