@@ -34,7 +34,7 @@ var svgWhiteList = {
 	"rect": ["fill", "fill-opacity", "opacity", "height", "id", "rx", "ry", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "width", "x", "y"],
 	"stop": ["id", "offset", "stop-color", "stop-opacity"],
 	"svg": ["id", "height", "transform", "width", "xmlns"],
-	"text": ["fill", "fill-opacity", "opacity", "font-family", "font-size", "font-style", "font-weight", "id", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "x", "y"],
+	"text": ["fill", "fill-opacity", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "text-anchor", "x", "y"],
 };
 
 // These command objects are used for the Undo/Redo stack
@@ -856,8 +856,6 @@ function SvgCanvas(c)
 		var changes = {};
 
 		// if there was a rotation transform, re-set it, otherwise empty out the transform attribute
-		// This fixes Firefox 2- behavior - which does not reset values when the attribute has
-		// been removed, see https://bugzilla.mozilla.org/show_bug.cgi?id=320622
 		var angle = canvas.getRotationAngle(selected);
 		var pointGripContainer = document.getElementById("polypointgrip_container");
 		if (angle) {
@@ -919,6 +917,8 @@ function SvgCanvas(c)
 			}
 		}
 		else {
+			// This fixes Firefox 2- behavior - which does not reset values when the attribute has
+			// been removed, see https://bugzilla.mozilla.org/show_bug.cgi?id=320622
 			selected.setAttribute("transform", "");
 			selected.removeAttribute("transform");
 			if(pointGripContainer) {
@@ -2056,6 +2056,73 @@ function SvgCanvas(c)
 				// if we were dragging a poly point, stop it now
 				if (current_poly_pt_drag != -1) {
 					current_poly_pt_drag = -1;
+					
+					// If the poly was rotated, we must now pay the piper:
+					// Every poly point must be rotated into the rotated coordinate system of 
+					// its old center, then determine the new center, then rotate it back
+					var angle = canvas.getRotationAngle(current_poly) * Math.PI / 180.0;
+					if (angle) {
+						var box = canvas.getBBox(current_poly);
+						var oldbox = selectedBBoxes[0];
+						var oldcx = oldbox.x + oldbox.width/2,
+							oldcy = oldbox.y + oldbox.height/2,
+							newcx = box.x + box.width/2,
+							newcy = box.y + box.height/2;
+						
+						var i = current_poly_pts.length;
+						console.log(current_poly_pts);
+						while (i) {
+							i -= 2;
+							var dx = current_poly_pts[i] - oldcx,
+								dy = current_poly_pts[i+1] - oldcy;
+							
+							// rotate the point around the old center
+							var r = Math.sqrt(dx*dx + dy*dy);
+							var theta = Math.atan2(dy,dx) + angle;
+							dx = r * Math.cos(theta) + oldcx;
+							dy = r * Math.sin(theta) + oldcy;
+							
+							// dx,dy should now hold the actual coordinates of each
+							// point after being rotated
+						
+							// now we want to rotate them around the new center in the reverse direction
+							dx -= newcx;
+							dy -= newcy;
+							
+							r = Math.sqrt(dx*dx + dy*dy);
+							theta = Math.atan2(dy,dx) - angle;
+							
+							current_poly_pts[i] = parseInt(r * Math.cos(theta) + newcx);
+							current_poly_pts[i+1] = parseInt(r * Math.sin(theta) + newcy);
+						}
+						console.log(current_poly_pts);
+						
+						// now set the d attribute to the new value of current_poly_pts
+						var oldd = current_poly.getAttribute("d");
+						var closedPath = (oldd[oldd.length-1] == 'z' || oldd[oldd.length-1] == 'Z');
+						var len = current_poly_pts.length/2;
+						var arr = new Array(len+1);
+						var curx = current_poly_pts[0],
+							cury = current_poly_pts[1];
+						arr[0] = ["M", curx, ",", cury].join('');
+						for (var j = 1; j < len; ++j) {
+							var px = current_poly_pts[j*2], py = current_poly_pts[j*2+1];
+							arr[j] = ["l", parseInt(px-curx), ",", parseInt(py-cury)].join('');
+							curx = px;
+							cury = py;
+						}
+						if (closedPath) {
+							arr[len] = "z";
+						}
+						current_poly.setAttribute("d", arr.join(' '));
+						
+						// now we must set the new transform to be rotated around the new center
+						angle *= 180.0 / Math.PI;
+						current_poly.setAttribute("transform", "rotate(" + angle + " " + newcx + "," + newcy + ")");
+						
+						selectedBBox[0].x = box.x; selectedBBox[0].y = box.y;
+						selectedBBox[0].width = box.width; selectedBBox[0].height = box.height;
+					}
 				}
 				// else, move back to select mode
 				else {
