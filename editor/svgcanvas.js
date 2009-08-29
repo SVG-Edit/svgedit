@@ -561,6 +561,7 @@ function SvgCanvas(c)
 	var current_poly = null;
 	var current_poly_pts = [];
 	var current_poly_pt_drag = -1;
+	var current_poly_oldd = null;
 	// this will hold all the currently selected elements
 	// default size of 1 until it needs to grow bigger
 	var selectedElements = new Array(1); 
@@ -1362,6 +1363,7 @@ function SvgCanvas(c)
 				break;
 			case "polyedit":
 				started = true;
+				current_poly_oldd = current_poly.getAttribute("d");
 				var id = evt.target.id;
 				if (id.substr(0,14) == "polypointgrip_") {
 					current_poly_pt_drag = parseInt(id.substr(14));
@@ -2057,6 +2059,11 @@ function SvgCanvas(c)
 				if (current_poly_pt_drag != -1) {
 					current_poly_pt_drag = -1;
 					
+					var batchCmd = new BatchCommand("Edit Poly");
+					// the attribute changes we want to undo
+					var oldvalues = {};
+					oldvalues["d"] = current_poly_oldd;
+					
 					// If the poly was rotated, we must now pay the piper:
 					// Every poly point must be rotated into the rotated coordinate system of 
 					// its old center, then determine the new center, then rotate it back
@@ -2132,6 +2139,7 @@ function SvgCanvas(c)
 						
 						// now we must set the new transform to be rotated around the new center
 						var rotate = "rotate(" + (angle * 180.0 / Math.PI) + " " + newcx + "," + newcy + ")";
+						oldvalues["transform"] = current_poly.getAttribute("rotate");
 						current_poly.setAttribute("transform", rotate);
 						
 						var pointGripContainer = document.getElementById("polypointgrip_container");
@@ -2139,6 +2147,12 @@ function SvgCanvas(c)
 							pointGripContainer.setAttribute("transform", rotate);
 						}
 					} // if rotated
+
+					batchCmd.addSubCommand(new ChangeElementCommand(current_poly, oldvalues, "poly points"));
+					addCommandToHistory(batchCmd);
+					call("changed", [current_poly]);
+					
+					// make these changes undo-able
 				} // if (current_poly_pt_drag != -1)
 				// else, move back to select mode
 				else {
@@ -2859,6 +2873,7 @@ function SvgCanvas(c)
 	this.undo = function() {
 		if (undoStackPointer > 0) {
 			this.clearSelection();
+			removeAllPointGripsFromPoly();
 			var cmd = undoStack[--undoStackPointer];
 			cmd.unapply();
 			call("changed", cmd.elements());
