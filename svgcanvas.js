@@ -22,16 +22,16 @@ if(!window.console) {
 // TODO: add <a> elements to this
 // TODO: add xmlns:xlink attr to <svg> element
 var svgWhiteList = {
-	"circle": ["cx", "cy", "fill", "fill-opacity", "opacity", "id", "r", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
+	"circle": ["cx", "cy", "fill", "fill-opacity", "id", "opacity", "r", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
 	"defs": [],
-	"ellipse": ["cx", "cy", "fill", "fill-opacity", "opacity", "id", "rx", "ry", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
-	"line": ["fill", "fill-opacity", "opacity", "id", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-opacity", "stroke-width",  "transform", "x1", "x2", "y1", "y2"],
+	"ellipse": ["cx", "cy", "fill", "fill-opacity", "id", "opacity", "rx", "ry", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
+	"line": ["fill", "fill-opacity", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-opacity", "stroke-width",  "transform", "x1", "x2", "y1", "y2"],
 	"linearGradient": ["id", "gradientTransform", "gradientUnits", "spreadMethod", "x1", "x2", "y1", "y2"],
-	"path": ["d", "fill", "fill-opacity", "opacity", "id", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
-	"polygon": ["id", "fill", "fill-opacity", "opacity", "points", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
-	"polyline": ["id", "points", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
+	"path": ["d", "fill", "fill-opacity", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
+	"polygon": ["id", "fill", "fill-opacity", "id", "opacity", "points", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
+	"polyline": ["id", "opacity", "points", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
 	"radialGradient": ["id", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "r", "spreadMethod"],
-	"rect": ["fill", "fill-opacity", "opacity", "height", "id", "rx", "ry", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "width", "x", "y"],
+	"rect": ["fill", "fill-opacity", "height", "id", "opacity", "rx", "ry", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "width", "x", "y"],
 	"stop": ["id", "offset", "stop-color", "stop-opacity"],
 	"svg": ["id", "height", "transform", "width", "xmlns"],
 	"text": ["fill", "fill-opacity", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "text-anchor", "x", "y"],
@@ -356,8 +356,8 @@ function SvgCanvas(c)
 			var transform = elem.getAttribute("transform");
 			var angle = canvas.getRotationAngle(elem);
 			if (angle) {
-				var cx = oldbox.x + oldbox.width/2, //l + w/2, 
-					cy = oldbox.y + oldbox.height/2; //t + h/2;
+				var cx = oldbox.x + oldbox.width/2
+					cy = oldbox.y + oldbox.height/2;
 				this.selectorGroup.setAttribute("transform", "rotate("+angle+" " + cx + "," + cy + ")");
 			}
 			svgroot.unsuspendRedraw(sr_handle);
@@ -394,7 +394,6 @@ function SvgCanvas(c)
 		this.requestSelector = function(elem) {
 			if (elem == null) return null;
 			var N = this.selectors.length;
-
 			// if we've already acquired one for this element, return it
 			if (typeof(this.selectorMap[elem.id]) == "object") {
 				this.selectorMap[elem.id].locked = true;
@@ -1682,6 +1681,7 @@ function SvgCanvas(c)
 					if (closedPath) {
 						arr[len] = "z";
 					}
+					// we don't want to undo this, we are in the middle of a drag
 					current_poly.setAttribute("d", arr.join(' '));
 
 					// move the point grip
@@ -2069,22 +2069,29 @@ function SvgCanvas(c)
 							newcx = box.x + box.width/2,
 							newcy = box.y + box.height/2;
 						
+						// un-rotate the new center to the proper position
+						var dx = newcx - oldcx,
+							dy = newcy - oldcy;
+						var r = Math.sqrt(dx*dx + dy*dy);
+						var theta = Math.atan2(dy,dx) + angle;
+						newcx = r * Math.cos(theta) + oldcx;
+						newcy = r * Math.sin(theta) + oldcy;
+						
 						var i = current_poly_pts.length;
-						console.log(current_poly_pts);
 						while (i) {
 							i -= 2;
-							var dx = current_poly_pts[i] - oldcx,
-								dy = current_poly_pts[i+1] - oldcy;
+							dx = current_poly_pts[i] - oldcx;
+							dy = current_poly_pts[i+1] - oldcy;
 							
 							// rotate the point around the old center
-							var r = Math.sqrt(dx*dx + dy*dy);
-							var theta = Math.atan2(dy,dx) + angle;
-							dx = r * Math.cos(theta) + oldcx;
-							dy = r * Math.sin(theta) + oldcy;
+							r = Math.sqrt(dx*dx + dy*dy);
+							theta = Math.atan2(dy,dx) + angle;
+							current_poly_pts[i] = dx = r * Math.cos(theta) + oldcx;
+							current_poly_pts[i+1] = dy = r * Math.sin(theta) + oldcy;
 							
 							// dx,dy should now hold the actual coordinates of each
 							// point after being rotated
-						
+
 							// now we want to rotate them around the new center in the reverse direction
 							dx -= newcx;
 							dy -= newcy;
@@ -2094,8 +2101,7 @@ function SvgCanvas(c)
 							
 							current_poly_pts[i] = parseInt(r * Math.cos(theta) + newcx);
 							current_poly_pts[i+1] = parseInt(r * Math.sin(theta) + newcy);
-						}
-						console.log(current_poly_pts);
+						} // loop for each point
 						
 						// now set the d attribute to the new value of current_poly_pts
 						var oldd = current_poly.getAttribute("d");
@@ -2105,25 +2111,35 @@ function SvgCanvas(c)
 						var curx = current_poly_pts[0],
 							cury = current_poly_pts[1];
 						arr[0] = ["M", curx, ",", cury].join('');
+						assignAttributes(document.getElementById("polypointgrip_0"), 
+										{"cx":curx,"cy":cury}, 100);
 						for (var j = 1; j < len; ++j) {
 							var px = current_poly_pts[j*2], py = current_poly_pts[j*2+1];
 							arr[j] = ["l", parseInt(px-curx), ",", parseInt(py-cury)].join('');
 							curx = px;
 							cury = py;
+							assignAttributes(document.getElementById("polypointgrip_"+j), 
+										{"cx":px,"cy":py}, 100);
 						}
 						if (closedPath) {
 							arr[len] = "z";
 						}
 						current_poly.setAttribute("d", arr.join(' '));
+
+						box = canvas.getBBox(current_poly);						
+						selectedBBoxes[0].x = box.x; selectedBBoxes[0].y = box.y;
+						selectedBBoxes[0].width = box.width; selectedBBoxes[0].height = box.height;
 						
 						// now we must set the new transform to be rotated around the new center
-						angle *= 180.0 / Math.PI;
-						current_poly.setAttribute("transform", "rotate(" + angle + " " + newcx + "," + newcy + ")");
+						var rotate = "rotate(" + (angle * 180.0 / Math.PI) + " " + newcx + "," + newcy + ")";
+						current_poly.setAttribute("transform", rotate);
 						
-						selectedBBox[0].x = box.x; selectedBBox[0].y = box.y;
-						selectedBBox[0].width = box.width; selectedBBox[0].height = box.height;
-					}
-				}
+						var pointGripContainer = document.getElementById("polypointgrip_container");
+						if(pointGripContainer) {
+							pointGripContainer.setAttribute("transform", rotate);
+						}
+					} // if rotated
+				} // if (current_poly_pt_drag != -1)
 				// else, move back to select mode
 				else {
 					current_mode = "select";
@@ -2863,8 +2879,9 @@ function SvgCanvas(c)
 		var copiedElements = [];
 		var len = selectedElements.length;
 		for (var i = 0; i < len; ++i) {
-			if (selectedElements[i] == null) break;
-			copiedElements.push(selectedElements[i].cloneNode(true));
+			var elem = selectedElements[i];
+			if (elem == null) break;
+			copiedElements.push(elem.cloneNode(true));
 		}
 		this.clearSelection();
 		var len = copiedElements.length;
