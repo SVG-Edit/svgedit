@@ -667,7 +667,6 @@ function svg_edit_setup() {
 			var button = document.getElementById(shortcutButtons[i]);
 			var title = button.title;
 			var index = title.indexOf("Ctrl+");
-			console.log(index);
 			button.title = [title.substr(0,index), "Cmd+", title.substr(index+5)].join('');
 		}
 	}
