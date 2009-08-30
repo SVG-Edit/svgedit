@@ -1409,7 +1409,7 @@ function SvgCanvas(c)
 		switch (current_mode)
 		{
 			case "select":
-				// we temporarily use a translate on the element being dragged
+				// we temporarily use a translate on the element(s) being dragged
 				// this transform is removed upon mousing up and the element is 
 				// relocated to the new location
 				if (selectedElements[0] != null) {
@@ -1422,7 +1422,6 @@ function SvgCanvas(c)
 						for (var i = 0; i < len; ++i) {
 							var selected = selectedElements[i];
 							if (selected == null) break;
-
 							var box = canvas.getBBox(selected);
 							selectedBBoxes[i].x = box.x + dx;
 							selectedBBoxes[i].y = box.y + dy;
@@ -1430,16 +1429,17 @@ function SvgCanvas(c)
 							if (angle) {
 								var cx = box.x + box.width/2,
 									cy = box.y + box.height/2;
-								ts += [" rotate(", angle, " ", cx, ",", cy, ")"].join('');
-
+								var xform = ts + [" rotate(", angle, " ", cx, ",", cy, ")"].join('');
  								var r = Math.sqrt( dx*dx + dy*dy );
 								var theta = Math.atan2(dy,dx) - angle * Math.PI / 180.0;
-								dx = r * Math.cos(theta);
-								dy = r * Math.sin(theta);
+								selected.setAttribute("transform", xform);
+								box.x += r * Math.cos(theta); box.y += r * Math.sin(theta);
 							}
-							selected.setAttribute("transform", ts);
+							else {
+								selected.setAttribute("transform", ts);
+								box.x += dx; box.y += dy;
+							}
 							// update our internal bbox that we're tracking while dragging
-							box.x += dx; box.y += dy;
 							selectorManager.requestSelector(selected).resize(box);
 						}
 					}
