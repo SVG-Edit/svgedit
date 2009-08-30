@@ -1701,12 +1701,6 @@ function SvgCanvas(c)
 			default:
 				break;
 		}
-		// TODO: should we fire the change event here?  I'm thinking only fire
-		// this event when the user mouses up.  That's when the action (create,
-		// move, resize, draw) has finished
-		// Only question is whether in Wave Gadget mode whether we want to see the 
-		// person live-dragging the element around (for instance)
-//		call("changed", selected);
 	};
 
 	var removeAllPointGripsFromPoly = function() {
@@ -1715,7 +1709,8 @@ function SvgCanvas(c)
 		while(i--) {
 			document.getElementById("polypointgrip_"+i).setAttribute("display", "none");
 		}
-		document.getElementById("poly_stretch_line").setAttribute("display", "none");
+		var line = document.getElementById("poly_stretch_line");
+		if (line) line.setAttribute("display", "none");
 	};
 
 	var addAllPointGripsToPoly = function() {
