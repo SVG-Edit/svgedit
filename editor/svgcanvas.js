@@ -1748,6 +1748,8 @@ function SvgCanvas(c)
 				addPointGripToPoly(current_poly_pts[i], current_poly_pts[i+1],i/2);
 			}
 		}
+		var pointGripContainer = document.getElementById("polypointgrip_container");
+		pointGripContainer.setAttribute("transform", current_poly.getAttribute("transform"));
 	};
 
 	var addPointGripToPoly = function(x,y,index) {
