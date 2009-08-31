@@ -1730,19 +1730,23 @@ function SvgCanvas(c)
 
 	var addAllPointGripsToPoly = function() {
 		// loop through and hide all pointgrips
-		var i = current_poly_pts.length;
-		while(i) {
-			i -= 2;
+		var len = current_poly_pts.length;
+		for (var i = 0; i < len; i += 2) {
 			var grip = document.getElementById("polypointgrip_"+i/2);
-			assignAttributes(grip, {
-				'cx': current_poly_pts[i],
-				'cy': current_poly_pts[i+1],
-				'display': 'inline'
-			});
+			if (grip) {
+				assignAttributes(grip, {
+					'cx': current_poly_pts[i],
+					'cy': current_poly_pts[i+1],
+					'display': 'inline'
+				});
+			}
+			else {
+				addPointGripToPoly(current_poly_pts[i], current_poly_pts[i+1],i/2);
+			}
 		}
 	};
 
-	var addPointGripToPoly = function(x,y) {
+	var addPointGripToPoly = function(x,y,index) {
 		// create the container of all the point grips
 		var pointGripContainer = document.getElementById("polypointgrip_container");
 		if (!pointGripContainer) {
@@ -1750,9 +1754,6 @@ function SvgCanvas(c)
 			pointGripContainer = parent.appendChild(document.createElementNS(svgns, "g"));
 			pointGripContainer.id = "polypointgrip_container";
 		}
-
-		// get index of this point
-		var index = current_poly_pts.length/2 - 1;
 
 		var pointGrip = document.getElementById("polypointgrip_"+index);
 		// create it
@@ -2000,7 +2001,7 @@ function SvgCanvas(c)
 						'x2': x,
 						'y2': y
 					});
-					addPointGripToPoly(x,y);
+					addPointGripToPoly(x,y,0);
 				}
 				else {
 					// determine if we clicked on an existing point
@@ -2057,7 +2058,7 @@ function SvgCanvas(c)
 							'x2': x,
 							'y2': y
 						});
-						addPointGripToPoly(x,y);
+						addPointGripToPoly(x,y,(current_poly_pts.length/2 - 1));
 					}
 					keep = true;
 				}
