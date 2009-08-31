@@ -541,19 +541,33 @@ function SvgCanvas(c)
 	var start_y = null;
 	var current_mode = "select";
 	var current_resize_mode = "none";
-	var current_fill = "#FF0000";
-	var current_stroke = "#000000";
-	var current_stroke_paint = null;
-	var current_fill_paint = null;
-	var current_stroke_width = 5;
-	var current_stroke_style = "none";
-	var current_opacity = 1;
-	var current_stroke_opacity = 1;
-	var current_fill_opacity = 1;
-	var current_text_fill = "#000000";
-	var current_text_stroke_width = 0;
-	var current_font_size = "12pt";
-	var current_font_family = "serif";
+	
+	var all_properties = {
+		shape: {
+			fill: "#FF0000",
+			fill_paint: null,
+			fill_opacity: 1,
+			stroke: "#000000",
+			stroke_paint: null,
+			stroke_opacity: 1,
+			stroke_width: 5,
+			stroke_style: 'none',
+			opacity: 1
+		}
+	};
+	
+	all_properties.text = $.extend(true, {}, all_properties.shape);
+	$.extend(all_properties.text, {
+		fill: "#000000",
+		stroke_width: 0,
+		font_size: '12pt',
+		font_family: 'serif'
+	});
+
+	var cur_properties = null;
+	var cur_shape = all_properties.shape;
+	var cur_text = all_properties.text;
+	
 	var freehand_min_x = null;
 	var freehand_max_x = null;
 	var freehand_min_y = null;
@@ -1238,13 +1252,13 @@ function SvgCanvas(c)
 						"points": d_attr,
 						"id": getNextId(),
 						"fill": "none",
-						"stroke": current_stroke,
-						"stroke-width": current_stroke_width,
-						"stroke-dasharray": current_stroke_style,
-						"stroke-opacity": current_stroke_opacity,
+						"stroke": cur_shape.stroke,
+						"stroke-width": cur_shape.stroke_width,
+						"stroke-dasharray": cur_shape.stroke_style,
+						"stroke-opacity": cur_shape.stroke_opacity,
 						"stroke-linecap": "round",
 						"stroke-linejoin": "round",
-						"opacity": current_opacity / 2
+						"opacity": cur_shape.opacity / 2
 					}
 				});
 				freehand_min_x = x;
@@ -1267,13 +1281,13 @@ function SvgCanvas(c)
 						"width": 0,
 						"height": 0,
 						"id": getNextId(),
-						"fill": current_fill,
-						"stroke": current_stroke,
-						"stroke-width": current_stroke_width,
-						"stroke-dasharray": current_stroke_style,
-						"stroke-opacity": current_stroke_opacity,
-						"fill-opacity": current_fill_opacity,
-						"opacity": current_opacity / 2
+						"fill": cur_shape.fill,
+						"stroke": cur_shape.stroke,
+						"stroke-width": cur_shape.stroke_width,
+						"stroke-dasharray": cur_shape.stroke_style,
+						"stroke-opacity": cur_shape.stroke_opacity,
+						"fill-opacity": cur_shape.fill_opacity,
+						"opacity": cur_shape.opacity / 2
 					}
 				});
 				break;
@@ -1287,12 +1301,12 @@ function SvgCanvas(c)
 						"x2": x,
 						"y2": y,
 						"id": getNextId(),
-						"stroke": current_stroke,
-						"stroke-width": current_stroke_width,
-						"stroke-dasharray": current_stroke_style,
-						"stroke-opacity": current_stroke_opacity,
+						"stroke": cur_shape.stroke,
+						"stroke-width": cur_shape.stroke_width,
+						"stroke-dasharray": cur_shape.stroke_style,
+						"stroke-opacity": cur_shape.stroke_opacity,
 						"fill": "none",
-						"opacity": current_opacity / 2
+						"opacity": cur_shape.opacity / 2
 					}
 				});
 				break;
@@ -1305,13 +1319,13 @@ function SvgCanvas(c)
 						"cy": y,
 						"r": 0,
 						"id": getNextId(),
-						"fill": current_fill,
-						"stroke": current_stroke,
-						"stroke-width": current_stroke_width,
-						"stroke-dasharray": current_stroke_style,
-						"stroke-opacity": current_stroke_opacity,
-						"fill-opacity": current_fill_opacity,
-						"opacity": current_opacity / 2
+						"fill": cur_shape.fill,
+						"stroke": cur_shape.stroke,
+						"stroke-width": cur_shape.stroke_width,
+						"stroke-dasharray": cur_shape.stroke_style,
+						"stroke-opacity": cur_shape.stroke_opacity,
+						"fill-opacity": cur_shape.fill_opacity,
+						"opacity": cur_shape.opacity / 2
 					}
 				});
 				break;
@@ -1325,13 +1339,13 @@ function SvgCanvas(c)
 						"rx": 0,
 						"ry": 0,
 						"id": getNextId(),
-						"fill": current_fill,
-						"stroke": current_stroke,
-						"stroke-width": current_stroke_width,
-						"stroke-dasharray": current_stroke_style,
-						"stroke-opacity": current_stroke_opacity,
-						"fill-opacity": current_fill_opacity,
-						"opacity": current_opacity / 2
+						"fill": cur_shape.fill,
+						"stroke": cur_shape.stroke,
+						"stroke-width": cur_shape.stroke_width,
+						"stroke-dasharray": cur_shape.stroke_style,
+						"stroke-opacity": cur_shape.stroke_opacity,
+						"fill-opacity": cur_shape.fill_opacity,
+						"opacity": cur_shape.opacity / 2
 					}
 				});
 				break;
@@ -1343,16 +1357,16 @@ function SvgCanvas(c)
 						"x": x,
 						"y": y,
 						"id": getNextId(),
-						"fill": current_text_fill,
-						"stroke": current_stroke,
-						"stroke-width": current_text_stroke_width,
-						"stroke-dasharray": current_stroke_style,
-						"stroke-opacity": current_stroke_opacity,
-						"fill-opacity": current_fill_opacity,
+						"fill": cur_text.fill,
+						"stroke": cur_shape.stroke,
+						"stroke-width": cur_text.stroke_width,
+						"stroke-dasharray": cur_shape.stroke_style,
+						"stroke-opacity": cur_shape.stroke_opacity,
+						"fill-opacity": cur_shape.fill_opacity,
 						// fix for bug where text elements were always 50% opacity
-						"opacity": current_opacity,
-						"font-size": current_font_size,
-						"font-family": current_font_family,
+						"opacity": cur_shape.opacity,
+						"font-size": cur_text.font_size,
+						"font-family": cur_text.font_family,
 						"text-anchor": "middle"
 					}
 				});
@@ -1799,15 +1813,15 @@ function SvgCanvas(c)
 					if (selectedElements[1] == null) {
 						// set our current stroke/fill properties to the element's
 						var selected = selectedElements[0];
-						current_fill = selected.getAttribute("fill");
-						current_fill_opacity = selected.getAttribute("fill-opacity");
-						current_stroke = selected.getAttribute("stroke");
-						current_stroke_opacity = selected.getAttribute("stroke-opacity");
-						current_stroke_width = selected.getAttribute("stroke-width");
-						current_stroke_style = selected.getAttribute("stroke-dasharray");
+						cur_shape.fill = selected.getAttribute("fill");
+						cur_shape.fill_opacity = selected.getAttribute("fill-opacity");
+						cur_shape.stroke = selected.getAttribute("stroke");
+						cur_shape.stroke_opacity = selected.getAttribute("stroke-opacity");
+						cur_shape.stroke_width = selected.getAttribute("stroke-width");
+						cur_shape.stroke_style = selected.getAttribute("stroke-dasharray");
 						if (selected.tagName == "text") {
-							current_font_size = selected.getAttribute("font-size");
-							current_font_family = selected.getAttribute("font-family");
+							cur_text.font_size = selected.getAttribute("font-size");
+							cur_text.font_family = selected.getAttribute("font-family");
 						}
 
 						selectorManager.requestSelector(selected).showGrips(true);
@@ -1900,13 +1914,13 @@ function SvgCanvas(c)
 							"rx": (freehand_max_x - freehand_min_x) / 2,
 							"ry": (freehand_max_y - freehand_min_y) / 2,
 							"id": getId(),
-							"fill": current_fill,
-							"stroke": current_stroke,
-							"stroke-width": current_stroke_width,
-							"stroke-dasharray": current_stroke_style,
-							"opacity": current_opacity,
-							"stroke-opacity": current_stroke_opacity,
-							"fill-opacity": current_fill_opacity
+							"fill": cur_shape.fill,
+							"stroke": cur_shape.stroke,
+							"stroke-width": cur_shape.stroke_width,
+							"stroke-dasharray": cur_shape.stroke_style,
+							"opacity": cur_shape.opacity,
+							"stroke-opacity": cur_shape.stroke_opacity,
+							"fill-opacity": cur_shape.fill_opacity
 						}
 					});
 					call("changed",[element]);
@@ -1924,13 +1938,13 @@ function SvgCanvas(c)
 							"width": (freehand_max_x - freehand_min_x),
 							"height": (freehand_max_y - freehand_min_y),
 							"id": getId(),
-							"fill": current_fill,
-							"stroke": current_stroke,
-							"stroke-width": current_stroke_width,
-							"stroke-dasharray": current_stroke_style,
-							"opacity": current_opacity,
-							"stroke-opacity": current_stroke_opacity,
-							"fill-opacity": current_fill_opacity
+							"fill": cur_shape.fill,
+							"stroke": cur_shape.stroke,
+							"stroke-width": cur_shape.stroke_width,
+							"stroke-dasharray": cur_shape.stroke_style,
+							"opacity": cur_shape.opacity,
+							"stroke-opacity": cur_shape.stroke_opacity,
+							"fill-opacity": cur_shape.fill_opacity
 						}
 					});
 					call("changed",[element]);
@@ -1969,13 +1983,13 @@ function SvgCanvas(c)
 						"attr": {
 							"d": d_attr,
 							"id": getNextId(),
-							"fill": current_fill,
-							"fill-opacity": current_fill_opacity,
-							"stroke": current_stroke,
-							"stroke-width": current_stroke_width,
-							"stroke-dasharray": current_stroke_style,
-							"stroke-opacity": current_stroke_opacity,
-							"opacity": current_opacity / 2
+							"fill": cur_shape.fill,
+							"fill-opacity": cur_shape.fill_opacity,
+							"stroke": cur_shape.stroke,
+							"stroke-width": cur_shape.stroke_width,
+							"stroke-dasharray": cur_shape.stroke_style,
+							"stroke-opacity": cur_shape.stroke_opacity,
+							"opacity": cur_shape.opacity / 2
 						}
 					});
 					// set stretchy line to first point
@@ -2171,7 +2185,7 @@ function SvgCanvas(c)
 			element = null;
 		} else if (element != null) {
 			canvas.addedNew = true;
-			element.setAttribute("opacity", current_opacity);
+			element.setAttribute("opacity", cur_shape.opacity);
 			cleanupElement(element);
 			selectorManager.update();
 			canvas.addToSelection([element], true);
@@ -2313,28 +2327,26 @@ function SvgCanvas(c)
 			current_poly = null;
 			current_poly_pts = [];
 		}
+		
+		cur_properties = (selectedElements[0] && selectedElements[0].nodeName == 'text') ? cur_text : cur_shape;
 		current_mode = name;
 	};
 
 	this.getStrokeColor = function() {
-		return current_stroke;
+		return cur_properties.stroke;
 	};
 
 	this.setStrokeColor = function(val) {
-		current_stroke = val;
+		cur_shape.stroke = val;
 		this.changeSelectedAttribute("stroke", val);
 	};
 
 	this.getFillColor = function() {
-		return current_fill;
+		return cur_properties.fill;
 	};
 
 	this.setFillColor = function(val) {
-		if(selectedElements[0] != null && selectedElements[0].nodeName == 'text') {
-			current_text_fill = val;
-		} else {
-			current_fill = val;
-		}
+		cur_properties.fill = val;
 
 		// take out any path/line elements when setting fill
 		var elems = [];
@@ -2364,15 +2376,11 @@ function SvgCanvas(c)
 	var addGradient = function() {
 		$.each(['stroke','fill'],function(i,type) {
 			
-			if(type == 'stroke' && (!current_stroke_paint || current_stroke_paint.type == "solidColor")) return;
-			if(type == 'fill' && (!current_fill_paint || current_fill_paint.type == "solidColor")) return;
-			
+			if(!cur_properties[type + '_paint'] || cur_properties[type + '_paint'].type == "solidColor") return;
 			var grad = canvas[type + 'Grad'];
-			
 			// find out if there is a duplicate gradient already in the defs
 			var duplicate_grad = findDuplicateGradient(grad);
 			var defs = findDefs();
-
 			// no duplicate found, so import gradient into defs
 			if (!duplicate_grad) {
 				grad = defs.appendChild( svgdoc.importNode(grad, true) );
@@ -2383,7 +2391,6 @@ function SvgCanvas(c)
 				grad = duplicate_grad;
 			}
 			var functype = type=='fill'?'Fill':'Stroke';
-			
 			canvas['set'+ functype +'Color']("url(#" + grad.id + ")");
 		});
 	}
@@ -2432,82 +2439,78 @@ function SvgCanvas(c)
 	};
 
 	this.setStrokePaint = function(p, addGrad) {
-		current_stroke_paint = new $.jGraduate.Paint(p);
-		if (current_stroke_paint.type == "solidColor") {
-			this.setStrokeColor("#"+current_stroke_paint.solidColor);
+		cur_properties.stroke_paint = new $.jGraduate.Paint(p);
+		if (cur_properties.stroke_paint.type == "solidColor") {
+			this.setStrokeColor("#"+cur_properties.stroke_paint.solidColor);
 		}
-		else if(current_stroke_paint.type == "linearGradient") {
-			canvas.strokeGrad = current_stroke_paint.linearGradient;
+		else if(cur_properties.stroke_paint.type == "linearGradient") {
+			canvas.strokeGrad = cur_properties.stroke_paint.linearGradient;
 			if(addGrad) addGradient(); 
 		}
 		else {
 //			console.log("none!");
 		}
-		this.setStrokeOpacity(current_stroke_paint.alpha/100);
+		this.setStrokeOpacity(cur_properties.stroke_paint.alpha/100);
 	};
 
 	this.setFillPaint = function(p, addGrad) {
 		// copy the incoming paint object
-		current_fill_paint = new $.jGraduate.Paint(p);
-		if (current_fill_paint.type == "solidColor") {
-			this.setFillColor("#"+current_fill_paint.solidColor);
+		cur_properties.fill_paint = new $.jGraduate.Paint(p);
+		if (cur_properties.fill_paint.type == "solidColor") {
+			this.setFillColor("#"+cur_properties.fill_paint.solidColor);
 		}
-		else if(current_fill_paint.type == "linearGradient") {
-			canvas.fillGrad = current_fill_paint.linearGradient;
+		else if(cur_properties.fill_paint.type == "linearGradient") {
+			canvas.fillGrad = cur_properties.fill_paint.linearGradient;
 			if(addGrad) addGradient(); 
 		}
 		else {
 //			console.log("none!");
 		}
-		this.setFillOpacity(current_fill_paint.alpha/100);
+		this.setFillOpacity(cur_properties.fill_paint.alpha/100);
 	};
 
 	this.getStrokeWidth = function() {
-		return current_stroke_width;
+		return cur_properties.stroke_width;
 	};
 
 	this.setStrokeWidth = function(val) {
-		if(selectedElements[0] != null && selectedElements[0].nodeName == 'text') {
-			current_text_stroke_width = val;
-		} else {
-			current_stroke_width = val;
-		}
+		cur_properties.stroke_width = val;
 		this.changeSelectedAttribute("stroke-width", val);
 	};
 
 	this.getStrokeStyle = function() {
-		return current_stroke_style;
+		return cur_shape.stroke_style;
 	};
 
 	this.setStrokeStyle = function(val) {
-		current_stroke_style = val;
+		cur_shape.stroke_style = val;
 		this.changeSelectedAttribute("stroke-dasharray", val);
 	};
 
 	this.getOpacity = function() {
-		return current_opacity;
+		return cur_shape.opacity;
 	};
 
 	this.setOpacity = function(val) {
-		current_opacity = val;
+		cur_shape.opacity = val;
 		this.changeSelectedAttribute("opacity", val);
 	};
 
 	this.getFillOpacity = function() {
-		return current_fill_opacity;
+		return cur_shape.fill_opacity;
 	};
 
 	this.setFillOpacity = function(val) {
-		current_fill_opacity = val;
+		cur_shape.fill_opacity = val;
 		this.changeSelectedAttribute("fill-opacity", val);
 	};
 
 	this.getStrokeOpacity = function() {
-		return current_stroke_opacity;
+		return cur_shape.stroke_opacity;
 	};
 
 	this.setStrokeOpacity = function(val) {
-		current_stroke_opacity = val;
+		cur_shape.stroke_opacity = val;
 		this.changeSelectedAttribute("stroke-opacity", val);
 	};
 
@@ -2609,20 +2612,20 @@ function SvgCanvas(c)
 	};
 
 	this.getFontFamily = function() {
-		return current_font_family;
+		return cur_text.font_family;
 	};
 
 	this.setFontFamily = function(val) {
-    	current_font_family = val;
+    	cur_text.font_family = val;
 		this.changeSelectedAttribute("font-family", val);
 	};
 
 	this.getFontSize = function() {
-		return current_font_size;
+		return cur_text.font_size;
 	};
 
 	this.setFontSize = function(val) {
-		current_font_size = val;
+		cur_text.font_size = val;
 		this.changeSelectedAttribute("font-size", val);
 	};
 
