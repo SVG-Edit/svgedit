@@ -564,9 +564,9 @@ function SvgCanvas(c)
 		font_family: 'serif'
 	});
 
-	var cur_properties = null;
 	var cur_shape = all_properties.shape;
 	var cur_text = all_properties.text;
+	var cur_properties = cur_shape;
 	
 	var freehand_min_x = null;
 	var freehand_max_x = null;
@@ -2338,6 +2338,7 @@ function SvgCanvas(c)
 
 	this.setStrokeColor = function(val) {
 		cur_shape.stroke = val;
+		cur_properties.stroke_paint = {type:"solidColor"};
 		this.changeSelectedAttribute("stroke", val);
 	};
 
@@ -2347,7 +2348,7 @@ function SvgCanvas(c)
 
 	this.setFillColor = function(val) {
 		cur_properties.fill = val;
-
+		cur_properties.fill_paint = {type:"solidColor"};
 		// take out any path/line elements when setting fill
 		var elems = [];
 		var i = selectedElements.length;
