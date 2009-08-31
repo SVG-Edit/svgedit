@@ -2561,7 +2561,7 @@ function SvgCanvas(c)
 									(bbox.y+bbox.height/2) + ")";
 		this.changeSelectedAttribute("transform", rotate);
 		var pointGripContainer = document.getElementById("polypointgrip_container");
-		if(pointGripContainer) {
+		if(elem.nodeName == "path" && pointGripContainer) {
 			pointGripContainer.setAttribute("transform", rotate);
 		}
 		selectorManager.requestSelector(selectedElements[0]).updateGripCursors(val);
