@@ -2835,13 +2835,13 @@ function SvgCanvas(c)
 			while(i--) {
 				if(all_elems[i] == cur_elem) {
 					var num = next?i-1:i+1;
-					if(num >= all_elems.length || num < 0) {
-						elem = cur_elem;
-						break;
-					} else {
-						elem = all_elems[num];
-						break;
-					}
+					if(num >= all_elems.length) {
+						num = 0;
+					} else if(num < 0) {
+						num = all_elems.length-1;
+					} 
+					elem = all_elems[num];
+					break;
 				} 
 			}
 		}		
