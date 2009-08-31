@@ -774,6 +774,10 @@ function SvgCanvas(c)
 			for (i=attrs.length-1; i>=0; i--) {
 				attr = attrs.item(i);
 				if (attr.nodeValue != "") {
+					//Opera bug turns N.N to N,N in some locales
+					if(window.opera && attr.nodeName == 'opacity' && /^\d+,\d+$/.test(attr.nodeValue)) {
+						attr.nodeValue = attr.nodeValue.replace(',','.');
+					}
 					out.push(" "); out.push(attr.nodeName); out.push("=\""); 
 					out.push(attr.nodeValue); out.push("\"");
 				}
