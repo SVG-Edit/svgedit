@@ -284,6 +284,7 @@ function SvgCanvas(c)
 			for (dir in this.selectorGrips) {
 				this.selectorGrips[dir].setAttribute("display", bShow);
 			}
+			if(elem) this.updateGripCursors(canvas.getRotationAngle(elem));
 		};
 		
 		// Updates cursors for corner grips on rotation so arrows point the right way
