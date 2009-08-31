@@ -1710,7 +1710,8 @@ function SvgCanvas(c)
 				break;
 			case "rotate":
 				var box = canvas.getBBox(selected),cx = box.x + box.width/2, cy = box.y + box.height/2;
-				canvas.setRotationAngle(parseInt(((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360));
+				var angle = parseInt(((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360);
+				canvas.setRotationAngle(angle<-180?(360+angle):angle);
 				break;
 			default:
 				break;
