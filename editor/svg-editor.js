@@ -272,6 +272,9 @@ function svg_edit_setup() {
 		svgCanvas.setStrokeStyle(this.options[this.selectedIndex].value);
 	});
 
+	// Lose focus for select elements when changed (Allows keyboard shortcuts to work better)
+	$('select').change(function(){$(this).blur();});
+
 	$('#group_opacity').change(function(){
 		svgCanvas.setOpacity(this.options[this.selectedIndex].value);
 	});
