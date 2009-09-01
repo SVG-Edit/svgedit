@@ -261,7 +261,13 @@ function svg_edit_setup() {
 	}
 	
 	var changeStrokeWidth = function(ctl) {
-		svgCanvas.setStrokeWidth(ctl.value);
+		var val = ctl.value;
+		if(val == 0 && selectedElement && $.inArray(selectedElement.nodeName, ['line', 'polyline']) != -1) {
+			console.log('1');
+			val = 1;
+			ctl.value = 1;
+		}
+		svgCanvas.setStrokeWidth(val);
 	}
 	
 	var changeRotationAngle = function(ctl) {
@@ -909,7 +915,7 @@ function svg_edit_setup() {
 	});
 
 	$('#rect_rx').SpinButton({ min: 0, max: 1000, step: 1, callback: changeRectRadius });
-	$('#stroke_width').SpinButton({ min: 1, max: 99, step: 1, callback: changeStrokeWidth });
+	$('#stroke_width').SpinButton({ min: 0, max: 99, step: 1, callback: changeStrokeWidth });
 	$('#angle').SpinButton({ min: -180, max: 180, step: 5, callback: changeRotationAngle });
 
 	svgCanvas.setCustomHandlers = function(opts) {
