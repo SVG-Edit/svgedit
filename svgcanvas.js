@@ -2900,8 +2900,8 @@ function SvgCanvas(c)
 	this.cloneSelectedElements = function() {
 		var batchCmd = new BatchCommand("Clone Elements");
 		var copiedElements = [];
-		var len = selectedElements.length;
-		for (var i = 0; i < len; ++i) {
+		var i = selectedElements.length;
+		while(i--) {
 			var elem = selectedElements[i];
 			if (elem == null) break;
 			copiedElements.push(elem.cloneNode(true));
