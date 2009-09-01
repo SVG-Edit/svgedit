@@ -1406,6 +1406,7 @@ function SvgCanvas(c)
 				break;
 			case "rotate":
 				started = true;
+				canvas.setRotationAngle(canvas.getRotationAngle());
 				break;
 			default:
 				console.log("Unknown mode in mousedown: " + current_mode);
@@ -1714,6 +1715,7 @@ function SvgCanvas(c)
 				}
 				break;
 			case "rotate":
+				canvas.dragging = true;
 				var box = canvas.getBBox(selected),cx = box.x + box.width/2, cy = box.y + box.height/2;
 				var angle = parseInt(((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360);
 				canvas.setRotationAngle(angle<-180?(360+angle):angle);
@@ -1806,6 +1808,7 @@ function SvgCanvas(c)
 		started = false;
 		var element = svgdoc.getElementById(getId());
 		var keep = false;
+		canvas.dragging = false;
 		switch (current_mode)
 		{
 			// intentionally fall-through to select here
@@ -2717,13 +2720,13 @@ function SvgCanvas(c)
 						changes['transform'] = rotate;
 					}
 				}
-				
+					
 				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes, attr));
 			}
 		}
 		svgroot.unsuspendRedraw(handle);
 		if (!batchCmd.isEmpty()) { 
-			addCommandToHistory(batchCmd);
+			if(!canvas.dragging) addCommandToHistory(batchCmd);
 			call("changed", elems);
 		}
 	};
