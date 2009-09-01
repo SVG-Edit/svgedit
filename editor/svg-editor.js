@@ -263,9 +263,7 @@ function svg_edit_setup() {
 	var changeStrokeWidth = function(ctl) {
 		var val = ctl.value;
 		if(val == 0 && selectedElement && $.inArray(selectedElement.nodeName, ['line', 'polyline']) != -1) {
-			console.log('1');
-			val = 1;
-			ctl.value = 1;
+			val = ctl.value = 1;
 		}
 		svgCanvas.setStrokeWidth(val);
 	}
