@@ -1251,6 +1251,7 @@ function SvgCanvas(c)
 				start_x = x;
 				start_y = y;
 				d_attr = x + "," + y + " ";
+				var stroke_w = cur_shape.stroke_width == 0?1:cur_shape.stroke_width;
 				addSvgElementFromJson({
 					"element": "polyline",
 					"attr": {
@@ -1258,7 +1259,7 @@ function SvgCanvas(c)
 						"id": getNextId(),
 						"fill": "none",
 						"stroke": cur_shape.stroke,
-						"stroke-width": cur_shape.stroke_width,
+						"stroke-width": stroke_w,
 						"stroke-dasharray": cur_shape.stroke_style,
 						"stroke-opacity": cur_shape.stroke_opacity,
 						"stroke-linecap": "round",
@@ -1298,6 +1299,8 @@ function SvgCanvas(c)
 				break;
 			case "line":
 				started = true;
+				var stroke_w = cur_shape.stroke_width == 0?1:cur_shape.stroke_width;
+				console.log(stroke_w);
 				addSvgElementFromJson({
 					"element": "line",
 					"attr": {
@@ -1307,7 +1310,7 @@ function SvgCanvas(c)
 						"y2": y,
 						"id": getNextId(),
 						"stroke": cur_shape.stroke,
-						"stroke-width": cur_shape.stroke_width,
+						"stroke-width": stroke_w,
 						"stroke-dasharray": cur_shape.stroke_style,
 						"stroke-opacity": cur_shape.stroke_opacity,
 						"fill": "none",
@@ -2487,6 +2490,9 @@ function SvgCanvas(c)
 	};
 
 	this.setStrokeWidth = function(val) {
+		if(val == 0 && $.inArray(current_mode, ['line', 'path']) == -1) {
+			canvas.setStrokeWidth(1);
+		}
 		cur_properties.stroke_width = val;
 		this.changeSelectedAttribute("stroke-width", val);
 	};
