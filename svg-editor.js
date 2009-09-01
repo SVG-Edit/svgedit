@@ -318,6 +318,13 @@ function svg_edit_setup() {
 		
 		svgCanvas.changeSelectedAttribute(attr, val);
 	});
+	
+	// Prevent selection of elements when shift-clicking
+	$('#palette').mouseover(function() {
+		var inp = $('<input type="hidden">');
+		$(this).append(inp);
+		inp.focus().remove();
+	});
 
 	$('.palette_item').click(function(evt){
 		var picker = (evt.shiftKey ? "stroke" : "fill");
