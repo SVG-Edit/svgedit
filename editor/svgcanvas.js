@@ -2902,17 +2902,21 @@ function SvgCanvas(c)
 	// this creates deep DOM copies (clones) of all selected elements
 	this.cloneSelectedElements = function() {
 		var batchCmd = new BatchCommand("Clone Elements");
-		var copiedElements = [];
-		var i = selectedElements.length;
-		while(i--) {
+		// find all the elements selected (stop at first null)
+		var len = selectedElements.length;
+		for (var i = 0; i < len; ++i) {
 			var elem = selectedElements[i];
 			if (elem == null) break;
-			copiedElements.push(elem.cloneNode(true));
 		}
+		// use slice to quickly get the subset of elements we need
+		var copiedElements = selectedElements.slice(0,i);
 		this.clearSelection();
-		var len = copiedElements.length;
-		for (var i = 0; i < len; ++i) {
-			var elem = copiedElements[i];
+		// note that we loop in the reverse way because of the way elements are added
+		// to the selectedElements array (top-first)
+		var i = copiedElements.length;
+		while (i--) {
+			// clone each element and replace it within copiedElements
+			var elem = copiedElements[i] = copiedElements[i].cloneNode(true);
 			elem.removeAttribute("id");
 			elem.id = getNextId();
 			svgroot.appendChild(elem);
