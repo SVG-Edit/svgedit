@@ -103,7 +103,6 @@ function RemoveElementCommand(elem, parent, text) {
 	this.apply = function() {
 		this.parent = this.elem.parentNode;
 		this.elem = this.parent.removeChild(this.elem);
-		call("deleted", [this.elem])
 	};
 
 	this.unapply = function() { this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); };
@@ -2747,6 +2746,7 @@ function SvgCanvas(c)
 	this.deleteSelectedElements = function() {
 		var batchCmd = new BatchCommand("Delete Elements");
 		var len = selectedElements.length;
+		var selectedCopy = []; //selectedElements is being delted
 		for (var i = 0; i < len; ++i) {
 			var selected = selectedElements[i];
 			if (selected == null) break;
@@ -2756,12 +2756,12 @@ function SvgCanvas(c)
 			// this will unselect the element and remove the selectedOutline
 			selectorManager.releaseSelector(t);
 			var elem = parent.removeChild(t);
+			selectedCopy.push(selected) //for the copy
 			selectedElements[i] = null;
 			batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
 		}
 		if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
-		call("selected", selectedElements);
-		call("deleted", selectedElements);
+		call("selected", selectedCopy);
 	};
 
 	this.moveToTopSelectedElement = function() {
