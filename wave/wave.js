@@ -62,7 +62,10 @@ function main() {
     if (wave && wave.isInWaveContainer()) {
       wave.setStateCallback(stateUpdated);
     }
-    svgCanvas.bind("changed", function(canvas, elem){
+    
+    var oldchanged = svgCanvas.bind("changed", function(canvas, elem){
+      if(oldchanged)oldchanged.apply(this, [canvas,elem]);
+      
       var delta = {}
       $.each(elem, function(){
         
@@ -76,12 +79,29 @@ function main() {
           
           ob.time = shapetime[this.id] = (new Date).getTime()
           delta[this.id] = JSON.stringify(ob);
-        }else{
-          alert(JSON.stringify(elem))
         }
       })
       wave.getState().submitDelta(delta)
       //sendDelta(canvas, elem)
+    });
+    var oldselected = svgCanvas.bind("selected", function(canvas, elem){
+      
+      if(oldselected)oldselected.apply(this, [canvas,elem]);
+      
+      
+      var delta = {}
+      var deletions = 0;
+      $.each(elem, function(){
+        
+        if(this != window && !this.parentNode){
+          delta[this.id] = null;
+        
+          deletions ++
+        }
+      });
+      if(deletions > 0){
+        wave.getState().submitDelta(delta)
+      }
     });
     svgCanvas.bind("cleared", function(){
       //alert("cleared")
