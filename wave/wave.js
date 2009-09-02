@@ -92,8 +92,8 @@ function main() {
       var delta = {}
       var deletions = 0;
       $.each(elem, function(){
-        
-        if(this != window && !this.parentNode){
+        console.log(elem)
+        if(!this.parentNode){
           delta[this.id] = null;
         
           deletions ++
