@@ -1,4 +1,5 @@
 var shapetime = {};
+var nodelete = false;
 
 function stateUpdated() {
   // 'state' is an object of key-value pairs that map ids to JSON serialization of SVG elements
@@ -20,8 +21,9 @@ function stateUpdated() {
       }
       //keys.remove(k);
       
-    } else if(this.id != "selectorParentGroup"){
+    } else if(this.id != "selectorParentGroup" && !nodelete){
       //console.log(this)
+      
       this.parentNode.removeChild(this);
     }
   });
