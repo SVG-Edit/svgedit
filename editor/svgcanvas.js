@@ -2584,7 +2584,9 @@ function SvgCanvas(c)
 	};
 
 	this.bind = function(event, f) {
+	  var old = events[event];
 		events[event] = f;
+		return old;
 	};
 
 	this.setIdPrefix = function(p) {
