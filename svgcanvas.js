@@ -103,6 +103,7 @@ function RemoveElementCommand(elem, parent, text) {
 	this.apply = function() {
 		this.parent = this.elem.parentNode;
 		this.elem = this.parent.removeChild(this.elem);
+		call("deleted", [this.elem])
 	};
 
 	this.unapply = function() { this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); };
@@ -2760,6 +2761,7 @@ function SvgCanvas(c)
 		}
 		if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
 		call("selected", selectedElements);
+		call("deleted", selectedElements);
 	};
 
 	this.moveToTopSelectedElement = function() {
