@@ -2696,6 +2696,8 @@ function SvgCanvas(c)
 			if (elem == null) continue;
 			
 			var oldval = (attr == "#text" ? elem.textContent : elem.getAttribute(attr));
+			// if the attribute was currently not set, store an empty string (cannot store null)
+			if (oldval == null) { oldval = ""; }
 			if (oldval != val) {
 				if (attr == "#text") {
 					elem.textContent = val;
@@ -2703,6 +2705,9 @@ function SvgCanvas(c)
 				} 
 				else elem.setAttribute(attr, val);
 				selectedBBoxes[i] = this.getBBox(elem);
+				// FIXME: I think this 'if' is never accessed
+				// When would we have a <text> element and be changing font-size, font-family, x, or y
+				// so that it starts with "url(" ?
 				if(elem.nodeName == 'text') {
 					if((val+'').indexOf('url') == 0 || $.inArray(attr, ['font-size','font-family','x','y']) != -1) {
 						elem = canvas.quickClone(elem);
@@ -2719,7 +2724,7 @@ function SvgCanvas(c)
 				// we need to update the rotational transform attribute and store it as part
 				// of our changeset
 				var angle = canvas.getRotationAngle(elem);
-				if (angle) {
+				if (angle && attr != "transform") {
 					var cx = selectedBBoxes[i].x + selectedBBoxes[i].width/2,
 						cy = selectedBBoxes[i].y + selectedBBoxes[i].height/2;
 					var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
@@ -2728,7 +2733,6 @@ function SvgCanvas(c)
 						changes['transform'] = rotate;
 					}
 				}
-					
 				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes, attr));
 			}
 		}
