@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-<ModulePrefs title="SVG-edit" height="600">
-<Require feature="rpc" />
-</ModulePrefs>
-<Content type="html">
-<![CDATA[
+  <ModulePrefs title="SVG-edit" height="780" author="SVG-edit Developers">
+    <Require feature="wave" /> 
+  </ModulePrefs>
+  <Content type="html">
+    <![CDATA[     
 
-<script type="text/javascript" src="http://wave-api.appspot.com/public/wave.js"></script>
+<base href="http://svg-edit.googlecode.com/svn/trunk/editor/svg-editor.html"></base>
 <link rel="stylesheet" href="http://svg-edit.googlecode.com/svn/trunk/editor/jpicker/jpicker.css" type="text/css"/>
 <link rel="stylesheet" href="http://svg-edit.googlecode.com/svn/trunk/editor/svg-editor.css" type="text/css"/>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
@@ -16,7 +16,10 @@
 <script type="text/javascript" src="http://svg-edit.googlecode.com/svn/trunk/editor/spinbtn/JQuerySpinBtn.js"></script>
 <script type="text/javascript" src="http://svg-edit.googlecode.com/svn/trunk/editor/svgcanvas.js"></script>
 <script type="text/javascript" src="http://svg-edit.googlecode.com/svn/trunk/editor/svg-editor.js"></script>
- 
+<script type="text/javascript" src="http://svg-edit.googlecode.com/svn/trunk/wave/json2.js"></script>
+<script type="text/javascript" src="http://svg-edit.googlecode.com/svn/trunk/wave/wave.js"></script>
+
+
 
 <div id="svg_editor">
 
@@ -25,29 +28,39 @@
 <div id="svgcanvas"></div>
 </div>
 
+<div id="logo">
+	<a href="http://svg-edit.googlecode.com/" target="_blank" title="SVG-edit Home Page">
+		<img src="images/logo.png" alt="logo" />
+	</a>
+</div>
+
 <div id="tools_top" class="tools_panel">
 	<!-- File-like buttons: New, Save, Source -->
 	<div>
-		<img class="tool_button" id="tool_clear" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/clear.png" title="New Image [N]" alt="Clear" />
-		<img class="tool_button" id="tool_save" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/save.png" title="Save Image [S]" alt="Save"/>
-		<img class="tool_button" id="tool_source" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/source.png" title="Edit Source [U]" alt="Source"/>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="tool_button" id="tool_clear" src="images/clear.png" title="New Image [N]" alt="Clear" />
+		<img style="display:none" class="tool_button" id="tool_open" src="images/open.png" title="Open Image [O]" alt="Open"/>
+		<img class="tool_button" id="tool_save" src="images/save.png" title="Save Image [S]" alt="Save"/>
+		<img class="tool_button" id="tool_source" src="images/source.png" title="Edit Source [U]" alt="Source"/>
+    <img class="tool_button" title="Wave" alt="Wave State" onclick="alert(wave.getState().toString())" />
 	</div>
 
     <!-- History buttons -->
 	<div>
-		<img class="tool_sep" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/sep.png" alt="|"/>
-		<img class="tool_button tool_button_disabled" id="tool_undo" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/undo.png" title="Undo [Z]" alt="Undo" />
-		<img class="tool_button tool_button_disabled" id="tool_redo" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/redo.png" title="Redo [Shift+Z/Y]" alt="Redo"/>
-		<img class="tool_button" id="tool_paste" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/paste.png" title="Paste Element [V]" alt="Paste"/>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="tool_button tool_button_disabled" id="tool_undo" src="images/undo.png" title="Undo [Z]" alt="Undo" />
+		<img class="tool_button tool_button_disabled" id="tool_redo" src="images/redo.png" title="Redo [Y]" alt="Redo"/>
 	</div>
 
-	<!-- Buttons when something a single element is selected -->
+	<!-- Buttons when a single element is selected -->
 	<div id="selected_panel">
-		<img class="tool_sep" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/sep.png" alt="|"/>
-		<img class="tool_button" id="tool_copy" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/copy.png" title="Copy Element [C]" alt="Copy"/>
-		<img class="tool_button" id="tool_delete" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/delete.png" title="Delete Element [Delete/Backspace]" alt="Delete"/>
-		<img class="tool_button" id="tool_move_top" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/move_top.png" title="Move to Top [Shift+Up]" alt="Top"/>
-		<img class="tool_button" id="tool_move_bottom" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/move_bottom.png" title="Move to Bottom [Shift+Down]" alt="Bottom"/>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="tool_button" id="tool_clone" src="images/clone.png" title="Clone Element [C]" alt="Copy"/>
+		<img class="tool_button" id="tool_delete" src="images/delete.png" title="Delete Element [Delete/Backspace]" alt="Delete"/>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="tool_button" id="tool_move_top" src="images/move_top.png" title="Move to Top [Shift+Up]" alt="Top"/>
+		<img class="tool_button" id="tool_move_bottom" src="images/move_bottom.png" title="Move to Bottom [Shift+Down]" alt="Bottom"/>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<select id="group_opacity" class="selected_tool" title="Change selected item opacity">
 			<option selected="selected" value="1">100 %</option>
 			<option value="0.9">90 %</option>
@@ -59,32 +72,49 @@
 			<option value="0.3">30 %</option>
 			<option value="0.2">20 %</option>
 			<option value="0.1">10 %</option>
-		</select>		
+			<option value="0">0 %</option>
+		</select>
+		<span class="selected_tool">angle:</span>
+		<input id="angle" class="selected_tool" title="Change rotation angle" alt="Rotation Angle" size="2" value="0" type="text"/>
 	</div>
 
-	<!-- Buttons when something a single element is selected -->
+	<!-- Buttons when multiple elements are selected -->
 	<div id="multiselected_panel">
-		<img class="tool_sep" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/sep.png" alt="|"/>
-		<img class="tool_button" id="tool_copy_multi" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/copy.png" title="Copy Elements [C]" alt="Copy"/>
-		<img class="tool_button" id="tool_delete_multi" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/delete.png" title="Delete Selected Elements [Delete/Backspace]" alt="Delete"/>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="tool_button" id="tool_clone_multi" src="images/clone.png" title="Clone Elements [C]" alt="Clone"/>
+		<img class="tool_button" id="tool_delete_multi" src="images/delete.png" title="Delete Selected Elements [Delete/Backspace]" alt="Delete"/>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="tool_button" id="tool_alignleft" src="images/align-left.png" title="Align Left" alt="Left"/>
+		<img class="tool_button" id="tool_aligncenter" src="images/align-center.png" title="Align Center" alt="Center"/>
+		<img class="tool_button" id="tool_alignright" src="images/align-right.png" title="Align Right" alt="Right"/>
+		<img class="tool_button" id="tool_aligntop" src="images/align-top.png" title="Align Top" alt="Top"/>
+		<img class="tool_button" id="tool_alignmiddle" src="images/align-middle.png" title="Align Middle" alt="Middle"/>
+		<img class="tool_button" id="tool_alignbottom" src="images/align-bottom.png" title="Align Bottom" alt="Bottom"/>
+		<span class="selected_tool">relative to:</span>
+		<select id="align_relative_to" class="selected_tool" title="Align relative to ...">
+		<option value="selected">selected objects</option>
+		<option value="largest">largest object</option>
+		<option value="smallest">smallest object</option>
+		<option value="page">page</option>
+		</select>
 	</div>
 
 	<div id="rect_panel">
-		<img class="tool_sep" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/sep.png" alt="|"/>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<label class="rect_tool">x:</label>
 		<input id="rect_x" class="rect_tool attr_changer" title="Change rectangle X coordinate" alt="x" size="3"/>
 		<label class="rect_tool">y:</label>
 		<input id="rect_y" class="rect_tool attr_changer" title="Change rectangle Y coordinate" alt="y" size="3"/>
 		<label class="rect_tool">width:</label>
-		<input id="rect_w" class="rect_tool attr_changer" title="Change rectangle width" alt="width" size="3"/>
+		<input id="rect_width" class="rect_tool attr_changer" title="Change rectangle width" alt="width" size="3"/>
 		<label class="rect_tool">height:</label>
-		<input id="rect_h" class="rect_tool attr_changer" title="Change rectangle height" alt="height" size="3"/>
+		<input id="rect_height" class="rect_tool attr_changer" title="Change rectangle height" alt="height" size="3"/>
 		<label class="rect_tool">Corner Radius:</label>
-		<input id="rect_radius" size="3" value="0" class="rect_tool" type="text" title="Change Rectangle Corner Radius" alt="Corner Radius"/>
+		<input id="rect_rx" size="3" value="0" class="rect_tool" type="text" title="Change Rectangle Corner Radius" alt="Corner Radius"/>
 	</div>
 
 	<div id="circle_panel">
-		<img class="tool_sep" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/sep.png" alt="|"/>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<label class="circle_tool">cx:</label>
 		<input id="circle_cx" class="circle_tool attr_changer" title="Change circle's cx coordinate" alt="cx" size="3"/>
 		<label class="circle_tool">cy:</label>
@@ -94,7 +124,7 @@
 	</div>
 
 	<div id="ellipse_panel">
-		<img class="tool_sep" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/sep.png" alt="|"/>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<label class="ellipse_tool">cx:</label>
 		<input id="ellipse_cx" class="ellipse_tool attr_changer" title="Change ellipse's cx coordinate" alt="cx" size="3"/>
 		<label class="ellipse_tool">cy:</label>
@@ -106,7 +136,7 @@
 	</div>
 
 	<div id="line_panel">
-		<img class="tool_sep" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/sep.png" alt="|"/>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<label class="line_tool">x1:</label>
 		<input id="line_x1" class="line_tool attr_changer" title="Change line's starting x coordinate" alt="x1" size="3"/>
 		<label class="line_tool">y1:</label>
@@ -118,9 +148,13 @@
 	</div>
 
 	<div id="text_panel">
-		<img class="tool_sep" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/sep.png" alt="|"/>
-		<img class="tool_button" id="tool_bold" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/bold.png" title="Bold Text [B]" alt="Bold"/>
-		<img class="tool_button" id="tool_italic" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/italic.png" title="Italic Text [I]" alt="Italic"/>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<label class="text_tool">x:</label>
+		<input id="text_x" class="text_tool attr_changer" title="Change text X coordinate" alt="x" size="3"/>
+		<label class="text_tool">y:</label>
+		<input id="text_y" class="text_tool attr_changer" title="Change text Y coordinate" alt="y" size="3"/>
+		<img class="tool_button" id="tool_bold" src="images/bold.png" title="Bold Text [B]" alt="Bold"/>
+		<img class="tool_button" id="tool_italic" src="images/italic.png" title="Italic Text [I]" alt="Italic"/>
 		<select id="font_family" class="text_tool" title="Change Font Family">
 			<option selected="selected" value="serif">serif</option>
 			<option value="sans-serif">sans-serif</option>
@@ -150,13 +184,15 @@
 </div> <!-- tools_top -->
 
 <div id="tools_left" class="tools_panel">
-	<img class="tool_button_current" id="tool_select" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/select.png" title="Select Tool [1]" alt="Select"/><br/>
-	<img class="tool_button" id="tool_path" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/path.png" title="Pencil Tool [2]" alt="Pencil"/><br/>
-	<img class="tool_button" id="tool_line" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/line.png" title="Line Tool [3]" alt="Line"/><br/>
-	<img class="tool_button" id="tools_rect_show" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/square.png" title="Square/Rect Tool [4/Shift+4]" alt="Square"/><br/>
-	<img class="tool_button" id="tools_ellipse_show" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/circle.png" title="Ellipse/Circle Tool [5/Shift+5]" alt="Circle"/><br/>
-	<img class="tool_button" id="tool_text" src="http://svg-edit.googlecode.com/svn/trunk/editor/images/text.png" title="Text Tool [6]" alt="Text"/>
-	<img class="tool_button" id="tool_poly" src="images/polygon.png" title="Poly Tool [7]" alt="Poly"/>	
+	<img class="tool_button_current" id="tool_select" src="images/select.png" title="Select Tool [1]" alt="Select"/><br/>
+	<img class="tool_button" id="tool_path" src="images/path.png" title="Pencil Tool [2]" alt="Pencil"/><br/>
+	<img class="tool_button" id="tool_line" src="images/line.png" title="Line Tool [3]" alt="Line"/><br/>
+	<img class="tool_button" id="tools_rect_show" src="images/square.png" title="Square/Rect Tool [4/Shift+4]" alt="Square"/>
+	<img class="flyout_arrow_horiz" src="images/flyouth.png"/>
+	<img class="tool_button" id="tools_ellipse_show" src="images/circle.png" title="Ellipse/Circle Tool [5/Shift+5]" alt="Circle"/><br/>
+	<img class="flyout_arrow_horiz" src="images/flyouth.png"/>
+	<img class="tool_button" id="tool_text" src="images/text.png" title="Text Tool [6]" alt="Text"/>
+	<img class="tool_button" id="tool_poly" src="images/polygon.png" title="Poly Tool [7]" alt="Poly"/>
 </div> <!-- tools_left -->
 
 <div id="tools_bottom" class="tools_panel">
@@ -168,6 +204,8 @@
 			<option>1024x768</option>
 			<option>1280x960</option>
 			<option>1600x1200</option>
+			<option>Fit to Content</option>
+			<option>Custom</option>
 		</select>
 	</div>
 
@@ -176,13 +214,13 @@
 		<tr>
 			<td>fill:</td>
 			<td><div id="fill_color" class="color_block"  title="Change fill color"></div></td>
-			<td><div id="fill_opacity">N/A</div></td>
+			<td><div id="fill_opacity">100%</div></td>
 		</tr><tr>
 			<td>stroke:</td>
 			<td><div id="stroke_color" class="color_block" title="Change stroke color"></div></td>
 			<td><div id="stroke_opacity">100 %</div></td>
 			<td>
-				<input id="stroke_width" title="Change stroke width" alt="Stroke Width" size="2" value="1" type="text"/>
+				<input id="stroke_width" title="Change stroke width" alt="Stroke Width" size="2" value="5" type="text"/>
 			</td>
 			<td>
 				<select id="stroke_style" title="Change stroke dash style">
@@ -199,7 +237,7 @@
 
 	<div id="tools_bottom_3">
 		<div id="palette_holder"><div id="palette" title="Click to change fill color, shift-click to change stroke color"></div></div>
-		<div id="copyright">Powered by <a href="http://svg-edit.googlecode.com/" target="_blank">SVG-edit v2.3-preAlpha</a></div>
+		<div id="copyright">Powered by <a href="http://svg-edit.googlecode.com/" target="_blank">SVG-edit v2.3-Beta</a></div>
 	</div>
 </div>
 
@@ -237,112 +275,17 @@
 <div id="svg_source_editor">
 	<div id="svg_source_overlay"></div>
 	<div id="svg_source_container">
-		<div id="tool_source_back" class="toolbar_button"></div>
+		<div id="tool_source_back" class="toolbar_button">
+			<button id="tool_source_save">Load</button>
+			<button id="tool_source_cancel">Cancel</button>
+		</div>
 		<form>
 			<textarea id="svg_source_textarea"></textarea>
 		</form>
 	</div>
 </div>
 
-<script type="text/javascript">
 
-	var svgCanvas = null;
-
-	function stateUpdated() {
-		// 'state' is an object of key-value pairs that map ids to JSON serialization of SVG elements
-		// 'keys' is an array of all the keys in the state
-		var state = wave.getState();
-		var keys = state.getKeys();
-		svgCanvas.each(function(e) {
-			// 'this' is the SVG DOM element node (ellipse, rect, etc)
-			// 'e' is an integer describing the position within the document
-			var k = this.id;
-			var v = state.get(k);
-			if (v) {
-				var ob;
-				eval("ob=" + v); // FIXME: Yes, I'm using eval... Dirty, dirty..
-				if (ob) {
-					svgCanvas.updateElementFromJson(ob);
-				} else {
-					var node = svgdoc.getElementById(k);
-					if (node) node.parentNode.removeChild(node);
-				}
-				keys.remove(k);
-			} else {
-				this.parentNode.removeChild(this);
-			}
-		});
-
-		// New nodes
-		for (var k in keys) {
-			var ob;
-			var v = state.get(keys[k]);
-			eval("ob=" + v); // FIXME: Yes, I'm using eval... Dirty, dirty..
-			if (ob) svgCanvas.updateElementFromJson(ob)
-		}
-	}
-	
-	function myPrintJson(a, b, e) {
-  		if(!a || typeof a.valueOf() != "object") {
-    		if(typeof a == "string")return"'" + a + "'";
-			else if(a instanceof Function)return"[function]";
-    		return"" + a
-  		}
-  		var c = [], f = wave.util.isArray_(a), d = f ? "[]" : "{}", h = b ? "\n" : "", k = b ? " " : "", l = 0, g = e || 1;
-  		b || (g = 0);
-  		c.push(d.charAt(0));
-		for(var i in a) {
-			var j = a[i];
-    		l++ > 0 && c.push(", ");
-    		if(f)
-    			c.push(myPrintJson(j, b, g + 1));
-    		else {
-      			c.push(h);
-      			c.push(wave.util.toSpaces_(g));
-      			c.push("'" + i + "':");
-      			c.push(k);
-      			c.push(myPrintJson(j, b, g + 1))
-    		}
-  		}
-  		if(!f) {
-    		c.push(h);
-    		c.push(wave.util.toSpaces_(g - 1))
-  		}
-  		c.push(d.charAt(1));
-  		return c.join("")
-	}	
-
-	function sendDelta(svgCanvas, elem) {
-		if (!wave) return;
-		var delta = {};
-		var attrs = {};
-		var a = elem.attributes;
-		for (var i = 0; i < a.length; i++) {
-			attrs[a.item(i).nodeName] = a.item(i).nodeValue;
-		}
-		var ob = { element: elem.nodeName, attr: attrs };
-		// wave.util.printJson has a bug where keys  are not quoted like 'stroke-width'
-		delta[elem.id] = myPrintJson(ob, true);
-		wave.getState().submitDelta(delta);
-	}
-	
-	function getId(objnum) {
-		return "svg_"+wave.getViewer().getId()+"_"+objnum;
-	}
-
-	function main() {
-		svgCanvas = svg_edit_setup();
-		if (wave && wave.isInWaveContainer()) {
-			wave.setStateCallback(stateUpdated);
-		}
-		svgCanvas.bind("changed", sendDelta);
-		svgCanvas.bind("cleared", stateUpdated);
-		svgCanvas.bind("getid", getId);
-	}
-
-	gadgets.util.registerOnLoadHandler(main);
-
-</script>
-]]>
-</Content>
+    ]]>
+  </Content>
 </Module>
