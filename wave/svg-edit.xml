@@ -42,7 +42,8 @@
 		<img style="display:none" class="tool_button" id="tool_open" src="images/open.png" title="Open Image [O]" alt="Open"/>
 		<img class="tool_button" id="tool_save" src="images/save.png" title="Save Image [S]" alt="Save"/>
 		<img class="tool_button" id="tool_source" src="images/source.png" title="Edit Source [U]" alt="Source"/>
-    <img class="tool_button" title="Wave" alt="Wave State" onclick="alert(wave.getState().toString())" />
+    <img class="tool_button" title="Wave" src="images/wave.png" alt="Wave State" onclick="alert(wave.getState().toString())" />
+    <input type="check" onchange="nodelete=this.checked">
 	</div>
 
     <!-- History buttons -->
