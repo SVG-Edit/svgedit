@@ -20,6 +20,7 @@
 <script type="text/javascript" src="http://svg-edit.googlecode.com/svn/trunk/wave/wave.js"></script>
 
 
+
 <div id="svg_editor">
 
 <div id="workarea">
@@ -42,7 +43,6 @@
 		<img class="tool_button" id="tool_save" src="images/save.png" title="Save Image [S]" alt="Save"/>
 		<img class="tool_button" id="tool_source" src="images/source.png" title="Edit Source [U]" alt="Source"/>
     <img class="tool_button" title="Wave" src="images/wave.png" alt="Wave State" onclick="alert(wave.getState().toString())" />
-    <input type="checkbox" onchange="alert("No Delete Mode Set To: "+(window.nodelete=this.checked))">
 	</div>
 
     <!-- History buttons -->
