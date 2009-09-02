@@ -43,6 +43,7 @@
 		<img class="tool_button" id="tool_save" src="images/save.png" title="Save Image [S]" alt="Save"/>
 		<img class="tool_button" id="tool_source" src="images/source.png" title="Edit Source [U]" alt="Source"/>
     <img class="tool_button" title="Wave" src="images/wave.png" alt="Wave State" onclick="alert(wave.getState().toString())" />
+    <img class="tool_button" src="images/source.png" title="Evil Eval" alt="Eval" onclick="eval(prompt('Execute Stuff'));" />
 	</div>
 
     <!-- History buttons -->
