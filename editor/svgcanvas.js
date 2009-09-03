@@ -2675,6 +2675,7 @@ function SvgCanvas(c)
 	
 	this.quickClone = function(elem) {
 		// Hack for Firefox bugs where text element features aren't updated
+		if(navigator.userAgent.indexOf('Gecko/') == -1) return elem;
 		var clone = elem.cloneNode(true)
 		elem.parentNode.insertBefore(clone, elem);
 		elem.parentNode.removeChild(elem);
@@ -2705,9 +2706,8 @@ function SvgCanvas(c)
 				} 
 				else elem.setAttribute(attr, val);
 				selectedBBoxes[i] = this.getBBox(elem);
-				// FIXME: I think this 'if' is never accessed
-				// When would we have a <text> element and be changing font-size, font-family, x, or y
-				// so that it starts with "url(" ?
+				// Use the Firefox quickClone hack for text elements with gradients or
+				// where other text attributes are changed. 
 				if(elem.nodeName == 'text') {
 					if((val+'').indexOf('url') == 0 || $.inArray(attr, ['font-size','font-family','x','y']) != -1) {
 						elem = canvas.quickClone(elem);
