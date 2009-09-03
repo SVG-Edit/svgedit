@@ -716,7 +716,7 @@ function svg_edit_setup() {
 			[modKey+'y', function(evt){clickRedo();evt.preventDefault();}],
 			[modKey+'u', function(evt){showSourceEditor();evt.preventDefault();}],
 			[modKey+'c', function(evt){clickClone();evt.preventDefault();}],
-			['esc', cancelSourceEditor, false],
+			['esc', cancelSourceEditor, false]
 		];
 		
 		$.each(keys,function(i,item) {
