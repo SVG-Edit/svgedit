@@ -81,7 +81,7 @@ function svg_edit_setup() {
 
 	// updates the toolbar (colors, opacity, etc) based on the selected element
 	var updateToolbar = function() {
-		if (selectedElement != null) { //the image thing might be a hack.
+		if (selectedElement != null && selectedElement.tagName != "image") { //the image thing might be a hack.
 			// get opacity values
 			var fillOpacity = parseFloat(selectedElement.getAttribute("fill-opacity"));
 			if (isNaN(fillOpacity)) {
