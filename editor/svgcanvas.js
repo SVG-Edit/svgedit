@@ -2294,6 +2294,7 @@ function BatchCommand(text) {
 		var nodes = svgroot.childNodes;
 		var len = svgroot.childNodes.length;
 		var i = 0;
+		current_poly_pts = [];
 		this.clearSelection();
 		for(var rep = 0; rep < len; rep++){
 			if (nodes[i].nodeType == 1) { // element node
@@ -2307,6 +2308,12 @@ function BatchCommand(text) {
 		// reset the selector manager
 		selectorManager.initGroup();
 		call("cleared");
+	};
+	
+	this.clearPoly = function() {
+		removeAllPointGripsFromPoly();
+		current_poly = null;
+		current_poly_pts = [];
 	};
 
 	this.getResolution = function() {
@@ -2350,16 +2357,12 @@ function BatchCommand(text) {
 		if (current_mode == "poly" && current_poly_pts.length > 0) {
 			var elem = svgdoc.getElementById(getId());
 			elem.parentNode.removeChild(elem);
-			removeAllPointGripsFromPoly();
+			canvas.clearPoly();
 			canvas.clearSelection();
 			started = false;
-			current_poly = null;
-			current_poly_pts = [];
 		}
 		else if (current_mode == "polyedit") {
-			removeAllPointGripsFromPoly();
-			current_poly = null;
-			current_poly_pts = [];
+			canvas.clearPoly();
 		}
 		
 		cur_properties = (selectedElements[0] && selectedElements[0].nodeName == 'text') ? cur_text : cur_shape;
