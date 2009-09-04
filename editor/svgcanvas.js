@@ -1,15 +1,3 @@
-/*
-TODOs for Rotator:
-
-- resize with negative width/height causes problems with selector (and upon release, kablooie)
-- fix resize when mouseup
-- show the proper resize cursor based on the rotation
-- add a rotator line/handle to the selector group
-- respond to mouse down on the rotator handle to start 'rotate' mode
-- respond to mouse move in rotate mode to change the rotation of the element
-- upon mouse up in rotate mode go back to select mode
-
-*/
 if(!window.console) {
   window.console = new function() {
     this.log = function(str) {};
