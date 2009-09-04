@@ -249,7 +249,7 @@ function svg_edit_setup() {
 	$('#text').focus( function(){ textBeingEntered = true; } );
 	$('#text').blur( function(){ textBeingEntered = false; } );
 
-  $('#image_url').blur(function(){ svgCanvas.setImageURL(this.value); });
+  
   
 	// bind the selected event to our function that handles updates to the UI
 	svgCanvas.bind("selected", selectedChanged);
@@ -306,6 +306,9 @@ function svg_edit_setup() {
 		svgCanvas.setTextContent(this.value);
 	});
   
+  $('#image_url').keyup(function(){
+    svgCanvas.setImageURL(this.value); 
+  });
 
 	$('.attr_changer').change(function() {
 		var attr = this.getAttribute("alt");
