@@ -52,6 +52,7 @@ li.jGraduate_tab_current {
 	display: none;
 	border: outset 1px #666;
 	padding: 10px 7px 5px 5px;
+	overflow: auto;
 }
 
 .jGraduate_tabs {
@@ -63,7 +64,7 @@ li.jGraduate_tab_current {
 }
 
 div.jGraduate_Swatch {
-	display: inline-block;
+	float: left;
 	margin: 8px;
 }
 div.jGraduate_GradContainer {
@@ -90,13 +91,13 @@ div.jGraduate_Opacity {
 }
 
 div.jGraduate_OpacityField {
-	margin-top: 110px;
-	margin-left: -10px;
+	position: absolute;
+	bottom: 25px;
+	left: 292px;
 }
 
 div.jGraduate_Form {
-	display: inline-block;
-	vertical-align: top;
+	float: left;
 	width: 140px;
 	margin: -3px 3px 0px 4px;
 }
@@ -107,8 +108,7 @@ div.jGraduate_StopSection {
 }
 
 div.jGraduate_OkCancel {
-	display: inline-block;
-	vertical-align: top;	
+	float: left;
 	width: 113px;
 }
 
@@ -123,13 +123,17 @@ input.jGraduate_Ok {
 }
 
 .colorBox {
-	display: inline-block;
+	float: left;
 	height: 16px;
 	width: 16px;
 	border: 1px solid #808080;
-	vertical-align: -7px;
 	cursor: pointer;
-	margin: 4px;
+	margin: 4px 4px 4px 30px;
+}
+
+.colorBox + label {
+	float: left;
+	margin-top: 7px;
 }
 
 label.jGraduate_Form_Heading {
@@ -151,6 +155,7 @@ div.jGraduate_Form_Section {
 	margin: 2px;
 	width: 110px;
 	text-align: center;
+	overflow: auto;
 }
 
 div.jGraduate_LightBox {
