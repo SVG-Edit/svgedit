@@ -389,7 +389,7 @@ jQuery.fn.jGraduate =
             var startx = -1, starty = -1;
             // for whatever reason, Opera does not allow $('image.stop') here,
             // and Firefox 1.5 does not allow $('.stop')
-            $('.stop, #gradPicker_jgraduate_svg image').mousedown(function(evt) {
+            $('.stop, #color_picker_jGraduate_GradContainer image').mousedown(function(evt) {
             	draggingStop = this;
             	startx = evt.clientX;
             	starty = evt.clientY;
