@@ -743,11 +743,9 @@ function svg_edit_setup() {
 	var colorPicker = function(elem) {
 		var picker = elem.attr('id') == 'stroke_color' ? 'stroke' : 'fill';
 		var opacity = (picker == 'stroke' ? $('#stroke_opacity') : $('#fill_opacity'));
-
 		var paint = (picker == 'stroke' ? strokePaint : fillPaint);
 		var title = (picker == 'stroke' ? 'Pick a Stroke Paint and Opacity' : 'Pick a Fill Paint and Opacity');
 		var was_none = false;
-		
 		if (paint.type == "none") {
 			// if it was none, then set to solid white
 			paint = new $.jGraduate.Paint({solidColor: 'ffffff'});
@@ -784,7 +782,7 @@ function svg_edit_setup() {
 				else {
 					svgCanvas.setFillPaint(paint, true);
 				}
-				
+				updateToolbar();
 				$('#color_picker').hide();
 			},
 			function(p) {
