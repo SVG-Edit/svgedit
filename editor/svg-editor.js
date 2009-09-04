@@ -4,21 +4,40 @@ if(!window.console) {
     this.dir = function(str) {};
   };
 }
-var palette = ["#000000","#202020","#404040","#606060","#808080","#a0a0a0","#c0c0c0","#e0e0e0","#ffffff","#800000","#ff0000","#808000","#ffff00","#008000","#00ff00","#008080","#00ffff","#000080","#0000ff","#800080","#ff00ff","#2b0000","#550000","#800000","#aa0000","#d40000","#ff0000","#ff2a2a","#ff5555","#ff8080","#ffaaaa","#ffd5d5","#280b0b","#501616","#782121","#a02c2c","#c83737","#d35f5f","#de8787","#e9afaf","#f4d7d7","#241c1c","#483737","#6c5353","#916f6f","#ac9393","#c8b7b7","#e3dbdb","#2b1100","#552200","#803300","#aa4400","#d45500","#ff6600","#ff7f2a","#ff9955","#ffb380","#ffccaa","#ffe6d5","#28170b","#502d16","#784421","#a05a2c","#c87137","#d38d5f","#deaa87","#e9c6af","#f4e3d7","#241f1c","#483e37","#6c5d53","#917c6f","#ac9d93","#c8beb7","#e3dedb","#2b2200","#554400","#806600","#aa8800","#d4aa00","#ffcc00","#ffd42a","#ffdd55","#ffe680","#ffeeaa","#fff6d5","#28220b","#504416","#786721","#a0892c","#c8ab37","#d3bc5f","#decd87","#e9ddaf","#f4eed7","#24221c","#484537","#6c6753","#918a6f","#aca793","#c8c4b7","#e3e2db","#222b00","#445500","#668000","#88aa00","#aad400","#ccff00","#d4ff2a","#ddff55","#e5ff80","#eeffaa","#f6ffd5","#22280b","#445016","#677821","#89a02c","#abc837","#bcd35f","#cdde87","#dde9af","#eef4d7","#22241c","#454837","#676c53","#8a916f","#a7ac93","#c4c8b7","#e2e3db","#112b00","#225500","#338000","#44aa00","#55d400","#66ff00","#7fff2a","#99ff55","#b3ff80","#ccffaa","#e5ffd5","#17280b","#2d5016","#447821","#5aa02c","#71c837","#8dd35f","#aade87","#c6e9af","#e3f4d7","#1f241c","#3e4837","#5d6c53","#7c916f","#9dac93","#bec8b7","#dee3db","#002b00","#005500","#008000","#00aa00","#00d400","#00ff00","#2aff2a","#55ff55","#80ff80","#aaffaa","#d5ffd5","#0b280b","#165016","#217821","#2ca02c","#37c837","#5fd35f","#87de87","#afe9af","#d7f4d7","#1c241c","#374837","#536c53","#6f916f","#93ac93","#b7c8b7","#dbe3db","#002b11","#005522","#008033","#00aa44","#00d455","#00ff66","#2aff80","#55ff99","#80ffb3","#aaffcc","#d5ffe6","#0b2817","#16502d","#217844","#2ca05a","#37c871","#5fd38d","#87deaa","#afe9c6","#d7f4e3","#1c241f","#37483e","#536c5d","#6f917c","#93ac9d","#b7c8be","#dbe3de","#002b22","#005544","#008066","#00aa88","#00d4aa","#00ffcc","#2affd5","#55ffdd","#80ffe6","#aaffee","#d5fff6","#0b2822","#165044","#217867","#2ca089","#37c8ab","#5fd3bc","#87decd","#afe9dd","#d7f4ee","#1c2422","#374845","#536c67","#6f918a","#93aca7","#b7c8c4","#dbe3e2","#00222b","#004455","#006680","#0088aa","#00aad4","#00ccff","#2ad4ff","#55ddff","#80e5ff","#aaeeff","#d5f6ff","#0b2228","#164450","#216778","#2c89a0","#37abc8","#5fbcd3","#87cdde","#afdde9","#d7eef4","#1c2224","#374548","#53676c","#6f8a91","#93a7ac","#b7c4c8","#dbe2e3","#00112b","#002255","#003380","#0044aa","#0055d4","#0066ff","#2a7fff","#5599ff","#80b3ff","#aaccff","#d5e5ff","#0b1728","#162d50","#214478","#2c5aa0","#3771c8","#5f8dd3","#87aade","#afc6e9","#d7e3f4","#1c1f24","#373e48","#535d6c","#6f7c91","#939dac","#b7bec8","#dbdee3","#00002b","#000055","#000080","#0000aa","#0000d4","#0000ff","#2a2aff","#5555ff","#8080ff","#aaaaff","#d5d5ff","#0b0b28","#161650","#212178","#2c2ca0","#3737c8","#5f5fd3","#8787de","#afafe9","#d7d7f4","#1c1c24","#373748","#53536c","#6f6f91","#9393ac","#b7b7c8","#dbdbe3","#11002b","#220055","#330080","#4400aa","#5500d4","#6600ff","#7f2aff","#9955ff","#b380ff","#ccaaff","#e5d5ff","#170b28","#2d1650","#442178","#5a2ca0","#7137c8","#8d5fd3","#aa87de","#c6afe9","#e3d7f4","#1f1c24","#3e3748","#5d536c","#7c6f91","#9d93ac","#beb7c8","#dedbe3","#22002b","#440055","#660080","#8800aa","#aa00d4","#cc00ff","#d42aff","#dd55ff","#e580ff","#eeaaff","#f6d5ff","#220b28","#441650","#672178","#892ca0","#ab37c8","#bc5fd3","#cd87de","#ddafe9","#eed7f4","#221c24","#453748","#67536c","#8a6f91","#a793ac","#c4b7c8","#e2dbe3","#2b0022","#550044","#800066","#aa0088","#d400aa","#ff00cc","#ff2ad4","#ff55dd","#ff80e5","#ffaaee","#ffd5f6","#280b22","#501644","#782167","#a02c89","#c837ab","#d35fbc","#de87cd","#e9afdd","#f4d7ee","#241c22","#483745","#6c5367","#916f8a","#ac93a7","#c8b7c4","#e3dbe2","#2b0011","#550022","#800033","#aa0044","#d40055","#ff0066","#ff2a7f","#ff5599","#ff80b2","#ffaacc","#ffd5e5","#280b17","#50162d","#782144","#a02c5a","#c83771","#d35f8d","#de87aa","#e9afc6","#f4d7e3","#241c1f","#48373e","#6c535d","#916f7c","#ac939d","#c8b7be","#e3dbde"]
 
 function svg_edit_setup() {
+	var palette = ["#000000","#202020","#404040","#606060","#808080","#a0a0a0","#c0c0c0","#e0e0e0","#ffffff","#800000","#ff0000","#808000","#ffff00","#008000","#00ff00","#008080","#00ffff","#000080","#0000ff","#800080","#ff00ff","#2b0000","#550000","#800000","#aa0000","#d40000","#ff0000","#ff2a2a","#ff5555","#ff8080","#ffaaaa","#ffd5d5","#280b0b","#501616","#782121","#a02c2c","#c83737","#d35f5f","#de8787","#e9afaf","#f4d7d7","#241c1c","#483737","#6c5353","#916f6f","#ac9393","#c8b7b7","#e3dbdb","#2b1100","#552200","#803300","#aa4400","#d45500","#ff6600","#ff7f2a","#ff9955","#ffb380","#ffccaa","#ffe6d5","#28170b","#502d16","#784421","#a05a2c","#c87137","#d38d5f","#deaa87","#e9c6af","#f4e3d7","#241f1c","#483e37","#6c5d53","#917c6f","#ac9d93","#c8beb7","#e3dedb","#2b2200","#554400","#806600","#aa8800","#d4aa00","#ffcc00","#ffd42a","#ffdd55","#ffe680","#ffeeaa","#fff6d5","#28220b","#504416","#786721","#a0892c","#c8ab37","#d3bc5f","#decd87","#e9ddaf","#f4eed7","#24221c","#484537","#6c6753","#918a6f","#aca793","#c8c4b7","#e3e2db","#222b00","#445500","#668000","#88aa00","#aad400","#ccff00","#d4ff2a","#ddff55","#e5ff80","#eeffaa","#f6ffd5","#22280b","#445016","#677821","#89a02c","#abc837","#bcd35f","#cdde87","#dde9af","#eef4d7","#22241c","#454837","#676c53","#8a916f","#a7ac93","#c4c8b7","#e2e3db","#112b00","#225500","#338000","#44aa00","#55d400","#66ff00","#7fff2a","#99ff55","#b3ff80","#ccffaa","#e5ffd5","#17280b","#2d5016","#447821","#5aa02c","#71c837","#8dd35f","#aade87","#c6e9af","#e3f4d7","#1f241c","#3e4837","#5d6c53","#7c916f","#9dac93","#bec8b7","#dee3db","#002b00","#005500","#008000","#00aa00","#00d400","#00ff00","#2aff2a","#55ff55","#80ff80","#aaffaa","#d5ffd5","#0b280b","#165016","#217821","#2ca02c","#37c837","#5fd35f","#87de87","#afe9af","#d7f4d7","#1c241c","#374837","#536c53","#6f916f","#93ac93","#b7c8b7","#dbe3db","#002b11","#005522","#008033","#00aa44","#00d455","#00ff66","#2aff80","#55ff99","#80ffb3","#aaffcc","#d5ffe6","#0b2817","#16502d","#217844","#2ca05a","#37c871","#5fd38d","#87deaa","#afe9c6","#d7f4e3","#1c241f","#37483e","#536c5d","#6f917c","#93ac9d","#b7c8be","#dbe3de","#002b22","#005544","#008066","#00aa88","#00d4aa","#00ffcc","#2affd5","#55ffdd","#80ffe6","#aaffee","#d5fff6","#0b2822","#165044","#217867","#2ca089","#37c8ab","#5fd3bc","#87decd","#afe9dd","#d7f4ee","#1c2422","#374845","#536c67","#6f918a","#93aca7","#b7c8c4","#dbe3e2","#00222b","#004455","#006680","#0088aa","#00aad4","#00ccff","#2ad4ff","#55ddff","#80e5ff","#aaeeff","#d5f6ff","#0b2228","#164450","#216778","#2c89a0","#37abc8","#5fbcd3","#87cdde","#afdde9","#d7eef4","#1c2224","#374548","#53676c","#6f8a91","#93a7ac","#b7c4c8","#dbe2e3","#00112b","#002255","#003380","#0044aa","#0055d4","#0066ff","#2a7fff","#5599ff","#80b3ff","#aaccff","#d5e5ff","#0b1728","#162d50","#214478","#2c5aa0","#3771c8","#5f8dd3","#87aade","#afc6e9","#d7e3f4","#1c1f24","#373e48","#535d6c","#6f7c91","#939dac","#b7bec8","#dbdee3","#00002b","#000055","#000080","#0000aa","#0000d4","#0000ff","#2a2aff","#5555ff","#8080ff","#aaaaff","#d5d5ff","#0b0b28","#161650","#212178","#2c2ca0","#3737c8","#5f5fd3","#8787de","#afafe9","#d7d7f4","#1c1c24","#373748","#53536c","#6f6f91","#9393ac","#b7b7c8","#dbdbe3","#11002b","#220055","#330080","#4400aa","#5500d4","#6600ff","#7f2aff","#9955ff","#b380ff","#ccaaff","#e5d5ff","#170b28","#2d1650","#442178","#5a2ca0","#7137c8","#8d5fd3","#aa87de","#c6afe9","#e3d7f4","#1f1c24","#3e3748","#5d536c","#7c6f91","#9d93ac","#beb7c8","#dedbe3","#22002b","#440055","#660080","#8800aa","#aa00d4","#cc00ff","#d42aff","#dd55ff","#e580ff","#eeaaff","#f6d5ff","#220b28","#441650","#672178","#892ca0","#ab37c8","#bc5fd3","#cd87de","#ddafe9","#eed7f4","#221c24","#453748","#67536c","#8a6f91","#a793ac","#c4b7c8","#e2dbe3","#2b0022","#550044","#800066","#aa0088","#d400aa","#ff00cc","#ff2ad4","#ff55dd","#ff80e5","#ffaaee","#ffd5f6","#280b22","#501644","#782167","#a02c89","#c837ab","#d35fbc","#de87cd","#e9afdd","#f4d7ee","#241c22","#483745","#6c5367","#916f8a","#ac93a7","#c8b7c4","#e3dbe2","#2b0011","#550022","#800033","#aa0044","#d40055","#ff0066","#ff2a7f","#ff5599","#ff80b2","#ffaacc","#ffd5e5","#280b17","#50162d","#782144","#a02c5a","#c83771","#d35f8d","#de87aa","#e9afc6","#f4d7e3","#241c1f","#48373e","#6c535d","#916f7c","#ac939d","#c8b7be","#e3dbde"]
+
+	var isMac = false; //(navigator.platform.indexOf("Mac") != -1);
+	var modKey = ""; //(isMac ? "meta+" : "ctrl+");
 	var svgCanvas = new SvgCanvas(document.getElementById("svgcanvas"));
 
 	var setSelectMode = function() {
 		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 		$('#tool_select').addClass('tool_button_current');
-		$('#styleoverrides').text('*{cursor:move;pointer-events:all} svg{cursor:default}');
+		$('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all} #svgcanvas svg{cursor:default}');
 		svgCanvas.setMode('select');
-	}
+	};
 
+	// used to make the flyouts stay on the screen longer the very first time
+	var flyoutspeed = 1250;
 	var textBeingEntered = false;
 	var selectedElement = null;
 	var multiselected = false;
+	var editingsource = false;
+	var length_attrs = ['x','y','x1','x2','y1','y2','cx','cy','width','height','r','rx','ry','width','height','radius'];
+	var length_types = ['em','ex','px','cm','mm','in','pt','pc','%'];
+	
+	var fillPaint = new $.jGraduate.Paint({solidColor: "FF0000"}); // solid red
+	var strokePaint = new $.jGraduate.Paint({solidColor: "000000"}); // solid black
+
+	// TODO: Unfortunately Mozilla does not handle internal references to gradients
+	// inside a data: URL document.  This means that any elements filled/stroked 
+	// with a gradient will appear black in Firefox, etc.  See bug 308590
+	// https://bugzilla.mozilla.org/show_bug.cgi?id=308590
+	var saveHandler = function(window,svg) {
+		window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
+	};
 
 	// called when we've selected a different element
 	var selectedChanged = function(window,elems) {
@@ -36,14 +55,14 @@ function svg_edit_setup() {
 			updateToolbar();
 		} // if (elem != null)
 
-		updateContextPanel(true);
-	}
+		updateContextPanel(); 
+	};
 
 	// called when any element has changed
 	var elementChanged = function(window,elems) {
 		for (var i = 0; i < elems.length; ++i) {
 			var elem = elems[i];
-			// if the element changed was the svg, then it must be a resolution change
+			// if the element changed was the svg, then it could be a resolution change
 			if (elem && elem.tagName == "svg") {
 				changeResolution(parseInt(elem.getAttribute("width")),
 								 parseInt(elem.getAttribute("height")));
@@ -57,42 +76,76 @@ function svg_edit_setup() {
 
 		// we tell it to skip focusing the text control if the
 		// text element was previously in focus
-		updateContextPanel(false);
-	}
+		updateContextPanel();
+	};
 
 	// updates the toolbar (colors, opacity, etc) based on the selected element
-	function updateToolbar() {
+	var updateToolbar = function() {
 		if (selectedElement != null) {
 			// get opacity values
 			var fillOpacity = parseFloat(selectedElement.getAttribute("fill-opacity"));
 			if (isNaN(fillOpacity)) {
 				fillOpacity = 1.0;
 			}
-			fillOpacity = (fillOpacity*100)+" %";
 			
 			var strokeOpacity = parseFloat(selectedElement.getAttribute("stroke-opacity"));
 			if (isNaN(strokeOpacity)) {
 				strokeOpacity = 1.0;
 			}
-			strokeOpacity = (strokeOpacity*100)+" %";
+
+			// update fill color and opacity
+			var fillColor = selectedElement.getAttribute("fill")||"none";
+			// prevent undo on these canvas changes
+			svgCanvas.setFillColor(fillColor, true);
+			svgCanvas.setFillOpacity(fillOpacity, true);
+
+			// update stroke color and opacity
+			var strokeColor = selectedElement.getAttribute("stroke")||"none";
+			// prevent undo on these canvas changes
+			svgCanvas.setStrokeColor(strokeColor, true);
+			svgCanvas.setStrokeOpacity(strokeOpacity, true);
+
+			fillOpacity *= 100;
+			strokeOpacity *= 100;
+			
+			var getPaint = function(color, opac) {
+				// update the editor's fill paint
+				var opts = null;
+				
+				if (color.substr(0,5) == "url(#") {
+					opts = {
+						alpha: opac,
+						linearGradient: document.getElementById(color.substr(5,color.length-6))
+					};
+				} 
+				else if (color.substr(0,1) == "#") {
+					opts = {
+						alpha: opac,
+						solidColor: color.substr(1)
+					};
+				}
+				return new $.jGraduate.Paint(opts);
+			}
+			
+			fillPaint = getPaint(fillColor, fillOpacity);
+			strokePaint = getPaint(strokeColor, strokeOpacity);
+			
+			fillOpacity = fillOpacity + " %";
+			strokeOpacity = strokeOpacity + " %";
 
 			// update fill color
-			var fillColor = selectedElement.getAttribute("fill");
-			svgCanvas.setFillColor(fillColor);
 			if (fillColor == "none") {
-				fillColor = 'url(\'images/none.png\')';
 				fillOpacity = "N/A";
 			}
-			$('#fill_color').css('background', fillColor);
+			document.getElementById("gradbox_fill").parentNode.firstChild.setAttribute("fill", fillColor);
 
-			// update stroke color
-			var strokeColor = selectedElement.getAttribute("stroke");
-			svgCanvas.setStrokeColor(strokeColor);
 			if (strokeColor == null || strokeColor == "" || strokeColor == "none") {
-				strokeColor = 'url(\'images/none.png\')';
+				strokeColor = "none";
 				strokeOpacity = "N/A";
 			}
-			$('#stroke_color').css('background', strokeColor);			
+			
+			// update the rect inside #fill_color
+			document.getElementById("gradbox_stroke").parentNode.firstChild.setAttribute("fill", strokeColor);
 			
 			$('#fill_opacity').html(fillOpacity);
 			$('#stroke_opacity').html(strokeOpacity);
@@ -102,53 +155,48 @@ function svg_edit_setup() {
 		}
 
 		updateToolButtonState();
-	}
+	};
 
 	// updates the context panel tools based on the selected element
-	function updateContextPanel(shouldHighlightText) {
+	var updateContextPanel = function() {
 		var elem = selectedElement;
-		$('#selected_panel').hide();
-		$('#multiselected_panel').hide();
-		$('#rect_panel').hide();
-		$('#circle_panel').hide();
-		$('#ellipse_panel').hide();
-		$('#line_panel').hide();
-		$('#text_panel').hide();
+		
+		// No need to update anything else in rotate mode
+		if (svgCanvas.getMode() == 'rotate' && elem != null) {
+			$('#angle').val(svgCanvas.getRotationAngle(elem));
+			return;
+		}
+		
+		$('#selected_panel, #multiselected_panel, #rect_panel, #circle_panel,\
+			#ellipse_panel, #line_panel, #text_panel').hide();
 		if (elem != null) {
+			$('#angle').val(svgCanvas.getRotationAngle(elem));
 			$('#selected_panel').show();
+			
 			// update contextual tools here
-			switch(elem.tagName) {
-				case "rect":
-					$('#rect_panel').show();
-					$('#rect_radius').val(elem.getAttribute("rx")||0);
-					$('#rect_x').val(elem.getAttribute("x")||0);
-					$('#rect_y').val(elem.getAttribute("y")||0);
-					$('#rect_w').val(elem.getAttribute("width")||0);
-					$('#rect_h').val(elem.getAttribute("height")||0);
-					break;
-				case "circle":
-					$('#circle_panel').show();
-					$('#circle_cx').val(elem.getAttribute("cx")||0);
-					$('#circle_cy').val(elem.getAttribute("cy")||0);
-					$('#circle_r').val(elem.getAttribute("r")||0);
-					break;
-				case "ellipse":
-					$('#ellipse_panel').show();
-					$('#ellipse_cx').val(elem.getAttribute("cx")||0);
-					$('#ellipse_cy').val(elem.getAttribute("cy")||0);
-					$('#ellipse_rx').val(elem.getAttribute("rx")||0);
-					$('#ellipse_ry').val(elem.getAttribute("ry")||0);
-					break;
-				case "line":
-					$('#line_panel').show();
-					$('#line_x1').val(elem.getAttribute("x1")||0);
-					$('#line_y1').val(elem.getAttribute("y1")||0);
-					$('#line_x2').val(elem.getAttribute("x2")||0);
-					$('#line_y2').val(elem.getAttribute("y2")||0);
-					break;
-				case "text":
-					// jquery's show() always sets display to block
-					$('#text_panel').show().css("display", "inline");
+			var panels = {
+				rect: ['radius','x','y','width','height'],
+				circle: ['cx','cy','r'],
+				ellipse: ['cx','cy','rx','ry'],
+				line: ['x1','y1','x2','y2'], 
+				text: ['x','y']
+			};
+			
+			var el_name = elem.tagName;
+			
+			if(panels[el_name]) {
+			
+				var cur_panel = panels[el_name];
+				
+				
+				$('#' + el_name + '_panel').show();
+	
+				$.each(cur_panel, function(i, item) {
+					$('#' + el_name + '_' + item).val(elem.getAttribute(item) || 0);
+				});
+				
+				if(el_name == 'text') {
+					$('#text_panel').css("display", "inline");	
 					if (svgCanvas.getItalic()) {
 						$('#tool_italic').addClass('tool_button_current');
 					}
@@ -164,17 +212,16 @@ function svg_edit_setup() {
 					$('#font_family').val(elem.getAttribute("font-family"));
 					$('#font_size').val(elem.getAttribute("font-size"));
 					$('#text').val(elem.textContent);
-					$('#text').focus();
-					if (shouldHighlightText) {
-						$('#text').select();
+					if (svgCanvas.addedNew) {
+						$('#text').focus().select();
 					}
-					break;
-			} // switch
+				}
+			}
 		} // if (elem != null)
 		else if (multiselected) {
 			$('#multiselected_panel').show();
 		}
-
+		
 		// update history buttons
 		if (svgCanvas.getUndoStackSize() > 0) {
 			$('#tool_undo').removeClass( 'tool_button_disabled');
@@ -188,7 +235,9 @@ function svg_edit_setup() {
 		else {
 			$('#tool_redo').addClass( 'tool_button_disabled');
 		}
-	}
+		
+		svgCanvas.addedNew = false;
+	};
 
 	$('#text').focus( function(){ textBeingEntered = true; } );
 	$('#text').blur( function(){ textBeingEntered = false; } );
@@ -196,10 +245,11 @@ function svg_edit_setup() {
 	// bind the selected event to our function that handles updates to the UI
 	svgCanvas.bind("selected", selectedChanged);
 	svgCanvas.bind("changed", elementChanged);
+	svgCanvas.bind("saved", saveHandler);
 
-	var str = '<div class="palette_item" style="background: url(\'images/none.png\');"></div>'
+	var str = '<div class="palette_item" style="background-image: url(\'images/none.png\');" data-rgb="none"></div>'
 	$.each(palette, function(i,item){
-		str += '<div class="palette_item" style="background: ' + item + ';"></div>';
+		str += '<div class="palette_item" style="background-color: ' + item + ';" data-rgb="' + item + '"></div>';
 	});
 	$('#palette').append(str);
 
@@ -208,13 +258,28 @@ function svg_edit_setup() {
 	pos = $('#tools_ellipse_show').position();
 	$('#tools_ellipse').css({'left': pos.left+4, 'top': pos.top+70});
 
-	function changeStrokeWidth(ctl) {
-		svgCanvas.setStrokeWidth(ctl.value);
+	var changeRectRadius = function(ctl) {
+		svgCanvas.setRectRadius(ctl.value);
+	}
+	
+	var changeStrokeWidth = function(ctl) {
+		var val = ctl.value;
+		if(val == 0 && selectedElement && $.inArray(selectedElement.nodeName, ['line', 'polyline']) != -1) {
+			val = ctl.value = 1;
+		}
+		svgCanvas.setStrokeWidth(val);
+	}
+	
+	var changeRotationAngle = function(ctl) {
+		svgCanvas.setRotationAngle(ctl.value);
 	}
 
 	$('#stroke_style').change(function(){
 		svgCanvas.setStrokeStyle(this.options[this.selectedIndex].value);
 	});
+
+	// Lose focus for select elements when changed (Allows keyboard shortcuts to work better)
+	$('select').change(function(){$(this).blur();});
 
 	$('#group_opacity').change(function(){
 		svgCanvas.setOpacity(this.options[this.selectedIndex].value);
@@ -232,34 +297,74 @@ function svg_edit_setup() {
 		svgCanvas.setTextContent(this.value);
 	});
 
-	function changeRectRadius(ctl) {
-		svgCanvas.setRectRadius(ctl.value);
-	}
-	
 	$('.attr_changer').change(function() {
-		svgCanvas.changeSelectedAttribute(this.getAttribute("alt"), this.value);
+		var attr = this.getAttribute("alt");
+		var val = this.value;
+		var valid = false;
+		if($.inArray(attr, length_attrs) != -1) {
+			if(!isNaN(val)) {
+				valid = true;
+			} else {
+				//TODO: Allow the values in length_types, then uncomment this:  
+// 				val = val.toLowerCase();
+// 				$.each(length_types, function(i, unit) {
+// 					if(valid) return;
+// 					var re = new RegExp('^-?[\\d\\.]+' + unit + '$');
+// 					if(re.test(val)) valid = true;
+// 				});
+			}
+		} else valid = true;
+		
+		if(!valid) {
+			alert('Invalid value given for' + $(this).attr('title').replace('Change','')
+				+ '.');
+			this.value = selectedElement.getAttribute(attr);
+			return false;
+		} 
+		
+		svgCanvas.changeSelectedAttribute(attr, val);
+	});
+	
+	// Prevent selection of elements when shift-clicking
+	$('#palette').mouseover(function() {
+		var inp = $('<input type="hidden">');
+		$(this).append(inp);
+		inp.focus().remove();
 	});
 
 	$('.palette_item').click(function(evt){
+		var picker = (evt.shiftKey ? "stroke" : "fill");
 		var id = (evt.shiftKey ? '#stroke_' : '#fill_');
-		color = $(this).css('background-color');
+		var color = $(this).attr('data-rgb');
+		var rectbox = document.getElementById("gradbox_"+picker).parentNode.firstChild;
+		var paint = null;
+
 		// Webkit-based browsers returned 'initial' here for no stroke
 		if (color == 'transparent' || color == 'initial') {
 			color = 'none';
-			$(id + "color").css('background', 'url(\'images/none.png\')');
 			$(id + "opacity").html("N/A");
-		} else {
-			$(id + "color").css('background', color);
+			paint = new $.jGraduate.Paint();
 		}
+		else {
+			paint = new $.jGraduate.Paint({alpha: 100, solidColor: color.substr(1)});
+		}
+		rectbox.setAttribute("fill", color);
+		
 		if (evt.shiftKey) {
-			svgCanvas.setStrokeColor(color);
-			if (color != 'none' && $("#stroke_opacity").html() == 'N/A') {
+			strokePaint = paint;
+			if (svgCanvas.getStrokeColor() != color) {
+				svgCanvas.setStrokeColor(color);
+			}
+			if (color != 'none' && svgCanvas.getStrokeOpacity() != 1) {
 				svgCanvas.setStrokeOpacity(1.0);
 				$("#stroke_opacity").html("100 %");
 			}
 		} else {
-			svgCanvas.setFillColor(color);
-			if (color != 'none' && $("#fill_opacity").html() == 'N/A') {
+			fillPaint = paint;
+			if (svgCanvas.getFillColor() != color) {
+				svgCanvas.setFillColor(color);
+			}
+			if (color != 'none' && svgCanvas.getFillOpacity() != 1) {
 				svgCanvas.setFillOpacity(1.0);
 				$("#fill_opacity").html("100 %");
 			}
@@ -272,9 +377,10 @@ function svg_edit_setup() {
 	// - removes the tool_button_current class from whatever tool currently has it
 	// - hides any flyouts
 	// - adds the tool_button_current class to the button passed in
-	var toolButtonClick = function(button) {
+	var toolButtonClick = function(button, fadeFlyouts) {
 		if ($(button).hasClass('tool_button_disabled')) return false;
-		$('.tools_flyout').fadeOut();
+		var fadeFlyouts = fadeFlyouts || 'normal';
+		$('.tools_flyout').fadeOut(fadeFlyouts);
 		$('#styleoverrides').text('');
 		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 		$(button).addClass('tool_button_current');
@@ -286,101 +392,124 @@ function svg_edit_setup() {
 	var clickSelect = function() {
 		if (toolButtonClick('#tool_select')) {
 			svgCanvas.setMode('select');
-			$('#styleoverrides').text('*{cursor:move;pointer-events:all} svg{cursor:default}');
+			$('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all}, #svgcanvas svg{cursor:default}');
 		}
-	}
+	};
 
 	var clickPath = function() {
 		if (toolButtonClick('#tool_path')) {
 			svgCanvas.setMode('path');
 		}
-	}
+	};
 
 	var clickLine = function() {
 		if (toolButtonClick('#tool_line')) {
 			svgCanvas.setMode('line');
 		}
-	}
+	};
 
 	var clickSquare = function(){
-		if (toolButtonClick('#tools_rect_show')) {
+		if (toolButtonClick('#tools_rect_show', flyoutspeed)) {
+			flyoutspeed = 'normal';
 			svgCanvas.setMode('square');
 		}
 		$('#tools_rect_show').attr('src', 'images/square.png');
-	}
+	};
 
 	var clickRect = function(){
 		if (toolButtonClick('#tools_rect_show')) {
 			svgCanvas.setMode('rect');
 		}
 		$('#tools_rect_show').attr('src', 'images/rect.png');
-	}
+	};
 
 	var clickFHRect = function(){
 		if (toolButtonClick('#tools_rect_show')) {
 			svgCanvas.setMode('fhrect');
 		}
 		$('#tools_rect_show').attr('src', 'images/freehand-square.png');
-	}
+	};
 
 	var clickCircle = function(){
-		if (toolButtonClick('#tools_ellipse_show')) {
+		if (toolButtonClick('#tools_ellipse_show', flyoutspeed)) {
+			flyoutspeed = 'normal';
 			svgCanvas.setMode('circle');
 		}
 		$('#tools_ellipse_show').attr('src', 'images/circle.png');
-	}
+	};
 
 	var clickEllipse = function(){
 		if (toolButtonClick('#tools_ellipse_show')) {
 			svgCanvas.setMode('ellipse');
 		}
 		$('#tools_ellipse_show').attr('src', 'images/ellipse.png');
-	}
+	};
 
 	var clickFHEllipse = function(){
 		if (toolButtonClick('#tools_ellipse_show')) {
 			svgCanvas.setMode('fhellipse');
 		}
 		$('#tools_ellipse_show').attr('src', 'images/freehand-circle.png');
-	}
+	};
 
+	var clickText = function(){
+		toolButtonClick('#tool_text');
+		svgCanvas.setMode('text');
+	};
+	
+	var clickPoly = function(){
+		toolButtonClick('#tool_poly');
+		svgCanvas.setMode('poly');
+	};
+	
 	// Delete is a contextual tool that only appears in the ribbon if
 	// an element has been selected
 	var deleteSelected = function() {
 		if (selectedElement != null || multiselected) {
 			svgCanvas.deleteSelectedElements();
 		}
-	}
+	};
 
 	var moveToTopSelected = function() {
 		if (selectedElement != null) {
 			svgCanvas.moveToTopSelectedElement();
 		}
-	}
+	};
 
 	var moveToBottomSelected = function() {
 		if (selectedElement != null) {
 			svgCanvas.moveToBottomSelectedElement();
 		}
-	}
+	};
 
 	var moveSelected = function(dx,dy) {
 		if (selectedElement != null || multiselected) {
-			svgCanvas.moveSelectedElement(dx,dy);
+			svgCanvas.moveSelectedElements(dx,dy);
 		}
+	};
+	
+	var selectNext = function() {
+		svgCanvas.cycleElement(1);
+	}
+	
+	var selectPrev = function() {
+		svgCanvas.cycleElement(0);
 	}
 
-	var clickText = function(){
-		toolButtonClick('#tool_text');
-		svgCanvas.setMode('text');
+	var rotateSelected = function(cw) {
+		if (selectedElement == null || multiselected) return;
+		var step = 5;
+		if(!cw) step *= -1;
+		var new_angle = $('#angle').val()*1 + step;
+		svgCanvas.setRotationAngle(new_angle);
 	}
-
+	
 	var clickClear = function(){
 		if( confirm('Do you want to clear the drawing?\nThis will also erase your undo history!') ) {
 			svgCanvas.clear();
 			updateContextPanel();
 		}
-	}
+	};
 	
 	var clickBold = function(){
 		svgCanvas.setBold( !svgCanvas.getBold() );
@@ -394,17 +523,96 @@ function svg_edit_setup() {
 
 	var clickSave = function(){
 		svgCanvas.save();
-	}
+	};
+	
+	var clickOpen = function(){
+		svgCanvas.open();
+	};
 
 	var clickUndo = function(){
 		if (svgCanvas.getUndoStackSize() > 0)
 			svgCanvas.undo();
-	}
+	};
 
 	var clickRedo = function(){
 		if (svgCanvas.getRedoStackSize() > 0)
 			svgCanvas.redo();
-	}
+	};
+	
+	var clickClone = function(){
+		svgCanvas.cloneSelectedElements();
+	};
+
+	var clickAlignLeft = function(){
+		svgCanvas.alignSelectedElements('l', $('#align_relative_to option:selected').val() );
+	};
+	var clickAlignCenter = function(){
+		svgCanvas.alignSelectedElements('c', $('#align_relative_to option:selected').val() );
+	};
+	var clickAlignRight = function(){
+		svgCanvas.alignSelectedElements('r', $('#align_relative_to option:selected').val() );
+	};
+	var clickAlignTop = function(){
+		svgCanvas.alignSelectedElements('t', $('#align_relative_to option:selected').val() );
+	};
+	var clickAlignMiddle = function(){
+		svgCanvas.alignSelectedElements('m', $('#align_relative_to option:selected').val() );
+	};
+	var clickAlignBottom = function(){
+		svgCanvas.alignSelectedElements('b', $('#align_relative_to option:selected').val() );
+	};
+
+	var showSourceEditor = function(){
+		if (editingsource) return;
+		editingsource = true;
+		var str = svgCanvas.getSvgString();
+		$('#svg_source_textarea').val(str);
+		$('#svg_source_editor').fadeIn();
+		properlySourceSizeTextArea();
+		$('#svg_source_textarea').focus();
+	};
+	
+	var properlySourceSizeTextArea = function(){
+		// TODO: remove magic numbers here and get values from CSS
+		var height = $('#svg_source_container').height() - 80;
+		$('#svg_source_textarea').css('height', height);
+	};
+	
+	var saveSourceEditor = function(){
+		if (!editingsource) return;
+
+		if (!svgCanvas.setSvgString($('#svg_source_textarea').val())) {
+			if( !confirm('There were parsing errors in your SVG source.\nRevert back to original SVG source?') ) {
+				return false;
+			}
+		}
+		svgCanvas.clearSelection();
+		hideSourceEditor();
+	};
+
+	var cancelSourceEditor = function() {
+		if (!editingsource) return;
+
+		var oldString = svgCanvas.getSvgString();
+		if (oldString != $('#svg_source_textarea').val()) {
+			if( !confirm('Ignore changes made to SVG source?') ) {
+				return false;
+			}
+		}
+		hideSourceEditor();
+	};
+
+	var hideSourceEditor = function(){
+		$('#svg_source_editor').hide();
+		editingsource = false;
+		$('#svg_source_textarea').blur();
+	};
+	
+	// TODO: add canvas-centering code in here
+	$(window).resize(function(evt) {
+		if (!editingsource) return;
+		properlySourceSizeTextArea();
+	});
 
 	$('#tool_select').click(clickSelect);
 	$('#tool_path').click(clickPath);
@@ -416,15 +624,28 @@ function svg_edit_setup() {
 	$('#tool_ellipse').mouseup(clickEllipse);
 	$('#tool_fhellipse').mouseup(clickFHEllipse);
 	$('#tool_text').click(clickText);
+	$('#tool_poly').click(clickPoly);
 	$('#tool_clear').click(clickClear);
 	$('#tool_save').click(clickSave);
+	$('#tool_open').click(clickOpen);
+	$('#tool_source').click(showSourceEditor);
+	$('#tool_source_cancel,#svg_source_overlay').click(cancelSourceEditor);
+	$('#tool_source_save').click(saveSourceEditor);
 	$('#tool_delete').click(deleteSelected);
 	$('#tool_delete_multi').click(deleteSelected);
 	$('#tool_move_top').click(moveToTopSelected);
 	$('#tool_move_bottom').click(moveToBottomSelected);
 	$('#tool_undo').click(clickUndo);
 	$('#tool_redo').click(clickRedo);
-	// these two lines are required to make Opera work properly with the new flyout mechanism
+	$('#tool_clone').click(clickClone);
+	$('#tool_clone_multi').click(clickClone);
+	$('#tool_alignleft').click(clickAlignLeft);
+	$('#tool_aligncenter').click(clickAlignCenter);
+	$('#tool_alignright').click(clickAlignRight);
+	$('#tool_aligntop').click(clickAlignTop);
+	$('#tool_alignmiddle').click(clickAlignMiddle);
+	$('#tool_alignbottom').click(clickAlignBottom);
+	// these two lines are required to make Opera work properly with the flyout mechanism
 	$('#tools_rect_show').click(clickSquare);
 	$('#tools_ellipse_show').click(clickCircle);
 	$('#tool_bold').mousedown(clickBold);
@@ -432,124 +653,144 @@ function svg_edit_setup() {
 
 	// added these event handlers for all the push buttons so they
 	// behave more like buttons being pressed-in and not images
-	$('#tool_clear').mousedown(function(){$('#tool_clear').addClass('tool_button_current');});
-	$('#tool_clear').mouseup(function(){$('#tool_clear').removeClass('tool_button_current');});
-	$('#tool_clear').mouseout(function(){$('#tool_clear').removeClass('tool_button_current');});
-	$('#tool_save').mousedown(function(){$('#tool_save').addClass('tool_button_current');});
-	$('#tool_save').mouseup(function(){$('#tool_save').removeClass('tool_button_current');});
-	$('#tool_save').mouseout(function(){$('#tool_save').removeClass('tool_button_current');});
-	$('#tool_delete').mousedown(function(){$('#tool_delete').addClass('tool_button_current');});
-	$('#tool_delete').mouseup(function(){$('#tool_delete').removeClass('tool_button_current');});
-	$('#tool_delete').mouseout(function(){$('#tool_delete').removeClass('tool_button_current');});
-	$('#tool_delete_multi').mousedown(function(){$('#tool_delete_multi').addClass('tool_button_current');});
-	$('#tool_delete_multi').mouseup(function(){$('#tool_delete_multi').removeClass('tool_button_current');});
-	$('#tool_delete_multi').mouseout(function(){$('#tool_delete_multi').removeClass('tool_button_current');});
-	$('#tool_undo').mousedown(function(){ if (!$('#tool_undo').hasClass('tool_button_disabled')) $('#tool_undo').addClass('tool_button_current');});
-	$('#tool_undo').mouseup(function(){$('#tool_undo').removeClass('tool_button_current');});
-	$('#tool_undo').mouseout(function(){$('#tool_undo').removeClass('tool_button_current');});
-	$('#tool_redo').mousedown(function(){ if (!$('#tool_redo').hasClass('tool_button_disabled')) $('#tool_redo').addClass('tool_button_current');});
-	$('#tool_redo').mouseup(function(){$('#tool_redo').removeClass('tool_button_current');});
-	$('#tool_redo').mouseout(function(){$('#tool_redo').removeClass('tool_button_current');});
-	$('#tool_move_top').mousedown(function(){$('#tool_move_top').addClass('tool_button_current');});
-	$('#tool_move_top').mouseup(function(){$('#tool_move_top').removeClass('tool_button_current');});
-	$('#tool_move_top').mouseout(function(){$('#tool_move_top').removeClass('tool_button_current');});
-	$('#tool_move_bottom').mousedown(function(){$('#tool_move_bottom').addClass('tool_button_current');});
-	$('#tool_move_bottom').mouseup(function(){$('#tool_move_bottom').removeClass('tool_button_current');});
-	$('#tool_move_bottom').mouseout(function(){$('#tool_move_bottom').removeClass('tool_button_current');});
+	function setPushButtons() {
+		var toolnames = ['clear','open','save','source','delete','delete_multi','paste','clone','clone_multi','move_top','move_bottom'];
+		var all_tools = '';
+		var cur_class = 'tool_button_current';
+		
+		$.each(toolnames, function(i,item) {
+			all_tools += '#tool_' + item + (i==toolnames.length-1?',':'');
+		});
+		
+		$(all_tools).mousedown(function() {
+			$(this).addClass(cur_class);
+		}).bind('mousedown mouseout', function() {
+			$(this).removeClass(cur_class);
+		});
+		
+		$('#tool_undo, #tool_redo').mousedown(function(){ 
+			if (!$(this).hasClass('tool_button_disabled')) $(this).addClass(cur_class);
+		}).bind('mousedown mouseout',function(){
+			$(this).removeClass(cur_class);}
+		);
+	}
+	
+	setPushButtons();
 
+	// switch modifier key in tooltips if mac
+	// NOTE: This code is not used yet until I can figure out how to successfully bind ctrl/meta
+	// in Opera and Chrome
+	if (isMac) {
+		var shortcutButtons = ["tool_clear", "tool_save", "tool_source", "tool_undo", "tool_redo", "tool_clone"];
+		var i = shortcutButtons.length;
+		while (i--) {
+			var button = document.getElementById(shortcutButtons[i]);
+			var title = button.title;
+			var index = title.indexOf("Ctrl+");
+			button.title = [title.substr(0,index), "Cmd+", title.substr(index+5)].join('');
+		}
+	}
+	
 	// do keybindings using jquery-hotkeys plugin
-	$(document).bind('keydown', {combi:'1', disableInInput: true}, clickSelect);
-	$(document).bind('keydown', {combi:'2', disableInInput: true}, clickPath);
-	$(document).bind('keydown', {combi:'3', disableInInput: true}, clickLine);
-	$(document).bind('keydown', {combi:'Shift+4', disableInInput: true}, clickSquare);
-	$(document).bind('keydown', {combi:'4', disableInInput: true}, clickRect);
-	$(document).bind('keydown', {combi:'Shift+5', disableInInput: true}, clickCircle);
-	$(document).bind('keydown', {combi:'5', disableInInput: true}, clickEllipse);
-	$(document).bind('keydown', {combi:'6', disableInInput: true}, clickText);
-	$(document).bind('keydown', {combi:'N', disableInInput: true}, clickClear);
-	$(document).bind('keydown', {combi:'S', disableInInput: true}, clickSave);
-	$(document).bind('keydown', {combi:'del', disableInInput: true}, function(evt){deleteSelected();evt.preventDefault();});
-	$(document).bind('keydown', {combi:'backspace', disableInInput: true}, function(evt){deleteSelected();evt.preventDefault();});
-	$(document).bind('keydown', {combi:'shift+up', disableInInput: true}, moveToTopSelected);
-	$(document).bind('keydown', {combi:'shift+down', disableInInput: true}, moveToBottomSelected);
-	$(document).bind('keydown', {combi:'up', disableInInput: true}, function(evt){moveSelected(0,-1);evt.preventDefault();});
-	$(document).bind('keydown', {combi:'down', disableInInput: true}, function(evt){moveSelected(0,1);evt.preventDefault();});
-	$(document).bind('keydown', {combi:'left', disableInInput: true}, function(evt){moveSelected(-1,0);evt.preventDefault();});
-	$(document).bind('keydown', {combi:'right', disableInInput: true}, function(evt){moveSelected(1,0);evt.preventDefault();});
-	$(document).bind('keydown', {combi:'z', disableInInput: true}, clickUndo);
-	$(document).bind('keydown', {combi:'shift+z', disableInInput: true}, clickRedo);
-	$(document).bind('keydown', {combi:'y', disableInInput: true}, clickRedo);
+	function setKeyBindings() {
+		var keys = [
+			['1', clickSelect],
+			['2', clickPath],
+			['3', clickLine],
+			['Shift+4', clickSquare],
+			['4', clickRect],
+			['Shift+5', clickCircle],
+			['5', clickEllipse],
+			['6', clickText],
+			['7', clickPoly],
+			[modKey+'N', function(evt){clickClear();evt.preventDefault();}],
+			[modKey+'S', function(evt){editingsource?saveSourceEditor():clickSave();evt.preventDefault();}],
+			[modKey+'O', function(evt){clickOpen();evt.preventDefault();}],
+			['del', function(evt){deleteSelected();evt.preventDefault();}],
+			['backspace', function(evt){deleteSelected();evt.preventDefault();}],
+			['shift+up', moveToTopSelected],
+			['shift+down', moveToBottomSelected],
+			['shift+left', function(){rotateSelected(0)}],
+			['shift+right', function(){rotateSelected(1)}],
+			['shift+O', selectPrev],
+			['shift+P', selectNext],
+			['up', function(evt){moveSelected(0,-1);evt.preventDefault();}],
+			['down', function(evt){moveSelected(0,1);evt.preventDefault();}],
+			['left', function(evt){moveSelected(-1,0);evt.preventDefault();}],
+			['right', function(evt){moveSelected(1,0);evt.preventDefault();}],
+			[modKey+'z', function(evt){clickUndo();evt.preventDefault();}],
+			[modKey+'y', function(evt){clickRedo();evt.preventDefault();}],
+			[modKey+'u', function(evt){showSourceEditor();evt.preventDefault();}],
+			[modKey+'c', function(evt){clickClone();evt.preventDefault();}],
+			['esc', cancelSourceEditor, false]
+		];
+		
+		$.each(keys,function(i,item) {
+			var disable = !(item.length > 2 && !item[2]);
+			$(document).bind('keydown', {combi:item[0], disableInInput: disable}, item[1]);
+		});
+		
+		$('.attr_changer').bind('keydown', {combi:'return', disableInInput: false}, 
+			function(evt) {$(this).change();evt.preventDefault();}
+		);
+	}
+	
+	setKeyBindings();
 
+	// TODO: fix opacity being updated
+	// TODO: go back to the color boxes having white background-color and then setting
+	//       background-image to none.png (otherwise partially transparent gradients look weird)	
 	var colorPicker = function(elem) {
-		var oldbg = elem.css('background');
-		var color = elem.css('background-color');
-		var oldopacity = "100 %";
-		if (elem.attr('id') == 'stroke_color') {
-			oldopacity = $('#stroke_opacity').html();
-		}
-		if (elem.attr('id') == 'fill_color') {
-			oldopacity = $('#fill_opacity').html();
-		}
+		var picker = elem.attr('id') == 'stroke_color' ? 'stroke' : 'fill';
+		var opacity = (picker == 'stroke' ? $('#stroke_opacity') : $('#fill_opacity'));
+		var paint = (picker == 'stroke' ? strokePaint : fillPaint);
+		var title = (picker == 'stroke' ? 'Pick a Stroke Paint and Opacity' : 'Pick a Fill Paint and Opacity');
 		var was_none = false;
-		if (color == 'transparent' || color == 'initial') {
-			color = new $.jPicker.Color({ hex: 'ffffff', a: 100 });
+		if (paint.type == "none") {
+			// if it was none, then set to solid white
+			paint = new $.jGraduate.Paint({solidColor: 'ffffff'});
 			was_none = true;
-		} else {
-			var alpha;
-			if (oldopacity == 'N/A') {
-				alpha = 100;
-			} else {
-				alpha = oldopacity.split(' ')[0];
-			}
-			if (color.length == 7 && color[0] == '#') { // #hheexx notation
-				color = new $.jPicker.Color( { hex: color.substring(1,7) , a: alpha } );
-			} else if (color.substring(0,4) == 'rgb(' && color[color.length-1] == ')') { // rgb(r,g,b) notation
-				var rgb = color.substring(4,color.length-1).split(',');
-				color = new $.jPicker.Color({ r: rgb[0], g: rgb[1], b: rgb[2], a: alpha });
-			} else {
-				color = new $.jPicker.Color({ hex: 'ffffff', a: alpha });
-			}
 		}
 		var pos = elem.position();
-		picker = 'stroke';
-		$('#color_picker').css({'left': pos.left - 140, 'bottom': 104 - pos.top}).jPicker({
-			images: { clientPath: "jpicker/images/" },
-			color: { active: color, alphaSupport: true }
-		}, function(color){
-			elem.css('background', '#' + this.settings.color.active.hex);
-			if (elem.attr('id') == 'stroke_color') {
-				svgCanvas.setStrokeColor('#' + this.settings.color.active.hex);
-				svgCanvas.setStrokeOpacity(this.settings.color.active.a/100);
-				$('#stroke_opacity').html(this.settings.color.active.a+" %");
-			} else if (elem.attr('id') == 'fill_color') {
-				svgCanvas.setFillColor('#' + this.settings.color.active.hex);
-				svgCanvas.setFillOpacity(this.settings.color.active.a/100);
-				$('#fill_opacity').html(this.settings.color.active.a+" %");
-			}
-			$('#color_picker').hide();
-		}
-		, null
-		, function(){
-			elem.css('background', oldbg);
-			if (elem.attr('id') == 'stroke_color') {
-				$('#stroke_opacity').html(oldopacity);
-			} else if (elem.attr('id') == 'fill_color') {
-				$('#fill_opacity').html(oldopacity);
-			}
-			if (was_none) {
-				if (elem.attr('id') == 'stroke_color') {
-					svgCanvas.setStrokeColor('none');
-					$('#stroke_opacity').html('N/A');
-				} else if (elem.attr('id') == 'fill_color') {
-					svgCanvas.setFillColor('none');
-					$('#fill_opacity').html('N/A');
+		$('#color_picker').css({'left': pos.left - 140, 'bottom': 124 - pos.top}).jGraduate(
+			{ 
+				paint: paint,
+				window: { pickerTitle: title },
+				images: { clientPath: "jgraduate/images/" },
+			},
+			function(p) {
+				paint = new $.jGraduate.Paint(p);
+				
+				var oldgrad = document.getElementById("gradbox_"+picker);
+				var svgbox = oldgrad.parentNode;
+				var rectbox = svgbox.firstChild;
+				
+				if (paint.type == "linearGradient") {
+					svgbox.removeChild(oldgrad);
+					var newgrad = svgbox.appendChild(document.importNode(paint.linearGradient, true));
+					newgrad.id = "gradbox_"+picker;
+					rectbox.setAttribute("fill", "url(#gradbox_" + picker + ")");
 				}
-			}
-			$('#color_picker').hide();
-		});
-	}
+				else {
+					rectbox.setAttribute("fill", "#" + paint.solidColor);
+				}
+				opacity.html(paint.alpha + " %");
 
-	function updateToolButtonState() {
+				if (picker == 'stroke') {
+					svgCanvas.setStrokePaint(paint, true);
+				}
+				else {
+					svgCanvas.setFillPaint(paint, true);
+				}
+				updateToolbar();
+				$('#color_picker').hide();
+			},
+			function(p) {
+				$('#color_picker').hide();
+			});
+	};
+
+	var updateToolButtonState = function() {
 		var bNoFill = (svgCanvas.getFillColor() == 'none');
 		var bNoStroke = (svgCanvas.getStrokeColor() == 'none');
 		var buttonsNeedingStroke = [ '#tool_path', '#tool_line' ];
@@ -585,8 +826,24 @@ function svg_edit_setup() {
 				$(button).removeClass('tool_button_disabled').addClass('tool_button');
 			}
 		}
-	}
+	};
 
+	// set up gradients to be used for the buttons
+	var svgdocbox = new DOMParser().parseFromString(
+		'<svg xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#FF0000"/>\
+		<linearGradient id="gradbox_">\
+				<stop stop-color="#000" offset="0.0"/>\
+				<stop stop-color="#FF0000" offset="1.0"/>\
+		</linearGradient></svg>', 'text/xml');
+
+	var boxgrad = svgdocbox.getElementById('gradbox_');
+	boxgrad.id = 'gradbox_fill';
+	$('#fill_color').append( document.importNode(svgdocbox.documentElement,true) );
+	
+	boxgrad.id = 'gradbox_stroke';	
+	$(svgdocbox.documentElement.firstChild).attr('fill', '#000000');
+	$('#stroke_color').append( document.importNode(svgdocbox.documentElement,true) );
+		
 	$('#fill_color').click(function(){
 		colorPicker($(this));
 		updateToolButtonState();
@@ -602,8 +859,11 @@ function svg_edit_setup() {
 		// this prevents the 'image drag' behavior in Firefox
 		evt.preventDefault();
 	});
-	$('#tools_rect').mouseleave(function() {
-		$('#tools_rect').fadeOut();
+	$('#tools_rect').mouseleave(function(){$('#tools_rect').fadeOut();});
+
+	$('#tool_move_top').mousedown(function(evt){
+		$('#tools_stacking').show();
+		evt.preventDefault();
 	});
 
 	$('#tools_ellipse_show').mousedown(function(evt){
@@ -611,9 +871,7 @@ function svg_edit_setup() {
 		// this prevents the 'image drag' behavior in Firefox
 		evt.preventDefault();
 	});
-	$('#tools_ellipse').mouseleave(function() {
-		$('#tools_ellipse').fadeOut();
-	});
+	$('#tools_ellipse').mouseleave(function() {$('#tools_ellipse').fadeOut();});
 
 	$('.tool_flyout_button').mouseover(function() {
 		$(this).addClass('tool_flyout_button_current');
@@ -622,19 +880,60 @@ function svg_edit_setup() {
 	});
 
 	function changeResolution(x,y) {
-		$('#resolution').val(x+'x'+y);
-		$('#svgroot').css( { 'width': x, 'height': y } );
+		var new_res = x+'x'+y;
+		var found = false;
+		$('#resolution option').each(function() {
+			if($(this).text() == new_res) {
+				$('#resolution').val(x+'x'+y);
+				found = true;
+			}
+		});
+		if(!found) $('#resolution').val('Custom');
+		
 		$('#svgcanvas').css( { 'width': x, 'height': y } );
 	}
 
 	$('#resolution').change(function(){
-		var res = this.value.split('x');
-		var x = parseInt(res[0]), y = parseInt(res[1]);
+		if(this.value == 'Custom') {
+			var cust_val = prompt("Please enter custom size (i.e. 400x300)","");
+			var res_vals = cust_val.match(/(\d+)[x \/,](\d+)/);
+			if(!res_vals) {
+				alert('Invalid size. Please format it as WIDTHxHEIGHT (like 400x300)');
+				return false;
+			} else {
+				var x = res_vals[1], y = res_vals[2];
+				if(x == '0' || y == '0') {
+					alert('Invalid size. Width or height may not be 0.');
+					return false;
+				}
+			}
+		} else if(this.value == 'Fit to content'){
+			var x = '', y = '';
+		} else {
+			var res = this.value.split('x');
+			var x = parseInt(res[0]), y = parseInt(res[1]);
+		}
 		svgCanvas.setResolution(x,y);
 	});
 
-	$('#rect_radius').SpinButton({ min: 0, max: 1000, step: 1, callback: changeRectRadius });
-	$('#stroke_width').SpinButton({ min: 1, max: 99, step: 1, callback: changeStrokeWidth });
+	$('#rect_rx').SpinButton({ min: 0, max: 1000, step: 1, callback: changeRectRadius });
+	$('#stroke_width').SpinButton({ min: 0, max: 99, step: 1, callback: changeStrokeWidth });
+	$('#angle').SpinButton({ min: -180, max: 180, step: 5, callback: changeRotationAngle });
+
+	svgCanvas.setCustomHandlers = function(opts) {
+		if(opts.open) {
+			$('#tool_open').show();
+			svgCanvas.bind("opened", opts.open);
+		}
+		if(opts.save) {
+			svgCanvas.bind("saved", opts.save);
+		}
+	}
 
 	return svgCanvas;
 };
+
+// This happens when the page is loaded
+$(function() {
+	svgCanvas = svg_edit_setup();
+});
