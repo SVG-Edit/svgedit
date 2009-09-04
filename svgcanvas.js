@@ -37,6 +37,9 @@ var svgWhiteList = {
 	"text": ["fill", "fill-opacity", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "text-anchor", "x", "y"],
 };
 
+function SvgCanvas(c)
+{
+
 // These command objects are used for the Undo/Redo stack
 // attrs contains the values that the attributes had before the change
 function ChangeElementCommand(elem, attrs, text) {
@@ -60,6 +63,19 @@ function ChangeElementCommand(elem, attrs, text) {
 				else this.elem.removeAttribute(attr);
 			}
 		}
+		// relocate rotational transform, if necessary
+		if (attr != "transform") {
+			var angle = canvas.getRotationAngle(elem);
+			if (angle) {
+				var bbox = elem.getBBox();
+				var cx = bbox.x + bbox.width/2,
+					cy = bbox.y + bbox.height/2;
+				var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
+				if (rotate != elem.getAttribute("transform")) {
+					elem.setAttribute("transform", rotate);
+				}
+			}
+		}
 		return true;
 	};
 
@@ -72,6 +88,19 @@ function ChangeElementCommand(elem, attrs, text) {
 			else {
 				if (attr == "#text") this.elem.textContent = "";
 				else this.elem.removeAttribute(attr);
+			}
+		}
+		// relocate rotational transform, if necessary
+		if (attr != "transform") {
+			var angle = canvas.getRotationAngle(elem);
+			if (angle) {
+				var bbox = elem.getBBox();
+				var cx = bbox.x + bbox.width/2,
+					cy = bbox.y + bbox.height/2;
+				var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
+				if (rotate != elem.getAttribute("transform")) {
+					elem.setAttribute("transform", rotate);
+				}
 			}
 		}
 		return true;
@@ -170,8 +199,6 @@ function BatchCommand(text) {
 	this.isEmpty = function() { return this.stack.length == 0; };
 }
 
-function SvgCanvas(c)
-{
 // private members
 
 	// **************************************************************************************
@@ -1300,7 +1327,6 @@ function SvgCanvas(c)
 			case "line":
 				started = true;
 				var stroke_w = cur_shape.stroke_width == 0?1:cur_shape.stroke_width;
-				console.log(stroke_w);
 				addSvgElementFromJson({
 					"element": "line",
 					"attr": {
@@ -1409,7 +1435,8 @@ function SvgCanvas(c)
 				break;
 			case "rotate":
 				started = true;
-				canvas.setRotationAngle(canvas.getRotationAngle());
+				// we are starting an undoable change (a drag-rotation)
+				canvas.beginUndoableChange("transform", selectedElements);
 				break;
 			default:
 				console.log("Unknown mode in mousedown: " + current_mode);
@@ -1718,10 +1745,9 @@ function SvgCanvas(c)
 				}
 				break;
 			case "rotate":
-				canvas.dragging = true;
 				var box = canvas.getBBox(selected),cx = box.x + box.width/2, cy = box.y + box.height/2;
 				var angle = parseInt(((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360);
-				canvas.setRotationAngle(angle<-180?(360+angle):angle);
+				canvas.setRotationAngle(angle<-180?(360+angle):angle, true);
 				break;
 			default:
 				break;
@@ -1811,7 +1837,6 @@ function SvgCanvas(c)
 		started = false;
 		var element = svgdoc.getElementById(getId());
 		var keep = false;
-		canvas.dragging = false;
 		switch (current_mode)
 		{
 			// intentionally fall-through to select here
@@ -2190,6 +2215,11 @@ function SvgCanvas(c)
 				keep = true;
 				element = null;
 				current_mode = "select";
+				canvas.setRotationAngle(canvas.getRotationAngle(), true);
+				var batchCmd = canvas.finishUndoableChange();
+				if (!batchCmd.isEmpty()) { 
+					addCommandToHistory(batchCmd);
+				}
 				break;
 			default:
 				console.log("Unknown mode in mouseup: " + current_mode);
@@ -2563,15 +2593,19 @@ function SvgCanvas(c)
 		return 0;
 	};
 
-	this.setRotationAngle = function(val) {
+	this.setRotationAngle = function(val,preventUndo) {
 		var elem = selectedElements[0];
 		// we use the actual element's bbox (not the calculated one) since the 
 		// calculated bbox's center can change depending on the angle
-		var bbox = elem.getBBox(); //this.getBBox(elem);
-		var rotate = "rotate(" + val + " " + 
-									(bbox.x+bbox.width/2) + "," +
-									(bbox.y+bbox.height/2) + ")";
-		this.changeSelectedAttribute("transform", rotate);
+		var bbox = elem.getBBox();
+		var cx = (bbox.x+bbox.width/2), cy = (bbox.y+bbox.height/2);
+		var rotate = "rotate(" + val + " " + cx + "," + cy + ")";
+		if (preventUndo) {
+			this.changeSelectedAttributeNoUndo("transform", rotate, selectedElements);
+		}
+		else {
+			this.changeSelectedAttribute("transform",rotate,selectedElements);
+		}
 		var pointGripContainer = document.getElementById("polypointgrip_container");
 		if(elem.nodeName == "path" && pointGripContainer) {
 			pointGripContainer.setAttribute("transform", rotate);
@@ -2684,27 +2718,49 @@ function SvgCanvas(c)
 		return clone;
 	}
 
-	// If you want to change all selectedElements, ignore the elems argument.
-	// If you want to change only a subset of selectedElements, then send the
-	// subset to this function in the elems argument.
-	this.changeSelectedAttribute = function(attr, val, elems) {
-		var elems = elems || selectedElements;
-		var batchCmd = new BatchCommand("Change " + attr);
+	// New functions for refactoring of Undo/Redo
+	
+	// this is the stack that stores the original values, the elements and
+	// the attribute name for begin/finish
+	var undoChangeStackPointer = -1;
+	var undoableChangeStack = [];
+	
+	// This function tells the canvas to remember the old values of the 
+	// attrName attribute for each element sent in.  The elements and values 
+	// are stored on a stack, so the next call to finishUndoableChange() will 
+	// pop the elements and old values off the stack, gets the current values
+	// from the DOM and uses all of these to construct the undo-able command.
+	this.beginUndoableChange = function(attrName, elems) {
+		var p = ++undoChangeStackPointer;
 		var i = elems.length;
-		var handle = svgroot.suspendRedraw(1000);
-		while(i--) {
+		var oldValues = new Array(i), elements = new Array(i);
+		while (i--) {
 			var elem = elems[i];
 			if (elem == null) continue;
-			
-			var oldval = (attr == "#text" ? elem.textContent : elem.getAttribute(attr));
-			// if the attribute was currently not set, store an empty string (cannot store null)
-			if (oldval == null) { oldval = ""; }
-			if (oldval != val) {
+			elements[i] = elem;
+			oldValues[i] = elem.getAttribute(attrName);
+		}
+		undoableChangeStack[p] = {'attrName': attrName,
+								'oldValues': oldValues,
+								'elements': elements};
+	};
+	
+	// This function makes the changes to the elements and then 
+	// fires the 'changed' event 
+	this.changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
+		var handle = svgroot.suspendRedraw(1000);
+		var i = elems.length;
+		while (i--) {
+			var elem = elems[i];
+			if (elem == null) continue;
+			var oldval = attr == "#text" ? elem.textContent : elem.getAttribute(attr);
+			if (oldval == null)  oldval = "";
+			if (oldval != newValue) {
 				if (attr == "#text") {
-					elem.textContent = val;
+					elem.textContent = newValue;
 					elem = canvas.quickClone(elem);
 				} 
-				else elem.setAttribute(attr, val);
+				else elem.setAttribute(attr, newValue);
 				selectedBBoxes[i] = this.getBBox(elem);
 				// Use the Firefox quickClone hack for text elements with gradients or
 				// where other text attributes are changed. 
@@ -2717,12 +2773,8 @@ function SvgCanvas(c)
 				setTimeout(function() {
 					selectorManager.requestSelector(elem).resize(selectedBBoxes[i]);
 				},0);
-				var changes = {};
-				changes[attr] = oldval;
-
 				// if this element was rotated, and we changed the position of this element
-				// we need to update the rotational transform attribute and store it as part
-				// of our changeset
+				// we need to update the rotational transform attribute 
 				var angle = canvas.getRotationAngle(elem);
 				if (angle && attr != "transform") {
 					var cx = selectedBBoxes[i].x + selectedBBoxes[i].width/2,
@@ -2730,16 +2782,49 @@ function SvgCanvas(c)
 					var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
 					if (rotate != elem.getAttribute("transform")) {
 						elem.setAttribute("transform", rotate);
-						changes['transform'] = rotate;
 					}
 				}
-				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes, attr));
+			} // if oldValue != newValue
+		} // for each elem
+		svgroot.unsuspendRedraw(handle);		
+		call("changed", elems);
+	};
+	
+	// This function returns a BatchCommand object which summarizes the
+	// change since beginUndoableChange was called.  The command can then
+	// be added to the command history
+	this.finishUndoableChange = function() {
+		var p = undoChangeStackPointer--;
+		var changeset = undoableChangeStack[p];
+		var i = changeset['elements'].length;
+		var attrName = changeset['attrName'];
+		var batchCmd = new BatchCommand("Change " + attrName);
+		while (i--) {
+			var elem = changeset['elements'][i];
+			if (elem == null) continue;
+			var changes = {};
+			changes[attrName] = changeset['oldValues'][i];
+			if (changes[attrName] != elem.getAttribute(attrName)) {
+				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes, attrName));
 			}
 		}
-		svgroot.unsuspendRedraw(handle);
+		undoableChangeStack[p] = null;
+		return batchCmd;
+	};
+
+	// If you want to change all selectedElements, ignore the elems argument.
+	// If you want to change only a subset of selectedElements, then send the
+	// subset to this function in the elems argument.
+	this.changeSelectedAttribute = function(attr, val, elems) {
+		var elems = elems || selectedElements;
+		canvas.beginUndoableChange(attr, elems);
+		var i = elems.length;
+
+		canvas.changeSelectedAttributeNoUndo(attr, val, elems);
+
+		var batchCmd = canvas.finishUndoableChange();
 		if (!batchCmd.isEmpty()) { 
-			if(!canvas.dragging) addCommandToHistory(batchCmd);
-			call("changed", elems);
+			addCommandToHistory(batchCmd);
 		}
 	};
 
