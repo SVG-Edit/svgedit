@@ -2839,7 +2839,7 @@ function BatchCommand(text) {
 					elem = canvas.quickClone(elem);
 				} else if (attr == "#href") {
           var xlinkNS="http://www.w3.org/1999/xlink";
-          elem.setAttributeNS(xlinkNS, "href", val);
+          elem.setAttributeNS(xlinkNS, "href", newValue);
         }
 				else elem.setAttribute(attr, newValue);
 				selectedBBoxes[i] = this.getBBox(elem);
