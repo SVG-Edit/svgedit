@@ -13,6 +13,7 @@ var svgWhiteList = {
 	"circle": ["cx", "cy", "fill", "fill-opacity", "id", "opacity", "r", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
 	"defs": [],
 	"ellipse": ["cx", "cy", "fill", "fill-opacity", "id", "opacity", "rx", "ry", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
+	"image": ["height", "id", "opacity", "width", "x", "xlink:href", "y"],
 	"line": ["fill", "fill-opacity", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-opacity", "stroke-width",  "transform", "x1", "x2", "y1", "y2"],
 	"linearGradient": ["id", "gradientTransform", "gradientUnits", "spreadMethod", "x1", "x2", "y1", "y2"],
 	"path": ["d", "fill", "fill-opacity", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
@@ -21,8 +22,7 @@ var svgWhiteList = {
 	"radialGradient": ["id", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "r", "spreadMethod"],
 	"rect": ["fill", "fill-opacity", "height", "id", "opacity", "rx", "ry", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "width", "x", "y"],
 	"stop": ["id", "offset", "stop-color", "stop-opacity"],
-	"svg": ["id", "height", "transform", "width", "xmlns"],
-  "image": ["id","width","height","opacity","x","y"],
+	"svg": ["id", "height", "transform", "width", "xmlns", "xmlns:xlink"],
 	"text": ["fill", "fill-opacity", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "text-anchor", "x", "y"],
 };
 
@@ -542,7 +542,7 @@ function BatchCommand(text) {
 	var canvas = this;
 	var container = c;
 	var svgns = "http://www.w3.org/2000/svg";
-
+	var xlinkns = "http://www.w3.org/1999/xlink";
 	var idprefix = "svg_";
 	var svgdoc  = c.ownerDocument;
 	var svgroot = svgdoc.createElementNS(svgns, "svg");
@@ -550,6 +550,8 @@ function BatchCommand(text) {
 	svgroot.setAttribute("height", 480);
 	svgroot.setAttribute("id", "svgroot");
 	svgroot.setAttribute("xmlns", svgns);
+	svgroot.setAttribute("xmlns:xlink", xlinkns);
+	
 	container.appendChild(svgroot);
 	var comment = svgdoc.createComment(" created with SVG-edit - http://svg-edit.googlecode.com/ ");
 	svgroot.appendChild(comment);
