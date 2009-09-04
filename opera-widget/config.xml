@@ -8,7 +8,7 @@
   <height>600</height>
   <id>
     <name>SVG Edit</name>
-    <revised>2009-08</revised>
+    <revised>2009-09</revised>
   </id>
   <feature name="http://xmlns.opera.com/fileio">
     <param name="folderhint" value="home" />
