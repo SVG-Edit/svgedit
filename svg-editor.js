@@ -95,13 +95,15 @@ function svg_edit_setup() {
 
 			// update fill color and opacity
 			var fillColor = selectedElement.getAttribute("fill")||"none";
-			svgCanvas.setFillColor(fillColor);
-			svgCanvas.setFillOpacity(fillOpacity);
+			// prevent undo on these canvas changes
+			svgCanvas.setFillColor(fillColor, true);
+			svgCanvas.setFillOpacity(fillOpacity, true);
 
 			// update stroke color and opacity
 			var strokeColor = selectedElement.getAttribute("stroke")||"none";
-			svgCanvas.setStrokeColor(strokeColor);
-			svgCanvas.setStrokeOpacity(strokeOpacity);
+			// prevent undo on these canvas changes
+			svgCanvas.setStrokeColor(strokeColor, true);
+			svgCanvas.setStrokeOpacity(strokeOpacity, true);
 
 			fillOpacity *= 100;
 			strokeOpacity *= 100;
@@ -350,15 +352,19 @@ function svg_edit_setup() {
 		
 		if (evt.shiftKey) {
 			strokePaint = paint;
-			svgCanvas.setStrokeColor(color);
-			if (color != 'none') {
+			if (svgCanvas.getStrokeColor() != color) {
+				svgCanvas.setStrokeColor(color);
+			}
+			if (color != 'none' && svgCanvas.getStrokeOpacity() != 1) {
 				svgCanvas.setStrokeOpacity(1.0);
 				$("#stroke_opacity").html("100 %");
 			}
 		} else {
 			fillPaint = paint;
-			svgCanvas.setFillColor(color);
-			if (color != 'none') {
+			if (svgCanvas.getFillColor() != color) {
+				svgCanvas.setFillColor(color);
+			}
+			if (color != 'none' && svgCanvas.getFillOpacity() != 1) {
 				svgCanvas.setFillOpacity(1.0);
 				$("#fill_opacity").html("100 %");
 			}
