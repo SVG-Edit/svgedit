@@ -2309,6 +2309,9 @@ function BatchCommand(text) {
 		resetUndoStack();
 		// reset the selector manager
 		selectorManager.initGroup();
+		// reset the rubber band box
+		rubberBox = selectorManager.getRubberBandBox();
+		
 		call("cleared");
 	};
 	
