@@ -405,6 +405,9 @@ function BatchCommand(text) {
 											"element": "g",
 											"attr": {"id": "selectorParentGroup"}
 										});
+			mgr.selectorMap = {};
+			mgr.selectors = [];
+			mgr.rubberBandBox = null;
 		};
 
 		this.requestSelector = function(elem) {
