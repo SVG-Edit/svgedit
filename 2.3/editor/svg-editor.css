@@ -1,0 +1,345 @@
+body {
+	background: #E8E8E8;
+}
+
+#svg_editor {
+	font-size: 8pt;
+	font-family: Verdana, Helvetica, Arial;
+	color: #000000;
+}
+
+#svg_editor a {
+	color: #0000FF;
+}
+
+#svg_editor hr {
+	border: none;
+	border-bottom: 1px solid #808080;
+}
+
+#svg_editor select {
+	margin-top: 4px;
+}
+
+#svg_editor #svgroot {
+	-moz-user-select: none;
+}
+
+#svg_editor #svgcanvas {
+	background-color: #FFFFFF;
+	text-align: center;
+	vertical-align: middle;
+	width: 640px;
+	height: 480px;
+	-apple-dashboard-region:dashboard-region(control rectangle 0px 0px 0px 0px); /* for widget regions that shouldn't react to dragging */
+}
+
+#svg_editor div#palette_holder {
+	overflow-x: scroll;
+	overflow-y: hidden;
+	height: 31px;
+	border: 1px solid #808080;
+	border-top: none;
+	margin-top: 2px;
+}
+
+#svg_editor #fill_color, #svg_editor #stroke_color {
+	height: 16px;
+	width: 16px;
+	border: 1px solid #808080;
+	cursor: pointer;
+}
+
+#svg_editor div#palette {
+	float: left;
+	width: 6848px;
+	height: 16px;
+}
+
+#svg_editor div#workarea {
+	position:absolute;
+	top: 70px;
+	left: 40px;
+	right: 2px;
+	bottom: 60px;
+	background-color: #A0A0A0;
+	border: 1px solid #808080;
+	overflow: auto;
+}
+
+#svg_editor div.palette_item {
+	height: 16px;
+	width: 16px;
+	float: left;
+}
+
+#svg_editor #logo {
+	position: absolute;
+	top: 4px;
+	left: 4px;
+	padding: 0px;
+}
+
+#svg_editor #logo a img {
+	border: 0;
+	width: 32px;
+	height: 32px;
+}
+
+#svg_editor #tools_top {
+	position: absolute;
+	left: 38px;
+	right: 2px;
+	top: 2px;
+	height: 68px;
+	border-bottom: none;
+}
+
+#svg_editor #tools_top div {
+	float: left;
+}
+
+#svg_editor #tools_left {
+	position: absolute;
+	border-right: none;
+	width: 36px;
+	top: 68px;
+	left: 2px;
+}
+
+/* TODO: fix this */
+div.color_block {
+	background-image: url('images/none.png');
+	display: inline-block;
+}
+
+#svg_editor #selected_panel {
+	display: none;
+}
+
+#svg_editor #multiselected_panel {
+	display: none;
+}
+
+#svg_editor #rect_panel {
+	display: none;
+}
+
+#svg_editor #circle_panel {
+	display: none;
+}
+
+#svg_editor #ellipse_panel {
+	display: none;
+}
+
+#svg_editor #line_panel {
+	display: none;
+}
+
+#svg_editor #text_panel {
+	display: none;
+}
+
+#svg_editor #selected_panel .selected_tool {
+	vertical-align: 12px;
+}
+
+#svg_editor #multiselected_panel .selected_tool {
+	vertical-align: 12px;
+}
+
+#svg_editor #text_panel .text_tool {
+	vertical-align: 12px;
+}
+
+#svg_editor #rect_panel .rect_tool {
+	vertical-align: 12px;
+}
+
+#svg_editor #circle_panel .circle_tool {
+	vertical-align:12px;
+}
+
+#svg_editor #ellipse_panel .ellipse_tool {
+	vertical-align:12px;
+}
+
+#svg_editor #line_panel .line_tool {
+	vertical-align:12px;
+}
+
+/* TODO: figure out why there is a couple pixels between
+   the tools with a flyout arrow */
+#svg_editor .flyout_arrow_horiz {
+	float: right;
+	position: relative;
+	top: -13px;
+	left: -5px;
+	margin-bottom: -13px;
+}
+
+#svg_editor .tool_button, #svg_editor .tool_button_current, #svg_editor .tool_button_disabled {
+	height: 24px;
+	width: 24px;
+	margin: 2px;
+	padding: 2px;
+	border-left: 1px solid #FFFFFF;
+	border-top: 1px solid #FFFFFF;
+	border-right: 1px solid #808080;
+	border-bottom: 1px solid #808080;
+	cursor: pointer;
+}
+
+#svg_editor .tool_button_current {
+	border-left: 1px solid #808080;
+	border-top: 1px solid #808080;
+	border-right: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	background-color: #B0B0B0;
+}
+
+#svg_editor .tool_button_disabled {
+	opacity: 0.5;
+	cursor: default;
+}
+
+#svg_editor .tool_sep {
+	width: 2px;
+	height: 24px;
+	margin: 2px;
+	margin-right: 0;
+	padding: 2px;
+}
+
+#svg_editor #color_picker {
+	position: absolute;
+	display: none;
+	background: #E8E8E8;
+}
+
+#svg_editor .tools_flyout {
+	position: absolute;
+	display: none;
+	cursor: pointer;
+}
+
+#svg_editor .tools_flyout_v {
+	position: absolute;
+	display: none;
+	cursor: pointer;
+	width: 30px;
+}
+
+#svg_editor #tool_square { background: 2px 2px url('images/square.png') no-repeat; }
+#svg_editor #tool_rect { background: 2px 2px url('images/rect.png') no-repeat; }
+#svg_editor #tool_fhrect { background: 2px 2px url('images/freehand-square.png') no-repeat; }
+#svg_editor #tool_circle { background: 2px 2px url('images/circle.png') no-repeat; }
+#svg_editor #tool_ellipse { background: 2px 2px url('images/ellipse.png') no-repeat; }
+#svg_editor #tool_fhellipse { background: 2px 2px url('images/freehand-circle.png') no-repeat; }
+#svg_editor #tool_stacktop { background: 2px 2px url('images/move_top.png') no-repeat; }
+#svg_editor #tool_stackbottom { background: 2px 2px url('images/move_bottom.png') no-repeat; }
+#svg_editor #tool_aligntop { background: 2px 2px url('images/align-vertical-top.png') no-repeat; }
+#svg_editor #tool_alignmiddle { background: 2px 2px url('images/align-vertical-middle.png') no-repeat; }
+#svg_editor #tool_alignbottom { background: 2px 2px url('images/align-vertical-bottom.png') no-repeat; }
+#svg_editor #tool_alignleft { background: 2px 2px url('images/align-horizontal-left.png') no-repeat; }
+#svg_editor #tool_aligncenter { background: 2px 2px url('images/align-horizontal-center.png') no-repeat; }
+#svg_editor #tool_alignright { background: 2px 2px url('images/align-horizontal-right.png') no-repeat; }
+
+/* TODO: figure out what more-specific selector causes me to write this atrocity and not
+         simply .tool_flyout_button */
+#svg_editor #tools_rect .tool_flyout_button, #svg_editor #tools_ellipse .tool_flyout_button {
+	float: left;
+	background-color: #E8E8E8;
+	border-left: 1px solid #FFFFFF;
+	border-top: 1px solid #FFFFFF;
+	border-right: 1px solid #808080;
+	border-bottom: 1px solid #808080;
+	height: 28px;
+	width: 28px;
+}
+
+#svg_editor #tools_rect .tool_flyout_button_current, #svg_editor #tools_ellipse .tool_flyout_button_current {
+	border-left: 1px solid #808080;
+	border-top: 1px solid #808080;
+	border-right: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	background-color: #B0B0B0;
+}
+
+#svg_editor #tools_bottom {
+	position: absolute;
+	left: 40px;
+	right: 2px;
+	bottom: 2px;
+	height: 60px;
+}
+
+#svg_editor #tools_bottom_1 {
+	width: 115px;
+	float: left;
+}
+
+#svg_editor #tools_bottom_2 {
+	width: 250px;
+	float: left;
+}
+
+#svg_editor #tools_bottom_3 {
+}
+
+#svg_editor #copyright {
+	text-align: right;
+}
+
+#svg_source_editor {
+	display: none;
+}
+
+#svg_source_editor #svg_source_overlay {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	left: 0px;
+	bottom: 0px;
+	background-color: black;
+	opacity: 0.6;
+}
+
+#svg_source_editor #svg_source_container {
+	position: absolute;
+	top: 30px;
+	left: 30px;
+	right: 30px;
+	bottom: 30px;
+	background-color: #B0B0B0;
+	opacity: 1.0;
+	text-align: center;
+}
+
+#svg_source_editor #svg_source_textarea {
+	position: relative;
+	width: 95%;
+	top: 5px;
+	height: 250px;
+	padding: 5px;
+	font-size: 12px;
+}
+
+#svg_source_editor #tool_source_back {
+	text-align: left;
+	padding-left: 20px;
+}
+
+#svg_source_editor button {
+	padding: 5px 2px 6px 28px;
+	margin: 5px 20px 0 0;	
+}
+
+#tool_source_save {
+	background: #E8E8E8 url(images/save.png) no-repeat 2px 2px;
+}
+
+#tool_source_cancel {
+	background: #E8E8E8 url(images/cancel.png) no-repeat 2px 2px;
+}
