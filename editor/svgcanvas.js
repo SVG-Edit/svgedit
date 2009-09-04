@@ -22,6 +22,7 @@ var svgWhiteList = {
 	"rect": ["fill", "fill-opacity", "height", "id", "opacity", "rx", "ry", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "width", "x", "y"],
 	"stop": ["id", "offset", "stop-color", "stop-opacity"],
 	"svg": ["id", "height", "transform", "width", "xmlns"],
+  "image": ["id","width","height","opacity","x","y"],
 	"text": ["fill", "fill-opacity", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "text-anchor", "x", "y"],
 };
 
@@ -1116,6 +1117,20 @@ function BatchCommand(text) {
 				'y': pt.y
 			}, 1000);
 			break;
+    
+    case "image":
+      changes["x"] = selected.getAttribute("x");
+			changes["y"] = selected.getAttribute("y");
+			changes["width"] = selected.getAttribute("width");
+			changes["height"] = selected.getAttribute("height");
+			var pt = remap(changes["x"], changes["y"]);
+			assignAttributes(selected, {
+				'x': pt.x,
+				'y': pt.y,
+				'width': scalew(changes["width"]),
+				'height': scaleh(changes["height"])
+			}, 1000);
+			break;
 		case "rect":
 			changes["x"] = selected.getAttribute("x");
 			changes["y"] = selected.getAttribute("y");
@@ -1220,6 +1235,8 @@ function BatchCommand(text) {
 		var x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
 		var y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
 		
+    evt.preventDefault()
+    
 		if($.inArray(current_mode, ['select', 'resize']) == -1) {
 			addGradient();
 		}
@@ -1289,6 +1306,24 @@ function BatchCommand(text) {
 				freehand_max_x = x;
 				freehand_min_y = y;
 				freehand_max_y = y;
+				break;
+			case "image":
+				started = true;
+				start_x = x;
+				start_y = y;
+				var newImage = addSvgElementFromJson({
+					"element": "image",
+					"attr": {
+						"x": x,
+						"y": y,
+						"width": 0,
+						"height": 0,
+						"id": getNextId(),
+						"opacity": cur_shape.opacity / 2
+					}
+				});
+        var xlinkNS="http://www.w3.org/1999/xlink";
+        newImage.setAttributeNS(xlinkNS, "href", "images/logo.png")
 				break;
 			case "square":
 				// FIXME: once we create the rect, we lose information that this was a square
@@ -1447,6 +1482,10 @@ function BatchCommand(text) {
 		var x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
 		var y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
 		var shape = svgdoc.getElementById(getId());
+    
+    evt.preventDefault()
+    
+    
 		switch (current_mode)
 		{
 			case "select":
@@ -1642,6 +1681,14 @@ function BatchCommand(text) {
 				},1000);
 				break;
 			case "rect":
+				assignAttributes(shape,{
+					'width': Math.abs(x-start_x),
+					'height': Math.abs(y-start_y),
+					'x': Math.min(start_x,x),
+					'y': Math.min(start_y,y)
+				},1000);
+				break;
+			case "image":
 				assignAttributes(shape,{
 					'width': Math.abs(x-start_x),
 					'height': Math.abs(y-start_y),
@@ -1926,6 +1973,10 @@ function BatchCommand(text) {
 				break;
 			case "square":
 			case "rect":
+				keep = (element.getAttribute('width') != 0 ||
+				        element.getAttribute('height') != 0);
+				break;
+			case "image":
 				keep = (element.getAttribute('width') != 0 ||
 				        element.getAttribute('height') != 0);
 				break;
@@ -2714,6 +2765,10 @@ function BatchCommand(text) {
 		this.changeSelectedAttribute("#text", val);
 	};
 
+	this.setImageURL = function(val) {
+		this.changeSelectedAttribute("#href", val);
+	};
+
 	this.setRectRadius = function(val) {
 		var selected = selectedElements[0];
 		if (selected != null && selected.tagName == "rect") {
@@ -2780,7 +2835,10 @@ function BatchCommand(text) {
 				if (attr == "#text") {
 					elem.textContent = newValue;
 					elem = canvas.quickClone(elem);
-				} 
+				} else if (attr == "#href") {
+          var xlinkNS="http://www.w3.org/1999/xlink";
+          elem.setAttributeNS(xlinkNS, "href", val);
+        }
 				else elem.setAttribute(attr, newValue);
 				selectedBBoxes[i] = this.getBBox(elem);
 				// Use the Firefox quickClone hack for text elements with gradients or

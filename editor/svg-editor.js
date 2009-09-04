@@ -81,7 +81,7 @@ function svg_edit_setup() {
 
 	// updates the toolbar (colors, opacity, etc) based on the selected element
 	var updateToolbar = function() {
-		if (selectedElement != null) {
+		if (selectedElement != null) { //the image thing might be a hack.
 			// get opacity values
 			var fillOpacity = parseFloat(selectedElement.getAttribute("fill-opacity"));
 			if (isNaN(fillOpacity)) {
@@ -168,7 +168,7 @@ function svg_edit_setup() {
 		}
 		
 		$('#selected_panel, #multiselected_panel, #rect_panel, #circle_panel,\
-			#ellipse_panel, #line_panel, #text_panel').hide();
+			#ellipse_panel, #line_panel, #text_panel, #image_panel').hide();
 		if (elem != null) {
 			$('#angle').val(svgCanvas.getRotationAngle(elem));
 			$('#selected_panel').show();
@@ -176,6 +176,7 @@ function svg_edit_setup() {
 			// update contextual tools here
 			var panels = {
 				rect: ['radius','x','y','width','height'],
+        image: ['x','y','width','height'],
 				circle: ['cx','cy','r'],
 				ellipse: ['cx','cy','rx','ry'],
 				line: ['x1','y1','x2','y2'], 
@@ -215,7 +216,13 @@ function svg_edit_setup() {
 					if (svgCanvas.addedNew) {
 						$('#text').focus().select();
 					}
-				}
+				}else if(el_name == 'image') {
+          var xlinkNS="http://www.w3.org/1999/xlink";
+          $('#image_url').val(elem.getAttributeNS(xlinkNS, "href"));
+          
+        }
+        
+        
 			}
 		} // if (elem != null)
 		else if (multiselected) {
@@ -242,6 +249,8 @@ function svg_edit_setup() {
 	$('#text').focus( function(){ textBeingEntered = true; } );
 	$('#text').blur( function(){ textBeingEntered = false; } );
 
+  $('#image_url').blur(function(){ svgCanvas.setImageURL(this.value); });
+  
 	// bind the selected event to our function that handles updates to the UI
 	svgCanvas.bind("selected", selectedChanged);
 	svgCanvas.bind("changed", elementChanged);
@@ -296,6 +305,7 @@ function svg_edit_setup() {
 	$('#text').keyup(function(){
 		svgCanvas.setTextContent(this.value);
 	});
+  
 
 	$('.attr_changer').change(function() {
 		var attr = this.getAttribute("alt");
@@ -421,6 +431,12 @@ function svg_edit_setup() {
 			svgCanvas.setMode('rect');
 		}
 		$('#tools_rect_show').attr('src', 'images/rect.png');
+	};
+
+	var clickImage = function(){
+		if (toolButtonClick('#tool_image')) {
+			svgCanvas.setMode('image');
+		}
 	};
 
 	var clickFHRect = function(){
@@ -623,6 +639,7 @@ function svg_edit_setup() {
 	$('#tool_circle').mouseup(clickCircle);
 	$('#tool_ellipse').mouseup(clickEllipse);
 	$('#tool_fhellipse').mouseup(clickFHEllipse);
+  $('#tool_image').mouseup(clickImage);
 	$('#tool_text').click(clickText);
 	$('#tool_poly').click(clickPoly);
 	$('#tool_clear').click(clickClear);
