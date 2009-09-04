@@ -411,8 +411,8 @@ function BatchCommand(text) {
 
 		// local reference to this object
 		var mgr = this;
-		// private function
-		var initGroup = function() {
+
+		this.initGroup = function() {
 			mgr.selectorParentGroup = addSvgElementFromJson({
 											"element": "g",
 											"attr": {"id": "selectorParentGroup"}
@@ -489,7 +489,7 @@ function BatchCommand(text) {
 			return this.rubberBandBox;
 		};
 
-		initGroup();
+		this.initGroup();
 	}
 	// **************************************************************************************
 
@@ -669,7 +669,6 @@ function BatchCommand(text) {
 		}
 		undoStack.push(cmd);
 		undoStackPointer = undoStack.length;
-		console.log(undoStack);
 	};
 
 // private functions
@@ -2317,6 +2316,8 @@ function BatchCommand(text) {
 		}
 		// clear the undo stack
 		resetUndoStack();
+		// reset the selector manager
+		selectorManager.initGroup();
 		call("cleared");
 	};
 
