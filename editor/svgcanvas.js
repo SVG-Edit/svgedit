@@ -56,8 +56,8 @@ function ChangeElementCommand(elem, attrs, text) {
 			var angle = canvas.getRotationAngle(elem);
 			if (angle) {
 				var bbox = elem.getBBox();
-				var cx = bbox.x + bbox.width/2,
-					cy = bbox.y + bbox.height/2;
+				var cx = parseInt(bbox.x + bbox.width/2),
+					cy = parseInt(bbox.y + bbox.height/2);
 				var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
 				if (rotate != elem.getAttribute("transform")) {
 					elem.setAttribute("transform", rotate);
@@ -83,8 +83,8 @@ function ChangeElementCommand(elem, attrs, text) {
 			var angle = canvas.getRotationAngle(elem);
 			if (angle) {
 				var bbox = elem.getBBox();
-				var cx = bbox.x + bbox.width/2,
-					cy = bbox.y + bbox.height/2;
+				var cx = parseInt(bbox.x + bbox.width/2),
+					cy = parseInt(bbox.y + bbox.height/2);
 				var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
 				if (rotate != elem.getAttribute("transform")) {
 					elem.setAttribute("transform", rotate);
@@ -372,8 +372,8 @@ function BatchCommand(text) {
 			var transform = elem.getAttribute("transform");
 			var angle = canvas.getRotationAngle(elem);
 			if (angle) {
-				var cx = oldbox.x + oldbox.width/2
-					cy = oldbox.y + oldbox.height/2;
+				var cx = parseInt(oldbox.x + oldbox.width/2)
+					cy = parseInt(oldbox.y + oldbox.height/2);
 				this.selectorGroup.setAttribute("transform", "rotate("+angle+" " + cx + "," + cy + ")");
 			}
 			svgroot.unsuspendRedraw(sr_handle);
@@ -894,8 +894,8 @@ function BatchCommand(text) {
 		var pointGripContainer = document.getElementById("polypointgrip_container");
 		if (angle) {
 			// this is our old center upon which we have rotated the shape
-			var tr_x = box.x + box.width/2, 
-				tr_y = box.y + box.height/2;
+			var tr_x = parseInt(box.x + box.width/2),
+				tr_y = parseInt(box.y + box.height/2);
 			var cx = null, cy = null;
 			
 			var bFoundScale = false;
@@ -1088,7 +1088,7 @@ function BatchCommand(text) {
 				'cy': pt.y,
 	
 				// take the minimum of the new selected box's dimensions for the new circle radius
-				'r': Math.min(selectedBBox.width/2,selectedBBox.height/2)
+				'r': parseInt(Math.min(selectedBBox.width/2,selectedBBox.height/2))
 			}, 1000);
 			break;
 		case "ellipse":
@@ -1465,8 +1465,8 @@ function BatchCommand(text) {
 							selectedBBoxes[i].y = box.y + dy;
 							var angle = canvas.getRotationAngle(selected);
 							if (angle) {
-								var cx = box.x + box.width/2,
-									cy = box.y + box.height/2;
+								var cx = parseInt(box.x + box.width/2),
+									cy = parseInt(box.y + box.height/2);
 								var xform = ts + [" rotate(", angle, " ", cx, ",", cy, ")"].join('');
  								var r = Math.sqrt( dx*dx + dy*dy );
 								var theta = Math.atan2(dy,dx) - angle * Math.PI / 180.0;
@@ -1568,8 +1568,8 @@ function BatchCommand(text) {
 				var ts = [" translate(", (left+tx), ",", (top+ty), ") scale(", sx, ",", sy,
 							") translate(", -(left+tx), ",", -(top+ty), ")"].join('');
 				if (angle) {
-					var cx = left+width/2,
-						cy = top+height/2;
+					var cx = parseInt(left+width/2),
+						cy = parseInt(top+height/2);
 					ts = ["rotate(", angle, " ", cx, ",", cy, ")", ts].join('')
 				}
 				selected.setAttribute("transform", ts);
@@ -1692,8 +1692,8 @@ function BatchCommand(text) {
 					if (angle) {
 						// calculate the shape's old center that was used for rotation
 						var box = selectedBBoxes[0];
-						var cx = box.x + box.width/2, 
-							cy = box.y + box.height/2;
+						var cx = paresInt(box.x + box.width/2), 
+							cy = parseInt(box.y + box.height/2);
 						var dx = x - cx, dy = y - cy;
  						var r = Math.sqrt( dx*dx + dy*dy );
 						var theta = Math.atan2(dy,dx) - angle;						
@@ -1733,7 +1733,9 @@ function BatchCommand(text) {
 				}
 				break;
 			case "rotate":
-				var box = canvas.getBBox(selected),cx = box.x + box.width/2, cy = box.y + box.height/2;
+				var box = canvas.getBBox(selected),
+					cx = parseInt(box.x + box.width/2), 
+					cy = parseInt(box.y + box.height/2);
 				var angle = parseInt(((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360);
 				canvas.setRotationAngle(angle<-180?(360+angle):angle, true);
 				break;
@@ -2108,18 +2110,18 @@ function BatchCommand(text) {
 					if (angle) {
 						var box = canvas.getBBox(current_poly);
 						var oldbox = selectedBBoxes[0];
-						var oldcx = oldbox.x + oldbox.width/2,
-							oldcy = oldbox.y + oldbox.height/2,
-							newcx = box.x + box.width/2,
-							newcy = box.y + box.height/2;
+						var oldcx = parseInt(oldbox.x + oldbox.width/2),
+							oldcy = parseInt(oldbox.y + oldbox.height/2),
+							newcx = parseInt(box.x + box.width/2),
+							newcy = parseInt(box.y + box.height/2);
 						
 						// un-rotate the new center to the proper position
 						var dx = newcx - oldcx,
 							dy = newcy - oldcy;
 						var r = Math.sqrt(dx*dx + dy*dy);
 						var theta = Math.atan2(dy,dx) + angle;
-						newcx = r * Math.cos(theta) + oldcx;
-						newcy = r * Math.sin(theta) + oldcy;
+						newcx = parseInt(r * Math.cos(theta) + oldcx);
+						newcy = parseInt(r * Math.sin(theta) + oldcy);
 						
 						var i = current_poly_pts.length;
 						while (i) {
@@ -2610,7 +2612,7 @@ function BatchCommand(text) {
 		// we use the actual element's bbox (not the calculated one) since the 
 		// calculated bbox's center can change depending on the angle
 		var bbox = elem.getBBox();
-		var cx = (bbox.x+bbox.width/2), cy = (bbox.y+bbox.height/2);
+		var cx = parseInt(bbox.x+bbox.width/2), cy = parseInt(bbox.y+bbox.height/2);
 		var rotate = "rotate(" + val + " " + cx + "," + cy + ")";
 		if (preventUndo) {
 			this.changeSelectedAttributeNoUndo("transform", rotate, selectedElements);
@@ -2790,8 +2792,8 @@ function BatchCommand(text) {
 				// we need to update the rotational transform attribute 
 				var angle = canvas.getRotationAngle(elem);
 				if (angle && attr != "transform") {
-					var cx = selectedBBoxes[i].x + selectedBBoxes[i].width/2,
-						cy = selectedBBoxes[i].y + selectedBBoxes[i].height/2;
+					var cx = parseInt(selectedBBoxes[i].x + selectedBBoxes[i].width/2),
+						cy = parseInt(selectedBBoxes[i].y + selectedBBoxes[i].height/2);
 					var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
 					if (rotate != elem.getAttribute("transform")) {
 						elem.setAttribute("transform", rotate);
@@ -3063,8 +3065,8 @@ function BatchCommand(text) {
 			if (angles[i]) {
 				var rminx = Number.MAX_VALUE, rminy = Number.MAX_VALUE, 
 					rmaxx = Number.MIN_VALUE, rmaxy = Number.MIN_VALUE;
-				var cx = bboxes[i].x + bboxes[i].width/2,
-					cy = bboxes[i].y + bboxes[i].height/2;
+				var cx = parseInt(bboxes[i].x + bboxes[i].width/2),
+					cy = parseInt(bboxes[i].y + bboxes[i].height/2);
 				var pts = [ [bboxes[i].x - cx, bboxes[i].y - cy], 
 							[bboxes[i].x + bboxes[i].width - cx, bboxes[i].y - cy],
 							[bboxes[i].x + bboxes[i].width - cx, bboxes[i].y + bboxes[i].height - cy],
