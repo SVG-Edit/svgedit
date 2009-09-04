@@ -2386,6 +2386,8 @@ function BatchCommand(text) {
 		cur_properties.stroke_paint = {type:"solidColor"};
 		if (!preventUndo) 
 			this.changeSelectedAttribute("stroke", val);
+		else 
+			this.changeSelectedAttributeNoUndo("stroke", val);
 	};
 
 	this.getFillColor = function() {
@@ -2404,8 +2406,12 @@ function BatchCommand(text) {
 				elems.push(elem);
 			}
 		}
-		if (elems.length > 0 && !preventUndo) 
-			this.changeSelectedAttribute("fill", val, elems);
+		if (elems.length > 0) {
+			if (!preventUndo) 
+				this.changeSelectedAttribute("fill", val, elems);
+			else
+				this.changeSelectedAttributeNoUndo("fill", val, elems);
+		}
 	};
 
 	var findDefs = function() {
@@ -2488,6 +2494,10 @@ function BatchCommand(text) {
 	this.setStrokePaint = function(p, addGrad) {
 		// make a copy
 		var p = new $.jGraduate.Paint(p);
+		this.setStrokeOpacity(p.alpha/100);
+
+		// now set the current paint object
+		cur_properties.stroke_paint = p;
 		if (p.type == "solidColor") {
 			this.setStrokeColor("#"+p.solidColor);
 		}
@@ -2498,15 +2508,15 @@ function BatchCommand(text) {
 		else {
 //			console.log("none!");
 		}
-		this.setStrokeOpacity(p.alpha/100);
-
-		// now set the current paint object
-		cur_properties.stroke_paint = p;
 	};
 
 	this.setFillPaint = function(p, addGrad) {
 		// make a copy
 		var p = new $.jGraduate.Paint(p);
+		this.setFillOpacity(p.alpha/100, true);
+
+		// now set the current paint object
+		cur_properties.fill_paint = p;
 		if (p.type == "solidColor") {
 			this.setFillColor("#"+p.solidColor);
 		}
@@ -2517,10 +2527,6 @@ function BatchCommand(text) {
 		else {
 //			console.log("none!");
 		}
-		this.setFillOpacity(p.alpha/100);
-
-		// now set the current paint object
-		cur_properties.fill_paint = p;
 	};
 
 	this.getStrokeWidth = function() {
@@ -2561,6 +2567,8 @@ function BatchCommand(text) {
 		cur_shape.fill_opacity = val;
 		if (!preventUndo)
 			this.changeSelectedAttribute("fill-opacity", val);
+		else
+			this.changeSelectedAttributeNoUndo("fill-opacity", val);
 	};
 
 	this.getStrokeOpacity = function() {
@@ -2571,6 +2579,8 @@ function BatchCommand(text) {
 		cur_shape.stroke_opacity = val;
 		if (!preventUndo)
 			this.changeSelectedAttribute("stroke-opacity", val);
+		else
+			this.changeSelectedAttributeNoUndo("stroke-opacity", val);
 	};
 
 	this.getBBox = function(elem) {
@@ -2759,6 +2769,7 @@ function BatchCommand(text) {
 	// fires the 'changed' event 
 	this.changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		var handle = svgroot.suspendRedraw(1000);
+		var elems = elems || selectedElements;
 		var i = elems.length;
 		while (i--) {
 			var elem = elems[i];
