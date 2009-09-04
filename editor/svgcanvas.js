@@ -2787,7 +2787,7 @@ function BatchCommand(text) {
 				// Use the Firefox quickClone hack for text elements with gradients or
 				// where other text attributes are changed. 
 				if(elem.nodeName == 'text') {
-					if((val+'').indexOf('url') == 0 || $.inArray(attr, ['font-size','font-family','x','y']) != -1) {
+					if((newValue+'').indexOf('url') == 0 || $.inArray(attr, ['font-size','font-family','x','y']) != -1) {
 						elem = canvas.quickClone(elem);
 					}
 				}
