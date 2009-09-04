@@ -669,6 +669,7 @@ function BatchCommand(text) {
 		}
 		undoStack.push(cmd);
 		undoStackPointer = undoStack.length;
+		console.log(undoStack);
 	};
 
 // private functions
@@ -2215,7 +2216,6 @@ function BatchCommand(text) {
 				keep = true;
 				element = null;
 				current_mode = "select";
-				canvas.setRotationAngle(canvas.getRotationAngle(), true);
 				var batchCmd = canvas.finishUndoableChange();
 				if (!batchCmd.isEmpty()) { 
 					addCommandToHistory(batchCmd);
@@ -2381,17 +2381,18 @@ function BatchCommand(text) {
 		return cur_properties.stroke;
 	};
 
-	this.setStrokeColor = function(val) {
+	this.setStrokeColor = function(val,preventUndo) {
 		cur_shape.stroke = val;
 		cur_properties.stroke_paint = {type:"solidColor"};
-		this.changeSelectedAttribute("stroke", val);
+		if (!preventUndo) 
+			this.changeSelectedAttribute("stroke", val);
 	};
 
 	this.getFillColor = function() {
 		return cur_properties.fill;
 	};
 
-	this.setFillColor = function(val) {
+	this.setFillColor = function(val,preventUndo) {
 		cur_properties.fill = val;
 		cur_properties.fill_paint = {type:"solidColor"};
 		// take out any path/line elements when setting fill
@@ -2403,7 +2404,7 @@ function BatchCommand(text) {
 				elems.push(elem);
 			}
 		}
-		if (elems.length > 0) 
+		if (elems.length > 0 && !preventUndo) 
 			this.changeSelectedAttribute("fill", val, elems);
 	};
 
@@ -2485,34 +2486,41 @@ function BatchCommand(text) {
 	};
 
 	this.setStrokePaint = function(p, addGrad) {
-		cur_properties.stroke_paint = new $.jGraduate.Paint(p);
-		if (cur_properties.stroke_paint.type == "solidColor") {
-			this.setStrokeColor("#"+cur_properties.stroke_paint.solidColor);
+		// make a copy
+		var p = new $.jGraduate.Paint(p);
+		if (p.type == "solidColor") {
+			this.setStrokeColor("#"+p.solidColor);
 		}
-		else if(cur_properties.stroke_paint.type == "linearGradient") {
-			canvas.strokeGrad = cur_properties.stroke_paint.linearGradient;
+		else if(p.type == "linearGradient") {
+			canvas.strokeGrad = p.linearGradient;
 			if(addGrad) addGradient(); 
 		}
 		else {
 //			console.log("none!");
 		}
-		this.setStrokeOpacity(cur_properties.stroke_paint.alpha/100);
+		this.setStrokeOpacity(p.alpha/100);
+
+		// now set the current paint object
+		cur_properties.stroke_paint = p;
 	};
 
 	this.setFillPaint = function(p, addGrad) {
-		// copy the incoming paint object
-		cur_properties.fill_paint = new $.jGraduate.Paint(p);
-		if (cur_properties.fill_paint.type == "solidColor") {
-			this.setFillColor("#"+cur_properties.fill_paint.solidColor);
+		// make a copy
+		var p = new $.jGraduate.Paint(p);
+		if (p.type == "solidColor") {
+			this.setFillColor("#"+p.solidColor);
 		}
-		else if(cur_properties.fill_paint.type == "linearGradient") {
-			canvas.fillGrad = cur_properties.fill_paint.linearGradient;
+		else if(p.type == "linearGradient") {
+			canvas.fillGrad = p.linearGradient;
 			if(addGrad) addGradient(); 
 		}
 		else {
 //			console.log("none!");
 		}
-		this.setFillOpacity(cur_properties.fill_paint.alpha/100);
+		this.setFillOpacity(p.alpha/100);
+
+		// now set the current paint object
+		cur_properties.fill_paint = p;
 	};
 
 	this.getStrokeWidth = function() {
@@ -2549,18 +2557,20 @@ function BatchCommand(text) {
 		return cur_shape.fill_opacity;
 	};
 
-	this.setFillOpacity = function(val) {
+	this.setFillOpacity = function(val, preventUndo) {
 		cur_shape.fill_opacity = val;
-		this.changeSelectedAttribute("fill-opacity", val);
+		if (!preventUndo)
+			this.changeSelectedAttribute("fill-opacity", val);
 	};
 
 	this.getStrokeOpacity = function() {
 		return cur_shape.stroke_opacity;
 	};
 
-	this.setStrokeOpacity = function(val) {
+	this.setStrokeOpacity = function(val, preventUndo) {
 		cur_shape.stroke_opacity = val;
-		this.changeSelectedAttribute("stroke-opacity", val);
+		if (!preventUndo)
+			this.changeSelectedAttribute("stroke-opacity", val);
 	};
 
 	this.getBBox = function(elem) {
