@@ -20,19 +20,19 @@ build/$(PACKAGE):
 # java -jar $(YUI) build/$(PACKAGE)/svg-editor.css > build/$(PACKAGE)/svg-editor.min.css
 
 release: build/$(PACKAGE)
-	$(ZIP) build/$(PACKAGE).zip -r build/$(PACKAGE)
+	cd build ; $(ZIP) $(PACKAGE).zip -r $(PACKAGE) ; cd ..
 
 firefox: build/$(PACKAGE)
 	mkdir -p build/firefox/editor
 	cp -a firefox-extension/* build/firefox
 	cp -ra build/$(PACKAGE)/* build/firefox/editor
-	$(ZIP) build/$(PACKAGE).xpi -r build/firefox/*
+	cd build/firefox ; $(ZIP) ../$(PACKAGE).xpi -r * ; cd ../..
 
 opera: build/$(PACKAGE)
 	mkdir -p build/opera/editor
 	cp -a opera-widget/* build/opera
 	cp -ra build/$(PACKAGE)/* build/opera/editor
-	$(ZIP) build/$(PACKAGE).wgt -r build/opera/*
+	cd build/opera ; $(ZIP) ../$(PACKAGE).wgt -r * ; cd ../..
 
 clean:
 	rm -rf build/$(PACKAGE)
