@@ -556,6 +556,10 @@ function svg_edit_setup() {
 			svgCanvas.redo();
 	};
 	
+	var clickGroup = function(){
+		console.log("Group not implemented yet");
+	};
+	
 	var clickClone = function(){
 		svgCanvas.cloneSelectedElements();
 	};
@@ -657,6 +661,8 @@ function svg_edit_setup() {
 	$('#tool_redo').click(clickRedo);
 	$('#tool_clone').click(clickClone);
 	$('#tool_clone_multi').click(clickClone);
+	$('#tool_group').click(clickGroup);
+	$('#tool_ungroup').click(clickGroup);
 	$('#tool_alignleft').click(clickAlignLeft);
 	$('#tool_aligncenter').click(clickAlignCenter);
 	$('#tool_alignright').click(clickAlignRight);
@@ -741,6 +747,7 @@ function svg_edit_setup() {
 			[modKey+'y', function(evt){clickRedo();evt.preventDefault();}],
 			[modKey+'u', function(evt){showSourceEditor();evt.preventDefault();}],
 			[modKey+'c', function(evt){clickClone();evt.preventDefault();}],
+			[modKey+'g', function(evt){clickGroup();evt.preventDefault();}],
 			['esc', cancelSourceEditor, false]
 		];
 		
