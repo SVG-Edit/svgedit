@@ -13,6 +13,7 @@ var svgWhiteList = {
 	"circle": ["cx", "cy", "fill", "fill-opacity", "id", "opacity", "r", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
 	"defs": [],
 	"ellipse": ["cx", "cy", "fill", "fill-opacity", "id", "opacity", "rx", "ry", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
+	"g": ["id", "transform"],
 	"image": ["height", "id", "opacity", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
 	"line": ["fill", "fill-opacity", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-opacity", "stroke-width",  "transform", "x1", "x2", "y1", "y2"],
 	"linearGradient": ["id", "gradientTransform", "gradientUnits", "spreadMethod", "x1", "x2", "y1", "y2"],
@@ -2456,7 +2457,6 @@ function BatchCommand(text) {
 	};
 
 	this.setFillColor = function(val,preventUndo) {
-		console.log('setFillColor(' + val + ')');
 		cur_properties.fill = val;
 		cur_properties.fill_paint = {type:"solidColor"};
 		// take out any path/line elements when setting fill
@@ -2840,6 +2840,8 @@ function BatchCommand(text) {
 		while (i--) {
 			var elem = elems[i];
 			if (elem == null) continue;
+			// only allow the transform attribute to change on <g> elements, slightly hacky
+			if (elem.tagName == "g" && attr != "transform") continue;
 			var oldval = attr == "#text" ? elem.textContent : elem.getAttribute(attr);
 			if (oldval == null)  oldval = "";
 			if (oldval != newValue) {
@@ -2924,7 +2926,7 @@ function BatchCommand(text) {
 	this.deleteSelectedElements = function() {
 		var batchCmd = new BatchCommand("Delete Elements");
 		var len = selectedElements.length;
-		var selectedCopy = []; //selectedElements is being delted
+		var selectedCopy = []; //selectedElements is being deleted
 		for (var i = 0; i < len; ++i) {
 			var selected = selectedElements[i];
 			if (selected == null) break;
@@ -2940,6 +2942,66 @@ function BatchCommand(text) {
 		}
 		if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
 		call("selected", selectedCopy);
+	};
+	
+	this.groupSelectedElements = function() {
+		var batchCmd = new BatchCommand("Group Elements");
+		
+		// create and insert the group element
+		var g = addSvgElementFromJson({
+								"element": "g",
+								"attr": {
+									"id": getNextId()
+								}
+							});
+		batchCmd.addSubCommand(new InsertElementCommand(g));
+		
+		// now move all children into the group
+		var i = selectedElements.length;
+		while (i--) {
+			var elem = selectedElements[i];
+			var oldNextSibling = elem.nextSibling;
+			var oldParent = elem.parentNode;
+			g.appendChild(elem);
+			batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));			
+		}
+		if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
+		
+		// ensure selectors are at bottom and update selection
+		selectorManager.update();
+		canvas.clearSelection();
+		canvas.addToSelection([g]);
+	};
+
+	this.ungroupSelectedElement = function() {
+		var g = selectedElements[0];
+		if (g.tagName == "g") {
+			var batchCmd = new BatchCommand("Ungroup Elements");
+			var parent = g.parentNode;
+			var anchor = g.previousSibling;
+			var children = new Array(g.childNodes.length);
+			var i = 0;
+			while (g.firstChild) {
+				var elem = g.firstChild;
+				var oldNextSibling = elem.nextSibling;
+				var oldParent = elem.parentNode;
+				children[i++] = elem = parent.insertBefore(elem, anchor);
+				batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));			
+			}
+
+			// remove the group from the selection			
+			canvas.clearSelection();
+			
+			// delete the group element (but make undo-able)
+			g = parent.removeChild(g);
+			batchCmd.addSubCommand(new RemoveElementCommand(g, parent));
+
+			if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
+			
+			// ensure selectors are at bottom and update selection
+			selectorManager.update();
+			canvas.addToSelection(children);
+		}
 	};
 
 	this.moveToTopSelectedElement = function() {
