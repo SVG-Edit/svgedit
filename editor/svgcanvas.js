@@ -1324,8 +1324,7 @@ function BatchCommand(text) {
 						"opacity": cur_shape.opacity / 2
 					}
 				});
-        var xlinkNS="http://www.w3.org/1999/xlink";
-        newImage.setAttributeNS(xlinkNS, "href", "images/logo.png")
+        		newImage.setAttributeNS(xlinkns, "href", "images/logo.png")
 				break;
 			case "square":
 				// FIXME: once we create the rect, we lose information that this was a square
@@ -2838,9 +2837,8 @@ function BatchCommand(text) {
 					elem.textContent = newValue;
 					elem = canvas.quickClone(elem);
 				} else if (attr == "#href") {
-          var xlinkNS="http://www.w3.org/1999/xlink";
-          elem.setAttributeNS(xlinkNS, "href", newValue);
-        }
+					elem.setAttributeNS(xlinkns, "href", newValue);
+        		}
 				else elem.setAttribute(attr, newValue);
 				selectedBBoxes[i] = this.getBBox(elem);
 				// Use the Firefox quickClone hack for text elements with gradients or
