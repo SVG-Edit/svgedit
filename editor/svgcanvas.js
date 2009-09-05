@@ -6,9 +6,8 @@ if(!window.console) {
 }
 
 // this defines which elements and attributes that we support
-// TODO: add <g> elements to this
 // TODO: add <a> elements to this
-// TODO: add xmlns:xlink attr to <svg> element
+// TODO: add <tspan> to this
 var svgWhiteList = {
 	"circle": ["cx", "cy", "fill", "fill-opacity", "id", "opacity", "r", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
 	"defs": [],
@@ -1260,6 +1259,12 @@ function BatchCommand(text) {
 				started = true;
 				current_resize_mode = "none";
 				var t = evt.target;
+				// if this element is in a group, go up until we reach the top-level group
+				while (t.parentNode.tagName == "g") {
+					t = t.parentNode;
+				}
+				// TODO: once we implement Layers, the top-level groups will be layers so
+				// we will want to stop just before then
 				// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
 				var nodeName = t.nodeName.toLowerCase();
 				if (nodeName != "div" && nodeName != "svg") {
