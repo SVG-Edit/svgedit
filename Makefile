@@ -23,9 +23,10 @@ release: build/$(PACKAGE)
 	cd build ; $(ZIP) $(PACKAGE).zip -r $(PACKAGE) ; cd ..
 
 firefox: build/$(PACKAGE)
-	mkdir -p build/firefox/editor
+	mkdir -p build/firefox/content/editor
 	cp -a firefox-extension/* build/firefox
-	cp -ra build/$(PACKAGE)/* build/firefox/editor
+	rm -rf build/firefox/content/.svn
+	cp -ra build/$(PACKAGE)/* build/firefox/content/editor
 	cd build/firefox ; $(ZIP) ../$(PACKAGE).xpi -r * ; cd ../..
 
 opera: build/$(PACKAGE)
