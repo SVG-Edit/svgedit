@@ -801,10 +801,15 @@ function BatchCommand(text) {
 						attr.nodeValue = attr.nodeValue.replace(',','.');
 					}
 					out.push(" "); 
+					// map various namespaces to our fixed namespace prefixes
+					// TODO: put this into a map and do a look-up instead of if-else
 					if (attr.namespaceURI == 'http://www.w3.org/1999/xlink') {
 						out.push('xlink:');
 					}
-					out.push(attr.nodeName); out.push("=\""); 
+					else if(attr.namespaceURI == 'http://www.w3.org/2000/xmlns/' && attr.localName != 'xmlns') {
+						out.push('xmlns:');
+					}
+					out.push(attr.localName); out.push("=\""); 
 					out.push(attr.nodeValue); out.push("\"");
 				}
 			}
