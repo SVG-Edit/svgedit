@@ -53,7 +53,7 @@ function ChangeElementCommand(elem, attrs, text) {
 			}
 		}
 		// relocate rotational transform, if necessary
-		if (attr != "transform") {
+		if($.inArray("transform", this.newValues) == -1) {
 			var angle = canvas.getRotationAngle(elem);
 			if (angle) {
 				var bbox = elem.getBBox();
@@ -80,7 +80,7 @@ function ChangeElementCommand(elem, attrs, text) {
 			}
 		}
 		// relocate rotational transform, if necessary
-		if (attr != "transform") {
+		if($.inArray("transform", this.oldValues) == -1) {
 			var angle = canvas.getRotationAngle(elem);
 			if (angle) {
 				var bbox = elem.getBBox();
@@ -861,7 +861,7 @@ function BatchCommand(text) {
 
 		var i = selectedElements.length;
 		while(i--) {
-			var cmd = recalculateSelectedDimensions(i);
+			var cmd = recalculateDimensions(selectedElements[i],selectedBBoxes[i]);
 			if (cmd) {
 				batchCmd.addSubCommand(cmd);
 			}
@@ -879,10 +879,8 @@ function BatchCommand(text) {
 					's', 's', 't', 't' ];
 
 	// this function returns the command which resulted from the selected change
-	var recalculateSelectedDimensions = function(i) {
-		var selected = selectedElements[i];
-		if (selected == null) return null;
-		var selectedBBox = selectedBBoxes[i];
+	var recalculateDimensions = function(selected,selectedBBox) {
+		if (selected == null || selectedBBox == null) return null;
 		var box = canvas.getBBox(selected);
 
 		// if we have not moved/resized, then immediately leave
@@ -1155,6 +1153,9 @@ function BatchCommand(text) {
 				'height': scaleh(changes["height"])
 			}, 1000);
 			break;
+		case "g":
+			// do work here :P
+			break;
 		default: // rect
 			console.log("Unknown shape type: " + selected.tagName);
 			break;
@@ -1246,7 +1247,7 @@ function BatchCommand(text) {
 		var x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
 		var y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
 		
-    evt.preventDefault()
+		evt.preventDefault();
     
 		if($.inArray(current_mode, ['select', 'resize']) == -1) {
 			addGradient();
@@ -1260,11 +1261,12 @@ function BatchCommand(text) {
 				current_resize_mode = "none";
 				var t = evt.target;
 				// if this element is in a group, go up until we reach the top-level group
+				// TODO: once we implement Layers, the top-level groups will be layers so
+				// we will want to stop just before then (parentNode.parentNode)
+				// TODO: once we implement links, we also would have to check for <a> elements
 				while (t.parentNode.tagName == "g") {
 					t = t.parentNode;
 				}
-				// TODO: once we implement Layers, the top-level groups will be layers so
-				// we will want to stop just before then
 				// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
 				var nodeName = t.nodeName.toLowerCase();
 				if (nodeName != "div" && nodeName != "svg") {
@@ -3058,7 +3060,7 @@ function BatchCommand(text) {
 				} else {
 					selectedBBoxes[i].y += dy;
 				}
-				var cmd = recalculateSelectedDimensions(i);
+				var cmd = recalculateDimensions(selected,selectedBBoxes[i]);
 				if (cmd) {
 					batchCmd.addSubCommand(cmd);
 				}
