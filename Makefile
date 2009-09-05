@@ -8,7 +8,7 @@ all: release firefox opera
 
 build/$(PACKAGE):
 	mkdir -p build/$(PACKAGE)
-	cp -ra editor/* build/$(PACKAGE)
+	cp -r editor/* build/$(PACKAGE)
 	-find build/$(PACKAGE) -name .svn -type d -exec rm -rf {} \;
 # minify spin button
 	java -jar $(YUI) build/$(PACKAGE)/spinbtn/JQuerySpinBtn.js > build/$(PACKAGE)/spinbtn/JQuerySpinBtn.min.js
@@ -24,15 +24,15 @@ release: build/$(PACKAGE)
 
 firefox: build/$(PACKAGE)
 	mkdir -p build/firefox/content/editor
-	cp -a firefox-extension/* build/firefox
+	cp -r firefox-extension/* build/firefox
 	rm -rf build/firefox/content/.svn
-	cp -ra build/$(PACKAGE)/* build/firefox/content/editor
+	cp -r build/$(PACKAGE)/* build/firefox/content/editor
 	cd build/firefox ; $(ZIP) ../$(PACKAGE).xpi -r * ; cd ../..
 
 opera: build/$(PACKAGE)
 	mkdir -p build/opera/editor
-	cp -a opera-widget/* build/opera
-	cp -ra build/$(PACKAGE)/* build/opera/editor
+	cp opera-widget/* build/opera
+	cp -r build/$(PACKAGE)/* build/opera/editor
 	cd build/opera ; $(ZIP) ../$(PACKAGE).wgt -r * ; cd ../..
 
 clean:
