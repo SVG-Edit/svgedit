@@ -81,7 +81,10 @@ function svg_edit_setup() {
 
 	// updates the toolbar (colors, opacity, etc) based on the selected element
 	var updateToolbar = function() {
-		if (selectedElement != null && selectedElement.tagName != "image") { //the image thing might be a hack.
+		if (selectedElement != null && 
+			selectedElement.tagName != "image" &&
+			selectedElement.tagName != "g")
+		{
 			// get opacity values
 			var fillOpacity = parseFloat(selectedElement.getAttribute("fill-opacity"));
 			if (isNaN(fillOpacity)) {
@@ -167,7 +170,7 @@ function svg_edit_setup() {
 			return;
 		}
 		
-		$('#selected_panel, #multiselected_panel, #rect_panel, #circle_panel,\
+		$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,\
 			#ellipse_panel, #line_panel, #text_panel, #image_panel').hide();
 		if (elem != null) {
 			$('#angle').val(svgCanvas.getRotationAngle(elem));
@@ -175,6 +178,7 @@ function svg_edit_setup() {
 			
 			// update contextual tools here
 			var panels = {
+				g: [],
 				rect: ['radius','x','y','width','height'],
 				image: ['x','y','width','height'],
 				circle: ['cx','cy','r'],
@@ -557,7 +561,14 @@ function svg_edit_setup() {
 	};
 	
 	var clickGroup = function(){
-		console.log("Group not implemented yet");
+		// group
+		if (multiselected) {
+			svgCanvas.groupSelectedElements();
+		}
+		// ungroup
+		else {
+			svgCanvas.ungroupSelectedElement();
+		}
 	};
 	
 	var clickClone = function(){
