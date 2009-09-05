@@ -176,7 +176,7 @@ function svg_edit_setup() {
 			// update contextual tools here
 			var panels = {
 				rect: ['radius','x','y','width','height'],
-        image: ['x','y','width','height'],
+				image: ['x','y','width','height'],
 				circle: ['cx','cy','r'],
 				ellipse: ['cx','cy','rx','ry'],
 				line: ['x1','y1','x2','y2'], 
@@ -216,13 +216,11 @@ function svg_edit_setup() {
 					if (svgCanvas.addedNew) {
 						$('#text').focus().select();
 					}
-				}else if(el_name == 'image') {
-          var xlinkNS="http://www.w3.org/1999/xlink";
-          $('#image_url').val(elem.getAttributeNS(xlinkNS, "href"));
-          
-        }
-        
-        
+				}
+				else if(el_name == 'image') {
+          			var xlinkNS="http://www.w3.org/1999/xlink";
+          			$('#image_url').val(elem.getAttributeNS(xlinkNS, "href"));
+        		}
 			}
 		} // if (elem != null)
 		else if (multiselected) {
@@ -642,7 +640,7 @@ function svg_edit_setup() {
 	$('#tool_circle').mouseup(clickCircle);
 	$('#tool_ellipse').mouseup(clickEllipse);
 	$('#tool_fhellipse').mouseup(clickFHEllipse);
-  $('#tool_image').mouseup(clickImage);
+	$('#tool_image').mouseup(clickImage);
 	$('#tool_text').click(clickText);
 	$('#tool_poly').click(clickPoly);
 	$('#tool_clear').click(clickClear);
@@ -723,6 +721,7 @@ function svg_edit_setup() {
 			['5', clickEllipse],
 			['6', clickText],
 			['7', clickPoly],
+			['8', clickImage],
 			[modKey+'N', function(evt){clickClear();evt.preventDefault();}],
 			[modKey+'S', function(evt){editingsource?saveSourceEditor():clickSave();evt.preventDefault();}],
 			[modKey+'O', function(evt){clickOpen();evt.preventDefault();}],
