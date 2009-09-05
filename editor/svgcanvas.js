@@ -797,10 +797,14 @@ function BatchCommand(text) {
 				attr = attrs.item(i);
 				if (attr.nodeValue != "") {
 					//Opera bug turns N.N to N,N in some locales
-					if(window.opera && attr.nodeName == 'opacity' && /^\d+,\d+$/.test(attr.nodeValue)) {
+					if (window.opera && attr.nodeName == 'opacity' && /^\d+,\d+$/.test(attr.nodeValue)) {
 						attr.nodeValue = attr.nodeValue.replace(',','.');
 					}
-					out.push(" "); out.push(attr.nodeName); out.push("=\""); 
+					out.push(" "); 
+					if (attr.namespaceURI == 'http://www.w3.org/1999/xlink') {
+						out.push('xlink:');
+					}
+					out.push(attr.nodeName); out.push("=\""); 
 					out.push(attr.nodeValue); out.push("\"");
 				}
 			}
@@ -1120,8 +1124,8 @@ function BatchCommand(text) {
 			}, 1000);
 			break;
     
-    case "image":
-      changes["x"] = selected.getAttribute("x");
+		case "image":
+			changes["x"] = selected.getAttribute("x");
 			changes["y"] = selected.getAttribute("y");
 			changes["width"] = selected.getAttribute("width");
 			changes["height"] = selected.getAttribute("height");
@@ -1324,7 +1328,7 @@ function BatchCommand(text) {
 						"opacity": cur_shape.opacity / 2
 					}
 				});
-        		newImage.setAttributeNS(xlinkns, "href", "images/logo.png")
+        		newImage.setAttributeNS(xlinkns, "href", "images/logo.png");
 				break;
 			case "square":
 				// FIXME: once we create the rect, we lose information that this was a square
