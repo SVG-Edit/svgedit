@@ -13,7 +13,7 @@ var svgWhiteList = {
 	"circle": ["cx", "cy", "fill", "fill-opacity", "id", "opacity", "r", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
 	"defs": [],
 	"ellipse": ["cx", "cy", "fill", "fill-opacity", "id", "opacity", "rx", "ry", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
-	"image": ["height", "id", "opacity", "transform" "width", "x", "xlink:href", "xlink:title", "y"],
+	"image": ["height", "id", "opacity", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
 	"line": ["fill", "fill-opacity", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-opacity", "stroke-width",  "transform", "x1", "x2", "y1", "y2"],
 	"linearGradient": ["id", "gradientTransform", "gradientUnits", "spreadMethod", "x1", "x2", "y1", "y2"],
 	"path": ["d", "fill", "fill-opacity", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
@@ -2447,6 +2447,7 @@ function BatchCommand(text) {
 	};
 
 	this.setFillColor = function(val,preventUndo) {
+		console.log('setFillColor(' + val + ')');
 		cur_properties.fill = val;
 		cur_properties.fill_paint = {type:"solidColor"};
 		// take out any path/line elements when setting fill
