@@ -973,9 +973,36 @@ function BatchCommand(text) {
 				pointGripContainer.removeAttribute("transform");
 			}
 		}
+		
+		// if it's a group, transfer the transform attribute to each child element
+		// and recursively call recalculateDimensions()
+		if (selected.tagName == "g") {
+			var batchCmd = new BatchCommand("Transform Group");
+			var xform = selected.getAttribute("transform");
+			var children = selected.childNodes;
+			var i = children.length;
+			while (i--) {
+				var child = children.item(i);
+				if (child.nodeType == 1) {
+					var childBox = child.getBBox();
+					if (childBox) {
+						var pt = remap(childBox.x,childBox.y),
+							w = scalew(childBox.width),
+							h = scaleh(childBox.height);
+						childBox.x = pt.x; childBox.y = pt.y;
+						childBox.width = w; childBox.height = h;
+						batchCmd.addSubCommand(recalculateDimensions(child, childBox));
+					}
+				}
+			}
+			return batchCmd;
+		}	
 
 		switch (selected.tagName)
 		{
+		case "g":
+			// do work here :P
+			break;
 		// NOTE: at the moment, there's no way to create an actual polygon element except by 
 		// editing source or importing from somewhere else but we'll cover it here anyway
 		// polygon is handled just like polyline
@@ -1152,9 +1179,6 @@ function BatchCommand(text) {
 				'width': scalew(changes["width"]),
 				'height': scaleh(changes["height"])
 			}, 1000);
-			break;
-		case "g":
-			// do work here :P
 			break;
 		default: // rect
 			console.log("Unknown shape type: " + selected.tagName);
