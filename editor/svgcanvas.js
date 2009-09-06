@@ -3016,8 +3016,8 @@ function BatchCommand(text) {
 		canvas.addToSelection([g]);
 	};
 
-	// TODO: if the group has a rotational transform on it, transfer that transform
-	// to each child element and add the change commands to the batch command
+	// TODO: when transferring group's rotational transform to the children, must deal
+	// with children who are already rotated within the group
 	this.ungroupSelectedElement = function() {
 		var g = selectedElements[0];
 		if (g.tagName == "g") {
@@ -3027,6 +3027,9 @@ function BatchCommand(text) {
 			var children = new Array(g.childNodes.length);
 			var xform = g.getAttribute("transform");
 			var i = 0;
+			var gbox = g.getBBox(),
+				gx = gbox.x + gbox.width/2,
+				gy = gbox.y + gbox.height/2;
 			while (g.firstChild) {
 				var elem = g.firstChild;
 				var oldNextSibling = elem.nextSibling;
@@ -3034,15 +3037,29 @@ function BatchCommand(text) {
 				children[i++] = elem = parent.insertBefore(elem, anchor);
 				batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
 				if (xform) {
+					var angle = canvas.getRotationAngle(g) * Math.PI / 180.0;
+					var childBox = elem.getBBox();
+					var cx = childBox.x + childBox.width/2,
+						cy = childBox.y + childBox.height/2,
+						dx = cx - gx,
+						dy = cy - gy,
+						r = Math.sqrt(dx*dx + dy*dy);
+					angle += Math.atan2(dy,dx);
+					var newcx = r * Math.cos(angle) + gx,
+						newcy = r * Math.sin(angle) + gy;
+					childBox.x += (newcx - cx);
+					childBox.y += (newcy - cy);
 					elem.setAttribute("transform", xform);
-					batchCmd.addSubCommand(recalculateDimensions(elem, elem.getBBox()));
+					batchCmd.addSubCommand(recalculateDimensions(elem, childBox));
 				}
 			}
 			
 			// remove transform and make it undo-able
 			if (xform) {
 				var changes = {};
-				changes['transform'] = xform;
+				changes["transform"] = xform;
+				g.setAttribute("transform", "");
+				g.removeAttribute("transform");				
 				batchCmd.addSubCommand(new ChangeElementCommand(g, changes));
 			}
 
