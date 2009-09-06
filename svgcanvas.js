@@ -42,6 +42,7 @@ function ChangeElementCommand(elem, attrs, text) {
 	}
 
 	this.apply = function() {
+		var bChangedTransform = false;
 		for( attr in this.newValues ) {
 			if (this.newValues[attr]) {
 				if (attr == "#text") this.elem.textContent = this.newValues[attr];
@@ -51,9 +52,10 @@ function ChangeElementCommand(elem, attrs, text) {
 				if (attr != "#text") this.elem.textContent = "";
 				else this.elem.removeAttribute(attr);
 			}
+			if (attr == "transform") { bChangedTransform = true; }
 		}
 		// relocate rotational transform, if necessary
-		if($.inArray("transform", this.newValues) == -1) {
+		if(!bChangedTransform) {
 			var angle = canvas.getRotationAngle(elem);
 			if (angle) {
 				var bbox = elem.getBBox();
@@ -69,6 +71,7 @@ function ChangeElementCommand(elem, attrs, text) {
 	};
 
 	this.unapply = function() {
+		var bChangedTransform = false;
 		for( attr in this.oldValues ) {
 			if (this.oldValues[attr]) {
 				if (attr == "#text") this.elem.textContent = this.oldValues[attr];
@@ -78,9 +81,10 @@ function ChangeElementCommand(elem, attrs, text) {
 				if (attr == "#text") this.elem.textContent = "";
 				else this.elem.removeAttribute(attr);
 			}
+			if (attr == "transform") { bChangedTransform = true; }
 		}
 		// relocate rotational transform, if necessary
-		if($.inArray("transform", this.oldValues) == -1) {
+		if(!bChangedTransform) {
 			var angle = canvas.getRotationAngle(elem);
 			if (angle) {
 				var bbox = elem.getBBox();
@@ -130,7 +134,7 @@ function RemoveElementCommand(elem, parent, text) {
 
 function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 	this.elem = elem;
-	this.text = text ? ("Move " + elem.tagName + " to " + text) : ("Move " + elem.tagName + "top/bottom");
+	this.text = text ? ("Move " + elem.tagName + " to " + text) : ("Move " + elem.tagName);
 	this.oldNextSibling = oldNextSibling;
 	this.oldParent = oldParent;
 	this.newNextSibling = elem.nextSibling;
@@ -884,8 +888,10 @@ function BatchCommand(text) {
 		var box = canvas.getBBox(selected);
 
 		// if we have not moved/resized, then immediately leave
-		if (box.x == selectedBBox.x && box.y == selectedBBox.y &&
-			box.width == selectedBBox.width && box.height == selectedBBox.height) {
+		var xform = selected.getAttribute("transform");
+		if ( (!xform || xform == "") && box.x == selectedBBox.x && box.y == selectedBBox.y &&
+				box.width == selectedBBox.width && box.height == selectedBBox.height) 
+		{
 			return null;
 		}
 
@@ -900,8 +906,8 @@ function BatchCommand(text) {
 		var scalew = function(w) {return parseInt(w*selectedBBox.width/box.width);}
 		var scaleh = function(h) {return parseInt(h*selectedBBox.height/box.height);}
 
-		var changes = {};
-
+		var batchCmd = new BatchCommand("Transform");
+		
 		// if there was a rotation transform, re-set it, otherwise empty out the transform attribute
 		var angle = canvas.getRotationAngle(selected);
 		var pointGripContainer = document.getElementById("polypointgrip_container");
@@ -959,6 +965,11 @@ function BatchCommand(text) {
 			
 			var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
 			selected.setAttribute("transform", rotate);
+			// if we were rotated, store just the old rotation (not other transforms) on the
+			// undo stack
+			var changes = {};
+			changes["transform"] = ["rotate(", angle, " ", tr_x, ",", tr_y, ")"].join('');
+			batchCmd.addSubCommand(new ChangeElementCommand(selected, changes));
 			if(pointGripContainer) {
 				pointGripContainer.setAttribute("transform", rotate);
 			}
@@ -977,8 +988,6 @@ function BatchCommand(text) {
 		// if it's a group, transfer the transform attribute to each child element
 		// and recursively call recalculateDimensions()
 		if (selected.tagName == "g") {
-			var batchCmd = new BatchCommand("Transform Group");
-			var xform = selected.getAttribute("transform");
 			var children = selected.childNodes;
 			var i = children.length;
 			while (i--) {
@@ -997,6 +1006,8 @@ function BatchCommand(text) {
 			}
 			return batchCmd;
 		}	
+
+		var changes = {};
 
 		switch (selected.tagName)
 		{
@@ -1185,8 +1196,9 @@ function BatchCommand(text) {
 			break;
 		}
 		if (changes) {
-			return new ChangeElementCommand(selected, changes);
+			batchCmd.addSubCommand(new ChangeElementCommand(selected, changes));
 		}
+		return batchCmd;
 	};
 
 // public events
@@ -3004,6 +3016,8 @@ function BatchCommand(text) {
 		canvas.addToSelection([g]);
 	};
 
+	// TODO: if the group has a rotational transform on it, transfer that transform
+	// to each child element and add the change commands to the batch command
 	this.ungroupSelectedElement = function() {
 		var g = selectedElements[0];
 		if (g.tagName == "g") {
@@ -3011,13 +3025,25 @@ function BatchCommand(text) {
 			var parent = g.parentNode;
 			var anchor = g.previousSibling;
 			var children = new Array(g.childNodes.length);
+			var xform = g.getAttribute("transform");
 			var i = 0;
 			while (g.firstChild) {
 				var elem = g.firstChild;
 				var oldNextSibling = elem.nextSibling;
 				var oldParent = elem.parentNode;
 				children[i++] = elem = parent.insertBefore(elem, anchor);
-				batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));			
+				batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
+				if (xform) {
+					elem.setAttribute("transform", xform);
+					batchCmd.addSubCommand(recalculateDimensions(elem, elem.getBBox()));
+				}
+			}
+			
+			// remove transform and make it undo-able
+			if (xform) {
+				var changes = {};
+				changes['transform'] = xform;
+				batchCmd.addSubCommand(new ChangeElementCommand(g, changes));
 			}
 
 			// remove the group from the selection			
