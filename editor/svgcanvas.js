@@ -607,6 +607,7 @@ function BatchCommand(text) {
 	var selectedElements = new Array(1); 
 	// this holds the selected's bbox
 	var selectedBBoxes = new Array(1);
+	var justSelected = null;
 	// this object manages selectors for us
 	var selectorManager = new SelectorManager();
 	var rubberBox = null;
@@ -1238,13 +1239,19 @@ function BatchCommand(text) {
 			if (selectedElements.indexOf(elem) == -1) {
 				selectedElements[j] = elem;
 				selectedBBoxes[j++] = this.getBBox(elem);
-				selectorManager.requestSelector(elem);
+				var sel = selectorManager.requestSelector(elem);
+				if (selectedElements.length > 1) {
+					sel.showGrips(false);
+				}
 				call("selected", selectedElements);
 			}
 		}
-		
+
 		if(showGrips) {
 			selectorManager.requestSelector(selectedElements[0]).showGrips(true);
+		}
+		else if (selectedElements.length > 1) {
+			selectorManager.requestSelector(selectedElements[0]).showGrips(false);
 		}
 	};
 
@@ -1308,8 +1315,13 @@ function BatchCommand(text) {
 				if (nodeName != "div" && nodeName != "svg") {
 					// if this element is not yet selected, clear selection and select it
 					if (selectedElements.indexOf(t) == -1) {
-						canvas.clearSelection();
+						// only clear selection if shift is not pressed (otherwise, add 
+						// element to selection)
+						if (!evt.shiftKey) {
+							canvas.clearSelection();
+						}
 						canvas.addToSelection([t]);
+						justSelected = t;
 						current_poly = null;
 					}
 					// else if it's a poly, go into polyedit mode in mouseup
@@ -1537,8 +1549,7 @@ function BatchCommand(text) {
 		var y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
 		var shape = svgdoc.getElementById(getId());
     
-    evt.preventDefault()
-    
+    	evt.preventDefault();
     
 		switch (current_mode)
 		{
@@ -1923,6 +1934,8 @@ function BatchCommand(text) {
 	//   this is done in when we recalculate the selected dimensions()
 	var mouseUp = function(evt)
 	{
+		var tempJustSelected = justSelected;
+		justSelected = null;
 		if (!started) return;
 
 		var x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
@@ -1971,9 +1984,9 @@ function BatchCommand(text) {
 					}
 					// no change in position/size, so maybe we should move to polyedit
 					else {
+						var t = evt.target;
 						// TODO: this causes a poly that was just going to be selected to go straight to polyedit
 						if (selectedElements[0].nodeName == "path" && selectedElements[1] == null) {
-							var t = evt.target;
 							if (current_poly == t) {
 								current_mode = "polyedit";
 
@@ -2012,8 +2025,12 @@ function BatchCommand(text) {
 							else {
 								current_poly = t;
 							}
-						} // no change in mouse position
-					}
+						} // if it was a path
+						// else, if it was selected and this is a shift-click, remove it from selection
+						else if (evt.shiftKey && tempJustSelected != t) {
+							canvas.removeFromSelection([t]);
+						}
+					} // no change in mouse position
 				}
 				// we return immediately from select so that the obj_num is not incremented
 				return;
@@ -3003,6 +3020,7 @@ function BatchCommand(text) {
 		var i = selectedElements.length;
 		while (i--) {
 			var elem = selectedElements[i];
+			if (elem == null) continue;
 			var oldNextSibling = elem.nextSibling;
 			var oldParent = elem.parentNode;
 			g.appendChild(elem);
