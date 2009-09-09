@@ -759,8 +759,6 @@ function svg_edit_setup() {
 			['shift+P', selectNext],
 			['ctrl+up', function(evt){clickZoom(true);evt.preventDefault();}],
 			['ctrl+down', function(evt){clickZoom();evt.preventDefault();}],
-			['+', function(evt){clickZoom(true);evt.preventDefault();}],
-			['-', function(evt){clickZoom();evt.preventDefault();}],
 			['up', function(evt){moveSelected(0,-1);evt.preventDefault();}],
 			['down', function(evt){moveSelected(0,1);evt.preventDefault();}],
 			['left', function(evt){moveSelected(-1,0);evt.preventDefault();}],
