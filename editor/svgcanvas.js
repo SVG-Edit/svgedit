@@ -2443,9 +2443,18 @@ function BatchCommand(text) {
         	svgzoom = svgroot.appendChild(svgdoc.importNode(newDoc.documentElement, true));
 			svgzoom.setAttribute('id', 'svgzoom');
 			// determine proper size
-			var vb = svgzoom.getAttribute("viewBox").split(' ');
-			var w = vb[2];
-			var h = vb[3];
+			var w, h;
+			if (svgzoom.getAttribute("viewBox")) {
+				var vb = svgzoom.getAttribute("viewBox").split(' ');
+				w = vb[2];
+				h = vb[3];
+			}
+			// handle old content that doesn't have a viewBox
+			else {
+				w = svgzoom.getAttribute("width");
+				h = svgzoom.getAttribute("height");
+				svgzoom.setAttribute("viewBox", ["0", "0", w, h].join(" "));
+			}
 			// just to be safe, remove any width/height from text so that they are 100%/100%
 			svgzoom.removeAttribute('width');
 			svgzoom.removeAttribute('height');
