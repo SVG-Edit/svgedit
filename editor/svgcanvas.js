@@ -22,7 +22,7 @@ var svgWhiteList = {
 	"radialGradient": ["id", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "r", "spreadMethod"],
 	"rect": ["fill", "fill-opacity", "height", "id", "opacity", "rx", "ry", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "width", "x", "y"],
 	"stop": ["id", "offset", "stop-color", "stop-opacity"],
-	"svg": ["id", "height", "transform", "width", "xmlns", "xmlns:xlink"],
+	"svg": ["id", "height", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
 	"text": ["fill", "fill-opacity", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "text-anchor", "x", "y"],
 };
 
@@ -560,12 +560,14 @@ function BatchCommand(text) {
 	svgroot.setAttribute("xmlns", svgns);
 	svgroot.setAttribute("xmlns:xlink", xlinkns);
 	container.appendChild(svgroot);
-	var comment = svgdoc.createComment(" created with SVG-edit - http://svg-edit.googlecode.com/ ");
-	svgroot.appendChild(comment);
 	var svgzoom = svgdoc.createElementNS(svgns, "svg");
 	svgzoom.setAttribute('id', 'svgzoom');
 	svgzoom.setAttribute('viewBox', '0 0 640 480');
+	svgzoom.setAttribute("xmlns", svgns);
+	svgzoom.setAttribute("xmlns:xlink", xlinkns);
 	svgroot.appendChild(svgzoom);
+	var comment = svgdoc.createComment(" created with SVG-edit - http://svg-edit.googlecode.com/ ");
+	svgzoom.appendChild(comment);
 
 	var d_attr = null;
 	var started = false;
@@ -753,10 +755,10 @@ function BatchCommand(text) {
 	};
 
 	var removeUnusedGrads = function() {
-		var defs = svgroot.getElementsByTagNameNS(svgns, "defs");
+		var defs = svgzoom.getElementsByTagNameNS(svgns, "defs");
 		if(!defs || !defs.length) return;
 		
-		var all_els = svgroot.getElementsByTagNameNS(svgns, '*');
+		var all_els = svgzoom.getElementsByTagNameNS(svgns, '*');
 		var grad_uses = [];
 		
 		$.each(all_els, function(i, el) {
@@ -773,9 +775,8 @@ function BatchCommand(text) {
 			} 
 		});
 		
-		var lgrads = svgroot.getElementsByTagNameNS(svgns, "linearGradient");
+		var lgrads = svgzoom.getElementsByTagNameNS(svgns, "linearGradient");
 		var grad_ids = [];
-
 		var i = lgrads.length;
 		while (i--) {
 			var grad = lgrads[i];
@@ -801,25 +802,7 @@ function BatchCommand(text) {
 		// remove unused gradients
 		removeUnusedGrads();
 		
-		// convert to image without additional zoom box
-		var res = canvas.getResolution();
-		svgroot.setAttribute('width', res.w);
-		svgroot.setAttribute('height', res.h);
-		var elems = canvas.getVisibleElements().reverse();
-		$.each(elems, function(i, elem) {
-			svgroot.appendChild(elem);
-		});
-		svgroot.removeChild(svgzoom);
-
-		var output = svgToString(svgroot, 0);
-		
-		// return zoombox functionality
-		svgroot.insertBefore(svgzoom, svgroot.firstChild);
-		$.each(elems, function(i, elem) {
-			svgzoom.appendChild(elem);
-		});
-		svgroot.setAttribute('width', res.w * res.zoom);
-		svgroot.setAttribute('height', res.h * res.zoom);
+		var output = svgToString(svgzoom, 0);
 		
 		return output;
 	}
@@ -2459,16 +2442,33 @@ function BatchCommand(text) {
     	    // set new svg document
         	svgzoom = svgroot.appendChild(svgdoc.importNode(newDoc.documentElement, true));
 			svgzoom.setAttribute('id', 'svgzoom');
-			// TODO: determine size?
-			svgzoom.setAttribute('viewBox', '0 0 640 480');
+			// determine proper size
+			var vb = svgzoom.getAttribute("viewBox").split(' ');
+			var w = vb[2];
+			var h = vb[3];
+			// just to be safe, remove any width/height from text so that they are 100%/100%
+			svgzoom.removeAttribute('width');
+			svgzoom.removeAttribute('height');
 			batchCmd.addSubCommand(new InsertElementCommand(svgzoom));
+
+			// update root to the correct size
+			var changes = {};
+			changes['width'] = svgroot.getAttribute('width');
+			changes['height'] = svgroot.getAttribute('height');
+			svgroot.setAttribute('width', w);
+			svgroot.setAttribute('height', h);
+			batchCmd.addSubCommand(new ChangeElementCommand(svgroot, changes));
+			
+			// reset zoom
+			current_zoom = 1;
 
 			// add back in parentSelectorGroup
 			// not needed anymore
 //			svgroot.appendChild(selectorManager.selectorParentGroup);
+			selectorManager.update();
 
 			addCommandToHistory(batchCmd);
-			call("changed", [svgzoom]);
+			call("changed", [svgroot]);
 		} catch(e) {
 			console.log(e);
 			return false;
@@ -2511,6 +2511,7 @@ function BatchCommand(text) {
 		var vb = svgzoom.getAttribute("viewBox").split(' ');
 		return {'w':vb[2], 'h':vb[3], 'zoom': current_zoom};
 	};
+	// TODO: change svgzoom's viewBox here also and create a batch command
 	this.setResolution = function(x, y) {
 		var w = svgroot.getAttribute("width"),
 			h = svgroot.getAttribute("height");
@@ -2521,7 +2522,7 @@ function BatchCommand(text) {
 			canvas.clearSelection();
 
 			// Get bounding box
-			var bbox = svgroot.getBBox();
+			var bbox = svgzoom.getBBox();
 			
 			if(bbox) {
 				x = bbox.x + bbox.width;
@@ -2609,13 +2610,13 @@ function BatchCommand(text) {
 	};
 
 	var findDefs = function() {
-		var defs = svgroot.getElementsByTagNameNS(svgns, "defs");
+		var defs = svgzoom.getElementsByTagNameNS(svgns, "defs");
 		if (defs.length > 0) {
 			defs = defs[0];
 		}
 		else {
 			// first child is a comment, so call nextSibling
-			defs = svgroot.insertBefore( svgdoc.createElementNS(svgns, "defs" ), svgroot.firstChild.nextSibling);
+			defs = svgzoom.insertBefore( svgdoc.createElementNS(svgns, "defs" ), svgzoom.firstChild.nextSibling);
 		}
 		return defs;
 	};
