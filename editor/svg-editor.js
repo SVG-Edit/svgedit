@@ -757,6 +757,8 @@ function svg_edit_setup() {
 			['shift+right', function(){rotateSelected(1)}],
 			['shift+O', selectPrev],
 			['shift+P', selectNext],
+			['ctrl+up', function(evt){clickZoom(true);evt.preventDefault();}],
+			['ctrl+down', function(evt){clickZoom();evt.preventDefault();}],
 			['+', function(evt){clickZoom(true);evt.preventDefault();}],
 			['-', function(evt){clickZoom();evt.preventDefault();}],
 			['up', function(evt){moveSelected(0,-1);evt.preventDefault();}],

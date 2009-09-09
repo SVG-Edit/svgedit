@@ -1031,6 +1031,24 @@ function BatchCommand(text) {
 				if (child.nodeType == 1) {
 					var childBox = child.getBBox();
 					if (childBox) {
+						// TODO: to fix the rotation problem, we must account for the
+						// child's rotation in the bbox adjustment
+						
+						// If the child is rotated at all, we should figure out the rotated
+						// bbox before the group's transform, remap all four corners of the bbox
+						// via the group's transform, then determine the new angle and the new center
+						/*
+						var childAngle = canvas.getRotationAngle(child) * Math.PI / 180.0;
+						var left = childBox.x - gcx, 
+							top = childBox.y - gcy,
+							right = childBox.x + childBox.width - gcx,
+							bottom = childBox.y + childBox.height - gcy;
+						
+						var ptTopLeft = remap(left,top),
+							ptTopRight = remap(right,top),
+							ptBottomLeft = remap(left,bottom),
+							ptBottomRight = remap(right,bottom);
+						*/
 						var pt = remap(childBox.x,childBox.y),
 							w = scalew(childBox.width),
 							h = scaleh(childBox.height);
