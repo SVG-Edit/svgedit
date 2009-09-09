@@ -342,6 +342,10 @@ function BatchCommand(text) {
 			var bbox = cur_bbox || oldbox;
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
 			var sr_handle = svgroot.suspendRedraw(100);
+			l*=current_zoom;
+			t*=current_zoom;
+			w*=current_zoom;
+			h*=current_zoom;
 			assignAttributes(selectedBox, {
 				'x': l,
 				'y': t,
@@ -531,12 +535,12 @@ function BatchCommand(text) {
 		var shape = svgdoc.getElementById(data.attr.id);
 		// if shape is a path but we need to create a rect/ellipse, then remove the path
 		if (shape && data.element != shape.tagName) {
-			svgroot.removeChild(shape);
+			svgzoom.removeChild(shape);
 			shape = null;
 		}
 		if (!shape) {
 			shape = svgdoc.createElementNS(svgns, data.element);
-			svgroot.appendChild(shape);
+			svgzoom.appendChild(shape);
 		}
 		assignAttributes(shape, data.attr, 100);
 		cleanupElement(shape);
@@ -555,10 +559,13 @@ function BatchCommand(text) {
 	svgroot.setAttribute("id", "svgroot");
 	svgroot.setAttribute("xmlns", svgns);
 	svgroot.setAttribute("xmlns:xlink", xlinkns);
-	
 	container.appendChild(svgroot);
 	var comment = svgdoc.createComment(" created with SVG-edit - http://svg-edit.googlecode.com/ ");
 	svgroot.appendChild(comment);
+	var svgzoom = svgdoc.createElementNS(svgns, "svg");
+	svgzoom.setAttribute('id', 'svgzoom');
+	svgzoom.setAttribute('viewBox', '0 0 640 480');
+	svgroot.appendChild(svgzoom);
 
 	var d_attr = null;
 	var started = false;
@@ -602,6 +609,7 @@ function BatchCommand(text) {
 	var current_poly_pts = [];
 	var current_poly_pt_drag = -1;
 	var current_poly_oldd = null;
+	var current_zoom = 1;
 	// this will hold all the currently selected elements
 	// default size of 1 until it needs to grow bigger
 	var selectedElements = new Array(1); 
@@ -787,6 +795,33 @@ function BatchCommand(text) {
 				def.parentNode.removeChild(def);
 			}
 		}
+	}
+	
+	var svgCanvasToString = function() {
+		// remove unused gradients
+		removeUnusedGrads();
+		
+		// convert to image without additional zoom box
+		var res = canvas.getResolution();
+		svgroot.setAttribute('width', res.w);
+		svgroot.setAttribute('height', res.h);
+		var elems = canvas.getVisibleElements().reverse();
+		$.each(elems, function(i, elem) {
+			svgroot.appendChild(elem);
+		});
+		svgroot.removeChild(svgzoom);
+
+		var output = svgToString(svgroot, 0);
+		
+		// return zoombox functionality
+		svgroot.insertBefore(svgzoom, svgroot.firstChild);
+		$.each(elems, function(i, elem) {
+			svgzoom.appendChild(elem);
+		});
+		svgroot.setAttribute('width', res.w * res.zoom);
+		svgroot.setAttribute('height', res.h * res.zoom);
+		
+		return output;
 	}
 
 	var svgToString = function(elem, indent) {
@@ -1219,7 +1254,6 @@ function BatchCommand(text) {
 
 	this.addToSelection = function(elemsToAdd, showGrips) {
 		if (elemsToAdd.length == 0) { return; }
-
 		// find the first null in our selectedElements array
 		var j = 0;
 		while (j < selectedElements.length) {
@@ -1295,6 +1329,10 @@ function BatchCommand(text) {
 		if($.inArray(current_mode, ['select', 'resize']) == -1) {
 			addGradient();
 		}
+		
+		x /= current_zoom;
+		y /= current_zoom;
+		
 		start_x = x;
 		start_y = y;
 		
@@ -1549,6 +1587,9 @@ function BatchCommand(text) {
 		var y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
 		var shape = svgdoc.getElementById(getId());
     
+    	x /= current_zoom;
+    	y /= current_zoom;
+    
     	evt.preventDefault();
     
 		switch (current_mode)
@@ -1560,7 +1601,6 @@ function BatchCommand(text) {
 				if (selectedElements[0] != null) {
 					var dx = x - start_x;
 					var dy = y - start_y;
-					
 					if (dx != 0 || dy != 0) {
 						var ts = ["translate(",dx,",",dy,")"].join('');
 						var len = selectedElements.length;
@@ -2366,18 +2406,14 @@ function BatchCommand(text) {
 		// remove the selected outline before serializing
 		this.clearSelection();
 		
-		// remove unused gradients
-		removeUnusedGrads();
-		
 		var str = "<?xml version=\"1.0\" standalone=\"no\"?>\n";
 		// no need for doctype, see http://jwatt.org/svg/authoring/#doctype-declaration
-		str += svgToString(svgroot, 0);
+		str += svgCanvasToString();
 		call("saved", str);
 	};
 
 	this.getSvgString = function() {
-		removeUnusedGrads();
-		return svgToString(svgroot, 0);
+		return svgCanvasToString();
 	};
 
 	// this function returns false if the set was unsuccessful, true otherwise
@@ -2447,7 +2483,9 @@ function BatchCommand(text) {
 	};
 
 	this.getResolution = function() {
-		return [svgroot.getAttribute("width"), svgroot.getAttribute("height")];
+// 		return [svgroot.getAttribute("width"), svgroot.getAttribute("height")];
+		var vb = svgzoom.getAttribute("viewBox").split(' ');
+		return {'w':vb[2], 'h':vb[3], 'zoom': current_zoom};
 	};
 	this.setResolution = function(x, y) {
 		var w = svgroot.getAttribute("width"),
@@ -2477,6 +2515,16 @@ function BatchCommand(text) {
 		addCommandToHistory(new ChangeElementCommand(svgroot, {"width":w,"height":h}, "resolution"));
 		call("changed", [svgroot]);
 	};
+
+	this.setZoom = function(zoomlevel) {
+		var res = canvas.getResolution();
+		svgroot.setAttribute("width", res.w * zoomlevel);
+		svgroot.setAttribute("height", res.h * zoomlevel);
+		current_zoom = zoomlevel;
+		if(selectedElements[0]) {
+			selectorManager.requestSelector(selectedElements[0]).resize();
+		}
+	}
 
 	this.getMode = function() {
 		return current_mode;
@@ -3127,6 +3175,8 @@ function BatchCommand(text) {
 
 	this.moveSelectedElements = function(dx,dy,undoable) {
 		// if undoable is not sent, default to true
+		dx *= current_zoom;
+		dy *= current_zoom;
 		var undoable = undoable || true;
 		var batchCmd = new BatchCommand("position");
 		var i = selectedElements.length;
@@ -3160,7 +3210,7 @@ function BatchCommand(text) {
 	};
 
 	this.getVisibleElements = function(includeBBox) {
-		var nodes = svgroot.childNodes;
+		var nodes = svgzoom.childNodes;
 		var i = nodes.length;
 		var contentElems = [];
 		
@@ -3168,7 +3218,7 @@ function BatchCommand(text) {
 			var elem = nodes[i];
 			try {
 				var box = canvas.getBBox(elem);
-				if (elem.id != "selectorParentGroup" && box) {
+				if (box) {
 					var item = includeBBox?{'elem':elem, 'bbox':box}:elem;
 					contentElems.push(item);
 				}
@@ -3261,7 +3311,7 @@ function BatchCommand(text) {
 			var elem = copiedElements[i] = copiedElements[i].cloneNode(true);
 			elem.removeAttribute("id");
 			elem.id = getNextId();
-			svgroot.appendChild(elem);
+			svgzoom.appendChild(elem);
 			batchCmd.addSubCommand(new InsertElementCommand(elem));
 		}
 
