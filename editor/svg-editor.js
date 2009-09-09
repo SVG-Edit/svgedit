@@ -594,6 +594,13 @@ function svg_edit_setup() {
 		svgCanvas.alignSelectedElements('b', $('#align_relative_to option:selected').val() );
 	};
 
+	var clickZoom = function(zoomIn) {
+		var res = svgCanvas.getResolution();
+		var multiplier = zoomIn? res.zoom * 2 : res.zoom * 0.5;
+		setResolution(res.w * multiplier, res.h * multiplier);
+		svgCanvas.setZoom(multiplier);
+	};
+
 	var showSourceEditor = function(){
 		if (editingsource) return;
 		editingsource = true;
@@ -750,6 +757,8 @@ function svg_edit_setup() {
 			['shift+right', function(){rotateSelected(1)}],
 			['shift+O', selectPrev],
 			['shift+P', selectNext],
+			['+', function(evt){clickZoom(true);evt.preventDefault();}],
+			['-', function(evt){clickZoom();evt.preventDefault();}],
 			['up', function(evt){moveSelected(0,-1);evt.preventDefault();}],
 			['down', function(evt){moveSelected(0,1);evt.preventDefault();}],
 			['left', function(evt){moveSelected(-1,0);evt.preventDefault();}],
@@ -927,7 +936,11 @@ function svg_edit_setup() {
 		});
 		if(!found) $('#resolution').val('Custom');
 		
-		$('#svgcanvas').css( { 'width': x, 'height': y } );
+		setResolution(x, y);
+	}
+	
+	function setResolution(w, h) {
+		$('#svgcanvas').css( { 'width': w, 'height': h } );
 	}
 
 	$('#resolution').change(function(){
