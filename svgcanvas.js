@@ -2448,21 +2448,27 @@ function BatchCommand(text) {
 			var batchCmd = new BatchCommand("Change Source");
 
 			// save our old selectorParentGroup
-			selectorManager.selectorParentGroup = svgroot.removeChild(selectorManager.selectorParentGroup);
+			// not needed anymore, we can keep svgroot forever (and just replace svgzoom)
+			// TODO: reset zoom level on svgroot
+//			selectorManager.selectorParentGroup = svgroot.removeChild(selectorManager.selectorParentGroup);
 
-        	// remove old root
-    	    var oldroot = container.removeChild(svgroot);
-			batchCmd.addSubCommand(new RemoveElementCommand(oldroot, container));
+        	// remove old svg document
+    	    var oldzoom = svgroot.removeChild(svgzoom);
+			batchCmd.addSubCommand(new RemoveElementCommand(oldzoom, svgroot));
         
-    	    // set new root
-        	svgroot = container.appendChild(svgdoc.importNode(newDoc.documentElement, true));
-			batchCmd.addSubCommand(new InsertElementCommand(svgroot));
+    	    // set new svg document
+        	svgzoom = svgroot.appendChild(svgdoc.importNode(newDoc.documentElement, true));
+			svgzoom.setAttribute('id', 'svgzoom');
+			// TODO: determine size?
+			svgzoom.setAttribute('viewBox', '0 0 640 480');
+			batchCmd.addSubCommand(new InsertElementCommand(svgzoom));
 
 			// add back in parentSelectorGroup
-			svgroot.appendChild(selectorManager.selectorParentGroup);
+			// not needed anymore
+//			svgroot.appendChild(selectorManager.selectorParentGroup);
 
 			addCommandToHistory(batchCmd);
-			call("changed", [svgroot]);
+			call("changed", [svgzoom]);
 		} catch(e) {
 			console.log(e);
 			return false;
