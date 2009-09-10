@@ -1,4 +1,7 @@
 <?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://svg-edit/content/svg-edit-overlay.css" type="text/css"?>
+
 <!DOCTYPE overlay SYSTEM "chrome://chromelist/locale/ChromeListOverlay.dtd" >
 <overlay id="SVGEditToolsOverlay"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
@@ -11,4 +14,12 @@
        oncommand="start_svg_edit();" />
 </menupopup>
 
+ <!-- Firefox -->
+  <statusbar id="status-bar">
+    <statusbarpanel id="svg-edit-statusbar-button" 
+		    class="statusbarpanel-menu-iconic"
+		    onclick="return start_svg_edit()"
+		    tooltip="SvgEdit">
+    </statusbarpanel>
+ </statusbar>
 </overlay>
