@@ -417,6 +417,7 @@ function BatchCommand(text) {
 			mgr.selectorMap = {};
 			mgr.selectors = [];
 			mgr.rubberBandBox = null;
+			mgr.update();
 		};
 
 		this.requestSelector = function(elem) {
@@ -1845,8 +1846,8 @@ function BatchCommand(text) {
 			case "poly":
 				var line = document.getElementById("poly_stretch_line");
 				if (line) {
-					line.setAttribute("x2", x);
-					line.setAttribute("y2", y);
+					line.setAttribute("x2", x *= current_zoom);
+					line.setAttribute("y2", y *= current_zoom);
 				}
 				break;
 			case "polyedit":
@@ -2168,7 +2169,10 @@ function BatchCommand(text) {
 				element = null;
 				// continue to be set to true so that mouseMove happens
 				started = true;
-
+				var real_x = x;
+				var real_y = y;
+				x /= current_zoom;
+				y /= current_zoom;
 				var stretchy = document.getElementById("poly_stretch_line");
 				if (!stretchy) {
 					stretchy = document.createElementNS(svgns, "line");
@@ -2202,12 +2206,12 @@ function BatchCommand(text) {
 					});
 					// set stretchy line to first point
 					assignAttributes(stretchy, {
-						'x1': x,
-						'y1': y,
-						'x2': x,
-						'y2': y
+						'x1': real_x,
+						'y1': real_y,
+						'x2': real_x,
+						'y2': real_y
 					});
-					addPointGripToPoly(x,y,0);
+					addPointGripToPoly(real_x,real_y,0);
 				}
 				else {
 					// determine if we clicked on an existing point
@@ -2223,7 +2227,7 @@ function BatchCommand(text) {
 							break;
 						}
 					}
-
+					
 					// get poly element that we are in the process of creating
 					var poly = svgdoc.getElementById(getId());
 
@@ -2259,12 +2263,12 @@ function BatchCommand(text) {
 
 						// set stretchy line to latest point
 						assignAttributes(stretchy, {
-							'x1': x,
-							'y1': y,
-							'x2': x,
-							'y2': y
+							'x1': real_x,
+							'y1': real_y,
+							'x2': real_x,
+							'y2': real_y
 						});
-						addPointGripToPoly(x,y,(current_poly_pts.length/2 - 1));
+						addPointGripToPoly(real_x,real_y,(current_poly_pts.length/2 - 1));
 					}
 					keep = true;
 				}
