@@ -653,6 +653,9 @@ function BatchCommand(text) {
 			resultList = [];
 
 			var rubberBBox = rubberBox.getBBox();
+			$.each(rubberBBox, function(key, val) {
+				rubberBBox[key] = val / current_zoom;
+			});
 			var i = curBBoxes.length;
 			while (i--) {
 				if (Utils.rectsIntersect(rubberBBox, curBBoxes[i].bbox))  {
@@ -1376,6 +1379,8 @@ function BatchCommand(text) {
 					if (rubberBox == null) {
 						rubberBox = selectorManager.getRubberBandBox();
 					}
+					start_x *= current_zoom;
+					start_y *= current_zoom;
 					assignAttributes(rubberBox, {
 						'x': start_x,
 						'y': start_y,
@@ -1637,6 +1642,8 @@ function BatchCommand(text) {
 				}
 				break;
 			case "multiselect":
+				x *= current_zoom;
+				y *= current_zoom;
 				assignAttributes(rubberBox, {
 					'x': Math.min(start_x,x),
 					'y': Math.min(start_y,y),
