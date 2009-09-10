@@ -941,6 +941,11 @@ function svg_edit_setup() {
 	
 	function setResolution(w, h) {
 		$('#svgcanvas').css( { 'width': w, 'height': h } );
+		var w_area = $('#workarea');
+		var scroll_y = h/2 - w_area.height()/2;
+		var scroll_x = w/2 - w_area.width()/2;
+		w_area[0].scrollTop = scroll_y;
+		w_area[0].scrollLeft = scroll_x;
 	}
 
 	$('#resolution').change(function(){
