@@ -1253,6 +1253,7 @@ function BatchCommand(text) {
 		call("selected", selectedElements);
 	};
 
+	// TODO: do we need to worry about selectedBBoxes here?
 	this.addToSelection = function(elemsToAdd, showGrips) {
 		if (elemsToAdd.length == 0) { return; }
 		// find the first null in our selectedElements array
@@ -1290,13 +1291,15 @@ function BatchCommand(text) {
 		}
 	};
 
-	// 
+	// updates the canvas arrays selectedElements and selectedBBoxes
+	// TODO: could use slice here to make this faster?
 	this.removeFromSelection = function(elemsToRemove) {
 		if (selectedElements[0] == null) { return; }
 		if (elemsToRemove.length == 0) { return; }
 
 		// find every element and remove it from our array copy
 		var newSelectedItems = new Array(selectedElements.length);
+		var newSelectedBBoxes = new Array(selectedBBoxes.length);
 		var j = 0;
 		var len = selectedElements.length;
 		for (var i = 0; i < len; ++i) {
@@ -1304,6 +1307,7 @@ function BatchCommand(text) {
 			if (elem) {
 				// keep the item
 				if (elemsToRemove.indexOf(elem) == -1) {
+					newSelectedBBoxes[j] = selectedBBoxes[i];
 					newSelectedItems[j++] = elem;
 				}
 				else { // remove the item and its selector
@@ -1313,6 +1317,7 @@ function BatchCommand(text) {
 		}
 		// the copy becomes the master now
 		selectedElements = newSelectedItems;
+		selectedBBoxes = newSelectedBBoxes;
 	};
 
 	// in mouseDown :
