@@ -1861,7 +1861,7 @@ function BatchCommand(text) {
 					if (angle) {
 						// calculate the shape's old center that was used for rotation
 						var box = selectedBBoxes[0];
-						var cx = paresInt(box.x + box.width/2), 
+						var cx = parseInt(box.x + box.width/2), 
 							cy = parseInt(box.y + box.height/2);
 						var dx = x - cx, dy = y - cy;
  						var r = Math.sqrt( dx*dx + dy*dy );
