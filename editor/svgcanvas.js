@@ -2491,7 +2491,7 @@ function BatchCommand(text) {
 			selectorManager.update();
 
 			addCommandToHistory(batchCmd);
-			call("changed", [svgroot]);
+			call("changed", [svgzoom]);
 		} catch(e) {
 			console.log(e);
 			return false;
@@ -2534,10 +2534,10 @@ function BatchCommand(text) {
 		var vb = svgzoom.getAttribute("viewBox").split(' ');
 		return {'w':vb[2], 'h':vb[3], 'zoom': current_zoom};
 	};
-	// TODO: change svgzoom's viewBox here also and create a batch command
 	this.setResolution = function(x, y) {
-		var w = svgroot.getAttribute("width"),
-			h = svgroot.getAttribute("height");
+		var res = canvas.getResolution();
+		var w = res.w, h = res.h;
+		var batchCmd = new BatchCommand("Change Image Dimensions");
 
 		var handle = svgroot.suspendRedraw(1000);
 		
@@ -2555,13 +2555,17 @@ function BatchCommand(text) {
 				return;
 			}
 		}
-		
-		svgroot.setAttribute("width", x);
-		svgroot.setAttribute("height", y);
+		svgroot.setAttribute('width', x * current_zoom);
+		svgroot.setAttribute('height', y * current_zoom);
+		batchCmd.addSubCommand(new ChangeElementCommand(svgroot, {"width":w, "height":h}));
+
+		svgzoom.setAttribute("viewBox", ["0 0", x, y].join(' '));
+		batchCmd.addSubCommand(new ChangeElementCommand(svgzoom, {"viewBox": ["0 0", w, h].join(' ')}));
 
 		svgroot.unsuspendRedraw(handle);
-		addCommandToHistory(new ChangeElementCommand(svgroot, {"width":w,"height":h}, "resolution"));
-		call("changed", [svgroot]);
+		
+		addCommandToHistory(batchCmd);
+		call("changed", [svgzoom]);
 	};
 
 	this.setZoom = function(zoomlevel) {
@@ -2818,6 +2822,7 @@ function BatchCommand(text) {
 
 	this.getRotationAngle = function(elem) {
 		var selected = elem || selectedElements[0];
+		if(!elem.transform) return null;
 		// find the rotation transform (if any) and set it
 		var tlist = selected.transform.baseVal;
 		var t = tlist.numberOfItems;
