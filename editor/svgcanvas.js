@@ -381,8 +381,8 @@ function BatchCommand(text) {
 			var transform = elem.getAttribute("transform");
 			var angle = canvas.getRotationAngle(elem);
 			if (angle) {
-				var cx = parseInt(oldbox.x + oldbox.width/2)
-					cy = parseInt(oldbox.y + oldbox.height/2);
+				var cx = parseInt(oldbox.x + oldbox.width/2) * current_zoom
+					cy = parseInt(oldbox.y + oldbox.height/2) * current_zoom;
 				this.selectorGroup.setAttribute("transform", "rotate("+angle+" " + cx + "," + cy + ")");
 			}
 			svgroot.unsuspendRedraw(sr_handle);
@@ -1863,7 +1863,7 @@ function BatchCommand(text) {
 						var box = selectedBBoxes[0];
 						var cx = parseInt(box.x + box.width/2), 
 							cy = parseInt(box.y + box.height/2);
-						var dx = x - cx, dy = y - cy;
+						var dx = mouse_x - cx, dy = mouse_y - cy;
  						var r = Math.sqrt( dx*dx + dy*dy );
 						var theta = Math.atan2(dy,dx) - angle;						
 						x = cx + r * Math.cos(theta);
@@ -1882,7 +1882,7 @@ function BatchCommand(text) {
 						cury = current_poly_pts[1];
 					arr[0] = ["M", curx, ",", cury].join('');
 					for (var j = 1; j < len; ++j) {
-						var px = current_poly_pts[j*2], py = current_poly_pts[j*2+1];
+						var px = current_poly_pts[j*2]/current_zoom, py = current_poly_pts[j*2+1]/current_zoom;
 						arr[j] = ["l", parseInt(px-curx), ",", parseInt(py-cury)].join('');
 						curx = px;
 						cury = py;
