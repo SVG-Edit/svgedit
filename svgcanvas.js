@@ -1331,8 +1331,8 @@ function BatchCommand(text) {
 	//   and do nothing else
 	var mouseDown = function(evt)
 	{
-		var x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
-		var y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
+		var mouse_x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
+		var mouse_y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
 		
 		evt.preventDefault();
     
@@ -1340,8 +1340,8 @@ function BatchCommand(text) {
 			addGradient();
 		}
 		
-		x /= current_zoom;
-		y /= current_zoom;
+		x = mouse_x / current_zoom;
+		y = mouse_y / current_zoom;
 		
 		start_x = x;
 		start_y = y;
@@ -1595,12 +1595,12 @@ function BatchCommand(text) {
 	{
 		if (!started) return;
 		var selected = selectedElements[0];
-		var x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
-		var y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
+		var mouse_x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
+		var mouse_y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
 		var shape = svgdoc.getElementById(getId());
     
-    	x /= current_zoom;
-    	y /= current_zoom;
+    	x = mouse_x / current_zoom;
+    	y = mouse_y / current_zoom;
     
     	evt.preventDefault();
     
@@ -1896,8 +1896,8 @@ function BatchCommand(text) {
 					// move the point grip
 					var grip = document.getElementById("polypointgrip_" + current_poly_pt_drag);
 					if (grip) {
-						grip.setAttribute("cx", x);
-						grip.setAttribute("cy", y);
+						grip.setAttribute("cx", mouse_x);
+						grip.setAttribute("cy", mouse_y);
 					}
 				}
 				break;
@@ -1992,9 +1992,11 @@ function BatchCommand(text) {
 		justSelected = null;
 		if (!started) return;
 
-		var x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
-		var y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
-
+		var mouse_x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
+		var mouse_y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
+		var x = mouse_x / current_zoom;
+		var y = mouse_y / current_zoom;
+		
 		started = false;
 		var element = svgdoc.getElementById(getId());
 		var keep = false;
@@ -2048,8 +2050,8 @@ function BatchCommand(text) {
 								current_poly_pts = [];
 								var segList = t.pathSegList;
 								var curx = segList.getItem(0).x, cury = segList.getItem(0).y;
-								current_poly_pts.push(curx);
-								current_poly_pts.push(cury);
+								current_poly_pts.push(curx * current_zoom);
+								current_poly_pts.push(cury * current_zoom);
 								var len = segList.numberOfItems;
 								for (var i = 1; i < len; ++i) {
 									var l = segList.getItem(i);
@@ -2068,8 +2070,8 @@ function BatchCommand(text) {
 										curx += x;
 										cury += y;
 									} // type 5 (rel line)
-									current_poly_pts.push(curx);
-									current_poly_pts.push(cury);
+									current_poly_pts.push(curx * current_zoom);
+									current_poly_pts.push(cury * current_zoom);
 								} // for each segment
 								canvas.clearSelection();
 								// save the poly's bbox
@@ -2169,10 +2171,6 @@ function BatchCommand(text) {
 				element = null;
 				// continue to be set to true so that mouseMove happens
 				started = true;
-				var real_x = x;
-				var real_y = y;
-				x /= current_zoom;
-				y /= current_zoom;
 				var stretchy = document.getElementById("poly_stretch_line");
 				if (!stretchy) {
 					stretchy = document.createElementNS(svgns, "line");
@@ -2206,12 +2204,12 @@ function BatchCommand(text) {
 					});
 					// set stretchy line to first point
 					assignAttributes(stretchy, {
-						'x1': real_x,
-						'y1': real_y,
-						'x2': real_x,
-						'y2': real_y
+						'x1': mouse_x,
+						'y1': mouse_y,
+						'x2': mouse_x,
+						'y2': mouse_y
 					});
-					addPointGripToPoly(real_x,real_y,0);
+					addPointGripToPoly(mouse_x,mouse_y,0);
 				}
 				else {
 					// determine if we clicked on an existing point
@@ -2263,12 +2261,12 @@ function BatchCommand(text) {
 
 						// set stretchy line to latest point
 						assignAttributes(stretchy, {
-							'x1': real_x,
-							'y1': real_y,
-							'x2': real_x,
-							'y2': real_y
+							'x1': mouse_x,
+							'y1': mouse_y,
+							'x2': mouse_x,
+							'y2': mouse_y
 						});
-						addPointGripToPoly(real_x,real_y,(current_poly_pts.length/2 - 1));
+						addPointGripToPoly(mouse_x,mouse_y,(current_poly_pts.length/2 - 1));
 					}
 					keep = true;
 				}
