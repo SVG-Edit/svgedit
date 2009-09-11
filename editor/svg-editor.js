@@ -63,9 +63,10 @@ function svg_edit_setup() {
 		for (var i = 0; i < elems.length; ++i) {
 			var elem = elems[i];
 			// if the element changed was the svg, then it could be a resolution change
-			if (elem && elem.tagName == "svg") {
-				changeResolution(parseInt(elem.getAttribute("width")),
-								 parseInt(elem.getAttribute("height")));
+			if (elem && elem.tagName == "svg" && elem.getAttribute("viewBox")) {
+				var vb = elem.getAttribute("viewBox").split(' ');
+				changeResolution(parseInt(vb[2]),
+								 parseInt(vb[3]));
 			}
 		}
 
@@ -597,7 +598,7 @@ function svg_edit_setup() {
 	var clickZoom = function(zoomIn) {
 		var res = svgCanvas.getResolution();
 		var multiplier = zoomIn? res.zoom * 2 : res.zoom * 0.5;
-		setResolution(res.w * multiplier, res.h * multiplier);
+		setResolution(res.w * multiplier, res.h * multiplier, true);
 		svgCanvas.setZoom(multiplier);
 	};
 
@@ -935,17 +936,19 @@ function svg_edit_setup() {
 			}
 		});
 		if(!found) $('#resolution').val('Custom');
-		
-		setResolution(x, y);
+		var zoom = svgCanvas.getResolution().zoom;
+		setResolution(x * zoom, y * zoom);
 	}
 	
-	function setResolution(w, h) {
+	function setResolution(w, h, center) {
 		$('#svgcanvas').css( { 'width': w, 'height': h } );
-		var w_area = $('#workarea');
-		var scroll_y = h/2 - w_area.height()/2;
-		var scroll_x = w/2 - w_area.width()/2;
-		w_area[0].scrollTop = scroll_y;
-		w_area[0].scrollLeft = scroll_x;
+		if(center) {
+			var w_area = $('#workarea');
+			var scroll_y = h/2 - w_area.height()/2;
+			var scroll_x = w/2 - w_area.width()/2;
+			w_area[0].scrollTop = scroll_y;
+			w_area[0].scrollLeft = scroll_x;
+		}
 	}
 
 	$('#resolution').change(function(){
