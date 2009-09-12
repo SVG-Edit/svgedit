@@ -1861,25 +1861,26 @@ function BatchCommand(text) {
 					if (angle) {
 						// calculate the shape's old center that was used for rotation
 						var box = selectedBBoxes[0];
-						var cx = parseInt(box.x + box.width/2), 
-							cy = parseInt(box.y + box.height/2);
+						var cx = parseInt(box.x + box.width/2) * current_zoom, 
+							cy = parseInt(box.y + box.height/2) * current_zoom;
 						var dx = mouse_x - cx, dy = mouse_y - cy;
  						var r = Math.sqrt( dx*dx + dy*dy );
 						var theta = Math.atan2(dy,dx) - angle;						
-						x = cx + r * Math.cos(theta);
-						y = cy + r * Math.sin(theta);
+						current_poly_pts[i] = mouse_x = cx + r * Math.cos(theta);
+						current_poly_pts[i+1] = mouse_y = cy + r * Math.sin(theta);
 					}
-
-					current_poly_pts[i] = x;
-					current_poly_pts[i+1] = y;
+					else {
+						current_poly_pts[i] = x * current_zoom;
+						current_poly_pts[i+1] = y * current_zoom;
+					}
 
 					// reset the path's d attribute using current_poly_pts
 					var oldd = current_poly.getAttribute("d");
 					var closedPath = (oldd[oldd.length-1] == 'z' || oldd[oldd.length-1] == 'Z');
 					var len = current_poly_pts.length/2;
 					var arr = new Array(len+1);
-					var curx = current_poly_pts[0],
-						cury = current_poly_pts[1];
+					var curx = current_poly_pts[0]/current_zoom,
+						cury = current_poly_pts[1]/current_zoom;
 					arr[0] = ["M", curx, ",", cury].join('');
 					for (var j = 1; j < len; ++j) {
 						var px = current_poly_pts[j*2]/current_zoom, py = current_poly_pts[j*2+1]/current_zoom;
@@ -1924,7 +1925,7 @@ function BatchCommand(text) {
 	};
 
 	var addAllPointGripsToPoly = function() {
-		// loop through and hide all pointgrips
+		// loop through and show all pointgrips
 		var len = current_poly_pts.length;
 		for (var i = 0; i < len; i += 2) {
 			var grip = document.getElementById("polypointgrip_"+i/2);
@@ -1940,7 +1941,16 @@ function BatchCommand(text) {
 			}
 		}
 		var pointGripContainer = document.getElementById("polypointgrip_container");
-		pointGripContainer.setAttribute("transform", current_poly.getAttribute("transform"));
+		// FIXME:  we cannot just use the same transform as the poly because we might be 
+		// at a different zoom level
+		var angle = canvas.getRotationAngle(current_poly);
+		if (angle) {
+			var bbox = canvas.getBBox(current_poly);
+			var cx = (bbox.x + bbox.width/2) * current_zoom,
+				cy = (bbox.y + bbox.height/2) * current_zoom;
+			var xform = ["rotate(", angle, " ", cx, ",", cy, ")"].join("");
+			pointGripContainer.setAttribute("transform", xform);
+		}
 	};
 
 	var addPointGripToPoly = function(x,y,index) {
@@ -2286,6 +2296,7 @@ function BatchCommand(text) {
 					// If the poly was rotated, we must now pay the piper:
 					// Every poly point must be rotated into the rotated coordinate system of 
 					// its old center, then determine the new center, then rotate it back
+					// This is because we want the poly to remember its rotation
 					var angle = canvas.getRotationAngle(current_poly) * Math.PI / 180.0;
 					if (angle) {
 						var box = canvas.getBBox(current_poly);
@@ -2334,13 +2345,14 @@ function BatchCommand(text) {
 						var closedPath = (oldd[oldd.length-1] == 'z' || oldd[oldd.length-1] == 'Z');
 						var len = current_poly_pts.length/2;
 						var arr = new Array(len+1);
-						var curx = current_poly_pts[0],
-							cury = current_poly_pts[1];
+						var curx = current_poly_pts[0]/current_zoom,
+							cury = current_poly_pts[1]/current_zoom;
 						arr[0] = ["M", curx, ",", cury].join('');
 						assignAttributes(document.getElementById("polypointgrip_0"), 
 										{"cx":curx,"cy":cury}, 100);
 						for (var j = 1; j < len; ++j) {
-							var px = current_poly_pts[j*2], py = current_poly_pts[j*2+1];
+							var px = current_poly_pts[j*2]/current_zoom, 
+								py = current_poly_pts[j*2+1]/current_zoom;
 							arr[j] = ["l", parseInt(px-curx), ",", parseInt(py-cury)].join('');
 							curx = px;
 							cury = py;
@@ -2363,7 +2375,10 @@ function BatchCommand(text) {
 						
 						var pointGripContainer = document.getElementById("polypointgrip_container");
 						if(pointGripContainer) {
-							pointGripContainer.setAttribute("transform", rotate);
+							var pcx = newcx * current_zoom,
+								pcy = newcy * current_zoom;
+							var xform = ["rotate(", (angle*180.0/Math.PI), " ", pcx, ",", pcy, ")"].join("");
+							pointGripContainer.setAttribute("transform", xform);
 						}
 					} // if rotated
 
