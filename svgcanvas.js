@@ -548,6 +548,8 @@ function BatchCommand(text) {
 		return shape;
 	};
 
+	// TODO: declare the variables and set them as null, then move this setup stuff to
+	// an initialization function - probably just use clear()
 	var canvas = this;
 	var container = c;
 	var svgns = "http://www.w3.org/2000/svg";
@@ -2516,8 +2518,8 @@ function BatchCommand(text) {
 	};
 
 	this.clear = function() {
-		var nodes = svgroot.childNodes;
-		var len = svgroot.childNodes.length;
+		var nodes = svgzoom.childNodes;
+		var len = svgzoom.childNodes.length;
 		var i = 0;
 		current_poly_pts = [];
 		this.clearSelection();
@@ -3513,8 +3515,6 @@ function BatchCommand(text) {
 		}
 		this.moveSelectedElements(dx,dy);
 	};
-
-	this.getCurrentZoom = function() { return this.current_zoom; }
 }
 
 // Static class for various utility functions
