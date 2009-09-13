@@ -58,7 +58,7 @@ body {
 
 #svg_editor div#workarea {
 	position:absolute;
-	top: 70px;
+	top: 75px;
 	left: 40px;
 	right: 2px;
 	bottom: 60px;
@@ -91,7 +91,7 @@ body {
 	left: 38px;
 	right: 2px;
 	top: 2px;
-	height: 68px;
+	height: 75px;
 	border-bottom: none;
 }
 
@@ -103,7 +103,7 @@ body {
 	position: absolute;
 	border-right: none;
 	width: 36px;
-	top: 68px;
+	top: 75px;
 	left: 2px;
 }
 
@@ -346,6 +346,20 @@ div.color_block {
 #svg_source_editor button {
 	padding: 5px 2px 6px 28px;
 	margin: 5px 20px 0 0;	
+}
+
+#svg_docprops {
+	display: none;
+}
+
+#svg_docprops #svg_docprops_overlay {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	left: 0px;
+	bottom: 0px;
+	background-color: black;
+	opacity: 0.6;
 }
 
 #tool_source_save {
