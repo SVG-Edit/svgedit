@@ -40,9 +40,9 @@
 </div>
 
 <div id="tools_top" class="tools_panel">
+	
 	<!-- File-like buttons: New, Save, Source -->
-	<div>
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+	<div id="file_panel">
 		<img class="tool_button" id="tool_clear" src="images/clear.png" title="New Image [N]" alt="Clear" />
 		<img style="display:none" class="tool_button" id="tool_open" src="images/open.png" title="Open Image [O]" alt="Open"/>
 		<img class="tool_button" id="tool_save" src="images/save.png" title="Save Image [S]" alt="Save"/>
@@ -313,6 +313,11 @@
 			<textarea id="svg_source_textarea"></textarea>
 		</form>
 	</div>
+</div>
+
+<div id="svg_docprops">
+	<div id="svg_docprops_overlay"></div>
+	<div id="svg_docprops_container"></div>
 </div>
 
 </body>
