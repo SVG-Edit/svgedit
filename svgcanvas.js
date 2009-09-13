@@ -3243,8 +3243,11 @@ function BatchCommand(text) {
 
 	this.moveSelectedElements = function(dx,dy,undoable) {
 		// if undoable is not sent, default to true
-		dx *= current_zoom;
-		dy *= current_zoom;
+		// if single values, scale them to the zoom
+		if (dx.constructor != Array) {
+			dx *= current_zoom;
+			dy *= current_zoom;
+		}
 		var undoable = undoable || true;
 		var batchCmd = new BatchCommand("position");
 		var i = selectedElements.length;
@@ -3254,12 +3257,12 @@ function BatchCommand(text) {
 				selectedBBoxes[i] = this.getBBox(selected);
 				// dx and dy could be arrays
 				if (dx.constructor == Array) {
-					selectedBBoxes[i].x += dx[i];
+					selectedBBoxes[i].x += dx[i] * current_zoom;
 				} else {
 					selectedBBoxes[i].x += dx;
 				}
 				if (dy.constructor == Array) {
-					selectedBBoxes[i].y += dy[i];
+					selectedBBoxes[i].y += dy[i] * current_zoom;
 				} else {
 					selectedBBoxes[i].y += dy;
 				}
@@ -3511,6 +3514,7 @@ function BatchCommand(text) {
 		this.moveSelectedElements(dx,dy);
 	};
 
+	this.getCurrentZoom = function() { return this.current_zoom; }
 }
 
 // Static class for various utility functions
