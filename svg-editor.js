@@ -25,6 +25,7 @@ function svg_edit_setup() {
 	var selectedElement = null;
 	var multiselected = false;
 	var editingsource = false;
+	var docprops = false;
 	var length_attrs = ['x','y','x1','x2','y1','y2','cx','cy','width','height','r','rx','ry','width','height','radius'];
 	var length_types = ['em','ex','px','cm','mm','in','pt','pc','%'];
 	
@@ -612,6 +613,12 @@ function svg_edit_setup() {
 		$('#svg_source_textarea').focus();
 	};
 	
+	var showDocProperties = function(){
+		if (docprops) return;
+		docprops = true;
+		$('#svg_docprops').fadeIn();
+	};
+	
 	var properlySourceSizeTextArea = function(){
 		// TODO: remove magic numbers here and get values from CSS
 		var height = $('#svg_source_container').height() - 80;
@@ -630,22 +637,32 @@ function svg_edit_setup() {
 		hideSourceEditor();
 	};
 
-	var cancelSourceEditor = function() {
-		if (!editingsource) return;
+	var cancelOverlays = function() {
+		if (!editingsource && !docprops) return;
 
-		var oldString = svgCanvas.getSvgString();
-		if (oldString != $('#svg_source_textarea').val()) {
-			if( !confirm('Ignore changes made to SVG source?') ) {
-				return false;
+		if (editingsource) {
+			var oldString = svgCanvas.getSvgString();
+			if (oldString != $('#svg_source_textarea').val()) {
+				if( !confirm('Ignore changes made to SVG source?') ) {
+					return false;
+				}
 			}
+			hideSourceEditor();
 		}
-		hideSourceEditor();
+		else if (docprops) {
+			hideDocProperties();
+		}
 	};
 
 	var hideSourceEditor = function(){
 		$('#svg_source_editor').hide();
 		editingsource = false;
 		$('#svg_source_textarea').blur();
+	};
+	
+	var hideDocProperties = function(){
+		$('#svg_docprops').hide();
+		docprops = false;
 	};
 	
 	// TODO: add canvas-centering code in here
@@ -670,8 +687,9 @@ function svg_edit_setup() {
 	$('#tool_save').click(clickSave);
 	$('#tool_open').click(clickOpen);
 	$('#tool_source').click(showSourceEditor);
-	$('#tool_source_cancel,#svg_source_overlay').click(cancelSourceEditor);
+	$('#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel').click(cancelOverlays);
 	$('#tool_source_save').click(saveSourceEditor);
+	$('#tool_docprops').click(showDocProperties);
 	$('#tool_delete').click(deleteSelected);
 	$('#tool_delete_multi').click(deleteSelected);
 	$('#tool_move_top').click(moveToTopSelected);
@@ -767,9 +785,10 @@ function svg_edit_setup() {
 			[modKey+'z', function(evt){clickUndo();evt.preventDefault();}],
 			[modKey+'y', function(evt){clickRedo();evt.preventDefault();}],
 			[modKey+'u', function(evt){showSourceEditor();evt.preventDefault();}],
+			[modKey+'i', function(evt){showDocProperties();evt.preventDefault();}],
 			[modKey+'c', function(evt){clickClone();evt.preventDefault();}],
 			[modKey+'g', function(evt){clickGroup();evt.preventDefault();}],
-			['esc', cancelSourceEditor, false]
+			['esc', cancelOverlays, false],
 		];
 		
 		$.each(keys,function(i,item) {
@@ -784,7 +803,6 @@ function svg_edit_setup() {
 	
 	setKeyBindings();
 
-	// TODO: fix opacity being updated
 	// TODO: go back to the color boxes having white background-color and then setting
 	//       background-image to none.png (otherwise partially transparent gradients look weird)	
 	var colorPicker = function(elem) {

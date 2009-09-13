@@ -47,7 +47,7 @@
 		<img style="display:none" class="tool_button" id="tool_open" src="images/open.png" title="Open Image [O]" alt="Open"/>
 		<img class="tool_button" id="tool_save" src="images/save.png" title="Save Image [S]" alt="Save"/>
 		<img class="tool_button" id="tool_source" src="images/source.png" title="Edit Source [U]" alt="Source"/>
-		<img class="tool_button" id="tool_docprops" src="images/document-properties.png" title="Document Properties"/>
+		<img class="tool_button" id="tool_docprops" src="images/document-properties.png" title="Document Properties [I]"/>
 	</div>
 
     <!-- History buttons -->
@@ -284,22 +284,6 @@
 	<div id="tool_fhellipse" class="tool_flyout_button" title="Free-Hand Ellipse"></div>
 </div>
 
-<!--
-<div id="tools_stacking" class="tools_flyout_v">
-	<div id="tool_stacktop" class="tool_flyout_button" title="Move to Top [Shift+Up]"></div>
-	<div id="tool_stackbottom" class="tool_flyout_button" title="Move to Bottom [Shift+Down]"></div>
-</div>
-
-<div id="tools_align" class="tools_flyout_v">
-	<div id="tool_aligntop" class="tool_flyout_button" title="Align to Top"></div>
-	<div id="tool_alignbottom" class="tool_flyout_button" title="Align to Bottom"></div>
-	<div id="tool_alignmiddle" class="tool_flyout_button" title="Align to Middle"></div>
-	<div id="tool_alignleft" class="tool_flyout_button" title="Align to Left"></div>
-	<div id="tool_alignright" class="tool_flyout_button" title="Align to Right"></div>
-	<div id="tool_aligncenter" class="tool_flyout_button" title="Align to Center"></div>
-</div>
--->
-
 </div> <!-- svg_editor -->
 
 <div id="svg_source_editor">
@@ -317,7 +301,12 @@
 
 <div id="svg_docprops">
 	<div id="svg_docprops_overlay"></div>
-	<div id="svg_docprops_container"></div>
+	<div id="svg_docprops_container">
+		<div id="tool_docprops_back" class="toolbar_button">
+			<button id="tool_docprops_save">Save</button>
+			<button id="tool_docprops_cancel">Cancel</button>
+		</div>
+	</div>
 </div>
 
 </body>
