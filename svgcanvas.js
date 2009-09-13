@@ -300,7 +300,7 @@ function BatchCommand(text) {
 			this.rotateGrip.setAttribute("display", bShow);
 			this.rotateGripConnector.setAttribute("display", bShow);
 			var elem = this.selectedElement;
-			if(elem && elem.tagName == "text") bShow = "none";
+			if(elem && (elem.tagName == "text" || elem.tagName == "g")) bShow = "none";
 			for (dir in this.selectorGrips) {
 				this.selectorGrips[dir].setAttribute("display", bShow);
 			}
@@ -2028,12 +2028,14 @@ function BatchCommand(text) {
 					if (selectedElements[1] == null) {
 						// set our current stroke/fill properties to the element's
 						var selected = selectedElements[0];
-						cur_shape.fill = selected.getAttribute("fill");
-						cur_shape.fill_opacity = selected.getAttribute("fill-opacity");
-						cur_shape.stroke = selected.getAttribute("stroke");
-						cur_shape.stroke_opacity = selected.getAttribute("stroke-opacity");
-						cur_shape.stroke_width = selected.getAttribute("stroke-width");
-						cur_shape.stroke_style = selected.getAttribute("stroke-dasharray");
+						if (selected.tagName != "g") {
+							cur_shape.fill = selected.getAttribute("fill");
+							cur_shape.fill_opacity = selected.getAttribute("fill-opacity");
+							cur_shape.stroke = selected.getAttribute("stroke");
+							cur_shape.stroke_opacity = selected.getAttribute("stroke-opacity");
+							cur_shape.stroke_width = selected.getAttribute("stroke-width");
+							cur_shape.stroke_style = selected.getAttribute("stroke-dasharray");
+						}
 						if (selected.tagName == "text") {
 							cur_text.font_size = selected.getAttribute("font-size");
 							cur_text.font_family = selected.getAttribute("font-family");
