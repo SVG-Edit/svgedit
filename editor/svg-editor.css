@@ -329,6 +329,17 @@ div.color_block {
 	text-align: center;
 }
 
+#svg_docprops #svg_docprops_container {
+	position: absolute;
+	top: 100px;
+	left: 80px;
+	right: 80px;
+	bottom: 100px;
+	background-color: #B0B0B0;
+	opacity: 1.0;
+	text-align: center;
+}
+
 #svg_source_editor #svg_source_textarea {
 	position: relative;
 	width: 95%;
@@ -338,12 +349,12 @@ div.color_block {
 	font-size: 12px;
 }
 
-#svg_source_editor #tool_source_back {
+#svg_source_editor #tool_source_back, #svg_source_editor #tool_docprops_back {
 	text-align: left;
 	padding-left: 20px;
 }
 
-#svg_source_editor button {
+#svg_source_editor button, #svg_docprops button {
 	padding: 5px 2px 6px 28px;
 	margin: 5px 20px 0 0;	
 }
@@ -362,10 +373,10 @@ div.color_block {
 	opacity: 0.6;
 }
 
-#tool_source_save {
+#tool_source_save, #tool_docprops_save {
 	background: #E8E8E8 url(images/save.png) no-repeat 2px 2px;
 }
 
-#tool_source_cancel {
+#tool_source_cancel, #tool_docprops_cancel {
 	background: #E8E8E8 url(images/cancel.png) no-repeat 2px 2px;
 }
