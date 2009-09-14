@@ -616,6 +616,10 @@ function svg_edit_setup() {
 	var showDocProperties = function(){
 		if (docprops) return;
 		docprops = true;
+		
+		var res = svgCanvas.getResolution();
+		$("#resolution").val(res.w+'x'+res.h).attr("selected", "selected");
+		
 		$('#svg_docprops').fadeIn();
 	};
 	
@@ -1005,7 +1009,6 @@ function svg_edit_setup() {
 				}
 			}
 		}
-//		svgCanvas.setResolution(x,y);
 	});
 
 	$('#rect_rx').SpinButton({ min: 0, max: 1000, step: 1, callback: changeRectRadius });
