@@ -617,6 +617,8 @@ function svg_edit_setup() {
 		if (docprops) return;
 		docprops = true;
 		
+		// update resolution option with actual resolution
+		// TODO: what if SVG source is changed?
 		var res = svgCanvas.getResolution();
 		$("#resolution").val(res.w+'x'+res.h).attr("selected", "selected");
 		
