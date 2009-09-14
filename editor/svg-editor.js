@@ -267,9 +267,9 @@ function svg_edit_setup() {
 	$('#palette').append(str);
 
 	var pos = $('#tools_rect_show').position();
-	$('#tools_rect').css({'left': pos.left+4, 'top': pos.top+70});
+	$('#tools_rect').css({'left': pos.left+4, 'top': pos.top+77});
 	pos = $('#tools_ellipse_show').position();
-	$('#tools_ellipse').css({'left': pos.left+4, 'top': pos.top+70});
+	$('#tools_ellipse').css({'left': pos.left+4, 'top': pos.top+77});
 
 	var changeRectRadius = function(ctl) {
 		svgCanvas.setRectRadius(ctl.value);
