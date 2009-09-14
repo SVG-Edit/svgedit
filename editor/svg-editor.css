@@ -329,12 +329,17 @@ div.color_block {
 	text-align: center;
 }
 
-#svg_docprops #svg_docprops_container {
-	position: absolute;
+/*
 	top: 100px;
 	left: 80px;
 	right: 80px;
 	bottom: 100px;
+*/
+
+#svg_docprops #svg_docprops_container {
+	position: absolute;
+	top: 50px;
+	padding: 10px;
 	background-color: #B0B0B0;
 	opacity: 1.0;
 	text-align: center;
@@ -349,9 +354,14 @@ div.color_block {
 	font-size: 12px;
 }
 
-#svg_source_editor #tool_source_back, #svg_source_editor #tool_docprops_back {
+#svg_source_editor #tool_source_back {
 	text-align: left;
 	padding-left: 20px;
+}
+
+#svg_docprops_container #tool_docprops_back div {
+	text-align: left;
+	padding: 20px;
 }
 
 #svg_source_editor button, #svg_docprops button {
