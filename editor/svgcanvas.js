@@ -2556,9 +2556,7 @@ function BatchCommand(text) {
 	this.setResolution = function(x, y) {
 		var res = canvas.getResolution();
 		var w = res.w, h = res.h;
-		var batchCmd = new BatchCommand("Change Image Dimensions");
 
-		var handle = svgroot.suspendRedraw(1000);
 		
 		if(!x) {
 			canvas.clearSelection();
@@ -2574,17 +2572,23 @@ function BatchCommand(text) {
 				return;
 			}
 		}
-		svgroot.setAttribute('width', x * current_zoom);
-		svgroot.setAttribute('height', y * current_zoom);
-		batchCmd.addSubCommand(new ChangeElementCommand(svgroot, {"width":w, "height":h}));
+		x *= current_zoom;
+		y *= current_zoom;
+		if (x != w || y != h) {
+			var handle = svgroot.suspendRedraw(1000);
+			var batchCmd = new BatchCommand("Change Image Dimensions");
+			svgroot.setAttribute('width', x);
+			svgroot.setAttribute('height', y);
+			batchCmd.addSubCommand(new ChangeElementCommand(svgroot, {"width":w, "height":h}));
 
-		svgzoom.setAttribute("viewBox", ["0 0", x, y].join(' '));
-		batchCmd.addSubCommand(new ChangeElementCommand(svgzoom, {"viewBox": ["0 0", w, h].join(' ')}));
+			svgzoom.setAttribute("viewBox", ["0 0", x, y].join(' '));
+			batchCmd.addSubCommand(new ChangeElementCommand(svgzoom, {"viewBox": ["0 0", w, h].join(' ')}));
 
-		svgroot.unsuspendRedraw(handle);
 		
-		addCommandToHistory(batchCmd);
-		call("changed", [svgzoom]);
+			addCommandToHistory(batchCmd);
+			svgroot.unsuspendRedraw(handle);
+			call("changed", [svgzoom]);
+		}
 	};
 
 	this.setZoom = function(zoomlevel) {

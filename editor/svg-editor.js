@@ -636,6 +636,20 @@ function svg_edit_setup() {
 		svgCanvas.clearSelection();
 		hideSourceEditor();
 	};
+	
+	var saveDocProperties = function(){
+		// update resolution
+		var x = '', y = '';
+		var resOption = $('#resolution');
+		var val = resOption.val();
+		if (val && val != 'Fit to content') {
+			var res = val.split('x');
+			x = parseInt(res[0]);
+			y = parseInt(res[1]);
+		}
+		svgCanvas.setResolution(x,y);
+		hideDocProperties();
+	};
 
 	var cancelOverlays = function() {
 		if (!editingsource && !docprops) return;
@@ -689,6 +703,7 @@ function svg_edit_setup() {
 	$('#tool_source').click(showSourceEditor);
 	$('#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel').click(cancelOverlays);
 	$('#tool_source_save').click(saveSourceEditor);
+	$('#tool_docprops_save').click(saveDocProperties);
 	$('#tool_docprops').click(showDocProperties);
 	$('#tool_delete').click(deleteSelected);
 	$('#tool_delete_multi').click(deleteSelected);
@@ -982,14 +997,10 @@ function svg_edit_setup() {
 					alert('Invalid size. Width or height may not be 0.');
 					return false;
 				}
+				$('#resolution').val(x+'x'+y);
 			}
-		} else if(this.value == 'Fit to content'){
-			var x = '', y = '';
-		} else {
-			var res = this.value.split('x');
-			var x = parseInt(res[0]), y = parseInt(res[1]);
 		}
-		svgCanvas.setResolution(x,y);
+//		svgCanvas.setResolution(x,y);
 	});
 
 	$('#rect_rx').SpinButton({ min: 0, max: 1000, step: 1, callback: changeRectRadius });
