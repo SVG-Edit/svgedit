@@ -563,13 +563,6 @@ function BatchCommand(text) {
 	svgroot.setAttribute("xmlns", svgns);
 	svgroot.setAttribute("xmlns:xlink", xlinkns);
 	container.appendChild(svgroot);
-	var svgbkgnd = svgdoc.createElementNS(svgns, "rect");
-	svgbkgnd.setAttribute("width", "100%");
-	svgbkgnd.setAttribute("height", "100%");
-	svgbkgnd.setAttribute("fill", "none");
-	svgbkgnd.setAttribute("fill-opacity", "100%");
-	svgbkgnd.setAttribute("id", "svgbkgnd");
-	svgroot.appendChild(svgbkgnd);
 	var svgzoom = svgdoc.createElementNS(svgns, "svg");
 	svgzoom.setAttribute('id', 'svgzoom');
 	svgzoom.setAttribute('viewBox', '0 0 640 480');
