@@ -997,7 +997,12 @@ function svg_edit_setup() {
 					alert('Invalid size. Width or height may not be 0.');
 					return false;
 				}
-				$('#resolution').val(x+'x'+y);
+				var newOption = [x,'x',y].join('');
+				$("#resolution").val(newOption).attr("selected", "selected");
+				if ($("#resolution").val() != newOption) {
+					$('#resolution').append('<option>'+newOption+'</option>');
+					$("#resolution").val(newOption).attr("selected", "selected");
+				}
 			}
 		}
 //		svgCanvas.setResolution(x,y);
