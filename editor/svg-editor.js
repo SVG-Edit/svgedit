@@ -289,6 +289,9 @@ function svg_edit_setup() {
 	var changeZoom = function(ctl) {
 		var zoomlevel = ctl.value / 100;
 		var res = svgCanvas.getResolution();
+		console.log(res.zoom, zoomlevel);
+		// Hack to increase properly from 10%
+		if(res.zoom < zoomlevel && res.zoom == .1) $('#zoom').val(50);
 		setResolution(res.w * zoomlevel, res.h * zoomlevel, true);
 		svgCanvas.setZoom(zoomlevel);
 	}
