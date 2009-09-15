@@ -887,7 +887,7 @@ function svg_edit_setup() {
 			was_none = true;
 		}
 		var pos = elem.position();
-		$('#color_picker').css({'left': pos.left - 140, 'bottom': 124 - pos.top}).jGraduate(
+		$('#color_picker').css({'left': pos.left, 'bottom': 50 - pos.top}).jGraduate(
 			{ 
 				paint: paint,
 				window: { pickerTitle: title },
