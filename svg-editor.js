@@ -289,7 +289,6 @@ function svg_edit_setup() {
 	var changeZoom = function(ctl) {
 		var zoomlevel = ctl.value / 100;
 		var res = svgCanvas.getResolution();
-		console.log(res.zoom, zoomlevel);
 		// Hack to increase properly from 10%
 		if(res.zoom < zoomlevel && res.zoom == .1) $('#zoom').val(50);
 		setResolution(res.w * zoomlevel, res.h * zoomlevel, true);
@@ -414,6 +413,46 @@ function svg_edit_setup() {
 		svgCanvas.clearSelection();
 		return true;
 	};
+	
+	var setZoomOpts = function() {
+		var button = $('#zoom_dropdown button');
+		var list = $('#zoom_dropdown ul');
+		var on_button = false;
+
+		$('#zoom_dropdown li').bind('mouseup',function() {
+			var item = $(this);
+			var val = item.attr('data-val');
+			if(val) {
+				//TODO: Calculate proper zoom from here.
+			} else {
+				var percent = parseInt(item.text());
+				$('#zoom').val(percent);
+				var zoomlevel = percent/100;
+				var res = svgCanvas.getResolution();
+				setResolution(res.w * zoomlevel, res.h * zoomlevel, true);
+				svgCanvas.setZoom(zoomlevel);
+			}
+		});
+		
+		$().mouseup(function() {
+			if(!on_button) {
+				button.removeClass('down');
+				list.hide();
+			}
+			on_button = false;
+		});
+		
+		button.bind('mousedown mouseup',function() {
+			button.addClass('down');
+			list.show();
+		}).hover(function() {
+			on_button = true;
+		}).mouseout(function() {
+			on_button = false;
+		});
+	};
+	
+	setZoomOpts();
 
 	var clickSelect = function() {
 		if (toolButtonClick('#tool_select')) {
