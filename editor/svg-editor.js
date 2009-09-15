@@ -286,6 +286,12 @@ function svg_edit_setup() {
 	var changeRotationAngle = function(ctl) {
 		svgCanvas.setRotationAngle(ctl.value);
 	}
+	var changeZoom = function(ctl) {
+		var zoomlevel = ctl.value / 100;
+		var res = svgCanvas.getResolution();
+		setResolution(res.w * zoomlevel, res.h * zoomlevel, true);
+		svgCanvas.setZoom(zoomlevel);
+	}
 
 	$('#stroke_style').change(function(){
 		svgCanvas.setStrokeStyle(this.options[this.selectedIndex].value);
@@ -596,10 +602,11 @@ function svg_edit_setup() {
 		svgCanvas.alignSelectedElements('b', $('#align_relative_to option:selected').val() );
 	};
 
-	var clickZoom = function(zoomIn) {
+	var zoomImage = function(zoomIn) {
 		var res = svgCanvas.getResolution();
 		var multiplier = zoomIn? res.zoom * 2 : res.zoom * 0.5;
 		setResolution(res.w * multiplier, res.h * multiplier, true);
+		$('#zoom').val(multiplier * 100);
 		svgCanvas.setZoom(multiplier);
 	};
 
@@ -797,8 +804,8 @@ function svg_edit_setup() {
 			['shift+right', function(){rotateSelected(1)}],
 			['shift+O', selectPrev],
 			['shift+P', selectNext],
-			['ctrl+up', function(evt){clickZoom(true);evt.preventDefault();}],
-			['ctrl+down', function(evt){clickZoom();evt.preventDefault();}],
+			['ctrl+up', function(evt){zoomImage(true);evt.preventDefault();}],
+			['ctrl+down', function(evt){zoomImage();evt.preventDefault();}],
 			['up', function(evt){moveSelected(0,-1);evt.preventDefault();}],
 			['down', function(evt){moveSelected(0,1);evt.preventDefault();}],
 			['left', function(evt){moveSelected(-1,0);evt.preventDefault();}],
@@ -1013,10 +1020,14 @@ function svg_edit_setup() {
 		}
 	});
 
+	//Prevent browser from erroneously repopulating fields
+	$('input,select').attr("autocomplete","off");
+
 	$('#rect_rx').SpinButton({ min: 0, max: 1000, step: 1, callback: changeRectRadius });
 	$('#stroke_width').SpinButton({ min: 0, max: 99, step: 1, callback: changeStrokeWidth });
 	$('#angle').SpinButton({ min: -180, max: 180, step: 5, callback: changeRotationAngle });
-
+	$('#zoom').SpinButton({ min: 10, max: 10000, step: 50, callback: changeZoom });
+	
 	svgCanvas.setCustomHandlers = function(opts) {
 		if(opts.open) {
 			$('#tool_open').show();
