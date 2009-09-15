@@ -157,6 +157,10 @@ div.color_block {
 	vertical-align: 12px;
 }
 
+#svg_editor .zoom_tool {
+	vertical-align: 12px;
+}
+
 #svg_editor #text_panel .text_tool {
 	vertical-align: 12px;
 }
