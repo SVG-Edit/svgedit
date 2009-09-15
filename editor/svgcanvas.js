@@ -2228,7 +2228,7 @@ function BatchCommand(text) {
 				else {
 					// determine if we clicked on an existing point
 					var i = current_poly_pts.length;
-					var FUZZ = 6;
+					var FUZZ = 6/current_zoom;
 					var clickOnPoint = false;
 					while(i) {
 						i -= 2;
