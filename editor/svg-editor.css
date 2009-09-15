@@ -185,14 +185,69 @@ div.color_block {
 	vertical-align:12px;
 }
 
-/* TODO: figure out why there is a couple pixels between
-   the tools with a flyout arrow */
 #svg_editor .flyout_arrow_horiz {
 	float: right;
 	position: relative;
 	top: -13px;
 	left: -5px;
 	margin-bottom: -13px;
+}
+
+#zoom_panel {
+	width: 133px;
+}
+
+#zoom {
+	width: 3em;
+}
+
+#svg_editor #tools_top #zoom_dropdown {
+	position: relative;
+	float: right;
+	left: -5px;
+}
+
+#zoom_dropdown button {
+	background: transparent 3px 8px url('images/dropdown.gif') no-repeat;
+	width: 15px;
+	height: 21px;
+	margin: 6px 0 0 3px;
+	padding: 0;
+	border-left: 1px solid #FFFFFF;
+	border-top: 1px solid #FFFFFF;
+	border-right: 1px solid #808080;
+	border-bottom: 1px solid #808080;
+}
+
+#zoom_dropdown button.down {
+	border-left: 1px solid #808080;
+	border-top: 1px solid #808080;
+	border-right: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	background-color: #B0B0B0;
+}
+
+#zoom_dropdown ul {
+	list-style: none;
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	left: -93px;
+	top: 30px;
+	display: none;
+}
+
+#zoom_dropdown li {
+	display: block;
+	width: 100px;
+	padding: 4px;
+	background: #E8E8E8;
+	border: 1px solid #B0B0B0;
+	margin: 0 0 -1px 0;
+}
+
+#zoom_dropdown li:hover {
+	background-color: #B0B0B0;
 }
 
 #svg_editor .tool_button, #svg_editor .tool_button_current, #svg_editor .tool_button_disabled {

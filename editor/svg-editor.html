@@ -58,10 +58,25 @@
 	</div>
 	
     <!-- Zoom buttons -->
-	<div>
+	<div id="zoom_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<span class="zoom_tool">zoom:</span>
 		<input id="zoom" class="zoom_tool" title="Change zoom level" alt="Zoom %" size="3" value="100" type="text"/>
+		<div id="zoom_dropdown">
+			<button></button>
+			<ul>
+				<li>100%</li>
+				<li data-val="content">Fit to content</li>
+				<li data-val="selection">Fit to selection</li>
+				<li data-val="canvas">Fit to canvas</li>
+				<li>25%</li>
+				<li>50%</li>
+				<li>100%</li>
+				<li>200%</li>
+				<li>400%</li>
+				<li>1000%</li>
+			</ul>
+		</div>
 	</div>
 
 	<!-- Buttons when a single element is selected -->
