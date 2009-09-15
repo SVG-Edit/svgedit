@@ -257,6 +257,9 @@ div.color_block {
 #svg_editor #tool_alignleft { background: 2px 2px url('images/align-left.png') no-repeat; }
 #svg_editor #tool_aligncenter { background: 2px 2px url('images/align-center.png') no-repeat; }
 #svg_editor #tool_alignright { background: 2px 2px url('images/align-right.png') no-repeat; }
+#svg_editor .tool_sep { background: 2px 2px url('images/sep.png') no-repeat; }
+#svg_editor #tool_undo { background: 2px 2px url('images/undo.png') no-repeat; }
+#svg_editor #tool_redo { background: 2px 2px url('images/redo.png') no-repeat; }
 
 /* TODO: figure out what more-specific selector causes me to write this atrocity and not
          simply .tool_flyout_button */

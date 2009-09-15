@@ -51,10 +51,10 @@
 	</div>
 
     <!-- History buttons -->
-	<div>
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="tool_button tool_button_disabled" id="tool_undo" src="images/undo.png" title="Undo [Z]" alt="Undo" />
-		<img class="tool_button tool_button_disabled" id="tool_redo" src="images/redo.png" title="Redo [Y]" alt="Redo"/>
+	<div id="history_panel">
+		<div class="tool_sep" alt="|"></div>
+		<div class="tool_button tool_button_disabled" id="tool_undo" title="Undo [Z]"></div>
+		<div class="tool_button tool_button_disabled" id="tool_redo" title="Redo [Y]"></div>
 	</div>
 
 	<!-- Buttons when a single element is selected -->
@@ -89,12 +89,12 @@
 		<img class="tool_button" id="tool_clone_multi" src="images/clone.png" title="Clone Elements [C]" alt="Clone"/>
 		<img class="tool_button" id="tool_delete_multi" src="images/delete.png" title="Delete Selected Elements [Delete/Backspace]" alt="Delete"/>
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<div class="tool_button" id="tool_alignleft" title="Align Left" alt="Left"></div>
-		<div class="tool_button" id="tool_aligncenter" title="Align Center" alt="Center"></div>
-		<div class="tool_button" id="tool_alignright" title="Align Right" alt="Right"></div>
-		<div class="tool_button" id="tool_aligntop" title="Align Top" alt="Top"></div>
-		<div class="tool_button" id="tool_alignmiddle" title="Align Middle" alt="Middle"></div>
-		<div class="tool_button" id="tool_alignbottom" title="Align Bottom" alt="Bottom"></div>
+		<div class="tool_button" id="tool_alignleft" title="Align Left"></div>
+		<div class="tool_button" id="tool_aligncenter" title="Align Center"></div>
+		<div class="tool_button" id="tool_alignright" title="Align Right"></div>
+		<div class="tool_button" id="tool_aligntop" title="Align Top"></div>
+		<div class="tool_button" id="tool_alignmiddle" title="Align Middle"></div>
+		<div class="tool_button" id="tool_alignbottom" title="Align Bottom"></div>
 		<span class="selected_tool">relative to:</span>
 		<select id="align_relative_to" class="selected_tool" title="Align relative to ...">
 		<option value="selected">selected objects</option>
