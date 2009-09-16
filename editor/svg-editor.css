@@ -57,14 +57,27 @@ body {
 }
 
 #svg_editor div#workarea {
+	display: inline-block;
 	position:absolute;
 	top: 75px;
 	left: 40px;
-	right: 2px;
 	bottom: 60px;
+	right: 155px;
 	background-color: #A0A0A0;
 	border: 1px solid #808080;
 	overflow: auto;
+}
+
+#svg_editor #sidepanels {
+	display: inline-block;
+	background-color: #E8E8E8;
+	position:absolute;
+	top: 75px;
+	bottom: 60px;
+	right: 0px;
+	width: 150px;
+	border-color: blue;
+	border-style: solid;
 }
 
 #svg_editor div.palette_item {
