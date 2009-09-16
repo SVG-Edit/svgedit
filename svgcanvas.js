@@ -2591,14 +2591,61 @@ function BatchCommand(text) {
 		}
 	};
 
+	this.setBBoxZoom = function(type, editor_w, editor_h) {
+		var spacer = .85;
+		var w_zoom, h_zoom;
+		
+		switch ( type ) {
+			case 'selection':
+				if(!selectedElements[0]) return;
+				var bb = selectedBBoxes[0];
+				$.each(selectedBBoxes, function(i, sel) {
+					if(!sel || !i) return;
+					
+					// FIXME: Calculations still need some work...
+					bb.x = Math.min(bb.x, sel.x);
+					bb.y = Math.min(bb.y, sel.y);
+					bb.width = Math.max(sel.width + sel.x, bb.width + bb.x) - bb.x;
+					bb.height = Math.max(sel.height + sel.y, bb.height + bb.y) - bb.y;
+				});
+
+				w_zoom = Math.round((editor_w / bb.width)*100 * spacer)/100;
+				h_zoom = Math.round((editor_h / bb.height)*100 * spacer)/100;	
+				var zoomlevel = Math.min(w_zoom,h_zoom);
+				canvas.setZoom(zoomlevel);
+				return {'zoom': zoomlevel, 'bbox': bb};
+
+			case 'canvas':
+				spacer = .95;
+				var res = canvas.getResolution();
+				w_zoom = Math.round((editor_w / res.w)*100)/100;
+				h_zoom = Math.round((editor_h / res.h)*100)/100;
+				var zoomlevel = Math.min(w_zoom, h_zoom);
+				canvas.setZoom(zoomlevel);
+				return {'zoom': zoomlevel, 'bbox': {width:res.w, height:res.h ,x:0, y:0}};
+
+			case 'content':
+				var bb = svgzoom.getBBox();
+				w_zoom = Math.round((editor_w / bb.width)*100 * spacer)/100;
+				h_zoom = Math.round((editor_h / bb.height)*100 * spacer)/100;	
+				var zoomlevel = Math.min(w_zoom,h_zoom);
+				canvas.setZoom(zoomlevel);
+				return {'zoom': zoomlevel, 'bbox': bb};
+
+			default:
+				return;
+		}
+	}
+
 	this.setZoom = function(zoomlevel) {
 		var res = canvas.getResolution();
 		svgroot.setAttribute("width", res.w * zoomlevel);
 		svgroot.setAttribute("height", res.h * zoomlevel);
 		current_zoom = zoomlevel;
-		if(selectedElements[0]) {
-			selectorManager.requestSelector(selectedElements[0]).resize();
-		}
+		$.each(selectedElements, function(i, elem) {
+			if(!elem) return;
+			selectorManager.requestSelector(elem).resize();
+		});
 	}
 
 	this.getMode = function() {
