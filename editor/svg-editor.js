@@ -422,13 +422,26 @@ function svg_edit_setup() {
 		$('#zoom_dropdown li').bind('mouseup',function() {
 			var item = $(this);
 			var val = item.attr('data-val');
+			var res = svgCanvas.getResolution();
+			var scrbar = 15;
 			if(val) {
-				//TODO: Calculate proper zoom from here.
+				var w_area = $('#workarea');
+				var z_info = svgCanvas.setBBoxZoom(val, w_area.width()-scrbar, w_area.height()-scrbar);
+				if(!z_info) return;
+				var zoomlevel = z_info.zoom;
+				var bb = z_info.bbox;
+				$('#zoom').val(zoomlevel*100);
+				setResolution(res.w * zoomlevel, res.h * zoomlevel);
+				var scrLeft = bb.x * zoomlevel;
+				var scrOffX = w_area.width()/2 - (bb.width * zoomlevel)/2;
+				w_area[0].scrollLeft = Math.max(0,scrLeft - scrOffX);
+				var scrTop = bb.y * zoomlevel;
+				var scrOffY = w_area.height()/2 - (bb.height * zoomlevel)/2;
+				w_area[0].scrollTop = Math.max(0,scrTop - scrOffY);
 			} else {
 				var percent = parseInt(item.text());
 				$('#zoom').val(percent);
 				var zoomlevel = percent/100;
-				var res = svgCanvas.getResolution();
 				setResolution(res.w * zoomlevel, res.h * zoomlevel, true);
 				svgCanvas.setZoom(zoomlevel);
 			}
