@@ -80,6 +80,27 @@ function svg_edit_setup() {
 		// text element was previously in focus
 		updateContextPanel();
 	};
+	
+	var zoomChanged = function(window, bbox) {
+		var scrbar = 15;
+		var res = svgCanvas.getResolution();
+		
+		var w_area = $('#workarea');
+		w_area.css('cursor','auto');
+		var z_info = svgCanvas.setBBoxZoom(bbox, w_area.width()-scrbar, w_area.height()-scrbar);
+		if(!z_info) return;
+		var zoomlevel = z_info.zoom;
+		var bb = z_info.bbox;
+		$('#zoom').val(Math.round(zoomlevel*100));
+		setResolution(res.w * zoomlevel, res.h * zoomlevel);
+		var scrLeft = bb.x * zoomlevel;
+		var scrOffX = w_area.width()/2 - (bb.width * zoomlevel)/2;
+		w_area[0].scrollLeft = Math.max(0,scrLeft - scrOffX);
+		var scrTop = bb.y * zoomlevel;
+		var scrOffY = w_area.height()/2 - (bb.height * zoomlevel)/2;
+		w_area[0].scrollTop = Math.max(0,scrTop - scrOffY);
+		clickSelect();
+	}
 
 	// updates the toolbar (colors, opacity, etc) based on the selected element
 	var updateToolbar = function() {
@@ -259,6 +280,7 @@ function svg_edit_setup() {
 	svgCanvas.bind("selected", selectedChanged);
 	svgCanvas.bind("changed", elementChanged);
 	svgCanvas.bind("saved", saveHandler);
+	svgCanvas.bind("zoomed", zoomChanged);
 
 	var str = '<div class="palette_item" style="background-image: url(\'images/none.png\');" data-rgb="none"></div>'
 	$.each(palette, function(i,item){
@@ -504,6 +526,23 @@ function svg_edit_setup() {
 	var clickImage = function(){
 		if (toolButtonClick('#tool_image')) {
 			svgCanvas.setMode('image');
+		}
+	};
+
+	var clickZoom = function(){
+		if (toolButtonClick('#tool_zoom')) {
+			$('#workarea').css('cursor','crosshair');
+			svgCanvas.setMode('zoom');
+		}
+	};
+
+	var dblclickZoom = function(){
+		if (toolButtonClick('#tool_zoom')) {
+			var res = svgCanvas.getResolution();
+			setResolution(res.w, res.h);
+			$('#zoom').val(100);
+			svgCanvas.setZoom(1);
+			setSelectMode();
 		}
 	};
 
@@ -763,6 +802,8 @@ function svg_edit_setup() {
 	$('#tool_ellipse').mouseup(clickEllipse);
 	$('#tool_fhellipse').mouseup(clickFHEllipse);
 	$('#tool_image').mouseup(clickImage);
+	$('#tool_zoom').mouseup(clickZoom);
+	$('#tool_zoom').dblclick(dblclickZoom);
 	$('#tool_text').click(clickText);
 	$('#tool_poly').click(clickPoly);
 	$('#tool_clear').click(clickClear);
@@ -1042,6 +1083,7 @@ function svg_edit_setup() {
 	}
 	
 	function setResolution(w, h, center) {
+		w-=0; h-=0;
 		$('#svgcanvas').css( { 'width': w, 'height': h } );
 		if(center) {
 			var w_area = $('#workarea');

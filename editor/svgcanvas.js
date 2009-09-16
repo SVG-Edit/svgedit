@@ -1393,6 +1393,11 @@ function BatchCommand(text) {
 					}, 100);
 				}
 				break;
+			case "zoom": 
+				started = true;
+				start_x = x;
+				start_y = y;
+				break;
 			case "resize":
 				started = true;
 				start_x = x;
@@ -2105,6 +2110,14 @@ function BatchCommand(text) {
 				// we return immediately from select so that the obj_num is not incremented
 				return;
 				break;
+			case "zoom":
+				call("zoomed", {
+					'x': Math.min(start_x,x),
+					'y': Math.min(start_y,y),
+					'width': Math.abs(x-start_x),
+					'height': Math.abs(y-start_y)
+				});
+				return;
 			case "path":
 				keep = true;
 				break;
@@ -2591,11 +2604,24 @@ function BatchCommand(text) {
 		}
 	};
 
-	this.setBBoxZoom = function(type, editor_w, editor_h) {
+	this.setBBoxZoom = function(val, editor_w, editor_h) {
 		var spacer = .85;
 		var w_zoom, h_zoom;
 		
-		switch ( type ) {
+		if(typeof val == 'object') {
+			var bb = val;
+			if(bb.width == 0 || bb.height == 0) {
+				canvas.setZoom(current_zoom * 2);
+				return {'zoom': current_zoom, 'bbox': bb};
+			}
+			w_zoom = Math.round((editor_w / bb.width)*100 * spacer)/100;
+			h_zoom = Math.round((editor_h / bb.height)*100 * spacer)/100;	
+			var zoomlevel = Math.min(w_zoom,h_zoom);
+			canvas.setZoom(zoomlevel);
+			return {'zoom': zoomlevel, 'bbox': bb};
+		}
+		
+		switch (val) {
 			case 'selection':
 				if(!selectedElements[0]) return;
 				var bb = selectedBBoxes[0];
