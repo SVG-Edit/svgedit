@@ -78,6 +78,7 @@ body {
 	width: 150px;
 	border-color: blue;
 	border-style: solid;
+	overflow-y: scroll;
 }
 
 #svg_editor div.palette_item {
