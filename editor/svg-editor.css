@@ -157,10 +157,6 @@ div.color_block {
 	vertical-align: 12px;
 }
 
-#svg_editor .zoom_tool {
-	vertical-align: 12px;
-}
-
 #svg_editor #text_panel .text_tool {
 	vertical-align: 12px;
 }
@@ -193,18 +189,21 @@ div.color_block {
 	margin-bottom: -13px;
 }
 
-#zoom_panel {
-	width: 133px;
+#zoom_panel > * {
+	float: left;
+}
+
+span.zoom_tool {
+	line-height: 26px;
+	padding: 3px;
 }
 
 #zoom {
-	width: 3em;
+	margin-top: 5px;
 }
 
-#svg_editor #tools_top #zoom_dropdown {
+#zoom_dropdown {
 	position: relative;
-	float: right;
-	left: -5px;
 }
 
 #zoom_dropdown button {
