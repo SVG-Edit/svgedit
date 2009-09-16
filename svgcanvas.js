@@ -1397,6 +1397,16 @@ function BatchCommand(text) {
 				started = true;
 				start_x = x;
 				start_y = y;
+				if (rubberBox == null) {
+					rubberBox = selectorManager.getRubberBandBox();
+				}
+				assignAttributes(rubberBox, {
+						'x': start_x * current_zoom,
+						'y': start_y * current_zoom,
+						'width': 0,
+						'height': 0,
+						'display': 'inline'
+				}, 100);
 				break;
 			case "resize":
 				started = true;
@@ -1785,6 +1795,16 @@ function BatchCommand(text) {
 				
 				selectorManager.requestSelector(selected).resize(selectedBBox);
 				break;
+			case "zoom":
+				x *= current_zoom;
+				y *= current_zoom;
+				assignAttributes(rubberBox, {
+					'x': Math.min(start_x*current_zoom,x),
+					'y': Math.min(start_y*current_zoom,y),
+					'width': Math.abs(x-start_x*current_zoom),
+					'height': Math.abs(y-start_y*current_zoom)
+				},100);			
+				break;
 			case "text":
 				assignAttributes(shape,{
 					'x': x,
@@ -2111,6 +2131,9 @@ function BatchCommand(text) {
 				return;
 				break;
 			case "zoom":
+				if (rubberBox != null) {
+					rubberBox.setAttribute("display", "none");
+				}
 				call("zoomed", {
 					'x': Math.min(start_x,x),
 					'y': Math.min(start_y,y),
