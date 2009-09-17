@@ -59,8 +59,8 @@ function ChangeElementCommand(elem, attrs, text) {
 			var angle = canvas.getRotationAngle(elem);
 			if (angle) {
 				var bbox = elem.getBBox();
-				var cx = parseInt(bbox.x + bbox.width/2),
-					cy = parseInt(bbox.y + bbox.height/2);
+				var cx = round(bbox.x + bbox.width/2),
+					cy = round(bbox.y + bbox.height/2);
 				var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
 				if (rotate != elem.getAttribute("transform")) {
 					elem.setAttribute("transform", rotate);
@@ -88,8 +88,8 @@ function ChangeElementCommand(elem, attrs, text) {
 			var angle = canvas.getRotationAngle(elem);
 			if (angle) {
 				var bbox = elem.getBBox();
-				var cx = parseInt(bbox.x + bbox.width/2),
-					cy = parseInt(bbox.y + bbox.height/2);
+				var cx = round(bbox.x + bbox.width/2),
+					cy = round(bbox.y + bbox.height/2);
 				var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
 				if (rotate != elem.getAttribute("transform")) {
 					elem.setAttribute("transform", rotate);
@@ -330,13 +330,13 @@ function BatchCommand(text) {
 			var selectedBox = this.selectorRect;
 			var selectedGrips = this.selectorGrips;
 			var selected = this.selectedElement;
-			var sw = parseInt(selected.getAttribute("stroke-width"));
-			var offset = 1;
-			if (!isNaN(sw)) {
+			var sw = round(selected.getAttribute("stroke-width"));
+			var offset = 1/canvas.getZoom();
+			if (selected.getAttribute("stroke") != "none" && !isNaN(sw)) {
 				offset += sw/2;
 			}
 			if (selected.tagName == "text") {
-				offset += 2;
+				offset += 2/canvas.getZoom();
 			}
 			var oldbox = canvas.getBBox(this.selectedElement);
 			var bbox = cur_bbox || oldbox;
@@ -381,8 +381,8 @@ function BatchCommand(text) {
 			var transform = elem.getAttribute("transform");
 			var angle = canvas.getRotationAngle(elem);
 			if (angle) {
-				var cx = parseInt(oldbox.x + oldbox.width/2) * current_zoom
-					cy = parseInt(oldbox.y + oldbox.height/2) * current_zoom;
+				var cx = round(oldbox.x + oldbox.width/2) * current_zoom
+					cy = round(oldbox.y + oldbox.height/2) * current_zoom;
 				this.selectorGroup.setAttribute("transform", "rotate("+angle+" " + cx + "," + cy + ")");
 			}
 			svgroot.unsuspendRedraw(sr_handle);
@@ -627,8 +627,12 @@ function BatchCommand(text) {
 	var events = {};
 	var undoStackPointer = 0;
 	var undoStack = [];
-
 	var curBBoxes = [];
+
+	// This method rounds the incoming value to the nearest value based on the current_zoom
+	var round = function(val){
+		return parseInt(val*current_zoom)/current_zoom;
+	};
 
 	// This method sends back an array or a NodeList full of elements that
 	// intersect the multi-select rubber-band-box.
@@ -924,12 +928,12 @@ function BatchCommand(text) {
 
 		var remap = function(x,y) {
 				return { 
-							'x':parseInt(((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x),
-							'y':parseInt(((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y)
+							'x':round(((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x),
+							'y':round(((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y)
 							};					
 			};
-		var scalew = function(w) {return parseInt(w*selectedBBox.width/box.width);}
-		var scaleh = function(h) {return parseInt(h*selectedBBox.height/box.height);}
+		var scalew = function(w) {return round(w*selectedBBox.width/box.width);}
+		var scaleh = function(h) {return round(h*selectedBBox.height/box.height);}
 
 		var batchCmd = new BatchCommand("Transform");
 		
@@ -938,8 +942,8 @@ function BatchCommand(text) {
 		var pointGripContainer = document.getElementById("polypointgrip_container");
 		if (angle) {
 			// this is our old center upon which we have rotated the shape
-			var tr_x = parseInt(box.x + box.width/2),
-				tr_y = parseInt(box.y + box.height/2);
+			var tr_x = round(box.x + box.width/2),
+				tr_y = round(box.y + box.height/2);
 			var cx = null, cy = null;
 			
 			var bFoundScale = false;
@@ -973,12 +977,12 @@ function BatchCommand(text) {
 					bottom = r * Math.sin(theta) + tr_y;
 			
 				// now find mid-point of line between top-left and bottom-right to find new center
-				cx = parseInt(left + (right-left)/2);
-				cy = parseInt(top + (bottom-top)/2);
+				cx = round(left + (right-left)/2);
+				cy = round(top + (bottom-top)/2);
 			
 				// now that we know the center and the axis-aligned width/height, calculate the x,y
-				selectedBBox.x = parseInt(cx - selectedBBox.width/2),
-				selectedBBox.y = parseInt(cy - selectedBBox.height/2);
+				selectedBBox.x = round(cx - selectedBBox.width/2),
+				selectedBBox.y = round(cy - selectedBBox.height/2);
 			}
 			// if it was not a resize, then it was a translation only
 			else {
@@ -1182,7 +1186,7 @@ function BatchCommand(text) {
 				'cy': pt.y,
 	
 				// take the minimum of the new selected box's dimensions for the new circle radius
-				'r': parseInt(Math.min(selectedBBox.width/2,selectedBBox.height/2))
+				'r': round(Math.min(selectedBBox.width/2,selectedBBox.height/2))
 			}, 1000);
 			break;
 		case "ellipse":
@@ -1641,8 +1645,8 @@ function BatchCommand(text) {
 							selectedBBoxes[i].y = box.y + dy;
 							var angle = canvas.getRotationAngle(selected);
 							if (angle) {
-								var cx = parseInt(box.x + box.width/2),
-									cy = parseInt(box.y + box.height/2);
+								var cx = round(box.x + box.width/2),
+									cy = round(box.y + box.height/2);
 								var xform = ts + [" rotate(", angle, " ", cx, ",", cy, ")"].join('');
  								var r = Math.sqrt( dx*dx + dy*dy );
 								var theta = Math.atan2(dy,dx) - angle * Math.PI / 180.0;
@@ -1746,8 +1750,8 @@ function BatchCommand(text) {
 				var ts = [" translate(", (left+tx), ",", (top+ty), ") scale(", sx, ",", sy,
 							") translate(", -(left+tx), ",", -(top+ty), ")"].join('');
 				if (angle) {
-					var cx = parseInt(left+width/2),
-						cy = parseInt(top+height/2);
+					var cx = round(left+width/2),
+						cy = round(top+height/2);
 					ts = ["rotate(", angle, " ", cx, ",", cy, ")", ts].join('')
 				}
 				selected.setAttribute("transform", ts);
@@ -1767,8 +1771,8 @@ function BatchCommand(text) {
 				}
 				
 				// update box width/height
-				selectedBBox.width = parseInt(width*sx);
-				selectedBBox.height = parseInt(height*sy);
+				selectedBBox.width = round(width*sx);
+				selectedBBox.height = round(height*sy);
 
 				// normalize selectedBBox
 				if (selectedBBox.width < 0) {
@@ -1888,8 +1892,8 @@ function BatchCommand(text) {
 					if (angle) {
 						// calculate the shape's old center that was used for rotation
 						var box = selectedBBoxes[0];
-						var cx = parseInt(box.x + box.width/2) * current_zoom, 
-							cy = parseInt(box.y + box.height/2) * current_zoom;
+						var cx = round(box.x + box.width/2) * current_zoom, 
+							cy = round(box.y + box.height/2) * current_zoom;
 						var dx = mouse_x - cx, dy = mouse_y - cy;
  						var r = Math.sqrt( dx*dx + dy*dy );
 						var theta = Math.atan2(dy,dx) - angle;						
@@ -1911,7 +1915,7 @@ function BatchCommand(text) {
 					arr[0] = ["M", curx, ",", cury].join('');
 					for (var j = 1; j < len; ++j) {
 						var px = current_poly_pts[j*2]/current_zoom, py = current_poly_pts[j*2+1]/current_zoom;
-						arr[j] = ["l", parseInt(px-curx), ",", parseInt(py-cury)].join('');
+						arr[j] = ["l", round(px-curx), ",", round(py-cury)].join('');
 						curx = px;
 						cury = py;
 					}
@@ -1931,9 +1935,9 @@ function BatchCommand(text) {
 				break;
 			case "rotate":
 				var box = canvas.getBBox(selected),
-					cx = parseInt(box.x + box.width/2), 
-					cy = parseInt(box.y + box.height/2);
-				var angle = parseInt(((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360);
+					cx = round(box.x + box.width/2), 
+					cy = round(box.y + box.height/2);
+				var angle = round(((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360);
 				canvas.setRotationAngle(angle<-180?(360+angle):angle, true);
 				break;
 			default:
@@ -2306,7 +2310,7 @@ function BatchCommand(text) {
 						current_poly_pts.push(y);
 						// but we store relative coordinates in the d string of the poly for easy
 						// translation around the canvas in move mode
-						d_attr += "l" + parseInt(x-lastx) + "," + parseInt(y-lasty) + " ";
+						d_attr += "l" + round(x-lastx) + "," + round(y-lasty) + " ";
 						poly.setAttribute("d", d_attr);
 
 						// set stretchy line to latest point
@@ -2341,18 +2345,18 @@ function BatchCommand(text) {
 					if (angle) {
 						var box = canvas.getBBox(current_poly);
 						var oldbox = selectedBBoxes[0];
-						var oldcx = parseInt(oldbox.x + oldbox.width/2),
-							oldcy = parseInt(oldbox.y + oldbox.height/2),
-							newcx = parseInt(box.x + box.width/2),
-							newcy = parseInt(box.y + box.height/2);
+						var oldcx = round(oldbox.x + oldbox.width/2),
+							oldcy = round(oldbox.y + oldbox.height/2),
+							newcx = round(box.x + box.width/2),
+							newcy = round(box.y + box.height/2);
 						
 						// un-rotate the new center to the proper position
 						var dx = newcx - oldcx,
 							dy = newcy - oldcy;
 						var r = Math.sqrt(dx*dx + dy*dy);
 						var theta = Math.atan2(dy,dx) + angle;
-						newcx = parseInt(r * Math.cos(theta) + oldcx);
-						newcy = parseInt(r * Math.sin(theta) + oldcy);
+						newcx = round(r * Math.cos(theta) + oldcx);
+						newcy = round(r * Math.sin(theta) + oldcy);
 						
 						var i = current_poly_pts.length;
 						while (i) {
@@ -2376,8 +2380,8 @@ function BatchCommand(text) {
 							r = Math.sqrt(dx*dx + dy*dy);
 							theta = Math.atan2(dy,dx) - angle;
 							
-							current_poly_pts[i] = parseInt(r * Math.cos(theta) + newcx);
-							current_poly_pts[i+1] = parseInt(r * Math.sin(theta) + newcy);
+							current_poly_pts[i] = round(r * Math.cos(theta) + newcx);
+							current_poly_pts[i+1] = round(r * Math.sin(theta) + newcy);
 						} // loop for each point
 						
 						// now set the d attribute to the new value of current_poly_pts
@@ -2393,7 +2397,7 @@ function BatchCommand(text) {
 						for (var j = 1; j < len; ++j) {
 							var px = current_poly_pts[j*2]/current_zoom, 
 								py = current_poly_pts[j*2+1]/current_zoom;
-							arr[j] = ["l", parseInt(px-curx), ",", parseInt(py-cury)].join('');
+							arr[j] = ["l", round(px-curx), ",", round(py-cury)].join('');
 							curx = px;
 							cury = py;
 							assignAttributes(document.getElementById("polypointgrip_"+j), 
@@ -2960,7 +2964,7 @@ function BatchCommand(text) {
 		// we use the actual element's bbox (not the calculated one) since the 
 		// calculated bbox's center can change depending on the angle
 		var bbox = elem.getBBox();
-		var cx = parseInt(bbox.x+bbox.width/2), cy = parseInt(bbox.y+bbox.height/2);
+		var cx = round(bbox.x+bbox.width/2), cy = round(bbox.y+bbox.height/2);
 		var rotate = "rotate(" + val + " " + cx + "," + cy + ")";
 		if (preventUndo) {
 			this.changeSelectedAttributeNoUndo("transform", rotate, selectedElements);
@@ -3148,8 +3152,8 @@ function BatchCommand(text) {
 				// we need to update the rotational transform attribute 
 				var angle = canvas.getRotationAngle(elem);
 				if (angle && attr != "transform") {
-					var cx = parseInt(selectedBBoxes[i].x + selectedBBoxes[i].width/2),
-						cy = parseInt(selectedBBoxes[i].y + selectedBBoxes[i].height/2);
+					var cx = round(selectedBBoxes[i].x + selectedBBoxes[i].width/2),
+						cy = round(selectedBBoxes[i].y + selectedBBoxes[i].height/2);
 					var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
 					if (rotate != elem.getAttribute("transform")) {
 						elem.setAttribute("transform", rotate);
@@ -3518,8 +3522,8 @@ function BatchCommand(text) {
 			if (angles[i]) {
 				var rminx = Number.MAX_VALUE, rminy = Number.MAX_VALUE, 
 					rmaxx = Number.MIN_VALUE, rmaxy = Number.MIN_VALUE;
-				var cx = parseInt(bboxes[i].x + bboxes[i].width/2),
-					cy = parseInt(bboxes[i].y + bboxes[i].height/2);
+				var cx = round(bboxes[i].x + bboxes[i].width/2),
+					cy = round(bboxes[i].y + bboxes[i].height/2);
 				var pts = [ [bboxes[i].x - cx, bboxes[i].y - cy], 
 							[bboxes[i].x + bboxes[i].width - cx, bboxes[i].y - cy],
 							[bboxes[i].x + bboxes[i].width - cx, bboxes[i].y + bboxes[i].height - cy],
@@ -3530,8 +3534,8 @@ function BatchCommand(text) {
 						y = pts[j][1],
 						r = Math.sqrt( x*x + y*y );
 					var theta = Math.atan2(y,x) + angles[i];
-					x = parseInt(r * Math.cos(theta) + cx);
-					y = parseInt(r * Math.sin(theta) + cy);
+					x = round(r * Math.cos(theta) + cx);
+					y = round(r * Math.sin(theta) + cy);
 
 					// now set the bbox for the shape after it's been rotated
 					if (x < rminx) rminx = x;
@@ -3617,6 +3621,7 @@ function BatchCommand(text) {
 		}
 		this.moveSelectedElements(dx,dy);
 	};
+	this.getZoom = function(){return current_zoom;};
 }
 
 // Static class for various utility functions
