@@ -1141,4 +1141,15 @@ function svg_edit_setup() {
 // This happens when the page is loaded
 $(function() {
 	svgCanvas = svg_edit_setup();
+	
+	try{
+	  window.addEventListener("message", function(e){
+	    try{
+        e.source.postMessage(eval(e.data), e.origin);
+      }catch(err){
+        e.source.postMessage("error:"+err.message, e.origin);
+      }
+    }, false)
+	}catch(err){}
+	
 });
