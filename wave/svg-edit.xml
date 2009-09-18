@@ -28,6 +28,14 @@
 <div id="svgcanvas"></div>
 </div>
 
+<div id="sidepanels" style="display:none">
+<p><b>TODO: Side Panels go here.</b></p>
+<p><b>By default, this panel will be collapsed.  It will be expandable by some button/handle.</b></p>
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+</div>
+
 <div id="logo">
 	<a href="http://svg-edit.googlecode.com/" target="_blank" title="SVG-edit Home Page">
 		<img src="images/logo.png" alt="logo" />
@@ -35,24 +43,23 @@
 </div>
 
 <div id="tools_top" class="tools_panel">
+	
 	<!-- File-like buttons: New, Save, Source -->
-	<div>
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+	<div id="file_panel">
 		<img class="tool_button" id="tool_clear" src="images/clear.png" title="New Image [N]" alt="Clear" />
 		<img style="display:none" class="tool_button" id="tool_open" src="images/open.png" title="Open Image [O]" alt="Open"/>
 		<img class="tool_button" id="tool_save" src="images/save.png" title="Save Image [S]" alt="Save"/>
 		<img class="tool_button" id="tool_source" src="images/source.png" title="Edit Source [U]" alt="Source"/>
-    <img class="tool_button" title="Wave" src="images/wave.png" alt="Wave State" onclick="alert(wave.getState().toString())" />
-    <img class="tool_button" src="images/source.png" title="Evil Eval" alt="Eval" onclick="eval(prompt('Execute Stuff'));" />
+		<img class="tool_button" id="tool_docprops" src="images/document-properties.png" title="Document Properties [I]"/>
 	</div>
 
     <!-- History buttons -->
-	<div>
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="tool_button tool_button_disabled" id="tool_undo" src="images/undo.png" title="Undo [Z]" alt="Undo" />
-		<img class="tool_button tool_button_disabled" id="tool_redo" src="images/redo.png" title="Redo [Y]" alt="Redo"/>
+	<div id="history_panel">
+		<div class="tool_sep" alt="|"></div>
+		<div class="tool_button tool_button_disabled" id="tool_undo" title="Undo [Z]"></div>
+		<div class="tool_button tool_button_disabled" id="tool_redo" title="Redo [Y]"></div>
 	</div>
-
+	
 	<!-- Buttons when a single element is selected -->
 	<div id="selected_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
@@ -85,12 +92,12 @@
 		<img class="tool_button" id="tool_clone_multi" src="images/clone.png" title="Clone Elements [C]" alt="Clone"/>
 		<img class="tool_button" id="tool_delete_multi" src="images/delete.png" title="Delete Selected Elements [Delete/Backspace]" alt="Delete"/>
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="tool_button" id="tool_alignleft" src="images/align-left.png" title="Align Left" alt="Left"/>
-		<img class="tool_button" id="tool_aligncenter" src="images/align-center.png" title="Align Center" alt="Center"/>
-		<img class="tool_button" id="tool_alignright" src="images/align-right.png" title="Align Right" alt="Right"/>
-		<img class="tool_button" id="tool_aligntop" src="images/align-top.png" title="Align Top" alt="Top"/>
-		<img class="tool_button" id="tool_alignmiddle" src="images/align-middle.png" title="Align Middle" alt="Middle"/>
-		<img class="tool_button" id="tool_alignbottom" src="images/align-bottom.png" title="Align Bottom" alt="Bottom"/>
+		<div class="tool_button" id="tool_alignleft" title="Align Left"></div>
+		<div class="tool_button" id="tool_aligncenter" title="Align Center"></div>
+		<div class="tool_button" id="tool_alignright" title="Align Right"></div>
+		<div class="tool_button" id="tool_aligntop" title="Align Top"></div>
+		<div class="tool_button" id="tool_alignmiddle" title="Align Middle"></div>
+		<div class="tool_button" id="tool_alignbottom" title="Align Bottom"></div>
 		<span class="selected_tool">relative to:</span>
 		<select id="align_relative_to" class="selected_tool" title="Align relative to ...">
 		<option value="selected">selected objects</option>
@@ -98,6 +105,13 @@
 		<option value="smallest">smallest object</option>
 		<option value="page">page</option>
 		</select>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="tool_button" id="tool_group" src="images/shape_group.png" title="Group Elements [G]" alt="Group"/>
+	</div>
+
+	<div id="g_panel">
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="tool_button" id="tool_ungroup" src="images/shape_ungroup.png" title="Ungroup Elements [G]" alt="Ungroup"/>
 	</div>
 
 	<div id="rect_panel">
@@ -113,6 +127,21 @@
 		<label class="rect_tool">Corner Radius:</label>
 		<input id="rect_rx" size="3" value="0" class="rect_tool" type="text" title="Change Rectangle Corner Radius" alt="Corner Radius"/>
 	</div>
+
+	<div id="image_panel">
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<label class="image_tool">x:</label>
+		<input id="image_x" class="image_tool attr_changer" title="Change image X coordinate" alt="x" size="3"/>
+		<label class="image_tool">y:</label>
+		<input id="image_y" class="image_tool attr_changer" title="Change image Y coordinate" alt="y" size="3"/>
+		<label class="image_tool">width:</label>
+		<input id="image_width" class="image_tool attr_changer" title="Change image width" alt="width" size="3"/>
+		<label class="image_tool">height:</label>
+		<input id="image_height" class="image_tool attr_changer" title="Change image height" alt="height" size="3"/>
+    <label class="image_tool">url:</label>
+    <input id="image_url" class="image_tool" type="text" title="Change URL" size="35"/>
+  </div>
+
 
 	<div id="circle_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
@@ -194,20 +223,32 @@
 	<img class="flyout_arrow_horiz" src="images/flyouth.png"/>
 	<img class="tool_button" id="tool_text" src="images/text.png" title="Text Tool [6]" alt="Text"/>
 	<img class="tool_button" id="tool_poly" src="images/polygon.png" title="Poly Tool [7]" alt="Poly"/>
+	<img class="tool_button" id="tool_image" src="images/image.png" title="Image Tool [8]" alt="Image"/>
+	<img class="tool_button" id="tool_zoom" src="images/zoom.png" title="Zoom Tool [Ctrl+Up/Down]" alt="Zoom"/>
 </div> <!-- tools_left -->
 
 <div id="tools_bottom" class="tools_panel">
 
-	<div id="tools_bottom_1">
-		<select id="resolution">
-			<option selected="selected">640x480</option>
-			<option>800x600</option>
-			<option>1024x768</option>
-			<option>1280x960</option>
-			<option>1600x1200</option>
-			<option>Fit to Content</option>
-			<option>Custom</option>
-		</select>
+    <!-- Zoom buttons -->
+	<div id="zoom_panel">
+		<span class="zoom_tool">zoom:</span>
+		<input id="zoom" class="zoom_tool" title="Change zoom level" alt="Zoom %" size="3" value="100" type="text"/>
+		<div id="zoom_dropdown">
+			<button></button>
+			<ul>
+				<li>100%</li>
+				<li data-val="content">Fit to content</li>
+				<li data-val="selection">Fit to selection</li>
+				<li data-val="canvas">Fit to canvas</li>
+				<li>25%</li>
+				<li>50%</li>
+				<li>100%</li>
+				<li>200%</li>
+				<li>400%</li>
+				<li>1000%</li>
+			</ul>
+		</div>
+		<img class="tool_sep" src="images/sep.png" alt="|"/>
 	</div>
 
 	<div id="tools_bottom_2">
@@ -238,7 +279,7 @@
 
 	<div id="tools_bottom_3">
 		<div id="palette_holder"><div id="palette" title="Click to change fill color, shift-click to change stroke color"></div></div>
-		<div id="copyright">Powered by <a href="http://svg-edit.googlecode.com/" target="_blank">SVG-edit v2.3-Beta</a></div>
+		<div id="copyright">Powered by <a href="http://svg-edit.googlecode.com/" target="_blank">SVG-edit v2.4-unstable</a></div>
 	</div>
 </div>
 
@@ -257,32 +298,46 @@
 	<div id="tool_fhellipse" class="tool_flyout_button" title="Free-Hand Ellipse"></div>
 </div>
 
-<div id="tools_stacking" class="tools_flyout_v">
-	<div id="tool_stacktop" class="tool_flyout_button" title="Move to Top [Shift+Up]"></div>
-	<div id="tool_stackbottom" class="tool_flyout_button" title="Move to Bottom [Shift+Down]"></div>
-</div>
-
-<div id="tools_align" class="tools_flyout_v">
-	<div id="tool_aligntop" class="tool_flyout_button" title="Align to Top"></div>
-	<div id="tool_alignbottom" class="tool_flyout_button" title="Align to Bottom"></div>
-	<div id="tool_alignmiddle" class="tool_flyout_button" title="Align to Middle"></div>
-	<div id="tool_alignleft" class="tool_flyout_button" title="Align to Left"></div>
-	<div id="tool_alignright" class="tool_flyout_button" title="Align to Right"></div>
-	<div id="tool_aligncenter" class="tool_flyout_button" title="Align to Center"></div>
-</div>
-
 </div> <!-- svg_editor -->
 
 <div id="svg_source_editor">
 	<div id="svg_source_overlay"></div>
 	<div id="svg_source_container">
 		<div id="tool_source_back" class="toolbar_button">
-			<button id="tool_source_save">Load</button>
+			<button id="tool_source_save">Save</button>
 			<button id="tool_source_cancel">Cancel</button>
 		</div>
 		<form>
 			<textarea id="svg_source_textarea"></textarea>
 		</form>
+	</div>
+</div>
+
+<div id="svg_docprops">
+	<div id="svg_docprops_overlay"></div>
+	<div id="svg_docprops_container">
+		<div id="tool_docprops_back" class="toolbar_button">
+			<button id="tool_docprops_save">Save</button>
+			<button id="tool_docprops_cancel">Cancel</button>
+
+			<div id="change_background">
+				<label>Canvas Background:</label>
+				<div id="bkgnd_color" class="color_block"  title="Change background color/opacity"></div>
+			</div>
+			
+			<div id="change_resolution">
+				<label>Resolution:</label>
+				<select id="resolution" label="Resolution:">
+					<option selected="selected">640x480</option>
+					<option>800x600</option>
+					<option>1024x768</option>
+					<option>1280x960</option>
+					<option>1600x1200</option>
+					<option>Fit to Content</option>
+					<option>Custom</option>
+				</select>
+			</div>
+		</div>
 	</div>
 </div>
 
