@@ -1,3 +1,23 @@
+/*
+Issue 73 (Layers) TODO:
+
+- when a layer option is selected, deselect all other layers
+- when a layer option is double-clicked, pop up a 'rename' dialog?  or provide a button?
+- upon turning SVG text into a DOM, analyze all top-level <g> elements that have a <title>
+  and create layer options
+- create a global variable for the currently selected layer, hold a reference to the <g>
+- when New/Delete are clicked, fire off a function
+- when creating a new layer, create a <g> with a <title>, set the current layer to the new one
+- when deleting a layer, delete all children of the <g> and then delete the <g>
+- ensure New/Delete are undo-able
+- upon changing current layers, set pointer-events='none' on all elements in the old current layer
+  then pointer-events='all' on all elements in the newly selected layer
+- create a mouseover region on the sidepanels that is resizable and affects all children within
+- default the side panel to closed
+- add a button that opens the side panel?
+
+*/
+
 if(!window.console) {
   window.console = new function() {
     this.log = function(str) {};
