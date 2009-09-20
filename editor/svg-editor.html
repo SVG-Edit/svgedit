@@ -34,11 +34,21 @@
 </div>
 
 <div id="sidepanels">
-<p><b>TODO: Side Panels go here.</b></p>
-<p><b>By default, this panel will be collapsed.  It will be expandable by some button/handle.</b></p>
-<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+	<div id="layerpanel">
+		<h3>Layers</h3>
+		
+		<fieldset id="layerbuttons">
+			<img id="layer_new" class="layer_button" src="images/clear.png" alt="New Layer" title="New Layer"></img>
+			<img id="layer_delete" class="layer_button" src="images/delete.png" alt="Delete Layer" title="Delete Layer"></img>
+		</fieldset>
+		
+		<select id="layerlist" size="20" multiple="multiple">
+			<option value="Layer_1" selected="selected">Layer 1</option>
+		</select>
+		
+		<p><b>By default, this panel will be collapsed.  It will be expandable by some button/handle.</b></p>
+
+	</div>
 </div>
 
 <div id="logo">
@@ -325,12 +335,12 @@
 			<button id="tool_docprops_save">Save</button>
 			<button id="tool_docprops_cancel">Cancel</button>
 
-			<div id="change_background">
+			<fieldset id="change_background">
 				<label>Canvas Background:</label>
 				<div id="bkgnd_color" class="color_block"  title="Change background color/opacity"></div>
-			</div>
+			</fieldset>
 			
-			<div id="change_resolution">
+			<fieldset id="change_resolution">
 				<label>Resolution:</label>
 				<select id="resolution" label="Resolution:">
 					<option selected="selected">640x480</option>
@@ -341,7 +351,7 @@
 					<option>Fit to Content</option>
 					<option>Custom</option>
 				</select>
-			</div>
+			</fieldset>
 		</div>
 	</div>
 </div>
