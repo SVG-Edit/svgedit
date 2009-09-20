@@ -75,10 +75,41 @@ body {
 	top: 75px;
 	bottom: 60px;
 	right: 0px;
-	width: 150px;
-	border-color: blue;
+	width: 126px;
+	border-color: #808080;
 	border-style: solid;
+	border-width: 1px;
 	overflow-y: scroll;
+	padding-left: 12px;
+	padding-right: 12px;
+	margin: 0px;
+}
+
+#svg_editor #layerbuttons {
+	margin: 0px;
+	padding: 0px;
+	width: 110px;
+	height: 20px;
+	border-right: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	border-left: 1px solid #808080;
+	border-top: 1px solid #808080;
+}
+
+#svg_editor .layer_button {
+	width: 15px;
+	height: 15px;
+	padding: 1px;
+	border-left: 1px solid #FFFFFF;
+	border-top: 1px solid #FFFFFF;
+	border-right: 1px solid #808080;
+	border-bottom: 1px solid #808080;
+	cursor: pointer;
+}
+
+#svg_editor #layerlist {
+	margin: 0px;
+	width: 110px;
 }
 
 #svg_editor div.palette_item {
