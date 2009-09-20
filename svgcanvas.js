@@ -24,6 +24,7 @@ var svgWhiteList = {
 	"stop": ["id", "offset", "stop-color", "stop-opacity"],
 	"svg": ["id", "height", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
 	"text": ["fill", "fill-opacity", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "text-anchor", "x", "y"],
+	"title": [],
 };
 
 function SvgCanvas(c)
