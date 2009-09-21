@@ -1,17 +1,14 @@
 /*
 Issue 73 (Layers) TODO:
 
-- when a layer option is selected, deselect all other layers
-- when a layer option is double-clicked, pop up a 'rename' dialog?  or provide a button?
-- upon turning SVG text into a DOM, analyze all top-level <g> elements that have a <title>
-  and create layer options
-- create a global variable for the currently selected layer, hold a reference to the <g>
+- create API for SvgCanvas that allows the client to:
+	- change layer order
+	- create a layer
+	- delete a layer
 - when New/Delete are clicked, fire off a function
 - when creating a new layer, create a <g> with a <title>, set the current layer to the new one
 - when deleting a layer, delete all children of the <g> and then delete the <g>
 - ensure New/Delete are undo-able
-- upon changing current layers, set pointer-events='none' on all elements in the old current layer
-  then pointer-events='all' on all elements in the newly selected layer
 - create a mouseover region on the sidepanels that is resizable and affects all children within
 - default the side panel to closed
 - add a button that opens the side panel?
@@ -594,8 +591,8 @@ function BatchCommand(text) {
 	svgroot.appendChild(svgzoom);
 	var comment = svgdoc.createComment(" created with SVG-edit - http://svg-edit.googlecode.com/ ");
 	svgzoom.appendChild(comment);
-	// associative array of layer names to <g> elements
-	var all_layers = {};
+	// z-ordered array of tuples containing layer names and <g> elements
+	var all_layers = [];
 	// pointer to the current layer <g>
 	var current_layer = null;
 	
@@ -1466,7 +1463,8 @@ function BatchCommand(text) {
 						"stroke-opacity": cur_shape.stroke_opacity,
 						"stroke-linecap": "round",
 						"stroke-linejoin": "round",
-						"opacity": cur_shape.opacity / 2
+						"opacity": cur_shape.opacity / 2,
+						"style": "pointer-events:all"
 					}
 				});
 				freehand_min_x = x;
@@ -1486,7 +1484,8 @@ function BatchCommand(text) {
 						"width": 0,
 						"height": 0,
 						"id": getNextId(),
-						"opacity": cur_shape.opacity / 2
+						"opacity": cur_shape.opacity / 2,
+						"style": "pointer-events:all"
 					}
 				});
         		newImage.setAttributeNS(xlinkns, "href", "images/logo.png");
@@ -1512,7 +1511,8 @@ function BatchCommand(text) {
 						"stroke-dasharray": cur_shape.stroke_style,
 						"stroke-opacity": cur_shape.stroke_opacity,
 						"fill-opacity": cur_shape.fill_opacity,
-						"opacity": cur_shape.opacity / 2
+						"opacity": cur_shape.opacity / 2,
+						"style": "pointer-events:all"
 					}
 				});
 				break;
@@ -1532,7 +1532,8 @@ function BatchCommand(text) {
 						"stroke-dasharray": cur_shape.stroke_style,
 						"stroke-opacity": cur_shape.stroke_opacity,
 						"fill": "none",
-						"opacity": cur_shape.opacity / 2
+						"opacity": cur_shape.opacity / 2,
+						"style": "pointer-events:all"
 					}
 				});
 				break;
@@ -1551,7 +1552,8 @@ function BatchCommand(text) {
 						"stroke-dasharray": cur_shape.stroke_style,
 						"stroke-opacity": cur_shape.stroke_opacity,
 						"fill-opacity": cur_shape.fill_opacity,
-						"opacity": cur_shape.opacity / 2
+						"opacity": cur_shape.opacity / 2,
+						"style": "pointer-events:all"
 					}
 				});
 				break;
@@ -1571,7 +1573,8 @@ function BatchCommand(text) {
 						"stroke-dasharray": cur_shape.stroke_style,
 						"stroke-opacity": cur_shape.stroke_opacity,
 						"fill-opacity": cur_shape.fill_opacity,
-						"opacity": cur_shape.opacity / 2
+						"opacity": cur_shape.opacity / 2,
+						"style": "pointer-events:all"
 					}
 				});
 				break;
@@ -1593,7 +1596,8 @@ function BatchCommand(text) {
 						"opacity": cur_shape.opacity,
 						"font-size": cur_text.font_size,
 						"font-family": cur_text.font_family,
-						"text-anchor": "middle"
+						"text-anchor": "middle",
+						"style": "pointer-events:all"
 					}
 				});
 				newText.textContent = "text";
@@ -2034,7 +2038,7 @@ function BatchCommand(text) {
 				'stroke': "#00F",
 				'stroke-width': 2,
 				'cursor': 'move',
-				"pointer-events": "all"
+				'style': 'pointer-events:all'
 			});
 			pointGrip = pointGripContainer.appendChild(pointGrip);
 
@@ -2214,7 +2218,8 @@ function BatchCommand(text) {
 							"stroke-dasharray": cur_shape.stroke_style,
 							"opacity": cur_shape.opacity,
 							"stroke-opacity": cur_shape.stroke_opacity,
-							"fill-opacity": cur_shape.fill_opacity
+							"fill-opacity": cur_shape.fill_opacity,
+							"style": "pointer-events:all"
 						}
 					});
 					call("changed",[element]);
@@ -2238,7 +2243,8 @@ function BatchCommand(text) {
 							"stroke-dasharray": cur_shape.stroke_style,
 							"opacity": cur_shape.opacity,
 							"stroke-opacity": cur_shape.stroke_opacity,
-							"fill-opacity": cur_shape.fill_opacity
+							"fill-opacity": cur_shape.fill_opacity,
+							"style": "pointer-events:all"
 						}
 					});
 					call("changed",[element]);
@@ -2282,7 +2288,8 @@ function BatchCommand(text) {
 							"stroke-width": cur_shape.stroke_width,
 							"stroke-dasharray": cur_shape.stroke_style,
 							"stroke-opacity": cur_shape.stroke_opacity,
-							"opacity": cur_shape.opacity / 2
+							"opacity": cur_shape.opacity / 2,
+							"style": "pointer-events:all"
 						}
 					});
 					// set stretchy line to first point
@@ -2515,6 +2522,16 @@ function BatchCommand(text) {
 		call("saved", str);
 	};
 
+	var walkTree = function(elem, cbFn){
+		if (elem && elem.nodeType == 1) {
+			cbFn(elem);
+			var i = elem.childNodes.length;
+			while (i--) {
+				walkTree(elem.childNodes.item(i), cbFn);
+			}
+		}
+	};
+	
 	this.getSvgString = function() {
 		return svgCanvasToString();
 	};
@@ -2568,7 +2585,25 @@ function BatchCommand(text) {
 			current_zoom = 1;
 			
 			// identify layers
-
+			all_layers = [];
+			var numchildren = svgzoom.childNodes.length;
+			// loop through all children of svgzoom
+			for (var i = 0; i < numchildren; ++i) {
+				var child = svgzoom.childNodes.item(i);
+				// for each g, find its layer name
+				if (child && child.tagName == "g") {
+					var name = getLayerName(child);
+					// store layer and name in global variable
+					if (name) {
+						all_layers.push( [name,child] );
+						current_layer = child;
+						walkTree(child, function(e){e.setAttribute("style", "pointer-events:none");});
+					}
+				}
+			}
+			console.dir(all_layers);
+			walkTree(current_layer, function(e){e.setAttribute("style","pointer-events:all");});
+			
 			selectorManager.update();
 
 			addCommandToHistory(batchCmd);
@@ -2579,6 +2614,92 @@ function BatchCommand(text) {
 		}
 
 		return true;
+	};
+
+	// Layer API Functions
+	// TODO: change layer order
+	// TODO: create a layer
+	// TODO: delete a layer
+	this.getNumLayers = function() {
+		return all_layers.length;
+	};
+	this.getLayer = function(i) {
+		if (i >= 0 && i < canvas.getNumLayers()) {
+			return all_layers[i][0];
+		}
+		return "";
+	};
+	this.getCurrentLayer = function() {
+		for (var i = 0; i < all_layers.length; ++i) {
+			if (all_layers[i][1] == current_layer) {
+				return all_layers[i][0];
+			}
+		}
+		return "";
+	};
+	this.setCurrentLayer = function(name) {
+		for (var i = 0; i < all_layers.length; ++i) {
+			if (name == all_layers[i][0]) {
+				if (current_layer != all_layers[i][1]) {
+					walkTree(current_layer,function(e){e.setAttribute("style","pointer-events:none");});
+					current_layer = all_layers[i][1];
+					walkTree(current_layer,function(e){e.setAttribute("style","pointer-events:all");});
+				}
+				return true;
+			}
+		}
+		return false;
+	};
+	this.renameLayer = function(oldname, newname) {
+		var rememberCurrentLayer = current_layer;
+		if (canvas.setCurrentLayer(oldname)) {
+			var oldLayer = current_layer;
+			// setCurrentLayer will return false if the name doesn't already exists
+			if (!canvas.setCurrentLayer(newname)) {
+				// find the index of the layer
+				for (var i = 0; i < all_layers.length; ++i) {
+					if (all_layers[i][1] == oldLayer) break;
+				}
+				all_layers[i][0] = newname;
+			
+				// now change the underlying title element contents
+				var len = oldLayer.childNodes.length;
+				for (var i = 0; i < len; ++i) {
+					var child = oldLayer.childNodes.item(i);
+					// found the <title> element, now append all the
+					if (child && child.tagName == "title") {
+						// wipe out old name 
+						// TODO: make this undo-able
+						while (child.firstChild) { child.removeChild(child.firstChild); }
+						child.appendChild( svgdoc.createTextNode(newname) );
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	};
+	// used internally
+	var getLayerName = function(g) {
+		var name = "";
+		if (g && g.tagName == "g") {
+			var len = g.childNodes.length;
+			for (var i = 0; i < len; ++i) {
+				var child = g.childNodes.item(i);
+				// found the <title> element, now append all the
+				if (child && child.tagName == "title") {
+					var tlen = child.childNodes.length;
+					for (var j = 0; j < tlen; ++j) {
+						var textNode = child.childNodes.item(j);
+						if (textNode.nodeType == 3) {
+							name += textNode.nodeValue;
+						}
+					}
+					break;
+				}
+			}
+		}
+		return name;
 	};
 
 	this.clear = function() {
@@ -2602,8 +2723,8 @@ function BatchCommand(text) {
 		layer_title.appendChild(svgdoc.createTextNode("Layer 1"));
 		current_layer.appendChild(layer_title);
 		current_layer = svgzoom.appendChild(current_layer);
-		all_layers = {};
-		all_layers["Layer 1"] = current_layer;
+		all_layers = [];
+		all_layers[0] = ["Layer 1",current_layer];
 		
 		// clear the undo stack
 		resetUndoStack();
