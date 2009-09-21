@@ -954,6 +954,9 @@ function BatchCommand(text) {
 		// after this point, we have some change to this element
 
 		var remap = function(x,y) {
+				// Prevent division by 0
+				if(!box.height) box.height = 1;
+				if(!box.width) box.width = 1;
 				return { 
 							'x':(((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x),
 							'y':(((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y)
