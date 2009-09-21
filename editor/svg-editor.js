@@ -742,6 +742,7 @@ function svg_edit_setup() {
 		}
 		svgCanvas.clearSelection();
 		hideSourceEditor();
+		populateLayers();		
 	};
 	
 	var saveDocProperties = function(){
@@ -1068,6 +1069,22 @@ function svg_edit_setup() {
 		$(this).removeClass('tool_flyout_button_current');
 	});
 
+	var populateLayers = function(){
+		var layerlen = svgCanvas.getNumLayers();
+		$('#layerlist').empty();
+		for (var layer = 0; layer < layerlen; ++layer) {
+			var name = svgCanvas.getLayer(layer);
+			$('#layerlist').append("<option value=\"" + name + "\">" + name + "</option>");
+		}
+		$('#layerlist option').mouseup(function(evt){
+			$('#layerlist option').removeAttr("selected");
+			var option = $(this);
+			option.attr("selected", "selected");
+			svgCanvas.setCurrentLayer(option.attr("value"));
+		});
+	};
+	populateLayers();
+
 	function changeResolution(x,y) {
 		var new_res = x+'x'+y;
 		var found = false;
@@ -1134,7 +1151,7 @@ function svg_edit_setup() {
 			svgCanvas.bind("saved", opts.save);
 		}
 	}
-
+	
 	return svgCanvas;
 };
 
