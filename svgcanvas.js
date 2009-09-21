@@ -557,12 +557,14 @@ function BatchCommand(text) {
 		var shape = svgdoc.getElementById(data.attr.id);
 		// if shape is a path but we need to create a rect/ellipse, then remove the path
 		if (shape && data.element != shape.tagName) {
-			svgzoom.removeChild(shape);
+			current_layer.removeChild(shape);
 			shape = null;
 		}
 		if (!shape) {
 			shape = svgdoc.createElementNS(svgns, data.element);
-			svgzoom.appendChild(shape);
+			if (current_layer) {
+				current_layer.appendChild(shape);
+			}
 		}
 		assignAttributes(shape, data.attr, 100);
 		cleanupElement(shape);
@@ -592,7 +594,11 @@ function BatchCommand(text) {
 	svgroot.appendChild(svgzoom);
 	var comment = svgdoc.createComment(" created with SVG-edit - http://svg-edit.googlecode.com/ ");
 	svgzoom.appendChild(comment);
-
+	// associative array of layer names to <g> elements
+	var all_layers = {};
+	// pointer to the current layer <g>
+	var current_layer = null;
+	
 	var d_attr = null;
 	var started = false;
 	var obj_num = 1;
@@ -674,7 +680,7 @@ function BatchCommand(text) {
 		
 		var resultList = null;
 		try {
-			resultList = svgroot.getIntersectionList(rect, null);
+			resultList = current_layer.getIntersectionList(rect, null);
 		} catch(e) { }
 
 		if (resultList == null || typeof(resultList.item) != "function") {
@@ -1378,11 +1384,10 @@ function BatchCommand(text) {
 				started = true;
 				current_resize_mode = "none";
 				var t = evt.target;
-				// if this element is in a group, go up until we reach the top-level group
-				// TODO: once we implement Layers, the top-level groups will be layers so
-				// we will want to stop just before then (parentNode.parentNode)
+				// if this element is in a group, go up until we reach the top-level group 
+				// just below the layer groups
 				// TODO: once we implement links, we also would have to check for <a> elements
-				while (t.parentNode.tagName == "g") {
+				while (t.parentNode.parentNode.tagName == "g") {
 					t = t.parentNode;
 				}
 				// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
@@ -2512,7 +2517,6 @@ function BatchCommand(text) {
 	};
 
 	// this function returns false if the set was unsuccessful, true otherwise
-	// TODO: should this function keep throwing the exception?
 	// TODO: after parsing in the new text, do we need to synchronize getId()?
 	this.setSvgString = function(xmlString) {
 		try {
@@ -2523,11 +2527,6 @@ function BatchCommand(text) {
 	        sanitizeSvg(newDoc.documentElement);
 
 			var batchCmd = new BatchCommand("Change Source");
-
-			// save our old selectorParentGroup
-			// not needed anymore, we can keep svgroot forever (and just replace svgzoom)
-			// TODO: reset zoom level on svgroot
-//			selectorManager.selectorParentGroup = svgroot.removeChild(selectorManager.selectorParentGroup);
 
         	// remove old svg document
     	    var oldzoom = svgroot.removeChild(svgzoom);
@@ -2564,10 +2563,9 @@ function BatchCommand(text) {
 			
 			// reset zoom
 			current_zoom = 1;
+			
+			// identify layers
 
-			// add back in parentSelectorGroup
-			// not needed anymore
-//			svgroot.appendChild(selectorManager.selectorParentGroup);
 			selectorManager.update();
 
 			addCommandToHistory(batchCmd);
@@ -2581,18 +2579,29 @@ function BatchCommand(text) {
 	};
 
 	this.clear = function() {
+		current_poly_pts = [];
+
+		// clear the svgzoom node
 		var nodes = svgzoom.childNodes;
 		var len = svgzoom.childNodes.length;
 		var i = 0;
-		current_poly_pts = [];
 		this.clearSelection();
 		for(var rep = 0; rep < len; rep++){
 			if (nodes[i].nodeType == 1) { // element node
-				nodes[i].parentNode.removeChild(nodes[i]);
+				svgzoom.removeChild(nodes[i]);
 			} else {
 				i++;
 			}
 		}
+		// create empty first layer
+		current_layer = svgdoc.createElementNS(svgns, "g");
+		var layer_title = svgdoc.createElementNS(svgns, "title");
+		layer_title.appendChild(svgdoc.createTextNode("Layer 1"));
+		current_layer.appendChild(layer_title);
+		current_layer = svgzoom.appendChild(current_layer);
+		all_layers = {};
+		all_layers["Layer 1"] = current_layer;
+		
 		// clear the undo stack
 		resetUndoStack();
 		// reset the selector manager
@@ -3410,7 +3419,7 @@ function BatchCommand(text) {
 	};
 
 	this.getVisibleElements = function(includeBBox) {
-		var nodes = svgzoom.childNodes;
+		var nodes = current_layer.childNodes;
 		var i = nodes.length;
 		var contentElems = [];
 		
@@ -3643,7 +3652,9 @@ function BatchCommand(text) {
 		this.moveSelectedElements(dx,dy);
 	};
 	this.getZoom = function(){return current_zoom;};
-}
+	
+	this.clear();
+};
 
 // Static class for various utility functions
 
