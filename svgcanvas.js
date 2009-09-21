@@ -949,12 +949,12 @@ function BatchCommand(text) {
 
 		var remap = function(x,y) {
 				return { 
-							'x':round(((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x),
-							'y':round(((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y)
+							'x':(((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x),
+							'y':(((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y)
 							};					
 			};
-		var scalew = function(w) {return round(w*selectedBBox.width/box.width);}
-		var scaleh = function(h) {return round(h*selectedBBox.height/box.height);}
+		var scalew = function(w) {return (w*selectedBBox.width/box.width);}
+		var scaleh = function(h) {return (h*selectedBBox.height/box.height);}
 
 		var batchCmd = new BatchCommand("Transform");
 		
