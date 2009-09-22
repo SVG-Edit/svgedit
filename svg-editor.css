@@ -110,8 +110,8 @@ body {
 }
 
 #svg_editor .layer_buttonpressed {
-	width: 15px;
-	height: 15px;
+	width: 14px;
+	height: 14px;
 	padding: 1px;
 	border-right: 1px solid #FFFFFF;
 	border-bottom: 1px solid #FFFFFF;
