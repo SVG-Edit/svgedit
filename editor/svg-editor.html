@@ -337,21 +337,29 @@
 			<button id="tool_docprops_cancel">Cancel</button>
 
 			<fieldset id="change_background">
-				<label>Canvas Background:</label>
-				<div id="bkgnd_color" class="color_block"  title="Change background color/opacity"></div>
+				<legend>Canvas Background</legend>
+					<div id="bkgnd_color" class="color_block"  title="Change background color/opacity"></div>
 			</fieldset>
 			
 			<fieldset id="change_resolution">
-				<label>Resolution:</label>
-				<select id="resolution" label="Resolution:">
-					<option selected="selected">640x480</option>
-					<option>800x600</option>
-					<option>1024x768</option>
-					<option>1280x960</option>
-					<option>1600x1200</option>
-					<option>Fit to Content</option>
-					<option>Custom</option>
-				</select>
+				<legend>Canvas Dimensions</legend>
+
+				<label>Width: <input type="text" id="canvas_width" size="6"></label>
+					
+				<label>Height: <input type="text" id="canvas_height" size="6"></label>
+					
+				<label>
+					<select id="resolution" label="Resolution:">
+						<option selected="selected">Select predefined:</option>
+						<option>640x480</option>
+						<option>800x600</option>
+						<option>1024x768</option>
+						<option>1280x960</option>
+						<option>1600x1200</option>
+						<option value="content">Fit to Content</option>
+					</select>
+				</label>
+				
 			</fieldset>
 		</div>
 	</div>
