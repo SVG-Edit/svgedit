@@ -653,13 +653,18 @@ function svg_edit_setup() {
 	};
 
 	var clickUndo = function(){
-		if (svgCanvas.getUndoStackSize() > 0)
+		if (svgCanvas.getUndoStackSize() > 0) {
 			svgCanvas.undo();
+			console.log('yooya');
+			populateLayers();
+		}
 	};
 
 	var clickRedo = function(){
-		if (svgCanvas.getRedoStackSize() > 0)
+		if (svgCanvas.getRedoStackSize() > 0) {
 			svgCanvas.redo();
+			populateLayers();
+		}
 	};
 	
 	var clickGroup = function(){
@@ -1068,9 +1073,33 @@ function svg_edit_setup() {
 	}).mouseout(function() {
 		$(this).removeClass('tool_flyout_button_current');
 	});
+	
+	$('.layer_button').mousedown(function() { 
+		$(this).addClass('layer_buttonpressed');
+	}).mouseout(function() {
+		$(this).removeClass('layer_buttonpressed');
+	}).mouseup(function() {
+		$(this).removeClass('layer_buttonpressed');
+	});
+	
+	$('#layer_new').click(function() {
+		svgCanvas.createLayer("New Layer");
+		updateContextPanel();
+		populateLayers();
+		$('#layerlist option:last').attr("selected", "selected");
+	});
+	
+	$('#layer_delete').click(function() {
+		if (svgCanvas.deleteCurrentLayer()) {
+			updateContextPanel();
+			populateLayers();
+			$('#layerlist option:last').attr("selected", "selected");
+		}
+	});
 
 	var populateLayers = function(){
 		var layerlen = svgCanvas.getNumLayers();
+		console.log('layerlen=' + layerlen);
 		$('#layerlist').empty();
 		for (var layer = 0; layer < layerlen; ++layer) {
 			var name = svgCanvas.getLayer(layer);
