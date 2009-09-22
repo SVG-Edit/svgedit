@@ -1179,15 +1179,6 @@ function svg_edit_setup() {
 	populateLayers();
 
 	function changeResolution(x,y) {
-		var new_res = x+'x'+y;
-		var found = false;
-		$('#resolution option').each(function() {
-			if($(this).text() == new_res) {
-				$('#resolution').val(x+'x'+y);
-				found = true;
-			}
-		});
-		if(!found) $('#resolution').val('Custom');
 		var zoom = svgCanvas.getResolution().zoom;
 		setResolution(x * zoom, y * zoom);
 	}
