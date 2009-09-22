@@ -1,13 +1,9 @@
 /*
 Issue 73 (Layers) TODO:
 
+- consider getting rid of the <title> element and using @id like AI (easier to browse the DOM in FB)
 - create API for SvgCanvas that allows the client to:
 	- change layer order
-	- create a layer
-	- delete a layer
-- when New/Delete are clicked, fire off a function
-- when creating a new layer, create a <g> with a <title>, set the current layer to the new one
-- when deleting a layer, delete all children of the <g> and then delete the <g>
 - ensure New/Delete are undo-able
 - create a mouseover region on the sidepanels that is resizable and affects all children within
 - default the side panel to closed
@@ -125,11 +121,19 @@ function InsertElementCommand(elem, text) {
 	this.text = text || ("Create " + elem.tagName);
 	this.parent = elem.parentNode;
 
-	this.apply = function() { this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); };
+	this.apply = function() { 
+		this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); 
+		if (this.parent == svgzoom) {
+			canvas.identifyLayers();
+		}		
+	};
 
 	this.unapply = function() {
 		this.parent = this.elem.parentNode;
 		this.elem = this.elem.parentNode.removeChild(this.elem);
+		if (this.parent == svgzoom) {
+			canvas.identifyLayers();
+		}		
 	};
 
 	this.elements = function() { return [this.elem]; };
@@ -143,9 +147,17 @@ function RemoveElementCommand(elem, parent, text) {
 	this.apply = function() {
 		this.parent = this.elem.parentNode;
 		this.elem = this.parent.removeChild(this.elem);
+		if (this.parent == svgzoom) {
+			canvas.identifyLayers();
+		}		
 	};
 
-	this.unapply = function() { this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); };
+	this.unapply = function() { 
+		this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); 
+		if (this.parent == svgzoom) {
+			canvas.identifyLayers();
+		}		
+	};
 
 	this.elements = function() { return [this.elem]; };
 }
@@ -160,10 +172,16 @@ function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 
 	this.apply = function() {
 		this.elem = this.newParent.insertBefore(this.elem, this.newNextSibling);
+		if (this.newParent == svgzoom) {
+			canvas.identifyLayers();
+		}
 	};
 
 	this.unapply = function() {
 		this.elem = this.oldParent.insertBefore(this.elem, this.oldNextSibling);
+		if (this.oldParent == svgzoom) {
+			canvas.identifyLayers();
+		}
 	};
 
 	this.elements = function() { return [this.elem]; };
@@ -2585,24 +2603,7 @@ function BatchCommand(text) {
 			current_zoom = 1;
 			
 			// identify layers
-			all_layers = [];
-			var numchildren = svgzoom.childNodes.length;
-			// loop through all children of svgzoom
-			for (var i = 0; i < numchildren; ++i) {
-				var child = svgzoom.childNodes.item(i);
-				// for each g, find its layer name
-				if (child && child.tagName == "g") {
-					var name = getLayerName(child);
-					// store layer and name in global variable
-					if (name) {
-						all_layers.push( [name,child] );
-						current_layer = child;
-						walkTree(child, function(e){e.setAttribute("style", "pointer-events:none");});
-					}
-				}
-			}
-			console.dir(all_layers);
-			walkTree(current_layer, function(e){e.setAttribute("style","pointer-events:all");});
+			canvas.identifyLayers();
 			
 			selectorManager.update();
 
@@ -2616,10 +2617,63 @@ function BatchCommand(text) {
 		return true;
 	};
 
+	this.identifyLayers = function() {
+		all_layers = [];
+		var numchildren = svgzoom.childNodes.length;
+		// loop through all children of svgzoom
+		for (var i = 0; i < numchildren; ++i) {
+			var child = svgzoom.childNodes.item(i);
+			// for each g, find its layer name
+			if (child && child.tagName == "g") {
+				var name = getLayerName(child);
+				// store layer and name in global variable
+				if (name) {
+					all_layers.push( [name,child] );
+					current_layer = child;
+					walkTree(child, function(e){e.setAttribute("style", "pointer-events:none");});
+				}
+			}
+		}
+		walkTree(current_layer, function(e){e.setAttribute("style","pointer-events:all");});
+	};
 	// Layer API Functions
 	// TODO: change layer order
-	// TODO: create a layer
-	// TODO: delete a layer
+	
+	this.createLayer = function(name) {
+		var batchCmd = new BatchCommand("Create Layer");
+		current_layer = svgdoc.createElementNS(svgns, "g");
+		var layer_title = svgdoc.createElementNS(svgns, "title");
+		layer_title.appendChild(svgdoc.createTextNode(name));
+		current_layer.appendChild(layer_title);
+		current_layer = svgzoom.appendChild(current_layer);
+		all_layers.push([name,current_layer]);
+		batchCmd.addSubCommand(new InsertElementCommand(current_layer));
+		addCommandToHistory(batchCmd);
+	};
+	
+	this.deleteCurrentLayer = function() {
+		if (current_layer && all_layers.length > 1) {
+			var batchCmd = new BatchCommand("Delete Layer");
+			var new_layers = [];
+			for(var i = 0; i < all_layers.length; ++i) {
+				if (all_layers[i][1] != current_layer) {
+					new_layers.push([all_layers[i][0], all_layers[i][1]]);
+				}
+				else {
+					// actually delete from the DOM and store in our Undo History
+					var parent = current_layer.parentNode;
+					batchCmd.addSubCommand(new RemoveElementCommand(current_layer, parent));
+					parent.removeChild(current_layer);
+				}
+			}
+			all_layers = new_layers;
+			current_layer = all_layers[all_layers.length-1][1];
+			addCommandToHistory(batchCmd);
+			return true;
+		}
+		return false;
+	};
+	
 	this.getNumLayers = function() {
 		return all_layers.length;
 	};
@@ -2641,6 +2695,7 @@ function BatchCommand(text) {
 		for (var i = 0; i < all_layers.length; ++i) {
 			if (name == all_layers[i][0]) {
 				if (current_layer != all_layers[i][1]) {
+					canvas.clearSelection();
 					walkTree(current_layer,function(e){e.setAttribute("style","pointer-events:none");});
 					current_layer = all_layers[i][1];
 					walkTree(current_layer,function(e){e.setAttribute("style","pointer-events:all");});
@@ -2718,13 +2773,8 @@ function BatchCommand(text) {
 			}
 		}
 		// create empty first layer
-		current_layer = svgdoc.createElementNS(svgns, "g");
-		var layer_title = svgdoc.createElementNS(svgns, "title");
-		layer_title.appendChild(svgdoc.createTextNode("Layer 1"));
-		current_layer.appendChild(layer_title);
-		current_layer = svgzoom.appendChild(current_layer);
 		all_layers = [];
-		all_layers[0] = ["Layer 1",current_layer];
+		canvas.createLayer("Layer 1");
 		
 		// clear the undo stack
 		resetUndoStack();

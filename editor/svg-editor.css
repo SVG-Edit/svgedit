@@ -107,6 +107,17 @@ body {
 	cursor: pointer;
 }
 
+#svg_editor .layer_buttonpressed {
+	width: 15px;
+	height: 15px;
+	padding: 1px;
+	border-right: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	border-left: 1px solid #808080;
+	border-top: 1px solid #808080;
+	cursor: pointer;
+}
+
 #svg_editor #layerlist {
 	margin: 0px;
 	width: 110px;
