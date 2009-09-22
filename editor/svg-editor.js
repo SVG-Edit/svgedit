@@ -1086,6 +1086,7 @@ function svg_edit_setup() {
 		for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getLayer(i); }
 	
 		var newName = prompt("Please enter a unique layer name","");
+		if (!newName) return;
 		if (jQuery.inArray(newName, curNames) != -1) {
 			alert("There is already a layer named that!");
 			return;
@@ -1107,10 +1108,36 @@ function svg_edit_setup() {
 			$('#layerlist option:last').attr("selected", "selected");
 		}
 	});
+	
+	$('#layer_up').click(function() {
+		// find index position of selected option
+		var curIndex = $('#layerlist option:selected').prevAll().length;
+		if (curIndex > 0) {
+			curIndex--;
+			svgCanvas.setCurrentLayerPosition(curIndex);
+			populateLayers();
+			$('#layerlist option').removeAttr("selected");
+			$('#layerlist option:eq('+curIndex+')').attr("selected", "selected");
+		}
+	});
+
+	$('#layer_down').click(function() {
+		// find index position of selected option
+		var curIndex = $('#layerlist option:selected').prevAll().length;
+		var total = $('#layerlist option').length;
+		if (curIndex < total-1) {
+			curIndex++;
+			svgCanvas.setCurrentLayerPosition(curIndex);
+			populateLayers();
+			$('#layerlist option').removeAttr("selected");
+			$('#layerlist option:eq('+curIndex+')').attr("selected", "selected");
+		}
+	});
 
 	$('#layer_rename').click(function() {
 		var oldName = $('#layerlist option:selected').attr("value");
 		var newName = prompt("Please enter the new layer name","");
+		if (!newName) return;
 		if (oldName == newName) {
 			alert("Layer already has that name");
 			return;
