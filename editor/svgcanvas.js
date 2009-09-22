@@ -2,6 +2,7 @@
 Issue 73 (Layers) TODO:
 
 - reverse order of layer list (top-most list should be on top of the image)
+- Fit To Content must look at all layers
 - convert select/options to tables, handle 'selection' of rows
 - add visibility icon to table as a column
 - determine how to toggle visibility of layers (UI-wise)
@@ -548,6 +549,7 @@ function BatchCommand(text) {
 		var handle = svgroot.suspendRedraw(suspendLength);
 
 		for (i in attrs) {
+			console.log([i,attrs[i]]);
 			node.setAttributeNS(null, i, attrs[i]);
 		}
 		
