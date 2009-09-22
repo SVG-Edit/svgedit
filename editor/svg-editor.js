@@ -725,8 +725,9 @@ function svg_edit_setup() {
 		// update resolution option with actual resolution
 		// TODO: what if SVG source is changed?
 		var res = svgCanvas.getResolution();
-		$("#resolution").val(res.w+'x'+res.h).attr("selected", "selected");
-		
+		$('#canvas_width').val(res.w);
+		$('#canvas_height').val(res.h);
+	
 		$('#svg_docprops').fadeIn();
 	};
 	
@@ -751,15 +752,15 @@ function svg_edit_setup() {
 	
 	var saveDocProperties = function(){
 		// update resolution
-		var x = '', y = '';
-		var resOption = $('#resolution');
-		var val = resOption.val();
-		if (val && val != 'Fit to content') {
-			var res = val.split('x');
-			x = parseInt(res[0]);
-			y = parseInt(res[1]);
+		var x = parseInt($('#canvas_width').val());
+		var y = parseInt($('#canvas_height').val());
+		if(isNaN(x) || isNaN(y)) {
+			x ='fit';
 		}
-		svgCanvas.setResolution(x,y);
+		if(!svgCanvas.setResolution(x,y)) {
+			alert('No content to fit to');
+			return false;
+		}
 		hideDocProperties();
 	};
 
@@ -788,6 +789,8 @@ function svg_edit_setup() {
 	
 	var hideDocProperties = function(){
 		$('#svg_docprops').hide();
+		$('#canvas_width,#canvas_height').removeAttr('disabled');
+		$('#resolution')[0].selectedIndex = 0;
 		docprops = false;
 	};
 	
@@ -1192,6 +1195,8 @@ function svg_edit_setup() {
 	function setResolution(w, h, center) {
 		w-=0; h-=0;
 		$('#svgcanvas').css( { 'width': w, 'height': h } );
+		$('#canvas_width').val(w);
+		$('#canvas_height').val(h);
 		if(center) {
 			var w_area = $('#workarea');
 			var scroll_y = h/2 - w_area.height()/2;
@@ -1202,25 +1207,18 @@ function svg_edit_setup() {
 	}
 
 	$('#resolution').change(function(){
-		if(this.value == 'Custom') {
-			var cust_val = prompt("Please enter custom size (i.e. 400x300)","");
-			var res_vals = cust_val.match(/(\d+)[x \/,](\d+)/);
-			if(!res_vals) {
-				alert('Invalid size. Please format it as WIDTHxHEIGHT (like 400x300)');
-				return false;
-			} else {
-				var x = res_vals[1], y = res_vals[2];
-				if(x == '0' || y == '0') {
-					alert('Invalid size. Width or height may not be 0.');
-					return false;
-				}
-				var newOption = [x,'x',y].join('');
-				$("#resolution").val(newOption).attr("selected", "selected");
-				if ($("#resolution").val() != newOption) {
-					$('#resolution').append('<option>'+newOption+'</option>');
-					$("#resolution").val(newOption).attr("selected", "selected");
-				}
+		var wh = $('#canvas_width,#canvas_height');
+		if(!this.selectedIndex) {
+			if($('#canvas_width').val() == 'fit') {
+				wh.removeAttr("disabled").val(100);
 			}
+		} else if(this.value == 'content') {
+			wh.val('fit').attr("disabled","disabled");
+		} else {
+			var dims = this.value.split('x');
+			$('#canvas_width').val(dims[0]);
+			$('#canvas_height').val(dims[1]);
+			wh.removeAttr("disabled");
 		}
 	});
 

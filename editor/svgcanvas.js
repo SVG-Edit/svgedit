@@ -2868,11 +2868,12 @@ function BatchCommand(text) {
 		var vb = svgzoom.getAttribute("viewBox").split(' ');
 		return {'w':vb[2], 'h':vb[3], 'zoom': current_zoom};
 	};
+	
 	this.setResolution = function(x, y) {
 		var res = canvas.getResolution();
 		var w = res.w, h = res.h;
 
-		if(!x) {
+		if(x == 'fit') {
 			canvas.clearSelection();
 
 			// Get bounding box
@@ -2890,11 +2891,10 @@ function BatchCommand(text) {
 					});
 				});
 				canvas.clearSelection();
-				x = bbox.width;
-				y = bbox.height;
+				x = Math.round(bbox.width);
+				y = Math.round(bbox.height);
 			} else {
-				alert('No content to fit to');
-				return;
+				return false;
 			}
 		}
 		x *= current_zoom;
@@ -2914,6 +2914,7 @@ function BatchCommand(text) {
 			svgroot.unsuspendRedraw(handle);
 			call("changed", [svgzoom]);
 		}
+		return true;
 	};
 
 	this.setBBoxZoom = function(val, editor_w, editor_h) {
@@ -3667,6 +3668,7 @@ function BatchCommand(text) {
 	this.getStrokedBBox = function(elems) {
 		// TODO: Get correct BBoxes for rotated elements
 		if(!elems) elems = canvas.getVisibleElements();
+		if(!elems.length) return false;
 		var full_bb = elems[0].getBBox();
 		var max_x = full_bb.x + full_bb.width;
 		var max_y = full_bb.y + full_bb.height;
