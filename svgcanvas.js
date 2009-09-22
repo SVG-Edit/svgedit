@@ -1,10 +1,10 @@
 /*
 Issue 73 (Layers) TODO:
 
-- consider getting rid of the <title> element and using @id like AI (easier to browse the DOM in FB)
+- do pop-up window that asks for layer name and rename layer, ensure that is undo-able
+- ensure that pointer-events work properly with layers named the same
 - create API for SvgCanvas that allows the client to:
 	- change layer order
-- ensure New/Delete are undo-able
 - create a mouseover region on the sidepanels that is resizable and affects all children within
 - default the side panel to closed
 - add a button that opens the side panel?
@@ -81,6 +81,10 @@ function ChangeElementCommand(elem, attrs, text) {
 				}
 			}
 		}
+		// if we are changing layer names, re-identify all layers
+		if (this.elem.tagName == "title" && this.elem.parentNode.parentNode == svgzoom) {
+			canvas.identifyLayers();
+		}		
 		return true;
 	};
 
@@ -110,6 +114,10 @@ function ChangeElementCommand(elem, attrs, text) {
 				}
 			}
 		}
+		// if we are changing layer names, re-identify all layers
+		if (this.elem.tagName == "title" && this.elem.parentNode.parentNode == svgzoom) {
+			canvas.identifyLayers();
+		}		
 		return true;
 	};
 
@@ -749,6 +757,7 @@ function BatchCommand(text) {
 	};
 
 	var call = function(event, arg) {
+		console.log(events[event]);
 		if (events[event]) {
 			return events[event](this,arg);
 		}
@@ -2617,6 +2626,9 @@ function BatchCommand(text) {
 		return true;
 	};
 
+	// Layer API Functions
+	// TODO: change layer order
+	
 	this.identifyLayers = function() {
 		all_layers = [];
 		var numchildren = svgzoom.childNodes.length;
@@ -2636,19 +2648,19 @@ function BatchCommand(text) {
 		}
 		walkTree(current_layer, function(e){e.setAttribute("style","pointer-events:all");});
 	};
-	// Layer API Functions
-	// TODO: change layer order
 	
 	this.createLayer = function(name) {
 		var batchCmd = new BatchCommand("Create Layer");
 		current_layer = svgdoc.createElementNS(svgns, "g");
 		var layer_title = svgdoc.createElementNS(svgns, "title");
-		layer_title.appendChild(svgdoc.createTextNode(name));
+		layer_title.textContent = name; //appendChild(svgdoc.createTextNode(name));
 		current_layer.appendChild(layer_title);
 		current_layer = svgzoom.appendChild(current_layer);
 		all_layers.push([name,current_layer]);
 		batchCmd.addSubCommand(new InsertElementCommand(current_layer));
 		addCommandToHistory(batchCmd);
+		canvas.clearSelection();
+		call("changed", [current_layer]);
 	};
 	
 	this.deleteCurrentLayer = function() {
@@ -2669,6 +2681,8 @@ function BatchCommand(text) {
 			all_layers = new_layers;
 			current_layer = all_layers[all_layers.length-1][1];
 			addCommandToHistory(batchCmd);
+			canvas.clearSelection();
+			call("changed", [svgzoom]);
 			return true;
 		}
 		return false;
@@ -2711,6 +2725,7 @@ function BatchCommand(text) {
 			var oldLayer = current_layer;
 			// setCurrentLayer will return false if the name doesn't already exists
 			if (!canvas.setCurrentLayer(newname)) {
+				var batchCmd = new BatchCommand("Rename Layer");
 				// find the index of the layer
 				for (var i = 0; i < all_layers.length; ++i) {
 					if (all_layers[i][1] == oldLayer) break;
@@ -2724,9 +2739,12 @@ function BatchCommand(text) {
 					// found the <title> element, now append all the
 					if (child && child.tagName == "title") {
 						// wipe out old name 
-						// TODO: make this undo-able
 						while (child.firstChild) { child.removeChild(child.firstChild); }
-						child.appendChild( svgdoc.createTextNode(newname) );
+						child.textContent = newname;
+
+						batchCmd.addSubCommand(new ChangeElementCommand(child, {"#text":oldname}));
+						addCommandToHistory(batchCmd);
+						call("changed", [oldLayer]);
 						return true;
 					}
 				}
@@ -2743,13 +2761,7 @@ function BatchCommand(text) {
 				var child = g.childNodes.item(i);
 				// found the <title> element, now append all the
 				if (child && child.tagName == "title") {
-					var tlen = child.childNodes.length;
-					for (var j = 0; j < tlen; ++j) {
-						var textNode = child.childNodes.item(j);
-						if (textNode.nodeType == 3) {
-							name += textNode.nodeValue;
-						}
-					}
+					name = child.textContent;
 					break;
 				}
 			}
