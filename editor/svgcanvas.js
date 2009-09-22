@@ -14,10 +14,12 @@ Issue 73 (Layers) TODO:
 */
 
 if(!window.console) {
-  window.console = new function() {
-    this.log = function(str) {};
-    this.dir = function(str) {};
-  };
+	window.console = {};
+	window.console.log = function(str) {};
+	window.console.dir = function(str) {};
+}
+if( window.opera ) {
+	window.console.log = function(str) {opera.postError(str);}
 }
 
 // this defines which elements and attributes that we support
