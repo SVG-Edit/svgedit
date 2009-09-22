@@ -79,6 +79,9 @@ function svg_edit_setup() {
 		// we tell it to skip focusing the text control if the
 		// text element was previously in focus
 		updateContextPanel();
+		
+		// TODO: ensure that the current layer is selected
+		console.log(svgCanvas.getCurrentLayer());
 	};
 	
 	var zoomChanged = function(window, bbox) {
@@ -655,7 +658,6 @@ function svg_edit_setup() {
 	var clickUndo = function(){
 		if (svgCanvas.getUndoStackSize() > 0) {
 			svgCanvas.undo();
-			console.log('yooya');
 			populateLayers();
 		}
 	};
@@ -1083,7 +1085,15 @@ function svg_edit_setup() {
 	});
 	
 	$('#layer_new').click(function() {
-		svgCanvas.createLayer("New Layer");
+		var curNames = new Array(svgCanvas.getNumLayers());
+		for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getLayer(i); }
+	
+		var newName = prompt("Please enter a unique layer name","");
+		if (jQuery.inArray(newName, curNames) != -1) {
+			alert("There is already a layer named that!");
+			return;
+		}
+		svgCanvas.createLayer(newName);
 		updateContextPanel();
 		populateLayers();
 		$('#layerlist option:last').attr("selected", "selected");
@@ -1097,9 +1107,27 @@ function svg_edit_setup() {
 		}
 	});
 
+	$('#layer_rename').click(function() {
+		var oldName = $('#layerlist option:selected').attr("value");
+		var newName = prompt("Please enter the new layer name","");
+		if (oldName == newName) {
+			alert("Layer already has that name");
+			return;
+		}
+
+		var curNames = new Array(svgCanvas.getNumLayers());
+		for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getLayer(i); }
+		if (jQuery.inArray(newName, curNames) != -1) {
+			alert("There is already a layer named that!");
+			return;
+		}
+		
+		svgCanvas.renameLayer(oldName, newName);
+		populateLayers();
+	});
+
 	var populateLayers = function(){
 		var layerlen = svgCanvas.getNumLayers();
-		console.log('layerlen=' + layerlen);
 		$('#layerlist').empty();
 		for (var layer = 0; layer < layerlen; ++layer) {
 			var name = svgCanvas.getLayer(layer);
