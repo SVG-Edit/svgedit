@@ -1304,14 +1304,15 @@ function BatchCommand(text) {
 // public events
 
 	this.clearSelection = function() {
-		if (selectedElements[0] == null) { return; }
-		var len = selectedElements.length;
-		for (var i = 0; i < len; ++i) {
-			var elem = selectedElements[i];
-			if (elem == null) break;
-			selectorManager.releaseSelector(elem);
-			selectedElements[i] = null;
-			selectedBBoxes[i] = null;
+		if (selectedElements[0] != null) {
+			var len = selectedElements.length;
+			for (var i = 0; i < len; ++i) {
+				var elem = selectedElements[i];
+				if (elem == null) break;
+				selectorManager.releaseSelector(elem);
+				selectedElements[i] = null;
+				selectedBBoxes[i] = null;
+			}
 		}
 		call("selected", selectedElements);
 	};
@@ -3492,7 +3493,8 @@ function BatchCommand(text) {
 			batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
 		}
 		if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
-		call("selected", selectedCopy);
+		call("changed", selectedCopy);
+		canvas.clearSelection();
 	};
 	
 	this.groupSelectedElements = function() {
