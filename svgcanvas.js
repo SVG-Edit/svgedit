@@ -2906,9 +2906,8 @@ function BatchCommand(text) {
 			svgroot.setAttribute('height', y);
 			batchCmd.addSubCommand(new ChangeElementCommand(svgroot, {"width":w, "height":h}));
 
-			svgzoom.setAttribute("viewBox", ["0 0", x, y].join(' '));
+			svgzoom.setAttribute("viewBox", ["0 0", x/current_zoom, y/current_zoom].join(' '));
 			batchCmd.addSubCommand(new ChangeElementCommand(svgzoom, {"viewBox": ["0 0", w, h].join(' ')}));
-
 		
 			addCommandToHistory(batchCmd);
 			svgroot.unsuspendRedraw(handle);
