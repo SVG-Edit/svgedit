@@ -79,9 +79,6 @@ function svg_edit_setup() {
 		// we tell it to skip focusing the text control if the
 		// text element was previously in focus
 		updateContextPanel();
-		
-		// TODO: ensure that the current layer is selected
-		console.log(svgCanvas.getCurrentLayer());
 	};
 	
 	var zoomChanged = function(window, bbox) {
@@ -1132,6 +1129,11 @@ function svg_edit_setup() {
 		for (var layer = 0; layer < layerlen; ++layer) {
 			var name = svgCanvas.getLayer(layer);
 			$('#layerlist').append("<option value=\"" + name + "\">" + name + "</option>");
+		}
+		// if we only have one layer, then always make sure that layer is selected
+		// (This is really only required upon first initialization)
+		if ($('#layerlist').size() == 1) {
+			$('#layerlist option:first').attr("selected", "selected");
 		}
 		$('#layerlist option').mouseup(function(evt){
 			$('#layerlist option').removeAttr("selected");
