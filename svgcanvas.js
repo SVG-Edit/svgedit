@@ -2872,16 +2872,26 @@ function BatchCommand(text) {
 		var res = canvas.getResolution();
 		var w = res.w, h = res.h;
 
-		
 		if(!x) {
 			canvas.clearSelection();
 
 			// Get bounding box
-			var bbox = svgzoom.getBBox();
+			var bbox = canvas.getStrokedBBox();
 			
 			if(bbox) {
-				x = bbox.x + bbox.width;
-				y = bbox.y + bbox.height;
+				canvas.addToSelection(canvas.getVisibleElements());
+				$.each(selectedElements, function(i, item) {
+					var sel_bb = item.getBBox();
+					recalculateDimensions(item, {
+						x: sel_bb.x - bbox.x,
+						y: sel_bb.y - bbox.y,
+						width: sel_bb.width,
+						height: sel_bb.height
+					});
+				});
+				canvas.clearSelection();
+				x = bbox.width;
+				y = bbox.height;
 			} else {
 				alert('No content to fit to');
 				return;
@@ -2926,17 +2936,8 @@ function BatchCommand(text) {
 		switch (val) {
 			case 'selection':
 				if(!selectedElements[0]) return;
-				var bb = selectedBBoxes[0];
-				$.each(selectedBBoxes, function(i, sel) {
-					if(!sel || !i) return;
-					
-					// FIXME: Calculations still need some work...
-					bb.x = Math.min(bb.x, sel.x);
-					bb.y = Math.min(bb.y, sel.y);
-					bb.width = Math.max(sel.width + sel.x, bb.width + bb.x) - bb.x;
-					bb.height = Math.max(sel.height + sel.y, bb.height + bb.y) - bb.y;
-				});
-
+				var sel_elems = $.map(selectedElements, function(n){ if(n) return n; });
+				var bb = canvas.getStrokedBBox(sel_elems);
 				w_zoom = Math.round((editor_w / bb.width)*100 * spacer)/100;
 				h_zoom = Math.round((editor_h / bb.height)*100 * spacer)/100;	
 				var zoomlevel = Math.min(w_zoom,h_zoom);
@@ -2953,7 +2954,7 @@ function BatchCommand(text) {
 				return {'zoom': zoomlevel, 'bbox': {width:res.w, height:res.h ,x:0, y:0}};
 
 			case 'content':
-				var bb = svgzoom.getBBox();
+				var bb = canvas.getStrokedBBox();
 				w_zoom = Math.round((editor_w / bb.width)*100 * spacer)/100;
 				h_zoom = Math.round((editor_h / bb.height)*100 * spacer)/100;	
 				var zoomlevel = Math.min(w_zoom,h_zoom);
@@ -3662,6 +3663,45 @@ function BatchCommand(text) {
 			call("changed", selectedElements);
 		}
 	};
+
+	this.getStrokedBBox = function(elems) {
+		// TODO: Get correct BBoxes for rotated elements
+		if(!elems) elems = canvas.getVisibleElements();
+		var full_bb = elems[0].getBBox();
+		var max_x = full_bb.x + full_bb.width;
+		var max_y = full_bb.y + full_bb.height;
+		var min_x = full_bb.x;
+		var min_y = full_bb.y;
+		var getOffset = function(elem) {
+			var sw = round(elem.getAttribute("stroke-width"));
+			var offset = 0;
+			if (elem.getAttribute("stroke") != "none" && !isNaN(sw)) {
+				offset += sw/2;
+			}
+			return offset;
+		}
+		
+		$.each(elems, function(i, elem) {
+			var cur_bb = elem.getBBox();
+			var offset = getOffset(elem);
+			min_x = Math.min(min_x, cur_bb.x - offset);
+			min_y = Math.min(min_y, cur_bb.y - offset);
+		});
+		
+		full_bb.x = min_x;
+		full_bb.y = min_y;
+		
+		$.each(elems, function(i, elem) {
+			var cur_bb = elem.getBBox();
+			var offset = getOffset(elem);
+			max_x = Math.max(max_x, cur_bb.x + cur_bb.width + offset);
+			max_y = Math.max(max_y, cur_bb.y + cur_bb.height + offset);
+		});
+		
+		full_bb.width = max_x - min_x;
+		full_bb.height = max_y - min_y;
+		return full_bb;
+	}
 
 	this.getVisibleElements = function(includeBBox) {
 		var nodes = current_layer.childNodes;
