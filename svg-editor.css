@@ -468,7 +468,16 @@ span.zoom_tool {
 	padding: 10px;
 	background-color: #B0B0B0;
 	opacity: 1.0;
-	text-align: center;
+}
+
+#svg_docprops_container fieldset {
+	padding: 5px;
+	margin: 5px;
+}
+
+#svg_docprops_container label {
+	display: block;
+	margin-bottom: .2em;
 }
 
 #svg_source_editor #svg_source_textarea {
@@ -491,8 +500,13 @@ span.zoom_tool {
 }
 
 #svg_source_editor button, #svg_docprops button {
-	padding: 5px 2px 6px 28px;
+	padding: 5px 5px 7px 28px;
 	margin: 5px 20px 0 0;	
+}
+
+#svg_docprops button {
+	margin-top: 0;
+	margin-bottom: 5px;
 }
 
 #svg_docprops {
@@ -510,9 +524,9 @@ span.zoom_tool {
 }
 
 #tool_source_save, #tool_docprops_save {
-	background: #E8E8E8 url(images/save.png) no-repeat 2px 2px;
+	background: #E8E8E8 url(images/save.png) no-repeat 2px 0;
 }
 
 #tool_source_cancel, #tool_docprops_cancel {
-	background: #E8E8E8 url(images/cancel.png) no-repeat 2px 2px;
+	background: #E8E8E8 url(images/cancel.png) no-repeat 2px 0;
 }
