@@ -125,8 +125,9 @@ body {
 	width: 110px;
 }
 
+/* TODO: Make this work in more than just Firefox */
 #svg_editor #layerlist option {
-	background-image: url('images/eye.png');
+/*	background-image: url('images/eye.png');*/
 	background-repeat: no-repeat;
 	background-position: 4px center;
 	padding-left: 25px;
