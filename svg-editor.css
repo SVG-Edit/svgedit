@@ -125,6 +125,13 @@ body {
 	width: 110px;
 }
 
+#svg_editor #layerlist option {
+	background-image: url('images/eye.png');
+	background-repeat: no-repeat;
+	background-position: 4px center;
+	padding-left: 25px;
+}
+
 #svg_editor div.palette_item {
 	height: 16px;
 	width: 16px;
