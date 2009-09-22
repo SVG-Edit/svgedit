@@ -1,9 +1,10 @@
 /*
 Issue 73 (Layers) TODO:
 
-- ensure that the current_layer is ALWAYS selected
 - create API for SvgCanvas that allows the client to:
 	- change layer order
+- determine how to toggle visibility of layers (UI-wise)
+- hide the pointer-events stuff from the serialized SVG source somehow
 - create a mouseover region on the sidepanels that is resizable and affects all children within
 - default the side panel to closed
 - add a button that opens the side panel?
@@ -756,7 +757,6 @@ function BatchCommand(text) {
 	};
 
 	var call = function(event, arg) {
-		console.log(events[event]);
 		if (events[event]) {
 			return events[event](this,arg);
 		}
@@ -2626,7 +2626,6 @@ function BatchCommand(text) {
 	};
 
 	// Layer API Functions
-	// TODO: change layer order
 	
 	this.identifyLayers = function() {
 		all_layers = [];
@@ -2696,6 +2695,7 @@ function BatchCommand(text) {
 		}
 		return "";
 	};
+	
 	this.getCurrentLayer = function() {
 		for (var i = 0; i < all_layers.length; ++i) {
 			if (all_layers[i][1] == current_layer) {
@@ -2704,6 +2704,7 @@ function BatchCommand(text) {
 		}
 		return "";
 	};
+	
 	this.setCurrentLayer = function(name) {
 		for (var i = 0; i < all_layers.length; ++i) {
 			if (name == all_layers[i][0]) {
@@ -2718,6 +2719,7 @@ function BatchCommand(text) {
 		}
 		return false;
 	};
+	
 	this.renameLayer = function(oldname, newname) {
 		var rememberCurrentLayer = current_layer;
 		if (canvas.setCurrentLayer(oldname)) {
@@ -2751,6 +2753,64 @@ function BatchCommand(text) {
 		}
 		return false;
 	};
+	
+	this.setCurrentLayerPosition = function(newpos) {
+		if (current_layer && newpos >= 0 && newpos < all_layers.length) {
+			for (var oldpos = 0; oldpos < all_layers.length; ++oldpos) {
+				if (all_layers[oldpos][1] == current_layer) break;
+			}
+			// some unknown error condition (current_layer not in all_layers)
+			if (oldpos == all_layers.length) { return false; }
+			
+			if (oldpos != newpos) {
+				// TODO: we could use the following loop to quickly re-establish all_layers
+				// but i think walking the DOM inside identifyLayers() is less bug-prone :)
+				/*
+				var new_layers = new Array(all_layers.length);
+				var trackIndex = 0;
+				for (var j = 0; j < new_layers.length; ++j) {
+					// new position of current_layer
+					if (newpos == j) {
+						new_layers[j] = all_layers[oldpos];
+					}
+					else {
+						// make sure we skip over the old position
+						if (trackIndex == oldpos) trackIndex++;
+						new_layers[j] = all_layers[trackIndex];
+						trackIndex++;
+					}
+				}
+				*/
+				
+				// TODO: use insertBefore(newChild, refChild) to move the layer in the DOM
+				// TODO: then create a MoveElementCommand and add it to the Undo history
+				// if our new position is below us, we need to insert before the node after newpos
+				var refLayer = null;
+				var oldNextSibling = current_layer.nextSibling;
+				console.log([oldpos,newpos,all_layers.length]);
+				if (newpos > oldpos ) {
+					if (newpos < all_layers.length-1) {
+						refLayer = all_layers[newpos+1][1];
+					}
+				}
+				// if our new position is above us, we need to insert before the node at newpos
+				else {
+					refLayer = all_layers[newpos][1];
+				}
+				svgzoom.insertBefore(current_layer, refLayer);
+				addCommandToHistory(new MoveElementCommand(current_layer, oldNextSibling, svgzoom));
+				
+				canvas.identifyLayers();
+				current_layer = all_layers[newpos][1];
+				
+				return true;
+			}
+		}
+		
+		// TODO: if i differs, then MoveElementCommand
+		return false;
+	};
+	
 	// used internally
 	var getLayerName = function(g) {
 		var name = "";
