@@ -1093,6 +1093,7 @@ function svg_edit_setup() {
 		svgCanvas.createLayer(newName);
 		updateContextPanel();
 		populateLayers();
+		$('#layerlist option').removeAttr("selected");
 		$('#layerlist option:last').attr("selected", "selected");
 	});
 	
@@ -1100,6 +1101,9 @@ function svg_edit_setup() {
 		if (svgCanvas.deleteCurrentLayer()) {
 			updateContextPanel();
 			populateLayers();
+			// This matches what SvgCanvas does
+			// TODO: make this behavior less brittle (svg-editor should get which
+			// layer is selected from the canvas and then select that one in the UI)
 			$('#layerlist option:last').attr("selected", "selected");
 		}
 	});
