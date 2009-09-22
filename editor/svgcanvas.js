@@ -1,8 +1,7 @@
 /*
 Issue 73 (Layers) TODO:
 
-- do pop-up window that asks for layer name and rename layer, ensure that is undo-able
-- ensure that pointer-events work properly with layers named the same
+- ensure that the current_layer is ALWAYS selected
 - create API for SvgCanvas that allows the client to:
 	- change layer order
 - create a mouseover region on the sidepanels that is resizable and affects all children within

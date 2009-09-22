@@ -88,7 +88,9 @@ body {
 #svg_editor #layerbuttons {
 	margin: 0px;
 	padding: 0px;
-	width: 110px;
+	padding-left: 2px;
+	padding-right: 2px;
+	width: 106px;
 	height: 20px;
 	border-right: 1px solid #FFFFFF;
 	border-bottom: 1px solid #FFFFFF;
@@ -97,8 +99,8 @@ body {
 }
 
 #svg_editor .layer_button {
-	width: 15px;
-	height: 15px;
+	width: 14px;
+	height: 14px;
 	padding: 1px;
 	border-left: 1px solid #FFFFFF;
 	border-top: 1px solid #FFFFFF;
