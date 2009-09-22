@@ -1,7 +1,6 @@
 /*
 Issue 73 (Layers) TODO:
 
-- fix bug with moving to top/bottom
 - reverse order of layer list (top-most list should be on top of the image)
 - convert select/options to tables, handle 'selection' of rows
 - add visibility icon to table as a column
