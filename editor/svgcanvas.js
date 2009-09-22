@@ -1,6 +1,8 @@
 /*
 Issue 73 (Layers) TODO:
 
+- fix bug with moving to top/bottom
+- reverse order of layer list (top-most list should be on top of the image)
 - convert select/options to tables, handle 'selection' of rows
 - add visibility icon to table as a column
 - determine how to toggle visibility of layers (UI-wise)
@@ -3799,7 +3801,7 @@ function BatchCommand(text) {
 			var elem = copiedElements[i] = copiedElements[i].cloneNode(true);
 			elem.removeAttribute("id");
 			elem.id = getNextId();
-			svgzoom.appendChild(elem);
+			current_layer.appendChild(elem);
 			batchCmd.addSubCommand(new InsertElementCommand(elem));
 		}
 
