@@ -1,8 +1,8 @@
 /*
 Issue 73 (Layers) TODO:
 
-- create API for SvgCanvas that allows the client to:
-	- change layer order
+- convert select/options to tables, handle 'selection' of rows
+- add visibility icon to table as a column
 - determine how to toggle visibility of layers (UI-wise)
 - hide the pointer-events stuff from the serialized SVG source somehow
 - create a mouseover region on the sidepanels that is resizable and affects all children within
@@ -2649,37 +2649,30 @@ function BatchCommand(text) {
 	
 	this.createLayer = function(name) {
 		var batchCmd = new BatchCommand("Create Layer");
-		current_layer = svgdoc.createElementNS(svgns, "g");
+		var new_layer = svgdoc.createElementNS(svgns, "g");
 		var layer_title = svgdoc.createElementNS(svgns, "title");
-		layer_title.textContent = name; //appendChild(svgdoc.createTextNode(name));
-		current_layer.appendChild(layer_title);
-		current_layer = svgzoom.appendChild(current_layer);
-		all_layers.push([name,current_layer]);
-		batchCmd.addSubCommand(new InsertElementCommand(current_layer));
+		layer_title.textContent = name;
+		new_layer.appendChild(layer_title);
+		new_layer = svgzoom.appendChild(new_layer);
+		batchCmd.addSubCommand(new InsertElementCommand(new_layer));
 		addCommandToHistory(batchCmd);
 		canvas.clearSelection();
-		call("changed", [current_layer]);
+		canvas.identifyLayers();
+		canvas.setCurrentLayer(name);
+		call("changed", [new_layer]);
 	};
 	
 	this.deleteCurrentLayer = function() {
 		if (current_layer && all_layers.length > 1) {
 			var batchCmd = new BatchCommand("Delete Layer");
-			var new_layers = [];
-			for(var i = 0; i < all_layers.length; ++i) {
-				if (all_layers[i][1] != current_layer) {
-					new_layers.push([all_layers[i][0], all_layers[i][1]]);
-				}
-				else {
-					// actually delete from the DOM and store in our Undo History
-					var parent = current_layer.parentNode;
-					batchCmd.addSubCommand(new RemoveElementCommand(current_layer, parent));
-					parent.removeChild(current_layer);
-				}
-			}
-			all_layers = new_layers;
-			current_layer = all_layers[all_layers.length-1][1];
+			// actually delete from the DOM and store in our Undo History
+			var parent = current_layer.parentNode;
+			batchCmd.addSubCommand(new RemoveElementCommand(current_layer, parent));
+			parent.removeChild(current_layer);
 			addCommandToHistory(batchCmd);
 			canvas.clearSelection();
+			canvas.identifyLayers();
+			canvas.setCurrentLayer(all_layers[all_layers.length-1][0]);
 			call("changed", [svgzoom]);
 			return true;
 		}
@@ -2782,8 +2775,6 @@ function BatchCommand(text) {
 				}
 				*/
 				
-				// TODO: use insertBefore(newChild, refChild) to move the layer in the DOM
-				// TODO: then create a MoveElementCommand and add it to the Undo history
 				// if our new position is below us, we need to insert before the node after newpos
 				var refLayer = null;
 				var oldNextSibling = current_layer.nextSibling;
@@ -2801,7 +2792,7 @@ function BatchCommand(text) {
 				addCommandToHistory(new MoveElementCommand(current_layer, oldNextSibling, svgzoom));
 				
 				canvas.identifyLayers();
-				current_layer = all_layers[newpos][1];
+				canvas.setCurrentLayer(all_layers[newpos][0]);
 				
 				return true;
 			}

@@ -1174,6 +1174,11 @@ function svg_edit_setup() {
 			var option = $(this);
 			option.attr("selected", "selected");
 			svgCanvas.setCurrentLayer(option.attr("value"));
+		}).click(function(evt) {
+			var container = document.getElementById("layerlist");
+			var mouse_x = evt.pageX - container.boxObject.x;
+			var mouse_y = evt.pageY - container.boxObject.y;
+			// mouse_x, mouse_y contain the relative x,y position of the click
 		});
 	};
 	populateLayers();
