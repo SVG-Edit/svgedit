@@ -620,6 +620,12 @@ function BatchCommand(text) {
 	svgroot.appendChild(svgzoom);
 	var comment = svgdoc.createComment(" created with SVG-edit - http://svg-edit.googlecode.com/ ");
 	svgzoom.appendChild(comment);
+	// TODO For Issue 208: this is a start on a thumbnail
+//	var svgthumb = svgdoc.createElementNS(svgns, "use");
+//	svgthumb.setAttribute('width', '100');
+//	svgthumb.setAttribute('height', '100');
+//	svgthumb.setAttributeNS(xlinkns, 'href', '#svgzoom');
+//	svgroot.appendChild(svgthumb);
 	// z-ordered array of tuples containing layer names and <g> elements
 	// the first layer is the one at the bottom of the rendering
 	var all_layers = [];
