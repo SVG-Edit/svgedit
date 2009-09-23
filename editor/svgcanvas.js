@@ -708,7 +708,7 @@ function BatchCommand(text) {
 
 		if(!curBBoxes.length) {
 			// Cache all bboxes
-			curBBoxes = canvas.getVisibleElements(true);
+			curBBoxes = canvas.getVisibleElements(svgzoom, true);
 		}
 		
 		var resultList = null;
@@ -1081,8 +1081,8 @@ function BatchCommand(text) {
 			while (i--) {
 				var child = children.item(i);
 				if (child.nodeType == 1) {
-					var childBox = child.getBBox();
-					if (childBox) {
+					try {
+						var childBox = child.getBBox();
 						// TODO: to fix the rotation problem, we must account for the
 						// child's rotation in the bbox adjustment
 						
@@ -1107,7 +1107,7 @@ function BatchCommand(text) {
 						childBox.x = pt.x; childBox.y = pt.y;
 						childBox.width = w; childBox.height = h;
 						batchCmd.addSubCommand(recalculateDimensions(child, childBox));
-					}
+					} catch(e) {}
 				}
 			}
 			return batchCmd;
@@ -2917,52 +2917,45 @@ function BatchCommand(text) {
 
 	this.setBBoxZoom = function(val, editor_w, editor_h) {
 		var spacer = .85;
-		var w_zoom, h_zoom;
-		
-		if(typeof val == 'object') {
-			var bb = val;
-			if(bb.width == 0 || bb.height == 0) {
-				canvas.setZoom(current_zoom * 2);
-				return {'zoom': current_zoom, 'bbox': bb};
-			}
-			w_zoom = Math.round((editor_w / bb.width)*100 * spacer)/100;
-			h_zoom = Math.round((editor_h / bb.height)*100 * spacer)/100;	
+		var bb;
+		var calcZoom = function(bb) {
+			var w_zoom = Math.round((editor_w / bb.width)*100 * spacer)/100;
+			var h_zoom = Math.round((editor_h / bb.height)*100 * spacer)/100;	
 			var zoomlevel = Math.min(w_zoom,h_zoom);
 			canvas.setZoom(zoomlevel);
 			return {'zoom': zoomlevel, 'bbox': bb};
 		}
 		
+		if(typeof val == 'object') {
+			bb = val;
+			if(bb.width == 0 || bb.height == 0) {
+				canvas.setZoom(current_zoom * 2);
+				return {'zoom': current_zoom, 'bbox': bb};
+			}
+			return calcZoom(bb);
+		}
+	
 		switch (val) {
 			case 'selection':
 				if(!selectedElements[0]) return;
 				var sel_elems = $.map(selectedElements, function(n){ if(n) return n; });
-				var bb = canvas.getStrokedBBox(sel_elems);
-				w_zoom = Math.round((editor_w / bb.width)*100 * spacer)/100;
-				h_zoom = Math.round((editor_h / bb.height)*100 * spacer)/100;	
-				var zoomlevel = Math.min(w_zoom,h_zoom);
-				canvas.setZoom(zoomlevel);
-				return {'zoom': zoomlevel, 'bbox': bb};
-
+				bb = canvas.getStrokedBBox(sel_elems);
+				break;
 			case 'canvas':
-				spacer = .95;
 				var res = canvas.getResolution();
-				w_zoom = Math.round((editor_w / res.w)*100)/100;
-				h_zoom = Math.round((editor_h / res.h)*100)/100;
-				var zoomlevel = Math.min(w_zoom, h_zoom);
-				canvas.setZoom(zoomlevel);
-				return {'zoom': zoomlevel, 'bbox': {width:res.w, height:res.h ,x:0, y:0}};
-
+				spacer = .95;
+				bb = {width:res.w, height:res.h ,x:0, y:0};
+				break;
 			case 'content':
-				var bb = canvas.getStrokedBBox();
-				w_zoom = Math.round((editor_w / bb.width)*100 * spacer)/100;
-				h_zoom = Math.round((editor_h / bb.height)*100 * spacer)/100;	
-				var zoomlevel = Math.min(w_zoom,h_zoom);
-				canvas.setZoom(zoomlevel);
-				return {'zoom': zoomlevel, 'bbox': bb};
-
+				bb = canvas.getStrokedBBox();
+				break;
+			case 'layer':
+				bb = canvas.getStrokedBBox(canvas.getVisibleElements(current_layer));
+				break;
 			default:
 				return;
 		}
+		return calcZoom(bb);
 	}
 
 	this.setZoom = function(zoomlevel) {
@@ -3704,8 +3697,9 @@ function BatchCommand(text) {
 		return full_bb;
 	}
 
-	this.getVisibleElements = function(includeBBox) {
-		var nodes = current_layer.childNodes;
+	this.getVisibleElements = function(parent, includeBBox) {
+		if(!parent) parent = svgzoom;
+		var nodes = parent.childNodes;
 		var i = nodes.length;
 		var contentElems = [];
 		
