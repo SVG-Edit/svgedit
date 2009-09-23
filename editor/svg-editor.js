@@ -1100,7 +1100,7 @@ function svg_edit_setup() {
 		updateContextPanel();
 		populateLayers();
 		$('#layerlist option').removeAttr("selected");
-		$('#layerlist option:last').attr("selected", "selected");
+		$('#layerlist option:first').attr("selected", "selected");
 	});
 	
 	$('#layer_delete').click(function() {
@@ -1110,7 +1110,7 @@ function svg_edit_setup() {
 			// This matches what SvgCanvas does
 			// TODO: make this behavior less brittle (svg-editor should get which
 			// layer is selected from the canvas and then select that one in the UI)
-			$('#layerlist option:last').attr("selected", "selected");
+			$('#layerlist option:first').attr("selected", "selected");
 		}
 	});
 	
@@ -1118,8 +1118,9 @@ function svg_edit_setup() {
 		// find index position of selected option
 		var curIndex = $('#layerlist option:selected').prevAll().length;
 		if (curIndex > 0) {
+			var total = $('#layerlist option').length;
 			curIndex--;
-			svgCanvas.setCurrentLayerPosition(curIndex);
+			svgCanvas.setCurrentLayerPosition(total-curIndex-1);
 			populateLayers();
 			$('#layerlist option').removeAttr("selected");
 			$('#layerlist option:eq('+curIndex+')').attr("selected", "selected");
@@ -1132,7 +1133,7 @@ function svg_edit_setup() {
 		var total = $('#layerlist option').length;
 		if (curIndex < total-1) {
 			curIndex++;
-			svgCanvas.setCurrentLayerPosition(curIndex);
+			svgCanvas.setCurrentLayerPosition(total-curIndex-1);
 			populateLayers();
 			$('#layerlist option').removeAttr("selected");
 			$('#layerlist option:eq('+curIndex+')').attr("selected", "selected");
@@ -1140,6 +1141,7 @@ function svg_edit_setup() {
 	});
 
 	$('#layer_rename').click(function() {
+		var curIndex = $('#layerlist option:selected').prevAll().length;
 		var oldName = $('#layerlist option:selected').attr("value");
 		var newName = prompt("Please enter the new layer name","");
 		if (!newName) return;
@@ -1155,14 +1157,17 @@ function svg_edit_setup() {
 			return;
 		}
 		
-		svgCanvas.renameLayer(oldName, newName);
+		svgCanvas.renameCurrentLayer(newName);
 		populateLayers();
+		$('#layerlist option').removeAttr("selected");
+		$('#layerlist option:eq('+curIndex+')').attr("selected", "selected");
 	});
 
 	var populateLayers = function(){
-		var layerlen = svgCanvas.getNumLayers();
 		$('#layerlist').empty();
-		for (var layer = 0; layer < layerlen; ++layer) {
+		var layer = svgCanvas.getNumLayers();
+		// we get the layers in the reverse z-order (the layer rendered on top is listed first)
+		while (layer--) {
 			var name = svgCanvas.getLayer(layer);
 			$('#layerlist').append("<option value=\"" + name + "\">" + name + "</option>");
 		}
