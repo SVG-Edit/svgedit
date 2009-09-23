@@ -347,7 +347,7 @@ function svg_edit_setup() {
   });
 
 	$('.attr_changer').change(function() {
-		var attr = this.getAttribute("alt");
+		var attr = this.getAttribute("data-attr");
 		var val = this.value;
 		var valid = false;
 		if($.inArray(attr, length_attrs) != -1) {
