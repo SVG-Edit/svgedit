@@ -1,7 +1,6 @@
 /*
 Issue 73 (Layers) TODO:
 
-- reverse order of layer list (top-most list should be on top of the image)
 - Fit To Content must look at all layers
 - convert select/options to tables, handle 'selection' of rows
 - add visibility icon to table as a column
@@ -623,6 +622,7 @@ function BatchCommand(text) {
 	var comment = svgdoc.createComment(" created with SVG-edit - http://svg-edit.googlecode.com/ ");
 	svgzoom.appendChild(comment);
 	// z-ordered array of tuples containing layer names and <g> elements
+	// the first layer is the one at the bottom of the rendering
 	var all_layers = [];
 	// pointer to the current layer <g>
 	var current_layer = null;
@@ -2719,9 +2719,8 @@ function BatchCommand(text) {
 		return false;
 	};
 	
-	this.renameLayer = function(oldname, newname) {
-		var rememberCurrentLayer = current_layer;
-		if (canvas.setCurrentLayer(oldname)) {
+	this.renameCurrentLayer = function(newname) {
+		if (current_layer) {
 			var oldLayer = current_layer;
 			// setCurrentLayer will return false if the name doesn't already exists
 			if (!canvas.setCurrentLayer(newname)) {
@@ -2730,6 +2729,7 @@ function BatchCommand(text) {
 				for (var i = 0; i < all_layers.length; ++i) {
 					if (all_layers[i][1] == oldLayer) break;
 				}
+				var oldname = all_layers[i][0];
 				all_layers[i][0] = newname;
 			
 				// now change the underlying title element contents
@@ -2749,6 +2749,7 @@ function BatchCommand(text) {
 					}
 				}
 			}
+			current_layer = oldLayer;
 		}
 		return false;
 	};
