@@ -352,6 +352,7 @@ span.zoom_tool {
 	position: absolute;
 	display: none;
 	background: #E8E8E8;
+	height: 350px;
 }
 
 #svg_editor .tools_flyout {
