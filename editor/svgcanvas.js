@@ -3528,7 +3528,7 @@ function BatchCommand(text) {
 	};
 
 	// TODO: when transferring group's rotational transform to the children, must deal
-	// with children who are already rotated within the group
+	// with children who are already rotated within the group (Issue 204)
 	this.ungroupSelectedElement = function() {
 		var g = selectedElements[0];
 		if (g.tagName == "g") {
