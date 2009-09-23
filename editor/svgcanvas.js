@@ -550,7 +550,6 @@ function BatchCommand(text) {
 		var handle = svgroot.suspendRedraw(suspendLength);
 
 		for (i in attrs) {
-			console.log([i,attrs[i]]);
 			node.setAttributeNS(null, i, attrs[i]);
 		}
 		
@@ -884,10 +883,6 @@ function BatchCommand(text) {
 			for (i=attrs.length-1; i>=0; i--) {
 				attr = attrs.item(i);
 				if (attr.nodeValue != "") {
-					//Opera bug turns N.N to N,N in some locales
-					if (window.opera && attr.nodeName == 'opacity' && /^\d+,\d+$/.test(attr.nodeValue)) {
-						attr.nodeValue = attr.nodeValue.replace(',','.');
-					}
 					out.push(" "); 
 					// map various namespaces to our fixed namespace prefixes
 					// TODO: put this into a map and do a look-up instead of if-else
@@ -3787,6 +3782,31 @@ function BatchCommand(text) {
 
 	// this creates deep DOM copies (clones) of all selected elements
 	this.cloneSelectedElements = function() {
+		var copyElem = function(el) {
+			// Manual clone function for Opera/Win/non-EN. 
+			// Needed because cloneNode changes "." to "," on float values
+			if(!window.opera) return el.cloneNode(true);
+			var new_el = document.createElementNS(svgns, el.nodeName);
+			$.each(el.attributes, function(i, attr) {
+				var ns = attr.nodeName == 'href'?xlinkns:null;
+				new_el.setAttributeNS(ns, attr.nodeName, attr.nodeValue);
+			});
+			
+			$.each(el.childNodes, function(i, child) {
+				switch(child.nodeType) {
+				case 1: // element node
+					new_el.appendChild(copyElem(child));
+					break;
+				case 3: // text node
+					new_el.textContent = child.nodeValue;
+					break;
+				default:
+					break;
+				}
+			});
+			return new_el;
+		}
+	
 		var batchCmd = new BatchCommand("Clone Elements");
 		// find all the elements selected (stop at first null)
 		var len = selectedElements.length;
@@ -3802,7 +3822,7 @@ function BatchCommand(text) {
 		var i = copiedElements.length;
 		while (i--) {
 			// clone each element and replace it within copiedElements
-			var elem = copiedElements[i] = copiedElements[i].cloneNode(true);
+			var elem = copiedElements[i] = copyElem(copiedElements[i]);
 			elem.removeAttribute("id");
 			elem.id = getNextId();
 			current_layer.appendChild(elem);
