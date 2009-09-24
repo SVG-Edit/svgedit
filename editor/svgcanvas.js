@@ -2642,7 +2642,7 @@ function BatchCommand(text) {
 		for (var i = 0; i < numchildren; ++i) {
 			var child = svgzoom.childNodes.item(i);
 			// for each g, find its layer name
-			if (child) {
+			if (child && child.nodeType == 1) {
 				if (child.tagName == "g") {
 					var name = getLayerName(child);
 					// store layer and name in global variable
@@ -2653,7 +2653,7 @@ function BatchCommand(text) {
 						walkTree(child, function(e){e.setAttribute("style", "pointer-events:none");});
 					}
 				}
-				else if (child.nodeType == 1) {
+				else {
 					orphans.push(child);
 				}
 			}
