@@ -855,11 +855,9 @@ function BatchCommand(text) {
 	}
 	
 	var svgCanvasToString = function() {
-		// remove unused gradients
 		removeUnusedGrads();
-		
+		canvas.clearPoly();
 		var output = svgToString(svgzoom, 0);
-		
 		return output;
 	}
 
@@ -2198,7 +2196,8 @@ function BatchCommand(text) {
 				});
 				return;
 			case "path":
-				keep = true;
+				var coordnum = element.getAttribute('points').split(',').length - 1;
+				keep = coordnum > 1;
 				break;
 			case "line":
 				keep = (element.getAttribute('x1') != element.getAttribute('x2') ||
@@ -2347,10 +2346,11 @@ function BatchCommand(text) {
 						// otherwise, close the poly
 						if (i == 0 && current_poly_pts.length >= 6) {
 							poly.setAttribute("d", d_attr + "z");
+						} else if(current_poly_pts.length < 3) {
+							keep = false;
+							break;
 						}
-
 						removeAllPointGripsFromPoly();
-
 						// this will signal to commit the poly
 						element = poly;
 						current_poly_pts = [];
@@ -2883,6 +2883,10 @@ function BatchCommand(text) {
 	};
 	
 	this.clearPoly = function() {
+		if(current_poly_pts.length > 0) {
+			var elem = svgdoc.getElementById(getId());
+			if(elem) elem.parentNode.removeChild(elem);
+		}
 		removeAllPointGripsFromPoly();
 		current_poly = null;
 		current_poly_pts = [];
