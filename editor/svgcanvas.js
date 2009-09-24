@@ -695,7 +695,7 @@ function BatchCommand(text) {
 	};
 
 	// This method sends back an array or a NodeList full of elements that
-	// intersect the multi-select rubber-band-box.
+	// intersect the multi-select rubber-band-box on the current_layer only.
 	// 
 	// Since the only browser that supports the SVG DOM getIntersectionList is Opera, 
 	// we need to provide an implementation here.  We brute-force it for now.
@@ -708,7 +708,7 @@ function BatchCommand(text) {
 
 		if(!curBBoxes.length) {
 			// Cache all bboxes
-			curBBoxes = canvas.getVisibleElements(svgzoom, true);
+			curBBoxes = canvas.getVisibleElements(current_layer, true);
 		}
 		
 		var resultList = null;
@@ -2638,18 +2638,41 @@ function BatchCommand(text) {
 		all_layers = [];
 		var numchildren = svgzoom.childNodes.length;
 		// loop through all children of svgzoom
+		var orphans = [], layernames = [];
 		for (var i = 0; i < numchildren; ++i) {
 			var child = svgzoom.childNodes.item(i);
 			// for each g, find its layer name
-			if (child && child.tagName == "g") {
-				var name = getLayerName(child);
-				// store layer and name in global variable
-				if (name) {
-					all_layers.push( [name,child] );
-					current_layer = child;
-					walkTree(child, function(e){e.setAttribute("style", "pointer-events:none");});
+			if (child) {
+				if (child.tagName == "g") {
+					var name = getLayerName(child);
+					// store layer and name in global variable
+					if (name) {
+						layernames.push(name);
+						all_layers.push( [name,child] );
+						current_layer = child;
+						walkTree(child, function(e){e.setAttribute("style", "pointer-events:none");});
+					}
+				}
+				else if (child.nodeType == 1) {
+					orphans.push(child);
 				}
 			}
+		}
+		// create a new layer and add all the orphans to it
+		if (orphans.length > 0) {
+			var i = 1;
+			while ($.inArray(("Layer " + i), layernames) != -1) { i++; }
+			var newname = "Layer " + i;
+			current_layer = svgdoc.createElementNS(svgns, "g");
+			var layer_title = svgdoc.createElementNS(svgns, "title");
+			layer_title.textContent = newname;
+			current_layer.appendChild(layer_title);
+			for (var j = 0; j < orphans.length; ++j) {
+				walkTree(orphans[j], function(e){e.setAttribute("style", "pointer-events:none");});
+				current_layer.appendChild(orphans[j]);
+			}
+			current_layer = svgzoom.appendChild(current_layer);
+			all_layers.push( [newname, current_layer] );
 		}
 		walkTree(current_layer, function(e){e.setAttribute("style","pointer-events:all");});
 	};
