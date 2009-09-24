@@ -121,16 +121,36 @@ body {
 }
 
 #svg_editor #layerlist {
-	margin: 0px;
+	margin: 1px;
+	padding: 0px;
 	width: 110px;
+	border-collapse: collapse;	
+	border: 1px solid #808080;
+	background-color: #FFFFFF;
 }
 
-/* TODO: Make this work in more than just Firefox */
-#svg_editor #layerlist option {
-/*	background-image: url('images/eye.png');*/
+#svg_editor #layerlist tr.layer {
+	background-color: #FFFFFF;
+	margin: 0px;
+	padding: 0px;
+}
+#svg_editor #layerlist tr.layersel {
+	border: 1px solid #808080;
+	background-color: #CCCCCC;
+}
+
+#svg_editor #layerlist td.layervis {
+	background-image: url('images/eye.png');
 	background-repeat: no-repeat;
-	background-position: 4px center;
-	padding-left: 25px;
+	background-position: 3px center;
+	width: 22px;
+}
+#svg_editor #layerlist td.layerinvis {
+	background-image: none;
+}
+
+#svg_editor #layerlist tr.layersel td.layername {
+	font-weight: bold;
 }
 
 #svg_editor div.palette_item {
