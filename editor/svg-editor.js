@@ -1175,7 +1175,12 @@ function svg_edit_setup() {
 		while (layer--) {
 			var name = svgCanvas.getLayer(layer);
 			// contenteditable=\"true\"
-			layerlist.append("<tr class=\"layer\"><td class=\"layervis\"/><td class=\"layername\" >" + name + "</td></tr>");
+			if (svgCanvas.getLayerVisibility(name)) {
+				layerlist.append("<tr class=\"layer\"><td class=\"layervis\"/><td class=\"layername\" >" + name + "</td></tr>");
+			}
+			else {
+				layerlist.append("<tr class=\"layer\"><td class=\"layervis layerinvis\"/><td class=\"layername\" >" + name + "</td></tr>");
+			}
 		}
 		// if we only have one layer, then always make sure that layer is selected
 		// (This is really only required upon first initialization)
@@ -1188,6 +1193,18 @@ function svg_edit_setup() {
 			var row = $(this.parentNode);
 			row.addClass("layersel");
 			svgCanvas.setCurrentLayer(this.textContent);
+		});
+		$('#layerlist td.layervis').click(function(evt){
+			var row = $(this.parentNode).prevAll().length;
+			var name = $('#layerlist tr.layer:eq(' + row + ') td.layername').text();
+			var vis = $(this).hasClass('layerinvis');
+			svgCanvas.setLayerVisibility(name, vis);
+			if (vis) {
+				$(this).removeClass('layerinvis');
+			}
+			else {
+				$(this).addClass('layerinvis');
+			}
 		});
 		
 		// if there were too few rows, let's add a few to make it not so lonely

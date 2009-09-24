@@ -1,17 +1,3 @@
-/*
-Issue 73 (Layers) TODO:
-
-- Fit To Content must look at all layers
-- convert select/options to tables, handle 'selection' of rows
-- add visibility icon to table as a column
-- determine how to toggle visibility of layers (UI-wise)
-- hide the pointer-events stuff from the serialized SVG source somehow
-- create a mouseover region on the sidepanels that is resizable and affects all children within
-- default the side panel to closed
-- add a button that opens the side panel?
-
-*/
-
 if(!window.console) {
 	window.console = {};
 	window.console.log = function(str) {};
@@ -28,7 +14,7 @@ var svgWhiteList = {
 	"circle": ["cx", "cy", "fill", "fill-opacity", "id", "opacity", "r", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
 	"defs": [],
 	"ellipse": ["cx", "cy", "fill", "fill-opacity", "id", "opacity", "rx", "ry", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
-	"g": ["id", "transform"],
+	"g": ["id", "display", "transform"],
 	"image": ["height", "id", "opacity", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
 	"line": ["fill", "fill-opacity", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-opacity", "stroke-width",  "transform", "x1", "x2", "y1", "y2"],
 	"linearGradient": ["id", "gradientTransform", "gradientUnits", "spreadMethod", "x1", "x2", "y1", "y2"],
@@ -2787,29 +2773,9 @@ function BatchCommand(text) {
 			if (oldpos == all_layers.length) { return false; }
 			
 			if (oldpos != newpos) {
-				// TODO: we could use the following loop to quickly re-establish all_layers
-				// but i think walking the DOM inside identifyLayers() is less bug-prone :)
-				/*
-				var new_layers = new Array(all_layers.length);
-				var trackIndex = 0;
-				for (var j = 0; j < new_layers.length; ++j) {
-					// new position of current_layer
-					if (newpos == j) {
-						new_layers[j] = all_layers[oldpos];
-					}
-					else {
-						// make sure we skip over the old position
-						if (trackIndex == oldpos) trackIndex++;
-						new_layers[j] = all_layers[trackIndex];
-						trackIndex++;
-					}
-				}
-				*/
-				
 				// if our new position is below us, we need to insert before the node after newpos
 				var refLayer = null;
 				var oldNextSibling = current_layer.nextSibling;
-				console.log([oldpos,newpos,all_layers.length]);
 				if (newpos > oldpos ) {
 					if (newpos < all_layers.length-1) {
 						refLayer = all_layers[newpos+1][1];
@@ -2831,6 +2797,43 @@ function BatchCommand(text) {
 		
 		// TODO: if i differs, then MoveElementCommand
 		return false;
+	};
+	
+	this.getLayerVisibility = function(layername) {
+		// find the layer
+		var layer = null;
+		for (var i = 0; i < all_layers.length; ++i) {
+			if (all_layers[i][0] == layername) {
+				layer = all_layers[i][1];
+				break;
+			}
+		}
+		if (!layer) return false;
+		return (layer.getAttribute("display") != "none");
+	};
+	
+	this.setLayerVisibility = function(layername, bVisible) {
+		// find the layer
+		var layer = null;
+		for (var i = 0; i < all_layers.length; ++i) {
+			if (all_layers[i][0] == layername) {
+				layer = all_layers[i][1];
+				break;
+			}
+		}
+		if (!layer) return false;
+		
+		var oldDisplay = layer.getAttribute("display");
+		if (!oldDisplay) oldDisplay = "inline";
+		layer.setAttribute("display", bVisible ? "inline" : "none");
+		addCommandToHistory(new ChangeElementCommand(layer, {"display":oldDisplay}, "Layer Visibility"));
+		
+		if (layer == current_layer) {
+			canvas.clearSelection();
+		}
+//		call("changed", [selected]);
+		
+		return true;
 	};
 	
 	// used internally

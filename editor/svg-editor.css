@@ -144,9 +144,15 @@ body {
 	background-repeat: no-repeat;
 	background-position: 3px center;
 	width: 22px;
+	cursor:pointer;
 }
 #svg_editor #layerlist td.layerinvis {
 	background-image: none;
+	cursor:pointer;
+}
+
+#svg_editor #layerlist td.layername {
+	cursor: pointer;
 }
 
 #svg_editor #layerlist tr.layersel td.layername {
