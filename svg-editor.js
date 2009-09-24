@@ -347,7 +347,7 @@ function svg_edit_setup() {
   });
 
 	$('.attr_changer').change(function() {
-		var attr = this.getAttribute("data-attr");
+		var attr = this.getAttribute("alt");
 		var val = this.value;
 		var valid = false;
 		if($.inArray(attr, length_attrs) != -1) {
@@ -1102,8 +1102,8 @@ function svg_edit_setup() {
 		svgCanvas.createLayer(newName);
 		updateContextPanel();
 		populateLayers();
-		$('#layerlist tr.layer').removeClass("layersel");
-		$('#layerlist tr.layer:first').addClass("layersel");
+		$('#layerlist option').removeAttr("selected");
+		$('#layerlist option:first').attr("selected", "selected");
 	});
 	
 	$('#layer_delete').click(function() {
@@ -1113,40 +1113,39 @@ function svg_edit_setup() {
 			// This matches what SvgCanvas does
 			// TODO: make this behavior less brittle (svg-editor should get which
 			// layer is selected from the canvas and then select that one in the UI)
-			$('#layerlist tr.layer').removeClass("layersel");
-			$('#layerlist tr.layer:first').addClass("layersel");
+			$('#layerlist option:first').attr("selected", "selected");
 		}
 	});
 	
 	$('#layer_up').click(function() {
 		// find index position of selected option
-		var curIndex = $('#layerlist tr.layersel').prevAll().length;
+		var curIndex = $('#layerlist option:selected').prevAll().length;
 		if (curIndex > 0) {
-			var total = $('#layerlist tr.layer').length;
+			var total = $('#layerlist option').length;
 			curIndex--;
 			svgCanvas.setCurrentLayerPosition(total-curIndex-1);
 			populateLayers();
-			$('#layerlist tr.layer').removeClass("layersel");
-			$('#layerlist tr.layer:eq('+curIndex+')').addClass("layersel");
+			$('#layerlist option').removeAttr("selected");
+			$('#layerlist option:eq('+curIndex+')').attr("selected", "selected");
 		}
 	});
 
 	$('#layer_down').click(function() {
 		// find index position of selected option
-		var curIndex = $('#layerlist tr.layersel').prevAll().length;
-		var total = $('#layerlist tr.layer').length;
+		var curIndex = $('#layerlist option:selected').prevAll().length;
+		var total = $('#layerlist option').length;
 		if (curIndex < total-1) {
 			curIndex++;
 			svgCanvas.setCurrentLayerPosition(total-curIndex-1);
 			populateLayers();
-			$('#layerlist tr.layer').removeClass("layersel");
-			$('#layerlist tr.layer:eq('+curIndex+')').addClass("layersel");
+			$('#layerlist option').removeAttr("selected");
+			$('#layerlist option:eq('+curIndex+')').attr("selected", "selected");
 		}
 	});
 
 	$('#layer_rename').click(function() {
-		var curIndex = $('#layerlist tr.layersel').prevAll().length;
-		var oldName = $('#layerlist tr.layersel td.layername').text();
+		var curIndex = $('#layerlist option:selected').prevAll().length;
+		var oldName = $('#layerlist option:selected').attr("value");
 		var newName = prompt("Please enter the new layer name","");
 		if (!newName) return;
 		if (oldName == newName) {
@@ -1163,56 +1162,34 @@ function svg_edit_setup() {
 		
 		svgCanvas.renameCurrentLayer(newName);
 		populateLayers();
-		$('#layerlist tr.layer').removeClass("layersel");
-		$('#layerlist tr.layer:eq('+curIndex+')').addClass("layersel");
+		$('#layerlist option').removeAttr("selected");
+		$('#layerlist option:eq('+curIndex+')').attr("selected", "selected");
 	});
 
 	var populateLayers = function(){
-		var layerlist = $('#layerlist tbody');
-		layerlist.empty();
+		$('#layerlist').empty();
 		var layer = svgCanvas.getNumLayers();
 		// we get the layers in the reverse z-order (the layer rendered on top is listed first)
 		while (layer--) {
 			var name = svgCanvas.getLayer(layer);
-			// contenteditable=\"true\"
-			if (svgCanvas.getLayerVisibility(name)) {
-				layerlist.append("<tr class=\"layer\"><td class=\"layervis\"/><td class=\"layername\" >" + name + "</td></tr>");
-			}
-			else {
-				layerlist.append("<tr class=\"layer\"><td class=\"layervis layerinvis\"/><td class=\"layername\" >" + name + "</td></tr>");
-			}
+			$('#layerlist').append("<option value=\"" + name + "\">" + name + "</option>");
 		}
 		// if we only have one layer, then always make sure that layer is selected
 		// (This is really only required upon first initialization)
-		if (layerlist.size() == 1) {
-			$('#layerlist tr:first').addClass("layersel");
+		if ($('#layerlist').size() == 1) {
+			$('#layerlist option:first').attr("selected", "selected");
 		}
-		// handle selection of layer
-		$('#layerlist td.layername').click(function(evt){
-			$('#layerlist tr.layer').removeClass("layersel");
-			var row = $(this.parentNode);
-			row.addClass("layersel");
-			svgCanvas.setCurrentLayer(this.textContent);
+		$('#layerlist option').mouseup(function(evt){
+			$('#layerlist option').removeAttr("selected");
+			var option = $(this);
+			option.attr("selected", "selected");
+			svgCanvas.setCurrentLayer(option.attr("value"));
+		}).click(function(evt) {
+			var container = document.getElementById("layerlist");
+//			var mouse_x = evt.pageX - container.boxObject.x;
+//			var mouse_y = evt.pageY - container.boxObject.y;
+			// mouse_x, mouse_y contain the relative x,y position of the click
 		});
-		$('#layerlist td.layervis').click(function(evt){
-			var row = $(this.parentNode).prevAll().length;
-			var name = $('#layerlist tr.layer:eq(' + row + ') td.layername').text();
-			var vis = $(this).hasClass('layerinvis');
-			svgCanvas.setLayerVisibility(name, vis);
-			if (vis) {
-				$(this).removeClass('layerinvis');
-			}
-			else {
-				$(this).addClass('layerinvis');
-			}
-		});
-		
-		// if there were too few rows, let's add a few to make it not so lonely
-		var num = 5 - $('#layerlist tr.layer').size();
-		while (num-- > 0) {
-			// FIXME: there must a better way to do this
-			layerlist.append("<tr><td style=\"color:white\">_</td><td/></tr>");
-		}
 	};
 	populateLayers();
 
