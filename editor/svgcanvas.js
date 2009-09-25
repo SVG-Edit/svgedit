@@ -660,6 +660,7 @@ function BatchCommand(text) {
 	var current_poly_pts = [];
 	var current_poly_pt_drag = -1;
 	var current_poly_oldd = null;
+	var current_ctrl_pt_drag = -1;
 	var current_zoom = 1;
 	// this will hold all the currently selected elements
 	// default size of 1 until it needs to grow bigger
@@ -856,7 +857,7 @@ function BatchCommand(text) {
 	
 	var svgCanvasToString = function() {
 		removeUnusedGrads();
-		canvas.clearPoly();
+		canvas.clearPoly(true);
 		var output = svgToString(svgzoom, 0);
 		return output;
 	}
@@ -1628,9 +1629,11 @@ function BatchCommand(text) {
 				var id = evt.target.id;
 				if (id.substr(0,14) == "polypointgrip_") {
 					current_poly_pt_drag = parseInt(id.substr(14));
+				} else if(id.indexOf("ctrlpointgrip_") == 0) {
+					current_ctrl_pt_drag = id.split('_')[1];
 				}
 
-				if(current_poly_pt_drag == -1) {
+				if(current_poly_pt_drag == -1 && current_ctrl_pt_drag == -1) {
 					canvas.clearSelection();
 					canvas.setMode("multiselect");
 					if (rubberBox == null) {
@@ -1981,6 +1984,27 @@ function BatchCommand(text) {
 						grip.setAttribute("cx", mouse_x);
 						grip.setAttribute("cy", mouse_y);
 					}
+				} else if (current_ctrl_pt_drag != -1 && current_poly) {
+					// Moving the control point. Since only one segment is altered,
+					// we only need to do a pathSegList replace.
+					var data = current_ctrl_pt_drag.split('c');
+					var index = data[0]-0;
+					var ctrl_num = data[1]-0;
+					var c_item = current_poly.pathSegList.getItem(index+1);
+					c_item['x' + ctrl_num] = x;
+					c_item['y' + ctrl_num] = y;
+					var newCurve = current_poly.createSVGPathSegCurvetoCubicAbs(c_item.x,c_item.y, c_item.x1,c_item.y1, c_item.x2,c_item.y2);
+					current_poly.pathSegList.replaceItem(newCurve, index+1);
+
+					var grip = document.getElementById("ctrlpointgrip_" + current_ctrl_pt_drag);
+					if(grip) {
+						grip.setAttribute("cx", mouse_x);
+						grip.setAttribute("cy", mouse_y);
+						
+						var line = document.getElementById("ctrlLine_"+current_ctrl_pt_drag);
+						line.setAttribute("x2", mouse_x);
+						line.setAttribute("y2", mouse_y);
+					}
 				}
 				break;
 			case "rotate":
@@ -2001,8 +2025,13 @@ function BatchCommand(text) {
 		while(i--) {
 			document.getElementById("polypointgrip_"+i).setAttribute("display", "none");
 		}
+
 		var line = document.getElementById("poly_stretch_line");
 		if (line) line.setAttribute("display", "none");
+		
+		// Should this be only for individual control grips + lines?
+		var ctrlContainer = document.getElementById("ctrlpointgrip_container");
+		if(ctrlContainer) ctrlContainer.setAttribute("display", "none");
 	};
 
 	var addAllPointGripsToPoly = function() {
@@ -2062,6 +2091,42 @@ function BatchCommand(text) {
 			var grip = $('#polypointgrip_'+index);
 			grip.mouseover( function() { this.setAttribute("stroke", "#F00"); } );
 			grip.mouseout( function() {this.setAttribute("stroke", "#00F"); } );
+			grip.dblclick( function() {
+				// Toggle segment to curve/straight line
+				var type = current_poly.pathSegList.getItem(index+1).pathSegType;
+				var pt_index = index*2;
+				var cur_x = current_poly_pts[pt_index];
+				var cur_y = current_poly_pts[pt_index+1];
+				if(pt_index + 2 >= current_poly_pts.length) {
+					var next_x = current_poly_pts[0];
+					var next_y = current_poly_pts[1];
+				} else {
+					var next_x = current_poly_pts[pt_index+2];
+					var next_y = current_poly_pts[pt_index+3];
+				}
+
+				if(type != 6) {
+					// Change to CubicAbs curve
+
+					// Get points in between to set as default control points
+					var ct1_x = (next_y/-2 - cur_y/-2) + cur_x;
+					var ct1_y = (next_x/-2 - cur_x/-2) + cur_y;
+					var ct2_x = (next_y/-2 - cur_y/-2) + next_x;
+					var ct2_y = (next_x/-2 - cur_x/-2) + next_y;
+					
+					var newCurve = current_poly.createSVGPathSegCurvetoCubicAbs(next_x,next_y, ct1_x,ct1_y, ct2_x,ct2_y);
+					current_poly.pathSegList.replaceItem(newCurve, index+1);
+					
+					// Add the control points + lines
+					addControlPointGrip(ct1_x,ct1_y, cur_x,cur_y, index+'c1');
+					addControlPointGrip(ct2_x,ct2_y, next_x,next_y, index+'c2');
+				} else {
+					// Revert to absolute line (should probably be relative)
+					var newStraight = current_poly.createSVGPathSegLinetoAbs(next_x, next_y);
+					current_poly.pathSegList.replaceItem(newStraight, index+1);
+					removeControlPointGrips(index);
+				}
+			});
 		}
 
 		// set up the point grip element and display it
@@ -2071,6 +2136,66 @@ function BatchCommand(text) {
 			'display': "inline",
 		});
 	};
+	
+	var addControlPointGrip = function(x, y, source_x, source_y, id) {
+		// create the container of all the control point grips
+		var ctrlPointGripContainer = document.getElementById("ctrlpointgrip_container");
+		if (!ctrlPointGripContainer) {
+			var parent = document.getElementById("selectorParentGroup");
+			ctrlPointGripContainer = parent.appendChild(document.createElementNS(svgns, "g"));
+			ctrlPointGripContainer.id = "ctrlpointgrip_container";
+		}
+		
+		var ctrlLine = document.getElementById("ctrlLine_"+id);
+		if (!ctrlLine) {
+			ctrlLine = document.createElementNS(svgns, "line");
+			assignAttributes(ctrlLine, {
+				'id': "ctrlLine_"+id,
+				'stroke': "#555",
+				'stroke-width': 1,
+				"style": "pointer-events:none"
+			});
+			ctrlLine = ctrlPointGripContainer.appendChild(ctrlLine);
+		}
+		
+		assignAttributes(ctrlLine, {
+			'x1': source_x,
+			'y1': source_y,
+			'x2': x,
+			'y2': y,
+			'display': "inline"
+		});
+		
+		var pointGrip = document.getElementById("ctrlpointgrip_"+id);
+		// create it
+		if (!pointGrip) {
+			pointGrip = document.createElementNS(svgns, "circle");
+			assignAttributes(pointGrip, {
+				'id': "ctrlpointgrip_" + id,
+				'display': "none",
+				'r': 5,
+				'fill': "#AAA",
+				'stroke': "#55F",
+				'stroke-width': 1,
+				'cursor': 'move',
+				'style': 'pointer-events:all'
+			});
+			pointGrip = ctrlPointGripContainer.appendChild(pointGrip);
+		}
+		
+		assignAttributes(pointGrip, {
+			'cx': x,
+			'cy': y,
+			'display': "inline"
+		});
+	}
+
+	var removeControlPointGrips = function(index) {
+		for(var i=1; i <= 2; i++) {
+			document.getElementById("ctrlpointgrip_" + index + "c" + i).setAttribute("display", "none");
+			document.getElementById("ctrlLine_" + index + "c" + i).setAttribute("display", "none");
+		}
+	}
 
 	// - in create mode, the element's opacity is set properly, we create an InsertElementCommand
 	//   and store it on the Undo stack
@@ -2488,6 +2613,9 @@ function BatchCommand(text) {
 					// make these changes undo-able
 				} // if (current_poly_pt_drag != -1)
 				// else, move back to select mode
+				else if(current_ctrl_pt_drag != -1) {
+					current_ctrl_pt_drag = -1;
+				}
 				else {
 					current_mode = "select";
 					removeAllPointGripsFromPoly();
@@ -2882,8 +3010,8 @@ function BatchCommand(text) {
 		call("cleared");
 	};
 	
-	this.clearPoly = function() {
-		if(current_poly_pts.length > 0) {
+	this.clearPoly = function(remove) {
+		if(remove && current_poly_pts.length > 0) {
 			var elem = svgdoc.getElementById(getId());
 			if(elem) elem.parentNode.removeChild(elem);
 		}
