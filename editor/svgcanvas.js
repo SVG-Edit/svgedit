@@ -2049,6 +2049,27 @@ function BatchCommand(text) {
 			else {
 				addPointGripToPoly(current_poly_pts[i], current_poly_pts[i+1],i/2);
 			}
+			
+			var index = i/2;
+			var item = current_poly.pathSegList.getItem(index);
+			if(item.pathSegType == 6) {
+				index -= 1;
+				// Same code as when making a curve, needs to be in own function
+				var pt_index = index*2;
+				var cur_x = current_poly_pts[pt_index];
+				var cur_y = current_poly_pts[pt_index+1];
+				if(pt_index + 2 >= current_poly_pts.length) {
+					var next_x = current_poly_pts[0];
+					var next_y = current_poly_pts[1];
+				} else {
+					var next_x = current_poly_pts[pt_index+2];
+					var next_y = current_poly_pts[pt_index+3];
+				}
+				addControlPointGrip(item.x1,item.y1, cur_x,cur_y, index+'c1');
+				addControlPointGrip(item.x2,item.y2, next_x,next_y, index+'c2');
+			} else if(item.pathSegType == 7) {
+				// TODO: Make relative curve handles appear here
+			}
 		}
 		var pointGripContainer = document.getElementById("polypointgrip_container");
 		// FIXME:  we cannot just use the same transform as the poly because we might be 
@@ -2145,6 +2166,7 @@ function BatchCommand(text) {
 			ctrlPointGripContainer = parent.appendChild(document.createElementNS(svgns, "g"));
 			ctrlPointGripContainer.id = "ctrlpointgrip_container";
 		}
+		ctrlPointGripContainer.setAttribute("display", "inline");
 		
 		var ctrlLine = document.getElementById("ctrlLine_"+id);
 		if (!ctrlLine) {
@@ -2288,6 +2310,14 @@ function BatchCommand(text) {
 										curx += x;
 										cury += y;
 									} // type 5 (rel line)
+									else if (type == 6) {
+										curx = x;
+										cury = y;
+									} // type 6 (abs curve)
+									else if (type == 7) {
+										curx += x;
+										cury += y;
+									} // type 7 (rel curve)
 									current_poly_pts.push(curx * current_zoom);
 									current_poly_pts.push(cury * current_zoom);
 								} // for each segment
