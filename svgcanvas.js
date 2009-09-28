@@ -1383,8 +1383,9 @@ function BatchCommand(text) {
 	//   and do nothing else
 	var mouseDown = function(evt)
 	{
-		var mouse_x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
-		var mouse_y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
+		console.dir(container);
+		var mouse_x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft - container.offsetLeft;
+		var mouse_y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop - container.offsetTop;
 		
 		evt.preventDefault();
     
@@ -1670,8 +1671,8 @@ function BatchCommand(text) {
 	{
 		if (!started) return;
 		var selected = selectedElements[0];
-		var mouse_x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
-		var mouse_y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
+		var mouse_x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft - container.offsetLeft;
+		var mouse_y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop - container.offsetTop;
 		var shape = svgdoc.getElementById(getId());
     
     	x = mouse_x / current_zoom;
@@ -2231,8 +2232,8 @@ function BatchCommand(text) {
 		justSelected = null;
 		if (!started) return;
 
-		var mouse_x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft;
-		var mouse_y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop;
+		var mouse_x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft - container.offsetLeft;
+		var mouse_y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop - container.offsetTop;
 		var x = mouse_x / current_zoom;
 		var y = mouse_y / current_zoom;
 		
