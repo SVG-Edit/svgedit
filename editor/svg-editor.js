@@ -1221,12 +1221,8 @@ function svg_edit_setup() {
 		setResolution(x * zoom, y * zoom);
 	}
 	
-	function setResolution(w, h, center) {
-		w-=0; h-=0;
-		$('#svgcanvas').css( { 'width': w, 'height': h } );
-		$('#canvas_width').val(w);
-		$('#canvas_height').val(h);
-	
+	var centerCanvasIfNeeded = function() {
+		console.log('foo');
 		// this centers the canvas in the workarea if it's small enough
 		var wa = {w: parseInt($('#workarea').css('width')), 
 				  h: parseInt($('#workarea').css('height'))};
@@ -1238,6 +1234,17 @@ function svg_edit_setup() {
 		if (wa.h > ca.h) {
 			$('#svgcanvas').css({'top': (wa.h-ca.h)/2});
 		}
+	};
+	
+	$(window).resize( centerCanvasIfNeeded );
+	
+	function setResolution(w, h, center) {
+		w-=0; h-=0;
+		$('#svgcanvas').css( { 'width': w, 'height': h } );
+		$('#canvas_width').val(w);
+		$('#canvas_height').val(h);
+
+		centerCanvasIfNeeded();
 		
 		if(center) {
 			var w_area = $('#workarea');
