@@ -284,7 +284,7 @@ function BatchCommand(text) {
 							"attr": {
 								"id": ("selectorGrip_rotate_connector_" + this.id),
 								"stroke": "blue",
-								"stroke-width": "1",
+								"stroke-width": "1"
 							}
 						}) );
 		this.rotateGrip = this.selectorGroup.appendChild( addSvgElementFromJson({
@@ -294,7 +294,8 @@ function BatchCommand(text) {
 								"fill": "lime",
 								"r": 4,
 								"stroke": "blue",
-								"stroke-width": 2
+								"stroke-width": 2,
+								"style": "cursor:url(images/rotate.png) 12 12, auto;"
 							}
 						}) );
 		
