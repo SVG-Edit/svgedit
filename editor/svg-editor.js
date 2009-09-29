@@ -479,9 +479,15 @@ function svg_edit_setup() {
 			on_button = false;
 		});
 		
-		button.bind('mousedown mouseup',function() {
-			button.addClass('down');
-			list.show();
+		button.bind('mousedown',function() {
+			if (!button.hasClass('down')) {
+				button.addClass('down');
+				list.show();
+				on_button = true;
+			} else {
+				button.removeClass('down');
+				list.hide();
+			}
 		}).hover(function() {
 			on_button = true;
 		}).mouseout(function() {
