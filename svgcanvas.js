@@ -1949,6 +1949,7 @@ function BatchCommand(text) {
 					
 					// if the image is rotated, then we must modify the x,y mouse coordinates
 					// and rotate them into the shape's rotated coordinate system
+					// we also re-map mouse_x/y and x/y into the rotated coordinate system
 					var angle = canvas.getRotationAngle(current_poly) * Math.PI / 180.0;
 					if (angle) {
 						// calculate the shape's old center that was used for rotation
@@ -1960,6 +1961,8 @@ function BatchCommand(text) {
 						var theta = Math.atan2(dy,dx) - angle;						
 						current_poly_pts[i] = mouse_x = cx + r * Math.cos(theta);
 						current_poly_pts[i+1] = mouse_y = cy + r * Math.sin(theta);
+						x = mouse_x / current_zoom;
+						y = mouse_y / current_zoom;
 					}
 					else {
 						current_poly_pts[i] = x * current_zoom;
