@@ -1228,7 +1228,6 @@ function svg_edit_setup() {
 	}
 	
 	var centerCanvasIfNeeded = function() {
-		console.log('foo');
 		// this centers the canvas in the workarea if it's small enough
 		var wa = {w: parseInt($('#workarea').css('width')), 
 				  h: parseInt($('#workarea').css('height'))};
