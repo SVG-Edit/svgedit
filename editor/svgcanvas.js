@@ -2897,7 +2897,12 @@ function BatchCommand(text) {
 						current_layer = child;
 						walkTree(child, function(e){e.setAttribute("style", "pointer-events:none");});
 					}
+					// if group did not have a name, it is an orphan
+					else {
+						orphans.push(child);
+					}
 				}
+				// if child has a bbox (i.e. not a <title> element), then it is an orphan
 				else if(child.getBBox) {
 					orphans.push(child);
 				}
