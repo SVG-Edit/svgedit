@@ -1945,7 +1945,7 @@ function BatchCommand(text) {
 				if (current_poly_pt_drag != -1 && current_poly) {
 					var i = current_poly_pt_drag * 2;
 					
-					var old_poly_pts = $.map(current_poly_pts, function(n){return n;});
+					var old_poly_pts = $.map(current_poly_pts, function(n){return n/current_zoom;});
 					
 					// if the image is rotated, then we must modify the x,y mouse coordinates
 					// and rotate them into the shape's rotated coordinate system
@@ -1968,10 +1968,10 @@ function BatchCommand(text) {
 					
 					// reset the path's d attribute using current_poly_pts
 					var index = current_poly_pt_drag;
-					var node_x = (getPolyPoint(index)[0] - getPolyPoint(index-1)[0]) / current_zoom;
-					var node_y = (getPolyPoint(index)[1] - getPolyPoint(index-1)[1]) / current_zoom;
-					var next_x = getPolyPoint(index+1)[0] / current_zoom;
-					var next_y = getPolyPoint(index+1)[1] / current_zoom;
+					var node_x = (getPolyPoint(index)[0] - getPolyPoint(index-1)[0]);
+					var node_y = (getPolyPoint(index)[1] - getPolyPoint(index-1)[1]);
+					var next_x = getPolyPoint(index+1)[0];
+					var next_y = getPolyPoint(index+1)[1];
 					
 					var item = current_poly.pathSegList.getItem(index);
 					var next_index = index+1 >= (current_poly_pts/2).length ? 0 : index+1;
@@ -2041,9 +2041,9 @@ function BatchCommand(text) {
 						var id2 = (current_poly_pt_drag-1)+'c2';
 						var line = document.getElementById("ctrlLine_"+id2);
 						if(line) {
-							var x2 = line.getAttribute('x2') - 0 + x_diff;
-							var y2 = line.getAttribute('y2') - 0 + y_diff;
-							addControlPointGrip(x2,y2, mouse_x,mouse_y, id2);
+							var x2 = line.getAttribute('x2') - 0 + x_diff*current_zoom;
+							var y2 = line.getAttribute('y2') - 0 + y_diff*current_zoom;
+							addControlPointGrip(x2,y2, mouse_x,mouse_y, id2, true);
 						}
 					}
 					
@@ -2051,9 +2051,9 @@ function BatchCommand(text) {
 						var id1 = (current_poly_pt_drag)+'c1';
 						var line = document.getElementById("ctrlLine_"+id1);
 						if(line) {
-							var x2 = line.getAttribute('x2') - 0 + x_diff;
-							var y2 = line.getAttribute('y2') - 0 + y_diff;
-							addControlPointGrip(x2,y2, mouse_x,mouse_y, id1);
+							var x2 = line.getAttribute('x2') - 0 + x_diff*current_zoom;
+							var y2 = line.getAttribute('y2') - 0 + y_diff*current_zoom;
+							addControlPointGrip(x2,y2, mouse_x,mouse_y, id1, true);
 						}
 					}
 
@@ -2239,7 +2239,7 @@ function BatchCommand(text) {
 		});
 	};
 	
-	var getPolyPoint = function(index) {
+	var getPolyPoint = function(index, raw_val) {
 		var len = current_poly_pts.length;
 		var pt_num = len/2;
 		if(index < 0) {
@@ -2247,10 +2247,16 @@ function BatchCommand(text) {
 		} else if(index >= pt_num) {
 			index -= pt_num;
 		}
-		return [current_poly_pts[index*2], current_poly_pts[index*2 + 1]];
+		var z = raw_val?1:current_zoom;
+		return [current_poly_pts[index*2] / z, current_poly_pts[index*2 + 1] / z];
 	}
 	
-	var addControlPointGrip = function(x, y, source_x, source_y, id) {
+	var addControlPointGrip = function(x, y, source_x, source_y, id, raw_val) {
+		if(!raw_val) {
+			x *= current_zoom; y *= current_zoom;
+			source_x *= current_zoom; source_y *= current_zoom;
+		}
+	
 		// create the container of all the control point grips
 		var ctrlPointGripContainer = document.getElementById("ctrlpointgrip_container");
 		if (!ctrlPointGripContainer) {
@@ -2287,7 +2293,7 @@ function BatchCommand(text) {
 			assignAttributes(pointGrip, {
 				'id': "ctrlpointgrip_" + id,
 				'display': "none",
-				'r': 5,
+				'r': 4,
 				'fill': "#AAA",
 				'stroke': "#55F",
 				'stroke-width': 1,
@@ -3147,12 +3153,11 @@ function BatchCommand(text) {
 	};
 	
 	this.clearPoly = function(remove) {
-		if(remove && current_poly_pts.length > 0) {
+		if(remove && current_mode == 'poly') {
 			var elem = svgdoc.getElementById(getId());
 			if(elem) elem.parentNode.removeChild(elem);
 		}
 		removeAllPointGripsFromPoly();
-		current_poly = null;
 		current_poly_pts = [];
 	};
 
