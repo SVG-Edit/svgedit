@@ -1387,7 +1387,6 @@ function BatchCommand(text) {
 	//   and do nothing else
 	var mouseDown = function(evt)
 	{
-		console.dir(container);
 		var mouse_x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft - container.offsetLeft;
 		var mouse_y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop - container.offsetTop;
 		
@@ -2899,7 +2898,7 @@ function BatchCommand(text) {
 						walkTree(child, function(e){e.setAttribute("style", "pointer-events:none");});
 					}
 				}
-				else {
+				else if(child.getBBox) {
 					orphans.push(child);
 				}
 			}
