@@ -1788,16 +1788,17 @@ function BatchCommand(text) {
 				
 				var ts = null;
 				var tx = 0, ty = 0;
-				var sy = (height+dy)/height, sx = (width+dx)/width;
+				var sy = height ? (height+dy)/height : 1, 
+					sx = width ? (width+dx)/width : 1;
 				// if we are dragging on the north side, then adjust the scale factor and ty
 				if(current_resize_mode.indexOf("n") != -1) {
-					sy = (height-dy)/height;
+					sy = height ? (height-dy)/height : 1;
 					ty = height;
 				}
 				
 				// if we dragging on the east side, then adjust the scale factor and tx
 				if(current_resize_mode.indexOf("w") != -1) {
-					sx = (width-dx)/width;
+					sx = width ? (width-dx)/width : 1;
 					tx = width;
 				}
 				
