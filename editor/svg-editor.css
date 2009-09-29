@@ -300,7 +300,7 @@ span.zoom_tool {
 }
 
 #zoom_dropdown button {
-	background: transparent 3px 8px url('images/flyup.gif') no-repeat;
+	background: transparent 3px 8px url('images/dropdown.gif') no-repeat;
 	width: 15px;
 	height: 21px;
 	margin: 6px 0 0 3px;
