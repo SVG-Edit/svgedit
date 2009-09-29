@@ -2179,6 +2179,10 @@ function BatchCommand(text) {
 			grip.mouseover( function() { this.setAttribute("stroke", "#F00"); } );
 			grip.mouseout( function() {this.setAttribute("stroke", "#00F"); } );
 			grip.dblclick( function() {
+			
+				var batchCmd = new BatchCommand("Toggle Poly Segment Type");
+				var old_d = current_poly.getAttribute('d');
+				
 				// Toggle segment to curve/straight line
 				var type = current_poly.pathSegList.getItem(index+1).pathSegType;
 				var next_index = index+1;
@@ -2227,7 +2231,9 @@ function BatchCommand(text) {
 // 					console.log(2,current_poly.pathSegList.getItem(i));
 // 				}
 
-
+				batchCmd.addSubCommand(new ChangeElementCommand(current_poly, {d: old_d}));
+				addCommandToHistory(batchCmd);
+				call("changed", [current_poly]);
 			});
 		}
 
@@ -2752,6 +2758,10 @@ function BatchCommand(text) {
 				// else, move back to select mode
 				else if(current_ctrl_pt_drag != -1) {
 					current_ctrl_pt_drag = -1;
+					var batchCmd = new BatchCommand("Edit Poly control points");
+					batchCmd.addSubCommand(new ChangeElementCommand(current_poly, {d:current_poly_oldd}));
+					addCommandToHistory(batchCmd);
+					call("changed", [current_poly]);
 				}
 				else {
 					current_mode = "select";
