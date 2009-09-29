@@ -3910,7 +3910,7 @@ function BatchCommand(text) {
 	this.cycleElement = function(next) {
 		var cur_elem = selectedElements[0];
 		var elem = false;
-		var all_elems = this.getVisibleElements();
+		var all_elems = this.getVisibleElements(current_layer);
 		if (cur_elem == null) {
 			var num = next?all_elems.length-1:0;
 			elem = all_elems[num];
