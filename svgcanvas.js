@@ -444,10 +444,14 @@ function BatchCommand(text) {
 		var mgr = this;
 
 		this.initGroup = function() {
-			mgr.selectorParentGroup = addSvgElementFromJson({
-											"element": "g",
-											"attr": {"id": "selectorParentGroup"}
-										});
+			// remove old selector parent group if it existed
+			if (mgr.selectorParentGroup && mgr.selectorParentGroup.parentNode) {
+				mgr.selectorParentGroup.parentNode.removeChild(mgr.selectorParentGroup);
+			}
+			// create parent selector group and add it to svgroot
+			mgr.selectorParentGroup = svgdoc.createElementNS(svgns, "g");
+			mgr.selectorParentGroup.setAttribute("id", "selectorParentGroup");
+			svgroot.appendChild(mgr.selectorParentGroup);
 			mgr.selectorMap = {};
 			mgr.selectors = [];
 			mgr.rubberBandBox = null;
