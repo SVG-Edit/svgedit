@@ -2354,8 +2354,17 @@ function BatchCommand(text) {
 				});
 				return;
 			case "path":
-				var coordnum = element.getAttribute('points').split(',').length - 1;
-				keep = coordnum > 1;
+				// Check that the path contains at least 2 points; a degenerate one-point path
+				// causes problems.
+				// Webkit ignores how we set the points attribute with commas and uses space
+				// to separate all coordinates, see https://bugs.webkit.org/show_bug.cgi?id=29870
+				var coords = element.getAttribute('points');
+				var commaIndex = coords.indexOf(',');
+				if (commaIndex >= 0) {
+					keep = coords.indexOf(',', commaIndex+1) >= 0;
+				} else {
+					keep = coords.indexOf(' ', coords.indexOf(' ')+1) >= 0;
+				}
 				break;
 			case "line":
 				keep = (element.getAttribute('x1') != element.getAttribute('x2') ||
