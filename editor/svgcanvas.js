@@ -52,8 +52,11 @@ function ChangeElementCommand(elem, attrs, text) {
 				else this.elem.setAttribute(attr, this.newValues[attr]);
 			}
 			else {
-				if (attr != "#text") this.elem.textContent = "";
-				else this.elem.removeAttribute(attr);
+				if (attr == "#text") this.elem.textContent = "";
+				else {
+					this.elem.setAttribute(attr, "");
+					this.elem.removeAttribute(attr);
+				}
 			}
 			if (attr == "transform") { bChangedTransform = true; }
 		}
@@ -3853,6 +3856,7 @@ function BatchCommand(text) {
 			var gbox = g.getBBox(),
 				gx = gbox.x + gbox.width/2,
 				gy = gbox.y + gbox.height/2;
+			var gangle = canvas.getRotationAngle(g) * Math.PI / 180.0;
 			while (g.firstChild) {
 				var elem = g.firstChild;
 				var oldNextSibling = elem.nextSibling;
@@ -3860,19 +3864,30 @@ function BatchCommand(text) {
 				children[i++] = elem = parent.insertBefore(elem, anchor);
 				batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
 				if (xform) {
-					var angle = canvas.getRotationAngle(g) * Math.PI / 180.0;
 					var childBox = elem.getBBox();
 					var cx = childBox.x + childBox.width/2,
 						cy = childBox.y + childBox.height/2,
 						dx = cx - gx,
 						dy = cy - gy,
 						r = Math.sqrt(dx*dx + dy*dy);
-					angle += Math.atan2(dy,dx);
-					var newcx = r * Math.cos(angle) + gx,
-						newcy = r * Math.sin(angle) + gy;
+					var tangle = gangle + Math.atan2(dy,dx);
+					var newcx = r * Math.cos(tangle) + gx,
+						newcy = r * Math.sin(tangle) + gy;
 					childBox.x += (newcx - cx);
 					childBox.y += (newcy - cy);
-					elem.setAttribute("transform", xform);
+					// now we add the angle that the element was rotated by
+					// if it's non-zero, we need to set the new transform
+					// otherwise, we clear it
+					var angle = gangle + canvas.getRotationAngle(elem) * Math.PI / 180.0;
+					var changes = {};
+					changes["transform"] = elem.getAttribute("transform");
+					if (angle != 0) {
+						elem.setAttribute("transform", "rotate(" + (angle*180.0)/Math.PI + " " + cx + "," + cy + ")");
+					}
+					else {
+						elem.setAttribute("transform", "");
+					}
+					batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
 					batchCmd.addSubCommand(recalculateDimensions(elem, childBox));
 				}
 			}
@@ -4097,7 +4112,21 @@ function BatchCommand(text) {
 		var copyElem = function(el) {
 			// Manual clone function for Opera/Win/non-EN. 
 			// Needed because cloneNode changes "." to "," on float values
-			if(!window.opera) return el.cloneNode(true);
+			if(!window.opera) {
+				var newElem = el.cloneNode(true);
+				// Webkit has a bug where a cloned element's transforms become matrix()
+				// we need to replace those with the original element's transforms
+				// TODO: raise webkit bug
+				var origtlist = el.transform.baseVal,
+					newtlist = newElem.transform.baseVal;
+				while (newtlist.numberOfItems > 0) {
+					newtlist.removeItem(0);
+				}
+				for (var j = 0; j < origtlist.numberOfItems; ++j) {
+					newtlist.appendItem( origtlist.getItem(j) );
+				}
+				return newElem;
+			}
 			var new_el = document.createElementNS(svgns, el.nodeName);
 			$.each(el.attributes, function(i, attr) {
 				var ns = attr.nodeName == 'href'?xlinkns:null;
