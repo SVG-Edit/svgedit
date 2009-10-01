@@ -882,6 +882,7 @@ function BatchCommand(text) {
 			for (i=attrs.length-1; i>=0; i--) {
 				attr = attrs.item(i);
 				if (attr.nodeValue != "") {
+					if(attr.nodeValue.indexOf('pointer-events') == 0) continue;
 					out.push(" "); 
 					// map various namespaces to our fixed namespace prefixes
 					// TODO: put this into a map and do a look-up instead of if-else
@@ -1947,7 +1948,6 @@ function BatchCommand(text) {
 				// if we are dragging a point, let's move it
 				if (current_poly_pt_drag != -1 && current_poly) {
 					var i = current_poly_pt_drag * 2;
-					
 					var old_poly_pts = $.map(current_poly_pts, function(n){return n/current_zoom;});
 					
 					// if the image is rotated, then we must modify the x,y mouse coordinates
@@ -1980,7 +1980,8 @@ function BatchCommand(text) {
 					var next_y = getPolyPoint(index+1)[1];
 					
 					var item = current_poly.pathSegList.getItem(index);
-					var next_index = index+1 >= (current_poly_pts/2).length ? 0 : index+1;
+					var next_index = index+1; // This currently only works for closed paths
+
 					var next_item = current_poly.pathSegList.getItem(next_index);
 					var x_diff = x - old_poly_pts[index*2];
 					var y_diff = y - old_poly_pts[index*2 + 1];
