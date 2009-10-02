@@ -3125,19 +3125,7 @@ function BatchCommand(text) {
 	
 	// used internally
 	var getLayerName = function(g) {
-		var name = "";
-		if (g && g.tagName == "g") {
-			var len = g.childNodes.length;
-			for (var i = 0; i < len; ++i) {
-				var child = g.childNodes.item(i);
-				// found the <title> element, now append all the
-				if (child && child.tagName == "title") {
-					name = child.textContent;
-					break;
-				}
-			}
-		}
-		return name;
+    return $(g,"title").text();
 	};
 
 	this.clear = function() {
