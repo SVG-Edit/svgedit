@@ -1098,8 +1098,7 @@ function svg_edit_setup() {
 	$('#layer_new').click(function() {
 		var curNames = new Array(svgCanvas.getNumLayers());
 		for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getLayer(i); }
-	
-		var newName = prompt("Please enter a unique layer name","");
+		var newName = prompt("Please enter a unique layer name","Layer "+(curNames.length+1));
 		if (!newName) return;
 		if (jQuery.inArray(newName, curNames) != -1) {
 			alert("There is already a layer named that!");
