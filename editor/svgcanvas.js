@@ -3572,6 +3572,11 @@ function BatchCommand(text) {
 			var xform = tlist.getItem(t);
 			if (xform.type == 4) {
 				return xform.angle;
+			} else if (xform.type == 1) {
+				// Matrix transformation. Extract the rotation. (for Webkit)
+				var angle = Math.round( Math.acos(xform.matrix.a) * 180.0 / Math.PI );
+				if (xform.matrix.b < 0) angle = -angle;
+				return angle;
 			}
 		}
 		return 0;
