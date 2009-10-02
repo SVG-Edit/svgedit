@@ -32,6 +32,10 @@ var svgWhiteList = {
 function SvgCanvas(c)
 {
 
+var pathFuncsStrs = ['Moveto','Lineto','CurvetoCubic','CurvetoQuadratic','Arc','LinetoHorizontal','LinetoVertical','CurvetoCubicSmooth','CurvetoQuadraticSmooth']
+var pathFuncs = [0,'ClosePath'];
+$.each(pathFuncsStrs,function(i,s){pathFuncs.push(s+'Abs');pathFuncs.push(s+'Rel');});
+
 // These command objects are used for the Undo/Redo stack
 // attrs contains the values that the attributes had before the change
 function ChangeElementCommand(elem, attrs, text) {
@@ -1950,6 +1954,9 @@ function BatchCommand(text) {
 					var i = current_poly_pt_drag * 2;
 					var old_poly_pts = $.map(current_poly_pts, function(n){return n/current_zoom;});
 					
+					var last_index = current_poly_pts.length/2 - 1;
+					var is_first = current_poly_pt_drag == 0 || (current_poly_pt_drag == last_index);
+					
 					// if the image is rotated, then we must modify the x,y mouse coordinates
 					// and rotate them into the shape's rotated coordinate system
 					// we also re-map mouse_x/y and x/y into the rotated coordinate system
@@ -1972,50 +1979,76 @@ function BatchCommand(text) {
 						current_poly_pts[i+1] = y * current_zoom;
 					}
 					
+					if(is_first) {
+						// Update the first point
+						current_poly_pts[0] = current_poly_pts[i];
+						current_poly_pts[1] = current_poly_pts[i+1];
+						current_poly_pt_drag = 0;
+					}
+
 					// reset the path's d attribute using current_poly_pts
 					var index = current_poly_pt_drag;
-					var node_x = (getPolyPoint(index)[0] - getPolyPoint(index-1)[0]);
-					var node_y = (getPolyPoint(index)[1] - getPolyPoint(index-1)[1]);
-					var next_x = getPolyPoint(index+1)[0];
-					var next_y = getPolyPoint(index+1)[1];
+					var rel_x = (getPolyPoint(index)[0] - getPolyPoint(index-1)[0]);
+					var rel_y = (getPolyPoint(index)[1] - getPolyPoint(index-1)[1]);
 					
 					var item = current_poly.pathSegList.getItem(index);
-					var next_index = index+1; // This currently only works for closed paths
-
-					var next_item = current_poly.pathSegList.getItem(next_index);
 					var x_diff = x - old_poly_pts[index*2];
 					var y_diff = y - old_poly_pts[index*2 + 1];
-					var newSeg = null;
 
 // 					console.log('index',index);
 // 					console.log('item.pathSegType',item.pathSegType);
 // 					console.log('nextitem.pathSegType',next_item.pathSegType);
 					
-					if(item.pathSegType == 7) {
-						newSeg = current_poly.createSVGPathSegCurvetoCubicRel(node_x,node_y, item.x1,item.y1, item.x2 + x_diff,item.y2 + y_diff);
+					var cur_type = item.pathSegType;
+					var points = [];
+					
+					if(cur_type == 7) {
+						points = [rel_x,rel_y, item.x1,item.y1, item.x2 + x_diff,item.y2 + y_diff];
 					} else {
-						if(index == 0) {
-							newSeg = current_poly.createSVGPathSegMovetoAbs(current_poly_pts[0]/current_zoom, current_poly_pts[1]/current_zoom);
+						if(is_first) {
+							// Need absolute position for first point
+							points = getPolyPoint(0);
 						} else {
-							newSeg = current_poly.createSVGPathSegLinetoRel(node_x, node_y);
+							points = [rel_x, rel_y];
 						}
 					}
-					current_poly.pathSegList.replaceItem(newSeg, index);
-					
-					switch (next_item.pathSegType) {
-					case 1:
-						newSeg = current_poly.createSVGPathSegClosePath();
-						break;
-					case 5:
-						newSeg = current_poly.createSVGPathSegLinetoRel(next_item.x - x_diff, next_item.y - y_diff);
-						break;
-					case 7:
-						newSeg = current_poly.createSVGPathSegCurvetoCubicRel(next_item.x - x_diff,next_item.y - y_diff, next_item.x1,next_item.y1, next_item.x2 - x_diff,next_item.y2 - y_diff);
-						break;
-					default:
-						break;
+					replacePathSeg(cur_type, index, points);
+
+					var setSeg = function(index,first) {
+						var points, item = current_poly.pathSegList.getItem(index);
+						var type = item.pathSegType;
+						if(first) {
+							x_diff *= -1;
+							y_diff *= -1;
+						}
+
+						var end_x = item.x - x_diff;
+						var end_y = item.y - y_diff;
+
+						switch (type) {
+						case 1:
+							points = [];
+							break;
+						case 5:
+							points = [end_x, end_y];
+							break;
+						case 7:
+							points = [end_x, end_y, item.x1,item.y1, item.x2 - x_diff,item.y2 - y_diff];
+							break;
+						default:
+							break;
+						}
+						replacePathSeg(type, index, points);
+						return type;
 					}
-					current_poly.pathSegList.replaceItem(newSeg, next_index);
+					
+					var next_type = setSeg(index+1);
+					
+					if(is_first) {
+						var last_type = setSeg(last_index,1);
+						x_diff *= -1;
+						y_diff *= -1;
+					}
 						
 					// Original method: Re-calculate the "d" attribute
 // 					var oldd = current_poly.getAttribute("d");
@@ -2042,10 +2075,20 @@ function BatchCommand(text) {
 					if (grip) {
 						grip.setAttribute("cx", mouse_x);
 						grip.setAttribute("cy", mouse_y);
+						
+						if(is_first) {
+							var grip = document.getElementById("polypointgrip_" + last_index);
+							grip.setAttribute("cx", mouse_x);
+							grip.setAttribute("cy", mouse_y);
+						}
 					}
 					
-					if(item.pathSegType != 5) {
-						var id2 = (current_poly_pt_drag-1)+'c2';
+					// move the control grips + lines
+					if(is_first) cur_type = last_type;
+					
+					if(cur_type != 5) {
+						var num = is_first?last_index:index;
+						var id2 = (num-1)+'c2';
 						var line = document.getElementById("ctrlLine_"+id2);
 						if(line) {
 							var x2 = line.getAttribute('x2') - 0 + x_diff*current_zoom;
@@ -2054,7 +2097,7 @@ function BatchCommand(text) {
 						}
 					}
 					
-					if(next_item.pathSegType != 5) {
+					if(next_type != 5) {
 						var id1 = (current_poly_pt_drag)+'c1';
 						var line = document.getElementById("ctrlLine_"+id1);
 						if(line) {
@@ -2074,8 +2117,7 @@ function BatchCommand(text) {
 					
 					c_item['x' + ctrl_num] = x - getPolyPoint(index)[0];
 					c_item['y' + ctrl_num] = y - getPolyPoint(index)[1];
-					var newCurve = current_poly.createSVGPathSegCurvetoCubicRel(c_item.x,c_item.y, c_item.x1,c_item.y1, c_item.x2,c_item.y2);
-					current_poly.pathSegList.replaceItem(newCurve, index+1);
+					replacePathSeg(7, index+1, [c_item.x,c_item.y, c_item.x1,c_item.y1, c_item.x2,c_item.y2]);
 
 					var grip = document.getElementById("ctrlpointgrip_" + current_ctrl_pt_drag);
 					if(grip) {
@@ -2190,6 +2232,12 @@ function BatchCommand(text) {
 				var batchCmd = new BatchCommand("Toggle Poly Segment Type");
 				var old_d = current_poly.getAttribute('d');
 				
+				
+				var last_index = current_poly_pts.length/2 - 1;
+				if(index == last_index) {
+					index = 0;
+				}
+				
 				// Toggle segment to curve/straight line
 				var type = current_poly.pathSegList.getItem(index+1).pathSegType;
 				var next_index = index+1;
@@ -2199,9 +2247,7 @@ function BatchCommand(text) {
 				var next_x = getPolyPoint(next_index)[0];
 				var next_y = getPolyPoint(next_index)[1];
 				
-// 				for(var i=0; i<current_poly.pathSegList.numberOfItems; i++) {
-// 					console.log(1,current_poly.pathSegList.getItem(i));
-// 				}
+				console.log(getPolyPoint(0,true)[0], getPolyPoint(0,true)[1]);
 
 				var next_rel_x = next_x - cur_x;
 				var next_rel_y = next_y - cur_y;
@@ -2214,29 +2260,16 @@ function BatchCommand(text) {
 					var ct2_x = (next_y/-2 - cur_y/-2);
 					var ct2_y = (next_x/-2 - cur_x/-2);
 
-					var newCurve = current_poly.createSVGPathSegCurvetoCubicRel(next_rel_x,next_rel_y, ct1_x,ct1_y, ct2_x+next_rel_x,ct2_y+next_rel_y);
-					// TODO: Currently this will replace the ClosePath segment 
-					// if the last node is double-clicked. This causes bugs when moving nodes
-					current_poly.pathSegList.replaceItem(newCurve, next_index);
-					
-					if(type == 1) {
-						var d = current_poly.getAttribute('d');
-						current_poly.setAttribute('d',d + 'z');
-					}
+					replacePathSeg(7, next_index, [next_rel_x,next_rel_y, ct1_x,ct1_y, ct2_x+next_rel_x,ct2_y+next_rel_y]);
 					
 					// Add the control points + lines
 					addControlPointGrip(ct1_x+cur_x,ct1_y+cur_y, cur_x,cur_y, index+'c1');
 					addControlPointGrip(ct2_x+next_x,ct2_y+next_y, next_x,next_y, index+'c2');
 				} else {
 					// Revert to relative line
-					var newStraight = current_poly.createSVGPathSegLinetoRel(next_rel_x, next_rel_y);
-					current_poly.pathSegList.replaceItem(newStraight, next_index);
+					replacePathSeg(5, next_index, [next_rel_x,next_rel_y]);
 					removeControlPointGrips(index);
 				}
-				
-// 				for(var i=0; i<current_poly.pathSegList.numberOfItems; i++) {
-// 					console.log(2,current_poly.pathSegList.getItem(i));
-// 				}
 
 				batchCmd.addSubCommand(new ChangeElementCommand(current_poly, {d: old_d}));
 				addCommandToHistory(batchCmd);
@@ -2262,6 +2295,13 @@ function BatchCommand(text) {
 		}
 		var z = raw_val?1:current_zoom;
 		return [current_poly_pts[index*2] / z, current_poly_pts[index*2 + 1] / z];
+	}
+	
+	// This replaces the segment at the given index. Type is given as number.
+	var replacePathSeg = function(type, index, pts) {
+		var poly = current_poly, func = 'createSVGPathSeg' + pathFuncs[type];
+		var seg = poly[func].apply(poly, pts);
+		poly.pathSegList.replaceItem(seg, index);
 	}
 	
 	var addControlPointGrip = function(x, y, source_x, source_y, id, raw_val) {
@@ -2611,7 +2651,7 @@ function BatchCommand(text) {
 					
 					// get poly element that we are in the process of creating
 					var poly = svgdoc.getElementById(getId());
-
+					var len = current_poly_pts.length;
 					// if we clicked on an existing point, then we are done this poly, commit it
 					// (i,i+1) are the x,y that were clicked on
 					if (clickOnPoint) {
@@ -2619,9 +2659,13 @@ function BatchCommand(text) {
 						// the first point was clicked on and there are less than 3 points
 						// then leave the poly open
 						// otherwise, close the poly
-						if (i == 0 && current_poly_pts.length >= 6) {
-							poly.setAttribute("d", d_attr + "z");
-						} else if(current_poly_pts.length < 3) {
+						if (i == 0 && len >= 6) {
+							// Create end segment
+							var rel_x = (getPolyPoint(0)[0] - getPolyPoint(-1)[0]);
+							var rel_y = (getPolyPoint(0)[1] - getPolyPoint(-1)[1]);
+							d_attr += ['l',rel_x,',',rel_y,'z'].join('');
+							poly.setAttribute("d", d_attr);
+						} else if(len < 3) {
 							keep = false;
 							break;
 						}
@@ -2633,7 +2677,6 @@ function BatchCommand(text) {
 					}
 					// else, create a new point, append to pts array, update path element
 					else {
-						var len = current_poly_pts.length;
 						var lastx = current_poly_pts[len-2], lasty = current_poly_pts[len-1];
 						// we store absolute values in our poly points array for easy checking above
 						current_poly_pts.push(x);
@@ -2760,16 +2803,19 @@ function BatchCommand(text) {
 					addCommandToHistory(batchCmd);
 					call("changed", [current_poly]);
 					
+					// If connected, last point should equal first
+					current_poly_pts[current_poly_pts.length-2] = getPolyPoint(0,true)[0];
+					current_poly_pts[current_poly_pts.length-1] = getPolyPoint(0,true)[1];
+					
 					// make these changes undo-able
 				} // if (current_poly_pt_drag != -1)
-				// else, move back to select mode
 				else if(current_ctrl_pt_drag != -1) {
 					current_ctrl_pt_drag = -1;
 					var batchCmd = new BatchCommand("Edit Poly control points");
 					batchCmd.addSubCommand(new ChangeElementCommand(current_poly, {d:current_poly_oldd}));
 					addCommandToHistory(batchCmd);
 					call("changed", [current_poly]);
-				}
+				} 	// else, move back to select mode
 				else {
 					current_mode = "select";
 					removeAllPointGripsFromPoly();
