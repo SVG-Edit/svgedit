@@ -38,4 +38,3 @@ var put_locale = function(){
 	},"json");
 };//function end
 
-put_locale();
