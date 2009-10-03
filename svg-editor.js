@@ -1301,6 +1301,7 @@ function svg_edit_setup() {
 
 // This happens when the page is loaded
 $(function() {
+	put_locale();
 	svgCanvas = svg_edit_setup();
 	
 	try{
