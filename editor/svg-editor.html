@@ -15,6 +15,9 @@
 <script type="text/javascript" src="spinbtn/JQuerySpinBtn.js"></script>
 <script type="text/javascript" src="svgcanvas.js"></script>
 <script type="text/javascript" src="svg-editor.js"></script>
+<script type="text/javascript" src="locale/locale.js"></script>
+
+
 <!-- Release version of script tags: >
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
 <script type="text/javascript" src="js-hotkeys/jquery.hotkeys-0.7.9.js"></script>
@@ -22,7 +25,8 @@
 <script type="text/javascript" src="spinbtn/JQuerySpinBtn.min.js"></script>
 <script type="text/javascript" src="svgcanvas.min.js"></script>
 <script type="text/javascript" src="svg-editor.min.js"></script>
--->
+script type="text/javascript" src="locale/locale.min.js"></script-->
+
 
 <!-- always minified scripts -->
 <script type="text/javascript" src="jquery-ui/jquery-ui-1.7.2.custom.min.js"></script>
@@ -46,7 +50,7 @@
 
 <div id="sidepanels">
 	<div id="layerpanel">
-		<h3>Layers</h3>
+		<h3 id="layersLable">Layers</h3>
 		<fieldset id="layerbuttons">
 			<img id="layer_new" class="layer_button" src="images/clear.png" alt="New Layer" title="New Layer"/>
 			<img id="layer_delete" class="layer_button" src="images/delete.png" alt="Delete Layer" title="Delete Layer"/>
@@ -110,7 +114,7 @@
 			<option value="0.1">10 %</option>
 			<option value="0">0 %</option>
 		</select>
-		<span class="selected_tool">angle:</span>
+		<span id="angleLabel" class="selected_tool">angle:</span>
 		<input id="angle" class="selected_tool" title="Change rotation angle" size="2" value="0" type="text"/>
 	</div>
 
@@ -126,12 +130,12 @@
 		<div class="tool_button" id="tool_aligntop" title="Align Top"></div>
 		<div class="tool_button" id="tool_alignmiddle" title="Align Middle"></div>
 		<div class="tool_button" id="tool_alignbottom" title="Align Bottom"></div>
-		<span class="selected_tool">relative to:</span>
+		<span id="relativeToLabel" class="selected_tool">relative to:</span>
 		<select id="align_relative_to" class="selected_tool" title="Align relative to ...">
-		<option value="selected">selected objects</option>
-		<option value="largest">largest object</option>
-		<option value="smallest">smallest object</option>
-		<option value="page">page</option>
+		<option id="selected_objects" value="selected">selected objects</option>
+		<option id="largest_object" value="largest">largest object</option>
+		<option id="smallest_object" value="smallest">smallest object</option>
+		<option id="page" value="page">page</option>
 		</select>
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<img class="tool_button" id="tool_group" src="images/shape_group.png" title="Group Elements [G]" alt="Group"/>
@@ -148,11 +152,11 @@
 		<input id="rect_x" class="rect_tool attr_changer" title="Change rectangle X coordinate" size="3" data-attr="x"/>
 		<label class="rect_tool">y:</label>
 		<input id="rect_y" class="rect_tool attr_changer" title="Change rectangle Y coordinate" size="3" data-attr="y"/>
-		<label class="rect_tool">width:</label>
+		<label id="rwidthLabel" class="rect_tool">width:</label>
 		<input id="rect_width" class="rect_tool attr_changer" title="Change rectangle width" size="3" data-attr="width"/>
-		<label class="rect_tool">height:</label>
+		<label id="rheightLabel" class="rect_tool">height:</label>
 		<input id="rect_height" class="rect_tool attr_changer" title="Change rectangle height" size="3" data-attr="height"/>
-		<label class="rect_tool">Corner Radius:</label>
+		<label id="cornerRadiusLabel" class="rect_tool">Corner Radius:</label>
 		<input id="rect_rx" size="3" value="0" class="rect_tool" type="text" title="Change Rectangle Corner Radius" data-attr="Corner Radius"/>
 	</div>
 
@@ -162,9 +166,9 @@
 		<input id="image_x" class="image_tool attr_changer" title="Change image X coordinate" size="3" data-attr="x"/>
 		<label class="image_tool">y:</label>
 		<input id="image_y" class="image_tool attr_changer" title="Change image Y coordinate" size="3" data-attr="y"/>
-		<label class="image_tool">width:</label>
+		<label id="iwidthLabel" class="image_tool">width:</label>
 		<input id="image_width" class="image_tool attr_changer" title="Change image width" size="3" data-attr="width"/>
-		<label class="image_tool">height:</label>
+		<label id="iheightLabel" class="image_tool">height:</label>
 		<input id="image_height" class="image_tool attr_changer" title="Change image height" size="3" data-attr="height"/>
     <label class="image_tool">url:</label>
     <input id="image_url" class="image_tool" type="text" title="Change URL" size="35"/>
@@ -258,16 +262,16 @@
 
     <!-- Zoom buttons -->
 	<div id="zoom_panel">
-		<span class="zoom_tool">zoom:</span>
+		<span id="zoomLabel" class="zoom_tool">zoom:</span>
 		<input id="zoom" class="zoom_tool" title="Change zoom level" size="3" value="100" type="text" />
 		<div id="zoom_dropdown">
 			<button></button>
 			<ul>
 				<li>100%</li>
-				<li data-val="content">Fit to all content</li>
-				<li data-val="layer">Fit to layer content</li>
-				<li data-val="selection">Fit to selection</li>
-				<li data-val="canvas">Fit to canvas</li>
+				<li id="fit_to_all" data-val="content">Fit to all content</li>
+				<li id="fit_to_layer_content" data-val="layer">Fit to layer content</li>
+				<li id="fit_to_sel" data-val="selection">Fit to selection</li>
+				<li id="fit_to_canvas" data-val="canvas">Fit to canvas</li>
 				<li>25%</li>
 				<li>50%</li>
 				<li>100%</li>
@@ -282,11 +286,11 @@
 	<div id="tools_bottom_2">
 		<table>
 		<tr>
-			<td>fill:</td>
+			<td id="fill_tool_bottom">fill:</td>
 			<td><div id="fill_color" class="color_block"  title="Change fill color"></div></td>
 			<td colspan="3"><div id="fill_opacity">100%</div></td>
 		</tr><tr>
-			<td>stroke:</td>
+			<td id="stroke_tool_bottom">stroke:</td>
 			<td><div id="stroke_color" class="color_block" title="Change stroke color"></div></td>
 			<td><div id="stroke_opacity">100 %</div></td>
 			<td>
@@ -349,26 +353,26 @@
 			<button id="tool_docprops_cancel">Cancel</button>
 
 			<fieldset id="change_background">
-				<legend>Canvas Background</legend>
+				<legend id="svninfo_change_background">Canvas Background</legend>
 					<div id="bkgnd_color" class="color_block"  title="Change background color/opacity"></div>
 			</fieldset>
 			
 			<fieldset id="change_resolution">
-				<legend>Canvas Dimensions</legend>
+				<legend id="svninfo_dim">Canvas Dimensions</legend>
 
-				<label>Width: <input type="text" id="canvas_width" size="6"></label>
+				<label id="svginfo_width">Width: </label><input type="text" id="canvas_width" size="6">
 					
-				<label>Height: <input type="text" id="canvas_height" size="6"></label>
+				<label id="svginfo_height">Height: </label><input type="text" id="canvas_height" size="6">
 					
 				<label>
 					<select id="resolution">
-						<option selected="selected">Select predefined:</option>
+						<option id="selectedPredefined" selected="selected">Select predefined:</option>
 						<option>640x480</option>
 						<option>800x600</option>
 						<option>1024x768</option>
 						<option>1280x960</option>
 						<option>1600x1200</option>
-						<option value="content">Fit to Content</option>
+						<option id="fitToContent" value="content">Fit to Content</option>
 					</select>
 				</label>
 				
