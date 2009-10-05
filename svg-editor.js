@@ -51,11 +51,13 @@ function svg_edit_setup() {
 			// unless we're already in always set the mode of the editor to select because
 			// upon creation of a text element the editor is switched into
 			// select mode and this event fires - we need our UI to be in sync
-			if (svgCanvas.getMode() != "multiselect") {
+			
+			var is_node = selectedElement.id && selectedElement.id.indexOf('polypointgrip') == 0;
+			
+			if (svgCanvas.getMode() != "multiselect" && !is_node) {
 				setSelectMode();
 			}
-
-			updateToolbar();
+			
 		} // if (elem != null)
 
 		updateContextPanel(); 
@@ -196,10 +198,23 @@ function svg_edit_setup() {
 		}
 		
 		$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,\
-			#ellipse_panel, #line_panel, #text_panel, #image_panel').hide();
+			#ellipse_panel, #line_panel, #text_panel, #image_panel, #poly_node_panel').hide();
 		if (elem != null) {
 			$('#angle').val(svgCanvas.getRotationAngle(elem));
-			$('#selected_panel').show();
+
+			var is_node = (elem.id && elem.id.indexOf('polypointgrip') == 0);
+
+			if(!is_node) {
+				$('#selected_panel').show();
+			} else {
+				$('#poly_node_panel').show();
+				var point = svgCanvas.getNodePoint();
+				if(point) {
+					$('#poly_node_x').val(point[0]);
+					$('#poly_node_y').val(point[1]);
+				}
+				return;
+			}
 			
 			// update contextual tools here
 			var panels = {
@@ -370,7 +385,6 @@ function svg_edit_setup() {
 			this.value = selectedElement.getAttribute(attr);
 			return false;
 		} 
-		
 		svgCanvas.changeSelectedAttribute(attr, val);
 	});
 	
