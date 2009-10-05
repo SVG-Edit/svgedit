@@ -3843,7 +3843,7 @@ function BatchCommand(text) {
 			var elem = elems[i];
 			if (elem == null) continue;
 			// only allow the transform attribute to change on <g> elements, slightly hacky
-			if (elem.tagName == "g" && attr != "transform") continue;
+			if (elem.tagName == "g" && attr == "transform") continue;
 			var oldval = attr == "#text" ? elem.textContent : elem.getAttribute(attr);
 			if (oldval == null)  oldval = "";
 			if (oldval != newValue) {
