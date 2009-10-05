@@ -206,39 +206,16 @@ div.color_block {
 	display: inline-block;
 }
 
-#svg_editor #selected_panel {
-	display: none;
-}
-
-#svg_editor #multiselected_panel {
-	display: none;
-}
-
-#svg_editor #g_panel {
-	display: none;
-}
-
-#svg_editor #rect_panel {
-	display: none;
-}
-
-#svg_editor #circle_panel {
-	display: none;
-}
-
-#svg_editor #ellipse_panel {
-	display: none;
-}
-
-#svg_editor #line_panel {
-	display: none;
-}
-
-#svg_editor #image_panel {
-	display: none;
-}
-
-#svg_editor #text_panel {
+#svg_editor #selected_panel,
+#svg_editor #multiselected_panel,
+#svg_editor #g_panel,
+#svg_editor #rect_panel,
+#svg_editor #circle_panel,
+#svg_editor #ellipse_panel,
+#svg_editor #line_panel,
+#svg_editor #image_panel,
+#svg_editor #text_panel,
+#svg_editor #poly_node_panel {
 	display: none;
 }
 
@@ -249,28 +226,15 @@ div.color_block {
 #svg_editor #multiselected_panel .selected_tool {
 	vertical-align: 12px;
 }
-
-#svg_editor #text_panel .text_tool {
-	vertical-align: 12px;
-}
-
-#svg_editor #rect_panel .rect_tool {
-	vertical-align: 12px;
-}
-
-#svg_editor #image_panel .image_tool {
-	vertical-align: 12px;
-}
-
-#svg_editor #circle_panel .circle_tool {
-	vertical-align:12px;
-}
-
-#svg_editor #ellipse_panel .ellipse_tool {
-	vertical-align:12px;
-}
-
-#svg_editor #line_panel .line_tool {
+#svg_editor #selected_panel .selected_tool,
+#svg_editor #multiselected_panel .selected_tool,
+#svg_editor #text_panel .text_tool,
+#svg_editor #rect_panel .rect_tool,
+#svg_editor #image_panel .image_tool,
+#svg_editor #circle_panel .circle_tool,
+#svg_editor #ellipse_panel .ellipse_tool,
+#svg_editor #line_panel .line_tool,
+#svg_editor #poly_node_panel .poly_node_tool {
 	vertical-align:12px;
 }
 

@@ -677,6 +677,7 @@ function BatchCommand(text) {
 	var freehand_max_y = null;
 	var current_poly = null;
 	var current_poly_pts = [];
+	var current_poly_pt = -1;
 	var current_poly_pt_drag = -1;
 	var current_poly_oldd = null;
 	var current_ctrl_pt_drag = -1;
@@ -1648,7 +1649,11 @@ function BatchCommand(text) {
 				current_poly_oldd = current_poly.getAttribute("d");
 				var id = evt.target.id;
 				if (id.substr(0,14) == "polypointgrip_") {
-					current_poly_pt_drag = parseInt(id.substr(14));
+					// Select this point
+					current_poly_pt = current_poly_pt_drag = parseInt(id.substr(14));
+					$('#polypointgrip_container circle').attr('fill','#0F0');
+					$(evt.target).attr('fill','blue');
+					call("selected", [evt.target]);
 				} else if(id.indexOf("ctrlpointgrip_") == 0) {
 					current_ctrl_pt_drag = id.split('_')[1];
 				}
@@ -1958,162 +1963,8 @@ function BatchCommand(text) {
 			case "polyedit":
 				// if we are dragging a point, let's move it
 				if (current_poly_pt_drag != -1 && current_poly) {
-					var i = current_poly_pt_drag * 2;
 					var old_poly_pts = $.map(current_poly_pts, function(n){return n/current_zoom;});
-					
-					var last_index = current_poly_pts.length/2 - 1;
-					var is_first = current_poly_pt_drag == 0 || (current_poly_pt_drag == last_index);
-					
-					// if the image is rotated, then we must modify the x,y mouse coordinates
-					// and rotate them into the shape's rotated coordinate system
-					// we also re-map mouse_x/y and x/y into the rotated coordinate system
-					var angle = canvas.getRotationAngle(current_poly) * Math.PI / 180.0;
-					if (angle) {
-						// calculate the shape's old center that was used for rotation
-						var box = selectedBBoxes[0];
-						var cx = round(box.x + box.width/2) * current_zoom, 
-							cy = round(box.y + box.height/2) * current_zoom;
-						var dx = mouse_x - cx, dy = mouse_y - cy;
- 						var r = Math.sqrt( dx*dx + dy*dy );
-						var theta = Math.atan2(dy,dx) - angle;						
-						current_poly_pts[i] = mouse_x = cx + r * Math.cos(theta);
-						current_poly_pts[i+1] = mouse_y = cy + r * Math.sin(theta);
-						x = mouse_x / current_zoom;
-						y = mouse_y / current_zoom;
-					}
-					else {
-						current_poly_pts[i] = x * current_zoom;
-						current_poly_pts[i+1] = y * current_zoom;
-					}
-					
-					if(is_first) {
-						// Update the first point
-						current_poly_pts[0] = current_poly_pts[i];
-						current_poly_pts[1] = current_poly_pts[i+1];
-						current_poly_pt_drag = 0;
-					}
-
-					// reset the path's d attribute using current_poly_pts
-					var index = current_poly_pt_drag;
-					var rel_x = (getPolyPoint(index)[0] - getPolyPoint(index-1)[0]);
-					var rel_y = (getPolyPoint(index)[1] - getPolyPoint(index-1)[1]);
-					
-					var item = current_poly.pathSegList.getItem(index);
-					var x_diff = x - old_poly_pts[index*2];
-					var y_diff = y - old_poly_pts[index*2 + 1];
-
-// 					console.log('index',index);
-// 					console.log('item.pathSegType',item.pathSegType);
-// 					console.log('nextitem.pathSegType',next_item.pathSegType);
-					
-					var cur_type = item.pathSegType;
-					var points = [];
-					
-					if(cur_type == 7) {
-						points = [rel_x,rel_y, item.x1,item.y1, item.x2 + x_diff,item.y2 + y_diff];
-					} else {
-						if(is_first) {
-							// Need absolute position for first point
-							points = getPolyPoint(0);
-						} else {
-							points = [rel_x, rel_y];
-						}
-					}
-					replacePathSeg(cur_type, index, points);
-
-					var setSeg = function(index,first) {
-						var points, item = current_poly.pathSegList.getItem(index);
-						var type = item.pathSegType;
-						if(first) {
-							x_diff *= -1;
-							y_diff *= -1;
-						}
-
-						var end_x = item.x - x_diff;
-						var end_y = item.y - y_diff;
-
-						switch (type) {
-						case 1:
-							points = [];
-							break;
-						case 5:
-							points = [end_x, end_y];
-							break;
-						case 7:
-							points = [end_x, end_y, item.x1,item.y1, item.x2 - x_diff,item.y2 - y_diff];
-							break;
-						default:
-							break;
-						}
-						replacePathSeg(type, index, points);
-						return type;
-					}
-					
-					var next_type = setSeg(index+1);
-					
-					if(is_first) {
-						var last_type = setSeg(last_index,1);
-						x_diff *= -1;
-						y_diff *= -1;
-					}
-						
-					// Original method: Re-calculate the "d" attribute
-// 					var oldd = current_poly.getAttribute("d");
-// 					var closedPath = (oldd[oldd.length-1] == 'z' || oldd[oldd.length-1] == 'Z');
-// 					var len = current_poly_pts.length/2;
-// 					var arr = new Array(len+1);
-// 					var curx = current_poly_pts[0]/current_zoom,
-// 						cury = current_poly_pts[1]/current_zoom;
-// 					arr[0] = ["M", curx, ",", cury].join('');
-// 					for (var j = 1; j < len; ++j) {
-// 						var px = current_poly_pts[j*2]/current_zoom, py = current_poly_pts[j*2+1]/current_zoom;
-// 						arr[j] = ["l", round(px-curx), ",", round(py-cury)].join('');
-// 						curx = px;
-// 						cury = py;
-// 					}
-// 					if (closedPath) {
-// 						arr[len] = "z";
-// 					}
-// 					// we don't want to undo this, we are in the middle of a drag
-// 					current_poly.setAttribute("d", arr.join(' '));
-
-					// move the point grip
-					var grip = document.getElementById("polypointgrip_" + current_poly_pt_drag);
-					if (grip) {
-						grip.setAttribute("cx", mouse_x);
-						grip.setAttribute("cy", mouse_y);
-						
-						if(is_first) {
-							var grip = document.getElementById("polypointgrip_" + last_index);
-							grip.setAttribute("cx", mouse_x);
-							grip.setAttribute("cy", mouse_y);
-						}
-					}
-					
-					// move the control grips + lines
-					if(is_first) cur_type = last_type;
-					
-					if(cur_type != 5) {
-						var num = is_first?last_index:index;
-						var id2 = (num-1)+'c2';
-						var line = document.getElementById("ctrlLine_"+id2);
-						if(line) {
-							var x2 = line.getAttribute('x2') - 0 + x_diff*current_zoom;
-							var y2 = line.getAttribute('y2') - 0 + y_diff*current_zoom;
-							addControlPointGrip(x2,y2, mouse_x,mouse_y, id2, true);
-						}
-					}
-					
-					if(next_type != 5) {
-						var id1 = (current_poly_pt_drag)+'c1';
-						var line = document.getElementById("ctrlLine_"+id1);
-						if(line) {
-							var x2 = line.getAttribute('x2') - 0 + x_diff*current_zoom;
-							var y2 = line.getAttribute('y2') - 0 + y_diff*current_zoom;
-							addControlPointGrip(x2,y2, mouse_x,mouse_y, id1, true);
-						}
-					}
-
+					updatePoly(mouse_x, mouse_y, old_poly_pts);
 				} else if (current_ctrl_pt_drag != -1 && current_poly) {
 					// Moving the control point. Since only one segment is altered,
 					// we only need to do a pathSegList replace.
@@ -2254,8 +2105,6 @@ function BatchCommand(text) {
 				var next_x = getPolyPoint(next_index)[0];
 				var next_y = getPolyPoint(next_index)[1];
 				
-//				console.log(getPolyPoint(0,true)[0], getPolyPoint(0,true)[1]);
-
 				var next_rel_x = next_x - cur_x;
 				var next_rel_y = next_y - cur_y;
 
@@ -2291,6 +2140,168 @@ function BatchCommand(text) {
 			'display': "inline",
 		});
 	};
+	
+	var updatePoly = function(mouse_x, mouse_y, old_poly_pts) {
+    	var x = mouse_x / current_zoom;
+    	var y = mouse_y / current_zoom;
+	
+		var i = current_poly_pt_drag * 2;
+		
+		var last_index = current_poly_pts.length/2 - 1;
+		var is_first = current_poly_pt_drag == 0 || (current_poly_pt_drag == last_index);
+		
+		// if the image is rotated, then we must modify the x,y mouse coordinates
+		// and rotate them into the shape's rotated coordinate system
+		// we also re-map mouse_x/y and x/y into the rotated coordinate system
+		var angle = canvas.getRotationAngle(current_poly) * Math.PI / 180.0;
+		if (angle) {
+			// calculate the shape's old center that was used for rotation
+			var box = selectedBBoxes[0];
+			var cx = round(box.x + box.width/2) * current_zoom, 
+				cy = round(box.y + box.height/2) * current_zoom;
+			var dx = mouse_x - cx, dy = mouse_y - cy;
+			var r = Math.sqrt( dx*dx + dy*dy );
+			var theta = Math.atan2(dy,dx) - angle;						
+			current_poly_pts[i] = mouse_x = cx + r * Math.cos(theta);
+			current_poly_pts[i+1] = mouse_y = cy + r * Math.sin(theta);
+			x = mouse_x / current_zoom;
+			y = mouse_y / current_zoom;
+		}
+		else {
+			current_poly_pts[i] = x * current_zoom;
+			current_poly_pts[i+1] = y * current_zoom;
+		}
+		
+		if(is_first) {
+			// Update the first point
+			current_poly_pts[0] = current_poly_pts[i];
+			current_poly_pts[1] = current_poly_pts[i+1];
+			current_poly_pt_drag = 0;
+		}
+
+		// reset the path's d attribute using current_poly_pts
+		var index = current_poly_pt_drag;
+		var rel_x = (getPolyPoint(index)[0] - getPolyPoint(index-1)[0]);
+		var rel_y = (getPolyPoint(index)[1] - getPolyPoint(index-1)[1]);
+		
+		var item = current_poly.pathSegList.getItem(index);
+		var x_diff = x - old_poly_pts[index*2];
+		var y_diff = y - old_poly_pts[index*2 + 1];
+
+// 					console.log('index',index);
+// 					console.log('item.pathSegType',item.pathSegType);
+// 					console.log('nextitem.pathSegType',next_item.pathSegType);
+		
+		var cur_type = item.pathSegType;
+		var points = [];
+		
+		if(cur_type == 7) {
+			points = [rel_x,rel_y, item.x1,item.y1, item.x2 + x_diff,item.y2 + y_diff];
+		} else {
+			if(is_first) {
+				// Need absolute position for first point
+				points = getPolyPoint(0);
+			} else {
+				points = [rel_x, rel_y];
+			}
+		}
+		replacePathSeg(cur_type, index, points);
+
+		var setSeg = function(index,first) {
+			var points, item = current_poly.pathSegList.getItem(index);
+			var type = item.pathSegType;
+			if(first) {
+				x_diff *= -1;
+				y_diff *= -1;
+			}
+
+			var end_x = item.x - x_diff;
+			var end_y = item.y - y_diff;
+
+			switch (type) {
+			case 1:
+				points = [];
+				break;
+			case 5:
+				points = [end_x, end_y];
+				break;
+			case 7:
+				points = [end_x, end_y, item.x1,item.y1, item.x2 - x_diff,item.y2 - y_diff];
+				break;
+			default:
+				break;
+			}
+			replacePathSeg(type, index, points);
+			return type;
+		}
+		
+		var next_type = setSeg(index+1);
+		
+		if(is_first) {
+			var last_type = setSeg(last_index,1);
+			x_diff *= -1;
+			y_diff *= -1;
+		}
+			
+		// Original method: Re-calculate the "d" attribute
+// 					var oldd = current_poly.getAttribute("d");
+// 					var closedPath = (oldd[oldd.length-1] == 'z' || oldd[oldd.length-1] == 'Z');
+// 					var len = current_poly_pts.length/2;
+// 					var arr = new Array(len+1);
+// 					var curx = current_poly_pts[0]/current_zoom,
+// 						cury = current_poly_pts[1]/current_zoom;
+// 					arr[0] = ["M", curx, ",", cury].join('');
+// 					for (var j = 1; j < len; ++j) {
+// 						var px = current_poly_pts[j*2]/current_zoom, py = current_poly_pts[j*2+1]/current_zoom;
+// 						arr[j] = ["l", round(px-curx), ",", round(py-cury)].join('');
+// 						curx = px;
+// 						cury = py;
+// 					}
+// 					if (closedPath) {
+// 						arr[len] = "z";
+// 					}
+// 					// we don't want to undo this, we are in the middle of a drag
+// 					current_poly.setAttribute("d", arr.join(' '));
+
+		// move the point grip
+		var grip = document.getElementById("polypointgrip_" + current_poly_pt_drag);
+		if (grip) {
+			grip.setAttribute("cx", mouse_x);
+			grip.setAttribute("cy", mouse_y);
+			
+			if(is_first) {
+				var grip = document.getElementById("polypointgrip_" + last_index);
+				grip.setAttribute("cx", mouse_x);
+				grip.setAttribute("cy", mouse_y);
+			}
+			call("selected", [grip]);
+		}
+		
+		// move the control grips + lines
+		if(is_first) cur_type = last_type;
+		
+		if(cur_type != 5) {
+			var num = is_first?last_index:index;
+			var id2 = (num-1)+'c2';
+			var line = document.getElementById("ctrlLine_"+id2);
+			if(line) {
+				var x2 = line.getAttribute('x2') - 0 + x_diff*current_zoom;
+				var y2 = line.getAttribute('y2') - 0 + y_diff*current_zoom;
+				addControlPointGrip(x2,y2, mouse_x,mouse_y, id2, true);
+			}
+		}
+		
+		if(next_type != 5) {
+			var id1 = (current_poly_pt_drag)+'c1';
+			var line = document.getElementById("ctrlLine_"+id1);
+			if(line) {
+				var x2 = line.getAttribute('x2') - 0 + x_diff*current_zoom;
+				var y2 = line.getAttribute('y2') - 0 + y_diff*current_zoom;
+				addControlPointGrip(x2,y2, mouse_x,mouse_y, id1, true);
+			}
+		}
+		
+	}
 	
 	var getPolyPoint = function(index, raw_val) {
 		var len = current_poly_pts.length;
@@ -3218,7 +3229,16 @@ function BatchCommand(text) {
 		}
 		removeAllPointGripsFromPoly();
 		current_poly_pts = [];
+		current_poly_pt = -1;
 	};
+	
+	this.getNodePoint = function() {	
+		if(current_poly_pt != -1) {
+			return getPolyPoint(current_poly_pt, true);
+		} else {
+			return false;
+		}
+	}
 
 	this.getResolution = function() {
 // 		return [svgroot.getAttribute("width"), svgroot.getAttribute("height")];
@@ -3750,6 +3770,15 @@ function BatchCommand(text) {
 	// fires the 'changed' event 
 	this.changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		var handle = svgroot.suspendRedraw(1000);
+		if(current_mode == 'polyedit') {
+			// Editing node
+			var num = (attr == 'x')?0:1;
+			var old_poly_pts = $.map(current_poly_pts, function(n){return n/current_zoom;});
+
+			current_poly_pts[current_poly_pt*2 + num] = newValue-0;
+			current_poly_pt_drag = current_poly_pt;
+			updatePoly(current_poly_pts[current_poly_pt*2], current_poly_pts[current_poly_pt*2 + 1], old_poly_pts);
+		}
 		var elems = elems || selectedElements;
 		var i = elems.length;
 		while (i--) {
