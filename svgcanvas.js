@@ -29,6 +29,13 @@ var svgWhiteList = {
 	"title": [],
 };
 
+var toXml = function(str) {
+	return str.replace("&", "&amp;").replace("<", "&lt;").replace(">","&gt;");
+};
+var fromXml = function(str) {
+	return str.replace("&gt;", ">").replace("&lt;", "<").replace("&amp;", "&");
+};
+
 function SvgCanvas(c)
 {
 
@@ -917,7 +924,7 @@ function BatchCommand(text) {
 						var str = child.nodeValue.replace(/^\s+|\s+$/g, "");
 						if (str != "") {
 							bOneLine = true;
-							out.push(str + "");
+							out.push(toXml(str) + "");
 						}
 						break;
 					case 8: // comment
@@ -2247,7 +2254,7 @@ function BatchCommand(text) {
 				var next_x = getPolyPoint(next_index)[0];
 				var next_y = getPolyPoint(next_index)[1];
 				
-				console.log(getPolyPoint(0,true)[0], getPolyPoint(0,true)[1]);
+//				console.log(getPolyPoint(0,true)[0], getPolyPoint(0,true)[1]);
 
 				var next_rel_x = next_x - cur_x;
 				var next_rel_y = next_y - cur_y;
@@ -3048,6 +3055,7 @@ function BatchCommand(text) {
 	};
 	
 	this.setCurrentLayer = function(name) {
+		name = toXml(name);
 		for (var i = 0; i < all_layers.length; ++i) {
 			if (name == all_layers[i][0]) {
 				if (current_layer != all_layers[i][1]) {
@@ -3073,7 +3081,7 @@ function BatchCommand(text) {
 					if (all_layers[i][1] == oldLayer) break;
 				}
 				var oldname = all_layers[i][0];
-				all_layers[i][0] = newname;
+				all_layers[i][0] = toXml(newname);
 			
 				// now change the underlying title element contents
 				var len = oldLayer.childNodes.length;
@@ -3171,7 +3179,7 @@ function BatchCommand(text) {
 	
 	// used internally
 	var getLayerName = function(g) {
-    return $(g,"title").text();
+		return $("title",g).text();
 	};
 
 	this.clear = function() {
