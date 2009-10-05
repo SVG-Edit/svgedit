@@ -1279,6 +1279,7 @@ function svg_edit_setup() {
 			w_area[0].scrollLeft = scroll_x;
 		}
 	}
+	
 
 	$('#resolution').change(function(){
 		var wh = $('#canvas_width,#canvas_height');
