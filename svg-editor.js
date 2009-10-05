@@ -633,6 +633,12 @@ function svg_edit_setup() {
 		}
 	};
 	
+	var deleteNode = function() {
+		if (svgCanvas.getNodePoint()) {
+			svgCanvas.deleteNode();
+		}
+	};
+	
 	var selectNext = function() {
 		svgCanvas.cycleElement(1);
 	}
@@ -846,6 +852,7 @@ function svg_edit_setup() {
 	$('#tool_docprops').click(showDocProperties);
 	$('#tool_delete').click(deleteSelected);
 	$('#tool_delete_multi').click(deleteSelected);
+	$('#tool_node_delete').click(deleteNode);
 	$('#tool_move_top').click(moveToTopSelected);
 	$('#tool_move_bottom').click(moveToBottomSelected);
 	$('#tool_undo').click(clickUndo);

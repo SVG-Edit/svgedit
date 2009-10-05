@@ -1395,6 +1395,15 @@ function BatchCommand(text) {
 		selectedElements = newSelectedItems;
 		selectedBBoxes = newSelectedBBoxes;
 	};
+	
+	this.addNodeToSelection = function(point) {
+		// Currently only one node can be selected at a time, should allow more later
+		// Should point be the index or the grip element?
+		current_poly_pt = point;
+		$('#polypointgrip_container circle').attr('fill','#0F0');
+		var grip = $('#polypointgrip_' + point).attr('fill','blue');
+		call("selected", [grip[0]]);
+	}
 
 	// in mouseDown :
 	// - when we are in a create mode, the element is added to the canvas
@@ -1650,10 +1659,8 @@ function BatchCommand(text) {
 				var id = evt.target.id;
 				if (id.substr(0,14) == "polypointgrip_") {
 					// Select this point
-					current_poly_pt = current_poly_pt_drag = parseInt(id.substr(14));
-					$('#polypointgrip_container circle').attr('fill','#0F0');
-					$(evt.target).attr('fill','blue');
-					call("selected", [evt.target]);
+					current_poly_pt_drag = parseInt(id.substr(14));
+					canvas.addNodeToSelection(current_poly_pt_drag);
 				} else if(id.indexOf("ctrlpointgrip_") == 0) {
 					current_ctrl_pt_drag = id.split('_')[1];
 				}
@@ -2010,9 +2017,7 @@ function BatchCommand(text) {
 		var line = document.getElementById("poly_stretch_line");
 		if (line) line.setAttribute("display", "none");
 		
-		// Should this be only for individual control grips + lines?
-		var ctrlContainer = document.getElementById("ctrlpointgrip_container");
-		if(ctrlContainer) ctrlContainer.setAttribute("display", "none");
+		$('#ctrlpointgrip_container *').attr('display','none');
 	};
 
 	var addAllPointGripsToPoly = function() {
@@ -2090,9 +2095,11 @@ function BatchCommand(text) {
 				var batchCmd = new BatchCommand("Toggle Poly Segment Type");
 				var old_d = current_poly.getAttribute('d');
 				
+				// Index could have changed by deleting nodes
+				index = grip[0].id.split('_')[1] - 0;
 				
 				var last_index = current_poly_pts.length/2 - 1;
-				if(index == last_index) {
+				if(index >= last_index) {
 					index = 0;
 				}
 				
@@ -2383,8 +2390,7 @@ function BatchCommand(text) {
 
 	var removeControlPointGrips = function(index) {
 		for(var i=1; i <= 2; i++) {
-			document.getElementById("ctrlpointgrip_" + index + "c" + i).setAttribute("display", "none");
-			document.getElementById("ctrlLine_" + index + "c" + i).setAttribute("display", "none");
+			$("#ctrlpointgrip_" + index + "c" + i + ",#ctrlLine_" + index + "c" + i).attr("display", "none");
 		}
 	}
 
@@ -3238,6 +3244,58 @@ function BatchCommand(text) {
 		} else {
 			return false;
 		}
+	}
+	
+	this.deleteNode = function() {
+		if(current_poly_pt == current_poly_pts.length/2 - 1) {
+			var last_pt = current_poly_pt;
+			current_poly_pt = 0;
+		}
+		var pt = current_poly_pt, list = current_poly.pathSegList;
+		var cur_item = list.getItem(pt);
+		var next_item = list.getItem(pt+1);
+
+		if(pt == 0) {
+			var next_x = getPolyPoint(1)[0];
+			var next_y = getPolyPoint(1)[1];
+			// Make the next point be the "M" point
+			replacePathSeg(2, 1, [next_x, next_y]);
+			
+			// Reposition last node
+			var last_item = list.getItem(last_pt);
+			replacePathSeg(5, last_pt, [next_x - getPolyPoint(last_pt-1)[0], next_y - getPolyPoint(last_pt-1)[1]]);
+			assignAttributes($('#polypointgrip_' + last_pt)[0], {
+				cx: next_x * current_zoom,
+				cy: next_y * current_zoom
+			});
+			removeControlPointGrips(last_pt - 1);
+		} else {
+			// Since relative values are used, the current point's values need to be added to the next one.
+			// Hard to tell whether it should be straight or curve, so always straight for now
+			replacePathSeg(5, pt+1, [next_item.x + cur_item.x, next_item.y + cur_item.y]);
+		}
+
+		removeControlPointGrips(pt);
+		removeControlPointGrips(pt-1);
+		
+		list.removeItem(pt);
+		current_poly_pts.splice(pt*2, 2);
+		$('#polypointgrip_' + pt).remove();
+		$('#polypointgrip_container circle').each(function(i, item) {
+			this.id = 'polypointgrip_' + i;
+		});
+		
+		$('#ctrlpointgrip_container circle').each(function(i, item) {
+			var data = this.id.match(/_(\d+)(c\d)/);
+			var inum = data[1] - 0;
+			var cnum = data[2];
+			if(inum >= pt) {
+				this.id = 'ctrlpointgrip_' + (inum-1) + cnum;
+				$('#ctrlLine_' + inum + cnum)[0].id = 'ctrlLine_' + (inum-1) + cnum;
+			}
+		});
+		
+		this.addNodeToSelection(pt);
 	}
 
 	this.getResolution = function() {
