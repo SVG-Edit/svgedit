@@ -1219,6 +1219,7 @@ function svg_edit_setup() {
 			var row = $(this.parentNode);
 			row.addClass("layersel");
 			svgCanvas.setCurrentLayer(this.textContent);
+			evt.preventDefault();
 		});
 		$('#layerlist td.layervis').click(function(evt){
 			var row = $(this.parentNode).prevAll().length;
