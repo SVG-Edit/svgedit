@@ -14,7 +14,7 @@ function gup( name )
 
 var put_locale = function(){
 	var lang_param = gup("lang");
-	if(lang_param == "")
+	if (lang_param == "")
 		return;
 	var url = "locale/lang." + lang_param + ".js";
 	$.get(url, function(data){
