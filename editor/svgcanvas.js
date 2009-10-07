@@ -1005,6 +1005,7 @@ function BatchCommand(text) {
 		// if there was a rotation transform, re-set it, otherwise empty out the transform attribute
 		var angle = canvas.getRotationAngle(selected);
 		var pointGripContainer = document.getElementById("polypointgrip_container");
+		var ctrlPointGripContainer = document.getElementById("ctrlpointgrip_container");
 		if (angle) {
 			// this is our old center upon which we have rotated the shape
 			var tr_x = round(box.x + box.width/2),
@@ -1067,6 +1068,9 @@ function BatchCommand(text) {
 			if(pointGripContainer) {
 				pointGripContainer.setAttribute("transform", rotate);
 			}
+			if(ctrlPointGripContainer) {
+				ctrlPointGripContainer.setAttribute("transform", rotate);
+			}
 		}
 		else {
 			// This fixes Firefox 2- behavior - which does not reset values when the attribute has
@@ -1077,6 +1081,10 @@ function BatchCommand(text) {
 				pointGripContainer.setAttribute("transform", "");
 				pointGripContainer.removeAttribute("transform");
 			}
+			if(ctrlPointGripContainer) {
+				ctrlPointGripContainer.setAttribute("transform", "");
+				ctrlPointGripContainer.removeAttribute("transform");
+			}			
 		}
 		
 		// if it's a group, transfer the transform attribute to each child element
@@ -1985,6 +1993,21 @@ function BatchCommand(text) {
 					var ctrl_num = data[1]-0;
 					var c_item = current_poly.pathSegList.getItem(index+1);
 					
+					var angle = canvas.getRotationAngle(current_poly) * Math.PI / 180.0;
+					if (angle) {
+						// calculate the shape's old center that was used for rotation
+						var box = selectedBBoxes[0];
+						var cx = round(box.x + box.width/2) * current_zoom, 
+							cy = round(box.y + box.height/2) * current_zoom;
+						var dx = mouse_x - cx, dy = mouse_y - cy;
+						var r = Math.sqrt( dx*dx + dy*dy );
+						var theta = Math.atan2(dy,dx) - angle;						
+						current_poly_pts[i] = mouse_x = cx + r * Math.cos(theta);
+						current_poly_pts[i+1] = mouse_y = cy + r * Math.sin(theta);
+						x = mouse_x / current_zoom;
+						y = mouse_y / current_zoom;
+					}
+					
 					c_item['x' + ctrl_num] = x - getPolyPoint(index)[0];
 					c_item['y' + ctrl_num] = y - getPolyPoint(index)[1];
 					replacePathSeg(7, index+1, [c_item.x,c_item.y, c_item.x1,c_item.y1, c_item.x2,c_item.y2]);
@@ -2097,6 +2120,7 @@ function BatchCommand(text) {
 			} 
 		}
 		var pointGripContainer = document.getElementById("polypointgrip_container");
+		var ctrlPointGripContainer = document.getElementById("ctrlpointgrip_container");
 		// FIXME:  we cannot just use the same transform as the poly because we might be 
 		// at a different zoom level
 		var angle = canvas.getRotationAngle(current_poly);
@@ -2106,6 +2130,7 @@ function BatchCommand(text) {
 				cy = (bbox.y + bbox.height/2) * current_zoom;
 			var xform = ["rotate(", angle, " ", cx, ",", cy, ")"].join("");
 			pointGripContainer.setAttribute("transform", xform);
+			if(ctrlPointGripContainer) ctrlPointGripContainer.setAttribute("transform", xform);
 		}
 	};
 
@@ -2837,11 +2862,15 @@ function BatchCommand(text) {
 						current_poly.setAttribute("transform", rotate);
 						
 						var pointGripContainer = document.getElementById("polypointgrip_container");
+						var ctrlPointGripContainer = document.getElementById("ctrlpointgrip_container");
 						if(pointGripContainer) {
 							var pcx = newcx * current_zoom,
 								pcy = newcy * current_zoom;
 							var xform = ["rotate(", (angle*180.0/Math.PI), " ", pcx, ",", pcy, ")"].join("");
 							pointGripContainer.setAttribute("transform", xform);
+							if(ctrlPointGripContainer) {
+								ctrlPointGripContainer.setAttribute("transform", xform);
+							}
 						}
 					} // if rotated
 
@@ -3728,8 +3757,12 @@ function BatchCommand(text) {
 			this.changeSelectedAttribute("transform",rotate,selectedElements);
 		}
 		var pointGripContainer = document.getElementById("polypointgrip_container");
+		var ctrlPointGripContainer = document.getElementById("ctrlpointgrip_container");
 		if(elem.nodeName == "path" && pointGripContainer) {
 			pointGripContainer.setAttribute("transform", rotate);
+			if(ctrlPointGripContainer) {
+				ctrlPointGripContainer.setAttribute("transform", rotate);
+			}
 		}
 		selectorManager.requestSelector(selectedElements[0]).updateGripCursors(val);
 	};
