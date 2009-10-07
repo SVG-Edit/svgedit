@@ -57,7 +57,7 @@ function svg_edit_setup() {
 			if (svgCanvas.getMode() != "multiselect" && !is_node) {
 				setSelectMode();
 			}
-			
+			updateToolbar();
 		} // if (elem != null)
 
 		updateContextPanel(); 
