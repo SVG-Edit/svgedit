@@ -2015,9 +2015,47 @@ function BatchCommand(text) {
 	var resetPointGrips = function() {
 		var sr = svgroot.suspendRedraw(100);
 		removeAllPointGripsFromPoly();
+		recalcPolyPoints();
 		addAllPointGripsToPoly();
 		svgroot.unsuspendRedraw(sr);
 	};
+	
+	var recalcPolyPoints = function() {
+		current_poly_pts = [];
+		var segList = current_poly.pathSegList;
+		var curx = segList.getItem(0).x, cury = segList.getItem(0).y;
+		current_poly_pts.push(curx * current_zoom);
+		current_poly_pts.push(cury * current_zoom);
+		var len = segList.numberOfItems;
+		for (var i = 1; i < len; ++i) {
+			var l = segList.getItem(i);
+			var x = l.x, y = l.y;
+			// polys can now be closed, skip Z segments
+			if (l.pathSegType == 1) {
+				break;
+			}
+			var type = l.pathSegType;
+			// current_poly_pts just holds the absolute coords
+			if (type == 4) {
+				curx = x;
+				cury = y;
+			} // type 4 (abs line)
+			else if (type == 5) {
+				curx += x;
+				cury += y;
+			} // type 5 (rel line)
+			else if (type == 6) {
+				curx = x;
+				cury = y;
+			} // type 6 (abs curve)
+			else if (type == 7) {
+				curx += x;
+				cury += y;
+			} // type 7 (rel curve)
+			current_poly_pts.push(curx * current_zoom);
+			current_poly_pts.push(cury * current_zoom);
+		} // for each segment	
+	}
 
 	var removeAllPointGripsFromPoly = function() {
 		// loop through and hide all pointgrips
@@ -2101,19 +2139,25 @@ function BatchCommand(text) {
 			grip.mouseout( function() {this.setAttribute("stroke", "#00F"); } );
 			grip.dblclick( function() {
 			
-				var batchCmd = new BatchCommand("Toggle Poly Segment Type");
 				var old_d = current_poly.getAttribute('d');
 				
 				// Index could have changed by deleting nodes
 				index = grip[0].id.split('_')[1] - 0;
 				
 				var last_index = current_poly_pts.length/2 - 1;
-				if(index >= last_index) {
+				var is_closed = current_poly.getAttribute('d').toLowerCase().indexOf('z') != -1; 
+				
+				if(!is_closed && index == last_index) {
+					return; // Last point of unclosed poly should do nothing
+				} else if(index >= last_index && is_closed) {
 					index = 0;
 				}
 				
+				var batchCmd = new BatchCommand("Toggle Poly Segment Type");
+				
 				// Toggle segment to curve/straight line
 				var type = current_poly.pathSegList.getItem(index+1).pathSegType;
+				
 				var next_index = index+1;
 				
 				var cur_x = getPolyPoint(index)[0];
@@ -2160,11 +2204,13 @@ function BatchCommand(text) {
 	var updatePoly = function(mouse_x, mouse_y, old_poly_pts) {
     	var x = mouse_x / current_zoom;
     	var y = mouse_y / current_zoom;
+    	
+    	var is_closed = current_poly.getAttribute('d').toLowerCase().indexOf('z') != -1; 
 	
 		var i = current_poly_pt_drag * 2;
-		
 		var last_index = current_poly_pts.length/2 - 1;
-		var is_first = current_poly_pt_drag == 0 || (current_poly_pt_drag == last_index);
+		var is_first = current_poly_pt_drag == 0 || (is_closed && current_poly_pt_drag == last_index);
+		var is_last = !is_closed && current_poly_pt_drag == last_index;
 		
 		// if the image is rotated, then we must modify the x,y mouse coordinates
 		// and rotate them into the shape's rotated coordinate system
@@ -2188,14 +2234,13 @@ function BatchCommand(text) {
 			current_poly_pts[i+1] = y * current_zoom;
 		}
 		
-		if(is_first) {
+		if(is_first && is_closed) {
 			// Update the first point
 			current_poly_pts[0] = current_poly_pts[i];
 			current_poly_pts[1] = current_poly_pts[i+1];
 			current_poly_pt_drag = 0;
 		}
 
-		// reset the path's d attribute using current_poly_pts
 		var index = current_poly_pt_drag;
 		var rel_x = (getPolyPoint(index)[0] - getPolyPoint(index-1)[0]);
 		var rel_y = (getPolyPoint(index)[1] - getPolyPoint(index-1)[1]);
@@ -2203,10 +2248,6 @@ function BatchCommand(text) {
 		var item = current_poly.pathSegList.getItem(index);
 		var x_diff = x - old_poly_pts[index*2];
 		var y_diff = y - old_poly_pts[index*2 + 1];
-
-// 					console.log('index',index);
-// 					console.log('item.pathSegType',item.pathSegType);
-// 					console.log('nextitem.pathSegType',next_item.pathSegType);
 		
 		var cur_type = item.pathSegType;
 		var points = [];
@@ -2251,9 +2292,13 @@ function BatchCommand(text) {
 			return type;
 		}
 		
-		var next_type = setSeg(index+1);
+		if(is_closed || !is_last) { 
+			var next_type = setSeg(index+1);
+		} else {
+			var next_type = 0;
+		}
 		
-		if(is_first) {
+		if(is_first && is_closed) {
 			var last_type = setSeg(last_index,1);
 			x_diff *= -1;
 			y_diff *= -1;
@@ -2285,7 +2330,7 @@ function BatchCommand(text) {
 			grip.setAttribute("cx", mouse_x);
 			grip.setAttribute("cy", mouse_y);
 			
-			if(is_first) {
+			if(is_closed && is_first) {
 				var grip = document.getElementById("polypointgrip_" + last_index);
 				grip.setAttribute("cx", mouse_x);
 				grip.setAttribute("cy", mouse_y);
@@ -2471,40 +2516,8 @@ function BatchCommand(text) {
 								current_mode = "polyedit";
 
 								// recalculate current_poly_pts
-								current_poly_pts = [];
-								var segList = t.pathSegList;
-								var curx = segList.getItem(0).x, cury = segList.getItem(0).y;
-								current_poly_pts.push(curx * current_zoom);
-								current_poly_pts.push(cury * current_zoom);
-								var len = segList.numberOfItems;
-								for (var i = 1; i < len; ++i) {
-									var l = segList.getItem(i);
-									var x = l.x, y = l.y;
-									// polys can now be closed, skip Z segments
-									if (l.pathSegType == 1) {
-										break;
-									}
-									var type = l.pathSegType;
-									// current_poly_pts just holds the absolute coords
-									if (type == 4) {
-										curx = x;
-										cury = y;
-									} // type 4 (abs line)
-									else if (type == 5) {
-										curx += x;
-										cury += y;
-									} // type 5 (rel line)
-									else if (type == 6) {
-										curx = x;
-										cury = y;
-									} // type 6 (abs curve)
-									else if (type == 7) {
-										curx += x;
-										cury += y;
-									} // type 7 (rel curve)
-									current_poly_pts.push(curx * current_zoom);
-									current_poly_pts.push(cury * current_zoom);
-								} // for each segment
+								recalcPolyPoints();
+								
 								canvas.clearSelection();
 								// save the poly's bbox
 								selectedBBoxes[0] = canvas.getBBox(current_poly);
@@ -2837,8 +2850,10 @@ function BatchCommand(text) {
 					call("changed", [current_poly]);
 					
 					// If connected, last point should equal first
-					current_poly_pts[current_poly_pts.length-2] = getPolyPoint(0,true)[0];
-					current_poly_pts[current_poly_pts.length-1] = getPolyPoint(0,true)[1];
+					if(current_poly.getAttribute('d').toLowerCase().indexOf('z') != -1) {
+						current_poly_pts[current_poly_pts.length-2] = getPolyPoint(0,true)[0];
+						current_poly_pts[current_poly_pts.length-1] = getPolyPoint(0,true)[1];
+					}
 					
 					// make these changes undo-able
 				} // if (current_poly_pt_drag != -1)
@@ -3275,8 +3290,8 @@ function BatchCommand(text) {
 		
 		replacePathSeg(5, pt+2, [new_x, new_y]);
 		
-		var abs_x = getPolyPoint(pt)[0] + new_x;
-		var abs_y = getPolyPoint(pt)[1] + new_y;
+		var abs_x = (getPolyPoint(pt)[0] + new_x) * current_zoom;
+		var abs_y = (getPolyPoint(pt)[1] + new_y) * current_zoom;
 		
 		var last_num = current_poly_pts.length/2;
 		
@@ -3431,6 +3446,9 @@ function BatchCommand(text) {
 			if(!elem) return;
 			selectorManager.requestSelector(elem).resize();
 		});
+		if(current_mode == "polyedit") {
+			resetPointGrips();
+		}
 	}
 
 	this.getMode = function() {
