@@ -56,8 +56,8 @@ function svg_edit_setup() {
 			
 			if (svgCanvas.getMode() != "multiselect" && !is_node) {
 				setSelectMode();
+				updateToolbar();
 			}
-			updateToolbar();
 		} // if (elem != null)
 
 		updateContextPanel(); 
@@ -632,6 +632,12 @@ function svg_edit_setup() {
 			svgCanvas.moveSelectedElements(dx,dy);
 		}
 	};
+
+	var cloneNode = function() {
+		if (svgCanvas.getNodePoint()) {
+			svgCanvas.cloneNode();
+		}
+	};
 	
 	var deleteNode = function() {
 		if (svgCanvas.getNodePoint()) {
@@ -852,6 +858,7 @@ function svg_edit_setup() {
 	$('#tool_docprops').click(showDocProperties);
 	$('#tool_delete').click(deleteSelected);
 	$('#tool_delete_multi').click(deleteSelected);
+	$('#tool_node_clone').click(cloneNode);
 	$('#tool_node_delete').click(deleteNode);
 	$('#tool_move_top').click(moveToTopSelected);
 	$('#tool_move_bottom').click(moveToBottomSelected);

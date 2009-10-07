@@ -1399,7 +1399,12 @@ function BatchCommand(text) {
 	this.addNodeToSelection = function(point) {
 		// Currently only one node can be selected at a time, should allow more later
 		// Should point be the index or the grip element?
-		current_poly_pt = point;
+		if(point == current_poly_pts.length/2 - 1) {
+			current_poly_pt = 0;
+		} else {
+			current_poly_pt = point;
+		}
+		
 		$('#polypointgrip_container circle').attr('fill','#0F0');
 		var grip = $('#polypointgrip_' + point).attr('fill','blue');
 		call("selected", [grip[0]]);
@@ -2007,12 +2012,16 @@ function BatchCommand(text) {
 		}
 	};
 
+	var resetPointGrips = function() {
+		var sr = svgroot.suspendRedraw(100);
+		removeAllPointGripsFromPoly();
+		addAllPointGripsToPoly();
+		svgroot.unsuspendRedraw(sr);
+	};
+
 	var removeAllPointGripsFromPoly = function() {
 		// loop through and hide all pointgrips
-		var i = current_poly_pts.length/2;
-		while(i--) {
-			document.getElementById("polypointgrip_"+i).setAttribute("display", "none");
-		}
+		$('#polypointgrip_container > *').attr("display", "none");
 
 		var line = document.getElementById("poly_stretch_line");
 		if (line) line.setAttribute("display", "none");
@@ -3245,12 +3254,44 @@ function BatchCommand(text) {
 			return false;
 		}
 	}
-	
-	this.deleteNode = function() {
-		if(current_poly_pt == current_poly_pts.length/2 - 1) {
-			var last_pt = current_poly_pt;
-			current_poly_pt = 0;
+
+	this.cloneNode = function() {
+		var pt = current_poly_pt, list = current_poly.pathSegList;
+
+		var next_item = list.getItem(pt+1); 
+		
+		// Get point in between nodes
+		if(next_item.pathSegType % 2 == 0) { // even num, so abs
+			var cur_item = list.getItem(pt);
+			var new_x = (next_item.x - cur_item.x) / 2;
+			var new_y = (next_item.y - cur_item.y) / 2;
+		} else {
+			var new_x = next_item.x/2;
+			var new_y = next_item.y/2;
 		}
+		
+		var seg = current_poly.createSVGPathSegLinetoRel(new_x, new_y);
+		list.insertItemBefore(seg, pt+1); // Webkit doesn't do this right.
+		
+		replacePathSeg(5, pt+2, [new_x, new_y]);
+		
+		var abs_x = getPolyPoint(pt)[0] + new_x;
+		var abs_y = getPolyPoint(pt)[1] + new_y;
+		
+		var last_num = current_poly_pts.length/2;
+		
+		// Add new grip
+		addPointGripToPoly(abs_x, abs_y, last_num);
+		
+		// Update poly_pts
+		current_poly_pts.splice(pt*2 + 2, 0, abs_x, abs_y);
+		
+		resetPointGrips();
+		this.addNodeToSelection(pt+1);
+	}
+
+	this.deleteNode = function() {
+		var last_pt = current_poly_pts.length/2 - 1;
 		var pt = current_poly_pt, list = current_poly.pathSegList;
 		var cur_item = list.getItem(pt);
 		var next_item = list.getItem(pt+1);
@@ -3264,36 +3305,23 @@ function BatchCommand(text) {
 			// Reposition last node
 			var last_item = list.getItem(last_pt);
 			replacePathSeg(5, last_pt, [next_x - getPolyPoint(last_pt-1)[0], next_y - getPolyPoint(last_pt-1)[1]]);
-			assignAttributes($('#polypointgrip_' + last_pt)[0], {
-				cx: next_x * current_zoom,
-				cy: next_y * current_zoom
-			});
 			removeControlPointGrips(last_pt - 1);
+			current_poly_pts.splice(last_pt*2, 2, next_x, next_y);
+			current_poly_pts.splice(0, 2);
 		} else {
 			// Since relative values are used, the current point's values need to be added to the next one.
 			// Hard to tell whether it should be straight or curve, so always straight for now
 			replacePathSeg(5, pt+1, [next_item.x + cur_item.x, next_item.y + cur_item.y]);
+			current_poly_pts.splice(pt*2, 2);
 		}
 
-		removeControlPointGrips(pt);
-		removeControlPointGrips(pt-1);
-		
 		list.removeItem(pt);
-		current_poly_pts.splice(pt*2, 2);
-		$('#polypointgrip_' + pt).remove();
-		$('#polypointgrip_container circle').each(function(i, item) {
-			this.id = 'polypointgrip_' + i;
-		});
 		
-		$('#ctrlpointgrip_container circle').each(function(i, item) {
-			var data = this.id.match(/_(\d+)(c\d)/);
-			var inum = data[1] - 0;
-			var cnum = data[2];
-			if(inum >= pt) {
-				this.id = 'ctrlpointgrip_' + (inum-1) + cnum;
-				$('#ctrlLine_' + inum + cnum)[0].id = 'ctrlLine_' + (inum-1) + cnum;
-			}
-		});
+		resetPointGrips();
+		
+		if(window.opera) { // Opera repaints incorrectly
+			var cp = $(current_poly); cp.attr('d',cp.attr('d'));
+		}
 		
 		this.addNodeToSelection(pt);
 	}
