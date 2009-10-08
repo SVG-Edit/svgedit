@@ -581,6 +581,8 @@ function BatchCommand(text) {
 			element.removeAttribute('rx')
 		if (element.getAttribute('ry') == '0')
 			element.removeAttribute('ry')
+		if (element.getAttribute('display') == 'inline')
+			element.removeAttribute('display');
 		svgroot.unsuspendRedraw(handle);
 	};
 
@@ -885,6 +887,7 @@ function BatchCommand(text) {
 	var svgToString = function(elem, indent) {
 		var out = new Array();
 		if (elem) {
+			cleanupElement(elem);
 			var attrs = elem.attributes;
 			var attr;
 			var i;
