@@ -5,6 +5,7 @@ automated translations and ensure they make sense.
 
 Languages Already Translated By Humans:
   * lang.cs.js
+  * lang.de.js
   * lang.en.js
   * lang.fr.js
   * lang.nl.js
