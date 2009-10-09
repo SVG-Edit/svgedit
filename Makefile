@@ -8,6 +8,8 @@ ZIP=zip
 all: release firefox opera
 
 build/$(PACKAGE):
+	rm -rf config
+	mkdir config
 	$(MAKEDOCS) -i editor/ -o html docs/ -p config/
 	mkdir -p build/$(PACKAGE)
 	cp -r editor/* build/$(PACKAGE)
@@ -38,7 +40,7 @@ opera: build/$(PACKAGE)
 	cd build/opera ; $(ZIP) ../$(PACKAGE).wgt -r * ; cd ../..
 
 clean:
-	rm -rf docs/*
+	rm -rf config
 	rm -rf build/$(PACKAGE)
 	rm -rf build/firefox
 	rm -rf build/opera
