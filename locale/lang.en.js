@@ -106,5 +106,12 @@
 {"id":"page","textContent":"page"},
 {"id":"fill_tool_bottom","textContent":"fill:"},
 {"id":"stroke_tool_bottom","textContent":"stroke:"},
-{"id":"svninfo_dim","textContent":"Canvas Dimensions"}
+{"id":"svninfo_dim","textContent":"Canvas Dimensions"},
+{"id":"poly_node_x","title":"Change node's x coordinate"},
+{"id":"poly_node_y","title":"Change node's y coordinate"},
+{"id":"seg_type","title":"Change Segment type"},
+{"id":"straight_segments","textContent":"Straight"},
+{"id":"curve_segments","textContent":"Curve"},
+{"id":"tool_node_clone","title":"Clone Node"},
+{"id":"tool_node_delete","title":"Delete Node"}
 ];
