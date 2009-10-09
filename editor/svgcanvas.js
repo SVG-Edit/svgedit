@@ -2987,6 +2987,12 @@ function BatchCommand(text) {
 		call("opened", str);
 	};
 
+	// Function: save
+	// Serializes the current drawing into SVG XML text and returns it to the 'saved' handler.
+	// This function also includes the XML prolog.
+	//
+	// Returns: 
+	// Nothing
 	this.save = function() {
 		// remove the selected outline before serializing
 		this.clearSelection();
@@ -3007,12 +3013,23 @@ function BatchCommand(text) {
 		}
 	};
 	
+	// Function: getSvgString
+	// Returns the current drawing as raw SVG XML text.
+	//
+	// Returns:
+	// The current drawing as raw SVG XML text.
 	this.getSvgString = function() {
 		return svgCanvasToString();
 	};
 
-	// this function returns false if the set was unsuccessful, true otherwise
-	// TODO: after parsing in the new text, do we need to synchronize getId()?
+	// Function: setSvgString
+	// This function sets the current drawing as the input SVG XML.
+	//
+	// Parameters:
+	// xmlString - The SVG as XML text.
+	//
+	// Returns:
+	// This function returns false if the set was unsuccessful, true otherwise.
 	this.setSvgString = function(xmlString) {
 		try {
 			// convert string into XML document
@@ -3124,6 +3141,13 @@ function BatchCommand(text) {
 		walkTree(current_layer, function(e){e.setAttribute("style","pointer-events:all");});
 	};
 	
+	// Function: createLayer
+	// This function clears the selection and then creates a new top-level layer in the drawing
+	// with the given name and sets the current layer to it.  This function then calls the 
+	// 'changed' handler.
+	//
+	// Parameters:
+	// name - The given name
 	this.createLayer = function(name) {
 		var batchCmd = new BatchCommand("Create Layer");
 		var new_layer = svgdoc.createElementNS(svgns, "g");
@@ -3139,6 +3163,9 @@ function BatchCommand(text) {
 		call("changed", [new_layer]);
 	};
 	
+	// Function: deleteCurrentLayer
+	// This function clears the selection and then deletes the current layer from the drawing.  
+	// This function then calls the 'changed' handler.
 	this.deleteCurrentLayer = function() {
 		if (current_layer && all_layers.length > 1) {
 			var batchCmd = new BatchCommand("Delete Layer");
@@ -3156,9 +3183,15 @@ function BatchCommand(text) {
 		return false;
 	};
 	
+	// Function: getNumLayers
+	// This function returns the number of layers in the current drawing.
+	// 
+	// Returns:
+	// The number of layers in the current drawing.
 	this.getNumLayers = function() {
 		return all_layers.length;
 	};
+	
 	this.getLayer = function(i) {
 		if (i >= 0 && i < canvas.getNumLayers()) {
 			return all_layers[i][0];
