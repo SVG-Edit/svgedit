@@ -1169,55 +1169,55 @@ function BatchCommand(text) {
 						newd += "z";
 						continue;
 					// turn this into a relative segment then fall through
-					case 2: // absolute move (M)
-					case 4: // absolute line (L)
-					case 12: // absolute horizontal line (H)
-					case 14: // absolute vertical line (V)
-					case 18: // absolute smooth quad (T)
-						x -= curx;
-						y -= cury;
 					case 3: // relative move (m)
 					case 5: // relative line (l)
 					case 13: // relative horizontal line (h)
 					case 15: // relative vertical line (v)
 					case 19: // relative smooth quad (t)
-						curx += x;
-						cury += y;
+						x += curx;
+						y += cury;
+					case 2: // absolute move (M)
+					case 4: // absolute line (L)
+					case 12: // absolute horizontal line (H)
+					case 14: // absolute vertical line (V)
+					case 18: // absolute smooth quad (T)
+						curx = x;
+						cury = y;
 						newd += [" ", pathMap[type], scalew(x), ",", scaleh(y)].join('');
 						break;
-					case 6: // absolute cubic (C)
-						x -= curx; x1 -= curx; x2 -= curx;
-						y -= cury; y1 -= cury; y2 -= cury;
 					case 7: // relative cubic (c)
-						curx += x;
-						cury += y;
+						x += curx; x1 += curx; x2 += curx;
+						y += cury; y1 += curx; y2 += cury;
+					case 6: // absolute cubic (C)
+						curx = x;
+						cury = y;
 						newd += [" c", scalew(x1), ",", scaleh(y1), " ", scalew(x2), ",", scaleh(y2),
 									" ", scalew(x), ",", scaleh(y)].join('');
 						break;
-					case 8: // absolute quad (Q)
-						x -= curx; x1 -= curx;
-						y -= cury; y1 -= cury;
 					case 9: // relative quad (q) 
-						curx += x;
-						cury += y;
+						x += curx; x1 += curx;
+						y += cury; y1 += cury;
+					case 8: // absolute quad (Q)
+						curx = x;
+						cury = y;
 						newd += [" q", scalew(x1), ",", scaleh(y1), " ", scalew(x), ",", scaleh(y)].join('');
 						break;
-					case 10: // absolute elliptical arc (A)
-						x -= curx;
-						y -= cury;
 					case 11: // relative elliptical arc (a)
-						curx += x;
-						cury += y;
+						x += curx;
+						y += cury;
+					case 10: // absolute elliptical arc (A)
+						curx = x;
+						cury = y;
 						newd += [ "a", scalew(seg.r1), ",", scaleh(seg.r2), " ", seg.angle, " ", 
 									(seg.largeArcFlag ? 1 : 0), " ", (seg.sweepFlag ? 1 : 0), " ", 
 									scalew(x), ",", scaleh(y) ].join('')
 						break;
-					case 16: // absolute smooth cubic (S)
-						x -= curx; x2 -= curx;
-						y -= cury; y2 -= cury;
 					case 17: // relative smooth cubic (s)
-						curx += x;
-						cury += y;
+						x += curx; x2 += curx;
+						y += cury; y2 += cury;
+					case 16: // absolute smooth cubic (S)
+						curx = x;
+						cury = y;
 						newd += [" s", scalew(x2), ",", scaleh(y2), " ", scalew(x), ",", scaleh(y)].join('');
 						break;
 				} // switch on path segment type
