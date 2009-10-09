@@ -4326,34 +4326,25 @@ function BatchCommand(text) {
 		}
 	};
 
-	// this creates deep DOM copies (clones) of all selected elements
-	this.cloneSelectedElements = function() {
-		var copyElem = function(el) {
-			// Manual clone function for Opera/Win/non-EN. 
-			// Needed because cloneNode changes "." to "," on float values
-			if(!window.opera) {
-				var newElem = el.cloneNode(true);
-				// Webkit has a bug where a cloned element's transforms become matrix()
-				// we need to replace those with the original element's transforms
-				// TODO: raise webkit bug
-				var origtlist = el.transform.baseVal,
-					newtlist = newElem.transform.baseVal;
-				while (newtlist.numberOfItems > 0) {
-					newtlist.removeItem(0);
-				}
-				for (var j = 0; j < origtlist.numberOfItems; ++j) {
-					newtlist.appendItem( origtlist.getItem(j) );
-				}
-				return newElem;
-			}
-			var new_el = document.createElementNS(svgns, el.nodeName);
-			$.each(el.attributes, function(i, attr) {
-				var ns = attr.nodeName == 'href'?xlinkns:null;
-				new_el.setAttributeNS(ns, attr.nodeName, attr.nodeValue);
-			});
-			
-			$.each(el.childNodes, function(i, child) {
-				switch(child.nodeType) {
+	// this function no longer uses cloneNode because we need to update the id
+	// of every copied element (even the descendants)
+	// we also do it manually because Opera/Win/non-EN puts , instead of .
+	var copyElem = function(el) {
+		// manually create a copy of the element
+		var new_el = document.createElementNS(svgns, el.nodeName);
+		$.each(el.attributes, function(i, attr) {
+			var ns = attr.nodeName == 'href'?xlinkns:null;
+			new_el.setAttributeNS(ns, attr.nodeName, attr.nodeValue);
+		});
+		// set the copied element's new id
+		new_el.removeAttribute("id");
+		new_el.id = getNextId();
+		// manually increment obj_num because our cloned elements are not in the DOM yet
+		obj_num++; 
+		
+		// now create copies of all children
+		$.each(el.childNodes, function(i, child) {
+			switch(child.nodeType) {
 				case 1: // element node
 					new_el.appendChild(copyElem(child));
 					break;
@@ -4362,11 +4353,13 @@ function BatchCommand(text) {
 					break;
 				default:
 					break;
-				}
-			});
-			return new_el;
-		}
+			}
+		});
+		return new_el;
+	};
 	
+	// this creates deep DOM copies (clones) of all selected elements
+	this.cloneSelectedElements = function() {
 		var batchCmd = new BatchCommand("Clone Elements");
 		// find all the elements selected (stop at first null)
 		var len = selectedElements.length;
@@ -4383,8 +4376,6 @@ function BatchCommand(text) {
 		while (i--) {
 			// clone each element and replace it within copiedElements
 			var elem = copiedElements[i] = copyElem(copiedElements[i]);
-			elem.removeAttribute("id");
-			elem.id = getNextId();
 			current_layer.appendChild(elem);
 			batchCmd.addSubCommand(new InsertElementCommand(elem));
 		}
