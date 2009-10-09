@@ -972,9 +972,9 @@ function BatchCommand(text) {
 	};
 
 	// this is how we map paths to our preferred relative segment types
-	var pathMap = [ 0, 'z', 'm', 'm', 'l', 'l', 'c', 'c', 'q', 'q', 'a', 'a', 
+	var pathMap = [ 0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a', 
 					'l', 'l', 'l', 'l', // TODO: be less lazy below and map them to h and v
-					's', 's', 't', 't' ];
+					'S', 's', 'T', 't' ];
 
 	// this function returns the command which resulted from the selected change
 	var recalculateDimensions = function(selected,selectedBBox) {
@@ -1997,9 +1997,9 @@ function BatchCommand(text) {
 						y = mouse_y / current_zoom;
 					}
 					
-					c_item['x' + ctrl_num] = x - getPolyPoint(index)[0];
-					c_item['y' + ctrl_num] = y - getPolyPoint(index)[1];
-					replacePathSeg(7, index+1, [c_item.x,c_item.y, c_item.x1,c_item.y1, c_item.x2,c_item.y2]);
+					c_item['x' + ctrl_num] = x;
+					c_item['y' + ctrl_num] = y;
+					replacePathSeg(6, index+1, [c_item.x,c_item.y, c_item.x1,c_item.y1, c_item.x2,c_item.y2]);
 
 					var grip = document.getElementById("ctrlpointgrip_" + current_ctrl_pt_drag);
 					if(grip) {
@@ -2181,15 +2181,15 @@ function BatchCommand(text) {
 			
 			var index = i/2;
 			var item = current_poly.pathSegList.getItem(index);
-			if(item.pathSegType == 7) {
+			if(item.pathSegType == 6) {
 				index -= 1;
 				// Same code as when making a curve, needs to be in own function
 				var cur_x = getPolyPoint(index)[0];
 				var cur_y = getPolyPoint(index)[1];
 				var next_x = getPolyPoint(index+1)[0];
 				var next_y = getPolyPoint(index+1)[1];
-				addControlPointGrip(cur_x + item.x1,cur_y + item.y1, cur_x,cur_y, index+'c1');
-				addControlPointGrip(cur_x + item.x2,cur_y + item.y2, next_x,next_y, index+'c2');
+				addControlPointGrip(item.x1,item.y1, cur_x,cur_y, index+'c1');
+				addControlPointGrip(item.x2,item.y2, next_x,next_y, index+'c2');
 			} 
 		}
 		// FIXME:  we cannot just use the same transform as the poly because we might be 
@@ -2312,8 +2312,8 @@ function BatchCommand(text) {
 		}
 
 		var index = current_poly_pt_drag;
-		var rel_x = (getPolyPoint(index)[0] - getPolyPoint(index-1)[0]);
-		var rel_y = (getPolyPoint(index)[1] - getPolyPoint(index-1)[1]);
+		var abs_x = getPolyPoint(index)[0];
+		var abs_y = getPolyPoint(index)[1];
 		
 		var item = current_poly.pathSegList.getItem(index);
 		var x_diff = x - old_poly_pts[index*2];
@@ -2322,14 +2322,14 @@ function BatchCommand(text) {
 		var cur_type = item.pathSegType;
 		var points = [];
 		
-		if(cur_type == 7) {
-			points = [rel_x,rel_y, item.x1,item.y1, item.x2 + x_diff,item.y2 + y_diff];
+		if(cur_type == 6) {
+			points = [abs_x,abs_y, item.x1,item.y1, item.x2 + x_diff,item.y2 + y_diff];
 		} else {
 			if(is_first) {
 				// Need absolute position for first point
 				points = getPolyPoint(0);
 			} else {
-				points = [rel_x, rel_y];
+				points = [abs_x, abs_y];
 			}
 		}
 		replacePathSeg(cur_type, index, points);
@@ -2338,22 +2338,19 @@ function BatchCommand(text) {
 			var points, item = current_poly.pathSegList.getItem(index);
 			var type = item.pathSegType;
 			if(first) {
-				x_diff *= -1;
-				y_diff *= -1;
+				item.x += x_diff;
+				item.y += y_diff;
 			}
-
-			var end_x = item.x - x_diff;
-			var end_y = item.y - y_diff;
 
 			switch (type) {
 			case 1:
 				points = [];
 				break;
-			case 5:
-				points = [end_x, end_y];
+			case 4:
+				points = [item.x, item.y];
 				break;
-			case 7:
-				points = [end_x, end_y, item.x1,item.y1, item.x2 - x_diff,item.y2 - y_diff];
+			case 6:
+				points = [item.x, item.y, item.x1 + x_diff,item.y1 + y_diff, item.x2,item.y2];
 				break;
 			default:
 				break;
@@ -2370,8 +2367,8 @@ function BatchCommand(text) {
 		
 		if(is_first && is_closed) {
 			var last_type = setSeg(last_index,1);
-			x_diff *= -1;
-			y_diff *= -1;
+// 			x_diff *= -1;
+// 			y_diff *= -1;
 		}
 			
 		// Original method: Re-calculate the "d" attribute
@@ -2411,7 +2408,7 @@ function BatchCommand(text) {
 		// move the control grips + lines
 		if(is_first) cur_type = last_type;
 		
-		if(cur_type != 5) {
+		if(cur_type != 4) {
 			var num = is_first?last_index:index;
 			var id2 = (num-1)+'c2';
 			var line = document.getElementById("ctrlLine_"+id2);
@@ -2422,7 +2419,7 @@ function BatchCommand(text) {
 			}
 		}
 		
-		if(next_type != 5) {
+		if(next_type != 4) {
 			var id1 = (current_poly_pt_drag)+'c1';
 			var line = document.getElementById("ctrlLine_"+id1);
 			if(line) {
@@ -2452,7 +2449,7 @@ function BatchCommand(text) {
 		var seg = poly[func].apply(poly, pts);
 		poly.pathSegList.replaceItem(seg, index);
 		// Fyrd: here's where i think it needs to be used
-//		poly.setAttribute("d", convertToD(poly.pathSegList));
+// 		poly.setAttribute("d", convertToD(poly.pathSegList));
 	}
 	
 	var addControlPointGrip = function(x, y, source_x, source_y, id, raw_val) {
@@ -2779,9 +2776,9 @@ function BatchCommand(text) {
 						// otherwise, close the poly
 						if (i == 0 && len >= 6) {
 							// Create end segment
-							var rel_x = (getPolyPoint(0)[0] - getPolyPoint(-1)[0]);
-							var rel_y = (getPolyPoint(0)[1] - getPolyPoint(-1)[1]);
-							d_attr += ['l',rel_x,',',rel_y,'z'].join('');
+							var abs_x = getPolyPoint(0)[0];
+							var abs_y = getPolyPoint(0)[1];
+							d_attr += ['L',abs_x,',',abs_y,'z'].join('');
 							poly.setAttribute("d", d_attr);
 						} else if(len < 3) {
 							keep = false;
@@ -2799,9 +2796,7 @@ function BatchCommand(text) {
 						// we store absolute values in our poly points array for easy checking above
 						current_poly_pts.push(x);
 						current_poly_pts.push(y);
-						// but we store relative coordinates in the d string of the poly for easy
-						// translation around the canvas in move mode
-						d_attr += "l" + round(x-lastx) + "," + round(y-lasty) + " ";
+						d_attr += "L" + round(x) + "," + round(y) + " ";
 						poly.setAttribute("d", d_attr);
 
 						// set stretchy line to latest point
@@ -3400,17 +3395,15 @@ function BatchCommand(text) {
 		// Get point in between nodes
 		if(next_item.pathSegType % 2 == 0) { // even num, so abs
 			var cur_item = list.getItem(pt);
-			var new_x = (next_item.x - cur_item.x) / 2;
-			var new_y = (next_item.y - cur_item.y) / 2;
+			var new_x = (next_item.x + cur_item.x) / 2;
+			var new_y = (next_item.y + cur_item.y) / 2;
 		} else {
 			var new_x = next_item.x/2;
 			var new_y = next_item.y/2;
 		}
 		
-		var seg = current_poly.createSVGPathSegLinetoRel(new_x, new_y);
+		var seg = current_poly.createSVGPathSegLinetoAbs(new_x, new_y);
 		list.insertItemBefore(seg, pt+1); // Webkit doesn't do this right.
-		
-		replacePathSeg(5, pt+2, [new_x, new_y]);
 		
 		var abs_x = (getPolyPoint(pt)[0] + new_x) * current_zoom;
 		var abs_y = (getPolyPoint(pt)[1] + new_y) * current_zoom;
@@ -3425,6 +3418,8 @@ function BatchCommand(text) {
 		
 		resetPointGrips();
 		this.addNodeToSelection(pt+1);
+		
+	// 	current_poly.setAttribute("d", convertToD(current_poly.pathSegList));
 	}
 
 	this.deletePolyNode = function() {
@@ -3441,14 +3436,11 @@ function BatchCommand(text) {
 			
 			// Reposition last node
 			var last_item = list.getItem(last_pt);
-			replacePathSeg(5, last_pt, [next_x - getPolyPoint(last_pt-1)[0], next_y - getPolyPoint(last_pt-1)[1]]);
+			replacePathSeg(4, last_pt, [next_x, next_y]);
 			removeControlPointGrips(last_pt - 1);
 			current_poly_pts.splice(last_pt*2, 2, next_x, next_y);
 			current_poly_pts.splice(0, 2);
 		} else {
-			// Since relative values are used, the current point's values need to be added to the next one.
-			// Hard to tell whether it should be straight or curve, so always straight for now
-			replacePathSeg(5, pt+1, [next_item.x + cur_item.x, next_item.y + cur_item.y]);
 			current_poly_pts.splice(pt*2, 2);
 		}
 
@@ -3977,8 +3969,8 @@ function BatchCommand(text) {
 		var next_x = getPolyPoint(next_index)[0];
 		var next_y = getPolyPoint(next_index)[1];
 		
-		var next_rel_x = next_x - cur_x;
-		var next_rel_y = next_y - cur_y;
+// 		var next_rel_x = next_x - cur_x;
+// 		var next_rel_y = next_y - cur_y;
 		
 		if(!new_type) { // double-click, so just toggle
 			var batchCmd = new BatchCommand("Toggle Poly Segment Type");
@@ -3986,7 +3978,7 @@ function BatchCommand(text) {
 			// Toggle segment to curve/straight line
 			var old_type = current_poly.pathSegList.getItem(index+1).pathSegType;
 			
-			new_type = (old_type == 7) ? 5 : 7;
+			new_type = (old_type == 6) ? 4 : 6;
 
 		} else {
 			new_type -= 0;
@@ -3994,22 +3986,26 @@ function BatchCommand(text) {
 		}
 		
 		var points;
+
 		
 		switch ( new_type ) {
-		case 7:
-			var ct1_x = (next_y/-2 - cur_y/-2);
-			var ct1_y = (next_x/-2 - cur_x/-2);
-			var ct2_x = (next_y/-2 - cur_y/-2);
-			var ct2_y = (next_x/-2 - cur_x/-2);
+		case 6:
+			var diff_x = next_x - cur_x;
+			var diff_y = next_y - cur_y;
+		
+			var ct1_x = cur_x + (diff_y/2);
+			var ct1_y = cur_y - (diff_x/2);
+			var ct2_x = next_x + (diff_y/2);
+			var ct2_y = next_y - (diff_x/2);
 			
-			points = [next_rel_x,next_rel_y, ct1_x,ct1_y, ct2_x+next_rel_x,ct2_y+next_rel_y];
+			points = [next_x,next_y, ct1_x,ct1_y, ct2_x,ct2_y];
 			
 			// Add the control points + lines
-			addControlPointGrip(ct1_x+cur_x,ct1_y+cur_y, cur_x,cur_y, index+'c1');
-			addControlPointGrip(ct2_x+next_x,ct2_y+next_y, next_x,next_y, index+'c2');
+			addControlPointGrip(ct1_x,ct1_y, cur_x,cur_y, index+'c1');
+			addControlPointGrip(ct2_x,ct2_y, next_x,next_y, index+'c2');
 			break;
-		case 5:
-			points = [next_rel_x,next_rel_y];
+		case 4:
+			points = [next_x,next_y];
 			removeControlPointGrips(index);
 			break;
 		}
