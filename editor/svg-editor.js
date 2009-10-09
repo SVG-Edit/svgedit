@@ -210,8 +210,9 @@ function svg_edit_setup() {
 				$('#poly_node_panel').show();
 				var point = svgCanvas.getNodePoint();
 				if(point) {
-					$('#poly_node_x').val(point[0]);
-					$('#poly_node_y').val(point[1]);
+					$('#poly_node_x').val(point.x);
+					$('#poly_node_y').val(point.y);
+					$('#seg_type').val(point.type);
 				}
 				return;
 			}
@@ -351,6 +352,10 @@ function svg_edit_setup() {
 
 	$('#font_family').change(function(){
 		svgCanvas.setFontFamily(this.options[this.selectedIndex].value);
+	});
+
+	$('#seg_type').change(function() {
+		svgCanvas.setSegType($(this).val());
 	});
 
 	$('#text').keyup(function(){
@@ -633,15 +638,15 @@ function svg_edit_setup() {
 		}
 	};
 
-	var cloneNode = function() {
+	var clonePolyNode = function() {
 		if (svgCanvas.getNodePoint()) {
-			svgCanvas.cloneNode();
+			svgCanvas.clonePolyNode();
 		}
 	};
 	
-	var deleteNode = function() {
+	var deletePolyNode = function() {
 		if (svgCanvas.getNodePoint()) {
-			svgCanvas.deleteNode();
+			svgCanvas.deletePolyNode();
 		}
 	};
 	
@@ -858,8 +863,8 @@ function svg_edit_setup() {
 	$('#tool_docprops').click(showDocProperties);
 	$('#tool_delete').click(deleteSelected);
 	$('#tool_delete_multi').click(deleteSelected);
-	$('#tool_node_clone').click(cloneNode);
-	$('#tool_node_delete').click(deleteNode);
+	$('#tool_node_clone').click(clonePolyNode);
+	$('#tool_node_delete').click(deletePolyNode);
 	$('#tool_move_top').click(moveToTopSelected);
 	$('#tool_move_bottom').click(moveToBottomSelected);
 	$('#tool_undo').click(clickUndo);

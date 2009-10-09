@@ -1007,8 +1007,6 @@ function BatchCommand(text) {
 		
 		// if there was a rotation transform, re-set it, otherwise empty out the transform attribute
 		var angle = canvas.getRotationAngle(selected);
-		var pointGripContainer = document.getElementById("polypointgrip_container");
-		var ctrlPointGripContainer = document.getElementById("ctrlpointgrip_container");
 		if (angle) {
 			// this is our old center upon which we have rotated the shape
 			var tr_x = round(box.x + box.width/2),
@@ -1068,26 +1066,14 @@ function BatchCommand(text) {
 			var changes = {};
 			changes["transform"] = ["rotate(", angle, " ", tr_x, ",", tr_y, ")"].join('');
 			batchCmd.addSubCommand(new ChangeElementCommand(selected, changes));
-			if(pointGripContainer) {
-				pointGripContainer.setAttribute("transform", rotate);
-			}
-			if(ctrlPointGripContainer) {
-				ctrlPointGripContainer.setAttribute("transform", rotate);
-			}
+			setPointContainerTransform(rotate);
 		}
 		else {
 			// This fixes Firefox 2- behavior - which does not reset values when the attribute has
 			// been removed, see https://bugzilla.mozilla.org/show_bug.cgi?id=320622
 			selected.setAttribute("transform", "");
 			selected.removeAttribute("transform");
-			if(pointGripContainer) {
-				pointGripContainer.setAttribute("transform", "");
-				pointGripContainer.removeAttribute("transform");
-			}
-			if(ctrlPointGripContainer) {
-				ctrlPointGripContainer.setAttribute("transform", "");
-				ctrlPointGripContainer.removeAttribute("transform");
-			}			
+			setPointContainerTransform("");
 		}
 		
 		// if it's a group, transfer the transform attribute to each child element
@@ -2046,6 +2032,16 @@ function BatchCommand(text) {
 		svgroot.unsuspendRedraw(sr);
 	};
 	
+	var setPointContainerTransform = function(value) {
+		var conts = $('#polypointgrip_container,#ctrlpointgrip_container');
+		$.each(conts,function() {
+			this.setAttribute("transform", value);
+			if(!value) {
+				this.removeAttribute("transform");
+			}
+		});
+	}
+	
 	var recalcPolyPoints = function() {
 		current_poly_pts = [];
 		var segList = current_poly.pathSegList;
@@ -2093,7 +2089,7 @@ function BatchCommand(text) {
 		$('#ctrlpointgrip_container *').attr('display','none');
 	};
 
-	var addAllPointGripsToPoly = function() {
+	var addAllPointGripsToPoly = function(pointToSelect) {
 		// loop through and show all pointgrips
 		var len = current_poly_pts.length;
 		for (var i = 0; i < len; i += 2) {
@@ -2122,8 +2118,6 @@ function BatchCommand(text) {
 				addControlPointGrip(cur_x + item.x2,cur_y + item.y2, next_x,next_y, index+'c2');
 			} 
 		}
-		var pointGripContainer = document.getElementById("polypointgrip_container");
-		var ctrlPointGripContainer = document.getElementById("ctrlpointgrip_container");
 		// FIXME:  we cannot just use the same transform as the poly because we might be 
 		// at a different zoom level
 		var angle = canvas.getRotationAngle(current_poly);
@@ -2132,8 +2126,10 @@ function BatchCommand(text) {
 			var cx = (bbox.x + bbox.width/2) * current_zoom,
 				cy = (bbox.y + bbox.height/2) * current_zoom;
 			var xform = ["rotate(", angle, " ", cx, ",", cy, ")"].join("");
-			pointGripContainer.setAttribute("transform", xform);
-			if(ctrlPointGripContainer) ctrlPointGripContainer.setAttribute("transform", xform);
+			setPointContainerTransform(xform);
+		}
+		if(pointToSelect != null) {
+			canvas.addNodeToSelection(pointToSelect);
 		}
 	};
 
@@ -2163,61 +2159,11 @@ function BatchCommand(text) {
 			pointGrip = pointGripContainer.appendChild(pointGrip);
 
 			var grip = $('#polypointgrip_'+index);
-			grip.mouseover( function() { this.setAttribute("stroke", "#F00"); } );
-			grip.mouseout( function() {this.setAttribute("stroke", "#00F"); } );
+// 			grip.mouseover( function() { this.setAttribute("stroke", "#F00"); } );
+// 			grip.mouseout( function() {this.setAttribute("stroke", "#00F"); } );
 			grip.dblclick( function() {
-			
-				var old_d = current_poly.getAttribute('d');
 				
-				// Index could have changed by deleting nodes
-				index = grip[0].id.split('_')[1] - 0;
-				
-				var last_index = current_poly_pts.length/2 - 1;
-				var is_closed = current_poly.getAttribute('d').toLowerCase().indexOf('z') != -1; 
-				
-				if(!is_closed && index == last_index) {
-					return; // Last point of unclosed poly should do nothing
-				} else if(index >= last_index && is_closed) {
-					index = 0;
-				}
-				
-				var batchCmd = new BatchCommand("Toggle Poly Segment Type");
-				
-				// Toggle segment to curve/straight line
-				var type = current_poly.pathSegList.getItem(index+1).pathSegType;
-				
-				var next_index = index+1;
-				
-				var cur_x = getPolyPoint(index)[0];
-				var cur_y = getPolyPoint(index)[1];
-				var next_x = getPolyPoint(next_index)[0];
-				var next_y = getPolyPoint(next_index)[1];
-				
-				var next_rel_x = next_x - cur_x;
-				var next_rel_y = next_y - cur_y;
-
-				if(type != 7) { // 6 = abs, 7 = rel
-					// Change to CubicRel curve
-					
-					var ct1_x = (next_y/-2 - cur_y/-2);
-					var ct1_y = (next_x/-2 - cur_x/-2);
-					var ct2_x = (next_y/-2 - cur_y/-2);
-					var ct2_y = (next_x/-2 - cur_x/-2);
-
-					replacePathSeg(7, next_index, [next_rel_x,next_rel_y, ct1_x,ct1_y, ct2_x+next_rel_x,ct2_y+next_rel_y]);
-					
-					// Add the control points + lines
-					addControlPointGrip(ct1_x+cur_x,ct1_y+cur_y, cur_x,cur_y, index+'c1');
-					addControlPointGrip(ct2_x+next_x,ct2_y+next_y, next_x,next_y, index+'c2');
-				} else {
-					// Revert to relative line
-					replacePathSeg(5, next_index, [next_rel_x,next_rel_y]);
-					removeControlPointGrips(index);
-				}
-
-				batchCmd.addSubCommand(new ChangeElementCommand(current_poly, {d: old_d}));
-				addCommandToHistory(batchCmd);
-				call("changed", [current_poly]);
+				canvas.setSegType();
 			});
 		}
 
@@ -2228,6 +2174,28 @@ function BatchCommand(text) {
 			'display': "inline",
 		});
 	};
+	
+	// Hack for Webktit to change the segment list from absolute values
+	// back to relative values. Probably inefficient, so not currently used
+// 	var fixWebkitNodes = function() {
+// 		var list = current_poly.pathSegList;
+// 		var pts = current_poly_pts;
+// 		var num = list.numberOfItems;
+// 		for(var i = 0; i<num; i++) {
+// 			var item = list.getItem(i);
+// 			if(item.pathSegType == 4) {
+// 				list.removeItem(i);
+// 				var rel_x = pts[i*2] - pts[(i-1)*2];
+// 				var rel_y = pts[i*2 + 1] - pts[(i-1)*2 + 1];
+// 				var seg = current_poly.createSVGPathSegLinetoRel(rel_x, rel_y);
+// 				list.insertItemBefore(seg, i);
+// 				i--;
+// 			}
+// 		}
+// 		for(var i = 0; i<num; i++) {
+// 			var item = list.getItem(i);
+// 		}
+// 	}
 	
 	var updatePoly = function(mouse_x, mouse_y, old_poly_pts) {
     	var x = mouse_x / current_zoom;
@@ -2864,16 +2832,11 @@ function BatchCommand(text) {
 						oldvalues["transform"] = current_poly.getAttribute("rotate");
 						current_poly.setAttribute("transform", rotate);
 						
-						var pointGripContainer = document.getElementById("polypointgrip_container");
-						var ctrlPointGripContainer = document.getElementById("ctrlpointgrip_container");
-						if(pointGripContainer) {
+						if(document.getElementById("polypointgrip_container")) {
 							var pcx = newcx * current_zoom,
 								pcy = newcy * current_zoom;
 							var xform = ["rotate(", (angle*180.0/Math.PI), " ", pcx, ",", pcy, ")"].join("");
-							pointGripContainer.setAttribute("transform", xform);
-							if(ctrlPointGripContainer) {
-								ctrlPointGripContainer.setAttribute("transform", xform);
-							}
+							setPointContainerTransform(xform);
 						}
 					} // if rotated
 
@@ -2924,7 +2887,16 @@ function BatchCommand(text) {
 			element.setAttribute("opacity", cur_shape.opacity);
 			cleanupElement(element);
 			selectorManager.update();
-			canvas.addToSelection([element], true);
+			
+ 			if(current_mode == "poly") {
+ 				current_poly = element;
+//  				selectedBBoxes[0] = canvas.getBBox(current_poly);
+				current_mode = "polyedit";
+				recalcPolyPoints();
+				addAllPointGripsToPoly(current_poly_pts.length/2 - 1);
+ 			} else {
+				canvas.addToSelection([element], true);
+			}
 			// we create the insert command that is stored on the stack
 			// undo means to call cmd.unapply(), redo means to call cmd.apply()
 			addCommandToHistory(new InsertElementCommand(element));
@@ -3296,13 +3268,22 @@ function BatchCommand(text) {
 	
 	this.getNodePoint = function() {	
 		if(current_poly_pt != -1) {
-			return getPolyPoint(current_poly_pt, true);
+			var pt = getPolyPoint(current_poly_pt, true);
+			var segtype = current_poly.pathSegList.getItem(current_poly_pt+1).pathSegType;
+			return {
+				x: pt[0],
+				y: pt[1],
+				type: segtype
+			}
 		} else {
 			return false;
 		}
 	}
 
-	this.cloneNode = function() {
+	this.clonePolyNode = function() {
+	
+// 		fixWebkitNodes();
+		
 		var pt = current_poly_pt, list = current_poly.pathSegList;
 
 		var next_item = list.getItem(pt+1); 
@@ -3329,7 +3310,7 @@ function BatchCommand(text) {
 		
 		// Add new grip
 		addPointGripToPoly(abs_x, abs_y, last_num);
-		
+
 		// Update poly_pts
 		current_poly_pts.splice(pt*2 + 2, 0, abs_x, abs_y);
 		
@@ -3337,7 +3318,7 @@ function BatchCommand(text) {
 		this.addNodeToSelection(pt+1);
 	}
 
-	this.deleteNode = function() {
+	this.deletePolyNode = function() {
 		var last_pt = current_poly_pts.length/2 - 1;
 		var pt = current_poly_pt, list = current_poly.pathSegList;
 		var cur_item = list.getItem(pt);
@@ -3762,12 +3743,8 @@ function BatchCommand(text) {
 			this.changeSelectedAttribute("transform",rotate,selectedElements);
 		}
 		var pointGripContainer = document.getElementById("polypointgrip_container");
-		var ctrlPointGripContainer = document.getElementById("ctrlpointgrip_container");
 		if(elem.nodeName == "path" && pointGripContainer) {
-			pointGripContainer.setAttribute("transform", rotate);
-			if(ctrlPointGripContainer) {
-				ctrlPointGripContainer.setAttribute("transform", rotate);
-			}
+			setPointContainerTransform(rotate);
 		}
 		selectorManager.requestSelector(selectedElements[0]).updateGripCursors(val);
 	};
@@ -3869,6 +3846,71 @@ function BatchCommand(text) {
 			}
 		}
 	};
+	
+	this.setSegType = function(new_type) {
+		var grip = $('#polypointgrip_' + current_poly_pt);
+		var old_d = current_poly.getAttribute('d');
+		
+		var index = grip[0].id.split('_')[1] - 0;
+		
+		var last_index = current_poly_pts.length/2 - 1;
+		var is_closed = current_poly.getAttribute('d').toLowerCase().indexOf('z') != -1; 
+		
+		if(!is_closed && index == last_index) {
+			return; // Last point of unclosed poly should do nothing
+		} else if(index >= last_index && is_closed) {
+			index = 0;
+		}
+
+		var next_index = index+1;
+		var cur_x = getPolyPoint(index)[0];
+		var cur_y = getPolyPoint(index)[1];
+		var next_x = getPolyPoint(next_index)[0];
+		var next_y = getPolyPoint(next_index)[1];
+		
+		var next_rel_x = next_x - cur_x;
+		var next_rel_y = next_y - cur_y;
+		
+		if(!new_type) { // double-click, so just toggle
+			var batchCmd = new BatchCommand("Toggle Poly Segment Type");
+
+			// Toggle segment to curve/straight line
+			var old_type = current_poly.pathSegList.getItem(index+1).pathSegType;
+			
+			new_type = (old_type == 7) ? 5 : 7;
+
+		} else {
+			new_type -= 0;
+			var batchCmd = new BatchCommand("Change Poly Segment Type");
+		}
+		
+		var points;
+		
+		switch ( new_type ) {
+		case 7:
+			var ct1_x = (next_y/-2 - cur_y/-2);
+			var ct1_y = (next_x/-2 - cur_x/-2);
+			var ct2_x = (next_y/-2 - cur_y/-2);
+			var ct2_y = (next_x/-2 - cur_x/-2);
+			
+			points = [next_rel_x,next_rel_y, ct1_x,ct1_y, ct2_x+next_rel_x,ct2_y+next_rel_y];
+			
+			// Add the control points + lines
+			addControlPointGrip(ct1_x+cur_x,ct1_y+cur_y, cur_x,cur_y, index+'c1');
+			addControlPointGrip(ct2_x+next_x,ct2_y+next_y, next_x,next_y, index+'c2');
+			break;
+		case 5:
+			points = [next_rel_x,next_rel_y];
+			removeControlPointGrips(index);
+			break;
+		}
+		
+		replacePathSeg(new_type, next_index, points);
+		
+		batchCmd.addSubCommand(new ChangeElementCommand(current_poly, {d: old_d}));
+		addCommandToHistory(batchCmd);
+		call("changed", [current_poly]);
+	}
 	
 	this.quickClone = function(elem) {
 		// Hack for Firefox bugs where text element features aren't updated
