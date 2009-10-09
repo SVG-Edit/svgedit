@@ -972,9 +972,9 @@ function BatchCommand(text) {
 	};
 
 	// this is how we map paths to our preferred relative segment types
-	var pathMap = [ 0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a', 
-					'l', 'l', 'l', 'l', // TODO: be less lazy below and map them to h and v
-					'S', 's', 'T', 't' ];
+	var pathMap = [ 0, 'z', 'M', 'M', 'L', 'L', 'C', 'C', 'Q', 'Q', 'A', 'A', 
+					'L', 'L', 'L', 'L', // TODO: be less lazy below and map them to h and v
+					'S', 'S', 'T', 'T' ];
 
 	// this function returns the command which resulted from the selected change
 	var recalculateDimensions = function(selected,selectedBBox) {
@@ -1183,7 +1183,8 @@ function BatchCommand(text) {
 					case 18: // absolute smooth quad (T)
 						curx = x;
 						cury = y;
-						newd += [" ", pathMap[type], scalew(x), ",", scaleh(y)].join('');
+						var pt = remap(x,y);
+						newd += [" ", pathMap[type], pt.x, ",", pt.y].join('');
 						break;
 					case 7: // relative cubic (c)
 						x += curx; x1 += curx; x2 += curx;
@@ -1191,8 +1192,9 @@ function BatchCommand(text) {
 					case 6: // absolute cubic (C)
 						curx = x;
 						cury = y;
-						newd += [" c", scalew(x1), ",", scaleh(y1), " ", scalew(x2), ",", scaleh(y2),
-									" ", scalew(x), ",", scaleh(y)].join('');
+						var pt = remap(x,y), pt1 = remap(x1,y1), pt2 = remap(x2,y2);
+						newd += [" ", pathMap[type], pt1.x, ",", pt1.y, " ", pt2.x, ",", pt2.y,
+									" ", pt.x, ",", pt.y].join('');
 						break;
 					case 9: // relative quad (q) 
 						x += curx; x1 += curx;
@@ -1200,7 +1202,8 @@ function BatchCommand(text) {
 					case 8: // absolute quad (Q)
 						curx = x;
 						cury = y;
-						newd += [" q", scalew(x1), ",", scaleh(y1), " ", scalew(x), ",", scaleh(y)].join('');
+						var pt = remap(x,y), pt1 = remap(x1,y1);
+						newd += [" ", pathMap[type], pt1.x, ",", pt1.y, " ", pt.x, ",", pt.y].join('');
 						break;
 					case 11: // relative elliptical arc (a)
 						x += curx;
@@ -1208,17 +1211,19 @@ function BatchCommand(text) {
 					case 10: // absolute elliptical arc (A)
 						curx = x;
 						cury = y;
-						newd += [ "a", scalew(seg.r1), ",", scaleh(seg.r2), " ", seg.angle, " ", 
+						var pt = remap(x,y);
+						newd += [" ", pathMap[type], scalew(seg.r1), ",", scaleh(seg.r2), " ", seg.angle, " ", 
 									(seg.largeArcFlag ? 1 : 0), " ", (seg.sweepFlag ? 1 : 0), " ", 
-									scalew(x), ",", scaleh(y) ].join('')
+									pt.x, ",", pt.y ].join('')
 						break;
 					case 17: // relative smooth cubic (s)
 						x += curx; x2 += curx;
 						y += cury; y2 += cury;
+						var pt = remap(x,y), pt2 = remap(x2,y2);
 					case 16: // absolute smooth cubic (S)
 						curx = x;
 						cury = y;
-						newd += [" s", scalew(x2), ",", scaleh(y2), " ", scalew(x), ",", scaleh(y)].join('');
+						newd += [" ", pathMap[type], pt2.x, ",", pt2.y, " ", pt.x, ",", pt.y].join('');
 						break;
 				} // switch on path segment type
 			} // for each segment
