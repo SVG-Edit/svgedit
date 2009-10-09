@@ -3051,8 +3051,8 @@ function BatchCommand(text) {
 						orphans.push(child);
 					}
 				}
-				// if child has a bbox (i.e. not a <title> element), then it is an orphan
-				else if(child.getBBox) {
+				// if child has a bbox (i.e. not a <title> or <defs> element), then it is an orphan
+				else if(canvas.getBBox(child)) {
 					orphans.push(child);
 				}
 			}
@@ -3712,13 +3712,15 @@ function BatchCommand(text) {
 
 	this.getBBox = function(elem) {
 		var selected = elem || selectedElements[0];
-
+		if (elem.nodeType != 1) return null;
+		var ret = null;
 		if(elem.nodeName == 'text' && selected.textContent == '') {
 			selected.textContent = 'a'; // Some character needed for the selector to use.
-			var ret = selected.getBBox();
+			ret = selected.getBBox();
 			selected.textContent = '';
 		} else {
-			var ret = selected.getBBox();
+			try { ret = selected.getBBox(); } 
+			catch(e) { ret = null; }
 		}
 
 		// get the bounding box from the DOM (which is in that element's coordinate system)
