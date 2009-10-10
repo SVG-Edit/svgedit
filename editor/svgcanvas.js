@@ -3192,6 +3192,15 @@ function BatchCommand(text) {
 		return all_layers.length;
 	};
 	
+	// Function: getLayer
+	// This function returns the name of the ith layer.  If the index is out of range,
+	// then an empty string is returned.
+	//
+	// Parameters:
+	// i - the zero-based index of the layer you are querying.
+	// 
+	// Returns:
+	// The name of the ith layer
 	this.getLayer = function(i) {
 		if (i >= 0 && i < canvas.getNumLayers()) {
 			return all_layers[i][0];
@@ -3199,6 +3208,12 @@ function BatchCommand(text) {
 		return "";
 	};
 	
+	// Function: getCurrentLayer
+	// This function returns the name of the currently selected layer.  If an error occurs,
+	// an empty string is returned.
+	//
+	// Returns:
+	// The name of the currently active layer.
 	this.getCurrentLayer = function() {
 		for (var i = 0; i < all_layers.length; ++i) {
 			if (all_layers[i][1] == current_layer) {
@@ -3208,6 +3223,15 @@ function BatchCommand(text) {
 		return "";
 	};
 	
+	// Function: setCurrentLayer
+	// This function sets the current layer.  If the name is not a valid layer name, then this
+	// function returns false.  Otherwise it returns true.  This is not an undo-able action.
+	//
+	// Parameters:
+	// name - the name of the layer you want to switch to.
+	//
+	// Returns:
+	// true if the current layer was switched, otherwise false
 	this.setCurrentLayer = function(name) {
 		name = toXml(name);
 		for (var i = 0; i < all_layers.length; ++i) {
@@ -3224,6 +3248,17 @@ function BatchCommand(text) {
 		return false;
 	};
 	
+	// Function: renameCurrentLayer
+	// This function renames the current layer.  This is an undo-able action.  If the layer name 
+	// is not valid (i.e. unique), then this function does nothing and returns false, otherwise
+	// it returns true.
+	// 
+	// Parameters:
+	// newname - the new name you want to give the current layer.  This name must be unique 
+	// among all layer names.
+	//
+	// Returns:
+	// true if the rename succeeded, false otherwise.
 	this.renameCurrentLayer = function(newname) {
 		if (current_layer) {
 			var oldLayer = current_layer;
@@ -3259,6 +3294,17 @@ function BatchCommand(text) {
 		return false;
 	};
 	
+	// Function: setCurrentLayerPosition
+	// This function changes the position of the current layer to the new value.  This is an
+	// undo-able action.  If the new index is not valid, this function does nothing and returns
+	// false, otherwise it returns true.
+	//
+	// Parameters:
+	// newpos - The zero-based index of the new position of the layer.  This should be between
+	// 0 and (number of layers - 1)
+	// 
+	// Returns:
+	// true if the current layer position was changed, false otherwise.
 	this.setCurrentLayerPosition = function(newpos) {
 		if (current_layer && newpos >= 0 && newpos < all_layers.length) {
 			for (var oldpos = 0; oldpos < all_layers.length; ++oldpos) {
@@ -3290,10 +3336,18 @@ function BatchCommand(text) {
 			}
 		}
 		
-		// TODO: if i differs, then MoveElementCommand
 		return false;
 	};
 	
+	// Function: getLayerVisibility
+	// This function returns whether the layer is visible.  If the layer name is not valid, then
+	// this function returns false.
+	//
+	// Parameters:
+	// layername - the name of the layer which you want to query.
+	//
+	// Returns:
+	// The visibility state of the layer, or false if the layer name was invalid.
 	this.getLayerVisibility = function(layername) {
 		// find the layer
 		var layer = null;
@@ -3307,6 +3361,16 @@ function BatchCommand(text) {
 		return (layer.getAttribute("display") != "none");
 	};
 	
+	// Function: setLayerVisibility
+	// This function sets the visibility of the layer.  This is an undo-able action.  If the 
+	// layer name is not valid, this function return false, otherwise it returns true.
+	//
+	// Parameters:
+	// layername - the name of the layer to change the visibility
+	// bVisible - true/false, whether the layer should be visible
+	//
+	// Returns:
+	// true if the layer's visibility was set, false otherwise
 	this.setLayerVisibility = function(layername, bVisible) {
 		// find the layer
 		var layer = null;
@@ -3327,6 +3391,46 @@ function BatchCommand(text) {
 			canvas.clearSelection();
 		}
 //		call("changed", [selected]);
+		
+		return true;
+	};
+	
+	// Function: moveSelectedToLayer
+	// This function moves the selected elements to layername.  This is an undo-able action.
+	// If the name is not a valid layer name, then false is returned.  Otherwise it returns true.
+	//
+	// Parameters:
+	// layername - the name of the layer you want to which you want to move the selected elements
+	//
+	// Returns:
+	// true if the selected elements were moved to the layer, false otherwise.
+	this.moveSelectedToLayer = function(layername) {
+		// find the layer
+		var layer = null;
+		for (var i = 0; i < all_layers.length; ++i) {
+			if (all_layers[i][0] == layername) {
+				layer = all_layers[i][1];
+				break;
+			}
+		}
+		if (!layer) return false;
+		
+		var batchCmd = new BatchCommand("Move Elements to Layer");
+		
+		// loop for each selected element and move it
+		var selElems = selectedElements;
+		var i = selElems.length;
+		while (i--) {
+			var elem = selElems[i];
+			if (!elem) continue;
+			var oldNextSibling = elem.nextSibling;
+			// TODO: this is pretty brittle!
+			var oldLayer = elem.parentNode;
+			layer.appendChild(elem);
+			batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldLayer));
+		}
+		
+		addCommandToHistory(batchCmd);
 		
 		return true;
 	};

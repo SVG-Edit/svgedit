@@ -190,6 +190,7 @@ function svg_edit_setup() {
 	// updates the context panel tools based on the selected element
 	var updateContextPanel = function() {
 		var elem = selectedElement;
+		var currentLayer = svgCanvas.getCurrentLayer();
 		
 		// No need to update anything else in rotate mode
 		if (svgCanvas.getMode() == 'rotate' && elem != null) {
@@ -205,6 +206,18 @@ function svg_edit_setup() {
 			var is_node = (elem.id && elem.id.indexOf('polypointgrip') == 0);
 
 			if(!is_node) {
+				// update the selected elements' layer
+				var opts = $('#selLayerNames option');
+				for (var i = 0; i < opts.length; ++i) {
+					var opt = opts[i];
+					if (currentLayer == opt.textContent) {
+						opt.setAttribute('selected', 'selected');
+					}
+					else {
+						opt.removeAttribute('selected');
+					}
+				}
+				
 				$('#selected_panel').show();
 			} else {
 				$('#poly_node_panel').show();
@@ -231,7 +244,6 @@ function svg_edit_setup() {
 			var el_name = elem.tagName;
 			
 			if(panels[el_name]) {
-			
 				var cur_panel = panels[el_name];
 				
 				
@@ -261,14 +273,26 @@ function svg_edit_setup() {
 					if (svgCanvas.addedNew) {
 						$('#text').focus().select();
 					}
-				}
+				} // text
 				else if(el_name == 'image') {
           			var xlinkNS="http://www.w3.org/1999/xlink";
           			$('#image_url').val(elem.getAttributeNS(xlinkNS, "href"));
-        		}
+        		} // image
 			}
 		} // if (elem != null)
 		else if (multiselected) {
+			// update the selected layer
+			var opts = $('#mselLayerNames option');
+			for (var i = 0; i < opts.length; ++i) {
+				var opt = opts[i];
+				if (currentLayer == opt.textContent) {
+					opt.setAttribute('selected', 'selected');
+				}
+				else {
+					opt.removeAttribute('selected');
+				}
+			}
+				
 			$('#multiselected_panel').show();
 		}
 		
@@ -343,7 +367,15 @@ function svg_edit_setup() {
 	$('select').change(function(){$(this).blur();});
 
 	$('#group_opacity').change(function(){
-		svgCanvas.setOpacity(this.options[this.selectedIndex].value);
+		svgCanvas.setOpacity();
+	});
+
+	// fired when user wants to move elements to another layer
+	$('#selLayerNames,#mselLayerNames').change(function(){
+		var destLayer = this.options[this.selectedIndex].value;
+		if (destLayer) {
+			svgCanvas.moveSelectedToLayer(destLayer);
+		}
 	});
 
 	$('#font_size').change(function(){
@@ -1214,7 +1246,11 @@ function svg_edit_setup() {
 
 	var populateLayers = function(){
 		var layerlist = $('#layerlist tbody');
+		var selLayerNames = $('#selLayerNames');
+		var mselLayerNames = $('#mselLayerNames');
 		layerlist.empty();
+		selLayerNames.empty();
+		mselLayerNames.empty();
 		var layer = svgCanvas.getNumLayers();
 		// we get the layers in the reverse z-order (the layer rendered on top is listed first)
 		while (layer--) {
@@ -1226,6 +1262,8 @@ function svg_edit_setup() {
 			else {
 				layerlist.append("<tr class=\"layer\"><td class=\"layervis layerinvis\"/><td class=\"layername\" >" + name + "</td></tr>");
 			}
+			selLayerNames.append("<option values=\"" + name + "\">" + name + "</option>");
+			mselLayerNames.append("<option values=\"" + name + "\">" + name + "</option>");
 		}
 		// if we only have one layer, then always make sure that layer is selected
 		// (This is really only required upon first initialization)
