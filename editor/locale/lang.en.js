@@ -116,5 +116,5 @@
 {"id":"tool_node_delete","title":"Delete Node"},
 {"id":"selLayerLabel","textContent":"Move elements to:"},
 {"id":"selLayerNames","title":"Move selected elements to a different layer"},
-{"id":"sidepanel_handle","title":"Drag left/right to resize Layer panel","textContent":"L a y e r s"}
+{"id":"sidepanel_handle","title":"Drag left/right to resize side panel","textContent":"L a y e r s"}
 ];

@@ -63,7 +63,7 @@ body {
 	top: 75px;
 	left: 40px;
 	bottom: 60px;
-	right: 155px;
+	right: 149px;
 	background-color: #A0A0A0;
 	border: 1px solid #808080;
 	overflow: auto;
@@ -75,7 +75,7 @@ body {
 	top: 75px;
 	bottom: 60px;
 	right: 0px;
-	width: 136px;
+	width: 130px;
 	padding: 12px;
 	border-color: #808080;
 	border-style: solid;
@@ -87,10 +87,10 @@ body {
 	display: inline-block;
 	background-color: #E8E8E8;
 	position:absolute;
-	top: 0px;
+	top: 1px;
 	bottom: 0px;
 	right: 0px;
-	width: 126px;
+	width: 120px;
 	overflow-y: scroll;
 	padding-left: 12px;
 	padding-right: 12px;
@@ -193,6 +193,10 @@ body {
 
 #svg_editor #layerlist tr.layersel td.layername {
 	font-weight: bold;
+}
+
+#svg_editor #selLayerLabel {
+	white-space: nowrap;
 }
 
 #svg_editor #selLayerNames {
