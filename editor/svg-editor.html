@@ -66,7 +66,12 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 				<td class="layername">Layer 1</td>
 			</tr>
 		</table>
+		<span id="selLayerLabel">Move elements to:</span>
+		<select id="selLayerNames" title="Move selected elements to a different layer" disabled="disabled">
+			<option selected="selected" value="layer1">Layer 1</option>
+		</select>
 	</div>
+	<div id="sidepanel_handle" onselectstart="return false;" title="Drag left/right to resize Layer panel">L a y e r s</div>
 </div>
 
 <div id="logo">
@@ -117,10 +122,6 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 		</select>
 		<span id="angleLabel" class="selected_tool">angle:</span>
 		<input id="angle" class="selected_tool" title="Change rotation angle" size="2" value="0" type="text"/>
-		<span id="selLayerLabel" class="selected_tool">layer:</span>
-		<select id="selLayerNames" class="selected_tool" title="Move selected elements to a different layer">
-			<option selected="selected" value="layer1">Layer 1</option>
-		</select>
 	</div>
 
 	<!-- Buttons when multiple elements are selected -->
@@ -143,10 +144,6 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 		<option id="page" value="page">page</option>
 		</select>
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<span id="mselLayerLabel" class="selected_tool">layer:</span>
-		<select id="mselLayerNames" class="selected_tool" title="Move selected elements to a different layer">
-			<option selected="selected" value="layer1">Layer 1</option>
-		</select>
 		<img class="tool_button" id="tool_group" src="images/shape_group.png" title="Group Elements [G]" alt="Group"/>
 	</div>
 

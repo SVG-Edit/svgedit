@@ -197,27 +197,15 @@ function svg_edit_setup() {
 			$('#angle').val(svgCanvas.getRotationAngle(elem));
 			return;
 		}
+
+		var is_node = elem ? (elem.id && elem.id.indexOf('polypointgrip') == 0) : false;
 		
 		$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,\
 			#ellipse_panel, #line_panel, #text_panel, #image_panel, #poly_node_panel').hide();
 		if (elem != null) {
 			$('#angle').val(svgCanvas.getRotationAngle(elem));
 
-			var is_node = (elem.id && elem.id.indexOf('polypointgrip') == 0);
-
 			if(!is_node) {
-				// update the selected elements' layer
-				var opts = $('#selLayerNames option');
-				for (var i = 0; i < opts.length; ++i) {
-					var opt = opts[i];
-					if (currentLayer == opt.textContent) {
-						opt.setAttribute('selected', 'selected');
-					}
-					else {
-						opt.removeAttribute('selected');
-					}
-				}
-				
 				$('#selected_panel').show();
 			} else {
 				$('#poly_node_panel').show();
@@ -281,18 +269,6 @@ function svg_edit_setup() {
 			}
 		} // if (elem != null)
 		else if (multiselected) {
-			// update the selected layer
-			var opts = $('#mselLayerNames option');
-			for (var i = 0; i < opts.length; ++i) {
-				var opt = opts[i];
-				if (currentLayer == opt.textContent) {
-					opt.setAttribute('selected', 'selected');
-				}
-				else {
-					opt.removeAttribute('selected');
-				}
-			}
-				
 			$('#multiselected_panel').show();
 		}
 		
@@ -311,6 +287,25 @@ function svg_edit_setup() {
 		}
 		
 		svgCanvas.addedNew = false;
+
+		if ( (elem && !is_node)	|| multiselected) {
+			// update the selected elements' layer
+			$('#selLayerNames')[0].removeAttribute('disabled');
+			var opts = $('#selLayerNames option');
+			for (var i = 0; i < opts.length; ++i) {
+				var opt = opts[i];
+				if (currentLayer == opt.textContent) {
+					opt.setAttribute('selected', 'selected');
+				}
+				else {
+					opt.removeAttribute('selected');
+				}
+			}
+		}
+		else {
+			$('#selLayerNames')[0].setAttribute('disabled', 'disabled');
+		}
+		
 	};
 
 	$('#text').focus( function(){ textBeingEntered = true; } );
@@ -371,10 +366,11 @@ function svg_edit_setup() {
 	});
 
 	// fired when user wants to move elements to another layer
-	$('#selLayerNames,#mselLayerNames').change(function(){
+	$('#selLayerNames').change(function(){
 		var destLayer = this.options[this.selectedIndex].value;
 		if (destLayer) {
 			svgCanvas.moveSelectedToLayer(destLayer);
+			svgCanvas.clearSelection();
 		}
 	});
 
