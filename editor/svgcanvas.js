@@ -1519,7 +1519,7 @@ function BatchCommand(text) {
 						"stroke-linecap": "round",
 						"stroke-linejoin": "round",
 						"opacity": cur_shape.opacity / 2,
-						"style": "pointer-events:all"
+						"style": "pointer-events:inherit"
 					}
 				});
 				freehand_min_x = x;
@@ -1540,7 +1540,7 @@ function BatchCommand(text) {
 						"height": 0,
 						"id": getNextId(),
 						"opacity": cur_shape.opacity / 2,
-						"style": "pointer-events:all"
+						"style": "pointer-events:inherit"
 					}
 				});
         		newImage.setAttributeNS(xlinkns, "href", "images/logo.png");
@@ -1567,7 +1567,7 @@ function BatchCommand(text) {
 						"stroke-opacity": cur_shape.stroke_opacity,
 						"fill-opacity": cur_shape.fill_opacity,
 						"opacity": cur_shape.opacity / 2,
-						"style": "pointer-events:all"
+						"style": "pointer-events:inherit"
 					}
 				});
 				break;
@@ -1588,7 +1588,7 @@ function BatchCommand(text) {
 						"stroke-opacity": cur_shape.stroke_opacity,
 						"fill": "none",
 						"opacity": cur_shape.opacity / 2,
-						"style": "pointer-events:all"
+						"style": "pointer-events:inherit"
 					}
 				});
 				break;
@@ -1608,7 +1608,7 @@ function BatchCommand(text) {
 						"stroke-opacity": cur_shape.stroke_opacity,
 						"fill-opacity": cur_shape.fill_opacity,
 						"opacity": cur_shape.opacity / 2,
-						"style": "pointer-events:all"
+						"style": "pointer-events:inherit"
 					}
 				});
 				break;
@@ -1629,7 +1629,7 @@ function BatchCommand(text) {
 						"stroke-opacity": cur_shape.stroke_opacity,
 						"fill-opacity": cur_shape.fill_opacity,
 						"opacity": cur_shape.opacity / 2,
-						"style": "pointer-events:all"
+						"style": "pointer-events:inherit"
 					}
 				});
 				break;
@@ -1652,7 +1652,7 @@ function BatchCommand(text) {
 						"font-size": cur_text.font_size,
 						"font-family": cur_text.font_family,
 						"text-anchor": "middle",
-						"style": "pointer-events:all"
+						"style": "pointer-events:inherit"
 					}
 				});
 				newText.textContent = "text";
@@ -2672,7 +2672,7 @@ function BatchCommand(text) {
 							"opacity": cur_shape.opacity,
 							"stroke-opacity": cur_shape.stroke_opacity,
 							"fill-opacity": cur_shape.fill_opacity,
-							"style": "pointer-events:all"
+							"style": "pointer-events:inherit"
 						}
 					});
 					call("changed",[element]);
@@ -2697,7 +2697,7 @@ function BatchCommand(text) {
 							"opacity": cur_shape.opacity,
 							"stroke-opacity": cur_shape.stroke_opacity,
 							"fill-opacity": cur_shape.fill_opacity,
-							"style": "pointer-events:all"
+							"style": "pointer-events:inherit"
 						}
 					});
 					call("changed",[element]);
@@ -2742,7 +2742,7 @@ function BatchCommand(text) {
 							"stroke-dasharray": cur_shape.stroke_style,
 							"stroke-opacity": cur_shape.stroke_opacity,
 							"opacity": cur_shape.opacity / 2,
-							"style": "pointer-events:all"
+							"style": "pointer-events:inherit"
 						}
 					});
 					// set stretchy line to first point
@@ -3138,7 +3138,8 @@ function BatchCommand(text) {
 			current_layer = svgzoom.appendChild(current_layer);
 			all_layers.push( [newname, current_layer] );
 		}
-		walkTree(current_layer, function(e){e.setAttribute("style","pointer-events:all");});
+		walkTree(current_layer, function(e){e.setAttribute("style","pointer-events:inherit");});
+		current_layer.setAttribute("style","pointer-events:all");
 	};
 	
 	// Function: createLayer
@@ -3238,9 +3239,9 @@ function BatchCommand(text) {
 			if (name == all_layers[i][0]) {
 				if (current_layer != all_layers[i][1]) {
 					canvas.clearSelection();
-					walkTree(current_layer,function(e){e.setAttribute("style","pointer-events:none");});
+					current_layer.setAttribute("style", "pointer-events:none");
 					current_layer = all_layers[i][1];
-					walkTree(current_layer,function(e){e.setAttribute("style","pointer-events:all");});
+					current_layer.setAttribute("style", "pointer-events:all");
 				}
 				return true;
 			}

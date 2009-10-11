@@ -71,21 +71,56 @@ body {
 
 #svg_editor #sidepanels {
 	display: inline-block;
-	background-color: #E8E8E8;
 	position:absolute;
 	top: 75px;
 	bottom: 60px;
 	right: 0px;
-	width: 126px;
+	width: 136px;
+	padding: 12px;
 	border-color: #808080;
 	border-style: solid;
 	border-width: 1px;
+	border-left: none;
+}
+
+#svg_editor #layerpanel {
+	display: inline-block;
+	background-color: #E8E8E8;
+	position:absolute;
+	top: 0px;
+	bottom: 0px;
+	right: 0px;
+	width: 126px;
 	overflow-y: scroll;
 	padding-left: 12px;
 	padding-right: 12px;
 	margin: 0px;
 }
 
+#svg_editor #sidepanel_handle {
+	display: inline-block;
+	position: absolute;
+	background-color: #E8E8E8;
+	left: 0px;
+	top: 40%;
+	width: 1em;
+	border-style: solid;
+	border-color: #666;
+	border-width: 1px;
+	padding: 2px 1px 2px 4px;
+	cursor: pointer;
+	-moz-user-select: none;
+}
+
+#svg_editor #sidepanel_handle:hover {
+	border-width: 2px;
+	margin-top: -1px;
+	margin-left: -1px;
+}
+#svg_editor #sidepanel_handle * {
+	cursor: pointer;
+	-moz-user-select: none;
+}
 #svg_editor #layerbuttons {
 	margin: 0px;
 	padding: 0px;
@@ -158,6 +193,10 @@ body {
 
 #svg_editor #layerlist tr.layersel td.layername {
 	font-weight: bold;
+}
+
+#svg_editor #selLayerNames {
+	display: block;
 }
 
 #svg_editor div.palette_item {
