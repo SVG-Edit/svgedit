@@ -1239,6 +1239,29 @@ function svg_edit_setup() {
 		$('#layerlist tr.layer').removeClass("layersel");
 		$('#layerlist tr.layer:eq('+curIndex+')').addClass("layersel");
 	});
+	
+	var sidedrag = -1;
+	$('#sidepanel_handle')
+		.mousedown(function(evt) {sidedrag = evt.pageX;})
+		.mouseup(function(evt) {sidedrag = -1;});
+	// TODO: is there a better way to do this splitter without attaching mouse handlers here?
+	$('#svg_editor')
+		.mouseup(function(){sidedrag=-1;})
+		.mousemove(function(evt) {
+			if (sidedrag == -1) return;
+			var deltax = sidedrag - evt.pageX;
+			if (deltax == 0) return;
+			sidedrag = evt.pageX;
+			var sidewidth = parseInt($('#sidepanels').css('width'))+deltax;
+			if (sidewidth <= 156 && sidewidth >= 10) {
+				var workarea = $('#workarea');
+				var sidepanels = $('#sidepanels');
+				var layerpanel = $('#layerpanel');
+				workarea.css('right', parseInt(workarea.css('right'))+deltax);
+				sidepanels.css('width', parseInt(sidepanels.css('width'))+deltax);
+				layerpanel.css('width', parseInt(layerpanel.css('width'))+deltax);
+			}
+	});
 
 	var populateLayers = function(){
 		var layerlist = $('#layerlist tbody');
