@@ -114,8 +114,7 @@
 {"id":"curve_segments","textContent":"Curve"},
 {"id":"tool_node_clone","title":"Clone Node"},
 {"id":"tool_node_delete","title":"Delete Node"},
-{"id":"selLayerLabel","textContent":"layer:"},
-{"id":"selLayerNames","title":"Move selected elements to a different layer"}
-{"id":"mselLayerLabel","textContent":"layer:"},
-{"id":"mselLayerNames","title":"Move selected elements to a different layer"}
+{"id":"selLayerLabel","textContent":"Move elements to:"},
+{"id":"selLayerNames","title":"Move selected elements to a different layer"},
+{"id":"sidepanel_handle","title":"Drag left/right to resize Layer panel","textContent":"L a y e r s"}
 ];
