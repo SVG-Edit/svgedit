@@ -3109,7 +3109,7 @@ function BatchCommand(text) {
 						layernames.push(name);
 						all_layers.push( [name,child] );
 						current_layer = child;
-						walkTree(child, function(e){e.setAttribute("style", "pointer-events:none");});
+//						walkTree(child, function(e){e.setAttribute("style", "pointer-events:none");});
 					}
 					// if group did not have a name, it is an orphan
 					else {
@@ -3132,7 +3132,7 @@ function BatchCommand(text) {
 			layer_title.textContent = newname;
 			current_layer.appendChild(layer_title);
 			for (var j = 0; j < orphans.length; ++j) {
-				walkTree(orphans[j], function(e){e.setAttribute("style", "pointer-events:none");});
+//				walkTree(orphans[j], function(e){e.setAttribute("style", "pointer-events:none");});
 				current_layer.appendChild(orphans[j]);
 			}
 			current_layer = svgzoom.appendChild(current_layer);
