@@ -211,9 +211,14 @@ function svg_edit_setup() {
 				$('#poly_node_panel').show();
 				var point = svgCanvas.getNodePoint();
 				if(point) {
+					var seg_type = $('#seg_type');
 					$('#poly_node_x').val(point.x);
 					$('#poly_node_y').val(point.y);
-					$('#seg_type').val(point.type);
+					if(point.type) {
+						seg_type.val(point.type).removeAttr('disabled');
+					} else {
+						seg_type.val(4).attr('disabled','disabled');
+					}
 				}
 				return;
 			}
