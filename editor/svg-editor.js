@@ -362,7 +362,7 @@ function svg_edit_setup() {
 	$('select').change(function(){$(this).blur();});
 
 	$('#group_opacity').change(function(){
-		svgCanvas.setOpacity();
+		svgCanvas.setOpacity(this.options[this.selectedIndex].value);
 	});
 
 	// fired when user wants to move elements to another layer
