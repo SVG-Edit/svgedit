@@ -413,6 +413,7 @@ function svg_edit_setup() {
 		} else valid = true;
 		
 		if(!valid) {
+			// TODO: localize this
 			alert('Invalid value given for' + $(this).attr('title').replace('Change','')
 				+ '.');
 			this.value = selectedElement.getAttribute(attr);
@@ -1166,6 +1167,7 @@ function svg_edit_setup() {
 			j++;
 			uniqName = "Layer " + j;
 		}
+		// TODO: localize this
 		var newName = prompt("Please enter a unique layer name",uniqName);
 		if (!newName) return;
 		if (jQuery.inArray(newName, curNames) != -1) {
@@ -1220,6 +1222,7 @@ function svg_edit_setup() {
 	$('#layer_rename').click(function() {
 		var curIndex = $('#layerlist tr.layersel').prevAll().length;
 		var oldName = $('#layerlist tr.layersel td.layername').text();
+		// TODO: localize this
 		var newName = prompt("Please enter the new layer name","");
 		if (!newName) return;
 		if (oldName == newName) {
