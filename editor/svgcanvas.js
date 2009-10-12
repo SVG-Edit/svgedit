@@ -1658,6 +1658,7 @@ function BatchCommand(text) {
 				newText.textContent = "text";
 				break;
 			case "poly":
+				setPointContainerTransform("");
 				started = true;
 				break;
 			case "polyedit":
@@ -2781,8 +2782,8 @@ function BatchCommand(text) {
 						// otherwise, close the poly
 						if (i == 0 && len >= 6) {
 							// Create end segment
-							var abs_x = getPolyPoint(0)[0];
-							var abs_y = getPolyPoint(0)[1];
+							var abs_x = current_poly_pts[0];
+							var abs_y = current_poly_pts[1];
 							d_attr += ['L',abs_x,',',abs_y,'z'].join('');
 							poly.setAttribute("d", d_attr);
 						} else if(len < 3) {
@@ -2833,33 +2834,32 @@ function BatchCommand(text) {
 					// its old center, then determine the new center, then rotate it back
 					// This is because we want the poly to remember its rotation
 					var angle = canvas.getRotationAngle(current_poly) * Math.PI / 180.0;
+	
 					if (angle) {
 						var box = canvas.getBBox(current_poly);
 						var oldbox = selectedBBoxes[0];
-						var oldcx = round(oldbox.x + oldbox.width/2),
-							oldcy = round(oldbox.y + oldbox.height/2),
-							newcx = round(box.x + box.width/2),
-							newcy = round(box.y + box.height/2);
+						var oldcx = oldbox.x + oldbox.width/2,
+							oldcy = oldbox.y + oldbox.height/2,
+							newcx = box.x + box.width/2,
+							newcy = box.y + box.height/2;
 						
 						// un-rotate the new center to the proper position
 						var dx = newcx - oldcx,
 							dy = newcy - oldcy;
 						var r = Math.sqrt(dx*dx + dy*dy);
 						var theta = Math.atan2(dy,dx) + angle;
-						newcx = round(r * Math.cos(theta) + oldcx);
-						newcy = round(r * Math.sin(theta) + oldcy);
+						newcx = r * Math.cos(theta) + oldcx;
+						newcy = r * Math.sin(theta) + oldcy;
 						
-						var i = current_poly_pts.length;
-						while (i) {
-							i -= 2;
-							dx = current_poly_pts[i] - oldcx;
-							dy = current_poly_pts[i+1] - oldcy;
+						var getRotVals = function(x, y) {
+							dx = x - oldcx;
+							dy = y - oldcy;
 							
 							// rotate the point around the old center
 							r = Math.sqrt(dx*dx + dy*dy);
 							theta = Math.atan2(dy,dx) + angle;
-							current_poly_pts[i] = dx = r * Math.cos(theta) + oldcx;
-							current_poly_pts[i+1] = dy = r * Math.sin(theta) + oldcy;
+							dx = r * Math.cos(theta) + oldcx;
+							dy = r * Math.sin(theta) + oldcy;
 							
 							// dx,dy should now hold the actual coordinates of each
 							// point after being rotated
@@ -2871,34 +2871,28 @@ function BatchCommand(text) {
 							r = Math.sqrt(dx*dx + dy*dy);
 							theta = Math.atan2(dy,dx) - angle;
 							
-							current_poly_pts[i] = round(r * Math.cos(theta) + newcx);
-							current_poly_pts[i+1] = round(r * Math.sin(theta) + newcy);
-						} // loop for each point
+							return {'x':(r * Math.cos(theta) + newcx)/1,
+								'y':(r * Math.sin(theta) + newcy)/1};
+						}
 						
-						// now set the d attribute to the new value of current_poly_pts
-						var oldd = current_poly.getAttribute("d");
-						var closedPath = (oldd[oldd.length-1] == 'z' || oldd[oldd.length-1] == 'Z');
-						var len = current_poly_pts.length/2;
-						var arr = new Array(len+1);
-						var curx = current_poly_pts[0]/current_zoom,
-							cury = current_poly_pts[1]/current_zoom;
-						arr[0] = ["M", curx, ",", cury].join('');
-						assignAttributes(document.getElementById("polypointgrip_0"), 
-										{"cx":curx,"cy":cury}, 100);
-						for (var j = 1; j < len; ++j) {
-							var px = current_poly_pts[j*2]/current_zoom, 
-								py = current_poly_pts[j*2+1]/current_zoom;
-							arr[j] = ["l", round(px-curx), ",", round(py-cury)].join('');
-							curx = px;
-							cury = py;
-							assignAttributes(document.getElementById("polypointgrip_"+j), 
-										{"cx":px,"cy":py}, 100);
-						}
-						if (closedPath) {
-							arr[len] = "z";
-						}
-						current_poly.setAttribute("d", arr.join(' '));
-
+						var list = current_poly.pathSegList;
+						var i = list.numberOfItems;
+						while (i) {
+							i -= 1;
+							var seg = list.getItem(i);
+							var type = seg.pathSegType;
+							if(type == 1) continue;
+							
+							var rvals = getRotVals(seg.x,seg.y);
+							var points = [rvals.x, rvals.y];
+							if(seg.x1 != null && seg.x2 != null) {
+								c_vals1 = getRotVals(seg.x1, seg.y1);
+								c_vals2 = getRotVals(seg.x2, seg.y2);
+								points.splice(points.length, 0, c_vals1.x , c_vals1.y, c_vals2.x, c_vals2.y);
+							}
+							replacePathSeg(type, i, points);
+						} // loop for each point
+	
 						box = canvas.getBBox(current_poly);						
 						selectedBBoxes[0].x = box.x; selectedBBoxes[0].y = box.y;
 						selectedBBoxes[0].width = box.width; selectedBBoxes[0].height = box.height;
@@ -2907,13 +2901,15 @@ function BatchCommand(text) {
 						var rotate = "rotate(" + (angle * 180.0 / Math.PI) + " " + newcx + "," + newcy + ")";
 						oldvalues["transform"] = current_poly.getAttribute("rotate");
 						current_poly.setAttribute("transform", rotate);
-						
+							
 						if(document.getElementById("polypointgrip_container")) {
 							var pcx = newcx * current_zoom,
 								pcy = newcy * current_zoom;
 							var xform = ["rotate(", (angle*180.0/Math.PI), " ", pcx, ",", pcy, ")"].join("");
 							setPointContainerTransform(xform);
 						}
+						resetPointGrips();
+
 					} // if rotated
 
 					batchCmd.addSubCommand(new ChangeElementCommand(current_poly, oldvalues, "poly points"));
@@ -2966,7 +2962,6 @@ function BatchCommand(text) {
 			
  			if(current_mode == "poly") {
  				current_poly = element;
-//  				selectedBBoxes[0] = canvas.getBBox(current_poly);
 				current_mode = "polyedit";
 				recalcPolyPoints();
 				addAllPointGripsToPoly(current_poly_pts.length/2 - 1);
@@ -3496,8 +3491,6 @@ function BatchCommand(text) {
 
 	this.clonePolyNode = function() {
 	
-// 		fixWebkitNodes();
-		
 		var pt = current_poly_pt, list = current_poly.pathSegList;
 
 		var next_item = list.getItem(pt+1); 
