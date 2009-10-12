@@ -2030,80 +2030,6 @@ function BatchCommand(text) {
 		}
 	};
 
-	var convertToD = function(segList) {
-		var len = segList.numberOfItems;
-		var curx = 0, cury = 0;
-		var d = "";
-		for (var i = 0; i < len; ++i) {
-			var seg = segList.getItem(i);
-			// if these properties are not in the segment, set them to zero
-			var x = seg.x || 0,
-				y = seg.y || 0,
-				x1 = seg.x1 || 0,
-				y1 = seg.y1 || 0,
-				x2 = seg.x2 || 0,
-				y2 = seg.y2 || 0;
-
-			var type = seg.pathSegType;
-			switch (type) {
-				case 1: // z,Z closepath (Z/z)
-					d += "z";
-					break;
-				case 2: // absolute move (M)
-				case 4: // absolute line (L)
-				case 12: // absolute horizontal line (H)
-				case 14: // absolute vertical line (V)
-				case 18: // absolute smooth quad (T)
-					x -= curx;
-					y -= cury;
-				case 3: // relative move (m)
-				case 5: // relative line (l)
-				case 13: // relative horizontal line (h)
-				case 15: // relative vertical line (v)
-				case 19: // relative smooth quad (t)
-					curx += x;
-					cury += y;
-					d += [" ", pathMap[type], x, ",", y].join('');
-					break;
-				case 6: // absolute cubic (C)
-					x -= curx; x1 -= curx; x2 -= curx;
-					y -= cury; y1 -= cury; y2 -= cury;
-				case 7: // relative cubic (c)
-					curx += x;
-					cury += y;
-					d += [" c", x1, ",", y1, " ", x2, ",", y2, " ", x, ",", y].join('');
-					break;
-				case 8: // absolute quad (Q)
-					x -= curx; x1 -= curx;
-					y -= cury; y1 -= cury;
-				case 9: // relative quad (q) 
-					curx += x;
-					cury += y;
-					d += [" q", x1, ",", y1, " ", x, ",", y].join('');
-					break;
-				case 10: // absolute elliptical arc (A)
-					x -= curx;
-					y -= cury;
-				case 11: // relative elliptical arc (a)
-					curx += x;
-					cury += y;
-					d += [ "a", seg.r1, ",", seg.r2, " ", seg.angle, " ", 
-							(seg.largeArcFlag ? 1 : 0), " ", (seg.sweepFlag ? 1 : 0), " ", 
-							x, ",", y ].join('')
-					break;
-				case 16: // absolute smooth cubic (S)
-					x -= curx; x2 -= curx;
-					y -= cury; y2 -= cury;
-				case 17: // relative smooth cubic (s)
-					curx += x;
-					cury += y;
-					d += [" s", x2, ",", y2, " ", x, ",", y].join('');
-					break;
-			} // switch on path segment type
-		} // for each segment
-		return d;
-	};
-	
 	var resetPointGrips = function() {
 		var sr = svgroot.suspendRedraw(100);
 		removeAllPointGripsFromPoly();
@@ -2356,6 +2282,13 @@ function BatchCommand(text) {
 				points = [item.x, item.y];
 				break;
 			case 6:
+				if(first) {
+					item.x1 -= x_diff;
+					item.y1 -= y_diff;
+					item.x2 += x_diff;
+					item.y2 += y_diff;
+				}
+
 				points = [item.x, item.y, item.x1 + x_diff,item.y1 + y_diff, item.x2,item.y2];
 				break;
 			default:
@@ -2377,26 +2310,6 @@ function BatchCommand(text) {
 // 			y_diff *= -1;
 		}
 			
-		// Original method: Re-calculate the "d" attribute
-// 					var oldd = current_poly.getAttribute("d");
-// 					var closedPath = (oldd[oldd.length-1] == 'z' || oldd[oldd.length-1] == 'Z');
-// 					var len = current_poly_pts.length/2;
-// 					var arr = new Array(len+1);
-// 					var curx = current_poly_pts[0]/current_zoom,
-// 						cury = current_poly_pts[1]/current_zoom;
-// 					arr[0] = ["M", curx, ",", cury].join('');
-// 					for (var j = 1; j < len; ++j) {
-// 						var px = current_poly_pts[j*2]/current_zoom, py = current_poly_pts[j*2+1]/current_zoom;
-// 						arr[j] = ["l", round(px-curx), ",", round(py-cury)].join('');
-// 						curx = px;
-// 						cury = py;
-// 					}
-// 					if (closedPath) {
-// 						arr[len] = "z";
-// 					}
-// 					// we don't want to undo this, we are in the middle of a drag
-// 					current_poly.setAttribute("d", arr.join(' '));
-
 		// move the point grip
 		var grip = document.getElementById("polypointgrip_" + current_poly_pt_drag);
 		if (grip) {
@@ -2899,7 +2812,6 @@ function BatchCommand(text) {
 						
 						// now we must set the new transform to be rotated around the new center
 						var rotate = "rotate(" + (angle * 180.0 / Math.PI) + " " + newcx + "," + newcy + ")";
-						oldvalues["transform"] = current_poly.getAttribute("rotate");
 						current_poly.setAttribute("transform", rotate);
 							
 						if(document.getElementById("polypointgrip_container")) {
@@ -4090,6 +4002,7 @@ function BatchCommand(text) {
 		
 		var points;
 
+		var bb = current_poly.getBBox();
 		
 		switch ( new_type ) {
 		case 6:
@@ -4102,10 +4015,6 @@ function BatchCommand(text) {
 			var ct2_y = next_y - (diff_x/2);
 			
 			points = [next_x,next_y, ct1_x,ct1_y, ct2_x,ct2_y];
-			
-			// Add the control points + lines
-			addControlPointGrip(ct1_x,ct1_y, cur_x,cur_y, index+'c1');
-			addControlPointGrip(ct2_x,ct2_y, next_x,next_y, index+'c2');
 			break;
 		case 4:
 			points = [next_x,next_y];
@@ -4114,6 +4023,9 @@ function BatchCommand(text) {
 		}
 		
 		replacePathSeg(new_type, next_index, points);
+		
+		addAllPointGripsToPoly(); 
+		recalculateDimensions(current_poly, current_poly.getBBox());
 		
 		batchCmd.addSubCommand(new ChangeElementCommand(current_poly, {d: old_d}));
 		addCommandToHistory(batchCmd);
