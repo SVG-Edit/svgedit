@@ -1401,7 +1401,9 @@ function BatchCommand(text) {
 	this.addNodeToSelection = function(point) {
 		// Currently only one node can be selected at a time, should allow more later
 		// Should point be the index or the grip element?
-		if(point == current_poly_pts.length/2 - 1) {
+		var is_closed = current_poly.getAttribute('d').toLowerCase().indexOf('z') != -1; 
+		
+		if(is_closed && point == current_poly_pts.length/2 - 1) {
 			current_poly_pt = 0;
 		} else {
 			current_poly_pt = point;
@@ -3390,7 +3392,13 @@ function BatchCommand(text) {
 	this.getNodePoint = function() {	
 		if(current_poly_pt != -1) {
 			var pt = getPolyPoint(current_poly_pt, true);
-			var segtype = current_poly.pathSegList.getItem(current_poly_pt+1).pathSegType;
+			var list = current_poly.pathSegList;
+			var segtype;
+			if(list.numberOfItems > current_poly_pt+1) {
+				segtype = list.getItem(current_poly_pt+1).pathSegType;
+			} else {
+				segtype = false;
+			}
 			return {
 				x: pt[0],
 				y: pt[1],
@@ -3971,7 +3979,7 @@ function BatchCommand(text) {
 		
 		var last_index = current_poly_pts.length/2 - 1;
 		var is_closed = current_poly.getAttribute('d').toLowerCase().indexOf('z') != -1; 
-		
+
 		if(!is_closed && index == last_index) {
 			return; // Last point of unclosed poly should do nothing
 		} else if(index >= last_index && is_closed) {
@@ -3983,9 +3991,6 @@ function BatchCommand(text) {
 		var cur_y = getPolyPoint(index)[1];
 		var next_x = getPolyPoint(next_index)[0];
 		var next_y = getPolyPoint(next_index)[1];
-		
-// 		var next_rel_x = next_x - cur_x;
-// 		var next_rel_y = next_y - cur_y;
 		
 		if(!new_type) { // double-click, so just toggle
 			var batchCmd = new BatchCommand("Toggle Poly Segment Type");
