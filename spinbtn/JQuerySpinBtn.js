@@ -33,6 +33,7 @@
  * v1.3a 28 Sep 2006 - George Adamson	- Minor enhancements
  * v1.4  18 Jun 2009 - Jeff Schiller    - Added callback function
  * v1.5  06 Jul 2009 - Jeff Schiller    - Fixes for Opera.  
+ * v1.6  13 Oct 2009 - Alexis Deveria   - Added stepfunc function  
  *                                        Fast-repeat for keys and live updating as you type.
  
  Sample usage:
@@ -68,6 +69,7 @@ $.fn.SpinButton = function(cfg){
 			min: cfg && !isNaN(parseFloat(cfg.min)) ? Number(cfg.min) : null,	// Fixes bug with min:0
 			max: cfg && !isNaN(parseFloat(cfg.max)) ? Number(cfg.max) : null,
 			step: cfg && cfg.step ? Number(cfg.step) : 1,
+			stepfunc: cfg && cfg.stepfunc ? cfg.stepfunc : false,
 			page: cfg && cfg.page ? Number(cfg.page) : 10,
 			upClass: cfg && cfg.upClass ? cfg.upClass : 'up',
 			downClass: cfg && cfg.downClass ? cfg.downClass : 'down',
@@ -82,8 +84,16 @@ $.fn.SpinButton = function(cfg){
 			callback: cfg && cfg.callback ? cfg.callback : null,
 		};
 		
+		
 		this.adjustValue = function(i){
-			var v = (isNaN(this.value) ? this.spinCfg.reset : Number(this.value)) + Number(i);
+			var v;
+			if(isNaN(this.value)) {
+				v = this.spinCfg.reset;
+			} else if($.isFunction(this.spinCfg.stepfunc)) {
+				v = this.spinCfg.stepfunc(this, i);
+			} else {
+				v = Number(this.value) + Number(i);
+			}
 			if (this.spinCfg.min !== null) v = Math.max(v, this.spinCfg.min);
 			if (this.spinCfg.max !== null) v = Math.min(v, this.spinCfg.max);
 			this.value = v;
