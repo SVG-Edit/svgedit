@@ -373,7 +373,8 @@ function svg_edit_setup() {
 	// fired when user wants to move elements to another layer
 	$('#selLayerNames').change(function(){
 		var destLayer = this.options[this.selectedIndex].value;
-		if (destLayer) {
+		// TODO: localize this prompt
+		if (destLayer && confirm('Move selected elements to layer \'' + destLayer + '\'?')) {
 			svgCanvas.moveSelectedToLayer(destLayer);
 			svgCanvas.clearSelection();
 		}
@@ -701,6 +702,7 @@ function svg_edit_setup() {
 	}
 	
 	var clickClear = function(){
+		// TODO: localize this prompt
 		if( confirm('Do you want to clear the drawing?\nThis will also erase your undo history!') ) {
 			svgCanvas.clear();
 			updateContextPanel();
@@ -814,6 +816,7 @@ function svg_edit_setup() {
 		if (!editingsource) return;
 
 		if (!svgCanvas.setSvgString($('#svg_source_textarea').val())) {
+			// TODO: localize this prompt
 			if( !confirm('There were parsing errors in your SVG source.\nRevert back to original SVG source?') ) {
 				return false;
 			}
@@ -843,6 +846,7 @@ function svg_edit_setup() {
 		if (editingsource) {
 			var oldString = svgCanvas.getSvgString();
 			if (oldString != $('#svg_source_textarea').val()) {
+				// TODO: localize this prompt
 				if( !confirm('Ignore changes made to SVG source?') ) {
 					return false;
 				}
@@ -1274,10 +1278,8 @@ function svg_edit_setup() {
 	var populateLayers = function(){
 		var layerlist = $('#layerlist tbody');
 		var selLayerNames = $('#selLayerNames');
-		var mselLayerNames = $('#mselLayerNames');
 		layerlist.empty();
 		selLayerNames.empty();
-		mselLayerNames.empty();
 		var layer = svgCanvas.getNumLayers();
 		// we get the layers in the reverse z-order (the layer rendered on top is listed first)
 		while (layer--) {
@@ -1290,7 +1292,6 @@ function svg_edit_setup() {
 				layerlist.append("<tr class=\"layer\"><td class=\"layervis layerinvis\"/><td class=\"layername\" >" + name + "</td></tr>");
 			}
 			selLayerNames.append("<option values=\"" + name + "\">" + name + "</option>");
-			mselLayerNames.append("<option values=\"" + name + "\">" + name + "</option>");
 		}
 		// if we only have one layer, then always make sure that layer is selected
 		// (This is really only required upon first initialization)
