@@ -566,3 +566,14 @@ span.zoom_tool {
 #tool_source_cancel, #tool_docprops_cancel {
 	background: #E8E8E8 url(images/cancel.png) no-repeat 2px 0;
 }
+olor: black;
+	opacity: 0.6;
+}
+
+#tool_source_save, #tool_docprops_save {
+	background: #E8E8E8 url(images/save.png) no-repeat 2px 0;
+}
+
+#tool_source_cancel, #tool_docprops_cancel {
+	background: #E8E8E8 url(images/cancel.png) no-repeat 2px 0;
+}
