@@ -88,8 +88,8 @@ function svg_edit_setup() {
 	var zoomChanged = function(window, bbox) {
 		var scrbar = 15;
 		var res = svgCanvas.getResolution();
-		
 		var w_area = $('#workarea');
+		var canvas_pos = $('#svgcanvas').position();
 		w_area.css('cursor','auto');
 		var z_info = svgCanvas.setBBoxZoom(bbox, w_area.width()-scrbar, w_area.height()-scrbar);
 		if(!z_info) return;
@@ -99,10 +99,10 @@ function svg_edit_setup() {
 		setResolution(res.w * zoomlevel, res.h * zoomlevel);
 		var scrLeft = bb.x * zoomlevel;
 		var scrOffX = w_area.width()/2 - (bb.width * zoomlevel)/2;
-		w_area[0].scrollLeft = Math.max(0,scrLeft - scrOffX);
+		w_area[0].scrollLeft = Math.max(0,scrLeft - scrOffX) + Math.max(0,canvas_pos.left);
 		var scrTop = bb.y * zoomlevel;
 		var scrOffY = w_area.height()/2 - (bb.height * zoomlevel)/2;
-		w_area[0].scrollTop = Math.max(0,scrTop - scrOffY);
+		w_area[0].scrollTop = Math.max(0,scrTop - scrOffY) + Math.max(0,canvas_pos.top);
 		clickSelect();
 	}
 
@@ -1349,6 +1349,21 @@ function svg_edit_setup() {
 	
 	$(window).resize( centerCanvasIfNeeded );
 	
+	function stepZoom(elem, step) {
+		var orig_val = elem.value-0;
+		var sug_val = orig_val + step;
+		
+		if(orig_val >= 100) {
+			return sug_val;
+		} else {
+			if(sug_val >= orig_val) {
+				return orig_val * 2;
+			} else {
+				return orig_val / 2;
+			}
+		}
+	}
+	
 	function setResolution(w, h, center) {
 		w-=0; h-=0;
 		$('#svgcanvas').css( { 'width': w, 'height': h } );
@@ -1357,8 +1372,13 @@ function svg_edit_setup() {
 
 		centerCanvasIfNeeded();
 		
+		var res = svgCanvas.getResolution();
+		
 		if(center) {
 			var w_area = $('#workarea');
+// 			console.log(w_area[0].scrollLeft); //  1677
+// 			console.log('w',w_area.width()); // 875 // zoom: 4.67
+			// Want: 1942 (+265)
 			var scroll_y = h/2 - w_area.height()/2;
 			var scroll_x = w/2 - w_area.width()/2;
 			w_area[0].scrollTop = scroll_y;
@@ -1389,7 +1409,7 @@ function svg_edit_setup() {
 	$('#rect_rx').SpinButton({ min: 0, max: 1000, step: 1, callback: changeRectRadius });
 	$('#stroke_width').SpinButton({ min: 0, max: 99, step: 1, callback: changeStrokeWidth });
 	$('#angle').SpinButton({ min: -180, max: 180, step: 5, callback: changeRotationAngle });
-	$('#zoom').SpinButton({ min: 10, max: 10000, step: 50, callback: changeZoom });
+	$('#zoom').SpinButton({ min: 0.1, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom });
 	
 	svgCanvas.setCustomHandlers = function(opts) {
 		if(opts.open) {
