@@ -1320,6 +1320,8 @@ function BatchCommand(text) {
 
 // public events
 
+	// Group: Selection
+
 	// Function: clearSelection
 	// Clears the selection.  The 'selected' handler is then called.
 	this.clearSelection = function() {
@@ -2910,14 +2912,20 @@ function BatchCommand(text) {
 
 // public functions
 
+	// Group: Serialization
+
+	// Function: open
+	// Calls the 'opened' handler and sends the SVG XML text.  Clients of the SvgCanvas bind
+	// their load function (typically calls to setSvgString() to the 'opened' event.
 	this.open = function(str) {
-		// Nothing by default, handled by optional widget/extention
+		// Nothing by default, handled by optional widget/extension
 		call("opened", str);
 	};
 
 	// Function: save
 	// Serializes the current drawing into SVG XML text and returns it to the 'saved' handler.
-	// This function also includes the XML prolog.
+	// This function also includes the XML prolog.  Clients of the SvgCanvas bind their save
+	// function to the 'saved' event.
 	//
 	// Returns: 
 	// Nothing
@@ -3020,7 +3028,10 @@ function BatchCommand(text) {
 	};
 
 	// Layer API Functions
-	
+
+	// Group: Layers
+
+	// TODO: make this an internal function?	
 	this.identifyLayers = function() {
 		all_layers = [];
 		var numchildren = svgzoom.childNodes.length;
