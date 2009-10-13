@@ -3755,6 +3755,8 @@ function BatchCommand(text) {
 
 		return null;
 	};
+	
+	// Group: Fill and Stroke
 
 	this.setStrokePaint = function(p, addGrad) {
 		// make a copy
@@ -3798,6 +3800,9 @@ function BatchCommand(text) {
 		return cur_properties.stroke_width;
 	};
 
+	// TODO: this seems like two bugs - if val is 0 and current_mode is NOT line/scribble, then
+	// we RECURSIVELY call setStrokeWidth(1) and then the rest of the function continues and
+	// stroke_width is set to 0 and selected element's stroke-width is set to 0
 	this.setStrokeWidth = function(val) {
 		if(val == 0 && $.inArray(current_mode, ['line', 'path']) == -1) {
 			canvas.setStrokeWidth(1);
