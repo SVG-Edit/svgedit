@@ -626,7 +626,9 @@ function BatchCommand(text) {
 	svgzoom.setAttribute("xmlns", svgns);
 	svgzoom.setAttribute("xmlns:xlink", xlinkns);
 	svgroot.appendChild(svgzoom);
-	var comment = svgdoc.createComment(" created with SVG-edit - http://svg-edit.googlecode.com/ ");
+	// TODO: make this string optional and set by the client
+	// TODO: make sure this is always at the top of the SVG file right underneath the <svg> element
+	var comment = svgdoc.createComment(" Created with SVG-edit - http://svg-edit.googlecode.com/ ");
 	svgzoom.appendChild(comment);
 	// TODO For Issue 208: this is a start on a thumbnail
 //	var svgthumb = svgdoc.createElementNS(svgns, "use");
