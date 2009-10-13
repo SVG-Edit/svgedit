@@ -25,7 +25,7 @@ var svgWhiteList = {
 	"rect": ["fill", "fill-opacity", "height", "id", "opacity", "rx", "ry", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "width", "x", "y"],
 	"stop": ["id", "offset", "stop-color", "stop-opacity"],
 	"svg": ["id", "height", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
-	"text": ["fill", "fill-opacity", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "text-anchor", "x", "y"],
+	"text": ["fill", "fill-opacity", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "text-anchor", "x", "xml:space", "y"],
 	"title": [],
 };
 
@@ -555,7 +555,8 @@ function BatchCommand(text) {
 		var handle = svgroot.suspendRedraw(suspendLength);
 
 		for (i in attrs) {
-			node.setAttributeNS(null, i, attrs[i]);
+			var ns = (i.substr(0,4) == "xml:" ? "http://www.w3.org/XML/1998/namespace" : null);
+			node.setAttributeNS(ns, i, attrs[i]);
 		}
 		
 		svgroot.unsuspendRedraw(handle);
@@ -1654,7 +1655,8 @@ function BatchCommand(text) {
 						"font-size": cur_text.font_size,
 						"font-family": cur_text.font_family,
 						"text-anchor": "middle",
-						"style": "pointer-events:inherit"
+						"style": "pointer-events:inherit",
+						"xml:space": "preserve"
 					}
 				});
 				newText.textContent = "text";
