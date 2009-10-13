@@ -3018,7 +3018,8 @@ function BatchCommand(text) {
 						layernames.push(name);
 						all_layers.push( [name,child] );
 						current_layer = child;
-//						walkTree(child, function(e){e.setAttribute("style", "pointer-events:none");});
+						walkTree(child, function(e){e.setAttribute("style", "pointer-events:inherit");});
+						current_layer.setAttribute("style", "pointer-events:none");
 					}
 					// if group did not have a name, it is an orphan
 					else {
