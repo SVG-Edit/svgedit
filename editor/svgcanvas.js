@@ -555,7 +555,7 @@ function BatchCommand(text) {
 		var handle = svgroot.suspendRedraw(suspendLength);
 
 		for (i in attrs) {
-			var ns = (i.substr(0,4) == "xml:" ? "http://www.w3.org/XML/1998/namespace" : null);
+			var ns = (i.substr(0,4) == "xml:" ? xmlns : null);
 			node.setAttributeNS(ns, i, attrs[i]);
 		}
 		
@@ -611,6 +611,7 @@ function BatchCommand(text) {
 	var container = c;
 	var svgns = "http://www.w3.org/2000/svg";
 	var xlinkns = "http://www.w3.org/1999/xlink";
+	var xmlns = "http://www.w3.org/XML/1998/namespace";
 	var idprefix = "svg_";
 	var svgdoc  = c.ownerDocument;
 	var svgroot = svgdoc.createElementNS(svgns, "svg");
@@ -904,11 +905,14 @@ function BatchCommand(text) {
 					out.push(" "); 
 					// map various namespaces to our fixed namespace prefixes
 					// TODO: put this into a map and do a look-up instead of if-else
-					if (attr.namespaceURI == 'http://www.w3.org/1999/xlink') {
+					if (attr.namespaceURI == xlinkns) {
 						out.push('xlink:');
 					}
 					else if(attr.namespaceURI == 'http://www.w3.org/2000/xmlns/' && attr.localName != 'xmlns') {
 						out.push('xmlns:');
+					}
+					else if(attr.namespaceURI == xmlns) {
+						out.push('xml:');
 					}
 					out.push(attr.localName); out.push("=\""); 
 					out.push(attr.nodeValue); out.push("\"");
@@ -4538,7 +4542,8 @@ function BatchCommand(text) {
 		// manually create a copy of the element
 		var new_el = document.createElementNS(svgns, el.nodeName);
 		$.each(el.attributes, function(i, attr) {
-			var ns = attr.nodeName == 'href'?xlinkns:null;
+			var ns = attr.nodeName == 'href' ? xlinkns : 
+				attr.prefix == "xml" ? xmlns : null;
 			new_el.setAttributeNS(ns, attr.nodeName, attr.nodeValue);
 		});
 		// set the copied element's new id
