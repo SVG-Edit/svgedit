@@ -1320,6 +1320,8 @@ function BatchCommand(text) {
 
 // public events
 
+	// Function: clearSelection
+	// Clears the selection.  The 'selected' handler is then called.
 	this.clearSelection = function() {
 		if (selectedElements[0] != null) {
 			var len = selectedElements.length;
@@ -1335,6 +1337,13 @@ function BatchCommand(text) {
 	};
 
 	// TODO: do we need to worry about selectedBBoxes here?
+	
+	// Function: addToSelection
+	// Adds a list of elements to the selection.  The 'selected' handler is then called.
+	//
+	// Parameters:
+	// elemsToAdd - an array of DOM elements to add to the selection
+	// showGrips - a boolean flag indicating whether the resize grips should be shown
 	this.addToSelection = function(elemsToAdd, showGrips) {
 		if (elemsToAdd.length == 0) { return; }
 		// find the first null in our selectedElements array
@@ -1372,8 +1381,14 @@ function BatchCommand(text) {
 		}
 	};
 
-	// updates the canvas arrays selectedElements and selectedBBoxes
 	// TODO: could use slice here to make this faster?
+	// TODO: should the 'selected' handler
+	
+	// Function: removeFromSelection
+	// Removes elements from the selection.
+	//
+	// Parameters:
+	// elemsToRemove - an array of elements to remove from selection
 	this.removeFromSelection = function(elemsToRemove) {
 		if (selectedElements[0] == null) { return; }
 		if (elemsToRemove.length == 0) { return; }
@@ -3057,9 +3072,9 @@ function BatchCommand(text) {
 	};
 	
 	// Function: createLayer
-	// This function clears the selection and then creates a new top-level layer in the drawing
-	// with the given name and sets the current layer to it.  This function then calls the 
-	// 'changed' handler.
+	// Creates a new top-level layer in the drawing with the given name, sets the current layer 
+	// to it, and then clears the selection  This function then calls the 'changed' handler.
+	// This is an undoable action.
 	//
 	// Parameters:
 	// name - The given name
@@ -3079,8 +3094,8 @@ function BatchCommand(text) {
 	};
 	
 	// Function: deleteCurrentLayer
-	// This function clears the selection and then deletes the current layer from the drawing.  
-	// This function then calls the 'changed' handler.
+	// Deletes the current layer from the drawing and then clears the selection. This function 
+	// then calls the 'changed' handler.  This is an undoable action.
 	this.deleteCurrentLayer = function() {
 		if (current_layer && all_layers.length > 1) {
 			var batchCmd = new BatchCommand("Delete Layer");
@@ -3099,7 +3114,7 @@ function BatchCommand(text) {
 	};
 	
 	// Function: getNumLayers
-	// This function returns the number of layers in the current drawing.
+	// Returns the number of layers in the current drawing.
 	// 
 	// Returns:
 	// The number of layers in the current drawing.
@@ -3108,8 +3123,7 @@ function BatchCommand(text) {
 	};
 	
 	// Function: getLayer
-	// This function returns the name of the ith layer.  If the index is out of range,
-	// then an empty string is returned.
+	// Returns the name of the ith layer. If the index is out of range, an empty string is returned.
 	//
 	// Parameters:
 	// i - the zero-based index of the layer you are querying.
@@ -3124,8 +3138,8 @@ function BatchCommand(text) {
 	};
 	
 	// Function: getCurrentLayer
-	// This function returns the name of the currently selected layer.  If an error occurs,
-	// an empty string is returned.
+	// Returns the name of the currently selected layer. If an error occurs, an empty string 
+	// is returned.
 	//
 	// Returns:
 	// The name of the currently active layer.
@@ -3139,8 +3153,8 @@ function BatchCommand(text) {
 	};
 	
 	// Function: setCurrentLayer
-	// This function sets the current layer.  If the name is not a valid layer name, then this
-	// function returns false.  Otherwise it returns true.  This is not an undo-able action.
+	// Sets the current layer. If the name is not a valid layer name, then this function returns
+	// false. Otherwise it returns true. This is not an undo-able action.
 	//
 	// Parameters:
 	// name - the name of the layer you want to switch to.
@@ -3164,9 +3178,8 @@ function BatchCommand(text) {
 	};
 	
 	// Function: renameCurrentLayer
-	// This function renames the current layer.  This is an undo-able action.  If the layer name 
-	// is not valid (i.e. unique), then this function does nothing and returns false, otherwise
-	// it returns true.
+	// Renames the current layer. If the layer name is not valid (i.e. unique), then this function 
+	// does nothing and returns false, otherwise it returns true. This is an undo-able action.
 	// 
 	// Parameters:
 	// newname - the new name you want to give the current layer.  This name must be unique 
@@ -3210,9 +3223,9 @@ function BatchCommand(text) {
 	};
 	
 	// Function: setCurrentLayerPosition
-	// This function changes the position of the current layer to the new value.  This is an
-	// undo-able action.  If the new index is not valid, this function does nothing and returns
-	// false, otherwise it returns true.
+	// Changes the position of the current layer to the new value. If the new index is not valid, 
+	// this function does nothing and returns false, otherwise it returns true. This is an
+	// undo-able action.
 	//
 	// Parameters:
 	// newpos - The zero-based index of the new position of the layer.  This should be between
@@ -3255,8 +3268,8 @@ function BatchCommand(text) {
 	};
 	
 	// Function: getLayerVisibility
-	// This function returns whether the layer is visible.  If the layer name is not valid, then
-	// this function returns false.
+	// Returns whether the layer is visible.  If the layer name is not valid, then this function
+	// returns false.
 	//
 	// Parameters:
 	// layername - the name of the layer which you want to query.
@@ -3277,8 +3290,8 @@ function BatchCommand(text) {
 	};
 	
 	// Function: setLayerVisibility
-	// This function sets the visibility of the layer.  This is an undo-able action.  If the 
-	// layer name is not valid, this function return false, otherwise it returns true.
+	// Sets the visibility of the layer. If the layer name is not valid, this function return 
+	// false, otherwise it returns true. This is an undo-able action.
 	//
 	// Parameters:
 	// layername - the name of the layer to change the visibility
@@ -3311,8 +3324,8 @@ function BatchCommand(text) {
 	};
 	
 	// Function: moveSelectedToLayer
-	// This function moves the selected elements to layername.  This is an undo-able action.
-	// If the name is not a valid layer name, then false is returned.  Otherwise it returns true.
+	// Moves the selected elements to layername. If the name is not a valid layer name, then false 
+	// is returned.  Otherwise it returns true. This is an undo-able action.
 	//
 	// Parameters:
 	// layername - the name of the layer you want to which you want to move the selected elements
@@ -3355,6 +3368,8 @@ function BatchCommand(text) {
 		return $("title",g).text();
 	};
 
+	// Function: clear
+	// Clears the current document.  This is not an undoable action.
 	this.clear = function() {
 		current_poly_pts = [];
 
@@ -3384,6 +3399,7 @@ function BatchCommand(text) {
 		call("cleared");
 	};
 	
+	// TODO: should this be an 'internal' function?
 	this.clearPoly = function(remove) {
 		if(remove && current_mode == 'poly') {
 			var elem = svgdoc.getElementById(getId());
@@ -3394,6 +3410,7 @@ function BatchCommand(text) {
 		current_poly_pt = -1;
 	};
 	
+	// TODO: should this be an 'internal' function?
 	this.getNodePoint = function() {	
 		if(current_poly_pt != -1) {
 			var pt = getPolyPoint(current_poly_pt, true);
