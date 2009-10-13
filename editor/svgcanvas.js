@@ -1425,6 +1425,7 @@ function BatchCommand(text) {
 	this.addNodeToSelection = function(point) {
 		// Currently only one node can be selected at a time, should allow more later
 		// Should point be the index or the grip element?
+		
 		var is_closed = current_poly.getAttribute('d').toLowerCase().indexOf('z') != -1; 
 		
 		if(is_closed && point == current_poly_pts.length/2 - 1) {
@@ -1433,8 +1434,11 @@ function BatchCommand(text) {
 			current_poly_pt = point;
 		}
 		
-		$('#polypointgrip_container circle').attr('fill','#0F0');
-		var grip = $('#polypointgrip_' + point).attr('fill','blue');
+		$('#polypointgrip_container circle').attr('stroke','#00F');
+		var grip = $('#polypointgrip_' + point).attr('stroke','#0FF');
+		updateSegLine();
+		updateSegLine(true);
+		
 		call("selected", [grip[0]]);
 	}
 
@@ -1696,6 +1700,7 @@ function BatchCommand(text) {
 					// Select this point
 					current_poly_pt_drag = parseInt(id.substr(14));
 					canvas.addNodeToSelection(current_poly_pt_drag);
+					updateSegLine();
 				} else if(id.indexOf("ctrlpointgrip_") == 0) {
 					current_ctrl_pt_drag = id.split('_')[1];
 				}
@@ -2033,7 +2038,9 @@ function BatchCommand(text) {
 					c_item['x' + ctrl_num] = x;
 					c_item['y' + ctrl_num] = y;
 					replacePathSeg(6, index+1, [c_item.x,c_item.y, c_item.x1,c_item.y1, c_item.x2,c_item.y2]);
-
+					
+					updateSegLine(true);
+					
 					var grip = document.getElementById("ctrlpointgrip_" + current_ctrl_pt_drag);
 					if(grip) {
 						grip.setAttribute("cx", mouse_x);
@@ -2183,7 +2190,7 @@ function BatchCommand(text) {
 				'id': "polypointgrip_" + index,
 				'display': "none",
 				'r': 4,
-				'fill': "#0F0",
+				'fill': "#0FF",
 				'stroke': "#00F",
 				'stroke-width': 2,
 				'cursor': 'move',
@@ -2192,14 +2199,11 @@ function BatchCommand(text) {
 			pointGrip = pointGripContainer.appendChild(pointGrip);
 
 			var grip = $('#polypointgrip_'+index);
-// 			grip.mouseover( function() { this.setAttribute("stroke", "#F00"); } );
-// 			grip.mouseout( function() {this.setAttribute("stroke", "#00F"); } );
-			grip.dblclick( function() {
-				
+			grip.dblclick(function() {
 				canvas.setSegType();
 			});
 		}
-
+		
 		// set up the point grip element and display it
 		assignAttributes(pointGrip, {
 			'cx': x,
@@ -2208,27 +2212,40 @@ function BatchCommand(text) {
 		});
 	};
 	
-	// Hack for Webktit to change the segment list from absolute values
-	// back to relative values. Probably inefficient, so not currently used
-// 	var fixWebkitNodes = function() {
-// 		var list = current_poly.pathSegList;
-// 		var pts = current_poly_pts;
-// 		var num = list.numberOfItems;
-// 		for(var i = 0; i<num; i++) {
-// 			var item = list.getItem(i);
-// 			if(item.pathSegType == 4) {
-// 				list.removeItem(i);
-// 				var rel_x = pts[i*2] - pts[(i-1)*2];
-// 				var rel_y = pts[i*2 + 1] - pts[(i-1)*2 + 1];
-// 				var seg = current_poly.createSVGPathSegLinetoRel(rel_x, rel_y);
-// 				list.insertItemBefore(seg, i);
-// 				i--;
-// 			}
-// 		}
-// 		for(var i = 0; i<num; i++) {
-// 			var item = list.getItem(i);
-// 		}
-// 	}
+	var updateSegLine = function(next_node) {
+		// create segment line
+		var segLine = document.getElementById("segline");
+		if(!segLine) {
+			var pointGripContainer = $('#polypointgrip_container')[0];
+			segLine = document.createElementNS(svgns, "path");
+			assignAttributes(segLine, {
+				'id': "segline",
+				'fill': "none",
+				'stroke': "#0FF",
+				'stroke-width': 2,
+				'style':'pointer-events:none'
+			});
+			segLine = pointGripContainer.appendChild(segLine);
+		}
+		if(!segLine.getAttribute('d')) {
+			var pt = getPolyPoint(current_poly_pt);
+			segLine.setAttribute('d', 'M' + pt.join(',') + ' 0,0');
+		}
+		segLine.setAttribute('display','inline');
+		
+		if(!next_node) {
+			// Replace "M" val
+			replacePathSeg(2, 0, getPolyPoint(current_poly_pt, true), segLine);
+		} else {
+			var seg = current_poly.pathSegList.getItem(current_poly_pt+1);
+			var points = [seg.x, seg.y];
+			if(seg.x1 != null && seg.x2 != null) {
+				points.splice(2, 0, seg.x1, seg.y1, seg.x2, seg.y2);
+			}
+			points = $.map(points, function(n){return n*current_zoom;});
+			replacePathSeg(seg.pathSegType, 1, points, segLine);
+		}
+	}
 	
 	var updatePoly = function(mouse_x, mouse_y, old_poly_pts) {
     	var x = mouse_x / current_zoom;
@@ -2333,8 +2350,6 @@ function BatchCommand(text) {
 		
 		if(is_first && is_closed) {
 			var last_type = setSeg(last_index,1);
-// 			x_diff *= -1;
-// 			y_diff *= -1;
 		}
 			
 		// move the point grip
@@ -2351,7 +2366,6 @@ function BatchCommand(text) {
 			call("selected", [grip]);
 		}
 		
-		// move the control grips + lines
 		if(is_first) cur_type = last_type;
 		
 		if(cur_type != 4) {
@@ -2374,7 +2388,10 @@ function BatchCommand(text) {
 				addControlPointGrip(x2,y2, mouse_x,mouse_y, id1, true);
 			}
 		}
-		
+		updateSegLine();
+		if(next_type != 4) {
+			updateSegLine(true);
+		}
 	}
 	
 	var getPolyPoint = function(index, raw_val) {
@@ -2390,12 +2407,11 @@ function BatchCommand(text) {
 	}
 	
 	// This replaces the segment at the given index. Type is given as number.
-	var replacePathSeg = function(type, index, pts) {
-		var poly = current_poly, func = 'createSVGPathSeg' + pathFuncs[type];
+	var replacePathSeg = function(type, index, pts, poly) {
+		if(!poly) poly = current_poly;
+		var func = 'createSVGPathSeg' + pathFuncs[type];
 		var seg = poly[func].apply(poly, pts);
 		poly.pathSegList.replaceItem(seg, index);
-		// Fyrd: here's where i think it needs to be used
-// 		poly.setAttribute("d", convertToD(poly.pathSegList));
 	}
 	
 	var addControlPointGrip = function(x, y, source_x, source_y, id, raw_val) {
@@ -2532,11 +2548,11 @@ function BatchCommand(text) {
 
 								// recalculate current_poly_pts
 								recalcPolyPoints();
-								
 								canvas.clearSelection();
 								// save the poly's bbox
 								selectedBBoxes[0] = canvas.getBBox(current_poly);
 								addAllPointGripsToPoly();
+								canvas.addNodeToSelection(0);
 							} // going into polyedit mode
 							else {
 								current_poly = t;
@@ -2848,6 +2864,7 @@ function BatchCommand(text) {
 							setPointContainerTransform(xform);
 						}
 						resetPointGrips();
+						updateSegLine(true);
 
 					} // if rotated
 
@@ -2860,6 +2877,7 @@ function BatchCommand(text) {
 						current_poly_pts[current_poly_pts.length-2] = getPolyPoint(0,true)[0];
 						current_poly_pts[current_poly_pts.length-1] = getPolyPoint(0,true)[1];
 					}
+					updateSegLine();
 					
 					// make these changes undo-able
 				} // if (current_poly_pt_drag != -1)
@@ -4073,6 +4091,7 @@ function BatchCommand(text) {
 		
 		addAllPointGripsToPoly(); 
 		recalculateDimensions(current_poly, current_poly.getBBox());
+		updateSegLine(true);
 		
 		batchCmd.addSubCommand(new ChangeElementCommand(current_poly, {d: old_d}));
 		addCommandToHistory(batchCmd);
