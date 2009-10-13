@@ -62,7 +62,7 @@
 {"id":"tools_rect_show","title":"Square/Rect Tool [4/Shift+4]"},
 {"id":"tools_ellipse_show","title":"Ellipse/Circle Tool [5/Shift+5]"},
 {"id":"tool_text","title":"Text Tool [6]"},
-{"id":"tool_poly","title":"Poly Tool [7]"},
+{"id":"tool_poly","title":"Path Tool [7]"},
 {"id":"tool_image","title":"Image Tool [8]"},
 {"id":"tool_zoom","title":"Zoom Tool [Ctrl+Up/Down]"},
 {"id":"zoom","title":"Change zoom level"},
