@@ -63,7 +63,7 @@ body {
 	top: 75px;
 	left: 40px;
 	bottom: 60px;
-	right: 149px;
+	right: 10px;
 	background-color: #A0A0A0;
 	border: 1px solid #808080;
 	overflow: auto;
@@ -75,8 +75,8 @@ body {
 	top: 75px;
 	bottom: 60px;
 	right: 0px;
-	width: 130px;
-	padding: 12px;
+	width: 2px;
+	padding: 10px;
 	border-color: #808080;
 	border-style: solid;
 	border-width: 1px;
@@ -90,13 +90,19 @@ body {
 	top: 1px;
 	bottom: 0px;
 	right: 0px;
-	width: 120px;
-	overflow-y: scroll;
-	padding-left: 12px;
-	padding-right: 12px;
+	width: 0px;
+	overflow: hidden;
 	margin: 0px;
+	border-radius: 10px 0px 0px 10px;
+	-moz-border-radius: 10px 0px 0px 10px;
+	-webkit-border-radius: 10px 0px 0px 10px;
 }
 
+/*
+	border-style: solid;
+	border-color: #666;
+	border-width: 0px 0px 0px 1px;	
+*/
 #svg_editor #sidepanel_handle {
 	display: inline-block;
 	position: absolute;
@@ -104,19 +110,18 @@ body {
 	left: 0px;
 	top: 40%;
 	width: 1em;
-	border-style: solid;
-	border-color: #666;
-	border-width: 1px;
-	padding: 2px 1px 2px 4px;
+	padding: 5px 1px 5px 5px;
 	cursor: pointer;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	-moz-user-select: none;
 }
 
 #svg_editor #sidepanel_handle:hover {
-	border-width: 2px;
-	margin-top: -1px;
-	margin-left: -1px;
+	font-weight: bold;
 }
+
 #svg_editor #sidepanel_handle * {
 	cursor: pointer;
 	-moz-user-select: none;

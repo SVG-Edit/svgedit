@@ -1265,7 +1265,7 @@ function svg_edit_setup() {
 			if (deltax == 0) return;
 			sidedrag = evt.pageX;
 			var sidewidth = parseInt($('#sidepanels').css('width'))+deltax;
-			if (sidewidth <= 156 && sidewidth >= 10) {
+			if (sidewidth <= 130 && sidewidth >= 1) {
 				var workarea = $('#workarea');
 				var sidepanels = $('#sidepanels');
 				var layerpanel = $('#layerpanel');
