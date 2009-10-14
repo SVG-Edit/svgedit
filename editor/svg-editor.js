@@ -1494,6 +1494,9 @@ function svg_edit_setup() {
 	// set starting resolution (centers canvas)
 	setResolution(640,480);
 	
+	var revnums = "$Rev$";
+	$('#copyright')[0].setAttribute("title", revnums);
+	
 	return svgCanvas;
 };
 
