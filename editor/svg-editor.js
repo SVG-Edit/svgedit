@@ -1361,9 +1361,11 @@ function svg_edit_setup() {
 				evt.preventDefault();
 			})
 			.mouseover(function(evt){
+				$(this).css({"font-style": "italic", "color":"blue"});
 				toggleHighlightLayer(this.textContent);
 			})
 			.mouseout(function(evt){
+				$(this).css({"font-style": "normal", "color":"black"});
 				toggleHighlightLayer();
 			});
 		$('#layerlist td.layervis').click(function(evt){
