@@ -1257,7 +1257,6 @@ function svg_edit_setup() {
 	$('#sidepanel_handle')
 		.mousedown(function(evt) {sidedrag = evt.pageX;})
 		.mouseup(function(evt) {sidedrag = -1;});
-	// TODO: is there a better way to do this splitter without attaching mouse handlers here?
 	$('#svg_editor')
 		.mouseup(function(){sidedrag=-1;})
 		.mouseout(function(evt){
@@ -1308,6 +1307,26 @@ function svg_edit_setup() {
 		layerpanel.css('width', parseInt(layerpanel.css('width'))+deltax);
 		centerCanvasIfNeeded();
 	};
+	
+	// this function highlights the layer passed in (by fading out the other layers)
+	// if no layer is passed in, this function restores the other layers
+	var toggleHighlightLayer = function(layerNameToHighlight) {
+		var curNames = new Array(svgCanvas.getNumLayers());
+		for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getLayer(i); }
+	
+		if (layerNameToHighlight) {
+			for (var i = 0; i < curNames.length; ++i) {
+				if (curNames[i] != layerNameToHighlight) {
+					svgCanvas.setLayerOpacity(curNames[i], 0.5);
+				}
+			}
+		}
+		else {
+			for (var i = 0; i < curNames.length; ++i) {
+				svgCanvas.setLayerOpacity(curNames[i], 1.0);
+			}
+		}
+	};
 
 	var populateLayers = function(){
 		var layerlist = $('#layerlist tbody');
@@ -1333,13 +1352,20 @@ function svg_edit_setup() {
 			$('#layerlist tr:first').addClass("layersel");
 		}
 		// handle selection of layer
-		$('#layerlist td.layername').click(function(evt){
-			$('#layerlist tr.layer').removeClass("layersel");
-			var row = $(this.parentNode);
-			row.addClass("layersel");
-			svgCanvas.setCurrentLayer(this.textContent);
-			evt.preventDefault();
-		});
+		$('#layerlist td.layername')
+			.click(function(evt){
+				$('#layerlist tr.layer').removeClass("layersel");
+				var row = $(this.parentNode);
+				row.addClass("layersel");
+				svgCanvas.setCurrentLayer(this.textContent);
+				evt.preventDefault();
+			})
+			.mouseover(function(evt){
+				toggleHighlightLayer(this.textContent);
+			})
+			.mouseout(function(evt){
+				toggleHighlightLayer();
+			});
 		$('#layerlist td.layervis').click(function(evt){
 			var row = $(this.parentNode).prevAll().length;
 			var name = $('#layerlist tr.layer:eq(' + row + ') td.layername').text();

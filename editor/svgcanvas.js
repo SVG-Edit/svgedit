@@ -3406,6 +3406,51 @@ function BatchCommand(text) {
 	var getLayerName = function(g) {
 		return $("title",g).text();
 	};
+	
+	// Function: getLayerOpacity
+	// Returns the opacity of the given layer.  If the input name is not a layer, null is returned.
+	//
+	// Parameters: 
+	// layername - name of the layer on which to get the opacity
+	//
+	// Returns:
+	// The opacity value of the given layer.  This will be a value between 0.0 and 1.0, or null
+	// if layername is not a valid layer
+	this.getLayerOpacity = function(layername) {
+		for (var i = 0; i < all_layers.length; ++i) {
+			if (all_layers[i][0] == layername) {
+				var g = all_layers[i][1];
+				var opacity = g.getAttribute("opacity");
+				if (!opacity) {
+					opacity = "1.0";
+				}
+				return parseFloat(opacity);
+			}
+		}
+		
+		return null;
+	};
+	
+	// Function: setLayerOpacity
+	// Sets the opacity of the given layer.  If the input name is not a layer, nothing happens.
+	// This is not an undo-able action.  NOTE: this function exists solely to apply
+	// a highlighting/de-emphasis effect to a layer, when it is possible for a user to affect
+	// the opacity of a layer, we will need to allow this function to produce an undo-able action.
+	// If opacity is not a value between 0.0 and 1.0, then nothing happens.
+	//
+	// Parameters:
+	// layername - name of the layer on which to set the opacity
+	// opacity - a float value in the range 0.0-1.0
+	this.setLayerOpacity = function(layername, opacity) {
+		if (opacity < 0.0 || opacity > 1.0) return;
+		for (var i = 0; i < all_layers.length; ++i) {
+			if (all_layers[i][0] == layername) {
+				var g = all_layers[i][1];
+				g.setAttribute("opacity", opacity);
+				break;
+			}
+		}
+	};
 
 	// Function: clear
 	// Clears the current document.  This is not an undoable action.
