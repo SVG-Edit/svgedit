@@ -4813,6 +4813,8 @@ var Utils = {
 
 	"encode64" : function(input) {
 		// base64 strings are 4/3 larger than the original string
+//		input = Utils.encodeUTF8(input); // convert non-ASCII characters
+		input = Utils.convertToXMLReferences(input);
 		var output = new Array( Math.floor( (input.length + 2) / 3 ) * 4 );
 		var chr1, chr2, chr3;
 		var enc1, enc2, enc3, enc4;
@@ -4841,6 +4843,43 @@ var Utils = {
 		} while (i < input.length);
 
 		return output.join('');
+	},
+	
+	// based on http://phpjs.org/functions/utf8_encode:577
+	// codedread:does not seem to work with webkit-based browsers on OSX
+	"encodeUTF8": function(input) {
+		//return unescape(encodeURIComponent(input)); //may or may not work
+		var output = '';
+		for (var n = 0; n < input.length; n++){
+			var c = input.charCodeAt(n);
+			if (c < 128) {
+				output += input[n];
+			}
+			else if (c > 127) {
+				if (c < 2048){
+					output += String.fromCharCode((c >> 6) | 192);
+				} 
+				else {
+					output += String.fromCharCode((c >> 12) | 224) + String.fromCharCode((c >> 6) & 63 | 128);
+				}
+				output += String.fromCharCode((c & 63) | 128);
+			}
+		}
+		return output;
+	},
+	
+	"convertToXMLReferences": function(input) {
+		var output = '';
+		for (var n = 0; n < input.length; n++){
+			var c = input.charCodeAt(n);
+			if (c < 128) {
+				output += input[n];
+			}
+			else if(c > 127) {
+				output += ("&#" + c + ";");
+			}
+		}
+		return output;
 	},
 
 	"rectsIntersect": function(r1, r2) {
