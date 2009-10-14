@@ -1260,27 +1260,46 @@ function svg_edit_setup() {
 	// TODO: is there a better way to do this splitter without attaching mouse handlers here?
 	$('#svg_editor')
 		.mouseup(function(){sidedrag=-1;})
+		.mouseout(function(evt){
+			if (sidedrag == -1) return;
+			// if we've moused out of the browser window, then we can stop dragging 
+			// and close the drawer
+			if (evt.pageX > this.clientWidth) {
+				sidedrag = -1;
+				toggleSidePanel(true);
+			}
+		})
 		.mousemove(function(evt) {
 			if (sidedrag == -1) return;
 			var deltax = sidedrag - evt.pageX;
-			if (deltax == 0) return;
-			sidedrag = evt.pageX;
-			var sidewidth = parseInt($('#sidepanels').css('width'))+deltax;
-			if (sidewidth <= 130 && sidewidth >= 2) {
-				var workarea = $('#workarea');
-				var sidepanels = $('#sidepanels');
-				var layerpanel = $('#layerpanel');
-				workarea.css('right', parseInt(workarea.css('right'))+deltax);
-				sidepanels.css('width', parseInt(sidepanels.css('width'))+deltax);
-				layerpanel.css('width', parseInt(layerpanel.css('width'))+deltax);
-				centerCanvasIfNeeded();
+
+			var sidepanels = $('#sidepanels');
+			var sidewidth = parseInt(sidepanels.css('width'));
+			if (sidewidth+deltax > 130) {
+				deltax = 130 - sidewidth;
+				sidewidth = 130;
 			}
+			else if (sidewidth+deltax < 2) {
+				deltax = 2 - sidewidth;
+				sidewidth = 2;
+			}
+
+			if (deltax == 0) return;
+			sidedrag -= deltax;
+
+			var workarea = $('#workarea');
+			var layerpanel = $('#layerpanel');
+			workarea.css('right', parseInt(workarea.css('right'))+deltax);
+			sidepanels.css('width', parseInt(sidepanels.css('width'))+deltax);
+			layerpanel.css('width', parseInt(layerpanel.css('width'))+deltax);
+			centerCanvasIfNeeded();
 	});
 	
 	// if width is non-zero, then fully close it, otherwise fully open it
-	var toggleSidePanel = function(){
+	// the optional close argument forces the side panel closed
+	var toggleSidePanel = function(close){
 		var w = parseInt($('#sidepanels').css('width'));
-		var deltax = (w > 2 ? 2 : 130) - w;
+		var deltax = (w > 2 || close ? 2 : 130) - w;
 		var workarea = $('#workarea');
 		var sidepanels = $('#sidepanels');
 		var layerpanel = $('#layerpanel');
