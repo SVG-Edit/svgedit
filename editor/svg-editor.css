@@ -63,7 +63,7 @@ body {
 	top: 75px;
 	left: 40px;
 	bottom: 60px;
-	right: 10px;
+	right: 14px;
 	background-color: #A0A0A0;
 	border: 1px solid #808080;
 	overflow: auto;
@@ -93,9 +93,6 @@ body {
 	width: 0px;
 	overflow: hidden;
 	margin: 0px;
-	border-radius: 10px 0px 0px 10px;
-	-moz-border-radius: 10px 0px 0px 10px;
-	-webkit-border-radius: 10px 0px 0px 10px;
 }
 
 /*
@@ -111,6 +108,7 @@ body {
 	top: 40%;
 	width: 1em;
 	padding: 5px 1px 5px 5px;
+	margin-left: 3px;
 	cursor: pointer;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
