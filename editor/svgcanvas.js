@@ -552,14 +552,16 @@ function BatchCommand(text) {
 
 	var assignAttributes = function(node, attrs, suspendLength) {
 		if(!suspendLength) suspendLength = 0;
-		var handle = svgroot.suspendRedraw(suspendLength);
+		// Opera has a problem with suspendRedraw() apparently
+		var handle = null;
+		if (!window.opera) svgroot.suspendRedraw(suspendLength);
 
 		for (i in attrs) {
 			var ns = (i.substr(0,4) == "xml:" ? xmlns : null);
 			node.setAttributeNS(ns, i, attrs[i]);
 		}
 		
-		svgroot.unsuspendRedraw(handle);
+		if (!window.opera) svgroot.unsuspendRedraw(handle);
 	};
 
 	// remove unneeded attributes
@@ -1942,10 +1944,12 @@ function BatchCommand(text) {
 				},1000);
 				break;
 			case "line":
-				var handle = svgroot.suspendRedraw(1000);
+				// Opera has a problem with suspendRedraw() apparently
+				var handle = null;
+				if (!window.opera) svgroot.suspendRedraw(1000);
 				shape.setAttributeNS(null, "x2", x);
 				shape.setAttributeNS(null, "y2", y);
-				svgroot.unsuspendRedraw(handle);
+				if (!window.opera) svgroot.unsuspendRedraw(handle);
 				break;
 			case "square":
 				var size = Math.max( Math.abs(x - start_x), Math.abs(y - start_y) );
@@ -1981,10 +1985,12 @@ function BatchCommand(text) {
 			case "ellipse":
 				var cx = shape.getAttributeNS(null, "cx");
 				var cy = shape.getAttributeNS(null, "cy");
-				var handle = svgroot.suspendRedraw(1000);
+				// Opera has a problem with suspendRedraw() apparently
+				var handle = null;
+				if (!window.opera) svgroot.suspendRedraw(1000);
 				shape.setAttributeNS(null, "rx", Math.abs(x - cx) );
 				shape.setAttributeNS(null, "ry", Math.abs(y - cy) );
-				svgroot.unsuspendRedraw(handle);
+				if (!window.opera) svgroot.unsuspendRedraw(handle);
 				break;
 			case "fhellipse":
 			case "fhrect":
