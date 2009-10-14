@@ -4789,6 +4789,12 @@ function BatchCommand(text) {
 	};
 	this.getZoom = function(){return current_zoom;};
 	
+	// Function: getVersion
+	// Returns a string which describes the revision number of SvgCanvas.
+	this.getVersion = function() {
+		return "svgcanvas.js ($Rev$)";
+	};
+	
 	this.clear();
 };
 
