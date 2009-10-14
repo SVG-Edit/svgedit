@@ -999,6 +999,7 @@ function svg_edit_setup() {
 			[modKey+'i', function(evt){showDocProperties();evt.preventDefault();}],
 			[modKey+'c', function(evt){clickClone();evt.preventDefault();}],
 			[modKey+'g', function(evt){clickGroup();evt.preventDefault();}],
+			[modKey+'x', function(evt){toggleSidePanel();}],
 			['esc', cancelOverlays, false],
 		];
 		
@@ -1265,15 +1266,29 @@ function svg_edit_setup() {
 			if (deltax == 0) return;
 			sidedrag = evt.pageX;
 			var sidewidth = parseInt($('#sidepanels').css('width'))+deltax;
-			if (sidewidth <= 130 && sidewidth >= 1) {
+			if (sidewidth <= 130 && sidewidth >= 2) {
 				var workarea = $('#workarea');
 				var sidepanels = $('#sidepanels');
 				var layerpanel = $('#layerpanel');
 				workarea.css('right', parseInt(workarea.css('right'))+deltax);
 				sidepanels.css('width', parseInt(sidepanels.css('width'))+deltax);
 				layerpanel.css('width', parseInt(layerpanel.css('width'))+deltax);
+				centerCanvasIfNeeded();
 			}
 	});
+	
+	// if width is non-zero, then fully close it, otherwise fully open it
+	var toggleSidePanel = function(){
+		var w = parseInt($('#sidepanels').css('width'));
+		var deltax = (w > 2 ? 2 : 130) - w;
+		var workarea = $('#workarea');
+		var sidepanels = $('#sidepanels');
+		var layerpanel = $('#layerpanel');
+		workarea.css('right', parseInt(workarea.css('right'))+deltax);
+		sidepanels.css('width', parseInt(sidepanels.css('width'))+deltax);
+		layerpanel.css('width', parseInt(layerpanel.css('width'))+deltax);
+		centerCanvasIfNeeded();
+	};
 
 	var populateLayers = function(){
 		var layerlist = $('#layerlist tbody');
