@@ -1494,7 +1494,8 @@ function svg_edit_setup() {
 	// set starting resolution (centers canvas)
 	setResolution(640,480);
 	
-	var revnums = "$Rev$";
+	var revnums = "svg-editor.js ($Rev$) ";
+	revnums += svgCanvas.getVersion();
 	$('#copyright')[0].setAttribute("title", revnums);
 	
 	return svgCanvas;
