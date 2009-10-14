@@ -371,12 +371,15 @@ function svg_edit_setup() {
 	});
 
 	// fired when user wants to move elements to another layer
+	var promptMoveLayerOnce = false;
 	$('#selLayerNames').change(function(){
 		var destLayer = this.options[this.selectedIndex].value;
 		// TODO: localize this prompt
-		if (destLayer && confirm('Move selected elements to layer \'' + destLayer + '\'?')) {
+		if (destLayer && (promptMoveLayerOnce || confirm('Move selected elements to layer \'' + destLayer + '\'?'))) {
+			promptMoveLayerOnce = true;
 			svgCanvas.moveSelectedToLayer(destLayer);
 			svgCanvas.clearSelection();
+			populateLayers();
 		}
 	});
 
@@ -1253,6 +1256,8 @@ function svg_edit_setup() {
 		$('#layerlist tr.layer:eq('+curIndex+')').addClass("layersel");
 	});
 	
+	var SIDEPANEL_MAXWIDTH = 300;
+	var SIDEPANEL_OPENWIDTH = 150;
 	var sidedrag = -1;
 	$('#sidepanel_handle')
 		.mousedown(function(evt) {sidedrag = evt.pageX;})
@@ -1274,9 +1279,9 @@ function svg_edit_setup() {
 
 			var sidepanels = $('#sidepanels');
 			var sidewidth = parseInt(sidepanels.css('width'));
-			if (sidewidth+deltax > 130) {
-				deltax = 130 - sidewidth;
-				sidewidth = 130;
+			if (sidewidth+deltax > SIDEPANEL_MAXWIDTH) {
+				deltax = SIDEPANEL_MAXWIDTH - sidewidth;
+				sidewidth = SIDEPANEL_MAXWIDTH;
 			}
 			else if (sidewidth+deltax < 2) {
 				deltax = 2 - sidewidth;
@@ -1298,7 +1303,7 @@ function svg_edit_setup() {
 	// the optional close argument forces the side panel closed
 	var toggleSidePanel = function(close){
 		var w = parseInt($('#sidepanels').css('width'));
-		var deltax = (w > 2 || close ? 2 : 130) - w;
+		var deltax = (w > 2 || close ? 2 : SIDEPANEL_OPENWIDTH) - w;
 		var workarea = $('#workarea');
 		var sidepanels = $('#sidepanels');
 		var layerpanel = $('#layerpanel');
@@ -1333,23 +1338,26 @@ function svg_edit_setup() {
 		var selLayerNames = $('#selLayerNames');
 		layerlist.empty();
 		selLayerNames.empty();
+		var currentlayer = svgCanvas.getCurrentLayer();
 		var layer = svgCanvas.getNumLayers();
 		// we get the layers in the reverse z-order (the layer rendered on top is listed first)
 		while (layer--) {
 			var name = svgCanvas.getLayer(layer);
 			// contenteditable=\"true\"
+			var appendstr = "<tr class=\"layer";
+			if (name == currentlayer) {
+				appendstr += " layersel"
+			}
+			appendstr += "\">";
+			
 			if (svgCanvas.getLayerVisibility(name)) {
-				layerlist.append("<tr class=\"layer\"><td class=\"layervis\"/><td class=\"layername\" >" + name + "</td></tr>");
+				appendstr += "<td class=\"layervis\"/><td class=\"layername\" >" + name + "</td></tr>";
 			}
 			else {
-				layerlist.append("<tr class=\"layer\"><td class=\"layervis layerinvis\"/><td class=\"layername\" >" + name + "</td></tr>");
+				appendstr += "<td class=\"layervis layerinvis\"/><td class=\"layername\" >" + name + "</td></tr>";
 			}
+			layerlist.append(appendstr);
 			selLayerNames.append("<option values=\"" + name + "\">" + name + "</option>");
-		}
-		// if we only have one layer, then always make sure that layer is selected
-		// (This is really only required upon first initialization)
-		if (layerlist.size() == 1) {
-			$('#layerlist tr:first').addClass("layersel");
 		}
 		// handle selection of layer
 		$('#layerlist td.layername')
