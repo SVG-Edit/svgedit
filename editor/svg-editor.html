@@ -84,28 +84,28 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	
 	<!-- File-like buttons: New, Save, Source -->
 	<div id="file_panel">
-		<img class="tool_button" id="tool_clear" src="images/clear.png" title="New Image [N]" alt="Clear" />
-		<img style="display:none" class="tool_button" id="tool_open" src="images/open.png" title="Open Image [O]" alt="Open"/>
-		<img class="tool_button" id="tool_save" src="images/save.png" title="Save Image [S]" alt="Save"/>
-		<img class="tool_button" id="tool_docprops" src="images/document-properties.png" title="Document Properties [I]"/>
-		<img class="tool_button" id="tool_source" src="images/source.png" title="Edit Source [U]" alt="Source"/>
+		<img class="push_button" id="tool_clear" src="images/clear.png" title="New Image [N]" alt="Clear" />
+		<img style="display:none" class="push_button" id="tool_open" src="images/open.png" title="Open Image [O]" alt="Open"/>
+		<img class="push_button" id="tool_save" src="images/save.png" title="Save Image [S]" alt="Save"/>
+		<img class="push_button" id="tool_docprops" src="images/document-properties.png" title="Document Properties [I]"/>
+		<img class="push_button" id="tool_source" src="images/source.png" title="Edit Source [U]" alt="Source"/>
 	</div>
 
     <!-- History buttons -->
 	<div id="history_panel">
 		<div class="tool_sep"></div>
-		<div class="tool_button tool_button_disabled" id="tool_undo" title="Undo [Z]"></div>
-		<div class="tool_button tool_button_disabled" id="tool_redo" title="Redo [Y]"></div>
+		<img class="push_button tool_button_disabled" id="tool_undo" src="images/undo.png" title="Undo [Z]"/>
+		<img class="push_button tool_button_disabled" id="tool_redo" src="images/redo.png" title="Redo [Y]"/>
 	</div>
 	
 	<!-- Buttons when a single element is selected -->
 	<div id="selected_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="tool_button" id="tool_clone" src="images/clone.png" title="Clone Element [C]" alt="Copy"/>
-		<img class="tool_button" id="tool_delete" src="images/delete.png" title="Delete Element [Delete/Backspace]" alt="Delete"/>
+		<img class="push_button" id="tool_clone" src="images/clone.png" title="Clone Element [C]" alt="Copy"/>
+		<img class="push_button" id="tool_delete" src="images/delete.png" title="Delete Element [Delete/Backspace]" alt="Delete"/>
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="tool_button" id="tool_move_top" src="images/move_top.png" title="Move to Top [Shift+Up]" alt="Top"/>
-		<img class="tool_button" id="tool_move_bottom" src="images/move_bottom.png" title="Move to Bottom [Shift+Down]" alt="Bottom"/>
+		<img class="push_button" id="tool_move_top" src="images/move_top.png" title="Move to Top [Shift+Up]" alt="Top"/>
+		<img class="push_button" id="tool_move_bottom" src="images/move_bottom.png" title="Move to Bottom [Shift+Down]" alt="Bottom"/>
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<select id="group_opacity" class="selected_tool" title="Change selected item opacity">
 			<option selected="selected" value="1">100 %</option>
@@ -127,15 +127,15 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<!-- Buttons when multiple elements are selected -->
 	<div id="multiselected_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="tool_button" id="tool_clone_multi" src="images/clone.png" title="Clone Elements [C]" alt="Clone"/>
-		<img class="tool_button" id="tool_delete_multi" src="images/delete.png" title="Delete Selected Elements [Delete/Backspace]" alt="Delete"/>
+		<img class="push_button" id="tool_clone_multi" src="images/clone.png" title="Clone Elements [C]" alt="Clone"/>
+		<img class="push_button" id="tool_delete_multi" src="images/delete.png" title="Delete Selected Elements [Delete/Backspace]" alt="Delete"/>
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<div class="tool_button" id="tool_alignleft" title="Align Left"></div>
-		<div class="tool_button" id="tool_aligncenter" title="Align Center"></div>
-		<div class="tool_button" id="tool_alignright" title="Align Right"></div>
-		<div class="tool_button" id="tool_aligntop" title="Align Top"></div>
-		<div class="tool_button" id="tool_alignmiddle" title="Align Middle"></div>
-		<div class="tool_button" id="tool_alignbottom" title="Align Bottom"></div>
+		<div class="push_button" id="tool_alignleft" title="Align Left"></div>
+		<div class="push_button" id="tool_aligncenter" title="Align Center"></div>
+		<div class="push_button" id="tool_alignright" title="Align Right"></div>
+		<div class="push_button" id="tool_aligntop" title="Align Top"></div>
+		<div class="push_button" id="tool_alignmiddle" title="Align Middle"></div>
+		<div class="push_button" id="tool_alignbottom" title="Align Bottom"></div>
 		<span id="relativeToLabel" class="selected_tool">relative to:</span>
 		<select id="align_relative_to" class="selected_tool" title="Align relative to ...">
 		<option id="selected_objects" value="selected">selected objects</option>
@@ -144,12 +144,12 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 		<option id="page" value="page">page</option>
 		</select>
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="tool_button" id="tool_group" src="images/shape_group.png" title="Group Elements [G]" alt="Group"/>
+		<img class="push_button" id="tool_group" src="images/shape_group.png" title="Group Elements [G]" alt="Group"/>
 	</div>
 
 	<div id="g_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="tool_button" id="tool_ungroup" src="images/shape_ungroup.png" title="Ungroup Elements [G]" alt="Ungroup"/>
+		<img class="push_button" id="tool_ungroup" src="images/shape_ungroup.png" title="Ungroup Elements [G]" alt="Ungroup"/>
 	</div>
 
 	<div id="rect_panel">
