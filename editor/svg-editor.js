@@ -1169,6 +1169,16 @@ function svg_edit_setup() {
 	}).mouseup(function() {
 		$(this).removeClass('layer_buttonpressed');
 	});
+
+	$('.push_button').mousedown(function() { 
+		if (!$(this).hasClass('tool_button_disabled')) {
+			$(this).addClass('push_button_pressed');
+		}
+	}).mouseout(function() {
+		$(this).removeClass('push_button_pressed');
+	}).mouseup(function() {
+		$(this).removeClass('push_button_pressed');
+	});
 	
 	$('#layer_new').click(function() {
 		var curNames = new Array(svgCanvas.getNumLayers());
