@@ -352,7 +352,10 @@ span.zoom_tool {
 	background-color: #B0B0B0;
 }
 
-#svg_editor .tool_button, #svg_editor .tool_button_current, #svg_editor .tool_button_disabled {
+#svg_editor .tool_button, 
+#svg_editor .push_button,
+#svg_editor .tool_button_current, 
+#svg_editor .tool_button_disabled {
 	height: 24px;
 	width: 24px;
 	margin: 2px;
@@ -364,7 +367,8 @@ span.zoom_tool {
 	cursor: pointer;
 }
 
-#svg_editor .tool_button_current {
+#svg_editor .tool_button_current,
+#svg_editor .push_button_pressed {
 	border-left: 1px solid #808080;
 	border-top: 1px solid #808080;
 	border-right: 1px solid #FFFFFF;
@@ -420,8 +424,6 @@ span.zoom_tool {
 #svg_editor #tool_aligncenter { background: 2px 2px url('images/align-center.png') no-repeat; }
 #svg_editor #tool_alignright { background: 2px 2px url('images/align-right.png') no-repeat; }
 #svg_editor .tool_sep { background: 2px 2px url('images/sep.png') no-repeat; }
-#svg_editor #tool_undo { background: 2px 2px url('images/undo.png') no-repeat; }
-#svg_editor #tool_redo { background: 2px 2px url('images/redo.png') no-repeat; }
 
 /* TODO: figure out what more-specific selector causes me to write this atrocity and not
          simply .tool_flyout_button */
@@ -434,6 +436,11 @@ span.zoom_tool {
 	border-bottom: 1px solid #808080;
 	height: 28px;
 	width: 28px;
+}
+
+#svg_editor .tool_button:hover, 
+#svg_editor .push_button:hover {
+	background-color: #FFF;
 }
 
 #svg_editor #tools_rect .tool_flyout_button_current, #svg_editor #tools_ellipse .tool_flyout_button_current {
