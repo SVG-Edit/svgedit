@@ -1466,19 +1466,28 @@ function BatchCommand(text) {
 		
 		start_x = x;
 		start_y = y;
+
+		var t = evt.target;
+		// if this element is in a group, go up until we reach the top-level group 
+		// just below the layer groups
+		// TODO: once we implement links, we also would have to check for <a> elements
+		while (t.parentNode.parentNode.tagName == "g") {
+			t = t.parentNode;
+		}
+		// if we are not in the middle of creating a path, and we've clicked on some shape, 
+		// then go to Select mode.
+		// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
+		if ( (current_mode != "poly" || current_poly_pts.length == 0) &&
+			t.id != "svgcanvas" && t.id != "svgroot") 
+		{
+			// switch into "select" mode if we've clicked on an element
+			canvas.setMode("select");
+		}
 		
 		switch (current_mode) {
 			case "select":
 				started = true;
 				current_resize_mode = "none";
-				var t = evt.target;
-				// if this element is in a group, go up until we reach the top-level group 
-				// just below the layer groups
-				// TODO: once we implement links, we also would have to check for <a> elements
-				while (t.parentNode.parentNode.tagName == "g") {
-					t = t.parentNode;
-				}
-				// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
 				var nodeName = t.nodeName.toLowerCase();
 				if (nodeName != "div" && nodeName != "svg") {
 					// if this element is not yet selected, clear selection and select it
@@ -2931,7 +2940,8 @@ function BatchCommand(text) {
 				current_mode = "polyedit";
 				recalcPolyPoints();
 				addAllPointGripsToPoly(current_poly_pts.length/2 - 1);
- 			} else {
+ 			} else if (current_mode == "text") {
+ 				// keep us in the tool we were in unless it was a text element
 				canvas.addToSelection([element], true);
 			}
 			// we create the insert command that is stored on the stack
