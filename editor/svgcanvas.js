@@ -1478,6 +1478,7 @@ function BatchCommand(text) {
 		// then go to Select mode.
 		// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
 		if ( (current_mode != "poly" || current_poly_pts.length == 0) &&
+			t.parentNode.id != "selectorParentGroup" &&
 			t.id != "svgcanvas" && t.id != "svgroot") 
 		{
 			// switch into "select" mode if we've clicked on an element
