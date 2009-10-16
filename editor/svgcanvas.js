@@ -1467,7 +1467,9 @@ function BatchCommand(text) {
 		start_x = x;
 		start_y = y;
 
+		/*
 		var t = evt.target;
+		// TODO: select on mouseup when it was a click
 		// if this element is in a group, go up until we reach the top-level group 
 		// just below the layer groups
 		// TODO: once we implement links, we also would have to check for <a> elements
@@ -1484,11 +1486,19 @@ function BatchCommand(text) {
 			// switch into "select" mode if we've clicked on an element
 			canvas.setMode("select");
 		}
+		*/
 		
 		switch (current_mode) {
 			case "select":
 				started = true;
 				current_resize_mode = "none";
+				var t = evt.target;
+				// if this element is in a group, go up until we reach the top-level group 
+				// just below the layer groups
+				// TODO: once we implement links, we also would have to check for <a> elements
+				while (t.parentNode.parentNode.tagName == "g") {
+					t = t.parentNode;
+				}
 				var nodeName = t.nodeName.toLowerCase();
 				if (nodeName != "div" && nodeName != "svg") {
 					// if this element is not yet selected, clear selection and select it
@@ -1657,7 +1667,7 @@ function BatchCommand(text) {
 				break;
 			case "ellipse":
 				started = true;
-				addSvgElementFromJson({
+				var shp = addSvgElementFromJson({
 					"element": "ellipse",
 					"attr": {
 						"cx": x,
@@ -2611,24 +2621,22 @@ function BatchCommand(text) {
 				}
 				break;
 			case "line":
-				keep = (element.getAttribute('x1') != element.getAttribute('x2') ||
-				        element.getAttribute('y1') != element.getAttribute('y2'));
+				keep = (element.x1.baseVal.value != element.x2.baseVal.value ||
+				        element.y1.baseVal.value != element.y2.baseVal.value);
 				break;
 			case "square":
 			case "rect":
-				keep = (element.getAttribute('width') != 0 ||
-				        element.getAttribute('height') != 0);
+				keep = (element.width.baseVal.value && element.height.baseVal.value);
+				console.log([keep,element.getAttribute('width'),element.getAttribute('height')]);
 				break;
 			case "image":
-				keep = (element.getAttribute('width') != 0 ||
-				        element.getAttribute('height') != 0);
+				keep = (element.width.baseVal.value && element.height.baseVal.value);
 				break;
 			case "circle":
-				keep = (element.getAttribute('r') != 0);
+				keep = (element.r.baseVal.value);
 				break;
 			case "ellipse":
-				keep = (element.getAttribute('rx') != 0 ||
-				        element.getAttribute('ry') != 0);
+				keep = (element.rx.baseVal.value && element.ry.baseVal.value);
 				break;
 			case "fhellipse":
 				if ((freehand_max_x - freehand_min_x) > 0 &&
@@ -2930,6 +2938,27 @@ function BatchCommand(text) {
 		if (!keep && element != null) {
 			element.parentNode.removeChild(element);
 			element = null;
+			
+			var t = evt.target;
+			// if this element is in a group, go up until we reach the top-level group 
+			// just below the layer groups
+			// TODO: once we implement links, we also would have to check for <a> elements
+			while (t.parentNode.parentNode.tagName == "g") {
+				t = t.parentNode;
+			}
+			// if we are not in the middle of creating a path, and we've clicked on some shape, 
+			// then go to Select mode.
+			// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
+			if ( (current_mode != "poly" || current_poly_pts.length == 0) &&
+				t.parentNode.id != "selectorParentGroup" &&
+				t.id != "svgcanvas" && t.id != "svgroot") 
+			{
+				// switch into "select" mode if we've clicked on an element
+				canvas.addToSelection([t], true);
+				canvas.setMode("select");
+			}
+			
+			
 		} else if (element != null) {
 			canvas.addedNew = true;
 			element.setAttribute("opacity", cur_shape.opacity);
