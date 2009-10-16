@@ -557,7 +557,8 @@ function BatchCommand(text) {
 		if (!window.opera) svgroot.suspendRedraw(suspendLength);
 
 		for (i in attrs) {
-			var ns = (i.substr(0,4) == "xml:" ? xmlns : null);
+			var ns = (i.substr(0,4) == "xml:" ? xmlns : 
+				i.substr(0,6) == "xlink:" ? xlinkns : null);
 			node.setAttributeNS(ns, i, attrs[i]);
 		}
 		
@@ -2200,7 +2201,8 @@ function BatchCommand(text) {
 				'stroke': "#00F",
 				'stroke-width': 2,
 				'cursor': 'move',
-				'style': 'pointer-events:all'
+				'style': 'pointer-events:all',
+				'xlink:title': 'Drag point to move it. Double-click point to change segment type.'
 			});
 			pointGrip = pointGripContainer.appendChild(pointGrip);
 
@@ -2467,7 +2469,8 @@ function BatchCommand(text) {
 				'stroke': "#55F",
 				'stroke-width': 1,
 				'cursor': 'move',
-				'style': 'pointer-events:all'
+				'style': 'pointer-events:all',
+				'xlink:title': 'Drag control point to adjust curve properties'
 			});
 			pointGrip = ctrlPointGripContainer.appendChild(pointGrip);
 		}
@@ -4066,7 +4069,36 @@ function BatchCommand(text) {
 	};
 
 	this.setImageURL = function(val) {
-		this.changeSelectedAttribute("#href", val);
+		// Below is some code to fetch the data: URL representation
+		// of local image files. It is commented out until we figure out
+		// a way of introducing this as an option into the UI.  Also, it 
+		// does not work in Firefox at all :(
+/*
+		// load in the image and once it's loaded, get the dimensions
+		var img = document.createElement("img");
+		var svgCanvas = this;
+		img.addEventListener("load", function(evt) {
+			if (this.width > 0 && this.height > 0) {
+				// create a canvas the same size as the raster image
+				var canvas = document.createElement("canvas");
+				canvas.width = this.width;
+				canvas.height = this.height;
+				// load the raster image into the canvas
+				canvas.getContext("2d").drawImage(img,0,0);
+				// retrieve the data: URL
+				try {
+					var dataurl = canvas.toDataURL();
+					svgCanvas.changeSelectedAttribute("#href", dataurl);
+				} catch(e) {
+					// if we get an exception, just set the href to the URL
+					svgCanvas.changeSelectedAttribute("#href", val);
+				}
+			}
+		}, false);		
+		img.setAttribute("src", val);
+*/		
+		
+		svgCanvas.changeSelectedAttribute("#href", val);
 	};
 
 	this.setRectRadius = function(val) {

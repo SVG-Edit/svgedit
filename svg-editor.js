@@ -399,9 +399,10 @@ function svg_edit_setup() {
 		svgCanvas.setTextContent(this.value);
 	});
   
-  $('#image_url').keyup(function(){
-    svgCanvas.setImageURL(this.value); 
-  });
+	// TODO: consider only setting the URL once Enter has been pressed?
+	$('#image_url').keyup(function(){
+		svgCanvas.setImageURL(this.value); 
+	});
 
 	$('.attr_changer').change(function() {
 		var attr = this.getAttribute("data-attr");
