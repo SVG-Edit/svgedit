@@ -1467,27 +1467,6 @@ function BatchCommand(text) {
 		start_x = x;
 		start_y = y;
 
-		/*
-		var t = evt.target;
-		// TODO: select on mouseup when it was a click
-		// if this element is in a group, go up until we reach the top-level group 
-		// just below the layer groups
-		// TODO: once we implement links, we also would have to check for <a> elements
-		while (t.parentNode.parentNode.tagName == "g") {
-			t = t.parentNode;
-		}
-		// if we are not in the middle of creating a path, and we've clicked on some shape, 
-		// then go to Select mode.
-		// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
-		if ( (current_mode != "poly" || current_poly_pts.length == 0) &&
-			t.parentNode.id != "selectorParentGroup" &&
-			t.id != "svgcanvas" && t.id != "svgroot") 
-		{
-			// switch into "select" mode if we've clicked on an element
-			canvas.setMode("select");
-		}
-		*/
-		
 		switch (current_mode) {
 			case "select":
 				started = true;
@@ -1667,7 +1646,7 @@ function BatchCommand(text) {
 				break;
 			case "ellipse":
 				started = true;
-				var shp = addSvgElementFromJson({
+				addSvgElementFromJson({
 					"element": "ellipse",
 					"attr": {
 						"cx": x,
