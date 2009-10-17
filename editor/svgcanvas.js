@@ -11,21 +11,23 @@ if( window.opera ) {
 // TODO: add <a> elements to this
 // TODO: add <tspan> to this
 var svgWhiteList = {
-	"circle": ["cx", "cy", "fill", "fill-opacity", "id", "opacity", "r", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
+	"circle": ["cx", "cy", "fill", "fill-opacity", "id", "opacity", "r", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
 	"defs": [],
-	"ellipse": ["cx", "cy", "fill", "fill-opacity", "id", "opacity", "rx", "ry", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "transform"],
-	"g": ["id", "display", "transform"],
-	"image": ["height", "id", "opacity", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
-	"line": ["fill", "fill-opacity", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-opacity", "stroke-width",  "transform", "x1", "x2", "y1", "y2"],
-	"linearGradient": ["id", "gradientTransform", "gradientUnits", "spreadMethod", "x1", "x2", "y1", "y2"],
-	"path": ["d", "fill", "fill-opacity", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
-	"polygon": ["id", "fill", "fill-opacity", "id", "opacity", "points", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
-	"polyline": ["id", "fill", "fill-opacity", "opacity", "points", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform"],
-	"radialGradient": ["id", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "r", "spreadMethod"],
-	"rect": ["fill", "fill-opacity", "height", "id", "opacity", "rx", "ry", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "width", "x", "y"],
-	"stop": ["id", "offset", "stop-color", "stop-opacity"],
-	"svg": ["id", "height", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
-	"text": ["fill", "fill-opacity", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "transform", "text-anchor", "x", "xml:space", "y"],
+	"desc": [],
+	"ellipse": ["cx", "cy", "fill", "fill-opacity", "id", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
+	"g": ["id", "display", "requiredFeatures", "systemLanguage", "transform"],
+	"image": ["height", "id", "opacity", "requiredFeatures", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
+	"line": ["fill", "fill-opacity", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
+	"linearGradient": ["id", "gradientTransform", "gradientUnits", "requiredFeatures", "spreadMethod", "systemLanguage", "x1", "x2", "y1", "y2"],
+	"path": ["d", "fill", "fill-opacity", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
+	"polygon": ["id", "fill", "fill-opacity", "id", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
+	"polyline": ["id", "fill", "fill-opacity", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
+	"radialGradient": ["id", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "r", "requiredFeatures", "spreadMethod", "systemLanguage"],
+	"rect": ["fill", "fill-opacity", "height", "id", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "width", "x", "y"],
+	"stop": ["id", "offset", "requiredFeatures", "stop-color", "stop-opacity", "systemLanguage"],
+	"switch": ["id", "requiredFeatures", "systemLanguage"],
+	"svg": ["id", "height", "requiredFeatures", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
+	"text": ["fill", "fill-opacity", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
 	"title": [],
 };
 
@@ -86,7 +88,7 @@ function ChangeElementCommand(elem, attrs, text) {
 		}
 		// if we are changing layer names, re-identify all layers
 		if (this.elem.tagName == "title" && this.elem.parentNode.parentNode == svgzoom) {
-			canvas.identifyLayers();
+			identifyLayers();
 		}		
 		return true;
 	};
@@ -119,7 +121,7 @@ function ChangeElementCommand(elem, attrs, text) {
 		}
 		// if we are changing layer names, re-identify all layers
 		if (this.elem.tagName == "title" && this.elem.parentNode.parentNode == svgzoom) {
-			canvas.identifyLayers();
+			identifyLayers();
 		}		
 		return true;
 	};
@@ -135,7 +137,7 @@ function InsertElementCommand(elem, text) {
 	this.apply = function() { 
 		this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); 
 		if (this.parent == svgzoom) {
-			canvas.identifyLayers();
+			identifyLayers();
 		}		
 	};
 
@@ -143,7 +145,7 @@ function InsertElementCommand(elem, text) {
 		this.parent = this.elem.parentNode;
 		this.elem = this.elem.parentNode.removeChild(this.elem);
 		if (this.parent == svgzoom) {
-			canvas.identifyLayers();
+			identifyLayers();
 		}		
 	};
 
@@ -159,14 +161,14 @@ function RemoveElementCommand(elem, parent, text) {
 		this.parent = this.elem.parentNode;
 		this.elem = this.parent.removeChild(this.elem);
 		if (this.parent == svgzoom) {
-			canvas.identifyLayers();
+			identifyLayers();
 		}		
 	};
 
 	this.unapply = function() { 
 		this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); 
 		if (this.parent == svgzoom) {
-			canvas.identifyLayers();
+			identifyLayers();
 		}		
 	};
 
@@ -184,14 +186,14 @@ function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 	this.apply = function() {
 		this.elem = this.newParent.insertBefore(this.elem, this.newNextSibling);
 		if (this.newParent == svgzoom) {
-			canvas.identifyLayers();
+			identifyLayers();
 		}
 	};
 
 	this.unapply = function() {
 		this.elem = this.oldParent.insertBefore(this.elem, this.oldNextSibling);
 		if (this.oldParent == svgzoom) {
-			canvas.identifyLayers();
+			identifyLayers();
 		}
 	};
 
@@ -1491,7 +1493,7 @@ function BatchCommand(text) {
 						justSelected = t;
 						current_poly = null;
 					}
-					// else if it's a poly, go into polyedit mode in mouseup
+					// else if it's a path, go into pathedit mode in mouseup
 				}
 				else {
 					canvas.clearSelection();
@@ -1694,7 +1696,7 @@ function BatchCommand(text) {
 				setPointContainerTransform("");
 				started = true;
 				break;
-			case "polyedit":
+			case "pathedit":
 				started = true;
 				current_poly_oldd = current_poly.getAttribute("d");
 				var id = evt.target.id;
@@ -1708,18 +1710,31 @@ function BatchCommand(text) {
 				}
 
 				if(current_poly_pt_drag == -1 && current_ctrl_pt_drag == -1) {
+					// if we haven't moused down on a shape, then go into multiselect mode
+					// otherwise, select it
+					var t = evt.target;
 					canvas.clearSelection();
-					canvas.setMode("multiselect");
-					if (rubberBox == null) {
-						rubberBox = selectorManager.getRubberBandBox();
+					while (t.parentNode.parentNode.tagName == "g") {
+						t = t.parentNode;
 					}
-					assignAttributes(rubberBox, {
-						'x': start_x,
-						'y': start_y,
-						'width': 0,
-						'height': 0,
-						'display': 'inline'
-					}, 100);
+					if (t.id != "svgcanvas" && t.id != "svgroot") {
+						current_poly = null;
+						canvas.addToSelection([t], true);
+						canvas.setMode("select");
+					}
+					else {
+						canvas.setMode("multiselect");
+						if (rubberBox == null) {
+							rubberBox = selectorManager.getRubberBandBox();
+						}
+						assignAttributes(rubberBox, {
+							'x': start_x,
+							'y': start_y,
+							'width': 0,
+							'height': 0,
+							'display': 'inline'
+						}, 100);
+					}
 				}
 
 				break;
@@ -2013,7 +2028,7 @@ function BatchCommand(text) {
 					line.setAttribute("y2", y *= current_zoom);
 				}
 				break;
-			case "polyedit":
+			case "pathedit":
 				// if we are dragging a point, let's move it
 				if (current_poly_pt_drag != -1 && current_poly) {
 					var old_poly_pts = $.map(current_poly_pts, function(n){return n/current_zoom;});
@@ -2546,13 +2561,12 @@ function BatchCommand(text) {
 							selectorManager.requestSelector(selectedElements[i]).resize(selectedBBoxes[i]);
 						}
 					}
-					// no change in position/size, so maybe we should move to polyedit
+					// no change in position/size, so maybe we should move to pathedit
 					else {
 						var t = evt.target;
-						// TODO: this causes a poly that was just going to be selected to go straight to polyedit
 						if (selectedElements[0].nodeName == "path" && selectedElements[1] == null) {
 							if (current_poly == t) {
-								current_mode = "polyedit";
+								current_mode = "pathedit";
 
 								// recalculate current_poly_pts
 								recalcPolyPoints();
@@ -2561,7 +2575,7 @@ function BatchCommand(text) {
 								selectedBBoxes[0] = canvas.getBBox(current_poly);
 								addAllPointGripsToPoly();
 								canvas.addNodeToSelection(0);
-							} // going into polyedit mode
+							} // going into pathedit mode
 							else {
 								current_poly = t;
 							}
@@ -2779,7 +2793,7 @@ function BatchCommand(text) {
 					keep = true;
 				}
 				break;
-			case "polyedit":
+			case "pathedit":
 				keep = true;
 				element = null;
 				// if we were dragging a poly point, stop it now
@@ -2946,7 +2960,7 @@ function BatchCommand(text) {
 			
  			if(current_mode == "poly") {
  				current_poly = element;
-				current_mode = "polyedit";
+				current_mode = "pathedit";
 				recalcPolyPoints();
 				addAllPointGripsToPoly(current_poly_pts.length/2 - 1);
  			} else if (current_mode == "text") {
@@ -3063,7 +3077,7 @@ function BatchCommand(text) {
 			current_zoom = 1;
 			
 			// identify layers
-			canvas.identifyLayers();
+			identifyLayers();
 			
 			selectorManager.update();
 
@@ -3081,8 +3095,7 @@ function BatchCommand(text) {
 
 	// Group: Layers
 
-	// TODO: make this an internal function?	
-	this.identifyLayers = function() {
+	var identifyLayers = function() {
 		all_layers = [];
 		var numchildren = svgzoom.childNodes.length;
 		// loop through all children of svgzoom
@@ -3092,7 +3105,7 @@ function BatchCommand(text) {
 			// for each g, find its layer name
 			if (child && child.nodeType == 1) {
 				if (child.tagName == "g") {
-					var name = getLayerName(child);
+					var name = $("title",child).text();
 					// store layer and name in global variable
 					if (name) {
 						layernames.push(name);
@@ -3122,7 +3135,6 @@ function BatchCommand(text) {
 			layer_title.textContent = newname;
 			current_layer.appendChild(layer_title);
 			for (var j = 0; j < orphans.length; ++j) {
-//				walkTree(orphans[j], function(e){e.setAttribute("style", "pointer-events:none");});
 				current_layer.appendChild(orphans[j]);
 			}
 			current_layer = svgzoom.appendChild(current_layer);
@@ -3149,7 +3161,7 @@ function BatchCommand(text) {
 		batchCmd.addSubCommand(new InsertElementCommand(new_layer));
 		addCommandToHistory(batchCmd);
 		canvas.clearSelection();
-		canvas.identifyLayers();
+		identifyLayers();
 		canvas.setCurrentLayer(name);
 		call("changed", [new_layer]);
 	};
@@ -3166,7 +3178,7 @@ function BatchCommand(text) {
 			parent.removeChild(current_layer);
 			addCommandToHistory(batchCmd);
 			canvas.clearSelection();
-			canvas.identifyLayers();
+			identifyLayers();
 			canvas.setCurrentLayer(all_layers[all_layers.length-1][0]);
 			call("changed", [svgzoom]);
 			return true;
@@ -3318,7 +3330,7 @@ function BatchCommand(text) {
 				svgzoom.insertBefore(current_layer, refLayer);
 				addCommandToHistory(new MoveElementCommand(current_layer, oldNextSibling, svgzoom));
 				
-				canvas.identifyLayers();
+				identifyLayers();
 				canvas.setCurrentLayer(all_layers[newpos][0]);
 				
 				return true;
@@ -3422,11 +3434,6 @@ function BatchCommand(text) {
 		addCommandToHistory(batchCmd);
 		
 		return true;
-	};
-	
-	// used internally
-	var getLayerName = function(g) {
-		return $("title",g).text();
 	};
 	
 	// Function: getLayerOpacity
@@ -3711,7 +3718,7 @@ function BatchCommand(text) {
 			if(!elem) return;
 			selectorManager.requestSelector(elem).resize();
 		});
-		if(current_mode == "polyedit") {
+		if(current_mode == "pathedit") {
 			resetPointGrips();
 		}
 	}
@@ -3729,7 +3736,7 @@ function BatchCommand(text) {
 			canvas.clearSelection();
 			started = false;
 		}
-		else if (current_mode == "polyedit") {
+		else if (current_mode == "pathedit") {
 			canvas.clearPoly();
 		}
 		
@@ -4242,7 +4249,7 @@ function BatchCommand(text) {
 	// fires the 'changed' event 
 	this.changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		var handle = svgroot.suspendRedraw(1000);
-		if(current_mode == 'polyedit') {
+		if(current_mode == 'pathedit') {
 			// Editing node
 			var num = (attr == 'x')?0:1;
 			var old_poly_pts = $.map(current_poly_pts, function(n){return n/current_zoom;});
