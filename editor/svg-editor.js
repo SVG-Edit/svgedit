@@ -52,7 +52,7 @@ function svg_edit_setup() {
 			// upon creation of a text element the editor is switched into
 			// select mode and this event fires - we need our UI to be in sync
 			
-			var is_node = selectedElement.id && selectedElement.id.indexOf('polypointgrip') == 0;
+			var is_node = selectedElement.id && selectedElement.id.indexOf('pathpointgrip') == 0;
 			
 			if (svgCanvas.getMode() != "multiselect" && !is_node) {
 				setSelectMode();
@@ -198,22 +198,22 @@ function svg_edit_setup() {
 			return;
 		}
 
-		var is_node = elem ? (elem.id && elem.id.indexOf('polypointgrip') == 0) : false;
+		var is_node = elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
 		
 		$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,\
-			#ellipse_panel, #line_panel, #text_panel, #image_panel, #poly_node_panel').hide();
+			#ellipse_panel, #line_panel, #text_panel, #image_panel, #path_node_panel').hide();
 		if (elem != null) {
 			$('#angle').val(svgCanvas.getRotationAngle(elem));
 
 			if(!is_node) {
 				$('#selected_panel').show();
 			} else {
-				$('#poly_node_panel').show();
+				$('#path_node_panel').show();
 				var point = svgCanvas.getNodePoint();
 				if(point) {
 					var seg_type = $('#seg_type');
-					$('#poly_node_x').val(point.x);
-					$('#poly_node_y').val(point.y);
+					$('#path_node_x').val(point.x);
+					$('#path_node_y').val(point.y);
 					if(point.type) {
 						seg_type.val(point.type).removeAttr('disabled');
 					} else {
@@ -646,9 +646,9 @@ function svg_edit_setup() {
 		svgCanvas.setMode('text');
 	};
 	
-	var clickPoly = function(){
-		toolButtonClick('#tool_poly');
-		svgCanvas.setMode('poly');
+	var clickPath = function(){
+		toolButtonClick('#tool_path');
+		svgCanvas.setMode('path');
 	};
 	
 	// Delete is a contextual tool that only appears in the ribbon if
@@ -677,15 +677,15 @@ function svg_edit_setup() {
 		}
 	};
 
-	var clonePolyNode = function() {
+	var clonePathNode = function() {
 		if (svgCanvas.getNodePoint()) {
-			svgCanvas.clonePolyNode();
+			svgCanvas.clonePathNode();
 		}
 	};
 	
-	var deletePolyNode = function() {
+	var deletePathNode = function() {
 		if (svgCanvas.getNodePoint()) {
-			svgCanvas.deletePolyNode();
+			svgCanvas.deletePathNode();
 		}
 	};
 	
@@ -894,7 +894,7 @@ function svg_edit_setup() {
 	$('#tool_zoom').mouseup(clickZoom);
 	$('#tool_zoom').dblclick(dblclickZoom);
 	$('#tool_text').click(clickText);
-	$('#tool_poly').click(clickPoly);
+	$('#tool_path').click(clickPath);
 	$('#tool_clear').click(clickClear);
 	$('#tool_save').click(clickSave);
 	$('#tool_open').click(clickOpen);
@@ -905,8 +905,8 @@ function svg_edit_setup() {
 	$('#tool_docprops').click(showDocProperties);
 	$('#tool_delete').click(deleteSelected);
 	$('#tool_delete_multi').click(deleteSelected);
-	$('#tool_node_clone').click(clonePolyNode);
-	$('#tool_node_delete').click(deletePolyNode);
+	$('#tool_node_clone').click(clonePathNode);
+	$('#tool_node_delete').click(deletePathNode);
 	$('#tool_move_top').click(moveToTopSelected);
 	$('#tool_move_bottom').click(moveToBottomSelected);
 	$('#tool_undo').click(clickUndo);
@@ -978,7 +978,7 @@ function svg_edit_setup() {
 			['Shift+5', clickCircle],
 			['5', clickEllipse],
 			['6', clickText],
-			['7', clickPoly],
+			['7', clickPath],
 			['8', clickImage],
 			[modKey+'N', function(evt){clickClear();evt.preventDefault();}],
 			[modKey+'S', function(evt){editingsource?saveSourceEditor():clickSave();evt.preventDefault();}],
