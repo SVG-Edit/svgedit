@@ -261,7 +261,7 @@ div.color_block {
 #svg_editor #line_panel,
 #svg_editor #image_panel,
 #svg_editor #text_panel,
-#svg_editor #poly_node_panel {
+#svg_editor #path_node_panel {
 	display: none;
 }
 
@@ -280,7 +280,7 @@ div.color_block {
 #svg_editor #circle_panel .circle_tool,
 #svg_editor #ellipse_panel .ellipse_tool,
 #svg_editor #line_panel .line_tool,
-#svg_editor #poly_node_panel .poly_node_tool {
+#svg_editor #path_node_panel .path_node_tool {
 	vertical-align:12px;
 }
 
