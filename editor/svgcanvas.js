@@ -1534,7 +1534,7 @@ function BatchCommand(text) {
 				break;
 			case "fhellipse":
 			case "fhrect":
-			case "path":
+			case "fhpath":
 				started = true;
 				start_x = x;
 				start_y = y;
@@ -2014,7 +2014,7 @@ function BatchCommand(text) {
 				freehand_min_y = Math.min(y, freehand_min_y);
 				freehand_max_y = Math.max(y, freehand_max_y);
 			// break; missing on purpose
-			case "path":
+			case "fhpath":
 				start_x = x;
 				start_y = y;
 				d_attr += + x + "," + y + " ";
@@ -2600,7 +2600,7 @@ function BatchCommand(text) {
 					'height': Math.abs(y-start_y)
 				});
 				return;
-			case "path":
+			case "fhpath":
 				// Check that the path contains at least 2 points; a degenerate one-point path
 				// causes problems.
 				// Webkit ignores how we set the points attribute with commas and uses space
