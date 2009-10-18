@@ -562,9 +562,9 @@ function svg_edit_setup() {
 		}
 	};
 
-	var clickPath = function() {
-		if (toolButtonClick('#tool_path')) {
-			svgCanvas.setMode('path');
+	var clickFHPath = function() {
+		if (toolButtonClick('#tool_fhpath')) {
+			svgCanvas.setMode('fhpath');
 		}
 	};
 
@@ -882,7 +882,7 @@ function svg_edit_setup() {
 	});
 
 	$('#tool_select').click(clickSelect);
-	$('#tool_path').click(clickPath);
+	$('#tool_fhpath').click(clickFHPath);
 	$('#tool_line').click(clickLine);
 	$('#tool_square').mouseup(clickSquare);
 	$('#tool_rect').mouseup(clickRect);
@@ -971,7 +971,7 @@ function svg_edit_setup() {
 	function setKeyBindings() {
 		var keys = [
 			['1', clickSelect],
-			['2', clickPath],
+			['2', clickFHPath],
 			['3', clickLine],
 			['Shift+4', clickSquare],
 			['4', clickRect],
