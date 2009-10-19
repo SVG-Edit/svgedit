@@ -3639,6 +3639,38 @@ function BatchCommand(text) {
 		return {'w':vb[2], 'h':vb[3], 'zoom': current_zoom};
 	};
 	
+	this.getImageTitle = function() {
+		var childs = svgzoom.childNodes;
+		for (var i=0; i<childs.length; i++) {
+			if(childs[i].nodeName == 'title') {
+				return childs[i].textContent;
+			}
+		}
+		return '';
+	}
+	
+	this.setImageTitle = function(newtitle) {
+		var childs = svgzoom.childNodes, doc_title = false;
+		for (var i=0; i<childs.length; i++) {
+			if(childs[i].nodeName == 'title') {
+				var doc_title = childs[i];
+				break;
+			}
+		}
+		if(!doc_title) {
+			doc_title = svgdoc.createElementNS(svgns, "title");
+			svgzoom.insertBefore(doc_title, svgzoom.firstChild);
+		} 
+		
+		if(newtitle.length) {
+			doc_title.textContent = newtitle;
+		} else {
+			// No title given, so element is not necessary
+			doc_title.parentNode.removeChild(doc_title);
+		}
+		
+	}
+	
 	this.setResolution = function(x, y) {
 		var res = canvas.getResolution();
 		var w = res.w, h = res.h;
@@ -4893,6 +4925,7 @@ var Utils = {
 		// base64 strings are 4/3 larger than the original string
 //		input = Utils.encodeUTF8(input); // convert non-ASCII characters
 		input = Utils.convertToXMLReferences(input);
+		if(window.btoa) return window.btoa(input); // Use native if available
 		var output = new Array( Math.floor( (input.length + 2) / 3 ) * 4 );
 		var chr1, chr2, chr3;
 		var enc1, enc2, enc3, enc4;

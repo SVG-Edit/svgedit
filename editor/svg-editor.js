@@ -806,6 +806,7 @@ function svg_edit_setup() {
 		var res = svgCanvas.getResolution();
 		$('#canvas_width').val(res.w);
 		$('#canvas_height').val(res.h);
+		$('#canvas_title').val(svgCanvas.getImageTitle())
 	
 		$('#svg_docprops').fadeIn();
 	};
@@ -831,6 +832,9 @@ function svg_edit_setup() {
 	};
 	
 	var saveDocProperties = function(){
+		// set title
+		svgCanvas.setImageTitle($('#canvas_title').val());
+	
 		// update resolution
 		var x = parseInt($('#canvas_width').val());
 		var y = parseInt($('#canvas_height').val());
