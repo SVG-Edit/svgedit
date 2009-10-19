@@ -32,23 +32,23 @@ if( window.opera ) {
 // TODO: add <a> elements to this
 // TODO: add <tspan> to this
 var svgWhiteList = {
-	"circle": ["cx", "cy", "fill", "fill-opacity", "id", "opacity", "r", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
+	"circle": ["cx", "cy", "fill", "fill-opacity", "fill-rule", "id", "opacity", "r", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
 	"defs": [],
 	"desc": [],
-	"ellipse": ["cx", "cy", "fill", "fill-opacity", "id", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
+	"ellipse": ["cx", "cy", "fill", "fill-opacity", "fill-rule", "id", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
 	"g": ["id", "display", "requiredFeatures", "systemLanguage", "transform"],
 	"image": ["height", "id", "opacity", "requiredFeatures", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
-	"line": ["fill", "fill-opacity", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
+	"line": ["fill", "fill-opacity", "fill-rule", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
 	"linearGradient": ["id", "gradientTransform", "gradientUnits", "requiredFeatures", "spreadMethod", "systemLanguage", "x1", "x2", "y1", "y2"],
-	"path": ["d", "fill", "fill-opacity", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
-	"polygon": ["id", "fill", "fill-opacity", "id", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
-	"polyline": ["id", "fill", "fill-opacity", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
+	"path": ["d", "fill", "fill-opacity", "fill-rule", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
+	"polygon": ["id", "fill", "fill-opacity", "fill-rule", "id", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
+	"polyline": ["id", "fill", "fill-opacity", "fill-rule", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
 	"radialGradient": ["id", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "r", "requiredFeatures", "spreadMethod", "systemLanguage"],
-	"rect": ["fill", "fill-opacity", "height", "id", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "width", "x", "y"],
+	"rect": ["fill", "fill-opacity", "fill-rule", "height", "id", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "width", "x", "y"],
 	"stop": ["id", "offset", "requiredFeatures", "stop-color", "stop-opacity", "systemLanguage"],
 	"switch": ["id", "requiredFeatures", "systemLanguage"],
 	"svg": ["id", "height", "requiredFeatures", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
-	"text": ["fill", "fill-opacity", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
+	"text": ["fill", "fill-opacity", "fill-rule", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
 	"title": [],
 };
 
@@ -1003,6 +1003,54 @@ function BatchCommand(text) {
 			call("changed", selectedElements);
 		}
 	};
+
+	/*
+		Changes need to handle resizing of groups and any number of transformations:
+		
+		- while being manipulated with a mouse, shapes can have any number of transforms applied
+		- when moused up, we will traverse the transform list of the element and see if we can 
+		  reduce the transform list to as small as possible (preferably a zero-length transform list)
+		- since translations completely preserve all shapes and orientations, we can ALWAYS remove
+		  translates (note that this doesn't apply to translates that are part of a scale operation)
+		- since rotations do not preserve any orientations, it is not possible to preserve rotations
+		  unless the rotation degrees is a multiple of 90, thus we will always keep rotational
+		  transforms around
+		- non-uniform scales (sx!=sy) preserve the shape and orientation ONLY if the shape has
+		  not been rotated, thus we will reduce non-uniform scales when we haven't rotated the shape
+		  but otherwise we are forced to keep them around
+		- uniform scales (sx==sy) preserve the shape and orientation, so we can ALWAYS remove
+		  uniform scales, even when the shape has been rotated
+		- does the removal of translate or scale transforms affect the rotational center of 
+		  previously visited transforms?
+		- ungrouping has the effect of transferring the transform list of the group down to its
+		  individual children, thus we will then attempt to reduce the transform list further on
+		  each child upon ungrouping
+		  
+		- we traverse the transform list backwards, starting at the nth transform and modifying
+		  frame of reference (the ctm) as we move to the next transform
+		- each time we reduce the transform list, we remap the coordinates of the shape
+		- at the end, we have a new transform list and a new set of coordinates for the shape,
+		  we can then update the DOM with both of these elements
+		  
+		  
+		The Simplest Case:
+			Dragging an axis-aligned rectangle 150 pixels east.
+			
+			* Transform list has just one transform:  translate(150,0)
+			* we translate the top-left coordinate of the rect (by adding 150 to the 'x' value)
+			  and reduce the transform list to empty
+		
+		A Simple Case:
+			Dragging an ellipse which has been rotated 30 degrees by 100 pixels south
+			
+			* Transform list has two transforms:  translate(0,100) rotate(30,cx,cy)
+			* we start at the rotation, since we cannot reduce rotations, we simply update the
+			  current transform matrix so that it includes the translate(cx,cy) rotate(30) translate(-cx,-cy)
+			* next, we get to translate(0,100), standalone translates can always be reduced so first
+			  we rotate by 30 degrees and it becomes translate(50,86.6), then we move the ellipse's
+			  center point by 50,86.6 and then adjust the rotate so that the transform list results
+			  as rotate(30,cx',cy')
+	*/
 
 	// this is how we map paths to our preferred relative segment types
 	var pathMap = [ 0, 'z', 'M', 'M', 'L', 'L', 'C', 'C', 'Q', 'Q', 'A', 'A', 
