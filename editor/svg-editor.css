@@ -526,6 +526,10 @@ span.zoom_tool {
 	margin-bottom: .2em;
 }
 
+#canvas_title {
+	display: block;
+}
+
 #svg_source_editor #svg_source_textarea {
 	position: relative;
 	width: 95%;
