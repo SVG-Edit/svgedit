@@ -179,7 +179,9 @@ function svg_edit_setup() {
 			
 			$('#fill_opacity').html(fillOpacity);
 			$('#stroke_opacity').html(strokeOpacity);
-			$('#group_opacity').val(((selectedElement.getAttribute("opacity")||1.0)*100)+" %");
+			var opac_perc = ((selectedElement.getAttribute("opacity")||1.0)*100);
+			$('#group_opacity').val(opac_perc);
+			$('#opac_slider').slider('option', 'value', opac_perc);
 			$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1);
 			$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
 		}
@@ -357,10 +359,17 @@ function svg_edit_setup() {
 	var changeZoom = function(ctl) {
 		var zoomlevel = ctl.value / 100;
 		var res = svgCanvas.getResolution();
-		// Hack to increase properly from 10%
-		if(res.zoom < zoomlevel && res.zoom == .1) $('#zoom').val(50);
 		setResolution(res.w * zoomlevel, res.h * zoomlevel, true);
 		svgCanvas.setZoom(zoomlevel);
+	}
+	
+	var changeOpacity = function(ctl, val) {
+		if(val == null) val = ctl.value;
+		$('#group_opacity').val(val);
+		if(!ctl || !ctl.handle) {
+			$('#opac_slider').slider('option', 'value', val);
+		}
+		svgCanvas.setOpacity(val/100);
 	}
 
 	$('#stroke_style').change(function(){
@@ -369,10 +378,6 @@ function svg_edit_setup() {
 
 	// Lose focus for select elements when changed (Allows keyboard shortcuts to work better)
 	$('select').change(function(){$(this).blur();});
-
-	$('#group_opacity').change(function(){
-		svgCanvas.setOpacity(this.options[this.selectedIndex].value);
-	});
 
 	// fired when user wants to move elements to another layer
 	var promptMoveLayerOnce = false;
@@ -496,40 +501,17 @@ function svg_edit_setup() {
 		return true;
 	};
 	
-	var setZoomOpts = function() {
-		var button = $('#zoom_dropdown button');
-		var list = $('#zoom_dropdown ul');
+	var addDropDown = function(elem, callback, dropUp) {
+		var button = $(elem).find('button');
+		var list = $(elem).find('ul');
 		var on_button = false;
-
-		$('#zoom_dropdown li').bind('mouseup',function() {
-			var item = $(this);
-			var val = item.attr('data-val');
-			var res = svgCanvas.getResolution();
-			var scrbar = 15;
-			if(val) {
-				var w_area = $('#workarea');
-				var z_info = svgCanvas.setBBoxZoom(val, w_area.width()-scrbar, w_area.height()-scrbar);
-				if(!z_info) return;
-				var zoomlevel = z_info.zoom;
-				var bb = z_info.bbox;
-				$('#zoom').val(zoomlevel*100);
-				setResolution(res.w * zoomlevel, res.h * zoomlevel);
-				var scrLeft = bb.x * zoomlevel;
-				var scrOffX = w_area.width()/2 - (bb.width * zoomlevel)/2;
-				w_area[0].scrollLeft = Math.max(0,scrLeft - scrOffX);
-				var scrTop = bb.y * zoomlevel;
-				var scrOffY = w_area.height()/2 - (bb.height * zoomlevel)/2;
-				w_area[0].scrollTop = Math.max(0,scrTop - scrOffY);
-			} else {
-				var percent = parseInt(item.text());
-				$('#zoom').val(percent);
-				var zoomlevel = percent/100;
-				setResolution(res.w * zoomlevel, res.h * zoomlevel, true);
-				svgCanvas.setZoom(zoomlevel);
-			}
-		});
+		if(dropUp) {
+			$(elem).addClass('dropup');
+		}
+	
+		$(elem).find('li').bind('mouseup', callback);
 		
-		$().mouseup(function() {
+		$().mouseup(function(evt) {
 			if(!on_button) {
 				button.removeClass('down');
 				list.hide();
@@ -551,10 +533,48 @@ function svg_edit_setup() {
 		}).mouseout(function() {
 			on_button = false;
 		});
-	};
+	}
 	
-	setZoomOpts();
+	addDropDown('#opacity_dropdown', function() {
+		if($(this).find('div').length) return;
+		var perc = parseInt($(this).text().split('%')[0]);
+		changeOpacity(false, perc);
+	});
+	
+	$("#opac_slider").slider({
+		slide: function(evt, ui){
+			changeOpacity(ui);
+		}
+	});
 
+	addDropDown('#zoom_dropdown', function() {
+		var item = $(this);
+		var val = item.attr('data-val');
+		var res = svgCanvas.getResolution();
+		var scrbar = 15;
+		if(val) {
+			var w_area = $('#workarea');
+			var z_info = svgCanvas.setBBoxZoom(val, w_area.width()-scrbar, w_area.height()-scrbar);
+			if(!z_info) return;
+			var zoomlevel = z_info.zoom;
+			var bb = z_info.bbox;
+			$('#zoom').val(zoomlevel*100);
+			setResolution(res.w * zoomlevel, res.h * zoomlevel);
+			var scrLeft = bb.x * zoomlevel;
+			var scrOffX = w_area.width()/2 - (bb.width * zoomlevel)/2;
+			w_area[0].scrollLeft = Math.max(0,scrLeft - scrOffX);
+			var scrTop = bb.y * zoomlevel;
+			var scrOffY = w_area.height()/2 - (bb.height * zoomlevel)/2;
+			w_area[0].scrollTop = Math.max(0,scrTop - scrOffY);
+		} else {
+			var percent = parseInt(item.text());
+			$('#zoom').val(percent);
+			var zoomlevel = percent/100;
+			setResolution(res.w * zoomlevel, res.h * zoomlevel, true);
+			svgCanvas.setZoom(zoomlevel);
+		}
+	}, true);
+	
 	var clickSelect = function() {
 		if (toolButtonClick('#tool_select')) {
 			svgCanvas.setMode('select');
@@ -1517,6 +1537,7 @@ function svg_edit_setup() {
 	$('#stroke_width').SpinButton({ min: 0, max: 99, step: 1, callback: changeStrokeWidth });
 	$('#angle').SpinButton({ min: -180, max: 180, step: 5, callback: changeRotationAngle });
 	$('#font_size').SpinButton({ step: 1, min: 0.001, stepfunc: stepFontSize, callback: changeFontSize });
+	$('#group_opacity').SpinButton({ step: 5, min: 0, max: 100, callback: changeOpacity });
 	$('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom });
 	
 	svgCanvas.setCustomHandlers = function(opts) {
