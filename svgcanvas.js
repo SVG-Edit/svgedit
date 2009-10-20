@@ -695,7 +695,7 @@ function BatchCommand(text) {
 	$.extend(all_properties.text, {
 		fill: "#000000",
 		stroke_width: 0,
-		font_size: '12pt',
+		font_size: 24,
 		font_family: 'serif'
 	});
 
