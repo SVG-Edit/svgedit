@@ -52,15 +52,15 @@ var svgWhiteList = {
 	"title": [],
 };
 
+function SvgCanvas(c)
+{
+
 var toXml = function(str) {
 	return str.replace("&", "&amp;").replace("<", "&lt;").replace(">","&gt;");
 };
 var fromXml = function(str) {
 	return str.replace("&gt;", ">").replace("&lt;", "<").replace("&amp;", "&");
 };
-
-function SvgCanvas(c)
-{
 
 var pathFuncsStrs = ['Moveto','Lineto','CurvetoCubic','CurvetoQuadratic','Arc','LinetoHorizontal','LinetoVertical','CurvetoCubicSmooth','CurvetoQuadraticSmooth']
 var pathFuncs = [0,'ClosePath'];
@@ -1081,6 +1081,26 @@ function BatchCommand(text) {
 							'y':(((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y)
 							};					
 			};
+		
+		// Deal with flips, need to know when to flip_x/flip_y
+// 		var remap = function(x,y) {
+// 				// Prevent division by 0
+// 				if(!box.height) box.height = 1;
+// 				if(!box.width) box.width = 1;
+// 				
+// 				var new_x = (((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x);
+// 				var new_y = (((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y);
+// 				
+// 				if(flip_x) {
+// 					new_x = selectedBBox.x + selectedBBox.width - (new_x - selectedBBox.x);
+// 				}
+// 				if(flip_y) {
+// 					new_y = selectedBBox.y + selectedBBox.height - (new_y - selectedBBox.y);
+// 				}
+// 				
+// 				return {x:new_x, y:new_y};
+// 			};
+			
 		var scalew = function(w) {return (w*selectedBBox.width/box.width);}
 		var scaleh = function(h) {return (h*selectedBBox.height/box.height);}
 
@@ -3698,10 +3718,14 @@ function BatchCommand(text) {
 	}
 	
 	this.setImageTitle = function(newtitle) {
-		var childs = svgzoom.childNodes, doc_title = false;
+		var childs = svgzoom.childNodes, doc_title = false, old_title = '';
+		
+		var batchCmd = new BatchCommand("Change Image Title");
+		
 		for (var i=0; i<childs.length; i++) {
 			if(childs[i].nodeName == 'title') {
-				var doc_title = childs[i];
+				doc_title = childs[i];
+				old_title = doc_title.textContent;
 				break;
 			}
 		}
@@ -3716,7 +3740,8 @@ function BatchCommand(text) {
 			// No title given, so element is not necessary
 			doc_title.parentNode.removeChild(doc_title);
 		}
-		
+		batchCmd.addSubCommand(new ChangeElementCommand(doc_title, {'#text': old_title}));
+		addCommandToHistory(batchCmd);
 	}
 	
 	this.setResolution = function(x, y) {
