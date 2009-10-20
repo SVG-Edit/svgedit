@@ -107,20 +107,23 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 		<img class="push_button" id="tool_move_top" src="images/move_top.png" title="Move to Top [Shift+Up]" alt="Top"/>
 		<img class="push_button" id="tool_move_bottom" src="images/move_bottom.png" title="Move to Bottom [Shift+Down]" alt="Bottom"/>
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<select id="group_opacity" class="selected_tool" title="Change selected item opacity">
-			<option selected="selected" value="1">100 %</option>
-			<option value="0.9">90 %</option>
-			<option value="0.8">80 %</option>
-			<option value="0.7">70 %</option>
-			<option value="0.6">60 %</option>
-			<option value="0.5">50 %</option>
-			<option value="0.4">40 %</option>
-			<option value="0.3">30 %</option>
-			<option value="0.2">20 %</option>
-			<option value="0.1">10 %</option>
-			<option value="0">0 %</option>
-		</select>
-		<span id="angleLabel" class="selected_tool">angle:</span>
+
+		<label id="group_opacityLabel" class="selected_tool" for="group_opacity">opac:</label>
+		<input id="group_opacity" class="selected_tool" title="Change selected item opacity" size="3" value="100" type="text"/>
+		<div id="opacity_dropdown" class="dropdown">
+			<button></button>
+			<ul>
+				<li class="special"><div id="opac_slider"></div></li>
+				<li>100% (no transparency)</li>
+				<li>0%</li>
+				<li>25%</li>
+				<li>50%</li>
+				<li>75%</li>
+				<li>100%</li>
+			</ul>
+		</div>
+
+		<label id="angleLabel" class="selected_tool">angle:</label>
 		<input id="angle" class="selected_tool" title="Change rotation angle" size="2" value="0" type="text"/>
 	</div>
 
@@ -130,6 +133,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 		<img class="push_button" id="tool_clone_multi" src="images/clone.png" title="Clone Elements [C]" alt="Clone"/>
 		<img class="push_button" id="tool_delete_multi" src="images/delete.png" title="Delete Selected Elements [Delete/Backspace]" alt="Delete"/>
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<img class="push_button" id="tool_group" src="images/shape_group.png" title="Group Elements [G]" alt="Group"/>
 		<div class="push_button" id="tool_alignleft" title="Align Left"></div>
 		<div class="push_button" id="tool_aligncenter" title="Align Center"></div>
 		<div class="push_button" id="tool_alignright" title="Align Right"></div>
@@ -144,7 +148,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 		<option id="page" value="page">page</option>
 		</select>
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="push_button" id="tool_group" src="images/shape_group.png" title="Group Elements [G]" alt="Group"/>
+
 	</div>
 
 	<div id="g_panel">
@@ -229,7 +233,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			<option value="fantasy">fantasy</option>
 			<option value="monospace">monospace</option>
 		</select>
-		<span id="font_sizeLabel" class="text_tool">size:</span>
+		<label id="font_sizeLabel" class="text_tool" for="font_size">size:</label>
 		<input id="font_size" class="text_tool" title="Change Font Size" size="3" value="0" type="text"/>
 		<input id="text" class="text_tool" type="text" title="Change text contents" size="35"/>
 	</div>
@@ -267,10 +271,10 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 <div id="tools_bottom" class="tools_panel">
 
     <!-- Zoom buttons -->
-	<div id="zoom_panel">
+	<div id="zoom_panel" class="magic_field">
 		<span id="zoomLabel" class="zoom_tool">zoom:</span>
 		<input id="zoom" class="zoom_tool" title="Change zoom level" size="3" value="100" type="text" />
-		<div id="zoom_dropdown">
+		<div id="zoom_dropdown" class="dropdown">
 			<button></button>
 			<ul>
 				<li>100%</li>
