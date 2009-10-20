@@ -339,6 +339,10 @@ function svg_edit_setup() {
 		svgCanvas.setRectRadius(ctl.value);
 	}
 	
+	var changeFontSize = function(ctl) {
+		svgCanvas.setFontSize(ctl.value);
+	}
+	
 	var changeStrokeWidth = function(ctl) {
 		var val = ctl.value;
 		if(val == 0 && selectedElement && $.inArray(selectedElement.nodeName, ['line', 'polyline']) != -1) {
@@ -381,10 +385,6 @@ function svg_edit_setup() {
 			svgCanvas.clearSelection();
 			populateLayers();
 		}
-	});
-
-	$('#font_size').change(function(){
-		svgCanvas.setFontSize(this.options[this.selectedIndex].value);
 	});
 
 	$('#font_family').change(function(){
@@ -1433,6 +1433,28 @@ function svg_edit_setup() {
 	};
 	
 	$(window).resize( centerCanvasIfNeeded );
+
+	function stepFontSize(elem, step) {
+		var orig_val = elem.value-0;
+		var sug_val = orig_val + step;
+		var increasing = sug_val >= orig_val;
+		
+		if(orig_val >= 24) {
+			if(increasing) {
+				return Math.round(orig_val * 1.1);
+			} else {
+				return Math.round(orig_val / 1.1);
+			}
+		} else if(orig_val <= 1) {
+			if(increasing) {
+				return orig_val * 2;			
+			} else {
+				return orig_val / 2;
+			}
+		} else {
+			return sug_val;
+		}
+	}
 	
 	function stepZoom(elem, step) {
 		var orig_val = elem.value-0;
@@ -1494,7 +1516,8 @@ function svg_edit_setup() {
 	$('#rect_rx').SpinButton({ min: 0, max: 1000, step: 1, callback: changeRectRadius });
 	$('#stroke_width').SpinButton({ min: 0, max: 99, step: 1, callback: changeStrokeWidth });
 	$('#angle').SpinButton({ min: -180, max: 180, step: 5, callback: changeRotationAngle });
-	$('#zoom').SpinButton({ min: 0.1, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom });
+	$('#font_size').SpinButton({ step: 1, min: 0.001, stepfunc: stepFontSize, callback: changeFontSize });
+	$('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom });
 	
 	svgCanvas.setCustomHandlers = function(opts) {
 		if(opts.open) {
