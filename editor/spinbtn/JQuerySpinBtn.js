@@ -25,6 +25,9 @@
  * Modifications by Jeff Schiller, July 2009:
  * - improve styling for widget in Opera
  * - consistent key-repeat handling cross-browser
+ * Modifications by Alexis Deveria, October 2009:
+ * - provide "stepfunc" callback option to allow custom function to run when changing a value
+ * - Made adjustValue(0) only run on certain keyup events, not all.
  *
  * Tested in IE6, Opera9, Firefox 1.5
  * v1.0  11 Aug 2006 - George Adamson	- First release
@@ -34,6 +37,7 @@
  * v1.4  18 Jun 2009 - Jeff Schiller    - Added callback function
  * v1.5  06 Jul 2009 - Jeff Schiller    - Fixes for Opera.  
  * v1.6  13 Oct 2009 - Alexis Deveria   - Added stepfunc function  
+ * v1.7  21 Oct 2009 - Alexis Deveria   - Minor fixes
  *                                        Fast-repeat for keys and live updating as you type.
  
  Sample usage:
@@ -201,7 +205,13 @@ $.fn.SpinButton = function(cfg){
 		// clear the 'repeating' flag
 		.keyup(function(e) {
 			this.repeating = false;
-			this.adjustValue(0);
+			switch(e.keyCode){
+				case 38: // Up
+				case 40: // Down
+				case 33: // PageUp
+				case 34: // PageDown
+				case 13: this.adjustValue(0); break; // Enter/Return
+			}
 		})
 		
 		.bind("mousewheel", function(e){
