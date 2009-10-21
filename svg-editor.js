@@ -807,6 +807,11 @@ function svg_edit_setup() {
 		svgCanvas.setZoom(multiplier);
 	};
 
+	var clickWireframe = function() {
+		 $('#tool_wireframe').toggleClass('push_button_pressed');
+		$('#workarea').toggleClass('wireframe');
+	}
+
 	var showSourceEditor = function(){
 		if (editingsource) return;
 		editingsource = true;
@@ -923,6 +928,7 @@ function svg_edit_setup() {
 	$('#tool_save').click(clickSave);
 	$('#tool_open').click(clickOpen);
 	$('#tool_source').click(showSourceEditor);
+	$('#tool_wireframe').click(clickWireframe);
 	$('#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel').click(cancelOverlays);
 	$('#tool_source_save').click(saveSourceEditor);
 	$('#tool_docprops_save').click(saveDocProperties);
@@ -1027,6 +1033,7 @@ function svg_edit_setup() {
 			[modKey+'i', function(evt){showDocProperties();evt.preventDefault();}],
 			[modKey+'c', function(evt){clickClone();evt.preventDefault();}],
 			[modKey+'g', function(evt){clickGroup();evt.preventDefault();}],
+			[modKey+'f', function(evt){clickWireframe();evt.preventDefault();}],
 			[modKey+'x', function(evt){toggleSidePanel();}],
 			['esc', cancelOverlays, false],
 		];
