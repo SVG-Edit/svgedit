@@ -1069,37 +1069,42 @@ function BatchCommand(text) {
 		{
 			return null;
 		}
-
+		
+		var bScaleMatrix = false;
+		var tlist = selected.transform.baseVal;
+		var t = tlist.numberOfItems;
+		while (t--) {
+			var xform = tlist.getItem(t);
+			if (xform.type == 3) {
+				bScaleMatrix = xform.matrix;
+				break;
+			}
+		}
+		
+		// Flipping points should only occur for elements without regular x,y vals
+		var multiPoints = (selected.getAttribute('x') === null);
+		
 		// after this point, we have some change to this element
-
+		
 		var remap = function(x,y) {
 				// Prevent division by 0
 				if(!box.height) box.height = 1;
 				if(!box.width) box.width = 1;
-				return { 
-							'x':(((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x),
-							'y':(((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y)
-							};					
+				
+				var new_x = (((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x);
+				var new_y = (((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y);
+				
+				if(multiPoints && bScaleMatrix) {
+					if(bScaleMatrix.a < 0) {
+						new_x = selectedBBox.x + selectedBBox.width - (new_x - selectedBBox.x);
+					}
+					if(bScaleMatrix.d < 0) {
+						new_y = selectedBBox.y + selectedBBox.height - (new_y - selectedBBox.y);
+					}
+				}
+				
+				return {x:new_x, y:new_y};
 			};
-		
-		// Deal with flips, need to know when to flip_x/flip_y
-// 		var remap = function(x,y) {
-// 				// Prevent division by 0
-// 				if(!box.height) box.height = 1;
-// 				if(!box.width) box.width = 1;
-// 				
-// 				var new_x = (((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x);
-// 				var new_y = (((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y);
-// 				
-// 				if(flip_x) {
-// 					new_x = selectedBBox.x + selectedBBox.width - (new_x - selectedBBox.x);
-// 				}
-// 				if(flip_y) {
-// 					new_y = selectedBBox.y + selectedBBox.height - (new_y - selectedBBox.y);
-// 				}
-// 				
-// 				return {x:new_x, y:new_y};
-// 			};
 			
 		var scalew = function(w) {return (w*selectedBBox.width/box.width);}
 		var scaleh = function(h) {return (h*selectedBBox.height/box.height);}
@@ -1114,19 +1119,8 @@ function BatchCommand(text) {
 				tr_y = round(box.y + box.height/2);
 			var cx = null, cy = null;
 			
-			var bFoundScale = false;
-			var tlist = selected.transform.baseVal;
-			var t = tlist.numberOfItems;
-			while (t--) {
-				var xform = tlist.getItem(t);
-				if (xform.type == 3) {
-					bFoundScale = true;
-					break;
-				}
-			}
-			
 			// if this was a resize, find the new cx,cy
-			if (bFoundScale) {
+			if (bScaleMatrix) {
 				var alpha = angle * Math.PI / 180.0;
 			
 				// rotate new opposite corners of bbox by angle at old center
