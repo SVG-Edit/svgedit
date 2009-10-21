@@ -1458,6 +1458,7 @@ function svg_edit_setup() {
 		var orig_val = elem.value-0;
 		var sug_val = orig_val + step;
 		var increasing = sug_val >= orig_val;
+		if(step === 0) return orig_val;
 		
 		if(orig_val >= 24) {
 			if(increasing) {
@@ -1479,6 +1480,7 @@ function svg_edit_setup() {
 	function stepZoom(elem, step) {
 		var orig_val = elem.value-0;
 		var sug_val = orig_val + step;
+		if(step === 0) return orig_val;
 		
 		if(orig_val >= 100) {
 			return sug_val;
