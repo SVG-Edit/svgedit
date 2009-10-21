@@ -193,6 +193,7 @@ function svg_edit_setup() {
 	var updateContextPanel = function() {
 		var elem = selectedElement;
 		var currentLayer = svgCanvas.getCurrentLayer();
+		$('#tool_select').attr('src','images/select.png');
 		
 		// No need to update anything else in rotate mode
 		if (svgCanvas.getMode() == 'rotate' && elem != null) {
@@ -211,6 +212,9 @@ function svg_edit_setup() {
 				$('#selected_panel').show();
 			} else {
 				$('#path_node_panel').show();
+				// Change select icon
+				$('.tool_button').removeClass('tool_button_current');
+				$('#tool_select').attr('src','images/select_node.png').addClass('tool_button_current');
 				var point = svgCanvas.getNodePoint();
 				if(point) {
 					var seg_type = $('#seg_type');
