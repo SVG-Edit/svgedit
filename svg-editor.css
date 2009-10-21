@@ -246,7 +246,7 @@ body {
 	left: 2px;
 }
 
-#workarea.wireframe #svgzoom * {
+#workarea.wireframe #svgcontent * {
 	fill: none;
 	stroke: #000;
 	stroke-width: 1px;
@@ -256,7 +256,7 @@ body {
 	pointer-events: stroke;
 }
 
-#workarea.wireframe #svgzoom text {
+#workarea.wireframe #svgcontent text {
 	fill: #000;
 	stroke: none;
 }

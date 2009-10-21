@@ -108,7 +108,7 @@ function ChangeElementCommand(elem, attrs, text) {
 			}
 		}
 		// if we are changing layer names, re-identify all layers
-		if (this.elem.tagName == "title" && this.elem.parentNode.parentNode == svgzoom) {
+		if (this.elem.tagName == "title" && this.elem.parentNode.parentNode == svgcontent) {
 			identifyLayers();
 		}		
 		return true;
@@ -141,7 +141,7 @@ function ChangeElementCommand(elem, attrs, text) {
 			}
 		}
 		// if we are changing layer names, re-identify all layers
-		if (this.elem.tagName == "title" && this.elem.parentNode.parentNode == svgzoom) {
+		if (this.elem.tagName == "title" && this.elem.parentNode.parentNode == svgcontent) {
 			identifyLayers();
 		}		
 		return true;
@@ -157,7 +157,7 @@ function InsertElementCommand(elem, text) {
 
 	this.apply = function() { 
 		this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); 
-		if (this.parent == svgzoom) {
+		if (this.parent == svgcontent) {
 			identifyLayers();
 		}		
 	};
@@ -165,7 +165,7 @@ function InsertElementCommand(elem, text) {
 	this.unapply = function() {
 		this.parent = this.elem.parentNode;
 		this.elem = this.elem.parentNode.removeChild(this.elem);
-		if (this.parent == svgzoom) {
+		if (this.parent == svgcontent) {
 			identifyLayers();
 		}		
 	};
@@ -181,14 +181,14 @@ function RemoveElementCommand(elem, parent, text) {
 	this.apply = function() {
 		this.parent = this.elem.parentNode;
 		this.elem = this.parent.removeChild(this.elem);
-		if (this.parent == svgzoom) {
+		if (this.parent == svgcontent) {
 			identifyLayers();
 		}		
 	};
 
 	this.unapply = function() { 
 		this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); 
-		if (this.parent == svgzoom) {
+		if (this.parent == svgcontent) {
 			identifyLayers();
 		}		
 	};
@@ -206,14 +206,14 @@ function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 
 	this.apply = function() {
 		this.elem = this.newParent.insertBefore(this.elem, this.newNextSibling);
-		if (this.newParent == svgzoom) {
+		if (this.newParent == svgcontent) {
 			identifyLayers();
 		}
 	};
 
 	this.unapply = function() {
 		this.elem = this.oldParent.insertBefore(this.elem, this.oldNextSibling);
-		if (this.oldParent == svgzoom) {
+		if (this.oldParent == svgcontent) {
 			identifyLayers();
 		}
 	};
@@ -647,21 +647,21 @@ function BatchCommand(text) {
 	svgroot.setAttribute("xmlns", svgns);
 	svgroot.setAttribute("xmlns:xlink", xlinkns);
 	container.appendChild(svgroot);
-	var svgzoom = svgdoc.createElementNS(svgns, "svg");
-	svgzoom.setAttribute('id', 'svgzoom');
-	svgzoom.setAttribute('viewBox', '0 0 640 480');
-	svgzoom.setAttribute("xmlns", svgns);
-	svgzoom.setAttribute("xmlns:xlink", xlinkns);
-	svgroot.appendChild(svgzoom);
+	var svgcontent = svgdoc.createElementNS(svgns, "svg");
+	svgcontent.setAttribute('id', 'svgcontent');
+	svgcontent.setAttribute('viewBox', '0 0 640 480');
+	svgcontent.setAttribute("xmlns", svgns);
+	svgcontent.setAttribute("xmlns:xlink", xlinkns);
+	svgroot.appendChild(svgcontent);
 	// TODO: make this string optional and set by the client
 	// TODO: make sure this is always at the top of the SVG file right underneath the <svg> element
 	var comment = svgdoc.createComment(" Created with SVG-edit - http://svg-edit.googlecode.com/ ");
-	svgzoom.appendChild(comment);
+	svgcontent.appendChild(comment);
 	// TODO For Issue 208: this is a start on a thumbnail
 //	var svgthumb = svgdoc.createElementNS(svgns, "use");
 //	svgthumb.setAttribute('width', '100');
 //	svgthumb.setAttribute('height', '100');
-//	svgthumb.setAttributeNS(xlinkns, 'href', '#svgzoom');
+//	svgthumb.setAttributeNS(xlinkns, 'href', '#svgcontent');
 //	svgroot.appendChild(svgthumb);
 	// z-ordered array of tuples containing layer names and <g> elements
 	// the first layer is the one at the bottom of the rendering
@@ -864,10 +864,10 @@ function BatchCommand(text) {
 	};
 
 	var removeUnusedGrads = function() {
-		var defs = svgzoom.getElementsByTagNameNS(svgns, "defs");
+		var defs = svgcontent.getElementsByTagNameNS(svgns, "defs");
 		if(!defs || !defs.length) return;
 		
-		var all_els = svgzoom.getElementsByTagNameNS(svgns, '*');
+		var all_els = svgcontent.getElementsByTagNameNS(svgns, '*');
 		var grad_uses = [];
 		
 		$.each(all_els, function(i, el) {
@@ -884,7 +884,7 @@ function BatchCommand(text) {
 			} 
 		});
 		
-		var lgrads = svgzoom.getElementsByTagNameNS(svgns, "linearGradient");
+		var lgrads = svgcontent.getElementsByTagNameNS(svgns, "linearGradient");
 		var grad_ids = [];
 		var i = lgrads.length;
 		while (i--) {
@@ -910,7 +910,9 @@ function BatchCommand(text) {
 	var svgCanvasToString = function() {
 		removeUnusedGrads();
 		canvas.clearPath(true);
-		var output = svgToString(svgzoom, 0);
+		svgcontent.removeAttribute('id');
+		var output = svgToString(svgcontent, 0);
+		svgcontent.id = 'svgcontent';
 		return output;
 	}
 
@@ -3123,29 +3125,29 @@ function BatchCommand(text) {
 			var batchCmd = new BatchCommand("Change Source");
 
         	// remove old svg document
-    	    var oldzoom = svgroot.removeChild(svgzoom);
+    	    var oldzoom = svgroot.removeChild(svgcontent);
 			batchCmd.addSubCommand(new RemoveElementCommand(oldzoom, svgroot));
         
     	    // set new svg document
-        	svgzoom = svgroot.appendChild(svgdoc.importNode(newDoc.documentElement, true));
-			svgzoom.setAttribute('id', 'svgzoom');
+        	svgcontent = svgroot.appendChild(svgdoc.importNode(newDoc.documentElement, true));
+			svgcontent.setAttribute('id', 'svgcontent');
 			// determine proper size
 			var w, h;
-			if (svgzoom.getAttribute("viewBox")) {
-				var vb = svgzoom.getAttribute("viewBox").split(' ');
+			if (svgcontent.getAttribute("viewBox")) {
+				var vb = svgcontent.getAttribute("viewBox").split(' ');
 				w = vb[2];
 				h = vb[3];
 			}
 			// handle old content that doesn't have a viewBox
 			else {
-				w = svgzoom.getAttribute("width");
-				h = svgzoom.getAttribute("height");
-				svgzoom.setAttribute("viewBox", ["0", "0", w, h].join(" "));
+				w = svgcontent.getAttribute("width");
+				h = svgcontent.getAttribute("height");
+				svgcontent.setAttribute("viewBox", ["0", "0", w, h].join(" "));
 			}
 			// just to be safe, remove any width/height from text so that they are 100%/100%
-			svgzoom.removeAttribute('width');
-			svgzoom.removeAttribute('height');
-			batchCmd.addSubCommand(new InsertElementCommand(svgzoom));
+			svgcontent.removeAttribute('width');
+			svgcontent.removeAttribute('height');
+			batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
 
 			// update root to the correct size
 			var changes = {};
@@ -3164,7 +3166,7 @@ function BatchCommand(text) {
 			selectorManager.update();
 
 			addCommandToHistory(batchCmd);
-			call("changed", [svgzoom]);
+			call("changed", [svgcontent]);
 		} catch(e) {
 			console.log(e);
 			return false;
@@ -3179,11 +3181,11 @@ function BatchCommand(text) {
 
 	var identifyLayers = function() {
 		all_layers = [];
-		var numchildren = svgzoom.childNodes.length;
-		// loop through all children of svgzoom
+		var numchildren = svgcontent.childNodes.length;
+		// loop through all children of svgcontent
 		var orphans = [], layernames = [];
 		for (var i = 0; i < numchildren; ++i) {
-			var child = svgzoom.childNodes.item(i);
+			var child = svgcontent.childNodes.item(i);
 			// for each g, find its layer name
 			if (child && child.nodeType == 1) {
 				if (child.tagName == "g") {
@@ -3219,7 +3221,7 @@ function BatchCommand(text) {
 			for (var j = 0; j < orphans.length; ++j) {
 				current_layer.appendChild(orphans[j]);
 			}
-			current_layer = svgzoom.appendChild(current_layer);
+			current_layer = svgcontent.appendChild(current_layer);
 			all_layers.push( [newname, current_layer] );
 		}
 		walkTree(current_layer, function(e){e.setAttribute("style","pointer-events:inherit");});
@@ -3239,7 +3241,7 @@ function BatchCommand(text) {
 		var layer_title = svgdoc.createElementNS(svgns, "title");
 		layer_title.textContent = name;
 		new_layer.appendChild(layer_title);
-		new_layer = svgzoom.appendChild(new_layer);
+		new_layer = svgcontent.appendChild(new_layer);
 		batchCmd.addSubCommand(new InsertElementCommand(new_layer));
 		addCommandToHistory(batchCmd);
 		canvas.clearSelection();
@@ -3262,7 +3264,7 @@ function BatchCommand(text) {
 			canvas.clearSelection();
 			identifyLayers();
 			canvas.setCurrentLayer(all_layers[all_layers.length-1][0]);
-			call("changed", [svgzoom]);
+			call("changed", [svgcontent]);
 			return true;
 		}
 		return false;
@@ -3409,8 +3411,8 @@ function BatchCommand(text) {
 				else {
 					refLayer = all_layers[newpos][1];
 				}
-				svgzoom.insertBefore(current_layer, refLayer);
-				addCommandToHistory(new MoveElementCommand(current_layer, oldNextSibling, svgzoom));
+				svgcontent.insertBefore(current_layer, refLayer);
+				addCommandToHistory(new MoveElementCommand(current_layer, oldNextSibling, svgcontent));
 				
 				identifyLayers();
 				canvas.setCurrentLayer(all_layers[newpos][0]);
@@ -3568,14 +3570,14 @@ function BatchCommand(text) {
 	this.clear = function() {
 		current_path_pts = [];
 
-		// clear the svgzoom node
-		var nodes = svgzoom.childNodes;
-		var len = svgzoom.childNodes.length;
+		// clear the svgcontent node
+		var nodes = svgcontent.childNodes;
+		var len = svgcontent.childNodes.length;
 		var i = 0;
 		this.clearSelection();
 		for(var rep = 0; rep < len; rep++){
 			if (nodes[i].nodeType == 1) { // element node
-				svgzoom.removeChild(nodes[i]);
+				svgcontent.removeChild(nodes[i]);
 			} else {
 				i++;
 			}
@@ -3697,12 +3699,12 @@ function BatchCommand(text) {
 
 	this.getResolution = function() {
 // 		return [svgroot.getAttribute("width"), svgroot.getAttribute("height")];
-		var vb = svgzoom.getAttribute("viewBox").split(' ');
+		var vb = svgcontent.getAttribute("viewBox").split(' ');
 		return {'w':vb[2], 'h':vb[3], 'zoom': current_zoom};
 	};
 	
 	this.getImageTitle = function() {
-		var childs = svgzoom.childNodes;
+		var childs = svgcontent.childNodes;
 		for (var i=0; i<childs.length; i++) {
 			if(childs[i].nodeName == 'title') {
 				return childs[i].textContent;
@@ -3712,7 +3714,7 @@ function BatchCommand(text) {
 	}
 	
 	this.setImageTitle = function(newtitle) {
-		var childs = svgzoom.childNodes, doc_title = false, old_title = '';
+		var childs = svgcontent.childNodes, doc_title = false, old_title = '';
 		
 		var batchCmd = new BatchCommand("Change Image Title");
 		
@@ -3725,7 +3727,7 @@ function BatchCommand(text) {
 		}
 		if(!doc_title) {
 			doc_title = svgdoc.createElementNS(svgns, "title");
-			svgzoom.insertBefore(doc_title, svgzoom.firstChild);
+			svgcontent.insertBefore(doc_title, svgcontent.firstChild);
 		} 
 		
 		if(newtitle.length) {
@@ -3775,12 +3777,12 @@ function BatchCommand(text) {
 			svgroot.setAttribute('height', y);
 			batchCmd.addSubCommand(new ChangeElementCommand(svgroot, {"width":w, "height":h}));
 
-			svgzoom.setAttribute("viewBox", ["0 0", x/current_zoom, y/current_zoom].join(' '));
-			batchCmd.addSubCommand(new ChangeElementCommand(svgzoom, {"viewBox": ["0 0", w, h].join(' ')}));
+			svgcontent.setAttribute("viewBox", ["0 0", x/current_zoom, y/current_zoom].join(' '));
+			batchCmd.addSubCommand(new ChangeElementCommand(svgcontent, {"viewBox": ["0 0", w, h].join(' ')}));
 		
 			addCommandToHistory(batchCmd);
 			svgroot.unsuspendRedraw(handle);
-			call("changed", [svgzoom]);
+			call("changed", [svgcontent]);
 		}
 		return true;
 	};
@@ -3901,13 +3903,13 @@ function BatchCommand(text) {
 	};
 
 	var findDefs = function() {
-		var defs = svgzoom.getElementsByTagNameNS(svgns, "defs");
+		var defs = svgcontent.getElementsByTagNameNS(svgns, "defs");
 		if (defs.length > 0) {
 			defs = defs[0];
 		}
 		else {
 			// first child is a comment, so call nextSibling
-			defs = svgzoom.insertBefore( svgdoc.createElementNS(svgns, "defs" ), svgzoom.firstChild.nextSibling);
+			defs = svgcontent.insertBefore( svgdoc.createElementNS(svgns, "defs" ), svgcontent.firstChild.nextSibling);
 		}
 		return defs;
 	};
@@ -4419,7 +4421,7 @@ function BatchCommand(text) {
 				}
 			} // if oldValue != newValue
 		} // for each elem
-		svgroot.unsuspendRedraw(handle);		
+		svgroot.unsuspendRedraw(handle);	
 		call("changed", elems);
 	};
 	
@@ -4700,7 +4702,7 @@ function BatchCommand(text) {
 	}
 
 	this.getVisibleElements = function(parent, includeBBox) {
-		if(!parent) parent = svgzoom;
+		if(!parent) parent = svgcontent;
 		var nodes = parent.childNodes;
 		var i = nodes.length;
 		var contentElems = [];
