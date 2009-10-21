@@ -4334,8 +4334,9 @@ function BatchCommand(text) {
 		var clone = elem.cloneNode(true)
 		elem.parentNode.insertBefore(clone, elem);
 		elem.parentNode.removeChild(elem);
-		canvas.clearSelection();
-		canvas.addToSelection([clone],true);
+		selectorManager.releaseSelector(elem);
+		selectedElements[0] = clone;
+		selectorManager.requestSelector(clone).showGrips(true);
 		return clone;
 	}
 
@@ -4406,7 +4407,7 @@ function BatchCommand(text) {
 				}
 				// Timeout needed for Opera & Firefox
 				setTimeout(function() {
-					selectorManager.requestSelector(elem).resize(selectedBBoxes[i]);
+					selectorManager.requestSelector(elem).resize(elem.getBBox());
 				},0);
 				// if this element was rotated, and we changed the position of this element
 				// we need to update the rotational transform attribute 
@@ -4422,7 +4423,9 @@ function BatchCommand(text) {
 			} // if oldValue != newValue
 		} // for each elem
 		svgroot.unsuspendRedraw(handle);	
-		call("changed", elems);
+
+		// Calling changed here will cause the toolbar to be updated too many times
+// 		call("changed", elems);
 	};
 	
 	// This function returns a BatchCommand object which summarizes the
