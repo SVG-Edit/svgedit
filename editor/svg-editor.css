@@ -246,6 +246,21 @@ body {
 	left: 2px;
 }
 
+#workarea.wireframe #svgzoom * {
+	fill: none;
+	stroke: #000;
+	stroke-width: 1px;
+	stroke-opacity: 1.0;
+	stroke-dasharray: none;
+	opacity: 1;
+	pointer-events: stroke;
+}
+
+#workarea.wireframe #svgzoom text {
+	fill: #000;
+	stroke: none;
+}
+
 /* TODO: fix this */
 div.color_block {
 	background-image: url('images/none.png');
