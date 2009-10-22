@@ -1538,12 +1538,11 @@ function BatchCommand(text) {
 
 	// A (hopefully) quicker function to transform a point by a matrix
 	// (this function avoids any DOM calls and just does the math)
-	// returns a tuple representing the transformed point
+	// Returns a x,y object representing the transformed point
 	var transformPoint = function(x, y, m) {
 		return { x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f};
 	};
 
-	// in mouseDown :
 	// - when we are in a create mode, the element is added to the canvas
 	//   but the action is not recorded until mousing up
 	// - when we are in select mode, select the element, remember the position
@@ -1575,11 +1574,11 @@ function BatchCommand(text) {
 		// Webkit bubbles the mouse event all the way up to the div, so we
 		// set the mouse_target to the svgroot like the other browsers
 		if (mouse_target.nodeName.toLowerCase() == "div") {
-			mouse_target = document.getElementById("svgroot");
+			mouse_target = svgroot;
 		}
 		// if it is a selector grip, then it must be a single element selected, 
 		// set the mouse_target to that
-		if (mouse_target.id.substr(0,13) == "selectorGroup" && selectedElements[0] != null) {
+		if (mouse_target.parentNode == selectorManager.selectorParentGroup && selectedElements[0] != null) {
 			mouse_target = selectedElements[0];
 		}
 
@@ -1587,8 +1586,7 @@ function BatchCommand(text) {
 			case "select":
 				started = true;
 				current_resize_mode = "none";
-				var nodeName = mouse_target.nodeName.toLowerCase();
-				if (nodeName != "svg") {
+				if (mouse_target != svgroot) {
 					// if this element is not yet selected, clear selection and select it
 					if (selectedElements.indexOf(mouse_target) == -1) {
 						// only clear selection if shift is not pressed (otherwise, add 
