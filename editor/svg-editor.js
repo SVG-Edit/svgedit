@@ -321,8 +321,6 @@ function svg_edit_setup() {
 
 	$('#text').focus( function(){ textBeingEntered = true; } );
 	$('#text').blur( function(){ textBeingEntered = false; } );
-
-  
   
 	// bind the selected event to our function that handles updates to the UI
 	svgCanvas.bind("selected", selectedChanged);
@@ -335,6 +333,28 @@ function svg_edit_setup() {
 		str += '<div class="palette_item" style="background-color: ' + item + ';" data-rgb="' + item + '"></div>';
 	});
 	$('#palette').append(str);
+	
+	// Set up editor background functionality
+	var color_blocks = ['#FFF','#888','#000','url(data:image/gif;base64,R0lGODlhEAAQAIAAAP%2F%2F%2F9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG%2Bgq4jM3IFLJgpswNly%2FXkcBpIiVaInlLJr9FZWAQA7)'];
+	var str = '';
+	$.each(color_blocks, function() {
+		str += '<div class="color_block" style="background:' + this + ';"></div>';
+	});
+	$('#bg_blocks').append(str);
+	var blocks = $('#bg_blocks div');
+	var cur_bg = 'cur_background';
+	blocks.each(function() {
+		var blk = $(this);
+		blk.click(function() {
+			blocks.removeClass(cur_bg);
+			$(this).addClass(cur_bg);
+			$('#canvas_bg_url').removeClass(cur_bg);
+		});
+	});
+	$('#canvas_bg_url').focus(function() {
+		blocks.removeClass(cur_bg);
+		$(this).addClass(cur_bg);
+	});
 
 	var pos = $('#tools_rect_show').position();
 	$('#tools_rect').css({'left': pos.left+4, 'top': pos.top+77});
@@ -835,8 +855,25 @@ function svg_edit_setup() {
 		var res = svgCanvas.getResolution();
 		$('#canvas_width').val(res.w);
 		$('#canvas_height').val(res.h);
-		$('#canvas_title').val(svgCanvas.getImageTitle())
-	
+		$('#canvas_title').val(svgCanvas.getImageTitle());
+		
+		// Update background color with current one
+		var blocks = $('#bg_blocks div');
+		var cur_bg = 'cur_background';
+		var canvas_bg = $('#svgcanvas').css('background');
+		var url = canvas_bg.match(/url\("?(.*?)"?\)/);
+		if(url) url = url[1];
+		blocks.each(function() {
+			var blk = $(this);
+			var is_bg = blk.css('background') == canvas_bg;
+			blk.toggleClass(cur_bg, is_bg);
+			if(is_bg) $('#canvas_bg_url').removeClass(cur_bg);
+		});
+		if(!canvas_bg) blocks.eq(0).addClass(cur_bg);
+		if(!$('#bg_blocks .' + cur_bg).length && url) {
+			$('#canvas_bg_url').val(url);
+		}
+		
 		$('#svg_docprops').fadeIn();
 	};
 	
@@ -874,6 +911,19 @@ function svg_edit_setup() {
 			alert('No content to fit to');
 			return false;
 		}
+		
+		// set background
+		var new_bg, bg_url = $('#canvas_bg_url').val();
+		var bg_blk = $('#bg_blocks div.cur_background');
+		if(bg_blk.length) {
+			new_bg = bg_blk.css('background');
+		} else if(bg_url) {
+			new_bg = '#FFF url("' + bg_url + '") no-repeat';
+		} else {
+			new_bg = '#FFF';
+		}
+		$('#svgcanvas').css('background',new_bg);
+		
 		hideDocProperties();
 	};
 
