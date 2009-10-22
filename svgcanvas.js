@@ -1534,6 +1534,7 @@ function BatchCommand(text) {
 
 	// Some global variables that we may need to refactor
 	var root_sctm = null;
+	var mouse_target = null;
 
 	// A (hopefully) quicker function to transform a point by a matrix
 	// (this function avoids any DOM calls and just does the math)
@@ -1553,7 +1554,6 @@ function BatchCommand(text) {
 		var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
 		var mouse_x = pt.x;
 		var mouse_y = pt.y;
-
 		evt.preventDefault();
     
 		if($.inArray(current_mode, ['select', 'resize']) == -1) {
@@ -1566,28 +1566,38 @@ function BatchCommand(text) {
 		start_x = x;
 		start_y = y;
 
+		// find mouse target
+		mouse_target = evt.target;
+		// go up until we hit a child of a layer
+		while (mouse_target.parentNode.parentNode.tagName == "g") {
+			mouse_target = mouse_target.parentNode;
+		}
+		// Webkit bubbles the mouse event all the way up to the div, so we
+		// set the mouse_target to the svgroot like the other browsers
+		if (mouse_target.nodeName.toLowerCase() == "div") {
+			mouse_target = document.getElementById("svgroot");
+		}
+		// if it is a selector grip, then it must be a single element selected, 
+		// set the mouse_target to that
+		if (mouse_target.id.substr(0,13) == "selectorGroup" && selectedElements[0] != null) {
+			mouse_target = selectedElements[0];
+		}
+
 		switch (current_mode) {
 			case "select":
 				started = true;
 				current_resize_mode = "none";
-				var t = evt.target;
-				// if this element is in a group, go up until we reach the top-level group 
-				// just below the layer groups
-				// TODO: once we implement links, we also would have to check for <a> elements
-				while (t.parentNode.parentNode.tagName == "g") {
-					t = t.parentNode;
-				}
-				var nodeName = t.nodeName.toLowerCase();
-				if (nodeName != "div" && nodeName != "svg") {
+				var nodeName = mouse_target.nodeName.toLowerCase();
+				if (nodeName != "svg") {
 					// if this element is not yet selected, clear selection and select it
-					if (selectedElements.indexOf(t) == -1) {
+					if (selectedElements.indexOf(mouse_target) == -1) {
 						// only clear selection if shift is not pressed (otherwise, add 
 						// element to selection)
 						if (!evt.shiftKey) {
 							canvas.clearSelection();
 						}
-						canvas.addToSelection([t]);
-						justSelected = t;
+						canvas.addToSelection([mouse_target]);
+						justSelected = mouse_target;
 						current_path = null;
 					}
 					// else if it's a path, go into pathedit mode in mouseup
@@ -1809,14 +1819,10 @@ function BatchCommand(text) {
 				if(current_path_pt_drag == -1 && current_ctrl_pt_drag == -1) {
 					// if we haven't moused down on a shape, then go into multiselect mode
 					// otherwise, select it
-					var t = evt.target;
 					canvas.clearSelection();
-					while (t.parentNode.parentNode.tagName == "g") {
-						t = t.parentNode;
-					}
-					if (t.id != "svgcanvas" && t.id != "svgroot") {
+					if (mouse_target.id != "svgroot") {
 						current_path = null;
-						canvas.addToSelection([t], true);
+						canvas.addToSelection([mouse_target], true);
 						canvas.setMode("select");
 					}
 					else {
