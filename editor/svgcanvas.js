@@ -1539,9 +1539,13 @@ function BatchCommand(text) {
 	//   and do nothing else
 	var mouseDown = function(evt)
 	{
-		var mouse_x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft - container.offsetLeft;
-		var mouse_y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop - container.offsetTop;
-		
+		var sctm = svgroot.getScreenCTM().inverse();
+		var pt = svgroot.createSVGPoint();
+		pt.x = evt.pageX; pt.y = evt.pageY;
+		pt = pt.matrixTransform(sctm);
+		var mouse_x = pt.x;
+		var mouse_y = pt.y;
+
 		evt.preventDefault();
     
 		if($.inArray(current_mode, ['select', 'resize']) == -1) {
@@ -1843,8 +1847,12 @@ function BatchCommand(text) {
 	{
 		if (!started) return;
 		var selected = selectedElements[0];
-		var mouse_x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft - container.offsetLeft;
-		var mouse_y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop - container.offsetTop;
+		var sctm = svgroot.getScreenCTM().inverse();
+		var pt = svgroot.createSVGPoint();
+		pt.x = evt.pageX; pt.y = evt.pageY;
+		pt = pt.matrixTransform(sctm);
+		var mouse_x = pt.x;
+		var mouse_y = pt.y;
 		var shape = svgdoc.getElementById(getId());
     
     	x = mouse_x / current_zoom;
@@ -2598,8 +2606,12 @@ function BatchCommand(text) {
 		justSelected = null;
 		if (!started) return;
 
-		var mouse_x = evt.pageX - container.parentNode.offsetLeft + container.parentNode.scrollLeft - container.offsetLeft;
-		var mouse_y = evt.pageY - container.parentNode.offsetTop + container.parentNode.scrollTop - container.offsetTop;
+		var sctm = svgroot.getScreenCTM().inverse();
+		var pt = svgroot.createSVGPoint();
+		pt.x = evt.pageX; pt.y = evt.pageY;
+		pt = pt.matrixTransform(sctm);
+		var mouse_x = pt.x;
+		var mouse_y = pt.y;
 		var x = mouse_x / current_zoom;
 		var y = mouse_y / current_zoom;
 		
@@ -2705,7 +2717,6 @@ function BatchCommand(text) {
 			case "square":
 			case "rect":
 				keep = (element.width.baseVal.value && element.height.baseVal.value);
-				console.log([keep,element.getAttribute('width'),element.getAttribute('height')]);
 				break;
 			case "image":
 				keep = (element.width.baseVal.value && element.height.baseVal.value);
