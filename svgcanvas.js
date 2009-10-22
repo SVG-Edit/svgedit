@@ -2041,7 +2041,6 @@ function BatchCommand(text) {
 					}
 				}
 				
-				
 				selectorManager.requestSelector(selected).resize(selectedBBox);
 				break;
 			case "zoom":
@@ -2487,7 +2486,7 @@ function BatchCommand(text) {
 				grip.setAttribute("cx", mouse_x);
 				grip.setAttribute("cy", mouse_y);
 			}
-			call("selected", [grip]);
+			call("changed", [grip]);
 		}
 		
 		if(is_first) cur_type = last_type;
@@ -4040,12 +4039,11 @@ function BatchCommand(text) {
 		return cur_properties.stroke_width;
 	};
 
-	// TODO: this seems like two bugs - if val is 0 and current_mode is NOT line/scribble, then
-	// we RECURSIVELY call setStrokeWidth(1) and then the rest of the function continues and
-	// stroke_width is set to 0 and selected element's stroke-width is set to 0
+	// When attempting to set a line's width to 0, change it to 1 instead
 	this.setStrokeWidth = function(val) {
-		if(val == 0 && $.inArray(current_mode, ['line', 'path']) == -1) {
+		if(val == 0 && $.inArray(current_mode, ['line', 'path']) != -1) {
 			canvas.setStrokeWidth(1);
+			return;
 		}
 		cur_properties.stroke_width = val;
 		this.changeSelectedAttribute("stroke-width", val);
@@ -4408,8 +4406,26 @@ function BatchCommand(text) {
 			if (oldval == null)  oldval = "";
 			if (oldval != newValue) {
 				if (attr == "#text") {
+					var old_w = elem.getBBox().width;
 					elem.textContent = newValue;
 					elem = canvas.quickClone(elem);
+					
+					// Hoped to solve the issue of moving text with text-anchor="start",
+					// but this doesn't actually fix it. Hopefully on the right track, though. -Fyrd
+					
+// 					var box=canvas.getBBox(elem), left=box.x, top=box.y, width=box.width,
+// 						height=box.height, dx = width - old_w, dy=0;
+// 					var angle = canvas.getRotationAngle(elem);
+// 					if (angle) {
+// 						var r = Math.sqrt( dx*dx + dy*dy );
+// 						var theta = Math.atan2(dy,dx) - angle * Math.PI / 180.0;
+// 						dx = r * Math.cos(theta);
+// 						dy = r * Math.sin(theta);
+// 						
+// 						elem.setAttribute('x', elem.getAttribute('x')-dx);
+// 						elem.setAttribute('y', elem.getAttribute('y')-dy);
+// 					}
+					
 				} else if (attr == "#href") {
 					elem.setAttributeNS(xlinkns, "href", newValue);
         		}

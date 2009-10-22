@@ -47,18 +47,33 @@ function svg_edit_setup() {
 		// if elems[1] is present, then we have more than one element
 		selectedElement = (elems.length == 1 || elems[1] == null ? elems[0] : null);
 		multiselected = (elems.length >= 2 && elems[1] != null);
+		var is_node = false;
 		if (selectedElement != null) {
 			// unless we're already in always set the mode of the editor to select because
 			// upon creation of a text element the editor is switched into
 			// select mode and this event fires - we need our UI to be in sync
 			
-			var is_node = selectedElement.id && selectedElement.id.indexOf('pathpointgrip') == 0;
+			is_node = selectedElement.id && selectedElement.id.indexOf('pathpointgrip') == 0;
 			
 			if (svgCanvas.getMode() != "multiselect" && !is_node) {
 				setSelectMode();
 				updateToolbar();
-			}
+			} 
+			
 		} // if (elem != null)
+
+
+		// Deal with pathedit mode
+		$('#path_node_panel').toggle(is_node);
+		$('#tools_bottom_2,#tools_bottom_3').toggle(!is_node);
+		if(is_node) {
+			// Change select icon
+			$('.tool_button').removeClass('tool_button_current');
+			$('#tool_select').attr('src','images/select_node.png').addClass('tool_button_current');
+		} else {
+			$('#tool_select').attr('src','images/select.png');
+
+		}
 
 		updateContextPanel(); 
 	};
@@ -74,7 +89,7 @@ function svg_edit_setup() {
 								 parseInt(vb[3]));
 			}
 		}
-
+		
 		// we update the contextual panel with potentially new
 		// positional/sizing information (we DON'T want to update the
 		// toolbar here as that creates an infinite loop)
@@ -91,7 +106,6 @@ function svg_edit_setup() {
 		var img = bg_img.find('img');
 		var zoomlevel = svgCanvas.getZoom();
 		img.width(zoomlevel*100 + '%');
-
 	}
 	
 	var zoomChanged = function(window, bbox) {
@@ -202,7 +216,6 @@ function svg_edit_setup() {
 	var updateContextPanel = function() {
 		var elem = selectedElement;
 		var currentLayer = svgCanvas.getCurrentLayer();
-		$('#tool_select').attr('src','images/select.png');
 		
 		// No need to update anything else in rotate mode
 		if (svgCanvas.getMode() == 'rotate' && elem != null) {
@@ -213,17 +226,13 @@ function svg_edit_setup() {
 		var is_node = elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
 		
 		$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,\
-			#ellipse_panel, #line_panel, #text_panel, #image_panel, #path_node_panel').hide();
+			#ellipse_panel, #line_panel, #text_panel, #image_panel').hide();
 		if (elem != null) {
 			$('#angle').val(svgCanvas.getRotationAngle(elem));
 
 			if(!is_node) {
 				$('#selected_panel').show();
 			} else {
-				$('#path_node_panel').show();
-				// Change select icon
-				$('.tool_button').removeClass('tool_button_current');
-				$('#tool_select').attr('src','images/select_node.png').addClass('tool_button_current');
 				var point = svgCanvas.getNodePoint();
 				if(point) {
 					var seg_type = $('#seg_type');
