@@ -85,6 +85,15 @@ function svg_edit_setup() {
 		updateContextPanel();
 	};
 	
+	var updateBgImage = function() {
+		var bg_img = $('#background_img');
+		if(!bg_img.length) return;
+		var img = bg_img.find('img');
+		var zoomlevel = svgCanvas.getZoom();
+		img.width(zoomlevel*100 + '%');
+
+	}
+	
 	var zoomChanged = function(window, bbox) {
 		var scrbar = 15;
 		var res = svgCanvas.getResolution();
@@ -917,12 +926,20 @@ function svg_edit_setup() {
 		var bg_blk = $('#bg_blocks div.cur_background');
 		if(bg_blk.length) {
 			new_bg = bg_blk.css('background');
+			$('#svgcanvas').css('background',new_bg);
+			$('#background_img').remove();
 		} else if(bg_url) {
-			new_bg = '#FFF url("' + bg_url + '") no-repeat';
+			if(!$('#background_img').length) {
+				$('<div id="background_img"><img src="'+bg_url+'" style="width:100%"></div>')
+					.prependTo('#svgcanvas');
+			} else {
+				$('#background_img img').attr('src',bg_url);
+			}
 		} else {
 			new_bg = '#FFF';
+			$('#svgcanvas').css('background',new_bg);
+			$('#background_img').remove();
 		}
-		$('#svgcanvas').css('background',new_bg);
 		
 		hideDocProperties();
 	};
@@ -1561,8 +1578,7 @@ function svg_edit_setup() {
 		$('#canvas_height').val(h);
 
 		centerCanvasIfNeeded();
-		
-		var res = svgCanvas.getResolution();
+		setTimeout(updateBgImage,10);
 		
 		if(center) {
 			var w_area = $('#workarea');
