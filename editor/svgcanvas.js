@@ -1532,6 +1532,16 @@ function BatchCommand(text) {
 		call("selected", [grip[0]]);
 	}
 
+	// Some global variables that we may need to refactor
+	var root_sctm = null;
+
+	// A (hopefully) quicker function to transform a point by a matrix
+	// (this function avoids any DOM calls and just does the math)
+	// returns a tuple representing the transformed point
+	var transformPoint = function(x, y, m) {
+		return { x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f};
+	};
+
 	// in mouseDown :
 	// - when we are in a create mode, the element is added to the canvas
 	//   but the action is not recorded until mousing up
@@ -1539,10 +1549,8 @@ function BatchCommand(text) {
 	//   and do nothing else
 	var mouseDown = function(evt)
 	{
-		var sctm = svgroot.getScreenCTM().inverse();
-		var pt = svgroot.createSVGPoint();
-		pt.x = evt.pageX; pt.y = evt.pageY;
-		pt = pt.matrixTransform(sctm);
+		root_sctm = svgroot.getScreenCTM().inverse();
+		var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
 		var mouse_x = pt.x;
 		var mouse_y = pt.y;
 
@@ -1847,10 +1855,7 @@ function BatchCommand(text) {
 	{
 		if (!started) return;
 		var selected = selectedElements[0];
-		var sctm = svgroot.getScreenCTM().inverse();
-		var pt = svgroot.createSVGPoint();
-		pt.x = evt.pageX; pt.y = evt.pageY;
-		pt = pt.matrixTransform(sctm);
+		var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
 		var mouse_x = pt.x;
 		var mouse_y = pt.y;
 		var shape = svgdoc.getElementById(getId());
@@ -2606,10 +2611,7 @@ function BatchCommand(text) {
 		justSelected = null;
 		if (!started) return;
 
-		var sctm = svgroot.getScreenCTM().inverse();
-		var pt = svgroot.createSVGPoint();
-		pt.x = evt.pageX; pt.y = evt.pageY;
-		pt = pt.matrixTransform(sctm);
+		var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
 		var mouse_x = pt.x;
 		var mouse_y = pt.y;
 		var x = mouse_x / current_zoom;
