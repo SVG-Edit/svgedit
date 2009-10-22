@@ -23,6 +23,9 @@ body {
 
 #svg_editor #svgroot {
 	-moz-user-select: none;
+	position: absolute;
+	top: 0;
+	left: 0;
 }
 
 #svg_editor #svgcanvas {
@@ -601,6 +604,13 @@ span.zoom_tool {
 	color: #000;
 }
 
+#background_img {
+	position: absolute;
+	top: 0;
+	left: 0;
+	text-align: left;
+}
+
 #svg_source_editor button, #svg_docprops button {
 	padding: 5px 5px 7px 28px;
 	margin: 5px 20px 0 0;	
@@ -631,9 +641,6 @@ span.zoom_tool {
 
 #tool_source_cancel, #tool_docprops_cancel {
 	background: #E8E8E8 url(images/cancel.png) no-repeat 2px 0;
-}
-olor: black;
-	opacity: 0.6;
 }
 
 #tool_source_save, #tool_docprops_save {
