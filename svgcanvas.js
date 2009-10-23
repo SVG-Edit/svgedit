@@ -1535,6 +1535,9 @@ function BatchCommand(text) {
 		
 		$('#pathpointgrip_container circle').attr('stroke','#00F');
 		var grip = $('#pathpointgrip_' + point).attr('stroke','#0FF');
+		$('#ctrlpointgrip_container circle').attr('fill', '#EEE');
+		$('#ctrlpointgrip_' + current_path_pt + 'c1, #ctrlpointgrip_' + current_path_pt + 'c2').attr('fill','#0FF');
+		
 		updateSegLine();
 		updateSegLine(true);
 		
@@ -1821,6 +1824,8 @@ function BatchCommand(text) {
 					updateSegLine();
 				} else if(id.indexOf("ctrlpointgrip_") == 0) {
 					current_ctrl_pt_drag = id.split('_')[1];
+					var node_num = current_ctrl_pt_drag.split('c')[0]-0;
+					canvas.addNodeToSelection(node_num);
 				}
 
 				if(current_path_pt_drag == -1 && current_ctrl_pt_drag == -1) {
@@ -2198,8 +2203,7 @@ function BatchCommand(text) {
 	var shortFloat = function(val) {
 		var digits = 5;
 		if(!isNaN(val)) {
-			val = Number(val);
-			return Number(val.toFixed(digits));
+			return Number(Number(val).toFixed(digits));
 		} else if($.isArray(val)) {
 			return shortFloat(val[0]) + ',' + shortFloat(val[1]);
 		}
@@ -2724,7 +2728,7 @@ function BatchCommand(text) {
 				'id': "ctrlpointgrip_" + id,
 				'display': "none",
 				'r': 4,
-				'fill': "#AAA",
+				'fill': "#0FF",
 				'stroke': "#55F",
 				'stroke-width': 1,
 				'cursor': 'move',
