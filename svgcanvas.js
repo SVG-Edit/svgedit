@@ -3907,6 +3907,7 @@ function BatchCommand(text) {
 	this.setResolution = function(x, y) {
 		var res = canvas.getResolution();
 		var w = res.w, h = res.h;
+		var batchCmd;
 
 		if(x == 'fit') {
 			canvas.clearSelection();
@@ -3915,15 +3916,17 @@ function BatchCommand(text) {
 			var bbox = canvas.getStrokedBBox();
 			
 			if(bbox) {
+				batchCmd = new BatchCommand("Fit Canvas to Content");
 				canvas.addToSelection(canvas.getVisibleElements());
 				$.each(selectedElements, function(i, item) {
 					var sel_bb = item.getBBox();
-					recalculateDimensions(item, {
+					var cmd = recalculateDimensions(item, {
 						x: sel_bb.x - bbox.x,
 						y: sel_bb.y - bbox.y,
 						width: sel_bb.width,
 						height: sel_bb.height
 					});
+					batchCmd.addSubCommand(cmd);
 				});
 				canvas.clearSelection();
 				x = Math.round(bbox.width);
@@ -3936,7 +3939,9 @@ function BatchCommand(text) {
 		y *= current_zoom;
 		if (x != w || y != h) {
 			var handle = svgroot.suspendRedraw(1000);
-			var batchCmd = new BatchCommand("Change Image Dimensions");
+			if(!batchCmd) {
+				batchCmd = new BatchCommand("Change Image Dimensions");
+			}
 			svgroot.setAttribute('width', x);
 			svgroot.setAttribute('height', y);
 			batchCmd.addSubCommand(new ChangeElementCommand(svgroot, {"width":w, "height":h}));
