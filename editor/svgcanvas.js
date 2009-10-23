@@ -839,6 +839,10 @@ function BatchCommand(text) {
 					// TODO: do I need to call setAttribute(..., "") here for Fx2?
 					node.removeAttribute(attrName);
 				}
+				if(attrName == 'd') {
+					// Convert to absolute
+					node.setAttribute('d',convertPath(node));
+				}
 			}
 
 			// recurse to children
@@ -928,9 +932,14 @@ function BatchCommand(text) {
 			out.push("<"); out.push(elem.nodeName);
 			for (i=attrs.length-1; i>=0; i--) {
 				attr = attrs.item(i);
-				if (attr.nodeValue != "") {
-					if(attr.nodeValue.indexOf('pointer-events') == 0) continue;
+				var attrVal = attr.nodeValue;
+				if (attrVal != "") {
+					if(attrVal.indexOf('pointer-events') == 0) continue;
 					out.push(" "); 
+					if(attr.localName == 'd') attrVal = convertPath(elem, true);
+					if(!isNaN(attrVal)) {
+						attrVal = shortFloat(attrVal);
+					}
 					// map various namespaces to our fixed namespace prefixes
 					// TODO: put this into a map and do a look-up instead of if-else
 					if (attr.namespaceURI == xlinkns) {
@@ -943,7 +952,7 @@ function BatchCommand(text) {
 						out.push('xml:');
 					}
 					out.push(attr.localName); out.push("=\""); 
-					out.push(attr.nodeValue); out.push("\"");
+					out.push(attrVal); out.push("\"");
 				}
 			}
 			if (elem.hasChildNodes()) {
@@ -2184,6 +2193,141 @@ function BatchCommand(text) {
 			default:
 				break;
 		}
+	};
+
+	var shortFloat = function(val) {
+		var digits = 5;
+		if(!isNaN(val)) {
+			val = Number(val);
+			return Number(val.toFixed(digits));
+		} else if($.isArray(val)) {
+			return shortFloat(val[0]) + ',' + shortFloat(val[1]);
+		}
+	}
+
+	var convertPath = function(path, toRel) {
+		var segList = path.pathSegList;
+		var len = segList.numberOfItems;
+		var curx = 0, cury = 0;
+		var d = "";
+		
+		for (var i = 0; i < len; ++i) {
+			var seg = segList.getItem(i);
+			// if these properties are not in the segment, set them to zero
+			var x = seg.x || 0,
+				y = seg.y || 0,
+				x1 = seg.x1 || 0,
+				y1 = seg.y1 || 0,
+				x2 = seg.x2 || 0,
+				y2 = seg.y2 || 0;
+
+			var type = seg.pathSegType;
+			var letter = pathMap[type]['to'+(toRel?'Lower':'Upper')+'Case']();
+			var addToD = function(pnts, more, last) {
+				var str = '';
+				var more = more?' '+more.join(' '):'';
+				var last = last?shortFloat(last):'';
+				$.each(pnts, function(i, pnt) {
+					pnts[i] = shortFloat(pnt);
+				});
+				d += letter + pnts.join(' ') + more + last;
+			}
+			
+			switch (type) {
+				case 1: // z,Z closepath (Z/z)
+					d += "z";
+					break;
+				case 2: // absolute move (M)
+				case 4: // absolute line (L)
+				case 12: // absolute horizontal line (H)
+				case 14: // absolute vertical line (V)
+				case 18: // absolute smooth quad (T)
+					x -= curx;
+					y -= cury;
+				case 3: // relative move (m)
+				case 5: // relative line (l)
+				case 13: // relative horizontal line (h)
+				case 15: // relative vertical line (v)
+				case 19: // relative smooth quad (t)
+					if(toRel) {
+						curx += x;
+						cury += y;
+					} else {
+						x += curx;
+						y += cury;
+						curx = x;
+						cury = y;
+					}
+					addToD([[x,y]]);
+					break;
+				case 6: // absolute cubic (C)
+					x -= curx; x1 -= curx; x2 -= curx;
+					y -= cury; y1 -= cury; y2 -= cury;
+				case 7: // relative cubic (c)
+					if(toRel) {
+						curx += x;
+						cury += y;
+					} else {
+						x += curx; x1 += curx; x2 += curx;
+						y += cury; y1 += cury; y2 += cury;
+						curx = x;
+						cury = y;
+					}
+					addToD([[x1,y1],[x2,y2],[x,y]]);
+					break;
+				case 8: // absolute quad (Q)
+					x -= curx; x1 -= curx;
+					y -= cury; y1 -= cury;
+				case 9: // relative quad (q) 
+					if(toRel) {
+						curx += x;
+						cury += y;
+					} else {
+						x += curx; x1 += curx;
+						y += cury; y1 += cury;
+						curx = x;
+						cury = y;
+					}
+					addToD([[x1,y1],[x,y]]);
+					break;
+				case 10: // absolute elliptical arc (A)
+					x -= curx;
+					y -= cury;
+				case 11: // relative elliptical arc (a)
+					if(toRel) {
+						curx += x;
+						cury += y;
+					} else {
+						x += curx;
+						y += cury;
+						curx = x;
+						cury = y;
+					}
+					addToD([[seg.r1,seg.r2]], [
+							seg.angle,
+							(seg.largeArcFlag ? 1 : 0),
+							(seg.sweepFlag ? 1 : 0)
+						],[x,y]
+					);
+					break;
+				case 16: // absolute smooth cubic (S)
+					x -= curx; x2 -= curx;
+					y -= cury; y2 -= cury;
+				case 17: // relative smooth cubic (s)
+					if(toRel) {
+						curx += x;
+						cury += y;
+					} else {
+						x += curx; x2 += curx;
+						y += cury; y2 += cury;
+						curx = x;
+						cury = y;
+					}
+					addToD([[x2,y2],[x,y]]);
+					break;
+			} // switch on path segment type
+		} // for each segment
+		return d;
 	};
 
 	var resetPointGrips = function() {
