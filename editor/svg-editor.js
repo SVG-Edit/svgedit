@@ -53,7 +53,7 @@ function svg_edit_setup() {
 			// upon creation of a text element the editor is switched into
 			// select mode and this event fires - we need our UI to be in sync
 			
-			is_node = selectedElement.id && selectedElement.id.indexOf('pathpointgrip') == 0;
+			is_node = !!(selectedElement.id && selectedElement.id.indexOf('pathpointgrip') == 0);
 			
 			if (svgCanvas.getMode() != "multiselect" && !is_node) {
 				setSelectMode();
