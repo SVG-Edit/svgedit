@@ -4557,7 +4557,7 @@ function BatchCommand(text) {
 			if (elem.tagName == "g" && (attr != "transform" && attr != "opacity")) continue;
 			var oldval = attr == "#text" ? elem.textContent : elem.getAttribute(attr);
 			if (oldval == null)  oldval = "";
-			if (oldval != newValue) {
+			if (oldval !== newValue) {
 				if (attr == "#text") {
 					var old_w = elem.getBBox().width;
 					elem.textContent = newValue;
