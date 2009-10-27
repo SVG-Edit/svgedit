@@ -583,7 +583,14 @@ function svg_edit_setup() {
 		changeOpacity(false, perc);
 	});
 	
+	// For slider usage, see: http://jqueryui.com/demos/slider/ 
 	$("#opac_slider").slider({
+		start: function() {
+			$('#opacity_dropdown li:not(.special)').hide();
+		},
+		stop: function() {
+			$('#opacity_dropdown li').show();
+		},
 		slide: function(evt, ui){
 			changeOpacity(ui);
 		}
