@@ -18,7 +18,7 @@
 		- selLayerNames
 		- sidepanel_handle
 */
-
+var isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1;
 if(!window.console) {
 	window.console = {};
 	window.console.log = function(str) {};
@@ -567,6 +567,114 @@ function BatchCommand(text) {
 
 		this.initGroup();
 	}
+	// **************************************************************************************
+
+	// **************************************************************************************
+	// SVGTransformList implementation for Webkit 
+	// These methods do not currently raise any exceptions.
+	// These methods also do not check that transforms are being inserted or handle if
+	// a transform is already in the list, etc.  This is basically implementing as much
+	// of SVGTransformList that we need to get the job done.
+	//
+	//  interface SVGEditTransformList { 
+    //		attribute unsigned long numberOfItems;
+    //		void   clear (  )
+    //		SVGTransform initialize ( in SVGTransform newItem )
+    //		SVGTransform getItem ( in unsigned long index )
+    //		SVGTransform insertItemBefore ( in SVGTransform newItem, in unsigned long index )
+    //		SVGTransform replaceItem ( in SVGTransform newItem, in unsigned long index )
+    //		SVGTransform removeItem ( in unsigned long index )
+    //		SVGTransform appendItem ( in SVGTransform newItem )
+    //		SVGTransform createSVGTransformFromMatrix ( in SVGMatrix matrix );
+    //		SVGTransform consolidate (  );
+    //	}
+	// **************************************************************************************
+	var svgTransformLists = {};
+	var SVGEditTransformList = function(elem) {
+		this._elem = elem || null;
+		this._xforms = [];
+		_this = this;
+		
+		this.numberOfItems = 0;
+		this.clear = function() { 
+			_this.numberOfItems = 0;
+			_this._xforms = [];
+		};
+		
+		this.initialize = function(newItem) {
+			_this.numberOfItems = 1;
+			_this._xforms = [newItem];
+		};
+		
+		this.getItem = function(index) {
+			if (index < _this.numberOfItems && index >= 0) {
+				return _this._xforms[index];
+			}
+			return null;
+		};
+		
+		// TODO: update all functions that modify the transform list to update
+		// the actual element
+		this.insertItemBefore = function(newItem, index) {
+			var retValue = null;
+			if (index >= 0) {
+				if (index < _this.numberOfItems) {
+					var newxforms = new Array(_this.numberOfItems + 1);
+					// TODO: use array copying and slicing
+					for ( var i = 0; i < index; ++i) {
+						newxforms[i] = _this._xforms[i];
+					}
+					newxforms[i] = newItem;
+					for ( var j = i+1; i < _this.numberOfItems; ++j, ++i) {
+						newxforms[j] = _this._xforms[i];
+					}
+					_this.numberOfItems++;
+					_this._xforms = newxforms;
+					retValue = newItem;
+					// TODO: modify the element's transform
+				}
+				else {
+					retValue = _this.appendItem(newItem);
+				}
+			}
+			return retValue;
+		};
+		
+		this.replaceItem = function(newItem, index) {
+			var retValue = null;
+			if (index < _this.numberOfItems && index >= 0) {
+				_this._xforms[index] = newItem;
+				retValue = newItem;
+				// TODO: modify the element's transform
+			}
+			return retValue;
+		};
+		
+		this.removeItem = function(index) {
+			var retValue = null;
+			if (index < _this.numberOfItems && index >= 0) {
+				var retValue = _this._xforms[index];
+				var newxforms = new Array(_this.numberOfItems - 1);
+				for (var i = 0; i < index; ++i) {
+					newxforms[i] = _this._xforms[i];
+				}
+				for (var j = i; j < _this.numberOfItems-1; ++j, ++i) {
+					newxforms[j] = _this._xforms[i+1];
+				}
+				_this.numberOfItems--;
+				_this._xforms = newxforms;
+				// TODO: modify the element's transform
+			}
+			return retValue;
+		};
+		
+		this.appendItem = function(newItem) {
+			_this._xforms.push(newItem);
+			_this.numberOfItems++;
+			// TODO: modify the element's transform
+			return newItem;
+		};
+	};
 	// **************************************************************************************
 
 	var addSvgElementFromJson = function(data) {
@@ -4242,6 +4350,18 @@ function BatchCommand(text) {
 			this.changeSelectedAttribute("stroke-opacity", val);
 		else
 			this.changeSelectedAttributeNoUndo("stroke-opacity", val);
+	};
+
+	// returns an object that behaves like a SVGTransformList
+	this.getTransformList = function(elem) {
+		if (isWebkit) {
+			var t = svgTransformLists[elem];
+			if (!t) {
+				t = svgTransformLists[elem] = new SVGEditTransformList(elem);
+			}
+			return t;
+		}
+		return elem.transform.baseVal;
 	};
 
 	this.getBBox = function(elem) {
