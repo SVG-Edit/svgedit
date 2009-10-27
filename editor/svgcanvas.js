@@ -4610,8 +4610,10 @@ function BatchCommand(text) {
 		} // for each elem
 		svgroot.unsuspendRedraw(handle);	
 
-		// Calling changed here will cause the toolbar to be updated too many times
-// 		call("changed", elems);
+		// Only call "changed" if really necessary, as it updates the toolbar each time
+		if(current_mode == 'rotate') {
+			call("changed", elems);
+		}
 	};
 	
 	// This function returns a BatchCommand object which summarizes the
