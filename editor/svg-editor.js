@@ -126,7 +126,6 @@ function svg_edit_setup() {
 		var scrTop = bb.y * zoomlevel;
 		var scrOffY = w_area.height()/2 - (bb.height * zoomlevel)/2;
 		w_area[0].scrollTop = Math.max(0,scrTop - scrOffY) + Math.max(0,canvas_pos.top);
-		clickSelect();
 	}
 
 	// updates the toolbar (colors, opacity, etc) based on the selected element
@@ -1069,6 +1068,38 @@ function svg_edit_setup() {
 	}
 	
 	setPushButtons();
+
+	$('#workarea').bind("mousewheel DOMMouseScroll", function(e){
+		if(!e.shiftKey) return;
+		e.preventDefault();
+		var off = $('#svgcanvas').offset();
+		var zoom = svgCanvas.getZoom();
+		var bbox = {
+			'x': (e.pageX - off.left)/zoom,
+			'y': (e.pageY - off.top)/zoom,
+			'width': 0,
+			'height': 0
+		};
+		
+		// Respond to mouse wheel in IE/Webkit/Opera.
+		// (It returns up/dn motion in multiples of 120)
+		if(e.wheelDelta) {
+			if (e.wheelDelta >= 120) {
+				bbox.factor = 2;
+			} else if (e.wheelDelta <= -120) {
+				bbox.factor = .5;
+			}
+		} else if(e.detail) {
+			if (e.detail > 0) {
+				bbox.factor = .5;
+			} else if (e.detail < 0) {
+				bbox.factor = 2;			
+			}				
+		}
+		
+		if(!bbox.factor) return;
+		zoomChanged(window, bbox);
+	});
 
 	// switch modifier key in tooltips if mac
 	// NOTE: This code is not used yet until I can figure out how to successfully bind ctrl/meta

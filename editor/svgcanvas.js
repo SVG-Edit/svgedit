@@ -2970,11 +2970,13 @@ function BatchCommand(text) {
 				if (rubberBox != null) {
 					rubberBox.setAttribute("display", "none");
 				}
+				var factor = evt.shiftKey?.5:2;
 				call("zoomed", {
 					'x': Math.min(start_x,x),
 					'y': Math.min(start_y,y),
 					'width': Math.abs(x-start_x),
-					'height': Math.abs(y-start_y)
+					'height': Math.abs(y-start_y),
+					'factor': factor
 				});
 				return;
 			case "fhpath":
@@ -4097,7 +4099,7 @@ function BatchCommand(text) {
 		if(typeof val == 'object') {
 			bb = val;
 			if(bb.width == 0 || bb.height == 0) {
-				canvas.setZoom(current_zoom * 2);
+				canvas.setZoom(current_zoom * bb.factor);
 				return {'zoom': current_zoom, 'bbox': bb};
 			}
 			return calcZoom(bb);
