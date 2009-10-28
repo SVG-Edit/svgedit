@@ -5003,7 +5003,7 @@ function BatchCommand(text) {
 		var min_x = full_bb.x;
 		var min_y = full_bb.y;
 		var getOffset = function(elem) {
-			var sw = round(elem.getAttribute("stroke-width"));
+			var sw = elem.getAttribute("stroke-width");
 			var offset = 0;
 			if (elem.getAttribute("stroke") != "none" && !isNaN(sw)) {
 				offset += sw/2;
@@ -5035,20 +5035,19 @@ function BatchCommand(text) {
 
 	this.getVisibleElements = function(parent, includeBBox) {
 		if(!parent) parent = svgcontent;
-		var nodes = parent.childNodes;
-		var i = nodes.length;
-		var contentElems = [];
 		
-		while (i--) {
-			var elem = nodes[i];
+		var contentElems = [];
+		$(parent).find('*').each(function(i, elem) {
+			if(elem.nodeName == 'g') return;
 			try {
 				var box = canvas.getBBox(elem);
 				if (box) {
 					var item = includeBBox?{'elem':elem, 'bbox':box}:elem;
+					console.log('item',item);
 					contentElems.push(item);
 				}
 			} catch(e) {}
-		}
+		});
 		return contentElems;
 	}
 	
