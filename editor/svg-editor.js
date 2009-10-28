@@ -1387,10 +1387,14 @@ function svg_edit_setup() {
 	
 	var SIDEPANEL_MAXWIDTH = 300;
 	var SIDEPANEL_OPENWIDTH = 150;
-	var sidedrag = -1;
+	var sidedrag = -1, sidedragging = false;
 	$('#sidepanel_handle')
 		.mousedown(function(evt) {sidedrag = evt.pageX;})
-		.mouseup(function(evt) {sidedrag = -1;});
+		.mouseup(function(evt) {
+			if (!sidedragging) toggleSidePanel();
+			sidedrag = -1;
+			sidedragging = false;
+		});
 	$('#svg_editor')
 		.mouseup(function(){sidedrag=-1;})
 		.mouseout(function(evt){
@@ -1404,6 +1408,7 @@ function svg_edit_setup() {
 		})
 		.mousemove(function(evt) {
 			if (sidedrag == -1) return;
+			sidedragging = true;
 			var deltax = sidedrag - evt.pageX;
 
 			var sidepanels = $('#sidepanels');
