@@ -4970,12 +4970,12 @@ function BatchCommand(text) {
 				selectedBBoxes[i] = this.getBBox(selected);
 				// dx and dy could be arrays
 				if (dx.constructor == Array) {
-					selectedBBoxes[i].x += dx[i] * current_zoom;
+					selectedBBoxes[i].x += dx[i];
 				} else {
 					selectedBBoxes[i].x += dx;
 				}
 				if (dy.constructor == Array) {
-					selectedBBoxes[i].y += dy[i] * current_zoom;
+					selectedBBoxes[i].y += dy[i];
 				} else {
 					selectedBBoxes[i].y += dy;
 				}
