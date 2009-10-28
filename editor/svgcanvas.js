@@ -577,22 +577,43 @@ function BatchCommand(text) {
 	// of SVGTransformList that we need to get the job done.
 	//
 	//  interface SVGEditTransformList { 
-    //		attribute unsigned long numberOfItems;
-    //		void   clear (  )
-    //		SVGTransform initialize ( in SVGTransform newItem )
-    //		SVGTransform getItem ( in unsigned long index )
-    //		SVGTransform insertItemBefore ( in SVGTransform newItem, in unsigned long index )
-    //		SVGTransform replaceItem ( in SVGTransform newItem, in unsigned long index )
-    //		SVGTransform removeItem ( in unsigned long index )
-    //		SVGTransform appendItem ( in SVGTransform newItem )
-    //		SVGTransform createSVGTransformFromMatrix ( in SVGMatrix matrix );
-    //		SVGTransform consolidate (  );
-    //	}
+	//		attribute unsigned long numberOfItems;
+	//		void   clear (  )
+	//		SVGTransform initialize ( in SVGTransform newItem )
+	//		SVGTransform getItem ( in unsigned long index )
+	//		SVGTransform insertItemBefore ( in SVGTransform newItem, in unsigned long index )
+	//		SVGTransform replaceItem ( in SVGTransform newItem, in unsigned long index )
+	//		SVGTransform removeItem ( in unsigned long index )
+	//		SVGTransform appendItem ( in SVGTransform newItem )
+	//		SVGTransform createSVGTransformFromMatrix ( in SVGMatrix matrix );
+	//		SVGTransform consolidate (  );
+	//	}
 	// **************************************************************************************
 	var svgTransformLists = {};
 	var SVGEditTransformList = function(elem) {
 		this._elem = elem || null;
 		this._xforms = [];
+		this._update = function() {
+			var tstr = "";
+			for (var i = 0; i < _this.numberOfItems; ++i) {
+				var xform = _this.getItem(i);
+				var m = xform.matrix;
+				switch (xform.type) {
+					case 2: // translate
+						tstr += "translate(" + m.e + "," + m.f + ") ";
+						break;
+					case 3: // scale
+						if (m.a == m.d) tstr += "scale(" + m.a + ") ";
+						else tstr += "scale(" + m.a + "," + m.d + ") ";
+						break;
+					case 4: // rotate (with a translate?)
+						// TODO: can i get the center right here and now from bbox?
+						tstr += "rotate(" + xform.angle + ") ";
+						break;
+				}
+			}
+			_this._elem.setAttribute("transform", tstr);
+		};
 		_this = this;
 		
 		this.numberOfItems = 0;
@@ -613,8 +634,6 @@ function BatchCommand(text) {
 			return null;
 		};
 		
-		// TODO: update all functions that modify the transform list to update
-		// the actual element
 		this.insertItemBefore = function(newItem, index) {
 			var retValue = null;
 			if (index >= 0) {
@@ -631,7 +650,7 @@ function BatchCommand(text) {
 					_this.numberOfItems++;
 					_this._xforms = newxforms;
 					retValue = newItem;
-					// TODO: modify the element's transform
+					_this._update();
 				}
 				else {
 					retValue = _this.appendItem(newItem);
@@ -645,7 +664,7 @@ function BatchCommand(text) {
 			if (index < _this.numberOfItems && index >= 0) {
 				_this._xforms[index] = newItem;
 				retValue = newItem;
-				// TODO: modify the element's transform
+				_this._update();
 			}
 			return retValue;
 		};
@@ -663,7 +682,7 @@ function BatchCommand(text) {
 				}
 				_this.numberOfItems--;
 				_this._xforms = newxforms;
-				// TODO: modify the element's transform
+				_this._update();
 			}
 			return retValue;
 		};
@@ -671,7 +690,7 @@ function BatchCommand(text) {
 		this.appendItem = function(newItem) {
 			_this._xforms.push(newItem);
 			_this.numberOfItems++;
-			// TODO: modify the element's transform
+			_this._update();
 			return newItem;
 		};
 	};
