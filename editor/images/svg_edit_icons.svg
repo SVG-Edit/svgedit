@@ -280,6 +280,30 @@
 </svg>
 </foreignContent>
 
+<foreignContent id="clone">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <defs>
+  <linearGradient y2="1" x2="1" y1="0" x1="0" id="svg_36">
+   <stop stop-opacity="1" stop-color="#f9f3de" offset="0"/>
+   <stop stop-opacity="1" stop-color="#ccbd8f" offset="1"/>
+  </linearGradient>
+  <linearGradient y2="0.80078" x2="0.42578" y1="0" x1="0" id="svg_69">
+   <stop stop-opacity="1" stop-color="#f9f3de" offset="0"/>
+   <stop stop-opacity="1" stop-color="#af995b" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <path stroke="#8f5902" fill="url(#svg_69)" id="svg_34" d="m2.11676,16.32061l-0.13787,-5.05515l1.93015,-2.02206l10.11029,0l2.02206,2.29779l0,4.77941l-13.92463,0z"/>
+  <title>Layer 1</title>
+  <rect x="7.85379" y="6.30027" width="2.2932" height="4.3407" id="svg_38" fill="url(#svg_36)" stroke="#8f5902" rx="1" ry="1"/>
+  <circle stroke="#8f5902" fill="url(#svg_36)" id="svg_35" r="2.96392" cy="4.48149" cx="9.11757"/>
+  <line x1="2.44838" y1="12.03512" x2="15.5524" y2="12.03512" id="svg_39" stroke="#f9f3de" fill="none"/>
+  <path d="m6.72427,12.55859l4.74203,0l-2.30831,2.07258l-2.43372,-2.07258z" id="svg_43" fill="#000000" stroke="#8f5902" fill-opacity="0.76" stroke-width="0"/>
+ </g>
+</svg>
+</foreignContent>
+
 <g id="svg_eof"/>
 
 </svg>
