@@ -1041,6 +1041,11 @@ function BatchCommand(text) {
 	var svgCanvasToString = function() {
 		removeUnusedGrads();
 		canvas.clearPath(true);
+		$.each(svgcontent.childNodes, function(i, node) {
+			if(i && node.nodeType == 8 && node.data.indexOf('Created with') != -1) {
+				svgcontent.insertBefore(node, svgcontent.firstChild);
+			}
+		});
 		svgcontent.removeAttribute('id');
 		var output = svgToString(svgcontent, 0);
 		svgcontent.id = 'svgcontent';
