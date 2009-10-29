@@ -55,7 +55,10 @@ $(function() {
 			'text':'text.png',
 			'image':'image.png',
 			'zoom':'zoom.png',
-			'arrow_right':'flyouth.png',
+			
+			'clone':'clone.png',
+
+			'arrow_right':'flyouth.png'
 		},
 		placement: {
 			'#tool_clear':'new_image',
@@ -76,6 +79,9 @@ $(function() {
 			'#tool_text':'text',
 			'#tool_image':'image',
 			'#tool_zoom':'zoom',
+			
+			'#tool_clone,#tool_clone_multi,#tool_node_clone':'clone',
+			
 			'.flyout_arrow_horiz':'arrow_right'
 		},
 		callback: function() {
@@ -168,7 +174,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<!-- Buttons when a single element is selected -->
 	<div id="selected_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="push_button" id="tool_clone" src="images/clone.png" title="Clone Element [C]" alt="Copy"/>
+		<div class="push_button" id="tool_clone" title="Clone Element [C]"></div>
 		<img class="push_button" id="tool_delete" src="images/delete.png" title="Delete Element [Delete/Backspace]" alt="Delete"/>
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<img class="push_button" id="tool_move_top" src="images/move_top.png" title="Move to Top [Shift+Up]" alt="Top"/>
@@ -197,7 +203,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<!-- Buttons when multiple elements are selected -->
 	<div id="multiselected_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="push_button" id="tool_clone_multi" src="images/clone.png" title="Clone Elements [C]" alt="Clone"/>
+		<div class="push_button" id="tool_clone_multi" title="Clone Elements [C]"></div>
 		<img class="push_button" id="tool_delete_multi" src="images/delete.png" title="Delete Selected Elements [Delete/Backspace]" alt="Delete"/>
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<img class="push_button" id="tool_group" src="images/shape_group.png" title="Group Elements [G]" alt="Group"/>
@@ -315,7 +321,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			<option id="straight_segments" selected="selected" value="4">Straight</option>
 			<option id="curve_segments" value="6">Curve</option>
 		</select>
-		<img class="tool_button" id="tool_node_clone" src="images/clone.png" title="Clone Node" alt="Clone"/>
+		<div class="tool_button" id="tool_node_clone" title="Clone Node"></div>
 		<img class="tool_button" id="tool_node_delete" src="images/delete.png" title="Delete Node" alt="Delete"/>
 	</div>
 	
@@ -426,7 +432,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<div id="svg_docprops_overlay"></div>
 	<div id="svg_docprops_container">
 		<div id="tool_docprops_back" class="toolbar_button">
-			<button id="tool_docprops_save">Save</button>
+			<button id="tool_docprops_save">OK</button>
 			<button id="tool_docprops_cancel">Cancel</button>
 
 			<label><span id="svginfo_title">Image title:</span> <input type="text" id="canvas_title" size="24"></label>
