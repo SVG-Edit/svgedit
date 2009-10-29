@@ -126,6 +126,10 @@ function svg_edit_setup() {
 		var scrTop = bb.y * zoomlevel;
 		var scrOffY = w_area.height()/2 - (bb.height * zoomlevel)/2;
 		w_area[0].scrollTop = Math.max(0,scrTop - scrOffY) + Math.max(0,canvas_pos.top);
+		if(svgCanvas.getMode() == 'zoom' && bb.width) {
+			// Go to select if a zoom box was drawn
+			setSelectMode();
+		}
 	}
 
 	// updates the toolbar (colors, opacity, etc) based on the selected element
@@ -399,9 +403,16 @@ function svg_edit_setup() {
 	}
 	var changeZoom = function(ctl) {
 		var zoomlevel = ctl.value / 100;
-		var res = svgCanvas.getResolution();
-		setResolution(res.w * zoomlevel, res.h * zoomlevel, true);
-		svgCanvas.setZoom(zoomlevel);
+		var zoom = svgCanvas.getZoom();
+		var w_area = $('#workarea');
+		
+		zoomChanged(window, {
+			width: 0,
+			height: 0,
+			x: (w_area[0].scrollLeft + w_area.width()/2)/zoom,
+			y: (w_area[0].scrollTop + w_area.height()/2)/zoom,
+			zoom: zoomlevel
+		});
 	}
 	
 	var changeOpacity = function(ctl, val) {
@@ -598,28 +609,10 @@ function svg_edit_setup() {
 	addDropDown('#zoom_dropdown', function() {
 		var item = $(this);
 		var val = item.attr('data-val');
-		var res = svgCanvas.getResolution();
-		var scrbar = 15;
 		if(val) {
-			var w_area = $('#workarea');
-			var z_info = svgCanvas.setBBoxZoom(val, w_area.width()-scrbar, w_area.height()-scrbar);
-			if(!z_info) return;
-			var zoomlevel = z_info.zoom;
-			var bb = z_info.bbox;
-			$('#zoom').val(zoomlevel*100);
-			setResolution(res.w * zoomlevel, res.h * zoomlevel);
-			var scrLeft = bb.x * zoomlevel;
-			var scrOffX = w_area.width()/2 - (bb.width * zoomlevel)/2;
-			w_area[0].scrollLeft = Math.max(0,scrLeft - scrOffX);
-			var scrTop = bb.y * zoomlevel;
-			var scrOffY = w_area.height()/2 - (bb.height * zoomlevel)/2;
-			w_area[0].scrollTop = Math.max(0,scrTop - scrOffY);
+			zoomChanged(window, val);
 		} else {
-			var percent = parseInt(item.text());
-			$('#zoom').val(percent);
-			var zoomlevel = percent/100;
-			setResolution(res.w * zoomlevel, res.h * zoomlevel, true);
-			svgCanvas.setZoom(zoomlevel);
+			changeZoom({value:parseInt(item.text())});
 		}
 	}, true);
 	
@@ -1634,9 +1627,6 @@ function svg_edit_setup() {
 		
 		if(center) {
 			var w_area = $('#workarea');
-// 			console.log(w_area[0].scrollLeft); //  1677
-// 			console.log('w',w_area.width()); // 875 // zoom: 4.67
-			// Want: 1942 (+265)
 			var scroll_y = h/2 - w_area.height()/2;
 			var scroll_x = w/2 - w_area.width()/2;
 			w_area[0].scrollTop = scroll_y;
