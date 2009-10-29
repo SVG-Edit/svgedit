@@ -4099,7 +4099,8 @@ function BatchCommand(text) {
 		if(typeof val == 'object') {
 			bb = val;
 			if(bb.width == 0 || bb.height == 0) {
-				canvas.setZoom(current_zoom * bb.factor);
+				var newzoom = bb.zoom?bb.zoom:current_zoom * bb.factor;
+				canvas.setZoom(newzoom);
 				return {'zoom': current_zoom, 'bbox': bb};
 			}
 			return calcZoom(bb);
@@ -5043,7 +5044,6 @@ function BatchCommand(text) {
 				var box = canvas.getBBox(elem);
 				if (box) {
 					var item = includeBBox?{'elem':elem, 'bbox':box}:elem;
-					console.log('item',item);
 					contentElems.push(item);
 				}
 			} catch(e) {}
