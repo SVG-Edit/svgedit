@@ -4964,8 +4964,8 @@ function BatchCommand(text) {
 		// if undoable is not sent, default to true
 		// if single values, scale them to the zoom
 		if (dx.constructor != Array) {
-			dx *= current_zoom;
-			dy *= current_zoom;
+			dx /= current_zoom;
+			dy /= current_zoom;
 		}
 		var undoable = undoable || true;
 		var batchCmd = new BatchCommand("position");
