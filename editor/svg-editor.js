@@ -253,7 +253,7 @@ function svg_edit_setup() {
 			// update contextual tools here
 			var panels = {
 				g: [],
-				rect: ['radius','x','y','width','height'],
+				rect: ['rx','x','y','width','height'],
 				image: ['x','y','width','height'],
 				circle: ['cx','cy','r'],
 				ellipse: ['cx','cy','rx','ry'],
