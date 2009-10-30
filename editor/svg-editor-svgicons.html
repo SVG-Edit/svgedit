@@ -17,8 +17,8 @@
 <script type="text/javascript" src="svgcanvas.js"></script>
 <script type="text/javascript" src="svg-editor.js"></script>
 <script type="text/javascript" src="locale/locale.js"></script>
-<!-- <script type="text/javascript" src="../../svg-icon-loader/jquery.svgicons.js"></script> -->
-<script type="text/javascript" src="http://svg-icon-loader.googlecode.com/svn/trunk/jquery.svgicons.js"></script>
+<script type="text/javascript" src="../../svg-icon-loader/jquery.svgicons.js"></script>
+<!-- <script type="text/javascript" src="http://svg-icon-loader.googlecode.com/svn/trunk/jquery.svgicons.js"></script> -->
 
 <style>
 #svg_editor .tools_panel div.tool_button {
@@ -26,9 +26,165 @@
 	height: 24px;
 }
 
+#layerbuttons {
+	overflow: auto;
+}
+
+.layer_button {
+	display: block;
+	float: left;
+	margin-right: 3px;
+}
+
 .flyout_arrow_horiz {
 	margin-top: -3px;
 }
+
+#tool_bold, #tool_italic { 
+	font: bold 2.1em/1.1em serif;
+	text-align: center;
+	padding-left: 2px;
+	position: relative;
+}
+
+#tool_bold span, #tool_italic span { 
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0; left: 0;
+	background: #000;
+	opacity: 0;
+}
+
+#tool_italic {
+	font-weight: normal;
+	font-style: italic;
+}
+
+#svg_editor .dropdown button {
+	background: none;
+	padding: 0;
+
+	border-left: 1px solid #FFFFFF;
+	border-top: 1px solid #FFFFFF;
+	border-right: 1px solid #808080;
+	border-bottom: 1px solid #808080;
+}
+
+/* Adjust size of all tools */
+body.small_tools #svg_editor .tool_button, 
+body.small_tools #svg_editor .push_button,
+body.small_tools #svg_editor .tool_button_current, 
+body.small_tools #svg_editor .tool_button_disabled {
+	width: 16px;
+	height: 16px;
+	padding: 1px;
+}
+
+body.small_tools #svg_editor .tool_sep {
+	height: 16px;
+}
+
+body.small_tools #svg_editor #tools_left {
+	width: 26px;
+	top: 50px;
+}
+
+body.small_tools #svg_editor div#workarea {
+	left: 27px;
+	top: 50px;
+}
+
+body.small_tools #svg_editor #tools_top input {
+	margin-top: 2px;
+	height: 12px;
+	border: 1px solid #555;
+	font-size: .9em;
+}
+
+body.small_tools #svg_editor #tools_top > div, #tools_top {
+	line-height: 17px;
+}
+
+body.small_tools #tools_top .dropdown button {
+	margin-top: 2px;
+	height: 18px;
+}
+
+body.small_tools #tools_top label {
+	margin-top: 1px;
+}
+
+body.small_tools #tool_bold, 
+body.small_tools #tool_italic {
+	font-size: 1.5em;
+}
+
+body.small_tools #svg_editor #sidepanels {
+	top: 50px;
+}
+
+
+body.large_tools #svg_editor .tool_button, 
+body.large_tools #svg_editor .push_button,
+body.large_tools #svg_editor .tool_button_current, 
+body.large_tools #svg_editor .tool_button_disabled {
+	width: 48px;
+	height: 48px;
+	padding: 3px;
+}
+
+body.large_tools #svg_editor .tool_sep {
+	height: 48px;
+}
+
+body.large_tools #svg_editor #tools_left {
+	width: 42px;
+	top: 125px;
+}
+
+body.large_tools #svg_editor div#workarea {
+	left: 65px;
+	top: 125px;
+}
+
+body.large_tools #svg_editor #tools_top input {
+	margin-top: 5px;
+	height: 45px;
+/*	border: 1px solid #555;*/
+	font-size: 2.5em;
+}
+
+body.large_tools #svg_editor #tools_top > div, #tools_top {
+	line-height: 50px;
+}
+
+body.large_tools #tools_top .dropdown button {
+	margin-top: 4px;
+	height: 50px;
+}
+
+body.large_tools #tools_top label {
+	font-size: 2em;
+	margin-top: 5px;
+}
+
+body.large_tools #tool_bold, 
+body.large_tools #tool_italic {
+	font-size: 4.5em;
+}
+
+body.large_tools #svg_editor select {
+	font-size: 2em;
+}
+
+body.large_tools #svg_editor #sidepanels {
+	top: 125px;
+}
+
+
+
+
 </style>
 <script>
 $(function() {
@@ -57,11 +213,12 @@ $(function() {
 			'zoom':'zoom.png',
 			
 			'clone':'clone.png',
+			'delete':'delete.png',
 
 			'arrow_right':'flyouth.png'
 		},
 		placement: {
-			'#tool_clear':'new_image',
+			'#tool_clear,#layer_new':'new_image',
 			'#tool_save':'save',
 			'#tool_source':'source',
 			'#tool_docprops':'docprops',
@@ -76,17 +233,49 @@ $(function() {
 			'#tools_ellipse_show':'circle',
 			'#tools_rect_show':'square',
 			'#tool_path':'path',
-			'#tool_text':'text',
+			'#tool_text,#layer_rename':'text',
 			'#tool_image':'image',
 			'#tool_zoom':'zoom',
 			
 			'#tool_clone,#tool_clone_multi,#tool_node_clone':'clone',
+			'#layer_delete,#tool_delete,#tool_delete_multi,#tool_node_delete':'delete',
+			'#tool_move_top':'move_top',
+			'#tool_move_bottom':'move_bottom',
 			
-			'.flyout_arrow_horiz':'arrow_right'
+			'#layer_up':'go_up',
+			'#layer_down':'go_down',
+			
+			'.flyout_arrow_horiz':'arrow_right',
+			'.dropdown button':'arrow_down'
 		},
-		callback: function() {
-			$('.flyout_arrow_horiz .svg_icon').width(5).height(5);
+		resize: {
+			'.flyout_arrow_horiz .svg_icon': 5,
+			'.layer_button .svg_icon': 14,
+			'.dropdown button .svg_icon': 7
 		}
+	});
+	
+	$('#iconsize').change(function() {
+		var size, size_num;
+		switch ( this.value ) {
+		case 's':
+			size = 'small', size_num = 16;
+			break;
+		case 'm':
+			size = 'medium', size_num = 24;
+			break;
+		case 'l':
+			size = 'large', size_num = 48;
+			break;
+		}
+		
+		$('body').removeClass('small_tools large_tools');
+		if(size != 'medium') $('body').addClass(size + '_tools');
+		$('.tool_button, .push_button, .tool_button_current, .tool_button_disabled')
+		.find('.svg_icon').each(function() {
+			this.setAttribute('width',size_num);
+			this.setAttribute('height',size_num);
+		});
 	});
 });
 </script>
@@ -125,11 +314,11 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<div id="layerpanel">
 		<h3 id="layersLable">Layers</h3>
 		<fieldset id="layerbuttons">
-			<img id="layer_new" class="layer_button" src="images/clear.png" alt="New Layer" title="New Layer"/>
-			<img id="layer_delete" class="layer_button" src="images/delete.png" alt="Delete Layer" title="Delete Layer"/>
-			<img id="layer_rename" class="layer_button" src="images/view-refresh.png" alt="Rename Layer" title="Rename Layer"/>
-			<img id="layer_up" class="layer_button" src="images/go-up.png" alt="Move Layer up" title="Move Layer Up"/>
-			<img id="layer_down" class="layer_button" src="images/go-down.png" alt="Move Layer Down" title="Move Layer Down"/>
+			<div id="layer_new" class="layer_button"  title="New Layer"></div>
+			<div id="layer_delete" class="layer_button"  title="Delete Layer"></div>
+			<div id="layer_rename" class="layer_button"  title="Rename Layer"></div>
+			<div id="layer_up" class="layer_button"  title="Move Layer Up"></div>
+			<div id="layer_down" class="layer_button"  title="Move Layer Down"></div>
 		</fieldset>
 		
 		<table id="layerlist">
@@ -175,10 +364,10 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<div id="selected_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<div class="push_button" id="tool_clone" title="Clone Element [C]"></div>
-		<img class="push_button" id="tool_delete" src="images/delete.png" title="Delete Element [Delete/Backspace]" alt="Delete"/>
+		<div class="push_button" id="tool_delete" title="Delete Element [Delete/Backspace]"></div>
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="push_button" id="tool_move_top" src="images/move_top.png" title="Move to Top [Shift+Up]" alt="Top"/>
-		<img class="push_button" id="tool_move_bottom" src="images/move_bottom.png" title="Move to Bottom [Shift+Down]" alt="Bottom"/>
+		<div class="push_button" id="tool_move_top" title="Move to Top [Shift+Up]"></div>
+		<div class="push_button" id="tool_move_bottom" title="Move to Bottom [Shift+Down]"></div>
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
 
 		<label id="group_opacityLabel" class="selected_tool" for="group_opacity">opac:</label>
@@ -204,7 +393,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<div id="multiselected_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<div class="push_button" id="tool_clone_multi" title="Clone Elements [C]"></div>
-		<img class="push_button" id="tool_delete_multi" src="images/delete.png" title="Delete Selected Elements [Delete/Backspace]" alt="Delete"/>
+		<div class="push_button" id="tool_delete_multi" title="Delete Selected Elements [Delete/Backspace]"></div>
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
 		<img class="push_button" id="tool_group" src="images/shape_group.png" title="Group Elements [G]" alt="Group"/>
 		<div class="push_button" id="tool_alignleft" title="Align Left"></div>
@@ -297,8 +486,8 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 		<input id="text_x" class="text_tool attr_changer" title="Change text X coordinate" size="3" data-attr="x"/>
 		<label class="text_tool">y:</label>
 		<input id="text_y" class="text_tool attr_changer" title="Change text Y coordinate" size="3" data-attr="y"/>
-		<img class="tool_button" id="tool_bold" src="images/bold.png" title="Bold Text [B]" alt="Bold"/>
-		<img class="tool_button" id="tool_italic" src="images/italic.png" title="Italic Text [I]" alt="Italic"/>
+		<div class="tool_button" id="tool_bold" title="Bold Text [B]"><span></span>B</div>
+		<div class="tool_button" id="tool_italic" title="Italic Text [I]"><span></span>i</div>
 		<select id="font_family" class="text_tool" title="Change Font Family">
 			<option selected="selected" value="serif">serif</option>
 			<option value="sans-serif">sans-serif</option>
@@ -322,7 +511,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			<option id="curve_segments" value="6">Curve</option>
 		</select>
 		<div class="tool_button" id="tool_node_clone" title="Clone Node"></div>
-		<img class="tool_button" id="tool_node_delete" src="images/delete.png" title="Delete Node" alt="Delete"/>
+		<div class="tool_button" id="tool_node_delete" title="Delete Node"></div>
 	</div>
 	
 </div> <!-- tools_top -->
@@ -462,7 +651,15 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 						<option id="fitToContent" value="content">Fit to Content</option>
 					</select>
 				</label>
-				
+			</fieldset>
+			
+			<fieldset id="change_iconsize">
+				<legend id="svginfo_icons">Icon size</legend>
+					<select id="iconsize">
+						<option id="icon_small" value="s">Small</option>
+						<option id="icon_medium" value="m" selected="selected">Medium</option>
+						<option id="icon_large" value="l">Large</option>
+					</select>
 			</fieldset>
 		</div>
 	</div>
