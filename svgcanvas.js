@@ -593,10 +593,12 @@ function BatchCommand(text) {
 	var SVGEditTransformList = function(elem) {
 		this._elem = elem || null;
 		this._xforms = [];
+		// TODO: how do we capture the undo-ability in the changed transform list?
 		this._update = function() {
 			var tstr = "";
-			for (var i = 0; i < _this.numberOfItems; ++i) {
-				var xform = _this.getItem(i);
+			var concatMatrix = svgroot.createSVGMatrix();
+			for (var i = 0; i < this.numberOfItems; ++i) {
+				var xform = this._list.getItem(i);
 				var m = xform.matrix;
 				switch (xform.type) {
 					case 2: // translate
@@ -606,30 +608,34 @@ function BatchCommand(text) {
 						if (m.a == m.d) tstr += "scale(" + m.a + ") ";
 						else tstr += "scale(" + m.a + "," + m.d + ") ";
 						break;
-					case 4: // rotate (with a translate?)
-						// TODO: can i get the center right here and now from bbox?
-						tstr += "rotate(" + xform.angle + ") ";
+					case 4: // rotate (with a translate)
+						var bbox = canvas.getBBox(this._elem);
+						var K = 1 - m.a;
+						var ty = ( K * m.f + m.b*m.e ) / ( K*K + m.b*m.b );
+						var tx = ( m.e - m.b * ty ) / K;
+						console.log("wooo!  tx=" + tx + ", ty=" + ty);
+						tstr += "rotate(" + xform.angle + " " + [tx,ty].join(",") + ") ";
 						break;
 				}
 			}
-			_this._elem.setAttribute("transform", tstr);
+			this._elem.setAttribute("transform", tstr);
 		};
-		_this = this;
+		this._list = this;
 		
 		this.numberOfItems = 0;
 		this.clear = function() { 
-			_this.numberOfItems = 0;
-			_this._xforms = [];
+			this.numberOfItems = 0;
+			this._xforms = [];
 		};
 		
 		this.initialize = function(newItem) {
-			_this.numberOfItems = 1;
-			_this._xforms = [newItem];
+			this.numberOfItems = 1;
+			this._xforms = [newItem];
 		};
 		
 		this.getItem = function(index) {
-			if (index < _this.numberOfItems && index >= 0) {
-				return _this._xforms[index];
+			if (index < this.numberOfItems && index >= 0) {
+				return this._xforms[index];
 			}
 			return null;
 		};
@@ -637,23 +643,23 @@ function BatchCommand(text) {
 		this.insertItemBefore = function(newItem, index) {
 			var retValue = null;
 			if (index >= 0) {
-				if (index < _this.numberOfItems) {
-					var newxforms = new Array(_this.numberOfItems + 1);
+				if (index < this.numberOfItems) {
+					var newxforms = new Array(this.numberOfItems + 1);
 					// TODO: use array copying and slicing
 					for ( var i = 0; i < index; ++i) {
-						newxforms[i] = _this._xforms[i];
+						newxforms[i] = this._xforms[i];
 					}
 					newxforms[i] = newItem;
-					for ( var j = i+1; i < _this.numberOfItems; ++j, ++i) {
-						newxforms[j] = _this._xforms[i];
+					for ( var j = i+1; i < this.numberOfItems; ++j, ++i) {
+						newxforms[j] = this._xforms[i];
 					}
-					_this.numberOfItems++;
-					_this._xforms = newxforms;
+					this.numberOfItems++;
+					this._xforms = newxforms;
 					retValue = newItem;
-					_this._update();
+					this._list._update();
 				}
 				else {
-					retValue = _this.appendItem(newItem);
+					retValue = this._list.appendItem(newItem);
 				}
 			}
 			return retValue;
@@ -661,36 +667,36 @@ function BatchCommand(text) {
 		
 		this.replaceItem = function(newItem, index) {
 			var retValue = null;
-			if (index < _this.numberOfItems && index >= 0) {
-				_this._xforms[index] = newItem;
+			if (index < this.numberOfItems && index >= 0) {
+				this._xforms[index] = newItem;
 				retValue = newItem;
-				_this._update();
+				this._list._update();
 			}
 			return retValue;
 		};
 		
 		this.removeItem = function(index) {
 			var retValue = null;
-			if (index < _this.numberOfItems && index >= 0) {
-				var retValue = _this._xforms[index];
-				var newxforms = new Array(_this.numberOfItems - 1);
+			if (index < this.numberOfItems && index >= 0) {
+				var retValue = this._xforms[index];
+				var newxforms = new Array(this.numberOfItems - 1);
 				for (var i = 0; i < index; ++i) {
-					newxforms[i] = _this._xforms[i];
+					newxforms[i] = this._xforms[i];
 				}
-				for (var j = i; j < _this.numberOfItems-1; ++j, ++i) {
-					newxforms[j] = _this._xforms[i+1];
+				for (var j = i; j < this.numberOfItems-1; ++j, ++i) {
+					newxforms[j] = this._xforms[i+1];
 				}
-				_this.numberOfItems--;
-				_this._xforms = newxforms;
-				_this._update();
+				this.numberOfItems--;
+				this._xforms = newxforms;
+				this._list._update();
 			}
 			return retValue;
 		};
 		
 		this.appendItem = function(newItem) {
-			_this._xforms.push(newItem);
-			_this.numberOfItems++;
-			_this._update();
+			this._xforms.push(newItem);
+			this.numberOfItems++;
+			this._list._update();
 			return newItem;
 		};
 	};
