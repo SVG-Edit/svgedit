@@ -4070,8 +4070,8 @@ function BatchCommand(text) {
 			
 			if(bbox) {
 				batchCmd = new BatchCommand("Fit Canvas to Content");
-				canvas.addToSelection(canvas.getVisibleElements());
-				$.each(selectedElements, function(i, item) {
+				var visEls = canvas.getVisibleElements();
+				$.each(visEls, function(i, item) {
 					var sel_bb = item.getBBox();
 					var cmd = recalculateDimensions(item, {
 						x: sel_bb.x - bbox.x,
@@ -4081,7 +4081,6 @@ function BatchCommand(text) {
 					});
 					batchCmd.addSubCommand(cmd);
 				});
-				canvas.clearSelection();
 				x = Math.round(bbox.width);
 				y = Math.round(bbox.height);
 			} else {
@@ -5028,10 +5027,19 @@ function BatchCommand(text) {
 			if(elem.tagName == 'g') {
 				return canvas.getStrokedBBox(elem.childNodes);
 			} else {
-				return elem.getBBox();
+				try {
+					return elem.getBBox();
+				} catch(e) { return null; }
 			}
 		}
-		var full_bb = getCheckedBBox(elems[0]);
+		var full_bb;
+		$.each(elems, function() {
+			if(full_bb) return;
+			full_bb = getCheckedBBox(this);
+		});
+		
+		if(elems.length == 1) return full_bb;
+		
 		var max_x = full_bb.x + full_bb.width;
 		var max_y = full_bb.y + full_bb.height;
 		var min_x = full_bb.x;
@@ -5048,6 +5056,7 @@ function BatchCommand(text) {
 		
 		$.each(elems, function(i, elem) {
 			var cur_bb = getCheckedBBox(elem);
+			if(!cur_bb) return;
 			var offset = getOffset(elem);
 			min_x = Math.min(min_x, cur_bb.x - offset);
 			min_y = Math.min(min_y, cur_bb.y - offset);
@@ -5058,6 +5067,7 @@ function BatchCommand(text) {
 		
 		$.each(elems, function(i, elem) {
 			var cur_bb = getCheckedBBox(elem);
+			if(!cur_bb) return;
 			var offset = getOffset(elem);
 			max_x = Math.max(max_x, cur_bb.x + cur_bb.width + offset);
 			max_y = Math.max(max_y, cur_bb.y + cur_bb.height + offset);
@@ -5069,15 +5079,14 @@ function BatchCommand(text) {
 	}
 
 	this.getVisibleElements = function(parent, includeBBox) {
-		if(!parent) parent = svgcontent;
+		if(!parent) parent = $(svgcontent).children(); // Prevent layers from being included
 		
 		var contentElems = [];
-		$(parent).find('*').each(function(i, elem) {
-			if(elem.nodeName == 'g') return;
+		$(parent).children().each(function(i, elem) {
 			try {
-				var box = canvas.getBBox(elem);
+				var box = elem.getBBox();
 				if (box) {
-					var item = includeBBox?{'elem':elem, 'bbox':box}:elem;
+					var item = includeBBox?{'elem':elem, 'bbox':canvas.getStrokedBBox([elem])}:elem;
 					contentElems.push(item);
 				}
 			} catch(e) {}
