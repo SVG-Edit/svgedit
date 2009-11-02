@@ -5059,7 +5059,7 @@ function BatchCommand(text) {
 				}
 			} catch(e) {}
 		});
-		return contentElems;
+		return contentElems.reverse();
 	}
 	
 	this.cycleElement = function(next) {
