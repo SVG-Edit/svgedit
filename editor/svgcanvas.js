@@ -1,4 +1,14 @@
 /*
+	TODOs for TransformList:
+	
+	* Fix moving/resizing/rotating of groups (pummel the transforms down to the children?)
+	* Fix rotation transforms after scaling
+	* Fix proper selector box sizing
+	* Ensure resizing in negative direction works
+	* Ensure ungrouping works
+	* Ensure undo still works properly
+*/
+/*
 	TODOs for Localizing:
 	
 	- rename tool_path to tool_fhpath in all localization files (already updated in UI and script)
@@ -319,7 +329,7 @@ function BatchCommand(text) {
 		this.rotateGripConnector = this.selectorGroup.appendChild( addSvgElementFromJson({
 							"element": "line",
 							"attr": {
-								"id": ("selectorGrip_rotate_connector_" + this.id),
+								"id": ("selectorGrip_rotateconnector_" + this.id),
 								"stroke": "blue",
 								"stroke-width": "1"
 							}
@@ -342,7 +352,7 @@ function BatchCommand(text) {
 				addSvgElementFromJson({
 					"element": "rect",
 					"attr": {
-						"id": ("selectorGrip_" + dir + "_" + this.id),
+						"id": ("selectorGrip_resize_" + dir + "_" + this.id),
 						"fill": "blue",
 						"width": 6,
 						"height": 6,
@@ -356,13 +366,6 @@ function BatchCommand(text) {
 						"display":"none"
 					}
 				}) );
-			$('#'+this.selectorGrips[dir].id).mousedown( function() {
-				current_mode = "resize";
-				current_resize_mode = this.id.substr(13,this.id.indexOf("_",13)-13);
-			});
-			$('#selectorGrip_rotate_'+id).mousedown( function() {
-				current_mode = "rotate";
-			});
 		}
 
 		this.showGrips = function(show) {
@@ -463,8 +466,8 @@ function BatchCommand(text) {
 			if (angle) {
 				var cx = round(oldbox.x + oldbox.width/2) * current_zoom
 					cy = round(oldbox.y + oldbox.height/2) * current_zoom;
-				this.selectorGroup.setAttribute("transform", "rotate("+angle+" " + cx + "," + cy + ")");
 			}
+			this.selectorGroup.setAttribute("transform", transform);
 			svgroot.unsuspendRedraw(sr_handle);
 		};
 
@@ -622,7 +625,6 @@ function BatchCommand(text) {
 						var K = 1 - m.a;
 						var ty = ( K * m.f + m.b*m.e ) / ( K*K + m.b*m.b );
 						var tx = ( m.e - m.b * ty ) / K;
-						console.log("wooo!  tx=" + tx + ", ty=" + ty);
 						tstr += "rotate(" + xform.angle + " " + [tx,ty].join(",") + ") ";
 						break;
 				}
@@ -1175,7 +1177,8 @@ function BatchCommand(text) {
 		  transforms around
 		- non-uniform scales (sx!=sy) preserve the shape and orientation ONLY if the shape has
 		  not been rotated, thus we will reduce non-uniform scales when we haven't rotated the shape
-		  but otherwise we are forced to keep them around
+		  but otherwise we are forced to keep them around (a consequence of this is that scale
+		  transforms will only be present in the final list with a rotate)
 		- uniform scales (sx==sy) preserve the shape and orientation, so we can ALWAYS remove
 		  uniform scales, even when the shape has been rotated
 		- does the removal of translate or scale transforms affect the rotational center of 
@@ -1214,10 +1217,355 @@ function BatchCommand(text) {
 	var pathMap = [ 0, 'z', 'M', 'M', 'L', 'L', 'C', 'C', 'Q', 'Q', 'A', 'A', 
 					'L', 'L', 'L', 'L', // TODO: be less lazy below and map them to h and v
 					'S', 'S', 'T', 'T' ];
+	var truePathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a', 
+						'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
 
 	// this function returns the command which resulted from the selected change
+	// TODO: use suspendRedraw() and unsuspendRedraw() around this function
+	// TODO: get rid of selectedBBox
 	var recalculateDimensions = function(selected,selectedBBox) {
 		if (selected == null || selectedBBox == null) return null;
+		
+		// if this element had no transforms, we are done
+		var tlist = canvas.getTransformList(selected);
+		if (tlist.numberOfItems == 0) return null;
+
+		// we know we have some transforms, so set up return variable		
+		var batchCmd = new BatchCommand("Transform");
+		
+		// store initial values that will be affected by reducing the transform list
+		var changes = {}, initial = null;
+		switch (selected.tagName)
+		{
+			case "line":
+				changes["x1"] = selected.getAttribute("x1");
+				changes["y1"] = selected.getAttribute("y1");
+				changes["x2"] = selected.getAttribute("x2");
+				changes["y2"] = selected.getAttribute("y2");
+				break;
+			case "circle":
+				changes["cx"] = selected.getAttribute("cx");
+				changes["cy"] = selected.getAttribute("cy");
+				changes["r"] = selected.getAttribute("r");
+				break;
+			case "ellipse":
+				changes["cx"] = selected.getAttribute("cx");
+				changes["cy"] = selected.getAttribute("cy");
+				changes["rx"] = selected.getAttribute("rx");
+				changes["ry"] = selected.getAttribute("ry");
+				break;
+			case "rect":
+			case "image":
+				changes["x"] = selected.getAttribute("x");
+				changes["y"] = selected.getAttribute("y");
+				changes["width"] = selected.getAttribute("width");
+				changes["height"] = selected.getAttribute("height");
+				break;
+			case "text":
+				changes["x"] = selected.getAttribute("x");
+				changes["y"] = selected.getAttribute("y");
+				break;
+			case "polygon":
+			case "polyline":
+				initial = {};
+				initial["points"] = selected.getAttribute("points");
+				var list = selected.points;
+				var len = list.numberOfItems;
+				changes["points"] = new Array(len);
+				for (var i = 0; i < len; ++i) {
+					var pt = list.getItem(i);
+					changes["points"][i] = {x:pt.x,y:pt.y};
+				}
+				break;
+			case "path":
+				initial = {};
+				initial["d"] = selected.getAttribute("d");
+				var segList = selected.pathSegList;
+				var len = segList.numberOfItems;
+				changes["d"] = new Array(len);
+				for (var i = 0; i < len; ++i) {
+					var seg = segList.getItem(i);
+					changes["d"][i] = {
+						type: seg.pathSegType,
+						x: seg.x,
+						y: seg.y,
+						x1: seg.x1,
+						y1: seg.y1,
+						x2: seg.x2,
+						y2: seg.y2,
+						r1: seg.r1,
+						r2: seg.r2,
+						angle: seg.angle,
+						largeArcFlag: seg.largeArcFlag,
+						sweepFlag: seg.sweepFlag
+					};
+				}
+				break;
+		} // switch on element type to get initial values
+		
+		// if we haven't created an initial array in polygon/polyline/path, then 
+		// make a copy of initial values and include the transform
+		if (initial == null) {
+			initial = jQuery.extend(true, {}, changes);
+		}
+		// save the transform value too
+		initial["transform"] = selected.getAttribute("transform");
+		
+		// reduce the transform list here...
+		var box = canvas.getBBox(selected);
+		var newcenter = {x: (box.x+box.width/2), y: (box.y+box.height/2)};
+		var currentMatrix = {a:1, b:0, c:0, d:1, e:0, f:0};
+		var n = tlist.numberOfItems;
+		var tx = 0, ty = 0, sx = 1, sy = 1, r = 0.0;
+		while (n--) {
+			var xform = tlist.getItem(n);
+			var m = xform.matrix;
+			// if translate...
+			var remap = null, scalew = null, scaleh = null;
+			switch (xform.type) {
+				case 2: // TRANSLATE
+					remap = function(x,y) { return transformPoint(x,y,m); };
+					scalew = function(w) { return w; }
+					scaleh = function(h) { return h; }
+					break;
+				case 3: // SCALE
+					remap = function(x,y) { return transformPoint(x,y,m); };
+					scalew = function(w) { return m.a * w; }
+					scaleh = function(h) { return m.d * h; }
+					break;
+				case 4: // ROTATE
+					// TODO: re-center the rotation and then continue (we cannot reduce a rotate)
+					var newrot = svgroot.createSVGTransform();
+					newrot.setRotate(xform.angle, newcenter.x, newcenter.y);
+//					tlist.replaceItem(newrot, n);
+					// fall through to the default: continue below
+				default:
+					continue;
+			}
+			newcenter = remap(box.x+box.width/2, box.y+box.height/2);
+			var bpt = remap(box.x,box.y);
+			box.x = bpt.x;
+			box.y = bpt.y;
+			box.width = scalew(box.width);
+			box.height = scaleh(box.height);
+			
+			switch (selected.tagName)
+			{
+				case "g":
+					var children = selected.childNodes;
+					var c = children.length;
+					while (c--) {
+						var child = children.item(c);
+						if (child.nodeType == 1) {
+							try {
+								// TODO: how to transfer the transform list of the group to each child
+								var childBox = child.getBBox();
+								var pt = remap(childBox.x,childBox.y),
+									w = scalew(childBox.width),
+									h = scaleh(childBox.height);
+								console.log([pt.x,pt.y,w,h]);
+								childBox.x = pt.x; childBox.y = pt.y;
+								childBox.width = w; childBox.height = h;
+								batchCmd.addSubCommand(recalculateDimensions(child, childBox));
+							} catch(e) {}
+						}
+					}
+					break;
+				case "line":
+					var pt1 = remap(changes["x1"],changes["y1"]),
+						pt2 = remap(changes["x2"],changes["y2"]);
+					changes["x1"] = pt1.x;
+					changes["y1"] = pt1.y;
+					changes["x2"] = pt2.x;
+					changes["y2"] = pt2.y;
+					break;
+				case "circle":
+					var c = remap(changes["cx"],changes["cy"]);
+					changes["cx"] = c.x;
+					changes["cy"] = c.y;
+					// take the minimum of the new selected box's dimensions for the new circle radius
+					changes["r"] = round(Math.min(box.width/2,box.height/2));
+					break;
+				case "ellipse":
+					var c = remap(changes["cx"],changes["cy"]);
+					changes["cx"] = c.x;
+					changes["cy"] = c.y;
+					changes["rx"] = scalew(changes["rx"]);
+					changes["ry"] = scaleh(changes["ry"]);
+					console.log(changes);
+					break;
+				case "rect":
+				case "image":
+					var pt1 = remap(changes["x"],changes["y"]);
+					changes["x"] = pt1.x;
+					changes["y"] = pt1.y;
+					changes["width"] = scalew(changes["width"]);
+					changes["height"] = scaleh(changes["height"]);
+					break;
+				case "text":
+					var pt1 = remap(changes["x"],changes["y"]);
+					changes["x"] = pt1.x;
+					changes["y"] = pt1.y;
+					break;
+				case "polygon":
+				case "polyline":
+					var len = changes["points"].length;
+					for (var i = 0; i < len; ++i) {
+						var pt = changes["points"][i];
+						pt = remap(pt.x,pt.y);
+						changes["points"][i].x = pt.x;
+						changes["points"][i].y = pt.y;
+					}
+					break;
+				case "path":
+					var len = changes["d"].length;
+					var firstseg = changes["d"][0];
+					var firstpt = remap(firstseg.x,firstseg.y);
+					changes["d"][0].x = firstpt.x;
+					changes["d"][0].y = firstpt.y;
+					for (var i = 1; i < len; ++i) {
+						var seg = changes["d"][i];
+						var type = seg.type;
+						// if absolute or first segment, we want to remap x, y, x1, y1, x2, y2
+						// if relative, we want to scalew, scaleh
+						if (type % 2 == 0) { // absolute
+							var pt = remap(seg.x,seg.y),
+								pt1 = remap(seg.x1,seg.y1),
+								pt2 = remap(seg.x2,seg.y2);
+							seg.x = pt.x;
+							seg.y = pt.y;
+							seg.x1 = pt1.x;
+							seg.y1 = pt1.y;
+							seg.x2 = pt2.x;
+							seg.y2 = pt2.y;
+							seg.r1 = scalew(seg.r1),
+							seg.r2 = scaleh(seg.r2);
+						}
+						else { // relative
+							seg.x = scalew(seg.x);
+							seg.y = scaleh(seg.y);
+							seg.x1 = scalew(seg.x1);
+							seg.y1 = scaleh(seg.y1);
+							seg.x2 = scalew(seg.x2);
+							seg.y2 = scaleh(seg.y2);
+							seg.r1 = scalew(seg.r1),
+							seg.r2 = scaleh(seg.r2);
+						}
+					} // for each segment
+					break;
+			} // switch on element type to get initial values
+			
+			// we have eliminated the transform, so remove it from the list
+			tlist.removeItem(n);
+			
+			// now loop through the other transforms and adjust accordingly
+			for ( var j = n; j < tlist.numberOfItems; ++j) {
+				var changed_xform = tlist.getItem(j);
+				switch (changed_xform.type) {
+					// TODO: TRANSLATE, SCALE?
+					case 4: // rotate
+						var newrot = svgroot.createSVGTransform();
+						newrot.setRotate(changed_xform.angle, newcenter.x, newcenter.y);
+						tlist.replaceItem(newrot, j);
+						break;
+				}
+			}
+		} // looping for each transform
+		
+		// now we have a set of changes and an applied reduced transform list
+		// we apply the changes directly to the DOM
+		switch (selected.tagName)
+		{
+			case "line":
+			case "circle":
+			case "rect":
+			case "ellipse":
+			case "image":
+			case "text":
+				assignAttributes(selected, changes, 1000);
+				break;
+			case "polyline":
+			case "polygon":
+				var len = changes["points"].length;
+				var pstr = "";
+				for (var i = 0; i < len; ++i) {
+					var pt = changes["points"][i];
+					pstr += pt.x + "," + pt.y + " ";
+				}
+				selected.setAttribute("points", pstr);
+				break;
+			case "path":
+				var dstr = "";
+				var len = changes["d"].length;
+				for (var i = 0; i < len; ++i) {
+					var seg = changes["d"][i];
+					var type = seg.type;
+					dstr += truePathMap[type];
+					switch(type) {
+						case 13: // relative horizontal line (h)
+						case 12: // absolute horizontal line (H)
+							dstr += seg.x + " ";
+							break;
+						case 15: // relative vertical line (v)
+						case 14: // absolute vertical line (V)
+							dstr += seg.y + " ";
+							break;
+						case 3: // relative move (m)
+						case 5: // relative line (l)
+						case 19: // relative smooth quad (t)
+						case 2: // absolute move (M)
+						case 4: // absolute line (L)
+						case 18: // absolute smooth quad (T)
+							dstr += seg.x + "," + seg.y + " ";
+							break;
+						case 7: // relative cubic (c)
+						case 6: // absolute cubic (C)
+							dstr += seg.x1 + "," + seg.y1 + " " + seg.x2 + "," + seg.y2 + " " +
+								 seg.x + "," + seg.y + " ";
+							break;
+						case 9: // relative quad (q) 
+						case 8: // absolute quad (Q)
+							dstr += seg.x + "," + seg.y + " " + seg.x1 + "," + seg.y1 + " ";
+							break;
+						case 11: // relative elliptical arc (a)
+						case 10: // absolute elliptical arc (A)
+							dstr += seg.r1 + "," + seg.r2 + " " + seg.angle + " " + seg.largeArcFlag +
+								" " + seg.sweepFlag + " " + seg.x + "," + seg.y + " ";
+							break;
+						case 17: // relative smooth cubic (s)
+						case 16: // absolute smooth cubic (S)
+							dstr += seg.x + "," + seg.y + " " + seg.x2 + "," + seg.y2 + " ";
+							break;
+					}
+				}
+				selected.setAttribute("d", dstr);
+				break;
+		}
+
+		// remove any stray identity transforms
+		if (tlist && tlist.numberOfItems > 0) {
+			var removeItems = [];
+			var k = tlist.numberOfItems;
+			while (k--) {
+				var xform = tlist.getItem(k);
+				if (xform.type == 0 || xform.type == 1) {
+					tlist.removeItem(k);
+				}
+			}
+		}
+		
+		// if the transform list has been emptied, remove it
+		if (tlist.numberOfItems == 0) {
+			selected.removeAttribute("transform");
+		}
+		
+		batchCmd.addSubCommand(new ChangeElementCommand(selected, initial));
+		
+		return batchCmd;
+		// -----
+		// TODO: once all functionality has been restored to the above function code then
+		// remove the below (old) function code
+
 		var box = canvas.getBBox(selected);
 
 		// if we have not moved/resized, then immediately leave
@@ -1736,10 +2084,24 @@ function BatchCommand(text) {
 			mouse_target = svgroot;
 		}
 		// if it is a selector grip, then it must be a single element selected, 
-		// set the mouse_target to that
+		// set the mouse_target to that and update the mode to rotate/resize
 		if (mouse_target.parentNode == selectorManager.selectorParentGroup && selectedElements[0] != null) {
+			var gripid = evt.target.id;
+			var griptype = gripid.substr(0,20);
+			// rotating
+			if (griptype == "selectorGrip_rotate_") {
+				current_mode = "rotate";
+			}
+			// resizing
+			else if(griptype == "selectorGrip_resize_") {
+				current_mode = "resize";
+				current_resize_mode = gripid.substr(20,gripid.indexOf("_",20)-20);
+				console.log(current_resize_mode);
+			}
 			mouse_target = selectedElements[0];
 		}
+		
+		var tlist = canvas.getTransformList(mouse_target);
 
 		switch (current_mode) {
 			case "select":
@@ -1758,6 +2120,10 @@ function BatchCommand(text) {
 						current_path = null;
 					}
 					// else if it's a path, go into pathedit mode in mouseup
+
+					// insert a dummy transform so if the element is moved it will have
+					// a transform to use for its translate
+					tlist.insertItemBefore(svgroot.createSVGTransform(), 0);
 				}
 				else {
 					canvas.clearSelection();
@@ -1795,6 +2161,11 @@ function BatchCommand(text) {
 				started = true;
 				start_x = x;
 				start_y = y;
+				// append three dummy transforms to the tlist so that
+				// we can translate,scale,translate in mousemove
+				tlist.appendItem(svgroot.createSVGTransform());
+				tlist.appendItem(svgroot.createSVGTransform());
+				tlist.appendItem(svgroot.createSVGTransform());
 				break;
 			case "fhellipse":
 			case "fhrect":
@@ -2029,7 +2400,7 @@ function BatchCommand(text) {
     	y = mouse_y / current_zoom;
     
     	evt.preventDefault();
-    
+    	    
 		switch (current_mode)
 		{
 			case "select":
@@ -2040,14 +2411,33 @@ function BatchCommand(text) {
 					var dx = x - start_x;
 					var dy = y - start_y;
 					if (dx != 0 || dy != 0) {
-						var ts = ["translate(",dx,",",dy,")"].join('');
 						var len = selectedElements.length;
 						for (var i = 0; i < len; ++i) {
 							var selected = selectedElements[i];
 							if (selected == null) break;
 							var box = canvas.getBBox(selected);
+//							box.x += dx; box.y += dy;
 							selectedBBoxes[i].x = box.x + dx;
 							selectedBBoxes[i].y = box.y + dy;
+
+							// update the dummy transform in our transform list
+							// to be a translate
+    						var tlist = canvas.getTransformList(selected);
+							var xform = svgroot.createSVGTransform();
+							xform.setTranslate(dx,dy);
+							tlist.replaceItem(xform, 0);
+							
+							// update our internal bbox that we're tracking while dragging
+							selectorManager.requestSelector(selected).resize(box);
+							
+							// now transform delta mouse movement into a translation in the
+							// coordinate space of the mouse target
+//							var startpt = transformPoint(start_x, start_y, mouse_target_ctm);
+//							var endpt = transformPoint(x, y, mouse_target_ctm);
+//							dx = endpt.x - startpt.x;
+//							dy = endpt.y - startpt.y;
+
+							/*
 							var angle = canvas.getRotationAngle(selected);
 							if (angle) {
 								var cx = round(box.x + box.width/2),
@@ -2062,8 +2452,7 @@ function BatchCommand(text) {
 								selected.setAttribute("transform", ts);
 								box.x += dx; box.y += dy;
 							}
-							// update our internal bbox that we're tracking while dragging
-							selectorManager.requestSelector(selected).resize(box);
+							*/
 						}
 					}
 				}
@@ -2152,16 +2541,19 @@ function BatchCommand(text) {
 					tx = width;
 				}
 				
-				// find the rotation transform and prepend it
-				var ts = [" translate(", (left+tx), ",", (top+ty), ") scale(", sx, ",", sy,
-							") translate(", -(left+tx), ",", -(top+ty), ")"].join('');
-				if (angle) {
-					var cx = round(left+width/2),
-						cy = round(top+height/2);
-					ts = ["rotate(", angle, " ", cx, ",", cy, ")", ts].join('')
-				}
-				selected.setAttribute("transform", ts);
-
+				// update the transform list with translate,scale,translate
+				var tlist = canvas.getTransformList(selected);
+				var translateOrigin = svgroot.createSVGTransform(),
+					scale = svgroot.createSVGTransform(),
+					translateBack = svgroot.createSVGTransform();
+				translateOrigin.setTranslate(-(left+tx),-(top+ty));
+				scale.setScale(sx,sy);
+				translateBack.setTranslate(left+tx,top+ty);
+				var N = tlist.numberOfItems;
+				tlist.replaceItem(translateBack, N-3);
+				tlist.replaceItem(scale, N-2);
+				tlist.replaceItem(translateOrigin, N-1);
+				
 				var selectedBBox = selectedBBoxes[0];				
 
 				// reset selected bbox top-left position
@@ -2341,11 +2733,12 @@ function BatchCommand(text) {
 					cy = round(box.y + box.height/2);
 				var angle = round(((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360);
 				canvas.setRotationAngle(angle<-180?(360+angle):angle, true);
+				call("changed", selectedElements);
 				break;
 			default:
 				break;
 		}
-	};
+	}; // mouseMove()
 
 	var shortFloat = function(val) {
 		var digits = 5;
@@ -2914,7 +3307,7 @@ function BatchCommand(text) {
 		var mouse_y = pt.y;
 		var x = mouse_x / current_zoom;
 		var y = mouse_y / current_zoom;
-		
+				
 		started = false;
 		var element = svgdoc.getElementById(getId());
 		var keep = false;
@@ -3324,6 +3717,8 @@ function BatchCommand(text) {
 				if (!batchCmd.isEmpty()) { 
 					addCommandToHistory(batchCmd);
 				}
+				// perform recalculation to weed out any stray identity transforms that might get stuck
+				recalculateAllSelectedDimensions();
 				break;
 			default:
 				console.log("Unknown mode in mouseup: " + current_mode);
@@ -3334,6 +3729,7 @@ function BatchCommand(text) {
 			element = null;
 			
 			var t = evt.target;
+			
 			// if this element is in a group, go up until we reach the top-level group 
 			// just below the layer groups
 			// TODO: once we implement links, we also would have to check for <a> elements
@@ -4400,13 +4796,17 @@ function BatchCommand(text) {
 	// returns an object that behaves like a SVGTransformList
 	this.getTransformList = function(elem) {
 		if (isWebkit) {
-			var t = svgTransformLists[elem];
+			var t = svgTransformLists[elem.id];
 			if (!t) {
-				t = svgTransformLists[elem] = new SVGEditTransformList(elem);
+				svgTransformLists[elem.id] = new SVGEditTransformList(elem);
+				t = svgTransformLists[elem.id];
 			}
 			return t;
 		}
-		return elem.transform.baseVal;
+		else if (elem.transform) {
+			return elem.transform.baseVal;
+		}
+		return null;
 	};
 
 	this.getBBox = function(elem) {
@@ -4428,20 +4828,13 @@ function BatchCommand(text) {
 
 	this.getRotationAngle = function(elem) {
 		var selected = elem || selectedElements[0];
-		if(!elem.transform) return null;
 		// find the rotation transform (if any) and set it
-		var tlist = selected.transform.baseVal;
+		var tlist = canvas.getTransformList(selected);
 		var t = tlist.numberOfItems;
-		var foundRot = false;
 		while (t--) {
 			var xform = tlist.getItem(t);
 			if (xform.type == 4) {
 				return xform.angle;
-			} else if (xform.type == 1) {
-				// Matrix transformation. Extract the rotation. (for Webkit)
-				var angle = Math.round( Math.acos(xform.matrix.a) * 180.0 / Math.PI );
-				if (xform.matrix.b < 0) angle = -angle;
-				return angle;
 			}
 		}
 		return 0;
@@ -4453,18 +4846,35 @@ function BatchCommand(text) {
 		// calculated bbox's center can change depending on the angle
 		var bbox = elem.getBBox();
 		var cx = round(bbox.x+bbox.width/2), cy = round(bbox.y+bbox.height/2);
-		var rotate = "rotate(" + val + " " + cx + "," + cy + ")";
+		var tlist = canvas.getTransformList(elem);
+		// if we are not rotated yet, insert a dummy xform
+		if (tlist.numberOfItems == 0 || tlist.getItem(0).type != 4) {
+			tlist.insertItemBefore(svgroot.createSVGTransform(), 0);
+		}
+		
+		var newrot = tlist.getItem(0);
+		newrot.setRotate(val, cx, cy);
+
 		if (preventUndo) {
-			this.changeSelectedAttributeNoUndo("transform", rotate, selectedElements);
+			// we don't need to undo, just update the transform list
+			tlist.replaceItem(newrot, 0);
 		}
 		else {
-			this.changeSelectedAttribute("transform",rotate,selectedElements);
+			// FIXME: we need to do it, then undo it, then redo it so it can be undo-able! :)
+			// TODO: figure out how to make changes to transform list undo-able cross-browser
+			var oldTransform = elem.getAttribute("transform");
+			tlist.replaceItem(newrot, 0);
+			var newTransform = elem.getAttribute("transform");
+			elem.setAttribute("transform", oldTransform);
+			this.changeSelectedAttribute("transform",newTransform,selectedElements);
 		}
 		var pointGripContainer = document.getElementById("pathpointgrip_container");
 		if(elem.nodeName == "path" && pointGripContainer) {
-			setPointContainerTransform(rotate);
+			setPointContainerTransform(elem.getAttribute("transform"));
 		}
-		selectorManager.requestSelector(selectedElements[0]).updateGripCursors(val);
+		var selector = selectorManager.requestSelector(selectedElements[0]);
+		selector.resize(bbox);
+		selector.updateGripCursors(val);
 	};
 
 	this.each = function(cb) {
@@ -4700,8 +5110,7 @@ function BatchCommand(text) {
 								'elements': elements};
 	};
 	
-	// This function makes the changes to the elements and then 
-	// fires the 'changed' event 
+	// This function makes the changes to the elements
 	this.changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		var handle = svgroot.suspendRedraw(1000);
 		if(current_mode == 'pathedit') {
@@ -4774,11 +5183,6 @@ function BatchCommand(text) {
 			} // if oldValue != newValue
 		} // for each elem
 		svgroot.unsuspendRedraw(handle);	
-
-		// Only call "changed" if really necessary, as it updates the toolbar each time
-		if(current_mode == 'rotate') {
-			call("changed", elems);
-		}
 	};
 	
 	// This function returns a BatchCommand object which summarizes the
