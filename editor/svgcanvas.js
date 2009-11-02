@@ -411,6 +411,15 @@ function BatchCommand(text) {
 			}
 			var oldbox = canvas.getBBox(this.selectedElement);
 			var bbox = cur_bbox || oldbox;
+			if(selected.tagName == 'g') {
+				// The bbox for a group does not include stroke vals, so we
+				// get the bbox based on its children. 
+				var stroked_bbox = canvas.getStrokedBBox(selected.childNodes);
+
+				$.each(bbox, function(key, val) {
+					bbox[key] = bbox[key] + stroked_bbox[key] - oldbox[key];
+				});
+			}
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
 			var sr_handle = svgroot.suspendRedraw(100);
 			l*=current_zoom;
@@ -2946,7 +2955,10 @@ function BatchCommand(text) {
 						var len = selectedElements.length;
 						for	(var i = 0; i < len; ++i) {
 							if (selectedElements[i] == null) break;
-							selectorManager.requestSelector(selectedElements[i]).resize(selectedBBoxes[i]);
+							if(selectedElements[i].tagName != 'g') {
+								// Not needed for groups (incorrectly resizes elems), possibly not needed at all?
+								selectorManager.requestSelector(selectedElements[i]).resize(selectedBBoxes[i]);
+							}
 						}
 					}
 					// no change in position/size, so maybe we should move to pathedit
@@ -5010,11 +5022,21 @@ function BatchCommand(text) {
 		// TODO: Get correct BBoxes for rotated elements
 		if(!elems) elems = canvas.getVisibleElements();
 		if(!elems.length) return false;
-		var full_bb = elems[0].getBBox();
+		
+		// Make sure the expected BBox is returned if the element is a group
+		var getCheckedBBox = function(elem) {
+			if(elem.tagName == 'g') {
+				return canvas.getStrokedBBox(elem.childNodes);
+			} else {
+				return elem.getBBox();
+			}
+		}
+		var full_bb = getCheckedBBox(elems[0]);
 		var max_x = full_bb.x + full_bb.width;
 		var max_y = full_bb.y + full_bb.height;
 		var min_x = full_bb.x;
 		var min_y = full_bb.y;
+		
 		var getOffset = function(elem) {
 			var sw = elem.getAttribute("stroke-width");
 			var offset = 0;
@@ -5025,7 +5047,7 @@ function BatchCommand(text) {
 		}
 		
 		$.each(elems, function(i, elem) {
-			var cur_bb = elem.getBBox();
+			var cur_bb = getCheckedBBox(elem);
 			var offset = getOffset(elem);
 			min_x = Math.min(min_x, cur_bb.x - offset);
 			min_y = Math.min(min_y, cur_bb.y - offset);
@@ -5035,7 +5057,7 @@ function BatchCommand(text) {
 		full_bb.y = min_y;
 		
 		$.each(elems, function(i, elem) {
-			var cur_bb = elem.getBBox();
+			var cur_bb = getCheckedBBox(elem);
 			var offset = getOffset(elem);
 			max_x = Math.max(max_x, cur_bb.x + cur_bb.width + offset);
 			max_y = Math.max(max_y, cur_bb.y + cur_bb.height + offset);
