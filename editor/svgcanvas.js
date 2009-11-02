@@ -3508,7 +3508,8 @@ function BatchCommand(text) {
 					}
 				}
 				// if child has a bbox (i.e. not a <title> or <defs> element), then it is an orphan
-				else if(canvas.getBBox(child)) {
+				else if(canvas.getBBox(child) && child.nodeName != 'defs') { // Opera returns a BBox for defs
+					var bb = canvas.getBBox(child);
 					orphans.push(child);
 				}
 			}
@@ -5180,9 +5181,9 @@ function BatchCommand(text) {
 			current_layer.appendChild(elem);
 			batchCmd.addSubCommand(new InsertElementCommand(elem));
 		}
-
+		
 		if (!batchCmd.isEmpty()) {
-			this.addToSelection(copiedElements);
+			this.addToSelection(copiedElements.reverse()); // Need to reverse for correct selection-adding
 			this.moveSelectedElements(20,20,false);
 			addCommandToHistory(batchCmd);
 			call("selected", selectedElements);
