@@ -2422,10 +2422,14 @@ function BatchCommand(text) {
 
 							// update the dummy transform in our transform list
 							// to be a translate
-    						var tlist = canvas.getTransformList(selected);
 							var xform = svgroot.createSVGTransform();
+							var tlist = canvas.getTransformList(selected);
 							xform.setTranslate(dx,dy);
-							tlist.replaceItem(xform, 0);
+							if(tlist.numberOfItems) {
+								tlist.replaceItem(xform, 0);
+							} else {
+								tlist.appendItem(xform);
+							}
 							
 							// update our internal bbox that we're tracking while dragging
 							selectorManager.requestSelector(selected).resize(box);
