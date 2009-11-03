@@ -465,8 +465,8 @@ function BatchCommand(text) {
 			if (angle) {
 				var cx = round(oldbox.x + oldbox.width/2) * current_zoom
 					cy = round(oldbox.y + oldbox.height/2) * current_zoom;
+				this.selectorGroup.setAttribute("transform", "rotate("+angle+" " + cx + "," + cy + ")");
 			}
-			this.selectorGroup.setAttribute("transform", transform);
 			svgroot.unsuspendRedraw(sr_handle);
 		};
 
