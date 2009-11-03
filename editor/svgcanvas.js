@@ -1,9 +1,8 @@
 /*
 	TODOs for TransformList:
 	
-	* Fix moving/resizing/rotating of groups (pummel the transforms down to the children?)
-	* Fix rotation transforms after scaling
 	* Fix proper selector box sizing
+	* Fix moving/resizing/rotating of groups (pummel the transforms down to the children?)
 	* Ensure resizing in negative direction works
 	* Ensure ungrouping works
 	* Ensure undo still works properly
@@ -1313,11 +1312,13 @@ function BatchCommand(text) {
 		
 		// reduce the transform list here...
 		var box = canvas.getBBox(selected);
-		var newcenter = {x: (box.x+box.width/2), y: (box.y+box.height/2)};
+		var origcenter = {x: (box.x+box.width/2), y: (box.y+box.height/2)};
+		var newcenter = {x: origcenter.x, y: origcenter.y};
 		var currentMatrix = {a:1, b:0, c:0, d:1, e:0, f:0};
 		var n = tlist.numberOfItems;
 		var tx = 0, ty = 0, sx = 1, sy = 1, r = 0.0;
 		while (n--) {
+			var bRemoveTransform = true;
 			var xform = tlist.getItem(n);
 			var m = xform.matrix;
 			// if translate...
@@ -1334,14 +1335,43 @@ function BatchCommand(text) {
 					scaleh = function(h) { return m.d * h; }
 					break;
 				case 4: // ROTATE
-					// TODO: re-center the rotation and then continue (we cannot reduce a rotate)
-					var newrot = svgroot.createSVGTransform();
-					newrot.setRotate(xform.angle, newcenter.x, newcenter.y);
-//					tlist.replaceItem(newrot, n);
+					// if the new center of the shape has moved, then 
+					// re-center the rotation, and determine the movement 
+					// offset required to keep the shape in the same place
+					if (origcenter.x != newcenter.x || origcenter.y != newcenter.y) {
+						var alpha = xform.angle * Math.PI / 180.0;
+			
+						// determine where the new rotated center should be
+						var dx = newcenter.x - origcenter.x,
+							dy = newcenter.y - origcenter.y,
+							r = Math.sqrt(dx*dx + dy*dy),
+							theta = Math.atan2(dy,dx) + alpha;
+						var cx = r * Math.cos(theta) + origcenter.x,
+							cy = r * Math.sin(theta) + origcenter.y;
+
+						dx = cx - newcenter.x;
+						dy = cy - newcenter.y;
+					
+						// TODO: fix this so that it determines the true translation
+						// required so that the rotational center lines up
+						remap = function(x,y) { 
+							return { x: x + dx, y: y + dy };
+						};
+						scalew = function(w) { return w; }
+						scaleh = function(h) { return h; }
+
+						bRemoveTransform = false;
+						var newrot = svgroot.createSVGTransform();
+						newrot.setRotate(xform.angle, cx, cy);
+						tlist.replaceItem(newrot, n);
+					}
+					break;
 					// fall through to the default: continue below
 				default:
 					continue;
 			}
+			if (!remap) continue;
+			
 			newcenter = remap(box.x+box.width/2, box.y+box.height/2);
 			var bpt = remap(box.x,box.y);
 			box.x = bpt.x;
@@ -1363,7 +1393,6 @@ function BatchCommand(text) {
 								var pt = remap(childBox.x,childBox.y),
 									w = scalew(childBox.width),
 									h = scaleh(childBox.height);
-								console.log([pt.x,pt.y,w,h]);
 								childBox.x = pt.x; childBox.y = pt.y;
 								childBox.width = w; childBox.height = h;
 								batchCmd.addSubCommand(recalculateDimensions(child, childBox));
@@ -1392,7 +1421,6 @@ function BatchCommand(text) {
 					changes["cy"] = c.y;
 					changes["rx"] = scalew(changes["rx"]);
 					changes["ry"] = scaleh(changes["ry"]);
-					console.log(changes);
 					break;
 				case "rect":
 				case "image":
@@ -1456,7 +1484,9 @@ function BatchCommand(text) {
 			} // switch on element type to get initial values
 			
 			// we have eliminated the transform, so remove it from the list
-			tlist.removeItem(n);
+			if (bRemoveTransform) {
+				tlist.removeItem(n);
+			}
 			
 			// now loop through the other transforms and adjust accordingly
 			for ( var j = n; j < tlist.numberOfItems; ++j) {
@@ -2096,7 +2126,6 @@ function BatchCommand(text) {
 			else if(griptype == "selectorGrip_resize_") {
 				current_mode = "resize";
 				current_resize_mode = gripid.substr(20,gripid.indexOf("_",20)-20);
-				console.log(current_resize_mode);
 			}
 			mouse_target = selectedElements[0];
 		}
