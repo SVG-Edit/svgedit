@@ -1145,6 +1145,29 @@ function BatchCommand(text) {
 		return out.join('');
 	}; // end svgToString()
 
+	// importNode, like cloneNode, causes the comma-to-period
+	// issue in Opera/Win/non-en. Thankfully we can compare to the original XML
+	// and simply use the original value when necessary
+	var fixOperaXML = function(elem, orig_el) {
+		var x_attrs = elem.attributes;
+		$.each(x_attrs, function(i, attr) {
+			if(attr.nodeValue.indexOf(',') == -1) return;
+			// attr val has comma, so let's get the good value
+			var ns = attr.nodeName == 'href' ? xlinkns : 
+				attr.prefix == "xml" ? xmlns : null;
+			var good_attrval = orig_el.getAttribute(attr.nodeName);
+			elem.setAttributeNS(ns, attr.nodeName, good_attrval);
+		});
+
+		var childs = elem.childNodes;
+		var o_childs = orig_el.childNodes;
+		$.each(childs, function(i, child) {
+			if(child.nodeType == 1) {
+				fixOperaXML(child, o_childs[i]);
+			}
+		});
+	}
+
 	var recalculateAllSelectedDimensions = function() {
 		var text = (current_resize_mode == "none" ? "position" : "size");
 		var batchCmd = new BatchCommand(text);
@@ -1413,7 +1436,7 @@ function BatchCommand(text) {
 					changes["cx"] = c.x;
 					changes["cy"] = c.y;
 					// take the minimum of the new selected box's dimensions for the new circle radius
-					changes["r"] = round(Math.min(box.width/2,box.height/2));
+					changes["r"] = Math.min(box.width/2,box.height/2);
 					break;
 				case "ellipse":
 					var c = remap(changes["cx"],changes["cy"]);
@@ -1884,7 +1907,7 @@ function BatchCommand(text) {
 				'cy': pt.y,
 	
 				// take the minimum of the new selected box's dimensions for the new circle radius
-				'r': round(Math.min(selectedBBox.width/2,selectedBBox.height/2))
+				'r': Math.min(selectedBBox.width/2,selectedBBox.height/2)
 			}, 1000);
 			break;
 		case "ellipse":
@@ -3875,6 +3898,12 @@ function BatchCommand(text) {
         
     	    // set new svg document
         	svgcontent = svgroot.appendChild(svgdoc.importNode(newDoc.documentElement, true));
+        	
+        	// Fix XML for Opera/Win/Non-EN
+			if(window.opera) {
+				fixOperaXML(svgcontent, newDoc.documentElement);
+			}
+        	
 			svgcontent.setAttribute('id', 'svgcontent');
 			// determine proper size
 			var w, h;
