@@ -322,20 +322,10 @@ function svg_edit_setup() {
 
 		if ( (elem && !is_node)	|| multiselected) {
 			// update the selected elements' layer
-			$('#selLayerNames')[0].removeAttribute('disabled');
-			var opts = $('#selLayerNames option');
-			for (var i = 0; i < opts.length; ++i) {
-				var opt = opts[i];
-				if (currentLayer == opt.textContent) {
-					opt.setAttribute('selected', 'selected');
-				}
-				else {
-					opt.removeAttribute('selected');
-				}
-			}
+			$('#selLayerNames').removeAttr('disabled').val(currentLayer);
 		}
 		else {
-			$('#selLayerNames')[0].setAttribute('disabled', 'disabled');
+			$('#selLayerNames').attr('disabled', 'disabled');
 		}
 		
 	};
@@ -1515,7 +1505,7 @@ function svg_edit_setup() {
 				appendstr += "<td class=\"layervis layerinvis\"/><td class=\"layername\" >" + name + "</td></tr>";
 			}
 			layerlist.append(appendstr);
-			selLayerNames.append("<option values=\"" + name + "\">" + name + "</option>");
+			selLayerNames.append("<option value=\"" + name + "\">" + name + "</option>");
 		}
 		// handle selection of layer
 		$('#layerlist td.layername')
