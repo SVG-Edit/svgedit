@@ -21,7 +21,10 @@
 <script type="text/javascript" src="http://svg-icon-loader.googlecode.com/svn/trunk/jquery.svgicons.js"></script>
 
 <style>
-#svg_editor .tool_button {
+#svg_editor .tool_button,
+#svg_editor #tools_rect .tool_flyout_button,
+#svg_editor #tools_ellipse .tool_flyout_button {
+	padding: 2px;
 	width: 24px;
 	height: 24px;
 }
@@ -71,8 +74,32 @@
 	border-bottom: 1px solid #808080;
 }
 
+
+#svg_editor #tool_square,  
+#svg_editor #tool_rect,
+#svg_editor #tool_fhrect,
+#svg_editor #tool_circle,  
+#svg_editor #tool_ellipse,
+#svg_editor #tool_fhellipse {
+	background: none;
+}
+
 </style>
 <script>
+/*
+TODO for SVG icons:
+
+- Make alignment SVG icons
+- Make layer eye SVG icon
+- Make layer icons bigger for l and xl (not s) 
+- Fix SVG logo to work with icon-loader
+- Make no-color (red X) SVG icon
+- Make flyout buttons work in Opera
+- Fix spinner on large icons (probably a lot of work)
+- Other sizing tweaks
+
+
+*/
 $(function() {
 	$.svgIcons('images/svg_edit_icons.svg', {
 		w:24, h:24,
@@ -92,16 +119,28 @@ $(function() {
 			'pencil':'fhpath.png',
 			'pen':'line.png',
 			'square':'square.png',
+			'rect':'rect.png',
+			'fh_rect':'freehand-square.png',
 			'circle':'circle.png',
-			'path':'polygon.png',
+			'ellipse':'ellipse.png',
+			'fh_ellipse':'freehand-circle.png',
+			'path':'path.png',
 			'text':'text.png',
 			'image':'image.png',
 			'zoom':'zoom.png',
 			
 			'clone':'clone.png',
 			'delete':'delete.png',
+			'group':'shape_group.png',
+			'ungroup':'shape_ungroup.png',
+			'move_top':'move_top.png',
+			'move_bottom':'move_bottom.png',
 
-			'arrow_right':'flyouth.png'
+			'go_up':'go-up.png',
+			'go_down':'go-down.png',
+
+			'arrow_right':'flyouth.png',
+			'arrow_down':'dropdown.gif'
 		},
 		placement: {
 			'#tool_clear,#layer_new':'new_image',
@@ -116,8 +155,12 @@ $(function() {
 			'#tool_select':'select',
 			'#tool_fhpath':'pencil',
 			'#tool_line':'pen',
-			'#tools_ellipse_show':'circle',
-			'#tools_rect_show':'square',
+			'#tool_square,#tools_rect_show':'square',
+			'#tool_rect':'rect',
+			'#tool_fhrect':'fh_rect',
+			'#tool_circle,#tools_ellipse_show':'circle',
+			'#tool_ellipse':'ellipse',
+			'#tool_fhellipse':'fh_ellipse',
 			'#tool_path':'path',
 			'#tool_text,#layer_rename':'text',
 			'#tool_image':'image',
@@ -127,6 +170,8 @@ $(function() {
 			'#layer_delete,#tool_delete,#tool_delete_multi,#tool_node_delete':'delete',
 			'#tool_move_top':'move_top',
 			'#tool_move_bottom':'move_bottom',
+			'#tool_group':'group',
+			'#tool_ungroup':'ungroup',
 			
 			'#layer_up':'go_up',
 			'#layer_down':'go_down',
@@ -141,15 +186,98 @@ $(function() {
 		}
 	});
 	
+	
+	/* Unchanged, just here because they're private methods */
+	var flyoutspeed = 1250;
+	var toolButtonClick = function(button, fadeFlyouts) {
+		if ($(button).hasClass('tool_button_disabled')) return false;
+		var fadeFlyouts = fadeFlyouts || 'normal';
+		$('.tools_flyout').fadeOut(fadeFlyouts);
+		$('#styleoverrides').text('');
+		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
+		$(button).addClass('tool_button_current');
+		// when a tool is selected, we should deselect any currently selected elements
+		svgCanvas.clearSelection();
+		return true;
+	};
+	
+	// New function to add
+	var setIcon = function(holder_sel, id) {
+		var icon = $.getSvgIcon(id).clone();
+		var holder = $(holder_sel);
+		icon[0].setAttribute('width',holder.width());
+		icon[0].setAttribute('height',holder.height());
+		holder.empty().append(icon);
+	}
+	
+	// Change in last line of each of these.
+	var clickSquare = function(){
+		if (toolButtonClick('#tools_rect_show', flyoutspeed)) {
+			flyoutspeed = 'normal';
+			svgCanvas.setMode('square');
+		}
+		setIcon('#tools_rect_show','square');
+	};
+	
+	var clickRect = function(){
+		if (toolButtonClick('#tools_rect_show')) {
+			svgCanvas.setMode('rect');
+		}
+		setIcon('#tools_rect_show','rect');
+	};
+	
+	var clickFHRect = function(){
+		if (toolButtonClick('#tools_rect_show')) {
+			svgCanvas.setMode('fhrect');
+		}
+		setIcon('#tools_rect_show','fh_rect');
+	};
+	
+	var clickCircle = function(){
+		if (toolButtonClick('#tools_ellipse_show', flyoutspeed)) {
+			flyoutspeed = 'normal';
+			svgCanvas.setMode('circle');
+		}
+		setIcon('#tools_ellipse_show','circle');
+	};
+
+	var clickEllipse = function(){
+		if (toolButtonClick('#tools_ellipse_show')) {
+			svgCanvas.setMode('ellipse');
+		}
+		setIcon('#tools_ellipse_show','ellipse');
+	};
+
+	var clickFHEllipse = function(){
+		if (toolButtonClick('#tools_ellipse_show')) {
+			svgCanvas.setMode('fhellipse');
+		}
+		setIcon('#tools_ellipse_show','fh_ellipse');
+	};
+
+	// Bind replacements (no need to move over)
+	$('#tool_square').unbind('mouseup').mouseup(clickSquare);
+	$('#tool_rect').unbind('mouseup').mouseup(clickRect);
+	$('#tool_fhrect').unbind('mouseup').mouseup(clickFHRect);
+	$('#tool_circle').unbind('mouseup').mouseup(clickCircle);
+	$('#tool_ellipse').unbind('mouseup').mouseup(clickEllipse);
+	$('#tool_fhellipse').unbind('mouseup').mouseup(clickFHEllipse);
+	
+	// This should only occur on docprops "OK", not immediately
 	$('#iconsize').change(function() {
 		var size = this.value;
-		var icon_sizes = { s:16, m:24, xl:48	};
+		var icon_sizes = { s:16, m:24, l:32, xl:48 };
 		
 		// Change icon size
-		$('.tool_button, .push_button, .tool_button_current, .tool_button_disabled')
+		$('.tool_button, .push_button, .tool_button_current, .tool_button_disabled, .tool_flyout_button')
 		.find('.svg_icon').each(function() {
 			this.setAttribute('width',icon_sizes[size]);
 			this.setAttribute('height',icon_sizes[size]);
+		});
+		
+		$('.flyout_arrow_horiz .svg_icon').each(function() {
+			this.setAttribute('width',icon_sizes[size]/3);
+			this.setAttribute('height',icon_sizes[size]/3);
 		});
 		
 		// Note that all rules will be prefixed with '#svg_editor' when parsed
@@ -157,7 +285,9 @@ $(function() {
 			".tool_button,\
 			.push_button,\
 			.tool_button_current,\
-			.tool_button_disabled": {
+			.tool_button_disabled,\
+			#tools_rect .tool_flyout_button,\
+			#tools_ellipse .tool_flyout_button": {
 				'width': {s: '16px', l: '32px', xl: '48px'},
 				'height': {s: '16px', l: '32px', xl: '48px'},
 				'padding': {s: '1px', l: '2px', xl: '3px'}
@@ -171,25 +301,30 @@ $(function() {
 			},
 			"div#workarea": {
 				'left': {s: '27px', l: '46px', xl: '65px'},
-				'top': {s: '50px', l: '88px', xl: '125px'}
+				'top': {s: '50px', l: '88px', xl: '125px'},
+				'bottom': {s: '50px', l: '60px', xl: '65px'}
 			},
 			"#tools_bottom": {
-				'left': {s: '50px', l: '57.5', xl: '65px'}
+				'left': {s: '50px', l: '57.5', xl: '65px'},
+				'height': {s: '50px', l: '57.5', xl: '65px'}
 			},
-			"#tools_top input": {
+			"#tools_top input, #tools_bottom input": {
 				'margin-top': {s: '2px', l: '4px', xl: '5px'},
 				'height': {s: '12px', l: '29px', xl: '45px'},
 				'border': {s: '1px solid #555', l: 'auto', xl: 'auto'},
 				'font-size': {s: '.9em', l: '1.7em', xl: '2.5em'}
 			},
+			"#tools_bottom input": {
+				'margin-top': {s: '6px', l: '4px', xl: '5px'},
+			},
 			"#tools_top > div, #tools_top": {
 				'line-height': {s: '17px', l: '34px', xl: '50px'}
 			}, 
-			"#tools_top .dropdown button": {
-				'margin-top': {s: '2px', l: '3px', xl: '4px'},
+			".dropdown button": {
+// 				'margin-top': {s: '2px', l: '3px', xl: '4px'},
 				'height': {s: '18px', l: '34px', xl: '50px'}
 			},
-			"#tools_top label": {
+			"#tools_top label, #tools_bottom label": {
 				'font-size': {s: '1em', l: '1.5em', xl: '2em'},
 				'margin-top': {s: '1px', l: '3px', xl: '5px'}
 			}, 
@@ -197,8 +332,14 @@ $(function() {
 				'font-size': {s: '1.5em', l: '3em', xl: '4.5em'}
 			},
 			"#sidepanels": {
-				'top': {s: '50px', l: '88px', xl: '125px'}
+				'top': {s: '50px', l: '88px', xl: '125px'},
+				'bottom': {s: '50px', l: '88px', xl: '125px'},
+			},
+			".flyout_arrow_horiz": {
+				'left': {s: '-5px', l: '5px', xl: '14px'},
+				'top': {s: '-13px', l: '-13px', xl: '-20px'}
 			}
+
 		};
 		
 		var rule_elem = $('#tool_size_rules');
@@ -219,9 +360,18 @@ $(function() {
 				style_str += '}';
 			});
 			rule_elem.text(style_str);
-			console.log(rule_elem.html());
 		}
+		
+		var pos = $('#tools_rect_show').offset();
+		$('#tools_rect').css({'left': pos.left, 'top': pos.top});
+		pos = $('#tools_ellipse_show').offset();
+		$('#tools_ellipse').css({'left': pos.left, 'top': pos.top});
 	});
+	
+	// For quick testing
+// 	window.setTimeout(function() {
+// 		$('#iconsize').val('s').change();
+// 	},1000);
 });
 </script>
 
@@ -340,7 +490,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 		<div class="push_button" id="tool_clone_multi" title="Clone Elements [C]"></div>
 		<div class="push_button" id="tool_delete_multi" title="Delete Selected Elements [Delete/Backspace]"></div>
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="push_button" id="tool_group" src="images/shape_group.png" title="Group Elements [G]" alt="Group"/>
+		<div class="push_button" id="tool_group" title="Group Elements [G]"></div>
 		<div class="push_button" id="tool_alignleft" title="Align Left"></div>
 		<div class="push_button" id="tool_aligncenter" title="Align Center"></div>
 		<div class="push_button" id="tool_alignright" title="Align Right"></div>
@@ -360,7 +510,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 
 	<div id="g_panel">
 		<img class="tool_sep" src="images/sep.png" alt="|"/>
-		<img class="push_button" id="tool_ungroup" src="images/shape_ungroup.png" title="Ungroup Elements [G]" alt="Ungroup"/>
+		<div class="push_button" id="tool_ungroup" title="Ungroup Elements [G]"></div>
 	</div>
 
 	<div id="rect_panel">
