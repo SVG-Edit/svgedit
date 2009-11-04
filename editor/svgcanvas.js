@@ -1,11 +1,10 @@
 /*
 	TODOs for TransformList:
 	
-	* Fix proper selector box sizing
 	* Fix moving/resizing/rotating of groups (pummel the transforms down to the children?)
-	* Ensure resizing in negative direction works
-	* Ensure ungrouping works
-	* Ensure undo still works properly
+	* Ensure resizing in negative direction works (nope! broken!)
+	* Ensure ungrouping works (surely broken)
+	* Ensure undo still works properly (nope! broken!)
 */
 /*
 	TODOs for Localizing:
@@ -399,6 +398,7 @@ function BatchCommand(text) {
 			};
 		};
 		
+		// TODO: update this function to not use the cur_bbox anymore
 		this.resize = function(cur_bbox) {
 			var selectedBox = this.selectorRect;
 			var selectedGrips = this.selectorGrips;
@@ -423,11 +423,52 @@ function BatchCommand(text) {
 				});
 			}
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
+
+			// loop and transform our bounding box until we reach our first rotation
+			var tlist = canvas.getTransformList(this.selectedElement);
+			var m = svgroot.createSVGMatrix();
+			var bFoundRotate = false;
+			var topleft = {x:l*current_zoom,y:t*current_zoom},
+				botright = {x:(l+w)*current_zoom,y:(t+h)*current_zoom};
+			var tstr = "";
+			var i = tlist.numberOfItems;
+			// loop backwards through the list of transforms and update the selector box coords
+			while (i--) {
+				var xform = tlist.getItem(i);
+				// once we hit a rotate, we stop doing this and just save up the transform
+				// string fragment and apply it to the selector group
+				if (xform.type == 4) {
+					bFoundRotate = true;
+				}
+				if (bFoundRotate) {
+					tstr = transformToString(xform) + " " + tstr;
+				}
+				else if(!bFoundRotate) {
+					m = matrixMultiply(xform.matrix,m);
+				}
+			}
+			
+			// apply the transforms
+			topleft = transformPoint( topleft.x, topleft.y, m );
+			botright = transformPoint( botright.x, botright.y, m );
+			
+			this.selectorGroup.setAttribute("transform", "");
+			this.selectorGroup.removeAttribute("transform");
+			if (tstr != "") {
+				this.selectorGroup.setAttribute("transform", tstr);
+			}
+			
+			l = topleft.x;
+			t = topleft.y;
+			w = botright.x - topleft.x;
+			h = botright.y - topleft.y;
+
+			// TODO: handle negative?
+
 			var sr_handle = svgroot.suspendRedraw(100);
-			l*=current_zoom;
-			t*=current_zoom;
-			w*=current_zoom;
-			h*=current_zoom;
+
+			// TODO: move to a path instead of a rect and then plot the
+			// grip coordinates more carefully
 			assignAttributes(selectedBox, {
 				'x': l,
 				'y': t,
@@ -454,19 +495,6 @@ function BatchCommand(text) {
 			assignAttributes(this.rotateGripConnector, { x1: l+w/2, y1: t-20, x2: l+w/2, y2: t });
 			assignAttributes(this.rotateGrip, { cx: l+w/2, cy: t-20 });
 			
-			// empty out the transform attribute
-			this.selectorGroup.setAttribute("transform", "");
-			this.selectorGroup.removeAttribute("transform");
-			
-			// align selector group with element coordinate axes
-			var elem = this.selectedElement;
-			var transform = elem.getAttribute("transform");
-			var angle = canvas.getRotationAngle(elem);
-			if (angle) {
-				var cx = round(oldbox.x + oldbox.width/2) * current_zoom
-					cy = round(oldbox.y + oldbox.height/2) * current_zoom;
-				this.selectorGroup.setAttribute("transform", "rotate("+angle+" " + cx + "," + cy + ")");
-			}
 			svgroot.unsuspendRedraw(sr_handle);
 		};
 
@@ -596,8 +624,8 @@ function BatchCommand(text) {
 	//		SVGTransform replaceItem ( in SVGTransform newItem, in unsigned long index )
 	//		SVGTransform removeItem ( in unsigned long index )
 	//		SVGTransform appendItem ( in SVGTransform newItem )
-	//		SVGTransform createSVGTransformFromMatrix ( in SVGMatrix matrix );
-	//		SVGTransform consolidate (  );
+	//		NOT IMPLEMENTED: SVGTransform createSVGTransformFromMatrix ( in SVGMatrix matrix );
+	//		NOT IMPLEMENTED: SVGTransform consolidate (  );
 	//	}
 	// **************************************************************************************
 	var svgTransformLists = {};
@@ -610,23 +638,7 @@ function BatchCommand(text) {
 			var concatMatrix = svgroot.createSVGMatrix();
 			for (var i = 0; i < this.numberOfItems; ++i) {
 				var xform = this._list.getItem(i);
-				var m = xform.matrix;
-				switch (xform.type) {
-					case 2: // translate
-						tstr += "translate(" + m.e + "," + m.f + ") ";
-						break;
-					case 3: // scale
-						if (m.a == m.d) tstr += "scale(" + m.a + ") ";
-						else tstr += "scale(" + m.a + "," + m.d + ") ";
-						break;
-					case 4: // rotate (with a translate)
-						var bbox = canvas.getBBox(this._elem);
-						var K = 1 - m.a;
-						var ty = ( K * m.f + m.b*m.e ) / ( K*K + m.b*m.b );
-						var tx = ( m.e - m.b * ty ) / K;
-						tstr += "rotate(" + xform.angle + " " + [tx,ty].join(",") + ") ";
-						break;
-				}
+				tstr += transformToString(xform) + " ";
 			}
 			this._elem.setAttribute("transform", tstr);
 		};
@@ -1375,8 +1387,6 @@ function BatchCommand(text) {
 						dx = cx - newcenter.x;
 						dy = cy - newcenter.y;
 					
-						// TODO: fix this so that it determines the true translation
-						// required so that the rotational center lines up
 						remap = function(x,y) { 
 							return { x: x + dx, y: y + dy };
 						};
@@ -2102,6 +2112,54 @@ function BatchCommand(text) {
 	var transformPoint = function(x, y, m) {
 		return { x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f};
 	};
+	
+	// This is provided because WebKit doesn't implement multiply() correctly
+	// on the SVGMatrix interface.  See https://bugs.webkit.org/show_bug.cgi?id=16062
+	// It returns a SVGMatrix that is the multiplication m1*m2.
+	var matrixMultiply = function(m1, m2) {
+		var a = m1.a*m2.a + m1.c*m2.b,
+			b = m1.b*m2.a + m1.d*m2.b,
+			c = m1.a*m2.c + m1.c*m2.d,
+			d = m1.b*m2.c + m1.d*m2.d,
+			e = m1.a*m2.e + m1.c*m2.f + m1.e,
+			f = m1.b*m2.e + m1.d*m2.f + m1.f;
+		var m = svgroot.createSVGMatrix();
+		m = m.translate(e,f);
+		m = m.scaleNonUniform(a,d);
+		m = m.skewX( Math.atan(c) );
+		m = m.skewY( Math.atan(b) );
+		return m;
+	}
+	
+	// This returns a single matrix Transform for a given Transform List
+	// (this is the equivalent of SVGTransformList.consolidate() but unlike
+	//  that method, this one does not modify the actual SVGTransformList)
+	var transformListToTransform = function(tlist) {
+		var m = svgroot.createSVGMatrix();
+		for (var i = 0; i < tlist.numberOfItems; ++i) {
+			m = matrixMultiply(m, tlist.getItem(i).matrix);
+		}
+		return svgroot.createSVGTransformFromMatrix(m);
+	};
+	
+	// converts a string equivalent of a SVGTransform
+	var transformToString = function(xform) {
+		var m = xform.matrix;
+		switch(xform.type) {
+			case 2: // TRANSFORM
+				return "translate(" + m.e + "," + m.f + ")";
+			case 3: // SCALE
+				if (m.a == m.d) return "scale(" + m.a + ")";
+				return "scale(" + m.a + "," + m.d + ")";
+			case 4: // ROTATE
+				// TODO: handle divide by zero here
+				var K = 1 - m.a;
+				var cy = ( K * m.f + m.b*m.e ) / ( K*K + m.b*m.b );
+				var cx = ( m.e - m.b * cy ) / K;
+				return "rotate(" + xform.angle + " " + cx + "," + cy + ")";
+			// TODO: matrix, skewX, skewY
+		}
+	};
 
 	// - when we are in a create mode, the element is added to the canvas
 	//   but the action is not recorded until mousing up
@@ -2484,7 +2542,7 @@ function BatchCommand(text) {
 							}
 							
 							// update our internal bbox that we're tracking while dragging
-							selectorManager.requestSelector(selected).resize(box);
+							selectorManager.requestSelector(selected).resize();//box); // TODO: remove box arg
 							
 							// now transform delta mouse movement into a translation in the
 							// coordinate space of the mouse target
@@ -2650,7 +2708,7 @@ function BatchCommand(text) {
 					}
 				}
 				
-				selectorManager.requestSelector(selected).resize(selectedBBox);
+				selectorManager.requestSelector(selected).resize();//selectedBBox); // TODO: remove box arg
 				break;
 			case "zoom":
 				x *= current_zoom;
@@ -3406,7 +3464,7 @@ function BatchCommand(text) {
 							if (selectedElements[i] == null) break;
 							if(selectedElements[i].tagName != 'g') {
 								// Not needed for groups (incorrectly resizes elems), possibly not needed at all?
-								selectorManager.requestSelector(selectedElements[i]).resize(selectedBBoxes[i]);
+								selectorManager.requestSelector(selectedElements[i]).resize();//selectedBBoxes[i]); // TODO: remove box arg
 							}
 						}
 					}
@@ -4919,7 +4977,13 @@ function BatchCommand(text) {
 
 		if (preventUndo) {
 			// we don't need to undo, just update the transform list
-			tlist.replaceItem(newrot, 0);
+			// Opera Bug: for whatever reason, sometimes Opera doesn't let you 
+			// replace the 0th transform (perhaps if it's an identity matrix?)
+			try {
+				tlist.replaceItem(newrot, 0);
+			} catch(e) {
+				tlist.insertItemBefore(newrot,0);
+			}
 		}
 		else {
 			// FIXME: we need to do it, then undo it, then redo it so it can be undo-able! :)
@@ -4935,7 +4999,7 @@ function BatchCommand(text) {
 			setPointContainerTransform(elem.getAttribute("transform"));
 		}
 		var selector = selectorManager.requestSelector(selectedElements[0]);
-		selector.resize(bbox);
+		selector.resize();//bbox); // TODO: remove box arg
 		selector.updateGripCursors(val);
 	};
 
@@ -5229,7 +5293,7 @@ function BatchCommand(text) {
 				}
 				// Timeout needed for Opera & Firefox
 				setTimeout(function() {
-					selectorManager.requestSelector(elem).resize(elem.getBBox());
+					selectorManager.requestSelector(elem).resize();//elem.getBBox()); // TODO: remove box arg
 				},0);
 				// if this element was rotated, and we changed the position of this element
 				// we need to update the rotational transform attribute 
@@ -5473,7 +5537,7 @@ function BatchCommand(text) {
 				if (cmd) {
 					batchCmd.addSubCommand(cmd);
 				}
-				selectorManager.requestSelector(selected).resize(selectedBBoxes[i]);
+				selectorManager.requestSelector(selected).resize();//selectedBBoxes[i]);
 			}
 		}
 		if (!batchCmd.isEmpty()) {
