@@ -26,6 +26,45 @@
 </svg>
 </foreignContent>
 
+<foreignContent id="rect">
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <defs>
+  <linearGradient y2="1" x2="1" y1="0.10156" x1="0.36328" id="svg_2">
+   <stop stop-opacity="1" stop-color="#ffffff" offset="0"/>
+   <stop stop-opacity="1" stop-color="#3b7e9b" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <title>Layer 1</title>
+  <rect transform="matrix(1, 0, 0, 1, 0, 0)" stroke="#000000" fill="url(#svg_2)" id="svg_1" height="10" width="20" y="6.5" x="1.5"/>
+ </g>
+</svg>
+</foreignContent>
+
+<foreignContent id="fh_rect">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+ <defs>
+  <linearGradient y2="1" x2="1" y1="0.10156" x1="0.36328" id="svg_2">
+   <stop stop-opacity="1" stop-color="#ffffff" offset="0"/>
+   <stop stop-opacity="1" stop-color="#3b7e9b" offset="1"/>
+  </linearGradient>
+  <linearGradient y2="0.3945" x2="0.6132" y1="0.1093" x1="0.3046" id="svg_9">
+   <stop stop-opacity="1" stop-color="#f9d225" offset="0"/>
+   <stop stop-opacity="1" stop-color="#bf5f00" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <title>Layer 1</title>
+  <rect stroke="#000000" stroke-width="2" fill="url(#svg_2)" id="svg_1" height="50" width="50" y="0.75" x="1.25"/>
+  <path stroke-width="2" stroke="#000000" fill="url(#svg_9)" id="svg_2" d="m31.5,0l-8.75,20.25l0.75,24l16.5,-16.5l6,-12.5"/>
+  <path stroke-width="2" stroke="#000000" fill="#fce0a9" id="svg_10" d="m39.5,28.5c-2,-9.25 -10.25,-11.75 -17,-7.4375l0.4843,24.4414z"/>
+  <path id="svg_11" stroke-width="2" stroke="#000000" fill="#000000" d="m26.9318,41.1745c-0.4491,-2.3511 -2.3021,-2.9866 -3.8181,-1.8905l0.1087,6.2126z"/>
+ </g>
+</svg>
+</foreignContent>
+
+
 <foreignContent id="circle">
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54 54" id="svgzoom">
  <defs>
@@ -34,8 +73,44 @@
    <stop stop-opacity="1" stop-color="#ff6666" offset="1.0"/>
   </linearGradient>
  </defs>
- <g style="pointer-events: all;">
-  <circle stroke-opacity="1" fill-opacity="1" style="pointer-events: all;" stroke-width="2" stroke="#000000" fill="url(#svg_4)" id="svg_1" r="23" cy="27" cx="27"/>
+ <g>
+  <circle stroke-opacity="1" fill-opacity="1" stroke-width="2" stroke="#000000" fill="url(#svg_4)" id="svg_1" r="23" cy="27" cx="27"/>
+ </g>
+</svg>
+</foreignContent>
+
+<foreignContent id="ellipse">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54 54" id="svgzoom">
+ <defs>
+  <linearGradient y2="1.0" x2="1.0" y1="0.1875" x1="0.171875" id="svg_4">
+   <stop stop-opacity="1" stop-color="#ffffff" offset="0.0"/>
+   <stop stop-opacity="1" stop-color="#ff6666" offset="1.0"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <ellipse stroke-opacity="1" fill-opacity="1" stroke-width="2" stroke="#000000" fill="url(#svg_4)" id="svg_1" rx="23" ry="12" cy="27" cx="27"/>
+ </g>
+</svg>
+</foreignContent>
+
+<foreignContent id="fh_ellipse">
+<svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient id="svg_9" x1="0.3046" y1="0.1093" x2="0.6132" y2="0.3945">
+   <stop offset="0" stop-color="#f9d225" stop-opacity="1"/>
+   <stop offset="1" stop-color="#bf5f00" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="svg_4" x1="0.17188" y1="0.1875" x2="1" y2="1">
+   <stop offset="0" stop-color="#ffffff" stop-opacity="1"/>
+   <stop offset="1" stop-color="#ff6666" stop-opacity="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <title>Layer 1</title>
+  <ellipse stroke-width="2" stroke="#000000" fill="url(#svg_4)" id="svg_1" rx="23" ry="12" cy="37" cx="27"/>
+  <path d="m31.5,0l-8.75,20.25l0.75,24l16.5,-16.5l6,-12.5" id="svg_2" fill="url(#svg_9)" stroke="#000000" stroke-width="2"/>
+  <path d="m39.5,28.5c-2,-9.25 -10.25,-11.75 -17,-7.4375l0.4843,24.4414z" id="svg_10" fill="#fce0a9" stroke="#000000" stroke-width="2"/>
+  <path d="m26.9318,41.1745c-0.4491,-2.3511 -2.3021,-2.9866 -3.8181,-1.8905l0.1087,6.2126z" fill="#000000" stroke="#000000" stroke-width="2" id="svg_11"/>
  </g>
 </svg>
 </foreignContent>
@@ -394,6 +469,62 @@
  </g>
 </svg>
 </foreignContent>
+
+<foreignContent id="group">
+<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <defs>
+  <linearGradient id="svg_90" x1="0" y1="0" x2="1" y2="1">
+   <stop offset="0" stop-color="#ccddff" stop-opacity="1"/>
+   <stop offset="1" stop-color="#789fed" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="svg_92" x1="0" y1="0" x2="1" y2="1">
+   <stop offset="0" stop-color="#70a1e5" stop-opacity="1"/>
+   <stop offset="1" stop-color="#4b6baf" stop-opacity="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <title>Layer 1</title>
+  <rect x="13.5" y="0.5" width="2" height="2" fill="#a0a0a0" stroke="#555555" id="svg_79"/>
+  <rect x="13.5" y="13.5" width="2" height="2" fill="#a0a0a0" stroke="#555555" id="svg_82"/>
+  <rect x="0.5" y="13.5" width="2" height="2" fill="#a0a0a0" stroke="#555555" id="svg_83"/>
+  <rect x="2.5" y="2.5" width="8" height="7" fill="#a0a0a0" stroke="#555555" id="svg_85"/>
+  <rect x="2.5" y="2.5" width="8" height="7" fill="url(#svg_90)" stroke="url(#svg_92)" id="svg_87"/>
+  <rect x="5.5" y="6.5" width="8" height="7" id="svg_84" fill="#7399d6" stroke="url(#svg_92)"/>
+  <rect x="0.5" y="0.5" width="2" height="2" id="svg_78" fill="#a0a0a0" stroke="#555555"/>
+ </g>
+</svg>
+</foreignContent>
+
+<foreignContent id="ungroup">
+<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <defs>
+  <linearGradient id="svg_90" x1="0" y1="0" x2="1" y2="1">
+   <stop offset="0" stop-color="#ccddff" stop-opacity="1"/>
+   <stop offset="1" stop-color="#789fed" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="svg_92" x1="0" y1="0" x2="1" y2="1">
+   <stop offset="0" stop-color="#70a1e5" stop-opacity="1"/>
+   <stop offset="1" stop-color="#4b6baf" stop-opacity="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <rect x="2.5" y="2.5" width="8" height="7" fill="url(#svg_90)" stroke="url(#svg_92)" id="svg_87"/>
+  <rect x="5.5" y="6.5" width="8" height="7" id="svg_84" fill="#7399d6" stroke="url(#svg_92)"/>
+  <title>Layer 1</title>
+  <rect x="9.5" y="1.5" width="2" height="2" fill="#a0a0a0" stroke="#555555" id="svg_79"/>
+  <rect x="1.5" y="8.5" width="2" height="2" fill="#a0a0a0" stroke="#555555" id="svg_83"/>
+  <rect x="1.5" y="1.5" width="2" height="2" id="svg_78" fill="#a0a0a0" stroke="#555555"/>
+  <rect id="svg_93" x="12.5" y="5.5" width="2" height="2" fill="#a0a0a0" stroke="#555555"/>
+  <rect id="svg_94" x="12.5" y="12.5" width="2" height="2" fill="#a0a0a0" stroke="#555555"/>
+  <rect id="svg_95" x="4.5" y="12.5" width="2" height="2" fill="#a0a0a0" stroke="#555555"/>
+  <rect id="svg_96" x="4.5" y="5.5" width="2" height="2" fill="#a0a0a0" stroke="#555555"/>
+ </g>
+</svg>
+</foreignContent>
+
+
 
 <g id="svg_eof"/>
 
