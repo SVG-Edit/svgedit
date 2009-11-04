@@ -21,7 +21,7 @@
 <script type="text/javascript" src="http://svg-icon-loader.googlecode.com/svn/trunk/jquery.svgicons.js"></script>
 
 <style>
-#svg_editor .tools_panel div.tool_button {
+#svg_editor .tool_button {
 	width: 24px;
 	height: 24px;
 }
@@ -70,120 +70,6 @@
 	border-right: 1px solid #808080;
 	border-bottom: 1px solid #808080;
 }
-
-/* Adjust size of all tools */
-body.small_tools #svg_editor .tool_button, 
-body.small_tools #svg_editor .push_button,
-body.small_tools #svg_editor .tool_button_current, 
-body.small_tools #svg_editor .tool_button_disabled {
-	width: 16px;
-	height: 16px;
-	padding: 1px;
-}
-
-body.small_tools #svg_editor .tool_sep {
-	height: 16px;
-}
-
-body.small_tools #svg_editor #tools_left {
-	width: 26px;
-	top: 50px;
-}
-
-body.small_tools #svg_editor div#workarea {
-	left: 27px;
-	top: 50px;
-}
-
-body.small_tools #svg_editor #tools_top input {
-	margin-top: 2px;
-	height: 12px;
-	border: 1px solid #555;
-	font-size: .9em;
-}
-
-body.small_tools #svg_editor #tools_top > div, #tools_top {
-	line-height: 17px;
-}
-
-body.small_tools #tools_top .dropdown button {
-	margin-top: 2px;
-	height: 18px;
-}
-
-body.small_tools #tools_top label {
-	margin-top: 1px;
-}
-
-body.small_tools #tool_bold, 
-body.small_tools #tool_italic {
-	font-size: 1.5em;
-}
-
-body.small_tools #svg_editor #sidepanels {
-	top: 50px;
-}
-
-
-body.large_tools #svg_editor .tool_button, 
-body.large_tools #svg_editor .push_button,
-body.large_tools #svg_editor .tool_button_current, 
-body.large_tools #svg_editor .tool_button_disabled {
-	width: 48px;
-	height: 48px;
-	padding: 3px;
-}
-
-body.large_tools #svg_editor .tool_sep {
-	height: 48px;
-}
-
-body.large_tools #svg_editor #tools_left {
-	width: 42px;
-	top: 125px;
-}
-
-body.large_tools #svg_editor div#workarea {
-	left: 65px;
-	top: 125px;
-}
-
-body.large_tools #svg_editor #tools_top input {
-	margin-top: 5px;
-	height: 45px;
-/*	border: 1px solid #555;*/
-	font-size: 2.5em;
-}
-
-body.large_tools #svg_editor #tools_top > div, #tools_top {
-	line-height: 50px;
-}
-
-body.large_tools #tools_top .dropdown button {
-	margin-top: 4px;
-	height: 50px;
-}
-
-body.large_tools #tools_top label {
-	font-size: 2em;
-	margin-top: 5px;
-}
-
-body.large_tools #tool_bold, 
-body.large_tools #tool_italic {
-	font-size: 4.5em;
-}
-
-body.large_tools #svg_editor select {
-	font-size: 2em;
-}
-
-body.large_tools #svg_editor #sidepanels {
-	top: 125px;
-}
-
-
-
 
 </style>
 <script>
@@ -256,26 +142,85 @@ $(function() {
 	});
 	
 	$('#iconsize').change(function() {
-		var size, size_num;
-		switch ( this.value ) {
-		case 's':
-			size = 'small', size_num = 16;
-			break;
-		case 'm':
-			size = 'medium', size_num = 24;
-			break;
-		case 'l':
-			size = 'large', size_num = 48;
-			break;
-		}
+		var size = this.value;
+		var icon_sizes = { s:16, m:24, xl:48	};
 		
-		$('body').removeClass('small_tools large_tools');
-		if(size != 'medium') $('body').addClass(size + '_tools');
+		// Change icon size
 		$('.tool_button, .push_button, .tool_button_current, .tool_button_disabled')
 		.find('.svg_icon').each(function() {
-			this.setAttribute('width',size_num);
-			this.setAttribute('height',size_num);
+			this.setAttribute('width',icon_sizes[size]);
+			this.setAttribute('height',icon_sizes[size]);
 		});
+		
+		// Note that all rules will be prefixed with '#svg_editor' when parsed
+		var cssResizeRules = {
+			".tool_button,\
+			.push_button,\
+			.tool_button_current,\
+			.tool_button_disabled": {
+				'width': {s: '16px', l: '32px', xl: '48px'},
+				'height': {s: '16px', l: '32px', xl: '48px'},
+				'padding': {s: '1px', l: '2px', xl: '3px'}
+			},
+			".tool_sep": {
+				'height': {s: '16px', l: '32px', xl: '48px'}
+			},
+			"#tools_left": {
+				'width': {s: '26px', l: '34px', xl: '42px'},
+				'top': {s: '50px', l: '87px', xl: '125px'}
+			},
+			"div#workarea": {
+				'left': {s: '27px', l: '46px', xl: '65px'},
+				'top': {s: '50px', l: '88px', xl: '125px'}
+			},
+			"#tools_bottom": {
+				'left': {s: '50px', l: '57.5', xl: '65px'}
+			},
+			"#tools_top input": {
+				'margin-top': {s: '2px', l: '4px', xl: '5px'},
+				'height': {s: '12px', l: '29px', xl: '45px'},
+				'border': {s: '1px solid #555', l: 'auto', xl: 'auto'},
+				'font-size': {s: '.9em', l: '1.7em', xl: '2.5em'}
+			},
+			"#tools_top > div, #tools_top": {
+				'line-height': {s: '17px', l: '34px', xl: '50px'}
+			}, 
+			"#tools_top .dropdown button": {
+				'margin-top': {s: '2px', l: '3px', xl: '4px'},
+				'height': {s: '18px', l: '34px', xl: '50px'}
+			},
+			"#tools_top label": {
+				'font-size': {s: '1em', l: '1.5em', xl: '2em'},
+				'margin-top': {s: '1px', l: '3px', xl: '5px'}
+			}, 
+			"#tool_bold, #tool_italic": {
+				'font-size': {s: '1.5em', l: '3em', xl: '4.5em'}
+			},
+			"#sidepanels": {
+				'top': {s: '50px', l: '88px', xl: '125px'}
+			}
+		};
+		
+		var rule_elem = $('#tool_size_rules');
+		if(!rule_elem.length) {
+			rule_elem = $('<style id="tool_size_rules"><\/style>').appendTo('head');
+		} else {
+			rule_elem.empty();
+		}
+		
+		if(size != 'm') {
+			var style_str = '';
+			$.each(cssResizeRules, function(selector, rules) {
+				selector = '#svg_editor ' + selector.replace(/,/g,', #svg_editor');
+				style_str += selector + '{';
+				$.each(rules, function(prop, values) {
+					style_str += (prop + ':' + values[size] + ';');
+				});
+				style_str += '}';
+			});
+			rule_elem.text(style_str);
+			console.log(rule_elem.html());
+		}
 	});
 });
 </script>
@@ -659,6 +604,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 						<option id="icon_small" value="s">Small</option>
 						<option id="icon_medium" value="m" selected="selected">Medium</option>
 						<option id="icon_large" value="l">Large</option>
+						<option id="icon_xlarge" value="xl">Extra Large</option>
 					</select>
 			</fieldset>
 		</div>
