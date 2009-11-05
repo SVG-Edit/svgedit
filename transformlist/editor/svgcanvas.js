@@ -1,6 +1,8 @@
 /*
 	TODOs for TransformList:
 	
+	* Fix rotation
+	* Fix bounding box of groups with rotated children
 	* Fix moving/resizing/rotating of groups (pummel the transforms down to the children?)
 	* Ensure resizing in negative direction works (nope! broken!)
 	* Ensure ungrouping works (surely broken)
@@ -372,7 +374,7 @@ function BatchCommand(text) {
 			this.rotateGrip.setAttribute("display", bShow);
 			this.rotateGripConnector.setAttribute("display", bShow);
 			var elem = this.selectedElement;
-			if(elem && (elem.tagName == "text" || elem.tagName == "g")) bShow = "none";
+			if(elem && (elem.tagName == "text")) bShow = "none";// || elem.tagName == "g")) bShow = "none";
 			for (dir in this.selectorGrips) {
 				this.selectorGrips[dir].setAttribute("display", bShow);
 			}
@@ -441,7 +443,7 @@ function BatchCommand(text) {
 					bFoundRotate = true;
 				}
 				if (bFoundRotate) {
-					tstr = transformToString(xform) + " " + tstr;
+					tstr = transformToObj(xform).text + " " + tstr;
 				}
 				else if(!bFoundRotate) {
 					m = matrixMultiply(xform.matrix,m);
@@ -638,7 +640,7 @@ function BatchCommand(text) {
 			var concatMatrix = svgroot.createSVGMatrix();
 			for (var i = 0; i < this.numberOfItems; ++i) {
 				var xform = this._list.getItem(i);
-				tstr += transformToString(xform) + " ";
+				tstr += transformToObj(xform).text + " ";
 			}
 			this._elem.setAttribute("transform", tstr);
 		};
@@ -1186,7 +1188,7 @@ function BatchCommand(text) {
 
 		var i = selectedElements.length;
 		while(i--) {
-			var cmd = recalculateDimensions(selectedElements[i],selectedBBoxes[i]);
+			var cmd = recalculateDimensions(selectedElements[i]);//,selectedBBoxes[i]);
 			if (cmd) {
 				batchCmd.addSubCommand(cmd);
 			}
@@ -1256,10 +1258,9 @@ function BatchCommand(text) {
 
 	// this function returns the command which resulted from the selected change
 	// TODO: use suspendRedraw() and unsuspendRedraw() around this function
-	// TODO: get rid of selectedBBox
-	var recalculateDimensions = function(selected,selectedBBox) {
-		if (selected == null || selectedBBox == null) return null;
-		
+	var recalculateDimensions = function(selected) {
+		if (selected == null) return null;
+		if (selected.tagName == "g") return null;
 		// if this element had no transforms, we are done
 		var tlist = canvas.getTransformList(selected);
 		if (tlist.numberOfItems == 0) return null;
@@ -1350,10 +1351,38 @@ function BatchCommand(text) {
 		var origcenter = {x: (box.x+box.width/2), y: (box.y+box.height/2)};
 		var newcenter = {x: origcenter.x, y: origcenter.y};
 		var currentMatrix = {a:1, b:0, c:0, d:1, e:0, f:0};
-		var n = tlist.numberOfItems;
 		var tx = 0, ty = 0, sx = 1, sy = 1, r = 0.0;
+
+		var n = tlist.numberOfItems;
+		
+		// TODO: have passes where we ONLY eliminate transforms (not
+		// provide remap/scaling functions for the element)
+		// This would reduce the transforms to the bare minimum.
+		// For now, these passes will just collapse adjacent transform types.
+		// This processing does not change the geometry of the element itself, 
+		// it will only reduce the transform list.
+
+		// TODO: first loop and find all adjacent transform sets of the form:
+		//       translate(tx,ty) scale(sx,sy) translate(-tx,-ty) and reduce them
+		//       to one set (multiply sx and sy)
+		var tx = 0, ty = 0, sx = 0, sy = 0;
 		while (n--) {
-			var bRemoveTransform = true;
+		}
+		
+		// TODO: then loop and find all adjacent translates of the form:
+		//       translate(tx1,ty1) translate(tx2,ty2) => translate(tx1+tx2,ty1+ty2)
+		n = tlist.numberOfItems;
+		while (n--) {
+			
+		}		
+		
+		// this loop then computes the remapping required of the element 
+		// (this prevents abnormal scaling of strokes)
+		var bRemoveTransform = true;
+		n = tlist.numberOfItems;
+		while (n--) {
+			// once we reach an unmoveable transform, we can stop
+			if (!bRemoveTransform) break;
 			var xform = tlist.getItem(n);
 			var m = xform.matrix;
 			// if translate...
@@ -1392,7 +1421,7 @@ function BatchCommand(text) {
 						};
 						scalew = function(w) { return w; }
 						scaleh = function(h) { return h; }
-
+						// this latches to false once we hit our first rotate transform
 						bRemoveTransform = false;
 						var newrot = svgroot.createSVGTransform();
 						newrot.setRotate(xform.angle, cx, cy);
@@ -1414,6 +1443,7 @@ function BatchCommand(text) {
 			
 			switch (selected.tagName)
 			{
+			/*
 				case "g":
 					var children = selected.childNodes;
 					var c = children.length;
@@ -1428,11 +1458,12 @@ function BatchCommand(text) {
 									h = scaleh(childBox.height);
 								childBox.x = pt.x; childBox.y = pt.y;
 								childBox.width = w; childBox.height = h;
-								batchCmd.addSubCommand(recalculateDimensions(child, childBox));
+								batchCmd.addSubCommand(recalculateDimensions(child));//, childBox));
 							} catch(e) {}
 						}
 					}
 					break;
+			*/
 				case "line":
 					var pt1 = remap(changes["x1"],changes["y1"]),
 						pt2 = remap(changes["x2"],changes["y2"]);
@@ -1773,7 +1804,7 @@ function BatchCommand(text) {
 							h = scaleh(childBox.height);
 						childBox.x = pt.x; childBox.y = pt.y;
 						childBox.width = w; childBox.height = h;
-						batchCmd.addSubCommand(recalculateDimensions(child, childBox));
+						batchCmd.addSubCommand(recalculateDimensions(child));//, childBox));
 					} catch(e) {}
 				}
 			}
@@ -2142,23 +2173,37 @@ function BatchCommand(text) {
 		return svgroot.createSVGTransformFromMatrix(m);
 	};
 	
-	// converts a string equivalent of a SVGTransform
-	var transformToString = function(xform) {
+	// converts a tiny object equivalent of a SVGTransform
+	// has the following properties:
+	// - tx, ty, sx, sy, angle, cx, cy, string
+	var transformToObj = function(xform) {
 		var m = xform.matrix;
+		var tobj = {tx:0,ty:0,sx:1,sy:1,angle:0,cx:0,cy:0,text:""};
 		switch(xform.type) {
 			case 2: // TRANSFORM
-				return "translate(" + m.e + "," + m.f + ")";
+				tobj.tx = m.e;
+				tobj.ty = m.f;
+				tobj.text = "translate(" + m.e + "," + m.f + ")";
+				break;
 			case 3: // SCALE
-				if (m.a == m.d) return "scale(" + m.a + ")";
-				return "scale(" + m.a + "," + m.d + ")";
+				tobj.sx = m.a;
+				tobj.sy = m.d;
+				if (m.a == m.d) tobj.text = "scale(" + m.a + ")";
+				else tobj.text = "scale(" + m.a + "," + m.d + ")";
+				break;
 			case 4: // ROTATE
-				// TODO: handle divide by zero here
-				var K = 1 - m.a;
-				var cy = ( K * m.f + m.b*m.e ) / ( K*K + m.b*m.b );
-				var cx = ( m.e - m.b * cy ) / K;
-				return "rotate(" + xform.angle + " " + cx + "," + cy + ")";
+				tobj.angle = xform.angle;
+				// this prevents divide by zero
+				if (xform.angle != 0) {
+					var K = 1 - m.a;
+					tobj.cy = ( K * m.f + m.b*m.e ) / ( K*K + m.b*m.b );
+					tobj.cx = ( m.e - m.b * tobj.cy ) / K;
+				}
+				tobj.text = "rotate(" + xform.angle + " " + tobj.cx + "," + tobj.cy + ")";
+				break;
 			// TODO: matrix, skewX, skewY
 		}
+		return tobj;
 	};
 
 	// - when we are in a create mode, the element is added to the canvas
@@ -2526,7 +2571,6 @@ function BatchCommand(text) {
 							var selected = selectedElements[i];
 							if (selected == null) break;
 							var box = canvas.getBBox(selected);
-//							box.x += dx; box.y += dy;
 							selectedBBoxes[i].x = box.x + dx;
 							selectedBBoxes[i].y = box.y + dy;
 
@@ -2543,30 +2587,6 @@ function BatchCommand(text) {
 							
 							// update our internal bbox that we're tracking while dragging
 							selectorManager.requestSelector(selected).resize();//box); // TODO: remove box arg
-							
-							// now transform delta mouse movement into a translation in the
-							// coordinate space of the mouse target
-//							var startpt = transformPoint(start_x, start_y, mouse_target_ctm);
-//							var endpt = transformPoint(x, y, mouse_target_ctm);
-//							dx = endpt.x - startpt.x;
-//							dy = endpt.y - startpt.y;
-
-							/*
-							var angle = canvas.getRotationAngle(selected);
-							if (angle) {
-								var cx = round(box.x + box.width/2),
-									cy = round(box.y + box.height/2);
-								var xform = ts + [" rotate(", angle, " ", cx, ",", cy, ")"].join('');
- 								var r = Math.sqrt( dx*dx + dy*dy );
-								var theta = Math.atan2(dy,dx) - angle * Math.PI / 180.0;
-								selected.setAttribute("transform", xform);
-								box.x += r * Math.cos(theta); box.y += r * Math.sin(theta);
-							}
-							else {
-								selected.setAttribute("transform", ts);
-								box.x += dx; box.y += dy;
-							}
-							*/
 						}
 					}
 				}
@@ -4589,6 +4609,7 @@ function BatchCommand(text) {
 				var visEls = canvas.getVisibleElements();
 				$.each(visEls, function(i, item) {
 					var sel_bb = item.getBBox();
+					// TODO: we are not using the second argument here anymore, what to do?
 					var cmd = recalculateDimensions(item, {
 						x: sel_bb.x - bbox.x,
 						y: sel_bb.y - bbox.y,
@@ -5189,7 +5210,7 @@ function BatchCommand(text) {
 		replacePathSeg(new_type, next_index, points);
 		
 		addAllPointGripsToPath(); 
-		recalculateDimensions(current_path, current_path.getBBox());
+		recalculateDimensions(current_path);//, current_path.getBBox());
 		updateSegLine(true);
 		
 		batchCmd.addSubCommand(new ChangeElementCommand(current_path, {d: old_d}));
@@ -5451,7 +5472,7 @@ function BatchCommand(text) {
 						elem.setAttribute("transform", "");
 					}
 					batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
-					batchCmd.addSubCommand(recalculateDimensions(elem, childBox));
+					batchCmd.addSubCommand(recalculateDimensions(elem));//, childBox));
 				}
 			}
 			
@@ -5533,7 +5554,7 @@ function BatchCommand(text) {
 				} else {
 					selectedBBoxes[i].y += dy;
 				}
-				var cmd = recalculateDimensions(selected,selectedBBoxes[i]);
+				var cmd = recalculateDimensions(selected);//,selectedBBoxes[i]);
 				if (cmd) {
 					batchCmd.addSubCommand(cmd);
 				}
