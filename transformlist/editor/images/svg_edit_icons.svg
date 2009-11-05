@@ -1,6 +1,109 @@
 <svg xmlns="http://www.w3.org/2000/svg">
 
-<foreignContent id="select">
+<g id="logo">
+	<svg version="1.0"
+		 id="svg2" inkscape:output_extension="org.inkscape.output.svg.inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:cc="http://creativecommons.org/ns#" inkscape:export-ydpi="90" inkscape:export-xdpi="90" xmlns:svg="http://www.w3.org/2000/svg"
+		 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+		 viewBox="0 0 48 48" enable-background="new 0 0 48 48" xml:space="preserve">
+	<a id="a32" xlink:href="http://svg-edit.googlecode.com/"  xlink:title="SVG-edit, an in-browser vector graphics editor">
+		
+			<path id="path3216" inkscape:randomized="0" inkscape:rounded="0" inkscape:flatsided="false" sodipodi:arg2="1.1780972" sodipodi:arg1="0.78539816" sodipodi:r2="155.59306" sodipodi:r1="194.03661" sodipodi:cy="346.96844" sodipodi:cx="239.79607" sodipodi:sides="8" sodipodi:type="star" fill="#FFFFFF" d="
+			M30.5,39.3l-6.2,0.5l-4.8,4l-4.8-4l-6.2-0.5L8,33.1l-4-4.8l4-4.8l0.5-6.2l6.2-0.5l4.8-4l4.8,4l6.2,0.5l0.5,6.2l4,4.8l-4,4.8
+			L30.5,39.3z"/>
+		<path id="path34" d="M20.6,44.7c2-0.6,3.3-2,3.6-3.9l0.1-0.7l0.4,0.3c2.6,1.9,6.1,1,7.3-1.9c0.7-1.6,0.4-4.1-0.6-4.9
+			c-0.4-0.3-0.3-0.4,0.5-0.5c5.1-0.7,5.2-8.3,0.2-9.4c-1.1-0.2-1.1-0.2-0.6-0.8c3.2-4.2-2.2-9.7-6.6-6.8l-0.7,0.5l-0.2-1
+			c-1.2-5-8.7-4.8-9.4,0.3c-0.1,0.8-0.1,0.8-0.7,0.3c-2.4-1.8-6.4-0.6-7.3,2.2c-0.5,1.6-0.2,3.8,0.7,4.6c0.4,0.4,0.4,0.5-0.4,0.6
+			c-5.3,0.8-5.3,8.8,0,9.5l0.7,0.1l-0.4,0.6c-2.2,3.3,0,7.6,3.9,7.6c1.2,0,2.5-0.4,3-1c0.4-0.4,0.5-0.4,0.5,0.1
+			C14.7,43.1,18,45.4,20.6,44.7L20.6,44.7z M18,42.1c-1.1-0.8-1.4-2.5-0.7-3.6c0.3-0.4,0.3-0.6,0.3-3.1v-2.7l-1.9,1.9
+			c-1.5,1.5-1.9,2-1.9,2.3c0,1.6-2.6,2.8-4,1.8C8,37.4,8.4,34.6,10.6,34c0.5-0.1,1-0.5,2.5-2l1.9-1.9l-2.6,0c-2.4,0-2.6,0-3.3,0.4
+			c-2.9,1.5-5.4-2.4-2.8-4.4c0.8-0.6,2.2-0.6,2.9-0.1c0.5,0.3,0.6,0.3,3.1,0.3h2.6l-1.8-1.8c-1.3-1.3-2-1.9-2.3-1.9
+			c-2.3-0.5-2.9-3.4-1-4.8c1.3-1,4,0.2,4,1.8c0,0.3,0.4,0.8,1.9,2.2l1.9,1.8l0-2.6c0-2.4,0-2.6-0.3-3c-1.1-1.6,0-3.8,2-4
+			c2.1-0.2,3.5,1.9,2.5,3.8c-0.4,0.7-0.4,0.9-0.4,3.3l0,2.6l1.8-1.8c1.3-1.3,1.9-2,1.9-2.3c0.5-2.4,3.7-2.9,4.8-0.7
+			c0.8,1.6,0,3.3-1.7,3.7c-0.5,0.1-1,0.5-2.5,2l-1.8,1.8h2.7c2.4,0,2.7,0,3.1-0.3c1-0.7,2.4-0.5,3.3,0.5c2,2.2-0.9,5.6-3.3,3.9
+			c-0.4-0.3-0.7-0.3-3.1-0.3h-2.7l1.8,1.8c1.5,1.5,2,1.9,2.5,2c2.9,0.7,2.7,4.9-0.3,5.1c-1.4,0.1-2.8-1.1-2.8-2.3
+			c0-0.1-0.8-1.1-1.9-2.1l-1.9-1.9l0,2.6c0,2.4,0,2.6,0.4,3.3C23,41.2,20.2,43.7,18,42.1L18,42.1z"/>
+		<g>
+			<g id="g36" transform="matrix(-4.6717475,0,0,4.6717475,1143.4575,-562.74962)">
+				<path id="path38" opacity="0.2" enable-background="new    " d="M240.5,126.5c-0.9-2.9-1.1-3.4-1.2-3.5c0,0,0,0,0,0l-6.3-7
+					c-0.3-0.4-1.1,0-1.7,0.6c-0.6,0.5-1.1,1.3-0.7,1.6l6.3,7l0,0l3,1.4l0.6,0.2L240.5,126.5L240.5,126.5z"/>
+				<path id="path40" opacity="0.2" enable-background="new    " d="M240.7,126.3c-0.9-2.9-1.1-3.4-1.2-3.5c0,0,0,0,0,0l-6.3-7
+					c-0.3-0.4-1.1,0-1.7,0.6c-0.6,0.5-1.1,1.3-0.7,1.6l6.3,7l0,0l3,1.4l0.6,0.2L240.7,126.3L240.7,126.3z"/>
+				<path id="path42" opacity="0.2" enable-background="new    " d="M240.1,126.1c-0.9-2.9-1.1-3.4-1.2-3.5c0,0,0,0,0,0l-6.3-7
+					c-0.3-0.4-1.1,0-1.7,0.6c-0.6,0.5-1.1,1.3-0.7,1.6l6.3,7l0,0l3,1.4l0.6,0.2L240.1,126.1L240.1,126.1z"/>
+				<path id="path44" fill="#FFFFFF" d="M240.1,126c-0.9-2.9-1.1-3.4-1.2-3.5c0,0,0,0,0,0l-6.3-7c-0.3-0.4-1.1,0-1.7,0.6
+					c-0.6,0.5-1.1,1.3-0.7,1.6l6.3,7l0,0l3,1.4l0.6,0.2L240.1,126L240.1,126z"/>
+				
+					<linearGradient id="path46_1_" gradientUnits="userSpaceOnUse" x1="251.6057" y1="30.2918" x2="373.0601" y2="100.0934" gradientTransform="matrix(-7.441159e-02 -0.3663 0.3663 -7.441159e-02 239.8726 211.8456)">
+					<stop  offset="0" style="stop-color:#990000"/>
+					<stop  offset="1" style="stop-color:#7C0000"/>
+				</linearGradient>
+				<path id="path46" fill="url(#path46_1_)" d="M240.1,126c-0.9-2.9-1.1-3.4-1.2-3.5c0,0,0,0,0,0l-6.3-7c-0.3-0.4-1.1,0-1.7,0.6
+					c-0.6,0.5-1.1,1.3-0.7,1.6l6.3,7l0,0l3,1.4l0.6,0.2L240.1,126L240.1,126z"/>
+				
+					<linearGradient id="path48_1_" gradientUnits="userSpaceOnUse" x1="448.9506" y1="-141.7113" x2="469.8885" y2="-162.6511" gradientTransform="matrix(0.3734 -1.625768e-02 -1.625768e-02 -0.3734 65.4455 75.4761)">
+					<stop  offset="0" style="stop-color:#F8F1DC"/>
+					<stop  offset="1" style="stop-color:#D6A84A"/>
+				</linearGradient>
+				<path id="path48" fill="url(#path48_1_)" d="M238.5,122.6l1.1,3.1l-2.9-1.4l0,0c0,0,0,0-0.1,0l0,0l-6-6.7l0,0
+					c-0.2-0.2,0.1-0.7,0.6-1.2c0.5-0.5,1.1-0.7,1.2-0.5L238.5,122.6L238.5,122.6L238.5,122.6z"/>
+				
+					<linearGradient id="path50_1_" gradientUnits="userSpaceOnUse" x1="473.214" y1="-2.063" x2="545.7217" y2="-163.0414" gradientTransform="matrix(-0.3737 0 0 -0.3737 407.2458 109.9867)">
+					<stop  offset="0" style="stop-color:#FFA700"/>
+					<stop  offset="0.7753" style="stop-color:#FFD700"/>
+					<stop  offset="1" style="stop-color:#FF794B"/>
+				</linearGradient>
+				<path id="path50" fill="url(#path50_1_)" d="M237.1,124.4c0.2,0,0.4-0.1,0.6-0.3c0.1-0.1,0.3-0.2,0.4-0.3
+					c0.1-0.1,0.2-0.2,0.3-0.3c0.2-0.2,0.3-0.4,0.3-0.6l-0.1-0.3l0-0.1l-6-6.6c0,0.2-0.1,0.5-0.3,0.8c-0.1,0.1-0.2,0.2-0.3,0.3
+					c-0.1,0.1-0.3,0.2-0.4,0.3c-0.4,0.2-0.7,0.3-0.8,0.2l0,0l6,6.7l0,0c0,0,0,0,0.1,0l0,0L237.1,124.4L237.1,124.4z"/>
+				<path id="path52" fill="#FFFFFF" d="M230.6,117.5c0.1,0.1,0.5,0.1,0.9-0.2c0.1-0.1,0.3-0.2,0.4-0.3c0.1-0.1,0.2-0.2,0.3-0.3
+					c0.3-0.4,0.4-0.7,0.3-0.8l0,0l6.1,6.7c0.1,0.2,0,0.5-0.3,0.8c-0.1,0.1-0.2,0.2-0.3,0.3c-0.1,0.1-0.3,0.2-0.4,0.3
+					c-0.4,0.2-0.7,0.3-0.9,0.2c0,0-0.2-0.2-0.2-0.2L230.6,117.5L230.6,117.5L230.6,117.5z"/>
+				<path id="path54" fill="#FFFFFF" d="M231.2,116.4c0.5-0.5,1.1-0.7,1.2-0.5l1.4,1.5l0.1,2.1l-1.4,0.1l-1.8-2l0,0
+					C230.5,117.3,230.7,116.8,231.2,116.4L231.2,116.4z"/>
+				<path id="path56" fill="#FFFFFF" d="M230.6,117.5c0.1,0.1,0.5,0.1,0.9-0.2c0.1-0.1,0.3-0.2,0.4-0.3c0.1-0.1,0.2-0.2,0.3-0.3
+					c0.3-0.4,0.4-0.7,0.3-0.8l0,0l6.1,6.7c0.1,0.2,0,0.5-0.3,0.8c-0.1,0.1-0.2,0.2-0.3,0.3c-0.1,0.1-0.3,0.2-0.4,0.3
+					c-0.4,0.2-0.7,0.3-0.9,0.2c0,0-0.2-0.2-0.2-0.2L230.6,117.5L230.6,117.5L230.6,117.5z"/>
+				
+					<linearGradient id="path58_1_" gradientUnits="userSpaceOnUse" x1="440.489" y1="-131.0965" x2="451.6169" y2="-117.8349" gradientTransform="matrix(0.3734 -1.625768e-02 -1.625768e-02 -0.3734 65.4455 75.4761)">
+					<stop  offset="0" style="stop-color:#FFC957"/>
+					<stop  offset="1" style="stop-color:#FF6D00"/>
+				</linearGradient>
+				<path id="path58" fill="url(#path58_1_)" d="M231.2,116.4c0.5-0.5,1.1-0.7,1.2-0.5l1.4,1.5l0.1,2.1l-1.4,0.1l-1.8-2l0,0
+					C230.5,117.3,230.7,116.8,231.2,116.4L231.2,116.4z"/>
+				
+					<linearGradient id="path60_1_" gradientUnits="userSpaceOnUse" x1="454.4041" y1="-122.501" x2="501.1769" y2="-226.3438" gradientTransform="matrix(0.3734 -1.625768e-02 -1.625768e-02 -0.3734 65.4455 75.4761)">
+					<stop  offset="0" style="stop-color:#FFA700"/>
+					<stop  offset="0.7753" style="stop-color:#FFD700"/>
+					<stop  offset="1" style="stop-color:#FF9200"/>
+				</linearGradient>
+				<path id="path60" fill="url(#path60_1_)" d="M230.6,117.5c0.1,0.1,0.5,0.1,0.9-0.2c0.1-0.1,0.3-0.2,0.4-0.3
+					c0.1-0.1,0.2-0.2,0.3-0.3c0.3-0.4,0.4-0.7,0.3-0.8l0,0l6.1,6.7c0.1,0.2,0,0.5-0.3,0.8c-0.1,0.1-0.2,0.2-0.3,0.3
+					c-0.1,0.1-0.3,0.2-0.4,0.3c-0.4,0.2-0.7,0.3-0.9,0.2c0,0-0.2-0.2-0.2-0.2L230.6,117.5L230.6,117.5L230.6,117.5z"/>
+				
+					<linearGradient id="path62_1_" gradientUnits="userSpaceOnUse" x1="472.6249" y1="-26.9638" x2="549.3671" y2="-26.9638" gradientTransform="matrix(-0.3737 0 0 -0.3737 407.2458 109.9867)">
+					<stop  offset="0" style="stop-color:#7D7D99"/>
+					<stop  offset="0.1798" style="stop-color:#B1B1C5"/>
+					<stop  offset="0.3727" style="stop-color:#BCBCC8"/>
+					<stop  offset="0.6825" style="stop-color:#C8C8CB"/>
+					<stop  offset="1" style="stop-color:#CCCCCC"/>
+				</linearGradient>
+				<path id="path62" fill="url(#path62_1_)" d="M231.1,118.1c0,0,0.5,0,0.9-0.3c0.1-0.1,0.3-0.2,0.4-0.3c0.1-0.1,0.2-0.2,0.3-0.3
+					c0.2-0.3,0.4-0.6,0.3-0.7l-0.5-0.6l0,0c0.1,0.2,0,0.5-0.3,0.8c-0.1,0.1-0.2,0.2-0.3,0.3c-0.1,0.1-0.3,0.2-0.4,0.3
+					c-0.4,0.2-0.7,0.3-0.9,0.2l0,0l5.9,6.5c0,0,0.1,0.2,0.2,0.2c0,0,0.1,0.1,0.1,0.1L231.1,118.1L231.1,118.1z"/>
+				<path id="path64" fill="#003333" d="M238.9,124.8c-0.1,0.1-0.3,0.2-0.4,0.3l1.1,0.5l-0.4-1.1C239.1,124.7,239,124.8,238.9,124.8z
+					"/>
+				<path id="path66" opacity="0.5" fill="#FFFFFF" enable-background="new    " d="M238.2,123.4l-6.1-6.6c0,0,0,0,0,0
+					c0.1-0.1,0.2-0.3,0.3-0.4l6.1,6.6C238.4,123.1,238.4,123.2,238.2,123.4L238.2,123.4z"/>
+				<path id="path68" opacity="0.5" fill="#FFFFFF" enable-background="new    " d="M232.2,116.7c0.1-0.1,0.1-0.1,0.1-0.2l6.1,6.6
+					c0,0.1-0.1,0.2-0.2,0.3c-0.1,0.1-0.1,0.1-0.2,0.2l-6.1-6.7C232,116.9,232.1,116.8,232.2,116.7L232.2,116.7z"/>
+			</g>
+		</g>
+	</a>
+	</svg>
+</g>
+
+
+<g id="select">
 	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 	 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
 	 <g>
@@ -8,9 +111,9 @@
 	  <path stroke="#ffffff" fill="#000000" id="svg_13" d="m7.38168,2.46948l0.07502,17.03258l3.30083,-2.62617l2.62566,5.62751l4.20105,-2.62617l-3.30082,-4.80214l4.57614,-0.37517l-11.47787,-12.23044z"/>
 	 </g>
 	</svg>
-</foreignContent>
+</g>
 
-<foreignContent id="square">
+<g id="square">
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
  <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
  <defs>
@@ -24,9 +127,9 @@
   <rect x="1.5" y="1.5" width="20" height="20" id="svg_1" fill="url(#svg_2)" stroke="#000000"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
-<foreignContent id="rect">
+<g id="rect">
 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
  <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
  <defs>
@@ -40,9 +143,9 @@
   <rect transform="matrix(1, 0, 0, 1, 0, 0)" stroke="#000000" fill="url(#svg_2)" id="svg_1" height="10" width="20" y="6.5" x="1.5"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
-<foreignContent id="fh_rect">
+<g id="fh_rect">
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
  <defs>
   <linearGradient y2="1" x2="1" y1="0.10156" x1="0.36328" id="svg_2">
@@ -62,10 +165,10 @@
   <path id="svg_11" stroke-width="2" stroke="#000000" fill="#000000" d="m26.9318,41.1745c-0.4491,-2.3511 -2.3021,-2.9866 -3.8181,-1.8905l0.1087,6.2126z"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
 
-<foreignContent id="circle">
+<g id="circle">
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54 54" id="svgzoom">
  <defs>
   <linearGradient y2="1.0" x2="1.0" y1="0.1875" x1="0.171875" id="svg_4">
@@ -77,9 +180,9 @@
   <circle stroke-opacity="1" fill-opacity="1" stroke-width="2" stroke="#000000" fill="url(#svg_4)" id="svg_1" r="23" cy="27" cx="27"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
-<foreignContent id="ellipse">
+<g id="ellipse">
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54 54" id="svgzoom">
  <defs>
   <linearGradient y2="1.0" x2="1.0" y1="0.1875" x1="0.171875" id="svg_4">
@@ -91,9 +194,9 @@
   <ellipse stroke-opacity="1" fill-opacity="1" stroke-width="2" stroke="#000000" fill="url(#svg_4)" id="svg_1" rx="23" ry="12" cy="27" cx="27"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
-<foreignContent id="fh_ellipse">
+<g id="fh_ellipse">
 <svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
  <defs>
   <linearGradient id="svg_9" x1="0.3046" y1="0.1093" x2="0.6132" y2="0.3945">
@@ -113,9 +216,9 @@
   <path d="m26.9318,41.1745c-0.4491,-2.3511 -2.3021,-2.9866 -3.8181,-1.8905l0.1087,6.2126z" fill="#000000" stroke="#000000" stroke-width="2" id="svg_11"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
-<foreignContent id="pencil">
+<g id="pencil">
 <svg id="svgzoom" viewBox="0 0 48 52" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs>
    <linearGradient id="svg_9" x1="0.3046" y1="0.1093" x2="0.6132" y2="0.3945">
@@ -128,9 +231,9 @@
   <path d="M26.9318,41.1745 c-0.4491,-2.3511 -2.3021,-2.9866 -3.8181,-1.8905 l0.1087,6.2126z" fill="#000000" stroke="#000000" stroke-width="2" fill-opacity="1" stroke-opacity="1" id="svg_11"/>
   <path d="M2.3132,4.6197 c12.4998,-1.6891 10.4729,7.0945 0,21.6215 c22.9729,-4.0539 12.1620,5.4053 12.1620,13.1756 c-0.3377,4.0539 8.7836,21.9594 26.0135,-1.3513" id="svg_12" fill="none" stroke="#000000" stroke-width="2" fill-opacity="1" stroke-opacity="1"/>
 </svg>
-</foreignContent>
+</g>
 
-<foreignContent id="pen">
+<g id="pen">
 	<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 	 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
 	 <defs>
@@ -151,9 +254,9 @@
 	  <path d="m16.61335,1.00028l-3.67325,8.60247l7.10285,3.47318l3.17783,-7.20549" id="svg_8" fill="url(#svg_16)" stroke="#000000"/>
 	 </g>
 	</svg>
-</foreignContent>
+</g>
 
-<foreignContent id="text">
+<g id="text">
 	<svg id="svgzoom" viewBox="0 0 158 128" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 	 <!-- created with SVG-edit - http://svg-edit.googlecode.com/ -->
 	 <g>
@@ -164,10 +267,10 @@
 	 </g>
 	 <line x1="120" y1="124" x2="152" y2="124" stroke="#000000" stroke-width="5" fill="none" fill-opacity="1" stroke-opacity="1" id="svg_4"/>
 	</svg>
-</foreignContent>
+</g>
 
 
-<foreignContent id="path">
+<g id="path">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 124 124" xmlns:xlink="http://www.w3.org/1999/xlink">
  <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
  <defs>
@@ -181,9 +284,9 @@
   <path stroke-dasharray="null" stroke-width="4" stroke="#000000" fill="url(#svg_4)" id="svg_1" d="m6,103l55,-87c85,33.64 -26,37.12 55,87l-110,0z"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
-<foreignContent id="image">
+<g id="image">
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
  <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
  <defs>
@@ -207,9 +310,9 @@
   <path d="m15.27203,8.98531c2.74584,0.06386 2.42657,4.21456 -0.63857,4.85313c0.70243,-1.27714 1.66028,-3.63985 0.63857,-4.85313z" id="svg_17" fill="#404040" stroke="#000000" stroke-width="0"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
-<foreignContent id="zoom">
+<g id="zoom">
 	<svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 	 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
 	 <defs>
@@ -226,22 +329,22 @@
 	  <path d="m15.68604,61.46511c38.13954,17.67442 48.13954,15.34883 85.11628,-0.46511c1.39536,18.60465 -19.30231,41.86047 -42.7907,40.93023c-21.6279,-0.93023 -42.7907,-21.86046 -42.32558,-40.46511z" id="svg_28" fill="#8cbaff" stroke="#202020" stroke-width="0"/>
 	 </g>
 	</svg>
-</foreignContent>
+</g>
 
-<foreignContent id="arrow_right">
+<g id="arrow_right">
 	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 50">
 	  <path stroke="#000000" fill="#000000" d="m0,0l0,50l25,-25l-25,-25z"/>
 	</svg>
-</foreignContent>
+</g>
 
-<foreignContent id="arrow_down">
+<g id="arrow_down">
 	<svg viewBox="0 0 50 40" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 	  <path transform="rotate(90, 26, 13)" d="m14,-12l0,50l25,-25l-25,-25z" fill="#000000" stroke="#000000"/>
 	</svg>
-</foreignContent>
+</g>
 
 
-<foreignContent id="new_image">
+<g id="new_image">
 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
  <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
  <g>
@@ -250,9 +353,9 @@
   <circle stroke-width="0" stroke="#a0a0a0" fill="#fff175" id="svg_65" r="3.83333" cy="6.24769" cx="19.16813"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
-<foreignContent id="save">
+<g id="save">
 	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 	 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
 	 <defs>
@@ -275,9 +378,9 @@
 	  <path stroke="#285582" fill="url(#svg_46)" id="svg_45" d="m7.14286,9.74903l5.21236,5.79151l5.50193,-5.88803l-2.50965,-0.09653l0,-2.79923c0,-2.3166 -2.3166,-5.59846 -6.56371,-5.59846c-4.05405,0 -6.27413,3.37838 -6.56371,6.75676c0.48263,-1.5444 2.7027,-4.53668 4.44015,-4.44015c2.12355,-0.09653 2.79923,1.64093 2.79923,3.37838l0.09653,2.79923l-2.41313,0.09653z"/>
 	 </g>
 	</svg>
-</foreignContent>
+</g>
 
-<foreignContent id="docprops">
+<g id="docprops">
 	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 	 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
 	 <defs>
@@ -301,9 +404,9 @@
 	  </g>
 	 </g>
 	</svg>
-</foreignContent>
+</g>
 
-<foreignContent id="source">
+<g id="source">
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 55 52">
  <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
  <g>
@@ -317,9 +420,9 @@
   <line id="svg_64" stroke-width="3" fill="none" stroke="#aa0000" y2="8" x2="39" y1="26" x1="51"/>
  </g>
 </svg>
-</foreignContent>
+</g>
  
-<foreignContent id="wireframe">
+<g id="wireframe">
  <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
  <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
  <g>
@@ -328,9 +431,9 @@
   <rect stroke="#000000" fill="none" id="svg_52" height="14" width="14" y="8.5" x="8.5"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
-<foreignContent id="undo">
+<g id="undo">
 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
  <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
  <defs>
@@ -344,9 +447,9 @@
   <path transform="rotate(-90, 10.3017, 11.5526)" d="m6.70188,10.72562l6.55493,-7.13388l6.65817,7.24912l-3.79441,0.03193l0,2.72259c-0.04257,2.74017 -2.76516,5.83068 -7.81235,6.02135c-5.18575,0 -7.1226,-3.75464 -7.49302,-7.41944c0.61736,1.6754 3.14913,3.78397 5.3716,3.67918c2.71635,0.1048 4.41501,-0.61714 4.41501,-2.50184l0,-2.64901l-3.89995,0z" id="svg_45" fill="url(#svg_66)" stroke="#b7a800"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
-<foreignContent id="redo">
+<g id="redo">
 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
  <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
  <defs>
@@ -360,9 +463,9 @@
   <path transform="rotate(-90, 12.7299, 11.5526)" d="m9.11294,12.43144l6.54089,6.84566l6.6439,-6.95624l-3.78628,-0.03064l0,-2.61259c-0.04248,-2.62946 -2.75924,-5.5951 -7.79561,-5.77807c-5.17464,0 -7.10734,3.60294 -7.47697,7.11967c0.61604,-1.60771 3.14238,-3.63109 5.36009,-3.53053c2.71053,-0.10056 4.40555,0.59221 4.40555,2.40076l0,2.54198l-3.89159,0z" id="svg_45" fill="url(#svg_71)" stroke="#44aa00"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
-<foreignContent id="clone">
+<g id="clone">
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
  <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
  <defs>
@@ -384,9 +487,9 @@
   <path d="m6.72427,12.55859l4.74203,0l-2.30831,2.07258l-2.43372,-2.07258z" id="svg_43" fill="#000000" stroke="#8f5902" fill-opacity="0.76" stroke-width="0"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
-<foreignContent id="delete">
+<g id="delete">
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
  <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
  <g>
@@ -397,9 +500,9 @@
   <line stroke-width="2" id="svg_70" fill="none" stroke="#ffffff" y2="16.85127" x2="7.00646" y1="6.85127" x1="17.00646"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
-<foreignContent id="go_up">
+<g id="go_up">
 	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
 	 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
 	 <defs>
@@ -413,9 +516,9 @@
 	  <path stroke="#008000" fill="url(#svg_74)" id="svg_33" d="m5.38492,16.77043l7.07692,0l0,-5.23077l4.15385,0l-7.69231,-10.15385l-7.69231,10.15385l4.15385,0l0,5.23077z"/>
 	 </g>
 	</svg>
-</foreignContent>
+</g>
 
-<foreignContent id="go_down">
+<g id="go_down">
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
  <defs>
   <linearGradient y2="0" x2="0.7" y1="0" x1="0" id="svg_75">
@@ -428,9 +531,9 @@
   <path stroke="#008000" fill="url(#svg_75)" id="svg_33" d="m5.3015,1.69202l6.93483,0l0,5.07323l4.07045,0l-7.53786,9.84803l-7.53786,-9.84803l4.07045,0l0,-5.07323z"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
-<foreignContent id="move_bottom">
+<g id="move_bottom">
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23">
  <defs>
   <linearGradient y2="0" x2="1" y1="0" x1="0" id="svg_80">
@@ -448,9 +551,9 @@
   <path stroke-width="0" stroke="#000000" fill="#000000" id="svg_81" d="m4.25,1.55l2.35,0l0,11.05l2,0l-3.175,3.45l-3.175,-3.45l2,0l0,-11.05z"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
-<foreignContent id="move_top">
+<g id="move_top">
 <svg viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
  <defs>
   <linearGradient id="svg_86" x1="0" y1="0" x2="1" y2="0">
@@ -468,9 +571,9 @@
   <path d="m16.83475,21.14603l2.33207,0l0,-11.04578l1.98474,0l-3.15077,-3.44869l-3.15077,3.44869l1.98474,0l0,11.04578z" id="svg_81" fill="#000000" stroke="#000000" stroke-width="0"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
-<foreignContent id="group">
+<g id="group">
 <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
  <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
  <defs>
@@ -494,9 +597,9 @@
   <rect x="0.5" y="0.5" width="2" height="2" id="svg_78" fill="#a0a0a0" stroke="#555555"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
-<foreignContent id="ungroup">
+<g id="ungroup">
 <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
  <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
  <defs>
@@ -522,9 +625,37 @@
   <rect id="svg_96" x="4.5" y="5.5" width="2" height="2" fill="#a0a0a0" stroke="#555555"/>
  </g>
 </svg>
-</foreignContent>
+</g>
 
+<g id="eye">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <defs>
+  <linearGradient y2="0.79688" x2="0.5625" y1="0.19141" x1="0.42969" id="svg_91">
+   <stop stop-opacity="1" stop-color="#d3a16b" offset="0"/>
+   <stop stop-opacity="1" stop-color="#a37c53" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <title>Layer 1</title>
+  <path stroke-width="0" stroke="#000000" fill="url(#svg_91)" id="svg_9" d="m0.12852,8.18338c3.59931,-7.71208 13.19749,-7.36932 16.75236,0.08569c-3.02165,7.5407 -13.59741,7.66924 -16.75236,-0.08569z"/>
+  <path id="svg_76" stroke-width="0" stroke="#000000" fill="#ffffff" d="m0.33033,8.2557c3.5173,-4.97159 12.89675,-4.75063 16.37062,0.05524c-2.95279,4.86111 -13.28756,4.94397 -16.37062,-0.05524z"/>
+  <circle stroke-width="0" stroke="#000000" fill="#4f92c1" id="svg_88" r="3.08008" cy="7.71116" cx="8.45861"/>
+  <circle stroke-width="0" stroke="#000000" fill="#000000" id="svg_89" r="1.27539" cy="7.6539" cx="8.43159"/>
+ </g>
+</svg>
+</g>
 
+<g id="no_color">
+	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+	 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+	 <g>
+	  <title>Layer 1</title>
+	  <line fill="none" stroke="#d40000" id="svg_90" y2="24" x2="24" y1="0" x1="0"/>
+	  <line id="svg_92" fill="none" stroke="#d40000" y2="24" x2="0" y1="0" x1="24"/>
+	 </g>
+	</svg>
+</g>
 
 <g id="svg_eof"/>
 
