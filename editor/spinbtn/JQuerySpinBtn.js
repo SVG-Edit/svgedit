@@ -81,7 +81,6 @@ $.fn.SpinButton = function(cfg){
 			delay: cfg && cfg.delay ? Number(cfg.delay) : 500,
 			interval: cfg && cfg.interval ? Number(cfg.interval) : 100,
 			_btn_width: 20,
-			_btn_height: 12,
 			_direction: null,
 			_delay: null,
 			_repeat: null,
@@ -112,9 +111,10 @@ $.fn.SpinButton = function(cfg){
 			var x = e.pageX || e.x;
 			var y = e.pageY || e.y;
 			var el = e.target || e.srcElement;
+			var height = $(el).outerHeight()/2;
 			var direction = 
 				(x > coord(el,'offsetLeft') + el.offsetWidth - this.spinCfg._btn_width)
-				? ((y < coord(el,'offsetTop') + this.spinCfg._btn_height) ? 1 : -1) : 0;
+				? ((y < coord(el,'offsetTop') + height) ? 1 : -1) : 0;
 			
 			if (direction !== this.spinCfg._direction) {
 				// Style up/down buttons:
