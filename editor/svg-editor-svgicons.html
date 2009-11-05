@@ -17,7 +17,7 @@
 <script type="text/javascript" src="svgcanvas.js"></script>
 <script type="text/javascript" src="svg-editor.js"></script>
 <script type="text/javascript" src="locale/locale.js"></script>
-<!-- <script type="text/javascript" src="../../svg-icon-loader/jquery.svgicons.js"></script> -->
+<!-- <script type="text/javascript" src="../../../svg-icon-loader/jquery.svgicons.js"></script> -->
 <script type="text/javascript" src="http://svg-icon-loader.googlecode.com/svn/trunk/jquery.svgicons.js"></script>
 
 <style>
@@ -29,8 +29,30 @@
 	height: 24px;
 }
 
+#svg_editor .tool_sep {
+	width: 1px;
+	background: #888;
+	background-image: none;
+	border-left: 1px outset #EEE;
+	margin: 2px 3px;
+	padding: 0;
+	height: 24px;
+}
+
 #layerbuttons {
 	overflow: auto;
+}
+
+#svg_editor #layerlist td.layervis {
+	background: none;
+}
+
+#layerlist td.layervis .svg_icon {
+	display: block;
+}
+
+#layerlist td.layerinvis .svg_icon {
+	display: none;
 }
 
 .layer_button {
@@ -90,20 +112,20 @@
 TODO for SVG icons:
 
 - Make alignment SVG icons
-- Make layer eye SVG icon
-- Make layer icons bigger for l and xl (not s) 
-- Fix SVG logo to work with icon-loader
-- Make no-color (red X) SVG icon
-- Make flyout buttons work in Opera
-- Fix spinner on large icons (probably a lot of work)
+- Make. "open" SVG icon
+- Convert source-view icons
 - Other sizing tweaks
+- Make layer icons bigger for l and xl (not s) 
 
+- Make layer eye SVG icon work when making new layers
+- Make transparency icon clone to fill/stroke box when clicked
 
 */
 $(function() {
-	$.svgIcons('images/svg_edit_icons.svg', {
+	$.svgIcons('images/svg_edit_icons.svgz', {
 		w:24, h:24,
 		id_match: false,
+		no_img: true,
 		fallback_path:'images/',
 		fallback:{
 			'new_image':'clear.png',
@@ -143,6 +165,8 @@ $(function() {
 			'arrow_down':'dropdown.gif'
 		},
 		placement: {
+			'#logo a':'logo',
+		
 			'#tool_clear,#layer_new':'new_image',
 			'#tool_save':'save',
 			'#tool_source':'source',
@@ -175,14 +199,26 @@ $(function() {
 			
 			'#layer_up':'go_up',
 			'#layer_down':'go_down',
+			'#layerlist td.layervis':'eye',
 			
 			'.flyout_arrow_horiz':'arrow_right',
-			'.dropdown button':'arrow_down'
+			'.dropdown button':'arrow_down',
+			'#palette .palette_item:first':'no_color'
 		},
 		resize: {
+			'#logo .svg_icon': 32,
 			'.flyout_arrow_horiz .svg_icon': 5,
-			'.layer_button .svg_icon': 14,
-			'.dropdown button .svg_icon': 7
+			'.layer_button .svg_icon, #layerlist td.layervis .svg_icon': 14,
+			'.dropdown button .svg_icon': 7,
+			'#palette .svg_icon': 16
+		},
+		callback: function(icons) {
+			var tleft = $('#tools_left')
+			var min_height = tleft.offset().top + tleft.outerHeight();
+			if($(window).height() < min_height) {
+				// Make smaller
+				$('#iconsize').val('s').change()
+			}
 		}
 	});
 	
@@ -209,6 +245,8 @@ $(function() {
 		icon[0].setAttribute('height',holder.height());
 		holder.empty().append(icon);
 	}
+	
+	$('#palette .palette_item:first').css('background','none');
 	
 	// Change in last line of each of these.
 	var clickSquare = function(){
@@ -275,9 +313,9 @@ $(function() {
 			this.setAttribute('height',icon_sizes[size]);
 		});
 		
-		$('.flyout_arrow_horiz .svg_icon').each(function() {
-			this.setAttribute('width',icon_sizes[size]/3);
-			this.setAttribute('height',icon_sizes[size]/3);
+		$.resizeSvgIcons({
+			'.flyout_arrow_horiz .svg_icon': icon_sizes[size] / 3,
+			'#logo .svg_icon': icon_sizes[size] * 1.3
 		});
 		
 		// Note that all rules will be prefixed with '#svg_editor' when parsed
@@ -293,7 +331,11 @@ $(function() {
 				'padding': {s: '1px', l: '2px', xl: '3px'}
 			},
 			".tool_sep": {
-				'height': {s: '16px', l: '32px', xl: '48px'}
+				'height': {s: '16px', l: '32px', xl: '48px'},
+				'margin': {s: '2px 2px', l: '2px 5px', xl: '2px 8px'}
+			},
+			"#tools_top": {
+				'left': {s: '27px', l: '50px', xl: '70px'}
 			},
 			"#tools_left": {
 				'width': {s: '26px', l: '34px', xl: '42px'},
@@ -305,8 +347,8 @@ $(function() {
 				'bottom': {s: '50px', l: '60px', xl: '65px'}
 			},
 			"#tools_bottom": {
-				'left': {s: '50px', l: '57.5', xl: '65px'},
-				'height': {s: '50px', l: '57.5', xl: '65px'}
+				'left': {s: '50px', l: '56', xl: '65px'},
+				'height': {s: '50px', l: '56', xl: '65px'}
 			},
 			"#tools_top input, #tools_bottom input": {
 				'margin-top': {s: '2px', l: '4px', xl: '5px'},
@@ -321,7 +363,6 @@ $(function() {
 				'line-height': {s: '17px', l: '34px', xl: '50px'}
 			}, 
 			".dropdown button": {
-// 				'margin-top': {s: '2px', l: '3px', xl: '4px'},
 				'height': {s: '18px', l: '34px', xl: '50px'}
 			},
 			"#tools_top label, #tools_bottom label": {
@@ -333,13 +374,22 @@ $(function() {
 			},
 			"#sidepanels": {
 				'top': {s: '50px', l: '88px', xl: '125px'},
-				'bottom': {s: '50px', l: '88px', xl: '125px'},
+				'bottom': {s: '50px', l: '58px', xl: '65px'},
 			},
 			".flyout_arrow_horiz": {
 				'left': {s: '-5px', l: '5px', xl: '14px'},
 				'top': {s: '-13px', l: '-13px', xl: '-20px'}
+			},
+			"input.spin-button": {
+				'background-image': {l: "url('images/spinbtn_updn_big.png')", xl: "url('images/spinbtn_updn_big.png')"},
+				'background-position': {l: '100% -3px', xl: '100% 4px'}
+			},
+			"input.spin-button.up": {
+				'background-position': {l: '100% -43px', xl: '100% -36px'}
+			},
+			"input.spin-button.down": {
+				'background-position': {l: '100% -83px', xl: '100% -76px'}
 			}
-
 		};
 		
 		var rule_elem = $('#tool_size_rules');
@@ -355,7 +405,9 @@ $(function() {
 				selector = '#svg_editor ' + selector.replace(/,/g,', #svg_editor');
 				style_str += selector + '{';
 				$.each(rules, function(prop, values) {
-					style_str += (prop + ':' + values[size] + ';');
+					if(values[size]) {
+						style_str += (prop + ':' + values[size] + ';');
+					}
 				});
 				style_str += '}';
 			});
@@ -370,7 +422,7 @@ $(function() {
 	
 	// For quick testing
 // 	window.setTimeout(function() {
-// 		$('#iconsize').val('s').change();
+// 		$('#iconsize').val('xl').change();
 // 	},1000);
 });
 </script>
@@ -432,7 +484,6 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 
 <div id="logo">
 	<a href="http://svg-edit.googlecode.com/" target="_blank" title="SVG-edit Home Page">
-		<img src="images/logo.png" alt="logo" />
 	</a>
 </div>
 
@@ -457,13 +508,13 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	
 	<!-- Buttons when a single element is selected -->
 	<div id="selected_panel">
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<div class="tool_sep"></div>
 		<div class="push_button" id="tool_clone" title="Clone Element [C]"></div>
 		<div class="push_button" id="tool_delete" title="Delete Element [Delete/Backspace]"></div>
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<div class="tool_sep"></div>
 		<div class="push_button" id="tool_move_top" title="Move to Top [Shift+Up]"></div>
 		<div class="push_button" id="tool_move_bottom" title="Move to Bottom [Shift+Down]"></div>
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<div class="tool_sep"></div>
 
 		<label id="group_opacityLabel" class="selected_tool" for="group_opacity">opac:</label>
 		<input id="group_opacity" class="selected_tool" title="Change selected item opacity" size="3" value="100" type="text"/>
@@ -486,10 +537,10 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 
 	<!-- Buttons when multiple elements are selected -->
 	<div id="multiselected_panel">
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<div class="tool_sep"></div>
 		<div class="push_button" id="tool_clone_multi" title="Clone Elements [C]"></div>
 		<div class="push_button" id="tool_delete_multi" title="Delete Selected Elements [Delete/Backspace]"></div>
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<div class="tool_sep"></div>
 		<div class="push_button" id="tool_group" title="Group Elements [G]"></div>
 		<div class="push_button" id="tool_alignleft" title="Align Left"></div>
 		<div class="push_button" id="tool_aligncenter" title="Align Center"></div>
@@ -504,17 +555,17 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 		<option id="smallest_object" value="smallest">smallest object</option>
 		<option id="page" value="page">page</option>
 		</select>
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<div class="tool_sep"></div>
 
 	</div>
 
 	<div id="g_panel">
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<div class="tool_sep"></div>
 		<div class="push_button" id="tool_ungroup" title="Ungroup Elements [G]"></div>
 	</div>
 
 	<div id="rect_panel">
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<div class="tool_sep"></div>
 		<label class="rect_tool">x:</label>
 		<input id="rect_x" class="rect_tool attr_changer" title="Change rectangle X coordinate" size="3" data-attr="x"/>
 		<label class="rect_tool">y:</label>
@@ -528,7 +579,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	</div>
 
 	<div id="image_panel">
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<div class="tool_sep"></div>
 		<label class="image_tool">x:</label>
 		<input id="image_x" class="image_tool attr_changer" title="Change image X coordinate" size="3" data-attr="x"/>
 		<label class="image_tool">y:</label>
@@ -542,7 +593,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
   </div>
 
 	<div id="circle_panel">
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<div class="tool_sep"></div>
 		<label class="circle_tool">cx:</label>
 		<input id="circle_cx" class="circle_tool attr_changer" title="Change circle's cx coordinate" size="3" data-attr="cx"/>
 		<label class="circle_tool">cy:</label>
@@ -552,7 +603,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	</div>
 
 	<div id="ellipse_panel">
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<div class="tool_sep"></div>
 		<label class="ellipse_tool">cx:</label>
 		<input id="ellipse_cx" class="ellipse_tool attr_changer" title="Change ellipse's cx coordinate" size="3" data-attr="cx"/>
 		<label class="ellipse_tool">cy:</label>
@@ -564,7 +615,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	</div>
 
 	<div id="line_panel">
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<div class="tool_sep"></div>
 		<label class="line_tool">x1:</label>
 		<input id="line_x1" class="line_tool attr_changer" title="Change line's starting x coordinate" size="3" data-attr="x1"/>
 		<label class="line_tool">y1:</label>
@@ -576,7 +627,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	</div>
 
 	<div id="text_panel">
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<div class="tool_sep"></div>
 		<label class="text_tool">x:</label>
 		<input id="text_x" class="text_tool attr_changer" title="Change text X coordinate" size="3" data-attr="x"/>
 		<label class="text_tool">y:</label>
@@ -596,7 +647,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	</div>
 	
 	<div id="path_node_panel">
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<div class="tool_sep"></div>
 		<label class="path_node_tool">x:</label>
 		<input id="path_node_x" class="path_node_tool attr_changer" title="Change node's x coordinate" size="3" data-attr="x"/>
 		<label class="path_node_tool">y:</label>
@@ -647,7 +698,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 				<li>1000%</li>
 			</ul>
 		</div>
-		<img class="tool_sep" src="images/sep.png" alt="|"/>
+		<div class="tool_sep"></div>
 	</div>
 
 	<div id="tools_bottom_2">
