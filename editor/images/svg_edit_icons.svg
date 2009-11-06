@@ -380,6 +380,28 @@
 	</svg>
 </g>
 
+<g id="open">
+<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <defs>
+  <linearGradient y2="0.91406" x2="0.65234" y1="0.14063" x1="0.42578" id="svg_76">
+   <stop stop-opacity="1" stop-color="#81bbf4" offset="0"/>
+   <stop stop-opacity="1" stop-color="#376eb7" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <rect x="1.65" y="3.75" width="9.8" height="16.72712" id="svg_98" fill="#c0c0c0" stroke="#606060"/>
+  <rect stroke-width="0" stroke="#606060" fill="#a0a0a0" id="svg_88" height="14.17459" width="6.39585" y="4.9758" x="2.89542"/>
+  <path d="m18.62576,4.54365l0,6.91443l-9.9395,0l-0.08643,-10.11236l6.828,0l3.19792,3.19793z" id="svg_99" fill="#e0e0e0" stroke="#404040"/>
+  <title>Layer 1</title>
+  <path d="m2.95,20.53644l1.65,-12.03644l16.2,0l-1.5,12l-16.35,0.03643z" id="svg_97" fill="url(#svg_76)" stroke="#285582"/>
+  <line fill="none" stroke="#606060" id="svg_89" y2="4.28436" x2="13.95851" y1="4.28436" x1="10.32844"/>
+  <line fill="none" stroke="#606060" id="svg_91" y2="6.53155" x2="14.82282" y1="6.53155" x1="10.32844"/>
+  <path stroke-width="0" stroke="#606060" fill="#ffffff" id="svg_100" d="m15.25895,1.95069l-0.00401,2.85225l2.89558,0.00004l-2.89157,-2.85229z"/>
+ </g>
+</svg>
+</g>
+
 <g id="docprops">
 	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 	 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
@@ -627,6 +649,96 @@
 </svg>
 </g>
 
+<g id="align_left">
+	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
+	 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+	 <g>
+	  <title>Layer 1</title>
+	  <rect stroke="#606060" fill="#ffffff" id="svg_4" height="7" width="12" y="2.5" x="2.5"/>
+	  <rect stroke-width="0" stroke="#606060" fill="#c0c0c0" id="svg_5" height="4" width="11" y="4" x="2"/>
+	  <rect id="svg_6" stroke="#606060" fill="#ffffff" height="7" width="18" y="12.5" x="2.5"/>
+	  <rect id="svg_7" stroke-width="0" stroke="#606060" fill="#c0c0c0" height="4" width="17" y="14" x="2"/>
+	  <rect stroke="#c15909" fill="#ef9a23" id="svg_2" height="40" width="2" y="-10" x="1.5"/>
+	 </g>
+	</svg>
+</g>
+
+<g id="align_center">
+	<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+	 <g>
+	  <rect x="1.5" y="12.5" width="18" height="7" fill="#c0c0c0" stroke="#606060" id="svg_6"/>
+	  <rect x="4.5" y="2.5" width="12" height="7" id="svg_4" fill="#c0c0c0" stroke="#606060"/>
+	  <rect x="9.5" y="-10" width="2" height="40" id="svg_2" fill="#ef9a23" stroke="#c15909"/>
+	  <title>Layer 1</title>
+	  <rect x="2.5" y="13.5" width="16" height="5" fill="none" stroke="#ffffff" id="svg_7"/>
+	  <rect x="5.5" y="3.5" width="10" height="5" id="svg_5" fill="none" stroke="#ffffff"/>
+	 </g>
+	</svg>
+</g>
+
+<g id="align_right">
+	<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+	 <g>
+	  <title>Layer 1</title>
+	  <rect x="7.5" y="2.5" width="12" height="7" id="svg_4" fill="#ffffff" stroke="#606060"/>
+	  <rect x="9" y="4" width="11" height="4" id="svg_5" fill="#c0c0c0" stroke="#606060" stroke-width="0"/>
+	  <rect x="1.5" y="12.5" width="18" height="7" fill="#ffffff" stroke="#606060" id="svg_6"/>
+	  <rect x="3" y="14" width="17" height="4" fill="#c0c0c0" stroke="#606060" stroke-width="0" id="svg_7"/>
+	  <rect x="18.5" y="-10" width="2" height="40" id="svg_2" fill="#ef9a23" stroke="#c15909"/>
+	 </g>
+	</svg>
+</g>
+
+<g id="align_top">
+	<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+	 <g>
+	  <title>Layer 1</title>
+	  <g transform="rotate(90, 11, 11)" id="svg_1">
+	   <rect x="2.5" y="3.5" width="12" height="7" id="svg_4" fill="#ffffff" stroke="#606060"/>
+	   <rect x="2" y="5" width="11" height="4" id="svg_5" fill="#c0c0c0" stroke="#606060" stroke-width="0"/>
+	   <rect x="2.5" y="13.5" width="18" height="7" fill="#ffffff" stroke="#606060" id="svg_6"/>
+	   <rect x="2" y="15" width="17" height="4" fill="#c0c0c0" stroke="#606060" stroke-width="0" id="svg_7"/>
+	   <rect x="1.5" y="-9" width="2" height="40" id="svg_2" fill="#ef9a23" stroke="#c15909"/>
+	  </g>
+	 </g>
+	</svg>
+</g>
+
+<g id="align_middle">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <g>
+  <title>Layer 1</title>
+  <g transform="rotate(90, 12, 11.5)" id="svg_1">
+   <rect id="svg_6" stroke="#606060" fill="#c0c0c0" height="7" width="18" y="14" x="3"/>
+   <rect stroke="#606060" fill="#c0c0c0" id="svg_4" height="7" width="12" y="4" x="6"/>
+   <rect stroke="#c15909" fill="#ef9a23" id="svg_2" height="40" width="2" y="-8.5" x="11"/>
+   <rect id="svg_7" stroke="#ffffff" fill="none" height="5" width="16" y="15" x="4"/>
+   <rect stroke="#ffffff" fill="none" id="svg_5" height="5" width="10" y="5" x="7"/>
+  </g>
+ </g>
+</svg>
+</g>
+
+<g id="align_bottom">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <g>
+  <title>Layer 1</title>
+  <g transform="rotate(90, 11, 11)" id="svg_1">
+   <rect stroke="#606060" fill="#ffffff" id="svg_4" height="7" width="12" y="2.5" x="7.5"/>
+   <rect stroke-width="0" stroke="#606060" fill="#c0c0c0" id="svg_5" height="4" width="11" y="4" x="9"/>
+   <rect id="svg_6" stroke="#606060" fill="#ffffff" height="7" width="18" y="12.5" x="1.5"/>
+   <rect id="svg_7" stroke-width="0" stroke="#606060" fill="#c0c0c0" height="4" width="17" y="14" x="3"/>
+   <rect stroke="#c15909" fill="#ef9a23" id="svg_2" height="40" width="2" y="-10" x="18.5"/>
+  </g>
+ </g>
+</svg>
+</g>
+
 <g id="eye">
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17">
  <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
@@ -655,6 +767,38 @@
 	  <line id="svg_92" fill="none" stroke="#d40000" y2="24" x2="0" y1="0" x1="24"/>
 	 </g>
 	</svg>
+</g>
+
+<g id="ok">
+	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+	 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+	 <defs>
+	  <linearGradient y2="0.65625" x2="0.94141" y1="0.43359" x1="0.42969" id="svg_106">
+	   <stop stop-opacity="1" stop-color="#38ff45" offset="0"/>
+	   <stop stop-opacity="1" stop-color="#127c0c" offset="1"/>
+	  </linearGradient>
+	 </defs>
+	 <g>
+	  <title>Layer 1</title>
+	  <path transform="rotate(45, 12, 10)" stroke="#005500" fill="url(#svg_106)" id="svg_101" d="m7.9,15.9l4.9,-0.05l0,-13.75l3.8,0l0,17.6l-8.7,0l0,-3.8z"/>
+	 </g>
+	</svg>
+</g>
+
+<g id="cancel">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <defs>
+  <linearGradient y2="0.65625" x2="0.94141" y1="0.43359" x1="0.42969" id="svg_9">
+   <stop stop-opacity="1" stop-color="#ff3838" offset="0"/>
+   <stop stop-opacity="1" stop-color="#7a0c0c" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <title>Layer 1</title>
+  <path stroke="#550000" fill="url(#svg_9)" id="svg_101" d="m2.10526,10.52632l7.36842,0l0,-7.36842l3.68421,0l0,7.36842l7.36842,0l0,3.68421l-7.36842,0l0,7.36842l-3.68421,0l0,-7.36842l-7.36842,0l0,-3.68421z" transform="rotate(45, 11.3, 12.3)"/>
+ </g>
+</svg>
 </g>
 
 <g id="svg_eof"/>
