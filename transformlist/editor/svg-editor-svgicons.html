@@ -102,8 +102,33 @@
 #svg_editor #tool_fhrect,
 #svg_editor #tool_circle,  
 #svg_editor #tool_ellipse,
-#svg_editor #tool_fhellipse {
+#svg_editor #tool_fhellipse,
+#svg_editor #tool_alignleft,
+#svg_editor #tool_aligncenter,
+#svg_editor #tool_alignright,
+#svg_editor #tool_aligntop,
+#svg_editor #tool_alignmiddle,
+#svg_editor #tool_alignbottom {
 	background: none;
+}
+
+button#tool_source_save,
+button#tool_source_cancel,
+button#tool_docprops_save,
+button#tool_docprops_cancel {
+    border:1px solid #dedede;
+    line-height:130%;
+	background: #E8E8E8 none;
+    padding:5px 10px 5px 7px; /* Firefox */
+    line-height:17px; /* Safari */
+}
+
+.toolbar_button button .svg_icon {
+    margin:0 3px -3px 0 !important;
+    padding:0;
+    border:none;
+    width:16px;
+    height:16px;
 }
 
 </style>
@@ -111,18 +136,13 @@
 /*
 TODO for SVG icons:
 
-- Make alignment SVG icons
-- Make. "open" SVG icon
-- Convert source-view icons
-- Other sizing tweaks
-- Make layer icons bigger for l and xl (not s) 
-
+- More sizing tweaks
 - Make layer eye SVG icon work when making new layers
 - Make transparency icon clone to fill/stroke box when clicked
 
 */
 $(function() {
-	$.svgIcons('images/svg_edit_icons.svgz', {
+	$.svgIcons('images/svg_edit_icons.svg', {
 		w:24, h:24,
 		id_match: false,
 		no_img: true,
@@ -130,6 +150,7 @@ $(function() {
 		fallback:{
 			'new_image':'clear.png',
 			'save':'save.png',
+			'open':'open.png',
 			'source':'source.png',
 			'docprops':'document-properties.png',
 			'wireframe':'wireframe.png',
@@ -157,10 +178,20 @@ $(function() {
 			'ungroup':'shape_ungroup.png',
 			'move_top':'move_top.png',
 			'move_bottom':'move_bottom.png',
+			
+			'align_left':'align-left.png',
+			'align_center':'align-center',
+			'align_right':'align-right',
+			'align_top':'align-top',
+			'align_middle':'align-middle',
+			'align_bottom':'align-bottom',
 
 			'go_up':'go-up.png',
 			'go_down':'go-down.png',
 
+			'ok':'save.png',
+			'cancel':'cancel.png',
+			
 			'arrow_right':'flyouth.png',
 			'arrow_down':'dropdown.gif'
 		},
@@ -169,6 +200,7 @@ $(function() {
 		
 			'#tool_clear,#layer_new':'new_image',
 			'#tool_save':'save',
+			'#tool_open':'open',
 			'#tool_source':'source',
 			'#tool_docprops':'docprops',
 			'#tool_wireframe':'wireframe',
@@ -197,9 +229,19 @@ $(function() {
 			'#tool_group':'group',
 			'#tool_ungroup':'ungroup',
 			
+			'#tool_alignleft':'align_left',
+			'#tool_aligncenter':'align_center',
+			'#tool_alignright':'align_right',
+			'#tool_aligntop':'align_top',
+			'#tool_alignmiddle':'align_middle',
+			'#tool_alignbottom':'align_bottom',
+			
 			'#layer_up':'go_up',
 			'#layer_down':'go_down',
 			'#layerlist td.layervis':'eye',
+			
+			'#tool_source_save,#tool_docprops_save':'ok',
+			'#tool_source_cancel,#tool_docprops_cancel':'cancel',
 			
 			'.flyout_arrow_horiz':'arrow_right',
 			'.dropdown button':'arrow_down',
@@ -213,6 +255,10 @@ $(function() {
 			'#palette .svg_icon': 16
 		},
 		callback: function(icons) {
+			$('.toolbar_button button .svg_icon').each(function() {
+				$(this).parent().prepend(this);
+			});
+			
 			var tleft = $('#tools_left')
 			var min_height = tleft.offset().top + tleft.outerHeight();
 			if($(window).height() < min_height) {
@@ -305,18 +351,22 @@ $(function() {
 	$('#iconsize').change(function() {
 		var size = this.value;
 		var icon_sizes = { s:16, m:24, l:32, xl:48 };
+		var size_num = icon_sizes[size];
 		
 		// Change icon size
 		$('.tool_button, .push_button, .tool_button_current, .tool_button_disabled, .tool_flyout_button')
 		.find('.svg_icon').each(function() {
-			this.setAttribute('width',icon_sizes[size]);
-			this.setAttribute('height',icon_sizes[size]);
+			this.setAttribute('width',size_num);
+			this.setAttribute('height',size_num);
 		});
 		
 		$.resizeSvgIcons({
-			'.flyout_arrow_horiz .svg_icon': icon_sizes[size] / 3,
-			'#logo .svg_icon': icon_sizes[size] * 1.3
+			'.flyout_arrow_horiz .svg_icon': size_num / 3,
+			'#logo .svg_icon': size_num * 1.3
 		});
+		if(size != 's') {
+			$.resizeSvgIcons({'#layerbuttons .svg_icon': size_num * .6});
+		}
 		
 		// Note that all rules will be prefixed with '#svg_editor' when parsed
 		var cssResizeRules = {
@@ -335,7 +385,8 @@ $(function() {
 				'margin': {s: '2px 2px', l: '2px 5px', xl: '2px 8px'}
 			},
 			"#tools_top": {
-				'left': {s: '27px', l: '50px', xl: '70px'}
+				'left': {s: '27px', l: '50px', xl: '70px'},
+				'height': {s: '50px', l: '88px', xl: '125px'}
 			},
 			"#tools_left": {
 				'width': {s: '26px', l: '34px', xl: '42px'},
@@ -344,26 +395,32 @@ $(function() {
 			"div#workarea": {
 				'left': {s: '27px', l: '46px', xl: '65px'},
 				'top': {s: '50px', l: '88px', xl: '125px'},
-				'bottom': {s: '50px', l: '60px', xl: '65px'}
+				'bottom': {s: '52px', l: '68px', xl: '75px'}
 			},
 			"#tools_bottom": {
-				'left': {s: '50px', l: '56', xl: '65px'},
-				'height': {s: '50px', l: '56', xl: '65px'}
+				'left': {s: '27px', l: '46px', xl: '65px'},
+				'height': {s: '52px', l: '68px', xl: '75px'}
 			},
 			"#tools_top input, #tools_bottom input": {
 				'margin-top': {s: '2px', l: '4px', xl: '5px'},
-				'height': {s: '12px', l: '29px', xl: '45px'},
+				'height': {s: 'auto', l: 'auto', xl: 'auto'},
 				'border': {s: '1px solid #555', l: 'auto', xl: 'auto'},
-				'font-size': {s: '.9em', l: '1.7em', xl: '2.5em'}
+				'font-size': {s: '.9em', l: '2em', xl: '2.5em'}
 			},
 			"#tools_bottom input": {
 				'margin-top': {s: '6px', l: '4px', xl: '5px'},
+			},
+			"#tools_bottom span, #copyright, #tools_bottom .label": {
+				'font-size': {l: '1.5em', xl: '2em'}
+			},
+			"#tools_bottom_2": {
+				'width': {l: '295px', xl: '355px'}
 			},
 			"#tools_top > div, #tools_top": {
 				'line-height': {s: '17px', l: '34px', xl: '50px'}
 			}, 
 			".dropdown button": {
-				'height': {s: '18px', l: '34px', xl: '50px'}
+				'height': {s: '18px', l: '34px', xl: '40px'}
 			},
 			"#tools_top label, #tools_bottom label": {
 				'font-size': {s: '1em', l: '1.5em', xl: '2em'},
@@ -374,7 +431,18 @@ $(function() {
 			},
 			"#sidepanels": {
 				'top': {s: '50px', l: '88px', xl: '125px'},
-				'bottom': {s: '50px', l: '58px', xl: '65px'},
+				'bottom': {s: '52px', l: '68px', xl: '65px'},
+			},
+			'#layerbuttons': {
+				'width': {l: '130px', xl: '175px'},
+				'height': {l: '24px', xl: '30px'}
+			},
+			'#layerlist': {
+				'width': {l: '128px', xl: '150px'}
+			},			
+			'.layer_button': {
+				'width': {l: '19px', xl: '28px'},
+				'height': {l: '19px', xl: '28px'}
 			},
 			".flyout_arrow_horiz": {
 				'left': {s: '-5px', l: '5px', xl: '14px'},
@@ -382,13 +450,14 @@ $(function() {
 			},
 			"input.spin-button": {
 				'background-image': {l: "url('images/spinbtn_updn_big.png')", xl: "url('images/spinbtn_updn_big.png')"},
-				'background-position': {l: '100% -3px', xl: '100% 4px'}
+				'background-position': {l: '100% -5px', xl: '100% -2px'},
+				'padding-right': {l: '24px', xl: '24px' }
 			},
 			"input.spin-button.up": {
-				'background-position': {l: '100% -43px', xl: '100% -36px'}
+				'background-position': {l: '100% -45px', xl: '100% -42px'}
 			},
 			"input.spin-button.down": {
-				'background-position': {l: '100% -83px', xl: '100% -76px'}
+				'background-position': {l: '100% -85px', xl: '100% -82px'}
 			}
 		};
 		
@@ -421,9 +490,9 @@ $(function() {
 	});
 	
 	// For quick testing
-// 	window.setTimeout(function() {
-// 		$('#iconsize').val('xl').change();
-// 	},1000);
+	window.setTimeout(function() {
+		$('#iconsize').val('s').change();
+	},1000);
 });
 </script>
 
@@ -492,7 +561,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<!-- File-like buttons: New, Save, Source -->
 	<div id="file_panel">
 		<div class="push_button" id="tool_clear" title="New Image [N]"></div>
-		<img style="display:none" class="push_button" id="tool_open" src="images/open.png" title="Open Image [O]" alt="Open"/>
+		<div class="push_button" id="tool_open" title="Open Image [O]" style="display:none"></div>
 		<div class="push_button" id="tool_save" title="Save Image [S]"></div>
 		<div class="push_button" id="tool_docprops" title="Document Properties [I]"></div>
 		<div class="push_button" id="tool_source" title="Edit Source [U]"></div>
@@ -704,13 +773,13 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<div id="tools_bottom_2">
 		<table>
 		<tr>
-			<td id="fill_tool_bottom">fill:</td>
+			<td id="fill_tool_bottom" class="label">fill:</td>
 			<td><div id="fill_color" class="color_block"  title="Change fill color"></div></td>
-			<td colspan="3"><div id="fill_opacity">100%</div></td>
+			<td colspan="3"><div id="fill_opacity" class="label">100%</div></td>
 		</tr><tr>
-			<td id="stroke_tool_bottom">stroke:</td>
+			<td id="stroke_tool_bottom" class="label">stroke:</td>
 			<td><div id="stroke_color" class="color_block" title="Change stroke color"></div></td>
-			<td><div id="stroke_opacity">100 %</div></td>
+			<td><div id="stroke_opacity" class="label">100 %</div></td>
 			<td>
 				<input id="stroke_width" title="Change stroke width" size="2" value="5" type="text" data-attr="Stroke Width"/>
 			</td>
