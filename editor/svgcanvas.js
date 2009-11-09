@@ -1,9 +1,11 @@
 /*
 	TODOs for TransformList:
 	
-	* Fix rotation
+	* Fix rotation of groups (rotate being prepended)
+	* See if we can completely eliminate translates on groups (currently flattening to one)
+	* Flattening adjacent scale transform sets on groups
 	* Fix bounding box of groups with rotated children
-	* Fix moving/resizing/rotating of groups (pummel the transforms down to the children?)
+	* Fix resizing/rotating of groups (pummel the transforms down to the children?)
 	* Ensure resizing in negative direction works (nope! broken!)
 	* Ensure ungrouping works (surely broken)
 	* Ensure undo still works properly (nope! broken!)
@@ -1199,54 +1201,78 @@ function BatchCommand(text) {
 			call("changed", selectedElements);
 		}
 	};
-
+	
 	/*
-		Changes need to handle resizing of groups and any number of transformations:
+	
+	The user changes shape geometry in one of several ways:
+		- drag/moving it
+		- rotating it
+		- FUTURE: skewing it
+		- resizing it
+	(we ignore path node editing here)
+	
+	From a transformation point of view:
+		- translations are always in the editor's frame of reference (NOT the element's)
+		- rotations rotate the element's frame of reference
+		- FUTURE: skewing skews the element's frame of reference
+		- resizing modifies the dimensions of the element in its rotated+skewed
+		  frame of reference.
+	
+	Thus, from a coding point of view, what we do when the user is changing geometry is:
+	
+	- when the user drags an element, we PREPEND the tlist with a: 
+			translate(tx,ty)
+	- when the user rotates an element, we INSERT into the tlist a:
+			rotate(angle,cx,cy) after any translates 
+	- FUTURE: when the user skews an element, we INSERT into the tlist a:
+			skewX(angle) or skewY(angle) after the rotate
+	- when the user is resizing an element, we APPEND the tlist with a:
+			translate(tx,ty) scale(sx,sy) translate(-tx,-ty)
+
+	Thus, a simple element's transform list looks like the following:
+		[ Translate ] [ Rotate ] [ SkewX/Y] [ Scale ]
+
+	When the user is done changing the shape's geometry (i.e. upon lifting the mouse button)		
+	we then attempt to reduce the transform list of the element by the following:
+	
+	- a translate can be removed by actually moving the element (modifying its x,y values)
+	- a rotate cannot be removed
+	- FUTURE: a skewX/skewY cannot be removed
+	- a scale can be removed by resizing the element (modifying its width/height values)
 		
-		- while being manipulated with a mouse, shapes can have any number of transforms applied
-		- when moused up, we will traverse the transform list of the element and see if we can 
-		  reduce the transform list to as small as possible (preferably a zero-length transform list)
-		- since translations completely preserve all shapes and orientations, we can ALWAYS remove
-		  translates (note that this doesn't apply to translates that are part of a scale operation)
-		- since rotations do not preserve any orientations, it is not possible to preserve rotations
-		  unless the rotation degrees is a multiple of 90, thus we will always keep rotational
-		  transforms around
-		- non-uniform scales (sx!=sy) preserve the shape and orientation ONLY if the shape has
-		  not been rotated, thus we will reduce non-uniform scales when we haven't rotated the shape
-		  but otherwise we are forced to keep them around (a consequence of this is that scale
-		  transforms will only be present in the final list with a rotate)
-		- uniform scales (sx==sy) preserve the shape and orientation, so we can ALWAYS remove
-		  uniform scales, even when the shape has been rotated
-		- does the removal of translate or scale transforms affect the rotational center of 
-		  previously visited transforms?
-		- ungrouping has the effect of transferring the transform list of the group down to its
-		  individual children, thus we will then attempt to reduce the transform list further on
-		  each child upon ungrouping
-		  
-		- we traverse the transform list backwards, starting at the nth transform and modifying
-		  frame of reference (the ctm) as we move to the next transform
-		- each time we reduce the transform list, we remap the coordinates of the shape
-		- at the end, we have a new transform list and a new set of coordinates for the shape,
-		  we can then update the DOM with both of these elements
-		  
-		  
-		The Simplest Case:
-			Dragging an axis-aligned rectangle 150 pixels east.
-			
-			* Transform list has just one transform:  translate(150,0)
-			* we translate the top-left coordinate of the rect (by adding 150 to the 'x' value)
-			  and reduce the transform list to empty
+	Thus, a simple element's transform list can always be reduced to:
+		[ Rotate ] [ SkewX/Y ]
 		
-		A Simple Case:
-			Dragging an ellipse which has been rotated 30 degrees by 100 pixels south
-			
-			* Transform list has two transforms:  translate(0,100) rotate(30,cx,cy)
-			* we start at the rotation, since we cannot reduce rotations, we simply update the
-			  current transform matrix so that it includes the translate(cx,cy) rotate(30) translate(-cx,-cy)
-			* next, we get to translate(0,100), standalone translates can always be reduced so first
-			  we rotate by 30 degrees and it becomes translate(50,86.6), then we move the ellipse's
-			  center point by 50,86.6 and then adjust the rotate so that the transform list results
-			  as rotate(30,cx',cy')
+	However, a group is an element that contains one or more other elements, let's call 
+	this a Complex Element.
+		
+	From the user point of view, a complex element is handled no differently 
+	than a simple element.  Thus its transform list looks like the following:
+		[ Translate] [ Rotate ] [ SkewX/SkewY ] [ Scale ]
+		
+	- all translates can be removed by moving the element's children
+	- all rotations can be collapsed down to one rotation
+	- all scales can be collapsed down to one scale (we cannot simply resize the children
+	  because the child of a <g> may be another group - and that <g> may be rotated!)
+		
+	This means a complex element has a reduced transform list as:
+		[ Rotate ] [ SkewX/SkewY ] [ Scale ]
+		
+	Next, we have to consider the case when a group is dissolved (ungrouped).  When
+	the group is dissolving, the transform list must make its way down to the children.
+	
+	Thus, every child of the now-dissolved group inherits the transformlist.  Child N's 
+	transform list looks like:
+		[ Parent Rotate ] [ Parent SkewX/SkewY ] [ Parent Scale ] [ Rotate ] [ SkewX/SkewY ] [ Scale ]
+	
+	THINGS TO FIGURE OUT:
+	
+	1) It's not clear to me yet what happens when you want to rotate an element with the 
+	above type of transform list.
+	
+	2) It's also not clear to me if we need to calculate the rotation angle of the element
+	differently (nor what we should display as the element's rotation angle).
+	
 	*/
 
 	// this is how we map paths to our preferred relative segment types
@@ -1260,7 +1286,6 @@ function BatchCommand(text) {
 	// TODO: use suspendRedraw() and unsuspendRedraw() around this function
 	var recalculateDimensions = function(selected) {
 		if (selected == null) return null;
-		if (selected.tagName == "g") return null;
 		// if this element had no transforms, we are done
 		var tlist = canvas.getTransformList(selected);
 		if (tlist.numberOfItems == 0) return null;
@@ -1352,53 +1377,75 @@ function BatchCommand(text) {
 		var newcenter = {x: origcenter.x, y: origcenter.y};
 		var currentMatrix = {a:1, b:0, c:0, d:1, e:0, f:0};
 		var tx = 0, ty = 0, sx = 1, sy = 1, r = 0.0;
-
-		var n = tlist.numberOfItems;
 		
-		// TODO: have passes where we ONLY eliminate transforms (not
-		// provide remap/scaling functions for the element)
-		// This would reduce the transforms to the bare minimum.
-		// For now, these passes will just collapse adjacent transform types.
-		// This processing does not change the geometry of the element itself, 
-		// it will only reduce the transform list.
-
-		// TODO: first loop and find all adjacent transform sets of the form:
-		//       translate(tx,ty) scale(sx,sy) translate(-tx,-ty) and reduce them
-		//       to one set (multiply sx and sy)
-		var tx = 0, ty = 0, sx = 0, sy = 0;
-		while (n--) {
-		}
+		var N = tlist.numberOfItems;
+		var n;
 		
-		// TODO: then loop and find all adjacent translates of the form:
-		//       translate(tx1,ty1) translate(tx2,ty2) => translate(tx1+tx2,ty1+ty2)
-		n = tlist.numberOfItems;
-		while (n--) {
+		// if it's a group, we have special reduction loops
+		if (selected.tagName == "g") {
+			// always remove translates by transferring them down to the children
+			// otherwise just reduce adjacent scales
+
+			// The first pass is to remove all translates unless it is immediately
+			// after or before a scale
+			n = N;
+			while (n--) {
+				var xform = tlist.getItem(n);
+				if (xform.type != 2 || (n < (tlist.numberOfItems-1) && tlist.getItem(n+1).type == 3) ||
+					(n > 0 && tlist.getItem(n-1).type == 3))
+				{
+					continue;
+				}
+				
+				var tobj = transformToObj(xform);
+				tx += tobj.tx;
+				ty += tobj.ty;
+				// remove the translate from the group
+				tlist.removeItem(n);
+			}
+			// now restore just the one translate
+			if (tx != 0 || ty != 0) {
+				var newxlate = svgroot.createSVGTransform(0);
+				newxlate.setTranslate(tx,ty);
+				tlist.insertItemBefore(newxlate, 0);
+			}
+
+			// TODO: The second pass is to find all adjacent transform sets of the form:
+			//       translate(tx,ty) scale(sx,sy) translate(-tx,-ty) and reduce them
+			//       to one set (multiply sx and sy)
+			n = N;
+			while (n--) {
+			}
 			
-		}		
+			return batchCmd;
+		}
+				
+		// else, it's a non-group
 		
-		// this loop then computes the remapping required of the element 
-		// (this prevents abnormal scaling of strokes)
+		// This pass loop in reverse order and removes any translates or scales.
+		// Once we hit our first rotate(), we will only remove translates.
 		var bRemoveTransform = true;
-		n = tlist.numberOfItems;
+		n = N;
 		while (n--) {
 			// once we reach an unmoveable transform, we can stop
-			if (!bRemoveTransform) break;
 			var xform = tlist.getItem(n);
 			var m = xform.matrix;
 			// if translate...
 			var remap = null, scalew = null, scaleh = null;
 			switch (xform.type) {
-				case 2: // TRANSLATE
+				case 2: // TRANSLATE - always remove
 					remap = function(x,y) { return transformPoint(x,y,m); };
 					scalew = function(w) { return w; }
 					scaleh = function(h) { return h; }
 					break;
-				case 3: // SCALE
+				case 3: // SCALE - only remove if we haven't hit a rotate
+					if (!bRemoveTransform) continue;
 					remap = function(x,y) { return transformPoint(x,y,m); };
 					scalew = function(w) { return m.a * w; }
 					scaleh = function(h) { return m.d * h; }
 					break;
-				case 4: // ROTATE
+				case 4: // ROTATE - only re-center if we haven't previously hit a rotate
+					if (!bRemoveTransform) continue;
 					// if the new center of the shape has moved, then 
 					// re-center the rotation, and determine the movement 
 					// offset required to keep the shape in the same place
@@ -2601,16 +2648,9 @@ function BatchCommand(text) {
 					'height': Math.abs(y-start_y)
 				},100);
 
-				// this code will probably be faster than using getIntersectionList(), but
-				// not as accurate (only grabs an element if the mouse happens to pass over
-				// its bbox and elements would never be released from selection)
-//				var nodeName = evt.target.nodeName.toLowerCase();
-//				if (nodeName != "div" && nodeName != "svg") {
-//					canvas.addToSelection([evt.target]);
-//				}
-
 				// clear out selection and set it to the new list
 				canvas.clearSelection();
+				// TODO: fix this, need to suppliy rect to getIntersectionList()
 				canvas.addToSelection(getIntersectionList());
 
 				/*
