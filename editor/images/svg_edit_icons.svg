@@ -145,6 +145,7 @@
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
  <defs>
   <linearGradient y2="1" x2="1" y1="0.10156" x1="0.36328" id="svg_2">
+
    <stop stop-opacity="1" stop-color="#ffffff" offset="0"/>
    <stop stop-opacity="1" stop-color="#3b7e9b" offset="1"/>
   </linearGradient>
@@ -153,11 +154,11 @@
    <stop stop-opacity="1" stop-color="#bf5f00" offset="1"/>
   </linearGradient>
  </defs>
-  <ellipse stroke-width="2" stroke="#000000" fill="url(#svg_4)" id="svg_1" rx="23" ry="12" cy="37" cx="27"/>
-  <path d="m31.5,0l-8.75,20.25l0.75,24l16.5,-16.5l6,-12.5" id="svg_2" fill="url(#svg_9)" stroke="#000000" stroke-width="2"/>
-  <path d="m39.5,28.5c-2,-9.25 -10.25,-11.75 -17,-7.4375l0.4843,24.4414z" id="svg_10" fill="#fce0a9" stroke="#000000" stroke-width="2"/>
-  <path d="m26.9318,41.1745c-0.4491,-2.3511 -2.3021,-2.9866 -3.8181,-1.8905l0.1087,6.2126z" fill="#000000" stroke="#000000" stroke-width="2" id="svg_11"/>
- </svg>
+  <rect stroke="#000000" stroke-width="2" fill="url(#svg_2)" id="svg_1" height="50" width="50" y="0.75" x="1.25"/>
+  <path stroke-width="2" stroke="#000000" fill="url(#svg_9)" id="svg_2" d="m31.5,0l-8.75,20.25l0.75,24l16.5,-16.5l6,-12.5"/>
+  <path stroke-width="2" stroke="#000000" fill="#fce0a9" id="svg_10" d="m39.5,28.5c-2,-9.25 -10.25,-11.75 -17,-7.4375l0.4843,24.4414z"/>
+  <path id="svg_11" stroke-width="2" stroke="#000000" fill="#000000" d="m26.9318,41.1745c-0.4491,-2.3511 -2.3021,-2.9866 -3.8181,-1.8905l0.1087,6.2126z"/>
+</svg>
 </g>
 
 
