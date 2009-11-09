@@ -5625,7 +5625,6 @@ function BatchCommand(text) {
 	};
 
 	this.getStrokedBBox = function(elems) {
-		// TODO: Get correct BBoxes for rotated elements
 		if(!elems) elems = canvas.getVisibleElements();
 		if(!elems.length) return false;
 		
@@ -5635,7 +5634,40 @@ function BatchCommand(text) {
 				return canvas.getStrokedBBox(elem.childNodes);
 			} else {
 				try {
-					return elem.getBBox();
+					var bb = elem.getBBox();
+					var angle = canvas.getRotationAngle(elem) * Math.PI / 180.0;
+					if (angle) {
+						var rminx = Number.MAX_VALUE, rminy = Number.MAX_VALUE, 
+							rmaxx = Number.MIN_VALUE, rmaxy = Number.MIN_VALUE;
+						var cx = round(bb.x + bb.width/2),
+							cy = round(bb.y + bb.height/2);
+						var pts = [ [bb.x - cx, bb.y - cy], 
+									[bb.x + bb.width - cx, bb.y - cy],
+									[bb.x + bb.width - cx, bb.y + bb.height - cy],
+									[bb.x - cx, bb.y + bb.height - cy] ];
+						var j = 4;
+						while (j--) {
+							var x = pts[j][0],
+								y = pts[j][1],
+								r = Math.sqrt( x*x + y*y );
+							var theta = Math.atan2(y,x) + angle;
+							x = round(r * Math.cos(theta) + cx);
+							y = round(r * Math.sin(theta) + cy);
+		
+							// now set the bbox for the shape after it's been rotated
+							if (x < rminx) rminx = x;
+							if (y < rminy) rminy = y;
+							if (x > rmaxx) rmaxx = x;
+							if (y > rmaxy) rmaxy = y;
+						}
+						
+						bb.x = rminx;
+						bb.y = rminy;
+						bb.width = rmaxx - rminx;
+						bb.height = rmaxy - rminy;
+					}
+				
+					return bb;
 				} catch(e) { return null; }
 			}
 		}
@@ -5839,42 +5871,7 @@ function BatchCommand(text) {
 		for (var i = 0; i < len; ++i) {
 			if (selectedElements[i] == null) break;
 			var elem = selectedElements[i];
-			bboxes[i] = this.getBBox(elem);
-			// TODO: could make the following code block as part of getBBox() and add a parameter 
-			//       to that function
-			// if element is rotated, get angle and rotate the 4 corners of the bbox and get
-			// the new axis-aligned bbox
-			angles[i] = this.getRotationAngle(elem) * Math.PI / 180.0;
-			if (angles[i]) {
-				var rminx = Number.MAX_VALUE, rminy = Number.MAX_VALUE, 
-					rmaxx = Number.MIN_VALUE, rmaxy = Number.MIN_VALUE;
-				var cx = round(bboxes[i].x + bboxes[i].width/2),
-					cy = round(bboxes[i].y + bboxes[i].height/2);
-				var pts = [ [bboxes[i].x - cx, bboxes[i].y - cy], 
-							[bboxes[i].x + bboxes[i].width - cx, bboxes[i].y - cy],
-							[bboxes[i].x + bboxes[i].width - cx, bboxes[i].y + bboxes[i].height - cy],
-							[bboxes[i].x - cx, bboxes[i].y + bboxes[i].height - cy] ];
-				var j = 4;
-				while (j--) {
-					var x = pts[j][0],
-						y = pts[j][1],
-						r = Math.sqrt( x*x + y*y );
-					var theta = Math.atan2(y,x) + angles[i];
-					x = round(r * Math.cos(theta) + cx);
-					y = round(r * Math.sin(theta) + cy);
-
-					// now set the bbox for the shape after it's been rotated
-					if (x < rminx) rminx = x;
-					if (y < rminy) rminy = y;
-					if (x > rmaxx) rmaxx = x;
-					if (y > rmaxy) rmaxy = y;
-				}
-				
-				bboxes[i].x = rminx;
-				bboxes[i].y = rminy;
-				bboxes[i].width = rmaxx - rminx;
-				bboxes[i].height = rmaxy - rminy;
-			}
+			bboxes[i] = canvas.getStrokedBBox(elem);
 			
 			// now bbox is axis-aligned and handles rotation
 			switch (relative_to) {
