@@ -1214,7 +1214,7 @@ function BatchCommand(text) {
 	From a transformation point of view:
 		- translations are always in the editor's frame of reference (NOT the element's)
 		- rotations rotate the element's frame of reference
-		- FUTURE: skewing skews the element's frame of reference
+		- FUTURE: skewing skews the element's rotated frame of reference
 		- resizing modifies the dimensions of the element in its rotated+skewed
 		  frame of reference.
 	
@@ -1378,9 +1378,6 @@ function BatchCommand(text) {
 		var currentMatrix = {a:1, b:0, c:0, d:1, e:0, f:0};
 		var tx = 0, ty = 0, sx = 1, sy = 1, r = 0.0;
 		
-		var N = tlist.numberOfItems;
-		var n;
-		
 		// if it's a group, we have special reduction loops
 		if (selected.tagName == "g") {
 			// always remove translates by transferring them down to the children
@@ -1388,7 +1385,7 @@ function BatchCommand(text) {
 
 			// The first pass is to remove all translates unless it is immediately
 			// after or before a scale
-			n = N;
+			var n = tlist.numberOfItems;
 			while (n--) {
 				var xform = tlist.getItem(n);
 				if (xform.type != 2 || (n < (tlist.numberOfItems-1) && tlist.getItem(n+1).type == 3) ||
@@ -1413,7 +1410,7 @@ function BatchCommand(text) {
 			// TODO: The second pass is to find all adjacent transform sets of the form:
 			//       translate(tx,ty) scale(sx,sy) translate(-tx,-ty) and reduce them
 			//       to one set (multiply sx and sy)
-			n = N;
+			n = tlist.numberOfItems;
 			while (n--) {
 			}
 			
@@ -1425,7 +1422,7 @@ function BatchCommand(text) {
 		// This pass loop in reverse order and removes any translates or scales.
 		// Once we hit our first rotate(), we will only remove translates.
 		var bRemoveTransform = true;
-		n = N;
+		n = tlist.numberOfItems;
 		while (n--) {
 			// once we reach an unmoveable transform, we can stop
 			var xform = tlist.getItem(n);
@@ -1490,27 +1487,6 @@ function BatchCommand(text) {
 			
 			switch (selected.tagName)
 			{
-			/*
-				case "g":
-					var children = selected.childNodes;
-					var c = children.length;
-					while (c--) {
-						var child = children.item(c);
-						if (child.nodeType == 1) {
-							try {
-								// TODO: how to transfer the transform list of the group to each child
-								var childBox = child.getBBox();
-								var pt = remap(childBox.x,childBox.y),
-									w = scalew(childBox.width),
-									h = scaleh(childBox.height);
-								childBox.x = pt.x; childBox.y = pt.y;
-								childBox.width = w; childBox.height = h;
-								batchCmd.addSubCommand(recalculateDimensions(child));//, childBox));
-							} catch(e) {}
-						}
-					}
-					break;
-			*/
 				case "line":
 					var pt1 = remap(changes["x1"],changes["y1"]),
 						pt2 = remap(changes["x2"],changes["y2"]);
@@ -5021,6 +4997,12 @@ function BatchCommand(text) {
 		return 0;
 	};
 
+	// TODO: if transforms are going to stay on <g> then we need to properly find the right
+	// place to insert a rotate.  This would be searching from the end of the tlist and 
+	// going back until we either:
+	// - find an existing rotate OR
+	// - find a translate that is not part of a scale (in the reduced case, this will mean
+	//   two translates next to each other)
 	this.setRotationAngle = function(val,preventUndo) {
 		var elem = selectedElements[0];
 		// we use the actual element's bbox (not the calculated one) since the 
