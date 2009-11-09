@@ -1383,7 +1383,7 @@ function BatchCommand(text) {
 			// always remove translates by transferring them down to the children
 			// otherwise just reduce adjacent scales
 
-			// The first pass is to flatten all translates into one
+			// The first pass is to collapse all translates
 			var n = tlist.numberOfItems;
 			while (n--) {
 				var xform = tlist.getItem(n);
@@ -1401,15 +1401,39 @@ function BatchCommand(text) {
 				tlist.removeItem(n);
 			}
 			// now restore just the one translate
+			// its matrix before transferring down
 			if (tx != 0 || ty != 0) {
 				var newxlate = svgroot.createSVGTransform();
 				newxlate.setTranslate(tx,ty);
 				tlist.insertItemBefore(newxlate, 0);
+			// TODO: can we pass the translates down to the individual children?
+/*				
+				// get the matrix of the remaining transformlist
+				var mat = svgroot.createSVGMatrix();
+				var m = tlist.numberOfItems;
+				while (m--) {
+					mat = matrixMultiply(tlist.getItem(m).matrix, mat);
+				}
+				mat = mat.inverse();
+				var mv = transformPoint(tx,ty,mat);
+				var children = selected.childNodes;
+				var c = children.length;
+				while (c--) {
+					var child = children.item(c);
+					if (child.nodeType == 1) {
+						var childTlist = canvas.getTransformList(child);
+						var newxlate = svgroot.createSVGTransform();
+						newxlate.setTranslate(mv.x,mv.y);
+						childTlist.insertItemBefore(newxlate, 0);
+						batchCmd.addSubCommand( recalculateDimensions(child) );
+					}
+				}
+*/
 			}
+			
 
-			// TODO: The second pass is to find all adjacent transform sets of the form:
-			//       translate(tx,ty) scale(sx,sy) translate(-tx,-ty) and reduce them
-			//       to one set (multiply sx and sy)
+			// The second pass is to find all adjacent transform sets of the form:
+			// translate(tx,ty) scale(sx,sy) translate(-tx,-ty) and collapse them
 			tx = 0;
 			ty = 0;
 			var bGotOffset = false;
@@ -1423,7 +1447,6 @@ function BatchCommand(text) {
 				var sobj = transformToObj(xform);
 				sx *= sobj.sx;
 				sy *= sobj.sy;
-				console.log([sx,sy]);
 				if (!bGotOffset) {
 					var tobj = transformToObj(tlist.getItem(n-1));
 					tx = tobj.tx;
@@ -1434,10 +1457,11 @@ function BatchCommand(text) {
 				tlist.removeItem(n+1);
 				tlist.removeItem(n);
 				tlist.removeItem(n-1);
+				// decrement one more so that we're not off the end of the transformlist
+				// after removing three transforms above
 				n--;
 			}
 			// now restore just the one scale and its offset translates
-			console.log('final scales: ' + sx + ',' + sy);
 			if (sx != 1 || sy != 1) {
 				var newscale = svgroot.createSVGTransform(),
 					offset_p = svgroot.createSVGTransform(),
@@ -5035,8 +5059,7 @@ function BatchCommand(text) {
 	// place to insert a rotate.  This would be searching from the end of the tlist and 
 	// going back until we either:
 	// - find an existing rotate OR
-	// - find a translate that is not part of a scale (in the reduced case, this will mean
-	//   two translates next to each other)
+	// - find a translate that is not part of a scale
 	this.setRotationAngle = function(val,preventUndo) {
 		var elem = selectedElements[0];
 		// we use the actual element's bbox (not the calculated one) since the 
