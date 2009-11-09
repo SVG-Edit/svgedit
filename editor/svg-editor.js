@@ -69,9 +69,10 @@ function svg_edit_setup() {
 		if(is_node) {
 			// Change select icon
 			$('.tool_button').removeClass('tool_button_current');
-			$('#tool_select').attr('src','images/select_node.png').addClass('tool_button_current');
+			$('#tool_select').addClass('tool_button_current')
+				.empty().append($.getSvgIcon('select_node'));
 		} else {
-			$('#tool_select').attr('src','images/select.png');
+			$('#tool_select').empty().append($.getSvgIcon('select'));
 
 		}
 
