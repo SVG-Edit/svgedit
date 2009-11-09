@@ -194,6 +194,7 @@ function svg_edit_setup() {
 				fillOpacity = "N/A";
 			}
 			document.getElementById("gradbox_fill").parentNode.firstChild.setAttribute("fill", fillColor);
+
 			if (strokeColor == null || strokeColor == "" || strokeColor == "none") {
 				strokeColor = "none";
 				strokeOpacity = "N/A";
@@ -338,7 +339,7 @@ function svg_edit_setup() {
 	svgCanvas.bind("saved", saveHandler);
 	svgCanvas.bind("zoomed", zoomChanged);
 
-	var str = '<div class="palette_item" data-rgb="none"></div>'
+	var str = '<div class="palette_item" style="background-image: url(\'images/none.png\');" data-rgb="none"></div>'
 	$.each(palette, function(i,item){
 		str += '<div class="palette_item" style="background-color: ' + item + ';" data-rgb="' + item + '"></div>';
 	});
@@ -605,14 +606,6 @@ function svg_edit_setup() {
 		}
 	}, true);
 	
-	var setIcon = function(holder_sel, id) {
-		var icon = $.getSvgIcon(id).clone();
-		var holder = $(holder_sel);
-		icon[0].setAttribute('width',holder.width());
-		icon[0].setAttribute('height',holder.height());
-		holder.empty().append(icon);
-	}
-	
 	var clickSelect = function() {
 		if (toolButtonClick('#tool_select')) {
 			svgCanvas.setMode('select');
@@ -637,45 +630,16 @@ function svg_edit_setup() {
 			flyoutspeed = 'normal';
 			svgCanvas.setMode('square');
 		}
-		setIcon('#tools_rect_show','square');
+		$('#tools_rect_show').attr('src', 'images/square.png');
 	};
-	
+
 	var clickRect = function(){
 		if (toolButtonClick('#tools_rect_show')) {
 			svgCanvas.setMode('rect');
 		}
-		setIcon('#tools_rect_show','rect');
-	};
-	
-	var clickFHRect = function(){
-		if (toolButtonClick('#tools_rect_show')) {
-			svgCanvas.setMode('fhrect');
-		}
-		setIcon('#tools_rect_show','fh_rect');
-	};
-	
-	var clickCircle = function(){
-		if (toolButtonClick('#tools_ellipse_show', flyoutspeed)) {
-			flyoutspeed = 'normal';
-			svgCanvas.setMode('circle');
-		}
-		setIcon('#tools_ellipse_show','circle');
+		$('#tools_rect_show').attr('src', 'images/rect.png');
 	};
 
-	var clickEllipse = function(){
-		if (toolButtonClick('#tools_ellipse_show')) {
-			svgCanvas.setMode('ellipse');
-		}
-		setIcon('#tools_ellipse_show','ellipse');
-	};
-
-	var clickFHEllipse = function(){
-		if (toolButtonClick('#tools_ellipse_show')) {
-			svgCanvas.setMode('fhellipse');
-		}
-		setIcon('#tools_ellipse_show','fh_ellipse');
-	};
-	
 	var clickImage = function(){
 		if (toolButtonClick('#tool_image')) {
 			svgCanvas.setMode('image');
@@ -697,6 +661,35 @@ function svg_edit_setup() {
 			svgCanvas.setZoom(1);
 			setSelectMode();
 		}
+	};
+
+	var clickFHRect = function(){
+		if (toolButtonClick('#tools_rect_show')) {
+			svgCanvas.setMode('fhrect');
+		}
+		$('#tools_rect_show').attr('src', 'images/freehand-square.png');
+	};
+
+	var clickCircle = function(){
+		if (toolButtonClick('#tools_ellipse_show', flyoutspeed)) {
+			flyoutspeed = 'normal';
+			svgCanvas.setMode('circle');
+		}
+		$('#tools_ellipse_show').attr('src', 'images/circle.png');
+	};
+
+	var clickEllipse = function(){
+		if (toolButtonClick('#tools_ellipse_show')) {
+			svgCanvas.setMode('ellipse');
+		}
+		$('#tools_ellipse_show').attr('src', 'images/ellipse.png');
+	};
+
+	var clickFHEllipse = function(){
+		if (toolButtonClick('#tools_ellipse_show')) {
+			svgCanvas.setMode('fhellipse');
+		}
+		$('#tools_ellipse_show').attr('src', 'images/freehand-circle.png');
 	};
 
 	var clickText = function(){
@@ -946,150 +939,8 @@ function svg_edit_setup() {
 			$('#background_img').remove();
 		}
 		
-		// set icon size
-		setIconSize($('#iconsize').val());
 		hideDocProperties();
 	};
-
-	var setIconSize = function(size) {
-		var icon_sizes = { s:16, m:24, l:32, xl:48 };
-		var size_num = icon_sizes[size];
-		
-		// Change icon size
-		$('.tool_button, .push_button, .tool_button_current, .tool_button_disabled, .tool_flyout_button')
-		.find('svg').each(function() {
-			this.setAttribute('width',size_num);
-			this.setAttribute('height',size_num);
-		});
-		
-		$.resizeSvgIcons({
-			'.flyout_arrow_horiz svg': size_num / 3,
-			'#logo svg': size_num * 1.3
-		});
-		if(size != 's') {
-			$.resizeSvgIcons({'#layerbuttons svg': size_num * .6});
-		}
-		
-		// Note that all rules will be prefixed with '#svg_editor' when parsed
-		var cssResizeRules = {
-			".tool_button,\
-			.push_button,\
-			.tool_button_current,\
-			.tool_button_disabled,\
-			#tools_rect .tool_flyout_button,\
-			#tools_ellipse .tool_flyout_button": {
-				'width': {s: '16px', l: '32px', xl: '48px'},
-				'height': {s: '16px', l: '32px', xl: '48px'},
-				'padding': {s: '1px', l: '2px', xl: '3px'}
-			},
-			".tool_sep": {
-				'height': {s: '16px', l: '32px', xl: '48px'},
-				'margin': {s: '2px 2px', l: '2px 5px', xl: '2px 8px'}
-			},
-			"#tools_top": {
-				'left': {s: '27px', l: '50px', xl: '70px'},
-				'height': {s: '50px', l: '88px', xl: '125px'}
-			},
-			"#tools_left": {
-				'width': {s: '26px', l: '34px', xl: '42px'},
-				'top': {s: '50px', l: '87px', xl: '125px'}
-			},
-			"div#workarea": {
-				'left': {s: '27px', l: '46px', xl: '65px'},
-				'top': {s: '50px', l: '88px', xl: '125px'},
-				'bottom': {s: '52px', l: '68px', xl: '75px'}
-			},
-			"#tools_bottom": {
-				'left': {s: '27px', l: '46px', xl: '65px'},
-				'height': {s: '52px', l: '68px', xl: '75px'}
-			},
-			"#tools_top input, #tools_bottom input": {
-				'margin-top': {s: '2px', l: '4px', xl: '5px'},
-				'height': {s: 'auto', l: 'auto', xl: 'auto'},
-				'border': {s: '1px solid #555', l: 'auto', xl: 'auto'},
-				'font-size': {s: '.9em', l: '2em', xl: '2.5em'}
-			},
-			"#tools_bottom input": {
-				'margin-top': {s: '6px', l: '4px', xl: '5px'},
-			},
-			"#tools_bottom span, #copyright, #tools_bottom .label": {
-				'font-size': {l: '1.5em', xl: '2em'}
-			},
-			"#tools_bottom_2": {
-				'width': {l: '295px', xl: '355px'}
-			},
-			"#tools_top > div, #tools_top": {
-				'line-height': {s: '17px', l: '34px', xl: '50px'}
-			}, 
-			".dropdown button": {
-				'height': {s: '18px', l: '34px', xl: '40px'}
-			},
-			"#tools_top label, #tools_bottom label": {
-				'font-size': {s: '1em', l: '1.5em', xl: '2em'},
-				'margin-top': {s: '1px', l: '3px', xl: '5px'}
-			}, 
-			"#tool_bold, #tool_italic": {
-				'font-size': {s: '1.5em', l: '3em', xl: '4.5em'}
-			},
-			"#sidepanels": {
-				'top': {s: '50px', l: '88px', xl: '125px'},
-				'bottom': {s: '52px', l: '68px', xl: '65px'},
-			},
-			'#layerbuttons': {
-				'width': {l: '130px', xl: '175px'},
-				'height': {l: '24px', xl: '30px'}
-			},
-			'#layerlist': {
-				'width': {l: '128px', xl: '150px'}
-			},			
-			'.layer_button': {
-				'width': {l: '19px', xl: '28px'},
-				'height': {l: '19px', xl: '28px'}
-			},
-			".flyout_arrow_horiz": {
-				'left': {s: '-5px', l: '5px', xl: '14px'},
-				'top': {s: '-13px', l: '-13px', xl: '-20px'}
-			},
-			"input.spin-button": {
-				'background-image': {l: "url('images/spinbtn_updn_big.png')", xl: "url('images/spinbtn_updn_big.png')"},
-				'background-position': {l: '100% -5px', xl: '100% -2px'},
-				'padding-right': {l: '24px', xl: '24px' }
-			},
-			"input.spin-button.up": {
-				'background-position': {l: '100% -45px', xl: '100% -42px'}
-			},
-			"input.spin-button.down": {
-				'background-position': {l: '100% -85px', xl: '100% -82px'}
-			}
-		};
-		
-		var rule_elem = $('#tool_size_rules');
-		if(!rule_elem.length) {
-			rule_elem = $('<style id="tool_size_rules"><\/style>').appendTo('head');
-		} else {
-			rule_elem.empty();
-		}
-		
-		if(size != 'm') {
-			var style_str = '';
-			$.each(cssResizeRules, function(selector, rules) {
-				selector = '#svg_editor ' + selector.replace(/,/g,', #svg_editor');
-				style_str += selector + '{';
-				$.each(rules, function(prop, values) {
-					if(values[size]) {
-						style_str += (prop + ':' + values[size] + ';');
-					}
-				});
-				style_str += '}';
-			});
-			rule_elem.text(style_str);
-		}
-		
-		var pos = $('#tools_rect_show').offset();
-		$('#tools_rect').css({'left': pos.left, 'top': pos.top});
-		pos = $('#tools_ellipse_show').offset();
-		$('#tools_ellipse').css({'left': pos.left, 'top': pos.top});
-	}
 
 	var cancelOverlays = function() {
 		if (!editingsource && !docprops) return;
@@ -1637,7 +1488,6 @@ function svg_edit_setup() {
 		selLayerNames.empty();
 		var currentlayer = svgCanvas.getCurrentLayer();
 		var layer = svgCanvas.getNumLayers();
-		var icon = $.getSvgIcon('eye');
 		// we get the layers in the reverse z-order (the layer rendered on top is listed first)
 		while (layer--) {
 			var name = svgCanvas.getLayer(layer);
@@ -1656,11 +1506,6 @@ function svg_edit_setup() {
 			}
 			layerlist.append(appendstr);
 			selLayerNames.append("<option value=\"" + name + "\">" + name + "</option>");
-		}
-		if(icon !== undefined) {
-			var copy = icon.clone();
-			$('td.layervis',layerlist).append(icon.clone());
-			$.resizeSvgIcons({'td.layervis .svg_icon':14});
 		}
 		// handle selection of layer
 		$('#layerlist td.layername')
@@ -1806,8 +1651,6 @@ function svg_edit_setup() {
 	$('#group_opacity').SpinButton({ step: 5, min: 0, max: 100, callback: changeOpacity });
 	$('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom });
 	
-	svgCanvas.setIconSize = setIconSize;
-	
 	svgCanvas.setCustomHandlers = function(opts) {
 		if(opts.open) {
 			$('#tool_open').show();
@@ -1821,145 +1664,12 @@ function svg_edit_setup() {
 	// set starting resolution (centers canvas)
 	setResolution(640,480);
 	
-//	var revnums = "svg-editor.js ($Rev$) ";
+//	var revnums = "svg-editor.js ($Rev: 902 $) ";
 //	revnums += svgCanvas.getVersion();
 //	$('#copyright')[0].setAttribute("title", revnums);
 	
 	return svgCanvas;
 };
-
-// This process starts before document.ready so the icons appear ASAP
-setSVGIcons();
-
-function setSVGIcons() {
-
-	$.svgIcons('images/svg_edit_icons.svg', {
-		w:24, h:24,
-		id_match: false,
-		no_img: true,
-		fallback_path:'images/',
-		fallback:{
-			'new_image':'clear.png',
-			'save':'save.png',
-			'open':'open.png',
-			'source':'source.png',
-			'docprops':'document-properties.png',
-			'wireframe':'wireframe.png',
-			
-			'undo':'undo.png',
-			'redo':'redo.png',
-			
-			'select':'select.png',
-			'pencil':'fhpath.png',
-			'pen':'line.png',
-			'square':'square.png',
-			'rect':'rect.png',
-			'fh_rect':'freehand-square.png',
-			'circle':'circle.png',
-			'ellipse':'ellipse.png',
-			'fh_ellipse':'freehand-circle.png',
-			'path':'path.png',
-			'text':'text.png',
-			'image':'image.png',
-			'zoom':'zoom.png',
-			
-			'clone':'clone.png',
-			'delete':'delete.png',
-			'group':'shape_group.png',
-			'ungroup':'shape_ungroup.png',
-			'move_top':'move_top.png',
-			'move_bottom':'move_bottom.png',
-			
-			'align_left':'align-left.png',
-			'align_center':'align-center',
-			'align_right':'align-right',
-			'align_top':'align-top',
-			'align_middle':'align-middle',
-			'align_bottom':'align-bottom',
-
-			'go_up':'go-up.png',
-			'go_down':'go-down.png',
-
-			'ok':'save.png',
-			'cancel':'cancel.png',
-			
-			'arrow_right':'flyouth.png',
-			'arrow_down':'dropdown.gif'
-		},
-		placement: {
-			'#logo a':'logo',
-		
-			'#tool_clear,#layer_new':'new_image',
-			'#tool_save':'save',
-			'#tool_open':'open',
-			'#tool_source':'source',
-			'#tool_docprops':'docprops',
-			'#tool_wireframe':'wireframe',
-			
-			'#tool_undo':'undo',
-			'#tool_redo':'redo',
-			
-			'#tool_select':'select',
-			'#tool_fhpath':'pencil',
-			'#tool_line':'pen',
-			'#tool_square,#tools_rect_show':'square',
-			'#tool_rect':'rect',
-			'#tool_fhrect':'fh_rect',
-			'#tool_circle,#tools_ellipse_show':'circle',
-			'#tool_ellipse':'ellipse',
-			'#tool_fhellipse':'fh_ellipse',
-			'#tool_path':'path',
-			'#tool_text,#layer_rename':'text',
-			'#tool_image':'image',
-			'#tool_zoom':'zoom',
-			
-			'#tool_clone,#tool_clone_multi,#tool_node_clone':'clone',
-			'#layer_delete,#tool_delete,#tool_delete_multi,#tool_node_delete':'delete',
-			'#tool_move_top':'move_top',
-			'#tool_move_bottom':'move_bottom',
-			'#tool_group':'group',
-			'#tool_ungroup':'ungroup',
-			
-			'#tool_alignleft':'align_left',
-			'#tool_aligncenter':'align_center',
-			'#tool_alignright':'align_right',
-			'#tool_aligntop':'align_top',
-			'#tool_alignmiddle':'align_middle',
-			'#tool_alignbottom':'align_bottom',
-			
-			'#layer_up':'go_up',
-			'#layer_down':'go_down',
-			'#layerlist td.layervis':'eye',
-			
-			'#tool_source_save,#tool_docprops_save':'ok',
-			'#tool_source_cancel,#tool_docprops_cancel':'cancel',
-			
-			'.flyout_arrow_horiz':'arrow_right',
-			'.dropdown button':'arrow_down',
-			'#palette .palette_item:first, #fill_bg, #stroke_bg':'no_color'
-		},
-		resize: {
-			'#logo a .svg_icon': 32,
-			'.flyout_arrow_horiz .svg_icon': 5,
-			'.layer_button .svg_icon, #layerlist td.layervis .svg_icon': 14,
-			'.dropdown button .svg_icon': 7,
-			'#palette .svg_icon, #fill_bg .svg_icon, #stroke_bg .svg_icon': 16
-		},
-		callback: function(icons) {
-			$('.toolbar_button button .svg_icon').each(function() {
-				$(this).parent().prepend(this);
-			});
-			
-			// Use small icons by default if not all left tools are visible
-			var tleft = $('#tools_left');
-			var min_height = tleft.offset().top + tleft.outerHeight();
-			if($(window).height() < min_height) {
-				// Make smaller
-				svgCanvas.setIconSize('s');
-			}
-		}
-	});
-}
 
 // This happens when the page is loaded
 $(function() {
