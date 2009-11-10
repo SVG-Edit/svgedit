@@ -137,7 +137,7 @@
    <stop stop-opacity="1" stop-color="#3b7e9b" offset="1"/>
   </linearGradient>
  </defs>
-  <rect transform="matrix(1, 0, 0, 1, 0, 0)" stroke="#000000" fill="url(#svg_2)" id="svg_1" height="10" width="20" y="6.5" x="1.5"/>
+  <rect transform="matrix(1, 0, 0, 1, 0, 0)" stroke="#000000" fill="url(#svg_2)" id="svg_1" height="12" width="20" y="5.5" x="1.5"/>
  </svg>
 </g>
 
@@ -185,7 +185,7 @@
   </linearGradient>
  </defs>
  <g>
-  <ellipse stroke-opacity="1" fill-opacity="1" stroke-width="2" stroke="#000000" fill="url(#svg_4)" id="svg_1" rx="23" ry="12" cy="27" cx="27"/>
+  <ellipse stroke-opacity="1" fill-opacity="1" stroke-width="2" stroke="#000000" fill="url(#svg_4)" id="svg_1" rx="23" ry="15" cy="27" cx="27"/>
  </g>
 </svg>
 </g>
