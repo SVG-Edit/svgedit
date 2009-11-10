@@ -1,10 +1,10 @@
 /*
 	TODOs for TransformList:
-	
+
+	* See if I can transfer scales at the end of the tlist down to the children 
+	* Groups of scaled groups have selector box sizing problems
 	* Fix rotating of resized groups (need to re-center?)
-	* Ensure resizing in negative direction works (nope! broken!)
 	* Ensure ungrouping works (surely broken)
-	* Ensure undo still works properly (nope! broken!)
 */
 /*
 	TODOs for Localizing:
@@ -829,6 +829,7 @@ function BatchCommand(text) {
 	var obj_num = 1;
 	var start_x = null;
 	var start_y = null;
+	var start_transform = null;
 	var current_mode = "select";
 	var current_resize_mode = "none";
 	
@@ -1286,6 +1287,17 @@ function BatchCommand(text) {
 		var tlist = canvas.getTransformList(selected);
 		if (tlist.numberOfItems == 0) return null;
 
+		// remove any stray identity transforms
+		if (tlist && tlist.numberOfItems > 0) {
+			var k = tlist.numberOfItems;
+			while (k--) {
+				var xform = tlist.getItem(k);
+				if (xform.type == 0 || xform.type == 1) {
+					tlist.removeItem(k);
+				}
+			}
+		}
+		
 		// we know we have some transforms, so set up return variable		
 		var batchCmd = new BatchCommand("Transform");
 		
@@ -1364,8 +1376,8 @@ function BatchCommand(text) {
 		if (initial == null) {
 			initial = jQuery.extend(true, {}, changes);
 		}
-		// save the transform value too
-		initial["transform"] = selected.getAttribute("transform");
+		// save the start transform value too
+		initial["transform"] = start_transform ? start_transform : "";
 		
 		// reduce the transform list here...
 		var box = canvas.getBBox(selected);
@@ -1470,8 +1482,8 @@ function BatchCommand(text) {
 				tlist.appendItem(newscale);
 			}
 			
-			// TODO: if we have a rotate, we need to update its center
-			// now loop through the other transforms and adjust accordingly
+			// TODO: if we have a rotate, we need to update its center and 
+			// adjust the transforms again
 /*
 			var newBox = canvas.getBBox(selected);
 			for ( var j = 0; j < tlist.numberOfItems; ++j) {
@@ -1729,17 +1741,6 @@ function BatchCommand(text) {
 				break;
 		}
 
-		// remove any stray identity transforms
-		if (tlist && tlist.numberOfItems > 0) {
-			var k = tlist.numberOfItems;
-			while (k--) {
-				var xform = tlist.getItem(k);
-				if (xform.type == 0 || xform.type == 1) {
-					tlist.removeItem(k);
-				}
-			}
-		}
-		
 		// if the transform list has been emptied, remove it
 		if (tlist.numberOfItems == 0) {
 			selected.removeAttribute("transform");
@@ -1756,12 +1757,6 @@ function BatchCommand(text) {
 
 		// if we have not moved/resized, then immediately leave
 		var xform = selected.getAttribute("transform");
-		if ( (!xform || xform == "") && box.x == selectedBBox.x && box.y == selectedBBox.y &&
-				box.width == selectedBBox.width && box.height == selectedBBox.height) 
-		{
-			return null;
-		}
-		
 		var bScaleMatrix = false;
 		var tlist = selected.transform.baseVal;
 		var t = tlist.numberOfItems;
@@ -1903,203 +1898,6 @@ function BatchCommand(text) {
 			return batchCmd;
 		}	
 
-		var changes = {};
-
-		switch (selected.tagName)
-		{
-		case "g":
-			// do work here :P
-			break;
-		// NOTE: at the moment, there's no way to create an actual polygon element except by 
-		// editing source or importing from somewhere else but we'll cover it here anyway
-		// polygon is handled just like polyline
-		case "polygon": 
-		case "polyline":
-			// extract the points from the polygon/polyline, adjust it and write back the new points
-			// but first, save the old points
-			changes["points"] = selected.getAttribute("points");
-			var list = selected.points;
-			var len = list.numberOfItems;
-			var newpoints = "";
-			for (var i = 0; i < len; ++i) {
-				var pt = list.getItem(i);
-				pt = remap(pt.x,pt.y);
-				newpoints += pt.x + "," + pt.y + " ";
-			}
-			selected.setAttributeNS(null, "points", newpoints);
-			break;
-		case "path":
-			// extract the x,y from the path, adjust it and write back the new path
-			// but first, save the old path
-			changes["d"] = selected.getAttribute("d");
-			var M = selected.pathSegList.getItem(0);
-			var curx = M.x, cury = M.y;
-			var pt = remap(curx,cury);
-			var newd = "M" + pt.x + "," + pt.y;
-			var segList = selected.pathSegList;
-			var len = segList.numberOfItems;
-			// for all path segments in the path, we first turn them into relative path segments,
-			// then we remap the coordinates from the resize
-			for (var i = 1; i < len; ++i) {
-				var seg = segList.getItem(i);
-				// if these properties are not in the segment, set them to zero
-				var x = seg.x || 0,
-					y = seg.y || 0,
-					x1 = seg.x1 || 0,
-					y1 = seg.y1 || 0,
-					x2 = seg.x2 || 0,
-					y2 = seg.y2 || 0;
-
-				var type = seg.pathSegType;
-				switch (type) {
-					case 1: // z,Z closepath (Z/z)
-						newd += "z";
-						continue;
-					// turn this into a relative segment then fall through
-					case 3: // relative move (m)
-					case 5: // relative line (l)
-					case 13: // relative horizontal line (h)
-					case 15: // relative vertical line (v)
-					case 19: // relative smooth quad (t)
-						x += curx;
-						y += cury;
-					case 2: // absolute move (M)
-					case 4: // absolute line (L)
-					case 12: // absolute horizontal line (H)
-					case 14: // absolute vertical line (V)
-					case 18: // absolute smooth quad (T)
-						curx = x;
-						cury = y;
-						var pt = remap(x,y);
-						newd += [" ", pathMap[type], pt.x, ",", pt.y].join('');
-						break;
-					case 7: // relative cubic (c)
-						x += curx; x1 += curx; x2 += curx;
-						y += cury; y1 += curx; y2 += cury;
-					case 6: // absolute cubic (C)
-						curx = x;
-						cury = y;
-						var pt = remap(x,y), pt1 = remap(x1,y1), pt2 = remap(x2,y2);
-						newd += [" ", pathMap[type], pt1.x, ",", pt1.y, " ", pt2.x, ",", pt2.y,
-									" ", pt.x, ",", pt.y].join('');
-						break;
-					case 9: // relative quad (q) 
-						x += curx; x1 += curx;
-						y += cury; y1 += cury;
-					case 8: // absolute quad (Q)
-						curx = x;
-						cury = y;
-						var pt = remap(x,y), pt1 = remap(x1,y1);
-						newd += [" ", pathMap[type], pt1.x, ",", pt1.y, " ", pt.x, ",", pt.y].join('');
-						break;
-					case 11: // relative elliptical arc (a)
-						x += curx;
-						y += cury;
-					case 10: // absolute elliptical arc (A)
-						curx = x;
-						cury = y;
-						var pt = remap(x,y);
-						newd += [" ", pathMap[type], scalew(seg.r1), ",", scaleh(seg.r2), " ", seg.angle, " ", 
-									(seg.largeArcFlag ? 1 : 0), " ", (seg.sweepFlag ? 1 : 0), " ", 
-									pt.x, ",", pt.y ].join('')
-						break;
-					case 17: // relative smooth cubic (s)
-						x += curx; x2 += curx;
-						y += cury; y2 += cury;
-						var pt = remap(x,y), pt2 = remap(x2,y2);
-					case 16: // absolute smooth cubic (S)
-						curx = x;
-						cury = y;
-						newd += [" ", pathMap[type], pt2.x, ",", pt2.y, " ", pt.x, ",", pt.y].join('');
-						break;
-				} // switch on path segment type
-			} // for each segment
-			selected.setAttributeNS(null, "d", newd);
-			break;
-		case "line":
-			changes["x1"] = selected.getAttribute("x1");
-			changes["y1"] = selected.getAttribute("y1");
-			changes["x2"] = selected.getAttribute("x2");
-			changes["y2"] = selected.getAttribute("y2");
-			var pt1 = remap(changes["x1"],changes["y1"]),
-				pt2 = remap(changes["x2"],changes["y2"]);
-			assignAttributes(selected, {
-				'x1': pt1.x,
-				'y1': pt1.y,
-				'x2': pt2.x,
-				'y2': pt2.y,
-			}, 1000);
-			break;
-		case "circle":
-			changes["cx"] = selected.getAttribute("cx");
-			changes["cy"] = selected.getAttribute("cy");
-			changes["r"] = selected.getAttribute("r");
-			var pt = remap(changes["cx"], changes["cy"]);
-			assignAttributes(selected, {
-				'cx': pt.x,
-				'cy': pt.y,
-	
-				// take the minimum of the new selected box's dimensions for the new circle radius
-				'r': Math.min(selectedBBox.width/2,selectedBBox.height/2)
-			}, 1000);
-			break;
-		case "ellipse":
-			changes["cx"] = selected.getAttribute("cx");
-			changes["cy"] = selected.getAttribute("cy");
-			changes["rx"] = selected.getAttribute("rx");
-			changes["ry"] = selected.getAttribute("ry");
-			var pt = remap(changes["cx"], changes["cy"]);
-			assignAttributes(selected, {
-				'cx': pt.x,
-				'cy': pt.y,
-				'rx': scalew(changes["rx"]),
-				'ry': scaleh(changes["ry"])
-			}, 1000);
-			break;
-		case "text":
-			changes["x"] = selected.getAttribute("x");
-			changes["y"] = selected.getAttribute("y");
-			var pt = remap(changes["x"], changes["y"]);
-			assignAttributes(selected, {
-				'x': pt.x,
-				'y': pt.y
-			}, 1000);
-			break;
-    
-		case "image":
-			changes["x"] = selected.getAttribute("x");
-			changes["y"] = selected.getAttribute("y");
-			changes["width"] = selected.getAttribute("width");
-			changes["height"] = selected.getAttribute("height");
-			var pt = remap(changes["x"], changes["y"]);
-			assignAttributes(selected, {
-				'x': pt.x,
-				'y': pt.y,
-				'width': scalew(changes["width"]),
-				'height': scaleh(changes["height"])
-			}, 1000);
-			break;
-		case "rect":
-			changes["x"] = selected.getAttribute("x");
-			changes["y"] = selected.getAttribute("y");
-			changes["width"] = selected.getAttribute("width");
-			changes["height"] = selected.getAttribute("height");
-			var pt = remap(changes["x"], changes["y"]);
-			assignAttributes(selected, {
-				'x': pt.x,
-				'y': pt.y,
-				'width': scalew(changes["width"]),
-				'height': scaleh(changes["height"])
-			}, 1000);
-			break;
-		default: // rect
-			console.log("Unknown shape type: " + selected.tagName);
-			break;
-		}
-		if (changes) {
-			batchCmd.addSubCommand(new ChangeElementCommand(selected, changes));
-		}
-		return batchCmd;
 	};
 
 // public events
@@ -2348,6 +2146,7 @@ function BatchCommand(text) {
 			mouse_target = selectedElements[0];
 		}
 		
+		start_transform = mouse_target.getAttribute("transform");
 		var tlist = canvas.getTransformList(mouse_target);
 
 		switch (current_mode) {
@@ -3988,6 +3787,8 @@ function BatchCommand(text) {
 			addCommandToHistory(new InsertElementCommand(element));
 			call("changed",[element]);
 		}
+		
+		start_transform = null;
 	};
 
 // public functions
@@ -5053,6 +4854,7 @@ function BatchCommand(text) {
 		return ret;
 	};
 
+	// TODO: do we need to sum up all rotation angles?
 	this.getRotationAngle = function(elem) {
 		var selected = elem || selectedElements[0];
 		// find the rotation transform (if any) and set it
@@ -5067,11 +4869,6 @@ function BatchCommand(text) {
 		return 0;
 	};
 
-	// TODO: if transforms are going to stay on <g> then we need to properly find the right
-	// place to insert a rotate.  This would be searching from the end of the tlist and 
-	// going back until we either:
-	// - find an existing rotate OR
-	// - find a translate that is not part of a scale
 	this.setRotationAngle = function(val,preventUndo) {
 		var elem = selectedElements[0];
 		// we use the actual element's bbox (not the calculated one) since the 
@@ -5079,29 +4876,42 @@ function BatchCommand(text) {
 		var bbox = elem.getBBox();
 		var cx = round(bbox.x+bbox.width/2), cy = round(bbox.y+bbox.height/2);
 		var tlist = canvas.getTransformList(elem);
+		var rotIndex = -1;
+		// find the index of the rotation trnasform
+		var n = tlist.numberOfItems;
+		while (n--) {
+			var xform = tlist.getItem(n);
+			if (xform.type == 4) {
+				rotIndex = n;
+				break;
+			}
+		}
 		// if we are not rotated yet, insert a dummy xform
-		if (tlist.numberOfItems == 0 || tlist.getItem(0).type != 4) {
+		if (rotIndex == -1) {
 			tlist.insertItemBefore(svgroot.createSVGTransform(), 0);
+			rotIndex = 0;
 		}
 		
-		var newrot = tlist.getItem(0);
+		var newrot = tlist.getItem(rotIndex);
 		newrot.setRotate(val, cx, cy);
 
+		// TODO: remove this seperate chunk of code where we replace the rotation transform
+		// because calling setRotate() above changes the live transform in the list
 		if (preventUndo) {
 			// we don't need to undo, just update the transform list
 			// Opera Bug: for whatever reason, sometimes Opera doesn't let you 
 			// replace the 0th transform (perhaps if it's an identity matrix?)
 			try {
-				tlist.replaceItem(newrot, 0);
+				tlist.replaceItem(newrot, rotIndex);
 			} catch(e) {
-				tlist.insertItemBefore(newrot,0);
+				tlist.insertItemBefore(newrot,rotIndex);
 			}
 		}
 		else {
 			// FIXME: we need to do it, then undo it, then redo it so it can be undo-able! :)
 			// TODO: figure out how to make changes to transform list undo-able cross-browser
 			var oldTransform = elem.getAttribute("transform");
-			tlist.replaceItem(newrot, 0);
+			tlist.replaceItem(newrot, rotIndex);
 			var newTransform = elem.getAttribute("transform");
 			elem.setAttribute("transform", oldTransform);
 			this.changeSelectedAttribute("transform",newTransform,selectedElements);
@@ -5111,7 +4921,7 @@ function BatchCommand(text) {
 			setPointContainerTransform(elem.getAttribute("transform"));
 		}
 		var selector = selectorManager.requestSelector(selectedElements[0]);
-		selector.resize();//bbox); // TODO: remove box arg
+		selector.resize();
 		selector.updateGripCursors(val);
 	};
 
