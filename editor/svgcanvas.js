@@ -1,11 +1,7 @@
 /*
 	TODOs for TransformList:
 	
-	* Fix rotation of groups (rotate being prepended)
-	* See if we can completely eliminate translates on groups (currently flattening to one)
-	* Flattening adjacent scale transform sets on groups
-	* Fix bounding box of groups with rotated children
-	* Fix resizing/rotating of groups (pummel the transforms down to the children?)
+	* Fix rotating of resized groups (need to re-center?)
 	* Ensure resizing in negative direction works (nope! broken!)
 	* Ensure ungrouping works (surely broken)
 	* Ensure undo still works properly (nope! broken!)
@@ -1383,7 +1379,8 @@ function BatchCommand(text) {
 			// always remove translates by transferring them down to the children
 			// otherwise just reduce adjacent scales
 
-			// The first pass is to collapse all translates
+			// The first pass is to collapse all adjacent translates and push
+			// them down to the children
 			var n = tlist.numberOfItems;
 			while (n--) {
 				var xform = tlist.getItem(n);
@@ -1401,21 +1398,8 @@ function BatchCommand(text) {
 				tlist.removeItem(n);
 			}
 			// now restore just the one translate
-			// its matrix before transferring down
 			if (tx != 0 || ty != 0) {
-				var newxlate = svgroot.createSVGTransform();
-				newxlate.setTranslate(tx,ty);
-				tlist.insertItemBefore(newxlate, 0);
-			// TODO: can we pass the translates down to the individual children?
-/*				
-				// get the matrix of the remaining transformlist
-				var mat = svgroot.createSVGMatrix();
-				var m = tlist.numberOfItems;
-				while (m--) {
-					mat = matrixMultiply(tlist.getItem(m).matrix, mat);
-				}
-				mat = mat.inverse();
-				var mv = transformPoint(tx,ty,mat);
+				// we pass the translates down to the individual children
 				var children = selected.childNodes;
 				var c = children.length;
 				while (c--) {
@@ -1423,56 +1407,84 @@ function BatchCommand(text) {
 					if (child.nodeType == 1) {
 						var childTlist = canvas.getTransformList(child);
 						var newxlate = svgroot.createSVGTransform();
-						newxlate.setTranslate(mv.x,mv.y);
+						newxlate.setTranslate(tx,ty);
 						childTlist.insertItemBefore(newxlate, 0);
 						batchCmd.addSubCommand( recalculateDimensions(child) );
 					}
 				}
-*/
 			}
 			
 
 			// The second pass is to find all adjacent transform sets of the form:
-			// translate(tx,ty) scale(sx,sy) translate(-tx,-ty) and collapse them
-			tx = 0;
-			ty = 0;
-			var bGotOffset = false;
+			// translate(tx,ty) scale(sx,sy) translate(-tx,-ty) and collapse them by
+			// applying the translates to the children and accumulating the scale factors
+			var mat = svgroot.createSVGMatrix();
 			n = tlist.numberOfItems;
 			while (n--) {
 				var xform = tlist.getItem(n);
-				if (!xform || xform.type != 3) {
-					continue;
+				// we stop as soon as we encounter a rotate
+				if (xform.type == 4) {
+					// update the frame of reference
+					mat = matrixMultiply(mat, xform.matrix);
+					break;
 				}
+				// if it's a translate we push it to the children
+				else if (xform.type == 2) {
+					// get the centroid of scaling and determine the net translation for this scale
+					var tobj = transformToObj(xform);
+
+					var t = transformPoint(tobj.tx, tobj.ty, mat.inverse());
+
+					// we pass the translates down to the individual children
+					var children = selected.childNodes;
+					var c = children.length;
+					while (c--) {
+						var child = children.item(c);
+						if (child.nodeType == 1) {
+							var childTlist = canvas.getTransformList(child);
+							var newxlate = svgroot.createSVGTransform();
+							newxlate.setTranslate(t.x, t.y);
+							childTlist.insertItemBefore(newxlate, 0);
+							batchCmd.addSubCommand( recalculateDimensions(child) );
+						}
+					}
+					
+					tlist.removeItem(n);
+				}
+				// if it's a scale, we accumulate it
+				else if (xform.type == 3) {
+					// update the frame of reference
+					mat = matrixMultiply(mat, xform.matrix);
+					// accumulate the scale values
+					var sobj = transformToObj(xform);
+					sx *= sobj.sx;
+					sy *= sobj.sy;
 				
-				var sobj = transformToObj(xform);
-				sx *= sobj.sx;
-				sy *= sobj.sy;
-				if (!bGotOffset) {
-					var tobj = transformToObj(tlist.getItem(n-1));
-					tx = tobj.tx;
-					ty = tobj.ty;
-					bGotOffset = true;
+					tlist.removeItem(n);
 				}
-				// remove the scale and translates from the group
-				tlist.removeItem(n+1);
-				tlist.removeItem(n);
-				tlist.removeItem(n-1);
-				// decrement one more so that we're not off the end of the transformlist
-				// after removing three transforms above
-				n--;
 			}
-			// now restore just the one scale and its offset translates
+			// now restore just the one scale
 			if (sx != 1 || sy != 1) {
-				var newscale = svgroot.createSVGTransform(),
-					offset_p = svgroot.createSVGTransform(),
-					offset_n = svgroot.createSVGTransform();
-				offset_n.setTranslate(-tx,-ty);
-				offset_p.setTranslate(tx,ty);
+				var newscale = svgroot.createSVGTransform();
 				newscale.setScale(sx,sy);
-				tlist.appendItem(offset_p);
 				tlist.appendItem(newscale);
-				tlist.appendItem(offset_n);
 			}
+			
+			// TODO: if we have a rotate, we need to update its center
+			// now loop through the other transforms and adjust accordingly
+/*
+			var newBox = canvas.getBBox(selected);
+			for ( var j = 0; j < tlist.numberOfItems; ++j) {
+				var changed_xform = tlist.getItem(j);
+				switch (changed_xform.type) {
+					case 4: // rotate
+						var newrot = svgroot.createSVGTransform();
+						newrot.setRotate(changed_xform.angle, newcenter.x, newcenter.y);
+						tlist.replaceItem(newrot, j);
+						break;
+				}
+			}
+*/
 		}
 		// else, it's a non-group
 		else {
