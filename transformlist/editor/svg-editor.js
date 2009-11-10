@@ -861,6 +861,8 @@ function svg_edit_setup() {
 		$('#svg_source_textarea').focus();
 	};
 	
+	$('#svg_docprops_container').draggable({cancel:'button,fieldset'});
+	
 	var showDocProperties = function(){
 		if (docprops) return;
 		docprops = true;
@@ -909,12 +911,21 @@ function svg_edit_setup() {
 		}
 		svgCanvas.clearSelection();
 		hideSourceEditor();
-		populateLayers();		
+		populateLayers();
+		setTitle(svgCanvas.getImageTitle());
 	};
+	
+	var setTitle = function(title) {
+		var editor_title = $('title:first').text().split(':')[0];
+		var new_title = editor_title + (title?': ' + title:'');
+		$('title:first').text(new_title);
+	}
 	
 	var saveDocProperties = function(){
 		// set title
-		svgCanvas.setImageTitle($('#canvas_title').val());
+		var new_title = $('#canvas_title').val();
+		setTitle(new_title);
+		svgCanvas.setImageTitle(new_title);
 	
 		// update resolution
 		var x = parseInt($('#canvas_width').val());

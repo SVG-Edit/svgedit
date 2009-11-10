@@ -362,15 +362,16 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			<button id="tool_docprops_save">OK</button>
 			<button id="tool_docprops_cancel">Cancel</button>
 
-			<label><span id="svginfo_title">Image title:</span> <input type="text" id="canvas_title" size="24"></label>
+		</div>
 
 
-			<fieldset id="change_background">
-				<legend id="svginfo_change_background">Editor Background</legend>
-				<div id="bg_blocks"></div>
-				<label><span id="svginfo_bg_url">URL:</span> <input type="text" id="canvas_bg_url" size="17"></label>
-			</fieldset>
-			
+		<fieldset id="svg_docprops_docprops">
+			<legend id="svginfo_image_props">Image Properties</legend>
+			<label>
+				<span id="svginfo_title">Title:</span>
+				<input type="text" id="canvas_title" size="24">
+			</label>			
+	
 			<fieldset id="change_resolution">
 				<legend id="svginfo_dim">Canvas Dimensions</legend>
 
@@ -390,17 +391,30 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 					</select>
 				</label>
 			</fieldset>
-			
-			<fieldset id="change_iconsize">
-				<legend id="svginfo_icons">Icon size</legend>
-					<select id="iconsize">
-						<option id="icon_small" value="s">Small</option>
-						<option id="icon_medium" value="m" selected="selected">Medium</option>
-						<option id="icon_large" value="l">Large</option>
-						<option id="icon_xlarge" value="xl">Extra Large</option>
-					</select>
+
+		</fieldset>
+
+		<fieldset id="svg_docprops_prefs">
+			<legend id="svginfo_editor_profs">Editor Preferences</legend>
+
+			<label><span id="svginfo_icons">Icon size:</span>
+				<select id="iconsize">
+					<option id="icon_small" value="s">Small</option>
+					<option id="icon_medium" value="m" selected="selected">Medium</option>
+					<option id="icon_large" value="l">Large</option>
+					<option id="icon_xlarge" value="xl">Extra Large</option>
+				</select>
+			</label>
+
+			<fieldset id="change_background">
+				<legend id="svginfo_change_background">Editor Background</legend>
+				<div id="bg_blocks"></div>
+				<label><span id="svginfo_bg_url">URL:</span> <input type="text" id="canvas_bg_url" size="21"></label>
+				<p id="svginfo_bg_note">Note: Background will not be saved with image.</p>
 			</fieldset>
-		</div>
+			
+		</fieldset>
+
 	</div>
 </div>
 
