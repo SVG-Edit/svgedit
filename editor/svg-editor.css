@@ -564,6 +564,7 @@ span.zoom_tool {
 	background-color: #B0B0B0;
 	opacity: 1.0;
 	text-align: center;
+	border: 1px outset #777;
 }
 
 /*
@@ -573,22 +574,52 @@ span.zoom_tool {
 	bottom: 100px;
 */
 
+
+
 #svg_docprops #svg_docprops_container {
 	position: absolute;
 	top: 50px;
 	padding: 10px;
 	background-color: #B0B0B0;
+	border: 1px outset #777;
 	opacity: 1.0;
+/*	width: 450px;*/
+	font-family: Verdana, Helvetica, sans-serif;
+	font-size: .8em;
 }
+
+#tool_docprops_back {
+	margin-left: 1em;
+}
+
+#svg_docprops_container #svg_docprops_docprops, 
+#svg_docprops_container #svg_docprops_prefs {
+	float: left;
+	width: 200px;
+	margin: 5px .7em; 
+}
+
+#svg_docprops_docprops > legend, #svg_docprops_prefs > legend {
+	font-weight: bold;
+	font-size: 1.1em;
+}
+
 
 #svg_docprops_container fieldset {
 	padding: 5px;
 	margin: 5px;
+	border: 1px solid #DDD;
 }
 
 #svg_docprops_container label {
 	display: block;
-	margin-bottom: .2em;
+	margin: .5em;
+}
+
+#svginfo_bg_note {
+	font-size: .9em;
+	font-style: italic;
+	color: #444;
 }
 
 #canvas_title {
