@@ -3062,6 +3062,11 @@ function BatchCommand(text) {
 		}
 		segLine.setAttribute('display','inline');
 		
+		if(current_path_pt+1 >= current_path.pathSegList.numberOfItems) {
+			segLine.setAttribute('display','none');
+			return;
+		}
+		
 		if(!next_node) {
 			// Replace "M" val
 			replacePathSeg(2, 0, getPathPoint(current_path_pt, true), segLine);
@@ -3186,7 +3191,6 @@ function BatchCommand(text) {
 		if (grip) {
 			grip.setAttribute("cx", mouse_x);
 			grip.setAttribute("cy", mouse_y);
-			
 			if(is_closed && is_first) {
 				var grip = document.getElementById("pathpointgrip_" + last_index);
 				grip.setAttribute("cx", mouse_x);
@@ -3202,9 +3206,12 @@ function BatchCommand(text) {
 			var id2 = (num-1)+'c2';
 			var line = document.getElementById("ctrlLine_"+id2);
 			if(line) {
-				var x2 = line.getAttribute('x2') - 0 + x_diff*current_zoom;
-				var y2 = line.getAttribute('y2') - 0 + y_diff*current_zoom;
-				addControlPointGrip(x2,y2, mouse_x,mouse_y, id2, true);
+				// Don't do if first point on open path
+				if(!(!is_closed && current_path_pt_drag == 0)) {
+					var x2 = line.getAttribute('x2') - 0 + x_diff*current_zoom;
+					var y2 = line.getAttribute('y2') - 0 + y_diff*current_zoom;
+					addControlPointGrip(x2,y2, mouse_x,mouse_y, id2, true);
+				}
 			}
 		}
 		
