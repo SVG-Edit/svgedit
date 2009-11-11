@@ -35,12 +35,22 @@ function svg_edit_setup() {
 		var host = location.hostname;
 		var onweb = host && host.indexOf('.') != -1;
 		var store = (val != undefined);
-		if(window.localStorage && onweb) {
-			if(store) localStorage.setItem(key, val);
-				else return localStorage.getItem(key);
-		} else if(window.globalStorage && onweb) {
-			if(store) globalStorage[host].setItem(key, val);
-				else return globalStorage[host].getItem(key);
+		var storage = false;
+		// Some FF versions throw security errors here
+		try { 
+			if(window.localStorage && onweb) {
+				storage = localStorage;
+			}
+		} catch(e) {}
+		try { 
+			if(window.globalStorage && onweb) {
+				storage = globalStorage[host];
+			}
+		} catch(e) {}
+		
+		if(storage) {
+			if(store) storage.setItem(key, val);
+				else return storage.getItem(key);
 		} else if(window.widget) {
 			if(store) widget.setPreferenceForKey(val, key);
 				else return widget.preferenceForKey(key);
