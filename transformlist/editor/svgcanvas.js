@@ -1388,28 +1388,52 @@ function BatchCommand(text) {
 		
 		// if it's a group, we have special reduction loops to flatten transforms
 		if (selected.tagName == "g") {
-			// always remove translates by transferring them down to the children
-			// otherwise just reduce adjacent scales
-
-			// The first pass is to collapse all adjacent translates and push
-			// them down to the children
-			var n = tlist.numberOfItems;
+			// loop through transforms and accumulate translation and scaling
+			var mat = svgroot.createSVGMatrix();
+			var bFoundRotate = false;
+			n = tlist.numberOfItems;
 			while (n--) {
 				var xform = tlist.getItem(n);
-				// only flatten the translate if it is not before or after a scale
-				if (xform.type != 2 || (n < (tlist.numberOfItems-1) && tlist.getItem(n+1).type == 3) ||
-					(n > 0 && tlist.getItem(n-1).type == 3))
-				{
-					continue;
+
+				if (xform.type == 4) {
+					// update the frame of reference
+					
+					mat = matrixMultiply(xform.matrix, mat);
+					bFoundRotate = true;
+//					break;
 				}
+				// accumulate the transformed translation
+				else if (xform.type == 2) {
+					// get the centroid of scaling and determine the net translation for this scale
+					var tobj = transformToObj(xform);
+
+					if (bFoundRotate && false) {
+						tx += tobj.tx;
+						ty += tobj.ty;
+					}
+					else {
+						var t = transformPoint(tobj.tx, tobj.ty, mat.inverse());
+						// accumulate translation
+						tx += t.x;
+						ty += t.y;
+					}
+
+					tlist.removeItem(n);
+				}
+				// if it's a scale, we accumulate it
+				else if (xform.type == 3) {
+					// update the frame of reference
+					mat = matrixMultiply(mat, xform.matrix);
+					// accumulate the scale values
+					var sobj = transformToObj(xform);
+					sx *= sobj.sx;
+					sy *= sobj.sy;
 				
-				var tobj = transformToObj(xform);
-				tx += tobj.tx;
-				ty += tobj.ty;
-				// remove the translate from the group
-				tlist.removeItem(n);
+					tlist.removeItem(n);
+				}
 			}
-			// now restore just the one translate
+
+			// force the accumulated translation down to the children			
 			if (tx != 0 || ty != 0) {
 				// we pass the translates down to the individual children
 				var children = selected.childNodes;
@@ -1426,56 +1450,7 @@ function BatchCommand(text) {
 				}
 			}
 			
-
-			// The second pass is to find all adjacent transform sets of the form:
-			// translate(tx,ty) scale(sx,sy) translate(-tx,-ty) and collapse them by
-			// applying the translates to the children and accumulating the scale factors
-			var mat = svgroot.createSVGMatrix();
-			n = tlist.numberOfItems;
-			while (n--) {
-				var xform = tlist.getItem(n);
-				// we stop as soon as we encounter a rotate
-				if (xform.type == 4) {
-					// update the frame of reference
-					mat = matrixMultiply(mat, xform.matrix);
-					break;
-				}
-				// if it's a translate we push it to the children
-				else if (xform.type == 2) {
-					// get the centroid of scaling and determine the net translation for this scale
-					var tobj = transformToObj(xform);
-
-					var t = transformPoint(tobj.tx, tobj.ty, mat.inverse());
-
-					// we pass the translates down to the individual children
-					var children = selected.childNodes;
-					var c = children.length;
-					while (c--) {
-						var child = children.item(c);
-						if (child.nodeType == 1) {
-							var childTlist = canvas.getTransformList(child);
-							var newxlate = svgroot.createSVGTransform();
-							newxlate.setTranslate(t.x, t.y);
-							childTlist.insertItemBefore(newxlate, 0);
-							batchCmd.addSubCommand( recalculateDimensions(child) );
-						}
-					}
-					
-					tlist.removeItem(n);
-				}
-				// if it's a scale, we accumulate it
-				else if (xform.type == 3) {
-					// update the frame of reference
-					mat = matrixMultiply(mat, xform.matrix);
-					// accumulate the scale values
-					var sobj = transformToObj(xform);
-					sx *= sobj.sx;
-					sy *= sobj.sy;
-				
-					tlist.removeItem(n);
-				}
-			}
-			// now restore just the one scale
+			// now apply only one scale
 			if (sx != 1 || sy != 1) {
 				var newscale = svgroot.createSVGTransform();
 				newscale.setScale(sx,sy);
@@ -2034,9 +2009,13 @@ function BatchCommand(text) {
 		return { x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f};
 	};
 	
-	// This is provided because WebKit doesn't implement multiply() correctly
+	// matrixMultiply() is provided because WebKit didn't implement multiply() correctly
 	// on the SVGMatrix interface.  See https://bugs.webkit.org/show_bug.cgi?id=16062
-	// It returns a SVGMatrix that is the multiplication m1*m2.
+	// This function tries to return a SVGMatrix that is the multiplication m1*m2.
+	// As far as I can tell, there is no way for us to handle matrix multiplication 
+	// of arbitrary matrices because we cannot directly set the a,b,c,d,e,f values
+	// of the resulting matrix, we have to do it with translate/rotate/scale
+	// TODO: investigate if webkit allows direct setting of matrix.a, etc
 	var matrixMultiply = function(m1, m2) {
 		var a = m1.a*m2.a + m1.c*m2.b,
 			b = m1.b*m2.a + m1.d*m2.b,
@@ -2044,11 +2023,33 @@ function BatchCommand(text) {
 			d = m1.b*m2.c + m1.d*m2.d,
 			e = m1.a*m2.e + m1.c*m2.f + m1.e,
 			f = m1.b*m2.e + m1.d*m2.f + m1.f;
+
+		// now construct a matrix by analyzing a,b,c,d,e,f and trying to
+		// translate, rotate, and scale the thing into place
 		var m = svgroot.createSVGMatrix();
+		var sx = 1, sy = 1, angle = 0;
+
+		// translate
 		m = m.translate(e,f);
-		m = m.scaleNonUniform(a,d);
-		m = m.skewX( Math.atan(c) );
-		m = m.skewY( Math.atan(b) );
+
+		// see if there was a rotation
+		var rad = Math.atan2(b,a);
+		if (rad != 0 && rad != Math.PI && rad != -Math.PI) {
+			m = m.rotate(180.0 * rad / Math.PI);
+			sx = b / Math.sin(rad);
+			sy = -c / Math.sin(rad);
+		}
+		else { // in the case of no rotation, scales are simply a,d
+			sx = a;
+			sy = d;
+		}
+		
+		// scale
+		if (sx != 1 || sy != 1) {
+			m = m.scaleNonUniform(sx,sy);
+		}
+
+		// TODO: handle skews?
 		return m;
 	}
 	
