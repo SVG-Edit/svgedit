@@ -651,15 +651,6 @@ span.zoom_tool {
 	padding: 18px;
 }
 
-#change_background input {
-	color: #888;
-}
-
-#change_background input.cur_background {
-	border: 2px solid blue;
-	color: #000;
-}
-
 #background_img {
 	position: absolute;
 	top: 0;
