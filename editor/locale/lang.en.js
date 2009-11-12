@@ -116,5 +116,19 @@
 {"id":"tool_node_delete","title":"Delete Node"},
 {"id":"selLayerLabel","textContent":"Move elements to:"},
 {"id":"selLayerNames","title":"Move selected elements to a different layer"},
-{"id":"sidepanel_handle","title":"Drag left/right to resize side panel [X]","textContent":"L a y e r s"}
+{"id":"sidepanel_handle","title":"Drag left/right to resize side panel [X]","textContent":"L a y e r s"},
+{"js_strings": {
+	"invalidAttrValGiven":"Invalid value given",
+	"noContentToFitTo":"No content to fit to",
+	'layer':"Layer",
+	"dupeLayerName":"There is already a layer named that!",
+	"enterUniqueLayerName":"Please enter a unique layer name",
+	"enterNewLayerName":"Please enter the new layer name",
+	"layerHasThatName":"Layer already has that name",
+	"QmoveElemsToLayer":"Move selected elements to layer '%s'?",
+	"QwantToClear":"Do you want to clear the drawing?\nThis will also erase your undo history!",
+	"QerrorsRevertToSource":"There were parsing errors in your SVG source.\nRevert back to original SVG source?",
+	"QignoreSourceChanges":"Ignore changes made to SVG source?"	
+	}
+}
 ];
