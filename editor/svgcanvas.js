@@ -448,6 +448,11 @@ function BatchCommand(text) {
 				}
 			}
 			
+			// This should probably be handled somewhere else, but for now
+			// it keeps the selection box correctly positioned when zoomed
+			m.e *= current_zoom;
+			m.f *= current_zoom;
+			
 			// apply the transforms
 			topleft = transformPoint( topleft.x, topleft.y, m );
 			botright = transformPoint( botright.x, botright.y, m );
