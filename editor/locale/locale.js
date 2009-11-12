@@ -19,20 +19,25 @@ var put_locale = function(svgCanvas, given_param){
 	var url = "locale/lang." + lang_param + ".js";
 	$.get(url, function(data){
 		var LangData = eval(data), js_strings;
-		for (var i=0;i<LangData.length;i++)
-		{
-			if(LangData[i].id) {
-				var elem = document.getElementById(LangData[i].id);
-				if(elem){
-					if(LangData[i].title)
-						elem.title = LangData[i].title;
-					if(LangData[i].textContent)
-						elem.textContent = LangData[i].textContent;
+		$.each(LangData, function(i, data) {
+			if(data.id) {
+				var elem = $('#'+data.id)[0];
+				if(elem) {
+					if(data.title) 
+						elem.title = data.title;
+					if(data.textContent) {
+						// Only replace text nodes, not elements
+						$.each(elem.childNodes, function(j, node) {
+							if(node.nodeType == 3) {
+								node.textContent = data.textContent;
+							}
+						});
+					}
 				}
-			} else if(LangData[i].js_strings) {
-				js_strings = LangData[i].js_strings;
+			} else if(data.js_strings) {
+				js_strings = data.js_strings;
 			}
-		}
+		});
 		svgCanvas.setLang(lang_param, js_strings);
 	},"json");
 };
