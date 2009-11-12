@@ -13,7 +13,8 @@ var put_locale = function(svgCanvas, given_param){
 				return;
 		}
 		// don't bother on first run if language is English
-		if(String(lang_param).indexOf("en") == 0) return;
+		lang_param = String(lang_param);
+		if(lang_param.indexOf("en") == 0) return;
 	}
 	
 	var url = "locale/lang." + lang_param + ".js";
