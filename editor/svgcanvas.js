@@ -1279,6 +1279,10 @@ function BatchCommand(text) {
 	var truePathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a', 
 						'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
 
+	var logMatrix = function(m) {
+		console.log([m.a,m.b,m.c,m.d,m.e,m.f]);
+	};
+	
 	// this function returns the command which resulted from the selected change
 	// TODO: use suspendRedraw() and unsuspendRedraw() around this function
 	var recalculateDimensions = function(selected) {
@@ -1383,56 +1387,45 @@ function BatchCommand(text) {
 		var box = canvas.getBBox(selected);
 		var origcenter = {x: (box.x+box.width/2), y: (box.y+box.height/2)};
 		var newcenter = {x: origcenter.x, y: origcenter.y};
-		var currentMatrix = {a:1, b:0, c:0, d:1, e:0, f:0};
 		var tx = 0.0, ty = 0.0, sx = 1.0, sy = 1.0, r = 0.0;
-		
+
 		// if it's a group, we have special reduction loops to flatten transforms
 		if (selected.tagName == "g") {
 			// loop through transforms and accumulate translation and scaling
 			var mat = svgroot.createSVGMatrix();
-			var bFoundRotate = false;
 			n = tlist.numberOfItems;
 			while (n--) {
 				var xform = tlist.getItem(n);
 
-				if (xform.type == 4) {
-					// update the frame of reference
-					
-					mat = matrixMultiply(xform.matrix, mat);
-					bFoundRotate = true;
-//					break;
-				}
-				// accumulate the transformed translation
-				else if (xform.type == 2) {
-					// get the centroid of scaling and determine the net translation for this scale
-					var tobj = transformToObj(xform);
-
-					if (bFoundRotate && false) {
-						tx += tobj.tx;
-						ty += tobj.ty;
-					}
-					else {
-						var t = transformPoint(tobj.tx, tobj.ty, mat.inverse());
-						// accumulate translation
-						tx += t.x;
-						ty += t.y;
-					}
-
-					tlist.removeItem(n);
-				}
 				// if it's a scale, we accumulate it
-				else if (xform.type == 3) {
+				if (xform.type == 3) {
 					// update the frame of reference
-					mat = matrixMultiply(mat, xform.matrix);
+					mat = matrixMultiply(xform.matrix, mat);
+
 					// accumulate the scale values
 					var sobj = transformToObj(xform);
 					sx *= sobj.sx;
 					sy *= sobj.sy;
-				
+					tlist.removeItem(n);
+				}
+				// if it's a rotation, adjust the frame of reference
+				else if (xform.type == 4) {
+//					mat = matrixMultiply(xform.matrix, mat);
+					r = xform.angle;
+					tlist.removeItem(n);
+				}
+				// accumulate the transformed translation
+				else if (xform.type == 2) {
+					// determine the translation based on the accumulated transformation thus far
+					var tobj = transformToObj(xform);
+					var t = transformPoint(tobj.tx, tobj.ty, mat.inverse());
+					// accumulate translation values
+					tx += t.x;
+					ty += t.y;
 					tlist.removeItem(n);
 				}
 			}
-
+			
 			// force the accumulated translation down to the children			
 			if (tx != 0 || ty != 0) {
 				// we pass the translates down to the individual children
@@ -1450,28 +1443,25 @@ function BatchCommand(text) {
 				}
 			}
 			
-			// now apply only one scale
+			// now append the single scale to the end of this group's tlist
+			// NOTE: we can't force this down to the children because they 
+			// might be rotated on a different frame of reference than the scale
 			if (sx != 1 || sy != 1) {
 				var newscale = svgroot.createSVGTransform();
 				newscale.setScale(sx,sy);
 				tlist.appendItem(newscale);
 			}
 			
-			// TODO: if we have a rotate, we need to update its center and 
-			// adjust the transforms again
-/*
-			var newBox = canvas.getBBox(selected);
-			for ( var j = 0; j < tlist.numberOfItems; ++j) {
-				var changed_xform = tlist.getItem(j);
-				switch (changed_xform.type) {
-					case 4: // rotate
-						var newrot = svgroot.createSVGTransform();
-						newrot.setRotate(changed_xform.angle, newcenter.x, newcenter.y);
-						tlist.replaceItem(newrot, j);
-						break;
-				}
+			if (r != 0.0) {
+				// get new bbox
+				var box = canvas.getBBox(selected);
+				// transform the center point by any remaining scale transforms
+				var cx = (box.x+box.width/2)*sx,
+					cy = (box.y+box.height/2)*sy;
+				var newrot = svgroot.createSVGTransform();
+				newrot.setRotate(r,cx,cy);
+				tlist.insertItemBefore(newrot,0);
 			}
-*/
 		}
 		// else, it's a non-group
 		else {
@@ -1543,6 +1533,8 @@ function BatchCommand(text) {
 			
 				switch (selected.tagName)
 				{
+					case "g":
+						break;
 					case "line":
 						var pt1 = remap(changes["x1"],changes["y1"]),
 							pt2 = remap(changes["x2"],changes["y2"]);
@@ -2039,9 +2031,9 @@ function BatchCommand(text) {
 			sx = b / Math.sin(rad);
 			sy = -c / Math.sin(rad);
 		}
-		else { // in the case of no rotation, scales are simply a,d
-			sx = a;
-			sy = d;
+		else {
+			sx = a / Math.cos(rad);
+			sy = d / Math.cos(rad);
 		}
 		
 		// scale
@@ -4884,24 +4876,24 @@ function BatchCommand(text) {
 		var bbox = elem.getBBox();
 		var cx = round(bbox.x+bbox.width/2), cy = round(bbox.y+bbox.height/2);
 		var tlist = canvas.getTransformList(elem);
-		var rotIndex = -1;
-		// find the index of the rotation trnasform
+		var rotIndex = 0;
+		// find the index of the rotation transform
 		var n = tlist.numberOfItems;
 		while (n--) {
 			var xform = tlist.getItem(n);
 			if (xform.type == 4) {
 				rotIndex = n;
+				tlist.removeItem(n);
 				break;
 			}
 		}
 		// if we are not rotated yet, insert a dummy xform
-		if (rotIndex == -1) {
-			tlist.insertItemBefore(svgroot.createSVGTransform(), 0);
-			rotIndex = 0;
-		}
-		
-		var newrot = tlist.getItem(rotIndex);
-		newrot.setRotate(val, cx, cy);
+				
+		var m = elem.getCTM();
+		var center = transformPoint(cx,cy,m);
+		var newrot = svgroot.createSVGTransform();
+		newrot.setRotate(val, center.x, center.y);
+		tlist.insertItemBefore(newrot, rotIndex);
 
 		// TODO: remove this seperate chunk of code where we replace the rotation transform
 		// because calling setRotate() above changes the live transform in the list
