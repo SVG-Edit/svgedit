@@ -5329,7 +5329,7 @@ function BatchCommand(text) {
 		// ensure selectors are at bottom and update selection
 		selectorManager.update();
 		canvas.clearSelection();
-		canvas.addToSelection([g]);
+		canvas.addToSelection([g], true);
 	};
 
 	// TODO: when transferring group's rotational transform to the children, must deal
