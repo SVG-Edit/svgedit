@@ -12,6 +12,10 @@ var put_locale = function(svgCanvas, given_param){
 			if (lang_param == "")
 				return;
 		}
+		if(typeof(lang_param) != 'string') {
+			alert(typeof(lang_param));
+			alert(lang_param)
+		}
 		// don't bother on first run if language is English
 		if(lang_param.indexOf("en") == 0) return;
 	}
