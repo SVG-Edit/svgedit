@@ -126,6 +126,7 @@ function svg_edit_setup() {
 		// Deal with pathedit mode
 		$('#path_node_panel').toggle(is_node);
 		$('#tools_bottom_2,#tools_bottom_3').toggle(!is_node);
+		var size = $('#tool_select > svg')[0].getAttribute('width');
 		if(is_node) {
 			// Change select icon
 			$('.tool_button').removeClass('tool_button_current');
@@ -133,8 +134,8 @@ function svg_edit_setup() {
 				.empty().append($.getSvgIcon('select_node'));
 		} else {
 			$('#tool_select').empty().append($.getSvgIcon('select'));
-
 		}
+		$.resizeSvgIcons({'#tool_select .svg_icon':size});
 
 		updateContextPanel(); 
 	};
@@ -1035,14 +1036,14 @@ function svg_edit_setup() {
 		
 		// Change icon size
 		$('.tool_button, .push_button, .tool_button_current, .tool_button_disabled, .tool_flyout_button')
-		.find('svg').each(function() {
+		.find('> svg').each(function() {
 			this.setAttribute('width',size_num);
 			this.setAttribute('height',size_num);
 		});
 		
 		$.resizeSvgIcons({
 			'.flyout_arrow_horiz svg': size_num / 3,
-			'#logo svg': size_num * 1.3
+			'#logo a > svg': size_num * 1.3
 		});
 		if(size != 's') {
 			$.resizeSvgIcons({'#layerbuttons svg': size_num * .6});
@@ -2028,10 +2029,11 @@ function setSVGIcons() {
 			'.flyout_arrow_horiz .svg_icon': 5,
 			'.layer_button .svg_icon, #layerlist td.layervis .svg_icon': 14,
 			'.dropdown button .svg_icon': 7,
-			'#palette .svg_icon, #fill_bg .svg_icon, #stroke_bg .svg_icon': 16
+			'.palette_item:first .svg_icon, #fill_bg .svg_icon, #stroke_bg .svg_icon': 16,
+			'.toolbar_button button .svg_icon':16
 		},
 		callback: function(icons) {
-			$('.toolbar_button button .svg_icon').each(function() {
+			$('.toolbar_button button > svg').each(function() {
 				$(this).parent().prepend(this);
 			});
 			
