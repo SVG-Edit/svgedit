@@ -47,20 +47,11 @@ body {
 	margin-top: 2px;
 }
 
-#svg_editor #stroke_bg, 
-#svg_editor #fill_bg {
-	height: 16px;
-	width: 16px;
-	margin: 2px;
-}
-
 #svg_editor #fill_color, #svg_editor #stroke_color {
 	height: 16px;
 	width: 16px;
 	border: 1px solid #808080;
 	cursor: pointer;
-	margin-top: -19px;
-	margin-left: 1px;
 }
 
 #svg_editor div#palette {
@@ -147,7 +138,6 @@ body {
 	border-bottom: 1px solid #FFFFFF;
 	border-left: 1px solid #808080;
 	border-top: 1px solid #808080;
-	overflow: auto;
 }
 
 #svg_editor .layer_button {
@@ -159,8 +149,6 @@ body {
 	border-right: 1px solid #808080;
 	border-bottom: 1px solid #808080;
 	cursor: pointer;
-	float: left;
-	margin-right: 3px;
 }
 
 #svg_editor .layer_buttonpressed {
@@ -194,20 +182,15 @@ body {
 }
 
 #svg_editor #layerlist td.layervis {
+	background-image: url('images/eye.png');
+	background-repeat: no-repeat;
+	background-position: 3px center;
 	width: 22px;
 	cursor:pointer;
 }
 #svg_editor #layerlist td.layerinvis {
 	background-image: none;
 	cursor:pointer;
-}
-
-#svg_editor #layerlist td.layervis * {
-	display: block;
-}
-
-#svg_editor #layerlist td.layerinvis * {
-	display: none;
 }
 
 #svg_editor #layerlist td.layername {
@@ -328,7 +311,6 @@ body {
 	position: relative;
 	top: -13px;
 	left: -5px;
-	margin-top: -3px;
 	margin-bottom: -13px;
 }
 
@@ -349,7 +331,8 @@ span.zoom_tool {
 	position: relative;
 }
 
-#svg_editor .dropdown button {
+.dropdown button {
+	background: transparent 3px 8px url('images/dropdown.gif') no-repeat;
 	width: 15px;
 	height: 21px;
 	margin: 6px 0 0 1px;
@@ -439,36 +422,12 @@ span.zoom_tool {
 }
 
 #svg_editor .tool_sep {
-	width: 1px;
-	background: #888;
-	border-left: 1px outset #EEE;
-	margin: 2px 3px;
-	padding: 0;
+	width: 2px;
 	height: 24px;
-
+	margin: 2px;
+	margin-right: 0;
+	padding: 2px;
 }
-
-#tool_bold, #tool_italic { 
-	font: bold 2.1em/1.1em serif;
-	text-align: center;
-	padding-left: 2px;
-	position: relative;
-}
-
-#tool_bold span, #tool_italic span { 
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	top: 0; left: 0;
-	background: #000;
-	opacity: 0;
-}
-
-#tool_italic {
-	font-weight: normal;
-	font-style: italic;
-}
-
 
 #svg_editor #color_picker {
 	position: absolute;
@@ -489,6 +448,22 @@ span.zoom_tool {
 	cursor: pointer;
 	width: 30px;
 }
+
+#svg_editor #tool_square { background: 2px 2px url('images/square.png') no-repeat; }
+#svg_editor #tool_rect { background: 2px 2px url('images/rect.png') no-repeat; }
+#svg_editor #tool_fhrect { background: 2px 2px url('images/freehand-square.png') no-repeat; }
+#svg_editor #tool_circle { background: 2px 2px url('images/circle.png') no-repeat; }
+#svg_editor #tool_ellipse { background: 2px 2px url('images/ellipse.png') no-repeat; }
+#svg_editor #tool_fhellipse { background: 2px 2px url('images/freehand-circle.png') no-repeat; }
+#svg_editor #tool_stacktop { background: 2px 2px url('images/move_top.png') no-repeat; }
+#svg_editor #tool_stackbottom { background: 2px 2px url('images/move_bottom.png') no-repeat; }
+#svg_editor #tool_aligntop { background: 2px 2px url('images/align-top.png') no-repeat; }
+#svg_editor #tool_alignmiddle { background: 2px 2px url('images/align-middle.png') no-repeat; }
+#svg_editor #tool_alignbottom { background: 2px 2px url('images/align-bottom.png') no-repeat; }
+#svg_editor #tool_alignleft { background: 2px 2px url('images/align-left.png') no-repeat; }
+#svg_editor #tool_aligncenter { background: 2px 2px url('images/align-center.png') no-repeat; }
+#svg_editor #tool_alignright { background: 2px 2px url('images/align-right.png') no-repeat; }
+#svg_editor .tool_sep { background: 2px 2px url('images/sep.png') no-repeat; }
 
 /* TODO: figure out what more-specific selector causes me to write this atrocity and not
          simply .tool_flyout_button */
@@ -564,7 +539,6 @@ span.zoom_tool {
 	background-color: #B0B0B0;
 	opacity: 1.0;
 	text-align: center;
-	border: 1px outset #777;
 }
 
 /*
@@ -574,52 +548,22 @@ span.zoom_tool {
 	bottom: 100px;
 */
 
-
-
 #svg_docprops #svg_docprops_container {
 	position: absolute;
 	top: 50px;
 	padding: 10px;
 	background-color: #B0B0B0;
-	border: 1px outset #777;
 	opacity: 1.0;
-/*	width: 450px;*/
-	font-family: Verdana, Helvetica, sans-serif;
-	font-size: .8em;
 }
-
-#tool_docprops_back {
-	margin-left: 1em;
-}
-
-#svg_docprops_container #svg_docprops_docprops, 
-#svg_docprops_container #svg_docprops_prefs {
-	float: left;
-	width: 200px;
-	margin: 5px .7em; 
-}
-
-#svg_docprops_docprops > legend, #svg_docprops_prefs > legend {
-	font-weight: bold;
-	font-size: 1.1em;
-}
-
 
 #svg_docprops_container fieldset {
 	padding: 5px;
 	margin: 5px;
-	border: 1px solid #DDD;
 }
 
 #svg_docprops_container label {
 	display: block;
-	margin: .5em;
-}
-
-#svginfo_bg_note {
-	font-size: .9em;
-	font-style: italic;
-	color: #444;
+	margin-bottom: .2em;
 }
 
 #canvas_title {
@@ -649,6 +593,15 @@ span.zoom_tool {
 #change_background div.cur_background {
 	border: 2px solid blue;
 	padding: 18px;
+}
+
+#change_background input {
+	color: #888;
+}
+
+#change_background input.cur_background {
+	border: 2px solid blue;
+	color: #000;
 }
 
 #background_img {
@@ -682,25 +635,21 @@ span.zoom_tool {
 	opacity: 0.6;
 }
 
-button#tool_source_save,
-button#tool_source_cancel,
-button#tool_docprops_save,
-button#tool_docprops_cancel {
-    border:1px solid #dedede;
-    line-height:130%;
-	background: #E8E8E8 none;
-    padding:5px 10px 5px 7px; /* Firefox */
-    line-height:17px; /* Safari */
+#tool_source_save, #tool_docprops_save {
+	background: #E8E8E8 url(images/save.png) no-repeat 2px 0;
 }
 
-.toolbar_button button .svg_icon {
-    margin:0 3px -3px 0 !important;
-    padding:0;
-    border:none;
-    width:16px;
-    height:16px;
+#tool_source_cancel, #tool_docprops_cancel {
+	background: #E8E8E8 url(images/cancel.png) no-repeat 2px 0;
 }
 
+#tool_source_save, #tool_docprops_save {
+	background: #E8E8E8 url(images/save.png) no-repeat 2px 0;
+}
+
+#tool_source_cancel, #tool_docprops_cancel {
+	background: #E8E8E8 url(images/cancel.png) no-repeat 2px 0;
+}
 
 /* Slider
 ----------------------------------*/
@@ -727,12 +676,4 @@ button#tool_docprops_cancel {
 .ui-slider-handle {
 	background: #B0B0B0;
 	border: 1px solid #000;
-}
-
-/* Possibly not necessary */
-#svg_editor #tools_rect .tool_flyout_button,
-#svg_editor #tools_ellipse .tool_flyout_button {
-	padding: 2px;
-	width: 24px;
-	height: 24px;
 }

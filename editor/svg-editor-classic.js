@@ -8,72 +8,12 @@ if(!window.console) {
 */
 
 function svg_edit_setup() {
-	var uiStrings = {
-		'invalidAttrValGiven':'Invalid value given',
-		'noContentToFitTo':'No content to fit to',
-		'layer':"Layer",
-		'dupeLayerName':"There is already a layer named that!",
-		'enterUniqueLayerName':"Please enter a unique layer name",
-		'enterNewLayerName':"Please enter the new layer name",
-		'layerHasThatName':"Layer already has that name",
-		'QmoveElemsToLayer':"Move selected elements to layer '%s'?",
-		'QwantToClear':'Do you want to clear the drawing?\nThis will also erase your undo history!',
-		'QerrorsRevertToSource':'There were parsing errors in your SVG source.\nRevert back to original SVG source?',
-		'QignoreSourceChanges':'Ignore changes made to SVG source?'
-	};
-	
 	var palette = ["#000000","#202020","#404040","#606060","#808080","#a0a0a0","#c0c0c0","#e0e0e0","#ffffff","#800000","#ff0000","#808000","#ffff00","#008000","#00ff00","#008080","#00ffff","#000080","#0000ff","#800080","#ff00ff","#2b0000","#550000","#800000","#aa0000","#d40000","#ff0000","#ff2a2a","#ff5555","#ff8080","#ffaaaa","#ffd5d5","#280b0b","#501616","#782121","#a02c2c","#c83737","#d35f5f","#de8787","#e9afaf","#f4d7d7","#241c1c","#483737","#6c5353","#916f6f","#ac9393","#c8b7b7","#e3dbdb","#2b1100","#552200","#803300","#aa4400","#d45500","#ff6600","#ff7f2a","#ff9955","#ffb380","#ffccaa","#ffe6d5","#28170b","#502d16","#784421","#a05a2c","#c87137","#d38d5f","#deaa87","#e9c6af","#f4e3d7","#241f1c","#483e37","#6c5d53","#917c6f","#ac9d93","#c8beb7","#e3dedb","#2b2200","#554400","#806600","#aa8800","#d4aa00","#ffcc00","#ffd42a","#ffdd55","#ffe680","#ffeeaa","#fff6d5","#28220b","#504416","#786721","#a0892c","#c8ab37","#d3bc5f","#decd87","#e9ddaf","#f4eed7","#24221c","#484537","#6c6753","#918a6f","#aca793","#c8c4b7","#e3e2db","#222b00","#445500","#668000","#88aa00","#aad400","#ccff00","#d4ff2a","#ddff55","#e5ff80","#eeffaa","#f6ffd5","#22280b","#445016","#677821","#89a02c","#abc837","#bcd35f","#cdde87","#dde9af","#eef4d7","#22241c","#454837","#676c53","#8a916f","#a7ac93","#c4c8b7","#e2e3db","#112b00","#225500","#338000","#44aa00","#55d400","#66ff00","#7fff2a","#99ff55","#b3ff80","#ccffaa","#e5ffd5","#17280b","#2d5016","#447821","#5aa02c","#71c837","#8dd35f","#aade87","#c6e9af","#e3f4d7","#1f241c","#3e4837","#5d6c53","#7c916f","#9dac93","#bec8b7","#dee3db","#002b00","#005500","#008000","#00aa00","#00d400","#00ff00","#2aff2a","#55ff55","#80ff80","#aaffaa","#d5ffd5","#0b280b","#165016","#217821","#2ca02c","#37c837","#5fd35f","#87de87","#afe9af","#d7f4d7","#1c241c","#374837","#536c53","#6f916f","#93ac93","#b7c8b7","#dbe3db","#002b11","#005522","#008033","#00aa44","#00d455","#00ff66","#2aff80","#55ff99","#80ffb3","#aaffcc","#d5ffe6","#0b2817","#16502d","#217844","#2ca05a","#37c871","#5fd38d","#87deaa","#afe9c6","#d7f4e3","#1c241f","#37483e","#536c5d","#6f917c","#93ac9d","#b7c8be","#dbe3de","#002b22","#005544","#008066","#00aa88","#00d4aa","#00ffcc","#2affd5","#55ffdd","#80ffe6","#aaffee","#d5fff6","#0b2822","#165044","#217867","#2ca089","#37c8ab","#5fd3bc","#87decd","#afe9dd","#d7f4ee","#1c2422","#374845","#536c67","#6f918a","#93aca7","#b7c8c4","#dbe3e2","#00222b","#004455","#006680","#0088aa","#00aad4","#00ccff","#2ad4ff","#55ddff","#80e5ff","#aaeeff","#d5f6ff","#0b2228","#164450","#216778","#2c89a0","#37abc8","#5fbcd3","#87cdde","#afdde9","#d7eef4","#1c2224","#374548","#53676c","#6f8a91","#93a7ac","#b7c4c8","#dbe2e3","#00112b","#002255","#003380","#0044aa","#0055d4","#0066ff","#2a7fff","#5599ff","#80b3ff","#aaccff","#d5e5ff","#0b1728","#162d50","#214478","#2c5aa0","#3771c8","#5f8dd3","#87aade","#afc6e9","#d7e3f4","#1c1f24","#373e48","#535d6c","#6f7c91","#939dac","#b7bec8","#dbdee3","#00002b","#000055","#000080","#0000aa","#0000d4","#0000ff","#2a2aff","#5555ff","#8080ff","#aaaaff","#d5d5ff","#0b0b28","#161650","#212178","#2c2ca0","#3737c8","#5f5fd3","#8787de","#afafe9","#d7d7f4","#1c1c24","#373748","#53536c","#6f6f91","#9393ac","#b7b7c8","#dbdbe3","#11002b","#220055","#330080","#4400aa","#5500d4","#6600ff","#7f2aff","#9955ff","#b380ff","#ccaaff","#e5d5ff","#170b28","#2d1650","#442178","#5a2ca0","#7137c8","#8d5fd3","#aa87de","#c6afe9","#e3d7f4","#1f1c24","#3e3748","#5d536c","#7c6f91","#9d93ac","#beb7c8","#dedbe3","#22002b","#440055","#660080","#8800aa","#aa00d4","#cc00ff","#d42aff","#dd55ff","#e580ff","#eeaaff","#f6d5ff","#220b28","#441650","#672178","#892ca0","#ab37c8","#bc5fd3","#cd87de","#ddafe9","#eed7f4","#221c24","#453748","#67536c","#8a6f91","#a793ac","#c4b7c8","#e2dbe3","#2b0022","#550044","#800066","#aa0088","#d400aa","#ff00cc","#ff2ad4","#ff55dd","#ff80e5","#ffaaee","#ffd5f6","#280b22","#501644","#782167","#a02c89","#c837ab","#d35fbc","#de87cd","#e9afdd","#f4d7ee","#241c22","#483745","#6c5367","#916f8a","#ac93a7","#c8b7c4","#e3dbe2","#2b0011","#550022","#800033","#aa0044","#d40055","#ff0066","#ff2a7f","#ff5599","#ff80b2","#ffaacc","#ffd5e5","#280b17","#50162d","#782144","#a02c5a","#c83771","#d35f8d","#de87aa","#e9afc6","#f4d7e3","#241c1f","#48373e","#6c535d","#916f7c","#ac939d","#c8b7be","#e3dbde"]
 
 	var isMac = false; //(navigator.platform.indexOf("Mac") != -1);
 	var modKey = ""; //(isMac ? "meta+" : "ctrl+");
 	var svgCanvas = new SvgCanvas(document.getElementById("svgcanvas"));
 
-	// Store and retrieve preferences
-	$.pref = function(key, val) {
-		curPrefs[key] = val;
-		key = 'svg-edit-'+key;
-		var host = location.hostname;
-		var onweb = host && host.indexOf('.') != -1;
-		var store = (val != undefined);
-		var storage = false;
-		// Some FF versions throw security errors here
-		try { 
-			if(window.localStorage && onweb) {
-				storage = localStorage;
-			}
-		} catch(e) {}
-		try { 
-			if(window.globalStorage && onweb) {
-				storage = globalStorage[host];
-			}
-		} catch(e) {}
-		
-		if(storage) {
-			if(store) storage.setItem(key, val);
-				else return storage.getItem(key);
-		} else if(window.widget) {
-			if(store) widget.setPreferenceForKey(val, key);
-				else return widget.preferenceForKey(key);
-		} else {
-			if(store) {
-				var d = new Date();
-				d.setTime(d.getTime() + 31536000000);
-				val = encodeURIComponent(val);
-				document.cookie = key+'='+val+'; expires='+d.toUTCString();
-			} else {
-				var result = document.cookie.match(new RegExp(key + "=([^;]+)"));
-				return result?decodeURIComponent(result[1]):'';
-			}
-		}
-	}
-
-	var curPrefs = {
-		lang:'en',
-		iconsize:'m',
-		bg_color:'#FFF',
-		bg_url:''
-	};
-	
 	var setSelectMode = function() {
 		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 		$('#tool_select').addClass('tool_button_current');
@@ -101,7 +41,7 @@ function svg_edit_setup() {
 	var saveHandler = function(window,svg) {
 		window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
 	};
-	
+
 	// called when we've selected a different element
 	var selectedChanged = function(window,elems) {
 		// if elems[1] is present, then we have more than one element
@@ -126,16 +66,14 @@ function svg_edit_setup() {
 		// Deal with pathedit mode
 		$('#path_node_panel').toggle(is_node);
 		$('#tools_bottom_2,#tools_bottom_3').toggle(!is_node);
-		var size = $('#tool_select > svg')[0].getAttribute('width');
 		if(is_node) {
 			// Change select icon
 			$('.tool_button').removeClass('tool_button_current');
-			$('#tool_select').addClass('tool_button_current')
-				.empty().append($.getSvgIcon('select_node'));
+			$('#tool_select').attr('src','images/select_node.png').addClass('tool_button_current');
 		} else {
-			$('#tool_select').empty().append($.getSvgIcon('select'));
+			$('#tool_select').attr('src','images/select.png');
+
 		}
-		$.resizeSvgIcons({'#tool_select .svg_icon':size});
 
 		updateContextPanel(); 
 	};
@@ -256,6 +194,7 @@ function svg_edit_setup() {
 				fillOpacity = "N/A";
 			}
 			document.getElementById("gradbox_fill").parentNode.firstChild.setAttribute("fill", fillColor);
+
 			if (strokeColor == null || strokeColor == "" || strokeColor == "none") {
 				strokeColor = "none";
 				strokeOpacity = "N/A";
@@ -400,7 +339,7 @@ function svg_edit_setup() {
 	svgCanvas.bind("saved", saveHandler);
 	svgCanvas.bind("zoomed", zoomChanged);
 
-	var str = '<div class="palette_item" data-rgb="none"></div>'
+	var str = '<div class="palette_item" style="background-image: url(\'images/none.png\');" data-rgb="none"></div>'
 	$.each(palette, function(i,item){
 		str += '<div class="palette_item" style="background-color: ' + item + ';" data-rgb="' + item + '"></div>';
 	});
@@ -420,12 +359,13 @@ function svg_edit_setup() {
 		blk.click(function() {
 			blocks.removeClass(cur_bg);
 			$(this).addClass(cur_bg);
+			$('#canvas_bg_url').removeClass(cur_bg);
 		});
 	});
-
-	if($.pref('bg_color')) {
-		setBackground($.pref('bg_color'), $.pref('bg_url'));
-	}
+	$('#canvas_bg_url').focus(function() {
+		blocks.removeClass(cur_bg);
+		$(this).addClass(cur_bg);
+	});
 
 	var pos = $('#tools_rect_show').position();
 	$('#tools_rect').css({'left': pos.left+4, 'top': pos.top+77});
@@ -485,8 +425,8 @@ function svg_edit_setup() {
 	var promptMoveLayerOnce = false;
 	$('#selLayerNames').change(function(){
 		var destLayer = this.options[this.selectedIndex].value;
-		var confirm_str = uiStrings.QmoveElemsToLayer.replace('%s',destLayer);
-		if (destLayer && (promptMoveLayerOnce || confirm(confirm_str))) {
+		// TODO: localize this prompt
+		if (destLayer && (promptMoveLayerOnce || confirm('Move selected elements to layer \'' + destLayer + '\'?'))) {
 			promptMoveLayerOnce = true;
 			svgCanvas.moveSelectedToLayer(destLayer);
 			svgCanvas.clearSelection();
@@ -530,7 +470,9 @@ function svg_edit_setup() {
 		} else valid = true;
 		
 		if(!valid) {
-			alert(uiStrings.invalidAttrValGiven);
+			// TODO: localize this
+			alert('Invalid value given for' + $(this).attr('title').replace('Change','')
+				+ '.');
 			this.value = selectedElement.getAttribute(attr);
 			return false;
 		} 
@@ -664,14 +606,6 @@ function svg_edit_setup() {
 		}
 	}, true);
 	
-	var setIcon = function(holder_sel, id) {
-		var icon = $.getSvgIcon(id).clone();
-		var holder = $(holder_sel);
-		icon[0].setAttribute('width',holder.width());
-		icon[0].setAttribute('height',holder.height());
-		holder.empty().append(icon);
-	}
-	
 	var clickSelect = function() {
 		if (toolButtonClick('#tool_select')) {
 			svgCanvas.setMode('select');
@@ -696,45 +630,16 @@ function svg_edit_setup() {
 			flyoutspeed = 'normal';
 			svgCanvas.setMode('square');
 		}
-		setIcon('#tools_rect_show','square');
+		$('#tools_rect_show').attr('src', 'images/square.png');
 	};
-	
+
 	var clickRect = function(){
 		if (toolButtonClick('#tools_rect_show')) {
 			svgCanvas.setMode('rect');
 		}
-		setIcon('#tools_rect_show','rect');
-	};
-	
-	var clickFHRect = function(){
-		if (toolButtonClick('#tools_rect_show')) {
-			svgCanvas.setMode('fhrect');
-		}
-		setIcon('#tools_rect_show','fh_rect');
-	};
-	
-	var clickCircle = function(){
-		if (toolButtonClick('#tools_ellipse_show', flyoutspeed)) {
-			flyoutspeed = 'normal';
-			svgCanvas.setMode('circle');
-		}
-		setIcon('#tools_ellipse_show','circle');
+		$('#tools_rect_show').attr('src', 'images/rect.png');
 	};
 
-	var clickEllipse = function(){
-		if (toolButtonClick('#tools_ellipse_show')) {
-			svgCanvas.setMode('ellipse');
-		}
-		setIcon('#tools_ellipse_show','ellipse');
-	};
-
-	var clickFHEllipse = function(){
-		if (toolButtonClick('#tools_ellipse_show')) {
-			svgCanvas.setMode('fhellipse');
-		}
-		setIcon('#tools_ellipse_show','fh_ellipse');
-	};
-	
 	var clickImage = function(){
 		if (toolButtonClick('#tool_image')) {
 			svgCanvas.setMode('image');
@@ -756,6 +661,35 @@ function svg_edit_setup() {
 			svgCanvas.setZoom(1);
 			setSelectMode();
 		}
+	};
+
+	var clickFHRect = function(){
+		if (toolButtonClick('#tools_rect_show')) {
+			svgCanvas.setMode('fhrect');
+		}
+		$('#tools_rect_show').attr('src', 'images/freehand-square.png');
+	};
+
+	var clickCircle = function(){
+		if (toolButtonClick('#tools_ellipse_show', flyoutspeed)) {
+			flyoutspeed = 'normal';
+			svgCanvas.setMode('circle');
+		}
+		$('#tools_ellipse_show').attr('src', 'images/circle.png');
+	};
+
+	var clickEllipse = function(){
+		if (toolButtonClick('#tools_ellipse_show')) {
+			svgCanvas.setMode('ellipse');
+		}
+		$('#tools_ellipse_show').attr('src', 'images/ellipse.png');
+	};
+
+	var clickFHEllipse = function(){
+		if (toolButtonClick('#tools_ellipse_show')) {
+			svgCanvas.setMode('fhellipse');
+		}
+		$('#tools_ellipse_show').attr('src', 'images/freehand-circle.png');
 	};
 
 	var clickText = function(){
@@ -823,7 +757,8 @@ function svg_edit_setup() {
 	}
 	
 	var clickClear = function(){
-		if( confirm(uiStrings.QwantToClear) ) {
+		// TODO: localize this prompt
+		if( confirm('Do you want to clear the drawing?\nThis will also erase your undo history!') ) {
 			svgCanvas.clear();
 			updateContextPanel();
 		}
@@ -918,8 +853,6 @@ function svg_edit_setup() {
 		$('#svg_source_textarea').focus();
 	};
 	
-	$('#svg_docprops_container').draggable({cancel:'button,fieldset'});
-	
 	var showDocProperties = function(){
 		if (docprops) return;
 		docprops = true;
@@ -961,27 +894,19 @@ function svg_edit_setup() {
 		if (!editingsource) return;
 
 		if (!svgCanvas.setSvgString($('#svg_source_textarea').val())) {
-			if( !confirm(uiStrings.QerrorsRevertToSource) ) {
+			// TODO: localize this prompt
+			if( !confirm('There were parsing errors in your SVG source.\nRevert back to original SVG source?') ) {
 				return false;
 			}
 		}
 		svgCanvas.clearSelection();
 		hideSourceEditor();
-		populateLayers();
-		setTitle(svgCanvas.getImageTitle());
+		populateLayers();		
 	};
-	
-	var setTitle = function(title) {
-		var editor_title = $('title:first').text().split(':')[0];
-		var new_title = editor_title + (title?': ' + title:'');
-		$('title:first').text(new_title);
-	}
 	
 	var saveDocProperties = function(){
 		// set title
-		var new_title = $('#canvas_title').val();
-		setTitle(new_title);
-		svgCanvas.setImageTitle(new_title);
+		svgCanvas.setImageTitle($('#canvas_title').val());
 	
 		// update resolution
 		var x = parseInt($('#canvas_width').val());
@@ -990,185 +915,32 @@ function svg_edit_setup() {
 			x ='fit';
 		}
 		if(!svgCanvas.setResolution(x,y)) {
-			alert(uiStrings.noContentToFitTo);
+			alert('No content to fit to');
 			return false;
 		}
 		
 		// set background
-		var color = $('#bg_blocks div.cur_background').css('background') || '#FFF';
-		setBackground(color, $('#canvas_bg_url').val());
-		
-		// set language
-		var lang = $('#lang_select').val();
-		if(lang != curPrefs.lang) {
-			put_locale(svgCanvas, lang);
+		var new_bg, bg_url = $('#canvas_bg_url').val();
+		var bg_blk = $('#bg_blocks div.cur_background');
+		if(bg_blk.length) {
+			new_bg = bg_blk.css('background');
+			$('#svgcanvas').css('background',new_bg);
+			$('#background_img').remove();
+		} else if(bg_url) {
+			if(!$('#background_img').length) {
+				$('<div id="background_img"><img src="'+bg_url+'" style="width:100%"></div>')
+					.prependTo('#svgcanvas');
+			} else {
+				$('#background_img img').attr('src',bg_url);
+			}
+		} else {
+			new_bg = '#FFF';
+			$('#svgcanvas').css('background',new_bg);
+			$('#background_img').remove();
 		}
-		
-		// set icon size
-		setIconSize($('#iconsize').val());
 		
 		hideDocProperties();
 	};
-	
-	function setBackground(color, url) {
-		if(color == curPrefs.bg_color && url == curPrefs.bg_url) return;
-		$.pref('bg_color', color);
-		$.pref('bg_url', url);
-		$('#svgcanvas').css('background',color);
-		if(url) {
-			if(!$('#background_img').length) {
-				$('<div id="background_img"><img src="'+url+'" style="width:100%"></div>')
-					.prependTo('#svgcanvas');
-			} else {
-				$('#background_img img').attr('src',url);
-			}
-		} else {
-			$('#background_img').remove();
-		}
-	}
-
-	var setIconSize = function(size) {
-		if(size == curPrefs.size) return;
-		$.pref('iconsize', size);
-		$('#iconsize').val(size);
-		var icon_sizes = { s:16, m:24, l:32, xl:48 };
-		var size_num = icon_sizes[size];
-		
-		// Change icon size
-		$('.tool_button, .push_button, .tool_button_current, .tool_button_disabled, .tool_flyout_button')
-		.find('> svg').each(function() {
-			this.setAttribute('width',size_num);
-			this.setAttribute('height',size_num);
-		});
-		
-		$.resizeSvgIcons({
-			'.flyout_arrow_horiz svg': size_num / 3,
-			'#logo a > svg': size_num * 1.3
-		});
-		if(size != 's') {
-			$.resizeSvgIcons({'#layerbuttons svg': size_num * .6});
-		}
-		
-		// Note that all rules will be prefixed with '#svg_editor' when parsed
-		var cssResizeRules = {
-			".tool_button,\
-			.push_button,\
-			.tool_button_current,\
-			.tool_button_disabled,\
-			#tools_rect .tool_flyout_button,\
-			#tools_ellipse .tool_flyout_button": {
-				'width': {s: '16px', l: '32px', xl: '48px'},
-				'height': {s: '16px', l: '32px', xl: '48px'},
-				'padding': {s: '1px', l: '2px', xl: '3px'}
-			},
-			".tool_sep": {
-				'height': {s: '16px', l: '32px', xl: '48px'},
-				'margin': {s: '2px 2px', l: '2px 5px', xl: '2px 8px'}
-			},
-			"#tools_top": {
-				'left': {s: '27px', l: '50px', xl: '70px'},
-				'height': {s: '50px', l: '88px', xl: '125px'}
-			},
-			"#tools_left": {
-				'width': {s: '26px', l: '34px', xl: '42px'},
-				'top': {s: '50px', l: '87px', xl: '125px'}
-			},
-			"div#workarea": {
-				'left': {s: '27px', l: '46px', xl: '65px'},
-				'top': {s: '50px', l: '88px', xl: '125px'},
-				'bottom': {s: '52px', l: '68px', xl: '75px'}
-			},
-			"#tools_bottom": {
-				'left': {s: '27px', l: '46px', xl: '65px'},
-				'height': {s: '52px', l: '68px', xl: '75px'}
-			},
-			"#tools_top input, #tools_bottom input": {
-				'margin-top': {s: '2px', l: '4px', xl: '5px'},
-				'height': {s: 'auto', l: 'auto', xl: 'auto'},
-				'border': {s: '1px solid #555', l: 'auto', xl: 'auto'},
-				'font-size': {s: '.9em', l: '2em', xl: '2.5em'}
-			},
-			"#tools_bottom input": {
-				'margin-top': {s: '6px', l: '4px', xl: '5px'},
-			},
-			"#tools_bottom span, #copyright, #tools_bottom .label": {
-				'font-size': {l: '1.5em', xl: '2em'}
-			},
-			"#tools_bottom_2": {
-				'width': {l: '295px', xl: '355px'}
-			},
-			"#tools_top > div, #tools_top": {
-				'line-height': {s: '17px', l: '34px', xl: '50px'}
-			}, 
-			".dropdown button": {
-				'height': {s: '18px', l: '34px', xl: '40px'}
-			},
-			"#tools_top label, #tools_bottom label": {
-				'font-size': {s: '1em', l: '1.5em', xl: '2em'},
-				'margin-top': {s: '1px', l: '3px', xl: '5px'}
-			}, 
-			"#tool_bold, #tool_italic": {
-				'font-size': {s: '1.5em', l: '3em', xl: '4.5em'}
-			},
-			"#sidepanels": {
-				'top': {s: '50px', l: '88px', xl: '125px'},
-				'bottom': {s: '52px', l: '68px', xl: '65px'},
-			},
-			'#layerbuttons': {
-				'width': {l: '130px', xl: '175px'},
-				'height': {l: '24px', xl: '30px'}
-			},
-			'#layerlist': {
-				'width': {l: '128px', xl: '150px'}
-			},			
-			'.layer_button': {
-				'width': {l: '19px', xl: '28px'},
-				'height': {l: '19px', xl: '28px'}
-			},
-			".flyout_arrow_horiz": {
-				'left': {s: '-5px', l: '5px', xl: '14px'},
-				'top': {s: '-13px', l: '-13px', xl: '-20px'}
-			},
-			"input.spin-button": {
-				'background-image': {l: "url('images/spinbtn_updn_big.png')", xl: "url('images/spinbtn_updn_big.png')"},
-				'background-position': {l: '100% -5px', xl: '100% -2px'},
-				'padding-right': {l: '24px', xl: '24px' }
-			},
-			"input.spin-button.up": {
-				'background-position': {l: '100% -45px', xl: '100% -42px'}
-			},
-			"input.spin-button.down": {
-				'background-position': {l: '100% -85px', xl: '100% -82px'}
-			}
-		};
-		
-		var rule_elem = $('#tool_size_rules');
-		if(!rule_elem.length) {
-			rule_elem = $('<style id="tool_size_rules"><\/style>').appendTo('head');
-		} else {
-			rule_elem.empty();
-		}
-		
-		if(size != 'm') {
-			var style_str = '';
-			$.each(cssResizeRules, function(selector, rules) {
-				selector = '#svg_editor ' + selector.replace(/,/g,', #svg_editor');
-				style_str += selector + '{';
-				$.each(rules, function(prop, values) {
-					if(values[size]) {
-						style_str += (prop + ':' + values[size] + ';');
-					}
-				});
-				style_str += '}';
-			});
-			rule_elem.text(style_str);
-		}
-		
-		var pos = $('#tools_rect_show').offset();
-		$('#tools_rect').css({'left': pos.left, 'top': pos.top});
-		pos = $('#tools_ellipse_show').offset();
-		$('#tools_ellipse').css({'left': pos.left, 'top': pos.top});
-	}
 
 	var cancelOverlays = function() {
 		if (!editingsource && !docprops) return;
@@ -1176,7 +948,8 @@ function svg_edit_setup() {
 		if (editingsource) {
 			var oldString = svgCanvas.getSvgString();
 			if (oldString != $('#svg_source_textarea').val()) {
-				if( !confirm(uiStrings.QignoreSourceChanges) ) {
+				// TODO: localize this prompt
+				if( !confirm('Ignore changes made to SVG source?') ) {
 					return false;
 				}
 			}
@@ -1545,15 +1318,16 @@ function svg_edit_setup() {
 		for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getLayer(i); }
 		
 		var j = (curNames.length+1);
-		var uniqName = uiStrings.layer + " " + j;
-		while ($.inArray(uniqName, curNames) != -1) {
+		var uniqName = "Layer " + j;
+		while (jQuery.inArray(uniqName, curNames) != -1) {
 			j++;
-			uniqName = uiStrings.layer + " " + j;
+			uniqName = "Layer " + j;
 		}
-		var newName = prompt(uiStrings.enterUniqueLayerName,uniqName);
+		// TODO: localize this
+		var newName = prompt("Please enter a unique layer name",uniqName);
 		if (!newName) return;
-		if ($.inArray(newName, curNames) != -1) {
-			alert(uiStrings.dupeLayerName);
+		if (jQuery.inArray(newName, curNames) != -1) {
+			alert("There is already a layer named that!");
 			return;
 		}
 		svgCanvas.createLayer(newName);
@@ -1604,17 +1378,18 @@ function svg_edit_setup() {
 	$('#layer_rename').click(function() {
 		var curIndex = $('#layerlist tr.layersel').prevAll().length;
 		var oldName = $('#layerlist tr.layersel td.layername').text();
-		var newName = prompt(uiStrings.enterNewLayerName,"");
+		// TODO: localize this
+		var newName = prompt("Please enter the new layer name","");
 		if (!newName) return;
 		if (oldName == newName) {
-			alert(uiStrings.layerHasThatName);
+			alert("Layer already has that name");
 			return;
 		}
 
 		var curNames = new Array(svgCanvas.getNumLayers());
 		for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getLayer(i); }
-		if ($.inArray(newName, curNames) != -1) {
-			alert(uiStrings.layerHasThatName);
+		if (jQuery.inArray(newName, curNames) != -1) {
+			alert("There is already a layer named that!");
 			return;
 		}
 		
@@ -1713,7 +1488,6 @@ function svg_edit_setup() {
 		selLayerNames.empty();
 		var currentlayer = svgCanvas.getCurrentLayer();
 		var layer = svgCanvas.getNumLayers();
-		var icon = $.getSvgIcon('eye');
 		// we get the layers in the reverse z-order (the layer rendered on top is listed first)
 		while (layer--) {
 			var name = svgCanvas.getLayer(layer);
@@ -1732,11 +1506,6 @@ function svg_edit_setup() {
 			}
 			layerlist.append(appendstr);
 			selLayerNames.append("<option value=\"" + name + "\">" + name + "</option>");
-		}
-		if(icon !== undefined) {
-			var copy = icon.clone();
-			$('td.layervis',layerlist).append(icon.clone());
-			$.resizeSvgIcons({'td.layervis .svg_icon':14});
 		}
 		// handle selection of layer
 		$('#layerlist td.layername')
@@ -1882,18 +1651,6 @@ function svg_edit_setup() {
 	$('#group_opacity').SpinButton({ step: 5, min: 0, max: 100, callback: changeOpacity });
 	$('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom });
 	
-	svgCanvas.setIconSize = setIconSize;
-	
-	svgCanvas.setLang = function(lang, strings) {
-		curPrefs.lang = lang;
-		$.pref('lang', lang);
-		$('#lang_select').val(lang);
-		if(strings) {
-			// $.extend will only replace the given strings
-			$.extend(uiStrings,strings); 
-		}
-	};
-	
 	svgCanvas.setCustomHandlers = function(opts) {
 		if(opts.open) {
 			$('#tool_open').show();
@@ -1907,154 +1664,17 @@ function svg_edit_setup() {
 	// set starting resolution (centers canvas)
 	setResolution(640,480);
 	
-//	var revnums = "svg-editor.js ($Rev$) ";
+//	var revnums = "svg-editor.js ($Rev: 902 $) ";
 //	revnums += svgCanvas.getVersion();
 //	$('#copyright')[0].setAttribute("title", revnums);
 	
 	return svgCanvas;
 };
 
-// This process starts before document.ready so the icons appear ASAP
-setSVGIcons();
-
-function setSVGIcons() {
-
-	$.svgIcons('images/svg_edit_icons.svg', {
-		w:24, h:24,
-		id_match: false,
-		no_img: true,
-		fallback_path:'images/',
-		fallback:{
-			'new_image':'clear.png',
-			'save':'save.png',
-			'open':'open.png',
-			'source':'source.png',
-			'docprops':'document-properties.png',
-			'wireframe':'wireframe.png',
-			
-			'undo':'undo.png',
-			'redo':'redo.png',
-			
-			'select':'select.png',
-			'pencil':'fhpath.png',
-			'pen':'line.png',
-			'square':'square.png',
-			'rect':'rect.png',
-			'fh_rect':'freehand-square.png',
-			'circle':'circle.png',
-			'ellipse':'ellipse.png',
-			'fh_ellipse':'freehand-circle.png',
-			'path':'path.png',
-			'text':'text.png',
-			'image':'image.png',
-			'zoom':'zoom.png',
-			
-			'clone':'clone.png',
-			'delete':'delete.png',
-			'group':'shape_group.png',
-			'ungroup':'shape_ungroup.png',
-			'move_top':'move_top.png',
-			'move_bottom':'move_bottom.png',
-			
-			'align_left':'align-left.png',
-			'align_center':'align-center',
-			'align_right':'align-right',
-			'align_top':'align-top',
-			'align_middle':'align-middle',
-			'align_bottom':'align-bottom',
-
-			'go_up':'go-up.png',
-			'go_down':'go-down.png',
-
-			'ok':'save.png',
-			'cancel':'cancel.png',
-			
-			'arrow_right':'flyouth.png',
-			'arrow_down':'dropdown.gif'
-		},
-		placement: {
-			'#logo a':'logo',
-		
-			'#tool_clear,#layer_new':'new_image',
-			'#tool_save':'save',
-			'#tool_open':'open',
-			'#tool_source':'source',
-			'#tool_docprops':'docprops',
-			'#tool_wireframe':'wireframe',
-			
-			'#tool_undo':'undo',
-			'#tool_redo':'redo',
-			
-			'#tool_select':'select',
-			'#tool_fhpath':'pencil',
-			'#tool_line':'pen',
-			'#tool_rect,#tools_rect_show':'rect',
-			'#tool_square':'square',
-			'#tool_fhrect':'fh_rect',
-			'#tool_ellipse,#tools_ellipse_show':'ellipse',
-			'#tool_circle':'circle',
-			'#tool_fhellipse':'fh_ellipse',
-			'#tool_path':'path',
-			'#tool_text,#layer_rename':'text',
-			'#tool_image':'image',
-			'#tool_zoom':'zoom',
-			
-			'#tool_clone,#tool_clone_multi,#tool_node_clone':'clone',
-			'#layer_delete,#tool_delete,#tool_delete_multi,#tool_node_delete':'delete',
-			'#tool_move_top':'move_top',
-			'#tool_move_bottom':'move_bottom',
-			'#tool_group':'group',
-			'#tool_ungroup':'ungroup',
-			
-			'#tool_alignleft':'align_left',
-			'#tool_aligncenter':'align_center',
-			'#tool_alignright':'align_right',
-			'#tool_aligntop':'align_top',
-			'#tool_alignmiddle':'align_middle',
-			'#tool_alignbottom':'align_bottom',
-			
-			'#layer_up':'go_up',
-			'#layer_down':'go_down',
-			'#layerlist td.layervis':'eye',
-			
-			'#tool_source_save,#tool_docprops_save':'ok',
-			'#tool_source_cancel,#tool_docprops_cancel':'cancel',
-			
-			'.flyout_arrow_horiz':'arrow_right',
-			'.dropdown button':'arrow_down',
-			'#palette .palette_item:first, #fill_bg, #stroke_bg':'no_color'
-		},
-		resize: {
-			'#logo a .svg_icon': 32,
-			'.flyout_arrow_horiz .svg_icon': 5,
-			'.layer_button .svg_icon, #layerlist td.layervis .svg_icon': 14,
-			'.dropdown button .svg_icon': 7,
-			'.palette_item:first .svg_icon, #fill_bg .svg_icon, #stroke_bg .svg_icon': 16,
-			'.toolbar_button button .svg_icon':16
-		},
-		callback: function(icons) {
-			$('.toolbar_button button > svg').each(function() {
-				$(this).parent().prepend(this);
-			});
-			
-			// Use small icons by default if not all left tools are visible
-			var tleft = $('#tools_left');
-			var min_height = tleft.offset().top + tleft.outerHeight();
-			var size = $.pref('iconsize');
-			if(size && size != 'm') {
-				svgCanvas.setIconSize(size);				
-			} else if($(window).height() < min_height) {
-				// Make smaller
-				svgCanvas.setIconSize('s');
-			}
-		}
-	});
-}
-
 // This happens when the page is loaded
 $(function() {
+	put_locale();
 	svgCanvas = svg_edit_setup();
-	put_locale(svgCanvas);
 	
 	try{
 	  window.addEventListener("message", function(e){
