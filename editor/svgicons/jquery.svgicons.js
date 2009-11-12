@@ -403,13 +403,14 @@ $(function() {
 	$.getSvgIcon = function(id) { return svg_icons[id]; }
 	
 	$.resizeSvgIcons = function(obj) {
+		// FF2 and older don't detect .svg_icon, so we change it detect svg elems instead
 		var change_sel = !$('.svg_icon:first').length;
 		$.each(obj, function(sel, size) {
 			var arr = $.isArray(size);
 			var w = arr?size[0]:size,
 				h = arr?size[1]:size;
 			if(change_sel) {
-				sel = sel.replace(/\.svg_icon/,'> svg');
+				sel = sel.replace(/\.svg_icon/g,'svg');
 			}
 			$(sel).each(function() {
 				this.setAttribute('width', w);
