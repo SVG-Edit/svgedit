@@ -5444,17 +5444,23 @@ function BatchCommand(text) {
 			var selected = selectedElements[i];
 			if (selected != null) {
 				selectedBBoxes[i] = this.getBBox(selected);
+				
+				var xform = svgroot.createSVGTransform();
+				var tlist = canvas.getTransformList(selected);
+				
 				// dx and dy could be arrays
 				if (dx.constructor == Array) {
 					selectedBBoxes[i].x += dx[i];
+					selectedBBoxes[i].y += dy[i];
+					xform.setTranslate(dx[i],dy[i]);
 				} else {
 					selectedBBoxes[i].x += dx;
-				}
-				if (dy.constructor == Array) {
-					selectedBBoxes[i].y += dy[i];
-				} else {
 					selectedBBoxes[i].y += dy;
+					xform.setTranslate(dx,dy);
 				}
+				
+				tlist.appendItem(xform);
+				
 				var cmd = recalculateDimensions(selected);//,selectedBBoxes[i]);
 				if (cmd) {
 					batchCmd.addSubCommand(cmd);
@@ -5716,7 +5722,7 @@ function BatchCommand(text) {
 		for (var i = 0; i < len; ++i) {
 			if (selectedElements[i] == null) break;
 			var elem = selectedElements[i];
-			bboxes[i] = canvas.getStrokedBBox(elem);
+			bboxes[i] = canvas.getStrokedBBox([elem]);
 			
 			// now bbox is axis-aligned and handles rotation
 			switch (relative_to) {
