@@ -588,6 +588,10 @@ span.zoom_tool {
 	font-size: .8em;
 }
 
+#svg_docprops #resolution {
+	max-width: 14em;
+}
+
 #tool_docprops_back {
 	margin-left: 1em;
 }
@@ -597,6 +601,7 @@ span.zoom_tool {
 	float: left;
 	width: 200px;
 	margin: 5px .7em; 
+	overflow: hidden;
 }
 
 #svg_docprops_docprops > legend, #svg_docprops_prefs > legend {
