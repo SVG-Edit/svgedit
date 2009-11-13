@@ -229,7 +229,6 @@ function svg_edit_setup() {
 			var getPaint = function(color, opac) {
 				// update the editor's fill paint
 				var opts = null;
-				
 				if (color.substr(0,5) == "url(#") {
 					opts = {
 						alpha: opac,
@@ -825,6 +824,7 @@ function svg_edit_setup() {
 	var clickClear = function(){
 		if( confirm(uiStrings.QwantToClear) ) {
 			svgCanvas.clear();
+			populateLayers();
 			updateContextPanel();
 		}
 	};
@@ -1413,6 +1413,7 @@ function svg_edit_setup() {
 				if (paint.type == "linearGradient") {
 					svgbox.removeChild(oldgrad);
 					var newgrad = svgbox.appendChild(document.importNode(paint.linearGradient, true));
+					svgCanvas.fixOperaXML(newgrad, paint.linearGradient)
 					newgrad.id = "gradbox_"+picker;
 					rectbox.setAttribute("fill", "url(#gradbox_" + picker + ")");
 				}
