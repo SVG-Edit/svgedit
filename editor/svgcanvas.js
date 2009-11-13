@@ -2444,7 +2444,28 @@ function BatchCommand(text) {
     	y = mouse_y / current_zoom;
     
     	evt.preventDefault();
-    	    
+    	
+    	var setRect = function(square) {
+    		var w = Math.abs(x - start_x),
+    			h = Math.abs(y - start_y),
+    			new_x, new_y;
+    		if(square) {
+				w = h = Math.max(w, h);
+				new_x = start_x < x ? start_x : start_x - w;
+				new_y = start_y < y ? start_y : start_y - h;
+			} else {
+				new_x = Math.min(start_x,x);
+				new_y = Math.min(start_y,y);
+			}
+
+			assignAttributes(shape,{
+				'width': w,
+				'height': h,
+				'x': new_x,
+				'y': new_y
+			},1000);
+    	}
+    	
 		switch (current_mode)
 		{
 			case "select":
@@ -2643,29 +2664,11 @@ function BatchCommand(text) {
 				if (!window.opera) svgroot.unsuspendRedraw(handle);
 				break;
 			case "square":
-				var size = Math.max( Math.abs(x - start_x), Math.abs(y - start_y) );
-				assignAttributes(shape,{
-					'width': size,
-					'height': size,
-					'x': start_x < x ? start_x : start_x - size,
-					'y': start_y < y ? start_y : start_y - size
-				},1000);
+				setRect(true);
 				break;
 			case "rect":
-				assignAttributes(shape,{
-					'width': Math.abs(x-start_x),
-					'height': Math.abs(y-start_y),
-					'x': Math.min(start_x,x),
-					'y': Math.min(start_y,y)
-				},1000);
-				break;
 			case "image":
-				assignAttributes(shape,{
-					'width': Math.abs(x-start_x),
-					'height': Math.abs(y-start_y),
-					'x': Math.min(start_x,x),
-					'y': Math.min(start_y,y)
-				},1000);
+				setRect(evt.shiftKey);
 				break;
 			case "circle":
 				var cx = shape.getAttributeNS(null, "cx");
@@ -2680,7 +2683,8 @@ function BatchCommand(text) {
 				var handle = null;
 				if (!window.opera) svgroot.suspendRedraw(1000);
 				shape.setAttributeNS(null, "rx", Math.abs(x - cx) );
-				shape.setAttributeNS(null, "ry", Math.abs(y - cy) );
+				var ry = Math.abs(evt.shiftKey?(x - cx):(y - cy));
+				shape.setAttributeNS(null, "ry", ry );
 				if (!window.opera) svgroot.unsuspendRedraw(handle);
 				break;
 			case "fhellipse":
