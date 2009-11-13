@@ -982,7 +982,6 @@ function BatchCommand(text) {
 			node.nodeValue = node.nodeValue.replace(/^\s+|\s+$/g, "");
 		}
 		if (node.nodeType != 1) return;
-
 		var doc = node.ownerDocument;
 		var parent = node.parentNode;
 		// can parent ever be null here?  I think the root node's parent is the document...
@@ -1054,7 +1053,7 @@ function BatchCommand(text) {
 		var i = lgrads.length;
 		while (i--) {
 			var grad = lgrads[i];
-			var id = grad.getAttribute('id');
+			var id = grad.id;
 			var url_id = 'url(#' + id + ')';
 			if($.inArray(url_id, grad_uses) == -1) {
 				// Not found, so remove
@@ -1166,7 +1165,7 @@ function BatchCommand(text) {
 	// importNode, like cloneNode, causes the comma-to-period
 	// issue in Opera/Win/non-en. Thankfully we can compare to the original XML
 	// and simply use the original value when necessary
-	var fixOperaXML = function(elem, orig_el) {
+	this.fixOperaXML = function(elem, orig_el) {
 		var x_attrs = elem.attributes;
 		$.each(x_attrs, function(i, attr) {
 			if(attr.nodeValue.indexOf(',') == -1) return;
@@ -1174,14 +1173,18 @@ function BatchCommand(text) {
 			var ns = attr.nodeName == 'href' ? xlinkns : 
 				attr.prefix == "xml" ? xmlns : null;
 			var good_attrval = orig_el.getAttribute(attr.nodeName);
-			elem.setAttributeNS(ns, attr.nodeName, good_attrval);
+			if(ns) {
+				elem.setAttributeNS(ns, attr.nodeName, good_attrval);
+			} else {
+				elem.setAttribute(attr.nodeName, good_attrval);
+			}
 		});
 
 		var childs = elem.childNodes;
 		var o_childs = orig_el.childNodes;
 		$.each(childs, function(i, child) {
 			if(child.nodeType == 1) {
-				fixOperaXML(child, o_childs[i]);
+				canvas.fixOperaXML(child, o_childs[i]);
 			}
 		});
 	}
@@ -3881,7 +3884,7 @@ function BatchCommand(text) {
         	
         	// Fix XML for Opera/Win/Non-EN
 			if(window.opera) {
-				fixOperaXML(svgcontent, newDoc.documentElement);
+				canvas.fixOperaXML(svgcontent, newDoc.documentElement);
 			}
         	
 			svgcontent.setAttribute('id', 'svgcontent');
@@ -4685,7 +4688,9 @@ function BatchCommand(text) {
 			var defs = findDefs();
 			// no duplicate found, so import gradient into defs
 			if (!duplicate_grad) {
+				var orig_grad = grad;
 				grad = defs.appendChild( svgdoc.importNode(grad, true) );
+				canvas.fixOperaXML(grad, orig_grad);
 				// get next id and set it on the grad
 				grad.id = getNextId();
 			}
