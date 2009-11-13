@@ -2563,7 +2563,13 @@ function BatchCommand(text) {
 					scale = svgroot.createSVGTransform(),
 					translateBack = svgroot.createSVGTransform();
 				translateOrigin.setTranslate(-(left+tx),-(top+ty));
+				if(evt.shiftKey) {
+					if(sx == 1) sx = sy
+						else sy = sx;
+				}
 				scale.setScale(sx,sy);
+
+				
 				translateBack.setTranslate(left+tx,top+ty);
 				var N = tlist.numberOfItems;
 				tlist.replaceItem(translateBack, N-3);

@@ -1076,7 +1076,7 @@ function svg_edit_setup() {
 			"div#workarea": {
 				'left': {s: '27px', l: '46px', xl: '65px'},
 				'top': {s: '50px', l: '88px', xl: '125px'},
-				'bottom': {s: '52px', l: '68px', xl: '75px'}
+				'bottom': {s: '51px', l: '68px', xl: '75px'}
 			},
 			"#tools_bottom": {
 				'left': {s: '27px', l: '46px', xl: '65px'},
@@ -1088,11 +1088,12 @@ function svg_edit_setup() {
 				'border': {s: '1px solid #555', l: 'auto', xl: 'auto'},
 				'font-size': {s: '.9em', l: '2em', xl: '2.5em'}
 			},
-			"#tools_bottom input": {
-				'margin-top': {s: '6px', l: '4px', xl: '5px'},
+			"#zoom_panel": {
+				'margin-top': {s: '3px', l: '4px', xl: '5px'},
 			},
-			"#tools_bottom span, #copyright, #tools_bottom .label": {
-				'font-size': {l: '1.5em', xl: '2em'}
+			"#copyright, #tools_bottom .label": {
+				'font-size': {l: '1.5em', xl: '2em'},
+				'line-height': {s: '15px'}
 			},
 			"#tools_bottom_2": {
 				'width': {l: '295px', xl: '355px'}
@@ -1101,7 +1102,8 @@ function svg_edit_setup() {
 				'line-height': {s: '17px', l: '34px', xl: '50px'}
 			}, 
 			".dropdown button": {
-				'height': {s: '18px', l: '34px', xl: '40px'}
+				'height': {s: '18px', l: '34px', xl: '40px'},
+				'margin-top': {s: '3px'}
 			},
 			"#tools_top label, #tools_bottom label": {
 				'font-size': {s: '1em', l: '1.5em', xl: '2em'},
@@ -1112,7 +1114,7 @@ function svg_edit_setup() {
 			},
 			"#sidepanels": {
 				'top': {s: '50px', l: '88px', xl: '125px'},
-				'bottom': {s: '52px', l: '68px', xl: '65px'},
+				'bottom': {s: '51px', l: '68px', xl: '65px'},
 			},
 			'#layerbuttons': {
 				'width': {l: '130px', xl: '175px'},
