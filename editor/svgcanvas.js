@@ -1933,6 +1933,8 @@ function BatchCommand(text) {
 		}
 		
 		// make sure the elements are in the correct order
+		// See: http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
+	
 		selectedElements.sort(function(a,b) {
 			if(a && b && a.compareDocumentPosition) {
 				return 3 - (b.compareDocumentPosition(a) & 6);	

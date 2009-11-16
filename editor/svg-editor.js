@@ -749,10 +749,7 @@ function svg_edit_setup() {
 
 	var dblclickZoom = function(){
 		if (toolButtonClick('#tool_zoom')) {
-			var res = svgCanvas.getResolution();
-			setResolution(res.w, res.h);
-			$('#zoom').val(100);
-			svgCanvas.setZoom(1);
+			zoomImage();
 			setSelectMode();
 		}
 	};
@@ -824,6 +821,8 @@ function svg_edit_setup() {
 	var clickClear = function(){
 		if( confirm(uiStrings.QwantToClear) ) {
 			svgCanvas.clear();
+			svgCanvas.setResolution(640, 480);
+			zoomImage();
 			populateLayers();
 			updateContextPanel();
 		}
@@ -875,29 +874,15 @@ function svg_edit_setup() {
 	var clickClone = function(){
 		svgCanvas.cloneSelectedElements();
 	};
-
-	var clickAlignLeft = function(){
-		svgCanvas.alignSelectedElements('l', $('#align_relative_to option:selected').val() );
+	
+	var clickAlign = function() {
+		var letter = this.id.replace('tool_align','').charAt(0);
+		svgCanvas.alignSelectedElements(letter, $('#align_relative_to').val());
 	};
-	var clickAlignCenter = function(){
-		svgCanvas.alignSelectedElements('c', $('#align_relative_to option:selected').val() );
-	};
-	var clickAlignRight = function(){
-		svgCanvas.alignSelectedElements('r', $('#align_relative_to option:selected').val() );
-	};
-	var clickAlignTop = function(){
-		svgCanvas.alignSelectedElements('t', $('#align_relative_to option:selected').val() );
-	};
-	var clickAlignMiddle = function(){
-		svgCanvas.alignSelectedElements('m', $('#align_relative_to option:selected').val() );
-	};
-	var clickAlignBottom = function(){
-		svgCanvas.alignSelectedElements('b', $('#align_relative_to option:selected').val() );
-	};
-
-	var zoomImage = function(zoomIn) {
+	
+	var zoomImage = function(multiplier) {
 		var res = svgCanvas.getResolution();
-		var multiplier = zoomIn? res.zoom * 2 : res.zoom * 0.5;
+		multiplier = multiplier?res.zoom * multiplier:1;
 		setResolution(res.w * multiplier, res.h * multiplier, true);
 		$('#zoom').val(multiplier * 100);
 		svgCanvas.setZoom(multiplier);
@@ -967,6 +952,7 @@ function svg_edit_setup() {
 		}
 		svgCanvas.clearSelection();
 		hideSourceEditor();
+		zoomImage();
 		populateLayers();
 		setTitle(svgCanvas.getImageTitle());
 	};
@@ -1243,12 +1229,7 @@ function svg_edit_setup() {
 	$('#tool_clone_multi').click(clickClone);
 	$('#tool_group').click(clickGroup);
 	$('#tool_ungroup').click(clickGroup);
-	$('#tool_alignleft').click(clickAlignLeft);
-	$('#tool_aligncenter').click(clickAlignCenter);
-	$('#tool_alignright').click(clickAlignRight);
-	$('#tool_aligntop').click(clickAlignTop);
-	$('#tool_alignmiddle').click(clickAlignMiddle);
-	$('#tool_alignbottom').click(clickAlignBottom);
+	$('[id^=tool_align]').click(clickAlign);
 	// these two lines are required to make Opera work properly with the flyout mechanism
 	$('#tools_rect_show').click(clickSquare);
 	$('#tools_ellipse_show').click(clickCircle);
@@ -1351,8 +1332,8 @@ function svg_edit_setup() {
 			['shift+right', function(){rotateSelected(1)}],
 			['shift+O', selectPrev],
 			['shift+P', selectNext],
-			['ctrl+up', function(evt){zoomImage(true);evt.preventDefault();}],
-			['ctrl+down', function(evt){zoomImage();evt.preventDefault();}],
+			['ctrl+up', function(evt){zoomImage(2);evt.preventDefault();}],
+			['ctrl+down', function(evt){zoomImage(.5);evt.preventDefault();}],
 			['up', function(evt){moveSelected(0,-1);evt.preventDefault();}],
 			['down', function(evt){moveSelected(0,1);evt.preventDefault();}],
 			['left', function(evt){moveSelected(-1,0);evt.preventDefault();}],
