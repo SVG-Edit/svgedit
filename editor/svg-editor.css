@@ -274,6 +274,7 @@ body {
 	stroke-dasharray: none;
 	opacity: 1;
 	pointer-events: stroke;
+	vector-effect: non-scaling-stroke;
 }
 
 #workarea.wireframe #svgcontent text {
