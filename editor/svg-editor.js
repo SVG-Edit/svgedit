@@ -192,6 +192,7 @@ function svg_edit_setup() {
 			// Go to select if a zoom box was drawn
 			setSelectMode();
 		}
+		zoomDone();
 	}
 
 	// updates the toolbar (colors, opacity, etc) based on the selected element
@@ -886,11 +887,35 @@ function svg_edit_setup() {
 		setResolution(res.w * multiplier, res.h * multiplier, true);
 		$('#zoom').val(multiplier * 100);
 		svgCanvas.setZoom(multiplier);
+		zoomDone();
 	};
+	
+	var zoomDone = function() {
+		updateBgImage();
+		updateWireFrame();
+	}
 
 	var clickWireframe = function() {
 		 $('#tool_wireframe').toggleClass('push_button_pressed');
 		$('#workarea').toggleClass('wireframe');
+		
+		if(supportsNonSS) return;
+		var wf_rules = $('#wireframe_rules');
+		if(!wf_rules.length) {
+			wf_rules = $('<style id="wireframe_rules"><\/style>').appendTo('head');
+		} else {
+			wf_rules.empty();
+		}
+		
+		updateWireFrame();
+	}
+	
+	var updateWireFrame = function() {
+		// Test support
+		if(supportsNonSS) return;
+
+		var rule = "#workarea.wireframe #svgcontent * { stroke-width: " + 1/svgCanvas.getZoom() + "px; }";
+		$('#wireframe_rules').text($('#workarea').hasClass('wireframe') ? rule : "");
 	}
 
 	var showSourceEditor = function(){
@@ -1470,6 +1495,13 @@ function svg_edit_setup() {
 	boxgrad.id = 'gradbox_stroke';	
 	$(svgdocbox.documentElement.firstChild).attr('fill', '#000000');
 	$('#stroke_color').append( document.importNode(svgdocbox.documentElement,true) );
+	
+	// Use this SVG elem to test vectorEffect support
+	var test_el = svgdocbox.documentElement.firstChild;
+	test_el.setAttribute('style','vector-effect:non-scaling-stroke');
+	var supportsNonSS = (test_el.style.vectorEffect == 'non-scaling-stroke');
+	test_el.removeAttribute('style');
+
 		
 	$('#fill_color').click(function(){
 		colorPicker($(this));
@@ -1828,7 +1860,6 @@ function svg_edit_setup() {
 		$('#canvas_height').val(h);
 
 		centerCanvasIfNeeded();
-		setTimeout(updateBgImage,10);
 		
 		if(center) {
 			var w_area = $('#workarea');
