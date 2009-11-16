@@ -1934,6 +1934,13 @@ function BatchCommand(text) {
 			}
 		}
 		
+		if(showGrips) {
+			selectorManager.requestSelector(selectedElements[0]).showGrips(true);
+		}
+		else if (selectedElements.length > 1) {
+			selectorManager.requestSelector(selectedElements[0]).showGrips(false);
+		}
+
 		// make sure the elements are in the correct order
 		// See: http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
 	
@@ -1943,13 +1950,9 @@ function BatchCommand(text) {
 			}
 		});
 		
-
-		if(showGrips) {
-			selectorManager.requestSelector(selectedElements[0]).showGrips(true);
-		}
-		else if (selectedElements.length > 1) {
-			selectorManager.requestSelector(selectedElements[0]).showGrips(false);
-		}
+		// Make sure null value is at the end
+		if(!selectedElements[0]) selectedElements.push(selectedElements.shift());
+		
 	};
 
 	// TODO: could use slice here to make this faster?
