@@ -1,5 +1,5 @@
 /*
- * SVG Icon Loader
+ * SVG Icon Loader 2.0
  *
  * jQuery Plugin for loading SVG icons from a single file
  *
@@ -13,8 +13,8 @@ How to use:
 1. Create the SVG master file that includes all icons:
 
 The master SVG icon-containing file is an SVG file that contains 
-<foreignContent> elements. Each <foreignContent> element should contain the markup of an SVG
-icon. The <foreignContent> element has an ID that should 
+<g> elements. Each <g> element should contain the markup of an SVG
+icon. The <g> element has an ID that should 
 correspond with the ID of the HTML element used on the page that should contain 
 or optionally be replaced by the icon. Additionally, one empty element should be
 added at the end with id "svg_eof".
@@ -57,7 +57,12 @@ All options are optional and can include:
 - 'id_match (boolean)': Automatically attempt to match SVG icon ids with
 	corresponding HTML id (default: true)
 	
-- 'no_img (boolean)': Prevent attempting to convert the icon into an <img> element (may be faster, help for browser consistency)
+- 'no_img (boolean)': Prevent attempting to convert the icon into an <img>
+	element (may be faster, help for browser consistency)
+
+- 'svgz (boolean)': Indicate that the file is an SVGZ file, and thus not to
+	parse as XML. SVGZ files add compression benefits, but getting data from
+	them fails in Firefox 2 and older.
 
 5. To access an icon at a later point without using the callback, use this:
 	$.getSvgIcon(id (string));
@@ -112,7 +117,10 @@ $(function() {
 		
 		callback: function(icons) { // Sets background color for "close" icon 
 			icons['close'].css('background','red');
-		}
+		},
+		
+		svgz: true // Indicates that an SVGZ file is being used
+		
 	})
 });
 

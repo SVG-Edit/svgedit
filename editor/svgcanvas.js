@@ -1931,6 +1931,14 @@ function BatchCommand(text) {
 				call("selected", selectedElements);
 			}
 		}
+		
+		// make sure the elements are in the correct order
+		selectedElements.sort(function(a,b) {
+			if(a && b && a.compareDocumentPosition) {
+				return 3 - (b.compareDocumentPosition(a) & 6);	
+			}
+		});
+		
 
 		if(showGrips) {
 			selectorManager.requestSelector(selectedElements[0]).showGrips(true);
