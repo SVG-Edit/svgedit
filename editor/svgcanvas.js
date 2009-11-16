@@ -980,6 +980,8 @@ function BatchCommand(text) {
 		// for text, we do a whitespace trim
 		if (node.nodeType == 3) {
 			node.nodeValue = node.nodeValue.replace(/^\s+|\s+$/g, "");
+			// Remove empty text nodes
+			if(!node.nodeValue.length) node.parentNode.removeChild(node);
 		}
 		if (node.nodeType != 1) return;
 		var doc = node.ownerDocument;
