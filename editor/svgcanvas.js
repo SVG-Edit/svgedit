@@ -828,7 +828,7 @@ function BatchCommand(text) {
 	var all_layers = [];
 	// pointer to the current layer <g>
 	var current_layer = null;
-	
+	var save_options = {round_digits: 5};
 	var d_attr = null;
 	var started = false;
 	var obj_num = 1;
@@ -1107,6 +1107,15 @@ function BatchCommand(text) {
 					if(!isNaN(attrVal)) {
 						attrVal = shortFloat(attrVal);
 					}
+					
+					// Embed images when saving 
+					if(save_options.apply
+						&& elem.nodeName == 'image' 
+						&& attr.localName == 'href'
+						&& save_options.images
+						&& save_options.images == 'embed') {
+						attrVal = canvas.embedImage(attrVal);
+					}
 					// map various namespaces to our fixed namespace prefixes
 					// TODO: put this into a map and do a look-up instead of if-else
 					if (attr.namespaceURI == xlinkns) {
@@ -1163,6 +1172,44 @@ function BatchCommand(text) {
 		}
 		return out.join('');
 	}; // end svgToString()
+
+	this.embedImage = function(val, img, attempts) {
+		var result;
+		
+		if(!attempts) attempts = 0;
+		// Prevent endless loop if image cannot be loaded
+		if(attempts > 100) return val;
+		attempts++;
+	
+		// Below is some code to fetch the data: URL representation
+		// of local image files. It is commented out until we figure out
+		// a way of introducing this as an option into the UI.  Also, it 
+		// does not work in Firefox at all :(
+
+		// load in the image and once it's loaded, get the dimensions
+		if(!img) {
+			img = document.createElement("img");
+			img.setAttribute("src", val);
+		}
+		
+		if (img.width > 0 && img.height > 0) {
+			// create a canvas the same size as the raster image
+			var canvas = document.createElement("canvas");
+			canvas.width = img.width;
+			canvas.height = img.height;
+			// load the raster image into the canvas
+			canvas.getContext("2d").drawImage(img,0,0);
+			// retrieve the data: URL
+			try {
+				result = canvas.toDataURL();
+			} catch(e) {
+				result = val;
+			}
+		}
+		if(result) return result;
+
+		return canvas.embedImage(val, img, attempts);
+	}
 
 	// importNode, like cloneNode, causes the comma-to-period
 	// issue in Opera/Win/non-en. Thankfully we can compare to the original XML
@@ -2785,7 +2832,7 @@ function BatchCommand(text) {
 	}; // mouseMove()
 
 	var shortFloat = function(val) {
-		var digits = 5;
+		var digits = save_options.round_digits;
 		if(!isNaN(val)) {
 			return Number(Number(val).toFixed(digits));
 		} else if($.isArray(val)) {
@@ -3843,9 +3890,12 @@ function BatchCommand(text) {
 	//
 	// Returns: 
 	// Nothing
-	this.save = function() {
+	this.save = function(opts) {
 		// remove the selected outline before serializing
 		this.clearSelection();
+		// Update save options if provided
+		if(opts) $.extend(save_options, opts);
+		save_options.apply = true;
 		
 		var str = "<?xml version=\"1.0\" standalone=\"no\"?>\n";
 		// no need for doctype, see http://jwatt.org/svg/authoring/#doctype-declaration
@@ -3869,6 +3919,7 @@ function BatchCommand(text) {
 	// Returns:
 	// The current drawing as raw SVG XML text.
 	this.getSvgString = function() {
+		save_options.apply = false;
 		return svgCanvasToString();
 	};
 
@@ -5042,35 +5093,6 @@ function BatchCommand(text) {
 	};
 
 	this.setImageURL = function(val) {
-		// Below is some code to fetch the data: URL representation
-		// of local image files. It is commented out until we figure out
-		// a way of introducing this as an option into the UI.  Also, it 
-		// does not work in Firefox at all :(
-/*
-		// load in the image and once it's loaded, get the dimensions
-		var img = document.createElement("img");
-		var svgCanvas = this;
-		img.addEventListener("load", function(evt) {
-			if (this.width > 0 && this.height > 0) {
-				// create a canvas the same size as the raster image
-				var canvas = document.createElement("canvas");
-				canvas.width = this.width;
-				canvas.height = this.height;
-				// load the raster image into the canvas
-				canvas.getContext("2d").drawImage(img,0,0);
-				// retrieve the data: URL
-				try {
-					var dataurl = canvas.toDataURL();
-					svgCanvas.changeSelectedAttribute("#href", dataurl);
-				} catch(e) {
-					// if we get an exception, just set the href to the URL
-					svgCanvas.changeSelectedAttribute("#href", val);
-				}
-			}
-		}, false);		
-		img.setAttribute("src", val);
-*/		
-		
 		svgCanvas.changeSelectedAttribute("#href", val);
 	};
 
