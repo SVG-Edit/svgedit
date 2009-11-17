@@ -678,6 +678,14 @@ span.zoom_tool {
 	display: none;
 }
 
+#image_save_opts label {
+	font-size: .9em;
+}
+
+#image_save_opts input {
+	margin-left: 0;
+}
+
 #svg_docprops #svg_docprops_overlay {
 	position: absolute;
 	top: 0px;

@@ -377,7 +377,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 				<label><span id="svginfo_width">Width:</span> <input type="text" id="canvas_width" size="6"></label>
 					
 				<label><span id="svginfo_height">Height:</span> <input type="text" id="canvas_height" size="6"></label>
-					
+				
 				<label>
 					<select id="resolution">
 						<option id="selectedPredefined" selected="selected">Select predefined:</option>
@@ -390,6 +390,13 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 					</select>
 				</label>
 			</fieldset>
+
+			<fieldset id="image_save_opts">
+				<legend id="includedImages">Included Images</legend>
+				<label><input type="radio" name="image_opt" value="ref" checked="checked"/> <span id="image_opt_ref">Use file reference</span> </label>
+				<label><input type="radio" name="image_opt" value="embed"/> <span id="image_opt_embed">Embed data (local files)</span> </label>
+			</fieldset>			
+
 
 		</fieldset>
 
