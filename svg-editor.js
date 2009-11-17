@@ -73,7 +73,7 @@ function svg_edit_setup() {
 		iconsize:'m',
 		bg_color:'#FFF',
 		bg_url:'',
-		img_save:'ref'
+		img_save:'embed'
 	};
 	
 	var setSelectMode = function() {
@@ -358,8 +358,9 @@ function svg_edit_setup() {
 					}
 				} // text
 				else if(el_name == 'image') {
-          			var xlinkNS="http://www.w3.org/1999/xlink";
-          			$('#image_url').val(elem.getAttributeNS(xlinkNS, "href"));
+					var xlinkNS="http://www.w3.org/1999/xlink";
+					var href = elem.getAttributeNS(xlinkNS, "href");
+          			setImageURL(href);
         		} // image
 			}
 		} // if (elem != null)
@@ -510,7 +511,7 @@ function svg_edit_setup() {
   
 	// TODO: consider only setting the URL once Enter has been pressed?
 	$('#image_url').keyup(function(){
-		svgCanvas.setImageURL(this.value); 
+		setImageURL(this.value); 
 	});
 
 	$('.attr_changer').change(function() {
@@ -1275,6 +1276,34 @@ function svg_edit_setup() {
 	$('#tools_ellipse_show').click(clickCircle);
 	$('#tool_bold').mousedown(clickBold);
 	$('#tool_italic').mousedown(clickItalic);
+	$('#change_image_url').click(function() {
+		var url = prompt("Select the new image URL","http://");
+		if(url) setImageURL(url);
+	});
+
+	function setImageURL(url) {
+		svgCanvas.setImageURL(url);
+		$('#image_url').val(url);
+		
+		if(url.indexOf('data:') === 0) {
+			// data URI found
+			$('#image_url').hide();
+			$('#change_image_url').show();
+		} else {
+			// regular URL
+			
+			var img = svgCanvas.embedImage(url);
+			if(img == url && curPrefs.img_save == 'embed') {
+				// Couldn't embed, so show warning
+				$('#url_notice').show();
+			} else {
+				$('#url_notice').hide();
+			}
+			
+			$('#image_url').show();
+			$('#change_image_url').hide();
+		}
+	}
 
 	// added these event handlers for all the push buttons so they
 	// behave more like buttons being pressed-in and not images
