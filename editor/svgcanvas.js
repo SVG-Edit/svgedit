@@ -1201,7 +1201,8 @@ function BatchCommand(text) {
 			canvas.getContext("2d").drawImage(img,0,0);
 			// retrieve the data: URL
 			try {
-				result = canvas.toDataURL();
+				var urldata = ';svgedit_url=' + encodeURIComponent(val);
+				result = canvas.toDataURL().replace(';base64',urldata+';base64');
 			} catch(e) {
 				result = val;
 			}
@@ -3947,6 +3948,22 @@ function BatchCommand(text) {
         
     	    // set new svg document
         	svgcontent = svgroot.appendChild(svgdoc.importNode(newDoc.documentElement, true));
+        	
+        	// change image href vals if possible
+        	$(svgcontent).find('image').each(function() {
+        		var image = this;
+        		var val = this.getAttributeNS(xlinkns, "href");
+				if(val.indexOf('data:') === 0) {
+					// Check if an SVG-edit data URI
+					var m = val.match(/svgedit_url=(.*?);/);
+					if(m) {
+						var url = decodeURIComponent(m[1]);
+						$(new Image()).load(function() {
+							image.setAttributeNS(xlinkns,'href',url);
+						}).attr('src',url);
+					}
+				}
+        	});
         	
         	// Fix XML for Opera/Win/Non-EN
 			if(window.opera) {
