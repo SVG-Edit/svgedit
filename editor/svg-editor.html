@@ -182,6 +182,8 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 		<input id="image_height" class="image_tool attr_changer" title="Change image height" size="3" data-attr="height"/>
     <label class="image_tool">url:</label>
     <input id="image_url" class="image_tool" type="text" title="Change URL" size="35"/>
+    <button id="change_image_url" style="display:none;">Change URL</button>
+    <div id="url_notice" title="NOTE: This image cannot be embedded. It will depend on this path to be displayed" style="display:none;">(!)</div>
   </div>
 
 	<div id="circle_panel">
@@ -393,8 +395,8 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 
 			<fieldset id="image_save_opts">
 				<legend id="includedImages">Included Images</legend>
-				<label><input type="radio" name="image_opt" value="ref" checked="checked"/> <span id="image_opt_ref">Use file reference</span> </label>
-				<label><input type="radio" name="image_opt" value="embed"/> <span id="image_opt_embed">Embed data (local files)</span> </label>
+				<label><input type="radio" name="image_opt" value="embed" checked="checked"/> <span id="image_opt_embed">Embed data (local files)</span> </label>
+				<label><input type="radio" name="image_opt" value="ref"/> <span id="image_opt_ref">Use file reference</span> </label>
 			</fieldset>			
 
 
