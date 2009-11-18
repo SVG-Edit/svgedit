@@ -288,7 +288,7 @@ function svg_edit_setup() {
 		if (svgCanvas.getMode() == 'rotate' && elem != null) {
 			$('#angle').val(svgCanvas.getRotationAngle(elem));
 			return;
-		} else if(svgCanvas.addedNew && elem.nodeName == 'image') {
+		} else if(svgCanvas.addedNew && elem != null && elem.nodeName == 'image') {
 			promptImgURL();
 		}
 		var is_node = elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
