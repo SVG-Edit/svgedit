@@ -470,6 +470,10 @@ span.zoom_tool {
 	font-style: italic;
 }
 
+#url_notice {
+	padding-top: 4px;
+	display: none;
+}
 
 #svg_editor #color_picker {
 	position: absolute;
