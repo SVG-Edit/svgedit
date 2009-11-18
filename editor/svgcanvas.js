@@ -826,6 +826,8 @@ function BatchCommand(text) {
 	// z-ordered array of tuples containing layer names and <g> elements
 	// the first layer is the one at the bottom of the rendering
 	var all_layers = [];
+	var encodableImages = {};
+	var last_good_img_url = 'images/logo.png';
 	// pointer to the current layer <g>
 	var current_layer = null;
 	var save_options = {round_digits: 5};
@@ -1114,7 +1116,8 @@ function BatchCommand(text) {
 						&& attr.localName == 'href'
 						&& save_options.images
 						&& save_options.images == 'embed') {
-						attrVal = canvas.embedImage(attrVal);
+						var img = encodableImages[attrVal];
+						if(img) attrVal = img;
 					}
 					// map various namespaces to our fixed namespace prefixes
 					// TODO: put this into a map and do a look-up instead of if-else
@@ -1173,13 +1176,7 @@ function BatchCommand(text) {
 		return out.join('');
 	}; // end svgToString()
 
-	this.embedImage = function(val, img, attempts) {
-		var result;
-		
-		if(!attempts) attempts = 0;
-		// Prevent endless loop if image cannot be loaded
-		if(attempts > 100) return val;
-		attempts++;
+	this.embedImage = function(val, callback) {
 	
 		// Below is some code to fetch the data: URL representation
 		// of local image files. It is commented out until we figure out
@@ -1187,29 +1184,24 @@ function BatchCommand(text) {
 		// does not work in Firefox at all :(
 
 		// load in the image and once it's loaded, get the dimensions
-		if(!img) {
-			img = document.createElement("img");
-			img.setAttribute("src", val);
-		}
-		
-		if (img.width > 0 && img.height > 0) {
+		$(new Image()).load(function() {
 			// create a canvas the same size as the raster image
 			var canvas = document.createElement("canvas");
-			canvas.width = img.width;
-			canvas.height = img.height;
+			canvas.width = this.width;
+			canvas.height = this.height;
 			// load the raster image into the canvas
-			canvas.getContext("2d").drawImage(img,0,0);
+			canvas.getContext("2d").drawImage(this,0,0);
 			// retrieve the data: URL
 			try {
 				var urldata = ';svgedit_url=' + encodeURIComponent(val);
-				result = canvas.toDataURL().replace(';base64',urldata+';base64');
+				urldata = canvas.toDataURL().replace(';base64',urldata+';base64');
+				encodableImages[val] = urldata;
 			} catch(e) {
-				result = val;
+				encodableImages[val] = false;
 			}
-		}
-		if(result) return result;
-
-		return canvas.embedImage(val, img, attempts);
+			last_good_img_url = val;
+			if(callback) callback(encodableImages[val]);
+		}).attr('src',val);
 	}
 
 	// importNode, like cloneNode, causes the comma-to-period
@@ -1220,9 +1212,9 @@ function BatchCommand(text) {
 		$.each(x_attrs, function(i, attr) {
 			if(attr.nodeValue.indexOf(',') == -1) return;
 			// attr val has comma, so let's get the good value
-			var ns = attr.nodeName == 'href' ? xlinkns : 
+			var ns = attr.prefix == 'xlink' ? xlinkns : 
 				attr.prefix == "xml" ? xmlns : null;
-			var good_attrval = orig_el.getAttribute(attr.nodeName);
+			var good_attrval = orig_el.getAttribute(attr.localName);
 			if(ns) {
 				elem.setAttributeNS(ns, attr.nodeName, good_attrval);
 			} else {
@@ -2322,7 +2314,7 @@ function BatchCommand(text) {
 						"style": "pointer-events:inherit"
 					}
 				});
-        		newImage.setAttributeNS(xlinkns, "href", "images/logo.png");
+        		newImage.setAttributeNS(xlinkns, "href", last_good_img_url);
 				break;
 			case "square":
 				// FIXME: once we create the rect, we lose information that this was a square
@@ -3848,7 +3840,6 @@ function BatchCommand(text) {
 				canvas.setMode("select");
 			}
 			
-			
 		} else if (element != null) {
 			canvas.addedNew = true;
 			element.setAttribute("opacity", cur_shape.opacity);
@@ -3859,8 +3850,8 @@ function BatchCommand(text) {
 				current_mode = "pathedit";
 				recalcPathPoints();
 				addAllPointGripsToPath(current_path_pts.length/2 - 1);
- 			} else if (current_mode == "text") {
- 				// keep us in the tool we were in unless it was a text element
+ 			} else if (current_mode == "text" || current_mode == "image") {
+ 				// keep us in the tool we were in unless it was a text or image element
 				canvas.addToSelection([element], true);
 			}
 			// we create the insert command that is stored on the stack
@@ -3963,6 +3954,8 @@ function BatchCommand(text) {
 						}).attr('src',url);
 					}
 				}
+        		// Add to encodableImages if it loads
+        		canvas.embedImage(val);
         	});
         	
         	// Fix XML for Opera/Win/Non-EN
