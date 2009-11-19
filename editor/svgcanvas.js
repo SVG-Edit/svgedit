@@ -1428,7 +1428,7 @@ function BatchCommand(text) {
 		// if we haven't created an initial array in polygon/polyline/path, then 
 		// make a copy of initial values and include the transform
 		if (initial == null) {
-			initial = jQuery.extend(true, {}, changes);
+			initial = $.extend(true, {}, changes);
 		}
 		// save the start transform value too
 		initial["transform"] = start_transform ? start_transform : "";
@@ -1692,11 +1692,20 @@ function BatchCommand(text) {
 		// we apply the changes directly to the DOM
 		switch (selected.tagName)
 		{
-			case "line":
-			case "circle":
 			case "rect":
-			case "ellipse":
 			case "image":
+				changes.x = changes.x + Math.min(0,changes.width);
+				changes.y = changes.y + Math.min(0,changes.height);
+				changes.width = Math.abs(changes.width);
+				changes.height = Math.abs(changes.height);
+				assignAttributes(selected, changes, 1000);
+				break;
+			case "ellipse":
+				changes.rx = Math.abs(changes.rx);
+				changes.ry = Math.abs(changes.ry);
+			case "circle":
+				if(changes.r) changes.r = Math.abs(changes.r);
+			case "line":
 			case "text":
 				assignAttributes(selected, changes, 1000);
 				break;
