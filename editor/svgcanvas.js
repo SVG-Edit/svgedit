@@ -3418,7 +3418,7 @@ function BatchCommand(text) {
 					if (selectedElements[1] == null) {
 						// set our current stroke/fill properties to the element's
 						var selected = selectedElements[0];
-						if (selected.tagName != "g") {
+						if (selected.tagName != "g" && selected.tagName != "image") {
 							cur_shape.fill = selected.getAttribute("fill");
 							cur_shape.fill_opacity = selected.getAttribute("fill-opacity");
 							cur_shape.stroke = selected.getAttribute("stroke");
