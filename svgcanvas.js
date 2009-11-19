@@ -4986,6 +4986,8 @@ function BatchCommand(text) {
 		// if we are not rotated yet, insert a dummy xform
 				
 		var m = elem.getCTM();
+		// Opera bug sets a and d to 0.
+		if(!m.a) m.a = 1; if(!m.d) m.d = 1;
 		var center = transformPoint(cx,cy,m);
 		var newrot = svgroot.createSVGTransform();
 		newrot.setRotate(val, center.x, center.y);
