@@ -125,6 +125,13 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 
 		<label id="angleLabel" class="selected_tool">angle:</label>
 		<input id="angle" class="selected_tool" title="Change rotation angle" size="2" value="0" type="text"/>
+		
+		<div id="xy_panel">
+			<label class="selected_tool">x:</label>
+			<input id="selected_x" class="selected_tool attr_changer" title="Change X coordinate" size="3" data-attr="x"/>
+			<label class="selected_tool">y:</label>
+			<input id="selected_y" class="selected_tool attr_changer" title="Change Y coordinate" size="3" data-attr="y"/>
+		</div>
 	</div>
 
 	<!-- Buttons when multiple elements are selected -->
@@ -157,11 +164,6 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	</div>
 
 	<div id="rect_panel">
-		<div class="tool_sep"></div>
-		<label class="rect_tool">x:</label>
-		<input id="rect_x" class="rect_tool attr_changer" title="Change rectangle X coordinate" size="3" data-attr="x"/>
-		<label class="rect_tool">y:</label>
-		<input id="rect_y" class="rect_tool attr_changer" title="Change rectangle Y coordinate" size="3" data-attr="y"/>
 		<label id="rwidthLabel" class="rect_tool">width:</label>
 		<input id="rect_width" class="rect_tool attr_changer" title="Change rectangle width" size="3" data-attr="width"/>
 		<label id="rheightLabel" class="rect_tool">height:</label>
@@ -171,11 +173,6 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	</div>
 
 	<div id="image_panel">
-		<div class="tool_sep"></div>
-		<label class="image_tool">x:</label>
-		<input id="image_x" class="image_tool attr_changer" title="Change image X coordinate" size="3" data-attr="x"/>
-		<label class="image_tool">y:</label>
-		<input id="image_y" class="image_tool attr_changer" title="Change image Y coordinate" size="3" data-attr="y"/>
 		<label id="iwidthLabel" class="image_tool">width:</label>
 		<input id="image_width" class="image_tool attr_changer" title="Change image width" size="3" data-attr="width"/>
 		<label id="iheightLabel" class="image_tool">height:</label>
@@ -187,7 +184,6 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
   </div>
 
 	<div id="circle_panel">
-		<div class="tool_sep"></div>
 		<label class="circle_tool">cx:</label>
 		<input id="circle_cx" class="circle_tool attr_changer" title="Change circle's cx coordinate" size="3" data-attr="cx"/>
 		<label class="circle_tool">cy:</label>
@@ -197,7 +193,6 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	</div>
 
 	<div id="ellipse_panel">
-		<div class="tool_sep"></div>
 		<label class="ellipse_tool">cx:</label>
 		<input id="ellipse_cx" class="ellipse_tool attr_changer" title="Change ellipse's cx coordinate" size="3" data-attr="cx"/>
 		<label class="ellipse_tool">cy:</label>
@@ -209,7 +204,6 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	</div>
 
 	<div id="line_panel">
-		<div class="tool_sep"></div>
 		<label class="line_tool">x1:</label>
 		<input id="line_x1" class="line_tool attr_changer" title="Change line's starting x coordinate" size="3" data-attr="x1"/>
 		<label class="line_tool">y1:</label>
@@ -221,11 +215,6 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	</div>
 
 	<div id="text_panel">
-		<div class="tool_sep"></div>
-		<label class="text_tool">x:</label>
-		<input id="text_x" class="text_tool attr_changer" title="Change text X coordinate" size="3" data-attr="x"/>
-		<label class="text_tool">y:</label>
-		<input id="text_y" class="text_tool attr_changer" title="Change text Y coordinate" size="3" data-attr="y"/>
 		<div class="tool_button" id="tool_bold" title="Bold Text [B]"><span></span>B</div>
 		<div class="tool_button" id="tool_italic" title="Italic Text [I]"><span></span>i</div>
 		<select id="font_family" class="text_tool" title="Change Font Family">
@@ -241,7 +230,6 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	</div>
 	
 	<div id="path_node_panel">
-		<div class="tool_sep"></div>
 		<label class="path_node_tool">x:</label>
 		<input id="path_node_x" class="path_node_tool attr_changer" title="Change node's x coordinate" size="3" data-attr="x"/>
 		<label class="path_node_tool">y:</label>
