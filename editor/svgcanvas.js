@@ -441,7 +441,7 @@ function BatchCommand(text) {
 					bFoundRotate = true;
 				}
 				if (bFoundRotate) {
-					tstr = transformToObj(xform).text + " " + tstr;
+					tstr = transformToObj(xform, true).text + " " + tstr;
 				}
 				else if(!bFoundRotate) {
 					m = matrixMultiply(xform.matrix,m);
@@ -1694,8 +1694,8 @@ function BatchCommand(text) {
 		{
 			case "rect":
 			case "image":
-				changes.x = changes.x + Math.min(0,changes.width);
-				changes.y = changes.y + Math.min(0,changes.height);
+				changes.x = changes.x-0 + Math.min(0,changes.width);
+				changes.y = changes.y-0 + Math.min(0,changes.height);
 				changes.width = Math.abs(changes.width);
 				changes.height = Math.abs(changes.height);
 				assignAttributes(selected, changes, 1000);
@@ -2131,14 +2131,15 @@ function BatchCommand(text) {
 	// converts a tiny object equivalent of a SVGTransform
 	// has the following properties:
 	// - tx, ty, sx, sy, angle, cx, cy, string
-	var transformToObj = function(xform) {
+	var transformToObj = function(xform, mZoom) {
 		var m = xform.matrix;
 		var tobj = {tx:0,ty:0,sx:1,sy:1,angle:0,cx:0,cy:0,text:""};
+		var z = mZoom?current_zoom:1;
 		switch(xform.type) {
-			case 2: // TRANSFORM
+			case 2: // TRANSLATE
 				tobj.tx = m.e;
 				tobj.ty = m.f;
-				tobj.text = "translate(" + m.e + "," + m.f + ")";
+				tobj.text = "translate(" + m.e*z + "," + m.f*z + ")";
 				break;
 			case 3: // SCALE
 				tobj.sx = m.a;
@@ -2154,7 +2155,7 @@ function BatchCommand(text) {
 					tobj.cy = ( K * m.f + m.b*m.e ) / ( K*K + m.b*m.b );
 					tobj.cx = ( m.e - m.b * tobj.cy ) / K;
 				}
-				tobj.text = "rotate(" + xform.angle + " " + tobj.cx + "," + tobj.cy + ")";
+				tobj.text = "rotate(" + xform.angle + " " + tobj.cx*z + "," + tobj.cy*z + ")";
 				break;
 			// TODO: matrix, skewX, skewY
 		}
@@ -4995,11 +4996,13 @@ function BatchCommand(text) {
 		// if we are not rotated yet, insert a dummy xform
 				
 		var m = elem.getCTM();
-		// Opera bug sets a and d to 0.
-		if(!m.a) m.a = 1; if(!m.d) m.d = 1;
+		// Opera bug sets a and d incorrectly.
+		if(window.opera) {
+			m.a = m.d = current_zoom;
+		}
 		var center = transformPoint(cx,cy,m);
 		var newrot = svgroot.createSVGTransform();
-		newrot.setRotate(val, center.x, center.y);
+		newrot.setRotate(val, center.x/current_zoom, center.y/current_zoom);
 		tlist.insertItemBefore(newrot, rotIndex);
 
 		// TODO: remove this seperate chunk of code where we replace the rotation transform
