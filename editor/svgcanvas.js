@@ -1084,8 +1084,15 @@ function BatchCommand(text) {
 			}
 		});
 		svgcontent.removeAttribute('id');
+		var res = canvas.getResolution();
+		assignAttributes(svgcontent, {width: res.w, height: res.h});
+		svgcontent.removeAttribute('viewBox');
+		
 		var output = svgToString(svgcontent, 0);
-		svgcontent.id = 'svgcontent';
+		
+		assignAttributes(svgcontent, {id: 'svgcontent', 'viewBox':[0,0,res.w,res.h].join(' ')});
+		svgcontent.removeAttribute('width');
+		svgcontent.removeAttribute('height');
 		return output;
 	}
 
