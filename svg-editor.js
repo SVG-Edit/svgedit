@@ -103,6 +103,7 @@ function svg_edit_setup() {
 			if(type == 'prompt') {
 				var input = $('<input type="text">').prependTo(btn_holder);
 				input.val(defText || '');
+				input.bind('keydown', {combi:'return'}, function() {ok.click();});
 			}
 
 			box.show();
@@ -324,7 +325,7 @@ function svg_edit_setup() {
 			$('#group_opacity').val(opac_perc);
 			$('#opac_slider').slider('option', 'value', opac_perc);
 		}
-
+		
 		updateToolButtonState();
 	};
 
@@ -345,9 +346,27 @@ function svg_edit_setup() {
 			#ellipse_panel, #line_panel, #text_panel, #image_panel').hide();
 		if (elem != null) {
 			$('#angle').val(svgCanvas.getRotationAngle(elem));
-
+			
 			if(!is_node) {
 				$('#selected_panel').show();
+				// Elements in this array already have coord fields
+				if($.inArray(elem.nodeName, ['line', 'circle', 'ellipse']) != -1) {
+					$('#xy_panel').hide();
+				} else {
+					var x,y;
+					// Get BBox vals for g, polyline and path
+					if($.inArray(elem.nodeName, ['g', 'polyline', 'path']) != -1) {
+						var bb = svgCanvas.getStrokedBBox([elem]);
+						x = bb.x;
+						y = bb.y;
+					} else {
+						x = elem.getAttribute('x');
+						y = elem.getAttribute('y');
+					}
+					$('#selected_x').val(x || 0);
+					$('#selected_y').val(y || 0);
+					$('#xy_panel').show();
+				}
 			} else {
 				var point = svgCanvas.getNodePoint();
 				if(point) {
@@ -366,12 +385,12 @@ function svg_edit_setup() {
 			// update contextual tools here
 			var panels = {
 				g: [],
-				rect: ['rx','x','y','width','height'],
-				image: ['x','y','width','height'],
+				rect: ['rx','width','height'],
+				image: ['width','height'],
 				circle: ['cx','cy','r'],
 				ellipse: ['cx','cy','rx','ry'],
 				line: ['x1','y1','x2','y2'], 
-				text: ['x','y']
+				text: []
 			};
 			
 			var el_name = elem.tagName;

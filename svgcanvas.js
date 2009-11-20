@@ -5256,6 +5256,15 @@ function BatchCommand(text) {
 		while (i--) {
 			var elem = elems[i];
 			if (elem == null) continue;
+			// Set x,y vals on elements that don't have them
+			if((attr == 'x' || attr == 'y') && $.inArray(elem.tagName, ['g', 'polyline', 'path']) != -1) {
+				var bbox = canvas.getStrokedBBox([elem]);
+				var diff_x = attr == 'x' ? newValue - bbox.x : 0;
+				var diff_y = attr == 'y' ? newValue - bbox.y : 0;
+				canvas.moveSelectedElements(diff_x*current_zoom, diff_y*current_zoom, true);
+				continue;
+			}
+			
 			// only allow the transform/opacity attribute to change on <g> elements, slightly hacky
 			if (elem.tagName == "g" && (attr != "transform" && attr != "opacity")) continue;
 			var oldval = attr == "#text" ? elem.textContent : elem.getAttribute(attr);
