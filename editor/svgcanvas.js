@@ -1,10 +1,11 @@
 /*
 	TODOs for TransformList:
 
-	* See if I can transfer scales at the end of the tlist down to the children 
-	* Groups of scaled groups have selector box sizing problems
-	* Fix rotating of resized groups (need to re-center?)
-	* Ensure ungrouping works (surely broken)
+	* Ensure undo works properly
+		* rotations seem to be getting transferred down to the children upon undo
+	* Ensure rotation works properly (extract the correct rotational center now?)
+	* Ensure resized/rotated groups show the proper located and sized selector box
+	* Ensure ungrouping works
 */
 /*
 	TODOs for Localizing:
@@ -1304,11 +1305,6 @@ function BatchCommand(text) {
 	than a simple element.  Thus its transform list looks like the following:
 		[ Translate] [ Rotate ] [ SkewX/SkewY ] [ Scale ]
 		
-	- all translates can be removed by moving the element's children
-	- all rotations can be collapsed down to one rotation
-	- all scales can be collapsed down to one scale (we cannot simply resize the children
-	  because the child of a <g> may be another group - and that <g> may be rotated!)
-		
 	This means a complex element has a reduced transform list as:
 		[ Rotate ] [ SkewX/SkewY ] [ Scale ]
 		
@@ -1318,14 +1314,6 @@ function BatchCommand(text) {
 	Thus, every child of the now-dissolved group inherits the transformlist.  Child N's 
 	transform list looks like:
 		[ Parent Rotate ] [ Parent SkewX/SkewY ] [ Parent Scale ] [ Rotate ] [ SkewX/SkewY ] [ Scale ]
-	
-	THINGS TO FIGURE OUT:
-	
-	1) It's not clear to me yet what happens when you want to rotate an element with the 
-	above type of transform list.
-	
-	2) It's also not clear to me if we need to calculate the rotation angle of the element
-	differently (nor what we should display as the element's rotation angle).
 	
 	*/
 
@@ -1344,9 +1332,8 @@ function BatchCommand(text) {
 	// TODO: use suspendRedraw() and unsuspendRedraw() around this function
 	var recalculateDimensions = function(selected) {
 		if (selected == null) return null;
-		// if this element had no transforms, we are done
+		
 		var tlist = canvas.getTransformList(selected);
-		if (tlist.numberOfItems == 0) return null;
 
 		// remove any stray identity transforms
 		if (tlist && tlist.numberOfItems > 0) {
@@ -1358,6 +1345,9 @@ function BatchCommand(text) {
 				}
 			}
 		}
+		
+		// if this element had no transforms, we are done
+		if (tlist.numberOfItems == 0) return null;
 		
 		// we know we have some transforms, so set up return variable		
 		var batchCmd = new BatchCommand("Transform");
@@ -1441,48 +1431,113 @@ function BatchCommand(text) {
 		initial["transform"] = start_transform ? start_transform : "";
 		
 		// reduce the transform list here...
-		var box = canvas.getBBox(selected);
-		var origcenter = {x: (box.x+box.width/2), y: (box.y+box.height/2)};
-		var newcenter = {x: origcenter.x, y: origcenter.y};
-		var tx = 0.0, ty = 0.0, sx = 1.0, sy = 1.0, r = 0.0;
 
-		// if it's a group, we have special reduction loops to flatten transforms
+		// if it's a group, we have special processing to flatten transforms
 		if (selected.tagName == "g") {
-			// loop through transforms and accumulate translation and scaling
-			var mat = svgroot.createSVGMatrix();
-			n = tlist.numberOfItems;
-			while (n--) {
-				var xform = tlist.getItem(n);
+							
+			var angle = 0;
+			var sx = 1, sy = 1;
+			var tx = 0, ty = 0;
+			var oldcx = 0, oldcy = 0, newcx = 0, newcy = 0;
+			var opType = 0;
+				
+			/*
+				The current concatenated matrix will be of the form:
+				
+				[ T ] [ R,oldc ] [ S ] [ T,s ] [ S,new ] [ - T,s ]
+				
+				which can be simply represented as:
 
-				// if it's a scale, we accumulate it
+				| x' |   | a c e |   | x |
+				| y' | = | b d f | * | y |
+				| 1  |   | 0 0 1 |   | 1 |
+				
+				where: a = A*cos(r), c = -C*sin(r)
+				       b = A*sin(r), d =  C*cos(r)
+					   e,f are the translation required to recenter and properly scale it.
+					   A is the total x scale factor
+					   C is the total y scale factor
+				
+				We always want to reduce the new transformation matrix to:
+				
+				[ R,newc ] [ S ]
+				
+				which will be of the form:
+				
+				| x' |   | a c g |   | x + tx |
+				| y' | = | b d h | * | y + ty |
+				| 1  |   | 0 0 1 |   |   1    |
+				
+				where: tx,ty are appropriate translations on the children so that the effect 
+						     is identical to the original concatenated matrix above
+					   g,h are translations to recenter the rotation.
+				
+				We can get a, b, c, d, e, f from the actual tlist matrix.
+				We can calculate g,h from the new bounding box.
+
+				Thus, we solve for tx,ty and we get:
+				
+				tx = (  (e-g)*cos(r) + (f-h)*sin(r) ) / A
+				ty = ( -(e-g)*sin(r) + (e-g)*cos(r) ) / C
+			*/
+				
+			// First, we quickly extract the factors:
+			var N = tlist.numberOfItems;
+			var i = N;
+			while (i--) {
+				var xform = tlist.getItem(i);
 				if (xform.type == 3) {
-					// update the frame of reference
-					mat = matrixMultiply(xform.matrix, mat);
-
-					// accumulate the scale values
+					// extract scale factors
 					var sobj = transformToObj(xform);
 					sx *= sobj.sx;
 					sy *= sobj.sy;
-					tlist.removeItem(n);
 				}
-				// if it's a rotation, adjust the frame of reference
 				else if (xform.type == 4) {
-//					mat = matrixMultiply(xform.matrix, mat);
-					r = xform.angle;
-					tlist.removeItem(n);
-				}
-				// accumulate the transformed translation
-				else if (xform.type == 2) {
-					// determine the translation based on the accumulated transformation thus far
-					var tobj = transformToObj(xform);
-					var t = transformPoint(tobj.tx, tobj.ty, mat.inverse());
-					// accumulate translation values
-					tx += t.x;
-					ty += t.y;
-					tlist.removeItem(n);
+					var robj = transformToObj(xform);
+					// extract angle and old center
+					angle = robj.angle;
+					oldcx = robj.cx;
+					oldcy = robj.cy;
+					newcx = oldcx;
+					newcy = oldcy;
 				}
 			}
+				
+			// now find the new transformed bbox so we can determine what the
+			// new center of rotation should be
+			var origm = transformListToTransform(tlist).matrix;
+			if (angle != 0) {
+				var c = transformPoint(oldcx,oldcy,origm);
+				newcx = c.x;
+				newcy = c.y;
+			}
+
+			// now get e,f and calculate g,h				
+			var e = origm.e,
+				f = origm.f;
+			var rad = angle * Math.PI / 180;
+			var g = newcx * (1 - Math.cos(rad)) + newcy * Math.sin(rad);
+				h = newcy * (1 - Math.cos(rad)) - newcx * Math.sin(rad);
+				
+			// now actually calculate the new scale factors
+			var tx = (  (e-g)*Math.cos(rad) + (f-h)*Math.sin(rad) ) / sx,
+				ty = ( -(e-g)*Math.sin(rad) + (f-h)*Math.cos(rad) ) / sy;
+					
+			// now we can remove all transforms from the list and create our new transforms
+			tlist.clear();
 			
+			if (angle) {
+				var rot = svgroot.createSVGTransform();
+				rot.setRotate(angle,newcx,newcy);
+				tlist.appendItem(rot);
+			}
+			
+			if (sx != 1 || sy != 1) {
+				var scale = svgroot.createSVGTransform();
+				scale.setScale(sx,sy);
+				tlist.appendItem(scale);
+			}
+								
 			// force the accumulated translation down to the children			
 			if (tx != 0 || ty != 0) {
 				// we pass the translates down to the individual children
@@ -1499,29 +1554,13 @@ function BatchCommand(text) {
 					}
 				}
 			}
-			
-			// now append the single scale to the end of this group's tlist
-			// NOTE: we can't force this down to the children because they 
-			// might be rotated on a different frame of reference than the scale
-			if (sx != 1 || sy != 1) {
-				var newscale = svgroot.createSVGTransform();
-				newscale.setScale(sx,sy);
-				tlist.appendItem(newscale);
-			}
-			
-			if (r != 0.0) {
-				// get new bbox
-				var box = canvas.getBBox(selected);
-				// transform the center point by any remaining scale transforms
-				var cx = (box.x+box.width/2)*sx,
-					cy = (box.y+box.height/2)*sy;
-				var newrot = svgroot.createSVGTransform();
-				newrot.setRotate(r,cx,cy);
-				tlist.insertItemBefore(newrot,0);
-			}
 		}
 		// else, it's a non-group
 		else {
+			var box = canvas.getBBox(selected);
+			var origcenter = {x: (box.x+box.width/2), y: (box.y+box.height/2)};
+			var newcenter = {x: origcenter.x, y: origcenter.y};
+		
 			// This pass loop in reverse order and removes any translates or scales.
 			// Once we hit our first rotate(), we will only remove translates.
 			var bRemoveTransform = true;
@@ -1782,155 +1821,6 @@ function BatchCommand(text) {
 		batchCmd.addSubCommand(new ChangeElementCommand(selected, initial));
 		
 		return batchCmd;
-		// -----
-		// TODO: once all functionality has been restored to the above function code then
-		// remove the below (old) function code
-
-		var box = canvas.getBBox(selected);
-
-		// if we have not moved/resized, then immediately leave
-		var xform = selected.getAttribute("transform");
-		var bScaleMatrix = false;
-		var tlist = selected.transform.baseVal;
-		var t = tlist.numberOfItems;
-		while (t--) {
-			var xform = tlist.getItem(t);
-			if (xform.type == 3) {
-				bScaleMatrix = xform.matrix;
-				break;
-			}
-		}
-		
-		// Flipping points should only occur for elements without regular x,y vals
-		var multiPoints = (selected.getAttribute('x') === null);
-		
-		// after this point, we have some change to this element
-		
-		var remap = function(x,y) {
-				// Prevent division by 0
-				if(!box.height) box.height = 1;
-				if(!box.width) box.width = 1;
-				
-				var new_x = (((x-box.x)/box.width)*selectedBBox.width + selectedBBox.x);
-				var new_y = (((y-box.y)/box.height)*selectedBBox.height + selectedBBox.y);
-				
-				if(multiPoints && bScaleMatrix) {
-					if(bScaleMatrix.a < 0) {
-						new_x = selectedBBox.x + selectedBBox.width - (new_x - selectedBBox.x);
-					}
-					if(bScaleMatrix.d < 0) {
-						new_y = selectedBBox.y + selectedBBox.height - (new_y - selectedBBox.y);
-					}
-				}
-				
-				return {x:new_x, y:new_y};
-			};
-			
-		var scalew = function(w) {return (w*selectedBBox.width/box.width);}
-		var scaleh = function(h) {return (h*selectedBBox.height/box.height);}
-
-		var batchCmd = new BatchCommand("Transform");
-		
-		// if there was a rotation transform, re-set it, otherwise empty out the transform attribute
-		var angle = canvas.getRotationAngle(selected);
-		if (angle) {
-			// this is our old center upon which we have rotated the shape
-			var tr_x = round(box.x + box.width/2),
-				tr_y = round(box.y + box.height/2);
-			var cx = null, cy = null;
-			
-			// if this was a resize, find the new cx,cy
-			if (bScaleMatrix) {
-				var alpha = angle * Math.PI / 180.0;
-			
-				// rotate new opposite corners of bbox by angle at old center
-				var dx = selectedBBox.x - tr_x,
-					dy = selectedBBox.y - tr_y,
-					r = Math.sqrt(dx*dx + dy*dy),
-					theta = Math.atan2(dy,dx) + alpha;
-				var left = r * Math.cos(theta) + tr_x,
-					top = r * Math.sin(theta) + tr_y;
-			
-				dx += selectedBBox.width;
-				dy += selectedBBox.height;
-				r = Math.sqrt(dx*dx + dy*dy);
-				theta = Math.atan2(dy,dx) + alpha;			
-				var right = r * Math.cos(theta) + tr_x,
-					bottom = r * Math.sin(theta) + tr_y;
-			
-				// now find mid-point of line between top-left and bottom-right to find new center
-				cx = round(left + (right-left)/2);
-				cy = round(top + (bottom-top)/2);
-			
-				// now that we know the center and the axis-aligned width/height, calculate the x,y
-				selectedBBox.x = round(cx - selectedBBox.width/2),
-				selectedBBox.y = round(cy - selectedBBox.height/2);
-			}
-			// if it was not a resize, then it was a translation only
-			else {
-				var tx = selectedBBox.x - box.x,
-					ty = selectedBBox.y - box.y;
-				cx = tr_x + tx;
-				cy = tr_y + ty;
-			}
-			
-			var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
-			selected.setAttribute("transform", rotate);
-			// if we were rotated, store just the old rotation (not other transforms) on the
-			// undo stack
-			var changes = {};
-			changes["transform"] = ["rotate(", angle, " ", tr_x, ",", tr_y, ")"].join('');
-			batchCmd.addSubCommand(new ChangeElementCommand(selected, changes));
-			setPointContainerTransform(rotate);
-		}
-		else {
-			// This fixes Firefox 2- behavior - which does not reset values when the attribute has
-			// been removed, see https://bugzilla.mozilla.org/show_bug.cgi?id=320622
-			selected.setAttribute("transform", "");
-			selected.removeAttribute("transform");
-			setPointContainerTransform("");
-		}
-		
-		// if it's a group, transfer the transform attribute to each child element
-		// and recursively call recalculateDimensions()
-		if (selected.tagName == "g") {
-			var children = selected.childNodes;
-			var i = children.length;
-			while (i--) {
-				var child = children.item(i);
-				if (child.nodeType == 1) {
-					try {
-						var childBox = child.getBBox();
-						// TODO: to fix the rotation problem, we must account for the
-						// child's rotation in the bbox adjustment
-						
-						// If the child is rotated at all, we should figure out the rotated
-						// bbox before the group's transform, remap all four corners of the bbox
-						// via the group's transform, then determine the new angle and the new center
-						/*
-						var childAngle = canvas.getRotationAngle(child) * Math.PI / 180.0;
-						var left = childBox.x - gcx, 
-							top = childBox.y - gcy,
-							right = childBox.x + childBox.width - gcx,
-							bottom = childBox.y + childBox.height - gcy;
-						
-						var ptTopLeft = remap(left,top),
-							ptTopRight = remap(right,top),
-							ptBottomLeft = remap(left,bottom),
-							ptBottomRight = remap(right,bottom);
-						*/
-						var pt = remap(childBox.x,childBox.y),
-							w = scalew(childBox.width),
-							h = scaleh(childBox.height);
-						childBox.x = pt.x; childBox.y = pt.y;
-						childBox.width = w; childBox.height = h;
-						batchCmd.addSubCommand(recalculateDimensions(child));//, childBox));
-					} catch(e) {}
-				}
-			}
-			return batchCmd;
-		}	
-
 	};
 
 // public events
@@ -2588,7 +2478,7 @@ function BatchCommand(text) {
 
 				// clear out selection and set it to the new list
 				canvas.clearSelection();
-				// TODO: fix this, need to suppliy rect to getIntersectionList()
+				// FIXME: fix this, need to supply rect to getIntersectionList()
 				canvas.addToSelection(getIntersectionList());
 
 				/*
