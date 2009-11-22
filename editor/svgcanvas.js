@@ -1540,6 +1540,9 @@ function BatchCommand(text) {
 								
 			// force the accumulated translation down to the children			
 			if (tx != 0 || ty != 0) {
+				// FIX ME: unfortunately recalculateDimensions depends on this global variable
+				var old_start_transform = start_transform;
+				start_transform = "";
 				// we pass the translates down to the individual children
 				var children = selected.childNodes;
 				var c = children.length;
@@ -1553,6 +1556,7 @@ function BatchCommand(text) {
 						batchCmd.addSubCommand( recalculateDimensions(child) );
 					}
 				}
+				start_transform = old_start_transform;
 			}
 		}
 		// else, it's a non-group
