@@ -1,4 +1,36 @@
 /*
+function embedded_svg_edit(frame){
+  //initialize communication
+  this.frame = frame;
+  this.stack = []; //callback stack
+  
+  var editapi = this;
+  
+  window.addEventListener("message", function(e){
+    if(e.data.substr(0,5) == "ERROR"){
+      editapi.stack.splice(0,1)[0](e.data,"error")
+    }else{
+      editapi.stack.splice(0,1)[0](e.data)
+    }
+  }, false)
+}
+
+embedded_svg_edit.prototype.call = function(code, callback){
+  this.stack.push(callback);
+  this.frame.contentWindow.postMessage(code,"*");
+}
+
+embedded_svg_edit.prototype.getSvgString = function(callback){
+  this.call("svgCanvas.getSvgString()",callback)
+}
+
+embedded_svg_edit.prototype.setSvgString = function(svg){
+  this.call("svgCanvas.setSvgString('"+svg.replace(/'/g, "\\'")+"')");
+}
+*/
+
+
+/*
 Embedded SVG-edit API
 
 General usage:
@@ -46,19 +78,14 @@ function embedded_svg_edit(frame){
   for(var i = 0; i < functions.length; i++){
     this[functions[i]] = (function(d){
       return function(){
-        var cbk = function(){}, t = this //new callback
+        var t = this //new callback
         for(var g = 0, args = []; g < arguments.length; g++){
           args.push(arguments[g]);
         }
-        setTimeout(function(){//delay for the callback to be set in case its synchronous
-          t.send(d, //the name of the function 
-                  args, //the arguments to the function
-                  function(r){
-                    cbk(r); //the callback (currently it's nothing, but will be set later
-                  })
-        },0)
+        var cbid = t.send(d,args, function(){})  //the callback (currently it's nothing, but will be set later
+        
         return function(newcallback){
-          cbk = newcallback;
+          t.callbacks[cbid] = newcallback; //set callback
         }
       }
     })(functions[i])
@@ -68,10 +95,10 @@ function embedded_svg_edit(frame){
   window.addEventListener("message", function(e){
     if(e.data.substr(0,4)=="SVGe"){ //because svg-edit is too longish
       var data = e.data.substr(4);
-      var cbid = parseInt(data.substr(0, data.indexOf(";")));
+      var cbid = data.substr(0, data.indexOf(";"));
       if(t.callbacks[cbid]){
         if(data.substr(0,6) != "error:"){
-          t.callbacks[cbid](eval("("+data+")"))
+          t.callbacks[cbid](eval("("+data.substr(cbid.length+1)+")"))
         }else{
           t.callbacks[cbid](data, "error");
         }
@@ -118,7 +145,11 @@ embedded_svg_edit.prototype.send = function(name, args, callback){
   for(var argstr = [], i = 0; i < args.length; i++){
     argstr.push(this.encode(args[i]))
   }
-  this.frame.contentWindow.postMessage(cbid+";svgCanvas['"+name+"']("+argstr.join(",")+")");
+  var t = this;
+  setTimeout(function(){//delay for the callback to be set in case its synchronous
+    t.frame.contentWindow.postMessage(cbid+";svgCanvas['"+name+"']("+argstr.join(",")+")","*");
+  }, 0);
+  return cbid;
   //this.stack.shift()("svgCanvas['"+name+"']("+argstr.join(",")+")")
 }
 

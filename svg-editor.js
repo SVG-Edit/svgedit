@@ -2274,6 +2274,8 @@ $(function() {
         e.source.postMessage("SVGe"+cbid+";error:"+err.message, e.origin);
       }
     }, false)
-	}catch(err){}
+	}catch(err){
+	  window.embed_error = err;
+	}
 	
 });
