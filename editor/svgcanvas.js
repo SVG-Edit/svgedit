@@ -1,11 +1,11 @@
 /*
 	TODOs for TransformList:
 
-	* Ensure undo works properly
-		* rotations seem to be getting transferred down to the children upon undo
 	* Ensure rotation works properly (extract the correct rotational center now?)
+		* when groups are resized, center is not found properly (dx/dy are not calculated correctly)
+		* clean up setRotationAngle()
 	* Ensure resized/rotated groups show the proper located and sized selector box
-	* Ensure ungrouping works
+	* Ensure ungrouping works (Issue 204)
 */
 /*
 	TODOs for Localizing:
@@ -1507,9 +1507,11 @@ function BatchCommand(text) {
 			// new center of rotation should be
 			var origm = transformListToTransform(tlist).matrix;
 			if (angle != 0) {
-				var c = transformPoint(oldcx,oldcy,origm);
-				newcx = c.x;
-				newcy = c.y;
+				var box = canvas.getBBox(selected);
+				var topleft = transformPoint(box.x,box.y,origm);
+				var botright = transformPoint(box.x+box.width,box.y+box.height,origm);
+				newcx = topleft.x + (botright.x-topleft.x)/2;
+				newcy = topleft.y + (botright.y-topleft.y)/2;
 			}
 
 			// now get e,f and calculate g,h				
@@ -1540,9 +1542,9 @@ function BatchCommand(text) {
 								
 			// force the accumulated translation down to the children			
 			if (tx != 0 || ty != 0) {
-				// FIX ME: unfortunately recalculateDimensions depends on this global variable
+				// FIXME: unfortunately recalculateDimensions depends on this global variable
 				var old_start_transform = start_transform;
-				start_transform = "";
+				start_transform = null;
 				// we pass the translates down to the individual children
 				var children = selected.childNodes;
 				var c = children.length;
@@ -2029,7 +2031,8 @@ function BatchCommand(text) {
 		return svgroot.createSVGTransformFromMatrix(m);
 	};
 	
-	// converts a tiny object equivalent of a SVGTransform
+    // FIXME: this should not have anything to do with zoom here - update the one place it is used this way
+    // converts a tiny object equivalent of a SVGTransform
 	// has the following properties:
 	// - tx, ty, sx, sy, angle, cx, cy, string
 	var transformToObj = function(xform, mZoom) {
@@ -4876,6 +4879,16 @@ function BatchCommand(text) {
 		return 0;
 	};
 
+	/*
+	In my opinion, this method does some questionable things.
+	
+	What should it do?
+	
+	If the element is already rotated, get the current rotational center
+	otherwise calculate the transformed rotational center.
+	
+	Update the rotate() transform on the element.
+	*/
 	this.setRotationAngle = function(val,preventUndo) {
 		var elem = selectedElements[0];
 		// we use the actual element's bbox (not the calculated one) since the 
@@ -4895,26 +4908,31 @@ function BatchCommand(text) {
 			}
 		}
 		// if we are not rotated yet, insert a dummy xform
-				
-		var m = elem.getCTM();
+		var m = transformListToTransform(tlist).matrix;
+		var ctm = elem.getCTM();
+//		console.log("ctm");
+//		logMatrix(ctm);
+//		logMatrix(m);
 		// Opera bug sets a and d incorrectly.
-		if(window.opera) {
-			m.a = m.d = current_zoom;
-		}
+//		if(window.opera) {
+//			m.a = m.d = current_zoom;
+//		}
 		var center = transformPoint(cx,cy,m);
 		var newrot = svgroot.createSVGTransform();
-		newrot.setRotate(val, center.x/current_zoom, center.y/current_zoom);
+		newrot.setRotate(val, center.x, center.y);///current_zoom, center.y/current_zoom);
 		tlist.insertItemBefore(newrot, rotIndex);
-
 		// TODO: remove this seperate chunk of code where we replace the rotation transform
 		// because calling setRotate() above changes the live transform in the list
 		if (preventUndo) {
 			// we don't need to undo, just update the transform list
 			// Opera Bug: for whatever reason, sometimes Opera doesn't let you 
 			// replace the 0th transform (perhaps if it's an identity matrix?)
+			// TODO: I don't think this block is needed anymore
 			try {
+				console.log('rotindex=' + rotIndex);
 				tlist.replaceItem(newrot, rotIndex);
 			} catch(e) {
+				console.log('in the catch: ' + e);
 				tlist.insertItemBefore(newrot,rotIndex);
 			}
 		}
