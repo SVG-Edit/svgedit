@@ -4879,18 +4879,11 @@ function BatchCommand(text) {
 		return 0;
 	};
 
-	/*
-	In my opinion, this method does some questionable things.
-	
-	What should it do?
-	
-	If the element is already rotated, get the current rotational center
-	otherwise calculate the transformed rotational center.
-	
-	Update the rotate() transform on the element.
-	*/
 	this.setRotationAngle = function(val,preventUndo) {
+		// ensure val is the proper type
+		val = parseFloat(val);
 		var elem = selectedElements[0];
+		var oldTransform = elem.getAttribute("transform");
 		// we use the actual element's bbox (not the calculated one) since the 
 		// calculated bbox's center can change depending on the angle
 		var bbox = elem.getBBox();
@@ -4910,37 +4903,13 @@ function BatchCommand(text) {
 		// if we are not rotated yet, insert a dummy xform
 		var m = transformListToTransform(tlist).matrix;
 		var ctm = elem.getCTM();
-//		console.log("ctm");
-//		logMatrix(ctm);
-//		logMatrix(m);
-		// Opera bug sets a and d incorrectly.
-//		if(window.opera) {
-//			m.a = m.d = current_zoom;
-//		}
 		var center = transformPoint(cx,cy,m);
 		var newrot = svgroot.createSVGTransform();
-		newrot.setRotate(val, center.x, center.y);///current_zoom, center.y/current_zoom);
+		newrot.setRotate(val, center.x, center.y);
 		tlist.insertItemBefore(newrot, rotIndex);
-		// TODO: remove this seperate chunk of code where we replace the rotation transform
-		// because calling setRotate() above changes the live transform in the list
-		if (preventUndo) {
-			// we don't need to undo, just update the transform list
-			// Opera Bug: for whatever reason, sometimes Opera doesn't let you 
-			// replace the 0th transform (perhaps if it's an identity matrix?)
-			// TODO: I don't think this block is needed anymore
-			try {
-				console.log('rotindex=' + rotIndex);
-				tlist.replaceItem(newrot, rotIndex);
-			} catch(e) {
-				console.log('in the catch: ' + e);
-				tlist.insertItemBefore(newrot,rotIndex);
-			}
-		}
-		else {
-			// FIXME: we need to do it, then undo it, then redo it so it can be undo-able! :)
-			// TODO: figure out how to make changes to transform list undo-able cross-browser
-			var oldTransform = elem.getAttribute("transform");
-			tlist.replaceItem(newrot, rotIndex);
+		if (!preventUndo) {
+			// FIXME: we need to undo it, then redo it so it can be undo-able! :)
+			// TODO: figure out how to make changes to transform list undo-able cross-browser?
 			var newTransform = elem.getAttribute("transform");
 			elem.setAttribute("transform", oldTransform);
 			this.changeSelectedAttribute("transform",newTransform,selectedElements);
