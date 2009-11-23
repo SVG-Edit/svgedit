@@ -1367,8 +1367,8 @@ function svg_edit_setup() {
 	$('#tool_ungroup').click(clickGroup);
 	$('[id^=tool_align]').click(clickAlign);
 	// these two lines are required to make Opera work properly with the flyout mechanism
-	$('#tools_rect_show').click(clickSquare);
-	$('#tools_ellipse_show').click(clickCircle);
+	$('#tools_rect_show').click(clickRect);
+	$('#tools_ellipse_show').click(clickEllipse);
 	$('#tool_bold').mousedown(clickBold);
 	$('#tool_italic').mousedown(clickItalic);
 	
