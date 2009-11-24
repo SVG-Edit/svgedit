@@ -5469,34 +5469,47 @@ function BatchCommand(text) {
 					var bb = elem.getBBox();
 					var angle = canvas.getRotationAngle(elem) * Math.PI / 180.0;
 					if (angle) {
-						var rminx = Number.MAX_VALUE, rminy = Number.MAX_VALUE, 
-							rmaxx = Number.MIN_VALUE, rmaxy = Number.MIN_VALUE;
-						var cx = round(bb.x + bb.width/2),
-							cy = round(bb.y + bb.height/2);
-						var pts = [ [bb.x - cx, bb.y - cy], 
-									[bb.x + bb.width - cx, bb.y - cy],
-									[bb.x + bb.width - cx, bb.y + bb.height - cy],
-									[bb.x - cx, bb.y + bb.height - cy] ];
-						var j = 4;
-						while (j--) {
-							var x = pts[j][0],
-								y = pts[j][1],
-								r = Math.sqrt( x*x + y*y );
-							var theta = Math.atan2(y,x) + angle;
-							x = round(r * Math.cos(theta) + cx);
-							y = round(r * Math.sin(theta) + cy);
-		
-							// now set the bbox for the shape after it's been rotated
-							if (x < rminx) rminx = x;
-							if (y < rminy) rminy = y;
-							if (x > rmaxx) rmaxx = x;
-							if (y > rmaxy) rmaxy = y;
-						}
-						
-						bb.x = rminx;
-						bb.y = rminy;
-						bb.width = rmaxx - rminx;
-						bb.height = rmaxy - rminy;
+						// Accurate way to get BBox of rotated element in Firefox:
+						// Put element in group and get its BBox
+						var g = document.createElementNS(svgns, "g");
+						var parent = elem.parentNode;
+						parent.replaceChild(g, elem);
+						g.appendChild(elem);
+						bb = g.getBBox();
+						parent.insertBefore(elem,g);
+						parent.removeChild(g);
+
+						// Old method: Works by giving the rotated BBox,
+						// this is (unfortunately) what Opera and Safari do
+						// natively when getting the BBox of the parent group
+// 						var rminx = Number.MAX_VALUE, rminy = Number.MAX_VALUE, 
+// 							rmaxx = Number.MIN_VALUE, rmaxy = Number.MIN_VALUE;
+// 						var cx = round(bb.x + bb.width/2),
+// 							cy = round(bb.y + bb.height/2);
+// 						var pts = [ [bb.x - cx, bb.y - cy], 
+// 									[bb.x + bb.width - cx, bb.y - cy],
+// 									[bb.x + bb.width - cx, bb.y + bb.height - cy],
+// 									[bb.x - cx, bb.y + bb.height - cy] ];
+// 						var j = 4;
+// 						while (j--) {
+// 							var x = pts[j][0],
+// 								y = pts[j][1],
+// 								r = Math.sqrt( x*x + y*y );
+// 							var theta = Math.atan2(y,x) + angle;
+// 							x = round(r * Math.cos(theta) + cx);
+// 							y = round(r * Math.sin(theta) + cy);
+// 		
+// 							// now set the bbox for the shape after it's been rotated
+// 							if (x < rminx) rminx = x;
+// 							if (y < rminy) rminy = y;
+// 							if (x > rmaxx) rmaxx = x;
+// 							if (y > rmaxy) rmaxy = y;
+// 						}
+// 						
+// 						bb.x = rminx;
+// 						bb.y = rminy;
+// 						bb.width = rmaxx - rminx;
+// 						bb.height = rmaxy - rminy;
 					}
 				
 					return bb;
