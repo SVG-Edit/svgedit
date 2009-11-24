@@ -1245,7 +1245,7 @@ function BatchCommand(text) {
 
 		var i = selectedElements.length;
 		while(i--) {
-			var cmd = recalculateDimensions(selectedElements[i]);//,selectedBBoxes[i]);
+			var cmd = recalculateDimensions(selectedElements[i]);
 			if (cmd) {
 				batchCmd.addSubCommand(cmd);
 			}
@@ -2729,6 +2729,11 @@ function BatchCommand(text) {
 				var box = canvas.getBBox(selected),
 					cx = round(box.x + box.width/2), 
 					cy = round(box.y + box.height/2);
+				var m = transformListToTransform(canvas.getTransformList(selected)).matrix;
+				logMatrix(m);
+				var center = transformPoint(cx,cy,m);
+				cx = center.x;
+				cy = center.y;
 				var angle = round(((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360);
 				canvas.setRotationAngle(angle<-180?(360+angle):angle, true);
 				call("changed", selectedElements);
@@ -3356,7 +3361,7 @@ function BatchCommand(text) {
 							if (selectedElements[i] == null) break;
 							if(selectedElements[i].tagName != 'g') {
 								// Not needed for groups (incorrectly resizes elems), possibly not needed at all?
-								selectorManager.requestSelector(selectedElements[i]).resize();//selectedBBoxes[i]); // TODO: remove box arg
+								selectorManager.requestSelector(selectedElements[i]).resize();
 							}
 						}
 					}
@@ -3838,6 +3843,7 @@ function BatchCommand(text) {
 	// Returns:
 	// This function returns false if the set was unsuccessful, true otherwise.
 	this.setSvgString = function(xmlString) {
+		console.log(xmlString);
 		try {
 			// convert string into XML document
 			var newDoc = Utils.text2xml(xmlString);
@@ -4884,8 +4890,6 @@ function BatchCommand(text) {
 		val = parseFloat(val);
 		var elem = selectedElements[0];
 		var oldTransform = elem.getAttribute("transform");
-		// we use the actual element's bbox (not the calculated one) since the 
-		// calculated bbox's center can change depending on the angle
 		var bbox = elem.getBBox();
 		var cx = round(bbox.x+bbox.width/2), cy = round(bbox.y+bbox.height/2);
 		var tlist = canvas.getTransformList(elem);
@@ -4896,14 +4900,16 @@ function BatchCommand(text) {
 			var xform = tlist.getItem(n);
 			if (xform.type == 4) {
 				rotIndex = n;
+				// TODO: get the rotational center here?
 				tlist.removeItem(n);
 				break;
 			}
 		}
 		// if we are not rotated yet, insert a dummy xform
 		var m = transformListToTransform(tlist).matrix;
-		var ctm = elem.getCTM();
 		var center = transformPoint(cx,cy,m);
+//		console.log("before: " + elem.getAttribute("transform"));
+//		console.log([center.x,center.y]);
 		var newrot = svgroot.createSVGTransform();
 		newrot.setRotate(val, center.x, center.y);
 		tlist.insertItemBefore(newrot, rotIndex);
@@ -4914,6 +4920,7 @@ function BatchCommand(text) {
 			elem.setAttribute("transform", oldTransform);
 			this.changeSelectedAttribute("transform",newTransform,selectedElements);
 		}
+//		console.log("after: " + elem.getAttribute("transform"));
 		var pointGripContainer = document.getElementById("pathpointgrip_container");
 		if(elem.nodeName == "path" && pointGripContainer) {
 			setPointContainerTransform(elem.getAttribute("transform"));
@@ -5080,7 +5087,7 @@ function BatchCommand(text) {
 		replacePathSeg(new_type, next_index, points);
 		
 		addAllPointGripsToPath(); 
-		recalculateDimensions(current_path);//, current_path.getBBox());
+		recalculateDimensions(current_path);
 		updateSegLine(true);
 		
 		batchCmd.addSubCommand(new ChangeElementCommand(current_path, {d: old_d}));
@@ -5351,7 +5358,7 @@ function BatchCommand(text) {
 						elem.setAttribute("transform", "");
 					}
 					batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
-					batchCmd.addSubCommand(recalculateDimensions(elem));//, childBox));
+					batchCmd.addSubCommand(recalculateDimensions(elem));
 				}
 			}
 			
@@ -5439,11 +5446,11 @@ function BatchCommand(text) {
 				
 				tlist.appendItem(xform);
 				
-				var cmd = recalculateDimensions(selected);//,selectedBBoxes[i]);
+				var cmd = recalculateDimensions(selected);
 				if (cmd) {
 					batchCmd.addSubCommand(cmd);
 				}
-				selectorManager.requestSelector(selected).resize();//selectedBBoxes[i]);
+				selectorManager.requestSelector(selected).resize();
 			}
 		}
 		if (!batchCmd.isEmpty()) {
