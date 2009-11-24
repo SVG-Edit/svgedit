@@ -1,10 +1,9 @@
 /*
 	TODOs for TransformList:
 
-	* Ensure rotation works properly (extract the correct rotational center now?)
-		* when groups are resized, center is not found properly (dx/dy are not calculated correctly)
-		* clean up setRotationAngle()
-	* Ensure resized/rotated groups show the proper located and sized selector box
+	* Fix Opera's centering of rotated, resized groups
+	* Fix resizing of rotated already-resized groups (scales incorrect with mouse)
+	* Ensure groups with rotated children have properly located and sized selector box
 	* Ensure ungrouping works (Issue 204)
 */
 /*
@@ -2524,7 +2523,7 @@ function BatchCommand(text) {
 					dx = r * Math.cos(theta);
 					dy = r * Math.sin(theta);
 				}
-				
+
 				// if not stretching in y direction, set dy to 0
 				// if not stretching in x direction, set dx to 0
 				if(current_resize_mode.indexOf("n")==-1 && current_resize_mode.indexOf("s")==-1) {
@@ -2558,7 +2557,7 @@ function BatchCommand(text) {
 				translateOrigin.setTranslate(-(left+tx),-(top+ty));
 				if(evt.shiftKey) {
 					if(sx == 1) sx = sy
-						else sy = sx;
+					else sy = sx;
 				}
 				scale.setScale(sx,sy);
 
@@ -2582,7 +2581,9 @@ function BatchCommand(text) {
 				if (ty) {
 					selectedBBox.y += dy;
 				}
-				
+
+				// I believe the following commented-out code is no longer required - schiller				
+				/*
 				// update box width/height
 				selectedBBox.width = round(width*sx);
 				selectedBBox.height = round(height*sy);
@@ -2608,8 +2609,9 @@ function BatchCommand(text) {
 						selectedBBox.y -= selectedBBox.height;
 					}
 				}
+				*/
 				
-				selectorManager.requestSelector(selected).resize();//selectedBBox); // TODO: remove box arg
+				selectorManager.requestSelector(selected).resize();
 				break;
 			case "zoom":
 				x *= current_zoom;
