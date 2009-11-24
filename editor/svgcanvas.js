@@ -3916,8 +3916,7 @@ function BatchCommand(text) {
 			// identify layers
 			identifyLayers();
 			
-			selectorManager.update();
-
+			canvas.clearSelection();
 			addCommandToHistory(batchCmd);
 			call("changed", [svgcontent]);
 		} catch(e) {
@@ -5464,7 +5463,7 @@ function BatchCommand(text) {
 		// Make sure the expected BBox is returned if the element is a group
 		var getCheckedBBox = function(elem) {
 			if(elem.tagName == 'g') {
-				return canvas.getStrokedBBox(elem.childNodes);
+				return canvas.getStrokedBBox($(elem).children());
 			} else {
 				try {
 					var bb = elem.getBBox();
@@ -5501,7 +5500,7 @@ function BatchCommand(text) {
 					}
 				
 					return bb;
-				} catch(e) { return null; }
+				} catch(e) { return null; } 
 			}
 		}
 		var full_bb;
@@ -5509,6 +5508,9 @@ function BatchCommand(text) {
 			if(full_bb) return;
 			full_bb = getCheckedBBox(this);
 		});
+		
+		// This shouldn't ever happen...
+		if(full_bb == null) return null;
 		
 		if(elems.length == 1) return full_bb;
 		
