@@ -2730,7 +2730,6 @@ function BatchCommand(text) {
 					cx = round(box.x + box.width/2), 
 					cy = round(box.y + box.height/2);
 				var m = transformListToTransform(canvas.getTransformList(selected)).matrix;
-				logMatrix(m);
 				var center = transformPoint(cx,cy,m);
 				cx = center.x;
 				cy = center.y;
@@ -3843,7 +3842,6 @@ function BatchCommand(text) {
 	// Returns:
 	// This function returns false if the set was unsuccessful, true otherwise.
 	this.setSvgString = function(xmlString) {
-		console.log(xmlString);
 		try {
 			// convert string into XML document
 			var newDoc = Utils.text2xml(xmlString);
@@ -4908,19 +4906,16 @@ function BatchCommand(text) {
 		// if we are not rotated yet, insert a dummy xform
 		var m = transformListToTransform(tlist).matrix;
 		var center = transformPoint(cx,cy,m);
-//		console.log("before: " + elem.getAttribute("transform"));
-//		console.log([center.x,center.y]);
 		var newrot = svgroot.createSVGTransform();
 		newrot.setRotate(val, center.x, center.y);
 		tlist.insertItemBefore(newrot, rotIndex);
 		if (!preventUndo) {
-			// FIXME: we need to undo it, then redo it so it can be undo-able! :)
+			// we need to undo it, then redo it so it can be undo-able! :)
 			// TODO: figure out how to make changes to transform list undo-able cross-browser?
 			var newTransform = elem.getAttribute("transform");
 			elem.setAttribute("transform", oldTransform);
 			this.changeSelectedAttribute("transform",newTransform,selectedElements);
 		}
-//		console.log("after: " + elem.getAttribute("transform"));
 		var pointGripContainer = document.getElementById("pathpointgrip_container");
 		if(elem.nodeName == "path" && pointGripContainer) {
 			setPointContainerTransform(elem.getAttribute("transform"));
