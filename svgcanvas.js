@@ -2709,6 +2709,173 @@ function BatchCommand(text) {
 		}
 	}
 
+	// Rotate all points of a path and remove its transform value
+	var resetPathOrientation = function(path, angle) {
+		if(path == null || path.nodeName != 'path') return false;
+		var angle = angle * Math.PI / 180.0;
+		if(!angle) return false;
+		path.removeAttribute("transform");
+		var bb = path.getBBox();
+		var cx = bb.x + bb.width/2,
+			cy = bb.y + bb.height/2;
+		var rotate = function(x,y) {
+			x -= cx; y -= cy;
+			var r = Math.sqrt(x*x + y*y);
+			var theta = Math.atan2(y,x) + angle;
+			return [r * Math.cos(theta) + cx, r * Math.sin(theta) + cy];
+		}
+		
+		var segList = path.pathSegList;
+		var len = segList.numberOfItems;
+
+		for (var i = 0; i < len; ++i) {
+			var seg = segList.getItem(i);
+			var type = seg.pathSegType;
+			if(type == 1) continue;
+			var pts = [];
+			$.each(['',1,2], function(j, n) {
+				var x = seg['x'+n], y = seg['y'+n];
+				if(x && y) {
+					$.merge(pts, rotate(x,y));
+				}
+			});
+			replacePathSeg(type, i, pts, path);
+		}
+	}
+
+	// Convert an element to a path
+	var convertToPath = function(elem, getBBox, angle) {
+		if(elem == null) return;
+		var attrs = getBBox?{}:{
+			"id": elem.id,
+			"fill": cur_shape.fill,
+			"fill-opacity": cur_shape.fill_opacity,
+			"stroke": cur_shape.stroke,
+			"stroke-width": cur_shape.stroke_width,
+			"stroke-dasharray": cur_shape.stroke_style,
+			"stroke-opacity": cur_shape.stroke_opacity,
+			"opacity": cur_shape.opacity,
+			"visibility":"hidden"
+		};
+		
+		var path = addSvgElementFromJson({
+			"element": "path",
+			"attr": attrs
+		});
+		
+		path.setAttribute("transform",elem.getAttribute("transform"));
+		
+		elem.parentNode.appendChild(path);
+		var d = '';
+		
+		var joinSegs = function(segs) {
+			$.each(segs, function(j, seg) {
+				var l = seg[0], pts = seg[1];
+				d += l;
+				for(var i=0; i < pts.length; i+=2) {
+					d += (pts[i] +','+pts[i+1]) + ' ';
+				}
+			});
+		}
+
+		// Possibly the cubed root of 6, but 1.81 works best
+		var num = 1.81;
+
+		switch (elem.tagName) {
+		case 'ellipse':
+			var rx = elem.getAttribute('rx')-0;
+			var ry = elem.getAttribute('ry')-0;
+		case 'circle':
+			if(elem.tagName == 'circle') {
+				var rx = ry = elem.getAttribute('r')-0;
+			}
+			var cx = elem.getAttribute('cx')-0;
+			var cy = elem.getAttribute('cy')-0;
+		
+			joinSegs([
+				['M',[(cx-rx),(cy)]],
+				['C',[(cx-rx),(cy-ry/num), (cx-rx/num),(cy-ry), (cx),(cy-ry)]],
+				['C',[(cx+rx/num),(cy-ry), (cx+rx),(cy-ry/num), (cx+rx),(cy)]],
+				['C',[(cx+rx),(cy+ry/num), (cx+rx/num),(cy+ry), (cx),(cy+ry)]],
+				['C',[(cx-rx/num),(cy+ry), (cx-rx),(cy+ry/num), (cx-rx),(cy)]],
+				['Z',[]]
+			]);
+			break;
+		case 'path':
+			d = elem.getAttribute('d');
+			break;
+		case 'line':
+			var x1 = elem.getAttribute('x1');
+			var x2 = elem.getAttribute('x2');
+			var y1 = elem.getAttribute('y1');
+			var y2 = elem.getAttribute('y2');
+			d = "M"+x1+","+y1+"L"+x2+","+y2;
+			break;
+		case 'polyline':
+		case 'polygon':
+			var points = elem.getAttribute('points');
+			d = "M"+points;
+			break;
+		case 'rect':
+			var rx = elem.getAttribute('rx')-0;
+			var ry = elem.getAttribute('ry')-0;
+			var b = elem.getBBox();
+			var x = b.x, y = b.y, w = b.width, h = b.height;
+			var num = 4-num; // Why? Because!
+			
+			if(!rx && !ry) {
+				// Regular rect
+				joinSegs([
+					['M',[x, y]],
+					['L',[x+w, y]],
+					['L',[x+w, y+h]],
+					['L',[x, y+h]],
+					['L',[x, y]],
+					['Z',[]]
+				]);
+			} else {
+				joinSegs([
+					['M',[x, y+ry]],
+					['C',[x,y+ry/num, x+rx/num,y, x+rx,y]],
+					['L',[x+w-rx, y]],
+					['C',[x+w-rx/num,y, x+w,y+ry/num, x+w,y+ry]],
+					['L',[x+w, y+h-ry]],
+					['C',[x+w, y+h-ry/num, x+w-rx/num,y+h, x+w-rx,y+h]],
+					['L',[x+rx, y+h]],
+					['C',[x+rx/num, y+h, x,y+h-ry/num, x,y+h-ry]],
+					['L',[x, y+ry]],
+					['Z',[]]
+				]);
+			}
+			break;
+		default:
+			path.parentNode.removeChild(path);
+			break;
+		}
+		
+		if(d) {
+			path.setAttribute('d',d);
+		}
+		
+		if(!getBBox) {
+			// Replace the current element with the converted one
+			elem.parentNode.removeChild(elem)
+			path.removeAttribute("visibility");
+		} else {
+			// Get the correct BBox of the new path, then discard it
+			resetPathOrientation(path, angle);
+			var bb = false;
+			try {
+				bb = path.getBBox();
+			} catch(e) {
+				// Firefox fails
+			}
+			path.parentNode.removeChild(path);
+			return bb;
+		}
+	}
+	
+	// Convert a path to one with only absolute or relative values
 	var convertPath = function(path, toRel) {
 		var segList = path.pathSegList;
 		var len = segList.numberOfItems;
@@ -5423,21 +5590,41 @@ function BatchCommand(text) {
 			} else {
 				try {
 					var bb = elem.getBBox();
-					var angle = canvas.getRotationAngle(elem) * Math.PI / 180.0;
-					if (angle) {
+					var angle = canvas.getRotationAngle(elem);
+					if (angle && angle % 90) {
 						// Accurate way to get BBox of rotated element in Firefox:
 						// Put element in group and get its BBox
-						var g = document.createElementNS(svgns, "g");
-						var parent = elem.parentNode;
-						parent.replaceChild(g, elem);
-						g.appendChild(elem);
-						bb = g.getBBox();
-						parent.insertBefore(elem,g);
-						parent.removeChild(g);
+						
+						var good_bb = false;
+						
+						// Get the BBox from the raw path for these elements
+						var elemNames = ['ellipse','path','line','polyline','polygon'];
+						if($.inArray(elem.tagName, elemNames) != -1) {
+							bb = good_bb = convertToPath(elem, true, angle);
+						} else if(elem.tagName == 'rect') {
+							// Look for radius
+							var rx = elem.getAttribute('rx');
+							var ry = elem.getAttribute('ry');
+							if(rx || ry) {
+								bb = good_bb = convertToPath(elem, true, angle);
+							}
+						}
+						
+						if(!good_bb) {
+							var g = document.createElementNS(svgns, "g");
+							var parent = elem.parentNode;
+							parent.replaceChild(g, elem);
+							g.appendChild(elem);
+							bb = g.getBBox();
+							parent.insertBefore(elem,g);
+							parent.removeChild(g);
+						}
+						
 
 						// Old method: Works by giving the rotated BBox,
 						// this is (unfortunately) what Opera and Safari do
 						// natively when getting the BBox of the parent group
+// 						var angle = angle * Math.PI / 180.0;
 // 						var rminx = Number.MAX_VALUE, rminy = Number.MAX_VALUE, 
 // 							rmaxx = Number.MIN_VALUE, rmaxy = Number.MIN_VALUE;
 // 						var cx = round(bb.x + bb.width/2),
