@@ -1,9 +1,18 @@
 /*
+ * svgcanvas.js
+ *
+ * Licensed under the Apache License, Version 2
+ *
+ * Copyright(c) 2009 Alexis Deveria
+ * Copyright(c) 2009 Pavol Rusnak
+ * Copyright(c) 2009 Jeff Schiller
+ *
+ */
+/*
 	TODOs for TransformList:
 
 	* Fix Opera's centering of rotated, resized groups
 	* Fix resizing of rotated already-resized groups (scales incorrect with mouse)
-	* Ensure groups with rotated children have properly located and sized selector box
 	* Ensure ungrouping works (Issue 204)
 */
 /*
@@ -298,17 +307,15 @@ function BatchCommand(text) {
 													"attr": {"id": ("selectorGroup"+this.id)}
 													});
 
-		// this holds a reference to <rect> element
+		// this holds a reference to the path rect
 		this.selectorRect = this.selectorGroup.appendChild( addSvgElementFromJson({
-								"element": "rect",
+								"element": "path",
 								"attr": {
 									"id": ("selectedBox"+this.id),
 									"fill": "none",
 									"stroke": "blue",
 									"stroke-width": "1",
 									"stroke-dasharray": "5,5",
-									"width": 1,
-									"height": 1,
 									// need to specify this so that the rect is not selectable
 									"style": "pointer-events:none"
 								}
@@ -348,12 +355,11 @@ function BatchCommand(text) {
 		for (dir in this.selectorGrips) {
 			this.selectorGrips[dir] = this.selectorGroup.appendChild( 
 				addSvgElementFromJson({
-					"element": "rect",
+					"element": "circle",
 					"attr": {
 						"id": ("selectorGrip_resize_" + dir + "_" + this.id),
 						"fill": "blue",
-						"width": 6,
-						"height": 6,
+						"r": 4,
 						"style": ("cursor:" + dir + "-resize"),
 						// This expands the mouse-able area of the grips making them
 						// easier to grab with the mouse.
@@ -399,7 +405,7 @@ function BatchCommand(text) {
 		};
 		
 		// TODO: update this function to not use the cur_bbox anymore
-		this.resize = function(cur_bbox) {
+		this.resize = function() {
 			var selectedBox = this.selectorRect;
 			var selectedGrips = this.selectorGrips;
 			var selected = this.selectedElement;
@@ -411,94 +417,74 @@ function BatchCommand(text) {
 			if (selected.tagName == "text") {
 				offset += 2/canvas.getZoom();
 			}
-			var oldbox = canvas.getBBox(this.selectedElement);
-			var bbox = cur_bbox || oldbox;
+			var bbox = canvas.getBBox(this.selectedElement);
 			if(selected.tagName == 'g') {
 				// The bbox for a group does not include stroke vals, so we
 				// get the bbox based on its children. 
 				var stroked_bbox = canvas.getStrokedBBox(selected.childNodes);
-
 				$.each(bbox, function(key, val) {
-					bbox[key] = bbox[key] + stroked_bbox[key] - oldbox[key];
+					bbox[key] = stroked_bbox[key];
 				});
 			}
-			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
 
 			// loop and transform our bounding box until we reach our first rotation
 			var tlist = canvas.getTransformList(this.selectedElement);
-			var m = svgroot.createSVGMatrix();
-			var bFoundRotate = false;
-			var topleft = {x:l*current_zoom,y:t*current_zoom},
-				botright = {x:(l+w)*current_zoom,y:(t+h)*current_zoom};
-			var tstr = "";
-			var i = tlist.numberOfItems;
-			// loop backwards through the list of transforms and update the selector box coords
-			while (i--) {
-				var xform = tlist.getItem(i);
-				// once we hit a rotate, we stop doing this and just save up the transform
-				// string fragment and apply it to the selector group
-				if (xform.type == 4) {
-					bFoundRotate = true;
-				}
-				if (bFoundRotate) {
-					tstr = transformToObj(xform, true).text + " " + tstr;
-				}
-				else if(!bFoundRotate) {
-					m = matrixMultiply(xform.matrix,m);
-				}
-			}
-			
+			var m = transformListToTransform(tlist).matrix;
+
 			// This should probably be handled somewhere else, but for now
 			// it keeps the selection box correctly positioned when zoomed
 			m.e *= current_zoom;
 			m.f *= current_zoom;
 			
 			// apply the transforms
+			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
+			var topleft = {x:l*current_zoom,y:t*current_zoom},
+				topright = {x:(l+w)*current_zoom,y:t*current_zoom},
+				botright = {x:(l+w)*current_zoom,y:(t+h)*current_zoom},
+				botleft = {x:l*current_zoom,y:(t+h)*current_zoom};
 			topleft = transformPoint( topleft.x, topleft.y, m );
+			topright = transformPoint( topright.x, topright.y, m );
 			botright = transformPoint( botright.x, botright.y, m );
-			
-			this.selectorGroup.setAttribute("transform", "");
-			this.selectorGroup.removeAttribute("transform");
-			if (tstr != "") {
-				this.selectorGroup.setAttribute("transform", tstr);
-			}
-			
-			l = topleft.x;
-			t = topleft.y;
-			w = botright.x - topleft.x;
-			h = botright.y - topleft.y;
+			botleft = transformPoint( botleft.x, botleft.y, m);
 
 			// TODO: handle negative?
 
 			var sr_handle = svgroot.suspendRedraw(100);
 
-			// TODO: move to a path instead of a rect and then plot the
-			// grip coordinates more carefully
-			assignAttributes(selectedBox, {
-				'x': l,
-				'y': t,
-				'width': w,
-				'height': h
-			});
+			var dstr = "M" + topleft.x + "," + topleft.y 
+						+ " L" + topright.x + "," + topright.y 
+						+ " " + botright.x + "," + botright.y
+						+ " " + botleft.x + "," + botleft.y + "z";
+			assignAttributes(selectedBox, {'d': dstr});
 			
 			var gripCoords = {
-				nw: [l-3, 		t-3],
-				ne: [l+w-3, 	t-3],
-				sw: [l-3, 		t+h-3],
-				se: [l+w-3, 	t+h-3],
-				n:  [l+w/2-3, 	t-3],
-				w:	[l-3, 		t+h/2-3],
-				e:	[l+w-3, 	t+h/2-3],
-				s:	[l+w/2-3, 	t+h-3]
+				nw: [topleft.x, topleft.y],
+				ne: [topright.x, topright.y],
+				sw: [botleft.x, botleft.y],
+				se: [botright.x, botright.y],
+				n:  [topleft.x + (topright.x-topleft.x)/2, topleft.y + (topright.y-topleft.y)/2],
+				w:	[topleft.x + (botleft.x-topleft.x)/2, topleft.y + (botleft.y-topleft.y)/2],
+				e:	[topright.x + (botright.x-topright.x)/2, topright.y + (botright.y-topright.y)/2],
+				s:	[botleft.x + (botright.x-botleft.x)/2, botleft.y + (botright.y-botleft.y)/2]
 			};
 			$.each(gripCoords, function(dir, coords) {
 				assignAttributes(selectedGrips[dir], {
-					x: coords[0], y: coords[1]
+					cx: coords[0], cy: coords[1]
 				});
 			});
-			
-			assignAttributes(this.rotateGripConnector, { x1: l+w/2, y1: t-20, x2: l+w/2, y2: t });
-			assignAttributes(this.rotateGrip, { cx: l+w/2, cy: t-20 });
+
+			// we want to go 20 pixels in the negative transformed y direction, ignoring scale
+			var dy = (topleft.y - topright.y),
+				dx = (topright.x - topleft.x),
+				theta = Math.atan2(dy,dx);
+			dy = 20 * Math.cos(theta);
+			dx = 20 * Math.sin(theta)
+			var rotatept = {x:(l+w/2)*current_zoom,y:t*current_zoom};
+			rotatept = transformPoint( rotatept.x, rotatept.y, m);
+			assignAttributes(this.rotateGripConnector, { x1: topleft.x + (topright.x-topleft.x)/2, 
+														y1: topleft.y + (topright.y-topleft.y)/2, 
+														x2: rotatept.x-dx, y2: rotatept.y-dy });
+			assignAttributes(this.rotateGrip, { cx: rotatept.x-dx, cy: rotatept.y-dy });
 			
 			svgroot.unsuspendRedraw(sr_handle);
 		};
@@ -2467,7 +2453,7 @@ function BatchCommand(text) {
 							}
 							
 							// update our internal bbox that we're tracking while dragging
-							selectorManager.requestSelector(selected).resize();//box); // TODO: remove box arg
+							selectorManager.requestSelector(selected).resize();
 						}
 					}
 				}
@@ -5196,7 +5182,7 @@ function BatchCommand(text) {
 				}
 				// Timeout needed for Opera & Firefox
 				setTimeout(function() {
-					selectorManager.requestSelector(elem).resize();//elem.getBBox()); // TODO: remove box arg
+					selectorManager.requestSelector(elem).resize();
 				},0);
 				// if this element was rotated, and we changed the position of this element
 				// we need to update the rotational transform attribute 

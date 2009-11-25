@@ -1,11 +1,14 @@
 /*
-if(!window.console) {
-  window.console = new function() {
-    this.log = function(str) {};
-    this.dir = function(str) {};
-  };
-}
-*/
+ * svg-editor.js
+ *
+ * Licensed under the Apache License, Version 2
+ *
+ * Copyright(c) 2009 Alexis Deveria
+ * Copyright(c) 2009 Pavol Rusnak
+ * Copyright(c) 2009 Jeff Schiller
+ * Copyright(c) 2009 Narendra Sisodya
+ *
+ */
 
 function svg_edit_setup() {
 	var uiStrings = {
