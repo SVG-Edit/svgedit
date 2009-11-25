@@ -1,3 +1,11 @@
+/*
+ * Localizing script for SVG-edit UI
+ *
+ * Licensed under the Apache License, Version 2
+ *
+ * Copyright(c) 2009 Narendra Sisodya
+ *
+ */
 var put_locale = function(svgCanvas, given_param){
 	var lang_param;
 	if(given_param) {
