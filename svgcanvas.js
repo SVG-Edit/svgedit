@@ -53,7 +53,7 @@ var svgWhiteList = {
 	"defs": [],
 	"desc": [],
 	"ellipse": ["cx", "cy", "fill", "fill-opacity", "fill-rule", "id", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
-	"g": ["id", "display", "requiredFeatures", "systemLanguage", "transform"],
+	"g": ["id", "display", "fill", "fill-opacity", "fill-rule", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
 	"image": ["height", "id", "opacity", "requiredFeatures", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
 	"line": ["fill", "fill-opacity", "fill-rule", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
 	"linearGradient": ["id", "gradientTransform", "gradientUnits", "requiredFeatures", "spreadMethod", "systemLanguage", "x1", "x2", "y1", "y2"],
@@ -404,7 +404,6 @@ function BatchCommand(text) {
 			};
 		};
 		
-		// TODO: update this function to not use the cur_bbox anymore
 		this.resize = function() {
 			var selectedBox = this.selectorRect;
 			var selectedGrips = this.selectorGrips;
@@ -2568,35 +2567,6 @@ function BatchCommand(text) {
 					selectedBBox.y += dy;
 				}
 
-				// I believe the following commented-out code is no longer required - schiller				
-				/*
-				// update box width/height
-				selectedBBox.width = round(width*sx);
-				selectedBBox.height = round(height*sy);
-
-				// normalize selectedBBox
-				if (selectedBBox.width < 0) {
-					selectedBBox.width *= -1;
-					// if we are dragging on the east side and scaled negatively
-					if(current_resize_mode.indexOf("e") != -1 && sx < 0) {
-						selectedBBox.x = box.x - selectedBBox.width;
-					}
-					else {
-						selectedBBox.x -= selectedBBox.width;
-					}
-				}
-				if (selectedBBox.height < 0) {
-					selectedBBox.height *= -1;
-					// if we are dragging on the south side and scaled negatively
-					if(current_resize_mode.indexOf("s") != -1 && sy < 0) {
-						selectedBBox.y = box.y - selectedBBox.height;
-					}
-					else {
-						selectedBBox.y -= selectedBBox.height;
-					}
-				}
-				*/
-				
 				selectorManager.requestSelector(selected).resize();
 				break;
 			case "zoom":
