@@ -342,7 +342,7 @@ function svg_edit_setup() {
 		if (svgCanvas.getMode() == 'rotate' && elem != null) {
 			$('#angle').val(svgCanvas.getRotationAngle(elem));
 			return;
-		} else if(svgCanvas.addedNew && elem != null && elem.nodeName == 'image') {
+		} else if(svgCanvas.addedNew && elem != null && elname == 'image') {
 			promptImgURL();
 		}
 		var is_node = elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
@@ -350,17 +350,19 @@ function svg_edit_setup() {
 		$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,\
 			#ellipse_panel, #line_panel, #text_panel, #image_panel').hide();
 		if (elem != null) {
-			$('#angle').val(svgCanvas.getRotationAngle(elem));
+			var elname = elem.nodeName;
+			var angle = svgCanvas.getRotationAngle(elem);
+			$('#angle').val(angle);
 			
 			if(!is_node) {
 				$('#selected_panel').show();
 				// Elements in this array already have coord fields
-				if($.inArray(elem.nodeName, ['line', 'circle', 'ellipse']) != -1) {
+				if($.inArray(elname, ['line', 'circle', 'ellipse']) != -1) {
 					$('#xy_panel').hide();
 				} else {
 					var x,y;
 					// Get BBox vals for g, polyline and path
-					if($.inArray(elem.nodeName, ['g', 'polyline', 'path']) != -1) {
+					if($.inArray(elname, ['g', 'polyline', 'path']) != -1) {
 						var bb = svgCanvas.getStrokedBBox([elem]);
 						x = bb.x;
 						y = bb.y;
@@ -372,6 +374,11 @@ function svg_edit_setup() {
 					$('#selected_y').val(y || 0);
 					$('#xy_panel').show();
 				}
+				
+				// Elements in this array cannot be converted to a path
+				var no_path = $.inArray(elname, ['image', 'text', 'path', 'g']) == -1;
+				$('#tool_topath').toggle(no_path);
+				$('#tool_reorient').toggle(elname == 'path');
 			} else {
 				var point = svgCanvas.getNodePoint();
 				if(point) {
@@ -873,6 +880,18 @@ function svg_edit_setup() {
 			svgCanvas.moveToBottomSelectedElement();
 		}
 	};
+	
+	var convertToPath = function() {
+		if (selectedElement != null) {
+			svgCanvas.convertToPath();
+		}
+	}
+	
+	var reorientPath = function() {
+		if (selectedElement != null) {
+			svgCanvas.reorientPath();
+		}
+	}
 
 	var moveSelected = function(dx,dy) {
 		if (selectedElement != null || multiselected) {
@@ -1358,10 +1377,12 @@ function svg_edit_setup() {
 	$('#tool_docprops').click(showDocProperties);
 	$('#tool_delete').click(deleteSelected);
 	$('#tool_delete_multi').click(deleteSelected);
+	$('#tool_reorient').click(reorientPath);
 	$('#tool_node_clone').click(clonePathNode);
 	$('#tool_node_delete').click(deletePathNode);
 	$('#tool_move_top').click(moveToTopSelected);
 	$('#tool_move_bottom').click(moveToBottomSelected);
+	$('#tool_topath').click(convertToPath);
 	$('#tool_undo').click(clickUndo);
 	$('#tool_redo').click(clickRedo);
 	$('#tool_clone').click(clickClone);
@@ -2184,6 +2205,8 @@ function setSVGIcons() {
 			'#layer_delete,#tool_delete,#tool_delete_multi,#tool_node_delete':'delete',
 			'#tool_move_top':'move_top',
 			'#tool_move_bottom':'move_bottom',
+			'#tool_topath':'to_path',
+			'#tool_reorient':'reorient',
 			'#tool_group':'group',
 			'#tool_ungroup':'ungroup',
 			
