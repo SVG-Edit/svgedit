@@ -2725,9 +2725,9 @@ function BatchCommand(text) {
 		resetPathOrientation(elem, angle);
 		addCommandToHistory(batchCmd);
 		current_path = elem;
-		resetPointGrips();
 		setPointContainerTransform("");	// Maybe this should be in resetPointGrips?
-		removeAllPointGripsFromPath();
+		resetPointGrips();
+		canvas.clearPath();
 
 		canvas.addToSelection([elem], true);
 		call("changed", selectedElements);

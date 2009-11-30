@@ -379,6 +379,7 @@ function svg_edit_setup() {
 				var no_path = $.inArray(elname, ['image', 'text', 'path', 'g']) == -1;
 				$('#tool_topath').toggle(no_path);
 				$('#tool_reorient').toggle(elname == 'path');
+				$('#tool_reorient').toggleClass('tool_button_disabled', angle == 0);
 			} else {
 				var point = svgCanvas.getNodePoint();
 				if(point) {
