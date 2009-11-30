@@ -296,10 +296,6 @@ body {
 	display: none;
 }
 
-#svg_editor #selected_panel .selected_tool {
-	vertical-align: 12px;
-}
-
 #svg_editor #multiselected_panel .selected_tool {
 	vertical-align: 12px;
 }

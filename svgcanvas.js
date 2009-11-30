@@ -1070,14 +1070,10 @@ function BatchCommand(text) {
 		});
 		svgcontent.removeAttribute('id');
 		var res = canvas.getResolution();
-		assignAttributes(svgcontent, {width: res.w, height: res.h});
+ 		assignAttributes(svgcontent, {width: res.w, height: res.h});
 		svgcontent.removeAttribute('viewBox');
-		
 		var output = svgToString(svgcontent, 0);
-		
 		assignAttributes(svgcontent, {id: 'svgcontent', 'viewBox':[0,0,res.w,res.h].join(' ')});
-		svgcontent.removeAttribute('width');
-		svgcontent.removeAttribute('height');
 		return output;
 	}
 
@@ -1094,6 +1090,7 @@ function BatchCommand(text) {
 			for (i=attrs.length-1; i>=0; i--) {
 				attr = attrs.item(i);
 				var attrVal = attr.nodeValue;
+				
 				if (attrVal != "") {
 					if(attrVal.indexOf('pointer-events') == 0) continue;
 					out.push(" "); 
@@ -1111,6 +1108,7 @@ function BatchCommand(text) {
 						var img = encodableImages[attrVal];
 						if(img) attrVal = img;
 					}
+					
 					// map various namespaces to our fixed namespace prefixes
 					// TODO: put this into a map and do a look-up instead of if-else
 					if (attr.namespaceURI == xlinkns) {
@@ -4025,7 +4023,6 @@ function BatchCommand(text) {
 		try {
 			// convert string into XML document
 			var newDoc = Utils.text2xml(xmlString);
-
 			// run it through our sanitizer to remove anything we do not support
 	        sanitizeSvg(newDoc.documentElement);
 
@@ -4037,7 +4034,6 @@ function BatchCommand(text) {
         
     	    // set new svg document
         	svgcontent = svgroot.appendChild(svgdoc.importNode(newDoc.documentElement, true));
-        	
         	// change image href vals if possible
         	$(svgcontent).find('image').each(function() {
         		var image = this;
@@ -4075,11 +4071,12 @@ function BatchCommand(text) {
 				h = svgcontent.getAttribute("height");
 				svgcontent.setAttribute("viewBox", ["0", "0", w, h].join(" "));
 			}
-			// just to be safe, remove any width/height from text so that they are 100%/100%
-			svgcontent.removeAttribute('width');
-			svgcontent.removeAttribute('height');
+			
+			// just to be safe, set width and height to 100%/100%
+			// (removing causes bug in Webkit)
+			svgcontent.setAttribute('width','100%');
+			svgcontent.setAttribute('height','100%');
 			batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
-
 			// update root to the correct size
 			var changes = {};
 			changes['width'] = svgroot.getAttribute('width');
