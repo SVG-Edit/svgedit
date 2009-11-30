@@ -2092,12 +2092,6 @@ function svg_edit_setup() {
 //	var revnums = "svg-editor.js ($Rev$) ";
 //	revnums += svgCanvas.getVersion();
 //	$('#copyright')[0].setAttribute("title", revnums);
-	var loc = document.location.href;
-	if(loc.indexOf('?source=') != -1) {
-		var pre = '?source=data:image/svg+xml;base64,';
-		var src = loc.substring(loc.indexOf(pre) + pre.length);
-		svgCanvas.setSvgString(Utils.decode64(src));
-	}
 	return svgCanvas;
 };
 
@@ -2235,6 +2229,14 @@ function setSVGIcons() {
 			} else if($(window).height() < min_height) {
 				// Make smaller
 				svgCanvas.setIconSize('s');
+			}
+			
+			// Load source if given
+			var loc = document.location.href;
+			if(loc.indexOf('?source=') != -1) {
+				var pre = '?source=data:image/svg+xml;base64,';
+				var src = loc.substring(loc.indexOf(pre) + pre.length);
+				svgCanvas.setSvgString(Utils.decode64(src));				
 			}
 		}
 	});
