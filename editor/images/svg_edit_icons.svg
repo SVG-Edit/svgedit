@@ -511,6 +511,41 @@
  </svg>
 </g>
 
+<g id="to_path">
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient y2="0.46875" x2="0.42969" y1="0.10156" x1="0.10547" id="svg_105">
+   <stop stop-color="#ff0000" offset="0"/>
+   <stop stop-opacity="0" stop-color="#ff0000" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <title>Layer 1</title>
+  <circle cx="21" cy="21.3125" r="18.44531" id="svg_120" fill="url(#svg_105)" stroke="#000000"/>
+  <path fill="none" stroke="#000000" d="m2.875,21.3125c-0.375,-9.25 7.75,-18.875 17.75,-18" id="svg_115"/>
+  <line x1="25.375" y1="3.0625" x2="8.5" y2="3.0625" id="svg_116" stroke="#808080" fill="none"/>
+  <line x1="2.625" y1="24.75" x2="2.625" y2="9.8125" id="svg_117" stroke="#808080" fill="none"/>
+  <circle cx="8.5" cy="2.9375" r="1.95313" fill="#00ffff" stroke="#0000ff" stroke-width="0.5" id="svg_118"/>
+  <circle cx="2.625" cy="9.8125" r="1.95313" fill="#00ffff" stroke="#0000ff" stroke-width="0.5" id="svg_119"/>
+  <circle cx="20.875" cy="3.1875" r="2.5" id="svg_112" fill="#00ffff" stroke="#0000ff"/>
+  <circle cx="2.875" cy="21.0625" r="2.5" fill="#00ffff" stroke="#0000ff" id="svg_114"/>
+ </g>
+</svg>
+</g>
+
+<g id="reorient">
+<svg viewBox="0 0 24 24" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <linearGradient y2="1" x2="1" y1="1" x1="0" id="svg_113">
+   <stop stop-opacity="0" stop-color="#0000ff" offset="0"/>
+   <stop stop-opacity="1" stop-color="#507ece" offset="1"/>
+  </linearGradient>
+ </defs>
+  <rect stroke-dasharray="2,2" stroke="#0000ff" fill="none" id="svg_108" height="19.125" width="18.625" y="2.625" x="2.875"/>
+  <rect transform="rotate(45, 12.2344, 12.1719)" stroke="#000000" fill="url(#svg_113)" id="svg_107" height="6.125" width="16" y="9.10848" x="4.23267"/>
+</svg>
+</g>
+
 <g id="group">
 <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
  <defs>

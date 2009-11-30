@@ -2447,6 +2447,9 @@ function BatchCommand(text) {
 							xform.setTranslate(dx,dy);
 							if(tlist.numberOfItems) {
 								tlist.replaceItem(xform, 0);
+								// TODO: Webkit returns null here, find out why
+// 								console.log(selected.getAttribute("transform"))
+
 							} else {
 								tlist.appendItem(xform);
 							}
@@ -2708,7 +2711,30 @@ function BatchCommand(text) {
 			return shortFloat(val[0]) + ',' + shortFloat(val[1]);
 		}
 	}
+	
+	this.reorientPath = function() {
+		var elem = selectedElements[0];
+		if(!elem) return;
+		var angle = canvas.getRotationAngle(elem);
+		if(angle == 0) return;
+		var batchCmd = new BatchCommand("Reorient path");
+		var changes = {
+			d: elem.getAttribute('d'),
+			transform: elem.getAttribute('transform')
+		};
+		batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
+		canvas.clearSelection();
+		resetPathOrientation(elem, angle);
+		addCommandToHistory(batchCmd);
+		current_path = elem;
+		resetPointGrips();
+		setPointContainerTransform("");	// Maybe this should be in resetPointGrips?
+		removeAllPointGripsFromPath();
 
+		canvas.addToSelection([elem], true);
+		call("changed", selectedElements);
+	}
+	
 	// Rotate all points of a path and remove its transform value
 	var resetPathOrientation = function(path, angle) {
 		if(path == null || path.nodeName != 'path') return false;
@@ -2744,10 +2770,20 @@ function BatchCommand(text) {
 	}
 
 	// Convert an element to a path
-	var convertToPath = function(elem, getBBox, angle) {
-		if(elem == null) return;
+	this.convertToPath = function(elem, getBBox, angle) {
+		if(elem == null) {
+			var elems = selectedElements;
+			$.each(selectedElements, function(i, elem) {
+				if(elem) canvas.convertToPath(elem);
+			});
+			return;
+		}
+		
+		if(!getBBox) {
+			var batchCmd = new BatchCommand("Convert element to Path");
+		}
+		
 		var attrs = getBBox?{}:{
-			"id": elem.id,
 			"fill": cur_shape.fill,
 			"fill-opacity": cur_shape.fill_opacity,
 			"stroke": cur_shape.stroke,
@@ -2763,9 +2799,19 @@ function BatchCommand(text) {
 			"attr": attrs
 		});
 		
-		path.setAttribute("transform",elem.getAttribute("transform"));
+		var eltrans = elem.getAttribute("transform");
+		if(eltrans) {
+			path.setAttribute("transform",eltrans);
+		}
 		
-		elem.parentNode.appendChild(path);
+		var id = elem.id;
+		var parent = elem.parentNode;
+		if(elem.nextSibling) {
+			parent.insertBefore(path, elem);
+		} else {
+			parent.appendChild(path);
+		}
+		
 		var d = '';
 		
 		var joinSegs = function(segs) {
@@ -2859,8 +2905,17 @@ function BatchCommand(text) {
 		
 		if(!getBBox) {
 			// Replace the current element with the converted one
+			batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
+			batchCmd.addSubCommand(new InsertElementCommand(path));
+
+			canvas.clearSelection();
 			elem.parentNode.removeChild(elem)
+			path.setAttribute('id', id);
 			path.removeAttribute("visibility");
+			canvas.addToSelection([path], true);
+			
+			addCommandToHistory(batchCmd);
+			
 		} else {
 			// Get the correct BBox of the new path, then discard it
 			resetPathOrientation(path, angle);
@@ -5600,13 +5655,13 @@ function BatchCommand(text) {
 						// Get the BBox from the raw path for these elements
 						var elemNames = ['ellipse','path','line','polyline','polygon'];
 						if($.inArray(elem.tagName, elemNames) != -1) {
-							bb = good_bb = convertToPath(elem, true, angle);
+							bb = good_bb = canvas.convertToPath(elem, true, angle);
 						} else if(elem.tagName == 'rect') {
 							// Look for radius
 							var rx = elem.getAttribute('rx');
 							var ry = elem.getAttribute('ry');
 							if(rx || ry) {
-								bb = good_bb = convertToPath(elem, true, angle);
+								bb = good_bb = canvas.convertToPath(elem, true, angle);
 							}
 						}
 						
