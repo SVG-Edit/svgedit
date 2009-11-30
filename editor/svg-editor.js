@@ -925,6 +925,7 @@ function svg_edit_setup() {
 		if(!cw) step *= -1;
 		var new_angle = $('#angle').val()*1 + step;
 		svgCanvas.setRotationAngle(new_angle);
+		updateContextPanel();
 	}
 	
 	var clickClear = function(){
