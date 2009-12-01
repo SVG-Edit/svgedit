@@ -2353,6 +2353,10 @@ function BatchCommand(text) {
 						current_path = null;
 						canvas.addToSelection([mouse_target], true);
 						canvas.setMode("select");
+						
+						// Insert the dummy transform here in case element is moved
+						var tlist = canvas.getTransformList(mouse_target);
+						tlist.insertItemBefore(svgroot.createSVGTransform(), 0);
 					}
 					else {
 						canvas.setMode("multiselect");
