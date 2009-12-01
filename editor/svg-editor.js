@@ -364,8 +364,10 @@ function svg_edit_setup() {
 					// Get BBox vals for g, polyline and path
 					if($.inArray(elname, ['g', 'polyline', 'path']) != -1) {
 						var bb = svgCanvas.getStrokedBBox([elem]);
-						x = bb.x;
-						y = bb.y;
+						if(bb) {
+							x = bb.x;
+							y = bb.y;
+						}
 					} else {
 						x = elem.getAttribute('x');
 						y = elem.getAttribute('y');
@@ -900,6 +902,12 @@ function svg_edit_setup() {
 		}
 	};
 
+	var linkControlPoints = function() {
+		$('#tool_node_link').toggleClass('push_button_pressed');
+		var linked = $('#tool_node_link').hasClass('push_button_pressed');
+		svgCanvas.linkControlPoints(linked);
+	}
+
 	var clonePathNode = function() {
 		if (svgCanvas.getNodePoint()) {
 			svgCanvas.clonePathNode();
@@ -1012,7 +1020,7 @@ function svg_edit_setup() {
 	}
 
 	var clickWireframe = function() {
-		 $('#tool_wireframe').toggleClass('push_button_pressed');
+		$('#tool_wireframe').toggleClass('push_button_pressed');
 		$('#workarea').toggleClass('wireframe');
 		
 		if(supportsNonSS) return;
@@ -1380,6 +1388,7 @@ function svg_edit_setup() {
 	$('#tool_delete').click(deleteSelected);
 	$('#tool_delete_multi').click(deleteSelected);
 	$('#tool_reorient').click(reorientPath);
+	$('#tool_node_link').click(linkControlPoints);
 	$('#tool_node_clone').click(clonePathNode);
 	$('#tool_node_delete').click(deletePathNode);
 	$('#tool_move_top').click(moveToTopSelected);
@@ -2208,6 +2217,7 @@ function setSVGIcons() {
 			'#tool_move_top':'move_top',
 			'#tool_move_bottom':'move_bottom',
 			'#tool_topath':'to_path',
+			'#tool_node_link':'link_controls',
 			'#tool_reorient':'reorient',
 			'#tool_group':'group',
 			'#tool_ungroup':'ungroup',

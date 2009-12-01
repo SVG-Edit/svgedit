@@ -861,6 +861,7 @@ function BatchCommand(text) {
 	var current_path_pt_drag = -1;
 	var current_path_oldd = null;
 	var current_ctrl_pt_drag = -1;
+	var link_control_pts = false;
 	var current_zoom = 1;
 	// this will hold all the currently selected elements
 	// default size of 1 until it needs to grow bigger
@@ -1928,7 +1929,7 @@ function BatchCommand(text) {
 		// Currently only one node can be selected at a time, should allow more later
 		// Should point be the index or the grip element?
 		
-		var is_closed = current_path.getAttribute('d').toLowerCase().indexOf('z') != -1; 
+		var is_closed = pathIsClosed(); 
 		
 		if(is_closed && point == current_path_pts.length/2 - 1) {
 			current_path_pt = 0;
@@ -2647,40 +2648,39 @@ function BatchCommand(text) {
 				} else if (current_ctrl_pt_drag != -1 && current_path) {
 					// Moving the control point. Since only one segment is altered,
 					// we only need to do a pathSegList replace.
+					
 					var data = current_ctrl_pt_drag.split('c');
 					var index = data[0]-0;
 					var ctrl_num = data[1]-0;
-					var c_item = current_path.pathSegList.getItem(index+1);
-					
-					var angle = canvas.getRotationAngle(current_path) * Math.PI / 180.0;
-					if (angle) {
-						// calculate the shape's old center that was used for rotation
-						var box = selectedBBoxes[0];
-						var cx = round(box.x + box.width/2) * current_zoom, 
-							cy = round(box.y + box.height/2) * current_zoom;
-						var dx = mouse_x - cx, dy = mouse_y - cy;
-						var r = Math.sqrt( dx*dx + dy*dy );
-						var theta = Math.atan2(dy,dx) - angle;						
-						current_path_pts[i] = mouse_x = cx + r * Math.cos(theta);
-						current_path_pts[i+1] = mouse_y = cy + r * Math.sin(theta);
-						x = mouse_x / current_zoom;
-						y = mouse_y / current_zoom;
-					}
-					
-					c_item['x' + ctrl_num] = x;
-					c_item['y' + ctrl_num] = y;
-					replacePathSeg(6, index+1, [c_item.x,c_item.y, c_item.x1,c_item.y1, c_item.x2,c_item.y2]);
-					
-					updateSegLine(true);
-					
-					var grip = document.getElementById("ctrlpointgrip_" + current_ctrl_pt_drag);
-					if(grip) {
-						grip.setAttribute("cx", mouse_x);
-						grip.setAttribute("cy", mouse_y);
+					var pt_index;
+					var pt_count = current_path_pts.length/2;
+					updateCurvedSegment(mouse_x, mouse_y, index, ctrl_num);
+					if(link_control_pts) {
+						var is_closed = pathIsClosed();
+						if(ctrl_num == 1) {
+							ctrl_num = 2;
+							index--;
+							pt_index = index+1;
+
+							if(index < 0) {
+								index = pt_count - 2;
+								if(!is_closed) break;
+							}
+						} else {
+							ctrl_num = 1;
+							index++;
+							pt_index = index;
+							
+							if(index >= pt_count - 1) {
+								index = 0;
+								if(!is_closed) break;
+							}
+						}
 						
-						var line = document.getElementById("ctrlLine_"+current_ctrl_pt_drag);
-						line.setAttribute("x2", mouse_x);
-						line.setAttribute("y2", mouse_y);
+						var pt = getPathPoint(pt_index, true);
+						var new_x = pt[0] - (mouse_x - pt[0]);
+						var new_y = pt[1] - (mouse_y - pt[1]);
+						updateCurvedSegment(new_x, new_y, index, ctrl_num, true);
 					}
 				}
 				break;
@@ -3203,6 +3203,11 @@ function BatchCommand(text) {
 		});
 	};
 	
+	var pathIsClosed = function() {
+		if(!current_path) return;
+		return current_path.getAttribute('d').substr(-1,1).toLowerCase() == 'z';
+	}
+	
 	var updateSegLine = function(next_node) {
 		// create segment line
 		var segLine = document.getElementById("segline");
@@ -3247,7 +3252,7 @@ function BatchCommand(text) {
     	var x = mouse_x / current_zoom;
     	var y = mouse_y / current_zoom;
     	
-    	var is_closed = current_path.getAttribute('d').toLowerCase().indexOf('z') != -1; 
+    	var is_closed = pathIsClosed(); 
 	
 		var i = current_path_pt_drag * 2;
 		var last_index = current_path_pts.length/2 - 1;
@@ -3257,7 +3262,7 @@ function BatchCommand(text) {
 		// if the image is rotated, then we must modify the x,y mouse coordinates
 		// and rotate them into the shape's rotated coordinate system
 		// we also re-map mouse_x/y and x/y into the rotated coordinate system
-		var angle = canvas.getRotationAngle(current_path) * Math.PI / 180.0;
+		var angle = canvas.getRotationAngle(current_path, true);
 		if (angle) {
 			// calculate the shape's old center that was used for rotation
 			var box = selectedBBoxes[0];
@@ -3389,6 +3394,55 @@ function BatchCommand(text) {
 		updateSegLine();
 		if(next_type != 4) {
 			updateSegLine(true);
+		}
+	}
+	
+	var updateCurvedSegment = function(mouse_x, mouse_y, index, ctrl_num) {
+		var list = current_path.pathSegList;
+		if(index+1 >= list.numberOfItems) {
+			index = -1;
+		}
+		var c_item = list.getItem(index+1);
+		
+		// Only do curves
+		if(c_item.pathSegType != 6) return;
+		
+		ctrl_pt_drag = index + 'c' + ctrl_num;
+		
+		var x = mouse_x / current_zoom;
+		var y = mouse_y / current_zoom;
+		
+		var angle = canvas.getRotationAngle(current_path, true);
+		
+		// TODO: Make sure this works for linked control points
+		if (angle) {
+			// calculate the shape's old center that was used for rotation
+			var box = selectedBBoxes[0];
+			var cx = round(box.x + box.width/2) * current_zoom, 
+				cy = round(box.y + box.height/2) * current_zoom;
+			var dx = mouse_x - cx, dy = mouse_y - cy;
+			var r = Math.sqrt( dx*dx + dy*dy );
+			var theta = Math.atan2(dy,dx) - angle;						
+			mouse_x = cx + r * Math.cos(theta);
+			mouse_y = cy + r * Math.sin(theta);
+			x = mouse_x / current_zoom;
+			y = mouse_y / current_zoom;
+		}
+		
+		c_item['x' + ctrl_num] = x;
+		c_item['y' + ctrl_num] = y;
+		replacePathSeg(6, index+1, [c_item.x,c_item.y, c_item.x1,c_item.y1, c_item.x2,c_item.y2]);
+		
+		updateSegLine(true);
+		
+		var grip = document.getElementById("ctrlpointgrip_" + ctrl_pt_drag);
+		if(grip) {
+			grip.setAttribute("cx", mouse_x);
+			grip.setAttribute("cy", mouse_y);
+			
+			var line = document.getElementById("ctrlLine_"+ctrl_pt_drag);
+			line.setAttribute("x2", mouse_x);
+			line.setAttribute("y2", mouse_y);
 		}
 	}
 	
@@ -3791,7 +3845,7 @@ function BatchCommand(text) {
 					// Every path point must be rotated into the rotated coordinate system of 
 					// its old center, then determine the new center, then rotate it back
 					// This is because we want the path to remember its rotation
-					var angle = canvas.getRotationAngle(current_path) * Math.PI / 180.0;
+					var angle = canvas.getRotationAngle(current_path, true);
 	
 					if (angle) {
 						var box = canvas.getBBox(current_path);
@@ -3875,7 +3929,7 @@ function BatchCommand(text) {
 					call("changed", [current_path]);
 					
 					// If connected, last point should equal first
-					if(current_path.getAttribute('d').toLowerCase().indexOf('z') != -1) {
+					if(pathIsClosed()) {
 						current_path_pts[current_path_pts.length-2] = getPathPoint(0,true)[0];
 						current_path_pts[current_path_pts.length-1] = getPathPoint(0,true)[1];
 					}
@@ -4556,6 +4610,10 @@ function BatchCommand(text) {
 		}
 	}
 
+	this.linkControlPoints = function(linkPoints) {
+		link_control_pts = linkPoints;
+	}
+
 	this.clonePathNode = function() {
 	
 		var pt = current_path_pt, list = current_path.pathSegList;
@@ -5045,7 +5103,7 @@ function BatchCommand(text) {
 	};
 
 	// TODO: do we need to sum up all rotation angles?
-	this.getRotationAngle = function(elem) {
+	this.getRotationAngle = function(elem, to_rad) {
 		var selected = elem || selectedElements[0];
 		// find the rotation transform (if any) and set it
 		var tlist = canvas.getTransformList(selected);
@@ -5053,7 +5111,7 @@ function BatchCommand(text) {
 		while (t--) {
 			var xform = tlist.getItem(t);
 			if (xform.type == 4) {
-				return xform.angle;
+				return to_rad ? xform.angle * Math.PI / 180.0 : xform.angle;
 			}
 		}
 		return 0;
@@ -5206,7 +5264,7 @@ function BatchCommand(text) {
 		var index = grip[0].id.split('_')[1] - 0;
 		
 		var last_index = current_path_pts.length/2 - 1;
-		var is_closed = current_path.getAttribute('d').toLowerCase().indexOf('z') != -1; 
+		var is_closed = pathIsClosed(); 
 
 		if(!is_closed && index == last_index) {
 			return; // Last point of unclosed path should do nothing
@@ -5346,10 +5404,10 @@ function BatchCommand(text) {
 					
 // 					var box=canvas.getBBox(elem), left=box.x, top=box.y, width=box.width,
 // 						height=box.height, dx = width - old_w, dy=0;
-// 					var angle = canvas.getRotationAngle(elem);
+// 					var angle = canvas.getRotationAngle(elem, true);
 // 					if (angle) {
 // 						var r = Math.sqrt( dx*dx + dy*dy );
-// 						var theta = Math.atan2(dy,dx) - angle * Math.PI / 180.0;
+// 						var theta = Math.atan2(dy,dx) - angle;
 // 						dx = r * Math.cos(theta);
 // 						dy = r * Math.sin(theta);
 // 						
@@ -5497,7 +5555,7 @@ function BatchCommand(text) {
 			var gbox = g.getBBox(),
 				gx = gbox.x + gbox.width/2,
 				gy = gbox.y + gbox.height/2;
-			var gangle = canvas.getRotationAngle(g) * Math.PI / 180.0;
+			var gangle = canvas.getRotationAngle(g, true);
 			while (g.firstChild) {
 				var elem = g.firstChild;
 				var oldNextSibling = elem.nextSibling;
@@ -5519,7 +5577,7 @@ function BatchCommand(text) {
 					// now we add the angle that the element was rotated by
 					// if it's non-zero, we need to set the new transform
 					// otherwise, we clear it
-					var angle = gangle + canvas.getRotationAngle(elem) * Math.PI / 180.0;
+					var angle = gangle + canvas.getRotationAngle(elem, true);
 					var changes = {};
 					changes["transform"] = elem.getAttribute("transform");
 					if (angle != 0) {
