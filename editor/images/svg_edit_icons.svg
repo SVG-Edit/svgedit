@@ -535,11 +535,11 @@
 
 <g id="link_controls">
 <svg viewBox="0 0 24 24" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
-  <path fill="none" stroke="#8dd35f" d="m12.4375,22.75c-4.75,-12.625 -0.375,-14.375 10.375,-11.5" id="svg_102"/>
-  <line x1="4" y1="19" x2="19" y2="4" id="svg_109" stroke="#606060" fill="none"/>
-  <circle cx="11.5" cy="11.5" r="2.17578" id="svg_111" fill="#00ffff" stroke="#0000ff"/>
-  <circle cx="19" cy="4" r="2.26172" fill="#00ffff" stroke="#0000ff" id="svg_121" stroke-width="0.5"/>
-  <circle cx="4" cy="19" r="2.26172" fill="#00ffff" stroke="#0000ff" stroke-width="0.5" id="svg_123"/>
+  <path stroke-width="2" id="svg_102" d="m9.875,23c-2,-4.25 -1.6875,-7.375 1.6875,-10.5c3.375,-3.125 7.5625,-2.75 11.0625,2" stroke="#8dd35f" fill="none"/>
+  <line fill="none" stroke="#606060" id="svg_109" y2="4" x2="19" y1="19" x1="4"/>
+  <circle stroke="#0000ff" fill="#00ffff" id="svg_111" r="2.17578" cy="11.5" cx="11.5"/>
+  <circle stroke-width="0.5" id="svg_121" stroke="#0000ff" fill="#00ffff" r="2.26172" cy="4" cx="19"/>
+  <circle id="svg_123" stroke-width="0.5" stroke="#0000ff" fill="#00ffff" r="2.26172" cy="19" cx="4"/>
 </svg>
 </g>
 
