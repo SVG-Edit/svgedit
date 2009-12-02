@@ -594,6 +594,10 @@ function svg_edit_setup() {
 		}
 	});
 
+	$('#font_family').change(function() {
+		svgCanvas.setFontFamily(this.value);
+	});
+
 	$('#seg_type').change(function() {
 		svgCanvas.setSegType($(this).val());
 	});
@@ -732,8 +736,7 @@ function svg_edit_setup() {
 	
 	addDropDown('#font_family_dropdown', function() {
 		var fam = $(this).text();
-		$('#font_family').val(fam);
-		svgCanvas.setFontFamily(fam);
+		$('#font_family').val($(this).text()).change();
 	});
 	
 	addDropDown('#opacity_dropdown', function() {
