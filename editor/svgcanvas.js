@@ -47,7 +47,12 @@ if( window.opera ) {
 
 // this defines which elements and attributes that we support
 // TODO: add <a> elements to this
+// TODO: add <marker> to this
+// TODO: add <mask> to this
+// TODO: add <pattern> to this
+// TODO: add <symbol> to this
 // TODO: add <tspan> to this
+// TODO: add <use> to this
 var svgWhiteList = {
 	"circle": ["cx", "cy", "fill", "fill-opacity", "fill-rule", "id", "opacity", "r", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
 	"defs": [],
@@ -1316,8 +1321,14 @@ function BatchCommand(text) {
 			var k = tlist.numberOfItems;
 			while (k--) {
 				var xform = tlist.getItem(k);
-				if (xform.type == 0 || xform.type == 1) {
+				if (xform.type == 0) {
 					tlist.removeItem(k);
+				}
+				else if (xform.type == 1) {
+					var m = xform.matrix;
+					if (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && m.e == 0 && m.f == 0) {
+						tlist.removeItem(k);
+					}
 				}
 			}
 		}
@@ -1596,7 +1607,6 @@ function BatchCommand(text) {
 							tlist.replaceItem(newrot, n);
 						}
 						break;
-						// fall through to the default: continue below
 					default:
 						continue;
 				}
@@ -1958,7 +1968,8 @@ function BatchCommand(text) {
 	// As far as I can tell, there is no way for us to handle matrix multiplication 
 	// of arbitrary matrices because we cannot directly set the a,b,c,d,e,f values
 	// of the resulting matrix, we have to do it with translate/rotate/scale
-	// TODO: investigate if webkit allows direct setting of matrix.a, etc
+	// TODO: Actually all browsers seem to allow setting of a-f in a SVGMatrix without 
+	//       throwing an exception - perhaps an update was issued in SVG 1.1 2e?
 	var matrixMultiply = function(m1, m2) {
 		var a = m1.a*m2.a + m1.c*m2.b,
 			b = m1.b*m2.a + m1.d*m2.b,
@@ -1999,9 +2010,12 @@ function BatchCommand(text) {
 	// This returns a single matrix Transform for a given Transform List
 	// (this is the equivalent of SVGTransformList.consolidate() but unlike
 	//  that method, this one does not modify the actual SVGTransformList)
-	var transformListToTransform = function(tlist) {
+	var transformListToTransform = function(tlist, min, max) {
+		if (min > max) { throw "min>max"; }
+		var min = min || 0;
+		var max = max || tlist.numberOfItems;
 		var m = svgroot.createSVGMatrix();
-		for (var i = 0; i < tlist.numberOfItems; ++i) {
+		for (var i = min; i < max; ++i) {
 			m = matrixMultiply(m, tlist.getItem(i).matrix);
 		}
 		return svgroot.createSVGTransformFromMatrix(m);
@@ -5560,6 +5574,18 @@ function BatchCommand(text) {
 			var anchor = g.previousSibling;
 			var children = new Array(g.childNodes.length);
 			var xform = g.getAttribute("transform");
+			var m = transformListToTransform(canvas.getTransformList(g)).matrix;
+
+			// TODO: get all fill/stroke properties from the group that we are about to destroy
+			// "fill", "fill-opacity", "fill-rule", "stroke", "stroke-dasharray", "stroke-dashoffset", 
+			// "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", 
+			// "stroke-width"
+			// and then for each child, if they do not have the attribute (or the value is 'inherit'?)
+			// then set the child's attribute
+
+			// TODO: get the group's opacity and propagate it down to the children (multiply it
+			// by the child's opacity (or 1.0)
+			
 			var i = 0;
 			var gbox = g.getBBox(),
 				gx = gbox.x + gbox.width/2,
