@@ -594,10 +594,6 @@ function svg_edit_setup() {
 		}
 	});
 
-	$('#font_family').change(function(){
-		svgCanvas.setFontFamily(this.options[this.selectedIndex].value);
-	});
-
 	$('#seg_type').change(function() {
 		svgCanvas.setSegType($(this).val());
 	});
@@ -733,6 +729,12 @@ function svg_edit_setup() {
 			on_button = false;
 		});
 	}
+	
+	addDropDown('#font_family_dropdown', function() {
+		var fam = $(this).text();
+		$('#font_family').val(fam);
+		svgCanvas.setFontFamily(fam);
+	});
 	
 	addDropDown('#opacity_dropdown', function() {
 		if($(this).find('div').length) return;

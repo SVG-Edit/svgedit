@@ -402,6 +402,15 @@ span.zoom_tool {
 	background: #E8E8E8;
 }
 
+#font_family_dropdown li {
+	font-size: 1.4em;
+}
+
+#font_family {
+	margin-left: 5px;
+	margin-right: 0;
+}
+
 #opacity_dropdown li {
 	width: 140px;
 }

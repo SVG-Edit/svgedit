@@ -219,13 +219,19 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<div id="text_panel">
 		<div class="tool_button" id="tool_bold" title="Bold Text [B]"><span></span>B</div>
 		<div class="tool_button" id="tool_italic" title="Italic Text [I]"><span></span>i</div>
-		<select id="font_family" class="text_tool" title="Change Font Family">
-			<option selected="selected" value="serif">serif</option>
-			<option value="sans-serif">sans-serif</option>
-			<option value="cursive">cursive</option>
-			<option value="fantasy">fantasy</option>
-			<option value="monospace">monospace</option>
-		</select>
+		
+		<input id="font_family" class="text_tool" type="text" title="Change Font Family" size="12"/>
+		<div id="font_family_dropdown" class="dropdown">
+			<button></button>
+			<ul>
+				<li style="font-family:serif">Serif</li>
+				<li style="font-family:sans-serif">Sans-serif</li>
+				<li style="font-family:cursive">Cursive</li>
+				<li style="font-family:fantasy">Fantasy</li>
+				<li style="font-family:monospace">Monospace</li>
+			</ul>
+		</div>
+
 		<label id="font_sizeLabel" class="text_tool" for="font_size">size:</label>
 		<input id="font_size" class="text_tool" title="Change Font Size" size="3" value="0" type="text"/>
 		<input id="text" class="text_tool" type="text" title="Change text contents" size="35"/>
