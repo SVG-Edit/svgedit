@@ -437,34 +437,27 @@ function BatchCommand(text) {
 			
 			// apply the transforms
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
-			var topleft = {x:l*current_zoom,y:t*current_zoom},
-				topright = {x:(l+w)*current_zoom,y:t*current_zoom},
-				botright = {x:(l+w)*current_zoom,y:(t+h)*current_zoom},
-				botleft = {x:l*current_zoom,y:(t+h)*current_zoom};
-			topleft = transformPoint( topleft.x, topleft.y, m );
-			topright = transformPoint( topright.x, topright.y, m );
-			botright = transformPoint( botright.x, botright.y, m );
-			botleft = transformPoint( botleft.x, botleft.y, m);
+			var nbox = transformBox(l*current_zoom, t*current_zoom, w*current_zoom, h*current_zoom, m);
 
 			// TODO: handle negative?
 
 			var sr_handle = svgroot.suspendRedraw(100);
 
-			var dstr = "M" + topleft.x + "," + topleft.y 
-						+ " L" + topright.x + "," + topright.y 
-						+ " " + botright.x + "," + botright.y
-						+ " " + botleft.x + "," + botleft.y + "z";
+			var dstr = "M" + nbox.tl.x + "," + nbox.tl.y 
+						+ " L" + nbox.tr.x + "," + nbox.tr.y 
+						+ " " + nbox.br.x + "," + nbox.br.y
+						+ " " + nbox.bl.x + "," + nbox.bl.y + "z";
 			assignAttributes(selectedBox, {'d': dstr});
 			
 			var gripCoords = {
-				nw: [topleft.x, topleft.y],
-				ne: [topright.x, topright.y],
-				sw: [botleft.x, botleft.y],
-				se: [botright.x, botright.y],
-				n:  [topleft.x + (topright.x-topleft.x)/2, topleft.y + (topright.y-topleft.y)/2],
-				w:	[topleft.x + (botleft.x-topleft.x)/2, topleft.y + (botleft.y-topleft.y)/2],
-				e:	[topright.x + (botright.x-topright.x)/2, topright.y + (botright.y-topright.y)/2],
-				s:	[botleft.x + (botright.x-botleft.x)/2, botleft.y + (botright.y-botleft.y)/2]
+				nw: [nbox.tl.x, nbox.tl.y],
+				ne: [nbox.tr.x, nbox.tr.y],
+				sw: [nbox.bl.x, nbox.bl.y],
+				se: [nbox.br.x, nbox.br.y],
+				n:  [nbox.tl.x + (nbox.tr.x-nbox.tl.x)/2, nbox.tl.y + (nbox.tr.y-nbox.tl.y)/2],
+				w:	[nbox.tl.x + (nbox.bl.x-nbox.tl.x)/2, nbox.tl.y + (nbox.bl.y-nbox.tl.y)/2],
+				e:	[nbox.tr.x + (nbox.br.x-nbox.tr.x)/2, nbox.tr.y + (nbox.br.y-nbox.tr.y)/2],
+				s:	[nbox.bl.x + (nbox.br.x-nbox.bl.x)/2, nbox.bl.y + (nbox.br.y-nbox.bl.y)/2]
 			};
 			$.each(gripCoords, function(dir, coords) {
 				assignAttributes(selectedGrips[dir], {
@@ -473,15 +466,15 @@ function BatchCommand(text) {
 			});
 
 			// we want to go 20 pixels in the negative transformed y direction, ignoring scale
-			var dy = (topleft.y - topright.y),
-				dx = (topright.x - topleft.x),
+			var dy = (nbox.tl.y - nbox.tr.y),
+				dx = (nbox.tr.x - nbox.tl.x),
 				theta = Math.atan2(dy,dx);
 			dy = 20 * Math.cos(theta);
 			dx = 20 * Math.sin(theta)
 			var rotatept = {x:(l+w/2)*current_zoom,y:t*current_zoom};
 			rotatept = transformPoint( rotatept.x, rotatept.y, m);
-			assignAttributes(this.rotateGripConnector, { x1: topleft.x + (topright.x-topleft.x)/2, 
-														y1: topleft.y + (topright.y-topleft.y)/2, 
+			assignAttributes(this.rotateGripConnector, { x1: nbox.tl.x + (nbox.tr.x-nbox.tl.x)/2, 
+														y1: nbox.tl.y + (nbox.tr.y-nbox.tl.y)/2, 
 														x2: rotatept.x-dx, y2: rotatept.y-dy });
 			assignAttributes(this.rotateGrip, { cx: rotatept.x-dx, cy: rotatept.y-dy });
 			
@@ -2047,6 +2040,18 @@ function BatchCommand(text) {
 			// TODO: matrix, skewX, skewY
 		}
 		return tobj;
+	};
+	
+	var transformBox = function(l, t, w, h, m) {
+		var topleft = {x:l,y:t},
+			topright = {x:(l+w),y:t},
+			botright = {x:(l+w),y:(t+h)},
+			botleft = {x:l,y:(t+h)};
+		topleft = transformPoint( topleft.x, topleft.y, m );
+		topright = transformPoint( topright.x, topright.y, m );
+		botleft = transformPoint( botleft.x, botleft.y, m);
+		botright = transformPoint( botright.x, botright.y, m );
+		return {tl:topleft, tr:topright, bl:botleft, br:botright};
 	};
 
 	// - when we are in a create mode, the element is added to the canvas
