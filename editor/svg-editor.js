@@ -197,6 +197,8 @@ function svg_edit_setup() {
 
 	// called when any element has changed
 	var elementChanged = function(window,elems) {
+		// selectedElement must be updated here in case it was changed
+		selectedElement = (elems.length == 1 || elems[1] == null ? elems[0] : null);
 		for (var i = 0; i < elems.length; ++i) {
 			var elem = elems[i];
 			// if the element changed was the svg, then it could be a resolution change
