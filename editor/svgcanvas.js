@@ -1512,6 +1512,7 @@ function BatchCommand(text) {
 						// if the new center of the shape has moved, then 
 						// re-center the rotation, and determine the movement 
 						// offset required to keep the shape in the same place
+						rotAngle = xform.angle;
 						if (origcenter.x != newcenter.x || origcenter.y != newcenter.y) {
 							rotAngle = xform.angle;
 							var alpha = xform.angle * Math.PI / 180.0;
@@ -1532,6 +1533,9 @@ function BatchCommand(text) {
 							};
 							scalew = function(w) { return w; }
 							scaleh = function(h) { return h; }
+						}
+						else {
+							tlist.removeItem(n);
 						}
 						break;
 					default:
@@ -1641,7 +1645,7 @@ function BatchCommand(text) {
 			// we may need to insert a rotation back now
 			if (rotAngle != 0) {
 				var newrot = svgroot.createSVGTransform();
-				newrot.setRotate(xform.angle, newcenter.x, newcenter.y);
+				newrot.setRotate(rotAngle, newcenter.x, newcenter.y);
 				tlist.insertItemBefore(newrot, 0);				
 			}
 		} // a non-group
