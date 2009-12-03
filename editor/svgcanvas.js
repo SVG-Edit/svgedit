@@ -1479,6 +1479,7 @@ function BatchCommand(text) {
 			var box = canvas.getBBox(selected);
 			var origcenter = {x: (box.x+box.width/2), y: (box.y+box.height/2)};
 			var newcenter = {x: origcenter.x, y: origcenter.y};
+			var rotAngle = 0;
 		
 			// This pass loop in reverse order and removes any translates or scales.
 			// Once we hit our first rotate(), we will only remove translates.
@@ -1512,6 +1513,7 @@ function BatchCommand(text) {
 						// re-center the rotation, and determine the movement 
 						// offset required to keep the shape in the same place
 						if (origcenter.x != newcenter.x || origcenter.y != newcenter.y) {
+							rotAngle = xform.angle;
 							var alpha = xform.angle * Math.PI / 180.0;
 			
 							// determine where the new rotated center should be
@@ -1530,9 +1532,6 @@ function BatchCommand(text) {
 							};
 							scalew = function(w) { return w; }
 							scaleh = function(h) { return h; }
-							var newrot = svgroot.createSVGTransform();
-							newrot.setRotate(xform.angle, cx, cy);
-							tlist.replaceItem(newrot, n);
 						}
 						break;
 					default:
@@ -1635,11 +1634,16 @@ function BatchCommand(text) {
 						break;
 				} // switch on element type to get initial values
 			
-				// if it wasn't a rotate, we have eliminated the transform, so remove it
-				if (xform.type != 4) {
-					tlist.removeItem(n);
-				}
+				// we have eliminated the transform, so remove it
+				tlist.removeItem(n);
 			} // looping for each transform
+
+			// we may need to insert a rotation back now
+			if (rotAngle != 0) {
+				var newrot = svgroot.createSVGTransform();
+				newrot.setRotate(xform.angle, newcenter.x, newcenter.y);
+				tlist.insertItemBefore(newrot, 0);				
+			}
 		} // a non-group
 		
 		// now we have a set of changes and an applied reduced transform list
