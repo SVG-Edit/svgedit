@@ -11,6 +11,12 @@
 /*
 	TODOs for TransformList:
 
+	* When ungrouping, always end up with a single [M]
+	* When rotating, always end up with [Rc][M]
+	* When scaling a group, [Rc][M]
+	* When scaling a shape, [Rc]
+	* When moving, always end up with a single [M]
+
 	* Fix Opera's centering of rotated, resized groups
 	* Fix resizing of rotated already-resized groups (scales incorrect with mouse)
 	* Ensure ungrouping works (Issue 204)
@@ -1417,118 +1423,38 @@ function BatchCommand(text) {
 		// save the start transform value too
 		initial["transform"] = start_transform ? start_transform : "";
 		
-		// reduce the transform list here...
-
 		// if it's a group, we have special processing to flatten transforms
 		if (selected.tagName == "g") {
-							
-			var angle = 0;
-			var sx = 1, sy = 1;
 			var tx = 0, ty = 0;
-			var oldcx = 0, oldcy = 0, newcx = 0, newcy = 0;
-			var opType = 0;
-				
-			/*
-				The current concatenated matrix will be of the form:
-				
-				[ T ] [ R,oldc ] [ S ] [ T,s ] [ S,new ] [ - T,s ]
-				
-				which can be simply represented as:
-
-				| x' |   | a c e |   | x |
-				| y' | = | b d f | * | y |
-				| 1  |   | 0 0 1 |   | 1 |
-				
-				where: a = A*cos(r), c = -C*sin(r)
-				       b = A*sin(r), d =  C*cos(r)
-					   e,f are the translation required to recenter and properly scale it.
-					   A is the total x scale factor
-					   C is the total y scale factor
-				
-				We always want to reduce the new transformation matrix to:
-				
-				[ R,newc ] [ S ]
-				
-				which will be of the form:
-				
-				| x' |   | a c g |   | x + tx |
-				| y' | = | b d h | * | y + ty |
-				| 1  |   | 0 0 1 |   |   1    |
-				
-				where: tx,ty are appropriate translations on the children so that the effect 
-						     is identical to the original concatenated matrix above
-					   g,h are translations to recenter the rotation.
-				
-				We can get a, b, c, d, e, f from the actual tlist matrix.
-				We can calculate g,h from the new bounding box.
-
-				Thus, we solve for tx,ty and we get:
-				
-				tx = (  (e-g)*cos(r) + (f-h)*sin(r) ) / A
-				ty = ( -(e-g)*sin(r) + (e-g)*cos(r) ) / C
-			*/
-				
-			// First, we quickly extract the factors:
-			var N = tlist.numberOfItems;
-			var i = N;
-			while (i--) {
-				var xform = tlist.getItem(i);
-				if (xform.type == 3) {
-					// extract scale factors
-					var sobj = transformToObj(xform);
-					sx *= sobj.sx;
-					sy *= sobj.sy;
-				}
-				else if (xform.type == 4) {
-					var robj = transformToObj(xform);
-					// extract angle and old center
-					angle = robj.angle;
-					oldcx = robj.cx;
-					oldcy = robj.cy;
-					newcx = oldcx;
-					newcy = oldcy;
-				}
-			}
-				
-			// now find the new transformed bbox so we can determine what the
-			// new center of rotation should be
-			var origm = transformListToTransform(tlist).matrix;
-			if (angle != 0) {
-				var box = canvas.getBBox(selected);
-				var topleft = transformPoint(box.x,box.y,origm);
-				var botright = transformPoint(box.x+box.width,box.y+box.height,origm);
-				newcx = topleft.x + (botright.x-topleft.x)/2;
-				newcy = topleft.y + (botright.y-topleft.y)/2;
-			}
-
-			// now get e,f and calculate g,h				
-			var e = origm.e,
-				f = origm.f;
-			var rad = angle * Math.PI / 180;
-			var g = newcx * (1 - Math.cos(rad)) + newcy * Math.sin(rad);
-				h = newcy * (1 - Math.cos(rad)) - newcx * Math.sin(rad);
-				
-			// now actually calculate the new scale factors
-			var tx = (  (e-g)*Math.cos(rad) + (f-h)*Math.sin(rad) ) / sx,
-				ty = ( -(e-g)*Math.sin(rad) + (f-h)*Math.cos(rad) ) / sy;
-					
-			// now we can remove all transforms from the list and create our new transforms
-			tlist.clear();
 			
-			if (angle) {
-				var rot = svgroot.createSVGTransform();
-				rot.setRotate(angle,newcx,newcy);
-				tlist.appendItem(rot);
+			// if we have a translate as the first transform, let's push it down to the children
+			var xform = tlist.getItem(0);
+			if (xform.type == 2 && (tlist.numberOfItems < 3 || tlist.getItem(1).type != 3)) {
+				var m = xform.matrix;
+				tx = m.e;
+				ty = m.f;
+				tlist.removeItem(0);
 			}
 			
-			if (sx != 1 || sy != 1) {
-				var scale = svgroot.createSVGTransform();
-				scale.setScale(sx,sy);
-				tlist.appendItem(scale);
+			// if we have any other transforms, collapse them all down to a matrix
+			var m = transformListToTransform(tlist).matrix;
+			if (tlist.numberOfItems > 0) {
+				var newxform = svgroot.createSVGTransform();
+				newxform.setMatrix(m);
+				tlist.clear();
+				tlist.appendItem(newxform);
 			}
-								
-			// force the accumulated translation down to the children			
+			
 			if (tx != 0 || ty != 0) {
+				var a = m.a, b = m.b, c = m.c, d = m.d;
+				// is it possible for (bc - ad) to equal zero?
+				var denom = b*c - a*d;
+				var ntx = (c*ty - d*tx) / denom,
+					nty = (b*tx - a*ty) / denom;
+				tx = ntx;
+				ty = nty;
+				
+				// now push this transform down to the children
 				// FIXME: unfortunately recalculateDimensions depends on this global variable
 				var old_start_transform = start_transform;
 				start_transform = null;
@@ -1556,28 +1482,32 @@ function BatchCommand(text) {
 		
 			// This pass loop in reverse order and removes any translates or scales.
 			// Once we hit our first rotate(), we will only remove translates.
-			var bRemoveTransform = true;
 			n = tlist.numberOfItems;
+			var m = svgroot.createSVGMatrix(); // identity
 			while (n--) {
-				// once we reach an unmoveable transform, we can stop
 				var xform = tlist.getItem(n);
-				var m = xform.matrix;
-				// if translate...
+				// get the matrix of all transformations to the right of this transform
+				// and its inverse (B and B_inv)
+				var tail = transformListToTransform(tlist, n+1, tlist.numberOfItems-1).matrix,
+					tail_inv = tail.inverse();
+				// multiply (B_inv * A * B)
+				m = matrixMultiply(tail_inv, matrixMultiply(xform.matrix,tail));
+				
 				var remap = null, scalew = null, scaleh = null;
 				switch (xform.type) {
+					case 1: // MATRIX - continue
+						continue;
 					case 2: // TRANSLATE - always remove
 						remap = function(x,y) { return transformPoint(x,y,m); };
 						scalew = function(w) { return w; }
 						scaleh = function(h) { return h; }
 						break;
-					case 3: // SCALE - only remove if we haven't hit a rotate
-						if (!bRemoveTransform) continue;
+					case 3: // SCALE - always remove
 						remap = function(x,y) { return transformPoint(x,y,m); };
 						scalew = function(w) { return m.a * w; }
 						scaleh = function(h) { return m.d * h; }
 						break;
-					case 4: // ROTATE - only re-center if we haven't previously hit a rotate
-						if (!bRemoveTransform) continue;
+					case 4: // ROTATE
 						// if the new center of the shape has moved, then 
 						// re-center the rotation, and determine the movement 
 						// offset required to keep the shape in the same place
@@ -1600,8 +1530,6 @@ function BatchCommand(text) {
 							};
 							scalew = function(w) { return w; }
 							scaleh = function(h) { return h; }
-							// this latches to false once we hit our first rotate transform
-							bRemoveTransform = false;
 							var newrot = svgroot.createSVGTransform();
 							newrot.setRotate(xform.angle, cx, cy);
 							tlist.replaceItem(newrot, n);
@@ -1610,8 +1538,9 @@ function BatchCommand(text) {
 					default:
 						continue;
 				}
+
 				if (!remap) continue;
-			
+				
 				newcenter = remap(box.x+box.width/2, box.y+box.height/2);
 				var bpt = remap(box.x,box.y);
 				box.x = bpt.x;
@@ -1706,22 +1635,9 @@ function BatchCommand(text) {
 						break;
 				} // switch on element type to get initial values
 			
-				// we have eliminated the transform, so remove it from the list
-				if (bRemoveTransform) {
+				// if it wasn't a rotate, we have eliminated the transform, so remove it
+				if (xform.type != 4) {
 					tlist.removeItem(n);
-				}
-				
-				// now loop through the other transforms and adjust accordingly
-				for ( var j = n; j < tlist.numberOfItems; ++j) {
-					var changed_xform = tlist.getItem(j);
-					switch (changed_xform.type) {
-						// TODO: TRANSLATE, SCALE?
-						case 4: // rotate
-							var newrot = svgroot.createSVGTransform();
-							newrot.setRotate(changed_xform.angle, newcenter.x, newcenter.y);
-							tlist.replaceItem(newrot, j);
-							break;
-					}
 				}
 			} // looping for each transform
 		} // a non-group
@@ -2010,13 +1926,21 @@ function BatchCommand(text) {
 	// This returns a single matrix Transform for a given Transform List
 	// (this is the equivalent of SVGTransformList.consolidate() but unlike
 	//  that method, this one does not modify the actual SVGTransformList)
+	// This function is very liberal with its min,max arguments
 	var transformListToTransform = function(tlist, min, max) {
-		if (min > max) { throw "min>max"; }
 		var min = min || 0;
-		var max = max || tlist.numberOfItems;
+		var max = max || (tlist.numberOfItems-1);
+		min = parseInt(min);
+		max = parseInt(max);
+		if (min > max) { var temp = max; max = min; min = temp; }
+		
 		var m = svgroot.createSVGMatrix();
-		for (var i = min; i < max; ++i) {
-			m = matrixMultiply(m, tlist.getItem(i).matrix);
+		for (var i = min; i <= max; ++i) {
+			// if our indices are out of range, just use a harmless identity matrix
+			var mtom = (i >= 0 && i < tlist.numberOfItems ? 
+							tlist.getItem(i).matrix :
+							svgroot.createSVGMatrix());
+			m = matrixMultiply(m, mtom);
 		}
 		return svgroot.createSVGTransformFromMatrix(m);
 	};
@@ -2395,6 +2319,8 @@ function BatchCommand(text) {
 				break;
 			case "rotate":
 				started = true;
+				// append a dummy transform that will be used as the rotate
+				tlist.appendItem(svgroot.createSVGTransform());
 				// we are starting an undoable change (a drag-rotation)
 				canvas.beginUndoableChange("transform", selectedElements);
 				break;
@@ -5125,21 +5051,31 @@ function BatchCommand(text) {
 		return ret;
 	};
 
-	// TODO: do we need to sum up all rotation angles?
+	// we get the rotation angle in the tlist
 	this.getRotationAngle = function(elem, to_rad) {
 		var selected = elem || selectedElements[0];
 		// find the rotation transform (if any) and set it
 		var tlist = canvas.getTransformList(selected);
 		var t = tlist.numberOfItems;
+		var sangle = 0;
 		while (t--) {
 			var xform = tlist.getItem(t);
+			// rotation transform
 			if (xform.type == 4) {
-				return to_rad ? xform.angle * Math.PI / 180.0 : xform.angle;
+				sangle += tlist.getItem(t).angle;
 			}
+			// matrix transform
+//			else if (xform.type == 1) {
+//				var m = xform.matrix;
+//				sangle += Math.atan2(m.b,m.a) * 180.0 / Math.PI;
+//			}
 		}
-		return 0;
+		return to_rad ? sangle * Math.PI / 180.0 : sangle;
 	};
 
+	// this should:
+	// - remove any old rotations if present
+	// - prepend a new rotation at the transformed center
 	this.setRotationAngle = function(val,preventUndo) {
 		// ensure val is the proper type
 		val = parseFloat(val);
@@ -5148,24 +5084,22 @@ function BatchCommand(text) {
 		var bbox = elem.getBBox();
 		var cx = round(bbox.x+bbox.width/2), cy = round(bbox.y+bbox.height/2);
 		var tlist = canvas.getTransformList(elem);
-		var rotIndex = 0;
-		// find the index of the rotation transform
+		
+		// remove the rotation transform
 		var n = tlist.numberOfItems;
 		while (n--) {
-			var xform = tlist.getItem(n);
-			if (xform.type == 4) {
-				rotIndex = n;
-				// TODO: get the rotational center here?
+			if (tlist.getItem(n).type == 4) {
 				tlist.removeItem(n);
-				break;
 			}
 		}
-		// if we are not rotated yet, insert a dummy xform
-		var m = transformListToTransform(tlist).matrix;
-		var center = transformPoint(cx,cy,m);
-		var newrot = svgroot.createSVGTransform();
-		newrot.setRotate(val, center.x, center.y);
-		tlist.insertItemBefore(newrot, rotIndex);
+		
+		// find R_nc and insert it
+		var center = transformPoint(cx,cy,transformListToTransform(tlist).matrix);
+		var R_nc = svgroot.createSVGTransform();
+		R_nc.setRotate(val, center.x, center.y);
+		
+		tlist.insertItemBefore(R_nc,0);
+		
 		if (!preventUndo) {
 			// we need to undo it, then redo it so it can be undo-able! :)
 			// TODO: figure out how to make changes to transform list undo-able cross-browser?
@@ -5564,8 +5498,6 @@ function BatchCommand(text) {
 		canvas.addToSelection([g], true);
 	};
 
-	// TODO: when transferring group's rotational transform to the children, must deal
-	// with children who are already rotated within the group (Issue 204)
 	this.ungroupSelectedElement = function() {
 		var g = selectedElements[0];
 		if (g.tagName == "g") {
@@ -5574,6 +5506,7 @@ function BatchCommand(text) {
 			var anchor = g.previousSibling;
 			var children = new Array(g.childNodes.length);
 			var xform = g.getAttribute("transform");
+			// get consolidated matrix
 			var m = transformListToTransform(canvas.getTransformList(g)).matrix;
 
 			// TODO: get all fill/stroke properties from the group that we are about to destroy
@@ -5585,43 +5518,25 @@ function BatchCommand(text) {
 
 			// TODO: get the group's opacity and propagate it down to the children (multiply it
 			// by the child's opacity (or 1.0)
-			
 			var i = 0;
-			var gbox = g.getBBox(),
-				gx = gbox.x + gbox.width/2,
-				gy = gbox.y + gbox.height/2;
-			var gangle = canvas.getRotationAngle(g, true);
 			while (g.firstChild) {
 				var elem = g.firstChild;
 				var oldNextSibling = elem.nextSibling;
 				var oldParent = elem.parentNode;
 				children[i++] = elem = parent.insertBefore(elem, anchor);
 				batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
+
+				// transfer the group's transform down to each child and then
+				// call recalculateDimensions()				
 				if (xform) {
-					var childBox = elem.getBBox();
-					var cx = childBox.x + childBox.width/2,
-						cy = childBox.y + childBox.height/2,
-						dx = cx - gx,
-						dy = cy - gy,
-						r = Math.sqrt(dx*dx + dy*dy);
-					var tangle = gangle + Math.atan2(dy,dx);
-					var newcx = r * Math.cos(tangle) + gx,
-						newcy = r * Math.sin(tangle) + gy;
-					childBox.x += (newcx - cx);
-					childBox.y += (newcy - cy);
-					// now we add the angle that the element was rotated by
-					// if it's non-zero, we need to set the new transform
-					// otherwise, we clear it
-					var angle = gangle + canvas.getRotationAngle(elem, true);
+					var oldxform = elem.getAttribute("transform");
 					var changes = {};
-					changes["transform"] = elem.getAttribute("transform");
-					if (angle != 0) {
-						elem.setAttribute("transform", "rotate(" + (angle*180.0)/Math.PI + " " + cx + "," + cy + ")");
-					}
-					else {
-						elem.setAttribute("transform", "");
-					}
-					batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
+					changes["transform"] = oldxform ? oldxform : "";
+
+					var newxform = svgroot.createSVGTransform();
+					var chtlist = canvas.getTransformList(elem);
+					newxform.setMatrix(matrixMultiply(m,transformListToTransform(chtlist).matrix.inverse()));
+					chtlist.insertItemBefore(newxform,0);
 					batchCmd.addSubCommand(recalculateDimensions(elem));
 				}
 			}
