@@ -10,6 +10,9 @@
  */
 /*
 	TODOs for TransformList:
+	
+	* Fix problem when moving elements that have [R][M]
+	* Fix problem when ungrouping rotated elements that were scaled in a group
 
 	* When ungrouping, always end up with a single [M]
 	* When rotating, always end up with [Rc][M]
@@ -1514,7 +1517,6 @@ function BatchCommand(text) {
 						// offset required to keep the shape in the same place
 						rotAngle = xform.angle;
 						if (origcenter.x != newcenter.x || origcenter.y != newcenter.y) {
-							rotAngle = xform.angle;
 							var alpha = xform.angle * Math.PI / 180.0;
 			
 							// determine where the new rotated center should be
@@ -5399,12 +5401,19 @@ function BatchCommand(text) {
 				// if this element was rotated, and we changed the position of this element
 				// we need to update the rotational transform attribute 
 				var angle = canvas.getRotationAngle(elem);
-				if (angle && attr != "transform") {
-					var cx = round(selectedBBoxes[i].x + selectedBBoxes[i].width/2),
-						cy = round(selectedBBoxes[i].y + selectedBBoxes[i].height/2);
-					var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
-					if (rotate != elem.getAttribute("transform")) {
-						elem.setAttribute("transform", rotate);
+				if (angle != 0 && attr != "transform") {
+					var tlist = canvas.getTransformList(elem);
+					var n = tlist.numberOfItems;
+					while (n--) {
+						var xform = tlist.getItem(n);
+						if (xform.type == 4) {
+							var cx = round(selectedBBoxes[i].x + selectedBBoxes[i].width/2),
+								cy = round(selectedBBoxes[i].y + selectedBBoxes[i].height/2);
+							var newrot = svgroot.createSVGTransform();
+							newrot.setRotate(angle, cx, cy);
+							tlist.replaceItem(newrot, n);
+							break;
+						}
 					}
 				}
 			} // if oldValue != newValue
@@ -5543,8 +5552,15 @@ function BatchCommand(text) {
 
 					var newxform = svgroot.createSVGTransform();
 					var chtlist = canvas.getTransformList(elem);
-					newxform.setMatrix(matrixMultiply(m,transformListToTransform(chtlist).matrix.inverse()));
-					chtlist.insertItemBefore(newxform,0);
+
+					// [ gm ] [ chm ] = [ chm ] [ gm' ]
+					// [ gm' ] = [ chm_inv ] [ gm ] [ chm ]
+					var chm = transformListToTransform(chtlist).matrix,
+						chm_inv = chm.inverse();
+					var gm = matrixMultiply( chm_inv, matrixMultiply( m, chm ) );
+					newxform.setMatrix(gm);
+					chtlist.appendItem(newxform);
+					
 					batchCmd.addSubCommand(recalculateDimensions(elem));
 				}
 			}
