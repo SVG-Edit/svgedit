@@ -1437,15 +1437,50 @@ function BatchCommand(text) {
 				tx = m.e;
 				ty = m.f;
 				tlist.removeItem(0);
-			}
+			} // if we have a translate/scale/translate transform, push down to children
+			else if(tlist.numberOfItems >= 3 && tlist.getItem(1).type == 3) {
+				var trans_m = tlist.getItem(0).matrix;
+				var scale_m = tlist.getItem(1).matrix;
 			
-			// if we have any other transforms, collapse them all down to a matrix
-			var m = transformListToTransform(tlist).matrix;
-			if (tlist.numberOfItems > 0) {
-				var newxform = svgroot.createSVGTransform();
-				newxform.setMatrix(m);
-				tlist.clear();
-				tlist.appendItem(newxform);
+				var children = selected.childNodes;
+				var c = children.length;
+				while (c--) {
+					var child = children.item(c);
+					if (child.nodeType == 1) {
+					
+						var angle = canvas.getRotationAngle(child);
+						if(angle) {
+							// TODO: Deal with rotated childen...
+						}
+						
+						// update the transform list with translate,scale,translate
+						var childTlist = canvas.getTransformList(child);
+						var translateOrigin = svgroot.createSVGTransform(),
+							scale = svgroot.createSVGTransform(),
+							translateBack = svgroot.createSVGTransform();
+						translateOrigin.setTranslate(trans_m.e*-1, trans_m.f*-1);
+						scale.setScale(scale_m.a, scale_m.d);
+						translateBack.setTranslate(trans_m.e, trans_m.f);
+						childTlist.appendItem(translateBack);
+						childTlist.appendItem(scale);
+						childTlist.appendItem(translateOrigin);
+						batchCmd.addSubCommand( recalculateDimensions(child) );
+					}
+				}
+				// Remove these transforms from group
+				var N = tlist.numberOfItems;
+				tlist.removeItem(N-1);
+				tlist.removeItem(N-2);
+				tlist.removeItem(N-3);
+			} // if we have any other transforms, collapse them all down to a matrix
+			else if(tlist.numberOfItems > 0) {
+				var m = transformListToTransform(tlist).matrix;
+				if (tlist.numberOfItems > 0) {
+					var newxform = svgroot.createSVGTransform();
+					newxform.setMatrix(m);
+					tlist.clear();
+					tlist.appendItem(newxform);
+				}
 			}
 			
 			if (tx != 0 || ty != 0) {
@@ -1954,6 +1989,17 @@ function BatchCommand(text) {
 		}
 		return svgroot.createSVGTransformFromMatrix(m);
 	};
+
+//  // Easy way to loop through transform list, but may not be worthwhile	
+// 	var eachXform = function(elem, callback) {
+// 		var tlist = canvas.getTransformList(elem);
+// 		var num = tlist.numberOfItems;
+// 		if(num == 0) return;
+// 		while(num--) {
+// 			var xform = tlist.getItem(num);
+// 			callback(xform, tlist);
+// 		}
+// 	}
 	
     // FIXME: this should not have anything to do with zoom here - update the one place it is used this way
     // converts a tiny object equivalent of a SVGTransform
