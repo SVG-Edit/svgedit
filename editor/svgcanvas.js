@@ -11,6 +11,7 @@
 /*
 	TODOs for TransformList:
 	
+	* Fix rotating groups turning into matrix()
 	* Fix problem when moving elements that have [R][M]
 	* Fix problem when ungrouping rotated elements that were scaled in a group
 
@@ -1429,49 +1430,121 @@ function BatchCommand(text) {
 		// if it's a group, we have special processing to flatten transforms
 		if (selected.tagName == "g") {
 			var tx = 0, ty = 0;
+			var N = tlist.numberOfItems;
 			
-			// if we have a translate as the first transform, let's push it down to the children
-			var xform = tlist.getItem(0);
-			if (xform.type == 2 && (tlist.numberOfItems < 3 || tlist.getItem(1).type != 3)) {
-				var m = xform.matrix;
-				tx = m.e;
-				ty = m.f;
-				tlist.removeItem(0);
-			} // if we have a translate/scale/translate transform, push down to children
-			else if(tlist.numberOfItems >= 3 && tlist.getItem(1).type == 3) {
-				var trans_m = tlist.getItem(0).matrix;
-				var scale_m = tlist.getItem(1).matrix;
+			// first, if it was a scale then the second-last transform will be it
+			if (N >= 3 && tlist.getItem(N-2).type == 3 && 
+				tlist.getItem(N-3).type == 2 && tlist.getItem(N-1).type == 2) 
+			{
+				// if the children are unrotated, pass the scale down directly
+				// otherwise pass the equivalent matrix() down directly
+				var tm = tlist.getItem(N-3).matrix;
+				var sm = tlist.getItem(N-2).matrix;
+				var tmn = tlist.getItem(N-1).matrix;
+				var em = matrixMultiply(tm, matrixMultiply(sm, tmn));
 			
 				var children = selected.childNodes;
 				var c = children.length;
 				while (c--) {
 					var child = children.item(c);
 					if (child.nodeType == 1) {
+						var childTlist = canvas.getTransformList(child);
+						var m = transformListToTransform(childTlist).matrix;
 					
 						var angle = canvas.getRotationAngle(child);
 						if(angle) {
-							// TODO: Deal with rotated childen...
+						// TODO: this does not work yet
+						/*
+							// if the child is rotated, we get:
+							// [E][M]
+							// where [M] = [R][M_remainder]
+							
+							// [E][M] = [M][E2]
+							// [E2] = [M_inv][E][M]
+							var e2 = matrixMultiply(m.inverse(), matrixMultiply(em, m));
+							
+							// this does not appear to work, something wrong with my logic here
+							var e2t = svgroot.createSVGTransform();
+							e2t.setMatrix(e2);
+							childTlist.appendItem(e2t);
+							
+							// the rotation is no longer centered
+							// so we need to re-center it
+						   
+						  	// TODO: find the old center
+						  	// TODO: find the new center
+						  	// TODO: find the transformed translation
+							// Is this taken care of by recalculateDimensions?
+						*/
 						}
-						
-						// update the transform list with translate,scale,translate
-						var childTlist = canvas.getTransformList(child);
-						var translateOrigin = svgroot.createSVGTransform(),
-							scale = svgroot.createSVGTransform(),
-							translateBack = svgroot.createSVGTransform();
-						translateOrigin.setTranslate(trans_m.e*-1, trans_m.f*-1);
-						scale.setScale(scale_m.a, scale_m.d);
-						translateBack.setTranslate(trans_m.e, trans_m.f);
-						childTlist.appendItem(translateBack);
-						childTlist.appendItem(scale);
-						childTlist.appendItem(translateOrigin);
+						else {
+							// update the transform list with translate,scale,translate
+							
+							// slide the [T][S][-T] from the front to the back
+							// [T][S][-T][M] = [M][T2][S2][-T2]
+							
+							// [T][S][-T][M] = [T][S][M][-T2]
+							// [-T2] = [M_inv][-T][M]
+							var t2n = matrixMultiply(m.inverse(), matrixMultiply(tmn,m));
+							// [T2] is always negative translation of [-T2]
+							var t2 = svgroot.createSVGMatrix();
+							t2.e = -t2n.e;
+							t2.f = -t2n.f;
+							
+							// [T][S][-T][M] = [M][T2][S2][-T2]
+							// [S2] = [T2_inv][M_inv][T][S][-T][M][-T2_inv]
+							var s2 = matrixMultiply(
+										t2.inverse(), matrixMultiply(
+										m.inverse(), matrixMultiply(
+										tm, matrixMultiply(
+										sm, matrixMultiply(
+										tmn, matrixMultiply(
+										m, t2n.inverse()) ) ) ) ) );
+
+							var translateOrigin = svgroot.createSVGTransform(),
+								scale = svgroot.createSVGTransform(),
+								translateBack = svgroot.createSVGTransform();
+							translateOrigin.setTranslate(t2n.e, t2n.f);
+							scale.setScale(s2.a, s2.d);
+							translateBack.setTranslate(t2.e, t2.f);
+							childTlist.appendItem(translateBack);
+							childTlist.appendItem(scale);
+							childTlist.appendItem(translateOrigin);
+						}
 						batchCmd.addSubCommand( recalculateDimensions(child) );
 					}
 				}
 				// Remove these transforms from group
-				var N = tlist.numberOfItems;
 				tlist.removeItem(N-1);
 				tlist.removeItem(N-2);
 				tlist.removeItem(N-3);
+			}
+			
+			N = tlist.numberOfItems;
+			
+			// next, check if the first transform was a translate 
+			// if we had [ T1 ] [ M ] we want to transform this into [ M ] [ T2 ]
+			// therefore [ T2 ] = [ M_inv ] [ T1 ] [ M ]
+			if ( (N == 1 || (N > 1 && tlist.getItem(1).type != 3)) && 
+				tlist.getItem(0).type == 2) 
+			{
+				var T_M = transformListToTransform(tlist).matrix;
+				logMatrix(T_M);
+				tlist.removeItem(0);
+				var M_inv = transformListToTransform(tlist).matrix.inverse();
+				logMatrix(M_inv);
+				var M2 = matrixMultiply( M_inv, T_M );
+				logMatrix(M2);
+				
+				tx = M2.e;
+				ty = M2.f;
+			}
+			// rotate?
+			else {
+				console.log('rotate?');
+			}
+			
+			/*
 			} // if we have any other transforms, collapse them all down to a matrix
 			else if(tlist.numberOfItems > 0) {
 				var m = transformListToTransform(tlist).matrix;
@@ -1482,16 +1555,9 @@ function BatchCommand(text) {
 					tlist.appendItem(newxform);
 				}
 			}
+			*/
 			
 			if (tx != 0 || ty != 0) {
-				var a = m.a, b = m.b, c = m.c, d = m.d;
-				// is it possible for (bc - ad) to equal zero?
-				var denom = b*c - a*d;
-				var ntx = (c*ty - d*tx) / denom,
-					nty = (b*tx - a*ty) / denom;
-				tx = ntx;
-				ty = nty;
-				
 				// now push this transform down to the children
 				// FIXME: unfortunately recalculateDimensions depends on this global variable
 				var old_start_transform = start_transform;
@@ -2119,9 +2185,12 @@ function BatchCommand(text) {
 					}
 					// else if it's a path, go into pathedit mode in mouseup
 
-					// insert a dummy transform so if the element is moved it will have
+					// insert a dummy transform so if the element(s) are moved it will have
 					// a transform to use for its translate
-					tlist.insertItemBefore(svgroot.createSVGTransform(), 0);
+					for (var i = 0; i < selectedElements.length; ++i) {
+						var slist = canvas.getTransformList(selectedElements[i]);
+						slist.insertItemBefore(svgroot.createSVGTransform(), 0);
+					}
 				}
 				else {
 					canvas.clearSelection();
