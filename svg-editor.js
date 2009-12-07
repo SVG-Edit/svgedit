@@ -197,15 +197,20 @@ function svg_edit_setup() {
 
 	// called when any element has changed
 	var elementChanged = function(window,elems) {
-		// selectedElement must be updated here in case it was changed
-		selectedElement = (elems.length == 1 || elems[1] == null ? elems[0] : null);
+		
 		for (var i = 0; i < elems.length; ++i) {
 			var elem = elems[i];
+			
 			// if the element changed was the svg, then it could be a resolution change
 			if (elem && elem.tagName == "svg" && elem.getAttribute("viewBox")) {
 				var vb = elem.getAttribute("viewBox").split(' ');
 				changeResolution(parseInt(vb[2]),
 								 parseInt(vb[3]));
+			} 
+			// Update selectedElement if element is no longer part of the image.
+			// This occurs for the text elements in Firefox
+			else if(elem && selectedElement && selectedElement.parentNode == null) {
+				selectedElement = elem;
 			}
 		}
 		
@@ -340,8 +345,9 @@ function svg_edit_setup() {
 	var updateContextPanel = function() {
 		var elem = selectedElement;
 		var currentLayer = svgCanvas.getCurrentLayer();
+		var currentMode = svgCanvas.getMode();
 		// No need to update anything else in rotate mode
-		if (svgCanvas.getMode() == 'rotate' && elem != null) {
+		if (currentMode == 'rotate' && elem != null) {
 			$('#angle').val(svgCanvas.getRotationAngle(elem));
 			return;
 		} else if(svgCanvas.addedNew && elem != null && elname == 'image') {
@@ -356,7 +362,7 @@ function svg_edit_setup() {
 			var angle = svgCanvas.getRotationAngle(elem);
 			$('#angle').val(angle);
 			
-			if(!is_node) {
+			if(!is_node && currentMode != 'pathedit') {
 				$('#selected_panel').show();
 				// Elements in this array already have coord fields
 				if($.inArray(elname, ['line', 'circle', 'ellipse']) != -1) {
