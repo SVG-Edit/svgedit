@@ -1476,6 +1476,7 @@ function BatchCommand(text) {
 						  	// TODO: find the transformed translation
 							// Is this taken care of by recalculateDimensions?
 						*/
+							
 						}
 						else {
 							// update the transform list with translate,scale,translate
@@ -2188,6 +2189,7 @@ function BatchCommand(text) {
 					// insert a dummy transform so if the element(s) are moved it will have
 					// a transform to use for its translate
 					for (var i = 0; i < selectedElements.length; ++i) {
+						if(selectedElements[i] == null) continue;
 						var slist = canvas.getTransformList(selectedElements[i]);
 						slist.insertItemBefore(svgroot.createSVGTransform(), 0);
 					}
@@ -2796,7 +2798,7 @@ function BatchCommand(text) {
 		};
 		batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
 		canvas.clearSelection();
-		resetPathOrientation(elem, angle);
+		resetPathOrientation(elem);
 		addCommandToHistory(batchCmd);
 		current_path = elem;
 		setPointContainerTransform("");	// Maybe this should be in resetPointGrips?
@@ -2808,20 +2810,12 @@ function BatchCommand(text) {
 	}
 	
 	// Rotate all points of a path and remove its transform value
-	var resetPathOrientation = function(path, angle) {
+	var resetPathOrientation = function(path) {
 		if(path == null || path.nodeName != 'path') return false;
-		var angle = angle * Math.PI / 180.0;
-		if(!angle) return false;
+
+		var tlist = canvas.getTransformList(path);
+		var m = transformListToTransform(tlist).matrix;
 		path.removeAttribute("transform");
-		var bb = path.getBBox();
-		var cx = bb.x + bb.width/2,
-			cy = bb.y + bb.height/2;
-		var rotate = function(x,y) {
-			x -= cx; y -= cy;
-			var r = Math.sqrt(x*x + y*y);
-			var theta = Math.atan2(y,x) + angle;
-			return [r * Math.cos(theta) + cx, r * Math.sin(theta) + cy];
-		}
 		
 		var segList = path.pathSegList;
 		var len = segList.numberOfItems;
@@ -2834,7 +2828,8 @@ function BatchCommand(text) {
 			$.each(['',1,2], function(j, n) {
 				var x = seg['x'+n], y = seg['y'+n];
 				if(x && y) {
-					$.merge(pts, rotate(x,y));
+					var pt = transformPoint(x, y, m);
+					pts.splice(pts.length, 0, pt.x, pt.y);
 				}
 			});
 			replacePathSeg(type, i, pts, path);
@@ -2990,7 +2985,7 @@ function BatchCommand(text) {
 			
 		} else {
 			// Get the correct BBox of the new path, then discard it
-			resetPathOrientation(path, angle);
+			resetPathOrientation(path);
 			var bb = false;
 			try {
 				bb = path.getBBox();
