@@ -122,6 +122,7 @@
 {"id":"svginfo_lang","textContent":"Language"},
 {"id":"svginfo_change_background","textContent":"Editor Background"},
 {"id":"svginfo_bg_note","textContent":"Note: Background will not be saved with image."},
+{"id":"svginfo_icons","textContent":"Icon size"},
 {"id":"icon_small","textContent":"Small"},
 {"id":"icon_medium","textContent":"Medium"},
 {"id":"icon_large","textContent":"Large"},
@@ -146,7 +147,9 @@
 	"featNotSupported":"Feature not supported",
 	"enterNewImgURL":"Enter the new image URL",
 	"ok":"OK",
-	"cancel":"Cancel"
+	"cancel":"Cancel",
+	"pathNodeTooltip":"Drag node to move it. Double-click node to change segment type",
+	"pathCtrlPtTooltip":"Drag control point to adjust curve properties"
 	}
 }
 ];
