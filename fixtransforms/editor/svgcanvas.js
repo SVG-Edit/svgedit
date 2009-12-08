@@ -88,10 +88,10 @@ function SvgCanvas(c)
 {
 
 var toXml = function(str) {
-	return str.replace("&", "&amp;").replace("<", "&lt;").replace(">","&gt;");
+	return $('<p/>').text(str).html();
 };
 var fromXml = function(str) {
-	return str.replace("&gt;", ">").replace("&lt;", "<").replace("&amp;", "&");
+	return $('<p/>').html(str).text();
 };
 
 var pathFuncsStrs = ['Moveto','Lineto','CurvetoCubic','CurvetoQuadratic','Arc','LinetoHorizontal','LinetoVertical','CurvetoCubicSmooth','CurvetoQuadraticSmooth']
@@ -1441,7 +1441,7 @@ function BatchCommand(text) {
 				var tm = tlist.getItem(N-3).matrix;
 				var sm = tlist.getItem(N-2).matrix;
 				var tmn = tlist.getItem(N-1).matrix;
-				var em = matrixMultiply(tm, matrixMultiply(sm, tmn));
+				var em = matrixMultiply(tm, sm, tmn);
 			
 				var children = selected.childNodes;
 				var c = children.length;
@@ -1461,7 +1461,7 @@ function BatchCommand(text) {
 							
 							// [E][M] = [M][E2]
 							// [E2] = [M_inv][E][M]
-							var e2 = matrixMultiply(m.inverse(), matrixMultiply(em, m));
+							var e2 = matrixMultiply(m.inverse(), em, m);
 							
 							// this does not appear to work, something wrong with my logic here
 							var e2t = svgroot.createSVGTransform();
@@ -1486,7 +1486,7 @@ function BatchCommand(text) {
 							
 							// [T][S][-T][M] = [T][S][M][-T2]
 							// [-T2] = [M_inv][-T][M]
-							var t2n = matrixMultiply(m.inverse(), matrixMultiply(tmn,m));
+							var t2n = matrixMultiply(m.inverse(), tmn, m);
 							// [T2] is always negative translation of [-T2]
 							var t2 = svgroot.createSVGMatrix();
 							t2.e = -t2n.e;
@@ -1494,13 +1494,7 @@ function BatchCommand(text) {
 							
 							// [T][S][-T][M] = [M][T2][S2][-T2]
 							// [S2] = [T2_inv][M_inv][T][S][-T][M][-T2_inv]
-							var s2 = matrixMultiply(
-										t2.inverse(), matrixMultiply(
-										m.inverse(), matrixMultiply(
-										tm, matrixMultiply(
-										sm, matrixMultiply(
-										tmn, matrixMultiply(
-										m, t2n.inverse()) ) ) ) ) );
+							var s2 = matrixMultiply(t2.inverse(), m.inverse(), tm, sm, tmn, m, t2n.inverse());
 
 							var translateOrigin = svgroot.createSVGTransform(),
 								scale = svgroot.createSVGTransform(),
@@ -1597,7 +1591,7 @@ function BatchCommand(text) {
 				var tail = transformListToTransform(tlist, n+1, tlist.numberOfItems-1).matrix,
 					tail_inv = tail.inverse();
 				// multiply (B_inv * A * B)
-				m = matrixMultiply(tail_inv, matrixMultiply(xform.matrix,tail));
+				m = matrixMultiply(tail_inv, xform.matrix, tail);
 				
 				var remap = null, scalew = null, scaleh = null;
 				switch (xform.type) {
@@ -1913,6 +1907,8 @@ function BatchCommand(text) {
 		selectedElements.sort(function(a,b) {
 			if(a && b && a.compareDocumentPosition) {
 				return 3 - (b.compareDocumentPosition(a) & 6);	
+			} else if(a == null) {
+				return 1;
 			}
 		});
 		
@@ -1998,40 +1994,51 @@ function BatchCommand(text) {
 	// of the resulting matrix, we have to do it with translate/rotate/scale
 	// TODO: Actually all browsers seem to allow setting of a-f in a SVGMatrix without 
 	//       throwing an exception - perhaps an update was issued in SVG 1.1 2e?
-	var matrixMultiply = function(m1, m2) {
-		var a = m1.a*m2.a + m1.c*m2.b,
-			b = m1.b*m2.a + m1.d*m2.b,
-			c = m1.a*m2.c + m1.c*m2.d,
-			d = m1.b*m2.c + m1.d*m2.d,
-			e = m1.a*m2.e + m1.c*m2.f + m1.e,
-			f = m1.b*m2.e + m1.d*m2.f + m1.f;
-
-		// now construct a matrix by analyzing a,b,c,d,e,f and trying to
-		// translate, rotate, and scale the thing into place
-		var m = svgroot.createSVGMatrix();
-		var sx = 1, sy = 1, angle = 0;
-
-		// translate
-		m = m.translate(e,f);
-
-		// see if there was a rotation
-		var rad = Math.atan2(b,a);
-		if (rad != 0 && rad != Math.PI && rad != -Math.PI) {
-			m = m.rotate(180.0 * rad / Math.PI);
-			sx = b / Math.sin(rad);
-			sy = -c / Math.sin(rad);
-		}
-		else {
-			sx = a / Math.cos(rad);
-			sy = d / Math.cos(rad);
+	var matrixMultiply = function() {
+		var multi2 = function(m1, m2) {
+			var a = m1.a*m2.a + m1.c*m2.b,
+				b = m1.b*m2.a + m1.d*m2.b,
+				c = m1.a*m2.c + m1.c*m2.d,
+				d = m1.b*m2.c + m1.d*m2.d,
+				e = m1.a*m2.e + m1.c*m2.f + m1.e,
+				f = m1.b*m2.e + m1.d*m2.f + m1.f;
+	
+			// now construct a matrix by analyzing a,b,c,d,e,f and trying to
+			// translate, rotate, and scale the thing into place
+			var m = svgroot.createSVGMatrix();
+			var sx = 1, sy = 1, angle = 0;
+	
+			// translate
+			m = m.translate(e,f);
+	
+			// see if there was a rotation
+			var rad = Math.atan2(b,a);
+			if (rad != 0 && rad != Math.PI && rad != -Math.PI) {
+				m = m.rotate(180.0 * rad / Math.PI);
+				sx = b / Math.sin(rad);
+				sy = -c / Math.sin(rad);
+			}
+			else {
+				sx = a / Math.cos(rad);
+				sy = d / Math.cos(rad);
+			}
+			
+			// scale
+			if (sx != 1 || sy != 1) {
+				m = m.scaleNonUniform(sx,sy);
+			}
+			
+			// TODO: handle skews?
+			
+			return m;
 		}
 		
-		// scale
-		if (sx != 1 || sy != 1) {
-			m = m.scaleNonUniform(sx,sy);
+		var args = arguments, i = args.length, m = args[i-1];
+		
+		while(i-- > 1) {
+			var m1 = args[i-1];
+			m = multi2(m1, m);
 		}
-
-		// TODO: handle skews?
 		return m;
 	}
 	
@@ -5472,7 +5479,7 @@ function BatchCommand(text) {
 			if (oldval == null)  oldval = "";
 			if (oldval !== newValue) {
 				if (attr == "#text") {
-					var old_w = elem.getBBox().width;
+					var old_w = canvas.getBBox(elem).width;
 					elem.textContent = newValue;
 					elem = canvas.quickClone(elem);
 					
@@ -5667,7 +5674,7 @@ function BatchCommand(text) {
 					// [ gm' ] = [ chm_inv ] [ gm ] [ chm ]
 					var chm = transformListToTransform(chtlist).matrix,
 						chm_inv = chm.inverse();
-					var gm = matrixMultiply( chm_inv, matrixMultiply( m, chm ) );
+					var gm = matrixMultiply( chm_inv, m, chm );
 					newxform.setMatrix(gm);
 					chtlist.appendItem(newxform);
 					
@@ -5779,45 +5786,46 @@ function BatchCommand(text) {
 		
 		// Make sure the expected BBox is returned if the element is a group
 		var getCheckedBBox = function(elem) {
-			if(elem.tagName == 'g') {
-				return canvas.getStrokedBBox($(elem).children());
-			} else {
-				try {
-					var bb = elem.getBBox();
-					var angle = canvas.getRotationAngle(elem);
-					if (angle && angle % 90) {
-						// Accurate way to get BBox of rotated element in Firefox:
-						// Put element in group and get its BBox
-						
-						var good_bb = false;
-						
-						// Get the BBox from the raw path for these elements
-						var elemNames = ['ellipse','path','line','polyline','polygon'];
-						if($.inArray(elem.tagName, elemNames) != -1) {
+			try {
+				// TODO: Fix issue with rotated groups. Currently they work
+				// fine in FF, but not in other browsers (same problem mentioned
+				// in Issue 339 comment #2).
+				
+				var bb = elem.getBBox();
+				var angle = canvas.getRotationAngle(elem);
+				if (angle && angle % 90) {
+					// Accurate way to get BBox of rotated element in Firefox:
+					// Put element in group and get its BBox
+					
+					var good_bb = false;
+					
+					// Get the BBox from the raw path for these elements
+					var elemNames = ['ellipse','path','line','polyline','polygon'];
+					if($.inArray(elem.tagName, elemNames) != -1) {
+						bb = good_bb = canvas.convertToPath(elem, true, angle);
+					} else if(elem.tagName == 'rect') {
+						// Look for radius
+						var rx = elem.getAttribute('rx');
+						var ry = elem.getAttribute('ry');
+						if(rx || ry) {
 							bb = good_bb = canvas.convertToPath(elem, true, angle);
-						} else if(elem.tagName == 'rect') {
-							// Look for radius
-							var rx = elem.getAttribute('rx');
-							var ry = elem.getAttribute('ry');
-							if(rx || ry) {
-								bb = good_bb = canvas.convertToPath(elem, true, angle);
-							}
 						}
-						
-						if(!good_bb) {
-							var g = document.createElementNS(svgns, "g");
-							var parent = elem.parentNode;
-							parent.replaceChild(g, elem);
-							g.appendChild(elem);
-							bb = g.getBBox();
-							parent.insertBefore(elem,g);
-							parent.removeChild(g);
-						}
-						
+					}
+					
+					if(!good_bb) {
+						var g = document.createElementNS(svgns, "g");
+						var parent = elem.parentNode;
+						parent.replaceChild(g, elem);
+						g.appendChild(elem);
+						bb = g.getBBox();
+						parent.insertBefore(elem,g);
+						parent.removeChild(g);
+					}
+					
 
-						// Old method: Works by giving the rotated BBox,
-						// this is (unfortunately) what Opera and Safari do
-						// natively when getting the BBox of the parent group
+					// Old method: Works by giving the rotated BBox,
+					// this is (unfortunately) what Opera and Safari do
+					// natively when getting the BBox of the parent group
 // 						var angle = angle * Math.PI / 180.0;
 // 						var rminx = Number.MAX_VALUE, rminy = Number.MAX_VALUE, 
 // 							rmaxx = Number.MIN_VALUE, rmaxy = Number.MIN_VALUE;
@@ -5847,11 +5855,11 @@ function BatchCommand(text) {
 // 						bb.y = rminy;
 // 						bb.width = rmaxx - rminx;
 // 						bb.height = rmaxy - rminy;
-					}
-				
-					return bb;
-				} catch(e) { return null; } 
-			}
+				}
+			
+				return bb;
+			} catch(e) { return null; } 
+
 		}
 		var full_bb;
 		$.each(elems, function() {
