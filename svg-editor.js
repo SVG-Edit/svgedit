@@ -2117,7 +2117,8 @@ function svg_edit_setup() {
 		$('#lang_select').val(lang);
 		if(strings) {
 			// $.extend will only replace the given strings
-			$.extend(uiStrings,strings); 
+			$.extend(uiStrings,strings);
+			svgCanvas.setUiStrings(strings);
 		}
 	};
 	

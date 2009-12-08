@@ -77,6 +77,11 @@ var svgWhiteList = {
 function SvgCanvas(c)
 {
 
+var uiStrings = {
+	"pathNodeTooltip":"Drag node to move it. Double-click node to change segment type",
+	"pathCtrlPtTooltip":"Drag control point to adjust curve properties"
+};
+
 var toXml = function(str) {
 	return str.replace("&", "&amp;").replace("<", "&lt;").replace(">","&gt;");
 };
@@ -3208,7 +3213,7 @@ function BatchCommand(text) {
 				'stroke-width': 2,
 				'cursor': 'move',
 				'style': 'pointer-events:all',
-				'xlink:title': 'Drag point to move it. Double-click point to change segment type.'
+				'xlink:title': uiStrings.pathNodeTooltip
 			});
 			pointGrip = pointGripContainer.appendChild(pointGrip);
 
@@ -3537,7 +3542,7 @@ function BatchCommand(text) {
 				'stroke-width': 1,
 				'cursor': 'move',
 				'style': 'pointer-events:all',
-				'xlink:title': 'Drag control point to adjust curve properties'
+				'xlink:title': uiStrings.pathCtrlPtTooltip
 			});
 			pointGrip = ctrlPointGripContainer.appendChild(pointGrip);
 		}
@@ -6087,6 +6092,11 @@ function BatchCommand(text) {
 	this.getVersion = function() {
 		return "svgcanvas.js ($Rev$)";
 	};
+	
+	this.setUiStrings = function(strs){
+		$.extend(uiStrings, strs);
+		console.log(uiStrings)
+	}
 	
 	this.clear();
 };
