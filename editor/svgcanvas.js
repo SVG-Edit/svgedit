@@ -2236,6 +2236,7 @@ function BatchCommand(text) {
 					}
 				});
         		newImage.setAttributeNS(xlinkns, "href", last_good_img_url);
+        		preventClickDefault(newImage);
 				break;
 			case "square":
 				// FIXME: once we create the rect, we lose information that this was a square
@@ -3644,8 +3645,10 @@ function BatchCommand(text) {
 							}
 						} // if it was a path
 						// else, if it was selected and this is a shift-click, remove it from selection
-						else if (evt.shiftKey && tempJustSelected != t) {
-							canvas.removeFromSelection([t]);
+						else if (evt.shiftKey) {
+							if(tempJustSelected != t) {
+								canvas.removeFromSelection([t]);
+							}
 						}
 					} // no change in mouse position
 				}
@@ -4119,6 +4122,7 @@ function BatchCommand(text) {
         	// change image href vals if possible
         	$(svgcontent).find('image').each(function() {
         		var image = this;
+        		preventClickDefault(image);
         		var val = this.getAttributeNS(xlinkns, "href");
 				if(val.indexOf('data:') === 0) {
 					// Check if an SVG-edit data URI
@@ -5968,8 +5972,15 @@ function BatchCommand(text) {
 					break;
 			}
 		});
+		if(new_el.tagName == 'image') {
+			preventClickDefault(new_el);
+		}
 		return new_el;
 	};
+	
+	var preventClickDefault = function(img) {
+     	$(img).click(function(e){e.preventDefault()});
+	}
 	
 	// this creates deep DOM copies (clones) of all selected elements
 	this.cloneSelectedElements = function() {
