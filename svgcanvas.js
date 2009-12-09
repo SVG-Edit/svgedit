@@ -5423,7 +5423,7 @@ function BatchCommand(text) {
 			if (oldval == null)  oldval = "";
 			if (oldval !== newValue) {
 				if (attr == "#text") {
-					var old_w = elem.getBBox().width;
+					var old_w = canvas.getBBox(elem).width;
 					elem.textContent = newValue;
 					elem = canvas.quickClone(elem);
 					
@@ -6095,7 +6095,6 @@ function BatchCommand(text) {
 	
 	this.setUiStrings = function(strs){
 		$.extend(uiStrings, strs);
-		console.log(uiStrings)
 	}
 	
 	this.clear();
