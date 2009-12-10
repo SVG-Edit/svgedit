@@ -1328,7 +1328,7 @@ function BatchCommand(text) {
 	// this function returns the command which resulted from the selected change
 	// TODO: use suspendRedraw() and unsuspendRedraw() around this function
 	var recalculateDimensions = function(selected) {
-		if (true || selected == null) return null;
+		if (selected == null) return null;
 		
 		var tlist = canvas.getTransformList(selected);
 
@@ -1435,7 +1435,6 @@ function BatchCommand(text) {
 		
 		// if it's a group, we have special processing to flatten transforms
 		if (selected.tagName == "g") {
-			console.log("recalculateDimensions(" + selected.tagName + ")");
 			var tx = 0, ty = 0;
 			var N = tlist.numberOfItems;
 			
@@ -1452,7 +1451,6 @@ function BatchCommand(text) {
 				var children = selected.childNodes;
 				var c = children.length;
 				while (c--) {
-					console.log("child #" + c);
 					var child = children.item(c);
 					tx = 0;
 					ty = 0;
@@ -1468,7 +1466,6 @@ function BatchCommand(text) {
 							var e2t = svgroot.createSVGTransform();
 							e2t.setMatrix(em);
 							childTlist.insertItemBefore(e2t,0);
-//							alert(child.getAttribute("transform"));
 						}
 						else {
 							// update the transform list with translate,scale,translate
@@ -1506,21 +1503,16 @@ function BatchCommand(text) {
 				tlist.removeItem(N-2);
 				tlist.removeItem(N-3);
 			}
-			
-			N = tlist.numberOfItems;
-			
 			// next, check if the first transform was a translate 
 			// if we had [ T1 ] [ M ] we want to transform this into [ M ] [ T2 ]
 			// therefore [ T2 ] = [ M_inv ] [ T1 ] [ M ]
-			if ( (N == 1 || (N > 1 && tlist.getItem(1).type != 3)) && 
+			else if ( (N == 1 || (N > 1 && tlist.getItem(1).type != 3)) && 
 				tlist.getItem(0).type == 2) 
 			{
 				var T_M = transformListToTransform(tlist).matrix;
 				tlist.removeItem(0);
 				var M_inv = transformListToTransform(tlist).matrix.inverse();
-				logMatrix(M_inv);
 				var M2 = matrixMultiply( M_inv, T_M );
-				logMatrix(M2);
 				
 				tx = M2.e;
 				ty = M2.f;
@@ -1546,23 +1538,9 @@ function BatchCommand(text) {
 					start_transform = old_start_transform;
 				}
 			}
-			
-			/*
-			} // if we have any other transforms, collapse them all down to a matrix
-			else if(tlist.numberOfItems > 0) {
-				var m = transformListToTransform(tlist).matrix;
-				if (tlist.numberOfItems > 0) {
-					var newxform = svgroot.createSVGTransform();
-					newxform.setMatrix(m);
-					tlist.clear();
-					tlist.appendItem(newxform);
-				}
-			}
-			*/
 		}
 		// else, it's a non-group
 		else {
-			console.log("recalculateDimensions(" + selected.tagName + ")");
 			var box = canvas.getBBox(selected);
 			var origcenter = {x: (box.x+box.width/2), y: (box.y+box.height/2)};
 			var newcenter = {x: origcenter.x, y: origcenter.y};
@@ -1586,7 +1564,6 @@ function BatchCommand(text) {
 				m = matrixMultiply(tail_inv, xform.matrix, tail);
 				
 				var remap = null, scalew = null, scaleh = null;
-				console.log("xform.type=" + xform.type);
 				switch (xform.type) {
 					case 1: // MATRIX - continue
 //						newcenter = transformPoint(newcenter.x,newcenter.y,xform.matrix);
@@ -1605,7 +1582,7 @@ function BatchCommand(text) {
 						// if the new center of the shape has moved, then 
 						// re-center the rotation, and determine the movement 
 						// offset required to keep the shape in the same place
-//						if (n != 0) continue;
+						if (n != 0) continue;
 						rotAngle = xform.angle;
 						if (origcenter.x != newcenter.x || origcenter.y != newcenter.y) {
 							var alpha = xform.angle * Math.PI / 180.0;
