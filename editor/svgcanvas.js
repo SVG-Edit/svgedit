@@ -11,8 +11,14 @@
 /*
 	TODOs for TransformList:
 	
-	* Fix rotating groups turning into matrix()
-	* Fix problem when moving elements that have [R][M]
+	* Maybe:
+		* we need do nothing about a rotate() - i.e. just look for [T] at beginning or [T][S][-T]
+		  at the end and update
+		* if no matrix() exists, we can freely recalculateDimensions as we used to do
+		* if a matrix() exists, we should no longer update the shape's dimensions - instead
+		  we should just update the matrix() transform to reflect any moving, stretch
+	* Fix problem when moving elements that are rotated in a group (all rotates must have their 
+	  center updated?) and what about matrix transforms - do they need update as well?
 	* Fix problem when ungrouping rotated elements that were scaled in a group
 
 	* When ungrouping, always end up with a single [M]
@@ -1322,7 +1328,7 @@ function BatchCommand(text) {
 	// this function returns the command which resulted from the selected change
 	// TODO: use suspendRedraw() and unsuspendRedraw() around this function
 	var recalculateDimensions = function(selected) {
-		if (selected == null) return null;
+		if (true || selected == null) return null;
 		
 		var tlist = canvas.getTransformList(selected);
 
@@ -1429,6 +1435,7 @@ function BatchCommand(text) {
 		
 		// if it's a group, we have special processing to flatten transforms
 		if (selected.tagName == "g") {
+			console.log("recalculateDimensions(" + selected.tagName + ")");
 			var tx = 0, ty = 0;
 			var N = tlist.numberOfItems;
 			
@@ -1441,42 +1448,27 @@ function BatchCommand(text) {
 				var tm = tlist.getItem(N-3).matrix;
 				var sm = tlist.getItem(N-2).matrix;
 				var tmn = tlist.getItem(N-1).matrix;
-				var em = matrixMultiply(tm, sm, tmn);
 			
 				var children = selected.childNodes;
 				var c = children.length;
 				while (c--) {
+					console.log("child #" + c);
 					var child = children.item(c);
+					tx = 0;
+					ty = 0;
 					if (child.nodeType == 1) {
 						var childTlist = canvas.getTransformList(child);
 						var m = transformListToTransform(childTlist).matrix;
 					
 						var angle = canvas.getRotationAngle(child);
 						if(angle) {
-						// TODO: this does not work yet
-						/*
-							// if the child is rotated, we get:
-							// [E][M]
-							// where [M] = [R][M_remainder]
-							
-							// [E][M] = [M][E2]
-							// [E2] = [M_inv][E][M]
-							var e2 = matrixMultiply(m.inverse(), em, m);
-							
+							var em = matrixMultiply(tm, sm, tmn);
+
 							// this does not appear to work, something wrong with my logic here
 							var e2t = svgroot.createSVGTransform();
-							e2t.setMatrix(e2);
-							childTlist.appendItem(e2t);
-							
-							// the rotation is no longer centered
-							// so we need to re-center it
-						   
-						  	// TODO: find the old center
-						  	// TODO: find the new center
-						  	// TODO: find the transformed translation
-							// Is this taken care of by recalculateDimensions?
-						*/
-							
+							e2t.setMatrix(em);
+							childTlist.insertItemBefore(e2t,0);
+//							alert(child.getAttribute("transform"));
 						}
 						else {
 							// update the transform list with translate,scale,translate
@@ -1505,10 +1497,10 @@ function BatchCommand(text) {
 							childTlist.appendItem(translateBack);
 							childTlist.appendItem(scale);
 							childTlist.appendItem(translateOrigin);
-						}
-						batchCmd.addSubCommand( recalculateDimensions(child) );
-					}
-				}
+							batchCmd.addSubCommand( recalculateDimensions(child) );
+						} // not rotated
+					} // element
+				} // for each child
 				// Remove these transforms from group
 				tlist.removeItem(N-1);
 				tlist.removeItem(N-2);
@@ -1524,7 +1516,6 @@ function BatchCommand(text) {
 				tlist.getItem(0).type == 2) 
 			{
 				var T_M = transformListToTransform(tlist).matrix;
-				logMatrix(T_M);
 				tlist.removeItem(0);
 				var M_inv = transformListToTransform(tlist).matrix.inverse();
 				logMatrix(M_inv);
@@ -1533,10 +1524,27 @@ function BatchCommand(text) {
 				
 				tx = M2.e;
 				ty = M2.f;
-			}
-			// rotate?
-			else {
-				console.log('rotate?');
+
+				if (tx != 0 || ty != 0) {
+					// now push this transform down to the children
+					// FIXME: unfortunately recalculateDimensions depends on this global variable
+					var old_start_transform = start_transform;
+					start_transform = null;
+					// we pass the translates down to the individual children
+					var children = selected.childNodes;
+					var c = children.length;
+					while (c--) {
+						var child = children.item(c);
+						if (child.nodeType == 1) {
+							var childTlist = canvas.getTransformList(child);
+							var newxlate = svgroot.createSVGTransform();
+							newxlate.setTranslate(tx,ty);
+							childTlist.insertItemBefore(newxlate, 0);
+							batchCmd.addSubCommand( recalculateDimensions(child) );
+						}
+					}
+					start_transform = old_start_transform;
+				}
 			}
 			
 			/*
@@ -1551,35 +1559,19 @@ function BatchCommand(text) {
 				}
 			}
 			*/
-			
-			if (tx != 0 || ty != 0) {
-				// now push this transform down to the children
-				// FIXME: unfortunately recalculateDimensions depends on this global variable
-				var old_start_transform = start_transform;
-				start_transform = null;
-				// we pass the translates down to the individual children
-				var children = selected.childNodes;
-				var c = children.length;
-				while (c--) {
-					var child = children.item(c);
-					if (child.nodeType == 1) {
-						var childTlist = canvas.getTransformList(child);
-						var newxlate = svgroot.createSVGTransform();
-						newxlate.setTranslate(tx,ty);
-						childTlist.insertItemBefore(newxlate, 0);
-						batchCmd.addSubCommand( recalculateDimensions(child) );
-					}
-				}
-				start_transform = old_start_transform;
-			}
 		}
 		// else, it's a non-group
 		else {
+			console.log("recalculateDimensions(" + selected.tagName + ")");
 			var box = canvas.getBBox(selected);
 			var origcenter = {x: (box.x+box.width/2), y: (box.y+box.height/2)};
 			var newcenter = {x: origcenter.x, y: origcenter.y};
 			var rotAngle = 0;
 		
+			// TODO: re-do this:  instead of looping through transforms just check
+			// like we do above for: scales, translates, rotations (in that order)
+			// and ignore all other transforms in the tlist.
+			
 			// This pass loop in reverse order and removes any translates or scales.
 			// Once we hit our first rotate(), we will only remove translates.
 			n = tlist.numberOfItems;
@@ -1594,9 +1586,11 @@ function BatchCommand(text) {
 				m = matrixMultiply(tail_inv, xform.matrix, tail);
 				
 				var remap = null, scalew = null, scaleh = null;
+				console.log("xform.type=" + xform.type);
 				switch (xform.type) {
 					case 1: // MATRIX - continue
-						continue;
+//						newcenter = transformPoint(newcenter.x,newcenter.y,xform.matrix);
+						break;
 					case 2: // TRANSLATE - always remove
 						remap = function(x,y) { return transformPoint(x,y,m); };
 						scalew = function(w) { return w; }
@@ -1611,6 +1605,7 @@ function BatchCommand(text) {
 						// if the new center of the shape has moved, then 
 						// re-center the rotation, and determine the movement 
 						// offset required to keep the shape in the same place
+//						if (n != 0) continue;
 						rotAngle = xform.angle;
 						if (origcenter.x != newcenter.x || origcenter.y != newcenter.y) {
 							var alpha = xform.angle * Math.PI / 180.0;
@@ -1996,40 +1991,13 @@ function BatchCommand(text) {
 	//       throwing an exception - perhaps an update was issued in SVG 1.1 2e?
 	var matrixMultiply = function() {
 		var multi2 = function(m1, m2) {
-			var a = m1.a*m2.a + m1.c*m2.b,
-				b = m1.b*m2.a + m1.d*m2.b,
-				c = m1.a*m2.c + m1.c*m2.d,
-				d = m1.b*m2.c + m1.d*m2.d,
-				e = m1.a*m2.e + m1.c*m2.f + m1.e,
-				f = m1.b*m2.e + m1.d*m2.f + m1.f;
-	
-			// now construct a matrix by analyzing a,b,c,d,e,f and trying to
-			// translate, rotate, and scale the thing into place
 			var m = svgroot.createSVGMatrix();
-			var sx = 1, sy = 1, angle = 0;
-	
-			// translate
-			m = m.translate(e,f);
-	
-			// see if there was a rotation
-			var rad = Math.atan2(b,a);
-			if (rad != 0 && rad != Math.PI && rad != -Math.PI) {
-				m = m.rotate(180.0 * rad / Math.PI);
-				sx = b / Math.sin(rad);
-				sy = -c / Math.sin(rad);
-			}
-			else {
-				sx = a / Math.cos(rad);
-				sy = d / Math.cos(rad);
-			}
-			
-			// scale
-			if (sx != 1 || sy != 1) {
-				m = m.scaleNonUniform(sx,sy);
-			}
-			
-			// TODO: handle skews?
-			
+			m.a = m1.a*m2.a + m1.c*m2.b;
+			m.b = m1.b*m2.a + m1.d*m2.b,
+			m.c = m1.a*m2.c + m1.c*m2.d,
+			m.d = m1.b*m2.c + m1.d*m2.d,
+			m.e = m1.a*m2.e + m1.c*m2.f + m1.e,
+			m.f = m1.b*m2.e + m1.d*m2.f + m1.f;
 			return m;
 		}
 		
@@ -5183,21 +5151,13 @@ function BatchCommand(text) {
 		var selected = elem || selectedElements[0];
 		// find the rotation transform (if any) and set it
 		var tlist = canvas.getTransformList(selected);
-		var t = tlist.numberOfItems;
-		var sangle = 0;
-		while (t--) {
-			var xform = tlist.getItem(t);
-			// rotation transform
+		if (tlist.numberOfItems > 0) {
+			var xform = tlist.getItem(0);
 			if (xform.type == 4) {
-				sangle += tlist.getItem(t).angle;
+				return to_rad ? xform.angle * Math.PI / 180.0 : xform.angle;
 			}
-			// matrix transform
-//			else if (xform.type == 1) {
-//				var m = xform.matrix;
-//				sangle += Math.atan2(m.b,m.a) * 180.0 / Math.PI;
-//			}
 		}
-		return to_rad ? sangle * Math.PI / 180.0 : sangle;
+		return 0.0;
 	};
 
 	// this should:
@@ -5212,11 +5172,11 @@ function BatchCommand(text) {
 		var cx = round(bbox.x+bbox.width/2), cy = round(bbox.y+bbox.height/2);
 		var tlist = canvas.getTransformList(elem);
 		
-		// remove the rotation transform
-		var n = tlist.numberOfItems;
-		while (n--) {
-			if (tlist.getItem(n).type == 4) {
-				tlist.removeItem(n);
+		// only remove the real rotational transform if present (i.e. at index=0)
+		if (tlist.numberOfItems > 0) {
+			var xform = tlist.getItem(0);
+			if (xform.type == 4) {
+				tlist.removeItem(0);
 			}
 		}
 		
@@ -5224,7 +5184,6 @@ function BatchCommand(text) {
 		var center = transformPoint(cx,cy,transformListToTransform(tlist).matrix);
 		var R_nc = svgroot.createSVGTransform();
 		R_nc.setRotate(val, center.x, center.y);
-		
 		tlist.insertItemBefore(R_nc,0);
 		
 		if (!preventUndo) {
