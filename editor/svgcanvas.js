@@ -10,26 +10,11 @@
  */
 /*
 	TODOs for TransformList:
-	
-	* Maybe:
-		* we need do nothing about a rotate() - i.e. just look for [T] at beginning or [T][S][-T]
-		  at the end and update
-		* if no matrix() exists, we can freely recalculateDimensions as we used to do
-		* if a matrix() exists, we should no longer update the shape's dimensions - instead
-		  we should just update the matrix() transform to reflect any moving, stretch
-	* Fix problem when moving elements that are rotated in a group (all rotates must have their 
-	  center updated?) and what about matrix transforms - do they need update as well?
-	* Fix problem when ungrouping rotated elements that were scaled in a group
 
-	* When ungrouping, always end up with a single [M]
-	* When rotating, always end up with [Rc][M]
-	* When scaling a group, [Rc][M]
-	* When scaling a shape, [Rc]
-	* When moving, always end up with a single [M]
-
-	* Fix Opera's centering of rotated, resized groups
-	* Fix resizing of rotated already-resized groups (scales incorrect with mouse)
-	* Ensure ungrouping works (Issue 204)
+	* fix resizing of rotated elements
+	* when resizing a group and elements are rotated within, collapse matrices now that it works
+	* go through ungrouping again
+	* go through Selector.resize() and rework so that they are always rectangular
 */
 /*
 	TODOs for Localizing:
@@ -1542,18 +1527,151 @@ function BatchCommand(text) {
 		// else, it's a non-group
 		else {
 			var box = canvas.getBBox(selected);
-			var origcenter = {x: (box.x+box.width/2), y: (box.y+box.height/2)};
-			var newcenter = {x: origcenter.x, y: origcenter.y};
-			var rotAngle = 0;
-		
-			// TODO: re-do this:  instead of looping through transforms just check
-			// like we do above for: scales, translates, rotations (in that order)
-			// and ignore all other transforms in the tlist.
+			var center = {x: (box.x+box.width/2), y: (box.y+box.height/2)};
+
+			// temporarily strip off the rotate
+			var angle = canvas.getRotationAngle(selected);
+			if (angle) {
+				for (var i = 0; i < tlist.numberOfItems; ++i) {
+					var xform = tlist.getItem(i);
+					if (xform.type == 4) {
+						tlist.removeItem(i);
+						break;
+					}
+				}
+			}
+
+			var N = tlist.numberOfItems;
 			
-			// This pass loop in reverse order and removes any translates or scales.
-			// Once we hit our first rotate(), we will only remove translates.
-			n = tlist.numberOfItems;
-			var m = svgroot.createSVGMatrix(); // identity
+			// first, if it was a scale then the second-last transform will be it
+			var remap = null, scalew = null, scaleh = null;
+			// if we had [M][T][S][T] we want to extract the matrix equivalent of
+			// [T][S][T] and push it down
+			if (N >= 3 && tlist.getItem(N-2).type == 3 && 
+				tlist.getItem(N-3).type == 2 && tlist.getItem(N-1).type == 2) 
+			{
+				console.log("scale");
+				var m = transformListToTransform(tlist,N-3,N-1).matrix;
+				remap = function(x,y) { return transformPoint(x,y,m); };
+				scalew = function(w) { return m.a * w; }
+				scaleh = function(h) { return m.d * h; }
+				tlist.removeItem(N-1);
+				tlist.removeItem(N-2);
+				tlist.removeItem(N-3);
+			}
+			// if we had [T1][M] we want to transform this into [M][T2]
+			// therefore [ T2 ] = [ M_inv ] [ T1 ] [ M ]
+			else if ( (N == 1 || (N > 1 && tlist.getItem(1).type != 3)) && 
+				tlist.getItem(0).type == 2) 
+			{
+				console.log("translate");
+				var oldxlate = tlist.removeItem(0).matrix,
+					m = transformListToTransform(tlist).matrix,
+					m_inv = m.inverse();
+				var newxlate = matrixMultiply( m_inv, oldxlate, m );
+				remap = function(x,y) { return transformPoint(x,y,newxlate); };
+				scalew = function(w) { return w; }
+				scaleh = function(h) { return h; }
+			}
+			
+			if (remap) {
+				switch (selected.tagName)
+				{
+					case "line":
+						var pt1 = remap(changes["x1"],changes["y1"]),
+							pt2 = remap(changes["x2"],changes["y2"]);
+						changes["x1"] = pt1.x;
+						changes["y1"] = pt1.y;
+						changes["x2"] = pt2.x;
+						changes["y2"] = pt2.y;
+						break;
+					case "circle":
+						var c = remap(changes["cx"],changes["cy"]);
+						changes["cx"] = c.x;
+						changes["cy"] = c.y;
+						// take the minimum of the new selected box's dimensions for the new circle radius
+						changes["r"] = Math.min(box.width/2,box.height/2);
+						break;
+					case "ellipse":
+						var c = remap(changes["cx"],changes["cy"]);
+						changes["cx"] = c.x;
+						changes["cy"] = c.y;
+						changes["rx"] = scalew(changes["rx"]);
+						changes["ry"] = scaleh(changes["ry"]);
+						break;
+					case "rect":
+					case "image":
+						var pt1 = remap(changes["x"],changes["y"]);
+						changes["x"] = pt1.x;
+						changes["y"] = pt1.y;
+						changes["width"] = scalew(changes["width"]);
+						changes["height"] = scaleh(changes["height"]);
+						break;
+					case "text":
+						var pt1 = remap(changes["x"],changes["y"]);
+						changes["x"] = pt1.x;
+						changes["y"] = pt1.y;
+						break;
+					case "polygon":
+					case "polyline":
+						var len = changes["points"].length;
+						for (var i = 0; i < len; ++i) {
+							var pt = changes["points"][i];
+							pt = remap(pt.x,pt.y);
+							changes["points"][i].x = pt.x;
+							changes["points"][i].y = pt.y;
+						}
+						break;
+					case "path":
+						var len = changes["d"].length;
+						var firstseg = changes["d"][0];
+						var firstpt = remap(firstseg.x,firstseg.y);
+						changes["d"][0].x = firstpt.x;
+						changes["d"][0].y = firstpt.y;
+						for (var i = 1; i < len; ++i) {
+							var seg = changes["d"][i];
+							var type = seg.type;
+							// if absolute or first segment, we want to remap x, y, x1, y1, x2, y2
+							// if relative, we want to scalew, scaleh
+							if (type % 2 == 0) { // absolute
+								var pt = remap(seg.x,seg.y),
+									pt1 = remap(seg.x1,seg.y1),
+									pt2 = remap(seg.x2,seg.y2);
+								seg.x = pt.x;
+								seg.y = pt.y;
+								seg.x1 = pt1.x;
+								seg.y1 = pt1.y;
+								seg.x2 = pt2.x;
+								seg.y2 = pt2.y;
+								seg.r1 = scalew(seg.r1),
+								seg.r2 = scaleh(seg.r2);
+							}
+							else { // relative
+								seg.x = scalew(seg.x);
+								seg.y = scaleh(seg.y);
+								seg.x1 = scalew(seg.x1);
+								seg.y1 = scaleh(seg.y1);
+								seg.x2 = scalew(seg.x2);
+								seg.y2 = scaleh(seg.y2);
+								seg.r1 = scalew(seg.r1),
+								seg.r2 = scaleh(seg.r2);
+							}
+						} // for each segment
+						break;
+				} // switch on element type to get initial values
+
+				var newcenter = remap(center.x,center.y);
+				center.x = newcenter.x;
+				center.y = newcenter.y;
+			} // if we are remapping
+			
+			// if we had a rotation, remap its center
+			if (angle) {
+				var newRot = svgroot.createSVGTransform();
+				newRot.setRotate(angle,center.x,center.y);
+				tlist.insertItemBefore(newRot,0);
+			}
+			/*
 			while (n--) {
 				var xform = tlist.getItem(n);
 				// get the matrix of all transformations to the right of this transform
@@ -1623,8 +1741,6 @@ function BatchCommand(text) {
 			
 				switch (selected.tagName)
 				{
-					case "g":
-						break;
 					case "line":
 						var pt1 = remap(changes["x1"],changes["y1"]),
 							pt2 = remap(changes["x2"],changes["y2"]);
@@ -1718,6 +1834,7 @@ function BatchCommand(text) {
 				newrot.setRotate(rotAngle, newcenter.x, newcenter.y);
 				tlist.insertItemBefore(newrot, 0);				
 			}
+			*/
 		} // a non-group
 		
 		// now we have a set of changes and an applied reduced transform list
@@ -5128,8 +5245,9 @@ function BatchCommand(text) {
 		var selected = elem || selectedElements[0];
 		// find the rotation transform (if any) and set it
 		var tlist = canvas.getTransformList(selected);
-		if (tlist.numberOfItems > 0) {
-			var xform = tlist.getItem(0);
+		var N = tlist.numberOfItems;
+		for (var i = 0; i < N; ++i) {
+			var xform = tlist.getItem(i);
 			if (xform.type == 4) {
 				return to_rad ? xform.angle * Math.PI / 180.0 : xform.angle;
 			}
