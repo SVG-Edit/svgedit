@@ -1400,7 +1400,87 @@ function BatchCommand(text) {
 				} // for each segment
 				break;
 		} // switch on element type to get initial values
-		return changes;
+		
+		// now we have a set of changes and an applied reduced transform list
+		// we apply the changes directly to the DOM
+		// TODO: merge this switch with the above one and optimize
+		switch (selected.tagName)
+		{
+			case "rect":
+			case "image":
+				changes.x = changes.x-0 + Math.min(0,changes.width);
+				changes.y = changes.y-0 + Math.min(0,changes.height);
+				changes.width = Math.abs(changes.width);
+				changes.height = Math.abs(changes.height);
+				assignAttributes(selected, changes, 1000);
+				break;
+			case "ellipse":
+				changes.rx = Math.abs(changes.rx);
+				changes.ry = Math.abs(changes.ry);
+			case "circle":
+				if(changes.r) changes.r = Math.abs(changes.r);
+			case "line":
+			case "text":
+				assignAttributes(selected, changes, 1000);
+				break;
+			case "polyline":
+			case "polygon":
+				var len = changes["points"].length;
+				var pstr = "";
+				for (var i = 0; i < len; ++i) {
+					var pt = changes["points"][i];
+					pstr += pt.x + "," + pt.y + " ";
+				}
+				selected.setAttribute("points", pstr);
+				break;
+			case "path":
+				var dstr = "";
+				var len = changes["d"].length;
+				for (var i = 0; i < len; ++i) {
+					var seg = changes["d"][i];
+					var type = seg.type;
+					dstr += truePathMap[type];
+					switch(type) {
+						case 13: // relative horizontal line (h)
+						case 12: // absolute horizontal line (H)
+							dstr += seg.x + " ";
+							break;
+						case 15: // relative vertical line (v)
+						case 14: // absolute vertical line (V)
+							dstr += seg.y + " ";
+							break;
+						case 3: // relative move (m)
+						case 5: // relative line (l)
+						case 19: // relative smooth quad (t)
+						case 2: // absolute move (M)
+						case 4: // absolute line (L)
+						case 18: // absolute smooth quad (T)
+							dstr += seg.x + "," + seg.y + " ";
+							break;
+						case 7: // relative cubic (c)
+						case 6: // absolute cubic (C)
+							dstr += seg.x1 + "," + seg.y1 + " " + seg.x2 + "," + seg.y2 + " " +
+								 seg.x + "," + seg.y + " ";
+							break;
+						case 9: // relative quad (q) 
+						case 8: // absolute quad (Q)
+							dstr += seg.x + "," + seg.y + " " + seg.x1 + "," + seg.y1 + " ";
+							break;
+						case 11: // relative elliptical arc (a)
+						case 10: // absolute elliptical arc (A)
+							dstr += seg.r1 + "," + seg.r2 + " " + seg.angle + " " + seg.largeArcFlag +
+								" " + seg.sweepFlag + " " + seg.x + "," + seg.y + " ";
+							break;
+						case 17: // relative smooth cubic (s)
+						case 16: // absolute smooth cubic (S)
+							dstr += seg.x + "," + seg.y + " " + seg.x2 + "," + seg.y2 + " ";
+							break;
+					}
+				}
+				selected.setAttribute("d", dstr);
+				break;
+		}
+		
 	};
 	
 	// this function returns the command which resulted from the selected change
@@ -1637,7 +1717,7 @@ function BatchCommand(text) {
 			}
 
 			var N = tlist.numberOfItems;
-			var bNeedRemap = false;
+			var operation = 0;
 			
 			// first, if it was a scale then the second-last transform will be it
 			// if we had [M][T][S][T] we want to extract the matrix equivalent of
@@ -1645,312 +1725,72 @@ function BatchCommand(text) {
 			if (N >= 3 && tlist.getItem(N-2).type == 3 && 
 				tlist.getItem(N-3).type == 2 && tlist.getItem(N-1).type == 2) 
 			{
+				operation = 3; // scale
 				m = transformListToTransform(tlist,N-3,N-1).matrix;
 				tlist.removeItem(N-1);
 				tlist.removeItem(N-2);
 				tlist.removeItem(N-3);
-				
-				bNeedRemap = true;
 			}
 			// if we had [T1][M] we want to transform this into [M][T2]
 			// therefore [ T2 ] = [ M_inv ] [ T1 ] [ M ]
 			else if ( (N == 1 || (N > 1 && tlist.getItem(1).type != 3)) && 
 				tlist.getItem(0).type == 2) 
 			{
+				operation = 2; // translate
 				var oldxlate = tlist.getItem(0).matrix,
 					meq = transformListToTransform(tlist).matrix,
 					meq_inv = meq.inverse();
 				m = matrixMultiply( meq_inv, oldxlate, meq );
 				tlist.removeItem(0);
-
-				bNeedRemap = true;
+			}
+			else {
+				operation = 4; // rotate
 			}
 			
-			// if the shape was rotated, calculate the new center and account for
-			// the resulting translation in the matrix
+			// if the shape was rotated, calculate what the center will be
+			var xcenter = null;
 			if (angle) {
-				// calculate the new center
-				newcenter = transformPoint(center.x,center.y,m);
-
-				// if the centers are different, then determine if the resultant xlate
-				var alpha = angle * Math.PI / 180.0;
-				var dx = newcenter.x - center.x,
-					dy = newcenter.y - center.y;
-				if (dx != 0 || dy != 0) {
-					var r = Math.sqrt(dx*dx + dy*dy),
-						theta = Math.atan2(dy,dx) + alpha;
-					var cx = r * Math.cos(theta) + center.x,
-						cy = r * Math.sin(theta) + center.y;
-
-					dx = cx - newcenter.x;
-					dy = cy - newcenter.y;
-					console.log([center.x,center.y]);
-					console.log([newcenter.x,newcenter.y]);
-					console.log([cx,cy]);
-					console.log([dx,dy]);
-				
-					// post- or pre- multiply?
-					var delta = svgroot.createSVGMatrix();
-					delta.translate(dx,dy);
-					m = matrixMultiply(delta,m);
+				// calculate the new center from the translate
+				if (operation == 2) {
+					newcenter = transformPoint(center.x,center.y,m);
+				}
+				else if (operation == 3) {
+					xcenter = transformPoint(center.x,center.y,m);
 				}
 			}
 
-			if (bNeedRemap) {
+			if (operation == 2 || operation == 3) {
 				remapElement(selected,changes,m);
 			} // if we are remapping
 			
-			// if we had a rotation, re-add the rotation with the newcenter
-			// (this will change if we had a move or a resize)
+			// if we had a rotation, re-add the rotation back with its original center
 			if (angle) {
 				var newRot = svgroot.createSVGTransform();
 				newRot.setRotate(angle,newcenter.x,newcenter.y);
 				tlist.insertItemBefore(newRot,0);
 			}
-			/*
-			while (n--) {
-				var xform = tlist.getItem(n);
-				// get the matrix of all transformations to the right of this transform
-				// and its inverse (B and B_inv)
-				var tail = transformListToTransform(tlist, n+1, tlist.numberOfItems-1).matrix,
-					tail_inv = tail.inverse();
-				// multiply (B_inv * A * B)
-				m = matrixMultiply(tail_inv, xform.matrix, tail);
+			
+			// at this point, the element looks exactly how we want it to look but its 
+			// rotational center may be off in the case of a resize - we need to fix that
+			if (angle && operation == 3) {
+				box = canvas.getBBox(selected);
+				m = transformListToTransform(tlist).matrix;
+
+				// get its actual center
+				newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2, m);
+
+				// determine the resultant delta translate to re-center
+				var dx = newcenter.x - xcenter.x,
+					dy = newcenter.y - xcenter.y;
 				
-				var remap = null, scalew = null, scaleh = null;
-				switch (xform.type) {
-					case 1: // MATRIX - continue
-//						newcenter = transformPoint(newcenter.x,newcenter.y,xform.matrix);
-						break;
-					case 2: // TRANSLATE - always remove
-						remap = function(x,y) { return transformPoint(x,y,m); };
-						scalew = function(w) { return w; }
-						scaleh = function(h) { return h; }
-						break;
-					case 3: // SCALE - always remove
-						remap = function(x,y) { return transformPoint(x,y,m); };
-						scalew = function(w) { return m.a * w; }
-						scaleh = function(h) { return m.d * h; }
-						break;
-					case 4: // ROTATE
-						// if the new center of the shape has moved, then 
-						// re-center the rotation, and determine the movement 
-						// offset required to keep the shape in the same place
-						if (n != 0) continue;
-						rotAngle = xform.angle;
-						if (origcenter.x != newcenter.x || origcenter.y != newcenter.y) {
-							var alpha = xform.angle * Math.PI / 180.0;
-			
-							// determine where the new rotated center should be
-							var dx = newcenter.x - origcenter.x,
-								dy = newcenter.y - origcenter.y,
-								r = Math.sqrt(dx*dx + dy*dy),
-								theta = Math.atan2(dy,dx) + alpha;
-							var cx = r * Math.cos(theta) + origcenter.x,
-								cy = r * Math.sin(theta) + origcenter.y;
+				var delta = svgroot.createSVGMatrix().translate(dx,dy);
+				remapElement(selected,changes,delta);
 
-							dx = cx - newcenter.x;
-							dy = cy - newcenter.y;
-					
-							remap = function(x,y) { 
-								return { x: x + dx, y: y + dy };
-							};
-							scalew = function(w) { return w; }
-							scaleh = function(h) { return h; }
-						}
-						else {
-							tlist.removeItem(n);
-						}
-						break;
-					default:
-						continue;
-				}
-
-				if (!remap) continue;
-				
-				newcenter = remap(box.x+box.width/2, box.y+box.height/2);
-				var bpt = remap(box.x,box.y);
-				box.x = bpt.x;
-				box.y = bpt.y;
-				box.width = scalew(box.width);
-				box.height = scaleh(box.height);
-			
-				switch (selected.tagName)
-				{
-					case "line":
-						var pt1 = remap(changes["x1"],changes["y1"]),
-							pt2 = remap(changes["x2"],changes["y2"]);
-						changes["x1"] = pt1.x;
-						changes["y1"] = pt1.y;
-						changes["x2"] = pt2.x;
-						changes["y2"] = pt2.y;
-						break;
-					case "circle":
-						var c = remap(changes["cx"],changes["cy"]);
-						changes["cx"] = c.x;
-						changes["cy"] = c.y;
-						// take the minimum of the new selected box's dimensions for the new circle radius
-						changes["r"] = Math.min(box.width/2,box.height/2);
-						break;
-					case "ellipse":
-						var c = remap(changes["cx"],changes["cy"]);
-						changes["cx"] = c.x;
-						changes["cy"] = c.y;
-						changes["rx"] = scalew(changes["rx"]);
-						changes["ry"] = scaleh(changes["ry"]);
-						break;
-					case "rect":
-					case "image":
-						var pt1 = remap(changes["x"],changes["y"]);
-						changes["x"] = pt1.x;
-						changes["y"] = pt1.y;
-						changes["width"] = scalew(changes["width"]);
-						changes["height"] = scaleh(changes["height"]);
-						break;
-					case "text":
-						var pt1 = remap(changes["x"],changes["y"]);
-						changes["x"] = pt1.x;
-						changes["y"] = pt1.y;
-						break;
-					case "polygon":
-					case "polyline":
-						var len = changes["points"].length;
-						for (var i = 0; i < len; ++i) {
-							var pt = changes["points"][i];
-							pt = remap(pt.x,pt.y);
-							changes["points"][i].x = pt.x;
-							changes["points"][i].y = pt.y;
-						}
-						break;
-					case "path":
-						var len = changes["d"].length;
-						var firstseg = changes["d"][0];
-						var firstpt = remap(firstseg.x,firstseg.y);
-						changes["d"][0].x = firstpt.x;
-						changes["d"][0].y = firstpt.y;
-						for (var i = 1; i < len; ++i) {
-							var seg = changes["d"][i];
-							var type = seg.type;
-							// if absolute or first segment, we want to remap x, y, x1, y1, x2, y2
-							// if relative, we want to scalew, scaleh
-							if (type % 2 == 0) { // absolute
-								var pt = remap(seg.x,seg.y),
-									pt1 = remap(seg.x1,seg.y1),
-									pt2 = remap(seg.x2,seg.y2);
-								seg.x = pt.x;
-								seg.y = pt.y;
-								seg.x1 = pt1.x;
-								seg.y1 = pt1.y;
-								seg.x2 = pt2.x;
-								seg.y2 = pt2.y;
-								seg.r1 = scalew(seg.r1),
-								seg.r2 = scaleh(seg.r2);
-							}
-							else { // relative
-								seg.x = scalew(seg.x);
-								seg.y = scaleh(seg.y);
-								seg.x1 = scalew(seg.x1);
-								seg.y1 = scaleh(seg.y1);
-								seg.x2 = scalew(seg.x2);
-								seg.y2 = scaleh(seg.y2);
-								seg.r1 = scalew(seg.r1),
-								seg.r2 = scaleh(seg.r2);
-							}
-						} // for each segment
-						break;
-				} // switch on element type to get initial values
-			
-				// we have eliminated the transform, so remove it
-				tlist.removeItem(n);
-			} // looping for each transform
-
-			// we may need to insert a rotation back now
-			if (rotAngle != 0) {
-				var newrot = svgroot.createSVGTransform();
-				newrot.setRotate(rotAngle, newcenter.x, newcenter.y);
-				tlist.insertItemBefore(newrot, 0);				
+				var newRot = svgroot.createSVGTransform();
+				newRot.setRotate(angle,newcenter.x,newcenter.y);
+				tlist.replaceItem(newRot,0);
 			}
-			*/
 		} // a non-group
-		
-		// now we have a set of changes and an applied reduced transform list
-		// we apply the changes directly to the DOM
-		switch (selected.tagName)
-		{
-			case "rect":
-			case "image":
-				changes.x = changes.x-0 + Math.min(0,changes.width);
-				changes.y = changes.y-0 + Math.min(0,changes.height);
-				changes.width = Math.abs(changes.width);
-				changes.height = Math.abs(changes.height);
-				assignAttributes(selected, changes, 1000);
-				break;
-			case "ellipse":
-				changes.rx = Math.abs(changes.rx);
-				changes.ry = Math.abs(changes.ry);
-			case "circle":
-				if(changes.r) changes.r = Math.abs(changes.r);
-			case "line":
-			case "text":
-				assignAttributes(selected, changes, 1000);
-				break;
-			case "polyline":
-			case "polygon":
-				var len = changes["points"].length;
-				var pstr = "";
-				for (var i = 0; i < len; ++i) {
-					var pt = changes["points"][i];
-					pstr += pt.x + "," + pt.y + " ";
-				}
-				selected.setAttribute("points", pstr);
-				break;
-			case "path":
-				var dstr = "";
-				var len = changes["d"].length;
-				for (var i = 0; i < len; ++i) {
-					var seg = changes["d"][i];
-					var type = seg.type;
-					dstr += truePathMap[type];
-					switch(type) {
-						case 13: // relative horizontal line (h)
-						case 12: // absolute horizontal line (H)
-							dstr += seg.x + " ";
-							break;
-						case 15: // relative vertical line (v)
-						case 14: // absolute vertical line (V)
-							dstr += seg.y + " ";
-							break;
-						case 3: // relative move (m)
-						case 5: // relative line (l)
-						case 19: // relative smooth quad (t)
-						case 2: // absolute move (M)
-						case 4: // absolute line (L)
-						case 18: // absolute smooth quad (T)
-							dstr += seg.x + "," + seg.y + " ";
-							break;
-						case 7: // relative cubic (c)
-						case 6: // absolute cubic (C)
-							dstr += seg.x1 + "," + seg.y1 + " " + seg.x2 + "," + seg.y2 + " " +
-								 seg.x + "," + seg.y + " ";
-							break;
-						case 9: // relative quad (q) 
-						case 8: // absolute quad (Q)
-							dstr += seg.x + "," + seg.y + " " + seg.x1 + "," + seg.y1 + " ";
-							break;
-						case 11: // relative elliptical arc (a)
-						case 10: // absolute elliptical arc (A)
-							dstr += seg.r1 + "," + seg.r2 + " " + seg.angle + " " + seg.largeArcFlag +
-								" " + seg.sweepFlag + " " + seg.x + "," + seg.y + " ";
-							break;
-						case 17: // relative smooth cubic (s)
-						case 16: // absolute smooth cubic (S)
-							dstr += seg.x + "," + seg.y + " " + seg.x2 + "," + seg.y2 + " ";
-							break;
-					}
-				}
-				selected.setAttribute("d", dstr);
-				break;
-		}
 
 		// if the transform list has been emptied, remove it
 		if (tlist.numberOfItems == 0) {
