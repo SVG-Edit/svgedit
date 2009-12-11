@@ -1310,6 +1310,99 @@ function BatchCommand(text) {
 		console.log([m.a,m.b,m.c,m.d,m.e,m.f]);
 	};
 	
+	var remapElement = function(selected,changes,m) {
+		var remap = function(x,y) { return transformPoint(x,y,m); };
+		var scalew = function(w) { return m.a*w; }
+		var scaleh = function(h) { return m.d*h; }
+		var box = canvas.getBBox(selected);
+
+		switch (selected.tagName)
+		{
+			case "line":
+				var pt1 = remap(changes["x1"],changes["y1"]),
+					pt2 = remap(changes["x2"],changes["y2"]);
+				changes["x1"] = pt1.x;
+				changes["y1"] = pt1.y;
+				changes["x2"] = pt2.x;
+				changes["y2"] = pt2.y;
+				break;
+			case "circle":
+				var c = remap(changes["cx"],changes["cy"]);
+				changes["cx"] = c.x;
+				changes["cy"] = c.y;
+				// take the minimum of the new selected box's dimensions for the new circle radius
+				changes["r"] = Math.min(box.width/2,box.height/2);
+				break;
+			case "ellipse":
+				var c = remap(changes["cx"],changes["cy"]);
+				changes["cx"] = c.x;
+				changes["cy"] = c.y;
+				changes["rx"] = scalew(changes["rx"]);
+				changes["ry"] = scaleh(changes["ry"]);
+				break;
+			case "rect":
+			case "image":
+				var pt1 = remap(changes["x"],changes["y"]);
+				changes["x"] = pt1.x;
+				changes["y"] = pt1.y;
+				changes["width"] = scalew(changes["width"]);
+				changes["height"] = scaleh(changes["height"]);
+				break;
+			case "text":
+				var pt1 = remap(changes["x"],changes["y"]);
+				changes["x"] = pt1.x;
+				changes["y"] = pt1.y;
+				break;
+			case "polygon":
+			case "polyline":
+				var len = changes["points"].length;
+				for (var i = 0; i < len; ++i) {
+					var pt = changes["points"][i];
+					pt = remap(pt.x,pt.y);
+					changes["points"][i].x = pt.x;
+					changes["points"][i].y = pt.y;
+				}
+				break;
+			case "path":
+				var len = changes["d"].length;
+				var firstseg = changes["d"][0];
+				var firstpt = remap(firstseg.x,firstseg.y);
+				changes["d"][0].x = firstpt.x;
+				changes["d"][0].y = firstpt.y;
+				for (var i = 1; i < len; ++i) {
+					var seg = changes["d"][i];
+					var type = seg.type;
+					// if absolute or first segment, we want to remap x, y, x1, y1, x2, y2
+					// if relative, we want to scalew, scaleh
+					if (type % 2 == 0) { // absolute
+						var pt = remap(seg.x,seg.y),
+							pt1 = remap(seg.x1,seg.y1),
+							pt2 = remap(seg.x2,seg.y2);
+						seg.x = pt.x;
+						seg.y = pt.y;
+						seg.x1 = pt1.x;
+						seg.y1 = pt1.y;
+						seg.x2 = pt2.x;
+						seg.y2 = pt2.y;
+						seg.r1 = scalew(seg.r1),
+						seg.r2 = scaleh(seg.r2);
+					}
+					else { // relative
+						seg.x = scalew(seg.x);
+						seg.y = scaleh(seg.y);
+						seg.x1 = scalew(seg.x1);
+						seg.y1 = scaleh(seg.y1);
+						seg.x2 = scalew(seg.x2);
+						seg.y2 = scaleh(seg.y2);
+						seg.r1 = scalew(seg.r1),
+						seg.r2 = scaleh(seg.r2);
+					}
+				} // for each segment
+				break;
+		} // switch on element type to get initial values
+		return changes;
+	};
+	
 	// this function returns the command which resulted from the selected change
 	// TODO: use suspendRedraw() and unsuspendRedraw() around this function
 	var recalculateDimensions = function(selected) {
@@ -1528,6 +1621,8 @@ function BatchCommand(text) {
 		else {
 			var box = canvas.getBBox(selected);
 			var center = {x: (box.x+box.width/2), y: (box.y+box.height/2)};
+			var newcenter = {x: center.x, y: center.y };
+			var m = svgroot.createSVGMatrix();
 
 			// temporarily strip off the rotate
 			var angle = canvas.getRotationAngle(selected);
@@ -1542,133 +1637,74 @@ function BatchCommand(text) {
 			}
 
 			var N = tlist.numberOfItems;
+			var bNeedRemap = false;
 			
 			// first, if it was a scale then the second-last transform will be it
-			var remap = null, scalew = null, scaleh = null;
 			// if we had [M][T][S][T] we want to extract the matrix equivalent of
 			// [T][S][T] and push it down
 			if (N >= 3 && tlist.getItem(N-2).type == 3 && 
 				tlist.getItem(N-3).type == 2 && tlist.getItem(N-1).type == 2) 
 			{
-				console.log("scale");
-				var m = transformListToTransform(tlist,N-3,N-1).matrix;
-				remap = function(x,y) { return transformPoint(x,y,m); };
-				scalew = function(w) { return m.a * w; }
-				scaleh = function(h) { return m.d * h; }
+				m = transformListToTransform(tlist,N-3,N-1).matrix;
 				tlist.removeItem(N-1);
 				tlist.removeItem(N-2);
 				tlist.removeItem(N-3);
+				
+				bNeedRemap = true;
 			}
 			// if we had [T1][M] we want to transform this into [M][T2]
 			// therefore [ T2 ] = [ M_inv ] [ T1 ] [ M ]
 			else if ( (N == 1 || (N > 1 && tlist.getItem(1).type != 3)) && 
 				tlist.getItem(0).type == 2) 
 			{
-				console.log("translate");
-				var oldxlate = tlist.removeItem(0).matrix,
-					m = transformListToTransform(tlist).matrix,
-					m_inv = m.inverse();
-				var newxlate = matrixMultiply( m_inv, oldxlate, m );
-				remap = function(x,y) { return transformPoint(x,y,newxlate); };
-				scalew = function(w) { return w; }
-				scaleh = function(h) { return h; }
+				var oldxlate = tlist.getItem(0).matrix,
+					meq = transformListToTransform(tlist).matrix,
+					meq_inv = meq.inverse();
+				m = matrixMultiply( meq_inv, oldxlate, meq );
+				tlist.removeItem(0);
+
+				bNeedRemap = true;
 			}
 			
-			if (remap) {
-				switch (selected.tagName)
-				{
-					case "line":
-						var pt1 = remap(changes["x1"],changes["y1"]),
-							pt2 = remap(changes["x2"],changes["y2"]);
-						changes["x1"] = pt1.x;
-						changes["y1"] = pt1.y;
-						changes["x2"] = pt2.x;
-						changes["y2"] = pt2.y;
-						break;
-					case "circle":
-						var c = remap(changes["cx"],changes["cy"]);
-						changes["cx"] = c.x;
-						changes["cy"] = c.y;
-						// take the minimum of the new selected box's dimensions for the new circle radius
-						changes["r"] = Math.min(box.width/2,box.height/2);
-						break;
-					case "ellipse":
-						var c = remap(changes["cx"],changes["cy"]);
-						changes["cx"] = c.x;
-						changes["cy"] = c.y;
-						changes["rx"] = scalew(changes["rx"]);
-						changes["ry"] = scaleh(changes["ry"]);
-						break;
-					case "rect":
-					case "image":
-						var pt1 = remap(changes["x"],changes["y"]);
-						changes["x"] = pt1.x;
-						changes["y"] = pt1.y;
-						changes["width"] = scalew(changes["width"]);
-						changes["height"] = scaleh(changes["height"]);
-						break;
-					case "text":
-						var pt1 = remap(changes["x"],changes["y"]);
-						changes["x"] = pt1.x;
-						changes["y"] = pt1.y;
-						break;
-					case "polygon":
-					case "polyline":
-						var len = changes["points"].length;
-						for (var i = 0; i < len; ++i) {
-							var pt = changes["points"][i];
-							pt = remap(pt.x,pt.y);
-							changes["points"][i].x = pt.x;
-							changes["points"][i].y = pt.y;
-						}
-						break;
-					case "path":
-						var len = changes["d"].length;
-						var firstseg = changes["d"][0];
-						var firstpt = remap(firstseg.x,firstseg.y);
-						changes["d"][0].x = firstpt.x;
-						changes["d"][0].y = firstpt.y;
-						for (var i = 1; i < len; ++i) {
-							var seg = changes["d"][i];
-							var type = seg.type;
-							// if absolute or first segment, we want to remap x, y, x1, y1, x2, y2
-							// if relative, we want to scalew, scaleh
-							if (type % 2 == 0) { // absolute
-								var pt = remap(seg.x,seg.y),
-									pt1 = remap(seg.x1,seg.y1),
-									pt2 = remap(seg.x2,seg.y2);
-								seg.x = pt.x;
-								seg.y = pt.y;
-								seg.x1 = pt1.x;
-								seg.y1 = pt1.y;
-								seg.x2 = pt2.x;
-								seg.y2 = pt2.y;
-								seg.r1 = scalew(seg.r1),
-								seg.r2 = scaleh(seg.r2);
-							}
-							else { // relative
-								seg.x = scalew(seg.x);
-								seg.y = scaleh(seg.y);
-								seg.x1 = scalew(seg.x1);
-								seg.y1 = scaleh(seg.y1);
-								seg.x2 = scalew(seg.x2);
-								seg.y2 = scaleh(seg.y2);
-								seg.r1 = scalew(seg.r1),
-								seg.r2 = scaleh(seg.r2);
-							}
-						} // for each segment
-						break;
-				} // switch on element type to get initial values
+			// if the shape was rotated, calculate the new center and account for
+			// the resulting translation in the matrix
+			if (angle) {
+				// calculate the new center
+				newcenter = transformPoint(center.x,center.y,m);
 
-				var newcenter = remap(center.x,center.y);
-				center.x = newcenter.x;
-				center.y = newcenter.y;
+				// if the centers are different, then determine if the resultant xlate
+				var alpha = angle * Math.PI / 180.0;
+				var dx = newcenter.x - center.x,
+					dy = newcenter.y - center.y;
+				if (dx != 0 || dy != 0) {
+					var r = Math.sqrt(dx*dx + dy*dy),
+						theta = Math.atan2(dy,dx) + alpha;
+					var cx = r * Math.cos(theta) + center.x,
+						cy = r * Math.sin(theta) + center.y;
+
+					dx = cx - newcenter.x;
+					dy = cy - newcenter.y;
+					console.log([center.x,center.y]);
+					console.log([newcenter.x,newcenter.y]);
+					console.log([cx,cy]);
+					console.log([dx,dy]);
+				
+					// post- or pre- multiply?
+					var delta = svgroot.createSVGMatrix();
+					delta.translate(dx,dy);
+					m = matrixMultiply(delta,m);
+				}
+			}
+
+			if (bNeedRemap) {
+				remapElement(selected,changes,m);
 			} // if we are remapping
 			
-			// if we had a rotation, remap its center
+			// if we had a rotation, re-add the rotation with the newcenter
+			// (this will change if we had a move or a resize)
 			if (angle) {
 				var newRot = svgroot.createSVGTransform();
-				newRot.setRotate(angle,center.x,center.y);
+				newRot.setRotate(angle,newcenter.x,newcenter.y);
 				tlist.insertItemBefore(newRot,0);
 			}
 			/*
