@@ -2031,6 +2031,9 @@ function BatchCommand(text) {
 		var tobj = {tx:0,ty:0,sx:1,sy:1,angle:0,cx:0,cy:0,text:""};
 		var z = mZoom?current_zoom:1;
 		switch(xform.type) {
+			case 1: // MATRIX
+				tobj.text = "matrix(" + [m.a,m.b,m.c,m.d,m.e,m.f].join(",") + ")";
+				break;
 			case 2: // TRANSLATE
 				tobj.tx = m.e;
 				tobj.ty = m.f;
