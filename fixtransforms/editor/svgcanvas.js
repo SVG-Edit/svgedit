@@ -11,9 +11,10 @@
 /*
 	TODOs for TransformList:
 
-	* go through Selector.resize() and make sure groups account for rotated/skewed children
 	* go through Selector.resize() and rework so that they are always rectangular
 	* go through ungrouping again
+	* ensure zooming works properly
+	* ensure undo/redo works perfectly
 */
 /*
 	TODOs for Localizing:
@@ -5727,6 +5728,9 @@ function BatchCommand(text) {
 		if(!elems.length) return false;
 		
 		// Make sure the expected BBox is returned if the element is a group
+		// FIXME: doesn't this mean that every time we call getStrokedBBox() that we are 
+		// re-creating the getCheckedBBox() function?  shouldn't we make this a function 
+		// at the 'canvas' level
 		var getCheckedBBox = function(elem) {
 			try {
 				// TODO: Fix issue with rotated groups. Currently they work
@@ -5735,7 +5739,7 @@ function BatchCommand(text) {
 				
 				var bb = elem.getBBox();
 				var angle = canvas.getRotationAngle(elem);
-				if (angle && angle % 90) {
+				if ((angle && angle % 90) || hasMatrixTransform(canvas.getTransformList(elem))) {
 					// Accurate way to get BBox of rotated element in Firefox:
 					// Put element in group and get its BBox
 					
@@ -5819,6 +5823,7 @@ function BatchCommand(text) {
 		var min_x = full_bb.x;
 		var min_y = full_bb.y;
 		
+		// FIXME: same re-creation problem with this function as getCheckedBBox() above
 		var getOffset = function(elem) {
 			var sw = elem.getAttribute("stroke-width");
 			var offset = 0;
