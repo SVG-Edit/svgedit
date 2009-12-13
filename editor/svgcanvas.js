@@ -11,10 +11,9 @@
 /*
 	TODOs for TransformList:
 
-	* fix resizing of rotated elements
-	* when resizing a group and elements are rotated within, collapse matrices now that it works
-	* go through ungrouping again
+	* go through Selector.resize() and make sure groups account for rotated/skewed children
 	* go through Selector.resize() and rework so that they are always rectangular
+	* go through ungrouping again
 */
 /*
 	TODOs for Localizing:
@@ -1617,14 +1616,16 @@ function BatchCommand(text) {
 						var m = transformListToTransform(childTlist).matrix;
 					
 						var angle = canvas.getRotationAngle(child);
-						if(angle) {
-							var em = matrixMultiply(tm, sm, tmn);
+						if(angle || hasMatrixTransform(childTlist)) {
+							var em = matrixMultiply(tm, sm, tmn, m);
 
 							// this does not appear to work, something wrong with my logic here
 							var e2t = svgroot.createSVGTransform();
 							e2t.setMatrix(em);
-							childTlist.insertItemBefore(e2t,0);
+							childTlist.clear();
+							childTlist.appendItem(e2t,0);
 						}
+						// if not rotated or skewed, push the [T][S][-T] down to the child
 						else {
 							// update the transform list with translate,scale,translate
 							
@@ -2001,6 +2002,14 @@ function BatchCommand(text) {
 		}
 		return svgroot.createSVGTransformFromMatrix(m);
 	};
+	
+	var hasMatrixTransform = function(tlist) {
+		var num = tlist.numberOfItems;
+		while (num--) {
+			if (tlist.getItem(num).type == 1) return true;
+		}
+		return false;
+	}
 
 //  // Easy way to loop through transform list, but may not be worthwhile	
 // 	var eachXform = function(elem, callback) {
