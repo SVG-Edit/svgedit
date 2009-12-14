@@ -466,6 +466,8 @@ function BatchCommand(text) {
 
 			if(canvas.getRotationAngle(selected)) {
 				this.selectorGroup.setAttribute("transform","rotate(" + angle + "," + mid_x + "," + mid_y + ")");
+			} else {
+				this.selectorGroup.removeAttribute("transform");
 			}
 			
 			var gripCoords = {
