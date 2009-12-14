@@ -46,6 +46,11 @@ if( window.opera ) {
 	window.console.log = function(str) {opera.postError(str);}
 }
 
+var uiStrings = {
+	"pathNodeTooltip":"Drag node to move it. Double-click node to change segment type",
+	"pathCtrlPtTooltip":"Drag control point to adjust curve properties"
+};
+
 // this defines which elements and attributes that we support
 // TODO: add <a> elements to this
 // TODO: add <marker> to this
@@ -434,7 +439,7 @@ function BatchCommand(text) {
 
 			// loop and transform our bounding box until we reach our first rotation
 			var tlist = canvas.getTransformList(this.selectedElement);
-			var m = transformListToTransform(tlist).matrix;
+			var m = transformListToTransform(tlist, null, null, true).matrix;
 
 			// This should probably be handled somewhere else, but for now
 			// it keeps the selection box correctly positioned when zoomed
@@ -455,6 +460,14 @@ function BatchCommand(text) {
 						+ " " + nbox.bl.x + "," + nbox.bl.y + "z";
 			assignAttributes(selectedBox, {'d': dstr});
 			
+			var angle = canvas.getRotationAngle(selected);
+			var mid_x = (nbox.tr.x + nbox.tl.x)/2;
+			var mid_y = (nbox.bl.y + nbox.tl.y)/2;
+
+			if(canvas.getRotationAngle(selected)) {
+				this.selectorGroup.setAttribute("transform","rotate(" + angle + "," + mid_x + "," + mid_y + ")");
+			}
+			
 			var gripCoords = {
 				nw: [nbox.tl.x, nbox.tl.y],
 				ne: [nbox.tr.x, nbox.tr.y],
@@ -472,17 +485,24 @@ function BatchCommand(text) {
 			});
 
 			// we want to go 20 pixels in the negative transformed y direction, ignoring scale
-			var dy = (nbox.tl.y - nbox.tr.y),
-				dx = (nbox.tr.x - nbox.tl.x),
-				theta = Math.atan2(dy,dx);
-			dy = 20 * Math.cos(theta);
-			dx = 20 * Math.sin(theta)
+			
 			var rotatept = {x:(l+w/2)*current_zoom,y:t*current_zoom};
-			rotatept = transformPoint( rotatept.x, rotatept.y, m);
-			assignAttributes(this.rotateGripConnector, { x1: nbox.tl.x + (nbox.tr.x-nbox.tl.x)/2, 
-														y1: nbox.tl.y + (nbox.tr.y-nbox.tl.y)/2, 
-														x2: rotatept.x-dx, y2: rotatept.y-dy });
-			assignAttributes(this.rotateGrip, { cx: rotatept.x-dx, cy: rotatept.y-dy });
+			assignAttributes(this.rotateGripConnector, { x1: mid_x, 
+														y1: nbox.tl.y, 
+														x2: mid_x, y2: nbox.tl.y - 20 });
+			assignAttributes(this.rotateGrip, { cx: mid_x, cy: nbox.tl.y - 20 });
+
+// 			var dy = (nbox.tl.y - nbox.tr.y),
+// 				dx = (nbox.tr.x - nbox.tl.x),
+// 				theta = Math.atan2(dy,dx);
+// 			dy = 20 * Math.cos(theta);
+// 			dx = 20 * Math.sin(theta)
+// 			var rotatept = {x:(l+w/2)*current_zoom,y:t*current_zoom};
+// 			rotatept = transformPoint( rotatept.x, rotatept.y, m);
+// 			assignAttributes(this.rotateGripConnector, { x1: nbox.tl.x + (nbox.tr.x-nbox.tl.x)/2, 
+// 														y1: nbox.tl.y + (nbox.tr.y-nbox.tl.y)/2, 
+// 														x2: rotatept.x-dx, y2: rotatept.y-dy });
+// 			assignAttributes(this.rotateGrip, { cx: rotatept.x-dx, cy: rotatept.y-dy });
 			
 			svgroot.unsuspendRedraw(sr_handle);
 		};
@@ -1986,7 +2006,7 @@ function BatchCommand(text) {
 	// (this is the equivalent of SVGTransformList.consolidate() but unlike
 	//  that method, this one does not modify the actual SVGTransformList)
 	// This function is very liberal with its min,max arguments
-	var transformListToTransform = function(tlist, min, max) {
+	var transformListToTransform = function(tlist, min, max, noRotate) {
 		var min = min || 0;
 		var max = max || (tlist.numberOfItems-1);
 		min = parseInt(min);
@@ -1995,6 +2015,8 @@ function BatchCommand(text) {
 		
 		var m = svgroot.createSVGMatrix();
 		for (var i = min; i <= max; ++i) {
+			if(noRotate && i >= 0 && i < tlist.numberOfItems && tlist.getItem(i).type == 4) continue;
+		
 			// if our indices are out of range, just use a harmless identity matrix
 			var mtom = (i >= 0 && i < tlist.numberOfItems ? 
 							tlist.getItem(i).matrix :
@@ -2066,10 +2088,35 @@ function BatchCommand(text) {
 			topright = {x:(l+w),y:t},
 			botright = {x:(l+w),y:(t+h)},
 			botleft = {x:l,y:(t+h)};
-		topleft = transformPoint( topleft.x, topleft.y, m );
-		topright = transformPoint( topright.x, topright.y, m );
-		botleft = transformPoint( botleft.x, botleft.y, m);
-		botright = transformPoint( botright.x, botright.y, m );
+
+		var first = transformPoint( topleft.x, topleft.y, m );
+		// Get all the new points of this box
+		var transPts = [
+			first,
+			transformPoint( topright.x, topright.y, m ),
+			transformPoint( botleft.x, botleft.y, m),
+			transformPoint( botright.x, botright.y, m )
+		];
+		
+		var min_x = first.x, min_y = first.y, max_x = first.x, max_y = first.y;
+		
+		// Make new box based on max/min, etc.
+		$.each(transPts, function(i, pt) {
+			min_x = Math.min(min_x, pt.x);
+			min_y = Math.min(min_y, pt.y);
+			max_x = Math.max(max_x, pt.x);
+			max_y = Math.max(max_y, pt.y);
+		});
+
+		topleft = {x: min_x, y: min_y};
+		topright = {x: max_x, y: min_y};
+		botleft = {x: min_x, y: max_y};
+		botright = {x: max_x, y: max_y};
+
+// 		topleft = transformPoint( topleft.x, topleft.y, m );
+// 		topright = transformPoint( topright.x, topright.y, m );
+// 		botleft = transformPoint( botleft.x, botleft.y, m);
+// 		botright = transformPoint( botright.x, botright.y, m );
 		return {tl:topleft, tr:topright, bl:botleft, br:botright};
 	};
 
@@ -3212,7 +3259,7 @@ function BatchCommand(text) {
 				'stroke-width': 2,
 				'cursor': 'move',
 				'style': 'pointer-events:all',
-				'xlink:title': 'Drag point to move it. Double-click point to change segment type.'
+				'xlink:title': uiStrings.pathNodeTooltip
 			});
 			pointGrip = pointGripContainer.appendChild(pointGrip);
 
@@ -3541,7 +3588,7 @@ function BatchCommand(text) {
 				'stroke-width': 1,
 				'cursor': 'move',
 				'style': 'pointer-events:all',
-				'xlink:title': 'Drag control point to adjust curve properties'
+				'xlink:title': uiStrings.pathCtrlPtTooltip
 			});
 			pointGrip = ctrlPointGripContainer.appendChild(pointGrip);
 		}
@@ -6091,6 +6138,10 @@ function BatchCommand(text) {
 	this.getVersion = function() {
 		return "svgcanvas.js ($Rev$)";
 	};
+	
+	this.setUiStrings = function(strs) {
+		$.extend(uiStrings, strs);
+	}
 	
 	this.clear();
 };
