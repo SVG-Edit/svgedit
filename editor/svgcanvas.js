@@ -11,7 +11,6 @@
 /*
 	TODOs for TransformList:
 
-	* go through Selector.resize() and rework so that they are always rectangular
 	* go through ungrouping again
 	* ensure zooming works properly
 	* ensure undo/redo works perfectly
@@ -427,7 +426,7 @@ function BatchCommand(text) {
 			if (selected.tagName == "text") {
 				offset += 2/canvas.getZoom();
 			}
-			var bbox = canvas.getBBox(this.selectedElement);
+			var bbox = canvas.getBBox(selected);
 			if(selected.tagName == 'g') {
 				// The bbox for a group does not include stroke vals, so we
 				// get the bbox based on its children. 
@@ -438,8 +437,8 @@ function BatchCommand(text) {
 			}
 
 			// loop and transform our bounding box until we reach our first rotation
-			var tlist = canvas.getTransformList(this.selectedElement);
-			var m = transformListToTransform(tlist, null, null, true).matrix;
+			var tlist = canvas.getTransformList(selected);
+			var m = transformListToTransform(tlist).matrix;
 
 			// This should probably be handled somewhere else, but for now
 			// it keeps the selection box correctly positioned when zoomed
@@ -448,37 +447,64 @@ function BatchCommand(text) {
 			
 			// apply the transforms
 			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
+			var bbox = {x:l, y:t, width:w, height:h};
+			
+			// we need to handle temporary transforms too
+			// if skewed, get its transformed box, then find its axis-aligned bbox
+			
+			//*
 			var nbox = transformBox(l*current_zoom, t*current_zoom, w*current_zoom, h*current_zoom, m);
+			
+			// now if the shape is rotated, un-rotate it
+			var cx = nbox.aabox.x + nbox.aabox.width/2; //nbox.tl.x + (nbox.tr.x - nbox.tl.x)/2;
+			var cy = nbox.aabox.y + nbox.aabox.height/2; //nbox.tl.y + (nbox.bl.y - nbox.tl.y)/2;
+			var angle = canvas.getRotationAngle(selected);
+			if (angle) {
+				
+				var rot = svgroot.createSVGTransform();
+				rot.setRotate(-angle,cx,cy);
+				var rotm = rot.matrix;
+				nbox.tl = transformPoint(nbox.tl.x,nbox.tl.y,rotm);
+				nbox.tr = transformPoint(nbox.tr.x,nbox.tr.y,rotm);
+				nbox.bl = transformPoint(nbox.bl.x,nbox.bl.y,rotm);
+				nbox.br = transformPoint(nbox.br.x,nbox.br.y,rotm);
+				
+				// calculate the axis-aligned bbox
+				var minx = nbox.tl.x,
+					miny = nbox.tl.y,
+					maxx = nbox.tl.x,
+					maxy = nbox.tl.y;
+				
+				minx = Math.min(minx, Math.min(nbox.tr.x, Math.min(nbox.bl.x, nbox.br.x) ) );
+				miny = Math.min(miny, Math.min(nbox.tr.y, Math.min(nbox.bl.y, nbox.br.y) ) );
+				maxx = Math.max(maxx, Math.max(nbox.tr.x, Math.max(nbox.bl.x, nbox.br.x) ) );
+				maxy = Math.max(maxy, Math.max(nbox.tr.y, Math.max(nbox.bl.y, nbox.br.y) ) );
+				
+				nbox.aabox.x = minx;
+				nbox.aabox.y = miny;
+				nbox.aabox.width = (maxx-minx);
+				nbox.aabox.height = (maxy-miny);
+			}
 
 			// TODO: handle negative?
 
 			var sr_handle = svgroot.suspendRedraw(100);
 
-			var dstr = "M" + nbox.tl.x + "," + nbox.tl.y 
-						+ " L" + nbox.tr.x + "," + nbox.tr.y 
-						+ " " + nbox.br.x + "," + nbox.br.y
-						+ " " + nbox.bl.x + "," + nbox.bl.y + "z";
+			var dstr = "M" + nbox.aabox.x + "," + nbox.aabox.y
+						+ " L" + (nbox.aabox.x+nbox.aabox.width) + "," + nbox.aabox.y
+						+ " " + (nbox.aabox.x+nbox.aabox.width) + "," + (nbox.aabox.y+nbox.aabox.height)
+						+ " " + nbox.aabox.x + "," + (nbox.aabox.y+nbox.aabox.height) + "z";
 			assignAttributes(selectedBox, {'d': dstr});
 			
-			var angle = canvas.getRotationAngle(selected);
-			var mid_x = (nbox.tr.x + nbox.tl.x)/2;
-			var mid_y = (nbox.bl.y + nbox.tl.y)/2;
-
-			if(canvas.getRotationAngle(selected)) {
-				this.selectorGroup.setAttribute("transform","rotate(" + angle + "," + mid_x + "," + mid_y + ")");
-			} else {
-				this.selectorGroup.removeAttribute("transform");
-			}
-			
 			var gripCoords = {
-				nw: [nbox.tl.x, nbox.tl.y],
-				ne: [nbox.tr.x, nbox.tr.y],
-				sw: [nbox.bl.x, nbox.bl.y],
-				se: [nbox.br.x, nbox.br.y],
-				n:  [nbox.tl.x + (nbox.tr.x-nbox.tl.x)/2, nbox.tl.y + (nbox.tr.y-nbox.tl.y)/2],
-				w:	[nbox.tl.x + (nbox.bl.x-nbox.tl.x)/2, nbox.tl.y + (nbox.bl.y-nbox.tl.y)/2],
-				e:	[nbox.tr.x + (nbox.br.x-nbox.tr.x)/2, nbox.tr.y + (nbox.br.y-nbox.tr.y)/2],
-				s:	[nbox.bl.x + (nbox.br.x-nbox.bl.x)/2, nbox.bl.y + (nbox.br.y-nbox.bl.y)/2]
+				nw: [nbox.aabox.x, nbox.aabox.y],
+				ne: [nbox.aabox.x+nbox.aabox.width, nbox.aabox.y],
+				sw: [nbox.aabox.x, nbox.aabox.y+nbox.aabox.height],
+				se: [nbox.aabox.x+nbox.aabox.width, nbox.aabox.y+nbox.aabox.height],
+				n:  [nbox.aabox.x + (nbox.aabox.width)/2, nbox.aabox.y],
+				w:	[nbox.aabox.x, nbox.aabox.y + (nbox.aabox.height)/2],
+				e:	[nbox.aabox.x + nbox.aabox.width, nbox.aabox.y + (nbox.aabox.height)/2],
+				s:	[nbox.aabox.x + (nbox.aabox.width)/2, nbox.aabox.y + nbox.aabox.height],
 			};
 			$.each(gripCoords, function(dir, coords) {
 				assignAttributes(selectedGrips[dir], {
@@ -486,25 +512,20 @@ function BatchCommand(text) {
 				});
 			});
 
-			// we want to go 20 pixels in the negative transformed y direction, ignoring scale
-			
-			var rotatept = {x:(l+w/2)*current_zoom,y:t*current_zoom};
-			assignAttributes(this.rotateGripConnector, { x1: mid_x, 
-														y1: nbox.tl.y, 
-														x2: mid_x, y2: nbox.tl.y - 20 });
-			assignAttributes(this.rotateGrip, { cx: mid_x, cy: nbox.tl.y - 20 });
+			if (angle) {
+				this.selectorGroup.setAttribute("transform", "rotate(" + [angle,cx,cy].join(",") + ")");
+			}
+			else {
+				this.selectorGroup.setAttribute("transform", "");
+			}
 
-// 			var dy = (nbox.tl.y - nbox.tr.y),
-// 				dx = (nbox.tr.x - nbox.tl.x),
-// 				theta = Math.atan2(dy,dx);
-// 			dy = 20 * Math.cos(theta);
-// 			dx = 20 * Math.sin(theta)
-// 			var rotatept = {x:(l+w/2)*current_zoom,y:t*current_zoom};
-// 			rotatept = transformPoint( rotatept.x, rotatept.y, m);
-// 			assignAttributes(this.rotateGripConnector, { x1: nbox.tl.x + (nbox.tr.x-nbox.tl.x)/2, 
-// 														y1: nbox.tl.y + (nbox.tr.y-nbox.tl.y)/2, 
-// 														x2: rotatept.x-dx, y2: rotatept.y-dy });
-// 			assignAttributes(this.rotateGrip, { cx: rotatept.x-dx, cy: rotatept.y-dy });
+			// we want to go 20 pixels in the negative transformed y direction, ignoring scale
+			assignAttributes(this.rotateGripConnector, { x1: nbox.aabox.x + (nbox.aabox.width)/2, 
+														y1: nbox.aabox.y, 
+														x2: nbox.aabox.x + (nbox.aabox.width)/2, 
+														y2: nbox.aabox.y- 20});
+			assignAttributes(this.rotateGrip, { cx: nbox.aabox.x + (nbox.aabox.width)/2, 
+												cy: nbox.aabox.y - 20 });
 			
 			svgroot.unsuspendRedraw(sr_handle);
 		};
@@ -1521,8 +1542,7 @@ function BatchCommand(text) {
 					tlist.removeItem(k);
 				}
 				else if (xform.type == 1) {
-					var m = xform.matrix;
-					if (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && m.e == 0 && m.f == 0) {
+					if (isIdentity(xform.matrix)) {
 						tlist.removeItem(k);
 					}
 				}
@@ -1975,6 +1995,10 @@ function BatchCommand(text) {
 		return { x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f};
 	};
 	
+	var isIdentity = function(m) {
+		return (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && m.e == 0 && m.f == 0);
+	}
+	
 	// matrixMultiply() is provided because WebKit didn't implement multiply() correctly
 	// on the SVGMatrix interface.  See https://bugs.webkit.org/show_bug.cgi?id=16062
 	// This function tries to return a SVGMatrix that is the multiplication m1*m2.
@@ -2008,17 +2032,14 @@ function BatchCommand(text) {
 	// (this is the equivalent of SVGTransformList.consolidate() but unlike
 	//  that method, this one does not modify the actual SVGTransformList)
 	// This function is very liberal with its min,max arguments
-	var transformListToTransform = function(tlist, min, max, noRotate) {
-		var min = min || 0;
-		var max = max || (tlist.numberOfItems-1);
+	var transformListToTransform = function(tlist, min, max) {
+		var min = min == undefined ? 0 : min;
+		var max = max == undefined ? (tlist.numberOfItems-1) : max;
 		min = parseInt(min);
 		max = parseInt(max);
 		if (min > max) { var temp = max; max = min; min = temp; }
-		
 		var m = svgroot.createSVGMatrix();
 		for (var i = min; i <= max; ++i) {
-			if(noRotate && i >= 0 && i < tlist.numberOfItems && tlist.getItem(i).type == 4) continue;
-		
 			// if our indices are out of range, just use a harmless identity matrix
 			var mtom = (i >= 0 && i < tlist.numberOfItems ? 
 							tlist.getItem(i).matrix :
@@ -2031,7 +2052,8 @@ function BatchCommand(text) {
 	var hasMatrixTransform = function(tlist) {
 		var num = tlist.numberOfItems;
 		while (num--) {
-			if (tlist.getItem(num).type == 1) return true;
+			var xform = tlist.getItem(num);
+			if (xform.type == 1 && !isIdentity(xform.matrix)) return true;
 		}
 		return false;
 	}
@@ -2090,36 +2112,29 @@ function BatchCommand(text) {
 			topright = {x:(l+w),y:t},
 			botright = {x:(l+w),y:(t+h)},
 			botleft = {x:l,y:(t+h)};
+		topleft = transformPoint( topleft.x, topleft.y, m );
+		var minx = topleft.x,
+			maxx = topleft.x,
+			miny = topleft.y,
+			maxy = topleft.y;
+		topright = transformPoint( topright.x, topright.y, m );
+		minx = Math.min(minx, topright.x);
+		maxx = Math.max(maxx, topright.x);
+		miny = Math.min(miny, topright.y);
+		maxy = Math.max(maxy, topright.y);
+		botleft = transformPoint( botleft.x, botleft.y, m);
+		minx = Math.min(minx, botleft.x);
+		maxx = Math.max(maxx, botleft.x);
+		miny = Math.min(miny, botleft.y);
+		maxy = Math.max(maxy, botleft.y);
+		botright = transformPoint( botright.x, botright.y, m );
+		minx = Math.min(minx, botright.x);
+		maxx = Math.max(maxx, botright.x);
+		miny = Math.min(miny, botright.y);
+		maxy = Math.max(maxy, botright.y);
 
-		var first = transformPoint( topleft.x, topleft.y, m );
-		// Get all the new points of this box
-		var transPts = [
-			first,
-			transformPoint( topright.x, topright.y, m ),
-			transformPoint( botleft.x, botleft.y, m),
-			transformPoint( botright.x, botright.y, m )
-		];
-		
-		var min_x = first.x, min_y = first.y, max_x = first.x, max_y = first.y;
-		
-		// Make new box based on max/min, etc.
-		$.each(transPts, function(i, pt) {
-			min_x = Math.min(min_x, pt.x);
-			min_y = Math.min(min_y, pt.y);
-			max_x = Math.max(max_x, pt.x);
-			max_y = Math.max(max_y, pt.y);
-		});
-
-		topleft = {x: min_x, y: min_y};
-		topright = {x: max_x, y: min_y};
-		botleft = {x: min_x, y: max_y};
-		botright = {x: max_x, y: max_y};
-
-// 		topleft = transformPoint( topleft.x, topleft.y, m );
-// 		topright = transformPoint( topright.x, topright.y, m );
-// 		botleft = transformPoint( botleft.x, botleft.y, m);
-// 		botright = transformPoint( botright.x, botright.y, m );
-		return {tl:topleft, tr:topright, bl:botleft, br:botright};
+		return {tl:topleft, tr:topright, bl:botleft, br:botright, 
+				aabox: {x:minx, y:miny, width:(maxx-minx), height:(maxy-miny)} };
 	};
 
 	// - when we are in a create mode, the element is added to the canvas
@@ -2454,7 +2469,7 @@ function BatchCommand(text) {
 			case "rotate":
 				started = true;
 				// append a dummy transform that will be used as the rotate
-				tlist.appendItem(svgroot.createSVGTransform());
+//				tlist.appendItem(svgroot.createSVGTransform());
 				// we are starting an undoable change (a drag-rotation)
 				canvas.beginUndoableChange("transform", selectedElements);
 				break;
