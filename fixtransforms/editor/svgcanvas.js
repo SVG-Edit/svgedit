@@ -1744,6 +1744,8 @@ function BatchCommand(text) {
 		// else, it's a non-group
 		else {
 			var box = canvas.getBBox(selected);
+			// TODO: fix this, it is not correct in the case of a skewed element
+			// - use transformBox?
 			var center = {x: (box.x+box.width/2), y: (box.y+box.height/2)};
 			var newcenter = {x: center.x, y: center.y };
 			var m = svgroot.createSVGMatrix();
