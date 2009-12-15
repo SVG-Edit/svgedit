@@ -2994,6 +2994,15 @@ function BatchCommand(text) {
 		
 		if(!getBBox) {
 			// Replace the current element with the converted one
+			
+			// Reorient if it has a matrix
+			if(eltrans) {
+				var tlist = canvas.getTransformList(path);
+				if(hasMatrixTransform(tlist)) {
+					resetPathOrientation(path);
+				}
+			}
+			
 			batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
 			batchCmd.addSubCommand(new InsertElementCommand(path));
 
