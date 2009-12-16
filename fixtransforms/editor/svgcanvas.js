@@ -1744,13 +1744,8 @@ function BatchCommand(text) {
 		// else, it's a non-group
 		else {
 			var box = canvas.getBBox(selected);
-			// TODO: fix this, it is not correct in the case of a skewed element
-			// - use transformBox?
-			// TODO: if a rotated, skewed element is moved, at first no problem
-			// however, if another element is selected, then back to the first element
-			// it will hop around...
 			var center = {x: (box.x+box.width/2), y: (box.y+box.height/2)};
-			var newcenter = transformPoint(center.x,center.y,transformListToTransform(tlist).matrix);//{x: center.x, y: center.y };
+			var newcenter = transformPoint(center.x,center.y,transformListToTransform(tlist).matrix);
 			var m = svgroot.createSVGMatrix();
 
 			// temporarily strip off the rotate
@@ -1797,14 +1792,9 @@ function BatchCommand(text) {
 			}
 			
 			// if the shape was rotated, calculate what the center will be
-			var xcenter = null;
+			var xcenter = {x:0, y:0};
 			if (angle) {
-				// calculate the new center from the translate
-				if (operation == 2) {
-					// TODO: avoid this?
-//					newcenter = transformPoint(center.x,center.y,m);
-				}
-				else if (operation == 3) {
+				if (operation == 3) {
 					xcenter = transformPoint(center.x,center.y,m);
 				}
 			}
@@ -1822,24 +1812,14 @@ function BatchCommand(text) {
 			
 			// at this point, the element looks exactly how we want it to look but its 
 			// rotational center may be off in the case of a resize - we need to fix that
-			// TODO: if we get in here, I think there are problems
-			if (angle && operation == 3) {
-				box = canvas.getBBox(selected);
-				m = transformListToTransform(tlist).matrix;
-
-				// get its actual center
-				newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2, m);
-
+			if (false && angle && operation == 3) {
 				// determine the resultant delta translate to re-center
 				var dx = newcenter.x - xcenter.x,
 					dy = newcenter.y - xcenter.y;
 				
 				var delta = svgroot.createSVGMatrix().translate(dx,dy);
+				console.log([dx,dy]);
 				remapElement(selected,changes,delta);
-
-				var newRot = svgroot.createSVGTransform();
-				newRot.setRotate(angle,newcenter.x,newcenter.y);
-				tlist.replaceItem(newRot,0);
 			}
 		} // a non-group
 
