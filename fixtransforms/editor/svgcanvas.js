@@ -1746,8 +1746,11 @@ function BatchCommand(text) {
 			var box = canvas.getBBox(selected);
 			// TODO: fix this, it is not correct in the case of a skewed element
 			// - use transformBox?
+			// TODO: if a rotated, skewed element is moved, at first no problem
+			// however, if another element is selected, then back to the first element
+			// it will hop around...
 			var center = {x: (box.x+box.width/2), y: (box.y+box.height/2)};
-			var newcenter = {x: center.x, y: center.y };
+			var newcenter = transformPoint(center.x,center.y,transformListToTransform(tlist).matrix);//{x: center.x, y: center.y };
 			var m = svgroot.createSVGMatrix();
 
 			// temporarily strip off the rotate
@@ -1784,7 +1787,7 @@ function BatchCommand(text) {
 			{
 				operation = 2; // translate
 				var oldxlate = tlist.getItem(0).matrix,
-					meq = transformListToTransform(tlist).matrix,
+					meq = transformListToTransform(tlist,1).matrix,
 					meq_inv = meq.inverse();
 				m = matrixMultiply( meq_inv, oldxlate, meq );
 				tlist.removeItem(0);
@@ -1798,7 +1801,8 @@ function BatchCommand(text) {
 			if (angle) {
 				// calculate the new center from the translate
 				if (operation == 2) {
-					newcenter = transformPoint(center.x,center.y,m);
+					// TODO: avoid this?
+//					newcenter = transformPoint(center.x,center.y,m);
 				}
 				else if (operation == 3) {
 					xcenter = transformPoint(center.x,center.y,m);
@@ -1818,6 +1822,7 @@ function BatchCommand(text) {
 			
 			// at this point, the element looks exactly how we want it to look but its 
 			// rotational center may be off in the case of a resize - we need to fix that
+			// TODO: if we get in here, I think there are problems
 			if (angle && operation == 3) {
 				box = canvas.getBBox(selected);
 				m = transformListToTransform(tlist).matrix;
@@ -5495,6 +5500,7 @@ function BatchCommand(text) {
 			if (elem.tagName == "g" && (attr != "transform" && attr != "opacity")) continue;
 			var oldval = attr == "#text" ? elem.textContent : elem.getAttribute(attr);
 			if (oldval == null)  oldval = "";
+			// TODO: determine why r877 changed this to !== which will means this if will always run
 			if (oldval !== newValue) {
 				if (attr == "#text") {
 					var old_w = canvas.getBBox(elem).width;
@@ -5542,11 +5548,16 @@ function BatchCommand(text) {
 					while (n--) {
 						var xform = tlist.getItem(n);
 						if (xform.type == 4) {
-							var cx = round(selectedBBoxes[i].x + selectedBBoxes[i].width/2),
-								cy = round(selectedBBoxes[i].y + selectedBBoxes[i].height/2);
+							// remove old rotate
+							tlist.removeItem(xform);
+							
+							var box = canvas.getBBox(elem);
+							var center = transformPoint(box.x+box.width/2, box.y+box.height/2, transformListToTransform(tlist).matrix);
+							var cx = center.x,
+								cy = center.y;
 							var newrot = svgroot.createSVGTransform();
 							newrot.setRotate(angle, cx, cy);
-							tlist.replaceItem(newrot, n);
+							tlist.insertItemBefore(newrot, n);
 							break;
 						}
 					}
