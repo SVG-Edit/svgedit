@@ -2030,7 +2030,7 @@ function svg_edit_setup() {
 			{sel:'#tool_open', fn: clickOpen, evt: 'click', key: [modKey+'O', true]},
 			{sel:'#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
 			{sel:'#tool_wireframe', fn: clickWireframe, evt: 'click', key: ['F', true]},
-			{sel:'#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, true]},
+			{sel:'#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false]},
 			{sel:'#tool_source_save', fn: saveSourceEditor, evt: 'click'},
 			{sel:'#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
 			{sel:'#tool_docprops', fn: showDocProperties, evt: 'click', key: [modKey+'I', true]},
@@ -2085,7 +2085,7 @@ function svg_edit_setup() {
 					// Bind function to shortcut key
 					if(opts.key) {
 						// Set shortcut based on options
-						var keyval, shortcut = '', disInInp = false, fn = opts.fn, pd = false;
+						var keyval, shortcut = '', disInInp = true, fn = opts.fn, pd = false;
 						if($.isArray(opts.key)) {
 							keyval = opts.key[0];
 							if(opts.key.length > 1) pd = opts.key[1];
