@@ -1661,8 +1661,39 @@ function BatchCommand(text) {
 							case 'polyline':
 							case 'polygon':
 								ch.points = child.getAttribute("points");
+								if(ch.points) {
+									var list = child.points;
+									var len = list.numberOfItems;
+									ch.points = new Array(len);
+									for (var i = 0; i < len; ++i) {
+										var pt = list.getItem(i);
+										ch.points[i] = {x:pt.x,y:pt.y};
+									}
+								}
 							case 'path':
 								ch.d = child.getAttribute("d");
+								if(ch.d) {
+									var segList = child.pathSegList;
+									var len = segList.numberOfItems;
+									ch.d = new Array(len);
+									for (var i = 0; i < len; ++i) {
+										var seg = segList.getItem(i);
+										ch.d[i] = {
+											type: seg.pathSegType,
+											x: seg.x,
+											y: seg.y,
+											x1: seg.x1,
+											y1: seg.y1,
+											x2: seg.x2,
+											y2: seg.y2,
+											r1: seg.r1,
+											r2: seg.r2,
+											angle: seg.angle,
+											largeArcFlag: seg.largeArcFlag,
+											sweepFlag: seg.sweepFlag
+										};
+									}
+								}
 								remapElement(child, ch, em);
 								childTlist.clear();
 							default:
