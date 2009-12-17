@@ -15,26 +15,7 @@
 	* ensure zooming works properly
 	* ensure undo/redo works perfectly
 */
-/*
-	TODOs for Localizing:
-	
-	- rename tool_path to tool_fhpath in all localization files (already updated in UI and script)
-	- rename tool_poly to tool_path in all localization files (already updated in UI and script)
-	- rename poly_node_x to path_node_x globally
-	- rename poly_node_y to path_node_y globally
-	- rename svninfo_dim to svginfo_dim globally (typo)
-	- provide translations in all other non-EN lang.XX.js files for:
-		- path_node_x
-		- path_node_y
-		- seg_type
-		- straight_segments
-		- curve_segments
-		- tool_node_clone
-		- tool_node_delete
-		- selLayerLabel
-		- selLayerNames
-		- sidepanel_handle
-*/
+
 var isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1;
 if(!window.console) {
 	window.console = {};
@@ -1664,12 +1645,29 @@ function BatchCommand(text) {
 						var angle = canvas.getRotationAngle(child);
 						if(angle || hasMatrixTransform(childTlist)) {
 							var em = matrixMultiply(tm, sm, tmn, m);
-
-							// this does not appear to work, something wrong with my logic here
 							var e2t = svgroot.createSVGTransform();
 							e2t.setMatrix(em);
 							childTlist.clear();
 							childTlist.appendItem(e2t,0);
+							
+							// Remap all point-based elements
+							var ch = {};
+							switch (child.tagName) {
+							case 'line':
+								ch.x1 = child.getAttribute("x1");
+								ch.y1 = child.getAttribute("y1");
+								ch.x2 = child.getAttribute("x2");
+								ch.y2 = child.getAttribute("y2");
+							case 'polyline':
+							case 'polygon':
+								ch.points = child.getAttribute("points");
+							case 'path':
+								ch.d = child.getAttribute("d");
+								remapElement(child, ch, em);
+								childTlist.clear();
+							default:
+								break;
+							}
 						}
 						// if not rotated or skewed, push the [T][S][-T] down to the child
 						else {
@@ -3646,7 +3644,7 @@ function BatchCommand(text) {
 	//   identified, a ChangeElementCommand is created and stored on the stack for those attrs
 	//   this is done in when we recalculate the selected dimensions()
 	var mouseUp = function(evt)
-	{
+	{	
 		var tempJustSelected = justSelected;
 		justSelected = null;
 		if (!started) return;
@@ -5610,7 +5608,7 @@ function BatchCommand(text) {
 		}
 	};
 
-	$(container).mouseup(mouseUp);
+	$(window).mouseup(mouseUp);
 	$(container).mousedown(mouseDown);
 	$(container).mousemove(mouseMove);
 
