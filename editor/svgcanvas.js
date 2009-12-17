@@ -1743,29 +1743,36 @@ function BatchCommand(text) {
 		}
 		// else, it's a non-group
 		else {
+			// TODO: it all seems to work now, but we need to make sure it's undo-able
 			var box = canvas.getBBox(selected);
-			var center = {x: (box.x+box.width/2), y: (box.y+box.height/2)};
-			var newcenter = transformPoint(center.x,center.y,transformListToTransform(tlist).matrix);
+			var oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2};
+			var newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2,
+								transformListToTransform(tlist).matrix);
 			var m = svgroot.createSVGMatrix();
-
-			// temporarily strip off the rotate
+			
+			// temporarily strip off the rotate and save the old center
 			var angle = canvas.getRotationAngle(selected);
 			if (angle) {
 				for (var i = 0; i < tlist.numberOfItems; ++i) {
 					var xform = tlist.getItem(i);
 					if (xform.type == 4) {
+						// extract old center through mystical arts
+						var rm = xform.matrix;
+						var a = angle * Math.PI / 180;
+						oldcenter.y = 0.5 * (Math.sin(a)*rm.e + (1-Math.cos(a))*rm.f) / (1 - Math.cos(a));
+						oldcenter.x = ((1 - Math.cos(a)) * oldcenter.y - rm.f) / Math.sin(a);
 						tlist.removeItem(i);
 						break;
 					}
 				}
 			}
-
-			var N = tlist.numberOfItems;
-			var operation = 0;
 			
+			var operation = 0;
+			var N = tlist.numberOfItems;
 			// first, if it was a scale then the second-last transform will be it
 			// if we had [M][T][S][T] we want to extract the matrix equivalent of
 			// [T][S][T] and push it down
+			console.log("N=" + N);
 			if (N >= 3 && tlist.getItem(N-2).type == 3 && 
 				tlist.getItem(N-3).type == 2 && tlist.getItem(N-1).type == 2) 
 			{
@@ -1788,38 +1795,41 @@ function BatchCommand(text) {
 				tlist.removeItem(0);
 			}
 			else {
-				operation = 4; // rotate
+				operation = 4; // rotation
+				var newRot = svgroot.createSVGTransform();
+				newRot.setRotate(angle,newcenter.x,newcenter.y);
+				tlist.insertItemBefore(newRot, 0);				
 			}
 			
-			// if the shape was rotated, calculate what the center will be
-			var xcenter = {x:0, y:0};
-			if (angle) {
-				if (operation == 3) {
-					xcenter = transformPoint(center.x,center.y,m);
-				}
-			}
-
 			if (operation == 2 || operation == 3) {
 				remapElement(selected,changes,m);
 			} // if we are remapping
 			
-			// if we had a rotation, re-add the rotation back with its original center
-			if (angle) {
-				var newRot = svgroot.createSVGTransform();
-				newRot.setRotate(angle,newcenter.x,newcenter.y);
-				tlist.insertItemBefore(newRot,0);
+			if (operation == 2) {
+				if (angle) {
+					var newRot = svgroot.createSVGTransform();
+					newRot.setRotate(angle,newcenter.x,newcenter.y);
+					tlist.insertItemBefore(newRot, 0);
+				}
 			}
+			// [Rold][M][T][S][-T] became [Rold][M]
+			// we want it to be [Rnew][M][Tr] where Tr is the
+			// translation required to re-center it
+			// Therefore, [Tr][ = [M_inv][Rnew_inv][Rold][M]
+			else if (operation == 3) {
+				var m = transformListToTransform(tlist).matrix;
+				var roldt = svgroot.createSVGTransform();
+				roldt.setRotate(angle, oldcenter.x, oldcenter.y);
+				var rold = roldt.matrix;
+				var rnew = svgroot.createSVGTransform();
+				rnew.setRotate(angle, newcenter.x, newcenter.y);
+				var rnew_inv = rnew.matrix.inverse();
+				var m_inv = m.inverse();
+				var extrat = matrixMultiply(m_inv, rnew_inv, rold, m);
 			
-			// at this point, the element looks exactly how we want it to look but its 
-			// rotational center may be off in the case of a resize - we need to fix that
-			if (false && angle && operation == 3) {
-				// determine the resultant delta translate to re-center
-				var dx = newcenter.x - xcenter.x,
-					dy = newcenter.y - xcenter.y;
+				remapElement(selected,changes,extrat);
 				
-				var delta = svgroot.createSVGMatrix().translate(dx,dy);
-				console.log([dx,dy]);
-				remapElement(selected,changes,delta);
+				tlist.insertItemBefore(rnew,0);
 			}
 		} // a non-group
 
