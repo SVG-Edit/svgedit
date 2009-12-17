@@ -1550,7 +1550,10 @@ function BatchCommand(text) {
 		}
 		
 		// if this element had no transforms, we are done
-		if (tlist.numberOfItems == 0) return null;
+		if (tlist.numberOfItems == 0) {
+			selected.removeAttribute("transform");
+			return null;
+		}
 		
 		// we know we have some transforms, so set up return variable		
 		var batchCmd = new BatchCommand("Transform");
@@ -1797,9 +1800,14 @@ function BatchCommand(text) {
 			// (this function has zero work to do for a rotate())
 			else {
 				operation = 4; // rotation
-				var newRot = svgroot.createSVGTransform();
-				newRot.setRotate(angle,newcenter.x,newcenter.y);
-				tlist.insertItemBefore(newRot, 0);
+				if (angle) {
+					var newRot = svgroot.createSVGTransform();
+					newRot.setRotate(angle,newcenter.x,newcenter.y);
+					tlist.insertItemBefore(newRot, 0);
+				}
+				if (tlist.numberOfItems == 0) {
+					selected.removeAttribute("transform");
+				}
 				return null;
 			}
 			
@@ -4109,7 +4117,7 @@ function BatchCommand(text) {
 			addCommandToHistory(new InsertElementCommand(element));
 			call("changed",[element]);
 		}
-		
+
 		start_transform = null;
 	};
 
@@ -5238,10 +5246,15 @@ function BatchCommand(text) {
 		}
 		
 		// find R_nc and insert it
-		var center = transformPoint(cx,cy,transformListToTransform(tlist).matrix);
-		var R_nc = svgroot.createSVGTransform();
-		R_nc.setRotate(val, center.x, center.y);
-		tlist.insertItemBefore(R_nc,0);
+		if (val != 0) {
+			var center = transformPoint(cx,cy,transformListToTransform(tlist).matrix);
+			var R_nc = svgroot.createSVGTransform();
+			R_nc.setRotate(val, center.x, center.y);
+			tlist.insertItemBefore(R_nc,0);
+		}
+		else if (tlist.numberOfItems == 0) {
+			elem.removeAttribute("transform");
+		}
 		
 		if (!preventUndo) {
 			// we need to undo it, then redo it so it can be undo-able! :)
