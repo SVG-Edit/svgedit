@@ -1743,7 +1743,6 @@ function BatchCommand(text) {
 		}
 		// else, it's a non-group
 		else {
-			// TODO: it all seems to work now, but we need to make sure it's undo-able
 			var box = canvas.getBBox(selected);
 			var oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2};
 			var newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2,
@@ -1769,10 +1768,9 @@ function BatchCommand(text) {
 			
 			var operation = 0;
 			var N = tlist.numberOfItems;
-			// first, if it was a scale then the second-last transform will be it
+			// first, if it was a scale then the second-last transform will be the [S]
 			// if we had [M][T][S][T] we want to extract the matrix equivalent of
-			// [T][S][T] and push it down
-			console.log("N=" + N);
+			// [T][S][T] and push it down to the element
 			if (N >= 3 && tlist.getItem(N-2).type == 3 && 
 				tlist.getItem(N-3).type == 2 && tlist.getItem(N-1).type == 2) 
 			{
@@ -1783,7 +1781,8 @@ function BatchCommand(text) {
 				tlist.removeItem(N-3);
 			}
 			// if we had [T1][M] we want to transform this into [M][T2]
-			// therefore [ T2 ] = [ M_inv ] [ T1 ] [ M ]
+			// therefore [ T2 ] = [ M_inv ] [ T1 ] [ M ] and we can push [T2] 
+			// down to the element
 			else if ( (N == 1 || (N > 1 && tlist.getItem(1).type != 3)) && 
 				tlist.getItem(0).type == 2) 
 			{
@@ -1794,17 +1793,22 @@ function BatchCommand(text) {
 				m = matrixMultiply( meq_inv, oldxlate, meq );
 				tlist.removeItem(0);
 			}
+			// if it was a rotation, put the rotate back and return without a command
+			// (this function has zero work to do for a rotate())
 			else {
 				operation = 4; // rotation
 				var newRot = svgroot.createSVGTransform();
 				newRot.setRotate(angle,newcenter.x,newcenter.y);
-				tlist.insertItemBefore(newRot, 0);				
+				tlist.insertItemBefore(newRot, 0);
+				return null;
 			}
 			
+			// if it was a translate or resize, we need to remap the element and absorb the xform
 			if (operation == 2 || operation == 3) {
 				remapElement(selected,changes,m);
 			} // if we are remapping
 			
+			// if it was a translate, put back the rotate at the new center
 			if (operation == 2) {
 				if (angle) {
 					var newRot = svgroot.createSVGTransform();
@@ -1815,7 +1819,7 @@ function BatchCommand(text) {
 			// [Rold][M][T][S][-T] became [Rold][M]
 			// we want it to be [Rnew][M][Tr] where Tr is the
 			// translation required to re-center it
-			// Therefore, [Tr][ = [M_inv][Rnew_inv][Rold][M]
+			// Therefore, [Tr] = [M_inv][Rnew_inv][Rold][M]
 			else if (operation == 3) {
 				var m = transformListToTransform(tlist).matrix;
 				var roldt = svgroot.createSVGTransform();
@@ -1837,7 +1841,6 @@ function BatchCommand(text) {
 		if (tlist.numberOfItems == 0) {
 			selected.removeAttribute("transform");
 		}
-		
 		batchCmd.addSubCommand(new ChangeElementCommand(selected, initial));
 		
 		return batchCmd;
@@ -5490,8 +5493,7 @@ function BatchCommand(text) {
 			if (elem.tagName == "g" && (attr != "transform" && attr != "opacity")) continue;
 			var oldval = attr == "#text" ? elem.textContent : elem.getAttribute(attr);
 			if (oldval == null)  oldval = "";
-			// TODO: determine why r877 changed this to !== which will means this if will always run
-			if (oldval !== newValue) {
+			if (oldval != String(newValue)) {
 				if (attr == "#text") {
 					var old_w = canvas.getBBox(elem).width;
 					elem.textContent = newValue;
