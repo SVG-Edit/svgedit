@@ -5827,7 +5827,7 @@ function BatchCommand(text) {
 					xform.setTranslate(dx,dy);
 				}
 				
-				tlist.appendItem(xform);
+				tlist.insertItemBefore(xform, 0);
 				
 				var cmd = recalculateDimensions(selected);
 				if (cmd) {
