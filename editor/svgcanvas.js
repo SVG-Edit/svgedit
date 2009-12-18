@@ -1781,6 +1781,15 @@ function BatchCommand(text) {
 				tlist.removeItem(N-2);
 				tlist.removeItem(N-3);
 			}
+			else if (N >= 3 && tlist.getItem(N-1).type == 1)
+			{
+				operation = 3; // scale
+				m = transformListToTransform(tlist).matrix;
+				var e2t = svgroot.createSVGTransform();
+				e2t.setMatrix(m);
+				tlist.clear();
+				tlist.appendItem(e2t);
+			}			
 			// next, check if the first transform was a translate 
 			// if we had [ T1 ] [ M ] we want to transform this into [ M ] [ T2 ]
 			// therefore [ T2 ] = [ M_inv ] [ T1 ] [ M ]
