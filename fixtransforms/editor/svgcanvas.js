@@ -1908,7 +1908,8 @@ function BatchCommand(text) {
 			var operation = 0;
 			var N = tlist.numberOfItems;
 			
-			// first, if it was a scale then the second-last transform will be the [S]
+			// first, if it was a scale of a non-skewed element, then the second-last  
+			// transform will be the [S]
 			// if we had [M][T][S][T] we want to extract the matrix equivalent of
 			// [T][S][T] and push it down to the element
 			if (N >= 3 && tlist.getItem(N-2).type == 3 && 
@@ -1919,31 +1920,18 @@ function BatchCommand(text) {
 				tlist.removeItem(N-1);
 				tlist.removeItem(N-2);
 				tlist.removeItem(N-3);
-			} // if we had [T][S][-T][M], then this was a matrix-element being 
-			  // resized. Thus, we simply combine it all into one matrix
-			else if(N == 4 && tlist.getItem(N-1).type == 1 && !angle) {
+			} // if we had [T][S][-T][M], then this was a skewed element being resized
+			// Thus, we simply combine it all into one matrix
+			else if(N == 4 && tlist.getItem(N-1).type == 1) {
+				operation = 3; // scale
 				m = transformListToTransform(tlist).matrix;
 				var e2t = svgroot.createSVGTransform();
 				e2t.setMatrix(m);
 				tlist.clear();
 				tlist.appendItem(e2t);
-				return null;
+				// reset the matrix so that the element is not re-mapped
+				m = svgroot.createSVGMatrix();
 			} // if we had [R][T][S][-T][M], then this was a rotated matrix-element  
-			  // being resized. Thus, we simply combine the matrix and keep the rotate
-			else if(N == 4 && tlist.getItem(N-1).type == 1 && angle) {
-				m = transformListToTransform(tlist).matrix;
-				var e2t = svgroot.createSVGTransform();
-				e2t.setMatrix(m);
-				tlist.clear();
-				tlist.appendItem(e2t);
-				
-				// Not positioned correctly yet.
-				// FIXME codedread! You're my only hope...
-				var newRot = svgroot.createSVGTransform();
-				newRot.setRotate(angle,newcenter.x,newcenter.y);
-				tlist.insertItemBefore(newRot, 0);
-				return null;
-			}			
 			// if we had [T1][M] we want to transform this into [M][T2]
 			// therefore [ T2 ] = [ M_inv ] [ T1 ] [ M ] and we can push [T2] 
 			// down to the element
