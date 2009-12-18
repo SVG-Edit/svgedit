@@ -1635,13 +1635,40 @@ function BatchCommand(text) {
 		
 		// if it's a group, we have special processing to flatten transforms
 		if (selected.tagName == "g") {
+			var box = canvas.getBBox(selected);
+			var oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2};
+			var newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2,
+								transformListToTransform(tlist).matrix);
+			var m = svgroot.createSVGMatrix();
+			
+			// temporarily strip off the rotate and save the old center
+			var gangle = canvas.getRotationAngle(selected);
+			if (gangle) {
+				for (var i = 0; i < tlist.numberOfItems; ++i) {
+					var xform = tlist.getItem(i);
+					if (xform.type == 4) {
+						// extract old center through mystical arts
+						var rm = xform.matrix;
+						var a = gangle * Math.PI / 180;
+						// FIXME: This blows up if the angle is exactly 0 or 180 degrees!
+						oldcenter.y = 0.5 * (Math.sin(a)*rm.e + (1-Math.cos(a))*rm.f) / (1 - Math.cos(a));
+						oldcenter.x = ((1 - Math.cos(a)) * oldcenter.y - rm.f) / Math.sin(a);
+						tlist.removeItem(i);
+						break;
+					}
+				}
+			}
+			
 			var tx = 0, ty = 0;
+			var operation = 0;
 			var N = tlist.numberOfItems;
 			
 			// first, if it was a scale then the second-last transform will be it
 			if (N >= 3 && tlist.getItem(N-2).type == 3 && 
 				tlist.getItem(N-3).type == 2 && tlist.getItem(N-1).type == 2) 
 			{
+				operation = 3; // scale
+			
 				// if the children are unrotated, pass the scale down directly
 				// otherwise pass the equivalent matrix() down directly
 				var tm = tlist.getItem(N-3).matrix;
@@ -1715,6 +1742,7 @@ function BatchCommand(text) {
 							default:
 								break;
 							}
+							// FIXME: we're not saving a subcommand to the batchCmd for this child
 						}
 						// if not rotated or skewed, push the [T][S][-T] down to the child
 						else {
@@ -1759,6 +1787,7 @@ function BatchCommand(text) {
 			else if ( (N == 1 || (N > 1 && tlist.getItem(1).type != 3)) && 
 				tlist.getItem(0).type == 2) 
 			{
+				operation = 2; // translate
 				var T_M = transformListToTransform(tlist).matrix;
 				tlist.removeItem(0);
 				var M_inv = transformListToTransform(tlist).matrix.inverse();
@@ -1788,6 +1817,67 @@ function BatchCommand(text) {
 					start_transform = old_start_transform;
 				}
 			}
+			// else it was just a rotate
+			else {
+				if (gangle) {
+					var newRot = svgroot.createSVGTransform();
+					newRot.setRotate(gangle,newcenter.x,newcenter.y);
+					tlist.insertItemBefore(newRot, 0);
+				}
+				if (tlist.numberOfItems == 0) {
+					selected.removeAttribute("transform");
+				}
+				return null;			
+			}
+			
+			// if it was a translate, put back the rotate at the new center
+			if (operation == 2) {
+				if (gangle) {
+					var newRot = svgroot.createSVGTransform();
+					newRot.setRotate(gangle,newcenter.x,newcenter.y);
+					tlist.insertItemBefore(newRot, 0);
+				}
+			}
+			// if it was a resize
+			else if (operation == 3) {
+				var m = transformListToTransform(tlist).matrix;
+				var roldt = svgroot.createSVGTransform();
+				roldt.setRotate(gangle, oldcenter.x, oldcenter.y);
+				var rold = roldt.matrix;
+				var rnew = svgroot.createSVGTransform();
+				rnew.setRotate(gangle, newcenter.x, newcenter.y);
+				var rnew_inv = rnew.matrix.inverse();
+				var m_inv = m.inverse();
+				var extrat = matrixMultiply(m_inv, rnew_inv, rold, m);
+
+				tx = extrat.e;
+				ty = extrat.f;
+
+				if (tx != 0 || ty != 0) {
+					// now push this transform down to the children
+					// FIXME: unfortunately recalculateDimensions depends on this global variable
+					var old_start_transform = start_transform;
+					start_transform = null;
+					// we pass the translates down to the individual children
+					var children = selected.childNodes;
+					var c = children.length;
+					while (c--) {
+						var child = children.item(c);
+						if (child.nodeType == 1) {
+							var childTlist = canvas.getTransformList(child);
+							var newxlate = svgroot.createSVGTransform();
+							newxlate.setTranslate(tx,ty);
+							childTlist.insertItemBefore(newxlate, 0);
+							batchCmd.addSubCommand( recalculateDimensions(child) );
+						}
+					}
+					start_transform = old_start_transform;
+				}
+				
+				if (gangle) {
+					tlist.insertItemBefore(rnew, 0);
+				}
+			}
 		}
 		// else, it's a non-group
 		else {
@@ -1806,6 +1896,7 @@ function BatchCommand(text) {
 						// extract old center through mystical arts
 						var rm = xform.matrix;
 						var a = angle * Math.PI / 180;
+						// FIXME: This blows up if the angle is exactly 0 or 180 degrees!
 						oldcenter.y = 0.5 * (Math.sin(a)*rm.e + (1-Math.cos(a))*rm.f) / (1 - Math.cos(a));
 						oldcenter.x = ((1 - Math.cos(a)) * oldcenter.y - rm.f) / Math.sin(a);
 						tlist.removeItem(i);
