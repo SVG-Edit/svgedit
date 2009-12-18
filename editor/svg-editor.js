@@ -26,7 +26,11 @@ function svg_edit_setup() {
 		'featNotSupported':'Feature not supported',
 		'enterNewImgURL':'Enter the new image URL',
 		'ok':'OK',
-		'cancel':'Cancel'
+		'cancel':'Cancel',
+		'key_up':'Up',
+		'key_down':'Down',
+		'key_backspace':'Backspace',
+		'key_del':'Del'
 	};
 	
 	var palette = ["#000000","#202020","#404040","#606060","#808080","#a0a0a0","#c0c0c0","#e0e0e0","#ffffff","#800000","#ff0000","#808000","#ffff00","#008000","#00ff00","#008080","#00ffff","#000080","#0000ff","#800080","#ff00ff","#2b0000","#550000","#800000","#aa0000","#d40000","#ff0000","#ff2a2a","#ff5555","#ff8080","#ffaaaa","#ffd5d5","#280b0b","#501616","#782121","#a02c2c","#c83737","#d35f5f","#de8787","#e9afaf","#f4d7d7","#241c1c","#483737","#6c5353","#916f6f","#ac9393","#c8b7b7","#e3dbdb","#2b1100","#552200","#803300","#aa4400","#d45500","#ff6600","#ff7f2a","#ff9955","#ffb380","#ffccaa","#ffe6d5","#28170b","#502d16","#784421","#a05a2c","#c87137","#d38d5f","#deaa87","#e9c6af","#f4e3d7","#241f1c","#483e37","#6c5d53","#917c6f","#ac9d93","#c8beb7","#e3dedb","#2b2200","#554400","#806600","#aa8800","#d4aa00","#ffcc00","#ffd42a","#ffdd55","#ffe680","#ffeeaa","#fff6d5","#28220b","#504416","#786721","#a0892c","#c8ab37","#d3bc5f","#decd87","#e9ddaf","#f4eed7","#24221c","#484537","#6c6753","#918a6f","#aca793","#c8c4b7","#e3e2db","#222b00","#445500","#668000","#88aa00","#aad400","#ccff00","#d4ff2a","#ddff55","#e5ff80","#eeffaa","#f6ffd5","#22280b","#445016","#677821","#89a02c","#abc837","#bcd35f","#cdde87","#dde9af","#eef4d7","#22241c","#454837","#676c53","#8a916f","#a7ac93","#c4c8b7","#e2e3db","#112b00","#225500","#338000","#44aa00","#55d400","#66ff00","#7fff2a","#99ff55","#b3ff80","#ccffaa","#e5ffd5","#17280b","#2d5016","#447821","#5aa02c","#71c837","#8dd35f","#aade87","#c6e9af","#e3f4d7","#1f241c","#3e4837","#5d6c53","#7c916f","#9dac93","#bec8b7","#dee3db","#002b00","#005500","#008000","#00aa00","#00d400","#00ff00","#2aff2a","#55ff55","#80ff80","#aaffaa","#d5ffd5","#0b280b","#165016","#217821","#2ca02c","#37c837","#5fd35f","#87de87","#afe9af","#d7f4d7","#1c241c","#374837","#536c53","#6f916f","#93ac93","#b7c8b7","#dbe3db","#002b11","#005522","#008033","#00aa44","#00d455","#00ff66","#2aff80","#55ff99","#80ffb3","#aaffcc","#d5ffe6","#0b2817","#16502d","#217844","#2ca05a","#37c871","#5fd38d","#87deaa","#afe9c6","#d7f4e3","#1c241f","#37483e","#536c5d","#6f917c","#93ac9d","#b7c8be","#dbe3de","#002b22","#005544","#008066","#00aa88","#00d4aa","#00ffcc","#2affd5","#55ffdd","#80ffe6","#aaffee","#d5fff6","#0b2822","#165044","#217867","#2ca089","#37c8ab","#5fd3bc","#87decd","#afe9dd","#d7f4ee","#1c2422","#374845","#536c67","#6f918a","#93aca7","#b7c8c4","#dbe3e2","#00222b","#004455","#006680","#0088aa","#00aad4","#00ccff","#2ad4ff","#55ddff","#80e5ff","#aaeeff","#d5f6ff","#0b2228","#164450","#216778","#2c89a0","#37abc8","#5fbcd3","#87cdde","#afdde9","#d7eef4","#1c2224","#374548","#53676c","#6f8a91","#93a7ac","#b7c4c8","#dbe2e3","#00112b","#002255","#003380","#0044aa","#0055d4","#0066ff","#2a7fff","#5599ff","#80b3ff","#aaccff","#d5e5ff","#0b1728","#162d50","#214478","#2c5aa0","#3771c8","#5f8dd3","#87aade","#afc6e9","#d7e3f4","#1c1f24","#373e48","#535d6c","#6f7c91","#939dac","#b7bec8","#dbdee3","#00002b","#000055","#000080","#0000aa","#0000d4","#0000ff","#2a2aff","#5555ff","#8080ff","#aaaaff","#d5d5ff","#0b0b28","#161650","#212178","#2c2ca0","#3737c8","#5f5fd3","#8787de","#afafe9","#d7d7f4","#1c1c24","#373748","#53536c","#6f6f91","#9393ac","#b7b7c8","#dbdbe3","#11002b","#220055","#330080","#4400aa","#5500d4","#6600ff","#7f2aff","#9955ff","#b380ff","#ccaaff","#e5d5ff","#170b28","#2d1650","#442178","#5a2ca0","#7137c8","#8d5fd3","#aa87de","#c6afe9","#e3d7f4","#1f1c24","#3e3748","#5d536c","#7c6f91","#9d93ac","#beb7c8","#dedbe3","#22002b","#440055","#660080","#8800aa","#aa00d4","#cc00ff","#d42aff","#dd55ff","#e580ff","#eeaaff","#f6d5ff","#220b28","#441650","#672178","#892ca0","#ab37c8","#bc5fd3","#cd87de","#ddafe9","#eed7f4","#221c24","#453748","#67536c","#8a6f91","#a793ac","#c4b7c8","#e2dbe3","#2b0022","#550044","#800066","#aa0088","#d400aa","#ff00cc","#ff2ad4","#ff55dd","#ff80e5","#ffaaee","#ffd5f6","#280b22","#501644","#782167","#a02c89","#c837ab","#d35fbc","#de87cd","#e9afdd","#f4d7ee","#241c22","#483745","#6c5367","#916f8a","#ac93a7","#c8b7c4","#e3dbe2","#2b0011","#550022","#800033","#aa0044","#d40055","#ff0066","#ff2a7f","#ff5599","#ff80b2","#ffaacc","#ffd5e5","#280b17","#50162d","#782144","#a02c5a","#c83771","#d35f8d","#de87aa","#e9afc6","#f4d7e3","#241c1f","#48373e","#6c535d","#916f7c","#ac939d","#c8b7be","#e3dbde"]
@@ -1374,51 +1378,6 @@ function svg_edit_setup() {
 		if (!editingsource) return;
 		properlySourceSizeTextArea();
 	});
-
-	$('#tool_select').click(clickSelect);
-	$('#tool_fhpath').click(clickFHPath);
-	$('#tool_line').click(clickLine);
-	$('#tool_square').mouseup(clickSquare);
-	$('#tool_rect').mouseup(clickRect);
-	$('#tool_fhrect').mouseup(clickFHRect);
-	$('#tool_circle').mouseup(clickCircle);
-	$('#tool_ellipse').mouseup(clickEllipse);
-	$('#tool_fhellipse').mouseup(clickFHEllipse);
-	$('#tool_image').mouseup(clickImage);
-	$('#tool_zoom').mouseup(clickZoom);
-	$('#tool_zoom').dblclick(dblclickZoom);
-	$('#tool_text').click(clickText);
-	$('#tool_path').click(clickPath);
-	$('#tool_clear').click(clickClear);
-	$('#tool_save').click(clickSave);
-	$('#tool_open').click(clickOpen);
-	$('#tool_source').click(showSourceEditor);
-	$('#tool_wireframe').click(clickWireframe);
-	$('#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel').click(cancelOverlays);
-	$('#tool_source_save').click(saveSourceEditor);
-	$('#tool_docprops_save').click(saveDocProperties);
-	$('#tool_docprops').click(showDocProperties);
-	$('#tool_delete').click(deleteSelected);
-	$('#tool_delete_multi').click(deleteSelected);
-	$('#tool_reorient').click(reorientPath);
-	$('#tool_node_link').click(linkControlPoints);
-	$('#tool_node_clone').click(clonePathNode);
-	$('#tool_node_delete').click(deletePathNode);
-	$('#tool_move_top').click(moveToTopSelected);
-	$('#tool_move_bottom').click(moveToBottomSelected);
-	$('#tool_topath').click(convertToPath);
-	$('#tool_undo').click(clickUndo);
-	$('#tool_redo').click(clickRedo);
-	$('#tool_clone').click(clickClone);
-	$('#tool_clone_multi').click(clickClone);
-	$('#tool_group').click(clickGroup);
-	$('#tool_ungroup').click(clickGroup);
-	$('[id^=tool_align]').click(clickAlign);
-	// these two lines are required to make Opera work properly with the flyout mechanism
-	$('#tools_rect_show').click(clickRect);
-	$('#tools_ellipse_show').click(clickEllipse);
-	$('#tool_bold').mousedown(clickBold);
-	$('#tool_italic').mousedown(clickItalic);
 	
 	$('#url_notice').click(function() {
 		$.alert(this.title);
@@ -1530,59 +1489,6 @@ function svg_edit_setup() {
 		}
 	}
 	
-	// do keybindings using jquery-hotkeys plugin
-	function setKeyBindings() {
-		var keys = [
-			['1', clickSelect],
-			['2', clickFHPath],
-			['3', clickLine],
-			['Shift+4', clickSquare],
-			['4', clickRect],
-			['Shift+5', clickCircle],
-			['5', clickEllipse],
-			['6', clickPath],
-			['7', clickText],
-			['8', clickImage],
-			[modKey+'N', function(evt){clickClear();evt.preventDefault();}],
-			[modKey+'S', function(evt){editingsource?saveSourceEditor():clickSave();evt.preventDefault();}],
-			[modKey+'O', function(evt){clickOpen();evt.preventDefault();}],
-			['del', function(evt){deleteSelected();evt.preventDefault();}],
-			['backspace', function(evt){deleteSelected();evt.preventDefault();}],
-			['shift+up', moveToTopSelected],
-			['shift+down', moveToBottomSelected],
-			['shift+left', function(){rotateSelected(0)}],
-			['shift+right', function(){rotateSelected(1)}],
-			['shift+O', selectPrev],
-			['shift+P', selectNext],
-			['ctrl+up', function(evt){zoomImage(2);evt.preventDefault();}],
-			['ctrl+down', function(evt){zoomImage(.5);evt.preventDefault();}],
-			['up', function(evt){moveSelected(0,-1);evt.preventDefault();}],
-			['down', function(evt){moveSelected(0,1);evt.preventDefault();}],
-			['left', function(evt){moveSelected(-1,0);evt.preventDefault();}],
-			['right', function(evt){moveSelected(1,0);evt.preventDefault();}],
-			[modKey+'z', function(evt){clickUndo();evt.preventDefault();}],
-			[modKey+'y', function(evt){clickRedo();evt.preventDefault();}],
-			[modKey+'u', function(evt){showSourceEditor();evt.preventDefault();}],
-			[modKey+'i', function(evt){showDocProperties();evt.preventDefault();}],
-			[modKey+'c', function(evt){clickClone();evt.preventDefault();}],
-			[modKey+'g', function(evt){clickGroup();evt.preventDefault();}],
-			[modKey+'f', function(evt){clickWireframe();evt.preventDefault();}],
-			[modKey+'x', function(evt){toggleSidePanel();}],
-			['esc', cancelOverlays, false],
-		];
-		
-		$.each(keys,function(i,item) {
-			var disable = !(item.length > 2 && !item[2]);
-			$(document).bind('keydown', {combi:item[0], disableInInput: disable}, item[1]);
-		});
-		
-		$('.attr_changer, #image_url').bind('keydown', {combi:'return', disableInInput: false}, 
-			function(evt) {$(this).change();evt.preventDefault();}
-		);
-	}
-	
-	setKeyBindings();
-
 	// TODO: go back to the color boxes having white background-color and then setting
 	//       background-image to none.png (otherwise partially transparent gradients look weird)	
 	var colorPicker = function(elem) {
@@ -2101,6 +2007,141 @@ function svg_edit_setup() {
 
 	//Prevent browser from erroneously repopulating fields
 	$('input,select').attr("autocomplete","off");
+	
+	// Associate all button actions as well as non-button keyboard shortcuts
+	var Actions = function() {
+		// sel:'selector', fn:function, evt:'event', key:[key, preventDefault, NoDisableInInput]
+		var tool_buttons = [
+			{sel:'#tool_select', fn: clickSelect, evt: 'click', key: 1},
+			{sel:'#tool_fhpath', fn: clickFHPath, evt: 'click', key: 2},
+			{sel:'#tool_line', fn: clickLine, evt: 'click', key: 3},
+			{sel:'#tool_square', fn: clickSquare, evt: 'mouseup', key: 'Shift+4'},
+			{sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4},
+			{sel:'#tool_fhrect', fn: clickFHRect, evt: 'mouseup'},
+			{sel:'#tool_circle', fn: clickCircle, evt: 'mouseup', key: 'Shift+5'},
+			{sel:'#tool_ellipse', fn: clickEllipse, evt: 'mouseup', key: 5},
+			{sel:'#tool_fhellipse', fn: clickFHEllipse, evt: 'mouseup'},
+			{sel:'#tool_path', fn: clickPath, evt: 'click', key: 6},
+			{sel:'#tool_text', fn: clickText, evt: 'click', key: 7},
+			{sel:'#tool_image', fn: clickImage, evt: 'mouseup', key: 8},
+			{sel:'#tool_zoom', fn: clickZoom, evt: 'mouseup', dblclick: dblclickZoom, key: 9},
+			{sel:'#tool_clear', fn: clickClear, evt: 'click', key: [modKey+'N', true]},
+			{sel:'#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'click', key: [modKey+'S', true]},
+			{sel:'#tool_open', fn: clickOpen, evt: 'click', key: [modKey+'O', true]},
+			{sel:'#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
+			{sel:'#tool_wireframe', fn: clickWireframe, evt: 'click', key: ['F', true]},
+			{sel:'#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false]},
+			{sel:'#tool_source_save', fn: saveSourceEditor, evt: 'click'},
+			{sel:'#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
+			{sel:'#tool_docprops', fn: showDocProperties, evt: 'click', key: [modKey+'I', true]},
+			{sel:'#tool_delete', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
+			{sel:'#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
+			{sel:'#tool_reorient', fn: reorientPath, evt: 'click'},
+			{sel:'#tool_node_link', fn: linkControlPoints, evt: 'click'},
+			{sel:'#tool_node_clone', fn: clonePathNode, evt: 'click'},
+			{sel:'#tool_node_delete', fn: deletePathNode, evt: 'click'},
+			{sel:'#tool_move_top', fn: moveToTopSelected, evt: 'click', key: 'shift+up'},
+			{sel:'#tool_move_bottom', fn: moveToBottomSelected, evt: 'click', key: 'shift+down'},
+			{sel:'#tool_topath', fn: convertToPath, evt: 'click'},
+			{sel:'#tool_undo', fn: clickUndo, evt: 'click', key: [modKey+'Z', true]},
+			{sel:'#tool_redo', fn: clickRedo, evt: 'click', key: [modKey+'Y', true]},
+			{sel:'#tool_clone', fn: clickClone, evt: 'click', key: [modKey+'C', true]},
+			{sel:'#tool_clone_multi', fn: clickClone, evt: 'click', key: [modKey+'C', true]},
+			{sel:'#tool_group', fn: clickGroup, evt: 'click', key: [modKey+'G', true]},
+			{sel:'#tool_ungroup', fn: clickGroup, evt: 'click'},
+			{sel:'[id^=tool_align]', fn: clickAlign, evt: 'click'},
+			// these two lines are required to make Opera work properly with the flyout mechanism
+			{sel:'#tools_rect_show', fn: clickRect, evt: 'click'},
+			{sel:'#tools_ellipse_show', fn: clickEllipse, evt: 'click'},
+			{sel:'#tool_bold', fn: clickBold, evt: 'mousedown'},
+			{sel:'#tool_italic', fn: clickItalic, evt: 'mousedown'},
+			{sel:'#sidepanel_handle', fn: toggleSidePanel, key: [modKey+'X']},
+			
+			// Shortcuts not associated with buttons
+			{key: 'shift+left', fn: function(){rotateSelected(0)}},
+			{key: 'shift+right', fn: function(){rotateSelected(1)}},
+			{key: 'shift+O', fn: selectPrev},
+			{key: 'shift+P', fn: selectNext},
+			{key: ['ctrl+up', true], fn: function(){zoomImage(2);}},
+			{key: ['ctrl+down', true], fn: function(){zoomImage(.5);}},
+			{key: ['up', true], fn: function(){moveSelected(0,-1);}},
+			{key: ['down', true], fn: function(){moveSelected(0,1);}},
+			{key: ['left', true], fn: function(){moveSelected(-1,0);}},
+			{key: ['right', true], fn: function(){moveSelected(1,0);}}
+		];
+		
+		var key_assocs = {};
+	
+		return {
+			setAll: function() {
+				$.each(tool_buttons, function(i, opts)  {
+					// Bind function to button
+					if(opts.sel) {
+						var btn = $(opts.sel);
+						if(opts.evt) {
+							btn[opts.evt](opts.fn);
+						}
+					}
+					// Bind function to shortcut key
+					if(opts.key) {
+						// Set shortcut based on options
+						var keyval, shortcut = '', disInInp = true, fn = opts.fn, pd = false;
+						if($.isArray(opts.key)) {
+							keyval = opts.key[0];
+							if(opts.key.length > 1) pd = opts.key[1];
+							if(opts.key.length > 2) disInInp = opts.key[2];
+						} else {
+							keyval = opts.key;
+						}
+						keyval += '';
+						
+						$.each(keyval.split('/'), function(i, key) {
+							$(document).bind('keydown', {combi: key, disableInInput: disInInp}, function(e) {
+								fn();
+								if(pd) e.preventDefault();
+							});
+						});
+						
+						// Put shortcut in title
+						if(opts.sel) {
+							var new_title = btn.attr('title').split('[')[0] + '[' + keyval + ']';
+							key_assocs[keyval] = opts.sel;
+							btn.attr('title', new_title);
+						}
+					}
+				});
+				
+				// Make "return" keypress trigger the change event
+				$('.attr_changer, #image_url').bind('keydown', {combi:'return'}, 
+					function(evt) {$(this).change();evt.preventDefault();}
+				);
+			},
+			setTitles: function() {
+				$.each(key_assocs, function(keyval, sel)  {
+					$(sel).each(function() {
+						var t = this.title.split(' [')[0];
+						var key_str = '';
+						// Shift+Up
+						$.each(keyval.split('/'), function(i, key) {
+							var mod_bits = key.split('+'), mod = '';
+							if(mod_bits.length > 1) {
+								mod = mod_bits[0] + '+';
+								key = mod_bits[1];
+							}
+							if(uiStrings['key_'+key]) {
+								key_str += (i?'/':'') + mod + uiStrings['key_'+key];
+							} else {
+								key_str = key;
+							}
+						});
+						this.title = t +' ['+key_str+']';
+					});
+				});
+			}
+		};
+	}();
+	
+	Actions.setAll();
 
 	$('#rect_rx').SpinButton({ min: 0, max: 1000, step: 1, callback: changeRectRadius });
 	$('#stroke_width').SpinButton({ min: 0, max: 99, step: 1, callback: changeStrokeWidth });
@@ -2117,7 +2158,9 @@ function svg_edit_setup() {
 		$('#lang_select').val(lang);
 		if(strings) {
 			// $.extend will only replace the given strings
-			$.extend(uiStrings,strings); 
+			$.extend(uiStrings,strings);
+			svgCanvas.setUiStrings(strings);
+			Actions.setTitles();
 		}
 	};
 	
