@@ -5027,25 +5027,22 @@ function BatchCommand(text) {
 		var batchCmd;
 
 		if(x == 'fit') {
-			canvas.clearSelection();
-
 			// Get bounding box
 			var bbox = canvas.getStrokedBBox();
 			
 			if(bbox) {
 				batchCmd = new BatchCommand("Fit Canvas to Content");
 				var visEls = canvas.getVisibleElements();
+				canvas.addToSelection(visEls);
+				var dx = [], dy = [];
 				$.each(visEls, function(i, item) {
-					var sel_bb = item.getBBox();
-					// TODO: we are not using the second argument here anymore, what to do?
-					var cmd = recalculateDimensions(item, {
-						x: sel_bb.x - bbox.x,
-						y: sel_bb.y - bbox.y,
-						width: sel_bb.width,
-						height: sel_bb.height
-					});
-					batchCmd.addSubCommand(cmd);
+					dx.push(bbox.x*-1);
+					dy.push(bbox.y*-1);
 				});
+				
+				canvas.moveSelectedElements(dx, dy, true);
+				canvas.clearSelection();
+				
 				x = Math.round(bbox.width);
 				y = Math.round(bbox.height);
 			} else {
@@ -5072,7 +5069,6 @@ function BatchCommand(text) {
 		}
 		return true;
 	};
-
 	this.setBBoxZoom = function(val, editor_w, editor_h) {
 		var spacer = .85;
 		var bb;
