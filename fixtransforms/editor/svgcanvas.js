@@ -1527,6 +1527,11 @@ function BatchCommand(text) {
 						tlist.removeItem(k);
 					}
 				}
+				else if (xform.type == 4) {
+					if (xform.angle == 0) {
+						tlist.removeItem(k);
+					}
+				}
 			}
 		}
 		
@@ -1921,7 +1926,7 @@ function BatchCommand(text) {
 			}
 			++j;
 		}
-		
+
 		// now add each element consecutively
 		var i = elemsToAdd.length;
 		while (i--) {
@@ -1933,12 +1938,13 @@ function BatchCommand(text) {
 				selectedElements[j] = elem;
 				selectedBBoxes[j++] = this.getBBox(elem);
 				var sel = selectorManager.requestSelector(elem);
+		
 				if (selectedElements.length > 1) {
 					sel.showGrips(false);
 				}
-				call("selected", selectedElements);
 			}
 		}
+		call("selected", selectedElements);
 		
 		if(showGrips) {
 			selectorManager.requestSelector(selectedElements[0]).showGrips(true);
@@ -5704,7 +5710,8 @@ function BatchCommand(text) {
 			var children = new Array(g.childNodes.length);
 			var xform = g.getAttribute("transform");
 			// get consolidated matrix
-			var m = transformListToTransform(canvas.getTransformList(g)).matrix;
+			var glist = canvas.getTransformList(g);
+			var m = transformListToTransform(glist).matrix;
 
 			// TODO: get all fill/stroke properties from the group that we are about to destroy
 			// "fill", "fill-opacity", "fill-rule", "stroke", "stroke-dasharray", "stroke-dashoffset", 
@@ -5715,7 +5722,9 @@ function BatchCommand(text) {
 
 			// TODO: get the group's opacity and propagate it down to the children (multiply it
 			// by the child's opacity (or 1.0)
+			
 			var i = 0;
+			var gangle = canvas.getRotationAngle(g);
 			while (g.firstChild) {
 				var elem = g.firstChild;
 				var oldNextSibling = elem.nextSibling;
@@ -5723,24 +5732,80 @@ function BatchCommand(text) {
 				children[i++] = elem = parent.insertBefore(elem, anchor);
 				batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
 
-				// transfer the group's transform down to each child and then
-				// call recalculateDimensions()				
-				if (xform) {
-					var oldxform = elem.getAttribute("transform");
-					var changes = {};
-					changes["transform"] = oldxform ? oldxform : "";
+				var chtlist = canvas.getTransformList(elem);
+				
+				if (glist.numberOfItems) {
+					// TODO: if the group's transform is just a rotate, we can always transfer the
+					// rotate() down to the children (collapsing consecutive rotates and factoring
+					// out any translates)
+					if (gangle && glist.numberOfItems == 1) {
+						// [Rg] [Rc] [Mc]
+						// we want [Tr] [Rc2] [Mc] where:
+						// 	- [Rc2] is at the child's current center but has the 
+						//	  sum of the group and child's rotation angles
+						// 	- [Tr] is the equivalent translation that this child 
+						// 	  undergoes if the group wasn't there
+						
+						// [Tr] = [Rg] [Rc] [Mc] [Mc_inv] [Rc2_inv]
+						// [Tr] = [Rg] [Rc] [Rc2_inv]
+						
+						// get group's rotation matrix (Rg)
+						var rgm = glist.getItem(0).matrix;
+						
+						// get child's rotation matrix (Rc)
+						var rcm = svgroot.createSVGMatrix();
+						var cangle = canvas.getRotationAngle(elem);
+						if (cangle) {
+							rcm = chtlist.getItem(0).matrix;
+						}
+						
+						// get child's old center of rotation
+						var cbox = canvas.getBBox(elem);
+						var ceqm = transformListToTransform(chtlist).matrix;
+						var coldc = transformPoint(cbox.x+cbox.width/2, cbox.y+cbox.height/2,ceqm);
+						
+						// sum group and child's angles
+						var sangle = gangle + cangle;
+						
+						// TODO: get child's rotation at the old center (Rc2_inv)
+						var r2 = svgroot.createSVGTransform();
+						r2.setRotate(sangle, coldc.x, coldc.y);
+						
+						// calculate equivalent translate
+						var trm = matrixMultiply(rgm, rcm, r2.matrix.inverse());
+						
+						// set up tlist
+						if (cangle) {
+							chtlist.removeItem(0);
+						}
+						
+						if (sangle) {
+							chtlist.insertItemBefore(r2, 0);
+						}
 
-					var newxform = svgroot.createSVGTransform();
-					var chtlist = canvas.getTransformList(elem);
+						if (trm.e || trm.f) {
+							var tr = svgroot.createSVGTransform();
+							tr.setTranslate(trm.e, trm.f);
+							chtlist.insertItemBefore(tr, 0);
+						}
+					}
+					else { // more complicated than just a rotate
+						// transfer the group's transform down to each child and then
+						// call recalculateDimensions()				
+						var oldxform = elem.getAttribute("transform");
+						var changes = {};
+						changes["transform"] = oldxform ? oldxform : "";
 
-					// [ gm ] [ chm ] = [ chm ] [ gm' ]
-					// [ gm' ] = [ chm_inv ] [ gm ] [ chm ]
-					var chm = transformListToTransform(chtlist).matrix,
-						chm_inv = chm.inverse();
-					var gm = matrixMultiply( chm_inv, m, chm );
-					newxform.setMatrix(gm);
-					chtlist.appendItem(newxform);
-					
+						var newxform = svgroot.createSVGTransform();
+
+						// [ gm ] [ chm ] = [ chm ] [ gm' ]
+						// [ gm' ] = [ chm_inv ] [ gm ] [ chm ]
+						var chm = transformListToTransform(chtlist).matrix,
+							chm_inv = chm.inverse();
+						var gm = matrixMultiply( chm_inv, m, chm );
+						newxform.setMatrix(gm);
+						chtlist.appendItem(newxform);
+					}
 					batchCmd.addSubCommand(recalculateDimensions(elem));
 				}
 			}
