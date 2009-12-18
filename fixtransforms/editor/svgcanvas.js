@@ -5595,7 +5595,7 @@ function BatchCommand(text) {
 						var xform = tlist.getItem(n);
 						if (xform.type == 4) {
 							// remove old rotate
-							tlist.removeItem(xform);
+							tlist.removeItem(n);
 							
 							var box = canvas.getBBox(elem);
 							var center = transformPoint(box.x+box.width/2, box.y+box.height/2, transformListToTransform(tlist).matrix);
