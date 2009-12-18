@@ -63,6 +63,11 @@ var svgWhiteList = {
 function SvgCanvas(c)
 {
 
+var uiStrings = {
+	"pathNodeTooltip":"Drag node to move it. Double-click node to change segment type",
+	"pathCtrlPtTooltip":"Drag control point to adjust curve properties"
+};
+
 var toXml = function(str) {
 	return $('<p/>').text(str).html();
 };
@@ -2353,6 +2358,7 @@ function BatchCommand(text) {
 					}
 				});
         		newImage.setAttributeNS(xlinkns, "href", last_good_img_url);
+        		preventClickDefault(newImage);
 				break;
 			case "square":
 				// FIXME: once we create the rect, we lose information that this was a square
@@ -3718,12 +3724,12 @@ function BatchCommand(text) {
 						// set our current stroke/fill properties to the element's
 						var selected = selectedElements[0];
 						if (selected.tagName != "g" && selected.tagName != "image") {
-							cur_shape.fill = selected.getAttribute("fill");
-							cur_shape.fill_opacity = selected.getAttribute("fill-opacity");
-							cur_shape.stroke = selected.getAttribute("stroke");
-							cur_shape.stroke_opacity = selected.getAttribute("stroke-opacity");
-							cur_shape.stroke_width = selected.getAttribute("stroke-width");
-							cur_shape.stroke_style = selected.getAttribute("stroke-dasharray");
+							cur_properties.fill = selected.getAttribute("fill");
+							cur_properties.fill_opacity = selected.getAttribute("fill-opacity");
+							cur_properties.stroke = selected.getAttribute("stroke");
+							cur_properties.stroke_opacity = selected.getAttribute("stroke-opacity");
+							cur_properties.stroke_width = selected.getAttribute("stroke-width");
+							cur_properties.stroke_style = selected.getAttribute("stroke-dasharray");
 						}
 						if (selected.tagName == "text") {
 							cur_text.font_size = selected.getAttribute("font-size");
@@ -3765,8 +3771,10 @@ function BatchCommand(text) {
 							}
 						} // if it was a path
 						// else, if it was selected and this is a shift-click, remove it from selection
-						else if (evt.shiftKey && tempJustSelected != t) {
-							canvas.removeFromSelection([t]);
+						else if (evt.shiftKey) {
+							if(tempJustSelected != t) {
+								canvas.removeFromSelection([t]);
+							}
 						}
 					} // no change in mouse position
 				}
@@ -4240,6 +4248,7 @@ function BatchCommand(text) {
         	// change image href vals if possible
         	$(svgcontent).find('image').each(function() {
         		var image = this;
+        		preventClickDefault(image);
         		var val = this.getAttributeNS(xlinkns, "href");
 				if(val.indexOf('data:') === 0) {
 					// Check if an SVG-edit data URI
@@ -6157,8 +6166,15 @@ function BatchCommand(text) {
 					break;
 			}
 		});
+		if(new_el.tagName == 'image') {
+			preventClickDefault(new_el);
+		}
 		return new_el;
 	};
+	
+	var preventClickDefault = function(img) {
+     	$(img).click(function(e){e.preventDefault()});
+	}
 	
 	// this creates deep DOM copies (clones) of all selected elements
 	this.cloneSelectedElements = function() {

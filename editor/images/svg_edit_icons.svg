@@ -520,7 +520,6 @@
   </linearGradient>
  </defs>
  <g>
-  <title>Layer 1</title>
   <circle cx="21" cy="21.3125" r="18.44531" id="svg_120" fill="url(#svg_105)" stroke="#000000"/>
   <path fill="none" stroke="#000000" d="m2.875,21.3125c-0.375,-9.25 7.75,-18.875 17.75,-18" id="svg_115"/>
   <line x1="25.375" y1="3.0625" x2="8.5" y2="3.0625" id="svg_116" stroke="#808080" fill="none"/>
