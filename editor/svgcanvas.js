@@ -1373,9 +1373,12 @@ function BatchCommand(text) {
 				changes["height"] = scaleh(changes["height"]);
 				break;
 			case "text":
-				var pt1 = remap(changes["x"],changes["y"]);
-				changes["x"] = pt1.x;
-				changes["y"] = pt1.y;
+				// we just absorb all matrices into the element and don't do any remapping
+				var chlist = canvas.getTransformList(selected);
+				var mt = svgroot.createSVGTransform();
+				mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix,m));
+				chlist.clear();
+				chlist.appendItem(mt);
 				break;
 			case "polygon":
 			case "polyline":
@@ -1514,7 +1517,7 @@ function BatchCommand(text) {
 		
 		var tlist = canvas.getTransformList(selected);
 
-		// remove any stray identity transforms
+		// remove any unnecessary transforms
 		if (tlist && tlist.numberOfItems > 0) {
 			var k = tlist.numberOfItems;
 			while (k--) {
@@ -1522,11 +1525,13 @@ function BatchCommand(text) {
 				if (xform.type == 0) {
 					tlist.removeItem(k);
 				}
+				// remove identity matrices
 				else if (xform.type == 1) {
 					if (isIdentity(xform.matrix)) {
 						tlist.removeItem(k);
 					}
 				}
+				// remove zero-degree rotations
 				else if (xform.type == 4) {
 					if (xform.angle == 0) {
 						tlist.removeItem(k);
@@ -1874,8 +1879,9 @@ function BatchCommand(text) {
 				var extrat = matrixMultiply(m_inv, rnew_inv, rold, m);
 			
 				remapElement(selected,changes,extrat);
-				
-				tlist.insertItemBefore(rnew,0);
+				if (angle) {
+					tlist.insertItemBefore(rnew,0);
+				}
 			}
 		} // a non-group
 
