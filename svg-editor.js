@@ -2024,7 +2024,7 @@ function svg_edit_setup() {
 			{sel:'#tool_path', fn: clickPath, evt: 'click', key: 6},
 			{sel:'#tool_text', fn: clickText, evt: 'click', key: 7},
 			{sel:'#tool_image', fn: clickImage, evt: 'mouseup', key: 8},
-			{sel:'#tool_zoom', fn: clickZoom, evt: 'mouseup', dblclick: dblclickZoom, key: 9},
+			{sel:'#tool_zoom', fn: clickZoom, evt: 'mouseup', key: 9},
 			{sel:'#tool_clear', fn: clickClear, evt: 'click', key: [modKey+'N', true]},
 			{sel:'#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'click', key: [modKey+'S', true]},
 			{sel:'#tool_open', fn: clickOpen, evt: 'click', key: [modKey+'O', true]},
@@ -2110,11 +2110,15 @@ function svg_edit_setup() {
 						}
 					}
 				});
+			
+				// Misc additional actions
 				
 				// Make "return" keypress trigger the change event
 				$('.attr_changer, #image_url').bind('keydown', {combi:'return'}, 
 					function(evt) {$(this).change();evt.preventDefault();}
 				);
+				
+				$('#tool_zoom').dblclick(dblclickZoom);
 			},
 			setTitles: function() {
 				$.each(key_assocs, function(keyval, sel)  {

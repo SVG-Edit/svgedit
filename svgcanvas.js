@@ -1091,6 +1091,7 @@ function BatchCommand(text) {
 	}
 	
 	var svgCanvasToString = function() {
+		// TODO: Find out why Webkit throws an error somewhere here (breaking the editor)
 		removeUnusedGrads();
 		canvas.clearPath(true);
 		$.each(svgcontent.childNodes, function(i, node) {
@@ -1104,6 +1105,8 @@ function BatchCommand(text) {
 		svgcontent.removeAttribute('viewBox');
 		var output = svgToString(svgcontent, 0);
 		assignAttributes(svgcontent, {id: 'svgcontent', 'viewBox':[0,0,res.w,res.h].join(' ')});
+		svgcontent.removeAttribute('width');
+		svgcontent.removeAttribute('height');
 		return output;
 	}
 
