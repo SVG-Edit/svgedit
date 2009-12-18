@@ -107,8 +107,8 @@ function ChangeElementCommand(elem, attrs, text) {
 			var angle = canvas.getRotationAngle(elem);
 			if (angle) {
 				var bbox = elem.getBBox();
-				var cx = round(bbox.x + bbox.width/2),
-					cy = round(bbox.y + bbox.height/2);
+				var cx = bbox.x + bbox.width/2,
+					cy = bbox.y + bbox.height/2;
 				var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
 				if (rotate != elem.getAttribute("transform")) {
 					elem.setAttribute("transform", rotate);
@@ -140,8 +140,8 @@ function ChangeElementCommand(elem, attrs, text) {
 			var angle = canvas.getRotationAngle(elem);
 			if (angle) {
 				var bbox = elem.getBBox();
-				var cx = round(bbox.x + bbox.width/2),
-					cy = round(bbox.y + bbox.height/2);
+				var cx = bbox.x + bbox.width/2,
+					cy = bbox.y + bbox.height/2;
 				var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
 				if (rotate != elem.getAttribute("transform")) {
 					elem.setAttribute("transform", rotate);
@@ -2833,13 +2833,13 @@ function BatchCommand(text) {
 				break;
 			case "rotate":
 				var box = canvas.getBBox(selected),
-					cx = round(box.x + box.width/2), 
-					cy = round(box.y + box.height/2);
+					cx = box.x + box.width/2, 
+					cy = box.y + box.height/2;
 				var m = transformListToTransform(canvas.getTransformList(selected)).matrix;
 				var center = transformPoint(cx,cy,m);
 				cx = center.x;
 				cy = center.y;
-				var angle = round(((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360);
+				var angle = ((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360;
 				canvas.setRotationAngle(angle<-180?(360+angle):angle, true);
 				call("changed", selectedElements);
 				break;
@@ -3415,8 +3415,8 @@ function BatchCommand(text) {
 		if (angle) {
 			// calculate the shape's old center that was used for rotation
 			var box = selectedBBoxes[0];
-			var cx = round(box.x + box.width/2) * current_zoom, 
-				cy = round(box.y + box.height/2) * current_zoom;
+			var cx = (box.x + box.width/2) * current_zoom, 
+				cy = (box.y + box.height/2) * current_zoom;
 			var dx = mouse_x - cx, dy = mouse_y - cy;
 			var r = Math.sqrt( dx*dx + dy*dy );
 			var theta = Math.atan2(dy,dx) - angle;						
@@ -3567,8 +3567,8 @@ function BatchCommand(text) {
 		if (angle) {
 			// calculate the shape's old center that was used for rotation
 			var box = selectedBBoxes[0];
-			var cx = round(box.x + box.width/2) * current_zoom, 
-				cy = round(box.y + box.height/2) * current_zoom;
+			var cx = (box.x + box.width/2) * current_zoom, 
+				cy = (box.y + box.height/2) * current_zoom;
 			var dx = mouse_x - cx, dy = mouse_y - cy;
 			var r = Math.sqrt( dx*dx + dy*dy );
 			var theta = Math.atan2(dy,dx) - angle;						
@@ -5275,7 +5275,7 @@ function BatchCommand(text) {
 		var elem = selectedElements[0];
 		var oldTransform = elem.getAttribute("transform");
 		var bbox = elem.getBBox();
-		var cx = round(bbox.x+bbox.width/2), cy = round(bbox.y+bbox.height/2);
+		var cx = bbox.x+bbox.width/2, cy = bbox.y+bbox.height/2;
 		var tlist = canvas.getTransformList(elem);
 		
 		// only remove the real rotational transform if present (i.e. at index=0)
@@ -5752,7 +5752,6 @@ function BatchCommand(text) {
 						// 	- [Tr] is the equivalent translation that this child 
 						// 	  undergoes if the group wasn't there
 						
-						// [Tr] = [Rg] [Rc] [Mc] [Mc_inv] [Rc2_inv]
 						// [Tr] = [Rg] [Rc] [Rc2_inv]
 						
 						// get group's rotation matrix (Rg)
@@ -5773,7 +5772,7 @@ function BatchCommand(text) {
 						// sum group and child's angles
 						var sangle = gangle + cangle;
 						
-						// TODO: get child's rotation at the old center (Rc2_inv)
+						// get child's rotation at the old center (Rc2_inv)
 						var r2 = svgroot.createSVGTransform();
 						r2.setRotate(sangle, coldc.x, coldc.y);
 						
