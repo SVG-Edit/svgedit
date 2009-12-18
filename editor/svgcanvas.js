@@ -850,6 +850,7 @@ function BatchCommand(text) {
 	var start_x = null;
 	var start_y = null;
 	var start_transform = null;
+	var init_bbox = {};
 	var current_mode = "select";
 	var current_resize_mode = "none";
 	
@@ -1815,6 +1816,7 @@ function BatchCommand(text) {
 			
 			var operation = 0;
 			var N = tlist.numberOfItems;
+			
 			// first, if it was a scale then the second-last transform will be the [S]
 			// if we had [M][T][S][T] we want to extract the matrix equivalent of
 			// [T][S][T] and push it down to the element
@@ -1826,7 +1828,31 @@ function BatchCommand(text) {
 				tlist.removeItem(N-1);
 				tlist.removeItem(N-2);
 				tlist.removeItem(N-3);
-			}
+			} // if we had [T][S][-T][M], then this was a matrix-element being 
+			  // resized. Thus, we simply combine it all into one matrix
+			else if(N == 4 && tlist.getItem(N-1).type == 1 && !angle) {
+				m = transformListToTransform(tlist).matrix;
+				var e2t = svgroot.createSVGTransform();
+				e2t.setMatrix(m);
+				tlist.clear();
+				tlist.appendItem(e2t);
+				return null;
+			} // if we had [R][T][S][-T][M], then this was a rotated matrix-element  
+			  // being resized. Thus, we simply combine the matrix and keep the rotate
+			else if(N == 4 && tlist.getItem(N-1).type == 1 && angle) {
+				m = transformListToTransform(tlist).matrix;
+				var e2t = svgroot.createSVGTransform();
+				e2t.setMatrix(m);
+				tlist.clear();
+				tlist.appendItem(e2t);
+				
+				// Not positioned correctly yet.
+				// FIXME codedread! You're my only hope...
+				var newRot = svgroot.createSVGTransform();
+				newRot.setRotate(angle,newcenter.x,newcenter.y);
+				tlist.insertItemBefore(newRot, 0);
+				return null;
+			}			
 			// if we had [T1][M] we want to transform this into [M][T2]
 			// therefore [ T2 ] = [ M_inv ] [ T1 ] [ M ] and we can push [T2] 
 			// down to the element
@@ -1855,6 +1881,7 @@ function BatchCommand(text) {
 				return null;
 			}
 			
+		
 			// if it was a translate or resize, we need to remap the element and absorb the xform
 			if (operation == 2 || operation == 3) {
 				remapElement(selected,changes,m);
@@ -2306,11 +2333,27 @@ function BatchCommand(text) {
 				started = true;
 				start_x = x;
 				start_y = y;
+				
+				// Getting the BBox from the selection box, since we know we
+				// want to orient around it
+				init_bbox = canvas.getBBox($('#selectedBox0')[0]);
+				$.each(init_bbox, function(key, val) {
+					init_bbox[key] = val/current_zoom;
+				});
+				
 				// append three dummy transforms to the tlist so that
 				// we can translate,scale,translate in mousemove
-				tlist.appendItem(svgroot.createSVGTransform());
-				tlist.appendItem(svgroot.createSVGTransform());
-				tlist.appendItem(svgroot.createSVGTransform());
+				var pos = canvas.getRotationAngle(mouse_target)?1:0;
+				
+				if(hasMatrixTransform(tlist)) {
+					tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
+					tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
+					tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
+				} else {
+					tlist.appendItem(svgroot.createSVGTransform());
+					tlist.appendItem(svgroot.createSVGTransform());
+					tlist.appendItem(svgroot.createSVGTransform());
+				}
 				break;
 			case "fhellipse":
 			case "fhrect":
@@ -2652,7 +2695,9 @@ function BatchCommand(text) {
 				// we track the resize bounding box and translate/scale the selected element
 				// while the mouse is down, when mouse goes up, we use this to recalculate
 				// the shape's coordinates
-				var box=canvas.getBBox(selected), left=box.x, top=box.y, width=box.width,
+				var tlist = canvas.getTransformList(selected);
+				var hasMatrix = hasMatrixTransform(tlist);
+				var box=hasMatrix?init_bbox:canvas.getBBox(selected), left=box.x, top=box.y, width=box.width,
 					height=box.height, dx=(x-start_x), dy=(y-start_y);
 								
 				// if rotated, adjust the dx,dy values
@@ -2690,7 +2735,6 @@ function BatchCommand(text) {
 				}
 				
 				// update the transform list with translate,scale,translate
-				var tlist = canvas.getTransformList(selected);
 				var translateOrigin = svgroot.createSVGTransform(),
 					scale = svgroot.createSVGTransform(),
 					translateBack = svgroot.createSVGTransform();
@@ -2700,14 +2744,19 @@ function BatchCommand(text) {
 					else sy = sx;
 				}
 				scale.setScale(sx,sy);
-
 				
 				translateBack.setTranslate(left+tx,top+ty);
-				var N = tlist.numberOfItems;
-				tlist.replaceItem(translateBack, N-3);
-				tlist.replaceItem(scale, N-2);
-				tlist.replaceItem(translateOrigin, N-1);
-				
+				if(hasMatrix) {
+					var diff = angle?1:0;
+					tlist.replaceItem(translateOrigin, 2+diff);
+					tlist.replaceItem(scale, 1+diff);
+					tlist.replaceItem(translateBack, 0+diff);
+				} else {
+					var N = tlist.numberOfItems;
+					tlist.replaceItem(translateBack, N-3);
+					tlist.replaceItem(scale, N-2);
+					tlist.replaceItem(translateOrigin, N-1);
+				}
 				var selectedBBox = selectedBBoxes[0];				
 
 				// reset selected bbox top-left position
