@@ -3064,6 +3064,93 @@ function BatchCommand(text) {
 		call("changed", selectedElements);
 	}
 	
+	// If the path was rotated, we must now pay the piper:
+	// Every path point must be rotated into the rotated coordinate system of 
+	// its old center, then determine the new center, then rotate it back
+	// This is because we want the path to remember its rotation
+	
+	// TODO: This is still using ye olde transform methods, can probably
+	// be optimized or even taken care of by recalculateDimensions
+	var recalcRotatedPath = function() {
+		var angle = canvas.getRotationAngle(current_path, true);
+		if(!angle) return;
+		var box = canvas.getBBox(current_path);
+		var oldbox = selectedBBoxes[0];
+		var oldcx = oldbox.x + oldbox.width/2,
+			oldcy = oldbox.y + oldbox.height/2,
+			newcx = box.x + box.width/2,
+			newcy = box.y + box.height/2;
+		
+		// un-rotate the new center to the proper position
+		var dx = newcx - oldcx,
+			dy = newcy - oldcy;
+		var r = Math.sqrt(dx*dx + dy*dy);
+		var theta = Math.atan2(dy,dx) + angle;
+		newcx = r * Math.cos(theta) + oldcx;
+		newcy = r * Math.sin(theta) + oldcy;
+		
+		var getRotVals = function(x, y) {
+			dx = x - oldcx;
+			dy = y - oldcy;
+			
+			// rotate the point around the old center
+			r = Math.sqrt(dx*dx + dy*dy);
+			theta = Math.atan2(dy,dx) + angle;
+			dx = r * Math.cos(theta) + oldcx;
+			dy = r * Math.sin(theta) + oldcy;
+			
+			// dx,dy should now hold the actual coordinates of each
+			// point after being rotated
+
+			// now we want to rotate them around the new center in the reverse direction
+			dx -= newcx;
+			dy -= newcy;
+			
+			r = Math.sqrt(dx*dx + dy*dy);
+			theta = Math.atan2(dy,dx) - angle;
+			
+			return {'x':(r * Math.cos(theta) + newcx)/1,
+				'y':(r * Math.sin(theta) + newcy)/1};
+		}
+		
+		var list = current_path.pathSegList;
+		var i = list.numberOfItems;
+		while (i) {
+			i -= 1;
+			var seg = list.getItem(i);
+			var type = seg.pathSegType;
+			if(type == 1) continue;
+			
+			var rvals = getRotVals(seg.x,seg.y);
+			var points = [rvals.x, rvals.y];
+			if(seg.x1 != null && seg.x2 != null) {
+				c_vals1 = getRotVals(seg.x1, seg.y1);
+				c_vals2 = getRotVals(seg.x2, seg.y2);
+				points.splice(points.length, 0, c_vals1.x , c_vals1.y, c_vals2.x, c_vals2.y);
+			}
+			replacePathSeg(type, i, points);
+		} // loop for each point
+
+		box = canvas.getBBox(current_path);						
+		selectedBBoxes[0].x = box.x; selectedBBoxes[0].y = box.y;
+		selectedBBoxes[0].width = box.width; selectedBBoxes[0].height = box.height;
+		
+		// now we must set the new transform to be rotated around the new center
+		var R_nc = svgroot.createSVGTransform();
+		var tlist = canvas.getTransformList(current_path);
+		R_nc.setRotate((angle * 180.0 / Math.PI), newcx, newcy);
+		tlist.replaceItem(R_nc,0);
+			
+		if(document.getElementById("pathpointgrip_container")) {
+			var pcx = newcx * current_zoom,
+				pcy = newcy * current_zoom;
+			var xform = ["rotate(", (angle*180.0/Math.PI), " ", pcx, ",", pcy, ")"].join("");
+			setPointContainerTransform(xform);
+		}
+		resetPointGrips();
+		updateSegLine(true);
+	}
+
 	// Rotate all points of a path and remove its transform value
 	var resetPathOrientation = function(path) {
 		if(path == null || path.nodeName != 'path') return false;
@@ -4176,88 +4263,7 @@ function BatchCommand(text) {
 					var oldvalues = {};
 					oldvalues["d"] = current_path_oldd;
 					
-					// If the path was rotated, we must now pay the piper:
-					// Every path point must be rotated into the rotated coordinate system of 
-					// its old center, then determine the new center, then rotate it back
-					// This is because we want the path to remember its rotation
-					var angle = canvas.getRotationAngle(current_path, true);
-	
-					if (angle) {
-						var box = canvas.getBBox(current_path);
-						var oldbox = selectedBBoxes[0];
-						var oldcx = oldbox.x + oldbox.width/2,
-							oldcy = oldbox.y + oldbox.height/2,
-							newcx = box.x + box.width/2,
-							newcy = box.y + box.height/2;
-						
-						// un-rotate the new center to the proper position
-						var dx = newcx - oldcx,
-							dy = newcy - oldcy;
-						var r = Math.sqrt(dx*dx + dy*dy);
-						var theta = Math.atan2(dy,dx) + angle;
-						newcx = r * Math.cos(theta) + oldcx;
-						newcy = r * Math.sin(theta) + oldcy;
-						
-						var getRotVals = function(x, y) {
-							dx = x - oldcx;
-							dy = y - oldcy;
-							
-							// rotate the point around the old center
-							r = Math.sqrt(dx*dx + dy*dy);
-							theta = Math.atan2(dy,dx) + angle;
-							dx = r * Math.cos(theta) + oldcx;
-							dy = r * Math.sin(theta) + oldcy;
-							
-							// dx,dy should now hold the actual coordinates of each
-							// point after being rotated
-
-							// now we want to rotate them around the new center in the reverse direction
-							dx -= newcx;
-							dy -= newcy;
-							
-							r = Math.sqrt(dx*dx + dy*dy);
-							theta = Math.atan2(dy,dx) - angle;
-							
-							return {'x':(r * Math.cos(theta) + newcx)/1,
-								'y':(r * Math.sin(theta) + newcy)/1};
-						}
-						
-						var list = current_path.pathSegList;
-						var i = list.numberOfItems;
-						while (i) {
-							i -= 1;
-							var seg = list.getItem(i);
-							var type = seg.pathSegType;
-							if(type == 1) continue;
-							
-							var rvals = getRotVals(seg.x,seg.y);
-							var points = [rvals.x, rvals.y];
-							if(seg.x1 != null && seg.x2 != null) {
-								c_vals1 = getRotVals(seg.x1, seg.y1);
-								c_vals2 = getRotVals(seg.x2, seg.y2);
-								points.splice(points.length, 0, c_vals1.x , c_vals1.y, c_vals2.x, c_vals2.y);
-							}
-							replacePathSeg(type, i, points);
-						} // loop for each point
-	
-						box = canvas.getBBox(current_path);						
-						selectedBBoxes[0].x = box.x; selectedBBoxes[0].y = box.y;
-						selectedBBoxes[0].width = box.width; selectedBBoxes[0].height = box.height;
-						
-						// now we must set the new transform to be rotated around the new center
-						var rotate = "rotate(" + (angle * 180.0 / Math.PI) + " " + newcx + "," + newcy + ")";
-						current_path.setAttribute("transform", rotate);
-							
-						if(document.getElementById("pathpointgrip_container")) {
-							var pcx = newcx * current_zoom,
-								pcy = newcy * current_zoom;
-							var xform = ["rotate(", (angle*180.0/Math.PI), " ", pcx, ",", pcy, ")"].join("");
-							setPointContainerTransform(xform);
-						}
-						resetPointGrips();
-						updateSegLine(true);
-
-					} // if rotated
+					recalcRotatedPath();
 
 					batchCmd.addSubCommand(new ChangeElementCommand(current_path, oldvalues, "path points"));
 					addCommandToHistory(batchCmd);
@@ -4274,7 +4280,9 @@ function BatchCommand(text) {
 				} // if (current_path_pt_drag != -1)
 				else if(current_ctrl_pt_drag != -1) {
 					current_ctrl_pt_drag = -1;
-					var batchCmd = new BatchCommand("Edit Path control points");
+					recalcRotatedPath();
+					updateSegLine();
+           					var batchCmd = new BatchCommand("Edit Path control points");
 					batchCmd.addSubCommand(new ChangeElementCommand(current_path, {d:current_path_oldd}));
 					addCommandToHistory(batchCmd);
 					call("changed", [current_path]);
