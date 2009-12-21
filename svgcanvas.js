@@ -661,6 +661,40 @@ function BatchCommand(text) {
 			this._elem.setAttribute("transform", tstr);
 		};
 		this._list = this;
+		this._init = function() {
+			// Transform attribute parser
+			var str = this._elem.getAttribute("transform");
+			if(!str) return;
+			
+			// TODO: Add skew support in future
+			var re = /\s*((scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/;
+			var arr = [];
+			var m = true;
+			while(m) {
+				m = str.match(re);
+				str = str.replace(re,'');
+				if(m && m[1]) {
+					var x = m[1];
+					var bits = x.split(/\s*\(/);
+					var name = bits[0];
+					var val_bits = bits[1].match(/\s*(.*?)\s*\)/);
+					var val_arr = val_bits[1].split(/[, ]+/);
+					var letters = 'abcdef'.split('');
+					var mtx = svgroot.createSVGMatrix();
+					$.each(val_arr, function(i, item) {
+						val_arr[i] = parseFloat(item);
+						if(name == 'matrix') {
+							mtx[letters[i]] = val_arr[i];
+						}
+					});
+					var xform = svgroot.createSVGTransform();
+					var fname = 'set' + name.charAt(0).toUpperCase() + name.slice(1);
+					var values = name=='matrix'?[mtx]:val_arr;
+					xform[fname].apply(xform, values);
+					this._list.appendItem(xform);
+				}
+			}
+		}
 		
 		this.numberOfItems = 0;
 		this.clear = function() { 
@@ -1099,14 +1133,7 @@ function BatchCommand(text) {
 				svgcontent.insertBefore(node, svgcontent.firstChild);
 			}
 		});
-		svgcontent.removeAttribute('id');
-		var res = canvas.getResolution();
- 		assignAttributes(svgcontent, {width: res.w, height: res.h});
-		svgcontent.removeAttribute('viewBox');
 		var output = svgToString(svgcontent, 0);
-		assignAttributes(svgcontent, {id: 'svgcontent', 'viewBox':[0,0,res.w,res.h].join(' ')});
-		svgcontent.removeAttribute('width');
-		svgcontent.removeAttribute('height');
 		return output;
 	}
 
@@ -1119,44 +1146,53 @@ function BatchCommand(text) {
 			var i;
 			var childs = elem.childNodes;
 			for (i=0; i<indent; i++) out.push(" ");
-			out.push("<"); out.push(elem.nodeName);
-			for (i=attrs.length-1; i>=0; i--) {
-				attr = attrs.item(i);
-				var attrVal = attr.nodeValue;
-				
-				if (attrVal != "") {
-					if(attrVal.indexOf('pointer-events') == 0) continue;
-					out.push(" "); 
-					if(attr.localName == 'd') attrVal = convertPath(elem, true);
-					if(!isNaN(attrVal)) {
-						attrVal = shortFloat(attrVal);
-					}
+			out.push("<"); out.push(elem.nodeName);			
+			if(elem.id == 'svgcontent') {
+				// Process root element separately; Prevents errors caused 
+				// in webkit when removing attributes
+				var res = canvas.getResolution();
+				out.push(' width="' + res.w + '" height="' + res.h
+				+ '" xmlns:xlink="'+xlinkns+'" xmlns="'+svgns+'"');
+			} else {
+				for (i=attrs.length-1; i>=0; i--) {
+					attr = attrs.item(i);
+					var attrVal = attr.nodeValue;
 					
-					// Embed images when saving 
-					if(save_options.apply
-						&& elem.nodeName == 'image' 
-						&& attr.localName == 'href'
-						&& save_options.images
-						&& save_options.images == 'embed') {
-						var img = encodableImages[attrVal];
-						if(img) attrVal = img;
+					if (attrVal != "") {
+						if(attrVal.indexOf('pointer-events') == 0) continue;
+						out.push(" "); 
+						if(attr.localName == 'd') attrVal = convertPath(elem, true);
+						if(!isNaN(attrVal)) {
+							attrVal = shortFloat(attrVal);
+						}
+						
+						// Embed images when saving 
+						if(save_options.apply
+							&& elem.nodeName == 'image' 
+							&& attr.localName == 'href'
+							&& save_options.images
+							&& save_options.images == 'embed') {
+							var img = encodableImages[attrVal];
+							if(img) attrVal = img;
+						}
+						
+						// map various namespaces to our fixed namespace prefixes
+						// TODO: put this into a map and do a look-up instead of if-else
+						if (attr.namespaceURI == xlinkns) {
+							out.push('xlink:');
+						}
+						else if(attr.namespaceURI == 'http://www.w3.org/2000/xmlns/' && attr.localName != 'xmlns') {
+							out.push('xmlns:');
+						}
+						else if(attr.namespaceURI == xmlns) {
+							out.push('xml:');
+						}
+						out.push(attr.localName); out.push("=\""); 
+						out.push(attrVal); out.push("\"");
 					}
-					
-					// map various namespaces to our fixed namespace prefixes
-					// TODO: put this into a map and do a look-up instead of if-else
-					if (attr.namespaceURI == xlinkns) {
-						out.push('xlink:');
-					}
-					else if(attr.namespaceURI == 'http://www.w3.org/2000/xmlns/' && attr.localName != 'xmlns') {
-						out.push('xmlns:');
-					}
-					else if(attr.namespaceURI == xmlns) {
-						out.push('xml:');
-					}
-					out.push(attr.localName); out.push("=\""); 
-					out.push(attrVal); out.push("\"");
 				}
 			}
+
 			if (elem.hasChildNodes()) {
 				out.push(">");
 				indent++;
@@ -4445,6 +4481,8 @@ function BatchCommand(text) {
 			// identify layers
 			identifyLayers();
 			
+			// reset transform lists
+			svgTransformLists = {};
 			canvas.clearSelection();
 			addCommandToHistory(batchCmd);
 			call("changed", [svgcontent]);
@@ -4874,7 +4912,6 @@ function BatchCommand(text) {
 		selectorManager.initGroup();
 		// reset the rubber band box
 		rubberBox = selectorManager.getRubberBandBox();
-		
 		call("cleared");
 	};
 	
@@ -5371,6 +5408,7 @@ function BatchCommand(text) {
 			var t = svgTransformLists[elem.id];
 			if (!t) {
 				svgTransformLists[elem.id] = new SVGEditTransformList(elem);
+				svgTransformLists[elem.id]._init();
 				t = svgTransformLists[elem.id];
 			}
 			return t;
