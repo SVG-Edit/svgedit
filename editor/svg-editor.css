@@ -609,7 +609,7 @@ span.zoom_tool {
 #svg_docprops_container #svg_docprops_docprops, 
 #svg_docprops_container #svg_docprops_prefs {
 	float: left;
-	width: 200px;
+	width: 220px;
 	margin: 5px .7em; 
 	overflow: hidden;
 }
