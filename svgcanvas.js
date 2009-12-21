@@ -1364,7 +1364,9 @@ function BatchCommand(text) {
 				changes["cx"] = c.x;
 				changes["cy"] = c.y;
 				// take the minimum of the new selected box's dimensions for the new circle radius
-				changes["r"] = Math.min(box.width/2,box.height/2);
+				var tbox = transformBox(box.x, box.y, box.width, box.height, m);
+				var w = tbox.tr.x - tbox.tl.x, h = tbox.bl.y - tbox.tl.y;
+				changes["r"] = Math.min(w/2, h/2);
 				break;
 			case "ellipse":
 				var c = remap(changes["cx"],changes["cy"]);
