@@ -421,7 +421,7 @@ function BatchCommand(text) {
 				offset += 2/canvas.getZoom();
 			}
 			var bbox = canvas.getBBox(selected);
-			if(selected.tagName == 'g') {
+			if(!isWebkit && selected.tagName == 'g') {
 				// The bbox for a group does not include stroke vals, so we
 				// get the bbox based on its children. 
 				var stroked_bbox = canvas.getStrokedBBox(selected.childNodes);
