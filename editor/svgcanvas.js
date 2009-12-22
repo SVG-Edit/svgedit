@@ -2505,7 +2505,7 @@ function BatchCommand(text) {
 						"stroke-linecap": "round",
 						"stroke-linejoin": "round",
 						"opacity": cur_shape.opacity / 2,
-						"style": "pointer-events:inherit"
+						"style": "pointer-events:none"
 					}
 				});
 				freehand_min_x = x;
@@ -2575,7 +2575,7 @@ function BatchCommand(text) {
 						"stroke-opacity": cur_shape.stroke_opacity,
 						"fill": "none",
 						"opacity": cur_shape.opacity / 2,
-						"style": "pointer-events:inherit"
+						"style": "pointer-events:none"
 					}
 				});
 				break;
@@ -4336,6 +4336,7 @@ function BatchCommand(text) {
 		} else if (element != null) {
 			canvas.addedNew = true;
 			element.setAttribute("opacity", cur_shape.opacity);
+			element.setAttribute("style", "pointer-events:inherit");
 			cleanupElement(element);
 			selectorManager.update();
  			if(current_mode == "path") {
