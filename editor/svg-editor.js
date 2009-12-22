@@ -2131,9 +2131,7 @@ function svg_edit_setup() {
 						var t = this.title.split(' [')[0];
 						var key_str = '';
 						// Shift+Up
-							console.log('keyval',keyval)
 						$.each(keyval.split('/'), function(i, key) {
-							console.log('key',key);
 							var mod_bits = key.split('+'), mod = '';
 							if(mod_bits.length > 1) {
 								mod = mod_bits[0] + '+';
