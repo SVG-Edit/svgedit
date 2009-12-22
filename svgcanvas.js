@@ -186,6 +186,8 @@ function InsertElementCommand(elem, text) {
 	this.elements = function() { return [this.elem]; };
 }
 
+// this is created for an element that has or will be removed from the DOM
+// (creating this object does not remove the element from the DOM itself)
 function RemoveElementCommand(elem, parent, text) {
 	this.elem = elem;
 	this.text = text || ("Delete " + elem.tagName);
@@ -207,6 +209,12 @@ function RemoveElementCommand(elem, parent, text) {
 	};
 
 	this.elements = function() { return [this.elem]; };
+	
+	// special hack for webkit: remove this element's entry in the svgTransformLists map
+	if (svgTransformLists[elem.id]) {
+		delete svgTransformLists[elem.id];
+	}
+	
 }
 
 function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
@@ -1307,66 +1315,6 @@ function BatchCommand(text) {
 			call("changed", selectedElements);
 		}
 	};
-	
-	/*
-	
-	The user changes shape geometry in one of several ways:
-		- drag/moving it
-		- rotating it
-		- FUTURE: skewing it
-		- resizing it
-	(we ignore path node editing here)
-	
-	From a transformation point of view:
-		- translations are always in the editor's frame of reference (NOT the element's)
-		- rotations rotate the element's frame of reference
-		- FUTURE: skewing skews the element's rotated frame of reference
-		- resizing modifies the dimensions of the element in its rotated+skewed
-		  frame of reference.
-	
-	Thus, from a coding point of view, what we do when the user is changing geometry is:
-	
-	- when the user drags an element, we PREPEND the tlist with a: 
-			translate(tx,ty)
-	- when the user rotates an element, we INSERT into the tlist a:
-			rotate(angle,cx,cy) after any translates 
-	- FUTURE: when the user skews an element, we INSERT into the tlist a:
-			skewX(angle) or skewY(angle) after the rotate
-	- when the user is resizing an element, we APPEND the tlist with a:
-			translate(tx,ty) scale(sx,sy) translate(-tx,-ty)
-
-	Thus, a simple element's transform list looks like the following:
-		[ Translate ] [ Rotate ] [ SkewX/Y] [ Scale ]
-
-	When the user is done changing the shape's geometry (i.e. upon lifting the mouse button)		
-	we then attempt to reduce the transform list of the element by the following:
-	
-	- a translate can be removed by actually moving the element (modifying its x,y values)
-	- a rotate cannot be removed
-	- FUTURE: a skewX/skewY cannot be removed
-	- a scale can be removed by resizing the element (modifying its width/height values)
-		
-	Thus, a simple element's transform list can always be reduced to:
-		[ Rotate ] [ SkewX/Y ]
-		
-	However, a group is an element that contains one or more other elements, let's call 
-	this a Complex Element.
-		
-	From the user point of view, a complex element is handled no differently 
-	than a simple element.  Thus its transform list looks like the following:
-		[ Translate] [ Rotate ] [ SkewX/SkewY ] [ Scale ]
-		
-	This means a complex element has a reduced transform list as:
-		[ Rotate ] [ SkewX/SkewY ] [ Scale ]
-		
-	Next, we have to consider the case when a group is dissolved (ungrouped).  When
-	the group is dissolving, the transform list must make its way down to the children.
-	
-	Thus, every child of the now-dissolved group inherits the transformlist.  Child N's 
-	transform list looks like:
-		[ Parent Rotate ] [ Parent SkewX/SkewY ] [ Parent Scale ] [ Rotate ] [ SkewX/SkewY ] [ Scale ]
-	
-	*/
 
 	// this is how we map paths to our preferred relative segment types
 	var pathMap = [ 0, 'z', 'M', 'M', 'L', 'L', 'C', 'C', 'Q', 'Q', 'A', 'A', 
