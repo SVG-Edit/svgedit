@@ -8,6 +8,7 @@
  */
 var put_locale = function(svgCanvas, given_param){
 	var lang_param;
+	var good_langs = ['cs','nl','en','es','fr','ro','sk'];
 	if(given_param) {
 		lang_param = given_param;
 	} else {
@@ -20,8 +21,14 @@ var put_locale = function(svgCanvas, given_param){
 			if (lang_param == "")
 				return;
 		}
-		// don't bother on first run if language is English
 		lang_param = String(lang_param);
+		
+		// Set to English if language is not in list of good langs
+		if($.inArray(lang_param, good_langs) == -1) {
+			lang_param = "en";
+		}
+		
+		// don't bother on first run if language is English		
 		if(lang_param.indexOf("en") == 0) return;
 	}
 	
