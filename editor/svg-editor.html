@@ -100,35 +100,38 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	
 	<!-- Buttons when a single element is selected -->
 	<div id="selected_panel">
-		<div class="tool_sep"></div>
-		<div class="push_button" id="tool_clone" title="Clone Element [C]"></div>
-		<div class="push_button" id="tool_delete" title="Delete Element [Delete/Backspace]"></div>
-		<div class="tool_sep"></div>
-		<div class="push_button" id="tool_move_top" title="Move to Top [Shift+Up]"></div>
-		<div class="push_button" id="tool_move_bottom" title="Move to Bottom [Shift+Down]"></div>
-		<div class="push_button" id="tool_topath" title="Convert to Path"></div>
-		<div class="push_button" id="tool_reorient" title="Reorient path"></div>
-		<div class="tool_sep"></div>
-
-		<label id="group_opacityLabel" class="selected_tool" for="group_opacity">opac:</label>
-		<input id="group_opacity" class="selected_tool" title="Change selected item opacity" size="3" value="100" type="text"/>
-		<div id="opacity_dropdown" class="dropdown">
-			<button></button>
-			<ul>
-				<li class="special"><div id="opac_slider"></div></li>
-				<li>100% (no transparency)</li>
-				<li>0%</li>
-				<li>25%</li>
-				<li>50%</li>
-				<li>75%</li>
-				<li>100%</li>
-			</ul>
+		<div class="toolset">
+			<div class="tool_sep"></div>
+			<div class="push_button" id="tool_clone" title="Clone Element [C]"></div>
+			<div class="push_button" id="tool_delete" title="Delete Element [Delete/Backspace]"></div>
+			<div class="tool_sep"></div>
+			<div class="push_button" id="tool_move_top" title="Move to Top [Shift+Up]"></div>
+			<div class="push_button" id="tool_move_bottom" title="Move to Bottom [Shift+Down]"></div>
+			<div class="push_button" id="tool_topath" title="Convert to Path"></div>
+			<div class="push_button" id="tool_reorient" title="Reorient path"></div>
+			<div class="tool_sep"></div>
 		</div>
-
-		<label id="angleLabel" class="selected_tool">angle:</label>
-		<input id="angle" class="selected_tool" title="Change rotation angle" size="2" value="0" type="text"/>
-		
-		<div id="xy_panel">
+		<div class="toolset">
+			<label id="group_opacityLabel" class="selected_tool" for="group_opacity">opac:</label>
+			<input id="group_opacity" class="selected_tool" title="Change selected item opacity" size="3" value="100" type="text"/>
+			<div id="opacity_dropdown" class="dropdown">
+				<button></button>
+				<ul>
+					<li class="special"><div id="opac_slider"></div></li>
+					<li>100% (no transparency)</li>
+					<li>0%</li>
+					<li>25%</li>
+					<li>50%</li>
+					<li>75%</li>
+					<li>100%</li>
+				</ul>
+			</div>
+		</div>
+		<div class="toolset">
+			<label id="angleLabel" class="selected_tool">angle:</label>
+			<input id="angle" class="selected_tool" title="Change rotation angle" size="2" value="0" type="text"/>
+		</div>
+		<div id="xy_panel" class="toolset">
 			<label class="selected_tool">x:</label>
 			<input id="selected_x" class="selected_tool attr_changer" title="Change X coordinate" size="3" data-attr="x"/>
 			<label class="selected_tool">y:</label>
@@ -166,23 +169,31 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	</div>
 
 	<div id="rect_panel">
-		<label id="rwidthLabel" class="rect_tool">width:</label>
-		<input id="rect_width" class="rect_tool attr_changer" title="Change rectangle width" size="3" data-attr="width"/>
-		<label id="rheightLabel" class="rect_tool">height:</label>
-		<input id="rect_height" class="rect_tool attr_changer" title="Change rectangle height" size="3" data-attr="height"/>
-		<label id="cornerRadiusLabel" class="rect_tool">Corner Radius:</label>
-		<input id="rect_rx" size="3" value="0" class="rect_tool" type="text" title="Change Rectangle Corner Radius" data-attr="Corner Radius"/>
+		<div class="toolset">
+			<label id="rwidthLabel" class="rect_tool">width:</label>
+			<input id="rect_width" class="rect_tool attr_changer" title="Change rectangle width" size="3" data-attr="width"/>
+			<label id="rheightLabel" class="rect_tool">height:</label>
+			<input id="rect_height" class="rect_tool attr_changer" title="Change rectangle height" size="3" data-attr="height"/>
+		</div>
+		<div class="toolset">
+			<label id="cornerRadiusLabel" class="rect_tool">Corner Radius:</label>
+			<input id="rect_rx" size="3" value="0" class="rect_tool" type="text" title="Change Rectangle Corner Radius" data-attr="Corner Radius"/>
+		</div>	
 	</div>
 
 	<div id="image_panel">
+	<div class="toolset">
 		<label id="iwidthLabel" class="image_tool">width:</label>
 		<input id="image_width" class="image_tool attr_changer" title="Change image width" size="3" data-attr="width"/>
 		<label id="iheightLabel" class="image_tool">height:</label>
 		<input id="image_height" class="image_tool attr_changer" title="Change image height" size="3" data-attr="height"/>
-    <label class="image_tool">url:</label>
-    <input id="image_url" class="image_tool" type="text" title="Change URL" size="35"/>
-    <button id="change_image_url" style="display:none;">Change Image</button>
-    <div id="url_notice" title="NOTE: This image cannot be embedded. It will depend on this path to be displayed"></div>
+	</div>
+	<div class="toolset">
+		<label class="image_tool">url:</label>
+		<input id="image_url" class="image_tool" type="text" title="Change URL" size="35"/>
+		<button id="change_image_url" style="display:none;">Change Image</button>
+		<div id="url_notice" title="NOTE: This image cannot be embedded. It will depend on this path to be displayed"></div>
+	</div>
   </div>
 
 	<div id="circle_panel">
@@ -206,34 +217,42 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	</div>
 
 	<div id="line_panel">
-		<label class="line_tool">x1:</label>
-		<input id="line_x1" class="line_tool attr_changer" title="Change line's starting x coordinate" size="3" data-attr="x1"/>
-		<label class="line_tool">y1:</label>
-		<input id="line_y1" class="line_tool attr_changer" title="Change line's starting y coordinate" size="3" data-attr="y1"/>
-		<label class="line_tool">x2:</label>
-		<input id="line_x2" class="line_tool attr_changer" title="Change line's ending x coordinate" size="3" data-attr="x2"/>
-		<label class="line_tool">y2:</label>
-		<input id="line_y2" class="line_tool attr_changer" title="Change line's ending y coordinate" size="3" data-attr="y2"/>
+		<div class="toolset">
+			<label class="line_tool">x1:</label>
+			<input id="line_x1" class="line_tool attr_changer" title="Change line's starting x coordinate" size="3" data-attr="x1"/>
+			<label class="line_tool">y1:</label>
+			<input id="line_y1" class="line_tool attr_changer" title="Change line's starting y coordinate" size="3" data-attr="y1"/>
+		</div>
+		<div class="toolset">
+			<label class="line_tool">x2:</label>
+			<input id="line_x2" class="line_tool attr_changer" title="Change line's ending x coordinate" size="3" data-attr="x2"/>
+			<label class="line_tool">y2:</label>
+			<input id="line_y2" class="line_tool attr_changer" title="Change line's ending y coordinate" size="3" data-attr="y2"/>
+		</div>
 	</div>
 
 	<div id="text_panel">
 		<div class="tool_button" id="tool_bold" title="Bold Text [B]"><span></span>B</div>
 		<div class="tool_button" id="tool_italic" title="Italic Text [I]"><span></span>i</div>
 		
-		<input id="font_family" class="text_tool" type="text" title="Change Font Family" size="12"/>
-		<div id="font_family_dropdown" class="dropdown">
-			<button></button>
-			<ul>
-				<li style="font-family:serif">Serif</li>
-				<li style="font-family:sans-serif">Sans-serif</li>
-				<li style="font-family:cursive">Cursive</li>
-				<li style="font-family:fantasy">Fantasy</li>
-				<li style="font-family:monospace">Monospace</li>
-			</ul>
+		<div class="toolset">
+			<input id="font_family" class="text_tool" type="text" title="Change Font Family" size="12"/>
+			<div id="font_family_dropdown" class="dropdown">
+				<button></button>
+				<ul>
+					<li style="font-family:serif">Serif</li>
+					<li style="font-family:sans-serif">Sans-serif</li>
+					<li style="font-family:cursive">Cursive</li>
+					<li style="font-family:fantasy">Fantasy</li>
+					<li style="font-family:monospace">Monospace</li>
+				</ul>
+			</div>
 		</div>
 
-		<label id="font_sizeLabel" class="text_tool" for="font_size">size:</label>
-		<input id="font_size" class="text_tool" title="Change Font Size" size="3" value="0" type="text"/>
+		<div class="toolset">
+			<label id="font_sizeLabel" class="text_tool" for="font_size">size:</label>
+			<input id="font_size" class="text_tool" title="Change Font Size" size="3" value="0" type="text"/>
+		</div>
 		<input id="text" class="text_tool" type="text" title="Change text contents" size="35"/>
 	</div>
 	
