@@ -1268,6 +1268,9 @@ function svg_edit_setup() {
 			"#tools_top > div, #tools_top": {
 				'line-height': {s: '17px', l: '34px', xl: '50px'}
 			}, 
+			"div.toolset": {
+				'height': {s: '25px', l: '43px', xl: '64px'}
+			}, 
 			".dropdown button": {
 				'height': {s: '18px', l: '34px', xl: '40px'},
 				'margin-top': {s: '3px'}
