@@ -2068,7 +2068,11 @@ function svg_edit_setup() {
 			{key: ['right', true], fn: function(){moveSelected(1,0);}}
 		];
 		
-		var key_assocs = {};
+		// Tooltips not directly associated with a single function
+		var key_assocs = {
+			'4/Shift+4': '#tools_rect_show',
+			'5/Shift+5': '#tools_ellipse_show'
+		};
 	
 		return {
 			setAll: function() {
@@ -2124,17 +2128,15 @@ function svg_edit_setup() {
 						var t = this.title.split(' [')[0];
 						var key_str = '';
 						// Shift+Up
+							console.log('keyval',keyval)
 						$.each(keyval.split('/'), function(i, key) {
+							console.log('key',key);
 							var mod_bits = key.split('+'), mod = '';
 							if(mod_bits.length > 1) {
 								mod = mod_bits[0] + '+';
 								key = mod_bits[1];
 							}
-							if(uiStrings['key_'+key]) {
-								key_str += (i?'/':'') + mod + uiStrings['key_'+key];
-							} else {
-								key_str = key;
-							}
+							key_str += (i?'/':'') + mod + (uiStrings['key_'+key] || key);
 						});
 						this.title = t +' ['+key_str+']';
 					});
