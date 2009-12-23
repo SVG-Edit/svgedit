@@ -1675,63 +1675,14 @@ function BatchCommand(text) {
 						var m = transformListToTransform(childTlist).matrix;
 					
 						var angle = canvas.getRotationAngle(child);
+						var old_start_transform = start_transform;
+						start_transform = child.getAttribute("transform");
 						if(angle || hasMatrixTransform(childTlist)) {
 							var em = matrixMultiply(tm, sm, tmn, m);
 							var e2t = svgroot.createSVGTransform();
 							e2t.setMatrix(em);
 							childTlist.clear();
 							childTlist.appendItem(e2t,0);
-							
-							// Remap all point-based elements
-							var ch = {};
-							switch (child.tagName) {
-							case 'line':
-								ch.x1 = child.getAttribute("x1");
-								ch.y1 = child.getAttribute("y1");
-								ch.x2 = child.getAttribute("x2");
-								ch.y2 = child.getAttribute("y2");
-							case 'polyline':
-							case 'polygon':
-								ch.points = child.getAttribute("points");
-								if(ch.points) {
-									var list = child.points;
-									var len = list.numberOfItems;
-									ch.points = new Array(len);
-									for (var i = 0; i < len; ++i) {
-										var pt = list.getItem(i);
-										ch.points[i] = {x:pt.x,y:pt.y};
-									}
-								}
-							case 'path':
-								ch.d = child.getAttribute("d");
-								if(ch.d) {
-									var segList = child.pathSegList;
-									var len = segList.numberOfItems;
-									ch.d = new Array(len);
-									for (var i = 0; i < len; ++i) {
-										var seg = segList.getItem(i);
-										ch.d[i] = {
-											type: seg.pathSegType,
-											x: seg.x,
-											y: seg.y,
-											x1: seg.x1,
-											y1: seg.y1,
-											x2: seg.x2,
-											y2: seg.y2,
-											r1: seg.r1,
-											r2: seg.r2,
-											angle: seg.angle,
-											largeArcFlag: seg.largeArcFlag,
-											sweepFlag: seg.sweepFlag
-										};
-									}
-								}
-								remapElement(child, ch, em);
-								childTlist.clear();
-							default:
-								break;
-							}
-							// FIXME: we're not saving a subcommand to the batchCmd for this child
 						}
 						// if not rotated or skewed, push the [T][S][-T] down to the child
 						else {
@@ -1761,8 +1712,9 @@ function BatchCommand(text) {
 							childTlist.appendItem(translateBack);
 							childTlist.appendItem(scale);
 							childTlist.appendItem(translateOrigin);
-							batchCmd.addSubCommand( recalculateDimensions(child) );
 						} // not rotated
+						batchCmd.addSubCommand( recalculateDimensions(child) );
+						start_transform = old_start_transform;
 					} // element
 				} // for each child
 				// Remove these transforms from group
@@ -1795,25 +1747,51 @@ function BatchCommand(text) {
 				ty = M2.f;
 
 				if (tx != 0 || ty != 0) {
-					// now push this transform down to the children
-					// FIXME: unfortunately recalculateDimensions depends on this global variable
-					var old_start_transform = start_transform;
-					start_transform = null;
 					// we pass the translates down to the individual children
 					var children = selected.childNodes;
 					var c = children.length;
 					while (c--) {
 						var child = children.item(c);
 						if (child.nodeType == 1) {
+							var old_start_transform = start_transform;
+							start_transform = child.getAttribute("transform");
+							
 							var childTlist = canvas.getTransformList(child);
 							var newxlate = svgroot.createSVGTransform();
 							newxlate.setTranslate(tx,ty);
 							childTlist.insertItemBefore(newxlate, 0);
 							batchCmd.addSubCommand( recalculateDimensions(child) );
+							start_transform = old_start_transform;
 						}
 					}
 					start_transform = old_start_transform;
 				}
+			}
+			// else, a matrix imposition from a parent group
+			// keep pushing it down to the children
+			else if (N == 1 && tlist.getItem(0).type == 1 && !gangle) {
+				operation = 1;
+				var m = tlist.getItem(0).matrix;
+				var children = selected.childNodes;
+				var c = children.length;
+				while (c--) {
+					var child = children.item(c);
+					if (child.nodeType == 1) {
+						var old_start_transform = start_transform;
+						start_transform = child.getAttribute("transform");
+						var childTlist = canvas.getTransformList(child);
+						
+						var em = matrixMultiply(m, transformListToTransform(childTlist).matrix);
+						var e2m = svgroot.createSVGTransform();
+						e2m.setMatrix(em);
+						childTlist.clear();
+						childTlist.appendItem(e2m,0);
+						
+						batchCmd.addSubCommand( recalculateDimensions(child) );
+						start_transform = old_start_transform;
+					}
+				}
+				tlist.clear();
 			}
 			// else it was just a rotate
 			else {
@@ -1853,23 +1831,22 @@ function BatchCommand(text) {
 
 				if (tx != 0 || ty != 0) {
 					// now push this transform down to the children
-					// FIXME: unfortunately recalculateDimensions depends on this global variable
-					var old_start_transform = start_transform;
-					start_transform = null;
 					// we pass the translates down to the individual children
 					var children = selected.childNodes;
 					var c = children.length;
 					while (c--) {
 						var child = children.item(c);
 						if (child.nodeType == 1) {
+							var old_start_transform = start_transform;
+							start_transform = child.getAttribute("transform");
 							var childTlist = canvas.getTransformList(child);
 							var newxlate = svgroot.createSVGTransform();
 							newxlate.setTranslate(tx,ty);
 							childTlist.insertItemBefore(newxlate, 0);
 							batchCmd.addSubCommand( recalculateDimensions(child) );
+							start_transform = old_start_transform;
 						}
 					}
-					start_transform = old_start_transform;
 				}
 				
 				if (gangle) {
@@ -1903,6 +1880,7 @@ function BatchCommand(text) {
 				}
 			}
 			
+			// 2 = translate, 3 = scale, 4 = rotate, 1 = matrix imposition
 			var operation = 0;
 			var N = tlist.numberOfItems;
 			
@@ -1943,6 +1921,59 @@ function BatchCommand(text) {
 				m = matrixMultiply( meq_inv, oldxlate, meq );
 				tlist.removeItem(0);
 			}
+			// else if this child now has a matrix imposition (from a parent group)
+			// we might be able to simplify
+			else if (N == 1 && tlist.getItem(0).type == 1 && !angle) {
+				// Remap all point-based elements
+				switch (selected.tagName) {
+					case 'line':
+						changes.x1 = selected.getAttribute("x1");
+						changes.y1 = selected.getAttribute("y1");
+						changes.x2 = selected.getAttribute("x2");
+						changes.y2 = selected.getAttribute("y2");
+					case 'polyline':
+					case 'polygon':
+						changes.points = selected.getAttribute("points");
+						if(changes.points) {
+							var list = selected.points;
+							var len = list.numberOfItems;
+							changes.points = new Array(len);
+							for (var i = 0; i < len; ++i) {
+								var pt = list.getItem(i);
+								changes.points[i] = {x:pt.x,y:pt.y};
+							}
+						}
+					case 'path':
+						changes.d = selected.getAttribute("d");
+						if(changes.d) {
+							var segList = selected.pathSegList;
+							var len = segList.numberOfItems;
+							changes.d = new Array(len);
+							for (var i = 0; i < len; ++i) {
+								var seg = segList.getItem(i);
+								changes.d[i] = {
+									type: seg.pathSegType,
+									x: seg.x,
+									y: seg.y,
+									x1: seg.x1,
+									y1: seg.y1,
+									x2: seg.x2,
+									y2: seg.y2,
+									r1: seg.r1,
+									r2: seg.r2,
+									angle: seg.angle,
+									largeArcFlag: seg.largeArcFlag,
+									sweepFlag: seg.sweepFlag
+								};
+							}
+						}
+						operation = 1;
+						tlist.clear();
+						break;
+					default:
+						break;
+				}
+			}
 			// if it was a rotation, put the rotate back and return without a command
 			// (this function has zero work to do for a rotate())
 			else {
@@ -1958,9 +1989,8 @@ function BatchCommand(text) {
 				return null;
 			}
 			
-		
 			// if it was a translate or resize, we need to remap the element and absorb the xform
-			if (operation == 2 || operation == 3) {
+			if (operation == 1 || operation == 2 || operation == 3) {
 				remapElement(selected,changes,m);
 			} // if we are remapping
 			
