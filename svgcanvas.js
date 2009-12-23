@@ -16,13 +16,14 @@
 	* ensure undo/redo works perfectly
 */
 
+var isOpera = !!window.opera;
 var isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1;
 if(!window.console) {
 	window.console = {};
 	window.console.log = function(str) {};
 	window.console.dir = function(str) {};
 }
-if( window.opera ) {
+if( isOpera ) {
 	window.console.log = function(str) {opera.postError(str);}
 }
 
@@ -2643,8 +2644,6 @@ function BatchCommand(text) {
 				break;
 			case "rotate":
 				started = true;
-				// append a dummy transform that will be used as the rotate
-//				tlist.appendItem(svgroot.createSVGTransform());
 				// we are starting an undoable change (a drag-rotation)
 				canvas.beginUndoableChange("transform", selectedElements);
 				break;
@@ -5384,6 +5383,22 @@ function BatchCommand(text) {
 			selected.textContent = 'a'; // Some character needed for the selector to use.
 			ret = selected.getBBox();
 			selected.textContent = '';
+		} else if (elem.nodeName == 'g' && isOpera) {
+			// deal with an opera bug here
+			// the bbox on a 'g' is not correct if the elements inside have been moved
+			// so we create a new g, add all the children to it, add it to the DOM, get its bbox
+			// then put all the children back on the old g and remove the new g
+			// (this means we make no changes to the DOM, which saves us a lot of headache at
+			//  the cost of performance)
+			ret = selected.getBBox();
+			var newg = document.createElementNS(svgns, "g");
+			while (selected.firstChild) { newg.appendChild(selected.firstChild); }
+			var i = selected.attributes.length;
+			while(i--) { newg.setAttributeNode(selected.attributes.item(i).cloneNode(true)); }
+			selected.parentNode.appendChild(newg);
+			ret = newg.getBBox();
+    		while (newg.firstChild) { selected.appendChild(newg.firstChild); }
+    		selected.parentNode.removeChild(newg);
 		} else {
 			try { ret = selected.getBBox(); } 
 			catch(e) { ret = null; }
@@ -5416,7 +5431,7 @@ function BatchCommand(text) {
 		val = parseFloat(val);
 		var elem = selectedElements[0];
 		var oldTransform = elem.getAttribute("transform");
-		var bbox = elem.getBBox();
+		var bbox = canvas.getBBox(elem);
 		var cx = bbox.x+bbox.width/2, cy = bbox.y+bbox.height/2;
 		var tlist = canvas.getTransformList(elem);
 		
