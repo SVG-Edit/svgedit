@@ -142,8 +142,7 @@ function ChangeElementCommand(elem, attrs, text) {
 			if (attr == "transform") { bChangedTransform = true; }
 		}
 		// relocate rotational transform, if necessary
-		if(!bChangedTransform && elem.tagName != 'svg') {
-			
+		if(!bChangedTransform) {
 			var angle = canvas.getRotationAngle(elem);
 			if (angle) {
 				var bbox = elem.getBBox();
@@ -5039,8 +5038,8 @@ function BatchCommand(text) {
 					dy.push(bbox.y*-1);
 				});
 				
-				var bCmd = canvas.moveSelectedElements(dx, dy, true);
-				batchCmd.addSubCommand(bCmd);
+				var cmd = canvas.moveSelectedElements(dx, dy, true);
+				batchCmd.addSubCommand(cmd);
 				canvas.clearSelection();
 				
 				x = Math.round(bbox.width);
