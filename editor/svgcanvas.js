@@ -383,7 +383,6 @@ function BatchCommand(text) {
 			this.rotateGrip.setAttribute("display", bShow);
 			this.rotateGripConnector.setAttribute("display", bShow);
 			var elem = this.selectedElement;
-			if(elem && (elem.tagName == "text")) bShow = "none";// || elem.tagName == "g")) bShow = "none";
 			for (dir in this.selectorGrips) {
 				this.selectorGrips[dir].setAttribute("display", bShow);
 			}
