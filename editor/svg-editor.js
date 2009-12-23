@@ -92,7 +92,7 @@ function svg_edit_setup() {
 	// needs to be included that returns the result as its first parameter.
 	// In the future we may want to add additional types of dialog boxes, since 
 	// they should be easy to handle this way.
-	var setDialogs = function() {
+	function() {
 		$('#dialog_container').draggable({cancel:'#dialog_content, #dialog_buttons *'});
 		var box = $('#dialog_box'), btn_holder = $('#dialog_buttons');
 		
@@ -129,9 +129,7 @@ function svg_edit_setup() {
 		$.alert = function(msg, cb) { dbox('alert', msg, cb);};
 		$.confirm = function(msg, cb) {	dbox('confirm', msg, cb);};
 		$.prompt = function(msg, txt, cb) { dbox('prompt', msg, cb, txt);};
-	}
-	
-	setDialogs();
+	}();
 	
 	var setSelectMode = function() {
 		$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
@@ -1422,7 +1420,7 @@ function svg_edit_setup() {
 
 	// added these event handlers for all the push buttons so they
 	// behave more like buttons being pressed-in and not images
-	function setPushButtons() {
+	function() {
 		var toolnames = ['clear','open','save','source','delete','delete_multi','paste','clone','clone_multi','move_top','move_bottom'];
 		var all_tools = '';
 		var cur_class = 'tool_button_current';
@@ -1442,9 +1440,7 @@ function svg_edit_setup() {
 		}).bind('mousedown mouseout',function(){
 			$(this).removeClass(cur_class);}
 		);
-	}
-	
-	setPushButtons();
+	}();
 
 	$('#workarea').bind("mousewheel DOMMouseScroll", function(e){
 		if(!e.shiftKey) return;
