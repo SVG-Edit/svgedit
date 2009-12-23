@@ -142,7 +142,8 @@ function ChangeElementCommand(elem, attrs, text) {
 			if (attr == "transform") { bChangedTransform = true; }
 		}
 		// relocate rotational transform, if necessary
-		if(!bChangedTransform) {
+		if(!bChangedTransform && elem.tagName != 'svg') {
+			
 			var angle = canvas.getRotationAngle(elem);
 			if (angle) {
 				var bbox = elem.getBBox();
@@ -5038,7 +5039,8 @@ function BatchCommand(text) {
 					dy.push(bbox.y*-1);
 				});
 				
-				canvas.moveSelectedElements(dx, dy, true);
+				var bCmd = canvas.moveSelectedElements(dx, dy, true);
+				batchCmd.addSubCommand(bCmd);
 				canvas.clearSelection();
 				
 				x = Math.round(bbox.width);
@@ -5413,6 +5415,7 @@ function BatchCommand(text) {
 		var selected = elem || selectedElements[0];
 		// find the rotation transform (if any) and set it
 		var tlist = canvas.getTransformList(selected);
+		if(!tlist) return 0; // <svg> elements have no tlist
 		var N = tlist.numberOfItems;
 		for (var i = 0; i < N; ++i) {
 			var xform = tlist.getItem(i);
@@ -6067,6 +6070,7 @@ function BatchCommand(text) {
 			if (undoable)
 				addCommandToHistory(batchCmd);
 			call("changed", selectedElements);
+			return batchCmd;
 		}
 	};
 
