@@ -5101,6 +5101,7 @@ function BatchCommand(text) {
 		var spacer = .85;
 		var bb;
 		var calcZoom = function(bb) {
+			if(!bb) return false;
 			var w_zoom = Math.round((editor_w / bb.width)*100 * spacer)/100;
 			var h_zoom = Math.round((editor_h / bb.height)*100 * spacer)/100;	
 			var zoomlevel = Math.min(w_zoom,h_zoom);
