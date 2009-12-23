@@ -1,4 +1,4 @@
-﻿[
+[
 {"id":"layer_new","title":"Nueva capa"},
 {"id":"layer_delete","title":"Suprimir capa"},
 {"id":"layer_rename","title":"Renombrar capa"},
@@ -56,7 +56,7 @@
 {"id":"tools_rect_show","title":"Cuadrado / Rectángulo"},
 {"id":"tools_ellipse_show","title":"Círculo / Elipse"},
 {"id":"tool_text","title":"Insertar texto"},
-{"id":"tool_path","title":"Polígono"},
+{"id":"tool_path","title":"Herramienta de trazado"},
 {"id":"tool_image","title":"Insertar imagen"},
 {"id":"tool_zoom","title":"Zoom"},
 {"id":"zoom","title":"Cambiar el nivel de zoom"},
@@ -99,7 +99,6 @@
 {"id":"page","textContent":"Página"},
 {"id":"fill_tool_bottom","textContent":"Relleno:"},
 {"id":"stroke_tool_bottom","textContent":"Contorno:"},
-{"id":"svninfo_dim","textContent":"Dimensiones del lienzo"},
 {"id":"path_node_x","title":"Cambiar la posición horizontal X del nodo"},
 {"id":"path_node_y","title":"Cambiar la posición vertical Y del nodo"},
 {"id":"seg_type","title":"Cambiar el tipo de segmento"},
