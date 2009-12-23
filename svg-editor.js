@@ -2163,9 +2163,18 @@ function svg_edit_setup() {
 		$('#lang_select').val(lang);
 		if(strings) {
 			// $.extend will only replace the given strings
+			var oldLayerName = $('#layerlist tr.layersel td.layername').text();
+			var rename_layer = (oldLayerName == uiStrings.layer + ' 1');
+			
 			$.extend(uiStrings,strings);
 			svgCanvas.setUiStrings(strings);
 			Actions.setTitles();
+			
+			if(rename_layer) {
+				svgCanvas.renameCurrentLayer(uiStrings.layer + ' 1');
+				populateLayers();				
+			}
+
 		}
 	};
 	
