@@ -5397,8 +5397,8 @@ function BatchCommand(text) {
 			while(i--) { newg.setAttributeNode(selected.attributes.item(i).cloneNode(true)); }
 			selected.parentNode.appendChild(newg);
 			ret = newg.getBBox();
-    		while (newg.firstChild) { selected.appendChild(newg.firstChild); }
-    		selected.parentNode.removeChild(newg);
+			while (newg.firstChild) { selected.appendChild(newg.firstChild); }
+			selected.parentNode.removeChild(newg);
 		} else {
 			try { ret = selected.getBBox(); } 
 			catch(e) { ret = null; }
