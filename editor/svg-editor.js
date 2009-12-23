@@ -2033,7 +2033,7 @@ function svg_edit_setup() {
 			{sel:'#tool_open', fn: clickOpen, evt: 'click', key: [modKey+'O', true]},
 			{sel:'#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
 			{sel:'#tool_wireframe', fn: clickWireframe, evt: 'click', key: ['F', true]},
-			{sel:'#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false]},
+			{sel:'#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
 			{sel:'#tool_source_save', fn: saveSourceEditor, evt: 'click'},
 			{sel:'#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
 			{sel:'#tool_docprops', fn: showDocProperties, evt: 'click', key: [modKey+'I', true]},
@@ -2108,7 +2108,7 @@ function svg_edit_setup() {
 						});
 						
 						// Put shortcut in title
-						if(opts.sel) {
+						if(opts.sel && !opts.hidekey) {
 							var new_title = btn.attr('title').split('[')[0] + '[' + keyval + ']';
 							key_assocs[keyval] = opts.sel;
 							btn.attr('title', new_title);
