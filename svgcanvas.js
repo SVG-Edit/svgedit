@@ -1678,9 +1678,8 @@ function BatchCommand(text) {
 						var old_start_transform = start_transform;
 						start_transform = child.getAttribute("transform");
 						if(angle || hasMatrixTransform(childTlist)) {
-							var em = matrixMultiply(tm, sm, tmn, m);
 							var e2t = svgroot.createSVGTransform();
-							e2t.setMatrix(em);
+							e2t.setMatrix(matrixMultiply(tm, sm, tmn, m));
 							childTlist.clear();
 							childTlist.appendItem(e2t,0);
 						}
@@ -1925,6 +1924,7 @@ function BatchCommand(text) {
 			// we might be able to simplify
 			else if (N == 1 && tlist.getItem(0).type == 1 && !angle) {
 				// Remap all point-based elements
+				m = transformListToTransform(tlist).matrix;
 				switch (selected.tagName) {
 					case 'line':
 						changes.x1 = selected.getAttribute("x1");
