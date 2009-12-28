@@ -3998,7 +3998,12 @@ function BatchCommand(text) {
 						if (selectedElements[0].nodeName == "path" && selectedElements[1] == null) {
 							if (current_path == t) {
 								current_mode = "pathedit";
-
+								
+								// This resets the pathedit selection in case it 
+								// was a rotate that turned into a matrix
+								var angle = canvas.getRotationAngle(t);
+								if(!angle) setPointContainerTransform();
+								
 								// recalculate current_path_pts
 								recalcPathPoints();
 								canvas.clearSelection();
