@@ -350,7 +350,9 @@ function svg_edit_setup() {
 		var currentMode = svgCanvas.getMode();
 		// No need to update anything else in rotate mode
 		if (currentMode == 'rotate' && elem != null) {
-			$('#angle').val(svgCanvas.getRotationAngle(elem));
+			var ang = svgCanvas.getRotationAngle(elem);
+			$('#angle').val(ang);
+			$('#tool_reorient').toggleClass('tool_button_disabled', ang == 0);
 			return;
 		} else if(svgCanvas.addedNew && elem != null && elname == 'image') {
 			promptImgURL();
@@ -552,6 +554,7 @@ function svg_edit_setup() {
 	
 	var changeRotationAngle = function(ctl) {
 		svgCanvas.setRotationAngle(ctl.value);
+		$('#tool_reorient').toggleClass('tool_button_disabled', ctl.value == 0);
 	}
 	var changeZoom = function(ctl) {
 		var zoomlevel = ctl.value / 100;
@@ -1592,9 +1595,11 @@ function svg_edit_setup() {
 
 	var boxgrad = svgdocbox.getElementById('gradbox_');
 	boxgrad.id = 'gradbox_fill';
+	svgdocbox.documentElement.setAttribute('width',16.5);
 	$('#fill_color').append( document.importNode(svgdocbox.documentElement,true) );
 	
 	boxgrad.id = 'gradbox_stroke';	
+	svgdocbox.documentElement.setAttribute('width',16.5);
 	$(svgdocbox.documentElement.firstChild).attr('fill', '#000000');
 	$('#stroke_color').append( document.importNode(svgdocbox.documentElement,true) );
 	
