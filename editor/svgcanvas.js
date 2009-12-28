@@ -3125,6 +3125,7 @@ function BatchCommand(text) {
 		}
 		resetPointGrips();
 		updateSegLine(true);
+		updateSegLine();
 	}
 
 	// Rotate all points of a path and remove its transform value
@@ -4255,15 +4256,13 @@ function BatchCommand(text) {
 						current_path_pts[current_path_pts.length-2] = getPathPoint(0,true)[0];
 						current_path_pts[current_path_pts.length-1] = getPathPoint(0,true)[1];
 					}
-					updateSegLine();
 					
 					// make these changes undo-able
 				} // if (current_path_pt_drag != -1)
 				else if(current_ctrl_pt_drag != -1) {
 					current_ctrl_pt_drag = -1;
 					recalcRotatedPath();
-					updateSegLine();
-           					var batchCmd = new BatchCommand("Edit Path control points");
+					var batchCmd = new BatchCommand("Edit Path control points");
 					batchCmd.addSubCommand(new ChangeElementCommand(current_path, {d:current_path_oldd}));
 					addCommandToHistory(batchCmd);
 					call("changed", [current_path]);
@@ -5662,10 +5661,11 @@ function BatchCommand(text) {
 		}
 		
 		replacePathSeg(new_type, next_index, points);
-		
+
 		addAllPointGripsToPath(); 
-		recalculateDimensions(current_path);
+		// recalculateDimensions(current_path);
 		updateSegLine(true);
+		recalcRotatedPath();
 		
 		batchCmd.addSubCommand(new ChangeElementCommand(current_path, {d: old_d}));
 		addCommandToHistory(batchCmd);
