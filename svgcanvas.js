@@ -64,11 +64,11 @@ var svgWhiteList = {
 function SvgCanvas(c)
 {
 
-console.log('Start profiling')
-setTimeout(function() {
-	canvas.addToSelection(canvas.getVisibleElements());
-	console.log('Stop profiling')
-},3000);
+// console.log('Start profiling')
+// setTimeout(function() {
+// 	canvas.addToSelection(canvas.getVisibleElements());
+// 	console.log('Stop profiling')
+// },3000);
 
 
 var uiStrings = {
