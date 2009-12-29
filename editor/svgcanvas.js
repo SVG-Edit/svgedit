@@ -4121,8 +4121,8 @@ function BatchCommand(text) {
 				}
 				break;
 			case "fhrect":
-				if ((freehand_max_x - freehand_min_x) > 0 &&
-				    (freehand_max_y - freehand_min_y) > 0) {
+				if ((freehand.maxx - freehand.minx) > 0 &&
+				    (freehand.maxy - freehand.miny) > 0) {
 				    element = addSvgElementFromJson({
 						"element": "rect",
 						"attr": {
