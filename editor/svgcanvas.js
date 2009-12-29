@@ -16,16 +16,21 @@
 	* ensure undo/redo works perfectly
 */
 
-var isOpera = !!window.opera;
-var isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1;
 if(!window.console) {
 	window.console = {};
 	window.console.log = function(str) {};
 	window.console.dir = function(str) {};
+	
+	if(window.opera) {
+		window.console.log = function(str) {opera.postError(str);}
+	}
 }
-if( isOpera ) {
-	window.console.log = function(str) {opera.postError(str);}
-}
+
+function SvgCanvas(container)
+{
+
+var isOpera = !!window.opera;
+var isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1;
 
 var uiStrings = {
 	"pathNodeTooltip":"Drag node to move it. Double-click node to change segment type",
@@ -58,11 +63,9 @@ var svgWhiteList = {
 	"switch": ["id", "requiredFeatures", "systemLanguage"],
 	"svg": ["id", "height", "requiredFeatures", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
 	"text": ["fill", "fill-opacity", "fill-rule", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
-	"title": [],
+	"title": []
 };
 
-function SvgCanvas(c)
-{
 
 // console.log('Start profiling')
 // setTimeout(function() {
@@ -83,9 +86,11 @@ var fromXml = function(str) {
 	return $('<p/>').html(str).text();
 };
 
-var pathFuncsStrs = ['Moveto','Lineto','CurvetoCubic','CurvetoQuadratic','Arc','LinetoHorizontal','LinetoVertical','CurvetoCubicSmooth','CurvetoQuadraticSmooth']
 var pathFuncs = [0,'ClosePath'];
-$.each(pathFuncsStrs,function(i,s){pathFuncs.push(s+'Abs');pathFuncs.push(s+'Rel');});
+(function() {
+	var pathFuncsStrs = ['Moveto','Lineto','CurvetoCubic','CurvetoQuadratic','Arc','LinetoHorizontal','LinetoVertical','CurvetoCubicSmooth','CurvetoQuadraticSmooth'];
+	$.each(pathFuncsStrs,function(i,s){pathFuncs.push(s+'Abs');pathFuncs.push(s+'Rel');});
+}());
 
 // These command objects are used for the Undo/Redo stack
 // attrs contains the values that the attributes had before the change
@@ -94,14 +99,14 @@ function ChangeElementCommand(elem, attrs, text) {
 	this.text = text ? ("Change " + elem.tagName + " " + text) : ("Change " + elem.tagName);
 	this.newValues = {};
 	this.oldValues = attrs;
-	for (attr in attrs) {
+	for (var attr in attrs) {
 		if (attr == "#text") this.newValues[attr] = elem.textContent;
 		else this.newValues[attr] = elem.getAttribute(attr);
 	}
 
 	this.apply = function() {
 		var bChangedTransform = false;
-		for( attr in this.newValues ) {
+		for(var attr in this.newValues ) {
 			if (this.newValues[attr]) {
 				if (attr == "#text") this.elem.textContent = this.newValues[attr];
 				else this.elem.setAttribute(attr, this.newValues[attr]);
@@ -137,7 +142,7 @@ function ChangeElementCommand(elem, attrs, text) {
 
 	this.unapply = function() {
 		var bChangedTransform = false;
-		for( attr in this.oldValues ) {
+		for(var attr in this.oldValues ) {
 			if (this.oldValues[attr]) {
 				if (attr == "#text") this.elem.textContent = this.oldValues[attr];
 				else this.elem.setAttribute(attr, this.oldValues[attr]);
@@ -363,7 +368,7 @@ function BatchCommand(text) {
 						}) );
 		
 		// add the corner grips
-		for (dir in this.selectorGrips) {
+		for (var dir in this.selectorGrips) {
 			this.selectorGrips[dir] = this.selectorGroup.appendChild( 
 				addSvgElementFromJson({
 					"element": "circle",
@@ -389,7 +394,7 @@ function BatchCommand(text) {
 			this.rotateGrip.setAttribute("display", bShow);
 			this.rotateGripConnector.setAttribute("display", bShow);
 			var elem = this.selectedElement;
-			for (dir in this.selectorGrips) {
+			for (var dir in this.selectorGrips) {
 				this.selectorGrips[dir].setAttribute("display", bShow);
 			}
 			if(elem) this.updateGripCursors(canvas.getRotationAngle(elem));
@@ -400,7 +405,7 @@ function BatchCommand(text) {
 			var dir_arr = [];
 			var steps = Math.round(angle / 45);
 			if(steps < 0) steps += 8;
-			for (dir in this.selectorGrips) {
+			for (var dir in this.selectorGrips) {
 				dir_arr.push(dir);
 			}
 			while(steps > 0) {
@@ -408,7 +413,7 @@ function BatchCommand(text) {
 				steps--;
 			}
 			var i = 0;
-			for (dir in this.selectorGrips) {
+			for (var dir in this.selectorGrips) {
 				this.selectorGrips[dir].setAttribute('style', ("cursor:" + dir_arr[i] + "-resize"));
 				i++;
 			};
@@ -510,7 +515,7 @@ function BatchCommand(text) {
 			};
 			
 			if(selected == selectedElements[0]) {
-				for(dir in gripCoords) {
+				for(var dir in gripCoords) {
 					var coords = gripCoords[dir];
 					assignAttributes(selectedGrips[dir], {
 						cx: coords[0], cy: coords[1]
@@ -799,7 +804,7 @@ function BatchCommand(text) {
 		var handle = null;
 		if (!window.opera) svgroot.suspendRedraw(suspendLength);
 
-		for (i in attrs) {
+		for (var i in attrs) {
 			var ns = (i.substr(0,4) == "xml:" ? xmlns : 
 				i.substr(0,6) == "xlink:" ? xlinkns : null);
 			node.setAttributeNS(ns, i, attrs[i]);
@@ -812,24 +817,24 @@ function BatchCommand(text) {
 	// makes resulting SVG smaller
 	var cleanupElement = function(element) {
 		var handle = svgroot.suspendRedraw(60);
-		if (element.getAttribute('fill-opacity') == '1')
-			element.removeAttribute('fill-opacity');
-		if (element.getAttribute('opacity') == '1')
-			element.removeAttribute('opacity');
-		if (element.getAttribute('stroke') == 'none')
-			element.removeAttribute('stroke');
-		if (element.getAttribute('stroke-dasharray') == 'none')
-			element.removeAttribute('stroke-dasharray');
-		if (element.getAttribute('stroke-opacity') == '1')
-			element.removeAttribute('stroke-opacity');
-		if (element.getAttribute('stroke-width') == '1')
-			element.removeAttribute('stroke-width');
-		if (element.getAttribute('rx') == '0')
-			element.removeAttribute('rx')
-		if (element.getAttribute('ry') == '0')
-			element.removeAttribute('ry')
-		if (element.getAttribute('display') == 'inline')
-			element.removeAttribute('display');
+		var defaults = {
+			'fill-opacity':1,
+			'opacity':1,
+			'stroke':'none',
+			'stroke-dasharray':'none',
+			'stroke-opacity':1,
+			'stroke-width':1,
+			'rx':0,
+			'ry':0,
+			'display':'inline'
+		}
+		for(var attr in defaults) {
+			var val = defaults[attr];
+			if(element.getAttribute(attr) == val) {
+				element.removeAttribute(attr);
+			}
+		}
+		
 		svgroot.unsuspendRedraw(handle);
 	};
 
@@ -854,12 +859,11 @@ function BatchCommand(text) {
 	// TODO: declare the variables and set them as null, then move this setup stuff to
 	// an initialization function - probably just use clear()
 	var canvas = this;
-	var container = c;
 	var svgns = "http://www.w3.org/2000/svg";
 	var xlinkns = "http://www.w3.org/1999/xlink";
 	var xmlns = "http://www.w3.org/XML/1998/namespace";
 	var idprefix = "svg_";
-	var svgdoc  = c.ownerDocument;
+	var svgdoc  = container.ownerDocument;
 	var svgroot = svgdoc.createElementNS(svgns, "svg");
 	svgroot.setAttribute("width", 640);
 	svgroot.setAttribute("height", 480);
@@ -873,16 +877,20 @@ function BatchCommand(text) {
 	svgcontent.setAttribute("xmlns", svgns);
 	svgcontent.setAttribute("xmlns:xlink", xlinkns);
 	svgroot.appendChild(svgcontent);
-	// TODO: make this string optional and set by the client
-	// TODO: make sure this is always at the top of the SVG file right underneath the <svg> element
-	var comment = svgdoc.createComment(" Created with SVG-edit - http://svg-edit.googlecode.com/ ");
-	svgcontent.appendChild(comment);
-	// TODO For Issue 208: this is a start on a thumbnail
-//	var svgthumb = svgdoc.createElementNS(svgns, "use");
-//	svgthumb.setAttribute('width', '100');
-//	svgthumb.setAttribute('height', '100');
-//	svgthumb.setAttributeNS(xlinkns, 'href', '#svgcontent');
-//	svgroot.appendChild(svgthumb);
+	
+	(function() {
+		// TODO: make this string optional and set by the client
+		var comment = svgdoc.createComment(" Created with SVG-edit - http://svg-edit.googlecode.com/ ");
+		svgcontent.appendChild(comment);
+
+		// TODO For Issue 208: this is a start on a thumbnail
+		//	var svgthumb = svgdoc.createElementNS(svgns, "use");
+		//	svgthumb.setAttribute('width', '100');
+		//	svgthumb.setAttribute('height', '100');
+		//	svgthumb.setAttributeNS(xlinkns, 'href', '#svgcontent');
+		//	svgroot.appendChild(svgthumb);
+
+	});
 	// z-ordered array of tuples containing layer names and <g> elements
 	// the first layer is the one at the bottom of the rendering
 	var all_layers = [];
@@ -927,10 +935,13 @@ function BatchCommand(text) {
 	var cur_text = all_properties.text;
 	var cur_properties = cur_shape;
 	
-	var freehand_min_x = null;
-	var freehand_max_x = null;
-	var freehand_min_y = null;
-	var freehand_max_y = null;
+	var freehand = {
+		minx: null,
+		miny: null,
+		maxx: null,
+		maxy: null
+	};
+	
 	var current_path = null;
 	var current_path_pts = [];
 	var current_path_pt = -1;
@@ -1158,7 +1169,7 @@ function BatchCommand(text) {
 			var attr;
 			var i;
 			var childs = elem.childNodes;
-			for (i=0; i<indent; i++) out.push(" ");
+			for (var i=0; i<indent; i++) out.push(" ");
 			out.push("<"); out.push(elem.nodeName);			
 			if(elem.id == 'svgcontent') {
 				// Process root element separately; Prevents errors caused 
@@ -1167,7 +1178,7 @@ function BatchCommand(text) {
 				out.push(' width="' + res.w + '" height="' + res.h
 				+ '" xmlns:xlink="'+xlinkns+'" xmlns="'+svgns+'"');
 			} else {
-				for (i=attrs.length-1; i>=0; i--) {
+				for (var i=attrs.length-1; i>=0; i--) {
 					attr = attrs.item(i);
 					var attrVal = attr.nodeValue;
 					
@@ -1210,7 +1221,7 @@ function BatchCommand(text) {
 				out.push(">");
 				indent++;
 				var bOneLine = false;
-				for (i=0; i<childs.length; i++)
+				for (var i=0; i<childs.length; i++)
 				{
 					var child = childs.item(i);
 					if (child.id == "selectorParentGroup") continue;
@@ -1238,7 +1249,7 @@ function BatchCommand(text) {
 				indent--;
 				if (!bOneLine) {
 					out.push("\n");
-					for (i=0; i<indent; i++) out.push(" ");
+					for (var i=0; i<indent; i++) out.push(" ");
 				}
 				out.push("</"); out.push(elem.nodeName); out.push(">");
 			} else {
@@ -1322,10 +1333,7 @@ function BatchCommand(text) {
 	};
 
 	// this is how we map paths to our preferred relative segment types
-	var pathMap = [ 0, 'z', 'M', 'M', 'L', 'L', 'C', 'C', 'Q', 'Q', 'A', 'A', 
-					'L', 'L', 'L', 'L', // TODO: be less lazy below and map them to h and v
-					'S', 'S', 'T', 'T' ];
-	var truePathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a', 
+	var pathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a', 
 						'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
 
 	var logMatrix = function(m) {
@@ -1466,7 +1474,7 @@ function BatchCommand(text) {
 				for (var i = 0; i < len; ++i) {
 					var seg = changes["d"][i];
 					var type = seg.type;
-					dstr += truePathMap[type];
+					dstr += pathMap[type];
 					switch(type) {
 						case 13: // relative horizontal line (h)
 						case 12: // absolute horizontal line (H)
@@ -2182,7 +2190,6 @@ function BatchCommand(text) {
 
 	// Some global variables that we may need to refactor
 	var root_sctm = null;
-	var mouse_target = null;
 
 	// A (hopefully) quicker function to transform a point by a matrix
 	// (this function avoids any DOM calls and just does the math)
@@ -2356,7 +2363,7 @@ function BatchCommand(text) {
 		start_y = y;
 
 		// find mouse target
-		mouse_target = evt.target;
+		var mouse_target = evt.target;
 		// go up until we hit a child of a layer
 		while (mouse_target.parentNode.parentNode.tagName == "g") {
 			mouse_target = mouse_target.parentNode;
@@ -2494,10 +2501,10 @@ function BatchCommand(text) {
 						"style": "pointer-events:none"
 					}
 				});
-				freehand_min_x = x;
-				freehand_max_x = x;
-				freehand_min_y = y;
-				freehand_max_y = y;
+				freehand.minx = x;
+				freehand.maxx = x;
+				freehand.miny = y;
+				freehand.miny = y;
 				break;
 			case "image":
 				started = true;
@@ -2804,7 +2811,7 @@ function BatchCommand(text) {
 				}
 				
 				len = newList.length;
-				for (i = 0; i < len; ++i) { if (newList[i]) elemsToAdd.push(newList[i]); }
+				for (var i = 0; i < len; ++i) { if (newList[i]) elemsToAdd.push(newList[i]); }
 				
 				if (elemsToRemove.length > 0) 
 					canvas.removeFromSelection(elemsToRemove);
@@ -2945,10 +2952,10 @@ function BatchCommand(text) {
 				break;
 			case "fhellipse":
 			case "fhrect":
-				freehand_min_x = Math.min(x, freehand_min_x);
-				freehand_max_x = Math.max(x, freehand_max_x);
-				freehand_min_y = Math.min(y, freehand_min_y);
-				freehand_max_y = Math.max(y, freehand_max_y);
+				freehand.minx = Math.min(x, freehand.minx);
+				freehand.maxx = Math.max(x, freehand.maxx);
+				freehand.miny = Math.min(y, freehand.miny);
+				freehand.maxy = Math.max(y, freehand.maxy);
 			// break; missing on purpose
 			case "fhpath":
 				start_x = x;
@@ -4089,15 +4096,15 @@ function BatchCommand(text) {
 				keep = (element.rx.baseVal.value && element.ry.baseVal.value);
 				break;
 			case "fhellipse":
-				if ((freehand_max_x - freehand_min_x) > 0 &&
-				    (freehand_max_y - freehand_min_y) > 0) {
+				if ((freehand.maxx - freehand.minx) > 0 &&
+				    (freehand.maxy - freehand.miny) > 0) {
 				    element = addSvgElementFromJson({
 						"element": "ellipse",
 						"attr": {
-							"cx": (freehand_min_x + freehand_max_x) / 2,
-							"cy": (freehand_min_y + freehand_max_y) / 2,
-							"rx": (freehand_max_x - freehand_min_x) / 2,
-							"ry": (freehand_max_y - freehand_min_y) / 2,
+							"cx": (freehand.minx + freehand.maxx) / 2,
+							"cy": (freehand.miny + freehand.maxy) / 2,
+							"rx": (freehand.maxx - freehand.minx) / 2,
+							"ry": (freehand.maxy - freehand.miny) / 2,
 							"id": getId(),
 							"fill": cur_shape.fill,
 							"stroke": cur_shape.stroke,
@@ -4119,10 +4126,10 @@ function BatchCommand(text) {
 				    element = addSvgElementFromJson({
 						"element": "rect",
 						"attr": {
-							"x": freehand_min_x,
-							"y": freehand_min_y,
-							"width": (freehand_max_x - freehand_min_x),
-							"height": (freehand_max_y - freehand_min_y),
+							"x": freehand.minx,
+							"y": freehand.miny,
+							"width": (freehand.maxx - freehand.minx),
+							"height": (freehand.maxy - freehand.miny),
 							"id": getId(),
 							"fill": cur_shape.fill,
 							"stroke": cur_shape.stroke,
@@ -5690,7 +5697,7 @@ function BatchCommand(text) {
 		call("changed", [current_path]);
 	}
 	
-	this.quickClone = function(elem) {
+	var ffClone = function(elem) {
 		// Hack for Firefox bugs where text element features aren't updated
 		if(navigator.userAgent.indexOf('Gecko/') == -1) return elem;
 		var clone = elem.cloneNode(true)
@@ -5763,7 +5770,7 @@ function BatchCommand(text) {
 				if (attr == "#text") {
 					var old_w = canvas.getBBox(elem).width;
 					elem.textContent = newValue;
-					elem = canvas.quickClone(elem);
+					elem = ffClone(elem);
 					
 					// Hoped to solve the issue of moving text with text-anchor="start",
 					// but this doesn't actually fix it. Hopefully on the right track, though. -Fyrd
@@ -5787,11 +5794,11 @@ function BatchCommand(text) {
 				else elem.setAttribute(attr, newValue);
 				if (i==0)
 					selectedBBoxes[i] = this.getBBox(elem);
-				// Use the Firefox quickClone hack for text elements with gradients or
+				// Use the Firefox ffClone hack for text elements with gradients or
 				// where other text attributes are changed. 
 				if(elem.nodeName == 'text') {
 					if((newValue+'').indexOf('url') == 0 || $.inArray(attr, ['font-size','font-family','x','y']) != -1) {
-						elem = canvas.quickClone(elem);
+						elem = ffClone(elem);
 					}
 				}
 				// Timeout needed for Opera & Firefox

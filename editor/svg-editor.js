@@ -2111,7 +2111,11 @@ function svg_edit_setup() {
 						$.each(keyval.split('/'), function(i, key) {
 							$(document).bind('keydown', {combi: key, disableInInput: disInInp}, function(e) {
 								fn();
-								if(pd) e.preventDefault();
+								if(pd) {
+									e.preventDefault();
+								}
+								// Prevent default on ALL keys?
+								return false;
 							});
 						});
 						
