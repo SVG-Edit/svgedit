@@ -568,7 +568,6 @@ function BatchCommand(text) {
 				this.selectorMap[elem.id].locked = true;
 				return this.selectorMap[elem.id];
 			}
-
 			for (var i = 0; i < N; ++i) {
 				if (this.selectors[i] && !this.selectors[i].locked) {
 					this.selectors[i].locked = true;
@@ -2047,7 +2046,7 @@ function BatchCommand(text) {
 				if (elem == null) break;
 				selectorManager.releaseSelector(elem);
 				selectedElements[i] = null;
-				selectedBBoxes[i] = null;
+				if (i==0) selectedBBoxes[i] = null;
 			}
 		}
 		call("selected", selectedElements);
@@ -2081,7 +2080,9 @@ function BatchCommand(text) {
 			// if it's not already there, add it
 			if (selectedElements.indexOf(elem) == -1) {
 				selectedElements[j] = elem;
-				selectedBBoxes[j++] = this.getBBox(elem);
+				// only the first selectedBBoxes element is ever used in the codebase these days
+				if (j == 0) selectedBBoxes[j] = this.getBBox(elem);
+				j++;
 				var sel = selectorManager.requestSelector(elem);
 		
 				if (selectedElements.length > 1) {
@@ -2136,8 +2137,9 @@ function BatchCommand(text) {
 			if (elem) {
 				// keep the item
 				if (elemsToRemove.indexOf(elem) == -1) {
-					newSelectedBBoxes[j] = selectedBBoxes[i];
-					newSelectedItems[j++] = elem;
+					newSelectedItems[j] = elem;
+					if (j==0) newSelectedBBoxes[j] = selectedBBoxes[i];
+					j++;
 				}
 				else { // remove the item and its selector
 					selectorManager.releaseSelector(elem);
@@ -2736,9 +2738,11 @@ function BatchCommand(text) {
 						for (var i = 0; i < len; ++i) {
 							var selected = selectedElements[i];
 							if (selected == null) break;
-							var box = canvas.getBBox(selected);
-							selectedBBoxes[i].x = box.x + dx;
-							selectedBBoxes[i].y = box.y + dy;
+							if (i==0) {
+								var box = canvas.getBBox(selected);
+								selectedBBoxes[i].x = box.x + dx;
+								selectedBBoxes[i].y = box.y + dy;
+							}
 
 							// update the dummy transform in our transform list
 							// to be a translate
@@ -2780,7 +2784,7 @@ function BatchCommand(text) {
 				// - if newList contains selected, do nothing
 				// - if newList doesn't contain selected, remove it from selected
 				// - for any newList that was not in selectedElements, add it to selected
-				var elemsToRemove = [];
+				var elemsToRemove = [], elemsToAdd = [];
 				var newList = getIntersectionList();
 				var len = selectedElements.length;
 				for (var i = 0; i < len; ++i) {
@@ -2792,10 +2796,15 @@ function BatchCommand(text) {
 						newList[ind] = null;
 					}
 				}
+				
+				len = newList.length;
+				for (i = 0; i < len; ++i) { if (newList[i]) elemsToAdd.push(newList[i]); }
+				
 				if (elemsToRemove.length > 0) 
 					canvas.removeFromSelection(elemsToRemove);
-					
-				canvas.addToSelection(newList);
+				
+				if (elemsToAdd.length > 0) 
+					canvas.addToSelection(elemsToAdd);
 				//*/
 				break;
 			case "resize":
@@ -5769,7 +5778,8 @@ function BatchCommand(text) {
 					elem.setAttributeNS(xlinkns, "href", newValue);
         		}
 				else elem.setAttribute(attr, newValue);
-				selectedBBoxes[i] = this.getBBox(elem);
+				if (i==0)
+					selectedBBoxes[i] = this.getBBox(elem);
 				// Use the Firefox quickClone hack for text elements with gradients or
 				// where other text attributes are changed. 
 				if(elem.nodeName == 'text') {
@@ -6077,19 +6087,24 @@ function BatchCommand(text) {
 		while (i--) {
 			var selected = selectedElements[i];
 			if (selected != null) {
-				selectedBBoxes[i] = this.getBBox(selected);
+				if (i==0)
+					selectedBBoxes[i] = this.getBBox(selected);
 				
 				var xform = svgroot.createSVGTransform();
 				var tlist = canvas.getTransformList(selected);
 				
 				// dx and dy could be arrays
 				if (dx.constructor == Array) {
-					selectedBBoxes[i].x += dx[i];
-					selectedBBoxes[i].y += dy[i];
+					if (i==0) {
+						selectedBBoxes[i].x += dx[i];
+						selectedBBoxes[i].y += dy[i];
+					}
 					xform.setTranslate(dx[i],dy[i]);
 				} else {
-					selectedBBoxes[i].x += dx;
-					selectedBBoxes[i].y += dy;
+					if (i==0) {
+						selectedBBoxes[i].x += dx;
+						selectedBBoxes[i].y += dy;
+					}
 					xform.setTranslate(dx,dy);
 				}
 				
