@@ -608,7 +608,8 @@ function BatchCommand(text) {
 
 		// this keeps the selector groups as the last child in the document
 		this.update = function() {
-			this.selectorParentGroup = svgroot.appendChild(this.selectorParentGroup);
+			if (svgroot.lastChild != this.selectorParentGroup)
+				this.selectorParentGroup = svgroot.appendChild(this.selectorParentGroup);
 		};
 
 		this.getRubberBandBox = function() {
