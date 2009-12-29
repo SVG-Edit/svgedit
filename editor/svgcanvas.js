@@ -2077,7 +2077,7 @@ function BatchCommand(text) {
 		while (i--) {
 			var elem = elemsToAdd[i];
 			// we ignore any selectors
-			if (elem.id.substr(0,13) == "selectorGrip_") continue;
+			if (!elem || elem.id.substr(0,13) == "selectorGrip_") continue;
 			// if it's not already there, add it
 			if (selectedElements.indexOf(elem) == -1) {
 				selectedElements[j] = elem;
@@ -2771,11 +2771,11 @@ function BatchCommand(text) {
 				},100);
 
 				// clear out selection and set it to the new list
-				canvas.clearSelection();
+//				canvas.clearSelection();
 				// FIXME: fix this, need to supply rect to getIntersectionList()
-				canvas.addToSelection(getIntersectionList());
+//				canvas.addToSelection(getIntersectionList());
 
-				/*
+				//*
 				// for each selected:
 				// - if newList contains selected, do nothing
 				// - if newList doesn't contain selected, remove it from selected
@@ -2794,7 +2794,9 @@ function BatchCommand(text) {
 				}
 				if (elemsToRemove.length > 0) 
 					canvas.removeFromSelection(elemsToRemove);
-				*/
+					
+				canvas.addToSelection(newList);
+				//*/
 				break;
 			case "resize":
 				// we track the resize bounding box and translate/scale the selected element
