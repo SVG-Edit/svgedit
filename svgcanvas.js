@@ -64,6 +64,13 @@ var svgWhiteList = {
 function SvgCanvas(c)
 {
 
+console.log('Start profiling')
+setTimeout(function() {
+	canvas.addToSelection(canvas.getVisibleElements());
+	console.log('Stop profiling')
+},3000);
+
+
 var uiStrings = {
 	"pathNodeTooltip":"Drag node to move it. Double-click node to change segment type",
 	"pathCtrlPtTooltip":"Drag control point to adjust curve properties"
@@ -299,11 +306,10 @@ function BatchCommand(text) {
 		this.locked = true;
 
 		// this function is used to reset the id and element that the selector is attached to
-		this.reset = function(e) {
+		this.reset = function(e, update) {
 			this.locked = true;
 			this.selectedElement = e;
 			this.resize();
-			selectorManager.update();
 			this.selectorGroup.setAttribute("display", "inline");
 		};
 
@@ -448,10 +454,14 @@ function BatchCommand(text) {
 			
 			//*
 			var nbox = transformBox(l*current_zoom, t*current_zoom, w*current_zoom, h*current_zoom, m);
-			
+			var nbax = nbox.aabox.x,
+				nbay = nbox.aabox.y,
+				nbaw = nbox.aabox.width,
+				nbah = nbox.aabox.height;
+				
 			// now if the shape is rotated, un-rotate it
-			var cx = nbox.aabox.x + nbox.aabox.width/2; //nbox.tl.x + (nbox.tr.x - nbox.tl.x)/2;
-			var cy = nbox.aabox.y + nbox.aabox.height/2; //nbox.tl.y + (nbox.bl.y - nbox.tl.y)/2;
+			var cx = nbax + nbaw/2; //nbox.tl.x + (nbox.tr.x - nbox.tl.x)/2;
+			var cy = nbay + nbah/2; //nbox.tl.y + (nbox.bl.y - nbox.tl.y)/2;
 			var angle = canvas.getRotationAngle(selected);
 			if (angle) {
 				
@@ -474,37 +484,39 @@ function BatchCommand(text) {
 				maxx = Math.max(maxx, Math.max(nbox.tr.x, Math.max(nbox.bl.x, nbox.br.x) ) );
 				maxy = Math.max(maxy, Math.max(nbox.tr.y, Math.max(nbox.bl.y, nbox.br.y) ) );
 				
-				nbox.aabox.x = minx;
-				nbox.aabox.y = miny;
-				nbox.aabox.width = (maxx-minx);
-				nbox.aabox.height = (maxy-miny);
+				nbax = minx;
+				nbay = miny;
+				nbaw = (maxx-minx);
+				nbah = (maxy-miny);
 			}
-
-			// TODO: handle negative?
 
 			var sr_handle = svgroot.suspendRedraw(100);
 
-			var dstr = "M" + nbox.aabox.x + "," + nbox.aabox.y
-						+ " L" + (nbox.aabox.x+nbox.aabox.width) + "," + nbox.aabox.y
-						+ " " + (nbox.aabox.x+nbox.aabox.width) + "," + (nbox.aabox.y+nbox.aabox.height)
-						+ " " + nbox.aabox.x + "," + (nbox.aabox.y+nbox.aabox.height) + "z";
+			var dstr = "M" + nbax + "," + nbay
+						+ " L" + (nbax+nbaw) + "," + nbay
+						+ " " + (nbax+nbaw) + "," + (nbay+nbah)
+						+ " " + nbax + "," + (nbay+nbah) + "z";
 			assignAttributes(selectedBox, {'d': dstr});
 			
 			var gripCoords = {
-				nw: [nbox.aabox.x, nbox.aabox.y],
-				ne: [nbox.aabox.x+nbox.aabox.width, nbox.aabox.y],
-				sw: [nbox.aabox.x, nbox.aabox.y+nbox.aabox.height],
-				se: [nbox.aabox.x+nbox.aabox.width, nbox.aabox.y+nbox.aabox.height],
-				n:  [nbox.aabox.x + (nbox.aabox.width)/2, nbox.aabox.y],
-				w:	[nbox.aabox.x, nbox.aabox.y + (nbox.aabox.height)/2],
-				e:	[nbox.aabox.x + nbox.aabox.width, nbox.aabox.y + (nbox.aabox.height)/2],
-				s:	[nbox.aabox.x + (nbox.aabox.width)/2, nbox.aabox.y + nbox.aabox.height],
+				nw: [nbax, nbay],
+				ne: [nbax+nbaw, nbay],
+				sw: [nbax, nbay+nbah],
+				se: [nbax+nbaw, nbay+nbah],
+				n:  [nbax + (nbaw)/2, nbay],
+				w:	[nbax, nbay + (nbah)/2],
+				e:	[nbax + nbaw, nbay + (nbah)/2],
+				s:	[nbax + (nbaw)/2, nbay + nbah],
 			};
-			$.each(gripCoords, function(dir, coords) {
-				assignAttributes(selectedGrips[dir], {
-					cx: coords[0], cy: coords[1]
-				});
-			});
+			
+			if(selected == selectedElements[0]) {
+				for(dir in gripCoords) {
+					var coords = gripCoords[dir];
+					assignAttributes(selectedGrips[dir], {
+						cx: coords[0], cy: coords[1]
+					});
+				};
+			}
 
 			if (angle) {
 				this.selectorGroup.setAttribute("transform", "rotate(" + [angle,cx,cy].join(",") + ")");
@@ -514,12 +526,12 @@ function BatchCommand(text) {
 			}
 
 			// we want to go 20 pixels in the negative transformed y direction, ignoring scale
-			assignAttributes(this.rotateGripConnector, { x1: nbox.aabox.x + (nbox.aabox.width)/2, 
-														y1: nbox.aabox.y, 
-														x2: nbox.aabox.x + (nbox.aabox.width)/2, 
-														y2: nbox.aabox.y- 20});
-			assignAttributes(this.rotateGrip, { cx: nbox.aabox.x + (nbox.aabox.width)/2, 
-												cy: nbox.aabox.y - 20 });
+			assignAttributes(this.rotateGripConnector, { x1: nbax + (nbaw)/2, 
+														y1: nbay, 
+														x2: nbax + (nbaw)/2, 
+														y2: nbay- 20});
+			assignAttributes(this.rotateGrip, { cx: nbax + (nbaw)/2, 
+												cy: nbay - 20 });
 			
 			svgroot.unsuspendRedraw(sr_handle);
 		};
@@ -557,7 +569,6 @@ function BatchCommand(text) {
 			mgr.selectorMap = {};
 			mgr.selectors = [];
 			mgr.rubberBandBox = null;
-			mgr.update();
 		};
 
 		this.requestSelector = function(elem) {
@@ -604,12 +615,6 @@ function BatchCommand(text) {
 					break;
 				}
 			}
-		};
-
-		// this keeps the selector groups as the last child in the document
-		this.update = function() {
-			if (svgroot.lastChild != this.selectorParentGroup)
-				this.selectorParentGroup = svgroot.appendChild(this.selectorParentGroup);
 		};
 
 		this.getRubberBandBox = function() {
@@ -4330,7 +4335,6 @@ function BatchCommand(text) {
 			element.setAttribute("opacity", cur_shape.opacity);
 			element.setAttribute("style", "pointer-events:inherit");
 			cleanupElement(element);
-			selectorManager.update();
  			if(current_mode == "path") {
  				current_path = element;
 				current_mode = "pathedit";
@@ -4485,6 +4489,8 @@ function BatchCommand(text) {
 			// reset transform lists
 			svgTransformLists = {};
 			canvas.clearSelection();
+			svgroot.appendChild(selectorManager.selectorParentGroup);
+			
 			addCommandToHistory(batchCmd);
 			call("changed", [svgcontent]);
 		} catch(e) {
@@ -5908,8 +5914,7 @@ function BatchCommand(text) {
 		}
 		if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
 		
-		// ensure selectors are at bottom and update selection
-		selectorManager.update();
+		// update selection
 		canvas.clearSelection();
 		canvas.addToSelection([g], true);
 	};
@@ -6040,8 +6045,7 @@ function BatchCommand(text) {
 
 			if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
 			
-			// ensure selectors are at bottom and update selection
-			selectorManager.update();
+			// update selection
 			canvas.addToSelection(children);
 		}
 	};
