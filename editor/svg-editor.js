@@ -354,8 +354,6 @@ function svg_edit_setup() {
 			$('#angle').val(ang);
 			$('#tool_reorient').toggleClass('tool_button_disabled', ang == 0);
 			return;
-		} else if(svgCanvas.addedNew && elem != null && elname == 'image') {
-			promptImgURL();
 		}
 		var is_node = elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
 		
@@ -365,6 +363,15 @@ function svg_edit_setup() {
 			var elname = elem.nodeName;
 			var angle = svgCanvas.getRotationAngle(elem);
 			$('#angle').val(angle);
+			
+			if(svgCanvas.addedNew) {
+				console.log(elname)
+				if(elname == 'image') {
+					promptImgURL();
+				} else if(elname == 'text') {
+					// TODO: Do something here for new text
+				}
+			}
 			
 			if(!is_node && currentMode != 'pathedit') {
 				$('#selected_panel').show();
