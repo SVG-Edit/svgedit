@@ -3028,21 +3028,26 @@ function BatchCommand(text) {
 					}
 					break;
 				case "line":
-					keep = (element.x1.baseVal.value != element.x2.baseVal.value ||
-							element.y1.baseVal.value != element.y2.baseVal.value);
+// 					keep = (element.x1.baseVal.value != element.x2.baseVal.value ||
+// 							element.y1.baseVal.value != element.y2.baseVal.value);
+					keep = (element.getAttribute('x1') != element.getAttribute('x2') || element.getAttribute('y1') != element.getAttribute('y2'));
 					break;
 				case "square":
 				case "rect":
-					keep = (element.width.baseVal.value && element.height.baseVal.value);
+					// keep = (element.width.baseVal.value && element.height.baseVal.value);
+					keep = (element.getAttribute('width') != 0 || element.getAttribute('height') != 0);
 					break;
 				case "image":
-					keep = (element.width.baseVal.value && element.height.baseVal.value);
+					// keep = (element.width.baseVal.value && element.height.baseVal.value);
+					keep = (element.getAttribute('width') != 0 || element.getAttribute('height') != 0);
 					break;
 				case "circle":
-					keep = (element.r.baseVal.value);
+					// keep = (element.r.baseVal.value);
+					keep = (element.getAttribute('r') != 0);
 					break;
 				case "ellipse":
-					keep = (element.rx.baseVal.value && element.ry.baseVal.value);
+					// keep = (element.rx.baseVal.value && element.ry.baseVal.value);
+					keep = (element.getAttribute('rx') != null || element.getAttribute('ry') != null);
 					break;
 				case "fhellipse":
 					if ((freehand.maxx - freehand.minx) > 0 &&
@@ -5579,7 +5584,9 @@ function BatchCommand(text) {
 
 	// returns an object that behaves like a SVGTransformList
 	this.getTransformList = function(elem) {
-		if (isWebkit) {
+		// Opera is included here because Opera/Win/Non-EN seems to change 
+		// transformlist float vals to use a comma rather than a period.
+		if (isWebkit || isOpera) {
 			var t = svgTransformLists[elem.id];
 			if (!t) {
 				svgTransformLists[elem.id] = new SVGEditTransformList(elem);
@@ -5662,13 +5669,13 @@ function BatchCommand(text) {
 				tlist.removeItem(0);
 			}
 		}
-		
 		// find R_nc and insert it
 		if (val != 0) {
 			var center = transformPoint(cx,cy,transformListToTransform(tlist).matrix);
 			var R_nc = svgroot.createSVGTransform();
 			R_nc.setRotate(val, center.x, center.y);
 			tlist.insertItemBefore(R_nc,0);
+			opera.postError(elem.getAttribute("transform"))	
 		}
 		else if (tlist.numberOfItems == 0) {
 			elem.removeAttribute("transform");
