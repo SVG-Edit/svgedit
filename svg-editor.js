@@ -495,7 +495,6 @@ function svg_edit_setup() {
 		else {
 			$('#selLayerNames').attr('disabled', 'disabled');
 		}
-		
 	};
 
 	$('#text').focus( function(){ textBeingEntered = true; } );
@@ -1590,6 +1589,11 @@ function svg_edit_setup() {
 				var button = buttonsNeedingFillAndStroke[index];
 				$(button).removeClass('tool_button_disabled').addClass('tool_button');
 			}
+		}
+		
+		if(window.opera) {
+			// Fix repaint bug for Opera
+			$('<p/>').hide().appendTo('body').remove();
 		}
 	};
 
