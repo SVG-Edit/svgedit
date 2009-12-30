@@ -5675,7 +5675,6 @@ function BatchCommand(text) {
 			var R_nc = svgroot.createSVGTransform();
 			R_nc.setRotate(val, center.x, center.y);
 			tlist.insertItemBefore(R_nc,0);
-			opera.postError(elem.getAttribute("transform"))	
 		}
 		else if (tlist.numberOfItems == 0) {
 			elem.removeAttribute("transform");
