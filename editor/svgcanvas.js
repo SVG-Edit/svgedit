@@ -32,11 +32,6 @@ function SvgCanvas(container)
 var isOpera = !!window.opera;
 var isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1;
 
-var uiStrings = {
-	"pathNodeTooltip":"Drag node to move it. Double-click node to change segment type",
-	"pathCtrlPtTooltip":"Drag control point to adjust curve properties"
-};
-
 // this defines which elements and attributes that we support
 // TODO: add <a> elements to this
 // TODO: add <marker> to this
@@ -85,12 +80,6 @@ var toXml = function(str) {
 var fromXml = function(str) {
 	return $('<p/>').html(str).text();
 };
-
-var pathFuncs = [0,'ClosePath'];
-(function() {
-	var pathFuncsStrs = ['Moveto','Lineto','CurvetoCubic','CurvetoQuadratic','Arc','LinetoHorizontal','LinetoVertical','CurvetoCubicSmooth','CurvetoQuadraticSmooth'];
-	$.each(pathFuncsStrs,function(i,s){pathFuncs.push(s+'Abs');pathFuncs.push(s+'Rel');});
-}());
 
 // These command objects are used for the Undo/Redo stack
 // attrs contains the values that the attributes had before the change
@@ -899,13 +888,9 @@ function BatchCommand(text) {
 	// pointer to the current layer <g>
 	var current_layer = null;
 	var save_options = {round_digits: 5};
-	var d_attr = null;
 	var started = false;
 	var obj_num = 1;
-	var start_x = null;
-	var start_y = null;
 	var start_transform = null;
-	var init_bbox = {};
 	var current_mode = "select";
 	var current_resize_mode = "none";
 	
@@ -942,13 +927,6 @@ function BatchCommand(text) {
 		maxy: null
 	};
 	
-	var current_path = null;
-	var current_path_pts = [];
-	var current_path_pt = -1;
-	var current_path_pt_drag = -1;
-	var current_path_oldd = null;
-	var current_ctrl_pt_drag = -1;
-	var link_control_pts = false;
 	var current_zoom = 1;
 	// this will hold all the currently selected elements
 	// default size of 1 until it needs to grow bigger
@@ -1078,7 +1056,7 @@ function BatchCommand(text) {
 				}
 				if(attrName == 'd') {
 					// Convert to absolute
-					node.setAttribute('d',convertPath(node));
+					node.setAttribute('d',pathActions.convertPath(node));
 				}
 			}
 
@@ -1151,7 +1129,7 @@ function BatchCommand(text) {
 	var svgCanvasToString = function() {
 		// TODO: Find out why Webkit throws an error somewhere here (breaking the editor)
 		removeUnusedGrads();
-		canvas.clearPath(true);
+		pathActions.clear(true);
 		$.each(svgcontent.childNodes, function(i, node) {
 			if(i && node.nodeType == 8 && node.data.indexOf('Created with') != -1) {
 				svgcontent.insertBefore(node, svgcontent.firstChild);
@@ -1185,7 +1163,7 @@ function BatchCommand(text) {
 					if (attrVal != "") {
 						if(attrVal.indexOf('pointer-events') == 0) continue;
 						out.push(" "); 
-						if(attr.localName == 'd') attrVal = convertPath(elem, true);
+						if(attr.localName == 'd') attrVal = pathActions.convertPath(elem, true);
 						if(!isNaN(attrVal)) {
 							attrVal = shortFloat(attrVal);
 						}
@@ -2165,29 +2143,6 @@ function BatchCommand(text) {
 		selectedBBoxes = newSelectedBBoxes;
 	};
 	
-	this.addNodeToSelection = function(point) {
-		// Currently only one node can be selected at a time, should allow more later
-		// Should point be the index or the grip element?
-		
-		var is_closed = pathIsClosed(); 
-		
-		if(is_closed && point == current_path_pts.length/2 - 1) {
-			current_path_pt = 0;
-		} else {
-			current_path_pt = point;
-		}
-		
-		$('#pathpointgrip_container circle').attr('stroke','#00F');
-		var grip = $('#pathpointgrip_' + point).attr('stroke','#0FF');
-		$('#ctrlpointgrip_container circle').attr('fill', '#EEE');
-		$('#ctrlpointgrip_' + current_path_pt + 'c1, #ctrlpointgrip_' + current_path_pt + 'c2').attr('fill','#0FF');
-		
-		updateSegLine();
-		updateSegLine(true);
-		
-		call("selected", [grip[0]]);
-	}
-
 	// Some global variables that we may need to refactor
 	var root_sctm = null;
 
@@ -2340,321 +2295,1518 @@ function BatchCommand(text) {
 				aabox: {x:minx, y:miny, width:(maxx-minx), height:(maxy-miny)} };
 	};
 
-	// - when we are in a create mode, the element is added to the canvas
-	//   but the action is not recorded until mousing up
-	// - when we are in select mode, select the element, remember the position
-	//   and do nothing else
-	var mouseDown = function(evt)
-	{
-		root_sctm = svgroot.getScreenCTM().inverse();
-		var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
-		var mouse_x = pt.x;
-		var mouse_y = pt.y;
-		evt.preventDefault();
-    
-		if($.inArray(current_mode, ['select', 'resize']) == -1) {
-			addGradient();
-		}
+	var mouseEvents = function() {
 		
-		x = mouse_x / current_zoom;
-		y = mouse_y / current_zoom;
+		var d_attr = null;
+		var start_x = null;
+		var start_y = null;
+		var init_bbox = {};
+	
+		// - when we are in a create mode, the element is added to the canvas
+		//   but the action is not recorded until mousing up
+		// - when we are in select mode, select the element, remember the position
+		//   and do nothing else
+		var mouseDown = function(evt)
+		{
+			root_sctm = svgroot.getScreenCTM().inverse();
+			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
+			var mouse_x = pt.x;
+			var mouse_y = pt.y;
+			evt.preventDefault();
 		
-		start_x = x;
-		start_y = y;
-
-		// find mouse target
-		var mouse_target = evt.target;
-		// go up until we hit a child of a layer
-		while (mouse_target.parentNode.parentNode.tagName == "g") {
-			mouse_target = mouse_target.parentNode;
-		}
-		// Webkit bubbles the mouse event all the way up to the div, so we
-		// set the mouse_target to the svgroot like the other browsers
-		if (mouse_target.nodeName.toLowerCase() == "div") {
-			mouse_target = svgroot;
-		}
-		// if it is a selector grip, then it must be a single element selected, 
-		// set the mouse_target to that and update the mode to rotate/resize
-		if (mouse_target.parentNode == selectorManager.selectorParentGroup && selectedElements[0] != null) {
-			var gripid = evt.target.id;
-			var griptype = gripid.substr(0,20);
-			// rotating
-			if (griptype == "selectorGrip_rotate_") {
-				current_mode = "rotate";
+			if($.inArray(current_mode, ['select', 'resize']) == -1) {
+				addGradient();
 			}
-			// resizing
-			else if(griptype == "selectorGrip_resize_") {
-				current_mode = "resize";
-				current_resize_mode = gripid.substr(20,gripid.indexOf("_",20)-20);
+			
+			x = mouse_x / current_zoom;
+			y = mouse_y / current_zoom;
+			
+			start_x = x;
+			start_y = y;
+	
+			// find mouse target
+			var mouse_target = evt.target;
+			// go up until we hit a child of a layer
+			while (mouse_target.parentNode.parentNode.tagName == "g") {
+				mouse_target = mouse_target.parentNode;
 			}
-			mouse_target = selectedElements[0];
-		}
-		
-		start_transform = mouse_target.getAttribute("transform");
-		var tlist = canvas.getTransformList(mouse_target);
-
-		switch (current_mode) {
-			case "select":
-				started = true;
-				current_resize_mode = "none";
-				if (mouse_target != svgroot) {
-					// if this element is not yet selected, clear selection and select it
-					if (selectedElements.indexOf(mouse_target) == -1) {
-						// only clear selection if shift is not pressed (otherwise, add 
-						// element to selection)
-						if (!evt.shiftKey) {
-							canvas.clearSelection();
-						}
-						canvas.addToSelection([mouse_target]);
-						justSelected = mouse_target;
-						current_path = null;
-					}
-					// else if it's a path, go into pathedit mode in mouseup
-
-					// insert a dummy transform so if the element(s) are moved it will have
-					// a transform to use for its translate
-					for (var i = 0; i < selectedElements.length; ++i) {
-						if(selectedElements[i] == null) continue;
-						var slist = canvas.getTransformList(selectedElements[i]);
-						slist.insertItemBefore(svgroot.createSVGTransform(), 0);
-					}
+			// Webkit bubbles the mouse event all the way up to the div, so we
+			// set the mouse_target to the svgroot like the other browsers
+			if (mouse_target.nodeName.toLowerCase() == "div") {
+				mouse_target = svgroot;
+			}
+			// if it is a selector grip, then it must be a single element selected, 
+			// set the mouse_target to that and update the mode to rotate/resize
+			if (mouse_target.parentNode == selectorManager.selectorParentGroup && selectedElements[0] != null) {
+				var gripid = evt.target.id;
+				var griptype = gripid.substr(0,20);
+				// rotating
+				if (griptype == "selectorGrip_rotate_") {
+					current_mode = "rotate";
 				}
-				else {
-					canvas.clearSelection();
-					current_mode = "multiselect";
+				// resizing
+				else if(griptype == "selectorGrip_resize_") {
+					current_mode = "resize";
+					current_resize_mode = gripid.substr(20,gripid.indexOf("_",20)-20);
+				}
+				mouse_target = selectedElements[0];
+			}
+			
+			start_transform = mouse_target.getAttribute("transform");
+			var tlist = canvas.getTransformList(mouse_target);
+	
+			switch (current_mode) {
+				case "select":
+					started = true;
+					current_resize_mode = "none";
+					if (mouse_target != svgroot) {
+						// if this element is not yet selected, clear selection and select it
+						if (selectedElements.indexOf(mouse_target) == -1) {
+							// only clear selection if shift is not pressed (otherwise, add 
+							// element to selection)
+							if (!evt.shiftKey) {
+								canvas.clearSelection();
+							}
+							canvas.addToSelection([mouse_target]);
+							justSelected = mouse_target;
+							pathActions.clear();
+						}
+						// else if it's a path, go into pathedit mode in mouseup
+	
+						// insert a dummy transform so if the element(s) are moved it will have
+						// a transform to use for its translate
+						for (var i = 0; i < selectedElements.length; ++i) {
+							if(selectedElements[i] == null) continue;
+							var slist = canvas.getTransformList(selectedElements[i]);
+							slist.insertItemBefore(svgroot.createSVGTransform(), 0);
+						}
+					}
+					else {
+						canvas.clearSelection();
+						current_mode = "multiselect";
+						if (rubberBox == null) {
+							rubberBox = selectorManager.getRubberBandBox();
+						}
+						start_x *= current_zoom;
+						start_y *= current_zoom;
+						assignAttributes(rubberBox, {
+							'x': start_x,
+							'y': start_y,
+							'width': 0,
+							'height': 0,
+							'display': 'inline'
+						}, 100);
+					}
+					break;
+				case "zoom": 
+					started = true;
+					start_x = x;
+					start_y = y;
 					if (rubberBox == null) {
 						rubberBox = selectorManager.getRubberBandBox();
 					}
-					start_x *= current_zoom;
-					start_y *= current_zoom;
 					assignAttributes(rubberBox, {
-						'x': start_x,
-						'y': start_y,
-						'width': 0,
-						'height': 0,
-						'display': 'inline'
+							'x': start_x * current_zoom,
+							'y': start_y * current_zoom,
+							'width': 0,
+							'height': 0,
+							'display': 'inline'
 					}, 100);
-				}
-				break;
-			case "zoom": 
-				started = true;
-				start_x = x;
-				start_y = y;
-				if (rubberBox == null) {
-					rubberBox = selectorManager.getRubberBandBox();
-				}
-				assignAttributes(rubberBox, {
-						'x': start_x * current_zoom,
-						'y': start_y * current_zoom,
-						'width': 0,
-						'height': 0,
-						'display': 'inline'
-				}, 100);
-				break;
-			case "resize":
-				started = true;
-				start_x = x;
-				start_y = y;
-				
-				// Getting the BBox from the selection box, since we know we
-				// want to orient around it
-				init_bbox = canvas.getBBox($('#selectedBox0')[0]);
-				$.each(init_bbox, function(key, val) {
-					init_bbox[key] = val/current_zoom;
-				});
-				
-				// append three dummy transforms to the tlist so that
-				// we can translate,scale,translate in mousemove
-				var pos = canvas.getRotationAngle(mouse_target)?1:0;
-				
-				if(hasMatrixTransform(tlist)) {
-					tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
-					tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
-					tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
+					break;
+				case "resize":
+					started = true;
+					start_x = x;
+					start_y = y;
+					
+					// Getting the BBox from the selection box, since we know we
+					// want to orient around it
+					init_bbox = canvas.getBBox($('#selectedBox0')[0]);
+					$.each(init_bbox, function(key, val) {
+						init_bbox[key] = val/current_zoom;
+					});
+					
+					// append three dummy transforms to the tlist so that
+					// we can translate,scale,translate in mousemove
+					var pos = canvas.getRotationAngle(mouse_target)?1:0;
+					
+					if(hasMatrixTransform(tlist)) {
+						tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
+						tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
+						tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
+					} else {
+						tlist.appendItem(svgroot.createSVGTransform());
+						tlist.appendItem(svgroot.createSVGTransform());
+						tlist.appendItem(svgroot.createSVGTransform());
+					}
+					break;
+				case "fhellipse":
+				case "fhrect":
+				case "fhpath":
+					started = true;
+					start_x = x;
+					start_y = y;
+					d_attr = x + "," + y + " ";
+					var stroke_w = cur_shape.stroke_width == 0?1:cur_shape.stroke_width;
+					addSvgElementFromJson({
+						"element": "polyline",
+						"attr": {
+							"points": d_attr,
+							"id": getNextId(),
+							"fill": "none",
+							"stroke": cur_shape.stroke,
+							"stroke-width": stroke_w,
+							"stroke-dasharray": cur_shape.stroke_style,
+							"stroke-opacity": cur_shape.stroke_opacity,
+							"stroke-linecap": "round",
+							"stroke-linejoin": "round",
+							"opacity": cur_shape.opacity / 2,
+							"style": "pointer-events:none"
+						}
+					});
+					freehand.minx = x;
+					freehand.maxx = x;
+					freehand.miny = y;
+					freehand.miny = y;
+					break;
+				case "image":
+					started = true;
+					start_x = x;
+					start_y = y;
+					var newImage = addSvgElementFromJson({
+						"element": "image",
+						"attr": {
+							"x": x,
+							"y": y,
+							"width": 0,
+							"height": 0,
+							"id": getNextId(),
+							"opacity": cur_shape.opacity / 2,
+							"style": "pointer-events:inherit"
+						}
+					});
+					newImage.setAttributeNS(xlinkns, "href", last_good_img_url);
+					preventClickDefault(newImage);
+					break;
+				case "square":
+					// FIXME: once we create the rect, we lose information that this was a square
+					// (for resizing purposes this could be important)
+				case "rect":
+					started = true;
+					start_x = x;
+					start_y = y;
+					addSvgElementFromJson({
+						"element": "rect",
+						"attr": {
+							"x": x,
+							"y": y,
+							"width": 0,
+							"height": 0,
+							"id": getNextId(),
+							"fill": cur_shape.fill,
+							"stroke": cur_shape.stroke,
+							"stroke-width": cur_shape.stroke_width,
+							"stroke-dasharray": cur_shape.stroke_style,
+							"stroke-opacity": cur_shape.stroke_opacity,
+							"fill-opacity": cur_shape.fill_opacity,
+							"opacity": cur_shape.opacity / 2,
+							"style": "pointer-events:inherit"
+						}
+					});
+					break;
+				case "line":
+					started = true;
+					var stroke_w = cur_shape.stroke_width == 0?1:cur_shape.stroke_width;
+					addSvgElementFromJson({
+						"element": "line",
+						"attr": {
+							"x1": x,
+							"y1": y,
+							"x2": x,
+							"y2": y,
+							"id": getNextId(),
+							"stroke": cur_shape.stroke,
+							"stroke-width": stroke_w,
+							"stroke-dasharray": cur_shape.stroke_style,
+							"stroke-opacity": cur_shape.stroke_opacity,
+							"fill": "none",
+							"opacity": cur_shape.opacity / 2,
+							"style": "pointer-events:none"
+						}
+					});
+					break;
+				case "circle":
+					started = true;
+					addSvgElementFromJson({
+						"element": "circle",
+						"attr": {
+							"cx": x,
+							"cy": y,
+							"r": 0,
+							"id": getNextId(),
+							"fill": cur_shape.fill,
+							"stroke": cur_shape.stroke,
+							"stroke-width": cur_shape.stroke_width,
+							"stroke-dasharray": cur_shape.stroke_style,
+							"stroke-opacity": cur_shape.stroke_opacity,
+							"fill-opacity": cur_shape.fill_opacity,
+							"opacity": cur_shape.opacity / 2,
+							"style": "pointer-events:inherit"
+						}
+					});
+					break;
+				case "ellipse":
+					started = true;
+					addSvgElementFromJson({
+						"element": "ellipse",
+						"attr": {
+							"cx": x,
+							"cy": y,
+							"rx": 0,
+							"ry": 0,
+							"id": getNextId(),
+							"fill": cur_shape.fill,
+							"stroke": cur_shape.stroke,
+							"stroke-width": cur_shape.stroke_width,
+							"stroke-dasharray": cur_shape.stroke_style,
+							"stroke-opacity": cur_shape.stroke_opacity,
+							"fill-opacity": cur_shape.fill_opacity,
+							"opacity": cur_shape.opacity / 2,
+							"style": "pointer-events:inherit"
+						}
+					});
+					break;
+				case "text":
+					started = true;
+					var newText = addSvgElementFromJson({
+						"element": "text",
+						"attr": {
+							"x": x,
+							"y": y,
+							"id": getNextId(),
+							"fill": cur_text.fill,
+							"stroke": cur_shape.stroke,
+							"stroke-width": cur_text.stroke_width,
+							"stroke-dasharray": cur_shape.stroke_style,
+							"stroke-opacity": cur_shape.stroke_opacity,
+							"fill-opacity": cur_shape.fill_opacity,
+							// fix for bug where text elements were always 50% opacity
+							"opacity": cur_shape.opacity,
+							"font-size": cur_text.font_size,
+							"font-family": cur_text.font_family,
+							"text-anchor": "middle",
+							"style": "pointer-events:inherit",
+							"xml:space": "preserve"
+						}
+					});
+					newText.textContent = "text";
+					break;
+				case "path":
+					// Fall through
+				case "pathedit":
+					pathActions.mouseDown(evt, mouse_target, start_x, start_y);
+					started = true;
+					break;
+				case "rotate":
+					started = true;
+					// we are starting an undoable change (a drag-rotation)
+					canvas.beginUndoableChange("transform", selectedElements);
+					break;
+				default:
+					console.log("Unknown mode in mousedown: " + current_mode);
+					break;
+			}
+		};
+	
+		// in this function we do not record any state changes yet (but we do update
+		// any elements that are still being created, moved or resized on the canvas)
+		// TODO: svgcanvas should just retain a reference to the image being dragged instead
+		// of the getId() and getElementById() funkiness - this will help us customize the ids 
+		// a little bit for squares and paths
+		var mouseMove = function(evt)
+		{
+			if (!started) return;
+			var selected = selectedElements[0];
+			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
+			var mouse_x = pt.x;
+			var mouse_y = pt.y;
+			var shape = svgdoc.getElementById(getId());
+		
+			x = mouse_x / current_zoom;
+			y = mouse_y / current_zoom;
+		
+			evt.preventDefault();
+			
+			var setRect = function(square) {
+				var w = Math.abs(x - start_x),
+					h = Math.abs(y - start_y),
+					new_x, new_y;
+				if(square) {
+					w = h = Math.max(w, h);
+					new_x = start_x < x ? start_x : start_x - w;
+					new_y = start_y < y ? start_y : start_y - h;
 				} else {
-					tlist.appendItem(svgroot.createSVGTransform());
-					tlist.appendItem(svgroot.createSVGTransform());
-					tlist.appendItem(svgroot.createSVGTransform());
+					new_x = Math.min(start_x,x);
+					new_y = Math.min(start_y,y);
 				}
-				break;
-			case "fhellipse":
-			case "fhrect":
-			case "fhpath":
-				started = true;
-				start_x = x;
-				start_y = y;
-				d_attr = x + "," + y + " ";
-				var stroke_w = cur_shape.stroke_width == 0?1:cur_shape.stroke_width;
-				addSvgElementFromJson({
-					"element": "polyline",
-					"attr": {
-						"points": d_attr,
-						"id": getNextId(),
-						"fill": "none",
-						"stroke": cur_shape.stroke,
-						"stroke-width": stroke_w,
-						"stroke-dasharray": cur_shape.stroke_style,
-						"stroke-opacity": cur_shape.stroke_opacity,
-						"stroke-linecap": "round",
-						"stroke-linejoin": "round",
-						"opacity": cur_shape.opacity / 2,
-						"style": "pointer-events:none"
+	
+				assignAttributes(shape,{
+					'width': w,
+					'height': h,
+					'x': new_x,
+					'y': new_y
+				},1000);
+			}
+			
+			switch (current_mode)
+			{
+				case "select":
+					// we temporarily use a translate on the element(s) being dragged
+					// this transform is removed upon mousing up and the element is 
+					// relocated to the new location
+					if (selectedElements[0] != null) {
+						var dx = x - start_x;
+						var dy = y - start_y;
+						if (dx != 0 || dy != 0) {
+							var len = selectedElements.length;
+							for (var i = 0; i < len; ++i) {
+								var selected = selectedElements[i];
+								if (selected == null) break;
+								if (i==0) {
+									var box = canvas.getBBox(selected);
+									selectedBBoxes[i].x = box.x + dx;
+									selectedBBoxes[i].y = box.y + dy;
+								}
+	
+								// update the dummy transform in our transform list
+								// to be a translate
+								var xform = svgroot.createSVGTransform();
+								var tlist = canvas.getTransformList(selected);
+								xform.setTranslate(dx,dy);
+								if(tlist.numberOfItems) {
+									tlist.replaceItem(xform, 0);
+									// TODO: Webkit returns null here, find out why
+	// 								console.log(selected.getAttribute("transform"))
+	
+								} else {
+									tlist.appendItem(xform);
+								}
+								
+								// update our internal bbox that we're tracking while dragging
+								selectorManager.requestSelector(selected).resize();
+							}
+						}
 					}
-				});
-				freehand.minx = x;
-				freehand.maxx = x;
-				freehand.miny = y;
-				freehand.miny = y;
-				break;
-			case "image":
-				started = true;
-				start_x = x;
-				start_y = y;
-				var newImage = addSvgElementFromJson({
-					"element": "image",
-					"attr": {
-						"x": x,
-						"y": y,
-						"width": 0,
-						"height": 0,
-						"id": getNextId(),
-						"opacity": cur_shape.opacity / 2,
-						"style": "pointer-events:inherit"
+					break;
+				case "multiselect":
+					x *= current_zoom;
+					y *= current_zoom;
+					assignAttributes(rubberBox, {
+						'x': Math.min(start_x,x),
+						'y': Math.min(start_y,y),
+						'width': Math.abs(x-start_x),
+						'height': Math.abs(y-start_y)
+					},100);
+	
+					// clear out selection and set it to the new list
+	//				canvas.clearSelection();
+					// FIXME: fix this, need to supply rect to getIntersectionList()
+	//				canvas.addToSelection(getIntersectionList());
+	
+					//*
+					// for each selected:
+					// - if newList contains selected, do nothing
+					// - if newList doesn't contain selected, remove it from selected
+					// - for any newList that was not in selectedElements, add it to selected
+					var elemsToRemove = [], elemsToAdd = [];
+					var newList = getIntersectionList();
+					var len = selectedElements.length;
+					for (var i = 0; i < len; ++i) {
+						var ind = newList.indexOf(selectedElements[i]);
+						if (ind == -1) {
+							elemsToRemove.push(selectedElements[i]);
+						}
+						else {
+							newList[ind] = null;
+						}
 					}
-				});
-        		newImage.setAttributeNS(xlinkns, "href", last_good_img_url);
-        		preventClickDefault(newImage);
-				break;
-			case "square":
-				// FIXME: once we create the rect, we lose information that this was a square
-				// (for resizing purposes this could be important)
-			case "rect":
-				started = true;
-				start_x = x;
-				start_y = y;
-				addSvgElementFromJson({
-					"element": "rect",
-					"attr": {
-						"x": x,
-						"y": y,
-						"width": 0,
-						"height": 0,
-						"id": getNextId(),
-						"fill": cur_shape.fill,
-						"stroke": cur_shape.stroke,
-						"stroke-width": cur_shape.stroke_width,
-						"stroke-dasharray": cur_shape.stroke_style,
-						"stroke-opacity": cur_shape.stroke_opacity,
-						"fill-opacity": cur_shape.fill_opacity,
-						"opacity": cur_shape.opacity / 2,
-						"style": "pointer-events:inherit"
+					
+					len = newList.length;
+					for (var i = 0; i < len; ++i) { if (newList[i]) elemsToAdd.push(newList[i]); }
+					
+					if (elemsToRemove.length > 0) 
+						canvas.removeFromSelection(elemsToRemove);
+					
+					if (elemsToAdd.length > 0) 
+						canvas.addToSelection(elemsToAdd);
+					//*/
+					break;
+				case "resize":
+					// we track the resize bounding box and translate/scale the selected element
+					// while the mouse is down, when mouse goes up, we use this to recalculate
+					// the shape's coordinates
+					var tlist = canvas.getTransformList(selected);
+					var hasMatrix = hasMatrixTransform(tlist);
+					var box=hasMatrix?init_bbox:canvas.getBBox(selected), left=box.x, top=box.y, width=box.width,
+						height=box.height, dx=(x-start_x), dy=(y-start_y);
+									
+					// if rotated, adjust the dx,dy values
+					var angle = canvas.getRotationAngle(selected);
+					if (angle) {
+						var r = Math.sqrt( dx*dx + dy*dy );
+						var theta = Math.atan2(dy,dx) - angle * Math.PI / 180.0;
+						dx = r * Math.cos(theta);
+						dy = r * Math.sin(theta);
 					}
-				});
-				break;
-			case "line":
-				started = true;
-				var stroke_w = cur_shape.stroke_width == 0?1:cur_shape.stroke_width;
-				addSvgElementFromJson({
-					"element": "line",
-					"attr": {
-						"x1": x,
-						"y1": y,
-						"x2": x,
-						"y2": y,
-						"id": getNextId(),
-						"stroke": cur_shape.stroke,
-						"stroke-width": stroke_w,
-						"stroke-dasharray": cur_shape.stroke_style,
-						"stroke-opacity": cur_shape.stroke_opacity,
-						"fill": "none",
-						"opacity": cur_shape.opacity / 2,
-						"style": "pointer-events:none"
+	
+					// if not stretching in y direction, set dy to 0
+					// if not stretching in x direction, set dx to 0
+					if(current_resize_mode.indexOf("n")==-1 && current_resize_mode.indexOf("s")==-1) {
+						dy = 0;
 					}
-				});
-				break;
-			case "circle":
-				started = true;
-				addSvgElementFromJson({
-					"element": "circle",
-					"attr": {
-						"cx": x,
-						"cy": y,
-						"r": 0,
-						"id": getNextId(),
-						"fill": cur_shape.fill,
-						"stroke": cur_shape.stroke,
-						"stroke-width": cur_shape.stroke_width,
-						"stroke-dasharray": cur_shape.stroke_style,
-						"stroke-opacity": cur_shape.stroke_opacity,
-						"fill-opacity": cur_shape.fill_opacity,
-						"opacity": cur_shape.opacity / 2,
-						"style": "pointer-events:inherit"
+					if(current_resize_mode.indexOf("e")==-1 && current_resize_mode.indexOf("w")==-1) {
+						dx = 0;
+					}				
+					
+					var ts = null;
+					var tx = 0, ty = 0;
+					var sy = height ? (height+dy)/height : 1, 
+						sx = width ? (width+dx)/width : 1;
+					// if we are dragging on the north side, then adjust the scale factor and ty
+					if(current_resize_mode.indexOf("n") != -1) {
+						sy = height ? (height-dy)/height : 1;
+						ty = height;
 					}
-				});
-				break;
-			case "ellipse":
-				started = true;
-				addSvgElementFromJson({
-					"element": "ellipse",
-					"attr": {
-						"cx": x,
-						"cy": y,
-						"rx": 0,
-						"ry": 0,
-						"id": getNextId(),
-						"fill": cur_shape.fill,
-						"stroke": cur_shape.stroke,
-						"stroke-width": cur_shape.stroke_width,
-						"stroke-dasharray": cur_shape.stroke_style,
-						"stroke-opacity": cur_shape.stroke_opacity,
-						"fill-opacity": cur_shape.fill_opacity,
-						"opacity": cur_shape.opacity / 2,
-						"style": "pointer-events:inherit"
+					
+					// if we dragging on the east side, then adjust the scale factor and tx
+					if(current_resize_mode.indexOf("w") != -1) {
+						sx = width ? (width-dx)/width : 1;
+						tx = width;
 					}
-				});
-				break;
-			case "text":
-				started = true;
-				var newText = addSvgElementFromJson({
-					"element": "text",
-					"attr": {
-						"x": x,
-						"y": y,
-						"id": getNextId(),
-						"fill": cur_text.fill,
-						"stroke": cur_shape.stroke,
-						"stroke-width": cur_text.stroke_width,
-						"stroke-dasharray": cur_shape.stroke_style,
-						"stroke-opacity": cur_shape.stroke_opacity,
-						"fill-opacity": cur_shape.fill_opacity,
-						// fix for bug where text elements were always 50% opacity
-						"opacity": cur_shape.opacity,
-						"font-size": cur_text.font_size,
-						"font-family": cur_text.font_family,
-						"text-anchor": "middle",
-						"style": "pointer-events:inherit",
-						"xml:space": "preserve"
+					
+					// update the transform list with translate,scale,translate
+					var translateOrigin = svgroot.createSVGTransform(),
+						scale = svgroot.createSVGTransform(),
+						translateBack = svgroot.createSVGTransform();
+					translateOrigin.setTranslate(-(left+tx),-(top+ty));
+					if(evt.shiftKey) {
+						if(sx == 1) sx = sy
+						else sy = sx;
 					}
+					scale.setScale(sx,sy);
+					
+					translateBack.setTranslate(left+tx,top+ty);
+					if(hasMatrix) {
+						var diff = angle?1:0;
+						tlist.replaceItem(translateOrigin, 2+diff);
+						tlist.replaceItem(scale, 1+diff);
+						tlist.replaceItem(translateBack, 0+diff);
+					} else {
+						var N = tlist.numberOfItems;
+						tlist.replaceItem(translateBack, N-3);
+						tlist.replaceItem(scale, N-2);
+						tlist.replaceItem(translateOrigin, N-1);
+					}
+					var selectedBBox = selectedBBoxes[0];				
+	
+					// reset selected bbox top-left position
+					selectedBBox.x = left;
+					selectedBBox.y = top;
+					
+					// if this is a translate, adjust the box position
+					if (tx) {
+						selectedBBox.x += dx;
+					}
+					if (ty) {
+						selectedBBox.y += dy;
+					}
+	
+					selectorManager.requestSelector(selected).resize();
+					break;
+				case "zoom":
+					x *= current_zoom;
+					y *= current_zoom;
+					assignAttributes(rubberBox, {
+						'x': Math.min(start_x*current_zoom,x),
+						'y': Math.min(start_y*current_zoom,y),
+						'width': Math.abs(x-start_x*current_zoom),
+						'height': Math.abs(y-start_y*current_zoom)
+					},100);			
+					break;
+				case "text":
+					assignAttributes(shape,{
+						'x': x,
+						'y': y
+					},1000);
+					break;
+				case "line":
+					// Opera has a problem with suspendRedraw() apparently
+					var handle = null;
+					if (!window.opera) svgroot.suspendRedraw(1000);
+					shape.setAttributeNS(null, "x2", x);
+					shape.setAttributeNS(null, "y2", y);
+					if (!window.opera) svgroot.unsuspendRedraw(handle);
+					break;
+				case "square":
+					setRect(true);
+					break;
+				case "rect":
+				case "image":
+					setRect(evt.shiftKey);
+					break;
+				case "circle":
+					var cx = shape.getAttributeNS(null, "cx");
+					var cy = shape.getAttributeNS(null, "cy");
+					var rad = Math.sqrt( (x-cx)*(x-cx) + (y-cy)*(y-cy) );
+					shape.setAttributeNS(null, "r", rad);
+					break;
+				case "ellipse":
+					var cx = shape.getAttributeNS(null, "cx");
+					var cy = shape.getAttributeNS(null, "cy");
+					// Opera has a problem with suspendRedraw() apparently
+					var handle = null;
+					if (!window.opera) svgroot.suspendRedraw(1000);
+					shape.setAttributeNS(null, "rx", Math.abs(x - cx) );
+					var ry = Math.abs(evt.shiftKey?(x - cx):(y - cy));
+					shape.setAttributeNS(null, "ry", ry );
+					if (!window.opera) svgroot.unsuspendRedraw(handle);
+					break;
+				case "fhellipse":
+				case "fhrect":
+					freehand.minx = Math.min(x, freehand.minx);
+					freehand.maxx = Math.max(x, freehand.maxx);
+					freehand.miny = Math.min(y, freehand.miny);
+					freehand.maxy = Math.max(y, freehand.maxy);
+				// break; missing on purpose
+				case "fhpath":
+					start_x = x;
+					start_y = y;
+					d_attr += + x + "," + y + " ";
+					shape.setAttributeNS(null, "points", d_attr);
+					break;
+				// update path stretch line coordinates
+				case "path":
+					// fall through
+				case "pathedit":
+					pathActions.mouseMove(mouse_x, mouse_y);
+					break;
+				case "rotate":
+					var box = canvas.getBBox(selected),
+						cx = box.x + box.width/2, 
+						cy = box.y + box.height/2;
+					var m = transformListToTransform(canvas.getTransformList(selected)).matrix;
+					var center = transformPoint(cx,cy,m);
+					cx = center.x;
+					cy = center.y;
+					var angle = ((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360;
+					canvas.setRotationAngle(angle<-180?(360+angle):angle, true);
+					call("changed", selectedElements);
+					break;
+				default:
+					break;
+			}
+		}; // mouseMove()
+		
+		var mouseUp = function(evt)
+		{	
+			var tempJustSelected = justSelected;
+			justSelected = null;
+			if (!started) return;
+	
+			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
+			var mouse_x = pt.x;
+			var mouse_y = pt.y;
+			var x = mouse_x / current_zoom;
+			var y = mouse_y / current_zoom;
+					
+			started = false;
+			var element = svgdoc.getElementById(getId());
+			var keep = false;
+			switch (current_mode)
+			{
+				// intentionally fall-through to select here
+				case "resize":
+				case "multiselect":
+					if (rubberBox != null) {
+						rubberBox.setAttribute("display", "none");
+						curBBoxes = [];
+					}
+					current_mode = "select";
+				case "select":
+					if (selectedElements[0] != null) {
+						// if we only have one selected element
+						if (selectedElements[1] == null) {
+							// set our current stroke/fill properties to the element's
+							var selected = selectedElements[0];
+							if (selected.tagName != "g" && selected.tagName != "image") {
+								cur_properties.fill = selected.getAttribute("fill");
+								cur_properties.fill_opacity = selected.getAttribute("fill-opacity");
+								cur_properties.stroke = selected.getAttribute("stroke");
+								cur_properties.stroke_opacity = selected.getAttribute("stroke-opacity");
+								cur_properties.stroke_width = selected.getAttribute("stroke-width");
+								cur_properties.stroke_style = selected.getAttribute("stroke-dasharray");
+							}
+							if (selected.tagName == "text") {
+								cur_text.font_size = selected.getAttribute("font-size");
+								cur_text.font_family = selected.getAttribute("font-family");
+							}
+	
+							selectorManager.requestSelector(selected).showGrips(true);
+						}
+						// always recalculate dimensions to strip off stray identity transforms
+						recalculateAllSelectedDimensions();
+						// if it was being dragged/resized
+						if (x != start_x || y != start_y) {
+							var len = selectedElements.length;
+							for	(var i = 0; i < len; ++i) {
+								if (selectedElements[i] == null) break;
+								if(selectedElements[i].tagName != 'g') {
+									// Not needed for groups (incorrectly resizes elems), possibly not needed at all?
+									selectorManager.requestSelector(selectedElements[i]).resize();
+								}
+							}
+						}
+						// no change in position/size, so maybe we should move to pathedit
+						else {
+							var t = evt.target;
+							if (selectedElements[0].nodeName == "path" && selectedElements[1] == null) {
+								pathActions.select(t);
+// 								if (current_path == t) {
+// 									current_mode = "pathedit";
+// 									
+// 									// This resets the pathedit selection in case it 
+// 									// was a rotate that turned into a matrix
+// 									var angle = canvas.getRotationAngle(t);
+// 									if(!angle) setPointContainerTransform();
+// 									
+// 									// recalculate current_path_pts
+// 									recalcPathPoints();
+// 									canvas.clearSelection();
+// 									// save the path's bbox
+// 									selectedBBoxes[0] = canvas.getBBox(current_path);
+// 									addAllPointGripsToPath();
+// 									addNodeToSelection(0);
+// 								} // going into pathedit mode
+// 								else {
+// 									current_path = t;
+// 								}
+							} // if it was a path
+							// else, if it was selected and this is a shift-click, remove it from selection
+							else if (evt.shiftKey) {
+								if(tempJustSelected != t) {
+									canvas.removeFromSelection([t]);
+								}
+							}
+						} // no change in mouse position
+					}
+					// we return immediately from select so that the obj_num is not incremented
+					return;
+					break;
+				case "zoom":
+					if (rubberBox != null) {
+						rubberBox.setAttribute("display", "none");
+					}
+					var factor = evt.shiftKey?.5:2;
+					call("zoomed", {
+						'x': Math.min(start_x,x),
+						'y': Math.min(start_y,y),
+						'width': Math.abs(x-start_x),
+						'height': Math.abs(y-start_y),
+						'factor': factor
+					});
+					return;
+				case "fhpath":
+					// Check that the path contains at least 2 points; a degenerate one-point path
+					// causes problems.
+					// Webkit ignores how we set the points attribute with commas and uses space
+					// to separate all coordinates, see https://bugs.webkit.org/show_bug.cgi?id=29870
+					var coords = element.getAttribute('points');
+					var commaIndex = coords.indexOf(',');
+					if (commaIndex >= 0) {
+						keep = coords.indexOf(',', commaIndex+1) >= 0;
+					} else {
+						keep = coords.indexOf(' ', coords.indexOf(' ')+1) >= 0;
+					}
+					break;
+				case "line":
+					keep = (element.x1.baseVal.value != element.x2.baseVal.value ||
+							element.y1.baseVal.value != element.y2.baseVal.value);
+					break;
+				case "square":
+				case "rect":
+					keep = (element.width.baseVal.value && element.height.baseVal.value);
+					break;
+				case "image":
+					keep = (element.width.baseVal.value && element.height.baseVal.value);
+					break;
+				case "circle":
+					keep = (element.r.baseVal.value);
+					break;
+				case "ellipse":
+					keep = (element.rx.baseVal.value && element.ry.baseVal.value);
+					break;
+				case "fhellipse":
+					if ((freehand.maxx - freehand.minx) > 0 &&
+						(freehand.maxy - freehand.miny) > 0) {
+						element = addSvgElementFromJson({
+							"element": "ellipse",
+							"attr": {
+								"cx": (freehand.minx + freehand.maxx) / 2,
+								"cy": (freehand.miny + freehand.maxy) / 2,
+								"rx": (freehand.maxx - freehand.minx) / 2,
+								"ry": (freehand.maxy - freehand.miny) / 2,
+								"id": getId(),
+								"fill": cur_shape.fill,
+								"stroke": cur_shape.stroke,
+								"stroke-width": cur_shape.stroke_width,
+								"stroke-dasharray": cur_shape.stroke_style,
+								"opacity": cur_shape.opacity,
+								"stroke-opacity": cur_shape.stroke_opacity,
+								"fill-opacity": cur_shape.fill_opacity,
+								"style": "pointer-events:inherit"
+							}
+						});
+						call("changed",[element]);
+						keep = true;
+					}
+					break;
+				case "fhrect":
+					if ((freehand.maxx - freehand.minx) > 0 &&
+						(freehand.maxy - freehand.miny) > 0) {
+						element = addSvgElementFromJson({
+							"element": "rect",
+							"attr": {
+								"x": freehand.minx,
+								"y": freehand.miny,
+								"width": (freehand.maxx - freehand.minx),
+								"height": (freehand.maxy - freehand.miny),
+								"id": getId(),
+								"fill": cur_shape.fill,
+								"stroke": cur_shape.stroke,
+								"stroke-width": cur_shape.stroke_width,
+								"stroke-dasharray": cur_shape.stroke_style,
+								"opacity": cur_shape.opacity,
+								"stroke-opacity": cur_shape.stroke_opacity,
+								"fill-opacity": cur_shape.fill_opacity,
+								"style": "pointer-events:inherit"
+							}
+						});
+						call("changed",[element]);
+						keep = true;
+					}
+					break;
+				case "text":
+					keep = true;
+					canvas.clearSelection();
+					break;
+				case "path":
+					// set element to null here so that it is not removed nor finalized
+					element = null;
+					// continue to be set to true so that mouseMove happens
+					started = true;
+					
+					var res = pathActions.mouseUp(evt, element, mouse_x, mouse_y);
+					element = res.element
+					keep = res.keep;
+					break;
+				case "pathedit":
+					keep = true;
+					element = null;
+					pathActions.mouseUp(evt);
+					break;
+				case "rotate":
+					keep = true;
+					element = null;
+					current_mode = "select";
+					var batchCmd = canvas.finishUndoableChange();
+					if (!batchCmd.isEmpty()) { 
+						addCommandToHistory(batchCmd);
+					}
+					// perform recalculation to weed out any stray identity transforms that might get stuck
+					recalculateAllSelectedDimensions();
+					break;
+				default:
+					console.log("Unknown mode in mouseup: " + current_mode);
+					break;
+			}
+			if (!keep && element != null) {
+				element.parentNode.removeChild(element);
+				element = null;
+				
+				var t = evt.target;
+				
+				// if this element is in a group, go up until we reach the top-level group 
+				// just below the layer groups
+				// TODO: once we implement links, we also would have to check for <a> elements
+				while (t.parentNode.parentNode.tagName == "g") {
+					t = t.parentNode;
+				}
+				// if we are not in the middle of creating a path, and we've clicked on some shape, 
+				// then go to Select mode.
+				// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
+				if ( (current_mode != "path" || current_path_pts.length == 0) &&
+					t.parentNode.id != "selectorParentGroup" &&
+					t.id != "svgcanvas" && t.id != "svgroot") 
+				{
+					// switch into "select" mode if we've clicked on an element
+					canvas.addToSelection([t], true);
+					canvas.setMode("select");
+				}
+				
+			} else if (element != null) {
+				canvas.addedNew = true;
+				element.setAttribute("opacity", cur_shape.opacity);
+				element.setAttribute("style", "pointer-events:inherit");
+				cleanupElement(element);
+				if(current_mode == "path") {
+					pathActions.toEditMode(element);
+				} else if (current_mode == "text" || current_mode == "image") {
+					// keep us in the tool we were in unless it was a text or image element
+					canvas.addToSelection([element], true);
+				}
+				// we create the insert command that is stored on the stack
+				// undo means to call cmd.unapply(), redo means to call cmd.apply()
+				addCommandToHistory(new InsertElementCommand(element));
+				call("changed",[element]);
+			}
+	
+			start_transform = null;
+		};
+
+		return {
+			up: mouseUp,
+			move: mouseMove,
+			down: mouseDown
+		};
+	}();
+
+	var pathActions = function() {
+		
+		var pathFuncs = [];
+		var current_path = null;
+		var current_path_pts = [];
+		var current_path_pt = -1;
+		var current_path_pt_drag = -1;
+		var current_path_oldd = null;
+		var current_ctrl_pt_drag = -1;
+		var link_control_pts = false;
+	
+		var resetPointGrips = function() {
+			if(!current_path) return;
+			var sr = svgroot.suspendRedraw(100);
+			removeAllPointGripsFromPath();
+			recalcPathPoints();
+			addAllPointGripsToPath();
+			svgroot.unsuspendRedraw(sr);
+		};
+		
+		var setPointContainerTransform = function(value) {
+			var conts = $('#pathpointgrip_container,#ctrlpointgrip_container');
+			$.each(conts,function() {
+				if(!value) {
+					this.removeAttribute("transform");
+				} else {
+					this.setAttribute("transform", value);
+				}
+			});
+		}
+		
+		var recalcPathPoints = function() {
+			current_path_pts = [];
+			var segList = current_path.pathSegList;
+			var curx = segList.getItem(0).x, cury = segList.getItem(0).y;
+			current_path_pts.push(curx * current_zoom);
+			current_path_pts.push(cury * current_zoom);
+			var len = segList.numberOfItems;
+			for (var i = 1; i < len; ++i) {
+				var l = segList.getItem(i);
+				var x = l.x, y = l.y;
+				// paths can now be closed, skip Z segments
+				if (l.pathSegType == 1) {
+					break;
+				}
+				var type = l.pathSegType;
+				// current_path_pts just holds the absolute coords
+				if (type == 4) {
+					curx = x;
+					cury = y;
+				} // type 4 (abs line)
+				else if (type == 5) {
+					curx += x;
+					cury += y;
+				} // type 5 (rel line)
+				else if (type == 6) {
+					curx = x;
+					cury = y;
+				} // type 6 (abs curve)
+				else if (type == 7) {
+					curx += x;
+					cury += y;
+				} // type 7 (rel curve)
+				current_path_pts.push(curx * current_zoom);
+				current_path_pts.push(cury * current_zoom);
+			} // for each segment	
+		}
+	
+		var removeAllPointGripsFromPath = function() {
+			// loop through and hide all pointgrips
+			$('#pathpointgrip_container > *').attr("display", "none");
+	
+			var line = document.getElementById("path_stretch_line");
+			if (line) line.setAttribute("display", "none");
+			
+			$('#ctrlpointgrip_container *').attr('display','none');
+		};
+		
+		var addNodeToSelection = function(point) {
+			// Currently only one node can be selected at a time, should allow more later
+			// Should point be the index or the grip element?
+			
+			var is_closed = pathIsClosed(); 
+			
+			if(is_closed && point == current_path_pts.length/2 - 1) {
+				current_path_pt = 0;
+			} else {
+				current_path_pt = point;
+			}
+			
+			$('#pathpointgrip_container circle').attr('stroke','#00F');
+			var grip = $('#pathpointgrip_' + point).attr('stroke','#0FF');
+			$('#ctrlpointgrip_container circle').attr('fill', '#EEE');
+			$('#ctrlpointgrip_' + current_path_pt + 'c1, #ctrlpointgrip_' + current_path_pt + 'c2').attr('fill','#0FF');
+			
+			updateSegLine();
+			updateSegLine(true);
+			
+			call("selected", [grip[0]]);
+		}
+	
+		var addAllPointGripsToPath = function(pointToSelect) {
+			// loop through and show all pointgrips
+			var len = current_path_pts.length;
+			for (var i = 0; i < len; i += 2) {
+				var grip = document.getElementById("pathpointgrip_"+i/2);
+				if (grip) {
+					assignAttributes(grip, {
+						'cx': current_path_pts[i],
+						'cy': current_path_pts[i+1],
+						'display': 'inline'
+					});
+				}
+				else {
+					addPointGripToPath(current_path_pts[i], current_path_pts[i+1],i/2);
+				}
+				
+				var index = i/2;
+				var item = current_path.pathSegList.getItem(index);
+				if(item.pathSegType == 6) {
+					index -= 1;
+					// Same code as when making a curve, needs to be in own function
+					var cur_x = getPathPoint(index)[0];
+					var cur_y = getPathPoint(index)[1];
+					var next_x = getPathPoint(index+1)[0];
+					var next_y = getPathPoint(index+1)[1];
+					addControlPointGrip(item.x1,item.y1, cur_x,cur_y, index+'c1');
+					addControlPointGrip(item.x2,item.y2, next_x,next_y, index+'c2');
+				} 
+			}
+			// FIXME:  we cannot just use the same transform as the path because we might be 
+			// at a different zoom level
+			var angle = canvas.getRotationAngle(current_path);
+			if (angle) {
+				var bbox = canvas.getBBox(current_path);
+				var cx = (bbox.x + bbox.width/2) * current_zoom,
+					cy = (bbox.y + bbox.height/2) * current_zoom;
+				var xform = ["rotate(", angle, " ", cx, ",", cy, ")"].join("");
+				setPointContainerTransform(xform);
+			}
+			if(pointToSelect != null) {
+				addNodeToSelection(pointToSelect);
+			}
+		};
+	
+		var addPointGripToPath = function(x,y,index) {
+			// create the container of all the point grips
+			var pointGripContainer = document.getElementById("pathpointgrip_container");
+			if (!pointGripContainer) {
+				var parent = document.getElementById("selectorParentGroup");
+				pointGripContainer = parent.appendChild(document.createElementNS(svgns, "g"));
+				pointGripContainer.id = "pathpointgrip_container";
+			}
+	
+			var pointGrip = document.getElementById("pathpointgrip_"+index);
+			// create it
+			if (!pointGrip) {
+				pointGrip = document.createElementNS(svgns, "circle");
+				assignAttributes(pointGrip, {
+					'id': "pathpointgrip_" + index,
+					'display': "none",
+					'r': 4,
+					'fill': "#0FF",
+					'stroke': "#00F",
+					'stroke-width': 2,
+					'cursor': 'move',
+					'style': 'pointer-events:all',
+					'xlink:title': uiStrings.pathNodeTooltip
 				});
-				newText.textContent = "text";
-				break;
-			case "path":
-				setPointContainerTransform("");
-				started = true;
-				break;
-			case "pathedit":
-				started = true;
+				pointGrip = pointGripContainer.appendChild(pointGrip);
+	
+				var grip = $('#pathpointgrip_'+index);
+				grip.dblclick(function() {
+					canvas.setSegType();
+				});
+			}
+			
+			// set up the point grip element and display it
+			assignAttributes(pointGrip, {
+				'cx': x,
+				'cy': y,
+				'display': "inline",
+			});
+		};
+		
+		var pathIsClosed = function() {
+			if(!current_path) return;
+			return current_path.getAttribute('d').substr(-1,1).toLowerCase() == 'z';
+		}
+		
+		var updateSegLine = function(next_node) {
+			// create segment line
+			var segLine = document.getElementById("segline");
+			if(!segLine) {
+				var pointGripContainer = $('#pathpointgrip_container')[0];
+				segLine = document.createElementNS(svgns, "path");
+				assignAttributes(segLine, {
+					'id': "segline",
+					'fill': "none",
+					'stroke': "#0FF",
+					'stroke-width': 2,
+					'style':'pointer-events:none'
+				});
+				segLine = pointGripContainer.appendChild(segLine);
+			}
+			if(!segLine.getAttribute('d')) {
+				var pt = getPathPoint(current_path_pt);
+				segLine.setAttribute('d', 'M' + pt.join(',') + ' 0,0');
+			}
+			segLine.setAttribute('display','inline');
+			
+			if(current_path_pt+1 >= current_path.pathSegList.numberOfItems) {
+				segLine.setAttribute('display','none');
+				return;
+			}
+			
+			if(!next_node) {
+				// Replace "M" val
+				replacePathSeg(2, 0, getPathPoint(current_path_pt, true), segLine);
+			} else {
+				var seg = current_path.pathSegList.getItem(current_path_pt+1);
+				var points = [seg.x, seg.y];
+				if(seg.x1 != null && seg.x2 != null) {
+					points.splice(2, 0, seg.x1, seg.y1, seg.x2, seg.y2);
+				}
+				points = $.map(points, function(n){return n*current_zoom;});
+				replacePathSeg(seg.pathSegType, 1, points, segLine);
+			}
+		}
+
+		var updatePath = function(mouse_x, mouse_y, old_path_pts) {
+			var x = mouse_x / current_zoom;
+			var y = mouse_y / current_zoom;
+			
+			var is_closed = pathIsClosed(); 
+		
+			var i = current_path_pt_drag * 2;
+			var last_index = current_path_pts.length/2 - 1;
+			var is_first = current_path_pt_drag == 0 || (is_closed && current_path_pt_drag == last_index);
+			var is_last = !is_closed && current_path_pt_drag == last_index;
+			
+			// if the image is rotated, then we must modify the x,y mouse coordinates
+			// and rotate them into the shape's rotated coordinate system
+			// we also re-map mouse_x/y and x/y into the rotated coordinate system
+			var angle = canvas.getRotationAngle(current_path, true);
+			if (angle) {
+				// calculate the shape's old center that was used for rotation
+				var box = selectedBBoxes[0];
+				var cx = (box.x + box.width/2) * current_zoom, 
+					cy = (box.y + box.height/2) * current_zoom;
+				var dx = mouse_x - cx, dy = mouse_y - cy;
+				var r = Math.sqrt( dx*dx + dy*dy );
+				var theta = Math.atan2(dy,dx) - angle;						
+				current_path_pts[i] = mouse_x = cx + r * Math.cos(theta);
+				current_path_pts[i+1] = mouse_y = cy + r * Math.sin(theta);
+				x = mouse_x / current_zoom;
+				y = mouse_y / current_zoom;
+			}
+			else {
+				current_path_pts[i] = x * current_zoom;
+				current_path_pts[i+1] = y * current_zoom;
+			}
+			
+			if(is_first && is_closed) {
+				// Update the first point
+				current_path_pts[0] = current_path_pts[i];
+				current_path_pts[1] = current_path_pts[i+1];
+				current_path_pt_drag = 0;
+			}
+	
+			var index = current_path_pt_drag;
+			var abs_x = getPathPoint(index)[0];
+			var abs_y = getPathPoint(index)[1];
+			
+			var item = current_path.pathSegList.getItem(index);
+			var x_diff = x - old_path_pts[index*2];
+			var y_diff = y - old_path_pts[index*2 + 1];
+			
+			var cur_type = item.pathSegType;
+			var points = [];
+			
+			if(cur_type == 6) {
+				points = [abs_x,abs_y, item.x1,item.y1, item.x2 + x_diff,item.y2 + y_diff];
+			} else {
+				if(is_first) {
+					// Need absolute position for first point
+					points = getPathPoint(0);
+				} else {
+					points = [abs_x, abs_y];
+				}
+			}
+			replacePathSeg(cur_type, index, points);
+	
+			var setSeg = function(index,first) {
+				var points, item = current_path.pathSegList.getItem(index);
+				var type = item.pathSegType;
+				if(first) {
+					item.x += x_diff;
+					item.y += y_diff;
+				}
+	
+				switch (type) {
+				case 1:
+					points = [];
+					break;
+				case 4:
+					points = [item.x, item.y];
+					break;
+				case 6:
+					if(first) {
+						item.x1 -= x_diff;
+						item.y1 -= y_diff;
+						item.x2 += x_diff;
+						item.y2 += y_diff;
+					}
+	
+					points = [item.x, item.y, item.x1 + x_diff,item.y1 + y_diff, item.x2,item.y2];
+					break;
+				default:
+					break;
+				}
+				replacePathSeg(type, index, points);
+				return type;
+			}
+			
+			if(is_closed || !is_last) { 
+				var next_type = setSeg(index+1);
+			} else {
+				var next_type = 0;
+			}
+			
+			if(is_first && is_closed) {
+				var last_type = setSeg(last_index,1);
+			}
+				
+			// move the point grip
+			var grip = document.getElementById("pathpointgrip_" + current_path_pt_drag);
+			if (grip) {
+				grip.setAttribute("cx", mouse_x);
+				grip.setAttribute("cy", mouse_y);
+				if(is_closed && is_first) {
+					var grip = document.getElementById("pathpointgrip_" + last_index);
+					grip.setAttribute("cx", mouse_x);
+					grip.setAttribute("cy", mouse_y);
+				}
+				call("changed", [grip]);
+			}
+			
+			if(is_first) cur_type = last_type;
+			
+			if(cur_type != 4) {
+				var num = is_first?last_index:index;
+				var id2 = (num-1)+'c2';
+				var line = document.getElementById("ctrlLine_"+id2);
+				if(line) {
+					// Don't do if first point on open path
+					if(!(!is_closed && current_path_pt_drag == 0)) {
+						var x2 = line.getAttribute('x2') - 0 + x_diff*current_zoom;
+						var y2 = line.getAttribute('y2') - 0 + y_diff*current_zoom;
+						addControlPointGrip(x2,y2, mouse_x,mouse_y, id2, true);
+					}
+				}
+			}
+			
+			if(next_type != 4) {
+				var id1 = (current_path_pt_drag)+'c1';
+				var line = document.getElementById("ctrlLine_"+id1);
+				if(line) {
+					var x2 = line.getAttribute('x2') - 0 + x_diff*current_zoom;
+					var y2 = line.getAttribute('y2') - 0 + y_diff*current_zoom;
+					addControlPointGrip(x2,y2, mouse_x,mouse_y, id1, true);
+				}
+			}
+			updateSegLine();
+			if(next_type != 4) {
+				updateSegLine(true);
+			}
+		}
+	
+		var updateCurvedSegment = function(mouse_x, mouse_y, index, ctrl_num) {
+			var list = current_path.pathSegList;
+			if(index+1 >= list.numberOfItems) {
+				index = -1;
+			}
+			var c_item = list.getItem(index+1);
+			
+			// Only do curves
+			if(c_item.pathSegType != 6) return;
+			
+			ctrl_pt_drag = index + 'c' + ctrl_num;
+			
+			var x = mouse_x / current_zoom;
+			var y = mouse_y / current_zoom;
+			
+			var angle = canvas.getRotationAngle(current_path, true);
+			
+			// TODO: Make sure this works for linked control points
+			if (angle) {
+				// calculate the shape's old center that was used for rotation
+				var box = selectedBBoxes[0];
+				var cx = (box.x + box.width/2) * current_zoom, 
+					cy = (box.y + box.height/2) * current_zoom;
+				var dx = mouse_x - cx, dy = mouse_y - cy;
+				var r = Math.sqrt( dx*dx + dy*dy );
+				var theta = Math.atan2(dy,dx) - angle;						
+				mouse_x = cx + r * Math.cos(theta);
+				mouse_y = cy + r * Math.sin(theta);
+				x = mouse_x / current_zoom;
+				y = mouse_y / current_zoom;
+			}
+			
+			c_item['x' + ctrl_num] = x;
+			c_item['y' + ctrl_num] = y;
+			replacePathSeg(6, index+1, [c_item.x,c_item.y, c_item.x1,c_item.y1, c_item.x2,c_item.y2]);
+			
+			updateSegLine(true);
+			
+			var grip = document.getElementById("ctrlpointgrip_" + ctrl_pt_drag);
+			if(grip) {
+				grip.setAttribute("cx", mouse_x);
+				grip.setAttribute("cy", mouse_y);
+				
+				var line = document.getElementById("ctrlLine_"+ctrl_pt_drag);
+				line.setAttribute("x2", mouse_x);
+				line.setAttribute("y2", mouse_y);
+			}
+		}
+		
+		var getPathPoint = function(index, raw_val) {
+			var len = current_path_pts.length;
+			var pt_num = len/2;
+			if(index < 0) {
+				index += pt_num;
+			} else if(index >= pt_num) {
+				index -= pt_num;
+			}
+			var z = raw_val?1:current_zoom;
+			return [current_path_pts[index*2] / z, current_path_pts[index*2 + 1] / z];
+		}
+		
+		// This replaces the segment at the given index. Type is given as number.
+		var replacePathSeg = function(type, index, pts, path) {
+			if(!path) path = current_path;
+			var func = 'createSVGPathSeg' + pathFuncs[type];
+			var seg = path[func].apply(path, pts);
+			path.pathSegList.replaceItem(seg, index);
+		}
+		
+		var addControlPointGrip = function(x, y, source_x, source_y, id, raw_val) {
+			if(!raw_val) {
+				x *= current_zoom; y *= current_zoom;
+				source_x *= current_zoom; source_y *= current_zoom;
+			}
+		
+			// create the container of all the control point grips
+			var ctrlPointGripContainer = document.getElementById("ctrlpointgrip_container");
+			if (!ctrlPointGripContainer) {
+				var parent = document.getElementById("selectorParentGroup");
+				ctrlPointGripContainer = parent.appendChild(document.createElementNS(svgns, "g"));
+				ctrlPointGripContainer.id = "ctrlpointgrip_container";
+			}
+			ctrlPointGripContainer.setAttribute("display", "inline");
+			
+			var ctrlLine = document.getElementById("ctrlLine_"+id);
+			if (!ctrlLine) {
+				ctrlLine = document.createElementNS(svgns, "line");
+				assignAttributes(ctrlLine, {
+					'id': "ctrlLine_"+id,
+					'stroke': "#555",
+					'stroke-width': 1,
+					"style": "pointer-events:none"
+				});
+				ctrlLine = ctrlPointGripContainer.appendChild(ctrlLine);
+			}
+			
+			assignAttributes(ctrlLine, {
+				'x1': source_x,
+				'y1': source_y,
+				'x2': x,
+				'y2': y,
+				'display': "inline"
+			});
+			
+			var pointGrip = document.getElementById("ctrlpointgrip_"+id);
+			// create it
+			if (!pointGrip) {
+				pointGrip = document.createElementNS(svgns, "circle");
+				assignAttributes(pointGrip, {
+					'id': "ctrlpointgrip_" + id,
+					'display': "none",
+					'r': 4,
+					'fill': "#0FF",
+					'stroke': "#55F",
+					'stroke-width': 1,
+					'cursor': 'move',
+					'style': 'pointer-events:all',
+					'xlink:title': uiStrings.pathCtrlPtTooltip
+				});
+				pointGrip = ctrlPointGripContainer.appendChild(pointGrip);
+			}
+			
+			assignAttributes(pointGrip, {
+				'cx': x,
+				'cy': y,
+				'display': "inline"
+			});
+		}
+	
+		var removeControlPointGrips = function(index) {
+			for(var i=1; i <= 2; i++) {
+				$("#ctrlpointgrip_" + index + "c" + i + ",#ctrlLine_" + index + "c" + i).attr("display", "none");
+			}
+		}
+		
+		// If the path was rotated, we must now pay the piper:
+		// Every path point must be rotated into the rotated coordinate system of 
+		// its old center, then determine the new center, then rotate it back
+		// This is because we want the path to remember its rotation
+		
+		// TODO: This is still using ye olde transform methods, can probably
+		// be optimized or even taken care of by recalculateDimensions
+		var recalcRotatedPath = function() {
+			var angle = canvas.getRotationAngle(current_path, true);
+			if(!angle) return;
+			var box = canvas.getBBox(current_path);
+			var oldbox = selectedBBoxes[0];
+			var oldcx = oldbox.x + oldbox.width/2,
+				oldcy = oldbox.y + oldbox.height/2,
+				newcx = box.x + box.width/2,
+				newcy = box.y + box.height/2;
+			
+			// un-rotate the new center to the proper position
+			var dx = newcx - oldcx,
+				dy = newcy - oldcy;
+			var r = Math.sqrt(dx*dx + dy*dy);
+			var theta = Math.atan2(dy,dx) + angle;
+			newcx = r * Math.cos(theta) + oldcx;
+			newcy = r * Math.sin(theta) + oldcy;
+			
+			var getRotVals = function(x, y) {
+				dx = x - oldcx;
+				dy = y - oldcy;
+				
+				// rotate the point around the old center
+				r = Math.sqrt(dx*dx + dy*dy);
+				theta = Math.atan2(dy,dx) + angle;
+				dx = r * Math.cos(theta) + oldcx;
+				dy = r * Math.sin(theta) + oldcy;
+				
+				// dx,dy should now hold the actual coordinates of each
+				// point after being rotated
+	
+				// now we want to rotate them around the new center in the reverse direction
+				dx -= newcx;
+				dy -= newcy;
+				
+				r = Math.sqrt(dx*dx + dy*dy);
+				theta = Math.atan2(dy,dx) - angle;
+				
+				return {'x':(r * Math.cos(theta) + newcx)/1,
+					'y':(r * Math.sin(theta) + newcy)/1};
+			}
+			
+			var list = current_path.pathSegList;
+			var i = list.numberOfItems;
+			while (i) {
+				i -= 1;
+				var seg = list.getItem(i);
+				var type = seg.pathSegType;
+				if(type == 1) continue;
+				
+				var rvals = getRotVals(seg.x,seg.y);
+				var points = [rvals.x, rvals.y];
+				if(seg.x1 != null && seg.x2 != null) {
+					c_vals1 = getRotVals(seg.x1, seg.y1);
+					c_vals2 = getRotVals(seg.x2, seg.y2);
+					points.splice(points.length, 0, c_vals1.x , c_vals1.y, c_vals2.x, c_vals2.y);
+				}
+				replacePathSeg(type, i, points);
+			} // loop for each point
+	
+			box = canvas.getBBox(current_path);						
+			selectedBBoxes[0].x = box.x; selectedBBoxes[0].y = box.y;
+			selectedBBoxes[0].width = box.width; selectedBBoxes[0].height = box.height;
+			
+			// now we must set the new transform to be rotated around the new center
+			var R_nc = svgroot.createSVGTransform();
+			var tlist = canvas.getTransformList(current_path);
+			R_nc.setRotate((angle * 180.0 / Math.PI), newcx, newcy);
+			tlist.replaceItem(R_nc,0);
+				
+			if(document.getElementById("pathpointgrip_container")) {
+				var pcx = newcx * current_zoom,
+					pcy = newcy * current_zoom;
+				var xform = ["rotate(", (angle*180.0/Math.PI), " ", pcx, ",", pcy, ")"].join("");
+				setPointContainerTransform(xform);
+			}
+			resetPointGrips();
+			updateSegLine(true);
+			updateSegLine();
+		}
+		
+		return {
+			init: function() {
+				pathFuncs = [0,'ClosePath'];
+				var pathFuncsStrs = ['Moveto','Lineto','CurvetoCubic','CurvetoQuadratic','Arc','LinetoHorizontal','LinetoVertical','CurvetoCubicSmooth','CurvetoQuadraticSmooth'];
+				$.each(pathFuncsStrs,function(i,s){pathFuncs.push(s+'Abs');pathFuncs.push(s+'Rel');});
+			},
+			mouseDown: function(evt, mouse_target, start_x, start_y) {
+				if(current_mode == "path") {
+					setPointContainerTransform("");
+					return;
+				}
+				
+				// TODO: Make sure current_path isn't null at this point
+				if(!current_path) return;
+				
 				current_path_oldd = current_path.getAttribute("d");
 				var id = evt.target.id;
 				if (id.substr(0,14) == "pathpointgrip_") {
 					// Select this point
 					current_path_pt_drag = parseInt(id.substr(14));
-					canvas.addNodeToSelection(current_path_pt_drag);
+					addNodeToSelection(current_path_pt_drag);
 					updateSegLine();
 				} else if(id.indexOf("ctrlpointgrip_") == 0) {
 					current_ctrl_pt_drag = id.split('_')[1];
 					var node_num = current_ctrl_pt_drag.split('c')[0]-0;
-					canvas.addNodeToSelection(node_num);
+					addNodeToSelection(node_num);
 				}
 
 				if(current_path_pt_drag == -1 && current_ctrl_pt_drag == -1) {
@@ -2684,294 +3836,17 @@ function BatchCommand(text) {
 						}, 100);
 					}
 				}
-
-				break;
-			case "rotate":
-				started = true;
-				// we are starting an undoable change (a drag-rotation)
-				canvas.beginUndoableChange("transform", selectedElements);
-				break;
-			default:
-				console.log("Unknown mode in mousedown: " + current_mode);
-				break;
-		}
-	};
-
-	// in this function we do not record any state changes yet (but we do update
-	// any elements that are still being created, moved or resized on the canvas)
-	// TODO: svgcanvas should just retain a reference to the image being dragged instead
-	// of the getId() and getElementById() funkiness - this will help us customize the ids 
-	// a little bit for squares and paths
-	var mouseMove = function(evt)
-	{
-		if (!started) return;
-		var selected = selectedElements[0];
-		var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
-		var mouse_x = pt.x;
-		var mouse_y = pt.y;
-		var shape = svgdoc.getElementById(getId());
-    
-    	x = mouse_x / current_zoom;
-    	y = mouse_y / current_zoom;
-    
-    	evt.preventDefault();
-    	
-    	var setRect = function(square) {
-    		var w = Math.abs(x - start_x),
-    			h = Math.abs(y - start_y),
-    			new_x, new_y;
-    		if(square) {
-				w = h = Math.max(w, h);
-				new_x = start_x < x ? start_x : start_x - w;
-				new_y = start_y < y ? start_y : start_y - h;
-			} else {
-				new_x = Math.min(start_x,x);
-				new_y = Math.min(start_y,y);
-			}
-
-			assignAttributes(shape,{
-				'width': w,
-				'height': h,
-				'x': new_x,
-				'y': new_y
-			},1000);
-    	}
-    	
-		switch (current_mode)
-		{
-			case "select":
-				// we temporarily use a translate on the element(s) being dragged
-				// this transform is removed upon mousing up and the element is 
-				// relocated to the new location
-				if (selectedElements[0] != null) {
-					var dx = x - start_x;
-					var dy = y - start_y;
-					if (dx != 0 || dy != 0) {
-						var len = selectedElements.length;
-						for (var i = 0; i < len; ++i) {
-							var selected = selectedElements[i];
-							if (selected == null) break;
-							if (i==0) {
-								var box = canvas.getBBox(selected);
-								selectedBBoxes[i].x = box.x + dx;
-								selectedBBoxes[i].y = box.y + dy;
-							}
-
-							// update the dummy transform in our transform list
-							// to be a translate
-							var xform = svgroot.createSVGTransform();
-							var tlist = canvas.getTransformList(selected);
-							xform.setTranslate(dx,dy);
-							if(tlist.numberOfItems) {
-								tlist.replaceItem(xform, 0);
-								// TODO: Webkit returns null here, find out why
-// 								console.log(selected.getAttribute("transform"))
-
-							} else {
-								tlist.appendItem(xform);
-							}
-							
-							// update our internal bbox that we're tracking while dragging
-							selectorManager.requestSelector(selected).resize();
-						}
+			},
+			mouseMove: function(mouse_x, mouse_y) {
+				if(current_mode == "path") {
+					var line = document.getElementById("path_stretch_line");
+					if (line) {
+						line.setAttribute("x2", x *= current_zoom);
+						line.setAttribute("y2", y *= current_zoom);
 					}
+					return;
 				}
-				break;
-			case "multiselect":
-				x *= current_zoom;
-				y *= current_zoom;
-				assignAttributes(rubberBox, {
-					'x': Math.min(start_x,x),
-					'y': Math.min(start_y,y),
-					'width': Math.abs(x-start_x),
-					'height': Math.abs(y-start_y)
-				},100);
-
-				// clear out selection and set it to the new list
-//				canvas.clearSelection();
-				// FIXME: fix this, need to supply rect to getIntersectionList()
-//				canvas.addToSelection(getIntersectionList());
-
-				//*
-				// for each selected:
-				// - if newList contains selected, do nothing
-				// - if newList doesn't contain selected, remove it from selected
-				// - for any newList that was not in selectedElements, add it to selected
-				var elemsToRemove = [], elemsToAdd = [];
-				var newList = getIntersectionList();
-				var len = selectedElements.length;
-				for (var i = 0; i < len; ++i) {
-					var ind = newList.indexOf(selectedElements[i]);
-					if (ind == -1) {
-						elemsToRemove.push(selectedElements[i]);
-					}
-					else {
-						newList[ind] = null;
-					}
-				}
-				
-				len = newList.length;
-				for (var i = 0; i < len; ++i) { if (newList[i]) elemsToAdd.push(newList[i]); }
-				
-				if (elemsToRemove.length > 0) 
-					canvas.removeFromSelection(elemsToRemove);
-				
-				if (elemsToAdd.length > 0) 
-					canvas.addToSelection(elemsToAdd);
-				//*/
-				break;
-			case "resize":
-				// we track the resize bounding box and translate/scale the selected element
-				// while the mouse is down, when mouse goes up, we use this to recalculate
-				// the shape's coordinates
-				var tlist = canvas.getTransformList(selected);
-				var hasMatrix = hasMatrixTransform(tlist);
-				var box=hasMatrix?init_bbox:canvas.getBBox(selected), left=box.x, top=box.y, width=box.width,
-					height=box.height, dx=(x-start_x), dy=(y-start_y);
-								
-				// if rotated, adjust the dx,dy values
-				var angle = canvas.getRotationAngle(selected);
-				if (angle) {
- 					var r = Math.sqrt( dx*dx + dy*dy );
-					var theta = Math.atan2(dy,dx) - angle * Math.PI / 180.0;
-					dx = r * Math.cos(theta);
-					dy = r * Math.sin(theta);
-				}
-
-				// if not stretching in y direction, set dy to 0
-				// if not stretching in x direction, set dx to 0
-				if(current_resize_mode.indexOf("n")==-1 && current_resize_mode.indexOf("s")==-1) {
-					dy = 0;
-				}
-				if(current_resize_mode.indexOf("e")==-1 && current_resize_mode.indexOf("w")==-1) {
-					dx = 0;
-				}				
-				
-				var ts = null;
-				var tx = 0, ty = 0;
-				var sy = height ? (height+dy)/height : 1, 
-					sx = width ? (width+dx)/width : 1;
-				// if we are dragging on the north side, then adjust the scale factor and ty
-				if(current_resize_mode.indexOf("n") != -1) {
-					sy = height ? (height-dy)/height : 1;
-					ty = height;
-				}
-				
-				// if we dragging on the east side, then adjust the scale factor and tx
-				if(current_resize_mode.indexOf("w") != -1) {
-					sx = width ? (width-dx)/width : 1;
-					tx = width;
-				}
-				
-				// update the transform list with translate,scale,translate
-				var translateOrigin = svgroot.createSVGTransform(),
-					scale = svgroot.createSVGTransform(),
-					translateBack = svgroot.createSVGTransform();
-				translateOrigin.setTranslate(-(left+tx),-(top+ty));
-				if(evt.shiftKey) {
-					if(sx == 1) sx = sy
-					else sy = sx;
-				}
-				scale.setScale(sx,sy);
-				
-				translateBack.setTranslate(left+tx,top+ty);
-				if(hasMatrix) {
-					var diff = angle?1:0;
-					tlist.replaceItem(translateOrigin, 2+diff);
-					tlist.replaceItem(scale, 1+diff);
-					tlist.replaceItem(translateBack, 0+diff);
-				} else {
-					var N = tlist.numberOfItems;
-					tlist.replaceItem(translateBack, N-3);
-					tlist.replaceItem(scale, N-2);
-					tlist.replaceItem(translateOrigin, N-1);
-				}
-				var selectedBBox = selectedBBoxes[0];				
-
-				// reset selected bbox top-left position
-				selectedBBox.x = left;
-				selectedBBox.y = top;
-				
-				// if this is a translate, adjust the box position
-				if (tx) {
-					selectedBBox.x += dx;
-				}
-				if (ty) {
-					selectedBBox.y += dy;
-				}
-
-				selectorManager.requestSelector(selected).resize();
-				break;
-			case "zoom":
-				x *= current_zoom;
-				y *= current_zoom;
-				assignAttributes(rubberBox, {
-					'x': Math.min(start_x*current_zoom,x),
-					'y': Math.min(start_y*current_zoom,y),
-					'width': Math.abs(x-start_x*current_zoom),
-					'height': Math.abs(y-start_y*current_zoom)
-				},100);			
-				break;
-			case "text":
-				assignAttributes(shape,{
-					'x': x,
-					'y': y
-				},1000);
-				break;
-			case "line":
-				// Opera has a problem with suspendRedraw() apparently
-				var handle = null;
-				if (!window.opera) svgroot.suspendRedraw(1000);
-				shape.setAttributeNS(null, "x2", x);
-				shape.setAttributeNS(null, "y2", y);
-				if (!window.opera) svgroot.unsuspendRedraw(handle);
-				break;
-			case "square":
-				setRect(true);
-				break;
-			case "rect":
-			case "image":
-				setRect(evt.shiftKey);
-				break;
-			case "circle":
-				var cx = shape.getAttributeNS(null, "cx");
-				var cy = shape.getAttributeNS(null, "cy");
-				var rad = Math.sqrt( (x-cx)*(x-cx) + (y-cy)*(y-cy) );
-				shape.setAttributeNS(null, "r", rad);
-				break;
-			case "ellipse":
-				var cx = shape.getAttributeNS(null, "cx");
-				var cy = shape.getAttributeNS(null, "cy");
-				// Opera has a problem with suspendRedraw() apparently
-				var handle = null;
-				if (!window.opera) svgroot.suspendRedraw(1000);
-				shape.setAttributeNS(null, "rx", Math.abs(x - cx) );
-				var ry = Math.abs(evt.shiftKey?(x - cx):(y - cy));
-				shape.setAttributeNS(null, "ry", ry );
-				if (!window.opera) svgroot.unsuspendRedraw(handle);
-				break;
-			case "fhellipse":
-			case "fhrect":
-				freehand.minx = Math.min(x, freehand.minx);
-				freehand.maxx = Math.max(x, freehand.maxx);
-				freehand.miny = Math.min(y, freehand.miny);
-				freehand.maxy = Math.max(y, freehand.maxy);
-			// break; missing on purpose
-			case "fhpath":
-				start_x = x;
-				start_y = y;
-				d_attr += + x + "," + y + " ";
-				shape.setAttributeNS(null, "points", d_attr);
-				break;
-			// update path stretch line coordinates
-			case "path":
-				var line = document.getElementById("path_stretch_line");
-				if (line) {
-					line.setAttribute("x2", x *= current_zoom);
-					line.setAttribute("y2", y *= current_zoom);
-				}
-				break;
-			case "pathedit":
+			
 				// if we are dragging a point, let's move it
 				if (current_path_pt_drag != -1 && current_path) {
 					var old_path_pts = $.map(current_path_pts, function(n){return n/current_zoom;});
@@ -2995,7 +3870,7 @@ function BatchCommand(text) {
 
 							if(index < 0) {
 								index = pt_count - 2;
-								if(!is_closed) break;
+								if(!is_closed) return;
 							}
 						} else {
 							ctrl_num = 1;
@@ -3004,7 +3879,7 @@ function BatchCommand(text) {
 							
 							if(index >= pt_count - 1) {
 								index = 0;
-								if(!is_closed) break;
+								if(!is_closed) return;
 							}
 						}
 						
@@ -3014,24 +3889,562 @@ function BatchCommand(text) {
 						updateCurvedSegment(new_x, new_y, index, ctrl_num, true);
 					}
 				}
-				break;
-			case "rotate":
-				var box = canvas.getBBox(selected),
-					cx = box.x + box.width/2, 
-					cy = box.y + box.height/2;
-				var m = transformListToTransform(canvas.getTransformList(selected)).matrix;
-				var center = transformPoint(cx,cy,m);
-				cx = center.x;
-				cy = center.y;
-				var angle = ((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360;
-				canvas.setRotationAngle(angle<-180?(360+angle):angle, true);
-				call("changed", selectedElements);
-				break;
-			default:
-				break;
-		}
-	}; // mouseMove()
+			}, 
+			mouseUp: function(evt, element, mouse_x, mouse_y) {
+				// Create mode
+				if(current_mode == "path") {
+					var x = mouse_x/current_zoom;
+					var y = mouse_y/current_zoom;
+					
+					var stretchy = document.getElementById("path_stretch_line");
+					if (!stretchy) {
+						stretchy = document.createElementNS(svgns, "line");
+						assignAttributes(stretchy, {
+							'id': "path_stretch_line",
+							'stroke': "blue",
+							'stroke-width': "0.5"
+						});
+						stretchy = document.getElementById("selectorParentGroup").appendChild(stretchy);
+					}
+					stretchy.setAttribute("display", "inline");
+					
+					var keep = null;
+					
+					// if pts array is empty, create path element with M at current point
+					if (current_path_pts.length == 0) {
+						current_path_pts.push(x);
+						current_path_pts.push(y);
+						d_attr = "M" + x + "," + y + " ";
+						addSvgElementFromJson({
+							"element": "path",
+							"attr": {
+								"d": d_attr,
+								"id": getNextId(),
+								"fill": cur_shape.fill,
+								"fill-opacity": cur_shape.fill_opacity,
+								"stroke": cur_shape.stroke,
+								"stroke-width": cur_shape.stroke_width,
+								"stroke-dasharray": cur_shape.stroke_style,
+								"stroke-opacity": cur_shape.stroke_opacity,
+								"opacity": cur_shape.opacity / 2,
+								"style": "pointer-events:inherit"
+							}
+						});
+						// set stretchy line to first point
+						assignAttributes(stretchy, {
+							'x1': mouse_x,
+							'y1': mouse_y,
+							'x2': mouse_x,
+							'y2': mouse_y
+						});
+						addPointGripToPath(mouse_x,mouse_y,0);
+					}
+					else {
+						// determine if we clicked on an existing point
+						var i = current_path_pts.length;
+						var FUZZ = 6/current_zoom;
+						var clickOnPoint = false;
+						while(i) {
+							i -= 2;
+							var px = current_path_pts[i], py = current_path_pts[i+1];
+							// found a matching point
+							if ( x >= (px-FUZZ) && x <= (px+FUZZ) && y >= (py-FUZZ) && y <= (py+FUZZ) ) {
+								clickOnPoint = true;
+								break;
+							}
+						}
+						
+						// get path element that we are in the process of creating
+						var path = svgdoc.getElementById(getId());
+						var len = current_path_pts.length;
+						// if we clicked on an existing point, then we are done this path, commit it
+						// (i,i+1) are the x,y that were clicked on
+						if (clickOnPoint) {
+							// if clicked on any other point but the first OR
+							// the first point was clicked on and there are less than 3 points
+							// then leave the path open
+							// otherwise, close the path
+							if (i == 0 && len >= 6) {
+								// Create end segment
+								var abs_x = current_path_pts[0];
+								var abs_y = current_path_pts[1];
+								d_attr += ['L',abs_x,',',abs_y,'z'].join('');
+								path.setAttribute("d", d_attr);
+							} else if(len < 3) {
+								keep = false;
+								return keep;
+							}
+							removeAllPointGripsFromPath();
+							// this will signal to commit the path
+							element = path;
+							current_path_pts = [];
+							started = false;
+						}
+						// else, create a new point, append to pts array, update path element
+						else {
+							var lastx = current_path_pts[len-2], lasty = current_path_pts[len-1];
+							// we store absolute values in our path points array for easy checking above
+							current_path_pts.push(x);
+							current_path_pts.push(y);
+							d_attr += "L" + round(x) + "," + round(y) + " ";
+							path.setAttribute("d", d_attr);
+	
+							// set stretchy line to latest point
+							assignAttributes(stretchy, {
+								'x1': mouse_x,
+								'y1': mouse_y,
+								'x2': mouse_x,
+								'y2': mouse_y
+							});
+							addPointGripToPath(mouse_x,mouse_y,(current_path_pts.length/2 - 1));
+						}
+						keep = true;
+					}
+					return {
+						keep: keep,
+						element: element
+					}
+				}
+				
+				// Edit mode
+				
+				if (current_path_pt_drag != -1) {
+					current_path_pt_drag = -1;
+					
+					var batchCmd = new BatchCommand("Edit Path");
+					// the attribute changes we want to undo
+					var oldvalues = {};
+					oldvalues["d"] = current_path_oldd;
+					
+					recalcRotatedPath();
 
+					batchCmd.addSubCommand(new ChangeElementCommand(current_path, oldvalues, "path points"));
+					addCommandToHistory(batchCmd);
+					call("changed", [current_path]);
+					
+					// If connected, last point should equal first
+					if(pathIsClosed()) {
+						current_path_pts[current_path_pts.length-2] = getPathPoint(0,true)[0];
+						current_path_pts[current_path_pts.length-1] = getPathPoint(0,true)[1];
+					}
+					
+					// make these changes undo-able
+				} // if (current_path_pt_drag != -1)
+				else if(current_ctrl_pt_drag != -1) {
+					current_ctrl_pt_drag = -1;
+					recalcRotatedPath();
+					var batchCmd = new BatchCommand("Edit Path control points");
+					batchCmd.addSubCommand(new ChangeElementCommand(current_path, {d:current_path_oldd}));
+					addCommandToHistory(batchCmd);
+					call("changed", [current_path]);
+				} 	// else, move back to select mode
+				else {
+					current_mode = "select";
+					removeAllPointGripsFromPath();
+					canvas.clearSelection();
+					canvas.addToSelection([evt.target]);
+				}
+			},
+			toEditMode: function(element) {
+				current_path = element;
+				current_mode = "pathedit";
+
+				// This resets the pathedit selection in case it 
+				// was a rotate that turned into a matrix
+				var angle = canvas.getRotationAngle(element);
+				if(!angle) setPointContainerTransform();
+				
+				// recalculate current_path_pts
+				recalcPathPoints();
+				canvas.clearSelection();
+				// save the path's bbox
+				selectedBBoxes[0] = canvas.getBBox(current_path);
+				addAllPointGripsToPath();
+				addNodeToSelection(0);
+
+// 				addAllPointGripsToPath(current_path_pts.length/2 - 1);
+			},
+			select: function(target) {
+				if (current_path == target) {
+					pathActions.toEditMode(current_path);
+					current_mode = "pathedit";
+					
+				} // going into pathedit mode
+				else {
+					current_path = target;
+				}	
+			},
+			reorient: function() {
+				var elem = selectedElements[0];
+				if(!elem) return;
+				var angle = canvas.getRotationAngle(elem);
+				if(angle == 0) return;
+				var batchCmd = new BatchCommand("Reorient path");
+				var changes = {
+					d: elem.getAttribute('d'),
+					transform: elem.getAttribute('transform')
+				};
+				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
+				canvas.clearSelection();
+				this.resetOrientation(elem);
+				addCommandToHistory(batchCmd);
+				current_path = elem;
+				setPointContainerTransform("");	// Maybe this should be in resetPointGrips?
+				resetPointGrips();
+				this.clear();
+		
+				canvas.addToSelection([elem], true);
+				call("changed", selectedElements);
+			},
+			
+			clear: function(remove) {
+				if(remove && current_mode == "path") {
+					var elem = svgdoc.getElementById(getId());
+					if(elem) elem.parentNode.removeChild(elem);
+				}
+				removeAllPointGripsFromPath();
+				current_path_pts = [];
+				current_path_pt = -1;
+				current_path = null;
+			},
+			resetOrientation: function(path) {
+				if(path == null || path.nodeName != 'path') return false;
+		
+				var tlist = canvas.getTransformList(path);
+				var m = transformListToTransform(tlist).matrix;
+				path.removeAttribute("transform");
+				
+				var segList = path.pathSegList;
+				var len = segList.numberOfItems;
+		
+				for (var i = 0; i < len; ++i) {
+					var seg = segList.getItem(i);
+					var type = seg.pathSegType;
+					if(type == 1) continue;
+					var pts = [];
+					$.each(['',1,2], function(j, n) {
+						var x = seg['x'+n], y = seg['y'+n];
+						if(x && y) {
+							var pt = transformPoint(x, y, m);
+							pts.splice(pts.length, 0, pt.x, pt.y);
+						}
+					});
+					replacePathSeg(type, i, pts, path);
+				}
+			},
+			zoomChange: function() {
+				if(current_mode == "pathedit") {
+					resetPointGrips();
+				}
+			},
+			modeChange: function() {
+				// toss out half-drawn path
+				if (current_mode == "path" && current_path_pts.length > 0) {
+					var elem = svgdoc.getElementById(getId());
+					elem.parentNode.removeChild(elem);
+					this.clear();
+					canvas.clearSelection();
+					started = false;
+				}
+				else if (current_mode == "pathedit") {
+					this.clear();
+				}
+			},
+			getNodePoint: function() {
+				if(current_path_pt != -1) {
+					var pt = getPathPoint(current_path_pt, true);
+					var list = current_path.pathSegList;
+					var segtype;
+					if(list.numberOfItems > current_path_pt+1) {
+						segtype = list.getItem(current_path_pt+1).pathSegType;
+					} else {
+						segtype = false;
+					}
+					return {
+						x: pt[0],
+						y: pt[1],
+						type: segtype
+					}
+				} else {
+					return false;
+				}
+			}, 
+			linkControlPoints: function(linkPoints) {
+				link_control_pts = linkPoints;
+			},
+			clonePathNode: function() {
+				var pt = current_path_pt, list = current_path.pathSegList;
+		
+				var next_item = list.getItem(pt+1); 
+				
+				// Get point in between nodes
+				if(next_item.pathSegType % 2 == 0) { // even num, so abs
+					var cur_item = list.getItem(pt);
+					var new_x = (next_item.x + cur_item.x) / 2;
+					var new_y = (next_item.y + cur_item.y) / 2;
+				} else {
+					var new_x = next_item.x/2;
+					var new_y = next_item.y/2;
+				}
+				
+				var seg = current_path.createSVGPathSegLinetoAbs(new_x, new_y);
+				list.insertItemBefore(seg, pt+1); // Webkit doesn't do this right.
+				
+				var abs_x = (getPathPoint(pt)[0] + new_x) * current_zoom;
+				var abs_y = (getPathPoint(pt)[1] + new_y) * current_zoom;
+				
+				var last_num = current_path_pts.length/2;
+				
+				// Add new grip
+				addPointGripToPath(abs_x, abs_y, last_num);
+		
+				// Update path_pts
+				current_path_pts.splice(pt*2 + 2, 0, abs_x, abs_y);
+				
+				resetPointGrips();
+				addNodeToSelection(pt+1);
+				
+			// 	current_path.setAttribute("d", convertToD(current_path.pathSegList));
+			},
+			deletePathNode: function() {
+				var last_pt = current_path_pts.length/2 - 1;
+				var pt = current_path_pt, list = current_path.pathSegList;
+				var cur_item = list.getItem(pt);
+				var next_item = list.getItem(pt+1);
+		
+				if(pt == 0) {
+					var next_x = getPathPoint(1)[0];
+					var next_y = getPathPoint(1)[1];
+					// Make the next point be the "M" point
+					replacePathSeg(2, 1, [next_x, next_y]);
+					
+					// Reposition last node
+					var last_item = list.getItem(last_pt);
+					replacePathSeg(4, last_pt, [next_x, next_y]);
+					removeControlPointGrips(last_pt - 1);
+					current_path_pts.splice(last_pt*2, 2, next_x, next_y);
+					current_path_pts.splice(0, 2);
+				} else {
+					current_path_pts.splice(pt*2, 2);
+				}
+		
+				list.removeItem(pt);
+				
+				resetPointGrips();
+				
+				if(window.opera) { // Opera repaints incorrectly
+					var cp = $(current_path); cp.attr('d',cp.attr('d'));
+				}
+				
+				addNodeToSelection(pt);
+			},
+			setPointContainerTransform: setPointContainerTransform,
+			setSegType: function(new_type) {
+				var grip = $('#pathpointgrip_' + current_path_pt);
+				var old_d = current_path.getAttribute('d');
+				
+				var index = grip[0].id.split('_')[1] - 0;
+				
+				var last_index = current_path_pts.length/2 - 1;
+				var is_closed = pathIsClosed(); 
+		
+				if(!is_closed && index == last_index) {
+					return; // Last point of unclosed path should do nothing
+				} else if(index >= last_index && is_closed) {
+					index = 0;
+				}
+		
+				var next_index = index+1;
+				var cur_x = getPathPoint(index)[0];
+				var cur_y = getPathPoint(index)[1];
+				var next_x = getPathPoint(next_index)[0];
+				var next_y = getPathPoint(next_index)[1];
+				
+				if(!new_type) { // double-click, so just toggle
+					var batchCmd = new BatchCommand("Toggle Path Segment Type");
+		
+					// Toggle segment to curve/straight line
+					var old_type = current_path.pathSegList.getItem(index+1).pathSegType;
+					
+					new_type = (old_type == 6) ? 4 : 6;
+		
+				} else {
+					new_type -= 0;
+					var batchCmd = new BatchCommand("Change Path Segment Type");
+				}
+				
+				var points;
+		
+				var bb = current_path.getBBox();
+				
+				switch ( new_type ) {
+				case 6:
+					var diff_x = next_x - cur_x;
+					var diff_y = next_y - cur_y;
+				
+					var ct1_x = cur_x + (diff_y/2);
+					var ct1_y = cur_y - (diff_x/2);
+					var ct2_x = next_x + (diff_y/2);
+					var ct2_y = next_y - (diff_x/2);
+					
+					points = [next_x,next_y, ct1_x,ct1_y, ct2_x,ct2_y];
+					break;
+				case 4:
+					points = [next_x,next_y];
+					removeControlPointGrips(index);
+					break;
+				}
+				
+				replacePathSeg(new_type, next_index, points);
+		
+				addAllPointGripsToPath(); 
+				// recalculateDimensions(current_path);
+				updateSegLine(true);
+				recalcRotatedPath();
+				
+				batchCmd.addSubCommand(new ChangeElementCommand(current_path, {d: old_d}));
+				addCommandToHistory(batchCmd);
+				call("changed", [current_path]);
+			},
+			moveNode: function(attr, newValue) {
+				var num = (attr == 'x')?0:1;
+				var old_path_pts = $.map(current_path_pts, function(n){return n/current_zoom;});
+	
+				current_path_pts[current_path_pt*2 + num] = newValue-0;
+				current_path_pt_drag = current_path_pt;
+				updatePath(current_path_pts[current_path_pt*2], current_path_pts[current_path_pt*2 + 1], old_path_pts);
+			},
+			// Convert a path to one with only absolute or relative values
+			convertPath: function(path, toRel) {
+				var segList = path.pathSegList;
+				var len = segList.numberOfItems;
+				var curx = 0, cury = 0;
+				var d = "";
+				
+				for (var i = 0; i < len; ++i) {
+					var seg = segList.getItem(i);
+					// if these properties are not in the segment, set them to zero
+					var x = seg.x || 0,
+						y = seg.y || 0,
+						x1 = seg.x1 || 0,
+						y1 = seg.y1 || 0,
+						x2 = seg.x2 || 0,
+						y2 = seg.y2 || 0;
+		
+					var type = seg.pathSegType;
+					var letter = pathMap[type]['to'+(toRel?'Lower':'Upper')+'Case']();
+					var addToD = function(pnts, more, last) {
+						var str = '';
+						var more = more?' '+more.join(' '):'';
+						var last = last?shortFloat(last):'';
+						$.each(pnts, function(i, pnt) {
+							pnts[i] = shortFloat(pnt);
+						});
+						d += letter + pnts.join(' ') + more + last;
+					}
+					
+					switch (type) {
+						case 1: // z,Z closepath (Z/z)
+							d += "z";
+							break;
+						case 2: // absolute move (M)
+						case 4: // absolute line (L)
+						case 12: // absolute horizontal line (H)
+						case 14: // absolute vertical line (V)
+						case 18: // absolute smooth quad (T)
+							x -= curx;
+							y -= cury;
+						case 3: // relative move (m)
+						case 5: // relative line (l)
+						case 13: // relative horizontal line (h)
+						case 15: // relative vertical line (v)
+						case 19: // relative smooth quad (t)
+							if(toRel) {
+								curx += x;
+								cury += y;
+							} else {
+								x += curx;
+								y += cury;
+								curx = x;
+								cury = y;
+							}
+							addToD([[x,y]]);
+							break;
+						case 6: // absolute cubic (C)
+							x -= curx; x1 -= curx; x2 -= curx;
+							y -= cury; y1 -= cury; y2 -= cury;
+						case 7: // relative cubic (c)
+							if(toRel) {
+								curx += x;
+								cury += y;
+							} else {
+								x += curx; x1 += curx; x2 += curx;
+								y += cury; y1 += cury; y2 += cury;
+								curx = x;
+								cury = y;
+							}
+							addToD([[x1,y1],[x2,y2],[x,y]]);
+							break;
+						case 8: // absolute quad (Q)
+							x -= curx; x1 -= curx;
+							y -= cury; y1 -= cury;
+						case 9: // relative quad (q) 
+							if(toRel) {
+								curx += x;
+								cury += y;
+							} else {
+								x += curx; x1 += curx;
+								y += cury; y1 += cury;
+								curx = x;
+								cury = y;
+							}
+							addToD([[x1,y1],[x,y]]);
+							break;
+						case 10: // absolute elliptical arc (A)
+							x -= curx;
+							y -= cury;
+						case 11: // relative elliptical arc (a)
+							if(toRel) {
+								curx += x;
+								cury += y;
+							} else {
+								x += curx;
+								y += cury;
+								curx = x;
+								cury = y;
+							}
+							addToD([[seg.r1,seg.r2]], [
+									seg.angle,
+									(seg.largeArcFlag ? 1 : 0),
+									(seg.sweepFlag ? 1 : 0)
+								],[x,y]
+							);
+							break;
+						case 16: // absolute smooth cubic (S)
+							x -= curx; x2 -= curx;
+							y -= cury; y2 -= cury;
+						case 17: // relative smooth cubic (s)
+							if(toRel) {
+								curx += x;
+								cury += y;
+							} else {
+								x += curx; x2 += curx;
+								y += cury; y2 += cury;
+								curx = x;
+								cury = y;
+							}
+							addToD([[x2,y2],[x,y]]);
+							break;
+					} // switch on path segment type
+				} // for each segment
+				return d;
+			}
+		}
+	}();
+
+	pathActions.init();
+	this.pathActions = pathActions;
+	
 	var shortFloat = function(val) {
 		var digits = save_options.round_digits;
 		if(!isNaN(val)) {
@@ -3041,144 +4454,6 @@ function BatchCommand(text) {
 		}
 	}
 	
-	this.reorientPath = function() {
-		var elem = selectedElements[0];
-		if(!elem) return;
-		var angle = canvas.getRotationAngle(elem);
-		if(angle == 0) return;
-		var batchCmd = new BatchCommand("Reorient path");
-		var changes = {
-			d: elem.getAttribute('d'),
-			transform: elem.getAttribute('transform')
-		};
-		batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
-		canvas.clearSelection();
-		resetPathOrientation(elem);
-		addCommandToHistory(batchCmd);
-		current_path = elem;
-		setPointContainerTransform("");	// Maybe this should be in resetPointGrips?
-		resetPointGrips();
-		canvas.clearPath();
-
-		canvas.addToSelection([elem], true);
-		call("changed", selectedElements);
-	}
-	
-	// If the path was rotated, we must now pay the piper:
-	// Every path point must be rotated into the rotated coordinate system of 
-	// its old center, then determine the new center, then rotate it back
-	// This is because we want the path to remember its rotation
-	
-	// TODO: This is still using ye olde transform methods, can probably
-	// be optimized or even taken care of by recalculateDimensions
-	var recalcRotatedPath = function() {
-		var angle = canvas.getRotationAngle(current_path, true);
-		if(!angle) return;
-		var box = canvas.getBBox(current_path);
-		var oldbox = selectedBBoxes[0];
-		var oldcx = oldbox.x + oldbox.width/2,
-			oldcy = oldbox.y + oldbox.height/2,
-			newcx = box.x + box.width/2,
-			newcy = box.y + box.height/2;
-		
-		// un-rotate the new center to the proper position
-		var dx = newcx - oldcx,
-			dy = newcy - oldcy;
-		var r = Math.sqrt(dx*dx + dy*dy);
-		var theta = Math.atan2(dy,dx) + angle;
-		newcx = r * Math.cos(theta) + oldcx;
-		newcy = r * Math.sin(theta) + oldcy;
-		
-		var getRotVals = function(x, y) {
-			dx = x - oldcx;
-			dy = y - oldcy;
-			
-			// rotate the point around the old center
-			r = Math.sqrt(dx*dx + dy*dy);
-			theta = Math.atan2(dy,dx) + angle;
-			dx = r * Math.cos(theta) + oldcx;
-			dy = r * Math.sin(theta) + oldcy;
-			
-			// dx,dy should now hold the actual coordinates of each
-			// point after being rotated
-
-			// now we want to rotate them around the new center in the reverse direction
-			dx -= newcx;
-			dy -= newcy;
-			
-			r = Math.sqrt(dx*dx + dy*dy);
-			theta = Math.atan2(dy,dx) - angle;
-			
-			return {'x':(r * Math.cos(theta) + newcx)/1,
-				'y':(r * Math.sin(theta) + newcy)/1};
-		}
-		
-		var list = current_path.pathSegList;
-		var i = list.numberOfItems;
-		while (i) {
-			i -= 1;
-			var seg = list.getItem(i);
-			var type = seg.pathSegType;
-			if(type == 1) continue;
-			
-			var rvals = getRotVals(seg.x,seg.y);
-			var points = [rvals.x, rvals.y];
-			if(seg.x1 != null && seg.x2 != null) {
-				c_vals1 = getRotVals(seg.x1, seg.y1);
-				c_vals2 = getRotVals(seg.x2, seg.y2);
-				points.splice(points.length, 0, c_vals1.x , c_vals1.y, c_vals2.x, c_vals2.y);
-			}
-			replacePathSeg(type, i, points);
-		} // loop for each point
-
-		box = canvas.getBBox(current_path);						
-		selectedBBoxes[0].x = box.x; selectedBBoxes[0].y = box.y;
-		selectedBBoxes[0].width = box.width; selectedBBoxes[0].height = box.height;
-		
-		// now we must set the new transform to be rotated around the new center
-		var R_nc = svgroot.createSVGTransform();
-		var tlist = canvas.getTransformList(current_path);
-		R_nc.setRotate((angle * 180.0 / Math.PI), newcx, newcy);
-		tlist.replaceItem(R_nc,0);
-			
-		if(document.getElementById("pathpointgrip_container")) {
-			var pcx = newcx * current_zoom,
-				pcy = newcy * current_zoom;
-			var xform = ["rotate(", (angle*180.0/Math.PI), " ", pcx, ",", pcy, ")"].join("");
-			setPointContainerTransform(xform);
-		}
-		resetPointGrips();
-		updateSegLine(true);
-		updateSegLine();
-	}
-
-	// Rotate all points of a path and remove its transform value
-	var resetPathOrientation = function(path) {
-		if(path == null || path.nodeName != 'path') return false;
-
-		var tlist = canvas.getTransformList(path);
-		var m = transformListToTransform(tlist).matrix;
-		path.removeAttribute("transform");
-		
-		var segList = path.pathSegList;
-		var len = segList.numberOfItems;
-
-		for (var i = 0; i < len; ++i) {
-			var seg = segList.getItem(i);
-			var type = seg.pathSegType;
-			if(type == 1) continue;
-			var pts = [];
-			$.each(['',1,2], function(j, n) {
-				var x = seg['x'+n], y = seg['y'+n];
-				if(x && y) {
-					var pt = transformPoint(x, y, m);
-					pts.splice(pts.length, 0, pt.x, pt.y);
-				}
-			});
-			replacePathSeg(type, i, pts, path);
-		}
-	}
-
 	// Convert an element to a path
 	this.convertToPath = function(elem, getBBox, angle) {
 		if(elem == null) {
@@ -3320,7 +4595,7 @@ function BatchCommand(text) {
 			if(eltrans) {
 				var tlist = canvas.getTransformList(path);
 				if(hasMatrixTransform(tlist)) {
-					resetPathOrientation(path);
+					pathActions.resetOrientation(path);
 				}
 			}
 			
@@ -3337,7 +4612,7 @@ function BatchCommand(text) {
 			
 		} else {
 			// Get the correct BBox of the new path, then discard it
-			resetPathOrientation(path);
+			pathActions.resetOrientation(path);
 			var bb = false;
 			try {
 				bb = path.getBBox();
@@ -3349,1016 +4624,13 @@ function BatchCommand(text) {
 		}
 	}
 	
-	// Convert a path to one with only absolute or relative values
-	var convertPath = function(path, toRel) {
-		var segList = path.pathSegList;
-		var len = segList.numberOfItems;
-		var curx = 0, cury = 0;
-		var d = "";
-		
-		for (var i = 0; i < len; ++i) {
-			var seg = segList.getItem(i);
-			// if these properties are not in the segment, set them to zero
-			var x = seg.x || 0,
-				y = seg.y || 0,
-				x1 = seg.x1 || 0,
-				y1 = seg.y1 || 0,
-				x2 = seg.x2 || 0,
-				y2 = seg.y2 || 0;
 
-			var type = seg.pathSegType;
-			var letter = pathMap[type]['to'+(toRel?'Lower':'Upper')+'Case']();
-			var addToD = function(pnts, more, last) {
-				var str = '';
-				var more = more?' '+more.join(' '):'';
-				var last = last?shortFloat(last):'';
-				$.each(pnts, function(i, pnt) {
-					pnts[i] = shortFloat(pnt);
-				});
-				d += letter + pnts.join(' ') + more + last;
-			}
-			
-			switch (type) {
-				case 1: // z,Z closepath (Z/z)
-					d += "z";
-					break;
-				case 2: // absolute move (M)
-				case 4: // absolute line (L)
-				case 12: // absolute horizontal line (H)
-				case 14: // absolute vertical line (V)
-				case 18: // absolute smooth quad (T)
-					x -= curx;
-					y -= cury;
-				case 3: // relative move (m)
-				case 5: // relative line (l)
-				case 13: // relative horizontal line (h)
-				case 15: // relative vertical line (v)
-				case 19: // relative smooth quad (t)
-					if(toRel) {
-						curx += x;
-						cury += y;
-					} else {
-						x += curx;
-						y += cury;
-						curx = x;
-						cury = y;
-					}
-					addToD([[x,y]]);
-					break;
-				case 6: // absolute cubic (C)
-					x -= curx; x1 -= curx; x2 -= curx;
-					y -= cury; y1 -= cury; y2 -= cury;
-				case 7: // relative cubic (c)
-					if(toRel) {
-						curx += x;
-						cury += y;
-					} else {
-						x += curx; x1 += curx; x2 += curx;
-						y += cury; y1 += cury; y2 += cury;
-						curx = x;
-						cury = y;
-					}
-					addToD([[x1,y1],[x2,y2],[x,y]]);
-					break;
-				case 8: // absolute quad (Q)
-					x -= curx; x1 -= curx;
-					y -= cury; y1 -= cury;
-				case 9: // relative quad (q) 
-					if(toRel) {
-						curx += x;
-						cury += y;
-					} else {
-						x += curx; x1 += curx;
-						y += cury; y1 += cury;
-						curx = x;
-						cury = y;
-					}
-					addToD([[x1,y1],[x,y]]);
-					break;
-				case 10: // absolute elliptical arc (A)
-					x -= curx;
-					y -= cury;
-				case 11: // relative elliptical arc (a)
-					if(toRel) {
-						curx += x;
-						cury += y;
-					} else {
-						x += curx;
-						y += cury;
-						curx = x;
-						cury = y;
-					}
-					addToD([[seg.r1,seg.r2]], [
-							seg.angle,
-							(seg.largeArcFlag ? 1 : 0),
-							(seg.sweepFlag ? 1 : 0)
-						],[x,y]
-					);
-					break;
-				case 16: // absolute smooth cubic (S)
-					x -= curx; x2 -= curx;
-					y -= cury; y2 -= cury;
-				case 17: // relative smooth cubic (s)
-					if(toRel) {
-						curx += x;
-						cury += y;
-					} else {
-						x += curx; x2 += curx;
-						y += cury; y2 += cury;
-						curx = x;
-						cury = y;
-					}
-					addToD([[x2,y2],[x,y]]);
-					break;
-			} // switch on path segment type
-		} // for each segment
-		return d;
-	};
-
-	var resetPointGrips = function() {
-		var sr = svgroot.suspendRedraw(100);
-		removeAllPointGripsFromPath();
-		recalcPathPoints();
-		addAllPointGripsToPath();
-		svgroot.unsuspendRedraw(sr);
-	};
-	
-	var setPointContainerTransform = function(value) {
-		var conts = $('#pathpointgrip_container,#ctrlpointgrip_container');
-		$.each(conts,function() {
-			this.setAttribute("transform", value);
-			if(!value) {
-				this.removeAttribute("transform");
-			}
-		});
-	}
-	
-	var recalcPathPoints = function() {
-		current_path_pts = [];
-		var segList = current_path.pathSegList;
-		var curx = segList.getItem(0).x, cury = segList.getItem(0).y;
-		current_path_pts.push(curx * current_zoom);
-		current_path_pts.push(cury * current_zoom);
-		var len = segList.numberOfItems;
-		for (var i = 1; i < len; ++i) {
-			var l = segList.getItem(i);
-			var x = l.x, y = l.y;
-			// paths can now be closed, skip Z segments
-			if (l.pathSegType == 1) {
-				break;
-			}
-			var type = l.pathSegType;
-			// current_path_pts just holds the absolute coords
-			if (type == 4) {
-				curx = x;
-				cury = y;
-			} // type 4 (abs line)
-			else if (type == 5) {
-				curx += x;
-				cury += y;
-			} // type 5 (rel line)
-			else if (type == 6) {
-				curx = x;
-				cury = y;
-			} // type 6 (abs curve)
-			else if (type == 7) {
-				curx += x;
-				cury += y;
-			} // type 7 (rel curve)
-			current_path_pts.push(curx * current_zoom);
-			current_path_pts.push(cury * current_zoom);
-		} // for each segment	
-	}
-
-	var removeAllPointGripsFromPath = function() {
-		// loop through and hide all pointgrips
-		$('#pathpointgrip_container > *').attr("display", "none");
-
-		var line = document.getElementById("path_stretch_line");
-		if (line) line.setAttribute("display", "none");
-		
-		$('#ctrlpointgrip_container *').attr('display','none');
-	};
-
-	var addAllPointGripsToPath = function(pointToSelect) {
-		// loop through and show all pointgrips
-		var len = current_path_pts.length;
-		for (var i = 0; i < len; i += 2) {
-			var grip = document.getElementById("pathpointgrip_"+i/2);
-			if (grip) {
-				assignAttributes(grip, {
-					'cx': current_path_pts[i],
-					'cy': current_path_pts[i+1],
-					'display': 'inline'
-				});
-			}
-			else {
-				addPointGripToPath(current_path_pts[i], current_path_pts[i+1],i/2);
-			}
-			
-			var index = i/2;
-			var item = current_path.pathSegList.getItem(index);
-			if(item.pathSegType == 6) {
-				index -= 1;
-				// Same code as when making a curve, needs to be in own function
-				var cur_x = getPathPoint(index)[0];
-				var cur_y = getPathPoint(index)[1];
-				var next_x = getPathPoint(index+1)[0];
-				var next_y = getPathPoint(index+1)[1];
-				addControlPointGrip(item.x1,item.y1, cur_x,cur_y, index+'c1');
-				addControlPointGrip(item.x2,item.y2, next_x,next_y, index+'c2');
-			} 
-		}
-		// FIXME:  we cannot just use the same transform as the path because we might be 
-		// at a different zoom level
-		var angle = canvas.getRotationAngle(current_path);
-		if (angle) {
-			var bbox = canvas.getBBox(current_path);
-			var cx = (bbox.x + bbox.width/2) * current_zoom,
-				cy = (bbox.y + bbox.height/2) * current_zoom;
-			var xform = ["rotate(", angle, " ", cx, ",", cy, ")"].join("");
-			setPointContainerTransform(xform);
-		}
-		if(pointToSelect != null) {
-			canvas.addNodeToSelection(pointToSelect);
-		}
-	};
-
-	var addPointGripToPath = function(x,y,index) {
-		// create the container of all the point grips
-		var pointGripContainer = document.getElementById("pathpointgrip_container");
-		if (!pointGripContainer) {
-			var parent = document.getElementById("selectorParentGroup");
-			pointGripContainer = parent.appendChild(document.createElementNS(svgns, "g"));
-			pointGripContainer.id = "pathpointgrip_container";
-		}
-
-		var pointGrip = document.getElementById("pathpointgrip_"+index);
-		// create it
-		if (!pointGrip) {
-			pointGrip = document.createElementNS(svgns, "circle");
-			assignAttributes(pointGrip, {
-				'id': "pathpointgrip_" + index,
-				'display': "none",
-				'r': 4,
-				'fill': "#0FF",
-				'stroke': "#00F",
-				'stroke-width': 2,
-				'cursor': 'move',
-				'style': 'pointer-events:all',
-				'xlink:title': uiStrings.pathNodeTooltip
-			});
-			pointGrip = pointGripContainer.appendChild(pointGrip);
-
-			var grip = $('#pathpointgrip_'+index);
-			grip.dblclick(function() {
-				canvas.setSegType();
-			});
-		}
-		
-		// set up the point grip element and display it
-		assignAttributes(pointGrip, {
-			'cx': x,
-			'cy': y,
-			'display': "inline",
-		});
-	};
-	
-	var pathIsClosed = function() {
-		if(!current_path) return;
-		return current_path.getAttribute('d').substr(-1,1).toLowerCase() == 'z';
-	}
-	
-	var updateSegLine = function(next_node) {
-		// create segment line
-		var segLine = document.getElementById("segline");
-		if(!segLine) {
-			var pointGripContainer = $('#pathpointgrip_container')[0];
-			segLine = document.createElementNS(svgns, "path");
-			assignAttributes(segLine, {
-				'id': "segline",
-				'fill': "none",
-				'stroke': "#0FF",
-				'stroke-width': 2,
-				'style':'pointer-events:none'
-			});
-			segLine = pointGripContainer.appendChild(segLine);
-		}
-		if(!segLine.getAttribute('d')) {
-			var pt = getPathPoint(current_path_pt);
-			segLine.setAttribute('d', 'M' + pt.join(',') + ' 0,0');
-		}
-		segLine.setAttribute('display','inline');
-		
-		if(current_path_pt+1 >= current_path.pathSegList.numberOfItems) {
-			segLine.setAttribute('display','none');
-			return;
-		}
-		
-		if(!next_node) {
-			// Replace "M" val
-			replacePathSeg(2, 0, getPathPoint(current_path_pt, true), segLine);
-		} else {
-			var seg = current_path.pathSegList.getItem(current_path_pt+1);
-			var points = [seg.x, seg.y];
-			if(seg.x1 != null && seg.x2 != null) {
-				points.splice(2, 0, seg.x1, seg.y1, seg.x2, seg.y2);
-			}
-			points = $.map(points, function(n){return n*current_zoom;});
-			replacePathSeg(seg.pathSegType, 1, points, segLine);
-		}
-	}
-	
-	var updatePath = function(mouse_x, mouse_y, old_path_pts) {
-    	var x = mouse_x / current_zoom;
-    	var y = mouse_y / current_zoom;
-    	
-    	var is_closed = pathIsClosed(); 
-	
-		var i = current_path_pt_drag * 2;
-		var last_index = current_path_pts.length/2 - 1;
-		var is_first = current_path_pt_drag == 0 || (is_closed && current_path_pt_drag == last_index);
-		var is_last = !is_closed && current_path_pt_drag == last_index;
-		
-		// if the image is rotated, then we must modify the x,y mouse coordinates
-		// and rotate them into the shape's rotated coordinate system
-		// we also re-map mouse_x/y and x/y into the rotated coordinate system
-		var angle = canvas.getRotationAngle(current_path, true);
-		if (angle) {
-			// calculate the shape's old center that was used for rotation
-			var box = selectedBBoxes[0];
-			var cx = (box.x + box.width/2) * current_zoom, 
-				cy = (box.y + box.height/2) * current_zoom;
-			var dx = mouse_x - cx, dy = mouse_y - cy;
-			var r = Math.sqrt( dx*dx + dy*dy );
-			var theta = Math.atan2(dy,dx) - angle;						
-			current_path_pts[i] = mouse_x = cx + r * Math.cos(theta);
-			current_path_pts[i+1] = mouse_y = cy + r * Math.sin(theta);
-			x = mouse_x / current_zoom;
-			y = mouse_y / current_zoom;
-		}
-		else {
-			current_path_pts[i] = x * current_zoom;
-			current_path_pts[i+1] = y * current_zoom;
-		}
-		
-		if(is_first && is_closed) {
-			// Update the first point
-			current_path_pts[0] = current_path_pts[i];
-			current_path_pts[1] = current_path_pts[i+1];
-			current_path_pt_drag = 0;
-		}
-
-		var index = current_path_pt_drag;
-		var abs_x = getPathPoint(index)[0];
-		var abs_y = getPathPoint(index)[1];
-		
-		var item = current_path.pathSegList.getItem(index);
-		var x_diff = x - old_path_pts[index*2];
-		var y_diff = y - old_path_pts[index*2 + 1];
-		
-		var cur_type = item.pathSegType;
-		var points = [];
-		
-		if(cur_type == 6) {
-			points = [abs_x,abs_y, item.x1,item.y1, item.x2 + x_diff,item.y2 + y_diff];
-		} else {
-			if(is_first) {
-				// Need absolute position for first point
-				points = getPathPoint(0);
-			} else {
-				points = [abs_x, abs_y];
-			}
-		}
-		replacePathSeg(cur_type, index, points);
-
-		var setSeg = function(index,first) {
-			var points, item = current_path.pathSegList.getItem(index);
-			var type = item.pathSegType;
-			if(first) {
-				item.x += x_diff;
-				item.y += y_diff;
-			}
-
-			switch (type) {
-			case 1:
-				points = [];
-				break;
-			case 4:
-				points = [item.x, item.y];
-				break;
-			case 6:
-				if(first) {
-					item.x1 -= x_diff;
-					item.y1 -= y_diff;
-					item.x2 += x_diff;
-					item.y2 += y_diff;
-				}
-
-				points = [item.x, item.y, item.x1 + x_diff,item.y1 + y_diff, item.x2,item.y2];
-				break;
-			default:
-				break;
-			}
-			replacePathSeg(type, index, points);
-			return type;
-		}
-		
-		if(is_closed || !is_last) { 
-			var next_type = setSeg(index+1);
-		} else {
-			var next_type = 0;
-		}
-		
-		if(is_first && is_closed) {
-			var last_type = setSeg(last_index,1);
-		}
-			
-		// move the point grip
-		var grip = document.getElementById("pathpointgrip_" + current_path_pt_drag);
-		if (grip) {
-			grip.setAttribute("cx", mouse_x);
-			grip.setAttribute("cy", mouse_y);
-			if(is_closed && is_first) {
-				var grip = document.getElementById("pathpointgrip_" + last_index);
-				grip.setAttribute("cx", mouse_x);
-				grip.setAttribute("cy", mouse_y);
-			}
-			call("changed", [grip]);
-		}
-		
-		if(is_first) cur_type = last_type;
-		
-		if(cur_type != 4) {
-			var num = is_first?last_index:index;
-			var id2 = (num-1)+'c2';
-			var line = document.getElementById("ctrlLine_"+id2);
-			if(line) {
-				// Don't do if first point on open path
-				if(!(!is_closed && current_path_pt_drag == 0)) {
-					var x2 = line.getAttribute('x2') - 0 + x_diff*current_zoom;
-					var y2 = line.getAttribute('y2') - 0 + y_diff*current_zoom;
-					addControlPointGrip(x2,y2, mouse_x,mouse_y, id2, true);
-				}
-			}
-		}
-		
-		if(next_type != 4) {
-			var id1 = (current_path_pt_drag)+'c1';
-			var line = document.getElementById("ctrlLine_"+id1);
-			if(line) {
-				var x2 = line.getAttribute('x2') - 0 + x_diff*current_zoom;
-				var y2 = line.getAttribute('y2') - 0 + y_diff*current_zoom;
-				addControlPointGrip(x2,y2, mouse_x,mouse_y, id1, true);
-			}
-		}
-		updateSegLine();
-		if(next_type != 4) {
-			updateSegLine(true);
-		}
-	}
-	
-	var updateCurvedSegment = function(mouse_x, mouse_y, index, ctrl_num) {
-		var list = current_path.pathSegList;
-		if(index+1 >= list.numberOfItems) {
-			index = -1;
-		}
-		var c_item = list.getItem(index+1);
-		
-		// Only do curves
-		if(c_item.pathSegType != 6) return;
-		
-		ctrl_pt_drag = index + 'c' + ctrl_num;
-		
-		var x = mouse_x / current_zoom;
-		var y = mouse_y / current_zoom;
-		
-		var angle = canvas.getRotationAngle(current_path, true);
-		
-		// TODO: Make sure this works for linked control points
-		if (angle) {
-			// calculate the shape's old center that was used for rotation
-			var box = selectedBBoxes[0];
-			var cx = (box.x + box.width/2) * current_zoom, 
-				cy = (box.y + box.height/2) * current_zoom;
-			var dx = mouse_x - cx, dy = mouse_y - cy;
-			var r = Math.sqrt( dx*dx + dy*dy );
-			var theta = Math.atan2(dy,dx) - angle;						
-			mouse_x = cx + r * Math.cos(theta);
-			mouse_y = cy + r * Math.sin(theta);
-			x = mouse_x / current_zoom;
-			y = mouse_y / current_zoom;
-		}
-		
-		c_item['x' + ctrl_num] = x;
-		c_item['y' + ctrl_num] = y;
-		replacePathSeg(6, index+1, [c_item.x,c_item.y, c_item.x1,c_item.y1, c_item.x2,c_item.y2]);
-		
-		updateSegLine(true);
-		
-		var grip = document.getElementById("ctrlpointgrip_" + ctrl_pt_drag);
-		if(grip) {
-			grip.setAttribute("cx", mouse_x);
-			grip.setAttribute("cy", mouse_y);
-			
-			var line = document.getElementById("ctrlLine_"+ctrl_pt_drag);
-			line.setAttribute("x2", mouse_x);
-			line.setAttribute("y2", mouse_y);
-		}
-	}
-	
-	var getPathPoint = function(index, raw_val) {
-		var len = current_path_pts.length;
-		var pt_num = len/2;
-		if(index < 0) {
-			index += pt_num;
-		} else if(index >= pt_num) {
-			index -= pt_num;
-		}
-		var z = raw_val?1:current_zoom;
-		return [current_path_pts[index*2] / z, current_path_pts[index*2 + 1] / z];
-	}
-	
-	// This replaces the segment at the given index. Type is given as number.
-	var replacePathSeg = function(type, index, pts, path) {
-		if(!path) path = current_path;
-		var func = 'createSVGPathSeg' + pathFuncs[type];
-		var seg = path[func].apply(path, pts);
-		path.pathSegList.replaceItem(seg, index);
-	}
-	
-	var addControlPointGrip = function(x, y, source_x, source_y, id, raw_val) {
-		if(!raw_val) {
-			x *= current_zoom; y *= current_zoom;
-			source_x *= current_zoom; source_y *= current_zoom;
-		}
-	
-		// create the container of all the control point grips
-		var ctrlPointGripContainer = document.getElementById("ctrlpointgrip_container");
-		if (!ctrlPointGripContainer) {
-			var parent = document.getElementById("selectorParentGroup");
-			ctrlPointGripContainer = parent.appendChild(document.createElementNS(svgns, "g"));
-			ctrlPointGripContainer.id = "ctrlpointgrip_container";
-		}
-		ctrlPointGripContainer.setAttribute("display", "inline");
-		
-		var ctrlLine = document.getElementById("ctrlLine_"+id);
-		if (!ctrlLine) {
-			ctrlLine = document.createElementNS(svgns, "line");
-			assignAttributes(ctrlLine, {
-				'id': "ctrlLine_"+id,
-				'stroke': "#555",
-				'stroke-width': 1,
-				"style": "pointer-events:none"
-			});
-			ctrlLine = ctrlPointGripContainer.appendChild(ctrlLine);
-		}
-		
-		assignAttributes(ctrlLine, {
-			'x1': source_x,
-			'y1': source_y,
-			'x2': x,
-			'y2': y,
-			'display': "inline"
-		});
-		
-		var pointGrip = document.getElementById("ctrlpointgrip_"+id);
-		// create it
-		if (!pointGrip) {
-			pointGrip = document.createElementNS(svgns, "circle");
-			assignAttributes(pointGrip, {
-				'id': "ctrlpointgrip_" + id,
-				'display': "none",
-				'r': 4,
-				'fill': "#0FF",
-				'stroke': "#55F",
-				'stroke-width': 1,
-				'cursor': 'move',
-				'style': 'pointer-events:all',
-				'xlink:title': uiStrings.pathCtrlPtTooltip
-			});
-			pointGrip = ctrlPointGripContainer.appendChild(pointGrip);
-		}
-		
-		assignAttributes(pointGrip, {
-			'cx': x,
-			'cy': y,
-			'display': "inline"
-		});
-	}
-
-	var removeControlPointGrips = function(index) {
-		for(var i=1; i <= 2; i++) {
-			$("#ctrlpointgrip_" + index + "c" + i + ",#ctrlLine_" + index + "c" + i).attr("display", "none");
-		}
-	}
 
 	// - in create mode, the element's opacity is set properly, we create an InsertElementCommand
 	//   and store it on the Undo stack
 	// - in move/resize mode, the element's attributes which were affected by the move/resize are
 	//   identified, a ChangeElementCommand is created and stored on the stack for those attrs
 	//   this is done in when we recalculate the selected dimensions()
-	var mouseUp = function(evt)
-	{	
-		var tempJustSelected = justSelected;
-		justSelected = null;
-		if (!started) return;
-
-		var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
-		var mouse_x = pt.x;
-		var mouse_y = pt.y;
-		var x = mouse_x / current_zoom;
-		var y = mouse_y / current_zoom;
-				
-		started = false;
-		var element = svgdoc.getElementById(getId());
-		var keep = false;
-		switch (current_mode)
-		{
-			// intentionally fall-through to select here
-			case "resize":
-			case "multiselect":
-				if (rubberBox != null) {
-					rubberBox.setAttribute("display", "none");
-					curBBoxes = [];
-				}
-				current_mode = "select";
-			case "select":
-				if (selectedElements[0] != null) {
-					// if we only have one selected element
-					if (selectedElements[1] == null) {
-						// set our current stroke/fill properties to the element's
-						var selected = selectedElements[0];
-						if (selected.tagName != "g" && selected.tagName != "image") {
-							cur_properties.fill = selected.getAttribute("fill");
-							cur_properties.fill_opacity = selected.getAttribute("fill-opacity");
-							cur_properties.stroke = selected.getAttribute("stroke");
-							cur_properties.stroke_opacity = selected.getAttribute("stroke-opacity");
-							cur_properties.stroke_width = selected.getAttribute("stroke-width");
-							cur_properties.stroke_style = selected.getAttribute("stroke-dasharray");
-						}
-						if (selected.tagName == "text") {
-							cur_text.font_size = selected.getAttribute("font-size");
-							cur_text.font_family = selected.getAttribute("font-family");
-						}
-
-						selectorManager.requestSelector(selected).showGrips(true);
-					}
-					// always recalculate dimensions to strip off stray identity transforms
-					recalculateAllSelectedDimensions();
-					// if it was being dragged/resized
-					if (x != start_x || y != start_y) {
-						var len = selectedElements.length;
-						for	(var i = 0; i < len; ++i) {
-							if (selectedElements[i] == null) break;
-							if(selectedElements[i].tagName != 'g') {
-								// Not needed for groups (incorrectly resizes elems), possibly not needed at all?
-								selectorManager.requestSelector(selectedElements[i]).resize();
-							}
-						}
-					}
-					// no change in position/size, so maybe we should move to pathedit
-					else {
-						var t = evt.target;
-						if (selectedElements[0].nodeName == "path" && selectedElements[1] == null) {
-							if (current_path == t) {
-								current_mode = "pathedit";
-								
-								// This resets the pathedit selection in case it 
-								// was a rotate that turned into a matrix
-								var angle = canvas.getRotationAngle(t);
-								if(!angle) setPointContainerTransform();
-								
-								// recalculate current_path_pts
-								recalcPathPoints();
-								canvas.clearSelection();
-								// save the path's bbox
-								selectedBBoxes[0] = canvas.getBBox(current_path);
-								addAllPointGripsToPath();
-								canvas.addNodeToSelection(0);
-							} // going into pathedit mode
-							else {
-								current_path = t;
-							}
-						} // if it was a path
-						// else, if it was selected and this is a shift-click, remove it from selection
-						else if (evt.shiftKey) {
-							if(tempJustSelected != t) {
-								canvas.removeFromSelection([t]);
-							}
-						}
-					} // no change in mouse position
-				}
-				// we return immediately from select so that the obj_num is not incremented
-				return;
-				break;
-			case "zoom":
-				if (rubberBox != null) {
-					rubberBox.setAttribute("display", "none");
-				}
-				var factor = evt.shiftKey?.5:2;
-				call("zoomed", {
-					'x': Math.min(start_x,x),
-					'y': Math.min(start_y,y),
-					'width': Math.abs(x-start_x),
-					'height': Math.abs(y-start_y),
-					'factor': factor
-				});
-				return;
-			case "fhpath":
-				// Check that the path contains at least 2 points; a degenerate one-point path
-				// causes problems.
-				// Webkit ignores how we set the points attribute with commas and uses space
-				// to separate all coordinates, see https://bugs.webkit.org/show_bug.cgi?id=29870
-				var coords = element.getAttribute('points');
-				var commaIndex = coords.indexOf(',');
-				if (commaIndex >= 0) {
-					keep = coords.indexOf(',', commaIndex+1) >= 0;
-				} else {
-					keep = coords.indexOf(' ', coords.indexOf(' ')+1) >= 0;
-				}
-				break;
-			case "line":
-				keep = (element.x1.baseVal.value != element.x2.baseVal.value ||
-				        element.y1.baseVal.value != element.y2.baseVal.value);
-				break;
-			case "square":
-			case "rect":
-				keep = (element.width.baseVal.value && element.height.baseVal.value);
-				break;
-			case "image":
-				keep = (element.width.baseVal.value && element.height.baseVal.value);
-				break;
-			case "circle":
-				keep = (element.r.baseVal.value);
-				break;
-			case "ellipse":
-				keep = (element.rx.baseVal.value && element.ry.baseVal.value);
-				break;
-			case "fhellipse":
-				if ((freehand.maxx - freehand.minx) > 0 &&
-				    (freehand.maxy - freehand.miny) > 0) {
-				    element = addSvgElementFromJson({
-						"element": "ellipse",
-						"attr": {
-							"cx": (freehand.minx + freehand.maxx) / 2,
-							"cy": (freehand.miny + freehand.maxy) / 2,
-							"rx": (freehand.maxx - freehand.minx) / 2,
-							"ry": (freehand.maxy - freehand.miny) / 2,
-							"id": getId(),
-							"fill": cur_shape.fill,
-							"stroke": cur_shape.stroke,
-							"stroke-width": cur_shape.stroke_width,
-							"stroke-dasharray": cur_shape.stroke_style,
-							"opacity": cur_shape.opacity,
-							"stroke-opacity": cur_shape.stroke_opacity,
-							"fill-opacity": cur_shape.fill_opacity,
-							"style": "pointer-events:inherit"
-						}
-					});
-					call("changed",[element]);
-					keep = true;
-				}
-				break;
-			case "fhrect":
-				if ((freehand.maxx - freehand.minx) > 0 &&
-				    (freehand.maxy - freehand.miny) > 0) {
-				    element = addSvgElementFromJson({
-						"element": "rect",
-						"attr": {
-							"x": freehand.minx,
-							"y": freehand.miny,
-							"width": (freehand.maxx - freehand.minx),
-							"height": (freehand.maxy - freehand.miny),
-							"id": getId(),
-							"fill": cur_shape.fill,
-							"stroke": cur_shape.stroke,
-							"stroke-width": cur_shape.stroke_width,
-							"stroke-dasharray": cur_shape.stroke_style,
-							"opacity": cur_shape.opacity,
-							"stroke-opacity": cur_shape.stroke_opacity,
-							"fill-opacity": cur_shape.fill_opacity,
-							"style": "pointer-events:inherit"
-						}
-					});
-					call("changed",[element]);
-					keep = true;
-				}
-				break;
-			case "text":
-				keep = true;
-				canvas.clearSelection();
-				break;
-			case "path":
-				// set element to null here so that it is not removed nor finalized
-				element = null;
-				// continue to be set to true so that mouseMove happens
-				started = true;
-				var stretchy = document.getElementById("path_stretch_line");
-				if (!stretchy) {
-					stretchy = document.createElementNS(svgns, "line");
-					assignAttributes(stretchy, {
-						'id': "path_stretch_line",
-						'stroke': "blue",
-						'stroke-width': "0.5"
-					});
-					stretchy = document.getElementById("selectorParentGroup").appendChild(stretchy);
-				}
-				stretchy.setAttribute("display", "inline");
-
-				// if pts array is empty, create path element with M at current point
-				if (current_path_pts.length == 0) {
-					current_path_pts.push(x);
-					current_path_pts.push(y);
-					d_attr = "M" + x + "," + y + " ";
-					addSvgElementFromJson({
-						"element": "path",
-						"attr": {
-							"d": d_attr,
-							"id": getNextId(),
-							"fill": cur_shape.fill,
-							"fill-opacity": cur_shape.fill_opacity,
-							"stroke": cur_shape.stroke,
-							"stroke-width": cur_shape.stroke_width,
-							"stroke-dasharray": cur_shape.stroke_style,
-							"stroke-opacity": cur_shape.stroke_opacity,
-							"opacity": cur_shape.opacity / 2,
-							"style": "pointer-events:inherit"
-						}
-					});
-					// set stretchy line to first point
-					assignAttributes(stretchy, {
-						'x1': mouse_x,
-						'y1': mouse_y,
-						'x2': mouse_x,
-						'y2': mouse_y
-					});
-					addPointGripToPath(mouse_x,mouse_y,0);
-				}
-				else {
-					// determine if we clicked on an existing point
-					var i = current_path_pts.length;
-					var FUZZ = 6/current_zoom;
-					var clickOnPoint = false;
-					while(i) {
-						i -= 2;
-						var px = current_path_pts[i], py = current_path_pts[i+1];
-						// found a matching point
-						if ( x >= (px-FUZZ) && x <= (px+FUZZ) && y >= (py-FUZZ) && y <= (py+FUZZ) ) {
-							clickOnPoint = true;
-							break;
-						}
-					}
-					
-					// get path element that we are in the process of creating
-					var path = svgdoc.getElementById(getId());
-					var len = current_path_pts.length;
-					// if we clicked on an existing point, then we are done this path, commit it
-					// (i,i+1) are the x,y that were clicked on
-					if (clickOnPoint) {
-						// if clicked on any other point but the first OR
-						// the first point was clicked on and there are less than 3 points
-						// then leave the path open
-						// otherwise, close the path
-						if (i == 0 && len >= 6) {
-							// Create end segment
-							var abs_x = current_path_pts[0];
-							var abs_y = current_path_pts[1];
-							d_attr += ['L',abs_x,',',abs_y,'z'].join('');
-							path.setAttribute("d", d_attr);
-						} else if(len < 3) {
-							keep = false;
-							break;
-						}
-						removeAllPointGripsFromPath();
-						// this will signal to commit the path
-						element = path;
-						current_path_pts = [];
-						started = false;
-					}
-					// else, create a new point, append to pts array, update path element
-					else {
-						var lastx = current_path_pts[len-2], lasty = current_path_pts[len-1];
-						// we store absolute values in our path points array for easy checking above
-						current_path_pts.push(x);
-						current_path_pts.push(y);
-						d_attr += "L" + round(x) + "," + round(y) + " ";
-						path.setAttribute("d", d_attr);
-
-						// set stretchy line to latest point
-						assignAttributes(stretchy, {
-							'x1': mouse_x,
-							'y1': mouse_y,
-							'x2': mouse_x,
-							'y2': mouse_y
-						});
-						addPointGripToPath(mouse_x,mouse_y,(current_path_pts.length/2 - 1));
-					}
-					keep = true;
-				}
-				break;
-			case "pathedit":
-				keep = true;
-				element = null;
-				// if we were dragging a path point, stop it now
-				if (current_path_pt_drag != -1) {
-					current_path_pt_drag = -1;
-					
-					var batchCmd = new BatchCommand("Edit Path");
-					// the attribute changes we want to undo
-					var oldvalues = {};
-					oldvalues["d"] = current_path_oldd;
-					
-					recalcRotatedPath();
-
-					batchCmd.addSubCommand(new ChangeElementCommand(current_path, oldvalues, "path points"));
-					addCommandToHistory(batchCmd);
-					call("changed", [current_path]);
-					
-					// If connected, last point should equal first
-					if(pathIsClosed()) {
-						current_path_pts[current_path_pts.length-2] = getPathPoint(0,true)[0];
-						current_path_pts[current_path_pts.length-1] = getPathPoint(0,true)[1];
-					}
-					
-					// make these changes undo-able
-				} // if (current_path_pt_drag != -1)
-				else if(current_ctrl_pt_drag != -1) {
-					current_ctrl_pt_drag = -1;
-					recalcRotatedPath();
-					var batchCmd = new BatchCommand("Edit Path control points");
-					batchCmd.addSubCommand(new ChangeElementCommand(current_path, {d:current_path_oldd}));
-					addCommandToHistory(batchCmd);
-					call("changed", [current_path]);
-				} 	// else, move back to select mode
-				else {
-					current_mode = "select";
-					removeAllPointGripsFromPath();
-					canvas.clearSelection();
-					canvas.addToSelection([evt.target]);
-				}
-				break;
-			case "rotate":
-				keep = true;
-				element = null;
-				current_mode = "select";
-				var batchCmd = canvas.finishUndoableChange();
-				if (!batchCmd.isEmpty()) { 
-					addCommandToHistory(batchCmd);
-				}
-				// perform recalculation to weed out any stray identity transforms that might get stuck
-				recalculateAllSelectedDimensions();
-				break;
-			default:
-				console.log("Unknown mode in mouseup: " + current_mode);
-				break;
-		}
-		if (!keep && element != null) {
-			element.parentNode.removeChild(element);
-			element = null;
-			
-			var t = evt.target;
-			
-			// if this element is in a group, go up until we reach the top-level group 
-			// just below the layer groups
-			// TODO: once we implement links, we also would have to check for <a> elements
-			while (t.parentNode.parentNode.tagName == "g") {
-				t = t.parentNode;
-			}
-			// if we are not in the middle of creating a path, and we've clicked on some shape, 
-			// then go to Select mode.
-			// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
-			if ( (current_mode != "path" || current_path_pts.length == 0) &&
-				t.parentNode.id != "selectorParentGroup" &&
-				t.id != "svgcanvas" && t.id != "svgroot") 
-			{
-				// switch into "select" mode if we've clicked on an element
-				canvas.addToSelection([t], true);
-				canvas.setMode("select");
-			}
-			
-		} else if (element != null) {
-			canvas.addedNew = true;
-			element.setAttribute("opacity", cur_shape.opacity);
-			element.setAttribute("style", "pointer-events:inherit");
-			cleanupElement(element);
- 			if(current_mode == "path") {
- 				current_path = element;
-				current_mode = "pathedit";
-				recalcPathPoints();
-				addAllPointGripsToPath(current_path_pts.length/2 - 1);
- 			} else if (current_mode == "text" || current_mode == "image") {
- 				// keep us in the tool we were in unless it was a text or image element
-				canvas.addToSelection([element], true);
-			}
-			// we create the insert command that is stored on the stack
-			// undo means to call cmd.unapply(), redo means to call cmd.apply()
-			addCommandToHistory(new InsertElementCommand(element));
-			call("changed",[element]);
-		}
-
-		start_transform = null;
-	};
 
 // public functions
 
@@ -4902,7 +5174,7 @@ function BatchCommand(text) {
 	// Function: clear
 	// Clears the current document.  This is not an undoable action.
 	this.clear = function() {
-		current_path_pts = [];
+		pathActions.clear();
 
 		// clear the svgcontent node
 		var nodes = svgcontent.childNodes;
@@ -4929,109 +5201,8 @@ function BatchCommand(text) {
 		call("cleared");
 	};
 	
-	// TODO: should this be an 'internal' function?
-	this.clearPath = function(remove) {
-		if(remove && current_mode == "path") {
-			var elem = svgdoc.getElementById(getId());
-			if(elem) elem.parentNode.removeChild(elem);
-		}
-		removeAllPointGripsFromPath();
-		current_path_pts = [];
-		current_path_pt = -1;
-	};
-	
-	// TODO: should this be an 'internal' function?
-	this.getNodePoint = function() {	
-		if(current_path_pt != -1) {
-			var pt = getPathPoint(current_path_pt, true);
-			var list = current_path.pathSegList;
-			var segtype;
-			if(list.numberOfItems > current_path_pt+1) {
-				segtype = list.getItem(current_path_pt+1).pathSegType;
-			} else {
-				segtype = false;
-			}
-			return {
-				x: pt[0],
-				y: pt[1],
-				type: segtype
-			}
-		} else {
-			return false;
-		}
-	}
-
 	this.linkControlPoints = function(linkPoints) {
-		link_control_pts = linkPoints;
-	}
-
-	this.clonePathNode = function() {
-	
-		var pt = current_path_pt, list = current_path.pathSegList;
-
-		var next_item = list.getItem(pt+1); 
-		
-		// Get point in between nodes
-		if(next_item.pathSegType % 2 == 0) { // even num, so abs
-			var cur_item = list.getItem(pt);
-			var new_x = (next_item.x + cur_item.x) / 2;
-			var new_y = (next_item.y + cur_item.y) / 2;
-		} else {
-			var new_x = next_item.x/2;
-			var new_y = next_item.y/2;
-		}
-		
-		var seg = current_path.createSVGPathSegLinetoAbs(new_x, new_y);
-		list.insertItemBefore(seg, pt+1); // Webkit doesn't do this right.
-		
-		var abs_x = (getPathPoint(pt)[0] + new_x) * current_zoom;
-		var abs_y = (getPathPoint(pt)[1] + new_y) * current_zoom;
-		
-		var last_num = current_path_pts.length/2;
-		
-		// Add new grip
-		addPointGripToPath(abs_x, abs_y, last_num);
-
-		// Update path_pts
-		current_path_pts.splice(pt*2 + 2, 0, abs_x, abs_y);
-		
-		resetPointGrips();
-		this.addNodeToSelection(pt+1);
-		
-	// 	current_path.setAttribute("d", convertToD(current_path.pathSegList));
-	}
-
-	this.deletePathNode = function() {
-		var last_pt = current_path_pts.length/2 - 1;
-		var pt = current_path_pt, list = current_path.pathSegList;
-		var cur_item = list.getItem(pt);
-		var next_item = list.getItem(pt+1);
-
-		if(pt == 0) {
-			var next_x = getPathPoint(1)[0];
-			var next_y = getPathPoint(1)[1];
-			// Make the next point be the "M" point
-			replacePathSeg(2, 1, [next_x, next_y]);
-			
-			// Reposition last node
-			var last_item = list.getItem(last_pt);
-			replacePathSeg(4, last_pt, [next_x, next_y]);
-			removeControlPointGrips(last_pt - 1);
-			current_path_pts.splice(last_pt*2, 2, next_x, next_y);
-			current_path_pts.splice(0, 2);
-		} else {
-			current_path_pts.splice(pt*2, 2);
-		}
-
-		list.removeItem(pt);
-		
-		resetPointGrips();
-		
-		if(window.opera) { // Opera repaints incorrectly
-			var cp = $(current_path); cp.attr('d',cp.attr('d'));
-		}
-		
-		this.addNodeToSelection(pt);
+		pathActions.linkControlPoints(linkPoints);
 	}
 
 	this.getResolution = function() {
@@ -5180,9 +5351,7 @@ function BatchCommand(text) {
 			if(!elem) return;
 			selectorManager.requestSelector(elem).resize();
 		});
-		if(current_mode == "pathedit") {
-			resetPointGrips();
-		}
+		pathActions.zoomChange();
 	}
 
 	this.getMode = function() {
@@ -5190,17 +5359,7 @@ function BatchCommand(text) {
 	};
 
 	this.setMode = function(name) {
-		// toss out half-drawn path
-		if (current_mode == "path" && current_path_pts.length > 0) {
-			var elem = svgdoc.getElementById(getId());
-			elem.parentNode.removeChild(elem);
-			canvas.clearPath();
-			canvas.clearSelection();
-			started = false;
-		}
-		else if (current_mode == "pathedit") {
-			canvas.clearPath();
-		}
+		pathActions.modeChange();
 		
 		cur_properties = (selectedElements[0] && selectedElements[0].nodeName == 'text') ? cur_text : cur_shape;
 		current_mode = name;
@@ -5524,7 +5683,7 @@ function BatchCommand(text) {
 		}
 		var pointGripContainer = document.getElementById("pathpointgrip_container");
 		if(elem.nodeName == "path" && pointGripContainer) {
-			setPointContainerTransform(elem.getAttribute("transform"));
+			pathActions.setPointContainerTransform(elem.getAttribute("transform"));
 		}
 		var selector = selectorManager.requestSelector(selectedElements[0]);
 		selector.resize();
@@ -5630,71 +5789,7 @@ function BatchCommand(text) {
 	};
 	
 	this.setSegType = function(new_type) {
-		var grip = $('#pathpointgrip_' + current_path_pt);
-		var old_d = current_path.getAttribute('d');
-		
-		var index = grip[0].id.split('_')[1] - 0;
-		
-		var last_index = current_path_pts.length/2 - 1;
-		var is_closed = pathIsClosed(); 
-
-		if(!is_closed && index == last_index) {
-			return; // Last point of unclosed path should do nothing
-		} else if(index >= last_index && is_closed) {
-			index = 0;
-		}
-
-		var next_index = index+1;
-		var cur_x = getPathPoint(index)[0];
-		var cur_y = getPathPoint(index)[1];
-		var next_x = getPathPoint(next_index)[0];
-		var next_y = getPathPoint(next_index)[1];
-		
-		if(!new_type) { // double-click, so just toggle
-			var batchCmd = new BatchCommand("Toggle Path Segment Type");
-
-			// Toggle segment to curve/straight line
-			var old_type = current_path.pathSegList.getItem(index+1).pathSegType;
-			
-			new_type = (old_type == 6) ? 4 : 6;
-
-		} else {
-			new_type -= 0;
-			var batchCmd = new BatchCommand("Change Path Segment Type");
-		}
-		
-		var points;
-
-		var bb = current_path.getBBox();
-		
-		switch ( new_type ) {
-		case 6:
-			var diff_x = next_x - cur_x;
-			var diff_y = next_y - cur_y;
-		
-			var ct1_x = cur_x + (diff_y/2);
-			var ct1_y = cur_y - (diff_x/2);
-			var ct2_x = next_x + (diff_y/2);
-			var ct2_y = next_y - (diff_x/2);
-			
-			points = [next_x,next_y, ct1_x,ct1_y, ct2_x,ct2_y];
-			break;
-		case 4:
-			points = [next_x,next_y];
-			removeControlPointGrips(index);
-			break;
-		}
-		
-		replacePathSeg(new_type, next_index, points);
-
-		addAllPointGripsToPath(); 
-		// recalculateDimensions(current_path);
-		updateSegLine(true);
-		recalcRotatedPath();
-		
-		batchCmd.addSubCommand(new ChangeElementCommand(current_path, {d: old_d}));
-		addCommandToHistory(batchCmd);
-		call("changed", [current_path]);
+		pathActions.setSegType(new_type);
 	}
 	
 	var ffClone = function(elem) {
@@ -5741,12 +5836,7 @@ function BatchCommand(text) {
 		var handle = svgroot.suspendRedraw(1000);
 		if(current_mode == 'pathedit') {
 			// Editing node
-			var num = (attr == 'x')?0:1;
-			var old_path_pts = $.map(current_path_pts, function(n){return n/current_zoom;});
-
-			current_path_pts[current_path_pt*2 + num] = newValue-0;
-			current_path_pt_drag = current_path_pt;
-			updatePath(current_path_pts[current_path_pt*2], current_path_pts[current_path_pt*2 + 1], old_path_pts);
+			pathActions.moveNode(attr, newValue);
 		}
 		var elems = elems || selectedElements;
 		var i = elems.length;
@@ -5871,9 +5961,9 @@ function BatchCommand(text) {
 		}
 	};
 
-	$(window).mouseup(mouseUp);
-	$(container).mousedown(mouseDown);
-	$(container).mousemove(mouseMove);
+	$(window).mouseup(mouseEvents.up);
+	$(container).mousedown(mouseEvents.down);
+	$(container).mousemove(mouseEvents.move);
 
 	this.deleteSelectedElements = function() {
 		var batchCmd = new BatchCommand("Delete Elements");
@@ -6336,7 +6426,7 @@ function BatchCommand(text) {
 	this.undo = function() {
 		if (undoStackPointer > 0) {
 			this.clearSelection();
-			removeAllPointGripsFromPath();
+			pathActions.clear();
 			var cmd = undoStack[--undoStackPointer];
 			cmd.unapply();
 			call("changed", cmd.elements());
