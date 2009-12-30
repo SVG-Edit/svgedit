@@ -38,6 +38,7 @@ function svg_edit_setup() {
 	var isMac = false; //(navigator.platform.indexOf("Mac") != -1);
 	var modKey = ""; //(isMac ? "meta+" : "ctrl+");
 	var svgCanvas = new SvgCanvas(document.getElementById("svgcanvas"));
+	var path = svgCanvas.pathActions;
 	var default_img_url = "images/logo.png";
 
 	// Store and retrieve preferences
@@ -402,7 +403,7 @@ function svg_edit_setup() {
 				$('#tool_reorient').toggle(elname == 'path');
 				$('#tool_reorient').toggleClass('tool_button_disabled', angle == 0);
 			} else {
-				var point = svgCanvas.getNodePoint();
+				var point = path.getNodePoint();
 				if(point) {
 					var seg_type = $('#seg_type');
 					$('#path_node_x').val(point.x);
@@ -917,7 +918,7 @@ function svg_edit_setup() {
 	
 	var reorientPath = function() {
 		if (selectedElement != null) {
-			svgCanvas.reorientPath();
+			path.reorient();
 		}
 	}
 
@@ -930,18 +931,18 @@ function svg_edit_setup() {
 	var linkControlPoints = function() {
 		$('#tool_node_link').toggleClass('push_button_pressed');
 		var linked = $('#tool_node_link').hasClass('push_button_pressed');
-		svgCanvas.linkControlPoints(linked);
+		path.linkControlPoints(linked);
 	}
 
 	var clonePathNode = function() {
-		if (svgCanvas.getNodePoint()) {
-			svgCanvas.clonePathNode();
+		if (path.getNodePoint()) {
+			path.clonePathNode();
 		}
 	};
 	
 	var deletePathNode = function() {
-		if (svgCanvas.getNodePoint()) {
-			svgCanvas.deletePathNode();
+		if (path.getNodePoint()) {
+			path.deletePathNode();
 		}
 	};
 	
@@ -1139,7 +1140,7 @@ function svg_edit_setup() {
 		} else {
 			saveChanges();
 		}
-		
+		setSelectMode();		
 	};
 	
 	var setTitle = function(title) {
