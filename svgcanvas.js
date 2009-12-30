@@ -4212,11 +4212,15 @@ function BatchCommand(text) {
 			// 	current_path.setAttribute("d", convertToD(current_path.pathSegList));
 			},
 			deletePathNode: function() {
+				var is_closed = pathIsClosed();
+
+				// TODO: Make delete node button disabled when there's only 2 nodes
+				if(current_path_pts.length <= (is_closed?6:4)) return;
+				
 				var last_pt = current_path_pts.length/2 - 1;
 				var pt = current_path_pt, list = current_path.pathSegList;
 				var cur_item = list.getItem(pt);
-				var next_item = list.getItem(pt+1);
-		
+
 				if(pt == 0) {
 					var next_x = getPathPoint(1)[0];
 					var next_y = getPathPoint(1)[1];
@@ -4224,11 +4228,13 @@ function BatchCommand(text) {
 					replacePathSeg(2, 1, [next_x, next_y]);
 					
 					// Reposition last node
-					var last_item = list.getItem(last_pt);
-					replacePathSeg(4, last_pt, [next_x, next_y]);
-					removeControlPointGrips(last_pt - 1);
-					current_path_pts.splice(last_pt*2, 2, next_x, next_y);
-					current_path_pts.splice(0, 2);
+					if(is_closed) {
+						var last_item = list.getItem(last_pt);
+						replacePathSeg(4, last_pt, [next_x, next_y]);
+						removeControlPointGrips(last_pt - 1);
+						current_path_pts.splice(last_pt*2, 2, next_x, next_y);
+						current_path_pts.splice(0, 2);
+					}
 				} else {
 					current_path_pts.splice(pt*2, 2);
 				}
@@ -4239,6 +4245,10 @@ function BatchCommand(text) {
 				
 				if(window.opera) { // Opera repaints incorrectly
 					var cp = $(current_path); cp.attr('d',cp.attr('d'));
+				}
+				
+				if(pt == last_pt && !is_closed) {
+					pt--;
 				}
 				
 				addNodeToSelection(pt);
