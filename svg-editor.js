@@ -1281,6 +1281,7 @@ function svg_edit_setup() {
 			}, 
 			".dropdown button": {
 				'height': {s: '18px', l: '34px', xl: '40px'},
+				'line-height': {s: '18px', l: '34px', xl: '40px'},
 				'margin-top': {s: '3px'}
 			},
 			"#tools_top label, #tools_bottom label": {
