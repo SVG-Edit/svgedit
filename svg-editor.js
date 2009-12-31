@@ -1264,7 +1264,7 @@ function svg_edit_setup() {
 				'font-size': {s: '.9em', l: '2em', xl: '2.5em'}
 			},
 			"#zoom_panel": {
-				'margin-top': {s: '3px', l: '4px', xl: '5px'},
+				'margin-top': {s: '3px', l: '4px', xl: '5px'}
 			},
 			"#copyright, #tools_bottom .label": {
 				'font-size': {l: '1.5em', xl: '2em'},
@@ -1292,7 +1292,7 @@ function svg_edit_setup() {
 			},
 			"#sidepanels": {
 				'top': {s: '50px', l: '88px', xl: '125px'},
-				'bottom': {s: '51px', l: '68px', xl: '65px'},
+				'bottom': {s: '51px', l: '68px', xl: '65px'}
 			},
 			'#layerbuttons': {
 				'width': {l: '130px', xl: '175px'},
@@ -1519,7 +1519,7 @@ function svg_edit_setup() {
 			{ 
 				paint: paint,
 				window: { pickerTitle: title },
-				images: { clientPath: "jgraduate/images/" },
+				images: { clientPath: "jgraduate/images/" }
 			},
 			function(p) {
 				paint = new $.jGraduate.Paint(p);

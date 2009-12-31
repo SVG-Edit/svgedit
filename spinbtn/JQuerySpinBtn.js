@@ -84,7 +84,7 @@ $.fn.SpinButton = function(cfg){
 			_direction: null,
 			_delay: null,
 			_repeat: null,
-			callback: cfg && cfg.callback ? cfg.callback : null,
+			callback: cfg && cfg.callback ? cfg.callback : null
 		};
 		
 		

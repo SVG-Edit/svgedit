@@ -83,6 +83,7 @@ var fromXml = function(str) {
 	return $('<p/>').html(str).text();
 };
 
+
 // These command objects are used for the Undo/Redo stack
 // attrs contains the values that the attributes had before the change
 function ChangeElementCommand(elem, attrs, text) {
@@ -502,7 +503,7 @@ function BatchCommand(text) {
 				n:  [nbax + (nbaw)/2, nbay],
 				w:	[nbax, nbay + (nbah)/2],
 				e:	[nbax + nbaw, nbay + (nbah)/2],
-				s:	[nbax + (nbaw)/2, nbay + nbah],
+				s:	[nbax + (nbaw)/2, nbay + nbah]
 			};
 			
 			if(selected == selectedElements[0]) {
@@ -830,7 +831,7 @@ function BatchCommand(text) {
 	};
 
 	this.updateElementFromJson = function(data) {
-		var shape = svgdoc.getElementById(data.attr.id);
+		var shape = getElem(data.attr.id);
 		// if shape is a path but we need to create a rect/ellipse, then remove the path
 		if (shape && data.element != shape.tagName) {
 			current_layer.removeChild(shape);
@@ -868,6 +869,8 @@ function BatchCommand(text) {
 	svgcontent.setAttribute("xmlns", svgns);
 	svgcontent.setAttribute("xmlns:xlink", xlinkns);
 	svgroot.appendChild(svgcontent);
+	
+	
 	
 	(function() {
 		// TODO: make this string optional and set by the client
@@ -921,13 +924,6 @@ function BatchCommand(text) {
 	var cur_shape = all_properties.shape;
 	var cur_text = all_properties.text;
 	var cur_properties = cur_shape;
-	
-	var freehand = {
-		minx: null,
-		miny: null,
-		maxx: null,
-		maxy: null
-	};
 	
 	var current_zoom = 1;
 	// this will hold all the currently selected elements
@@ -1014,7 +1010,8 @@ function BatchCommand(text) {
 	var getNextId = function() {
 		// ensure the ID does not exist
 		var id = getId();
-		while (svgdoc.getElementById(id)) {
+		
+		while (getElem(id)) {
 			obj_num++;
 			id = getId();
 		}
@@ -2283,6 +2280,12 @@ function BatchCommand(text) {
 		var start_x = null;
 		var start_y = null;
 		var init_bbox = {};
+		var freehand = {
+			minx: null,
+			miny: null,
+			maxx: null,
+			maxy: null
+		};
 	
 		// - when we are in a create mode, the element is added to the canvas
 		//   but the action is not recorded until mousing up
@@ -2611,7 +2614,7 @@ function BatchCommand(text) {
 			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
 			var mouse_x = pt.x;
 			var mouse_y = pt.y;
-			var shape = svgdoc.getElementById(getId());
+			var shape = getElem(getId());
 		
 			x = mouse_x / current_zoom;
 			y = mouse_y / current_zoom;
@@ -2901,7 +2904,7 @@ function BatchCommand(text) {
 			var y = mouse_y / current_zoom;
 					
 			started = false;
-			var element = svgdoc.getElementById(getId());
+			var element = getElem(getId());
 			var keep = false;
 			switch (current_mode)
 			{
@@ -3217,7 +3220,7 @@ function BatchCommand(text) {
 			// loop through and hide all pointgrips
 			$('#pathpointgrip_container > *').attr("display", "none");
 	
-			var line = document.getElementById("path_stretch_line");
+			var line = getElem("path_stretch_line");
 			if (line) line.setAttribute("display", "none");
 			
 			$('#ctrlpointgrip_container *').attr('display','none');
@@ -3250,7 +3253,7 @@ function BatchCommand(text) {
 			// loop through and show all pointgrips
 			var len = current_path_pts.length;
 			for (var i = 0; i < len; i += 2) {
-				var grip = document.getElementById("pathpointgrip_"+i/2);
+				var grip = getElem("pathpointgrip_"+i/2);
 				if (grip) {
 					assignAttributes(grip, {
 						'cx': current_path_pts[i],
@@ -3292,14 +3295,14 @@ function BatchCommand(text) {
 	
 		var addPointGripToPath = function(x,y,index) {
 			// create the container of all the point grips
-			var pointGripContainer = document.getElementById("pathpointgrip_container");
+			var pointGripContainer = getElem("pathpointgrip_container");
 			if (!pointGripContainer) {
-				var parent = document.getElementById("selectorParentGroup");
+				var parent = getElem("selectorParentGroup");
 				pointGripContainer = parent.appendChild(document.createElementNS(svgns, "g"));
 				pointGripContainer.id = "pathpointgrip_container";
 			}
 	
-			var pointGrip = document.getElementById("pathpointgrip_"+index);
+			var pointGrip = getElem("pathpointgrip_"+index);
 			// create it
 			if (!pointGrip) {
 				pointGrip = document.createElementNS(svgns, "circle");
@@ -3326,7 +3329,7 @@ function BatchCommand(text) {
 			assignAttributes(pointGrip, {
 				'cx': x,
 				'cy': y,
-				'display': "inline",
+				'display': "inline"
 			});
 		};
 		
@@ -3337,7 +3340,7 @@ function BatchCommand(text) {
 		
 		var updateSegLine = function(next_node) {
 			// create segment line
-			var segLine = document.getElementById("segline");
+			var segLine = getElem("segline");
 			if(!segLine) {
 				var pointGripContainer = $('#pathpointgrip_container')[0];
 				segLine = document.createElementNS(svgns, "path");
@@ -3481,12 +3484,12 @@ function BatchCommand(text) {
 			}
 				
 			// move the point grip
-			var grip = document.getElementById("pathpointgrip_" + current_path_pt_drag);
+			var grip = getElem("pathpointgrip_" + current_path_pt_drag);
 			if (grip) {
 				grip.setAttribute("cx", mouse_x);
 				grip.setAttribute("cy", mouse_y);
 				if(is_closed && is_first) {
-					var grip = document.getElementById("pathpointgrip_" + last_index);
+					var grip = getElem("pathpointgrip_" + last_index);
 					grip.setAttribute("cx", mouse_x);
 					grip.setAttribute("cy", mouse_y);
 				}
@@ -3498,7 +3501,7 @@ function BatchCommand(text) {
 			if(cur_type != 4) {
 				var num = is_first?last_index:index;
 				var id2 = (num-1)+'c2';
-				var line = document.getElementById("ctrlLine_"+id2);
+				var line = getElem("ctrlLine_"+id2);
 				if(line) {
 					// Don't do if first point on open path
 					if(!(!is_closed && current_path_pt_drag == 0)) {
@@ -3511,7 +3514,7 @@ function BatchCommand(text) {
 			
 			if(next_type != 4) {
 				var id1 = (current_path_pt_drag)+'c1';
-				var line = document.getElementById("ctrlLine_"+id1);
+				var line = getElem("ctrlLine_"+id1);
 				if(line) {
 					var x2 = line.getAttribute('x2') - 0 + x_diff*current_zoom;
 					var y2 = line.getAttribute('y2') - 0 + y_diff*current_zoom;
@@ -3562,12 +3565,12 @@ function BatchCommand(text) {
 			
 			updateSegLine(true);
 			
-			var grip = document.getElementById("ctrlpointgrip_" + ctrl_pt_drag);
+			var grip = getElem("ctrlpointgrip_" + ctrl_pt_drag);
 			if(grip) {
 				grip.setAttribute("cx", mouse_x);
 				grip.setAttribute("cy", mouse_y);
 				
-				var line = document.getElementById("ctrlLine_"+ctrl_pt_drag);
+				var line = getElem("ctrlLine_"+ctrl_pt_drag);
 				line.setAttribute("x2", mouse_x);
 				line.setAttribute("y2", mouse_y);
 			}
@@ -3600,15 +3603,15 @@ function BatchCommand(text) {
 			}
 		
 			// create the container of all the control point grips
-			var ctrlPointGripContainer = document.getElementById("ctrlpointgrip_container");
+			var ctrlPointGripContainer = getElem("ctrlpointgrip_container");
 			if (!ctrlPointGripContainer) {
-				var parent = document.getElementById("selectorParentGroup");
+				var parent = getElem("selectorParentGroup");
 				ctrlPointGripContainer = parent.appendChild(document.createElementNS(svgns, "g"));
 				ctrlPointGripContainer.id = "ctrlpointgrip_container";
 			}
 			ctrlPointGripContainer.setAttribute("display", "inline");
 			
-			var ctrlLine = document.getElementById("ctrlLine_"+id);
+			var ctrlLine = getElem("ctrlLine_"+id);
 			if (!ctrlLine) {
 				ctrlLine = document.createElementNS(svgns, "line");
 				assignAttributes(ctrlLine, {
@@ -3628,7 +3631,7 @@ function BatchCommand(text) {
 				'display': "inline"
 			});
 			
-			var pointGrip = document.getElementById("ctrlpointgrip_"+id);
+			var pointGrip = getElem("ctrlpointgrip_"+id);
 			// create it
 			if (!pointGrip) {
 				pointGrip = document.createElementNS(svgns, "circle");
@@ -3736,7 +3739,7 @@ function BatchCommand(text) {
 			R_nc.setRotate((angle * 180.0 / Math.PI), newcx, newcy);
 			tlist.replaceItem(R_nc,0);
 				
-			if(document.getElementById("pathpointgrip_container")) {
+			if(getElem("pathpointgrip_container")) {
 				var pcx = newcx * current_zoom,
 					pcy = newcy * current_zoom;
 				var xform = ["rotate(", (angle*180.0/Math.PI), " ", pcx, ",", pcy, ")"].join("");
@@ -3805,7 +3808,7 @@ function BatchCommand(text) {
 			},
 			mouseMove: function(mouse_x, mouse_y) {
 				if(current_mode == "path") {
-					var line = document.getElementById("path_stretch_line");
+					var line = getElem("path_stretch_line");
 					if (line) {
 						line.setAttribute("x2", x *= current_zoom);
 						line.setAttribute("y2", y *= current_zoom);
@@ -3862,7 +3865,7 @@ function BatchCommand(text) {
 					var x = mouse_x/current_zoom;
 					var y = mouse_y/current_zoom;
 					
-					var stretchy = document.getElementById("path_stretch_line");
+					var stretchy = getElem("path_stretch_line");
 					if (!stretchy) {
 						stretchy = document.createElementNS(svgns, "line");
 						assignAttributes(stretchy, {
@@ -3870,7 +3873,7 @@ function BatchCommand(text) {
 							'stroke': "blue",
 							'stroke-width': "0.5"
 						});
-						stretchy = document.getElementById("selectorParentGroup").appendChild(stretchy);
+						stretchy = getElem("selectorParentGroup").appendChild(stretchy);
 					}
 					stretchy.setAttribute("display", "inline");
 					
@@ -3921,7 +3924,7 @@ function BatchCommand(text) {
 						}
 						
 						// get path element that we are in the process of creating
-						var path = svgdoc.getElementById(getId());
+						var path = getElem(getId());
 						var len = current_path_pts.length;
 						// if we clicked on an existing point, then we are done this path, commit it
 						// (i,i+1) are the x,y that were clicked on
@@ -4065,7 +4068,7 @@ function BatchCommand(text) {
 			
 			clear: function(remove) {
 				if(remove && current_mode == "path") {
-					var elem = svgdoc.getElementById(getId());
+					var elem = getElem(getId());
 					if(elem) elem.parentNode.removeChild(elem);
 				}
 				removeAllPointGripsFromPath();
@@ -4106,7 +4109,7 @@ function BatchCommand(text) {
 			modeChange: function() {
 				// toss out half-drawn path
 				if (current_mode == "path" && current_path_pts.length > 0) {
-					var elem = svgdoc.getElementById(getId());
+					var elem = getElem(getId());
 					elem.parentNode.removeChild(elem);
 					this.clear();
 					canvas.clearSelection();
@@ -5664,7 +5667,7 @@ function BatchCommand(text) {
 			elem.setAttribute("transform", oldTransform);
 			this.changeSelectedAttribute("transform",newTransform,selectedElements);
 		}
-		var pointGripContainer = document.getElementById("pathpointgrip_container");
+		var pointGripContainer = getElem("pathpointgrip_container");
 		if(elem.nodeName == "path" && pointGripContainer) {
 			pathActions.setPointContainerTransform(elem.getAttribute("transform"));
 		}
@@ -6593,8 +6596,30 @@ function BatchCommand(text) {
 	}
 	
 	this.clear();
-};
-
+	
+	var done = false;
+	
+	function getElem(id) {
+		
+		if(svgroot.querySelector) {
+			// querySelector lookup
+			return svgroot.querySelector('#'+id);
+		} else if(svgdoc.evaluate) {
+			if(!done) {
+				alert('e')
+				done = true;
+			}
+			// xpath lookup
+			return svgdoc.evaluate('svg:svg[@id="svgroot"]//svg:*[@id="'+id+'"]', container, function() { return "http://www.w3.org/2000/svg"; }, 9, null).singleNodeValue;
+		} else {
+			// jQuery lookup: twice as slow as xpath in FF
+			return $(svgroot).find('[id=' + id + ']')[0];
+		}
+		
+		// getElementById lookup: includes icons, not good
+		// return svgdoc.getElementById(id);
+	}
+}
 // Static class for various utility functions
 
 var Utils = {
