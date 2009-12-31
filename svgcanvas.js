@@ -6597,18 +6597,11 @@ function BatchCommand(text) {
 	
 	this.clear();
 	
-	var done = false;
-	
 	function getElem(id) {
-		
 		if(svgroot.querySelector) {
 			// querySelector lookup
 			return svgroot.querySelector('#'+id);
 		} else if(svgdoc.evaluate) {
-			if(!done) {
-				alert('e')
-				done = true;
-			}
 			// xpath lookup
 			return svgdoc.evaluate('svg:svg[@id="svgroot"]//svg:*[@id="'+id+'"]', container, function() { return "http://www.w3.org/2000/svg"; }, 9, null).singleNodeValue;
 		} else {
