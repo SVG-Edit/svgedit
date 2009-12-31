@@ -2286,7 +2286,7 @@ function BatchCommand(text) {
 			maxx: null,
 			maxy: null
 		};
-	
+		
 		// - when we are in a create mode, the element is added to the canvas
 		//   but the action is not recorded until mousing up
 		// - when we are in select mode, select the element, remember the position
@@ -2621,27 +2621,6 @@ function BatchCommand(text) {
 		
 			evt.preventDefault();
 			
-			var setRect = function(square) {
-				var w = Math.abs(x - start_x),
-					h = Math.abs(y - start_y),
-					new_x, new_y;
-				if(square) {
-					w = h = Math.max(w, h);
-					new_x = start_x < x ? start_x : start_x - w;
-					new_y = start_y < y ? start_y : start_y - h;
-				} else {
-					new_x = Math.min(start_x,x);
-					new_y = Math.min(start_y,y);
-				}
-	
-				assignAttributes(shape,{
-					'width': w,
-					'height': h,
-					'x': new_x,
-					'y': new_y
-				},1000);
-			}
-			
 			switch (current_mode)
 			{
 				case "select":
@@ -2832,11 +2811,30 @@ function BatchCommand(text) {
 					if (!window.opera) svgroot.unsuspendRedraw(handle);
 					break;
 				case "square":
-					setRect(true);
-					break;
+					// fall through
 				case "rect":
+					// fall through
 				case "image":
-					setRect(evt.shiftKey);
+					var square = (current_mode == 'square') || evt.shiftKey;
+					var w = Math.abs(x - start_x),
+						h = Math.abs(y - start_y),
+						new_x, new_y;
+					if(square) {
+						w = h = Math.max(w, h);
+						new_x = start_x < x ? start_x : start_x - w;
+						new_y = start_y < y ? start_y : start_y - h;
+					} else {
+						new_x = Math.min(start_x,x);
+						new_y = Math.min(start_y,y);
+					}
+		
+					assignAttributes(shape,{
+						'width': w,
+						'height': h,
+						'x': new_x,
+						'y': new_y
+					},1000);
+					
 					break;
 				case "circle":
 					var cx = shape.getAttributeNS(null, "cx");
