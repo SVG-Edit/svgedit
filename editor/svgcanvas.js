@@ -20,11 +20,13 @@ if(!window.console) {
 	window.console = {};
 	window.console.log = function(str) {};
 	window.console.dir = function(str) {};
-	
-	if(window.opera) {
-		window.console.log = function(str) {opera.postError(str);}
-	}
 }
+
+if(window.opera) {
+	window.console.log = function(str) {opera.postError(str);}
+}
+
+
 
 function SvgCanvas(container)
 {
@@ -1377,6 +1379,27 @@ function BatchCommand(text) {
 				}
 				break;
 			case "path":
+				var segList = selected.pathSegList;
+				var len = segList.numberOfItems;
+				changes.d = new Array(len);
+				for (var i = 0; i < len; ++i) {
+					var seg = segList.getItem(i);
+					changes.d[i] = {
+						type: seg.pathSegType,
+						x: seg.x,
+						y: seg.y,
+						x1: seg.x1,
+						y1: seg.y1,
+						x2: seg.x2,
+						y2: seg.y2,
+						r1: seg.r1,
+						r2: seg.r2,
+						angle: seg.angle,
+						largeArcFlag: seg.largeArcFlag,
+						sweepFlag: seg.sweepFlag
+					};
+				}
+				
 				var len = changes["d"].length;
 				var firstseg = changes["d"][0];
 				var firstpt = remap(firstseg.x,firstseg.y);
@@ -1582,26 +1605,7 @@ function BatchCommand(text) {
 			case "path":
 				initial = {};
 				initial["d"] = selected.getAttribute("d");
-				var segList = selected.pathSegList;
-				var len = segList.numberOfItems;
-				changes["d"] = new Array(len);
-				for (var i = 0; i < len; ++i) {
-					var seg = segList.getItem(i);
-					changes["d"][i] = {
-						type: seg.pathSegType,
-						x: seg.x,
-						y: seg.y,
-						x1: seg.x1,
-						y1: seg.y1,
-						x2: seg.x2,
-						y2: seg.y2,
-						r1: seg.r1,
-						r2: seg.r2,
-						angle: seg.angle,
-						largeArcFlag: seg.largeArcFlag,
-						sweepFlag: seg.sweepFlag
-					};
-				}
+				changes["d"] = selected.getAttribute("d");
 				break;
 		} // switch on element type to get initial values
 		
@@ -1936,28 +1940,6 @@ function BatchCommand(text) {
 						}
 					case 'path':
 						changes.d = selected.getAttribute("d");
-						if(changes.d) {
-							var segList = selected.pathSegList;
-							var len = segList.numberOfItems;
-							changes.d = new Array(len);
-							for (var i = 0; i < len; ++i) {
-								var seg = segList.getItem(i);
-								changes.d[i] = {
-									type: seg.pathSegType,
-									x: seg.x,
-									y: seg.y,
-									x1: seg.x1,
-									y1: seg.y1,
-									x2: seg.x2,
-									y2: seg.y2,
-									r1: seg.r1,
-									r2: seg.r2,
-									angle: seg.angle,
-									largeArcFlag: seg.largeArcFlag,
-									sweepFlag: seg.sweepFlag
-								};
-							}
-						}
 						operation = 1;
 						tlist.clear();
 						break;
@@ -2295,7 +2277,7 @@ function BatchCommand(text) {
 				aabox: {x:minx, y:miny, width:(maxx-minx), height:(maxy-miny)} };
 	};
 
-	var mouseEvents = function() {
+	(function() {
 		
 		var d_attr = null;
 		var start_x = null;
@@ -2318,8 +2300,8 @@ function BatchCommand(text) {
 				addGradient();
 			}
 			
-			x = mouse_x / current_zoom;
-			y = mouse_y / current_zoom;
+			var x = mouse_x / current_zoom;
+			var y = mouse_y / current_zoom;
 			
 			start_x = x;
 			start_y = y;
@@ -2970,25 +2952,6 @@ function BatchCommand(text) {
 							var t = evt.target;
 							if (selectedElements[0].nodeName == "path" && selectedElements[1] == null) {
 								pathActions.select(t);
-// 								if (current_path == t) {
-// 									current_mode = "pathedit";
-// 									
-// 									// This resets the pathedit selection in case it 
-// 									// was a rotate that turned into a matrix
-// 									var angle = canvas.getRotationAngle(t);
-// 									if(!angle) setPointContainerTransform();
-// 									
-// 									// recalculate current_path_pts
-// 									recalcPathPoints();
-// 									canvas.clearSelection();
-// 									// save the path's bbox
-// 									selectedBBoxes[0] = canvas.getBBox(current_path);
-// 									addAllPointGripsToPath();
-// 									addNodeToSelection(0);
-// 								} // going into pathedit mode
-// 								else {
-// 									current_path = t;
-// 								}
 							} // if it was a path
 							// else, if it was selected and this is a shift-click, remove it from selection
 							else if (evt.shiftKey) {
@@ -3177,12 +3140,10 @@ function BatchCommand(text) {
 			start_transform = null;
 		};
 
-		return {
-			up: mouseUp,
-			move: mouseMove,
-			down: mouseDown
-		};
-	}();
+		$(container).mousedown(mouseDown).mousemove(mouseMove);
+		$(window).mouseup(mouseUp);
+		
+	}());
 
 	var pathActions = function() {
 		
@@ -4311,7 +4272,13 @@ function BatchCommand(text) {
 				}
 				
 				replacePathSeg(new_type, next_index, points);
-		
+				
+				// d attribute needs to be manually updated for Webkit
+				if(isWebkit && current_path) {
+					var fixed_d = pathActions.convertPath(current_path);
+					current_path.setAttribute('d', fixed_d);
+				}
+
 				addAllPointGripsToPath(); 
 				// recalculateDimensions(current_path);
 				updateSegLine(true);
@@ -5977,10 +5944,6 @@ function BatchCommand(text) {
 		}
 	};
 
-	$(window).mouseup(mouseEvents.up);
-	$(container).mousedown(mouseEvents.down);
-	$(container).mousemove(mouseEvents.move);
-
 	this.deleteSelectedElements = function() {
 		var batchCmd = new BatchCommand("Delete Elements");
 		var len = selectedElements.length;
@@ -6474,6 +6437,12 @@ function BatchCommand(text) {
 		// manually increment obj_num because our cloned elements are not in the DOM yet
 		obj_num++; 
 		
+		// Opera's "d" value needs to be reset for Opera/Win/non-EN
+		if(isOpera && el.nodeName == 'path') {
+			var fixed_d = pathActions.convertPath(el);
+			new_el.setAttribute('d', fixed_d);
+		}
+
 		// now create copies of all children
 		$.each(el.childNodes, function(i, child) {
 			switch(child.nodeType) {
