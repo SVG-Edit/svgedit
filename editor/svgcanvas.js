@@ -4078,14 +4078,21 @@ function BatchCommand(text) {
 			},
 			resetOrientation: function(path) {
 				if(path == null || path.nodeName != 'path') return false;
-		
 				var tlist = canvas.getTransformList(path);
 				var m = transformListToTransform(tlist).matrix;
 				path.removeAttribute("transform");
-				
 				var segList = path.pathSegList;
-				var len = segList.numberOfItems;
-		
+				
+				// Opera/win/non-EN throws an error here.
+				// TODO: Find out why!
+				try {
+					var len = segList.numberOfItems;
+				} catch(err) {
+					var fixed_d = pathActions.convertPath(path);
+					path.setAttribute('d', fixed_d);
+					segList = path.pathSegList;
+					var len = segList.numberOfItems;
+				}
 				for (var i = 0; i < len; ++i) {
 					var seg = segList.getItem(i);
 					var type = seg.pathSegType;
