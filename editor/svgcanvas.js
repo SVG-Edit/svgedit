@@ -34,6 +34,8 @@ function SvgCanvas(container)
 var isOpera = !!window.opera;
 var isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1;
 
+var support = {};
+
 // this defines which elements and attributes that we support
 // TODO: add <a> elements to this
 // TODO: add <marker> to this
@@ -3591,7 +3593,26 @@ function BatchCommand(text) {
 			if(!path) path = current_path;
 			var func = 'createSVGPathSeg' + pathFuncs[type];
 			var seg = path[func].apply(path, pts);
-			path.pathSegList.replaceItem(seg, index);
+			
+			if(support.pathReplaceItem) {
+				path.pathSegList.replaceItem(seg, index);
+			} else {
+				var segList = path.pathSegList;
+				var len = segList.numberOfItems;
+				var arr = [];
+				for(var i=0; i<len; i++) {
+					var cur_seg = segList.getItem(i);
+					arr.push(cur_seg)				
+				}
+				segList.clear();
+				for(var i=0; i<len; i++) {
+					if(i == index) {
+						segList.appendItem(seg);
+					} else {
+						segList.appendItem(arr[i]);
+					}
+				}
+			}
 		}
 		
 		var addControlPointGrip = function(x, y, source_x, source_y, id, raw_val) {
@@ -4162,7 +4183,25 @@ function BatchCommand(text) {
 				}
 				
 				var seg = current_path.createSVGPathSegLinetoAbs(new_x, new_y);
-				list.insertItemBefore(seg, pt+1); // Webkit doesn't do this right.
+				
+				if(support.pathInsertItemBefore) {
+					list.insertItemBefore(seg, pt+1);
+				} else {
+					var segList = current_path.pathSegList;
+					var len = segList.numberOfItems;
+					var arr = [];
+					for(var i=0; i<len; i++) {
+						var cur_seg = segList.getItem(i);
+						arr.push(cur_seg)				
+					}
+					segList.clear();
+					for(var i=0; i<len; i++) {
+						if(i == pt+1) {
+							segList.appendItem(seg);
+						}
+						segList.appendItem(arr[i]);
+					}
+				}
 				
 				var abs_x = (getPathPoint(pt)[0] + new_x) * current_zoom;
 				var abs_y = (getPathPoint(pt)[1] + new_y) * current_zoom;
@@ -6617,6 +6656,27 @@ function BatchCommand(text) {
 		// getElementById lookup: includes icons, not good
 		// return svgdoc.getElementById(id);
 	}
+	
+	// Test support for features
+	(function() {
+		var path = document.createElementNS(svgns,'path');
+		path.setAttribute('d','M0,0 10,10');
+		var seglist = path.pathSegList;
+		var seg = path.createSVGPathSegLinetoAbs(5,5);
+		try {
+			seglist.replaceItem(seg, 0);
+			support.pathReplaceItem = true;
+		} catch(err) {
+			support.pathReplaceItem = false;
+		}
+		
+		try {
+			seglist.insertItemBefore(seg, 0);
+			support.pathInsertItemBefore = true;
+		} catch(err) {
+			support.pathInsertItemBefore = false;
+		}		
+	}());
 }
 // Static class for various utility functions
 
