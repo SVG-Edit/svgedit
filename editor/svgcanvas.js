@@ -4756,7 +4756,7 @@ function BatchCommand(text) {
         	});
         	
         	// Fix XML for Opera/Win/Non-EN
-			if(window.opera) {
+			if(!support.goodDecimals) {
 				canvas.fixOperaXML(svgcontent, newDoc.documentElement);
 			}
         	
@@ -5610,7 +5610,7 @@ function BatchCommand(text) {
 	this.getTransformList = function(elem) {
 		// Opera is included here because Opera/Win/Non-EN seems to change 
 		// transformlist float vals to use a comma rather than a period.
-		if (isWebkit || isOpera) {
+		if (isWebkit || !support.goodDecimals) {
 			var t = svgTransformLists[elem.id];
 			if (!t) {
 				svgTransformLists[elem.id] = new SVGEditTransformList(elem);
@@ -6485,7 +6485,7 @@ function BatchCommand(text) {
 		obj_num++; 
 		
 		// Opera's "d" value needs to be reset for Opera/Win/non-EN
-		if(isOpera && el.nodeName == 'path') {
+		if(!support.goodDecimals && el.nodeName == 'path') {
 			var fixed_d = pathActions.convertPath(el);
 			new_el.setAttribute('d', fixed_d);
 		}
@@ -6657,8 +6657,9 @@ function BatchCommand(text) {
 		// return svgdoc.getElementById(id);
 	}
 	
-	// Test support for features
+	// Test support for features/bugs
 	(function() {
+		// segList functions (for FF1.5 and 2.0)
 		var path = document.createElementNS(svgns,'path');
 		path.setAttribute('d','M0,0 10,10');
 		var seglist = path.pathSegList;
@@ -6675,7 +6676,13 @@ function BatchCommand(text) {
 			support.pathInsertItemBefore = true;
 		} catch(err) {
 			support.pathInsertItemBefore = false;
-		}		
+		}
+		
+		// Correct decimals on clone attributes (Opera/win/non-en)
+		var rect = document.createElementNS(svgns,'rect');
+		rect.setAttribute('x',.1);
+		var crect = rect.cloneNode(false);
+		support.goodDecimals = (crect.getAttribute('x').indexOf(',') == -1);
 	}());
 }
 // Static class for various utility functions
