@@ -2083,8 +2083,8 @@ function BatchCommand(text) {
 			}
 		});
 		
-		// Make sure null value is at the end
-		if(!selectedElements[0]) selectedElements.push(selectedElements.shift());
+		// Make sure first elements are not null
+		while(selectedElements[0] == null) selectedElements.shift(0);
 		
 	};
 
