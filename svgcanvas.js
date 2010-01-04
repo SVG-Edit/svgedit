@@ -4099,6 +4099,7 @@ function BatchCommand(text) {
 				if(path == null || path.nodeName != 'path') return false;
 				var tlist = canvas.getTransformList(path);
 				var m = transformListToTransform(tlist).matrix;
+				tlist.clear();
 				path.removeAttribute("transform");
 				var segList = path.pathSegList;
 				
