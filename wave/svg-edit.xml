@@ -479,8 +479,6 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	</div> 
 </div> 
  
-    <script type='text/javascript' 
-        src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>
     ]]>
   </Content>
 </Module>
