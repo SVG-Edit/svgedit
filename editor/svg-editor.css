@@ -270,7 +270,7 @@ body {
 	stroke: #000;
 	stroke-width: 1px;
 	stroke-opacity: 1.0;
-	stroke-dasharray: none;
+	stroke-dasharray: 0;
 	opacity: 1;
 	pointer-events: stroke;
 	vector-effect: non-scaling-stroke;
