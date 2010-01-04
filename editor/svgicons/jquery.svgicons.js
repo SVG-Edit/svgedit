@@ -344,8 +344,8 @@ $(function() {
 				var id = this.id;
 				var no_dupes = ($(svgdoc).find('#' + id).length <= 1);
 				if(isOpera) no_dupes = false; // Opera didn't clone svg_el, so not reliable
-				if(!force && no_dupes) return;
-				var new_id = id + svg_num + i;
+				// if(!force && no_dupes) return;
+				var new_id = 'x' + id + svg_num + i;
 				$(this).attr('id', new_id);			
 	
 				svg_el.find('[fill="url(#' + id + ')"]').each(function() {
