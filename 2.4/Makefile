@@ -10,7 +10,7 @@ all: release firefox opera
 build/$(PACKAGE):
 	rm -rf config
 	mkdir config
-	$(MAKEDOCS) -i editor/ -o html docs/ -p config/
+	$(MAKEDOCS) -i editor/ -o html docs/ -p config/ -oft -r
 	mkdir -p build/$(PACKAGE)
 	cp -r editor/* build/$(PACKAGE)
 	-find build/$(PACKAGE) -name .svn -type d -exec rm -rf {} \;
@@ -21,7 +21,7 @@ build/$(PACKAGE):
 # minify SVG-edit files
 	java -jar $(YUI) build/$(PACKAGE)/svg-editor.js > build/$(PACKAGE)/svg-editor.min.js
 	java -jar $(YUI) build/$(PACKAGE)/svgcanvas.js > build/$(PACKAGE)/svgcanvas.min.js
-	java -jar $(YUI) build/$(PACKAGE)/locale/locale.js > build/$(PACKAGE)/locale/locale.js
+#	java -jar $(YUI) build/$(PACKAGE)/locale/locale.js > build/$(PACKAGE)/locale/locale.js
 # CSS files do not work remotely
 # java -jar $(YUI) build/$(PACKAGE)/spinbtn/JQuerySpinBtn.css > build/$(PACKAGE)/spinbtn/JQuerySpinBtn.min.css
 # java -jar $(YUI) build/$(PACKAGE)/svg-editor.css > build/$(PACKAGE)/svg-editor.min.css
