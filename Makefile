@@ -1,5 +1,5 @@
 NAME=svg-edit
-VERSION=2.4
+VERSION=2.5
 MAKEDOCS=naturaldocs/NaturalDocs
 PACKAGE=$(NAME)-$(VERSION)
 YUI=build/yuicompressor.jar
@@ -10,7 +10,7 @@ all: release firefox opera
 build/$(PACKAGE):
 	rm -rf config
 	mkdir config
-	$(MAKEDOCS) -i editor/ -o html docs/ -p config/
+	$(MAKEDOCS) -i editor/ -o html docs/ -p config/ -oft -r
 	mkdir -p build/$(PACKAGE)
 	cp -r editor/* build/$(PACKAGE)
 	-find build/$(PACKAGE) -name .svn -type d -exec rm -rf {} \;
