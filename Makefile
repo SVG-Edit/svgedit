@@ -16,9 +16,12 @@ build/$(PACKAGE):
 	-find build/$(PACKAGE) -name .svn -type d -exec rm -rf {} \;
 # minify spin button
 	java -jar $(YUI) build/$(PACKAGE)/spinbtn/JQuerySpinBtn.js > build/$(PACKAGE)/spinbtn/JQuerySpinBtn.min.js
+# minify icon loader
+	java -jar $(YUI) build/$(PACKAGE)/svgicons/jquery.svgicons.js > build/$(PACKAGE)/svgicons/jquery.svgicons.min.js
 # minify SVG-edit files
 	java -jar $(YUI) build/$(PACKAGE)/svg-editor.js > build/$(PACKAGE)/svg-editor.min.js
 	java -jar $(YUI) build/$(PACKAGE)/svgcanvas.js > build/$(PACKAGE)/svgcanvas.min.js
+	java -jar $(YUI) build/$(PACKAGE)/locale/locale.js > build/$(PACKAGE)/locale/locale.js
 # CSS files do not work remotely
 # java -jar $(YUI) build/$(PACKAGE)/spinbtn/JQuerySpinBtn.css > build/$(PACKAGE)/spinbtn/JQuerySpinBtn.min.css
 # java -jar $(YUI) build/$(PACKAGE)/svg-editor.css > build/$(PACKAGE)/svg-editor.min.css
