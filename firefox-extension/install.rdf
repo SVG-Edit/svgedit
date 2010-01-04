@@ -7,7 +7,7 @@
   <Description about="urn:mozilla:install-manifest">
     <!-- required properties -->
     <em:id>svg-edit@googlegroups.com</em:id>
-    <em:version>2.3</em:version>
+    <em:version>2.5</em:version>
     <em:type>2</em:type>
     <em:targetApplication>
       <Description>
