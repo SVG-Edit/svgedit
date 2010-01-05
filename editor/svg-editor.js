@@ -184,7 +184,7 @@ function svg_edit_setup() {
 		// Deal with pathedit mode
 		$('#path_node_panel').toggle(is_node);
 		$('#tools_bottom_2,#tools_bottom_3').toggle(!is_node);
-		var size = $('#tool_select > svg')[0].getAttribute('width');
+		var size = $('#tool_select > svg, #tool_select > img')[0].getAttribute('width');
 		if(is_node) {
 			// Change select icon
 			$('.tool_button').removeClass('tool_button_current');
@@ -1211,17 +1211,17 @@ function svg_edit_setup() {
 		
 		// Change icon size
 		$('.tool_button, .push_button, .tool_button_current, .tool_button_disabled, .tool_flyout_button, #url_notice')
-		.find('> svg').each(function() {
+		.find('> svg, > img').each(function() {
 			this.setAttribute('width',size_num);
 			this.setAttribute('height',size_num);
 		});
 		
 		$.resizeSvgIcons({
-			'.flyout_arrow_horiz svg': size_num / 3,
-			'#logo a > svg': size_num * 1.3
+			'.flyout_arrow_horiz svg, .flyout_arrow_horiz img': size_num / 3,
+			'#logo a > svg, #logo a > img': size_num * 1.3
 		});
 		if(size != 's') {
-			$.resizeSvgIcons({'#layerbuttons svg': size_num * .6});
+			$.resizeSvgIcons({'#layerbuttons svg, #layerbuttons img': size_num * .6});
 		}
 		
 		// Note that all rules will be prefixed with '#svg_editor' when parsed
@@ -2234,6 +2234,7 @@ function svg_edit_setup() {
 			'redo':'redo.png',
 			
 			'select':'select.png',
+			'select_node':'select_node.png',
 			'pencil':'fhpath.png',
 			'pen':'line.png',
 			'square':'square.png',
@@ -2253,6 +2254,9 @@ function svg_edit_setup() {
 			'ungroup':'shape_ungroup.png',
 			'move_top':'move_top.png',
 			'move_bottom':'move_bottom.png',
+			'to_path':'to_path.png',
+			'link_controls':'link_controls.png',
+			'reorient':'reorient.png',
 			
 			'align_left':'align-left.png',
 			'align_center':'align-center',
@@ -2336,7 +2340,7 @@ function svg_edit_setup() {
 			'.toolbar_button button .svg_icon':16
 		},
 		callback: function(icons) {
-			$('.toolbar_button button > svg').each(function() {
+			$('.toolbar_button button > svg, .toolbar_button button > img').each(function() {
 				$(this).parent().prepend(this);
 			});
 			
