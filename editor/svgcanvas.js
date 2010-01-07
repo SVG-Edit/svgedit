@@ -315,7 +315,7 @@ function BatchCommand(text) {
 								"attr": {
 									"id": ("selectedBox"+this.id),
 									"fill": "none",
-									"stroke": "blue",
+									"stroke": "#22C",
 									"stroke-width": "1",
 									"stroke-dasharray": "5,5",
 									// need to specify this so that the rect is not selectable
@@ -337,7 +337,7 @@ function BatchCommand(text) {
 							"element": "line",
 							"attr": {
 								"id": ("selectorGrip_rotateconnector_" + this.id),
-								"stroke": "blue",
+								"stroke": "#22C",
 								"stroke-width": "1"
 							}
 						}) );
@@ -347,7 +347,7 @@ function BatchCommand(text) {
 								"id": ("selectorGrip_rotate_" + this.id),
 								"fill": "lime",
 								"r": 4,
-								"stroke": "blue",
+								"stroke": "#22C",
 								"stroke-width": 2,
 								"style": "cursor:url(images/rotate.png) 12 12, auto;"
 							}
@@ -360,7 +360,7 @@ function BatchCommand(text) {
 					"element": "circle",
 					"attr": {
 						"id": ("selectorGrip_resize_" + dir + "_" + this.id),
-						"fill": "blue",
+						"fill": "#22C",
 						"r": 4,
 						"style": ("cursor:" + dir + "-resize"),
 						// This expands the mouse-able area of the grips making them
@@ -614,9 +614,9 @@ function BatchCommand(text) {
 						addSvgElementFromJson({ "element": "rect",
 							"attr": {
 								"id": "selectorRubberBand",
-								"fill": "blue",
+								"fill": "#22C",
 								"fill-opacity": 0.15,
-								"stroke": "blue",
+								"stroke": "#22C",
 								"stroke-width": 0.5,
 								"display": "none",
 								"style": "pointer-events:none"
@@ -3881,7 +3881,7 @@ function BatchCommand(text) {
 						stretchy = document.createElementNS(svgns, "line");
 						assignAttributes(stretchy, {
 							'id': "path_stretch_line",
-							'stroke': "blue",
+							'stroke': "#22C",
 							'stroke-width': "0.5"
 						});
 						stretchy = getElem("selectorParentGroup").appendChild(stretchy);

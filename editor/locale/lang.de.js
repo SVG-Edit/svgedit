@@ -129,7 +129,7 @@
 {"id":"selected_y","title":"Ändere die Y Koordinate"},
 {"id":"tool_topath","title":"Gewähltes Objekt in einen Pfad konvertieren"},
 {"id":"tool_reorient","title":"Neuausrichtung des Pfades"},
-{"id":"tool_node_link","title":"Link Control Points"},
+{"id":"tool_node_link","title":"Gekoppelte oder separate Kontroll Punkte für die Bearbeitung des Pfades"},
 {"js_strings": {
 	"invalidAttrValGiven":"Fehlerhafter Wert",
 	"noContentToFitTo":"Kein Inhalt anzupassen",
