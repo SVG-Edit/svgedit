@@ -418,7 +418,7 @@ function BatchCommand(text) {
 				offset += 2/canvas.getZoom();
 			}
 			var bbox = canvas.getBBox(selected);
-			if(!isWebkit && selected.tagName == 'g') {
+			if(selected.tagName == 'g') {
 				// The bbox for a group does not include stroke vals, so we
 				// get the bbox based on its children. 
 				var stroked_bbox = canvas.getStrokedBBox(selected.childNodes);
@@ -5604,11 +5604,16 @@ function BatchCommand(text) {
 		// Opera is included here because Opera/Win/Non-EN seems to change 
 		// transformlist float vals to use a comma rather than a period.
 		if (isWebkit || !support.goodDecimals) {
-			var t = svgTransformLists[elem.id];
-			if (!t) {
-				svgTransformLists[elem.id] = new SVGEditTransformList(elem);
-				svgTransformLists[elem.id]._init();
-				t = svgTransformLists[elem.id];
+			var id = elem.id;
+			if(!id) {
+				// Get unique ID for temporary element
+				id = 'temp';
+			}
+			var t = svgTransformLists[id];
+			if (!t || id == 'temp') {
+				svgTransformLists[id] = new SVGEditTransformList(elem);
+				svgTransformLists[id]._init();
+				t = svgTransformLists[id];
 			}
 			return t;
 		}
@@ -6249,7 +6254,6 @@ function BatchCommand(text) {
 	this.getStrokedBBox = function(elems) {
 		if(!elems) elems = canvas.getVisibleElements();
 		if(!elems.length) return false;
-		
 		// Make sure the expected BBox is returned if the element is a group
 		// FIXME: doesn't this mean that every time we call getStrokedBBox() that we are 
 		// re-creating the getCheckedBBox() function?  shouldn't we make this a function 
@@ -6355,21 +6359,21 @@ function BatchCommand(text) {
 			}
 			return offset;
 		}
-		
+		var bboxes = [];
 		$.each(elems, function(i, elem) {
 			var cur_bb = getCheckedBBox(elem);
 			if(!cur_bb) return;
 			var offset = getOffset(elem);
 			min_x = Math.min(min_x, cur_bb.x - offset);
 			min_y = Math.min(min_y, cur_bb.y - offset);
+			bboxes.push(cur_bb);
 		});
 		
 		full_bb.x = min_x;
 		full_bb.y = min_y;
 		
 		$.each(elems, function(i, elem) {
-			var cur_bb = getCheckedBBox(elem);
-			if(!cur_bb) return;
+			var cur_bb = bboxes[i];
 			var offset = getOffset(elem);
 			max_x = Math.max(max_x, cur_bb.x + cur_bb.width + offset);
 			max_y = Math.max(max_y, cur_bb.y + cur_bb.height + offset);
