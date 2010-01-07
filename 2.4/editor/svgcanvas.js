@@ -5655,6 +5655,8 @@ function BatchCommand(text) {
 			ret = newg.getBBox();
 			while (newg.firstChild) { selected.appendChild(newg.firstChild); }
 			selected.parentNode.removeChild(newg);
+		} else if(elem.nodeName == 'path' && isWebkit) {
+			ret = getPathBBox(selected);
 		} else {
 			try { ret = selected.getBBox(); } 
 			catch(e) { ret = null; }
@@ -6259,6 +6261,82 @@ function BatchCommand(text) {
 		}
 	};
 
+	var getPathBBox = function(path) {
+		// Get correct BBox for a path in Webkit
+	
+		// Converted from code found here:
+		// http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html
+	
+		var seglist = path.pathSegList;
+		var tot = seglist.numberOfItems;
+		
+		var bounds = [[], []];
+		var start = seglist.getItem(0);
+		var P0 = [start.x, start.y];
+		
+		for(var i=0; i < tot; i++) {
+			var seg = seglist.getItem(i);
+			if(!seg.x) continue;
+			
+			// Add actual points to limits
+			bounds[0].push(P0[0]);
+			bounds[1].push(P0[1]);
+			
+			if(seg.x1) {
+				var P1 = [seg.x1, seg.y1],
+					P2 = [seg.x2, seg.y2],
+					P3 = [seg.x, seg.y];
+
+				for(var j=0; j < 2; j++) {
+
+					var calc = function(t) {
+						return Math.pow(1-t,3) * P0[j] 
+							+ 3 * Math.pow(1-t,2) * t * P1[j]
+							+ 3 * (1-t) * Math.pow(t,2) * P2[j]
+							+ Math.pow(t,3) * P3[j];
+					};
+
+					var b = 6 * P0[j] - 12 * P1[j] + 6 * P2[j];
+					var a = -3 * P0[j] + 9 * P1[j] - 9 * P2[j] + 3 * P3[j];
+					var c = 3 * P1[j] - 3 * P0[j];
+					
+					if(a == 0) {
+						if(b == 0) {
+							continue;
+						}
+						var t = -c / b;
+						if(0 < t && t < 1) {
+							bounds[j].push(calc(t));
+						}
+						continue;
+					}
+					
+					var b2ac = Math.pow(b,2) - 4 * c * a;
+					if(b2ac < 0) continue;
+					var t1 = (-b + Math.sqrt(b2ac))/(2 * a);
+					if(0 < t1 && t1 < 1) bounds[j].push(calc(t1));
+					var t2 = (-b - Math.sqrt(b2ac))/(2 * a);
+					if(0 < t2 && t2 < 1) bounds[j].push(calc(t2));
+				}
+				P0 = P3;
+			} else {
+				bounds[0].push(seg.x);
+				bounds[1].push(seg.y);
+			}
+		}
+		
+		var x = Math.min.apply(null, bounds[0]);
+		var w = Math.max.apply(null, bounds[0]) - x;
+		var y = Math.min.apply(null, bounds[1]);
+		var h = Math.max.apply(null, bounds[1]) - y;
+		return {
+			'x': x,
+			'y': y,
+			'width': w,
+			'height': h
+		};
+	}
+
 	this.getStrokedBBox = function(elems) {
 		if(!elems) elems = canvas.getVisibleElements();
 		if(!elems.length) return false;
@@ -6272,7 +6350,8 @@ function BatchCommand(text) {
 				// fine in FF, but not in other browsers (same problem mentioned
 				// in Issue 339 comment #2).
 				
-				var bb = elem.getBBox();
+				var bb = canvas.getBBox(elem);
+				
 				var angle = canvas.getRotationAngle(elem);
 				if ((angle && angle % 90) || hasMatrixTransform(canvas.getTransformList(elem))) {
 					// Accurate way to get BBox of rotated element in Firefox:
