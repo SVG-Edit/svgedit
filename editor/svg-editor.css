@@ -281,6 +281,9 @@ body {
 	stroke: none;
 }
 
+#workarea.wireframe #svgcanvas {
+	background: #FFF !important;
+}
 
 #svg_editor #selected_panel,
 #svg_editor #multiselected_panel,
