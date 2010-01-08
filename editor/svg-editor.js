@@ -216,7 +216,7 @@ function svg_edit_setup() {
 				selectedElement = elem;
 			}
 		}
-		
+
 		// we update the contextual panel with potentially new
 		// positional/sizing information (we DON'T want to update the
 		// toolbar here as that creates an infinite loop)
@@ -347,8 +347,11 @@ function svg_edit_setup() {
 	// updates the context panel tools based on the selected element
 	var updateContextPanel = function() {
 		var elem = selectedElement;
+		// If element has just been deleted, consider it null
+		if(elem != null && !elem.parentNode) elem = null;
 		var currentLayer = svgCanvas.getCurrentLayer();
 		var currentMode = svgCanvas.getMode();
+		
 		// No need to update anything else in rotate mode
 		if (currentMode == 'rotate' && elem != null) {
 			var ang = svgCanvas.getRotationAngle(elem);
@@ -366,7 +369,6 @@ function svg_edit_setup() {
 			$('#angle').val(angle);
 			
 			if(svgCanvas.addedNew) {
-				console.log(elname)
 				if(elname == 'image') {
 					promptImgURL();
 				} else if(elname == 'text') {

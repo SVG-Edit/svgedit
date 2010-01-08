@@ -221,7 +221,7 @@ function RemoveElementCommand(elem, parent, text) {
 	if (svgTransformLists[elem.id]) {
 		delete svgTransformLists[elem.id];
 	}
-	
+
 }
 
 function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
@@ -5998,7 +5998,7 @@ function BatchCommand(text) {
 			addCommandToHistory(batchCmd);
 		}
 	};
-
+	
 	this.deleteSelectedElements = function() {
 		var batchCmd = new BatchCommand("Delete Elements");
 		var len = selectedElements.length;
@@ -6424,6 +6424,7 @@ function BatchCommand(text) {
 		var full_bb;
 		$.each(elems, function() {
 			if(full_bb) return;
+			if(!this.parentNode) return;
 			full_bb = getCheckedBBox(this);
 		});
 		
