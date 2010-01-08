@@ -2269,6 +2269,7 @@ function BatchCommand(text) {
 				aabox: {x:minx, y:miny, width:(maxx-minx), height:(maxy-miny)} };
 	};
 
+	// Mouse events
 	(function() {
 		
 		var d_attr = null;
@@ -4149,7 +4150,7 @@ function BatchCommand(text) {
 			},
 			getNodePoint: function() {
 				if(current_path_pt != -1) {
-					var pt = getPathPoint(current_path_pt, true);
+					var pt = getPathPoint(current_path_pt);
 					var list = current_path.pathSegList;
 					var segtype;
 					if(list.numberOfItems > current_path_pt+1) {
@@ -4338,6 +4339,7 @@ function BatchCommand(text) {
 				call("changed", [current_path]);
 			},
 			moveNode: function(attr, newValue) {
+				newValue *= current_zoom;
 				var num = (attr == 'x')?0:1;
 				var old_path_pts = $.map(current_path_pts, function(n){return n/current_zoom;});
 	
