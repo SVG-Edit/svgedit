@@ -6200,8 +6200,12 @@ function BatchCommand(text) {
 			var oldParent = t.parentNode;
 			var oldNextSibling = t.nextSibling;
 			if (oldNextSibling == selectorManager.selectorParentGroup) oldNextSibling = null;
-			// first child is a comment, so call nextSibling
-			var firstChild = t.parentNode.firstChild.nextSibling;
+			var firstChild = t.parentNode.firstChild;
+			if (firstChild.tagName == 'title') {
+				firstChild = firstChild.nextSibling;
+			}
+			// This can probably be removed, as the defs should not ever apppear
+			// inside a layer group
 			if (firstChild.tagName == 'defs') {
 				firstChild = firstChild.nextSibling;
 			}
