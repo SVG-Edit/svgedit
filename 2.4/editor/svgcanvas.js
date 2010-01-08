@@ -3226,21 +3226,27 @@ function BatchCommand(text) {
 			$('#ctrlpointgrip_container *').attr('display','none');
 		};
 		
-		var addNodeToSelection = function(point) {
+		
+	var addNodeToSelection = function(point) {
 			// Currently only one node can be selected at a time, should allow more later
 			// Should point be the index or the grip element?
 			
 			var is_closed = pathIsClosed(); 
+			var last_pt = current_path_pts.length/2 - 1;
 			
-			if(is_closed && point == current_path_pts.length/2 - 1) {
+			if(is_closed && point == last_pt) {
 				current_path_pt = 0;
 			} else {
 				current_path_pt = point;
 			}
 			
 			$('#pathpointgrip_container circle').attr('stroke','#00F');
-			var grip = $('#pathpointgrip_' + point).attr('stroke','#0FF');
+			
+			var sel_point = (current_path_pt == 0 && is_closed)?last_pt:point;
+			$('#pathpointgrip_' + sel_point).attr('stroke','#0FF');
+			var grip = $('#pathpointgrip_' + point);
 			$('#ctrlpointgrip_container circle').attr('fill', '#EEE');
+
 			$('#ctrlpointgrip_' + current_path_pt + 'c1, #ctrlpointgrip_' + current_path_pt + 'c2').attr('fill','#0FF');
 			
 			updateSegLine();
