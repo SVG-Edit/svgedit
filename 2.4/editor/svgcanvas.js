@@ -3,18 +3,11 @@
  *
  * Licensed under the Apache License, Version 2
  *
- * Copyright(c) 2009 Alexis Deveria
- * Copyright(c) 2009 Pavol Rusnak
- * Copyright(c) 2009 Jeff Schiller
+ * Copyright(c) 2010 Alexis Deveria
+ * Copyright(c) 2010 Pavol Rusnak
+ * Copyright(c) 2010 Jeff Schiller
  *
  */
-/*
-	TODOs for TransformList:
-
-	* go through ungrouping again
-	* ensure zooming works properly
-	* ensure undo/redo works perfectly
-*/
 
 if(!window.console) {
 	window.console = {};
@@ -4137,6 +4130,8 @@ function BatchCommand(text) {
 			zoomChange: function() {
 				if(current_mode == "pathedit") {
 					resetPointGrips();
+					updateSegLine(true);
+					updateSegLine();
 				}
 			},
 			modeChange: function() {
