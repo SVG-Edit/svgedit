@@ -8,6 +8,7 @@
  * Copyright(c) 2010 Jeff Schiller
  *
  */
+
 if(!window.console) {
 	window.console = {};
 	window.console.log = function(str) {};
@@ -213,7 +214,7 @@ function RemoveElementCommand(elem, parent, text) {
 	if (svgTransformLists[elem.id]) {
 		delete svgTransformLists[elem.id];
 	}
-	
+
 }
 
 function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
@@ -2268,6 +2269,7 @@ function BatchCommand(text) {
 				aabox: {x:minx, y:miny, width:(maxx-minx), height:(maxy-miny)} };
 	};
 
+	// Mouse events
 	(function() {
 		
 		var d_attr = null;
@@ -3218,21 +3220,27 @@ function BatchCommand(text) {
 			$('#ctrlpointgrip_container *').attr('display','none');
 		};
 		
-		var addNodeToSelection = function(point) {
+		
+	var addNodeToSelection = function(point) {
 			// Currently only one node can be selected at a time, should allow more later
 			// Should point be the index or the grip element?
 			
 			var is_closed = pathIsClosed(); 
+			var last_pt = current_path_pts.length/2 - 1;
 			
-			if(is_closed && point == current_path_pts.length/2 - 1) {
+			if(is_closed && point == last_pt) {
 				current_path_pt = 0;
 			} else {
 				current_path_pt = point;
 			}
 			
 			$('#pathpointgrip_container circle').attr('stroke','#00F');
-			var grip = $('#pathpointgrip_' + point).attr('stroke','#0FF');
+			
+			var sel_point = (current_path_pt == 0 && is_closed)?last_pt:point;
+			$('#pathpointgrip_' + sel_point).attr('stroke','#0FF');
+			var grip = $('#pathpointgrip_' + point);
 			$('#ctrlpointgrip_container circle').attr('fill', '#EEE');
+
 			$('#ctrlpointgrip_' + current_path_pt + 'c1, #ctrlpointgrip_' + current_path_pt + 'c2').attr('fill','#0FF');
 			
 			updateSegLine();
@@ -4123,6 +4131,8 @@ function BatchCommand(text) {
 			zoomChange: function() {
 				if(current_mode == "pathedit") {
 					resetPointGrips();
+					updateSegLine(true);
+					updateSegLine();
 				}
 			},
 			modeChange: function() {
@@ -4140,7 +4150,7 @@ function BatchCommand(text) {
 			},
 			getNodePoint: function() {
 				if(current_path_pt != -1) {
-					var pt = getPathPoint(current_path_pt, true);
+					var pt = getPathPoint(current_path_pt);
 					var list = current_path.pathSegList;
 					var segtype;
 					if(list.numberOfItems > current_path_pt+1) {
@@ -4329,6 +4339,7 @@ function BatchCommand(text) {
 				call("changed", [current_path]);
 			},
 			moveNode: function(attr, newValue) {
+				newValue *= current_zoom;
 				var num = (attr == 'x')?0:1;
 				var old_path_pts = $.map(current_path_pts, function(n){return n/current_zoom;});
 	
@@ -5647,6 +5658,8 @@ function BatchCommand(text) {
 			ret = newg.getBBox();
 			while (newg.firstChild) { selected.appendChild(newg.firstChild); }
 			selected.parentNode.removeChild(newg);
+		} else if(elem.nodeName == 'path' && isWebkit) {
+			ret = getPathBBox(selected);
 		} else {
 			try { ret = selected.getBBox(); } 
 			catch(e) { ret = null; }
@@ -5988,7 +6001,7 @@ function BatchCommand(text) {
 			addCommandToHistory(batchCmd);
 		}
 	};
-
+	
 	this.deleteSelectedElements = function() {
 		var batchCmd = new BatchCommand("Delete Elements");
 		var len = selectedElements.length;
@@ -6190,8 +6203,12 @@ function BatchCommand(text) {
 			var oldParent = t.parentNode;
 			var oldNextSibling = t.nextSibling;
 			if (oldNextSibling == selectorManager.selectorParentGroup) oldNextSibling = null;
-			// first child is a comment, so call nextSibling
-			var firstChild = t.parentNode.firstChild.nextSibling;
+			var firstChild = t.parentNode.firstChild;
+			if (firstChild.tagName == 'title') {
+				firstChild = firstChild.nextSibling;
+			}
+			// This can probably be removed, as the defs should not ever apppear
+			// inside a layer group
 			if (firstChild.tagName == 'defs') {
 				firstChild = firstChild.nextSibling;
 			}
@@ -6251,6 +6268,82 @@ function BatchCommand(text) {
 		}
 	};
 
+	var getPathBBox = function(path) {
+		// Get correct BBox for a path in Webkit
+	
+		// Converted from code found here:
+		// http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html
+	
+		var seglist = path.pathSegList;
+		var tot = seglist.numberOfItems;
+		
+		var bounds = [[], []];
+		var start = seglist.getItem(0);
+		var P0 = [start.x, start.y];
+		
+		for(var i=0; i < tot; i++) {
+			var seg = seglist.getItem(i);
+			if(!seg.x) continue;
+			
+			// Add actual points to limits
+			bounds[0].push(P0[0]);
+			bounds[1].push(P0[1]);
+			
+			if(seg.x1) {
+				var P1 = [seg.x1, seg.y1],
+					P2 = [seg.x2, seg.y2],
+					P3 = [seg.x, seg.y];
+
+				for(var j=0; j < 2; j++) {
+
+					var calc = function(t) {
+						return Math.pow(1-t,3) * P0[j] 
+							+ 3 * Math.pow(1-t,2) * t * P1[j]
+							+ 3 * (1-t) * Math.pow(t,2) * P2[j]
+							+ Math.pow(t,3) * P3[j];
+					};
+
+					var b = 6 * P0[j] - 12 * P1[j] + 6 * P2[j];
+					var a = -3 * P0[j] + 9 * P1[j] - 9 * P2[j] + 3 * P3[j];
+					var c = 3 * P1[j] - 3 * P0[j];
+					
+					if(a == 0) {
+						if(b == 0) {
+							continue;
+						}
+						var t = -c / b;
+						if(0 < t && t < 1) {
+							bounds[j].push(calc(t));
+						}
+						continue;
+					}
+					
+					var b2ac = Math.pow(b,2) - 4 * c * a;
+					if(b2ac < 0) continue;
+					var t1 = (-b + Math.sqrt(b2ac))/(2 * a);
+					if(0 < t1 && t1 < 1) bounds[j].push(calc(t1));
+					var t2 = (-b - Math.sqrt(b2ac))/(2 * a);
+					if(0 < t2 && t2 < 1) bounds[j].push(calc(t2));
+				}
+				P0 = P3;
+			} else {
+				bounds[0].push(seg.x);
+				bounds[1].push(seg.y);
+			}
+		}
+		
+		var x = Math.min.apply(null, bounds[0]);
+		var w = Math.max.apply(null, bounds[0]) - x;
+		var y = Math.min.apply(null, bounds[1]);
+		var h = Math.max.apply(null, bounds[1]) - y;
+		return {
+			'x': x,
+			'y': y,
+			'width': w,
+			'height': h
+		};
+	}
+
 	this.getStrokedBBox = function(elems) {
 		if(!elems) elems = canvas.getVisibleElements();
 		if(!elems.length) return false;
@@ -6264,7 +6357,8 @@ function BatchCommand(text) {
 				// fine in FF, but not in other browsers (same problem mentioned
 				// in Issue 339 comment #2).
 				
-				var bb = elem.getBBox();
+				var bb = canvas.getBBox(elem);
+				
 				var angle = canvas.getRotationAngle(elem);
 				if ((angle && angle % 90) || hasMatrixTransform(canvas.getTransformList(elem))) {
 					// Accurate way to get BBox of rotated element in Firefox:
@@ -6337,6 +6431,7 @@ function BatchCommand(text) {
 		var full_bb;
 		$.each(elems, function() {
 			if(full_bb) return;
+			if(!this.parentNode) return;
 			full_bb = getCheckedBBox(this);
 		});
 		

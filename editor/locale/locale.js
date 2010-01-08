@@ -8,7 +8,8 @@
  */
 var put_locale = function(svgCanvas, given_param){
 	var lang_param;
-	var good_langs = ['cs','de','en','es','fr','nl','ro','sk'];
+	// TODO: Make this array be based on entries in svg-editor.html
+	var good_langs = ['cs','de','en','es','fa','fr','nl','ro','sk'];
 	if(given_param) {
 		lang_param = given_param;
 	} else {
