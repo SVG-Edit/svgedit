@@ -1,6 +1,45 @@
-2.2 - ???? ??, ????
+2.4 - January 11, 2010
 -------------------
-* 
+* Zoom
+* Layers
+* UI Localization
+* Wireframe Mode
+* Resizable UI (SVG icons)
+* Set background color and/or image (for tracing)
+* Convert Shapes to Paths  
+* X, Y coordinates for all elements
+* Draggable Dialog boxes
+* Select Non-Adjacent Elements
+* Fixed-ratio resize
+* Automatic Tool Switching
+* Raster Images
+* Group elements
+* Add/Remove path nodes
+* Curved Paths
+* Floating point values for all attributes
+* Text fields for all attributes 
+* Title element
+    
+2.3 - September 08, 2009
+-------------------
+* Align Objects 
+* Rotate Objects 
+* Clone Objects 
+* Select Next/Prev Object 
+* Edit SVG Source 
+* Gradient picking 
+* Polygon Mode (Path Editing, Phase 1)
+
+2.2 - July 08, 2009
+-------------------
+* Multiselect Mode 
+* Undo/Redo Actions 
+* Resize Elements 
+* Contextual tools for rect, circle, ellipse, line, text elements 
+* Some updated button images 
+* Stretched the UI to fit the browser window 
+* Resizing of the SVG canvas 
+* Upgraded to jPicker 1.0.8 
 
 2.1 - June 17, 2009
 -------------------
@@ -27,3 +66,7 @@
 * rewritten SVG-edit, so now it uses OOP
 * draw ellipse, square
 * created HTML interface similar to Inkscape
+
+1.0 - February 06, 2009
+-------------------
+* SVG-Edit released
