@@ -6,16 +6,26 @@
                    em:package="content" />
   <Description about="urn:mozilla:install-manifest">
     <!-- required properties -->
+    <em:name>SVG-edit</em:name>
     <em:id>svg-edit@googlegroups.com</em:id>
+    <em:homepageURL>http://svg-edit.googlecode.com/</em:homepageURL>
+    <em:description>A complete vector graphic editor in the browser</em:description>
+    <em:iconURL>chrome://svg-edit/skin/logo32.png</em:iconURL>
     <em:version>2.4</em:version>
     <em:type>2</em:type>
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
         <em:minVersion>1.5</em:minVersion>
-        <em:maxVersion>3.5.*</em:maxVersion>
+        <em:maxVersion>3.7.*</em:maxVersion>
       </Description>
     </em:targetApplication>
-    <em:name>SVG-edit</em:name>
+    <em:targetApplication><!-- SeaMonkey -->
+      <Description>
+        <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
+        <em:minVersion>2.0</em:minVersion>
+        <em:maxVersion>2.5.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
   </Description>
 </RDF>

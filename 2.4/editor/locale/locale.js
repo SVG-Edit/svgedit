@@ -68,4 +68,5 @@ var put_locale = function(svgCanvas, given_param){
 				processFile(xhr.responseText);
 			}
 		}
+	});
 };
