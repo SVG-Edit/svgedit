@@ -2342,6 +2342,7 @@ function svg_edit_setup() {
 			'.toolbar_button button .svg_icon':16
 		},
 		callback: function(icons) {
+		
 			$('.toolbar_button button > svg, .toolbar_button button > img').each(function() {
 				$(this).parent().prepend(this);
 			});

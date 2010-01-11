@@ -160,10 +160,17 @@ $(function() {
 							getIcons('ajax');
 						});
 					},
-					error: function() {
+					error: function(err) {
 						$(function() {
 							useFallback();
 						});
+					// Use this once icon bugs are fixed
+// 						if(err.responseXML) {
+// 							svgdoc = err.responseXML;
+// 							$(function() {
+// 								getIcons('ajax');
+// 							});							
+// 						} 
 					}
 				});
 			}
