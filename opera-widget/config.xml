@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
-<widget>
+<widget defaultmode="application">
   <widgetname>SVG Edit</widgetname>
   <description>
     A simple SVG Editor.
   </description>
   <width>800</width>
   <height>600</height>
+  <icon>editor/images/logo.svg</icon>
   <id>
     <name>SVG Edit</name>
     <revised>2009-09</revised>

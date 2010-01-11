@@ -25,6 +25,9 @@
  * Modifications by Jeff Schiller, July 2009:
  * - improve styling for widget in Opera
  * - consistent key-repeat handling cross-browser
+ * Modifications by Alexis Deveria, October 2009:
+ * - provide "stepfunc" callback option to allow custom function to run when changing a value
+ * - Made adjustValue(0) only run on certain keyup events, not all.
  *
  * Tested in IE6, Opera9, Firefox 1.5
  * v1.0  11 Aug 2006 - George Adamson	- First release
@@ -33,6 +36,8 @@
  * v1.3a 28 Sep 2006 - George Adamson	- Minor enhancements
  * v1.4  18 Jun 2009 - Jeff Schiller    - Added callback function
  * v1.5  06 Jul 2009 - Jeff Schiller    - Fixes for Opera.  
+ * v1.6  13 Oct 2009 - Alexis Deveria   - Added stepfunc function  
+ * v1.7  21 Oct 2009 - Alexis Deveria   - Minor fixes
  *                                        Fast-repeat for keys and live updating as you type.
  
  Sample usage:
@@ -68,6 +73,7 @@ $.fn.SpinButton = function(cfg){
 			min: cfg && !isNaN(parseFloat(cfg.min)) ? Number(cfg.min) : null,	// Fixes bug with min:0
 			max: cfg && !isNaN(parseFloat(cfg.max)) ? Number(cfg.max) : null,
 			step: cfg && cfg.step ? Number(cfg.step) : 1,
+			stepfunc: cfg && cfg.stepfunc ? cfg.stepfunc : false,
 			page: cfg && cfg.page ? Number(cfg.page) : 10,
 			upClass: cfg && cfg.upClass ? cfg.upClass : 'up',
 			downClass: cfg && cfg.downClass ? cfg.downClass : 'down',
@@ -75,15 +81,22 @@ $.fn.SpinButton = function(cfg){
 			delay: cfg && cfg.delay ? Number(cfg.delay) : 500,
 			interval: cfg && cfg.interval ? Number(cfg.interval) : 100,
 			_btn_width: 20,
-			_btn_height: 12,
 			_direction: null,
 			_delay: null,
 			_repeat: null,
-			callback: cfg && cfg.callback ? cfg.callback : null,
+			callback: cfg && cfg.callback ? cfg.callback : null
 		};
 		
+		
 		this.adjustValue = function(i){
-			var v = (isNaN(this.value) ? this.spinCfg.reset : Number(this.value)) + Number(i);
+			var v;
+			if(isNaN(this.value)) {
+				v = this.spinCfg.reset;
+			} else if($.isFunction(this.spinCfg.stepfunc)) {
+				v = this.spinCfg.stepfunc(this, i);
+			} else {
+				v = Number(this.value) + Number(i);
+			}
 			if (this.spinCfg.min !== null) v = Math.max(v, this.spinCfg.min);
 			if (this.spinCfg.max !== null) v = Math.min(v, this.spinCfg.max);
 			this.value = v;
@@ -98,9 +111,10 @@ $.fn.SpinButton = function(cfg){
 			var x = e.pageX || e.x;
 			var y = e.pageY || e.y;
 			var el = e.target || e.srcElement;
+			var height = $(el).outerHeight()/2;
 			var direction = 
 				(x > coord(el,'offsetLeft') + el.offsetWidth - this.spinCfg._btn_width)
-				? ((y < coord(el,'offsetTop') + this.spinCfg._btn_height) ? 1 : -1) : 0;
+				? ((y < coord(el,'offsetTop') + height) ? 1 : -1) : 0;
 			
 			if (direction !== this.spinCfg._direction) {
 				// Style up/down buttons:
@@ -191,7 +205,13 @@ $.fn.SpinButton = function(cfg){
 		// clear the 'repeating' flag
 		.keyup(function(e) {
 			this.repeating = false;
-			this.adjustValue(0);
+			switch(e.keyCode){
+				case 38: // Up
+				case 40: // Down
+				case 33: // PageUp
+				case 34: // PageDown
+				case 13: this.adjustValue(0); break; // Enter/Return
+			}
 		})
 		
 		.bind("mousewheel", function(e){

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE overlay SYSTEM "chrome://chromelist/locale/ChromeListOverlay.dtd" >
+
 <overlay id="SVGEditToolsOverlay"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
@@ -7,8 +7,20 @@
        src="chrome://svg-edit/content/svg-edit-overlay.js" />
 
 <menupopup id="menu_ToolsPopup">
-       <menuitem insertafter="devToolsSeparator" label="SVG Editor"
-       oncommand="start_svg_edit();" />
+	<menuitem id="svg-edit"
+		label="SVG Edit"
+		insertafter="devToolsSeparator"
+		class="menuitem-iconic"
+		image="chrome://svg-edit/skin/minilogo.png"
+		oncommand="start_svg_edit();" />
+</menupopup>
+
+<menupopup id="toolsPopup">
+	<menuitem id="svg-edit"
+		label="SVG Edit"
+		class="menuitem-iconic"
+		image="chrome://svg-edit/skin/minilogo.png"
+		oncommand="start_svg_edit();" />
 </menupopup>
 
 </overlay>
