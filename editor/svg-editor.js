@@ -2202,7 +2202,6 @@ function svg_edit_setup() {
 	svgCanvas.setCustomHandlers = function(opts) {
 		if(opts.open) {
 			$('#tool_open').show();
-			alert('hi');
 			svgCanvas.bind("opened", function(window, str) { opts.open(str); this.populateLayers(); });
 		}
 		if(opts.save) {
