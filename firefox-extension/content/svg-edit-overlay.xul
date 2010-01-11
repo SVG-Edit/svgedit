@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
 
-<?xml-stylesheet href="chrome://svg-edit/content/svg-edit-overlay.css" type="text/css"?>
-
-<!DOCTYPE overlay SYSTEM "chrome://chromelist/locale/ChromeListOverlay.dtd" >
 <overlay id="SVGEditToolsOverlay"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
@@ -10,16 +7,20 @@
        src="chrome://svg-edit/content/svg-edit-overlay.js" />
 
 <menupopup id="menu_ToolsPopup">
-       <menuitem insertafter="devToolsSeparator" label="SVG Editor"
-       oncommand="start_svg_edit();" />
+	<menuitem id="svg-edit"
+		label="SVG Edit"
+		insertafter="devToolsSeparator"
+		class="menuitem-iconic"
+		image="chrome://svg-edit/skin/minilogo.png"
+		oncommand="start_svg_edit();" />
 </menupopup>
 
- <!-- Firefox -->
-  <statusbar id="status-bar">
-    <statusbarpanel id="svg-edit-statusbar-button" 
-		    class="statusbarpanel-menu-iconic"
-		    onclick="return start_svg_edit()"
-		    tooltip="SvgEdit">
-    </statusbarpanel>
- </statusbar>
+<menupopup id="toolsPopup">
+	<menuitem id="svg-edit"
+		label="SVG Edit"
+		class="menuitem-iconic"
+		image="chrome://svg-edit/skin/minilogo.png"
+		oncommand="start_svg_edit();" />
+</menupopup>
+
 </overlay>

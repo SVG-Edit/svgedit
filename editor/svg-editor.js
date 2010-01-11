@@ -2198,10 +2198,12 @@ function svg_edit_setup() {
 		}
 	};
 	
+	svgCanvas.populateLayers = populateLayers;
 	svgCanvas.setCustomHandlers = function(opts) {
 		if(opts.open) {
 			$('#tool_open').show();
-			svgCanvas.bind("opened", opts.open);
+			alert('hi');
+			svgCanvas.bind("opened", function(window, str) { opts.open(str); this.populateLayers(); });
 		}
 		if(opts.save) {
 			svgCanvas.bind("saved", opts.save);
