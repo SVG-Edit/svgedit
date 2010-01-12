@@ -442,6 +442,7 @@ span.zoom_tool {
 	cursor: pointer;
 }
 
+/*
 div.fileinputs {
 	position: relative;
 }
@@ -460,15 +461,34 @@ div.fileinputs svg {
 	z-index: 2;
 	cursor: pointer;
 }
+*/
 
 /* the file input control is placed on top but made invisible */
 /* TODO: is moz-opacity really needed? filter? */
+/*
 input.file {
 	position: relative;
 	text-align: right;
 	-moz-opacity: 0;
 	filter:alpha(opacity: 0);
 	opacity: 0;
+}
+*/
+
+#fileinputs {
+	position: relative;
+	overflow: hidden;
+}
+
+#fileinputs input {
+	-moz-transform: scale(2.0); /* Not entirely necessary, but keeps it nice and big for OS X*/
+	height: 100%;
+	position: absolute;
+	opacity: 0;
+	top: -3px;
+	right: 10px;
+	margin: 0;
+	cursor: pointer; /* Sadly doesn't appear to have an effect */
 }
 
 #svg_editor .tool_button_current,
