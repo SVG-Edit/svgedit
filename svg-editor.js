@@ -1211,7 +1211,7 @@ function svg_edit_setup() {
 		var size_num = icon_sizes[size];
 		
 		// Change icon size
-		$('.tool_button, .push_button, .tool_button_current, .tool_button_disabled, .tool_flyout_button, #url_notice, #fileinputs, #tool_open')
+		$('.tool_button, .push_button, .tool_button_current, .tool_button_disabled, .tool_flyout_button, #url_notice, #tool_open')
 		.find('> svg, > img').each(function() {
 			this.setAttribute('width',size_num);
 			this.setAttribute('height',size_num);
@@ -2218,33 +2218,19 @@ function svg_edit_setup() {
 	// svgCanvas.open() will fire the 'opened' handler back here, 
 	// which is file_open here
 	if (window.FileReader) {
-		$("#fileinputs").show();
-		var fi = document.getElementById("fileinputs");
-		var svgns = "http://www.w3.org/2000/svg";
-		// we dynamically create an SVG with a foreignObject with a file input
-		// then we stretch and clip that file input so that it takes up exactly 24x24
-		// this is all thanks to there being no other way to bring up a file picker :(
-		// until Mozilla Bug 36619 is fixed, this is the only way I know how to do it
-		// TODO: fix this for when icon size is changed
-		var fi_holder = document.createElementNS(svgns, "svg");
-		fi_holder.setAttribute("viewBox", "0 0 24 24");
-		fi_holder.setAttribute("className", "svg_icon");
-		var fo = document.createElementNS(svgns, "foreignObject");
-		fo.setAttribute("width", "100%");
-		fo.setAttribute("height", "100%");
-		fo.setAttribute("transform", "translate(-5,-30) scale(3)");
-		var input = document.createElementNS("http://www.w3.org/1999/xhtml", "input");
-		input.setAttribute("type", "file");
-
-		input.setAttribute("onchange", "if(this.files.length==1) { \
-								var reader = new FileReader(); \
-								reader.onloadend = function(e) {console.log(e.target.result); svgCanvas.open(e.target.result);}; \
-								reader.readAsText(this.files[0]);}");
-		input.className = "file";
-		fo.appendChild(input);
-		fi_holder.appendChild(fo);
-		fi.insertBefore(fi_holder, fi.firstChild);
+		var inp = $('<input type="file">').change(function() {
+			if(this.files.length==1) {
+				var reader = new FileReader();
+				reader.onloadend = function(e) {
+					console.log(e.target.result);
+					svgCanvas.open(e.target.result);
+				};
+				reader.readAsText(this.files[0]);
+			}
+		});
+		$("#fileinputs").show().prepend(inp);
 		
+		// This doesn't appear to be necessary...
 		svgCanvas.setCustomHandlers( {open: fileOpen} );
 	}
 	
