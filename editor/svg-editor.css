@@ -307,7 +307,7 @@ body {
 }
 
 #svg_editor div.toolset,
-#svg_editor div.toolset > *{
+#svg_editor div.toolset > * {
 	float: left;
 }
 
@@ -440,6 +440,35 @@ span.zoom_tool {
 	border-right: 1px solid #808080;
 	border-bottom: 1px solid #808080;
 	cursor: pointer;
+}
+
+div.fileinputs {
+	position: relative;
+}
+
+div.fakefile {
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	z-index: 0;
+}
+
+div.fileinputs svg {
+	position: relative;
+	width: 24px;
+	height: 24px;
+	z-index: 2;
+	cursor: pointer;
+}
+
+/* the file input control is placed on top but made invisible */
+/* TODO: is moz-opacity really needed? filter? */
+input.file {
+	position: relative;
+	text-align: right;
+	-moz-opacity: 0;
+	filter:alpha(opacity: 0);
+	opacity: 0;
 }
 
 #svg_editor .tool_button_current,
@@ -608,6 +637,7 @@ span.zoom_tool {
 /*	width: 450px;*/
 	font-family: Verdana, Helvetica, sans-serif;
 	font-size: .8em;
+	z-index: 20001;
 }
 
 #svg_docprops #resolution {
@@ -723,6 +753,7 @@ span.zoom_tool {
 	bottom: 0px;
 	background-color: black;
 	opacity: 0.6;
+	z-index: 20000;
 }
 
 button#tool_source_save,
