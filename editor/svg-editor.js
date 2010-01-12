@@ -723,6 +723,34 @@ function svg_edit_setup() {
 		return true;
 	};
 	
+	(function() {
+		var button = $('#main_button');
+		var list = $('#main_menu');
+		var on_button = false;
+		$().mouseup(function(evt) {
+			if(!on_button) {
+				button.removeClass('down');
+				list.hide();
+			}
+			on_button = false;
+		});
+		
+		button.bind('mousedown',function() {
+			if (!button.hasClass('down')) {
+				button.addClass('down');
+				list.show();
+				on_button = true;
+			} else {
+				button.removeClass('down');
+// 				list.hide();
+			}
+		}).hover(function() {
+			on_button = true;
+		}).mouseout(function() {
+			on_button = false;
+		});
+	}());
+	
 	var addDropDown = function(elem, callback, dropUp) {
 		var button = $(elem).find('button');
 		var list = $(elem).find('ul');
@@ -1220,7 +1248,7 @@ function svg_edit_setup() {
 		
 		$.resizeSvgIcons({
 			'.flyout_arrow_horiz svg, .flyout_arrow_horiz img': size_num / 3,
-			'#logo a > svg, #logo a > img': size_num * 1.3
+			'#logo > svg, #logo > img': size_num * 1.3
 		});
 		if(size != 's') {
 			$.resizeSvgIcons({'#layerbuttons svg, #layerbuttons img': size_num * .6});
@@ -1243,7 +1271,7 @@ function svg_edit_setup() {
 				'margin': {s: '2px 2px', l: '2px 5px', xl: '2px 8px'}
 			},
 			"#tools_top": {
-				'left': {s: '27px', l: '50px', xl: '70px'},
+				'left': {s: '35px', l: '50px', xl: '70px'},
 				'height': {s: '50px', l: '88px', xl: '125px'}
 			},
 			"#tools_left": {
@@ -2047,15 +2075,15 @@ function svg_edit_setup() {
 			{sel:'#tool_text', fn: clickText, evt: 'click', key: 7},
 			{sel:'#tool_image', fn: clickImage, evt: 'mouseup', key: 8},
 			{sel:'#tool_zoom', fn: clickZoom, evt: 'mouseup', key: 9},
-			{sel:'#tool_clear', fn: clickClear, evt: 'click', key: [modKey+'N', true]},
-			{sel:'#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'click', key: [modKey+'S', true]},
-			{sel:'#tool_open', fn: clickOpen, evt: 'click', key: [modKey+'O', true]},
+			{sel:'#tool_clear', fn: clickClear, evt: 'mouseup', key: [modKey+'N', true]},
+			{sel:'#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'mouseup', key: [modKey+'S', true]},
+			{sel:'#tool_open', fn: clickOpen, evt: 'mouseup', key: [modKey+'O', true]},
 			{sel:'#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
 			{sel:'#tool_wireframe', fn: clickWireframe, evt: 'click', key: ['F', true]},
 			{sel:'#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
 			{sel:'#tool_source_save', fn: saveSourceEditor, evt: 'click'},
 			{sel:'#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
-			{sel:'#tool_docprops', fn: showDocProperties, evt: 'click', key: [modKey+'I', true]},
+			{sel:'#tool_docprops', fn: showDocProperties, evt: 'mouseup', key: [modKey+'I', true]},
 			{sel:'#tool_delete,#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
 			{sel:'#tool_reorient', fn: reorientPath, evt: 'click'},
 			{sel:'#tool_node_link', fn: linkControlPoints, evt: 'click'},
@@ -2228,7 +2256,7 @@ function svg_edit_setup() {
 				reader.readAsText(this.files[0]);
 			}
 		});
-		$("#fileinputs").show().prepend(inp);
+		$("#tool_open").show().prepend(inp);
 		
 		// This doesn't appear to be necessary...
 		svgCanvas.setCustomHandlers( {open: fileOpen} );
@@ -2303,13 +2331,13 @@ function svg_edit_setup() {
 			'arrow_down':'dropdown.gif'
 		},
 		placement: {
-			'#logo a':'logo',
+			'#logo':'logo',
 		
-			'#tool_clear,#layer_new':'new_image',
-			'#tool_save':'save',
-			'#tool_open':'open',
+			'#tool_clear div,#layer_new':'new_image',
+			'#tool_save div':'save',
+			'#tool_open div div':'open',
 			'#tool_source':'source',
-			'#tool_docprops':'docprops',
+			'#tool_docprops > div':'docprops',
 			'#tool_wireframe':'wireframe',
 			
 			'#tool_undo':'undo',
@@ -2356,14 +2384,15 @@ function svg_edit_setup() {
 			'#tool_source_cancel,#tool_docprops_cancel':'cancel',
 			
 			'.flyout_arrow_horiz':'arrow_right',
-			'.dropdown button':'arrow_down',
+			'.dropdown button, #main_button .dropdown':'arrow_down',
 			'#palette .palette_item:first, #fill_bg, #stroke_bg':'no_color'
 		},
 		resize: {
-			'#logo a .svg_icon': 32,
+			'#logo .svg_icon': 32,
 			'.flyout_arrow_horiz .svg_icon': 5,
 			'.layer_button .svg_icon, #layerlist td.layervis .svg_icon': 14,
 			'.dropdown button .svg_icon': 7,
+			'#main_button .dropdown .svg_icon': 9,
 			'.palette_item:first .svg_icon, #fill_bg .svg_icon, #stroke_bg .svg_icon': 16,
 			'.toolbar_button button .svg_icon':16
 		},
