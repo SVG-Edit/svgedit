@@ -1,4 +1,4 @@
-/*
+﻿/*
  * svg-editor.js
  *
  * Licensed under the Apache License, Version 2

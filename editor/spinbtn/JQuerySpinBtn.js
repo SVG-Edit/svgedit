@@ -1,4 +1,4 @@
-/* SpinButton control
+﻿/* SpinButton control
  *
  * Adds bells and whistles to any ordinary textbox to
  * make it look and feel like a SpinButton Control.

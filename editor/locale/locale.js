@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Localizing script for SVG-edit UI
  *
  * Licensed under the Apache License, Version 2
