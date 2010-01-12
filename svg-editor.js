@@ -1081,7 +1081,6 @@ function svg_edit_setup() {
 	
 	$('#svg_docprops_container').draggable({cancel:'button,fieldset'});
 	
-	
 	var showDocProperties = function(){
 		if (docprops) return;
 		docprops = true;
@@ -1212,7 +1211,7 @@ function svg_edit_setup() {
 		var size_num = icon_sizes[size];
 		
 		// Change icon size
-		$('.tool_button, .push_button, .tool_button_current, .tool_button_disabled, .tool_flyout_button, #url_notice')
+		$('.tool_button, .push_button, .tool_button_current, .tool_button_disabled, .tool_flyout_button, #url_notice, #fileinputs, #tool_open')
 		.find('> svg, > img').each(function() {
 			this.setAttribute('width',size_num);
 			this.setAttribute('height',size_num);
@@ -1948,6 +1947,11 @@ function svg_edit_setup() {
 		}
 	};
 	
+	var fileOpen = function(window, str) {
+		svgCanvas.setSvgString(str);
+		populateLayers();
+	};
+
 	$(window).resize( centerCanvasIfNeeded );
 
 	function stepFontSize(elem, step) {
@@ -2006,7 +2010,6 @@ function svg_edit_setup() {
 			w_area[0].scrollLeft = scroll_x;
 		}
 	}
-	
 
 	$('#resolution').change(function(){
 		var wh = $('#canvas_width,#canvas_height');
@@ -2200,12 +2203,49 @@ function svg_edit_setup() {
 	
 	svgCanvas.setCustomHandlers = function(opts) {
 		if(opts.open) {
-			$('#tool_open').show();
+//			$('#tool_open').show();
 			svgCanvas.bind("opened", opts.open);
 		}
 		if(opts.save) {
 			svgCanvas.bind("saved", opts.save);
 		}
+	}
+	
+	// use HTML5 File API: http://www.w3.org/TR/FileAPI/
+	// if browser has HTML5 File API support, then provide the Open button
+	// clicking the button will bring up a file chooser dialog, once a file is chosen
+	// then the change() event will fire on the file input, will call svgCanvas.open()
+	// svgCanvas.open() will fire the 'opened' handler back here, 
+	// which is file_open here
+	if (window.FileReader) {
+		$("#fileinputs").show();
+		var fi = document.getElementById("fileinputs");
+		var svgns = "http://www.w3.org/2000/svg";
+		// we dynamically create an SVG with a foreignObject with a file input
+		// then we stretch and clip that file input so that it takes up exactly 24x24
+		// this is all thanks to there being no other way to bring up a file picker :(
+		// until Mozilla Bug 36619 is fixed, this is the only way I know how to do it
+		// TODO: fix this for when icon size is changed
+		var fi_holder = document.createElementNS(svgns, "svg");
+		fi_holder.setAttribute("viewBox", "0 0 24 24");
+		fi_holder.setAttribute("className", "svg_icon");
+		var fo = document.createElementNS(svgns, "foreignObject");
+		fo.setAttribute("width", "100%");
+		fo.setAttribute("height", "100%");
+		fo.setAttribute("transform", "translate(-5,-30) scale(3)");
+		var input = document.createElementNS("http://www.w3.org/1999/xhtml", "input");
+		input.setAttribute("type", "file");
+
+		input.setAttribute("onchange", "if(this.files.length==1) { \
+								var reader = new FileReader(); \
+								reader.onloadend = function(e) {console.log(e.target.result); svgCanvas.open(e.target.result);}; \
+								reader.readAsText(this.files[0]);}");
+		input.className = "file";
+		fo.appendChild(input);
+		fi_holder.appendChild(fo);
+		fi.insertBefore(fi_holder, fi.firstChild);
+		
+		svgCanvas.setCustomHandlers( {open: fileOpen} );
 	}
 	
 	// set starting resolution (centers canvas)

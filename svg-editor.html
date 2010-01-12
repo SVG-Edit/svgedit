@@ -84,7 +84,13 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<!-- File-like buttons: New, Save, Source -->
 	<div id="file_panel">
 		<div class="push_button" id="tool_clear" title="New Image [N]"></div>
-		<div class="push_button" id="tool_open" title="Open Image [O]" style="display:none"></div>
+		
+		<div id="fileinputs" class="fileinputs push_button" style="display: none">
+			<div class="fakefile">
+				<div id="tool_open" title="Open Image [O]" ></div>
+			</div>
+		</div>
+  	
 		<div class="push_button" id="tool_save" title="Save Image [S]"></div>
 		<div class="push_button" id="tool_docprops" title="Document Properties [I]"></div>
 		<div class="push_button" id="tool_source" title="Edit Source [U]"></div>
