@@ -74,23 +74,51 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<div id="sidepanel_handle" onselectstart="return false;" title="Drag left/right to resize side panel [X]">L a y e r s</div>
 </div>
 
-<div id="logo">
-	<a href="http://svg-edit.googlecode.com/" target="_blank" title="SVG-edit Home Page">
-	</a>
+<div id="main_button" title="Main Menu">
+	<div id="logo"></div>
+	<div class="dropdown"></div>
+		
+	<div id="main_menu"> 
+	
+		<!-- File-like buttons: New, Save, Source -->
+		<ul>
+			<li id="tool_clear">
+				<div></div>
+				New Image [N]
+			</li>
+			
+			<li id="tool_open" style="display:none;">
+				<div id="fileinputs">
+					<div></div>
+				</div>
+				Open Image [O]
+			</li>
+			
+			<li id="tool_save">
+				<div></div>
+				Save Image [S]
+			</li>
+			
+			<li id="tool_docprops">
+				<div></div>
+				Document Properties [I]
+			</li>
+		</ul>
+		
+		<p>
+			<a href="http://svg-edit.googlecode.com/" target="_blank">
+				SVG-edit Home Page
+			</a>
+		</p>
+
+	</div>
 </div>
+
+
 
 <div id="tools_top" class="tools_panel">
 	
-	<!-- File-like buttons: New, Save, Source -->
-	<div id="file_panel">
-		<div class="push_button" id="tool_clear" title="New Image [N]"></div>
-		
-		<div id="fileinputs" class="push_button">
-			<div id="tool_open" title="Open Image [O]" ></div>
-		</div>
-  	
-		<div class="push_button" id="tool_save" title="Save Image [S]"></div>
-		<div class="push_button" id="tool_docprops" title="Document Properties [I]"></div>
+	<div id="editor_panel">
 		<div class="push_button" id="tool_source" title="Edit Source [U]"></div>
 		<div class="tool_button" id="tool_wireframe" title="Wireframe Mode [F]"></div>
 	</div>
