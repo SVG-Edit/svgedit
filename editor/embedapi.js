@@ -1,4 +1,4 @@
-/*
+﻿/*
 function embedded_svg_edit(frame){
   //initialize communication
   this.frame = frame;

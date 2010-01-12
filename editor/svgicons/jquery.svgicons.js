@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SVG Icon Loader 2.0
  *
  * jQuery Plugin for loading SVG icons from a single file
