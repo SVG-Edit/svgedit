@@ -209,6 +209,7 @@ function svg_edit_setup() {
 				var vb = elem.getAttribute("viewBox").split(' ');
 				changeResolution(parseInt(vb[2]),
 								 parseInt(vb[3]));
+				populateLayers();
 			} 
 			// Update selectedElement if element is no longer part of the image.
 			// This occurs for the text elements in Firefox
@@ -1949,7 +1950,6 @@ function svg_edit_setup() {
 	
 	var fileOpen = function(window, str) {
 		svgCanvas.setSvgString(str);
-		populateLayers();
 	};
 
 	$(window).resize( centerCanvasIfNeeded );
