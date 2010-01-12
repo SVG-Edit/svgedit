@@ -39,6 +39,8 @@
  * v1.6  13 Oct 2009 - Alexis Deveria   - Added stepfunc function  
  * v1.7  21 Oct 2009 - Alexis Deveria   - Minor fixes
  *                                        Fast-repeat for keys and live updating as you type.
+ * v1.8  12 Jan 2010 - Benjamin Thomas  - Fixes for mouseout behavior.
+ *                                        Added smallStep
  
  Sample usage:
  
@@ -47,6 +49,7 @@
 					min: 0,						// Set lower limit.
 					max: 100,					// Set upper limit.
 					step: 1,					// Set increment size.
+					smallStep: 0.5,				// Set shift-click increment size.
 					spinClass: mySpinBtnClass,	// CSS class to style the spinbutton. (Class also specifies url of the up/down button image.)
 					upClass: mySpinUpClass,		// CSS class for style when mouse over up button.
 					downClass: mySpinDnClass	// CSS class for style when mouse over down button.
@@ -86,7 +89,9 @@ $.fn.SpinButton = function(cfg){
 			_repeat: null,
 			callback: cfg && cfg.callback ? cfg.callback : null
 		};
-		
+
+		// if a smallStep isn't supplied, use half the regular step
+		this.spinCfg.smallStep = cfg && cfg.smallStep ? cfg.smallStep : this.spinCfg.step/2;
 		
 		this.adjustValue = function(i){
 			var v;
@@ -95,7 +100,8 @@ $.fn.SpinButton = function(cfg){
 			} else if($.isFunction(this.spinCfg.stepfunc)) {
 				v = this.spinCfg.stepfunc(this, i);
 			} else {
-				v = Number(this.value) + Number(i);
+				// weirdest javascript bug ever: 5.1 + 0.1 = 5.199999999
+				v = Number((Number(this.value) + Number(i)).toFixed(5));
 			}
 			if (this.spinCfg.min !== null) v = Math.max(v, this.spinCfg.min);
 			if (this.spinCfg.max !== null) v = Math.min(v, this.spinCfg.max);
@@ -146,8 +152,10 @@ $.fn.SpinButton = function(cfg){
 			if ( e.button === 0 && this.spinCfg._direction != 0) {
 				// Respond to click on one of the buttons:
 				var self = this;
+				var stepSize = e.shiftKey ? self.spinCfg.smallStep : self.spinCfg.step
+
 				var adjust = function() {
-					self.adjustValue(self.spinCfg._direction * self.spinCfg.step);
+					self.adjustValue(self.spinCfg._direction * stepSize);
 				};
 			
 				adjust();
