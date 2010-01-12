@@ -160,10 +160,20 @@ $(function() {
 							getIcons('ajax');
 						});
 					},
-					error: function() {
-						$(function() {
-							useFallback();
-						});
+					error: function(err) {
+						// TODO: Fix Opera widget icon bug
+						if(window.opera) {
+							$(function() {
+								useFallback();
+							});
+						} else {
+							if(err.responseXML) {
+								svgdoc = err.responseXML;
+								$(function() {
+									getIcons('ajax');
+								});							
+							} 
+						}
 					}
 				});
 			}
@@ -423,6 +433,10 @@ $(function() {
 			$(sel).each(function() {
 				this.setAttribute('width', w);
 				this.setAttribute('height', h);
+				if(window.opera && window.widget) {
+					this.parentNode.style.width = w + 'px';
+					this.parentNode.style.height = h + 'px';
+				}
 			});
 		});
 	}

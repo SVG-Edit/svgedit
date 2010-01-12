@@ -34,7 +34,8 @@ var put_locale = function(svgCanvas, given_param){
 	}
 	
 	var url = "locale/lang." + lang_param + ".js";
-	$.get(url, function(data){
+	
+	var processFile = function(data){
 		var LangData = eval(data), js_strings;
 		$.each(LangData, function(i, data) {
 			if(data.id) {
@@ -56,5 +57,16 @@ var put_locale = function(svgCanvas, given_param){
 			}
 		});
 		svgCanvas.setLang(lang_param, js_strings);
-	},"json");
+	}
+	
+	$.ajax({
+		'url': url,
+		'dataType': "text",
+		success: processFile,
+		error: function(xhr) {
+			if(xhr.responseText) {
+				processFile(xhr.responseText);
+			}
+		}
+	});
 };

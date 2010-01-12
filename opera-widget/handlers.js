@@ -33,7 +33,7 @@ $(function() {
 				}
 
 			},
-			'save':function(svg) {
+			'save':function(window, svg) {
 				try {
 					window.opera.io.filesystem.browseForSave(
 						new Date().getTime(), /* mountpoint name */
