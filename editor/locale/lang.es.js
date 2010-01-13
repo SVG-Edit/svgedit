@@ -99,7 +99,6 @@
 {"id":"page","textContent":"Página"},
 {"id":"fill_tool_bottom","textContent":"Relleno:"},
 {"id":"stroke_tool_bottom","textContent":"Contorno:"},
-{"id":"svninfo_dim","textContent":"Dimensiones del lienzo"}
 {"id":"path_node_x","title":"Cambiar la posición horizontal X del nodo"},
 {"id":"path_node_y","title":"Cambiar la posición vertical Y del nodo"},
 {"id":"seg_type","title":"Cambiar el tipo de segmento"},
