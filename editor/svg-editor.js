@@ -3,10 +3,10 @@
  *
  * Licensed under the Apache License, Version 2
  *
- * Copyright(c) 2009 Alexis Deveria
- * Copyright(c) 2009 Pavol Rusnak
- * Copyright(c) 2009 Jeff Schiller
- * Copyright(c) 2009 Narendra Sisodya
+ * Copyright(c) 2010 Alexis Deveria
+ * Copyright(c) 2010 Pavol Rusnak
+ * Copyright(c) 2010 Jeff Schiller
+ * Copyright(c) 2010 Narendra Sisodya
  *
  */
 
@@ -589,8 +589,15 @@ function svg_edit_setup() {
 		svgCanvas.setOpacity(val/100);
 	}
 
+	var operaRepaint = function() {
+		// Repaints canvas in Opera. Needed for stroke-dasharray change as well as fill change
+		if(!window.opera) return;
+		$('<p/>').hide().appendTo('body').remove();
+	}
+
 	$('#stroke_style').change(function(){
 		svgCanvas.setStrokeStyle(this.options[this.selectedIndex].value);
+		operaRepaint();
 	});
 
 	// Lose focus for select elements when changed (Allows keyboard shortcuts to work better)
@@ -1669,10 +1676,7 @@ function svg_edit_setup() {
 			}
 		}
 		
-		if(window.opera) {
-			// Fix repaint bug for Opera
-			$('<p/>').hide().appendTo('body').remove();
-		}
+		operaRepaint();
 	};
 
 	// set up gradients to be used for the buttons
