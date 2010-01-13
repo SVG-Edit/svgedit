@@ -724,29 +724,39 @@ function svg_edit_setup() {
 	};
 	
 	(function() {
-		var button = $('#main_button');
+		var button = $('#main_icon');
+		var overlay = $('#main_icon span');
 		var list = $('#main_menu');
 		var on_button = false;
+		var height = 0;
 		$().mouseup(function(evt) {
 			if(!on_button) {
 				// FIXME: figure out why the main_button stays hovered...
 				button.removeClass('down');
 				// do not hide if it was the file input as that input needs to be visible 
 				// for its change event to fire
-				if (evt.target.localName != "input") 
-					list.hide();
+				if (evt.target.localName != "input")
+					list.fadeOut(100);
 			}
 			on_button = false;
 		});
 		
-		button.bind('mousedown',function() {
+		overlay.bind('mousedown',function() {
 			if (!button.hasClass('down')) {
 				button.addClass('down');
 				list.show();
+				if(!height) {
+					height = list.height();
+				}
+				// Using custom animation as slideDown has annoying "bounce effect"
+				list.css('height',0).animate({
+					'height': height
+				},200);
 				on_button = true;
+				return false;
 			} else {
 				button.removeClass('down');
-// 				list.hide();
+				list.fadeOut(200);
 			}
 		}).hover(function() {
 			on_button = true;
