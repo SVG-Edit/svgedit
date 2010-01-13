@@ -133,7 +133,7 @@
 {"js_strings": {
 	"invalidAttrValGiven":"Fehlerhafter Wert",
 	"noContentToFitTo":"Kein Inhalt anzupassen",
-	'layer':"Ebene",
+	"layer":"Ebene",
 	"dupeLayerName":"Eine Ebene hat bereits diesen Namen!",
 	"enterUniqueLayerName":"Verwenden Sie einen eindeutigen Namen für die Ebene",
 	"enterNewLayerName":"Geben Sie bitte einen neuen Namen für die Ebene ein",

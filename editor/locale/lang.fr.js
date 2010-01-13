@@ -134,7 +134,7 @@
 {"js_strings": {
 	"invalidAttrValGiven":"Valeur fournie invalide",
 	"noContentToFitTo":"Il n'y a pas de contenu auquel ajuster",
-	'layer':"Calque",
+	"layer":"Calque",
 	"dupeLayerName":"Il existe déjà un calque de ce nom !",
 	"enterUniqueLayerName":"Veuillez entrer un nom (unique) pour le calque",
 	"enterNewLayerName":"Veuillez entrer le nouveau nom du calque",

@@ -133,7 +133,7 @@
 {"js_strings": {
 		"invalidAttrValGiven":"Verkeerde waarde gegeven",
 		"noContentToFitTo":"Geen inhoud om omheen te passen",
-		'layer':"Laag",
+		"layer":"Laag",
 		"dupeLayerName":"Er is al een laag met die naam!",
 		"enterUniqueLayerName":"Geef een unieke laag naam",
 		"enterNewLayerName":"Geef een nieuwe laag naam",
@@ -154,4 +154,4 @@
 		"key_del":"delete"
 	}
 }
-];
+]

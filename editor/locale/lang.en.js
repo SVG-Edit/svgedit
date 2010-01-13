@@ -133,7 +133,7 @@
 {"js_strings": {
 	"invalidAttrValGiven":"Invalid value given",
 	"noContentToFitTo":"No content to fit to",
-	'layer':"Layer",
+	"layer":"Layer",
 	"dupeLayerName":"There is already a layer named that!",
 	"enterUniqueLayerName":"Please enter a unique layer name",
 	"enterNewLayerName":"Please enter the new layer name",
@@ -154,4 +154,4 @@
 	"key_del":"delete"
 	}
 }
-];
+]
