@@ -763,7 +763,7 @@ function svg_edit_setup() {
 		}).mouseout(function() {
 			on_button = false;
 		});
-	}());
+}());
 	
 	var addDropDown = function(elem, callback, dropUp) {
 		var button = $(elem).find('button');
@@ -1287,8 +1287,12 @@ function svg_edit_setup() {
 				'height': {s: '16px', l: '32px', xl: '48px'},
 				'margin': {s: '2px 2px', l: '2px 5px', xl: '2px 8px'}
 			},
+			"#main_icon": {
+				'width': {s: '31px', l: '53px', xl: '75px'},
+				'height': {s: '22px', l: '42px', xl: '64px'}
+			},
 			"#tools_top": {
-				'left': {s: '35px', l: '50px', xl: '70px'},
+				'left': {s: '36px', l: '60px', xl: '80px'},
 				'height': {s: '50px', l: '88px', xl: '125px'}
 			},
 			"#tools_left": {
