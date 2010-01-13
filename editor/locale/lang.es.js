@@ -134,7 +134,7 @@
 {"js_strings": {
 	"invalidAttrValGiven":"Valor no válido",
 	"noContentToFitTo":"No existe un contenido al que ajustarse.",
-	'layer':"Capa",
+	"layer":"Capa",
 	"dupeLayerName":"¡Ya existe una capa con este nombre!",
 	"enterUniqueLayerName":"Introduzca otro nombre distinto para la capa.",
 	"enterNewLayerName":"Introduzca el nuevo nombre de la capa.",
