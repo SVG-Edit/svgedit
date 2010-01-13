@@ -729,14 +729,22 @@ function svg_edit_setup() {
 		var list = $('#main_menu');
 		var on_button = false;
 		var height = 0;
+		var js_hover = true;
+		
+		var hideMenu = function() {
+			list.fadeOut(200);
+		};
+		
 		$().mouseup(function(evt) {
 			if(!on_button) {
-				// FIXME: figure out why the main_button stays hovered...
 				button.removeClass('down');
 				// do not hide if it was the file input as that input needs to be visible 
 				// for its change event to fire
-				if (evt.target.localName != "input")
-					list.fadeOut(100);
+				if (evt.target.localName != "input") {
+					list.fadeOut(200);
+				} else {
+					list.css('opacity',0).show();
+				}
 			}
 			on_button = false;
 		});
@@ -744,7 +752,8 @@ function svg_edit_setup() {
 		overlay.bind('mousedown',function() {
 			if (!button.hasClass('down')) {
 				button.addClass('down');
-				list.show();
+				// Opacity must be set to 1 in case it was set to 0 before;
+				list.css('opacity',1).show();
 				if(!height) {
 					height = list.height();
 				}
@@ -763,7 +772,24 @@ function svg_edit_setup() {
 		}).mouseout(function() {
 			on_button = false;
 		});
-}());
+		
+		var list_items = $('#main_menu li');
+		
+		// Check if JS method of hovering needs to be used (Webkit bug)
+		list_items.mouseover(function() {
+			js_hover = ($(this).css('background-color') == 'rgba(0, 0, 0, 0)');
+			
+			list_items.unbind('mouseover');
+			if(js_hover) {
+				list_items.mouseover(function() {
+					this.style.backgroundColor = '#FFC';
+				}).mouseout(function() {
+					this.style.backgroundColor = 'transparent';
+					return true;
+				});
+			}
+		});
+	}());
 	
 	var addDropDown = function(elem, callback, dropUp) {
 		var button = $(elem).find('button');
