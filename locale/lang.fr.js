@@ -99,7 +99,6 @@
 {"id":"page","textContent":"Page"},
 {"id":"fill_tool_bottom","textContent":"Remplis.:"},
 {"id":"stroke_tool_bottom","textContent":"Contour:"},
-{"id":"svninfo_dim","textContent":"Dimensions du canevas"},
 {"id":"path_node_x","title":"Changer la positon horizontale x du nœud"},
 {"id":"path_node_y","title":"Changer la position verticale y du nœud"},
 {"id":"seg_type","title":"Changer le type du Segment"},
