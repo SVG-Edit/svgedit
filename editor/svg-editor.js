@@ -750,7 +750,7 @@ function svg_edit_setup() {
 				if (evt.target.localName != "input") {
 					list.fadeOut(200);
 				} else {
-					list.css('opacity',0).show();
+					list.css('margin-left','-9999px').show();
 				}
 			}
 			on_button = false;
@@ -759,8 +759,8 @@ function svg_edit_setup() {
 		overlay.bind('mousedown',function() {
 			if (!button.hasClass('down')) {
 				button.addClass('down');
-				// Opacity must be set to 1 in case it was set to 0 before;
-				list.css('opacity',1).show();
+				// Margin must be reset in case it was changed before;
+				list.css('margin-left',0).show();
 				if(!height) {
 					height = list.height();
 				}
