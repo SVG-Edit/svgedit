@@ -729,8 +729,12 @@ function svg_edit_setup() {
 		var on_button = false;
 		$().mouseup(function(evt) {
 			if(!on_button) {
+				// FIXME: figure out why the main_button stays hovered...
 				button.removeClass('down');
-				list.hide();
+				// do not hide if it was the file input as that input needs to be visible 
+				// for its change event to fire
+				if (evt.target.localName != "input") 
+					list.hide();
 			}
 			on_button = false;
 		});
@@ -1023,6 +1027,9 @@ function svg_edit_setup() {
 		svgCanvas.save(saveOpts);
 	};
 	
+	// by default, svgCanvas.open() is a no-op.
+	// it is up to an extension mechanism (opera widget, etc) 
+	// to call setCustomHandlers() which will make it do something
 	var clickOpen = function(){
 		svgCanvas.open();
 	};
@@ -1976,10 +1983,6 @@ function svg_edit_setup() {
 		}
 	};
 	
-	var fileOpen = function(window, str) {
-		svgCanvas.setSvgString(str);
-	};
-
 	$(window).resize( centerCanvasIfNeeded );
 
 	function stepFontSize(elem, step) {
@@ -2229,10 +2232,19 @@ function svg_edit_setup() {
 		}
 	};
 	
+	// Extension mechanisms must call setCustomHandlers with two functions: opts.open and opts.save
+	// opts.open's responsibilities are:
+	// 	- invoke a file chooser dialog in 'open' mode
+	//	- let user pick a SVG file
+	//	- calls setCanvas.setSvgString() with the string contents of that file
+	// opts.save's responsibilities are:
+	//	- accept the string contents of the current document 
+	//	- invoke a file chooser dialog in 'save' mode
+	// 	- save the file to location chosen by the user
 	svgCanvas.setCustomHandlers = function(opts) {
 		if(opts.open) {
-//			$('#tool_open').show();
-			svgCanvas.bind("opened", opts.open);
+			$('#tool_open').show();
+			svgCanvas.open = opts.open;
 		}
 		if(opts.save) {
 			svgCanvas.bind("saved", opts.save);
@@ -2240,26 +2252,21 @@ function svg_edit_setup() {
 	}
 	
 	// use HTML5 File API: http://www.w3.org/TR/FileAPI/
-	// if browser has HTML5 File API support, then provide the Open button
-	// clicking the button will bring up a file chooser dialog, once a file is chosen
-	// then the change() event will fire on the file input, will call svgCanvas.open()
-	// svgCanvas.open() will fire the 'opened' handler back here, 
-	// which is file_open here
+	// if browser has HTML5 File API support, then we will show the open menu item
+	// and provide a file input to click.  When that change event fires, it will
+	// get the text contents of the file and send it to the canvas
 	if (window.FileReader) {
 		var inp = $('<input type="file">').change(function() {
+			$('#main_menu').hide();
 			if(this.files.length==1) {
 				var reader = new FileReader();
 				reader.onloadend = function(e) {
-					console.log(e.target.result);
-					svgCanvas.open(e.target.result);
+					svgCanvas.setSvgString(e.target.result);
 				};
 				reader.readAsText(this.files[0]);
 			}
 		});
 		$("#tool_open").show().prepend(inp);
-		
-		// This doesn't appear to be necessary...
-		svgCanvas.setCustomHandlers( {open: fileOpen} );
 	}
 	
 	// set starting resolution (centers canvas)

@@ -4669,12 +4669,8 @@ function BatchCommand(text) {
 
 	// Group: Serialization
 
-	// Function: open
-	// Calls the 'opened' handler and sends the SVG XML text.  Clients of the SvgCanvas bind
-	// their load function (typically calls to setSvgString() to the 'opened' event.
-	this.open = function(str) {
+	this.open = function() {
 		// Nothing by default, handled by optional widget/extension
-		call("opened", str);
 	};
 
 	// Function: save
