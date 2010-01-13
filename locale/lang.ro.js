@@ -133,7 +133,7 @@
 {"js_strings": {
 	"invalidAttrValGiven":"Valoarea data nu este valida",
 	"noContentToFitTo":"Fara continut de referinta",
-	'layer':"Strat",
+	"layer":"Strat",
 	"dupeLayerName":"Deja exista un strat numis asa!",
 	"enterUniqueLayerName":"Rog introduceti un nume unic",
 	"enterNewLayerName":"Rog introduceti un nume pentru strat",

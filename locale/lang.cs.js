@@ -133,7 +133,7 @@
 {"js_strings": {
 	"invalidAttrValGiven":"Nevhodná hodnota",
 	"noContentToFitTo":"Vyberte oblast pro přizpůsobení",
-	'layer':"Vrstva",
+	"layer":"Vrstva",
 	"dupeLayerName":"Taková vrstva už bohužel existuje",
 	"enterUniqueLayerName":"Zadejte prosím jedinečné jméno pro vrstvu",
 	"enterNewLayerName":"Zadejte prosím jméno pro novou vrstvu",

@@ -133,7 +133,7 @@
 {"js_strings": {
 	"invalidAttrValGiven":"‫مقدار داده شده نامعتبر است‬",
 	"noContentToFitTo":"‫محتوایی برای هم اندازه شدن وجود ندارد‬",
-	'layer':"‫لایه‬",
+	"layer":"‫لایه‬",
 	"dupeLayerName":"‫لایه ای با آن نام وجود دارد!‬",
 	"enterUniqueLayerName":"‫لطفا یک نام لایه یکتا انتخاب کنید‬",
 	"enterNewLayerName":"‫لطفا نام لایه جدید را وارد کنید‬",
