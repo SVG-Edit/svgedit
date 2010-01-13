@@ -239,9 +239,16 @@
 }
 
 #svg_editor #main_icon {
-	padding: 0px;
+	position: relative;
+	top: -2px;
+	left: -2px;
+	padding: 1px 0 2px 1px;
 	width: 44px;
 	height: 30px;
+	border-left: 1px solid #EEE;
+	border-top: 1px solid #EEE;
+	border-right: 1px solid #CCC;
+	border-bottom: 1px solid #CCC;
 	border-radius: 8px;
 	-moz-border-radius: 8px;
 	-webkit-border-radius: 8px;
@@ -249,10 +256,6 @@
 
 #svg_editor #main_icon:hover,
 #svg_editor #main_icon.down {
-	top: -2px;
-	left: -2px;
-	position: relative;
-	padding: 1px 0 2px 1px;
 	border-left: 1px #fcd9ba solid;
 	border-top: 1px #fcd9ba solid;
 	border-right: 1px #e0a874 solid;
@@ -333,7 +336,7 @@
 }
 
 #svg_editor #main_button .dropdown {
-	padding-top: 10px;
+	padding-top: 28%;
 	margin-left: -1px;
 }
 
