@@ -44,9 +44,9 @@ var put_locale = function(svgCanvas, given_param){
 					if(data.title) 
 						elem.title = data.title;
 					if(data.textContent) {
-						// Only replace text nodes, not elements
+						// Only replace non-empty text nodes, not elements
 						$.each(elem.childNodes, function(j, node) {
-							if(node.nodeType == 3) {
+							if(node.nodeType == 3 && $.trim(node.textContent)) {
 								node.textContent = data.textContent;
 							}
 						});
