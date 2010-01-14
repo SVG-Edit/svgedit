@@ -2199,7 +2199,10 @@ function svg_edit_setup() {
 						if(opts.sel && !opts.hidekey) {
 							var new_title = btn.attr('title').split('[')[0] + '[' + keyval + ']';
 							key_assocs[keyval] = opts.sel;
-							btn.attr('title', new_title);
+							// Disregard for menu items
+							if(!btn.parents('#main_menu').length) {
+								btn.attr('title', new_title);
+							}
 						}
 					}
 				});
@@ -2215,8 +2218,14 @@ function svg_edit_setup() {
 			},
 			setTitles: function() {
 				$.each(key_assocs, function(keyval, sel)  {
+					var menu = ($(sel).parents('#main_menu').length);
+				
 					$(sel).each(function() {
-						var t = this.title.split(' [')[0];
+						if(menu) {
+							var t = $(this).text().split(' [')[0];
+						} else {
+							var t = this.title.split(' [')[0];							
+						}
 						var key_str = '';
 						// Shift+Up
 						$.each(keyval.split('/'), function(i, key) {
@@ -2227,7 +2236,11 @@ function svg_edit_setup() {
 							}
 							key_str += (i?'/':'') + mod + (uiStrings['key_'+key] || key);
 						});
-						this.title = t +' ['+key_str+']';
+						if(menu) {
+							this.lastChild.textContent = t +' ['+key_str+']';
+						} else {
+							this.title = t +' ['+key_str+']';
+						}
 					});
 				});
 			}
