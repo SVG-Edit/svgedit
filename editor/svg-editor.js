@@ -40,6 +40,7 @@ function svg_edit_setup() {
 	var svgCanvas = new SvgCanvas(document.getElementById("svgcanvas"));
 	var path = svgCanvas.pathActions;
 	var default_img_url = "images/logo.png";
+	var workarea = $("#workarea");
 
 	// Store and retrieve preferences
 	$.pref = function(key, val) {
@@ -239,7 +240,7 @@ function svg_edit_setup() {
 	var zoomChanged = function(window, bbox) {
 		var scrbar = 15;
 		var res = svgCanvas.getResolution();
-		var w_area = $('#workarea');
+		var w_area = workarea;
 		var canvas_pos = $('#svgcanvas').position();
 		w_area.css('cursor','auto');
 		var z_info = svgCanvas.setBBoxZoom(bbox, w_area.width()-scrbar, w_area.height()-scrbar);
@@ -569,7 +570,7 @@ function svg_edit_setup() {
 	var changeZoom = function(ctl) {
 		var zoomlevel = ctl.value / 100;
 		var zoom = svgCanvas.getZoom();
-		var w_area = $('#workarea');
+		var w_area = workarea;
 		
 		zoomChanged(window, {
 			width: 0,
@@ -949,7 +950,7 @@ function svg_edit_setup() {
 
 	var clickZoom = function(){
 		if (toolButtonClick('#tool_zoom')) {
-			$('#workarea').css('cursor','crosshair');
+			workarea.css('cursor','crosshair');
 			svgCanvas.setMode('zoom');
 		}
 	};
@@ -1131,7 +1132,7 @@ function svg_edit_setup() {
 
 	var clickWireframe = function() {
 		$('#tool_wireframe').toggleClass('push_button_pressed');
-		$('#workarea').toggleClass('wireframe');
+		workarea.toggleClass('wireframe');
 		
 		if(supportsNonSS) return;
 		var wf_rules = $('#wireframe_rules');
@@ -1149,7 +1150,7 @@ function svg_edit_setup() {
 		if(supportsNonSS) return;
 
 		var rule = "#workarea.wireframe #svgcontent * { stroke-width: " + 1/svgCanvas.getZoom() + "px; }";
-		$('#wireframe_rules').text($('#workarea').hasClass('wireframe') ? rule : "");
+		$('#wireframe_rules').text(workarea.hasClass('wireframe') ? rule : "");
 	}
 
 	var showSourceEditor = function(){
@@ -1541,7 +1542,7 @@ function svg_edit_setup() {
 		);
 	}());
 
-	$('#workarea').bind("mousewheel DOMMouseScroll", function(e){
+	workarea.bind("mousewheel DOMMouseScroll", function(e){
 		if(!e.shiftKey) return;
 		e.preventDefault();
 		var off = $('#svgcanvas').offset();
@@ -1899,12 +1900,10 @@ function svg_edit_setup() {
 			if (deltax == 0) return;
 			sidedrag -= deltax;
 
-			var workarea = $('#workarea');
 			var layerpanel = $('#layerpanel');
 			workarea.css('right', parseInt(workarea.css('right'))+deltax);
 			sidepanels.css('width', parseInt(sidepanels.css('width'))+deltax);
 			layerpanel.css('width', parseInt(layerpanel.css('width'))+deltax);
-			centerCanvasIfNeeded();
 	});
 	
 	// if width is non-zero, then fully close it, otherwise fully open it
@@ -1912,13 +1911,11 @@ function svg_edit_setup() {
 	var toggleSidePanel = function(close){
 		var w = parseInt($('#sidepanels').css('width'));
 		var deltax = (w > 2 || close ? 2 : SIDEPANEL_OPENWIDTH) - w;
-		var workarea = $('#workarea');
 		var sidepanels = $('#sidepanels');
 		var layerpanel = $('#layerpanel');
 		workarea.css('right', parseInt(workarea.css('right'))+deltax);
 		sidepanels.css('width', parseInt(sidepanels.css('width'))+deltax);
 		layerpanel.css('width', parseInt(layerpanel.css('width'))+deltax);
-		centerCanvasIfNeeded();
 	};
 	
 	// this function highlights the layer passed in (by fading out the other layers)
@@ -2017,21 +2014,12 @@ function svg_edit_setup() {
 		setResolution(x * zoom, y * zoom);
 	}
 	
-	var centerCanvasIfNeeded = function() {
-		// this centers the canvas in the workarea if it's small enough
-		var wa = {w: parseInt($('#workarea').css('width')), 
-				  h: parseInt($('#workarea').css('height'))};
-		var ca = {w: parseInt($('#svgcanvas').css('width')), 
-				  h: parseInt($('#svgcanvas').css('height'))};
-		if (wa.w > ca.w) {
-			$('#svgcanvas').css({'left': (wa.w-ca.w)/2});
-		}
-		if (wa.h > ca.h) {
-			$('#svgcanvas').css({'top': (wa.h-ca.h)/2});
-		}
+	var centerCanvas = function() {
+		// this centers the canvas vertically in the workarea (horizontal handled in CSS)
+		workarea.css('line-height', workarea.height() + 'px');
 	};
 	
-	$(window).resize( centerCanvasIfNeeded );
+	$(window).bind('load resize', centerCanvas);
 
 	function stepFontSize(elem, step) {
 		var orig_val = elem.value-0;
@@ -2079,10 +2067,8 @@ function svg_edit_setup() {
 		$('#canvas_width').val(w);
 		$('#canvas_height').val(h);
 
-		centerCanvasIfNeeded();
-		
 		if(center) {
-			var w_area = $('#workarea');
+			var w_area = workarea;
 			var scroll_y = h/2 - w_area.height()/2;
 			var scroll_x = w/2 - w_area.width()/2;
 			w_area[0].scrollTop = scroll_y;

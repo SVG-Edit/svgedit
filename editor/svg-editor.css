@@ -29,6 +29,7 @@
 }
 
 #svg_editor #svgcanvas {
+	display: inline-block;
 	background-color: #FFFFFF;
 	text-align: center;
 	vertical-align: middle;
@@ -70,7 +71,7 @@
 }
 
 #svg_editor div#workarea {
-	display: inline-block;
+	display: inline-table-cell;
 	position:absolute;
 	top: 75px;
 	left: 40px;
@@ -79,6 +80,7 @@
 	background-color: #A0A0A0;
 	border: 1px solid #808080;
 	overflow: auto;
+	text-align: center;
 }
 
 #svg_editor #sidepanels {
