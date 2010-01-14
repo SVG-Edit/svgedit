@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Localizing script for SVG-edit UI
  *
  * Licensed under the Apache License, Version 2
@@ -9,7 +9,7 @@
 var put_locale = function(svgCanvas, given_param){
 	var lang_param;
 	// TODO: Make this array be based on entries in svg-editor.html
-	var good_langs = ['cs','de','en','es','fa','fr','nl','ro','sk'];
+	var good_langs = ['cs','de','en','es','fa','fr','fy','hi','nl','ro','sk'];
 	if(given_param) {
 		lang_param = given_param;
 	} else {
