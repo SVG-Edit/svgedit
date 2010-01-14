@@ -737,6 +737,7 @@ function svg_edit_setup() {
 		var on_button = false;
 		var height = 0;
 		var js_hover = true;
+		var set_click = false;
 		
 		var hideMenu = function() {
 			list.fadeOut(200);
@@ -749,8 +750,11 @@ function svg_edit_setup() {
 				// for its change event to fire
 				if (evt.target.localName != "input") {
 					list.fadeOut(200);
-				} else {
-					list.css('margin-left','-9999px').show();
+				} else if(!set_click) {
+					set_click = true;
+					$(evt.target).click(function() {
+						list.css('margin-left','-9999px').show();
+					});
 				}
 			}
 			on_button = false;
