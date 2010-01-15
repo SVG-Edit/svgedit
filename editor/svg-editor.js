@@ -41,7 +41,8 @@ function svg_edit_setup() {
 	var path = svgCanvas.pathActions;
 	var default_img_url = "images/logo.png";
 	var workarea = $("#workarea");
-
+	
+	
 	// Store and retrieve preferences
 	$.pref = function(key, val) {
 		if(val) curPrefs[key] = val;
@@ -207,9 +208,10 @@ function svg_edit_setup() {
 			
 			// if the element changed was the svg, then it could be a resolution change
 			if (elem && elem.tagName == "svg" && elem.getAttribute("viewBox")) {
-				var vb = elem.getAttribute("viewBox").split(' ');
-				changeResolution(parseInt(vb[2]),
-								 parseInt(vb[3]));
+				
+// 				var vb = elem.getAttribute("viewBox").split(' ');
+// 				changeResolution(parseInt(vb[2]),
+// 								 parseInt(vb[3]));
 				populateLayers();
 			} 
 			// Update selectedElement if element is no longer part of the image.
@@ -248,7 +250,7 @@ function svg_edit_setup() {
 		var zoomlevel = z_info.zoom;
 		var bb = z_info.bbox;
 		$('#zoom').val(Math.round(zoomlevel*100));
-		setResolution(res.w * zoomlevel, res.h * zoomlevel);
+		// setResolution(res.w * zoomlevel, res.h * zoomlevel);
 		var scrLeft = bb.x * zoomlevel;
 		var scrOffX = w_area.width()/2 - (bb.width * zoomlevel)/2;
 		w_area[0].scrollLeft = Math.max(0,scrLeft - scrOffX) + Math.max(0,canvas_pos.left);
@@ -1049,7 +1051,8 @@ function svg_edit_setup() {
 		$.confirm(uiStrings.QwantToClear, function(ok) {
 			if(!ok) return;
 			svgCanvas.clear();
-			svgCanvas.setResolution(640, 480);
+// 			svgCanvas.setResolution(640, 480);
+			updateCanvas();
 			zoomImage();
 			populateLayers();
 			updateContextPanel();
@@ -1119,7 +1122,8 @@ function svg_edit_setup() {
 	var zoomImage = function(multiplier) {
 		var res = svgCanvas.getResolution();
 		multiplier = multiplier?res.zoom * multiplier:1;
-		setResolution(res.w * multiplier, res.h * multiplier, true);
+// 		setResolution(res.w * multiplier, res.h * multiplier, true);
+		updateCanvas();
 		$('#zoom').val(multiplier * 100);
 		svgCanvas.setZoom(multiplier);
 		zoomDone();
@@ -1128,6 +1132,7 @@ function svg_edit_setup() {
 	var zoomDone = function() {
 		updateBgImage();
 		updateWireFrame();
+		updateCanvas();
 	}
 
 	var clickWireframe = function() {
@@ -1267,6 +1272,7 @@ function svg_edit_setup() {
 		// set icon size
 		setIconSize($('#iconsize').val());
 		
+		updateCanvas();
 		hideDocProperties();
 	};
 	
@@ -2009,10 +2015,10 @@ function svg_edit_setup() {
 	};
 	populateLayers();
 
-	function changeResolution(x,y) {
-		var zoom = svgCanvas.getResolution().zoom;
-		setResolution(x * zoom, y * zoom);
-	}
+// 	function changeResolution(x,y) {
+// 		var zoom = svgCanvas.getResolution().zoom;
+// 		setResolution(x * zoom, y * zoom);
+// 	}
 	
 	var centerCanvas = function() {
 		// this centers the canvas vertically in the workarea (horizontal handled in CSS)
@@ -2061,20 +2067,21 @@ function svg_edit_setup() {
 		}
 	}
 	
-	function setResolution(w, h, center) {
-		w-=0; h-=0;
-		$('#svgcanvas').css( { 'width': w, 'height': h } );
-		$('#canvas_width').val(w);
-		$('#canvas_height').val(h);
-
-		if(center) {
-			var w_area = workarea;
-			var scroll_y = h/2 - w_area.height()/2;
-			var scroll_x = w/2 - w_area.width()/2;
-			w_area[0].scrollTop = scroll_y;
-			w_area[0].scrollLeft = scroll_x;
-		}
-	}
+// 	function setResolution(w, h, center) {
+// 		updateCanvas();
+// // 		w-=0; h-=0;
+// // 		$('#svgcanvas').css( { 'width': w, 'height': h } );
+// // 		$('#canvas_width').val(w);
+// // 		$('#canvas_height').val(h);
+// // 
+// // 		if(center) {
+// // 			var w_area = workarea;
+// // 			var scroll_y = h/2 - w_area.height()/2;
+// // 			var scroll_x = w/2 - w_area.width()/2;
+// // 			w_area[0].scrollTop = scroll_y;
+// // 			w_area[0].scrollLeft = scroll_x;
+// // 		}
+// 	}
 
 	$('#resolution').change(function(){
 		var wh = $('#canvas_width,#canvas_height');
@@ -2316,8 +2323,28 @@ function svg_edit_setup() {
 		$("#tool_open").show().prepend(inp);
 	}
 	
+	
+	var updateCanvas = function() {
+		var w = workarea.width(), h = workarea.height();
+		var w_orig = w, h_orig = h;
+		var zoom = svgCanvas.getZoom();
+		var multi = (5*(zoom>1?zoom:1));
+		// Make the canvas bigger than the viewport
+		w *= multi;
+		h *= multi;
+
+		$("#svgcanvas").width(w).height(h);
+		svgCanvas.updateCanvas(w, h);
+		
+		var w_area = workarea;
+		var scroll_y = h/2 - h_orig/2;
+		var scroll_x = w/2 - w_orig/2;
+		w_area[0].scrollTop = scroll_y;
+		w_area[0].scrollLeft = scroll_x;
+	}
 	// set starting resolution (centers canvas)
-	setResolution(640,480);
+// 	setResolution(640,480);
+	$(updateCanvas);
 	
 //	var revnums = "svg-editor.js ($Rev$) ";
 //	revnums += svgCanvas.getVersion();
