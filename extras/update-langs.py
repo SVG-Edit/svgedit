@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# This is a helper script for the svg-edit project, useful for updating language files
+# This is a helper script for the svg-edit project, useful for managing
+# all the language files
+#
 # Licensed under the Apache 2 License as is the rest of the project
 # Requires Python 2.6
 #
@@ -60,7 +62,7 @@ def processFile(filename):
 		j = json.loads(in_string)
 		
 		# process the JSON object here
-		updateMainMenu(j)
+#		updateMainMenu(j)
 	
 		# now write it out back to the file
 		s = ourPrettyPrint(j).encode("UTF-8");
