@@ -251,12 +251,23 @@ function svg_edit_setup() {
 		var bb = z_info.bbox;
 		$('#zoom').val(Math.round(zoomlevel*100));
 		// setResolution(res.w * zoomlevel, res.h * zoomlevel);
-		var scrLeft = bb.x * zoomlevel + $("svgcanvas").width()/2;
+// 		console.log('zoomlevel',zoomlevel)
+		
+		if(bbox.width) {
+			updateCanvas(false, {x: bb.x * zoomlevel + bb.width * zoomlevel/2, y: bb.y * zoomlevel + bb.height * zoomlevel/2});
+		} else {
+			updateCanvas();
+		}
+//temp		
+// bb = {width: 0, height: 0, x:100, y:100};
+// 		console.log('bb',bb);
+		var scrLeft = bb.x * zoomlevel;
 		var scrOffX = w_area.width()/2 - (bb.width * zoomlevel)/2;
-		w_area[0].scrollLeft = Math.max(0,scrLeft - scrOffX) + Math.max(0,canvas_pos.left);
+// 		w_area[0].scrollLeft = Math.max(0,scrLeft - scrOffX) + Math.max(0,canvas_pos.left);
+		
 		var scrTop = bb.y * zoomlevel;
 		var scrOffY = w_area.height()/2 - (bb.height * zoomlevel)/2;
-		w_area[0].scrollTop = Math.max(0,scrTop - scrOffY) + Math.max(0,canvas_pos.top);
+// 		w_area[0].scrollTop = Math.max(0,scrTop - scrOffY) + Math.max(0,canvas_pos.top);
 		if(svgCanvas.getMode() == 'zoom' && bb.width) {
 			// Go to select if a zoom box was drawn
 			setSelectMode();
@@ -574,10 +585,13 @@ function svg_edit_setup() {
 		var zoom = svgCanvas.getZoom();
 		var w_area = workarea;
 		
+// 		console.log('y',zoom,(w_area[0].scrollTop + w_area.height()/2)/zoom);
+		
 		zoomChanged(window, {
 			width: 0,
 			height: 0,
-			x: (w_area[0].scrollLeft + w_area.width()/2)/zoom,
+			// center pt of scroll position
+			x: (w_area[0].scrollLeft + w_area.width()/2)/zoom, 
 			y: (w_area[0].scrollTop + w_area.height()/2)/zoom,
 			zoom: zoomlevel
 		});
@@ -1052,7 +1066,7 @@ function svg_edit_setup() {
 			if(!ok) return;
 			svgCanvas.clear();
 // 			svgCanvas.setResolution(640, 480);
-			updateCanvas();
+			updateCanvas(true);
 			zoomImage();
 			populateLayers();
 			updateContextPanel();
@@ -1123,16 +1137,16 @@ function svg_edit_setup() {
 		var res = svgCanvas.getResolution();
 		multiplier = multiplier?res.zoom * multiplier:1;
 // 		setResolution(res.w * multiplier, res.h * multiplier, true);
-		updateCanvas();
 		$('#zoom').val(multiplier * 100);
 		svgCanvas.setZoom(multiplier);
 		zoomDone();
+		updateCanvas(true);
 	};
 	
 	var zoomDone = function() {
 		updateBgImage();
 		updateWireFrame();
-		updateCanvas();
+		updateCanvas(); // necessary?
 	}
 
 	var clickWireframe = function() {
@@ -2319,6 +2333,7 @@ function svg_edit_setup() {
 				var reader = new FileReader();
 				reader.onloadend = function(e) {
 					svgCanvas.setSvgString(e.target.result);
+					updateCanvas();
 				};
 				reader.readAsText(this.files[0]);
 			}
@@ -2327,28 +2342,61 @@ function svg_edit_setup() {
 	}
 	
 	
-	var updateCanvas = function(center) {
+	var updateCanvas = function(center, new_ctr) {
 		var w = workarea.width(), h = workarea.height();
 		var w_orig = w, h_orig = h;
 		var zoom = svgCanvas.getZoom();
-		var multi = (3*(zoom>1?zoom:1));
+		var multi = 2; //(2*(zoom>1?zoom:1));
+		var res = svgCanvas.getResolution();
 		// Make the canvas bigger than the viewport
 		w *= multi;
 		h *= multi;
-
-		$("#svgcanvas").width(w).height(h);
-		svgCanvas.updateCanvas(w, h);
 		
-// 		if(center) {
-			var w_area = workarea;
-			var scroll_y = h/2 - h_orig/2;
-			var scroll_x = w/2 - w_orig/2;
-			w_area[0].scrollTop = scroll_y;
+		w = Math.max(w, res.w*3*zoom);
+		h = Math.max(h, res.h*3*zoom);
+
+		var old_c_h = $("#svgcanvas").height();
+		$("#svgcanvas").width(w).height(h);
+		var new_c_h = $("#svgcanvas").height();
+		var offset = svgCanvas.updateCanvas(w, h);
+		
+		// Get the ratio of how much the canvas is resized, so we can change
+		// the viewport scroll numbers to match
+		var ratio = new_c_h/old_c_h;	
+// 		console.log('ratio',ratio);
+
+		
+		var w_area = workarea;
+		var scroll_x = w/2 - w_orig/2;
+		var scroll_y = h/2 - h_orig/2;
+		
+		var old_ctr = {
+			x: w_area[0].scrollLeft + w_orig/2,
+			y: w_area[0].scrollTop + h_orig/2
+		};
+		
+		
+		if(!new_ctr) {
+			new_ctr = {
+				x: old_ctr.x * ratio,
+				y: old_ctr.y * ratio
+			};
+		} else {
+			new_ctr.x += offset.x,
+			new_ctr.y += offset.y;
+		}
+// 		console.log('new_ctr',new_ctr)
+		
+		if(center) {
 			w_area[0].scrollLeft = scroll_x;
-// 		}
+			w_area[0].scrollTop = scroll_y;
+		} else {
+			w_area[0].scrollLeft = new_ctr.x - w_orig/2;
+			w_area[0].scrollTop = new_ctr.y - h_orig/2;
+			// bottom: 
+		}
 	}
-	// set starting resolution (centers canvas)
-// 	setResolution(640,480);
+
 	$(function() {
 		updateCanvas(true);
 	});
