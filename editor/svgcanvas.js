@@ -561,6 +561,22 @@ function BatchCommand(text) {
 			mgr.selectorMap = {};
 			mgr.selectors = [];
 			mgr.rubberBandBox = null;
+			
+			if($("#borderRect").length) return;
+
+			var rect = svgdoc.createElementNS(svgns, "rect");
+			assignAttributes(rect, {
+				'id':'borderRect',
+				'width':'640',
+				'height':'480',
+				'x':'0',
+				'y':'0',
+				'stroke-width':'1',
+				'stroke':'#000',
+				'fill':'none',
+				'style':'pointer-events:none'
+			});
+			mgr.selectorParentGroup.appendChild(rect);
 		};
 
 		this.requestSelector = function(elem) {
@@ -860,12 +876,17 @@ function BatchCommand(text) {
 	container.appendChild(svgroot);
 	var svgcontent = svgdoc.createElementNS(svgns, "svg");
 	svgcontent.setAttribute('id', 'svgcontent');
-	svgcontent.setAttribute('viewBox', '0 0 640 480');
+// 	svgcontent.setAttribute('viewBox', '0 0 640 480');
+	svgcontent.setAttribute('width', '640');
+	svgcontent.setAttribute('height', '480');
+	svgcontent.setAttribute('x', '640');
+	svgcontent.setAttribute('y', '480');
+	svgcontent.setAttribute('overflow', 'visible');
+	
+	
 	svgcontent.setAttribute("xmlns", svgns);
 	svgcontent.setAttribute("xmlns:xlink", xlinkns);
 	svgroot.appendChild(svgcontent);
-	
-	
 	
 	(function() {
 		// TODO: make this string optional and set by the client
@@ -1121,7 +1142,6 @@ function BatchCommand(text) {
 	}
 	
 	var svgCanvasToString = function() {
-		// TODO: Find out why Webkit throws an error somewhere here (breaking the editor)
 		removeUnusedGrads();
 		pathActions.clear(true);
 		$.each(svgcontent.childNodes, function(i, node) {
@@ -1141,6 +1161,7 @@ function BatchCommand(text) {
 			var attr;
 			var i;
 			var childs = elem.childNodes;
+			
 			for (var i=0; i<indent; i++) out.push(" ");
 			out.push("<"); out.push(elem.nodeName);			
 			if(elem.id == 'svgcontent') {
@@ -1196,7 +1217,6 @@ function BatchCommand(text) {
 				for (var i=0; i<childs.length; i++)
 				{
 					var child = childs.item(i);
-					if (child.id == "selectorParentGroup") continue;
 					switch(child.nodeType) {
 					case 1: // element node
 						out.push("\n");
@@ -2289,10 +2309,10 @@ function BatchCommand(text) {
 		//   and do nothing else
 		var mouseDown = function(evt)
 		{
-			root_sctm = svgroot.getScreenCTM().inverse();
+			root_sctm = svgcontent.getScreenCTM().inverse();
 			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
-			var mouse_x = pt.x;
-			var mouse_y = pt.y;
+			var mouse_x = pt.x * current_zoom;
+			var mouse_y = pt.y * current_zoom;
 			evt.preventDefault();
 		
 			if($.inArray(current_mode, ['select', 'resize']) == -1) {
@@ -2608,8 +2628,8 @@ function BatchCommand(text) {
 			if (!started) return;
 			var selected = selectedElements[0];
 			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
-			var mouse_x = pt.x;
-			var mouse_y = pt.y;
+			var mouse_x = pt.x * current_zoom;
+			var mouse_y = pt.y * current_zoom;
 			var shape = getElem(getId());
 		
 			x = mouse_x / current_zoom;
@@ -2892,8 +2912,8 @@ function BatchCommand(text) {
 			if (!started) return;
 	
 			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
-			var mouse_x = pt.x;
-			var mouse_y = pt.y;
+			var mouse_x = pt.x * current_zoom;
+			var mouse_y = pt.y * current_zoom;
 			var x = mouse_x / current_zoom;
 			var y = mouse_y / current_zoom;
 					
@@ -4772,20 +4792,19 @@ function BatchCommand(text) {
 			else {
 				w = svgcontent.getAttribute("width");
 				h = svgcontent.getAttribute("height");
-				svgcontent.setAttribute("viewBox", ["0", "0", w, h].join(" "));
+				// svgcontent.setAttribute("viewBox", ["0", "0", w, h].join(" "));
 			}
 			
-			// just to be safe, set width and height to 100%/100%
-			// (removing causes bug in Webkit)
-			svgcontent.setAttribute('width','100%');
-			svgcontent.setAttribute('height','100%');
+			svgcontent.setAttribute('width', w);
+			svgcontent.setAttribute('height', h);
+			svgcontent.setAttribute('overflow', 'visible');
 			batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
 			// update root to the correct size
 			var changes = {};
-			changes['width'] = svgroot.getAttribute('width');
-			changes['height'] = svgroot.getAttribute('height');
-			svgroot.setAttribute('width', w);
-			svgroot.setAttribute('height', h);
+			changes['width'] = svgcontent.getAttribute('width');
+			changes['height'] = svgcontent.getAttribute('height');
+// 			svgroot.setAttribute('width', w);
+// 			svgroot.setAttribute('height', h);
 			batchCmd.addSubCommand(new ChangeElementCommand(svgroot, changes));
 			
 			// reset zoom
@@ -5235,9 +5254,14 @@ function BatchCommand(text) {
 	}
 
 	this.getResolution = function() {
-// 		return [svgroot.getAttribute("width"), svgroot.getAttribute("height")];
-		var vb = svgcontent.getAttribute("viewBox").split(' ');
-		return {'w':vb[2], 'h':vb[3], 'zoom': current_zoom};
+// 		var vb = svgcontent.getAttribute("viewBox").split(' ');
+// 		return {'w':vb[2], 'h':vb[3], 'zoom': current_zoom};
+			
+		return {
+			'w':svgcontent.getAttribute("width"),
+			'h':svgcontent.getAttribute("height"),
+			'zoom': current_zoom
+		};
 	};
 	
 	this.getImageTitle = function() {
@@ -5306,18 +5330,16 @@ function BatchCommand(text) {
 				return false;
 			}
 		}
-		x *= current_zoom;
-		y *= current_zoom;
 		if (x != w || y != h) {
 			var handle = svgroot.suspendRedraw(1000);
 			if(!batchCmd) {
 				batchCmd = new BatchCommand("Change Image Dimensions");
 			}
-			svgroot.setAttribute('width', x);
-			svgroot.setAttribute('height', y);
-			batchCmd.addSubCommand(new ChangeElementCommand(svgroot, {"width":w, "height":h}));
+			svgcontent.setAttribute('width', x);
+			svgcontent.setAttribute('height', y);
+			batchCmd.addSubCommand(new ChangeElementCommand(svgcontent, {"width":w, "height":h}));
 
-			svgcontent.setAttribute("viewBox", ["0 0", x/current_zoom, y/current_zoom].join(' '));
+			svgcontent.setAttribute("viewBox", [0, 0, x/current_zoom, y/current_zoom].join(' '));
 			batchCmd.addSubCommand(new ChangeElementCommand(svgcontent, {"viewBox": ["0 0", w, h].join(' ')}));
 		
 			addCommandToHistory(batchCmd);
@@ -5373,8 +5395,7 @@ function BatchCommand(text) {
 
 	this.setZoom = function(zoomlevel) {
 		var res = canvas.getResolution();
-		svgroot.setAttribute("width", res.w * zoomlevel);
-		svgroot.setAttribute("height", res.h * zoomlevel);
+		svgcontent.setAttribute("viewBox", "0 0 " + res.w/zoomlevel + " " + res.h/zoomlevel);
 		current_zoom = zoomlevel;
 		$.each(selectedElements, function(i, elem) {
 			if(!elem) return;
@@ -6338,6 +6359,26 @@ function BatchCommand(text) {
 			'width': w,
 			'height': h
 		};
+	}
+	
+	this.updateCanvas = function(w, h, w_orig, h_orig) {
+		svgroot.setAttribute("width", w);
+		svgroot.setAttribute("height", h);
+		var rect = $('#borderRect')[0];
+		var x = (w/2 - svgcontent.getAttribute('width')*current_zoom/2);
+		var y = (h/2 - svgcontent.getAttribute('height')*current_zoom/2);
+
+		assignAttributes(svgcontent, {
+			'x': x,
+			'y': y
+		});
+		
+		assignAttributes(rect, {
+			width: svgcontent.getAttribute('width') * current_zoom,
+			height: svgcontent.getAttribute('height') * current_zoom
+		});
+		
+		selectorManager.selectorParentGroup.setAttribute("transform","translate(" + x + "," + y + ")");
 	}
 
 	this.getStrokedBBox = function(elems) {
