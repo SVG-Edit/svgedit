@@ -6365,8 +6365,12 @@ function BatchCommand(text) {
 		svgroot.setAttribute("width", w);
 		svgroot.setAttribute("height", h);
 		var rect = $('#borderRect')[0];
+		var old_x = svgcontent.getAttribute('x');
+		var old_y = svgcontent.getAttribute('y');
 		var x = (w/2 - svgcontent.getAttribute('width')*current_zoom/2);
 		var y = (h/2 - svgcontent.getAttribute('height')*current_zoom/2);
+
+		
 
 		assignAttributes(svgcontent, {
 			'x': x,
@@ -6381,6 +6385,8 @@ function BatchCommand(text) {
 		});
 		
 		selectorManager.selectorParentGroup.setAttribute("transform","translate(" + x + "," + y + ")");
+		
+		return {x:x, y:y, d_x:x - old_x, d_y:y - old_y};
 	}
 
 	this.getStrokedBBox = function(elems) {
