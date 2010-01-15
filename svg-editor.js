@@ -251,7 +251,7 @@ function svg_edit_setup() {
 		var bb = z_info.bbox;
 		$('#zoom').val(Math.round(zoomlevel*100));
 		// setResolution(res.w * zoomlevel, res.h * zoomlevel);
-		var scrLeft = bb.x * zoomlevel;
+		var scrLeft = bb.x * zoomlevel + $("svgcanvas").width()/2;
 		var scrOffX = w_area.width()/2 - (bb.width * zoomlevel)/2;
 		w_area[0].scrollLeft = Math.max(0,scrLeft - scrOffX) + Math.max(0,canvas_pos.left);
 		var scrTop = bb.y * zoomlevel;
@@ -1280,7 +1280,10 @@ function svg_edit_setup() {
 		if(color == curPrefs.bg_color && url == curPrefs.bg_url) return;
 		$.pref('bg_color', color);
 		$.pref('bg_url', url);
-		$('#svgcanvas').css('background',color);
+		
+		// This should be done in svgcanvas.js for the borderRect fill
+		// $('#svgcanvas').css('background',color);
+		
 		if(url) {
 			if(!$('#background_img').length) {
 				$('<div id="background_img"><img src="'+url+'" style="width:100%"></div>')
@@ -2324,11 +2327,11 @@ function svg_edit_setup() {
 	}
 	
 	
-	var updateCanvas = function() {
+	var updateCanvas = function(center) {
 		var w = workarea.width(), h = workarea.height();
 		var w_orig = w, h_orig = h;
 		var zoom = svgCanvas.getZoom();
-		var multi = (5*(zoom>1?zoom:1));
+		var multi = (3*(zoom>1?zoom:1));
 		// Make the canvas bigger than the viewport
 		w *= multi;
 		h *= multi;
@@ -2336,15 +2339,19 @@ function svg_edit_setup() {
 		$("#svgcanvas").width(w).height(h);
 		svgCanvas.updateCanvas(w, h);
 		
-		var w_area = workarea;
-		var scroll_y = h/2 - h_orig/2;
-		var scroll_x = w/2 - w_orig/2;
-		w_area[0].scrollTop = scroll_y;
-		w_area[0].scrollLeft = scroll_x;
+// 		if(center) {
+			var w_area = workarea;
+			var scroll_y = h/2 - h_orig/2;
+			var scroll_x = w/2 - w_orig/2;
+			w_area[0].scrollTop = scroll_y;
+			w_area[0].scrollLeft = scroll_x;
+// 		}
 	}
 	// set starting resolution (centers canvas)
 // 	setResolution(640,480);
-	$(updateCanvas);
+	$(function() {
+		updateCanvas(true);
+	});
 	
 //	var revnums = "svg-editor.js ($Rev$) ";
 //	revnums += svgCanvas.getVersion();

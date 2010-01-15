@@ -573,10 +573,10 @@ function BatchCommand(text) {
 				'y':'0',
 				'stroke-width':'1',
 				'stroke':'#000',
-				'fill':'none',
+				'fill':'#FFF',
 				'style':'pointer-events:none'
 			});
-			mgr.selectorParentGroup.appendChild(rect);
+			svgroot.insertBefore(rect, svgcontent);
 		};
 
 		this.requestSelector = function(elem) {
@@ -6375,7 +6375,9 @@ function BatchCommand(text) {
 		
 		assignAttributes(rect, {
 			width: svgcontent.getAttribute('width') * current_zoom,
-			height: svgcontent.getAttribute('height') * current_zoom
+			height: svgcontent.getAttribute('height') * current_zoom,
+			x: x,
+			y: y
 		});
 		
 		selectorManager.selectorParentGroup.setAttribute("transform","translate(" + x + "," + y + ")");
