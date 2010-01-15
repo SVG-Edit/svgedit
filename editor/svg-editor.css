@@ -306,8 +306,9 @@
 #svg_editor #main_menu li {
 /*	height: 35px;*/
 	line-height: 22px;
-	padding-top: 2px;
-	padding-left: 2px;
+	padding-top: 7px;
+	padding-left: 7px;
+	margin: -5px;
 	overflow: auto;
 	cursor: default;
 }
