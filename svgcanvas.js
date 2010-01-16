@@ -1373,12 +1373,25 @@ function BatchCommand(text) {
 				changes["height"] = scaleh(changes["height"]);
 				break;
 			case "text":
-				// we just absorb all matrices into the element and don't do any remapping
-				var chlist = canvas.getTransformList(selected);
-				var mt = svgroot.createSVGTransform();
-				mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix,m));
-				chlist.clear();
-				chlist.appendItem(mt);
+				// if it was a translate, then just update x,y
+				if (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && 
+					(m.e != 0 || m.f != 0) ) 
+				{
+					// [T][M] = [M][T']
+					// therefore [T'] = [M_inv][T][M]
+					var existing = transformListToTransform(selected).matrix,
+						t_new = matrixMultiply(existing.inverse(), m, existing);
+					changes["x"] = parseFloat(changes["x"]) + t_new.e;
+					changes["y"] = parseFloat(changes["y"]) + t_new.f;
+				}
+				else {
+					// we just absorb all matrices into the element and don't do any remapping
+					var chlist = canvas.getTransformList(selected);
+					var mt = svgroot.createSVGTransform();
+					mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix,m));
+					chlist.clear();
+					chlist.appendItem(mt);
+				}
 				break;
 			case "polygon":
 			case "polyline":
@@ -2154,12 +2167,9 @@ function BatchCommand(text) {
 	// matrixMultiply() is provided because WebKit didn't implement multiply() correctly
 	// on the SVGMatrix interface.  See https://bugs.webkit.org/show_bug.cgi?id=16062
 	// This function tries to return a SVGMatrix that is the multiplication m1*m2.
-	// As far as I can tell, there is no way for us to handle matrix multiplication 
-	// of arbitrary matrices because we cannot directly set the a,b,c,d,e,f values
-	// of the resulting matrix, we have to do it with translate/rotate/scale
-	// TODO: Actually all browsers seem to allow setting of a-f in a SVGMatrix without 
-	//       throwing an exception - perhaps an update was issued in SVG 1.1 2e?
+	// We also round to zero when it's near zero
 	var matrixMultiply = function() {
+		var NEAR_ZERO = 1e-14;
 		var multi2 = function(m1, m2) {
 			var m = svgroot.createSVGMatrix();
 			m.a = m1.a*m2.a + m1.c*m2.b;
@@ -2177,6 +2187,13 @@ function BatchCommand(text) {
 			var m1 = args[i-1];
 			m = multi2(m1, m);
 		}
+		if (Math.abs(m.a) < NEAR_ZERO) m.a = 0;
+		if (Math.abs(m.b) < NEAR_ZERO) m.b = 0;
+		if (Math.abs(m.c) < NEAR_ZERO) m.c = 0;
+		if (Math.abs(m.d) < NEAR_ZERO) m.d = 0;
+		if (Math.abs(m.e) < NEAR_ZERO) m.e = 0;
+		if (Math.abs(m.f) < NEAR_ZERO) m.f = 0;
+		
 		return m;
 	}
 	
