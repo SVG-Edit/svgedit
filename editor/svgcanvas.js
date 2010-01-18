@@ -559,21 +559,30 @@ function BatchCommand(text) {
 			mgr.selectors = [];
 			mgr.rubberBandBox = null;
 			
-			if($("#borderRect").length) return;
+			if($("#canvasBackground").length) return;
 
+			var canvasbg = svgdoc.createElementNS(svgns, "svg");
+			assignAttributes(canvasbg, {
+				'id':'canvasBackground',
+				'width': 640,
+				'height': 480,
+				'x': 0,
+				'y': 0,
+				'style': 'pointer-events:none'
+			});
 			var rect = svgdoc.createElementNS(svgns, "rect");
 			assignAttributes(rect, {
-				'id':'borderRect',
-				'width':'640',
-				'height':'480',
-				'x':'0',
-				'y':'0',
-				'stroke-width':'1',
-				'stroke':'#000',
-				'fill':'#FFF',
-				'style':'pointer-events:none'
+				'width': '100%',
+				'height': '100%',
+				'x': 0,
+				'y': 0,
+				'stroke-width': 1,
+				'stroke': '#000',
+				'fill': '#FFF',
+				'style': 'pointer-events:none'
 			});
-			svgroot.insertBefore(rect, svgcontent);
+			canvasbg.appendChild(rect);
+			svgroot.insertBefore(canvasbg, svgcontent);
 		};
 
 		this.requestSelector = function(elem) {
@@ -6418,20 +6427,18 @@ function BatchCommand(text) {
 	this.updateCanvas = function(w, h, w_orig, h_orig) {
 		svgroot.setAttribute("width", w);
 		svgroot.setAttribute("height", h);
-		var rect = $('#borderRect')[0];
+		var bg = $('#canvasBackground')[0];
 		var old_x = svgcontent.getAttribute('x');
 		var old_y = svgcontent.getAttribute('y');
 		var x = (w/2 - svgcontent.getAttribute('width')*current_zoom/2);
 		var y = (h/2 - svgcontent.getAttribute('height')*current_zoom/2);
-
-		
 
 		assignAttributes(svgcontent, {
 			'x': x,
 			'y': y
 		});
 		
-		assignAttributes(rect, {
+		assignAttributes(bg, {
 			width: svgcontent.getAttribute('width') * current_zoom,
 			height: svgcontent.getAttribute('height') * current_zoom,
 			x: x,
@@ -6734,6 +6741,29 @@ function BatchCommand(text) {
 		}
 	};
 
+	this.setBackground = function(color, url) {
+		var bg =  getElem('canvasBackground');
+		var border = $(bg).find('rect')[0];
+		var bg_img = getElem('background_image');
+		border.setAttribute('fill',color);
+		if(url) {
+			if(!bg_img) {
+				bg_img = svgdoc.createElementNS(svgns, "image");
+				assignAttributes(bg_img, {
+					'id': 'background_image',
+					'width': '100%',
+					'height': '100%',
+					'preserveAspectRatio': 'xMinYMin',
+					'style':'pointer-events:none'
+				});
+			}
+			bg_img.setAttributeNS(xlinkns, "href", url);
+			bg.appendChild(bg_img);
+		} else if(bg_img) {
+			bg_img.parentNode.removeChild(bg_img);
+		}
+	}
+
 	// aligns selected elements (type is a char - see switch below for explanation)
 	// relative_to can be "selected", "largest", "smallest", "page"
 	this.alignSelectedElements = function(type, relative_to) {
@@ -6783,8 +6813,8 @@ function BatchCommand(text) {
 		if (relative_to == 'page') {
 			minx = 0;
 			miny = 0;
-			maxx = svgroot.getAttribute('width');
-			maxy = svgroot.getAttribute('height');
+			maxx = svgcontent.getAttribute('width');
+			maxy = svgcontent.getAttribute('height');
 		}
 
 		var dx = new Array(len);
