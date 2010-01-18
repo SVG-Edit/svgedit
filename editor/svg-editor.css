@@ -381,8 +381,8 @@
 	stroke: none;
 }
 
-#workarea.wireframe #svgcanvas {
-	background: #FFF !important;
+#workarea.wireframe #canvasBackground rect {
+	fill: #FFF !important;
 }
 
 #svg_editor #selected_panel,
