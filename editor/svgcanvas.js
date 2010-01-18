@@ -3174,6 +3174,39 @@ function BatchCommand(text) {
 		$(container).mousedown(mouseDown).mousemove(mouseMove);
 		$(window).mouseup(mouseUp);
 		
+		$(container).bind("mousewheel DOMMouseScroll", function(e){
+			if(!e.shiftKey) return;
+			e.preventDefault();
+
+			root_sctm = svgcontent.getScreenCTM().inverse();
+			var pt = transformPoint( e.pageX, e.pageY, root_sctm );
+			var bbox = {
+				'x': pt.x,
+				'y': pt.y,
+				'width': 0,
+				'height': 0
+			};
+
+			// Respond to mouse wheel in IE/Webkit/Opera.
+			// (It returns up/dn motion in multiples of 120)
+			if(e.wheelDelta) {
+				if (e.wheelDelta >= 120) {
+					bbox.factor = 2;
+				} else if (e.wheelDelta <= -120) {
+					bbox.factor = .5;
+				}
+			} else if(e.detail) {
+				if (e.detail > 0) {
+					bbox.factor = .5;
+				} else if (e.detail < 0) {
+					bbox.factor = 2;			
+				}				
+			}
+			
+			if(!bbox.factor) return;
+			call("zoomed", bbox);
+		});
+		
 	}());
 
 	var pathActions = function() {
@@ -5362,6 +5395,13 @@ function BatchCommand(text) {
 		}
 		return true;
 	};
+	this.getOffset = function() {
+		return {
+			x: svgcontent.getAttribute('x'),
+			y: svgcontent.getAttribute('y')
+		};
+	}
+	
 	this.setBBoxZoom = function(val, editor_w, editor_h) {
 		var spacer = .85;
 		var bb;

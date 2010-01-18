@@ -256,6 +256,7 @@ function svg_edit_setup() {
 		if(autoCenter) {
 			updateCanvas();
 		} else {
+			console.log(bb.x, bb.x * zoomlevel);
 			updateCanvas(false, {x: bb.x * zoomlevel + (bb.width * zoomlevel)/2, y: bb.y * zoomlevel + (bb.height * zoomlevel)/2});
 		}
 
@@ -1556,38 +1557,6 @@ function svg_edit_setup() {
 		);
 	}());
 
-	workarea.bind("mousewheel DOMMouseScroll", function(e){
-		if(!e.shiftKey) return;
-		e.preventDefault();
-		var off = $('#svgcanvas').offset();
-		var zoom = svgCanvas.getZoom();
-		var bbox = {
-			'x': (e.pageX - off.left)/zoom,
-			'y': (e.pageY - off.top)/zoom,
-			'width': 0,
-			'height': 0
-		};
-		
-		// Respond to mouse wheel in IE/Webkit/Opera.
-		// (It returns up/dn motion in multiples of 120)
-		if(e.wheelDelta) {
-			if (e.wheelDelta >= 120) {
-				bbox.factor = 2;
-			} else if (e.wheelDelta <= -120) {
-				bbox.factor = .5;
-			}
-		} else if(e.detail) {
-			if (e.detail > 0) {
-				bbox.factor = .5;
-			} else if (e.detail < 0) {
-				bbox.factor = 2;			
-			}				
-		}
-		
-		if(!bbox.factor) return;
-		zoomChanged(window, bbox);
-	});
-
 	// switch modifier key in tooltips if mac
 	// NOTE: This code is not used yet until I can figure out how to successfully bind ctrl/meta
 	// in Opera and Chrome
@@ -2339,6 +2308,7 @@ function svg_edit_setup() {
 		var zoom = svgCanvas.getZoom();
 		var res = svgCanvas.getResolution();
 		var w_area = workarea;
+		var cnvs = $("#svgcanvas");
 		
 		var old_ctr = {
 			x: w_area[0].scrollLeft + w_orig/2,
@@ -2354,11 +2324,11 @@ function svg_edit_setup() {
 			workarea.css('overflow','scroll');
 		}
 		
-		var old_can_y = $("#svgcanvas").height()/2;
-		var old_can_x = $("#svgcanvas").width()/2;
-		$("#svgcanvas").width(w).height(h);
-		var new_can_y = $("#svgcanvas").height()/2;
-		var new_can_x = $("#svgcanvas").width()/2;
+		var old_can_y = cnvs.height()/2;
+		var old_can_x = cnvs.width()/2;
+		cnvs.width(w).height(h);
+		var new_can_y = h/2;
+		var new_can_x = w/2;
 		var offset = svgCanvas.updateCanvas(w, h);
 		
 		var ratio = new_can_x / old_can_x;
@@ -2382,33 +2352,14 @@ function svg_edit_setup() {
 		} else {
 			new_ctr.x += offset.x,
 			new_ctr.y += offset.y;
-// 			new_ctr.x /= zoom;
-// 			new_ctr.y /= zoom;
-// 			console.log('new_ctr',new_ctr)
-// 			
-// 			var old_dist_x = new_ctr.x - old_can_x;
-// 			var new_x = new_can_x + old_dist_x * ratio;
-// 
-// 			var old_dist_y = new_ctr.y - old_can_y;
-// 			var new_y = new_can_y + old_dist_y * ratio;
-// 
-// 			new_ctr = {
-// 				x: new_x, // + res.w/2,
-// 				y: new_y //+ res.h/2,
-// 			};
-
 		}
-// 		console.log('new_ctr',new_ctr)
 		
 		if(center) {
 			w_area[0].scrollLeft = scroll_x;
 			w_area[0].scrollTop = scroll_y;
 		} else {
-
 			w_area[0].scrollLeft = new_ctr.x - w_orig/2;
 			w_area[0].scrollTop = new_ctr.y - h_orig/2;
-
-			// bottom: 
 		}
 	}
 
