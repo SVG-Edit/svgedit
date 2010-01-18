@@ -239,7 +239,7 @@ function svg_edit_setup() {
 		img.width(zoomlevel*100 + '%');
 	}
 	
-	var zoomChanged = function(window, bbox) {
+	var zoomChanged = function(window, bbox, autoCenter) {
 		var scrbar = 15;
 		var res = svgCanvas.getResolution();
 		var w_area = workarea;
@@ -253,21 +253,12 @@ function svg_edit_setup() {
 		// setResolution(res.w * zoomlevel, res.h * zoomlevel);
 // 		console.log('zoomlevel',zoomlevel)
 		
-		if(bbox.width) {
-			updateCanvas(false, {x: bb.x * zoomlevel + bb.width * zoomlevel/2, y: bb.y * zoomlevel + bb.height * zoomlevel/2});
-		} else {
+		if(autoCenter) {
 			updateCanvas();
+		} else {
+			updateCanvas(false, {x: bb.x * zoomlevel + (bb.width * zoomlevel)/2, y: bb.y * zoomlevel + (bb.height * zoomlevel)/2});
 		}
-//temp		
-// bb = {width: 0, height: 0, x:100, y:100};
-// 		console.log('bb',bb);
-		var scrLeft = bb.x * zoomlevel;
-		var scrOffX = w_area.width()/2 - (bb.width * zoomlevel)/2;
-// 		w_area[0].scrollLeft = Math.max(0,scrLeft - scrOffX) + Math.max(0,canvas_pos.left);
-		
-		var scrTop = bb.y * zoomlevel;
-		var scrOffY = w_area.height()/2 - (bb.height * zoomlevel)/2;
-// 		w_area[0].scrollTop = Math.max(0,scrTop - scrOffY) + Math.max(0,canvas_pos.top);
+
 		if(svgCanvas.getMode() == 'zoom' && bb.width) {
 			// Go to select if a zoom box was drawn
 			setSelectMode();
@@ -594,7 +585,7 @@ function svg_edit_setup() {
 			x: (w_area[0].scrollLeft + w_area.width()/2)/zoom, 
 			y: (w_area[0].scrollTop + w_area.height()/2)/zoom,
 			zoom: zoomlevel
-		});
+		}, true);
 	}
 	
 	var changeOpacity = function(ctl, val) {
@@ -1146,7 +1137,7 @@ function svg_edit_setup() {
 	var zoomDone = function() {
 		updateBgImage();
 		updateWireFrame();
-		updateCanvas(); // necessary?
+		//updateCanvas(); // necessary?
 	}
 
 	var clickWireframe = function() {
@@ -2346,44 +2337,66 @@ function svg_edit_setup() {
 		var w = workarea.width(), h = workarea.height();
 		var w_orig = w, h_orig = h;
 		var zoom = svgCanvas.getZoom();
-		var multi = 2; //(2*(zoom>1?zoom:1));
 		var res = svgCanvas.getResolution();
-		// Make the canvas bigger than the viewport
-		w *= multi;
-		h *= multi;
-		
-		w = Math.max(w, res.w*3*zoom);
-		h = Math.max(h, res.h*3*zoom);
-
-		var old_c_h = $("#svgcanvas").height();
-		$("#svgcanvas").width(w).height(h);
-		var new_c_h = $("#svgcanvas").height();
-		var offset = svgCanvas.updateCanvas(w, h);
-		
-		// Get the ratio of how much the canvas is resized, so we can change
-		// the viewport scroll numbers to match
-		var ratio = new_c_h/old_c_h;	
-// 		console.log('ratio',ratio);
-
-		
 		var w_area = workarea;
-		var scroll_x = w/2 - w_orig/2;
-		var scroll_y = h/2 - h_orig/2;
 		
 		var old_ctr = {
 			x: w_area[0].scrollLeft + w_orig/2,
 			y: w_area[0].scrollTop + h_orig/2
 		};
 		
+		w = Math.max(w_orig, res.w*3*zoom);
+		h = Math.max(h_orig, res.h*3*zoom);
+		
+		if(w == w_orig && h == h_orig) {
+			workarea.css('overflow','hidden');
+		} else {
+			workarea.css('overflow','scroll');
+		}
+		
+		var old_can_y = $("#svgcanvas").height()/2;
+		var old_can_x = $("#svgcanvas").width()/2;
+		$("#svgcanvas").width(w).height(h);
+		var new_can_y = $("#svgcanvas").height()/2;
+		var new_can_x = $("#svgcanvas").width()/2;
+		var offset = svgCanvas.updateCanvas(w, h);
+		
+		var ratio = new_can_x / old_can_x;
+
+		var scroll_x = w/2 - w_orig/2;
+		var scroll_y = h/2 - h_orig/2;
 		
 		if(!new_ctr) {
+
+			var old_dist_x = old_ctr.x - old_can_x;
+			var new_x = new_can_x + old_dist_x * ratio;
+
+			var old_dist_y = old_ctr.y - old_can_y;
+			var new_y = new_can_y + old_dist_y * ratio;
+
 			new_ctr = {
-				x: old_ctr.x * ratio,
-				y: old_ctr.y * ratio
+				x: new_x, // + res.w/2,
+				y: new_y //+ res.h/2,
 			};
+			
 		} else {
 			new_ctr.x += offset.x,
 			new_ctr.y += offset.y;
+// 			new_ctr.x /= zoom;
+// 			new_ctr.y /= zoom;
+// 			console.log('new_ctr',new_ctr)
+// 			
+// 			var old_dist_x = new_ctr.x - old_can_x;
+// 			var new_x = new_can_x + old_dist_x * ratio;
+// 
+// 			var old_dist_y = new_ctr.y - old_can_y;
+// 			var new_y = new_can_y + old_dist_y * ratio;
+// 
+// 			new_ctr = {
+// 				x: new_x, // + res.w/2,
+// 				y: new_y //+ res.h/2,
+// 			};
+
 		}
 // 		console.log('new_ctr',new_ctr)
 		
@@ -2391,8 +2404,10 @@ function svg_edit_setup() {
 			w_area[0].scrollLeft = scroll_x;
 			w_area[0].scrollTop = scroll_y;
 		} else {
+
 			w_area[0].scrollLeft = new_ctr.x - w_orig/2;
 			w_area[0].scrollTop = new_ctr.y - h_orig/2;
+
 			// bottom: 
 		}
 	}

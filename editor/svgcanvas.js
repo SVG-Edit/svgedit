@@ -6400,7 +6400,7 @@ function BatchCommand(text) {
 		
 		selectorManager.selectorParentGroup.setAttribute("transform","translate(" + x + "," + y + ")");
 		
-		return {x:x, y:y, d_x:x - old_x, d_y:y - old_y};
+		return {x:x, y:y, old_x:old_x, old_y:old_y, d_x:x - old_x, d_y:y - old_y};
 	}
 
 	this.getStrokedBBox = function(elems) {
