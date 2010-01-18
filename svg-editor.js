@@ -231,13 +231,13 @@ function svg_edit_setup() {
 		updateContextPanel();
 	};
 	
-	var updateBgImage = function() {
-		var bg_img = $('#background_img');
-		if(!bg_img.length) return;
-		var img = bg_img.find('img');
-		var zoomlevel = svgCanvas.getZoom();
-		img.width(zoomlevel*100 + '%');
-	}
+// 	var updateBgImage = function() {
+// 		var bg_img = $('#background_img');
+// 		if(!bg_img.length) return;
+// 		var img = bg_img.find('img');
+// 		var zoomlevel = svgCanvas.getZoom();
+// 		img.width(zoomlevel*100 + '%');
+// 	}
 	
 	var zoomChanged = function(window, bbox, autoCenter) {
 		var scrbar = 15;
@@ -522,7 +522,8 @@ function svg_edit_setup() {
 	$('#palette').append(str);
 	
 	// Set up editor background functionality
-	var color_blocks = ['#FFF','#888','#000','url(data:image/gif;base64,R0lGODlhEAAQAIAAAP%2F%2F%2F9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG%2Bgq4jM3IFLJgpswNly%2FXkcBpIiVaInlLJr9FZWAQA7)'];
+	// TODO add checkerboard as "pattern"
+	var color_blocks = ['#FFF','#888','#000']; // ,'url(data:image/gif;base64,R0lGODlhEAAQAIAAAP%2F%2F%2F9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG%2Bgq4jM3IFLJgpswNly%2FXkcBpIiVaInlLJr9FZWAQA7)'];
 	var str = '';
 	$.each(color_blocks, function() {
 		str += '<div class="color_block" style="background:' + this + ';"></div>';
@@ -1057,7 +1058,7 @@ function svg_edit_setup() {
 		$.confirm(uiStrings.QwantToClear, function(ok) {
 			if(!ok) return;
 			svgCanvas.clear();
-// 			svgCanvas.setResolution(640, 480);
+			svgCanvas.setResolution(640, 480);
 			updateCanvas(true);
 			zoomImage();
 			populateLayers();
@@ -1136,7 +1137,7 @@ function svg_edit_setup() {
 	};
 	
 	var zoomDone = function() {
-		updateBgImage();
+// 		updateBgImage();
 		updateWireFrame();
 		//updateCanvas(); // necessary?
 	}
@@ -1193,17 +1194,17 @@ function svg_edit_setup() {
 		// Update background color with current one
 		var blocks = $('#bg_blocks div');
 		var cur_bg = 'cur_background';
-		var canvas_bg = $('#svgcanvas').css('background');
-		var url = canvas_bg.match(/url\("?(.*?)"?\)/);
-		if(url) url = url[1];
+		var canvas_bg = $.pref('bg_color');
+		var url = $.pref('bg_url');
+// 		if(url) url = url[1];
 		blocks.each(function() {
 			var blk = $(this);
-			var is_bg = blk.css('background') == canvas_bg;
+			var is_bg = blk.css('background-color') == canvas_bg;
 			blk.toggleClass(cur_bg, is_bg);
 			if(is_bg) $('#canvas_bg_url').removeClass(cur_bg);
 		});
 		if(!canvas_bg) blocks.eq(0).addClass(cur_bg);
-		if(!$('#bg_blocks .' + cur_bg).length && url) {
+		if(url) {
 			$('#canvas_bg_url').val(url);
 		}
 		
@@ -1266,7 +1267,7 @@ function svg_edit_setup() {
 		$.pref('img_save',curPrefs.img_save);
 		
 		// set background
-		var color = $('#bg_blocks div.cur_background').css('background') || '#FFF';
+		var color = $('#bg_blocks div.cur_background').css('background-color') || '#FFF';
 		setBackground(color, $('#canvas_bg_url').val());
 		
 		// set language
@@ -1288,18 +1289,7 @@ function svg_edit_setup() {
 		$.pref('bg_url', url);
 		
 		// This should be done in svgcanvas.js for the borderRect fill
-		// $('#svgcanvas').css('background',color);
-		
-		if(url) {
-			if(!$('#background_img').length) {
-				$('<div id="background_img"><img src="'+url+'" style="width:100%"></div>')
-					.prependTo('#svgcanvas');
-			} else {
-				$('#background_img img').attr('src',url);
-			}
-		} else {
-			$('#background_img').remove();
-		}
+		svgCanvas.setBackground(color, url);
 	}
 
 	var setIconSize = function(size) {
