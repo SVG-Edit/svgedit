@@ -998,6 +998,7 @@ function BatchCommand(text) {
 			});
 			var i = curBBoxes.length;
 			while (i--) {
+				if(!rubberBBox.width || !rubberBBox.width) continue;
 				if (Utils.rectsIntersect(rubberBBox, curBBoxes[i].bbox))  {
 					resultList.push(curBBoxes[i].elem);
 				}
@@ -2383,6 +2384,7 @@ function BatchCommand(text) {
 				case "select":
 					started = true;
 					current_resize_mode = "none";
+					
 					if (mouse_target != svgroot) {
 						// if this element is not yet selected, clear selection and select it
 						if (selectedElements.indexOf(mouse_target) == -1) {
@@ -3228,6 +3230,7 @@ function BatchCommand(text) {
 		var current_path_oldd = null;
 		var current_ctrl_pt_drag = -1;
 		var link_control_pts = false;
+		var selected_pts = [];
 	
 		var resetPointGrips = function() {
 			if(!current_path) return;
@@ -3297,9 +3300,14 @@ function BatchCommand(text) {
 		};
 		
 		
-	var addNodeToSelection = function(point) {
+		var addNodeToSelection = function(points) {
 			// Currently only one node can be selected at a time, should allow more later
 			// Should point be the index or the grip element?
+			
+// 			if(!$.isArray(points)) points = [points];
+// 			
+// 			$.merge(selected_pts, points);
+// 			$.unique(selected_pts);
 			
 			var is_closed = pathIsClosed(); 
 			var last_pt = current_path_pts.length/2 - 1;
@@ -3867,6 +3875,11 @@ function BatchCommand(text) {
 					current_path_pt_drag = parseInt(id.substr(14));
 					addNodeToSelection(current_path_pt_drag);
 					updateSegLine();
+					
+// 					if(evt.shiftKey) {
+// 						if(current_path_pt)
+// 					}
+					
 				} else if(id.indexOf("ctrlpointgrip_") == 0) {
 					current_ctrl_pt_drag = id.split('_')[1];
 					var node_num = current_ctrl_pt_drag.split('c')[0]-0;

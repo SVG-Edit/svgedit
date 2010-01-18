@@ -250,13 +250,10 @@ function svg_edit_setup() {
 		var zoomlevel = z_info.zoom;
 		var bb = z_info.bbox;
 		$('#zoom').val(Math.round(zoomlevel*100));
-		// setResolution(res.w * zoomlevel, res.h * zoomlevel);
-// 		console.log('zoomlevel',zoomlevel)
 		
 		if(autoCenter) {
 			updateCanvas();
 		} else {
-			console.log(bb.x, bb.x * zoomlevel);
 			updateCanvas(false, {x: bb.x * zoomlevel + (bb.width * zoomlevel)/2, y: bb.y * zoomlevel + (bb.height * zoomlevel)/2});
 		}
 
@@ -577,8 +574,6 @@ function svg_edit_setup() {
 		var zoomlevel = ctl.value / 100;
 		var zoom = svgCanvas.getZoom();
 		var w_area = workarea;
-		
-// 		console.log('y',zoom,(w_area[0].scrollTop + w_area.height()/2)/zoom);
 		
 		zoomChanged(window, {
 			width: 0,
