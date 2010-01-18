@@ -1,0 +1,77 @@
+<html>  
+<head>  
+  <link rel="stylesheet" href="qunit/qunit.css" type="text/css"/>  
+  <script src="../editor/jquery.js"> </script>  
+  <script type="text/javascript" src="../editor/svgicons/jquery.svgicons.js"></script>
+  <script type="text/javascript" src="../editor/locale/locale.js"></script>
+  <script type="text/javascript" src="../editor/svgcanvas.js"></script>
+  <script type="text/javascript" src="qunit/qunit.js"></script>  
+  <script type="text/javascript">
+  $(function() {
+  	// log function
+  	QUnit.log = function(result, message) {
+		if (window.console && window.console.log) {
+			window.console.log(result +' :: '+ message);
+		}
+	};
+	
+	// helper functions
+	var isIdentity = function(m) {
+		return (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && m.e == 0 && m.f == 0);
+	};
+	var matrixString = function(m) {
+		return [m.a,m.b,m.c,m.d,m.e,m.f].join(',');
+	}
+
+  	var svgCanvas = new SvgCanvas(document.getElementById("svgcanvas")),
+  		svgroot = document.getElementById("svgroot"),
+  		svgdoc = svgroot.documentElement;
+
+	module("Basic Module");
+
+	test("Test existence of SvgCanvas object", function() {
+		expect(1);
+		equals(typeof {}, typeof svgCanvas);
+	});
+	
+	module("Transform Module");
+
+	test("Test matrixMultiply", function() {
+		expect(4);
+
+		// translate there and back
+		var tr_1 = svgroot.createSVGMatrix().translate(100,50),
+			tr_2 = svgroot.createSVGMatrix().translate(-90,0),
+			tr_3 = svgroot.createSVGMatrix().translate(-10,-50),
+			I = svgCanvas.matrixMultiply(tr_1,tr_2,tr_3);
+		equals(true, isIdentity(I),
+			"Expected identity matrix when translating there and back, got " + matrixString(I));
+
+		// rotate there and back
+		var rot_there = svgroot.createSVGMatrix().rotate(90),
+			rot_back = svgroot.createSVGMatrix().rotate(-90);
+		I = svgCanvas.matrixMultiply(rot_there, rot_back);
+		equals(true, isIdentity(I),
+			"Expected identity matrix when rotating there and back, got " + matrixString(I));
+
+		// test multiplication with its inverse 
+		I = svgCanvas.matrixMultiply(rot_there, rot_there.inverse());
+		equals(true, isIdentity(I),
+			"Expected identity matrix when multiplying a matrix by its inverse, got " + matrixString(I));
+		I = svgCanvas.matrixMultiply(rot_there.inverse(), rot_there);
+		equals(true, isIdentity(I),
+			"Expected identity matrix when multiplying a matrix by its inverse, got " + matrixString(I));
+	});
+	
+  }); 
+  </script>  
+</head>  
+<body>  
+  <h1 id="qunit-header">Unit Tests for SvgCanvas</h1>
+  <h2 id="qunit-banner"></h2>
+  <h2 id="qunit-userAgent"></h2>
+  <ol id="qunit-tests">
+  </ol>
+  <div id="svgcanvas" style="display:none"></div>
+</body>  
+</html> 

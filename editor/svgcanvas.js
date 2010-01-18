@@ -19,11 +19,8 @@ if(window.opera) {
 	window.console.log = function(str) {opera.postError(str);}
 }
 
-
-
 function SvgCanvas(container)
 {
-
 var isOpera = !!window.opera;
 var isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1;
 
@@ -2168,20 +2165,19 @@ function BatchCommand(text) {
 	// on the SVGMatrix interface.  See https://bugs.webkit.org/show_bug.cgi?id=16062
 	// This function tries to return a SVGMatrix that is the multiplication m1*m2.
 	// We also round to zero when it's near zero
-	var matrixMultiply = function() {
-		var NEAR_ZERO = 1e-14;
-		var multi2 = function(m1, m2) {
-			var m = svgroot.createSVGMatrix();
-			m.a = m1.a*m2.a + m1.c*m2.b;
-			m.b = m1.b*m2.a + m1.d*m2.b,
-			m.c = m1.a*m2.c + m1.c*m2.d,
-			m.d = m1.b*m2.c + m1.d*m2.d,
-			m.e = m1.a*m2.e + m1.c*m2.f + m1.e,
-			m.f = m1.b*m2.e + m1.d*m2.f + m1.f;
-			return m;
-		}
-		
-		var args = arguments, i = args.length, m = args[i-1];
+	this.matrixMultiply = function() {
+		var NEAR_ZERO = 1e-14,
+			multi2 = function(m1, m2) {
+				var m = svgroot.createSVGMatrix();
+				m.a = m1.a*m2.a + m1.c*m2.b;
+				m.b = m1.b*m2.a + m1.d*m2.b,
+				m.c = m1.a*m2.c + m1.c*m2.d,
+				m.d = m1.b*m2.c + m1.d*m2.d,
+				m.e = m1.a*m2.e + m1.c*m2.f + m1.e,
+				m.f = m1.b*m2.e + m1.d*m2.f + m1.f;
+				return m;
+			},
+			args = arguments, i = args.length, m = args[i-1];
 		
 		while(i-- > 1) {
 			var m1 = args[i-1];
@@ -2196,6 +2192,7 @@ function BatchCommand(text) {
 		
 		return m;
 	}
+	var matrixMultiply = this.matrixMultiply;
 	
 	// This returns a single matrix Transform for a given Transform List
 	// (this is the equivalent of SVGTransformList.consolidate() but unlike
