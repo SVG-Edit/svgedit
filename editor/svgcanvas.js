@@ -3313,16 +3313,11 @@ function BatchCommand(text) {
 			var is_closed = pathIsClosed(); 
 			var last_pt = current_path_pts.length/2 - 1;
 			
-			if(is_closed && point == last_pt) {
-				current_path_pt = 0;
-			} else {
-				current_path_pt = point;
-			}
+			current_path_pt = point;
 			
 			$('#pathpointgrip_container circle').attr('stroke','#00F');
 			
-			var sel_point = (current_path_pt == 0 && is_closed)?last_pt:point;
-			$('#pathpointgrip_' + sel_point).attr('stroke','#0FF');
+			$('#pathpointgrip_' + point).attr('stroke','#0FF');
 			var grip = $('#pathpointgrip_' + point);
 			$('#ctrlpointgrip_container circle').attr('fill', '#EEE');
 
@@ -3336,18 +3331,23 @@ function BatchCommand(text) {
 	
 		var addAllPointGripsToPath = function(pointToSelect) {
 			// loop through and show all pointgrips
+			var closed = pathIsClosed();
 			var len = current_path_pts.length;
 			for (var i = 0; i < len; i += 2) {
 				var grip = getElem("pathpointgrip_"+i/2);
-				if (grip) {
-					assignAttributes(grip, {
-						'cx': current_path_pts[i],
-						'cy': current_path_pts[i+1],
-						'display': 'inline'
-					});
-				}
-				else {
-					addPointGripToPath(current_path_pts[i], current_path_pts[i+1],i/2);
+
+				// Skip last point if closed
+				if(!closed || i+2 < len) {
+					if (grip) {
+						assignAttributes(grip, {
+							'cx': current_path_pts[i],
+							'cy': current_path_pts[i+1],
+							'display': 'inline'
+						});
+					}
+					else {
+						addPointGripToPath(current_path_pts[i], current_path_pts[i+1],i/2);
+					}
 				}
 				
 				var index = i/2;
@@ -3471,7 +3471,7 @@ function BatchCommand(text) {
 		
 			var i = current_path_pt_drag * 2;
 			var last_index = current_path_pts.length/2 - 1;
-			var is_first = current_path_pt_drag == 0 || (is_closed && current_path_pt_drag == last_index);
+			var is_first = current_path_pt_drag == 0; // || (is_closed && current_path_pt_drag == last_index);
 			var is_last = !is_closed && current_path_pt_drag == last_index;
 			
 			// if the image is rotated, then we must modify the x,y mouse coordinates
@@ -3573,11 +3573,6 @@ function BatchCommand(text) {
 			if (grip) {
 				grip.setAttribute("cx", mouse_x);
 				grip.setAttribute("cy", mouse_y);
-				if(is_closed && is_first) {
-					var grip = getElem("pathpointgrip_" + last_index);
-					grip.setAttribute("cx", mouse_x);
-					grip.setAttribute("cy", mouse_y);
-				}
 				call("changed", [grip]);
 			}
 			
@@ -4262,7 +4257,11 @@ function BatchCommand(text) {
 			},
 			clonePathNode: function() {
 				var pt = current_path_pt, list = current_path.pathSegList;
-		
+				
+				if(pt+1 >= list.numberOfItems) {
+					pt--;
+				}
+				
 				var next_item = list.getItem(pt+1); 
 				
 				// Get point in between nodes
