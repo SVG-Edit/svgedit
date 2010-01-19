@@ -1052,6 +1052,7 @@ function svg_edit_setup() {
 	var clickClear = function(){
 		$.confirm(uiStrings.QwantToClear, function(ok) {
 			if(!ok) return;
+			setSelectMode();
 			svgCanvas.clear();
 			svgCanvas.setResolution(640, 480);
 			updateCanvas(true);
