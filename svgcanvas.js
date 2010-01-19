@@ -2911,7 +2911,17 @@ function BatchCommand(text) {
 				case "path":
 					// fall through
 				case "pathedit":
+					if(rubberBox && rubberBox.getAttribute('display') != 'none') {
+						assignAttributes(rubberBox, {
+							'x': Math.min(start_x,x),
+							'y': Math.min(start_y,y),
+							'width': Math.abs(x-start_x),
+							'height': Math.abs(y-start_y)
+						},100);
+					}
+					
 					pathActions.mouseMove(mouse_x, mouse_y);
+					
 					break;
 				case "rotate":
 					var box = canvas.getBBox(selected),
@@ -3299,35 +3309,80 @@ function BatchCommand(text) {
 			$('#ctrlpointgrip_container *').attr('display','none');
 		};
 		
-		
+		// 
 		var addNodeToSelection = function(points) {
-			// Currently only one node can be selected at a time, should allow more later
-			// Should point be the index or the grip element?
+// 			var point = points;
+			if(!$.isArray(points)) points = [points];
 			
-			var point = points;
-// 			if(!$.isArray(points)) points = [points];
-// 			
-// 			$.merge(selected_pts, points);
-// 			$.unique(selected_pts);
+			for(var i=0; i< points.length; i++) {
+				var pt = points[i];
+				if($.inArray(pt, selected_pts) == -1) {
+					selected_pts.push(pt);
+				}
+			}
+			selected_pts.sort();
 			
 			var is_closed = pathIsClosed(); 
+			var i = selected_pts.length;
 			var last_pt = current_path_pts.length/2 - 1;
-			
-			current_path_pt = point;
-			
+			var grips = new Array(i);
+
 			$('#pathpointgrip_container circle').attr('stroke','#00F');
 			
-			$('#pathpointgrip_' + point).attr('stroke','#0FF');
-			var grip = $('#pathpointgrip_' + point);
-			$('#ctrlpointgrip_container circle').attr('fill', '#EEE');
-
-			$('#ctrlpointgrip_' + current_path_pt + 'c1, #ctrlpointgrip_' + current_path_pt + 'c2').attr('fill','#0FF');
+			// Loop through points to be selected and highlight each
+			while(i--) {
+				var point = selected_pts[i];
+				
+				$('#pathpointgrip_' + point).attr('stroke','#0FF');
+				grips[i] = $('#pathpointgrip_' + point)[0];
+				$('#ctrlpointgrip_container circle').attr('fill', '#EEE');
+				$('#ctrlpointgrip_' + point + 'c1, #ctrlpointgrip_' + point + 'c2').attr('fill','#0FF');
+			}
 			
+			if(current_path_pt == -1) {
+				current_path_pt = selected_pts[0];
+			}
 			updateSegLine();
 			updateSegLine(true);
 			
-			call("selected", [grip[0]]);
-		}
+			call("nodeselected", grips);
+		};
+		
+		var removeNodeFromSelection = function(point) {
+			
+			var pos = $.inArray(point, selected_pts);
+			if(pos == -1) {
+				return;
+			} else {
+				selected_pts.splice(pos, 1);
+			}
+			
+			$('#pathpointgrip_' + point).attr('stroke','#00F');
+			// grips[i] = $('#pathpointgrip_' + point)[0];
+			$('#ctrlpointgrip_container circle').attr('fill', '#EEE');
+			$('#ctrlpointgrip_' + point + 'c1, #ctrlpointgrip_' + point + 'c2').attr('fill','#0FF');
+			
+			current_path_pt = selected_pts[0];
+			updateSegLine();
+			updateSegLine(true);
+			
+// 			call("nodeselected", grips);
+		};
+
+		var removeAllNodesFromSelection = function() {
+			var i = selected_pts.length;
+			var last_pt = current_path_pts.length/2 - 1;
+
+			$('#pathpointgrip_container circle').attr('stroke','#EEE');
+			$('#ctrlpointgrip_container circle').attr('fill', '#EEE');
+			selected_pts = [];
+// 			call("nodeselected", []);
+		};
+		
+		var selectNode = function(point) {
+			removeAllNodesFromSelection();
+			addNodeToSelection(point);
+		};
 	
 		var addAllPointGripsToPath = function(pointToSelect) {
 			// loop through and show all pointgrips
@@ -3374,7 +3429,7 @@ function BatchCommand(text) {
 				setPointContainerTransform(xform);
 			}
 			if(pointToSelect != null) {
-				addNodeToSelection(pointToSelect);
+				selectNode(pointToSelect);
 			}
 		};
 	
@@ -3601,9 +3656,13 @@ function BatchCommand(text) {
 					addControlPointGrip(x2,y2, mouse_x,mouse_y, id1, true);
 				}
 			}
-			updateSegLine();
-			if(next_type != 4) {
-				updateSegLine(true);
+			if(selected_pts.length > 1) {
+				getElem("segline").setAttribute('display','none');
+			} else {
+				updateSegLine();
+				if(next_type != 4) {
+					updateSegLine(true);
+				}
 			}
 		}
 	
@@ -3868,54 +3927,82 @@ function BatchCommand(text) {
 				var id = evt.target.id;
 				if (id.substr(0,14) == "pathpointgrip_") {
 					// Select this point
-					current_path_pt_drag = parseInt(id.substr(14));
-					addNodeToSelection(current_path_pt_drag);
-					updateSegLine();
+					current_path_pt = current_path_pt_drag = parseInt(id.substr(14));
 					
-// 					if(evt.shiftKey) {
-// 						if(current_path_pt)
-// 					}
+					// only clear selection if shift is not pressed (otherwise, add 
+					// node to selection)
+					if (!evt.shiftKey) {
+						if(selected_pts.length <= 1 || $.inArray(current_path_pt, selected_pts) == -1) {
+							removeAllNodesFromSelection();
+						}
+						addNodeToSelection(current_path_pt);
+					} else if($.inArray(current_path_pt, selected_pts) != -1) {
+						removeNodeFromSelection(current_path_pt);
+					} else {
+						addNodeToSelection(current_path_pt);
+					}
+// 					justSelected = current_path_pt;
+					
+					updateSegLine();
+
 					
 				} else if(id.indexOf("ctrlpointgrip_") == 0) {
 					current_ctrl_pt_drag = id.split('_')[1];
 					var node_num = current_ctrl_pt_drag.split('c')[0]-0;
-					addNodeToSelection(node_num);
+					selectNode(node_num);
 				}
 
 				if(current_path_pt_drag == -1 && current_ctrl_pt_drag == -1) {
-					// if we haven't moused down on a shape, then go into multiselect mode
-					// otherwise, select it
-					canvas.clearSelection();
-					if (mouse_target.id != "svgroot") {
-						current_path = null;
-						canvas.addToSelection([mouse_target], true);
-						canvas.setMode("select");
-						
-						// Insert the dummy transform here in case element is moved
-						var tlist = canvas.getTransformList(mouse_target);
-						tlist.insertItemBefore(svgroot.createSVGTransform(), 0);
+				
+// 					start_x = x;
+// 					start_y = y;
+					if (rubberBox == null) {
+						rubberBox = selectorManager.getRubberBandBox();
 					}
-					else {
-						canvas.setMode("multiselect");
-						if (rubberBox == null) {
-							rubberBox = selectorManager.getRubberBandBox();
-						}
-						assignAttributes(rubberBox, {
-							'x': start_x,
-							'y': start_y,
+					assignAttributes(rubberBox, {
+							'x': start_x * current_zoom,
+							'y': start_y * current_zoom,
 							'width': 0,
 							'height': 0,
 							'display': 'inline'
-						}, 100);
-					}
+					}, 100);
+					
+				
+					// if we haven't moused down on a shape, then go into multiselect mode
+					// otherwise, select it
+// 					console.log('clear!')
+// 					canvas.clearSelection();
+// 					if (mouse_target.id != "svgroot") {
+// 						current_path = null;
+// 						canvas.addToSelection([mouse_target], true);
+// 						canvas.setMode("select");
+// 						
+// 						// Insert the dummy transform here in case element is moved
+// 						var tlist = canvas.getTransformList(mouse_target);
+// 						tlist.insertItemBefore(svgroot.createSVGTransform(), 0);
+// 					}
+// 					else {
+// 						canvas.setMode("multiselect");
+// 						if (rubberBox == null) {
+// 							rubberBox = selectorManager.getRubberBandBox();
+// 						}
+// 						assignAttributes(rubberBox, {
+// 							'x': start_x,
+// 							'y': start_y,
+// 							'width': 0,
+// 							'height': 0,
+// 							'display': 'inline'
+// 						}, 100);
+// 					}
 				}
 			},
 			mouseMove: function(mouse_x, mouse_y) {
+				hasMoved = true;
 				if(current_mode == "path") {
 					var line = getElem("path_stretch_line");
 					if (line) {
-						line.setAttribute("x2", x *= current_zoom);
-						line.setAttribute("y2", y *= current_zoom);
+						line.setAttribute("x2", mouse_x);
+						line.setAttribute("y2", mouse_y);
 					}
 					return;
 				}
@@ -3923,7 +4010,17 @@ function BatchCommand(text) {
 				// if we are dragging a point, let's move it
 				if (current_path_pt_drag != -1 && current_path) {
 					var old_path_pts = $.map(current_path_pts, function(n){return n/current_zoom;});
-					updatePath(mouse_x, mouse_y, old_path_pts);
+					var diff_x = mouse_x - old_path_pts[current_path_pt*2];
+					var diff_y = mouse_y - old_path_pts[current_path_pt*2+1];
+// 					console.log(diff_x, diff_y);
+					for(var i=0; i<selected_pts.length; i++) {
+						var sel_pt = selected_pts[i];
+						var sel_pt_x = old_path_pts[sel_pt*2] + diff_x;
+						var sel_pt_y = old_path_pts[sel_pt*2+1] + diff_y;
+					
+						current_path_pt_drag = sel_pt;
+						updatePath(sel_pt_x, sel_pt_y, old_path_pts);
+					}
 				} else if (current_ctrl_pt_drag != -1 && current_path) {
 					// Moving the control point. Since only one segment is altered,
 					// we only need to do a pathSegList replace.
@@ -3961,9 +4058,34 @@ function BatchCommand(text) {
 						var new_y = pt[1] - (mouse_y - pt[1]);
 						updateCurvedSegment(new_x, new_y, index, ctrl_num, true);
 					}
+				} else {
+					var len = current_path_pts.length;
+					var sel_pts = [];
+					selected_pts = [];
+					
+					for(var i=0; i<len; i+=2) {
+						var x = current_path_pts[i];
+						var y = current_path_pts[i+1];
+						var rbb = rubberBox.getBBox();
+						var pt_bb = {
+							x: x,
+							y: y,
+							width: 0,
+							height: 0
+						};
+					
+						if (Utils.rectsIntersect(rbb, pt_bb)) {
+							sel_pts.push(i/2);
+						}
+					}
+					removeAllNodesFromSelection();
+					selectNode(sel_pts);
 				}
 			}, 
 			mouseUp: function(evt, element, mouse_x, mouse_y) {
+				var tempJustSelected = justSelected;
+				justSelected = null;
+			
 				// Create mode
 				if(current_mode == "path") {
 					var x = mouse_x/current_zoom;
@@ -4082,6 +4204,8 @@ function BatchCommand(text) {
 				// Edit mode
 				
 				if (current_path_pt_drag != -1) {
+					var last_pt = current_path_pt_drag;
+
 					current_path_pt_drag = -1;
 					
 					var batchCmd = new BatchCommand("Edit Path");
@@ -4101,6 +4225,21 @@ function BatchCommand(text) {
 						current_path_pts[current_path_pts.length-1] = getPathPoint(0,true)[1];
 					}
 					
+					if(evt.shiftKey) {
+						
+						if(tempJustSelected != current_path_pt) {
+							removeNodeFromSelection();
+						}
+						
+// 						if($.inArray(last_pt, selected_pts) != -1) {
+// 							removeNodeFromSelection(last_pt)
+// 						} else {
+// 							addNodeToSelection(last_pt)
+// 						}
+					} else if(!hasMoved) {
+						selectNode(last_pt);
+					} 
+					
 					// make these changes undo-able
 				} // if (current_path_pt_drag != -1)
 				else if(current_ctrl_pt_drag != -1) {
@@ -4110,13 +4249,20 @@ function BatchCommand(text) {
 					batchCmd.addSubCommand(new ChangeElementCommand(current_path, {d:current_path_oldd}));
 					addCommandToHistory(batchCmd);
 					call("changed", [current_path]);
-				} 	// else, move back to select mode
-				else {
-					current_mode = "select";
-					removeAllPointGripsFromPath();
-					canvas.clearSelection();
-					canvas.addToSelection([evt.target]);
+				} 	
+				else if(rubberBox && rubberBox.getAttribute('display') != 'none') {
+					// Done with multi-node-select
+					rubberBox.setAttribute("display", "none");
+					
+					if(rubberBox.getAttribute('width') <= 2 && rubberBox.getAttribute('height') <= 2) {
+						pathActions.toSelectMode(evt.target);
+					}
+					
+				// else, move back to select mode	
+				} else {
+					pathActions.toSelectMode(evt.target);
 				}
+				hasMoved = false;
 			},
 			toEditMode: function(element) {
 				current_path = element;
@@ -4133,9 +4279,19 @@ function BatchCommand(text) {
 				// save the path's bbox
 				selectedBBoxes[0] = canvas.getBBox(current_path);
 				addAllPointGripsToPath();
-				addNodeToSelection(0);
+				selectNode(0);
 
 // 				addAllPointGripsToPath(current_path_pts.length/2 - 1);
+			},
+			toSelectMode: function(elem) {
+				var selPath = (elem == current_path);
+				current_mode = "select";
+				removeAllPointGripsFromPath();
+				canvas.clearSelection();
+				if(selPath) {
+					call("selected", [elem]);
+					canvas.addToSelection([elem], true);
+				}
 			},
 			select: function(target) {
 				if (current_path == target) {
@@ -4307,7 +4463,7 @@ function BatchCommand(text) {
 				current_path_pts.splice(pt*2 + 2, 0, abs_x, abs_y);
 				
 				resetPointGrips();
-				addNodeToSelection(pt+1);
+				selectNode(pt+1);
 				
 			// 	current_path.setAttribute("d", convertToD(current_path.pathSegList));
 			},
@@ -4318,28 +4474,34 @@ function BatchCommand(text) {
 				if(current_path_pts.length <= (is_closed?6:4)) return;
 				
 				var last_pt = current_path_pts.length/2 - 1;
-				var pt = current_path_pt, list = current_path.pathSegList;
-				var cur_item = list.getItem(pt);
-
-				if(pt == 0) {
-					var next_x = getPathPoint(1)[0];
-					var next_y = getPathPoint(1)[1];
-					// Make the next point be the "M" point
-					replacePathSeg(2, 1, [next_x, next_y]);
+				
+				var len = selected_pts.length;
+				while(len--) {
+					var pt = selected_pts[len];
 					
-					// Reposition last node
-					if(is_closed) {
-						var last_item = list.getItem(last_pt);
-						replacePathSeg(4, last_pt, [next_x, next_y]);
-						removeControlPointGrips(last_pt - 1);
-						current_path_pts.splice(last_pt*2, 2, next_x, next_y);
-						current_path_pts.splice(0, 2);
+					var list = current_path.pathSegList;
+					var cur_item = list.getItem(pt);
+	
+					if(pt == 0) {
+						var next_x = getPathPoint(1)[0];
+						var next_y = getPathPoint(1)[1];
+						// Make the next point be the "M" point
+						replacePathSeg(2, 1, [next_x, next_y]);
+						
+						// Reposition last node
+						if(is_closed) {
+							var last_item = list.getItem(last_pt);
+							replacePathSeg(4, last_pt, [next_x, next_y]);
+							removeControlPointGrips(last_pt - 1);
+							current_path_pts.splice(last_pt*2, 2, next_x, next_y);
+							current_path_pts.splice(0, 2);
+						}
+					} else {
+						current_path_pts.splice(pt*2, 2);
 					}
-				} else {
-					current_path_pts.splice(pt*2, 2);
+			
+					list.removeItem(pt);
 				}
-		
-				list.removeItem(pt);
 				
 				resetPointGrips();
 				
@@ -4351,7 +4513,7 @@ function BatchCommand(text) {
 					pt--;
 				}
 				
-				addNodeToSelection(pt);
+				selectNode(pt);
 			},
 			setPointContainerTransform: setPointContainerTransform,
 			setSegType: function(new_type) {

@@ -164,40 +164,53 @@ function svg_edit_setup() {
 	
 	// called when we've selected a different element
 	var selectedChanged = function(window,elems) {
+
+		if (selectedElement && selectedElement.id.indexOf('pathpointgrip') == 0) {
+			$('#path_node_panel').hide();
+			$('#tools_bottom_2,#tools_bottom_3').show();
+			var size = $('#tool_select > svg, #tool_select > img')[0].getAttribute('width');
+			$('#tool_select').empty().append($.getSvgIcon('select'));
+			$.resizeSvgIcons({'#tool_select .svg_icon':size});
+		}
+
 		// if elems[1] is present, then we have more than one element
 		selectedElement = (elems.length == 1 || elems[1] == null ? elems[0] : null);
 		multiselected = (elems.length >= 2 && elems[1] != null);
-		var is_node = false;
 		if (selectedElement != null) {
 			// unless we're already in always set the mode of the editor to select because
 			// upon creation of a text element the editor is switched into
 			// select mode and this event fires - we need our UI to be in sync
 			
-			is_node = !!(selectedElement.id && selectedElement.id.indexOf('pathpointgrip') == 0);
-			
-			if (svgCanvas.getMode() != "multiselect" && !is_node) {
+			if (svgCanvas.getMode() != "multiselect") {
 				setSelectMode();
 				updateToolbar();
 			} 
 			
+			
 		} // if (elem != null)
-
-
-		// Deal with pathedit mode
-		$('#path_node_panel').toggle(is_node);
-		$('#tools_bottom_2,#tools_bottom_3').toggle(!is_node);
-		var size = $('#tool_select > svg, #tool_select > img')[0].getAttribute('width');
-		if(is_node) {
-			// Change select icon
-			$('.tool_button').removeClass('tool_button_current');
-			$('#tool_select').addClass('tool_button_current')
-				.empty().append($.getSvgIcon('select_node'));
-		} else {
-			$('#tool_select').empty().append($.getSvgIcon('select'));
-		}
-		$.resizeSvgIcons({'#tool_select .svg_icon':size});
+		
 
 		updateContextPanel(); 
+	};
+	
+	// called when we've selected a different path node
+	var selectedPathNodeChanged = function(window, elems) {
+		$('#path_node_panel').show();
+		$('#tools_bottom_2,#tools_bottom_3').hide();
+		var size = $('#tool_select > svg, #tool_select > img')[0].getAttribute('width');
+
+		// Change select icon
+		$('.tool_button').removeClass('tool_button_current');
+		$('#tool_select').addClass('tool_button_current')
+			.empty().append($.getSvgIcon('select_node'));
+
+		$.resizeSvgIcons({'#tool_select .svg_icon':size});
+		
+		updateContextPanel();
+		if(elems.length) {
+			selectedElement = elems[0];
+// 			multiselected = (elems.length >= 2);
+		}
 	};
 
 	// called when any element has changed
@@ -508,6 +521,7 @@ function svg_edit_setup() {
   
 	// bind the selected event to our function that handles updates to the UI
 	svgCanvas.bind("selected", selectedChanged);
+	svgCanvas.bind("nodeselected", selectedPathNodeChanged);
 	svgCanvas.bind("changed", elementChanged);
 	svgCanvas.bind("saved", saveHandler);
 	svgCanvas.bind("zoomed", zoomChanged);
@@ -523,7 +537,7 @@ function svg_edit_setup() {
 	var color_blocks = ['#FFF','#888','#000']; // ,'url(data:image/gif;base64,R0lGODlhEAAQAIAAAP%2F%2F%2F9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG%2Bgq4jM3IFLJgpswNly%2FXkcBpIiVaInlLJr9FZWAQA7)'];
 	var str = '';
 	$.each(color_blocks, function() {
-		str += '<div class="color_block" style="background:' + this + ';"></div>';
+		str += '<div class="color_block" style="background-color:' + this + ';"></div>';
 	});
 	$('#bg_blocks').append(str);
 	var blocks = $('#bg_blocks div');
