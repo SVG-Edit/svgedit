@@ -3304,6 +3304,7 @@ function BatchCommand(text) {
 			// Currently only one node can be selected at a time, should allow more later
 			// Should point be the index or the grip element?
 			
+			var point = points;
 // 			if(!$.isArray(points)) points = [points];
 // 			
 // 			$.merge(selected_pts, points);
