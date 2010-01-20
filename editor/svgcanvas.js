@@ -3240,6 +3240,7 @@ function BatchCommand(text) {
 		var current_ctrl_pt_drag = -1;
 		var link_control_pts = false;
 		var selected_pts = [];
+		var hasMoved = false;
 	
 		var resetPointGrips = function() {
 			if(!current_path) return;
@@ -3315,7 +3316,7 @@ function BatchCommand(text) {
 			
 			for(var i=0; i< points.length; i++) {
 				var pt = points[i];
-				if($.inArray(pt, selected_pts) == -1) {
+				if($.inArray(pt, selected_pts) == -1 && pt >= 0) {
 					selected_pts.push(pt);
 				}
 			}
@@ -3338,9 +3339,10 @@ function BatchCommand(text) {
 				$('#ctrlpointgrip_' + point + 'c1, #ctrlpointgrip_' + point + 'c2').attr('fill','#0FF');
 			}
 			
-			if(current_path_pt == -1) {
+			if(selected_pts.length <= 1) {//if(current_path_pt == -1) {
 				current_path_pt = selected_pts[0];
 			}
+			
 			updateSegLine();
 			updateSegLine(true);
 			
@@ -3375,6 +3377,7 @@ function BatchCommand(text) {
 			$('#pathpointgrip_container circle').attr('stroke','#EEE');
 			$('#ctrlpointgrip_container circle').attr('fill', '#EEE');
 			selected_pts = [];
+// 			current_path_pt = -1;
 // 			call("selected", []);
 		};
 		
@@ -3492,6 +3495,11 @@ function BatchCommand(text) {
 				});
 				segLine = pointGripContainer.appendChild(segLine);
 			}
+			if(selected_pts.length != 1) {
+				segLine.setAttribute('display','none');
+				return;
+			}
+			
 			if(!segLine.getAttribute('d')) {
 				var pt = getPathPoint(current_path_pt);
 				segLine.setAttribute('d', 'M' + pt.join(',') + ' 0,0');
@@ -3965,34 +3973,6 @@ function BatchCommand(text) {
 							'height': 0,
 							'display': 'inline'
 					}, 100);
-					
-				
-					// if we haven't moused down on a shape, then go into multiselect mode
-					// otherwise, select it
-// 					console.log('clear!')
-// 					canvas.clearSelection();
-// 					if (mouse_target.id != "svgroot") {
-// 						current_path = null;
-// 						canvas.addToSelection([mouse_target], true);
-// 						canvas.setMode("select");
-// 						
-// 						// Insert the dummy transform here in case element is moved
-// 						var tlist = canvas.getTransformList(mouse_target);
-// 						tlist.insertItemBefore(svgroot.createSVGTransform(), 0);
-// 					}
-// 					else {
-// 						canvas.setMode("multiselect");
-// 						if (rubberBox == null) {
-// 							rubberBox = selectorManager.getRubberBandBox();
-// 						}
-// 						assignAttributes(rubberBox, {
-// 							'x': start_x,
-// 							'y': start_y,
-// 							'width': 0,
-// 							'height': 0,
-// 							'display': 'inline'
-// 						}, 100);
-// 					}
 				}
 			},
 			mouseMove: function(mouse_x, mouse_y) {
@@ -4011,6 +3991,11 @@ function BatchCommand(text) {
 					var old_path_pts = $.map(current_path_pts, function(n){return n/current_zoom;});
 					var diff_x = mouse_x - current_path_pts[current_path_pt*2];
 					var diff_y = mouse_y - current_path_pts[current_path_pt*2+1];
+
+// 					var rot = !!canvas.getRotationAngle(current_path);
+// 					if(rot) {
+// 						var m = canvas.getTransformList(current_path).getItem(0).matrix;
+// 					}
 
 					for(var i=0; i<selected_pts.length; i++) {
 						var sel_pt = selected_pts[i];
@@ -4062,11 +4047,24 @@ function BatchCommand(text) {
 					var len = current_path_pts.length;
 					var sel_pts = [];
 					selected_pts = [];
+					var rot = !!canvas.getRotationAngle(current_path);
+					if(rot) {
+						var tlist = canvas.getTransformList(current_path);
+						var m = transformListToTransform(tlist).matrix;
+					}
+					
+					if(pathIsClosed()) len -= 2;
 					
 					for(var i=0; i<len; i+=2) {
 						var x = current_path_pts[i];
 						var y = current_path_pts[i+1];
 						var rbb = rubberBox.getBBox();
+						if(rot) {
+							var pt = transformPoint(x, y, m);
+							x = pt.x;
+							y = pt.y;
+						}
+						
 						var pt_bb = {
 							x: x,
 							y: y,
@@ -4473,11 +4471,12 @@ function BatchCommand(text) {
 				// TODO: Make delete node button disabled when there's only 2 nodes
 				if(current_path_pts.length <= (is_closed?6:4)) return;
 				
-				var last_pt = current_path_pts.length/2 - 1;
+				
 				
 				var len = selected_pts.length;
 				while(len--) {
 					var pt = selected_pts[len];
+					var last_pt = current_path_pts.length/2 - 1;
 					
 					var list = current_path.pathSegList;
 					var cur_item = list.getItem(pt);
