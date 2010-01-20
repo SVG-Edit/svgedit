@@ -215,16 +215,11 @@ function svg_edit_setup() {
 
 	// called when any element has changed
 	var elementChanged = function(window,elems) {
-		
 		for (var i = 0; i < elems.length; ++i) {
 			var elem = elems[i];
 			
 			// if the element changed was the svg, then it could be a resolution change
-			if (elem && elem.tagName == "svg" && elem.getAttribute("viewBox")) {
-				
-// 				var vb = elem.getAttribute("viewBox").split(' ');
-// 				changeResolution(parseInt(vb[2]),
-// 								 parseInt(vb[3]));
+			if (elem && elem.tagName == "svg") {
 				populateLayers();
 			} 
 			// Update selectedElement if element is no longer part of the image.
