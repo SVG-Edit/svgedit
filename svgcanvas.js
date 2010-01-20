@@ -2624,6 +2624,8 @@ function BatchCommand(text) {
 				case "path":
 					// Fall through
 				case "pathedit":
+					start_x *= current_zoom;
+					start_y *= current_zoom;
 					pathActions.mouseDown(evt, mouse_target, start_x, start_y);
 					started = true;
 					break;
@@ -2906,6 +2908,8 @@ function BatchCommand(text) {
 				case "path":
 					// fall through
 				case "pathedit":
+					x *= current_zoom;
+					y *= current_zoom;
 					if(rubberBox && rubberBox.getAttribute('display') != 'none') {
 						assignAttributes(rubberBox, {
 							'x': Math.min(start_x,x),
@@ -3340,7 +3344,7 @@ function BatchCommand(text) {
 			updateSegLine();
 			updateSegLine(true);
 			
-			call("nodeselected", grips);
+			call("selected", grips);
 		};
 		
 		var removeNodeFromSelection = function(point) {
@@ -3361,7 +3365,7 @@ function BatchCommand(text) {
 			updateSegLine();
 			updateSegLine(true);
 			
-// 			call("nodeselected", grips);
+// 			call("selected", grips);
 		};
 
 		var removeAllNodesFromSelection = function() {
@@ -3371,7 +3375,7 @@ function BatchCommand(text) {
 			$('#pathpointgrip_container circle').attr('stroke','#EEE');
 			$('#ctrlpointgrip_container circle').attr('fill', '#EEE');
 			selected_pts = [];
-// 			call("nodeselected", []);
+// 			call("selected", []);
 		};
 		
 		var selectNode = function(point) {
@@ -4005,14 +4009,15 @@ function BatchCommand(text) {
 				// if we are dragging a point, let's move it
 				if (current_path_pt_drag != -1 && current_path) {
 					var old_path_pts = $.map(current_path_pts, function(n){return n/current_zoom;});
-					var diff_x = mouse_x - old_path_pts[current_path_pt*2];
-					var diff_y = mouse_y - old_path_pts[current_path_pt*2+1];
-// 					console.log(diff_x, diff_y);
+					var diff_x = mouse_x - current_path_pts[current_path_pt*2];
+					var diff_y = mouse_y - current_path_pts[current_path_pt*2+1];
+
 					for(var i=0; i<selected_pts.length; i++) {
 						var sel_pt = selected_pts[i];
-						var sel_pt_x = old_path_pts[sel_pt*2] + diff_x;
-						var sel_pt_y = old_path_pts[sel_pt*2+1] + diff_y;
-					
+						
+						var sel_pt_x = current_path_pts[sel_pt*2] + diff_x;
+						var sel_pt_y = current_path_pts[sel_pt*2+1] + diff_y;
+// 					
 						current_path_pt_drag = sel_pt;
 						updatePath(sel_pt_x, sel_pt_y, old_path_pts);
 					}
