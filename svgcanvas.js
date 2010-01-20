@@ -1,10 +1,4 @@
 ﻿/*
-USE TODO:
-	- scrub xlink:href to ensure a local reference only
-	- debug why sometimes the <use> disappears from the canvas
-
-*/
-/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -1077,14 +1071,23 @@ function BatchCommand(text) {
 			while (i--) {
 				// if the attribute is not in our whitelist, then remove it
 				// could use jQuery's inArray(), but I don't know if that's any better
-				var attrName = node.attributes.item(i).nodeName;
+				var attr = node.attributes.item(i);
+				var attrName = attr.nodeName;
 				if (allowedAttrs.indexOf(attrName) == -1) {
-					// TODO: do I need to call setAttribute(..., "") here for Fx2?
 					node.removeAttribute(attrName);
 				}
-				if(attrName == 'd') {
+				if (attrName == 'd') {
 					// Convert to absolute
 					node.setAttribute('d',pathActions.convertPath(node));
+				}
+				// for a <use> element, ensure the xlink:href is a local element
+				if (node.nodeName == "use" && attr.localName == "href") {
+					// TODO: we simply check if the first character is a #, is this bullet-proof?
+					if (attr.nodeValue[0] != "#") {
+						// just delete the <use> element and return immediately (toss out children)
+						parent.removeChild(node);
+						return;
+					}
 				}
 			}
 
@@ -1095,6 +1098,7 @@ function BatchCommand(text) {
 		// else, remove this element
 		else {
 			// remove all children from this node and insert them before this node
+			// FIXME: in the case of animation elements or tspans this will hardly ever be correct
 			var children = [];
 			while (node.hasChildNodes()) {
 				children.push(parent.insertBefore(node.firstChild, node));
