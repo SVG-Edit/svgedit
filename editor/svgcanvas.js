@@ -1,4 +1,10 @@
 ﻿/*
+USE TODO:
+	- scrub xlink:href to ensure a local reference only
+	- debug why sometimes the <use> disappears from the canvas
+
+*/
+/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -6876,7 +6882,7 @@ function BatchCommand(text) {
 		// manually create a copy of the element
 		var new_el = document.createElementNS(svgns, el.nodeName);
 		$.each(el.attributes, function(i, attr) {
-			var ns = attr.nodeName == 'href' ? xlinkns : 
+			var ns = attr.localName == 'href' ? xlinkns : 
 				attr.prefix == "xml" ? xmlns : null;
 			new_el.setAttributeNS(ns, attr.nodeName, attr.nodeValue);
 		});
