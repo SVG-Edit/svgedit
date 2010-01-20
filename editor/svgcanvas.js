@@ -3242,6 +3242,16 @@ function BatchCommand(text) {
 		var selected_pts = [];
 		var hasMoved = false;
 	
+		var getD = function() {
+			return current_path.getAttribute('d');
+		};
+		
+		var endChanges = function(d, text) {
+			var cmd = new ChangeElementCommand(current_path, {d:d}, text);
+			addCommandToHistory(cmd);
+			call("changed", [current_path]);
+		}
+	
 		var resetPointGrips = function() {
 			if(!current_path) return;
 			var sr = svgroot.suspendRedraw(100);
@@ -3477,7 +3487,7 @@ function BatchCommand(text) {
 		
 		var pathIsClosed = function() {
 			if(!current_path) return;
-			return current_path.getAttribute('d').substr(-1,1).toLowerCase() == 'z';
+			return getD().substr(-1,1).toLowerCase() == 'z';
 		}
 		
 		var updateSegLine = function(next_node) {
@@ -3930,7 +3940,7 @@ function BatchCommand(text) {
 				// TODO: Make sure current_path isn't null at this point
 				if(!current_path) return;
 				
-				current_path_oldd = current_path.getAttribute("d");
+				current_path_oldd = getD();
 				var id = evt.target.id;
 				if (id.substr(0,14) == "pathpointgrip_") {
 					// Select this point
@@ -4206,16 +4216,11 @@ function BatchCommand(text) {
 
 					current_path_pt_drag = -1;
 					
-					var batchCmd = new BatchCommand("Edit Path");
-					// the attribute changes we want to undo
-					var oldvalues = {};
-					oldvalues["d"] = current_path_oldd;
-					
 					recalcRotatedPath();
-
-					batchCmd.addSubCommand(new ChangeElementCommand(current_path, oldvalues, "path points"));
-					addCommandToHistory(batchCmd);
-					call("changed", [current_path]);
+					
+					if(hasMoved) {
+						endChanges(current_path_oldd, "Move path point(s)");
+					}
 					
 					// If connected, last point should equal first
 					if(pathIsClosed()) {
@@ -4243,10 +4248,7 @@ function BatchCommand(text) {
 				else if(current_ctrl_pt_drag != -1) {
 					current_ctrl_pt_drag = -1;
 					recalcRotatedPath();
-					var batchCmd = new BatchCommand("Edit Path control points");
-					batchCmd.addSubCommand(new ChangeElementCommand(current_path, {d:current_path_oldd}));
-					addCommandToHistory(batchCmd);
-					call("changed", [current_path]);
+					endChanges(current_path_oldd, "Edit Path control point(s)");
 				} 	
 				else if(rubberBox && rubberBox.getAttribute('display') != 'none') {
 					// Done with multi-node-select
@@ -4306,6 +4308,7 @@ function BatchCommand(text) {
 				if(!elem) return;
 				var angle = canvas.getRotationAngle(elem);
 				if(angle == 0) return;
+				
 				var batchCmd = new BatchCommand("Reorient path");
 				var changes = {
 					d: elem.getAttribute('d'),
@@ -4410,6 +4413,8 @@ function BatchCommand(text) {
 				link_control_pts = linkPoints;
 			},
 			clonePathNode: function() {
+				var d = getD();
+				
 				var pt = current_path_pt, list = current_path.pathSegList;
 				
 				if(pt+1 >= list.numberOfItems) {
@@ -4463,6 +4468,8 @@ function BatchCommand(text) {
 				resetPointGrips();
 				selectNode(pt+1);
 				
+				endChanges(d, "Clone path node(s)");
+
 			// 	current_path.setAttribute("d", convertToD(current_path.pathSegList));
 			},
 			deletePathNode: function() {
@@ -4471,7 +4478,7 @@ function BatchCommand(text) {
 				// TODO: Make delete node button disabled when there's only 2 nodes
 				if(current_path_pts.length <= (is_closed?6:4)) return;
 				
-				
+				var d = getD();
 				
 				var len = selected_pts.length;
 				while(len--) {
@@ -4513,11 +4520,13 @@ function BatchCommand(text) {
 				}
 				
 				selectNode(pt);
+				
+				endChanges(d, "Delete path node(s)");
 			},
 			setPointContainerTransform: setPointContainerTransform,
 			setSegType: function(new_type) {
 				var grip = $('#pathpointgrip_' + current_path_pt);
-				var old_d = current_path.getAttribute('d');
+				var old_d = getD();
 				
 				var index = grip[0].id.split('_')[1] - 0;
 				
@@ -4537,7 +4546,7 @@ function BatchCommand(text) {
 				var next_y = getPathPoint(next_index)[1];
 				
 				if(!new_type) { // double-click, so just toggle
-					var batchCmd = new BatchCommand("Toggle Path Segment Type");
+					var text = "Toggle Path Segment Type";
 		
 					// Toggle segment to curve/straight line
 					var old_type = current_path.pathSegList.getItem(index+1).pathSegType;
@@ -4546,7 +4555,7 @@ function BatchCommand(text) {
 		
 				} else {
 					new_type -= 0;
-					var batchCmd = new BatchCommand("Change Path Segment Type");
+					var text = "Change Path Segment Type";
 				}
 				
 				var points;
@@ -4584,18 +4593,19 @@ function BatchCommand(text) {
 				updateSegLine(true);
 				recalcRotatedPath();
 				
-				batchCmd.addSubCommand(new ChangeElementCommand(current_path, {d: old_d}));
-				addCommandToHistory(batchCmd);
-				call("changed", [current_path]);
+				endChanges(old_d, text);
 			},
 			moveNode: function(attr, newValue) {
 				newValue *= current_zoom;
 				var num = (attr == 'x')?0:1;
 				var old_path_pts = $.map(current_path_pts, function(n){return n/current_zoom;});
+				var d = getD();
 	
 				current_path_pts[current_path_pt*2 + num] = newValue-0;
 				current_path_pt_drag = current_path_pt;
 				updatePath(current_path_pts[current_path_pt*2], current_path_pts[current_path_pt*2 + 1], old_path_pts);
+				
+				endChanges(d, "Move path point");
 			},
 			// Convert a path to one with only absolute or relative values
 			convertPath: function(path, toRel) {
