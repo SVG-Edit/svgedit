@@ -140,6 +140,22 @@ function svg_edit_setup() {
 		$('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all} #svgcanvas svg{cursor:default}');
 		svgCanvas.setMode('select');
 	};
+	
+	var togglePathEditMode = function(editmode) {
+		$('#path_node_panel').toggle(editmode);
+		$('#tools_bottom_2,#tools_bottom_3').toggle(!editmode);
+		var size = $('#tool_select > svg, #tool_select > img')[0].getAttribute('width');
+		if(editmode) {
+			// Change select icon
+			$('.tool_button').removeClass('tool_button_current');
+			$('#tool_select').addClass('tool_button_current')
+				.empty().append($.getSvgIcon('select_node'));
+			multiselected = false;
+		} else {
+			$('#tool_select').empty().append($.getSvgIcon('select'));
+		}
+		$.resizeSvgIcons({'#tool_select .svg_icon':size});
+	}
 
 	// used to make the flyouts stay on the screen longer the very first time
 	var flyoutspeed = 1250;
@@ -164,15 +180,8 @@ function svg_edit_setup() {
 	
 	// called when we've selected a different element
 	var selectedChanged = function(window,elems) {
-
-		if (selectedElement && selectedElement.id.indexOf('pathpointgrip') == 0) {
-			$('#path_node_panel').hide();
-			$('#tools_bottom_2,#tools_bottom_3').show();
-			var size = $('#tool_select > svg, #tool_select > img')[0].getAttribute('width');
-			$('#tool_select').empty().append($.getSvgIcon('select'));
-			$.resizeSvgIcons({'#tool_select .svg_icon':size});
-		}
-
+		var mode = svgCanvas.getMode();
+		var is_node = (mode == "pathedit");
 		// if elems[1] is present, then we have more than one element
 		selectedElement = (elems.length == 1 || elems[1] == null ? elems[0] : null);
 		multiselected = (elems.length >= 2 && elems[1] != null);
@@ -181,36 +190,17 @@ function svg_edit_setup() {
 			// upon creation of a text element the editor is switched into
 			// select mode and this event fires - we need our UI to be in sync
 			
-			if (svgCanvas.getMode() != "multiselect") {
+			if (mode != "multiselect" && !is_node) {
 				setSelectMode();
 				updateToolbar();
 			} 
 			
-			
 		} // if (elem != null)
-		
+
+		// Deal with pathedit mode
+		togglePathEditMode(is_node);
 
 		updateContextPanel(); 
-	};
-	
-	// called when we've selected a different path node
-	var selectedPathNodeChanged = function(window, elems) {
-		$('#path_node_panel').show();
-		$('#tools_bottom_2,#tools_bottom_3').hide();
-		var size = $('#tool_select > svg, #tool_select > img')[0].getAttribute('width');
-
-		// Change select icon
-		$('.tool_button').removeClass('tool_button_current');
-		$('#tool_select').addClass('tool_button_current')
-			.empty().append($.getSvgIcon('select_node'));
-
-		$.resizeSvgIcons({'#tool_select .svg_icon':size});
-		
-		updateContextPanel();
-		if(elems.length) {
-			selectedElement = elems[0];
-// 			multiselected = (elems.length >= 2);
-		}
 	};
 
 	// called when any element has changed
@@ -220,7 +210,12 @@ function svg_edit_setup() {
 			
 			// if the element changed was the svg, then it could be a resolution change
 			if (elem && elem.tagName == "svg") {
+				
+// 				var vb = elem.getAttribute("viewBox").split(' ');
+// 				changeResolution(parseInt(vb[2]),
+// 								 parseInt(vb[3]));
 				populateLayers();
+				updateCanvas();
 			} 
 			// Update selectedElement if element is no longer part of the image.
 			// This occurs for the text elements in Firefox
@@ -371,7 +366,7 @@ function svg_edit_setup() {
 			$('#tool_reorient').toggleClass('tool_button_disabled', ang == 0);
 			return;
 		}
-		var is_node = elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
+		var is_node = currentMode == 'pathedit'; //elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
 		
 		$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,\
 			#ellipse_panel, #line_panel, #text_panel, #image_panel').hide();
@@ -516,7 +511,6 @@ function svg_edit_setup() {
   
 	// bind the selected event to our function that handles updates to the UI
 	svgCanvas.bind("selected", selectedChanged);
-	svgCanvas.bind("nodeselected", selectedPathNodeChanged);
 	svgCanvas.bind("changed", elementChanged);
 	svgCanvas.bind("saved", saveHandler);
 	svgCanvas.bind("zoomed", zoomChanged);
@@ -2514,7 +2508,7 @@ function svg_edit_setup() {
 			if(loc.indexOf('?source=') != -1) {
 				var pre = '?source=data:image/svg+xml;base64,';
 				var src = loc.substring(loc.indexOf(pre) + pre.length);
-				svgCanvas.setSvgString(Utils.decode64(src));				
+				svgCanvas.setSvgString(Utils.decode64(src));
 			}
 		}
 	});
