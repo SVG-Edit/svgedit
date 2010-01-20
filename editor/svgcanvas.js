@@ -52,7 +52,7 @@ var svgWhiteList = {
 	"switch": ["id", "requiredFeatures", "systemLanguage"],
 	"svg": ["id", "height", "requiredFeatures", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
 	"text": ["fill", "fill-opacity", "fill-rule", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
-	"title": []
+	"title": [],
 };
 
 
@@ -404,10 +404,10 @@ function BatchCommand(text) {
 		};
 		
 		this.resize = function() {
-			var selectedBox = this.selectorRect;
-			var selectedGrips = this.selectorGrips;
-			var selected = this.selectedElement;
-			var sw = round(selected.getAttribute("stroke-width"));
+			var selectedBox = this.selectorRect,
+				selectedGrips = this.selectorGrips,
+				selected = this.selectedElement,
+				 sw = round(selected.getAttribute("stroke-width"));
 			var offset = 1/canvas.getZoom();
 			if (selected.getAttribute("stroke") != "none" && !isNaN(sw)) {
 				offset += sw/2;
@@ -424,10 +424,12 @@ function BatchCommand(text) {
 					bbox[key] = stroked_bbox[key];
 				});
 			}
+			console.log(selected.tagName);
+			console.dir(bbox);
 
 			// loop and transform our bounding box until we reach our first rotation
-			var tlist = canvas.getTransformList(selected);
-			var m = transformListToTransform(tlist).matrix;
+			var tlist = canvas.getTransformList(selected),
+				m = transformListToTransform(tlist).matrix;
 
 			// This should probably be handled somewhere else, but for now
 			// it keeps the selection box correctly positioned when zoomed
@@ -435,22 +437,22 @@ function BatchCommand(text) {
 			m.f *= current_zoom;
 			
 			// apply the transforms
-			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1);
-			var bbox = {x:l, y:t, width:w, height:h};
+			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1),
+				bbox = {x:l, y:t, width:w, height:h};
 			
 			// we need to handle temporary transforms too
 			// if skewed, get its transformed box, then find its axis-aligned bbox
 			
 			//*
-			var nbox = transformBox(l*current_zoom, t*current_zoom, w*current_zoom, h*current_zoom, m);
-			var nbax = nbox.aabox.x,
+			var nbox = transformBox(l*current_zoom, t*current_zoom, w*current_zoom, h*current_zoom, m),
+				nbax = nbox.aabox.x,
 				nbay = nbox.aabox.y,
 				nbaw = nbox.aabox.width,
 				nbah = nbox.aabox.height;
 				
 			// now if the shape is rotated, un-rotate it
-			var cx = nbax + nbaw/2; //nbox.tl.x + (nbox.tr.x - nbox.tl.x)/2;
-			var cy = nbay + nbah/2; //nbox.tl.y + (nbox.bl.y - nbox.tl.y)/2;
+			var cx = nbax + nbaw/2,
+				cy = nbay + nbah/2;
 			var angle = canvas.getRotationAngle(selected);
 			if (angle) {
 				
@@ -1260,11 +1262,6 @@ function BatchCommand(text) {
 
 	this.embedImage = function(val, callback) {
 	
-		// Below is some code to fetch the data: URL representation
-		// of local image files. It is commented out until we figure out
-		// a way of introducing this as an option into the UI.  Also, it 
-		// does not work in Firefox at all :(
-
 		// load in the image and once it's loaded, get the dimensions
 		$(new Image()).load(function() {
 			// create a canvas the same size as the raster image
@@ -2334,23 +2331,22 @@ function BatchCommand(text) {
 		var mouseDown = function(evt)
 		{
 			root_sctm = svgcontent.getScreenCTM().inverse();
-			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
-			var mouse_x = pt.x * current_zoom;
-			var mouse_y = pt.y * current_zoom;
+			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
+				mouse_x = pt.x * current_zoom,
+				mouse_y = pt.y * current_zoom;
 			evt.preventDefault();
 		
 			if($.inArray(current_mode, ['select', 'resize']) == -1) {
 				addGradient();
 			}
 			
-			var x = mouse_x / current_zoom;
-			var y = mouse_y / current_zoom;
+			var x = mouse_x / current_zoom,
+				y = mouse_y / current_zoom,
+				mouse_target = evt.target;
 			
 			start_x = x;
 			start_y = y;
 	
-			// find mouse target
-			var mouse_target = evt.target;
 			// go up until we hit a child of a layer
 			while (mouse_target.parentNode.parentNode.tagName == "g") {
 				mouse_target = mouse_target.parentNode;
@@ -2363,8 +2359,8 @@ function BatchCommand(text) {
 			// if it is a selector grip, then it must be a single element selected, 
 			// set the mouse_target to that and update the mode to rotate/resize
 			if (mouse_target.parentNode == selectorManager.selectorParentGroup && selectedElements[0] != null) {
-				var gripid = evt.target.id;
-				var griptype = gripid.substr(0,20);
+				var gripid = evt.target.id,
+					griptype = gripid.substr(0,20);
 				// rotating
 				if (griptype == "selectorGrip_rotate_") {
 					current_mode = "rotate";
@@ -5011,7 +5007,8 @@ function BatchCommand(text) {
 				canvas.fixOperaXML(svgcontent, newDoc.documentElement);
 			}
         	
-			svgcontent.setAttribute('id', 'svgcontent');
+			svgcontent.id= 'svgcontent';
+			
 			// determine proper size
 			var w, h;
 			if (svgcontent.getAttribute("viewBox")) {
