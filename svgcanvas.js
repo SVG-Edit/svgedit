@@ -16,7 +16,8 @@ if(!window.console) {
 }
 
 if(window.opera) {
-	window.console.log = function(str) {opera.postError(str);}
+	window.console.log = function(str) {opera.postError(str);};
+	window.console.dir = function(str) {};
 }
 
 function SvgCanvas(container)
@@ -52,7 +53,7 @@ var svgWhiteList = {
 	"switch": ["id", "requiredFeatures", "systemLanguage"],
 	"svg": ["id", "height", "requiredFeatures", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
 	"text": ["fill", "fill-opacity", "fill-rule", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
-	"title": [],
+	"title": []
 };
 
 
@@ -424,8 +425,6 @@ function BatchCommand(text) {
 					bbox[key] = stroked_bbox[key];
 				});
 			}
-			console.log(selected.tagName);
-			console.dir(bbox);
 
 			// loop and transform our bounding box until we reach our first rotation
 			var tlist = canvas.getTransformList(selected),
