@@ -85,8 +85,8 @@ function svg_edit_setup() {
 	var curPrefs = {
 		lang:'en',
 		iconsize:'m',
-		bg_color:'#FFF',
-		bg_url:'',
+		bkgd_color:'#FFF',
+		bkgd_url:'',
 		img_save:'embed'
 	};
 	
@@ -539,8 +539,8 @@ function svg_edit_setup() {
 		});
 	});
 
-	if($.pref('bg_color')) {
-		setBackground($.pref('bg_color'), $.pref('bg_url'));
+	if($.pref('bkgd_color')) {
+		setBackground($.pref('bkgd_color'), $.pref('bkgd_url'));
 	}
 	
 	if($.pref('img_save')) {
@@ -1193,8 +1193,8 @@ function svg_edit_setup() {
 		// Update background color with current one
 		var blocks = $('#bg_blocks div');
 		var cur_bg = 'cur_background';
-		var canvas_bg = $.pref('bg_color');
-		var url = $.pref('bg_url');
+		var canvas_bg = $.pref('bkgd_color');
+		var url = $.pref('bkgd_url');
 // 		if(url) url = url[1];
 		blocks.each(function() {
 			var blk = $(this);
@@ -1283,9 +1283,9 @@ function svg_edit_setup() {
 	};
 	
 	function setBackground(color, url) {
-		if(color == curPrefs.bg_color && url == curPrefs.bg_url) return;
-		$.pref('bg_color', color);
-		$.pref('bg_url', url);
+		if(color == curPrefs.bkgd_color && url == curPrefs.bkgd_url) return;
+		$.pref('bkgd_color', color);
+		$.pref('bkgd_url', url);
 		
 		// This should be done in svgcanvas.js for the borderRect fill
 		svgCanvas.setBackground(color, url);
