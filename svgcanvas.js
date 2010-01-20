@@ -22,10 +22,9 @@ if(window.opera) {
 
 function SvgCanvas(container)
 {
-var isOpera = !!window.opera;
-var isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1;
-
-var support = {};
+var isOpera = !!window.opera,
+	isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1,
+	support = {},
 
 // this defines which elements and attributes that we support
 // TODO: add <a> elements to this
@@ -34,8 +33,7 @@ var support = {};
 // TODO: add <pattern> to this
 // TODO: add <symbol> to this
 // TODO: add <tspan> to this
-// TODO: add <use> to this
-var svgWhiteList = {
+	svgWhiteList = {
 	"circle": ["cx", "cy", "fill", "fill-opacity", "fill-rule", "id", "opacity", "r", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
 	"defs": [],
 	"desc": [],
@@ -53,7 +51,8 @@ var svgWhiteList = {
 	"switch": ["id", "requiredFeatures", "systemLanguage"],
 	"svg": ["id", "height", "requiredFeatures", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
 	"text": ["fill", "fill-opacity", "fill-rule", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
-	"title": []
+	"title": [],
+	"use": ["height", "width", "x", "xlink:href", "y"]
 };
 
 
@@ -1375,6 +1374,11 @@ function BatchCommand(text) {
 				changes["width"] = scalew(changes["width"]);
 				changes["height"] = scaleh(changes["height"]);
 				break;
+			case "use":
+				var pt1 = remap(changes["x"],changes["y"]);
+				changes["x"] = pt1.x;
+				changes["y"] = pt1.y;
+				break;
 			case "text":
 				// if it was a translate, then just update x,y
 				if (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && 
@@ -1476,6 +1480,11 @@ function BatchCommand(text) {
 				changes.y = changes.y-0 + Math.min(0,changes.height);
 				changes.width = Math.abs(changes.width);
 				changes.height = Math.abs(changes.height);
+				assignAttributes(selected, changes, 1000);
+				break;
+			case "use":
+//				changes.x = changes.x-0 + Math.min(0,changes.width);
+//				changes.y = changes.y-0 + Math.min(0,changes.height);
 				assignAttributes(selected, changes, 1000);
 				break;
 			case "ellipse":
@@ -1609,10 +1618,11 @@ function BatchCommand(text) {
 				break;
 			case "rect":
 			case "image":
-				changes["x"] = selected.getAttribute("x");
-				changes["y"] = selected.getAttribute("y");
 				changes["width"] = selected.getAttribute("width");
 				changes["height"] = selected.getAttribute("height");
+			case "use":
+				changes["x"] = selected.getAttribute("x");
+				changes["y"] = selected.getAttribute("y");
 				break;
 			case "text":
 				changes["x"] = selected.getAttribute("x");
@@ -1911,7 +1921,8 @@ function BatchCommand(text) {
 			// if we had [M][T][S][T] we want to extract the matrix equivalent of
 			// [T][S][T] and push it down to the element
 			if (N >= 3 && tlist.getItem(N-2).type == 3 && 
-				tlist.getItem(N-3).type == 2 && tlist.getItem(N-1).type == 2) 
+				tlist.getItem(N-3).type == 2 && tlist.getItem(N-1).type == 2 &&
+				selected.nodeName != "use") 
 			{
 				operation = 3; // scale
 				m = transformListToTransform(tlist,N-3,N-1).matrix;
@@ -2345,6 +2356,10 @@ function BatchCommand(text) {
 			
 			start_x = x;
 			start_y = y;
+	
+			// if it was a <use>, Opera and WebKit return the SVGElementInstance
+			if (mouse_target.correspondingUseElement)
+				mouse_target = mouse_target.correspondingUseElement;
 	
 			// go up until we hit a child of a layer
 			while (mouse_target.parentNode.parentNode.tagName == "g") {
@@ -5925,6 +5940,10 @@ function BatchCommand(text) {
 			selected.parentNode.removeChild(newg);
 		} else if(elem.nodeName == 'path' && isWebkit) {
 			ret = getPathBBox(selected);
+		} else if(elem.nodeName == 'use' && !isWebkit) {
+			ret = selected.getBBox();
+			ret.x += parseFloat(selected.getAttribute('x'));
+			ret.y += parseFloat(selected.getAttribute('y'));
 		} else {
 			try { ret = selected.getBBox(); } 
 			catch(e) { ret = null; }
