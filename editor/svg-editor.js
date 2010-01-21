@@ -141,7 +141,7 @@ function svg_edit_setup() {
 		svgCanvas.setMode('select');
 	};
 	
-	var togglePathEditMode = function(editmode) {
+	var togglePathEditMode = function(editmode, elems) {
 		$('#path_node_panel').toggle(editmode);
 		$('#tools_bottom_2,#tools_bottom_3').toggle(!editmode);
 		var size = $('#tool_select > svg, #tool_select > img')[0].getAttribute('width');
@@ -151,6 +151,9 @@ function svg_edit_setup() {
 			$('#tool_select').addClass('tool_button_current')
 				.empty().append($.getSvgIcon('select_node'));
 			multiselected = false;
+			if(elems.length) {
+				selectedElement = elems[0];
+			}
 		} else {
 			$('#tool_select').empty().append($.getSvgIcon('select'));
 		}
@@ -198,7 +201,8 @@ function svg_edit_setup() {
 		} // if (elem != null)
 
 		// Deal with pathedit mode
-		togglePathEditMode(is_node);
+		togglePathEditMode(is_node, elems);
+
 
 		updateContextPanel(); 
 	};
@@ -401,6 +405,7 @@ function svg_edit_setup() {
 				$('#tool_reorient').toggleClass('tool_button_disabled', angle == 0);
 			} else {
 				var point = path.getNodePoint();
+				$('#tool_node_delete').toggleClass('tool_button_disabled', !path.canDeleteNodes);
 				if(point) {
 					var seg_type = $('#seg_type');
 					$('#path_node_x').val(point.x);
