@@ -3336,6 +3336,8 @@ function BatchCommand(text) {
 		// 
 		var addNodeToSelection = function(points) {
 // 			var point = points;
+			
+
 			if(!$.isArray(points)) points = [points];
 			
 			for(var i=0; i< points.length; i++) {
@@ -3350,6 +3352,10 @@ function BatchCommand(text) {
 				i = selected_pts.length,
 				last_pt = current_path_pts.length/2 - 1,
 				grips = new Array(i);
+				
+			// Check if amount of selected nodes are allowed to be deleted
+			var tot_pts = current_path_pts.length/2 - (is_closed?1:0);
+			pathActions.canDeleteNodes = (tot_pts - i >= 2);
 
 			$('#pathpointgrip_container circle').attr('stroke','#00F');
 			
@@ -3391,6 +3397,7 @@ function BatchCommand(text) {
 			updateSegLine();
 			updateSegLine(true);
 			
+			// TODO: Set grips
 // 			call("selected", grips);
 		};
 
@@ -4017,17 +4024,24 @@ function BatchCommand(text) {
 					var diff_x = mouse_x - current_path_pts[current_path_pt*2];
 					var diff_y = mouse_y - current_path_pts[current_path_pt*2+1];
 
-// 					var rot = !!canvas.getRotationAngle(current_path);
-// 					if(rot) {
-// 						var m = canvas.getTransformList(current_path).getItem(0).matrix;
-// 					}
+					var rot = !!canvas.getRotationAngle(current_path);
+					if(rot) {
+						var m = canvas.getTransformList(current_path).getItem(0).matrix;
+					}
 
 					for(var i=0; i<selected_pts.length; i++) {
 						var sel_pt = selected_pts[i];
 						
 						var sel_pt_x = current_path_pts[sel_pt*2] + diff_x;
 						var sel_pt_y = current_path_pts[sel_pt*2+1] + diff_y;
-// 					
+						
+						if(rot) {
+// 							var pt = transformPoint(current_path_pts[sel_pt*2], current_path_pts[sel_pt*2+1], m);
+// 							var dpt = transformPoint(diff_x, diff_y, m);
+// 							sel_pt_x = pt.x + dpt.x;
+// 							sel_pt_y = pt.y + dpt.y;
+						}
+						
 						current_path_pt_drag = sel_pt;
 						updatePath(sel_pt_x, sel_pt_y, old_path_pts);
 					}
@@ -4487,14 +4501,13 @@ function BatchCommand(text) {
 			// 	current_path.setAttribute("d", convertToD(current_path.pathSegList));
 			},
 			deletePathNode: function() {
+				if(!pathActions.canDeleteNodes) return;
 				var is_closed = pathIsClosed();
 
-				// TODO: Make delete node button disabled when there's only 2 nodes
-				if(current_path_pts.length <= (is_closed?6:4)) return;
-				
-				var d = getD();
-				
 				var len = selected_pts.length;
+
+				var d = getD();
+
 				while(len--) {
 					var pt = selected_pts[len];
 					var last_pt = current_path_pts.length/2 - 1;
