@@ -53,7 +53,7 @@ var isOpera = !!window.opera,
 	"text": ["fill", "fill-opacity", "fill-rule", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
 	"title": [],
 	"use": ["height", "width", "x", "xlink:href", "y"]
-};
+	},
 
 
 // console.log('Start profiling')
@@ -63,17 +63,18 @@ var isOpera = !!window.opera,
 // },3000);
 
 
-var uiStrings = {
-	"pathNodeTooltip":"Drag node to move it. Double-click node to change segment type",
-	"pathCtrlPtTooltip":"Drag control point to adjust curve properties"
-};
-
-var toXml = function(str) {
-	return $('<p/>').text(str).html();
-};
-var fromXml = function(str) {
-	return $('<p/>').html(str).text();
-};
+	uiStrings = {
+		"pathNodeTooltip":"Drag node to move it. Double-click node to change segment type",
+		"pathCtrlPtTooltip":"Drag control point to adjust curve properties"
+	},
+	
+	toXml = function(str) {
+		return $('<p/>').text(str).html();
+	},
+	
+	fromXml = function(str) {
+		return $('<p/>').html(str).text();
+	};
 
 
 // These command objects are used for the Undo/Redo stack
@@ -867,13 +868,13 @@ function BatchCommand(text) {
 
 	// TODO: declare the variables and set them as null, then move this setup stuff to
 	// an initialization function - probably just use clear()
-	var canvas = this;
-	var svgns = "http://www.w3.org/2000/svg";
-	var xlinkns = "http://www.w3.org/1999/xlink";
-	var xmlns = "http://www.w3.org/XML/1998/namespace";
-	var idprefix = "svg_";
-	var svgdoc  = container.ownerDocument;
-	var svgroot = svgdoc.createElementNS(svgns, "svg");
+	var canvas = this,
+		svgns = "http://www.w3.org/2000/svg",
+		xlinkns = "http://www.w3.org/1999/xlink",
+		xmlns = "http://www.w3.org/XML/1998/namespace",
+		idprefix = "svg_",
+		svgdoc  = container.ownerDocument,
+		svgroot = svgdoc.createElementNS(svgns, "svg");
 	svgroot.setAttribute("width", 640);
 	svgroot.setAttribute("height", 480);
 	svgroot.setAttribute("id", "svgroot");
@@ -909,31 +910,30 @@ function BatchCommand(text) {
 	});
 	// z-ordered array of tuples containing layer names and <g> elements
 	// the first layer is the one at the bottom of the rendering
-	var all_layers = [];
-	var encodableImages = {};
-	var last_good_img_url = 'images/logo.png';
-	// pointer to the current layer <g>
-	var current_layer = null;
-	var save_options = {round_digits: 5};
-	var started = false;
-	var obj_num = 1;
-	var start_transform = null;
-	var current_mode = "select";
-	var current_resize_mode = "none";
-	
-	var all_properties = {
-		shape: {
-			fill: "#FF0000",
-			fill_paint: null,
-			fill_opacity: 1,
-			stroke: "#000000",
-			stroke_paint: null,
-			stroke_opacity: 1,
-			stroke_width: 5,
-			stroke_style: 'none',
-			opacity: 1
-		}
-	};
+	var all_layers = [],
+		encodableImages = {},
+		last_good_img_url = 'images/logo.png',
+		// pointer to the current layer <g>
+		current_layer = null,
+		save_options = {round_digits: 5},
+		started = false,
+		obj_num = 1,
+		start_transform = null,
+		current_mode = "select",
+		current_resize_mode = "none",
+		all_properties = {
+			shape: {
+				fill: "#FF0000",
+				fill_paint: null,
+				fill_opacity: 1,
+				stroke: "#000000",
+				stroke_paint: null,
+				stroke_opacity: 1,
+				stroke_width: 5,
+				stroke_style: 'none',
+				opacity: 1
+			}
+		};
 	
 	all_properties.text = $.extend(true, {}, all_properties.shape);
 	$.extend(all_properties.text, {
@@ -943,24 +943,23 @@ function BatchCommand(text) {
 		font_family: 'serif'
 	});
 
-	var cur_shape = all_properties.shape;
-	var cur_text = all_properties.text;
-	var cur_properties = cur_shape;
-	
-	var current_zoom = 1;
-	// this will hold all the currently selected elements
-	// default size of 1 until it needs to grow bigger
-	var selectedElements = new Array(1); 
-	// this holds the selected's bbox
-	var selectedBBoxes = new Array(1);
-	var justSelected = null;
-	// this object manages selectors for us
-	var selectorManager = new SelectorManager();
-	var rubberBox = null;
-	var events = {};
-	var undoStackPointer = 0;
-	var undoStack = [];
-	var curBBoxes = [];
+	var cur_shape = all_properties.shape,
+		cur_text = all_properties.text,
+		cur_properties = cur_shape,
+		current_zoom = 1,
+		// this will hold all the currently selected elements
+		// default size of 1 until it needs to grow bigger
+		selectedElements = new Array(1),
+		// this holds the selected's bbox
+		selectedBBoxes = new Array(1),
+		justSelected = null,
+		// this object manages selectors for us
+		selectorManager = new SelectorManager(),
+		rubberBox = null,
+		events = {},
+		undoStackPointer = 0,
+		undoStack = [],
+		curBBoxes = [];
 
 	// This method rounds the incoming value to the nearest value based on the current_zoom
 	var round = function(val){
@@ -1135,9 +1134,9 @@ function BatchCommand(text) {
 			} 
 		});
 		
-		var lgrads = svgcontent.getElementsByTagNameNS(svgns, "linearGradient");
-		var grad_ids = [];
-		var i = lgrads.length;
+		var lgrads = svgcontent.getElementsByTagNameNS(svgns, "linearGradient"),
+			grad_ids = [],
+			i = lgrads.length;
 		while (i--) {
 			var grad = lgrads[i];
 			var id = grad.id;
@@ -1174,10 +1173,10 @@ function BatchCommand(text) {
 		var out = new Array();
 		if (elem) {
 			cleanupElement(elem);
-			var attrs = elem.attributes;
-			var attr;
-			var i;
-			var childs = elem.childNodes;
+			var attrs = elem.attributes,
+				attr,
+				i,
+				childs = elem.childNodes;
 			
 			for (var i=0; i<indent; i++) out.push(" ");
 			out.push("<"); out.push(elem.nodeName);			
@@ -1345,10 +1344,10 @@ function BatchCommand(text) {
 	};
 	
 	var remapElement = function(selected,changes,m) {
-		var remap = function(x,y) { return transformPoint(x,y,m); };
-		var scalew = function(w) { return m.a*w; }
-		var scaleh = function(h) { return m.d*h; }
-		var box = canvas.getBBox(selected);
+		var remap = function(x,y) { return transformPoint(x,y,m); },
+			scalew = function(w) { return m.a*w; },
+			scaleh = function(h) { return m.d*h; },
+			box = canvas.getBBox(selected);
 
 		switch (selected.tagName)
 		{
@@ -1442,9 +1441,9 @@ function BatchCommand(text) {
 					};
 				}
 				
-				var len = changes["d"].length;
-				var firstseg = changes["d"][0];
-				var firstpt = remap(firstseg.x,firstseg.y);
+				var len = changes["d"].length,
+					firstseg = changes["d"][0],
+					firstpt = remap(firstseg.x,firstseg.y);
 				changes["d"][0].x = firstpt.x;
 				changes["d"][0].y = firstpt.y;
 				for (var i = 1; i < len; ++i) {
@@ -1493,8 +1492,6 @@ function BatchCommand(text) {
 				assignAttributes(selected, changes, 1000);
 				break;
 			case "use":
-//				changes.x = changes.x-0 + Math.min(0,changes.width);
-//				changes.y = changes.y-0 + Math.min(0,changes.height);
 				assignAttributes(selected, changes, 1000);
 				break;
 			case "ellipse":
@@ -1667,11 +1664,11 @@ function BatchCommand(text) {
 		
 		// if it's a group, we have special processing to flatten transforms
 		if (selected.tagName == "g") {
-			var box = canvas.getBBox(selected);
-			var oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2};
-			var newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2,
-								transformListToTransform(tlist).matrix);
-			var m = svgroot.createSVGMatrix();
+			var box = canvas.getBBox(selected),
+				oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2},
+				newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2,
+								transformListToTransform(tlist).matrix),
+				m = svgroot.createSVGMatrix();
 			
 			// temporarily strip off the rotate and save the old center
 			var gangle = canvas.getRotationAngle(selected);
@@ -1691,9 +1688,9 @@ function BatchCommand(text) {
 				}
 			}
 			
-			var tx = 0, ty = 0;
-			var operation = 0;
-			var N = tlist.numberOfItems;
+			var tx = 0, ty = 0,
+				operation = 0,
+				N = tlist.numberOfItems;
 			
 			// first, if it was a scale then the second-last transform will be it
 			if (N >= 3 && tlist.getItem(N-2).type == 3 && 
@@ -1703,9 +1700,9 @@ function BatchCommand(text) {
 			
 				// if the children are unrotated, pass the scale down directly
 				// otherwise pass the equivalent matrix() down directly
-				var tm = tlist.getItem(N-3).matrix;
-				var sm = tlist.getItem(N-2).matrix;
-				var tmn = tlist.getItem(N-1).matrix;
+				var tm = tlist.getItem(N-3).matrix,
+					sm = tlist.getItem(N-2).matrix,
+					tmn = tlist.getItem(N-1).matrix;
 			
 				var children = selected.childNodes;
 				var c = children.length;
@@ -1813,9 +1810,9 @@ function BatchCommand(text) {
 			// keep pushing it down to the children
 			else if (N == 1 && tlist.getItem(0).type == 1 && !gangle) {
 				operation = 1;
-				var m = tlist.getItem(0).matrix;
-				var children = selected.childNodes;
-				var c = children.length;
+				var m = tlist.getItem(0).matrix,
+					children = selected.childNodes,
+					c = children.length;
 				while (c--) {
 					var child = children.item(c);
 					if (child.nodeType == 1) {
@@ -1864,9 +1861,9 @@ function BatchCommand(text) {
 				var rold = roldt.matrix;
 				var rnew = svgroot.createSVGTransform();
 				rnew.setRotate(gangle, newcenter.x, newcenter.y);
-				var rnew_inv = rnew.matrix.inverse();
-				var m_inv = m.inverse();
-				var extrat = matrixMultiply(m_inv, rnew_inv, rold, m);
+				var rnew_inv = rnew.matrix.inverse(),
+					m_inv = m.inverse(),
+					extrat = matrixMultiply(m_inv, rnew_inv, rold, m);
 
 				tx = extrat.e;
 				ty = extrat.f;
@@ -1898,14 +1895,13 @@ function BatchCommand(text) {
 		}
 		// else, it's a non-group
 		else {
-			var box = canvas.getBBox(selected);
-			var oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2};
-			var newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2,
-								transformListToTransform(tlist).matrix);
-			var m = svgroot.createSVGMatrix();
-			
-			// temporarily strip off the rotate and save the old center
-			var angle = canvas.getRotationAngle(selected);
+			var box = canvas.getBBox(selected),
+				oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2},
+				newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2,
+								transformListToTransform(tlist).matrix),
+				m = svgroot.createSVGMatrix(),
+				// temporarily strip off the rotate and save the old center
+				angle = canvas.getRotationAngle(selected);
 			if (angle) {
 				for (var i = 0; i < tlist.numberOfItems; ++i) {
 					var xform = tlist.getItem(i);
@@ -2151,10 +2147,10 @@ function BatchCommand(text) {
 		if (elemsToRemove.length == 0) { return; }
 
 		// find every element and remove it from our array copy
-		var newSelectedItems = new Array(selectedElements.length);
-		var newSelectedBBoxes = new Array(selectedBBoxes.length);
-		var j = 0;
-		var len = selectedElements.length;
+		var newSelectedItems = new Array(selectedElements.length),
+			newSelectedBBoxes = new Array(selectedBBoxes.length),
+			j = 0,
+			len = selectedElements.length;
 		for (var i = 0; i < len; ++i) {
 			var elem = selectedElements[i];
 			if (elem) {
@@ -2267,9 +2263,9 @@ function BatchCommand(text) {
 	// has the following properties:
 	// - tx, ty, sx, sy, angle, cx, cy, string
 	var transformToObj = function(xform, mZoom) {
-		var m = xform.matrix;
-		var tobj = {tx:0,ty:0,sx:1,sy:1,angle:0,cx:0,cy:0,text:""};
-		var z = mZoom?current_zoom:1;
+		var m = xform.matrix,
+			tobj = {tx:0,ty:0,sx:1,sy:1,angle:0,cx:0,cy:0,text:""},
+			z = mZoom?current_zoom:1;
 		switch(xform.type) {
 			case 1: // MATRIX
 				tobj.text = "matrix(" + [m.a,m.b,m.c,m.d,m.e,m.f].join(",") + ")";
@@ -2673,11 +2669,11 @@ function BatchCommand(text) {
 		var mouseMove = function(evt)
 		{
 			if (!started) return;
-			var selected = selectedElements[0];
-			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
-			var mouse_x = pt.x * current_zoom;
-			var mouse_y = pt.y * current_zoom;
-			var shape = getElem(getId());
+			var selected = selectedElements[0],
+				pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
+				mouse_x = pt.x * current_zoom,
+				mouse_y = pt.y * current_zoom,
+				shape = getElem(getId());
 		
 			x = mouse_x / current_zoom;
 			y = mouse_y / current_zoom;
@@ -2773,8 +2769,8 @@ function BatchCommand(text) {
 					// if rotated, adjust the dx,dy values
 					var angle = canvas.getRotationAngle(selected);
 					if (angle) {
-						var r = Math.sqrt( dx*dx + dy*dy );
-						var theta = Math.atan2(dy,dx) - angle * Math.PI / 180.0;
+						var r = Math.sqrt( dx*dx + dy*dy ),
+							theta = Math.atan2(dy,dx) - angle * Math.PI / 180.0;
 						dx = r * Math.cos(theta);
 						dy = r * Math.sin(theta);
 					}
@@ -2872,8 +2868,8 @@ function BatchCommand(text) {
 				case "rect":
 					// fall through
 				case "image":
-					var square = (current_mode == 'square') || evt.shiftKey;
-					var w = Math.abs(x - start_x),
+					var square = (current_mode == 'square') || evt.shiftKey,
+						w = Math.abs(x - start_x),
 						h = Math.abs(y - start_y),
 						new_x, new_y;
 					if(square) {
@@ -2894,16 +2890,16 @@ function BatchCommand(text) {
 					
 					break;
 				case "circle":
-					var cx = shape.getAttributeNS(null, "cx");
-					var cy = shape.getAttributeNS(null, "cy");
-					var rad = Math.sqrt( (x-cx)*(x-cx) + (y-cy)*(y-cy) );
+					var cx = shape.getAttributeNS(null, "cx"),
+						cy = shape.getAttributeNS(null, "cy"),
+						rad = Math.sqrt( (x-cx)*(x-cx) + (y-cy)*(y-cy) );
 					shape.setAttributeNS(null, "r", rad);
 					break;
 				case "ellipse":
-					var cx = shape.getAttributeNS(null, "cx");
-					var cy = shape.getAttributeNS(null, "cy");
+					var cx = shape.getAttributeNS(null, "cx"),
+						cy = shape.getAttributeNS(null, "cy"),
 					// Opera has a problem with suspendRedraw() apparently
-					var handle = null;
+						handle = null;
 					if (!window.opera) svgroot.suspendRedraw(1000);
 					shape.setAttributeNS(null, "rx", Math.abs(x - cx) );
 					var ry = Math.abs(evt.shiftKey?(x - cx):(y - cy));
@@ -2944,9 +2940,9 @@ function BatchCommand(text) {
 				case "rotate":
 					var box = canvas.getBBox(selected),
 						cx = box.x + box.width/2, 
-						cy = box.y + box.height/2;
-					var m = transformListToTransform(canvas.getTransformList(selected)).matrix;
-					var center = transformPoint(cx,cy,m);
+						cy = box.y + box.height/2,
+						m = transformListToTransform(canvas.getTransformList(selected)).matrix,
+						center = transformPoint(cx,cy,m);
 					cx = center.x;
 					cy = center.y;
 					var angle = ((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360;
@@ -3249,16 +3245,16 @@ function BatchCommand(text) {
 
 	var pathActions = function() {
 		
-		var pathFuncs = [];
-		var current_path = null;
-		var current_path_pts = [];
-		var current_path_pt = -1;
-		var current_path_pt_drag = -1;
-		var current_path_oldd = null;
-		var current_ctrl_pt_drag = -1;
-		var link_control_pts = false;
-		var selected_pts = [];
-		var hasMoved = false;
+		var pathFuncs = [],
+			current_path = null,
+			current_path_pts = [],
+			current_path_pt = -1,
+			current_path_pt_drag = -1,
+			current_path_oldd = null,
+			current_ctrl_pt_drag = -1,
+			link_control_pts = false,
+			selected_pts = [],
+			hasMoved = false;
 	
 		var getD = function() {
 			return current_path.getAttribute('d');
@@ -3350,10 +3346,10 @@ function BatchCommand(text) {
 			}
 			selected_pts.sort();
 			
-			var is_closed = pathIsClosed(); 
-			var i = selected_pts.length;
-			var last_pt = current_path_pts.length/2 - 1;
-			var grips = new Array(i);
+			var is_closed = pathIsClosed(),
+				i = selected_pts.length,
+				last_pt = current_path_pts.length/2 - 1,
+				grips = new Array(i);
 
 			$('#pathpointgrip_container circle').attr('stroke','#00F');
 			
@@ -3554,15 +3550,15 @@ function BatchCommand(text) {
 		}
 
 		var updatePath = function(mouse_x, mouse_y, old_path_pts) {
-			var x = mouse_x / current_zoom;
-			var y = mouse_y / current_zoom;
-			
-			var is_closed = pathIsClosed(); 
-		
-			var i = current_path_pt_drag * 2;
-			var last_index = current_path_pts.length/2 - 1;
-			var is_first = current_path_pt_drag == 0; // || (is_closed && current_path_pt_drag == last_index);
-			var is_last = !is_closed && current_path_pt_drag == last_index;
+			var x = mouse_x / current_zoom,
+				y = mouse_y / current_zoom,
+				
+				is_closed = pathIsClosed(),
+
+				i = current_path_pt_drag * 2,
+				last_index = current_path_pts.length/2 - 1,
+				is_first = current_path_pt_drag == 0, // || (is_closed && current_path_pt_drag == last_index);
+				is_last = !is_closed && current_path_pt_drag == last_index;
 			
 			// if the image is rotated, then we must modify the x,y mouse coordinates
 			// and rotate them into the shape's rotated coordinate system
@@ -3570,12 +3566,12 @@ function BatchCommand(text) {
 			var angle = canvas.getRotationAngle(current_path, true);
 			if (angle) {
 				// calculate the shape's old center that was used for rotation
-				var box = selectedBBoxes[0];
-				var cx = (box.x + box.width/2) * current_zoom, 
-					cy = (box.y + box.height/2) * current_zoom;
-				var dx = mouse_x - cx, dy = mouse_y - cy;
-				var r = Math.sqrt( dx*dx + dy*dy );
-				var theta = Math.atan2(dy,dx) - angle;						
+				var box = selectedBBoxes[0],
+					cx = (box.x + box.width/2) * current_zoom,
+					cy = (box.y + box.height/2) * current_zoom,
+					dx = mouse_x - cx, dy = mouse_y - cy,
+					r = Math.sqrt( dx*dx + dy*dy ),
+					theta = Math.atan2(dy,dx) - angle;						
 				current_path_pts[i] = mouse_x = cx + r * Math.cos(theta);
 				current_path_pts[i+1] = mouse_y = cy + r * Math.sin(theta);
 				x = mouse_x / current_zoom;
@@ -3593,13 +3589,13 @@ function BatchCommand(text) {
 				current_path_pt_drag = 0;
 			}
 	
-			var index = current_path_pt_drag;
-			var abs_x = getPathPoint(index)[0];
-			var abs_y = getPathPoint(index)[1];
-			
-			var item = current_path.pathSegList.getItem(index);
-			var x_diff = x - old_path_pts[index*2];
-			var y_diff = y - old_path_pts[index*2 + 1];
+			var index = current_path_pt_drag,
+				abs_x = getPathPoint(index)[0],
+				abs_y = getPathPoint(index)[1],
+				
+				item = current_path.pathSegList.getItem(index),
+				x_diff = x - old_path_pts[index*2],
+				y_diff = y - old_path_pts[index*2 + 1];
 			
 			var cur_type = item.pathSegType;
 			var points = [];
@@ -3669,14 +3665,14 @@ function BatchCommand(text) {
 			if(is_first) cur_type = last_type;
 			
 			if(cur_type != 4) {
-				var num = is_first?last_index:index;
-				var id2 = (num-1)+'c2';
-				var line = getElem("ctrlLine_"+id2);
+				var num = is_first?last_index:index,
+					id2 = (num-1)+'c2',
+					line = getElem("ctrlLine_"+id2);
 				if(line) {
 					// Don't do if first point on open path
 					if(!(!is_closed && current_path_pt_drag == 0)) {
-						var x2 = line.getAttribute('x2') - 0 + x_diff*current_zoom;
-						var y2 = line.getAttribute('y2') - 0 + y_diff*current_zoom;
+						var x2 = line.getAttribute('x2') - 0 + x_diff*current_zoom,
+							y2 = line.getAttribute('y2') - 0 + y_diff*current_zoom;
 						addControlPointGrip(x2,y2, mouse_x,mouse_y, id2, true);
 					}
 				}
@@ -3686,8 +3682,8 @@ function BatchCommand(text) {
 				var id1 = (current_path_pt_drag)+'c1';
 				var line = getElem("ctrlLine_"+id1);
 				if(line) {
-					var x2 = line.getAttribute('x2') - 0 + x_diff*current_zoom;
-					var y2 = line.getAttribute('y2') - 0 + y_diff*current_zoom;
+					var x2 = line.getAttribute('x2') - 0 + x_diff*current_zoom,
+						y2 = line.getAttribute('y2') - 0 + y_diff*current_zoom;
 					addControlPointGrip(x2,y2, mouse_x,mouse_y, id1, true);
 				}
 			}
@@ -3713,20 +3709,20 @@ function BatchCommand(text) {
 			
 			ctrl_pt_drag = index + 'c' + ctrl_num;
 			
-			var x = mouse_x / current_zoom;
-			var y = mouse_y / current_zoom;
+			var x = mouse_x / current_zoom,
+				y = mouse_y / current_zoom;
 			
 			var angle = canvas.getRotationAngle(current_path, true);
 			
 			// TODO: Make sure this works for linked control points
 			if (angle) {
 				// calculate the shape's old center that was used for rotation
-				var box = selectedBBoxes[0];
-				var cx = (box.x + box.width/2) * current_zoom, 
-					cy = (box.y + box.height/2) * current_zoom;
-				var dx = mouse_x - cx, dy = mouse_y - cy;
-				var r = Math.sqrt( dx*dx + dy*dy );
-				var theta = Math.atan2(dy,dx) - angle;						
+				var box = selectedBBoxes[0],
+					cx = (box.x + box.width/2) * current_zoom,
+					cy = (box.y + box.height/2) * current_zoom,
+					dx = mouse_x - cx, dy = mouse_y - cy,
+					r = Math.sqrt( dx*dx + dy*dy ),
+					theta = Math.atan2(dy,dx) - angle;						
 				mouse_x = cx + r * Math.cos(theta);
 				mouse_y = cy + r * Math.sin(theta);
 				x = mouse_x / current_zoom;
@@ -3865,18 +3861,19 @@ function BatchCommand(text) {
 		var recalcRotatedPath = function() {
 			var angle = canvas.getRotationAngle(current_path, true);
 			if(!angle) return;
-			var box = canvas.getBBox(current_path);
-			var oldbox = selectedBBoxes[0];
-			var oldcx = oldbox.x + oldbox.width/2,
+			var box = canvas.getBBox(current_path),
+				oldbox = selectedBBoxes[0],
+				oldcx = oldbox.x + oldbox.width/2,
 				oldcy = oldbox.y + oldbox.height/2,
 				newcx = box.x + box.width/2,
-				newcy = box.y + box.height/2;
+				newcy = box.y + box.height/2,
 			
 			// un-rotate the new center to the proper position
-			var dx = newcx - oldcx,
-				dy = newcy - oldcy;
-			var r = Math.sqrt(dx*dx + dy*dy);
-			var theta = Math.atan2(dy,dx) + angle;
+				dx = newcx - oldcx,
+				dy = newcy - oldcy,
+				r = Math.sqrt(dx*dx + dy*dy),
+				theta = Math.atan2(dy,dx) + angle;
+				
 			newcx = r * Math.cos(theta) + oldcx;
 			newcy = r * Math.sin(theta) + oldcy;
 			
@@ -3904,16 +3901,16 @@ function BatchCommand(text) {
 					'y':(r * Math.sin(theta) + newcy)/1};
 			}
 			
-			var list = current_path.pathSegList;
-			var i = list.numberOfItems;
+			var list = current_path.pathSegList,
+				i = list.numberOfItems;
 			while (i) {
 				i -= 1;
-				var seg = list.getItem(i);
-				var type = seg.pathSegType;
+				var seg = list.getItem(i),
+					type = seg.pathSegType;
 				if(type == 1) continue;
 				
-				var rvals = getRotVals(seg.x,seg.y);
-				var points = [rvals.x, rvals.y];
+				var rvals = getRotVals(seg.x,seg.y),
+					points = [rvals.x, rvals.y];
 				if(seg.x1 != null && seg.x2 != null) {
 					c_vals1 = getRotVals(seg.x1, seg.y1);
 					c_vals2 = getRotVals(seg.x2, seg.y2);
@@ -3927,8 +3924,8 @@ function BatchCommand(text) {
 			selectedBBoxes[0].width = box.width; selectedBBoxes[0].height = box.height;
 			
 			// now we must set the new transform to be rotated around the new center
-			var R_nc = svgroot.createSVGTransform();
-			var tlist = canvas.getTransformList(current_path);
+			var R_nc = svgroot.createSVGTransform(),
+				tlist = canvas.getTransformList(current_path);
 			R_nc.setRotate((angle * 180.0 / Math.PI), newcx, newcy);
 			tlist.replaceItem(R_nc,0);
 				
@@ -4038,11 +4035,11 @@ function BatchCommand(text) {
 					// Moving the control point. Since only one segment is altered,
 					// we only need to do a pathSegList replace.
 					
-					var data = current_ctrl_pt_drag.split('c');
-					var index = data[0]-0;
-					var ctrl_num = data[1]-0;
-					var pt_index;
-					var pt_count = current_path_pts.length/2;
+					var data = current_ctrl_pt_drag.split('c'),
+						index = data[0]-0,
+						ctrl_num = data[1]-0,
+						pt_index,
+						pt_count = current_path_pts.length/2;
 					updateCurvedSegment(mouse_x, mouse_y, index, ctrl_num);
 					if(link_control_pts) {
 						var is_closed = pathIsClosed();
@@ -4066,27 +4063,27 @@ function BatchCommand(text) {
 							}
 						}
 						
-						var pt = getPathPoint(pt_index, true);
-						var new_x = pt[0] - (mouse_x - pt[0]);
-						var new_y = pt[1] - (mouse_y - pt[1]);
+						var pt = getPathPoint(pt_index, true),
+							new_x = pt[0] - (mouse_x - pt[0]),
+							new_y = pt[1] - (mouse_y - pt[1]);
 						updateCurvedSegment(new_x, new_y, index, ctrl_num, true);
 					}
 				} else {
-					var len = current_path_pts.length;
-					var sel_pts = [];
+					var len = current_path_pts.length,
+						sel_pts = [];
 					selected_pts = [];
 					var rot = !!canvas.getRotationAngle(current_path);
 					if(rot) {
-						var tlist = canvas.getTransformList(current_path);
-						var m = transformListToTransform(tlist).matrix;
+						var tlist = canvas.getTransformList(current_path),
+							m = transformListToTransform(tlist).matrix;
 					}
 					
 					if(pathIsClosed()) len -= 2;
 					
 					for(var i=0; i<len; i+=2) {
-						var x = current_path_pts[i];
-						var y = current_path_pts[i+1];
-						var rbb = rubberBox.getBBox();
+						var x = current_path_pts[i],
+							y = current_path_pts[i+1],
+							rbb = rubberBox.getBBox();
 						if(rot) {
 							var pt = transformPoint(x, y, m);
 							x = pt.x;
@@ -4114,10 +4111,9 @@ function BatchCommand(text) {
 			
 				// Create mode
 				if(current_mode == "path") {
-					var x = mouse_x/current_zoom;
-					var y = mouse_y/current_zoom;
-					
-					var stretchy = getElem("path_stretch_line");
+					var x = mouse_x/current_zoom,
+						y = mouse_y/current_zoom,
+						stretchy = getElem("path_stretch_line");
 					if (!stretchy) {
 						stretchy = document.createElementNS(svgns, "line");
 						assignAttributes(stretchy, {
