@@ -2333,16 +2333,16 @@ function BatchCommand(text) {
 	// Mouse events
 	(function() {
 		
-		var d_attr = null;
-		var start_x = null;
-		var start_y = null;
-		var init_bbox = {};
-		var freehand = {
-			minx: null,
-			miny: null,
-			maxx: null,
-			maxy: null
-		};
+		var d_attr = null,
+			start_x = null,
+			start_y = null,
+			init_bbox = {},
+			freehand = {
+				minx: null,
+				miny: null,
+				maxx: null,
+				maxy: null
+			};
 		
 		// - when we are in a create mode, the element is added to the canvas
 		//   but the action is not recorded until mousing up
@@ -2512,7 +2512,7 @@ function BatchCommand(text) {
 					freehand.minx = x;
 					freehand.maxx = x;
 					freehand.miny = y;
-					freehand.miny = y;
+					freehand.maxy = y;
 					break;
 				case "image":
 					started = true;
