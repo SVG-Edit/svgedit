@@ -28,7 +28,7 @@ var isOpera = !!window.opera,
 
 // this defines which elements and attributes that we support
 // TODO: add <a> elements to this
-// TODO: add <marker> to this
+// TODO: add <marker> to this and marker attributes
 // TODO: add <mask> to this
 // TODO: add <pattern> to this
 // TODO: add <symbol> to this
@@ -52,7 +52,7 @@ var isOpera = !!window.opera,
 	"svg": ["id", "height", "requiredFeatures", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
 	"text": ["fill", "fill-opacity", "fill-rule", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
 	"title": [],
-	"use": ["height", "width", "x", "xlink:href", "y"]
+	"use": ["height", "id", "width", "x", "xlink:href", "y"]
 	},
 
 
@@ -1097,7 +1097,7 @@ function BatchCommand(text) {
 		// else, remove this element
 		else {
 			// remove all children from this node and insert them before this node
-			// FIXME: in the case of animation elements or tspans this will hardly ever be correct
+			// FIXME: in the case of animation elements this will hardly ever be correct
 			var children = [];
 			while (node.hasChildNodes()) {
 				children.push(parent.insertBefore(node.firstChild, node));
