@@ -2464,7 +2464,7 @@ function BatchCommand(text) {
 					freehand.minx = x;
 					freehand.maxx = x;
 					freehand.miny = y;
-					freehand.miny = y;
+					freehand.maxy = y;
 					break;
 				case "image":
 					started = true;
