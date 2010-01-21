@@ -3254,6 +3254,7 @@ function BatchCommand(text) {
 			current_ctrl_pt_drag = -1,
 			link_control_pts = false,
 			selected_pts = [],
+			is_closed = false,
 			hasMoved = false;
 	
 		var getD = function() {
@@ -3326,7 +3327,7 @@ function BatchCommand(text) {
 		var removeAllPointGripsFromPath = function() {
 			// loop through and hide all pointgrips
 			$('#pathpointgrip_container > *').attr("display", "none");
-	
+			
 			var line = getElem("path_stretch_line");
 			if (line) line.setAttribute("display", "none");
 			
@@ -3348,8 +3349,7 @@ function BatchCommand(text) {
 			}
 			selected_pts.sort();
 			
-			var is_closed = pathIsClosed(),
-				i = selected_pts.length,
+			var i = selected_pts.length,
 				last_pt = current_path_pts.length/2 - 1,
 				grips = new Array(i);
 				
@@ -3367,14 +3367,14 @@ function BatchCommand(text) {
 				grips[i] = $('#pathpointgrip_' + point)[0];
 				$('#ctrlpointgrip_container circle').attr('fill', '#EEE');
 				$('#ctrlpointgrip_' + point + 'c1, #ctrlpointgrip_' + point + 'c2').attr('fill','#0FF');
+				$('#segline_' + point).attr('display','inline');
 			}
 			
 			if(selected_pts.length <= 1) {//if(current_path_pt == -1) {
 				current_path_pt = selected_pts[0];
 			}
 			
-			updateSegLine();
-			updateSegLine(true);
+			updateSegLines();
 			
 			call("selected", grips);
 		};
@@ -3392,10 +3392,9 @@ function BatchCommand(text) {
 			// grips[i] = $('#pathpointgrip_' + point)[0];
 			$('#ctrlpointgrip_container circle').attr('fill', '#EEE');
 			$('#ctrlpointgrip_' + point + 'c1, #ctrlpointgrip_' + point + 'c2').attr('fill','#0FF');
+			$('#segline_' + point).attr('display','none');
 			
 			current_path_pt = selected_pts[0];
-			updateSegLine();
-			updateSegLine(true);
 			
 			// TODO: Set grips
 // 			call("selected", grips);
@@ -3419,13 +3418,12 @@ function BatchCommand(text) {
 	
 		var addAllPointGripsToPath = function(pointToSelect) {
 			// loop through and show all pointgrips
-			var closed = pathIsClosed();
 			var len = current_path_pts.length;
 			for (var i = 0; i < len; i += 2) {
 				var grip = getElem("pathpointgrip_"+i/2);
 
 				// Skip last point if closed
-				if(!closed || i+2 < len) {
+				if(!is_closed || i+2 < len) {
 					if (grip) {
 						assignAttributes(grip, {
 							'cx': current_path_pts[i],
@@ -3496,6 +3494,19 @@ function BatchCommand(text) {
 				grip.dblclick(function() {
 					canvas.setSegType();
 				});
+				
+				// create segline
+				segLine = document.createElementNS(svgns, "path");
+				assignAttributes(segLine, {
+					'id': "segline_" + index,
+					'display': 'none',
+					'fill': "none",
+					'stroke': "#0FF",
+					'stroke-width': 2,
+					'style':'pointer-events:none',
+					'd': 'M0,0 0,0'
+				});
+				segLine = pointGripContainer.appendChild(segLine);
 			}
 			
 			// set up the point grip element and display it
@@ -3506,53 +3517,37 @@ function BatchCommand(text) {
 			});
 		};
 		
-		var pathIsClosed = function() {
-			if(!current_path) return;
-			return getD().substr(-1,1).toLowerCase() == 'z';
-		}
-		
-		var updateSegLine = function(next_node) {
-			// create segment line
-			var segLine = getElem("segline");
-			if(!segLine) {
-				var pointGripContainer = $('#pathpointgrip_container')[0];
-				segLine = document.createElementNS(svgns, "path");
-				assignAttributes(segLine, {
-					'id': "segline",
-					'fill': "none",
-					'stroke': "#0FF",
-					'stroke-width': 2,
-					'style':'pointer-events:none'
-				});
-				segLine = pointGripContainer.appendChild(segLine);
-			}
-			if(selected_pts.length != 1) {
-				segLine.setAttribute('display','none');
-				return;
-			}
+		var updateSegLines = function() {
+			// create segment lines
+			var len = current_path_pts.length/2 - (is_closed?1:0);
 			
-			if(!segLine.getAttribute('d')) {
-				var pt = getPathPoint(current_path_pt);
-				segLine.setAttribute('d', 'M' + pt.join(',') + ' 0,0');
-			}
-			segLine.setAttribute('display','inline');
-			
-			if(current_path_pt+1 >= current_path.pathSegList.numberOfItems) {
-				segLine.setAttribute('display','none');
-				return;
-			}
-			
-			if(!next_node) {
-				// Replace "M" val
-				replacePathSeg(2, 0, getPathPoint(current_path_pt, true), segLine);
-			} else {
-				var seg = current_path.pathSegList.getItem(current_path_pt+1);
-				var points = [seg.x, seg.y];
-				if(seg.x1 != null && seg.x2 != null) {
-					points.splice(2, 0, seg.x1, seg.y1, seg.x2, seg.y2);
+			for(var i=0; i<len; i++) {
+				var segLine = getElem("segline_"+i);
+				if(!segLine) continue;
+				
+				if($.inArray(i, selected_pts) != -1) {
+					// Point is selected, so calculate and display
+					replacePathSeg(2, 0, getPathPoint(i, true), segLine);
+					
+					var seg = current_path.pathSegList.getItem(i+1);
+					var points = [seg.x, seg.y];
+					if(seg.x1 != null && seg.x2 != null) {
+						points.splice(2, 0, seg.x1, seg.y1, seg.x2, seg.y2);
+					}
+					points = $.map(points, function(n){return n*current_zoom;});
+					replacePathSeg(seg.pathSegType, 1, points, segLine);
+					segLine.setAttribute('display','inline');
+				} else {
+					// Point is not selected, so just hide
+					segLine.setAttribute('display','none');
 				}
-				points = $.map(points, function(n){return n*current_zoom;});
-				replacePathSeg(seg.pathSegType, 1, points, segLine);
+				
+// 				if(current_path_pt+1 >= current_path.pathSegList.numberOfItems) {
+// 					segLine.setAttribute('display','none');
+// 					return;
+// 				}
+
+
 			}
 		}
 
@@ -3560,8 +3555,6 @@ function BatchCommand(text) {
 			var x = mouse_x / current_zoom,
 				y = mouse_y / current_zoom,
 				
-				is_closed = pathIsClosed(),
-
 				i = current_path_pt_drag * 2,
 				last_index = current_path_pts.length/2 - 1,
 				is_first = current_path_pt_drag == 0, // || (is_closed && current_path_pt_drag == last_index);
@@ -3694,14 +3687,6 @@ function BatchCommand(text) {
 					addControlPointGrip(x2,y2, mouse_x,mouse_y, id1, true);
 				}
 			}
-			if(selected_pts.length > 1) {
-				getElem("segline").setAttribute('display','none');
-			} else {
-				updateSegLine();
-				if(next_type != 4) {
-					updateSegLine(true);
-				}
-			}
 		}
 	
 		var updateCurvedSegment = function(mouse_x, mouse_y, index, ctrl_num) {
@@ -3740,7 +3725,7 @@ function BatchCommand(text) {
 			c_item['y' + ctrl_num] = y;
 			replacePathSeg(6, index+1, [c_item.x,c_item.y, c_item.x1,c_item.y1, c_item.x2,c_item.y2]);
 			
-			updateSegLine(true);
+			updateSegLines();
 			
 			var grip = getElem("ctrlpointgrip_" + ctrl_pt_drag);
 			if(grip) {
@@ -3943,8 +3928,7 @@ function BatchCommand(text) {
 				setPointContainerTransform(xform);
 			}
 			resetPointGrips();
-			updateSegLine(true);
-			updateSegLine();
+			updateSegLines();
 		}
 		
 		return {
@@ -3980,11 +3964,6 @@ function BatchCommand(text) {
 					} else {
 						addNodeToSelection(current_path_pt);
 					}
-// 					justSelected = current_path_pt;
-					
-					updateSegLine();
-
-					
 				} else if(id.indexOf("ctrlpointgrip_") == 0) {
 					current_ctrl_pt_drag = id.split('_')[1];
 					var node_num = current_ctrl_pt_drag.split('c')[0]-0;
@@ -4056,7 +4035,6 @@ function BatchCommand(text) {
 						pt_count = current_path_pts.length/2;
 					updateCurvedSegment(mouse_x, mouse_y, index, ctrl_num);
 					if(link_control_pts) {
-						var is_closed = pathIsClosed();
 						if(ctrl_num == 1) {
 							ctrl_num = 2;
 							index--;
@@ -4092,7 +4070,7 @@ function BatchCommand(text) {
 							m = transformListToTransform(tlist).matrix;
 					}
 					
-					if(pathIsClosed()) len -= 2;
+					if(is_closed) len -= 2;
 					
 					for(var i=0; i<len; i+=2) {
 						var x = current_path_pts[i],
@@ -4118,6 +4096,7 @@ function BatchCommand(text) {
 					removeAllNodesFromSelection();
 					selectNode(sel_pts);
 				}
+				updateSegLines();
 			}, 
 			mouseUp: function(evt, element, mouse_x, mouse_y) {
 				var tempJustSelected = justSelected;
@@ -4251,7 +4230,7 @@ function BatchCommand(text) {
 					}
 					
 					// If connected, last point should equal first
-					if(pathIsClosed()) {
+					if(is_closed) {
 						current_path_pts[current_path_pts.length-2] = getPathPoint(0,true)[0];
 						current_path_pts[current_path_pts.length-1] = getPathPoint(0,true)[1];
 					}
@@ -4294,6 +4273,8 @@ function BatchCommand(text) {
 			},
 			toEditMode: function(element) {
 				current_path = element;
+				is_closed = getD().substr(-1,1).toLowerCase() == 'z';
+				
 				current_mode = "pathedit";
 
 				// This resets the pathedit selection in case it 
@@ -4401,8 +4382,7 @@ function BatchCommand(text) {
 			zoomChange: function() {
 				if(current_mode == "pathedit") {
 					resetPointGrips();
-					updateSegLine(true);
-					updateSegLine();
+					updateSegLines();
 				}
 			},
 			modeChange: function() {
@@ -4419,22 +4399,20 @@ function BatchCommand(text) {
 				}
 			},
 			getNodePoint: function() {
-				if(current_path_pt != -1) {
-					var pt = getPathPoint(current_path_pt);
-					var list = current_path.pathSegList;
-					var segtype;
-					if(list.numberOfItems > current_path_pt+1) {
-						segtype = list.getItem(current_path_pt+1).pathSegType;
-					} else {
-						segtype = false;
-					}
-					return {
-						x: pt[0],
-						y: pt[1],
-						type: segtype
-					}
+				var sel_pt = selected_pts.length ? selected_pts[0] : 0;
+
+				var pt = getPathPoint(sel_pt);
+				var list = current_path.pathSegList;
+				var segtype;
+				if(list.numberOfItems > sel_pt+1) {
+					segtype = list.getItem(sel_pt+1).pathSegType;
 				} else {
-					return false;
+					segtype = false;
+				}
+				return {
+					x: pt[0],
+					y: pt[1],
+					type: segtype
 				}
 			}, 
 			linkControlPoints: function(linkPoints) {
@@ -4443,58 +4421,69 @@ function BatchCommand(text) {
 			clonePathNode: function() {
 				var d = getD();
 				
-				var pt = current_path_pt, list = current_path.pathSegList;
-				
-				if(pt+1 >= list.numberOfItems) {
-					pt--;
-				}
-				
-				var next_item = list.getItem(pt+1); 
-				
-				// Get point in between nodes
-				if(next_item.pathSegType % 2 == 0) { // even num, so abs
-					var cur_item = list.getItem(pt);
-					var new_x = (next_item.x + cur_item.x) / 2;
-					var new_y = (next_item.y + cur_item.y) / 2;
-				} else {
-					var new_x = next_item.x/2;
-					var new_y = next_item.y/2;
-				}
-				
-				var seg = current_path.createSVGPathSegLinetoAbs(new_x, new_y);
-				
-				if(support.pathInsertItemBefore) {
-					list.insertItemBefore(seg, pt+1);
-				} else {
-					var segList = current_path.pathSegList;
-					var len = segList.numberOfItems;
-					var arr = [];
-					for(var i=0; i<len; i++) {
-						var cur_seg = segList.getItem(i);
-						arr.push(cur_seg)				
+				var i = selected_pts.length,
+					nums = [];
+				while(i--) {
+					var pt = selected_pts[i], list = current_path.pathSegList;
+					if(pt+1 >= list.numberOfItems) {
+						pt--;
 					}
-					segList.clear();
-					for(var i=0; i<len; i++) {
-						if(i == pt+1) {
-							segList.appendItem(seg);
+					
+					var next_item = list.getItem(pt+1); 
+					
+					// Get point in between nodes
+					if(next_item.pathSegType % 2 == 0) { // even num, so abs
+						var cur_item = list.getItem(pt);
+						var new_x = (next_item.x + cur_item.x) / 2;
+						var new_y = (next_item.y + cur_item.y) / 2;
+					} else {
+						var new_x = next_item.x/2;
+						var new_y = next_item.y/2;
+					}
+					
+					var seg = current_path.createSVGPathSegLinetoAbs(new_x, new_y);
+					
+					if(support.pathInsertItemBefore) {
+						list.insertItemBefore(seg, pt+1);
+					} else {
+						var segList = current_path.pathSegList;
+						var len = segList.numberOfItems;
+						var arr = [];
+						for(var i=0; i<len; i++) {
+							var cur_seg = segList.getItem(i);
+							arr.push(cur_seg)				
 						}
-						segList.appendItem(arr[i]);
+						segList.clear();
+						for(var i=0; i<len; i++) {
+							if(i == pt+1) {
+								segList.appendItem(seg);
+							}
+							segList.appendItem(arr[i]);
+						}
 					}
-				}
-				
-				var abs_x = (getPathPoint(pt)[0] + new_x) * current_zoom;
-				var abs_y = (getPathPoint(pt)[1] + new_y) * current_zoom;
-				
-				var last_num = current_path_pts.length/2;
-				
-				// Add new grip
-				addPointGripToPath(abs_x, abs_y, last_num);
-		
-				// Update path_pts
-				current_path_pts.splice(pt*2 + 2, 0, abs_x, abs_y);
-				
+					
+					var abs_x = (getPathPoint(pt)[0] + new_x) * current_zoom;
+					var abs_y = (getPathPoint(pt)[1] + new_y) * current_zoom;
+					
+					var last_num = current_path_pts.length/2;
+					
+					// Add new grip
+					addPointGripToPath(abs_x, abs_y, last_num);
+			
+					// Update path_pts
+					current_path_pts.splice(pt*2 + 2, 0, abs_x, abs_y);
+					
+					// TODO: This should select the new path points but breaks
+					// when doing several times seleting many nodes
+					nums.push(pt + i);
+					nums.push(pt + i + 1);
+				}	
+
 				resetPointGrips();
-				selectNode(pt+1);
+
+				removeAllNodesFromSelection();
+
+				addNodeToSelection(nums);
 				
 				endChanges(d, "Clone path node(s)");
 
@@ -4502,8 +4491,6 @@ function BatchCommand(text) {
 			},
 			deletePathNode: function() {
 				if(!pathActions.canDeleteNodes) return;
-				var is_closed = pathIsClosed();
-
 				var len = selected_pts.length;
 
 				var d = getD();
@@ -4532,6 +4519,7 @@ function BatchCommand(text) {
 					} else {
 						current_path_pts.splice(pt*2, 2);
 					}
+					removeNodeFromSelection(pt);
 			
 					list.removeItem(pt);
 				}
@@ -4542,7 +4530,7 @@ function BatchCommand(text) {
 					var cp = $(current_path); cp.attr('d',cp.attr('d'));
 				}
 				
-				if(pt == last_pt && !is_closed) {
+				if(pt == last_pt-1) {
 					pt--;
 				}
 				
@@ -4552,63 +4540,67 @@ function BatchCommand(text) {
 			},
 			setPointContainerTransform: setPointContainerTransform,
 			setSegType: function(new_type) {
-				var grip = $('#pathpointgrip_' + current_path_pt);
 				var old_d = getD();
 				
-				var index = grip[0].id.split('_')[1] - 0;
+				var i = selected_pts.length;
+				while(i--) {
+					var sel_pt = selected_pts[i];
 				
-				var last_index = current_path_pts.length/2 - 1;
-				var is_closed = pathIsClosed(); 
-		
-				if(!is_closed && index == last_index) {
-					return; // Last point of unclosed path should do nothing
-				} else if(index >= last_index && is_closed) {
-					index = 0;
-				}
-		
-				var next_index = index+1;
-				var cur_x = getPathPoint(index)[0];
-				var cur_y = getPathPoint(index)[1];
-				var next_x = getPathPoint(next_index)[0];
-				var next_y = getPathPoint(next_index)[1];
-				
-				if(!new_type) { // double-click, so just toggle
-					var text = "Toggle Path Segment Type";
-		
-					// Toggle segment to curve/straight line
-					var old_type = current_path.pathSegList.getItem(index+1).pathSegType;
+					var grip = $('#pathpointgrip_' + sel_pt);
+	
+					var index = grip[0].id.split('_')[1] - 0;
 					
-					new_type = (old_type == 6) ? 4 : 6;
-		
-				} else {
-					new_type -= 0;
-					var text = "Change Path Segment Type";
-				}
-				
-				var points;
-		
-				var bb = current_path.getBBox();
-				
-				switch ( new_type ) {
-				case 6:
-					var diff_x = next_x - cur_x;
-					var diff_y = next_y - cur_y;
-				
-					var ct1_x = cur_x + (diff_y/2);
-					var ct1_y = cur_y - (diff_x/2);
-					var ct2_x = next_x + (diff_y/2);
-					var ct2_y = next_y - (diff_x/2);
+					var last_index = current_path_pts.length/2 - 1;
+			
+					if(!is_closed && index == last_index) {
+						return; // Last point of unclosed path should do nothing
+					} else if(index >= last_index && is_closed) {
+						index = 0;
+					}
+			
+					var next_index = index+1;
+					var cur_x = getPathPoint(index)[0];
+					var cur_y = getPathPoint(index)[1];
+					var next_x = getPathPoint(next_index)[0];
+					var next_y = getPathPoint(next_index)[1];
 					
-					points = [next_x,next_y, ct1_x,ct1_y, ct2_x,ct2_y];
-					break;
-				case 4:
-					points = [next_x,next_y];
-					removeControlPointGrips(index);
-					break;
+					if(!new_type) { // double-click, so just toggle
+						var text = "Toggle Path Segment Type";
+			
+						// Toggle segment to curve/straight line
+						var old_type = current_path.pathSegList.getItem(index+1).pathSegType;
+						
+						new_type = (old_type == 6) ? 4 : 6;
+			
+					} else {
+						new_type -= 0;
+						var text = "Change Path Segment Type";
+					}
+					
+					var points;
+			
+					var bb = current_path.getBBox();
+					
+					switch ( new_type ) {
+					case 6:
+						var diff_x = next_x - cur_x;
+						var diff_y = next_y - cur_y;
+					
+						var ct1_x = cur_x + (diff_y/2);
+						var ct1_y = cur_y - (diff_x/2);
+						var ct2_x = next_x + (diff_y/2);
+						var ct2_y = next_y - (diff_x/2);
+						
+						points = [next_x,next_y, ct1_x,ct1_y, ct2_x,ct2_y];
+						break;
+					case 4:
+						points = [next_x,next_y];
+						removeControlPointGrips(index);
+						break;
+					}
+					
+					replacePathSeg(new_type, next_index, points);
 				}
-				
-				replacePathSeg(new_type, next_index, points);
-				
 				// d attribute needs to be manually updated for Webkit
 				if(isWebkit && current_path) {
 					var fixed_d = pathActions.convertPath(current_path);
@@ -4617,7 +4609,7 @@ function BatchCommand(text) {
 
 				addAllPointGripsToPath(); 
 				// recalculateDimensions(current_path);
-				updateSegLine(true);
+				updateSegLines();
 				recalcRotatedPath();
 				
 				endChanges(old_d, text);
@@ -4631,7 +4623,7 @@ function BatchCommand(text) {
 				current_path_pts[current_path_pt*2 + num] = newValue-0;
 				current_path_pt_drag = current_path_pt;
 				updatePath(current_path_pts[current_path_pt*2], current_path_pts[current_path_pt*2 + 1], old_path_pts);
-				
+				updateSegLines();
 				endChanges(d, "Move path point");
 			},
 			// Convert a path to one with only absolute or relative values
