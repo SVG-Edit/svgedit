@@ -3526,10 +3526,16 @@ function BatchCommand(text) {
 				if(!segLine) continue;
 				
 				if($.inArray(i, selected_pts) != -1) {
+					var list = current_path.pathSegList;
+					if(i+1 >= list.numberOfItems) {
+						segLine.setAttribute('display','none');
+						continue;
+					}
+				
 					// Point is selected, so calculate and display
 					replacePathSeg(2, 0, getPathPoint(i, true), segLine);
 					
-					var seg = current_path.pathSegList.getItem(i+1);
+					var seg = list.getItem(i+1);
 					var points = [seg.x, seg.y];
 					if(seg.x1 != null && seg.x2 != null) {
 						points.splice(2, 0, seg.x1, seg.y1, seg.x2, seg.y2);
@@ -3541,13 +3547,6 @@ function BatchCommand(text) {
 					// Point is not selected, so just hide
 					segLine.setAttribute('display','none');
 				}
-				
-// 				if(current_path_pt+1 >= current_path.pathSegList.numberOfItems) {
-// 					segLine.setAttribute('display','none');
-// 					return;
-// 				}
-
-
 			}
 		}
 
@@ -4530,7 +4529,7 @@ function BatchCommand(text) {
 					var cp = $(current_path); cp.attr('d',cp.attr('d'));
 				}
 				
-				if(pt == last_pt-1) {
+				if(pt == last_pt - (is_closed?1:0)) {
 					pt--;
 				}
 				
