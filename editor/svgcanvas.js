@@ -609,8 +609,8 @@ function BatchCommand(text) {
 		};
 		this.releaseSelector = function(elem) {
 			if (elem == null) return;
-			var N = this.selectors.length;
-			var sel = this.selectorMap[elem.id];
+			var N = this.selectors.length,
+				sel = this.selectorMap[elem.id];
 			for (var i = 0; i < N; ++i) {
 				if (this.selectors[i] && this.selectors[i] == sel) {
 					if (sel.locked == false) {
@@ -2734,19 +2734,13 @@ function BatchCommand(text) {
 						'height': Math.abs(y-start_y)
 					},100);
 	
-					// clear out selection and set it to the new list
-	//				canvas.clearSelection();
-					// FIXME: fix this, need to supply rect to getIntersectionList()
-	//				canvas.addToSelection(getIntersectionList());
-	
-					//*
 					// for each selected:
 					// - if newList contains selected, do nothing
 					// - if newList doesn't contain selected, remove it from selected
 					// - for any newList that was not in selectedElements, add it to selected
-					var elemsToRemove = [], elemsToAdd = [];
-					var newList = getIntersectionList();
-					var len = selectedElements.length;
+					var elemsToRemove = [], elemsToAdd = [],
+						newList = getIntersectionList(),
+						len = selectedElements.length;
 					for (var i = 0; i < len; ++i) {
 						var ind = newList.indexOf(selectedElements[i]);
 						if (ind == -1) {
@@ -2758,22 +2752,22 @@ function BatchCommand(text) {
 					}
 					
 					len = newList.length;
-					for (var i = 0; i < len; ++i) { if (newList[i]) elemsToAdd.push(newList[i]); }
+					for (i = 0; i < len; ++i) { if (newList[i]) elemsToAdd.push(newList[i]); }
 					
 					if (elemsToRemove.length > 0) 
 						canvas.removeFromSelection(elemsToRemove);
 					
 					if (elemsToAdd.length > 0) 
 						canvas.addToSelection(elemsToAdd);
-					//*/
 					break;
 				case "resize":
 					// we track the resize bounding box and translate/scale the selected element
 					// while the mouse is down, when mouse goes up, we use this to recalculate
 					// the shape's coordinates
-					var tlist = canvas.getTransformList(selected);
-					var hasMatrix = hasMatrixTransform(tlist);
-					var box=hasMatrix?init_bbox:canvas.getBBox(selected), left=box.x, top=box.y, width=box.width,
+					var tlist = canvas.getTransformList(selected),
+						hasMatrix = hasMatrixTransform(tlist),
+						box=hasMatrix?init_bbox:canvas.getBBox(selected), 
+						left=box.x, top=box.y, width=box.width,
 						height=box.height, dx=(x-start_x), dy=(y-start_y);
 									
 					// if rotated, adjust the dx,dy values
@@ -2794,9 +2788,9 @@ function BatchCommand(text) {
 						dx = 0;
 					}				
 					
-					var ts = null;
-					var tx = 0, ty = 0;
-					var sy = height ? (height+dy)/height : 1, 
+					var ts = null,
+						tx = 0, ty = 0,
+						sy = height ? (height+dy)/height : 1, 
 						sx = width ? (width+dx)/width : 1;
 					// if we are dragging on the north side, then adjust the scale factor and ty
 					if(current_resize_mode.indexOf("n") != -1) {
@@ -2965,20 +2959,19 @@ function BatchCommand(text) {
 		}; // mouseMove()
 		
 		var mouseUp = function(evt)
-		{	
+		{
 			var tempJustSelected = justSelected;
 			justSelected = null;
 			if (!started) return;
-	
-			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
-			var mouse_x = pt.x * current_zoom;
-			var mouse_y = pt.y * current_zoom;
-			var x = mouse_x / current_zoom;
-			var y = mouse_y / current_zoom;
+			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
+				mouse_x = pt.x * current_zoom,
+				mouse_y = pt.y * current_zoom,
+				x = mouse_x / current_zoom,
+				y = mouse_y / current_zoom,
+				element = getElem(getId()),
+				keep = false;
 					
 			started = false;
-			var element = getElem(getId());
-			var keep = false;
 			switch (current_mode)
 			{
 				// intentionally fall-through to select here
@@ -3007,8 +3000,8 @@ function BatchCommand(text) {
 								cur_text.font_size = selected.getAttribute("font-size");
 								cur_text.font_family = selected.getAttribute("font-family");
 							}
-	
 							selectorManager.requestSelector(selected).showGrips(true);
+							call("selected", [selected]);
 						}
 						// always recalculate dimensions to strip off stray identity transforms
 						recalculateAllSelectedDimensions();
