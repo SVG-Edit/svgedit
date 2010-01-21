@@ -231,15 +231,15 @@ function svg_edit_setup() {
 	};
 	
 	var zoomChanged = function(window, bbox, autoCenter) {
-		var scrbar = 15;
-		var res = svgCanvas.getResolution();
-		var w_area = workarea;
-		var canvas_pos = $('#svgcanvas').position();
+		var scrbar = 15,
+			res = svgCanvas.getResolution(),
+			w_area = workarea,
+			canvas_pos = $('#svgcanvas').position();
 		w_area.css('cursor','auto');
 		var z_info = svgCanvas.setBBoxZoom(bbox, w_area.width()-scrbar, w_area.height()-scrbar);
 		if(!z_info) return;
-		var zoomlevel = z_info.zoom;
-		var bb = z_info.bbox;
+		var zoomlevel = z_info.zoom,
+			bb = z_info.bbox;
 		$('#zoom').val(Math.round(zoomlevel*100));
 		
 		if(autoCenter) {
@@ -273,7 +273,7 @@ function svg_edit_setup() {
 			}
 
 			// update fill color and opacity
-			var fillColor = selectedElement.getAttribute("fill")||"none";
+			var fillColor = selectedElement.getAttribute("fill")||"black";
 			// prevent undo on these canvas changes
 			svgCanvas.setFillColor(fillColor, true);
 			svgCanvas.setFillOpacity(fillOpacity, true);
