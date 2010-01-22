@@ -103,7 +103,7 @@
 		
 		var t = document.getElementById("the-text");
 		
-		equals(true, (t && t.getAttribute("d") == "text"), "Did not import <text> element");
+		equals(true, (t && t.nodeName == "text"), "Did not import <text> element");
 		equals(null, t.getAttribute("d"), "Imported a <text> with a d attribute");
 	});
 	
