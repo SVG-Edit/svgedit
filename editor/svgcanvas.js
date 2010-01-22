@@ -1075,7 +1075,7 @@ function BatchCommand(text) {
 				if (allowedAttrs.indexOf(attrName) == -1) {
 					node.removeAttribute(attrName);
 				}
-				if (attrName == 'd') {
+				if (node.nodeName == 'path' && attrName == 'd') {
 					// Convert to absolute
 					node.setAttribute('d',pathActions.convertPath(node));
 				}
