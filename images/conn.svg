@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+	<g id="mode_connect">
+		<svg viewBox="0 0 131 156" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+		  <line stroke-dasharray="5,5" transform="rotate(-83.0765, 60.5, 79.0001)" fill="none" stroke-width="5" stroke="#000000" id="svg_1" y2="121.004358" x2="14.899046" y1="36.995687" x1="106.101014"/>
+		  <circle stroke-width="5" stroke="#000000" fill="#800000" id="svg_3" r="25" cy="27.5" cx="27.5"/>
+		  <rect stroke-width="5" stroke="#000000" fill="#008000" id="svg_6" height="39" width="74" y="114.5" x="54.5"/>
+		</svg>
+	</g>
+	<g id="svg_eof"/>
+</svg>
