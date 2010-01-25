@@ -202,9 +202,12 @@ function svg_edit_setup() {
 
 		// Deal with pathedit mode
 		togglePathEditMode(is_node, elems);
-
-
-		updateContextPanel(); 
+		updateContextPanel();
+		svgCanvas.runExtensions("selectedChanged", {
+			elems: elems,
+			selectedElement: selectedElement,
+			multiselected: multiselected
+		});
 	};
 
 	// called when any element has changed
@@ -258,6 +261,83 @@ function svg_edit_setup() {
 		}
 		zoomDone();
 	}
+	
+	var extAdded = function(window, ext) {
+		if("buttons" in ext) {
+			var fallback_obj = {},
+				placement_obj = {},
+				svgicons = ext.svgicons;
+		
+			// Add buttons given by extension
+			$.each(ext.buttons, function(i, btn) {
+				var icon;
+				var id = btn.id;
+				var num = i;
+				
+				// Give button a unique ID
+				while($('#'+id).length) {
+					id = btn.id + '_' + (++num);
+				}
+
+				if(!svgicons) {
+					icon = $('<img src="' + btn.icon + '">');
+				} else {
+					fallback_obj[id] = btn.iocn;
+					placement_obj['#' + id] = btn.id;
+				}
+				
+				var cls, parent;
+				
+				// Set button up according to its type
+				switch ( btn.type ) {
+				case 'mode':
+					cls = 'tool_button';
+					parent = "#tools_left";
+					break;
+				}
+				
+				var button = $('<div/>')
+					.attr("id", id)
+					.addClass(cls)
+					.appendTo(parent);
+				if(!svgicons) {
+					button.append(icon);
+				}
+				
+				// Add given events to button
+				$.each(btn.events, function(name, func) {
+					button.bind(name, function() {
+						if(name == "click" && btn.type == 'mode') {
+							if (toolButtonClick('#' + id)) {
+								func();
+							}
+						} else {
+							func();
+						}
+					});
+				});
+					
+			});
+			
+			$.svgIcons(svgicons, {
+				w:24, h:24,
+				id_match: false,
+				no_img: true,
+				fallback: fallback_obj,
+				placement: placement_obj,
+				callback: function() {
+					// Bad hack to make the icon match the current size
+					// TODO: Write better hack!
+					var old = curPrefs.iconsize;
+					if(curPrefs.iconsize != 'm') {
+					 	setIconSize('m');
+					 	setIconSize(old);
+					}
+				}
+		
+			});
+		}
+	};
 
 	// updates the toolbar (colors, opacity, etc) based on the selected element
 	var updateToolbar = function() {
@@ -507,6 +587,7 @@ function svg_edit_setup() {
 	svgCanvas.bind("changed", elementChanged);
 	svgCanvas.bind("saved", saveHandler);
 	svgCanvas.bind("zoomed", zoomChanged);
+	svgCanvas.bind("extension_added", extAdded);
 
 	var str = '<div class="palette_item" data-rgb="none"></div>'
 	$.each(palette, function(i,item){
