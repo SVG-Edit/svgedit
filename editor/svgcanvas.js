@@ -959,7 +959,34 @@ function BatchCommand(text) {
 		events = {},
 		undoStackPointer = 0,
 		undoStack = [],
-		curBBoxes = [];
+		curBBoxes = [],
+		extensions = {};
+	
+	var runExtensions = this.runExtensions = function(action, vars) {
+		var result = false;
+		$.each(extensions, function(name, opts) {
+			if(action in opts) {
+				result = opts[action](vars);
+			}
+		});
+		return result;
+	}
+	
+	this.addExtension = function(name, ext_func) {
+		if(!(name in extensions)) {
+			// Provide constants here (or should these be accessed through getSomething()?
+			var ext = ext_func({
+				content: svgcontent,
+				getNextId: getNextId,
+				addSvgElementFromJson: addSvgElementFromJson,
+				selectorManager: selectorManager
+			});
+			extensions[name] = ext;
+			call("extension_added", ext);
+		} else {
+			console.log('Cannot add extension "' + name + '", an extension by that name already exists"');
+		}
+	};
 
 	// This method rounds the incoming value to the nearest value based on the current_zoom
 	var round = function(val){
@@ -2131,7 +2158,6 @@ function BatchCommand(text) {
 		
 		// Make sure first elements are not null
 		while(selectedElements[0] == null) selectedElements.shift(0);
-		
 	};
 
 	// TODO: could use slice here to make this faster?
@@ -2659,6 +2685,17 @@ function BatchCommand(text) {
 					console.log("Unknown mode in mousedown: " + current_mode);
 					break;
 			}
+			
+			var ext_result = runExtensions("mouseDown", {
+				event: evt,
+				start_x: start_x,
+				start_y: start_y,
+				selectedElements: selectedElements
+			});
+			
+			if(ext_result) {
+				started = ext_result.started;
+			}
 		};
 	
 		// in this function we do not record any state changes yet (but we do update
@@ -2952,6 +2989,14 @@ function BatchCommand(text) {
 				default:
 					break;
 			}
+			
+			runExtensions("mouseMove", {
+				event: evt,
+				mouse_x: mouse_x,
+				mouse_y: mouse_y,
+				selected: selected
+			});
+
 		}; // mouseMove()
 		
 		var mouseUp = function(evt)
@@ -3161,6 +3206,19 @@ function BatchCommand(text) {
 					console.log("Unknown mode in mouseup: " + current_mode);
 					break;
 			}
+			
+			var ext_result = runExtensions("mouseUp", {
+				event: evt,
+				mouse_x: mouse_x,
+				mouse_y: mouse_y
+			});
+			
+			if(ext_result) {
+				keep = ext_result.keep;
+				element = ext_result.element;
+				started = ext_result.started;
+			}
+			
 			if (!keep && element != null) {
 				element.parentNode.removeChild(element);
 				element = null;
@@ -3201,7 +3259,7 @@ function BatchCommand(text) {
 				addCommandToHistory(new InsertElementCommand(element));
 				call("changed",[element]);
 			}
-	
+			
 			start_transform = null;
 		};
 
