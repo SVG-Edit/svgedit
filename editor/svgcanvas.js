@@ -977,9 +977,30 @@ function BatchCommand(text) {
 			// Provide constants here (or should these be accessed through getSomething()?
 			var ext = ext_func({
 				content: svgcontent,
+				root: svgroot,
 				getNextId: getNextId,
+				getElem: getElem,
 				addSvgElementFromJson: addSvgElementFromJson,
-				selectorManager: selectorManager
+				selectorManager: selectorManager,
+				findDefs: findDefs,
+				// Probably only needed for extensions, so no need to make public?
+				// Also, should we prevent extensions from allowing <script> elements to be added?
+				extendWhitelist: function(new_data) {
+					$.each(new_data, function(elname, attrs) {
+						// add element
+						if(!(elname in svgWhiteList)) {
+							svgWhiteList[elname] = attrs;
+						} else {
+							$.each(attrs, function(i, attr) {
+								// add attributes
+								if($.inArray(attr, svgWhiteList[elname]) == -1) {
+									svgWhiteList[elname].push(attr);
+								}
+							});
+						}
+					});
+				}
+
 			});
 			extensions[name] = ext;
 			call("extension_added", ext);
