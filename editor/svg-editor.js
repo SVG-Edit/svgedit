@@ -298,6 +298,7 @@ function svg_edit_setup() {
 				
 				var button = $('<div/>')
 					.attr("id", id)
+					.attr("title", btn.title)
 					.addClass(cls)
 					.appendTo(parent);
 				if(!svgicons) {
@@ -1443,17 +1444,18 @@ function svg_edit_setup() {
 			"#tools_top > div, #tools_top": {
 				'line-height': {s: '17px', l: '34px', xl: '50px'}
 			}, 
-			"div.toolset": {
-				'height': {s: '25px', l: '43px', xl: '64px'}
-			}, 
+// 			"div.toolset, #tools_top label": {
+// 				'height': {s: '25px', l: '43px', xl: '64px'}
+// 			}, 
 			".dropdown button": {
 				'height': {s: '18px', l: '34px', xl: '40px'},
 				'line-height': {s: '18px', l: '34px', xl: '40px'},
 				'margin-top': {s: '3px'}
 			},
-			"#tools_top label, #tools_bottom label": {
+			"div.toolset, #tools_top label, #tools_bottom label": {
 				'font-size': {s: '1em', l: '1.5em', xl: '2em'},
-				'margin-top': {s: '1px', l: '3px', xl: '5px'}
+				'margin-top': {s: '1px', l: '3px', xl: '5px'},
+				'height': {s: '25px', l: '43px', xl: '64px'}
 			}, 
 			"#tool_bold, #tool_italic": {
 				'font-size': {s: '1.5em', l: '3em', xl: '4.5em'}
@@ -2322,7 +2324,8 @@ function svg_edit_setup() {
 				svgCanvas.renameCurrentLayer(uiStrings.layer + ' 1');
 				populateLayers();				
 			}
-
+			
+			svgCanvas.runExtensions("langChanged", lang);
 		}
 	};
 	
