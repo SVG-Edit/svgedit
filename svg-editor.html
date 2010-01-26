@@ -147,9 +147,11 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			<div class="push_button" id="tool_reorient" title="Reorient path"></div>
 			<div class="tool_sep"></div>
 		</div>
-		<div class="toolset">
-			<label id="group_opacityLabel" class="selected_tool" for="group_opacity">opac:</label>
-			<input id="group_opacity" class="selected_tool" title="Change selected item opacity" size="3" value="100" type="text"/>
+		<div class="toolset" id="tool_opacity">
+			<label>
+				<span id="group_opacityLabel">opac:</span>
+				<input id="group_opacity" title="Change selected item opacity" size="3" value="100" type="text"/>
+			</label>
 			<div id="opacity_dropdown" class="dropdown">
 				<button></button>
 				<ul>
@@ -163,15 +165,19 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 				</ul>
 			</div>
 		</div>
-		<div class="toolset">
-			<label id="angleLabel" class="selected_tool">angle:</label>
-			<input id="angle" class="selected_tool" title="Change rotation angle" size="2" value="0" type="text"/>
-		</div>
+
+		<label id="tool_angle">
+			<span id="angleLabel">angle:</span>
+			<input id="angle" title="Change rotation angle" size="2" value="0" type="text"/>
+		</label>
+		
 		<div id="xy_panel" class="toolset">
-			<label class="selected_tool">x:</label>
-			<input id="selected_x" class="selected_tool attr_changer" title="Change X coordinate" size="3" data-attr="x"/>
-			<label class="selected_tool">y:</label>
-			<input id="selected_y" class="selected_tool attr_changer" title="Change Y coordinate" size="3" data-attr="y"/>
+			<label>
+				x: <input id="selected_x" class="attr_changer" title="Change X coordinate" size="3" data-attr="x"/>
+			</label>
+			<label>
+				y: <input id="selected_y" class="attr_changer" title="Change Y coordinate" size="3" data-attr="y"/>
+			</label>
 		</div>
 	</div>
 
@@ -188,13 +194,15 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 		<div class="push_button" id="tool_aligntop" title="Align Top"></div>
 		<div class="push_button" id="tool_alignmiddle" title="Align Middle"></div>
 		<div class="push_button" id="tool_alignbottom" title="Align Bottom"></div>
-		<span id="relativeToLabel" class="selected_tool">relative to:</span>
-		<select id="align_relative_to" class="selected_tool" title="Align relative to ...">
-		<option id="selected_objects" value="selected">selected objects</option>
-		<option id="largest_object" value="largest">largest object</option>
-		<option id="smallest_object" value="smallest">smallest object</option>
-		<option id="page" value="page">page</option>
-		</select>
+		<label id="tool_align_relative"> 
+			<span id="relativeToLabel">relative to:</span>
+			<select id="align_relative_to" title="Align relative to ...">
+			<option id="selected_objects" value="selected">selected objects</option>
+			<option id="largest_object" value="largest">largest object</option>
+			<option id="smallest_object" value="smallest">smallest object</option>
+			<option id="page" value="page">page</option>
+			</select>
+		</label>
 		<div class="tool_sep"></div>
 
 	</div>
@@ -206,72 +214,89 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 
 	<div id="rect_panel">
 		<div class="toolset">
-			<label id="rwidthLabel" class="rect_tool">width:</label>
-			<input id="rect_width" class="rect_tool attr_changer" title="Change rectangle width" size="3" data-attr="width"/>
-			<label id="rheightLabel" class="rect_tool">height:</label>
-			<input id="rect_height" class="rect_tool attr_changer" title="Change rectangle height" size="3" data-attr="height"/>
+			<label>
+				<span id="rwidthLabel">width:</span>
+				<input id="rect_width" class="attr_changer" title="Change rectangle width" size="3" data-attr="width"/>
+			</label>
+			<label>
+				<span id="rheightLabel">height:</span>
+				<input id="rect_height" class="attr_changer" title="Change rectangle height" size="3" data-attr="height"/>
+			</label>
 		</div>
-		<div class="toolset">
-			<label id="cornerRadiusLabel" class="rect_tool">Corner Radius:</label>
-			<input id="rect_rx" size="3" value="0" class="rect_tool" type="text" title="Change Rectangle Corner Radius" data-attr="Corner Radius"/>
-		</div>	
+		<label id="cornerRadiusLabel">Corner Radius:
+			<input id="rect_rx" size="3" value="0" type="text" title="Change Rectangle Corner Radius" data-attr="Corner Radius"/>
+		</label>
 	</div>
 
 	<div id="image_panel">
 	<div class="toolset">
-		<label id="iwidthLabel" class="image_tool">width:</label>
-		<input id="image_width" class="image_tool attr_changer" title="Change image width" size="3" data-attr="width"/>
-		<label id="iheightLabel" class="image_tool">height:</label>
-		<input id="image_height" class="image_tool attr_changer" title="Change image height" size="3" data-attr="height"/>
+		<label id="iwidthLabel"><span id="iwidthLabel">width:</span>
+		<input id="image_width" class="attr_changer" title="Change image width" size="3" data-attr="width"/>
+		</label>
+		<label><span id="iheightLabel">height:</span>
+		<input id="image_height" class="attr_changer" title="Change image height" size="3" data-attr="height"/>
+		</label>
 	</div>
 	<div class="toolset">
-		<label class="image_tool">url:</label>
-		<input id="image_url" class="image_tool" type="text" title="Change URL" size="35"/>
-		<button id="change_image_url" style="display:none;">Change Image</button>
-		<div id="url_notice" title="NOTE: This image cannot be embedded. It will depend on this path to be displayed"></div>
+		<label id="tool_image_url">url:
+			<input id="image_url" type="text" title="Change URL" size="35"/>
+			<button id="change_image_url" style="display:none;">Change Image</button>
+			<div id="url_notice" title="NOTE: This image cannot be embedded. It will depend on this path to be displayed"></div>
+		</label>
 	</div>
   </div>
 
 	<div id="circle_panel">
 		<div class="toolset">
-			<label class="circle_tool">cx:</label>
-			<input id="circle_cx" class="circle_tool attr_changer" title="Change circle's cx coordinate" size="3" data-attr="cx"/>
-			<label class="circle_tool">cy:</label>
-			<input id="circle_cy" class="circle_tool attr_changer" title="Change circle's cy coordinate" size="3" data-attr="cy"/>
+			<label id="tool_ellipse_cx">cx:
+			<input id="circle_cx" class="attr_changer" title="Change circle's cx coordinate" size="3" data-attr="cx"/>
+			</label>
+			<label id="tool_ellipse_cy">cy:
+			<input id="circle_cy" class="attr_changer" title="Change circle's cy coordinate" size="3" data-attr="cy"/>
+			</label>
 		</div>
 		<div class="toolset">
-			<label class="circle_tool">r:</label>
-			<input id="circle_r" class="circle_tool attr_changer" title="Change circle's radius" size="3" data-attr="r"/>
+			<label id="tool_ellipse_r">r:
+			<input id="circle_r" class="attr_changer" title="Change circle's radius" size="3" data-attr="r"/>
+			</label>
 		</div>
 	</div>
 
 	<div id="ellipse_panel">
 		<div class="toolset">
-			<label class="ellipse_tool">cx:</label>
-			<input id="ellipse_cx" class="ellipse_tool attr_changer" title="Change ellipse's cx coordinate" size="3" data-attr="cx"/>
-			<label class="ellipse_tool">cy:</label>
-			<input id="ellipse_cy" class="ellipse_tool attr_changer" title="Change ellipse's cy coordinate" size="3" data-attr="cy"/>
-			</div>
+			<label id="tool_ellipse_cx">cx:
+			<input id="ellipse_cx" class="attr_changer" title="Change ellipse's cx coordinate" size="3" data-attr="cx"/>
+			</label>
+			<label id="tool_ellipse_cy">cy:
+			<input id="ellipse_cy" class="attr_changer" title="Change ellipse's cy coordinate" size="3" data-attr="cy"/>
+			</label>
+		</div>
 		<div class="toolset">
-			<label class="ellipse_tool">rx:</label>
-			<input id="ellipse_rx" class="ellipse_tool attr_changer" title="Change ellipse's x radius" size="3" data-attr="rx"/>
-			<label class="ellipse_tool">ry:</label>
-			<input id="ellipse_ry" class="ellipse_tool attr_changer" title="Change ellipse's y radius" size="3" data-attr="ry"/>
+			<label id="tool_ellipse_rx">rx:
+			<input id="ellipse_rx" class="attr_changer" title="Change ellipse's x radius" size="3" data-attr="rx"/>
+			</label>
+			<label id="tool_ellipse_ry">ry:
+			<input id="ellipse_ry" class="attr_changer" title="Change ellipse's y radius" size="3" data-attr="ry"/>
+			</label>
 		</div>
 	</div>
 
 	<div id="line_panel">
 		<div class="toolset">
-			<label class="line_tool">x1:</label>
-			<input id="line_x1" class="line_tool attr_changer" title="Change line's starting x coordinate" size="3" data-attr="x1"/>
-			<label class="line_tool">y1:</label>
-			<input id="line_y1" class="line_tool attr_changer" title="Change line's starting y coordinate" size="3" data-attr="y1"/>
+			<label id="tool_line_x1">x1:
+			<input id="line_x1" class="attr_changer" title="Change line's starting x coordinate" size="3" data-attr="x1"/>
+			</label>
+			<label id="tool_line_y1">y1:
+			<input id="line_y1" class="attr_changer" title="Change line's starting y coordinate" size="3" data-attr="y1"/>
+			</label>
 		</div>
 		<div class="toolset">
-			<label class="line_tool">x2:</label>
-			<input id="line_x2" class="line_tool attr_changer" title="Change line's ending x coordinate" size="3" data-attr="x2"/>
-			<label class="line_tool">y2:</label>
-			<input id="line_y2" class="line_tool attr_changer" title="Change line's ending y coordinate" size="3" data-attr="y2"/>
+			<label id="tool_line_x2">x2:
+			<input id="line_x2" class="attr_changer" title="Change line's ending x coordinate" size="3" data-attr="x2"/>
+			</label>
+			<label id="tool_line_y2">y2:
+			<input id="line_y2" class="attr_changer" title="Change line's ending y coordinate" size="3" data-attr="y2"/>
+			</label>
 		</div>
 	</div>
 
@@ -281,8 +306,8 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			<div class="tool_button" id="tool_italic" title="Italic Text [I]"><span></span>i</div>
 		</div>
 		
-		<div class="toolset">
-			<input id="font_family" class="text_tool" type="text" title="Change Font Family" size="12"/>
+		<div class="toolset" id="tool_font_family">
+			<input id="font_family" type="text" title="Change Font Family" size="12"/>
 			<div id="font_family_dropdown" class="dropdown">
 				<button></button>
 				<ul>
@@ -295,22 +320,24 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			</div>
 		</div>
 
-		<div class="toolset">
-			<label id="font_sizeLabel" class="text_tool" for="font_size">size:</label>
-			<input id="font_size" class="text_tool" title="Change Font Size" size="3" value="0" type="text"/>
-		</div>
-		<input id="text" class="text_tool" type="text" title="Change text contents" size="35"/>
+		<label id="tool_font_size">
+			<span id="font_sizeLabel">size:</span>
+			<input id="font_size" title="Change Font Size" size="3" value="0" type="text"/>
+		</label>
+		<input id="text" type="text" title="Change text contents" size="35"/>
 	</div>
 	
 	<div id="path_node_panel">
 		<div class="tool_sep"></div>
 		<div class="tool_button" id="tool_node_link" title="Link Control Points"></div>
 		<div class="tool_sep"></div>
-		<label class="path_node_tool">x:</label>
-		<input id="path_node_x" class="path_node_tool attr_changer" title="Change node's x coordinate" size="3" data-attr="x"/>
-		<label class="path_node_tool">y:</label>
-		<input id="path_node_y" class="path_node_tool attr_changer" title="Change node's y coordinate" size="3" data-attr="y"/>
-		<select id="seg_type" class="path_node_tool" title="Change Segment type">
+		<label id="tool_node_x">x:
+			<input id="path_node_x" class="attr_changer" title="Change node's x coordinate" size="3" data-attr="x"/>
+		</label>
+		<label id="tool_node_y">y:</label>
+			<input id="path_node_y" class="attr_changer" title="Change node's y coordinate" size="3" data-attr="y"/>
+		</label>
+		<select id="seg_type" title="Change Segment type">
 			<option id="straight_segments" selected="selected" value="4">Straight</option>
 			<option id="curve_segments" value="6">Curve</option>
 		</select>
@@ -339,7 +366,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
     <!-- Zoom buttons -->
 	<div id="zoom_panel" class="magic_field">
 		<span id="zoomLabel" class="zoom_tool label">zoom:</span>
-		<input id="zoom" class="zoom_tool" title="Change zoom level" size="3" value="100" type="text" />
+		<input id="zoom" title="Change zoom level" size="3" value="100" type="text" />
 		<div id="zoom_dropdown" class="dropdown">
 			<button></button>
 			<ul>

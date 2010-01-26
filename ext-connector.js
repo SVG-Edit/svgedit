@@ -1,11 +1,13 @@
 $(function() {
 	svgCanvas.addExtension("Connector", function(vars) {
 		
-		var svgcontent = vars.content;
-		var getNextId = vars.getNextId;
-		var addElem = vars.addSvgElementFromJson;
-		var selManager = vars.selectorManager;
-		var started = false,
+		var svgcontent = vars.content,
+			svgroot = vars.root,
+			getNextId = vars.getNextId,
+			getElem = vars.getElem,
+			addElem = vars.addSvgElementFromJson,
+			selManager = vars.selectorManager,
+			started = false,
 			start_x,
 			start_y,
 			cur_line,
@@ -15,13 +17,124 @@ $(function() {
 			conn_class = "se_connect",
 			connect_str = "-SE_CONNECT-",
 			selElems;
+			
+		var lang_list = {
+			"en":[
+				{"id": "mode_connect", "title": "Connect two objects" },
+				{"id": "conn_arrow_none", "textContent": "No arrow" },
+				{"id": "conn_arrow_arrow", "textContent": "Arrow" }
+			],
+			"fr":[
+				{"id": "mode_connect", "title": "Connecter deux objets"},
+				{"id": "conn_arrow_none", "textContent": "Sans flèche" },
+				{"id": "conn_arrow_arrow", "textContent": "Flèche" }
+			]
+		};
+		
+		function showPanel(on) {
+			var conn_rules = $('#connector_rules');
+			if(!conn_rules.length) {
+				conn_rules = $('<style id="connector_rules"><\/style>').appendTo('head');
+			} 
+			conn_rules.text(!on?"":"#tool_clone, #tool_topath, #tool_angle, #xy_panel { display: none !important; }");
+			$('#connector_panel').toggle(on);
+			
+			if(on) {
+				var has_arrow = selElems[0].getAttribute("marker-mid");
+				$("#connector_arrow").val(has_arrow?"arrow":"none");
+			}
+		}
+		
+		function setPoint(elem, pos, x, y, setMid) {
+			var pts = elem.points;
+			var pt = svgroot.createSVGPoint();
+			pt.x = x;
+			pt.y = y;
+			if(pos === 'end') pos = pts.numberOfItems-1;
+			// TODO: Test for this on init, then use alt only if needed
+			try {
+				pts.replaceItem(pt, pos);
+			} catch(err) {
+				// Should only occur in FF which formats points attr as "n,n n,n", so just split
+				var pt_arr = elem.getAttribute("points").split(" ");
+				for(var i=0; i< pt_arr.length; i++) {
+					if(i == pos) {
+						pt_arr[i] = x + ',' + y;
+					}
+				}
+				elem.setAttribute("points",pt_arr.join(" ")); 
+			}
+			
+			if(setMid) {
+				// Add center point
+				var pt_start = pts.getItem(0);
+				var pt_end = pts.getItem(pts.numberOfItems-1);
+				setPoint(elem, 1, (pt_end.x + pt_start.x)/2, (pt_end.y + pt_start.y)/2);
+			}
+		}
+		
+		function addArrow() {
+			var defs = vars.findDefs();
+			var m_id = "se_connector_arrow";
+			var marker = getElem(m_id);
+			
+			if(!marker) {
+				marker = addElem({
+					"element": "marker",
+					"attr": {
+						"viewBox": "0 0 10 10",
+						"id": m_id,
+						"refX": 5,
+						"refY": 5,
+						"markerUnits": "strokeWidth",
+						"markerWidth": 16,
+						"markerHeight": 14,
+						"orient": "auto"
+					}
+				});
+				var arrow = addElem({
+					"element": "path",
+					"attr": {
+						"d": "M0,0 L10,5 L0,10 z",
+						"fill": "#000"
+					}
+				});
+				
+				marker.appendChild(arrow);
+				defs.appendChild(marker);
+			}
+			
+			selElems[0].setAttribute("marker-mid", "url(#" + m_id + ")");
+		}
+
+		function remArrow() {
+			selElems[0].removeAttribute("marker-mid");
+		}
 		
 		// Init code
-// 		(function() {
-// 
-// 
-// 		}());
-		
+		(function() {
+			var conn_tools = $('<div id="connector_panel">\
+			<label><select id="connector_arrow">\
+			<option id="conn_arrow_none" value="none">No arrow</option>\
+			<option id="conn_arrow_arrow" value="arrow">Arrow</option>\
+			</select></label></div>"').hide().appendTo("#tools_top");
+			
+			$('#connector_arrow').change(function() {
+				switch ( this.value ) {
+					case "arrow":
+						addArrow();
+						break;
+					case "none":
+						remArrow();
+						break;
+				}
+			});
+
+			vars.extendWhitelist({
+				"marker": ["viewBox", "id", "refX", "refY", "markerUnits", "markerWidth", "markerHeight", "orient"],
+				"polyline": ["class", "marker-mid"]
+			});
+		}());
 		
 		return {
 			name: "Connector",
@@ -30,12 +143,18 @@ $(function() {
 				id: "mode_connect",
 				type: "mode",
 				icon: "images/cut.png",
+				title: "Connect two objects",
 				events: {
 					'click': function() {
 						svgCanvas.setMode("connector");
 					}
 				}
 			}],
+			addLangData: function(lang) {
+				return {
+					data: lang_list[lang]
+				};
+			},
 			mouseDown: function(opts) {
 				var e = opts.event;
 				
@@ -58,13 +177,9 @@ $(function() {
 						
 						started = true;
 						cur_line = addElem({
-							"element": "line",
+							"element": "polyline",
 							"attr": {
-								"x1": x,
-								"y1": y,
-								"x2": start_x,
-								"y2": start_y,
-								"id": getNextId(),
+								"points": (x+','+y+' '+x+','+y+' '+start_x+','+start_y),
 								"stroke": '#000',
 								"stroke-width": 1,
 								"fill": "none",
@@ -103,7 +218,6 @@ $(function() {
 								var bb = svgCanvas.getStrokedBBox([elem]);
 								var x = bb.x + bb.width/2;
 								var y = bb.y + bb.height/2;
-								
 								connections.push({
 									elem: elem,
 									connector: this,
@@ -128,8 +242,8 @@ $(function() {
 				var mode = svgCanvas.getMode();
 				
 				if(mode == "connector" && started) {
-					cur_line.setAttributeNS(null, "x2", x);
-					cur_line.setAttributeNS(null, "y2", y);
+					// Set middle point for marker
+					setPoint(cur_line, 'end', x, y, true);
 				} else if(mode == "select") {
 					var slen = selElems.length;
 					
@@ -141,18 +255,16 @@ $(function() {
 							svgCanvas.getTransformList(elem).clear();
 						}
 					}
-					
 					if(connections.length) {
 						// Update line with element
 						var i = connections.length;
-						
 						while(i--) {
 							var conn = connections[i];
 							var line = conn.connector;
 							var elem = conn.elem;
-							var n = conn.is_start ? 1 : 2;
-							line.setAttributeNS(null, "x"+n, conn.start_x + diff_x);
-							line.setAttributeNS(null, "y"+n, conn.start_y + diff_y);
+							var pt_x = conn.start_x + diff_x;
+							var pt_y = conn.start_y + diff_y;
+							setPoint(line, conn.is_start?0:'end', pt_x, pt_y, true);
 						}
 					}
 				} 
@@ -200,10 +312,8 @@ $(function() {
 						var bb = svgCanvas.getStrokedBBox([end_elem]);
 						var x = bb.x + bb.width/2;
 						var y = bb.y + bb.height/2;
-						cur_line.setAttributeNS(null, "x2", x);
-						cur_line.setAttributeNS(null, "y2", y);
+						setPoint(cur_line, 'end', x, y, true);
 						cur_line.id = line_id;
-						console.log('cur_line',cur_line.id);
 						cur_line.setAttribute("class", conn_class);
 						svgCanvas.addToSelection([cur_line]);
 						svgCanvas.moveToBottomSelectedElement();
@@ -224,8 +334,6 @@ $(function() {
 				
 				var i = selElems.length;
 				
-// 				var to_hide = $('#tool_clone, #tool_topath, div.toolset:has(#angle), #line_panel');
-				
 				while(i--) {
 					var elem = selElems[i];
 					if(elem && elem.getAttribute('class') == conn_class) {
@@ -233,9 +341,13 @@ $(function() {
 						
 						if(opts.selectedElement && !opts.multiselected) {
 							// TODO: Set up context tools and hide most regular line tools
-
+							showPanel(true);
+						} else {
+							showPanel(false);
 						}
-					} 
+					} else {
+						showPanel(false);
+					}
 				}
 			}
 		};

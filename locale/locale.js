@@ -37,6 +37,10 @@ var put_locale = function(svgCanvas, given_param){
 	
 	var processFile = function(data){
 		var LangData = eval(data), js_strings;
+		var more = svgCanvas.runExtensions("addLangData", lang_param);
+		if(more) {
+			LangData = $.merge(LangData, more.data);
+		}
 		$.each(LangData, function(i, data) {
 			if(data.id) {
 				var elem = $('#'+data.id)[0];
