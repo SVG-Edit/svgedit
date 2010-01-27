@@ -43,7 +43,7 @@ var put_locale = function(svgCanvas, given_param){
 		}
 		$.each(LangData, function(i, data) {
 			if(data.id) {
-				var elem = $('#'+data.id)[0];
+				var elem = $('#svg_editor #'+data.id)[0];
 				if(elem) {
 					if(data.title) 
 						elem.title = data.title;
