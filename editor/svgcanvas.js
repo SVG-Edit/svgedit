@@ -34,25 +34,27 @@ var isOpera = !!window.opera,
 // TODO: add <symbol> to this
 // TODO: add <tspan> to this
 	svgWhiteList = {
-	"circle": ["cx", "cy", "fill", "fill-opacity", "fill-rule", "id", "opacity", "r", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
+	"circle": ["cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "r", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"defs": [],
 	"desc": [],
-	"ellipse": ["cx", "cy", "fill", "fill-opacity", "fill-rule", "id", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
-	"g": ["id", "display", "fill", "fill-opacity", "fill-rule", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
-	"image": ["height", "id", "opacity", "requiredFeatures", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
-	"line": ["fill", "fill-opacity", "fill-rule", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
+	"ellipse": ["cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"feGaussianBlur": ["id", "requiredFeatures", "stdDeviation"],
+	"filter": ["filterRes", "filterUnits", "height", "id", "primitiveUnits", "requiredFeatures", "width", "x", "xlink:href", "y"],
+	"g": ["id", "display", "fill", "fill-opacity", "fill-rule", "filter", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"image": ["filter", "height", "id", "opacity", "requiredFeatures", "style", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
+	"line": ["fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
 	"linearGradient": ["id", "gradientTransform", "gradientUnits", "requiredFeatures", "spreadMethod", "systemLanguage", "x1", "x2", "xlink:href", "y1", "y2"],
-	"path": ["d", "fill", "fill-opacity", "fill-rule", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
-	"polygon": ["id", "fill", "fill-opacity", "fill-rule", "id", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
-	"polyline": ["id", "fill", "fill-opacity", "fill-rule", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
+	"path": ["d", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"polygon": ["id", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"polyline": ["id", "fill", "fill-opacity", "fill-rule", "filter", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"radialGradient": ["id", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "r", "requiredFeatures", "spreadMethod", "systemLanguage", "xlink:href"],
-	"rect": ["fill", "fill-opacity", "fill-rule", "height", "id", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "width", "x", "y"],
+	"rect": ["fill", "fill-opacity", "fill-rule", "filter", "height", "id", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "width", "x", "y"],
 	"stop": ["id", "offset", "requiredFeatures", "stop-color", "stop-opacity", "style", "systemLanguage"],
 	"switch": ["id", "requiredFeatures", "systemLanguage"],
-	"svg": ["id", "height", "requiredFeatures", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
-	"text": ["fill", "fill-opacity", "fill-rule", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
+	"svg": ["filter", "id", "height", "requiredFeatures", "style", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
+	"text": ["fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
 	"title": [],
-	"use": ["height", "id", "width", "x", "xlink:href", "y"]
+	"use": ["filter", "height", "id", "style", "width", "x", "xlink:href", "y"]
 	},
 
 
@@ -1119,23 +1121,40 @@ function BatchCommand(text) {
 				// if the attribute is not in our whitelist, then remove it
 				// could use jQuery's inArray(), but I don't know if that's any better
 				var attr = node.attributes.item(i);
+				// TODO: use localName here and grab the namespace URI.  Then, make sure that
+				// anything in our whitelist with a prefix is parsed out properly.  
+				// i.e. "xlink:href" in our whitelist would mean we check that localName matches
+				// "href" and that namespaceURI matches the XLINK namespace
 				var attrName = attr.nodeName;
 				if (allowedAttrs.indexOf(attrName) == -1) {
 					node.removeAttribute(attrName);
 				}
+				// special handling for path d attribute
 				if (node.nodeName == 'path' && attrName == 'd') {
 					// Convert to absolute
 					node.setAttribute('d',pathActions.convertPath(node));
 				}
-				// for <use> and gradient elements, ensure the xlink:href refers to a local element
-				if($.inArray(node.nodeName, ["use", "linearGradient", "radialGradient"]) != -1 &&
+				// for filters, uses and gradients, ensure the xlink:href refers to a local element
+				if($.inArray(node.nodeName, ["filter", "use", "linearGradient", "radialGradient"]) != -1 &&
 					attr.localName == "href" && attr.namespaceURI == xlinkns) 
 				{
 					// TODO: we simply check if the first character is a #, is this bullet-proof?
 					if (attr.nodeValue[0] != "#") {
-						// just delete the <use> element and return immediately (toss out children)
+						// just delete the element and return immediately (toss out children)
 						parent.removeChild(node);
 						return;
+					}
+				}
+				// for the style attribute, rewrite it in terms of XML presentational attributes
+				if (attrName == "style") {
+					var props = attr.nodeValue.split(";"),
+						p = props.length;
+					while(p--) {
+						var nv = props[p].split(":");
+						// now check that this attribute is supported
+						if (allowedAttrs.indexOf(nv[0]) != -1) {
+							node.setAttribute(nv[0],nv[1]);
+						}
 					}
 				}
 			}
@@ -1176,7 +1195,6 @@ function BatchCommand(text) {
 			if(fill && fill.indexOf('url(#') == 0) {
 				//found gradient
 				grad_uses.push(fill.substring(5,fill.indexOf(')')));
-				alert(fill.substring(5,fill.indexOf(')')));
 			} 
 			
 			var stroke = el.getAttribute('stroke');
