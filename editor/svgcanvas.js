@@ -5466,6 +5466,7 @@ function BatchCommand(text) {
 		
 		if (layer == current_layer) {
 			canvas.clearSelection();
+			pathActions.clear();
 		}
 //		call("changed", [selected]);
 		
