@@ -41,13 +41,13 @@ var isOpera = !!window.opera,
 	"g": ["id", "display", "fill", "fill-opacity", "fill-rule", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
 	"image": ["height", "id", "opacity", "requiredFeatures", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
 	"line": ["fill", "fill-opacity", "fill-rule", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
-	"linearGradient": ["id", "gradientTransform", "gradientUnits", "requiredFeatures", "spreadMethod", "systemLanguage", "x1", "x2", "y1", "y2"],
+	"linearGradient": ["id", "gradientTransform", "gradientUnits", "requiredFeatures", "spreadMethod", "systemLanguage", "x1", "x2", "xlink:href", "y1", "y2"],
 	"path": ["d", "fill", "fill-opacity", "fill-rule", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
 	"polygon": ["id", "fill", "fill-opacity", "fill-rule", "id", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
 	"polyline": ["id", "fill", "fill-opacity", "fill-rule", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform"],
-	"radialGradient": ["id", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "r", "requiredFeatures", "spreadMethod", "systemLanguage"],
+	"radialGradient": ["id", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "r", "requiredFeatures", "spreadMethod", "systemLanguage", "xlink:href"],
 	"rect": ["fill", "fill-opacity", "fill-rule", "height", "id", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "width", "x", "y"],
-	"stop": ["id", "offset", "requiredFeatures", "stop-color", "stop-opacity", "systemLanguage"],
+	"stop": ["id", "offset", "requiredFeatures", "stop-color", "stop-opacity", "style", "systemLanguage"],
 	"switch": ["id", "requiredFeatures", "systemLanguage"],
 	"svg": ["id", "height", "requiredFeatures", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
 	"text": ["fill", "fill-opacity", "fill-rule", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
@@ -1127,8 +1127,10 @@ function BatchCommand(text) {
 					// Convert to absolute
 					node.setAttribute('d',pathActions.convertPath(node));
 				}
-				// for a <use> element, ensure the xlink:href is a local element
-				if (node.nodeName == "use" && attr.localName == "href") {
+				// for <use> and gradient elements, ensure the xlink:href refers to a local element
+				if($.inArray(node.nodeName, ["use", "linearGradient", "radialGradient"]) != -1 &&
+					attr.localName == "href" && attr.namespaceURI == xlinkns) 
+				{
 					// TODO: we simply check if the first character is a #, is this bullet-proof?
 					if (attr.nodeValue[0] != "#") {
 						// just delete the <use> element and return immediately (toss out children)
@@ -1163,23 +1165,31 @@ function BatchCommand(text) {
 
 	var removeUnusedGrads = function() {
 		var defs = svgcontent.getElementsByTagNameNS(svgns, "defs");
-		if(!defs || !defs.length) return;
+		if(!defs || !defs.length) return 0;
 		
-		var all_els = svgcontent.getElementsByTagNameNS(svgns, '*');
-		var grad_uses = [];
+		var all_els = svgcontent.getElementsByTagNameNS(svgns, '*'),
+			grad_uses = [],
+			numRemoved = 0;
 		
 		$.each(all_els, function(i, el) {
 			var fill = el.getAttribute('fill');
 			if(fill && fill.indexOf('url(#') == 0) {
 				//found gradient
-				grad_uses.push(fill);
+				grad_uses.push(fill.substring(5,fill.indexOf(')')));
+				alert(fill.substring(5,fill.indexOf(')')));
 			} 
 			
 			var stroke = el.getAttribute('stroke');
 			if(stroke && stroke.indexOf('url(#') == 0) {
 				//found gradient
-				grad_uses.push(stroke);
-			} 
+				grad_uses.push(stroke.substring(5,stroke.indexOf(')')));
+			}
+			
+			// gradients can refer to other gradients
+			var href = el.getAttributeNS(xlinkns, "href");
+			if (href && href.indexOf('#') == 0) {
+				grad_uses.push(href.substr(1));
+			}
 		});
 		
 		var lgrads = svgcontent.getElementsByTagNameNS(svgns, "linearGradient"),
@@ -1188,10 +1198,10 @@ function BatchCommand(text) {
 		while (i--) {
 			var grad = lgrads[i];
 			var id = grad.id;
-			var url_id = 'url(#' + id + ')';
-			if($.inArray(url_id, grad_uses) == -1) {
+			if($.inArray(id, grad_uses) == -1) {
 				// Not found, so remove
 				grad.parentNode.removeChild(grad);
+				numRemoved++;
 			}
 		}
 		
@@ -1203,10 +1213,13 @@ function BatchCommand(text) {
 				def.parentNode.removeChild(def);
 			}
 		}
+		
+		return numRemoved;
 	}
 	
 	var svgCanvasToString = function() {
-		removeUnusedGrads();
+		// keep calling it until there are none to remove
+		while (removeUnusedGrads() > 0) {};
 		pathActions.clear(true);
 		$.each(svgcontent.childNodes, function(i, node) {
 			if(i && node.nodeType == 8 && node.data.indexOf('Created with') != -1) {
