@@ -1134,17 +1134,6 @@ function BatchCommand(text) {
 					// Convert to absolute
 					node.setAttribute('d',pathActions.convertPath(node));
 				}
-				// for filters, uses and gradients, ensure the xlink:href refers to a local element
-				if($.inArray(node.nodeName, ["filter", "use", "linearGradient", "radialGradient"]) != -1 &&
-					attr.localName == "href" && attr.namespaceURI == xlinkns) 
-				{
-					// TODO: we simply check if the first character is a #, is this bullet-proof?
-					if (attr.nodeValue[0] != "#") {
-						// just delete the element and return immediately (toss out children)
-						parent.removeChild(node);
-						return;
-					}
-				}
 				// for the style attribute, rewrite it in terms of XML presentational attributes
 				if (attrName == "style") {
 					var props = attr.nodeValue.split(";"),
@@ -1156,6 +1145,18 @@ function BatchCommand(text) {
 							node.setAttribute(nv[0],nv[1]);
 						}
 					}
+				}
+			}
+			// for filters, uses and gradients, ensure the xlink:href refers to a local element
+			var href = node.getAttributeNS(xlinkns,"href");
+			if(href && 
+			   $.inArray(node.nodeName, ["filter", "use", "linearGradient", "radialGradient"]) != -1)
+			{
+				// TODO: we simply check if the first character is a #, is this bullet-proof?
+				if (href[0] != "#") {
+					// just delete the element and return immediately (toss out children)
+					parent.removeChild(node);
+					return;
 				}
 			}
 
