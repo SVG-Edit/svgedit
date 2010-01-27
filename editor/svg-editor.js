@@ -826,7 +826,7 @@ function svg_edit_setup() {
 			list.fadeOut(200);
 		};
 		
-		$().mouseup(function(evt) {
+		$(window).mouseup(function(evt) {
 			if(!on_button) {
 				button.removeClass('down');
 				// do not hide if it was the file input as that input needs to be visible 
@@ -895,7 +895,7 @@ function svg_edit_setup() {
 	
 		$(elem).find('li').bind('mouseup', callback);
 		
-		$().mouseup(function(evt) {
+		$(window).mouseup(function(evt) {
 			if(!on_button) {
 				button.removeClass('down');
 				list.hide();
@@ -937,6 +937,7 @@ function svg_edit_setup() {
 		},
 		stop: function() {
 			$('#opacity_dropdown li').show();
+			$(window).mouseup();
 		},
 		slide: function(evt, ui){
 			changeOpacity(ui);
