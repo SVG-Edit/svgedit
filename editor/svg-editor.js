@@ -235,6 +235,10 @@ function svg_edit_setup() {
 		// we tell it to skip focusing the text control if the
 		// text element was previously in focus
 		updateContextPanel();
+		
+		svgCanvas.runExtensions("elementChanged", {
+			elems: elems
+		});
 	};
 	
 	var zoomChanged = function(window, bbox, autoCenter) {
@@ -307,6 +311,24 @@ function svg_edit_setup() {
 				
 				// Add given events to button
 				$.each(btn.events, function(name, func) {
+					if(name == "click") {
+						if(btn.type == 'mode') {
+							var new_func = function() {
+								if (toolButtonClick('#' + id)) {
+									func();
+								}
+							}
+							
+							button.bind(name, new_func);
+							if(btn.key) {
+								$(document).bind('keydown', {combi: btn.key}, new_func);
+								if(btn.title) button.attr("title", btn.title + ' ['+btn.key+']');
+							}
+						}
+					} else {
+						button.bind(name, func);
+					}
+				
 					button.bind(name, function() {
 						if(name == "click" && btn.type == 'mode') {
 							if (toolButtonClick('#' + id)) {

@@ -1,6 +1,5 @@
 $(function() {
 	svgCanvas.addExtension("Connector", function(vars) {
-		
 		var svgcontent = vars.content,
 			svgroot = vars.root,
 			getNextId = vars.getNextId,
@@ -144,6 +143,7 @@ $(function() {
 				type: "mode",
 				icon: "images/cut.png",
 				title: "Connect two objects",
+				key: "L",
 				events: {
 					'click': function() {
 						svgCanvas.setMode("connector");
@@ -198,7 +198,6 @@ $(function() {
 					var i = elems.length;
 					var connectors = $(svgcontent).find("." + conn_class);
 					if(!connectors.length) return;
-					
 					connections = [];
 					
 					while(i--) {
@@ -349,6 +348,14 @@ $(function() {
 						showPanel(false);
 					}
 				}
+			},
+			elementChanged: function(opts) {
+				var elem = opts.elems[0];
+				if (elem && elem.tagName == 'svg' && elem.id == "svgcontent") {
+					// Update svgcontent (can change on import)
+					svgcontent = elem;
+				}
+				
 			}
 		};
 	});

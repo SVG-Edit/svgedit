@@ -78,7 +78,8 @@ var isOpera = !!window.opera,
 		return $('<p/>').html(str).text();
 	};
 
-
+	var unit_types = {'em':0,'ex':0,'px':1,'cm':35.43307,'mm':3.543307,'in':90,'pt':1.25,'pc':15,'%':0};
+	
 // These command objects are used for the Undo/Redo stack
 // attrs contains the values that the attributes had before the change
 function ChangeElementCommand(elem, attrs, text) {
@@ -4432,6 +4433,7 @@ function BatchCommand(text) {
 				current_mode = "select";
 				removeAllPointGripsFromPath();
 				canvas.clearSelection();
+				pathActions.clear();
 				if(selPath) {
 					call("selected", [elem]);
 					canvas.addToSelection([elem], true);
@@ -7248,6 +7250,16 @@ function BatchCommand(text) {
 		rect.setAttribute('x',.1);
 		var crect = rect.cloneNode(false);
 		support.goodDecimals = (crect.getAttribute('x').indexOf(',') == -1);
+		
+		// Get correct em/ex values
+		var rect = document.createElementNS(svgns,'rect');
+		rect.setAttribute('width',"1em");
+		rect.setAttribute('height',"1ex");
+		svgcontent.appendChild(rect);
+		var bb = rect.getBBox();
+		unit_types.em = bb.width;
+		unit_types.ex = bb.height;
+		svgcontent.removeChild(rect);
 	}());
 }
 // Static class for various utility functions
