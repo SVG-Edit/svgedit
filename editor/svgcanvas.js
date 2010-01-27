@@ -1159,6 +1159,12 @@ function BatchCommand(text) {
 					return;
 				}
 			}
+			
+			// TODO: if element has fill/stroke pointing to a non-local reference, need to remove
+			// the attribute
+			// i.e. <circle fill="url(http://example.com/someEvilFile.svg#foo)" /> or
+			//      <circle fill="url('http://example.com/someEvilFile.svg#foo')" /> or
+			//      <circle fill='url("http://example.com/someEvilFile.svg#foo")' /> or
 
 			// recurse to children
 			i = node.childNodes.length;
@@ -1193,15 +1199,34 @@ function BatchCommand(text) {
 		
 		$.each(all_els, function(i, el) {
 			var fill = el.getAttribute('fill');
-			if(fill && fill.indexOf('url(#') == 0) {
-				//found gradient
-				grad_uses.push(fill.substring(5,fill.indexOf(')')));
-			} 
+			if(fill) {
+				// url(#somegrad)
+				if (fill.indexOf('url(#') == 0) {
+					grad_uses.push(fill.substring(5,fill.indexOf(')')));
+				}
+				// url("#somegrad")
+				else if (fill.indexOf('url("#') == 0) {
+					grad_uses.push(fill.substring(6,fill.indexOf('"',7)));
+				}
+				// url('#somegrad')
+				else if (fill.indexOf("url('#)") == 0) {
+					grad_uses.push(fill.substring(6,fill.indexOf("'",7)));
+				}
+			}
 			
 			var stroke = el.getAttribute('stroke');
-			if(stroke && stroke.indexOf('url(#') == 0) {
-				//found gradient
-				grad_uses.push(stroke.substring(5,stroke.indexOf(')')));
+			if (stroke) {
+				if (stroke.indexOf('url(#') == 0) {
+					grad_uses.push(stroke.substring(5,stroke.indexOf(')')));
+				}
+				else if (stroke.indexOf('url("#') == 0) {
+					grad_uses.push(stroke.substring(6,stroke.indexOf('"',7)));
+				}
+				// url('#somegrad')
+				else if (stroke.indexOf("url('#)") == 0) {
+					grad_uses.push(stroke.substring(6,stroke.indexOf("'",7)));
+				}
+				
 			}
 			
 			// gradients can refer to other gradients
