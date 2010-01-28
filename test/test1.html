@@ -34,6 +34,41 @@
 		equals(typeof {}, typeof svgCanvas);
 	});
 	
+	module("Path Module");
+	
+	test("Test path conversion from absolute to relative", function() {
+		expect(6);
+		var convert = svgCanvas.pathActions.convertPath;
+
+		// TODO: 
+		svgCanvas.setSvgString("<svg xmlns='http://www.w3.org/2000/svg' width='400' x='300'>" +
+								  "<path id='p1' d='M100,100 L200,100 Z'/>" +
+								  "<path id='p2' d='M100,100 L200,100 Z'/>" +
+								"</svg>");
+		
+		var p1 = document.getElementById("p1"),
+			p2 = document.getElementById("p2"),
+			d_abs = p1.getAttribute("d"),
+			seglist = p1.pathSegList,
+			curseg = null;
+			
+		equals(p1.nodeName, "path", "Expected 'path', got");
+		
+		equals(seglist.numberOfItems, 3, "Number of segments before conversion");
+		
+		// verify segments before conversion
+		curseg = seglist.getItem(0);
+		equals(curseg.pathSegTypeAsLetter, "M", "Before conversion, segment #1 type");
+		curseg = seglist.getItem(1);
+		equals(curseg.pathSegTypeAsLetter, "L", "Before conversion, segment #2 type");
+		curseg = seglist.getItem(2);
+		equals(curseg.pathSegType, 1, "Before conversion, segment #3 type");
+		
+		// convert and verify segments
+		var d = convert(p1, true);
+		equals(d, "m100,100l100,0z", "Converted path to relative string");
+	});
+	
 	module("Transform Module");
 
 	test("Test matrixMultiply", function() {
@@ -116,6 +151,6 @@
   <h2 id="qunit-userAgent"></h2>
   <ol id="qunit-tests">
   </ol>
-  <div id="svgcanvas" style="display:none"></div>
+  <div id="svgcanvas" style="visibility:hidden"></div>
 </body>  
 </html> 
