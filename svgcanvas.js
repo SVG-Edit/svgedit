@@ -54,7 +54,7 @@ var isOpera = !!window.opera,
 	"svg": ["filter", "id", "height", "requiredFeatures", "style", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
 	"text": ["fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
 	"title": [],
-	"use": ["filter", "height", "id", "style", "width", "x", "xlink:href", "y"]
+	"use": ["filter", "height", "id", "style", "transform", "width", "x", "xlink:href", "y"]
 	},
 
 
