@@ -4796,17 +4796,35 @@ function BatchCommand(text) {
 						case 1: // z,Z closepath (Z/z)
 							d += "z";
 							break;
+						case 12: // absolute horizontal line (H)
+							x -= curx;
+						case 13: // relative horizontal line (h)
+							if(toRel) {
+								curx += x;
+							} else {
+								x += curx;
+								curx = x;
+							}
+							addToD([[x]]);
+							break;
+						case 14: // absolute vertical line (V)
+							y -= cury;
+						case 15: // relative vertical line (v)
+							if(toRel) {
+								cury += y;
+							} else {
+								y += cury;
+								cury = y;
+							}
+							addToD([[y]]);
+							break;
 						case 2: // absolute move (M)
 						case 4: // absolute line (L)
-						case 12: // absolute horizontal line (H)
-						case 14: // absolute vertical line (V)
 						case 18: // absolute smooth quad (T)
 							x -= curx;
 							y -= cury;
 						case 3: // relative move (m)
 						case 5: // relative line (l)
-						case 13: // relative horizontal line (h)
-						case 15: // relative vertical line (v)
 						case 19: // relative smooth quad (t)
 							if(toRel) {
 								curx += x;
