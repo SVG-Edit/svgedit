@@ -1549,16 +1549,18 @@ function BatchCommand(text) {
 				
 				var len = changes["d"].length,
 					firstseg = changes["d"][0],
-					firstpt = remap(firstseg.x,firstseg.y);
-				changes["d"][0].x = firstpt.x;
-				changes["d"][0].y = firstpt.y;
+					currentpt = remap(firstseg.x,firstseg.y);
+				changes["d"][0].x = currentpt.x;
+				changes["d"][0].y = currentpt.y;
 				for (var i = 1; i < len; ++i) {
 					var seg = changes["d"][i];
 					var type = seg.type;
 					// if absolute or first segment, we want to remap x, y, x1, y1, x2, y2
 					// if relative, we want to scalew, scaleh
 					if (type % 2 == 0) { // absolute
-						var pt = remap(seg.x,seg.y),
+						var thisx = seg.x ? seg.x : currentpt.x, // for V commands
+							thisy = seg.y ? seg.y : currentpt.y, // for H commands
+							pt = remap(thisx,thisy),
 							pt1 = remap(seg.x1,seg.y1),
 							pt2 = remap(seg.x2,seg.y2);
 						seg.x = pt.x;
@@ -1580,6 +1582,9 @@ function BatchCommand(text) {
 						seg.r1 = scalew(seg.r1),
 						seg.r2 = scaleh(seg.r2);
 					}
+					// tracks the current position (for H,V commands)
+					if (seg.x) currentpt.x = seg.x;
+					if (seg.y) currentpt.y = seg.y;
 				} // for each segment
 				break;
 		} // switch on element type to get initial values
