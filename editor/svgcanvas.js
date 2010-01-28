@@ -1654,8 +1654,8 @@ function BatchCommand(text) {
 							break;
 						case 11: // relative elliptical arc (a)
 						case 10: // absolute elliptical arc (A)
-							dstr += seg.r1 + "," + seg.r2 + " " + seg.angle + " " + seg.largeArcFlag +
-								" " + seg.sweepFlag + " " + seg.x + "," + seg.y + " ";
+							dstr += seg.r1 + "," + seg.r2 + " " + seg.angle + " " + Number(seg.largeArcFlag) +
+								" " + Number(seg.sweepFlag) + " " + seg.x + "," + seg.y + " ";
 							break;
 						case 17: // relative smooth cubic (s)
 						case 16: // absolute smooth cubic (S)
