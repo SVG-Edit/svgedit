@@ -911,7 +911,7 @@ function BatchCommand(text) {
 		//	svgthumb.setAttributeNS(xlinkns, 'href', '#svgcontent');
 		//	svgroot.appendChild(svgthumb);
 
-	});
+	})();
 	// z-ordered array of tuples containing layer names and <g> elements
 	// the first layer is the one at the bottom of the rendering
 	var all_layers = [],
