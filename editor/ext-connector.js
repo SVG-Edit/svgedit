@@ -146,7 +146,7 @@ $(function() {
 				key: "L",
 				includeWith: {
 					button: '#tool_line',
-					'default': true,
+					isDefault: true,
 					position: 1
 				},
 				events: {

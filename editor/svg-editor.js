@@ -428,7 +428,7 @@ function svg_edit_setup() {
 					
 					var ref_data = Actions.getButtonData(opts.button);
 					
-					if(opts.default) {
+					if(opts.def) {
 						placement_obj['#' + tls_id + '_show'] = btn.id;
 					} 
 					// TODO: Find way to set the current icon using the iconloader if this is not default
@@ -438,7 +438,7 @@ function svg_edit_setup() {
 						sel: '#'+id,
 						fn: btn.events.click,
 						icon: btn.id,
-						isDefault: btn.includeWith?btn.includeWith.default:0
+						isDefault: btn.includeWith?btn.includeWith.isDefault:0
 					}, ref_data];
 					
 					// {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
