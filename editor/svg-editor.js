@@ -1673,12 +1673,6 @@ function svg_edit_setup() {
 		var paint = (picker == 'stroke' ? strokePaint : fillPaint);
 		var title = (picker == 'stroke' ? 'Pick a Stroke Paint and Opacity' : 'Pick a Fill Paint and Opacity');
 		var was_none = false;
-//		if (paint.type == "none") {
-//			// if it was none, then set to solid white
-//			paint = new $.jGraduate.Paint({solidColor: 'ffffff'});
-//			was_none = true;
-//		}
-		console.dir(paint);
 		var pos = elem.position();
 		$("#color_picker")
 			.draggable({cancel:'.jPicker_table,.jGraduate_lgPick'})
