@@ -25,7 +25,9 @@
 
   	var svgCanvas = new SvgCanvas(document.getElementById("svgcanvas")),
   		svgroot = document.getElementById("svgroot"),
-  		svgdoc = svgroot.documentElement;
+  		svgdoc = svgroot.documentElement,
+  		svgns = "http://www.w3.org/2000/svg",
+  		xlinkns = "http://www.w3.org/1999/xlink";
 
 	module("Basic Module");
 
@@ -123,8 +125,17 @@
 		var u = document.getElementById("the-use"),
 			fu = document.getElementById("foreign-use");
 		
-		equals(true, (u && u.nodeName == "use"), "Did not import <use> element");
-		equals(null, fu, "Imported a <use> that references a foreign element");
+		equals((u && u.nodeName == "use"), true, "Did not import <use> element");
+		equals((fu && !fu.getAttributeNS(xlinkns,"href")), true, "Did not remove reference to foreign element in <use>");
+	});
+	
+	test("Test getUrlFromAttr", function() {
+		expect(4);
+		
+		equals(svgCanvas.getUrlFromAttr("url(#foo)"), "#foo");
+		equals(svgCanvas.getUrlFromAttr("url(somefile.svg#foo)"), "somefile.svg#foo");
+		equals(svgCanvas.getUrlFromAttr("url('#foo')"), "#foo");
+		equals(svgCanvas.getUrlFromAttr('url("#foo")'), "#foo");
 	});
 	
 	// This test shows that an element with an invalid attribute is still parsed in properly
