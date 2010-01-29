@@ -138,10 +138,12 @@ $.fn.SpinButton = function(cfg){
 			// Reset up/down buttons to their normal appearance when mouse moves away:
 			$(this).removeClass(this.spinCfg.upClass).removeClass(this.spinCfg.downClass);
 			this.spinCfg._direction = null;
+			window.clearInterval(this.spinCfg._repeat);
+			window.clearTimeout(this.spinCfg._delay);
 		})
 		
 		.mousedown(function(e){
-			if (this.spinCfg._direction != 0) {
+			if ( e.button === 0 && this.spinCfg._direction != 0) {
 				// Respond to click on one of the buttons:
 				var self = this;
 				var adjust = function() {
