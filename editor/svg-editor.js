@@ -301,6 +301,7 @@ function svg_edit_setup() {
 						icon[0].setAttribute('height',shower.height());
 						shower.children(':not(.flyout_arrow_horiz)').remove();
 						shower.append(icon).attr('data-curopt', opts.sel); // This sets the current mode
+						shower.attr('title', $(opts.sel).attr('title'));
 					});
 				});
 			
@@ -319,12 +320,14 @@ function svg_edit_setup() {
 				var holder = $(show_sel.replace('_show',''));
 				var l = holder.css('left');
 				var w = holder.width()*-1;
+				var time = holder.data('shown_popop')?200:0;
 				timer = setTimeout(function() {
 					// Show corresponding menu
 					holder.css('left', w).show().animate({
 						left: l
 					},150);
-				},200);
+					holder.data('shown_popop',true);
+				},time);
 				evt.preventDefault();
 			}).mouseup(function() {
 				clearTimeout(timer);
@@ -1001,6 +1004,8 @@ function svg_edit_setup() {
 				}
 			}
 			on_button = false;
+		}).mousedown(function() {
+			$('.tools_flyout:visible').fadeOut();
 		});
 		
 		overlay.bind('mousedown',function() {
@@ -1539,7 +1544,7 @@ function svg_edit_setup() {
 		});
 		
 		$.resizeSvgIcons({
-			'.flyout_arrow_horiz svg, .flyout_arrow_horiz img': size_num / 3,
+			'.flyout_arrow_horiz svg, .flyout_arrow_horiz img': size_num / 5,
 			'#logo > svg, #logo > img': size_num * 1.3
 		});
 		if(size != 's') {
@@ -1923,42 +1928,10 @@ function svg_edit_setup() {
 		updateToolButtonState();
 	});
 
-// 	(function() {
-// 		var timer, menuShown;
-// 		$('#tools_rect_show').mousedown(function(evt){
-// 			timer = setTimeout(function() {
-// // 				menuShown = true;
-// 				$('#tools_rect').show();
-// 			},200);
-// 			// this prevents the 'image drag' behavior in Firefox
-// 			evt.preventDefault();
-// 		}).mouseup(function() {
-// 			clearTimeout(timer);
-// // 			var opt = $(this).attr('data-curopt',);
-// 		});
-// 		
-// 		
-// 	// 	$('#tools_rect').mouseleave(function(){$('#tools_rect').fadeOut();});
-// 	
-// 	}());
-
 	$('#tool_move_top').mousedown(function(evt){
 		$('#tools_stacking').show();
 		evt.preventDefault();
 	});
-
-// 	$('#tools_ellipse_show').mousedown(function(evt){
-// 		$('#tools_ellipse').show();
-// 		// this prevents the 'image drag' behavior in Firefox
-// 		evt.preventDefault();
-// 	});
-// 	$('#tools_ellipse').mouseleave(function() {$('#tools_ellipse').fadeOut();});
-
-// 	$('.tool_flyout_button').mouseover(function() {
-// 		$(this).addClass('tool_flyout_button_current');
-// 	}).mouseout(function() {
-// 		$(this).removeClass('tool_flyout_button_current');
-// 	});
 	
 	$('.layer_button').mousedown(function() { 
 		$(this).addClass('layer_buttonpressed');
@@ -2765,6 +2738,16 @@ function svg_edit_setup() {
 				// Make smaller
 				svgCanvas.setIconSize('s');
 			}
+			
+			// Look for any missing flyout icons from plugins
+			$('.tools_flyout').each(function() {
+				var shower = $('#' + this.id + '_show');
+				var sel = shower.attr('data-curopt');
+				// Check if there's an icon here
+				if(!shower.children('svg, img').length) {
+					shower.append($(sel).children().clone());
+				}
+			});
 			
 			// Load source if given
 			var loc = document.location.href;
