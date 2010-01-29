@@ -27,13 +27,13 @@ var isOpera = !!window.opera,
 	support = {},
 
 // this defines which elements and attributes that we support
-// TODO: add <a> elements to this
 // TODO: add <marker> to this and marker attributes
 // TODO: add <mask> to this
 // TODO: add <pattern> to this
 // TODO: add <symbol> to this
 // TODO: add <tspan> to this
 	svgWhiteList = {
+	"a": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "xlink:href", "xlink:title"],
 	"circle": ["clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "r", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"clipPath": ["clipPathUnits", "id"],
 	"defs": [],
@@ -1205,16 +1205,18 @@ function BatchCommand(text) {
 	//      <circle fill="url('someFile.svg#foo')" /> or
 	//      <circle fill='url("someFile.svg#foo")' />
 	this.getUrlFromAttr = function(attrVal) {
-		// url("#somegrad")
-		if (attrVal.indexOf('url("') == 0) {
-			return attrVal.substring(5,attrVal.indexOf('"',6));
-		}
-		// url('#somegrad')
-		else if (attrVal.indexOf("url('") == 0) {
-			return attrVal.substring(5,attrVal.indexOf("'",6));
-		}
-		else if (attrVal.indexOf("url(") == 0) {
-			return attrVal.substring(4,attrVal.indexOf(')'));
+		if (attrVal) {		
+			// url("#somegrad")
+			if (attrVal.indexOf('url("') == 0) {
+				return attrVal.substring(5,attrVal.indexOf('"',6));
+			}
+			// url('#somegrad')
+			else if (attrVal.indexOf("url('") == 0) {
+				return attrVal.substring(5,attrVal.indexOf("'",6));
+			}
+			else if (attrVal.indexOf("url(") == 0) {
+				return attrVal.substring(4,attrVal.indexOf(')'));
+			}
 		}
 		return null;
 	};
@@ -1783,7 +1785,7 @@ function BatchCommand(text) {
 		initial["transform"] = start_transform ? start_transform : "";
 		
 		// if it's a group, we have special processing to flatten transforms
-		if (selected.tagName == "g") {
+		if (selected.tagName == "g" || selected.tagName == "a") {
 			var box = canvas.getBBox(selected),
 				oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2},
 				newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2,
@@ -3356,7 +3358,13 @@ function BatchCommand(text) {
 			start_transform = null;
 		};
 
-		$(container).mousedown(mouseDown).mousemove(mouseMove);
+		// prevent links from being followed in the canvas
+		var handleLinkInCanvas = function(e) {
+			e.preventDefault();
+			return false;
+		};
+		
+		$(container).mousedown(mouseDown).mousemove(mouseMove).click(handleLinkInCanvas);
 		$(window).mouseup(mouseUp);
 		
 		$(container).bind("mousewheel DOMMouseScroll", function(e){
@@ -6527,7 +6535,7 @@ function BatchCommand(text) {
 			// "fill", "fill-opacity", "fill-rule", "stroke", "stroke-dasharray", "stroke-dashoffset", 
 			// "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", 
 			// "stroke-width"
-			// and then for each child, if they do not have the attribute (or the value is 'inherit'?)
+			// and then for each child, if they do not have the attribute (or the value is 'inherit')
 			// then set the child's attribute
 
 			// TODO: get the group's opacity and propagate it down to the children (multiply it
