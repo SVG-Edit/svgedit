@@ -144,6 +144,11 @@ $(function() {
 				icon: "images/cut.png",
 				title: "Connect two objects",
 				key: "L",
+				includeWith: {
+					button: '#tool_line',
+					'default': true,
+					position: 1
+				},
 				events: {
 					'click': function() {
 						svgCanvas.setMode("connector");

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * svg-editor.js
  *
  * Licensed under the Apache License, Version 2
@@ -266,11 +266,107 @@ function svg_edit_setup() {
 		zoomDone();
 	}
 	
+	var flyout_funcs = {};
+	
+	var setupFlyouts = function(holders) {
+		$.each(holders, function(hold_sel, btn_opts) {
+			var buttons = $(hold_sel).children();
+			var show_sel = hold_sel + '_show';
+			var def = false;
+			
+			buttons.addClass('tool_button')
+				.unbind('click mousedown mouseup') // may not be necessary
+				.each(function(i) {
+					// Get this buttons options
+					var opts = btn_opts[i];
+					// Remember the function that goes with this ID
+					flyout_funcs[opts.sel] = opts.fn;
+
+					if(opts.isDefault) def = i;
+					
+					// Clicking the icon in flyout should set this set's icon
+					$(this).mouseup(function() {
+						if (toolButtonClick(show_sel)) {
+							opts.fn();
+						}
+						if(opts.icon) {
+							var icon = $.getSvgIcon(opts.icon).clone();
+						} else {
+							// 
+							var icon = $(opts.sel).children().eq(0).clone();
+						}
+						
+						var shower = $(show_sel);
+						icon[0].setAttribute('width',shower.width());
+						icon[0].setAttribute('height',shower.height());
+						shower.children(':not(.flyout_arrow_horiz)').remove();
+						shower.append(icon).attr('data-curopt', opts.sel); // This sets the current mode
+					});
+				});
+			
+			
+			if(def) {
+				$(show_sel).attr('data-curopt', btn_opts[def].sel);
+			} else if(!$(show_sel).attr('data-curopt')) {
+				// Set first as default
+				$(show_sel).attr('data-curopt', btn_opts[0].sel);
+			}
+			
+			var timer;
+			
+			// Clicking the "show" icon should set the current mode
+			$(show_sel).mousedown(function(evt) {
+				var holder = $(show_sel.replace('_show',''));
+				var l = holder.css('left');
+				var w = holder.width()*-1;
+				timer = setTimeout(function() {
+					// Show corresponding menu
+					holder.css('left', w).show().animate({
+						left: l
+					},150);
+				},200);
+				evt.preventDefault();
+			}).mouseup(function() {
+				clearTimeout(timer);
+				var opt = $(this).attr('data-curopt');
+				if (toolButtonClick(show_sel)) {
+					flyout_funcs[opt]();
+				}
+			});
+			
+			// 	$('#tools_rect').mouseleave(function(){$('#tools_rect').fadeOut();});
+			
+			var pos = $(show_sel).position();
+			$(hold_sel).css({'left': pos.left+34, 'top': pos.top+77});
+		});
+		
+	}
+	
+	var makeFlyoutHolder = function(id, child) {
+		var div = $('<div>',{
+			'class': 'tools_flyout',
+			id: id
+		}).appendTo('#svg_editor').append(child);
+		
+		return div;
+	}
+	
+	var setFlyoutPositions = function() {
+		$('.tools_flyout').each(function() {
+			var shower = $('#' + this.id + '_show');
+			var pos = shower.offset();
+			var w = shower.outerWidth();
+			$(this).css({left: pos.left + w, top: pos.top});
+		});
+	}
+	
 	var extAdded = function(window, ext) {
 		if("buttons" in ext) {
 			var fallback_obj = {},
 				placement_obj = {},
 				svgicons = ext.svgicons;
+		
+			var holders = {};
 		
 			// Add buttons given by extension
 			$.each(ext.buttons, function(i, btn) {
@@ -286,7 +382,7 @@ function svg_edit_setup() {
 				if(!svgicons) {
 					icon = $('<img src="' + btn.icon + '">');
 				} else {
-					fallback_obj[id] = btn.iocn;
+					fallback_obj[id] = btn.icon;
 					placement_obj['#' + id] = btn.id;
 				}
 				
@@ -303,8 +399,62 @@ function svg_edit_setup() {
 				var button = $('<div/>')
 					.attr("id", id)
 					.attr("title", btn.title)
-					.addClass(cls)
-					.appendTo(parent);
+					.addClass(cls);
+				
+				if(!btn.includeWith) {
+					button.appendTo(parent);
+				} else {
+					// Add to flyout menu / make flyout menu
+					var opts = btn.includeWith;
+					// opts.button, default, position
+					var ref_btn = $(opts.button);
+					
+					var flyout_holder = ref_btn.parent();
+					// Create a flyout menu if there isn't one already
+					if(!ref_btn.parent().hasClass('tools_flyout')) {
+						// Create flyout placeholder
+						var arr_div = $('<div>',{id:'flyout_arrow_horiz'})
+						
+						var tls_id = ref_btn[0].id.replace('tool_','tools_')
+						var show_btn = ref_btn.clone()
+							.attr('id',tls_id + '_show')
+							.append($('<div>',{'class':'flyout_arrow_horiz'}));
+							
+						ref_btn.before(show_btn);
+					
+						// Create a flyout div
+						flyout_holder = makeFlyoutHolder(tls_id, ref_btn);
+					} 
+					
+					var ref_data = Actions.getButtonData(opts.button);
+					
+					if(opts.default) {
+						placement_obj['#' + tls_id + '_show'] = btn.id;
+					} 
+					// TODO: Find way to set the current icon using the iconloader if this is not default
+					
+					// Include data for extension button as well as ref button
+					var cur_h = holders['#'+flyout_holder[0].id] = [{
+						sel: '#'+id,
+						fn: btn.events.click,
+						icon: btn.id,
+						isDefault: btn.includeWith?btn.includeWith.default:0
+					}, ref_data];
+					
+					// {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
+						
+					var pos  = ("position" in opts)?opts.position:'last';
+					var len = flyout_holder.children().length;
+					
+					// Add at given position or end
+					if(!isNaN(pos) && pos >= 0 && pos < len) {
+						flyout_holder.children().eq(pos).before(button);
+					} else {
+						flyout_holder.append(button);
+						cur_h.reverse();
+					}
+				}
+				
 				if(!svgicons) {
 					button.append(icon);
 				}
@@ -313,33 +463,18 @@ function svg_edit_setup() {
 				$.each(btn.events, function(name, func) {
 					if(name == "click") {
 						if(btn.type == 'mode') {
-							var new_func = function() {
-								if (toolButtonClick('#' + id)) {
-									func();
-								}
-							}
-							
-							button.bind(name, new_func);
+							button.bind(name, func);
 							if(btn.key) {
-								$(document).bind('keydown', {combi: btn.key}, new_func);
+								$(document).bind('keydown', {combi: btn.key}, func);
 								if(btn.title) button.attr("title", btn.title + ' ['+btn.key+']');
 							}
 						}
 					} else {
 						button.bind(name, func);
 					}
-				
-					button.bind(name, function() {
-						if(name == "click" && btn.type == 'mode') {
-							if (toolButtonClick('#' + id)) {
-								func();
-							}
-						} else {
-							func();
-						}
 					});
-				});
-					
+				
+				setupFlyouts(holders);
 			});
 			
 			$.svgIcons(svgicons, {
@@ -348,7 +483,8 @@ function svg_edit_setup() {
 				no_img: true,
 				fallback: fallback_obj,
 				placement: placement_obj,
-				callback: function() {
+				callback: function(icons) {
+			
 					// Bad hack to make the icon match the current size
 					// TODO: Write better hack!
 					var old = curPrefs.iconsize;
@@ -651,11 +787,6 @@ function svg_edit_setup() {
 		$('#image_save_opts input').val([curPrefs.img_save]);
 	}
 
-	var pos = $('#tools_rect_show').position();
-	$('#tools_rect').css({'left': pos.left+4, 'top': pos.top+77});
-	pos = $('#tools_ellipse_show').position();
-	$('#tools_ellipse').css({'left': pos.left+4, 'top': pos.top+77});
-
 	var changeRectRadius = function(ctl) {
 		svgCanvas.setRectRadius(ctl.value);
 	}
@@ -831,6 +962,7 @@ function svg_edit_setup() {
 	// - adds the tool_button_current class to the button passed in
 	var toolButtonClick = function(button, fadeFlyouts) {
 		if ($(button).hasClass('tool_button_disabled')) return false;
+		if($(button).parent().hasClass('tools_flyout')) return true;
 		var fadeFlyouts = fadeFlyouts || 'normal';
 		$('.tools_flyout').fadeOut(fadeFlyouts);
 		$('#styleoverrides').text('');
@@ -982,13 +1114,30 @@ function svg_edit_setup() {
 		}
 	}, true);
 	
-	var setIcon = function(holder_sel, id) {
-		var icon = $.getSvgIcon(id).clone();
-		var holder = $(holder_sel);
-		icon[0].setAttribute('width',holder.width());
-		icon[0].setAttribute('height',holder.height());
-		holder.empty().append(icon);
-	}
+	/*
+	
+	When a flyout icon is selected
+		(if flyout) {
+		- Change the icon
+		- Make pressing the button run its stuff
+		}
+		- Run its stuff
+	
+	When its shortcut key is pressed
+		- If not current in list, do as above
+		, else:
+		- Just run its stuff
+	
+	*/
+	
+// 	var setIcon = function(holder_sel, id) {
+// 		var icon = $.getSvgIcon(id).clone();
+// 		var holder = $(holder_sel);
+// 		icon[0].setAttribute('width',holder.width());
+// 		icon[0].setAttribute('height',holder.height());
+// 		holder.empty().append(icon)
+// 			.attr('data-curopt', holder_sel.replace('_show','')); // This sets the current mode
+// 	}
 	
 	var clickSelect = function() {
 		if (toolButtonClick('#tool_select')) {
@@ -1010,47 +1159,27 @@ function svg_edit_setup() {
 	};
 
 	var clickSquare = function(){
-		if (toolButtonClick('#tools_rect_show', flyoutspeed)) {
-			flyoutspeed = 'normal';
-			svgCanvas.setMode('square');
-		}
-		setIcon('#tools_rect_show','square');
+		svgCanvas.setMode('square');
 	};
 	
 	var clickRect = function(){
-		if (toolButtonClick('#tools_rect_show')) {
-			svgCanvas.setMode('rect');
-		}
-		setIcon('#tools_rect_show','rect');
+		svgCanvas.setMode('rect');
 	};
 	
 	var clickFHRect = function(){
-		if (toolButtonClick('#tools_rect_show')) {
-			svgCanvas.setMode('fhrect');
-		}
-		setIcon('#tools_rect_show','fh_rect');
+		svgCanvas.setMode('fhrect');
 	};
 	
 	var clickCircle = function(){
-		if (toolButtonClick('#tools_ellipse_show', flyoutspeed)) {
-			flyoutspeed = 'normal';
-			svgCanvas.setMode('circle');
-		}
-		setIcon('#tools_ellipse_show','circle');
+		svgCanvas.setMode('circle');
 	};
 
 	var clickEllipse = function(){
-		if (toolButtonClick('#tools_ellipse_show')) {
-			svgCanvas.setMode('ellipse');
-		}
-		setIcon('#tools_ellipse_show','ellipse');
+		svgCanvas.setMode('ellipse');
 	};
 
 	var clickFHEllipse = function(){
-		if (toolButtonClick('#tools_ellipse_show')) {
-			svgCanvas.setMode('fhellipse');
-		}
-		setIcon('#tools_ellipse_show','fh_ellipse');
+		svgCanvas.setMode('fhellipse');
 	};
 	
 	var clickImage = function(){
@@ -1403,7 +1532,7 @@ function svg_edit_setup() {
 		var size_num = icon_sizes[size];
 		
 		// Change icon size
-		$('.tool_button, .push_button, .tool_button_current, .tool_button_disabled, .tool_flyout_button, #url_notice, #tool_open')
+		$('.tool_button, .push_button, .tool_button_current, .tool_button_disabled, #url_notice, #tool_open')
 		.find('> svg, > img').each(function() {
 			this.setAttribute('width',size_num);
 			this.setAttribute('height',size_num);
@@ -1423,8 +1552,7 @@ function svg_edit_setup() {
 			.push_button,\
 			.tool_button_current,\
 			.tool_button_disabled,\
-			#tools_rect .tool_flyout_button,\
-			#tools_ellipse .tool_flyout_button": {
+			.tools_flyout .tool_button": {
 				'width': {s: '16px', l: '32px', xl: '48px'},
 				'height': {s: '16px', l: '32px', xl: '48px'},
 				'padding': {s: '1px', l: '2px', xl: '3px'}
@@ -1442,7 +1570,7 @@ function svg_edit_setup() {
 				'height': {s: '50px', l: '88px', xl: '125px'}
 			},
 			"#tools_left": {
-				'width': {s: '26px', l: '34px', xl: '42px'},
+				'width': {s: '22px', l: '30px', xl: '38px'},
 				'top': {s: '50px', l: '87px', xl: '125px'}
 			},
 			"div#workarea": {
@@ -1473,9 +1601,6 @@ function svg_edit_setup() {
 			"#tools_top > div, #tools_top": {
 				'line-height': {s: '17px', l: '34px', xl: '50px'}
 			}, 
-// 			"div.toolset, #tools_top label": {
-// 				'height': {s: '25px', l: '43px', xl: '64px'}
-// 			}, 
 			".dropdown button": {
 				'height': {s: '18px', l: '34px', xl: '40px'},
 				'line-height': {s: '18px', l: '34px', xl: '40px'},
@@ -1503,10 +1628,6 @@ function svg_edit_setup() {
 			'.layer_button': {
 				'width': {l: '19px', xl: '28px'},
 				'height': {l: '19px', xl: '28px'}
-			},
-			".flyout_arrow_horiz": {
-				'left': {s: '-5px', l: '5px', xl: '14px'},
-				'top': {s: '-13px', l: '-13px', xl: '-20px'}
 			},
 			"input.spin-button": {
 				'background-image': {l: "url('images/spinbtn_updn_big.png')", xl: "url('images/spinbtn_updn_big.png')"},
@@ -1543,10 +1664,7 @@ function svg_edit_setup() {
 			rule_elem.text(style_str);
 		}
 		
-		var pos = $('#tools_rect_show').offset();
-		$('#tools_rect').css({'left': pos.left, 'top': pos.top});
-		pos = $('#tools_ellipse_show').offset();
-		$('#tools_ellipse').css({'left': pos.left, 'top': pos.top});
+		setFlyoutPositions();
 	}
 
 	var cancelOverlays = function() {
@@ -1805,30 +1923,42 @@ function svg_edit_setup() {
 		updateToolButtonState();
 	});
 
-	$('#tools_rect_show').mousedown(function(evt){
-		$('#tools_rect').show();
-		// this prevents the 'image drag' behavior in Firefox
-		evt.preventDefault();
-	});
-	$('#tools_rect').mouseleave(function(){$('#tools_rect').fadeOut();});
+// 	(function() {
+// 		var timer, menuShown;
+// 		$('#tools_rect_show').mousedown(function(evt){
+// 			timer = setTimeout(function() {
+// // 				menuShown = true;
+// 				$('#tools_rect').show();
+// 			},200);
+// 			// this prevents the 'image drag' behavior in Firefox
+// 			evt.preventDefault();
+// 		}).mouseup(function() {
+// 			clearTimeout(timer);
+// // 			var opt = $(this).attr('data-curopt',);
+// 		});
+// 		
+// 		
+// 	// 	$('#tools_rect').mouseleave(function(){$('#tools_rect').fadeOut();});
+// 	
+// 	}());
 
 	$('#tool_move_top').mousedown(function(evt){
 		$('#tools_stacking').show();
 		evt.preventDefault();
 	});
 
-	$('#tools_ellipse_show').mousedown(function(evt){
-		$('#tools_ellipse').show();
-		// this prevents the 'image drag' behavior in Firefox
-		evt.preventDefault();
-	});
-	$('#tools_ellipse').mouseleave(function() {$('#tools_ellipse').fadeOut();});
+// 	$('#tools_ellipse_show').mousedown(function(evt){
+// 		$('#tools_ellipse').show();
+// 		// this prevents the 'image drag' behavior in Firefox
+// 		evt.preventDefault();
+// 	});
+// 	$('#tools_ellipse').mouseleave(function() {$('#tools_ellipse').fadeOut();});
 
-	$('.tool_flyout_button').mouseover(function() {
-		$(this).addClass('tool_flyout_button_current');
-	}).mouseout(function() {
-		$(this).removeClass('tool_flyout_button_current');
-	});
+// 	$('.tool_flyout_button').mouseover(function() {
+// 		$(this).addClass('tool_flyout_button_current');
+// 	}).mouseout(function() {
+// 		$(this).removeClass('tool_flyout_button_current');
+// 	});
 	
 	$('.layer_button').mousedown(function() { 
 		$(this).addClass('layer_buttonpressed');
@@ -2177,12 +2307,12 @@ function svg_edit_setup() {
 			{sel:'#tool_select', fn: clickSelect, evt: 'click', key: 1},
 			{sel:'#tool_fhpath', fn: clickFHPath, evt: 'click', key: 2},
 			{sel:'#tool_line', fn: clickLine, evt: 'click', key: 3},
-			{sel:'#tool_square', fn: clickSquare, evt: 'mouseup', key: 'Shift+4'},
-			{sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4},
-			{sel:'#tool_fhrect', fn: clickFHRect, evt: 'mouseup'},
-			{sel:'#tool_circle', fn: clickCircle, evt: 'mouseup', key: 'Shift+5'},
-			{sel:'#tool_ellipse', fn: clickEllipse, evt: 'mouseup', key: 5},
-			{sel:'#tool_fhellipse', fn: clickFHEllipse, evt: 'mouseup'},
+			{sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'},
+			{sel:'#tool_square', fn: clickSquare, evt: 'mouseup', key: 'Shift+4', parent: '#tools_rect', icon: 'square'},
+			{sel:'#tool_fhrect', fn: clickFHRect, evt: 'mouseup', parent: '#tools_rect', icon: 'fh_rect'},
+			{sel:'#tool_ellipse', fn: clickEllipse, evt: 'mouseup', key: 5, parent: '#tools_ellipse', icon: 'ellipse'},
+			{sel:'#tool_circle', fn: clickCircle, evt: 'mouseup', key: 'Shift+5', parent: '#tools_ellipse', icon: 'circle'},
+			{sel:'#tool_fhellipse', fn: clickFHEllipse, evt: 'mouseup', parent: '#tools_ellipse', icon: 'fh_ellipse'},
 			{sel:'#tool_path', fn: clickPath, evt: 'click', key: 6},
 			{sel:'#tool_text', fn: clickText, evt: 'click', key: 7},
 			{sel:'#tool_image', fn: clickImage, evt: 'mouseup', key: 8},
@@ -2211,8 +2341,8 @@ function svg_edit_setup() {
 			{sel:'#tool_ungroup', fn: clickGroup, evt: 'click'},
 			{sel:'[id^=tool_align]', fn: clickAlign, evt: 'click'},
 			// these two lines are required to make Opera work properly with the flyout mechanism
-			{sel:'#tools_rect_show', fn: clickRect, evt: 'click'},
-			{sel:'#tools_ellipse_show', fn: clickEllipse, evt: 'click'},
+// 			{sel:'#tools_rect_show', fn: clickRect, evt: 'click'},
+// 			{sel:'#tools_ellipse_show', fn: clickEllipse, evt: 'click'},
 			{sel:'#tool_bold', fn: clickBold, evt: 'mousedown'},
 			{sel:'#tool_italic', fn: clickItalic, evt: 'mousedown'},
 			{sel:'#sidepanel_handle', fn: toggleSidePanel, key: [modKey+'X']},
@@ -2238,6 +2368,8 @@ function svg_edit_setup() {
 	
 		return {
 			setAll: function() {
+				var flyouts = {};
+				
 				$.each(tool_buttons, function(i, opts)  {
 					// Bind function to button
 					if(opts.sel) {
@@ -2245,7 +2377,24 @@ function svg_edit_setup() {
 						if(opts.evt) {
 							btn[opts.evt](opts.fn);
 						}
+
+						// Add to parent flyout menu
+						if(opts.parent) {
+							var f_h = $(opts.parent);
+							if(!f_h.length) {
+								f_h = makeFlyoutHolder(opts.parent.substr(1));
+							}
+							
+							f_h.append(btn);
+							
+							if(!$.isArray(flyouts[opts.parent])) {
+								flyouts[opts.parent] = [];
+							}
+							flyouts[opts.parent].push(opts);
+						}
 					}
+					
+					
 					// Bind function to shortcut key
 					if(opts.key) {
 						// Set shortcut based on options
@@ -2281,7 +2430,11 @@ function svg_edit_setup() {
 						}
 					}
 				});
-			
+				
+				// Setup flyouts
+				setupFlyouts(flyouts);
+				
+				
 				// Misc additional actions
 				
 				// Make "return" keypress trigger the change event
@@ -2318,6 +2471,13 @@ function svg_edit_setup() {
 						}
 					});
 				});
+			},
+			getButtonData: function(sel) {
+				var b;
+				$.each(tool_buttons, function(i, btn) {
+					if(btn.sel === sel) b = btn;
+				});
+				return b;
 			}
 		};
 	}();
