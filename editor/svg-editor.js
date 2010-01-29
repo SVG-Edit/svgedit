@@ -1,4 +1,4 @@
-﻿/*
+/*
  * svg-editor.js
  *
  * Licensed under the Apache License, Version 2
@@ -1727,7 +1727,7 @@ function svg_edit_setup() {
 	var updateToolButtonState = function() {
 		var bNoFill = (svgCanvas.getFillColor() == 'none');
 		var bNoStroke = (svgCanvas.getStrokeColor() == 'none');
-		var buttonsNeedingStroke = [ '#tool_path', '#tool_line' ];
+		var buttonsNeedingStroke = [ '#tool_fhpath', '#tool_line' ];
 		var buttonsNeedingFillAndStroke = [ '#tools_rect_show', '#tools_ellipse_show', '#tool_text' ];
 		if (bNoStroke) {
 			for (index in buttonsNeedingStroke) {
