@@ -5969,7 +5969,7 @@ function BatchCommand(text) {
 		// now set the current paint object
 		cur_properties.stroke_paint = p;
 		if (p.type == "solidColor") {
-			this.setStrokeColor("#"+p.solidColor);
+			this.setStrokeColor(p.solidColor != "none" ? "#"+p.solidColor : "none");
 		}
 		else if(p.type == "linearGradient") {
 			canvas.strokeGrad = p.linearGradient;
@@ -5988,7 +5988,7 @@ function BatchCommand(text) {
 		// now set the current paint object
 		cur_properties.fill_paint = p;
 		if (p.type == "solidColor") {
-			this.setFillColor("#"+p.solidColor);
+			this.setFillColor(p.solidColor != "none" ? "#"+p.solidColor : "none");
 		}
 		else if(p.type == "linearGradient") {
 			canvas.fillGrad = p.linearGradient;

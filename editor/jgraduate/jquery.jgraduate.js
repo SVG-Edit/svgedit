@@ -1,5 +1,5 @@
 ﻿/*
- * jGraduate 0.2.x
+ * jGraduate 0.3.x
  *
  * jQuery Plugin for a gradient picker
  *
@@ -112,11 +112,11 @@ $.jGraduate = {
 jQuery.fn.jGraduateDefaults = {
 	paint: new $.jGraduate.Paint(),
 	window: {
-		pickerTitle: "Drag markers to pick a paint"
+		pickerTitle: "Drag markers to pick a paint",
 	},
 	images: {
-		clientPath: "images/"
-	}
+		clientPath: "images/",
+	},
 };
 
 jQuery.fn.jGraduate =
@@ -147,7 +147,7 @@ jQuery.fn.jGraduate =
               	// make a copy of the incoming paint
                 paint: new $.jGraduate.Paint({copy: $settings.paint}),
                 okCallback: $.isFunction($arguments[1]) && $arguments[1] || null,
-                cancelCallback: $.isFunction($arguments[2]) && $arguments[2] || null
+                cancelCallback: $.isFunction($arguments[2]) && $arguments[2] || null,
               });
 
 			var pos = $this.position(),
@@ -214,7 +214,6 @@ jQuery.fn.jGraduate =
             // Set up all the SVG elements (the gradient, stops and rectangle)
             var MAX = 256, MARGINX = 0, MARGINY = 0, STOP_RADIUS = 15/2,
             	SIZEX = MAX - 2*MARGINX, SIZEY = MAX - 2*MARGINY;
-//            var container = document.getElementById(id+'_jGraduate_Swatch');
             var container = document.getElementById(id+'_jGraduate_GradContainer');
             var svg = container.appendChild(document.createElementNS(ns.svg, 'svg'));
             svg.id = id+'_jgraduate_svg';            
@@ -225,7 +224,6 @@ jQuery.fn.jGraduate =
 			// if we are sent a gradient, import it 
 			if ($this.paint.type == "linearGradient") {
 				$this.paint.linearGradient.id = id+'_jgraduate_grad';
-// 				$this.paint.linearGradient = svg.appendChild(document.importNode($this.paint.linearGradient, true));
 				$this.paint.linearGradient = svg.appendChild($.cloneNode($this.paint.linearGradient));
 			}
 			else { // we create a gradient
@@ -253,10 +251,10 @@ jQuery.fn.jGraduate =
             $('#' + id + '_jGraduate_AlphaArrows').css({'margin-left':posx});
             $('#' + id + '_jgraduate_rect').attr('fill-opacity', gradalpha/100);
 			
-			var x1 = parseFloat($this.paint.linearGradient.getAttribute('x1')||0.0);
-			var y1 = parseFloat($this.paint.linearGradient.getAttribute('y1')||0.0);
-			var x2 = parseFloat($this.paint.linearGradient.getAttribute('x2')||1.0);
-			var y2 = parseFloat($this.paint.linearGradient.getAttribute('y2')||0.0);
+			var x1 = parseFloat($this.paint.linearGradient.getAttribute('x1')||0.0),
+				y1 = parseFloat($this.paint.linearGradient.getAttribute('y1')||0.0),
+				x2 = parseFloat($this.paint.linearGradient.getAttribute('x2')||1.0),
+				y2 = parseFloat($this.paint.linearGradient.getAttribute('y2')||0.0);
 			
             var rect = document.createElementNS(ns.svg, 'rect');
             rect.id = id + '_jgraduate_rect';
@@ -475,14 +473,16 @@ jQuery.fn.jGraduate =
 			$('#'+id+'_jGraduate_colorBoxBegin').click(function() {
 				$('div.jGraduate_LightBox').show();			
 				var colorbox = $(this);
-				color = new $.jPicker.Color({ hex: beginColor.substr(1), a:(parseFloat(beginOpacity)*100) });
+				var thisAlpha = (parseFloat(beginOpacity)*255).toString(16);
+				while (thisAlpha.length < 2) { thisAlpha = "0" + thisAlpha; }
+				color = beginColor.substr(1) + thisAlpha;
 				$('#'+id+'_jGraduate_stopPicker').css({'left': 100, 'bottom': 15}).jPicker({
 						window: { title: "Pick the start color and opacity for the gradient" },
 						images: { clientPath: $settings.images.clientPath },
 						color: { active: color, alphaSupport: true }
 					}, function(color){
-						beginColor = '#' + this.settings.color.active.hex;
-						beginOpacity = this.settings.color.active.a/100;
+						beginColor = color.get_Hex() ? ('#'+color.get_Hex()) : "none";
+						beginOpacity = color.get_A() ? color.get_A()/100 : 1;
 						colorbox.css('background', beginColor);
 						$('#'+id+'_jGraduate_beginOpacity').html(parseInt(beginOpacity*100)+'%');
             			stops[0].setAttribute('stop-color', beginColor);
@@ -497,14 +497,16 @@ jQuery.fn.jGraduate =
 			$('#'+id+'_jGraduate_colorBoxEnd').click(function() {
 				$('div.jGraduate_LightBox').show();
 				var colorbox = $(this);
-				color = new $.jPicker.Color({ hex: endColor.substr(1), a:(parseFloat(endOpacity)*100) });
+				var thisAlpha = (parseFloat(endOpacity)*255).toString(16);
+				while (thisAlpha.length < 2) { thisAlpha = "0" + thisAlpha; }
+				color = endColor.substr(1) + thisAlpha;
 				$('#'+id+'_jGraduate_stopPicker').css({'left': 100, 'top': 15}).jPicker({
 						window: { title: "Pick the end color and opacity for the gradient" },
 						images: { clientPath: $settings.images.clientPath },
 						color: { active: color, alphaSupport: true }
 					}, function(color){
-						endColor = '#' + this.settings.color.active.hex;
-						endOpacity = this.settings.color.active.a/100;
+						endColor = color.get_Hex() ? ('#'+color.get_Hex()) : "none";
+						endOpacity = color.get_A() ? color.get_A()/100 : 1;
 						colorbox.css('background', endColor);
 						$('#'+id+'_jGraduate_endOpacity').html(parseInt(endOpacity*100)+'%');
             			stops[1].setAttribute('stop-color', endColor);
@@ -518,16 +520,19 @@ jQuery.fn.jGraduate =
 			});            
             
 			// --------------
+			var thisAlpha = ($this.paint.alpha*255/100).toString(16);
+			while (thisAlpha.length < 2) { thisAlpha = "0" + thisAlpha; }
+			color = $this.paint.solidColor == "none" ? "" : $this.paint.solidColor + thisAlpha;
 			colPicker.jPicker(
 				{
 					window: { title: $settings.window.pickerTitle },
 					images: { clientPath: $settings.images.clientPath },
-					color: { active: new $.jPicker.Color({hex:$this.paint.solidColor, a:$this.paint.alpha}), alphaSupport: true }
+					color: { active: color, alphaSupport: true }
 				},
 				function(color) {
 					$this.paint.type = "solidColor";
-					$this.paint.alpha = color.a;
-					$this.paint.solidColor = color.hex;
+					$this.paint.alpha = color.get_A() ? color.get_A() : 100;
+					$this.paint.solidColor = color.get_Hex() ? color.get_Hex() : "none";
 					$this.paint.linearGradient = null;
 					okClicked(); 
 				},

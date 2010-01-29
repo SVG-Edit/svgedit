@@ -361,6 +361,30 @@ function svg_edit_setup() {
 			});
 		}
 	};
+	
+	var getPaint = function(color, opac) {
+		// update the editor's fill paint
+		var opts = null;
+		if (color.substr(0,5) == "url(#") {
+			opts = {
+				alpha: opac,
+				linearGradient: document.getElementById(color.substr(5,color.length-6))
+			};
+		} 
+		else if (color.substr(0,1) == "#") {
+			opts = {
+				alpha: opac,
+				solidColor: color.substr(1)
+			};
+		}
+		else {
+			opts = {
+				alpha: opac,
+				solidColor: 'none'
+			};
+		}
+		return new $.jGraduate.Paint(opts);
+	};	
 
 	// updates the toolbar (colors, opacity, etc) based on the selected element
 	var updateToolbar = function() {
@@ -393,24 +417,6 @@ function svg_edit_setup() {
 
 			fillOpacity *= 100;
 			strokeOpacity *= 100;
-			
-			var getPaint = function(color, opac) {
-				// update the editor's fill paint
-				var opts = null;
-				if (color.substr(0,5) == "url(#") {
-					opts = {
-						alpha: opac,
-						linearGradient: document.getElementById(color.substr(5,color.length-6))
-					};
-				} 
-				else if (color.substr(0,1) == "#") {
-					opts = {
-						alpha: opac,
-						solidColor: color.substr(1)
-					};
-				}
-				return new $.jGraduate.Paint(opts);
-			}
 			
 			fillPaint = getPaint(fillColor, fillOpacity);
 			strokePaint = getPaint(strokeColor, strokeOpacity);
@@ -1667,11 +1673,12 @@ function svg_edit_setup() {
 		var paint = (picker == 'stroke' ? strokePaint : fillPaint);
 		var title = (picker == 'stroke' ? 'Pick a Stroke Paint and Opacity' : 'Pick a Fill Paint and Opacity');
 		var was_none = false;
-		if (paint.type == "none") {
-			// if it was none, then set to solid white
-			paint = new $.jGraduate.Paint({solidColor: 'ffffff'});
-			was_none = true;
-		}
+//		if (paint.type == "none") {
+//			// if it was none, then set to solid white
+//			paint = new $.jGraduate.Paint({solidColor: 'ffffff'});
+//			was_none = true;
+//		}
+		console.dir(paint);
 		var pos = elem.position();
 		$("#color_picker")
 			.draggable({cancel:'.jPicker_table,.jGraduate_lgPick'})
@@ -1697,15 +1704,17 @@ function svg_edit_setup() {
 					rectbox.setAttribute("fill", "url(#gradbox_" + picker + ")");
 				}
 				else {
-					rectbox.setAttribute("fill", "#" + paint.solidColor);
+					rectbox.setAttribute("fill", paint.solidColor != "none" ? "#" + paint.solidColor : "none");
 				}
 				opacity.html(paint.alpha + " %");
 
 				if (picker == 'stroke') {
 					svgCanvas.setStrokePaint(paint, true);
+					strokePaint = paint;
 				}
 				else {
 					svgCanvas.setFillPaint(paint, true);
+					fillPaint = paint;
 				}
 				updateToolbar();
 				$('#color_picker').hide();
