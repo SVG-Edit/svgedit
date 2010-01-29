@@ -34,28 +34,29 @@ var isOpera = !!window.opera,
 // TODO: add <symbol> to this
 // TODO: add <tspan> to this
 	svgWhiteList = {
-	"circle": ["cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "r", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"circle": ["clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "r", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"clipPath": ["clipPathUnits", "id"],
 	"defs": [],
 	"desc": [],
-	"ellipse": ["cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"ellipse": ["clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"feGaussianBlur": ["id", "requiredFeatures", "stdDeviation"],
 	"filter": ["filterRes", "filterUnits", "height", "id", "primitiveUnits", "requiredFeatures", "width", "x", "xlink:href", "y"],
-	"g": ["id", "display", "fill", "fill-opacity", "fill-rule", "filter", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"image": ["filter", "height", "id", "opacity", "requiredFeatures", "style", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
-	"line": ["fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
+	"g": ["clip-path", "clip-rule", "id", "display", "fill", "fill-opacity", "fill-rule", "filter", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"image": ["clip-path", "clip-rule", "filter", "height", "id", "opacity", "requiredFeatures", "style", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
+	"line": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
 	"linearGradient": ["id", "gradientTransform", "gradientUnits", "requiredFeatures", "spreadMethod", "systemLanguage", "x1", "x2", "xlink:href", "y1", "y2"],
 	"metadata": ["id"],
-	"path": ["d", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"polygon": ["id", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"polyline": ["id", "fill", "fill-opacity", "fill-rule", "filter", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"path": ["clip-path", "clip-rule", "d", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"polygon": ["clip-path", "clip-rule", "id", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"polyline": ["clip-path", "clip-rule", "id", "fill", "fill-opacity", "fill-rule", "filter", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"radialGradient": ["id", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "r", "requiredFeatures", "spreadMethod", "systemLanguage", "xlink:href"],
-	"rect": ["fill", "fill-opacity", "fill-rule", "filter", "height", "id", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "width", "x", "y"],
+	"rect": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "height", "id", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "width", "x", "y"],
 	"stop": ["id", "offset", "requiredFeatures", "stop-color", "stop-opacity", "style", "systemLanguage"],
 	"switch": ["id", "requiredFeatures", "systemLanguage"],
-	"svg": ["filter", "id", "height", "requiredFeatures", "style", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
-	"text": ["fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
+	"svg": ["clip-path", "clip-rule", "filter", "id", "height", "requiredFeatures", "style", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
+	"text": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
 	"title": [],
-	"use": ["filter", "height", "id", "style", "transform", "width", "x", "xlink:href", "y"]
+	"use": ["clip-path", "clip-rule", "filter", "height", "id", "style", "transform", "width", "x", "xlink:href", "y"]
 	},
 
 
@@ -1156,17 +1157,25 @@ function BatchCommand(text) {
 			{
 				// TODO: we simply check if the first character is a #, is this bullet-proof?
 				if (href[0] != "#") {
-					// just delete the element and return immediately (toss out children)
-					parent.removeChild(node);
-					return;
+					// remove the attribute (but keep the element)
+					node.setAttributeNS(xlinkns, "href", "");
+					node.removeAttributeNS(xlinkns, "href");
 				}
 			}
 			
-			// TODO: if element has fill/stroke pointing to a non-local reference, need to remove
-			// the attribute
-			// i.e. <circle fill="url(http://example.com/someEvilFile.svg#foo)" /> or
-			//      <circle fill="url('http://example.com/someEvilFile.svg#foo')" /> or
-			//      <circle fill='url("http://example.com/someEvilFile.svg#foo")' /> or
+			// if the element has fill/stroke/clip-path pointing to a non-local reference, 
+			// need to remove the attribute
+			$.each(["clip-path", "fill", "stroke"],function(i,attr) {
+				var val = node.getAttribute(attr);
+				if (val) {
+					val = getUrlFromAttr(val);
+					// simply check for first character being a '#'
+					if (val && val[0] != "#") {
+						node.setAttribute(attr, "");
+						node.removeAttribute(attr);
+					}
+				}
+			});
 
 			// recurse to children
 			i = node.childNodes.length;
@@ -1190,6 +1199,26 @@ function BatchCommand(text) {
 
 		}
 	};
+	
+	// extracts the URL from the url(...) syntax of some attributes.  Three variants:
+	// i.e. <circle fill="url(someFile.svg#foo)" /> or
+	//      <circle fill="url('someFile.svg#foo')" /> or
+	//      <circle fill='url("someFile.svg#foo")' />
+	this.getUrlFromAttr = function(attrVal) {
+		// url("#somegrad")
+		if (attrVal.indexOf('url("') == 0) {
+			return attrVal.substring(5,attrVal.indexOf('"',6));
+		}
+		// url('#somegrad')
+		else if (attrVal.indexOf("url('") == 0) {
+			return attrVal.substring(5,attrVal.indexOf("'",6));
+		}
+		else if (attrVal.indexOf("url(") == 0) {
+			return attrVal.substring(4,attrVal.indexOf(')'));
+		}
+		return null;
+	};
+	var getUrlFromAttr = this.getUrlFromAttr;
 
 	var removeUnusedGrads = function() {
 		var defs = svgcontent.getElementsByTagNameNS(svgns, "defs");
@@ -1200,35 +1229,14 @@ function BatchCommand(text) {
 			numRemoved = 0;
 		
 		$.each(all_els, function(i, el) {
-			var fill = el.getAttribute('fill');
+			var fill = getUrlFromAttr(el.getAttribute('fill'));
 			if(fill) {
-				// url(#somegrad)
-				if (fill.indexOf('url(#') == 0) {
-					grad_uses.push(fill.substring(5,fill.indexOf(')')));
-				}
-				// url("#somegrad")
-				else if (fill.indexOf('url("#') == 0) {
-					grad_uses.push(fill.substring(6,fill.indexOf('"',7)));
-				}
-				// url('#somegrad')
-				else if (fill.indexOf("url('#)") == 0) {
-					grad_uses.push(fill.substring(6,fill.indexOf("'",7)));
-				}
+				grad_uses.push(fill.substr(1));
 			}
 			
-			var stroke = el.getAttribute('stroke');
+			var stroke = getUrlFromAttr(el.getAttribute('stroke'));
 			if (stroke) {
-				if (stroke.indexOf('url(#') == 0) {
-					grad_uses.push(stroke.substring(5,stroke.indexOf(')')));
-				}
-				else if (stroke.indexOf('url("#') == 0) {
-					grad_uses.push(stroke.substring(6,stroke.indexOf('"',7)));
-				}
-				// url('#somegrad')
-				else if (stroke.indexOf("url('#)") == 0) {
-					grad_uses.push(stroke.substring(6,stroke.indexOf("'",7)));
-				}
-				
+				grad_uses.push(stroke.substr(1));
 			}
 			
 			// gradients can refer to other gradients
