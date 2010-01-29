@@ -428,7 +428,7 @@ function svg_edit_setup() {
 					
 					var ref_data = Actions.getButtonData(opts.button);
 					
-					if(opts.def) {
+					if(opts.isDefault) {
 						placement_obj['#' + tls_id + '_show'] = btn.id;
 					} 
 					// TODO: Find way to set the current icon using the iconloader if this is not default
