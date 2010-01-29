@@ -441,8 +441,8 @@
 
 #svg_editor .flyout_arrow_horiz {
 	position: absolute;
-	bottom: 3%;
-	right: 5%;
+	bottom: -1px;
+	right: 0;
 	z-index: 10;
 }
 
@@ -690,6 +690,7 @@ span.zoom_tool {
 	bottom: 0px;
 	background-color: black;
 	opacity: 0.6;
+	z-index: 5;
 }
 
 #svg_source_editor #svg_source_container {
@@ -702,6 +703,7 @@ span.zoom_tool {
 	opacity: 1.0;
 	text-align: center;
 	border: 1px outset #777;
+	z-index: 6;
 }
 
 /*
