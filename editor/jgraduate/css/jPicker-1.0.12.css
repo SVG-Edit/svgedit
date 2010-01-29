@@ -5,7 +5,8 @@
   text-align: left; /* make the zero width children position to the left of container */
   width: 25px; /* change this value if using a different sized color picker icon */
 }
-.jPicker_Color {
+.jPicker_Color, .jPicker_Alpha {
+  background-position: 2px 2px;
   display: block;
   height: 100%;
   left: 0px;
@@ -33,7 +34,6 @@
   border: 1px outset #666;
   font-family: Arial, Helvetica, Sans-Serif;
   font-size: 12px;
-  height: 330px;
   margin: 0px;
   padding: 5px;
   width: 550px;
@@ -71,29 +71,6 @@ div[class="jPicker_ColorMap"] {
   height: 256px; /* correct to 256px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
   width: 256px; /* correct to 256px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
 }
-.jPicker_ColorMap_l1, .jPicker_ColorMap_l2, .jPicker_ColorMap_l3, .jPicker_ColorBar_l1, .jPicker_ColorBar_l2, .jPicker_ColorBar_l3, .jPicker_ColorBar_l4, .jPicker_ColorBar_l5, .jPicker_AlphaBar_l1, .jPicker_AlphaBar_l2 {
-  background-repeat: no-repeat;
-  display: block;
-  height: 100%;
-  left: 0px;
-  position: absolute;
-  top: 0px;
-  width: 100%;
-}
-.jPicker_ColorMap_l1 {
-  background-color: #000000;
-  background-image: none;
-}
-.jPicker_ColorMap_l2 {
-  background-color: transparent;
-}
-.jPicker_ColorMap_l3 {
-  background-repeat: repeat;
-}
-.jPicker_ColorMap_Arrow {
-  display: block;
-  position: absolute;
-}
 .jPicker_ColorBar {
   border: 2px inset #eee;
   cursor: n-resize;
@@ -107,45 +84,41 @@ div[class="jPicker_ColorBar"] {
   height: 256px; /* correct to 256px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
   width: 20px; /* correct to 20px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
 }
-.jPicker_ColorBar_l1, .jPicker_ColorBar_l2, .jPicker_ColorBar_l3 {
+.jPicker_ColorMap_l1, .jPicker_ColorMap_l2, .jPicker_ColorMap_l3, .jPicker_ColorBar_l1, .jPicker_ColorBar_l2, .jPicker_ColorBar_l3, .jPicker_ColorBar_l4, .jPicker_ColorBar_l5, .jPicker_ColorBar_l6 {
   background-color: transparent;
   background-image: none;
-  background-repeat: repeat-x;
+  display: block;
+  height: 256px; /* must specific pixel height. IE7/8 Quirks mode ignores opacity for an absolutely positioned item in a relative container with "overflow: visible". The marker in the colorBar
+                    would not be drawn if its overflow is set to hidden. */
+  left: 0px;
+  position: absolute;
+  top: 0px;
 }
-.jPicker_ColorBar_l4 {
-  background-color: transparent;
-  background-repeat: repeat-x;
+.jPicker_ColorMap_l1, .jPicker_ColorMap_l2, .jPicker_ColorMap_l3 {
+  width: 256px; /* must specific pixel width. IE7/8 Quirks mode ignores opacity for an absolutely positioned item in a relative container with "overflow: visible". The marker in the colorBar
+                   would not be drawn if its overflow is set to hidden. */
 }
-.jPicker_ColorBar_l5 {
-  background-color: transparent;
+.jPicker_ColorBar_l1, .jPicker_ColorBar_l2, .jPicker_ColorBar_l3, .jPicker_ColorBar_l4, .jPicker_ColorBar_l5, .jPicker_ColorBar_l6 {
+  width: 20px; /* must specific pixel width. IE7/8 Quirks mode ignores opacity for an absolutely positioned item in a relative container with "overflow: visible". The marker in the colorBar
+                  would not be drawn if its overflow is set to hidden. */
+}
+.jPicker_ColorMap_l1, .jPicker_ColorMap_l2, .jPicker_ColorBar_l6 {
+  background-repeat: no-repeat;
+}
+.jPicker_ColorMap_l3, .jPicker_ColorBar_l5 {
   background-repeat: repeat;
+}
+.jPicker_ColorBar_l1, .jPicker_ColorBar_l2, .jPicker_ColorBar_l3, .jPicker_ColorBar_l4 {
+  background-repeat: repeat-x;
+}
+.jPicker_ColorMap_Arrow {
+  display: block;
+  position: absolute;
 }
 .jPicker_ColorBar_Arrow {
   display: block;
   left: -10px; /* (arrow width / 2) - (element width / 2) - position arrows' center in elements' center */
   position: absolute;
-}
-.jPicker_AlphaBar {
-  border: 2px inset #eee;
-  cursor: e-resize;
-  display: none;
-  height: 24px; /* IE 6 incorrectly draws border inside the width and height instead of outside - We will fix this to 20px later */
-  margin: 10px 5px 4px 5px;
-  padding: 0px;
-  position: relative;
-  width: 260px; /* IE 6 incorrectly draws border inside the width and height instead of outside - We will fix this to 256px later */
-}
-div[class="jPicker_AlphaBar"] {
-  height: 20px; /* correct to 20px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
-  width: 256px; /* correct to 256px for browsers that support the "[class="xxx"]" selector (IE7+,Firefox,Safari,Chrome,Opera,etc.) */
-}
-.jPicker_AlphaBar_Arrow {
-  display: block;
-  top: -10px; /* (arrow height / 2) - (element height / 2) - position arrows' center in elements' center */
-  position: absolute;
-}
-.jPicker_EnableAlpha {
-  text-align: left;
 }
 .jPicker_Preview {
   font-size: x-small;
@@ -183,45 +156,36 @@ div[class="jPicker_AlphaBar"] {
 .jPicker_OkCancel input.jPicker_Ok {
   margin: 12px 0px 5px 0px;
 }
-.jPicker_Spacer {
-  height: 10px;
+.jPicker_Text {
+  text-align: left;
 }
 .jPicker_HueText, .jPicker_SaturationText, .jPicker_BrightnessText, .jPicker_RedText, .jPicker_GreenText, .jPicker_BlueText, .jPicker_AlphaText {
   background-color: #fff;
   border: 1px inset #aaa;
   margin: 0px 0px 0px 5px;
+  text-align: left;
   width: 30px;
-}
-.jPicker_EnterHex {
-  text-align: right;
 }
 .jPicker_HexText {
   background-color: #fff;
   border: 1px inset #aaa;
-  margin: 0px 19px 0px 5px;
-  width: 50px;
-}
-td.jPicker_OpacityCol {
-  padding-top: 12px;
-  text-indent: -8px;
-}
-td.jPicker_OpacityCol * {
-  display: none;
-}
-td.jPicker_HexCol {
-  text-align: left;
+  margin: 0px 0px 0px 5px;
+  width: 65px;
 }
 .jPicker_Grid {
   text-align: center;
 }
-.jPicker_QuickColor {
+span.jPicker_QuickColor {
   border: 1px inset #aaa;
   cursor: pointer;
   display: block;
   float: left;
-  height: 12px;
-  line-height: 12px;
-  margin: 2px 3px 1px 3px;
+  height: 13px;
+  line-height: 13px;
+  margin: 2px 2px 1px 2px;
   padding: 0px;
-  width: 12px;
+  width: 15px;
+}
+span[class="jPicker_QuickColor"] {
+  width: 13px;
 }
