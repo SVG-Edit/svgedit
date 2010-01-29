@@ -282,7 +282,7 @@
 }
 
 #svg_editor #main_menu {
-	z-index: 1;
+	z-index: 12;
 	background: #E8E8E8;
 	position: relative;
 	width: 200px;
@@ -360,9 +360,12 @@
 #svg_editor #tools_left {
 	position: absolute;
 	border-right: none;
-	width: 36px;
+	width: 32px;
 	top: 75px;
-	left: 2px;
+	left: 0;
+	padding-left: 2px;
+	background: #E8E8E8;
+	z-index: 5;
 }
 
 #workarea.wireframe #svgcontent * {
@@ -431,14 +434,18 @@
 	height: 15px;
 }
 
-#svg_editor .flyout_arrow_horiz {
-	float: right;
+#svg_editor #tools_left .tool_button {
 	position: relative;
-	top: -13px;
-	left: -5px;
-	margin-top: -3px;
-	margin-bottom: -13px;
+	z-index: 11;
 }
+
+#svg_editor .flyout_arrow_horiz {
+	position: absolute;
+	bottom: 3%;
+	right: 5%;
+	z-index: 10;
+}
+
 
 .magic_field > * {
 	float: left;
@@ -539,6 +546,7 @@ span.zoom_tool {
 	border-top: 1px solid #FFFFFF;
 	border-right: 1px solid #808080;
 	border-bottom: 1px solid #808080;
+	background-color: #E8E8E8;
 	cursor: pointer;
 }
 
@@ -619,6 +627,7 @@ span.zoom_tool {
 	position: absolute;
 	display: none;
 	cursor: pointer;
+	width: 400px;
 }
 
 #svg_editor .tools_flyout_v {
@@ -628,9 +637,7 @@ span.zoom_tool {
 	width: 30px;
 }
 
-/* TODO: figure out what more-specific selector causes me to write this atrocity and not
-         simply .tool_flyout_button */
-#svg_editor #tools_rect .tool_flyout_button, #svg_editor #tools_ellipse .tool_flyout_button {
+#svg_editor .tools_flyout .tool_button {
 	float: left;
 	background-color: #E8E8E8;
 	border-left: 1px solid #FFFFFF;
@@ -644,14 +651,6 @@ span.zoom_tool {
 #svg_editor .tool_button:hover, 
 #svg_editor .push_button:hover {
 	background-color: #FFF;
-}
-
-#svg_editor #tools_rect .tool_flyout_button_current, #svg_editor #tools_ellipse .tool_flyout_button_current {
-	border-left: 1px solid #808080;
-	border-top: 1px solid #808080;
-	border-right: 1px solid #FFFFFF;
-	border-bottom: 1px solid #FFFFFF;
-	background-color: #B0B0B0;
 }
 
 #svg_editor #tools_bottom {
@@ -951,9 +950,18 @@ button#tool_docprops_cancel {
 }
 
 /* Possibly not necessary */
-#svg_editor #tools_rect .tool_flyout_button,
-#svg_editor #tools_ellipse .tool_flyout_button {
+#svg_editor .tools_flyout .tool_button,
+#svg_editor .tools_flyout .tool_flyout {
 	padding: 2px;
 	width: 24px;
 	height: 24px;
+	margin: 0;
+}
+
+#svg_editor .tools_flyout .tool_button:hover {
+	border-left: 1px solid #808080;
+	border-top: 1px solid #808080;
+	border-right: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	background-color: #B0B0B0;
 }
