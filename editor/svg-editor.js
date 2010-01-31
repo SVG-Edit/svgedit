@@ -1275,12 +1275,12 @@ function svg_edit_setup() {
 	
 	var selectNext = function() {
 		svgCanvas.cycleElement(1);
-	}
+	};
 	
 	var selectPrev = function() {
 		svgCanvas.cycleElement(0);
-	}
-
+	};
+	
 	var rotateSelected = function(cw) {
 		if (selectedElement == null || multiselected) return;
 		var step = 5;
@@ -1288,7 +1288,7 @@ function svg_edit_setup() {
 		var new_angle = $('#angle').val()*1 + step;
 		svgCanvas.setRotationAngle(new_angle);
 		updateContextPanel();
-	}
+	};
 	
 	var clickClear = function(){
 		$.confirm(uiStrings.QwantToClear, function(ok) {
@@ -2330,7 +2330,8 @@ function svg_edit_setup() {
 			{key: ['up', true], fn: function(){moveSelected(0,-1);}},
 			{key: ['down', true], fn: function(){moveSelected(0,1);}},
 			{key: ['left', true], fn: function(){moveSelected(-1,0);}},
-			{key: ['right', true], fn: function(){moveSelected(1,0);}}
+			{key: ['right', true], fn: function(){moveSelected(1,0);}},
+			{key: 'A', fn: function(){svgCanvas.selectAllInCurrentLayer();}}
 		];
 		
 		// Tooltips not directly associated with a single function
