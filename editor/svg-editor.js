@@ -2759,11 +2759,6 @@ function svg_edit_setup() {
 			else if(loc.indexOf('?url=') != -1) {
 				var pre = '?url=';
 				var url = loc.substring(loc.indexOf(pre) + pre.length);
-				var s = document.createElement("script");
-				s.setAttribute("src", url);
-				document.body.appendChild(s);
-				console.log(s.textContent);
-				/*
 				$.ajax({
 					'url': url,
 					'dataType': 'text',
@@ -2774,7 +2769,6 @@ function svg_edit_setup() {
 						}
 					}
 				});
-				*/
 			}
 		}
 	});
