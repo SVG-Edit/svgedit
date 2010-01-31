@@ -28,35 +28,35 @@ var isOpera = !!window.opera,
 
 // this defines which elements and attributes that we support
 // TODO: add <marker> to this and marker attributes
-// TODO: add <mask> to this
 // TODO: add <pattern> to this
 // TODO: add <symbol> to this
 // TODO: add <tspan> to this
 	svgWhiteList = {
-	"a": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "xlink:href", "xlink:title"],
-	"circle": ["clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "r", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"a": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "xlink:href", "xlink:title"],
+	"circle": ["clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "r", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"clipPath": ["clipPathUnits", "id"],
 	"defs": [],
 	"desc": [],
-	"ellipse": ["clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"ellipse": ["clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"feGaussianBlur": ["id", "requiredFeatures", "stdDeviation"],
 	"filter": ["filterRes", "filterUnits", "height", "id", "primitiveUnits", "requiredFeatures", "width", "x", "xlink:href", "y"],
-	"g": ["clip-path", "clip-rule", "id", "display", "fill", "fill-opacity", "fill-rule", "filter", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"image": ["clip-path", "clip-rule", "filter", "height", "id", "opacity", "requiredFeatures", "style", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
-	"line": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
+	"g": ["clip-path", "clip-rule", "id", "display", "fill", "fill-opacity", "fill-rule", "filter", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"image": ["clip-path", "clip-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "style", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
+	"line": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
 	"linearGradient": ["id", "gradientTransform", "gradientUnits", "requiredFeatures", "spreadMethod", "systemLanguage", "x1", "x2", "xlink:href", "y1", "y2"],
+	"mask": ["height", "id", "maskContentUnits", "maskUnits", "width", "x", "y"],
 	"metadata": ["id"],
-	"path": ["clip-path", "clip-rule", "d", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"polygon": ["clip-path", "clip-rule", "id", "fill", "fill-opacity", "fill-rule", "filter", "id", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"polyline": ["clip-path", "clip-rule", "id", "fill", "fill-opacity", "fill-rule", "filter", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"path": ["clip-path", "clip-rule", "d", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"polygon": ["clip-path", "clip-rule", "id", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"polyline": ["clip-path", "clip-rule", "id", "fill", "fill-opacity", "fill-rule", "filter", "mask", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"radialGradient": ["id", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "r", "requiredFeatures", "spreadMethod", "systemLanguage", "xlink:href"],
-	"rect": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "height", "id", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "width", "x", "y"],
+	"rect": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "width", "x", "y"],
 	"stop": ["id", "offset", "requiredFeatures", "stop-color", "stop-opacity", "style", "systemLanguage"],
 	"switch": ["id", "requiredFeatures", "systemLanguage"],
-	"svg": ["clip-path", "clip-rule", "filter", "id", "height", "requiredFeatures", "style", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
-	"text": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
+	"svg": ["clip-path", "clip-rule", "filter", "id", "height", "mask", "requiredFeatures", "style", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
+	"text": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
 	"title": [],
-	"use": ["clip-path", "clip-rule", "filter", "height", "id", "style", "transform", "width", "x", "xlink:href", "y"]
+	"use": ["clip-path", "clip-rule", "filter", "height", "id", "mask", "style", "transform", "width", "x", "xlink:href", "y"]
 	},
 
 
@@ -1163,9 +1163,9 @@ function BatchCommand(text) {
 				}
 			}
 			
-			// if the element has fill/stroke/clip-path pointing to a non-local reference, 
+			// if the element has fill/stroke/clip-path/mask pointing to a non-local reference, 
 			// need to remove the attribute
-			$.each(["clip-path", "fill", "stroke"],function(i,attr) {
+			$.each(["clip-path", "fill", "mask", "stroke"],function(i,attr) {
 				var val = node.getAttribute(attr);
 				if (val) {
 					val = getUrlFromAttr(val);
