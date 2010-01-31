@@ -2217,7 +2217,7 @@ function BatchCommand(text) {
 		while (i--) {
 			var elem = elemsToAdd[i];
 			// we ignore any selectors
-			if (!elem || elem.id.substr(0,13) == "selectorGrip_") continue;
+			if (!elem || elem.id.substr(0,13) == "selectorGrip_" || !this.getBBox(elem)) continue;
 			// if it's not already there, add it
 			if (selectedElements.indexOf(elem) == -1) {
 				selectedElements[j] = elem;
@@ -5654,6 +5654,18 @@ function BatchCommand(text) {
 				g.setAttribute("opacity", opacity);
 				break;
 			}
+		}
+	};
+	
+	// Function: selectAllInCurrentLayer
+	// Clears the selection, then adds all elements in the current layer to the selection.
+	// This function then fires the selected event.
+	this.selectAllInCurrentLayer = function() {
+		if (current_layer) {
+			canvas.clearSelection();
+			canvas.addToSelection($(current_layer).children());
+			current_mode = "select";
+			call("selected", selectedElements);			
 		}
 	};
 
