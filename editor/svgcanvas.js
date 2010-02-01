@@ -967,11 +967,17 @@ function BatchCommand(text) {
 		curBBoxes = [],
 		extensions = {};
 	
-	var runExtensions = this.runExtensions = function(action, vars) {
+	// Should this return an array by default, so extension results aren't overwritten?
+	var runExtensions = this.runExtensions = function(action, vars, returnArray) {
 		var result = false;
+		if(returnArray) result = [];
 		$.each(extensions, function(name, opts) {
 			if(action in opts) {
-				result = opts[action](vars);
+				if(returnArray) {
+					result.push(opts[action](vars))
+				} else {
+					result = opts[action](vars);
+				}
 			}
 		});
 		return result;
