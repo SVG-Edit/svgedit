@@ -285,7 +285,8 @@ function svg_edit_setup() {
 					if(opts.isDefault) def = i;
 					
 					// Clicking the icon in flyout should set this set's icon
-					$(this).mouseup(function() {
+					
+					var func = function() {
 						if (toolButtonClick(show_sel)) {
 							opts.fn();
 						}
@@ -302,7 +303,12 @@ function svg_edit_setup() {
 						shower.children(':not(.flyout_arrow_horiz)').remove();
 						shower.append(icon).attr('data-curopt', opts.sel); // This sets the current mode
 						shower.attr('title', $(opts.sel).attr('title'));
-					});
+					}
+					
+					$(this).mouseup(func);
+					if(opts.key) {
+						$(document).bind('keydown', {combi: opts.key+''}, func);
+					}
 				});
 			
 			
@@ -441,6 +447,7 @@ function svg_edit_setup() {
 						sel: '#'+id,
 						fn: btn.events.click,
 						icon: btn.id,
+						key: btn.key,
 						isDefault: btn.includeWith?btn.includeWith.isDefault:0
 					}, ref_data];
 					
