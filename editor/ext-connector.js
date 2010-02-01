@@ -1,3 +1,12 @@
+/*
+ * ext-connector.js
+ *
+ * Licensed under the Apache License, Version 2
+ *
+ * Copyright(c) 2010 Alexis Deveria
+ *
+ */
+ 
 $(function() {
 	svgCanvas.addExtension("Connector", function(S) {
 		var svgcontent = S.content,
@@ -15,18 +24,14 @@ $(function() {
 			connections = [],
 			conn_class = "se_connect",
 			connect_str = "-SE_CONNECT-",
-			selElems;
+			selElems = [];
 			
 		var lang_list = {
 			"en":[
-				{"id": "mode_connect", "title": "Connect two objects" },
-				{"id": "conn_arrow_none", "textContent": "No arrow" },
-				{"id": "conn_arrow_arrow", "textContent": "Arrow" }
+				{"id": "mode_connect", "title": "Connect two objects" }
 			],
 			"fr":[
-				{"id": "mode_connect", "title": "Connecter deux objets"},
-				{"id": "conn_arrow_none", "textContent": "Sans flèche" },
-				{"id": "conn_arrow_arrow", "textContent": "Flèche" }
+				{"id": "mode_connect", "title": "Connecter deux objets"}
 			]
 		};
 		
@@ -37,11 +42,6 @@ $(function() {
 			} 
 			conn_rules.text(!on?"":"#tool_clone, #tool_topath, #tool_angle, #xy_panel { display: none !important; }");
 			$('#connector_panel').toggle(on);
-			
-			if(on) {
-				var has_arrow = selElems[0].getAttribute("marker-mid");
-				$("#connector_arrow").val(has_arrow?"arrow":"none");
-			}
 		}
 		
 		function setPoint(elem, pos, x, y, setMid) {
@@ -70,44 +70,6 @@ $(function() {
 				var pt_end = pts.getItem(pts.numberOfItems-1);
 				setPoint(elem, 1, (pt_end.x + pt_start.x)/2, (pt_end.y + pt_start.y)/2);
 			}
-		}
-		
-		function addArrow() {
-			var defs = S.findDefs();
-			var m_id = "se_connector_arrow";
-			var marker = getElem(m_id);
-			
-			if(!marker) {
-				marker = addElem({
-					"element": "marker",
-					"attr": {
-						"viewBox": "0 0 10 10",
-						"id": m_id,
-						"refX": 5,
-						"refY": 5,
-						"markerUnits": "strokeWidth",
-						"markerWidth": 16,
-						"markerHeight": 14,
-						"orient": "auto"
-					}
-				});
-				var arrow = addElem({
-					"element": "path",
-					"attr": {
-						"d": "M0,0 L10,5 L0,10 z",
-						"fill": "#000"
-					}
-				});
-				
-				marker.appendChild(arrow);
-				defs.appendChild(marker);
-			}
-			
-			selElems[0].setAttribute("marker-mid", "url(#" + m_id + ")");
-		}
-
-		function remArrow() {
-			selElems[0].removeAttribute("marker-mid");
 		}
 		
 		function findConnectors() {
@@ -194,22 +156,22 @@ $(function() {
 		
 		// Init code
 		(function() {
-			var conn_tools = $('<div id="connector_panel">\
-			<label><select id="connector_arrow">\
-			<option id="conn_arrow_none" value="none">No arrow</option>\
-			<option id="conn_arrow_arrow" value="arrow">Arrow</option>\
-			</select></label></div>"').hide().appendTo("#tools_top");
-			
-			$('#connector_arrow').change(function() {
-				switch ( this.value ) {
-					case "arrow":
-						addArrow();
-						break;
-					case "none":
-						remArrow();
-						break;
-				}
-			});
+// 			var conn_tools = $('<div id="connector_panel">\
+// 			<label><select id="connector_arrow">\
+// 			<option id="conn_arrow_none" value="none">No arrow</option>\
+// 			<option id="conn_arrow_arrow" value="arrow">Arrow</option>\
+// 			</select></label></div>"').hide().appendTo("#tools_top");
+// 			
+// 			$('#connector_arrow').change(function() {
+// 				switch ( this.value ) {
+// 					case "arrow":
+// 						addArrow();
+// 						break;
+// 					case "none":
+// 						remArrow();
+// 						break;
+// 				}
+// 			});
 
 			S.extendWhitelist({
 				"marker": ["viewBox", "id", "refX", "refY", "markerUnits", "markerWidth", "markerHeight", "orient"],
