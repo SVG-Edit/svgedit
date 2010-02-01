@@ -988,6 +988,7 @@ function BatchCommand(text) {
 				addSvgElementFromJson: addSvgElementFromJson,
 				selectorManager: selectorManager,
 				findDefs: findDefs,
+				recalculateDimensions: recalculateDimensions,
 				// Probably only needed for extensions, so no need to make public?
 				// Also, should we prevent extensions from allowing <script> elements to be added?
 				extendWhitelist: function(new_data) {
@@ -2777,7 +2778,7 @@ function BatchCommand(text) {
 					canvas.beginUndoableChange("transform", selectedElements);
 					break;
 				default:
-					console.log("Unknown mode in mousedown: " + current_mode);
+					// This could occur in an extension
 					break;
 			}
 			
@@ -3298,7 +3299,7 @@ function BatchCommand(text) {
 					recalculateAllSelectedDimensions();
 					break;
 				default:
-					console.log("Unknown mode in mouseup: " + current_mode);
+					// This could occur in an extension
 					break;
 			}
 			
