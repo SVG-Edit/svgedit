@@ -1,11 +1,11 @@
 $(function() {
-	svgCanvas.addExtension("Connector", function(vars) {
-		var svgcontent = vars.content,
-			svgroot = vars.root,
-			getNextId = vars.getNextId,
-			getElem = vars.getElem,
-			addElem = vars.addSvgElementFromJson,
-			selManager = vars.selectorManager,
+	svgCanvas.addExtension("Connector", function(S) {
+		var svgcontent = S.content,
+			svgroot = S.root,
+			getNextId = S.getNextId,
+			getElem = S.getElem,
+			addElem = S.addSvgElementFromJson,
+			selManager = S.selectorManager,
 			started = false,
 			start_x,
 			start_y,
@@ -73,7 +73,7 @@ $(function() {
 		}
 		
 		function addArrow() {
-			var defs = vars.findDefs();
+			var defs = S.findDefs();
 			var m_id = "se_connector_arrow";
 			var marker = getElem(m_id);
 			
@@ -110,6 +110,88 @@ $(function() {
 			selElems[0].removeAttribute("marker-mid");
 		}
 		
+		function findConnectors() {
+
+			// Check if selected elements have connections
+			var elems = selElems;
+			var i = elems.length;
+			var connectors = $(svgcontent).find("." + conn_class);
+			if(!connectors.length) return;
+			connections = [];
+			
+			var sel = ':not(a,g,svg,.'+conn_class+')';
+			var all_els = [];
+			// Get children from groups
+			
+			while(i--) {
+				var elem = elems[i];
+				if(!elem) continue;
+				// Get all children that cannot contain children
+				var solid_elems = $(elem).find(sel);
+				// Include self if okay
+				if($(elem).filter(sel).length) {
+					solid_elems.push(elem);
+				}
+				$.merge(all_els, solid_elems);
+			}
+			
+			i = all_els.length;
+			
+			if(i > 1) {
+				// Multiselected, so unselect connector
+				svgCanvas.removeFromSelection($("." + conn_class).toArray());
+			}
+			
+			while(i--) {
+				var elem = all_els[i];
+				if(!elem) continue;
+				if(elem.getAttribute('class') == conn_class) continue;
+				var elem_id = elem.id;
+				connectors.each(function() {
+					var con_id = this.id;
+					if(con_id.indexOf(elem_id) != -1) {
+						var is_start = true;
+						if(con_id.indexOf(connect_str + elem_id) != -1) {
+							// Found connector (selected is end elem)
+							is_start = false;
+						}
+						
+						var bb = svgCanvas.getStrokedBBox([elem]);
+						var x = bb.x + bb.width/2;
+						var y = bb.y + bb.height/2;
+						connections.push({
+							elem: elem,
+							connector: this,
+							is_start: is_start,
+							start_x: x,
+							start_y: y
+						});	
+					}
+				});
+			}
+
+		}
+		
+		function updateConnectors() {
+			// Updates connector lines based on selected elements
+			// Is not used on mousemove, as it runs getStrokedBBox every time,
+			// which isn't necessary there.
+			findConnectors();
+			if(connections.length) {
+				// Update line with element
+				var i = connections.length;
+				while(i--) {
+					var conn = connections[i];
+					var line = conn.connector;
+					var elem = conn.elem;
+					var bb = svgCanvas.getStrokedBBox([elem]);
+					var pt_x = bb.x + bb.width/2;
+					var pt_y = bb.y + bb.height/2;
+					setPoint(line, conn.is_start?0:'end', pt_x, pt_y, true);
+				}
+			}
+		}
+		
 		// Init code
 		(function() {
 			var conn_tools = $('<div id="connector_panel">\
@@ -129,10 +211,26 @@ $(function() {
 				}
 			});
 
-			vars.extendWhitelist({
+			S.extendWhitelist({
 				"marker": ["viewBox", "id", "refX", "refY", "markerUnits", "markerWidth", "markerHeight", "orient"],
 				"polyline": ["class", "marker-mid"]
 			});
+			
+			var gse = svgCanvas.groupSelectedElements;
+			
+			svgCanvas.groupSelectedElements = function() {
+				svgCanvas.removeFromSelection($("." + conn_class).toArray());
+				gse();
+			}
+			
+			var mse = svgCanvas.moveSelectedElements;
+			
+			svgCanvas.moveSelectedElements = function() {
+				svgCanvas.removeFromSelection($("." + conn_class).toArray());
+				mse.apply(this, arguments);
+				updateConnectors();
+			}
+			
 		}());
 		
 		return {
@@ -171,9 +269,14 @@ $(function() {
 					
 					if(started) return;
 					
-					if(e.target.parentNode.parentNode == svgcontent) {
+					var mouse_target = e.target;
+					
+					var parents = $(mouse_target).parents();
+					
+					if($.inArray(svgcontent, parents) != -1) {
 						// Connectable element
-						start_elem = e.target;
+
+						start_elem = mouse_target;
 						
 						// Get center of source element
 						var bb = svgCanvas.getStrokedBBox([start_elem]);
@@ -197,41 +300,7 @@ $(function() {
 						started: true
 					};
 				} else if(mode == "select") {
-					
-					// Check if selected elements have connections
-					var elems = opts.selectedElements;
-					var i = elems.length;
-					var connectors = $(svgcontent).find("." + conn_class);
-					if(!connectors.length) return;
-					connections = [];
-					
-					while(i--) {
-						var elem = elems[i];
-						if(!elem) continue;
-						if(elem.getAttribute('class') == conn_class) continue;
-						var elem_id = elem.id;
-						connectors.each(function() {
-							var con_id = this.id;
-							if(con_id.indexOf(elem_id) != -1) {
-								var is_start = true;
-								if(con_id.indexOf(connect_str + elem_id) != -1) {
-									// Found connector (selected is end elem)
-									is_start = false;
-								}
-								
-								var bb = svgCanvas.getStrokedBBox([elem]);
-								var x = bb.x + bb.width/2;
-								var y = bb.y + bb.height/2;
-								connections.push({
-									elem: elem,
-									connector: this,
-									is_start: is_start,
-									start_x: x,
-									start_y: y
-								});	
-							}
-						});
-					}
+					findConnectors();
 				}
 			},
 			mouseMove: function(opts) {
@@ -256,7 +325,9 @@ $(function() {
 						// Look for selected connector elements
 						if(elem && elem.getAttribute('class') == conn_class) {
 							// Remove the "translate" transform given to move
+							svgCanvas.removeFromSelection([elem]);
 							svgCanvas.getTransformList(elem).clear();
+
 						}
 					}
 					if(connections.length) {
@@ -361,6 +432,7 @@ $(function() {
 					svgcontent = elem;
 				}
 				
+				updateConnectors();
 			}
 		};
 	});
