@@ -2753,7 +2753,9 @@ function svg_edit_setup() {
 				var sel = shower.attr('data-curopt');
 				// Check if there's an icon here
 				if(!shower.children('svg, img').length) {
-					shower.append($(sel).children().clone());
+					var clone = $(sel).children().clone();
+					clone[0].removeAttribute('style'); //Needed for Opera
+					shower.append(clone);
 				}
 			});
 			
