@@ -2780,6 +2780,8 @@ function svg_edit_setup() {
 					}
 				});
 			}
+			
+			svgCanvas.runCallback();
 		}
 	});
 }());
