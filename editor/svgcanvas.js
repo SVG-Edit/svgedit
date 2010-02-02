@@ -7327,6 +7327,16 @@ function BatchCommand(text) {
 	}
 	
 	this.clear();
+
+	this.ready = function(cb) {
+		this.callback = cb;
+	}
+	
+	this.runCallback = function() {
+		if(this.callback) {
+			this.callback();
+		}
+	}
 	
 	function getElem(id) {
 		if(svgroot.querySelector) {
