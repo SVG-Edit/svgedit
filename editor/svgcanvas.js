@@ -31,32 +31,32 @@ var isOpera = !!window.opera,
 // TODO: add <symbol> to this
 // TODO: add <tspan> to this
 	svgWhiteList = {
-	"a": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "xlink:href", "xlink:title"],
-	"circle": ["clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "r", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"clipPath": ["clipPathUnits", "id"],
+	"a": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "class", "mask", "opacity", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "xlink:href", "xlink:title"],
+	"circle": ["clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "class", "mask", "opacity", "r", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"clipPath": ["clipPathUnits", "id", "class"],
 	"defs": [],
 	"desc": [],
-	"ellipse": ["clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"feGaussianBlur": ["id", "requiredFeatures", "stdDeviation"],
-	"filter": ["filterRes", "filterUnits", "height", "id", "primitiveUnits", "requiredFeatures", "width", "x", "xlink:href", "y"],
-	"g": ["clip-path", "clip-rule", "id", "display", "fill", "fill-opacity", "fill-rule", "filter", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"image": ["clip-path", "clip-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "style", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
-	"line": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
-	"linearGradient": ["id", "gradientTransform", "gradientUnits", "requiredFeatures", "spreadMethod", "systemLanguage", "x1", "x2", "xlink:href", "y1", "y2"],
-	"marker": ["id", "markerHeight", "markerUnits", "markerWidth", "orient", "preserveAspectRatio", "refX", "refY", "systemLanguage", "viewBox"],
-	"mask": ["height", "id", "maskContentUnits", "maskUnits", "width", "x", "y"],
-	"metadata": ["id"],
-	"path": ["clip-path", "clip-rule", "d", "fill", "fill-opacity", "fill-rule", "filter", "id", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"polygon": ["clip-path", "clip-rule", "id", "fill", "fill-opacity", "fill-rule", "filter", "id", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"polyline": ["clip-path", "clip-rule", "id", "fill", "fill-opacity", "fill-rule", "filter", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"radialGradient": ["id", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "r", "requiredFeatures", "spreadMethod", "systemLanguage", "xlink:href"],
-	"rect": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "width", "x", "y"],
-	"stop": ["id", "offset", "requiredFeatures", "stop-color", "stop-opacity", "style", "systemLanguage"],
-	"switch": ["id", "requiredFeatures", "systemLanguage"],
-	"svg": ["clip-path", "clip-rule", "filter", "id", "height", "mask", "requiredFeatures", "style", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
-	"text": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
+	"ellipse": ["clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "class", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"feGaussianBlur": ["id", "class", "requiredFeatures", "stdDeviation"],
+	"filter": ["filterRes", "filterUnits", "height", "id", "class", "primitiveUnits", "requiredFeatures", "width", "x", "xlink:href", "y"],
+	"g": ["clip-path", "clip-rule", "id", "class", "display", "fill", "fill-opacity", "fill-rule", "filter", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"image": ["clip-path", "clip-rule", "filter", "height", "id", "class", "mask", "opacity", "requiredFeatures", "style", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
+	"line": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "class", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
+	"linearGradient": ["id", "class", "gradientTransform", "gradientUnits", "requiredFeatures", "spreadMethod", "systemLanguage", "x1", "x2", "xlink:href", "y1", "y2"],
+	"marker": ["id", "class", "markerHeight", "markerUnits", "markerWidth", "orient", "preserveAspectRatio", "refX", "refY", "systemLanguage", "viewBox"],
+	"mask": ["height", "id", "class", "maskContentUnits", "maskUnits", "width", "x", "y"],
+	"metadata": ["id", "class"],
+	"path": ["clip-path", "clip-rule", "d", "fill", "fill-opacity", "fill-rule", "filter", "id", "class", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"polygon": ["clip-path", "clip-rule", "id", "class", "fill", "fill-opacity", "fill-rule", "filter", "id", "class", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"polyline": ["clip-path", "clip-rule", "id", "class", "fill", "fill-opacity", "fill-rule", "filter", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
+	"radialGradient": ["id", "class", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "r", "requiredFeatures", "spreadMethod", "systemLanguage", "xlink:href"],
+	"rect": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "height", "id", "class", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "width", "x", "y"],
+	"stop": ["id", "class", "offset", "requiredFeatures", "stop-color", "stop-opacity", "style", "systemLanguage"],
+	"switch": ["id", "class", "requiredFeatures", "systemLanguage"],
+	"svg": ["clip-path", "clip-rule", "filter", "id", "class", "height", "mask", "requiredFeatures", "style", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
+	"text": ["clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "class", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "text-anchor", "x", "xml:space", "y"],
 	"title": [],
-	"use": ["clip-path", "clip-rule", "filter", "height", "id", "mask", "style", "transform", "width", "x", "xlink:href", "y"]
+	"use": ["clip-path", "clip-rule", "filter", "height", "id", "class", "mask", "style", "transform", "width", "x", "xlink:href", "y"]
 	},
 
 
@@ -876,6 +876,7 @@ function BatchCommand(text) {
 		svgns = "http://www.w3.org/2000/svg",
 		xlinkns = "http://www.w3.org/1999/xlink",
 		xmlns = "http://www.w3.org/XML/1998/namespace",
+		se_ns = "http://svg-edit.googlecode.com",
 		idprefix = "svg_",
 		svgdoc  = container.ownerDocument,
 		svgroot = svgdoc.createElementNS(svgns, "svg");
@@ -993,25 +994,7 @@ function BatchCommand(text) {
 				addSvgElementFromJson: addSvgElementFromJson,
 				selectorManager: selectorManager,
 				findDefs: findDefs,
-				recalculateDimensions: recalculateDimensions,
-				// Probably only needed for extensions, so no need to make public?
-				// Also, should we prevent extensions from allowing <script> elements to be added?
-				extendWhitelist: function(new_data) {
-					$.each(new_data, function(elname, attrs) {
-						// add element
-						if(!(elname in svgWhiteList)) {
-							svgWhiteList[elname] = attrs;
-						} else {
-							$.each(attrs, function(i, attr) {
-								// add attributes
-								if($.inArray(attr, svgWhiteList[elname]) == -1) {
-									svgWhiteList[elname].push(attr);
-								}
-							});
-						}
-					});
-				}
-
+				recalculateDimensions: recalculateDimensions
 			});
 			extensions[name] = ext;
 			call("extension_added", ext);
@@ -1123,8 +1106,11 @@ function BatchCommand(text) {
 		if (!doc || !parent) return;
 
 		var allowedAttrs = svgWhiteList[node.nodeName];
+		
 		// if this element is allowed
 		if (allowedAttrs != undefined) {
+			var se_attrs = [];
+		
 			var i = node.attributes.length;
 			while (i--) {
 				// if the attribute is not in our whitelist, then remove it
@@ -1136,6 +1122,11 @@ function BatchCommand(text) {
 				// "href" and that namespaceURI matches the XLINK namespace
 				var attrName = attr.nodeName;
 				if (allowedAttrs.indexOf(attrName) == -1) {
+					// Bypassing the whitelist to allow se: prefixes. Is there
+					// a more appropriate way to do this?
+					if(attrName.indexOf('se:') == 0) {
+						se_attrs.push([attrName, attr.nodeValue]);
+					} 
 					node.removeAttribute(attrName);
 				}
 				// special handling for path d attribute
@@ -1156,6 +1147,11 @@ function BatchCommand(text) {
 					}
 				}
 			}
+			
+			$.each(se_attrs, function(i, attr) {
+				node.setAttributeNS(se_ns, attr[0], attr[1]);
+			});
+			
 			// for filters, uses and gradients, ensure the xlink:href refers to a local element
 			var href = node.getAttributeNS(xlinkns,"href");
 			if(href && 
@@ -1283,11 +1279,14 @@ function BatchCommand(text) {
 		// keep calling it until there are none to remove
 		while (removeUnusedGrads() > 0) {};
 		pathActions.clear(true);
+		
+		// Keep SVG-Edit comment on top
 		$.each(svgcontent.childNodes, function(i, node) {
 			if(i && node.nodeType == 8 && node.data.indexOf('Created with') != -1) {
 				svgcontent.insertBefore(node, svgcontent.firstChild);
 			}
 		});
+		
 		var output = svgToString(svgcontent, 0);
 		return output;
 	}
@@ -1309,6 +1308,10 @@ function BatchCommand(text) {
 				var res = canvas.getResolution();
 				out.push(' width="' + res.w + '" height="' + res.h
 				+ '" xmlns:xlink="'+xlinkns+'" xmlns="'+svgns+'"');
+				if(svgcontent.getAttribute("xmlns:se")) {
+					// TODO: Check if any se: attributes are actually used
+					out.push(' xmlns:se="'+se_ns+'"');
+				}
 			} else {
 				for (var i=attrs.length-1; i>=0; i--) {
 					attr = attrs.item(i);
@@ -1316,6 +1319,7 @@ function BatchCommand(text) {
 					
 					if (attrVal != "") {
 						if(attrVal.indexOf('pointer-events') == 0) continue;
+						if(attr.localName == "class" && attrVal.indexOf('se_') == 0) continue;
 						out.push(" "); 
 						if(attr.localName == 'd') attrVal = pathActions.convertPath(elem, true);
 						if(!isNaN(attrVal)) {
@@ -1342,6 +1346,9 @@ function BatchCommand(text) {
 						}
 						else if(attr.namespaceURI == xmlns) {
 							out.push('xml:');
+						} 
+						else if(attr.namespaceURI == se_ns) {
+							out.push('se:');
 						}
 						out.push(attr.localName); out.push("=\""); 
 						out.push(attrVal); out.push("\"");
@@ -5755,6 +5762,13 @@ function BatchCommand(text) {
 		}
 		batchCmd.addSubCommand(new ChangeElementCommand(doc_title, {'#text': old_title}));
 		addCommandToHistory(batchCmd);
+	}
+	
+	this.getEditorNS = function(add) {
+		if(add) {
+			svgcontent.setAttribute('xmlns:se', se_ns);
+		}
+		return se_ns;
 	}
 	
 	this.setResolution = function(x, y) {
