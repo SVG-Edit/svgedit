@@ -38,11 +38,11 @@ var put_locale = function(svgCanvas, given_param){
 	var processFile = function(data){
 		var LangData = eval(data), js_strings;
 		var more = svgCanvas.runExtensions("addLangData", lang_param, true);
-		if(more.length) {
-			$.each(more, function(i, m) {
+		$.each(more, function(i, m) {
+			if(m.data) {
 				LangData = $.merge(LangData, m.data);
-			});
-		}
+			}
+		});
 		$.each(LangData, function(i, data) {
 			if(data.id) {
 				var elem = $('#svg_editor').parent().find('#'+data.id)[0];
