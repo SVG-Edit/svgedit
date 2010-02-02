@@ -289,7 +289,6 @@ function BatchCommand(text) {
 // private members
 
 	// **************************************************************************************
-	// FIXME: what's the right way to make this 'class' private to the SelectorManager? 
 	function Selector(id, elem) {
 		// this is the selector's unique number
 		this.id = id;
@@ -2194,8 +2193,8 @@ function BatchCommand(text) {
 				if (elem == null) break;
 				selectorManager.releaseSelector(elem);
 				selectedElements[i] = null;
-				if (i==0) selectedBBoxes[i] = null;
 			}
+			selectedBBoxes[0] = null;
 		}
 		call("selected", selectedElements);
 	};
@@ -2240,10 +2239,10 @@ function BatchCommand(text) {
 		}
 		call("selected", selectedElements);
 		
-		if(showGrips) {
+		if (showGrips || selectedElements.length == 1) {
 			selectorManager.requestSelector(selectedElements[0]).showGrips(true);
 		}
-		else if (selectedElements.length > 1) {
+		else {
 			selectorManager.requestSelector(selectedElements[0]).showGrips(false);
 		}
 
@@ -5883,13 +5882,29 @@ function BatchCommand(text) {
 		return cur_properties.stroke;
 	};
 
+	// TODO: rewrite setFillColor(), setStrokeColor(), setStrokeWidth(), setStrokeStyle() 
+	// to use a common function?
 	this.setStrokeColor = function(val,preventUndo) {
 		cur_shape.stroke = val;
 		cur_properties.stroke_paint = {type:"solidColor"};
-		if (!preventUndo) 
-			this.changeSelectedAttribute("stroke", val);
-		else 
-			this.changeSelectedAttributeNoUndo("stroke", val);
+		var elems = [];
+		var i = selectedElements.length;
+		while (i--) {
+			var elem = selectedElements[i];
+			if (elem) {
+				if (elem.tagName == "g")
+					walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
+				else
+					elems.push(elem);
+			}
+		}
+
+		if (elems.length > 0) {
+			if (!preventUndo) 
+				this.changeSelectedAttribute("stroke", val, elems);
+			else 
+				this.changeSelectedAttributeNoUndo("stroke", val, elems);
+		}
 	};
 
 	this.getFillColor = function() {
@@ -5900,12 +5915,16 @@ function BatchCommand(text) {
 		cur_properties.fill = val;
 		cur_properties.fill_paint = {type:"solidColor"};
 		// take out any path/line elements when setting fill
+		// add all descendants of groups (but remove groups)
 		var elems = [];
 		var i = selectedElements.length;
-		while(i--) {
+		while (i--) {
 			var elem = selectedElements[i];
-			if (elem && elem.tagName != "polyline" && elem.tagName != "line") {
-				elems.push(elem);
+			if (elem) {
+				if (elem.tagName == "g")
+					walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
+				else if (elem.tagName != "polyline" && elem.tagName != "line")
+					elems.push(elem);
 			}
 		}
 		if (elems.length > 0) {
@@ -6046,7 +6065,19 @@ function BatchCommand(text) {
 			return;
 		}
 		cur_properties.stroke_width = val;
-		this.changeSelectedAttribute("stroke-width", val);
+		
+		var elems = [];
+		var i = selectedElements.length;
+		while (i--) {
+			var elem = selectedElements[i];
+			if (elem) {
+				if (elem.tagName == "g")
+					walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
+			}
+		}		
+		if (elems.length > 0) {
+			this.changeSelectedAttribute("stroke-width", val, elems);
+		}
 	};
 
 	this.getStrokeStyle = function() {
@@ -6055,7 +6086,18 @@ function BatchCommand(text) {
 
 	this.setStrokeStyle = function(val) {
 		cur_shape.stroke_style = val;
-		this.changeSelectedAttribute("stroke-dasharray", val);
+		var elems = [];
+		var i = selectedElements.length;
+		while (i--) {
+			var elem = selectedElements[i];
+			if (elem) {
+				if (elem.tagName == "g")
+					walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
+			}
+		}		
+		if (elems.length > 0) {
+			this.changeSelectedAttribute("stroke-dasharray", val, elems);
+		}
 	};
 
 	this.getOpacity = function() {
@@ -6418,9 +6460,14 @@ function BatchCommand(text) {
 					}
 				}
 				// Timeout needed for Opera & Firefox
-				setTimeout(function() {
-					selectorManager.requestSelector(elem).resize();
-				},0);
+				// codedread: it is now possible for this function to be called with elements
+				// that are not in the selectedElements array, we need to only request a
+				// selector if the element is in that array
+				if ($.inArray(elem, selectedElements) != -1) {
+					setTimeout(function() {
+						selectorManager.requestSelector(elem).resize();
+					},0);
+				}
 				// if this element was rotated, and we changed the position of this element
 				// we need to update the rotational transform attribute 
 				var angle = canvas.getRotationAngle(elem);
