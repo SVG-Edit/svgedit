@@ -91,11 +91,6 @@ $(function() {
 						break;
 				}
 			});
-
-			S.extendWhitelist({
-				"marker": ["viewBox", "id", "refX", "refY", "markerUnits", "markerWidth", "markerHeight", "orient"],
-				"polyline": ["class", "marker-mid"]
-			});
 		}());
 		
 		return {
