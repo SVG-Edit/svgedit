@@ -273,12 +273,12 @@ function svg_edit_setup() {
 			var buttons = $(hold_sel).children();
 			var show_sel = hold_sel + '_show';
 			var def = false;
-			
 			buttons.addClass('tool_button')
 				.unbind('click mousedown mouseup') // may not be necessary
 				.each(function(i) {
 					// Get this buttons options
 					var opts = btn_opts[i];
+					
 					// Remember the function that goes with this ID
 					flyout_funcs[opts.sel] = opts.fn;
 
@@ -302,7 +302,6 @@ function svg_edit_setup() {
 						icon[0].setAttribute('height',shower.height());
 						shower.children(':not(.flyout_arrow_horiz)').remove();
 						shower.append(icon).attr('data-curopt', opts.sel); // This sets the current mode
-						shower.attr('title', $(opts.sel).attr('title'));
 					}
 					
 					$(this).mouseup(func);
@@ -310,7 +309,6 @@ function svg_edit_setup() {
 						$(document).bind('keydown', {combi: opts.key+''}, func);
 					}
 				});
-			
 			
 			if(def) {
 				$(show_sel).attr('data-curopt', btn_opts[def].sel);
@@ -349,6 +347,7 @@ function svg_edit_setup() {
 			$(hold_sel).css({'left': pos.left+34, 'top': pos.top+77});
 		});
 		
+		setFlyoutTitles();
 	}
 	
 	var makeFlyoutHolder = function(id, child) {
@@ -366,6 +365,17 @@ function svg_edit_setup() {
 			var pos = shower.offset();
 			var w = shower.outerWidth();
 			$(this).css({left: pos.left + w, top: pos.top});
+		});
+	}
+	
+	var setFlyoutTitles = function() {
+		$('.tools_flyout').each(function() {
+			var shower = $('#' + this.id + '_show');
+			var tooltips = [];
+			$(this).children().each(function() {
+				tooltips.push(this.title);
+			});
+			shower[0].title = tooltips.join(' / ');
 		});
 	}
 	
@@ -2498,6 +2508,9 @@ function svg_edit_setup() {
 			}
 			
 			svgCanvas.runExtensions("langChanged", lang);
+			
+			// Update flyout tooltips
+			setFlyoutTitles();
 		}
 	};
 	
