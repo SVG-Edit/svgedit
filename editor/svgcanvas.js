@@ -3210,6 +3210,9 @@ function BatchCommand(text) {
 					} else {
 						keep = coords.indexOf(' ', coords.indexOf(' ')+1) >= 0;
 					}
+					if (keep) {
+						element = pathActions.smoothPolylineIntoPath(element);
+					}
 					break;
 				case "line":
 // 					keep = (element.x1.baseVal.value != element.x2.baseVal.value ||
@@ -3507,6 +3510,55 @@ function BatchCommand(text) {
 			if (line) line.setAttribute("display", "none");
 			
 			$('#ctrlpointgrip_container *').attr('display','none');
+		};
+		
+		// This function converts a polyline (created by the fh_path tool) into
+		// a path element and coverts every three line segments into a single bezier
+		// curve in an attempt to smooth out the free-hand
+		var smoothPolylineIntoPath = function(element) {
+			var points = element.points;
+			var N = points.numberOfItems;
+			if (N >= 4) {
+				// loop through every 3 points and convert to a cubic bezier curve segment
+				var curpos = points.getItem(0);
+				var d = [];
+				d.push(["M",curpos.x,",",curpos.y," C"].join(""));
+				for (var i = 1; i <= (N-4); i += 3) {
+					var ct1 = points.getItem(i);
+					var ct2 = points.getItem(i+1);
+					var end = points.getItem(i+2);
+					
+					d.push([ct1.x,ct1.y,ct2.x,ct2.y,end.x,end.y].join(','));
+					
+					curpos = end;
+				}
+				// handle remaining line segments
+				d.push("L");
+				for(;i < N;++i) {
+					var pt = points.getItem(i);
+					d.push([pt.x,pt.y].join(","));
+				}
+				d = d.join(" ");
+
+				// create new path element
+				element = addSvgElementFromJson({
+					"element": "path",
+						"attr": {
+							"id": getId(),
+							"d": d,
+							"fill": "none",
+							"stroke": cur_shape.stroke,
+							"stroke-width": cur_shape.stroke_width,
+							"stroke-dasharray": cur_shape.stroke_style,
+							"opacity": cur_shape.opacity,
+							"stroke-opacity": cur_shape.stroke_opacity,
+							"fill-opacity": cur_shape.fill_opacity,
+							"style": "pointer-events:inherit"
+						}
+					});
+				call("changed",[element]);
+			}
+			return element;
 		};
 		
 		// 
@@ -4714,6 +4766,7 @@ function BatchCommand(text) {
 				endChanges(d, "Delete path node(s)");
 			},
 			setPointContainerTransform: setPointContainerTransform,
+			smoothPolylineIntoPath: smoothPolylineIntoPath,
 			setSegType: function(new_type) {
 				var old_d = getD();
 				
