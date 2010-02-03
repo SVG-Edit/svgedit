@@ -7080,7 +7080,8 @@ function BatchCommand(text) {
 		// This shouldn't ever happen...
 		if(full_bb == null) return null;
 		
-		if(elems.length == 1) return full_bb;
+		// full_bb doesn't include the stoke, so this does no good!
+// 		if(elems.length == 1) return full_bb;
 		
 		var max_x = full_bb.x + full_bb.width;
 		var max_y = full_bb.y + full_bb.height;

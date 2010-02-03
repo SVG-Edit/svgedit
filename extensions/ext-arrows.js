@@ -30,7 +30,7 @@ $(function() {
 			$('#arrow_panel').toggle(on);
 			
 			if(on) {
-				var has_arrow = selElems[0].getAttribute("marker-mid");
+				var has_arrow = selElems[0].getAttribute("marker-end");
 				$("#arrow_list").val(has_arrow?"arrow":"none");
 			}
 		}
@@ -46,7 +46,7 @@ $(function() {
 					"attr": {
 						"viewBox": "0 0 10 10",
 						"id": m_id,
-						"refX": 5,
+						"refX": 10,
 						"refY": 5,
 						"markerUnits": "strokeWidth",
 						"markerWidth": 5,
@@ -66,11 +66,11 @@ $(function() {
 				defs.appendChild(marker);
 			}
 			
-			selElems[0].setAttribute("marker-mid", "url(#" + m_id + ")");
+			selElems[0].setAttribute("marker-end", "url(#" + m_id + ")");
 		}
 
 		function remArrow() {
-			selElems[0].removeAttribute("marker-mid");
+			selElems[0].removeAttribute("marker-end");
 		}
 		
 		

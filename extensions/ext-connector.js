@@ -113,14 +113,12 @@ $(function() {
 					var end = $(this).data("c_end");
 					if(start == elem.id || end == elem.id) {
 						var bb = svgCanvas.getStrokedBBox([elem]);
-						var x = bb.x + bb.width/2;
-						var y = bb.y + bb.height/2;
 						connections.push({
 							elem: elem,
 							connector: this,
 							is_start: start == elem.id,
-							start_x: x,
-							start_y: y
+							start_x: bb.x,
+							start_y: bb.y
 						});	
 					}
 				});
@@ -139,11 +137,51 @@ $(function() {
 					var conn = connections[i];
 					var line = conn.connector;
 					var elem = conn.elem;
+
+					var pre = conn.is_start?'start':'end';
+					
+					// Update bbox for this element
 					var bb = svgCanvas.getStrokedBBox([elem]);
-					var pt_x = bb.x + bb.width/2;
-					var pt_y = bb.y + bb.height/2;
-					setPoint(line, conn.is_start?0:'end', pt_x, pt_y, true);
+					bb.x = conn.start_x;
+					bb.y = conn.start_y;
+					$(line).data(pre+'_bb', bb);
+					
+					var alt_pre = conn.is_start?'end':'start';
+					
+					// Get center pt of connected element
+					var bb2 = $(line).data(alt_pre+'_bb');
+					var src_x = bb2.x + bb2.width/2;
+					var src_y = bb2.y + bb2.height/2;
+					
+					// Set point of element being moved
+					var pt = getBBintersect(src_x, src_y, bb);
+					setPoint(line, conn.is_start?0:'end', pt.x, pt.y, true);
+					
+					// Set point of connected element
+					var pt2 = getBBintersect(pt.x, pt.y, $(line).data(alt_pre + '_bb'));
+					setPoint(line, conn.is_start?'end':0, pt2.x, pt2.y, true);
 				}
+			}
+		}
+		
+		function getBBintersect(x, y, bb) {
+			var mid_x = bb.x + bb.width/2;
+			var mid_y = bb.y + bb.height/2;
+			var len_x = x - mid_x;
+			var len_y = y - mid_y;
+			
+			var slope = Math.abs(len_y/len_x);
+			
+			var ratio;
+			
+			if(slope < bb.height/bb.width) {
+				ratio = (bb.width/2) / Math.abs(len_x);
+			} else {
+				ratio = (bb.height/2) / Math.abs(len_y);
+			}
+			return {
+				x: mid_x + len_x * ratio,
+				y: mid_y + len_y * ratio
 			}
 		}
 		
@@ -180,8 +218,19 @@ $(function() {
 					svgCanvas.getEditorNS(true);
 				}
 			});
-			findConnectors();
+// 			updateConnectors();
 		}
+		
+// 		$(svgroot).parent().mousemove(function(e) {
+// // 			if(started 
+// // 				|| svgCanvas.getMode() != "connector"
+// // 				|| e.target.parentNode.parentNode != svgcontent) return;
+// 			
+// 			console.log('y')
+// // 			if(e.target.parentNode.parentNode === svgcontent) {
+// // 					
+// // 			}
+// 		});
 		
 		return {
 			name: "Connector",
@@ -240,12 +289,14 @@ $(function() {
 								"id": getNextId(),
 								"points": (x+','+y+' '+x+','+y+' '+start_x+','+start_y),
 								"stroke": '#000',
-								"stroke-width": 1,
+								"stroke-width": 3,
 								"fill": "none",
 								"opacity": .5,
 								"style": "pointer-events:none"
 							}
 						});
+						
+						$(cur_line).data('start_bb', bb);
 					}
 					return {
 						started: true
@@ -266,7 +317,15 @@ $(function() {
 				var mode = svgCanvas.getMode();
 				
 				if(mode == "connector" && started) {
-					// Set middle point for marker
+
+					// Set start point (adjusts based on bb)
+					var pt = getBBintersect(x, y, $(cur_line).data('start_bb'));
+					start_x = pt.x;
+					start_y = pt.y;
+					
+					setPoint(cur_line, 0, pt.x, pt.y, true);
+					
+					// Set end point
 					setPoint(cur_line, 'end', x, y, true);
 				} else if(mode == "select") {
 					var slen = selElems.length;
@@ -288,10 +347,32 @@ $(function() {
 							var conn = connections[i];
 							var line = conn.connector;
 							var elem = conn.elem;
-							var pt_x = conn.start_x + diff_x;
-							var pt_y = conn.start_y + diff_y;
-							setPoint(line, conn.is_start?0:'end', pt_x, pt_y, true);
+							
+							var pre = conn.is_start?'start':'end';
+							
+							// Update bbox for this element
+							var bb = $(line).data(pre+'_bb');
+							bb.x = conn.start_x + diff_x;
+							bb.y = conn.start_y + diff_y;
+							$(line).data(pre+'_bb', bb);
+							
+							var alt_pre = conn.is_start?'end':'start';
+							
+							// Get center pt of connected element
+							var bb2 = $(line).data(alt_pre+'_bb');
+							var src_x = bb2.x + bb2.width/2;
+							var src_y = bb2.y + bb2.height/2;
+							
+							// Set point of element being moved
+							var pt = getBBintersect(src_x, src_y, bb);
+							setPoint(line, conn.is_start?0:'end', pt.x, pt.y, true);
+							
+							// Set point of connected element
+							var pt2 = getBBintersect(pt.x, pt.y, $(line).data(alt_pre + '_bb'));
+							setPoint(line, conn.is_start?'end':0, pt2.x, pt2.y, true);
+
 						}
+						
 					}
 				} 
 			},
@@ -340,12 +421,13 @@ $(function() {
 						}
 						
 						var bb = svgCanvas.getStrokedBBox([end_elem]);
-						var x = bb.x + bb.width/2;
-						var y = bb.y + bb.height/2;
-						setPoint(cur_line, 'end', x, y, true);
+						
+						var pt = getBBintersect(start_x, start_y, bb);
+						setPoint(cur_line, 'end', pt.x, pt.y, true);
 						$(cur_line)
 							.data("c_start", start_id)
-							.data("c_end", end_id);
+							.data("c_end", end_id)
+							.data("end_bb", bb);
 						se_ns = svgCanvas.getEditorNS(true);
 						cur_line.setAttributeNS(se_ns, "se:connector", conn_str);
 						cur_line.setAttribute('class', conn_sel.substr(1));
@@ -392,7 +474,15 @@ $(function() {
 				}
 				
 				updateConnectors();
-			}
+			},
+// 			toolButtonStateUpdate: function(opts) {
+// 				if(opts.nostroke) {
+// 					if ($('#mode_connect').hasClass('tool_button_current')) {
+// 						clickSelect();
+// 					}
+// 				}
+// 				$('#mode_connect').toggleClass('tool_button',opts.nostroke).toggleClass('tool_button_disabled',opts.nostroke);
+// 			}
 		};
 	});
 });
