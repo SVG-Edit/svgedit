@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "그룹 해제 요소"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "줌 도구"},
-{"id": "tools_ellipse_show", "title": "타원 / 원형 도구"},
-{"id": "tools_rect_show", "title": "광장 / RECT 도구"},
 {"id": "zoom", "title": "변경 수준으로 확대"},
 {"id": "zoomLabel", "textContent": "축소:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

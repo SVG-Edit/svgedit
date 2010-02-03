@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Szétbont elemei"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "Zoom Tool"},
-{"id": "tools_ellipse_show", "title": "Ellipszis / Circle Tool"},
-{"id": "tools_rect_show", "title": "Square / Rect Tool"},
 {"id": "zoom", "title": "Change nagyítási"},
 {"id": "zoomLabel", "textContent": "nagyítási:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

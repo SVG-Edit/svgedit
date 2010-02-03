@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Lõhu Elements"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "Zoom Tool"},
-{"id": "tools_ellipse_show", "title": "Ellips / Circle Tool"},
-{"id": "tools_rect_show", "title": "Square / Rect Tool"},
 {"id": "zoom", "title": "Muuda suumi taset"},
 {"id": "zoomLabel", "textContent": "zoom:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Zrušit seskupení"},
 {"id": "tool_wireframe", "title": "Zobrazit jen kostru"},
 {"id": "tool_zoom", "title": "Přiblížení"},
-{"id": "tools_ellipse_show", "title": "Elipsa / Kružnice"},
-{"id": "tools_rect_show", "title": "Čtverec / Obdélník"},
 {"id": "zoom", "title": "Změna přiblížení"},
 {"id": "zoomLabel", "textContent": "přiblížení:"},
 {"id": "sidepanel_handle", "textContent": "V r s t v y", "title": "Táhnutím změnit velikost"},

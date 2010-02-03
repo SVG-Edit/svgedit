@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "अंश को समूह से अलग करें"},
 {"id": "tool_wireframe", "title": "रूपरेखा मोड"},
 {"id": "tool_zoom", "title": "ज़ूम उपकरण"},
-{"id": "tools_ellipse_show", "title": "दीर्घवृत्त / सर्किल उपकरण"},
-{"id": "tools_rect_show", "title": "वर्ग / रंगरूट उपकरण"},
 {"id": "zoom", "title": "बदलें स्तर ज़ूम"},
 {"id": "zoomLabel", "textContent": "जूम:"},
 {"id": "sidepanel_handle", "textContent": "परतें", "title": "दायें/बाएं घसीट कर आकार बदलें"},

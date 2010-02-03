@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Anulare Grupare Elemente"},
 {"id": "tool_wireframe", "title": "Mod Schelet"},
 {"id": "tool_zoom", "title": "Unealta de Zoom"},
-{"id": "tools_ellipse_show", "title": "Unealta de Elipsă / Cerc"},
-{"id": "tools_rect_show", "title": "Unealta de Pătrat / Dreptunghi"},
 {"id": "zoom", "title": "Schimbarea nivelului de zoom"},
 {"id": "zoomLabel", "textContent": "zoom:"},
 {"id": "sidepanel_handle", "textContent": "S t r a t u r i", "title": "Trage stanga/dreapta pentru redimensionare  panou lateral"},

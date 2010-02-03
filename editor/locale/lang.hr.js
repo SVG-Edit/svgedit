@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Razgrupiranje Elementi"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "Alat za zumiranje"},
-{"id": "tools_ellipse_show", "title": "Elipsa / Circle Tool"},
-{"id": "tools_rect_show", "title": "Trg / Prav Alat"},
 {"id": "zoom", "title": "Promjena razine zumiranja"},
 {"id": "zoomLabel", "textContent": "zoom:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

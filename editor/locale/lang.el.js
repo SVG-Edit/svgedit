@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Κατάργηση ομαδοποίησης Στοιχεία"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "Zoom Tool"},
-{"id": "tools_ellipse_show", "title": "Ellipse / Circle Tool"},
-{"id": "tools_rect_show", "title": "Πλατεία / Ορθ Tool"},
 {"id": "zoom", "title": "Αλλαγή επίπεδο μεγέθυνσης"},
 {"id": "zoomLabel", "textContent": "zoom:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

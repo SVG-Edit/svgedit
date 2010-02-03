@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "ונגראָופּ עלעמענץ"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "פארגרעסער טול"},
-{"id": "tools_ellipse_show", "title": "עלליפּסע / סירקלע טול"},
-{"id": "tools_rect_show", "title": "קוואדראט / רעקט טול"},
 {"id": "zoom", "title": "ענדערן פארגרעסער הייך"},
 {"id": "zoomLabel", "textContent": "פארגרעסער:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

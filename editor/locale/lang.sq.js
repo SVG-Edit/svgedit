@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Elemente Ungroup"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "Zoom Tool"},
-{"id": "tools_ellipse_show", "title": "Elips / Rrethi Tool"},
-{"id": "tools_rect_show", "title": "Sheshi / rect Tool"},
 {"id": "zoom", "title": "Ndryshimi zoom nivel"},
 {"id": "zoomLabel", "textContent": "zoom:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

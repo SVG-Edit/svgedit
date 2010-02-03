@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Ungroup Sangkap"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "Mag-zoom Kasangkapan"},
-{"id": "tools_ellipse_show", "title": "Tambilugan / Circle Kasangkapan"},
-{"id": "tools_rect_show", "title": "Square / Rect Kasangkapan"},
 {"id": "zoom", "title": "Baguhin ang antas ng zoom"},
 {"id": "zoomLabel", "textContent": "mag-zoom:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

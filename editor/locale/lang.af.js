@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Ungroup Elemente"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "Klik op die Gereedskap"},
-{"id": "tools_ellipse_show", "title": "Ellips / Circle Gereedskap"},
-{"id": "tools_rect_show", "title": "Vierkante / Rect Gereedskap"},
 {"id": "zoom", "title": "Change zoom vlak"},
 {"id": "zoomLabel", "textContent": "zoom:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

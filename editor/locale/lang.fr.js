@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Dégrouper les éléments"},
 {"id": "tool_wireframe", "title": "Mode Fil de Fer"},
 {"id": "tool_zoom", "title": "Zoom"},
-{"id": "tools_ellipse_show", "title": "Cercle / Ellipse / Ellipse à main levée"},
-{"id": "tools_rect_show", "title": "Carré / Rectangle / Rectangle à main levée"},
 {"id": "zoom", "title": "Changer le niveau de zoom"},
 {"id": "zoomLabel", "textContent": "Zoom:"},
 {"id": "sidepanel_handle", "textContent": "C A L Q U E S", "title": "Tirer vers la gauche/droite pour redimensionner le panneau"},

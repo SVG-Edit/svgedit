@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Elfennau Ungroup"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "Offer Chwyddo"},
-{"id": "tools_ellipse_show", "title": "Ellipse / Cylch Arfau"},
-{"id": "tools_rect_show", "title": "Sgwâr / Rect Tool"},
 {"id": "zoom", "title": "Newid lefel chwyddo"},
 {"id": "zoomLabel", "textContent": "chwyddo:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},
