@@ -4784,13 +4784,6 @@ function BatchCommand(text) {
 						newseg.c2_y = oldseg.y2;
 					}
 				}
-				// TODO: codedread, I need to be reminded of why WebKit needs to re-set @d
-				// (this prevents SVG-edit from remembering the curvature of points)
-				// d attribute needs to be manually updated for Webkit
-				if(isWebkit && current_path) {
-					var fixed_d = pathActions.convertPath(current_path);
-					current_path.setAttribute('d', fixed_d);
-				}
 
 				addAllPointGripsToPath(); 
 				// recalculateDimensions(current_path);
@@ -7162,7 +7155,8 @@ function BatchCommand(text) {
 		obj_num++; 
 		
 		// Opera's "d" value needs to be reset for Opera/Win/non-EN
-		if(!support.goodDecimals && el.nodeName == 'path') {
+		// Also needed for webkit (else does not keep curved segments on clone)
+		if((isWebkit || !support.goodDecimals) && el.nodeName == 'path') {
 			var fixed_d = pathActions.convertPath(el);
 			new_el.setAttribute('d', fixed_d);
 		}

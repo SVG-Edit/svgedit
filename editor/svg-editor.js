@@ -1885,6 +1885,11 @@ function svg_edit_setup() {
 			}
 		}
 		
+		svgCanvas.runExtensions("toolButtonStateUpdate", {
+			nofill: bNoFill,
+			nostroke: bNoStroke
+		});
+		
 		operaRepaint();
 	};
 
