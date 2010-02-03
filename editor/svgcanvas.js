@@ -4755,17 +4755,16 @@ function BatchCommand(text) {
 					var points;
 			
 					var bb = current_path.getBBox();
-					
+					var oldseg = current_path.pathSegList.getItem(next_index);
 					switch ( new_type ) {
 					case 6:
 						var diff_x = next_x - cur_x;
 						var diff_y = next_y - cur_y;
-					
-						var ct1_x = cur_x + (diff_y/2);
-						var ct1_y = cur_y - (diff_x/2);
-						var ct2_x = next_x + (diff_y/2);
-						var ct2_y = next_y - (diff_x/2);
-						
+						// get control points from straight line segment
+						var ct1_x = oldseg.c1_x || (cur_x + (diff_y/2));
+						var ct1_y = oldseg.c1_y || (cur_y - (diff_x/2));
+						var ct2_x = oldseg.c2_x || (next_x + (diff_y/2));
+						var ct2_y = oldseg.c2_y || (next_y - (diff_x/2));
 						points = [next_x,next_y, ct1_x,ct1_y, ct2_x,ct2_y];
 						break;
 					case 4:
@@ -4775,7 +4774,18 @@ function BatchCommand(text) {
 					}
 					
 					replacePathSeg(new_type, next_index, points);
+					
+					// if we changed to a straight line, store the old control points
+					var newseg = current_path.pathSegList.getItem(next_index);
+					if (newseg.pathSegType == 4 && oldseg.pathSegType == 6) {
+						newseg.c1_x = oldseg.x1;
+						newseg.c1_y = oldseg.y1;
+						newseg.c2_x = oldseg.x2;
+						newseg.c2_y = oldseg.y2;
+					}
 				}
+				// TODO: codedread, I need to be reminded of why WebKit needs to re-set @d
+				// (this prevents SVG-edit from remembering the curvature of points)
 				// d attribute needs to be manually updated for Webkit
 				if(isWebkit && current_path) {
 					var fixed_d = pathActions.convertPath(current_path);
