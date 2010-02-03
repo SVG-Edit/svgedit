@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "グループ化を解除要素"},
 {"id": "tool_wireframe", "title": "Wireframe Mode [F]"},
 {"id": "tool_zoom", "title": "ズームツール"},
-{"id": "tools_ellipse_show", "title": "楕円/サークルツール"},
-{"id": "tools_rect_show", "title": "スクエア/ Rectツール"},
 {"id": "zoom", "title": "変更のズームレベル"},
 {"id": "zoomLabel", "textContent": "ズーム:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

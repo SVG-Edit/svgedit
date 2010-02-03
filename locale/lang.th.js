@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "องค์ประกอบ Ungroup"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "เครื่องมือซูม"},
-{"id": "tools_ellipse_show", "title": "Ellipse / Circle Tool"},
-{"id": "tools_rect_show", "title": "ตาราง / เครื่องมือ Rect"},
 {"id": "zoom", "title": "เปลี่ยนระดับการซูม"},
 {"id": "zoomLabel", "textContent": "ซูม:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

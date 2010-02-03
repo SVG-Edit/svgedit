@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "取消组合元素"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "缩放工具"},
-{"id": "tools_ellipse_show", "title": "椭圆/圆工具"},
-{"id": "tools_rect_show", "title": "广场/整流工具"},
 {"id": "zoom", "title": "更改缩放级别"},
 {"id": "zoomLabel", "textContent": "变焦:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

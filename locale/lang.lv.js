@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Atgrupēt Elements"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "Zoom Tool"},
-{"id": "tools_ellipse_show", "title": "Elipse / Circle rīks"},
-{"id": "tools_rect_show", "title": "Kvadrātveida / Rect rīks"},
 {"id": "zoom", "title": "Pārmaiņu mērogu"},
 {"id": "zoomLabel", "textContent": "zoom:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Zrušiť skupinu"},
 {"id": "tool_wireframe", "title": "Drôtový model"},
 {"id": "tool_zoom", "title": "Priblíženie"},
-{"id": "tools_ellipse_show", "title": "Elipsa / Kružnica"},
-{"id": "tools_rect_show", "title": "Štvorec / Obdĺžnik"},
 {"id": "zoom", "title": "Zmena priblíženia"},
 {"id": "zoomLabel", "textContent": "priblíženie:"},
 {"id": "sidepanel_handle", "textContent": "V r s t v y", "title": "Ťahajte vľavo/vpravo na zmenu veľkosti"},

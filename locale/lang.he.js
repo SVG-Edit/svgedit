@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "אלמנטים פרק קבוצה"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "זום כלי"},
-{"id": "tools_ellipse_show", "title": "אליפסה / עיגול הכלי"},
-{"id": "tools_rect_show", "title": "ריבוע / כלי"},
 {"id": "zoom", "title": "שינוי גודל תצוגה"},
 {"id": "zoomLabel", "textContent": "זום:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

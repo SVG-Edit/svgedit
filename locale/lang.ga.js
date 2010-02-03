@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Eilimintí Díghrúpáil"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "Zúmáil Uirlis"},
-{"id": "tools_ellipse_show", "title": "Éilips / Ciorcal Uirlis"},
-{"id": "tools_rect_show", "title": "Mhuirfean / Rect Uirlis"},
 {"id": "zoom", "title": "Athraigh súmáil leibhéal"},
 {"id": "zoomLabel", "textContent": "súmáil isteach:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

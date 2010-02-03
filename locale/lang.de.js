@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Gruppierung aufheben"},
 {"id": "tool_wireframe", "title": "Drahtmodell Modus"},
 {"id": "tool_zoom", "title": "Zoomfaktor vergrößern oder verringern"},
-{"id": "tools_ellipse_show", "title": "Ellipsen und Kreise zeichnen"},
-{"id": "tools_rect_show", "title": "Rechtecke und Quadrate zeichnen"},
 {"id": "zoom", "title": "vergrößern"},
 {"id": "zoomLabel", "textContent": "Zoom:"},
 {"id": "sidepanel_handle", "textContent": "E b e n e n", "title": "Ziehe links/rechts um die Seitenleiste anzupassen"},

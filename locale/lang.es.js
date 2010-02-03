@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Desagrupar objetos"},
 {"id": "tool_wireframe", "title": "Modo marco de alambre"},
 {"id": "tool_zoom", "title": "Zoom"},
-{"id": "tools_ellipse_show", "title": "Círculo / Elipse"},
-{"id": "tools_rect_show", "title": "Cuadrado / Rectángulo"},
 {"id": "zoom", "title": "Cambiar el nivel de zoom"},
 {"id": "zoomLabel", "textContent": "Zoom:"},
 {"id": "sidepanel_handle", "textContent": "C a p a s", "title": "Arrastrar hacia la izquierda/derecha para modificar el tamaño del panel lateral"},

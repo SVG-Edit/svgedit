@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "فك تجميع عناصر"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "أداة تكبير"},
-{"id": "tools_ellipse_show", "title": "القطع الناقص / الدائرة أداة"},
-{"id": "tools_rect_show", "title": "مربع / Rect أداة"},
 {"id": "zoom", "title": "تغيير مستوى التكبير"},
 {"id": "zoomLabel", "textContent": "التكبير:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

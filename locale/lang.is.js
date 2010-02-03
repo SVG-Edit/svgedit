@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Ungroup Elements"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "Zoom Tool"},
-{"id": "tools_ellipse_show", "title": "Sporbaugur / Circle Tool"},
-{"id": "tools_rect_show", "title": "Ferningur / rect Tól"},
 {"id": "zoom", "title": "Breyta Stækkunarstig"},
 {"id": "zoomLabel", "textContent": "zoom:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},
