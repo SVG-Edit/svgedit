@@ -3520,7 +3520,7 @@ function BatchCommand(text) {
 			var N = points.numberOfItems;
 			if (N >= 4) {
 				// loop through every 3 points and convert to a cubic bezier curve segment
-				var curpos = points.getItem(0);
+				var curpos = points.getItem(0), prevCtlPt = null;
 				var d = [];
 				d.push(["M",curpos.x,",",curpos.y," C"].join(""));
 				for (var i = 1; i <= (N-4); i += 3) {
@@ -3528,9 +3528,16 @@ function BatchCommand(text) {
 					var ct2 = points.getItem(i+1);
 					var end = points.getItem(i+2);
 					
+					// if the previous segment had a control point, we want to smooth out
+					// the control points on both sides
+					if (prevCtlPt) {
+						// TODO: fancy processing here :)
+					}
+					
 					d.push([ct1.x,ct1.y,ct2.x,ct2.y,end.x,end.y].join(','));
 					
 					curpos = end;
+					prevCtlPt = ct2;
 				}
 				// handle remaining line segments
 				d.push("L");
@@ -6146,6 +6153,8 @@ function BatchCommand(text) {
 			if (elem) {
 				if (elem.tagName == "g")
 					walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
+				else 
+					elems.push(elem);
 			}
 		}		
 		if (elems.length > 0) {
@@ -6166,6 +6175,8 @@ function BatchCommand(text) {
 			if (elem) {
 				if (elem.tagName == "g")
 					walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
+				else 
+					elems.push(elem);
 			}
 		}		
 		if (elems.length > 0) {
