@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Разгрупирање Елементи"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "Алатка за зумирање"},
-{"id": "tools_ellipse_show", "title": "Елипса / круг Алат"},
-{"id": "tools_rect_show", "title": "Скуаре / прав Алат"},
 {"id": "zoom", "title": "Промените ниво зумирања"},
 {"id": "zoomLabel", "textContent": "зум:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Çöz Elemanları"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "Zoom Tool"},
-{"id": "tools_ellipse_show", "title": "Elips / Circle Aracı"},
-{"id": "tools_rect_show", "title": "Kare / Rect Aracı"},
 {"id": "zoom", "title": "Yakınlaştırma düzeyini değiştirebilirsiniz"},
 {"id": "zoomLabel", "textContent": "zoom:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

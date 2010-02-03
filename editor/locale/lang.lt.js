@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Išgrupuoti elementai"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "Zoom Įrankį"},
-{"id": "tools_ellipse_show", "title": "Elipse / Circle Tool"},
-{"id": "tools_rect_show", "title": "Square / Rect Tool"},
 {"id": "zoom", "title": "Keisti mastelį"},
 {"id": "zoomLabel", "textContent": "Padidinti:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

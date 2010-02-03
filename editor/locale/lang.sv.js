@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Dela Elements"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "Zoomverktyget"},
-{"id": "tools_ellipse_show", "title": "Ellips / Circle Tool"},
-{"id": "tools_rect_show", "title": "Square / Rect Tool"},
 {"id": "zoom", "title": "Ändra zoomnivå"},
 {"id": "zoomLabel", "textContent": "zoom:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

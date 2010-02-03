@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Элементы Разгруппировать"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "Zoom Tool"},
-{"id": "tools_ellipse_show", "title": "Эліпс / круг інструментаў"},
-{"id": "tools_rect_show", "title": "Плошча / Rect Tool"},
 {"id": "zoom", "title": "Змяненне маштабу"},
 {"id": "zoomLabel", "textContent": "Павялічыць:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

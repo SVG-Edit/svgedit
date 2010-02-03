@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Ungroup Elements"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "Suurennustyökalu"},
-{"id": "tools_ellipse_show", "title": "Ellipsi / Circle Tool"},
-{"id": "tools_rect_show", "title": "Square / Rect Tool"},
 {"id": "zoom", "title": "Muuta suurennustaso"},
 {"id": "zoomLabel", "textContent": "zoomin:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

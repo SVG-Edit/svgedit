@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Desagrupar elements"},
 {"id": "tool_wireframe", "title": "Wireframe Mode"},
 {"id": "tool_zoom", "title": "Zoom Tool"},
-{"id": "tools_ellipse_show", "title": "Lipse / Eina Cercle"},
-{"id": "tools_rect_show", "title": "Quadrat / Rect Eina"},
 {"id": "zoom", "title": "Canviar el nivell de zoom"},
 {"id": "zoomLabel", "textContent": "Zoom:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},

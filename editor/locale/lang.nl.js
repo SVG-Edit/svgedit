@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "Groepering opheffen"},
 {"id": "tool_wireframe", "title": "Draadmodel"},
 {"id": "tool_zoom", "title": "Zoom"},
-{"id": "tools_ellipse_show", "title": "Ellips/cirkel"},
-{"id": "tools_rect_show", "title": "Vierkant/rechthoek"},
 {"id": "zoom", "title": "In-/uitzoomen"},
 {"id": "zoomLabel", "textContent": "Zoom:"},
 {"id": "sidepanel_handle", "textContent": "L a g e n", "title": "Sleep naar links/rechts om het zijpaneel te vergroten/verkleinen"},

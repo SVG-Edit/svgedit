@@ -125,8 +125,6 @@
 {"id": "tool_ungroup", "title": "‫خارج کردن عناصر از گروه ‬"},
 {"id": "tool_wireframe", "title": "‫حالت نمایش لبه ها ‬"},
 {"id": "tool_zoom", "title": "‫ابزار بزرگ نمایی ‬"},
-{"id": "tools_ellipse_show", "title": "‫ابزار بیضی/دایره ‬"},
-{"id": "tools_rect_show", "title": "‫ابزار مستطیل/مربع ‬"},
 {"id": "zoom", "title": "‫تغییر بزرگ نمایی‬"},
 {"id": "zoomLabel", "textContent": "‫بزرگ نمایی:‬"},
 {"id": "sidepanel_handle", "textContent": "‫لایه ها‬", "title": "‫برای تغییر اندازه منوی کناری، آن را به سمت راست/چپ بکشید ‬"},
