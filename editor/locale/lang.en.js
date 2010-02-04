@@ -67,7 +67,7 @@
 {"id": "stroke_color", "title": "Change stroke color"},
 {"id": "stroke_style", "title": "Change stroke dash style"},
 {"id": "stroke_tool_bottom", "textContent": "stroke:"},
-{"id": "stroke_width", "title": "Change stroke width"},
+{"id": "stroke_width", "title": "Change stroke width by 1, shift-click to change by 0.1"},
 {"id": "svginfo_bg_note", "textContent": "Note: Background will not be saved with image."},
 {"id": "svginfo_change_background", "textContent": "Editor Background"},
 {"id": "svginfo_dim", "textContent": "Canvas Dimensions"},
