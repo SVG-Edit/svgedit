@@ -162,6 +162,19 @@ $(function() {
 					// Set point of connected element
 					var pt2 = getBBintersect(pt.x, pt.y, $(line).data(alt_pre + '_bb'), $(line).data(alt_pre + '_off')?sw:0);
 					setPoint(line, conn.is_start?'end':0, pt2.x, pt2.y, true);
+					
+					// Update points attribute manually for webkit
+					if(navigator.userAgent.indexOf('AppleWebKit') != -1) {
+						var pts = line.points;
+						var len = pts.numberOfItems;
+						var pt_arr = Array(len);
+						for(var j=0; j< len; j++) {
+							var pt = pts.getItem(j);
+							pt_arr[j] = pt.x + ',' + pt.y;
+						}	
+						line.setAttribute("points",pt_arr.join(" ")); 
+					}
+
 				}
 			}
 		}
@@ -495,7 +508,6 @@ $(function() {
 				)) {
 					var start = elem.getAttribute("marker-start");
 					var end = elem.getAttribute("marker-end");
-					console.log('elem',elem);
 					cur_line = elem;
 					$(elem)
 						.data("start_off", !!start)
@@ -503,14 +515,15 @@ $(function() {
 				}
 				updateConnectors();
 			},
-// 			toolButtonStateUpdate: function(opts) {
-// 				if(opts.nostroke) {
-// 					if ($('#mode_connect').hasClass('tool_button_current')) {
-// 						clickSelect();
-// 					}
-// 				}
-// 				$('#mode_connect').toggleClass('tool_button',opts.nostroke).toggleClass('tool_button_disabled',opts.nostroke);
-// 			}
+			toolButtonStateUpdate: function(opts) {
+				if(opts.nostroke) {
+					if ($('#mode_connect').hasClass('tool_button_current')) {
+						clickSelect();
+					}
+				}
+				$('#mode_connect')
+					.toggleClass('disabled',opts.nostroke);
+			}
 		};
 	});
 });

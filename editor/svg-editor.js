@@ -287,6 +287,7 @@ function svg_edit_setup() {
 					// Clicking the icon in flyout should set this set's icon
 					
 					var func = function() {
+						if($(this).hasClass('disabled')) return false;
 						if (toolButtonClick(show_sel)) {
 							opts.fn();
 						}
@@ -321,6 +322,7 @@ function svg_edit_setup() {
 			
 			// Clicking the "show" icon should set the current mode
 			$(show_sel).mousedown(function(evt) {
+				if($(show_sel).hasClass('disabled')) return false;
 				var holder = $(show_sel.replace('_show',''));
 				var l = holder.css('left');
 				var w = holder.width()*-1;
@@ -620,7 +622,7 @@ function svg_edit_setup() {
 		if (currentMode == 'rotate' && elem != null) {
 			var ang = svgCanvas.getRotationAngle(elem);
 			$('#angle').val(ang);
-			$('#tool_reorient').toggleClass('tool_button_disabled', ang == 0);
+			$('#tool_reorient').toggleClass('disabled', ang == 0);
 			return;
 		}
 		var is_node = currentMode == 'pathedit'; //elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
@@ -667,10 +669,10 @@ function svg_edit_setup() {
 				var no_path = $.inArray(elname, ['image', 'text', 'path', 'g', 'use']) == -1;
 				$('#tool_topath').toggle(no_path);
 				$('#tool_reorient').toggle(elname == 'path');
-				$('#tool_reorient').toggleClass('tool_button_disabled', angle == 0);
+				$('#tool_reorient').toggleClass('disabled', angle == 0);
 			} else {
 				var point = path.getNodePoint();
-				$('#tool_node_delete').toggleClass('tool_button_disabled', !path.canDeleteNodes);
+				$('#tool_node_delete').toggleClass('disabled', !path.canDeleteNodes);
 				if(point) {
 					var seg_type = $('#seg_type');
 					$('#path_node_x').val(point.x);
@@ -741,16 +743,16 @@ function svg_edit_setup() {
 		
 		// update history buttons
 		if (svgCanvas.getUndoStackSize() > 0) {
-			$('#tool_undo').removeClass( 'tool_button_disabled');
+			$('#tool_undo').removeClass( 'disabled');
 		}
 		else {
-			$('#tool_undo').addClass( 'tool_button_disabled');
+			$('#tool_undo').addClass( 'disabled');
 		}
 		if (svgCanvas.getRedoStackSize() > 0) {
-			$('#tool_redo').removeClass( 'tool_button_disabled');
+			$('#tool_redo').removeClass( 'disabled');
 		}
 		else {
-			$('#tool_redo').addClass( 'tool_button_disabled');
+			$('#tool_redo').addClass( 'disabled');
 		}
 		
 		svgCanvas.addedNew = false;
@@ -825,7 +827,7 @@ function svg_edit_setup() {
 	
 	var changeRotationAngle = function(ctl) {
 		svgCanvas.setRotationAngle(ctl.value);
-		$('#tool_reorient').toggleClass('tool_button_disabled', ctl.value == 0);
+		$('#tool_reorient').toggleClass('disabled', ctl.value == 0);
 	}
 	var changeZoom = function(ctl) {
 		var zoomlevel = ctl.value / 100;
@@ -981,7 +983,7 @@ function svg_edit_setup() {
 	// - hides any flyouts
 	// - adds the tool_button_current class to the button passed in
 	var toolButtonClick = function(button, fadeFlyouts) {
-		if ($(button).hasClass('tool_button_disabled')) return false;
+		if ($(button).hasClass('disabled')) return false;
 		if($(button).parent().hasClass('tools_flyout')) return true;
 		var fadeFlyouts = fadeFlyouts || 'normal';
 		$('.tools_flyout').fadeOut(fadeFlyouts);
@@ -1554,7 +1556,7 @@ function svg_edit_setup() {
 		var size_num = icon_sizes[size];
 		
 		// Change icon size
-		$('.tool_button, .push_button, .tool_button_current, .tool_button_disabled, #url_notice, #tool_open')
+		$('.tool_button, .push_button, .tool_button_current, .disabled, #url_notice, #tool_open')
 		.find('> svg, > img').each(function() {
 			this.setAttribute('width',size_num);
 			this.setAttribute('height',size_num);
@@ -1573,7 +1575,7 @@ function svg_edit_setup() {
 			".tool_button,\
 			.push_button,\
 			.tool_button_current,\
-			.tool_button_disabled,\
+			.disabled,\
 			.tools_flyout .tool_button": {
 				'width': {s: '16px', l: '32px', xl: '48px'},
 				'height': {s: '16px', l: '32px', xl: '48px'},
@@ -1785,7 +1787,7 @@ function svg_edit_setup() {
 		});
 		
 		$('#tool_undo, #tool_redo').mousedown(function(){ 
-			if (!$(this).hasClass('tool_button_disabled')) $(this).addClass(cur_class);
+			if (!$(this).hasClass('disabled')) $(this).addClass(cur_class);
 		}).bind('mousedown mouseout',function(){
 			$(this).removeClass(cur_class);}
 		);
@@ -1862,20 +1864,20 @@ function svg_edit_setup() {
 		var bNoFill = (svgCanvas.getFillColor() == 'none');
 		var bNoStroke = (svgCanvas.getStrokeColor() == 'none');
 		var buttonsNeedingStroke = [ '#tool_fhpath', '#tool_line' ];
-		var buttonsNeedingFillAndStroke = [ '#tools_rect_show', '#tools_ellipse_show', '#tool_text' ];
+		var buttonsNeedingFillAndStroke = [ '#tools_rect .tool_button', '#tools_ellipse .tool_button', '#tool_text' ];
 		if (bNoStroke) {
 			for (index in buttonsNeedingStroke) {
 				var button = buttonsNeedingStroke[index];
 				if ($(button).hasClass('tool_button_current')) {
 					clickSelect();
 				}
-				$(button).removeClass('tool_button').addClass('tool_button_disabled');
+				$(button).addClass('disabled');
 			}
 		}
 		else {
 			for (index in buttonsNeedingStroke) {
 				var button = buttonsNeedingStroke[index];
-				$(button).removeClass('tool_button_disabled').addClass('tool_button');
+				$(button).removeClass('disabled');
 			}
 		}
 
@@ -1885,13 +1887,13 @@ function svg_edit_setup() {
 				if ($(button).hasClass('tool_button_current')) {
 					clickSelect();
 				}
-				$(button).removeClass('tool_button').addClass('tool_button_disabled');
+				$(button).addClass('disabled');
 			}
 		}
 		else {
 			for (index in buttonsNeedingFillAndStroke) {
 				var button = buttonsNeedingFillAndStroke[index];
-				$(button).removeClass('tool_button_disabled').addClass('tool_button');
+				$(button).removeClass('disabled');
 			}
 		}
 		
@@ -1899,6 +1901,19 @@ function svg_edit_setup() {
 			nofill: bNoFill,
 			nostroke: bNoStroke
 		});
+		
+		// Disable flyouts if all inside are disabled
+		$('.tools_flyout').each(function() {
+			var shower = $('#' + this.id + '_show');
+			var has_enabled = false;
+			$(this).children().each(function() {
+				if(!$(this).hasClass('disabled')) {
+					has_enabled = true;
+				}
+			});
+			shower.toggleClass('disabled', !has_enabled);
+		});
+
 		
 		operaRepaint();
 	};
@@ -1964,7 +1979,7 @@ function svg_edit_setup() {
 	});
 
 	$('.push_button').mousedown(function() { 
-		if (!$(this).hasClass('tool_button_disabled')) {
+		if (!$(this).hasClass('disabled')) {
 			$(this).addClass('push_button_pressed');
 		}
 	}).mouseout(function() {
