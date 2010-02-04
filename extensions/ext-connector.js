@@ -124,7 +124,7 @@ $(function() {
 				});
 			}
 		}
-		
+
 		function updateConnectors() {
 			// Updates connector lines based on selected elements
 			// Is not used on mousemove, as it runs getStrokedBBox every time,
@@ -139,13 +139,15 @@ $(function() {
 					var elem = conn.elem;
 
 					var pre = conn.is_start?'start':'end';
+					var sw = line.getAttribute('stroke-width');
 					
 					// Update bbox for this element
 					var bb = svgCanvas.getStrokedBBox([elem]);
 					bb.x = conn.start_x;
 					bb.y = conn.start_y;
 					$(line).data(pre+'_bb', bb);
-					
+					var add_offset = $(line).data(pre+'_off');
+				
 					var alt_pre = conn.is_start?'end':'start';
 					
 					// Get center pt of connected element
@@ -154,17 +156,26 @@ $(function() {
 					var src_y = bb2.y + bb2.height/2;
 					
 					// Set point of element being moved
-					var pt = getBBintersect(src_x, src_y, bb);
+					var pt = getBBintersect(src_x, src_y, bb, add_offset?sw:0);
 					setPoint(line, conn.is_start?0:'end', pt.x, pt.y, true);
 					
 					// Set point of connected element
-					var pt2 = getBBintersect(pt.x, pt.y, $(line).data(alt_pre + '_bb'));
+					var pt2 = getBBintersect(pt.x, pt.y, $(line).data(alt_pre + '_bb'), $(line).data(alt_pre + '_off')?sw:0);
 					setPoint(line, conn.is_start?'end':0, pt2.x, pt2.y, true);
 				}
 			}
 		}
 		
-		function getBBintersect(x, y, bb) {
+		function getBBintersect(x, y, bb, offset) {
+			if(offset) {
+				offset -= 0;
+				bb = $.extend({}, bb);
+				bb.width += offset;
+				bb.height += offset;
+				bb.x -= offset/2;
+				bb.y -= offset/2;
+			}
+		
 			var mid_x = bb.x + bb.width/2;
 			var mid_y = bb.y + bb.height/2;
 			var len_x = x - mid_x;
@@ -179,6 +190,8 @@ $(function() {
 			} else {
 				ratio = (bb.height/2) / Math.abs(len_y);
 			}
+			
+			
 			return {
 				x: mid_x + len_x * ratio,
 				y: mid_y + len_y * ratio
@@ -333,7 +346,7 @@ $(function() {
 					while(slen--) {
 						var elem = selElems[slen];
 						// Look for selected connector elements
-						if(elem && $(elem).is(conn_sel)) {
+						if(elem && $(elem).data('c_start')) {
 							// Remove the "translate" transform given to move
 							svgCanvas.removeFromSelection([elem]);
 							svgCanvas.getTransformList(elem).clear();
@@ -349,6 +362,7 @@ $(function() {
 							var elem = conn.elem;
 							
 							var pre = conn.is_start?'start':'end';
+							var sw = line.getAttribute('stroke-width');
 							
 							// Update bbox for this element
 							var bb = $(line).data(pre+'_bb');
@@ -364,11 +378,11 @@ $(function() {
 							var src_y = bb2.y + bb2.height/2;
 							
 							// Set point of element being moved
-							var pt = getBBintersect(src_x, src_y, bb);
+							var pt = getBBintersect(src_x, src_y, bb, $(line).data(pre+'_off')?sw:0);
 							setPoint(line, conn.is_start?0:'end', pt.x, pt.y, true);
 							
 							// Set point of connected element
-							var pt2 = getBBintersect(pt.x, pt.y, $(line).data(alt_pre + '_bb'));
+							var pt2 = getBBintersect(pt.x, pt.y, $(line).data(alt_pre + '_bb'), $(line).data(alt_pre+'_off')?sw:0);
 							setPoint(line, conn.is_start?'end':0, pt2.x, pt2.y, true);
 
 						}
@@ -473,6 +487,20 @@ $(function() {
 					init();
 				}
 				
+				// Has marker, so change offset
+				if(elem && (
+					elem.getAttribute("marker-start") ||
+					elem.getAttribute("marker-mid") ||
+					elem.getAttribute("marker-end")
+				)) {
+					var start = elem.getAttribute("marker-start");
+					var end = elem.getAttribute("marker-end");
+					console.log('elem',elem);
+					cur_line = elem;
+					$(elem)
+						.data("start_off", !!start)
+						.data("end_off", !!end);
+				}
 				updateConnectors();
 			},
 // 			toolButtonStateUpdate: function(opts) {
