@@ -536,8 +536,7 @@ span.zoom_tool {
 
 #svg_editor .tool_button, 
 #svg_editor .push_button,
-#svg_editor .tool_button_current, 
-#svg_editor .tool_button_disabled {
+#svg_editor .tool_button_current {
 	height: 24px;
 	width: 24px;
 	margin: 2px;
@@ -575,7 +574,7 @@ span.zoom_tool {
 	background-color: #B0B0B0;
 }
 
-#svg_editor .tool_button_disabled {
+#svg_editor .disabled {
 	opacity: 0.5;
 	cursor: default;
 }
