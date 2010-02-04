@@ -28,8 +28,30 @@ $(function() {
 			$('#arrow_panel').toggle(on);
 			
 			if(on) {
-				var has_arrow = selElems[0].getAttribute("marker-end");
-				$("#arrow_list").val(has_arrow?"arrow":"none");
+				var el = selElems[0];
+				var end = el.getAttribute("marker-end");
+				var start = el.getAttribute("marker-start");
+				var mid = el.getAttribute("marker-mid");
+				var val;
+				
+				if(end && start) {
+					val = "both";
+				} else if(end) {
+					val = "end";
+				} else if(start) {
+					val = "start";
+				} else if(mid) {
+					val = "mid";
+					if(mid.indexOf("bk") != -1) {
+						val = "mid_bk";
+					}
+				}
+				
+				if(!start && !mid && !end) {
+					val = "none";
+				}
+				
+				$("#arrow_list").val(val);
 			}
 		}
 		
@@ -45,8 +67,8 @@ $(function() {
 			var marker = getElem(id);
 
 			var pathdata = {
-				se_arrow_fw: {d:"m0,0l10,5l-10,5l5,-5l-5,-5z", refx:10},
-				se_arrow_bk: {d:"m10,0l-10,5l10,5l-5,-5l5,-5z", refx:0}
+				se_arrow_fw: {d:"m0,0l10,5l-10,5l5,-5l-5,-5z", refx:8},
+				se_arrow_bk: {d:"m10,0l-10,5l10,5l-5,-5l5,-5z", refx:2}
 			}
 			
 			var data = pathdata[id];
@@ -78,9 +100,8 @@ $(function() {
 				marker.appendChild(arrow);
 				S.findDefs().appendChild(marker);
 			} 
-				
-			marker.setAttribute('refX', data.refx);
 			
+			marker.setAttribute('refX', data.refx);
 		}
 		
 		function setArrow(type) {
@@ -101,7 +122,7 @@ $(function() {
 				id = bk_id;
 			} else if(type == "both") {
 				addMarker(bk_id, type);
-				selElems[0].setAttribute("marker-start", "url(#" + bk_id + ")");
+				svgCanvas.changeSelectedAttribute("marker-start", "url(#" + bk_id + ")");
 				type = "end";
 				id = fw_id;
 			} else if (type == "start") {
@@ -109,11 +130,8 @@ $(function() {
 			}
 			
 			addMarker(id, type);
-			selElems[0].setAttribute("marker-"+type, "url(#" + id + ")");			
-
-
-			
-
+			svgCanvas.changeSelectedAttribute("marker-"+type, "url(#" + id + ")");
+			S.call("changed", selElems);
 		}
 		
 		// Init code
