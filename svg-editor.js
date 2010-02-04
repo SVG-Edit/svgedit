@@ -306,7 +306,7 @@ function svg_edit_setup() {
 					
 					$(this).mouseup(func);
 					if(opts.key) {
-						$(document).bind('keydown', {combi: opts.key+''}, func);
+						$(document).bind('keydown', {combi: opts.key+'', disableInInput:true}, func);
 					}
 				});
 			
@@ -485,7 +485,7 @@ function svg_edit_setup() {
 						if(btn.type == 'mode') {
 							button.bind(name, func);
 							if(btn.key) {
-								$(document).bind('keydown', {combi: btn.key}, func);
+								$(document).bind('keydown', {combi: btn.key, disableInInput: true}, func);
 								if(btn.title) button.attr("title", btn.title + ' ['+btn.key+']');
 							}
 						}

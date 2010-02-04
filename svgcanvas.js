@@ -990,6 +990,7 @@ function BatchCommand(text) {
 			var ext = ext_func({
 				content: svgcontent,
 				root: svgroot,
+				call: call,
 				getNextId: getNextId,
 				getElem: getElem,
 				addSvgElementFromJson: addSvgElementFromJson,
