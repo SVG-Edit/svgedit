@@ -127,7 +127,7 @@
 {"id": "tool_zoom", "title": "ज़ूम उपकरण"},
 {"id": "zoom", "title": "बदलें स्तर ज़ूम"},
 {"id": "zoomLabel", "textContent": "जूम:"},
-{"id": "sidepanel_handle", "textContent": "परतें", "title": "दायें/बाएं घसीट कर आकार बदलें"},
+{"id": "sidepanel_handle","textContent":"प र तें","title":"दायें/बाएं घसीट कर आकार बदलें"},
 {
  "js_strings": {
   "QerrorsRevertToSource": "आपके एस.वी.जी. स्रोत में त्रुटियों थी.\nक्या आप मूल एस.वी.जी स्रोत पर वापिस जाना चाहते हैं?", 
