@@ -3521,6 +3521,18 @@ function BatchCommand(text) {
 			var N = points.numberOfItems;
 			if (N >= 4) {
 				// loop through every 3 points and convert to a cubic bezier curve segment
+				// 
+				// NOTE: this is cheating, it means that every 3 points has the potential to 
+				// be a corner instead of treating each point in an equal manner.  In general,
+				// this technique does not look that good.
+				// 
+				// I am open to better ideas!
+				// 
+				// Reading:
+				// - http://www.efg2.com/Lab/Graphics/Jean-YvesQueinecBezierCurves.htm
+				// - http://www.codeproject.com/KB/graphics/BezierSpline.aspx?msg=2956963
+				// - http://www.ian-ko.com/ET_GeoWizards/UserGuide/smooth.htm
+				// - http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html
 				var curpos = points.getItem(0), prevCtlPt = null;
 				var d = [];
 				d.push(["M",curpos.x,",",curpos.y," C"].join(""));
