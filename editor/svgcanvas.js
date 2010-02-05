@@ -984,27 +984,6 @@ function BatchCommand(text) {
 		return result;
 	}
 	
-	this.addExtension = function(name, ext_func) {
-		if(!(name in extensions)) {
-			// Provide constants here (or should these be accessed through getSomething()?
-			var ext = ext_func({
-				content: svgcontent,
-				root: svgroot,
-				call: call,
-				getNextId: getNextId,
-				getElem: getElem,
-				addSvgElementFromJson: addSvgElementFromJson,
-				selectorManager: selectorManager,
-				findDefs: findDefs,
-				recalculateDimensions: recalculateDimensions
-			});
-			extensions[name] = ext;
-			call("extension_added", ext);
-		} else {
-			console.log('Cannot add extension "' + name + '", an extension by that name already exists"');
-		}
-	};
-
 	// This method rounds the incoming value to the nearest value based on the current_zoom
 	var round = function(val){
 		return parseInt(val*current_zoom)/current_zoom;
@@ -7438,6 +7417,78 @@ function BatchCommand(text) {
 		// getElementById lookup: includes icons, not good
 		// return svgdoc.getElementById(id);
 	}
+	
+	// Being able to access private methods publicly seems wrong somehow,
+	// but currently appears to be the best way to allow testing and provide
+	// access to them to plugins.
+	this.getPrivateMethods = function() {
+		return {
+			addCommandToHistory: addCommandToHistory,
+			addGradient: addGradient,
+			addSvgElementFromJson: addSvgElementFromJson,
+			assignAttributes: assignAttributes,
+			BatchCommand: BatchCommand,
+			call: call,
+			ChangeElementCommand: ChangeElementCommand,
+			cleanupElement: cleanupElement,
+			copyElem: copyElem,
+			ffClone: ffClone,
+			findDefs: findDefs,
+			findDuplicateGradient: findDuplicateGradient,
+			fromXml: fromXml,
+			getElem: getElem,
+			getId: getId,
+			getIntersectionList: getIntersectionList,
+			getNextId: getNextId,
+			getPathBBox: getPathBBox,
+			getUrlFromAttr: getUrlFromAttr,
+			hasMatrixTransform: hasMatrixTransform,
+			identifyLayers: identifyLayers,
+			InsertElementCommand: InsertElementCommand,
+			isIdentity: isIdentity,
+			logMatrix: logMatrix,
+			matrixMultiply: matrixMultiply,
+			MoveElementCommand: MoveElementCommand,
+			preventClickDefault: preventClickDefault,
+			recalculateAllSelectedDimensions: recalculateAllSelectedDimensions,
+			recalculateDimensions: recalculateDimensions,
+			remapElement: remapElement,
+			RemoveElementCommand: RemoveElementCommand,
+			removeUnusedGrads: removeUnusedGrads,
+			resetUndoStack: resetUndoStack,
+			round: round,
+			runExtensions: runExtensions,
+			sanitizeSvg: sanitizeSvg,
+			Selector: Selector,
+			SelectorManager: SelectorManager,
+			shortFloat: shortFloat,
+			svgCanvasToString: svgCanvasToString,
+			SVGEditTransformList: SVGEditTransformList,
+			svgToString: svgToString,
+			toString: toString,
+			toXml: toXml,
+			transformBox: transformBox,
+			transformListToTransform: transformListToTransform,
+			transformPoint: transformPoint,
+			transformToObj: transformToObj,
+			walkTree: walkTree
+		}
+	}
+	
+	this.addExtension = function(name, ext_func) {
+		if(!(name in extensions)) {
+			// Provide private vars/funcs here. Is there a better way to do this?
+			var ext = ext_func($.extend(canvas.getPrivateMethods(), {
+				svgroot: svgroot,
+				svgcontent: svgcontent,
+				selectorManager: selectorManager
+			}));
+			extensions[name] = ext;
+			call("extension_added", ext);
+		} else {
+			console.log('Cannot add extension "' + name + '", an extension by that name already exists"');
+		}
+	};
 	
 	// Test support for features/bugs
 	(function() {

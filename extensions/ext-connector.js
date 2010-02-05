@@ -9,8 +9,8 @@
  
 $(function() {
 	svgCanvas.addExtension("Connector", function(S) {
-		var svgcontent = S.content,
-			svgroot = S.root,
+		var svgcontent = S.svgcontent,
+			svgroot = S.svgroot,
 			getNextId = S.getNextId,
 			getElem = S.getElem,
 			addElem = S.addSvgElementFromJson,
@@ -104,14 +104,29 @@ $(function() {
 				svgCanvas.removeFromSelection($(conn_sel).toArray());
 			}
 			
+			// Loop through selected elements
 			while(i--) {
 				var elem = all_els[i];
 				if(!elem) continue;
+				
+				// Element was deleted, so delete connector
+				var was_deleted = !elem.parentNode;
+				
+				// Skip connector
 				if($(elem).data('c_start')) continue;
+				
+				// Loop through connectors to see if one is connected to the element
 				connectors.each(function() {
 					var start = $(this).data("c_start");
 					var end = $(this).data("c_end");
+					
+					// Connector found for this element
 					if(start == elem.id || end == elem.id) {
+						
+						if(was_deleted) {
+							$(this).remove();
+							return;
+						}
 						var bb = svgCanvas.getStrokedBBox([elem]);
 						connections.push({
 							elem: elem,
@@ -138,8 +153,8 @@ $(function() {
 					var line = conn.connector;
 					var elem = conn.elem;
 
-					var pre = conn.is_start?'start':'end';
 					var sw = line.getAttribute('stroke-width');
+					var pre = conn.is_start?'start':'end';
 					
 					// Update bbox for this element
 					var bb = svgCanvas.getStrokedBBox([elem]);

@@ -382,7 +382,7 @@ function svg_edit_setup() {
 	}
 	
 	var extAdded = function(window, ext) {
-		if("buttons" in ext) {
+		if(ext.buttons) {
 			var fallback_obj = {},
 				placement_obj = {},
 				svgicons = ext.svgicons;
@@ -516,6 +516,28 @@ function svg_edit_setup() {
 					}
 				}
 		
+			});
+		}
+		if(ext.context_panels) {
+			$.each(ext.context_panels, function(i, panel) {
+				// Add select panel
+				
+				// TODO: Allow support for other types, or adding to existing panel
+				if(panel.type == "select") {
+					var html = '<div id="' + panel.id + '"><label>'
+						+ '<select id="' + panel.list_id + '">';
+					$.each(panel.options, function(val, text) {
+						var sel = (val == panel.defopt) ? " selected":"";
+						html += '<option value="'+val+'"' + sel + '>' + text + '</option>';
+					});
+					html += "</select></label></div>";
+					// Creates the panel, hides & adds it, returns the select element
+					var sel = $(html).hide().appendTo("#tools_top").find("select");
+					$.each(panel.events, function(evt, func) {
+						$(sel).bind(evt, func);
+					});
+				}
+				
 			});
 		}
 	};
@@ -1864,7 +1886,7 @@ function svg_edit_setup() {
 		var bNoFill = (svgCanvas.getFillColor() == 'none');
 		var bNoStroke = (svgCanvas.getStrokeColor() == 'none');
 		var buttonsNeedingStroke = [ '#tool_fhpath', '#tool_line' ];
-		var buttonsNeedingFillAndStroke = [ '#tools_rect .tool_button', '#tools_ellipse .tool_button', '#tool_text' ];
+		var buttonsNeedingFillAndStroke = [ '#tools_rect .tool_button', '#tools_ellipse .tool_button', '#tool_text', '#tool_path'];
 		if (bNoStroke) {
 			for (index in buttonsNeedingStroke) {
 				var button = buttonsNeedingStroke[index];

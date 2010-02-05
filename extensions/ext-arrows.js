@@ -9,8 +9,7 @@
  
 $(function() {
 	svgCanvas.addExtension("Arrows", function(S) {
-		var svgcontent = S.content,
-			getElem = S.getElem,
+		var svgcontent = S.svgcontent,
 			addElem = S.addSvgElementFromJson,
 			selElems;
 			
@@ -64,7 +63,7 @@ $(function() {
 		
 		function addMarker(id, type) {
 			// TODO: Make marker (or use?) per arrow type, since refX can be different
-			var marker = getElem(id);
+			var marker = S.getElem(id);
 
 			var pathdata = {
 				se_arrow_fw: {d:"m0,0l10,5l-10,5l5,-5l-5,-5z", refx:8},
@@ -104,7 +103,8 @@ $(function() {
 			marker.setAttribute('refX', data.refx);
 		}
 		
-		function setArrow(type) {
+		function setArrow() {
+			var type = this.value;
 			resetMarker();
 		
 			if(type == "none") {
@@ -113,7 +113,6 @@ $(function() {
 		
 			var fw_id = "se_arrow_fw";
 			var bk_id = "se_arrow_bk";
-			
 			
 			// Set marker on element
 			var id = fw_id;
@@ -134,24 +133,25 @@ $(function() {
 			S.call("changed", selElems);
 		}
 		
-		// Init code
-		(function() {
-			var conn_tools = $('<div id="arrow_panel">\
-			<label><select id="arrow_list">\
-			<option value="none">No arrow</option>\
-			<option value="end">----&gt;</option>\
-			<option value="start">&lt;----</option>\
-			<option value="both">&lt;---&gt;</option>\
-			<option value="mid">--&gt;--</option>\
-			<option value="mid_bk">--&lt;--</option>\
-			</select></label></div>"').hide().appendTo("#tools_top");
-			$('#arrow_list').change(function() {
-				setArrow(this.value);
-			});
-		}());
-		
 		return {
 			name: "Arrows",
+			context_panels: [{
+				type: "select",
+				id: "arrow_panel",
+				list_id: "arrow_list",
+				options: {
+					none: "No arrow",
+					end: "----&gt;",
+					start: "&lt;----",
+					both: "&lt;---&gt;",
+					mid: "--&gt;--",
+					mid_bk: "--&lt;--"
+				},
+				defopt: "none",
+				events: {
+					change: setArrow
+				}
+			}],
 			addLangData: function(lang) {
 				return {
 					data: lang_list[lang]
