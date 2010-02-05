@@ -382,12 +382,23 @@ function svg_edit_setup() {
 	}
 	
 	var extAdded = function(window, ext) {
+
+		var cb_called = false;
+		
+		var runCallback = function() {
+			if(ext.callback && !cb_called) {
+				cb_called = true;
+				ext.callback();
+			}
+		}
+	
 		if(ext.buttons) {
 			var fallback_obj = {},
 				placement_obj = {},
 				svgicons = ext.svgicons;
 		
 			var holders = {};
+			
 		
 			// Add buttons given by extension
 			$.each(ext.buttons, function(i, btn) {
@@ -514,32 +525,70 @@ function svg_edit_setup() {
 					 	setIconSize('m');
 					 	setIconSize(old);
 					}
+					runCallback();
 				}
 		
 			});
 		}
-		if(ext.context_panels) {
-			$.each(ext.context_panels, function(i, panel) {
-				// Add select panel
+		if(ext.context_tools) {
+			$.each(ext.context_tools, function(i, tool) {
+				// Add select tool
+				var cont_id = tool.container_id?(' id="' + tool.container_id + '"'):"";
 				
-				// TODO: Allow support for other types, or adding to existing panel
-				if(panel.type == "select") {
-					var html = '<div id="' + panel.id + '"><label>'
-						+ '<select id="' + panel.list_id + '">';
-					$.each(panel.options, function(val, text) {
-						var sel = (val == panel.defopt) ? " selected":"";
-						html += '<option value="'+val+'"' + sel + '>' + text + '</option>';
-					});
-					html += "</select></label></div>";
-					// Creates the panel, hides & adds it, returns the select element
-					var sel = $(html).hide().appendTo("#tools_top").find("select");
-					$.each(panel.events, function(evt, func) {
-						$(sel).bind(evt, func);
-					});
+				var panel = $('#' + tool.panel);
+				
+				if(!panel.length) {
+					panel = $('<div>', {id: tool.panel}).appendTo("#tools_top");
 				}
 				
+				// TODO: Allow support for other types, or adding to existing tool
+				switch (tool.type) {
+				case 'select':
+					var html = '<label' + cont_id + '>'
+						+ '<select id="' + tool.id + '">';
+					$.each(tool.options, function(val, text) {
+						var sel = (val == tool.defval) ? " selected":"";
+						html += '<option value="'+val+'"' + sel + '>' + text + '</option>';
+					});
+					html += "</select></label>";
+					// Creates the tool, hides & adds it, returns the select element
+					var sel = $(html).appendTo(panel).find('select');
+					
+					$.each(tool.events, function(evt, func) {
+						$(sel).bind(evt, func);
+					});
+					break;
+				
+				case 'input':
+					var html = '<label' + cont_id + '">'
+						+ '<span id="' + tool.id + '_label">' 
+						+ tool.label + ':</span>'
+						+ '<input id="' + tool.id + '" title="' + tool.title
+						+ '" size="' + (tool.size || "4") + '" value="' + (tool.defval || "") + '" type="text"/></label>'
+						
+					// Creates the tool, hides & adds it, returns the select element
+					
+					// Add to given tool.panel
+					var inp = $(html).appendTo(panel).find('input');
+					
+					if(tool.spindata) {
+						inp.SpinButton(tool.spindata);
+					}
+					
+					if(tool.events) {
+						$.each(tool.events, function(evt, func) {
+							$(sel).bind(evt, func);
+						});
+					}
+					break;
+					
+				default:
+					break;
+				}
 			});
 		}
+		
+		runCallback();
 	};
 	
 	var getPaint = function(color, opac) {

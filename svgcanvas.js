@@ -6541,6 +6541,9 @@ function BatchCommand(text) {
 				// selector if the element is in that array
 				if ($.inArray(elem, selectedElements) != -1) {
 					setTimeout(function() {
+						// Due to element replacement, this element may no longer
+						// be part of the DOM
+						if(!elem.parentNode) return;
 						selectorManager.requestSelector(elem).resize();
 					},0);
 				}
