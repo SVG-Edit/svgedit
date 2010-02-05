@@ -473,6 +473,7 @@ $(function() {
 						se_ns = svgCanvas.getEditorNS(true);
 						cur_line.setAttributeNS(se_ns, "se:connector", conn_str);
 						cur_line.setAttribute('class', conn_sel.substr(1));
+						cur_line.setAttribute('opacity', 1);
 						svgCanvas.addToSelection([cur_line]);
 						svgCanvas.moveToBottomSelectedElement();
 						selManager.requestSelector(cur_line).showGrips(false);
@@ -522,11 +523,40 @@ $(function() {
 					elem.getAttribute("marker-end")
 				)) {
 					var start = elem.getAttribute("marker-start");
+					var mid = elem.getAttribute("marker-mid");
 					var end = elem.getAttribute("marker-end");
 					cur_line = elem;
 					$(elem)
 						.data("start_off", !!start)
 						.data("end_off", !!end);
+					
+					if(elem.tagName == "line" && mid) {
+						// Convert to polyline to accept mid-arrow
+						
+						var x1 = elem.getAttribute('x1')-0;
+						var x2 = elem.getAttribute('x2')-0;
+						var y1 = elem.getAttribute('y1')-0;
+						var y2 = elem.getAttribute('y2')-0;
+						var id = elem.id;
+						
+						var mid_pt = (' '+((x1+x2)/2)+','+((y1+y2)/2) + ' ');
+						var pline = addElem({
+							"element": "polyline",
+							"attr": {
+								"points": (x1+','+y1+ mid_pt +x2+','+y2),
+								"stroke": elem.getAttribute('stroke'),
+								"stroke-width": elem.getAttribute('stroke-width'),
+								"marker-mid": mid,
+								"fill": "none",
+								"opacity": elem.getAttribute('opacity') || 1
+							}
+						});
+						$(elem).after(pline).remove();
+						svgCanvas.clearSelection();
+						pline.id = id;
+						svgCanvas.addToSelection([pline]);
+					}
+						
 				}
 				updateConnectors();
 			},

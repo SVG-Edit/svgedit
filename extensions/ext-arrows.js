@@ -135,10 +135,11 @@ $(function() {
 		
 		return {
 			name: "Arrows",
-			context_panels: [{
+			context_tools: [{
 				type: "select",
-				id: "arrow_panel",
-				list_id: "arrow_list",
+				panel: "arrow_panel",
+				title: "Select arrow type",
+				id: "arrow_list",
 				options: {
 					none: "No arrow",
 					end: "----&gt;",
@@ -147,11 +148,14 @@ $(function() {
 					mid: "--&gt;--",
 					mid_bk: "--&lt;--"
 				},
-				defopt: "none",
+				defval: "none",
 				events: {
 					change: setArrow
 				}
 			}],
+			callback: function() {
+				$('#arrow_panel').hide();
+			},
 			addLangData: function(lang) {
 				return {
 					data: lang_list[lang]
