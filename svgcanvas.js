@@ -3569,21 +3569,11 @@ function BatchCommand(text) {
 					// the control points on both sides
 					if (prevCtlPt) {
 						var newpts = smoothControlPoints( prevCtlPt, ct1, curpos );
-						if (newpts.length == 2) {
-							// set previous control point 2
-//							console.log("prev ctl point 2 = " + prevCtlPt.x + "," + prevCtlPt.y);
-//							console.log(d[d.length-1]);
-//							console.log(newpts);
+						if (newpts && newpts.length == 2) {
 							var prevArr = d[d.length-1].split(',');
-//							console.log("prevArr[2]=" + prevArr[2]);
-//							console.log(newpts[0].x);
 							prevArr[2] = newpts[0].x;
 							prevArr[3] = newpts[0].y;
-//							console.log(prevArr);
-							// TODO: do I need to update d or is the array a reference?
-//							console.log(d[d.length-1]);
 							d[d.length-1] = prevArr.join(',');
-//							console.log(d[d.length-1]);
 							ct1 = newpts[1];
 						}
 					}
