@@ -2301,6 +2301,51 @@ function BatchCommand(text) {
 		return (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && m.e == 0 && m.f == 0);
 	}
 	
+	// expects three points to be sent, each point must have an x,y field
+	// returns an array of two points that are the smoothed
+	this.smoothControlPoints = function(ct1, ct2, pt) {
+		// each point must not be the origin
+		var x1 = ct1.x - pt.x,
+			y1 = ct1.y - pt.y,
+			x2 = ct2.x - pt.x,
+			y2 = ct2.y - pt.y;
+			
+		if ( (x1 != 0 || y1 != 0) && (x2 != 0 || y2 != 0) ) {
+			var anglea = Math.atan2(y1,x1),
+				angleb = Math.atan2(y2,x2),
+				r1 = Math.sqrt(x1*x1+y1*y1),
+				r2 = Math.sqrt(x2*x2+y2*y2),
+				nct1 = svgroot.createSVGPoint(),
+				nct2 = svgroot.createSVGPoint();				
+			if (anglea < 0) { anglea += 2*Math.PI; }
+			if (angleb < 0) { angleb += 2*Math.PI; }
+			
+			var angleBetween = Math.abs(anglea - angleb),
+				angleDiff = Math.abs(Math.PI - angleBetween)/2;
+			
+			var new_anglea, new_angleb;
+			if (anglea - angleb > 0) {
+				new_anglea = angleBetween < Math.PI ? (anglea + angleDiff) : (anglea - angleDiff);
+				new_angleb = angleBetween < Math.PI ? (angleb - angleDiff) : (angleb + angleDiff);
+			}
+			else {
+				new_anglea = angleBetween < Math.PI ? (anglea - angleDiff) : (anglea + angleDiff);
+				new_angleb = angleBetween < Math.PI ? (angleb + angleDiff) : (angleb - angleDiff);
+			}
+			
+			// rotate the points
+			nct1.x = r1 * Math.cos(new_anglea) + pt.x;
+			nct1.y = r1 * Math.sin(new_anglea) + pt.y;
+			nct2.x = r2 * Math.cos(new_angleb) + pt.x;
+			nct2.y = r2 * Math.sin(new_angleb) + pt.y;
+			
+			return [nct1, nct2];
+		}
+		return undefined;
+	};
+	var smoothControlPoints = this.smoothControlPoints;
+		
+
 	// matrixMultiply() is provided because WebKit didn't implement multiply() correctly
 	// on the SVGMatrix interface.  See https://bugs.webkit.org/show_bug.cgi?id=16062
 	// This function tries to return a SVGMatrix that is the multiplication m1*m2.
@@ -3523,7 +3568,24 @@ function BatchCommand(text) {
 					// if the previous segment had a control point, we want to smooth out
 					// the control points on both sides
 					if (prevCtlPt) {
-						// TODO: fancy processing here :)
+						var newpts = smoothControlPoints( prevCtlPt, ct1, curpos );
+						if (newpts.length == 2) {
+							// set previous control point 2
+//							console.log("prev ctl point 2 = " + prevCtlPt.x + "," + prevCtlPt.y);
+//							console.log(d[d.length-1]);
+//							console.log(newpts);
+							var prevArr = d[d.length-1].split(',');
+//							console.log("prevArr[2]=" + prevArr[2]);
+//							console.log(newpts[0].x);
+							prevArr[2] = newpts[0].x;
+							prevArr[3] = newpts[0].y;
+//							console.log(prevArr);
+							// TODO: do I need to update d or is the array a reference?
+//							console.log(d[d.length-1]);
+							d[d.length-1] = prevArr.join(',');
+//							console.log(d[d.length-1]);
+							ct1 = newpts[1];
+						}
 					}
 					
 					d.push([ct1.x,ct1.y,ct2.x,ct2.y,end.x,end.y].join(','));
