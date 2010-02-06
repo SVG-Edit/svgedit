@@ -73,7 +73,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			<option selected="selected" value="layer1">Layer 1</option>
 		</select>
 	</div>
-	<div id="sidepanel_handle" onselectstart="return false;" title="Drag left/right to resize side panel [X]">L a y e r s</div>
+	<div id="sidepanel_handle" title="Drag left/right to resize side panel [X]">L a y e r s</div>
 </div>
 
 <div id="main_button">
@@ -241,6 +241,8 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<div class="toolset">
 		<label id="tool_image_url">url:
 			<input id="image_url" type="text" title="Change URL" size="35"/>
+		</label>
+		<label id="tool_change_image">
 			<button id="change_image_url" style="display:none;">Change Image</button>
 			<span id="url_notice" title="NOTE: This image cannot be embedded. It will depend on this path to be displayed"></span>
 		</label>
@@ -249,15 +251,15 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 
 	<div id="circle_panel">
 		<div class="toolset">
-			<label id="tool_ellipse_cx">cx:
+			<label id="tool_circle_cx">cx:
 			<input id="circle_cx" class="attr_changer" title="Change circle's cx coordinate" size="3" data-attr="cx"/>
 			</label>
-			<label id="tool_ellipse_cy">cy:
+			<label id="tool_circle_cy">cy:
 			<input id="circle_cy" class="attr_changer" title="Change circle's cy coordinate" size="3" data-attr="cy"/>
 			</label>
 		</div>
 		<div class="toolset">
-			<label id="tool_ellipse_r">r:
+			<label id="tool_circle_r">r:
 			<input id="circle_r" class="attr_changer" title="Change circle's radius" size="3" data-attr="r"/>
 			</label>
 		</div>
