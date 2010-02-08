@@ -37,6 +37,12 @@
 	height: 480px;
 	-apple-dashboard-region:dashboard-region(control rectangle 0px 0px 0px 0px); /* for widget regions that shouldn't react to dragging */
 	position: relative;
+	/* 
+	  A subtle gradient effect in the canvas.
+	  Just experimenting - not sure if this is worth it.
+	*/
+	background: -moz-radial-gradient(45deg,#bbb,#222);
+	background: -webkit-gradient(radial, center center, 3, center center, 1000, from(#bbb), to(#222));
 }
 
 #svg_editor div#palette_holder {
