@@ -133,6 +133,32 @@ $(function() {
 			S.call("changed", selElems);
 		}
 		
+		function colorChanged(elem) {
+			var color = elem.getAttribute('stroke');
+			
+			var markers = ['start','mid','end'];
+			
+			$.each(markers, function(i, type) {
+				var href = elem.getAttribute('marker-'+type);
+				if(href) {
+					var marker_id = href.match(/\(\#(.*)\)/)[1];
+					var marker = S.getElem(marker_id);
+					var shape = marker.firstChild;
+					var cur_color = shape.getAttribute('fill');
+					console.log(cur_color, color);
+					
+					
+					// If color matches, ignore
+					// If color doesn't match, look for marker with shape that does match color
+					// - Found? Use its URL!
+					// - Not found? Create new one (based on this one) but with new fill
+					// (don't remove old marker: removeUnused* can take care of that)
+				}
+
+			});
+			
+		}
+		
 		return {
 			name: "Arrows",
 			context_tools: [{
@@ -181,6 +207,21 @@ $(function() {
 						showPanel(false);
 					}
 				}
+			},
+			elementChanged: function(opts) {
+				var elem = opts.elems[0];
+				if(elem && (
+					elem.getAttribute("marker-start") ||
+					elem.getAttribute("marker-mid") ||
+					elem.getAttribute("marker-end")
+				)) {
+	// 								var start = elem.getAttribute("marker-start");
+	// 								var mid = elem.getAttribute("marker-mid");
+	// 								var end = elem.getAttribute("marker-end");
+					// Has marker, so see if it should match color
+					colorChanged(elem);
+				}
+				
 			}
 		};
 	});
