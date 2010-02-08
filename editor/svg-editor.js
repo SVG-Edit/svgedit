@@ -42,7 +42,6 @@ function svg_edit_setup() {
 		default_img_url = "images/logo.png",
 		workarea = $("#workarea");
 	
-	
 	// Store and retrieve preferences
 	$.pref = function(key, val) {
 		if(val) curPrefs[key] = val;
