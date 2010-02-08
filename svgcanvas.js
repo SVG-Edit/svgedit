@@ -20,6 +20,68 @@ if(window.opera) {
 	window.console.dir = function(str) {};
 }
 
+(function() {
+
+	// This fixes $(...).attr() to work as expected with SVG elements.
+	// Does not currently use *AttributeNS() since we rarely need that.
+	
+	// See http://api.jquery.com/attr/ for basic documentation of .attr()
+	
+	// Additional functionality: 
+	// - When getting attributes, a string that's a number is return as type number.
+	// - If an array is supplied as first parameter, multiple values are returned
+	// as an object with values for each given attributes
+	
+	var proxied = jQuery.fn.attr, svgns = "http://www.w3.org/2000/svg";
+	jQuery.fn.attr = function(key, value) {
+		var len = this.length;
+		if(!len) return this;
+		for(var i=0; i<len; i++) {
+			var elem = this[i];
+			// set/get SVG attribute
+			if(elem.namespaceURI === svgns) {
+				// Setting attribute
+				if(value !== undefined) {
+					elem.setAttribute(key, value);
+				} else if($.isArray(key)) {
+					// Getting attributes from array
+					var j = key.length, obj = {};
+
+					while(j--) {
+						var aname = key[j];
+						var attr = elem.getAttribute(aname);
+						// This returns a number when appropriate
+						if(attr || attr === "0") {
+							attr = isNaN(attr)?attr:attr-0;
+						}
+						obj[aname] = attr;
+					}
+					return obj;
+				
+				} else if(typeof key === "object") {
+					// Setting attributes form object
+					for(v in key) {
+						elem.setAttribute(v, key[v]);
+					}
+				// Getting attribute
+				} else {
+					var attr = elem.getAttribute(key);
+					if(attr || attr === "0") {
+						attr = isNaN(attr)?attr:attr-0;
+					}
+
+					return attr;
+				}
+			} else {
+				return proxied.apply(this, arguments);
+			}
+		}
+		return this;
+	};
+
+}());
+
+
 function SvgCanvas(container)
 {
 var isOpera = !!window.opera,
@@ -882,26 +944,27 @@ function BatchCommand(text) {
 		idprefix = "svg_",
 		svgdoc  = container.ownerDocument,
 		svgroot = svgdoc.createElementNS(svgns, "svg");
-	svgroot.setAttribute("width", 640);
-	svgroot.setAttribute("height", 480);
-	svgroot.setAttribute("id", "svgroot");
-	svgroot.setAttribute("xmlns", svgns);
-	svgroot.setAttribute("xmlns:xlink", xlinkns);
-	container.appendChild(svgroot);
+
+	$(svgroot).attr({
+		width: 640,
+		height: 480,
+		id: "svgroot",
+		xmlns: svgns,
+		"xmlns:xlink": xlinkns
+	}).appendTo(container);
+	
 	var svgcontent = svgdoc.createElementNS(svgns, "svg");
-	svgcontent.setAttribute('id', 'svgcontent');
-// 	svgcontent.setAttribute('viewBox', '0 0 640 480');
-	svgcontent.setAttribute('width', '640');
-	svgcontent.setAttribute('height', '480');
-	svgcontent.setAttribute('x', '640');
-	svgcontent.setAttribute('y', '480');
-	svgcontent.setAttribute('overflow', 'visible');
-	
-	
-	svgcontent.setAttribute("xmlns", svgns);
-	svgcontent.setAttribute("xmlns:xlink", xlinkns);
-	svgroot.appendChild(svgcontent);
-	
+	$(svgcontent).attr({
+		id: 'svgcontent',
+		width: 640,
+		height: 480,
+		x: 640,
+		y: 480,
+		overflow: 'visible',
+		xmlns: svgns,
+		"xmlns:xlink": xlinkns
+	}).appendTo(svgroot);
+
 	(function() {
 		// TODO: make this string optional and set by the client
 		var comment = svgdoc.createComment(" Created with SVG-edit - http://svg-edit.googlecode.com/ ");
@@ -6025,9 +6088,10 @@ function BatchCommand(text) {
 		}
 
 		if (elems.length > 0) {
-			if (!preventUndo) 
+			if (!preventUndo) {
 				this.changeSelectedAttribute("stroke", val, elems);
-			else 
+				call("changed", elems);
+			} else 
 				this.changeSelectedAttributeNoUndo("stroke", val, elems);
 		}
 	};
@@ -6053,9 +6117,10 @@ function BatchCommand(text) {
 			}
 		}
 		if (elems.length > 0) {
-			if (!preventUndo) 
+			if (!preventUndo) {
 				this.changeSelectedAttribute("fill", val, elems);
-			else
+				call("changed", elems);
+			} else
 				this.changeSelectedAttributeNoUndo("fill", val, elems);
 		}
 	};
