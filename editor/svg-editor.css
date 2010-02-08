@@ -371,7 +371,7 @@
 	left: 0;
 	padding-left: 2px;
 	background: #E8E8E8;
-	z-index: 5;
+	z-index: 4;
 }
 
 #workarea.wireframe #svgcontent * {
@@ -880,6 +880,7 @@ button#tool_docprops_cancel {
 	position:absolute;
 	top:0;
 	width:100%;
+	z-index: 6;
 }
 
 #dialog_content {
