@@ -163,7 +163,7 @@ function ChangeElementCommand(elem, attrs, text) {
 		for(var attr in this.newValues ) {
 			if (this.newValues[attr]) {
 				if (attr == "#text") this.elem.textContent = this.newValues[attr];
-				else setUnitAttr(this.elem, attr, this.newValues[attr]);
+				else this.elem.setAttribute(attr, this.newValues[attr]);
 			}
 			else {
 				if (attr == "#text") this.elem.textContent = "";
@@ -199,7 +199,7 @@ function ChangeElementCommand(elem, attrs, text) {
 		for(var attr in this.oldValues ) {
 			if (this.oldValues[attr]) {
 				if (attr == "#text") this.elem.textContent = this.oldValues[attr];
-				else setUnitAttr(this.elem, attr, this.newValues[attr]);
+				else this.elem.setAttribute(attr, this.oldValues[attr]);
 			}
 			else {
 				if (attr == "#text") this.elem.textContent = "";
@@ -973,10 +973,6 @@ function BatchCommand(text) {
 			elem.setAttribute(attr, val);
 		}
 		
-		convertToUnit = function(val, unit) {
-			
-		}
-
 		canvas.isValidUnit = function(attr, val) {
 			var valid = false;
 			if($.inArray(attr, unit_attrs) != -1) {
@@ -1935,6 +1931,9 @@ function BatchCommand(text) {
 		// make a copy of initial values and include the transform
 		if (initial == null) {
 			initial = $.extend(true, {}, changes);
+			$.each(initial, function(attr, val) {
+				initial[attr] = convertToNum(attr, val);
+			});
 		}
 		// save the start transform value too
 		initial["transform"] = start_transform ? start_transform : "";
