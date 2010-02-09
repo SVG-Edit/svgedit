@@ -262,21 +262,26 @@
 	-webkit-border-radius: 8px;
 }
 
-#svg_editor #main_icon:hover,
-#svg_editor #main_icon.down {
-	border-left: 1px #fcd9ba solid;
-	border-top: 1px #fcd9ba solid;
-	border-right: 1px #e0a874 solid;
-	border-bottom: 1px #e0a874 solid;
-	background-color: #FFC;
+#svg_editor .tool_button:hover, 
+#svg_editor .push_button:hover,
+#svg_editor .buttonup:hover,
+#svg_editor .buttondown,
+#svg_editor .tool_button_current,
+#svg_editor .push_button_pressed
+{
+	border-left: 1px #fcd9ba solid !important;
+	border-top: 1px #fcd9ba solid !important;
+	border-right: 1px #e0a874 solid !important;
+	border-bottom: 1px #e0a874 solid !important;
+	background-color: #FFC !important;
 }
 
-#svg_editor #main_icon.down { 
-	background-color: #f4e284;
-	border-top: 1px solid #630;
-	border-left: 1px solid #630;
-	top: -1px;
-	left: -1px;
+#svg_editor .tool_button_current,
+#svg_editor .push_button_pressed,
+#svg_editor .buttondown { 
+	background-color: #f4e284 !important;
+	border-top: 1px solid #630 !important;
+	border-left: 1px solid #630 !important;
 }
 
 #svg_editor #main_icon span {
@@ -440,7 +445,8 @@
 	height: 15px;
 }
 
-#svg_editor #tools_left .tool_button {
+#svg_editor #tools_left .tool_button,
+#svg_editor #tools_left .tool_button_current {
 	position: relative;
 	z-index: 11;
 }
@@ -542,7 +548,9 @@ span.zoom_tool {
 
 #svg_editor .tool_button, 
 #svg_editor .push_button,
-#svg_editor .tool_button_current {
+#svg_editor .tool_button_current,
+#svg_editor .push_button_pressed 
+{
 	height: 24px;
 	width: 24px;
 	margin: 2px;
@@ -553,6 +561,9 @@ span.zoom_tool {
 	border-bottom: 1px solid #808080;
 	background-color: #E8E8E8;
 	cursor: pointer;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
 #svg_editor #main_menu li#tool_open {
@@ -569,15 +580,6 @@ span.zoom_tool {
 	right: 270px;
 	margin: 0;
 	cursor: pointer; /* Sadly doesn't appear to have an effect */
-}
-
-#svg_editor .tool_button_current,
-#svg_editor .push_button_pressed {
-	border-left: 1px solid #808080;
-	border-top: 1px solid #808080;
-	border-right: 1px solid #FFFFFF;
-	border-bottom: 1px solid #FFFFFF;
-	background-color: #B0B0B0;
 }
 
 #svg_editor .disabled {
@@ -653,11 +655,6 @@ span.zoom_tool {
 	width: 28px;
 }
 
-#svg_editor .tool_button:hover, 
-#svg_editor .push_button:hover {
-	background-color: #FFF;
-}
-
 #svg_editor #tools_bottom {
 	position: absolute;
 	left: 40px;
@@ -710,15 +707,6 @@ span.zoom_tool {
 	border: 1px outset #777;
 	z-index: 6;
 }
-
-/*
-	top: 100px;
-	left: 80px;
-	right: 80px;
-	bottom: 100px;
-*/
-
-
 
 #svg_docprops #svg_docprops_container {
 	position: absolute;
@@ -957,19 +945,15 @@ button#tool_docprops_cancel {
 	border: 1px solid #000;
 }
 
-/* Possibly not necessary */
+/* Necessary to keep the flyouts sized properly */
 #svg_editor .tools_flyout .tool_button,
 #svg_editor .tools_flyout .tool_flyout {
 	padding: 2px;
 	width: 24px;
 	height: 24px;
 	margin: 0;
+	border-radius: 0px;
+	-moz-border-radius: 0px;
+	-webkit-border-radius: 0px;	
 }
 
-#svg_editor .tools_flyout .tool_button:hover {
-	border-left: 1px solid #808080;
-	border-top: 1px solid #808080;
-	border-right: 1px solid #FFFFFF;
-	border-bottom: 1px solid #FFFFFF;
-	background-color: #B0B0B0;
-}
