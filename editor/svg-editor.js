@@ -166,8 +166,6 @@ function svg_edit_setup() {
 	var multiselected = false;
 	var editingsource = false;
 	var docprops = false;
-	var length_attrs = ['x','y','x1','x2','y1','y2','cx','cy','width','height','r','rx','ry','width','height','radius'];
-	var length_types = ['em','ex','px','cm','mm','in','pt','pc','%'];
 	
 	var fillPaint = new $.jGraduate.Paint({solidColor: "FF0000"}); // solid red
 	var strokePaint = new $.jGraduate.Paint({solidColor: "000000"}); // solid black
@@ -977,20 +975,7 @@ function svg_edit_setup() {
 	$('.attr_changer').change(function() {
 		var attr = this.getAttribute("data-attr");
 		var val = this.value;
-		var valid = false;
-		if($.inArray(attr, length_attrs) != -1) {
-			if(!isNaN(val)) {
-				valid = true;
-			} else {
-				//TODO: Allow the values in length_types, then uncomment this:  
-// 				val = val.toLowerCase();
-// 				$.each(length_types, function(i, unit) {
-// 					if(valid) return;
-// 					var re = new RegExp('^-?[\\d\\.]+' + unit + '$');
-// 					if(re.test(val)) valid = true;
-// 				});
-			}
-		} else valid = true;
+		var valid = svgCanvas.isValidUnit(attr, val);
 		
 		if(!valid) {
 			$.alert(uiStrings.invalidAttrValGiven);
