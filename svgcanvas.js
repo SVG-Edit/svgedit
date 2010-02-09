@@ -1785,37 +1785,27 @@ function BatchCommand(text) {
 		var batchCmd = new BatchCommand("Transform");
 		
 		// store initial values that will be affected by reducing the transform list
-		var changes = {}, initial = null;
+		var changes = {}, initial = null, attrs = [];
 		switch (selected.tagName)
 		{
 			case "line":
-				changes["x1"] = selected.getAttribute("x1");
-				changes["y1"] = selected.getAttribute("y1");
-				changes["x2"] = selected.getAttribute("x2");
-				changes["y2"] = selected.getAttribute("y2");
+				attrs = ["x1", "y1", "x2", "y2"];
 				break;
 			case "circle":
-				changes["cx"] = selected.getAttribute("cx");
-				changes["cy"] = selected.getAttribute("cy");
-				changes["r"] = selected.getAttribute("r");
+				attrs = ["cx", "cy", "r"];
 				break;
 			case "ellipse":
-				changes["cx"] = selected.getAttribute("cx");
-				changes["cy"] = selected.getAttribute("cy");
-				changes["rx"] = selected.getAttribute("rx");
-				changes["ry"] = selected.getAttribute("ry");
+				attrs = ["cx", "cy", "rx", "ry"];
 				break;
 			case "rect":
 			case "image":
-				changes["width"] = selected.getAttribute("width");
-				changes["height"] = selected.getAttribute("height");
+				attrs = ["width", "height", "x", "y"];
+				break;
 			case "use":
-				changes["x"] = selected.getAttribute("x");
-				changes["y"] = selected.getAttribute("y");
+				attrs = ["x", "y"];
 				break;
 			case "text":
-				changes["x"] = selected.getAttribute("x");
-				changes["y"] = selected.getAttribute("y");
+				attrs = ["x", "y"];
 				break;
 			case "polygon":
 			case "polyline":
@@ -1835,6 +1825,10 @@ function BatchCommand(text) {
 				changes["d"] = selected.getAttribute("d");
 				break;
 		} // switch on element type to get initial values
+		
+		if(attrs.length) {
+			changes = $(selected).attr(attrs);
+		}
 		
 		// if we haven't created an initial array in polygon/polyline/path, then 
 		// make a copy of initial values and include the transform
@@ -2149,10 +2143,7 @@ function BatchCommand(text) {
 				m = transformListToTransform(tlist).matrix;
 				switch (selected.tagName) {
 					case 'line':
-						changes.x1 = selected.getAttribute("x1");
-						changes.y1 = selected.getAttribute("y1");
-						changes.x2 = selected.getAttribute("x2");
-						changes.y2 = selected.getAttribute("y2");
+						changes = $(selected).attr(["x1","y1","x2","y2"]);
 					case 'polyline':
 					case 'polygon':
 						changes.points = selected.getAttribute("points");
@@ -3127,14 +3118,14 @@ function BatchCommand(text) {
 					
 					break;
 				case "circle":
-					var cx = shape.getAttributeNS(null, "cx"),
-						cy = shape.getAttributeNS(null, "cy"),
+					var c = $(shape).attr(["cx", "cy"]);
+					var cx = c.cx, cy = c.cy,
 						rad = Math.sqrt( (x-cx)*(x-cx) + (y-cy)*(y-cy) );
 					shape.setAttributeNS(null, "r", rad);
 					break;
 				case "ellipse":
-					var cx = shape.getAttributeNS(null, "cx"),
-						cy = shape.getAttributeNS(null, "cy"),
+					var c = $(shape).attr(["cx", "cy"]);
+					var cx = c.cx, cy = c.cy;
 					// Opera has a problem with suspendRedraw() apparently
 						handle = null;
 					if (!window.opera) svgroot.suspendRedraw(1000);
@@ -3304,26 +3295,21 @@ function BatchCommand(text) {
 					}
 					break;
 				case "line":
-// 					keep = (element.x1.baseVal.value != element.x2.baseVal.value ||
-// 							element.y1.baseVal.value != element.y2.baseVal.value);
-					keep = (element.getAttribute('x1') != element.getAttribute('x2') || element.getAttribute('y1') != element.getAttribute('y2'));
+					var attrs = $(element).attr(["x1", "x2", "y1", "y2"]);
+					keep = (attrs.x1 != attrs.x2 || attrs.y1 != attrs.y2);
 					break;
 				case "square":
 				case "rect":
-					// keep = (element.width.baseVal.value && element.height.baseVal.value);
-					keep = (element.getAttribute('width') != 0 || element.getAttribute('height') != 0);
-					break;
 				case "image":
-					// keep = (element.width.baseVal.value && element.height.baseVal.value);
-					keep = (element.getAttribute('width') != 0 || element.getAttribute('height') != 0);
+					var attrs = $(element).attr(["width", "height"]);
+					keep = (attrs.width != 0 || attrs.height != 0);
 					break;
 				case "circle":
-					// keep = (element.r.baseVal.value);
 					keep = (element.getAttribute('r') != 0);
 					break;
 				case "ellipse":
-					// keep = (element.rx.baseVal.value && element.ry.baseVal.value);
-					keep = (element.getAttribute('rx') != null || element.getAttribute('ry') != null);
+					var attrs = $(element).attr(["rx", "ry"]);
+					keep = (attrs.rx != null || attrs.ry != null);
 					break;
 				case "fhellipse":
 					if ((freehand.maxx - freehand.minx) > 0 &&
@@ -5190,14 +5176,12 @@ function BatchCommand(text) {
 
 		switch (elem.tagName) {
 		case 'ellipse':
-			var rx = elem.getAttribute('rx')-0;
-			var ry = elem.getAttribute('ry')-0;
 		case 'circle':
+			var a = $(elem).attr(['rx', 'ry', 'cx', 'cy']);
+			var cx = a.cx, cy = a.cy, rx = a.rx, ry = a.ry;
 			if(elem.tagName == 'circle') {
-				var rx = ry = elem.getAttribute('r')-0;
+				rx = ry = $(elem).attr('r');
 			}
-			var cx = elem.getAttribute('cx')-0;
-			var cy = elem.getAttribute('cy')-0;
 		
 			joinSegs([
 				['M',[(cx-rx),(cy)]],
@@ -5212,20 +5196,16 @@ function BatchCommand(text) {
 			d = elem.getAttribute('d');
 			break;
 		case 'line':
-			var x1 = elem.getAttribute('x1');
-			var x2 = elem.getAttribute('x2');
-			var y1 = elem.getAttribute('y1');
-			var y2 = elem.getAttribute('y2');
-			d = "M"+x1+","+y1+"L"+x2+","+y2;
+			var a = $(elem).attr(["x1", "y1", "x2", "y2"]);
+			d = "M"+a.x1+","+a.y1+"L"+a.x2+","+a.y2;
 			break;
 		case 'polyline':
 		case 'polygon':
-			var points = elem.getAttribute('points');
-			d = "M"+points;
+			d = "M" + elem.getAttribute('points');
 			break;
 		case 'rect':
-			var rx = elem.getAttribute('rx')-0;
-			var ry = elem.getAttribute('ry')-0;
+			var r = $(elem).attr(['rx', 'ry']);
+			var rx = r.rx, ry = r.ry;
 			var b = elem.getBBox();
 			var x = b.x, y = b.y, w = b.width, h = b.height;
 			var num = 4-num; // Why? Because!
@@ -5993,10 +5973,7 @@ function BatchCommand(text) {
 		return true;
 	};
 	this.getOffset = function() {
-		return {
-			x: svgcontent.getAttribute('x'),
-			y: svgcontent.getAttribute('y')
-		};
+		return $(svgcontent).attr(['x', 'y']);
 	}
 	
 	this.setBBoxZoom = function(val, editor_w, editor_h) {
