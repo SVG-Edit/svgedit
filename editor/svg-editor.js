@@ -540,6 +540,15 @@ function svg_edit_setup() {
 				
 				// TODO: Allow support for other types, or adding to existing tool
 				switch (tool.type) {
+				case 'tool_button':
+					var html = '<div class="tool_button">' + tool.id + '</div>';
+					var div = $(html).appendTo(panel);
+					if (tool.events) {
+						$.each(tool.events, function(evt, func) {
+							$(div).bind(evt, func);
+						});
+					}
+					break;
 				case 'select':
 					var html = '<label' + cont_id + '>'
 						+ '<select id="' + tool.id + '">';
