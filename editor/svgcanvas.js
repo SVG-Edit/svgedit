@@ -6105,6 +6105,9 @@ function BatchCommand(text) {
 			if(!batchCmd) {
 				batchCmd = new BatchCommand("Change Image Dimensions");
 			}
+			x = convertToNum('width', x);
+			y = convertToNum('height', y);
+			
 			svgcontent.setAttribute('width', x);
 			svgcontent.setAttribute('height', y);
 			batchCmd.addSubCommand(new ChangeElementCommand(svgcontent, {"width":w, "height":h}));

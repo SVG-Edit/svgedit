@@ -722,6 +722,11 @@ span.zoom_tool {
 	z-index: 20001;
 }
 
+#svg_docprops .error {
+	border: 1px solid red;
+	padding: 3px;
+}
+
 #svg_docprops #resolution {
 	max-width: 14em;
 }
