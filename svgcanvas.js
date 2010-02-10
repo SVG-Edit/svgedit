@@ -87,8 +87,6 @@ function SvgCanvas(container)
 var isOpera = !!window.opera,
 	isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1,
 	support = {},
-	htmlns = "http://www.w3.org/1999/xhtml",
-	mathns = "http://www.w3.org/1998/Math/MathML",
 
 // this defines which elements and attributes that we support
 	svgWhiteList = {
@@ -673,6 +671,9 @@ function BatchCommand(text) {
 				'y': 0,
 				'style': 'pointer-events:none'
 			});
+			// Opera has a rendering bug
+			if (!window.opera) canvasbg.setAttribute("filter", "url(#canvashadow)");
+			
 			var rect = svgdoc.createElementNS(svgns, "rect");
 			assignAttributes(rect, {
 				'width': '100%',
@@ -917,17 +918,25 @@ function BatchCommand(text) {
 		xlinkns = "http://www.w3.org/1999/xlink",
 		xmlns = "http://www.w3.org/XML/1998/namespace",
 		se_ns = "http://svg-edit.googlecode.com",
+		htmlns = "http://www.w3.org/1999/xhtml",
+		mathns = "http://www.w3.org/1998/Math/MathML",
 		idprefix = "svg_",
 		svgdoc  = container.ownerDocument,
-		svgroot = svgdoc.createElementNS(svgns, "svg");
-
-	$(svgroot).attr({
-		width: 640,
-		height: 480,
-		id: "svgroot",
-		xmlns: svgns,
-		"xmlns:xlink": xlinkns
-	}).appendTo(container);
+		svgroot = svgdoc.importNode(Utils.text2xml('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
+						'width="640" height="480" x="640" y="480" overflow="visible">' +
+						'<defs>' +
+							'<filter id="canvashadow" filterUnits="objectBoundingBox">' +
+								'<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>'+
+								'<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>'+
+								'<feMerge>'+
+									'<feMergeNode in="offsetBlur"/>'+
+									'<feMergeNode in="SourceGraphic"/>'+
+								'</feMerge>'+
+							'</filter>'+
+						'</defs>'+
+					'</svg>').documentElement, true);
+		
+		$(svgroot).appendTo(container);
 	
 	var svgcontent = svgdoc.createElementNS(svgns, "svg");
 	$(svgcontent).attr({
