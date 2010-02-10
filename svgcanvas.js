@@ -682,9 +682,9 @@ function BatchCommand(text) {
 				'stroke-width': 1,
 				'stroke': '#000',
 				'fill': '#FFF',
-				'filter': 'url(#canvashadow)',
 				'style': 'pointer-events:none'
 			});
+			if (!window.opera) rect.setAttribute('filter', 'url(#canvashadow)');
 			canvasbg.appendChild(rect);
 			svgroot.insertBefore(canvasbg, svgcontent);
 		};
