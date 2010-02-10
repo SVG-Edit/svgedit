@@ -669,10 +669,9 @@ function BatchCommand(text) {
 				'height': 480,
 				'x': 0,
 				'y': 0,
+				'overflow': 'visible',
 				'style': 'pointer-events:none'
 			});
-			// Opera has a rendering bug
-			if (!window.opera) canvasbg.setAttribute("filter", "url(#canvashadow)");
 			
 			var rect = svgdoc.createElementNS(svgns, "rect");
 			assignAttributes(rect, {
@@ -683,6 +682,7 @@ function BatchCommand(text) {
 				'stroke-width': 1,
 				'stroke': '#000',
 				'fill': '#FFF',
+				'filter': 'url(#canvashadow)',
 				'style': 'pointer-events:none'
 			});
 			canvasbg.appendChild(rect);
