@@ -1513,7 +1513,6 @@ function svg_edit_setup() {
 		$('#image_save_opts input').val([curPrefs.img_save]);
 		
 		// update resolution option with actual resolution
-		// TODO: what if SVG source is changed?
 		var res = svgCanvas.getResolution();
 		$('#canvas_width').val(res.w);
 		$('#canvas_height').val(res.h);
@@ -1580,12 +1579,26 @@ function svg_edit_setup() {
 		svgCanvas.setImageTitle(new_title);
 	
 		// update resolution
-		var x = parseInt($('#canvas_width').val());
-		var y = parseInt($('#canvas_height').val());
-		if(isNaN(x) || isNaN(y)) {
-			x ='fit';
+		var width = $('#canvas_width'), w = width.val();
+		var height = $('#canvas_height'), h = height.val();
+
+		if(w != "fit" && !svgCanvas.isValidUnit('width', w)) {
+			$.alert(uiStrings.invalidAttrValGiven);
+			width.parent().addClass('error');
+			return false;
 		}
-		if(!svgCanvas.setResolution(x,y)) {
+		
+		width.parent().removeClass('error');
+		
+		if(h != "fit" && !svgCanvas.isValidUnit('height', h)) {
+			$.alert(uiStrings.invalidAttrValGiven);
+			height.parent().addClass('error');
+			return false;
+		} 
+		
+		height.parent().removeClass('error');
+		
+		if(!svgCanvas.setResolution(w, h)) {
 			$.alert(uiStrings.noContentToFitTo);
 			return false;
 		}
