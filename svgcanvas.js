@@ -5527,33 +5527,34 @@ function BatchCommand(text) {
 			if(!support.goodDecimals) {
 				canvas.fixOperaXML(svgcontent, newDoc.documentElement);
 			}
-        	
-			svgcontent.id= 'svgcontent';
 			
+			var content = $(svgcontent);
+        	
 			// determine proper size
 			var w, h;
-			if (svgcontent.getAttribute("viewBox")) {
-				var vb = svgcontent.getAttribute("viewBox").split(' ');
+			if (content.attr("viewBox")) {
+				var vb = content.attr("viewBox").split(' ');
 				w = vb[2];
 				h = vb[3];
 			}
-			// handle old content that doesn't have a viewBox
+			// handle content that doesn't have a viewBox
 			else {
-				w = svgcontent.getAttribute("width");
-				h = svgcontent.getAttribute("height");
+				var dims = content.attr(["width", "height"]);
+				w = convertToNum('width', dims.width);
+				h = convertToNum('height', dims.height);
 				// svgcontent.setAttribute("viewBox", ["0", "0", w, h].join(" "));
 			}
 			
-			svgcontent.setAttribute('width', w);
-			svgcontent.setAttribute('height', h);
-			svgcontent.setAttribute('overflow', 'visible');
+			content.attr({
+				id: 'svgcontent',
+				width: w,
+				height: h,
+				overflow: 'visible'
+			});
+			
 			batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
 			// update root to the correct size
-			var changes = {};
-			changes['width'] = svgcontent.getAttribute('width');
-			changes['height'] = svgcontent.getAttribute('height');
-// 			svgroot.setAttribute('width', w);
-// 			svgroot.setAttribute('height', h);
+			var changes = content.attr(["width", "height"]);
 			batchCmd.addSubCommand(new ChangeElementCommand(svgroot, changes));
 			
 			// reset zoom
