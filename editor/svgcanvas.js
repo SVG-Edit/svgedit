@@ -1066,7 +1066,7 @@ function BatchCommand(text) {
 		}
 		for(var attr in defaults) {
 			var val = defaults[attr];
-			if(element.localName != 'math' && element.getAttribute(attr) == val) {
+			if(element.getAttribute(attr) == val) {
 				element.removeAttribute(attr);
 			}
 		}
