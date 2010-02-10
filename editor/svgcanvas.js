@@ -90,6 +90,7 @@ var isOpera = !!window.opera,
 
 // this defines which elements and attributes that we support
 	svgWhiteList = {
+	// SVG Elements
 	"a": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "xlink:href", "xlink:title"],
 	"circle": ["class", "clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "r", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"clipPath": ["class", "clipPathUnits", "id"],
@@ -98,7 +99,7 @@ var isOpera = !!window.opera,
 	"ellipse": ["class", "clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"feGaussianBlur": ["class", "id", "requiredFeatures", "stdDeviation"],
 	"filter": ["class", "filterRes", "filterUnits", "height", "id", "primitiveUnits", "requiredFeatures", "width", "x", "xlink:href", "y"],
-	"foreignObject": ["class", "height", "id", "requiredFeatures", "style", "width", "x", "y"],
+	"foreignObject": ["class", "font-size", "height", "id", "opacity", "requiredFeatures", "style", "width", "x", "y"],
 	"g": ["class", "clip-path", "clip-rule", "id", "display", "fill", "fill-opacity", "fill-rule", "filter", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"image": ["class", "clip-path", "clip-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "style", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
 	"line": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
@@ -120,7 +121,38 @@ var isOpera = !!window.opera,
 	"textPath": ["class", "id", "method", "requiredFeatures", "spacing", "startOffset", "style", "systemLanguage", "transform", "xlink:href"],
 	"title": [],
 	"tspan": ["class", "clip-path", "clip-rule", "dx", "dy", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "mask", "opacity", "requiredFeatures", "rotate", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "text-anchor", "textLength", "transform", "x", "xml:space", "y"],
-	"use": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "height", "id", "mask", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "transform", "width", "x", "xlink:href", "y"]
+	"use": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "height", "id", "mask", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "transform", "width", "x", "xlink:href", "y"],
+	
+	// MathML Elements
+	"annotation-xml": ["encoding"],
+	"maction": ["actiontype", "other", "selection"],
+	"math": ["class", "id", "display", "xmlns"],
+	"merror": [],
+	"mfrac": ["linethickness"],
+	"mi": ["mathvariant"],
+	"mmultiscripts": [],
+	"mn": [],
+	"mo": ["fence", "lspace", "maxsize", "minsize", "rspace", "stretchy"],
+	"mover": [],
+	"mpadded": ["lspace", "width"],
+	"mphantom": [],
+	"mprescripts": [],
+	"mroot": [],
+	"mrow": ["xlink:href", "xlink:type", "xmlns:xlink"],
+	"mspace": ["depth", "height", "width"],
+	"msqrt": [],
+	"mstyle": ["displaystyle", "mathbackground", "mathcolor", "mathvariant", "scriptlevel"],
+	"msub": [],
+	"msubsup": [],
+	"msup": [],
+	"mtable": ["align", "columnalign", "columnlines", "columnspacing", "displaystyle", "equalcolumns", "equalrows", "frame", "rowalign", "rowlines", "rowspacing", "width"],
+	"mtd": ["columnalign", "columnspan", "rowalign", "rowspan"],
+	"mtext": [],
+	"mtr": ["columnalign", "rowalign"],
+	"munder": [],
+	"munderover": [],
+	"none": [],
+	"semantics": []
 	},
 
 
@@ -1028,12 +1060,11 @@ function BatchCommand(text) {
 			'stroke-opacity':1,
 			'stroke-width':1,
 			'rx':0,
-			'ry':0,
-			'display':'inline'
+			'ry':0
 		}
 		for(var attr in defaults) {
 			var val = defaults[attr];
-			if(element.getAttribute(attr) == val) {
+			if(element.localName != 'math' && element.getAttribute(attr) == val) {
 				element.removeAttribute(attr);
 			}
 		}
@@ -1457,7 +1488,7 @@ function BatchCommand(text) {
 				for (var i=attrs.length-1; i>=0; i--) {
 					attr = attrs.item(i);
 					var attrVal = attr.nodeValue;
-					
+					if (attr.localName == '-moz-math-font-style') continue;
 					if (attrVal != "") {
 						if(attrVal.indexOf('pointer-events') == 0) continue;
 						if(attr.localName == "class" && attrVal.indexOf('se_') == 0) continue;
@@ -1646,6 +1677,7 @@ function BatchCommand(text) {
 				changes["rx"] = scalew(changes["rx"]);
 				changes["ry"] = scaleh(changes["ry"]);
 				break;
+			case "foreignObject":
 			case "rect":
 			case "image":
 				var pt1 = remap(changes["x"],changes["y"]);
@@ -1759,6 +1791,7 @@ function BatchCommand(text) {
 		// TODO: merge this switch with the above one and optimize
 		switch (selected.tagName)
 		{
+			case "foreignObject":
 			case "rect":
 			case "image":
 				changes.x = changes.x-0 + Math.min(0,changes.width);
@@ -1891,6 +1924,7 @@ function BatchCommand(text) {
 			case "ellipse":
 				attrs = ["cx", "cy", "rx", "ry"];
 				break;
+			case "foreignObject":
 			case "rect":
 			case "image":
 				attrs = ["width", "height", "x", "y"];
@@ -3191,6 +3225,8 @@ function BatchCommand(text) {
 					shape.setAttributeNS(null, "y2", y);
 					if (!window.opera) svgroot.unsuspendRedraw(handle);
 					break;
+				case "foreignObject":
+					// fall through
 				case "square":
 					// fall through
 				case "rect":
@@ -3398,6 +3434,7 @@ function BatchCommand(text) {
 					var attrs = $(element).attr(["x1", "x2", "y1", "y2"]);
 					keep = (attrs.x1 != attrs.x2 || attrs.y1 != attrs.y2);
 					break;
+				case "foreignObject":
 				case "square":
 				case "rect":
 				case "image":
@@ -5410,9 +5447,8 @@ function BatchCommand(text) {
 		if(opts) $.extend(save_options, opts);
 		save_options.apply = true;
 		
-		var str = "<?xml version=\"1.0\" standalone=\"no\"?>\n";
 		// no need for doctype, see http://jwatt.org/svg/authoring/#doctype-declaration
-		str += svgCanvasToString();
+		var str = svgCanvasToString();
 		call("saved", str);
 	};
 

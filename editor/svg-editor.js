@@ -175,7 +175,7 @@ function svg_edit_setup() {
 	// with a gradient will appear black in Firefox, etc.  See bug 308590
 	// https://bugzilla.mozilla.org/show_bug.cgi?id=308590
 	var saveHandler = function(window,svg) {
-		window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
+	    window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
 	};
 	
 	// called when we've selected a different element
