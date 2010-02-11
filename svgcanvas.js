@@ -913,6 +913,7 @@ function BatchCommand(text) {
 
 	// TODO: declare the variables and set them as null, then move this setup stuff to
 	// an initialization function - probably just use clear()
+	
 	var canvas = this,
 		svgns = "http://www.w3.org/2000/svg",
 		xlinkns = "http://www.w3.org/1999/xlink",
@@ -937,6 +938,13 @@ function BatchCommand(text) {
 					'</svg>').documentElement, true);
 		
 		$(svgroot).appendTo(container);
+		
+	var nsMap = {};
+	nsMap[xlinkns] = 'xlink';
+	nsMap[xmlns] = 'xmlns';
+	nsMap[se_ns] = 'se';
+	nsMap[htmlns] = 'xhtml';
+	nsMap[mathns] = 'mathml';
 	
 	var svgcontent = svgdoc.createElementNS(svgns, "svg");
 	$(svgcontent).attr({
@@ -1476,6 +1484,7 @@ function BatchCommand(text) {
 
 	var svgToString = function(elem, indent) {
 		var out = new Array();
+
 		if (elem) {
 			cleanupElement(elem);
 			var attrs = elem.attributes,
@@ -1486,15 +1495,24 @@ function BatchCommand(text) {
 			for (var i=0; i<indent; i++) out.push(" ");
 			out.push("<"); out.push(elem.nodeName);			
 			if(elem.id == 'svgcontent') {
-				// Process root element separately; Prevents errors caused 
-				// in webkit when removing attributes
+				// Process root element separately
 				var res = canvas.getResolution();
-				out.push(' width="' + res.w + '" height="' + res.h
-				+ '" xmlns:xlink="'+xlinkns+'" xmlns="'+svgns+'"');
-				if(svgcontent.getAttribute("xmlns:se")) {
-					// TODO: Check if any se: attributes are actually used
-					out.push(' xmlns:se="'+se_ns+'"');
-				}
+				out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'"');
+			
+				var nsuris = {};
+				
+				// Check elements for namespaces, add if found
+				$(elem).find('*').each(function() {
+					var el = this;
+					$.each(this.attributes, function(i, attr) {
+						var uri = attr.namespaceURI;
+						if(uri && !nsuris[uri]) {
+							nsuris[uri] = true;
+							out.push(" xmlns:" + nsMap[uri] + '="' + uri +'"');
+						}
+					});
+				});
+
 			} else {
 				for (var i=attrs.length-1; i>=0; i--) {
 					attr = attrs.item(i);
@@ -1520,19 +1538,10 @@ function BatchCommand(text) {
 						}
 						
 						// map various namespaces to our fixed namespace prefixes
-						// TODO: put this into a map and do a look-up instead of if-else
-						if (attr.namespaceURI == xlinkns) {
-							out.push('xlink:');
+						if(attr.namespaceURI) {
+							out.push(nsMap[attr.namespaceURI]+':');
 						}
-						else if(attr.namespaceURI == 'http://www.w3.org/2000/xmlns/' && attr.localName != 'xmlns') {
-							out.push('xmlns:');
-						}
-						else if(attr.namespaceURI == xmlns) {
-							out.push('xml:');
-						} 
-						else if(attr.namespaceURI == se_ns) {
-							out.push('se:');
-						}
+						
 						out.push(attr.localName); out.push("=\""); 
 						out.push(attrVal); out.push("\"");
 					}
