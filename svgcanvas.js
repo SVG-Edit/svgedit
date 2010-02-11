@@ -923,7 +923,7 @@ function BatchCommand(text) {
 		mathns = "http://www.w3.org/1998/Math/MathML",
 		idprefix = "svg_",
 		svgdoc  = container.ownerDocument,
-		svgroot = svgdoc.importNode(Utils.text2xml('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
+		svgroot = svgdoc.importNode(Utils.text2xml('<svg id="svgroot" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
 						'width="640" height="480" x="640" y="480" overflow="visible">' +
 						'<defs>' +
 							'<filter id="canvashadow" filterUnits="objectBoundingBox">' +
