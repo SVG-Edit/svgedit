@@ -6,10 +6,9 @@
  * Copyright(c) 2009 Narendra Sisodya
  *
  */
-var put_locale = function(svgCanvas, given_param){
+var put_locale = function(svgCanvas, given_param, good_langs){
 	var lang_param;
-	// TODO: Make this array be based on entries in svg-editor.html
-	var good_langs = ['ar','cs','de','en','es','fa','fr','fy','hi','ja','nl','ro','ru','sk','zh-TW'];
+
 	if(given_param) {
 		lang_param = given_param;
 	} else {
@@ -28,7 +27,7 @@ var put_locale = function(svgCanvas, given_param){
 		if($.inArray(lang_param, good_langs) == -1) {
 			lang_param = "en";
 		}
-		
+
 		// don't bother on first run if language is English		
 		if(lang_param.indexOf("en") == 0) return;
 	}

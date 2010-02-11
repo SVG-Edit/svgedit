@@ -2907,7 +2907,11 @@ function svg_edit_setup() {
 // This happens when the page is loaded
 $(function() {
 	svgCanvas = svg_edit_setup();
-	put_locale(svgCanvas);
+	var good_langs = [];
+	$('#lang_select option').each(function() {
+		good_langs.push(this.value);
+	});
+	put_locale(svgCanvas, null, good_langs);
 	
 	try{
 	    json_encode = function(obj){
