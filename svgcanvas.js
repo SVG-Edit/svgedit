@@ -1992,20 +1992,22 @@ function BatchCommand(text) {
 				m = svgroot.createSVGMatrix();
 			
 			// temporarily strip off the rotate and save the old center
-			var gangle = canvas.getRotationAngle(selected);
-			if (gangle) {
-				for (var i = 0; i < tlist.numberOfItems; ++i) {
-					var xform = tlist.getItem(i);
-					if (xform.type == 4) {
-						// extract old center through mystical arts
-						var rm = xform.matrix;
-						var a = gangle * Math.PI / 180;
-						// FIXME: This blows up if the angle is exactly 0 or 180 degrees!
-						oldcenter.y = 0.5 * (Math.sin(a)*rm.e + (1-Math.cos(a))*rm.f) / (1 - Math.cos(a));
-						oldcenter.x = ((1 - Math.cos(a)) * oldcenter.y - rm.f) / Math.sin(a);
-						tlist.removeItem(i);
-						break;
-					}
+			var a = gangle * Math.PI / 180;
+			if ( Math.abs(a) > (1.0e-10) ) {
+				var s = Math.sin(a)/(1 - Math.cos(a));
+			} else {
+				// FIXME: This blows up if the angle is exactly 0!
+				var s = 2/a;
+			}
+			for (var i = 0; i < tlist.numberOfItems; ++i) {
+				var xform = tlist.getItem(i);
+				if (xform.type == 4) {
+					// extract old center through mystical arts
+					var rm = xform.matrix;
+					oldcenter.y = (s*rm.e + rm.f)/2;
+					oldcenter.x = (rm.e - s*rm.f)/2;
+					tlist.removeItem(i);
+					break;
 				}
 			}
 			
@@ -2223,19 +2225,23 @@ function BatchCommand(text) {
 				m = svgroot.createSVGMatrix(),
 				// temporarily strip off the rotate and save the old center
 				angle = canvas.getRotationAngle(selected);
-			if (angle) {
-				for (var i = 0; i < tlist.numberOfItems; ++i) {
-					var xform = tlist.getItem(i);
-					if (xform.type == 4) {
-						// extract old center through mystical arts
-						var rm = xform.matrix;
-						var a = angle * Math.PI / 180;
-						// FIXME: This blows up if the angle is exactly 0 or 180 degrees!
-						oldcenter.y = 0.5 * (Math.sin(a)*rm.e + (1-Math.cos(a))*rm.f) / (1 - Math.cos(a));
-						oldcenter.x = ((1 - Math.cos(a)) * oldcenter.y - rm.f) / Math.sin(a);
-						tlist.removeItem(i);
-						break;
-					}
+
+			var a = angle * Math.PI / 180;
+			if ( Math.abs(a) > (1.0e-10) ) {
+				var s = Math.sin(a)/(1 - Math.cos(a));
+			} else {
+				// FIXME: This blows up if the angle is exactly 0!
+				var s = 2/a;
+			}
+			for (var i = 0; i < tlist.numberOfItems; ++i) {
+				var xform = tlist.getItem(i);
+				if (xform.type == 4) {
+					// extract old center through mystical arts
+					var rm = xform.matrix;
+					oldcenter.y = (s*rm.e + rm.f)/2;
+					oldcenter.x = (rm.e - s*rm.f)/2;
+					tlist.removeItem(i);
+					break;
 				}
 			}
 			
@@ -2730,7 +2736,11 @@ function BatchCommand(text) {
 				mouse_target = mouse_target.correspondingUseElement;
 	
 			// for foreign content, go up until we find the foreignObject
-			if ($.inArray(mouse_target.namespaceURI, [mathns, htmlns]) != -1) {
+			// WebKit browsers set the mouse target to the svgcanvas div 
+			if ($.inArray(mouse_target.namespaceURI, [mathns, htmlns]) != -1 && 
+				mouse_target.id != "svgcanvas") 
+			{
+				console.log(mouse_target.id);
 				while (mouse_target.nodeName != "foreignObject") {
 					mouse_target = mouse_target.parentNode;
 				}
