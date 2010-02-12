@@ -979,7 +979,7 @@ function BatchCommand(text) {
 				
 				if($.inArray(attr, w_attrs) !== -1) {
 					return num * res.w;
-				} else if($.inArray(attr, w_attrs) !== -1) {
+				} else if($.inArray(attr, h_attrs) !== -1) {
 					return num * res.h;
 				} else {
 					return num * Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
@@ -1006,7 +1006,7 @@ function BatchCommand(text) {
 						val *= 100;
 						if($.inArray(attr, w_attrs) !== -1) {
 							val = val / res.w;
-						} else if($.inArray(attr, w_attrs) !== -1) {
+						} else if($.inArray(attr, h_attrs) !== -1) {
 							val = val / res.h;
 						} else {
 							return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
