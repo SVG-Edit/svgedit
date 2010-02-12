@@ -1369,7 +1369,7 @@ function BatchCommand(text) {
 					}
 				}
 			});
-
+			
 			// recurse to children
 			i = node.childNodes.length;
 			while (i--) { sanitizeSvg(node.childNodes.item(i)); }
@@ -1923,7 +1923,7 @@ function BatchCommand(text) {
 		}
 		
 		// if this element had no transforms, we are done
-		if (tlist.numberOfItems == 0) {
+		if (!tlist || tlist.numberOfItems == 0) {
 			selected.removeAttribute("transform");
 			return null;
 		}
@@ -2001,25 +2001,27 @@ function BatchCommand(text) {
 				m = svgroot.createSVGMatrix();
 			
 			// temporarily strip off the rotate and save the old center
-			var a = gangle * Math.PI / 180;
-			if ( Math.abs(a) > (1.0e-10) ) {
-				var s = Math.sin(a)/(1 - Math.cos(a));
-			} else {
-				// FIXME: This blows up if the angle is exactly 0!
-				var s = 2/a;
-			}
-			for (var i = 0; i < tlist.numberOfItems; ++i) {
-				var xform = tlist.getItem(i);
-				if (xform.type == 4) {
-					// extract old center through mystical arts
-					var rm = xform.matrix;
-					oldcenter.y = (s*rm.e + rm.f)/2;
-					oldcenter.x = (rm.e - s*rm.f)/2;
-					tlist.removeItem(i);
-					break;
+			var gangle = canvas.getRotationAngle(selected);
+			if (gangle) {
+				var a = gangle * Math.PI / 180;
+				if ( Math.abs(a) > (1.0e-10) ) {
+					var s = Math.sin(a)/(1 - Math.cos(a));
+				} else {
+					// FIXME: This blows up if the angle is exactly 0!
+					var s = 2/a;
+				}
+				for (var i = 0; i < tlist.numberOfItems; ++i) {
+					var xform = tlist.getItem(i);
+					if (xform.type == 4) {
+						// extract old center through mystical arts
+						var rm = xform.matrix;
+						oldcenter.y = (s*rm.e + rm.f)/2;
+						oldcenter.x = (rm.e - s*rm.f)/2;
+						tlist.removeItem(i);
+						break;
+					}
 				}
 			}
-			
 			var tx = 0, ty = 0,
 				operation = 0,
 				N = tlist.numberOfItems;
@@ -2234,23 +2236,24 @@ function BatchCommand(text) {
 				m = svgroot.createSVGMatrix(),
 				// temporarily strip off the rotate and save the old center
 				angle = canvas.getRotationAngle(selected);
-
-			var a = angle * Math.PI / 180;
-			if ( Math.abs(a) > (1.0e-10) ) {
-				var s = Math.sin(a)/(1 - Math.cos(a));
-			} else {
-				// FIXME: This blows up if the angle is exactly 0!
-				var s = 2/a;
-			}
-			for (var i = 0; i < tlist.numberOfItems; ++i) {
-				var xform = tlist.getItem(i);
-				if (xform.type == 4) {
-					// extract old center through mystical arts
-					var rm = xform.matrix;
-					oldcenter.y = (s*rm.e + rm.f)/2;
-					oldcenter.x = (rm.e - s*rm.f)/2;
-					tlist.removeItem(i);
-					break;
+			if (angle) {
+				var a = angle * Math.PI / 180;
+				if ( Math.abs(a) > (1.0e-10) ) {
+					var s = Math.sin(a)/(1 - Math.cos(a));
+				} else {
+					// FIXME: This blows up if the angle is exactly 0!
+					var s = 2/a;
+				}
+				for (var i = 0; i < tlist.numberOfItems; ++i) {
+					var xform = tlist.getItem(i);
+					if (xform.type == 4) {
+						// extract old center through mystical arts
+						var rm = xform.matrix;
+						oldcenter.y = (s*rm.e + rm.f)/2;
+						oldcenter.x = (rm.e - s*rm.f)/2;
+						tlist.removeItem(i);
+						break;
+					}
 				}
 			}
 			
@@ -5554,6 +5557,20 @@ function BatchCommand(text) {
 			if(!support.goodDecimals) {
 				canvas.fixOperaXML(svgcontent, newDoc.documentElement);
 			}
+			
+			// recalculate dimensions on the top-level children so that unnecessary transforms
+			// are removed
+			var deepdive = function(node) {
+				if (node.nodeType == 1) {
+					var children = node.children;
+					var i = children.length;
+					while (i--) { deepdive(children.item(i)); }
+					try {
+						recalculateDimensions(node);
+					} catch(e) { console.log(e); }
+				}
+			}
+			deepdive(svgcontent);
 			
 			var content = $(svgcontent);
         	
