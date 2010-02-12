@@ -4695,11 +4695,18 @@ function BatchCommand(text) {
 						}
 						// else, create a new point, append to pts array, update path element
 						else {
+							// Checks if current target or parents are #svgcontent
+							if(!$.contains(container, evt.target)) {
+								// Clicked outside canvas, so don't make point
+								return false;
+							}
+
 							var lastx = current_path_pts[len-2], lasty = current_path_pts[len-1];
 							// we store absolute values in our path points array for easy checking above
 							current_path_pts.push(x);
 							current_path_pts.push(y);
 							d_attr += "L" + round(x) + "," + round(y) + " ";
+
 							path.setAttribute("d", d_attr);
 	
 							// set stretchy line to latest point
