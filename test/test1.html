@@ -163,6 +163,31 @@
 		equals(null, t.getAttribute("d"), "Imported a <text> with a d attribute");
 	});
 	
+	// This test makes sure import/export properly handles namespaced attributes
+	test("Test importing/exporting namespaced attributes", function() {
+		expect(5);
+		var set = svgCanvas.setSvgString('<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:se="http://svg-edit.googlecode.com" xmlns:foo="http://example.com">'+
+				'<image xlink:href="../editor/images/logo.png"/>' +
+				'<polyline id="se_test_elem" se:foo="bar"/>' +
+				'</svg>');
+		var attrVal = document.getElementById('se_test_elem').getAttributeNS("http://svg-edit.googlecode.com", "foo");
+		
+		equals(true, attrVal === "bar", "Preserved namespaced attribute on import");
+				
+		var output = svgCanvas.getSvgString();
+		var has_xlink = output.indexOf('xmlns:xlink="http://www.w3.org/1999/xlink"') !== -1;
+		var has_se = output.indexOf('xmlns:se=') !== -1;
+		var has_foo = output.indexOf('xmlns:foo=') === -1;
+		var has_attr = output.indexOf('se:foo="bar"') !== -1;
+		
+		equals(true, has_attr, "Preserved namespaced attribute on export");
+		equals(true, has_xlink, "Included xlink: xmlns");
+		equals(true, has_se, "Included se: xmlns");
+		equals(true, has_foo, "Did not include foo: xmlns");
+		
+	});
+	
+	
   }); 
   </script>  
 </head>  
