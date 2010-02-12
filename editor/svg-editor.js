@@ -175,35 +175,31 @@ function svg_edit_setup() {
 		// Creates and opens an HTML page that provides a link to the SVG, a preview, and the markup. 
 		// Also includes warning about Mozilla bug #308590 when applicable
 		
-	    var title = svgCanvas.getImageTitle() || "Untitled";
-	    var res = svgCanvas.getResolution();
-	    var str = encodeURIComponent(svg);
-	    var note = '';
-	    // Check if FF and has <defs/>
-	    if(navigator.userAgent.indexOf('Gecko/') !== -1 && svg.indexOf('<defs') !== -1) {
-	    	note = "<p><b>NOTE:</b> Due to a <a href='https://bugzilla.mozilla.org/show_bug.cgi?id=308590'>bug</a> in your browser, the image may appear wrong (missing gradients or elements). It will however appear correct once saved as a file.</p>";
-	    }
-	    
-		var htmlpage = "\
-<!doctype html>\
-  <title>SVG-Edit saved image: " + title + "</title>\
-<script>\
-	window.onload = function() {\
-		var str = '" + str + "';\
-		var data = 'data:image/svg+xml;base64," + Utils.encode64(svg) + "';\
-		document.getElementById('ta').value = decodeURIComponent(str);\
-		document.getElementById('frame').src = data;\
-		document.getElementById('view').href = data;\
-	}\
-</script>\
-<h2>Download</h2>\
-<p><a id=view>Download image</a> (Follow link, then choose \"Save As\" on your browser)</p>\
-<h2>Preview</h2>" + note +
-"<iframe id=frame width='" + res.w + "' height='" + res.h + "'></iframe>\
-<h2>Markup</h2>\
-<textarea id=ta style='width:100%' rows=10></textarea>\
-";
-	    window.open("data:text/html;charset=utf-8;base64," + Utils.encode64(htmlpage));
+		var win = window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
+		
+		// Alert will only appear the first time saved OR the first time the bug is encountered
+		var done = $.pref('save_notice_done');
+		if(done !== "all") {
+
+			var note = 'Select "Save As..." in your browser to save this image as an SVG file.';
+			
+			// Check if FF and has <defs/>
+			if(navigator.userAgent.indexOf('Gecko/') !== -1) {
+				if(svg.indexOf('<defs') !== -1) {
+					note += "\n\nNOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.";
+					$.pref('save_notice_done', 'all');
+					done = "all";
+				} else {
+					$.pref('save_notice_done', 'part');
+				}
+			} else {
+				$.pref('save_notice_done', 'all'); 
+			}
+			
+			if(done !== 'part') {
+				win.alert(note);
+			}
+		}
 	};
 	
 	// called when we've selected a different element
