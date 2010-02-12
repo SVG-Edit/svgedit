@@ -178,7 +178,7 @@ function svg_edit_setup() {
 		var win = window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
 		
 		// Alert will only appear the first time saved OR the first time the bug is encountered
-		var done = $.pref('save_notice_done');
+		var done = $.pref('save_notice_done') + ""; // TODO: Find out why this returns an object in FF when online
 		if(done !== "all") {
 
 			var note = 'Select "Save As..." in your browser to save this image as an SVG file.';
