@@ -170,12 +170,40 @@ function svg_edit_setup() {
 	var fillPaint = new $.jGraduate.Paint({solidColor: "FF0000"}); // solid red
 	var strokePaint = new $.jGraduate.Paint({solidColor: "000000"}); // solid black
 
-	// TODO: Unfortunately Mozilla does not handle internal references to gradients
-	// inside a data: URL document.  This means that any elements filled/stroked 
-	// with a gradient will appear black in Firefox, etc.  See bug 308590
-	// https://bugzilla.mozilla.org/show_bug.cgi?id=308590
 	var saveHandler = function(window,svg) {
-	    window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
+		
+		// Creates and opens an HTML page that provides a link to the SVG, a preview, and the markup. 
+		// Also includes warning about Mozilla bug #308590 when applicable
+		
+	    var title = svgCanvas.getImageTitle() || "Untitled";
+	    var res = svgCanvas.getResolution();
+	    var str = encodeURIComponent(svg);
+	    var note = '';
+	    // Check if FF and has <defs/>
+	    if(navigator.userAgent.indexOf('Gecko/') !== -1 && svg.indexOf('<defs') !== -1) {
+	    	note = "<p><b>NOTE:</b> Due to a <a href='https://bugzilla.mozilla.org/show_bug.cgi?id=308590'>bug</a> in your browser, the image may appear wrong (missing gradients or elements). It will however appear correct once saved as a file.</p>";
+	    }
+	    
+		var htmlpage = "\
+<!doctype html>\
+  <title>SVG-Edit saved image: " + title + "</title>\
+<script>\
+	window.onload = function() {\
+		var str = '" + str + "';\
+		var data = 'data:image/svg+xml;base64," + Utils.encode64(svg) + "';\
+		document.getElementById('ta').value = decodeURIComponent(str);\
+		document.getElementById('frame').src = data;\
+		document.getElementById('view').href = data;\
+	}\
+</script>\
+<h2>Download</h2>\
+<p><a id=view>Download image</a> (Follow link, then choose \"Save As\" on your browser)</p>\
+<h2>Preview</h2>" + note +
+"<iframe id=frame width='" + res.w + "' height='" + res.h + "'></iframe>\
+<h2>Markup</h2>\
+<textarea id=ta style='width:100%' rows=10></textarea>\
+";
+	    window.open("data:text/html;charset=utf-8;base64," + Utils.encode64(htmlpage));
 	};
 	
 	// called when we've selected a different element
