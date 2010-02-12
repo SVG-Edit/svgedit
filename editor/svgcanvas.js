@@ -1775,8 +1775,8 @@ function BatchCommand(text) {
 					// if absolute or first segment, we want to remap x, y, x1, y1, x2, y2
 					// if relative, we want to scalew, scaleh
 					if (type % 2 == 0) { // absolute
-						var thisx = seg.x ? seg.x : currentpt.x, // for V commands
-							thisy = seg.y ? seg.y : currentpt.y, // for H commands
+						var thisx = (seg.x != undefined) ? seg.x : currentpt.x, // for V commands
+							thisy = (seg.y != undefined) ? seg.y : currentpt.y, // for H commands
 							pt = remap(thisx,thisy),
 							pt1 = remap(seg.x1,seg.y1),
 							pt2 = remap(seg.x2,seg.y2);
@@ -2749,7 +2749,6 @@ function BatchCommand(text) {
 			if ($.inArray(mouse_target.namespaceURI, [mathns, htmlns]) != -1 && 
 				mouse_target.id != "svgcanvas") 
 			{
-				console.log(mouse_target.id);
 				while (mouse_target.nodeName != "foreignObject") {
 					mouse_target = mouse_target.parentNode;
 				}
