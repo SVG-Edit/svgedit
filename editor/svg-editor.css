@@ -1,5 +1,5 @@
 ﻿body {
-	background: #E8E8E8;
+	background: #D8D8D8;
 }
 
 #svg_editor {
@@ -106,7 +106,6 @@
 
 #svg_editor #layerpanel {
 	display: inline-block;
-	background-color: #E8E8E8;
 	position:absolute;
 	top: 1px;
 	bottom: 0px;
@@ -124,7 +123,8 @@
 #svg_editor #sidepanel_handle {
 	display: inline-block;
 	position: absolute;
-	background-color: #E8E8E8;
+	background-color: #D8D8D8;
+	font-weight: bold;
 	left: 0px;
 	top: 40%;
 	width: 1em;
@@ -247,17 +247,19 @@
 	left: 4px;
 }
 
+
 #svg_editor #main_icon {
+	background: #E8E8E8;
 	position: relative;
 	top: -2px;
 	left: -2px;
 	padding: 1px 0 2px 1px;
 	width: 44px;
 	height: 30px;
-	border-left: 1px solid #EEE;
-	border-top: 1px solid #EEE;
-	border-right: 1px solid #CCC;
-	border-bottom: 1px solid #CCC;
+	border-left: 1px solid #FFF;
+	border-top: 1px solid #FFF;
+	border-right: 1px solid #808080;
+	border-bottom: 1px solid #808080;
 	border-radius: 8px;
 	-moz-border-radius: 8px;
 	-webkit-border-radius: 8px;
@@ -376,7 +378,6 @@
 	top: 75px;
 	left: 0;
 	padding-left: 2px;
-	background: #E8E8E8;
 	z-index: 4;
 }
 
@@ -556,8 +557,8 @@ span.zoom_tool {
 	width: 24px;
 	margin: 2px;
 	padding: 2px;
-	border-left: 1px solid #FFFFFF;
-	border-top: 1px solid #FFFFFF;
+	border-left: 1px solid #FFF;
+	border-top: 1px solid #FFF;
 	border-right: 1px solid #808080;
 	border-bottom: 1px solid #808080;
 	background-color: #E8E8E8;
