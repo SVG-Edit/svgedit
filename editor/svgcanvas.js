@@ -917,7 +917,7 @@ function BatchCommand(text) {
 	var canvas = this,
 		svgns = "http://www.w3.org/2000/svg",
 		xlinkns = "http://www.w3.org/1999/xlink",
-		xmlns = "http://www.w3.org/XML/1998/namespace",
+		xmlns = "http://www.w3.org/2000/xmlns/", // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
 		se_ns = "http://svg-edit.googlecode.com",
 		htmlns = "http://www.w3.org/1999/xhtml",
 		mathns = "http://www.w3.org/1998/Math/MathML",
@@ -1497,22 +1497,7 @@ function BatchCommand(text) {
 			if(elem.id == 'svgcontent') {
 				// Process root element separately
 				var res = canvas.getResolution();
-				out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'"');
-			
-				var nsuris = {};
-				
-				// Check elements for namespaces, add if found
-				$(elem).find('*').each(function() {
-					var el = this;
-					$.each(this.attributes, function(i, attr) {
-						var uri = attr.namespaceURI;
-						if(uri && !nsuris[uri]) {
-							nsuris[uri] = true;
-							out.push(" xmlns:" + nsMap[uri] + '="' + uri +'"');
-						}
-					});
-				});
-
+				out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'" xmlns:xlink="'+xlinkns+'"');
 			} else {
 				for (var i=attrs.length-1; i>=0; i--) {
 					attr = attrs.item(i);
@@ -1538,7 +1523,8 @@ function BatchCommand(text) {
 						}
 						
 						// map various namespaces to our fixed namespace prefixes
-						if(attr.namespaceURI) {
+						// (the default xmlns attribute itself does not get a prefix)
+						if(attr.namespaceURI && nsMap[attr.namespaceURI] != "xmlns") {
 							out.push(nsMap[attr.namespaceURI]+':');
 						}
 						
