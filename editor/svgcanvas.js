@@ -114,7 +114,7 @@ var isOpera = !!window.opera,
 	"radialGradient": ["class", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "id", "r", "requiredFeatures", "spreadMethod", "systemLanguage", "xlink:href"],
 	"rect": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "width", "x", "y"],
 	"stop": ["class", "id", "offset", "requiredFeatures", "stop-color", "stop-opacity", "style", "systemLanguage"],
-	"svg": ["class", "clip-path", "clip-rule", "filter", "id", "height", "mask", "preserveAspectRatio", "requiredFeatures", "style", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:xlink"],
+	"svg": ["class", "clip-path", "clip-rule", "filter", "id", "height", "mask", "preserveAspectRatio", "requiredFeatures", "style", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:se", "xmlns:xlink"],
 	"switch": ["class", "id", "requiredFeatures", "systemLanguage"],
 	"symbol": ["class", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "preserveAspectRatio", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "viewBox"],
 	"text": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "text-anchor", "transform", "x", "xml:space", "y"],
@@ -1497,7 +1497,26 @@ function BatchCommand(text) {
 			if(elem.id == 'svgcontent') {
 				// Process root element separately
 				var res = canvas.getResolution();
-				out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'" xmlns:xlink="'+xlinkns+'"');
+				out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'"');
+				var i = attrs.length;
+				while (i--) {
+					attr = attrs.item(i);
+					var attrVal = attr.nodeValue;
+					// only serialize attributes we don't use internally
+					if (attrVal != "" && 
+						$.inArray(attr.localName, ['width','height','xmlns','x','y','viewBox','id','overflow']) == -1) 
+					{
+						out.push(' ');
+						// map various namespaces to our fixed namespace prefixes
+						// (the default xmlns attribute itself does not get a prefix)
+						if(attr.namespaceURI) {
+							out.push(nsMap[attr.namespaceURI]+':');
+						}
+						
+						out.push(attr.localName); out.push("=\""); 
+						out.push(attrVal); out.push("\"");
+					}
+				}
 			} else {
 				for (var i=attrs.length-1; i>=0; i--) {
 					attr = attrs.item(i);
@@ -1524,7 +1543,7 @@ function BatchCommand(text) {
 						
 						// map various namespaces to our fixed namespace prefixes
 						// (the default xmlns attribute itself does not get a prefix)
-						if(attr.namespaceURI && nsMap[attr.namespaceURI] != "xmlns") {
+						if(attr.namespaceURI && attr.localName != "xmlns") {
 							out.push(nsMap[attr.namespaceURI]+':');
 						}
 						
