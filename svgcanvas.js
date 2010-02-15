@@ -917,7 +917,8 @@ function BatchCommand(text) {
 	var canvas = this,
 		svgns = "http://www.w3.org/2000/svg",
 		xlinkns = "http://www.w3.org/1999/xlink",
-		xmlns = "http://www.w3.org/2000/xmlns/", // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
+		xmlns = "http://www.w3.org/XML/1998/namespace",
+		xmlnsns = "http://www.w3.org/2000/xmlns/", // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
 		se_ns = "http://svg-edit.googlecode.com",
 		htmlns = "http://www.w3.org/1999/xhtml",
 		mathns = "http://www.w3.org/1998/Math/MathML",
@@ -941,7 +942,8 @@ function BatchCommand(text) {
 		
 	var nsMap = {};
 	nsMap[xlinkns] = 'xlink';
-	nsMap[xmlns] = 'xmlns';
+	nsMap[xmlns] = 'xml';
+	nsMap[xmlnsns] = 'xmlns';
 	nsMap[se_ns] = 'se';
 	nsMap[htmlns] = 'xhtml';
 	nsMap[mathns] = 'mathml';
