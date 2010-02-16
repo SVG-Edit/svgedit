@@ -1514,14 +1514,10 @@ function BatchCommand(text) {
 						$.inArray(attr.localName, ['width','height','xmlns','x','y','viewBox','id','overflow']) == -1) 
 					{
 						out.push(' ');
-						// map various namespaces to our fixed namespace prefixes
-						// (the default xmlns attribute itself does not get a prefix)
-						if(attr.namespaceURI) {
-							out.push(nsMap[attr.namespaceURI]+':');
+						if(!attr.namespaceURI || nsMap[attr.namespaceURI]) {
+							out.push(attr.nodeName); out.push("=\"");
+							out.push(attrVal); out.push("\"");
 						}
-						
-						out.push(attr.localName); out.push("=\""); 
-						out.push(attrVal); out.push("\"");
 					}
 				}
 			} else {
@@ -1543,19 +1539,18 @@ function BatchCommand(text) {
 							&& elem.nodeName == 'image' 
 							&& attr.localName == 'href'
 							&& save_options.images
-							&& save_options.images == 'embed') {
+							&& save_options.images == 'embed') 
+						{
 							var img = encodableImages[attrVal];
 							if(img) attrVal = img;
 						}
 						
 						// map various namespaces to our fixed namespace prefixes
 						// (the default xmlns attribute itself does not get a prefix)
-						if(attr.namespaceURI && attr.localName != "xmlns") {
-							out.push(nsMap[attr.namespaceURI]+':');
+						if(!attr.namespaceURI || nsMap[attr.namespaceURI]) {
+							out.push(attr.nodeName); out.push("=\"");
+							out.push(attrVal); out.push("\"");
 						}
-						
-						out.push(attr.localName); out.push("=\""); 
-						out.push(attrVal); out.push("\"");
 					}
 				}
 			}
