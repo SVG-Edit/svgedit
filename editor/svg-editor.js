@@ -412,7 +412,74 @@ function svg_edit_setup() {
 				ext.callback();
 			}
 		}
-	
+
+		if(ext.context_tools) {
+			$.each(ext.context_tools, function(i, tool) {
+				// Add select tool
+				var cont_id = tool.container_id?(' id="' + tool.container_id + '"'):"";
+				
+				var panel = $('#' + tool.panel);
+				
+				if(!panel.length) {
+					panel = $('<div>', {id: tool.panel}).appendTo("#tools_top");
+				}
+				
+				// TODO: Allow support for other types, or adding to existing tool
+				switch (tool.type) {
+				case 'tool_button':
+					var html = '<div class="tool_button">' + tool.id + '</div>';
+					var div = $(html).appendTo(panel);
+					if (tool.events) {
+						$.each(tool.events, function(evt, func) {
+							$(div).bind(evt, func);
+						});
+					}
+					break;
+				case 'select':
+					var html = '<label' + cont_id + '>'
+						+ '<select id="' + tool.id + '">';
+					$.each(tool.options, function(val, text) {
+						var sel = (val == tool.defval) ? " selected":"";
+						html += '<option value="'+val+'"' + sel + '>' + text + '</option>';
+					});
+					html += "</select></label>";
+					// Creates the tool, hides & adds it, returns the select element
+					var sel = $(html).appendTo(panel).find('select');
+					
+					$.each(tool.events, function(evt, func) {
+						$(sel).bind(evt, func);
+					});
+					break;
+				
+				case 'input':
+					var html = '<label' + cont_id + '>'
+						+ '<span id="' + tool.id + '_label">' 
+						+ tool.label + ':</span>'
+						+ '<input id="' + tool.id + '" title="' + tool.title
+						+ '" size="' + (tool.size || "4") + '" value="' + (tool.defval || "") + '" type="text"/></label>'
+						
+					// Creates the tool, hides & adds it, returns the select element
+					
+					// Add to given tool.panel
+					var inp = $(html).appendTo(panel).find('input');
+					
+					if(tool.spindata) {
+						inp.SpinButton(tool.spindata);
+					}
+					
+					if(tool.events) {
+						$.each(tool.events, function(evt, func) {
+							inp.bind(evt, func);
+						});
+					}
+					break;
+					
+				default:
+					break;
+				}
+			});
+		}
+		
 		if(ext.buttons) {
 			var fallback_obj = {},
 				placement_obj = {},
@@ -446,6 +513,10 @@ function svg_edit_setup() {
 				case 'mode':
 					cls = 'tool_button';
 					parent = "#tools_left";
+					break;
+				case 'context':
+					cls = 'tool_button';
+					parent = "#" + btn.panel;
 					break;
 				}
 				
@@ -512,21 +583,31 @@ function svg_edit_setup() {
 				if(!svgicons) {
 					button.append(icon);
 				}
-				
+
 				// Add given events to button
 				$.each(btn.events, function(name, func) {
 					if(name == "click") {
 						if(btn.type == 'mode') {
-							button.bind(name, func);
+							if(btn.includeWith) {
+								button.bind(name, func);
+							} else {
+								button.bind(name, function() {
+									if(toolButtonClick(button)) {
+										func();
+									}
+								});
+							}
 							if(btn.key) {
 								$(document).bind('keydown', {combi: btn.key, disableInInput: true}, func);
 								if(btn.title) button.attr("title", btn.title + ' ['+btn.key+']');
 							}
+						} else {
+							button.bind(name, func);
 						}
 					} else {
 						button.bind(name, func);
 					}
-					});
+				});
 				
 				setupFlyouts(holders);
 			});
@@ -538,7 +619,6 @@ function svg_edit_setup() {
 				fallback: fallback_obj,
 				placement: placement_obj,
 				callback: function(icons) {
-			
 					// Bad hack to make the icon match the current size
 					// TODO: Write better hack!
 					var old = curPrefs.iconsize;
@@ -549,72 +629,6 @@ function svg_edit_setup() {
 					runCallback();
 				}
 		
-			});
-		}
-		if(ext.context_tools) {
-			$.each(ext.context_tools, function(i, tool) {
-				// Add select tool
-				var cont_id = tool.container_id?(' id="' + tool.container_id + '"'):"";
-				
-				var panel = $('#' + tool.panel);
-				
-				if(!panel.length) {
-					panel = $('<div>', {id: tool.panel}).appendTo("#tools_top");
-				}
-				
-				// TODO: Allow support for other types, or adding to existing tool
-				switch (tool.type) {
-				case 'tool_button':
-					var html = '<div class="tool_button">' + tool.id + '</div>';
-					var div = $(html).appendTo(panel);
-					if (tool.events) {
-						$.each(tool.events, function(evt, func) {
-							$(div).bind(evt, func);
-						});
-					}
-					break;
-				case 'select':
-					var html = '<label' + cont_id + '>'
-						+ '<select id="' + tool.id + '">';
-					$.each(tool.options, function(val, text) {
-						var sel = (val == tool.defval) ? " selected":"";
-						html += '<option value="'+val+'"' + sel + '>' + text + '</option>';
-					});
-					html += "</select></label>";
-					// Creates the tool, hides & adds it, returns the select element
-					var sel = $(html).appendTo(panel).find('select');
-					
-					$.each(tool.events, function(evt, func) {
-						$(sel).bind(evt, func);
-					});
-					break;
-				
-				case 'input':
-					var html = '<label' + cont_id + '">'
-						+ '<span id="' + tool.id + '_label">' 
-						+ tool.label + ':</span>'
-						+ '<input id="' + tool.id + '" title="' + tool.title
-						+ '" size="' + (tool.size || "4") + '" value="' + (tool.defval || "") + '" type="text"/></label>'
-						
-					// Creates the tool, hides & adds it, returns the select element
-					
-					// Add to given tool.panel
-					var inp = $(html).appendTo(panel).find('input');
-					
-					if(tool.spindata) {
-						inp.SpinButton(tool.spindata);
-					}
-					
-					if(tool.events) {
-						$.each(tool.events, function(evt, func) {
-							$(sel).bind(evt, func);
-						});
-					}
-					break;
-					
-				default:
-					break;
-				}
 			});
 		}
 		
