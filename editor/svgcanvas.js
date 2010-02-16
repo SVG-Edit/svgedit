@@ -1308,7 +1308,12 @@ function BatchCommand(text) {
 				// could use jQuery's inArray(), but I don't know if that's any better
 				var attr = node.attributes.item(i);
 				// TODO: use localName here and grab the namespace URI.  Then, make sure that
-				// anything in our whitelist with a prefix is parsed out properly.  
+				// anything in our whitelist with a prefix is parsed out properly.
+				// if attr has namespaceURI, ensure that nsMap[namespaceURI]+localName is in
+				// allowed Attrs
+				
+				// TODO: normalize the namespace prefix in declarations
+				
 				// i.e. "xlink:href" in our whitelist would mean we check that localName matches
 				// "href" and that namespaceURI matches the XLINK namespace
 				var attrName = attr.nodeName;
@@ -7509,11 +7514,11 @@ function BatchCommand(text) {
 	// we also do it manually because Opera/Win/non-EN puts , instead of .
 	var copyElem = function(el) {
 		// manually create a copy of the element
-		var new_el = document.createElementNS(svgns, el.nodeName);
+		var new_el = document.createElementNS(el.namespaceURI, el.nodeName);
 		$.each(el.attributes, function(i, attr) {
-			var ns = attr.localName == 'href' ? xlinkns : 
-				attr.prefix == "xml" ? xmlns : null;
-			new_el.setAttributeNS(ns, attr.nodeName, attr.nodeValue);
+			if (attr.localName != '-moz-math-font-style') {
+				new_el.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.nodeValue);
+			}
 		});
 		// set the copied element's new id
 		new_el.removeAttribute("id");
