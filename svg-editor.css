@@ -811,11 +811,6 @@ span.zoom_tool {
 	text-align: left;
 }
 
-#svg_source_editor button, #svg_docprops button {
-	padding: 5px 5px 7px 28px;
-	margin: 5px 20px 0 0;	
-}
-
 #svg_docprops button {
 	margin-top: 0;
 	margin-bottom: 5px;
@@ -844,15 +839,14 @@ span.zoom_tool {
 	z-index: 20000;
 }
 
-button#tool_source_save,
-button#tool_source_cancel,
-button#tool_docprops_save,
-button#tool_docprops_cancel {
+.toolbar_button button {
     border:1px solid #dedede;
     line-height:130%;
+    float: left;
 	background: #E8E8E8 none;
     padding:5px 10px 5px 7px; /* Firefox */
     line-height:17px; /* Safari */
+	margin: 5px 20px 0 0;	
 }
 
 .toolbar_button button .svg_icon {
