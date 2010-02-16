@@ -5331,6 +5331,15 @@ function BatchCommand(text) {
 			"visibility":"hidden"
 		};
 		
+		// any attribute on the element not covered by the above
+		// TODO: make this list global so that we can properly maintain it
+		// TODO: what about @transform, @clip-rule, @fill-rule, etc?
+		$.each(['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'], function() {
+			if (elem.getAttribute(this)) {
+				attrs[this] = elem.getAttribute(this);
+			}
+		});
+		
 		var path = addSvgElementFromJson({
 			"element": "path",
 			"attr": attrs
