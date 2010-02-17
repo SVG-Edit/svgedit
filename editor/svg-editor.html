@@ -45,7 +45,17 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 <title>SVG-edit</title>
 </head>
 <body>
+<script type="text/javascript"
+src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"> </script>
 
+<div id="placeholder"></div>
+
+<script>
+ CFInstall.check({
+    node: "placeholder",
+    destination: "http://www.waikiki.com"
+  });
+</script>
 <div id="svg_editor">
 
 <div id="workarea">
