@@ -21,7 +21,9 @@ $(function() {
 			htmlns = "http://www.w3.org/1999/xhtml",
 			mathns = "http://www.w3.org/1998/Math/MathML",
 			editingforeign = false,
-			svgdoc = S.svgroot.parentNode.ownerDocument;
+			svgdoc = S.svgroot.parentNode.ownerDocument,
+			started,
+			newFO;
 			
 			
 		var properlySourceSizeTextArea = function(){
@@ -200,7 +202,8 @@ $(function() {
 				
 				if(svgCanvas.getMode() == "foreign") {
 
-					var newText = S.addSvgElementFromJson({
+					started = true;
+					newFO = S.addSvgElementFromJson({
 						"element": "foreignObject",
 						"attr": {
 							"x": opts.start_x,
@@ -218,7 +221,7 @@ $(function() {
 					var mi = svgdoc.createElementNS(mathns, 'mo');
 					mi.textContent = "\u03A6";
 					m.appendChild(mi);
-					newText.appendChild(m);
+					newFO.appendChild(m);
 					return {
 						started: true
 					}
@@ -226,15 +229,14 @@ $(function() {
 			},
 			mouseUp: function(opts) {
 				var e = opts.event;
-				
-				if(svgCanvas.getMode() == "foreign") {
-					var attrs = $(e.target).attr(["width", "height"]);
+				if(svgCanvas.getMode() == "foreign" && started) {
+					var attrs = $(newFO).attr(["width", "height"]);
 					keep = (attrs.width != 0 || attrs.height != 0);
-					
-					svgCanvas.addToSelection([e.target], true);
+					svgCanvas.addToSelection([newFO], true);
+
 					return {
 						keep: keep,
-						element: e.target
+						element: newFO
 					}
 
 				}
