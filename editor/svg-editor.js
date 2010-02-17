@@ -1737,7 +1737,7 @@ function svg_edit_setup() {
 				'margin-top': {s: '2px', l: '4px', xl: '5px'},
 				'height': {s: 'auto', l: 'auto', xl: 'auto'},
 				'border': {s: '1px solid #555', l: 'auto', xl: 'auto'},
-				'font-size': {s: '.9em', l: '2em', xl: '2.5em'}
+				'font-size': {s: '.9em', l: '1.2em', xl: '1.4em'}
 			},
 			"#zoom_panel": {
 				'margin-top': {s: '3px', l: '4px', xl: '5px'}
@@ -1757,11 +1757,13 @@ function svg_edit_setup() {
 				'line-height': {s: '18px', l: '34px', xl: '40px'},
 				'margin-top': {s: '3px'}
 			},
-			"div.toolset, #tools_top label, #tools_bottom label": {
+			"#tools_top label, #tools_bottom label": {
 				'font-size': {s: '1em', l: '1.5em', xl: '2em'},
-				'margin-top': {s: '1px', l: '3px', xl: '5px'},
-				'height': {s: '25px', l: '43px', xl: '64px'}
+				'height': {s: '25px', l: '42px', xl: '64px'}
 			}, 
+			"div.toolset": {
+				'height': {s: '25px', l: '42px', xl: '64px'}
+			},
 			"#tool_bold, #tool_italic": {
 				'font-size': {s: '1.5em', l: '3em', xl: '4.5em'}
 			},
