@@ -1530,7 +1530,7 @@ function BatchCommand(text) {
 				var i = attrs.length;
 				while (i--) {
 					attr = attrs.item(i);
-					var attrVal = attr.nodeValue;
+					var attrVal = toXml(attr.nodeValue);
 					// only serialize attributes we don't use internally
 					if (attrVal != "" && 
 						$.inArray(attr.localName, ['width','height','xmlns','x','y','viewBox','id','overflow']) == -1) 
@@ -1545,7 +1545,7 @@ function BatchCommand(text) {
 			} else {
 				for (var i=attrs.length-1; i>=0; i--) {
 					attr = attrs.item(i);
-					var attrVal = attr.nodeValue;
+					var attrVal = toXml(attr.nodeValue);
 					if (attr.localName == '-moz-math-font-style') continue;
 					if (attrVal != "") {
 						if(attrVal.indexOf('pointer-events') == 0) continue;
