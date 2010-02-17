@@ -684,7 +684,9 @@ function BatchCommand(text) {
 				'fill': '#FFF',
 				'style': 'pointer-events:none'
 			});
-			if (!window.opera) rect.setAttribute('filter', 'url(#canvashadow)');
+			// Both Firefox and WebKit are too slow with this filter region (especially at higher
+			// zoom levels) and Opera has at least one bug
+//			if (!window.opera) rect.setAttribute('filter', 'url(#canvashadow)');
 			canvasbg.appendChild(rect);
 			svgroot.insertBefore(canvasbg, svgcontent);
 		};
