@@ -939,7 +939,8 @@ function BatchCommand(text) {
 					'</svg>').documentElement, true);
 		
 		$(svgroot).appendTo(container);
-		
+	
+	// map namespace URIs to prefixes
 	var nsMap = {};
 	nsMap[xlinkns] = 'xlink';
 	nsMap[xmlns] = 'xml';
@@ -947,6 +948,27 @@ function BatchCommand(text) {
 	nsMap[se_ns] = 'se';
 	nsMap[htmlns] = 'xhtml';
 	nsMap[mathns] = 'mathml';
+
+	// map prefixes to namespace URIs
+	var nsRevMap = {};
+	$.each(nsMap, function(key,value){
+		nsRevMap[value] = key;
+    });
+
+	// Produce a Namespace-aware version of svgWhitelist
+	var svgWhiteListNS = {};
+    $.each(svgWhiteList, function(elt,atts){
+		attNS = {};
+		$.each(atts, function(i, att){
+			if (att.indexOf(':') != -1) {
+				v=att.split(':');
+				attNS[v[1]] = nsRevMap[v[0]];
+			} else {
+				attNS[att] = att == 'xmlns' ? xmlnsns : null;
+			}
+		});
+		svgWhiteListNS[elt] = attNS;
+	});
 	
 	var svgcontent = svgdoc.createElementNS(svgns, "svg");
 	$(svgcontent).attr({
@@ -1297,7 +1319,8 @@ function BatchCommand(text) {
 		if (!doc || !parent) return;
 
 		var allowedAttrs = svgWhiteList[node.nodeName];
-		
+		var allowedAttrsNS = svgWhiteListNS[node.nodeName];
+
 		// if this element is allowed
 		if (allowedAttrs != undefined) {
 			var se_attrs = [];
@@ -1307,17 +1330,14 @@ function BatchCommand(text) {
 				// if the attribute is not in our whitelist, then remove it
 				// could use jQuery's inArray(), but I don't know if that's any better
 				var attr = node.attributes.item(i);
-				// TODO: use localName here and grab the namespace URI.  Then, make sure that
-				// anything in our whitelist with a prefix is parsed out properly.
-				// if attr has namespaceURI, ensure that nsMap[namespaceURI]+localName is in
-				// allowed Attrs
-				
-				// TODO: normalize the namespace prefix in declarations
-				
-				// i.e. "xlink:href" in our whitelist would mean we check that localName matches
-				// "href" and that namespaceURI matches the XLINK namespace
 				var attrName = attr.nodeName;
-				if (allowedAttrs.indexOf(attrName) == -1) {
+				var attrLocalName = attr.localName;
+				var attrNsURI = attr.namespaceURI;
+				// Check that an attribute with the correct localName in the correct namespace is on 
+				// our whitelist or is a namespace declaration for one of our allowed namespaces
+				if (!(allowedAttrsNS.hasOwnProperty(attrLocalName) && attrNsURI == allowedAttrsNS[attrLocalName] && attrNsURI != xmlnsns) &&
+					!(attrNsURI == xmlnsns && nsMap[attr.nodeValue]) ) 
+				{
 					// Bypassing the whitelist to allow se: prefixes. Is there
 					// a more appropriate way to do this?
 					if(attrName.indexOf('se:') == 0) {
