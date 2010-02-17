@@ -171,6 +171,9 @@ function svg_edit_setup() {
 	var strokePaint = new $.jGraduate.Paint({solidColor: "000000"}); // solid black
 
 	var saveHandler = function(window,svg) {
+		// by default, we add the XML prolog back, systems integrating SVG-edit (wikis, CMSs) 
+		// can just provide their own custom save handler and might not want the XML prolog
+		svg = "<?xml version='1.0'?>\n" + svg;
 		
 		// Creates and opens an HTML page that provides a link to the SVG, a preview, and the markup. 
 		// Also includes warning about Mozilla bug #308590 when applicable
