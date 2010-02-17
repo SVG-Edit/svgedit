@@ -177,20 +177,19 @@
 		var output = svgCanvas.getSvgString();
 		var has_xlink = output.indexOf('xmlns:xlink="http://www.w3.org/1999/xlink"') !== -1;
 		var has_se = output.indexOf('xmlns:se=') !== -1;
-		var has_foo = output.indexOf('xmlns:foo=') === -1;
+		var has_foo = output.indexOf('xmlns:foo=') !== -1;
 		var has_attr = output.indexOf('se:foo="bar"') !== -1;
 		
 		equals(has_attr, true, "Preserved namespaced attribute on export");
 		equals(has_xlink, true, "Included xlink: xmlns");
 		equals(has_se, true, "Included se: xmlns");
-		equals(has_foo, true, "Did not include foo: xmlns");
+		equals(has_foo, false, "Did not include foo: xmlns");
 	});
 	
 	test("Test import math elements inside a foreignObject", function() {
-		expect(2);
-		var set = svgCanvas.setSvgString('<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:se="http://svg-edit.googlecode.com" xmlns:xlink="http://www.w3.org/1999/xlink" class="foo">'+
-				'<foreignObject id="fo" y="0" x="0" width="24" height="26" font-size="24">'+
-					'<math id="math" display="inline" xmlns="http://www.w3.org/1998/Math/MathML">'+
+		expect(4);
+		var set = svgCanvas.setSvgString('<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:se="http://svg-edit.googlecode.com" xmlns:xlink="http://www.w3.org/1999/xlink">'+
+				'<foreignObject id="fo" width="24" height="26" font-size="24"><math id="m" display="inline" xmlns="http://www.w3.org/1998/Math/MathML">'+
 						'<msub>'+
 							'<mi>A</mi>'+
 							'<mn>0</mn>'+
@@ -198,9 +197,14 @@
 					'</math>'+
 				'</foreignObject>'+
 			'</svg>');
-		var math = document.getElementById('math');
+		var fo = document.getElementById('fo');
+		// we cannot use getElementById('math') because not all browsers understand MathML and do not know to use the @id attribute
+		// see Bug https://bugs.webkit.org/show_bug.cgi?id=35042
+		var math = fo.firstChild;
 		
 		equals(!!math, true, "Math element exists");
+		equals(math.nodeName, 'math', "Math element has the proper nodeName");
+		equals(math.getAttribute('id'), 'm', "Math element has an id");
 		equals(math.namespaceURI, "http://www.w3.org/1998/Math/MathML", "Preserved MathML namespace");
 	});
 	
