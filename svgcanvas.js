@@ -5619,28 +5619,33 @@ function BatchCommand(text) {
 			
 			var content = $(svgcontent);
         	
+			var attrs = {
+				id: 'svgcontent',
+				overflow: 'visible'
+			};
+			
 			// determine proper size
-			var w, h;
 			if (content.attr("viewBox")) {
 				var vb = content.attr("viewBox").split(' ');
-				w = vb[2];
-				h = vb[3];
+				attrs.width = vb[2];
+				attrs.height = vb[3];
 			}
 			// handle content that doesn't have a viewBox
 			else {
-				var dims = content.attr(["width", "height"]);
-				w = convertToNum('width', dims.width);
-				h = convertToNum('height', dims.height);
-				// svgcontent.setAttribute("viewBox", ["0", "0", w, h].join(" "));
+				$.each(['width', 'height'], function(i, dim) {
+					// Set to 100 if not given
+					var val = content.attr(dim) || 100;
+
+					if((val+'').substr(-1) === "%") {
+						// Use user units if percentage given
+						attrs[dim] = parseInt(val);
+					} else {
+						attrs[dim] = convertToNum(dim, val);
+					}
+				});
 			}
 			
-			content.attr({
-				id: 'svgcontent',
-				width: w,
-				height: h,
-				overflow: 'visible'
-			});
-			
+			content.attr(attrs);
 			batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
 			// update root to the correct size
 			var changes = content.attr(["width", "height"]);
