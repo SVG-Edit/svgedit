@@ -1345,7 +1345,7 @@ function BatchCommand(text) {
 					if(attrName.indexOf('se:') == 0) {
 						se_attrs.push([attrName, attr.nodeValue]);
 					} 
-					node.removeAttribute(attrName);
+					node.removeAttributeNS(attrNsURI, attrLocalName);
 				}
 				// special handling for path d attribute
 				if (node.nodeName == 'path' && attrName == 'd') {
