@@ -124,19 +124,22 @@
 	module("Import Module");
 	
 	test("Test import use", function() {
-		expect(2);
+		expect(3);
 		
 		svgCanvas.setSvgString("<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='400' x='300'>" +
 								"<rect id='the-rect' width='200' height='200'/>" +
 								"<use id='the-use' xlink:href='#the-rect'/>" +
 								"<use id='foreign-use' xlink:href='somefile.svg#the-rect'/>" +
+								"<use id='no-use'/>" +
 								"</svg>");
 		
 		var u = document.getElementById("the-use"),
-			fu = document.getElementById("foreign-use");
+			fu = document.getElementById("foreign-use"),
+			nfu = document.getElementById("no-use");
 		
 		equals((u && u.nodeName == "use"), true, "Did not import <use> element");
-		equals((fu && !fu.getAttributeNS(xlinkns,"href")), true, "Did not remove reference to foreign element in <use>");
+		equals(fu, null, "Removed <use> element that had a foreign href");
+		equals(nfu, null, "Removed <use> element that had no href");
 	});
 	
 	test("Test getUrlFromAttr", function() {

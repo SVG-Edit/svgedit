@@ -1385,6 +1385,11 @@ function BatchCommand(text) {
 				}
 			}
 			
+			// Safari crashes on a <use> without a xlink:href, so we just remove the node here
+			if (node.nodeName == "use" && !node.getAttributeNS(xlinkns,"href")) {
+				parent.removeChild(node);
+				return;
+			}
 			// if the element has attributes pointing to a non-local reference, 
 			// need to remove the attribute
 			$.each(["clip-path", "fill", "marker-end", "marker-mid", "marker-start", "mask", "stroke"],function(i,attr) {
