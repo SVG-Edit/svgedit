@@ -1380,7 +1380,7 @@ function BatchCommand(text) {
 				// TODO: we simply check if the first character is a #, is this bullet-proof?
 				if (href[0] != "#") {
 					// remove the attribute (but keep the element)
-					node.setAttributeNS(xlinkns, "href", "");
+					node.setAttributeNS(xlinkns, "xlink:href", "");
 					node.removeAttributeNS(xlinkns, "href");
 				}
 			}
@@ -2951,7 +2951,7 @@ function BatchCommand(text) {
 							"style": "pointer-events:inherit"
 						}
 					});
-					newImage.setAttributeNS(xlinkns, "href", last_good_img_url);
+					newImage.setAttributeNS(xlinkns, "xlink:href", last_good_img_url);
 					preventClickDefault(newImage);
 					break;
 				case "square":
@@ -5600,7 +5600,7 @@ function BatchCommand(text) {
 					if(m) {
 						var url = decodeURIComponent(m[1]);
 						$(new Image()).load(function() {
-							image.setAttributeNS(xlinkns,'href',url);
+							image.setAttributeNS(xlinkns,'xlink:href',url);
 						}).attr('src',url);
 					}
 				}
@@ -6888,7 +6888,7 @@ function BatchCommand(text) {
 // 					}
 					
 				} else if (attr == "#href") {
-					elem.setAttributeNS(xlinkns, "href", newValue);
+					elem.setAttributeNS(xlinkns, "xlink:href", newValue);
         		}
 				else elem.setAttribute(attr, newValue);
 				if (i==0)
@@ -7659,7 +7659,7 @@ function BatchCommand(text) {
 					'style':'pointer-events:none'
 				});
 			}
-			bg_img.setAttributeNS(xlinkns, "href", url);
+			bg_img.setAttributeNS(xlinkns, "xlink:href", url);
 			bg.appendChild(bg_img);
 		} else if(bg_img) {
 			bg_img.parentNode.removeChild(bg_img);
