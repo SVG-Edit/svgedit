@@ -72,74 +72,48 @@ $(function() {
 				setPoint(elem, 1, (pt_end.x + pt_start.x)/2, (pt_end.y + pt_start.y)/2);
 			}
 		}
-		
+ 		
 		function findConnectors() {
-			// Check if selected elements have connections
 			var elems = selElems;
-			var i = elems.length;
 			var connectors = $(svgcontent).find(conn_sel);
-			if(!connectors.length) return;
 			connections = [];
-			
-			var sel = ':not(a,g,svg,'+conn_sel+')';
-			var all_els = [];
-			// Get children from groups
-			
-			while(i--) {
-				var elem = elems[i];
-				if(!elem) continue;
-				// Get all children that cannot contain children
-				var solid_elems = $(elem).find(sel);
-				// Include self if okay
-				if($(elem).filter(sel).length) {
-					solid_elems.push(elem);
-				}
-				$.merge(all_els, solid_elems);
-			}
-			
-			i = all_els.length;
 
-			if(i > 1) {
-				// Multiselected, so unselect connector
-				svgCanvas.removeFromSelection($(conn_sel).toArray());
-			}
-			
-			// Loop through selected elements
-			while(i--) {
-				var elem = all_els[i];
-				if(!elem) continue;
+			// Loop through connectors to see if one is connected to the element
+			connectors.each(function() {
+				var start = $(this).data("c_start");
+				var end = $(this).data("c_end");
 				
-				// Element was deleted, so delete connector
-				var was_deleted = !elem.parentNode;
-				
-				// Skip connector
-				if($(elem).data('c_start')) continue;
-				
-				// Loop through connectors to see if one is connected to the element
-				connectors.each(function() {
-					var start = $(this).data("c_start");
-					var end = $(this).data("c_end");
-					
-					// Connector found for this element
-					if(start == elem.id || end == elem.id) {
-						
-						if(was_deleted) {
-							$(this).remove();
-							return;
+				var parts = [getElem(start), getElem(end)];
+				for(var i=0; i<2; i++) {
+					var c_elem = parts[i];
+					var add_this = false;
+					// The connected element might be part of a selected group
+					$(c_elem).parents().each(function() {
+						if($.inArray(this, elems) !== -1) {
+							// Pretend this element is selected
+							add_this = true;
 						}
-						var bb = svgCanvas.getStrokedBBox([elem]);
+					});
+					
+					if(!c_elem || !c_elem.parentNode) {
+						$(this).remove();
+						continue;
+					}
+					
+					if($.inArray(c_elem, elems) !== -1 || add_this) {
+						var bb = svgCanvas.getStrokedBBox([c_elem]);
 						connections.push({
-							elem: elem,
+							elem: c_elem,
 							connector: this,
-							is_start: start == elem.id,
+							is_start: (i === 0),
 							start_x: bb.x,
 							start_y: bb.y
 						});	
 					}
-				});
-			}
+				}
+			});
 		}
-
+		
 		function updateConnectors() {
 			// Updates connector lines based on selected elements
 			// Is not used on mousemove, as it runs getStrokedBBox every time,
@@ -300,7 +274,6 @@ $(function() {
 			},
 			mouseDown: function(opts) {
 				var e = opts.event;
-				
 				start_x = opts.start_x,
 				start_y = opts.start_y;
 				var mode = svgCanvas.getMode();
@@ -315,8 +288,10 @@ $(function() {
 					
 					if($.inArray(svgcontent, parents) != -1) {
 						// Connectable element
-
-						start_elem = mouse_target;
+						
+						// If child of foreignObject, use parent
+						var fo = $(mouse_target).closest("foreignObject");
+						start_elem = fo.length ? fo[0] : mouse_target;
 						
 						// Get center of source element
 						var bb = svgCanvas.getStrokedBBox([start_elem]);
@@ -422,10 +397,13 @@ $(function() {
 				var zoom = svgCanvas.getZoom();
 				var e = opts.event,
 					x = opts.mouse_x/zoom,
-					y = opts.mouse_y/zoom;
+					y = opts.mouse_y/zoom,
+					mouse_target = e.target;
 				
 				if(svgCanvas.getMode() == "connector") {
-					if(e.target.parentNode.parentNode != svgcontent) {
+					var fo = $(mouse_target).closest("foreignObject");
+					if(fo.length) mouse_target = fo[0];
+					if(mouse_target.parentNode.parentNode != svgcontent) {
 						// Not a valid target element, so remove line
 						$(cur_line).remove();
 						started = false;
@@ -434,7 +412,7 @@ $(function() {
 							element: null,
 							started: started
 						}
-					} else if(e.target == start_elem) {
+					} else if(mouse_target == start_elem) {
 						// Start line through click
 						started = true;
 						return {
@@ -444,7 +422,8 @@ $(function() {
 						}						
 					} else {
 						// Valid end element
-						end_elem = e.target;
+						end_elem = mouse_target;
+						
 						var start_id = start_elem.id, end_id = end_elem.id;
 						var conn_str = start_id + " " + end_id;
 						var alt_str = end_id + " " + start_id;

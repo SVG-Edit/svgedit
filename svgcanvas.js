@@ -2653,6 +2653,7 @@ function BatchCommand(text) {
 	};
 	
 	var hasMatrixTransform = function(tlist) {
+		if(!tlist) return false;
 		var num = tlist.numberOfItems;
 		while (num--) {
 			var xform = tlist.getItem(num);
@@ -3089,11 +3090,13 @@ function BatchCommand(text) {
 				start_x: start_x,
 				start_y: start_y,
 				selectedElements: selectedElements
-			});
+			}, true);
 			
-			if(ext_result) {
-				started = ext_result.started;
-			}
+			$.each(ext_result, function(i, r) {
+				if(r && r.started) {
+					started = true;
+				}
+			});
 		};
 	
 		// in this function we do not record any state changes yet (but we do update
@@ -3610,13 +3613,15 @@ function BatchCommand(text) {
 				event: evt,
 				mouse_x: mouse_x,
 				mouse_y: mouse_y
-			});
+			}, true);
 			
-			if(ext_result) {
-				keep = ext_result.keep;
-				element = ext_result.element;
-				started = ext_result.started;
-			}
+			$.each(ext_result, function(i, r) {
+				if(r) {
+					keep = r.keep || keep;
+					element = r.element;
+					started = r.started || started;
+				}
+			});
 			
 			if (!keep && element != null) {
 				element.parentNode.removeChild(element);
@@ -6613,7 +6618,19 @@ function BatchCommand(text) {
 			ret.y += parseFloat(selected.getAttribute('y'));
 		} else {
 			try { ret = selected.getBBox(); } 
-			catch(e) { ret = null; }
+			catch(e) { 
+				// Check if element is child of a foreignObject
+				var fo = $(selected).closest("foreignObject");
+				if(fo.length) {
+					try {
+						ret = fo[0].getBBox();						
+					} catch(e) {
+						ret = null;
+					}
+				} else {
+					ret = null;
+				}
+			}
 		}
 
 		// get the bounding box from the DOM (which is in that element's coordinate system)
@@ -7337,6 +7354,7 @@ function BatchCommand(text) {
 		// re-creating the getCheckedBBox() function?  shouldn't we make this a function 
 		// at the 'canvas' level
 		var getCheckedBBox = function(elem) {
+		
 			try {
 				// TODO: Fix issue with rotated groups. Currently they work
 				// fine in FF, but not in other browsers (same problem mentioned
@@ -7410,7 +7428,10 @@ function BatchCommand(text) {
 				}
 			
 				return bb;
-			} catch(e) { return null; } 
+			} catch(e) { 
+				console.log(elem, e);
+				return null;
+			} 
 
 		}
 		var full_bb;
