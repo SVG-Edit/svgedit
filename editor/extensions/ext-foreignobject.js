@@ -63,7 +63,6 @@ $(function() {
 				var newDoc = Utils.text2xml('<svg xmlns="'+svgns+'" xmlns:xlink="'+xlinkns+'">'+xmlString+'</svg>');
 				// run it through our sanitizer to remove anything we do not support
 				S.sanitizeSvg(newDoc.documentElement);
-				
 				elt.parentNode.replaceChild(svgdoc.importNode(newDoc.documentElement.firstChild, true), elt);
 				S.call("changed", [elt]);
 				svgCanvas.clearSelection();
