@@ -209,17 +209,24 @@ $(function() {
 							"y": opts.start_y,
 							"id": S.getNextId(),
 							"font-size": 16, //cur_text.font_size,
-							"width": "24",
-							"height": "24",
+							"width": "48",
+							"height": "20",
 							"style": "pointer-events:inherit"
 						}
 					});
 					var m = svgdoc.createElementNS(mathns, 'math');
 					m.setAttributeNS(xmlnsns, 'xmlns', mathns);
 					m.setAttribute('display', 'inline');
-					var mi = svgdoc.createElementNS(mathns, 'mo');
+					var mi = svgdoc.createElementNS(mathns, 'mi');
+					mi.setAttribute('mathvariant', 'normal');
 					mi.textContent = "\u03A6";
+					var mo = svgdoc.createElementNS(mathns, 'mo');
+					mo.textContent = "\u222A";
+					var mi2 = svgdoc.createElementNS(mathns, 'mi');
+					mi2.textContent = "\u2133";
 					m.appendChild(mi);
+					m.appendChild(mo);
+					m.appendChild(mi2);
 					newFO.appendChild(m);
 					return {
 						started: true
