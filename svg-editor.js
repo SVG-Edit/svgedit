@@ -666,6 +666,7 @@ function svg_edit_setup() {
 	var updateToolbar = function() {
 		if (selectedElement != null && 
 			selectedElement.tagName != "image" &&
+			selectedElement.tagName != "text" &&
 			selectedElement.tagName != "foreignObject" &&
 			selectedElement.tagName != "g")
 		{
@@ -1822,7 +1823,7 @@ function svg_edit_setup() {
 
 	var cancelOverlays = function() {
 		$('#dialog_box').hide();
-		if (!editingsource && !docprops) return;
+		if (!editingsource && !editingforeign && !docprops) return;
 
 		if (editingsource) {
 			var oldString = svgCanvas.getSvgString();
