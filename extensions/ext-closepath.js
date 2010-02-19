@@ -46,7 +46,7 @@ $(function() {
 		
 		return {
 			name: "ClosePath",
-			svgicons: "extensions/closepath-icons.svg",
+			svgicons: "extensions/closepath_icons.svg",
 			buttons: [{
 				id: "tool_openpath",
 				type: "context",
@@ -88,7 +88,7 @@ $(function() {
 						showPanel(false);
 					}
 				}
-			},
+			}
 		};
 	});
 });
