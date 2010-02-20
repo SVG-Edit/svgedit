@@ -1459,6 +1459,9 @@ function svg_edit_setup() {
 	var clickOpen = function(){
 		svgCanvas.open();
 	};
+	var clickImport = function(){
+		svgCanvas.open();
+	};
 
 	var clickUndo = function(){
 		if (svgCanvas.getUndoStackSize() > 0) {
@@ -2461,12 +2464,13 @@ function svg_edit_setup() {
 			{sel:'#tool_clear', fn: clickClear, evt: 'mouseup', key: [modKey+'N', true]},
 			{sel:'#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'mouseup', key: [modKey+'S', true]},
 			{sel:'#tool_open', fn: clickOpen, evt: 'mouseup', key: [modKey+'O', true]},
+			{sel:'#tool_import', fn: clickImport, evt: 'mouseup'},
 			{sel:'#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
 			{sel:'#tool_wireframe', fn: clickWireframe, evt: 'click', key: ['F', true]},
 			{sel:'#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
 			{sel:'#tool_source_save', fn: saveSourceEditor, evt: 'click'},
 			{sel:'#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
-			{sel:'#tool_docprops', fn: showDocProperties, evt: 'mouseup', key: [modKey+'I', true]},
+			{sel:'#tool_docprops', fn: showDocProperties, evt: 'mouseup', key: [modKey+'P', true]},
 			{sel:'#tool_delete,#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
 			{sel:'#tool_reorient', fn: reorientPath, evt: 'click'},
 			{sel:'#tool_node_link', fn: linkControlPoints, evt: 'click'},
@@ -2696,6 +2700,18 @@ function svg_edit_setup() {
 			}
 		});
 		$("#tool_open").show().prepend(inp);
+		var inp2 = $('<input type="file">').change(function() {
+			$('#main_menu').hide();
+			if(this.files.length==1) {
+				var reader = new FileReader();
+				reader.onloadend = function(e) {
+					svgCanvas.setSvgString(e.target.result);
+					updateCanvas();
+				};
+				reader.readAsText(this.files[0]);
+			}
+		});
+		$("#tool_import").show().prepend(inp2);
 	}
 	
 	
@@ -2835,6 +2851,7 @@ function svg_edit_setup() {
 			'#tool_clear div,#layer_new':'new_image',
 			'#tool_save div':'save',
 			'#tool_open div div':'open',
+			'#tool_import div div':'import',
 			'#tool_source':'source',
 			'#tool_docprops > div':'docprops',
 			'#tool_wireframe':'wireframe',
