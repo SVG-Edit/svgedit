@@ -101,6 +101,7 @@
 {"id": "tool_fhrect", "title": "Free-Hand Rectangle"},
 {"id": "tool_group", "title": "Group Elements"},
 {"id": "tool_image", "title": "Image Tool"},
+{"id": "tool_import", "textContent": "Import Image"},
 {"id": "tool_italic", "title": "Italic Text"},
 {"id": "tool_line", "title": "Line Tool"},
 {"id": "tool_move_bottom", "title": "Move to Bottom"},
