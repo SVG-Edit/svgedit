@@ -568,12 +568,12 @@ span.zoom_tool {
 	-webkit-border-radius: 5px;
 }
 
-#svg_editor #main_menu li#tool_open {
+#svg_editor #main_menu li#tool_open, #svg_editor #main_menu li#tool_import {
 	position: relative;
 	overflow: hidden;
 }
 
-#tool_open input {
+#tool_open input, #tool_import input {
 	-moz-transform: scale(4,2); /* Not entirely necessary, but keeps it nice and big for OS X*/
 	height: 100%;
 	position: absolute;
