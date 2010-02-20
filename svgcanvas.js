@@ -114,7 +114,7 @@ var isOpera = !!window.opera,
 	"radialGradient": ["class", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "id", "r", "requiredFeatures", "spreadMethod", "systemLanguage", "xlink:href"],
 	"rect": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "width", "x", "y"],
 	"stop": ["class", "id", "offset", "requiredFeatures", "stop-color", "stop-opacity", "style", "systemLanguage"],
-	"svg": ["class", "clip-path", "clip-rule", "filter", "id", "height", "mask", "preserveAspectRatio", "requiredFeatures", "style", "systemLanguage", "transform", "viewBox", "width", "xmlns", "xmlns:se", "xmlns:xlink"],
+	"svg": ["class", "clip-path", "clip-rule", "filter", "id", "height", "mask", "preserveAspectRatio", "requiredFeatures", "style", "systemLanguage", "viewBox", "width", "x", "xmlns", "xmlns:se", "xmlns:xlink", "y"],
 	"switch": ["class", "id", "requiredFeatures", "systemLanguage"],
 	"symbol": ["class", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "preserveAspectRatio", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "viewBox"],
 	"text": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "text-anchor", "transform", "x", "xml:space", "y"],
@@ -2793,7 +2793,9 @@ function BatchCommand(text) {
 			}
 			
 			// go up until we hit a child of a layer
-			while (mouse_target.parentNode.parentNode.tagName == "g") {
+			while (mouse_target.parentNode.parentNode.tagName != "svg" && 
+					mouse_target.parentNode.parentNode.id != "svgcontent")
+			{
 				mouse_target = mouse_target.parentNode;
 			}
 			// Webkit bubbles the mouse event all the way up to the div, so we
@@ -2820,7 +2822,6 @@ function BatchCommand(text) {
 			
 			start_transform = mouse_target.getAttribute("transform");
 			var tlist = canvas.getTransformList(mouse_target);
-	
 			switch (current_mode) {
 				case "select":
 					started = true;
