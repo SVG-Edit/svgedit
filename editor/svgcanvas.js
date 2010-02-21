@@ -2793,9 +2793,7 @@ function BatchCommand(text) {
 			}
 			
 			// go up until we hit a child of a layer
-			while (mouse_target.parentNode.parentNode.tagName != "svg" && 
-					mouse_target.parentNode.parentNode.id != "svgcontent")
-			{
+			while (mouse_target.parentNode.parentNode.tagName == "g") {
 				mouse_target = mouse_target.parentNode;
 			}
 			// Webkit bubbles the mouse event all the way up to the div, so we
@@ -5527,6 +5525,9 @@ function BatchCommand(text) {
 	this.open = function() {
 		// Nothing by default, handled by optional widget/extension
 	};
+	this.import = function() {
+		// Nothing by default, handled by optional widget/extension
+	};
 
 	// Function: save
 	// Serializes the current drawing into SVG XML text and returns it to the 'saved' handler.
@@ -5683,6 +5684,129 @@ function BatchCommand(text) {
 		return true;
 	};
 
+	// Function: importSvgString
+	// This function imports the input SVG XML into the current layer in the drawing
+	//
+	// Parameters:
+	// xmlString - The SVG as XML text.
+	//
+	// Returns:
+	// This function returns false if the import was unsuccessful, true otherwise.
+	
+	// TODO: create a new layer for the imported SVG
+	// TODO: create a group and add all <svg> children to the group
+	// TODO: properly size the new group
+	this.importSvgString = function(xmlString) {
+		try {
+			// convert string into XML document
+			var newDoc = Utils.text2xml(xmlString);
+			// run it through our sanitizer to remove anything we do not support
+	        sanitizeSvg(newDoc.documentElement);
+
+			var batchCmd = new BatchCommand("Change Source");
+
+        	// remove old svg document
+//    	    var oldzoom = svgroot.removeChild(svgcontent);
+//			batchCmd.addSubCommand(new RemoveElementCommand(oldzoom, svgroot));
+        
+    	    // import new svg document
+    	    if (current_layer) {
+    	    	current_layer.appendChild(svgdoc.importNode(newDoc.documentElement, true));
+    	    }
+//        	svgcontent = svgroot.appendChild(svgdoc.importNode(newDoc.documentElement, true));
+        	// change image href vals if possible
+//        	$(svgcontent).find('image').each(function() {
+//        		var image = this;
+//        		preventClickDefault(image);
+//        		var val = this.getAttributeNS(xlinkns, "href");
+//				if(val.indexOf('data:') === 0) {
+//					// Check if an SVG-edit data URI
+//					var m = val.match(/svgedit_url=(.*?);/);
+//					if(m) {
+//						var url = decodeURIComponent(m[1]);
+//						$(new Image()).load(function() {
+//							image.setAttributeNS(xlinkns,'xlink:href',url);
+//						}).attr('src',url);
+//					}
+//				}
+//        		// Add to encodableImages if it loads
+//        		canvas.embedImage(val);
+//        	});
+        	
+        	// Fix XML for Opera/Win/Non-EN
+//			if(!support.goodDecimals) {
+//				canvas.fixOperaXML(svgcontent, newDoc.documentElement);
+//			}
+			
+			// recalculate dimensions on the top-level children so that unnecessary transforms
+			// are removed
+//			var deepdive = function(node) {
+//				if (node.nodeType == 1) {
+//					var children = node.childNodes;
+//					var i = children.length;
+//					while (i--) { deepdive(children.item(i)); }
+//					try {
+//						recalculateDimensions(node);
+//					} catch(e) { console.log(e); }
+//				}
+//			}
+//			deepdive(svgcontent);
+			
+//			var content = $(svgcontent);
+        	
+//			var attrs = {
+//				id: 'svgcontent',
+//				overflow: 'visible'
+//			};
+			
+			// determine proper size
+//			if (content.attr("viewBox")) {
+//				var vb = content.attr("viewBox").split(' ');
+//				attrs.width = vb[2];
+//				attrs.height = vb[3];
+//			}
+//			// handle content that doesn't have a viewBox
+//			else {
+//				$.each(['width', 'height'], function(i, dim) {
+//					// Set to 100 if not given
+//					var val = content.attr(dim) || 100;
+//
+//					if((val+'').substr(-1) === "%") {
+//						// Use user units if percentage given
+//						attrs[dim] = parseInt(val);
+//					} else {
+//						attrs[dim] = convertToNum(dim, val);
+//					}
+//				});
+//			}
+			
+//			content.attr(attrs);
+			batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
+			// update root to the correct size
+//			var changes = content.attr(["width", "height"]);
+//			batchCmd.addSubCommand(new ChangeElementCommand(svgroot, changes));
+			
+			// reset zoom
+			current_zoom = 1;
+			
+			// identify layers
+//			identifyLayers();
+			
+			// reset transform lists
+//			svgTransformLists = {};
+//			canvas.clearSelection();
+//			svgroot.appendChild(selectorManager.selectorParentGroup);
+			
+			addCommandToHistory(batchCmd);
+			call("changed", [svgcontent]);
+		} catch(e) {
+			console.log(e);
+			return false;
+		}
+
+		return true;
+	};
+	
 	// Layer API Functions
 
 	// Group: Layers

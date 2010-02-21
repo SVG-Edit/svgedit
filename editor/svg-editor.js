@@ -1460,7 +1460,7 @@ function svg_edit_setup() {
 		svgCanvas.open();
 	};
 	var clickImport = function(){
-		svgCanvas.open();
+		svgCanvas.import();
 	};
 
 	var clickUndo = function(){
@@ -2705,7 +2705,7 @@ function svg_edit_setup() {
 			if(this.files.length==1) {
 				var reader = new FileReader();
 				reader.onloadend = function(e) {
-					svgCanvas.setSvgString(e.target.result);
+					svgCanvas.importSvgString(e.target.result);
 					updateCanvas();
 				};
 				reader.readAsText(this.files[0]);
