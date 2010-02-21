@@ -5694,7 +5694,6 @@ function BatchCommand(text) {
 	// This function returns false if the import was unsuccessful, true otherwise.
 	
 	// TODO: create a new layer for the imported SVG
-	// TODO: create a group and add all <svg> children to the group
 	// TODO: properly size the new group
 	this.importSvgString = function(xmlString) {
 		try {
@@ -5705,15 +5704,16 @@ function BatchCommand(text) {
 
 			var batchCmd = new BatchCommand("Change Source");
 
-        	// remove old svg document
-//    	    var oldzoom = svgroot.removeChild(svgcontent);
-//			batchCmd.addSubCommand(new RemoveElementCommand(oldzoom, svgroot));
+			// import new svg document into our document
+			var importedNode = svgdoc.importNode(newDoc.documentElement, true);
         
-    	    // import new svg document
     	    if (current_layer) {
-    	    	current_layer.appendChild(svgdoc.importNode(newDoc.documentElement, true));
+    	    	// add all children of the imported <svg> to the <g> we create
+    	    	var g = svgdoc.createElementNS(svgns, "g");
+    	    	while (importedNode.hasChildNodes()) { g.appendChild(importedNode.firstChild); }
+    	    	current_layer.appendChild(g);
     	    }
-//        	svgcontent = svgroot.appendChild(svgdoc.importNode(newDoc.documentElement, true));
+    	    
         	// change image href vals if possible
 //        	$(svgcontent).find('image').each(function() {
 //        		var image = this;
@@ -5734,23 +5734,23 @@ function BatchCommand(text) {
 //        	});
         	
         	// Fix XML for Opera/Win/Non-EN
-//			if(!support.goodDecimals) {
-//				canvas.fixOperaXML(svgcontent, newDoc.documentElement);
-//			}
+			if(!support.goodDecimals) {
+				canvas.fixOperaXML(svgcontent, importedNode);
+			}
 			
 			// recalculate dimensions on the top-level children so that unnecessary transforms
 			// are removed
-//			var deepdive = function(node) {
-//				if (node.nodeType == 1) {
-//					var children = node.childNodes;
-//					var i = children.length;
-//					while (i--) { deepdive(children.item(i)); }
-//					try {
-//						recalculateDimensions(node);
-//					} catch(e) { console.log(e); }
-//				}
-//			}
-//			deepdive(svgcontent);
+			var deepdive = function(node) {
+				if (node.nodeType == 1) {
+					var children = node.childNodes;
+					var i = children.length;
+					while (i--) { deepdive(children.item(i)); }
+					try {
+						recalculateDimensions(node);
+					} catch(e) { console.log(e); }
+				}
+			}
+			deepdive(importedNode);
 			
 //			var content = $(svgcontent);
         	
@@ -5793,9 +5793,8 @@ function BatchCommand(text) {
 //			identifyLayers();
 			
 			// reset transform lists
-//			svgTransformLists = {};
-//			canvas.clearSelection();
-//			svgroot.appendChild(selectorManager.selectorParentGroup);
+			svgTransformLists = {};
+			canvas.clearSelection();
 			
 			addCommandToHistory(batchCmd);
 			call("changed", [svgcontent]);
@@ -7601,9 +7600,11 @@ function BatchCommand(text) {
 		
 		$.each(elems, function(i, elem) {
 			var cur_bb = bboxes[i];
-			var offset = getOffset(elem);
-			max_x = Math.max(max_x, cur_bb.x + cur_bb.width + offset);
-			max_y = Math.max(max_y, cur_bb.y + cur_bb.height + offset);
+			if (cur_bb) {
+				var offset = getOffset(elem);
+				max_x = Math.max(max_x, cur_bb.x + cur_bb.width + offset);
+				max_y = Math.max(max_y, cur_bb.y + cur_bb.height + offset);
+			}
 		});
 		
 		full_bb.width = max_x - min_x;
