@@ -2164,11 +2164,14 @@ function BatchCommand(text) {
 							start_transform = child.getAttribute("transform");
 							
 							var childTlist = canvas.getTransformList(child);
-							var newxlate = svgroot.createSVGTransform();
-							newxlate.setTranslate(tx,ty);
-							childTlist.insertItemBefore(newxlate, 0);
-							batchCmd.addSubCommand( recalculateDimensions(child) );
-							start_transform = old_start_transform;
+							// some children might not have a transform (<metadata>, <defs>, etc)
+							if (childTlist) {
+								var newxlate = svgroot.createSVGTransform();
+								newxlate.setTranslate(tx,ty);
+								childTlist.insertItemBefore(newxlate, 0);
+								batchCmd.addSubCommand( recalculateDimensions(child) );
+								start_transform = old_start_transform;
+							}
 						}
 					}
 					start_transform = old_start_transform;
@@ -2263,6 +2266,7 @@ function BatchCommand(text) {
 		}
 		// else, it's a non-group
 		else {
+			// FIXME: box might be null for some elements (<metadata> etc), need to handle this
 			var box = canvas.getBBox(selected),
 				oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2},
 				newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2,
@@ -2706,7 +2710,6 @@ function BatchCommand(text) {
 				}
 				tobj.text = "rotate(" + xform.angle + " " + tobj.cx*z + "," + tobj.cy*z + ")";
 				break;
-			// TODO: matrix, skewX, skewY
 		}
 		return tobj;
 	};
@@ -4484,7 +4487,7 @@ function BatchCommand(text) {
 					return;
 				}
 				
-				// TODO: Make sure current_path isn't null at this point
+				// Make sure current_path isn't null at this point
 				if(!current_path) return;
 				
 				current_path_oldd = getD();
@@ -5023,7 +5026,7 @@ function BatchCommand(text) {
 					current_path_pts.splice(pt*2 + 2, 0, abs_x, abs_y);
 					
 					// TODO: This should select the new path points but breaks
-					// when doing several times seleting many nodes
+					// when doing several times selecting many nodes
 					nums.push(pt + i);
 					nums.push(pt + i + 1);
 				}	
@@ -5525,9 +5528,6 @@ function BatchCommand(text) {
 	this.open = function() {
 		// Nothing by default, handled by optional widget/extension
 	};
-	this.import = function() {
-		// Nothing by default, handled by optional widget/extension
-	};
 
 	// Function: save
 	// Serializes the current drawing into SVG XML text and returns it to the 'saved' handler.
@@ -5692,9 +5692,10 @@ function BatchCommand(text) {
 	//
 	// Returns:
 	// This function returns false if the import was unsuccessful, true otherwise.
-	
+
+	// TODO: import should happen in top-left of current zoomed viewport	
 	// TODO: create a new layer for the imported SVG
-	// TODO: properly size the new group
+	// TODO: properly re-identify all elements and references in the imported SVG
 	this.importSvgString = function(xmlString) {
 		try {
 			// convert string into XML document
@@ -5708,9 +5709,33 @@ function BatchCommand(text) {
 			var importedNode = svgdoc.importNode(newDoc.documentElement, true);
         
     	    if (current_layer) {
+    	    	// TODO: properly handle if width/height are not specified or if in percentages
+    	    	// TODO: properly handle if width/height are in units (px, etc)
+    	    	var innerw = importedNode.getAttribute("width"),
+    	    		innerh = importedNode.getAttribute("height"),
+    	    		innervb = importedNode.getAttribute("viewBox"),
+    	    		// if no explicit viewbox, create one out of the width and height
+    	    		vb = innervb ? innervb.split(" ") : [0,0,innerw,innerh];
+    	    	for (var j = 0; j < 4; ++j)
+    	    		vb[j] = Number(vb[j]);
+
+    	    	// TODO: properly handle preserveAspectRatio
+    	    	var canvasw = Number(svgcontent.getAttribute("width")),
+    	    		canvash = Number(svgcontent.getAttribute("height"));
+    	    	// imported content should be 1/3 of the canvas on its largest dimension
+    	    	if (innerh > innerw) {
+    	    		var ts = "scale(" + (canvash/3)/vb[3] + ")";
+    	    	}
+    	    	else {
+    	    		var ts = "scale(" + (canvash/3)/vb[2] + ")";
+    	    	}
+
     	    	// add all children of the imported <svg> to the <g> we create
     	    	var g = svgdoc.createElementNS(svgns, "g");
-    	    	while (importedNode.hasChildNodes()) { g.appendChild(importedNode.firstChild); }
+    	    	while (importedNode.hasChildNodes())
+    	    		g.appendChild(importedNode.firstChild);
+    	    	if (ts)
+    	    		g.setAttribute("transform", ts);
     	    	current_layer.appendChild(g);
     	    }
     	    
@@ -5752,42 +5777,10 @@ function BatchCommand(text) {
 			}
 			deepdive(importedNode);
 			
-//			var content = $(svgcontent);
-        	
-//			var attrs = {
-//				id: 'svgcontent',
-//				overflow: 'visible'
-//			};
-			
-			// determine proper size
-//			if (content.attr("viewBox")) {
-//				var vb = content.attr("viewBox").split(' ');
-//				attrs.width = vb[2];
-//				attrs.height = vb[3];
-//			}
-//			// handle content that doesn't have a viewBox
-//			else {
-//				$.each(['width', 'height'], function(i, dim) {
-//					// Set to 100 if not given
-//					var val = content.attr(dim) || 100;
-//
-//					if((val+'').substr(-1) === "%") {
-//						// Use user units if percentage given
-//						attrs[dim] = parseInt(val);
-//					} else {
-//						attrs[dim] = convertToNum(dim, val);
-//					}
-//				});
-//			}
-			
-//			content.attr(attrs);
 			batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
-			// update root to the correct size
-//			var changes = content.attr(["width", "height"]);
-//			batchCmd.addSubCommand(new ChangeElementCommand(svgroot, changes));
-			
-			// reset zoom
-			current_zoom = 1;
+
+			// reset zoom - TODO: why?
+//			current_zoom = 1;
 			
 			// identify layers
 //			identifyLayers();
