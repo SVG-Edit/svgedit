@@ -1460,7 +1460,6 @@ function svg_edit_setup() {
 		svgCanvas.open();
 	};
 	var clickImport = function(){
-		svgCanvas.import();
 	};
 
 	var clickUndo = function(){
