@@ -1392,7 +1392,7 @@ function BatchCommand(text) {
 			}
 			// if the element has attributes pointing to a non-local reference, 
 			// need to remove the attribute
-			$.each(["clip-path", "fill", "marker-end", "marker-mid", "marker-start", "mask", "stroke"],function(i,attr) {
+			$.each(["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"],function(i,attr) {
 				var val = node.getAttribute(attr);
 				if (val) {
 					val = getUrlFromAttr(val);
@@ -5747,15 +5747,14 @@ function BatchCommand(text) {
 							// and we haven't tracked this ID yet
 	    	    			if (!(n.id in ids)) {
     		    				// add this id to our map
-			    	    		ids[n.id] = {elem:null, attrs:[]};
+			    	    		ids[n.id] = {elem:null, attrs:[], hrefs:[]};
 	    			    	}
-	    			    	ids[n.id]['elem'] = n;
+	    			    	ids[n.id]["elem"] = n;
 	    	    		}
 	    	    		
 	    	    		// now search for all attributes on this element that might refer
 	    	    		// to other elements
-	    	    		// TODO: also check for other attributes not of the url() form
-						$.each(["clip-path", "fill", "marker-end", "marker-mid", "marker-start", "mask", "stroke"],function(i,attr) {
+						$.each(["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"],function(i,attr) {
 							var attrnode = n.getAttributeNode(attr);
 							if (attrnode) {
 								// the incoming file has been sanitized, so we should be able to safely just strip off the leading #
@@ -5764,30 +5763,55 @@ function BatchCommand(text) {
 								if (refid) {
 									if (!(refid in ids)) {
 										// add this id to our map
-										ids[refid] = {elem:null, attrs:[]};
+										ids[refid] = {elem:null, attrs:[], hrefs:[]};
 									}
-//									alert("pushing " + attrnode.name + " into ids[" + refid + "]");
-									ids[refid]['attrs'].push(attrnode);
+									ids[refid]["attrs"].push(attrnode);
 								}
 							}
 						});
+						
+						// check xlink:href now
+						var href = n.getAttributeNS(xlinkns,"href");
+						// TODO: what if an <image> or <a> element refers to an element internally?
+						if(href && 
+			   				$.inArray(n.nodeName, ["filter", "linearGradient", "pattern", 
+			   							 "radialGradient", "textPath", "use"]) != -1)
+						{
+							var refid = href.substr(1);
+							if (!(refid in ids)) {
+								// add this id to our map
+								ids[refid] = {elem:null, attrs:[], hrefs:[]};
+							}
+							ids[refid]["hrefs"].push(n);
+						}						
 	    	    	}
     	    	});
     	    	
     	    	// in ids, we now have a map of ids, elements and attributes, let's re-identify
     	    	for (var oldid in ids) {
-    	    		var elem = ids[oldid]['elem'];
+    	    		var elem = ids[oldid]["elem"];
     	    		if (elem) {
     	    			var newid = getNextId();
 						// manually increment obj_num because our cloned elements are not in the DOM yet
 						obj_num++;
 						
+						// assign element its new id
     	    			elem.id = newid;
-    	    			var attrs = ids[oldid]['attrs'];
+    	    			
+    	    			// remap all url() attributes
+    	    			var attrs = ids[oldid]["attrs"];
     	    			var j = attrs.length;
     	    			while (j--) {
     	    				var attr = attrs[j];
     	    				attr.ownerElement.setAttribute(attr.name, "url(#" + newid + ")");
+    	    			}
+    	    			
+    	    			// remap all href attributes
+    	    			var hreffers = ids[oldid]["hrefs"];
+    	    			var k = hreffers.length;
+    	    			while (k--) {
+    	    				var hreffer = hreffers[k];
+    	    				hreffer.setAttributeNS(xlinkns, "xlink:href", "#"+newid);
     	    			}
     	    		}
     	    	}
