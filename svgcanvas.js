@@ -5729,6 +5729,8 @@ function BatchCommand(text) {
 				else {
 					var ts = "scale(" + (canvash/3)/vb[2] + ")";
 				}
+				if (vb[0] != 0 || vb[1] != 0)
+					ts = "translate(" + (-vb[0]) + "," + (-vb[1]) + ") " + ts;
 
 				// add all children of the imported <svg> to the <g> we create
 				var g = svgdoc.createElementNS(svgns, "g");
@@ -5850,17 +5852,8 @@ function BatchCommand(text) {
 			
 			// recalculate dimensions on the top-level children so that unnecessary transforms
 			// are removed
-			var deepdive = function(node) {
-				if (node.nodeType == 1) {
-					var children = node.childNodes;
-					var i = children.length;
-					while (i--) { deepdive(children.item(i)); }
-					try {
-						recalculateDimensions(node);
-					} catch(e) { console.log(e); }
-				}
-			}
-			deepdive(importedNode);
+			walkTreePost(importedNode, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
+			
 			
 			batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
 
@@ -6812,12 +6805,12 @@ function BatchCommand(text) {
 			ret = getPathBBox(selected);
 		} else if(elem.nodeName == 'use' && !isWebkit) {
 			ret = selected.getBBox();
-			ret.x += parseFloat(selected.getAttribute('x'));
-			ret.y += parseFloat(selected.getAttribute('y'));
+			ret.x += parseFloat(selected.getAttribute('x')||0);
+			ret.y += parseFloat(selected.getAttribute('y')||0);
 		} else if(elem.nodeName == 'foreignObject') {
 			ret = selected.getBBox();
-			ret.x += parseFloat(selected.getAttribute('x'));
-			ret.y += parseFloat(selected.getAttribute('y'));
+			ret.x += parseFloat(selected.getAttribute('x')||0);
+			ret.y += parseFloat(selected.getAttribute('y')||0);
 		} else {
 			try { ret = selected.getBBox(); } 
 			catch(e) { 
@@ -7552,9 +7545,6 @@ function BatchCommand(text) {
 		if(!elems) elems = canvas.getVisibleElements();
 		if(!elems.length) return false;
 		// Make sure the expected BBox is returned if the element is a group
-		// FIXME: doesn't this mean that every time we call getStrokedBBox() that we are 
-		// re-creating the getCheckedBBox() function?  shouldn't we make this a function 
-		// at the 'canvas' level
 		var getCheckedBBox = function(elem) {
 		
 			try {
@@ -7666,11 +7656,12 @@ function BatchCommand(text) {
 		var bboxes = [];
 		$.each(elems, function(i, elem) {
 			var cur_bb = getCheckedBBox(elem);
-			if(!cur_bb) return;
-			var offset = getOffset(elem);
-			min_x = Math.min(min_x, cur_bb.x - offset);
-			min_y = Math.min(min_y, cur_bb.y - offset);
-			bboxes.push(cur_bb);
+			if(cur_bb) {
+				var offset = getOffset(elem);
+				min_x = Math.min(min_x, cur_bb.x - offset);
+				min_y = Math.min(min_y, cur_bb.y - offset);
+				bboxes.push(cur_bb);
+			}
 		});
 		
 		full_bb.x = min_x;
@@ -7678,7 +7669,8 @@ function BatchCommand(text) {
 		
 		$.each(elems, function(i, elem) {
 			var cur_bb = bboxes[i];
-			if (cur_bb) {
+			// ensure that elem is really an element node
+			if (cur_bb && elem.nodeType == 1) {
 				var offset = getOffset(elem);
 				max_x = Math.max(max_x, cur_bb.x + cur_bb.width + offset);
 				max_y = Math.max(max_y, cur_bb.y + cur_bb.height + offset);
