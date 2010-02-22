@@ -5548,6 +5548,7 @@ function BatchCommand(text) {
 		call("saved", str);
 	};
 
+	// Walks the tree and executes the callback on each element in a top-down fashion
 	var walkTree = function(elem, cbFn){
 		if (elem && elem.nodeType == 1) {
 			cbFn(elem);
@@ -5555,6 +5556,16 @@ function BatchCommand(text) {
 			while (i--) {
 				walkTree(elem.childNodes.item(i), cbFn);
 			}
+		}
+	};
+	// Walks the tree and executes the callback on each element in a depth-first fashion
+	var walkTreePost = function(elem, cbFn) {
+		if (elem && elem.nodeType == 1) {
+			var i = elem.childNodes.length;
+			while (i--) {
+				walkTree(elem.childNodes.item(i), cbFn);
+			}
+			cbFn(elem);
 		}
 	};
 	
@@ -5617,17 +5628,7 @@ function BatchCommand(text) {
 			
 			// recalculate dimensions on the top-level children so that unnecessary transforms
 			// are removed
-			var deepdive = function(node) {
-				if (node.nodeType == 1) {
-					var children = node.childNodes;
-					var i = children.length;
-					while (i--) { deepdive(children.item(i)); }
-					try {
-						recalculateDimensions(node);
-					} catch(e) { console.log(e); }
-				}
-			}
-			deepdive(svgcontent);
+			walkTreePost(svgcontent, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
 			
 			var content = $(svgcontent);
         	
@@ -5695,7 +5696,6 @@ function BatchCommand(text) {
 
 	// TODO: import should happen in top-left of current zoomed viewport	
 	// TODO: create a new layer for the imported SVG
-	// TODO: properly re-identify all elements and references in the imported SVG
 	this.importSvgString = function(xmlString) {
 		try {
 			// convert string into XML document
@@ -5708,34 +5708,95 @@ function BatchCommand(text) {
 			// import new svg document into our document
 			var importedNode = svgdoc.importNode(newDoc.documentElement, true);
         
-    	    if (current_layer) {
-    	    	// TODO: properly handle if width/height are not specified or if in percentages
-    	    	// TODO: properly handle if width/height are in units (px, etc)
-    	    	var innerw = importedNode.getAttribute("width"),
-    	    		innerh = importedNode.getAttribute("height"),
-    	    		innervb = importedNode.getAttribute("viewBox"),
-    	    		// if no explicit viewbox, create one out of the width and height
-    	    		vb = innervb ? innervb.split(" ") : [0,0,innerw,innerh];
-    	    	for (var j = 0; j < 4; ++j)
-    	    		vb[j] = Number(vb[j]);
+			if (current_layer) {
+				// TODO: properly handle if width/height are not specified or if in percentages
+				// TODO: properly handle if width/height are in units (px, etc)
+				var innerw = importedNode.getAttribute("width"),
+					innerh = importedNode.getAttribute("height"),
+					innervb = importedNode.getAttribute("viewBox"),
+					// if no explicit viewbox, create one out of the width and height
+					vb = innervb ? innervb.split(" ") : [0,0,innerw,innerh];
+				for (var j = 0; j < 4; ++j)
+					vb[j] = Number(vb[j]);
 
-    	    	// TODO: properly handle preserveAspectRatio
-    	    	var canvasw = Number(svgcontent.getAttribute("width")),
-    	    		canvash = Number(svgcontent.getAttribute("height"));
-    	    	// imported content should be 1/3 of the canvas on its largest dimension
-    	    	if (innerh > innerw) {
-    	    		var ts = "scale(" + (canvash/3)/vb[3] + ")";
-    	    	}
-    	    	else {
-    	    		var ts = "scale(" + (canvash/3)/vb[2] + ")";
-    	    	}
+				// TODO: properly handle preserveAspectRatio
+				var canvasw = Number(svgcontent.getAttribute("width")),
+					canvash = Number(svgcontent.getAttribute("height"));
+				// imported content should be 1/3 of the canvas on its largest dimension
+				if (innerh > innerw) {
+					var ts = "scale(" + (canvash/3)/vb[3] + ")";
+				}
+				else {
+					var ts = "scale(" + (canvash/3)/vb[2] + ")";
+				}
 
-    	    	// add all children of the imported <svg> to the <g> we create
-    	    	var g = svgdoc.createElementNS(svgns, "g");
-    	    	while (importedNode.hasChildNodes())
-    	    		g.appendChild(importedNode.firstChild);
-    	    	if (ts)
-    	    		g.setAttribute("transform", ts);
+				// add all children of the imported <svg> to the <g> we create
+				var g = svgdoc.createElementNS(svgns, "g");
+				while (importedNode.hasChildNodes())
+					g.appendChild(importedNode.firstChild);
+				if (ts)
+					g.setAttribute("transform", ts);
+    	    		
+				// now ensure each element has a unique ID
+				var ids = {};
+				walkTree(g, function(n) {
+					// if it's an element node
+					if (n.nodeType == 1) {
+						// and the element has an ID
+						if (n.id) {
+							// and we haven't tracked this ID yet
+	    	    			if (!(n.id in ids)) {
+    		    				// add this id to our map
+			    	    		ids[n.id] = {elem:null, attrs:[]};
+	    			    	}
+	    			    	ids[n.id]['elem'] = n;
+	    	    		}
+	    	    		
+	    	    		// now search for all attributes on this element that might refer
+	    	    		// to other elements
+	    	    		// TODO: also check for other attributes not of the url() form
+						$.each(["clip-path", "fill", "marker-end", "marker-mid", "marker-start", "mask", "stroke"],function(i,attr) {
+							var attrnode = n.getAttributeNode(attr);
+							if (attrnode) {
+								// the incoming file has been sanitized, so we should be able to safely just strip off the leading #
+								var url = getUrlFromAttr(attrnode.value),								
+									refid = url ? url.substr(1) : null;
+								if (refid) {
+									if (!(refid in ids)) {
+										// add this id to our map
+										ids[refid] = {elem:null, attrs:[]};
+									}
+//									alert("pushing " + attrnode.name + " into ids[" + refid + "]");
+									ids[refid]['attrs'].push(attrnode);
+								}
+							}
+						});
+	    	    	}
+    	    	});
+    	    	
+    	    	// in ids, we now have a map of ids, elements and attributes, let's re-identify
+    	    	for (var oldid in ids) {
+    	    		var elem = ids[oldid]['elem'];
+    	    		if (elem) {
+    	    			var newid = getNextId();
+						// manually increment obj_num because our cloned elements are not in the DOM yet
+						obj_num++;
+						
+    	    			elem.id = newid;
+    	    			var attrs = ids[oldid]['attrs'];
+    	    			var j = attrs.length;
+    	    			while (j--) {
+    	    				var attr = attrs[j];
+    	    				attr.ownerElement.setAttribute(attr.name, "url(#" + newid + ")");
+    	    			}
+    	    		}
+    	    	}
+    	    	
+    	    	// now give the g itself a new id
+				g.id = getNextId();
+				// manually increment obj_num because our cloned elements are not in the DOM yet
+				obj_num++;
+				
     	    	current_layer.appendChild(g);
     	    }
     	    
