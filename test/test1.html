@@ -33,7 +33,7 @@
 
 	test("Test existence of SvgCanvas object", function() {
 		expect(1);
-		equals(typeof {}, typeof svgCanvas);
+		equal(typeof {}, typeof svgCanvas);
 	});
 	
 	module("Path Module");
@@ -58,21 +58,21 @@
 			seglist = p1.pathSegList,
 			curseg = null;
 			
-		equals(p1.nodeName, "path", "Expected 'path', got");
+		equal(p1.nodeName, "path", "Expected 'path', got");
 		
-		equals(seglist.numberOfItems, 3, "Number of segments before conversion");
+		equal(seglist.numberOfItems, 3, "Number of segments before conversion");
 		
 		// verify segments before conversion
 		curseg = seglist.getItem(0);
-		equals(curseg.pathSegTypeAsLetter, "M", "Before conversion, segment #1 type");
+		equal(curseg.pathSegTypeAsLetter, "M", "Before conversion, segment #1 type");
 		curseg = seglist.getItem(1);
-		equals(curseg.pathSegTypeAsLetter, "L", "Before conversion, segment #2 type");
+		equal(curseg.pathSegTypeAsLetter, "L", "Before conversion, segment #2 type");
 		curseg = seglist.getItem(2);
-		equals(curseg.pathSegType, 1, "Before conversion, segment #3 type");
+		equal(curseg.pathSegType, 1, "Before conversion, segment #3 type");
 		
 		// convert and verify segments
 		var d = convert(p1, true);
-		equals(d, "m100,100l100,0z", "Converted path to relative string");
+		equal(d, "m100,100l100,0z", "Converted path to relative string");
 		
 		// TODO: see why this isn't working in SVG-edit
 		d = convert(p2, true);
@@ -91,7 +91,7 @@
 			tr_2 = svgroot.createSVGMatrix().translate(-90,0),
 			tr_3 = svgroot.createSVGMatrix().translate(-10,-50),
 			I = svgCanvas.matrixMultiply(tr_1,tr_2,tr_3);
-		equals(true, isIdentity(I),
+		equal(isIdentity(I), true,
 			"Expected identity matrix when translating there and back, got " + matrixString(I));
 
 		// rotate there and back
@@ -101,7 +101,7 @@
 			rot_back = svgroot.createSVGMatrix().rotate(-90); // TODO: set this to -50
 			rot_back_more = svgroot.createSVGMatrix().rotate(0); // TODO: set this to -40
 		I = svgCanvas.matrixMultiply(rot_there, rot_back, rot_back_more);
-		equals(true, isIdentity(I),
+		equal(isIdentity(I), true,
 			"Expected identity matrix when rotating there and back, got " + matrixString(I));
 
 		// scale up and down
@@ -109,15 +109,15 @@
 			scale_down = svgroot.createSVGMatrix().scaleNonUniform(0.25,1);
 			scale_down_more = svgroot.createSVGMatrix().scaleNonUniform(1,0.25);
 		I = svgCanvas.matrixMultiply(scale_up, scale_down, scale_down_more);
-		equals(true, isIdentity(I),
+		equal(isIdentity(I), true,
 			"Expected identity matrix when scaling up and down, got " + matrixString(I));
 
 		// test multiplication with its inverse 
 		I = svgCanvas.matrixMultiply(rot_there, rot_there.inverse());
-		equals(true, isIdentity(I),
+		equal(isIdentity(I), true,
 			"Expected identity matrix when multiplying a matrix by its inverse, got " + matrixString(I));
 		I = svgCanvas.matrixMultiply(rot_there.inverse(), rot_there);
-		equals(true, isIdentity(I),
+		equal(isIdentity(I), true,
 			"Expected identity matrix when multiplying a matrix by its inverse, got " + matrixString(I));
 	});
 	
@@ -137,18 +137,18 @@
 			fu = document.getElementById("foreign-use"),
 			nfu = document.getElementById("no-use");
 		
-		equals((u && u.nodeName == "use"), true, "Did not import <use> element");
-		equals(fu, null, "Removed <use> element that had a foreign href");
-		equals(nfu, null, "Removed <use> element that had no href");
+		equal((u && u.nodeName == "use"), true, "Did not import <use> element");
+		equal(fu, null, "Removed <use> element that had a foreign href");
+		equal(nfu, null, "Removed <use> element that had no href");
 	});
 	
 	test("Test getUrlFromAttr", function() {
 		expect(4);
 		
-		equals(svgCanvas.getUrlFromAttr("url(#foo)"), "#foo");
-		equals(svgCanvas.getUrlFromAttr("url(somefile.svg#foo)"), "somefile.svg#foo");
-		equals(svgCanvas.getUrlFromAttr("url('#foo')"), "#foo");
-		equals(svgCanvas.getUrlFromAttr('url("#foo")'), "#foo");
+		equal(svgCanvas.getUrlFromAttr("url(#foo)"), "#foo");
+		equal(svgCanvas.getUrlFromAttr("url(somefile.svg#foo)"), "somefile.svg#foo");
+		equal(svgCanvas.getUrlFromAttr("url('#foo')"), "#foo");
+		equal(svgCanvas.getUrlFromAttr('url("#foo")'), "#foo");
 	});
 	
 	// This test shows that an element with an invalid attribute is still parsed in properly
@@ -162,8 +162,8 @@
 		
 		var t = document.getElementById("the-text");
 		
-		equals(true, (t && t.nodeName == "text"), "Did not import <text> element");
-		equals(null, t.getAttribute("d"), "Imported a <text> with a d attribute");
+		equal(true, (t && t.nodeName == "text"), "Did not import <text> element");
+		equal(null, t.getAttribute("d"), "Imported a <text> with a d attribute");
 	});
 	
 	// This test makes sure import/export properly handles namespaced attributes
@@ -175,7 +175,7 @@
 				'</svg>');
 		var attrVal = document.getElementById('se_test_elem').getAttributeNS("http://svg-edit.googlecode.com", "foo");
 		
-		equals(attrVal === "bar", true, "Preserved namespaced attribute on import");
+		equal(attrVal === "bar", true, "Preserved namespaced attribute on import");
 				
 		var output = svgCanvas.getSvgString();
 		var has_xlink = output.indexOf('xmlns:xlink="http://www.w3.org/1999/xlink"') !== -1;
@@ -183,10 +183,10 @@
 		var has_foo = output.indexOf('xmlns:foo=') !== -1;
 		var has_attr = output.indexOf('se:foo="bar"') !== -1;
 		
-		equals(has_attr, true, "Preserved namespaced attribute on export");
-		equals(has_xlink, true, "Included xlink: xmlns");
-		equals(has_se, true, "Included se: xmlns");
-		equals(has_foo, false, "Did not include foo: xmlns");
+		equal(has_attr, true, "Preserved namespaced attribute on export");
+		equal(has_xlink, true, "Included xlink: xmlns");
+		equal(has_se, true, "Included se: xmlns");
+		equal(has_foo, false, "Did not include foo: xmlns");
 	});
 	
 	test("Test import math elements inside a foreignObject", function() {
@@ -205,18 +205,18 @@
 		// see Bug https://bugs.webkit.org/show_bug.cgi?id=35042
 		var math = fo.firstChild;
 		
-		equals(!!math, true, "Math element exists");
-		equals(math.nodeName, 'math', "Math element has the proper nodeName");
-		equals(math.getAttribute('id'), 'm', "Math element has an id");
-		equals(math.namespaceURI, "http://www.w3.org/1998/Math/MathML", "Preserved MathML namespace");
+		equal(!!math, true, "Math element exists");
+		equal(math.nodeName, 'math', "Math element has the proper nodeName");
+		equal(math.getAttribute('id'), 'm', "Math element has an id");
+		equal(math.namespaceURI, "http://www.w3.org/1998/Math/MathML", "Preserved MathML namespace");
 	});
 	
-	test("Test XML entities in attribute", function() {
+	test("Test escaping XML entities", function() {
 		expect(3);
 		
-		equals(svgCanvas.getPrivateMethods().toXml("<"), "&lt;", "Escaped < properly");
-		equals(svgCanvas.getPrivateMethods().toXml(">"), "&gt;", "Escaped > properly");
-		equals(svgCanvas.getPrivateMethods().toXml("&"), "&amp;", "Escaped & properly");
+		equal(svgCanvas.getPrivateMethods().toXml("<"), "&lt;", "Escaped < properly");
+		equal(svgCanvas.getPrivateMethods().toXml(">"), "&gt;", "Escaped > properly");
+		equal(svgCanvas.getPrivateMethods().toXml("&"), "&amp;", "Escaped & properly");
 		// TODO: what about &quot; and &apos; ?
 	});
 	
@@ -239,9 +239,47 @@
 			circles = svgcontent.getElementsByTagNameNS(svgns, "circle"),
 			rects = svgcontent.getElementsByTagNameNS(svgns, "rect"),
 			ellipses = svgcontent.getElementsByTagNameNS(svgns, "ellipse");
-		equals(circles.length, 2, "Found two circles upon importing");
-		equals(rects.length, 1, "Found one rectangle upon importing");
-		equals(ellipses.length, 1, "Found one ellipse upon importing");
+		equal(circles.length, 2, "Found two circles upon importing");
+		equal(rects.length, 1, "Found one rectangle upon importing");
+		equal(ellipses.length, 1, "Found one ellipse upon importing");
+	});
+
+	test("Test importing SVG remaps IDs", function() {
+		expect(5);
+		
+		var doc = svgCanvas.setSvgString('<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg">'+
+											'<g><title>Layer 1</title>'+
+												'<ellipse id="svg_1" cx="200" cy="200" rx="50" ry="20" fill="blue"/>'+
+												'<ellipse id="svg_2" cx="300" cy="100" rx="40" ry="30" fill="green"/>'+
+												'<ellipse id="svg_3" cx="300" cy="100" rx="40" ry="30" fill="green"/>'+
+											'</g>'+
+										'</svg>');
+		
+		svgCanvas.importSvgString('<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">'+
+									'<defs>'+
+										'<linearGradient id="svg_2">'+
+											'<stop stop-color="red" offset="0"/>'+
+											'<stop stop-color="green" offset="1"/>'+
+										'</linearGradient>'+
+									'</defs>'+
+									'<circle id="svg_1" cx="50" cy="50" r="40" fill="url(#svg_2)"/>'+
+									'<rect id="svg_3" width="20" height="20" fill="blue" stroke="url(#svg_2)"/>'+
+								'</svg>');
+		
+		var svgcontent = document.getElementById("svgcontent"),
+			circles = svgcontent.getElementsByTagNameNS(svgns, "circle"),
+			rects = svgcontent.getElementsByTagNameNS(svgns, "rect"),
+			ellipses = svgcontent.getElementsByTagNameNS(svgns, "ellipse"),
+			defs = svgcontent.getElementsByTagNameNS(svgns, "defs"),
+			grads = svgcontent.getElementsByTagNameNS(svgns, "linearGradient");
+		notEqual(circles.item(0).id, "svg_1", "Circle not re-identified");
+		notEqual(rects.item(0).id, "svg_3", "Rectangle not re-identified");
+//		// TODO: determine why this test fails in WebKit browsers
+//		equal(grads.length, 1, "Linear gradient imported");
+		var grad = defs.item(0).firstChild;
+		notEqual(grad.id, "svg_2", "Linear gradient not re-identified");
+		notEqual(circles.item(0).getAttribute("fill"), "url(#svg_2)", "Circle fill value not remapped");
+		notEqual(rects.item(0).getAttribute("stroke"), "url(#svg_2)", "Rectangle stroke value not remapped");
 	});
 	
   }); 
