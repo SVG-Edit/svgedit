@@ -665,6 +665,7 @@ function svg_edit_setup() {
 	};	
 
 	// updates the toolbar (colors, opacity, etc) based on the selected element
+	// This function also updates the opacity and id elements that are in the context panel
 	var updateToolbar = function() {
 		if (selectedElement != null && 
 			selectedElement.tagName != "image" &&
@@ -727,6 +728,7 @@ function svg_edit_setup() {
 			var opac_perc = ((selectedElement.getAttribute("opacity")||1.0)*100);
 			$('#group_opacity').val(opac_perc);
 			$('#opac_slider').slider('option', 'value', opac_perc);
+			$('#elem_id').val(selectedElement.id);
 		}
 		
 		updateToolButtonState();
@@ -1033,8 +1035,18 @@ function svg_edit_setup() {
 			$.alert(uiStrings.invalidAttrValGiven);
 			this.value = selectedElement.getAttribute(attr);
 			return false;
-		} 
-		svgCanvas.changeSelectedAttribute(attr, val);
+		}
+		// if the user is changing the id, then de-select the element first
+		// change the ID, then re-select it with the new ID
+		if (attr == "id") {
+			var elem = selectedElement;
+			svgCanvas.clearSelection();
+			elem.id = val;
+			svgCanvas.addToSelection([elem],true);
+		}
+		else {
+			svgCanvas.changeSelectedAttribute(attr, val);
+		}
 	});
 	
 	// Prevent selection of elements when shift-clicking
