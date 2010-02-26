@@ -1066,6 +1066,20 @@ function BatchCommand(text) {
 						if(re.test(val)) valid = true;
 					});
 				}
+			} else if (attr == "id") {
+				// if we're trying to change the id, make sure it's not already present in the doc
+				// and the id value is valid.
+
+				var result = false;
+				// because getElem() can throw an exception in the case of an invalid id
+				// (according to http://www.w3.org/TR/xml-id/ IDs must be a NCName)
+				// we wrap it in an exception and only return true if the ID was valid and
+				// not already present
+				try {
+					var elem = getElem(val);
+					result = (elem == null);
+				} catch(e) {}
+				return result;
 			} else valid = true;			
 			
 			return valid;
@@ -5637,6 +5651,11 @@ function BatchCommand(text) {
 	// Returns:
 	// This function returns false if the import was unsuccessful, true otherwise.
 
+	// TODO: properly handle if namespace is introduced by imported content (must add to svgcontent
+	//       and update all prefixes in the imported node)
+	// TODO: properly handle recalculating dimensions, recalculateDimensions() doesn't handle
+	//       arbitrary transform lists, but makes some assumptions about how the transform list 
+	//       was obtained
 	// TODO: import should happen in top-left of current zoomed viewport	
 	// TODO: create a new layer for the imported SVG
 	this.importSvgString = function(xmlString) {
@@ -8186,4 +8205,5 @@ var Utils = {
 		catch(e){ throw new Error("Error parsing XML string"); };
 		return out;
 	}
+
 };
