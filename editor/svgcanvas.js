@@ -1352,6 +1352,7 @@ function BatchCommand(text) {
 				if (node.nodeName == 'path' && attrName == 'd') {
 					// Convert to absolute
 					node.setAttribute('d',pathActions.convertPath(node));
+					pathActions.fixEnd(node);
 				}
 				// for the style attribute, rewrite it in terms of XML presentational attributes
 				if (attrName == "style") {
@@ -3732,6 +3733,28 @@ function BatchCommand(text) {
 		function retPath() {
 			return path;
 		}
+
+		function resetD(p) {
+			p.setAttribute("d", pathActions.convertPath(p));
+		}
+		
+		function insertItemBefore(elem, newseg, index) {
+			// Support insertItemBefore on paths for FF2
+			var list = elem.pathSegList;
+			var len = list.numberOfItems;
+			var arr = [];
+			for(var i=0; i<len; i++) {
+				var cur_seg = list.getItem(i);
+				arr.push(cur_seg)				
+			}
+			list.clear();
+			for(var i=0; i<len; i++) {
+				if(i == index) { //index+1
+					list.appendItem(newseg);
+				}
+				list.appendItem(arr[i]);
+			}
+		}
 		
 		// TODO: See if this should just live in replacePathSeg
 		function ptObjToArr(type, seg_item) {
@@ -4216,20 +4239,7 @@ function BatchCommand(text) {
 				if(support.pathInsertItemBefore) {
 					list.insertItemBefore(newseg, index);
 				} else {
-					//TODO: Fix this
-					var len = list.numberOfItems;
-					var arr = [];
-					for(var i=0; i<len; i++) {
-						var cur_seg = list.getItem(i);
-						arr.push(cur_seg)				
-					}
-					list.clear();
-					for(var i=0; i<len; i++) {
-						if(i == index) { //index+1
-							list.appendItem(seg);
-						}
-						list.appendItem(arr[i]);
-					}
+					insertItemBefore(elem, newseg, index);
 				}
 
 			}
@@ -4239,9 +4249,9 @@ function BatchCommand(text) {
 				var list = elem.pathSegList;
 				
 				seg.show(false);
+				var next = seg.next;
 				if(seg.mate) {
 					// Make the next point be the "M" point
-					var next = seg.next;
 					var pt = [next.item.x, next.item.y];
 					replacePathSeg(2, next.index, pt);
 					
@@ -4249,13 +4259,20 @@ function BatchCommand(text) {
 					replacePathSeg(4, seg.index, pt);
 					
 					list.removeItem(seg.mate.index);
+				} else if(!seg.prev) {
+					// First node of open path, make next point the M
+					var item = seg.item;
+					var pt = [next.item.x, next.item.y];
+					replacePathSeg(2, seg.next.index, pt);
+					list.removeItem(index);
+					
 				} else {
 					list.removeItem(index);
 				}
 			}
 			
 			this.endChanges = function(text) {
-				if(isWebkit) path.resetD();
+				if(isWebkit) resetD(p.elem);
 				var cmd = new ChangeElementCommand(elem, {d: p.last_d}, text);
 				addCommandToHistory(cmd);
 				call("changed", [elem]);
@@ -4320,10 +4337,6 @@ function BatchCommand(text) {
 				this.last_d = elem.getAttribute('d');
 			}
 			
-			this.resetD = function() {
-				p.elem.setAttribute("d", convertToD(elem.pathSegList));
-			}
-
 			this.show = function(y) {
 				// Shows this path's segment grips 
 				p.eachSeg(function() {
@@ -5053,8 +5066,9 @@ function BatchCommand(text) {
 				var sel_pt = sel_pts[0]-1 > 0 ? sel_pts[0]-1 : 1;
 				
 				path.clearSelection();
-				path.addPtsToSelection(sel_pt);
-
+				
+				// TODO: Find right way to select point now
+				// path.selectPt(sel_pt);
 				if(window.opera) { // Opera repaints incorrectly
 					var cp = $(path.elem); cp.attr('d',cp.attr('d'));
 				}
@@ -5077,6 +5091,38 @@ function BatchCommand(text) {
 				
 				seg.move(diff.x, diff.y);
 				path.endChanges("Move path point");
+			},
+			fixEnd: function(elem) {
+				// Adds an extra segment if the last seg before a Z doesn't end
+				// at its M point
+				// M0,0 L0,100 L100,100 z
+				var segList = elem.pathSegList;
+				var len = segList.numberOfItems;
+				var last_m;
+				for (var i = 0; i < len; ++i) {
+					var item = segList.getItem(i);
+					if(item.pathSegType === 2) {
+						last_m = item;
+					}
+					
+					if(item.pathSegType === 1) {
+						var prev = segList.getItem(i-1);
+						if(prev.x != last_m.x && prev.y != last_m.y) {
+							// Add an L segment here
+							var newseg = elem.createSVGPathSegLinetoAbs(last_m.x, last_m.y);
+							if(support.pathInsertItemBefore) {
+								segList.insertItemBefore(newseg, i);
+							} else {
+								insertItemBefore(elem, newseg, i);
+							}
+							// Can this be done better?
+							pathActions.fixEnd(elem);
+							break;
+						}
+						
+					}
+				}
+				if(isWebkit) resetD(elem);
 			},
 			// Convert a path to one with only absolute or relative values
 			convertPath: function(path, toRel) {
