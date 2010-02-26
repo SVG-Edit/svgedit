@@ -228,8 +228,12 @@ $(function() {
 				if(conn) {
 					this.setAttribute('class', conn_sel.substr(1));
 					var conn_data = conn.split(' ');
+					var sbb = svgCanvas.getStrokedBBox([getElem(conn_data[0])]);
+					var ebb = svgCanvas.getStrokedBBox([getElem(conn_data[1])]);
 					$(this).data('c_start',conn_data[0])
-						.data('c_end',conn_data[1]);
+						.data('c_end',conn_data[1])
+						.data('start_bb', sbb)
+						.data('end_bb', ebb);
 					svgCanvas.getEditorNS(true);
 				}
 			});
@@ -311,7 +315,6 @@ $(function() {
 								"style": "pointer-events:none"
 							}
 						});
-						
 						$(cur_line).data('start_bb', bb);
 					}
 					return {
