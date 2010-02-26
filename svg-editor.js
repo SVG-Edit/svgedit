@@ -246,7 +246,8 @@ function svg_edit_setup() {
 			} 
 			// Update selectedElement if element is no longer part of the image.
 			// This occurs for the text elements in Firefox
-			else if(elem && selectedElement && selectedElement.parentNode == null) {
+			else if(elem && selectedElement && selectedElement.parentNode == null
+				|| elem && elem.tagName == "path") {
 				selectedElement = elem;
 			}
 		}
@@ -738,7 +739,6 @@ function svg_edit_setup() {
 		if(elem != null && !elem.parentNode) elem = null;
 		var currentLayer = svgCanvas.getCurrentLayer();
 		var currentMode = svgCanvas.getMode();
-		
 		// No need to update anything else in rotate mode
 		if (currentMode == 'rotate' && elem != null) {
 			var ang = svgCanvas.getRotationAngle(elem);
@@ -747,7 +747,6 @@ function svg_edit_setup() {
 			return;
 		}
 		var is_node = currentMode == 'pathedit'; //elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
-		
 		$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,\
 			#ellipse_panel, #line_panel, #text_panel, #image_panel').hide();
 		if (elem != null) {
