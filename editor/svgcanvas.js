@@ -943,6 +943,10 @@ function BatchCommand(text) {
 		
 		$(svgroot).appendTo(container);
 	
+    //nonce to uniquify id's
+    var nonce = Math.floor(Math.random()*100001);
+    var randomize_ids = false;
+    
 	// map namespace URIs to prefixes
 	var nsMap = {};
 	nsMap[xlinkns] = 'xlink';
@@ -982,8 +986,10 @@ function BatchCommand(text) {
 		y: 480,
 		overflow: 'visible',
 		xmlns: svgns,
+		"xmlns:se": se_ns,
 		"xmlns:xlink": xlinkns
 	}).appendTo(svgroot);
+	if (randomize_ids) svgContent.setAttributeNS(se_ns, nonce);
 
 	var convertToNum, convertToUnit, setUnitAttr;
 	
@@ -1298,7 +1304,11 @@ function BatchCommand(text) {
 // private functions
 	var getId = function() {
 		if (events["getid"]) return call("getid", obj_num);
+		if (randomize_ids) {
+		  return idprefix + nonce +'_' + obj_num;
+		} else {
 		return idprefix + obj_num;
+		}
 	};
 
 	var getNextId = function() {
@@ -5535,6 +5545,27 @@ function BatchCommand(text) {
 		return svgCanvasToString();
 	};
 
+	//function randomizeIds
+	// This function determines whether to add a nonce to the prefix, when
+	// generating IDs in SVG-Edit
+	// 
+	//  Parameters:
+	//   an opional boolean, which, if true, adds a nonce to the prefix. Thus
+	//     svgCanvas.randomizeIds()  <==> svgCanvas.randomizeIds(true)
+	//
+	// if you're controlling SVG-Edit externally, and want randomized IDs, call
+	// this BEFORE calling svgCanvas.setSvgString
+	//
+	this.randomizeIds = function() {
+	   if (arguments.length > 0 && arguments[0] == false) {
+	     randomize_ids = false;
+	     if (extensions["Arrows"])  call("unsetarrownonce") ;
+	   } else {
+	     randomize_ids = true;
+	   }
+	}
+
+	//   
 	// Function: setSvgString
 	// This function sets the current drawing as the input SVG XML.
 	//
@@ -5558,6 +5589,17 @@ function BatchCommand(text) {
         
     	    // set new svg document
         	svgcontent = svgroot.appendChild(svgdoc.importNode(newDoc.documentElement, true));
+        	// retrieve or set the nonce
+        	n = svgcontent.getAttributeNS(se_ns, 'nonce');
+        	if (n) {
+        		randomize_ids = true;
+        		nonce = n;
+        		if (extensions["Arrows"])  call("setarrownonce", n) ;
+        	} else if (randomize_ids) {
+        		svgcontent.setAttributeNS(xmlnsns, 'xml:se', se_ns); 
+        		svgcontent.setAttributeNS(se_ns, 'se:nonce', nonce); 
+        		if (extensions["Arrows"])  call("setarrownonce", nonce) ;
+         	}         
         	// change image href vals if possible
         	$(svgcontent).find('image').each(function() {
         		var image = this;
@@ -8012,6 +8054,7 @@ function BatchCommand(text) {
 			var ext = ext_func($.extend(canvas.getPrivateMethods(), {
 				svgroot: svgroot,
 				svgcontent: svgcontent,
+				nonce: nonce,
 				selectorManager: selectorManager
 			}));
 			extensions[name] = ext;

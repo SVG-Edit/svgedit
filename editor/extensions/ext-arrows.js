@@ -12,7 +12,12 @@ $(function() {
 	svgCanvas.addExtension("Arrows", function(S) {
 		var svgcontent = S.svgcontent,
 			addElem = S.addSvgElementFromJson,
+			nonce = S.nonce,
+			randomize_ids = S.randomize_ids,
 			selElems;
+			
+		svgCanvas.bind('setarrownonce', setArrowNonce);
+		svgCanvas.bind('unsetsetarrownonce', unsetArrowNonce);
 			
 		var lang_list = {
 			"en":[
@@ -23,10 +28,32 @@ $(function() {
 			]
 		};
 		
-		var pathdata = {
-			fw: {d:"m0,0l10,5l-10,5l5,-5l-5,-5z", refx:8, id:"se_arrow_fw"},
-			bk: {d:"m10,0l-10,5l10,5l-5,-5l5,-5z", refx:2, id:"se_arrow_bk"}
+		var prefix = 'se_arrow_';
+		if (randomize_ids) {
+		  var arrowprefix = prefix + nonce + '_';
+		} else {
+		  var arrowprefix = prefix;
 		}
+
+		var pathdata = {
+			fw: {d:"m0,0l10,5l-10,5l5,-5l-5,-5z", refx:8,  id: arrowprefix + 'fw'},
+			bk: {d:"m10,0l-10,5l10,5l-5,-5l5,-5z", refx:2, id: arrowprefix + 'bk'}
+		}
+		
+		function setArrowNonce(window, n) {
+		    randomize_ids = true;
+		    arrowprefix = prefix + n + '_';
+ 			pathdata.fw.id = arrowprefix + 'fw';
+			pathdata.bk.id = arrowprefix + 'bk';
+		}
+
+		function unsetArrowNonce(window) {
+		    randomize_ids = false;
+		    arrowprefix = prefix;
+ 			pathdata.fw.id = arrowprefix + 'fw';
+			pathdata.bk.id = arrowprefix + 'bk';
+		}
+
 		function getLinked(elem, attr) {
 			var str = elem.getAttribute(attr);
 			if(!str) return null;
@@ -77,7 +104,7 @@ $(function() {
 		
 		function addMarker(dir, type, id) {
 			// TODO: Make marker (or use?) per arrow type, since refX can be different
-			id = id || 'se_arrow_' + dir;
+			id = id || arrowprefix + dir;
 			
 			var marker = S.getElem(id);
 
@@ -174,7 +201,7 @@ $(function() {
 					var last_id = marker.id;
 					var dir = last_id.indexOf('_fw') !== -1?'fw':'bk';
 					
-					new_marker = addMarker(dir, type, 'se_arrow_' + dir + all_markers.length);
+					new_marker = addMarker(dir, type, arrowprefix + dir + all_markers.length);
 
 					$(new_marker).children().attr('fill', color);
 				}
