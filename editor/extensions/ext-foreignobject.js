@@ -144,7 +144,7 @@ $(function() {
 			}, {
 				type: "input",
 				panel: "foreignObject_panel",
-				title: "Change foreignObject's height",
+				title: "Change foreignObject's font size",
 				id: "foreign_font_size",
 				label: "font-size",
 				size: 2,
