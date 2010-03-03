@@ -3741,6 +3741,7 @@ function BatchCommand(text) {
 
 	var pathActions = function() {
 		
+		var subpath = false;
 		var pathData = {};
 		var current_path;
 		var path;
@@ -4347,6 +4348,13 @@ function BatchCommand(text) {
 			
 			this.selectPt = function(pt, ctrl_num) {
 				p.clearSelection();
+				if(pt == null) {
+					p.eachSeg(function(i) {
+						if(this.prev) {
+							pt = i;
+						}
+					});
+				}
 				p.addPtsToSelection(pt);
 				if(ctrl_num) {
 					p.dragctrl = ctrl_num;
@@ -4806,7 +4814,8 @@ function BatchCommand(text) {
 							'x2': mouse_x,
 							'y2': mouse_y
 						});
-						addPointGrip(0,mouse_x,mouse_y);
+						var index = subpath ? path.segs.length : 0;
+						addPointGrip(index, mouse_x, mouse_y);
 					}
 					else {
 						// determine if we clicked on an existing point
@@ -4849,13 +4858,23 @@ function BatchCommand(text) {
 								keep = false;
 								return keep;
 							}
-							// removeAllPointGripsFromPath();
 							$(stretchy).remove();
 							
 							// this will signal to commit the path
 							element = newpath;
 							current_path_pts = [];
 							started = false;
+							
+							if(subpath) {
+								var new_d = newpath.getAttribute("d");
+								var orig_d = $(path.elem).attr("d");
+								$(path.elem).attr("d", orig_d + new_d);
+								$(newpath).remove();
+								path.init();
+								pathActions.toEditMode(path.elem);
+								path.selectPt();
+								return false;
+							}
 						}
 						// else, create a new point, append to pts array, update path element
 						else {
@@ -4880,7 +4899,9 @@ function BatchCommand(text) {
 								'x2': mouse_x,
 								'y2': mouse_y
 							});
-							addPointGrip((current_path_pts.length/2 - 1),mouse_x,mouse_y);
+							var index = (current_path_pts.length/2 - 1);
+							if(subpath) index += path.segs.length;
+							addPointGrip(index, mouse_x, mouse_y);
 						}
 						keep = true;
 					}
@@ -4931,6 +4952,7 @@ function BatchCommand(text) {
 				canvas.clearSelection();
 				path.show(true).update();
 				path.oldbbox = canvas.getBBox(path.elem);
+				subpath = false;
 			},
 			toSelectMode: function(elem) {
 				var selPath = (elem == path.elem);
@@ -4947,6 +4969,17 @@ function BatchCommand(text) {
 				if(selPath) {
 					call("selected", [elem]);
 					canvas.addToSelection([elem], true);
+				}
+			},
+			addSubPath: function(on) {
+				if(on) {
+					// Internally we go into "path" mode, but in the UI it will
+					// still appear as if in "pathedit" mode.
+					current_mode = "path";
+					subpath = true;
+				} else {
+					pathActions.clear(true);
+					pathActions.toEditMode(path.elem);
 				}
 			},
 			select: function(target) {
