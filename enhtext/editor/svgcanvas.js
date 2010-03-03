@@ -153,7 +153,15 @@ var isOpera = !!window.opera,
 	"munder": [],
 	"munderover": [],
 	"none": [],
-	"semantics": []
+	"semantics": [],
+	
+	// HTML Elements
+	"body": ["contenteditable", "xmlns"],
+	"div":  ["contenteditable", "xmlns"],
+	"li": [],
+	"p": [],
+	"span": [],
+	"ul": []
 	},
 
 
@@ -1344,9 +1352,13 @@ function BatchCommand(text) {
 		var parent = node.parentNode;
 		// can parent ever be null here?  I think the root node's parent is the document...
 		if (!doc || !parent) return;
-
-		var allowedAttrs = svgWhiteList[node.nodeName];
-		var allowedAttrsNS = svgWhiteListNS[node.nodeName];
+		
+		var nodename = node.nodeName;
+		// HTML nodeNames are capitalized
+		if (node.namespaceURI == htmlns)
+			nodename = nodename.toLowerCase();
+		var allowedAttrs = svgWhiteList[nodename];
+		var allowedAttrsNS = svgWhiteListNS[nodename];
 
 		// if this element is allowed
 		if (allowedAttrs != undefined) {
@@ -1553,7 +1565,11 @@ function BatchCommand(text) {
 				childs = elem.childNodes;
 			
 			for (var i=0; i<indent; i++) out.push(" ");
-			out.push("<"); out.push(elem.nodeName);			
+			var nodename = elem.nodeName;
+			// lower-case HTML elements
+			if (elem.namespaceURI == htmlns)
+				nodename = nodename.toLowerCase();
+			out.push("<"); out.push(nodename);			
 			if(elem.id == 'svgcontent') {
 				// Process root element separately
 				var res = canvas.getResolution();
@@ -1641,7 +1657,7 @@ function BatchCommand(text) {
 					out.push("\n");
 					for (var i=0; i<indent; i++) out.push(" ");
 				}
-				out.push("</"); out.push(elem.nodeName); out.push(">");
+				out.push("</"); out.push(nodename); out.push(">");
 			} else {
 				out.push("/>");
 			}
@@ -2794,7 +2810,17 @@ function BatchCommand(text) {
 			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
 				mouse_x = pt.x * current_zoom,
 				mouse_y = pt.y * current_zoom;
-			evt.preventDefault();
+			
+			// we only prevent default if we haven't clicked on an HTML element
+			// (i.e. inside a foreignObject element)
+			if (evt.target.namespaceURI != htmlns) {
+				evt.preventDefault();
+				hotkeys.allDisabled = false;
+			}
+			else {
+				hotkeys.allDisabled = true;
+			}
+			console.log("allDisabled = " + hotkeys.allDisabled);
 		
 			if($.inArray(current_mode, ['select', 'resize']) == -1) {
 				addGradient();
@@ -2806,6 +2832,8 @@ function BatchCommand(text) {
 			
 			start_x = x;
 			start_y = y;
+			
+			console.log(mouse_target);
 	
 			// if it was a <use>, Opera and WebKit return the SVGElementInstance
 			if (mouse_target.correspondingUseElement)
@@ -2816,20 +2844,27 @@ function BatchCommand(text) {
 			if ($.inArray(mouse_target.namespaceURI, [mathns, htmlns]) != -1 && 
 				mouse_target.id != "svgcanvas") 
 			{
+				// for foreign content, if the foreignObject is not selected, we'll select it
+				// however, if it's already selected, do not go up from what's been clicked on
+	
 				while (mouse_target.nodeName != "foreignObject") {
 					mouse_target = mouse_target.parentNode;
+					console.log(mouse_target);
 				}
 			}
 			
 			// go up until we hit a child of a layer
 			while (mouse_target.parentNode.parentNode.tagName == "g") {
 				mouse_target = mouse_target.parentNode;
+				console.log(mouse_target);
 			}
 			// Webkit bubbles the mouse event all the way up to the div, so we
 			// set the mouse_target to the svgroot like the other browsers
 			if (mouse_target.nodeName.toLowerCase() == "div") {
 				mouse_target = svgroot;
 			}
+			console.log(mouse_target);
+			
 			// if it is a selector grip, then it must be a single element selected, 
 			// set the mouse_target to that and update the mode to rotate/resize
 			if (mouse_target.parentNode == selectorManager.selectorParentGroup && selectedElements[0] != null) {
@@ -2845,6 +2880,7 @@ function BatchCommand(text) {
 					current_resize_mode = gripid.substr(20,gripid.indexOf("_",20)-20);
 				}
 				mouse_target = selectedElements[0];
+				console.log(mouse_target);
 			}
 			
 			start_transform = mouse_target.getAttribute("transform");
