@@ -9,7 +9,6 @@
  * Copyright(c) 2010 Narendra Sisodya
  *
  */
-
 function svg_edit_setup() {
 	var uiStrings = {
 		'invalidAttrValGiven':'Invalid value given',
@@ -161,7 +160,7 @@ function svg_edit_setup() {
 
 	// used to make the flyouts stay on the screen longer the very first time
 	var flyoutspeed = 1250;
-	var textBeingEntered = false;
+//	var textBeingEntered = false;
 	var selectedElement = null;
 	var multiselected = false;
 	var editingsource = false;
@@ -888,8 +887,8 @@ function svg_edit_setup() {
 		}
 	};
 
-	$('#text').focus( function(){ textBeingEntered = true; } );
-	$('#text').blur( function(){ textBeingEntered = false; } );
+//	$('#text').focus( function(){ textBeingEntered = true; } );
+//	$('#text').blur( function(){ textBeingEntered = false; } );
   
 	// bind the selected event to our function that handles updates to the UI
 	svgCanvas.bind("selected", selectedChanged);
