@@ -794,6 +794,7 @@ function svg_edit_setup() {
 				$('#tool_reorient').toggleClass('disabled', angle == 0);
 			} else {
 				var point = path.getNodePoint();
+				$('#tool_add_subpath').removeClass('push_button_pressed').addClass('tool_button');
 				$('#tool_node_delete').toggleClass('disabled', !path.canDeleteNodes);
 				if(point) {
 					var seg_type = $('#seg_type');
@@ -1414,6 +1415,20 @@ function svg_edit_setup() {
 			path.deletePathNode();
 		}
 	};
+
+	var addSubPath = function() {
+		var button = $('#tool_add_subpath');
+		var sp = !button.hasClass('push_button_pressed');
+		if (sp) {
+			button.addClass('push_button_pressed').removeClass('tool_button');
+		} else {
+			button.removeClass('push_button_pressed').addClass('tool_button');
+		}
+		
+		path.addSubPath(sp);
+		
+	};
+
 	
 	var selectNext = function() {
 		svgCanvas.cycleElement(1);
@@ -2486,6 +2501,7 @@ function svg_edit_setup() {
 			{sel:'#tool_node_link', fn: linkControlPoints, evt: 'click'},
 			{sel:'#tool_node_clone', fn: clonePathNode, evt: 'click'},
 			{sel:'#tool_node_delete', fn: deletePathNode, evt: 'click'},
+			{sel:'#tool_add_subpath', fn: addSubPath, evt: 'click'},
 			{sel:'#tool_move_top', fn: moveToTopSelected, evt: 'click', key: 'shift+up'},
 			{sel:'#tool_move_bottom', fn: moveToBottomSelected, evt: 'click', key: 'shift+down'},
 			{sel:'#tool_topath', fn: convertToPath, evt: 'click'},
@@ -2885,6 +2901,7 @@ function svg_edit_setup() {
 			
 			'#tool_clone,#tool_clone_multi,#tool_node_clone':'clone',
 			'#layer_delete,#tool_delete,#tool_delete_multi,#tool_node_delete':'delete',
+			'#tool_add_subpath':'add_subpath',
 			'#tool_move_top':'move_top',
 			'#tool_move_bottom':'move_bottom',
 			'#tool_topath':'to_path',
