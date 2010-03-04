@@ -102,6 +102,19 @@ $(function() {
 						setAttr('height', this.value);
 					}
 				}
+			},{
+				type: "input",
+				panel: "enhText_panel",
+				title: "Change text font size",
+				id: "enhtext_font_size",
+				label: "font-size",
+				size: 2,
+				defval: 16,
+				events: {
+					change: function() {
+						setAttr('font-size', this.value);
+					}
+				}
 			}],
 			callback: function() {
 				$('#enhText_panel').hide();
@@ -171,21 +184,9 @@ $(function() {
 					p.appendChild( svgdoc.createTextNode("text") );
 					div.appendChild(p);
 					newFO.appendChild(div);
-					/*
-					var mi = svgdoc.createElementNS(mathns, 'mi');
-					mi.setAttribute('mathvariant', 'normal');
-					mi.textContent = "\u03A6";
-					var mo = svgdoc.createElementNS(mathns, 'mo');
-					mo.textContent = "\u222A";
-					var mi2 = svgdoc.createElementNS(mathns, 'mi');
-					mi2.textContent = "\u2133";
-					m.appendChild(mi);
-					m.appendChild(mo);
-					m.appendChild(mi2);
-					*/
 					return {
 						started: true
-					}
+					};
 				}
 			},
 			mouseUp: function(opts) {
@@ -212,10 +213,11 @@ $(function() {
 				while(i--) {
 					var elem = selElems[i];
 					if(elem && elem.tagName == "foreignObject") {
-						if(opts.selectedElement && !opts.multiselected) {
-							$('#foreign_font_size').val(elem.getAttribute("font-size"));
-							$('#foreign_width').val(elem.getAttribute("width"));
-							$('#foreign_height').val(elem.getAttribute("height"));
+						if(opts.selectedElement && !opts.multiselected &&
+							elem.firstElementChild.namespaceURI == htmlns) {
+							$('#enhtext_font_size').val(elem.getAttribute("font-size"));
+							$('#enhtext_width').val(elem.getAttribute("width"));
+							$('#enhtext_height').val(elem.getAttribute("height"));
 						
 							showPanel(true);
 						} else {

@@ -144,7 +144,7 @@ $(function() {
 			}, {
 				type: "input",
 				panel: "foreignObject_panel",
-				title: "Change foreignObject's height",
+				title: "Change foreignObject's font size",
 				id: "foreign_font_size",
 				label: "font-size",
 				size: 2,
@@ -257,7 +257,8 @@ $(function() {
 				while(i--) {
 					var elem = selElems[i];
 					if(elem && elem.tagName == "foreignObject") {
-						if(opts.selectedElement && !opts.multiselected) {
+						if(opts.selectedElement && !opts.multiselected &&
+							elem.firstElementChild.namespaceURI == mathns) {
 							$('#foreign_font_size').val(elem.getAttribute("font-size"));
 							$('#foreign_width').val(elem.getAttribute("width"));
 							$('#foreign_height').val(elem.getAttribute("height"));

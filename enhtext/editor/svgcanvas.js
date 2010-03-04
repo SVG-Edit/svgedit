@@ -2820,7 +2820,6 @@ function BatchCommand(text) {
 			else {
 				hotkeys.allDisabled = true;
 			}
-			console.log("allDisabled = " + hotkeys.allDisabled);
 		
 			if($.inArray(current_mode, ['select', 'resize']) == -1) {
 				addGradient();
@@ -2833,8 +2832,6 @@ function BatchCommand(text) {
 			start_x = x;
 			start_y = y;
 			
-			console.log(mouse_target);
-	
 			// if it was a <use>, Opera and WebKit return the SVGElementInstance
 			if (mouse_target.correspondingUseElement)
 				mouse_target = mouse_target.correspondingUseElement;
@@ -2849,21 +2846,18 @@ function BatchCommand(text) {
 	
 				while (mouse_target.nodeName != "foreignObject") {
 					mouse_target = mouse_target.parentNode;
-					console.log(mouse_target);
 				}
 			}
 			
 			// go up until we hit a child of a layer
 			while (mouse_target.parentNode.parentNode.tagName == "g") {
 				mouse_target = mouse_target.parentNode;
-				console.log(mouse_target);
 			}
 			// Webkit bubbles the mouse event all the way up to the div, so we
 			// set the mouse_target to the svgroot like the other browsers
 			if (mouse_target.nodeName.toLowerCase() == "div") {
 				mouse_target = svgroot;
 			}
-			console.log(mouse_target);
 			
 			// if it is a selector grip, then it must be a single element selected, 
 			// set the mouse_target to that and update the mode to rotate/resize
@@ -2880,7 +2874,6 @@ function BatchCommand(text) {
 					current_resize_mode = gripid.substr(20,gripid.indexOf("_",20)-20);
 				}
 				mouse_target = selectedElements[0];
-				console.log(mouse_target);
 			}
 			
 			start_transform = mouse_target.getAttribute("transform");
