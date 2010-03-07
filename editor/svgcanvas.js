@@ -1566,8 +1566,8 @@ function BatchCommand(text) {
 					if (attrVal != "" && 
 						$.inArray(attr.localName, ['width','height','xmlns','x','y','viewBox','id','overflow']) == -1) 
 					{
-						out.push(' ');
 						if(!attr.namespaceURI || nsMap[attr.namespaceURI]) {
+							out.push(' '); 
 							out.push(attr.nodeName); out.push("=\"");
 							out.push(attrVal); out.push("\"");
 						}
