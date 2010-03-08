@@ -1232,7 +1232,7 @@ function svg_edit_setup() {
 		if($(this).find('div').length) return;
 		var perc = parseInt($(this).text().split('%')[0]);
 		changeOpacity(false, perc);
-	});
+	}, true);
 	
 	// For slider usage, see: http://jqueryui.com/demos/slider/ 
 	$("#opac_slider").slider({
@@ -1757,11 +1757,20 @@ function svg_edit_setup() {
 			"div#workarea": {
 				'left': {s: '27px', l: '46px', xl: '65px'},
 				'top': {s: '50px', l: '88px', xl: '125px'},
-				'bottom': {s: '51px', l: '68px', xl: '75px'}
+				'bottom': {s: '55px', l: '70px', xl: '77px'}
 			},
 			"#tools_bottom": {
 				'left': {s: '27px', l: '46px', xl: '65px'},
-				'height': {s: '52px', l: '68px', xl: '75px'}
+				'height': {s: '58px', l: '70px', xl: '77px'}
+			},
+			"#color_tools": {
+				'border-spacing': {s: '0 1px'}
+			},
+			".color_tool": {
+				'height': {s: '20px'}
+			},
+			"#tool_opacity": {
+				'top': {s: '1px'}
 			},
 			"#tools_top input, #tools_bottom input": {
 				'margin-top': {s: '2px', l: '4px', xl: '5px'},
