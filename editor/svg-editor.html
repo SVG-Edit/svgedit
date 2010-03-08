@@ -161,24 +161,6 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 				<input id="elem_id" class="attr_changer" data-attr="id" size="10" type="text" title="Identify the element"/>
 			</label>
 		</div>
-		<div class="toolset" id="tool_opacity">
-			<label>
-				<span id="group_opacityLabel">opac:</span>
-				<input id="group_opacity" title="Change selected item opacity" size="3" value="100" type="text"/>
-			</label>
-			<div id="opacity_dropdown" class="dropdown">
-				<button></button>
-				<ul>
-					<li class="special"><div id="opac_slider"></div></li>
-					<li>100% (no transparency)</li>
-					<li>0%</li>
-					<li>25%</li>
-					<li>50%</li>
-					<li>75%</li>
-					<li>100%</li>
-				</ul>
-			</div>
-		</div>
 
 		<label id="tool_angle">
 			<span id="angleLabel">angle:</span>
@@ -422,29 +404,61 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	</div>
 
 	<div id="tools_bottom_2">
-		<table>
-		<tr>
-			<td id="fill_tool_bottom" class="label">fill:</td>
-			<td><div id="fill_bg"></div><div id="fill_color" class="color_block"  title="Change fill color"></div></td>
-			<td colspan="3"><div id="fill_opacity" class="label">100%</div></td>
-		</tr><tr>
-			<td id="stroke_tool_bottom" class="label">stroke:</td>
-			<td><div id="stroke_bg"></div><div id="stroke_color" class="color_block" title="Change stroke color"></div></td>
-			<td><div id="stroke_opacity" class="label">100 %</div></td>
-			<td>
-				<input id="stroke_width" title="Change stroke width by 1, shift-click to change by 0.1" size="2" value="5" type="text" data-attr="Stroke Width"/>
-			</td>
-			<td>
-				<select id="stroke_style" title="Change stroke dash style">
-					<option selected="selected" value="none">&mdash;</option>
-					<option value="2,2">...</option>
-					<option value="5,5">- -</option>
-					<option value="5,2,2,2">- .</option>
-					<option value="5,2,2,2,2,2">- ..</option>
-				</select>
-			</td>
-		</tr>
-		</table>
+		<div id="color_tools">
+			<div class="color_tool" id="tool_fill">
+				<label>
+					fill:
+				</label>
+				<div class="color_block">
+					<div id="fill_bg"></div>
+					<div id="fill_color" class="color_block"  title="Change fill color"></div>
+				</div>
+			</div>
+		
+			<div class="color_tool" id="tool_stroke">
+				<label>
+					stroke:
+				</label>
+				<div class="color_block">
+					<div id="stroke_bg"></div>
+					<div id="stroke_color" class="color_block" title="Change stroke color"></div>
+				</div>
+				
+				<label>
+					<input id="stroke_width" title="Change stroke width by 1, shift-click to change by 0.1" size="2" value="5" type="text" data-attr="Stroke Width"/>
+				</label>
+				
+				<label>
+					<select id="stroke_style" title="Change stroke dash style">
+						<option selected="selected" value="none">&mdash;</option>
+						<option value="2,2">...</option>
+						<option value="5,5">- -</option>
+						<option value="5,2,2,2">- .</option>
+						<option value="5,2,2,2,2,2">- ..</option>
+					</select>
+				</label>
+			</div>
+		</div>
+	
+		<div class="toolset" id="tool_opacity">
+			<label>
+				<span id="group_opacityLabel">opac:</span>
+				<input id="group_opacity" title="Change selected item opacity" size="3" value="100" type="text"/>
+			</label>
+			<div id="opacity_dropdown" class="dropdown">
+				<button></button>
+				<ul>
+					<li>100% (no transparency)</li>
+					<li>0%</li>
+					<li>25%</li>
+					<li>50%</li>
+					<li>75%</li>
+					<li>100%</li>
+					<li class="special"><div id="opac_slider"></div></li>
+				</ul>
+			</div>
+		</div>
+
 	</div>
 
 	<div id="tools_bottom_3">
