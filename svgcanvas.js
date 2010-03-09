@@ -6516,6 +6516,7 @@ function BatchCommand(text) {
 			selectorManager.requestSelector(elem).resize();
 		});
 		pathActions.zoomChange();
+		runExtensions("zoomChanged", zoomlevel);
 	}
 
 	this.getMode = function() {
