@@ -26,7 +26,7 @@ h2.jGraduate_Title {
 	padding: 10px;
 }
 
-li.jGraduate_tab_color, li.jGraduate_tab_lingrad {
+.jGraduate_tabs li {
 	background-color: #ccc;
 	display: inline;
 	border: solid 1px grey;
@@ -53,6 +53,14 @@ li.jGraduate_tab_current {
 	border: outset 1px #666;
 	padding: 10px 7px 5px 5px;
 	overflow: auto;
+}
+
+.jGraduate_rgPick {	
+	display: none;
+	border: outset 1px #666;
+	padding: 10px 7px 5px 5px;
+	overflow: auto;
+/*	position: relative;*/
 }
 
 .jGraduate_tabs {
@@ -90,7 +98,7 @@ div.jGraduate_Opacity {
 	cursor: ew-resize;
 }
 
-div.jGraduate_OpacityField {
+div.lg_jGraduate_OpacityField {
 	position: absolute;
 	bottom: 25px;
 	left: 292px;
@@ -106,6 +114,41 @@ div.jGraduate_StopSection {
 	width: 120px;
 	text-align: center;
 }
+
+div.jGraduate_RadiusField {
+	
+	text-align: center;
+	float: left;
+}
+
+div.jGraduate_RadiusField input {
+	margin-top: 10px;
+}
+
+.jGraduate_RadiusField .jGraduate_Form_Section {
+	width: 250px;
+	padding: 2px;
+	height: 80px;
+	overflow: visible;
+}
+
+.jGraduate_Radius {
+	border:1px solid #BBB;
+	cursor:ew-resize;
+	height:20px;
+	margin-top:14px;
+	position: relative;
+}
+
+
+.jGraduate_RadiusArrows {
+	top: 0;
+	left: 0;
+	position: absolute;
+	margin-top: -10px;
+	margin-left: 250.5px;
+}
+
 
 div.jGraduate_OkCancel {
 	float: left;
@@ -173,4 +216,51 @@ div.jGraduate_stopPicker {
 	position: absolute;
 	display: none;
 	background: #E8E8E8;
+}
+
+
+.jGraduate_rgPick {
+	width: 530px;
+}
+
+.jGraduate_rgPick div.jGraduate_Form {
+	width: 270px;
+	position: absolute;
+	left: 284px;
+	width: 266px;
+	top: 130px;
+	margin: -3px 3px 0px 4px;
+}
+
+.jGraduate_Colorblocks {
+	display: table;
+	border-spacing: 0 5px;
+}
+
+.jGraduate_colorblock {
+	display: table-row;
+}
+
+.jGraduate_Colorblocks .jGraduate_colorblock > * {
+	display: table-cell;
+	vertical-align: middle;
+	margin: 0;
+	float: none;
+}
+
+.jGraduate_rgPick div.jGraduate_StopSection {
+	float: left;
+	width: 133px;
+	margin: 0;
+}
+
+.jGraduate_rgPick .jGraduate_OkCancel {
+	position: absolute;
+	right: 0;
+}
+
+.rg_jGraduate_OpacityField {
+	position: absolute;
+	left: 288px;
+	bottom: 24px;
 }

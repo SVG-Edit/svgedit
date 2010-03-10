@@ -1509,11 +1509,11 @@ function BatchCommand(text) {
 			}
 		});
 		
-		var lgrads = svgcontent.getElementsByTagNameNS(svgns, "linearGradient"),
+		var grads = $(svgcontent).find("linearGradient, radialGradient");
 			grad_ids = [],
-			i = lgrads.length;
+			i = grads.length;
 		while (i--) {
-			var grad = lgrads[i];
+			var grad = grads[i];
 			var id = grad.id;
 			if($.inArray(id, grad_uses) == -1) {
 				// Not found, so remove
@@ -6651,16 +6651,29 @@ function BatchCommand(text) {
 
 	var findDuplicateGradient = function(grad) {
 		var defs = findDefs();
-		var existing_grads = defs.getElementsByTagNameNS(svgns, "linearGradient");
+		var existing_grads = $(defs).find("linearGradient, radialGradient");
 		var i = existing_grads.length;
+		var rad_attrs = ['r','cx','cy','fx','fy'];
 		while (i--) {
-			var og = existing_grads.item(i);
-			if (grad.getAttribute('x1') != og.getAttribute('x1') ||
-				grad.getAttribute('y1') != og.getAttribute('y1') ||
-				grad.getAttribute('x2') != og.getAttribute('x2') ||
-				grad.getAttribute('y2') != og.getAttribute('y2')) 
-			{
-				continue;
+			var og = existing_grads[i];
+			if(grad.tagName == "linearGradient") {
+				if (grad.getAttribute('x1') != og.getAttribute('x1') ||
+					grad.getAttribute('y1') != og.getAttribute('y1') ||
+					grad.getAttribute('x2') != og.getAttribute('x2') ||
+					grad.getAttribute('y2') != og.getAttribute('y2')) 
+				{
+					continue;
+				}
+			} else {
+				var grad_attrs = $(grad).attr(rad_attrs);
+				var og_attrs = $(og).attr(rad_attrs);
+				
+				var diff = false;
+				$.each(rad_attrs, function(i, attr) {
+					if(grad_attrs[attr] != og_attrs[attr]) diff = true;
+				});
+				
+				if(diff) continue;
 			}
 
 			// else could be a duplicate, iterate through stops
@@ -6673,8 +6686,8 @@ function BatchCommand(text) {
 
 			var j = stops.length;
 			while(j--) {
-				var stop = stops.item(j);
-				var ostop = ostops.item(j);
+				var stop = stops[j];
+				var ostop = ostops[j];
 
 				if (stop.getAttribute('offset') != ostop.getAttribute('offset') ||
 					stop.getAttribute('stop-opacity') != ostop.getAttribute('stop-opacity') ||
@@ -6708,6 +6721,10 @@ function BatchCommand(text) {
 			canvas.strokeGrad = p.linearGradient;
 			if(addGrad) addGradient(); 
 		}
+		else if(p.type == "radialGradient") {
+			canvas.strokeGrad = p.radialGradient;
+			if(addGrad) addGradient(); 
+		}
 		else {
 //			console.log("none!");
 		}
@@ -6725,6 +6742,10 @@ function BatchCommand(text) {
 		}
 		else if(p.type == "linearGradient") {
 			canvas.fillGrad = p.linearGradient;
+			if(addGrad) addGradient(); 
+		}
+		else if(p.type == "radialGradient") {
+			canvas.fillGrad = p.radialGradient;
 			if(addGrad) addGradient(); 
 		}
 		else {
