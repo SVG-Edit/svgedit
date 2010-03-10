@@ -644,10 +644,9 @@ function svg_edit_setup() {
 		// update the editor's fill paint
 		var opts = null;
 		if (color.substr(0,5) == "url(#") {
-			opts = {
-				alpha: opac,
-				linearGradient: document.getElementById(color.substr(5,color.length-6))
-			};
+			var grad = document.getElementById(color.substr(5,color.length-6));
+			opts = { alpha: opac };
+			opts[grad.tagName] = grad;
 		} 
 		else if (color.substr(0,1) == "#") {
 			opts = {
@@ -1985,7 +1984,7 @@ function svg_edit_setup() {
 		var was_none = false;
 		var pos = elem.position();
 		$("#color_picker")
-			.draggable({cancel:'.jPicker_table,.jGraduate_lgPick'})
+			.draggable({cancel:'.jPicker_table,.jGraduate_lgPick,.jGraduate_rgPick'})
 			.css({'left': pos.left, 'bottom': 50 - pos.top})
 			.jGraduate(
 			{ 
@@ -1999,11 +1998,10 @@ function svg_edit_setup() {
 				var oldgrad = document.getElementById("gradbox_"+picker);
 				var svgbox = oldgrad.parentNode;
 				var rectbox = svgbox.firstChild;
-				
-				if (paint.type == "linearGradient") {
+				if (paint.type == "linearGradient" || paint.type == "radialGradient") {
 					svgbox.removeChild(oldgrad);
-					var newgrad = svgbox.appendChild(document.importNode(paint.linearGradient, true));
-					svgCanvas.fixOperaXML(newgrad, paint.linearGradient)
+					var newgrad = svgbox.appendChild(document.importNode(paint[paint.type], true));
+					svgCanvas.fixOperaXML(newgrad, paint[paint.type])
 					newgrad.id = "gradbox_"+picker;
 					rectbox.setAttribute("fill", "url(#gradbox_" + picker + ")");
 				}
