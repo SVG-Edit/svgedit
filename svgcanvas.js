@@ -1608,7 +1608,7 @@ function BatchCommand(text) {
 						
 						// map various namespaces to our fixed namespace prefixes
 						// (the default xmlns attribute itself does not get a prefix)
-						if(!attr.namespaceURI || nsMap[attr.namespaceURI]) {
+						if(!attr.namespaceURI || attr.namespaceURI == svgns || nsMap[attr.namespaceURI]) {
 							out.push(attr.nodeName); out.push("=\"");
 							out.push(attrVal); out.push("\"");
 						}
