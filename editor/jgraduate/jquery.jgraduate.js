@@ -1,5 +1,5 @@
 ﻿/*
- * jGraduate 0.4.x
+ * jGraduate 0.3.x
  *
  * jQuery Plugin for a gradient picker
  *
