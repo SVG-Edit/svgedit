@@ -942,6 +942,14 @@ function BatchCommand(text) {
 					'</svg>').documentElement, true);
 		
 		$(svgroot).appendTo(container);
+		
+		var opac_ani = document.createElementNS(svgns, 'animate');
+ 		$(opac_ani).attr({
+ 			attributeName: 'opacity',
+ 			begin: 'indefinite',
+ 			dur: 1,
+ 			fill: 'freeze'
+ 		}).appendTo(svgroot);
 	
     //nonce to uniquify id's
     var nonce = Math.floor(Math.random()*100001);
@@ -3677,19 +3685,35 @@ function BatchCommand(text) {
 				
 			} else if (element != null) {
 				canvas.addedNew = true;
-				element.setAttribute("opacity", cur_shape.opacity);
-				element.setAttribute("style", "pointer-events:inherit");
-				cleanupElement(element);
-				if(current_mode == "path") {
-					pathActions.toEditMode(element);
-				} else if (current_mode == "text" || current_mode == "image" || current_mode == "foreignObject") {
-					// keep us in the tool we were in unless it was a text or image element
-					canvas.addToSelection([element], true);
+				var ani_dur = .2, c_ani;
+				if(opac_ani.beginElement && element.getAttribute('opacity') != cur_shape.opacity) {
+					c_ani = $(opac_ani).clone().attr({
+						to: cur_shape.opacity,
+						dur: ani_dur
+					}).appendTo(element);
+					c_ani[0].beginElement();
+				} else {
+					ani_dur = 0;
 				}
-				// we create the insert command that is stored on the stack
-				// undo means to call cmd.unapply(), redo means to call cmd.apply()
-				addCommandToHistory(new InsertElementCommand(element));
-				call("changed",[element]);
+				
+				// Ideally this would be done on the endEvent of the animation,
+				// but that doesn't seem to be supported in Webkit
+				setTimeout(function() {
+					if(c_ani) c_ani.remove();
+					element.setAttribute("opacity", cur_shape.opacity);
+					element.setAttribute("style", "pointer-events:inherit");
+					cleanupElement(element);
+					if(current_mode == "path") {
+						pathActions.toEditMode(element);
+					} else if (current_mode == "text" || current_mode == "image" || current_mode == "foreignObject") {
+						// keep us in the tool we were in unless it was a text or image element
+						canvas.addToSelection([element], true);
+					}
+					// we create the insert command that is stored on the stack
+					// undo means to call cmd.unapply(), redo means to call cmd.apply()
+					addCommandToHistory(new InsertElementCommand(element));
+					call("changed",[element]);
+				}, ani_dur * 1000);
 			}
 			
 			start_transform = null;
