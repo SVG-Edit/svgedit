@@ -82,7 +82,7 @@ if(window.opera) {
 }());
 
 
-function SvgCanvas(container)
+$.SvgCanvas = function(container, config)
 {
 var isOpera = !!window.opera,
 	isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1,
@@ -169,6 +169,10 @@ var isOpera = !!window.opera,
 		"pathCtrlPtTooltip":"Drag control point to adjust curve properties"
 	},
 	
+	curConfig = {
+		show_outside_canvas: true
+	},
+	
 	toXml = function(str) {
 		return $('<p/>').text(str).html();
 	},
@@ -176,6 +180,10 @@ var isOpera = !!window.opera,
 	fromXml = function(str) {
 		return $('<p/>').html(str).text();
 	};
+
+	if(config) {
+		$.extend(curConfig, config);
+	}
 
 	var unit_types = {'em':0,'ex':0,'px':1,'cm':35.43307,'mm':3.543307,'in':90,'pt':1.25,'pc':15,'%':0};
 	
@@ -992,7 +1000,7 @@ function BatchCommand(text) {
 		height: 480,
 		x: 640,
 		y: 480,
-		overflow: 'visible',
+		overflow: curConfig.show_outside_canvas?'visible':'hidden',
 		xmlns: svgns,
 		"xmlns:se": se_ns,
 		"xmlns:xlink": xlinkns
@@ -5749,7 +5757,7 @@ function BatchCommand(text) {
         	
 			var attrs = {
 				id: 'svgcontent',
-				overflow: 'visible'
+				overflow: curConfig.show_outside_canvas?'visible':'hidden'
 			};
 			
 			// determine proper size
@@ -8105,19 +8113,13 @@ function BatchCommand(text) {
 	this.setUiStrings = function(strs) {
 		$.extend(uiStrings, strs);
 	}
+
+	this.setConfig = function(opts) {
+		$.extend(curConfig, opts);
+	}
 	
 	this.clear();
 
-	this.ready = function(cb) {
-		this.callback = cb;
-	}
-	
-	this.runCallback = function() {
-		if(this.callback) {
-			this.callback();
-		}
-	}
-	
 	function getElem(id) {
 		if(svgroot.querySelector) {
 			// querySelector lookup
