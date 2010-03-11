@@ -6,7 +6,7 @@
  * Copyright(c) 2009 Narendra Sisodya
  *
  */
-var put_locale = function(svgCanvas, given_param, good_langs){
+var put_locale = function(svgEditor, given_param, good_langs){
 	var lang_param;
 
 	if(given_param) {
@@ -21,7 +21,6 @@ var put_locale = function(svgCanvas, given_param, good_langs){
 			if (lang_param == "")
 				return;
 		}
-		lang_param = String(lang_param);
 		
 		// Set to English if language is not in list of good langs
 		if($.inArray(lang_param, good_langs) == -1) {
@@ -36,7 +35,7 @@ var put_locale = function(svgCanvas, given_param, good_langs){
 	
 	var processFile = function(data){
 		var LangData = eval(data), js_strings;
-		var more = svgCanvas.runExtensions("addLangData", lang_param, true);
+		var more = svgEditor.canvas.runExtensions("addLangData", lang_param, true);
 		$.each(more, function(i, m) {
 			if(m.data) {
 				LangData = $.merge(LangData, m.data);
@@ -61,7 +60,7 @@ var put_locale = function(svgCanvas, given_param, good_langs){
 				js_strings = data.js_strings;
 			}
 		});
-		svgCanvas.setLang(lang_param, js_strings);
+		svgEditor.setLang(lang_param, js_strings);
 	}
 	
 	$.ajax({
