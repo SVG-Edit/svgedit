@@ -3899,7 +3899,10 @@ function BatchCommand(text) {
 			
 			if(update) {
 				var prev = seg.prev;
-				if(!prev) return segLine;
+				if(!prev) {
+					segLine.setAttribute("display", "none");
+					return segLine;
+				}
 				
 				var pt = getGripPt(prev);
 				// Set start point
@@ -5096,6 +5099,7 @@ function BatchCommand(text) {
 				}
 				else if (current_mode == "pathedit") {
 					this.clear();
+					this.toSelectMode();
 				}
 			},
 			getNodePoint: function() {
@@ -5143,8 +5147,64 @@ function BatchCommand(text) {
 					path.deleteSeg(pt);
 				}
 				
+				// Cleanup
+				var cleanup = function() {
+					var segList = path.elem.pathSegList;
+					var len = segList.numberOfItems;
+					
+					var remItems = function(pos, count) {
+						while(count--) {
+							segList.removeItem(pos);
+						}
+					}
+
+					if(len <= 1) return true;
+					
+					while(len--) {
+						var item = segList.getItem(len);
+						if(item.pathSegType === 1) {
+							var prev = segList.getItem(len-1);
+							var nprev = segList.getItem(len-2);
+							if(prev.pathSegType === 2) {
+								remItems(len-1, 2);
+								cleanup();
+								break;
+							} else if(nprev.pathSegType === 2) {
+								remItems(len-2, 3);
+								cleanup();
+								break;
+							}
+
+						} else if(item.pathSegType === 2) {
+							if(len > 0) {
+								var prev_type = segList.getItem(len-1).pathSegType;
+								// Path has M M  
+								if(prev_type === 2) {
+									remItems(len-1, 1);
+									cleanup();
+									break;
+								// Entire path ends with Z M 
+								} else if(prev_type === 1 && segList.numberOfItems-1 === len) {
+									remItems(len, 1);
+									cleanup();
+									break;
+								}
+							}
+						}
+					}	
+					return false;
+				}
+				
+				cleanup();
+				
+				// Completely delete a path with 1 or 0 segments
+				if(path.elem.pathSegList.numberOfItems <= 1) {
+					pathActions.toSelectMode(path.elem);
+					canvas.deleteSelectedElements();
+					return;
+				}
+				
 				path.init();
-				var sel_pt = sel_pts[0]-1 > 0 ? sel_pts[0]-1 : 1;
 				
 				path.clearSelection();
 				
@@ -6375,6 +6435,10 @@ function BatchCommand(text) {
 	this.linkControlPoints = function(linkPoints) {
 		pathActions.linkControlPoints(linkPoints);
 	}
+
+	this.getContentElem = function() { return svgcontent; };
+	this.getRootElem = function() { return svgroot; };
+	this.getSelectedElems = function() { return selectedElements; };
 
 	this.getResolution = function() {
 // 		var vb = svgcontent.getAttribute("viewBox").split(' ');
