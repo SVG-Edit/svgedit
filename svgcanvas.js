@@ -60,7 +60,7 @@ if(window.opera) {
 				
 				} else if(typeof key === "object") {
 					// Setting attributes form object
-					for(v in key) {
+					for(var v in key) {
 						elem.setAttribute(v, key[v]);
 					}
 				// Getting attribute
@@ -170,7 +170,8 @@ var isOpera = !!window.opera,
 	},
 	
 	curConfig = {
-		show_outside_canvas: true
+		show_outside_canvas: true,
+		dimensions: [640, 480]
 	},
 	
 	toXml = function(str) {
@@ -672,10 +673,11 @@ function BatchCommand(text) {
 			if($("#canvasBackground").length) return;
 
 			var canvasbg = svgdoc.createElementNS(svgns, "svg");
+			var dims = curConfig.dimensions;
 			assignAttributes(canvasbg, {
 				'id':'canvasBackground',
-				'width': 640,
-				'height': 480,
+				'width': dims[0],
+				'height': dims[1],
 				'x': 0,
 				'y': 0,
 				'overflow': 'visible',
@@ -935,8 +937,9 @@ function BatchCommand(text) {
 		mathns = "http://www.w3.org/1998/Math/MathML",
 		idprefix = "svg_",
 		svgdoc  = container.ownerDocument,
+		dimensions = curConfig.dimensions,
 		svgroot = svgdoc.importNode(Utils.text2xml('<svg id="svgroot" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
-						'width="640" height="480" x="640" y="480" overflow="visible">' +
+						'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
 						'<defs>' +
 							'<filter id="canvashadow" filterUnits="objectBoundingBox">' +
 								'<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>'+
@@ -981,10 +984,10 @@ function BatchCommand(text) {
 	// Produce a Namespace-aware version of svgWhitelist
 	var svgWhiteListNS = {};
     $.each(svgWhiteList, function(elt,atts){
-		attNS = {};
+		var attNS = {};
 		$.each(atts, function(i, att){
 			if (att.indexOf(':') != -1) {
-				v=att.split(':');
+				var v = att.split(':');
 				attNS[v[1]] = nsRevMap[v[0]];
 			} else {
 				attNS[att] = att == 'xmlns' ? xmlnsns : null;
@@ -996,10 +999,10 @@ function BatchCommand(text) {
 	var svgcontent = svgdoc.createElementNS(svgns, "svg");
 	$(svgcontent).attr({
 		id: 'svgcontent',
-		width: 640,
-		height: 480,
-		x: 640,
-		y: 480,
+		width: dimensions[0],
+		height: dimensions[1],
+		x: dimensions[0],
+		y: dimensions[1],
 		overflow: curConfig.show_outside_canvas?'visible':'hidden',
 		xmlns: svgns,
 		"xmlns:se": se_ns,
@@ -1200,15 +1203,15 @@ function BatchCommand(text) {
 		current_resize_mode = "none",
 		all_properties = {
 			shape: {
-				fill: "#FF0000",
+				fill: "#" + curConfig.initFill.color,
 				fill_paint: null,
-				fill_opacity: 1,
-				stroke: "#000000",
+				fill_opacity: curConfig.initFill.opacity,
+				stroke: "#" + curConfig.initStroke.color,
 				stroke_paint: null,
-				stroke_opacity: 1,
-				stroke_width: 5,
+				stroke_opacity: curConfig.initStroke.opacity,
+				stroke_width: curConfig.initStroke.width,
 				stroke_style: 'none',
-				opacity: 1
+				opacity: curConfig.initOpacity
 			}
 		};
 	
