@@ -674,7 +674,7 @@ span.zoom_tool {
 }
 
 #svg_editor #tools_bottom_2 {
-	width: 204px;
+	width: 215px;
 	position: relative;
 	float: left;
 }
@@ -706,6 +706,7 @@ span.zoom_tool {
 	-moz-border-radius-bottomleft: 4px;
 	-webkit-border-top-left-radius: 4px;
 	-webkit-border-bottom-left-radius: 4px;
+	padding-right: 0;
 }
 
 .color_tool > *:last-child {

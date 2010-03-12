@@ -28,11 +28,22 @@
 			curPrefs = {},
 			
 			// Note: Difference between Prefs and Config is that Prefs can be
-			// changed by the user and are stored in the browser, config can not
+			// changed in the UI and are stored in the browser, config can not
 			
 			curConfig = {
-				canvas_expansion: 3
-			}
+				canvas_expansion: 3,
+				dimensions: [640,480],
+				initFill: {
+					color: 'FF0000',  // solid red
+					opacity: 1
+				},
+				initStroke: {
+					width: 1,
+					color: '000000',  // solid black
+					opacity: 1
+				},
+				initOpacity: 1
+			},
 			uiStrings = {
 			'invalidAttrValGiven':'Invalid value given',
 			'noContentToFitTo':'No content to fit to',
@@ -98,13 +109,12 @@
 		
 		Editor.setConfig = function(opts) {
 			$.each(opts, function(key, val) {
-				// Only allow prefs defined in defaultPrefs or curConfig
+				// Only allow prefs defined in defaultPrefs
 				if(key in defaultPrefs) {
 					$.pref(key, val);
-				} else {
-					curConfig[key] = val;
 				}
 			});
+			$.extend(true, curConfig, opts);
 		}
 		
 		// Extension mechanisms must call setCustomHandlers with two functions: opts.open and opts.save
@@ -131,6 +141,37 @@
 		}
 
 		Editor.init = function() {
+
+			(function() {
+				// Load config/data from URL if given
+				var urldata = $.deparam.querystring();
+				if(!$.isEmptyObject(urldata)) {
+					if(urldata.dimensions) {
+						urldata.dimensions = urldata.dimensions.split(',');
+					}
+					
+					if(urldata.bkgd_color) {
+						urldata.bkgd_color = '#' + urldata.bkgd_color;
+					}
+					
+					svgEditor.setConfig(urldata);
+					
+					var src = urldata.source;
+
+					if(src) {
+						if(src.indexOf("data:") === 0) {
+							// plusses get replaced by spaces, so re-insert
+							src = src.replace(/ /g, "+");
+							Editor.loadFromDataURI(src);
+						} else {
+							Editor.loadFromString(src);
+						}
+					} else if(urldata.url) {
+						svgEditor.loadFromURL(urldata.url);
+					}
+				}
+			})();
+
 			Editor.canvas = svgCanvas = new $.SvgCanvas(document.getElementById("svgcanvas"), curConfig);
 			
 			var palette = ["#000000","#202020","#404040","#606060","#808080","#a0a0a0","#c0c0c0","#e0e0e0","#ffffff","#800000","#ff0000","#808000","#ffff00","#008000","#00ff00","#008080","#00ffff","#000080","#0000ff","#800080","#ff00ff","#2b0000","#550000","#800000","#aa0000","#d40000","#ff0000","#ff2a2a","#ff5555","#ff8080","#ffaaaa","#ffd5d5","#280b0b","#501616","#782121","#a02c2c","#c83737","#d35f5f","#de8787","#e9afaf","#f4d7d7","#241c1c","#483737","#6c5353","#916f6f","#ac9393","#c8b7b7","#e3dbdb","#2b1100","#552200","#803300","#aa4400","#d45500","#ff6600","#ff7f2a","#ff9955","#ffb380","#ffccaa","#ffe6d5","#28170b","#502d16","#784421","#a05a2c","#c87137","#d38d5f","#deaa87","#e9c6af","#f4e3d7","#241f1c","#483e37","#6c5d53","#917c6f","#ac9d93","#c8beb7","#e3dedb","#2b2200","#554400","#806600","#aa8800","#d4aa00","#ffcc00","#ffd42a","#ffdd55","#ffe680","#ffeeaa","#fff6d5","#28220b","#504416","#786721","#a0892c","#c8ab37","#d3bc5f","#decd87","#e9ddaf","#f4eed7","#24221c","#484537","#6c6753","#918a6f","#aca793","#c8c4b7","#e3e2db","#222b00","#445500","#668000","#88aa00","#aad400","#ccff00","#d4ff2a","#ddff55","#e5ff80","#eeffaa","#f6ffd5","#22280b","#445016","#677821","#89a02c","#abc837","#bcd35f","#cdde87","#dde9af","#eef4d7","#22241c","#454837","#676c53","#8a916f","#a7ac93","#c4c8b7","#e2e3db","#112b00","#225500","#338000","#44aa00","#55d400","#66ff00","#7fff2a","#99ff55","#b3ff80","#ccffaa","#e5ffd5","#17280b","#2d5016","#447821","#5aa02c","#71c837","#8dd35f","#aade87","#c6e9af","#e3f4d7","#1f241c","#3e4837","#5d6c53","#7c916f","#9dac93","#bec8b7","#dee3db","#002b00","#005500","#008000","#00aa00","#00d400","#00ff00","#2aff2a","#55ff55","#80ff80","#aaffaa","#d5ffd5","#0b280b","#165016","#217821","#2ca02c","#37c837","#5fd35f","#87de87","#afe9af","#d7f4d7","#1c241c","#374837","#536c53","#6f916f","#93ac93","#b7c8b7","#dbe3db","#002b11","#005522","#008033","#00aa44","#00d455","#00ff66","#2aff80","#55ff99","#80ffb3","#aaffcc","#d5ffe6","#0b2817","#16502d","#217844","#2ca05a","#37c871","#5fd38d","#87deaa","#afe9c6","#d7f4e3","#1c241f","#37483e","#536c5d","#6f917c","#93ac9d","#b7c8be","#dbe3de","#002b22","#005544","#008066","#00aa88","#00d4aa","#00ffcc","#2affd5","#55ffdd","#80ffe6","#aaffee","#d5fff6","#0b2822","#165044","#217867","#2ca089","#37c8ab","#5fd3bc","#87decd","#afe9dd","#d7f4ee","#1c2422","#374845","#536c67","#6f918a","#93aca7","#b7c8c4","#dbe3e2","#00222b","#004455","#006680","#0088aa","#00aad4","#00ccff","#2ad4ff","#55ddff","#80e5ff","#aaeeff","#d5f6ff","#0b2228","#164450","#216778","#2c89a0","#37abc8","#5fbcd3","#87cdde","#afdde9","#d7eef4","#1c2224","#374548","#53676c","#6f8a91","#93a7ac","#b7c4c8","#dbe2e3","#00112b","#002255","#003380","#0044aa","#0055d4","#0066ff","#2a7fff","#5599ff","#80b3ff","#aaccff","#d5e5ff","#0b1728","#162d50","#214478","#2c5aa0","#3771c8","#5f8dd3","#87aade","#afc6e9","#d7e3f4","#1c1f24","#373e48","#535d6c","#6f7c91","#939dac","#b7bec8","#dbdee3","#00002b","#000055","#000080","#0000aa","#0000d4","#0000ff","#2a2aff","#5555ff","#8080ff","#aaaaff","#d5d5ff","#0b0b28","#161650","#212178","#2c2ca0","#3737c8","#5f5fd3","#8787de","#afafe9","#d7d7f4","#1c1c24","#373748","#53536c","#6f6f91","#9393ac","#b7b7c8","#dbdbe3","#11002b","#220055","#330080","#4400aa","#5500d4","#6600ff","#7f2aff","#9955ff","#b380ff","#ccaaff","#e5d5ff","#170b28","#2d1650","#442178","#5a2ca0","#7137c8","#8d5fd3","#aa87de","#c6afe9","#e3d7f4","#1f1c24","#3e3748","#5d536c","#7c6f91","#9d93ac","#beb7c8","#dedbe3","#22002b","#440055","#660080","#8800aa","#aa00d4","#cc00ff","#d42aff","#dd55ff","#e580ff","#eeaaff","#f6d5ff","#220b28","#441650","#672178","#892ca0","#ab37c8","#bc5fd3","#cd87de","#ddafe9","#eed7f4","#221c24","#453748","#67536c","#8a6f91","#a793ac","#c4b7c8","#e2dbe3","#2b0022","#550044","#800066","#aa0088","#d400aa","#ff00cc","#ff2ad4","#ff55dd","#ff80e5","#ffaaee","#ffd5f6","#280b22","#501644","#782167","#a02c89","#c837ab","#d35fbc","#de87cd","#e9afdd","#f4d7ee","#241c22","#483745","#6c5367","#916f8a","#ac93a7","#c8b7c4","#e3dbe2","#2b0011","#550022","#800033","#aa0044","#d40055","#ff0066","#ff2a7f","#ff5599","#ff80b2","#ffaacc","#ffd5e5","#280b17","#50162d","#782144","#a02c5a","#c83771","#d35f8d","#de87aa","#e9afc6","#f4d7e3","#241c1f","#48373e","#6c535d","#916f7c","#ac939d","#c8b7be","#e3dbde"],
@@ -219,8 +260,8 @@
 			var editingsource = false;
 			var docprops = false;
 			
-			var fillPaint = new $.jGraduate.Paint({solidColor: "FF0000"}); // solid red
-			var strokePaint = new $.jGraduate.Paint({solidColor: "000000"}); // solid black
+			var fillPaint = new $.jGraduate.Paint({solidColor: curConfig.initFill.color});
+			var strokePaint = new $.jGraduate.Paint({solidColor: curConfig.initStroke.color});
 		
 			var saveHandler = function(window,svg) {
 				// by default, we add the XML prolog back, systems integrating SVG-edit (wikis, CMSs) 
@@ -747,6 +788,18 @@
 					svgCanvas.setStrokeColor(strokeColor, true);
 					svgCanvas.setStrokeOpacity(strokeOpacity, true);
 		
+					// update the rect inside #fill_color
+					$("#stroke_color rect").attr({
+						fill: strokeColor,
+						opacity: strokeOpacity
+					});
+
+					// update the rect inside #fill_color
+					$("#fill_color rect").attr({
+						fill: fillColor,
+						opacity: fillOpacity
+					});
+		
 					fillOpacity *= 100;
 					strokeOpacity *= 100;
 					
@@ -760,16 +813,11 @@
 					if (fillColor == "none") {
 						fillOpacity = "N/A";
 					}
-					document.getElementById("gradbox_fill").parentNode.firstChild.setAttribute("fill", fillColor);
 					if (strokeColor == null || strokeColor == "" || strokeColor == "none") {
 						strokeColor = "none";
 						strokeOpacity = "N/A";
 					}
 					
-					// update the rect inside #fill_color
-					document.getElementById("gradbox_stroke").parentNode.firstChild.setAttribute("fill", strokeColor);
-					$('#fill_opacity').html(fillOpacity);
-					$('#stroke_opacity').html(strokeOpacity);
 					$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1);
 					$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
 				}
@@ -1125,6 +1173,7 @@
 					paint = new $.jGraduate.Paint({alpha: 100, solidColor: color.substr(1)});
 				}
 				rectbox.setAttribute("fill", color);
+				rectbox.setAttribute("opacity", 1);
 				
 				if (evt.shiftKey) {
 					strokePaint = paint;
@@ -1133,7 +1182,6 @@
 					}
 					if (color != 'none' && svgCanvas.getStrokeOpacity() != 1) {
 						svgCanvas.setStrokeOpacity(1.0);
-						$("#stroke_opacity").html("100 %");
 					}
 				} else {
 					fillPaint = paint;
@@ -1142,7 +1190,6 @@
 					}
 					if (color != 'none' && svgCanvas.getFillOpacity() != 1) {
 						svgCanvas.setFillOpacity(1.0);
-						$("#fill_opacity").html("100 %");
 					}
 				}
 				updateToolButtonState();
@@ -1499,11 +1546,12 @@
 			};
 			
 			var clickClear = function(){
+				var dims = curConfig.dimensions;
 				$.confirm(uiStrings.QwantToClear, function(ok) {
 					if(!ok) return;
 					setSelectMode();
 					svgCanvas.clear();
-					svgCanvas.setResolution(640, 480);
+					svgCanvas.setResolution(dims[0], dims[1]);
 					updateCanvas(true);
 					zoomImage();
 					populateLayers();
@@ -2030,7 +2078,7 @@
 			//       background-image to none.png (otherwise partially transparent gradients look weird)	
 			var colorPicker = function(elem) {
 				var picker = elem.attr('id') == 'stroke_color' ? 'stroke' : 'fill';
-				var opacity = (picker == 'stroke' ? $('#stroke_opacity') : $('#fill_opacity'));
+// 				var opacity = (picker == 'stroke' ? $('#stroke_opacity') : $('#fill_opacity'));
 				var paint = (picker == 'stroke' ? strokePaint : fillPaint);
 				var title = (picker == 'stroke' ? 'Pick a Stroke Paint and Opacity' : 'Pick a Fill Paint and Opacity');
 				var was_none = false;
@@ -2056,11 +2104,12 @@
 							svgCanvas.fixOperaXML(newgrad, paint[paint.type])
 							newgrad.id = "gradbox_"+picker;
 							rectbox.setAttribute("fill", "url(#gradbox_" + picker + ")");
+							rectbox.setAttribute("opacity", paint.alpha/100);
 						}
 						else {
 							rectbox.setAttribute("fill", paint.solidColor != "none" ? "#" + paint.solidColor : "none");
+							rectbox.setAttribute("opacity", paint.alpha/100);
 						}
-						opacity.html(paint.alpha + " %");
 		
 						if (picker == 'stroke') {
 							svgCanvas.setStrokePaint(paint, true);
@@ -2138,7 +2187,8 @@
 		
 			// set up gradients to be used for the buttons
 			var svgdocbox = new DOMParser().parseFromString(
-				'<svg xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#FF0000"/>\
+				'<svg xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%"\
+				fill="#' + curConfig.initFill.color + '" opacity="' + curConfig.initFill.opacity + '"/>\
 				<linearGradient id="gradbox_">\
 						<stop stop-color="#000" offset="0.0"/>\
 						<stop stop-color="#FF0000" offset="1.0"/>\
@@ -2151,8 +2201,14 @@
 			
 			boxgrad.id = 'gradbox_stroke';	
 			svgdocbox.documentElement.setAttribute('width',16.5);
-			$(svgdocbox.documentElement.firstChild).attr('fill', '#000000');
 			$('#stroke_color').append( document.importNode(svgdocbox.documentElement,true) );
+			$('#stroke_color rect').attr({
+				'fill': '#' + curConfig.initStroke.color,
+				'opacity': curConfig.initStroke.opacity
+			});
+			
+			$('#stroke_width').val(curConfig.initStroke.width);
+			$('#group_opacity').val(curConfig.initOpacity * 100);
 			
 			// Use this SVG elem to test vectorEffect support
 			var test_el = svgdocbox.documentElement.firstChild;
@@ -3120,19 +3176,6 @@
 			});
 			
 			svgEditor.runCallbacks();
-
-			// Load source if given
-			var loc = document.location.href;
-			if(loc.indexOf('?source=') != -1) {
-				var pre = '?source=';
-				var src = loc.substring(loc.indexOf(pre) + pre.length);
-				svgEditor.loadFromDataURI(src);
-			}
-			else if(loc.indexOf('?url=') != -1) {
-				var pre = '?url=';
-				var url = loc.substring(loc.indexOf(pre) + pre.length);
-				svgEditor.loadFromURL(url);
-			}
 		}
 	});
 	
@@ -3140,3 +3183,19 @@
 	$(svgEditor.init);
 	
 })();
+
+// ?iconsize=s&bkgd_color=555
+
+// svgEditor.setConfig({
+// 	dimensions: [800, 600],
+// 	canvas_expansion: 5,
+// 	initStroke: {
+// 		color: '0000FF',
+// 		width: 3.5,
+// 		opacity: .5
+// 	},
+// 	initFill: {
+// 		color: '550000',
+// 		opacity: .75
+// 	}
+// })
