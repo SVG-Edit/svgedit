@@ -79,7 +79,7 @@
 			
 			if(storage) {
 				if(store) storage.setItem(key, val);
-					else return storage.getItem(key).value;
+					else if (storage.getItem(key)) return storage.getItem(key).value;
 			} else if(window.widget) {
 				if(store) widget.setPreferenceForKey(val, key);
 					else return widget.preferenceForKey(key);
@@ -126,6 +126,10 @@
 			}
 		}
 		
+		Editor.randomizeIds = function() {
+			svgCanvas.randomizeIds(arguments)
+		}
+
 		Editor.init = function() {
 			Editor.canvas = svgCanvas = new $.SvgCanvas(document.getElementById("svgcanvas"), curConfig);
 			
