@@ -8,8 +8,7 @@
  *
  */
 
-$(function() {
-	svgCanvas.addExtension("foreignObject", function(S) {
+svgEditor.addExtension("foreignObject", function(S) {
 		var svgcontent = S.svgcontent,
 			addElem = S.addSvgElementFromJson,
 			selElems,
@@ -275,5 +274,4 @@ $(function() {
 				var elem = opts.elems[0];
 			}
 		};
-	});
 });

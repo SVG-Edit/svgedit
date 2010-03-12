@@ -13,8 +13,7 @@
  	user the point on the canvas that was clicked on.
 */
  
-$(function() {
-	svgCanvas.addExtension("Hello World", function() {
+svgEditor.addExtension("Hello World", function() {
 
 		return {
 			name: "Hello World",
@@ -75,6 +74,5 @@ $(function() {
 				}
 			}
 		};
-	});
 });
 
