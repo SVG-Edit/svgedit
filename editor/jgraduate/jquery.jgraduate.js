@@ -46,6 +46,9 @@ $.jGraduate.Paint({hex: "#rrggbb", linearGradient: o}) -> throws an exception?
 
  *
  */
+ 
+(function() {
+ 
 var ns = { svg: 'http://www.w3.org/2000/svg', xlink: 'http://www.w3.org/1999/xlink' };
 if(!window.console) {
   window.console = new function() {
@@ -1083,3 +1086,4 @@ jQuery.fn.jGraduate =
 			$this.show();
 		});
 	};
+})();
