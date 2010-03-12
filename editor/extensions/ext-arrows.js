@@ -8,14 +8,13 @@
  */
 
  
-$(function() {
-	svgCanvas.addExtension("Arrows", function(S) {
+svgEditor.addExtension("Arrows", function(S) {
 		var svgcontent = S.svgcontent,
 			addElem = S.addSvgElementFromJson,
 			nonce = S.nonce,
 			randomize_ids = S.randomize_ids,
 			selElems;
-			
+
 		svgCanvas.bind('setarrownonce', setArrowNonce);
 		svgCanvas.bind('unsetsetarrownonce', unsetArrowNonce);
 			
@@ -294,5 +293,4 @@ $(function() {
 				
 			}
 		};
-	});
 });
