@@ -78,7 +78,7 @@
 				storage = false;
 			// Some FF versions throw security errors here
 			try { 
-				if(window.localStorage && onweb) {
+				if(window.localStorage) { // && onweb removed so Webkit works locally
 					storage = localStorage;
 				}
 			} catch(e) {}
@@ -90,7 +90,7 @@
 			
 			if(storage) {
 				if(store) storage.setItem(key, val);
-					else if (storage.getItem(key)) return storage.getItem(key).value;
+					else if (storage.getItem(key)) return storage.getItem(key) + ''; // Convert to string for FF (.value fails in Webkit)
 			} else if(window.widget) {
 				if(store) widget.setPreferenceForKey(val, key);
 					else return widget.preferenceForKey(key);
@@ -1024,6 +1024,9 @@
 		
 			if($.pref('bkgd_color')) {
 				setBackground($.pref('bkgd_color'), $.pref('bkgd_url'));
+			} else if($.pref('bkgd_url')) {
+				// No color set, only URL
+				setBackground(defaultPrefs.bkgd_color, $.pref('bkgd_url'));
 			}
 			
 			if($.pref('img_save')) {
