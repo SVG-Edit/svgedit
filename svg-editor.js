@@ -12,8 +12,7 @@
 
 (function() { 
 	
-	
-	if(!window.svgEditor) window.svgEditor = function() {
+	if(!window.svgEditor) window.svgEditor = function($) {
 		var svgCanvas;
 		var Editor = {};
 		var is_ready = false;
@@ -42,7 +41,11 @@
 					color: '000000',  // solid black
 					opacity: 1
 				},
-				initOpacity: 1
+				initOpacity: 1,
+				imgPath: 'images/',
+				langPath: 'locale/',
+				initTool: 'zoom',
+				wireframe: false
 			},
 			uiStrings = {
 			'invalidAttrValGiven':'Invalid value given',
@@ -67,6 +70,8 @@
 		};
 		
 		var curPrefs = {}; //$.extend({}, defaultPrefs);
+		
+		Editor.curConfig = curConfig;
 		
 		// Store and retrieve preferences
 		$.pref = function(key, val) {
@@ -141,10 +146,9 @@
 		}
 
 		Editor.init = function() {
-
 			(function() {
 				// Load config/data from URL if given
-				var urldata = $.deparam.querystring();
+				var urldata = $.deparam.querystring(true);
 				if(!$.isEmptyObject(urldata)) {
 					if(urldata.dimensions) {
 						urldata.dimensions = urldata.dimensions.split(',');
@@ -154,6 +158,10 @@
 						urldata.bkgd_color = '#' + urldata.bkgd_color;
 					}
 					
+					if(urldata.bkgd_color) {
+						urldata.bkgd_color = '#' + urldata.bkgd_color;
+					}
+
 					svgEditor.setConfig(urldata);
 					
 					var src = urldata.source;
@@ -171,6 +179,163 @@
 					}
 				}
 			})();
+			
+			$.svgIcons(curConfig.imgPath + 'svg_edit_icons.svg', {
+				w:24, h:24,
+				id_match: false,
+				no_img: true,
+				fallback_path: curConfig.imgPath,
+				fallback:{
+					'new_image':'clear.png',
+					'save':'save.png',
+					'open':'open.png',
+					'source':'source.png',
+					'docprops':'document-properties.png',
+					'wireframe':'wireframe.png',
+					
+					'undo':'undo.png',
+					'redo':'redo.png',
+					
+					'select':'select.png',
+					'select_node':'select_node.png',
+					'pencil':'fhpath.png',
+					'pen':'line.png',
+					'square':'square.png',
+					'rect':'rect.png',
+					'fh_rect':'freehand-square.png',
+					'circle':'circle.png',
+					'ellipse':'ellipse.png',
+					'fh_ellipse':'freehand-circle.png',
+					'path':'path.png',
+					'text':'text.png',
+					'image':'image.png',
+					'zoom':'zoom.png',
+					
+					'clone':'clone.png',
+					'delete':'delete.png',
+					'group':'shape_group.png',
+					'ungroup':'shape_ungroup.png',
+					'move_top':'move_top.png',
+					'move_bottom':'move_bottom.png',
+					'to_path':'to_path.png',
+					'link_controls':'link_controls.png',
+					'reorient':'reorient.png',
+					
+					'align_left':'align-left.png',
+					'align_center':'align-center',
+					'align_right':'align-right',
+					'align_top':'align-top',
+					'align_middle':'align-middle',
+					'align_bottom':'align-bottom',
+		
+					'go_up':'go-up.png',
+					'go_down':'go-down.png',
+		
+					'ok':'save.png',
+					'cancel':'cancel.png',
+					
+					'arrow_right':'flyouth.png',
+					'arrow_down':'dropdown.gif'
+				},
+				placement: {
+					'#logo':'logo',
+				
+					'#tool_clear div,#layer_new':'new_image',
+					'#tool_save div':'save',
+					'#tool_open div div':'open',
+					'#tool_import div div':'import',
+					'#tool_source':'source',
+					'#tool_docprops > div':'docprops',
+					'#tool_wireframe':'wireframe',
+					
+					'#tool_undo':'undo',
+					'#tool_redo':'redo',
+					
+					'#tool_select':'select',
+					'#tool_fhpath':'pencil',
+					'#tool_line':'pen',
+					'#tool_rect,#tools_rect_show':'rect',
+					'#tool_square':'square',
+					'#tool_fhrect':'fh_rect',
+					'#tool_ellipse,#tools_ellipse_show':'ellipse',
+					'#tool_circle':'circle',
+					'#tool_fhellipse':'fh_ellipse',
+					'#tool_path':'path',
+					'#tool_text,#layer_rename':'text',
+					'#tool_image':'image',
+					'#tool_zoom':'zoom',
+					
+					'#tool_clone,#tool_clone_multi,#tool_node_clone':'clone',
+					'#layer_delete,#tool_delete,#tool_delete_multi,#tool_node_delete':'delete',
+					'#tool_add_subpath':'add_subpath',
+					'#tool_move_top':'move_top',
+					'#tool_move_bottom':'move_bottom',
+					'#tool_topath':'to_path',
+					'#tool_node_link':'link_controls',
+					'#tool_reorient':'reorient',
+					'#tool_group':'group',
+					'#tool_ungroup':'ungroup',
+					
+					'#tool_alignleft':'align_left',
+					'#tool_aligncenter':'align_center',
+					'#tool_alignright':'align_right',
+					'#tool_aligntop':'align_top',
+					'#tool_alignmiddle':'align_middle',
+					'#tool_alignbottom':'align_bottom',
+					
+					'#url_notice':'warning',
+					
+					'#layer_up':'go_up',
+					'#layer_down':'go_down',
+					'#layerlist td.layervis':'eye',
+					
+					'#tool_source_save,#tool_docprops_save':'ok',
+					'#tool_source_cancel,#tool_docprops_cancel':'cancel',
+					
+					'.flyout_arrow_horiz':'arrow_right',
+					'.dropdown button, #main_button .dropdown':'arrow_down',
+					'#palette .palette_item:first, #fill_bg, #stroke_bg':'no_color'
+				},
+				resize: {
+					'#logo .svg_icon': 32,
+					'.flyout_arrow_horiz .svg_icon': 5,
+					'.layer_button .svg_icon, #layerlist td.layervis .svg_icon': 14,
+					'.dropdown button .svg_icon': 7,
+					'#main_button .dropdown .svg_icon': 9,
+					'.palette_item:first .svg_icon, #fill_bg .svg_icon, #stroke_bg .svg_icon': 16,
+					'.toolbar_button button .svg_icon':16
+				},
+				callback: function(icons) {
+					$('.toolbar_button button > svg, .toolbar_button button > img').each(function() {
+						$(this).parent().prepend(this);
+					});
+					
+					// Use small icons by default if not all left tools are visible
+					var tleft = $('#tools_left');
+					var min_height = tleft.offset().top + tleft.outerHeight();
+					var size = $.pref('iconsize');
+					if(size && size != 'm') {
+						svgEditor.setIconSize(size);				
+					} else if($(window).height() < min_height) {
+						// Make smaller
+						svgEditor.setIconSize('s');
+					}
+					
+					// Look for any missing flyout icons from plugins
+					$('.tools_flyout').each(function() {
+						var shower = $('#' + this.id + '_show');
+						var sel = shower.attr('data-curopt');
+						// Check if there's an icon here
+						if(!shower.children('svg, img').length) {
+							var clone = $(sel).children().clone();
+							clone[0].removeAttribute('style'); //Needed for Opera
+							shower.append(clone);
+						}
+					});
+					
+					svgEditor.runCallbacks();
+				}
+			});
 
 			Editor.canvas = svgCanvas = new $.SvgCanvas(document.getElementById("svgcanvas"), curConfig);
 			
@@ -179,7 +344,7 @@
 				isMac = false, //(navigator.platform.indexOf("Mac") != -1);
 				modKey = "", //(isMac ? "meta+" : "ctrl+");
 				path = svgCanvas.pathActions,
-				default_img_url = "images/logo.png",
+				default_img_url = curConfig.imgPath + "logo.png",
 				workarea = $("#workarea");
 
 			// This sets up alternative dialog boxes. They mostly work the same way as
@@ -424,6 +589,7 @@
 							}
 							
 							$(this).mouseup(func);
+							
 							if(opts.key) {
 								$(document).bind('keydown', {combi: opts.key+'', disableInInput:true}, func);
 							}
@@ -1788,7 +1954,7 @@
 				// set language
 				var lang = $('#lang_select').val();
 				if(lang != curPrefs.lang) {
-					put_locale(Editor, lang);
+					Editor.putLocale(lang);
 				}
 				
 				// set icon size
@@ -2773,7 +2939,31 @@
 			}();
 			
 			Actions.setAll();
-		
+			
+			// Select given tool
+			Editor.ready(function() {
+				var itool = curConfig.initTool,
+					container = $("#tools_left, #svg_editor .tools_flyout"),
+					pre_tool = container.find("#tool_" + itool),
+					reg_tool = container.find("#" + itool);
+				if(pre_tool.length) {
+					tool = pre_tool;
+				} else if(reg_tool.length){
+					tool = reg_tool;
+				} else {
+					tool = $("#tool_select");
+				}
+				tool.click().mouseup();
+				
+				if(curConfig.wireframe) {
+					$('#tool_wireframe').click();
+				}
+				
+				if(curConfig.showlayers) {
+					toggleSidePanel();
+				}
+			});
+			
 			$('#rect_rx').SpinButton({ min: 0, max: 1000, step: 1, callback: changeRectRadius });
 			$('#stroke_width').SpinButton({ min: 0, max: 99, step: 1, smallStep: 0.1, callback: changeStrokeWidth });
 			$('#angle').SpinButton({ min: -180, max: 180, step: 5, callback: changeRotationAngle });
@@ -2890,7 +3080,7 @@
 			});
 			
 // 			var lang = ('lang' in curPrefs) ? curPrefs.lang : null;
-			put_locale(Editor, null, good_langs);
+			Editor.putLocale(null, good_langs);
 			
 			try{
 				json_encode = function(obj){
@@ -3020,167 +3210,13 @@
 				svgCanvas.addExtension.apply(this, args);
 			});
 		};
+
 		
+		
+		
+
 		return Editor;
-	}();
-	
-	// This process starts before document.ready so the icons appear ASAP
-	$.svgIcons('images/svg_edit_icons.svg', {
-		w:24, h:24,
-		id_match: false,
-		no_img: true,
-		fallback_path:'images/',
-		fallback:{
-			'new_image':'clear.png',
-			'save':'save.png',
-			'open':'open.png',
-			'source':'source.png',
-			'docprops':'document-properties.png',
-			'wireframe':'wireframe.png',
-			
-			'undo':'undo.png',
-			'redo':'redo.png',
-			
-			'select':'select.png',
-			'select_node':'select_node.png',
-			'pencil':'fhpath.png',
-			'pen':'line.png',
-			'square':'square.png',
-			'rect':'rect.png',
-			'fh_rect':'freehand-square.png',
-			'circle':'circle.png',
-			'ellipse':'ellipse.png',
-			'fh_ellipse':'freehand-circle.png',
-			'path':'path.png',
-			'text':'text.png',
-			'image':'image.png',
-			'zoom':'zoom.png',
-			
-			'clone':'clone.png',
-			'delete':'delete.png',
-			'group':'shape_group.png',
-			'ungroup':'shape_ungroup.png',
-			'move_top':'move_top.png',
-			'move_bottom':'move_bottom.png',
-			'to_path':'to_path.png',
-			'link_controls':'link_controls.png',
-			'reorient':'reorient.png',
-			
-			'align_left':'align-left.png',
-			'align_center':'align-center',
-			'align_right':'align-right',
-			'align_top':'align-top',
-			'align_middle':'align-middle',
-			'align_bottom':'align-bottom',
-
-			'go_up':'go-up.png',
-			'go_down':'go-down.png',
-
-			'ok':'save.png',
-			'cancel':'cancel.png',
-			
-			'arrow_right':'flyouth.png',
-			'arrow_down':'dropdown.gif'
-		},
-		placement: {
-			'#logo':'logo',
-		
-			'#tool_clear div,#layer_new':'new_image',
-			'#tool_save div':'save',
-			'#tool_open div div':'open',
-			'#tool_import div div':'import',
-			'#tool_source':'source',
-			'#tool_docprops > div':'docprops',
-			'#tool_wireframe':'wireframe',
-			
-			'#tool_undo':'undo',
-			'#tool_redo':'redo',
-			
-			'#tool_select':'select',
-			'#tool_fhpath':'pencil',
-			'#tool_line':'pen',
-			'#tool_rect,#tools_rect_show':'rect',
-			'#tool_square':'square',
-			'#tool_fhrect':'fh_rect',
-			'#tool_ellipse,#tools_ellipse_show':'ellipse',
-			'#tool_circle':'circle',
-			'#tool_fhellipse':'fh_ellipse',
-			'#tool_path':'path',
-			'#tool_text,#layer_rename':'text',
-			'#tool_image':'image',
-			'#tool_zoom':'zoom',
-			
-			'#tool_clone,#tool_clone_multi,#tool_node_clone':'clone',
-			'#layer_delete,#tool_delete,#tool_delete_multi,#tool_node_delete':'delete',
-			'#tool_add_subpath':'add_subpath',
-			'#tool_move_top':'move_top',
-			'#tool_move_bottom':'move_bottom',
-			'#tool_topath':'to_path',
-			'#tool_node_link':'link_controls',
-			'#tool_reorient':'reorient',
-			'#tool_group':'group',
-			'#tool_ungroup':'ungroup',
-			
-			'#tool_alignleft':'align_left',
-			'#tool_aligncenter':'align_center',
-			'#tool_alignright':'align_right',
-			'#tool_aligntop':'align_top',
-			'#tool_alignmiddle':'align_middle',
-			'#tool_alignbottom':'align_bottom',
-			
-			'#url_notice':'warning',
-			
-			'#layer_up':'go_up',
-			'#layer_down':'go_down',
-			'#layerlist td.layervis':'eye',
-			
-			'#tool_source_save,#tool_docprops_save':'ok',
-			'#tool_source_cancel,#tool_docprops_cancel':'cancel',
-			
-			'.flyout_arrow_horiz':'arrow_right',
-			'.dropdown button, #main_button .dropdown':'arrow_down',
-			'#palette .palette_item:first, #fill_bg, #stroke_bg':'no_color'
-		},
-		resize: {
-			'#logo .svg_icon': 32,
-			'.flyout_arrow_horiz .svg_icon': 5,
-			'.layer_button .svg_icon, #layerlist td.layervis .svg_icon': 14,
-			'.dropdown button .svg_icon': 7,
-			'#main_button .dropdown .svg_icon': 9,
-			'.palette_item:first .svg_icon, #fill_bg .svg_icon, #stroke_bg .svg_icon': 16,
-			'.toolbar_button button .svg_icon':16
-		},
-		callback: function(icons) {
-			$('.toolbar_button button > svg, .toolbar_button button > img').each(function() {
-				$(this).parent().prepend(this);
-			});
-			
-			// Use small icons by default if not all left tools are visible
-			var tleft = $('#tools_left');
-			var min_height = tleft.offset().top + tleft.outerHeight();
-			var size = $.pref('iconsize');
-			if(size && size != 'm') {
-				svgEditor.setIconSize(size);				
-			} else if($(window).height() < min_height) {
-				// Make smaller
-				svgEditor.setIconSize('s');
-			}
-			
-			// Look for any missing flyout icons from plugins
-			$('.tools_flyout').each(function() {
-				var shower = $('#' + this.id + '_show');
-				var sel = shower.attr('data-curopt');
-				// Check if there's an icon here
-				if(!shower.children('svg, img').length) {
-					var clone = $(sel).children().clone();
-					clone[0].removeAttribute('style'); //Needed for Opera
-					shower.append(clone);
-				}
-			});
-			
-			svgEditor.runCallbacks();
-		}
-	});
+	}(jQuery);
 	
 	// Run init once DOM is loaded
 	$(svgEditor.init);
@@ -3189,16 +3225,17 @@
 
 // ?iconsize=s&bkgd_color=555
 
-// svgEditor.setConfig({
-// 	dimensions: [800, 600],
-// 	canvas_expansion: 5,
-// 	initStroke: {
-// 		color: '0000FF',
-// 		width: 3.5,
-// 		opacity: .5
-// 	},
-// 	initFill: {
-// 		color: '550000',
-// 		opacity: .75
-// 	}
-// })
+svgEditor.setConfig({
+// 	imgPath: 'foo',
+	dimensions: [800, 600],
+	canvas_expansion: 5,
+	initStroke: {
+		color: '0000FF',
+		width: 3.5,
+		opacity: .5
+	},
+	initFill: {
+		color: '550000',
+		opacity: .75
+	}
+})
