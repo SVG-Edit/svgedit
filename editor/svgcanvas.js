@@ -450,6 +450,7 @@ function BatchCommand(text) {
 								"stroke-width": "1"
 							}
 						}) );
+						
 		this.rotateGrip = this.selectorGroup.appendChild( addSvgElementFromJson({
 							"element": "circle",
 							"attr": {
@@ -458,7 +459,7 @@ function BatchCommand(text) {
 								"r": 4,
 								"stroke": "#22C",
 								"stroke-width": 2,
-								"style": "cursor:url(images/rotate.png) 12 12, auto;"
+								"style": "cursor:url(" + curConfig.imgPath + "rotate.png) 12 12, auto;"
 							}
 						}) );
 		
@@ -1192,7 +1193,7 @@ function BatchCommand(text) {
 	// the first layer is the one at the bottom of the rendering
 	var all_layers = [],
 		encodableImages = {},
-		last_good_img_url = 'images/logo.png',
+		last_good_img_url = curConfig.imgPath + 'logo.png',
 		// pointer to the current layer <g>
 		current_layer = null,
 		save_options = {round_digits: 5},
