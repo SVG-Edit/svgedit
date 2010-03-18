@@ -37,14 +37,14 @@
 					opacity: 1
 				},
 				initStroke: {
-					width: 1,
+					width: 5,
 					color: '000000',  // solid black
 					opacity: 1
 				},
 				initOpacity: 1,
 				imgPath: 'images/',
 				langPath: 'locale/',
-				initTool: 'zoom',
+				initTool: 'select',
 				wireframe: false
 			},
 			uiStrings = {
