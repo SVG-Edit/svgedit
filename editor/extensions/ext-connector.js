@@ -14,6 +14,7 @@ svgEditor.addExtension("Connector", function(S) {
 		getElem = S.getElem,
 		addElem = S.addSvgElementFromJson,
 		selManager = S.selectorManager,
+		curConfig = svgEditor.curConfig,
 		started = false,
 		start_x,
 		start_y,
@@ -307,10 +308,10 @@ svgEditor.addExtension("Connector", function(S) {
 						"attr": {
 							"id": getNextId(),
 							"points": (x+','+y+' '+x+','+y+' '+start_x+','+start_y),
-							"stroke": '#000',
-							"stroke-width": 3,
+							"stroke": '#' + curConfig.initStroke.color,
+							"stroke-width": (!start_elem.stroke_width || start_elem.stroke_width == 0) ? curConfig.initStroke.width : start_elem.stroke_width,
 							"fill": "none",
-							"opacity": .5,
+							"opacity": curConfig.initStroke.opacity,
 							"style": "pointer-events:none"
 						}
 					});
