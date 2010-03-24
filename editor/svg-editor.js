@@ -44,6 +44,8 @@
 				initOpacity: 1,
 				imgPath: 'images/',
 				langPath: 'locale/',
+				extPath: 'extensions/',
+				extensions: ['ext-arrows.js', 'ext-connector.js'],
 				initTool: 'select',
 				wireframe: false
 			},
@@ -120,6 +122,10 @@
 				}
 			});
 			$.extend(true, curConfig, opts);
+			if(opts.extensions) {
+				curConfig.extensions = opts.extensions;
+			}
+
 		}
 		
 		// Extension mechanisms must call setCustomHandlers with two functions: opts.open and opts.save
@@ -154,6 +160,10 @@
 						urldata.dimensions = urldata.dimensions.split(',');
 					}
 					
+					if(urldata.extensions) {
+						urldata.extensions = urldata.extensions.split(',');
+					}
+					
 					if(urldata.bkgd_color) {
 						urldata.bkgd_color = '#' + urldata.bkgd_color;
 					}
@@ -179,6 +189,11 @@
 					}
 				}
 			})();
+			
+			// Load extensions
+			$.each(curConfig.extensions, function() {
+				$.getScript(curConfig.extPath + this);
+			});
 			
 			$.svgIcons(curConfig.imgPath + 'svg_edit_icons.svg', {
 				w:24, h:24,
@@ -268,6 +283,7 @@
 					'#tool_clone,#tool_clone_multi,#tool_node_clone':'clone',
 					'#layer_delete,#tool_delete,#tool_delete_multi,#tool_node_delete':'delete',
 					'#tool_add_subpath':'add_subpath',
+					'#tool_openclose_path':'open_path',
 					'#tool_move_top':'move_top',
 					'#tool_move_bottom':'move_bottom',
 					'#tool_topath':'to_path',
@@ -883,12 +899,9 @@
 						fallback: fallback_obj,
 						placement: placement_obj,
 						callback: function(icons) {
-							// Bad hack to make the icon match the current size
-							// TODO: Write better hack!
-							var old = curPrefs.iconsize;
-							if(curPrefs.iconsize != 'm') {
-								setIconSize('m');
-								setIconSize(old);
+							// Non-ideal hack to make the icon match the current size
+							if(curPrefs.iconsize && curPrefs.iconsize != 'm') {
+								setIconSize(curPrefs.iconsize, true);
 							}
 							runCallback();
 						}
@@ -1061,6 +1074,12 @@
 						var point = path.getNodePoint();
 						$('#tool_add_subpath').removeClass('push_button_pressed').addClass('tool_button');
 						$('#tool_node_delete').toggleClass('disabled', !path.canDeleteNodes);
+						
+						// Show open/close button based on selected point
+						$('#tool_openclose_path')
+							.empty()
+							.append($.getSvgIcon(path.closed_subpath ? 'open_path' : 'close_path'));
+						
 						if(point) {
 							var seg_type = $('#seg_type');
 							$('#path_node_x').val(point.x);
@@ -1696,6 +1715,9 @@
 				
 			};
 		
+			var opencloseSubPath = function() {
+				path.opencloseSubPath();
+			}	
 			
 			var selectNext = function() {
 				svgCanvas.cycleElement(1);
@@ -1973,8 +1995,8 @@
 				svgCanvas.setBackground(color, url);
 			}
 		
-			var setIconSize = Editor.setIconSize = function(size) {
-				if(size == curPrefs.size) return;
+			var setIconSize = Editor.setIconSize = function(size, force) {
+				if(size == curPrefs.size && !force) return;
 				$.pref('iconsize', size);
 				$('#iconsize').val(size);
 				var icon_sizes = { s:16, m:24, l:32, xl:48 };
@@ -1988,7 +2010,7 @@
 				});
 				
 				$.resizeSvgIcons({
-					'.flyout_arrow_horiz svg, .flyout_arrow_horiz img': size_num / 5,
+					'.flyout_arrow_horiz > svg, .flyout_arrow_horiz > img': size_num / 5,
 					'#logo > svg, #logo > img': size_num * 1.3
 				});
 				if(size != 's') {
@@ -2785,6 +2807,7 @@
 					{sel:'#tool_node_link', fn: linkControlPoints, evt: 'click'},
 					{sel:'#tool_node_clone', fn: clonePathNode, evt: 'click'},
 					{sel:'#tool_node_delete', fn: deletePathNode, evt: 'click'},
+					{sel:'#tool_openclose_path', fn: opencloseSubPath, evt: 'click'},
 					{sel:'#tool_add_subpath', fn: addSubPath, evt: 'click'},
 					{sel:'#tool_move_top', fn: moveToTopSelected, evt: 'click', key: 'shift+up'},
 					{sel:'#tool_move_bottom', fn: moveToBottomSelected, evt: 'click', key: 'shift+down'},
@@ -3211,10 +3234,6 @@
 			});
 		};
 
-		
-		
-		
-
 		return Editor;
 	}(jQuery);
 	
@@ -3237,5 +3256,6 @@
 // 	initFill: {
 // 		color: '550000',
 // 		opacity: .75
-// 	}
+// 	},
+// 	extensions: ['ext-helloworld.js']
 // })
