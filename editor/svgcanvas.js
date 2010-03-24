@@ -3802,6 +3802,11 @@ function BatchCommand(text) {
 		function insertItemBefore(elem, newseg, index) {
 			// Support insertItemBefore on paths for FF2
 			var list = elem.pathSegList;
+			
+			if(support.pathInsertItemBefore) {
+				list.insertItemBefore(newseg, index);
+				return;
+			}
 			var len = list.numberOfItems;
 			var arr = [];
 			for(var i=0; i<len; i++) {
@@ -4196,6 +4201,7 @@ function BatchCommand(text) {
 				var len = segList.numberOfItems;
 				p.segs = [];
 				p.selected_pts = [];
+				p.first_seg = null;
 				
 				// Set up segs array
 				for(var i=0; i < len; i++) {
@@ -4233,7 +4239,7 @@ function BatchCommand(text) {
 						seg.next.prev = seg;
 						seg.mate = segs[start_i];
 						seg.addGrip();
-						if(!p.first_seg) {
+						if(p.first_seg == null) {
 							p.first_seg = seg;
 						}
 					} else if(!next_seg) {
@@ -4286,7 +4292,8 @@ function BatchCommand(text) {
 			this.eachSeg = function(fn) {
 				var len = p.segs.length
 				for(var i=0; i < len; i++) {
-					fn.call(p.segs[i], i);
+					var ret = fn.call(p.segs[i], i);
+					if(ret === false) break;
 				}
 			}
 			
@@ -4300,12 +4307,7 @@ function BatchCommand(text) {
 				
 				var list = elem.pathSegList;
 				var newseg = elem.createSVGPathSegLinetoAbs(new_x, new_y);
-				if(support.pathInsertItemBefore) {
-					list.insertItemBefore(newseg, index);
-				} else {
-					insertItemBefore(elem, newseg, index);
-				}
-
+				insertItemBefore(elem, newseg, index);
 			}
 			
 			this.deleteSeg = function(index) {
@@ -4342,6 +4344,23 @@ function BatchCommand(text) {
 				call("changed", [elem]);
 			}
 
+			this.subpathIsClosed = function(index) {
+				var closed = false;
+				// Check if subpath is already open
+				path.eachSeg(function(i) {
+					if(i <= index) return true;
+					if(this.type === 2) {
+						// Found M first, so open
+						return false;
+					} else if(this.type === 1) {
+						// Found Z first, so closed
+						closed = true;
+						return false;
+					}
+				});
+				
+				return closed;
+			}
 			
 			this.addPtsToSelection = function(indexes) {
 				if(!$.isArray(indexes)) indexes = [indexes];
@@ -4364,7 +4383,11 @@ function BatchCommand(text) {
 					seg.select(true);
 					grips[i] = seg.ptgrip;
 				}
+				// TODO: Correct this:
 				pathActions.canDeleteNodes = true;
+				
+				pathActions.closed_subpath = p.subpathIsClosed(p.selected_pts[0]);
+				
 				call("selected", grips);
 			}
 
@@ -5147,6 +5170,115 @@ function BatchCommand(text) {
 
 				path.endChanges("Clone path node(s)");
 			},
+			opencloseSubPath: function() {
+				var sel_pts = path.selected_pts;
+				// Only allow one selected node for now
+				if(sel_pts.length !== 1) return;
+				
+				var elem = path.elem;
+				var list = elem.pathSegList;
+
+				var len = list.numberOfItems;
+
+				var index = sel_pts[0];
+				
+				var open_pt = null;
+				var start_item = null;
+
+				// Check if subpath is already open
+				path.eachSeg(function(i) {
+					if(this.type === 2 && i <= index) {
+						start_item = this.item;
+					}
+					if(i <= index) return true;
+					if(this.type === 2) {
+						// Found M first, so open
+						open_pt = i;
+						return false;
+					} else if(this.type === 1) {
+						// Found Z first, so closed
+						open_pt = false;
+						return false;
+					}
+				});
+				
+				if(open_pt == null) {
+					// Single path, so close last seg
+					open_pt = path.segs.length - 1;
+				}
+
+				if(open_pt !== false) {
+					// Close this path
+					
+					// Create a line going to the previous "M"
+					var newseg = elem.createSVGPathSegLinetoAbs(start_item.x, start_item.y);
+				
+					var closer = elem.createSVGPathSegClosePath();
+					if(open_pt == path.segs.length - 1) {
+						list.appendItem(newseg);
+						list.appendItem(closer);
+					} else {
+						insertItemBefore(elem, closer, open_pt);
+						insertItemBefore(elem, newseg, open_pt);
+					}
+					
+					path.init().selectPt(open_pt+1);
+					return;
+				}
+				
+				
+
+				// M 1,1 L 2,2 L 3,3 L 1,1 z // open at 2,2
+				// M 2,2 L 3,3 L 1,1
+				
+				// M 1,1 L 2,2 L 1,1 z M 4,4 L 5,5 L6,6 L 5,5 z 
+				// M 1,1 L 2,2 L 1,1 z [M 4,4] L 5,5 L(M)6,6 L 5,5 z 
+				
+				var seg = path.segs[index];
+				
+				if(seg.mate) {
+					list.removeItem(index); // Removes last "L"
+					list.removeItem(index); // Removes the "Z"
+					path.init().selectPt(index - 1);
+					return;
+				}
+				
+				var last_m, z_seg;
+				
+				// Find this sub-path's closing point and remove
+				for(var i=0; i<list.numberOfItems; i++) {
+					var item = list.getItem(i);
+
+					if(item.pathSegType === 2) {
+						// Find the preceding M
+						last_m = i;
+					} else if(i === index) {
+						// Remove it
+						list.removeItem(last_m);
+// 						index--;
+					} else if(item.pathSegType === 1 && index < i) {
+						// Remove the closing seg of this subpath
+						z_seg = i-1;
+						list.removeItem(i);
+						break;
+					}
+				}
+				
+				var num = (index - last_m) - 1;
+				
+				while(num--) {
+					insertItemBefore(elem, list.getItem(last_m), z_seg);
+				}
+				
+				var pt = list.getItem(last_m);
+				
+				// Make this point the new "M"
+				replacePathSeg(2, last_m, [pt.x, pt.y]);
+				
+				var i = index
+				
+				path.init().selectPt(0);
+			},
 			deletePathNode: function() {
 				if(!pathActions.canDeleteNodes) return;
 				path.storeD();
@@ -5263,11 +5395,7 @@ function BatchCommand(text) {
 						if(prev.x != last_m.x && prev.y != last_m.y) {
 							// Add an L segment here
 							var newseg = elem.createSVGPathSegLinetoAbs(last_m.x, last_m.y);
-							if(support.pathInsertItemBefore) {
-								segList.insertItemBefore(newseg, i);
-							} else {
-								insertItemBefore(elem, newseg, i);
-							}
+							insertItemBefore(elem, newseg, i);
 							// Can this be done better?
 							pathActions.fixEnd(elem);
 							break;
