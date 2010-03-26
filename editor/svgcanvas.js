@@ -1320,6 +1320,10 @@ function BatchCommand(text) {
 		undoStack.push(cmd);
 		undoStackPointer = undoStack.length;
 	};
+	
+	this.getHistoryPosition = function() {
+		return undoStackPointer;
+	};
 
 // private functions
 	var getId = function() {
