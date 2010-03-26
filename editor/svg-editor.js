@@ -59,6 +59,7 @@
 			'layerHasThatName':"Layer already has that name",
 			'QmoveElemsToLayer':"Move selected elements to layer '%s'?",
 			'QwantToClear':'Do you want to clear the drawing?\nThis will also erase your undo history!',
+			'QwantToOpen':'Do you want to open a new file?\nThis will also erase your undo history!',
 			'QerrorsRevertToSource':'There were parsing errors in your SVG source.\nRevert back to original SVG source?',
 			'QignoreSourceChanges':'Ignore changes made to SVG source?',
 			'featNotSupported':'Feature not supported',
@@ -3019,14 +3020,25 @@
 			// get the text contents of the file and send it to the canvas
 			if (window.FileReader) {
 				var inp = $('<input type="file">').change(function() {
+					var f = this;
+					var openFile = function(ok) {
+						if(!ok) return;
+						svgCanvas.clear();
+						if(f.files.length==1) {
+							var reader = new FileReader();
+							reader.onloadend = function(e) {
+								svgCanvas.setSvgString(e.target.result);
+								updateCanvas();
+							};
+							reader.readAsText(f.files[0]);
+						}
+					}
+				
 					$('#main_menu').hide();
-					if(this.files.length==1) {
-						var reader = new FileReader();
-						reader.onloadend = function(e) {
-							svgCanvas.setSvgString(e.target.result);
-							updateCanvas();
-						};
-						reader.readAsText(this.files[0]);
+					if(svgCanvas.getHistoryPosition() === 0) {
+						openFile(true);
+					} else {
+						$.confirm(uiStrings.QwantToOpen, openFile);
 					}
 				});
 				$("#tool_open").show().prepend(inp);
