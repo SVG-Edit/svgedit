@@ -5880,6 +5880,46 @@ function BatchCommand(text) {
         		canvas.embedImage(val);
         	});
         	
+        	// convert gradients with userSpaceOnUse to objectBoundingBox
+        	$(svgcontent).find('linearGradient').each(function() {
+        		var grad = this;
+        		if($(grad).attr('gradientUnits') === 'userSpaceOnUse') {
+        			// TODO: Support more than one element with this ref by duplicating parent grad
+        			// TODO: Support elements with stroke grad 
+        			var elems = $(svgcontent).find('[fill=url(#' + grad.id + ')]');
+        			if(!elems.length) return;
+        			
+        			// get object's bounding box
+        			var bb = elems[0].getBBox();
+        			
+        			// bb.x, bb.y
+        			// bb.width, bb.height
+        			var tot_w = bb.x + bb.width;
+        			
+        			var g_coords = $(grad).attr(['x1', 'y1', 'x2', 'y2']);
+        			
+        			g_coords.x1 -= bb.x;
+        			g_coords.y1 -= bb.y;
+        			g_coords.x2 -= bb.x;
+        			g_coords.y2 -= bb.y;
+        			
+        			var new_x1 = g_coords.x1 / bb.width;
+        			var new_y1 = g_coords.y1 / bb.height;
+        			var new_x2 = g_coords.x2 / bb.width;
+        			var new_y2 = g_coords.y1 / bb.height;
+        			
+        			$(grad).attr({
+        				x1: new_x1,
+        				y1: new_y1,
+        				x2: new_x2,
+        				y2: new_y2
+        			});
+        			
+        			grad.removeAttribute('gradientUnits');
+        		}
+        	});
+        	
+        	
         	// Fix XML for Opera/Win/Non-EN
 			if(!support.goodDecimals) {
 				canvas.fixOperaXML(svgcontent, newDoc.documentElement);
