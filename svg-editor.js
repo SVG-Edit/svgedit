@@ -143,6 +143,7 @@
 				svgCanvas.open = opts.open;
 			}
 			if(opts.save) {
+				show_save_warning = false;
 				svgCanvas.bind("saved", opts.save);
 			}
 		}
@@ -361,7 +362,8 @@
 				modKey = "", //(isMac ? "meta+" : "ctrl+");
 				path = svgCanvas.pathActions,
 				default_img_url = curConfig.imgPath + "logo.png",
-				workarea = $("#workarea");
+				workarea = $("#workarea"),
+				show_save_warning = false;
 
 			// This sets up alternative dialog boxes. They mostly work the same way as
 			// their UI counterparts, expect instead of returning the result, a callback
@@ -445,6 +447,8 @@
 			var strokePaint = new $.jGraduate.Paint({solidColor: curConfig.initStroke.color});
 		
 			var saveHandler = function(window,svg) {
+				show_save_warning = false;
+			
 				// by default, we add the XML prolog back, systems integrating SVG-edit (wikis, CMSs) 
 				// can just provide their own custom save handler and might not want the XML prolog
 				svg = "<?xml version='1.0'?>\n" + svg;
@@ -525,6 +529,8 @@
 						selectedElement = elem;
 					}
 				}
+				
+				show_save_warning = true;
 		
 				// we update the contextual panel with potentially new
 				// positional/sizing information (we DON'T want to update the
@@ -2993,6 +2999,19 @@
 			$('#font_size').SpinButton({ step: 1, min: 0.001, stepfunc: stepFontSize, callback: changeFontSize });
 			$('#group_opacity').SpinButton({ step: 5, min: 0, max: 100, callback: changeOpacity });
 			$('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom });
+			
+			window.onbeforeunload = function() { 
+				// Suppress warning if page is empty 
+				if(svgCanvas.getHistoryPosition() === 0) {
+					show_save_warning = false;
+				}
+
+				// show_save_warning is set to "false" when the page is saved.
+				if(!curConfig.no_save_warning && show_save_warning) {
+					// Browser already asks question about closing the page
+					return "There are unsaved changes."; 
+				}
+			};
 			
 			// use HTML5 File API: http://www.w3.org/TR/FileAPI/
 			// if browser has HTML5 File API support, then we will show the open menu item
