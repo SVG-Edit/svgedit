@@ -192,10 +192,19 @@
 				}
 			})();
 			
+			var extFunc = function() {
+				$.each(curConfig.extensions, function() {
+					$.getScript(curConfig.extPath + this);
+				});
+			}
+			
 			// Load extensions
-			$.each(curConfig.extensions, function() {
-				$.getScript(curConfig.extPath + this);
-			});
+			// Bit of a hack to run extensions in local Opera
+			if(window.opera && document.location.href.indexOf('http') !== 0) {
+				setTimeout(extFunc, 1000);
+			} else {
+				extFunc();
+			}
 			
 			$.svgIcons(curConfig.imgPath + 'svg_edit_icons.svg', {
 				w:24, h:24,
