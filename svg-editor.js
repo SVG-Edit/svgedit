@@ -45,7 +45,7 @@
 				imgPath: 'images/',
 				langPath: 'locale/',
 				extPath: 'extensions/',
-				extensions: ['ext-arrows.js', 'ext-connector.js'],
+				extensions: ['ext-arrows.js', 'ext-connector.js', 'ext-eyedropper.js'],
 				initTool: 'select',
 				wireframe: false
 			},
