@@ -200,7 +200,7 @@
 			
 			// Load extensions
 			// Bit of a hack to run extensions in local Opera
-			if(window.opera && document.location.href.indexOf('http') !== 0) {
+			if(window.opera && document.location.protocol === 'file:') {
 				setTimeout(extFunc, 1000);
 			} else {
 				extFunc();
@@ -2038,6 +2038,7 @@
 					".tool_button,\
 					.push_button,\
 					.tool_button_current,\
+					.push_button_pressed,\
 					.disabled,\
 					.tools_flyout .tool_button": {
 						'width': {s: '16px', l: '32px', xl: '48px'},
@@ -2063,11 +2064,11 @@
 					"div#workarea": {
 						'left': {s: '27px', l: '46px', xl: '65px'},
 						'top': {s: '50px', l: '88px', xl: '125px'},
-						'bottom': {s: '55px', l: '70px', xl: '77px'}
+						'bottom': {s: '55px', l: '98px', xl: '145px'}
 					},
 					"#tools_bottom": {
 						'left': {s: '27px', l: '46px', xl: '65px'},
-						'height': {s: '58px', l: '70px', xl: '77px'}
+						'height': {s: '58px', l: '98px', xl: '145px'}
 					},
 					"#color_tools": {
 						'border-spacing': {s: '0 1px'}
@@ -2076,7 +2077,8 @@
 						'height': {s: '20px'}
 					},
 					"#tool_opacity": {
-						'top': {s: '1px'}
+						'top': {s: '1px'},
+						'height': {s: 'auto', l:'auto', xl:'auto'}
 					},
 					"#tools_top input, #tools_bottom input": {
 						'margin-top': {s: '2px', l: '4px', xl: '5px'},

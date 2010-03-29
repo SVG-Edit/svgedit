@@ -383,6 +383,7 @@
 	top: 75px;
 	left: 0;
 	padding-left: 2px;
+	background: #D8D8D8; /* Needed so flyout icons don't appear on the left */
 	z-index: 4;
 }
 
@@ -466,17 +467,13 @@
 }
 
 
-.magic_field > * {
-	float: left;
-}
-
 span.zoom_tool {
 	line-height: 26px;
 	padding: 3px;
 }
 
-.magic_field input {
-	margin-top: 5px;
+#zoom_panel label {
+	margin-top: 2px;
 }
 
 .dropdown {
