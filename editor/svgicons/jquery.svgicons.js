@@ -293,6 +293,17 @@ $(function() {
 					var svgroot = svgdoc.createElementNS(svgns, "svg");
 					svgroot.setAttributeNS(svgns, 'viewBox', [0,0,icon_w,icon_h].join(' '));
 					
+					// Make flexible by converting width/height to viewBox
+					var w = svg.getAttribute('width');
+					var h = svg.getAttribute('height');
+					svg.removeAttribute('width');
+					svg.removeAttribute('height');
+					
+					var vb = svg.getAttribute('viewBox');
+					if(!vb) {
+						svg.setAttribute('viewBox', [0,0,w,h].join(' '));
+					}
+					
 					$(svgroot).attr({
 						"xmlns": svgns,
 						"width": icon_w,
