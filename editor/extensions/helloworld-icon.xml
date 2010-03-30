@@ -5,11 +5,10 @@
 	in the extension. The SVG inside the group makes up the actual icon, and
 	needs use a viewBox instead of width/height for it to scale	properly.
 	
-	Multiple icons can be included, each within their own group. A final element
-	with ID "svg_eof" must be included too.
+	Multiple icons can be included, each within their own group.
 -->
 	<g id="hello_world">
-		<svg viewBox="0 0 102 102" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<svg width="102" height="102" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 		 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
 		 <g>
 		  <title>Layer 1</title>
@@ -19,5 +18,4 @@
 		 </g>
 		</svg>
 	</g>
-	<g id="svg_eof"/>
 </svg>
