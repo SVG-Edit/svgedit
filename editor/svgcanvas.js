@@ -1143,6 +1143,7 @@ function BatchCommand(text) {
 			'opacity':1,
 			'stroke':'none',
 			'stroke-dasharray':'none',
+			'stroke-linejoin':'miter',
 			'stroke-opacity':1,
 			'stroke-width':1,
 			'rx':0,
@@ -1211,7 +1212,8 @@ function BatchCommand(text) {
 				stroke_paint: null,
 				stroke_opacity: curConfig.initStroke.opacity,
 				stroke_width: curConfig.initStroke.width,
-				stroke_style: 'none',
+				stroke_dasharray: 'none',
+				stroke_linejoin: 'none',
 				opacity: curConfig.initOpacity
 			}
 		};
@@ -3013,10 +3015,10 @@ function BatchCommand(text) {
 							"fill": "none",
 							"stroke": cur_shape.stroke,
 							"stroke-width": stroke_w,
-							"stroke-dasharray": cur_shape.stroke_style,
+							"stroke-dasharray": cur_shape.stroke_dasharray,
 							"stroke-opacity": cur_shape.stroke_opacity,
 							"stroke-linecap": "round",
-							"stroke-linejoin": "round",
+							"stroke-linejoin": cur_shape.stroke_linejoin,
 							"opacity": cur_shape.opacity / 2,
 							"style": "pointer-events:none"
 						}
@@ -3063,7 +3065,8 @@ function BatchCommand(text) {
 							"fill": cur_shape.fill,
 							"stroke": cur_shape.stroke,
 							"stroke-width": cur_shape.stroke_width,
-							"stroke-dasharray": cur_shape.stroke_style,
+							"stroke-dasharray": cur_shape.stroke_dasharray,
+							"stroke-linejoin": cur_shape.stroke_linejoin,
 							"stroke-opacity": cur_shape.stroke_opacity,
 							"fill-opacity": cur_shape.fill_opacity,
 							"opacity": cur_shape.opacity / 2,
@@ -3084,7 +3087,8 @@ function BatchCommand(text) {
 							"id": getNextId(),
 							"stroke": cur_shape.stroke,
 							"stroke-width": stroke_w,
-							"stroke-dasharray": cur_shape.stroke_style,
+							"stroke-dasharray": cur_shape.stroke_dasharray,
+							"stroke-linejoin": cur_shape.stroke_linejoin,
 							"stroke-opacity": cur_shape.stroke_opacity,
 							"fill": "none",
 							"opacity": cur_shape.opacity / 2,
@@ -3104,7 +3108,8 @@ function BatchCommand(text) {
 							"fill": cur_shape.fill,
 							"stroke": cur_shape.stroke,
 							"stroke-width": cur_shape.stroke_width,
-							"stroke-dasharray": cur_shape.stroke_style,
+							"stroke-dasharray": cur_shape.stroke_dasharray,
+							"stroke-linejoin": cur_shape.stroke_linejoin,
 							"stroke-opacity": cur_shape.stroke_opacity,
 							"fill-opacity": cur_shape.fill_opacity,
 							"opacity": cur_shape.opacity / 2,
@@ -3125,7 +3130,8 @@ function BatchCommand(text) {
 							"fill": cur_shape.fill,
 							"stroke": cur_shape.stroke,
 							"stroke-width": cur_shape.stroke_width,
-							"stroke-dasharray": cur_shape.stroke_style,
+							"stroke-dasharray": cur_shape.stroke_dasharray,
+							"stroke-linejoin": cur_shape.stroke_linejoin,
 							"stroke-opacity": cur_shape.stroke_opacity,
 							"fill-opacity": cur_shape.fill_opacity,
 							"opacity": cur_shape.opacity / 2,
@@ -3144,7 +3150,8 @@ function BatchCommand(text) {
 							"fill": cur_text.fill,
 							"stroke": cur_shape.stroke,
 							"stroke-width": cur_text.stroke_width,
-							"stroke-dasharray": cur_shape.stroke_style,
+							"stroke-dasharray": cur_shape.stroke_dasharray,
+							"stroke-linejoin": cur_shape.stroke_linejoin,
 							"stroke-opacity": cur_shape.stroke_opacity,
 							"fill-opacity": cur_shape.fill_opacity,
 							// fix for bug where text elements were always 50% opacity
@@ -3531,7 +3538,8 @@ function BatchCommand(text) {
 								cur_properties.stroke = selected.getAttribute("stroke");
 								cur_properties.stroke_opacity = selected.getAttribute("stroke-opacity");
 								cur_properties.stroke_width = selected.getAttribute("stroke-width");
-								cur_properties.stroke_style = selected.getAttribute("stroke-dasharray");
+								cur_properties.stroke_dasharray = selected.getAttribute("stroke-dasharray");
+								cur_properties.stroke_linejoin = selected.getAttribute("stroke-linejoin");
 							}
 							if (selected.tagName == "text") {
 								cur_text.font_size = selected.getAttribute("font-size");
@@ -3631,7 +3639,8 @@ function BatchCommand(text) {
 								"fill": cur_shape.fill,
 								"stroke": cur_shape.stroke,
 								"stroke-width": cur_shape.stroke_width,
-								"stroke-dasharray": cur_shape.stroke_style,
+								"stroke-dasharray": cur_shape.stroke_dasharray,
+								"stroke-linejoin": cur_shape.stroke_linejoin,
 								"opacity": cur_shape.opacity,
 								"stroke-opacity": cur_shape.stroke_opacity,
 								"fill-opacity": cur_shape.fill_opacity,
@@ -3656,7 +3665,8 @@ function BatchCommand(text) {
 								"fill": cur_shape.fill,
 								"stroke": cur_shape.stroke,
 								"stroke-width": cur_shape.stroke_width,
-								"stroke-dasharray": cur_shape.stroke_style,
+								"stroke-dasharray": cur_shape.stroke_dasharray,
+								"stroke-linejoin": cur_shape.stroke_linejoin,
 								"opacity": cur_shape.opacity,
 								"stroke-opacity": cur_shape.stroke_opacity,
 								"fill-opacity": cur_shape.fill_opacity,
@@ -4640,7 +4650,8 @@ function BatchCommand(text) {
 							"fill": "none",
 							"stroke": cur_shape.stroke,
 							"stroke-width": cur_shape.stroke_width,
-							"stroke-dasharray": cur_shape.stroke_style,
+							"stroke-dasharray": cur_shape.stroke_dasharray,
+							"stroke-linejoin": cur_shape.stroke_linejoin,
 							"opacity": cur_shape.opacity,
 							"stroke-opacity": cur_shape.stroke_opacity,
 							"fill-opacity": cur_shape.fill_opacity,
@@ -4908,7 +4919,8 @@ function BatchCommand(text) {
 								"fill-opacity": cur_shape.fill_opacity,
 								"stroke": cur_shape.stroke,
 								"stroke-width": cur_shape.stroke_width,
-								"stroke-dasharray": cur_shape.stroke_style,
+								"stroke-dasharray": cur_shape.stroke_dasharray,
+								"stroke-linejoin": cur_shape.stroke_linejoin,
 								"stroke-opacity": cur_shape.stroke_opacity,
 								"opacity": cur_shape.opacity / 2,
 								"style": "pointer-events:inherit"
@@ -5627,7 +5639,8 @@ function BatchCommand(text) {
 			"fill-opacity": cur_shape.fill_opacity,
 			"stroke": cur_shape.stroke,
 			"stroke-width": cur_shape.stroke_width,
-			"stroke-dasharray": cur_shape.stroke_style,
+			"stroke-dasharray": cur_shape.stroke_dasharray,
+			"stroke-linejoin": cur_shape.stroke_linejoin,
 			"stroke-opacity": cur_shape.stroke_opacity,
 			"opacity": cur_shape.opacity,
 			"visibility":"hidden"
@@ -7077,12 +7090,8 @@ function BatchCommand(text) {
 		}
 	};
 
-	this.getStrokeStyle = function() {
-		return cur_shape.stroke_style;
-	};
-
-	this.setStrokeStyle = function(val) {
-		cur_shape.stroke_style = val;
+	this.setStrokeAttr = function(attr, val) {
+		cur_shape[attr.replace('-','_')] = val;
 		var elems = [];
 		var i = selectedElements.length;
 		while (i--) {
@@ -7095,10 +7104,10 @@ function BatchCommand(text) {
 			}
 		}		
 		if (elems.length > 0) {
-			this.changeSelectedAttribute("stroke-dasharray", val, elems);
+			this.changeSelectedAttribute(attr, val, elems);
 		}
 	};
-
+	
 	this.getOpacity = function() {
 		return cur_shape.opacity;
 	};

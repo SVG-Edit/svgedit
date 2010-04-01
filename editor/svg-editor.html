@@ -340,6 +340,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 		<label id="tool_node_y">y:
 			<input id="path_node_y" class="attr_changer" title="Change node's y coordinate" size="3" data-attr="y"/>
 		</label>
+		
 		<select id="seg_type" title="Change Segment type">
 			<option id="straight_segments" selected="selected" value="4">Straight</option>
 			<option id="curve_segments" value="6">Curve</option>
@@ -429,7 +430,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 					<input id="stroke_width" title="Change stroke width by 1, shift-click to change by 0.1" size="2" value="5" type="text" data-attr="Stroke Width"/>
 				</label>
 				
-				<label>
+				<label class="stroke_tool">
 					<select id="stroke_style" title="Change stroke dash style">
 						<option selected="selected" value="none">&mdash;</option>
 						<option value="2,2">...</option>
@@ -437,7 +438,23 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 						<option value="5,2,2,2">- .</option>
 						<option value="5,2,2,2,2,2">- ..</option>
 					</select>
+				</label>	
+				
+				<label class="stroke_tool">
+					<select id="stroke_linejoin" title="Change Linejoin type">
+						<option id="linejoin_miter" selected="selected" value="miter">Miter</option>
+						<option id="linejoin_round" value="round">Round</option>
+						<option id="linejoin_bevel" value="bevel">Bevel</option>
+					</select>
 				</label>
+			
+				<div id="toggle_stroke_tools" title="Show/hide more stroke tools">
+					&gt;&gt;
+				</div>
+				
+
+				
+
 			</div>
 		</div>
 	
