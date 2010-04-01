@@ -1418,6 +1418,44 @@
 			};
 			
 			(function() {
+				var last_x = null, last_y = null, w_area = workarea[0], 
+					panning = false, keypan = false;
+				
+				$('#svgcanvas').bind('mousemove mouseup', function(evt) {
+					if(panning === false) return;
+
+					w_area.scrollLeft -= (evt.clientX - last_x);
+					w_area.scrollTop -= (evt.clientY - last_y);
+					
+					last_x = evt.clientX;
+					last_y = evt.clientY;
+					
+					if(evt.type === 'mouseup') panning = false;
+					return false;
+				}).mousedown(function(evt) {
+					if(evt.button === 1 || keypan === true) {
+						panning = true;
+						last_x = evt.clientX;
+						last_y = evt.clientY;
+						return false;
+					}
+				});
+				
+				$(window).mouseup(function() {
+					panning = false;
+				});
+				
+				$(document).bind('keydown', 'space', function(evt) {
+					svgCanvas.spaceKey = keypan = true;
+					evt.preventDefault();
+				}).bind('keyup', 'space', function(evt) {
+					evt.preventDefault();
+					svgCanvas.spaceKey = keypan = false;
+				});
+			}());
+			
+			
+			(function() {
 				var button = $('#main_icon');
 				var overlay = $('#main_icon span');
 				var list = $('#main_menu');
