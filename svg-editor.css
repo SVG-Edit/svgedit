@@ -751,6 +751,8 @@ span.zoom_tool {
 
 
 #svg_editor #tools_bottom_3 {
+	position: relative;
+	z-index: 2;
 }
 
 #svg_editor #copyright {
