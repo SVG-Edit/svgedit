@@ -1172,6 +1172,19 @@ function BatchCommand(text) {
 				current_layer.appendChild(shape);
 			}
 		}
+		if(data.curStyles) {
+			assignAttributes(shape, {
+				"fill": cur_shape.fill,
+				"stroke": cur_shape.stroke,
+				"stroke-width": cur_shape.stroke_width,
+				"stroke-dasharray": cur_shape.stroke_dasharray,
+				"stroke-linejoin": cur_shape.stroke_linejoin,
+				"stroke-opacity": cur_shape.stroke_opacity,
+				"fill-opacity": cur_shape.fill_opacity,
+				"opacity": cur_shape.opacity / 2,
+				"style": "pointer-events:inherit"
+			}, 100);
+		}
 		assignAttributes(shape, data.attr, 100);
 		cleanupElement(shape);
 		return shape;
@@ -1213,7 +1226,7 @@ function BatchCommand(text) {
 				stroke_opacity: curConfig.initStroke.opacity,
 				stroke_width: curConfig.initStroke.width,
 				stroke_dasharray: 'none',
-				stroke_linejoin: 'none',
+				stroke_linejoin: 'miter',
 				opacity: curConfig.initOpacity
 			}
 		};
@@ -3009,17 +3022,13 @@ function BatchCommand(text) {
 					var stroke_w = cur_shape.stroke_width == 0?1:cur_shape.stroke_width;
 					addSvgElementFromJson({
 						"element": "polyline",
+						"curStyles": true,
 						"attr": {
 							"points": d_attr,
 							"id": getNextId(),
 							"fill": "none",
-							"stroke": cur_shape.stroke,
-							"stroke-width": stroke_w,
-							"stroke-dasharray": cur_shape.stroke_dasharray,
-							"stroke-opacity": cur_shape.stroke_opacity,
-							"stroke-linecap": "round",
-							"stroke-linejoin": cur_shape.stroke_linejoin,
 							"opacity": cur_shape.opacity / 2,
+							"stroke-linecap": "round",
 							"style": "pointer-events:none"
 						}
 					});
@@ -3056,21 +3065,14 @@ function BatchCommand(text) {
 					start_y = y;
 					addSvgElementFromJson({
 						"element": "rect",
+						"curStyles": true,
 						"attr": {
 							"x": x,
 							"y": y,
 							"width": 0,
 							"height": 0,
 							"id": getNextId(),
-							"fill": cur_shape.fill,
-							"stroke": cur_shape.stroke,
-							"stroke-width": cur_shape.stroke_width,
-							"stroke-dasharray": cur_shape.stroke_dasharray,
-							"stroke-linejoin": cur_shape.stroke_linejoin,
-							"stroke-opacity": cur_shape.stroke_opacity,
-							"fill-opacity": cur_shape.fill_opacity,
-							"opacity": cur_shape.opacity / 2,
-							"style": "pointer-events:inherit"
+							"opacity": cur_shape.opacity / 2
 						}
 					});
 					break;
@@ -3079,6 +3081,7 @@ function BatchCommand(text) {
 					var stroke_w = cur_shape.stroke_width == 0?1:cur_shape.stroke_width;
 					addSvgElementFromJson({
 						"element": "line",
+						"curStyles": true,
 						"attr": {
 							"x1": x,
 							"y1": y,
@@ -3100,20 +3103,13 @@ function BatchCommand(text) {
 					started = true;
 					addSvgElementFromJson({
 						"element": "circle",
+						"curStyles": true,
 						"attr": {
 							"cx": x,
 							"cy": y,
 							"r": 0,
 							"id": getNextId(),
-							"fill": cur_shape.fill,
-							"stroke": cur_shape.stroke,
-							"stroke-width": cur_shape.stroke_width,
-							"stroke-dasharray": cur_shape.stroke_dasharray,
-							"stroke-linejoin": cur_shape.stroke_linejoin,
-							"stroke-opacity": cur_shape.stroke_opacity,
-							"fill-opacity": cur_shape.fill_opacity,
-							"opacity": cur_shape.opacity / 2,
-							"style": "pointer-events:inherit"
+							"opacity": cur_shape.opacity / 2
 						}
 					});
 					break;
@@ -3121,21 +3117,14 @@ function BatchCommand(text) {
 					started = true;
 					addSvgElementFromJson({
 						"element": "ellipse",
+						"curStyles": true,
 						"attr": {
 							"cx": x,
 							"cy": y,
 							"rx": 0,
 							"ry": 0,
 							"id": getNextId(),
-							"fill": cur_shape.fill,
-							"stroke": cur_shape.stroke,
-							"stroke-width": cur_shape.stroke_width,
-							"stroke-dasharray": cur_shape.stroke_dasharray,
-							"stroke-linejoin": cur_shape.stroke_linejoin,
-							"stroke-opacity": cur_shape.stroke_opacity,
-							"fill-opacity": cur_shape.fill_opacity,
-							"opacity": cur_shape.opacity / 2,
-							"style": "pointer-events:inherit"
+							"opacity": cur_shape.opacity / 2
 						}
 					});
 					break;
@@ -3143,23 +3132,16 @@ function BatchCommand(text) {
 					started = true;
 					var newText = addSvgElementFromJson({
 						"element": "text",
+						"curStyles": true,
 						"attr": {
 							"x": x,
 							"y": y,
 							"id": getNextId(),
 							"fill": cur_text.fill,
-							"stroke": cur_shape.stroke,
 							"stroke-width": cur_text.stroke_width,
-							"stroke-dasharray": cur_shape.stroke_dasharray,
-							"stroke-linejoin": cur_shape.stroke_linejoin,
-							"stroke-opacity": cur_shape.stroke_opacity,
-							"fill-opacity": cur_shape.fill_opacity,
-							// fix for bug where text elements were always 50% opacity
-							"opacity": cur_shape.opacity,
 							"font-size": cur_text.font_size,
 							"font-family": cur_text.font_family,
 							"text-anchor": "middle",
-							"style": "pointer-events:inherit",
 							"xml:space": "preserve"
 						}
 					});
@@ -3630,21 +3612,13 @@ function BatchCommand(text) {
 						(freehand.maxy - freehand.miny) > 0) {
 						element = addSvgElementFromJson({
 							"element": "ellipse",
+							"curStyles": true,
 							"attr": {
 								"cx": (freehand.minx + freehand.maxx) / 2,
 								"cy": (freehand.miny + freehand.maxy) / 2,
 								"rx": (freehand.maxx - freehand.minx) / 2,
 								"ry": (freehand.maxy - freehand.miny) / 2,
-								"id": getId(),
-								"fill": cur_shape.fill,
-								"stroke": cur_shape.stroke,
-								"stroke-width": cur_shape.stroke_width,
-								"stroke-dasharray": cur_shape.stroke_dasharray,
-								"stroke-linejoin": cur_shape.stroke_linejoin,
-								"opacity": cur_shape.opacity,
-								"stroke-opacity": cur_shape.stroke_opacity,
-								"fill-opacity": cur_shape.fill_opacity,
-								"style": "pointer-events:inherit"
+								"id": getId()
 							}
 						});
 						call("changed",[element]);
@@ -3656,21 +3630,13 @@ function BatchCommand(text) {
 						(freehand.maxy - freehand.miny) > 0) {
 						element = addSvgElementFromJson({
 							"element": "rect",
+							"curStyles": true,
 							"attr": {
 								"x": freehand.minx,
 								"y": freehand.miny,
 								"width": (freehand.maxx - freehand.minx),
 								"height": (freehand.maxy - freehand.miny),
-								"id": getId(),
-								"fill": cur_shape.fill,
-								"stroke": cur_shape.stroke,
-								"stroke-width": cur_shape.stroke_width,
-								"stroke-dasharray": cur_shape.stroke_dasharray,
-								"stroke-linejoin": cur_shape.stroke_linejoin,
-								"opacity": cur_shape.opacity,
-								"stroke-opacity": cur_shape.stroke_opacity,
-								"fill-opacity": cur_shape.fill_opacity,
-								"style": "pointer-events:inherit"
+								"id": getId()
 							}
 						});
 						call("changed",[element]);
@@ -4644,20 +4610,13 @@ function BatchCommand(text) {
 				// create new path element
 				element = addSvgElementFromJson({
 					"element": "path",
-						"attr": {
-							"id": getId(),
-							"d": d,
-							"fill": "none",
-							"stroke": cur_shape.stroke,
-							"stroke-width": cur_shape.stroke_width,
-							"stroke-dasharray": cur_shape.stroke_dasharray,
-							"stroke-linejoin": cur_shape.stroke_linejoin,
-							"opacity": cur_shape.opacity,
-							"stroke-opacity": cur_shape.stroke_opacity,
-							"fill-opacity": cur_shape.fill_opacity,
-							"style": "pointer-events:inherit"
-						}
-					});
+					"curStyles": true,
+					"attr": {
+						"id": getId(),
+						"d": d,
+						"fill": "none"
+					}
+				});
 				call("changed",[element]);
 			}
 			return element;
@@ -4912,18 +4871,12 @@ function BatchCommand(text) {
 						d_attr = "M" + x + "," + y + " ";
 						addSvgElementFromJson({
 							"element": "path",
+							"curStyles": true,
 							"attr": {
 								"d": d_attr,
 								"id": getNextId(),
-								"fill": cur_shape.fill,
-								"fill-opacity": cur_shape.fill_opacity,
-								"stroke": cur_shape.stroke,
-								"stroke-width": cur_shape.stroke_width,
-								"stroke-dasharray": cur_shape.stroke_dasharray,
-								"stroke-linejoin": cur_shape.stroke_linejoin,
-								"stroke-opacity": cur_shape.stroke_opacity,
 								"opacity": cur_shape.opacity / 2,
-								"style": "pointer-events:inherit"
+
 							}
 						});
 						// set stretchy line to first point
