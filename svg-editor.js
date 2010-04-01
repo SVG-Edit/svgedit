@@ -400,7 +400,7 @@
 					if(type == 'prompt') {
 						var input = $('<input type="text">').prependTo(btn_holder);
 						input.val(defText || '');
-						input.bind('keydown', {combi:'return'}, function() {ok.click();});
+						input.bind('keydown', 'return', function() {ok.click();});
 					}
 		
 					box.show();
@@ -623,7 +623,7 @@
 							$(this).mouseup(func);
 							
 							if(opts.key) {
-								$(document).bind('keydown', {combi: opts.key+'', disableInInput:true}, func);
+								$(document).bind('keydown', opts.key+'', func);
 							}
 						});
 					
@@ -894,7 +894,7 @@
 										});
 									}
 									if(btn.key) {
-										$(document).bind('keydown', {combi: btn.key, disableInInput: true}, func);
+										$(document).bind('keydown', btn.key, func);
 										if(btn.title) button.attr("title", btn.title + ' ['+btn.key+']');
 									}
 								} else {
@@ -2944,7 +2944,7 @@
 								keyval += '';
 								
 								$.each(keyval.split('/'), function(i, key) {
-									$(document).bind('keydown', {combi: key, disableInInput: disInInp}, function(e) {
+									$(document).bind('keydown', key, function(e) {
 										fn();
 										if(pd) {
 											e.preventDefault();
@@ -2973,7 +2973,7 @@
 						// Misc additional actions
 						
 						// Make "return" keypress trigger the change event
-						$('.attr_changer, #image_url').bind('keydown', {combi:'return'}, 
+						$('.attr_changer, #image_url').bind('keydown', 'return', 
 							function(evt) {$(this).change();evt.preventDefault();}
 						);
 						
