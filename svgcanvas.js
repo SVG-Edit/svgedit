@@ -1957,7 +1957,7 @@ function BatchCommand(text) {
 							break;
 						case 9: // relative quad (q) 
 						case 8: // absolute quad (Q)
-							dstr += seg.x + "," + seg.y + " " + seg.x1 + "," + seg.y1 + " ";
+							dstr += seg.x1 + "," + seg.y1 + " " + seg.x + "," + seg.y + " ";
 							break;
 						case 11: // relative elliptical arc (a)
 						case 10: // absolute elliptical arc (A)
@@ -1966,7 +1966,7 @@ function BatchCommand(text) {
 							break;
 						case 17: // relative smooth cubic (s)
 						case 16: // absolute smooth cubic (S)
-							dstr += seg.x + "," + seg.y + " " + seg.x2 + "," + seg.y2 + " ";
+							dstr += seg.x2 + "," + seg.y2 + " " + seg.x + "," + seg.y + " ";
 							break;
 					}
 				}
