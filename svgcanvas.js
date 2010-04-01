@@ -2852,6 +2852,7 @@ function BatchCommand(text) {
 		//   and do nothing else
 		var mouseDown = function(evt)
 		{
+			if(evt.button === 1 || canvas.spaceKey) return;
 			root_sctm = svgcontent.getScreenCTM().inverse();
 			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
 				mouse_x = pt.x * current_zoom,
@@ -3197,6 +3198,7 @@ function BatchCommand(text) {
 		var mouseMove = function(evt)
 		{
 			if (!started) return;
+			if(evt.button === 1 || canvas.spaceKey) return;
 			var selected = selectedElements[0],
 				pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
 				mouse_x = pt.x * current_zoom,
@@ -3494,6 +3496,7 @@ function BatchCommand(text) {
 		
 		var mouseUp = function(evt)
 		{
+			if(evt.button === 1) return;
 			var tempJustSelected = justSelected;
 			justSelected = null;
 			if (!started) return;
