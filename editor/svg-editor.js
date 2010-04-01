@@ -1015,6 +1015,7 @@
 					
 					$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1);
 					$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
+					$('#stroke_linejoin').val(selectedElement.getAttribute("stroke-linejoin")||"miter");
 				}
 				
 				// All elements including image and group have opacity
@@ -1286,9 +1287,15 @@
 			}
 		
 			$('#stroke_style').change(function(){
-				svgCanvas.setStrokeStyle(this.options[this.selectedIndex].value);
+				svgCanvas.setStrokeAttr('stroke-dasharray', $(this).val());
 				operaRepaint();
 			});
+
+			$('#stroke_linejoin').change(function(){
+				svgCanvas.setStrokeAttr('stroke-linejoin', $(this).val());
+				operaRepaint();
+			});
+
 		
 			// Lose focus for select elements when changed (Allows keyboard shortcuts to work better)
 			$('select').change(function(){$(this).blur();});
@@ -1397,6 +1404,14 @@
 					}
 				}
 				updateToolButtonState();
+			});
+		
+			$("#toggle_stroke_tools").toggle(function() {
+				$(".stroke_tool").css('display','table-cell');
+				$(this).text('<<');
+			}, function() {
+				$(".stroke_tool").css('display','none');
+				$(this).text('>>');
 			});
 		
 			// This is a common function used when a tool has been clicked (chosen)

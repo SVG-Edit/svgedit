@@ -698,6 +698,20 @@ span.zoom_tool {
 	height: 26px;
 }
 
+#toggle_stroke_tools {
+	letter-spacing: -.2em;
+	padding-right: 8px;
+}
+
+#toggle_stroke_tools:hover {
+	cursor: pointer;
+	background: #FFC;
+}
+
+.stroke_tool {
+	display: none;
+}
+
 .color_tool > *:first-child {
 	-moz-border-radius-topleft: 4px;
 	-moz-border-radius-bottomleft: 4px;
