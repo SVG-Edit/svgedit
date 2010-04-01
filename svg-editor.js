@@ -1016,6 +1016,7 @@
 					$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1);
 					$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
 					$('#stroke_linejoin').val(selectedElement.getAttribute("stroke-linejoin")||"miter");
+					$('#stroke_linecap').val(selectedElement.getAttribute("stroke-linecap")||"butt");
 				}
 				
 				// All elements including image and group have opacity
@@ -1296,6 +1297,11 @@
 				operaRepaint();
 			});
 
+			$('#stroke_linecap').change(function(){
+				svgCanvas.setStrokeAttr('stroke-linecap', $(this).val());
+				operaRepaint();
+			});
+ 
 		
 			// Lose focus for select elements when changed (Allows keyboard shortcuts to work better)
 			$('select').change(function(){$(this).blur();});
