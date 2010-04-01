@@ -2134,12 +2134,14 @@ function BatchCommand(text) {
 					
 						var angle = canvas.getRotationAngle(child);
 						var old_start_transform = start_transform;
+						var childxforms = [];
 						start_transform = child.getAttribute("transform");
 						if(angle || hasMatrixTransform(childTlist)) {
 							var e2t = svgroot.createSVGTransform();
 							e2t.setMatrix(matrixMultiply(tm, sm, tmn, m));
 							childTlist.clear();
-							childTlist.appendItem(e2t,0);
+							childTlist.appendItem(e2t);
+							childxforms.push(e2t);
 						}
 						// if not rotated or skewed, push the [T][S][-T] down to the child
 						else {
@@ -2148,6 +2150,7 @@ function BatchCommand(text) {
 							// slide the [T][S][-T] from the front to the back
 							// [T][S][-T][M] = [M][T2][S2][-T2]
 							
+							// (only bringing [-T] to the right of [M])
 							// [T][S][-T][M] = [T][S][M][-T2]
 							// [-T2] = [M_inv][-T][M]
 							var t2n = matrixMultiply(m.inverse(), tmn, m);
@@ -2169,8 +2172,28 @@ function BatchCommand(text) {
 							childTlist.appendItem(translateBack);
 							childTlist.appendItem(scale);
 							childTlist.appendItem(translateOrigin);
+							childxforms.push(translateBack);
+							childxforms.push(scale);
+							childxforms.push(translateOrigin);
+							logMatrix(translateBack.matrix);
+							logMatrix(scale.matrix);
 						} // not rotated
 						batchCmd.addSubCommand( recalculateDimensions(child) );
+						// TODO: If any <use> have this group as a parent and are 
+						// referencing this child, then we need to impose a reverse 
+						// scale on it so that when it won't get double-translated
+//						var uses = selected.getElementsByTagNameNS(svgns, "use");
+//						var href = "#"+child.id;
+//						var u = uses.length;
+//						while (u--) {
+//							var useElem = uses.item(u);
+//							if(href == useElem.getAttributeNS(xlinkns, "href")) {
+//								var usexlate = svgroot.createSVGTransform();
+//								usexlate.setTranslate(-tx,-ty);
+//								canvas.getTransformList(useElem).insertItemBefore(usexlate,0);
+//								batchCmd.addSubCommand( recalculateDimensions(useElem) );
+//							}
+//						}
 						start_transform = old_start_transform;
 					} // element
 				} // for each child
@@ -2220,6 +2243,21 @@ function BatchCommand(text) {
 								newxlate.setTranslate(tx,ty);
 								childTlist.insertItemBefore(newxlate, 0);
 								batchCmd.addSubCommand( recalculateDimensions(child) );
+								// If any <use> have this group as a parent and are 
+								// referencing this child, then impose a reverse translate on it
+								// so that when it won't get double-translated
+								var uses = selected.getElementsByTagNameNS(svgns, "use");
+								var href = "#"+child.id;
+								var u = uses.length;
+								while (u--) {
+									var useElem = uses.item(u);
+									if(href == useElem.getAttributeNS(xlinkns, "href")) {
+										var usexlate = svgroot.createSVGTransform();
+										usexlate.setTranslate(-tx,-ty);
+										canvas.getTransformList(useElem).insertItemBefore(usexlate,0);
+										batchCmd.addSubCommand( recalculateDimensions(useElem) );
+									}
+								}
 								start_transform = old_start_transform;
 							}
 						}
