@@ -710,6 +710,7 @@ span.zoom_tool {
 
 .stroke_tool {
 	display: none;
+	white-space: nowrap;
 }
 
 .color_tool > *:first-child {

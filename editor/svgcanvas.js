@@ -1144,6 +1144,7 @@ function BatchCommand(text) {
 			'stroke':'none',
 			'stroke-dasharray':'none',
 			'stroke-linejoin':'miter',
+			'stroke-linecap':'butt',
 			'stroke-opacity':1,
 			'stroke-width':1,
 			'rx':0,
@@ -1179,6 +1180,7 @@ function BatchCommand(text) {
 				"stroke-width": cur_shape.stroke_width,
 				"stroke-dasharray": cur_shape.stroke_dasharray,
 				"stroke-linejoin": cur_shape.stroke_linejoin,
+				"stroke-linecap": cur_shape.stroke_linecap,
 				"stroke-opacity": cur_shape.stroke_opacity,
 				"fill-opacity": cur_shape.fill_opacity,
 				"opacity": cur_shape.opacity / 2,
@@ -1227,6 +1229,7 @@ function BatchCommand(text) {
 				stroke_width: curConfig.initStroke.width,
 				stroke_dasharray: 'none',
 				stroke_linejoin: 'miter',
+				stroke_linecap: 'butt',
 				opacity: curConfig.initOpacity
 			}
 		};
@@ -3092,6 +3095,7 @@ function BatchCommand(text) {
 							"stroke-width": stroke_w,
 							"stroke-dasharray": cur_shape.stroke_dasharray,
 							"stroke-linejoin": cur_shape.stroke_linejoin,
+							"stroke-linecap": cur_shape.stroke_linecap,
 							"stroke-opacity": cur_shape.stroke_opacity,
 							"fill": "none",
 							"opacity": cur_shape.opacity / 2,
@@ -3522,6 +3526,7 @@ function BatchCommand(text) {
 								cur_properties.stroke_width = selected.getAttribute("stroke-width");
 								cur_properties.stroke_dasharray = selected.getAttribute("stroke-dasharray");
 								cur_properties.stroke_linejoin = selected.getAttribute("stroke-linejoin");
+								cur_properties.stroke_linecap = selected.getAttribute("stroke-linecap");
 							}
 							if (selected.tagName == "text") {
 								cur_text.font_size = selected.getAttribute("font-size");
@@ -5594,6 +5599,7 @@ function BatchCommand(text) {
 			"stroke-width": cur_shape.stroke_width,
 			"stroke-dasharray": cur_shape.stroke_dasharray,
 			"stroke-linejoin": cur_shape.stroke_linejoin,
+			"stroke-linecap": cur_shape.stroke_linecap,
 			"stroke-opacity": cur_shape.stroke_opacity,
 			"opacity": cur_shape.opacity,
 			"visibility":"hidden"
