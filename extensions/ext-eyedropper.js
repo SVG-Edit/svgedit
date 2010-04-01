@@ -27,7 +27,7 @@ svgEditor.addExtension("eyedropper", function(S) {
 				title: "Eye Dropper Tool",
 				events: {
 					"click": function() {
-						svgCanvas.setMode("eyedropper")
+						svgCanvas.setMode("eyedropper");
 					}
 				}
 			}],
@@ -67,7 +67,6 @@ svgEditor.addExtension("eyedropper", function(S) {
 					var e = opts.event;
 					var target = e.target;
 					if ($.inArray(target.nodeName, ['svg', 'g', 'use']) == -1) {
-						
 						var changes = {};
 
 						var change = function(elem, attrname, newvalue) {
