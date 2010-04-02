@@ -6,7 +6,7 @@
  * Copyright(c) 2010 Alexis Deveria
  * Copyright(c) 2010 Pavol Rusnak
  * Copyright(c) 2010 Jeff Schiller
- * Copyright(c) 2010 Narendra Sisodya
+ * Copyright(c) 2010 Narendra Sisodiya
  *
  */
 
