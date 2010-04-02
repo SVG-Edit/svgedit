@@ -5836,6 +5836,10 @@ function BatchCommand(text) {
 	     if (extensions["Arrows"])  call("unsetarrownonce") ;
 	   } else {
 	     randomize_ids = true;
+	     if (!svgcontent.getAttributeNS(se_ns, 'nonce')) {
+        		svgcontent.setAttributeNS(se_ns, 'se:nonce', nonce); 
+        		if (extensions["Arrows"])  call("setarrownonce", nonce) ;
+	     }
 	   }
 	}
 
