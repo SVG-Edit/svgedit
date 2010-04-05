@@ -684,6 +684,60 @@
 </svg>
 </g>
 
+<g id="linecap_butt">
+<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:se="http://svg-edit.googlecode.com" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <defs>
+  <linearGradient id="svg_8" x1="0.8" y1="1" x2="0.2" y2="1">
+   <stop offset="0" stop-color="#000000" stop-opacity="1"/>
+   <stop offset="1" stop-color="#000000" stop-opacity="0"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <rect fill="url(#svg_8)" stroke="#a0a0a0" stroke-width="2" x="-15.20196" y="43.5974" width="94.8373" height="50.3728" id="svg_3" transform="rotate(-45, 32.2148, 68.7832)"/>
+  <path id="svg_1" d="m6.63133,95.07755l59.17514,-59.17514" stroke-width="3" stroke="#00ffff" fill="none"/>
+  <path id="svg_2" d="m51.62893,36.10742l13.05662,-13.05662l13.05661,13.05662l-13.05661,13.05662l-13.05662,-13.05662z" stroke-width="0" stroke="#000000" fill="#00ffff"/>
+  <title>Layer 1</title>
+ </g>
+</svg>
+</g>
+
+<g id="linecap_square">
+<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:se="http://svg-edit.googlecode.com" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <defs>
+  <linearGradient id="svg_8" x1="0.8" y1="1" x2="0.2" y2="1">
+   <stop offset="0" stop-color="#000000" stop-opacity="1"/>
+   <stop offset="1" stop-color="#000000" stop-opacity="0"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <rect fill="url(#svg_8)" stroke="#000000" stroke-width="0" x="-18.51568" y="35.5974" width="117.46469" height="50.3728" id="svg_3" transform="rotate(-45, 40.2168, 60.7832)"/>
+  <path id="svg_1" d="m6.63133,95.07755l59.17514,-59.17514" stroke-width="3" stroke="#00ffff" fill="none"/>
+  <path id="svg_2" d="m51.62893,36.10742l13.05662,-13.05662l13.05661,13.05662l-13.05661,13.05662l-13.05662,-13.05662z" stroke-width="0" stroke="#000000" fill="#00ffff"/>
+  <title>Layer 1</title>
+ </g>
+</svg>
+</g>
+
+<g id="linecap_round">
+<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:se="http://svg-edit.googlecode.com">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <defs>
+  <linearGradient y2="1" x2="0.2" y1="1" x1="0.8" id="svg_8">
+   <stop stop-opacity="1" stop-color="#000000" offset="0"/>
+   <stop stop-opacity="0" stop-color="#000000" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <path transform="rotate(-45, 41.5117, 59.4648)" id="svg_3" d="m-19.0679,34.2946l94.8359,0c36.499,-1.4142 33.67101,48.9569 0,50.3711l-94.8359,0l0,-50.3711z" stroke-width="2" stroke="#a0a0a0" fill="url(#svg_8)"/>
+  <path id="svg_1" d="m6.63133,95.07755l59.17515,-59.17515" stroke-width="3" stroke="#00ffff" fill="none"/>
+  <path id="svg_2" d="m51.62893,36.10742l13.05662,-13.05662l13.05661,13.05662l-13.05661,13.05662l-13.05662,-13.05662z" stroke-width="0" stroke="#000000" fill="#00ffff"/>
+  <title>Layer 1</title>
+ </g>
+</svg>
+</g>
+
 <g id="eye">
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17">
  <defs>

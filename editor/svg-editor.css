@@ -54,6 +54,8 @@
 	border-top: none;
 	margin-top: 2px;
 	margin-left: 4px;
+	position: relative;
+	z-index: 2;
 }
 
 #svg_editor #stroke_bg, 
@@ -713,6 +715,59 @@ span.zoom_tool {
 	white-space: nowrap;
 }
 
+#svg_editor .stroke_tool button {
+	margin-top: 3px;
+	background: #F0F0F0;
+}
+
+#svg_editor #cur_linecap {
+	-moz-user-select: none;
+	width: 20px;
+	height: 20px;
+	margin: 1px 0;
+	padding: 1px;
+	border: 1px solid #DDD;
+}
+
+#svg_editor #cur_linecap:hover {
+	background-color: #FFC;
+}
+
+#svg_editor .stroke_tool.down #cur_linecap,
+#svg_editor .stroke_tool.down button {
+	border: 1px inset gray;
+	background: #F4E284;
+}
+
+#stroke_linecap > div {
+	width: 42px;
+}
+
+#stroke_linecap > div > * {
+	float: left;
+}
+
+ul#linecap_opts {
+	display: none;
+	position: absolute;
+	height: 90px;
+	z-index: 3;
+	margin: 0;
+	list-style: none;
+	padding-left: 0;
+}
+
+#svg_editor ul li.current {
+	background-color: #F4E284;
+}
+
+#svg_editor ul#linecap_opts li {
+	margin: 0;
+	border-radius: 0;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+}
+
 .color_tool > *:first-child {
 	-moz-border-radius-topleft: 4px;
 	-moz-border-radius-bottomleft: 4px;
@@ -747,12 +802,6 @@ span.zoom_tool {
 
 #opacity_dropdown li {
 	width: 140px;
-}
-
-
-#svg_editor #tools_bottom_3 {
-//	position: relative;
-	z-index: 2;
 }
 
 #svg_editor #copyright {
