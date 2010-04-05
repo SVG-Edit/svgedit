@@ -116,7 +116,7 @@
 	bottom: 0px;
 	right: 0px;
 	width: 0px;
-	overflow: hidden;
+	overflow: scroll;
 	margin: 0px;
 }
 
