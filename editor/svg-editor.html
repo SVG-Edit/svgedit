@@ -451,6 +451,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 					</select>
 				</label>
 				
+<!-- 
 				<label class="stroke_tool">
 					<span>Cap:</span>
 					<select id="stroke_linecap" title="Change Linecap type">
@@ -459,6 +460,13 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 						<option id="linecap_square" value="square">Square</option>
 					</select>
 				</label>
+ -->
+ 				<div class="stroke_tool dropdown" id="stroke_linecap">
+ 					<div>
+						<div id="cur_linecap" title="Linecap: Butt"></div>
+						<button></button>
+					</div>
+ 				</div>
 			
 				<div id="toggle_stroke_tools" title="Show/hide more stroke tools">
 					&gt;&gt;
@@ -496,6 +504,13 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	</div>
 	<div id="copyright">Powered by <a href="http://svg-edit.googlecode.com/" target="_blank">SVG-edit v2.5-preAlpha</a></div>
 </div>
+
+<ul id="linecap_opts">
+	<li class="tool_button current" id="linecap_butt" title="Linecap: Butt"></li>
+	<li class="tool_button" id="linecap_square" title="Linecap: Square"></li>
+	<li class="tool_button" id="linecap_round" title="Linecap: Round"></li>
+</ul>
+
 
 <!-- hidden divs -->
 <div id="color_picker"></div>
