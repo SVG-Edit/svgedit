@@ -300,6 +300,12 @@
 	</svg>
 </g>
 
+<g id="arrow_right_big">
+	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 50">
+	  <path stroke="#000000" fill="#000000" d="m0,0l0,50l25,-25l-25,-25z"/>
+	</svg>
+</g>
+
 <g id="arrow_down">
 	<svg viewBox="0 0 50 40" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 	  <path transform="rotate(90, 26, 13)" d="m14,-12l0,50l25,-25l-25,-25z" fill="#000000" stroke="#000000"/>
