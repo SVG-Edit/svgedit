@@ -6742,6 +6742,8 @@ function BatchCommand(text) {
 			
 			svgcontent.setAttribute('width', x);
 			svgcontent.setAttribute('height', y);
+			this.contentW = x;
+			this.contentH = y;
 			batchCmd.addSubCommand(new ChangeElementCommand(svgcontent, {"width":w, "height":h}));
 
 			svgcontent.setAttribute("viewBox", [0, 0, x/current_zoom, y/current_zoom].join(' '));
@@ -7866,23 +7868,29 @@ function BatchCommand(text) {
 		};
 	}
 	
+	this.contentW = this.getResolution().w;
+	this.contentH = this.getResolution().h;
+	
 	this.updateCanvas = function(w, h, w_orig, h_orig) {
 		svgroot.setAttribute("width", w);
 		svgroot.setAttribute("height", h);
 		var bg = $('#canvasBackground')[0];
 		var old_x = svgcontent.getAttribute('x');
 		var old_y = svgcontent.getAttribute('y');
-		var x = (w/2 - svgcontent.getAttribute('width')*current_zoom/2);
-		var y = (h/2 - svgcontent.getAttribute('height')*current_zoom/2);
-
+		var x = (w/2 - this.contentW*current_zoom/2);
+		var y = (h/2 - this.contentH*current_zoom/2);
+	
 		assignAttributes(svgcontent, {
+			width: this.contentW*current_zoom,
+			height: this.contentH*current_zoom,
 			'x': x,
-			'y': y
+			'y': y,
+			"viewBox" : "0 0 " + this.contentW + " " + this.contentH
 		});
 		
 		assignAttributes(bg, {
-			width: svgcontent.getAttribute('width') * current_zoom,
-			height: svgcontent.getAttribute('height') * current_zoom,
+			width: svgcontent.getAttribute('width'),
+			height: svgcontent.getAttribute('height'),
 			x: x,
 			y: y
 		});
