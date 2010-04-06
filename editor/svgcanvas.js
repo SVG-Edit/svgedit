@@ -6949,6 +6949,8 @@ function BatchCommand(text) {
 				
 				if(diff) continue;
 			}
+			this.contentW = attrs['width'];
+			this.contentH = attrs['height'];
 
 			// else could be a duplicate, iterate through stops
 			var stops = grad.getElementsByTagNameNS(svgns, "stop");
