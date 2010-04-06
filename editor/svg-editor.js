@@ -1064,6 +1064,10 @@
 					var elname = elem.nodeName;
 					var angle = svgCanvas.getRotationAngle(elem);
 					$('#angle').val(angle);
+
+					var blurval = svgCanvas.getBlur(elem);
+					$('#blur').val(blurval);
+					$('#blur_slider').slider('option', 'value', blurval);
 					
 					if(svgCanvas.addedNew) {
 						if(elname == 'image') {
@@ -1292,6 +1296,15 @@
 					$('#opac_slider').slider('option', 'value', val);
 				}
 				svgCanvas.setOpacity(val/100);
+			}
+		
+			var changeBlur = function(ctl, val) {
+				if(val == null) val = ctl.value;
+				$('#blur').val(val);
+				if(!ctl || !ctl.handle) {
+					$('#blur_slider').slider('option', 'value', val);
+				}
+				svgCanvas.setBlur(val);
 			}
 		
 			var operaRepaint = function() {
@@ -1670,6 +1683,22 @@
 					changeOpacity(ui);
 				}
 			});
+		
+			addDropDown('#blur_dropdown', function() {
+			});
+			
+			$("#blur_slider").slider({
+				max: 10,
+				step: .1,
+				stop: function() {
+					$('#blur_dropdown li').show();
+					$(window).mouseup();
+				},
+				slide: function(evt, ui){
+					changeBlur(ui);
+				}
+			});
+
 		
 			addDropDown('#zoom_dropdown', function() {
 				var item = $(this);
@@ -2568,6 +2597,13 @@
 			var supportsNonSS = (test_el.style.vectorEffect == 'non-scaling-stroke');
 			test_el.removeAttribute('style');
 			
+			// Use this to test support for blur element. Seems to work to test support in Webkit
+			var blur_test = svgdocbox.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
+			if(typeof blur_test.stdDeviationX === "undefined") {
+				$('#tool_blur').hide();
+			}
+			$(blur_test).remove();
+			
 			// Test for embedImage support (use timeout to not interfere with page load)
 			setTimeout(function() {
 				svgCanvas.embedImage('images/logo.png', function(datauri) {
@@ -3153,6 +3189,7 @@
 			$('#angle').SpinButton({ min: -180, max: 180, step: 5, callback: changeRotationAngle });
 			$('#font_size').SpinButton({ step: 1, min: 0.001, stepfunc: stepFontSize, callback: changeFontSize });
 			$('#group_opacity').SpinButton({ step: 5, min: 0, max: 100, callback: changeOpacity });
+			$('#blur').SpinButton({ step: .1, min: 0, max: 10, callback: changeBlur });
 			$('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom });
 			
 			window.onbeforeunload = function() { 
