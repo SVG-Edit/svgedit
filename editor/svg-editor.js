@@ -314,6 +314,10 @@
 					'#linecap_round':'linecap_round',
 					'#linecap_square':'linecap_square',
 					
+					'#linejoin_miter,#cur_linejoin':'linejoin_miter',
+					'#linejoin_round':'linejoin_round',
+					'#linejoin_bevel':'linejoin_bevel',
+					
 					'#url_notice':'warning',
 					
 					'#layer_up':'go_up',
@@ -1020,8 +1024,9 @@
 					
 					$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1);
 					$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
-					$('#stroke_linejoin').val(selectedElement.getAttribute("stroke-linejoin")||"miter");
-// 					$('#stroke_linecap').val(selectedElement.getAttribute("stroke-linecap")||"butt");
+
+					var attr = selectedElement.getAttribute("stroke-linejoin") || 'miter';
+					$('#linejoin_' + attr).mouseup();
 
 					var attr = selectedElement.getAttribute("stroke-linecap") || 'butt';
 					$('#linecap_' + attr).mouseup();
@@ -1687,6 +1692,15 @@
 				var icon = $.getSvgIcon(this.id).clone();
 				$('#cur_linecap').empty().append(icon);
 				$.resizeSvgIcons({'#cur_linecap .svg_icon': 20});
+			}, true);
+			
+			addAltDropDown('#stroke_linejoin', '#linejoin_opts', function() {
+				var val = this.id.split('_')[1];
+				svgCanvas.setStrokeAttr('stroke-linejoin', val);
+				operaRepaint();
+				var icon = $.getSvgIcon(this.id).clone();
+				$('#cur_linejoin').empty().append(icon);
+				$.resizeSvgIcons({'#cur_linejoin .svg_icon': 20});
 			}, true);
 			
 			/*

@@ -631,6 +631,7 @@ span.zoom_tool {
 	display: none;
 	background: #E8E8E8;
 	height: 350px;
+	z-index: 4;
 }
 
 #svg_editor .tools_flyout {
@@ -720,7 +721,7 @@ span.zoom_tool {
 	background: #F0F0F0;
 }
 
-#svg_editor #cur_linecap {
+#svg_editor .stroke_tool div div {
 	-moz-user-select: none;
 	width: 20px;
 	height: 20px;
@@ -729,25 +730,25 @@ span.zoom_tool {
 	border: 1px solid #DDD;
 }
 
-#svg_editor #cur_linecap:hover {
+#svg_editor .stroke_tool:hover div > * {
 	background-color: #FFC;
 }
 
-#svg_editor .stroke_tool.down #cur_linecap,
+#svg_editor .stroke_tool.down div div,
 #svg_editor .stroke_tool.down button {
 	border: 1px inset gray;
 	background: #F4E284;
 }
 
-#stroke_linecap > div {
+.stroke_tool > div {
 	width: 42px;
 }
 
-#stroke_linecap > div > * {
+.stroke_tool > div > * {
 	float: left;
 }
 
-ul#linecap_opts {
+#option_lists ul {
 	display: none;
 	position: absolute;
 	height: 90px;
@@ -761,7 +762,7 @@ ul#linecap_opts {
 	background-color: #F4E284;
 }
 
-#svg_editor ul#linecap_opts li {
+#svg_editor #option_lists ul li {
 	margin: 0;
 	border-radius: 0;
 	-moz-border-radius: 0;
