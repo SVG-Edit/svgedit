@@ -398,6 +398,7 @@
 	opacity: 1;
 	pointer-events: stroke;
 	vector-effect: non-scaling-stroke;
+	filter: none;
 }
 
 #workarea.wireframe #svgcontent text {
