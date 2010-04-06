@@ -7084,6 +7084,77 @@ function BatchCommand(text) {
 		this.changeSelectedAttribute("opacity", val);
 	};
 
+	this.getBlur = function() {
+		var val = 0;
+		var elem = selectedElements[0];
+		
+		if(elem) {
+			var filter_url = elem.getAttribute('filter');
+			if(filter_url) {
+				var blur = getElem(elem.id + '_blur');
+				if(blur) {
+					val = blur.firstChild.getAttribute('stdDeviation');
+				}
+			}
+		}
+		return val;
+	}
+
+	this.setBlur = function(val) {
+		// Looks for associated blur, creates one if not found
+		var elem_id = selectedElements[0].id;
+		var filter = getElem(elem_id + '_blur');
+		
+		val -= 0;
+		
+		// Blur found!
+		if(filter) {
+			if(val === 0) {
+				$(filter).remove();
+			} else {
+				filter.firstChild.setAttribute('stdDeviation', val);
+			}
+		} else {
+			// Not found, so create
+			var newblur = addSvgElementFromJson({ "element": "feGaussianBlur",
+				"attr": {
+					"in": 'SourceGraphic',
+					"stdDeviation": val
+				}
+			});
+			
+			filter = addSvgElementFromJson({ "element": "filter",
+				"attr": {
+					"id": elem_id + '_blur'
+				}
+			});
+			
+			filter.appendChild(newblur);
+			findDefs().appendChild(filter);
+		}
+		
+		if(val === 0) {
+			selectedElements[0].removeAttribute("filter");
+		} else {
+			this.changeSelectedAttribute("filter", 'url(#' + elem_id + '_blur)');
+			
+			if(val > 3) {
+				// TODO: Create algorithm here where size is based on expected blur
+				assignAttributes(filter, {
+					x: '-50%',
+					y: '-50%',
+					width: '200%',
+					height: '200%',
+				}, 100);
+			} else {
+				filter.removeAttribute('x');
+				filter.removeAttribute('y');
+				filter.removeAttribute('width');
+				filter.removeAttribute('height');
+			}
+		}
+	};
+
 	this.getFillOpacity = function() {
 		return cur_shape.fill_opacity;
 	};

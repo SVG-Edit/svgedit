@@ -166,6 +166,19 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			<input id="angle" title="Change rotation angle" size="2" value="0" type="text"/>
 		</label>
 		
+		<div class="toolset" id="tool_blur">
+			<label>
+				<span id="blurLabel">blur:</span>
+				<input id="blur" title="Change gaussian blur value" size="2" value="0" type="text"/>
+			</label>
+			<div id="blur_dropdown" class="dropdown">
+				<button></button>
+				<ul>
+					<li class="special"><div id="blur_slider"></div></li>
+				</ul>
+			</div>
+		</div>
+		
 		<div id="xy_panel" class="toolset">
 			<label>
 				x: <input id="selected_x" class="attr_changer" title="Change X coordinate" size="3" data-attr="x"/>
