@@ -440,27 +440,14 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 						<option value="5,2,2,2,2,2">- ..</option>
 					</select>
 				</label>	
-				
-				<!-- TODO: Turn these into icon lists, rather than text ones -->
-				<label class="stroke_tool">
-					<span>Join:</span>
-					<select id="stroke_linejoin" title="Change Linejoin type">
-						<option id="linejoin_miter" selected="selected" value="miter">Miter</option>
-						<option id="linejoin_round" value="round">Round</option>
-						<option id="linejoin_bevel" value="bevel">Bevel</option>
-					</select>
-				</label>
-				
-<!-- 
-				<label class="stroke_tool">
-					<span>Cap:</span>
-					<select id="stroke_linecap" title="Change Linecap type">
-						<option id="linecap_butt" selected="selected" value="butt">Butt</option>
-						<option id="linecap_round" value="round">Round</option>
-						<option id="linecap_square" value="square">Square</option>
-					</select>
-				</label>
- -->
+
+ 				<div class="stroke_tool dropdown" id="stroke_linejoin">
+ 					<div>
+						<div id="cur_linejoin" title="Linejoin: Miter"></div>
+						<button></button>
+					</div>
+ 				</div>
+ 				
  				<div class="stroke_tool dropdown" id="stroke_linecap">
  					<div>
 						<div id="cur_linecap" title="Linecap: Butt"></div>
@@ -472,9 +459,6 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 					&gt;&gt;
 				</div>
 				
-
-				
-
 			</div>
 		</div>
 	
@@ -505,11 +489,19 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<div id="copyright">Powered by <a href="http://svg-edit.googlecode.com/" target="_blank">SVG-edit v2.5-preAlpha</a></div>
 </div>
 
-<ul id="linecap_opts">
-	<li class="tool_button current" id="linecap_butt" title="Linecap: Butt"></li>
-	<li class="tool_button" id="linecap_square" title="Linecap: Square"></li>
-	<li class="tool_button" id="linecap_round" title="Linecap: Round"></li>
-</ul>
+<div id="option_lists">
+	<ul id="linejoin_opts">
+		<li class="tool_button current" id="linejoin_miter" title="Linejoin: Miter"></li>
+		<li class="tool_button" id="linejoin_round" title="Linecap: Round"></li>
+		<li class="tool_button" id="linejoin_bevel" title="Linecap: Bevel"></li>
+	</ul>
+	
+	<ul id="linecap_opts">
+		<li class="tool_button current" id="linecap_butt" title="Linecap: Butt"></li>
+		<li class="tool_button" id="linecap_square" title="Linecap: Square"></li>
+		<li class="tool_button" id="linecap_round" title="Linecap: Round"></li>
+	</ul>
+</div>
 
 
 <!-- hidden divs -->
