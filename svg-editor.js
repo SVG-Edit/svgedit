@@ -1298,13 +1298,13 @@
 				svgCanvas.setOpacity(val/100);
 			}
 		
-			var changeBlur = function(ctl, val) {
+			var changeBlur = function(ctl, val, noUndo) {
 				if(val == null) val = ctl.value;
 				$('#blur').val(val);
 				if(!ctl || !ctl.handle) {
 					$('#blur_slider').slider('option', 'value', val);
 				}
-				svgCanvas.setBlur(val);
+				svgCanvas.setBlur(val, noUndo);
 			}
 		
 			var operaRepaint = function() {
@@ -1690,12 +1690,13 @@
 			$("#blur_slider").slider({
 				max: 10,
 				step: .1,
-				stop: function() {
+				stop: function(evt, ui) {
+					changeBlur(ui);
 					$('#blur_dropdown li').show();
 					$(window).mouseup();
 				},
 				slide: function(evt, ui){
-					changeBlur(ui);
+					changeBlur(ui, null, true);
 				}
 			});
 

@@ -7100,7 +7100,7 @@ function BatchCommand(text) {
 		return val;
 	}
 
-	this.setBlur = function(val) {
+	this.setBlur = function(val, noUndo) {
 		// Looks for associated blur, creates one if not found
 		var elem_id = selectedElements[0].id;
 		var filter = getElem(elem_id + '_blur');
@@ -7112,7 +7112,12 @@ function BatchCommand(text) {
 			if(val === 0) {
 				$(filter).remove();
 			} else {
-				filter.firstChild.setAttribute('stdDeviation', val);
+				var elem = filter.firstChild;
+				if(noUndo) {
+					this.changeSelectedAttributeNoUndo('stdDeviation', val, [elem]);
+				} else {
+					this.changeSelectedAttribute('stdDeviation', val, [elem]);
+				}
 			}
 		} else {
 			// Not found, so create
