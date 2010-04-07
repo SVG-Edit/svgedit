@@ -1140,6 +1140,7 @@ function BatchCommand(text) {
 		var handle = svgroot.suspendRedraw(60);
 		var defaults = {
 			'fill-opacity':1,
+			'stop-opacity':1,
 			'opacity':1,
 			'stroke':'none',
 			'stroke-dasharray':'none',
@@ -1600,15 +1601,40 @@ function BatchCommand(text) {
 				// Process root element separately
 				var res = canvas.getResolution();
 				out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'"');
+				
+				var nsuris = {};
+				
+				// Check elements for namespaces, add if found
+				$(elem).find('*').andSelf().each(function() {
+					var el = this;
+					$.each(this.attributes, function(i, attr) {
+						var uri = attr.namespaceURI;
+						if(uri && !nsuris[uri] && nsMap[uri] !== 'xmlns') {
+							nsuris[uri] = true;
+// 							console.log('add', nsMap[uri]);
+// 							if(nsMap[uri] == 'xmlns') {
+// 								console.log('hm',el, attr.nodeName);
+// 							}
+							out.push(" xmlns:" + nsMap[uri] + '="' + uri +'"');
+						}
+					});
+				});
+				
 				var i = attrs.length;
 				while (i--) {
 					attr = attrs.item(i);
 					var attrVal = toXml(attr.nodeValue);
+					
+					// Namespaces have already been dealt with, so skip
+					if(attr.nodeName.indexOf('xmlns:') === 0) continue;
+					
 					// only serialize attributes we don't use internally
 					if (attrVal != "" && 
 						$.inArray(attr.localName, ['width','height','xmlns','x','y','viewBox','id','overflow']) == -1) 
 					{
+
 						if(!attr.namespaceURI || nsMap[attr.namespaceURI]) {
+							console.log(!attr.namespaceURI, nsMap[attr.namespaceURI]);
 							out.push(' '); 
 							out.push(attr.nodeName); out.push("=\"");
 							out.push(attrVal); out.push("\"");
@@ -5982,6 +6008,9 @@ function BatchCommand(text) {
 			}
 			
 			content.attr(attrs);
+			this.contentW = attrs['width'];
+			this.contentH = attrs['height'];
+			
 			batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
 			// update root to the correct size
 			var changes = content.attr(["width", "height"]);
@@ -6949,9 +6978,7 @@ function BatchCommand(text) {
 				
 				if(diff) continue;
 			}
-			this.contentW = attrs['width'];
-			this.contentH = attrs['height'];
-
+			
 			// else could be a duplicate, iterate through stops
 			var stops = grad.getElementsByTagNameNS(svgns, "stop");
 			var ostops = og.getElementsByTagNameNS(svgns, "stop");
