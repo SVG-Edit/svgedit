@@ -1711,10 +1711,6 @@
 				}
 			}, true);
 			
-// 			$('#cur_linecap').mousedown(function() {
-// 				$('#linecap_opts').show();
-// 			});
-			
 			addAltDropDown('#stroke_linecap', '#linecap_opts', function() {
 				var val = this.id.split('_')[1];
 				svgCanvas.setStrokeAttr('stroke-linecap', val);
@@ -2267,7 +2263,8 @@
 						'line-height': {s: '15px'}
 					},
 					"#tools_bottom_2": {
-						'width': {l: '295px', xl: '355px'}
+						'width': {l: '295px', xl: '355px'},
+						'top': {s: '4px'}
 					},
 					"#tools_top > div, #tools_top": {
 						'line-height': {s: '17px', l: '34px', xl: '50px'}

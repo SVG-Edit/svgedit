@@ -752,7 +752,7 @@ span.zoom_tool {
 #option_lists ul {
 	display: none;
 	position: absolute;
-	height: 90px;
+	height: auto;
 	z-index: 3;
 	margin: 0;
 	list-style: none;
