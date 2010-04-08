@@ -963,12 +963,7 @@
 			// updates the toolbar (colors, opacity, etc) based on the selected element
 			// This function also updates the opacity and id elements that are in the context panel
 			var updateToolbar = function() {
-				if (selectedElement != null && 
-					selectedElement.tagName != "image" &&
-					selectedElement.tagName != "text" &&
-					selectedElement.tagName != "foreignObject" &&
-					selectedElement.tagName != "g")
-				{
+				if (selectedElement != null && $.inArray(selectedElement.tagName, ['image', 'text', 'foreignObject', 'g', 'a']) === -1) {
 					// get opacity values
 					var fillOpacity = parseFloat(selectedElement.getAttribute("fill-opacity"));
 					if (isNaN(fillOpacity)) {
@@ -1062,6 +1057,15 @@
 					#ellipse_panel, #line_panel, #text_panel, #image_panel').hide();
 				if (elem != null) {
 					var elname = elem.nodeName;
+					
+					// If this is a link with no transform and one child, pretend
+					// its child is selected
+// 					console.log('go', elem)
+// 					if(elname === 'a') { // && !$(elem).attr('transform')) {
+// 						elem = elem.firstChild;
+// 					}
+
+					
 					var angle = svgCanvas.getRotationAngle(elem);
 					$('#angle').val(angle);
 
