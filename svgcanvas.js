@@ -1600,6 +1600,7 @@ function BatchCommand(text) {
 			if(elem.id == 'svgcontent') {
 				// Process root element separately
 				var res = canvas.getResolution();
+				console.log('res',res);
 				out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'"');
 				
 				var nsuris = {};
@@ -1611,10 +1612,6 @@ function BatchCommand(text) {
 						var uri = attr.namespaceURI;
 						if(uri && !nsuris[uri] && nsMap[uri] !== 'xmlns') {
 							nsuris[uri] = true;
-// 							console.log('add', nsMap[uri]);
-// 							if(nsMap[uri] == 'xmlns') {
-// 								console.log('hm',el, attr.nodeName);
-// 							}
 							out.push(" xmlns:" + nsMap[uri] + '="' + uri +'"');
 						}
 					});
@@ -1634,7 +1631,6 @@ function BatchCommand(text) {
 					{
 
 						if(!attr.namespaceURI || nsMap[attr.namespaceURI]) {
-							console.log(!attr.namespaceURI, nsMap[attr.namespaceURI]);
 							out.push(' '); 
 							out.push(attr.nodeName); out.push("=\"");
 							out.push(attrVal); out.push("\"");
@@ -2615,6 +2611,11 @@ function BatchCommand(text) {
 				}
 			}
 		}
+		if(selectedElements[0] && selectedElements.length === 1 && selectedElements[0].tagName == 'a') {
+			// Make "a" element's child be the selected element 
+			selectedElements[0] = selectedElements[0].firstChild;
+		}
+		
 		call("selected", selectedElements);
 		
 		if (showGrips || selectedElements.length == 1) {
@@ -5119,12 +5120,17 @@ function BatchCommand(text) {
 			},
 			
 			clear: function(remove) {
-				if(remove && current_mode == "path") {
+				if (current_mode == "path" && current_path_pts.length > 0) {
 					var elem = getElem(getId());
-					if(elem) elem.parentNode.removeChild(elem);
+					$(getElem("path_stretch_line")).remove();
+					$(elem).remove();
+					$(getElem("pathpointgrip_container")).find('*').attr('display', 'none');
+					current_path_pts = [];
+					started = false;
+				} else if (current_mode == "pathedit") {
+					this.toSelectMode();
 				}
 				if(path) path.init().show(false);
-				current_path = null;
 			},
 			resetOrientation: function(path) {
 				if(path == null || path.nodeName != 'path') return false;
@@ -5162,20 +5168,6 @@ function BatchCommand(text) {
 			zoomChange: function() {
 				if(current_mode == "pathedit") {
 					path.update();
-				}
-			},
-			modeChange: function() {
-				// toss out half-drawn path
-				if (current_mode == "path" && current_path_pts.length > 0) {
-					var elem = getElem(getId());
-					elem.parentNode.removeChild(elem);
-					this.clear();
-					canvas.clearSelection();
-					started = false;
-				}
-				else if (current_mode == "pathedit") {
-					this.clear();
-					this.toSelectMode();
 				}
 			},
 			getNodePoint: function() {
@@ -6682,8 +6674,8 @@ function BatchCommand(text) {
 // 		return {'w':vb[2], 'h':vb[3], 'zoom': current_zoom};
 			
 		return {
-			'w':svgcontent.getAttribute("width"),
-			'h':svgcontent.getAttribute("height"),
+			'w':svgcontent.getAttribute("width")/current_zoom,
+			'h':svgcontent.getAttribute("height")/current_zoom,
 			'zoom': current_zoom
 		};
 	};
@@ -6851,7 +6843,7 @@ function BatchCommand(text) {
 	};
 
 	this.setMode = function(name) {
-		pathActions.modeChange();
+		pathActions.clear(true);
 		
 		cur_properties = (selectedElements[0] && selectedElements[0].nodeName == 'text') ? cur_text : cur_shape;
 		current_mode = name;
