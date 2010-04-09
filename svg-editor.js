@@ -2395,6 +2395,7 @@
 		
 			function setImageURL(url) {
 				if(!url) url = default_img_url;
+				
 				svgCanvas.setImageURL(url);
 				$('#image_url').val(url);
 				
