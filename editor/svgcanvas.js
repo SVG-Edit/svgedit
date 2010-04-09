@@ -197,6 +197,7 @@ function ChangeElementCommand(elem, attrs, text) {
 	this.oldValues = attrs;
 	for (var attr in attrs) {
 		if (attr == "#text") this.newValues[attr] = elem.textContent;
+		else if (attr == "#href") this.newValues[attr] = elem.getAttributeNS(xlinkns, "href");
 		else this.newValues[attr] = elem.getAttribute(attr);
 	}
 
@@ -205,6 +206,7 @@ function ChangeElementCommand(elem, attrs, text) {
 		for(var attr in this.newValues ) {
 			if (this.newValues[attr]) {
 				if (attr == "#text") this.elem.textContent = this.newValues[attr];
+				else if (attr == "#href") this.elem.setAttributeNS(xlinkns, "xlink:href", this.newValues[attr])
 				else this.elem.setAttribute(attr, this.newValues[attr]);
 			}
 			else {
@@ -241,6 +243,7 @@ function ChangeElementCommand(elem, attrs, text) {
 		for(var attr in this.oldValues ) {
 			if (this.oldValues[attr]) {
 				if (attr == "#text") this.elem.textContent = this.oldValues[attr];
+				else if (attr == "#href") this.elem.setAttributeNS(xlinkns, "xlink:href", this.oldValues[attr]);
 				else this.elem.setAttribute(attr, this.oldValues[attr]);
 			}
 			else {
@@ -3634,7 +3637,8 @@ function BatchCommand(text) {
 				case "rect":
 				case "image":
 					var attrs = $(element).attr(["width", "height"]);
-					keep = (attrs.width != 0 || attrs.height != 0);
+					// Image should be kept regardless of size (use inherit dimensions later)
+					keep = (attrs.width != 0 || attrs.height != 0) || current_mode === "image";
 					break;
 				case "circle":
 					keep = (element.getAttribute('r') != 0);
@@ -7430,7 +7434,44 @@ function BatchCommand(text) {
 	};
 
 	this.setImageURL = function(val) {
-		svgCanvas.changeSelectedAttribute("#href", val);
+		var elem = selectedElements[0];
+		if(!elem) return;
+		
+		var attrs = $(elem).attr(['width', 'height']);
+		var setsize = (!attrs.width || !attrs.height);
+
+		var cur_href = elem.getAttributeNS(xlinkns, "href");
+		
+		// Do nothing if no URL change or size change
+		if(cur_href !== val) {
+			setsize = true;
+		} else if(!setsize) return;
+
+		var batchCmd = new BatchCommand("Change Image URL");
+	
+		elem.setAttributeNS(xlinkns, "xlink:href", val);
+		batchCmd.addSubCommand(new ChangeElementCommand(elem, {
+			"#href": cur_href
+		}));
+	
+		if(setsize) {
+			$(new Image()).load(function() {
+				var changes = $(elem).attr(['width', 'height']);
+			
+				$(elem).attr({
+					width: this.width,
+					height: this.height
+				});
+				
+				selectorManager.requestSelector(elem).resize();
+				
+				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
+				addCommandToHistory(batchCmd);
+				call("changed", elem);
+			}).attr('src',val);
+		} else {
+			addCommandToHistory(batchCmd);
+		}
 	};
 
 	this.setRectRadius = function(val) {
