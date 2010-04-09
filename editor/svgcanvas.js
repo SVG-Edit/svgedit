@@ -2170,6 +2170,10 @@ function BatchCommand(text) {
 					ty = 0;
 					if (child.nodeType == 1) {
 						var childTlist = canvas.getTransformList(child);
+
+						// some children might not have a transform (<metadata>, <defs>, etc)
+						if (!childTlist) continue;
+
 						var m = transformListToTransform(childTlist).matrix;
 					
 						var angle = canvas.getRotationAngle(child);
