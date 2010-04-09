@@ -3254,7 +3254,6 @@
 				var w = workarea.width(), h = workarea.height();
 				var w_orig = w, h_orig = h;
 				var zoom = svgCanvas.getZoom();
-				var res = svgCanvas.getResolution();
 				var w_area = workarea;
 				var cnvs = $("#svgcanvas");
 				
@@ -3264,8 +3263,8 @@
 				};
 				
 				var multi = curConfig.canvas_expansion;
-				w = Math.max(w_orig, res.w * multi * zoom);
-				h = Math.max(h_orig, res.h * multi * zoom);
+				w = Math.max(w_orig, svgCanvas.contentW * zoom * multi);
+				h = Math.max(h_orig, svgCanvas.contentH * zoom * multi);
 				
 				if(w == w_orig && h == h_orig) {
 					workarea.css('overflow','hidden');
@@ -3294,8 +3293,8 @@
 					var new_y = new_can_y + old_dist_y * ratio;
 		
 					new_ctr = {
-						x: new_x, // + res.w/2,
-						y: new_y //+ res.h/2,
+						x: new_x,
+						y: new_y
 					};
 					
 				} else {
