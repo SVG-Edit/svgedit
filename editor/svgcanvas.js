@@ -1603,7 +1603,6 @@ function BatchCommand(text) {
 			if(elem.id == 'svgcontent') {
 				// Process root element separately
 				var res = canvas.getResolution();
-				console.log('res',res);
 				out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'"');
 				
 				var nsuris = {};
@@ -3966,6 +3965,9 @@ function BatchCommand(text) {
 			var pt = svgroot.createSVGPoint();
 			pt.x = mouse_x;
 			pt.y = mouse_y;
+
+			// No content, so return 0
+			if(chardata.length == 1) return 0;
 			
 			// Determine if cursor should be on left or right of character
 			var charpos = curtext.getCharNumAtPosition(pt);
@@ -3998,7 +4000,7 @@ function BatchCommand(text) {
 			var end = Math.max(i1, i2);
 			setSelection(start, end, apply);
 		}
-
+			
 		function screenToPt(x_in, y_in) {
 			var out = {
 				x: x_in,
@@ -4050,7 +4052,7 @@ function BatchCommand(text) {
 				var pt = screenToPt(mouse_x, mouse_y);
 				setEndSelectionFromPoint(pt.x, pt.y, true);
 				if(last_x === mouse_x && last_y === mouse_y && evt.target !== curtext) {
-					textActions.toSelectMode();
+					textActions.toSelectMode(true);
 				}
 			},
 			setCursor: setCursor,
@@ -4069,23 +4071,35 @@ function BatchCommand(text) {
 					setCursorFromPoint(pt.x, pt.y);
 				}
 			},
-			toSelectMode: function() {
+			toSelectMode: function(selectElem) {
 				current_mode = "select";
 				clearInterval(blinker);
 				blinker = null;
 				if(selblock) $(selblock).attr('display','none');
 				if(cursor) $(cursor).attr('visibility','hidden');
-				
-				canvas.clearSelection();
 				$(curtext).css('cursor', 'move');
 				
-				call("selected", [curtext]);
-				canvas.addToSelection([curtext], true);
+				if(selectElem) {
+					canvas.clearSelection();
+					$(curtext).css('cursor', 'move');
+					
+					call("selected", [curtext]);
+					canvas.addToSelection([curtext], true);
+				}
+				if(!curtext.textContent.length) {
+					// No content, so delete
+					canvas.deleteSelectedElements();
+				}
 				
 				curtext = false;
 			},
 			setInputElem: function(elem) {
 				textinput = elem;
+			},
+			clear: function() {
+				if(current_mode == "textedit") {
+					textActions.toSelectMode();
+				}
 			},
 			init: function(inputElem) {
 				if(!curtext) return;
@@ -4114,7 +4128,7 @@ function BatchCommand(text) {
 				});
 
 				if(!len) {
-					var end = {x: textbb.x + (textbb.width/2)};
+					var end = {x: textbb.x + (textbb.width/2), width: 0};
 				}
 				
 				for(var i=0; i<len; i++) {
@@ -4136,7 +4150,8 @@ function BatchCommand(text) {
 
 				// Add a last bbox for cursor at end of text
 				chardata.push({
-					x: end.x
+					x: end.x,
+					width: 0
 				});
 				
 			}
@@ -7159,6 +7174,7 @@ function BatchCommand(text) {
 
 	this.setMode = function(name) {
 		pathActions.clear(true);
+		textActions.clear();
 		
 		cur_properties = (selectedElements[0] && selectedElements[0].nodeName == 'text') ? cur_text : cur_shape;
 		current_mode = name;
