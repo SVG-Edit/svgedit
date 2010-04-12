@@ -3183,7 +3183,7 @@ function BatchCommand(text) {
 							"xml:space": "preserve"
 						}
 					});
-					newText.textContent = "text";
+// 					newText.textContent = "text";
 					break;
 				case "path":
 					// Fall through
@@ -3709,7 +3709,8 @@ function BatchCommand(text) {
 					break;
 				case "text":
 					keep = true;
-					canvas.clearSelection();
+					canvas.addToSelection([element]);
+					textActions.start(element);
 					break;
 				case "path":
 					// set element to null here so that it is not removed nor finalized
@@ -3865,7 +3866,7 @@ function BatchCommand(text) {
 		
 	}());
 
-	var textActions = function() {
+	var textActions = canvas.textActions = function() {
 		var curtext;
 		var textinput;
 		var cursor;
@@ -3873,24 +3874,31 @@ function BatchCommand(text) {
 		var blinker;
 		var chardata = [];
 		var textbb;
-		
+		var xform, imatrix;
 		
 		function setCursor(index) {
+			var empty = (textinput.value === "");
+		
 			if(!arguments.length) {
-				index = textinput.selectionEnd;
+				if(empty) {
+					index = 0;
+				} else {
+					index = textinput.selectionEnd;
+				}
 			}
 			
 			var charbb;
 			charbb = chardata[index];
-		
-			textinput.setSelectionRange(index, index);
+			if(!empty) {
+				textinput.setSelectionRange(index, index);
+			}
 			cursor = getElem("text_cursor");
 			if (!cursor) {
 				cursor = document.createElementNS(svgns, "line");
 				assignAttributes(cursor, {
 					'id': "text_cursor",
 					'stroke': "#333",
-					'stroke-width': "1"
+					'stroke-width': 1
 				});
 				cursor = getElem("selectorParentGroup").appendChild(cursor);
 			}
@@ -3904,12 +3912,13 @@ function BatchCommand(text) {
 			}
 				
 			assignAttributes(cursor, {
-				x1: charbb.x,
-				y1: textbb.y,
-				x2: charbb.x,
-				y2: textbb.y + textbb.height,
+				x1: charbb.x * current_zoom,
+				y1: textbb.y * current_zoom,
+				x2: charbb.x * current_zoom,
+				y2: (textbb.y + textbb.height) * current_zoom,
 				visibility: 'visible',
-				display: 'inline'
+				display: 'inline',
+				transform: (xform || '')
 			});
 			
 			if(selblock) selblock.setAttribute('width', 0);
@@ -3943,11 +3952,12 @@ function BatchCommand(text) {
 			
 			cursor.setAttribute('visibility', 'hidden');
 			assignAttributes(selblock, {
-				'x': startbb.x,
-				'y': textbb.y,
-				'width': endbb.x - startbb.x,
-				'height': textbb.height,
-				'display': 'inline'
+				'x': startbb.x * current_zoom,
+				'y': textbb.y * current_zoom,
+				'width': (endbb.x - startbb.x) * current_zoom,
+				'height': textbb.height * current_zoom,
+				'display': 'inline',
+				'transform': (xform || '')
 			});
 		}
 		
@@ -3989,6 +3999,24 @@ function BatchCommand(text) {
 			setSelection(start, end, apply);
 		}
 
+		function screenToPt(x_in, y_in) {
+			var out = {
+				x: x_in,
+				y: y_in
+			}
+			
+			if(xform) {
+				var pt = transformPoint(out.x, out.y, imatrix);
+				out.x = pt.x;
+				out.y = pt.y;
+			}
+			
+			out.x /= current_zoom;
+			out.y /= current_zoom;			
+			
+			return out;
+		}
+
 		var last_x, last_y;
 
 		return {
@@ -4000,17 +4028,27 @@ function BatchCommand(text) {
 					curtext = target;
 				}	
 			},
+			start: function(elem) {
+				curtext = elem;
+				textActions.toEditMode();
+			},
 			mouseDown: function(evt, mouse_target, start_x, start_y) {
+				var pt = screenToPt(start_x, start_y);
+			
 				textinput.focus();
-				setCursorFromPoint(start_x, start_y);
+				setCursorFromPoint(pt.x, pt.y);
 				last_x = start_x;
 				last_y = start_y;
+				
+				// TODO: Find way to block native selection
 			},
 			mouseMove: function(mouse_x, mouse_y) {
-				setEndSelectionFromPoint(mouse_x, mouse_y);
+				var pt = screenToPt(mouse_x, mouse_y);
+				setEndSelectionFromPoint(pt.x, pt.y);
 			},			
 			mouseUp: function(evt, mouse_x, mouse_y) {
-				setEndSelectionFromPoint(mouse_x, mouse_y, true);
+				var pt = screenToPt(mouse_x, mouse_y);
+				setEndSelectionFromPoint(pt.x, pt.y, true);
 				if(last_x === mouse_x && last_y === mouse_y && evt.target !== curtext) {
 					textActions.toSelectMode();
 				}
@@ -4024,37 +4062,60 @@ function BatchCommand(text) {
 				textActions.init();
 				$(curtext).css('cursor', 'text');
 				
-				setCursorFromPoint(x, y);
+				if(!arguments.length) {
+					setCursor();
+				} else {
+					var pt = screenToPt(x, y);
+					setCursorFromPoint(pt.x, pt.y);
+				}
 			},
 			toSelectMode: function() {
 				current_mode = "select";
 				clearInterval(blinker);
+				blinker = null;
 				if(selblock) $(selblock).attr('display','none');
-				if(cursor) $(cursor).attr('display','none');
+				if(cursor) $(cursor).attr('visibility','hidden');
 				
 				canvas.clearSelection();
+				$(curtext).css('cursor', 'move');
 				
 				call("selected", [curtext]);
 				canvas.addToSelection([curtext], true);
 				
 				curtext = false;
 			},
-			init: function() {
+			setInputElem: function(elem) {
+				textinput = elem;
+			},
+			init: function(inputElem) {
+				if(!curtext) return;
+			
+				if(!curtext.parentNode) {
+					curtext = selectedElements[0];
+					selectorManager.requestSelector(curtext).showGrips(false);
+				}
+			
 				var str = curtext.textContent;
 				var len = str.length;
 				
+				xform = curtext.getAttribute('transform');
+				if(xform) {
+					var tlist = canvas.getTransformList(curtext);
+					imatrix = transformListToTransform(tlist).matrix.inverse();
+				}
+				
 				textbb = canvas.getBBox(curtext);
 				chardata = Array(len);
-				
-				// TODO: This element should be dynamically created and hidden
-				// For now we use the svg-editor one for visibility purposes
-				textinput = $('#text')[0];
 				textinput.focus();
 				$(textinput).blur(function() {
 					if(cursor) {
 						cursor.setAttribute('visibility', 'hidden');
 					}
 				});
+
+				if(!len) {
+					var end = {x: textbb.x + (textbb.width/2)};
+				}
 				
 				for(var i=0; i<len; i++) {
 					var start = curtext.getStartPositionOfChar(i);
@@ -4072,10 +4133,12 @@ function BatchCommand(text) {
 					};
 				}
 				
+
 				// Add a last bbox for cursor at end of text
 				chardata.push({
 					x: end.x
 				});
+				
 			}
 		}
 	}();
@@ -7675,7 +7738,7 @@ function BatchCommand(text) {
 
 	this.setTextContent = function(val) {
 		this.changeSelectedAttribute("#text", val);
-		textActions.init();
+		textActions.init(val);
 		textActions.setCursor();
 	};
 	
@@ -7739,10 +7802,6 @@ function BatchCommand(text) {
 	
 	var ffClone = function(elem) {
 		// Hack for Firefox bugs where text element features aren't updated
-		
-		// May not be necessary, so let's try disabling.
-		return elem;
-		
 		if(navigator.userAgent.indexOf('Gecko/') == -1) return elem;
 		var clone = elem.cloneNode(true)
 		elem.parentNode.insertBefore(clone, elem);

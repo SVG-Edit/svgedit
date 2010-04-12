@@ -1221,6 +1221,7 @@
 			svgCanvas.bind("saved", saveHandler);
 			svgCanvas.bind("zoomed", zoomChanged);
 			svgCanvas.bind("extension_added", extAdded);
+			svgCanvas.textActions.setInputElem($("#text")[0]);
 		
 			var str = '<div class="palette_item" data-rgb="none"></div>'
 			$.each(palette, function(i,item){
