@@ -608,6 +608,11 @@ span.zoom_tool {
 	position: relative;
 }
 
+#text {
+	position: absolute;
+	left: -9999px;
+}
+
 #tool_bold span, #tool_italic span { 
 	position: absolute;
 	width: 100%;
