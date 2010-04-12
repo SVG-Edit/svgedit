@@ -2067,7 +2067,7 @@
 				var res = svgCanvas.getResolution();
 				$('#canvas_width').val(res.w);
 				$('#canvas_height').val(res.h);
-				$('#canvas_title').val(svgCanvas.getImageTitle());
+				$('#canvas_title').val(svgCanvas.getDocumentTitle());
 				
 				// Update background color with current one
 				var blocks = $('#bg_blocks div');
@@ -2103,7 +2103,7 @@
 					hideSourceEditor();
 					zoomImage();
 					populateLayers();
-					setTitle(svgCanvas.getImageTitle());
+					setTitle(svgCanvas.getDocumentTitle());
 				}
 		
 				if (!svgCanvas.setSvgString($('#svg_source_textarea').val())) {
@@ -2127,7 +2127,7 @@
 				// set title
 				var new_title = $('#canvas_title').val();
 				setTitle(new_title);
-				svgCanvas.setImageTitle(new_title);
+				svgCanvas.setDocumentTitle(new_title);
 			
 				// update resolution
 				var width = $('#canvas_width'), w = width.val();

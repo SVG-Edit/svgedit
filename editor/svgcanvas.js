@@ -3193,6 +3193,12 @@ function BatchCommand(text) {
 					pathActions.mouseDown(evt, mouse_target, start_x, start_y);
 					started = true;
 					break;
+				case "textedit":
+					start_x *= current_zoom;
+					start_y *= current_zoom;
+					textActions.mouseDown(evt, mouse_target, start_x, start_y);
+					started = true;
+					break;
 				case "rotate":
 					started = true;
 					// we are starting an undoable change (a drag-rotation)
@@ -3496,6 +3502,21 @@ function BatchCommand(text) {
 					pathActions.mouseMove(mouse_x, mouse_y);
 					
 					break;
+				case "textedit":
+					x *= current_zoom;
+					y *= current_zoom;
+// 					if(rubberBox && rubberBox.getAttribute('display') != 'none') {
+// 						assignAttributes(rubberBox, {
+// 							'x': Math.min(start_x,x),
+// 							'y': Math.min(start_y,y),
+// 							'width': Math.abs(x-start_x),
+// 							'height': Math.abs(y-start_y)
+// 						},100);
+// 					}
+					
+					textActions.mouseMove(mouse_x, mouse_y);
+					
+					break;
 				case "rotate":
 					var box = canvas.getBBox(selected),
 						cx = box.x + box.width/2, 
@@ -3587,6 +3608,9 @@ function BatchCommand(text) {
 							var t = evt.target;
 							if (selectedElements[0].nodeName == "path" && selectedElements[1] == null) {
 								pathActions.select(t);
+							} // if it was a path
+							else if (selectedElements[0].nodeName == "text" && selectedElements[1] == null) {
+								textActions.select(t, x, y);
 							} // if it was a path
 							// else, if it was selected and this is a shift-click, remove it from selection
 							else if (evt.shiftKey) {
@@ -3701,6 +3725,11 @@ function BatchCommand(text) {
 					keep = true;
 					element = null;
 					pathActions.mouseUp(evt);
+					break;
+				case "textedit":
+					keep = false;
+					element = null;
+					textActions.mouseUp(evt, mouse_x, mouse_y);
 					break;
 				case "rotate":
 					keep = true;
@@ -3836,6 +3865,221 @@ function BatchCommand(text) {
 		
 	}());
 
+	var textActions = function() {
+		var curtext;
+		var textinput;
+		var cursor;
+		var selblock;
+		var blinker;
+		var chardata = [];
+		var textbb;
+		
+		
+		function setCursor(index) {
+			if(!arguments.length) {
+				index = textinput.selectionEnd;
+			}
+			
+			var charbb;
+			charbb = chardata[index];
+		
+			textinput.setSelectionRange(index, index);
+			cursor = getElem("text_cursor");
+			if (!cursor) {
+				cursor = document.createElementNS(svgns, "line");
+				assignAttributes(cursor, {
+					'id': "text_cursor",
+					'stroke': "#333",
+					'stroke-width': "1"
+				});
+				cursor = getElem("selectorParentGroup").appendChild(cursor);
+			}
+			
+			if(!blinker) {
+				blinker = setInterval(function() {
+					var show = (cursor.getAttribute('display') === 'none');
+					cursor.setAttribute('display', show?'inline':'none');
+				}, 600);
+
+			}
+				
+			assignAttributes(cursor, {
+				x1: charbb.x,
+				y1: textbb.y,
+				x2: charbb.x,
+				y2: textbb.y + textbb.height,
+				visibility: 'visible',
+				display: 'inline'
+			});
+			
+			if(selblock) selblock.setAttribute('width', 0);
+		}
+		
+		function setSelection(start, end, changeInput) {
+			if(start === end) {
+				setCursor(end);
+				return;
+			}
+		
+			if(changeInput) {
+				textinput.setSelectionRange(start, end);
+			}
+			
+			selblock = getElem("text_selectblock");
+			if (!selblock) {
+				selblock = document.createElementNS(svgns, "rect");
+				assignAttributes(selblock, {
+					'id': "text_selectblock",
+					'fill': "green",
+					'opacity': .5,
+					'style': "pointer-events:none"
+				});
+				selblock = getElem("selectorParentGroup").appendChild(selblock);
+			}
+			
+			var startbb = chardata[start];
+			
+			var endbb = chardata[end];
+			
+			cursor.setAttribute('visibility', 'hidden');
+			assignAttributes(selblock, {
+				'x': startbb.x,
+				'y': textbb.y,
+				'width': endbb.x - startbb.x,
+				'height': textbb.height,
+				'display': 'inline'
+			});
+		}
+		
+		function getIndexFromPoint(mouse_x, mouse_y) {
+			// Position cursor here
+			var pt = svgroot.createSVGPoint();
+			pt.x = mouse_x;
+			pt.y = mouse_y;
+			
+			// Determine if cursor should be on left or right of character
+			var charpos = curtext.getCharNumAtPosition(pt);
+			if(charpos < 0) {
+				// Out of text range, look at mouse coords
+				charpos = chardata.length - 2;
+				if(mouse_x <= chardata[0].x) {
+					charpos = 0;
+				}
+			} else if(charpos >= chardata.length - 2) {
+				charpos = chardata.length - 2;
+			}
+			var charbb = chardata[charpos];
+			var mid = charbb.x + (charbb.width/2);
+			if(mouse_x > mid) {
+				charpos++;
+			}
+			return charpos;
+		}
+		
+		function setCursorFromPoint(mouse_x, mouse_y) {
+			setCursor(getIndexFromPoint(mouse_x, mouse_y));
+		}
+		
+		function setEndSelectionFromPoint(x, y, apply) {
+			var i1 = textinput.selectionStart;
+			var i2 = getIndexFromPoint(x, y);
+			
+			var start = Math.min(i1, i2);
+			var end = Math.max(i1, i2);
+			setSelection(start, end, apply);
+		}
+
+		var last_x, last_y;
+
+		return {
+			select: function(target, x, y) {
+				if (curtext == target) {
+					textActions.toEditMode(x, y);
+				} // going into pathedit mode
+				else {
+					curtext = target;
+				}	
+			},
+			mouseDown: function(evt, mouse_target, start_x, start_y) {
+				textinput.focus();
+				setCursorFromPoint(start_x, start_y);
+				last_x = start_x;
+				last_y = start_y;
+			},
+			mouseMove: function(mouse_x, mouse_y) {
+				setEndSelectionFromPoint(mouse_x, mouse_y);
+			},			
+			mouseUp: function(evt, mouse_x, mouse_y) {
+				setEndSelectionFromPoint(mouse_x, mouse_y, true);
+				if(last_x === mouse_x && last_y === mouse_y && evt.target !== curtext) {
+					textActions.toSelectMode();
+				}
+			},
+			setCursor: setCursor,
+			toEditMode: function(x, y) {
+				
+				current_mode = "textedit";
+				selectorManager.requestSelector(curtext).showGrips(false);
+
+				textActions.init();
+				$(curtext).css('cursor', 'text');
+				
+				setCursorFromPoint(x, y);
+			},
+			toSelectMode: function() {
+				current_mode = "select";
+				clearInterval(blinker);
+				if(selblock) $(selblock).attr('display','none');
+				if(cursor) $(cursor).attr('display','none');
+				
+				canvas.clearSelection();
+				
+				call("selected", [curtext]);
+				canvas.addToSelection([curtext], true);
+				
+				curtext = false;
+			},
+			init: function() {
+				var str = curtext.textContent;
+				var len = str.length;
+				
+				textbb = canvas.getBBox(curtext);
+				chardata = Array(len);
+				
+				// TODO: This element should be dynamically created and hidden
+				// For now we use the svg-editor one for visibility purposes
+				textinput = $('#text')[0];
+				textinput.focus();
+				$(textinput).blur(function() {
+					if(cursor) {
+						cursor.setAttribute('visibility', 'hidden');
+					}
+				});
+				
+				for(var i=0; i<len; i++) {
+					var start = curtext.getStartPositionOfChar(i);
+					var end = curtext.getEndPositionOfChar(i);
+					
+					// Get a "bbox" equivalent for each character. Uses the
+					// bbox data of the actual text for y, height purposes
+					
+					// TODO: Decide if y, width and height are actually necessary
+					chardata[i] = {
+						x: start.x,
+						y: textbb.y, // start.y?
+						width: end.x - start.x,
+						height: textbb.height
+					};
+				}
+				
+				// Add a last bbox for cursor at end of text
+				chardata.push({
+					x: end.x
+				});
+			}
+		}
+	}();
+	
 	var pathActions = function() {
 		
 		var subpath = false;
@@ -6688,7 +6932,7 @@ function BatchCommand(text) {
 		};
 	};
 	
-	this.getImageTitle = function() {
+	this.getDocumentTitle = function() {
 		var childs = svgcontent.childNodes;
 		for (var i=0; i<childs.length; i++) {
 			if(childs[i].nodeName == 'title') {
@@ -6698,7 +6942,7 @@ function BatchCommand(text) {
 		return '';
 	}
 	
-	this.setImageTitle = function(newtitle) {
+	this.setDocumentTitle = function(newtitle) {
 		var childs = svgcontent.childNodes, doc_title = false, old_title = '';
 		
 		var batchCmd = new BatchCommand("Change Image Title");
@@ -7431,8 +7675,10 @@ function BatchCommand(text) {
 
 	this.setTextContent = function(val) {
 		this.changeSelectedAttribute("#text", val);
+		textActions.init();
+		textActions.setCursor();
 	};
-
+	
 	this.setImageURL = function(val) {
 		var elem = selectedElements[0];
 		if(!elem) return;
@@ -7493,6 +7739,10 @@ function BatchCommand(text) {
 	
 	var ffClone = function(elem) {
 		// Hack for Firefox bugs where text element features aren't updated
+		
+		// May not be necessary, so let's try disabling.
+		return elem;
+		
 		if(navigator.userAgent.indexOf('Gecko/') == -1) return elem;
 		var clone = elem.cloneNode(true)
 		elem.parentNode.insertBefore(clone, elem);
