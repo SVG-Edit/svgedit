@@ -3882,6 +3882,7 @@ function BatchCommand(text) {
 				if(empty) {
 					index = 0;
 				} else {
+					if(textinput.selectionEnd !== textinput.selectionStart) return;
 					index = textinput.selectionEnd;
 				}
 			}
@@ -3923,13 +3924,13 @@ function BatchCommand(text) {
 			if(selblock) selblock.setAttribute('width', 0);
 		}
 		
-		function setSelection(start, end, changeInput) {
+		function setSelection(start, end, skipInput) {
 			if(start === end) {
 				setCursor(end);
 				return;
 			}
 		
-			if(changeInput) {
+			if(!skipInput) {
 				textinput.setSelectionRange(start, end);
 			}
 			
@@ -3998,7 +3999,7 @@ function BatchCommand(text) {
 			
 			var start = Math.min(i1, i2);
 			var end = Math.max(i1, i2);
-			setSelection(start, end, apply);
+			setSelection(start, end, !apply);
 		}
 			
 		function screenToPt(x_in, y_in) {
@@ -4017,6 +4018,37 @@ function BatchCommand(text) {
 			out.y /= current_zoom;			
 			
 			return out;
+		}
+		
+		function hideCursor() {
+			if(cursor) {
+				cursor.setAttribute('visibility', 'hidden');
+			}
+		}
+		
+		function selectAll(evt) {
+			setSelection(0, curtext.textContent.length);
+			$(this).unbind(evt);
+		}
+
+		function selectWord(evt) {
+			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
+			mouse_x = pt.x * current_zoom,
+			mouse_y = pt.y * current_zoom;
+			
+			var index = getIndexFromPoint(mouse_x, mouse_y);
+			var str = curtext.textContent;
+			var first = str.substr(0, index).replace(/[a-z0-9]+$/i, '').length;
+			var m = str.substr(index).match(/^[a-z0-9]+/i);
+			var last = (m?m[0].length:0) + index;
+			setSelection(first, last);
+			
+			// Set tripleclick
+			$(evt.target).click(selectAll);
+			setTimeout(function() {
+				$(evt.target).unbind('click', selectAll);
+			}, 300);
+			
 		}
 
 		var last_x, last_y;
@@ -4051,8 +4083,10 @@ function BatchCommand(text) {
 			mouseUp: function(evt, mouse_x, mouse_y) {
 				var pt = screenToPt(mouse_x, mouse_y);
 				setEndSelectionFromPoint(pt.x, pt.y, true);
-				if(last_x === mouse_x && last_y === mouse_y && evt.target !== curtext) {
-					textActions.toSelectMode(true);
+				
+				if(last_x === mouse_x && last_y === mouse_y
+					&& !Utils.rectsIntersect(textbb, {x: mouse_x, y: mouse_y, width:0, height:0})) {
+					textActions.toSelectMode(true);				
 				}
 			},
 			setCursor: setCursor,
@@ -4095,6 +4129,7 @@ function BatchCommand(text) {
 			},
 			setInputElem: function(elem) {
 				textinput = elem;
+				$(textinput).blur(hideCursor);
 			},
 			clear: function() {
 				if(current_mode == "textedit") {
@@ -4105,6 +4140,7 @@ function BatchCommand(text) {
 				if(!curtext) return;
 			
 				if(!curtext.parentNode) {
+					// Result of the ffClone, need to get correct element
 					curtext = selectedElements[0];
 					selectorManager.requestSelector(curtext).showGrips(false);
 				}
@@ -4121,11 +4157,9 @@ function BatchCommand(text) {
 				textbb = canvas.getBBox(curtext);
 				chardata = Array(len);
 				textinput.focus();
-				$(textinput).blur(function() {
-					if(cursor) {
-						cursor.setAttribute('visibility', 'hidden');
-					}
-				});
+				
+				$(curtext).unbind('dblclick', selectWord).dblclick(selectWord);
+				
 
 				if(!len) {
 					var end = {x: textbb.x + (textbb.width/2), width: 0};
@@ -4147,13 +4181,13 @@ function BatchCommand(text) {
 					};
 				}
 				
-
 				// Add a last bbox for cursor at end of text
 				chardata.push({
 					x: end.x,
 					width: 0
 				});
 				
+				setSelection(textinput.selectionStart, textinput.selectionEnd, true);
 			}
 		}
 	}();
