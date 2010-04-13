@@ -3872,7 +3872,7 @@ function BatchCommand(text) {
 		var selblock;
 		var blinker;
 		var chardata = [];
-		var textbb;
+		var textbb, transbb;
 		var xform, imatrix;
 		
 		function setCursor(index) {
@@ -4032,11 +4032,12 @@ function BatchCommand(text) {
 		}
 
 		function selectWord(evt) {
-			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
-			mouse_x = pt.x * current_zoom,
-			mouse_y = pt.y * current_zoom;
+			var ept = transformPoint( evt.pageX, evt.pageY, root_sctm ),
+				mouse_x = ept.x * current_zoom,
+				mouse_y = ept.y * current_zoom;
+			var pt = screenToPt(mouse_x, mouse_y);
 			
-			var index = getIndexFromPoint(mouse_x, mouse_y);
+			var index = getIndexFromPoint(pt.x, pt.y);
 			var str = curtext.textContent;
 			var first = str.substr(0, index).replace(/[a-z0-9]+$/i, '').length;
 			var m = str.substr(index).match(/^[a-z0-9]+/i);
@@ -4084,10 +4085,15 @@ function BatchCommand(text) {
 				var pt = screenToPt(mouse_x, mouse_y);
 				setEndSelectionFromPoint(pt.x, pt.y, true);
 				
-				if(last_x === mouse_x && last_y === mouse_y
-					&& !Utils.rectsIntersect(textbb, {x: mouse_x, y: mouse_y, width:0, height:0})) {
-					textActions.toSelectMode(true);				
+				// TODO: Find a way to make this work: Use transformed BBox instead of evt.target 
+// 				if(last_x === mouse_x && last_y === mouse_y
+// 					&& !Utils.rectsIntersect(transbb, {x: pt.x, y: pt.y, width:0, height:0})) {
+// 					textActions.toSelectMode(true);				
+// 				}
+				if(last_x === mouse_x && last_y === mouse_y && evt.target !== curtext) {
+					textActions.toSelectMode(true);
 				}
+
 			},
 			setCursor: setCursor,
 			toEditMode: function(x, y) {
@@ -4149,18 +4155,29 @@ function BatchCommand(text) {
 				var len = str.length;
 				
 				xform = curtext.getAttribute('transform');
+
+				textbb = canvas.getBBox(curtext);
+				
 				if(xform) {
 					var tlist = canvas.getTransformList(curtext);
-					imatrix = transformListToTransform(tlist).matrix.inverse();
+					var matrix = transformListToTransform(tlist).matrix;
+					imatrix = matrix.inverse();
+// 					var tbox = transformBox(textbb.x, textbb.y, textbb.width, textbb.height, matrix);
+// 					transbb = {
+// 						width: tbox.tr.x - tbox.tl.x,
+// 						height: tbox.bl.y - tbox.tl.y,
+// 						x: tbox.tl.x,
+// 						y: tbox.tl.y
+// 					}
+				} else {
+// 					transbb = textbb;
 				}
-				
-				textbb = canvas.getBBox(curtext);
+
 				chardata = Array(len);
 				textinput.focus();
 				
 				$(curtext).unbind('dblclick', selectWord).dblclick(selectWord);
 				
-
 				if(!len) {
 					var end = {x: textbb.x + (textbb.width/2), width: 0};
 				}
