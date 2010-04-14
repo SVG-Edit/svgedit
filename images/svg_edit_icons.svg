@@ -345,6 +345,25 @@
 	</svg>
 </g>
 
+<g id="export">
+	<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+	 <defs>
+	  <linearGradient id="svg_5" x1="0.77734" y1="0.51172" x2="0.09375" y2="0.53516">
+	   <stop offset="0" stop-color="#81bbf4"/>
+	   <stop offset="1" stop-color="#376eb7"/>
+	  </linearGradient>
+	 </defs>
+	 <g>
+	  <rect x="7.22599" y="1.3603" width="15.76465" height="21.51735" id="svg_55" fill="#eaeaea" stroke="#606060"/>
+	  <circle fill="#31abed" stroke-width="0.5" cx="17.4206" cy="11.1278" r="4.69727" id="svg_3"/>
+	  <path fill="#ffcc00" stroke-width="0.5" d="m9.67673,20.24302l7.38701,-6.80778l2.91746,6.71323" id="svg_4"/>
+	  <rect fill="#ff5555" stroke-width="0.5" x="9.5385" y="2.94914" width="5.74652" height="5.74652" id="svg_2"/>
+	  <path d="m6.13727,17.94236l5.77328,-4.91041l-5.86949,-5.1832l-0.09622,2.36426l-4.64805,-0.06751l-0.04665,5.54694l4.79093,-0.02342l0.09623,2.27334z" id="svg_45" fill="url(#svg_5)" stroke="#285582"/>
+	  <title>Layer 1</title>
+	 </g>
+	</svg>
+</g>
+
 <g id="open">
 <svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
  <defs>

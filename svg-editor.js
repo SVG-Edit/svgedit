@@ -268,6 +268,7 @@
 				
 					'#tool_clear div,#layer_new':'new_image',
 					'#tool_save div':'save',
+					'#tool_export div':'export',
 					'#tool_open div div':'open',
 					'#tool_import div div':'import',
 					'#tool_source':'source',
@@ -472,8 +473,7 @@
 				// can just provide their own custom save handler and might not want the XML prolog
 				svg = "<?xml version='1.0'?>\n" + svg;
 				
-				// Creates and opens an HTML page that provides a link to the SVG, a preview, and the markup. 
-				// Also includes warning about Mozilla bug #308590 when applicable
+				// Opens the SVG in new window, with warning about Mozilla bug #308590 when applicable
 				
 				var win = window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
 				
@@ -500,6 +500,32 @@
 						win.alert(note);
 					}
 				}
+			};
+			
+			var exportHandler = function(window, data) {
+
+				var issues = data.issues;
+				
+				if(!$('#export_canvas').length) {
+					$('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
+				}
+				var c = $('#export_canvas')[0];
+				
+				c.width = svgCanvas.contentW;
+				c.height = svgCanvas.contentH;
+				canvg(c, data.svg);
+				var datauri = c.toDataURL('image/png');
+				var win = window.open(datauri);
+				
+				var note = 'Select "Save As..." in your browser to save this image as a PNG file.';
+				
+				// Check if there's issues
+
+				if(issues.length) {
+					var pre = "\n \u2022 ";
+					note += ("\n\nAlso note these issues:" + pre + issues.join(pre));
+				} 
+				win.alert(note);
 			};
 			
 			// called when we've selected a different element
@@ -1219,6 +1245,7 @@
 			svgCanvas.bind("selected", selectedChanged);
 			svgCanvas.bind("changed", elementChanged);
 			svgCanvas.bind("saved", saveHandler);
+			svgCanvas.bind("exported", exportHandler);
 			svgCanvas.bind("zoomed", zoomChanged);
 			svgCanvas.bind("extension_added", extAdded);
 			svgCanvas.textActions.setInputElem($("#text")[0]);
@@ -1958,6 +1985,36 @@
 				}
 				svgCanvas.save(saveOpts);
 			};
+			
+			var clickExport = function() {
+				if(window.canvg) {
+					console.log(1);
+					svgCanvas.rasterExport();
+					return;
+				} else {
+					$.getScript('canvg/rgbcolor.js', function() {
+						$.getScript('canvg/canvg.js');
+						// Would normally run svgCanvas.rasterExport() here,
+						// but that causes popup dialog box
+					});
+				}
+				var count = 0;
+				
+				// Run export when window.canvg is created
+				var timer = setInterval(function() {
+					count++;
+					if(window.canvg) {
+						clearInterval(timer);
+						svgCanvas.rasterExport();
+						return;
+					}
+					
+					if(count > 100) { // 5 seconds
+						clearInterval(timer);
+						$.alert("Error: Failed to load CanVG script");
+					}
+				}, 50);
+			}
 			
 			// by default, svgCanvas.open() is a no-op.
 			// it is up to an extension mechanism (opera widget, etc) 
@@ -2995,6 +3052,7 @@
 					{sel:'#tool_zoom', fn: clickZoom, evt: 'mouseup', key: 9},
 					{sel:'#tool_clear', fn: clickClear, evt: 'mouseup', key: [modKey+'N', true]},
 					{sel:'#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'mouseup', key: [modKey+'S', true]},
+					{sel:'#tool_export', fn: clickExport, evt: 'mouseup'},
 					{sel:'#tool_open', fn: clickOpen, evt: 'mouseup', key: [modKey+'O', true]},
 					{sel:'#tool_import', fn: clickImport, evt: 'mouseup'},
 					{sel:'#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
