@@ -3874,6 +3874,8 @@ function BatchCommand(text) {
 		var chardata = [];
 		var textbb, transbb;
 		var xform, imatrix;
+		var last_x, last_y;
+		var allow_dbl;
 		
 		function setCursor(index) {
 			var empty = (textinput.value === "");
@@ -4032,6 +4034,8 @@ function BatchCommand(text) {
 		}
 
 		function selectWord(evt) {
+			if(!allow_dbl) return;
+		
 			var ept = transformPoint( evt.pageX, evt.pageY, root_sctm ),
 				mouse_x = ept.x * current_zoom,
 				mouse_y = ept.y * current_zoom;
@@ -4051,8 +4055,6 @@ function BatchCommand(text) {
 			}, 300);
 			
 		}
-
-		var last_x, last_y;
 
 		return {
 			select: function(target, x, y) {
@@ -4097,7 +4099,7 @@ function BatchCommand(text) {
 			},
 			setCursor: setCursor,
 			toEditMode: function(x, y) {
-				
+				allow_dbl = false;
 				current_mode = "textedit";
 				selectorManager.requestSelector(curtext).showGrips(false);
 
@@ -4110,6 +4112,10 @@ function BatchCommand(text) {
 					var pt = screenToPt(x, y);
 					setCursorFromPoint(pt.x, pt.y);
 				}
+				
+				setTimeout(function() {
+					allow_dbl = true;
+				}, 300);
 			},
 			toSelectMode: function(selectElem) {
 				current_mode = "select";
@@ -6187,6 +6193,35 @@ function BatchCommand(text) {
 		call("saved", str);
 	};
 
+	this.rasterExport = function() {
+		// remove the selected outline before serializing
+		this.clearSelection();
+		
+		// Check for known CanVG issues 
+		var issues = [];
+		
+		// Selector and notice
+		var issue_list = {
+			'feGaussianBlur': 'Blurred elements will appear as un-blurred',
+			'text': 'Text may not appear as expected',
+			'image': 'Image elements will not appear',
+			'foreignObject': 'foreignObject elements will not appear',
+			'marker': 'Marker elements (arrows, etc) will not appear',
+			'[stroke-dasharray]': 'Strokes will appear filled',
+			'[stroke^=url]': 'Strokes with gradients will not appear'
+		};
+		var content = $(svgcontent);
+		
+		$.each(issue_list, function(sel, descr) {
+			if(content.find(sel).length) {
+				issues.push(descr);
+			}
+		});
+
+		var str = svgCanvasToString();
+		call("exported", {svg: str, issues: issues});
+	};
+	
 	// Walks the tree and executes the callback on each element in a top-down fashion
 	var walkTree = function(elem, cbFn){
 		if (elem && elem.nodeType == 1) {
