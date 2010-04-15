@@ -23,7 +23,26 @@
 		return [m.a,m.b,m.c,m.d,m.e,m.f].join(',');
 	}
 
-  	var svgCanvas = new SvgCanvas(document.getElementById("svgcanvas")),
+  	var svgCanvas = new $.SvgCanvas(document.getElementById("svgcanvas"), {
+			canvas_expansion: 3,
+			dimensions: [640,480],
+			initFill: {
+				color: 'FF0000',  // solid red
+				opacity: 1
+			},
+			initStroke: {
+				width: 5,
+				color: '000000',  // solid black
+				opacity: 1
+			},
+			initOpacity: 1,
+			imgPath: 'images/',
+			langPath: 'locale/',
+			extPath: 'extensions/',
+			extensions: ['ext-arrows.js', 'ext-connector.js', 'ext-eyedropper.js'],
+			initTool: 'select',
+			wireframe: false
+		}),
   		svgroot = document.getElementById("svgroot"),
   		svgdoc = svgroot.documentElement,
   		svgns = "http://www.w3.org/2000/svg",
