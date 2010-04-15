@@ -177,7 +177,7 @@
 					svgEditor.setConfig(urldata);
 					
 					var src = urldata.source;
-					var qstr = $.​param.querystring();
+					var qstr = $.param.querystring();
 					
 					if(src) {
 						if(src.indexOf("data:") === 0) {
