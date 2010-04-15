@@ -177,7 +177,8 @@
 					svgEditor.setConfig(urldata);
 					
 					var src = urldata.source;
-
+					var qstr = $.​param.querystring();
+					
 					if(src) {
 						if(src.indexOf("data:") === 0) {
 							// plusses get replaced by spaces, so re-insert
@@ -186,6 +187,9 @@
 						} else {
 							Editor.loadFromString(src);
 						}
+					} else if(qstr.indexOf('paramurl=') !== -1) {
+						// Get paramater URL (use full length of remaining location.href)
+						svgEditor.loadFromURL(qstr.substr(9));
 					} else if(urldata.url) {
 						svgEditor.loadFromURL(urldata.url);
 					}
