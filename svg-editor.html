@@ -184,6 +184,11 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			</div>
 		</div>
 		
+		<div class="dropdown toolset" id="tool_position" title="Align Element to Page">
+				<div id="cur_position" class="icon_label"></div>
+				<button></button>
+		</div>		
+
 		<div id="xy_panel" class="toolset">
 			<label>
 				x: <input id="selected_x" class="attr_changer" title="Change X coordinate" size="3" data-attr="x"/>
@@ -228,25 +233,26 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	<div id="rect_panel">
 		<div class="toolset">
 			<label>
-				<span id="rwidthLabel">width:</span>
+				<span id="rwidthLabel" class="icon_label"></span>
 				<input id="rect_width" class="attr_changer" title="Change rectangle width" size="3" data-attr="width"/>
 			</label>
 			<label>
-				<span id="rheightLabel">height:</span>
+				<span id="rheightLabel" class="icon_label"></span>
 				<input id="rect_height" class="attr_changer" title="Change rectangle height" size="3" data-attr="height"/>
 			</label>
 		</div>
-		<label id="cornerRadiusLabel">Corner Radius:
-			<input id="rect_rx" size="3" value="0" type="text" title="Change Rectangle Corner Radius" data-attr="Corner Radius"/>
+		<label id="cornerRadiusLabel" title="Change Rectangle Corner Radius">
+			<span class="icon_label"></span>
+			<input id="rect_rx" size="3" value="0" type="text" data-attr="Corner Radius"/>
 		</label>
 	</div>
 
 	<div id="image_panel">
 	<div class="toolset">
-		<label><span id="iwidthLabel">width:</span>
+		<label><span id="iwidthLabel" class="icon_label"></span>
 		<input id="image_width" class="attr_changer" title="Change image width" size="3" data-attr="width"/>
 		</label>
-		<label><span id="iheightLabel">height:</span>
+		<label><span id="iheightLabel" class="icon_label"></span>
 		<input id="image_height" class="attr_changer" title="Change image height" size="3" data-attr="height"/>
 		</label>
 	</div>
@@ -518,6 +524,15 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 		<li class="tool_button" id="linecap_square" title="Linecap: Square"></li>
 		<li class="tool_button" id="linecap_round" title="Linecap: Round"></li>
 	</ul>
+	
+	<ul id="position_opts">
+		<li class="push_button" id="tool_posleft" title="Align Left"></li>
+		<li class="push_button" id="tool_poscenter" title="Align Center"></li>
+		<li class="push_button" id="tool_posright" title="Align Right"></li>
+		<li class="push_button" id="tool_postop" title="Align Top"></li>
+		<li class="push_button" id="tool_posmiddle" title="Align Middle"></li>
+		<li class="push_button" id="tool_posbottom" title="Align Bottom"></li>
+	</ul>
 </div>
 
 
@@ -558,9 +573,9 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			<fieldset id="change_resolution">
 				<legend id="svginfo_dim">Canvas Dimensions</legend>
 
-				<label><span id="svginfo_width">Width:</span> <input type="text" id="canvas_width" size="6"/></label>
+				<label><span id="svginfo_width">width:</span> <input type="text" id="canvas_width" size="6"/></label>
 					
-				<label><span id="svginfo_height">Height:</span> <input type="text" id="canvas_height" size="6"/></label>
+				<label><span id="svginfo_height">height:</span> <input type="text" id="canvas_height" size="6"/></label>
 				
 				<label>
 					<select id="resolution">

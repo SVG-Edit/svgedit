@@ -308,12 +308,13 @@
 					'#tool_group':'group',
 					'#tool_ungroup':'ungroup',
 					
-					'#tool_alignleft':'align_left',
-					'#tool_aligncenter':'align_center',
-					'#tool_alignright':'align_right',
-					'#tool_aligntop':'align_top',
-					'#tool_alignmiddle':'align_middle',
-					'#tool_alignbottom':'align_bottom',
+					'#tool_alignleft, #tool_posleft':'align_left',
+					'#tool_aligncenter, #tool_poscenter':'align_center',
+					'#tool_alignright, #tool_posright':'align_right',
+					'#tool_aligntop, #tool_postop':'align_top',
+					'#tool_alignmiddle, #tool_posmiddle':'align_middle',
+					'#tool_alignbottom, #tool_posbottom':'align_bottom',
+					'#cur_position':'align',
 					
 					'#linecap_butt,#cur_linecap':'linecap_butt',
 					'#linecap_round':'linecap_round',
@@ -331,6 +332,10 @@
 					
 					'#tool_source_save,#tool_docprops_save':'ok',
 					'#tool_source_cancel,#tool_docprops_cancel':'cancel',
+					
+					'#rwidthLabel, #iwidthLabel':'width',
+					'#rheightLabel, #iheightLabel':'height',
+					'#cornerRadiusLabel span':'c_radius',
 					
 					'.flyout_arrow_horiz':'arrow_right',
 					'.dropdown button, #main_button .dropdown':'arrow_down',
@@ -1647,17 +1652,19 @@
 			}
 			
 			// TODO: Combine this with addDropDown or find other way to optimize
-			var addAltDropDown = function(elem, list, callback, dropUp) {
+			var addAltDropDown = function(elem, list, callback, opts) {
 				var button = $(elem);
 				var list = $(list);
 				var on_button = false;
+				var dropUp = opts.dropUp;
 				if(dropUp) {
 					$(elem).addClass('dropup');
 				}
-			
 				list.find('li').bind('mouseup', function() {
 					callback.apply(this, arguments);
-					$(this).addClass('current').siblings().removeClass('current');
+					if(!opts.multiclick) {
+						$(this).addClass('current').siblings().removeClass('current');
+					}
 				});
 				
 				$(window).mouseup(function(evt) {
@@ -1673,8 +1680,12 @@
 				
 				$(elem).bind('mousedown',function() {
 					var off = $(elem).offset();
-					off.top -= list.height();
-					off.left += 8;
+					if(dropUp) {
+						off.top -= list.height();
+						off.left += 8;
+					} else {
+						off.top += $(elem).height();
+					}
 					$(list).offset(off);
 					
 					if (!button.hasClass('down')) {
@@ -1693,6 +1704,12 @@
 				}).mouseout(function() {
 					on_button = false;
 				});
+				
+				if(opts.multiclick) {
+					list.mousedown(function() {
+						on_button = true;
+					});
+				}
 			}
 			
 			addDropDown('#font_family_dropdown', function() {
@@ -1754,7 +1771,7 @@
 				var icon = $.getSvgIcon(this.id).clone();
 				$('#cur_linecap').empty().append(icon);
 				$.resizeSvgIcons({'#cur_linecap .svg_icon': 20});
-			}, true);
+			}, {dropUp: true});
 			
 			addAltDropDown('#stroke_linejoin', '#linejoin_opts', function() {
 				var val = this.id.split('_')[1];
@@ -1763,7 +1780,12 @@
 				var icon = $.getSvgIcon(this.id).clone();
 				$('#cur_linejoin').empty().append(icon);
 				$.resizeSvgIcons({'#cur_linejoin .svg_icon': 20});
-			}, true);
+			}, {dropUp: true});
+			
+			addAltDropDown('#tool_position', '#position_opts', function() {
+				var letter = this.id.replace('tool_pos','').charAt(0);
+				svgCanvas.alignSelectedElements(letter, 'page');
+			}, {multiclick: true});
 			
 			/*
 			
@@ -1992,7 +2014,6 @@
 			
 			var clickExport = function() {
 				if(window.canvg) {
-					console.log(1);
 					svgCanvas.rasterExport();
 					return;
 				} else {
@@ -2254,7 +2275,7 @@
 				var size_num = icon_sizes[size];
 				
 				// Change icon size
-				$('.tool_button, .push_button, .tool_button_current, .disabled, #url_notice, #tool_open')
+				$('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open')
 				.find('> svg, > img').each(function() {
 					this.setAttribute('width',size_num);
 					this.setAttribute('height',size_num);
@@ -2275,6 +2296,7 @@
 					.tool_button_current,\
 					.push_button_pressed,\
 					.disabled,\
+					.icon_label,\
 					.tools_flyout .tool_button": {
 						'width': {s: '16px', l: '32px', xl: '48px'},
 						'height': {s: '16px', l: '32px', xl: '48px'},
@@ -2375,6 +2397,9 @@
 					},
 					"input.spin-button.down": {
 						'background-position': {l: '100% -85px', xl: '100% -82px'}
+					},
+					"#position_opts": {
+						'width': {all: (size_num*4) +'px'}
 					}
 				};
 				
@@ -2391,8 +2416,8 @@
 						selector = '#svg_editor ' + selector.replace(/,/g,', #svg_editor');
 						style_str += selector + '{';
 						$.each(rules, function(prop, values) {
-							if(values[size]) {
-								style_str += (prop + ':' + values[size] + ';');
+							if(values[size] || values.all) {
+								style_str += (prop + ':' + (values[size] || values.all) + ';');
 							}
 						});
 						style_str += '}';
