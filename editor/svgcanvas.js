@@ -8824,8 +8824,8 @@ function BatchCommand(text) {
 		if (relative_to == 'page') {
 			minx = 0;
 			miny = 0;
-			maxx = svgcontent.getAttribute('width');
-			maxy = svgcontent.getAttribute('height');
+			maxx = canvas.contentW;
+			maxy = canvas.contentH;
 		}
 
 		var dx = new Array(len);
