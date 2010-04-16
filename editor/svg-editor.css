@@ -601,6 +601,16 @@ span.zoom_tool {
 
 }
 
+#svg_editor .icon_label {
+	float: left;
+	padding-top: 3px;
+	padding-right: 3px;
+}
+
+#svg_editor .width_label {
+	padding-right: 5px;
+}
+
 #tool_bold, #tool_italic { 
 	font: bold 2.1em/1.1em serif;
 	text-align: center;
@@ -741,7 +751,8 @@ span.zoom_tool {
 }
 
 #svg_editor .stroke_tool.down div div,
-#svg_editor .stroke_tool.down button {
+#svg_editor .stroke_tool.down button,
+#tools_top .dropdown.down > * {
 	border: 1px inset gray;
 	background: #F4E284;
 }
@@ -754,6 +765,12 @@ span.zoom_tool {
 	float: left;
 }
 
+
+#tools_top .dropdown div {
+	border: 1px solid transparent;
+	margin-top: 3px;
+}
+
 #option_lists ul {
 	display: none;
 	position: absolute;
@@ -762,6 +779,15 @@ span.zoom_tool {
 	margin: 0;
 	list-style: none;
 	padding-left: 0;
+}
+
+#option_lists #position_opts {
+	width: 90px;
+	margin-left: -32px;
+}
+
+#option_lists #position_opts li {
+	float: left;
 }
 
 #svg_editor ul li.current {
