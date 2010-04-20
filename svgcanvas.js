@@ -522,13 +522,13 @@ function BatchCommand(text) {
 			var selectedBox = this.selectorRect,
 				selectedGrips = this.selectorGrips,
 				selected = this.selectedElement,
-				 sw = round(selected.getAttribute("stroke-width"));
-			var offset = 1/canvas.getZoom();
+				 sw = selected.getAttribute("stroke-width");
+			var offset = 1/current_zoom;
 			if (selected.getAttribute("stroke") != "none" && !isNaN(sw)) {
-				offset += sw/2;
+				offset += (sw/2);
 			}
 			if (selected.tagName == "text") {
-				offset += 2/canvas.getZoom();
+				offset += 2/current_zoom;
 			}
 			var bbox = canvas.getBBox(selected);
 			if(selected.tagName == 'g') {
@@ -550,7 +550,7 @@ function BatchCommand(text) {
 			m.f *= current_zoom;
 			
 			// apply the transforms
-			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset<<1), h=bbox.height+(offset<<1),
+			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset*2), h=bbox.height+(offset*2),
 				bbox = {x:l, y:t, width:w, height:h};
 			
 			// we need to handle temporary transforms too
@@ -3421,8 +3421,58 @@ function BatchCommand(text) {
 					// Opera has a problem with suspendRedraw() apparently
 					var handle = null;
 					if (!window.opera) svgroot.suspendRedraw(1000);
-					shape.setAttributeNS(null, "x2", x);
-					shape.setAttributeNS(null, "y2", y);
+
+					var x2 = x;
+					var y2 = y;					
+
+					if(evt.shiftKey) {
+						var diff_x = x - start_x;
+						var diff_y = y - start_y;
+						
+						var angle = ((Math.atan2(start_y-y,start_x-x) * (180/Math.PI))-90) % 360;
+						angle = angle<0?(360+angle):angle
+
+						// TODO: Write all this more efficiently						
+						var dist = Math.sqrt(diff_x * diff_x + diff_y * diff_y);
+						var val = Math.sqrt((dist*dist)/2);
+						var diagonal = false;
+						
+						if(angle >= 360-22.5 || angle < 22.5) {
+							x2 = start_x;
+						} else if(angle >= 22.5 && angle < 22.5 + 45) {
+							diagonal = true;
+						} else if(angle >= 22.5 + 45 && angle < 22.5 + 90) {
+							y2 = start_y;
+						} else if(angle >= 22.5 + 90 && angle < 22.5 + 135) {
+							diagonal = true;
+						} else if(angle >= 22.5 + 135 && angle < 22.5 + 180) {
+							x2 = start_x;
+						} else if(angle >= 22.5 + 180 && angle < 22.5 + 225) {
+							diagonal = true;
+						} else if(angle >= 22.5 + 225 && angle < 22.5 + 270) {
+							y2 = start_y;
+						} else if(angle >= 22.5 + 270 && angle < 22.5 + 315) {
+							diagonal = true;							
+						}
+						
+						if(diagonal) {
+							if(y2 < start_y) {
+								y2 = start_y - val;
+							} else {
+								y2 = start_y + val;
+							}
+
+							if(x2 < start_x) {
+								x2 = start_x - val;
+							} else {
+								x2 = start_x + val;
+							}
+						}
+					}
+
+					
+					shape.setAttributeNS(null, "x2", x2);
+					shape.setAttributeNS(null, "y2", y2);
 					if (!window.opera) svgroot.unsuspendRedraw(handle);
 					break;
 				case "foreignObject":
@@ -6203,14 +6253,17 @@ function BatchCommand(text) {
 		// Selector and notice
 		var issue_list = {
 			'feGaussianBlur': 'Blurred elements will appear as un-blurred',
-			'text': 'Text may not appear as expected',
 			'image': 'Image elements will not appear',
 			'foreignObject': 'foreignObject elements will not appear',
-			'marker': 'Marker elements (arrows, etc) will not appear',
-			'[stroke-dasharray]': 'Strokes will appear filled',
-			'[stroke^=url]': 'Strokes with gradients will not appear'
+			'marker': 'Marker elements (arrows, etc) may not appear as expected', // waiting for marker-mid and marker-end support
+			'[stroke-dasharray]': 'Strokes will appear filled'
 		};
 		var content = $(svgcontent);
+		
+		// Add font/text check if Canvas Text API is not implemented
+		if(!("font" in $('<canvas>')[0].getContext('2d'))) {
+			issue_list['text'] = 'Text may not appear as expected';
+		}
 		
 		$.each(issue_list, function(sel, descr) {
 			if(content.find(sel).length) {
