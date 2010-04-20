@@ -166,9 +166,9 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			</label>
 		</div>
 
-		<label id="tool_angle">
-			<span id="angleLabel">angle:</span>
-			<input id="angle" title="Change rotation angle" size="2" value="0" type="text"/>
+		<label id="tool_angle" title="Change rotation angle">
+			<span id="angleLabel" class="icon_label"></span>
+			<input id="angle" size="2" value="0" type="text"/>
 		</label>
 		
 		<div class="toolset" id="tool_blur">
@@ -404,10 +404,10 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 <div id="tools_bottom" class="tools_panel">
 
     <!-- Zoom buttons -->
-	<div id="zoom_panel" class="toolset">
+	<div id="zoom_panel" class="toolset" title="Change zoom level">
 		<label>
-		<span id="zoomLabel" class="zoom_tool">zoom:</span>
-		<input id="zoom" title="Change zoom level" size="3" value="100" type="text" />
+		<span id="zoomLabel" class="zoom_tool icon_label"></span>
+		<input id="zoom" size="3" value="100" type="text" />
 		</label>
 		<div id="zoom_dropdown" class="dropdown">
 			<button></button>
@@ -430,20 +430,16 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 
 	<div id="tools_bottom_2">
 		<div id="color_tools">
-			<div class="color_tool" id="tool_fill">
-				<label>
-					fill:
-				</label>
+			<div class="color_tool" id="tool_fill" title="Change fill color">
+				<label class="icon_label" for="fill_color"></label>
 				<div class="color_block">
 					<div id="fill_bg"></div>
-					<div id="fill_color" class="color_block"  title="Change fill color"></div>
+					<div id="fill_color" class="color_block"></div>
 				</div>
 			</div>
 		
 			<div class="color_tool" id="tool_stroke">
-				<label>
-					stroke:
-				</label>
+				<label class="icon_label" title="Change stroke color"></label>
 				<div class="color_block">
 					<div id="stroke_bg"></div>
 					<div id="stroke_color" class="color_block" title="Change stroke color"></div>
@@ -485,10 +481,10 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			</div>
 		</div>
 	
-		<div class="toolset" id="tool_opacity">
+		<div class="toolset" id="tool_opacity" title="Change selected item opacity">
 			<label>
-				<span id="group_opacityLabel">opac:</span>
-				<input id="group_opacity" title="Change selected item opacity" size="3" value="100" type="text"/>
+				<span id="group_opacityLabel" class="icon_label"></span>
+				<input id="group_opacity" size="3" value="100" type="text"/>
 			</label>
 			<div id="opacity_dropdown" class="dropdown">
 				<button></button>
