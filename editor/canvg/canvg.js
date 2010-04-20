@@ -159,7 +159,19 @@ if(!window.console) {
 				getDefinition: function() {
 					var name = that.value.replace(/^(url\()?#([^\)]+)\)?$/, '$2');
 					return svg.Definitions[name];
-				}	
+				},
+				
+				isUrl: function() {
+					return that.value.indexOf('url(') == 0
+				},
+				
+				getGradient: function(e) {
+					var grad = this.getDefinition();
+					if (grad != null && grad.createGradient) {
+						return grad.createGradient(svg.ctx, e);
+					}
+					return null;
+				}
 			}
 			
 			// length extensions
@@ -171,7 +183,7 @@ if(!window.console) {
 				EM: function(viewPort) {
 					var em = 12;
 					
-					var fontSize = new svg.Property('fontSize', svg.ctx.font.match(/[0-9][^\s\t\n\r\/]*/g)[0]);
+					var fontSize = new svg.Property('fontSize', svg.Font.Parse(svg.ctx.font).fontSize);
 					if (fontSize.hasValue()) em = fontSize.Length.toPixels(viewPort);
 					
 					return em;
@@ -219,6 +231,41 @@ if(!window.console) {
 				}
 			}
 		}
+		
+		// fonts
+		svg.Font = new (function() {
+			this.Styles = ['normal','italic','oblique','inherit'];
+			this.Variants = ['normal','small-caps','inherit'];
+			this.Weights = ['normal','bold','bolder','lighter','100','200','300','400','500','600','700','800','900','inherit'];
+			
+			this.CreateFont = function(fontStyle, fontVariant, fontWeight, fontSize, fontFamily, inherit) { 
+				var f = inherit != null ? this.Parse(inherit) : this.CreateFont('', '', '', '', '', svg.ctx.font);
+				return { 
+					fontFamily: fontFamily || f.fontFamily, 
+					fontSize: fontSize || f.fontSize, 
+					fontStyle: fontStyle || f.fontStyle, 
+					fontWeight: fontWeight || f.fontWeight, 
+					fontVariant: fontVariant || f.fontVariant,
+					toString: function () { return [this.fontStyle, this.fontVariant, this.fontWeight, this.fontSize, this.fontFamily].join(' ') } 
+				} 
+			}
+			
+			var that = this;
+			this.Parse = function(s) {
+				var f = {};
+				var d = svg.trim(svg.compressSpaces(s || '')).split(' ');
+				var set = { fontSize: false, fontStyle: false, fontWeight: false, fontVariant: false }
+				var ff = '';
+				for (var i=0; i<d.length; i++) {
+					if (!set.fontStyle && that.Styles.indexOf(d[i]) != -1) { if (d[i] != 'inherit') f.fontStyle = d[i]; set.fontStyle = true; }
+					else if (!set.fontVariant && that.Variants.indexOf(d[i]) != -1) { if (d[i] != 'inherit') f.fontVariant = d[i]; set.fontStyle = set.fontVariant = true;	}
+					else if (!set.fontWeight && that.Weights.indexOf(d[i]) != -1) {	if (d[i] != 'inherit') f.fontWeight = d[i]; set.fontStyle = set.fontVariant = set.fontWeight = true; }
+					else if (!set.fontSize) { if (d[i] != 'inherit') f.fontSize = d[i].split('/')[0]; set.fontStyle = set.fontVariant = set.fontWeight = set.fontSize = true; }
+					else { if (d[i] != 'inherit') ff += d[i]; }
+				} if (ff != '') f.fontFamily = ff;
+				return f;
+			}
+		});
 		
 		// points and paths
 		svg.ToNumberArray = function(s) {
@@ -532,22 +579,22 @@ if(!window.console) {
 			
 			this.setContext = function(ctx) {
 				// fill
-				if (this.style('fill').value.indexOf('url(') == 0) {
-					var grad = this.style('fill').Definition.getDefinition();
-					if (grad != null && grad.createGradient) {
-						ctx.fillStyle = grad.createGradient(ctx, this);
-					}
+				if (this.style('fill').Definition.isUrl()) {
+					var grad = this.style('fill').Definition.getGradient(this);
+					if (grad != null) ctx.fillStyle = grad;
 				}
-				else {
-					if (this.style('fill').hasValue()) {
-						var fillStyle = this.style('fill');
-						if (this.style('fill-opacity').hasValue()) fillStyle = fillStyle.Color.addOpacity(this.style('fill-opacity').value);
-						ctx.fillStyle = (fillStyle.value == 'none' ? 'rgba(0,0,0,0)' : fillStyle.value);
-					}
+				else if (this.style('fill').hasValue()) {
+					var fillStyle = this.style('fill');
+					if (this.style('fill-opacity').hasValue()) fillStyle = fillStyle.Color.addOpacity(this.style('fill-opacity').value);
+					ctx.fillStyle = (fillStyle.value == 'none' ? 'rgba(0,0,0,0)' : fillStyle.value);
 				}
 									
 				// stroke
-				if (this.style('stroke').hasValue()) {
+				if (this.style('stroke').Definition.isUrl()) {
+					var grad = this.style('stroke').Definition.getGradient(this);
+					if (grad != null) ctx.strokeStyle = grad;
+				}
+				else if (this.style('stroke').hasValue()) {
 					var strokeStyle = this.style('stroke');
 					if (this.style('stroke-opacity').hasValue()) strokeStyle = strokeStyle.Color.addOpacity(this.style('stroke-opacity').value);
 					ctx.strokeStyle = (strokeStyle.value == 'none' ? 'rgba(0,0,0,0)' : strokeStyle.value);
@@ -558,10 +605,14 @@ if(!window.console) {
 				if (this.style('stroke-miterlimit').hasValue()) ctx.miterLimit = this.style('stroke-miterlimit').value;
 
 				// font
-				if (this.style('font-size').hasValue()) {
-					var fontFamily = this.style('font-family').valueOrDefault('Arial');
-					var fontSize = this.style('font-size').numValueOrDefault('12') + 'px';
-					ctx.font = fontSize + ' ' + fontFamily;
+				opera.postError('typeof(ctx.font):' + ctx.font);
+				if (typeof(ctx.font) != 'undefined') {
+					ctx.font = svg.Font.CreateFont( 
+						this.style('font-style').value, 
+						this.style('font-variant').value, 
+						this.style('font-weight').value, 
+						this.style('font-size').hasValue() ? this.style('font-size').Length.toPixels() + 'px' : '', 
+						this.style('font-family').value).toString();
 				}
 				
 				// transform
@@ -596,11 +647,28 @@ if(!window.console) {
 			this.renderChildren = function(ctx) {
 				this.path(ctx);
 				if (ctx.fillStyle != '') ctx.fill();
-				if (ctx.strokeStyle != '') ctx.stroke();	
+				if (ctx.strokeStyle != '') ctx.stroke();
+
+				if (this.attribute('marker-end').Definition.isUrl()) {
+					var marker = this.attribute('marker-end').Definition.getDefinition();
+					var endPoint = this.getEndPoint();
+					var endAngle = this.getEndAngle();
+					if (endPoint != null && endAngle != null) {
+						marker.render(ctx, endPoint, endAngle);
+					}
+				}						
 			}
 			
 			this.getBoundingBox = function() {
 				return this.path();
+			}
+			
+			this.getEndPoint = function() {
+				return null;
+			}
+			
+			this.getEndAngle = function() {
+				return null;
 			}
 		}
 		svg.Element.PathElementBase.prototype = new svg.Element.RenderedElementBase;
@@ -630,11 +698,19 @@ if(!window.console) {
 				if (this.attribute('width').hasValue() && this.attribute('height').hasValue()) {
 					width = this.attribute('width').Length.toPixels('x');
 					height = this.attribute('height').Length.toPixels('y');
+					
+					var x = 0;
+					var y = 0;
+					if (this.attribute('refX').hasValue() && this.attribute('refY').hasValue()) {
+						x = -this.attribute('refX').Length.toPixels('x');
+						y = -this.attribute('refY').Length.toPixels('y');
+					}
+					
 					ctx.beginPath();
-					ctx.moveTo(0, 0);
-					ctx.lineTo(width, 0);
+					ctx.moveTo(x, y);
+					ctx.lineTo(width, y);
 					ctx.lineTo(width, height);
-					ctx.lineTo(0, height);
+					ctx.lineTo(x, height);
 					ctx.closePath();
 					ctx.clip();
 				}
@@ -661,24 +737,28 @@ if(!window.console) {
 					var scaleMax = Math.max(scaleX, scaleY);
 					if (meetOrSlice == 'meet') { width *= scaleMin; height *= scaleMin; }
 					if (meetOrSlice == 'slice') { width *= scaleMax; height *= scaleMax; }	
-
-					// align
-					if (align.match(/^xMid/) && ((meetOrSlice == 'meet' && scaleMin == scaleY) || (meetOrSlice == 'slice' && scaleMax == scaleY))) ctx.translate(svg.ViewPort.width() / 2.0 - width / 2.0, 0); 
-					if (align.match(/YMid$/) && ((meetOrSlice == 'meet' && scaleMin == scaleX) || (meetOrSlice == 'slice' && scaleMax == scaleX))) ctx.translate(0, svg.ViewPort.height() / 2.0 - height / 2.0); 
-					if (align.match(/^xMax/) && ((meetOrSlice == 'meet' && scaleMin == scaleY) || (meetOrSlice == 'slice' && scaleMax == scaleY))) ctx.translate(svg.ViewPort.width() - width, 0); 
-					if (align.match(/YMax$/) && ((meetOrSlice == 'meet' && scaleMin == scaleX) || (meetOrSlice == 'slice' && scaleMax == scaleX))) ctx.translate(0, svg.ViewPort.height() - height); 
-
+					
+					if (this.attribute('refX').hasValue() && this.attribute('refY').hasValue()) {
+						ctx.translate(-scaleMin * this.attribute('refX').Length.toPixels('x'), -scaleMin * this.attribute('refY').Length.toPixels('y'));
+					} 
+					else {					
+						// align
+						if (align.match(/^xMid/) && ((meetOrSlice == 'meet' && scaleMin == scaleY) || (meetOrSlice == 'slice' && scaleMax == scaleY))) ctx.translate(svg.ViewPort.width() / 2.0 - width / 2.0, 0); 
+						if (align.match(/YMid$/) && ((meetOrSlice == 'meet' && scaleMin == scaleX) || (meetOrSlice == 'slice' && scaleMax == scaleX))) ctx.translate(0, svg.ViewPort.height() / 2.0 - height / 2.0); 
+						if (align.match(/^xMax/) && ((meetOrSlice == 'meet' && scaleMin == scaleY) || (meetOrSlice == 'slice' && scaleMax == scaleY))) ctx.translate(svg.ViewPort.width() - width, 0); 
+						if (align.match(/YMax$/) && ((meetOrSlice == 'meet' && scaleMin == scaleX) || (meetOrSlice == 'slice' && scaleMax == scaleX))) ctx.translate(0, svg.ViewPort.height() - height); 
+					}
+					
 					// scale
 					if (meetOrSlice == 'meet') ctx.scale(scaleMin, scaleMin); 
 					if (meetOrSlice == 'slice') ctx.scale(scaleMax, scaleMax); 	
-					ctx.translate(-minX, -minY);		
-
+					ctx.translate(-minX, -minY);	
+					
 					svg.ViewPort.RemoveCurrent();	
 					svg.ViewPort.SetCurrent(viewBox[2], viewBox[3]);						
 				}				
 				
 				// initial values
-				ctx.fillStyle = '#000000';
 				ctx.strokeStyle = 'rgba(0,0,0,0)';
 				ctx.lineCap = 'butt';
 				ctx.lineJoin = 'miter';
@@ -788,6 +868,20 @@ if(!window.console) {
 				
 				return new svg.BoundingBox(x1, y1, x2, y2);
 			}
+			
+			this.getEndPoint = function() {
+				var x2 = this.attribute('x2').Length.toPixels('x');
+				var y2 = this.attribute('y2').Length.toPixels('y');			
+				return new svg.Point(x2, y2);
+			}
+			
+			this.getEndAngle = function() {
+				var x1 = this.attribute('x1').Length.toPixels('x');
+				var y1 = this.attribute('y1').Length.toPixels('y');
+				var x2 = this.attribute('x2').Length.toPixels('x');
+				var y2 = this.attribute('y2').Length.toPixels('y');
+				return Math.atan((y2-y1)/(x2-x1));
+			}
 		}
 		svg.Element.line.prototype = new svg.Element.PathElementBase;		
 				
@@ -843,6 +937,7 @@ if(!window.console) {
 			d = d.replace(/([^\s])([A-Za-z])/gm,'$1 $2'); // separate commands from points
 			d = d.replace(/([0-9])([+\-])/gm,'$1 $2'); // separate digits when no comma
 			d = d.replace(/(\.[0-9]*)(\.)/gm,'$1 $2'); // separate digits when no comma
+			d = d.replace(/([Aa](\s+[0-9]+){3})\s+([01])\s*([01])/gm,'$1 $3 $4 '); // shorthand elliptical arc path syntax
 			d = svg.compressSpaces(d); // compress multiple spaces
 			d = svg.trim(d);
 			this.PathParser = new (function(d) {
@@ -852,7 +947,17 @@ if(!window.console) {
 					this.i = -1;
 					this.command = '';
 					this.control = new svg.Point(0, 0);
+					this.last = new svg.Point(0, 0);
 					this.current = new svg.Point(0, 0);
+				}
+				
+				this.angle = function() {
+					return Math.atan((this.current.y - this.last.y) / (this.current.x - this.last.x));
+				}
+				
+				this.setCurrent = function(p) {
+					this.last = this.current;
+					this.current = p;
 				}
 				
 				this.isEnd = function() {
@@ -894,7 +999,7 @@ if(!window.console) {
 				
 				this.getAsCurrentPoint = function() {
 					var p = this.getPoint();
-					this.current = p;
+					this.setCurrent(p);
 					return p;	
 				}
 				
@@ -912,7 +1017,7 @@ if(!window.console) {
 				}
 			})(d);
 			
-			this.path = function(ctx) {				
+			this.path = function(ctx) {		
 				var pp = this.PathParser;
 				pp.reset();
 				
@@ -940,6 +1045,7 @@ if(!window.console) {
 					else if (pp.command.toUpperCase() == 'H') {
 						while (!pp.isCommandOrEnd()) {
 							pp.current.x = (pp.isRelativeCommand() ? pp.current.x : 0) + pp.getScalar();
+							pp.setCurrent(pp.current);
 							bb.addPoint(pp.current.x, pp.current.y);
 							if (ctx != null) ctx.lineTo(pp.current.x, pp.current.y);
 						}
@@ -947,6 +1053,7 @@ if(!window.console) {
 					else if (pp.command.toUpperCase() == 'V') {
 						while (!pp.isCommandOrEnd()) {
 							pp.current.y = (pp.isRelativeCommand() ? pp.current.y : 0) + pp.getScalar();
+							pp.setCurrent(pp.current);
 							bb.addPoint(pp.current.x, pp.current.y);
 							if (ctx != null) ctx.lineTo(pp.current.x, pp.current.y);
 						}
@@ -1050,16 +1157,59 @@ if(!window.console) {
 						if (ctx != null) ctx.closePath();
 					}
 				}
-				
+							
 				return bb;
+			}
+			
+			this.getEndPoint = function() {
+				return this.PathParser.current;
+			}
+			
+			this.getEndAngle = function() {
+				return this.PathParser.angle();
 			}
 		}
 		svg.Element.path.prototype = new svg.Element.PathElementBase;
+		
+		svg.Element.marker = function(node) {
+			this.base = svg.Element.ElementBase;
+			this.base(node);
+			
+			this.baseRender = this.render;
+			this.render = function(ctx, endPoint, endAngle) {
+				ctx.translate(endPoint.x, endPoint.y);
+				if (this.attribute('orient').valueOrDefault('auto') == 'auto') ctx.rotate(endAngle);
+				if (this.attribute('markerUnits').valueOrDefault('strokeWidth') == 'strokeWidth') ctx.scale(ctx.lineWidth, ctx.lineWidth);
+				ctx.save();
+							
+				// render me using a temporary svg element
+				var tempSvg = new svg.Element.svg();
+				tempSvg.attributes['viewBox'] = new svg.Property('viewBox', this.attribute('viewBox').value);
+				tempSvg.attributes['refX'] = new svg.Property('refX', this.attribute('refX').value);
+				tempSvg.attributes['refY'] = new svg.Property('refY', this.attribute('refY').value);
+				tempSvg.attributes['width'] = new svg.Property('width', this.attribute('markerWidth').value);
+				tempSvg.attributes['height'] = new svg.Property('height', this.attribute('markerHeight').value);
+				tempSvg.attributes['fill'] = new svg.Property('fill', this.attribute('fill').valueOrDefault('black'));
+				tempSvg.attributes['stroke'] = new svg.Property('stroke', this.attribute('stroke').valueOrDefault('none'));
+				tempSvg.children = this.children;
+				tempSvg.render(ctx);
+				
+				ctx.restore();
+				if (this.attribute('markerUnits').valueOrDefault('strokeWidth') == 'strokeWidth') ctx.scale(1/ctx.lineWidth, 1/ctx.lineWidth);
+				if (this.attribute('orient').valueOrDefault('auto') == 'auto') ctx.rotate(-endAngle);
+				ctx.translate(-endPoint.x, -endPoint.y);
+			}
+		}
+		svg.Element.marker.prototype = new svg.Element.ElementBase;
 		
 		// definitions element
 		svg.Element.defs = function(node) {
 			this.base = svg.Element.ElementBase;
 			this.base(node);			
+			
+			this.render = function(ctx) {
+				// NOOP
+			}
 		}
 		svg.Element.defs.prototype = new svg.Element.ElementBase;
 		
@@ -1275,7 +1425,7 @@ if(!window.console) {
 		
 		// text element
 		svg.Element.text = function(node) {
-			this.base = svg.Element.ElementBase;
+			this.base = svg.Element.RenderedElementBase;
 			this.base(node);
 			
 			// accumulate all the child text nodes, then trim them
@@ -1287,13 +1437,23 @@ if(!window.console) {
 			}
 			this.text = svg.trim(this.text);
 			
-			this.render = function(ctx) {
+			this.baseSetContext = this.setContext;
+			this.setContext = function(ctx) {
+				this.baseSetContext(ctx);
+				if (this.attribute('text-anchor').hasValue()) {
+					var textAnchor = this.attribute('text-anchor').value;
+					ctx.textAlign = textAnchor == 'middle' ? 'center' : textAnchor;
+				}
+				if (this.attribute('alignment-baseline').hasValue()) ctx.textBaseline = this.attribute('alignment-baseline').value;
+			}
+			
+			this.renderChildren = function(ctx) {
 				var x = this.attribute('x').Length.toPixels('x');
 				var y = this.attribute('y').Length.toPixels('y');
 				if (ctx.fillText) ctx.fillText(this.text, x, y);
 			}
 		}
-		svg.Element.text.prototype = new svg.Element.ElementBase;
+		svg.Element.text.prototype = new svg.Element.RenderedElementBase;
 		
 		// group element
 		svg.Element.g = function(node) {
