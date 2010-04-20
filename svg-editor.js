@@ -341,6 +341,8 @@
 					'#tool_fill label': 'fill',
 					'#tool_stroke .icon_label': 'stroke',
 					'#group_opacityLabel': 'opacity',
+					'#blurLabel': 'blur',
+					'#font_sizeLabel': 'fontsize',
 					
 					'.flyout_arrow_horiz':'arrow_right',
 					'.dropdown button, #main_button .dropdown':'arrow_down',
@@ -2861,47 +2863,48 @@
 			var SIDEPANEL_MAXWIDTH = 300;
 			var SIDEPANEL_OPENWIDTH = 150;
 			var sidedrag = -1, sidedragging = false;
+				
+			var resizePanel = function(evt) {
+				if (sidedrag == -1) return;
+				sidedragging = true;
+				var deltax = sidedrag - evt.pageX;
+	
+				var sidepanels = $('#sidepanels');
+				var sidewidth = parseInt(sidepanels.css('width'));
+				if (sidewidth+deltax > SIDEPANEL_MAXWIDTH) {
+					deltax = SIDEPANEL_MAXWIDTH - sidewidth;
+					sidewidth = SIDEPANEL_MAXWIDTH;
+				}
+				else if (sidewidth+deltax < 2) {
+					deltax = 2 - sidewidth;
+					sidewidth = 2;
+				}
+	
+				if (deltax == 0) return;
+				sidedrag -= deltax;
+	
+				var layerpanel = $('#layerpanel');
+				workarea.css('right', parseInt(workarea.css('right'))+deltax);
+				sidepanels.css('width', parseInt(sidepanels.css('width'))+deltax);
+				layerpanel.css('width', parseInt(layerpanel.css('width'))+deltax);
+			}
+			
 			$('#sidepanel_handle')
-				.mousedown(function(evt) {sidedrag = evt.pageX;})
+				.mousedown(function(evt) {
+					sidedrag = evt.pageX;
+					$(window).mousemove(resizePanel);
+					
+				})
 				.mouseup(function(evt) {
 					if (!sidedragging) toggleSidePanel();
 					sidedrag = -1;
 					sidedragging = false;
 				});
-			$('#svg_editor')
-				.mouseup(function(){sidedrag=-1;})
-				.mouseout(function(evt){
-					if (sidedrag == -1) return;
-					// if we've moused out of the browser window, then we can stop dragging 
-					// and close the drawer
-					if (evt.pageX > this.clientWidth) {
-						sidedrag = -1;
-						toggleSidePanel(true);
-					}
-				})
-				.mousemove(function(evt) {
-					if (sidedrag == -1) return;
-					sidedragging = true;
-					var deltax = sidedrag - evt.pageX;
-		
-					var sidepanels = $('#sidepanels');
-					var sidewidth = parseInt(sidepanels.css('width'));
-					if (sidewidth+deltax > SIDEPANEL_MAXWIDTH) {
-						deltax = SIDEPANEL_MAXWIDTH - sidewidth;
-						sidewidth = SIDEPANEL_MAXWIDTH;
-					}
-					else if (sidewidth+deltax < 2) {
-						deltax = 2 - sidewidth;
-						sidewidth = 2;
-					}
-		
-					if (deltax == 0) return;
-					sidedrag -= deltax;
-		
-					var layerpanel = $('#layerpanel');
-					workarea.css('right', parseInt(workarea.css('right'))+deltax);
-					sidepanels.css('width', parseInt(sidepanels.css('width'))+deltax);
-					layerpanel.css('width', parseInt(layerpanel.css('width'))+deltax);
+
+			$(window).mouseup(function() {
+				sidedrag = -1;
+				sidedragging = false;
+				$('#svg_editor').unbind('mousemove', resizePanel);
 			});
 			
 			// if width is non-zero, then fully close it, otherwise fully open it

@@ -377,6 +377,8 @@ $(function() {
 					if(this.getAttribute('xlink:href') == '#' + id) {
 						this.setAttributeNS(xlinkns,'href','#' + new_id);
 					}
+				}).end().find('[filter="url(#' + id + ')"]').each(function() {
+					$(this).attr('filter', 'url(#' + new_id + ')');
 				});
 			});
 			return svg_el;
