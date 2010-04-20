@@ -336,6 +336,11 @@
 					'#rwidthLabel, #iwidthLabel':'width',
 					'#rheightLabel, #iheightLabel':'height',
 					'#cornerRadiusLabel span':'c_radius',
+					'#angleLabel':'angle',
+					'#zoomLabel':'zoom',
+					'#tool_fill label': 'fill',
+					'#tool_stroke .icon_label': 'stroke',
+					'#group_opacityLabel': 'opacity',
 					
 					'.flyout_arrow_horiz':'arrow_right',
 					'.dropdown button, #main_button .dropdown':'arrow_down',
@@ -349,7 +354,8 @@
 					'#main_button .dropdown .svg_icon': 9,
 					'.palette_item:first .svg_icon, #fill_bg .svg_icon, #stroke_bg .svg_icon': 16,
 					'.toolbar_button button .svg_icon':16,
-					'.stroke_tool div div .svg_icon': 20
+					'.stroke_tool div div .svg_icon': 20,
+					'#tools_bottom label .svg_icon': 18
 				},
 				callback: function(icons) {
 					$('.toolbar_button button > svg, .toolbar_button button > img').each(function() {
@@ -1811,7 +1817,23 @@
 		// 		holder.empty().append(icon)
 		// 			.attr('data-curopt', holder_sel.replace('_show','')); // This sets the current mode
 		// 	}
-			
+		
+			// Unfocus text input when workarea is mousedowned.
+			(function() {
+				var inp;
+
+				var unfocus = function() {
+					$(inp).blur();
+				}
+
+				$('#svg_editor input:text').focus(function() {
+					inp = this;
+					workarea.mousedown(unfocus);
+				}).blur(function() {
+					workarea.unbind('mousedown', unfocus);
+				});
+			}());
+
 			var clickSelect = function() {
 				if (toolButtonClick('#tool_select')) {
 					svgCanvas.setMode('select');
@@ -2707,16 +2729,26 @@
 				});
 			},1000);
 				
-			$('#fill_color').click(function(){
-				colorPicker($(this));
+			$('#fill_color, #tool_fill .icon_label').click(function(){
+				colorPicker($('#fill_color'));
 				updateToolButtonState();
 			});
 		
-			$('#stroke_color').click(function(){
-				colorPicker($(this));
+			$('#stroke_color, #tool_stroke .icon_label').click(function(){
+				colorPicker($('#stroke_color'));
 				updateToolButtonState();
 			});
-		
+			
+			$('#group_opacityLabel').click(function() {
+				$('#opacity_dropdown button').mousedown();
+				$(window).mouseup();
+			});
+			
+			$('#zoomLabel').click(function() {
+				$('#zoom_dropdown button').mousedown();
+				$(window).mouseup();
+			});
+			
 			$('#tool_move_top').mousedown(function(evt){
 				$('#tools_stacking').show();
 				evt.preventDefault();
