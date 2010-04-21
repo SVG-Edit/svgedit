@@ -13,6 +13,19 @@ import os
 import json
 from types import DictType
 
+def changeTooltipTarget(j):
+	"""
+	Moves the tooltip target for some tools
+	"""
+	tools = ['rect_width', 'rect_height']
+	for row in j:
+		try:
+			id = row['id']
+			if id in tools:
+				row['id'] = row['id'] + '_tool'
+		except KeyError:
+			pass
+	
 def updateMainMenu(j):
     """
     Converts title into textContent for items in the main menu
@@ -58,7 +71,7 @@ def processFile(filename):
         j = json.loads(in_string)
 
         # process the JSON object here
-        # updateMainMenu(j)
+        changeTooltipTarget(j)
 
         # now write it out back to the file
         s = ourPrettyPrint(j).encode("UTF-8")
