@@ -49,9 +49,9 @@
 {"id": "palette", "title": "रंग बदलने पर क्लिक करें, बदलाव भरने के क्लिक करने के लिए स्ट्रोक का रंग बदलने के लिए"},
 {"id": "path_node_x", "title": "नोड का x समकक्ष बदलें"},
 {"id": "path_node_y", "title": "नोड का y समकक्ष बदलें"},
-{"id": "rect_height", "title": "बदलें आयत ऊंचाई"},
+{"id": "rect_height_tool", "title": "बदलें आयत ऊंचाई"},
 {"id": "rect_rx", "title": "बदलें आयत कॉर्नर त्रिज्या"},
-{"id": "rect_width", "title": "बदलें आयत चौड़ाई"},
+{"id": "rect_width_tool", "title": "बदलें आयत चौड़ाई"},
 {"id": "relativeToLabel", "textContent": "रिश्तेदार को:"},
 {"id": "rheightLabel", "textContent": "ऊँचाई:"},
 {"id": "rwidthLabel", "textContent": "चौड़ाई:"},
@@ -127,7 +127,7 @@
 {"id": "tool_zoom", "title": "ज़ूम उपकरण"},
 {"id": "zoom", "title": "बदलें स्तर ज़ूम"},
 {"id": "zoomLabel", "textContent": "जूम:"},
-{"id": "sidepanel_handle","textContent":"प र तें","title":"दायें/बाएं घसीट कर आकार बदलें"},
+{"id": "sidepanel_handle", "textContent": "प र तें", "title": "दायें/बाएं घसीट कर आकार बदलें"},
 {
  "js_strings": {
   "QerrorsRevertToSource": "आपके एस.वी.जी. स्रोत में त्रुटियों थी.\nक्या आप मूल एस.वी.जी स्रोत पर वापिस जाना चाहते हैं?", 
