@@ -80,7 +80,7 @@
 
 #svg_editor #color_tools .icon_label {
 	padding-right: 0;
-	height: 23px;
+	height: 26px;
 	min-width: 18px;
 	cursor: pointer;
 }
@@ -622,6 +622,10 @@ span.zoom_tool {
 	float: left;
 	padding-top: 3px;
 	padding-right: 3px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	height: 0;
 }
 
 #svg_editor .width_label {
