@@ -86,6 +86,7 @@
 {"id": "tool_alignright", "title": "Align Right"},
 {"id": "tool_aligntop", "title": "Align Top"},
 {"id": "tool_bold", "title": "Bold Text"},
+{"id": "tool_blur", "title": "Change gaussian blur value"},
 {"id": "tool_circle", "title": "Circle"},
 {"id": "tool_clear", "textContent": "New Image"},
 {"id": "tool_clone", "title": "Clone Element"},
