@@ -1827,8 +1827,10 @@
 				var unfocus = function() {
 					$(inp).blur();
 				}
-
-				$('#svg_editor input:text').focus(function() {
+				
+				// Do not include the #text input, as it needs to remain focused 
+				// when clicking on an SVG text element.
+				$('#svg_editor input:text:not(#text)').focus(function() {
 					inp = this;
 					workarea.mousedown(unfocus);
 				}).blur(function() {
