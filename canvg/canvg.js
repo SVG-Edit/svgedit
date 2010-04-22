@@ -605,7 +605,6 @@ if(!window.console) {
 				if (this.style('stroke-miterlimit').hasValue()) ctx.miterLimit = this.style('stroke-miterlimit').value;
 
 				// font
-				opera.postError('typeof(ctx.font):' + ctx.font);
 				if (typeof(ctx.font) != 'undefined') {
 					ctx.font = svg.Font.CreateFont( 
 						this.style('font-style').value, 
