@@ -400,7 +400,8 @@
 				path = svgCanvas.pathActions,
 				default_img_url = curConfig.imgPath + "logo.png",
 				workarea = $("#workarea"),
-				show_save_warning = false;
+				show_save_warning = false, 
+				exportWindow = null;
 
 			// This sets up alternative dialog boxes. They mostly work the same way as
 			// their UI counterparts, expect instead of returning the result, a callback
@@ -520,7 +521,6 @@
 			};
 			
 			var exportHandler = function(window, data) {
-
 				var issues = data.issues;
 				
 				if(!$('#export_canvas').length) {
@@ -532,7 +532,7 @@
 				c.height = svgCanvas.contentH;
 				canvg(c, data.svg);
 				var datauri = c.toDataURL('image/png');
-				var win = window.open(datauri);
+				exportWindow.location.href = datauri;
 				
 				var note = 'Select "Save As..." in your browser to save this image as a PNG file.';
 				
@@ -542,7 +542,7 @@
 					var pre = "\n \u2022 ";
 					note += ("\n\nAlso note these issues:" + pre + issues.join(pre));
 				} 
-				win.alert(note);
+				exportWindow.alert(note);
 			};
 			
 			// called when we've selected a different element
@@ -2037,32 +2037,19 @@
 			};
 			
 			var clickExport = function() {
+				// Open placeholder window (prevents popup)
+				var str = "Loading image, please wait...";
+				exportWindow = window.open("data:text/html;charset=utf-8,<title>" + str + "<\/title><h1>" + str + "<\/h1>");
+
 				if(window.canvg) {
 					svgCanvas.rasterExport();
-					return;
 				} else {
 					$.getScript('canvg/rgbcolor.js', function() {
-						$.getScript('canvg/canvg.js');
-						// Would normally run svgCanvas.rasterExport() here,
-						// but that causes popup dialog box
+						$.getScript('canvg/canvg.js', function() {
+							svgCanvas.rasterExport();
+						});
 					});
 				}
-				var count = 0;
-				
-				// Run export when window.canvg is created
-				var timer = setInterval(function() {
-					count++;
-					if(window.canvg) {
-						clearInterval(timer);
-						svgCanvas.rasterExport();
-						return;
-					}
-					
-					if(count > 100) { // 5 seconds
-						clearInterval(timer);
-						$.alert("Error: Failed to load CanVG script");
-					}
-				}, 50);
 			}
 			
 			// by default, svgCanvas.open() is a no-op.
