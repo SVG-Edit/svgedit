@@ -5862,7 +5862,7 @@ function BatchCommand(text) {
 					
 					if(item.pathSegType === 1) {
 						var prev = segList.getItem(i-1);
-						if(prev.x != last_m.x && prev.y != last_m.y) {
+						if(prev.x != last_m.x || prev.y != last_m.y) {
 							// Add an L segment here
 							var newseg = elem.createSVGPathSegLinetoAbs(last_m.x, last_m.y);
 							insertItemBefore(elem, newseg, i);
@@ -5881,6 +5881,7 @@ function BatchCommand(text) {
 				var len = segList.numberOfItems;
 				var curx = 0, cury = 0;
 				var d = "";
+				var last_m = null;
 				
 				for (var i = 0; i < len; ++i) {
 					var seg = segList.getItem(i);
@@ -5894,6 +5895,7 @@ function BatchCommand(text) {
 		
 					var type = seg.pathSegType;
 					var letter = pathMap[type]['to'+(toRel?'Lower':'Upper')+'Case']();
+					
 					var addToD = function(pnts, more, last) {
 						var str = '';
 						var more = more?' '+more.join(' '):'';
@@ -5935,8 +5937,15 @@ function BatchCommand(text) {
 						case 18: // absolute smooth quad (T)
 							x -= curx;
 							y -= cury;
-						case 3: // relative move (m)
 						case 5: // relative line (l)
+						case 3: // relative move (m)
+							// If the last segment was a "z", this must be relative to 
+							if(last_m && segList.getItem(i-1).pathSegType === 1 && !toRel) {
+									curx = last_m[0];
+									cury = last_m[1];
+								}
+							}
+						
 						case 19: // relative smooth quad (t)
 							if(toRel) {
 								curx += x;
@@ -5947,6 +5956,8 @@ function BatchCommand(text) {
 								curx = x;
 								cury = y;
 							}
+							if(type === 3) last_m = [curx, cury];
+							
 							addToD([[x,y]]);
 							break;
 						case 6: // absolute cubic (C)
