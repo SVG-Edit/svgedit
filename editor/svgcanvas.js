@@ -4790,6 +4790,9 @@ function BatchCommand(text) {
 			this.addSeg = function(index) {
 				// Adds a new segment
 				var seg = p.segs[index];
+				
+				if(!seg.prev) return;
+				
 				var prev = seg.prev;
 				
 				var new_x = (seg.item.x + prev.item.x) / 2;
