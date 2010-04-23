@@ -2474,11 +2474,19 @@
 				$('#image_save_opts input').val([curPrefs.img_save]);
 				docprops = false;
 			};
+
+			var win_wh = {width:$(window).width(), height:$(window).height()};
 			
-			// TODO: add canvas-centering code in here
 			$(window).resize(function(evt) {
-				if (!editingsource) return;
-				properlySourceSizeTextArea();
+				if (editingsource) {
+					properlySourceSizeTextArea();
+				}
+				
+				$.each(win_wh, function(type, val) {
+					var curval = $(window)[type]();
+					workarea[0]['scroll' + (type==='width'?'Left':'Top')] -= (curval - val)/2;
+					win_wh[type] = curval;
+				});
 			});
 			
 			$('#url_notice').click(function() {
@@ -3545,9 +3553,11 @@
 					'url': url,
 					'dataType': 'text',
 					success: svgCanvas.setSvgString,
-					error: function(xhr) {
+					error: function(xhr, stat, err) {
 						if(xhr.responseText) {
 							svgCanvas.setSvgString(xhr.responseText);
+						} else {
+							$.alert("Unable to load from URL. Error: \n"+err+'');
 						}
 					}
 				});
