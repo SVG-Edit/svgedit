@@ -5941,9 +5941,8 @@ function BatchCommand(text) {
 						case 3: // relative move (m)
 							// If the last segment was a "z", this must be relative to 
 							if(last_m && segList.getItem(i-1).pathSegType === 1 && !toRel) {
-									curx = last_m[0];
-									cury = last_m[1];
-								}
+								curx = last_m[0];
+								cury = last_m[1];
 							}
 						
 						case 19: // relative smooth quad (t)
