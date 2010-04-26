@@ -4175,7 +4175,7 @@ function BatchCommand(text) {
 					call("selected", [curtext]);
 					canvas.addToSelection([curtext], true);
 				}
-				if(!curtext.textContent.length) {
+				if(curtext && !curtext.textContent.length) {
 					// No content, so delete
 					canvas.deleteSelectedElements();
 				}
@@ -7895,6 +7895,7 @@ function BatchCommand(text) {
 
 	this.setFontSize = function(val) {
 		cur_text.font_size = val;
+		textActions.toSelectMode();
 		this.changeSelectedAttribute("font-size", val);
 	};
 
@@ -8019,6 +8020,12 @@ function BatchCommand(text) {
 		while (i--) {
 			var elem = elems[i];
 			if (elem == null) continue;
+			
+			// Go into "select" mode for text changes
+			if(current_mode === "textedit" && attr !== "#text") {
+				textActions.toSelectMode(elem);
+			}
+			
 			// Set x,y vals on elements that don't have them
 			if((attr == 'x' || attr == 'y') && $.inArray(elem.tagName, ['g', 'polyline', 'path']) != -1) {
 				var bbox = canvas.getStrokedBBox([elem]);

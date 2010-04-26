@@ -3520,6 +3520,20 @@
 					
 					// Update flyout tooltips
 					setFlyoutTitles();
+					
+					// Copy title for certain tool elements
+					var elems = {
+						'#stroke_color': '#tool_stroke .icon_label, #tool_stroke .color_block',
+// 						'#group_opacity': '#tool_opacity', // Change lang file
+//						'#zoom': '#zoom_panel',
+						'#fill_color': '#tool_fill label, #tool_fill .color_block'
+					}
+					
+					$.each(elems, function(source, dest) {
+						$(dest).attr('title', $(source).attr('title'));
+					});
+
+					
 				}
 			};
 		};
