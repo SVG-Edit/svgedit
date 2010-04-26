@@ -541,8 +541,7 @@ function BatchCommand(text) {
 			}
 
 			// loop and transform our bounding box until we reach our first rotation
-			var tlist = canvas.getTransformList(selected),
-				m = transformListToTransform(tlist).matrix;
+			var m = getMatrix(selected);
 
 			// This should probably be handled somewhere else, but for now
 			// it keeps the selection box correctly positioned when zoomed
@@ -2804,17 +2803,11 @@ function BatchCommand(text) {
 		}
 		return false;
 	}
-
-//  // Easy way to loop through transform list, but may not be worthwhile	
-// 	var eachXform = function(elem, callback) {
-// 		var tlist = canvas.getTransformList(elem);
-// 		var num = tlist.numberOfItems;
-// 		if(num == 0) return;
-// 		while(num--) {
-// 			var xform = tlist.getItem(num);
-// 			callback(xform, tlist);
-// 		}
-// 	}
+	
+	var getMatrix = function(elem) {
+		var tlist = canvas.getTransformList(elem);
+		return transformListToTransform(tlist).matrix;
+	}
 	
     // FIXME: this should not have anything to do with zoom here - update the one place it is used this way
     // converts a tiny object equivalent of a SVGTransform
@@ -3570,7 +3563,7 @@ function BatchCommand(text) {
 					var box = canvas.getBBox(selected),
 						cx = box.x + box.width/2, 
 						cy = box.y + box.height/2,
-						m = transformListToTransform(canvas.getTransformList(selected)).matrix,
+						m = getMatrix(selected),
 						center = transformPoint(cx,cy,m);
 					cx = center.x;
 					cy = center.y;
@@ -4215,8 +4208,8 @@ function BatchCommand(text) {
 				textbb = canvas.getBBox(curtext);
 				
 				if(xform) {
-					var tlist = canvas.getTransformList(curtext);
-					var matrix = transformListToTransform(tlist).matrix;
+					var matrix = getMatrix(curtext);
+					
 					imatrix = matrix.inverse();
 // 					var tbox = transformBox(textbb.x, textbb.y, textbb.width, textbb.height, matrix);
 // 					transbb = {
@@ -4766,8 +4759,7 @@ function BatchCommand(text) {
 			// Update position of all points
 			this.update = function() {
 				if(canvas.getRotationAngle(p.elem)) {
-					var tlist = canvas.getTransformList(path.elem);
-					p.matrix = transformListToTransform(tlist).matrix;
+					p.matrix = getMatrix(path.elem);
 					p.imatrix = p.matrix.inverse();
 				}
 
@@ -5410,10 +5402,17 @@ function BatchCommand(text) {
 							started = false;
 							
 							if(subpath) {
+								if(path.matrix) {
+									remapElement(newpath, {}, path.matrix.inverse());
+								}
+							
 								var new_d = newpath.getAttribute("d");
 								var orig_d = $(path.elem).attr("d");
 								$(path.elem).attr("d", orig_d + new_d);
 								$(newpath).remove();
+								if(path.matrix) {
+									recalcRotatedPath();
+								}
 								path.init();
 								pathActions.toEditMode(path.elem);
 								path.selectPt();
@@ -5551,7 +5550,8 @@ function BatchCommand(text) {
 				this.resetOrientation(elem);
 				addCommandToHistory(batchCmd);
 
-				getPath(elem).show(false);
+				// Set matrix to null
+				getPath(elem).show(false).matrix = null; 
 
 				this.clear();
 		
