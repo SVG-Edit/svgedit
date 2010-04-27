@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "يصلح لطبقة المحتوى"},
 {"id": "fit_to_sel", "textContent": "يصلح لاختيار"},
 {"id": "font_family", "title": "تغيير الخط الأسرة"},
-{"id": "font_size", "title": "تغيير حجم الخط"},
+{"id": "tool_font_size", "title": "تغيير حجم الخط"},
 {"id": "tool_opacity", "title": "تغيير مختارة غموض البند"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "מתאים לתוכן שכבת"},
 {"id": "fit_to_sel", "textContent": "התאם הבחירה"},
 {"id": "font_family", "title": "שינוי גופן משפחה"},
-{"id": "font_size", "title": "שנה גודל גופן"},
+{"id": "tool_font_size", "title": "שנה גודל גופן"},
 {"id": "tool_opacity", "title": "שינוי הפריט הנבחר אטימות"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

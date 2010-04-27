@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Προσαρμογή στο περιεχόμενο στρώμα"},
 {"id": "fit_to_sel", "textContent": "Fit to επιλογή"},
 {"id": "font_family", "title": "Αλλαγή γραμματοσειράς Οικογένεια"},
-{"id": "font_size", "title": "Αλλαγή μεγέθους γραμματοσειράς"},
+{"id": "tool_font_size", "title": "Αλλαγή μεγέθους γραμματοσειράς"},
 {"id": "tool_opacity", "title": "Αλλαγή αδιαφάνεια επιλεγμένο σημείο"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

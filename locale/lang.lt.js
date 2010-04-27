@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Talpinti sluoksnis turinio"},
 {"id": "fit_to_sel", "textContent": "Talpinti atrankos"},
 {"id": "font_family", "title": "Pakeistišriftą Šeima"},
-{"id": "font_size", "title": "Change font size"},
+{"id": "tool_font_size", "title": "Change font size"},
 {"id": "tool_opacity", "title": "Pakeisti pasirinkto elemento neskaidrumo"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

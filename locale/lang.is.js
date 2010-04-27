@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Laga til lag efni"},
 {"id": "fit_to_sel", "textContent": "Fit til val"},
 {"id": "font_family", "title": "Change Leturfjölskylda"},
-{"id": "font_size", "title": "Breyta leturstærð"},
+{"id": "tool_font_size", "title": "Breyta leturstærð"},
 {"id": "tool_opacity", "title": "Breyta valin atriði opacity"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

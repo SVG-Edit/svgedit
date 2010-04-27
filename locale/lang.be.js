@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "По размеру слой ўтрымання"},
 {"id": "fit_to_sel", "textContent": "Выбар памеру"},
 {"id": "font_family", "title": "Змены Сямейства шрыфтоў"},
-{"id": "font_size", "title": "Змяніць памер шрыфта"},
+{"id": "tool_font_size", "title": "Змяніць памер шрыфта"},
 {"id": "tool_opacity", "title": "Старонка абранага пункта непразрыстасці"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

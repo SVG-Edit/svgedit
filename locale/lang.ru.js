@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Под размер содержания слоя"},
 {"id": "fit_to_sel", "textContent": "Под размер выделенного"},
 {"id": "font_family", "title": "Изменить семейство шрифтов"},
-{"id": "font_size", "title": "Изменить размер шрифта"},
+{"id": "tool_font_size", "title": "Изменить размер шрифта"},
 {"id": "tool_opacity", "title": "Изменить непрозрачность элемента"},
 {"id": "icon_large", "textContent": "Большие"},
 {"id": "icon_medium", "textContent": "Средние"},

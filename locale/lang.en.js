@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Fit to layer content"},
 {"id": "fit_to_sel", "textContent": "Fit to selection"},
 {"id": "font_family", "title": "Change Font Family"},
-{"id": "font_size", "title": "Change Font Size"},
+{"id": "tool_font_size", "title": "Change Font Size"},
 {"id": "tool_opacity", "title": "Change selected item opacity"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},
@@ -132,7 +132,24 @@
 {"id": "zoom_panel", "title": "Change zoom level"},
 {"id": "zoomLabel", "textContent": "zoom:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},
-{"id": "tool_blur", "textContent": "Change gaussian blur value:"},
+{"id": "tool_blur", "title": "Change gaussian blur value"},
+{"id": "tool_position", "title": "Align Element to Page"},
+{"id": "idLabel", "title": "Identify the element"},
+{"id": "tool_openclose_path", "title": "Open/close sub-path"},
+{"id": "tool_add_subpath", "title": "Add sub-path"},
+{"id": "cur_linejoin", "title": "Add sub-path"},
+{"id": "linejoin_miter", "title": "Linejoin: Miter"},
+{"id": "linejoin_round", "title": "Linejoin: Round"},
+{"id": "linejoin_bevel", "title": "Linejoin: Bevel"},
+{"id": "linecap_butt", "title": "Linecap: Butt"},
+{"id": "linecap_square", "title": "Linecap: Square"},
+{"id": "linecap_round", "title": "Linecap: Round"},
+{"id": "tool_import", "textContent": "Import SVG"},
+{"id": "tool_export", "textContent": "Export as PNG"},
+{"id": "tool_eyedropper", "title": "Eye Dropper Tool"},
+{"id": "mode_connect", "title": "Connect two objects"},
+{"id": "connector_no_arrow", "textContent": "No arrow"},
+
 {
  "js_strings": {
   "QerrorsRevertToSource": "There were parsing errors in your SVG source.\nRevert back to original SVG source?", 
@@ -146,6 +163,11 @@
   "enterUniqueLayerName": "Please enter a unique layer name", 
   "featNotSupported": "Feature not supported", 
   "invalidAttrValGiven": "Invalid value given", 
+  "enterNewImgURL":"Enter the new image URL",
+  "defsFailOnSave": "NOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.",
+  "loadingImage":"Loading image, please wait...",
+  "saveFromBrowser": "Select \"Save As...\" in your browser to save this image as a %s file.",
+  "noteTheseIssues": "Also note the following issues: ",
   "key_backspace": "backspace", 
   "key_del": "delete", 
   "key_down": "down", 
@@ -155,7 +177,13 @@
   "noContentToFitTo": "No content to fit to", 
   "ok": "OK", 
   "pathCtrlPtTooltip": "Drag control point to adjust curve properties", 
-  "pathNodeTooltip": "Drag node to move it. Double-click node to change segment type"
+  "pathNodeTooltip": "Drag node to move it. Double-click node to change segment type",
+  "exportNoBlur": "Blurred elements will appear as un-blurred",
+  "exportNoImage": "Image elements will not appear",
+  "exportNoforeignObject": "foreignObject elements will not appear",
+  "exportNoMarkers": "Marker elements (arrows, etc) may not appear as expected",
+  "exportNoDashArray": "Strokes will appear filled",
+  "exportNoText": "Text may not appear as expected"
  }
 }
 ]

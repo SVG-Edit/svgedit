@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "‫هم اندازه شدن با محتوای لایه‬"},
 {"id": "fit_to_sel", "textContent": "‫هم اندازه شدن با اشیاء انتخاب شده‬"},
 {"id": "font_family", "title": "‫تغییر خانواده قلم‬"},
-{"id": "font_size", "title": "‫تغییر اندازه قلم‬"},
+{"id": "tool_font_size", "title": "‫تغییر اندازه قلم‬"},
 {"id": "tool_opacity", "title": "‫تغییر تاری عنصر انتخاب شده‬"},
 {"id": "icon_large", "textContent": "‫بزرگ‬"},
 {"id": "icon_medium", "textContent": "‫متوسط‬"},

@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Dopasuj do zawartości warstwy"},
 {"id": "fit_to_sel", "textContent": "Dopasuj do wyboru"},
 {"id": "font_family", "title": "Zmiana czcionki Rodzina"},
-{"id": "font_size", "title": "Zmień rozmiar czcionki"},
+{"id": "tool_font_size", "title": "Zmień rozmiar czcionki"},
 {"id": "tool_opacity", "title": "Zmiana stron przezroczystość elementu"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "레이어에 맞게 콘텐츠"},
 {"id": "fit_to_sel", "textContent": "맞춤 선택"},
 {"id": "font_family", "title": "글꼴 변경 패밀리"},
-{"id": "font_size", "title": "글꼴 크기 변경"},
+{"id": "tool_font_size", "title": "글꼴 크기 변경"},
 {"id": "tool_opacity", "title": "변경 항목을 선택 불투명도"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

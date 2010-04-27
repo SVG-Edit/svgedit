@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Ffit cynnwys haen i"},
 {"id": "fit_to_sel", "textContent": "Yn addas at ddewis"},
 {"id": "font_family", "title": "Newid Font Teulu"},
-{"id": "font_size", "title": "Newid Maint Ffont"},
+{"id": "tool_font_size", "title": "Newid Maint Ffont"},
 {"id": "tool_opacity", "title": "Newid dewis Didreiddiad eitem"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

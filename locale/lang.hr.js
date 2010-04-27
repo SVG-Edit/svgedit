@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Prilagodi sloj sadržaj"},
 {"id": "fit_to_sel", "textContent": "Prilagodi odabir"},
 {"id": "font_family", "title": "Promjena fontova"},
-{"id": "font_size", "title": "Change font size"},
+{"id": "tool_font_size", "title": "Change font size"},
 {"id": "tool_opacity", "title": "Promjena odabrane stavke neprozirnost"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

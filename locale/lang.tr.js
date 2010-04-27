@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Sığacak şekilde katman içerik"},
 {"id": "fit_to_sel", "textContent": "Fit seçimine"},
 {"id": "font_family", "title": "Font değiştir Aile"},
-{"id": "font_size", "title": "Change font size"},
+{"id": "tool_font_size", "title": "Change font size"},
 {"id": "tool_opacity", "title": "Değiştirmek öğe opacity seçilmiş"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

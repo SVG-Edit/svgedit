@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Op laachynhâld passe"},
 {"id": "fit_to_sel", "textContent": "Op seleksje passe"},
 {"id": "font_family", "title": "Lettertype oanpasse"},
-{"id": "font_size", "title": "Lettergrutte oanpasse"},
+{"id": "tool_font_size", "title": "Lettergrutte oanpasse"},
 {"id": "tool_opacity", "title": "Trochsichtigens oanpasse"},
 {"id": "icon_large", "textContent": "Grut"},
 {"id": "icon_medium", "textContent": "Middel"},
