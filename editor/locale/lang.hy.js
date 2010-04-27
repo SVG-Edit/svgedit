@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Fit to layer content"},
 {"id": "fit_to_sel", "textContent": "Fit to selection"},
 {"id": "font_family", "title": "Change Font Family"},
-{"id": "font_size", "title": "Change Font Size"},
+{"id": "tool_font_size", "title": "Change Font Size"},
 {"id": "tool_opacity", "title": "Change selected item opacity"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

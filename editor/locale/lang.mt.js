@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Fit-kontenut ta &#39;saff għal"},
 {"id": "fit_to_sel", "textContent": "Fit-għażla"},
 {"id": "font_family", "title": "Bidla Font Familja"},
-{"id": "font_size", "title": "Change font size"},
+{"id": "tool_font_size", "title": "Change font size"},
 {"id": "tool_opacity", "title": "Bidla magħżula opaċità partita"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

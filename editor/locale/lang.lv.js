@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Ievietot slānis saturs"},
 {"id": "fit_to_sel", "textContent": "Fit atlases"},
 {"id": "font_family", "title": "Mainīt fonta Family"},
-{"id": "font_size", "title": "Mainīt fonta izmēru"},
+{"id": "tool_font_size", "title": "Mainīt fonta izmēru"},
 {"id": "tool_opacity", "title": "Mainīt izvēlēto objektu necaurredzamība"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Laghdaigh shraith ábhar a"},
 {"id": "fit_to_sel", "textContent": "Laghdaigh a roghnú"},
 {"id": "font_family", "title": "Athraigh an Cló Teaghlaigh"},
-{"id": "font_size", "title": "Athraigh Clómhéid"},
+{"id": "tool_font_size", "title": "Athraigh Clómhéid"},
 {"id": "tool_opacity", "title": "Athraigh roghnaithe teimhneacht mír"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

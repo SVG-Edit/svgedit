@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Shtresë Fit to content"},
 {"id": "fit_to_sel", "textContent": "Fit to Selection"},
 {"id": "font_family", "title": "Ndryshimi Font Family"},
-{"id": "font_size", "title": "Ndryshimi Font Size"},
+{"id": "tool_font_size", "title": "Ndryshimi Font Size"},
 {"id": "tool_opacity", "title": "Ndryshimi zgjedhur errësirë item"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

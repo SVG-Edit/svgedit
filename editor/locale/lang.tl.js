@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Pagkasyahin sa layer nilalaman"},
 {"id": "fit_to_sel", "textContent": "Pagkasyahin sa pagpili"},
 {"id": "font_family", "title": "Baguhin ang Pamilya ng Font"},
-{"id": "font_size", "title": "Baguhin ang Laki ng Font"},
+{"id": "tool_font_size", "title": "Baguhin ang Laki ng Font"},
 {"id": "tool_opacity", "title": "Palitan ang mga napiling bagay kalabuan"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

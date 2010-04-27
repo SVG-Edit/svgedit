@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Waliopo safu content"},
 {"id": "fit_to_sel", "textContent": "Waliopo uteuzi"},
 {"id": "font_family", "title": "Change font Family"},
-{"id": "font_size", "title": "Change font Size"},
+{"id": "tool_font_size", "title": "Change font Size"},
 {"id": "tool_opacity", "title": "Change selected opacity punkt"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

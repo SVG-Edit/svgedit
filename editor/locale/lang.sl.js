@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Fit na plast vsebine"},
 {"id": "fit_to_sel", "textContent": "Fit za izbor"},
 {"id": "font_family", "title": "Change Font Family"},
-{"id": "font_size", "title": "Spremeni velikost pisave"},
+{"id": "tool_font_size", "title": "Spremeni velikost pisave"},
 {"id": "tool_opacity", "title": "Spremeni izbran predmet motnosti"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

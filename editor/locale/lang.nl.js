@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Pas om laag inhoud"},
 {"id": "fit_to_sel", "textContent": "Pas om selectie"},
 {"id": "font_family", "title": "Verander lettertype"},
-{"id": "font_size", "title": "Verander lettertype grootte"},
+{"id": "tool_font_size", "title": "Verander lettertype grootte"},
 {"id": "tool_opacity", "title": "Verander opaciteit geselecteerde item"},
 {"id": "icon_large", "textContent": "Groot"},
 {"id": "icon_medium", "textContent": "Gemiddeld"},

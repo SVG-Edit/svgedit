@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Ajustar al contingut de la capa d&#39;"},
 {"id": "fit_to_sel", "textContent": "Ajustar a la selecció"},
 {"id": "font_family", "title": "Canviar la font Família"},
-{"id": "font_size", "title": "Change Font Size"},
+{"id": "tool_font_size", "title": "Change Font Size"},
 {"id": "tool_opacity", "title": "Canviar la opacitat tema seleccionat"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

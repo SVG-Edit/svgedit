@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Fit да слой съдържание"},
 {"id": "fit_to_sel", "textContent": "Fit за подбор"},
 {"id": "font_family", "title": "Промяна на шрифта Семейство"},
-{"id": "font_size", "title": "Промени размера на буквите"},
+{"id": "tool_font_size", "title": "Промени размера на буквите"},
 {"id": "tool_opacity", "title": "Промяна на избрания елемент непрозрачност"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

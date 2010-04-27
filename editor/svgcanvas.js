@@ -165,8 +165,14 @@ var isOpera = !!window.opera,
 
 
 	uiStrings = {
-		"pathNodeTooltip":"Drag node to move it. Double-click node to change segment type",
-		"pathCtrlPtTooltip":"Drag control point to adjust curve properties"
+		"pathNodeTooltip": "Drag node to move it. Double-click node to change segment type",
+		"pathCtrlPtTooltip": "Drag control point to adjust curve properties",
+		"exportNoBlur": "Blurred elements will appear as un-blurred",
+		"exportNoImage": "Image elements will not appear",
+		"exportNoforeignObject": "foreignObject elements will not appear",
+		"exportNoMarkers": "Marker elements (arrows, etc) may not appear as expected",
+		"exportNoDashArray": "Strokes will appear filled",
+		"exportNoText": "Text may not appear as expected"
 	},
 	
 	curConfig = {
@@ -6265,17 +6271,17 @@ function BatchCommand(text) {
 		
 		// Selector and notice
 		var issue_list = {
-			'feGaussianBlur': 'Blurred elements will appear as un-blurred',
-			'image': 'Image elements will not appear',
-			'foreignObject': 'foreignObject elements will not appear',
-			'marker': 'Marker elements (arrows, etc) may not appear as expected', // waiting for marker-mid and marker-end support
-			'[stroke-dasharray]': 'Strokes will appear filled'
+			'feGaussianBlur': uiStrings.exportNoBlur,
+			'image': uiStrings.exportNoImage,
+			'foreignObject': uiStrings.exportNoforeignObject,
+			'marker': uiStrings.exportNoMarkers,
+			'[stroke-dasharray]': uiStrings.exportNoDashArray
 		};
 		var content = $(svgcontent);
 		
 		// Add font/text check if Canvas Text API is not implemented
 		if(!("font" in $('<canvas>')[0].getContext('2d'))) {
-			issue_list['text'] = 'Text may not appear as expected';
+			issue_list['text'] = uiStrings.exportNoText;
 		}
 		
 		$.each(issue_list, function(sel, descr) {

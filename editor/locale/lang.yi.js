@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "פּאַסיק צו שיכטע אינהאַלט"},
 {"id": "fit_to_sel", "textContent": "פּאַסיק צו אָפּקלייב"},
 {"id": "font_family", "title": "ענדערן פאָנט פאַמילי"},
-{"id": "font_size", "title": "בייטן פאָנט גרייס"},
+{"id": "tool_font_size", "title": "בייטן פאָנט גרייס"},
 {"id": "tool_opacity", "title": "ענדערן סעלעקטעד נומער אָופּאַסאַטי"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

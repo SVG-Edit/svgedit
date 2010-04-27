@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Sobita kiht sisu"},
 {"id": "fit_to_sel", "textContent": "Fit valiku"},
 {"id": "font_family", "title": "Muutke Kirjasinperhe"},
-{"id": "font_size", "title": "Change font size"},
+{"id": "tool_font_size", "title": "Change font size"},
 {"id": "tool_opacity", "title": "Muuda valitud elemendi läbipaistmatus"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

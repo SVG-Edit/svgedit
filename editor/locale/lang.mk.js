@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Способен да слој содржина"},
 {"id": "fit_to_sel", "textContent": "Способен да селекција"},
 {"id": "font_family", "title": "Смени фонт Фамилија"},
-{"id": "font_size", "title": "Изменифонт Големина"},
+{"id": "tool_font_size", "title": "Изменифонт Големина"},
 {"id": "tool_opacity", "title": "Промена избрани ставка непроѕирноста"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},
