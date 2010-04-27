@@ -250,6 +250,8 @@ svgEditor.addExtension("Arrows", function(S) {
 			}],
 			callback: function() {
 				$('#arrow_panel').hide();
+				// Set ID so it can be translated in locale file
+				$('#arrow_list option')[0].id = 'connector_no_arrow';
 			},
 			addLangData: function(lang) {
 				return {

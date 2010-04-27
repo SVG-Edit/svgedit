@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "พอดีเนื้อหาชั้นที่"},
 {"id": "fit_to_sel", "textContent": "เหมาะสมในการเลือก"},
 {"id": "font_family", "title": "ครอบครัว Change Font"},
-{"id": "font_size", "title": "เปลี่ยนขนาดตัวอักษร"},
+{"id": "tool_font_size", "title": "เปลี่ยนขนาดตัวอักษร"},
 {"id": "tool_opacity", "title": "เปลี่ยนความทึบเลือกรายการ"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

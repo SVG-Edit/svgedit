@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Anpassa till lager innehåll"},
 {"id": "fit_to_sel", "textContent": "Anpassa till val"},
 {"id": "font_family", "title": "Ändra Typsnitt"},
-{"id": "font_size", "title": "Ändra textstorlek"},
+{"id": "tool_font_size", "title": "Ändra textstorlek"},
 {"id": "tool_opacity", "title": "Ändra markerat objekt opacitet"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

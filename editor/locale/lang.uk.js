@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "За розміром шар змісту"},
 {"id": "fit_to_sel", "textContent": "Вибір розміру"},
 {"id": "font_family", "title": "Зміни Сімейство шрифтів"},
-{"id": "font_size", "title": "Змінити розмір шрифту"},
+{"id": "tool_font_size", "title": "Змінити розмір шрифту"},
 {"id": "tool_opacity", "title": "Зміна вибраного пункту непрозорості"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

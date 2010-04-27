@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Tilpas til lag indhold"},
 {"id": "fit_to_sel", "textContent": "Tilpas til udvælgelse"},
 {"id": "font_family", "title": "Skift Font Family"},
-{"id": "font_size", "title": "Skift skriftstørrelse"},
+{"id": "tool_font_size", "title": "Skift skriftstørrelse"},
 {"id": "tool_opacity", "title": "Skift valgte element opacitet"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

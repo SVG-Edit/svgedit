@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Adatta a livello di contenuti"},
 {"id": "fit_to_sel", "textContent": "Adatta alla selezione"},
 {"id": "font_family", "title": "Change Font Family"},
-{"id": "font_size", "title": "Modifica dimensione carattere"},
+{"id": "tool_font_size", "title": "Modifica dimensione carattere"},
 {"id": "tool_opacity", "title": "Cambia l&#39;opacità dell&#39;oggetto selezionato"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

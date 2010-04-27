@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Sovita kerros sisältöön"},
 {"id": "fit_to_sel", "textContent": "Sovita valinta"},
 {"id": "font_family", "title": "Muuta Font Family"},
-{"id": "font_size", "title": "Muuta fontin kokoa"},
+{"id": "tool_font_size", "title": "Muuta fontin kokoa"},
 {"id": "tool_opacity", "title": "Muuta valitun kohteen läpinäkyvyys"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

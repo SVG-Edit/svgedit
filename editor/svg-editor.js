@@ -50,26 +50,30 @@
 				wireframe: false
 			},
 			uiStrings = {
-			'invalidAttrValGiven':'Invalid value given',
-			'noContentToFitTo':'No content to fit to',
-			'layer':"Layer",
-			'dupeLayerName':"There is already a layer named that!",
-			'enterUniqueLayerName':"Please enter a unique layer name",
-			'enterNewLayerName':"Please enter the new layer name",
-			'layerHasThatName':"Layer already has that name",
-			'QmoveElemsToLayer':"Move selected elements to layer '%s'?",
-			'QwantToClear':'Do you want to clear the drawing?\nThis will also erase your undo history!',
-			'QwantToOpen':'Do you want to open a new file?\nThis will also erase your undo history!',
-			'QerrorsRevertToSource':'There were parsing errors in your SVG source.\nRevert back to original SVG source?',
-			'QignoreSourceChanges':'Ignore changes made to SVG source?',
-			'featNotSupported':'Feature not supported',
-			'enterNewImgURL':'Enter the new image URL',
-			'ok':'OK',
-			'cancel':'Cancel',
-			'key_up':'Up',
-			'key_down':'Down',
-			'key_backspace':'Backspace',
-			'key_del':'Del'
+			"invalidAttrValGiven":"Invalid value given",
+			"noContentToFitTo":"No content to fit to",
+			"layer":"Layer",
+			"dupeLayerName":"There is already a layer named that!",
+			"enterUniqueLayerName":"Please enter a unique layer name",
+			"enterNewLayerName":"Please enter the new layer name",
+			"layerHasThatName":"Layer already has that name",
+			"QmoveElemsToLayer":"Move selected elements to layer \"%s\"?",
+			"QwantToClear":"Do you want to clear the drawing?\nThis will also erase your undo history!",
+			"QwantToOpen":"Do you want to open a new file?\nThis will also erase your undo history!",
+			"QerrorsRevertToSource":"There were parsing errors in your SVG source.\nRevert back to original SVG source?",
+			"QignoreSourceChanges":"Ignore changes made to SVG source?",
+			"featNotSupported":"Feature not supported",
+			"enterNewImgURL":"Enter the new image URL",
+			"defsFailOnSave": "NOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.",
+			"loadingImage":"Loading image, please wait...",
+			"saveFromBrowser": "Select \"Save As...\" in your browser to save this image as a %s file.",
+			"noteTheseIssues": "Also note the following issues: ",
+			"ok":"OK",
+			"cancel":"Cancel",
+			"key_up":"Up",
+			"key_down":"Down",
+			"key_backspace":"Backspace",
+			"key_del":"Del"
 		};
 		
 		var curPrefs = {}; //$.extend({}, defaultPrefs);
@@ -499,12 +503,12 @@
 				var done = $.pref('save_notice_done');
 				if(done !== "all") {
 		
-					var note = 'Select "Save As..." in your browser to save this image as an SVG file.';
+					var note = uiStrings.saveFromBrowser.replace('%s', 'SVG');
 					
 					// Check if FF and has <defs/>
 					if(navigator.userAgent.indexOf('Gecko/') !== -1) {
 						if(svg.indexOf('<defs') !== -1) {
-							note += "\n\nNOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.";
+							note += "\n\n" + uiStrings.defsFailOnSave;
 							$.pref('save_notice_done', 'all');
 							done = "all";
 						} else {
@@ -534,13 +538,13 @@
 				var datauri = c.toDataURL('image/png');
 				exportWindow.location.href = datauri;
 				
-				var note = 'Select "Save As..." in your browser to save this image as a PNG file.';
+				var note = uiStrings.saveFromBrowser.replace('%s', 'PNG');
 				
 				// Check if there's issues
 
 				if(issues.length) {
 					var pre = "\n \u2022 ";
-					note += ("\n\nAlso note these issues:" + pre + issues.join(pre));
+					note += ("\n\n" + uiStrings.noteTheseIssues + pre + issues.join(pre));
 				} 
 				exportWindow.alert(note);
 			};
@@ -2040,7 +2044,7 @@
 			
 			var clickExport = function() {
 				// Open placeholder window (prevents popup)
-				var str = "Loading image, please wait...";
+				var str = uiStrings.loadingImage;
 				exportWindow = window.open("data:text/html;charset=utf-8,<title>" + str + "<\/title><h1>" + str + "<\/h1>");
 
 				if(window.canvg) {

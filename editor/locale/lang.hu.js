@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Igazítás a réteg tartalma"},
 {"id": "fit_to_sel", "textContent": "Igazítás a kiválasztási"},
 {"id": "font_family", "title": "Change Betűcsalád"},
-{"id": "font_size", "title": "Change font size"},
+{"id": "tool_font_size", "title": "Change font size"},
 {"id": "tool_opacity", "title": "A kijelölt elem opacity"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

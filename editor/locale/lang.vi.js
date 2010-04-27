@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Vào lớp phù hợp với nội dung"},
 {"id": "fit_to_sel", "textContent": "Phù hợp để lựa chọn"},
 {"id": "font_family", "title": "Thay đổi Font Gia đình"},
-{"id": "font_size", "title": "Thay đổi cỡ chữ"},
+{"id": "tool_font_size", "title": "Thay đổi cỡ chữ"},
 {"id": "tool_opacity", "title": "Thay đổi lựa chọn opacity mục"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

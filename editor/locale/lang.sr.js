@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Уклопи у слоју садржај"},
 {"id": "fit_to_sel", "textContent": "Уклопи у избор"},
 {"id": "font_family", "title": "Цханге фонт породицу"},
-{"id": "font_size", "title": "Цханге фонт сизе"},
+{"id": "tool_font_size", "title": "Цханге фонт сизе"},
 {"id": "tool_opacity", "title": "Промена изабране ставке непрозирност"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

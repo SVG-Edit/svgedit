@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Muat kandungan lapisan"},
 {"id": "fit_to_sel", "textContent": "Fit seleksi"},
 {"id": "font_family", "title": "Tukar Font Keluarga"},
-{"id": "font_size", "title": "Ubah Saiz Font"},
+{"id": "tool_font_size", "title": "Ubah Saiz Font"},
 {"id": "tool_opacity", "title": "Mengubah item yang dipilih keburaman"},
 {"id": "icon_large", "textContent": "Large"},
 {"id": "icon_medium", "textContent": "Medium"},

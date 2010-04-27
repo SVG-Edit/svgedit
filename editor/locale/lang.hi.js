@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "फिट परत सामग्री के लिए"},
 {"id": "fit_to_sel", "textContent": "चयन के लिए फिट"},
 {"id": "font_family", "title": "बदलें फ़ॉन्ट परिवार"},
-{"id": "font_size", "title": "फ़ॉन्ट का आकार बदलें"},
+{"id": "tool_font_size", "title": "फ़ॉन्ट का आकार बदलें"},
 {"id": "tool_opacity", "title": "पारदर्शिता बदलें"},
 {"id": "icon_large", "textContent": "बड़ा"},
 {"id": "icon_medium", "textContent": "मध्यम"},

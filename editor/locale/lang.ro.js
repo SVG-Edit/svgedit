@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Potrivire la conţinutul stratului"},
 {"id": "fit_to_sel", "textContent": "Potrivire la selecţie"},
 {"id": "font_family", "title": "Modificare familie de Fonturi"},
-{"id": "font_size", "title": "Schimbă dimensiunea fontului"},
+{"id": "tool_font_size", "title": "Schimbă dimensiunea fontului"},
 {"id": "tool_opacity", "title": "Schimbarea selectat opacitate element"},
 {"id": "icon_large", "textContent": "Mari"},
 {"id": "icon_medium", "textContent": "Medii"},

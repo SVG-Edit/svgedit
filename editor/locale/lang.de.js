@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "An Inhalt der Ebene anpassen"},
 {"id": "fit_to_sel", "textContent": "An die Auswahl anpassen"},
 {"id": "font_family", "title": "Schriftart wählen"},
-{"id": "font_size", "title": "Schriftgröße einstellen"},
+{"id": "tool_font_size", "title": "Schriftgröße einstellen"},
 {"id": "tool_opacity", "title": "Opazität des ausgewählten Objekts ändern"},
 {"id": "icon_large", "textContent": "Groß"},
 {"id": "icon_medium", "textContent": "Mittel"},

@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Ajuster au contenu du calque"},
 {"id": "fit_to_sel", "textContent": "Ajuster à la sélection"},
 {"id": "font_family", "title": "Changer la famille de police"},
-{"id": "font_size", "title": "Taille de la police"},
+{"id": "tool_font_size", "title": "Taille de la police"},
 {"id": "tool_opacity", "title": "Changer l'opacité de l'élément"},
 {"id": "icon_large", "textContent": "Grande"},
 {"id": "icon_medium", "textContent": "Moyenne"},

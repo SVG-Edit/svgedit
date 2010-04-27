@@ -20,7 +20,7 @@
 {"id": "fit_to_layer_content", "textContent": "Přizpůsobit obsahu vrstvy"},
 {"id": "fit_to_sel", "textContent": "Přizpůsobit výběru"},
 {"id": "font_family", "title": "Změnit font"},
-{"id": "font_size", "title": "Změnit velikost písma"},
+{"id": "tool_font_size", "title": "Změnit velikost písma"},
 {"id": "tool_opacity", "title": "Změnit průhlednost objektů"},
 {"id": "icon_large", "textContent": "velké"},
 {"id": "icon_medium", "textContent": "střední"},
