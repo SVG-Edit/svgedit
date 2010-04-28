@@ -7614,13 +7614,24 @@ function BatchCommand(text) {
 	(function() {
 		var cur_command = null;
 		var filter = null;
+		var filterHidden = false;
 		
 		canvas.setBlurNoUndo = function(val) {
 			if(!filter) {
 				canvas.setBlur(val);
 				return;
 			}
-			canvas.changeSelectedAttributeNoUndo("stdDeviation", val, [filter.firstChild]);
+			if(val === 0) {
+				// Don't change the StdDev, as that will hide the element.
+				// Instead, just remove the value for "filter"
+				canvas.changeSelectedAttributeNoUndo("filter", "");
+				filterHidden = true;
+			} else {
+				if(filterHidden) {
+					canvas.changeSelectedAttributeNoUndo("filter", 'url(#' + selectedElements[0].id + '_blur)');
+				}
+				canvas.changeSelectedAttributeNoUndo("stdDeviation", val, [filter.firstChild]);
+			}
 		}
 		
 		function finishChange() {
@@ -7649,9 +7660,6 @@ function BatchCommand(text) {
 			// Blur found!
 			if(filter) {
 				if(val === 0) {
-					var parent = filter.parentNode;
-					$(filter).remove();
-					RemoveElementCommand(filter, parent);
 					filter = null;
 				}
 			} else {
@@ -7680,6 +7688,7 @@ function BatchCommand(text) {
 			if(val === 0) {
 				elem.removeAttribute("filter");
 				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
+				return;
 			} else {
 				this.changeSelectedAttribute("filter", 'url(#' + elem_id + '_blur)');
 				
@@ -7702,7 +7711,7 @@ function BatchCommand(text) {
 			}
 			
 			cur_command = batchCmd;
-			canvas.beginUndoableChange("stdDeviation", [filter.firstChild]);
+			canvas.beginUndoableChange("stdDeviation", [filter?filter.firstChild:null]);
 			if(complete) {
 				canvas.setBlurNoUndo(val);
 				finishChange();
