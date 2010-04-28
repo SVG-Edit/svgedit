@@ -132,12 +132,13 @@
 {"id": "zoom_panel", "title": "Change zoom level"},
 {"id": "zoomLabel", "textContent": "zoom:"},
 {"id": "sidepanel_handle", "textContent": "L a y e r s", "title": "Drag left/right to resize side panel"},
+{"id": "main_icon", "title": "Main Menu"},
 {"id": "tool_blur", "title": "Change gaussian blur value"},
 {"id": "tool_position", "title": "Align Element to Page"},
 {"id": "idLabel", "title": "Identify the element"},
 {"id": "tool_openclose_path", "title": "Open/close sub-path"},
 {"id": "tool_add_subpath", "title": "Add sub-path"},
-{"id": "cur_linejoin", "title": "Add sub-path"},
+{"id": "toggle_stroke_tools", "title": "Show/hide more stroke tools"},
 {"id": "linejoin_miter", "title": "Linejoin: Miter"},
 {"id": "linejoin_round", "title": "Linejoin: Round"},
 {"id": "linejoin_bevel", "title": "Linejoin: Bevel"},
@@ -149,6 +150,8 @@
 {"id": "tool_eyedropper", "title": "Eye Dropper Tool"},
 {"id": "mode_connect", "title": "Connect two objects"},
 {"id": "connector_no_arrow", "textContent": "No arrow"},
+
+
 
 {
  "js_strings": {

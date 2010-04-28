@@ -1115,7 +1115,7 @@
 					
 					var angle = svgCanvas.getRotationAngle(elem);
 					$('#angle').val(angle);
-
+					
 					var blurval = svgCanvas.getBlur(elem);
 					$('#blur').val(blurval);
 					$('#blur_slider').slider('option', 'value', blurval);
@@ -1354,10 +1354,16 @@
 			var changeBlur = function(ctl, val, noUndo) {
 				if(val == null) val = ctl.value;
 				$('#blur').val(val);
+				var complete = false;
 				if(!ctl || !ctl.handle) {
 					$('#blur_slider').slider('option', 'value', val);
+					complete = true;
 				}
-				svgCanvas.setBlur(val, noUndo);
+				if(noUndo) {
+					svgCanvas.setBlurNoUndo(val);	
+				} else {
+					svgCanvas.setBlur(val, complete);
+				}
 			}
 		
 			var operaRepaint = function() {
@@ -1752,16 +1758,22 @@
 			addDropDown('#blur_dropdown', function() {
 			});
 			
+			var slideStart = false;
+			
 			$("#blur_slider").slider({
 				max: 10,
 				step: .1,
 				stop: function(evt, ui) {
+					slideStart = false;
 					changeBlur(ui);
 					$('#blur_dropdown li').show();
 					$(window).mouseup();
 				},
+				start: function() {
+					slideStart = true;
+				},
 				slide: function(evt, ui){
-					changeBlur(ui, null, true);
+					changeBlur(ui, null, slideStart);
 				}
 			});
 
@@ -3528,15 +3540,19 @@
 					// Copy title for certain tool elements
 					var elems = {
 						'#stroke_color': '#tool_stroke .icon_label, #tool_stroke .color_block',
-// 						'#group_opacity': '#tool_opacity', // Change lang file
-//						'#zoom': '#zoom_panel',
-						'#fill_color': '#tool_fill label, #tool_fill .color_block'
+						'#fill_color': '#tool_fill label, #tool_fill .color_block',
+						'#linejoin_miter': '#cur_linejoin',
+						'#linecap_butt': '#cur_linecap'
 					}
 					
 					$.each(elems, function(source, dest) {
-						$(dest).attr('title', $(source).attr('title'));
+						$(dest).attr('title', $(source)[0].title);
 					});
-
+					
+					// Copy alignment titles
+					$('#multiselected_panel div[id^=tool_align]').each(function() {
+						$('#tool_pos' + this.id.substr(10))[0].title = this.title;
+					});
 					
 				}
 			};
