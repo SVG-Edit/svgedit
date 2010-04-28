@@ -1617,7 +1617,7 @@ function BatchCommand(text) {
 					var el = this;
 					$.each(this.attributes, function(i, attr) {
 						var uri = attr.namespaceURI;
-						if(uri && !nsuris[uri] && nsMap[uri] !== 'xmlns') {
+						if(uri && !nsuris[uri] && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml' ) {
 							nsuris[uri] = true;
 							out.push(" xmlns:" + nsMap[uri] + '="' + uri +'"');
 						}
@@ -1631,9 +1631,6 @@ function BatchCommand(text) {
 					
 					// Namespaces have already been dealt with, so skip
 					if(attr.nodeName.indexOf('xmlns:') === 0) continue;
-
-					//remove bogus attributes added by Gecko
-					if (attr.localName == '-moz-math-font-style') continue;
 
 					// only serialize attributes we don't use internally
 					if (attrVal != "" && 
@@ -1651,7 +1648,8 @@ function BatchCommand(text) {
 				for (var i=attrs.length-1; i>=0; i--) {
 					attr = attrs.item(i);
 					var attrVal = toXml(attr.nodeValue);
-					if (attr.localName == '-moz-math-font-style') continue;
+					//remove bogus attributes added by Gecko
+					if ($.inArray(attr.localName, ['-moz-math-font-style', '_moz-math-font-style']) !== -1) continue;
 					if (attrVal != "") {
 						if(attrVal.indexOf('pointer-events') == 0) continue;
 						if(attr.localName == "class" && attrVal.indexOf('se_') == 0) continue;
