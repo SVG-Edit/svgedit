@@ -1631,7 +1631,10 @@ function BatchCommand(text) {
 					
 					// Namespaces have already been dealt with, so skip
 					if(attr.nodeName.indexOf('xmlns:') === 0) continue;
-					
+
+					//remove bogus attributes added by Gecko
+					if (attr.localName == '-moz-math-font-style') continue;
+
 					// only serialize attributes we don't use internally
 					if (attrVal != "" && 
 						$.inArray(attr.localName, ['width','height','xmlns','x','y','viewBox','id','overflow']) == -1) 
