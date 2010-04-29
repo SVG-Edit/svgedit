@@ -1526,41 +1526,41 @@ function BatchCommand(text) {
 	};
 	var getUrlFromAttr = this.getUrlFromAttr;
 
-	var removeUnusedGrads = function() {
+	var removeUnusedDefElems = function() {
 		var defs = svgcontent.getElementsByTagNameNS(svgns, "defs");
 		if(!defs || !defs.length) return 0;
 		
-		var all_els = svgcontent.getElementsByTagNameNS(svgns, '*'),
-			grad_uses = [],
+		var defelem_uses = [],
 			numRemoved = 0;
+		var attrs = ['fill', 'stroke', 'filter', 'marker-start', 'marker-mid', 'marker-end'];
+		var alen = attrs.length;
 		
-		$.each(all_els, function(i, el) {
-			var fill = getUrlFromAttr(el.getAttribute('fill'));
-			if(fill) {
-				grad_uses.push(fill.substr(1));
-			}
-			
-			var stroke = getUrlFromAttr(el.getAttribute('stroke'));
-			if (stroke) {
-				grad_uses.push(stroke.substr(1));
+		var all_els = svgcontent.getElementsByTagNameNS(svgns, '*');
+		var all_len = all_els.length;
+		
+		for(var i=0; i<all_len; i++) {
+			var el = all_els[i];
+			for(var j = 0; j < alen; j++) {
+				var ref = getUrlFromAttr(el.getAttribute(attrs[j]));
+				if(ref) defelem_uses.push(ref.substr(1));
 			}
 			
 			// gradients can refer to other gradients
 			var href = el.getAttributeNS(xlinkns, "href");
 			if (href && href.indexOf('#') == 0) {
-				grad_uses.push(href.substr(1));
+				defelem_uses.push(href.substr(1));
 			}
-		});
+		};
 		
-		var grads = $(svgcontent).find("linearGradient, radialGradient");
-			grad_ids = [],
-			i = grads.length;
+		var defelems = $(svgcontent).find("linearGradient, radialGradient, filter, marker");
+			defelem_ids = [],
+			i = defelems.length;
 		while (i--) {
-			var grad = grads[i];
-			var id = grad.id;
-			if($.inArray(id, grad_uses) == -1) {
+			var defelem = defelems[i];
+			var id = defelem.id;
+			if($.inArray(id, defelem_uses) == -1) {
 				// Not found, so remove
-				grad.parentNode.removeChild(grad);
+				defelem.parentNode.removeChild(defelem);
 				numRemoved++;
 			}
 		}
@@ -1579,7 +1579,8 @@ function BatchCommand(text) {
 	
 	var svgCanvasToString = function() {
 		// keep calling it until there are none to remove
-		while (removeUnusedGrads() > 0) {};
+		while (removeUnusedDefElems() > 0) {};
+		
 		pathActions.clear(true);
 		
 		// Keep SVG-Edit comment on top
@@ -9057,7 +9058,7 @@ function BatchCommand(text) {
 			recalculateDimensions: recalculateDimensions,
 			remapElement: remapElement,
 			RemoveElementCommand: RemoveElementCommand,
-			removeUnusedGrads: removeUnusedGrads,
+			removeUnusedDefElems: removeUnusedDefElems,
 			resetUndoStack: resetUndoStack,
 			round: round,
 			runExtensions: runExtensions,
