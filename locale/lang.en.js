@@ -150,9 +150,8 @@
 {"id": "tool_eyedropper", "title": "Eye Dropper Tool"},
 {"id": "mode_connect", "title": "Connect two objects"},
 {"id": "connector_no_arrow", "textContent": "No arrow"},
-
-
-
+{"id": "copyrightLabel", "textContent": "Powered by"},
+{"id": "url_notice", "title": "NOTE: This image cannot be embedded. It will depend on this path to be displayed"},
 {
  "js_strings": {
   "QerrorsRevertToSource": "There were parsing errors in your SVG source.\nRevert back to original SVG source?", 
