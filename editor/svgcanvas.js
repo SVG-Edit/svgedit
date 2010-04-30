@@ -2439,6 +2439,27 @@ function BatchCommand(text) {
 			var operation = 0;
 			var N = tlist.numberOfItems;
 			
+			
+			// Check if it has a gradient with userSpaceOnUse, in which case
+			// adjust it by recalculating the matrix transform.
+			// TODO: Make this work in Webkit using SVGEditTransformList
+			if(!isWebkit) {
+				var fill = selected.getAttribute('fill');
+				if(fill && fill.indexOf('url(') === 0) {
+					var grad = getElem(getUrlFromAttr(fill).substr(1));
+					if(grad.getAttribute('gradientUnits') === 'userSpaceOnUse') {
+						//Update the userSpaceOnUse element
+						var grad = $(grad);
+						m = transformListToTransform(tlist).matrix;
+						var gtlist = canvas.getTransformList(grad[0]);
+						var gmatrix = transformListToTransform(gtlist).matrix;
+						m = matrixMultiply(m, gmatrix);
+						var m_str = "matrix(" + [m.a,m.b,m.c,m.d,m.e,m.f].join(",") + ")";
+						grad.attr('gradientTransform', m_str);
+					}
+				}
+			}
+			
 			// first, if it was a scale of a non-skewed element, then the second-last  
 			// transform will be the [S]
 			// if we had [M][T][S][T] we want to extract the matrix equivalent of
@@ -7779,6 +7800,9 @@ function BatchCommand(text) {
 		}
 		else if (elem.transform) {
 			return elem.transform.baseVal;
+		}
+		else if (elem.gradientTransform) {
+			return elem.gradientTransform.baseVal;
 		}
 		return null;
 	};
