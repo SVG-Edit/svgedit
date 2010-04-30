@@ -165,11 +165,19 @@ if(!window.console) {
 					return that.value.indexOf('url(') == 0
 				},
 				
-				getGradient: function(e) {
-					var grad = this.getDefinition();
-					if (grad != null && grad.createGradient) {
-						return grad.createGradient(svg.ctx, e);
+				getFillStyle: function(e) {
+					var def = this.getDefinition();
+					
+					// gradient
+					if (def != null && def.createGradient) {
+						return def.createGradient(svg.ctx, e);
 					}
+					
+					// pattern
+					if (def != null && def.createPattern) {
+						return def.createPattern(svg.ctx, e);
+					}
+					
 					return null;
 				}
 			}
@@ -278,6 +286,10 @@ if(!window.console) {
 		svg.Point = function(x, y) {
 			this.x = x;
 			this.y = y;
+			
+			this.angleTo = function(p) {
+				return Math.atan2(p.y - this.y, p.x - this.x);
+			}
 		}
 		svg.CreatePoint = function(s) {
 			var a = svg.ToNumberArray(s);
@@ -516,16 +528,19 @@ if(!window.console) {
 					this.children[i].render(ctx);
 				}
 			}
+			
+			this.addChild = function(childNode, create) {
+				var child = childNode;
+				if (create) child = svg.CreateElement(childNode);
+				child.parent = this;
+				this.children.push(child);			
+			}
 				
-			if (node != null) {
+			if (node != null && node.nodeType == 1) { //ELEMENT_NODE
 				// add children
 				for (var i=0; i<node.childNodes.length; i++) {
 					var childNode = node.childNodes[i];
-					if (childNode.nodeType == 1) { //ELEMENT_NODE
-						var child = svg.CreateElement(childNode);
-						child.parent = this;
-						this.children.push(child);
-					}
+					if (childNode.nodeType == 1) this.addChild(childNode, true); //ELEMENT_NODE
 				}
 				
 				// add attributes
@@ -580,8 +595,8 @@ if(!window.console) {
 			this.setContext = function(ctx) {
 				// fill
 				if (this.style('fill').Definition.isUrl()) {
-					var grad = this.style('fill').Definition.getGradient(this);
-					if (grad != null) ctx.fillStyle = grad;
+					var fs = this.style('fill').Definition.getFillStyle(this);
+					if (fs != null) ctx.fillStyle = fs;
 				}
 				else if (this.style('fill').hasValue()) {
 					var fillStyle = this.style('fill');
@@ -591,8 +606,8 @@ if(!window.console) {
 									
 				// stroke
 				if (this.style('stroke').Definition.isUrl()) {
-					var grad = this.style('stroke').Definition.getGradient(this);
-					if (grad != null) ctx.strokeStyle = grad;
+					var fs = this.style('stroke').Definition.getFillStyle(this);
+					if (fs != null) ctx.strokeStyle = fs;
 				}
 				else if (this.style('stroke').hasValue()) {
 					var strokeStyle = this.style('stroke');
@@ -647,26 +662,31 @@ if(!window.console) {
 				this.path(ctx);
 				if (ctx.fillStyle != '') ctx.fill();
 				if (ctx.strokeStyle != '') ctx.stroke();
-
-				if (this.attribute('marker-end').Definition.isUrl()) {
-					var marker = this.attribute('marker-end').Definition.getDefinition();
-					var endPoint = this.getEndPoint();
-					var endAngle = this.getEndAngle();
-					if (endPoint != null && endAngle != null) {
-						marker.render(ctx, endPoint, endAngle);
+				
+				var markers = this.getMarkers();
+				if (markers != null) {
+					if (this.attribute('marker-start').Definition.isUrl()) {
+						var marker = this.attribute('marker-start').Definition.getDefinition();
+						marker.render(ctx, markers[0][0], markers[0][1]);
 					}
-				}						
+					if (this.attribute('marker-mid').Definition.isUrl()) {
+						var marker = this.attribute('marker-mid').Definition.getDefinition();
+						for (var i=1;i<markers.length-1;i++) {
+							marker.render(ctx, markers[i][0], markers[i][1]);
+						}
+					}
+					if (this.attribute('marker-end').Definition.isUrl()) {
+						var marker = this.attribute('marker-end').Definition.getDefinition();
+						marker.render(ctx, markers[markers.length-1][0], markers[markers.length-1][1]);
+					}
+				}					
 			}
 			
 			this.getBoundingBox = function() {
 				return this.path();
 			}
 			
-			this.getEndPoint = function() {
-				return null;
-			}
-			
-			this.getEndAngle = function() {
+			this.getMarkers = function() {
 				return null;
 			}
 		}
@@ -852,34 +872,29 @@ if(!window.console) {
 		svg.Element.line = function(node) {
 			this.base = svg.Element.PathElementBase;
 			this.base(node);
-						
+			
+			this.getPoints = function() {
+				return [
+					new svg.Point(this.attribute('x1').Length.toPixels('x'), this.attribute('y1').Length.toPixels('y')),
+					new svg.Point(this.attribute('x2').Length.toPixels('x'), this.attribute('y2').Length.toPixels('y'))];
+			}
+								
 			this.path = function(ctx) {
-				var x1 = this.attribute('x1').Length.toPixels('x');
-				var y1 = this.attribute('y1').Length.toPixels('y');
-				var x2 = this.attribute('x2').Length.toPixels('x');
-				var y2 = this.attribute('y2').Length.toPixels('y');
+				var points = this.getPoints();
 				
 				if (ctx != null) {
 					ctx.beginPath();
-					ctx.moveTo(x1, y1);
-					ctx.lineTo(x2, y2);
+					ctx.moveTo(points[0].x, points[0].y);
+					ctx.lineTo(points[1].x, points[1].y);
 				}
 				
-				return new svg.BoundingBox(x1, y1, x2, y2);
+				return new svg.BoundingBox(points[0].x, points[0].y, points[1].x, points[1].y);
 			}
 			
-			this.getEndPoint = function() {
-				var x2 = this.attribute('x2').Length.toPixels('x');
-				var y2 = this.attribute('y2').Length.toPixels('y');			
-				return new svg.Point(x2, y2);
-			}
-			
-			this.getEndAngle = function() {
-				var x1 = this.attribute('x1').Length.toPixels('x');
-				var y1 = this.attribute('y1').Length.toPixels('y');
-				var x2 = this.attribute('x2').Length.toPixels('x');
-				var y2 = this.attribute('y2').Length.toPixels('y');
-				return Math.atan((y2-y1)/(x2-x1));
+			this.getMarkers = function() {
+				var points = this.getPoints();	
+				var a = points[0].angleTo(points[1]);
+				return [[points[0], a], [points[1], a]];
 			}
 		}
 		svg.Element.line.prototype = new svg.Element.PathElementBase;		
@@ -902,6 +917,15 @@ if(!window.console) {
 				}
 				return bb;
 			}
+			
+			this.getMarkers = function() {
+				var markers = [];
+				for (var i=0; i<this.points.length - 1; i++) {
+					markers.push([this.points[i], this.points[i].angleTo(this.points[i+1])]);
+				}
+				markers.push([this.points[this.points.length-1], markers[markers.length-1][1]]);
+				return markers;
+			}			
 		}
 		svg.Element.polyline.prototype = new svg.Element.PathElementBase;				
 				
@@ -946,19 +970,11 @@ if(!window.console) {
 					this.i = -1;
 					this.command = '';
 					this.control = new svg.Point(0, 0);
-					this.last = new svg.Point(0, 0);
 					this.current = new svg.Point(0, 0);
+					this.points = [];
+					this.angles = [];
 				}
-				
-				this.angle = function() {
-					return Math.atan((this.current.y - this.last.y) / (this.current.x - this.last.x));
-				}
-				
-				this.setCurrent = function(p) {
-					this.last = this.current;
-					this.current = p;
-				}
-				
+								
 				this.isEnd = function() {
 					return this.i == this.tokens.length - 1;
 				}
@@ -998,7 +1014,7 @@ if(!window.console) {
 				
 				this.getAsCurrentPoint = function() {
 					var p = this.getPoint();
-					this.setCurrent(p);
+					this.current = p;
 					return p;	
 				}
 				
@@ -1014,6 +1030,30 @@ if(!window.console) {
 					}
 					return p;
 				}
+				
+				this.addMarker = function(p, from) {
+					this.addMarkerAngle(p, from == null ? null : from.angleTo(p));
+				}
+				
+				this.addMarkerAngle = function(p, a) {
+					this.points.push(p);
+					this.angles.push(a);
+				}				
+				
+				this.getMarkerPoints = function() { return this.points; }
+				this.getMarkerAngles = function() {
+					for (var i=0; i<this.angles.length; i++) {
+						if (this.angles[i] == null) {
+							for (var j=i+1; j<this.angles.length; j++) {
+								if (this.angles[j] != null) {
+									this.angles[i] = this.angles[j];
+									break;
+								}
+							}
+						}
+					}
+					return this.angles;
+				}
 			})(d);
 			
 			this.path = function(ctx) {		
@@ -1026,33 +1066,39 @@ if(!window.console) {
 					pp.nextCommand();
 					if (pp.command.toUpperCase() == 'M') {
 						var p = pp.getAsCurrentPoint();
+						pp.addMarker(p);
 						bb.addPoint(p.x, p.y);
 						if (ctx != null) ctx.moveTo(p.x, p.y);
 						while (!pp.isCommandOrEnd()) {
 							var p = pp.getAsCurrentPoint();
+							pp.addMarker(p);
 							bb.addPoint(p.x, p.y);
 							if (ctx != null) ctx.lineTo(p.x, p.y);
 						}
 					}
 					else if (pp.command.toUpperCase() == 'L') {
 						while (!pp.isCommandOrEnd()) {
+							var c = pp.current;
 							var p = pp.getAsCurrentPoint();
+							pp.addMarker(p, c);
 							bb.addPoint(p.x, p.y);
 							if (ctx != null) ctx.lineTo(p.x, p.y);
 						}
 					}
 					else if (pp.command.toUpperCase() == 'H') {
 						while (!pp.isCommandOrEnd()) {
-							pp.current.x = (pp.isRelativeCommand() ? pp.current.x : 0) + pp.getScalar();
-							pp.setCurrent(pp.current);
+							var newP = new svg.Point((pp.isRelativeCommand() ? pp.current.x : 0) + pp.getScalar(), pp.current.y);
+							pp.addMarker(newP, pp.current);
+							pp.current = newP;
 							bb.addPoint(pp.current.x, pp.current.y);
 							if (ctx != null) ctx.lineTo(pp.current.x, pp.current.y);
 						}
 					}
 					else if (pp.command.toUpperCase() == 'V') {
 						while (!pp.isCommandOrEnd()) {
-							pp.current.y = (pp.isRelativeCommand() ? pp.current.y : 0) + pp.getScalar();
-							pp.setCurrent(pp.current);
+							var newP = new svg.Point(pp.current.x, (pp.isRelativeCommand() ? pp.current.y : 0) + pp.getScalar());
+							pp.addMarker(newP, pp.current);
+							pp.current = newP;
 							bb.addPoint(pp.current.x, pp.current.y);
 							if (ctx != null) ctx.lineTo(pp.current.x, pp.current.y);
 						}
@@ -1063,6 +1109,7 @@ if(!window.console) {
 							var p1 = pp.getPoint();
 							var cntrl = pp.getAsControlPoint();
 							var cp = pp.getAsCurrentPoint();
+							pp.addMarker(cp, cntrl);
 							bb.addBezierCurve(curr.x, curr.y, p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
 							if (ctx != null) ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
 						}
@@ -1073,6 +1120,7 @@ if(!window.console) {
 							var p1 = pp.getReflectedControlPoint();
 							var cntrl = pp.getAsControlPoint();
 							var cp = pp.getAsCurrentPoint();
+							pp.addMarker(cp, cntrl);
 							bb.addBezierCurve(curr.x, curr.y, p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
 							if (ctx != null) ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
 						}				
@@ -1082,6 +1130,7 @@ if(!window.console) {
 							var curr = pp.current;
 							var cntrl = pp.getAsControlPoint();
 							var cp = pp.getAsCurrentPoint();
+							pp.addMarker(cp, cntrl);
 							bb.addQuadraticCurve(curr.x, curr.y, cntrl.x, cntrl.y, cp.x, cp.y);
 							if (ctx != null) ctx.quadraticCurveTo(cntrl.x, cntrl.y, cp.x, cp.y);
 						}
@@ -1092,10 +1141,12 @@ if(!window.console) {
 							var cntrl = pp.getReflectedControlPoint();
 							pp.control = cntrl;
 							var cp = pp.getAsCurrentPoint();
+							pp.addMarker(cp, cntrl);
 							bb.addQuadraticCurve(curr.x, curr.y, cntrl.x, cntrl.y, cp.x, cp.y);
 							if (ctx != null) ctx.quadraticCurveTo(cntrl.x, cntrl.y, cp.x, cp.y);
 						}					
 					}
+
 					else if (pp.command.toUpperCase() == 'A') {
 						while (!pp.isCommandOrEnd()) {
 						    var curr = pp.current;
@@ -1113,6 +1164,12 @@ if(!window.console) {
 								Math.cos(xAxisRotation) * (curr.x - cp.x) / 2.0 + Math.sin(xAxisRotation) * (curr.y - cp.y) / 2.0,
 								-Math.sin(xAxisRotation) * (curr.x - cp.x) / 2.0 + Math.cos(xAxisRotation) * (curr.y - cp.y) / 2.0
 							);
+							// adjust radii
+							var l = Math.pow(currp.x,2)/Math.pow(rx,2)+Math.pow(currp.y,2)/Math.pow(ry,2);
+							if (l > 1) {
+								rx *= Math.sqrt(l);
+								ry *= Math.sqrt(l);
+							}
 							// cx', cy'
 							var s = (largeArcFlag == sweepFlag ? -1 : 1) * Math.sqrt(
 								((Math.pow(rx,2)*Math.pow(ry,2))-(Math.pow(rx,2)*Math.pow(currp.y,2))-(Math.pow(ry,2)*Math.pow(currp.x,2))) /
@@ -1127,15 +1184,30 @@ if(!window.console) {
 							);
 							// vector magnitude
 							var m = function(v) { return Math.sqrt(Math.pow(v[0],2) + Math.pow(v[1],2)); }
+							// ratio between two vectors
+							var r = function(u, v) { return (u[0]*v[0]+u[1]*v[1]) / (m(u)*m(v)) }
 							// angle between two vectors
-							var a = function(u, v) { return (u[0]*v[1] < u[1]*v[0] ? -1 : 1) * Math.acos((u[0]*v[0]+u[1]*v[1]) / (m(u)*m(v))); }
+							var a = function(u, v) { return (u[0]*v[1] < u[1]*v[0] ? -1 : 1) * Math.acos(r(u,v)); }
 							// initial angle
 							var a1 = a([1,0], [(currp.x-cpp.x)/rx,(currp.y-cpp.y)/ry]);
 							// angle delta
-							var ad = a([(currp.x-cpp.x)/rx,(currp.y-cpp.y)/ry], [(-currp.x-cpp.x)/rx,(-currp.y-cpp.y)/ry]);
+							var u = [(currp.x-cpp.x)/rx,(currp.y-cpp.y)/ry];
+							var v = [(-currp.x-cpp.x)/rx,(-currp.y-cpp.y)/ry];
+							var ad = a(u, v);
+							if (r(u,v) <= -1) ad = Math.PI;
+							if (r(u,v) >= 1) ad = 0;
+							
 							if (sweepFlag == 0 && ad > 0) ad = ad - 2 * Math.PI;
 							if (sweepFlag == 1 && ad < 0) ad = ad + 2 * Math.PI;
 							
+							// for markers
+							var halfWay = new svg.Point(
+								centp.x - rx * Math.cos((a1 + ad) / 2),
+								centp.y - ry * Math.sin((a1 + ad) / 2)
+							);
+							pp.addMarkerAngle(halfWay, (a1 + ad) / 2 + (sweepFlag == 0 ? 1 : -1) * Math.PI / 2);
+							pp.addMarkerAngle(cp, ad + (sweepFlag == 0 ? 1 : -1) * Math.PI / 2);
+														
 							bb.addPoint(cp.x, cp.y); // TODO: this is too naive, make it better
 							if (ctx != null) {
 								var r = rx > ry ? rx : ry;
@@ -1160,24 +1232,52 @@ if(!window.console) {
 				return bb;
 			}
 			
-			this.getEndPoint = function() {
-				return this.PathParser.current;
-			}
-			
-			this.getEndAngle = function() {
-				return this.PathParser.angle();
+			this.getMarkers = function() {
+				var points = this.PathParser.getMarkerPoints();
+				var angles = this.PathParser.getMarkerAngles();
+				
+				var markers = [];
+				for (var i=0; i<points.length; i++) {
+					markers.push([points[i], angles[i]]);
+				}
+				return markers;
 			}
 		}
 		svg.Element.path.prototype = new svg.Element.PathElementBase;
 		
+		// pattern element
+		svg.Element.pattern = function(node) {
+			this.base = svg.Element.ElementBase;
+			this.base(node);
+			
+			this.createPattern = function(ctx, element) {
+				// render me using a temporary svg element
+				var tempSvg = new svg.Element.svg();
+				tempSvg.attributes['viewBox'] = new svg.Property('viewBox', this.attribute('viewBox').value);
+				tempSvg.attributes['x'] = new svg.Property('x', this.attribute('x').value);
+				tempSvg.attributes['y'] = new svg.Property('y', this.attribute('y').value);
+				tempSvg.attributes['width'] = new svg.Property('width', this.attribute('width').value);
+				tempSvg.attributes['height'] = new svg.Property('height', this.attribute('height').value);
+				tempSvg.children = this.children;
+				
+				var c = document.createElement('canvas');
+				c.width = this.attribute('width').Length.toPixels();
+				c.height = this.attribute('height').Length.toPixels();
+				tempSvg.render(c.getContext('2d'));		
+				return ctx.createPattern(c, 'repeat');
+			}
+		}
+		svg.Element.pattern.prototype = new svg.Element.ElementBase;
+		
+		// marker element
 		svg.Element.marker = function(node) {
 			this.base = svg.Element.ElementBase;
 			this.base(node);
 			
 			this.baseRender = this.render;
-			this.render = function(ctx, endPoint, endAngle) {
-				ctx.translate(endPoint.x, endPoint.y);
-				if (this.attribute('orient').valueOrDefault('auto') == 'auto') ctx.rotate(endAngle);
+			this.render = function(ctx, point, angle) {
+				ctx.translate(point.x, point.y);
+				if (this.attribute('orient').valueOrDefault('auto') == 'auto') ctx.rotate(angle);
 				if (this.attribute('markerUnits').valueOrDefault('strokeWidth') == 'strokeWidth') ctx.scale(ctx.lineWidth, ctx.lineWidth);
 				ctx.save();
 							
@@ -1195,8 +1295,8 @@ if(!window.console) {
 				
 				ctx.restore();
 				if (this.attribute('markerUnits').valueOrDefault('strokeWidth') == 'strokeWidth') ctx.scale(1/ctx.lineWidth, 1/ctx.lineWidth);
-				if (this.attribute('orient').valueOrDefault('auto') == 'auto') ctx.rotate(-endAngle);
-				ctx.translate(-endPoint.x, -endPoint.y);
+				if (this.attribute('orient').valueOrDefault('auto') == 'auto') ctx.rotate(-angle);
+				ctx.translate(-point.x, -point.y);
 			}
 		}
 		svg.Element.marker.prototype = new svg.Element.ElementBase;
@@ -1427,14 +1527,19 @@ if(!window.console) {
 			this.base = svg.Element.RenderedElementBase;
 			this.base(node);
 			
-			// accumulate all the child text nodes, then trim them
-			this.text = '';
-			for (var i=0; i<node.childNodes.length; i++) {
-				if (node.childNodes[i].nodeType == 3) { // TEXT
-					this.text = this.text + node.childNodes[i].nodeValue;
+			if (node != null) {
+				// add children
+				this.children = [];
+				for (var i=0; i<node.childNodes.length; i++) {
+					var childNode = node.childNodes[i];
+					if (childNode.nodeType == 1) { // capture tspan and tref nodes
+						this.addChild(childNode, true);
+					}
+					else if (childNode.nodeType == 3) { // capture text
+						this.addChild(new svg.Element.tspan(childNode), false);
+					}
 				}
 			}
-			this.text = svg.trim(this.text);
 			
 			this.baseSetContext = this.setContext;
 			this.setContext = function(ctx) {
@@ -1449,10 +1554,59 @@ if(!window.console) {
 			this.renderChildren = function(ctx) {
 				var x = this.attribute('x').Length.toPixels('x');
 				var y = this.attribute('y').Length.toPixels('y');
-				if (ctx.fillText) ctx.fillText(this.text, x, y);
+				for (var i=0; i<this.children.length; i++) {
+					this.children[i].x = x;
+					this.children[i].y = y;
+					this.children[i].render(ctx);
+					x += this.children[i].measureText(ctx);
+				}
 			}
 		}
 		svg.Element.text.prototype = new svg.Element.RenderedElementBase;
+		
+		// text base
+		svg.Element.TextElementBase = function(node) {
+			this.base = svg.Element.RenderedElementBase;
+			this.base(node);
+			
+			this.renderChildren = function(ctx) {
+				ctx.fillText(svg.compressSpaces(this.getText()), this.x, this.y);
+			}
+			
+			this.getText = function() {
+				// OVERRIDE ME
+			}
+			
+			this.measureText = function(ctx) {
+				return ctx.measureText(svg.compressSpaces(this.getText())).width;
+			}
+		}
+		svg.Element.TextElementBase.prototype = new svg.Element.RenderedElementBase;
+		
+		// tspan 
+		svg.Element.tspan = function(node) {
+			this.base = svg.Element.TextElementBase;
+			this.base(node);
+			
+			//								 TEXT			  ELEMENT
+			this.text = node.nodeType == 3 ? node.nodeValue : node.childNodes[0].nodeValue;
+			this.getText = function() {
+				return this.text;
+			}
+		}
+		svg.Element.tspan.prototype = new svg.Element.TextElementBase;
+		
+		// tref
+		svg.Element.tref = function(node) {
+			this.base = svg.Element.TextElementBase;
+			this.base(node);
+			
+			this.getText = function() {
+				var element = this.attribute('xlink:href').Definition.getDefinition();
+				if (element != null) return element.children[0].getText();
+			}
+		}
+		svg.Element.tref.prototype = new svg.Element.TextElementBase;		
 		
 		// group element
 		svg.Element.g = function(node) {
@@ -1461,12 +1615,21 @@ if(!window.console) {
 		}
 		svg.Element.g.prototype = new svg.Element.RenderedElementBase;
 
+		// symbol element
+		svg.Element.symbol = function(node) {
+			this.base = svg.Element.RenderedElementBase;
+			this.base(node);
+		}
+		svg.Element.symbol.prototype = new svg.Element.RenderedElementBase;		
+		
+		// a element
 		svg.Element.a = function(node) {
 			this.base = svg.Element.RenderedElementBase;
 			this.base(node);
 		}
 		svg.Element.a.prototype = new svg.Element.RenderedElementBase;
 		
+		// style element
 		svg.Element.style = function(node) { 
 			this.base = svg.Element.ElementBase;
 			this.base(node);
@@ -1495,6 +1658,7 @@ if(!window.console) {
 							svg.Styles[cssClass] = props;
 						}
 					}
+
 				}
 			}
 		}

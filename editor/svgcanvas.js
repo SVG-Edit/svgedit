@@ -3924,7 +3924,7 @@ function BatchCommand(text) {
 		var blinker;
 		var chardata = [];
 		var textbb, transbb;
-		var xform, imatrix;
+		var matrix;
 		var last_x, last_y;
 		var allow_dbl;
 		
@@ -3963,18 +3963,21 @@ function BatchCommand(text) {
 				}, 600);
 
 			}
-				
+			
+			
+			var start_pt = ptToScreen(charbb.x, textbb.y);
+			var end_pt = ptToScreen(charbb.x, (textbb.y + textbb.height));
+			
 			assignAttributes(cursor, {
-				x1: charbb.x * current_zoom,
-				y1: textbb.y * current_zoom,
-				x2: charbb.x * current_zoom,
-				y2: (textbb.y + textbb.height) * current_zoom,
+				x1: start_pt.x,
+				y1: start_pt.y,
+				x2: end_pt.x,
+				y2: end_pt.y,
 				visibility: 'visible',
-				display: 'inline',
-				transform: (xform || '')
+				display: 'inline'
 			});
 			
-			if(selblock) selblock.setAttribute('width', 0);
+			if(selblock) selblock.setAttribute('d', '');
 		}
 		
 		function setSelection(start, end, skipInput) {
@@ -3989,28 +3992,38 @@ function BatchCommand(text) {
 			
 			selblock = getElem("text_selectblock");
 			if (!selblock) {
-				selblock = document.createElementNS(svgns, "rect");
+
+				selblock = document.createElementNS(svgns, "path");
 				assignAttributes(selblock, {
 					'id': "text_selectblock",
 					'fill': "green",
 					'opacity': .5,
 					'style': "pointer-events:none"
 				});
-				selblock = getElem("selectorParentGroup").appendChild(selblock);
+				getElem("selectorParentGroup").appendChild(selblock);
 			}
+
 			
 			var startbb = chardata[start];
 			
 			var endbb = chardata[end];
 			
 			cursor.setAttribute('visibility', 'hidden');
+			
+			var tl = ptToScreen(startbb.x, textbb.y),
+				tr = ptToScreen(startbb.x + (endbb.x - startbb.x), textbb.y),
+				bl = ptToScreen(startbb.x, textbb.y + textbb.height),
+				br = ptToScreen(startbb.x + (endbb.x - startbb.x), textbb.y + textbb.height);
+			
+			
+			var dstr = "M" + tl.x + "," + tl.y
+						+ " L" + tr.x + "," + tr.y
+						+ " " + br.x + "," + br.y
+						+ " " + bl.x + "," + bl.y + "z";
+			
 			assignAttributes(selblock, {
-				'x': startbb.x * current_zoom,
-				'y': textbb.y * current_zoom,
-				'width': (endbb.x - startbb.x) * current_zoom,
-				'height': textbb.height * current_zoom,
-				'display': 'inline',
-				'transform': (xform || '')
+				d: dstr,
+				'display': 'inline'
 			});
 		}
 		
@@ -4061,14 +4074,32 @@ function BatchCommand(text) {
 				y: y_in
 			}
 			
-			if(xform) {
-				var pt = transformPoint(out.x, out.y, imatrix);
+			out.x /= current_zoom;
+			out.y /= current_zoom;			
+
+			if(matrix) {
+				var pt = transformPoint(out.x, out.y, matrix.inverse());
 				out.x = pt.x;
 				out.y = pt.y;
 			}
 			
-			out.x /= current_zoom;
-			out.y /= current_zoom;			
+			return out;
+		}	
+		
+		function ptToScreen(x_in, y_in) {
+			var out = {
+				x: x_in,
+				y: y_in
+			}
+			
+			if(matrix) {
+				var pt = transformPoint(out.x, out.y, matrix);
+				out.x = pt.x;
+				out.y = pt.y;
+			}
+			
+			out.x *= current_zoom;
+			out.y *= current_zoom;
 			
 			return out;
 		}
@@ -4136,6 +4167,7 @@ function BatchCommand(text) {
 			},			
 			mouseUp: function(evt, mouse_x, mouse_y) {
 				var pt = screenToPt(mouse_x, mouse_y);
+				
 				setEndSelectionFromPoint(pt.x, pt.y, true);
 				
 				// TODO: Find a way to make this work: Use transformed BBox instead of evt.target 
@@ -4211,24 +4243,11 @@ function BatchCommand(text) {
 				var str = curtext.textContent;
 				var len = str.length;
 				
-				xform = curtext.getAttribute('transform');
+				var xform = curtext.getAttribute('transform');
 
 				textbb = canvas.getBBox(curtext);
 				
-				if(xform) {
-					var matrix = getMatrix(curtext);
-					
-					imatrix = matrix.inverse();
-// 					var tbox = transformBox(textbb.x, textbb.y, textbb.width, textbb.height, matrix);
-// 					transbb = {
-// 						width: tbox.tr.x - tbox.tl.x,
-// 						height: tbox.bl.y - tbox.tl.y,
-// 						x: tbox.tl.x,
-// 						y: tbox.tl.y
-// 					}
-				} else {
-// 					transbb = textbb;
-				}
+				matrix = xform?getMatrix(curtext):null;
 
 				chardata = Array(len);
 				textinput.focus();
