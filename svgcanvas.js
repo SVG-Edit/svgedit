@@ -170,7 +170,6 @@ var isOpera = !!window.opera,
 		"exportNoBlur": "Blurred elements will appear as un-blurred",
 		"exportNoImage": "Image elements will not appear",
 		"exportNoforeignObject": "foreignObject elements will not appear",
-		"exportNoMarkers": "Marker elements (arrows, etc) may not appear as expected",
 		"exportNoDashArray": "Strokes will appear filled",
 		"exportNoText": "Text may not appear as expected"
 	},
@@ -6295,7 +6294,6 @@ function BatchCommand(text) {
 			'feGaussianBlur': uiStrings.exportNoBlur,
 			'image': uiStrings.exportNoImage,
 			'foreignObject': uiStrings.exportNoforeignObject,
-			'marker': uiStrings.exportNoMarkers,
 			'[stroke-dasharray]': uiStrings.exportNoDashArray
 		};
 		var content = $(svgcontent);
