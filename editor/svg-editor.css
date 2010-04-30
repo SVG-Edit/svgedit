@@ -525,8 +525,9 @@ span.zoom_tool {
 	position: absolute;
 	margin: 0;
 	padding: 0;
-	left: -93px;
+	left: -80px;
 	top: 26px;
+	z-index: 4;
 	display: none;
 }
 
@@ -546,7 +547,7 @@ span.zoom_tool {
 }
 
 .dropdown li:hover {
-	background-color: #B0B0B0;
+	background-color: #FFC;
 }
 
 .dropdown li.special {
@@ -554,7 +555,7 @@ span.zoom_tool {
 }
 
 .dropdown li.special:hover {
-	background: #E8E8E8;
+	background: #FFC;
 }
 
 #font_family_dropdown li {
@@ -1029,6 +1030,26 @@ span.zoom_tool {
     padding:5px 10px 5px 7px; /* Firefox */
     line-height:17px; /* Safari */
 	margin: 5px 20px 0 0;	
+	
+	border: 1px #808080 solid;
+	border-top-color: #FFF;
+	border-left-color: #FFF;
+
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.toolbar_button button:hover {
+	border: 1px #e0a874 solid;
+	border-top-color: #fcd9ba;
+	border-left-color: #fcd9ba;
+	background-color: #FFC;
+}
+.toolbar_button button:active {
+	background-color: #F4E284;
+	border-left: 1px solid #663300;
+	border-top: 1px solid #663300;
 }
 
 .toolbar_button button .svg_icon {
@@ -1088,6 +1109,12 @@ span.zoom_tool {
 	border: 1px outset #777;
 	font-family:Verdana,Helvetica,sans-serif;
 	font-size:0.8em;
+}
+
+#dialog_container, #dialog_content {
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
 #dialog_buttons input[type=text] {
