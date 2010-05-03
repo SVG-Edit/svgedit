@@ -65,7 +65,7 @@ def processFile(filename):
     Loads the given lang.XX.js file, processes it and saves it
     back to the file system
     """
-    in_string = open('./editor/locale/' + filename, 'r').read()
+    in_string = open('../editor/locale/' + filename, 'r').read()
 
     try:
         j = json.loads(in_string)
@@ -75,7 +75,7 @@ def processFile(filename):
 
         # now write it out back to the file
         s = ourPrettyPrint(j).encode("UTF-8")
-        open('./editor/locale/' + filename, 'w').write(s)
+        open('../editor/locale/' + filename, 'w').write(s)
 
         print "Updated " + filename
     except ValueError:
@@ -83,6 +83,6 @@ def processFile(filename):
 
 if __name__ == '__main__':
     # get list of all lang files and process them
-    for file_name in os.listdir('./editor/locale/'):
+    for file_name in os.listdir('../editor/locale/'):
         if file_name[:4] == "lang":
             processFile(file_name)
