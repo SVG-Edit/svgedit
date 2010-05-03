@@ -3,7 +3,7 @@ Initial translations were done by Narendra Sisodiya putting the English
 strings through the Google Translation API. Humans will need to take these
 automated translations and ensure they make sense.
 
-See Authors.txt for the translations credits.
+See AUTHORS for the translations credits.
 
 Languages Already Translated By Humans:
   * lang.cs.js

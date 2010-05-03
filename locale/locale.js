@@ -7,7 +7,7 @@
  * Copyright(c) 2010 Alexis Deveria
  *
  */
- 
+
 var svgEditor = (function($, Editor) {
 	Editor.putLocale = function(given_param, good_langs){
 		var lang_param;
@@ -50,7 +50,7 @@ var svgEditor = (function($, Editor) {
 				if(data.id) {
 					var elem = $('#svg_editor').parent().find('#'+data.id)[0];
 					if(elem) {
-						if(data.title) 
+						if(data.title)
 							elem.title = data.title;
 						if(data.textContent) {
 							// Only replace non-empty text nodes, not elements
