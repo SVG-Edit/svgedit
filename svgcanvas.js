@@ -4240,6 +4240,8 @@ function BatchCommand(text) {
 					canvas.deleteSelectedElements();
 				}
 				
+				$(textinput).blur();
+				
 				curtext = false;
 			},
 			setInputElem: function(elem) {
