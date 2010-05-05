@@ -132,6 +132,10 @@ div.jGraduate_RadiusField input {
 	overflow: visible;
 }
 
+.jGraduate_Form_Section input[type=text] {
+	width: 38px;
+}
+
 .jGraduate_Radius {
 	border:1px solid #BBB;
 	cursor:ew-resize;

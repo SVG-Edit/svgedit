@@ -135,7 +135,7 @@
 	bottom: 0px;
 	right: 0px;
 	width: 0px;
-	overflow: scroll;
+	overflow: auto;
 	margin: 0px;
 }
 
@@ -712,15 +712,19 @@ span.zoom_tool {
 }
 
 #svg_editor #tools_bottom_2 {
-	width: 180px;
+	width: 165px;
 	position: relative;
 	float: left;
 }
 
+#tools_bottom input[type=text] {
+	width: 2.2em;
+}
+
 #svg_editor #color_tools {
 	display: table;
-	margin-top: 0px;
-	border-spacing: 0 4px;
+	margin-top: 1px;
+	border-spacing: 0 3px;
 	clip: rect(0,0,10px,0);
 }
 
@@ -791,6 +795,7 @@ span.zoom_tool {
 #tools_top .dropdown .icon_label {
 	border: 1px solid transparent;
 	margin-top: 3px;
+	height: auto;
 }
 
 #option_lists ul {
