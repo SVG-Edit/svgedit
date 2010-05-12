@@ -7604,6 +7604,7 @@ function BatchCommand(text) {
 		}		
 		if (elems.length > 0) {
 			this.changeSelectedAttribute("stroke-width", val, elems);
+			call("changed", selectedElements);
 		}
 	};
 
@@ -7622,6 +7623,7 @@ function BatchCommand(text) {
 		}		
 		if (elems.length > 0) {
 			this.changeSelectedAttribute(attr, val, elems);
+			call("changed", selectedElements);
 		}
 	};
 	

@@ -899,6 +899,11 @@ span.zoom_tool {
 	z-index: 6;
 }
 
+#bg_blocks {
+	overflow: auto;
+	margin-left: 30px;
+}
+
 #svg_docprops #svg_docprops_container {
 	position: absolute;
 	top: 50px;

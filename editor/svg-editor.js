@@ -2319,7 +2319,8 @@
 				
 				$.resizeSvgIcons({
 					'.flyout_arrow_horiz > svg, .flyout_arrow_horiz > img': size_num / 5,
-					'#logo > svg, #logo > img': size_num * 1.3
+					'#logo > svg, #logo > img': size_num * 1.3,
+					'#tools_bottom .icon_label > *': (size_num === 16 ? 18 : size_num * .75)
 				});
 				if(size != 's') {
 					$.resizeSvgIcons({'#layerbuttons svg, #layerbuttons img': size_num * .6});
