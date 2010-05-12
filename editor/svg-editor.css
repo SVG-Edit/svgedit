@@ -79,15 +79,18 @@
 }
 
 #svg_editor #color_tools .icon_label {
-	padding-right: 0;
-	height: 26px;
-	min-width: 18px;
+	padding: 3px 19%;
+	width: 28px;
+	height: 100%;
 	cursor: pointer;
+	
 }
 
-#group_opacityLabel, 
-#zoomLabel {
+#svg_editor #group_opacityLabel, 
+#svg_editor #zoomLabel {
 	cursor: pointer;
+	margin-right: 5px;
+	padding-top: 4px
 }
 
 #color_tools .icon_label > * {
@@ -738,9 +741,9 @@ span.zoom_tool {
 .color_tool > * {
 	display: table-cell;
 	background: #f0f0f0;
-	padding: 0 5px;
+	padding: 0 5px 0 0;
 	vertical-align: middle;
-	height: 25px;
+/*	height: 25px;*/
 }
 
 #toggle_stroke_tools {
@@ -841,7 +844,6 @@ span.zoom_tool {
 	-moz-border-radius-bottomright: 4px;
 	-webkit-border-top-right-radius: 4px;
 	-webkit-border-bottom-right-radius: 4px;
-
 }
 
 #svg_editor #tool_opacity {

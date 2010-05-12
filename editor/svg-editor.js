@@ -461,20 +461,18 @@
 			var togglePathEditMode = function(editmode, elems) {
 				$('#path_node_panel').toggle(editmode);
 				$('#tools_bottom_2,#tools_bottom_3').toggle(!editmode);
-				var size = $('#tool_select > svg, #tool_select > img')[0].getAttribute('width');
 				if(editmode) {
 					// Change select icon
 					$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
-					$('#tool_select').addClass('tool_button_current').removeClass('tool_button')
-						.empty().append($.getSvgIcon('select_node'));
+					$('#tool_select').addClass('tool_button_current').removeClass('tool_button');
+					setIcon('#tool_select', 'select_node');
 					multiselected = false;
 					if(elems.length) {
 						selectedElement = elems[0];
 					}
 				} else {
-					$('#tool_select').empty().append($.getSvgIcon('select'));
+					setIcon('#tool_select', 'select');
 				}
-				$.resizeSvgIcons({'#tool_select .svg_icon':size});
 			}
 		
 			// used to make the flyouts stay on the screen longer the very first time
@@ -1162,9 +1160,7 @@
 						$('#tool_node_delete').toggleClass('disabled', !path.canDeleteNodes);
 						
 						// Show open/close button based on selected point
-						$('#tool_openclose_path')
-							.empty()
-							.append($.getSvgIcon(path.closed_subpath ? 'open_path' : 'close_path'));
+						setIcon('#tool_openclose_path', path.closed_subpath ? 'open_path' : 'close_path');
 						
 						if(point) {
 							var seg_type = $('#seg_type');
@@ -2295,6 +2291,17 @@
 				// This should be done in svgcanvas.js for the borderRect fill
 				svgCanvas.setBackground(color, url);
 			}
+			
+			var setIcon = function(elem, icon_id) {
+				var icon = $.getSvgIcon(icon_id).clone();
+				$(elem).empty().append(icon);
+				var size = curPrefs.iconsize;
+				if(size !== 'm') {
+					var icon_sizes = { s:16, m:24, l:32, xl:48}, obj = {};
+					obj[elem + ' .svg_icon'] = icon_sizes[size];
+					$.resizeSvgIcons(obj);
+				}
+			}
 		
 			var setIconSize = Editor.setIconSize = function(size, force) {
 				if(size == curPrefs.size && !force) return;
@@ -2357,7 +2364,11 @@
 						'height': {s: '58px', l: '98px', xl: '145px'}
 					},
 					"#color_tools": {
-						'border-spacing': {s: '0 1px'}
+						'border-spacing': {s: '0 1px'},
+						'margin-top': {s: '-1px'}
+					},
+					"#color_tools .icon_label": {
+						'width': {l:'43px', xl: '60px'}
 					},
 					".color_tool": {
 						'height': {s: '20px'}
