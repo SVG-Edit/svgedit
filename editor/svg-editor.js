@@ -1823,15 +1823,6 @@
 			
 			*/
 			
-		// 	var setIcon = function(holder_sel, id) {
-		// 		var icon = $.getSvgIcon(id).clone();
-		// 		var holder = $(holder_sel);
-		// 		icon[0].setAttribute('width',holder.width());
-		// 		icon[0].setAttribute('height',holder.height());
-		// 		holder.empty().append(icon)
-		// 			.attr('data-curopt', holder_sel.replace('_show','')); // This sets the current mode
-		// 	}
-		
 			// Unfocus text input when workarea is mousedowned.
 			(function() {
 				var inp;
@@ -2296,7 +2287,7 @@
 				var icon = $.getSvgIcon(icon_id).clone();
 				$(elem).empty().append(icon);
 				var size = curPrefs.iconsize;
-				if(size !== 'm') {
+				if(size && size !== 'm') {
 					var icon_sizes = { s:16, m:24, l:32, xl:48}, obj = {};
 					obj[elem + ' .svg_icon'] = icon_sizes[size];
 					$.resizeSvgIcons(obj);
