@@ -961,7 +961,6 @@ function BatchCommand(text) {
 					'</svg>').documentElement, true);
 		
 		$(svgroot).appendTo(container);
-		
 		var opac_ani = document.createElementNS(svgns, 'animate');
  		$(opac_ani).attr({
  			attributeName: 'opacity',
@@ -1777,7 +1776,9 @@ function BatchCommand(text) {
 
 		var i = selectedElements.length;
 		while(i--) {
-			var cmd = recalculateDimensions(selectedElements[i]);
+			var elem = selectedElements[i];
+// 			if(canvas.getRotationAngle(elem) && !hasMatrixTransform(canvas.getTransformList(elem))) continue;
+			var cmd = recalculateDimensions(elem);
 			if (cmd) {
 				batchCmd.addSubCommand(cmd);
 			}
@@ -2052,6 +2053,8 @@ function BatchCommand(text) {
 					}
 				}
 			}
+			// End here if all it has is a rotation
+			if(tlist.numberOfItems == 1 && canvas.getRotationAngle(selected)) return null;
 		}
 		
 		// if this element had no transforms, we are done
@@ -2132,6 +2135,7 @@ function BatchCommand(text) {
 								transformListToTransform(tlist).matrix),
 				m = svgroot.createSVGMatrix();
 			
+			
 			// temporarily strip off the rotate and save the old center
 			var gangle = canvas.getRotationAngle(selected);
 			if (gangle) {
@@ -2157,7 +2161,11 @@ function BatchCommand(text) {
 			var tx = 0, ty = 0,
 				operation = 0,
 				N = tlist.numberOfItems;
-			
+
+			if(N) {
+				var first_m = tlist.getItem(0).matrix;
+			}
+
 			// first, if it was a scale then the second-last transform will be it
 			if (N >= 3 && tlist.getItem(N-2).type == 3 && 
 				tlist.getItem(N-3).type == 2 && tlist.getItem(N-1).type == 2) 
@@ -2359,6 +2367,11 @@ function BatchCommand(text) {
 			// if it was a translate, put back the rotate at the new center
 			if (operation == 2) {
 				if (gangle) {
+					newcenter = {
+						x: oldcenter.x + first_m.e,
+						y: oldcenter.y + first_m.f
+					};
+				
 					var newRot = svgroot.createSVGTransform();
 					newRot.setRotate(gangle,newcenter.x,newcenter.y);
 					tlist.insertItemBefore(newRot, 0);
@@ -2550,8 +2563,12 @@ function BatchCommand(text) {
 			// if it was a translate, put back the rotate at the new center
 			if (operation == 2) {
 				if (angle) {
+					newcenter = {
+						x: oldcenter.x + m.e,
+						y: oldcenter.y + m.f
+					};
 					var newRot = svgroot.createSVGTransform();
-					newRot.setRotate(angle,newcenter.x,newcenter.y);
+					newRot.setRotate(angle, newcenter.x, newcenter.y);
 					tlist.insertItemBefore(newRot, 0);
 				}
 			}
