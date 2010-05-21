@@ -3464,50 +3464,15 @@ function BatchCommand(text) {
 					var y2 = y;					
 
 					if(evt.shiftKey) {
+						var snap = Math.PI/4; // 45 degrees
 						var diff_x = x - start_x;
 						var diff_y = y - start_y;
-						
-						var angle = ((Math.atan2(start_y-y,start_x-x) * (180/Math.PI))-90) % 360;
-						angle = angle<0?(360+angle):angle
-
-						// TODO: Write all this more efficiently						
+						var angle = Math.atan2(diff_y,diff_x);
 						var dist = Math.sqrt(diff_x * diff_x + diff_y * diff_y);
-						var val = Math.sqrt((dist*dist)/2);
-						var diagonal = false;
-						
-						if(angle >= 360-22.5 || angle < 22.5) {
-							x2 = start_x;
-						} else if(angle >= 22.5 && angle < 22.5 + 45) {
-							diagonal = true;
-						} else if(angle >= 22.5 + 45 && angle < 22.5 + 90) {
-							y2 = start_y;
-						} else if(angle >= 22.5 + 90 && angle < 22.5 + 135) {
-							diagonal = true;
-						} else if(angle >= 22.5 + 135 && angle < 22.5 + 180) {
-							x2 = start_x;
-						} else if(angle >= 22.5 + 180 && angle < 22.5 + 225) {
-							diagonal = true;
-						} else if(angle >= 22.5 + 225 && angle < 22.5 + 270) {
-							y2 = start_y;
-						} else if(angle >= 22.5 + 270 && angle < 22.5 + 315) {
-							diagonal = true;							
-						}
-						
-						if(diagonal) {
-							if(y2 < start_y) {
-								y2 = start_y - val;
-							} else {
-								y2 = start_y + val;
-							}
-
-							if(x2 < start_x) {
-								x2 = start_x - val;
-							} else {
-								x2 = start_x + val;
-							}
-						}
+						var snapangle= Math.round(angle/snap)*snap;
+						x2 = start_x + dist*Math.cos(snapangle);	
+						y2 = start_y + dist*Math.sin(snapangle);	
 					}
-
 					
 					shape.setAttributeNS(null, "x2", x2);
 					shape.setAttributeNS(null, "y2", y2);
@@ -4848,16 +4813,36 @@ function BatchCommand(text) {
 			this.addSeg = function(index) {
 				// Adds a new segment
 				var seg = p.segs[index];
-				
 				if(!seg.prev) return;
 				
 				var prev = seg.prev;
-				
-				var new_x = (seg.item.x + prev.item.x) / 2;
-				var new_y = (seg.item.y + prev.item.y) / 2;
-				
-				var list = elem.pathSegList;
-				var newseg = elem.createSVGPathSegLinetoAbs(new_x, new_y);
+				var newseg;
+				switch(seg.item.pathSegType) {
+				case 4:
+					var new_x = (seg.item.x + prev.item.x) / 2;
+					var new_y = (seg.item.y + prev.item.y) / 2;
+					newseg = elem.createSVGPathSegLinetoAbs(new_x, new_y);
+					break;
+				case 6: //make it a curved segment to preserve the shape (WRS)
+					// http://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm#Geometric_interpretation
+					var p0_x = (prev.item.x + seg.item.x1)/2;
+					var p1_x = (seg.item.x1 + seg.item.x2)/2;
+					var p2_x = (seg.item.x2 + seg.item.x)/2;
+					var p01_x = (p0_x + p1_x)/2;
+					var p12_x = (p1_x + p2_x)/2;
+					var new_x = (p01_x + p12_x)/2;
+					var p0_y = (prev.item.y + seg.item.y1)/2;
+					var p1_y = (seg.item.y1 + seg.item.y2)/2;
+					var p2_y = (seg.item.y2 + seg.item.y)/2;
+					var p01_y = (p0_y + p1_y)/2;
+					var p12_y = (p1_y + p2_y)/2;
+					var new_y = (p01_y + p12_y)/2;
+					newseg = elem.createSVGPathSegCurvetoCubicAbs(new_x,new_y, p0_x,p0_y, p01_x,p01_y);
+					var pts = [seg.item.x,seg.item.y,p12_x,p12_y,p2_x,p2_y];
+					replacePathSeg(seg.type,index,pts);
+					break;
+				}
+						
 				insertItemBefore(elem, newseg, index);
 			}
 			
@@ -5047,10 +5032,17 @@ function BatchCommand(text) {
 							var diff_x = cur_x - prev_x;
 							var diff_y = cur_y - prev_y;
 							// get control points from straight line segment
+							/*
 							var ct1_x = (prev_x + (diff_y/2));
 							var ct1_y = (prev_y - (diff_x/2));
 							var ct2_x = (cur_x + (diff_y/2));
 							var ct2_y = (cur_y - (diff_x/2));
+							*/
+							//create control points on the line to preserve the shape (WRS)
+							var ct1_x = (prev_x + (diff_x/3));
+							var ct1_y = (prev_y + (diff_y/3));
+							var ct2_x = (cur_x - (diff_x/3));
+							var ct2_y = (cur_y - (diff_y/3));
 							points = [cur_x,cur_y, ct1_x,ct1_y, ct2_x,ct2_y];
 						}
 						break;
