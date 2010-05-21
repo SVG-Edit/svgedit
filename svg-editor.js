@@ -246,7 +246,9 @@
 					'zoom':'zoom.png',
 					
 					'clone':'clone.png',
+					'node_clone':'node_clone.png',
 					'delete':'delete.png',
+					'node_delete':'node_delete.png',
 					'group':'shape_group.png',
 					'ungroup':'shape_ungroup.png',
 					'move_top':'move_top.png',
@@ -300,8 +302,10 @@
 					'#tool_image':'image',
 					'#tool_zoom':'zoom',
 					
-					'#tool_clone,#tool_clone_multi,#tool_node_clone':'clone',
-					'#layer_delete,#tool_delete,#tool_delete_multi,#tool_node_delete':'delete',
+					'#tool_clone,#tool_clone_multi':'clone',
+					'#tool_node_clone':'node_clone',
+					'#layer_delete,#tool_delete,#tool_delete_multi':'delete',
+					'#tool_node_delete':'node_delete',
 					'#tool_add_subpath':'add_subpath',
 					'#tool_openclose_path':'open_path',
 					'#tool_move_top':'move_top',
