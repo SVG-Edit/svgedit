@@ -1070,10 +1070,13 @@
 					$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
 
 					var attr = selectedElement.getAttribute("stroke-linejoin") || 'miter';
-					$('#linejoin_' + attr).mouseup();
+					
+					setStrokeOpt($('#linejoin_' + attr)[0]);
+					
+					attr = selectedElement.getAttribute("stroke-linecap") || 'butt';
+					
+					setStrokeOpt($('#linecap_' + attr)[0]);
 
-					var attr = selectedElement.getAttribute("stroke-linecap") || 'butt';
-					$('#linecap_' + attr).mouseup();
 				}
 				
 				// All elements including image and group have opacity
@@ -1382,11 +1385,6 @@
 				operaRepaint();
 			});
 
-// 			$('#stroke_linecap').change(function(){
-// 				svgCanvas.setStrokeAttr('stroke-linecap', $(this).val());
-// 				operaRepaint();
-// 			});
- 
 		
 			// Lose focus for select elements when changed (Allows keyboard shortcuts to work better)
 			$('select').change(function(){$(this).blur();});
@@ -1561,6 +1559,20 @@
 			}());
 			
 			
+			function setStrokeOpt(opt, changeElem) {
+				var id = opt.id;
+				var bits = id.split('_');
+				var pre = bits[0];
+				var val = bits[1];
+			
+				if(changeElem) {
+					svgCanvas.setStrokeAttr('stroke-' + pre, val);
+				}
+				operaRepaint();
+				setIcon('#cur_' + pre , id, 20);
+				$(opt).addClass('current').siblings().removeClass('current');
+			}
+			
 			(function() {
 				var button = $('#main_icon');
 				var overlay = $('#main_icon span');
@@ -1678,12 +1690,7 @@
 				if(dropUp) {
 					$(elem).addClass('dropup');
 				}
-				list.find('li').bind('mouseup', function() {
-					callback.apply(this, arguments);
-					if(!opts.multiclick) {
-						$(this).addClass('current').siblings().removeClass('current');
-					}
-				});
+				list.find('li').bind('mouseup', callback);
 				
 				$(window).mouseup(function(evt) {
 					if(!on_button) {
@@ -1789,21 +1796,11 @@
 			}, true);
 			
 			addAltDropDown('#stroke_linecap', '#linecap_opts', function() {
-				var val = this.id.split('_')[1];
-				svgCanvas.setStrokeAttr('stroke-linecap', val);
-				operaRepaint();
-				var icon = $.getSvgIcon(this.id).clone();
-				$('#cur_linecap').empty().append(icon);
-				$.resizeSvgIcons({'#cur_linecap .svg_icon': 20});
+				setStrokeOpt(this, true);
 			}, {dropUp: true});
 			
 			addAltDropDown('#stroke_linejoin', '#linejoin_opts', function() {
-				var val = this.id.split('_')[1];
-				svgCanvas.setStrokeAttr('stroke-linejoin', val);
-				operaRepaint();
-				var icon = $.getSvgIcon(this.id).clone();
-				$('#cur_linejoin').empty().append(icon);
-				$.resizeSvgIcons({'#cur_linejoin .svg_icon': 20});
+				setStrokeOpt(this, true);
 			}, {dropUp: true});
 			
 			addAltDropDown('#tool_position', '#position_opts', function() {
@@ -2287,14 +2284,20 @@
 				svgCanvas.setBackground(color, url);
 			}
 			
-			var setIcon = function(elem, icon_id) {
+			var setIcon = function(elem, icon_id, forcedSize) {
 				var icon = $.getSvgIcon(icon_id).clone();
 				$(elem).empty().append(icon);
-				var size = curPrefs.iconsize;
-				if(size && size !== 'm') {
-					var icon_sizes = { s:16, m:24, l:32, xl:48}, obj = {};
-					obj[elem + ' .svg_icon'] = icon_sizes[size];
+				if(forcedSize) {
+					var obj = {};
+					obj[elem + ' .svg_icon'] = forcedSize;
 					$.resizeSvgIcons(obj);
+				} else {
+					var size = curPrefs.iconsize;
+					if(size && size !== 'm') {
+						var icon_sizes = { s:16, m:24, l:32, xl:48}, obj = {};
+						obj[elem + ' .svg_icon'] = icon_sizes[size];
+						$.resizeSvgIcons(obj);
+					}
 				}
 			}
 		
@@ -2696,7 +2699,6 @@
 					shower.toggleClass('disabled', !has_enabled);
 				});
 		
-				
 				operaRepaint();
 			};
 		
