@@ -2609,7 +2609,7 @@ function BatchCommand(text) {
 
 	// Function: clearSelection
 	// Clears the selection.  The 'selected' handler is then called.
-	this.clearSelection = function() {
+	this.clearSelection = function(noCall) {
 		if (selectedElements[0] != null) {
 			var len = selectedElements.length;
 			for (var i = 0; i < len; ++i) {
@@ -2620,7 +2620,7 @@ function BatchCommand(text) {
 			}
 			selectedBBoxes[0] = null;
 		}
-		call("selected", selectedElements);
+		if(!noCall) call("selected", selectedElements);
 	};
 
 	// TODO: do we need to worry about selectedBBoxes here?
@@ -3012,7 +3012,8 @@ function BatchCommand(text) {
 							// only clear selection if shift is not pressed (otherwise, add 
 							// element to selection)
 							if (!evt.shiftKey) {
-								canvas.clearSelection();
+								// No need to do the call here as it will be done on addToSelection
+								canvas.clearSelection(true);
 							}
 							canvas.addToSelection([mouse_target]);
 							justSelected = mouse_target;
@@ -3296,8 +3297,8 @@ function BatchCommand(text) {
 								if (selected == null) break;
 								if (i==0) {
 									var box = canvas.getBBox(selected);
-									selectedBBoxes[i].x = box.x + dx;
-									selectedBBoxes[i].y = box.y + dy;
+// 									selectedBBoxes[i].x = box.x + dx;
+// 									selectedBBoxes[i].y = box.y + dy;
 								}
 	
 								// update the dummy transform in our transform list
@@ -3640,7 +3641,9 @@ function BatchCommand(text) {
 								cur_text.font_family = selected.getAttribute("font-family");
 							}
 							selectorManager.requestSelector(selected).showGrips(true);
-							call("selected", [selected]);
+							
+							// This shouldn't be necessary as it was done on mouseDown...
+// 							call("selected", [selected]);
 						}
 						// always recalculate dimensions to strip off stray identity transforms
 						recalculateAllSelectedDimensions();
@@ -4187,9 +4190,14 @@ function BatchCommand(text) {
 				allow_dbl = false;
 				current_mode = "textedit";
 				selectorManager.requestSelector(curtext).showGrips(false);
-
+				
 				textActions.init();
 				$(curtext).css('cursor', 'text');
+				
+// 				if(support.editableText) {
+// 					curtext.setAttribute('editable', 'simple');
+// 					return;
+// 				}
 				
 				if(!arguments.length) {
 					setCursor();
@@ -4225,6 +4233,10 @@ function BatchCommand(text) {
 				$(textinput).blur();
 				
 				curtext = false;
+				
+// 				if(support.editableText) {
+// 					curtext.removeAttribute('editable');
+// 				}
 			},
 			setInputElem: function(elem) {
 				textinput = elem;
@@ -4237,13 +4249,18 @@ function BatchCommand(text) {
 			},
 			init: function(inputElem) {
 				if(!curtext) return;
+
+// 				if(support.editableText) {
+// 					curtext.select();
+// 					return;
+// 				}
 			
 				if(!curtext.parentNode) {
 					// Result of the ffClone, need to get correct element
 					curtext = selectedElements[0];
 					selectorManager.requestSelector(curtext).showGrips(false);
 				}
-			
+				
 				var str = curtext.textContent;
 				var len = str.length;
 				
@@ -9169,6 +9186,9 @@ function BatchCommand(text) {
 		} catch(err) {
 			support.pathInsertItemBefore = false;
 		}
+		
+		// TODO: Find better way to check support for this
+		support.editableText = isOpera;
 		
 		// Correct decimals on clone attributes (Opera/win/non-en)
 		var rect = document.createElementNS(svgns,'rect');
