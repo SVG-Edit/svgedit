@@ -3290,6 +3290,12 @@ function BatchCommand(text) {
 					if (selectedElements[0] != null) {
 						var dx = x - start_x;
 						var dy = y - start_y;
+						
+						if(evt.shiftKey) { // restrict to movement up/down/left/right (WRS)
+							if (Math.abs(dx)>Math.abs(dy)) dy=0;
+							else dx=0; 
+							}
+
 						if (dx != 0 || dy != 0) {
 							var len = selectedElements.length;
 							for (var i = 0; i < len; ++i) {
@@ -3543,6 +3549,12 @@ function BatchCommand(text) {
 				case "pathedit":
 					x *= current_zoom;
 					y *= current_zoom;
+					
+					if(evt.shiftKey) { // restrict path segments to horizontal/vertical (WRS)
+						if (Math.abs(start_x-x)>Math.abs(start_y-y)) {y=start_y; mouse_y=y;}
+						else {x=start_x; mouse_x=x;}
+					}
+					
 					if(rubberBox && rubberBox.getAttribute('display') != 'none') {
 						assignAttributes(rubberBox, {
 							'x': Math.min(start_x,x),
@@ -3579,6 +3591,12 @@ function BatchCommand(text) {
 					cx = center.x;
 					cy = center.y;
 					var angle = ((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360;
+                    
+					if(evt.shiftKey) { // restrict rotations to nice angles (WRS)
+                        			var snap = 45;
+                        			angle= Math.round(angle/snap)*snap;
+                    			}
+
 					canvas.setRotationAngle(angle<-180?(360+angle):angle, true);
 					call("changed", selectedElements);
 					break;
@@ -5503,6 +5521,12 @@ function BatchCommand(text) {
 							}
 
 							var lastx = current_path_pts[len-2], lasty = current_path_pts[len-1];
+
+							if (evt.shiftKey) { // restrict to horizonontal/vertical (WRS)
+								if (Math.abs(x-lastx)>Math.abs(y-lasty)) y=lasty;
+								else x=lastx;
+							}
+
 							// we store absolute values in our path points array for easy checking above
 							current_path_pts.push(x);
 							current_path_pts.push(y);
@@ -5512,14 +5536,14 @@ function BatchCommand(text) {
 	
 							// set stretchy line to latest point
 							assignAttributes(stretchy, {
-								'x1': mouse_x,
-								'y1': mouse_y,
-								'x2': mouse_x,
-								'y2': mouse_y
+								'x1': x,
+								'y1': y,
+								'x2': x,
+								'y2': y
 							});
 							var index = (current_path_pts.length/2 - 1);
 							if(subpath) index += path.segs.length;
-							addPointGrip(index, mouse_x, mouse_y);
+							addPointGrip(index, x, y);
 						}
 						keep = true;
 					}
