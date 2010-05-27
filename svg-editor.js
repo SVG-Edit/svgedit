@@ -776,6 +776,8 @@
 					}
 				}
 		
+				var btn_selects = [];
+		
 				if(ext.context_tools) {
 					$.each(ext.context_tools, function(i, tool) {
 						// Add select tool
@@ -813,7 +815,23 @@
 								$(sel).bind(evt, func);
 							});
 							break;
-						
+						case 'button-select': 
+							var html = '<div id="' + tool.id + '" class="dropdown toolset">'
+								+ '<div id="cur_' + tool.id + '" class="icon_label"></div><button></button></div>';
+							
+							var list = $('<ul id="' + tool.id + '_opts"></ul>').appendTo('#option_lists');
+							
+							// Creates the tool, hides & adds it, returns the select element
+							var dropdown = $(html).appendTo(panel).children();
+							
+							btn_selects.push({
+								elem: ('#' + tool.id),
+								list: ('#' + tool.id + '_opts'),
+								callback: tool.events.change,
+								cur: ('#cur_' + tool.id)
+							});
+
+							break;
 						case 'input':
 							var html = '<label' + cont_id + '>'
 								+ '<span id="' + tool.id + '_label">' 
@@ -885,13 +903,21 @@
 							break;
 						}
 						
-						var button = $('<div/>')
+						var button = $(btn.list?'<li/>':'<div/>')
 							.attr("id", id)
 							.attr("title", btn.title)
 							.addClass(cls);
-						if(!btn.includeWith) {
+						if(!btn.includeWith && !btn.list) {
 							button.appendTo(parent);
-						} else {
+						} else if(btn.list) {
+							// Add button to list
+							button.addClass('push_button');
+							$('#' + btn.list + '_opts').append(button);
+ 							if(btn.isDefault) {
+ 								$('#cur_' + btn.list).append(button.children().clone());
+	 							placement_obj['#cur_' + btn.list] = btn.id;
+ 							}
+						} else if(btn.includeWith) {
 							// Add to flyout menu / make flyout menu
 							var opts = btn.includeWith;
 							// opts.button, default, position
@@ -947,34 +973,41 @@
 						if(!svgicons) {
 							button.append(icon);
 						}
-		
-						// Add given events to button
-						$.each(btn.events, function(name, func) {
-							if(name == "click") {
-								if(btn.type == 'mode') {
-									if(btn.includeWith) {
-										button.bind(name, func);
+						
+						if(!btn.list) {
+							// Add given events to button
+							$.each(btn.events, function(name, func) {
+								if(name == "click") {
+									if(btn.type == 'mode') {
+										if(btn.includeWith) {
+											button.bind(name, func);
+										} else {
+											button.bind(name, function() {
+												if(toolButtonClick(button)) {
+													func();
+												}
+											});
+										}
+										if(btn.key) {
+											$(document).bind('keydown', btn.key, func);
+											if(btn.title) button.attr("title", btn.title + ' ['+btn.key+']');
+										}
 									} else {
-										button.bind(name, function() {
-											if(toolButtonClick(button)) {
-												func();
-											}
-										});
-									}
-									if(btn.key) {
-										$(document).bind('keydown', btn.key, func);
-										if(btn.title) button.attr("title", btn.title + ' ['+btn.key+']');
+										button.bind(name, func);
 									}
 								} else {
 									button.bind(name, func);
 								}
-							} else {
-								button.bind(name, func);
-							}
-						});
+							});
+						}
 						
 						setupFlyouts(holders);
 					});
+					
+					$.each(btn_selects, function() {
+						addAltDropDown(this.elem, this.list, this.callback, {seticon: true}); 
+					});
+
 					
 					$.svgIcons(svgicons, {
 						w:24, h:24,
@@ -1700,7 +1733,14 @@
 				if(dropUp) {
 					$(elem).addClass('dropup');
 				}
-				list.find('li').bind('mouseup', callback);
+				list.find('li').bind('mouseup', function() {
+					if(opts.seticon) {
+						setIcon('#cur_' + button[0].id , $(this).children());
+						$(this).addClass('current').siblings().removeClass('current');
+					}
+					callback.apply(this, arguments);
+
+				});
 				
 				$(window).mouseup(function(evt) {
 					if(!on_button) {
@@ -1712,7 +1752,6 @@
 				});
 				
 				var height = list.height();
-				
 				$(elem).bind('mousedown',function() {
 					var off = $(elem).offset();
 					if(dropUp) {
@@ -2295,7 +2334,7 @@
 			}
 			
 			var setIcon = function(elem, icon_id, forcedSize) {
-				var icon = $.getSvgIcon(icon_id).clone();
+				var icon = (typeof icon_id == 'string') ? $.getSvgIcon(icon_id).clone() : icon_id.clone();
 				$(elem).empty().append(icon);
 				if(forcedSize) {
 					var obj = {};
