@@ -8187,7 +8187,7 @@ function BatchCommand(text) {
 			}
 			
 			// only allow the transform/opacity attribute to change on <g> elements, slightly hacky
-			if (elem.tagName == "g" && (attr != "transform" && attr != "opacity")) continue;
+			if (elem.tagName == "g" && $.inArray(attr, ['transform', 'opacity', 'filter']) !== -1);
 			var oldval = attr == "#text" ? elem.textContent : elem.getAttribute(attr);
 			if (oldval == null)  oldval = "";
 			if (oldval != String(newValue)) {
@@ -8378,13 +8378,22 @@ function BatchCommand(text) {
 			
 			var i = 0;
 			var gangle = canvas.getRotationAngle(g);
+			
+			var gattrs = $(g).attr(['filter', 'opacity']);
+			
 			while (g.firstChild) {
 				var elem = g.firstChild;
 				var oldNextSibling = elem.nextSibling;
 				var oldParent = elem.parentNode;
 				children[i++] = elem = parent.insertBefore(elem, anchor);
 				batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
-
+				
+				if(gattrs.opacity !== null && gattrs.opacity !== 1) {
+					var c_opac = elem.getAttribute('opacity') || 1;
+					var new_opac = Math.round((elem.getAttribute('opacity') || 1) * gattrs.opacity * 100)/100;
+					this.changeSelectedAttribute('opacity', new_opac, [elem]);
+				}
+				
 				var chtlist = canvas.getTransformList(elem);
 				
 				if (glist.numberOfItems) {
@@ -8460,6 +8469,11 @@ function BatchCommand(text) {
 					}
 					batchCmd.addSubCommand(recalculateDimensions(elem));
 				}
+			}
+			
+			if(gattrs.filter) {
+				this.changeSelectedAttribute('filter', g.getAttribute('filter'), children);
+				// TODO: Make the blur tool work propery on this element
 			}
 			
 			// remove transform and make it undo-able
