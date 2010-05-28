@@ -1443,6 +1443,7 @@ function BatchCommand(text) {
 							node.setAttribute(nv[0],nv[1]);
 						}
 					}
+					node.removeAttribute('style');
 				}
 			}
 			
@@ -2425,8 +2426,10 @@ function BatchCommand(text) {
 		// else, it's a non-group
 		else {
 			// FIXME: box might be null for some elements (<metadata> etc), need to handle this
-			var box = canvas.getBBox(selected),
-				oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2},
+			var box = canvas.getBBox(selected);
+			if(!box) return null;
+			
+			var oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2},
 				newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2,
 								transformListToTransform(tlist).matrix),
 				m = svgroot.createSVGMatrix(),
@@ -2651,8 +2654,7 @@ function BatchCommand(text) {
 		var i = elemsToAdd.length;
 		while (i--) {
 			var elem = elemsToAdd[i];
-			// we ignore any selectors
-			if (!elem || elem.id.substr(0,13) == "selectorGrip_" || !this.getBBox(elem)) continue;
+			if (!elem || !this.getBBox(elem)) continue;
 			// if it's not already there, add it
 			if (selectedElements.indexOf(elem) == -1) {
 				selectedElements[j] = elem;
@@ -6664,8 +6666,13 @@ function BatchCommand(text) {
 				else {
 					var ts = "scale(" + (canvash/3)/vb[2] + ")";
 				}
-				if (vb[0] != 0 || vb[1] != 0)
-					ts = "translate(" + (-vb[0]) + "," + (-vb[1]) + ") " + ts;
+				
+				// Hack to make recalculateDimensions understand how to scale
+				ts = "translate(0) " + ts + " translate(0)";
+				
+				// TODO: Find way to add this in a recalculateDimensions-parsable way
+// 				if (vb[0] != 0 || vb[1] != 0)
+// 					ts = "translate(" + (-vb[0]) + "," + (-vb[1]) + ") " + ts;
 
 				// add all children of the imported <svg> to the <g> we create
 				var g = svgdoc.createElementNS(svgns, "g");
@@ -6754,6 +6761,7 @@ function BatchCommand(text) {
     	    	}
     	    	
     	    	// now give the g itself a new id
+    	    	
 				g.id = getNextId();
 				// manually increment obj_num because our cloned elements are not in the DOM yet
 				obj_num++;
@@ -6787,7 +6795,7 @@ function BatchCommand(text) {
 			
 			// recalculate dimensions on the top-level children so that unnecessary transforms
 			// are removed
-			walkTreePost(importedNode, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
+			walkTreePost(svgcontent, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
 			
 			
 			batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
