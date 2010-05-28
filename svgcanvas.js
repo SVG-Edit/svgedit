@@ -214,6 +214,9 @@ function ChangeElementCommand(elem, attrs, text) {
 				else if (attr == "#href") this.elem.setAttributeNS(xlinkns, "xlink:href", this.newValues[attr])
 				else this.elem.setAttribute(attr, this.newValues[attr]);
 			}
+			
+			if (attr == "stdDeviation") canvas.setBlurOffsets(this.elem.parentNode, this.newValues[attr]);
+			
 			else {
 				if (attr == "#text") this.elem.textContent = "";
 				else {
@@ -250,6 +253,8 @@ function ChangeElementCommand(elem, attrs, text) {
 				if (attr == "#text") this.elem.textContent = this.oldValues[attr];
 				else if (attr == "#href") this.elem.setAttributeNS(xlinkns, "xlink:href", this.oldValues[attr]);
 				else this.elem.setAttribute(attr, this.oldValues[attr]);
+				
+				if (attr == "stdDeviation") canvas.setBlurOffsets(this.elem.parentNode, this.oldValues[attr]);
 			}
 			else {
 				if (attr == "#text") this.elem.textContent = "";
@@ -7722,6 +7727,7 @@ function BatchCommand(text) {
 					canvas.changeSelectedAttributeNoUndo("filter", 'url(#' + selectedElements[0].id + '_blur)');
 				}
 				canvas.changeSelectedAttributeNoUndo("stdDeviation", val, [filter.firstChild]);
+				canvas.setBlurOffsets(filter, val);
 			}
 		}
 		
@@ -7731,6 +7737,23 @@ function BatchCommand(text) {
 			addCommandToHistory(cur_command);
 			cur_command = null;	
 			filter = null;
+		}
+	
+		canvas.setBlurOffsets = function(filter, stdDev) {
+			if(stdDev > 3) {
+				// TODO: Create algorithm here where size is based on expected blur
+				assignAttributes(filter, {
+					x: '-50%',
+					y: '-50%',
+					width: '200%',
+					height: '200%',
+				}, 100);
+			} else {
+				filter.removeAttribute('x');
+				filter.removeAttribute('y');
+				filter.removeAttribute('width');
+				filter.removeAttribute('height');
+			}
 		}
 	
 		canvas.setBlur = function(val, complete) {
@@ -7785,20 +7808,7 @@ function BatchCommand(text) {
 				
 				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
 				
-				if(val > 3) {
-					// TODO: Create algorithm here where size is based on expected blur
-					assignAttributes(filter, {
-						x: '-50%',
-						y: '-50%',
-						width: '200%',
-						height: '200%',
-					}, 100);
-				} else {
-					filter.removeAttribute('x');
-					filter.removeAttribute('y');
-					filter.removeAttribute('width');
-					filter.removeAttribute('height');
-				}
+				canvas.setBlurOffsets(filter, val);
 			}
 			
 			cur_command = batchCmd;
@@ -8372,14 +8382,12 @@ function BatchCommand(text) {
 			// "stroke-width"
 			// and then for each child, if they do not have the attribute (or the value is 'inherit')
 			// then set the child's attribute
-
-			// TODO: get the group's opacity and propagate it down to the children (multiply it
-			// by the child's opacity (or 1.0)
 			
 			var i = 0;
 			var gangle = canvas.getRotationAngle(g);
 			
 			var gattrs = $(g).attr(['filter', 'opacity']);
+			var gfilter, gblur;
 			
 			while (g.firstChild) {
 				var elem = g.firstChild;
@@ -8392,6 +8400,43 @@ function BatchCommand(text) {
 					var c_opac = elem.getAttribute('opacity') || 1;
 					var new_opac = Math.round((elem.getAttribute('opacity') || 1) * gattrs.opacity * 100)/100;
 					this.changeSelectedAttribute('opacity', new_opac, [elem]);
+				}
+
+				if(gattrs.filter) {
+					var cblur = this.getBlur(elem);
+					var orig_cblur = cblur;
+					if(!gblur) gblur = this.getBlur(g);
+					if(cblur) {
+						// Is this formula correct?
+						cblur = (gblur-0) + (cblur-0);
+					} else if(cblur === 0) {
+						cblur = gblur;
+					}
+					
+					// If child has no current filter, get group's filter or clone it.
+					if(!orig_cblur) {
+						// Set group's filter to use first child's ID
+						if(!gfilter) {
+							gfilter = getElem(getUrlFromAttr(gattrs.filter).substr(1));
+						} else {
+							// Clone the group's filter
+							gfilter = copyElem(gfilter);
+							findDefs().appendChild(gfilter);
+						}
+					} else {
+						gfilter = getElem(getUrlFromAttr(elem.getAttribute('filter')).substr(1));
+					}
+
+					// Change this in future for different filters
+					var suffix = (gfilter.firstChild.tagName === 'feGaussianBlur')?'blur':'filter'; 
+					gfilter.id = elem.id + '_' + suffix;
+					this.changeSelectedAttribute('filter', 'url(#' + gfilter.id + ')', [elem]);
+					
+					// Update blur value 
+					if(cblur) {
+						this.changeSelectedAttribute('stdDeviation', cblur, [gfilter.firstChild]);
+						canvas.setBlurOffsets(gfilter, cblur);
+					}
 				}
 				
 				var chtlist = canvas.getTransformList(elem);
@@ -8470,11 +8515,7 @@ function BatchCommand(text) {
 					batchCmd.addSubCommand(recalculateDimensions(elem));
 				}
 			}
-			
-			if(gattrs.filter) {
-				this.changeSelectedAttribute('filter', g.getAttribute('filter'), children);
-				// TODO: Make the blur tool work propery on this element
-			}
+
 			
 			// remove transform and make it undo-able
 			if (xform) {
