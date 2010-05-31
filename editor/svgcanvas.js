@@ -214,9 +214,6 @@ function ChangeElementCommand(elem, attrs, text) {
 				else if (attr == "#href") this.elem.setAttributeNS(xlinkns, "xlink:href", this.newValues[attr])
 				else this.elem.setAttribute(attr, this.newValues[attr]);
 			}
-			
-			if (attr == "stdDeviation") canvas.setBlurOffsets(this.elem.parentNode, this.newValues[attr]);
-			
 			else {
 				if (attr == "#text") this.elem.textContent = "";
 				else {
@@ -224,7 +221,10 @@ function ChangeElementCommand(elem, attrs, text) {
 					this.elem.removeAttribute(attr);
 				}
 			}
+			
 			if (attr == "transform") { bChangedTransform = true; }
+			else if (attr == "stdDeviation") { canvas.setBlurOffsets(this.elem.parentNode, this.newValues[attr]); }
+			
 		}
 		// relocate rotational transform, if necessary
 		if(!bChangedTransform) {
