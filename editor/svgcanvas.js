@@ -3957,7 +3957,7 @@ function BatchCommand(text) {
 	}());
 
 	var textActions = canvas.textActions = function() {
-		var curtext;
+		var curtext, current_text;
 		var textinput;
 		var cursor;
 		var selblock;
@@ -4180,11 +4180,12 @@ function BatchCommand(text) {
 
 		return {
 			select: function(target, x, y) {
-				if (curtext == target) {
+				if (current_text == target) {
+					curtext = target;
 					textActions.toEditMode(x, y);
 				} // going into pathedit mode
 				else {
-					curtext = target;
+					current_text = target;
 				}	
 			},
 			start: function(elem) {
@@ -4278,6 +4279,7 @@ function BatchCommand(text) {
 				$(textinput).blur(hideCursor);
 			},
 			clear: function() {
+				current_text = null;
 				if(current_mode == "textedit") {
 					textActions.toSelectMode();
 				}
@@ -5677,6 +5679,7 @@ function BatchCommand(text) {
 			},
 			
 			clear: function(remove) {
+				current_path = null;
 				if (current_mode == "path" && current_path_pts.length > 0) {
 					var elem = getElem(getId());
 					$(getElem("path_stretch_line")).remove();
