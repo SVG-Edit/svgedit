@@ -2927,6 +2927,39 @@ function BatchCommand(text) {
 		return {tl:topleft, tr:topright, bl:botleft, br:botright, 
 				aabox: {x:minx, y:miny, width:(maxx-minx), height:(maxy-miny)} };
 	};
+	
+	var getMouseTarget = function(evt) {
+		if (evt == null) {
+			return null;
+		}
+		var mouse_target = evt.target;
+		
+		// if it was a <use>, Opera and WebKit return the SVGElementInstance
+		if (mouse_target.correspondingUseElement)
+		
+		mouse_target = mouse_target.correspondingUseElement;
+		// for foreign content, go up until we find the foreignObject
+		// WebKit browsers set the mouse target to the svgcanvas div 
+		if ($.inArray(mouse_target.namespaceURI, [mathns, htmlns]) != -1 && 
+			mouse_target.id != "svgcanvas") 
+		{
+			while (mouse_target.nodeName != "foreignObject") {
+				mouse_target = mouse_target.parentNode;
+			}
+		}
+		
+		// go up until we hit a child of a layer
+		while (mouse_target.parentNode.parentNode.tagName == "g") {
+			mouse_target = mouse_target.parentNode;
+		}
+		// Webkit bubbles the mouse event all the way up to the div, so we
+		// set the mouse_target to the svgroot like the other browsers
+		if (mouse_target.nodeName.toLowerCase() == "div") {
+			mouse_target = svgroot;
+		}
+		
+		return mouse_target;
+	};
 
 	// Mouse events
 	(function() {
@@ -2961,34 +2994,11 @@ function BatchCommand(text) {
 			
 			var x = mouse_x / current_zoom,
 				y = mouse_y / current_zoom,
-				mouse_target = evt.target;
+				mouse_target = getMouseTarget(evt);
 			
 			start_x = x;
 			start_y = y;
 	
-			// if it was a <use>, Opera and WebKit return the SVGElementInstance
-			if (mouse_target.correspondingUseElement)
-				mouse_target = mouse_target.correspondingUseElement;
-	
-			// for foreign content, go up until we find the foreignObject
-			// WebKit browsers set the mouse target to the svgcanvas div 
-			if ($.inArray(mouse_target.namespaceURI, [mathns, htmlns]) != -1 && 
-				mouse_target.id != "svgcanvas") 
-			{
-				while (mouse_target.nodeName != "foreignObject") {
-					mouse_target = mouse_target.parentNode;
-				}
-			}
-			
-			// go up until we hit a child of a layer
-			while (mouse_target.parentNode.parentNode.tagName == "g") {
-				mouse_target = mouse_target.parentNode;
-			}
-			// Webkit bubbles the mouse event all the way up to the div, so we
-			// set the mouse_target to the svgroot like the other browsers
-			if (mouse_target.nodeName.toLowerCase() == "div") {
-				mouse_target = svgroot;
-			}
 			// if it is a selector grip, then it must be a single element selected, 
 			// set the mouse_target to that and update the mode to rotate/resize
 			if (mouse_target.parentNode == selectorManager.selectorParentGroup && selectedElements[0] != null) {
@@ -5522,8 +5532,9 @@ function BatchCommand(text) {
 						// else, create a new point, append to pts array, update path element
 						else {
 							// Checks if current target or parents are #svgcontent
-							if(!$.contains(container, evt.target)) {
+							if(!$.contains(container, getMouseTarget(evt))) {
 								// Clicked outside canvas, so don't make point
+								console.log("Clicked outside canvas");
 								return false;
 							}
 
@@ -9201,6 +9212,7 @@ function BatchCommand(text) {
 			getElem: getElem,
 			getId: getId,
 			getIntersectionList: getIntersectionList,
+			getMouseTarget: getMouseTarget,
 			getNextId: getNextId,
 			getPathBBox: getPathBBox,
 			getUrlFromAttr: getUrlFromAttr,
