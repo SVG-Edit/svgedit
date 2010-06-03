@@ -45,7 +45,7 @@
 				imgPath: 'images/',
 				langPath: 'locale/',
 				extPath: 'extensions/',
-				extensions: ['ext-arrows.js', 'ext-connector.js', 'ext-eyedropper.js'],
+				extensions: ['ext-markers.js','ext-connector.js', 'ext-eyedropper.js'],
 				initTool: 'select',
 				wireframe: false
 			},
@@ -816,7 +816,7 @@
 							});
 							break;
 						case 'button-select': 
-							var html = '<div id="' + tool.id + '" class="dropdown toolset">'
+							var html = '<div id="' + tool.id + '" class="dropdown toolset" title="' + tool.title + '">'
 								+ '<div id="cur_' + tool.id + '" class="icon_label"></div><button></button></div>';
 							
 							var list = $('<ul id="' + tool.id + '_opts"></ul>').appendTo('#option_lists');
@@ -827,6 +827,7 @@
 							btn_selects.push({
 								elem: ('#' + tool.id),
 								list: ('#' + tool.id + '_opts'),
+								title: tool.title,
 								callback: tool.events.change,
 								cur: ('#cur_' + tool.id)
 							});
@@ -883,7 +884,8 @@
 							icon = $('<img src="' + btn.icon + '">');
 						} else {
 							fallback_obj[id] = btn.icon;
-							placement_obj['#' + id] = btn.id;
+							var svgicon = btn.svgicon?btn.svgicon:btn.id;
+							placement_obj['#' + id] = svgicon;
 						}
 						
 						var cls, parent;
@@ -915,7 +917,8 @@
 							$('#' + btn.list + '_opts').append(button);
  							if(btn.isDefault) {
  								$('#cur_' + btn.list).append(button.children().clone());
-	 							placement_obj['#cur_' + btn.list] = btn.id;
+ 								var svgicon = btn.svgicon?btn.svgicon:btn.id;
+	 							placement_obj['#cur_' + btn.list] = svgicon;
  							}
 						} else if(btn.includeWith) {
 							// Add to flyout menu / make flyout menu
@@ -2333,7 +2336,7 @@
 				svgCanvas.setBackground(color, url);
 			}
 			
-			var setIcon = function(elem, icon_id, forcedSize) {
+			var setIcon = Editor.setIcon = function(elem, icon_id, forcedSize) {
 				var icon = (typeof icon_id == 'string') ? $.getSvgIcon(icon_id).clone() : icon_id.clone();
 				$(elem).empty().append(icon);
 				if(forcedSize) {

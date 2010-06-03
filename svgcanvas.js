@@ -3277,7 +3277,8 @@ function BatchCommand(text) {
 				}
 			});
 		};
-	
+
+		
 		// in this function we do not record any state changes yet (but we do update
 		// any elements that are still being created, moved or resized on the canvas)
 		// TODO: svgcanvas should just retain a reference to the image being dragged instead
@@ -3308,10 +3309,7 @@ function BatchCommand(text) {
 						var dx = x - start_x;
 						var dy = y - start_y;
 						
-						if(evt.shiftKey) { // restrict to movement up/down/left/right (WRS)
-							if (Math.abs(dx)>Math.abs(dy)) dy=0;
-							else dx=0; 
-							}
+						if(evt.shiftKey) { var xya = snapToAngle(start_x,start_y,x,y); x=xya.x; y=xya.y; }
 
 						if (dx != 0 || dy != 0) {
 							var len = selectedElements.length;
@@ -3487,16 +3485,7 @@ function BatchCommand(text) {
 					var x2 = x;
 					var y2 = y;					
 
-					if(evt.shiftKey) {
-						var snap = Math.PI/4; // 45 degrees
-						var diff_x = x - start_x;
-						var diff_y = y - start_y;
-						var angle = Math.atan2(diff_y,diff_x);
-						var dist = Math.sqrt(diff_x * diff_x + diff_y * diff_y);
-						var snapangle= Math.round(angle/snap)*snap;
-						x2 = start_x + dist*Math.cos(snapangle);	
-						y2 = start_y + dist*Math.sin(snapangle);	
-					}
+					if(evt.shiftKey) { var xya=Utils.snapToAngle(start_x,start_y,x2,y2); x2=xya.x; y2=xya.y; }
 					
 					shape.setAttributeNS(null, "x2", x2);
 					shape.setAttributeNS(null, "y2", y2);
@@ -3567,9 +3556,11 @@ function BatchCommand(text) {
 					x *= current_zoom;
 					y *= current_zoom;
 					
-					if(evt.shiftKey) { // restrict path segments to horizontal/vertical (WRS)
-						if (Math.abs(start_x-x)>Math.abs(start_y-y)) {y=start_y; mouse_y=y;}
-						else {x=start_x; mouse_x=x;}
+					if(evt.shiftKey) {
+						var x1 = path.dragging?path.dragging[0]:start_x;
+						var y1 = path.dragging?path.dragging[1]:start_y;
+					    var xya=Utils.snapToAngle(x1,y1,x,y);
+					    x=xya.x; y=xya.y;
 					}
 					
 					if(rubberBox && rubberBox.getAttribute('display') != 'none') {
@@ -3581,7 +3572,7 @@ function BatchCommand(text) {
 						},100);
 					}
 					
-					pathActions.mouseMove(mouse_x, mouse_y);
+					pathActions.mouseMove(x, y);
 					
 					break;
 				case "textedit":
@@ -3610,9 +3601,9 @@ function BatchCommand(text) {
 					var angle = ((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360;
                     
 					if(evt.shiftKey) { // restrict rotations to nice angles (WRS)
-                        			var snap = 45;
-                        			angle= Math.round(angle/snap)*snap;
-                    			}
+                        var snap = 45;
+                        angle= Math.round(angle/snap)*snap;
+                    }
 
 					canvas.setRotationAngle(angle<-180?(360+angle):angle, true);
 					call("changed", selectedElements);
@@ -5542,10 +5533,7 @@ function BatchCommand(text) {
 
 							var lastx = current_path_pts[len-2], lasty = current_path_pts[len-1];
 
-							if (evt.shiftKey) { // restrict to horizonontal/vertical (WRS)
-								if (Math.abs(x-lastx)>Math.abs(y-lasty)) y=lasty;
-								else x=lastx;
-							}
+							if(evt.shiftKey) { var xya=Utils.snapToAngle(lastx,lasty,x,y); x=xya.x; y=xya.y; }
 
 							// we store absolute values in our path points array for easy checking above
 							current_path_pts.push(x);
@@ -9437,6 +9425,19 @@ var Utils = {
 			(r2.y+r2.height) > r1.y;
 	},
 
+	"snapToAngle": function(x1,y1,x2,y2) {
+		var snap = Math.PI/4; // 45 degrees
+		var dx = x2 - x1;
+		var dy = y2 - y1;
+		var angle = Math.atan2(dy,dx);
+		var dist = Math.sqrt(dx * dx + dy * dy);
+		var snapangle= Math.round(angle/snap)*snap;
+		var x = x1 + dist*Math.cos(snapangle);	
+		var y = y1 + dist*Math.sin(snapangle);
+		//console.log(x1,y1,x2,y2,x,y,angle)
+		return {x:x, y:y, a:snapangle};
+	},
+	
 	// found this function http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f
 	"text2xml": function(sXML) {
 		// NOTE: I'd like to use jQuery for this, but jQuery makes all tags uppercase
