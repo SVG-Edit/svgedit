@@ -821,6 +821,10 @@
 							
 							var list = $('<ul id="' + tool.id + '_opts"></ul>').appendTo('#option_lists');
 							
+							if(tool.colnum) {
+								list.addClass('optcols' + tool.colnum);
+							}
+							
 							// Creates the tool, hides & adds it, returns the select element
 							var dropdown = $(html).appendTo(panel).children();
 							

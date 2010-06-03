@@ -484,6 +484,7 @@ svgEditor.addExtension("Markers", function(S) {
 			panel: "marker_panel",
 			title: getTitle('en','start_marker_list'),
 			id: "start_marker_list",
+			colnum: 3,
 			events: { change: setArrowFromButton }
 		},{
 			type: "input",
@@ -499,6 +500,7 @@ svgEditor.addExtension("Markers", function(S) {
 			panel: "marker_panel",
 			title: getTitle('en','mid_marker_list'),
 			id: "mid_marker_list",
+			colnum: 3,
 			events: { change: setArrowFromButton }
 		},{
 			type: "input",
@@ -513,6 +515,7 @@ svgEditor.addExtension("Markers", function(S) {
 			panel: "marker_panel",
 			title: getTitle('en','end_marker_list'),
 			id: "end_marker_list",
+			colnum: 3,
 			events: { change: setArrowFromButton }
 		} ],
 		callback: function() {
