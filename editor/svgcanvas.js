@@ -4424,7 +4424,7 @@ function BatchCommand(text) {
 	
 				var grip = $('#pathpointgrip_'+index);
 				grip.dblclick(function() {
-					path.setSegType();
+					if(path) path.setSegType();
 				});
 			}
 			if(x && y) {
