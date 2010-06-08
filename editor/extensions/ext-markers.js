@@ -68,7 +68,7 @@ svgEditor.addExtension("Markers", function(S) {
 			{element:'path', attr:{d:'M20,80 L80,20 M80,80 L20,20'}},
 		triangle:
 			{element:'path', attr:{d:'M10,80 L50,20 L80,80 Z'}},
-		circle:
+		mcircle:
 			{element:'circle', attr:{r:30, cx:50, cy:50}},			
 	}
 	
@@ -89,19 +89,19 @@ svgEditor.addExtension("Markers", function(S) {
 			{id: "star", title: "Star" },
 			{id: "xmark", title: "X" },
 			{id: "triangle", title: "Triangle" },
-			{id: "circle", title: "Circle" },
+			{id: "mcircle", title: "Circle" },
 			{id: "leftarrow_o", title: "Open Left Arrow" },
 			{id: "rightarrow_o", title: "Open Right Arrow" },
 			{id: "box_o", title: "Open Box" },
 			{id: "star_o", title: "Open Star" },
 			{id: "triangle_o", title: "Open Triangle" },
-			{id: "circle_o", title: "Open Circle" },
+			{id: "mcircle_o", title: "Open Circle" },
 		]
 	};
 
 
 	// duplicate shapes to support unfilled (open) marker types with an _o suffix
-	$.each(['leftarrow','rightarrow','box','star','circle','triangle'],function(i,v) {
+	$.each(['leftarrow','rightarrow','box','star','mcircle','triangle'],function(i,v) {
 		marker_types[v+'_o'] = marker_types[v];
 	});
 	
