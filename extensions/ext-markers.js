@@ -301,10 +301,16 @@ svgEditor.addExtension("Markers", function(S) {
 			var m = elem.getAttribute(nam);
 			if (m) pline.setAttribute(nam,elem.getAttribute(nam));
 		});
+		
+		var batchCmd = new S.BatchCommand();
+		batchCmd.addSubCommand(new S.RemoveElementCommand(elem, elem.parentNode));
+		batchCmd.addSubCommand(new S.InsertElementCommand(pline));
+		
 		$(elem).after(pline).remove();
 		svgCanvas.clearSelection();
 		pline.id = id;
 		svgCanvas.addToSelection([pline]);
+		S.addCommandToHistory(batchCmd);
 		return pline;
 	}
 

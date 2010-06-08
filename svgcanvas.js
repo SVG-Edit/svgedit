@@ -315,7 +315,11 @@ function RemoveElementCommand(elem, parent, text) {
 	this.text = text || ("Delete " + elem.tagName);
 	this.parent = parent;
 
-	this.apply = function() {
+	this.apply = function() {	
+		if (svgTransformLists[this.elem.id]) {
+			delete svgTransformLists[this.elem.id];
+		}	
+	
 		this.parent = this.elem.parentNode;
 		this.elem = this.parent.removeChild(this.elem);
 		if (this.parent == svgcontent) {
@@ -324,6 +328,10 @@ function RemoveElementCommand(elem, parent, text) {
 	};
 
 	this.unapply = function() { 
+		if (svgTransformLists[this.elem.id]) {
+			delete svgTransformLists[this.elem.id];
+		}
+
 		this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); 
 		if (this.parent == svgcontent) {
 			identifyLayers();
