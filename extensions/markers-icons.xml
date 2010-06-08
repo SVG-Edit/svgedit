@@ -40,12 +40,12 @@
             <path stroke-width="10" stroke="#ff7f00" fill="none" d="m0,-50l0,100"/>
         </svg>
     </g>
-    <g id="circle">
+    <g id="mcircle">
         <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
             <circle stroke-width="10" stroke="#ff7f00" fill="#ff7f00" cy="0" cx="0" r="30"/>
         </svg>
     </g>
-    <g id="circle_o">
+    <g id="mcircle_o">
         <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
             <circle stroke-width="10" stroke="#ff7f00" fill="none" cy="0" cx="0" r="30"/>
         </svg>
@@ -83,11 +83,6 @@
      <g id="triangle">
         <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
             <path stroke-width="10" stroke="#ff7f00" fill="#ff7f00" d="M-30,30 L0,-30 L30,30 Z"/>
-        </svg>
-    </g>
-   <g id="textmarker">
-        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
-			<text xml:space="preserve" text-anchor="middle" font-family="serif" font-size="120"  y="40" x="0" stroke-width="0" stroke="#ff7f00" fill="#ff7f00">T</text>	
         </svg>
     </g>
    <g id="textmarker">
