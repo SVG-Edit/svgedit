@@ -23,6 +23,7 @@
 
 #svg_editor #svgroot {
 	-moz-user-select: none;
+	-webkit-user-select: none;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -140,6 +141,9 @@
 	width: 0px;
 	overflow: auto;
 	margin: 0px;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+
 }
 
 /*
@@ -162,6 +166,7 @@
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	-moz-user-select: none;
+	-webkit-user-select: none;
 }
 
 #svg_editor #sidepanel_handle:hover {
@@ -171,6 +176,7 @@
 #svg_editor #sidepanel_handle * {
 	cursor: pointer;
 	-moz-user-select: none;
+	-webkit-user-select: none;
 }
 #svg_editor #layerbuttons {
 	margin: 0px;
@@ -768,6 +774,7 @@ span.zoom_tool {
 
 #svg_editor .stroke_tool div div {
 	-moz-user-select: none;
+	-webkit-user-select: none;
 	width: 20px;
 	height: 20px;
 	margin: 1px 0;
