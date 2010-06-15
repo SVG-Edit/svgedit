@@ -525,7 +525,8 @@ svgEditor.addExtension("Markers", function(S) {
 			events: { change: setArrowFromButton }
 		} ],
 		callback: function() {
-			$('#marker_panel').hide();
+			$('#marker_panel').addClass('toolset').hide();
+			
 		},
 		addLangData: function(lang) {
 			return { data: lang_list[lang] };
