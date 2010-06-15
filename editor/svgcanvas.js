@@ -3317,7 +3317,7 @@ function BatchCommand(text) {
 						var dx = x - start_x;
 						var dy = y - start_y;
 						
-						if(evt.shiftKey) { var xya = snapToAngle(start_x,start_y,x,y); x=xya.x; y=xya.y; }
+						if(evt.shiftKey) { var xya = Utils.snapToAngle(start_x,start_y,x,y); x=xya.x; y=xya.y; }
 
 						if (dx != 0 || dy != 0) {
 							var len = selectedElements.length;
