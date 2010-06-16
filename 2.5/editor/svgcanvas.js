@@ -279,6 +279,12 @@ function ChangeElementCommand(elem, attrs, text) {
 		if (this.elem.tagName == "title" && this.elem.parentNode.parentNode == svgcontent) {
 			identifyLayers();
 		}		
+		
+		// Remove transformlist to prevent confusion that causes bugs like 575.
+		if (svgTransformLists[this.elem.id]) {
+			delete svgTransformLists[this.elem.id];
+		}	
+		
 		return true;
 	};
 
@@ -5663,6 +5669,7 @@ function BatchCommand(text) {
 				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
 				canvas.clearSelection();
 				this.resetOrientation(elem);
+				
 				addCommandToHistory(batchCmd);
 
 				// Set matrix to null
