@@ -406,7 +406,18 @@ svgEditor.addExtension("Connector", function(S) {
 			if(svgCanvas.getMode() == "connector") {
 				var fo = $(mouse_target).closest("foreignObject");
 				if(fo.length) mouse_target = fo[0];
-				if(mouse_target.parentNode.parentNode != svgcontent) {
+				
+				var parents = $(mouse_target).parents();
+
+				if(mouse_target == start_elem) {
+					// Start line through click
+					started = true;
+					return {
+						keep: true,
+						element: null,
+						started: started
+					}						
+				} else if($.inArray(svgcontent, parents) === -1) {
 					// Not a valid target element, so remove line
 					$(cur_line).remove();
 					started = false;
@@ -415,14 +426,6 @@ svgEditor.addExtension("Connector", function(S) {
 						element: null,
 						started: started
 					}
-				} else if(mouse_target == start_elem) {
-					// Start line through click
-					started = true;
-					return {
-						keep: true,
-						element: null,
-						started: started
-					}						
 				} else {
 					// Valid end element
 					end_elem = mouse_target;
