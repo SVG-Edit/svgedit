@@ -4,44 +4,50 @@
 <head>
 <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
-<link rel="icon" type="image/png" href="images/logo.png">
-<link rel="stylesheet" href="jgraduate/css/jPicker-1.0.9.css" type="text/css"/>
-<link rel="stylesheet" href="jgraduate/css/jGraduate-0.2.0.css" type="text/css"/>
+<link rel="icon" type="image/png" href="images/logo.png"/>
+<link rel="stylesheet" href="jgraduate/css/jPicker-1.0.12.css" type="text/css"/>
+<link rel="stylesheet" href="jgraduate/css/jgraduate.css" type="text/css"/>
 <link rel="stylesheet" href="svg-editor.css" type="text/css"/>
 <link rel="stylesheet" href="spinbtn/JQuerySpinBtn.css" type="text/css"/>
-<!-- Development version of script tags:>
-<script type="text/javascript" src="jquery.js"></script>
-<script type="text/javascript" src="js-hotkeys/jquery.hotkeys.min.js"></script>
-<script type="text/javascript" src="jgraduate/jquery.jgraduate.js"></script>
-<script type="text/javascript" src="svgicons/jquery.svgicons.js"></script>
-<script type="text/javascript" src="spinbtn/JQuerySpinBtn.js"></script>
-<script type="text/javascript" src="locale/locale.js"></script>
-<script type="text/javascript" src="svgcanvas.js"></script>
-<script type="text/javascript" src="svg-editor.js"></script-->
 
 <!-- Release version of script tags: -->
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+<script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="js-hotkeys/jquery.hotkeys.min.js"></script>
 <script type="text/javascript" src="jgraduate/jquery.jgraduate.min.js"></script>
 <script type="text/javascript" src="svgicons/jquery.svgicons.min.js"></script>
+<script type="text/javascript" src="jquerybbq/jquery.bbq.min.js"></script>
 <script type="text/javascript" src="spinbtn/JQuerySpinBtn.min.js"></script>
-<script type="text/javascript" src="locale/locale.js"></script>
 <script type="text/javascript" src="svgcanvas.min.js"></script>
 <script type="text/javascript" src="svg-editor.min.js"></script>
+<script type="text/javascript" src="locale/locale.min.js"></script>
+<!-- you can load extensions here -->
+<!-- <script type="text/javascript" src="extensions/ext-helloworld.js"></script> -->
+
+
+<!-- Development version of script tags: 
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="js-hotkeys/jquery.hotkeys.min.js"></script>
+<script type="text/javascript" src="jgraduate/jquery.jgraduate.min.js"></script>
+<script type="text/javascript" src="svgicons/jquery.svgicons.min.js"></script>
+<script type="text/javascript" src="jquerybbq/jquery.bbq.min.js"></script>
+<script type="text/javascript" src="spinbtn/JQuerySpinBtn.js"></script>
+<script type="text/javascript" src="svgcanvas.js"></script>
+<script type="text/javascript" src="svg-editor.js"></script>
+<script type="text/javascript" src="locale/locale.js"></script>
+-->
 
 <!-- always minified scripts -->
-<script type="text/javascript" src="jquery-ui/jquery-ui-1.7.2.custom.min.js"></script>
-<script type="text/javascript" src="jgraduate/jpicker-1.0.9.min.js"></script>
+<script type="text/javascript" src="jquery-ui/jquery-ui-1.8.custom.min.js"></script>
+<script type="text/javascript" src="jgraduate/jpicker-1.0.12.min.js"></script>
 
 <!-- feeds -->
 <link rel="alternate" type="application/atom+xml" title="SVG-edit General Discussion" href="http://groups.google.com/group/svg-edit/feed/atom_v1_0_msgs.xml" />
 <link rel="alternate" type="application/atom+xml" title="SVG-edit Updates (Issues/Fixes/Commits)" href="http://code.google.com/feeds/p/svg-edit/updates/basic" />
 
 <!-- Add script with custom handlers here -->
-<title>SVG-edit demo</title>
+<title>SVG-edit</title>
 </head>
 <body>
-
 <div id="svg_editor">
 
 <div id="workarea">
@@ -71,22 +77,69 @@
 			<option selected="selected" value="layer1">Layer 1</option>
 		</select>
 	</div>
-	<div id="sidepanel_handle" onselectstart="return false;" title="Drag left/right to resize side panel [X]">L a y e r s</div>
+	<div id="sidepanel_handle" title="Drag left/right to resize side panel [X]">L a y e r s</div>
 </div>
 
-<div id="logo">
-	<a href="http://svg-edit.googlecode.com/" target="_blank" title="SVG-edit Home Page">
-	</a>
+<div id="main_button">
+	<div id="main_icon" class="buttonup" title="Main Menu">
+		<span></span>
+		<div id="logo"></div>
+		<div class="dropdown"></div>
+	</div>
+		
+	<div id="main_menu"> 
+	
+		<!-- File-like buttons: New, Save, Source -->
+		<ul>
+			<li id="tool_clear">
+				<div></div>
+				New Image [N]
+			</li>
+			
+			<li id="tool_open" style="display:none;">
+				<div id="fileinputs">
+					<div></div>
+				</div>
+				Open Image [O]
+			</li>
+			
+			<li id="tool_import" style="display:none;">
+				<div id="fileinputs_import">
+					<div></div>
+				</div>
+				Import SVG
+			</li>
+			
+			<li id="tool_save">
+				<div></div>
+				Save Image [S]
+			</li>
+			
+			<li id="tool_export">
+				<div></div>
+				Export as PNG
+			</li>
+			
+			<li id="tool_docprops">
+				<div></div>
+				Document Properties [I]
+			</li>
+		</ul>
+		
+		<p>
+			<a href="http://svg-edit.googlecode.com/" target="_blank">
+				SVG-edit Home Page
+			</a>
+		</p>
+
+	</div>
 </div>
+
+
 
 <div id="tools_top" class="tools_panel">
 	
-	<!-- File-like buttons: New, Save, Source -->
-	<div id="file_panel">
-		<div class="push_button" id="tool_clear" title="New Image [N]"></div>
-		<div class="push_button" id="tool_open" title="Open Image [O]" style="display:none"></div>
-		<div class="push_button" id="tool_save" title="Save Image [S]"></div>
-		<div class="push_button" id="tool_docprops" title="Document Properties [I]"></div>
+	<div id="editor_panel">
 		<div class="push_button" id="tool_source" title="Edit Source [U]"></div>
 		<div class="tool_button" id="tool_wireframe" title="Wireframe Mode [F]"></div>
 	</div>
@@ -110,32 +163,42 @@
 			<div class="push_button" id="tool_topath" title="Convert to Path"></div>
 			<div class="push_button" id="tool_reorient" title="Reorient path"></div>
 			<div class="tool_sep"></div>
+			<label id="idLabel" title="Identify the element">
+				<span>id:</span>
+				<input id="elem_id" class="attr_changer" data-attr="id" size="10" type="text"/>
+			</label>
 		</div>
-		<div class="toolset">
-			<label id="group_opacityLabel" class="selected_tool" for="group_opacity">opac:</label>
-			<input id="group_opacity" class="selected_tool" title="Change selected item opacity" size="3" value="100" type="text"/>
-			<div id="opacity_dropdown" class="dropdown">
+
+		<label id="tool_angle" title="Change rotation angle">
+			<span id="angleLabel" class="icon_label"></span>
+			<input id="angle" size="2" value="0" type="text"/>
+		</label>
+		
+		<div class="toolset" id="tool_blur" title="Change gaussian blur value">
+			<label>
+				<span id="blurLabel" class="icon_label"></span>
+				<input id="blur" size="2" value="0" type="text"/>
+			</label>
+			<div id="blur_dropdown" class="dropdown">
 				<button></button>
 				<ul>
-					<li class="special"><div id="opac_slider"></div></li>
-					<li>100% (no transparency)</li>
-					<li>0%</li>
-					<li>25%</li>
-					<li>50%</li>
-					<li>75%</li>
-					<li>100%</li>
+					<li class="special"><div id="blur_slider"></div></li>
 				</ul>
 			</div>
 		</div>
-		<div class="toolset">
-			<label id="angleLabel" class="selected_tool">angle:</label>
-			<input id="angle" class="selected_tool" title="Change rotation angle" size="2" value="0" type="text"/>
-		</div>
+		
+		<div class="dropdown toolset" id="tool_position" title="Align Element to Page">
+				<div id="cur_position" class="icon_label"></div>
+				<button></button>
+		</div>		
+
 		<div id="xy_panel" class="toolset">
-			<label class="selected_tool">x:</label>
-			<input id="selected_x" class="selected_tool attr_changer" title="Change X coordinate" size="3" data-attr="x"/>
-			<label class="selected_tool">y:</label>
-			<input id="selected_y" class="selected_tool attr_changer" title="Change Y coordinate" size="3" data-attr="y"/>
+			<label>
+				x: <input id="selected_x" class="attr_changer" title="Change X coordinate" size="3" data-attr="x"/>
+			</label>
+			<label>
+				y: <input id="selected_y" class="attr_changer" title="Change Y coordinate" size="3" data-attr="y"/>
+			</label>
 		</div>
 	</div>
 
@@ -152,13 +215,15 @@
 		<div class="push_button" id="tool_aligntop" title="Align Top"></div>
 		<div class="push_button" id="tool_alignmiddle" title="Align Middle"></div>
 		<div class="push_button" id="tool_alignbottom" title="Align Bottom"></div>
-		<span id="relativeToLabel" class="selected_tool">relative to:</span>
-		<select id="align_relative_to" class="selected_tool" title="Align relative to ...">
-		<option id="selected_objects" value="selected">selected objects</option>
-		<option id="largest_object" value="largest">largest object</option>
-		<option id="smallest_object" value="smallest">smallest object</option>
-		<option id="page" value="page">page</option>
-		</select>
+		<label id="tool_align_relative"> 
+			<span id="relativeToLabel">relative to:</span>
+			<select id="align_relative_to" title="Align relative to ...">
+			<option id="selected_objects" value="selected">selected objects</option>
+			<option id="largest_object" value="largest">largest object</option>
+			<option id="smallest_object" value="smallest">smallest object</option>
+			<option id="page" value="page">page</option>
+			</select>
+		</label>
 		<div class="tool_sep"></div>
 
 	</div>
@@ -170,72 +235,92 @@
 
 	<div id="rect_panel">
 		<div class="toolset">
-			<label id="rwidthLabel" class="rect_tool">width:</label>
-			<input id="rect_width" class="rect_tool attr_changer" title="Change rectangle width" size="3" data-attr="width"/>
-			<label id="rheightLabel" class="rect_tool">height:</label>
-			<input id="rect_height" class="rect_tool attr_changer" title="Change rectangle height" size="3" data-attr="height"/>
+			<label id="rect_width_tool" title="Change rectangle width">
+				<span id="rwidthLabel" class="icon_label"></span>
+				<input id="rect_width" class="attr_changer" size="3" data-attr="width"/>
+			</label>
+			<label id="rect_height_tool" title="Change rectangle height">
+				<span id="rheightLabel" class="icon_label"></span>
+				<input id="rect_height" class="attr_changer" size="3" data-attr="height"/>
+			</label>
 		</div>
-		<div class="toolset">
-			<label id="cornerRadiusLabel" class="rect_tool">Corner Radius:</label>
-			<input id="rect_rx" size="3" value="0" class="rect_tool" type="text" title="Change Rectangle Corner Radius" data-attr="Corner Radius"/>
-		</div>	
+		<label id="cornerRadiusLabel" title="Change Rectangle Corner Radius">
+			<span class="icon_label"></span>
+			<input id="rect_rx" size="3" value="0" type="text" data-attr="Corner Radius"/>
+		</label>
 	</div>
 
 	<div id="image_panel">
 	<div class="toolset">
-		<label id="iwidthLabel" class="image_tool">width:</label>
-		<input id="image_width" class="image_tool attr_changer" title="Change image width" size="3" data-attr="width"/>
-		<label id="iheightLabel" class="image_tool">height:</label>
-		<input id="image_height" class="image_tool attr_changer" title="Change image height" size="3" data-attr="height"/>
+		<label><span id="iwidthLabel" class="icon_label"></span>
+		<input id="image_width" class="attr_changer" title="Change image width" size="3" data-attr="width"/>
+		</label>
+		<label><span id="iheightLabel" class="icon_label"></span>
+		<input id="image_height" class="attr_changer" title="Change image height" size="3" data-attr="height"/>
+		</label>
 	</div>
 	<div class="toolset">
-		<label class="image_tool">url:</label>
-		<input id="image_url" class="image_tool" type="text" title="Change URL" size="35"/>
-		<button id="change_image_url" style="display:none;">Change Image</button>
-		<div id="url_notice" title="NOTE: This image cannot be embedded. It will depend on this path to be displayed"></div>
+		<label id="tool_image_url">url:
+			<input id="image_url" type="text" title="Change URL" size="35"/>
+		</label>
+		<label id="tool_change_image">
+			<button id="change_image_url" style="display:none;">Change Image</button>
+			<span id="url_notice" title="NOTE: This image cannot be embedded. It will depend on this path to be displayed"></span>
+		</label>
 	</div>
   </div>
 
 	<div id="circle_panel">
 		<div class="toolset">
-			<label class="circle_tool">cx:</label>
-			<input id="circle_cx" class="circle_tool attr_changer" title="Change circle's cx coordinate" size="3" data-attr="cx"/>
-			<label class="circle_tool">cy:</label>
-			<input id="circle_cy" class="circle_tool attr_changer" title="Change circle's cy coordinate" size="3" data-attr="cy"/>
+			<label id="tool_circle_cx">cx:
+			<input id="circle_cx" class="attr_changer" title="Change circle's cx coordinate" size="3" data-attr="cx"/>
+			</label>
+			<label id="tool_circle_cy">cy:
+			<input id="circle_cy" class="attr_changer" title="Change circle's cy coordinate" size="3" data-attr="cy"/>
+			</label>
 		</div>
 		<div class="toolset">
-			<label class="circle_tool">r:</label>
-			<input id="circle_r" class="circle_tool attr_changer" title="Change circle's radius" size="3" data-attr="r"/>
+			<label id="tool_circle_r">r:
+			<input id="circle_r" class="attr_changer" title="Change circle's radius" size="3" data-attr="r"/>
+			</label>
 		</div>
 	</div>
 
 	<div id="ellipse_panel">
 		<div class="toolset">
-			<label class="ellipse_tool">cx:</label>
-			<input id="ellipse_cx" class="ellipse_tool attr_changer" title="Change ellipse's cx coordinate" size="3" data-attr="cx"/>
-			<label class="ellipse_tool">cy:</label>
-			<input id="ellipse_cy" class="ellipse_tool attr_changer" title="Change ellipse's cy coordinate" size="3" data-attr="cy"/>
-			</div>
+			<label id="tool_ellipse_cx">cx:
+			<input id="ellipse_cx" class="attr_changer" title="Change ellipse's cx coordinate" size="3" data-attr="cx"/>
+			</label>
+			<label id="tool_ellipse_cy">cy:
+			<input id="ellipse_cy" class="attr_changer" title="Change ellipse's cy coordinate" size="3" data-attr="cy"/>
+			</label>
+		</div>
 		<div class="toolset">
-			<label class="ellipse_tool">rx:</label>
-			<input id="ellipse_rx" class="ellipse_tool attr_changer" title="Change ellipse's x radius" size="3" data-attr="rx"/>
-			<label class="ellipse_tool">ry:</label>
-			<input id="ellipse_ry" class="ellipse_tool attr_changer" title="Change ellipse's y radius" size="3" data-attr="ry"/>
+			<label id="tool_ellipse_rx">rx:
+			<input id="ellipse_rx" class="attr_changer" title="Change ellipse's x radius" size="3" data-attr="rx"/>
+			</label>
+			<label id="tool_ellipse_ry">ry:
+			<input id="ellipse_ry" class="attr_changer" title="Change ellipse's y radius" size="3" data-attr="ry"/>
+			</label>
 		</div>
 	</div>
 
 	<div id="line_panel">
 		<div class="toolset">
-			<label class="line_tool">x1:</label>
-			<input id="line_x1" class="line_tool attr_changer" title="Change line's starting x coordinate" size="3" data-attr="x1"/>
-			<label class="line_tool">y1:</label>
-			<input id="line_y1" class="line_tool attr_changer" title="Change line's starting y coordinate" size="3" data-attr="y1"/>
+			<label id="tool_line_x1">x1:
+			<input id="line_x1" class="attr_changer" title="Change line's starting x coordinate" size="3" data-attr="x1"/>
+			</label>
+			<label id="tool_line_y1">y1:
+			<input id="line_y1" class="attr_changer" title="Change line's starting y coordinate" size="3" data-attr="y1"/>
+			</label>
 		</div>
 		<div class="toolset">
-			<label class="line_tool">x2:</label>
-			<input id="line_x2" class="line_tool attr_changer" title="Change line's ending x coordinate" size="3" data-attr="x2"/>
-			<label class="line_tool">y2:</label>
-			<input id="line_y2" class="line_tool attr_changer" title="Change line's ending y coordinate" size="3" data-attr="y2"/>
+			<label id="tool_line_x2">x2:
+			<input id="line_x2" class="attr_changer" title="Change line's ending x coordinate" size="3" data-attr="x2"/>
+			</label>
+			<label id="tool_line_y2">y2:
+			<input id="line_y2" class="attr_changer" title="Change line's ending y coordinate" size="3" data-attr="y2"/>
+			</label>
 		</div>
 	</div>
 
@@ -245,8 +330,11 @@
 			<div class="tool_button" id="tool_italic" title="Italic Text [I]"><span></span>i</div>
 		</div>
 		
-		<div class="toolset">
-			<input id="font_family" class="text_tool" type="text" title="Change Font Family" size="12"/>
+		<div class="toolset" id="tool_font_family">
+			<label>
+				<!-- Font family -->
+				<input id="font_family" type="text" title="Change Font Family" size="12"/>
+			</label>
 			<div id="font_family_dropdown" class="dropdown">
 				<button></button>
 				<ul>
@@ -259,51 +347,71 @@
 			</div>
 		</div>
 
-		<div class="toolset">
-			<label id="font_sizeLabel" class="text_tool" for="font_size">size:</label>
-			<input id="font_size" class="text_tool" title="Change Font Size" size="3" value="0" type="text"/>
-		</div>
-		<input id="text" class="text_tool" type="text" title="Change text contents" size="35"/>
+		<label id="tool_font_size" title="Change Font Size">
+			<span id="font_sizeLabel" class="icon_label"></span>
+			<input id="font_size" size="3" value="0" type="text"/>
+		</label>
+		
+		<!-- Not visible, but still used -->
+		<input id="text" type="text" size="35"/>
 	</div>
 	
 	<div id="path_node_panel">
 		<div class="tool_sep"></div>
 		<div class="tool_button" id="tool_node_link" title="Link Control Points"></div>
 		<div class="tool_sep"></div>
-		<label class="path_node_tool">x:</label>
-		<input id="path_node_x" class="path_node_tool attr_changer" title="Change node's x coordinate" size="3" data-attr="x"/>
-		<label class="path_node_tool">y:</label>
-		<input id="path_node_y" class="path_node_tool attr_changer" title="Change node's y coordinate" size="3" data-attr="y"/>
-		<select id="seg_type" class="path_node_tool" title="Change Segment type">
+		<label id="tool_node_x">x:
+			<input id="path_node_x" class="attr_changer" title="Change node's x coordinate" size="3" data-attr="x"/>
+		</label>
+		<label id="tool_node_y">y:
+			<input id="path_node_y" class="attr_changer" title="Change node's y coordinate" size="3" data-attr="y"/>
+		</label>
+		
+		<select id="seg_type" title="Change Segment type">
 			<option id="straight_segments" selected="selected" value="4">Straight</option>
 			<option id="curve_segments" value="6">Curve</option>
 		</select>
 		<div class="tool_button" id="tool_node_clone" title="Clone Node"></div>
 		<div class="tool_button" id="tool_node_delete" title="Delete Node"></div>
+		<div class="tool_button" id="tool_openclose_path" title="Open/close sub-path"></div>
+		<div class="tool_button" id="tool_add_subpath" title="Add sub-path"></div>
 	</div>
 	
 </div> <!-- tools_top -->
 
 <div id="tools_left" class="tools_panel">
-	<div class="tool_button_current" id="tool_select" title="Select Tool [1]"></div>
+	<div class="tool_button" id="tool_select" title="Select Tool [1]"></div>
 	<div class="tool_button" id="tool_fhpath" title="Pencil Tool [2]"></div>
 	<div class="tool_button" id="tool_line" title="Line Tool [3]"></div>
-	<div class="tool_button" id="tools_rect_show" title="Square/Rect Tool [4/Shift+4]"></div>
-	<div class="flyout_arrow_horiz"></div>
-	<div class="tool_button" id="tools_ellipse_show" title="Ellipse/Circle Tool [5/Shift+5]"></div>
-	<div class="flyout_arrow_horiz"></div>
+	<div class="tool_button flyout_current" id="tools_rect_show" title="Square/Rect Tool [4/Shift+4]">
+		<div class="flyout_arrow_horiz"></div>
+	</div>
+	<div class="tool_button flyout_current" id="tools_ellipse_show" title="Ellipse/Circle Tool [5/Shift+5]">
+		<div class="flyout_arrow_horiz"></div>
+	</div>
 	<div class="tool_button" id="tool_path" title="Path Tool [7]"></div>
 	<div class="tool_button" id="tool_text" title="Text Tool [6]"></div>
 	<div class="tool_button" id="tool_image" title="Image Tool [8]"></div>
 	<div class="tool_button" id="tool_zoom" title="Zoom Tool [Ctrl+Up/Down]"></div>
+	
+	<div style="display: none">
+		<div id="tool_rect" title="Rectangle"></div>
+		<div id="tool_square" title="Square"></div>
+		<div id="tool_fhrect" title="Free-Hand Rectangle"></div>
+		<div id="tool_ellipse" title="Ellipse"></div>
+		<div id="tool_circle" title="Circle"></div>
+		<div id="tool_fhellipse" title="Free-Hand Ellipse"></div>
+	</div>
 </div> <!-- tools_left -->
 
 <div id="tools_bottom" class="tools_panel">
 
     <!-- Zoom buttons -->
-	<div id="zoom_panel" class="magic_field">
-		<span id="zoomLabel" class="zoom_tool label">zoom:</span>
-		<input id="zoom" class="zoom_tool" title="Change zoom level" size="3" value="100" type="text" />
+	<div id="zoom_panel" class="toolset" title="Change zoom level">
+		<label>
+		<span id="zoomLabel" class="zoom_tool icon_label"></span>
+		<input id="zoom" size="3" value="100" type="text" />
+		</label>
 		<div id="zoom_dropdown" class="dropdown">
 			<button></button>
 			<ul>
@@ -324,51 +432,111 @@
 	</div>
 
 	<div id="tools_bottom_2">
-		<table>
-		<tr>
-			<td id="fill_tool_bottom" class="label">fill:</td>
-			<td><div id="fill_bg"></div><div id="fill_color" class="color_block"  title="Change fill color"></div></td>
-			<td colspan="3"><div id="fill_opacity" class="label">100%</div></td>
-		</tr><tr>
-			<td id="stroke_tool_bottom" class="label">stroke:</td>
-			<td><div id="stroke_bg"></div><div id="stroke_color" class="color_block" title="Change stroke color"></div></td>
-			<td><div id="stroke_opacity" class="label">100 %</div></td>
-			<td>
-				<input id="stroke_width" title="Change stroke width" size="2" value="5" type="text" data-attr="Stroke Width"/>
-			</td>
-			<td>
-				<select id="stroke_style" title="Change stroke dash style">
-					<option selected="selected" value="none">---</option>
-					<option value="2,2">...</option>
-					<option value="5,5">- -</option>
-					<option value="5,2,2,2">- .</option>
-					<option value="5,2,2,2,2,2">- ..</option>
-				</select>
-			</td>
-		</tr>
-		</table>
+		<div id="color_tools">
+			<div class="color_tool" id="tool_fill">
+				<label class="icon_label" for="fill_color" title="Change fill color"></label>
+				<div class="color_block">
+					<div id="fill_bg"></div>
+					<div id="fill_color" class="color_block"></div>
+				</div>
+			</div>
+		
+			<div class="color_tool" id="tool_stroke">
+				<div class="color_block">
+					<label class="icon_label" title="Change stroke color"></label>
+				</div>
+				<div class="color_block">
+					<div id="stroke_bg"></div>
+					<div id="stroke_color" class="color_block" title="Change stroke color"></div>
+				</div>
+				
+				<label>
+					<input id="stroke_width" title="Change stroke width by 1, shift-click to change by 0.1" size="2" value="5" type="text" data-attr="Stroke Width"/>
+				</label>
+				
+				<label class="stroke_tool">
+					<select id="stroke_style" title="Change stroke dash style">
+						<option selected="selected" value="none">&mdash;</option>
+						<option value="2,2">...</option>
+						<option value="5,5">- -</option>
+						<option value="5,2,2,2">- .</option>
+						<option value="5,2,2,2,2,2">- ..</option>
+					</select>
+				</label>	
+
+ 				<div class="stroke_tool dropdown" id="stroke_linejoin">
+ 					<div>
+						<div id="cur_linejoin" title="Linejoin: Miter"></div>
+						<button></button>
+					</div>
+ 				</div>
+ 				
+ 				<div class="stroke_tool dropdown" id="stroke_linecap">
+ 					<div>
+						<div id="cur_linecap" title="Linecap: Butt"></div>
+						<button></button>
+					</div>
+ 				</div>
+			
+				<div id="toggle_stroke_tools" title="Show/hide more stroke tools">
+					&gt;&gt;
+				</div>
+				
+			</div>
+		</div>
+	
+		<div class="toolset" id="tool_opacity" title="Change selected item opacity">
+			<label>
+				<span id="group_opacityLabel" class="icon_label"></span>
+				<input id="group_opacity" size="3" value="100" type="text"/>
+			</label>
+			<div id="opacity_dropdown" class="dropdown">
+				<button></button>
+				<ul>
+					<li>0%</li>
+					<li>25%</li>
+					<li>50%</li>
+					<li>75%</li>
+					<li>100%</li>
+					<li class="special"><div id="opac_slider"></div></li>
+				</ul>
+			</div>
+		</div>
+
 	</div>
 
 	<div id="tools_bottom_3">
 		<div id="palette_holder"><div id="palette" title="Click to change fill color, shift-click to change stroke color"></div></div>
 	</div>
-	<div id="copyright">Powered by <a href="http://svg-edit.googlecode.com/" target="_blank">SVG-edit v2.4</a></div>
+	<div id="copyright"><span id="copyrightLabel">Powered by</span> <a href="http://svg-edit.googlecode.com/" target="_blank">SVG-edit v2.5</a></div>
 </div>
+
+<div id="option_lists">
+	<ul id="linejoin_opts">
+		<li class="tool_button current" id="linejoin_miter" title="Linejoin: Miter"></li>
+		<li class="tool_button" id="linejoin_round" title="Linejoin: Round"></li>
+		<li class="tool_button" id="linejoin_bevel" title="Linejoin: Bevel"></li>
+	</ul>
+	
+	<ul id="linecap_opts">
+		<li class="tool_button current" id="linecap_butt" title="Linecap: Butt"></li>
+		<li class="tool_button" id="linecap_square" title="Linecap: Square"></li>
+		<li class="tool_button" id="linecap_round" title="Linecap: Round"></li>
+	</ul>
+	
+	<ul id="position_opts" class="optcols3">
+		<li class="push_button" id="tool_posleft" title="Align Left"></li>
+		<li class="push_button" id="tool_poscenter" title="Align Center"></li>
+		<li class="push_button" id="tool_posright" title="Align Right"></li>
+		<li class="push_button" id="tool_postop" title="Align Top"></li>
+		<li class="push_button" id="tool_posmiddle" title="Align Middle"></li>
+		<li class="push_button" id="tool_posbottom" title="Align Bottom"></li>
+	</ul>
+</div>
+
 
 <!-- hidden divs -->
 <div id="color_picker"></div>
-
-<div id="tools_rect" class="tools_flyout">
-	<div id="tool_rect" class="tool_flyout_button" title="Rectangle"></div>
-	<div id="tool_square" class="tool_flyout_button" title="Square"></div>
-	<div id="tool_fhrect" class="tool_flyout_button" title="Free-Hand Rectangle"></div>
-</div>
-
-<div id="tools_ellipse" class="tools_flyout">
-	<div id="tool_ellipse" class="tool_flyout_button" title="Ellipse"></div>
-	<div id="tool_circle" class="tool_flyout_button" title="Circle"></div>
-	<div id="tool_fhellipse" class="tool_flyout_button" title="Free-Hand Ellipse"></div>
-</div>
 
 </div> <!-- svg_editor -->
 
@@ -398,15 +566,15 @@
 			<legend id="svginfo_image_props">Image Properties</legend>
 			<label>
 				<span id="svginfo_title">Title:</span>
-				<input type="text" id="canvas_title" size="24">
+				<input type="text" id="canvas_title" size="24"/>
 			</label>			
 	
 			<fieldset id="change_resolution">
 				<legend id="svginfo_dim">Canvas Dimensions</legend>
 
-				<label><span id="svginfo_width">Width:</span> <input type="text" id="canvas_width" size="6"></label>
+				<label><span id="svginfo_width">width:</span> <input type="text" id="canvas_width" size="6"/></label>
 					
-				<label><span id="svginfo_height">Height:</span> <input type="text" id="canvas_height" size="6"></label>
+				<label><span id="svginfo_height">height:</span> <input type="text" id="canvas_height" size="6"/></label>
 				
 				<label>
 					<select id="resolution">
@@ -436,15 +604,22 @@
 			<label><span id="svginfo_lang">Language:</span>
 				<!-- Source: http://en.wikipedia.org/wiki/Language_names -->
 				<select id="lang_select">
+				  <option id="lang_ar" value="ar">العربية</option>
 					<option id="lang_cs" value="cs">Čeština</option>
- 					<option id="lang_de" value="de">Deutsch</option>
+					<option id="lang_de" value="de">Deutsch</option>
 					<option id="lang_en" value="en" selected="selected">English</option>
 					<option id="lang_es" value="es">Español</option>
 					<option id="lang_fa" value="fa">فارسی</option>
 					<option id="lang_fr" value="fr">Français</option>
+					<option id="lang_fy" value="fy">Frysk</option>
+					<option id="lang_hi" value="hi">&#2361;&#2367;&#2344;&#2381;&#2342;&#2368;, &#2361;&#2367;&#2306;&#2342;&#2368;</option>
+					<option id="lang_ja" value="ja">日本語</option>
 					<option id="lang_nl" value="nl">Nederlands</option>
+					<option id="lang_pt-BR" value="pt-BR">Português (BR)</option>
 					<option id="lang_ro" value="ro">Româneşte</option>
+					<option id="lang_ru" value="ru">Русский</option>
 					<option id="lang_sk" value="sk">Slovenčina</option>
+					<option id="lang_zh-TW" value="zh-TW">繁體中文</option>
 				</select>
 			</label>
 
@@ -460,7 +635,7 @@
 			<fieldset id="change_background">
 				<legend id="svginfo_change_background">Editor Background</legend>
 				<div id="bg_blocks"></div>
-				<label><span id="svginfo_bg_url">URL:</span> <input type="text" id="canvas_bg_url" size="21"></label>
+				<label><span id="svginfo_bg_url">URL:</span> <input type="text" id="canvas_bg_url" size="21"/></label>
 				<p id="svginfo_bg_note">Note: Background will not be saved with image.</p>
 			</fieldset>
 			
@@ -472,9 +647,7 @@
 <div id="dialog_box">
 	<div id="dialog_box_overlay"></div>
 	<div id="dialog_container">
-		<div id="dialog_content">
-			Test message
-		</div>
+		<div id="dialog_content"></div>
 		<div id="dialog_buttons"></div>
 	</div>
 </div>
