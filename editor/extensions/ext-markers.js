@@ -261,6 +261,7 @@ svgEditor.addExtension("Markers", function(S) {
 		if (val=='') val='\\nomarker';
 		if (val=='\\nomarker') {
 			setIcon(pos,val);
+			S.call("changed", selElems);
 			return;
 		}
 		// Set marker on element
