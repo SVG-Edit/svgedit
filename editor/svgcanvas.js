@@ -214,10 +214,9 @@ var isOpera = !!window.opera,
 // Usually an attribute change, but can also be textcontent.
 //
 // Parameters:
-// elem - The DOM element to be changed
+// elem - The DOM element that was changed
 // attrs - An object with the attributes to be changed and the values they had *before* the change
 // text - An optional string visible to user related to this change
-
 function ChangeElementCommand(elem, attrs, text) {
 	this.elem = elem;
 	this.text = text ? ("Change " + elem.tagName + " " + text) : ("Change " + elem.tagName);
@@ -271,6 +270,8 @@ function ChangeElementCommand(elem, attrs, text) {
 		return true;
 	};
 
+	// Function: ChangeElementCommand.unapply
+	// Reverses the stored change action
 	this.unapply = function() {
 		var bChangedTransform = false;
 		for(var attr in this.oldValues ) {
@@ -313,14 +314,24 @@ function ChangeElementCommand(elem, attrs, text) {
 		return true;
 	};
 
+	// Function: ChangeElementCommand.elements
+	// Returns array with element associated with this command
 	this.elements = function() { return [this.elem]; }
 }
 
+// Function: InsertElementCommand
+// History command for an element that was added to the DOM
+//
+// Parameters:
+// elem - The newly added DOM element
+// text - An optional string visible to user related to this change
 function InsertElementCommand(elem, text) {
 	this.elem = elem;
 	this.text = text || ("Create " + elem.tagName);
 	this.parent = elem.parentNode;
-
+	
+	// Function: InsertElementCommand.apply
+	// Re-Inserts the new element
 	this.apply = function() { 
 		this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); 
 		if (this.parent == svgcontent) {
@@ -328,6 +339,8 @@ function InsertElementCommand(elem, text) {
 		}		
 	};
 
+	// Function: InsertElementCommand.unapply
+	// Removes the element
 	this.unapply = function() {
 		this.parent = this.elem.parentNode;
 		this.elem = this.elem.parentNode.removeChild(this.elem);
@@ -336,16 +349,25 @@ function InsertElementCommand(elem, text) {
 		}		
 	};
 
+	// Function: InsertElementCommand.elements
+	// Returns array with element associated with this command
 	this.elements = function() { return [this.elem]; };
 }
 
-// this is created for an element that has or will be removed from the DOM
-// (creating this object does not remove the element from the DOM itself)
+// Function: RemoveElementCommand
+// History command for an element removed from the DOM
+//
+// Parameters:
+// elem - The removed DOM element
+// elem - The DOM element's parent
+// text - An optional string visible to user related to this change
 function RemoveElementCommand(elem, parent, text) {
 	this.elem = elem;
 	this.text = text || ("Delete " + elem.tagName);
 	this.parent = parent;
 
+	// Function: RemoveElementCommand.apply
+	// Re-removes the new element
 	this.apply = function() {	
 		if (svgTransformLists[this.elem.id]) {
 			delete svgTransformLists[this.elem.id];
@@ -358,6 +380,8 @@ function RemoveElementCommand(elem, parent, text) {
 		}		
 	};
 
+	// Function: RemoveElementCommand.unapply
+	// Re-adds the new element
 	this.unapply = function() { 
 		if (svgTransformLists[this.elem.id]) {
 			delete svgTransformLists[this.elem.id];
@@ -369,13 +393,14 @@ function RemoveElementCommand(elem, parent, text) {
 		}		
 	};
 
+	// Function: RemoveElementCommand.elements
+	// Returns array with element associated with this command
 	this.elements = function() { return [this.elem]; };
 	
 	// special hack for webkit: remove this element's entry in the svgTransformLists map
 	if (svgTransformLists[elem.id]) {
 		delete svgTransformLists[elem.id];
 	}
-
 }
 
 function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
