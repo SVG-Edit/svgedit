@@ -81,7 +81,12 @@ if(window.opera) {
 
 }());
 
-
+// Class: SvgCanvas
+// The main SvgCanvas class that manages all SVG-related functions
+//
+// Parameters:
+// container - The container HTML element that should hold the SVG root element
+// config - An object that contains configuration data
 $.SvgCanvas = function(container, config)
 {
 var isOpera = !!window.opera,
@@ -156,14 +161,7 @@ var isOpera = !!window.opera,
 	"semantics": []
 	},
 
-
-// console.log('Start profiling')
-// setTimeout(function() {
-// 	canvas.addToSelection(canvas.getVisibleElements());
-// 	console.log('Stop profiling')
-// },3000);
-
-
+	// Interface strings, usually for title elements
 	uiStrings = {
 		"pathNodeTooltip": "Drag node to move it. Double-click node to change segment type",
 		"pathCtrlPtTooltip": "Drag control point to adjust curve properties",
@@ -174,27 +172,52 @@ var isOpera = !!window.opera,
 		"exportNoText": "Text may not appear as expected"
 	},
 	
+	// Default configuration options
 	curConfig = {
 		show_outside_canvas: true,
 		dimensions: [640, 480]
 	},
 	
+	// Function: toXml
+	// Converts characters in a string to XML-friendly entities.
+	//
+	// Example: "&" becomes "&amp;"
+	// Parameters:
+	// str - The string to be converted
+	// Returns: The converted string
 	toXml = function(str) {
 		return $('<p/>').text(str).html();
 	},
 	
+	// Function: fromXml
+	// Converts XML entities in a string to single characters. 
+	// Example: "&amp;" becomes "&"
+	// Parameters:
+	// str - The string to be converted
+	// Returns: The converted string
 	fromXml = function(str) {
 		return $('<p/>').html(str).text();
 	};
 
+	// Update config with new one if given
 	if(config) {
 		$.extend(curConfig, config);
 	}
-
+	
+	// Map of units, those set to 0 are updated later based on calculations
 	var unit_types = {'em':0,'ex':0,'px':1,'cm':35.43307,'mm':3.543307,'in':90,'pt':1.25,'pc':15,'%':0};
 	
-// These command objects are used for the Undo/Redo stack
-// attrs contains the values that the attributes had before the change
+// Group: Undo/Redo history management
+
+// Function: ChangeElementCommand
+// History command to make a change to an element. 
+// Usually an attribute change, but can also be textcontent.
+//
+// Parameters:
+// elem - The DOM element to be changed
+// attrs - An object with the attributes to be changed and the values they had *before* the change
+// text - An optional string visible to user related to this change
+
 function ChangeElementCommand(elem, attrs, text) {
 	this.elem = elem;
 	this.text = text ? ("Change " + elem.tagName + " " + text) : ("Change " + elem.tagName);
@@ -206,6 +229,8 @@ function ChangeElementCommand(elem, attrs, text) {
 		else this.newValues[attr] = elem.getAttribute(attr);
 	}
 
+	// Function: ChangeElementCommand.apply
+	// Performs the stored change action
 	this.apply = function() {
 		var bChangedTransform = false;
 		for(var attr in this.newValues ) {
