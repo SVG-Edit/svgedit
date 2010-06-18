@@ -403,6 +403,14 @@ function RemoveElementCommand(elem, parent, text) {
 	}
 }
 
+// Function: MoveElementCommand
+// History command for an element that had its DOM position changed
+//
+// Parameters:
+// elem - The DOM element that was moved
+// oldNextSibling - The element's next sibling before it was moved
+// oldParent - The element's parent before it was moved
+// text - An optional string visible to user related to this change
 function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 	this.elem = elem;
 	this.text = text ? ("Move " + elem.tagName + " to " + text) : ("Move " + elem.tagName);
@@ -411,6 +419,8 @@ function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 	this.newNextSibling = elem.nextSibling;
 	this.newParent = elem.parentNode;
 
+	// Function: MoveElementCommand.unapply
+	// Re-positions the element
 	this.apply = function() {
 		this.elem = this.newParent.insertBefore(this.elem, this.newNextSibling);
 		if (this.newParent == svgcontent) {
@@ -418,6 +428,8 @@ function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 		}
 	};
 
+	// Function: MoveElementCommand.unapply
+	// Positions the element back to its original location
 	this.unapply = function() {
 		this.elem = this.oldParent.insertBefore(this.elem, this.oldNextSibling);
 		if (this.oldParent == svgcontent) {
@@ -425,6 +437,8 @@ function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 		}
 	};
 
+	// Function: InsertElementCommand.elements
+	// Returns array with element associated with this command
 	this.elements = function() { return [this.elem]; };
 }
 
