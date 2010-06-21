@@ -91,9 +91,11 @@ $.SvgCanvas = function(container, config)
 {
 var isOpera = !!window.opera,
 	isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1,
+	
+	// Object populated later with booleans indicating support for features	
 	support = {},
 
-// this defines which elements and attributes that we support
+	// this defines which elements and attributes that we support
 	svgWhiteList = {
 	// SVG Elements
 	"a": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "xlink:href", "xlink:title"],
@@ -182,6 +184,7 @@ var isOpera = !!window.opera,
 	// Converts characters in a string to XML-friendly entities.
 	//
 	// Example: "&" becomes "&amp;"
+	//
 	// Parameters:
 	// str - The string to be converted
 	// Returns: The converted string
@@ -192,6 +195,7 @@ var isOpera = !!window.opera,
 	// Function: fromXml
 	// Converts XML entities in a string to single characters. 
 	// Example: "&amp;" becomes "&"
+	//
 	// Parameters:
 	// str - The string to be converted
 	// Returns: The converted string
@@ -204,10 +208,220 @@ var isOpera = !!window.opera,
 		$.extend(curConfig, config);
 	}
 	
-	// Map of units, those set to 0 are updated later based on calculations
-	var unit_types = {'em':0,'ex':0,'px':1,'cm':35.43307,'mm':3.543307,'in':90,'pt':1.25,'pc':15,'%':0};
 	
+// TODO: declare the variables and set them as null, then move this setup stuff to
+// an initialization function - probably just use clear()
+
+var canvas = this,
+	
+	// Namespace constants
+	svgns = "http://www.w3.org/2000/svg",
+	xlinkns = "http://www.w3.org/1999/xlink",
+	xmlns = "http://www.w3.org/XML/1998/namespace",
+	xmlnsns = "http://www.w3.org/2000/xmlns/", // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
+	se_ns = "http://svg-edit.googlecode.com",
+	htmlns = "http://www.w3.org/1999/xhtml",
+	mathns = "http://www.w3.org/1998/Math/MathML",
+	
+	// Prefix string for element IDs
+	idprefix = "svg_",
+	
+	// Map of units, those set to 0 are updated later based on calculations
+	unit_types = {'em':0,'ex':0,'px':1,'cm':35.43307,'mm':3.543307,'in':90,'pt':1.25,'pc':15,'%':0},
+
+	//nonce to uniquify id's
+	nonce = Math.floor(Math.random()*100001),
+	
+	// Boolean to indicate whether or not IDs given to elements should be random
+	randomize_ids = false, 
+	
+	// "document" element associated with the container (same as window.document using default svg-editor.js)
+	svgdoc = container.ownerDocument,
+	
+	// Array with width/height of canvas
+	dimensions = curConfig.dimensions,
+	
+	// Create Root SVG element. This is a container for the document being edited, not the document itself.
+	svgroot = svgdoc.importNode(Utils.text2xml('<svg id="svgroot" xmlns="' + svgns + '" xlinkns="' + xlinkns + '" ' +
+					'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
+					'<defs>' +
+						'<filter id="canvashadow" filterUnits="objectBoundingBox">' +
+							'<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>'+
+							'<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>'+
+							'<feMerge>'+
+								'<feMergeNode in="offsetBlur"/>'+
+								'<feMergeNode in="SourceGraphic"/>'+
+							'</feMerge>'+
+						'</filter>'+
+					'</defs>'+
+				'</svg>').documentElement, true);
+				
+
+	container.appendChild(svgroot);
+	
+// The actual element that represents the final output SVG element
+var svgcontent = svgdoc.createElementNS(svgns, "svg");
+$(svgcontent).attr({
+	id: 'svgcontent',
+	width: dimensions[0],
+	height: dimensions[1],
+	x: dimensions[0],
+	y: dimensions[1],
+	overflow: curConfig.show_outside_canvas?'visible':'hidden',
+	xmlns: svgns,
+	"xmlns:se": se_ns,
+	"xmlns:xlink": xlinkns
+}).appendTo(svgroot);
+
+// Set nonce if randomize_ids = true
+if (randomize_ids) svgcontent.setAttributeNS(se_ns, 'se:nonce', nonce);
+
+// map namespace URIs to prefixes
+var nsMap = {};
+nsMap[xlinkns] = 'xlink';
+nsMap[xmlns] = 'xml';
+nsMap[xmlnsns] = 'xmlns';
+nsMap[se_ns] = 'se';
+nsMap[htmlns] = 'xhtml';
+nsMap[mathns] = 'mathml';
+
+// map prefixes to namespace URIs
+var nsRevMap = {};
+$.each(nsMap, function(key,value){
+	nsRevMap[value] = key;
+});
+
+// Produce a Namespace-aware version of svgWhitelist
+var svgWhiteListNS = {};
+$.each(svgWhiteList, function(elt,atts){
+	var attNS = {};
+	$.each(atts, function(i, att){
+		if (att.indexOf(':') != -1) {
+			var v = att.split(':');
+			attNS[v[1]] = nsRevMap[v[0]];
+		} else {
+			attNS[att] = att == 'xmlns' ? xmlnsns : null;
+		}
+	});
+	svgWhiteListNS[elt] = attNS;
+});
+
+// Animation element to change the opacity of any newly created element
+var opac_ani = document.createElementNS(svgns, 'animate');
+$(opac_ani).attr({
+	attributeName: 'opacity',
+	begin: 'indefinite',
+	dur: 1,
+	fill: 'freeze'
+}).appendTo(svgroot);
+
+// Unit conversion functions
+var convertToNum, convertToUnit, setUnitAttr;
+
+(function() {
+	var w_attrs = ['x', 'x1', 'cx', 'rx', 'width'];
+	var h_attrs = ['y', 'y1', 'cy', 'ry', 'height'];
+	var unit_attrs = $.merge(['r','radius'], w_attrs);
+	$.merge(unit_attrs, h_attrs);
+	
+	// Converts given values to numbers. Attributes must be supplied in 
+	// case a percentage is given
+	convertToNum = function(attr, val) {
+		// Return a number if that's what it already is
+		if(!isNaN(val)) return val-0;
+		
+		if(val.substr(-1) === '%') {
+			// Deal with percentage, depends on attribute
+			var num = val.substr(0, val.length-1)/100;
+			var res = canvas.getResolution();
+			
+			if($.inArray(attr, w_attrs) !== -1) {
+				return num * res.w;
+			} else if($.inArray(attr, h_attrs) !== -1) {
+				return num * res.h;
+			} else {
+				return num * Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
+			}
+		} else {
+			var unit = val.substr(-2);
+			var num = val.substr(0, val.length-2);
+			// Note that this multiplication turns the string into a number
+			return num * unit_types[unit];
+		}
+	};
+	
+	setUnitAttr = function(elem, attr, val) {
+		if(!isNaN(val)) {
+			// New value is a number, so check currently used unit
+			var old_val = elem.getAttribute(attr);
+			
+			if(old_val !== null && isNaN(old_val)) {
+				// Old value was a number, so get unit, then convert
+				var unit;
+				if(old_val.substr(-1) === '%') {
+					var res = canvas.getResolution();
+					unit = '%';
+					val *= 100;
+					if($.inArray(attr, w_attrs) !== -1) {
+						val = val / res.w;
+					} else if($.inArray(attr, h_attrs) !== -1) {
+						val = val / res.h;
+					} else {
+						return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
+					}
+
+				} else {
+					unit = old_val.substr(-2);
+					val = val / unit_types[unit];
+				}
+				
+				val += unit;
+			}
+		}
+		
+		elem.setAttribute(attr, val);
+	}
+	
+	canvas.isValidUnit = function(attr, val) {
+		var valid = false;
+		if($.inArray(attr, unit_attrs) != -1) {
+			// True if it's just a number
+			if(!isNaN(val)) {
+				valid = true;
+			} else {
+			// Not a number, check if it has a valid unit
+				val = val.toLowerCase();
+				$.each(unit_types, function(unit) {
+					if(valid) return;
+					var re = new RegExp('^-?[\\d\\.]+' + unit + '$');
+					if(re.test(val)) valid = true;
+				});
+			}
+		} else if (attr == "id") {
+			// if we're trying to change the id, make sure it's not already present in the doc
+			// and the id value is valid.
+
+			var result = false;
+			// because getElem() can throw an exception in the case of an invalid id
+			// (according to http://www.w3.org/TR/xml-id/ IDs must be a NCName)
+			// we wrap it in an exception and only return true if the ID was valid and
+			// not already present
+			try {
+				var elem = getElem(val);
+				result = (elem == null);
+			} catch(e) {}
+			return result;
+		} else valid = true;			
+		
+		return valid;
+	}
+	
+})();
+
+
 // Group: Undo/Redo history management
+
+this.undoCmd = {};
 
 // Function: ChangeElementCommand
 // History command to make a change to an element. 
@@ -217,7 +431,7 @@ var isOpera = !!window.opera,
 // elem - The DOM element that was changed
 // attrs - An object with the attributes to be changed and the values they had *before* the change
 // text - An optional string visible to user related to this change
-function ChangeElementCommand(elem, attrs, text) {
+var ChangeElementCommand = this.undoCmd.changeElement = function(elem, attrs, text) {
 	this.elem = elem;
 	this.text = text ? ("Change " + elem.tagName + " " + text) : ("Change " + elem.tagName);
 	this.newValues = {};
@@ -325,7 +539,7 @@ function ChangeElementCommand(elem, attrs, text) {
 // Parameters:
 // elem - The newly added DOM element
 // text - An optional string visible to user related to this change
-function InsertElementCommand(elem, text) {
+var InsertElementCommand = this.undoCmd.insertElement = function(elem, text) {
 	this.elem = elem;
 	this.text = text || ("Create " + elem.tagName);
 	this.parent = elem.parentNode;
@@ -359,9 +573,9 @@ function InsertElementCommand(elem, text) {
 //
 // Parameters:
 // elem - The removed DOM element
-// elem - The DOM element's parent
+// parent - The DOM element's parent
 // text - An optional string visible to user related to this change
-function RemoveElementCommand(elem, parent, text) {
+var RemoveElementCommand = this.undoCmd.removeElement = function(elem, parent, text) {
 	this.elem = elem;
 	this.text = text || ("Delete " + elem.tagName);
 	this.parent = parent;
@@ -411,7 +625,7 @@ function RemoveElementCommand(elem, parent, text) {
 // oldNextSibling - The element's next sibling before it was moved
 // oldParent - The element's parent before it was moved
 // text - An optional string visible to user related to this change
-function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
+var MoveElementCommand = this.undoCmd.moveElement = function(elem, oldNextSibling, oldParent, text) {
 	this.elem = elem;
 	this.text = text ? ("Move " + elem.tagName + " to " + text) : ("Move " + elem.tagName);
 	this.oldNextSibling = oldNextSibling;
@@ -437,7 +651,7 @@ function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 		}
 	};
 
-	// Function: InsertElementCommand.elements
+	// Function: MoveElementCommand.elements
 	// Returns array with element associated with this command
 	this.elements = function() { return [this.elem]; };
 }
@@ -446,11 +660,17 @@ function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
 // if a new Typing command is created and the top command on the stack is also a Typing
 // and they both affect the same element, then collapse the two commands into one
 
-// this command object acts an arbitrary number of subcommands 
-function BatchCommand(text) {
+// Function: BatchCommand
+// History command that can contain/execute multiple other commands
+//
+// Parameters:
+// text - An optional string visible to user related to this change
+var BatchCommand = this.undoCmd.batch = function(text) {
 	this.text = text || "Batch Command";
 	this.stack = [];
 
+	// Function: BatchCommand.apply
+	// Runs "apply" on all subcommands
 	this.apply = function() {
 		var len = this.stack.length;
 		for (var i = 0; i < len; ++i) {
@@ -458,14 +678,17 @@ function BatchCommand(text) {
 		}
 	};
 
+	// Function: BatchCommand.unapply
+	// Runs "unapply" on all subcommands
 	this.unapply = function() {
 		for (var i = this.stack.length-1; i >= 0; i--) {
 			this.stack[i].unapply();
 		}
 	};
 
+	// Function: BatchCommand.elements
+	// Iterate through all our subcommands and returns all the elements we are changing
 	this.elements = function() {
-		// iterate through all our subcommands and find all the elements we are changing
 		var elems = [];
 		var cmd = this.stack.length;
 		while (cmd--) {
@@ -478,260 +701,293 @@ function BatchCommand(text) {
 		return elems; 
 	};
 
+	// Function: BatchCommand.addSubCommand
+	// Adds a given command to the history stack
+
+	// Parameters:
+	// cmd - The undo command object to add
 	this.addSubCommand = function(cmd) { this.stack.push(cmd); };
 
+	// Function: BatchCommand.isEmpty
+	// Returns a boolean indicating whether or not the batch command is empty
 	this.isEmpty = function() { return this.stack.length == 0; };
 }
 
 // private members
 
-	// **************************************************************************************
-	function Selector(id, elem) {
-		// this is the selector's unique number
-		this.id = id;
-
-		// this holds a reference to the element for which this selector is being used
-		this.selectedElement = elem;
-
-		// this is a flag used internally to track whether the selector is being used or not
-		this.locked = true;
-
-		// this function is used to reset the id and element that the selector is attached to
-		this.reset = function(e, update) {
+	var SelectorManager;
+	
+	(function() {
+	
+		// Class: Selector
+		// Private class for DOM element selection boxes
+		// 
+		// Parameters:
+		// id - integer to internally indentify the selector
+		// elem - DOM element associated with this selector
+		function Selector(id, elem) {
+			// this is the selector's unique number
+			this.id = id;
+	
+			// this holds a reference to the element for which this selector is being used
+			this.selectedElement = elem;
+	
+			// this is a flag used internally to track whether the selector is being used or not
 			this.locked = true;
-			this.selectedElement = e;
-			this.resize();
-			this.selectorGroup.setAttribute("display", "inline");
-		};
-
-		// this holds a reference to the <g> element that holds all visual elements of the selector
-		this.selectorGroup = addSvgElementFromJson({ "element": "g",
-													"attr": {"id": ("selectorGroup"+this.id)}
-													});
-
-		// this holds a reference to the path rect
-		this.selectorRect = this.selectorGroup.appendChild( addSvgElementFromJson({
-								"element": "path",
+	
+			// Function: Selector.reset 
+			// Used to reset the id and element that the selector is attached to
+			//
+			// Parameters: 
+			// e - DOM element associated with this selector
+			this.reset = function(e) {
+				this.locked = true;
+				this.selectedElement = e;
+				this.resize();
+				this.selectorGroup.setAttribute("display", "inline");
+			};
+	
+			// this holds a reference to the <g> element that holds all visual elements of the selector
+			this.selectorGroup = addSvgElementFromJson({ "element": "g",
+														"attr": {"id": ("selectorGroup"+this.id)}
+														});
+	
+			// this holds a reference to the path rect
+			this.selectorRect = this.selectorGroup.appendChild( addSvgElementFromJson({
+									"element": "path",
+									"attr": {
+										"id": ("selectedBox"+this.id),
+										"fill": "none",
+										"stroke": "#22C",
+										"stroke-width": "1",
+										"stroke-dasharray": "5,5",
+										// need to specify this so that the rect is not selectable
+										"style": "pointer-events:none"
+									}
+								}) );
+	
+			// this holds a reference to the grip elements for this selector
+			this.selectorGrips = {	"nw":null,
+									"n":null,
+									"ne":null,
+									"e":null,
+									"se":null,
+									"s":null,
+									"sw":null,
+									"w":null
+									};
+			this.rotateGripConnector = this.selectorGroup.appendChild( addSvgElementFromJson({
+								"element": "line",
 								"attr": {
-									"id": ("selectedBox"+this.id),
-									"fill": "none",
+									"id": ("selectorGrip_rotateconnector_" + this.id),
 									"stroke": "#22C",
-									"stroke-width": "1",
-									"stroke-dasharray": "5,5",
-									// need to specify this so that the rect is not selectable
-									"style": "pointer-events:none"
+									"stroke-width": "1"
 								}
 							}) );
-
-		// this holds a reference to the grip elements for this selector
-		this.selectorGrips = {	"nw":null,
-								"n":null,
-								"ne":null,
-								"e":null,
-								"se":null,
-								"s":null,
-								"sw":null,
-								"w":null
-								};
-		this.rotateGripConnector = this.selectorGroup.appendChild( addSvgElementFromJson({
-							"element": "line",
-							"attr": {
-								"id": ("selectorGrip_rotateconnector_" + this.id),
-								"stroke": "#22C",
-								"stroke-width": "1"
-							}
-						}) );
-						
-		this.rotateGrip = this.selectorGroup.appendChild( addSvgElementFromJson({
-							"element": "circle",
-							"attr": {
-								"id": ("selectorGrip_rotate_" + this.id),
-								"fill": "lime",
-								"r": 4,
-								"stroke": "#22C",
-								"stroke-width": 2,
-								"style": "cursor:url(" + curConfig.imgPath + "rotate.png) 12 12, auto;"
-							}
-						}) );
-		
-		// add the corner grips
-		for (var dir in this.selectorGrips) {
-			this.selectorGrips[dir] = this.selectorGroup.appendChild( 
-				addSvgElementFromJson({
-					"element": "circle",
-					"attr": {
-						"id": ("selectorGrip_resize_" + dir + "_" + this.id),
-						"fill": "#22C",
-						"r": 4,
-						"style": ("cursor:" + dir + "-resize"),
-						// This expands the mouse-able area of the grips making them
-						// easier to grab with the mouse.
-						// This works in Opera and WebKit, but does not work in Firefox
-						// see https://bugzilla.mozilla.org/show_bug.cgi?id=500174
-						"stroke-width": 2,
-						"pointer-events":"all",
-						"display":"none"
-					}
-				}) );
-		}
-
-		this.showGrips = function(show) {
-			// TODO: use suspendRedraw() here
-			var bShow = show ? "inline" : "none";
-			this.rotateGrip.setAttribute("display", bShow);
-			this.rotateGripConnector.setAttribute("display", bShow);
-			var elem = this.selectedElement;
+							
+			this.rotateGrip = this.selectorGroup.appendChild( addSvgElementFromJson({
+								"element": "circle",
+								"attr": {
+									"id": ("selectorGrip_rotate_" + this.id),
+									"fill": "lime",
+									"r": 4,
+									"stroke": "#22C",
+									"stroke-width": 2,
+									"style": "cursor:url(" + curConfig.imgPath + "rotate.png) 12 12, auto;"
+								}
+							}) );
+			
+			// add the corner grips
 			for (var dir in this.selectorGrips) {
-				this.selectorGrips[dir].setAttribute("display", bShow);
+				this.selectorGrips[dir] = this.selectorGroup.appendChild( 
+					addSvgElementFromJson({
+						"element": "circle",
+						"attr": {
+							"id": ("selectorGrip_resize_" + dir + "_" + this.id),
+							"fill": "#22C",
+							"r": 4,
+							"style": ("cursor:" + dir + "-resize"),
+							// This expands the mouse-able area of the grips making them
+							// easier to grab with the mouse.
+							// This works in Opera and WebKit, but does not work in Firefox
+							// see https://bugzilla.mozilla.org/show_bug.cgi?id=500174
+							"stroke-width": 2,
+							"pointer-events":"all",
+							"display":"none"
+						}
+					}) );
 			}
-			if(elem) this.updateGripCursors(canvas.getRotationAngle(elem));
-		};
-		
-		// Updates cursors for corner grips on rotation so arrows point the right way
-		this.updateGripCursors = function(angle) {
-			var dir_arr = [];
-			var steps = Math.round(angle / 45);
-			if(steps < 0) steps += 8;
-			for (var dir in this.selectorGrips) {
-				dir_arr.push(dir);
-			}
-			while(steps > 0) {
-				dir_arr.push(dir_arr.shift());
-				steps--;
-			}
-			var i = 0;
-			for (var dir in this.selectorGrips) {
-				this.selectorGrips[dir].setAttribute('style', ("cursor:" + dir_arr[i] + "-resize"));
-				i++;
-			};
-		};
-		
-		this.resize = function() {
-			var selectedBox = this.selectorRect,
-				selectedGrips = this.selectorGrips,
-				selected = this.selectedElement,
-				 sw = selected.getAttribute("stroke-width");
-			var offset = 1/current_zoom;
-			if (selected.getAttribute("stroke") != "none" && !isNaN(sw)) {
-				offset += (sw/2);
-			}
-			if (selected.tagName == "text") {
-				offset += 2/current_zoom;
-			}
-			var bbox = canvas.getBBox(selected);
-			if(selected.tagName == 'g') {
-				// The bbox for a group does not include stroke vals, so we
-				// get the bbox based on its children. 
-				var stroked_bbox = canvas.getStrokedBBox(selected.childNodes);
-				$.each(bbox, function(key, val) {
-					bbox[key] = stroked_bbox[key];
-				});
-			}
-
-			// loop and transform our bounding box until we reach our first rotation
-			var m = getMatrix(selected);
-
-			// This should probably be handled somewhere else, but for now
-			// it keeps the selection box correctly positioned when zoomed
-			m.e *= current_zoom;
-			m.f *= current_zoom;
-			
-			// apply the transforms
-			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset*2), h=bbox.height+(offset*2),
-				bbox = {x:l, y:t, width:w, height:h};
-			
-			// we need to handle temporary transforms too
-			// if skewed, get its transformed box, then find its axis-aligned bbox
-			
-			//*
-			var nbox = transformBox(l*current_zoom, t*current_zoom, w*current_zoom, h*current_zoom, m),
-				nbax = nbox.aabox.x,
-				nbay = nbox.aabox.y,
-				nbaw = nbox.aabox.width,
-				nbah = nbox.aabox.height;
-				
-			// now if the shape is rotated, un-rotate it
-			var cx = nbax + nbaw/2,
-				cy = nbay + nbah/2;
-			var angle = canvas.getRotationAngle(selected);
-			if (angle) {
-				
-				var rot = svgroot.createSVGTransform();
-				rot.setRotate(-angle,cx,cy);
-				var rotm = rot.matrix;
-				nbox.tl = transformPoint(nbox.tl.x,nbox.tl.y,rotm);
-				nbox.tr = transformPoint(nbox.tr.x,nbox.tr.y,rotm);
-				nbox.bl = transformPoint(nbox.bl.x,nbox.bl.y,rotm);
-				nbox.br = transformPoint(nbox.br.x,nbox.br.y,rotm);
-				
-				// calculate the axis-aligned bbox
-				var minx = nbox.tl.x,
-					miny = nbox.tl.y,
-					maxx = nbox.tl.x,
-					maxy = nbox.tl.y;
-				
-				minx = Math.min(minx, Math.min(nbox.tr.x, Math.min(nbox.bl.x, nbox.br.x) ) );
-				miny = Math.min(miny, Math.min(nbox.tr.y, Math.min(nbox.bl.y, nbox.br.y) ) );
-				maxx = Math.max(maxx, Math.max(nbox.tr.x, Math.max(nbox.bl.x, nbox.br.x) ) );
-				maxy = Math.max(maxy, Math.max(nbox.tr.y, Math.max(nbox.bl.y, nbox.br.y) ) );
-				
-				nbax = minx;
-				nbay = miny;
-				nbaw = (maxx-minx);
-				nbah = (maxy-miny);
-			}
-
-			var sr_handle = svgroot.suspendRedraw(100);
-
-			var dstr = "M" + nbax + "," + nbay
-						+ " L" + (nbax+nbaw) + "," + nbay
-						+ " " + (nbax+nbaw) + "," + (nbay+nbah)
-						+ " " + nbax + "," + (nbay+nbah) + "z";
-			assignAttributes(selectedBox, {'d': dstr});
-			
-			var gripCoords = {
-				nw: [nbax, nbay],
-				ne: [nbax+nbaw, nbay],
-				sw: [nbax, nbay+nbah],
-				se: [nbax+nbaw, nbay+nbah],
-				n:  [nbax + (nbaw)/2, nbay],
-				w:	[nbax, nbay + (nbah)/2],
-				e:	[nbax + nbaw, nbay + (nbah)/2],
-				s:	[nbax + (nbaw)/2, nbay + nbah]
+	
+			// Function: Selector.showGrips
+			// Show the resize grips of this selector
+			//
+			// Parameters:
+			// show - boolean indicating whether grips should be shown or not
+			this.showGrips = function(show) {
+				// TODO: use suspendRedraw() here
+				var bShow = show ? "inline" : "none";
+				this.rotateGrip.setAttribute("display", bShow);
+				this.rotateGripConnector.setAttribute("display", bShow);
+				var elem = this.selectedElement;
+				for (var dir in this.selectorGrips) {
+					this.selectorGrips[dir].setAttribute("display", bShow);
+				}
+				if(elem) this.updateGripCursors(canvas.getRotationAngle(elem));
 			};
 			
-			if(selected == selectedElements[0]) {
-				for(var dir in gripCoords) {
-					var coords = gripCoords[dir];
-					assignAttributes(selectedGrips[dir], {
-						cx: coords[0], cy: coords[1]
-					});
+			// Function: Selector.updateGripCursors
+			// Updates cursors for corner grips on rotation so arrows point the right way
+			//
+			// Parameters:
+			// angle - Float indicating current rotation angle in degrees
+			this.updateGripCursors = function(angle) {
+				var dir_arr = [];
+				var steps = Math.round(angle / 45);
+				if(steps < 0) steps += 8;
+				for (var dir in this.selectorGrips) {
+					dir_arr.push(dir);
+				}
+				while(steps > 0) {
+					dir_arr.push(dir_arr.shift());
+					steps--;
+				}
+				var i = 0;
+				for (var dir in this.selectorGrips) {
+					this.selectorGrips[dir].setAttribute('style', ("cursor:" + dir_arr[i] + "-resize"));
+					i++;
 				};
-			}
-
-			if (angle) {
-				this.selectorGroup.setAttribute("transform", "rotate(" + [angle,cx,cy].join(",") + ")");
-			}
-			else {
-				this.selectorGroup.setAttribute("transform", "");
-			}
-
-			// we want to go 20 pixels in the negative transformed y direction, ignoring scale
-			assignAttributes(this.rotateGripConnector, { x1: nbax + (nbaw)/2, 
-														y1: nbay, 
-														x2: nbax + (nbaw)/2, 
-														y2: nbay- 20});
-			assignAttributes(this.rotateGrip, { cx: nbax + (nbaw)/2, 
-												cy: nbay - 20 });
+			};
 			
-			svgroot.unsuspendRedraw(sr_handle);
+			// Function: Selector.resize
+			// Updates the selector to match the element's size
+			this.resize = function() {
+				var selectedBox = this.selectorRect,
+					selectedGrips = this.selectorGrips,
+					selected = this.selectedElement,
+					 sw = selected.getAttribute("stroke-width");
+				var offset = 1/current_zoom;
+				if (selected.getAttribute("stroke") != "none" && !isNaN(sw)) {
+					offset += (sw/2);
+				}
+				if (selected.tagName == "text") {
+					offset += 2/current_zoom;
+				}
+				var bbox = canvas.getBBox(selected);
+				if(selected.tagName == 'g') {
+					// The bbox for a group does not include stroke vals, so we
+					// get the bbox based on its children. 
+					var stroked_bbox = canvas.getStrokedBBox(selected.childNodes);
+					$.each(bbox, function(key, val) {
+						bbox[key] = stroked_bbox[key];
+					});
+				}
+	
+				// loop and transform our bounding box until we reach our first rotation
+				var m = getMatrix(selected);
+	
+				// This should probably be handled somewhere else, but for now
+				// it keeps the selection box correctly positioned when zoomed
+				m.e *= current_zoom;
+				m.f *= current_zoom;
+				
+				// apply the transforms
+				var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset*2), h=bbox.height+(offset*2),
+					bbox = {x:l, y:t, width:w, height:h};
+				
+				// we need to handle temporary transforms too
+				// if skewed, get its transformed box, then find its axis-aligned bbox
+				
+				//*
+				var nbox = transformBox(l*current_zoom, t*current_zoom, w*current_zoom, h*current_zoom, m),
+					nbax = nbox.aabox.x,
+					nbay = nbox.aabox.y,
+					nbaw = nbox.aabox.width,
+					nbah = nbox.aabox.height;
+					
+				// now if the shape is rotated, un-rotate it
+				var cx = nbax + nbaw/2,
+					cy = nbay + nbah/2;
+				var angle = canvas.getRotationAngle(selected);
+				if (angle) {
+					
+					var rot = svgroot.createSVGTransform();
+					rot.setRotate(-angle,cx,cy);
+					var rotm = rot.matrix;
+					nbox.tl = transformPoint(nbox.tl.x,nbox.tl.y,rotm);
+					nbox.tr = transformPoint(nbox.tr.x,nbox.tr.y,rotm);
+					nbox.bl = transformPoint(nbox.bl.x,nbox.bl.y,rotm);
+					nbox.br = transformPoint(nbox.br.x,nbox.br.y,rotm);
+					
+					// calculate the axis-aligned bbox
+					var minx = nbox.tl.x,
+						miny = nbox.tl.y,
+						maxx = nbox.tl.x,
+						maxy = nbox.tl.y;
+					
+					minx = Math.min(minx, Math.min(nbox.tr.x, Math.min(nbox.bl.x, nbox.br.x) ) );
+					miny = Math.min(miny, Math.min(nbox.tr.y, Math.min(nbox.bl.y, nbox.br.y) ) );
+					maxx = Math.max(maxx, Math.max(nbox.tr.x, Math.max(nbox.bl.x, nbox.br.x) ) );
+					maxy = Math.max(maxy, Math.max(nbox.tr.y, Math.max(nbox.bl.y, nbox.br.y) ) );
+					
+					nbax = minx;
+					nbay = miny;
+					nbaw = (maxx-minx);
+					nbah = (maxy-miny);
+				}
+	
+				var sr_handle = svgroot.suspendRedraw(100);
+	
+				var dstr = "M" + nbax + "," + nbay
+							+ " L" + (nbax+nbaw) + "," + nbay
+							+ " " + (nbax+nbaw) + "," + (nbay+nbah)
+							+ " " + nbax + "," + (nbay+nbah) + "z";
+				assignAttributes(selectedBox, {'d': dstr});
+				
+				var gripCoords = {
+					nw: [nbax, nbay],
+					ne: [nbax+nbaw, nbay],
+					sw: [nbax, nbay+nbah],
+					se: [nbax+nbaw, nbay+nbah],
+					n:  [nbax + (nbaw)/2, nbay],
+					w:	[nbax, nbay + (nbah)/2],
+					e:	[nbax + nbaw, nbay + (nbah)/2],
+					s:	[nbax + (nbaw)/2, nbay + nbah]
+				};
+				
+				if(selected == selectedElements[0]) {
+					for(var dir in gripCoords) {
+						var coords = gripCoords[dir];
+						assignAttributes(selectedGrips[dir], {
+							cx: coords[0], cy: coords[1]
+						});
+					};
+				}
+	
+				if (angle) {
+					this.selectorGroup.setAttribute("transform", "rotate(" + [angle,cx,cy].join(",") + ")");
+				}
+				else {
+					this.selectorGroup.setAttribute("transform", "");
+				}
+	
+				// we want to go 20 pixels in the negative transformed y direction, ignoring scale
+				assignAttributes(this.rotateGripConnector, { x1: nbax + (nbaw)/2, 
+															y1: nbay, 
+															x2: nbax + (nbaw)/2, 
+															y2: nbay- 20});
+				assignAttributes(this.rotateGrip, { cx: nbax + (nbaw)/2, 
+													cy: nbay - 20 });
+				
+				svgroot.unsuspendRedraw(sr_handle);
+			};
+	
+			// now initialize the selector
+			this.reset(elem);
 		};
-
-		// now initialize the selector
-		this.reset(elem);
-	};
-
-	function SelectorManager() {
+	
+		// Class: SelectorManager
+		// public class to manage all selector objects (selection boxes)
+		SelectorManager = function() {
 
 		// this will hold the <g> element that contains all selector rects/grips
 		this.selectorParentGroup = null;
@@ -747,7 +1003,9 @@ function BatchCommand(text) {
 
 		// local reference to this object
 		var mgr = this;
-
+		
+		// Function: SelectorManager.initGroup
+		// Resets the parent selector group element
 		this.initGroup = function() {
 			// remove old selector parent group if it existed
 			if (mgr.selectorParentGroup && mgr.selectorParentGroup.parentNode) {
@@ -792,7 +1050,12 @@ function BatchCommand(text) {
 			canvasbg.appendChild(rect);
 			svgroot.insertBefore(canvasbg, svgcontent);
 		};
-
+		
+		// Function: SelectorManager.requestSelector
+		// Returns the selector based on the given element
+		//
+		// Parameters:
+		// elem - DOM element to get the selector for
 		this.requestSelector = function(elem) {
 			if (elem == null) return null;
 			var N = this.selectors.length;
@@ -815,6 +1078,12 @@ function BatchCommand(text) {
 			this.selectorMap[elem.id] = this.selectors[N];
 			return this.selectors[N];
 		};
+		
+		// Function: SelectorManager.releaseSelector
+		// Removes the selector of the given element (hides selection box) 
+		//
+		// Parameters:
+		// elem - DOM element to remove the selector for
 		this.releaseSelector = function(elem) {
 			if (elem == null) return;
 			var N = this.selectors.length,
@@ -839,6 +1108,8 @@ function BatchCommand(text) {
 			}
 		};
 
+		// Function: SelectorManager.getRubberBandBox
+		// Returns the rubberBandBox DOM element. This is the rectangle drawn by the user for selecting/zooming
 		this.getRubberBandBox = function() {
 			if (this.rubberBandBox == null) {
 				this.rubberBandBox = this.selectorParentGroup.appendChild(
@@ -858,8 +1129,9 @@ function BatchCommand(text) {
 		};
 
 		this.initGroup();
-	}
-	// **************************************************************************************
+	};
+	}());
+
 
 	// **************************************************************************************
 	// SVGTransformList implementation for Webkit 
@@ -1011,197 +1283,6 @@ function BatchCommand(text) {
 	};
 	// **************************************************************************************
 
-	var addSvgElementFromJson = function(data) {
-		return canvas.updateElementFromJson(data)
-	};
-
-	// TODO: declare the variables and set them as null, then move this setup stuff to
-	// an initialization function - probably just use clear()
-	
-	var canvas = this,
-		svgns = "http://www.w3.org/2000/svg",
-		xlinkns = "http://www.w3.org/1999/xlink",
-		xmlns = "http://www.w3.org/XML/1998/namespace",
-		xmlnsns = "http://www.w3.org/2000/xmlns/", // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
-		se_ns = "http://svg-edit.googlecode.com",
-		htmlns = "http://www.w3.org/1999/xhtml",
-		mathns = "http://www.w3.org/1998/Math/MathML",
-		idprefix = "svg_",
-		svgdoc  = container.ownerDocument,
-		dimensions = curConfig.dimensions,
-		svgroot = svgdoc.importNode(Utils.text2xml('<svg id="svgroot" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
-						'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
-						'<defs>' +
-							'<filter id="canvashadow" filterUnits="objectBoundingBox">' +
-								'<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>'+
-								'<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>'+
-								'<feMerge>'+
-									'<feMergeNode in="offsetBlur"/>'+
-									'<feMergeNode in="SourceGraphic"/>'+
-								'</feMerge>'+
-							'</filter>'+
-						'</defs>'+
-					'</svg>').documentElement, true);
-		
-		$(svgroot).appendTo(container);
-		var opac_ani = document.createElementNS(svgns, 'animate');
- 		$(opac_ani).attr({
- 			attributeName: 'opacity',
- 			begin: 'indefinite',
- 			dur: 1,
- 			fill: 'freeze'
- 		}).appendTo(svgroot);
-	
-    //nonce to uniquify id's
-    var nonce = Math.floor(Math.random()*100001);
-    var randomize_ids = false;
-    
-	// map namespace URIs to prefixes
-	var nsMap = {};
-	nsMap[xlinkns] = 'xlink';
-	nsMap[xmlns] = 'xml';
-	nsMap[xmlnsns] = 'xmlns';
-	nsMap[se_ns] = 'se';
-	nsMap[htmlns] = 'xhtml';
-	nsMap[mathns] = 'mathml';
-
-	// map prefixes to namespace URIs
-	var nsRevMap = {};
-	$.each(nsMap, function(key,value){
-		nsRevMap[value] = key;
-    });
-
-	// Produce a Namespace-aware version of svgWhitelist
-	var svgWhiteListNS = {};
-    $.each(svgWhiteList, function(elt,atts){
-		var attNS = {};
-		$.each(atts, function(i, att){
-			if (att.indexOf(':') != -1) {
-				var v = att.split(':');
-				attNS[v[1]] = nsRevMap[v[0]];
-			} else {
-				attNS[att] = att == 'xmlns' ? xmlnsns : null;
-			}
-		});
-		svgWhiteListNS[elt] = attNS;
-	});
-	
-	var svgcontent = svgdoc.createElementNS(svgns, "svg");
-	$(svgcontent).attr({
-		id: 'svgcontent',
-		width: dimensions[0],
-		height: dimensions[1],
-		x: dimensions[0],
-		y: dimensions[1],
-		overflow: curConfig.show_outside_canvas?'visible':'hidden',
-		xmlns: svgns,
-		"xmlns:se": se_ns,
-		"xmlns:xlink": xlinkns
-	}).appendTo(svgroot);
-	if (randomize_ids) svgcontent.setAttributeNS(se_ns, 'se:nonce', nonce);
-
-	var convertToNum, convertToUnit, setUnitAttr;
-	
-	(function() {
-		var w_attrs = ['x', 'x1', 'cx', 'rx', 'width'];
-		var h_attrs = ['y', 'y1', 'cy', 'ry', 'height'];
-		var unit_attrs = $.merge(['r','radius'], w_attrs);
-		$.merge(unit_attrs, h_attrs);
-		
-		// Converts given values to numbers. Attributes must be supplied in 
-		// case a percentage is given
-		convertToNum = function(attr, val) {
-			// Return a number if that's what it already is
-			if(!isNaN(val)) return val-0;
-			
-			if(val.substr(-1) === '%') {
-				// Deal with percentage, depends on attribute
-				var num = val.substr(0, val.length-1)/100;
-				var res = canvas.getResolution();
-				
-				if($.inArray(attr, w_attrs) !== -1) {
-					return num * res.w;
-				} else if($.inArray(attr, h_attrs) !== -1) {
-					return num * res.h;
-				} else {
-					return num * Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
-				}
-			} else {
-				var unit = val.substr(-2);
-				var num = val.substr(0, val.length-2);
-				// Note that this multiplication turns the string into a number
-				return num * unit_types[unit];
-			}
-		};
-		
-		setUnitAttr = function(elem, attr, val) {
-			if(!isNaN(val)) {
-				// New value is a number, so check currently used unit
-				var old_val = elem.getAttribute(attr);
-				
-				if(old_val !== null && isNaN(old_val)) {
-					// Old value was a number, so get unit, then convert
-					var unit;
-					if(old_val.substr(-1) === '%') {
-						var res = canvas.getResolution();
-						unit = '%';
-						val *= 100;
-						if($.inArray(attr, w_attrs) !== -1) {
-							val = val / res.w;
-						} else if($.inArray(attr, h_attrs) !== -1) {
-							val = val / res.h;
-						} else {
-							return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
-						}
-
-					} else {
-						unit = old_val.substr(-2);
-						val = val / unit_types[unit];
-					}
-					
-					val += unit;
-				}
-			}
-			
-			elem.setAttribute(attr, val);
-		}
-		
-		canvas.isValidUnit = function(attr, val) {
-			var valid = false;
-			if($.inArray(attr, unit_attrs) != -1) {
-				// True if it's just a number
-				if(!isNaN(val)) {
-					valid = true;
-				} else {
-				// Not a number, check if it has a valid unit
-					val = val.toLowerCase();
-					$.each(unit_types, function(unit) {
-						if(valid) return;
-						var re = new RegExp('^-?[\\d\\.]+' + unit + '$');
-						if(re.test(val)) valid = true;
-					});
-				}
-			} else if (attr == "id") {
-				// if we're trying to change the id, make sure it's not already present in the doc
-				// and the id value is valid.
-
-				var result = false;
-				// because getElem() can throw an exception in the case of an invalid id
-				// (according to http://www.w3.org/TR/xml-id/ IDs must be a NCName)
-				// we wrap it in an exception and only return true if the ID was valid and
-				// not already present
-				try {
-					var elem = getElem(val);
-					result = (elem == null);
-				} catch(e) {}
-				return result;
-			} else valid = true;			
-			
-			return valid;
-		}
-		
-	})();
-
 	var assignAttributes = function(node, attrs, suspendLength, unitCheck) {
 		if(!suspendLength) suspendLength = 0;
 		// Opera has a problem with suspendRedraw() apparently
@@ -1250,7 +1331,7 @@ function BatchCommand(text) {
 		svgroot.unsuspendRedraw(handle);
 	};
 
-	this.updateElementFromJson = function(data) {
+	var addSvgElementFromJson = this.updateElementFromJson = function(data) {
 		var shape = getElem(data.attr.id);
 		// if shape is a path but we need to create a rect/ellipse, then remove the path
 		if (shape && data.element != shape.tagName) {
@@ -9303,7 +9384,6 @@ function BatchCommand(text) {
 			round: round,
 			runExtensions: runExtensions,
 			sanitizeSvg: sanitizeSvg,
-			Selector: Selector,
 			SelectorManager: SelectorManager,
 			shortFloat: shortFloat,
 			svgCanvasToString: svgCanvasToString,
