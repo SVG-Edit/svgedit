@@ -416,6 +416,7 @@
 				isMac = false, //(navigator.platform.indexOf("Mac") != -1);
 				modKey = "", //(isMac ? "meta+" : "ctrl+");
 				path = svgCanvas.pathActions,
+				undoMgr = svgCanvas.undoMgr,
 				default_img_url = curConfig.imgPath + "logo.png",
 				workarea = $("#workarea"),
 				show_save_warning = false, 
@@ -1288,13 +1289,13 @@
 				}
 				
 				// update history buttons
-				if (svgCanvas.getUndoStackSize() > 0) {
+				if (undoMgr.getUndoStackSize() > 0) {
 					$('#tool_undo').removeClass( 'disabled');
 				}
 				else {
 					$('#tool_undo').addClass( 'disabled');
 				}
-				if (svgCanvas.getRedoStackSize() > 0) {
+				if (undoMgr.getRedoStackSize() > 0) {
 					$('#tool_redo').removeClass( 'disabled');
 				}
 				else {
@@ -2124,15 +2125,15 @@
 			};
 		
 			var clickUndo = function(){
-				if (svgCanvas.getUndoStackSize() > 0) {
-					svgCanvas.undo();
+				if (undoMgr.getUndoStackSize() > 0) {
+					undoMgr.undo();
 					populateLayers();
 				}
 			};
 		
 			var clickRedo = function(){
-				if (svgCanvas.getRedoStackSize() > 0) {
-					svgCanvas.redo();
+				if (undoMgr.getRedoStackSize() > 0) {
+					undoMgr.redo();
 					populateLayers();
 				}
 			};
@@ -3403,7 +3404,7 @@
 			
 			window.onbeforeunload = function() { 
 				// Suppress warning if page is empty 
-				if(svgCanvas.getHistoryPosition() === 0) {
+				if(undoMgr.getUndoStackSize() === 0) {
 					show_save_warning = false;
 				}
 
@@ -3435,7 +3436,7 @@
 					}
 				
 					$('#main_menu').hide();
-					if(svgCanvas.getHistoryPosition() === 0) {
+					if(undoMgr.getHistoryPosition() === 0) {
 						openFile(true);
 					} else {
 						$.confirm(uiStrings.QwantToOpen, openFile);
