@@ -187,7 +187,9 @@ var isOpera = !!window.opera,
 	//
 	// Parameters:
 	// str - The string to be converted
-	// Returns: The converted string
+	//
+	// Returns:
+	// The converted string
 	toXml = function(str) {
 		return $('<p/>').text(str).html();
 	},
@@ -198,7 +200,9 @@ var isOpera = !!window.opera,
 	//
 	// Parameters:
 	// str - The string to be converted
-	// Returns: The converted string
+	//
+	// Returns: 
+	// The converted string
 	fromXml = function(str) {
 		return $('<p/>').html(str).text();
 	};
@@ -713,424 +717,575 @@ var BatchCommand = this.undoCmd.batch = function(text) {
 	this.isEmpty = function() { return this.stack.length == 0; };
 }
 
-// private members
+// Set scope for these undo functions
+var resetUndoStack, addCommandToHistory;
 
-	var SelectorManager;
+// Undo/redo stack related functions
+(function(c) {
+	var undoStackPointer = 0, 
+		undoStack = [];
 	
-	(function() {
-	
-		// Class: Selector
-		// Private class for DOM element selection boxes
-		// 
-		// Parameters:
-		// id - integer to internally indentify the selector
-		// elem - DOM element associated with this selector
-		function Selector(id, elem) {
-			// this is the selector's unique number
-			this.id = id;
-	
-			// this holds a reference to the element for which this selector is being used
-			this.selectedElement = elem;
-	
-			// this is a flag used internally to track whether the selector is being used or not
-			this.locked = true;
-	
-			// Function: Selector.reset 
-			// Used to reset the id and element that the selector is attached to
-			//
-			// Parameters: 
-			// e - DOM element associated with this selector
-			this.reset = function(e) {
-				this.locked = true;
-				this.selectedElement = e;
-				this.resize();
-				this.selectorGroup.setAttribute("display", "inline");
-			};
-	
-			// this holds a reference to the <g> element that holds all visual elements of the selector
-			this.selectorGroup = addSvgElementFromJson({ "element": "g",
-														"attr": {"id": ("selectorGroup"+this.id)}
-														});
-	
-			// this holds a reference to the path rect
-			this.selectorRect = this.selectorGroup.appendChild( addSvgElementFromJson({
-									"element": "path",
-									"attr": {
-										"id": ("selectedBox"+this.id),
-										"fill": "none",
-										"stroke": "#22C",
-										"stroke-width": "1",
-										"stroke-dasharray": "5,5",
-										// need to specify this so that the rect is not selectable
-										"style": "pointer-events:none"
-									}
-								}) );
-	
-			// this holds a reference to the grip elements for this selector
-			this.selectorGrips = {	"nw":null,
-									"n":null,
-									"ne":null,
-									"e":null,
-									"se":null,
-									"s":null,
-									"sw":null,
-									"w":null
-									};
-			this.rotateGripConnector = this.selectorGroup.appendChild( addSvgElementFromJson({
-								"element": "line",
-								"attr": {
-									"id": ("selectorGrip_rotateconnector_" + this.id),
-									"stroke": "#22C",
-									"stroke-width": "1"
-								}
-							}) );
-							
-			this.rotateGrip = this.selectorGroup.appendChild( addSvgElementFromJson({
-								"element": "circle",
-								"attr": {
-									"id": ("selectorGrip_rotate_" + this.id),
-									"fill": "lime",
-									"r": 4,
-									"stroke": "#22C",
-									"stroke-width": 2,
-									"style": "cursor:url(" + curConfig.imgPath + "rotate.png) 12 12, auto;"
-								}
-							}) );
-			
-			// add the corner grips
-			for (var dir in this.selectorGrips) {
-				this.selectorGrips[dir] = this.selectorGroup.appendChild( 
-					addSvgElementFromJson({
-						"element": "circle",
-						"attr": {
-							"id": ("selectorGrip_resize_" + dir + "_" + this.id),
-							"fill": "#22C",
-							"r": 4,
-							"style": ("cursor:" + dir + "-resize"),
-							// This expands the mouse-able area of the grips making them
-							// easier to grab with the mouse.
-							// This works in Opera and WebKit, but does not work in Firefox
-							// see https://bugzilla.mozilla.org/show_bug.cgi?id=500174
-							"stroke-width": 2,
-							"pointer-events":"all",
-							"display":"none"
-						}
-					}) );
-			}
-	
-			// Function: Selector.showGrips
-			// Show the resize grips of this selector
-			//
-			// Parameters:
-			// show - boolean indicating whether grips should be shown or not
-			this.showGrips = function(show) {
-				// TODO: use suspendRedraw() here
-				var bShow = show ? "inline" : "none";
-				this.rotateGrip.setAttribute("display", bShow);
-				this.rotateGripConnector.setAttribute("display", bShow);
-				var elem = this.selectedElement;
-				for (var dir in this.selectorGrips) {
-					this.selectorGrips[dir].setAttribute("display", bShow);
-				}
-				if(elem) this.updateGripCursors(canvas.getRotationAngle(elem));
-			};
-			
-			// Function: Selector.updateGripCursors
-			// Updates cursors for corner grips on rotation so arrows point the right way
-			//
-			// Parameters:
-			// angle - Float indicating current rotation angle in degrees
-			this.updateGripCursors = function(angle) {
-				var dir_arr = [];
-				var steps = Math.round(angle / 45);
-				if(steps < 0) steps += 8;
-				for (var dir in this.selectorGrips) {
-					dir_arr.push(dir);
-				}
-				while(steps > 0) {
-					dir_arr.push(dir_arr.shift());
-					steps--;
-				}
-				var i = 0;
-				for (var dir in this.selectorGrips) {
-					this.selectorGrips[dir].setAttribute('style', ("cursor:" + dir_arr[i] + "-resize"));
-					i++;
-				};
-			};
-			
-			// Function: Selector.resize
-			// Updates the selector to match the element's size
-			this.resize = function() {
-				var selectedBox = this.selectorRect,
-					selectedGrips = this.selectorGrips,
-					selected = this.selectedElement,
-					 sw = selected.getAttribute("stroke-width");
-				var offset = 1/current_zoom;
-				if (selected.getAttribute("stroke") != "none" && !isNaN(sw)) {
-					offset += (sw/2);
-				}
-				if (selected.tagName == "text") {
-					offset += 2/current_zoom;
-				}
-				var bbox = canvas.getBBox(selected);
-				if(selected.tagName == 'g') {
-					// The bbox for a group does not include stroke vals, so we
-					// get the bbox based on its children. 
-					var stroked_bbox = canvas.getStrokedBBox(selected.childNodes);
-					$.each(bbox, function(key, val) {
-						bbox[key] = stroked_bbox[key];
-					});
-				}
-	
-				// loop and transform our bounding box until we reach our first rotation
-				var m = getMatrix(selected);
-	
-				// This should probably be handled somewhere else, but for now
-				// it keeps the selection box correctly positioned when zoomed
-				m.e *= current_zoom;
-				m.f *= current_zoom;
-				
-				// apply the transforms
-				var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset*2), h=bbox.height+(offset*2),
-					bbox = {x:l, y:t, width:w, height:h};
-				
-				// we need to handle temporary transforms too
-				// if skewed, get its transformed box, then find its axis-aligned bbox
-				
-				//*
-				var nbox = transformBox(l*current_zoom, t*current_zoom, w*current_zoom, h*current_zoom, m),
-					nbax = nbox.aabox.x,
-					nbay = nbox.aabox.y,
-					nbaw = nbox.aabox.width,
-					nbah = nbox.aabox.height;
-					
-				// now if the shape is rotated, un-rotate it
-				var cx = nbax + nbaw/2,
-					cy = nbay + nbah/2;
-				var angle = canvas.getRotationAngle(selected);
-				if (angle) {
-					
-					var rot = svgroot.createSVGTransform();
-					rot.setRotate(-angle,cx,cy);
-					var rotm = rot.matrix;
-					nbox.tl = transformPoint(nbox.tl.x,nbox.tl.y,rotm);
-					nbox.tr = transformPoint(nbox.tr.x,nbox.tr.y,rotm);
-					nbox.bl = transformPoint(nbox.bl.x,nbox.bl.y,rotm);
-					nbox.br = transformPoint(nbox.br.x,nbox.br.y,rotm);
-					
-					// calculate the axis-aligned bbox
-					var minx = nbox.tl.x,
-						miny = nbox.tl.y,
-						maxx = nbox.tl.x,
-						maxy = nbox.tl.y;
-					
-					minx = Math.min(minx, Math.min(nbox.tr.x, Math.min(nbox.bl.x, nbox.br.x) ) );
-					miny = Math.min(miny, Math.min(nbox.tr.y, Math.min(nbox.bl.y, nbox.br.y) ) );
-					maxx = Math.max(maxx, Math.max(nbox.tr.x, Math.max(nbox.bl.x, nbox.br.x) ) );
-					maxy = Math.max(maxy, Math.max(nbox.tr.y, Math.max(nbox.bl.y, nbox.br.y) ) );
-					
-					nbax = minx;
-					nbay = miny;
-					nbaw = (maxx-minx);
-					nbah = (maxy-miny);
-				}
-	
-				var sr_handle = svgroot.suspendRedraw(100);
-	
-				var dstr = "M" + nbax + "," + nbay
-							+ " L" + (nbax+nbaw) + "," + nbay
-							+ " " + (nbax+nbaw) + "," + (nbay+nbah)
-							+ " " + nbax + "," + (nbay+nbah) + "z";
-				assignAttributes(selectedBox, {'d': dstr});
-				
-				var gripCoords = {
-					nw: [nbax, nbay],
-					ne: [nbax+nbaw, nbay],
-					sw: [nbax, nbay+nbah],
-					se: [nbax+nbaw, nbay+nbah],
-					n:  [nbax + (nbaw)/2, nbay],
-					w:	[nbax, nbay + (nbah)/2],
-					e:	[nbax + nbaw, nbay + (nbah)/2],
-					s:	[nbax + (nbaw)/2, nbay + nbah]
-				};
-				
-				if(selected == selectedElements[0]) {
-					for(var dir in gripCoords) {
-						var coords = gripCoords[dir];
-						assignAttributes(selectedGrips[dir], {
-							cx: coords[0], cy: coords[1]
-						});
-					};
-				}
-	
-				if (angle) {
-					this.selectorGroup.setAttribute("transform", "rotate(" + [angle,cx,cy].join(",") + ")");
-				}
-				else {
-					this.selectorGroup.setAttribute("transform", "");
-				}
-	
-				// we want to go 20 pixels in the negative transformed y direction, ignoring scale
-				assignAttributes(this.rotateGripConnector, { x1: nbax + (nbaw)/2, 
-															y1: nbay, 
-															x2: nbax + (nbaw)/2, 
-															y2: nbay- 20});
-				assignAttributes(this.rotateGrip, { cx: nbax + (nbaw)/2, 
-													cy: nbay - 20 });
-				
-				svgroot.unsuspendRedraw(sr_handle);
-			};
-	
-			// now initialize the selector
-			this.reset(elem);
-		};
-	
-		// Class: SelectorManager
-		// public class to manage all selector objects (selection boxes)
-		SelectorManager = function() {
-
-		// this will hold the <g> element that contains all selector rects/grips
-		this.selectorParentGroup = null;
-
-		// this is a special rect that is used for multi-select
-		this.rubberBandBox = null;
-
-		// this will hold objects of type Selector (see above)
-		this.selectors = [];
-
-		// this holds a map of SVG elements to their Selector object
-		this.selectorMap = {};
-
-		// local reference to this object
-		var mgr = this;
-		
-		// Function: SelectorManager.initGroup
-		// Resets the parent selector group element
-		this.initGroup = function() {
-			// remove old selector parent group if it existed
-			if (mgr.selectorParentGroup && mgr.selectorParentGroup.parentNode) {
-				mgr.selectorParentGroup.parentNode.removeChild(mgr.selectorParentGroup);
-			}
-			// create parent selector group and add it to svgroot
-			mgr.selectorParentGroup = svgdoc.createElementNS(svgns, "g");
-			mgr.selectorParentGroup.setAttribute("id", "selectorParentGroup");
-			svgroot.appendChild(mgr.selectorParentGroup);
-			mgr.selectorMap = {};
-			mgr.selectors = [];
-			mgr.rubberBandBox = null;
-			
-			if($("#canvasBackground").length) return;
-
-			var canvasbg = svgdoc.createElementNS(svgns, "svg");
-			var dims = curConfig.dimensions;
-			assignAttributes(canvasbg, {
-				'id':'canvasBackground',
-				'width': dims[0],
-				'height': dims[1],
-				'x': 0,
-				'y': 0,
-				'overflow': 'visible',
-				'style': 'pointer-events:none'
-			});
-			
-			var rect = svgdoc.createElementNS(svgns, "rect");
-			assignAttributes(rect, {
-				'width': '100%',
-				'height': '100%',
-				'x': 0,
-				'y': 0,
-				'stroke-width': 1,
-				'stroke': '#000',
-				'fill': '#FFF',
-				'style': 'pointer-events:none'
-			});
-			// Both Firefox and WebKit are too slow with this filter region (especially at higher
-			// zoom levels) and Opera has at least one bug
-//			if (!window.opera) rect.setAttribute('filter', 'url(#canvashadow)');
-			canvasbg.appendChild(rect);
-			svgroot.insertBefore(canvasbg, svgcontent);
-		};
-		
-		// Function: SelectorManager.requestSelector
-		// Returns the selector based on the given element
-		//
-		// Parameters:
-		// elem - DOM element to get the selector for
-		this.requestSelector = function(elem) {
-			if (elem == null) return null;
-			var N = this.selectors.length;
-			// if we've already acquired one for this element, return it
-			if (typeof(this.selectorMap[elem.id]) == "object") {
-				this.selectorMap[elem.id].locked = true;
-				return this.selectorMap[elem.id];
-			}
-			for (var i = 0; i < N; ++i) {
-				if (this.selectors[i] && !this.selectors[i].locked) {
-					this.selectors[i].locked = true;
-					this.selectors[i].reset(elem);
-					this.selectorMap[elem.id] = this.selectors[i];
-					return this.selectors[i];
-				}
-			}
-			// if we reached here, no available selectors were found, we create one
-			this.selectors[N] = new Selector(N, elem);
-			this.selectorParentGroup.appendChild(this.selectors[N].selectorGroup);
-			this.selectorMap[elem.id] = this.selectors[N];
-			return this.selectors[N];
-		};
-		
-		// Function: SelectorManager.releaseSelector
-		// Removes the selector of the given element (hides selection box) 
-		//
-		// Parameters:
-		// elem - DOM element to remove the selector for
-		this.releaseSelector = function(elem) {
-			if (elem == null) return;
-			var N = this.selectors.length,
-				sel = this.selectorMap[elem.id];
-			for (var i = 0; i < N; ++i) {
-				if (this.selectors[i] && this.selectors[i] == sel) {
-					if (sel.locked == false) {
-						console.log("WARNING! selector was released but was already unlocked");
-					}
-					delete this.selectorMap[elem.id];
-					sel.locked = false;
-					sel.selectedElement = null;
-					sel.showGrips(false);
-
-					// remove from DOM and store reference in JS but only if it exists in the DOM
-					try {
-						sel.selectorGroup.setAttribute("display", "none");
-					} catch(e) { }
-
-					break;
-				}
-			}
-		};
-
-		// Function: SelectorManager.getRubberBandBox
-		// Returns the rubberBandBox DOM element. This is the rectangle drawn by the user for selecting/zooming
-		this.getRubberBandBox = function() {
-			if (this.rubberBandBox == null) {
-				this.rubberBandBox = this.selectorParentGroup.appendChild(
-						addSvgElementFromJson({ "element": "rect",
-							"attr": {
-								"id": "selectorRubberBand",
-								"fill": "#22C",
-								"fill-opacity": 0.15,
-								"stroke": "#22C",
-								"stroke-width": 0.5,
-								"display": "none",
-								"style": "pointer-events:none"
-							}
-						}));
-			}
-			return this.rubberBandBox;
-		};
-
-		this.initGroup();
+	// Function: resetUndoStack
+	// Resets the undo stack, effectively clearing the undo/redo history
+	resetUndoStack = function() {
+		undoStack = [];
+		undoStackPointer = 0;
 	};
-	}());
+	
+	c.undoMgr = {
+		// Function: undoMgr.getUndoStackSize
+		// Returns: 
+		// Integer with the current size of the undo history stack
+		getUndoStackSize: function() { return undoStackPointer; },
+		
+		// Function: undoMgr.getRedoStackSize
+		// Returns: 
+		// Integer with the current size of the redo history stack
+		getRedoStackSize: function() { return undoStack.length - undoStackPointer; },
+		
+		// Function: undoMgr.getNextUndoCommandText
+		// Returns: 
+		// String associated with the next undo command
+		getNextUndoCommandText: function() { 
+			if (undoStackPointer > 0) 
+				return undoStack[undoStackPointer-1].text;
+			return "";
+		},
+		
+		// Function: undoMgr.getNextRedoCommandText
+		// Returns: 
+		// String associated with the next redo command
+		getNextRedoCommandText: function() { 
+			if (undoStackPointer < undoStack.length) 
+				return undoStack[undoStackPointer].text;
+			return "";
+		},
+		
+		// Function: undoMgr.undo
+		// Performs an undo step
+		undo: function() {
+			if (undoStackPointer > 0) {
+				c.clearSelection();
+				var cmd = undoStack[--undoStackPointer];
+				cmd.unapply();
+				pathActions.clear();
+				call("changed", cmd.elements());
+			}
+		},
+
+		// Function: undoMgr.redo		
+		// Performs a redo step
+		redo: function() {
+			if (undoStackPointer < undoStack.length && undoStack.length > 0) {
+				c.clearSelection();
+				var cmd = undoStack[undoStackPointer++];
+				cmd.apply();
+				pathActions.clear();
+				call("changed", cmd.elements());
+			}
+		}
+	};
+	
+	// Function: addCommandToHistory
+	// Adds a command object to the undo history stack
+	//
+	// Parameters: 
+	// cmd - The command object to add
+	addCommandToHistory = c.undoCmd.add = function(cmd) {
+	// FIXME: we MUST compress consecutive text changes to the same element
+	// (right now each keystroke is saved as a separate command that includes the
+	// entire text contents of the text element)
+	// TODO: consider limiting the history that we store here (need to do some slicing)
+	
+		// if our stack pointer is not at the end, then we have to remove
+		// all commands after the pointer and insert the new command
+		if (undoStackPointer < undoStack.length && undoStack.length > 0) {
+			undoStack = undoStack.splice(0, undoStackPointer);
+		}
+		undoStack.push(cmd);
+		undoStackPointer = undoStack.length;
+	};
+	
+}(canvas));
+
+(function(c) {
+
+	// New functions for refactoring of Undo/Redo
+	
+	// this is the stack that stores the original values, the elements and
+	// the attribute name for begin/finish
+	var undoChangeStackPointer = -1;
+	var undoableChangeStack = [];
+	
+	// Function: beginUndoableChange
+	// This function tells the canvas to remember the old values of the 
+	// attrName attribute for each element sent in.  The elements and values 
+	// are stored on a stack, so the next call to finishUndoableChange() will 
+	// pop the elements and old values off the stack, gets the current values
+	// from the DOM and uses all of these to construct the undo-able command.
+	//
+	// Parameters: 
+	// attrName - The name of the attribute being changed
+	// elems - Array of DOM elements being changed
+	c.beginUndoableChange = function(attrName, elems) {
+		var p = ++undoChangeStackPointer;
+		var i = elems.length;
+		var oldValues = new Array(i), elements = new Array(i);
+		while (i--) {
+			var elem = elems[i];
+			if (elem == null) continue;
+			elements[i] = elem;
+			oldValues[i] = elem.getAttribute(attrName);
+		}
+		undoableChangeStack[p] = {'attrName': attrName,
+								'oldValues': oldValues,
+								'elements': elements};
+	};
+	
+	// Function: finishUndoableChange
+	// This function returns a BatchCommand object which summarizes the
+	// change since beginUndoableChange was called.  The command can then
+	// be added to the command history
+	//
+	// Returns: 
+	// Batch command object with resulting changes
+	c.finishUndoableChange = function() {
+		var p = undoChangeStackPointer--;
+		var changeset = undoableChangeStack[p];
+		var i = changeset['elements'].length;
+		var attrName = changeset['attrName'];
+		var batchCmd = new BatchCommand("Change " + attrName);
+		while (i--) {
+			var elem = changeset['elements'][i];
+			if (elem == null) continue;
+			var changes = {};
+			changes[attrName] = changeset['oldValues'][i];
+			if (changes[attrName] != elem.getAttribute(attrName)) {
+				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes, attrName));
+			}
+		}
+		undoableChangeStack[p] = null;
+		return batchCmd;
+	};
+
+}(canvas));
+
+// Put SelectorManager in this scope
+var SelectorManager;
+
+(function() {
+	// Class: Selector
+	// Private class for DOM element selection boxes
+	// 
+	// Parameters:
+	// id - integer to internally indentify the selector
+	// elem - DOM element associated with this selector
+	function Selector(id, elem) {
+		// this is the selector's unique number
+		this.id = id;
+
+		// this holds a reference to the element for which this selector is being used
+		this.selectedElement = elem;
+
+		// this is a flag used internally to track whether the selector is being used or not
+		this.locked = true;
+
+		// Function: Selector.reset 
+		// Used to reset the id and element that the selector is attached to
+		//
+		// Parameters: 
+		// e - DOM element associated with this selector
+		this.reset = function(e) {
+			this.locked = true;
+			this.selectedElement = e;
+			this.resize();
+			this.selectorGroup.setAttribute("display", "inline");
+		};
+
+		// this holds a reference to the <g> element that holds all visual elements of the selector
+		this.selectorGroup = addSvgElementFromJson({ "element": "g",
+													"attr": {"id": ("selectorGroup"+this.id)}
+													});
+
+		// this holds a reference to the path rect
+		this.selectorRect = this.selectorGroup.appendChild( addSvgElementFromJson({
+								"element": "path",
+								"attr": {
+									"id": ("selectedBox"+this.id),
+									"fill": "none",
+									"stroke": "#22C",
+									"stroke-width": "1",
+									"stroke-dasharray": "5,5",
+									// need to specify this so that the rect is not selectable
+									"style": "pointer-events:none"
+								}
+							}) );
+
+		// this holds a reference to the grip elements for this selector
+		this.selectorGrips = {	"nw":null,
+								"n":null,
+								"ne":null,
+								"e":null,
+								"se":null,
+								"s":null,
+								"sw":null,
+								"w":null
+								};
+		this.rotateGripConnector = this.selectorGroup.appendChild( addSvgElementFromJson({
+							"element": "line",
+							"attr": {
+								"id": ("selectorGrip_rotateconnector_" + this.id),
+								"stroke": "#22C",
+								"stroke-width": "1"
+							}
+						}) );
+						
+		this.rotateGrip = this.selectorGroup.appendChild( addSvgElementFromJson({
+							"element": "circle",
+							"attr": {
+								"id": ("selectorGrip_rotate_" + this.id),
+								"fill": "lime",
+								"r": 4,
+								"stroke": "#22C",
+								"stroke-width": 2,
+								"style": "cursor:url(" + curConfig.imgPath + "rotate.png) 12 12, auto;"
+							}
+						}) );
+		
+		// add the corner grips
+		for (var dir in this.selectorGrips) {
+			this.selectorGrips[dir] = this.selectorGroup.appendChild( 
+				addSvgElementFromJson({
+					"element": "circle",
+					"attr": {
+						"id": ("selectorGrip_resize_" + dir + "_" + this.id),
+						"fill": "#22C",
+						"r": 4,
+						"style": ("cursor:" + dir + "-resize"),
+						// This expands the mouse-able area of the grips making them
+						// easier to grab with the mouse.
+						// This works in Opera and WebKit, but does not work in Firefox
+						// see https://bugzilla.mozilla.org/show_bug.cgi?id=500174
+						"stroke-width": 2,
+						"pointer-events":"all",
+						"display":"none"
+					}
+				}) );
+		}
+
+		// Function: Selector.showGrips
+		// Show the resize grips of this selector
+		//
+		// Parameters:
+		// show - boolean indicating whether grips should be shown or not
+		this.showGrips = function(show) {
+			// TODO: use suspendRedraw() here
+			var bShow = show ? "inline" : "none";
+			this.rotateGrip.setAttribute("display", bShow);
+			this.rotateGripConnector.setAttribute("display", bShow);
+			var elem = this.selectedElement;
+			for (var dir in this.selectorGrips) {
+				this.selectorGrips[dir].setAttribute("display", bShow);
+			}
+			if(elem) this.updateGripCursors(canvas.getRotationAngle(elem));
+		};
+		
+		// Function: Selector.updateGripCursors
+		// Updates cursors for corner grips on rotation so arrows point the right way
+		//
+		// Parameters:
+		// angle - Float indicating current rotation angle in degrees
+		this.updateGripCursors = function(angle) {
+			var dir_arr = [];
+			var steps = Math.round(angle / 45);
+			if(steps < 0) steps += 8;
+			for (var dir in this.selectorGrips) {
+				dir_arr.push(dir);
+			}
+			while(steps > 0) {
+				dir_arr.push(dir_arr.shift());
+				steps--;
+			}
+			var i = 0;
+			for (var dir in this.selectorGrips) {
+				this.selectorGrips[dir].setAttribute('style', ("cursor:" + dir_arr[i] + "-resize"));
+				i++;
+			};
+		};
+		
+		// Function: Selector.resize
+		// Updates the selector to match the element's size
+		this.resize = function() {
+			var selectedBox = this.selectorRect,
+				selectedGrips = this.selectorGrips,
+				selected = this.selectedElement,
+				 sw = selected.getAttribute("stroke-width");
+			var offset = 1/current_zoom;
+			if (selected.getAttribute("stroke") != "none" && !isNaN(sw)) {
+				offset += (sw/2);
+			}
+			if (selected.tagName == "text") {
+				offset += 2/current_zoom;
+			}
+			var bbox = canvas.getBBox(selected);
+			if(selected.tagName == 'g') {
+				// The bbox for a group does not include stroke vals, so we
+				// get the bbox based on its children. 
+				var stroked_bbox = canvas.getStrokedBBox(selected.childNodes);
+				$.each(bbox, function(key, val) {
+					bbox[key] = stroked_bbox[key];
+				});
+			}
+
+			// loop and transform our bounding box until we reach our first rotation
+			var m = getMatrix(selected);
+
+			// This should probably be handled somewhere else, but for now
+			// it keeps the selection box correctly positioned when zoomed
+			m.e *= current_zoom;
+			m.f *= current_zoom;
+			
+			// apply the transforms
+			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset*2), h=bbox.height+(offset*2),
+				bbox = {x:l, y:t, width:w, height:h};
+			
+			// we need to handle temporary transforms too
+			// if skewed, get its transformed box, then find its axis-aligned bbox
+			
+			//*
+			var nbox = transformBox(l*current_zoom, t*current_zoom, w*current_zoom, h*current_zoom, m),
+				nbax = nbox.aabox.x,
+				nbay = nbox.aabox.y,
+				nbaw = nbox.aabox.width,
+				nbah = nbox.aabox.height;
+				
+			// now if the shape is rotated, un-rotate it
+			var cx = nbax + nbaw/2,
+				cy = nbay + nbah/2;
+			var angle = canvas.getRotationAngle(selected);
+			if (angle) {
+				
+				var rot = svgroot.createSVGTransform();
+				rot.setRotate(-angle,cx,cy);
+				var rotm = rot.matrix;
+				nbox.tl = transformPoint(nbox.tl.x,nbox.tl.y,rotm);
+				nbox.tr = transformPoint(nbox.tr.x,nbox.tr.y,rotm);
+				nbox.bl = transformPoint(nbox.bl.x,nbox.bl.y,rotm);
+				nbox.br = transformPoint(nbox.br.x,nbox.br.y,rotm);
+				
+				// calculate the axis-aligned bbox
+				var minx = nbox.tl.x,
+					miny = nbox.tl.y,
+					maxx = nbox.tl.x,
+					maxy = nbox.tl.y;
+				
+				minx = Math.min(minx, Math.min(nbox.tr.x, Math.min(nbox.bl.x, nbox.br.x) ) );
+				miny = Math.min(miny, Math.min(nbox.tr.y, Math.min(nbox.bl.y, nbox.br.y) ) );
+				maxx = Math.max(maxx, Math.max(nbox.tr.x, Math.max(nbox.bl.x, nbox.br.x) ) );
+				maxy = Math.max(maxy, Math.max(nbox.tr.y, Math.max(nbox.bl.y, nbox.br.y) ) );
+				
+				nbax = minx;
+				nbay = miny;
+				nbaw = (maxx-minx);
+				nbah = (maxy-miny);
+			}
+
+			var sr_handle = svgroot.suspendRedraw(100);
+
+			var dstr = "M" + nbax + "," + nbay
+						+ " L" + (nbax+nbaw) + "," + nbay
+						+ " " + (nbax+nbaw) + "," + (nbay+nbah)
+						+ " " + nbax + "," + (nbay+nbah) + "z";
+			assignAttributes(selectedBox, {'d': dstr});
+			
+			var gripCoords = {
+				nw: [nbax, nbay],
+				ne: [nbax+nbaw, nbay],
+				sw: [nbax, nbay+nbah],
+				se: [nbax+nbaw, nbay+nbah],
+				n:  [nbax + (nbaw)/2, nbay],
+				w:	[nbax, nbay + (nbah)/2],
+				e:	[nbax + nbaw, nbay + (nbah)/2],
+				s:	[nbax + (nbaw)/2, nbay + nbah]
+			};
+			
+			if(selected == selectedElements[0]) {
+				for(var dir in gripCoords) {
+					var coords = gripCoords[dir];
+					assignAttributes(selectedGrips[dir], {
+						cx: coords[0], cy: coords[1]
+					});
+				};
+			}
+
+			if (angle) {
+				this.selectorGroup.setAttribute("transform", "rotate(" + [angle,cx,cy].join(",") + ")");
+			}
+			else {
+				this.selectorGroup.setAttribute("transform", "");
+			}
+
+			// we want to go 20 pixels in the negative transformed y direction, ignoring scale
+			assignAttributes(this.rotateGripConnector, { x1: nbax + (nbaw)/2, 
+														y1: nbay, 
+														x2: nbax + (nbaw)/2, 
+														y2: nbay- 20});
+			assignAttributes(this.rotateGrip, { cx: nbax + (nbaw)/2, 
+												cy: nbay - 20 });
+			
+			svgroot.unsuspendRedraw(sr_handle);
+		};
+
+		// now initialize the selector
+		this.reset(elem);
+	};
+
+	// Class: SelectorManager
+	// public class to manage all selector objects (selection boxes)
+	SelectorManager = function() {
+
+	// this will hold the <g> element that contains all selector rects/grips
+	this.selectorParentGroup = null;
+
+	// this is a special rect that is used for multi-select
+	this.rubberBandBox = null;
+
+	// this will hold objects of type Selector (see above)
+	this.selectors = [];
+
+	// this holds a map of SVG elements to their Selector object
+	this.selectorMap = {};
+
+	// local reference to this object
+	var mgr = this;
+	
+	// Function: SelectorManager.initGroup
+	// Resets the parent selector group element
+	this.initGroup = function() {
+		// remove old selector parent group if it existed
+		if (mgr.selectorParentGroup && mgr.selectorParentGroup.parentNode) {
+			mgr.selectorParentGroup.parentNode.removeChild(mgr.selectorParentGroup);
+		}
+		// create parent selector group and add it to svgroot
+		mgr.selectorParentGroup = svgdoc.createElementNS(svgns, "g");
+		mgr.selectorParentGroup.setAttribute("id", "selectorParentGroup");
+		svgroot.appendChild(mgr.selectorParentGroup);
+		mgr.selectorMap = {};
+		mgr.selectors = [];
+		mgr.rubberBandBox = null;
+		
+		if($("#canvasBackground").length) return;
+
+		var canvasbg = svgdoc.createElementNS(svgns, "svg");
+		var dims = curConfig.dimensions;
+		assignAttributes(canvasbg, {
+			'id':'canvasBackground',
+			'width': dims[0],
+			'height': dims[1],
+			'x': 0,
+			'y': 0,
+			'overflow': 'visible',
+			'style': 'pointer-events:none'
+		});
+		
+		var rect = svgdoc.createElementNS(svgns, "rect");
+		assignAttributes(rect, {
+			'width': '100%',
+			'height': '100%',
+			'x': 0,
+			'y': 0,
+			'stroke-width': 1,
+			'stroke': '#000',
+			'fill': '#FFF',
+			'style': 'pointer-events:none'
+		});
+		// Both Firefox and WebKit are too slow with this filter region (especially at higher
+		// zoom levels) and Opera has at least one bug
+//			if (!window.opera) rect.setAttribute('filter', 'url(#canvashadow)');
+		canvasbg.appendChild(rect);
+		svgroot.insertBefore(canvasbg, svgcontent);
+	};
+	
+	// Function: SelectorManager.requestSelector
+	// Returns the selector based on the given element
+	//
+	// Parameters:
+	// elem - DOM element to get the selector for
+	this.requestSelector = function(elem) {
+		if (elem == null) return null;
+		var N = this.selectors.length;
+		// if we've already acquired one for this element, return it
+		if (typeof(this.selectorMap[elem.id]) == "object") {
+			this.selectorMap[elem.id].locked = true;
+			return this.selectorMap[elem.id];
+		}
+		for (var i = 0; i < N; ++i) {
+			if (this.selectors[i] && !this.selectors[i].locked) {
+				this.selectors[i].locked = true;
+				this.selectors[i].reset(elem);
+				this.selectorMap[elem.id] = this.selectors[i];
+				return this.selectors[i];
+			}
+		}
+		// if we reached here, no available selectors were found, we create one
+		this.selectors[N] = new Selector(N, elem);
+		this.selectorParentGroup.appendChild(this.selectors[N].selectorGroup);
+		this.selectorMap[elem.id] = this.selectors[N];
+		return this.selectors[N];
+	};
+	
+	// Function: SelectorManager.releaseSelector
+	// Removes the selector of the given element (hides selection box) 
+	//
+	// Parameters:
+	// elem - DOM element to remove the selector for
+	this.releaseSelector = function(elem) {
+		if (elem == null) return;
+		var N = this.selectors.length,
+			sel = this.selectorMap[elem.id];
+		for (var i = 0; i < N; ++i) {
+			if (this.selectors[i] && this.selectors[i] == sel) {
+				if (sel.locked == false) {
+					console.log("WARNING! selector was released but was already unlocked");
+				}
+				delete this.selectorMap[elem.id];
+				sel.locked = false;
+				sel.selectedElement = null;
+				sel.showGrips(false);
+
+				// remove from DOM and store reference in JS but only if it exists in the DOM
+				try {
+					sel.selectorGroup.setAttribute("display", "none");
+				} catch(e) { }
+
+				break;
+			}
+		}
+	};
+
+	// Function: SelectorManager.getRubberBandBox
+	// Returns the rubberBandBox DOM element. This is the rectangle drawn by the user for selecting/zooming
+	this.getRubberBandBox = function() {
+		if (this.rubberBandBox == null) {
+			this.rubberBandBox = this.selectorParentGroup.appendChild(
+					addSvgElementFromJson({ "element": "rect",
+						"attr": {
+							"id": "selectorRubberBand",
+							"fill": "#22C",
+							"fill-opacity": 0.15,
+							"stroke": "#22C",
+							"stroke-width": 0.5,
+							"display": "none",
+							"style": "pointer-events:none"
+						}
+					}));
+		}
+		return this.rubberBandBox;
+	};
+
+	this.initGroup();
+};
+}());
 
 
 	// **************************************************************************************
@@ -1427,8 +1582,6 @@ var BatchCommand = this.undoCmd.batch = function(text) {
 		selectorManager = new SelectorManager(),
 		rubberBox = null,
 		events = {},
-		undoStackPointer = 0,
-		undoStack = [],
 		curBBoxes = [],
 		extensions = {};
 	
@@ -1496,23 +1649,6 @@ var BatchCommand = this.undoCmd.batch = function(text) {
 		return resultList;
 	};
 
-	// FIXME: we MUST compress consecutive text changes to the same element
-	// (right now each keystroke is saved as a separate command that includes the
-	// entire text contents of the text element)
-	// TODO: consider limiting the history that we store here (need to do some slicing)
-	var addCommandToHistory = function(cmd) {
-		// if our stack pointer is not at the end, then we have to remove
-		// all commands after the pointer and insert the new command
-		if (undoStackPointer < undoStack.length && undoStack.length > 0) {
-			undoStack = undoStack.splice(0, undoStackPointer);
-		}
-		undoStack.push(cmd);
-		undoStackPointer = undoStack.length;
-	};
-	
-	this.getHistoryPosition = function() {
-		return undoStackPointer;
-	};
 
 // private functions
 	var getId = function() {
@@ -8312,33 +8448,6 @@ var BatchCommand = this.undoCmd.batch = function(text) {
 		return clone;
 	}
 
-	// New functions for refactoring of Undo/Redo
-	
-	// this is the stack that stores the original values, the elements and
-	// the attribute name for begin/finish
-	var undoChangeStackPointer = -1;
-	var undoableChangeStack = [];
-	
-	// This function tells the canvas to remember the old values of the 
-	// attrName attribute for each element sent in.  The elements and values 
-	// are stored on a stack, so the next call to finishUndoableChange() will 
-	// pop the elements and old values off the stack, gets the current values
-	// from the DOM and uses all of these to construct the undo-able command.
-	this.beginUndoableChange = function(attrName, elems) {
-		var p = ++undoChangeStackPointer;
-		var i = elems.length;
-		var oldValues = new Array(i), elements = new Array(i);
-		while (i--) {
-			var elem = elems[i];
-			if (elem == null) continue;
-			elements[i] = elem;
-			oldValues[i] = elem.getAttribute(attrName);
-		}
-		undoableChangeStack[p] = {'attrName': attrName,
-								'oldValues': oldValues,
-								'elements': elements};
-	};
-	
 	// This function makes the changes to the elements
 	this.changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		var handle = svgroot.suspendRedraw(1000);
@@ -8445,27 +8554,7 @@ var BatchCommand = this.undoCmd.batch = function(text) {
 		svgroot.unsuspendRedraw(handle);	
 	};
 	
-	// This function returns a BatchCommand object which summarizes the
-	// change since beginUndoableChange was called.  The command can then
-	// be added to the command history
-	this.finishUndoableChange = function() {
-		var p = undoChangeStackPointer--;
-		var changeset = undoableChangeStack[p];
-		var i = changeset['elements'].length;
-		var attrName = changeset['attrName'];
-		var batchCmd = new BatchCommand("Change " + attrName);
-		while (i--) {
-			var elem = changeset['elements'][i];
-			if (elem == null) continue;
-			var changes = {};
-			changes[attrName] = changeset['oldValues'][i];
-			if (changes[attrName] != elem.getAttribute(attrName)) {
-				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes, attrName));
-			}
-		}
-		undoableChangeStack[p] = null;
-		return batchCmd;
-	};
+
 
 	// If you want to change all selectedElements, ignore the elems argument.
 	// If you want to change only a subset of selectedElements, then send the
@@ -9086,43 +9175,7 @@ var BatchCommand = this.undoCmd.batch = function(text) {
 		call("selected", selectedElements);
 	}
 
-	var resetUndoStack = function() {
-		undoStack = [];
-		undoStackPointer = 0;
-	};
 
-	this.getUndoStackSize = function() { return undoStackPointer; };
-	this.getRedoStackSize = function() { return undoStack.length - undoStackPointer; };
-
-	this.getNextUndoCommandText = function() { 
-		if (undoStackPointer > 0) 
-			return undoStack[undoStackPointer-1].text;
-		return "";
-	};
-	this.getNextRedoCommandText = function() { 
-		if (undoStackPointer < undoStack.length) 
-			return undoStack[undoStackPointer].text;
-		return "";
-	};
-
-	this.undo = function() {
-		if (undoStackPointer > 0) {
-			this.clearSelection();
-			var cmd = undoStack[--undoStackPointer];
-			cmd.unapply();
-			pathActions.clear();
-			call("changed", cmd.elements());
-		}
-	};
-	this.redo = function() {
-		if (undoStackPointer < undoStack.length && undoStack.length > 0) {
-			this.clearSelection();
-			var cmd = undoStack[undoStackPointer++];
-			cmd.apply();
-			pathActions.clear();
-			call("changed", cmd.elements());
-		}
-	};
 
 	// this function no longer uses cloneNode because we need to update the id
 	// of every copied element (even the descendants)
@@ -9380,7 +9433,6 @@ var BatchCommand = this.undoCmd.batch = function(text) {
 			remapElement: remapElement,
 			RemoveElementCommand: RemoveElementCommand,
 			removeUnusedDefElems: removeUnusedDefElems,
-			resetUndoStack: resetUndoStack,
 			round: round,
 			runExtensions: runExtensions,
 			sanitizeSvg: sanitizeSvg,
