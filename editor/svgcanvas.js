@@ -1328,6 +1328,35 @@ var SelectorManager;
 // **************************************************************************************
 var svgTransformLists = {};
 var SVGEditTransformList = function(elem) {
+
+	function transformToString(xform) {
+		var m = xform.matrix,
+			text = "";
+		switch(xform.type) {
+			case 1: // MATRIX
+				text = "matrix(" + [m.a,m.b,m.c,m.d,m.e,m.f].join(",") + ")";
+				break;
+			case 2: // TRANSLATE
+				text = "translate(" + m.e + "," + m.f + ")";
+				break;
+			case 3: // SCALE
+				if (m.a == m.d) text = "scale(" + m.a + ")";
+				else text = "scale(" + m.a + "," + m.d + ")";
+				break;
+			case 4: // ROTATE
+				var cx = 0, cy = 0;
+				// this prevents divide by zero
+				if (xform.angle != 0) {
+					var K = 1 - m.a;
+					cy = ( K * m.f + m.b*m.e ) / ( K*K + m.b*m.b );
+					cx = ( m.e - m.b * cy ) / K;
+				}
+				text = "rotate(" + xform.angle + " " + cx + "," + cy + ")";
+				break;
+		}
+		return text;
+	};
+
 	this._elem = elem || null;
 	this._xforms = [];
 	// TODO: how do we capture the undo-ability in the changed transform list?
@@ -1336,7 +1365,7 @@ var SVGEditTransformList = function(elem) {
 		var concatMatrix = svgroot.createSVGMatrix();
 		for (var i = 0; i < this.numberOfItems; ++i) {
 			var xform = this._list.getItem(i);
-			tstr += transformToObj(xform).text + " ";
+			tstr += transformToString(xform) + " ";
 		}
 		this._elem.setAttribute("transform", tstr);
 	};
@@ -1457,6 +1486,38 @@ var SVGEditTransformList = function(elem) {
 // **************************************************************************************
 
 // Group: Helper functions
+
+// Function: walkTree
+// Walks the tree and executes the callback on each element in a top-down fashion
+//
+// Parameters:
+// elem - DOM element to traverse
+// cbFn - Callback function to run on each element
+function walkTree(elem, cbFn){
+	if (elem && elem.nodeType == 1) {
+		cbFn(elem);
+		var i = elem.childNodes.length;
+		while (i--) {
+			walkTree(elem.childNodes.item(i), cbFn);
+		}
+	}
+};
+
+// Function: walkTreePost
+// Walks the tree and executes the callback on each element in a depth-first fashion
+//
+// Parameters:
+// elem - DOM element to traverse
+// cbFn - Callback function to run on each element
+function walkTreePost(elem, cbFn) {
+	if (elem && elem.nodeType == 1) {
+		var i = elem.childNodes.length;
+		while (i--) {
+			walkTree(elem.childNodes.item(i), cbFn);
+		}
+		cbFn(elem);
+	}
+};
 
 // Function: assignAttributes
 // Assigns multiple attributes to an element.
@@ -1679,6 +1740,24 @@ var runExtensions = this.runExtensions = function(action, vars, returnArray) {
 		}
 	});
 	return result;
+}
+	
+// Function: shortFloat
+// Rounds a given value to a float with number of digits defined in save_options
+//
+// Parameters: 
+// val - The value as a String, Number or Array of two numbers to be rounded
+//
+// Returns:
+// If a string/number was given, returns a Float. If an array, return a string
+// with comma-seperated floats
+var shortFloat = function(val) {
+	var digits = save_options.round_digits;
+	if(!isNaN(val)) {
+		return Number(Number(val).toFixed(digits));
+	} else if($.isArray(val)) {
+		return shortFloat(val[0]) + ',' + shortFloat(val[1]);
+	}
 }
 	
 // This method rounds the incoming value to the nearest value based on the current_zoom
@@ -1932,16 +2011,17 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 };
 
 // Function: getUrlFromAttr
-// Extracts the URL from the url(...) syntax of some attributes.  Three variants:
-// i.e. <circle fill="url(someFile.svg#foo)" /> or
-//      <circle fill="url('someFile.svg#foo')" /> or
-//      <circle fill='url("someFile.svg#foo")' />
+// Extracts the URL from the url(...) syntax of some attributes.  
+// Three variants:
+// 	* <circle fill="url(someFile.svg#foo)" />
+//  * <circle fill="url('someFile.svg#foo')" />
+//  * <circle fill='url("someFile.svg#foo")' />
 //
 // Parameters:
 // attrVal - The attribute value as a string
 // 
 // Returns:
-// String with just the URL
+// String with just the URL, like someFile.svg#foo
 var getUrlFromAttr = this.getUrlFromAttr = function(attrVal) {
 	if (attrVal) {		
 		// url("#somegrad")
@@ -1959,7 +2039,12 @@ var getUrlFromAttr = this.getUrlFromAttr = function(attrVal) {
 	return null;
 };
 
-var recalculateAllSelectedDimensions = function() {
+// Group: Element Transforms
+
+// Function: recalculateAllSelectedDimensions
+// Runs recalculateDimensions on the selected elements, 
+// adding the changes to a single batch command
+var recalculateAllSelectedDimensions = this.recalculateAllSelectedDimensions = function() {
 	var text = (current_resize_mode == "none" ? "position" : "size");
 	var batchCmd = new BatchCommand(text);
 
@@ -1982,12 +2067,20 @@ var recalculateAllSelectedDimensions = function() {
 // this is how we map paths to our preferred relative segment types
 var pathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a', 
 					'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
-
+					
+// Debug tool to easily see the current matrix in the browser's console
 var logMatrix = function(m) {
 	console.log([m.a,m.b,m.c,m.d,m.e,m.f]);
 };
 
-var remapElement = function(selected,changes,m) {
+// Function: remapElement
+// Applies coordinate changes to an element based on the given matrix
+//
+// Parameters:
+// selected - DOM element to be changed
+// changes - Object with changes to be remapped
+// m - Matrix object to use for remapping coordinates
+var remapElement = this.remapElement = function(selected,changes,m) {
 	var remap = function(x,y) { return transformPoint(x,y,m); },
 		scalew = function(w) { return m.a*w; },
 		scaleh = function(h) { return m.d*h; },
@@ -2214,9 +2307,15 @@ var remapElement = function(selected,changes,m) {
 	
 };
 
-// this function returns the command which resulted from the selected change
-// TODO: use suspendRedraw() and unsuspendRedraw() around this function
-var recalculateDimensions = function(selected) {
+// Function: recalculateDimensions
+// Decides the course of action based on the element's transform list
+//
+// Parameters:
+// selected - The DOM element to recalculate
+//
+// Returns: 
+// Undo command object with the resulting change
+var recalculateDimensions = this.recalculateDimensions = function(selected) {
 	if (selected == null) return null;
 	
 	var tlist = canvas.getTransformList(selected);
@@ -2794,12 +2893,194 @@ var recalculateDimensions = function(selected) {
 	return batchCmd;
 };
 
-// public events
+// Root Current Transformation Matrix in user units
+var root_sctm = null;
+
+// Function: transformPoint
+// A (hopefully) quicker function to transform a point by a matrix
+// (this function avoids any DOM calls and just does the math)
+// 
+// Parameters:
+// x - Float representing the x coordinate
+// y - Float representing the y coordinate
+// m - Matrix object to transform the point with
+// Returns a x,y object representing the transformed point
+var transformPoint = function(x, y, m) {
+	return { x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f};
+};
+
+// Function: isIdentity
+// Helper function to check if the matrix performs no actual transform 
+// (i.e. exists for identity purposes)
+//
+// Parameters: 
+// m - The matrix object to check
+//
+// Returns:
+// Boolean indicating whether or not the matrix is 1,0,0,1,0,0
+var isIdentity = function(m) {
+	return (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && m.e == 0 && m.f == 0);
+}
+
+// matrixMultiply() is provided because WebKit didn't implement multiply() correctly
+// on the SVGMatrix interface.  See https://bugs.webkit.org/show_bug.cgi?id=16062
+
+// Function: matrixMultiply
+// This function tries to return a SVGMatrix that is the multiplication m1*m2.
+// We also round to zero when it's near zero
+// 
+// Parameters:
+// >= 2 Matrix objects to multiply
+//
+// Returns: 
+// The matrix object resulting from the calculation
+var matrixMultiply = this.matrixMultiply = function() {
+	var NEAR_ZERO = 1e-14,
+		multi2 = function(m1, m2) {
+			var m = svgroot.createSVGMatrix();
+			m.a = m1.a*m2.a + m1.c*m2.b;
+			m.b = m1.b*m2.a + m1.d*m2.b,
+			m.c = m1.a*m2.c + m1.c*m2.d,
+			m.d = m1.b*m2.c + m1.d*m2.d,
+			m.e = m1.a*m2.e + m1.c*m2.f + m1.e,
+			m.f = m1.b*m2.e + m1.d*m2.f + m1.f;
+			return m;
+		},
+		args = arguments, i = args.length, m = args[i-1];
+	
+	while(i-- > 1) {
+		var m1 = args[i-1];
+		m = multi2(m1, m);
+	}
+	if (Math.abs(m.a) < NEAR_ZERO) m.a = 0;
+	if (Math.abs(m.b) < NEAR_ZERO) m.b = 0;
+	if (Math.abs(m.c) < NEAR_ZERO) m.c = 0;
+	if (Math.abs(m.d) < NEAR_ZERO) m.d = 0;
+	if (Math.abs(m.e) < NEAR_ZERO) m.e = 0;
+	if (Math.abs(m.f) < NEAR_ZERO) m.f = 0;
+	
+	return m;
+}
+
+// Function: transformListToTransform
+// This returns a single matrix Transform for a given Transform List
+// (this is the equivalent of SVGTransformList.consolidate() but unlike
+//  that method, this one does not modify the actual SVGTransformList)
+// This function is very liberal with its min,max arguments
+// 
+// Parameters:
+// tlist - The transformlist object
+// min - Optional integer indicating start transform position
+// max - Optional integer indicating end transform position
+//
+// Returns:
+// A single matrix transform object
+var transformListToTransform = this.transformListToTransform = function(tlist, min, max) {
+	var min = min == undefined ? 0 : min;
+	var max = max == undefined ? (tlist.numberOfItems-1) : max;
+	min = parseInt(min);
+	max = parseInt(max);
+	if (min > max) { var temp = max; max = min; min = temp; }
+	var m = svgroot.createSVGMatrix();
+	for (var i = min; i <= max; ++i) {
+		// if our indices are out of range, just use a harmless identity matrix
+		var mtom = (i >= 0 && i < tlist.numberOfItems ? 
+						tlist.getItem(i).matrix :
+						svgroot.createSVGMatrix());
+		m = matrixMultiply(m, mtom);
+	}
+	return svgroot.createSVGTransformFromMatrix(m);
+};
+
+// Function: hasMatrixTransform
+// See if the given transformlist includes a non-indentity matrix transform
+//
+// Parameters: 
+// tlist - The transformlist to check
+//
+// Returns: 
+// Boolean on whether or not a matrix transform was found
+var hasMatrixTransform = this.hasMatrixTransform = function(tlist) {
+	if(!tlist) return false;
+	var num = tlist.numberOfItems;
+	while (num--) {
+		var xform = tlist.getItem(num);
+		if (xform.type == 1 && !isIdentity(xform.matrix)) return true;
+	}
+	return false;
+}
+
+// Function: getMatrix
+// Get the matrix object for a given element
+//
+// Parameters:
+// elem - The DOM element to check
+// 
+// Returns:
+// The matrix object associated with the element's transformlist
+var getMatrix = function(elem) {
+	var tlist = canvas.getTransformList(elem);
+	return transformListToTransform(tlist).matrix;
+}
+
+// Function: transformBox
+// Transforms a rectangle based on the given matrix
+//
+// Parameters:
+// l - Float with the box's left coordinate
+// t - Float with the box's top coordinate
+// w - Float with the box width
+// h - Float with the box height
+// m - Matrix object to transform the box by
+// 
+// Returns:
+// An object with the following values:
+// * tl - The top left coordinate (x,y object)
+// * tr - The top right coordinate (x,y object)
+// * bl - The bottom left coordinate (x,y object)
+// * br - The bottom right coordinate (x,y object)
+// * aabox - Object with the following values:
+// * Float with the axis-aligned x coordinate
+// * Float with the axis-aligned y coordinate
+// * Float with the axis-aligned width coordinate
+// * Float with the axis-aligned height coordinate
+var transformBox = this.transformBox = function(l, t, w, h, m) {
+	var topleft = {x:l,y:t},
+		topright = {x:(l+w),y:t},
+		botright = {x:(l+w),y:(t+h)},
+		botleft = {x:l,y:(t+h)};
+	topleft = transformPoint( topleft.x, topleft.y, m );
+	var minx = topleft.x,
+		maxx = topleft.x,
+		miny = topleft.y,
+		maxy = topleft.y;
+	topright = transformPoint( topright.x, topright.y, m );
+	minx = Math.min(minx, topright.x);
+	maxx = Math.max(maxx, topright.x);
+	miny = Math.min(miny, topright.y);
+	maxy = Math.max(maxy, topright.y);
+	botleft = transformPoint( botleft.x, botleft.y, m);
+	minx = Math.min(minx, botleft.x);
+	maxx = Math.max(maxx, botleft.x);
+	miny = Math.min(miny, botleft.y);
+	maxy = Math.max(maxy, botleft.y);
+	botright = transformPoint( botright.x, botright.y, m );
+	minx = Math.min(minx, botright.x);
+	maxx = Math.max(maxx, botright.x);
+	miny = Math.min(miny, botright.y);
+	maxy = Math.max(maxy, botright.y);
+
+	return {tl:topleft, tr:topright, bl:botleft, br:botright, 
+			aabox: {x:minx, y:miny, width:(maxx-minx), height:(maxy-miny)} };
+};
+
 
 // Group: Selection
 
 // Function: clearSelection
 // Clears the selection.  The 'selected' handler is then called.
+// Parameters: 
+// noCall - Optional boolean that when true does not call the "selected" handler
 this.clearSelection = function(noCall) {
 	if (selectedElements[0] != null) {
 		var len = selectedElements.length;
@@ -2916,23 +3197,17 @@ this.removeFromSelection = function(elemsToRemove) {
 	selectedBBoxes = newSelectedBBoxes;
 };
 
-// Some global variables that we may need to refactor
-var root_sctm = null;
-
-// A (hopefully) quicker function to transform a point by a matrix
-// (this function avoids any DOM calls and just does the math)
-// Returns a x,y object representing the transformed point
-var transformPoint = function(x, y, m) {
-	return { x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f};
-};
-
-var isIdentity = function(m) {
-	return (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && m.e == 0 && m.f == 0);
-}
-
-// expects three points to be sent, each point must have an x,y field
-// returns an array of two points that are the smoothed
-this.smoothControlPoints = function(ct1, ct2, pt) {
+// Function: smoothControlPoints
+// Takes three points and creates a smoother line based on them
+// 
+// Parameters: 
+// ct1 - Object with x and y values (first control point)
+// ct2 - Object with x and y values (second control point)
+// pt - Object with x and y values (third point)
+//
+// Returns: 
+// Array of two "smoothed" point objects
+var smoothControlPoints = this.smoothControlPoints = function(ct1, ct2, pt) {
 	// each point must not be the origin
 	var x1 = ct1.x - pt.x,
 		y1 = ct1.y - pt.y,
@@ -2972,146 +3247,17 @@ this.smoothControlPoints = function(ct1, ct2, pt) {
 	}
 	return undefined;
 };
-var smoothControlPoints = this.smoothControlPoints;
-	
 
-// matrixMultiply() is provided because WebKit didn't implement multiply() correctly
-// on the SVGMatrix interface.  See https://bugs.webkit.org/show_bug.cgi?id=16062
-// This function tries to return a SVGMatrix that is the multiplication m1*m2.
-// We also round to zero when it's near zero
-this.matrixMultiply = function() {
-	var NEAR_ZERO = 1e-14,
-		multi2 = function(m1, m2) {
-			var m = svgroot.createSVGMatrix();
-			m.a = m1.a*m2.a + m1.c*m2.b;
-			m.b = m1.b*m2.a + m1.d*m2.b,
-			m.c = m1.a*m2.c + m1.c*m2.d,
-			m.d = m1.b*m2.c + m1.d*m2.d,
-			m.e = m1.a*m2.e + m1.c*m2.f + m1.e,
-			m.f = m1.b*m2.e + m1.d*m2.f + m1.f;
-			return m;
-		},
-		args = arguments, i = args.length, m = args[i-1];
-	
-	while(i-- > 1) {
-		var m1 = args[i-1];
-		m = multi2(m1, m);
-	}
-	if (Math.abs(m.a) < NEAR_ZERO) m.a = 0;
-	if (Math.abs(m.b) < NEAR_ZERO) m.b = 0;
-	if (Math.abs(m.c) < NEAR_ZERO) m.c = 0;
-	if (Math.abs(m.d) < NEAR_ZERO) m.d = 0;
-	if (Math.abs(m.e) < NEAR_ZERO) m.e = 0;
-	if (Math.abs(m.f) < NEAR_ZERO) m.f = 0;
-	
-	return m;
-}
-var matrixMultiply = this.matrixMultiply;
 
-// This returns a single matrix Transform for a given Transform List
-// (this is the equivalent of SVGTransformList.consolidate() but unlike
-//  that method, this one does not modify the actual SVGTransformList)
-// This function is very liberal with its min,max arguments
-var transformListToTransform = function(tlist, min, max) {
-	var min = min == undefined ? 0 : min;
-	var max = max == undefined ? (tlist.numberOfItems-1) : max;
-	min = parseInt(min);
-	max = parseInt(max);
-	if (min > max) { var temp = max; max = min; min = temp; }
-	var m = svgroot.createSVGMatrix();
-	for (var i = min; i <= max; ++i) {
-		// if our indices are out of range, just use a harmless identity matrix
-		var mtom = (i >= 0 && i < tlist.numberOfItems ? 
-						tlist.getItem(i).matrix :
-						svgroot.createSVGMatrix());
-		m = matrixMultiply(m, mtom);
-	}
-	return svgroot.createSVGTransformFromMatrix(m);
-};
-
-var hasMatrixTransform = function(tlist) {
-	if(!tlist) return false;
-	var num = tlist.numberOfItems;
-	while (num--) {
-		var xform = tlist.getItem(num);
-		if (xform.type == 1 && !isIdentity(xform.matrix)) return true;
-	}
-	return false;
-}
-
-var getMatrix = function(elem) {
-	var tlist = canvas.getTransformList(elem);
-	return transformListToTransform(tlist).matrix;
-}
-
-// FIXME: this should not have anything to do with zoom here - update the one place it is used this way
-// converts a tiny object equivalent of a SVGTransform
-// has the following properties:
-// - tx, ty, sx, sy, angle, cx, cy, string
-var transformToObj = function(xform, mZoom) {
-	var m = xform.matrix,
-		tobj = {tx:0,ty:0,sx:1,sy:1,angle:0,cx:0,cy:0,text:""},
-		z = mZoom?current_zoom:1;
-	switch(xform.type) {
-		case 1: // MATRIX
-			tobj.text = "matrix(" + [m.a,m.b,m.c,m.d,m.e,m.f].join(",") + ")";
-			break;
-		case 2: // TRANSLATE
-			tobj.tx = m.e;
-			tobj.ty = m.f;
-			tobj.text = "translate(" + m.e*z + "," + m.f*z + ")";
-			break;
-		case 3: // SCALE
-			tobj.sx = m.a;
-			tobj.sy = m.d;
-			if (m.a == m.d) tobj.text = "scale(" + m.a + ")";
-			else tobj.text = "scale(" + m.a + "," + m.d + ")";
-			break;
-		case 4: // ROTATE
-			tobj.angle = xform.angle;
-			// this prevents divide by zero
-			if (xform.angle != 0) {
-				var K = 1 - m.a;
-				tobj.cy = ( K * m.f + m.b*m.e ) / ( K*K + m.b*m.b );
-				tobj.cx = ( m.e - m.b * tobj.cy ) / K;
-			}
-			tobj.text = "rotate(" + xform.angle + " " + tobj.cx*z + "," + tobj.cy*z + ")";
-			break;
-	}
-	return tobj;
-};
-
-var transformBox = function(l, t, w, h, m) {
-	var topleft = {x:l,y:t},
-		topright = {x:(l+w),y:t},
-		botright = {x:(l+w),y:(t+h)},
-		botleft = {x:l,y:(t+h)};
-	topleft = transformPoint( topleft.x, topleft.y, m );
-	var minx = topleft.x,
-		maxx = topleft.x,
-		miny = topleft.y,
-		maxy = topleft.y;
-	topright = transformPoint( topright.x, topright.y, m );
-	minx = Math.min(minx, topright.x);
-	maxx = Math.max(maxx, topright.x);
-	miny = Math.min(miny, topright.y);
-	maxy = Math.max(maxy, topright.y);
-	botleft = transformPoint( botleft.x, botleft.y, m);
-	minx = Math.min(minx, botleft.x);
-	maxx = Math.max(maxx, botleft.x);
-	miny = Math.min(miny, botleft.y);
-	maxy = Math.max(maxy, botleft.y);
-	botright = transformPoint( botright.x, botright.y, m );
-	minx = Math.min(minx, botright.x);
-	maxx = Math.max(maxx, botright.x);
-	miny = Math.min(miny, botright.y);
-	maxy = Math.max(maxy, botright.y);
-
-	return {tl:topleft, tr:topright, bl:botleft, br:botright, 
-			aabox: {x:minx, y:miny, width:(maxx-minx), height:(maxy-miny)} };
-};
-
-var getMouseTarget = function(evt) {
+// Function: getMouseTarget
+// Gets the desired element from a mouse event
+// 
+// Parameters:
+// evt - Event object from the mouse event
+// 
+// Returns:
+// DOM element we want
+var getMouseTarget = this.getMouseTarget = function(evt) {
 	if (evt == null) {
 		return null;
 	}
@@ -3460,7 +3606,6 @@ var getMouseTarget = function(evt) {
 			}
 		});
 	};
-
 	
 	// in this function we do not record any state changes yet (but we do update
 	// any elements that are still being created, moved or resized on the canvas)
@@ -3804,6 +3949,11 @@ var getMouseTarget = function(evt) {
 
 	}; // mouseMove()
 	
+	// - in create mode, the element's opacity is set properly, we create an InsertElementCommand
+	//   and store it on the Undo stack
+	// - in move/resize mode, the element's attributes which were affected by the move/resize are
+	//   identified, a ChangeElementCommand is created and stored on the stack for those attrs
+	//   this is done in when we recalculate the selected dimensions()
 	var mouseUp = function(evt)
 	{
 		if(evt.button === 1) return;
@@ -4130,6 +4280,8 @@ var getMouseTarget = function(evt) {
 	
 }());
 
+// Interface: textActions
+// Functions relating to editing text elements
 var textActions = canvas.textActions = function() {
 	var curtext, current_text;
 	var textinput;
@@ -4517,7 +4669,9 @@ var textActions = canvas.textActions = function() {
 	}
 }();
 
-var pathActions = function() {
+// Interface: pathActions
+// Functions relating to editing path elements
+var pathActions = this.pathActions = function() {
 	
 	var subpath = false;
 	var pathData = {};
@@ -6329,199 +6483,6 @@ var pathActions = function() {
 }();
 
 pathActions.init();
-this.pathActions = pathActions;
-
-var shortFloat = function(val) {
-	var digits = save_options.round_digits;
-	if(!isNaN(val)) {
-		return Number(Number(val).toFixed(digits));
-	} else if($.isArray(val)) {
-		return shortFloat(val[0]) + ',' + shortFloat(val[1]);
-	}
-}
-
-// Convert an element to a path
-this.convertToPath = function(elem, getBBox, angle) {
-	if(elem == null) {
-		var elems = selectedElements;
-		$.each(selectedElements, function(i, elem) {
-			if(elem) canvas.convertToPath(elem);
-		});
-		return;
-	}
-	
-	if(!getBBox) {
-		var batchCmd = new BatchCommand("Convert element to Path");
-	}
-	
-	var attrs = getBBox?{}:{
-		"fill": cur_shape.fill,
-		"fill-opacity": cur_shape.fill_opacity,
-		"stroke": cur_shape.stroke,
-		"stroke-width": cur_shape.stroke_width,
-		"stroke-dasharray": cur_shape.stroke_dasharray,
-		"stroke-linejoin": cur_shape.stroke_linejoin,
-		"stroke-linecap": cur_shape.stroke_linecap,
-		"stroke-opacity": cur_shape.stroke_opacity,
-		"opacity": cur_shape.opacity,
-		"visibility":"hidden"
-	};
-	
-	// any attribute on the element not covered by the above
-	// TODO: make this list global so that we can properly maintain it
-	// TODO: what about @transform, @clip-rule, @fill-rule, etc?
-	$.each(['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'], function() {
-		if (elem.getAttribute(this)) {
-			attrs[this] = elem.getAttribute(this);
-		}
-	});
-	
-	var path = addSvgElementFromJson({
-		"element": "path",
-		"attr": attrs
-	});
-	
-	var eltrans = elem.getAttribute("transform");
-	if(eltrans) {
-		path.setAttribute("transform",eltrans);
-	}
-	
-	var id = elem.id;
-	var parent = elem.parentNode;
-	if(elem.nextSibling) {
-		parent.insertBefore(path, elem);
-	} else {
-		parent.appendChild(path);
-	}
-	
-	var d = '';
-	
-	var joinSegs = function(segs) {
-		$.each(segs, function(j, seg) {
-			var l = seg[0], pts = seg[1];
-			d += l;
-			for(var i=0; i < pts.length; i+=2) {
-				d += (pts[i] +','+pts[i+1]) + ' ';
-			}
-		});
-	}
-
-	// Possibly the cubed root of 6, but 1.81 works best
-	var num = 1.81;
-
-	switch (elem.tagName) {
-	case 'ellipse':
-	case 'circle':
-		var a = $(elem).attr(['rx', 'ry', 'cx', 'cy']);
-		var cx = a.cx, cy = a.cy, rx = a.rx, ry = a.ry;
-		if(elem.tagName == 'circle') {
-			rx = ry = $(elem).attr('r');
-		}
-	
-		joinSegs([
-			['M',[(cx-rx),(cy)]],
-			['C',[(cx-rx),(cy-ry/num), (cx-rx/num),(cy-ry), (cx),(cy-ry)]],
-			['C',[(cx+rx/num),(cy-ry), (cx+rx),(cy-ry/num), (cx+rx),(cy)]],
-			['C',[(cx+rx),(cy+ry/num), (cx+rx/num),(cy+ry), (cx),(cy+ry)]],
-			['C',[(cx-rx/num),(cy+ry), (cx-rx),(cy+ry/num), (cx-rx),(cy)]],
-			['Z',[]]
-		]);
-		break;
-	case 'path':
-		d = elem.getAttribute('d');
-		break;
-	case 'line':
-		var a = $(elem).attr(["x1", "y1", "x2", "y2"]);
-		d = "M"+a.x1+","+a.y1+"L"+a.x2+","+a.y2;
-		break;
-	case 'polyline':
-	case 'polygon':
-		d = "M" + elem.getAttribute('points');
-		break;
-	case 'rect':
-		var r = $(elem).attr(['rx', 'ry']);
-		var rx = r.rx, ry = r.ry;
-		var b = elem.getBBox();
-		var x = b.x, y = b.y, w = b.width, h = b.height;
-		var num = 4-num; // Why? Because!
-		
-		if(!rx && !ry) {
-			// Regular rect
-			joinSegs([
-				['M',[x, y]],
-				['L',[x+w, y]],
-				['L',[x+w, y+h]],
-				['L',[x, y+h]],
-				['L',[x, y]],
-				['Z',[]]
-			]);
-		} else {
-			joinSegs([
-				['M',[x, y+ry]],
-				['C',[x,y+ry/num, x+rx/num,y, x+rx,y]],
-				['L',[x+w-rx, y]],
-				['C',[x+w-rx/num,y, x+w,y+ry/num, x+w,y+ry]],
-				['L',[x+w, y+h-ry]],
-				['C',[x+w, y+h-ry/num, x+w-rx/num,y+h, x+w-rx,y+h]],
-				['L',[x+rx, y+h]],
-				['C',[x+rx/num, y+h, x,y+h-ry/num, x,y+h-ry]],
-				['L',[x, y+ry]],
-				['Z',[]]
-			]);
-		}
-		break;
-	default:
-		path.parentNode.removeChild(path);
-		break;
-	}
-	
-	if(d) {
-		path.setAttribute('d',d);
-	}
-	
-	if(!getBBox) {
-		// Replace the current element with the converted one
-		
-		// Reorient if it has a matrix
-		if(eltrans) {
-			var tlist = canvas.getTransformList(path);
-			if(hasMatrixTransform(tlist)) {
-				pathActions.resetOrientation(path);
-			}
-		}
-		
-		batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
-		batchCmd.addSubCommand(new InsertElementCommand(path));
-
-		canvas.clearSelection();
-		elem.parentNode.removeChild(elem)
-		path.setAttribute('id', id);
-		path.removeAttribute("visibility");
-		canvas.addToSelection([path], true);
-		
-		addCommandToHistory(batchCmd);
-		
-	} else {
-		// Get the correct BBox of the new path, then discard it
-		pathActions.resetOrientation(path);
-		var bb = false;
-		try {
-			bb = path.getBBox();
-		} catch(e) {
-			// Firefox fails
-		}
-		path.parentNode.removeChild(path);
-		return bb;
-	}
-}
-
-
-
-// - in create mode, the element's opacity is set properly, we create an InsertElementCommand
-//   and store it on the Undo stack
-// - in move/resize mode, the element's attributes which were affected by the move/resize are
-//   identified, a ChangeElementCommand is created and stored on the stack for those attrs
-//   this is done in when we recalculate the selected dimensions()
 
 // Group: Serialization
 
@@ -6795,6 +6756,9 @@ this.save = function(opts) {
 	call("saved", str);
 };
 
+// Function: rasterExport
+// Generates a PNG Data URL based on the current image, then calls "exported" 
+// with an object including the string and any issues found
 this.rasterExport = function() {
 	// remove the selected outline before serializing
 	this.clearSelection();
@@ -6824,27 +6788,6 @@ this.rasterExport = function() {
 
 	var str = svgCanvasToString();
 	call("exported", {svg: str, issues: issues});
-};
-
-// Walks the tree and executes the callback on each element in a top-down fashion
-var walkTree = function(elem, cbFn){
-	if (elem && elem.nodeType == 1) {
-		cbFn(elem);
-		var i = elem.childNodes.length;
-		while (i--) {
-			walkTree(elem.childNodes.item(i), cbFn);
-		}
-	}
-};
-// Walks the tree and executes the callback on each element in a depth-first fashion
-var walkTreePost = function(elem, cbFn) {
-	if (elem && elem.nodeType == 1) {
-		var i = elem.childNodes.length;
-		while (i--) {
-			walkTree(elem.childNodes.item(i), cbFn);
-		}
-		cbFn(elem);
-	}
 };
 
 // Function: getSvgString
@@ -7053,7 +6996,6 @@ this.setSvgString = function(xmlString) {
 //
 // Returns:
 // This function returns false if the import was unsuccessful, true otherwise.
-
 // TODO: properly handle if namespace is introduced by imported content (must add to svgcontent
 //       and update all prefixes in the imported node)
 // TODO: properly handle recalculating dimensions, recalculateDimensions() doesn't handle
@@ -8897,6 +8839,191 @@ this.ungroupSelectedElement = function() {
 	}
 };
 
+
+// Function: convertToPath
+// Convert selected element to a path, or get the BBox of an element-as-path
+//
+// Parameters: 
+// elem - The DOM element to be converted
+// getBBox - Boolean on whether or not to only return the path's BBox
+//
+// Returns:
+// If the getBBox flag is true, the resulting path's bounding box object.
+// Otherwise the resulting path element is returned.
+this.convertToPath = function(elem, getBBox) {
+	if(elem == null) {
+		var elems = selectedElements;
+		$.each(selectedElements, function(i, elem) {
+			if(elem) canvas.convertToPath(elem);
+		});
+		return;
+	}
+	
+	if(!getBBox) {
+		var batchCmd = new BatchCommand("Convert element to Path");
+	}
+	
+	var attrs = getBBox?{}:{
+		"fill": cur_shape.fill,
+		"fill-opacity": cur_shape.fill_opacity,
+		"stroke": cur_shape.stroke,
+		"stroke-width": cur_shape.stroke_width,
+		"stroke-dasharray": cur_shape.stroke_dasharray,
+		"stroke-linejoin": cur_shape.stroke_linejoin,
+		"stroke-linecap": cur_shape.stroke_linecap,
+		"stroke-opacity": cur_shape.stroke_opacity,
+		"opacity": cur_shape.opacity,
+		"visibility":"hidden"
+	};
+	
+	// any attribute on the element not covered by the above
+	// TODO: make this list global so that we can properly maintain it
+	// TODO: what about @transform, @clip-rule, @fill-rule, etc?
+	$.each(['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'], function() {
+		if (elem.getAttribute(this)) {
+			attrs[this] = elem.getAttribute(this);
+		}
+	});
+	
+	var path = addSvgElementFromJson({
+		"element": "path",
+		"attr": attrs
+	});
+	
+	var eltrans = elem.getAttribute("transform");
+	if(eltrans) {
+		path.setAttribute("transform",eltrans);
+	}
+	
+	var id = elem.id;
+	var parent = elem.parentNode;
+	if(elem.nextSibling) {
+		parent.insertBefore(path, elem);
+	} else {
+		parent.appendChild(path);
+	}
+	
+	var d = '';
+	
+	var joinSegs = function(segs) {
+		$.each(segs, function(j, seg) {
+			var l = seg[0], pts = seg[1];
+			d += l;
+			for(var i=0; i < pts.length; i+=2) {
+				d += (pts[i] +','+pts[i+1]) + ' ';
+			}
+		});
+	}
+
+	// Possibly the cubed root of 6, but 1.81 works best
+	var num = 1.81;
+
+	switch (elem.tagName) {
+	case 'ellipse':
+	case 'circle':
+		var a = $(elem).attr(['rx', 'ry', 'cx', 'cy']);
+		var cx = a.cx, cy = a.cy, rx = a.rx, ry = a.ry;
+		if(elem.tagName == 'circle') {
+			rx = ry = $(elem).attr('r');
+		}
+	
+		joinSegs([
+			['M',[(cx-rx),(cy)]],
+			['C',[(cx-rx),(cy-ry/num), (cx-rx/num),(cy-ry), (cx),(cy-ry)]],
+			['C',[(cx+rx/num),(cy-ry), (cx+rx),(cy-ry/num), (cx+rx),(cy)]],
+			['C',[(cx+rx),(cy+ry/num), (cx+rx/num),(cy+ry), (cx),(cy+ry)]],
+			['C',[(cx-rx/num),(cy+ry), (cx-rx),(cy+ry/num), (cx-rx),(cy)]],
+			['Z',[]]
+		]);
+		break;
+	case 'path':
+		d = elem.getAttribute('d');
+		break;
+	case 'line':
+		var a = $(elem).attr(["x1", "y1", "x2", "y2"]);
+		d = "M"+a.x1+","+a.y1+"L"+a.x2+","+a.y2;
+		break;
+	case 'polyline':
+	case 'polygon':
+		d = "M" + elem.getAttribute('points');
+		break;
+	case 'rect':
+		var r = $(elem).attr(['rx', 'ry']);
+		var rx = r.rx, ry = r.ry;
+		var b = elem.getBBox();
+		var x = b.x, y = b.y, w = b.width, h = b.height;
+		var num = 4-num; // Why? Because!
+		
+		if(!rx && !ry) {
+			// Regular rect
+			joinSegs([
+				['M',[x, y]],
+				['L',[x+w, y]],
+				['L',[x+w, y+h]],
+				['L',[x, y+h]],
+				['L',[x, y]],
+				['Z',[]]
+			]);
+		} else {
+			joinSegs([
+				['M',[x, y+ry]],
+				['C',[x,y+ry/num, x+rx/num,y, x+rx,y]],
+				['L',[x+w-rx, y]],
+				['C',[x+w-rx/num,y, x+w,y+ry/num, x+w,y+ry]],
+				['L',[x+w, y+h-ry]],
+				['C',[x+w, y+h-ry/num, x+w-rx/num,y+h, x+w-rx,y+h]],
+				['L',[x+rx, y+h]],
+				['C',[x+rx/num, y+h, x,y+h-ry/num, x,y+h-ry]],
+				['L',[x, y+ry]],
+				['Z',[]]
+			]);
+		}
+		break;
+	default:
+		path.parentNode.removeChild(path);
+		break;
+	}
+	
+	if(d) {
+		path.setAttribute('d',d);
+	}
+	
+	if(!getBBox) {
+		// Replace the current element with the converted one
+		
+		// Reorient if it has a matrix
+		if(eltrans) {
+			var tlist = canvas.getTransformList(path);
+			if(hasMatrixTransform(tlist)) {
+				pathActions.resetOrientation(path);
+			}
+		}
+		
+		batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
+		batchCmd.addSubCommand(new InsertElementCommand(path));
+
+		canvas.clearSelection();
+		elem.parentNode.removeChild(elem)
+		path.setAttribute('id', id);
+		path.removeAttribute("visibility");
+		canvas.addToSelection([path], true);
+		
+		addCommandToHistory(batchCmd);
+		
+	} else {
+		// Get the correct BBox of the new path, then discard it
+		pathActions.resetOrientation(path);
+		var bb = false;
+		try {
+			bb = path.getBBox();
+		} catch(e) {
+			// Firefox fails
+		}
+		path.parentNode.removeChild(path);
+		return bb;
+	}
+}
+
 this.moveToTopSelectedElement = function() {
 	var selected = selectedElements[0];
 	if (selected != null) {
@@ -9112,13 +9239,13 @@ this.getStrokedBBox = function(elems) {
 				// Get the BBox from the raw path for these elements
 				var elemNames = ['ellipse','path','line','polyline','polygon'];
 				if($.inArray(elem.tagName, elemNames) != -1) {
-					bb = good_bb = canvas.convertToPath(elem, true, angle);
+					bb = good_bb = canvas.convertToPath(elem, true);
 				} else if(elem.tagName == 'rect') {
 					// Look for radius
 					var rx = elem.getAttribute('rx');
 					var ry = elem.getAttribute('ry');
 					if(rx || ry) {
-						bb = good_bb = canvas.convertToPath(elem, true, angle);
+						bb = good_bb = canvas.convertToPath(elem, true);
 					}
 				}
 				
@@ -9543,7 +9670,6 @@ this.getPrivateMethods = function() {
 		transformBox: transformBox,
 		transformListToTransform: transformListToTransform,
 		transformPoint: transformPoint,
-		transformToObj: transformToObj,
 		walkTree: walkTree
 	}
 }
