@@ -3197,6 +3197,18 @@ this.removeFromSelection = function(elemsToRemove) {
 	selectedBBoxes = newSelectedBBoxes;
 };
 
+// Function: selectAllInCurrentLayer
+// Clears the selection, then adds all elements in the current layer to the selection.
+// This function then fires the selected event.
+this.selectAllInCurrentLayer = function() {
+	if (current_layer) {
+		canvas.clearSelection();
+		canvas.addToSelection($(current_layer).children());
+		current_mode = "select";
+		call("selected", selectedElements);			
+	}
+};
+
 // Function: smoothControlPoints
 // Takes three points and creates a smoother line based on them
 // 
@@ -6996,13 +7008,14 @@ this.setSvgString = function(xmlString) {
 //
 // Returns:
 // This function returns false if the import was unsuccessful, true otherwise.
-// TODO: properly handle if namespace is introduced by imported content (must add to svgcontent
-//       and update all prefixes in the imported node)
-// TODO: properly handle recalculating dimensions, recalculateDimensions() doesn't handle
-//       arbitrary transform lists, but makes some assumptions about how the transform list 
-//       was obtained
-// TODO: import should happen in top-left of current zoomed viewport	
-// TODO: create a new layer for the imported SVG
+// TODO: 
+// * properly handle if namespace is introduced by imported content (must add to svgcontent
+// and update all prefixes in the imported node)
+// * properly handle recalculating dimensions, recalculateDimensions() doesn't handle
+// arbitrary transform lists, but makes some assumptions about how the transform list 
+// was obtained
+// * import should happen in top-left of current zoomed viewport	
+// * create a new layer for the imported SVG
 this.importSvgString = function(xmlString) {
 	try {
 		// convert string into XML document
@@ -7190,6 +7203,8 @@ this.importSvgString = function(xmlString) {
 
 // Group: Layers
 
+// Function: identifyLayers
+// Updates layer system
 var identifyLayers = function() {
 	all_layers = [];
 	var numchildren = svgcontent.childNodes.length;
@@ -7578,17 +7593,7 @@ this.setLayerOpacity = function(layername, opacity) {
 	}
 };
 
-// Function: selectAllInCurrentLayer
-// Clears the selection, then adds all elements in the current layer to the selection.
-// This function then fires the selected event.
-this.selectAllInCurrentLayer = function() {
-	if (current_layer) {
-		canvas.clearSelection();
-		canvas.addToSelection($(current_layer).children());
-		current_mode = "select";
-		call("selected", selectedElements);			
-	}
-};
+// Group: User actions
 
 // Function: clear
 // Clears the current document.  This is not an undoable action.
@@ -7620,14 +7625,24 @@ this.clear = function() {
 	call("cleared");
 };
 
-this.linkControlPoints = function(linkPoints) {
-	pathActions.linkControlPoints(linkPoints);
-}
+// Function: linkControlPoints
+// Alias function
+this.linkControlPoints = pathActions.linkControlPoints;
 
+// Function: getContentElem
+// Returns the content DOM element
 this.getContentElem = function() { return svgcontent; };
+
+// Function: getRootElem
+// Returns the root DOM element
 this.getRootElem = function() { return svgroot; };
+
+// Function: getSelectedElems
+// Returns the array with selected DOM elements
 this.getSelectedElems = function() { return selectedElements; };
 
+// Function: getResolution
+// Returns the current dimensions and zoom level in an object
 this.getResolution = function() {
 // 		var vb = svgcontent.getAttribute("viewBox").split(' ');
 // 		return {'w':vb[2], 'h':vb[3], 'zoom': current_zoom};
@@ -7639,6 +7654,8 @@ this.getResolution = function() {
 	};
 };
 
+// Function: getDocumentTitle
+// Returns the current document title or an empty string if not found
 this.getDocumentTitle = function() {
 	var childs = svgcontent.childNodes;
 	for (var i=0; i<childs.length; i++) {
@@ -7649,6 +7666,12 @@ this.getDocumentTitle = function() {
 	return '';
 }
 
+// Function: setDocumentTitle
+// Adds/updates a title element for the document with the given name.
+// This is an undoable action
+//
+// Parameters:
+// newtitle - String with the new title
 this.setDocumentTitle = function(newtitle) {
 	var childs = svgcontent.childNodes, doc_title = false, old_title = '';
 	

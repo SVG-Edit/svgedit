@@ -2676,7 +2676,6 @@
 						if (paint.type == "linearGradient" || paint.type == "radialGradient") {
 							svgbox.removeChild(oldgrad);
 							var newgrad = svgbox.appendChild(document.importNode(paint[paint.type], true));
-							svgCanvas.fixOperaXML(newgrad, paint[paint.type])
 							newgrad.id = "gradbox_"+picker;
 							rectbox.setAttribute("fill", "url(#gradbox_" + picker + ")");
 							rectbox.setAttribute("opacity", paint.alpha/100);
