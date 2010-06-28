@@ -1078,14 +1078,14 @@
 					// update fill color and opacity
 					var fillColor = selectedElement.getAttribute("fill")||"black";
 					// prevent undo on these canvas changes
-					svgCanvas.setFillColor(fillColor, true);
-					svgCanvas.setFillOpacity(fillOpacity, true);
+					svgCanvas.setColor('fill', fillColor, true);
+					svgCanvas.setPaintOpacity('fill', fillOpacity, true);
 		
 					// update stroke color and opacity
 					var strokeColor = selectedElement.getAttribute("stroke")||"none";
 					// prevent undo on these canvas changes
-					svgCanvas.setStrokeColor(strokeColor, true);
-					svgCanvas.setStrokeOpacity(strokeOpacity, true);
+					svgCanvas.setColor('stroke', strokeColor, true);
+					svgCanvas.setPaintOpacity('stroke', strokeOpacity, true);
 		
 					// update the rect inside #fill_color
 					$("#stroke_color rect").attr({
@@ -1528,19 +1528,19 @@
 				
 				if (evt.shiftKey) {
 					strokePaint = paint;
-					if (svgCanvas.getStrokeColor() != color) {
-						svgCanvas.setStrokeColor(color);
+					if (svgCanvas.getColor('stroke') != color) {
+						svgCanvas.setColor('stroke', color);
 					}
 					if (color != 'none' && svgCanvas.getStrokeOpacity() != 1) {
-						svgCanvas.setStrokeOpacity(1.0);
+						svgCanvas.setPaintOpacity('stroke', 1.0);
 					}
 				} else {
 					fillPaint = paint;
-					if (svgCanvas.getFillColor() != color) {
-						svgCanvas.setFillColor(color);
+					if (svgCanvas.getColor('fill') != color) {
+						svgCanvas.setColor('fill', color);
 					}
-					if (color != 'none' && svgCanvas.getFillOpacity() != 1) {
-						svgCanvas.setFillOpacity(1.0);
+					if (color != 'none' && svgCanvas.getFillOpacity('fill') != 1) {
+						svgCanvas.setPaintOpacity('fill', 1.0);
 					}
 				}
 				updateToolButtonState();
@@ -2686,11 +2686,11 @@
 						}
 		
 						if (picker == 'stroke') {
-							svgCanvas.setStrokePaint(paint, true);
+							svgCanvas.setPaint('stroke', paint);
 							strokePaint = paint;
 						}
 						else {
-							svgCanvas.setFillPaint(paint, true);
+							svgCanvas.setPaint('fill', paint);
 							fillPaint = paint;
 						}
 						updateToolbar();
@@ -2702,8 +2702,8 @@
 			};
 		
 			var updateToolButtonState = function() {
-				var bNoFill = (svgCanvas.getFillColor() == 'none');
-				var bNoStroke = (svgCanvas.getStrokeColor() == 'none');
+				var bNoFill = (svgCanvas.getColor('fill') == 'none');
+				var bNoStroke = (svgCanvas.getColor('stroke') == 'none');
 				var buttonsNeedingStroke = [ '#tool_fhpath', '#tool_line' ];
 				var buttonsNeedingFillAndStroke = [ '#tools_rect .tool_button', '#tools_ellipse .tool_button', '#tool_text', '#tool_path'];
 				if (bNoStroke) {

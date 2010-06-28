@@ -3328,10 +3328,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			mouse_x = pt.x * current_zoom,
 			mouse_y = pt.y * current_zoom;
 		evt.preventDefault();
-	
-		if($.inArray(current_mode, ['select', 'resize']) == -1) {
-			addGradient();
-		}
+		
+		// This would seem to be unnecessary...
+// 		if($.inArray(current_mode, ['select', 'resize']) == -1) {
+// 			setGradient();
+// 		}
 		
 		var x = mouse_x / current_zoom,
 			y = mouse_y / current_zoom,
@@ -7593,7 +7594,7 @@ this.setLayerOpacity = function(layername, opacity) {
 	}
 };
 
-// Group: User actions
+// Group: Document functions
 
 // Function: clear
 // Clears the current document.  This is not an undoable action.
@@ -7699,6 +7700,11 @@ this.setDocumentTitle = function(newtitle) {
 	addCommandToHistory(batchCmd);
 }
 
+// Function: getEditorNS
+// Returns the editor's namespace URL, optionally adds it to root element
+//
+// Parameters:
+// add - Boolean to indicate whether or not to add the namespace value
 this.getEditorNS = function(add) {
 	if(add) {
 		svgcontent.setAttribute('xmlns:se', se_ns);
@@ -7706,6 +7712,17 @@ this.getEditorNS = function(add) {
 	return se_ns;
 }
 
+// Function: setResolution
+// Changes the document's dimensions to the given size
+//
+// Parameters: 
+// x - Number with the width of the new dimensions in user units. 
+// Can also be the string "fit" to indicate "fit to content"
+// y - Number with the height of the new dimensions in user units. 
+//
+// Returns:
+// Boolean to indicate if resolution change was succesful. 
+// It will fail on "fit to content" option with no content to fit to.
 this.setResolution = function(x, y) {
 	var res = canvas.getResolution();
 	var w = res.w, h = res.h;
@@ -7759,10 +7776,20 @@ this.setResolution = function(x, y) {
 	return true;
 };
 
+// Function: getOffset
+// Returns an object with x, y values indicating the svgcontent element's
+// position in the editor's canvas.
 this.getOffset = function() {
 	return $(svgcontent).attr(['x', 'y']);
 }
 
+// Function: setBBoxZoom
+// Sets the zoom level on the canvas-side based on the given value
+// 
+// Parameters:
+// val - Bounding box object to zoom to or string indicating zoom option 
+// editor_w - Integer with the editor's workarea box's width
+// editor_h - Integer with the editor's workarea box's height
 this.setBBoxZoom = function(val, editor_w, editor_h) {
 	var spacer = .85;
 	var bb;
@@ -7808,6 +7835,11 @@ this.setBBoxZoom = function(val, editor_w, editor_h) {
 	return calcZoom(bb);
 }
 
+// Function: setZoom
+// Sets the zoom to the given level
+//
+// Parameters:
+// zoomlevel - Float indicating the zoom level to change to
 this.setZoom = function(zoomlevel) {
 	var res = canvas.getResolution();
 	svgcontent.setAttribute("viewBox", "0 0 " + res.w/zoomlevel + " " + res.h/zoomlevel);
@@ -7820,10 +7852,17 @@ this.setZoom = function(zoomlevel) {
 	runExtensions("zoomChanged", zoomlevel);
 }
 
+// Function: getMode
+// Returns the current editor mode string
 this.getMode = function() {
 	return current_mode;
 };
 
+// Function: setMode
+// Sets the editor's mode to the given string
+//
+// Parameters:
+// name - String with the new mode to change to
 this.setMode = function(name) {
 	pathActions.clear(true);
 	textActions.clear();
@@ -7832,15 +7871,24 @@ this.setMode = function(name) {
 	current_mode = name;
 };
 
-this.getStrokeColor = function() {
-	return cur_properties.stroke;
+// Group: Element Styling
+
+// Function: getColor
+// Returns the current fill/stroke option
+this.getColor = function(type) {
+	return cur_properties[type];
 };
 
-// TODO: rewrite setFillColor(), setStrokeColor(), setStrokeWidth(), setStrokeStyle() 
-// to use a common function?
-this.setStrokeColor = function(val,preventUndo) {
-	cur_shape.stroke = val;
-	cur_properties.stroke_paint = {type:"solidColor"};
+// Function: setColor
+// Change the current stroke/fill color/gradient value
+// 
+// Parameters:
+// type - String indicating fill or stroke
+// val - The value to set the stroke attribute to
+// preventUndo - Boolean indicating whether or not this should be and undoable option
+this.setColor = function(type, val, preventUndo) {
+	cur_shape[type] = val;
+	cur_properties[type + '_paint'] = {type:"solidColor"};
 	var elems = [];
 	var i = selectedElements.length;
 	while (i--) {
@@ -7848,49 +7896,29 @@ this.setStrokeColor = function(val,preventUndo) {
 		if (elem) {
 			if (elem.tagName == "g")
 				walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
-			else
-				elems.push(elem);
+			else {
+				if(type == 'fill') {
+					if(elem.tagName != "polyline" && elem.tagName != "line") {
+						elems.push(elem);
+					}
+				} else {
+					elems.push(elem);
+				}
+			}
 		}
 	}
-
 	if (elems.length > 0) {
 		if (!preventUndo) {
-			this.changeSelectedAttribute("stroke", val, elems);
+			this.changeSelectedAttribute(type, val, elems);
 			call("changed", elems);
 		} else 
-			this.changeSelectedAttributeNoUndo("stroke", val, elems);
+			this.changeSelectedAttributeNoUndo(type, val, elems);
 	}
-};
+}
 
-this.getFillColor = function() {
-	return cur_properties.fill;
-};
 
-this.setFillColor = function(val,preventUndo) {
-	cur_properties.fill = val;
-	cur_properties.fill_paint = {type:"solidColor"};
-	// take out any path/line elements when setting fill
-	// add all descendants of groups (but remove groups)
-	var elems = [];
-	var i = selectedElements.length;
-	while (i--) {
-		var elem = selectedElements[i];
-		if (elem) {
-			if (elem.tagName == "g")
-				walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
-			else if (elem.tagName != "polyline" && elem.tagName != "line")
-				elems.push(elem);
-		}
-	}
-	if (elems.length > 0) {
-		if (!preventUndo) {
-			this.changeSelectedAttribute("fill", val, elems);
-			call("changed", elems);
-		} else
-			this.changeSelectedAttributeNoUndo("fill", val, elems);
-	}
-};
-
+// Function: findDefs
+// Return the document's <defs> element, create it first if necessary
 var findDefs = function() {
 	var defs = svgcontent.getElementsByTagNameNS(svgns, "defs");
 	if (defs.length > 0) {
@@ -7903,29 +7931,38 @@ var findDefs = function() {
 	return defs;
 };
 
-var addGradient = function() {
-	$.each(['stroke','fill'],function(i,type) {
-		
-		if(!cur_properties[type + '_paint'] || cur_properties[type + '_paint'].type == "solidColor") return;
-		var grad = canvas[type + 'Grad'];
-		// find out if there is a duplicate gradient already in the defs
-		var duplicate_grad = findDuplicateGradient(grad);
-		var defs = findDefs();
-		// no duplicate found, so import gradient into defs
-		if (!duplicate_grad) {
-			var orig_grad = grad;
-			grad = defs.appendChild( svgdoc.importNode(grad, true) );
-			// get next id and set it on the grad
-			grad.id = getNextId();
-		}
-		else { // use existing gradient
-			grad = duplicate_grad;
-		}
-		var functype = type=='fill'?'Fill':'Stroke';
-		canvas['set'+ functype +'Color']("url(#" + grad.id + ")");
-	});
+// Function: setGradient
+// Apply the current gradient to selected element's fill or stroke
+//
+// Parameters
+// type - String indicating "fill" or "stroke" to apply to an element
+var setGradient = this.setGradient = function(type) {
+	if(!cur_properties[type + '_paint'] || cur_properties[type + '_paint'].type == "solidColor") return;
+	var grad = canvas[type + 'Grad'];
+	// find out if there is a duplicate gradient already in the defs
+	var duplicate_grad = findDuplicateGradient(grad);
+	var defs = findDefs();
+	// no duplicate found, so import gradient into defs
+	if (!duplicate_grad) {
+		var orig_grad = grad;
+		grad = defs.appendChild( svgdoc.importNode(grad, true) );
+		// get next id and set it on the grad
+		grad.id = getNextId();
+	}
+	else { // use existing gradient
+		grad = duplicate_grad;
+	}
+	canvas.setColor(type, "url(#" + grad.id + ")");
 }
 
+// Function: findDuplicateGradient
+// Check if exact gradient already exists
+//
+// Parameters:
+// grad - The gradient DOM element to compare to others
+//
+// Returns:
+// The existing gradient if found, null if not
 var findDuplicateGradient = function(grad) {
 	var defs = findDefs();
 	var existing_grads = $(defs).find("linearGradient, radialGradient");
@@ -7982,59 +8019,89 @@ var findDuplicateGradient = function(grad) {
 	return null;
 };
 
-// Group: Fill and Stroke
-
-this.setStrokePaint = function(p, addGrad) {
+// Function: setPaint
+// Set a color/gradient to a fill/stroke
+//
+// Parameters: 
+// type - String with "fill" or "stroke"
+// paint - The jGraduate paint object to apply
+this.setPaint = function(type, paint) {
 	// make a copy
-	var p = new $.jGraduate.Paint(p);
-	this.setStrokeOpacity(p.alpha/100);
+	var p = new $.jGraduate.Paint(paint);
+	this.setPaintOpacity(type, p.alpha/100, true);
 
 	// now set the current paint object
-	cur_properties.stroke_paint = p;
-	if (p.type == "solidColor") {
-		this.setStrokeColor(p.solidColor != "none" ? "#"+p.solidColor : "none");
-	}
-	else if(p.type == "linearGradient") {
-		canvas.strokeGrad = p.linearGradient;
-		if(addGrad) addGradient(); 
-	}
-	else if(p.type == "radialGradient") {
-		canvas.strokeGrad = p.radialGradient;
-		if(addGrad) addGradient(); 
-	}
-	else {
+	cur_properties[type + '_paint'] = p;
+	switch ( p.type ) {
+		case "solidColor":
+			this.setColor('stroke', p.solidColor != "none" ? "#"+p.solidColor : "none");;
+			break;
+		case "linearGradient":
+		case "radialGradient":
+			canvas[type + 'Grad'] = p[p.type];
+			setGradient(type);
+			break;
+		default:
 //			console.log("none!");
 	}
 };
 
-this.setFillPaint = function(p, addGrad) {
-	// make a copy
-	var p = new $.jGraduate.Paint(p);
-	this.setFillOpacity(p.alpha/100, true);
 
-	// now set the current paint object
-	cur_properties.fill_paint = p;
-	if (p.type == "solidColor") {
-		this.setFillColor(p.solidColor != "none" ? "#"+p.solidColor : "none");
-	}
-	else if(p.type == "linearGradient") {
-		canvas.fillGrad = p.linearGradient;
-		if(addGrad) addGradient(); 
-	}
-	else if(p.type == "radialGradient") {
-		canvas.fillGrad = p.radialGradient;
-		if(addGrad) addGradient(); 
-	}
-	else {
-//			console.log("none!");
-	}
-};
+// this.setStrokePaint = function(p) {
+// 	// make a copy
+// 	var p = new $.jGraduate.Paint(p);
+// 	this.setStrokeOpacity(p.alpha/100);
+// 
+// 	// now set the current paint object
+// 	cur_properties.stroke_paint = p;
+// 	switch ( p.type ) {
+// 		case "solidColor":
+// 			this.setColor('stroke', p.solidColor != "none" ? "#"+p.solidColor : "none");;
+// 			break;
+// 		case "linearGradient"
+// 		case "radialGradient"
+// 			canvas.strokeGrad = p[p.type];
+// 			setGradient(type); 
+// 		default:
+// //			console.log("none!");
+// 	}
+// };
+// 
+// this.setFillPaint = function(p, addGrad) {
+// 	// make a copy
+// 	var p = new $.jGraduate.Paint(p);
+// 	this.setFillOpacity(p.alpha/100, true);
+// 
+// 	// now set the current paint object
+// 	cur_properties.fill_paint = p;
+// 	if (p.type == "solidColor") {
+// 		this.setColor('fill', p.solidColor != "none" ? "#"+p.solidColor : "none");
+// 	}
+// 	else if(p.type == "linearGradient") {
+// 		canvas.fillGrad = p.linearGradient;
+// 		if(addGrad) setGradient(); 
+// 	}
+// 	else if(p.type == "radialGradient") {
+// 		canvas.fillGrad = p.radialGradient;
+// 		if(addGrad) setGradient(); 
+// 	}
+// 	else {
+// //			console.log("none!");
+// 	}
+// };
 
+// Function: getStrokeWidth
+// Returns the current stroke-width value
 this.getStrokeWidth = function() {
 	return cur_properties.stroke_width;
 };
 
-// When attempting to set a line's width to 0, change it to 1 instead
+// Function: setStrokeWidth
+// Sets the stroke width for the current selected elements
+// When attempting to set a line's width to 0, this changes it to 1 instead
+//
+// Parameters:
+// val - A Float indicating the new stroke width value
 this.setStrokeWidth = function(val) {
 	if(val == 0 && $.inArray(current_mode, ['line', 'path']) != -1) {
 		canvas.setStrokeWidth(1);
@@ -8059,6 +8126,12 @@ this.setStrokeWidth = function(val) {
 	}
 };
 
+// Function: setStrokeAttr
+// Set the given stroke-related attribute the given value for selected elements
+//
+// Parameters:
+// attr - String with the attribute name
+// val - String or number with the attribute value
 this.setStrokeAttr = function(attr, val) {
 	cur_shape[attr.replace('-','_')] = val;
 	var elems = [];
@@ -8078,13 +8151,44 @@ this.setStrokeAttr = function(attr, val) {
 	}
 };
 
+// Function: getOpacity
+// Returns the current opacity
 this.getOpacity = function() {
 	return cur_shape.opacity;
 };
 
+// Function: setOpacity
+// Sets the given opacity to the current selected elements
 this.setOpacity = function(val) {
 	cur_shape.opacity = val;
 	this.changeSelectedAttribute("opacity", val);
+};
+
+// Function: getOpacity
+// Returns the current fill opacity
+this.getFillOpacity = function() {
+	return cur_shape.fill_opacity;
+};
+
+// Function: getStrokeOpacity
+// Returns the current stroke opacity
+this.getStrokeOpacity = function() {
+	return cur_shape.stroke_opacity;
+};
+
+// Function: setPaintOpacity
+// Sets the current fill/stroke opacity
+//
+// Parameters:
+// type - String with "fill" or "stroke"
+// val - Float with the new opacity value
+// preventUndo - Boolean indicating whether or not this should be an undoable action
+this.setPaintOpacity = function(type, val, preventUndo) {
+	cur_shape[type + '_opacity'] = val;
+	if (!preventUndo)
+		this.changeSelectedAttribute(type + "-opacity", val);
+	else
+		this.changeSelectedAttributeNoUndo(type + "-opacity", val);
 };
 
 this.getBlur = function(elem) {
@@ -8216,29 +8320,6 @@ this.getBlur = function(elem) {
 	};
 }());
 
-this.getFillOpacity = function() {
-	return cur_shape.fill_opacity;
-};
-
-this.setFillOpacity = function(val, preventUndo) {
-	cur_shape.fill_opacity = val;
-	if (!preventUndo)
-		this.changeSelectedAttribute("fill-opacity", val);
-	else
-		this.changeSelectedAttributeNoUndo("fill-opacity", val);
-};
-
-this.getStrokeOpacity = function() {
-	return cur_shape.stroke_opacity;
-};
-
-this.setStrokeOpacity = function(val, preventUndo) {
-	cur_shape.stroke_opacity = val;
-	if (!preventUndo)
-		this.changeSelectedAttribute("stroke-opacity", val);
-	else
-		this.changeSelectedAttributeNoUndo("stroke-opacity", val);
-};
 
 // returns an object that behaves like a SVGTransformList
 this.getTransformList = function(elem) {
@@ -9648,7 +9729,7 @@ function getElem(id) {
 this.getPrivateMethods = function() {
 	return {
 		addCommandToHistory: addCommandToHistory,
-		addGradient: addGradient,
+		setGradient: setGradient,
 		addSvgElementFromJson: addSvgElementFromJson,
 		assignAttributes: assignAttributes,
 		BatchCommand: BatchCommand,
