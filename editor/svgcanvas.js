@@ -2039,7 +2039,265 @@ var getUrlFromAttr = this.getUrlFromAttr = function(attrVal) {
 	return null;
 };
 
+// Function: getBBox
+// Get the given/selected element's bounding box object, convert it to be more
+// usable when necessary
+//
+// Parameters:
+// elem - Optional DOM element to get the BBox for
+this.getBBox = function(elem) {
+	var selected = elem || selectedElements[0];
+	if (elem.nodeType != 1) return null;
+	var ret = null;
+	if(elem.nodeName == 'text' && selected.textContent == '') {
+		selected.textContent = 'a'; // Some character needed for the selector to use.
+		ret = selected.getBBox();
+		selected.textContent = '';
+	} else if(elem.nodeName == 'path' && isWebkit) {
+		ret = getPathBBox(selected);
+	} else if(elem.nodeName == 'use' && !isWebkit) {
+		ret = selected.getBBox();
+		ret.x += parseFloat(selected.getAttribute('x')||0);
+		ret.y += parseFloat(selected.getAttribute('y')||0);
+	} else if(elem.nodeName == 'foreignObject') {
+		ret = selected.getBBox();
+		ret.x += parseFloat(selected.getAttribute('x')||0);
+		ret.y += parseFloat(selected.getAttribute('y')||0);
+	} else {
+		try { ret = selected.getBBox(); } 
+		catch(e) { 
+			// Check if element is child of a foreignObject
+			var fo = $(selected).closest("foreignObject");
+			if(fo.length) {
+				try {
+					ret = fo[0].getBBox();						
+				} catch(e) {
+					ret = null;
+				}
+			} else {
+				ret = null;
+			}
+		}
+	}
+
+	// get the bounding box from the DOM (which is in that element's coordinate system)
+	return ret;
+};
+
+
+// Function: ffClone
+// Hack for Firefox bugs where text element features aren't updated.
+// This function clones the element and re-selects it 
+// TODO: Test for this bug on load and add it to "support" object instead of 
+// browser sniffing
+//
+// Parameters: 
+// elem - The (text) DOM element to clone
+var ffClone = function(elem) {
+	if(navigator.userAgent.indexOf('Gecko/') == -1) return elem;
+	var clone = elem.cloneNode(true)
+	elem.parentNode.insertBefore(clone, elem);
+	elem.parentNode.removeChild(elem);
+	selectorManager.releaseSelector(elem);
+	selectedElements[0] = clone;
+	selectorManager.requestSelector(clone).showGrips(true);
+	return clone;
+}
+
+// Function: getPathBBox
+// Get correct BBox for a path in Webkit
+// Converted from code found here:
+// http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html
+// 
+// Parameters:
+// path - The path DOM element to get the BBox for
+//
+// Returns:
+// A BBox-like object
+var getPathBBox = function(path) {
+	var seglist = path.pathSegList;
+	var tot = seglist.numberOfItems;
+	
+	var bounds = [[], []];
+	var start = seglist.getItem(0);
+	var P0 = [start.x, start.y];
+	
+	for(var i=0; i < tot; i++) {
+		var seg = seglist.getItem(i);
+		if(!seg.x) continue;
+		
+		// Add actual points to limits
+		bounds[0].push(P0[0]);
+		bounds[1].push(P0[1]);
+		
+		if(seg.x1) {
+			var P1 = [seg.x1, seg.y1],
+				P2 = [seg.x2, seg.y2],
+				P3 = [seg.x, seg.y];
+
+			for(var j=0; j < 2; j++) {
+
+				var calc = function(t) {
+					return Math.pow(1-t,3) * P0[j] 
+						+ 3 * Math.pow(1-t,2) * t * P1[j]
+						+ 3 * (1-t) * Math.pow(t,2) * P2[j]
+						+ Math.pow(t,3) * P3[j];
+				};
+
+				var b = 6 * P0[j] - 12 * P1[j] + 6 * P2[j];
+				var a = -3 * P0[j] + 9 * P1[j] - 9 * P2[j] + 3 * P3[j];
+				var c = 3 * P1[j] - 3 * P0[j];
+				
+				if(a == 0) {
+					if(b == 0) {
+						continue;
+					}
+					var t = -c / b;
+					if(0 < t && t < 1) {
+						bounds[j].push(calc(t));
+					}
+					continue;
+				}
+				
+				var b2ac = Math.pow(b,2) - 4 * c * a;
+				if(b2ac < 0) continue;
+				var t1 = (-b + Math.sqrt(b2ac))/(2 * a);
+				if(0 < t1 && t1 < 1) bounds[j].push(calc(t1));
+				var t2 = (-b - Math.sqrt(b2ac))/(2 * a);
+				if(0 < t2 && t2 < 1) bounds[j].push(calc(t2));
+			}
+			P0 = P3;
+		} else {
+			bounds[0].push(seg.x);
+			bounds[1].push(seg.y);
+		}
+	}
+	
+	var x = Math.min.apply(null, bounds[0]);
+	var w = Math.max.apply(null, bounds[0]) - x;
+	var y = Math.min.apply(null, bounds[1]);
+	var h = Math.max.apply(null, bounds[1]) - y;
+	return {
+		'x': x,
+		'y': y,
+		'width': w,
+		'height': h
+	};
+}
+
+// this.each is deprecated, if any extension used this it can be recreated by doing this:
+// $(canvas.getRootElem()).children().each(...)
+
+// this.each = function(cb) {
+// 	$(svgroot).children().each(cb);
+// };
+
+
 // Group: Element Transforms
+
+// Function: getRotationAngle
+// Get the rotation angle of the given/selected DOM element
+//
+// Parameters:
+// elem - Optional DOM element to get the angle for
+// to_rad - Boolean that when true returns the value in radians rather than degrees
+//
+// Returns:
+// Float with the angle in degrees or radians
+this.getRotationAngle = function(elem, to_rad) {
+	var selected = elem || selectedElements[0];
+	// find the rotation transform (if any) and set it
+	var tlist = canvas.getTransformList(selected);
+	if(!tlist) return 0; // <svg> elements have no tlist
+	var N = tlist.numberOfItems;
+	for (var i = 0; i < N; ++i) {
+		var xform = tlist.getItem(i);
+		if (xform.type == 4) {
+			return to_rad ? xform.angle * Math.PI / 180.0 : xform.angle;
+		}
+	}
+	return 0.0;
+};
+
+// Function: setRotationAngle
+// Removes any old rotations if present, prepends a new rotation at the
+// transformed center
+//
+// Parameters:
+// val - The new rotation angle in degrees
+// preventUndo - Boolean indicating whether the action should be undoable or not
+this.setRotationAngle = function(val, preventUndo) {
+	// ensure val is the proper type
+	val = parseFloat(val);
+	var elem = selectedElements[0];
+	var oldTransform = elem.getAttribute("transform");
+	var bbox = canvas.getBBox(elem);
+	var cx = bbox.x+bbox.width/2, cy = bbox.y+bbox.height/2;
+	var tlist = canvas.getTransformList(elem);
+	
+	// only remove the real rotational transform if present (i.e. at index=0)
+	if (tlist.numberOfItems > 0) {
+		var xform = tlist.getItem(0);
+		if (xform.type == 4) {
+			tlist.removeItem(0);
+		}
+	}
+	// find R_nc and insert it
+	if (val != 0) {
+		var center = transformPoint(cx,cy,transformListToTransform(tlist).matrix);
+		var R_nc = svgroot.createSVGTransform();
+		R_nc.setRotate(val, center.x, center.y);
+		tlist.insertItemBefore(R_nc,0);
+	}
+	else if (tlist.numberOfItems == 0) {
+		elem.removeAttribute("transform");
+	}
+	
+	if (!preventUndo) {
+		// we need to undo it, then redo it so it can be undo-able! :)
+		// TODO: figure out how to make changes to transform list undo-able cross-browser?
+		var newTransform = elem.getAttribute("transform");
+		elem.setAttribute("transform", oldTransform);
+		this.changeSelectedAttribute("transform",newTransform,selectedElements);
+	}
+	var pointGripContainer = getElem("pathpointgrip_container");
+// 		if(elem.nodeName == "path" && pointGripContainer) {
+// 			pathActions.setPointContainerTransform(elem.getAttribute("transform"));
+// 		}
+	var selector = selectorManager.requestSelector(selectedElements[0]);
+	selector.resize();
+	selector.updateGripCursors(val);
+};
+
+
+// Function: getTransformList
+// Returns an object that behaves like a SVGTransformList for the given DOM element
+//
+// Parameters:
+// elem - DOM element to get a transformlist from
+this.getTransformList = function(elem) {
+	if (isWebkit) {
+		var id = elem.id;
+		if(!id) {
+			// Get unique ID for temporary element
+			id = 'temp';
+		}
+		var t = svgTransformLists[id];
+		if (!t || id == 'temp') {
+			svgTransformLists[id] = new SVGEditTransformList(elem);
+			svgTransformLists[id]._init();
+			t = svgTransformLists[id];
+		}
+		return t;
+	}
+	else if (elem.transform) {
+		return elem.transform.baseVal;
+	}
+	else if (elem.gradientTransform) {
+		return elem.gradientTransform.baseVal;
+	}
+	return null;
+};
 
 // Function: recalculateAllSelectedDimensions
 // Runs recalculateDimensions on the selected elements, 
@@ -4293,7 +4551,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	
 }());
 
-// Interface: textActions
+// Group: Text edit functions
 // Functions relating to editing text elements
 var textActions = canvas.textActions = function() {
 	var curtext, current_text;
@@ -4682,7 +4940,7 @@ var textActions = canvas.textActions = function() {
 	}
 }();
 
-// Interface: pathActions
+// Group: Path edit functions
 // Functions relating to editing path elements
 var pathActions = this.pathActions = function() {
 	
@@ -8191,6 +8449,11 @@ this.setPaintOpacity = function(type, val, preventUndo) {
 		this.changeSelectedAttributeNoUndo(type + "-opacity", val);
 };
 
+// Function: getBlur
+// Gets the stdDeviation blur value of the given element
+//
+// Parameters:
+// elem - The element to check the blur value for
 this.getBlur = function(elem) {
 	var val = 0;
 // 		var elem = selectedElements[0];
@@ -8212,6 +8475,11 @@ this.getBlur = function(elem) {
 	var filter = null;
 	var filterHidden = false;
 	
+	// Function: setBlurNoUndo
+	// Sets the stdDeviation blur value on the selected element without being undoable
+	//
+	// Parameters:
+	// val - The new stdDeviation value
 	canvas.setBlurNoUndo = function(val) {
 		if(!filter) {
 			canvas.setBlur(val);
@@ -8239,6 +8507,13 @@ this.getBlur = function(elem) {
 		filter = null;
 	}
 
+	// Function: setBlurOffsets
+	// Sets the x, y, with, height values of the filter element in order to
+	// make the blur not be clipped. Removes them if not neeeded
+	//
+	// Parameters:
+	// filter - The filter DOM element to update
+	// stdDev - The standard deviation value on which to base the offset size
 	canvas.setBlurOffsets = function(filter, stdDev) {
 		if(stdDev > 3) {
 			// TODO: Create algorithm here where size is based on expected blur
@@ -8256,6 +8531,12 @@ this.getBlur = function(elem) {
 		}
 	}
 
+	// Function: setBlur 
+	// Adds/updates the blur filter to the selected element
+	//
+	// Parameters:
+	// val - Float with the new stdDeviation blur value
+	// complete - Boolean indicating whether or not the action should be completed (to add to the undo manager)
 	canvas.setBlur = function(val, complete) {
 		if(cur_command) {
 			finishChange();
@@ -8320,138 +8601,11 @@ this.getBlur = function(elem) {
 	};
 }());
 
-
-// returns an object that behaves like a SVGTransformList
-this.getTransformList = function(elem) {
-	if (isWebkit) {
-		var id = elem.id;
-		if(!id) {
-			// Get unique ID for temporary element
-			id = 'temp';
-		}
-		var t = svgTransformLists[id];
-		if (!t || id == 'temp') {
-			svgTransformLists[id] = new SVGEditTransformList(elem);
-			svgTransformLists[id]._init();
-			t = svgTransformLists[id];
-		}
-		return t;
-	}
-	else if (elem.transform) {
-		return elem.transform.baseVal;
-	}
-	else if (elem.gradientTransform) {
-		return elem.gradientTransform.baseVal;
-	}
-	return null;
-};
-
-this.getBBox = function(elem) {
-	var selected = elem || selectedElements[0];
-	if (elem.nodeType != 1) return null;
-	var ret = null;
-	if(elem.nodeName == 'text' && selected.textContent == '') {
-		selected.textContent = 'a'; // Some character needed for the selector to use.
-		ret = selected.getBBox();
-		selected.textContent = '';
-	} else if(elem.nodeName == 'path' && isWebkit) {
-		ret = getPathBBox(selected);
-	} else if(elem.nodeName == 'use' && !isWebkit) {
-		ret = selected.getBBox();
-		ret.x += parseFloat(selected.getAttribute('x')||0);
-		ret.y += parseFloat(selected.getAttribute('y')||0);
-	} else if(elem.nodeName == 'foreignObject') {
-		ret = selected.getBBox();
-		ret.x += parseFloat(selected.getAttribute('x')||0);
-		ret.y += parseFloat(selected.getAttribute('y')||0);
-	} else {
-		try { ret = selected.getBBox(); } 
-		catch(e) { 
-			// Check if element is child of a foreignObject
-			var fo = $(selected).closest("foreignObject");
-			if(fo.length) {
-				try {
-					ret = fo[0].getBBox();						
-				} catch(e) {
-					ret = null;
-				}
-			} else {
-				ret = null;
-			}
-		}
-	}
-
-	// get the bounding box from the DOM (which is in that element's coordinate system)
-	return ret;
-};
-
-// we get the rotation angle in the tlist
-this.getRotationAngle = function(elem, to_rad) {
-	var selected = elem || selectedElements[0];
-	// find the rotation transform (if any) and set it
-	var tlist = canvas.getTransformList(selected);
-	if(!tlist) return 0; // <svg> elements have no tlist
-	var N = tlist.numberOfItems;
-	for (var i = 0; i < N; ++i) {
-		var xform = tlist.getItem(i);
-		if (xform.type == 4) {
-			return to_rad ? xform.angle * Math.PI / 180.0 : xform.angle;
-		}
-	}
-	return 0.0;
-};
-
-// this should:
-// - remove any old rotations if present
-// - prepend a new rotation at the transformed center
-this.setRotationAngle = function(val,preventUndo) {
-	// ensure val is the proper type
-	val = parseFloat(val);
-	var elem = selectedElements[0];
-	var oldTransform = elem.getAttribute("transform");
-	var bbox = canvas.getBBox(elem);
-	var cx = bbox.x+bbox.width/2, cy = bbox.y+bbox.height/2;
-	var tlist = canvas.getTransformList(elem);
-	
-	// only remove the real rotational transform if present (i.e. at index=0)
-	if (tlist.numberOfItems > 0) {
-		var xform = tlist.getItem(0);
-		if (xform.type == 4) {
-			tlist.removeItem(0);
-		}
-	}
-	// find R_nc and insert it
-	if (val != 0) {
-		var center = transformPoint(cx,cy,transformListToTransform(tlist).matrix);
-		var R_nc = svgroot.createSVGTransform();
-		R_nc.setRotate(val, center.x, center.y);
-		tlist.insertItemBefore(R_nc,0);
-	}
-	else if (tlist.numberOfItems == 0) {
-		elem.removeAttribute("transform");
-	}
-	
-	if (!preventUndo) {
-		// we need to undo it, then redo it so it can be undo-able! :)
-		// TODO: figure out how to make changes to transform list undo-able cross-browser?
-		var newTransform = elem.getAttribute("transform");
-		elem.setAttribute("transform", oldTransform);
-		this.changeSelectedAttribute("transform",newTransform,selectedElements);
-	}
-	var pointGripContainer = getElem("pathpointgrip_container");
-// 		if(elem.nodeName == "path" && pointGripContainer) {
-// 			pathActions.setPointContainerTransform(elem.getAttribute("transform"));
-// 		}
-	var selector = selectorManager.requestSelector(selectedElements[0]);
-	selector.resize();
-	selector.updateGripCursors(val);
-};
-
-this.each = function(cb) {
-	$(svgroot).children().each(cb);
-};
-
-
+// Function: getBold
+// Check whether selected element is bold or not
+//
+// Returns:
+// Boolean indicating whether or not element is bold
 this.getBold = function() {
 	// should only have one element selected
 	var selected = selectedElements[0];
@@ -8463,6 +8617,11 @@ this.getBold = function() {
 	return false;
 };
 
+// Function: setBold
+// Make the selected element bold or normal
+//
+// Parameters:
+// b - Boolean indicating bold (true) or normal (false)
 this.setBold = function(b) {
 	var selected = selectedElements[0];
 	if (selected != null && selected.tagName  == "text" &&
@@ -8472,6 +8631,11 @@ this.setBold = function(b) {
 	}
 };
 
+// Function: getItalic
+// Check whether selected element is italic or not
+//
+// Returns:
+// Boolean indicating whether or not element is italic
 this.getItalic = function() {
 	var selected = selectedElements[0];
 	if (selected != null && selected.tagName  == "text" &&
@@ -8482,6 +8646,11 @@ this.getItalic = function() {
 	return false;
 };
 
+// Function: setItalic
+// Make the selected element italic or normal
+//
+// Parameters:
+// b - Boolean indicating italic (true) or normal (false)
 this.setItalic = function(i) {
 	var selected = selectedElements[0];
 	if (selected != null && selected.tagName  == "text" &&
@@ -8491,37 +8660,64 @@ this.setItalic = function(i) {
 	}
 };
 
+// Function: getFontFamily
+// Returns the current font family
 this.getFontFamily = function() {
 	return cur_text.font_family;
 };
 
+// Function: setFontFamily
+// Set the new font family
+//
+// Parameters:
+// val - String with the new font family
 this.setFontFamily = function(val) {
 	cur_text.font_family = val;
 	this.changeSelectedAttribute("font-family", val);
 };
 
+// Function: getFontSize
+// Returns the current font size
 this.getFontSize = function() {
 	return cur_text.font_size;
 };
 
+// Function: setFontSize
+// Applies the given font size to the selected element
+//
+// Parameters:
+// val - Float with the new font size
 this.setFontSize = function(val) {
 	cur_text.font_size = val;
 	textActions.toSelectMode();
 	this.changeSelectedAttribute("font-size", val);
 };
 
+// Function: getText
+// Returns the current text (textContent) of the selected element
 this.getText = function() {
 	var selected = selectedElements[0];
 	if (selected == null) { return ""; }
 	return selected.textContent;
 };
 
+// Function: setTextContent
+// Updates the text element with the given string
+//
+// Parameters:
+// val - String with the new text
 this.setTextContent = function(val) {
 	this.changeSelectedAttribute("#text", val);
 	textActions.init(val);
 	textActions.setCursor();
 };
 
+// Function: setImageURL
+// Sets the new image URL for the selected image element. Updates its size if
+// a new URL is given
+// 
+// Parameters:
+// val - String with the image URL/path
 this.setImageURL = function(val) {
 	var elem = selectedElements[0];
 	if(!elem) return;
@@ -8563,6 +8759,11 @@ this.setImageURL = function(val) {
 	}
 };
 
+// Function: setRectRadius
+// Sets the rx & ry values to the selected rect element to change its corner radius
+// 
+// Parameters:
+// val - The new radius
 this.setRectRadius = function(val) {
 	var selected = selectedElements[0];
 	if (selected != null && selected.tagName == "rect") {
@@ -8576,23 +8777,24 @@ this.setRectRadius = function(val) {
 	}
 };
 
+// Function: setSegType
+// Sets the new segment type to the selected segment(s). 
+//
+// Parameters:
+// new_type - Integer with the new segment type
+// See http://www.w3.org/TR/SVG/paths.html#InterfaceSVGPathSeg for list
 this.setSegType = function(new_type) {
 	pathActions.setSegType(new_type);
 }
 
-var ffClone = function(elem) {
-	// Hack for Firefox bugs where text element features aren't updated
-	if(navigator.userAgent.indexOf('Gecko/') == -1) return elem;
-	var clone = elem.cloneNode(true)
-	elem.parentNode.insertBefore(clone, elem);
-	elem.parentNode.removeChild(elem);
-	selectorManager.releaseSelector(elem);
-	selectedElements[0] = clone;
-	selectorManager.requestSelector(clone).showGrips(true);
-	return clone;
-}
-
-// This function makes the changes to the elements
+// Function: changeSelectedAttributeNoUndo
+// This function makes the changes to the elements. It does not add the change
+// to the history stack. 
+// 
+// Parameters:
+// attr - String with the attribute name
+// newValue - String or number with the new attribute value
+// elems - The DOM elements to apply the change to
 this.changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 	var handle = svgroot.suspendRedraw(1000);
 	if(current_mode == 'pathedit') {
@@ -8698,11 +8900,16 @@ this.changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 	svgroot.unsuspendRedraw(handle);	
 };
 
-
-
+// Function: changeSelectedAttribute
+// Change the given/selected element and add the original value to the history stack
 // If you want to change all selectedElements, ignore the elems argument.
 // If you want to change only a subset of selectedElements, then send the
 // subset to this function in the elems argument.
+// 
+// Parameters:
+// attr - String with the attribute name
+// newValue - String or number with the new attribute value
+// elems - The DOM elements to apply the change to
 this.changeSelectedAttribute = function(attr, val, elems) {
 	var elems = elems || selectedElements;
 	canvas.beginUndoableChange(attr, elems);
@@ -8716,6 +8923,9 @@ this.changeSelectedAttribute = function(attr, val, elems) {
 	}
 };
 
+// Function: deleteSelectedElements
+// Removes all selected elements from the DOM and adds the change to the 
+// history stack
 this.deleteSelectedElements = function() {
 	var batchCmd = new BatchCommand("Delete Elements");
 	var len = selectedElements.length;
@@ -8738,6 +8948,8 @@ this.deleteSelectedElements = function() {
 	canvas.clearSelection();
 };
 
+// Function: groupSelectedElements
+// Wraps all the selected elements in a group (g) element
 this.groupSelectedElements = function() {
 	var batchCmd = new BatchCommand("Group Elements");
 	
@@ -8767,6 +8979,9 @@ this.groupSelectedElements = function() {
 	canvas.addToSelection([g], true);
 };
 
+// Function: ungroupSelectedElement
+// Unwraps all the elements in a selected group (g) element. This requires
+// significant recalculations to apply group's transforms, etc to its children
 this.ungroupSelectedElement = function() {
 	var g = selectedElements[0];
 	if (g.tagName == "g") {
@@ -9128,25 +9343,29 @@ this.convertToPath = function(elem, getBBox) {
 	}
 }
 
+// Function: moveToTopSelectedElement
+// Repositions the selected element to the bottom in the DOM to appear on top of
+// other elements
 this.moveToTopSelectedElement = function() {
 	var selected = selectedElements[0];
 	if (selected != null) {
 		var t = selected;
 		var oldParent = t.parentNode;
 		var oldNextSibling = t.nextSibling;
-		if (oldNextSibling == selectorManager.selectorParentGroup) oldNextSibling = null;
 		t = t.parentNode.appendChild(t);
 		addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, "top"));
 	}
 };
 
+// Function: moveToBottomSelectedElement
+// Repositions the selected element to the top in the DOM to appear under 
+// other elements
 this.moveToBottomSelectedElement = function() {
 	var selected = selectedElements[0];
 	if (selected != null) {
 		var t = selected;
 		var oldParent = t.parentNode;
 		var oldNextSibling = t.nextSibling;
-		if (oldNextSibling == selectorManager.selectorParentGroup) oldNextSibling = null;
 		var firstChild = t.parentNode.firstChild;
 		if (firstChild.tagName == 'title') {
 			firstChild = firstChild.nextSibling;
@@ -9161,6 +9380,16 @@ this.moveToBottomSelectedElement = function() {
 	}
 };
 
+// Function: moveSelectedElements
+// Moves selected elements on the X/Y axis 
+//
+// Parameters:
+// dx - Float with the distance to move on the x-axis
+// dy - Float with the distance to move on the y-axis
+// undoable - Boolean indicating whether or not the action should be undoable
+//
+// Returns:
+// Batch command for the move
 this.moveSelectedElements = function(dx,dy,undoable) {
 	// if undoable is not sent, default to true
 	// if single values, scale them to the zoom
@@ -9212,86 +9441,25 @@ this.moveSelectedElements = function(dx,dy,undoable) {
 	}
 };
 
-var getPathBBox = function(path) {
-	// Get correct BBox for a path in Webkit
-
-	// Converted from code found here:
-	// http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html
-
-	var seglist = path.pathSegList;
-	var tot = seglist.numberOfItems;
-	
-	var bounds = [[], []];
-	var start = seglist.getItem(0);
-	var P0 = [start.x, start.y];
-	
-	for(var i=0; i < tot; i++) {
-		var seg = seglist.getItem(i);
-		if(!seg.x) continue;
-		
-		// Add actual points to limits
-		bounds[0].push(P0[0]);
-		bounds[1].push(P0[1]);
-		
-		if(seg.x1) {
-			var P1 = [seg.x1, seg.y1],
-				P2 = [seg.x2, seg.y2],
-				P3 = [seg.x, seg.y];
-
-			for(var j=0; j < 2; j++) {
-
-				var calc = function(t) {
-					return Math.pow(1-t,3) * P0[j] 
-						+ 3 * Math.pow(1-t,2) * t * P1[j]
-						+ 3 * (1-t) * Math.pow(t,2) * P2[j]
-						+ Math.pow(t,3) * P3[j];
-				};
-
-				var b = 6 * P0[j] - 12 * P1[j] + 6 * P2[j];
-				var a = -3 * P0[j] + 9 * P1[j] - 9 * P2[j] + 3 * P3[j];
-				var c = 3 * P1[j] - 3 * P0[j];
-				
-				if(a == 0) {
-					if(b == 0) {
-						continue;
-					}
-					var t = -c / b;
-					if(0 < t && t < 1) {
-						bounds[j].push(calc(t));
-					}
-					continue;
-				}
-				
-				var b2ac = Math.pow(b,2) - 4 * c * a;
-				if(b2ac < 0) continue;
-				var t1 = (-b + Math.sqrt(b2ac))/(2 * a);
-				if(0 < t1 && t1 < 1) bounds[j].push(calc(t1));
-				var t2 = (-b - Math.sqrt(b2ac))/(2 * a);
-				if(0 < t2 && t2 < 1) bounds[j].push(calc(t2));
-			}
-			P0 = P3;
-		} else {
-			bounds[0].push(seg.x);
-			bounds[1].push(seg.y);
-		}
-	}
-	
-	var x = Math.min.apply(null, bounds[0]);
-	var w = Math.max.apply(null, bounds[0]) - x;
-	var y = Math.min.apply(null, bounds[1]);
-	var h = Math.max.apply(null, bounds[1]) - y;
-	return {
-		'x': x,
-		'y': y,
-		'width': w,
-		'height': h
-	};
-}
-
 this.contentW = this.getResolution().w;
 this.contentH = this.getResolution().h;
 
-this.updateCanvas = function(w, h, w_orig, h_orig) {
+// Function: updateCanvas
+// Updates the editor canvas width/height/position after a zoom has occurred 
+//
+// Parameters:
+// w - Float with the new width
+// h - Float with the new height
+//
+// Returns: 
+// Object with the following values:
+// * x - The canvas' new x coordinate
+// * y - The canvas' new y coordinate
+// * old_x - The canvas' old x coordinate
+// * old_y - The canvas' old y coordinate
+// * d_x - The x position difference
+// * d_y - The y position difference
+this.updateCanvas = function(w, h) {
 	svgroot.setAttribute("width", w);
 	svgroot.setAttribute("height", h);
 	var bg = $('#canvasBackground')[0];
