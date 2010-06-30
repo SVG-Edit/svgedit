@@ -179,40 +179,239 @@ var isOpera = !!window.opera,
 	curConfig = {
 		show_outside_canvas: true,
 		dimensions: [640, 480]
-	},
-	
-	// Function: toXml
-	// Converts characters in a string to XML-friendly entities.
-	//
-	// Example: "&" becomes "&amp;"
-	//
-	// Parameters:
-	// str - The string to be converted
-	//
-	// Returns:
-	// The converted string
-	toXml = function(str) {
-		return $('<p/>').text(str).html();
-	},
-	
-	// Function: fromXml
-	// Converts XML entities in a string to single characters. 
-	// Example: "&amp;" becomes "&"
-	//
-	// Parameters:
-	// str - The string to be converted
-	//
-	// Returns: 
-	// The converted string
-	fromXml = function(str) {
-		return $('<p/>').html(str).text();
 	};
-
-	// Update config with new one if given
-	if(config) {
-		$.extend(curConfig, config);
-	}
 	
+
+	
+
+
+// Update config with new one if given
+if(config) {
+	$.extend(curConfig, config);
+}
+	
+// Static class for various utility functions
+var Utils = this.Utils = function() {
+
+	var _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+
+	return {
+	
+		// Function: Utils.toXml
+		// Converts characters in a string to XML-friendly entities.
+		//
+		// Example: "&" becomes "&amp;"
+		//
+		// Parameters:
+		// str - The string to be converted
+		//
+		// Returns:
+		// The converted string
+		"toXml": function(str) {
+			return $('<p/>').text(str).html();
+		},
+			
+		// Function: Utils.fromXml
+		// Converts XML entities in a string to single characters. 
+		// Example: "&amp;" becomes "&"
+		//
+		// Parameters:
+		// str - The string to be converted
+		//
+		// Returns: 
+		// The converted string
+		"fromXml": function(str) {
+			return $('<p/>').html(str).text();
+		},
+		
+		// This code was written by Tyler Akins and has been placed in the
+		// public domain.  It would be nice if you left this header intact.
+		// Base64 code from Tyler Akins -- http://rumkin.com
+		
+		// schiller: Removed string concatenation in favour of Array.join() optimization,
+		//           also precalculate the size of the array needed.
+		
+		// Function: Utils.encode64
+		// Converts a string to base64
+		"encode64" : function(input) {
+			// base64 strings are 4/3 larger than the original string
+	//		input = Utils.encodeUTF8(input); // convert non-ASCII characters
+			input = Utils.convertToXMLReferences(input);
+			if(window.btoa) return window.btoa(input); // Use native if available
+			var output = new Array( Math.floor( (input.length + 2) / 3 ) * 4 );
+			var chr1, chr2, chr3;
+			var enc1, enc2, enc3, enc4;
+			var i = 0, p = 0;
+	
+			do {
+				chr1 = input.charCodeAt(i++);
+				chr2 = input.charCodeAt(i++);
+				chr3 = input.charCodeAt(i++);
+	
+				enc1 = chr1 >> 2;
+				enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+				enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+				enc4 = chr3 & 63;
+	
+				if (isNaN(chr2)) {
+					enc3 = enc4 = 64;
+				} else if (isNaN(chr3)) {
+					enc4 = 64;
+				}
+	
+				output[p++] = _keyStr.charAt(enc1);
+				output[p++] = _keyStr.charAt(enc2);
+				output[p++] = _keyStr.charAt(enc3);
+				output[p++] = _keyStr.charAt(enc4);
+			} while (i < input.length);
+	
+			return output.join('');
+		},
+		
+		// Function: Utils.decode64
+		// Converts a string from base64
+		"decode64" : function(input) {
+			if(window.atob) return window.atob(input);
+			var output = "";
+			var chr1, chr2, chr3 = "";
+			var enc1, enc2, enc3, enc4 = "";
+			var i = 0;
+		
+			 // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
+			 input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+		
+			 do {
+				enc1 = _keyStr.indexOf(input.charAt(i++));
+				enc2 = _keyStr.indexOf(input.charAt(i++));
+				enc3 = _keyStr.indexOf(input.charAt(i++));
+				enc4 = _keyStr.indexOf(input.charAt(i++));
+		
+				chr1 = (enc1 << 2) | (enc2 >> 4);
+				chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+				chr3 = ((enc3 & 3) << 6) | enc4;
+		
+				output = output + String.fromCharCode(chr1);
+		
+				if (enc3 != 64) {
+				   output = output + String.fromCharCode(chr2);
+				}
+				if (enc4 != 64) {
+				   output = output + String.fromCharCode(chr3);
+				}
+		
+				chr1 = chr2 = chr3 = "";
+				enc1 = enc2 = enc3 = enc4 = "";
+		
+			 } while (i < input.length);
+			 return unescape(output);
+		},
+		
+		// Currently not being used, so commented out for now
+		// based on http://phpjs.org/functions/utf8_encode:577
+		// codedread:does not seem to work with webkit-based browsers on OSX
+// 		"encodeUTF8": function(input) {
+// 			//return unescape(encodeURIComponent(input)); //may or may not work
+// 			var output = '';
+// 			for (var n = 0; n < input.length; n++){
+// 				var c = input.charCodeAt(n);
+// 				if (c < 128) {
+// 					output += input[n];
+// 				}
+// 				else if (c > 127) {
+// 					if (c < 2048){
+// 						output += String.fromCharCode((c >> 6) | 192);
+// 					} 
+// 					else {
+// 						output += String.fromCharCode((c >> 12) | 224) + String.fromCharCode((c >> 6) & 63 | 128);
+// 					}
+// 					output += String.fromCharCode((c & 63) | 128);
+// 				}
+// 			}
+// 			return output;
+// 		},
+		
+		// Function: Utils.convertToXMLReferences 
+		// Converts a string to use XML references
+		"convertToXMLReferences": function(input) {
+			var output = '';
+			for (var n = 0; n < input.length; n++){
+				var c = input.charCodeAt(n);
+				if (c < 128) {
+					output += input[n];
+				}
+				else if(c > 127) {
+					output += ("&#" + c + ";");
+				}
+			}
+			return output;
+		},
+		
+		// Function: rectsIntersect
+		// Check if two rectangles (BBoxes objects) intersect each other
+		//
+		// Paramaters:
+		// r1 - The first BBox-like object
+		// r2 - The second BBox-like object
+		//
+		// Returns:
+		// Boolean that's true if rectangles intersect
+		"rectsIntersect": function(r1, r2) {
+			return r2.x < (r1.x+r1.width) && 
+				(r2.x+r2.width) > r1.x &&
+				r2.y < (r1.y+r1.height) &&
+				(r2.y+r2.height) > r1.y;
+		},
+	
+		// Function: snapToAngle
+		// Returns a 45 degree angle coordinate associated with the two given 
+		// coordinates
+		// 
+		// Parameters:
+		// x1 - First coordinate's x value
+		// x2 - Second coordinate's x value
+		// y1 - First coordinate's y value
+		// y2 - Second coordinate's y value
+		//
+		// Returns: 
+		// Object with the following values:
+		// x - The angle-snapped x value
+		// y - The angle-snapped y value
+		// snapangle - The angle at which to snap
+		"snapToAngle": function(x1,y1,x2,y2) {
+			var snap = Math.PI/4; // 45 degrees
+			var dx = x2 - x1;
+			var dy = y2 - y1;
+			var angle = Math.atan2(dy,dx);
+			var dist = Math.sqrt(dx * dx + dy * dy);
+			var snapangle= Math.round(angle/snap)*snap;
+			var x = x1 + dist*Math.cos(snapangle);	
+			var y = y1 + dist*Math.sin(snapangle);
+			//console.log(x1,y1,x2,y2,x,y,angle)
+			return {x:x, y:y, a:snapangle};
+		},
+		
+		// Function: text2xml
+		// Cross-browser compatible method of converting a string to an XML tree
+		// found this function here: http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f
+		"text2xml": function(sXML) {
+			var out;
+			try{
+				var dXML = ($.browser.msie)?new ActiveXObject("Microsoft.XMLDOM"):new DOMParser();
+				dXML.async = false;
+			} catch(e){ 
+				throw new Error("XML Parser could not be instantiated"); 
+			};
+			try{
+				if($.browser.msie) out = (dXML.loadXML(sXML))?dXML:false;
+				else out = dXML.parseFromString(sXML, "text/xml");
+			}
+			catch(e){ throw new Error("Error parsing XML string"); };
+			return out;
+		}
+	}
+
+}();
+
 	
 // TODO: declare the variables and set them as null, then move this setup stuff to
 // an initialization function - probably just use clear()
@@ -342,7 +541,7 @@ var convertToNum, convertToUnit, setUnitAttr;
 		if(val.substr(-1) === '%') {
 			// Deal with percentage, depends on attribute
 			var num = val.substr(0, val.length-1)/100;
-			var res = canvas.getResolution();
+			var res = getResolution();
 			
 			if($.inArray(attr, w_attrs) !== -1) {
 				return num * res.w;
@@ -376,7 +575,7 @@ var convertToNum, convertToUnit, setUnitAttr;
 				// Old value was a number, so get unit, then convert
 				var unit;
 				if(old_val.substr(-1) === '%') {
-					var res = canvas.getResolution();
+					var res = getResolution();
 					unit = '%';
 					val *= 100;
 					if($.inArray(attr, w_attrs) !== -1) {
@@ -488,7 +687,7 @@ var ChangeElementCommand = this.undoCmd.changeElement = function(elem, attrs, te
 		}
 		// relocate rotational transform, if necessary
 		if(!bChangedTransform) {
-			var angle = canvas.getRotationAngle(elem);
+			var angle = getRotationAngle(elem);
 			if (angle) {
 				var bbox = elem.getBBox();
 				var cx = bbox.x + bbox.width/2,
@@ -526,7 +725,7 @@ var ChangeElementCommand = this.undoCmd.changeElement = function(elem, attrs, te
 		}
 		// relocate rotational transform, if necessary
 		if(!bChangedTransform) {
-			var angle = canvas.getRotationAngle(elem);
+			var angle = getRotationAngle(elem);
 			if (angle) {
 				var bbox = elem.getBBox();
 				var cx = bbox.x + bbox.width/2,
@@ -1005,7 +1204,7 @@ var SelectorManager;
 			for (var dir in this.selectorGrips) {
 				this.selectorGrips[dir].setAttribute("display", bShow);
 			}
-			if(elem) this.updateGripCursors(canvas.getRotationAngle(elem));
+			if(elem) this.updateGripCursors(getRotationAngle(elem));
 		};
 		
 		// Function: Selector.updateGripCursors
@@ -1045,11 +1244,11 @@ var SelectorManager;
 			if (selected.tagName == "text") {
 				offset += 2/current_zoom;
 			}
-			var bbox = canvas.getBBox(selected);
+			var bbox = getBBox(selected);
 			if(selected.tagName == 'g') {
 				// The bbox for a group does not include stroke vals, so we
 				// get the bbox based on its children. 
-				var stroked_bbox = canvas.getStrokedBBox(selected.childNodes);
+				var stroked_bbox = getStrokedBBox(selected.childNodes);
 				$.each(bbox, function(key, val) {
 					bbox[key] = stroked_bbox[key];
 				});
@@ -1080,7 +1279,7 @@ var SelectorManager;
 			// now if the shape is rotated, un-rotate it
 			var cx = nbax + nbaw/2,
 				cy = nbay + nbah/2;
-			var angle = canvas.getRotationAngle(selected);
+			var angle = getRotationAngle(selected);
 			if (angle) {
 				
 				var rot = svgroot.createSVGTransform();
@@ -1741,6 +1940,28 @@ var runExtensions = this.runExtensions = function(action, vars, returnArray) {
 	});
 	return result;
 }
+
+// Function: addExtension
+// Add an extension to the editor
+// 
+// Parameters:
+// name - String with the ID of the extension
+// ext_func - Function supplied by the extension with its data
+this.addExtension = function(name, ext_func) {
+	if(!(name in extensions)) {
+		// Provide private vars/funcs here. Is there a better way to do this?
+		var ext = ext_func($.extend(canvas.getPrivateMethods(), {
+			svgroot: svgroot,
+			svgcontent: svgcontent,
+			nonce: nonce,
+			selectorManager: selectorManager
+		}));
+		extensions[name] = ext;
+		call("extension_added", ext);
+	} else {
+		console.log('Cannot add extension "' + name + '", an extension by that name already exists"');
+	}
+};
 	
 // Function: shortFloat
 // Rounds a given value to a float with number of digits defined in save_options
@@ -1779,7 +2000,7 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 
 	if(!curBBoxes.length) {
 		// Cache all bboxes
-		curBBoxes = canvas.getVisibleElements(current_layer, true);
+		curBBoxes = getVisibleElements(current_layer, true);
 	}
 	
 	var resultList = null;
@@ -1807,6 +2028,258 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 	// http://www.w3.org/TR/DOM-Level-2-Core/ecma-script-binding.html
 	return resultList;
 };
+
+// Function: getStrokedBBox
+// Get the bounding box for one or more stroked and/or transformed elements
+// 
+// Parameters:
+// elems - Array with DOM elements to check
+// 
+// Returns:
+// A single bounding box object
+var getStrokedBBox = this.getStrokedBBox = function(elems) {
+	if(!elems) elems = getVisibleElements();
+	if(!elems.length) return false;
+	// Make sure the expected BBox is returned if the element is a group
+	var getCheckedBBox = function(elem) {
+	
+		try {
+			// TODO: Fix issue with rotated groups. Currently they work
+			// fine in FF, but not in other browsers (same problem mentioned
+			// in Issue 339 comment #2).
+			
+			var bb = getBBox(elem);
+			
+			var angle = getRotationAngle(elem);
+			if ((angle && angle % 90) || hasMatrixTransform(getTransformList(elem))) {
+				// Accurate way to get BBox of rotated element in Firefox:
+				// Put element in group and get its BBox
+				
+				var good_bb = false;
+				
+				// Get the BBox from the raw path for these elements
+				var elemNames = ['ellipse','path','line','polyline','polygon'];
+				if($.inArray(elem.tagName, elemNames) != -1) {
+					bb = good_bb = canvas.convertToPath(elem, true);
+				} else if(elem.tagName == 'rect') {
+					// Look for radius
+					var rx = elem.getAttribute('rx');
+					var ry = elem.getAttribute('ry');
+					if(rx || ry) {
+						bb = good_bb = canvas.convertToPath(elem, true);
+					}
+				}
+				
+				if(!good_bb) {
+					var g = document.createElementNS(svgns, "g");
+					var parent = elem.parentNode;
+					parent.replaceChild(g, elem);
+					g.appendChild(elem);
+					bb = g.getBBox();
+					parent.insertBefore(elem,g);
+					parent.removeChild(g);
+				}
+				
+
+				// Old method: Works by giving the rotated BBox,
+				// this is (unfortunately) what Opera and Safari do
+				// natively when getting the BBox of the parent group
+// 						var angle = angle * Math.PI / 180.0;
+// 						var rminx = Number.MAX_VALUE, rminy = Number.MAX_VALUE, 
+// 							rmaxx = Number.MIN_VALUE, rmaxy = Number.MIN_VALUE;
+// 						var cx = round(bb.x + bb.width/2),
+// 							cy = round(bb.y + bb.height/2);
+// 						var pts = [ [bb.x - cx, bb.y - cy], 
+// 									[bb.x + bb.width - cx, bb.y - cy],
+// 									[bb.x + bb.width - cx, bb.y + bb.height - cy],
+// 									[bb.x - cx, bb.y + bb.height - cy] ];
+// 						var j = 4;
+// 						while (j--) {
+// 							var x = pts[j][0],
+// 								y = pts[j][1],
+// 								r = Math.sqrt( x*x + y*y );
+// 							var theta = Math.atan2(y,x) + angle;
+// 							x = round(r * Math.cos(theta) + cx);
+// 							y = round(r * Math.sin(theta) + cy);
+// 		
+// 							// now set the bbox for the shape after it's been rotated
+// 							if (x < rminx) rminx = x;
+// 							if (y < rminy) rminy = y;
+// 							if (x > rmaxx) rmaxx = x;
+// 							if (y > rmaxy) rmaxy = y;
+// 						}
+// 						
+// 						bb.x = rminx;
+// 						bb.y = rminy;
+// 						bb.width = rmaxx - rminx;
+// 						bb.height = rmaxy - rminy;
+			}
+		
+			return bb;
+		} catch(e) { 
+			console.log(elem, e);
+			return null;
+		} 
+
+	}
+	var full_bb;
+	$.each(elems, function() {
+		if(full_bb) return;
+		if(!this.parentNode) return;
+		full_bb = getCheckedBBox(this);
+	});
+	
+	// This shouldn't ever happen...
+	if(full_bb == null) return null;
+	
+	// full_bb doesn't include the stoke, so this does no good!
+// 		if(elems.length == 1) return full_bb;
+	
+	var max_x = full_bb.x + full_bb.width;
+	var max_y = full_bb.y + full_bb.height;
+	var min_x = full_bb.x;
+	var min_y = full_bb.y;
+	
+	// FIXME: same re-creation problem with this function as getCheckedBBox() above
+	var getOffset = function(elem) {
+		var sw = elem.getAttribute("stroke-width");
+		var offset = 0;
+		if (elem.getAttribute("stroke") != "none" && !isNaN(sw)) {
+			offset += sw/2;
+		}
+		return offset;
+	}
+	var bboxes = [];
+	$.each(elems, function(i, elem) {
+		var cur_bb = getCheckedBBox(elem);
+		if(cur_bb) {
+			var offset = getOffset(elem);
+			min_x = Math.min(min_x, cur_bb.x - offset);
+			min_y = Math.min(min_y, cur_bb.y - offset);
+			bboxes.push(cur_bb);
+		}
+	});
+	
+	full_bb.x = min_x;
+	full_bb.y = min_y;
+	
+	$.each(elems, function(i, elem) {
+		var cur_bb = bboxes[i];
+		// ensure that elem is really an element node
+		if (cur_bb && elem.nodeType == 1) {
+			var offset = getOffset(elem);
+			max_x = Math.max(max_x, cur_bb.x + cur_bb.width + offset);
+			max_y = Math.max(max_y, cur_bb.y + cur_bb.height + offset);
+		}
+	});
+	
+	full_bb.width = max_x - min_x;
+	full_bb.height = max_y - min_y;
+	return full_bb;
+}
+
+// Function: getVisibleElements
+// Get all elements that have a BBox (excludes <defs>, <title>, etc).
+// Note that 0-opacity, off-screen etc elements are still considered "visible"
+// for this function
+//
+// Parameters:
+// parent - The parent DOM element to search within
+// includeBBox - Boolean to indicate that an object should return with the element and its bbox
+//
+// Returns:
+// An array with all "visible" elements, or if includeBBox is true, an array with
+// objects that include:
+// * elem - The element
+// * bbox - The element's BBox as retrieved from getStrokedBBox
+var getVisibleElements = this.getVisibleElements = function(parent, includeBBox) {
+	if(!parent) parent = $(svgcontent).children(); // Prevent layers from being included
+	
+	var contentElems = [];
+	$(parent).children().each(function(i, elem) {
+		try {
+			var box = elem.getBBox();
+			if (box) {
+				var item = includeBBox?{'elem':elem, 'bbox':getStrokedBBox([elem])}:elem;
+				contentElems.push(item);
+			}
+		} catch(e) {}
+	});
+	return contentElems.reverse();
+}
+
+// Function: copyElem
+// Create a clone of an element, updating its ID and its children's IDs when needed
+//
+// Parameters:
+// el - DOM element to clone
+//
+// Returns: The cloned element
+var copyElem = function(el) {
+	// manually create a copy of the element
+	var new_el = document.createElementNS(el.namespaceURI, el.nodeName);
+	$.each(el.attributes, function(i, attr) {
+		if (attr.localName != '-moz-math-font-style') {
+			new_el.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.nodeValue);
+		}
+	});
+	// set the copied element's new id
+	new_el.removeAttribute("id");
+	new_el.id = getNextId();
+	// manually increment obj_num because our cloned elements are not in the DOM yet
+	obj_num++; 
+	
+	// Opera's "d" value needs to be reset for Opera/Win/non-EN
+	// Also needed for webkit (else does not keep curved segments on clone)
+	if((isWebkit) && el.nodeName == 'path') {
+		var fixed_d = pathActions.convertPath(el);
+		new_el.setAttribute('d', fixed_d);
+	}
+
+	// now create copies of all children
+	$.each(el.childNodes, function(i, child) {
+		switch(child.nodeType) {
+			case 1: // element node
+				new_el.appendChild(copyElem(child));
+				break;
+			case 3: // text node
+				new_el.textContent = child.nodeValue;
+				break;
+			default:
+				break;
+		}
+	});
+	if(new_el.tagName == 'image') {
+		preventClickDefault(new_el);
+	}
+	return new_el;
+};
+
+// Function: getElem
+// Get a DOM element by ID within the SVG root element.
+//
+// Parameters:
+// id - String with the element's new ID
+function getElem(id) {
+// 	if(svgroot.getElementById) {
+// 		// getElementById lookup
+// 		return svgroot.getElementById(id);
+// 	} else 
+	
+	if(svgroot.querySelector) {
+		// querySelector lookup
+		return svgroot.querySelector('#'+id);
+	} else if(svgdoc.evaluate) {
+		// xpath lookup
+		return svgdoc.evaluate('svg:svg[@id="svgroot"]//svg:*[@id="'+id+'"]', container, function() { return "http://www.w3.org/2000/svg"; }, 9, null).singleNodeValue;
+	} else {
+		// jQuery lookup: twice as slow as xpath in FF
+		return $(svgroot).find('[id=' + id + ']')[0];
+	}
+	
+	// getElementById lookup: includes icons, not good
+	// return svgdoc.getElementById(id);
+}
 
 // Set scope for these functions
 var getId, getNextId;
@@ -2045,7 +2518,7 @@ var getUrlFromAttr = this.getUrlFromAttr = function(attrVal) {
 //
 // Parameters:
 // elem - Optional DOM element to get the BBox for
-this.getBBox = function(elem) {
+var getBBox = this.getBBox = function(elem) {
 	var selected = elem || selectedElements[0];
 	if (elem.nodeType != 1) return null;
 	var ret = null;
@@ -2204,10 +2677,10 @@ var getPathBBox = function(path) {
 //
 // Returns:
 // Float with the angle in degrees or radians
-this.getRotationAngle = function(elem, to_rad) {
+var getRotationAngle = this.getRotationAngle = function(elem, to_rad) {
 	var selected = elem || selectedElements[0];
 	// find the rotation transform (if any) and set it
-	var tlist = canvas.getTransformList(selected);
+	var tlist = getTransformList(selected);
 	if(!tlist) return 0; // <svg> elements have no tlist
 	var N = tlist.numberOfItems;
 	for (var i = 0; i < N; ++i) {
@@ -2231,9 +2704,9 @@ this.setRotationAngle = function(val, preventUndo) {
 	val = parseFloat(val);
 	var elem = selectedElements[0];
 	var oldTransform = elem.getAttribute("transform");
-	var bbox = canvas.getBBox(elem);
+	var bbox = getBBox(elem);
 	var cx = bbox.x+bbox.width/2, cy = bbox.y+bbox.height/2;
-	var tlist = canvas.getTransformList(elem);
+	var tlist = getTransformList(elem);
 	
 	// only remove the real rotational transform if present (i.e. at index=0)
 	if (tlist.numberOfItems > 0) {
@@ -2258,7 +2731,7 @@ this.setRotationAngle = function(val, preventUndo) {
 		// TODO: figure out how to make changes to transform list undo-able cross-browser?
 		var newTransform = elem.getAttribute("transform");
 		elem.setAttribute("transform", oldTransform);
-		this.changeSelectedAttribute("transform",newTransform,selectedElements);
+		changeSelectedAttribute("transform",newTransform,selectedElements);
 	}
 	var pointGripContainer = getElem("pathpointgrip_container");
 // 		if(elem.nodeName == "path" && pointGripContainer) {
@@ -2275,7 +2748,7 @@ this.setRotationAngle = function(val, preventUndo) {
 //
 // Parameters:
 // elem - DOM element to get a transformlist from
-this.getTransformList = function(elem) {
+var getTransformList = this.getTransformList = function(elem) {
 	if (isWebkit) {
 		var id = elem.id;
 		if(!id) {
@@ -2309,7 +2782,7 @@ var recalculateAllSelectedDimensions = this.recalculateAllSelectedDimensions = f
 	var i = selectedElements.length;
 	while(i--) {
 		var elem = selectedElements[i];
-// 			if(canvas.getRotationAngle(elem) && !hasMatrixTransform(canvas.getTransformList(elem))) continue;
+// 			if(getRotationAngle(elem) && !hasMatrixTransform(getTransformList(elem))) continue;
 		var cmd = recalculateDimensions(elem);
 		if (cmd) {
 			batchCmd.addSubCommand(cmd);
@@ -2342,7 +2815,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 	var remap = function(x,y) { return transformPoint(x,y,m); },
 		scalew = function(w) { return m.a*w; },
 		scaleh = function(h) { return m.d*h; },
-		box = canvas.getBBox(selected);
+		box = getBBox(selected);
 
 	switch (selected.tagName)
 	{
@@ -2398,7 +2871,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			}
 			else {
 				// we just absorb all matrices into the element and don't do any remapping
-				var chlist = canvas.getTransformList(selected);
+				var chlist = getTransformList(selected);
 				var mt = svgroot.createSVGTransform();
 				mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix,m));
 				chlist.clear();
@@ -2576,7 +3049,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 var recalculateDimensions = this.recalculateDimensions = function(selected) {
 	if (selected == null) return null;
 	
-	var tlist = canvas.getTransformList(selected);
+	var tlist = getTransformList(selected);
 
 	// remove any unnecessary transforms
 	if (tlist && tlist.numberOfItems > 0) {
@@ -2600,7 +3073,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 			}
 		}
 		// End here if all it has is a rotation
-		if(tlist.numberOfItems == 1 && canvas.getRotationAngle(selected)) return null;
+		if(tlist.numberOfItems == 1 && getRotationAngle(selected)) return null;
 	}
 	
 	// if this element had no transforms, we are done
@@ -2675,7 +3148,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 	
 	// if it's a group, we have special processing to flatten transforms
 	if (selected.tagName == "g" || selected.tagName == "a") {
-		var box = canvas.getBBox(selected),
+		var box = getBBox(selected),
 			oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2},
 			newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2,
 							transformListToTransform(tlist).matrix),
@@ -2683,7 +3156,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		
 		
 		// temporarily strip off the rotate and save the old center
-		var gangle = canvas.getRotationAngle(selected);
+		var gangle = getRotationAngle(selected);
 		if (gangle) {
 			var a = gangle * Math.PI / 180;
 			if ( Math.abs(a) > (1.0e-10) ) {
@@ -2731,14 +3204,14 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 				tx = 0;
 				ty = 0;
 				if (child.nodeType == 1) {
-					var childTlist = canvas.getTransformList(child);
+					var childTlist = getTransformList(child);
 
 					// some children might not have a transform (<metadata>, <defs>, etc)
 					if (!childTlist) continue;
 
 					var m = transformListToTransform(childTlist).matrix;
 				
-					var angle = canvas.getRotationAngle(child);
+					var angle = getRotationAngle(child);
 					var old_start_transform = start_transform;
 					var childxforms = [];
 					start_transform = child.getAttribute("transform");
@@ -2796,7 +3269,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 //							if(href == useElem.getAttributeNS(xlinkns, "href")) {
 //								var usexlate = svgroot.createSVGTransform();
 //								usexlate.setTranslate(-tx,-ty);
-//								canvas.getTransformList(useElem).insertItemBefore(usexlate,0);
+//								getTransformList(useElem).insertItemBefore(usexlate,0);
 //								batchCmd.addSubCommand( recalculateDimensions(useElem) );
 //							}
 //						}
@@ -2842,7 +3315,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 						var old_start_transform = start_transform;
 						start_transform = child.getAttribute("transform");
 						
-						var childTlist = canvas.getTransformList(child);
+						var childTlist = getTransformList(child);
 						// some children might not have a transform (<metadata>, <defs>, etc)
 						if (childTlist) {
 							var newxlate = svgroot.createSVGTransform();
@@ -2860,7 +3333,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 								if(href == useElem.getAttributeNS(xlinkns, "href")) {
 									var usexlate = svgroot.createSVGTransform();
 									usexlate.setTranslate(-tx,-ty);
-									canvas.getTransformList(useElem).insertItemBefore(usexlate,0);
+									getTransformList(useElem).insertItemBefore(usexlate,0);
 									batchCmd.addSubCommand( recalculateDimensions(useElem) );
 								}
 							}
@@ -2883,7 +3356,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 				if (child.nodeType == 1) {
 					var old_start_transform = start_transform;
 					start_transform = child.getAttribute("transform");
-					var childTlist = canvas.getTransformList(child);
+					var childTlist = getTransformList(child);
 					
 					var em = matrixMultiply(m, transformListToTransform(childTlist).matrix);
 					var e2m = svgroot.createSVGTransform();
@@ -2948,7 +3421,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 					if (child.nodeType == 1) {
 						var old_start_transform = start_transform;
 						start_transform = child.getAttribute("transform");
-						var childTlist = canvas.getTransformList(child);
+						var childTlist = getTransformList(child);
 						var newxlate = svgroot.createSVGTransform();
 						newxlate.setTranslate(tx,ty);
 						childTlist.insertItemBefore(newxlate, 0);
@@ -2966,7 +3439,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 	// else, it's a non-group
 	else {
 		// FIXME: box might be null for some elements (<metadata> etc), need to handle this
-		var box = canvas.getBBox(selected);
+		var box = getBBox(selected);
 		if(!box) return null;
 		
 		var oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2},
@@ -2974,7 +3447,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 							transformListToTransform(tlist).matrix),
 			m = svgroot.createSVGMatrix(),
 			// temporarily strip off the rotate and save the old center
-			angle = canvas.getRotationAngle(selected);
+			angle = getRotationAngle(selected);
 		if (angle) {
 			var a = angle * Math.PI / 180;
 			if ( Math.abs(a) > (1.0e-10) ) {
@@ -3012,7 +3485,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 					//Update the userSpaceOnUse element
 					var grad = $(grad);
 					m = transformListToTransform(tlist).matrix;
-					var gtlist = canvas.getTransformList(grad[0]);
+					var gtlist = getTransformList(grad[0]);
 					var gmatrix = transformListToTransform(gtlist).matrix;
 					m = matrixMultiply(m, gmatrix);
 					var m_str = "matrix(" + [m.a,m.b,m.c,m.d,m.e,m.f].join(",") + ")";
@@ -3277,7 +3750,7 @@ var hasMatrixTransform = this.hasMatrixTransform = function(tlist) {
 // Returns:
 // The matrix object associated with the element's transformlist
 var getMatrix = function(elem) {
-	var tlist = canvas.getTransformList(elem);
+	var tlist = getTransformList(elem);
 	return transformListToTransform(tlist).matrix;
 }
 
@@ -3339,7 +3812,7 @@ var transformBox = this.transformBox = function(l, t, w, h, m) {
 // Clears the selection.  The 'selected' handler is then called.
 // Parameters: 
 // noCall - Optional boolean that when true does not call the "selected" handler
-this.clearSelection = function(noCall) {
+var clearSelection = this.clearSelection = function(noCall) {
 	if (selectedElements[0] != null) {
 		var len = selectedElements.length;
 		for (var i = 0; i < len; ++i) {
@@ -3361,7 +3834,7 @@ this.clearSelection = function(noCall) {
 // Parameters:
 // elemsToAdd - an array of DOM elements to add to the selection
 // showGrips - a boolean flag indicating whether the resize grips should be shown
-this.addToSelection = function(elemsToAdd, showGrips) {
+var addToSelection = this.addToSelection = function(elemsToAdd, showGrips) {
 	if (elemsToAdd.length == 0) { return; }
 	// find the first null in our selectedElements array
 	var j = 0;
@@ -3376,12 +3849,12 @@ this.addToSelection = function(elemsToAdd, showGrips) {
 	var i = elemsToAdd.length;
 	while (i--) {
 		var elem = elemsToAdd[i];
-		if (!elem || !this.getBBox(elem)) continue;
+		if (!elem || !getBBox(elem)) continue;
 		// if it's not already there, add it
 		if (selectedElements.indexOf(elem) == -1) {
 			selectedElements[j] = elem;
 			// only the first selectedBBoxes element is ever used in the codebase these days
-			if (j == 0) selectedBBoxes[j] = this.getBBox(elem);
+			if (j == 0) selectedBBoxes[j] = getBBox(elem);
 			j++;
 			var sel = selectorManager.requestSelector(elem);
 	
@@ -3427,7 +3900,7 @@ this.addToSelection = function(elemsToAdd, showGrips) {
 //
 // Parameters:
 // elemsToRemove - an array of elements to remove from selection
-this.removeFromSelection = function(elemsToRemove) {
+var removeFromSelection = this.removeFromSelection = function(elemsToRemove) {
 	if (selectedElements[0] == null) { return; }
 	if (elemsToRemove.length == 0) { return; }
 
@@ -3460,8 +3933,8 @@ this.removeFromSelection = function(elemsToRemove) {
 // This function then fires the selected event.
 this.selectAllInCurrentLayer = function() {
 	if (current_layer) {
-		canvas.clearSelection();
-		canvas.addToSelection($(current_layer).children());
+		clearSelection();
+		addToSelection($(current_layer).children());
 		current_mode = "select";
 		call("selected", selectedElements);			
 	}
@@ -3617,7 +4090,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		}
 		
 		start_transform = mouse_target.getAttribute("transform");
-		var tlist = canvas.getTransformList(mouse_target);
+		var tlist = getTransformList(mouse_target);
 		switch (current_mode) {
 			case "select":
 				started = true;
@@ -3630,9 +4103,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						// element to selection)
 						if (!evt.shiftKey) {
 							// No need to do the call here as it will be done on addToSelection
-							canvas.clearSelection(true);
+							clearSelection(true);
 						}
-						canvas.addToSelection([mouse_target]);
+						addToSelection([mouse_target]);
 						justSelected = mouse_target;
 						pathActions.clear();
 					}
@@ -3642,12 +4115,12 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					// a transform to use for its translate
 					for (var i = 0; i < selectedElements.length; ++i) {
 						if(selectedElements[i] == null) continue;
-						var slist = canvas.getTransformList(selectedElements[i]);
+						var slist = getTransformList(selectedElements[i]);
 						slist.insertItemBefore(svgroot.createSVGTransform(), 0);
 					}
 				}
 				else {
-					canvas.clearSelection();
+					clearSelection();
 					current_mode = "multiselect";
 					if (rubberBox == null) {
 						rubberBox = selectorManager.getRubberBandBox();
@@ -3685,14 +4158,14 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				
 				// Getting the BBox from the selection box, since we know we
 				// want to orient around it
-				init_bbox = canvas.getBBox($('#selectedBox0')[0]);
+				init_bbox = getBBox($('#selectedBox0')[0]);
 				$.each(init_bbox, function(key, val) {
 					init_bbox[key] = val/current_zoom;
 				});
 				
 				// append three dummy transforms to the tlist so that
 				// we can translate,scale,translate in mousemove
-				var pos = canvas.getRotationAngle(mouse_target)?1:0;
+				var pos = getRotationAngle(mouse_target)?1:0;
 				
 				if(hasMatrixTransform(tlist)) {
 					tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
@@ -3916,7 +4389,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 							var selected = selectedElements[i];
 							if (selected == null) break;
 							if (i==0) {
-								var box = canvas.getBBox(selected);
+								var box = getBBox(selected);
 // 									selectedBBoxes[i].x = box.x + dx;
 // 									selectedBBoxes[i].y = box.y + dy;
 							}
@@ -3924,7 +4397,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 							// update the dummy transform in our transform list
 							// to be a translate
 							var xform = svgroot.createSVGTransform();
-							var tlist = canvas.getTransformList(selected);
+							var tlist = getTransformList(selected);
 							xform.setTranslate(dx,dy);
 							if(tlist.numberOfItems) {
 								tlist.replaceItem(xform, 0);
@@ -3975,20 +4448,20 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					canvas.removeFromSelection(elemsToRemove);
 				
 				if (elemsToAdd.length > 0) 
-					canvas.addToSelection(elemsToAdd);
+					addToSelection(elemsToAdd);
 				break;
 			case "resize":
 				// we track the resize bounding box and translate/scale the selected element
 				// while the mouse is down, when mouse goes up, we use this to recalculate
 				// the shape's coordinates
-				var tlist = canvas.getTransformList(selected),
+				var tlist = getTransformList(selected),
 					hasMatrix = hasMatrixTransform(tlist),
-					box=hasMatrix?init_bbox:canvas.getBBox(selected), 
+					box=hasMatrix?init_bbox:getBBox(selected), 
 					left=box.x, top=box.y, width=box.width,
 					height=box.height, dx=(x-start_x), dy=(y-start_y);
 								
 				// if rotated, adjust the dx,dy values
-				var angle = canvas.getRotationAngle(selected);
+				var angle = getRotationAngle(selected);
 				if (angle) {
 					var r = Math.sqrt( dx*dx + dy*dy ),
 						theta = Math.atan2(dy,dx) - angle * Math.PI / 180.0;
@@ -4190,7 +4663,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				
 				break;
 			case "rotate":
-				var box = canvas.getBBox(selected),
+				var box = getBBox(selected),
 					cx = box.x + box.width/2, 
 					cy = box.y + box.height/2,
 					m = getMatrix(selected),
@@ -4394,7 +4867,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				break;
 			case "text":
 				keep = true;
-				canvas.addToSelection([element]);
+				addToSelection([element]);
 				textActions.start(element);
 				break;
 			case "path":
@@ -4467,7 +4940,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				t.id != "svgcanvas" && t.id != "svgroot") 
 			{
 				// switch into "select" mode if we've clicked on an element
-				canvas.addToSelection([t], true);
+				addToSelection([t], true);
 				canvas.setMode("select");
 			}
 			
@@ -4495,7 +4968,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					pathActions.toEditMode(element);
 				} else if (current_mode == "text" || current_mode == "image" || current_mode == "foreignObject") {
 					// keep us in the tool we were in unless it was a text or image element
-					canvas.addToSelection([element], true);
+					addToSelection([element], true);
 				}
 				// we create the insert command that is stored on the stack
 				// undo means to call cmd.unapply(), redo means to call cmd.apply()
@@ -4550,6 +5023,15 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	});
 	
 }());
+
+// Function: preventClickDefault
+// Prevents default browser click behaviour on the given element
+//
+// Parameters:
+// img - The DOM element to prevent the cilck on
+var preventClickDefault = function(img) {
+	$(img).click(function(e){e.preventDefault()});
+}
 
 // Group: Text edit functions
 // Functions relating to editing text elements
@@ -4852,11 +5334,11 @@ var textActions = canvas.textActions = function() {
 			$(curtext).css('cursor', 'move');
 			
 			if(selectElem) {
-				canvas.clearSelection();
+				clearSelection();
 				$(curtext).css('cursor', 'move');
 				
 				call("selected", [curtext]);
-				canvas.addToSelection([curtext], true);
+				addToSelection([curtext], true);
 			}
 			if(curtext && !curtext.textContent.length) {
 				// No content, so delete
@@ -4900,7 +5382,7 @@ var textActions = canvas.textActions = function() {
 			
 			var xform = curtext.getAttribute('transform');
 
-			textbb = canvas.getBBox(curtext);
+			textbb = getBBox(curtext);
 			
 			matrix = xform?getMatrix(curtext):null;
 
@@ -5442,7 +5924,7 @@ var pathActions = this.pathActions = function() {
 		
 		// Update position of all points
 		this.update = function() {
-			if(canvas.getRotationAngle(p.elem)) {
+			if(getRotationAngle(p.elem)) {
 				p.matrix = getMatrix(path.elem);
 				p.imatrix = p.matrix.inverse();
 			}
@@ -5833,10 +6315,10 @@ var pathActions = this.pathActions = function() {
 	// be optimized or even taken care of by recalculateDimensions
 	var recalcRotatedPath = function() {
 		var current_path = path.elem;
-		var angle = canvas.getRotationAngle(current_path, true);
+		var angle = getRotationAngle(current_path, true);
 		if(!angle) return;
 		selectedBBoxes[0] = path.oldbbox;
-		var box = canvas.getBBox(current_path),
+		var box = getBBox(current_path),
 			oldbox = selectedBBoxes[0],
 			oldcx = oldbox.x + oldbox.width/2,
 			oldcy = oldbox.y + oldbox.height/2,
@@ -5894,13 +6376,13 @@ var pathActions = this.pathActions = function() {
 			replacePathSeg(type, i, points);
 		} // loop for each point
 
-		box = canvas.getBBox(current_path);						
+		box = getBBox(current_path);						
 		selectedBBoxes[0].x = box.x; selectedBBoxes[0].y = box.y;
 		selectedBBoxes[0].width = box.width; selectedBBoxes[0].height = box.height;
 		
 		// now we must set the new transform to be rotated around the new center
 		var R_nc = svgroot.createSVGTransform(),
-			tlist = canvas.getTransformList(current_path);
+			tlist = getTransformList(current_path);
 		R_nc.setRotate((angle * 180.0 / Math.PI), newcx, newcy);
 		tlist.replaceItem(R_nc,0);
 	}
@@ -6207,9 +6689,9 @@ var pathActions = this.pathActions = function() {
 		toEditMode: function(element) {
 			path = getPath(element);
 			current_mode = "pathedit";
-			canvas.clearSelection();
+			clearSelection();
 			path.show(true).update();
-			path.oldbbox = canvas.getBBox(path.elem);
+			path.oldbbox = getBBox(path.elem);
 			subpath = false;
 		},
 		toSelectMode: function(elem) {
@@ -6217,7 +6699,7 @@ var pathActions = this.pathActions = function() {
 			current_mode = "select";
 			path.show(false);
 			current_path = false;
-			canvas.clearSelection();
+			clearSelection();
 			
 			if(path.matrix) {
 				// Rotated, so may need to re-calculate the center
@@ -6226,7 +6708,7 @@ var pathActions = this.pathActions = function() {
 			
 			if(selPath) {
 				call("selected", [elem]);
-				canvas.addToSelection([elem], true);
+				addToSelection([elem], true);
 			}
 		},
 		addSubPath: function(on) {
@@ -6252,7 +6734,7 @@ var pathActions = this.pathActions = function() {
 		reorient: function() {
 			var elem = selectedElements[0];
 			if(!elem) return;
-			var angle = canvas.getRotationAngle(elem);
+			var angle = getRotationAngle(elem);
 			if(angle == 0) return;
 			
 			var batchCmd = new BatchCommand("Reorient path");
@@ -6261,7 +6743,7 @@ var pathActions = this.pathActions = function() {
 				transform: elem.getAttribute('transform')
 			};
 			batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
-			canvas.clearSelection();
+			clearSelection();
 			this.resetOrientation(elem);
 			
 			addCommandToHistory(batchCmd);
@@ -6271,7 +6753,7 @@ var pathActions = this.pathActions = function() {
 
 			this.clear();
 	
-			canvas.addToSelection([elem], true);
+			addToSelection([elem], true);
 			call("changed", selectedElements);
 		},
 		
@@ -6291,7 +6773,7 @@ var pathActions = this.pathActions = function() {
 		},
 		resetOrientation: function(path) {
 			if(path == null || path.nodeName != 'path') return false;
-			var tlist = canvas.getTransformList(path);
+			var tlist = getTransformList(path);
 			var m = transformListToTransform(tlist).matrix;
 			tlist.clear();
 			path.removeAttribute("transform");
@@ -6846,7 +7328,7 @@ var svgCanvasToString = this.svgCanvasToString = function() {
 // Returns: 
 // String with the given element as an SVG tag
 var svgToString = this.svgToString = function(elem, indent) {
-	var out = new Array();
+	var out = new Array(), toXml = Utils.toXml;
 
 	if (elem) {
 		cleanupElement(elem);
@@ -6859,7 +7341,7 @@ var svgToString = this.svgToString = function(elem, indent) {
 		out.push("<"); out.push(elem.nodeName);			
 		if(elem.id == 'svgcontent') {
 			// Process root element separately
-			var res = canvas.getResolution();
+			var res = getResolution();
 			out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'"');
 			
 			var nsuris = {};
@@ -7017,7 +7499,7 @@ this.open = function() {
 // Nothing
 this.save = function(opts) {
 	// remove the selected outline before serializing
-	this.clearSelection();
+	clearSelection();
 	// Update save options if provided
 	if(opts) $.extend(save_options, opts);
 	save_options.apply = true;
@@ -7032,7 +7514,7 @@ this.save = function(opts) {
 // with an object including the string and any issues found
 this.rasterExport = function() {
 	// remove the selected outline before serializing
-	this.clearSelection();
+	clearSelection();
 	
 	// Check for known CanVG issues 
 	var issues = [];
@@ -7245,7 +7727,7 @@ this.setSvgString = function(xmlString) {
 		
 		// reset transform lists
 		svgTransformLists = {};
-		canvas.clearSelection();
+		clearSelection();
 		pathActions.clearData();
 		svgroot.appendChild(selectorManager.selectorParentGroup);
 		
@@ -7446,7 +7928,7 @@ this.importSvgString = function(xmlString) {
 		
 		// reset transform lists
 		svgTransformLists = {};
-		canvas.clearSelection();
+		clearSelection();
 		
 		addCommandToHistory(batchCmd);
 		call("changed", [svgcontent]);
@@ -7489,8 +7971,8 @@ var identifyLayers = function() {
 				}
 			}
 			// if child has a bbox (i.e. not a <title> or <defs> element), then it is an orphan
-			else if(canvas.getBBox(child) && child.nodeName != 'defs') { // Opera returns a BBox for defs
-				var bb = canvas.getBBox(child);
+			else if(getBBox(child) && child.nodeName != 'defs') { // Opera returns a BBox for defs
+				var bb = getBBox(child);
 				orphans.push(child);
 			}
 		}
@@ -7530,7 +8012,7 @@ this.createLayer = function(name) {
 	new_layer = svgcontent.appendChild(new_layer);
 	batchCmd.addSubCommand(new InsertElementCommand(new_layer));
 	addCommandToHistory(batchCmd);
-	canvas.clearSelection();
+	clearSelection();
 	identifyLayers();
 	canvas.setCurrentLayer(name);
 	call("changed", [new_layer]);
@@ -7547,7 +8029,7 @@ this.deleteCurrentLayer = function() {
 		batchCmd.addSubCommand(new RemoveElementCommand(current_layer, parent));
 		parent.removeChild(current_layer);
 		addCommandToHistory(batchCmd);
-		canvas.clearSelection();
+		clearSelection();
 		identifyLayers();
 		canvas.setCurrentLayer(all_layers[all_layers.length-1][0]);
 		call("changed", [svgcontent]);
@@ -7605,11 +8087,11 @@ this.getCurrentLayer = function() {
 // Returns:
 // true if the current layer was switched, otherwise false
 this.setCurrentLayer = function(name) {
-	name = toXml(name);
+	name = Utils.toXml(name);
 	for (var i = 0; i < all_layers.length; ++i) {
 		if (name == all_layers[i][0]) {
 			if (current_layer != all_layers[i][1]) {
-				canvas.clearSelection();
+				clearSelection();
 				current_layer.setAttribute("style", "pointer-events:none");
 				current_layer = all_layers[i][1];
 				current_layer.setAttribute("style", "pointer-events:all");
@@ -7641,7 +8123,7 @@ this.renameCurrentLayer = function(newname) {
 				if (all_layers[i][1] == oldLayer) break;
 			}
 			var oldname = all_layers[i][0];
-			all_layers[i][0] = toXml(newname);
+			all_layers[i][0] = Utils.toXml(newname);
 		
 			// now change the underlying title element contents
 			var len = oldLayer.childNodes.length;
@@ -7759,7 +8241,7 @@ this.setLayerVisibility = function(layername, bVisible) {
 	addCommandToHistory(new ChangeElementCommand(layer, {"display":oldDisplay}, "Layer Visibility"));
 	
 	if (layer == current_layer) {
-		canvas.clearSelection();
+		clearSelection();
 		pathActions.clear();
 	}
 //		call("changed", [selected]);
@@ -7863,7 +8345,7 @@ this.clear = function() {
 	var nodes = svgcontent.childNodes;
 	var len = svgcontent.childNodes.length;
 	var i = 0;
-	this.clearSelection();
+	clearSelection();
 	for(var rep = 0; rep < len; rep++){
 		if (nodes[i].nodeType == 1) { // element node
 			svgcontent.removeChild(nodes[i]);
@@ -7902,7 +8384,7 @@ this.getSelectedElems = function() { return selectedElements; };
 
 // Function: getResolution
 // Returns the current dimensions and zoom level in an object
-this.getResolution = function() {
+var getResolution = this.getResolution = function() {
 // 		var vb = svgcontent.getAttribute("viewBox").split(' ');
 // 		return {'w':vb[2], 'h':vb[3], 'zoom': current_zoom};
 		
@@ -7912,6 +8394,34 @@ this.getResolution = function() {
 		'zoom': current_zoom
 	};
 };
+
+// Function: getZoom
+// Returns the current zoom level
+this.getZoom = function(){return current_zoom;};
+
+// Function: getVersion
+// Returns a string which describes the revision number of SvgCanvas.
+this.getVersion = function() {
+	return "svgcanvas.js ($Rev$)";
+};
+
+// Function: setUiStrings
+// Update interface strings with given values
+//
+// Parameters:
+// strs - Object with strings (see uiStrings for examples)
+this.setUiStrings = function(strs) {
+	$.extend(uiStrings, strs);
+}
+
+// Function: setConfig
+// Update configuration options with given values
+//
+// Parameters:
+// opts - Object with options (see curConfig for examples)
+this.setConfig = function(opts) {
+	$.extend(curConfig, opts);
+}
 
 // Function: getDocumentTitle
 // Returns the current document title or an empty string if not found
@@ -7982,18 +8492,18 @@ this.getEditorNS = function(add) {
 // Boolean to indicate if resolution change was succesful. 
 // It will fail on "fit to content" option with no content to fit to.
 this.setResolution = function(x, y) {
-	var res = canvas.getResolution();
+	var res = getResolution();
 	var w = res.w, h = res.h;
 	var batchCmd;
 
 	if(x == 'fit') {
 		// Get bounding box
-		var bbox = canvas.getStrokedBBox();
+		var bbox = getStrokedBBox();
 		
 		if(bbox) {
 			batchCmd = new BatchCommand("Fit Canvas to Content");
-			var visEls = canvas.getVisibleElements();
-			canvas.addToSelection(visEls);
+			var visEls = getVisibleElements();
+			addToSelection(visEls);
 			var dx = [], dy = [];
 			$.each(visEls, function(i, item) {
 				dx.push(bbox.x*-1);
@@ -8002,7 +8512,7 @@ this.setResolution = function(x, y) {
 			
 			var cmd = canvas.moveSelectedElements(dx, dy, true);
 			batchCmd.addSubCommand(cmd);
-			canvas.clearSelection();
+			clearSelection();
 			
 			x = Math.round(bbox.width);
 			y = Math.round(bbox.height);
@@ -8074,18 +8584,18 @@ this.setBBoxZoom = function(val, editor_w, editor_h) {
 		case 'selection':
 			if(!selectedElements[0]) return;
 			var sel_elems = $.map(selectedElements, function(n){ if(n) return n; });
-			bb = canvas.getStrokedBBox(sel_elems);
+			bb = getStrokedBBox(sel_elems);
 			break;
 		case 'canvas':
-			var res = canvas.getResolution();
+			var res = getResolution();
 			spacer = .95;
 			bb = {width:res.w, height:res.h ,x:0, y:0};
 			break;
 		case 'content':
-			bb = canvas.getStrokedBBox();
+			bb = getStrokedBBox();
 			break;
 		case 'layer':
-			bb = canvas.getStrokedBBox(canvas.getVisibleElements(current_layer));
+			bb = getStrokedBBox(getVisibleElements(current_layer));
 			break;
 		default:
 			return;
@@ -8099,7 +8609,7 @@ this.setBBoxZoom = function(val, editor_w, editor_h) {
 // Parameters:
 // zoomlevel - Float indicating the zoom level to change to
 this.setZoom = function(zoomlevel) {
-	var res = canvas.getResolution();
+	var res = getResolution();
 	svgcontent.setAttribute("viewBox", "0 0 " + res.w/zoomlevel + " " + res.h/zoomlevel);
 	current_zoom = zoomlevel;
 	$.each(selectedElements, function(i, elem) {
@@ -8167,10 +8677,10 @@ this.setColor = function(type, val, preventUndo) {
 	}
 	if (elems.length > 0) {
 		if (!preventUndo) {
-			this.changeSelectedAttribute(type, val, elems);
+			changeSelectedAttribute(type, val, elems);
 			call("changed", elems);
 		} else 
-			this.changeSelectedAttributeNoUndo(type, val, elems);
+			changeSelectedAttributeNoUndo(type, val, elems);
 	}
 }
 
@@ -8379,7 +8889,7 @@ this.setStrokeWidth = function(val) {
 		}
 	}		
 	if (elems.length > 0) {
-		this.changeSelectedAttribute("stroke-width", val, elems);
+		changeSelectedAttribute("stroke-width", val, elems);
 		call("changed", selectedElements);
 	}
 };
@@ -8404,7 +8914,7 @@ this.setStrokeAttr = function(attr, val) {
 		}
 	}		
 	if (elems.length > 0) {
-		this.changeSelectedAttribute(attr, val, elems);
+		changeSelectedAttribute(attr, val, elems);
 		call("changed", selectedElements);
 	}
 };
@@ -8419,7 +8929,7 @@ this.getOpacity = function() {
 // Sets the given opacity to the current selected elements
 this.setOpacity = function(val) {
 	cur_shape.opacity = val;
-	this.changeSelectedAttribute("opacity", val);
+	changeSelectedAttribute("opacity", val);
 };
 
 // Function: getOpacity
@@ -8444,9 +8954,9 @@ this.getStrokeOpacity = function() {
 this.setPaintOpacity = function(type, val, preventUndo) {
 	cur_shape[type + '_opacity'] = val;
 	if (!preventUndo)
-		this.changeSelectedAttribute(type + "-opacity", val);
+		changeSelectedAttribute(type + "-opacity", val);
 	else
-		this.changeSelectedAttributeNoUndo(type + "-opacity", val);
+		changeSelectedAttributeNoUndo(type + "-opacity", val);
 };
 
 // Function: getBlur
@@ -8488,13 +8998,13 @@ this.getBlur = function(elem) {
 		if(val === 0) {
 			// Don't change the StdDev, as that will hide the element.
 			// Instead, just remove the value for "filter"
-			canvas.changeSelectedAttributeNoUndo("filter", "");
+			changeSelectedAttributeNoUndo("filter", "");
 			filterHidden = true;
 		} else {
 			if(filterHidden) {
-				canvas.changeSelectedAttributeNoUndo("filter", 'url(#' + selectedElements[0].id + '_blur)');
+				changeSelectedAttributeNoUndo("filter", 'url(#' + selectedElements[0].id + '_blur)');
 			}
-			canvas.changeSelectedAttributeNoUndo("stdDeviation", val, [filter.firstChild]);
+			changeSelectedAttributeNoUndo("stdDeviation", val, [filter.firstChild]);
 			canvas.setBlurOffsets(filter, val);
 		}
 	}
@@ -8585,7 +9095,7 @@ this.getBlur = function(elem) {
 			batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
 			return;
 		} else {
-			this.changeSelectedAttribute("filter", 'url(#' + elem_id + '_blur)');
+			changeSelectedAttribute("filter", 'url(#' + elem_id + '_blur)');
 			
 			batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
 			
@@ -8627,7 +9137,7 @@ this.setBold = function(b) {
 	if (selected != null && selected.tagName  == "text" &&
 		selectedElements[1] == null) 
 	{
-		this.changeSelectedAttribute("font-weight", b ? "bold" : "normal");
+		changeSelectedAttribute("font-weight", b ? "bold" : "normal");
 	}
 };
 
@@ -8656,7 +9166,7 @@ this.setItalic = function(i) {
 	if (selected != null && selected.tagName  == "text" &&
 		selectedElements[1] == null) 
 	{
-		this.changeSelectedAttribute("font-style", i ? "italic" : "normal");
+		changeSelectedAttribute("font-style", i ? "italic" : "normal");
 	}
 };
 
@@ -8673,7 +9183,7 @@ this.getFontFamily = function() {
 // val - String with the new font family
 this.setFontFamily = function(val) {
 	cur_text.font_family = val;
-	this.changeSelectedAttribute("font-family", val);
+	changeSelectedAttribute("font-family", val);
 };
 
 // Function: getFontSize
@@ -8690,7 +9200,7 @@ this.getFontSize = function() {
 this.setFontSize = function(val) {
 	cur_text.font_size = val;
 	textActions.toSelectMode();
-	this.changeSelectedAttribute("font-size", val);
+	changeSelectedAttribute("font-size", val);
 };
 
 // Function: getText
@@ -8707,7 +9217,7 @@ this.getText = function() {
 // Parameters:
 // val - String with the new text
 this.setTextContent = function(val) {
-	this.changeSelectedAttribute("#text", val);
+	changeSelectedAttribute("#text", val);
 	textActions.init(val);
 	textActions.setCursor();
 };
@@ -8777,6 +9287,8 @@ this.setRectRadius = function(val) {
 	}
 };
 
+// Group: Element manipulation
+
 // Function: setSegType
 // Sets the new segment type to the selected segment(s). 
 //
@@ -8786,378 +9298,6 @@ this.setRectRadius = function(val) {
 this.setSegType = function(new_type) {
 	pathActions.setSegType(new_type);
 }
-
-// Function: changeSelectedAttributeNoUndo
-// This function makes the changes to the elements. It does not add the change
-// to the history stack. 
-// 
-// Parameters:
-// attr - String with the attribute name
-// newValue - String or number with the new attribute value
-// elems - The DOM elements to apply the change to
-this.changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
-	var handle = svgroot.suspendRedraw(1000);
-	if(current_mode == 'pathedit') {
-		// Editing node
-		pathActions.moveNode(attr, newValue);
-	}
-	var elems = elems || selectedElements;
-	var i = elems.length;
-	while (i--) {
-		var elem = elems[i];
-		if (elem == null) continue;
-		
-		// Go into "select" mode for text changes
-		if(current_mode === "textedit" && attr !== "#text") {
-			textActions.toSelectMode(elem);
-		}
-		
-		// Set x,y vals on elements that don't have them
-		if((attr == 'x' || attr == 'y') && $.inArray(elem.tagName, ['g', 'polyline', 'path']) != -1) {
-			var bbox = canvas.getStrokedBBox([elem]);
-			var diff_x = attr == 'x' ? newValue - bbox.x : 0;
-			var diff_y = attr == 'y' ? newValue - bbox.y : 0;
-			canvas.moveSelectedElements(diff_x*current_zoom, diff_y*current_zoom, true);
-			continue;
-		}
-		
-		// only allow the transform/opacity attribute to change on <g> elements, slightly hacky
-		if (elem.tagName == "g" && $.inArray(attr, ['transform', 'opacity', 'filter']) !== -1);
-		var oldval = attr == "#text" ? elem.textContent : elem.getAttribute(attr);
-		if (oldval == null)  oldval = "";
-		if (oldval != String(newValue)) {
-			if (attr == "#text") {
-				var old_w = canvas.getBBox(elem).width;
-				elem.textContent = newValue;
-				elem = ffClone(elem);
-				
-				// Hoped to solve the issue of moving text with text-anchor="start",
-				// but this doesn't actually fix it. Hopefully on the right track, though. -Fyrd
-				
-// 					var box=canvas.getBBox(elem), left=box.x, top=box.y, width=box.width,
-// 						height=box.height, dx = width - old_w, dy=0;
-// 					var angle = canvas.getRotationAngle(elem, true);
-// 					if (angle) {
-// 						var r = Math.sqrt( dx*dx + dy*dy );
-// 						var theta = Math.atan2(dy,dx) - angle;
-// 						dx = r * Math.cos(theta);
-// 						dy = r * Math.sin(theta);
-// 						
-// 						elem.setAttribute('x', elem.getAttribute('x')-dx);
-// 						elem.setAttribute('y', elem.getAttribute('y')-dy);
-// 					}
-				
-			} else if (attr == "#href") {
-				elem.setAttributeNS(xlinkns, "xlink:href", newValue);
-			}
-			else elem.setAttribute(attr, newValue);
-			if (i==0)
-				selectedBBoxes[i] = this.getBBox(elem);
-			// Use the Firefox ffClone hack for text elements with gradients or
-			// where other text attributes are changed. 
-			if(elem.nodeName == 'text') {
-				if((newValue+'').indexOf('url') == 0 || $.inArray(attr, ['font-size','font-family','x','y']) != -1) {
-					elem = ffClone(elem);
-				}
-			}
-			// Timeout needed for Opera & Firefox
-			// codedread: it is now possible for this function to be called with elements
-			// that are not in the selectedElements array, we need to only request a
-			// selector if the element is in that array
-			if ($.inArray(elem, selectedElements) != -1) {
-				setTimeout(function() {
-					// Due to element replacement, this element may no longer
-					// be part of the DOM
-					if(!elem.parentNode) return;
-					selectorManager.requestSelector(elem).resize();
-				},0);
-			}
-			// if this element was rotated, and we changed the position of this element
-			// we need to update the rotational transform attribute 
-			var angle = canvas.getRotationAngle(elem);
-			if (angle != 0 && attr != "transform") {
-				var tlist = canvas.getTransformList(elem);
-				var n = tlist.numberOfItems;
-				while (n--) {
-					var xform = tlist.getItem(n);
-					if (xform.type == 4) {
-						// remove old rotate
-						tlist.removeItem(n);
-						
-						var box = canvas.getBBox(elem);
-						var center = transformPoint(box.x+box.width/2, box.y+box.height/2, transformListToTransform(tlist).matrix);
-						var cx = center.x,
-							cy = center.y;
-						var newrot = svgroot.createSVGTransform();
-						newrot.setRotate(angle, cx, cy);
-						tlist.insertItemBefore(newrot, n);
-						break;
-					}
-				}
-			}
-		} // if oldValue != newValue
-	} // for each elem
-	svgroot.unsuspendRedraw(handle);	
-};
-
-// Function: changeSelectedAttribute
-// Change the given/selected element and add the original value to the history stack
-// If you want to change all selectedElements, ignore the elems argument.
-// If you want to change only a subset of selectedElements, then send the
-// subset to this function in the elems argument.
-// 
-// Parameters:
-// attr - String with the attribute name
-// newValue - String or number with the new attribute value
-// elems - The DOM elements to apply the change to
-this.changeSelectedAttribute = function(attr, val, elems) {
-	var elems = elems || selectedElements;
-	canvas.beginUndoableChange(attr, elems);
-	var i = elems.length;
-
-	canvas.changeSelectedAttributeNoUndo(attr, val, elems);
-
-	var batchCmd = canvas.finishUndoableChange();
-	if (!batchCmd.isEmpty()) { 
-		addCommandToHistory(batchCmd);
-	}
-};
-
-// Function: deleteSelectedElements
-// Removes all selected elements from the DOM and adds the change to the 
-// history stack
-this.deleteSelectedElements = function() {
-	var batchCmd = new BatchCommand("Delete Elements");
-	var len = selectedElements.length;
-	var selectedCopy = []; //selectedElements is being deleted
-	for (var i = 0; i < len; ++i) {
-		var selected = selectedElements[i];
-		if (selected == null) break;
-
-		var parent = selected.parentNode;
-		var t = selected;
-		// this will unselect the element and remove the selectedOutline
-		selectorManager.releaseSelector(t);
-		var elem = parent.removeChild(t);
-		selectedCopy.push(selected) //for the copy
-		selectedElements[i] = null;
-		batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
-	}
-	if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
-	call("changed", selectedCopy);
-	canvas.clearSelection();
-};
-
-// Function: groupSelectedElements
-// Wraps all the selected elements in a group (g) element
-this.groupSelectedElements = function() {
-	var batchCmd = new BatchCommand("Group Elements");
-	
-	// create and insert the group element
-	var g = addSvgElementFromJson({
-							"element": "g",
-							"attr": {
-								"id": getNextId()
-							}
-						});
-	batchCmd.addSubCommand(new InsertElementCommand(g));
-	
-	// now move all children into the group
-	var i = selectedElements.length;
-	while (i--) {
-		var elem = selectedElements[i];
-		if (elem == null) continue;
-		var oldNextSibling = elem.nextSibling;
-		var oldParent = elem.parentNode;
-		g.appendChild(elem);
-		batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));			
-	}
-	if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
-	
-	// update selection
-	canvas.clearSelection();
-	canvas.addToSelection([g], true);
-};
-
-// Function: ungroupSelectedElement
-// Unwraps all the elements in a selected group (g) element. This requires
-// significant recalculations to apply group's transforms, etc to its children
-this.ungroupSelectedElement = function() {
-	var g = selectedElements[0];
-	if (g.tagName == "g") {
-		var batchCmd = new BatchCommand("Ungroup Elements");
-		var parent = g.parentNode;
-		var anchor = g.previousSibling;
-		var children = new Array(g.childNodes.length);
-		var xform = g.getAttribute("transform");
-		// get consolidated matrix
-		var glist = canvas.getTransformList(g);
-		var m = transformListToTransform(glist).matrix;
-
-		// TODO: get all fill/stroke properties from the group that we are about to destroy
-		// "fill", "fill-opacity", "fill-rule", "stroke", "stroke-dasharray", "stroke-dashoffset", 
-		// "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", 
-		// "stroke-width"
-		// and then for each child, if they do not have the attribute (or the value is 'inherit')
-		// then set the child's attribute
-		
-		var i = 0;
-		var gangle = canvas.getRotationAngle(g);
-		
-		var gattrs = $(g).attr(['filter', 'opacity']);
-		var gfilter, gblur;
-		
-		while (g.firstChild) {
-			var elem = g.firstChild;
-			var oldNextSibling = elem.nextSibling;
-			var oldParent = elem.parentNode;
-			children[i++] = elem = parent.insertBefore(elem, anchor);
-			batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
-			
-			if(gattrs.opacity !== null && gattrs.opacity !== 1) {
-				var c_opac = elem.getAttribute('opacity') || 1;
-				var new_opac = Math.round((elem.getAttribute('opacity') || 1) * gattrs.opacity * 100)/100;
-				this.changeSelectedAttribute('opacity', new_opac, [elem]);
-			}
-
-			if(gattrs.filter) {
-				var cblur = this.getBlur(elem);
-				var orig_cblur = cblur;
-				if(!gblur) gblur = this.getBlur(g);
-				if(cblur) {
-					// Is this formula correct?
-					cblur = (gblur-0) + (cblur-0);
-				} else if(cblur === 0) {
-					cblur = gblur;
-				}
-				
-				// If child has no current filter, get group's filter or clone it.
-				if(!orig_cblur) {
-					// Set group's filter to use first child's ID
-					if(!gfilter) {
-						gfilter = getElem(getUrlFromAttr(gattrs.filter).substr(1));
-					} else {
-						// Clone the group's filter
-						gfilter = copyElem(gfilter);
-						findDefs().appendChild(gfilter);
-					}
-				} else {
-					gfilter = getElem(getUrlFromAttr(elem.getAttribute('filter')).substr(1));
-				}
-
-				// Change this in future for different filters
-				var suffix = (gfilter.firstChild.tagName === 'feGaussianBlur')?'blur':'filter'; 
-				gfilter.id = elem.id + '_' + suffix;
-				this.changeSelectedAttribute('filter', 'url(#' + gfilter.id + ')', [elem]);
-				
-				// Update blur value 
-				if(cblur) {
-					this.changeSelectedAttribute('stdDeviation', cblur, [gfilter.firstChild]);
-					canvas.setBlurOffsets(gfilter, cblur);
-				}
-			}
-			
-			var chtlist = canvas.getTransformList(elem);
-			
-			if (glist.numberOfItems) {
-				// TODO: if the group's transform is just a rotate, we can always transfer the
-				// rotate() down to the children (collapsing consecutive rotates and factoring
-				// out any translates)
-				if (gangle && glist.numberOfItems == 1) {
-					// [Rg] [Rc] [Mc]
-					// we want [Tr] [Rc2] [Mc] where:
-					// 	- [Rc2] is at the child's current center but has the 
-					//	  sum of the group and child's rotation angles
-					// 	- [Tr] is the equivalent translation that this child 
-					// 	  undergoes if the group wasn't there
-					
-					// [Tr] = [Rg] [Rc] [Rc2_inv]
-					
-					// get group's rotation matrix (Rg)
-					var rgm = glist.getItem(0).matrix;
-					
-					// get child's rotation matrix (Rc)
-					var rcm = svgroot.createSVGMatrix();
-					var cangle = canvas.getRotationAngle(elem);
-					if (cangle) {
-						rcm = chtlist.getItem(0).matrix;
-					}
-					
-					// get child's old center of rotation
-					var cbox = canvas.getBBox(elem);
-					var ceqm = transformListToTransform(chtlist).matrix;
-					var coldc = transformPoint(cbox.x+cbox.width/2, cbox.y+cbox.height/2,ceqm);
-					
-					// sum group and child's angles
-					var sangle = gangle + cangle;
-					
-					// get child's rotation at the old center (Rc2_inv)
-					var r2 = svgroot.createSVGTransform();
-					r2.setRotate(sangle, coldc.x, coldc.y);
-					
-					// calculate equivalent translate
-					var trm = matrixMultiply(rgm, rcm, r2.matrix.inverse());
-					
-					// set up tlist
-					if (cangle) {
-						chtlist.removeItem(0);
-					}
-					
-					if (sangle) {
-						chtlist.insertItemBefore(r2, 0);
-					}
-
-					if (trm.e || trm.f) {
-						var tr = svgroot.createSVGTransform();
-						tr.setTranslate(trm.e, trm.f);
-						chtlist.insertItemBefore(tr, 0);
-					}
-				}
-				else { // more complicated than just a rotate
-					// transfer the group's transform down to each child and then
-					// call recalculateDimensions()				
-					var oldxform = elem.getAttribute("transform");
-					var changes = {};
-					changes["transform"] = oldxform ? oldxform : "";
-
-					var newxform = svgroot.createSVGTransform();
-
-					// [ gm ] [ chm ] = [ chm ] [ gm' ]
-					// [ gm' ] = [ chm_inv ] [ gm ] [ chm ]
-					var chm = transformListToTransform(chtlist).matrix,
-						chm_inv = chm.inverse();
-					var gm = matrixMultiply( chm_inv, m, chm );
-					newxform.setMatrix(gm);
-					chtlist.appendItem(newxform);
-				}
-				batchCmd.addSubCommand(recalculateDimensions(elem));
-			}
-		}
-
-		
-		// remove transform and make it undo-able
-		if (xform) {
-			var changes = {};
-			changes["transform"] = xform;
-			g.setAttribute("transform", "");
-			g.removeAttribute("transform");				
-			batchCmd.addSubCommand(new ChangeElementCommand(g, changes));
-		}
-
-		// remove the group from the selection			
-		canvas.clearSelection();
-		
-		// delete the group element (but make undo-able)
-		g = parent.removeChild(g);
-		batchCmd.addSubCommand(new RemoveElementCommand(g, parent));
-
-		if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
-		
-		// update selection
-		canvas.addToSelection(children);
-	}
-};
-
 
 // Function: convertToPath
 // Convert selected element to a path, or get the BBox of an element-as-path
@@ -9312,7 +9452,7 @@ this.convertToPath = function(elem, getBBox) {
 		
 		// Reorient if it has a matrix
 		if(eltrans) {
-			var tlist = canvas.getTransformList(path);
+			var tlist = getTransformList(path);
 			if(hasMatrixTransform(tlist)) {
 				pathActions.resetOrientation(path);
 			}
@@ -9321,11 +9461,11 @@ this.convertToPath = function(elem, getBBox) {
 		batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
 		batchCmd.addSubCommand(new InsertElementCommand(path));
 
-		canvas.clearSelection();
+		clearSelection();
 		elem.parentNode.removeChild(elem)
 		path.setAttribute('id', id);
 		path.removeAttribute("visibility");
-		canvas.addToSelection([path], true);
+		addToSelection([path], true);
 		
 		addCommandToHistory(batchCmd);
 		
@@ -9342,6 +9482,378 @@ this.convertToPath = function(elem, getBBox) {
 		return bb;
 	}
 }
+
+
+// Function: changeSelectedAttributeNoUndo
+// This function makes the changes to the elements. It does not add the change
+// to the history stack. 
+// 
+// Parameters:
+// attr - String with the attribute name
+// newValue - String or number with the new attribute value
+// elems - The DOM elements to apply the change to
+var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
+	var handle = svgroot.suspendRedraw(1000);
+	if(current_mode == 'pathedit') {
+		// Editing node
+		pathActions.moveNode(attr, newValue);
+	}
+	var elems = elems || selectedElements;
+	var i = elems.length;
+	while (i--) {
+		var elem = elems[i];
+		if (elem == null) continue;
+		
+		// Go into "select" mode for text changes
+		if(current_mode === "textedit" && attr !== "#text") {
+			textActions.toSelectMode(elem);
+		}
+		
+		// Set x,y vals on elements that don't have them
+		if((attr == 'x' || attr == 'y') && $.inArray(elem.tagName, ['g', 'polyline', 'path']) != -1) {
+			var bbox = getStrokedBBox([elem]);
+			var diff_x = attr == 'x' ? newValue - bbox.x : 0;
+			var diff_y = attr == 'y' ? newValue - bbox.y : 0;
+			canvas.moveSelectedElements(diff_x*current_zoom, diff_y*current_zoom, true);
+			continue;
+		}
+		
+		// only allow the transform/opacity attribute to change on <g> elements, slightly hacky
+		if (elem.tagName == "g" && $.inArray(attr, ['transform', 'opacity', 'filter']) !== -1);
+		var oldval = attr == "#text" ? elem.textContent : elem.getAttribute(attr);
+		if (oldval == null)  oldval = "";
+		if (oldval != String(newValue)) {
+			if (attr == "#text") {
+				var old_w = getBBox(elem).width;
+				elem.textContent = newValue;
+				elem = ffClone(elem);
+				
+				// Hoped to solve the issue of moving text with text-anchor="start",
+				// but this doesn't actually fix it. Hopefully on the right track, though. -Fyrd
+				
+// 					var box=getBBox(elem), left=box.x, top=box.y, width=box.width,
+// 						height=box.height, dx = width - old_w, dy=0;
+// 					var angle = getRotationAngle(elem, true);
+// 					if (angle) {
+// 						var r = Math.sqrt( dx*dx + dy*dy );
+// 						var theta = Math.atan2(dy,dx) - angle;
+// 						dx = r * Math.cos(theta);
+// 						dy = r * Math.sin(theta);
+// 						
+// 						elem.setAttribute('x', elem.getAttribute('x')-dx);
+// 						elem.setAttribute('y', elem.getAttribute('y')-dy);
+// 					}
+				
+			} else if (attr == "#href") {
+				elem.setAttributeNS(xlinkns, "xlink:href", newValue);
+			}
+			else elem.setAttribute(attr, newValue);
+			if (i==0)
+				selectedBBoxes[i] = getBBox(elem);
+			// Use the Firefox ffClone hack for text elements with gradients or
+			// where other text attributes are changed. 
+			if(elem.nodeName == 'text') {
+				if((newValue+'').indexOf('url') == 0 || $.inArray(attr, ['font-size','font-family','x','y']) != -1) {
+					elem = ffClone(elem);
+				}
+			}
+			// Timeout needed for Opera & Firefox
+			// codedread: it is now possible for this function to be called with elements
+			// that are not in the selectedElements array, we need to only request a
+			// selector if the element is in that array
+			if ($.inArray(elem, selectedElements) != -1) {
+				setTimeout(function() {
+					// Due to element replacement, this element may no longer
+					// be part of the DOM
+					if(!elem.parentNode) return;
+					selectorManager.requestSelector(elem).resize();
+				},0);
+			}
+			// if this element was rotated, and we changed the position of this element
+			// we need to update the rotational transform attribute 
+			var angle = getRotationAngle(elem);
+			if (angle != 0 && attr != "transform") {
+				var tlist = getTransformList(elem);
+				var n = tlist.numberOfItems;
+				while (n--) {
+					var xform = tlist.getItem(n);
+					if (xform.type == 4) {
+						// remove old rotate
+						tlist.removeItem(n);
+						
+						var box = getBBox(elem);
+						var center = transformPoint(box.x+box.width/2, box.y+box.height/2, transformListToTransform(tlist).matrix);
+						var cx = center.x,
+							cy = center.y;
+						var newrot = svgroot.createSVGTransform();
+						newrot.setRotate(angle, cx, cy);
+						tlist.insertItemBefore(newrot, n);
+						break;
+					}
+				}
+			}
+		} // if oldValue != newValue
+	} // for each elem
+	svgroot.unsuspendRedraw(handle);	
+};
+
+// Function: changeSelectedAttribute
+// Change the given/selected element and add the original value to the history stack
+// If you want to change all selectedElements, ignore the elems argument.
+// If you want to change only a subset of selectedElements, then send the
+// subset to this function in the elems argument.
+// 
+// Parameters:
+// attr - String with the attribute name
+// newValue - String or number with the new attribute value
+// elems - The DOM elements to apply the change to
+var changeSelectedAttribute = this.changeSelectedAttribute = function(attr, val, elems) {
+	var elems = elems || selectedElements;
+	canvas.beginUndoableChange(attr, elems);
+	var i = elems.length;
+
+	changeSelectedAttributeNoUndo(attr, val, elems);
+
+	var batchCmd = canvas.finishUndoableChange();
+	if (!batchCmd.isEmpty()) { 
+		addCommandToHistory(batchCmd);
+	}
+};
+
+// Function: deleteSelectedElements
+// Removes all selected elements from the DOM and adds the change to the 
+// history stack
+this.deleteSelectedElements = function() {
+	var batchCmd = new BatchCommand("Delete Elements");
+	var len = selectedElements.length;
+	var selectedCopy = []; //selectedElements is being deleted
+	for (var i = 0; i < len; ++i) {
+		var selected = selectedElements[i];
+		if (selected == null) break;
+
+		var parent = selected.parentNode;
+		var t = selected;
+		// this will unselect the element and remove the selectedOutline
+		selectorManager.releaseSelector(t);
+		var elem = parent.removeChild(t);
+		selectedCopy.push(selected) //for the copy
+		selectedElements[i] = null;
+		batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
+	}
+	if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
+	call("changed", selectedCopy);
+	clearSelection();
+};
+
+// Function: groupSelectedElements
+// Wraps all the selected elements in a group (g) element
+this.groupSelectedElements = function() {
+	var batchCmd = new BatchCommand("Group Elements");
+	
+	// create and insert the group element
+	var g = addSvgElementFromJson({
+							"element": "g",
+							"attr": {
+								"id": getNextId()
+							}
+						});
+	batchCmd.addSubCommand(new InsertElementCommand(g));
+	
+	// now move all children into the group
+	var i = selectedElements.length;
+	while (i--) {
+		var elem = selectedElements[i];
+		if (elem == null) continue;
+		var oldNextSibling = elem.nextSibling;
+		var oldParent = elem.parentNode;
+		g.appendChild(elem);
+		batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));			
+	}
+	if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
+	
+	// update selection
+	clearSelection();
+	addToSelection([g], true);
+};
+
+// Function: ungroupSelectedElement
+// Unwraps all the elements in a selected group (g) element. This requires
+// significant recalculations to apply group's transforms, etc to its children
+this.ungroupSelectedElement = function() {
+	var g = selectedElements[0];
+	if (g.tagName == "g") {
+		var batchCmd = new BatchCommand("Ungroup Elements");
+		var parent = g.parentNode;
+		var anchor = g.previousSibling;
+		var children = new Array(g.childNodes.length);
+		var xform = g.getAttribute("transform");
+		// get consolidated matrix
+		var glist = getTransformList(g);
+		var m = transformListToTransform(glist).matrix;
+
+		// TODO: get all fill/stroke properties from the group that we are about to destroy
+		// "fill", "fill-opacity", "fill-rule", "stroke", "stroke-dasharray", "stroke-dashoffset", 
+		// "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", 
+		// "stroke-width"
+		// and then for each child, if they do not have the attribute (or the value is 'inherit')
+		// then set the child's attribute
+		
+		var i = 0;
+		var gangle = getRotationAngle(g);
+		
+		var gattrs = $(g).attr(['filter', 'opacity']);
+		var gfilter, gblur;
+		
+		while (g.firstChild) {
+			var elem = g.firstChild;
+			var oldNextSibling = elem.nextSibling;
+			var oldParent = elem.parentNode;
+			children[i++] = elem = parent.insertBefore(elem, anchor);
+			batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
+			
+			if(gattrs.opacity !== null && gattrs.opacity !== 1) {
+				var c_opac = elem.getAttribute('opacity') || 1;
+				var new_opac = Math.round((elem.getAttribute('opacity') || 1) * gattrs.opacity * 100)/100;
+				changeSelectedAttribute('opacity', new_opac, [elem]);
+			}
+
+			if(gattrs.filter) {
+				var cblur = this.getBlur(elem);
+				var orig_cblur = cblur;
+				if(!gblur) gblur = this.getBlur(g);
+				if(cblur) {
+					// Is this formula correct?
+					cblur = (gblur-0) + (cblur-0);
+				} else if(cblur === 0) {
+					cblur = gblur;
+				}
+				
+				// If child has no current filter, get group's filter or clone it.
+				if(!orig_cblur) {
+					// Set group's filter to use first child's ID
+					if(!gfilter) {
+						gfilter = getElem(getUrlFromAttr(gattrs.filter).substr(1));
+					} else {
+						// Clone the group's filter
+						gfilter = copyElem(gfilter);
+						findDefs().appendChild(gfilter);
+					}
+				} else {
+					gfilter = getElem(getUrlFromAttr(elem.getAttribute('filter')).substr(1));
+				}
+
+				// Change this in future for different filters
+				var suffix = (gfilter.firstChild.tagName === 'feGaussianBlur')?'blur':'filter'; 
+				gfilter.id = elem.id + '_' + suffix;
+				changeSelectedAttribute('filter', 'url(#' + gfilter.id + ')', [elem]);
+				
+				// Update blur value 
+				if(cblur) {
+					changeSelectedAttribute('stdDeviation', cblur, [gfilter.firstChild]);
+					canvas.setBlurOffsets(gfilter, cblur);
+				}
+			}
+			
+			var chtlist = getTransformList(elem);
+			
+			if (glist.numberOfItems) {
+				// TODO: if the group's transform is just a rotate, we can always transfer the
+				// rotate() down to the children (collapsing consecutive rotates and factoring
+				// out any translates)
+				if (gangle && glist.numberOfItems == 1) {
+					// [Rg] [Rc] [Mc]
+					// we want [Tr] [Rc2] [Mc] where:
+					// 	- [Rc2] is at the child's current center but has the 
+					//	  sum of the group and child's rotation angles
+					// 	- [Tr] is the equivalent translation that this child 
+					// 	  undergoes if the group wasn't there
+					
+					// [Tr] = [Rg] [Rc] [Rc2_inv]
+					
+					// get group's rotation matrix (Rg)
+					var rgm = glist.getItem(0).matrix;
+					
+					// get child's rotation matrix (Rc)
+					var rcm = svgroot.createSVGMatrix();
+					var cangle = getRotationAngle(elem);
+					if (cangle) {
+						rcm = chtlist.getItem(0).matrix;
+					}
+					
+					// get child's old center of rotation
+					var cbox = getBBox(elem);
+					var ceqm = transformListToTransform(chtlist).matrix;
+					var coldc = transformPoint(cbox.x+cbox.width/2, cbox.y+cbox.height/2,ceqm);
+					
+					// sum group and child's angles
+					var sangle = gangle + cangle;
+					
+					// get child's rotation at the old center (Rc2_inv)
+					var r2 = svgroot.createSVGTransform();
+					r2.setRotate(sangle, coldc.x, coldc.y);
+					
+					// calculate equivalent translate
+					var trm = matrixMultiply(rgm, rcm, r2.matrix.inverse());
+					
+					// set up tlist
+					if (cangle) {
+						chtlist.removeItem(0);
+					}
+					
+					if (sangle) {
+						chtlist.insertItemBefore(r2, 0);
+					}
+
+					if (trm.e || trm.f) {
+						var tr = svgroot.createSVGTransform();
+						tr.setTranslate(trm.e, trm.f);
+						chtlist.insertItemBefore(tr, 0);
+					}
+				}
+				else { // more complicated than just a rotate
+					// transfer the group's transform down to each child and then
+					// call recalculateDimensions()				
+					var oldxform = elem.getAttribute("transform");
+					var changes = {};
+					changes["transform"] = oldxform ? oldxform : "";
+
+					var newxform = svgroot.createSVGTransform();
+
+					// [ gm ] [ chm ] = [ chm ] [ gm' ]
+					// [ gm' ] = [ chm_inv ] [ gm ] [ chm ]
+					var chm = transformListToTransform(chtlist).matrix,
+						chm_inv = chm.inverse();
+					var gm = matrixMultiply( chm_inv, m, chm );
+					newxform.setMatrix(gm);
+					chtlist.appendItem(newxform);
+				}
+				batchCmd.addSubCommand(recalculateDimensions(elem));
+			}
+		}
+
+		
+		// remove transform and make it undo-able
+		if (xform) {
+			var changes = {};
+			changes["transform"] = xform;
+			g.setAttribute("transform", "");
+			g.removeAttribute("transform");				
+			batchCmd.addSubCommand(new ChangeElementCommand(g, changes));
+		}
+
+		// remove the group from the selection			
+		clearSelection();
+		
+		// delete the group element (but make undo-able)
+		g = parent.removeChild(g);
+		batchCmd.addSubCommand(new RemoveElementCommand(g, parent));
+
+		if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
+		
+		// update selection
+		addToSelection(children);
+	}
+};
 
 // Function: moveToTopSelectedElement
 // Repositions the selected element to the bottom in the DOM to appear on top of
@@ -9404,10 +9916,10 @@ this.moveSelectedElements = function(dx,dy,undoable) {
 		var selected = selectedElements[i];
 		if (selected != null) {
 			if (i==0)
-				selectedBBoxes[i] = this.getBBox(selected);
+				selectedBBoxes[i] = getBBox(selected);
 			
 			var xform = svgroot.createSVGTransform();
-			var tlist = canvas.getTransformList(selected);
+			var tlist = getTransformList(selected);
 			
 			// dx and dy could be arrays
 			if (dx.constructor == Array) {
@@ -9441,286 +9953,9 @@ this.moveSelectedElements = function(dx,dy,undoable) {
 	}
 };
 
-this.contentW = this.getResolution().w;
-this.contentH = this.getResolution().h;
-
-// Function: updateCanvas
-// Updates the editor canvas width/height/position after a zoom has occurred 
-//
-// Parameters:
-// w - Float with the new width
-// h - Float with the new height
-//
-// Returns: 
-// Object with the following values:
-// * x - The canvas' new x coordinate
-// * y - The canvas' new y coordinate
-// * old_x - The canvas' old x coordinate
-// * old_y - The canvas' old y coordinate
-// * d_x - The x position difference
-// * d_y - The y position difference
-this.updateCanvas = function(w, h) {
-	svgroot.setAttribute("width", w);
-	svgroot.setAttribute("height", h);
-	var bg = $('#canvasBackground')[0];
-	var old_x = svgcontent.getAttribute('x');
-	var old_y = svgcontent.getAttribute('y');
-	var x = (w/2 - this.contentW*current_zoom/2);
-	var y = (h/2 - this.contentH*current_zoom/2);
-
-	assignAttributes(svgcontent, {
-		width: this.contentW*current_zoom,
-		height: this.contentH*current_zoom,
-		'x': x,
-		'y': y,
-		"viewBox" : "0 0 " + this.contentW + " " + this.contentH
-	});
-	
-	assignAttributes(bg, {
-		width: svgcontent.getAttribute('width'),
-		height: svgcontent.getAttribute('height'),
-		x: x,
-		y: y
-	});
-	
-	selectorManager.selectorParentGroup.setAttribute("transform","translate(" + x + "," + y + ")");
-	
-	return {x:x, y:y, old_x:old_x, old_y:old_y, d_x:x - old_x, d_y:y - old_y};
-}
-
-this.getStrokedBBox = function(elems) {
-	if(!elems) elems = canvas.getVisibleElements();
-	if(!elems.length) return false;
-	// Make sure the expected BBox is returned if the element is a group
-	var getCheckedBBox = function(elem) {
-	
-		try {
-			// TODO: Fix issue with rotated groups. Currently they work
-			// fine in FF, but not in other browsers (same problem mentioned
-			// in Issue 339 comment #2).
-			
-			var bb = canvas.getBBox(elem);
-			
-			var angle = canvas.getRotationAngle(elem);
-			if ((angle && angle % 90) || hasMatrixTransform(canvas.getTransformList(elem))) {
-				// Accurate way to get BBox of rotated element in Firefox:
-				// Put element in group and get its BBox
-				
-				var good_bb = false;
-				
-				// Get the BBox from the raw path for these elements
-				var elemNames = ['ellipse','path','line','polyline','polygon'];
-				if($.inArray(elem.tagName, elemNames) != -1) {
-					bb = good_bb = canvas.convertToPath(elem, true);
-				} else if(elem.tagName == 'rect') {
-					// Look for radius
-					var rx = elem.getAttribute('rx');
-					var ry = elem.getAttribute('ry');
-					if(rx || ry) {
-						bb = good_bb = canvas.convertToPath(elem, true);
-					}
-				}
-				
-				if(!good_bb) {
-					var g = document.createElementNS(svgns, "g");
-					var parent = elem.parentNode;
-					parent.replaceChild(g, elem);
-					g.appendChild(elem);
-					bb = g.getBBox();
-					parent.insertBefore(elem,g);
-					parent.removeChild(g);
-				}
-				
-
-				// Old method: Works by giving the rotated BBox,
-				// this is (unfortunately) what Opera and Safari do
-				// natively when getting the BBox of the parent group
-// 						var angle = angle * Math.PI / 180.0;
-// 						var rminx = Number.MAX_VALUE, rminy = Number.MAX_VALUE, 
-// 							rmaxx = Number.MIN_VALUE, rmaxy = Number.MIN_VALUE;
-// 						var cx = round(bb.x + bb.width/2),
-// 							cy = round(bb.y + bb.height/2);
-// 						var pts = [ [bb.x - cx, bb.y - cy], 
-// 									[bb.x + bb.width - cx, bb.y - cy],
-// 									[bb.x + bb.width - cx, bb.y + bb.height - cy],
-// 									[bb.x - cx, bb.y + bb.height - cy] ];
-// 						var j = 4;
-// 						while (j--) {
-// 							var x = pts[j][0],
-// 								y = pts[j][1],
-// 								r = Math.sqrt( x*x + y*y );
-// 							var theta = Math.atan2(y,x) + angle;
-// 							x = round(r * Math.cos(theta) + cx);
-// 							y = round(r * Math.sin(theta) + cy);
-// 		
-// 							// now set the bbox for the shape after it's been rotated
-// 							if (x < rminx) rminx = x;
-// 							if (y < rminy) rminy = y;
-// 							if (x > rmaxx) rmaxx = x;
-// 							if (y > rmaxy) rmaxy = y;
-// 						}
-// 						
-// 						bb.x = rminx;
-// 						bb.y = rminy;
-// 						bb.width = rmaxx - rminx;
-// 						bb.height = rmaxy - rminy;
-			}
-		
-			return bb;
-		} catch(e) { 
-			console.log(elem, e);
-			return null;
-		} 
-
-	}
-	var full_bb;
-	$.each(elems, function() {
-		if(full_bb) return;
-		if(!this.parentNode) return;
-		full_bb = getCheckedBBox(this);
-	});
-	
-	// This shouldn't ever happen...
-	if(full_bb == null) return null;
-	
-	// full_bb doesn't include the stoke, so this does no good!
-// 		if(elems.length == 1) return full_bb;
-	
-	var max_x = full_bb.x + full_bb.width;
-	var max_y = full_bb.y + full_bb.height;
-	var min_x = full_bb.x;
-	var min_y = full_bb.y;
-	
-	// FIXME: same re-creation problem with this function as getCheckedBBox() above
-	var getOffset = function(elem) {
-		var sw = elem.getAttribute("stroke-width");
-		var offset = 0;
-		if (elem.getAttribute("stroke") != "none" && !isNaN(sw)) {
-			offset += sw/2;
-		}
-		return offset;
-	}
-	var bboxes = [];
-	$.each(elems, function(i, elem) {
-		var cur_bb = getCheckedBBox(elem);
-		if(cur_bb) {
-			var offset = getOffset(elem);
-			min_x = Math.min(min_x, cur_bb.x - offset);
-			min_y = Math.min(min_y, cur_bb.y - offset);
-			bboxes.push(cur_bb);
-		}
-	});
-	
-	full_bb.x = min_x;
-	full_bb.y = min_y;
-	
-	$.each(elems, function(i, elem) {
-		var cur_bb = bboxes[i];
-		// ensure that elem is really an element node
-		if (cur_bb && elem.nodeType == 1) {
-			var offset = getOffset(elem);
-			max_x = Math.max(max_x, cur_bb.x + cur_bb.width + offset);
-			max_y = Math.max(max_y, cur_bb.y + cur_bb.height + offset);
-		}
-	});
-	
-	full_bb.width = max_x - min_x;
-	full_bb.height = max_y - min_y;
-	return full_bb;
-}
-
-this.getVisibleElements = function(parent, includeBBox) {
-	if(!parent) parent = $(svgcontent).children(); // Prevent layers from being included
-	
-	var contentElems = [];
-	$(parent).children().each(function(i, elem) {
-		try {
-			var box = elem.getBBox();
-			if (box) {
-				var item = includeBBox?{'elem':elem, 'bbox':canvas.getStrokedBBox([elem])}:elem;
-				contentElems.push(item);
-			}
-		} catch(e) {}
-	});
-	return contentElems.reverse();
-}
-
-this.cycleElement = function(next) {
-	var cur_elem = selectedElements[0];
-	var elem = false;
-	var all_elems = this.getVisibleElements(current_layer);
-	if (cur_elem == null) {
-		var num = next?all_elems.length-1:0;
-		elem = all_elems[num];
-	} else {
-		var i = all_elems.length;
-		while(i--) {
-			if(all_elems[i] == cur_elem) {
-				var num = next?i-1:i+1;
-				if(num >= all_elems.length) {
-					num = 0;
-				} else if(num < 0) {
-					num = all_elems.length-1;
-				} 
-				elem = all_elems[num];
-				break;
-			} 
-		}
-	}		
-	canvas.clearSelection();
-	canvas.addToSelection([elem], true);
-	call("selected", selectedElements);
-}
-
-
-
-// this function no longer uses cloneNode because we need to update the id
-// of every copied element (even the descendants)
-var copyElem = function(el) {
-	// manually create a copy of the element
-	var new_el = document.createElementNS(el.namespaceURI, el.nodeName);
-	$.each(el.attributes, function(i, attr) {
-		if (attr.localName != '-moz-math-font-style') {
-			new_el.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.nodeValue);
-		}
-	});
-	// set the copied element's new id
-	new_el.removeAttribute("id");
-	new_el.id = getNextId();
-	// manually increment obj_num because our cloned elements are not in the DOM yet
-	obj_num++; 
-	
-	// Opera's "d" value needs to be reset for Opera/Win/non-EN
-	// Also needed for webkit (else does not keep curved segments on clone)
-	if((isWebkit) && el.nodeName == 'path') {
-		var fixed_d = pathActions.convertPath(el);
-		new_el.setAttribute('d', fixed_d);
-	}
-
-	// now create copies of all children
-	$.each(el.childNodes, function(i, child) {
-		switch(child.nodeType) {
-			case 1: // element node
-				new_el.appendChild(copyElem(child));
-				break;
-			case 3: // text node
-				new_el.textContent = child.nodeValue;
-				break;
-			default:
-				break;
-		}
-	});
-	if(new_el.tagName == 'image') {
-		preventClickDefault(new_el);
-	}
-	return new_el;
-};
-
-var preventClickDefault = function(img) {
-	$(img).click(function(e){e.preventDefault()});
-}
-
-// this creates deep DOM copies (clones) of all selected elements
+// Function: cloneSelectedElements
+// Create deep DOM copies (clones) of all selected elements and move them slightly 
+// from their originals
 this.cloneSelectedElements = function() {
 	var batchCmd = new BatchCommand("Clone Elements");
 	// find all the elements selected (stop at first null)
@@ -9743,38 +9978,20 @@ this.cloneSelectedElements = function() {
 	}
 	
 	if (!batchCmd.isEmpty()) {
-		this.addToSelection(copiedElements.reverse()); // Need to reverse for correct selection-adding
+		addToSelection(copiedElements.reverse()); // Need to reverse for correct selection-adding
 		this.moveSelectedElements(20,20,false);
 		addCommandToHistory(batchCmd);
 		call("selected", selectedElements);
 	}
 };
 
-this.setBackground = function(color, url) {
-	var bg =  getElem('canvasBackground');
-	var border = $(bg).find('rect')[0];
-	var bg_img = getElem('background_image');
-	border.setAttribute('fill',color);
-	if(url) {
-		if(!bg_img) {
-			bg_img = svgdoc.createElementNS(svgns, "image");
-			assignAttributes(bg_img, {
-				'id': 'background_image',
-				'width': '100%',
-				'height': '100%',
-				'preserveAspectRatio': 'xMinYMin',
-				'style':'pointer-events:none'
-			});
-		}
-		bg_img.setAttributeNS(xlinkns, "xlink:href", url);
-		bg.appendChild(bg_img);
-	} else if(bg_img) {
-		bg_img.parentNode.removeChild(bg_img);
-	}
-}
-
-// aligns selected elements (type is a char - see switch below for explanation)
-// relative_to can be "selected", "largest", "smallest", "page"
+// Function: alignSelectedElements
+// Aligns selected elements
+//
+// Parameters:
+// type - String with single character indicating the alignment type
+// relative_to - String that must be one of the following: 
+// "selected", "largest", "smallest", "page"
 this.alignSelectedElements = function(type, relative_to) {
 	var bboxes = [], angles = [];
 	var minx = Number.MAX_VALUE, maxx = Number.MIN_VALUE, miny = Number.MAX_VALUE, maxy = Number.MIN_VALUE;
@@ -9784,7 +10001,7 @@ this.alignSelectedElements = function(type, relative_to) {
 	for (var i = 0; i < len; ++i) {
 		if (selectedElements[i] == null) break;
 		var elem = selectedElements[i];
-		bboxes[i] = canvas.getStrokedBBox([elem]);
+		bboxes[i] = getStrokedBBox([elem]);
 		
 		// now bbox is axis-aligned and handles rotation
 		switch (relative_to) {
@@ -9857,45 +10074,128 @@ this.alignSelectedElements = function(type, relative_to) {
 	}
 	this.moveSelectedElements(dx,dy);
 };
-this.getZoom = function(){return current_zoom;};
 
-// Function: getVersion
-// Returns a string which describes the revision number of SvgCanvas.
-this.getVersion = function() {
-	return "svgcanvas.js ($Rev$)";
-};
+// Group: Additional editor tools
 
-this.setUiStrings = function(strs) {
-	$.extend(uiStrings, strs);
+this.contentW = getResolution().w;
+this.contentH = getResolution().h;
+
+// Function: updateCanvas
+// Updates the editor canvas width/height/position after a zoom has occurred 
+//
+// Parameters:
+// w - Float with the new width
+// h - Float with the new height
+//
+// Returns: 
+// Object with the following values:
+// * x - The canvas' new x coordinate
+// * y - The canvas' new y coordinate
+// * old_x - The canvas' old x coordinate
+// * old_y - The canvas' old y coordinate
+// * d_x - The x position difference
+// * d_y - The y position difference
+this.updateCanvas = function(w, h) {
+	svgroot.setAttribute("width", w);
+	svgroot.setAttribute("height", h);
+	var bg = $('#canvasBackground')[0];
+	var old_x = svgcontent.getAttribute('x');
+	var old_y = svgcontent.getAttribute('y');
+	var x = (w/2 - this.contentW*current_zoom/2);
+	var y = (h/2 - this.contentH*current_zoom/2);
+
+	assignAttributes(svgcontent, {
+		width: this.contentW*current_zoom,
+		height: this.contentH*current_zoom,
+		'x': x,
+		'y': y,
+		"viewBox" : "0 0 " + this.contentW + " " + this.contentH
+	});
+	
+	assignAttributes(bg, {
+		width: svgcontent.getAttribute('width'),
+		height: svgcontent.getAttribute('height'),
+		x: x,
+		y: y
+	});
+	
+	selectorManager.selectorParentGroup.setAttribute("transform","translate(" + x + "," + y + ")");
+	
+	return {x:x, y:y, old_x:old_x, old_y:old_y, d_x:x - old_x, d_y:y - old_y};
 }
 
-this.setConfig = function(opts) {
-	$.extend(curConfig, opts);
+// Function: setBackground
+// Set the background of the editor (NOT the actual document)
+//
+// Parameters:
+// color - String with fill color to apply
+// url - URL or path to image to use
+this.setBackground = function(color, url) {
+	var bg =  getElem('canvasBackground');
+	var border = $(bg).find('rect')[0];
+	var bg_img = getElem('background_image');
+	border.setAttribute('fill',color);
+	if(url) {
+		if(!bg_img) {
+			bg_img = svgdoc.createElementNS(svgns, "image");
+			assignAttributes(bg_img, {
+				'id': 'background_image',
+				'width': '100%',
+				'height': '100%',
+				'preserveAspectRatio': 'xMinYMin',
+				'style':'pointer-events:none'
+			});
+		}
+		bg_img.setAttributeNS(xlinkns, "xlink:href", url);
+		bg.appendChild(bg_img);
+	} else if(bg_img) {
+		bg_img.parentNode.removeChild(bg_img);
+	}
+}
+
+// Function: cycleElement
+// Select the next/previous element within the current layer
+//
+// Parameters:
+// next - Boolean where true = next and false = previous element
+this.cycleElement = function(next) {
+	var cur_elem = selectedElements[0];
+	var elem = false;
+	var all_elems = getVisibleElements(current_layer);
+	if (cur_elem == null) {
+		var num = next?all_elems.length-1:0;
+		elem = all_elems[num];
+	} else {
+		var i = all_elems.length;
+		while(i--) {
+			if(all_elems[i] == cur_elem) {
+				var num = next?i-1:i+1;
+				if(num >= all_elems.length) {
+					num = 0;
+				} else if(num < 0) {
+					num = all_elems.length-1;
+				} 
+				elem = all_elems[num];
+				break;
+			} 
+		}
+	}		
+	clearSelection();
+	addToSelection([elem], true);
+	call("selected", selectedElements);
 }
 
 this.clear();
 
-function getElem(id) {
-	if(svgroot.querySelector) {
-		// querySelector lookup
-		return svgroot.querySelector('#'+id);
-	} else if(svgdoc.evaluate) {
-		// xpath lookup
-		return svgdoc.evaluate('svg:svg[@id="svgroot"]//svg:*[@id="'+id+'"]', container, function() { return "http://www.w3.org/2000/svg"; }, 9, null).singleNodeValue;
-	} else {
-		// jQuery lookup: twice as slow as xpath in FF
-		return $(svgroot).find('[id=' + id + ']')[0];
-	}
-	
-	// getElementById lookup: includes icons, not good
-	// return svgdoc.getElementById(id);
-}
+
+// DEPRECATED: getPrivateMethods 
+// Since all methods are/should be public somehow, this function should be removed
 
 // Being able to access private methods publicly seems wrong somehow,
 // but currently appears to be the best way to allow testing and provide
 // access to them to plugins.
 this.getPrivateMethods = function() {
-	return {
+	var obj = {
 		addCommandToHistory: addCommandToHistory,
 		setGradient: setGradient,
 		addSvgElementFromJson: addSvgElementFromJson,
@@ -9908,7 +10208,6 @@ this.getPrivateMethods = function() {
 		ffClone: ffClone,
 		findDefs: findDefs,
 		findDuplicateGradient: findDuplicateGradient,
-		fromXml: fromXml,
 		getElem: getElem,
 		getId: getId,
 		getIntersectionList: getIntersectionList,
@@ -9938,29 +10237,15 @@ this.getPrivateMethods = function() {
 		SVGEditTransformList: SVGEditTransformList,
 		svgToString: svgToString,
 		toString: toString,
-		toXml: toXml,
 		transformBox: transformBox,
 		transformListToTransform: transformListToTransform,
 		transformPoint: transformPoint,
 		walkTree: walkTree
 	}
-}
-
-this.addExtension = function(name, ext_func) {
-	if(!(name in extensions)) {
-		// Provide private vars/funcs here. Is there a better way to do this?
-		var ext = ext_func($.extend(canvas.getPrivateMethods(), {
-			svgroot: svgroot,
-			svgcontent: svgcontent,
-			nonce: nonce,
-			selectorManager: selectorManager
-		}));
-		extensions[name] = ext;
-		call("extension_added", ext);
-	} else {
-		console.log('Cannot add extension "' + name + '", an extension by that name already exists"');
-	}
+	return obj;
 };
+
+// console.log('canvas.getPrivateMethods',canvas.getPrivateMethods);
 
 // Test support for features/bugs
 (function() {
@@ -10006,165 +10291,6 @@ this.addExtension = function(name, ext_func) {
 	unit_types.ex = bb.height;
 	svgcontent.removeChild(rect);
 }());
+
 }
-// Static class for various utility functions
 
-var Utils = {
-
-// This code was written by Tyler Akins and has been placed in the
-// public domain.  It would be nice if you left this header intact.
-// Base64 code from Tyler Akins -- http://rumkin.com
-
-// schiller: Removed string concatenation in favour of Array.join() optimization,
-//           also precalculate the size of the array needed.
-
-	"_keyStr" : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
-
-	"encode64" : function(input) {
-		// base64 strings are 4/3 larger than the original string
-//		input = Utils.encodeUTF8(input); // convert non-ASCII characters
-		input = Utils.convertToXMLReferences(input);
-		if(window.btoa) return window.btoa(input); // Use native if available
-		var output = new Array( Math.floor( (input.length + 2) / 3 ) * 4 );
-		var chr1, chr2, chr3;
-		var enc1, enc2, enc3, enc4;
-		var i = 0, p = 0;
-
-		do {
-			chr1 = input.charCodeAt(i++);
-			chr2 = input.charCodeAt(i++);
-			chr3 = input.charCodeAt(i++);
-
-			enc1 = chr1 >> 2;
-			enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-			enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-			enc4 = chr3 & 63;
-
-			if (isNaN(chr2)) {
-				enc3 = enc4 = 64;
-			} else if (isNaN(chr3)) {
-				enc4 = 64;
-			}
-
-			output[p++] = this._keyStr.charAt(enc1);
-			output[p++] = this._keyStr.charAt(enc2);
-			output[p++] = this._keyStr.charAt(enc3);
-			output[p++] = this._keyStr.charAt(enc4);
-		} while (i < input.length);
-
-		return output.join('');
-	},
-	
-	"decode64" : function(input) {
-		if(window.atob) return window.atob(input);
-		var output = "";
-		var chr1, chr2, chr3 = "";
-		var enc1, enc2, enc3, enc4 = "";
-		var i = 0;
-	
-		 // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
-		 input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-	
-		 do {
-			enc1 = this._keyStr.indexOf(input.charAt(i++));
-			enc2 = this._keyStr.indexOf(input.charAt(i++));
-			enc3 = this._keyStr.indexOf(input.charAt(i++));
-			enc4 = this._keyStr.indexOf(input.charAt(i++));
-	
-			chr1 = (enc1 << 2) | (enc2 >> 4);
-			chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-			chr3 = ((enc3 & 3) << 6) | enc4;
-	
-			output = output + String.fromCharCode(chr1);
-	
-			if (enc3 != 64) {
-			   output = output + String.fromCharCode(chr2);
-			}
-			if (enc4 != 64) {
-			   output = output + String.fromCharCode(chr3);
-			}
-	
-			chr1 = chr2 = chr3 = "";
-			enc1 = enc2 = enc3 = enc4 = "";
-	
-		 } while (i < input.length);
-		 return unescape(output);
-	},
-	
-	// based on http://phpjs.org/functions/utf8_encode:577
-	// codedread:does not seem to work with webkit-based browsers on OSX
-	"encodeUTF8": function(input) {
-		//return unescape(encodeURIComponent(input)); //may or may not work
-		var output = '';
-		for (var n = 0; n < input.length; n++){
-			var c = input.charCodeAt(n);
-			if (c < 128) {
-				output += input[n];
-			}
-			else if (c > 127) {
-				if (c < 2048){
-					output += String.fromCharCode((c >> 6) | 192);
-				} 
-				else {
-					output += String.fromCharCode((c >> 12) | 224) + String.fromCharCode((c >> 6) & 63 | 128);
-				}
-				output += String.fromCharCode((c & 63) | 128);
-			}
-		}
-		return output;
-	},
-	
-	"convertToXMLReferences": function(input) {
-		var output = '';
-		for (var n = 0; n < input.length; n++){
-			var c = input.charCodeAt(n);
-			if (c < 128) {
-				output += input[n];
-			}
-			else if(c > 127) {
-				output += ("&#" + c + ";");
-			}
-		}
-		return output;
-	},
-
-	"rectsIntersect": function(r1, r2) {
-		return r2.x < (r1.x+r1.width) && 
-			(r2.x+r2.width) > r1.x &&
-			r2.y < (r1.y+r1.height) &&
-			(r2.y+r2.height) > r1.y;
-	},
-
-	"snapToAngle": function(x1,y1,x2,y2) {
-		var snap = Math.PI/4; // 45 degrees
-		var dx = x2 - x1;
-		var dy = y2 - y1;
-		var angle = Math.atan2(dy,dx);
-		var dist = Math.sqrt(dx * dx + dy * dy);
-		var snapangle= Math.round(angle/snap)*snap;
-		var x = x1 + dist*Math.cos(snapangle);	
-		var y = y1 + dist*Math.sin(snapangle);
-		//console.log(x1,y1,x2,y2,x,y,angle)
-		return {x:x, y:y, a:snapangle};
-	},
-	
-	// found this function http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f
-	"text2xml": function(sXML) {
-		// NOTE: I'd like to use jQuery for this, but jQuery makes all tags uppercase
-		//return $(xml)[0];
-		var out;
-		try{
-			var dXML = ($.browser.msie)?new ActiveXObject("Microsoft.XMLDOM"):new DOMParser();
-			dXML.async = false;
-		} catch(e){ 
-			throw new Error("XML Parser could not be instantiated"); 
-		};
-		try{
-			if($.browser.msie) out = (dXML.loadXML(sXML))?dXML:false;
-			else out = dXML.parseFromString(sXML, "text/xml");
-		}
-		catch(e){ throw new Error("Error parsing XML string"); };
-		return out;
-	}
-
-};
