@@ -39,6 +39,7 @@ var svgEditor = (function($, Editor) {
 		var url = conf.langPath + "lang." + lang_param + ".js";
 		
 		var processFile = function(data){
+			if(!data) return;
 			var LangData = eval(data), js_strings;
 			var more = Editor.canvas.runExtensions("addLangData", lang_param, true);
 			$.each(more, function(i, m) {

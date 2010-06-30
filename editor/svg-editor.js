@@ -417,6 +417,7 @@
 				modKey = "", //(isMac ? "meta+" : "ctrl+");
 				path = svgCanvas.pathActions,
 				undoMgr = svgCanvas.undoMgr,
+				Utils = svgCanvas.Utils,
 				default_img_url = curConfig.imgPath + "logo.png",
 				workarea = $("#workarea"),
 				show_save_warning = false, 
@@ -3455,7 +3456,6 @@
 				});
 				$("#tool_import").show().prepend(inp2);
 			}
-			
 			
 			var updateCanvas = function(center, new_ctr) {
 				var w = workarea.width(), h = workarea.height();
