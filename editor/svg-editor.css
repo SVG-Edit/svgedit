@@ -603,12 +603,12 @@ span.zoom_tool {
 }
 
 #tool_open input, #tool_import input {
-	-moz-transform: scale(4,2); /* Not entirely necessary, but keeps it nice and big for OS X*/
 	height: 100%;
 	position: absolute;
 	opacity: 0;
-	top: -3px;
-	right: 270px;
+	font-size: 10em;
+	top: -5px;
+	right: -5px;
 	margin: 0;
 	cursor: pointer; /* Sadly doesn't appear to have an effect */
 }
