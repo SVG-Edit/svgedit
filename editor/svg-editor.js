@@ -1643,7 +1643,7 @@
 						button.removeClass('buttondown');
 						// do not hide if it was the file input as that input needs to be visible 
 						// for its change event to fire
-						if (evt.target.localName != "input") {
+						if (evt.target.tagName.toLowerCase() != "input") {
 							list.fadeOut(200);
 						} else if(!set_click) {
 							set_click = true;
@@ -3415,6 +3415,15 @@
 				}
 			};
 			
+			Editor.openPrep = function(func) {
+				$('#main_menu').hide();
+				if(undoMgr.getUndoStackSize() === 0) {
+					func(true);
+				} else {
+					$.confirm(uiStrings.QwantToOpen, func);
+				}
+			}
+			
 			// use HTML5 File API: http://www.w3.org/TR/FileAPI/
 			// if browser has HTML5 File API support, then we will show the open menu item
 			// and provide a file input to click.  When that change event fires, it will
@@ -3422,7 +3431,7 @@
 			if (window.FileReader) {
 				var inp = $('<input type="file">').change(function() {
 					var f = this;
-					var openFile = function(ok) {
+					Editor.openPrep(function(ok) {
 						if(!ok) return;
 						svgCanvas.clear();
 						if(f.files.length==1) {
@@ -3433,14 +3442,7 @@
 							};
 							reader.readAsText(f.files[0]);
 						}
-					}
-				
-					$('#main_menu').hide();
-					if(undoMgr.getHistoryPosition() === 0) {
-						openFile(true);
-					} else {
-						$.confirm(uiStrings.QwantToOpen, openFile);
-					}
+					});
 				});
 				$("#tool_open").show().prepend(inp);
 				var inp2 = $('<input type="file">').change(function() {
@@ -3457,7 +3459,7 @@
 				$("#tool_import").show().prepend(inp2);
 			}
 			
-			var updateCanvas = function(center, new_ctr) {
+			var updateCanvas = Editor.updateCanvas = function(center, new_ctr) {
 				var w = workarea.width(), h = workarea.height();
 				var w_orig = w, h_orig = h;
 				var zoom = svgCanvas.getZoom();

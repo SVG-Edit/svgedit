@@ -1598,6 +1598,12 @@ var SVGEditTransformList = function(elem) {
 				var xform = svgroot.createSVGTransform();
 				var fname = 'set' + name.charAt(0).toUpperCase() + name.slice(1);
 				var values = name=='matrix'?[mtx]:val_arr;
+				
+				if(name == 'scale' && values.length == 1) {
+					values.push(values[0]);
+				} else if(name == 'translate' && values.length == 1) {
+					values.push(0);
+				}
 				xform[fname].apply(xform, values);
 				this._list.appendItem(xform);
 			}
@@ -1950,12 +1956,17 @@ var runExtensions = this.runExtensions = function(action, vars, returnArray) {
 this.addExtension = function(name, ext_func) {
 	if(!(name in extensions)) {
 		// Provide private vars/funcs here. Is there a better way to do this?
+		
+		if($.isFunction(ext_func)) {
 		var ext = ext_func($.extend(canvas.getPrivateMethods(), {
 			svgroot: svgroot,
 			svgcontent: svgcontent,
 			nonce: nonce,
 			selectorManager: selectorManager
 		}));
+		} else {
+			var ext = ext_func;
+		}
 		extensions[name] = ext;
 		call("extension_added", ext);
 	} else {
@@ -10293,4 +10304,3 @@ this.getPrivateMethods = function() {
 }());
 
 }
-
