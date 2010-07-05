@@ -8813,7 +8813,7 @@ this.setPaint = function(type, paint) {
 	cur_properties[type + '_paint'] = p;
 	switch ( p.type ) {
 		case "solidColor":
-			this.setColor('stroke', p.solidColor != "none" ? "#"+p.solidColor : "none");;
+			this.setColor(type, p.solidColor != "none" ? "#"+p.solidColor : "none");;
 			break;
 		case "linearGradient":
 		case "radialGradient":
