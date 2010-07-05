@@ -602,8 +602,13 @@ span.zoom_tool {
 	overflow: hidden;
 }
 
-#tool_open input, #tool_import input {
-	height: 100%;
+#tool_image {
+	overflow: hidden;
+}
+
+#tool_open input, 
+#tool_import input,
+#tool_image input {
 	position: absolute;
 	opacity: 0;
 	font-size: 10em;
