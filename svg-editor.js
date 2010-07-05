@@ -173,10 +173,6 @@
 					if(urldata.bkgd_color) {
 						urldata.bkgd_color = '#' + urldata.bkgd_color;
 					}
-					
-					if(urldata.bkgd_color) {
-						urldata.bkgd_color = '#' + urldata.bkgd_color;
-					}
 
 					svgEditor.setConfig(urldata);
 					
