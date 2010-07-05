@@ -7496,6 +7496,11 @@ this.embedImage = function(val, callback) {
 	}).attr('src',val);
 }
 
+// Function: setGoodImage
+// Sets a given URL to be a "last good image" URL
+this.setGoodImage = function(val) {
+	last_good_img_url = val;
+}
 
 this.open = function() {
 	// Nothing by default, handled by optional widget/extension

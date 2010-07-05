@@ -12,6 +12,8 @@ svgEditor.addExtension("server_open", {
 		// Do nothing if client support is found
 		if(window.FileReader) return;
 	
+		var cancelled = false;
+	
 		// Change these to appropriate script file
 		var open_svg_action = 'extensions/fileopen.php?type=load_svg';
 		var import_svg_action = 'extensions/fileopen.php?type=import_svg';
@@ -19,7 +21,16 @@ svgEditor.addExtension("server_open", {
 		
 		// Set up function for PHP uploader to use
 		svgEditor.processFile = function(str64, type) {
-			var xmlstr = svgCanvas.Utils.decode64(str64);
+			if(cancelled) {
+				cancelled = false;
+				return;
+			}
+		
+			$('#dialog_box').hide();
+		
+			if(type != 'import_img') {
+				var xmlstr = svgCanvas.Utils.decode64(str64);
+			}
 			
 			switch ( type ) {
 				case 'load_svg':
@@ -30,6 +41,9 @@ svgEditor.addExtension("server_open", {
 				case 'import_svg':
 					svgCanvas.importSvgString(xmlstr);
 					svgEditor.updateCanvas();					
+					break;
+				case 'import_img':
+					svgCanvas.setGoodImage(str64);
 					break;
 			}
 		}
@@ -55,6 +69,18 @@ svgEditor.addExtension("server_open", {
 			form.empty();
 			var inp = $('<input type="file" name="svg_file">').appendTo(form);
 			
+			
+			function submit() {
+				// This submits the form, which returns the file data using svgEditor.uploadSVG
+				form.submit();
+				
+				rebuildInput(form);
+				$.process_cancel("Uploading...", function() {
+					cancelled = true;
+					$('#dialog_box').hide();
+				});
+			}
+			
 			if(form[0] == open_svg_form[0]) {
 				inp.change(function() {
 					// This takes care of the "are you sure" dialog box
@@ -63,17 +89,13 @@ svgEditor.addExtension("server_open", {
 							rebuildInput(form);
 							return;
 						}
-						// This submits the form, which returns the file data using svgEditor.uploadSVG
-						form.submit();
-						
-						rebuildInput(form);
+						submit();
 					});
 				});
 			} else {
 				inp.change(function() {
 					// This submits the form, which returns the file data using svgEditor.uploadSVG
-					form.submit();
-					rebuildInput(form);
+					submit();
 				});
 			}
 		}
@@ -89,6 +111,7 @@ svgEditor.addExtension("server_open", {
 		// Add forms to buttons
 		$("#tool_open").show().prepend(open_svg_form);
 		$("#tool_import").show().prepend(import_svg_form);
+		$("#tool_image").prepend(import_img_form);
 	}
 });
 

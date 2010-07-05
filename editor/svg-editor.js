@@ -446,6 +446,10 @@
 						input.val(defText || '');
 						input.bind('keydown', 'return', function() {ok.click();});
 					}
+					
+					if(type == 'process') {
+						ok.hide();
+					}
 		
 					box.show();
 					
@@ -460,6 +464,7 @@
 				
 				$.alert = function(msg, cb) { dbox('alert', msg, cb);};
 				$.confirm = function(msg, cb) {	dbox('confirm', msg, cb);};
+				$.process_cancel = function(msg, cb) {	dbox('process', msg, cb);};
 				$.prompt = function(msg, txt, cb) { dbox('prompt', msg, cb, txt);};
 			}());
 			
@@ -1175,7 +1180,12 @@
 					
 					if(svgCanvas.addedNew) {
 						if(elname == 'image') {
-							promptImgURL();
+							var xlinkNS = "http://www.w3.org/1999/xlink";
+							var href = elem.getAttributeNS(xlinkNS, "href");
+							// Prompt for URL if not a data URL
+							if(href.indexOf('data:') !== 0) {
+								promptImgURL();
+							}
 						} else if(elname == 'text') {
 							// TODO: Do something here for new text
 						}
