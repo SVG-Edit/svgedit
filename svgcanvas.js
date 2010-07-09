@@ -1920,7 +1920,7 @@ var cur_shape = all_properties.shape,
 	justSelected = null,
 	
 	// this object manages selectors for us
-	selectorManager = new SelectorManager(),
+	selectorManager = this.selectorManager = new SelectorManager(),
 	
 	// DOM element for selection rectangle drawn by the user
 	rubberBox = null,
@@ -3061,7 +3061,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 	if (selected == null) return null;
 	
 	var tlist = getTransformList(selected);
-
+	
 	// remove any unnecessary transforms
 	if (tlist && tlist.numberOfItems > 0) {
 		var k = tlist.numberOfItems;
@@ -8934,6 +8934,12 @@ this.setStrokeAttr = function(attr, val) {
 		call("changed", selectedElements);
 	}
 };
+
+// Function: getStyle
+// Returns current style options
+this.getStyle = function() {
+	return cur_shape;
+}
 
 // Function: getOpacity
 // Returns the current opacity
