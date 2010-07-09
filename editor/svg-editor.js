@@ -45,11 +45,11 @@
 				imgPath: 'images/',
 				langPath: 'locale/',
 				extPath: 'extensions/',
-				extensions: ['ext-markers.js','ext-connector.js', 'ext-eyedropper.js'],
+				extensions: ['ext-markers.js','ext-connector.js', 'ext-eyedropper.js', 'ext-shapes.js'],
 				initTool: 'select',
 				wireframe: false
 			},
-			uiStrings = {
+			uiStrings = Editor.uiStrings = {
 			"invalidAttrValGiven":"Invalid value given",
 			"noContentToFitTo":"No content to fit to",
 			"layer":"Layer",
@@ -77,6 +77,8 @@
 		};
 		
 		var curPrefs = {}; //$.extend({}, defaultPrefs);
+		
+		var customHandlers = {};
 		
 		Editor.curConfig = curConfig;
 		
@@ -151,6 +153,10 @@
 				show_save_warning = false;
 				svgCanvas.bind("saved", opts.save);
 			}
+			if(opts.pngsave) {
+				svgCanvas.bind("exported", opts.pngsave);
+			}
+			customHandlers = opts;
 		}
 		
 		Editor.randomizeIds = function() {
@@ -386,8 +392,10 @@
 						// Check if there's an icon here
 						if(!shower.children('svg, img').length) {
 							var clone = $(sel).children().clone();
-							clone[0].removeAttribute('style'); //Needed for Opera
-							shower.append(clone);
+							if(clone.length) {
+								clone[0].removeAttribute('style'); //Needed for Opera
+								shower.append(clone);
+							}
 						}
 					});
 					
@@ -606,7 +614,7 @@
 					// Update selectedElement if element is no longer part of the image.
 					// This occurs for the text elements in Firefox
 					else if(elem && selectedElement && selectedElement.parentNode == null
-						|| elem && elem.tagName == "path") {
+						|| elem && elem.tagName == "path" && !multiselected) {
 						selectedElement = elem;
 					}
 				}
@@ -658,6 +666,7 @@
 				$.each(holders, function(hold_sel, btn_opts) {
 					var buttons = $(hold_sel).children();
 					var show_sel = hold_sel + '_show';
+					var shower = $(show_sel);
 					var def = false;
 					buttons.addClass('tool_button')
 						.unbind('click mousedown mouseup') // may not be necessary
@@ -684,7 +693,6 @@
 									var icon = $(opts.sel).children().eq(0).clone();
 								}
 								
-								var shower = $(show_sel);
 								icon[0].setAttribute('width',shower.width());
 								icon[0].setAttribute('height',shower.height());
 								shower.children(':not(.flyout_arrow_horiz)').remove();
@@ -699,33 +707,42 @@
 						});
 					
 					if(def) {
-						$(show_sel).attr('data-curopt', btn_opts[def].sel);
-					} else if(!$(show_sel).attr('data-curopt')) {
+						shower.attr('data-curopt', btn_opts[def].sel);
+					} else if(!shower.attr('data-curopt')) {
 						// Set first as default
-						$(show_sel).attr('data-curopt', btn_opts[0].sel);
+						shower.attr('data-curopt', btn_opts[0].sel);
 					}
 					
 					var timer;
 					
 					// Clicking the "show" icon should set the current mode
-					$(show_sel).mousedown(function(evt) {
-						if($(show_sel).hasClass('disabled')) return false;
+					shower.mousedown(function(evt) {
+						if(shower.hasClass('disabled')) return false;
 						var holder = $(show_sel.replace('_show',''));
 						var l = holder.css('left');
 						var w = holder.width()*-1;
 						var time = holder.data('shown_popop')?200:0;
 						timer = setTimeout(function() {
 							// Show corresponding menu
-							holder.css('left', w).show().animate({
-								left: l
-							},150);
+							if(!shower.data('isLibrary')) {
+								holder.css('left', w).show().animate({
+									left: l
+								},150);
+							} else {
+								holder.css('left', l).show();
+							}
 							holder.data('shown_popop',true);
 						},time);
 						evt.preventDefault();
-					}).mouseup(function() {
+					}).mouseup(function(evt) {
 						clearTimeout(timer);
 						var opt = $(this).attr('data-curopt');
-						if (toolButtonClick(show_sel)) {
+						// Is library and popped up, so do nothing
+						if(shower.data('isLibrary') && $(show_sel.replace('_show','')).is(':visible')) {
+							toolButtonClick(show_sel, true);
+							return;
+						}
+						if (toolButtonClick(show_sel) && (opt in flyout_funcs)) {
 							flyout_funcs[opt]();
 						}
 					});
@@ -899,6 +916,7 @@
 						
 						// Set button up according to its type
 						switch ( btn.type ) {
+						case 'mode_flyout':
 						case 'mode':
 							cls = 'tool_button';
 							parent = "#tools_left";
@@ -917,7 +935,65 @@
 							.attr("title", btn.title)
 							.addClass(cls);
 						if(!btn.includeWith && !btn.list) {
-							button.appendTo(parent);
+							if("position" in btn) {
+								$(parent).children().eq(btn.position).before(button);
+							} else {
+								button.appendTo(parent);
+							}
+							
+							if(btn.type =='mode_flyout') {
+							// Add to flyout menu / make flyout menu
+	// 							var opts = btn.includeWith;
+	// 							// opts.button, default, position
+								var ref_btn = $(button);
+								
+								var flyout_holder = ref_btn.parent();
+								// Create a flyout menu if there isn't one already
+								if(!ref_btn.parent().hasClass('tools_flyout')) {
+									// Create flyout placeholder
+									var tls_id = ref_btn[0].id.replace('tool_','tools_')
+									var show_btn = ref_btn.clone()
+										.attr('id',tls_id + '_show')
+										.append($('<div>',{'class':'flyout_arrow_horiz'}));
+										
+									ref_btn.before(show_btn);
+								
+									// Create a flyout div
+									flyout_holder = makeFlyoutHolder(tls_id, ref_btn);
+									flyout_holder.data('isLibrary', true);
+									show_btn.data('isLibrary', true);
+								} 
+								
+								
+								
+	// 							var ref_data = Actions.getButtonData(opts.button);
+								
+								placement_obj['#' + tls_id + '_show'] = btn.id;
+								// TODO: Find way to set the current icon using the iconloader if this is not default
+								
+								// Include data for extension button as well as ref button
+								var cur_h = holders['#'+flyout_holder[0].id] = [{
+									sel: '#'+id,
+									fn: btn.events.click,
+									icon: btn.id,
+// 									key: btn.key,
+									isDefault: true
+								}, ref_data];
+	// 							
+	// 							// {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
+	// 								
+	// 							var pos  = ("position" in opts)?opts.position:'last';
+	// 							var len = flyout_holder.children().length;
+	// 							
+	// 							// Add at given position or end
+	// 							if(!isNaN(pos) && pos >= 0 && pos < len) {
+	// 								flyout_holder.children().eq(pos).before(button);
+	// 							} else {
+	// 								flyout_holder.append(button);
+	// 								cur_h.reverse();
+	// 							}
+							}
+							
 						} else if(btn.list) {
 							// Add button to list
 							button.addClass('push_button');
@@ -937,8 +1013,6 @@
 							// Create a flyout menu if there isn't one already
 							if(!ref_btn.parent().hasClass('tools_flyout')) {
 								// Create flyout placeholder
-								var arr_div = $('<div>',{id:'flyout_arrow_horiz'})
-								
 								var tls_id = ref_btn[0].id.replace('tool_','tools_')
 								var show_btn = ref_btn.clone()
 									.attr('id',tls_id + '_show')
@@ -978,7 +1052,7 @@
 								flyout_holder.append(button);
 								cur_h.reverse();
 							}
-						}
+						} 
 						
 						if(!svgicons) {
 							button.append(icon);
@@ -1018,7 +1092,6 @@
 						addAltDropDown(this.elem, this.list, this.callback, {seticon: true}); 
 					});
 
-					
 					$.svgIcons(svgicons, {
 						w:24, h:24,
 						id_match: false,
@@ -1566,11 +1639,13 @@
 			// - removes the tool_button_current class from whatever tool currently has it
 			// - hides any flyouts
 			// - adds the tool_button_current class to the button passed in
-			var toolButtonClick = function(button, fadeFlyouts) {
+			var toolButtonClick = function(button, noHiding) {
 				if ($(button).hasClass('disabled')) return false;
 				if($(button).parent().hasClass('tools_flyout')) return true;
 				var fadeFlyouts = fadeFlyouts || 'normal';
-				$('.tools_flyout').fadeOut(fadeFlyouts);
+				if(!noHiding) {
+					$('.tools_flyout').fadeOut(fadeFlyouts);
+				}
 				$('#styleoverrides').text('');
 				$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 				$(button).addClass('tool_button_current').removeClass('tool_button');
@@ -1649,7 +1724,7 @@
 						button.removeClass('buttondown');
 						// do not hide if it was the file input as that input needs to be visible 
 						// for its change event to fire
-						if (evt.target.tagName.toLowerCase() != "input") {
+						if (evt.target.tagName != "INPUT") {
 							list.fadeOut(200);
 						} else if(!set_click) {
 							set_click = true;
@@ -1659,8 +1734,9 @@
 						}
 					}
 					on_button = false;
-				}).mousedown(function() {
-					$('.tools_flyout:visible').fadeOut();
+				}).mousedown(function(evt) {
+					var islib = $(evt.target).closest('div.tools_flyout').length;
+					if(!islib) $('.tools_flyout:visible').fadeOut();
 				});
 				
 				overlay.bind('mousedown',function() {
@@ -2108,8 +2184,10 @@
 			
 			var clickExport = function() {
 				// Open placeholder window (prevents popup)
-				var str = uiStrings.loadingImage;
-				exportWindow = window.open("data:text/html;charset=utf-8,<title>" + str + "<\/title><h1>" + str + "<\/h1>");
+				if(!customHandlers.pngsave)  {
+					var str = uiStrings.loadingImage;
+					exportWindow = window.open("data:text/html;charset=utf-8,<title>" + str + "<\/title><h1>" + str + "<\/h1>");
+				}
 
 				if(window.canvg) {
 					svgCanvas.rasterExport();
@@ -2591,7 +2669,7 @@
 				});
 			}
 		
-			function setImageURL(url) {
+			var setImageURL = Editor.setImageURL = function(url) {
 				if(!url) url = default_img_url;
 				
 				svgCanvas.setImageURL(url);
