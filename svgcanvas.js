@@ -3049,6 +3049,28 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 	
 };
 
+// Function: updateClipPath
+// Updates a <clipPath>s values based on the given translation of an element
+//
+// Parameters:
+// attr - The clip-path attribute value with the clipPath's ID
+// tx - The translation's x value
+// ty - The translation's y value
+var updateClipPath = function(attr, tx, ty) {
+	var id = getUrlFromAttr(attr).substr(1);
+	var path = getElem(id).firstChild;
+	
+	var cp_xform = getTransformList(path);
+	
+	var newxlate = svgroot.createSVGTransform();
+	newxlate.setTranslate(tx, ty);
+
+	cp_xform.appendItem(newxlate);
+	
+	// Update clipPath's dimensions
+	recalculateDimensions(path);
+}
+
 // Function: recalculateDimensions
 // Decides the course of action based on the element's transform list
 //
@@ -3320,9 +3342,23 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 				// we pass the translates down to the individual children
 				var children = selected.childNodes;
 				var c = children.length;
+				
+				var clipPaths_done = [];
+				
 				while (c--) {
 					var child = children.item(c);
 					if (child.nodeType == 1) {
+					
+						// Check if child has clip-path
+						if(child.getAttribute('clip-path')) {
+							// tx, ty
+							var attr = child.getAttribute('clip-path');
+							if($.inArray(attr, clipPaths_done) === -1) {
+								updateClipPath(attr, tx, ty);
+								clipPaths_done.push(attr);
+							}							
+						}
+
 						var old_start_transform = start_transform;
 						start_transform = child.getAttribute("transform");
 						
@@ -3352,6 +3388,9 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 						}
 					}
 				}
+				
+				clipPaths_done = [];
+				
 				start_transform = old_start_transform;
 			}
 		}
@@ -3449,17 +3488,26 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 	}
 	// else, it's a non-group
 	else {
+
 		// FIXME: box might be null for some elements (<metadata> etc), need to handle this
 		var box = getBBox(selected);
-		if(!box) return null;
+
+		// Paths (and possbly other shapes) will have no BBox while still in <defs>,
+		// but we still may need to recalculate them (see issue 595).
+		// TODO: Figure out how to get BBox from these elements in case they
+		// have a rotation transform
 		
-		var oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2},
-			newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2,
-							transformListToTransform(tlist).matrix),
-			m = svgroot.createSVGMatrix(),
+		if(!box && selected.tagName != 'path') return null;
+		
+
+		var m = svgroot.createSVGMatrix(),
 			// temporarily strip off the rotate and save the old center
 			angle = getRotationAngle(selected);
 		if (angle) {
+			var oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2},
+			newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2,
+							transformListToTransform(tlist).matrix);
+		
 			var a = angle * Math.PI / 180;
 			if ( Math.abs(a) > (1.0e-10) ) {
 				var s = Math.sin(a)/(1 - Math.cos(a));
@@ -3608,7 +3656,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		// we want it to be [Rnew][M][Tr] where Tr is the
 		// translation required to re-center it
 		// Therefore, [Tr] = [M_inv][Rnew_inv][Rold][M]
-		else if (operation == 3) {
+		else if (operation == 3 && angle) {
 			var m = transformListToTransform(tlist).matrix;
 			var roldt = svgroot.createSVGTransform();
 			roldt.setRotate(angle, oldcenter.x, oldcenter.y);
@@ -7705,6 +7753,8 @@ this.setSvgString = function(xmlString) {
 			overflow: curConfig.show_outside_canvas?'visible':'hidden'
 		};
 		
+		var percs = false;
+		
 		// determine proper size
 		if (content.attr("viewBox")) {
 			var vb = content.attr("viewBox").split(' ');
@@ -7715,15 +7765,24 @@ this.setSvgString = function(xmlString) {
 		else {
 			$.each(['width', 'height'], function(i, dim) {
 				// Set to 100 if not given
-				var val = content.attr(dim) || 100;
-
+				var val = content.attr(dim);
+				
+				if(!val) val = '100%';
+				
 				if((val+'').substr(-1) === "%") {
 					// Use user units if percentage given
-					attrs[dim] = parseInt(val);
+					percs = true;
 				} else {
 					attrs[dim] = convertToNum(dim, val);
 				}
 			});
+		}
+		
+		// Percentage width/height, so let's base it on visible elements
+		if(percs) {
+			var bb = getStrokedBBox();
+			attrs.width = bb.width;
+			attrs.height = bb.height;
 		}
 		
 		content.attr(attrs);
