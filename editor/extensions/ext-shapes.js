@@ -142,7 +142,7 @@ svgEditor.addExtension("shapes", function() {
 		buttons: [{
 			id: "tool_shapelib",
 			type: "mode_flyout", // _flyout
-			position: 5,
+			position: 6,
 			title: "Shape library",
 			events: {
 				"click": function() {
@@ -326,7 +326,9 @@ svgEditor.addExtension("shapes", function() {
 			sy = sy || 1;
 			
 			// Not perfect, but mostly works...
-			if(x < start_x) tx = lastBBox.width;
+			if(x < start_x) {
+				tx = lastBBox.width;
+			}
 			if(y < start_y) ty = lastBBox.height;
 			
 			// update the transform list with translate,scale,translate
@@ -336,9 +338,10 @@ svgEditor.addExtension("shapes", function() {
 				
 			translateOrigin.setTranslate(-(left+tx), -(top+ty));
 			if(!evt.shiftKey) {
-				var max = Math.max(sx, sy);
-				sx = max;
-				sy = max;
+				var max = Math.min(Math.abs(sx), Math.abs(sy));
+
+				sx = max * (sx < 0 ? -1 : 1);
+				sy = max * (sy < 0 ? -1 : 1);
 			}
 			scale.setScale(sx,sy);
 			
