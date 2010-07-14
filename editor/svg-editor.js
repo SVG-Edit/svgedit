@@ -45,7 +45,7 @@
 				imgPath: 'images/',
 				langPath: 'locale/',
 				extPath: 'extensions/',
-				extensions: ['ext-markers.js','ext-connector.js', 'ext-eyedropper.js', 'ext-shapes.js'],
+				extensions: ['ext-markers.js','ext-connector.js', 'ext-eyedropper.js', 'ext-shapes.js', 'ext-imagelib.js'],
 				initTool: 'select',
 				wireframe: false
 			},
@@ -909,7 +909,11 @@
 						} else {
 							fallback_obj[id] = btn.icon;
 							var svgicon = btn.svgicon?btn.svgicon:btn.id;
-							placement_obj['#' + id] = svgicon;
+							if(btn.type == 'app_menu') {
+								placement_obj['#' + id + ' > div'] = svgicon;
+							} else {
+								placement_obj['#' + id] = svgicon;
+							}
 						}
 						
 						var cls, parent;
@@ -928,9 +932,13 @@
 							if(!$(parent).length)
 								$('<div>', {id: btn.panel}).appendTo("#tools_top");
 							break;
+						case 'app_menu':
+							cls = '';
+							parent = '#main_menu ul';
+							break;
 						}
 						
-						var button = $(btn.list?'<li/>':'<div/>')
+						var button = $((btn.list || btn.type == 'app_menu')?'<li/>':'<div/>')
 							.attr("id", id)
 							.attr("title", btn.title)
 							.addClass(cls);
@@ -940,7 +948,7 @@
 							} else {
 								button.appendTo(parent);
 							}
-							
+
 							if(btn.type =='mode_flyout') {
 							// Add to flyout menu / make flyout menu
 	// 							var opts = btn.includeWith;
@@ -992,6 +1000,8 @@
 	// 								flyout_holder.append(button);
 	// 								cur_h.reverse();
 	// 							}
+							} else if(btn.type == 'app_menu') {
+								button.append('<div>').append(btn.title);
 							}
 							
 						} else if(btn.list) {
@@ -3629,46 +3639,48 @@
 // 			var lang = ('lang' in curPrefs) ? curPrefs.lang : null;
 			Editor.putLocale(null, good_langs);
 			
-			try{
-				json_encode = function(obj){
-			  //simple partial JSON encoder implementation
-			  if(window.JSON && JSON.stringify) return JSON.stringify(obj);
-			  var enc = arguments.callee; //for purposes of recursion
-			  if(typeof obj == "boolean" || typeof obj == "number"){
-				  return obj+'' //should work...
-			  }else if(typeof obj == "string"){
-				//a large portion of this is stolen from Douglas Crockford's json2.js
-				return '"'+
-					  obj.replace(
-						/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g
-					  , function (a) {
-						return '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
-					  })
-					  +'"'; //note that this isn't quite as purtyful as the usualness
-			  }else if(obj.length){ //simple hackish test for arrayish-ness
-				for(var i = 0; i < obj.length; i++){
-				  obj[i] = enc(obj[i]); //encode every sub-thingy on top
-				}
-				return "["+obj.join(",")+"]";
-			  }else{
-				var pairs = []; //pairs will be stored here
-				for(var k in obj){ //loop through thingys
-				  pairs.push(enc(k)+":"+enc(obj[k])); //key: value
-				}
-				return "{"+pairs.join(",")+"}" //wrap in the braces
-			  }
-			}
-			  window.addEventListener("message", function(e){
-				var cbid = parseInt(e.data.substr(0, e.data.indexOf(";")));
-				try{
-				e.source.postMessage("SVGe"+cbid+";"+json_encode(eval(e.data)), e.origin);
-			  }catch(err){
-				e.source.postMessage("SVGe"+cbid+";error:"+err.message, e.origin);
-			  }
-			}, false)
-			}catch(err){
-			  window.embed_error = err;
-			}
+			// Not sure what this was being used for...commented out until known.
+			// The "message" event listener was interfering with image lib responder
+// 			try{
+// 				json_encode = function(obj){
+// 			  //simple partial JSON encoder implementation
+// 			  if(window.JSON && JSON.stringify) return JSON.stringify(obj);
+// 			  var enc = arguments.callee; //for purposes of recursion
+// 			  if(typeof obj == "boolean" || typeof obj == "number"){
+// 				  return obj+'' //should work...
+// 			  }else if(typeof obj == "string"){
+// 				//a large portion of this is stolen from Douglas Crockford's json2.js
+// 				return '"'+
+// 					  obj.replace(
+// 						/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g
+// 					  , function (a) {
+// 						return '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+// 					  })
+// 					  +'"'; //note that this isn't quite as purtyful as the usualness
+// 			  }else if(obj.length){ //simple hackish test for arrayish-ness
+// 				for(var i = 0; i < obj.length; i++){
+// 				  obj[i] = enc(obj[i]); //encode every sub-thingy on top
+// 				}
+// 				return "["+obj.join(",")+"]";
+// 			  }else{
+// 				var pairs = []; //pairs will be stored here
+// 				for(var k in obj){ //loop through thingys
+// 				  pairs.push(enc(k)+":"+enc(obj[k])); //key: value
+// 				}
+// 				return "{"+pairs.join(",")+"}" //wrap in the braces
+// 			  }
+// 			}
+// 			  window.addEventListener("message", function(e){
+// 				var cbid = parseInt(e.data.substr(0, e.data.indexOf(";")));
+// 				try{
+// 				e.source.postMessage("SVGe"+cbid+";"+json_encode(eval(e.data)), e.origin);
+// 			  }catch(err){
+// 				e.source.postMessage("SVGe"+cbid+";error:"+err.message, e.origin);
+// 			  }
+// 			}, false)
+// 			}catch(err){
+// 			  window.embed_error = err;
+// 			}
 			
 		
 		
