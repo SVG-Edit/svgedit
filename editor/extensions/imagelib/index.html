@@ -1,0 +1,26 @@
+<!doctype html>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+
+
+<body>
+
+<h1>Select an image:</h1>
+<a href="smiley.svg">smiley.svg</a>
+
+</body>
+
+<script>
+
+$('a').click(function() {
+
+	// Do ajax request for image's href value
+	$.get(this.href, function(data) {
+	
+		// This is where the magic happens!
+		window.top.postMessage(data, "*");
+		
+	}, 'html'); // 'html' is necessary to keep returned data as a string
+	return false;
+});
+
+</script>
