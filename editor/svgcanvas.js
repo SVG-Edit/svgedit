@@ -394,6 +394,10 @@ var Utils = this.Utils = function() {
 		// Cross-browser compatible method of converting a string to an XML tree
 		// found this function here: http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f
 		"text2xml": function(sXML) {
+			if(sXML.indexOf('<svg:svg') !== -1) {
+				sXML = sXML.replace(/<(\/?)svg:/g, '<$1').replace('xmlns:svg', 'xmlns');
+			}
+		
 			var out;
 			try{
 				var dXML = ($.browser.msie)?new ActiveXObject("Microsoft.XMLDOM"):new DOMParser();
