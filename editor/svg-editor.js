@@ -376,7 +376,9 @@
 					
 					// Use small icons by default if not all left tools are visible
 					var tleft = $('#tools_left');
-					var min_height = tleft.offset().top + tleft.outerHeight();
+					if (tleft.length != 0) {
+						var min_height = tleft.offset().top + tleft.outerHeight();
+					}
 					var size = $.pref('iconsize');
 					if(size && size != 'm') {
 						svgEditor.setIconSize(size);				
@@ -1207,11 +1209,13 @@
 
 					var attr = selectedElement.getAttribute("stroke-linejoin") || 'miter';
 					
-					setStrokeOpt($('#linejoin_' + attr)[0]);
+					if ($('#linejoin_' + attr).length != 0)
+						setStrokeOpt($('#linejoin_' + attr)[0]);
 					
 					attr = selectedElement.getAttribute("stroke-linecap") || 'butt';
 					
-					setStrokeOpt($('#linecap_' + attr)[0]);
+					if ($('#linecap_' + attr).length != 0)
+						setStrokeOpt($('#linecap_' + attr)[0]);
 
 				}
 				
@@ -2012,27 +2016,39 @@
 			};
 		
 			var clickSquare = function(){
-				svgCanvas.setMode('square');
+				if (toolButtonClick('#tool_square')) {
+					svgCanvas.setMode('square');
+				}
 			};
 			
 			var clickRect = function(){
-				svgCanvas.setMode('rect');
+				if (toolButtonClick('#tool_rect')) {
+					svgCanvas.setMode('rect');
+				}
 			};
 			
 			var clickFHRect = function(){
-				svgCanvas.setMode('fhrect');
+				if (toolButtonClick('#tool_fhrect')) {
+					svgCanvas.setMode('fhrect');
+				}
 			};
 			
 			var clickCircle = function(){
-				svgCanvas.setMode('circle');
+				if (toolButtonClick('#tool_circle')) {
+					svgCanvas.setMode('circle');
+				}
 			};
 		
 			var clickEllipse = function(){
-				svgCanvas.setMode('ellipse');
+				if (toolButtonClick('#tool_ellipse')) {
+					svgCanvas.setMode('ellipse');
+				}
 			};
 		
 			var clickFHEllipse = function(){
-				svgCanvas.setMode('fhellipse');
+				if (toolButtonClick('#tool_fhellipse')) {
+					svgCanvas.setMode('fhellipse');
+				}
 			};
 			
 			var clickImage = function(){
@@ -3350,16 +3366,17 @@
 					setAll: function() {
 						var flyouts = {};
 						
-						$.each(tool_buttons, function(i, opts)  {
+						$.each(tool_buttons, function(i, opts)  {				
 							// Bind function to button
 							if(opts.sel) {
 								var btn = $(opts.sel);
+								if (btn.length == 0) return true; // Skip if markup does not exist
 								if(opts.evt) {
 									btn[opts.evt](opts.fn);
 								}
 		
-								// Add to parent flyout menu
-								if(opts.parent) {
+								// Add to parent flyout menu, if able to be displayed
+								if(opts.parent && $(opts.parent + '_show').length != 0) {
 									var f_h = $(opts.parent);
 									if(!f_h.length) {
 										f_h = makeFlyoutHolder(opts.parent.substr(1));
