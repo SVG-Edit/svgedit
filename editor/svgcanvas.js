@@ -8144,6 +8144,7 @@ this.importSvgString = function(xmlString, toElements) {
 	return true;
 };
 
+
 // Layer API Functions
 
 // Group: Layers
@@ -9478,7 +9479,7 @@ this.setImageURL = function(val) {
 			
 			batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
 			addCommandToHistory(batchCmd);
-			call("changed", elem);
+			call("changed", [elem]);
 		}).attr('src',val);
 	} else {
 		addCommandToHistory(batchCmd);

@@ -20,10 +20,28 @@ svgEditor.addExtension("imagelib", function() {
 			description: 'Free library of 2300+ illustrations'
 		}
 	];
-
+	
+	var xlinkns = "http://www.w3.org/1999/xlink";
 
 	function closeBrowser() {
 		$('#imgbrowse_holder').hide();
+	}
+	
+	function importImage(url) {
+		var newImage = svgCanvas.addSvgElementFromJson({
+			"element": "image",
+			"attr": {
+				"x": 0,
+				"y": 0,
+				"width": 0,
+				"height": 0,
+				"id": svgCanvas.getNextId(),
+				"style": "pointer-events:inherit"
+			}
+		});
+		svgCanvas.clearSelection();
+		svgCanvas.addToSelection([newImage]);
+		svgCanvas.setImageURL(url);
 	}
 
 	 window.addEventListener("message", function(evt) {
@@ -42,15 +60,25 @@ svgEditor.addExtension("imagelib", function() {
 				svgCanvas.importSvgString(response);
 				break;
 			case 'd':
-				if(response.indexOf('data:') === 0) {
+				if(response.indexOf('data:image/svg+xml') === 0) {
 					var pre = 'data:image/svg+xml;base64,';
 					var src = response.substring(pre.length);
 					svgCanvas.importSvgString(svgCanvas.Utils.decode64(src));
 					break;
+				} else if(response.indexOf('data:image/') === 0) {
+					
+					importImage(response);
+					break;
 				}
 				// Else fall through
 			default:
-				$.alert('Unexpected data was returned', closeBrowser);
+				// TODO: See if there's a way to base64 encode the binary data stream
+// 				var str = 'data:;base64,' + svgCanvas.Utils.encode64(response, true);
+			
+				// Assume it's raw image data
+// 				importImage(str);
+			
+				$.alert('Unexpected data was returned: ' + response, closeBrowser);
 				return;
 		}
 		
