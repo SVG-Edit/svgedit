@@ -1233,6 +1233,33 @@
 				updateToolButtonState();
 			};
 		
+			var setImageURL = Editor.setImageURL = function(url) {
+				if(!url) url = default_img_url;
+				
+				svgCanvas.setImageURL(url);
+				$('#image_url').val(url);
+				
+				if(url.indexOf('data:') === 0) {
+					// data URI found
+					$('#image_url').hide();
+					$('#change_image_url').show();
+				} else {
+					// regular URL
+					
+					svgCanvas.embedImage(url, function(datauri) {
+						if(!datauri) {
+							// Couldn't embed, so show warning
+							$('#url_notice').show();
+						} else {
+							$('#url_notice').hide();
+						}
+						default_img_url = url;
+					});
+					$('#image_url').show();
+					$('#change_image_url').hide();
+				}
+			}
+		
 			// updates the context panel tools based on the selected element
 			var updateContextPanel = function() {
 				var elem = selectedElement;
@@ -2700,33 +2727,6 @@
 				$.prompt(uiStrings.enterNewImgURL, default_img_url, function(url) {
 					if(url) setImageURL(url);
 				});
-			}
-		
-			var setImageURL = Editor.setImageURL = function(url) {
-				if(!url) url = default_img_url;
-				
-				svgCanvas.setImageURL(url);
-				$('#image_url').val(url);
-				
-				if(url.indexOf('data:') === 0) {
-					// data URI found
-					$('#image_url').hide();
-					$('#change_image_url').show();
-				} else {
-					// regular URL
-					
-					svgCanvas.embedImage(url, function(datauri) {
-						if(!datauri) {
-							// Couldn't embed, so show warning
-							$('#url_notice').show();
-						} else {
-							$('#url_notice').hide();
-						}
-						default_img_url = url;
-					});
-					$('#image_url').show();
-					$('#change_image_url').hide();
-				}
 			}
 		
 			// added these event handlers for all the push buttons so they

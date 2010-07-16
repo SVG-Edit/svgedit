@@ -6,20 +6,44 @@
 
 <h1>Select an image:</h1>
 <a href="smiley.svg">smiley.svg</a>
-
+<br>
+<a href="../../images/logo.png">logo.png</a>
 </body>
 
 <script>
 
 $('a').click(function() {
-
-	// Do ajax request for image's href value
-	$.get(this.href, function(data) {
 	
-		// This is where the magic happens!
-		window.top.postMessage(data, "*");
+	// Convert Non-SVG images to data URL first 
+	// (this could also have been done server-side by the library)
+	if(this.href.indexOf('.svg') === -1) {
+		var img = new Image();
+		img.onload = function() {
+			var canvas = document.createElement("canvas");
+			canvas.width = this.width;
+			canvas.height = this.height;
+			// load the raster image into the canvas
+			canvas.getContext("2d").drawImage(this,0,0);
+			// retrieve the data: URL
+			try {
+				var dataurl = canvas.toDataURL();
+			} catch(err) {
+				// This fails in Firefox with file:// URLs :(
+				alert("Data URL conversion failed: " + err);
+				var dataurl = "";
+			}
+			window.top.postMessage(dataurl, "*");
+		}
+		img.src = this.href;
+	} else {
+		// Do ajax request for image's href value
+		$.get(this.href, function(data) {
 		
-	}, 'html'); // 'html' is necessary to keep returned data as a string
+			// This is where the magic happens!
+			window.top.postMessage(data, "*");
+			
+		}, 'html'); // 'html' is necessary to keep returned data as a string
+	}
 	return false;
 });
 
