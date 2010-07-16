@@ -18,7 +18,7 @@ svgEditor.addExtension("imagelib", function() {
 			name: 'Demo library (external)',
 			url: 'http://a.deveria.com/tests/clip-art/',
 			description: 'Demonstration library for SVG-edit on another domain'
-		},		
+		}
 	];
 
 
@@ -39,11 +39,13 @@ svgEditor.addExtension("imagelib", function() {
 		
 		switch (char1) {
 			case '<':
-				svgEditor.loadFromString(response);
+				svgCanvas.importSvgString(response);
 				break;
 			case 'd':
 				if(response.indexOf('data:') === 0) {
-					svgEditor.loadFromDataURI(response);
+					var pre = 'data:image/svg+xml;base64,';
+					var src = response.substring(pre.length);
+					svgCanvas.importSvgString(svgCanvas.Utils.decode64(src));
 					break;
 				}
 				// Else fall through
