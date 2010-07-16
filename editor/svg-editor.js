@@ -145,18 +145,20 @@
 		//	- invoke a file chooser dialog in 'save' mode
 		// 	- save the file to location chosen by the user
 		Editor.setCustomHandlers = function(opts) {
-			if(opts.open) {
-				$('#tool_open').show();
-				svgCanvas.open = opts.open;
-			}
-			if(opts.save) {
-				show_save_warning = false;
-				svgCanvas.bind("saved", opts.save);
-			}
-			if(opts.pngsave) {
-				svgCanvas.bind("exported", opts.pngsave);
-			}
-			customHandlers = opts;
+			Editor.ready(function() {
+				if(opts.open) {
+					$('#tool_open').show();
+					svgCanvas.open = opts.open;
+				}
+				if(opts.save) {
+					show_save_warning = false;
+					svgCanvas.bind("saved", opts.save);
+				}
+				if(opts.pngsave) {
+					svgCanvas.bind("exported", opts.pngsave);
+				}
+				customHandlers = opts;
+			});
 		}
 		
 		Editor.randomizeIds = function() {
@@ -182,9 +184,10 @@
 
 					svgEditor.setConfig(urldata);
 					
+					// FIXME: This is null if Data URL ends with '='. 
 					var src = urldata.source;
 					var qstr = $.param.querystring();
-					
+
 					if(src) {
 						if(src.indexOf("data:") === 0) {
 							// plusses get replaced by spaces, so re-insert
@@ -1339,6 +1342,10 @@
 					};
 					
 					var el_name = elem.tagName;
+					
+					if($(elem).data('gsvg')) {
+						el_name = 'svg';
+					}
 					
 					if(panels[el_name]) {
 						var cur_panel = panels[el_name];
@@ -3561,7 +3568,7 @@
 					if(this.files.length==1) {
 						var reader = new FileReader();
 						reader.onloadend = function(e) {
-							svgCanvas.importSvgString(e.target.result);
+							svgCanvas.importSvgString(e.target.result, true);
 							updateCanvas();
 						};
 						reader.readAsText(this.files[0]);
@@ -3814,6 +3821,7 @@
 	$(svgEditor.init);
 	
 })();
+
 
 // ?iconsize=s&bkgd_color=555
 

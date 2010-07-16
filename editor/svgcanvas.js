@@ -1249,7 +1249,7 @@ var SelectorManager;
 				offset += 2/current_zoom;
 			}
 			var bbox = getBBox(selected);
-			if(selected.tagName == 'g') {
+			if(selected.tagName == 'g' && !$(selected).data('gsvg')) {
 				// The bbox for a group does not include stroke vals, so we
 				// get the bbox based on its children. 
 				var stroked_bbox = getStrokedBBox(selected.childNodes);
@@ -2223,6 +2223,18 @@ var getVisibleElements = this.getVisibleElements = function(parent, includeBBox)
 	return contentElems.reverse();
 }
 
+// Function: groupSvgElem
+// Wrap an SVG element into a group element, mark the group as 'gsvg'
+//
+// Parameters:
+// elem - SVG element to wrap
+var groupSvgElem = this.groupSvgElem = function(elem) {
+	var g = document.createElementNS(svgns, "g");
+	elem.parentNode.replaceChild(g, elem);
+	$(g).append(elem).data('gsvg', elem)[0].id = getNextId();
+}
+
+
 // Function: copyElem
 // Create a clone of an element, updating its ID and its children's IDs when needed
 //
@@ -2264,7 +2276,10 @@ var copyElem = function(el) {
 				break;
 		}
 	});
-	if(new_el.tagName == 'image') {
+	
+	if($(el).data('gsvg')) {
+		$(new_el).data('gsvg', new_el.firstChild);
+	} else if(new_el.tagName == 'image') {
 		preventClickDefault(new_el);
 	}
 	return new_el;
@@ -2388,12 +2403,13 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 	var parent = node.parentNode;
 	// can parent ever be null here?  I think the root node's parent is the document...
 	if (!doc || !parent) return;
-
+	
 	var allowedAttrs = svgWhiteList[node.nodeName];
 	var allowedAttrsNS = svgWhiteListNS[node.nodeName];
 
 	// if this element is allowed
 	if (allowedAttrs != undefined) {
+
 		var se_attrs = [];
 	
 		var i = node.attributes.length;
@@ -2872,6 +2888,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			changes["x"] = pt1.x;
 			changes["y"] = pt1.y;
 			break;
+		case "g":
 		case "text":
 			// if it was a translate, then just update x,y
 			if (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && 
@@ -2992,6 +3009,12 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 		case "line":
 		case "text":
 			assignAttributes(selected, changes, 1000, true);
+			break;
+		case "g":
+			var gsvg = $(selected).data('gsvg');
+			if(gsvg) {
+				assignAttributes(gsvg, changes, 1000, true);
+			}
 			break;
 		case "polyline":
 		case "polygon":
@@ -3119,6 +3142,9 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		return null;
 	}
 	
+	// Grouped SVG element 
+	var gsvg = $(selected).data('gsvg');
+	
 	// we know we have some transforms, so set up return variable		
 	var batchCmd = new BatchCommand("Transform");
 	
@@ -3170,6 +3196,12 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		$.each(changes, function(attr, val) {
 			changes[attr] = convertToNum(attr, val);
 		});
+	} else if(gsvg) {
+		// GSVG exception
+		changes = {
+			x: $(gsvg).attr('x') || 0,
+			y: $(gsvg).attr('y') || 0
+		};
 	}
 	
 	// if we haven't created an initial array in polygon/polyline/path, then 
@@ -3183,8 +3215,8 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 	// save the start transform value too
 	initial["transform"] = start_transform ? start_transform : "";
 	
-	// if it's a group, we have special processing to flatten transforms
-	if (selected.tagName == "g" || selected.tagName == "a") {
+	// if it's a regular group, we have special processing to flatten transforms
+	if ((selected.tagName == "g" && !gsvg) || selected.tagName == "a") {
 		var box = getBBox(selected),
 			oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2},
 			newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2,
@@ -3770,6 +3802,10 @@ var matrixMultiply = this.matrixMultiply = function() {
 // Returns:
 // A single matrix transform object
 var transformListToTransform = this.transformListToTransform = function(tlist, min, max) {
+	if(tlist == null) {
+		// Or should tlist = null have been prevented before this?
+		return svgroot.createSVGTransformFromMatrix(svgroot.createSVGMatrix());
+	}
 	var min = min == undefined ? 0 : min;
 	var max = max == undefined ? (tlist.numberOfItems-1) : max;
 	min = parseInt(min);
@@ -3901,6 +3937,7 @@ var addToSelection = this.addToSelection = function(elemsToAdd, showGrips) {
 	if (elemsToAdd.length == 0) { return; }
 	// find the first null in our selectedElements array
 	var j = 0;
+	
 	while (j < selectedElements.length) {
 		if (selectedElements[j] == null) { 
 			break;
@@ -4083,15 +4120,38 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		}
 	}
 	
-	// go up until we hit a child of a layer
-	while (mouse_target.parentNode.parentNode.tagName == "g") {
+	// Get the desired mouse_target with jQuery selector-fu
+	// If it's root-like, select the root
+	if($.inArray(mouse_target, [svgroot, container, svgcontent, current_layer]) !== -1) {
+		return svgroot;
+	}
+	
+	var $target = $(mouse_target);
+
+	// If it's a selection grip, return the grip parent
+	if($target.closest('#selectorParentGroup').length) {
+		// While we could instead have just returned mouse_target, 
+		// this makes it easier to indentify as being a selector grip
+		return selectorManager.selectorParentGroup;
+	}
+
+	while (mouse_target.parentNode !== current_layer) {
 		mouse_target = mouse_target.parentNode;
 	}
+	
+	return mouse_target;
+	
+	
+// 	
+// 	// go up until we hit a child of a layer
+// 	while (mouse_target.parentNode.parentNode.tagName == 'g') {
+// 		mouse_target = mouse_target.parentNode;
+// 	}
 	// Webkit bubbles the mouse event all the way up to the div, so we
 	// set the mouse_target to the svgroot like the other browsers
-	if (mouse_target.nodeName.toLowerCase() == "div") {
-		mouse_target = svgroot;
-	}
+// 	if (mouse_target.nodeName.toLowerCase() == "div") {
+// 		mouse_target = svgroot;
+// 	}
 	
 	return mouse_target;
 };
@@ -4134,10 +4194,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		
 		start_x = x;
 		start_y = y;
-
+		
 		// if it is a selector grip, then it must be a single element selected, 
 		// set the mouse_target to that and update the mode to rotate/resize
-		if (mouse_target.parentNode == selectorManager.selectorParentGroup && selectedElements[0] != null) {
+		if (mouse_target == selectorManager.selectorParentGroup && selectedElements[0] != null) {
 			var gripid = evt.target.id,
 				griptype = gripid.substr(0,20);
 			// rotating
@@ -4581,19 +4641,20 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					tlist.replaceItem(translateOrigin, N-1);
 				}
 				var selectedBBox = selectedBBoxes[0];				
-
-				// reset selected bbox top-left position
-				selectedBBox.x = left;
-				selectedBBox.y = top;
 				
-				// if this is a translate, adjust the box position
-				if (tx) {
-					selectedBBox.x += dx;
+				if(selectedBBox) {
+					// reset selected bbox top-left position
+					selectedBBox.x = left;
+					selectedBBox.y = top;
+					
+					// if this is a translate, adjust the box position
+					if (tx) {
+						selectedBBox.x += dx;
+					}
+					if (ty) {
+						selectedBBox.y += dy;
+					}
 				}
-				if (ty) {
-					selectedBBox.y += dy;
-				}
-
 				selectorManager.requestSelector(selected).resize();
 				break;
 			case "zoom":
@@ -7377,7 +7438,34 @@ var svgCanvasToString = this.svgCanvasToString = function() {
 		}
 	});
 	
+	var naked_svgs = [];
+	
+	// Unwrap gsvg if it has no special attributes (only id and style)
+	$(svgcontent).find('g:data(gsvg)').each(function() {
+		var attrs = this.attributes;
+		var len = attrs.length;
+		for(var i=0; i<len; i++) {
+			if(attrs[i].nodeName == 'id' || attrs[i].nodeName == 'style') {
+				len--;
+			}
+		}
+		// No significant attributes, so ungroup
+		if(len <= 0) {
+			var svg = this.firstChild;
+			naked_svgs.push(svg);
+			$(this).replaceWith(svg);
+		}
+	});
+	
 	var output = svgToString(svgcontent, 0);
+	
+	// Rewrap gsvg
+	if(naked_svgs.length) {
+		$(naked_svgs).each(function() {
+			groupSvgElem(this);
+		});
+	}
+	
 	return output;
 }
 
@@ -7481,6 +7569,7 @@ var svgToString = this.svgToString = function(elem, indent) {
 			out.push(">");
 			indent++;
 			var bOneLine = false;
+			
 			for (var i=0; i<childs.length; i++)
 			{
 				var child = childs.item(i);
@@ -7645,6 +7734,94 @@ this.randomizeIds = function() {
    }
 }
 
+// Function: uniquifyElems
+// Ensure each element has a unique ID
+//
+// Parameters:
+// g - The parent element of the tree to give unique IDs
+var uniquifyElems = this.uniquifyElems = function(g) {
+	var ids = {};
+	walkTree(g, function(n) {
+		// if it's an element node
+		if (n.nodeType == 1) {
+			// and the element has an ID
+			if (n.id) {
+				// and we haven't tracked this ID yet
+				if (!(n.id in ids)) {
+					// add this id to our map
+					ids[n.id] = {elem:null, attrs:[], hrefs:[]};
+				}
+				ids[n.id]["elem"] = n;
+			}
+			
+			// now search for all attributes on this element that might refer
+			// to other elements
+			$.each(["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"],function(i,attr) {
+				var attrnode = n.getAttributeNode(attr);
+				if (attrnode) {
+					// the incoming file has been sanitized, so we should be able to safely just strip off the leading #
+					var url = getUrlFromAttr(attrnode.value),								
+						refid = url ? url.substr(1) : null;
+					if (refid) {
+						if (!(refid in ids)) {
+							// add this id to our map
+							ids[refid] = {elem:null, attrs:[], hrefs:[]};
+						}
+						ids[refid]["attrs"].push(attrnode);
+					}
+				}
+			});
+			
+			// check xlink:href now
+			var href = n.getAttributeNS(xlinkns,"href");
+			// TODO: what if an <image> or <a> element refers to an element internally?
+			if(href && 
+				$.inArray(n.nodeName, ["filter", "linearGradient", "pattern", 
+							 "radialGradient", "textPath", "use"]) != -1)
+			{
+				var refid = href.substr(1);
+				if (!(refid in ids)) {
+					// add this id to our map
+					ids[refid] = {elem:null, attrs:[], hrefs:[]};
+				}
+				ids[refid]["hrefs"].push(n);
+			}						
+		}
+	});
+	
+	// in ids, we now have a map of ids, elements and attributes, let's re-identify
+	for (var oldid in ids) {
+		var elem = ids[oldid]["elem"];
+		if (elem) {
+			var newid = getNextId();
+			// manually increment obj_num because our cloned elements are not in the DOM yet
+			obj_num++;
+			
+			// assign element its new id
+			elem.id = newid;
+			
+			// remap all url() attributes
+			var attrs = ids[oldid]["attrs"];
+			var j = attrs.length;
+			while (j--) {
+				var attr = attrs[j];
+				attr.ownerElement.setAttribute(attr.name, "url(#" + newid + ")");
+			}
+			
+			// remap all href attributes
+			var hreffers = ids[oldid]["hrefs"];
+			var k = hreffers.length;
+			while (k--) {
+				var hreffer = hreffers[k];
+				hreffer.setAttributeNS(xlinkns, "xlink:href", "#"+newid);
+			}
+		}
+	}
+	
+	// manually increment obj_num because our cloned elements are not in the DOM yet
+	obj_num++;
+}
+
 //   
 // Function: setSvgString
 // This function sets the current drawing as the input SVG XML.
@@ -7697,6 +7874,20 @@ this.setSvgString = function(xmlString) {
 			}
 			// Add to encodableImages if it loads
 			canvas.embedImage(val);
+		});
+	
+		// Wrap child SVGs in group elements
+		$(svgcontent).find('svg').each(function() {
+			uniquifyElems(this);
+		
+			// Check if it already has a gsvg group
+			var pa = this.parentNode;
+			if(pa.children.length === 1 && pa.nodeName === 'g') {
+				$(pa).data('gsvg', this);
+				pa.id = pa.id || getNextId();
+			} else {
+				groupSvgElem(this);
+			}
 		});
 		
 		// convert gradients with userSpaceOnUse to objectBoundingBox
@@ -7825,6 +8016,8 @@ this.setSvgString = function(xmlString) {
 //
 // Parameters:
 // xmlString - The SVG as XML text.
+// toElements - Boolean indicating whether or not to convert the SVG to a group
+// with children
 //
 // Returns:
 // This function returns false if the import was unsuccessful, true otherwise.
@@ -7836,7 +8029,7 @@ this.setSvgString = function(xmlString) {
 // was obtained
 // * import should happen in top-left of current zoomed viewport	
 // * create a new layer for the imported SVG
-this.importSvgString = function(xmlString) {
+this.importSvgString = function(xmlString, toElements) {
 	try {
 		// convert string into XML document
 		var newDoc = Utils.text2xml(xmlString);
@@ -7848,129 +8041,61 @@ this.importSvgString = function(xmlString) {
 		// import new svg document into our document
 		var importedNode = svgdoc.importNode(newDoc.documentElement, true);
 	
-		if (current_layer) {
-			// TODO: properly handle if width/height are not specified or if in percentages
-			// TODO: properly handle if width/height are in units (px, etc)
-			var innerw = importedNode.getAttribute("width"),
-				innerh = importedNode.getAttribute("height"),
-				innervb = importedNode.getAttribute("viewBox"),
-				// if no explicit viewbox, create one out of the width and height
-				vb = innervb ? innervb.split(" ") : [0,0,innerw,innerh];
-			for (var j = 0; j < 4; ++j)
-				vb[j] = Number(vb[j]);
+		var innerw = convertToNum('width', importedNode.getAttribute("width")),
+			innerh = convertToNum('height', importedNode.getAttribute("height")),
+			innervb = importedNode.getAttribute("viewBox"),
+			// if no explicit viewbox, create one out of the width and height
+			vb = innervb ? innervb.split(" ") : [0,0,innerw,innerh];
+		for (var j = 0; j < 4; ++j)
+			vb[j] = Number(vb[j]);
 
-			// TODO: properly handle preserveAspectRatio
-			var canvasw = Number(svgcontent.getAttribute("width")),
-				canvash = Number(svgcontent.getAttribute("height"));
-			// imported content should be 1/3 of the canvas on its largest dimension
-			if (innerh > innerw) {
-				var ts = "scale(" + (canvash/3)/vb[3] + ")";
-			}
-			else {
-				var ts = "scale(" + (canvash/3)/vb[2] + ")";
-			}
+		// TODO: properly handle preserveAspectRatio
+		var canvasw = Number(svgcontent.getAttribute("width")),
+			canvash = Number(svgcontent.getAttribute("height"));
+		// imported content should be 1/3 of the canvas on its largest dimension
+		
+		if (innerh > innerw) {
+			var ts = "scale(" + (canvash/3)/vb[3] + ")";
+		}
+		else {
+			var ts = "scale(" + (canvash/3)/vb[2] + ")";
+		}
+		
+		// Hack to make recalculateDimensions understand how to scale
+		ts = "translate(0) " + ts + " translate(0)";
+	
+		if(!toElements) {
+			var elem = $(importedNode).appendTo(current_layer)[0];
+			groupSvgElem(elem);
+			clearSelection();
 			
-			// Hack to make recalculateDimensions understand how to scale
-			ts = "translate(0) " + ts + " translate(0)";
+			var g = elem.parentNode;
 			
-			// TODO: Find way to add this in a recalculateDimensions-parsable way
+			g.setAttribute("transform", ts);
+			recalculateDimensions(g);
+			
+			addToSelection([g]);
+			
+			return;
+		}
+		
+		// TODO: Find way to add this in a recalculateDimensions-parsable way
 // 				if (vb[0] != 0 || vb[1] != 0)
 // 					ts = "translate(" + (-vb[0]) + "," + (-vb[1]) + ") " + ts;
 
-			// add all children of the imported <svg> to the <g> we create
-			var g = svgdoc.createElementNS(svgns, "g");
-			while (importedNode.hasChildNodes())
-				g.appendChild(importedNode.firstChild);
-			if (ts)
-				g.setAttribute("transform", ts);
-				
-			// now ensure each element has a unique ID
-			var ids = {};
-			walkTree(g, function(n) {
-				// if it's an element node
-				if (n.nodeType == 1) {
-					// and the element has an ID
-					if (n.id) {
-						// and we haven't tracked this ID yet
-						if (!(n.id in ids)) {
-							// add this id to our map
-							ids[n.id] = {elem:null, attrs:[], hrefs:[]};
-						}
-						ids[n.id]["elem"] = n;
-					}
-					
-					// now search for all attributes on this element that might refer
-					// to other elements
-					$.each(["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"],function(i,attr) {
-						var attrnode = n.getAttributeNode(attr);
-						if (attrnode) {
-							// the incoming file has been sanitized, so we should be able to safely just strip off the leading #
-							var url = getUrlFromAttr(attrnode.value),								
-								refid = url ? url.substr(1) : null;
-							if (refid) {
-								if (!(refid in ids)) {
-									// add this id to our map
-									ids[refid] = {elem:null, attrs:[], hrefs:[]};
-								}
-								ids[refid]["attrs"].push(attrnode);
-							}
-						}
-					});
-					
-					// check xlink:href now
-					var href = n.getAttributeNS(xlinkns,"href");
-					// TODO: what if an <image> or <a> element refers to an element internally?
-					if(href && 
-						$.inArray(n.nodeName, ["filter", "linearGradient", "pattern", 
-									 "radialGradient", "textPath", "use"]) != -1)
-					{
-						var refid = href.substr(1);
-						if (!(refid in ids)) {
-							// add this id to our map
-							ids[refid] = {elem:null, attrs:[], hrefs:[]};
-						}
-						ids[refid]["hrefs"].push(n);
-					}						
-				}
-			});
-			
-			// in ids, we now have a map of ids, elements and attributes, let's re-identify
-			for (var oldid in ids) {
-				var elem = ids[oldid]["elem"];
-				if (elem) {
-					var newid = getNextId();
-					// manually increment obj_num because our cloned elements are not in the DOM yet
-					obj_num++;
-					
-					// assign element its new id
-					elem.id = newid;
-					
-					// remap all url() attributes
-					var attrs = ids[oldid]["attrs"];
-					var j = attrs.length;
-					while (j--) {
-						var attr = attrs[j];
-						attr.ownerElement.setAttribute(attr.name, "url(#" + newid + ")");
-					}
-					
-					// remap all href attributes
-					var hreffers = ids[oldid]["hrefs"];
-					var k = hreffers.length;
-					while (k--) {
-						var hreffer = hreffers[k];
-						hreffer.setAttributeNS(xlinkns, "xlink:href", "#"+newid);
-					}
-				}
-			}
-			
-			// now give the g itself a new id
-			
-			g.id = getNextId();
-			// manually increment obj_num because our cloned elements are not in the DOM yet
-			obj_num++;
-			
-			current_layer.appendChild(g);
-		}
+		// add all children of the imported <svg> to the <g> we create
+		var g = svgdoc.createElementNS(svgns, "g");
+		while (importedNode.hasChildNodes())
+			g.appendChild(importedNode.firstChild);
+		if (ts)
+			g.setAttribute("transform", ts);
+		
+		uniquifyElems(g);
+
+		// now give the g itself a new id
+		g.id = getNextId();
+		
+		current_layer.appendChild(g);
 		
 		// change image href vals if possible
 //        	$(svgcontent).find('image').each(function() {
@@ -8036,6 +8161,12 @@ var identifyLayers = function() {
 		if (child && child.nodeType == 1) {
 			if (child.tagName == "g") {
 				var name = $("title",child).text();
+				
+				// Hack for Opera 10.60
+				if(!name && isOpera && child.querySelectorAll) {
+					name = $(child.querySelectorAll('title')).text();
+				}
+
 				// store layer and name in global variable
 				if (name) {
 					layernames.push(name);
