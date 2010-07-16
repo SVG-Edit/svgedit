@@ -15,9 +15,9 @@ svgEditor.addExtension("imagelib", function() {
 			description: 'Demonstration library for SVG-edit on this server'
 		}, 
 		{
-			name: 'Demo library (external)',
-			url: 'http://a.deveria.com/tests/clip-art/',
-			description: 'Demonstration library for SVG-edit on another domain'
+			name: 'IAN Symbol Libraries',
+			url: 'http://ian.umces.edu/symbols/catalog/svgedit/album_chooser.php',
+			description: 'Free library of 2300+ illustrations'
 		}
 	];
 
