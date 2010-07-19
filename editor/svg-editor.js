@@ -2478,7 +2478,7 @@
 			};
 			
 			function setBackground(color, url) {
-				if(color == curPrefs.bkgd_color && url == curPrefs.bkgd_url) return;
+// 				if(color == curPrefs.bkgd_color && url == curPrefs.bkgd_url) return;
 				$.pref('bkgd_color', color);
 				$.pref('bkgd_url', url);
 				
