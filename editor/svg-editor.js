@@ -3781,11 +3781,12 @@
 			});
 		};
 		
-		Editor.loadFromURL = function(url) {
+		Editor.loadFromURL = function(url, cache) {
 			Editor.ready(function() {
 				$.ajax({
 					'url': url,
 					'dataType': 'text',
+					cache: !!cache,
 					success: svgCanvas.setSvgString,
 					error: function(xhr, stat, err) {
 						if(xhr.responseText) {
