@@ -2027,6 +2027,11 @@
 					workarea.mousedown(unfocus);
 				}).blur(function() {
 					workarea.unbind('mousedown', unfocus);
+					
+					// Go back to selecting text if in textedit mode
+					if(svgCanvas.getMode() == 'textedit') {
+						$('#text').focus();
+					}
 				});
 			}());
 
@@ -2226,11 +2231,13 @@
 			var clickBold = function(){
 				svgCanvas.setBold( !svgCanvas.getBold() );
 				updateContextPanel();
+				return false;
 			};
 			
 			var clickItalic = function(){
 				svgCanvas.setItalic( !svgCanvas.getItalic() );
 				updateContextPanel();
+				return false;
 			};
 		
 			var clickSave = function(){

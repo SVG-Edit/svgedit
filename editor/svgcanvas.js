@@ -5173,6 +5173,7 @@ var textActions = canvas.textActions = function() {
 	
 	function setCursor(index) {
 		var empty = (textinput.value === "");
+		$(textinput).focus();
 	
 		if(!arguments.length) {
 			if(empty) {
@@ -5429,6 +5430,8 @@ var textActions = canvas.textActions = function() {
 			allow_dbl = false;
 			current_mode = "textedit";
 			selectorManager.requestSelector(curtext).showGrips(false);
+			// Make selector group accept clicks
+			var sel = selectorManager.requestSelector(curtext).selectorRect;
 			
 			textActions.init();
 			$(curtext).css('cursor', 'text');
@@ -5479,7 +5482,7 @@ var textActions = canvas.textActions = function() {
 		},
 		setInputElem: function(elem) {
 			textinput = elem;
-			$(textinput).blur(hideCursor);
+// 			$(textinput).blur(hideCursor);
 		},
 		clear: function() {
 			current_text = null;
@@ -9356,6 +9359,9 @@ this.setBold = function(b) {
 	{
 		changeSelectedAttribute("font-weight", b ? "bold" : "normal");
 	}
+	if(!selectedElements[0].textContent) {
+		textActions.setCursor();
+	}
 };
 
 // Function: getItalic
@@ -9385,6 +9391,9 @@ this.setItalic = function(i) {
 	{
 		changeSelectedAttribute("font-style", i ? "italic" : "normal");
 	}
+	if(!selectedElements[0].textContent) {
+		textActions.setCursor();
+	}
 };
 
 // Function: getFontFamily
@@ -9401,6 +9410,9 @@ this.getFontFamily = function() {
 this.setFontFamily = function(val) {
 	cur_text.font_family = val;
 	changeSelectedAttribute("font-family", val);
+	if(!selectedElements[0].textContent) {
+		textActions.setCursor();
+	}
 };
 
 // Function: getFontSize
@@ -9416,8 +9428,10 @@ this.getFontSize = function() {
 // val - Float with the new font size
 this.setFontSize = function(val) {
 	cur_text.font_size = val;
-	textActions.toSelectMode();
 	changeSelectedAttribute("font-size", val);
+	if(!selectedElements[0].textContent) {
+		textActions.setCursor();
+	}
 };
 
 // Function: getText
@@ -9722,7 +9736,7 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		if (elem == null) continue;
 		
 		// Go into "select" mode for text changes
-		if(current_mode === "textedit" && attr !== "#text") {
+		if(current_mode === "textedit" && attr !== "#text" && elem.textContent.length) {
 			textActions.toSelectMode(elem);
 		}
 		
@@ -9770,7 +9784,7 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 			// Use the Firefox ffClone hack for text elements with gradients or
 			// where other text attributes are changed. 
 			if(elem.nodeName == 'text') {
-				if((newValue+'').indexOf('url') == 0 || $.inArray(attr, ['font-size','font-family','x','y']) != -1) {
+				if((newValue+'').indexOf('url') == 0 || $.inArray(attr, ['font-size','font-family','x','y']) != -1 && elem.textContent) {
 					elem = ffClone(elem);
 				}
 			}
