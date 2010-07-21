@@ -56,21 +56,6 @@ if(!window.console) {
     this.dir = function(str) {};
   };
 }
-$.cloneNode = function(el) {
-	if(!window.opera) return el.cloneNode(true);
-	// manually create a copy of the element
-	opera.postError(ns.svg, el.nodeName);
-	var new_el = document.createElementNS(ns.svg, el.nodeName);
-	$.each(el.attributes, function(i, attr) {
-		new_el.setAttributeNS(ns.svg, attr.nodeName, attr.nodeValue);
-	});
-	$.each(el.childNodes, function(i, child) {
-		if(child.nodeType == 1) {
-			new_el.appendChild($.cloneNode(child));
-		}
-	});
-	return new_el;
-}
 
 $.jGraduate = { 
 	Paint:
@@ -92,10 +77,10 @@ $.jGraduate = {
     					this.solidColor = options.copy.solidColor;
     					break;
     				case "linearGradient":
-    					this.linearGradient = $.cloneNode(options.copy.linearGradient);
+    					this.linearGradient = options.copy.linearGradient.cloneNode(true);
     					break;
     				case "radialGradient":
-    					this.radialGradient = $.cloneNode(options.copy.radialGradient);
+    					this.radialGradient = options.copy.radialGradient.cloneNode(true);
     					break;
     			}
     		}
@@ -104,14 +89,14 @@ $.jGraduate = {
     			this.type = "linearGradient";
     			this.solidColor = null;
     			this.radialGradient = null;
-    			this.linearGradient = $.cloneNode(options.linearGradient);
+    			this.linearGradient = options.linearGradient.cloneNode(true);
     		}
     		// create linear gradient paint
     		else if (options.radialGradient) {
     			this.type = "radialGradient";
     			this.solidColor = null;
     			this.linearGradient = null;
-    			this.radialGradient = $.cloneNode(options.radialGradient);
+    			this.radialGradient = options.radialGradient.cloneNode(true);
     		}
     		// create solid color paint
     		else if (options.solidColor) {
@@ -328,7 +313,7 @@ jQuery.fn.jGraduate =
 				// if we are sent a gradient, import it 
 				if ($this.paint.type == "linearGradient") {
 					$this.paint.linearGradient.id = id+'_jgraduate_grad';
-					$this.paint.linearGradient = svg.appendChild($.cloneNode($this.paint.linearGradient));
+					$this.paint.linearGradient = svg.appendChild($this.paint.linearGradient.cloneNode(true));
 				} else { // we create a gradient
 					var grad = svg.appendChild(document.createElementNS(ns.svg, 'linearGradient'));
 					grad.id = id+'_jgraduate_grad';
@@ -650,7 +635,7 @@ jQuery.fn.jGraduate =
 				// if we are sent a gradient, import it 
 				if ($this.paint.type == "radialGradient") {
 					$this.paint.radialGradient.id = id+'_rg_jgraduate_grad';
-					$this.paint.radialGradient = svg.appendChild($.cloneNode($this.paint.radialGradient));
+					$this.paint.radialGradient = svg.appendChild($this.paint.radialGradient.cloneNode(true));
 				} else { // we create a gradient
 					var grad = svg.appendChild(document.createElementNS(ns.svg, 'radialGradient'));
 					grad.id = id+'_rg_jgraduate_grad';
