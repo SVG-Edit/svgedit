@@ -618,8 +618,8 @@
 					} 
 					// Update selectedElement if element is no longer part of the image.
 					// This occurs for the text elements in Firefox
-					else if(elem && selectedElement && selectedElement.parentNode == null
-						|| elem && elem.tagName == "path" && !multiselected) {
+					else if(elem && selectedElement && selectedElement.parentNode == null) {
+// 						|| elem && elem.tagName == "path" && !multiselected) { // This was added in r1430, but not sure why
 						selectedElement = elem;
 					}
 				}
@@ -1153,7 +1153,8 @@
 			// updates the toolbar (colors, opacity, etc) based on the selected element
 			// This function also updates the opacity and id elements that are in the context panel
 			var updateToolbar = function() {
-				if (selectedElement != null && $.inArray(selectedElement.tagName, ['image', 'text', 'foreignObject', 'g', 'a']) === -1) {
+				if (selectedElement != null && $.inArray(selectedElement.tagName, ['image', 'foreignObject', 'g', 'a']) === -1) {
+				
 					// get opacity values
 					var fillOpacity = parseFloat(selectedElement.getAttribute("fill-opacity"));
 					if (isNaN(fillOpacity)) {
