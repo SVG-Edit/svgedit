@@ -183,6 +183,8 @@ svgEditor.addExtension("imagelib", function() {
 					background: white;\
 					margin: 0;\
 					padding: 0;\
+				}\
+				#imgbrowse > ul {\
 					overflow: auto;\
 				}\
 				#imgbrowse li {\

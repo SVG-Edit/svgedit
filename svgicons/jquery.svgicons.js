@@ -172,7 +172,9 @@ $(function() {
 								$(function() {
 									getIcons('ajax');
 								});							
-							} 
+							} else {
+								$(useFallback);
+							}
 						}
 					}
 				});

@@ -5564,7 +5564,9 @@ var pathActions = this.pathActions = function() {
 		8: ['x','y','x1','y1'],
 		10: ['x','y','r1','r2','angle','largeArcFlag','sweepFlag'],
 		12: ['x'],
-		14: ['y']
+		14: ['y'],
+		16: ['x','y','x2','y2'],
+		18: ['x','y']
 	};
 	
 	function retPath() {
