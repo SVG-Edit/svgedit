@@ -2495,7 +2495,12 @@
 			}
 			
 			var setIcon = Editor.setIcon = function(elem, icon_id, forcedSize) {
-				var icon = (typeof icon_id == 'string') ? $.getSvgIcon(icon_id).clone() : icon_id.clone();
+				var icon = (typeof icon_id == 'string') ? $.getSvgIcon(icon_id) : icon_id;
+				if(!icon) {
+					console.log('NOTE: Icon image missing: ' + icon_id);
+					return;
+				}
+				icon = icon.clone();
 				$(elem).empty().append(icon);
 				if(forcedSize) {
 					var obj = {};
