@@ -207,7 +207,15 @@
 			
 			var extFunc = function() {
 				$.each(curConfig.extensions, function() {
-					$.getScript(curConfig.extPath + this);
+					var extname = this;
+					$.getScript(curConfig.extPath + extname, function(d) {
+						// Fails locally in Chrome 5
+						if(!d) {
+							var s = document.createElement('script');
+							s.src = curConfig.extPath + extname;
+							document.querySelector('head').appendChild(s);
+						}
+					});
 				});
 			}
 			
@@ -1277,7 +1285,7 @@
 				}
 				var is_node = currentMode == 'pathedit'; //elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
 				$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,\
-					#ellipse_panel, #line_panel, #text_panel, #image_panel').hide();
+					#ellipse_panel, #line_panel, #text_panel, #image_panel, #gsvg_panel').hide();
 				if (elem != null) {
 					var elname = elem.nodeName;
 					
@@ -1366,13 +1374,14 @@
 						circle: ['cx','cy','r'],
 						ellipse: ['cx','cy','rx','ry'],
 						line: ['x1','y1','x2','y2'], 
-						text: []
+						text: [],
+						gsvg: []
 					};
 					
 					var el_name = elem.tagName;
 					
 					if($(elem).data('gsvg')) {
-						el_name = 'svg';
+						$('#gsvg_panel').show();
 					}
 					
 					if(panels[el_name]) {
@@ -1411,6 +1420,11 @@
 							var href = elem.getAttributeNS(xlinkNS, "href");
 							setImageURL(href);
 						} // image
+						else if(el_name == 'g') {
+							console.log('is group');
+							var title = svgCanvas.getTitle();
+							$('#g_title').val(title);
+						}
 					}
 				} // if (elem != null)
 				else if (multiselected) {
@@ -1604,6 +1618,11 @@
 		  
 			$('#image_url').change(function(){
 				setImageURL(this.value); 
+			});
+			
+			$('#g_title').change(function() {
+				svgCanvas.setGroupTitle(this.value);
+				$(this).width(17 + this.value.length * 5);
 			});
 		
 			$('.attr_changer').change(function() {
@@ -2140,7 +2159,7 @@
 					svgCanvas.moveToBottomSelectedElement();
 				}
 			};
-			
+
 			var convertToPath = function() {
 				if (selectedElement != null) {
 					svgCanvas.convertToPath();
