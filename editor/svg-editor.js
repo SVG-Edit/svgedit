@@ -801,9 +801,10 @@
 			var extAdded = function(window, ext) {
 		
 				var cb_called = false;
+				var cb_ready = true; // Set to false to delay callback (e.g. wait for $.svgIcons)
 				
 				var runCallback = function() {
-					if(ext.callback && !cb_called) {
+					if(ext.callback && !cb_called && cb_ready) {
 						cb_called = true;
 						ext.callback();
 					}
@@ -1114,6 +1115,9 @@
 					$.each(btn_selects, function() {
 						addAltDropDown(this.elem, this.list, this.callback, {seticon: true}); 
 					});
+					
+					if (svgicons)
+						cb_ready = false; // Delay callback
 
 					$.svgIcons(svgicons, {
 						w:24, h:24,
@@ -1126,6 +1130,7 @@
 							if(curPrefs.iconsize && curPrefs.iconsize != 'm') {
 								setIconSize(curPrefs.iconsize, true);
 							}
+							cb_ready = true; // Ready for callback
 							runCallback();
 						}
 				
@@ -1216,8 +1221,8 @@
 						strokeOpacity = "N/A";
 					}
 					
-					$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1);
-					$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
+					$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1).change();
+					$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none").change();
 
 					var attr = selectedElement.getAttribute("stroke-linejoin") || 'miter';
 					
@@ -1848,8 +1853,9 @@
 					}
 				});
 			}());
-			
-			var addDropDown = function(elem, callback, dropUp) {
+			// Made public for UI customization.
+			// TODO: Group UI functions into a public svgEditor.ui interface.
+			Editor.addDropDown = function(elem, callback, dropUp) {
 				var button = $(elem).find('button');
 				var list = $(elem).find('ul');
 				var on_button = false;
@@ -1945,12 +1951,12 @@
 				}
 			}
 			
-			addDropDown('#font_family_dropdown', function() {
+			Editor.addDropDown('#font_family_dropdown', function() {
 				var fam = $(this).text();
 				$('#font_family').val($(this).text()).change();
 			});
 			
-			addDropDown('#opacity_dropdown', function() {
+			Editor.addDropDown('#opacity_dropdown', function() {
 				if($(this).find('div').length) return;
 				var perc = parseInt($(this).text().split('%')[0]);
 				changeOpacity(false, perc);
@@ -1970,7 +1976,7 @@
 				}
 			});
 		
-			addDropDown('#blur_dropdown', function() {
+			Editor.addDropDown('#blur_dropdown', function() {
 			});
 			
 			var slideStart = false;
@@ -1993,7 +1999,7 @@
 			});
 
 		
-			addDropDown('#zoom_dropdown', function() {
+			Editor.addDropDown('#zoom_dropdown', function() {
 				var item = $(this);
 				var val = item.attr('data-val');
 				if(val) {
