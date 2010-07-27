@@ -82,6 +82,8 @@
 		
 		Editor.curConfig = curConfig;
 		
+		Editor.tool_scale = 1;
+		
 		// Store and retrieve preferences
 		$.pref = function(key, val) {
 			if(val) curPrefs[key] = val;
@@ -385,18 +387,17 @@
 						$(this).parent().prepend(this);
 					});
 					
-					// Use small icons by default if not all left tools are visible
 					var tleft = $('#tools_left');
 					if (tleft.length != 0) {
 						var min_height = tleft.offset().top + tleft.outerHeight();
 					}
-					var size = $.pref('iconsize');
-					if(size && size != 'm') {
-						svgEditor.setIconSize(size);				
-					} else if($(window).height() < min_height) {
-						// Make smaller
-						svgEditor.setIconSize('s');
-					}
+// 					var size = $.pref('iconsize');
+// 					if(size && size != 'm') {
+// 						svgEditor.setIconSize(size);				
+// 					} else if($(window).height() < min_height) {
+// 						// Make smaller
+// 						svgEditor.setIconSize('s');
+// 					}
 					
 					// Look for any missing flyout icons from plugins
 					$('.tools_flyout').each(function() {
@@ -438,7 +439,8 @@
 				default_img_url = curConfig.imgPath + "logo.png",
 				workarea = $("#workarea"),
 				show_save_warning = false, 
-				exportWindow = null;
+				exportWindow = null, 
+				tool_scale = 1;
 
 			// This sets up alternative dialog boxes. They mostly work the same way as
 			// their UI counterparts, expect instead of returning the result, a callback
@@ -783,7 +785,7 @@
 					var shower = $('#' + this.id + '_show');
 					var pos = shower.offset();
 					var w = shower.outerWidth();
-					$(this).css({left: pos.left + w, top: pos.top});
+					$(this).css({left: (pos.left + w)*tool_scale, top: pos.top});
 				});
 			}
 			
@@ -797,11 +799,28 @@
 					shower[0].title = tooltips.join(' / ');
 				});
 			}
+
+			var resize_timer;			
 			
 			var extAdded = function(window, ext) {
 		
 				var cb_called = false;
+				var resize_done = false;
 				var cb_ready = true; // Set to false to delay callback (e.g. wait for $.svgIcons)
+				
+				function prepResize() {
+					if(resize_timer) {
+						clearTimeout(resize_timer);
+						resize_timer = null;
+					}
+					if(!resize_done) {
+						resize_timer = setTimeout(function() {
+							resize_done = true;
+							setIconSize(curPrefs.iconsize);
+						}, 50);	
+					}
+				}
+
 				
 				var runCallback = function() {
 					if(ext.callback && !cb_called && cb_ready) {
@@ -1128,7 +1147,7 @@
 						callback: function(icons) {
 							// Non-ideal hack to make the icon match the current size
 							if(curPrefs.iconsize && curPrefs.iconsize != 'm') {
-								setIconSize(curPrefs.iconsize, true);
+								prepResize();
 							}
 							cb_ready = true; // Ready for callback
 							runCallback();
@@ -2527,159 +2546,253 @@
 				}
 				icon = icon.clone();
 				$(elem).empty().append(icon);
-				if(forcedSize) {
-					var obj = {};
-					obj[elem + ' .svg_icon'] = forcedSize;
-					$.resizeSvgIcons(obj);
-				} else {
-					var size = curPrefs.iconsize;
-					if(size && size !== 'm') {
-						var icon_sizes = { s:16, m:24, l:32, xl:48}, obj = {};
-						obj[elem + ' .svg_icon'] = icon_sizes[size];
-						$.resizeSvgIcons(obj);
-					}
-				}
+// 				if(forcedSize) {
+// 					var obj = {};
+// 					obj[elem + ' .svg_icon'] = forcedSize;
+// 					$.resizeSvgIcons(obj);
+// 				} else {
+// 					var size = curPrefs.iconsize;
+// 					if(size && size !== 'm') {
+// 						var icon_sizes = { s:16, m:24, l:32, xl:48}, obj = {};
+// 						obj[elem + ' .svg_icon'] = icon_sizes[size];
+// 						$.resizeSvgIcons(obj);
+// 					}
+// 				}
 			}
 		
+			var ua_prefix;
+			(ua_prefix = function() {
+				var regex = /^(Moz|Webkit|Khtml|O|ms|Icab)(?=[A-Z])/;
+				var someScript = document.getElementsByTagName('script')[0];
+				for(var prop in someScript.style) {
+					if(regex.test(prop)) {
+						// test is faster than match, so it's better to perform
+						// that on the lot and match only when necessary
+						return prop.match(regex)[0];
+					}
+				}
+			
+				// Nothing found so far?
+				if('WebkitOpacity' in someScript.style) return 'Webkit';
+				if('KhtmlOpacity' in someScript.style) return 'Khtml';
+				
+				return '';
+			}());
+			
+			var scaleElements = function(elems, scale) {
+				var prefix = '-' + ua_prefix.toLowerCase() + '-';
+				
+				var sides = ['top', 'left', 'bottom', 'right'];
+			
+				elems.each(function() {
+// 					console.log('go', scale);
+
+					// Handled in CSS
+					// this.style[ua_prefix + 'Transform'] = 'scale(' + scale + ')';
+				
+					var el = $(this);
+					
+					var w = el.outerWidth() * (scale - 1);
+					var h = el.outerHeight() * (scale - 1);
+					var margins = {};
+					
+					for(var i = 0; i < 4; i++) {
+						var s = sides[i];
+						
+						var cur = el.data('orig_margin-' + s);
+						if(cur == null) {
+							cur = parseInt(el.css('margin-' + s));
+							// Cache the original margin
+							el.data('orig_margin-' + s, cur);
+						}
+						var val = cur * scale;
+						if(s === 'right') {
+							val += w;
+						} else if(s === 'bottom') {
+							val += h;
+						}
+						
+						el.css('margin-' + s, val);
+// 						el.css('outline', '1px solid red');
+					}
+				});
+			}
+			
 			var setIconSize = Editor.setIconSize = function(size, force) {
 				if(size == curPrefs.size && !force) return;
+// 				return;
+// 				var elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
+				console.log('size', size);
+				
+				var sel_toscale = '#tools_top .toolset, #editor_panel > *, #history_panel > *,\
+				#main_button, #tools_left > *, #path_node_panel > *, #multiselected_panel > *,\
+				#g_panel > *, #tool_font_size > *, .tools_flyout';
+				
+				var elems = $(sel_toscale);
+				
+				var scale = 1;
+				
+				if(typeof size == 'number') {
+					scale = size;
+				} else {
+					var icon_sizes = { s:.75, m:1, l:1.25, xl:1.5 };
+					scale = icon_sizes[size];
+				}
+				
+				Editor.tool_scale = tool_scale = scale;
+				
+				setFlyoutPositions();
+				// $('.tools_flyout').each(function() {
+// 					var pos = $(this).position();
+// 					console.log($(this),  pos.left+(34 * scale));
+// 					$(this).css({'left': pos.left+(34 * scale), 'top': pos.top+(77 * scale)});
+// 					console.log('l', $(this).css('left'));
+// 				});
+
+// 				var scale = .75;//0.75;
+				
+				var hidden_ps = elems.parents(':hidden');
+				hidden_ps.css('visibility', 'hidden').show();
+				scaleElements(elems, scale);
+				hidden_ps.css('visibility', 'visible').hide();
+// 				console.timeEnd('elems');								
+// 				return;
+				
 				$.pref('iconsize', size);
 				$('#iconsize').val(size);
-				var icon_sizes = { s:16, m:24, l:32, xl:48 };
-				var size_num = icon_sizes[size];
+				
 				
 				// Change icon size
-				$('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open')
-				.find('> svg, > img').each(function() {
-					this.setAttribute('width',size_num);
-					this.setAttribute('height',size_num);
-				});
-				
-				$.resizeSvgIcons({
-					'.flyout_arrow_horiz > svg, .flyout_arrow_horiz > img': size_num / 5,
-					'#logo > svg, #logo > img': size_num * 1.3,
-					'#tools_bottom .icon_label > *': (size_num === 16 ? 18 : size_num * .75)
-				});
-				if(size != 's') {
-					$.resizeSvgIcons({'#layerbuttons svg, #layerbuttons img': size_num * .6});
-				}
+// 				$('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open')
+// 				.find('> svg, > img').each(function() {
+// 					this.setAttribute('width',size_num);
+// 					this.setAttribute('height',size_num);
+// 				});
+// 				
+// 				$.resizeSvgIcons({
+// 					'.flyout_arrow_horiz > svg, .flyout_arrow_horiz > img': size_num / 5,
+// 					'#logo > svg, #logo > img': size_num * 1.3,
+// 					'#tools_bottom .icon_label > *': (size_num === 16 ? 18 : size_num * .75)
+// 				});
+// 				if(size != 's') {
+// 					$.resizeSvgIcons({'#layerbuttons svg, #layerbuttons img': size_num * .6});
+// 				}
 				
 				// Note that all rules will be prefixed with '#svg_editor' when parsed
 				var cssResizeRules = {
-					".tool_button,\
-					.push_button,\
-					.tool_button_current,\
-					.push_button_pressed,\
-					.disabled,\
-					.icon_label,\
-					.tools_flyout .tool_button": {
-						'width': {s: '16px', l: '32px', xl: '48px'},
-						'height': {s: '16px', l: '32px', xl: '48px'},
-						'padding': {s: '1px', l: '2px', xl: '3px'}
-					},
-					".tool_sep": {
-						'height': {s: '16px', l: '32px', xl: '48px'},
-						'margin': {s: '2px 2px', l: '2px 5px', xl: '2px 8px'}
-					},
-					"#main_icon": {
-						'width': {s: '31px', l: '53px', xl: '75px'},
-						'height': {s: '22px', l: '42px', xl: '64px'}
-					},
+// 					".tool_button,\
+// 					.push_button,\
+// 					.tool_button_current,\
+// 					.push_button_pressed,\
+// 					.disabled,\
+// 					.icon_label,\
+// 					.tools_flyout .tool_button": {
+// 						'width': {s: '16px', l: '32px', xl: '48px'},
+// 						'height': {s: '16px', l: '32px', xl: '48px'},
+// 						'padding': {s: '1px', l: '2px', xl: '3px'}
+// 					},
+// 					".tool_sep": {
+// 						'height': {s: '16px', l: '32px', xl: '48px'},
+// 						'margin': {s: '2px 2px', l: '2px 5px', xl: '2px 8px'}
+// 					},
+// 					"#main_icon": {
+// 						'width': {s: '31px', l: '53px', xl: '75px'},
+// 						'height': {s: '22px', l: '42px', xl: '64px'}
+// 					},
 					"#tools_top": {
-						'left': {s: '36px', l: '60px', xl: '80px'},
-						'height': {s: '50px', l: '88px', xl: '125px'}
+						'left': 50,
+						'height': 72
 					},
 					"#tools_left": {
-						'width': {s: '22px', l: '30px', xl: '38px'},
-						'top': {s: '50px', l: '87px', xl: '125px'}
+						'width': 31,
+						'top': 74
 					},
 					"div#workarea": {
-						'left': {s: '27px', l: '46px', xl: '65px'},
-						'top': {s: '50px', l: '88px', xl: '125px'},
-						'bottom': {s: '55px', l: '98px', xl: '145px'}
+						'left': 38,
+						'top': 74
 					},
-					"#tools_bottom": {
-						'left': {s: '27px', l: '46px', xl: '65px'},
-						'height': {s: '58px', l: '98px', xl: '145px'}
-					},
-					"#color_tools": {
-						'border-spacing': {s: '0 1px'},
-						'margin-top': {s: '-1px'}
-					},
-					"#color_tools .icon_label": {
-						'width': {l:'43px', xl: '60px'}
-					},
-					".color_tool": {
-						'height': {s: '20px'}
-					},
-					"#tool_opacity": {
-						'top': {s: '1px'},
-						'height': {s: 'auto', l:'auto', xl:'auto'}
-					},
-					"#tools_top input, #tools_bottom input": {
-						'margin-top': {s: '2px', l: '4px', xl: '5px'},
-						'height': {s: 'auto', l: 'auto', xl: 'auto'},
-						'border': {s: '1px solid #555', l: 'auto', xl: 'auto'},
-						'font-size': {s: '.9em', l: '1.2em', xl: '1.4em'}
-					},
-					"#zoom_panel": {
-						'margin-top': {s: '3px', l: '4px', xl: '5px'}
-					},
-					"#copyright, #tools_bottom .label": {
-						'font-size': {l: '1.5em', xl: '2em'},
-						'line-height': {s: '15px'}
-					},
-					"#tools_bottom_2": {
-						'width': {l: '295px', xl: '355px'},
-						'top': {s: '4px'}
-					},
-					"#tools_top > div, #tools_top": {
-						'line-height': {s: '17px', l: '34px', xl: '50px'}
-					}, 
-					".dropdown button": {
-						'height': {s: '18px', l: '34px', xl: '40px'},
-						'line-height': {s: '18px', l: '34px', xl: '40px'},
-						'margin-top': {s: '3px'}
-					},
-					"#tools_top label, #tools_bottom label": {
-						'font-size': {s: '1em', l: '1.5em', xl: '2em'},
-						'height': {s: '25px', l: '42px', xl: '64px'}
-					}, 
-					"div.toolset": {
-						'height': {s: '25px', l: '42px', xl: '64px'}
-					},
-					"#tool_bold, #tool_italic": {
-						'font-size': {s: '1.5em', l: '3em', xl: '4.5em'}
-					},
-					"#sidepanels": {
-						'top': {s: '50px', l: '88px', xl: '125px'},
-						'bottom': {s: '51px', l: '68px', xl: '65px'}
-					},
-					'#layerbuttons': {
-						'width': {l: '130px', xl: '175px'},
-						'height': {l: '24px', xl: '30px'}
-					},
-					'#layerlist': {
-						'width': {l: '128px', xl: '150px'}
-					},			
-					'.layer_button': {
-						'width': {l: '19px', xl: '28px'},
-						'height': {l: '19px', xl: '28px'}
-					},
-					"input.spin-button": {
-						'background-image': {l: "url('images/spinbtn_updn_big.png')", xl: "url('images/spinbtn_updn_big.png')"},
-						'background-position': {l: '100% -5px', xl: '100% -2px'},
-						'padding-right': {l: '24px', xl: '24px' }
-					},
-					"input.spin-button.up": {
-						'background-position': {l: '100% -45px', xl: '100% -42px'}
-					},
-					"input.spin-button.down": {
-						'background-position': {l: '100% -85px', xl: '100% -82px'}
-					},
-					"#position_opts": {
-						'width': {all: (size_num*4) +'px'}
-					}
+// 					"#tools_bottom": {
+// 						'left': {s: '27px', l: '46px', xl: '65px'},
+// 						'height': {s: '58px', l: '98px', xl: '145px'}
+// 					},
+// 					"#color_tools": {
+// 						'border-spacing': {s: '0 1px'},
+// 						'margin-top': {s: '-1px'}
+// 					},
+// 					"#color_tools .icon_label": {
+// 						'width': {l:'43px', xl: '60px'}
+// 					},
+// 					".color_tool": {
+// 						'height': {s: '20px'}
+// 					},
+// 					"#tool_opacity": {
+// 						'top': {s: '1px'},
+// 						'height': {s: 'auto', l:'auto', xl:'auto'}
+// 					},
+// 					"#tools_top input, #tools_bottom input": {
+// 						'margin-top': {s: '2px', l: '4px', xl: '5px'},
+// 						'height': {s: 'auto', l: 'auto', xl: 'auto'},
+// 						'border': {s: '1px solid #555', l: 'auto', xl: 'auto'},
+// 						'font-size': {s: '.9em', l: '1.2em', xl: '1.4em'}
+// 					},
+// 					"#zoom_panel": {
+// 						'margin-top': {s: '3px', l: '4px', xl: '5px'}
+// 					},
+// 					"#copyright, #tools_bottom .label": {
+// 						'font-size': {l: '1.5em', xl: '2em'},
+// 						'line-height': {s: '15px'}
+// 					},
+// 					"#tools_bottom_2": {
+// 						'width': {l: '295px', xl: '355px'},
+// 						'top': {s: '4px'}
+// 					},
+// 					"#tools_top > div, #tools_top": {
+// 						'line-height': {s: '17px', l: '34px', xl: '50px'}
+// 					}, 
+// 					".dropdown button": {
+// 						'height': {s: '18px', l: '34px', xl: '40px'},
+// 						'line-height': {s: '18px', l: '34px', xl: '40px'},
+// 						'margin-top': {s: '3px'}
+// 					},
+// 					"#tools_top label, #tools_bottom label": {
+// 						'font-size': {s: '1em', l: '1.5em', xl: '2em'},
+// 						'height': {s: '25px', l: '42px', xl: '64px'}
+// 					}, 
+// 					"div.toolset": {
+// 						'height': {s: '25px', l: '42px', xl: '64px'}
+// 					},
+// 					"#tool_bold, #tool_italic": {
+// 						'font-size': {s: '1.5em', l: '3em', xl: '4.5em'}
+// 					},
+// 					"#sidepanels": {
+// 						'top': {s: '50px', l: '88px', xl: '125px'},
+// 						'bottom': {s: '51px', l: '68px', xl: '65px'}
+// 					},
+// 					'#layerbuttons': {
+// 						'width': {l: '130px', xl: '175px'},
+// 						'height': {l: '24px', xl: '30px'}
+// 					},
+// 					'#layerlist': {
+// 						'width': {l: '128px', xl: '150px'}
+// 					},			
+// 					'.layer_button': {
+// 						'width': {l: '19px', xl: '28px'},
+// 						'height': {l: '19px', xl: '28px'}
+// 					},
+// 					"input.spin-button": {
+// 						'background-image': {l: "url('images/spinbtn_updn_big.png')", xl: "url('images/spinbtn_updn_big.png')"},
+// 						'background-position': {l: '100% -5px', xl: '100% -2px'},
+// 						'padding-right': {l: '24px', xl: '24px' }
+// 					},
+// 					"input.spin-button.up": {
+// 						'background-position': {l: '100% -45px', xl: '100% -42px'}
+// 					},
+// 					"input.spin-button.down": {
+// 						'background-position': {l: '100% -85px', xl: '100% -82px'}
+// 					},
+// 					"#position_opts": {
+// 						'width': {all: (size_num*4) +'px'}
+// 					}
 				};
 				
 				var rule_elem = $('#tool_size_rules');
@@ -2695,12 +2808,21 @@
 						selector = '#svg_editor ' + selector.replace(/,/g,', #svg_editor');
 						style_str += selector + '{';
 						$.each(rules, function(prop, values) {
-							if(values[size] || values.all) {
-								style_str += (prop + ':' + (values[size] || values.all) + ';');
+							if(typeof values === 'number') {
+								var val = (values * scale) + 'px';
+							} else if(values[size] || values.all) {
+								var val = (values[size] || values.all);
 							}
+							style_str += (prop + ':' + val + ';');
 						});
 						style_str += '}';
 					});
+					//this.style[ua_prefix + 'Transform'] = 'scale(' + scale + ')';
+					var prefix = '-' + ua_prefix.toLowerCase() + '-';
+					style_str += (sel_toscale + '{' + prefix + 'transform: scale(' + scale + ');}'
+					+ ' #svg_editor div.toolset .toolset {' + prefix + 'transform: scale(1); margin: 1px !important;}' // Hack for markers
+					+ ' #svg_editor .ui-slider {' + prefix + 'transform: scale(' + (1/scale) + ');}' // Hack for sliders
+					);
 					rule_elem.text(style_str);
 				}
 				
