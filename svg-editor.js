@@ -45,9 +45,11 @@
 				imgPath: 'images/',
 				langPath: 'locale/',
 				extPath: 'extensions/',
+				jGraduatePath: 'jgraduate/images/',
 				extensions: ['ext-markers.js','ext-connector.js', 'ext-eyedropper.js', 'ext-shapes.js', 'ext-imagelib.js'],
 				initTool: 'select',
-				wireframe: false
+				wireframe: false,
+				colorPickerCSS: null
 			},
 			uiStrings = Editor.uiStrings = {
 			"invalidAttrValGiven":"Invalid value given",
@@ -2938,12 +2940,12 @@
 				var pos = elem.position();
 				$("#color_picker")
 					.draggable({cancel:'.jPicker_table,.jGraduate_lgPick,.jGraduate_rgPick'})
-					.css({'left': pos.left, 'bottom': 50 - pos.top})
+					.css(curConfig.colorPickerCSS || {'left': pos.left, 'bottom': 50 - pos.top})
 					.jGraduate(
 					{ 
 						paint: paint,
 						window: { pickerTitle: title },
-						images: { clientPath: "jgraduate/images/" }
+						images: { clientPath: curConfig.jGraduatePath }
 					},
 					function(p) {
 						paint = new $.jGraduate.Paint(p);
