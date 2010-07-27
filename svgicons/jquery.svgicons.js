@@ -254,7 +254,7 @@ $(function() {
 				}
 				if(isOpera) {
 					setTimeout(function() {
-						icon.attr('style','visibility:visible;');
+						icon.removeAttr('style');
 					},1);
 				}
 			}

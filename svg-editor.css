@@ -2,6 +2,13 @@
 	background: #D8D8D8;
 }
 
+#svg_editor * {
+	transform-origin: 0 0;
+	-moz-transform-origin: 0 0;
+	-o-transform-origin: 0 0;
+	-webkit-transform-origin: 0 0;
+}
+
 #svg_editor {
 	font-size: 8pt;
 	font-family: Verdana, Helvetica, Arial;
@@ -278,6 +285,7 @@
 	position: absolute;
 	top: 4px;
 	left: 4px;
+	z-index: 5;
 }
 
 
@@ -466,6 +474,11 @@
 	height: 34px;
 }
 
+#svg_editor div.toolset label span {
+/*	outline: 1px solid red;*/
+	padding-top: 3px;
+	display: inline-block;
+}
 
 #tools_top > div > * {
 	float: left;
