@@ -531,7 +531,7 @@
 			
 				// by default, we add the XML prolog back, systems integrating SVG-edit (wikis, CMSs) 
 				// can just provide their own custom save handler and might not want the XML prolog
-				svg = "<?xml version='1.0'?>\n" + svg;
+				svg = '<?xml version="1.0"?>\n' + svg;
 				
 				// Opens the SVG in new window, with warning about Mozilla bug #308590 when applicable
 				
