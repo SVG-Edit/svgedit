@@ -1407,10 +1407,9 @@
 					
 					var el_name = elem.tagName;
 					
-					if($(elem).data('gsvg')) {
-						$('#container_panel').show();
-						$('#g_panel').show();
-					}
+// 					if($(elem).data('gsvg')) {
+// 						$('#g_panel').show();
+// 					}
 					
 					if(panels[el_name]) {
 						var cur_panel = panels[el_name];
@@ -1449,6 +1448,7 @@
 							setImageURL(href);
 						} // image
 						else if(el_name == 'g' || el_name == 'use') {
+							$('#container_panel').show();
 							var title = svgCanvas.getTitle();
 							$('#g_title').val(title);
 						}

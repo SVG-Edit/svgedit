@@ -225,17 +225,6 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 
 	</div>
 
-	<div id="g_panel">
-		<div class="tool_sep"></div>
-		
-		<label id="group_title" title="Group identification label">
-			<span>label:</span>
-			<input id="g_title" data-attr="title" size="10" type="text"/>
-		</label>
-		
-		<div class="push_button" id="tool_ungroup" title="Ungroup Elements [G]"></div>
-	</div>
-
 	<div id="rect_panel">
 		<div class="toolset">
 			<label id="rect_width_tool" title="Change rectangle width">
@@ -361,13 +350,22 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 
 	<!-- formerly gsvg_panel -->
 	<div id="container_panel">
+		<div class="tool_sep"></div>
+
 		<!-- Add viewBox field here? -->
+
+		<label id="group_title" title="Group identification label">
+			<span>label:</span>
+			<input id="g_title" data-attr="title" size="10" type="text"/>
+		</label>
 	</div>
 	
 	<div id="use_panel">
-		<div class="tool_sep"></div>
-		
 		<div class="push_button" id="tool_unlink_use" title="Break link to reference element (make unique)"></div>
+	</div>
+	
+	<div id="g_panel">
+		<div class="push_button" id="tool_ungroup" title="Ungroup Elements [G]"></div>
 	</div>
 
 	
