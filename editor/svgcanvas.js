@@ -7999,6 +7999,9 @@ this.setSvgString = function(xmlString) {
 	
 		// Wrap child SVGs in group elements
 		$(svgcontent).find('svg').each(function() {
+			// Skip if it's in a <defs>
+			if($(this).closest('defs').length) return;
+		
 			uniquifyElems(this);
 		
 			// Check if it already has a gsvg group
@@ -8218,7 +8221,6 @@ this.importSvgString = function(xmlString) {
 		recalculateDimensions(use_el);
 		$(use_el).data('symbol', symbol);
 		addToSelection([use_el]);
-
 		return true;
 
 		
@@ -8753,7 +8755,7 @@ this.setGroupTitle = function(val) {
 	
 	if(!val.length) {
 		// Remove title element
-		batchCmd.addSubCommand(new RemoveElementCommand(ts[i], elem));
+		batchCmd.addSubCommand(new RemoveElementCommand(ts[0], elem));
 		ts.remove();
 	} else if(ts.length) {
 		// Change title contents
