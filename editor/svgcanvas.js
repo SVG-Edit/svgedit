@@ -4545,12 +4545,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 							// to be a translate
 							var xform = svgroot.createSVGTransform();
 							var tlist = getTransformList(selected);
+							// Note that if Webkit and there's no ID for this
+							// element, the dummy transform may have gotten lost.
+							// This results in unexpected behaviour
+							
 							xform.setTranslate(dx,dy);
 							if(tlist.numberOfItems) {
 								tlist.replaceItem(xform, 0);
-								// TODO: Webkit returns null here, find out why
-// 								console.log(selected.getAttribute("transform"))
-
 							} else {
 								tlist.appendItem(xform);
 							}
@@ -7899,7 +7900,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		var has_more = $(svgcontent).find('use:data(symbol)').length;
 			
 		var g = svgdoc.createElementNS(svgns, "g");
-		var childs = elem.children;
+		var childs = elem.childNodes;
 		
 		for(var i = 0; i < childs.length; i++) {
 			g.appendChild(childs[i].cloneNode(true));
@@ -8002,7 +8003,7 @@ this.setSvgString = function(xmlString) {
 		
 			// Check if it already has a gsvg group
 			var pa = this.parentNode;
-			if(pa.children.length === 1 && pa.nodeName === 'g') {
+			if(pa.childNodes.length === 1 && pa.nodeName === 'g') {
 				$(pa).data('gsvg', this);
 				pa.id = pa.id || getNextId();
 			} else {
@@ -8207,10 +8208,12 @@ this.importSvgString = function(xmlString) {
 		symbol.id = getNextId();
 		
 		var use_el = svgdoc.createElementNS(svgns, "use");
+		use_el.id = getNextId();
 		use_el.setAttributeNS(xlinkns, "xlink:href", "#" + symbol.id);
 		findDefs().appendChild(symbol);
 		current_layer.appendChild(use_el);
 		clearSelection();
+		
 		use_el.setAttribute("transform", ts);
 		recalculateDimensions(use_el);
 		$(use_el).data('symbol', symbol);
@@ -10039,6 +10042,7 @@ this.ungroupSelectedElement = function() {
 	var g = selectedElements[0];
 	if($(g).data('gsvg') || $(g).data('symbol')) {
 		// Is svg, so actually convert to group
+
 		convertToGroup(g);
 		return;
 	}
