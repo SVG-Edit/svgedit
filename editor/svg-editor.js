@@ -1188,7 +1188,7 @@
 			// updates the toolbar (colors, opacity, etc) based on the selected element
 			// This function also updates the opacity and id elements that are in the context panel
 			var updateToolbar = function() {
-				if (selectedElement != null && $.inArray(selectedElement.tagName, ['image', 'foreignObject', 'g', 'a']) === -1) {
+				if (selectedElement != null && $.inArray(selectedElement.tagName, ['use', 'image', 'foreignObject', 'g', 'a']) === -1) {
 				
 					// get opacity values
 					var fillOpacity = parseFloat(selectedElement.getAttribute("fill-opacity"));
@@ -1294,6 +1294,11 @@
 					$('#image_url').show();
 					$('#change_image_url').hide();
 				}
+			}
+		
+			var setInputWidth = function(elem) {
+				var w = Math.min(Math.max(12 + elem.value.length * 6, 50), 300);
+				$(elem).width(w);
 			}
 		
 			// updates the context panel tools based on the selected element
@@ -1450,7 +1455,15 @@
 						else if(el_name == 'g' || el_name == 'use') {
 							$('#container_panel').show();
 							var title = svgCanvas.getTitle();
-							$('#g_title').val(title);
+							var label = $('#g_title')[0];
+							label.value = title;
+							setInputWidth(label);
+							var d = 'disabled';
+							if(el_name == 'use') {
+								label.setAttribute(d, d);
+							} else {
+								label.removeAttribute(d);
+							}
 						}
 					}
 				} // if (elem != null)
@@ -1649,7 +1662,8 @@
 			
 			$('#g_title').change(function() {
 				svgCanvas.setGroupTitle(this.value);
-				$(this).width(17 + this.value.length * 5);
+				setInputWidth(this);
+
 			});
 		
 			$('.attr_changer').change(function() {
