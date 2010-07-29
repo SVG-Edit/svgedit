@@ -110,7 +110,7 @@ svgEditor.addExtension("imagelib", function() {
 			});
 
 			var back = $('<input type=button value="Show libraries">').appendTo(browser).click(function() {
-				frame.hide();
+				frame.attr('src', 'about:blank').hide();
 				lib_opts.show();
 				header.text(all_libs);
 			}).css({
@@ -122,7 +122,7 @@ svgEditor.addExtension("imagelib", function() {
 			$.each(img_libs, function(i, opts) {
 				$('<li>').appendTo(lib_opts).text(opts.name).click(function() {
 					frame.attr('src', opts.url).show();
-					header.text(name);
+					header.text(opts.name);
 					lib_opts.hide();
 				}).append('<span>' + opts.description + '</span>');
 			});
@@ -153,7 +153,7 @@ svgEditor.addExtension("imagelib", function() {
 					width: 100%;\
 					height: 100%;\
 					background-color: rgba(0, 0, 0, .5);\
-					z-index: 4;\
+					z-index: 5;\
 				}\
 				\
 				#imgbrowse {\
