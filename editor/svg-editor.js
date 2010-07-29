@@ -332,6 +332,7 @@
 					'#tool_reorient':'reorient',
 					'#tool_group':'group',
 					'#tool_ungroup':'ungroup',
+					'#tool_unlink_use':'unlink_use',
 					
 					'#tool_alignleft, #tool_posleft':'align_left',
 					'#tool_aligncenter, #tool_poscenter':'align_center',
@@ -1311,7 +1312,7 @@
 				}
 				var is_node = currentMode == 'pathedit'; //elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
 				$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,\
-					#ellipse_panel, #line_panel, #text_panel, #image_panel, #gsvg_panel').hide();
+					#ellipse_panel, #line_panel, #text_panel, #image_panel, #container_panel, #use_panel').hide();
 				if (elem != null) {
 					var elname = elem.nodeName;
 					
@@ -1401,13 +1402,14 @@
 						ellipse: ['cx','cy','rx','ry'],
 						line: ['x1','y1','x2','y2'], 
 						text: [],
-						gsvg: []
+						'use': []
 					};
 					
 					var el_name = elem.tagName;
 					
 					if($(elem).data('gsvg')) {
-						$('#gsvg_panel').show();
+						$('#container_panel').show();
+						$('#g_panel').show();
 					}
 					
 					if(panels[el_name]) {
@@ -1446,8 +1448,7 @@
 							var href = elem.getAttributeNS(xlinkNS, "href");
 							setImageURL(href);
 						} // image
-						else if(el_name == 'g') {
-							console.log('is group');
+						else if(el_name == 'g' || el_name == 'use') {
 							var title = svgCanvas.getTitle();
 							$('#g_title').val(title);
 						}
@@ -2343,7 +2344,7 @@
 					svgCanvas.groupSelectedElements();
 				}
 				// ungroup
-				else if(selectedElement && selectedElement.tagName == 'g'){
+				else if(selectedElement){
 					svgCanvas.ungroupSelectedElement();
 				}
 			};
@@ -3503,6 +3504,7 @@
 					{sel:'#tool_clone,#tool_clone_multi', fn: clickClone, evt: 'click', key: [modKey+'C', true]},
 					{sel:'#tool_group', fn: clickGroup, evt: 'click', key: [modKey+'G', true]},
 					{sel:'#tool_ungroup', fn: clickGroup, evt: 'click'},
+					{sel:'#tool_unlink_use', fn: clickGroup, evt: 'click'},
 					{sel:'[id^=tool_align]', fn: clickAlign, evt: 'click'},
 					// these two lines are required to make Opera work properly with the flyout mechanism
 		// 			{sel:'#tools_rect_show', fn: clickRect, evt: 'click'},
@@ -3984,7 +3986,6 @@
 	$(svgEditor.init);
 	
 })();
-
 
 // ?iconsize=s&bkgd_color=555
 
