@@ -1253,9 +1253,11 @@ var SelectorManager;
 				// The bbox for a group does not include stroke vals, so we
 				// get the bbox based on its children. 
 				var stroked_bbox = getStrokedBBox(selected.childNodes);
-				$.each(bbox, function(key, val) {
-					bbox[key] = stroked_bbox[key];
-				});
+				if(stroked_bbox) {
+					$.each(bbox, function(key, val) {
+						bbox[key] = stroked_bbox[key];
+					});
+				}
 			}
 
 			// loop and transform our bounding box until we reach our first rotation
@@ -2279,7 +2281,12 @@ var copyElem = function(el) {
 	
 	if($(el).data('gsvg')) {
 		$(new_el).data('gsvg', new_el.firstChild);
-	} else if(new_el.tagName == 'image') {
+	} else if($(el).data('symbol')) {
+		var ref = $(el).data('symbol');
+		$(new_el).data('ref', ref).data('symbol', ref);
+	}
+	
+	else if(new_el.tagName == 'image') {
 		preventClickDefault(new_el);
 	}
 	return new_el;
@@ -2884,10 +2891,10 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			changes["height"] = scaleh(changes["height"]);
 			break;
 		case "use":
-			var pt1 = remap(changes["x"],changes["y"]);
-			changes["x"] = pt1.x;
-			changes["y"] = pt1.y;
-			break;
+// 			var pt1 = remap(changes["x"],changes["y"]);
+// 			changes["x"] = pt1.x;
+// 			changes["y"] = pt1.y;
+// 			break;
 		case "g":
 		case "text":
 			// if it was a translate, then just update x,y
@@ -2998,9 +3005,6 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			changes.height = Math.abs(changes.height);
 			assignAttributes(selected, changes, 1000, true);
 			break;
-		case "use":
-			assignAttributes(selected, changes, 1000, true);
-			break;
 		case "ellipse":
 			changes.rx = Math.abs(changes.rx);
 			changes.ry = Math.abs(changes.ry);
@@ -3008,6 +3012,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			if(changes.r) changes.r = Math.abs(changes.r);
 		case "line":
 		case "text":
+		case "use":
 			assignAttributes(selected, changes, 1000, true);
 			break;
 		case "g":
@@ -3167,8 +3172,6 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 			attrs = ["width", "height", "x", "y"];
 			break;
 		case "use":
-			attrs = ["x", "y"];
-			break;
 		case "text":
 			attrs = ["x", "y"];
 			break;
@@ -3612,8 +3615,11 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		// if we had [M][T][S][T] we want to extract the matrix equivalent of
 		// [T][S][T] and push it down to the element
 		if (N >= 3 && tlist.getItem(N-2).type == 3 && 
-			tlist.getItem(N-3).type == 2 && tlist.getItem(N-1).type == 2 &&
-			selected.nodeName != "use") 
+			tlist.getItem(N-3).type == 2 && tlist.getItem(N-1).type == 2) 
+			
+			// Removed this so a <use> with a given [T][S][T] would convert to a matrix. 
+			// Is that bad?
+			//  && selected.nodeName != "use"
 		{
 			operation = 3; // scale
 			m = transformListToTransform(tlist,N-3,N-1).matrix;
@@ -5094,7 +5100,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					to: cur_shape.opacity,
 					dur: ani_dur
 				}).appendTo(element);
-				c_ani[0].beginElement();
+				try {
+					// Fails in FF4 on foreignObject
+					c_ani[0].beginElement();
+				} catch(e){}
 			} else {
 				ani_dur = 0;
 			}
@@ -7845,13 +7854,19 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 	obj_num++;
 }
 
-// Function: svgToGroup
-// Converts a child SVG element to a group
-var svgToGroup = this.svgToGroup = function(elem) {
+// Function: convertToGroup
+// Converts selected/given <use> or child SVG element to a group
+var convertToGroup = this.convertToGroup = function(elem) {
 	if(!elem) {
 		elem = selectedElements[0];
 	}
-	if(elem.tagName == 'g') {
+	var $elem = $(elem);
+	
+	var batchCmd = new BatchCommand();
+	
+	var ts;
+	
+	if($elem.data('gsvg')) {
 		// Use the gsvg as the new group
 		var svg = elem.firstChild;
 		var pt = $(svg).attr(['x', 'y']);
@@ -7865,67 +7880,66 @@ var svgToGroup = this.svgToGroup = function(elem) {
 		tlist.appendItem(xform);
 		recalculateDimensions(elem);
 		call("selected", [elem]);
-// 		addToSelection(elem]);
-		return;
-// 		elem = $(elem).data('gsvg');
+	} else if($elem.data('symbol')) {
+		elem = $elem.data('symbol');
+		
+		ts = $elem.attr('transform');
+		var pos = $elem.attr(['x','y']);
+		
+		// Not ideal, but works
+		ts += "translate(" + pos.x + "," + pos.y + ")";
+		
+		var prev = $elem.prev();
+		
+		// Remove <use> element
+		batchCmd.addSubCommand(new RemoveElementCommand($elem[0], $elem[0].parentNode));
+		$elem.remove();
+		
+		// See if other elements reference this symbol
+		var has_more = $(svgcontent).find('use:data(symbol)').length;
+			
+		var g = svgdoc.createElementNS(svgns, "g");
+		var childs = elem.children;
+		
+		for(var i = 0; i < childs.length; i++) {
+			g.appendChild(childs[i].cloneNode(true));
+		}
+		
+// 		while (elem.hasChildNodes())
+// 			g.appendChild(elem.firstChild.cloneNode(true));
+		if (ts)
+			g.setAttribute("transform", ts);
+		
+		var parent = elem.parentNode;
+		
+		uniquifyElems(g);
+	
+		// now give the g itself a new id
+		g.id = getNextId();
+		
+		prev.after(g);
+		
+		if(parent) {
+			if(!has_more) {
+				// remove symbol/svg element
+				parent.removeChild(elem);
+				batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
+			}
+			batchCmd.addSubCommand(new InsertElementCommand(g));
+		}
+	
+		// recalculate dimensions on the top-level children so that unnecessary transforms
+		// are removed
+		walkTreePost(g, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
+		
+		clearSelection();
+		addToSelection([g]);
+		
+		addCommandToHistory(batchCmd);
+		
+	} else {
+		console.log('Unexpected element to ungroup:', elem);
 	}
-	if(elem.tagName != 'svg') return;
-	
-	var g = svgdoc.createElementNS(svgns, "g");
-	while (elem.hasChildNodes())
-		g.appendChild(elem.firstChild);
-// 	if (ts)
-// 		g.setAttribute("transform", ts);
-	
-	var parent = elem.parentNode;
-	
-	if(parent) parent.removeChild(elem);
-	
-	uniquifyElems(g);
-
-	// now give the g itself a new id
-	g.id = getNextId();
-	
-	current_layer.appendChild(g);
-	
-	// change image href vals if possible
-//        	$(svgcontent).find('image').each(function() {
-//        		var image = this;
-//        		preventClickDefault(image);
-//        		var val = this.getAttributeNS(xlinkns, "href");
-//				if(val.indexOf('data:') === 0) {
-//					// Check if an SVG-edit data URI
-//					var m = val.match(/svgedit_url=(.*?);/);
-//					if(m) {
-//						var url = decodeURIComponent(m[1]);
-//						$(new Image()).load(function() {
-//							image.setAttributeNS(xlinkns,'xlink:href',url);
-//						}).attr('src',url);
-//					}
-//				}
-//        		// Add to encodableImages if it loads
-//        		canvas.embedImage(val);
-//        	});
-	
-	
-	var batchCmd = new BatchCommand();
-	
-	if(parent) {
-		batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
-		batchCmd.addSubCommand(new InsertElementCommand(g));
-	}
-
-	// recalculate dimensions on the top-level children so that unnecessary transforms
-	// are removed
-	walkTreePost(svgcontent, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
-	
-// 	batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
-
-	// reset transform lists
-// 	svgTransformLists = {};
-	clearSelection();
-	addToSelection([g]);
-	addCommandToHistory(batchCmd);
 }
 
 //   
@@ -7993,6 +8007,16 @@ this.setSvgString = function(xmlString) {
 				pa.id = pa.id || getNextId();
 			} else {
 				groupSvgElem(this);
+			}
+		});
+		
+		// Set ref element for <use> elements
+		$(svgcontent).find('use').each(function() {
+			var id = this.getAttributeNS(xlinkns,"href").substr(1);
+			var ref_elem = getElem(id);
+			$(this).data('ref', ref_elem);
+			if(ref_elem.tagName == 'symbol' || ref_elem.tagName == 'svg') {
+				$(this).data('symbol', ref_elem);
 			}
 		});
 		
@@ -8118,12 +8142,11 @@ this.setSvgString = function(xmlString) {
 };
 
 // Function: importSvgString
-// This function imports the input SVG XML into the current layer in the drawing
+// This function imports the input SVG XML as a <symbol> in the <defs>, then adds a
+// <use> to the current layer.
 //
 // Parameters:
 // xmlString - The SVG as XML text.
-// toElements - Boolean indicating whether or not to convert the SVG to a group
-// with children
 //
 // Returns:
 // This function returns false if the import was unsuccessful, true otherwise.
@@ -8134,8 +8157,7 @@ this.setSvgString = function(xmlString) {
 // arbitrary transform lists, but makes some assumptions about how the transform list 
 // was obtained
 // * import should happen in top-left of current zoomed viewport	
-// * create a new layer for the imported SVG
-this.importSvgString = function(xmlString, toElements) {
+this.importSvgString = function(xmlString) {
 	try {
 		// convert string into XML document
 		var newDoc = Utils.text2xml(xmlString);
@@ -8145,11 +8167,11 @@ this.importSvgString = function(xmlString, toElements) {
 		var batchCmd = new BatchCommand("Change Source");
 
 		// import new svg document into our document
-		var importedNode = svgdoc.importNode(newDoc.documentElement, true);
+		var svg = svgdoc.importNode(newDoc.documentElement, true);
 	
-		var innerw = convertToNum('width', importedNode.getAttribute("width")),
-			innerh = convertToNum('height', importedNode.getAttribute("height")),
-			innervb = importedNode.getAttribute("viewBox"),
+		var innerw = convertToNum('width', svg.getAttribute("width")),
+			innerh = convertToNum('height', svg.getAttribute("height")),
+			innervb = svg.getAttribute("viewBox"),
 			// if no explicit viewbox, create one out of the width and height
 			vb = innervb ? innervb.split(" ") : [0,0,innerw,innerh];
 		for (var j = 0; j < 4; ++j)
@@ -8169,32 +8191,39 @@ this.importSvgString = function(xmlString, toElements) {
 		
 		// Hack to make recalculateDimensions understand how to scale
 		ts = "translate(0) " + ts + " translate(0)";
-	
-		if(!toElements) {
-			var elem = $(importedNode).appendTo(current_layer)[0];
-			groupSvgElem(elem);
-			clearSelection();
-			
-			var g = elem.parentNode;
-			
-			g.setAttribute("transform", ts);
-			recalculateDimensions(g);
-			
-			addToSelection([g]);
-			
-			return;
-		}
 		
-		var g = svgToGroup(importedNode);
+		// Uncomment this once Firefox has fixed their symbol bug:
+		// https://bugzilla.mozilla.org/show_bug.cgi?id=353575
+// 		var symbol = svgdoc.createElementNS(svgns, "symbol");
+// 		while (svg.firstChild) {
+// 			symbol.appendChild(svg.firstChild);
+// 		}
+// 		var attrs = svg.attributes;
+// 		for(var i=0; i < attrs.length; i++) {
+// 			var attr = attrs[i];
+// 			symbol.setAttribute(attr.nodeName, attr.nodeValue);
+// 		}
+		var symbol = svg;
+		symbol.id = getNextId();
 		
+		var use_el = svgdoc.createElementNS(svgns, "use");
+		use_el.setAttributeNS(xlinkns, "xlink:href", "#" + symbol.id);
+		findDefs().appendChild(symbol);
+		current_layer.appendChild(use_el);
+		clearSelection();
+		use_el.setAttribute("transform", ts);
+		recalculateDimensions(use_el);
+		$(use_el).data('symbol', symbol);
+		addToSelection([use_el]);
+
+		return true;
+
 		
 		// TODO: Find way to add this in a recalculateDimensions-parsable way
 // 				if (vb[0] != 0 || vb[1] != 0)
 // 					ts = "translate(" + (-vb[0]) + "," + (-vb[1]) + ") " + ts;
 
-		// add all children of the imported <svg> to the <g> we create
 
-		call("changed", [svgcontent]);
 	} catch(e) {
 		console.log(e);
 		return false;
@@ -8698,8 +8727,7 @@ this.setConfig = function(opts) {
 this.getTitle = function(elem) {
 	elem = elem || selectedElements[0];
 	if(!elem) return;
-	elem = $(elem).data('gsvg') || elem;
-
+	elem = $(elem).data('gsvg') || $(elem).data('symbol') || elem;
 	var childs = elem.childNodes;
 	for (var i=0; i<childs.length; i++) {
 		if(childs[i].nodeName == 'title') {
@@ -10009,16 +10037,16 @@ this.groupSelectedElements = function() {
 // significant recalculations to apply group's transforms, etc to its children
 this.ungroupSelectedElement = function() {
 	var g = selectedElements[0];
+	if($(g).data('gsvg') || $(g).data('symbol')) {
+		// Is svg, so actually convert to group
+		convertToGroup(g);
+		return;
+	}
 	if (g.tagName == "g") {
-		if($(g).data('gsvg')) {
-			// Is gsvg, so actually convert to group
-			svgToGroup(g);
-			return;
-		}
 	
 		var batchCmd = new BatchCommand("Ungroup Elements");
 		var parent = g.parentNode;
-		var anchor = g.previousSibling;
+		var anchor = g.nextSibling;
 		var children = new Array(g.childNodes.length);
 		var xform = g.getAttribute("transform");
 		// get consolidated matrix
