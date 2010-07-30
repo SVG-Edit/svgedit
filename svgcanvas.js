@@ -9540,7 +9540,7 @@ this.getFontFamily = function() {
 this.setFontFamily = function(val) {
 	cur_text.font_family = val;
 	changeSelectedAttribute("font-family", val);
-	if(!selectedElements[0].textContent) {
+	if(selectedElements[0] && !selectedElements[0].textContent) {
 		textActions.setCursor();
 	}
 };
