@@ -151,6 +151,7 @@
 		Editor.setCustomHandlers = function(opts) {
 			Editor.ready(function() {
 				if(opts.open) {
+					$('#tool_open > input[type="file"]').remove();
 					$('#tool_open').show();
 					svgCanvas.open = opts.open;
 				}
@@ -579,15 +580,21 @@
 				var datauri = c.toDataURL('image/png');
 				exportWindow.location.href = datauri;
 				
-				var note = uiStrings.saveFromBrowser.replace('%s', 'PNG');
-				
-				// Check if there's issues
-
-				if(issues.length) {
-					var pre = "\n \u2022 ";
-					note += ("\n\n" + uiStrings.noteTheseIssues + pre + issues.join(pre));
-				} 
-				exportWindow.alert(note);
+				var done = $.pref('export_notice_done');
+				if(done !== "all") {
+					var note = uiStrings.saveFromBrowser.replace('%s', 'PNG');
+					
+					// Check if there's issues
+					if(issues.length) {
+						var pre = "\n \u2022 ";
+						note += ("\n\n" + uiStrings.noteTheseIssues + pre + issues.join(pre));
+					} 
+					
+					// Note that this will also prevent the notice even though new issues may appear later.
+					// May want to find a way to deal with that without annoying the user
+					$.pref('export_notice_done', 'all'); 
+					exportWindow.alert(note);
+				}
 			};
 			
 			// called when we've selected a different element
