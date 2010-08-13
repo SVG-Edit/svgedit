@@ -77,6 +77,7 @@
 		};
 		
 		var curPrefs = {}; //$.extend({}, defaultPrefs);
+		var customHandlers = {};
 		
 		Editor.curConfig = curConfig;
 		
@@ -151,6 +152,11 @@
 				show_save_warning = false;
 				svgCanvas.bind("saved", opts.save);
 			}
+			if(opts.pngsave) {
+				svgCanvas.bind("exported", opts.pngsave);
+			}
+			customHandlers = opts;
+			
 		}
 		
 		Editor.randomizeIds = function() {
@@ -168,10 +174,6 @@
 					
 					if(urldata.extensions) {
 						urldata.extensions = urldata.extensions.split(',');
-					}
-					
-					if(urldata.bkgd_color) {
-						urldata.bkgd_color = '#' + urldata.bkgd_color;
 					}
 					
 					if(urldata.bkgd_color) {
@@ -416,6 +418,8 @@
 				isMac = false, //(navigator.platform.indexOf("Mac") != -1);
 				modKey = "", //(isMac ? "meta+" : "ctrl+");
 				path = svgCanvas.pathActions,
+				undoMgr = svgCanvas.undoMgr,
+				Utils = svgCanvas.Utils,
 				default_img_url = curConfig.imgPath + "logo.png",
 				workarea = $("#workarea"),
 				show_save_warning = false, 
@@ -448,6 +452,10 @@
 						input.val(defText || '');
 						input.bind('keydown', 'return', function() {ok.click();});
 					}
+					
+					if(type == 'process') {
+						ok.hide();
+					}
 		
 					box.show();
 					
@@ -462,6 +470,7 @@
 				
 				$.alert = function(msg, cb) { dbox('alert', msg, cb);};
 				$.confirm = function(msg, cb) {	dbox('confirm', msg, cb);};
+				$.process_cancel = function(msg, cb) {	dbox('process', msg, cb);};
 				$.prompt = function(msg, txt, cb) { dbox('prompt', msg, cb, txt);};
 			}());
 			
@@ -505,7 +514,7 @@
 			
 				// by default, we add the XML prolog back, systems integrating SVG-edit (wikis, CMSs) 
 				// can just provide their own custom save handler and might not want the XML prolog
-				svg = "<?xml version='1.0'?>\n" + svg;
+				svg = '<?xml version="1.0"?>\n' + svg;
 				
 				// Opens the SVG in new window, with warning about Mozilla bug #308590 when applicable
 				
@@ -602,8 +611,8 @@
 					} 
 					// Update selectedElement if element is no longer part of the image.
 					// This occurs for the text elements in Firefox
-					else if(elem && selectedElement && selectedElement.parentNode == null
-						|| elem && elem.tagName == "path") {
+					else if(elem && selectedElement && selectedElement.parentNode == null) {
+// 						|| elem && elem.tagName == "path" && !multiselected) { // This was added in r1430, but not sure why
 						selectedElement = elem;
 					}
 				}
@@ -1062,7 +1071,7 @@
 			// updates the toolbar (colors, opacity, etc) based on the selected element
 			// This function also updates the opacity and id elements that are in the context panel
 			var updateToolbar = function() {
-				if (selectedElement != null && $.inArray(selectedElement.tagName, ['image', 'text', 'foreignObject', 'g', 'a']) === -1) {
+				if (selectedElement != null && $.inArray(selectedElement.tagName, ['image', 'foreignObject', 'g', 'a']) === -1) {
 					// get opacity values
 					var fillOpacity = parseFloat(selectedElement.getAttribute("fill-opacity"));
 					if (isNaN(fillOpacity)) {
@@ -1077,14 +1086,14 @@
 					// update fill color and opacity
 					var fillColor = selectedElement.getAttribute("fill")||"black";
 					// prevent undo on these canvas changes
-					svgCanvas.setFillColor(fillColor, true);
-					svgCanvas.setFillOpacity(fillOpacity, true);
+					svgCanvas.setColor('fill', fillColor, true);
+					svgCanvas.setPaintOpacity('fill', fillOpacity, true);
 		
 					// update stroke color and opacity
 					var strokeColor = selectedElement.getAttribute("stroke")||"none";
 					// prevent undo on these canvas changes
-					svgCanvas.setStrokeColor(strokeColor, true);
-					svgCanvas.setStrokeOpacity(strokeOpacity, true);
+					svgCanvas.setColor('stroke', strokeColor, true);
+					svgCanvas.setPaintOpacity('stroke', strokeOpacity, true);
 		
 					// update the rect inside #fill_color
 					$("#stroke_color rect").attr({
@@ -1177,7 +1186,12 @@
 					
 					if(svgCanvas.addedNew) {
 						if(elname == 'image') {
-							promptImgURL();
+							var xlinkNS = "http://www.w3.org/1999/xlink";
+							var href = elem.getAttributeNS(xlinkNS, "href");
+							// Prompt for URL if not a data URL
+							if(href.indexOf('data:') !== 0) {
+								promptImgURL();
+							}
 						} else if(elname == 'text') {
 							// TODO: Do something here for new text
 						}
@@ -1288,13 +1302,13 @@
 				}
 				
 				// update history buttons
-				if (svgCanvas.getUndoStackSize() > 0) {
+				if (undoMgr.getUndoStackSize() > 0) {
 					$('#tool_undo').removeClass( 'disabled');
 				}
 				else {
 					$('#tool_undo').addClass( 'disabled');
 				}
-				if (svgCanvas.getRedoStackSize() > 0) {
+				if (undoMgr.getRedoStackSize() > 0) {
 					$('#tool_redo').removeClass( 'disabled');
 				}
 				else {
@@ -1527,19 +1541,19 @@
 				
 				if (evt.shiftKey) {
 					strokePaint = paint;
-					if (svgCanvas.getStrokeColor() != color) {
-						svgCanvas.setStrokeColor(color);
+					if (svgCanvas.getColor('stroke') != color) {
+						svgCanvas.setColor('stroke', color);
 					}
 					if (color != 'none' && svgCanvas.getStrokeOpacity() != 1) {
-						svgCanvas.setStrokeOpacity(1.0);
+						svgCanvas.setPaintOpacity('stroke', 1.0);
 					}
 				} else {
 					fillPaint = paint;
-					if (svgCanvas.getFillColor() != color) {
-						svgCanvas.setFillColor(color);
+					if (svgCanvas.getColor('fill') != color) {
+						svgCanvas.setColor('fill', color);
 					}
-					if (color != 'none' && svgCanvas.getFillOpacity() != 1) {
-						svgCanvas.setFillOpacity(1.0);
+					if (color != 'none' && svgCanvas.getFillOpacity('fill') != 1) {
+						svgCanvas.setPaintOpacity('fill', 1.0);
 					}
 				}
 				updateToolButtonState();
@@ -1641,7 +1655,7 @@
 						button.removeClass('buttondown');
 						// do not hide if it was the file input as that input needs to be visible 
 						// for its change event to fire
-						if (evt.target.localName != "input") {
+						if (evt.target.tagName.toLowerCase() != "input") {
 							list.fadeOut(200);
 						} else if(!set_click) {
 							set_click = true;
@@ -2100,8 +2114,10 @@
 			
 			var clickExport = function() {
 				// Open placeholder window (prevents popup)
-				var str = uiStrings.loadingImage;
-				exportWindow = window.open("data:text/html;charset=utf-8,<title>" + str + "<\/title><h1>" + str + "<\/h1>");
+				if(!customHandlers.pngsave)  {
+					var str = uiStrings.loadingImage;
+					exportWindow = window.open("data:text/html;charset=utf-8,<title>" + str + "<\/title><h1>" + str + "<\/h1>");
+				}
 
 				if(window.canvg) {
 					svgCanvas.rasterExport();
@@ -2124,15 +2140,15 @@
 			};
 		
 			var clickUndo = function(){
-				if (svgCanvas.getUndoStackSize() > 0) {
-					svgCanvas.undo();
+				if (undoMgr.getUndoStackSize() > 0) {
+					undoMgr.undo();
 					populateLayers();
 				}
 			};
 		
 			var clickRedo = function(){
-				if (svgCanvas.getRedoStackSize() > 0) {
-					svgCanvas.redo();
+				if (undoMgr.getRedoStackSize() > 0) {
+					undoMgr.redo();
 					populateLayers();
 				}
 			};
@@ -2332,7 +2348,7 @@
 			};
 			
 			function setBackground(color, url) {
-				if(color == curPrefs.bkgd_color && url == curPrefs.bkgd_url) return;
+// 				if(color == curPrefs.bkgd_color && url == curPrefs.bkgd_url) return;
 				$.pref('bkgd_color', color);
 				$.pref('bkgd_url', url);
 				
@@ -2675,7 +2691,6 @@
 						if (paint.type == "linearGradient" || paint.type == "radialGradient") {
 							svgbox.removeChild(oldgrad);
 							var newgrad = svgbox.appendChild(document.importNode(paint[paint.type], true));
-							svgCanvas.fixOperaXML(newgrad, paint[paint.type])
 							newgrad.id = "gradbox_"+picker;
 							rectbox.setAttribute("fill", "url(#gradbox_" + picker + ")");
 							rectbox.setAttribute("opacity", paint.alpha/100);
@@ -2686,11 +2701,11 @@
 						}
 		
 						if (picker == 'stroke') {
-							svgCanvas.setStrokePaint(paint, true);
+							svgCanvas.setPaint('stroke', paint);
 							strokePaint = paint;
 						}
 						else {
-							svgCanvas.setFillPaint(paint, true);
+							svgCanvas.setPaint('fill', paint);
 							fillPaint = paint;
 						}
 						updateToolbar();
@@ -2702,8 +2717,8 @@
 			};
 		
 			var updateToolButtonState = function() {
-				var bNoFill = (svgCanvas.getFillColor() == 'none');
-				var bNoStroke = (svgCanvas.getStrokeColor() == 'none');
+				var bNoFill = (svgCanvas.getColor('fill') == 'none');
+				var bNoStroke = (svgCanvas.getColor('stroke') == 'none');
 				var buttonsNeedingStroke = [ '#tool_fhpath', '#tool_line' ];
 				var buttonsNeedingFillAndStroke = [ '#tools_rect .tool_button', '#tools_ellipse .tool_button', '#tool_text', '#tool_path'];
 				if (bNoStroke) {
@@ -3403,7 +3418,7 @@
 			
 			window.onbeforeunload = function() { 
 				// Suppress warning if page is empty 
-				if(svgCanvas.getHistoryPosition() === 0) {
+				if(undoMgr.getUndoStackSize() === 0) {
 					show_save_warning = false;
 				}
 
@@ -3414,6 +3429,15 @@
 				}
 			};
 			
+			Editor.openPrep = function(func) {
+				$('#main_menu').hide();
+				if(undoMgr.getUndoStackSize() === 0) {
+					func(true);
+				} else {
+					$.confirm(uiStrings.QwantToOpen, func);
+				}
+			}
+			
 			// use HTML5 File API: http://www.w3.org/TR/FileAPI/
 			// if browser has HTML5 File API support, then we will show the open menu item
 			// and provide a file input to click.  When that change event fires, it will
@@ -3421,7 +3445,7 @@
 			if (window.FileReader) {
 				var inp = $('<input type="file">').change(function() {
 					var f = this;
-					var openFile = function(ok) {
+					Editor.openPrep(function(ok) {
 						if(!ok) return;
 						svgCanvas.clear();
 						if(f.files.length==1) {
@@ -3432,14 +3456,7 @@
 							};
 							reader.readAsText(f.files[0]);
 						}
-					}
-				
-					$('#main_menu').hide();
-					if(svgCanvas.getHistoryPosition() === 0) {
-						openFile(true);
-					} else {
-						$.confirm(uiStrings.QwantToOpen, openFile);
-					}
+					});
 				});
 				$("#tool_open").show().prepend(inp);
 				var inp2 = $('<input type="file">').change(function() {
@@ -3456,8 +3473,7 @@
 				$("#tool_import").show().prepend(inp2);
 			}
 			
-			
-			var updateCanvas = function(center, new_ctr) {
+			var updateCanvas = Editor.updateCanvas = function(center, new_ctr) {
 				var w = workarea.width(), h = workarea.height();
 				var w_orig = w, h_orig = h;
 				var zoom = svgCanvas.getZoom();
