@@ -145,6 +145,7 @@
 		// 	- save the file to location chosen by the user
 		Editor.setCustomHandlers = function(opts) {
 			if(opts.open) {
+				$('#tool_open > input[type="file"]').remove();
 				$('#tool_open').show();
 				svgCanvas.open = opts.open;
 			}
