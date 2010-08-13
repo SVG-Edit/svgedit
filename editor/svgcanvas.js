@@ -7260,7 +7260,7 @@ var pathActions = this.pathActions = function() {
 				var addToD = function(pnts, more, last) {
 					var str = '';
 					var more = more?' '+more.join(' '):'';
-					var last = last?shortFloat(last):'';
+					var last = last?' '+shortFloat(last):'';
 					$.each(pnts, function(i, pnt) {
 						pnts[i] = shortFloat(pnt);
 					});
