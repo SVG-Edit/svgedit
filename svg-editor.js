@@ -1345,10 +1345,8 @@
 					
 					if(svgCanvas.addedNew) {
 						if(elname == 'image') {
-							var xlinkNS = "http://www.w3.org/1999/xlink";
-							var href = elem.getAttributeNS(xlinkNS, "href");
 							// Prompt for URL if not a data URL
-							if(href.indexOf('data:') !== 0) {
+							if(svgCanvas.getHref(elem).indexOf('data:') !== 0) {
 								promptImgURL();
 							}
 						} else if(elname == 'text') {
@@ -1455,9 +1453,7 @@
 							}
 						} // text
 						else if(el_name == 'image') {
-							var xlinkNS="http://www.w3.org/1999/xlink";
-							var href = elem.getAttributeNS(xlinkNS, "href");
-							setImageURL(href);
+							setImageURL(svgCanvas.getHref(elem));
 						} // image
 						else if(el_name == 'g' || el_name == 'use') {
 							$('#container_panel').show();
@@ -2908,7 +2904,9 @@
 			$('#change_image_url').click(promptImgURL);
 			
 			function promptImgURL() {
-				$.prompt(uiStrings.enterNewImgURL, default_img_url, function(url) {
+				var curhref = svgCanvas.getHref(selectedElement);
+				curhref = curhref.indexOf("data:") === 0?"":curhref;
+				$.prompt(uiStrings.enterNewImgURL, curhref, function(url) {
 					if(url) setImageURL(url);
 				});
 			}

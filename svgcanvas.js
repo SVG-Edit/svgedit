@@ -663,7 +663,7 @@ var ChangeElementCommand = this.undoCmd.changeElement = function(elem, attrs, te
 	this.oldValues = attrs;
 	for (var attr in attrs) {
 		if (attr == "#text") this.newValues[attr] = elem.textContent;
-		else if (attr == "#href") this.newValues[attr] = elem.getAttributeNS(xlinkns, "href");
+		else if (attr == "#href") this.newValues[attr] = getHref(elem);
 		else this.newValues[attr] = elem.getAttribute(attr);
 	}
 
@@ -674,7 +674,7 @@ var ChangeElementCommand = this.undoCmd.changeElement = function(elem, attrs, te
 		for(var attr in this.newValues ) {
 			if (this.newValues[attr]) {
 				if (attr == "#text") this.elem.textContent = this.newValues[attr];
-				else if (attr == "#href") this.elem.setAttributeNS(xlinkns, "xlink:href", this.newValues[attr])
+				else if (attr == "#href") setHref(this.elem, this.newValues[attr])
 				else this.elem.setAttribute(attr, this.newValues[attr]);
 			}
 			else {
@@ -716,7 +716,7 @@ var ChangeElementCommand = this.undoCmd.changeElement = function(elem, attrs, te
 		for(var attr in this.oldValues ) {
 			if (this.oldValues[attr]) {
 				if (attr == "#text") this.elem.textContent = this.oldValues[attr];
-				else if (attr == "#href") this.elem.setAttributeNS(xlinkns, "xlink:href", this.oldValues[attr]);
+				else if (attr == "#href") setHref(this.elem, this.oldValues[attr]);
 				else this.elem.setAttribute(attr, this.oldValues[attr]);
 				
 				if (attr == "stdDeviation") canvas.setBlurOffsets(this.elem.parentNode, this.oldValues[attr]);
@@ -1842,7 +1842,7 @@ var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
 	//	var svgthumb = svgdoc.createElementNS(svgns, "use");
 	//	svgthumb.setAttribute('width', '100');
 	//	svgthumb.setAttribute('height', '100');
-	//	svgthumb.setAttributeNS(xlinkns, 'href', '#svgcontent');
+	//	setHref(svgthumb, '#svgcontent');
 	//	svgroot.appendChild(svgthumb);
 
 })();
@@ -2466,7 +2466,7 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 		
 		// for some elements that have a xlink:href, ensure the URI refers to a local element
 		// (but not for links)
-		var href = node.getAttributeNS(xlinkns,"href");
+		var href = getHref(node);
 		if(href && 
 		   $.inArray(node.nodeName, ["filter", "linearGradient", "pattern", 
 									 "radialGradient", "textPath", "use"]) != -1)
@@ -2474,13 +2474,13 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 			// TODO: we simply check if the first character is a #, is this bullet-proof?
 			if (href[0] != "#") {
 				// remove the attribute (but keep the element)
-				node.setAttributeNS(xlinkns, "xlink:href", "");
+				setHref(node, "");
 				node.removeAttributeNS(xlinkns, "href");
 			}
 		}
 		
 		// Safari crashes on a <use> without a xlink:href, so we just remove the node here
-		if (node.nodeName == "use" && !node.getAttributeNS(xlinkns,"href")) {
+		if (node.nodeName == "use" && !getHref(node)) {
 			parent.removeChild(node);
 			return;
 		}
@@ -3354,7 +3354,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 //						var u = uses.length;
 //						while (u--) {
 //							var useElem = uses.item(u);
-//							if(href == useElem.getAttributeNS(xlinkns, "href")) {
+//							if(href == getHref(useElem)) {
 //								var usexlate = svgroot.createSVGTransform();
 //								usexlate.setTranslate(-tx,-ty);
 //								getTransformList(useElem).insertItemBefore(usexlate,0);
@@ -3432,7 +3432,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 							var u = uses.length;
 							while (u--) {
 								var useElem = uses.item(u);
-								if(href == useElem.getAttributeNS(xlinkns, "href")) {
+								if(href == getHref(useElem)) {
 									var usexlate = svgroot.createSVGTransform();
 									usexlate.setTranslate(-tx,-ty);
 									getTransformList(useElem).insertItemBefore(usexlate,0);
@@ -4365,7 +4365,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						"style": "pointer-events:inherit"
 					}
 				});
-				newImage.setAttributeNS(xlinkns, "xlink:href", last_good_img_url);
+				setHref(newImage, last_good_img_url);
 				preventClickDefault(newImage);
 				break;
 			case "square":
@@ -7422,7 +7422,7 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 		}
 		
 		// gradients can refer to other gradients
-		var href = el.getAttributeNS(xlinkns, "href");
+		var href = getHref(el);
 		if (href && href.indexOf('#') == 0) {
 			defelem_uses.push(href.substr(1));
 		}
@@ -7806,7 +7806,7 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 			});
 			
 			// check xlink:href now
-			var href = n.getAttributeNS(xlinkns,"href");
+			var href = getHref(n);
 			// TODO: what if an <image> or <a> element refers to an element internally?
 			if(href && 
 				$.inArray(n.nodeName, ["filter", "linearGradient", "pattern", 
@@ -7846,7 +7846,7 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 			var k = hreffers.length;
 			while (k--) {
 				var hreffer = hreffers[k];
-				hreffer.setAttributeNS(xlinkns, "xlink:href", "#"+newid);
+				setHref(hreffer, "#"+newid);
 			}
 		}
 	}
@@ -7982,7 +7982,7 @@ this.setSvgString = function(xmlString) {
 		$(svgcontent).find('image').each(function() {
 			var image = this;
 			preventClickDefault(image);
-			var val = this.getAttributeNS(xlinkns, "href");
+			var val = getHref(this);
 			if(val.indexOf('data:') === 0) {
 				// Check if an SVG-edit data URI
 				var m = val.match(/svgedit_url=(.*?);/);
@@ -8016,7 +8016,7 @@ this.setSvgString = function(xmlString) {
 		
 		// Set ref element for <use> elements
 		$(svgcontent).find('use').each(function() {
-			var id = this.getAttributeNS(xlinkns,"href").substr(1);
+			var id = getHref(this).substr(1);
 			var ref_elem = getElem(id);
 			$(this).data('ref', ref_elem);
 			if(ref_elem.tagName == 'symbol' || ref_elem.tagName == 'svg') {
@@ -8212,7 +8212,7 @@ this.importSvgString = function(xmlString) {
 		
 		var use_el = svgdoc.createElementNS(svgns, "use");
 		use_el.id = getNextId();
-		use_el.setAttributeNS(xlinkns, "xlink:href", "#" + symbol.id);
+		setHref(use_el, "#" + symbol.id);
 		findDefs().appendChild(symbol);
 		current_layer.appendChild(use_el);
 		clearSelection();
@@ -8741,6 +8741,19 @@ this.getTitle = function(elem) {
 	}
 	return '';
 }
+
+// Function: getHref
+// Returns the given element's xlink:href value
+var getHref = this.getHref = function(elem) {
+	return elem.getAttributeNS(xlinkns, "href");
+}
+
+// Function: setHref
+// Sets the given element's xlink:href value
+var setHref = this.setHref = function(elem, val) {
+	elem.setAttributeNS(xlinkns, "xlink:href", val);
+}
+
 
 // Function: setGroupTitle
 // Sets the group/SVG's title content
@@ -9596,7 +9609,7 @@ this.setImageURL = function(val) {
 	var attrs = $(elem).attr(['width', 'height']);
 	var setsize = (!attrs.width || !attrs.height);
 
-	var cur_href = elem.getAttributeNS(xlinkns, "href");
+	var cur_href = getHref(elem);
 	
 	// Do nothing if no URL change or size change
 	if(cur_href !== val) {
@@ -9605,7 +9618,7 @@ this.setImageURL = function(val) {
 
 	var batchCmd = new BatchCommand("Change Image URL");
 
-	elem.setAttributeNS(xlinkns, "xlink:href", val);
+	setHref(elem, val);
 	batchCmd.addSubCommand(new ChangeElementCommand(elem, {
 		"#href": cur_href
 	}));
@@ -9906,7 +9919,7 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 // 					}
 				
 			} else if (attr == "#href") {
-				elem.setAttributeNS(xlinkns, "xlink:href", newValue);
+				setHref(elem, newValue);
 			}
 			else elem.setAttribute(attr, newValue);
 			if (i==0)
@@ -10525,7 +10538,7 @@ this.setBackground = function(color, url) {
 				'style':'pointer-events:none'
 			});
 		}
-		bg_img.setAttributeNS(xlinkns, "xlink:href", url);
+		setHref(bg_img, url);
 		bg.appendChild(bg_img);
 	} else if(bg_img) {
 		bg_img.parentNode.removeChild(bg_img);
