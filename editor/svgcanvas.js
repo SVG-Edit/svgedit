@@ -6788,7 +6788,10 @@ var pathActions = this.pathActions = function() {
 						d_attr += "L" + round(x) + "," + round(y) + " ";
 
 						newpath.setAttribute("d", d_attr);
-
+						
+						x *= current_zoom;
+						y *= current_zoom;
+						
 						// set stretchy line to latest point
 						assignAttributes(stretchy, {
 							'x1': x,
