@@ -4200,7 +4200,14 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	//   and do nothing else
 	var mouseDown = function(evt)
 	{
-		if(evt.button === 1 || canvas.spaceKey) return;
+		console.log(evt.button);
+		if(canvas.spaceKey) return;
+		
+		var right_click = evt.button === 2;
+		if(right_click) {
+			current_mode = "select";
+		}
+		
 		root_sctm = svgcontent.getScreenCTM().inverse();
 		var pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
 			mouse_x = pt.x * current_zoom,
@@ -4242,6 +4249,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			case "select":
 				started = true;
 				current_resize_mode = "none";
+				if(right_click) started = false;
 				
 				if (mouse_target != svgroot) {
 					// if this element is not yet selected, clear selection and select it
@@ -4266,7 +4274,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						slist.insertItemBefore(svgroot.createSVGTransform(), 0);
 					}
 				}
-				else {
+				else if(!right_click){
 					clearSelection();
 					current_mode = "multiselect";
 					if (rubberBox == null) {
@@ -4849,7 +4857,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	//   this is done in when we recalculate the selected dimensions()
 	var mouseUp = function(evt)
 	{
-		if(evt.button === 1) return;
+		if(evt.button === 2) return;
 		var tempJustSelected = justSelected;
 		justSelected = null;
 		if (!started) return;
