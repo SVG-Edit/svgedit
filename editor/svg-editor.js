@@ -1472,6 +1472,8 @@
 				} // if (elem != null)
 				else if (multiselected) {
 					$('#multiselected_panel').show();
+				} else {
+					$('#cmenu_canvas li').disableContextMenu();
 				}
 				
 				// update history buttons
@@ -1493,6 +1495,9 @@
 				if ( (elem && !is_node)	|| multiselected) {
 					// update the selected elements' layer
 					$('#selLayerNames').removeAttr('disabled').val(currentLayer);
+					
+					// Enable regular menu options
+					$('#cmenu_canvas').enableContextMenuItems('#delete');
 				}
 				else {
 					$('#selLayerNames').attr('disabled', 'disabled');
@@ -1847,8 +1852,11 @@
 					}
 					on_button = false;
 				}).mousedown(function(evt) {
-					var islib = $(evt.target).closest('div.tools_flyout').length;
-					if(!islib) $('.tools_flyout:visible').fadeOut();
+// 					$(".contextMenu").hide();
+// 					console.log('cm', $(evt.target).closest('.contextMenu'));
+				
+					var islib = $(evt.target).closest('div.tools_flyout, .contextMenu').length;
+					if(!islib) $('.tools_flyout:visible,.contextMenu').fadeOut(250);
 				});
 				
 				overlay.bind('mousedown',function() {
@@ -3702,6 +3710,21 @@
 			$('#group_opacity').SpinButton({ step: 5, min: 0, max: 100, callback: changeOpacity });
 			$('#blur').SpinButton({ step: .1, min: 0, max: 10, callback: changeBlur });
 			$('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom });
+			
+			$("#workarea").contextMenu({
+					menu: 'cmenu_canvas',
+					inSpeed: 0
+				},
+				function(action, el, pos) {
+					switch ( action ) {
+						case 'delete':
+							deleteSelected();
+							break;
+					}
+			});
+			
+			$('#cmenu_canvas li').disableContextMenu();
+			$('#cmenu_canvas').enableContextMenuItems('#delete');
 			
 			window.onbeforeunload = function() { 
 				// Suppress warning if page is empty 
