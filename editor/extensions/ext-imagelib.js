@@ -17,7 +17,7 @@ svgEditor.addExtension("imagelib", function() {
 		{
 			name: 'IAN Symbol Libraries',
 			url: 'http://ian.umces.edu/symbols/catalog/svgedit/album_chooser.php',
-			description: 'Free library of 2300+ illustrations'
+			description: 'Free library of illustrations'
 		}
 	];
 	
