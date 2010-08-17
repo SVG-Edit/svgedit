@@ -1005,8 +1005,9 @@ span.zoom_tool {
 	color: #444;
 }
 
-#canvas_title {
+#canvas_title, #canvas_bg_url {
 	display: block;
+	width: 96%;
 }
 
 #svg_source_editor #svg_source_textarea {
