@@ -8125,12 +8125,20 @@ this.setSvgString = function(xmlString) {
 			});
 		}
 		
+		// identify layers
+		identifyLayers();
+		
 		// Percentage width/height, so let's base it on visible elements
 		if(percs) {
 			var bb = getStrokedBBox();
-			attrs.width = bb.width;
-			attrs.height = bb.height;
+			attrs.width = bb.width + bb.x;
+			attrs.height = bb.height + bb.y;
 		}
+		
+		// Just in case negative numbers are given or 
+		// result from the percs calculation
+		if(attrs.width <= 0) attrs.width = 100;
+		if(attrs.height <= 0) attrs.height = 100;
 		
 		content.attr(attrs);
 		this.contentW = attrs['width'];
@@ -8143,9 +8151,6 @@ this.setSvgString = function(xmlString) {
 		
 		// reset zoom
 		current_zoom = 1;
-		
-		// identify layers
-		identifyLayers();
 		
 		// reset transform lists
 		svgTransformLists = {};
