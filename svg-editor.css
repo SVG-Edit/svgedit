@@ -1217,13 +1217,18 @@ span.zoom_tool {
 /* Generic context menu styles */
 .contextMenu {
 	position: absolute;
-	width: 120px;
 	z-index: 99999;
-	border: solid 1px #CCC;
-	background: #EEE;
-	padding: 0px;
+	border: solid 1px rgba(0,0,0,.33);
+	background: rgba(255,255,255,.95);
+	padding: 5px 0;
 	margin: 0px;
 	display: none;
+	font: 14px/17px Lucida Sans, Helvetica, Verdana, sans-serif;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-moz-box-shadow: 2px 5px 10px rgba(0,0,0,.3);
+	-webkit-box-shadow: 2px 5px 10px rgba(0,0,0,.3);
+	box-shadow: 2px 5px 10px rgba(0,0,0,.3);
 }
 
 .contextMenu LI {
@@ -1233,7 +1238,9 @@ span.zoom_tool {
 }
 
 .contextMenu A {
-	color: #333;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	color: #222;
 	text-decoration: none;
 	display: block;
 	line-height: 20px;
@@ -1241,17 +1248,17 @@ span.zoom_tool {
 	background-position: 6px center;
 	background-repeat: no-repeat;
 	outline: none;
-	padding: 1px 5px;
-	padding-left: 28px;
+	padding: 0px 15px 1px 20px;
 }
 
 .contextMenu LI.hover A {
-	background-color: #FFC;
+	background-color: #2e5dea;
+	color: white;
+	cursor: default;
 }
 
 .contextMenu LI.disabled A {
-	color: #AAA;
-	cursor: default;
+	color: #999;
 }
 
 .contextMenu LI.hover.disabled A {
@@ -1259,7 +1266,9 @@ span.zoom_tool {
 }
 
 .contextMenu LI.separator {
-	border-top: solid 1px #CCC;
+	border-top: solid 1px #E3E3E3;
+	padding-top: 5px;
+	margin-top: 5px;
 }
 
 /*

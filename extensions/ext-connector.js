@@ -256,8 +256,9 @@ svgEditor.addExtension("Connector", function(S) {
 		
 		svgCanvas.moveSelectedElements = function() {
 			svgCanvas.removeFromSelection($(conn_sel).toArray());
-			mse.apply(this, arguments);
+			var cmd = mse.apply(this, arguments);
 			updateConnectors();
+			return cmd;
 		}
 		
 		se_ns = svgCanvas.getEditorNS();
