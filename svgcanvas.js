@@ -7730,7 +7730,6 @@ this.rasterExport = function() {
 	// Selector and notice
 	var issue_list = {
 		'feGaussianBlur': uiStrings.exportNoBlur,
-		'image': uiStrings.exportNoImage,
 		'foreignObject': uiStrings.exportNoforeignObject,
 		'[stroke-dasharray]': uiStrings.exportNoDashArray
 	};
