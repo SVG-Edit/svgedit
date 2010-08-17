@@ -94,8 +94,8 @@ if(jQuery)( function() {
 							});
 							
 							// When items are selected
-							$('#' + o.menu).find('A').unbind('click');
-							$('#' + o.menu).find('LI:not(.disabled) A').click( function() {
+							$('#' + o.menu).find('A').unbind('mouseup');
+							$('#' + o.menu).find('LI:not(.disabled) A').mouseup( function() {
 								$(document).unbind('click').unbind('keypress');
 								$(".contextMenu").hide();
 								// Callback
