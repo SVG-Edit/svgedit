@@ -11,11 +11,27 @@ if(!window.console) {
 	window.console.log = function(str) {};
 	window.console.dir = function(str) {};
 }
+
+// <3 IE
+if(!Array.indexOf){
+	Array.prototype.indexOf = function(obj){
+		for(var i=0; i<this.length; i++){
+			if(this[i]==obj){
+				return i;
+			}
+		}
+		return -1;
+	}
+}
+
 (function(){
 	// canvg(target, s)
 	// target: canvas element or the id of a canvas element
 	// s: svg string or url to svg file
-	this.canvg = function (target, s) {
+	// opts: optional hash of options
+	//		 ignoreMouse: true => ignore mouse events
+	//		 ignoreAnimation: true => ignore animations
+	this.canvg = function (target, s, opts) {
 		if (typeof target == 'string') {
 			target = document.getElementById(target);
 		}
@@ -30,6 +46,7 @@ if(!window.console) {
 			svg = target.svg;
 			svg.stop();
 		}
+		svg.opts = opts;
 		
 		var ctx = target.getContext('2d');
 		if (s.substr(0,1) == '<') {
@@ -43,7 +60,7 @@ if(!window.console) {
 	}
 
 	function build() {
-		var svg = {};
+		var svg = { };
 		
 		svg.FRAMERATE = 30;
 		
@@ -290,6 +307,13 @@ if(!window.console) {
 			this.angleTo = function(p) {
 				return Math.atan2(p.y - this.y, p.x - this.x);
 			}
+			
+			this.applyTransform = function(v) {
+				var xp = this.x * v[0] + this.y * v[2] + v[4];
+				var yp = this.x * v[1] + this.y * v[3] + v[5];
+				this.x = xp;
+				this.y = yp;
+			}
 		}
 		svg.CreatePoint = function(s) {
 			var a = svg.ToNumberArray(s);
@@ -389,6 +413,10 @@ if(!window.console) {
 				}
 			}
 			
+			this.isPointInBox = function(x, y) {
+				return (this.x1 <= x && x <= this.x2 && this.y1 <= y && y <= this.y2);
+			}
+			
 			this.addPoint(x1, y1);
 			this.addPoint(x2, y2);
 		}
@@ -404,6 +432,9 @@ if(!window.console) {
 				this.apply = function(ctx) {
 					ctx.translate(this.p.x || 0.0, this.p.y || 0.0);
 				}
+				this.applyToPoint = function(p) {
+					p.applyTransform([1, 0, 0, 1, this.p.x || 0.0, this.p.y || 0.0]);
+				}
 			}
 			
 			// rotate
@@ -417,6 +448,12 @@ if(!window.console) {
 					ctx.rotate(this.angle.Angle.toRadians());
 					ctx.translate(-this.cx, -this.cy);
 				}
+				this.applyToPoint = function(p) {
+					var a = this.angle.Angle.toRadians();
+					p.applyTransform([1, 0, 0, 1, this.p.x || 0.0, this.p.y || 0.0]);
+					p.applyTransform([Math.cos(a), Math.sin(a), -Math.sin(a), Math.cos(a), 0, 0]);
+					p.applyTransform([1, 0, 0, 1, -this.p.x || 0.0, -this.p.y || 0.0]);
+				}			
 			}
 			
 			this.Type.scale = function(s) {
@@ -424,6 +461,9 @@ if(!window.console) {
 				this.apply = function(ctx) {
 					ctx.scale(this.p.x || 1.0, this.p.y || this.p.x || 1.0);
 				}
+				this.applyToPoint = function(p) {
+					p.applyTransform([this.p.x || 0.0, 0, 0, this.p.y || 0.0, 0, 0]);
+				}				
 			}
 			
 			this.Type.matrix = function(s) {
@@ -431,6 +471,9 @@ if(!window.console) {
 				this.apply = function(ctx) {
 					ctx.transform(this.m[0], this.m[1], this.m[2], this.m[3], this.m[4], this.m[5]);
 				}
+				this.applyToPoint = function(p) {
+					p.applyTransform(this.m);
+				}					
 			}
 			
 			this.Type.SkewBase = function(s) {
@@ -455,9 +498,16 @@ if(!window.console) {
 			this.Type.skewY.prototype = new this.Type.SkewBase;
 		
 			this.transforms = [];
+			
 			this.apply = function(ctx) {
 				for (var i=0; i<this.transforms.length; i++) {
 					this.transforms[i].apply(ctx);
+				}
+			}
+			
+			this.applyToPoint = function(p) {
+				for (var i=0; i<this.transforms.length; i++) {
+					this.transforms[i].applyToPoint(p);
 				}
 			}
 			
@@ -468,6 +518,43 @@ if(!window.console) {
 				var transform = eval('new this.Type.' + type + '(s)');
 				this.transforms.push(transform);
 			}
+		}
+		
+		// aspect ratio
+		svg.AspectRatio = function(ctx, aspectRatio, width, desiredWidth, height, desiredHeight, minX, minY, refX, refY) {
+			// aspect ratio - http://www.w3.org/TR/SVG/coords.html#PreserveAspectRatioAttribute
+			aspectRatio = svg.compressSpaces(aspectRatio);
+			aspectRatio = aspectRatio.replace(/^defer\s/,''); // ignore defer
+			var align = aspectRatio.split(' ')[0] || 'xMidYMid';
+			var meetOrSlice = aspectRatio.split(' ')[1] || 'meet';					
+	
+			// calculate scale
+			var scaleX = width / desiredWidth;
+			var scaleY = height / desiredHeight;
+			var scaleMin = Math.min(scaleX, scaleY);
+			var scaleMax = Math.max(scaleX, scaleY);
+			if (meetOrSlice == 'meet') { desiredWidth *= scaleMin; desiredHeight *= scaleMin; }
+			if (meetOrSlice == 'slice') { desiredWidth *= scaleMax; desiredHeight *= scaleMax; }	
+			
+			refX = new svg.Property('refX', refX);
+			refY = new svg.Property('refY', refY);
+			if (refX.hasValue() && refY.hasValue()) {				
+				ctx.translate(-scaleMin * refX.Length.toPixels('x'), -scaleMin * refY.Length.toPixels('y'));
+			} 
+			else {					
+				// align
+				if (align.match(/^xMid/) && ((meetOrSlice == 'meet' && scaleMin == scaleY) || (meetOrSlice == 'slice' && scaleMax == scaleY))) ctx.translate(width / 2.0 - desiredWidth / 2.0, 0); 
+				if (align.match(/YMid$/) && ((meetOrSlice == 'meet' && scaleMin == scaleX) || (meetOrSlice == 'slice' && scaleMax == scaleX))) ctx.translate(0, height / 2.0 - desiredHeight / 2.0); 
+				if (align.match(/^xMax/) && ((meetOrSlice == 'meet' && scaleMin == scaleY) || (meetOrSlice == 'slice' && scaleMax == scaleY))) ctx.translate(width - desiredWidth, 0); 
+				if (align.match(/YMax$/) && ((meetOrSlice == 'meet' && scaleMin == scaleX) || (meetOrSlice == 'slice' && scaleMax == scaleX))) ctx.translate(0, height - desiredHeight); 
+			}
+			
+			// scale
+			if (meetOrSlice == 'meet') ctx.scale(scaleMin, scaleMin); 
+			if (meetOrSlice == 'slice') ctx.scale(scaleMax, scaleMax); 	
+			
+			// translate
+			ctx.translate(minX == null ? 0 : -minX, minY == null ? 0 : -minY);			
 		}
 		
 		// elements
@@ -505,6 +592,9 @@ if(!window.console) {
 			
 			// base render
 			this.render = function(ctx) {
+				// don't render display=none
+				if (this.attribute('display').value == 'none') return;
+			
 				ctx.save();
 				this.setContext(ctx);
 				this.renderChildren(ctx);
@@ -581,10 +671,14 @@ if(!window.console) {
 							this.styles[name] = new svg.Property(name, value);
 						}
 					}
+				}	
+
+				// add id
+				if (this.attribute('id').hasValue()) {
+					if (svg.Definitions[this.attribute('id').value] == null) {
+						svg.Definitions[this.attribute('id').value] = this;
+					}
 				}
-				
-				// set id
-				if (this.attribute('id').hasValue()) svg.Definitions[this.attribute('id').value] = this;				
 			}
 		}
 		
@@ -660,6 +754,7 @@ if(!window.console) {
 			
 			this.renderChildren = function(ctx) {
 				this.path(ctx);
+				svg.Mouse.checkPath(this, ctx);
 				if (ctx.fillStyle != '') ctx.fill();
 				if (ctx.strokeStyle != '') ctx.stroke();
 				
@@ -743,36 +838,17 @@ if(!window.console) {
 					width = viewBox[2];
 					height = viewBox[3];
 					
-					// aspect ratio - http://www.w3.org/TR/SVG/coords.html#PreserveAspectRatioAttribute
-					var preserveAspectRatio = svg.compressSpaces(this.attribute('preserveAspectRatio').value);
-					preserveAspectRatio = preserveAspectRatio.replace(/^defer\s/,''); // ignore defer
-					var align = preserveAspectRatio.split(' ')[0] || 'xMidYMid';
-					var meetOrSlice = preserveAspectRatio.split(' ')[1] || 'meet';					
-					
-					// calculate scale
-					var scaleX = svg.ViewPort.width() / width;
-					var scaleY = svg.ViewPort.height() / height;
-					var scaleMin = Math.min(scaleX, scaleY);
-					var scaleMax = Math.max(scaleX, scaleY);
-					if (meetOrSlice == 'meet') { width *= scaleMin; height *= scaleMin; }
-					if (meetOrSlice == 'slice') { width *= scaleMax; height *= scaleMax; }	
-					
-					if (this.attribute('refX').hasValue() && this.attribute('refY').hasValue()) {
-						ctx.translate(-scaleMin * this.attribute('refX').Length.toPixels('x'), -scaleMin * this.attribute('refY').Length.toPixels('y'));
-					} 
-					else {					
-						// align
-						if (align.match(/^xMid/) && ((meetOrSlice == 'meet' && scaleMin == scaleY) || (meetOrSlice == 'slice' && scaleMax == scaleY))) ctx.translate(svg.ViewPort.width() / 2.0 - width / 2.0, 0); 
-						if (align.match(/YMid$/) && ((meetOrSlice == 'meet' && scaleMin == scaleX) || (meetOrSlice == 'slice' && scaleMax == scaleX))) ctx.translate(0, svg.ViewPort.height() / 2.0 - height / 2.0); 
-						if (align.match(/^xMax/) && ((meetOrSlice == 'meet' && scaleMin == scaleY) || (meetOrSlice == 'slice' && scaleMax == scaleY))) ctx.translate(svg.ViewPort.width() - width, 0); 
-						if (align.match(/YMax$/) && ((meetOrSlice == 'meet' && scaleMin == scaleX) || (meetOrSlice == 'slice' && scaleMax == scaleX))) ctx.translate(0, svg.ViewPort.height() - height); 
-					}
-					
-					// scale
-					if (meetOrSlice == 'meet') ctx.scale(scaleMin, scaleMin); 
-					if (meetOrSlice == 'slice') ctx.scale(scaleMax, scaleMax); 	
-					ctx.translate(-minX, -minY);	
-					
+					svg.AspectRatio(ctx,
+									this.attribute('preserveAspectRatio').value, 
+									svg.ViewPort.width(), 
+									width,
+									svg.ViewPort.height(),
+									height,
+									minX,
+									minY,
+									this.attribute('refX').value,
+									this.attribute('refY').value);
+										
 					svg.ViewPort.RemoveCurrent();	
 					svg.ViewPort.SetCurrent(viewBox[2], viewBox[3]);						
 				}				
@@ -969,6 +1045,7 @@ if(!window.console) {
 				this.reset = function() {
 					this.i = -1;
 					this.command = '';
+					this.previousCommand = '';
 					this.control = new svg.Point(0, 0);
 					this.current = new svg.Point(0, 0);
 					this.points = [];
@@ -987,7 +1064,7 @@ if(!window.console) {
 				this.isRelativeCommand = function() {
 					return this.command == this.command.toLowerCase();
 				}
-				
+							
 				this.getToken = function() {
 					this.i = this.i + 1;
 					return this.tokens[this.i];
@@ -998,6 +1075,7 @@ if(!window.console) {
 				}
 				
 				this.nextCommand = function() {
+					this.previousCommand = this.command;
 					this.command = this.getToken();
 				}				
 				
@@ -1019,8 +1097,13 @@ if(!window.console) {
 				}
 				
 				this.getReflectedControlPoint = function() {
+					if (this.previousCommand.toLowerCase() != 'c' && this.previousCommand.toLowerCase() != 's') {
+						return this.current;
+					}
+					
+					// reflect point
 					var p = new svg.Point(2 * this.current.x - this.control.x, 2 * this.current.y - this.control.y);					
-					return this.makeAbsolute(p);
+					return p;
 				}
 				
 				this.makeAbsolute = function(p) {
@@ -1146,7 +1229,6 @@ if(!window.console) {
 							if (ctx != null) ctx.quadraticCurveTo(cntrl.x, cntrl.y, cp.x, cp.y);
 						}					
 					}
-
 					else if (pp.command.toUpperCase() == 'A') {
 						while (!pp.isCommandOrEnd()) {
 						    var curr = pp.current;
@@ -1304,7 +1386,7 @@ if(!window.console) {
 		// definitions element
 		svg.Element.defs = function(node) {
 			this.base = svg.Element.ElementBase;
-			this.base(node);			
+			this.base(node);	
 			
 			this.render = function(ctx) {
 				// NOOP
@@ -1324,15 +1406,20 @@ if(!window.console) {
 				var child = this.children[i];
 				this.stops.push(child);
 			}	
-
+			
 			this.getGradient = function() {
 				// OVERRIDE ME!
 			}			
 
 			this.createGradient = function(ctx, element) {
+				var stopsContainer = this;
+				if (this.attribute('xlink:href').hasValue()) {
+					stopsContainer = this.attribute('xlink:href').Definition.getDefinition();
+				}
+			
 				var g = this.getGradient(ctx, element);
-				for (var i=0; i<this.stops.length; i++) {
-					g.addColorStop(this.stops[i].offset, this.stops[i].color);
+				for (var i=0; i<stopsContainer.stops.length; i++) {
+					g.addColorStop(stopsContainer.stops[i].offset, stopsContainer.stops[i].color);
 				}
 				return g;				
 			}
@@ -1360,7 +1447,15 @@ if(!window.console) {
 					? bb.y() + bb.height() * this.attribute('y2').numValue()
 					: this.attribute('y2').Length.toPixels('y'));
 				
-				return ctx.createLinearGradient(x1, y1, x2, y2);
+				var p1 = new svg.Point(x1, y1);
+				var p2 = new svg.Point(x2, y2);
+				if (this.attribute('gradientTransform').hasValue()) { 
+					var transform = new svg.Transform(this.attribute('gradientTransform').value);
+					transform.applyToPoint(p1);
+					transform.applyToPoint(p2);
+				}
+				
+				return ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
 			}
 		}
 		svg.Element.linearGradient.prototype = new svg.Element.GradientBase;
@@ -1397,7 +1492,15 @@ if(!window.console) {
 					? (bb.width() + bb.height()) / 2.0 * this.attribute('r').numValue()
 					: this.attribute('r').Length.toPixels());
 				
-				return ctx.createRadialGradient(fx, fy, 0, cx, cy, r);
+				var c = new svg.Point(cx, cy);
+				var f = new svg.Point(fx, fy);
+				if (this.attribute('gradientTransform').hasValue()) { 
+					var transform = new svg.Transform(this.attribute('gradientTransform').value);
+					transform.applyToPoint(c);
+					transform.applyToPoint(f);
+				}				
+				
+				return ctx.createRadialGradient(f.x, f.y, 0, c.x, c.y, r);
 			}
 		}
 		svg.Element.radialGradient.prototype = new svg.Element.GradientBase;
@@ -1555,10 +1658,26 @@ if(!window.console) {
 				var x = this.attribute('x').Length.toPixels('x');
 				var y = this.attribute('y').Length.toPixels('y');
 				for (var i=0; i<this.children.length; i++) {
-					this.children[i].x = x;
-					this.children[i].y = y;
-					this.children[i].render(ctx);
-					x += this.children[i].measureText(ctx);
+					var child = this.children[i];
+				
+					if (child.attribute('x').hasValue()) {
+						child.x = child.attribute('x').Length.toPixels('x');
+					}
+					else {
+						if (child.attribute('dx').hasValue()) x += child.attribute('dx').Length.toPixels('x');
+						child.x = x;
+						x += child.measureText(ctx);
+					}
+					
+					if (child.attribute('y').hasValue()) {
+						child.y = child.attribute('y').Length.toPixels('y');
+					}
+					else {
+						if (child.attribute('dy').hasValue()) y += child.attribute('dy').Length.toPixels('y');
+						child.y = y;
+					}	
+					
+					child.render(ctx);
 				}
 			}
 		}
@@ -1578,7 +1697,9 @@ if(!window.console) {
 			}
 			
 			this.measureText = function(ctx) {
-				return ctx.measureText(svg.compressSpaces(this.getText())).width;
+				var textToMeasure = svg.compressSpaces(this.getText());
+				if (!ctx.measureText) return textToMeasure.length * 10;
+				return ctx.measureText(textToMeasure).width;
 			}
 		}
 		svg.Element.TextElementBase.prototype = new svg.Element.RenderedElementBase;
@@ -1608,6 +1729,96 @@ if(!window.console) {
 		}
 		svg.Element.tref.prototype = new svg.Element.TextElementBase;		
 		
+		// a element
+		svg.Element.a = function(node) {
+			this.base = svg.Element.TextElementBase;
+			this.base(node);
+			
+			this.hasText = true;
+			for (var i=0; i<node.childNodes.length; i++) {
+				if (node.childNodes[i].nodeType != 3) this.hasText = false;
+			}
+			
+			// this might contain text
+			this.text = this.hasText ? node.childNodes[0].nodeValue : '';
+			this.getText = function() {
+				return this.text;
+			}		
+
+			this.baseRenderChildren = this.renderChildren;
+			this.renderChildren = function(ctx) {
+				if (this.hasText) {
+					// render as text element
+					this.baseRenderChildren(ctx);
+					var fontSize = new svg.Property('fontSize', svg.Font.Parse(svg.ctx.font).fontSize);
+					svg.Mouse.checkBoundingBox(this, new svg.BoundingBox(this.x, this.y - fontSize.Length.toPixels('y'), this.x + this.measureText(ctx), this.y));					
+				}
+				else {
+					// render as temporary group
+					var g = new svg.Element.g();
+					g.children = this.children;
+					g.parent = this;
+					g.render(ctx);
+				}
+			}
+			
+			this.onclick = function() {
+				window.open(this.attribute('xlink:href').value);
+			}
+			
+			this.onmousemove = function() {
+				svg.ctx.canvas.style.cursor = 'pointer';
+			}
+		}
+		svg.Element.a.prototype = new svg.Element.TextElementBase;		
+		
+		// image element
+		svg.Element.image = function(node) {
+			this.base = svg.Element.RenderedElementBase;
+			this.base(node);
+			
+			this.img = document.createElement('img');
+			this.loaded = false;
+			
+			var that = this;
+			this.renderChildren = function(ctx) {
+				if (!this.loaded) {
+					var src = this.attribute('xlink:href').value;
+					this.img.onload = function() {
+						that.loaded = true;
+						that.drawImage(ctx);
+					}
+					this.img.src = src;					
+				}
+				else {
+					this.drawImage(ctx);
+				}
+			}
+			
+			this.drawImage = function(ctx) {
+				var x = this.attribute('x').Length.toPixels('x');
+				var y = this.attribute('y').Length.toPixels('y');
+				
+				var width = this.attribute('width').Length.toPixels('x');
+				var height = this.attribute('height').Length.toPixels('y');			
+				if (width == 0 || height == 0) return;
+			
+				ctx.save();
+				ctx.translate(x, y);
+				svg.AspectRatio(ctx,
+								this.attribute('preserveAspectRatio').value,
+								width,
+								this.img.width,
+								height,
+								this.img.height,
+								0,
+								0);	
+				ctx.drawImage(this.img, 0, 0);			
+				ctx.restore();
+			}
+		}
+		svg.Element.image.prototype = new svg.Element.RenderedElementBase;
+		
 		// group element
 		svg.Element.g = function(node) {
 			this.base = svg.Element.RenderedElementBase;
@@ -1621,14 +1832,7 @@ if(!window.console) {
 			this.base(node);
 		}
 		svg.Element.symbol.prototype = new svg.Element.RenderedElementBase;		
-		
-		// a element
-		svg.Element.a = function(node) {
-			this.base = svg.Element.RenderedElementBase;
-			this.base(node);
-		}
-		svg.Element.a.prototype = new svg.Element.RenderedElementBase;
-		
+			
 		// style element
 		svg.Element.style = function(node) { 
 			this.base = svg.Element.ElementBase;
@@ -1658,7 +1862,6 @@ if(!window.console) {
 							svg.Styles[cssClass] = props;
 						}
 					}
-
 				}
 			}
 		}
@@ -1676,8 +1879,17 @@ if(!window.console) {
 				if (this.attribute('y').hasValue()) ctx.translate(0, this.attribute('y').Length.toPixels('y'));
 			}
 			
+			this.getDefinition = function() {
+				return this.attribute('xlink:href').Definition.getDefinition();
+			}
+			
+			this.path = function(ctx) {
+				var element = this.getDefinition();
+				if (element != null) element.path(ctx);
+			}
+			
 			this.renderChildren = function(ctx) {
-				var element = this.attribute('xlink:href').Definition.getDefinition();
+				var element = this.getDefinition();
 				if (element != null) element.render(ctx);
 			}
 		}
@@ -1732,6 +1944,28 @@ if(!window.console) {
 		// load from xml
 		svg.loadXml = function(ctx, xml) {
 			svg.init(ctx);
+			
+			var mapXY = function(p) {
+				var e = ctx.canvas;
+				while (e) {
+					p.x -= e.offsetLeft;
+					p.y -= e.offsetTop;
+					e = e.offsetParent;
+				}
+				if (window.scrollX) p.x += window.scrollX;
+				if (window.scrollY) p.y += window.scrollY;
+				return p;
+			}
+			
+			// bind mouse
+			ctx.canvas.onclick = function(e) {
+				var p = mapXY(new svg.Point(e != null ? e.clientX : event.clientX, e != null ? e.clientY : event.clientY));
+				svg.Mouse.onclick(p.x, p.y);
+			}
+			ctx.canvas.onmousemove = function(e) {
+				var p = mapXY(new svg.Point(e != null ? e.clientX : event.clientX, e != null ? e.clientY : event.clientY));
+				svg.Mouse.onmousemove(p.x, p.y);
+			}
 		
 			var dom = svg.parseXml(xml);
 			var e = svg.CreateElement(dom.documentElement);
@@ -1749,16 +1983,25 @@ if(!window.console) {
 			ctx.clearRect(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
 			e.render(ctx);
 			svg.intervalID = setInterval(function() { 
-				// update animations
 				var needUpdate = false;
-				for (var i=0; i<svg.Animations.length; i++) {
-					needUpdate = needUpdate | svg.Animations[i].update(1000 / svg.FRAMERATE);
+			
+				// need update from mouse events?
+				if (svg.opts == null || svg.opts['ignoreMouse'] != true) {
+					needUpdate = needUpdate | svg.Mouse.hasEvents();
 				}
 			
+				// need update from animations?
+				if (svg.opts == null || svg.opts['ignoreAnimation'] != true) {
+					for (var i=0; i<svg.Animations.length; i++) {
+						needUpdate = needUpdate | svg.Animations[i].update(1000 / svg.FRAMERATE);
+					}
+				}
+
 				// render if needed
 				if (needUpdate) {
 					ctx.clearRect(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
 					e.render(ctx);
+					svg.Mouse.runEvents(); // run and clear our events
 				}
 			}, 1000 / svg.FRAMERATE);
 		}
@@ -1768,6 +2011,56 @@ if(!window.console) {
 				clearInterval(svg.intervalID);
 			}
 		}
+		
+		svg.Mouse = new (function() {
+			this.events = [];
+			this.hasEvents = function() { return this.events.length != 0; }
+		
+			this.onclick = function(x, y) {
+				this.events.push({ type: 'onclick', x: x, y: y, 
+					run: function(e) { if (e.onclick) e.onclick(); }
+				});
+			}
+			
+			this.onmousemove = function(x, y) {
+				this.events.push({ type: 'onmousemove', x: x, y: y,
+					run: function(e) { if (e.onmousemove) e.onmousemove(); }
+				});
+			}			
+			
+			this.eventElements = [];
+			
+			this.checkPath = function(element, ctx) {
+				for (var i=0; i<this.events.length; i++) {
+					var e = this.events[i];
+					if (ctx.isPointInPath && ctx.isPointInPath(e.x, e.y)) this.eventElements[i] = element;
+				}
+			}
+			
+			this.checkBoundingBox = function(element, bb) {
+				for (var i=0; i<this.events.length; i++) {
+					var e = this.events[i];
+					if (bb.isPointInBox(e.x, e.y)) this.eventElements[i] = element;
+				}			
+			}
+			
+			this.runEvents = function() {
+				svg.ctx.canvas.style.cursor = '';
+				
+				for (var i=0; i<this.events.length; i++) {
+					var e = this.events[i];
+					var element = this.eventElements[i];
+					while (element) {
+						e.run(element);
+						element = element.parent;
+					}
+				}		
+			
+				// done running, clear
+				this.events = []; 
+				this.eventElements = [];
+			}
+		});
 		
 		return svg;
 	}

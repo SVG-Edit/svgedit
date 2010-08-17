@@ -578,24 +578,25 @@
 				c.width = svgCanvas.contentW;
 				c.height = svgCanvas.contentH;
 				canvg(c, data.svg);
-				var datauri = c.toDataURL('image/png');
-				exportWindow.location.href = datauri;
-				
-				var done = $.pref('export_notice_done');
-				if(done !== "all") {
-					var note = uiStrings.saveFromBrowser.replace('%s', 'PNG');
-					
-					// Check if there's issues
-					if(issues.length) {
-						var pre = "\n \u2022 ";
-						note += ("\n\n" + uiStrings.noteTheseIssues + pre + issues.join(pre));
-					} 
-					
-					// Note that this will also prevent the notice even though new issues may appear later.
-					// May want to find a way to deal with that without annoying the user
-					$.pref('export_notice_done', 'all'); 
-					exportWindow.alert(note);
-				}
+				setTimeout(function() {
+					var datauri = c.toDataURL('image/png');
+					exportWindow.location.href = datauri;
+					var done = $.pref('export_notice_done');
+					if(done !== "all") {
+						var note = uiStrings.saveFromBrowser.replace('%s', 'PNG');
+						
+						// Check if there's issues
+						if(issues.length) {
+							var pre = "\n \u2022 ";
+							note += ("\n\n" + uiStrings.noteTheseIssues + pre + issues.join(pre));
+						} 
+						
+						// Note that this will also prevent the notice even though new issues may appear later.
+						// May want to find a way to deal with that without annoying the user
+						$.pref('export_notice_done', 'all'); 
+						exportWindow.alert(note);
+					}
+				},1000);
 			};
 			
 			// called when we've selected a different element
