@@ -442,6 +442,7 @@
 				Utils = svgCanvas.Utils,
 				default_img_url = curConfig.imgPath + "logo.png",
 				workarea = $("#workarea"),
+				canv_menu = $("#cmenu_canvas"),
 				show_save_warning = false, 
 				exportWindow = null, 
 				tool_scale = 1;
@@ -1473,7 +1474,7 @@
 				else if (multiselected) {
 					$('#multiselected_panel').show();
 				} else {
-					$('#cmenu_canvas li').disableContextMenu();
+					$('#cmenu_canvas li').disableContextMenuItems('#delete,#cut,#copy');
 				}
 				
 				// update history buttons
@@ -1497,7 +1498,7 @@
 					$('#selLayerNames').removeAttr('disabled').val(currentLayer);
 					
 					// Enable regular menu options
-					$('#cmenu_canvas').enableContextMenuItems('#delete');
+					canv_menu.enableContextMenuItems('#delete,#cut,#copy');
 				}
 				else {
 					$('#selLayerNames').attr('disabled', 'disabled');
@@ -2201,6 +2202,18 @@
 				}
 			};
 		
+			var cutSelected = function() {
+				if (selectedElement != null || multiselected) {
+					svgCanvas.cutSelectedElements();
+				}
+			};
+			
+			var copySelected = function() {
+				if (selectedElement != null || multiselected) {
+					svgCanvas.copySelectedElements();
+				}
+			};
+			
 			var moveToTopSelected = function() {
 				if (selectedElement != null) {
 					svgCanvas.moveToTopSelectedElement();
@@ -3720,11 +3733,31 @@
 						case 'delete':
 							deleteSelected();
 							break;
+						case 'cut':
+							cutSelected();
+							break;
+						case 'copy':
+							copySelected();
+							break;
+						case 'paste':
+							svgCanvas.pasteElements();
+							break;
+						case 'paste_in_place':
+							svgCanvas.pasteElements('in_place');
+							break;
+					}
+					
+					if(svgCanvas.clipBoard.length) {
+						canv_menu.enableContextMenuItems('#paste,#paste_in_place');
 					}
 			});
 			
+			$('.contextMenu li').mousedown(function(ev) {
+				ev.preventDefault();
+			})
+			
 			$('#cmenu_canvas li').disableContextMenu();
-			$('#cmenu_canvas').enableContextMenuItems('#delete');
+			canv_menu.enableContextMenuItems('#delete,#cut,#copy');
 			
 			window.onbeforeunload = function() { 
 				// Suppress warning if page is empty 

@@ -1935,7 +1935,13 @@ var cur_shape = all_properties.shape,
 	curBBoxes = [],
 	
 	// Object to contain all included extensions
-	extensions = {};
+	extensions = {},
+	
+	// Canvas point for the most recent right click
+	lastClickPoint = null;
+
+// Clipboard for cut, copy&pasted elements
+canvas.clipBoard = [];
 
 // Should this return an array by default, so extension results aren't overwritten?
 var runExtensions = this.runExtensions = function(action, vars, returnArray) {
@@ -4200,19 +4206,20 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	//   and do nothing else
 	var mouseDown = function(evt)
 	{
-		console.log(evt.button);
 		if(canvas.spaceKey) return;
 		
 		var right_click = evt.button === 2;
-		if(right_click) {
-			current_mode = "select";
-		}
 		
 		root_sctm = svgcontent.getScreenCTM().inverse();
 		var pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
 			mouse_x = pt.x * current_zoom,
 			mouse_y = pt.y * current_zoom;
 		evt.preventDefault();
+
+		if(right_click) {
+			current_mode = "select";
+			lastClickPoint = pt;
+		}
 		
 		// This would seem to be unnecessary...
 // 		if($.inArray(current_mode, ['select', 'resize']) == -1) {
@@ -10029,6 +10036,87 @@ this.deleteSelectedElements = function() {
 	call("changed", selectedCopy);
 	clearSelection();
 };
+
+// Function: cutSelectedElements
+// Removes all selected elements from the DOM and adds the change to the 
+// history stack. Remembers removed elements on the clipboard
+
+// TODO: Combine similar code with deleteSelectedElements
+this.cutSelectedElements = function() {
+	var batchCmd = new BatchCommand("Cut Elements");
+	var len = selectedElements.length;
+	var selectedCopy = []; //selectedElements is being deleted
+	for (var i = 0; i < len; ++i) {
+		var selected = selectedElements[i];
+		if (selected == null) break;
+
+		var parent = selected.parentNode;
+		var t = selected;
+		// this will unselect the element and remove the selectedOutline
+		selectorManager.releaseSelector(t);
+		var elem = parent.removeChild(t);
+		selectedCopy.push(selected) //for the copy
+		selectedElements[i] = null;
+		batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
+	}
+	if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
+	call("changed", selectedCopy);
+	clearSelection();
+	
+	canvas.clipBoard = selectedCopy;
+};
+
+// Function: copySelectedElements
+// Remembers the current selected elements on the clipboard
+this.copySelectedElements = function() {
+	canvas.clipBoard = $.merge([], selectedElements);
+};
+
+this.pasteElements = function(type) {
+	var cb = canvas.clipBoard;
+	var len = cb.length;
+	if(!len) return;
+	
+	var pasted = [];
+	var batchCmd = new BatchCommand('Paste elements');
+	
+	// Move elements to lastClickPoint
+
+	while (len--) {
+		var elem = cb[len];
+		if(!elem) continue;
+		var copy = copyElem(elem);
+
+		// See if elem with elem ID is in the DOM already
+		if(!getElem(elem.id)) copy.id = elem.id;
+		
+		pasted.push(copy);
+		current_layer.appendChild(copy);
+		batchCmd.addSubCommand(new InsertElementCommand(copy));
+	}
+	
+	clearSelection(true);
+	addToSelection(pasted);
+	
+	if(type !== 'in_place') {
+		var bbox = getStrokedBBox(pasted);
+		var cx = lastClickPoint.x - (bbox.x + bbox.width/2),
+			cy = lastClickPoint.y - (bbox.y + bbox.height/2),
+			dx = [],
+			dy = [];
+	
+		$.each(pasted, function(i, item) {
+			dx.push(cx);
+			dy.push(cy);
+		});
+		
+		var cmd = canvas.moveSelectedElements(dx, dy, false);
+		batchCmd.addSubCommand(cmd);
+	}
+	
+	addCommandToHistory(batchCmd);
+	call("changed", pasted);
+}
 
 // Function: groupSelectedElements
 // Wraps all the selected elements in a group (g) element
