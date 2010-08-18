@@ -472,7 +472,7 @@
 					if(type == 'prompt') {
 						var input = $('<input type="text">').prependTo(btn_holder);
 						input.val(defText || '');
-						input.bind('keydown', 'return', function() {ok.click();});
+						input.bind('keyup', 'return', function() {ok.click();});
 					}
 					
 					if(type == 'process') {
@@ -2664,7 +2664,6 @@
 				if(size == curPrefs.size && !force) return;
 // 				return;
 // 				var elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
-				console.log('size', size);
 				
 				var sel_toscale = '#tools_top .toolset, #editor_panel > *, #history_panel > *,\
 				#main_button, #tools_left > *, #path_node_panel > *, #multiselected_panel > *,\
@@ -3120,7 +3119,7 @@
 			
 			// Test for embedImage support (use timeout to not interfere with page load)
 			setTimeout(function() {
-				svgCanvas.embedImage('images/logo.png', function(datauri) {
+				svgCanvas.embedImage(curConfig.imgPath + 'logo.png', function(datauri) {
 					if(!datauri) {
 						// Disable option
 						$('#image_save_opts [value=embed]').attr('disabled','disabled');
