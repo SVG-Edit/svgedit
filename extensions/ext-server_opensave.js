@@ -43,32 +43,36 @@ svgEditor.addExtension("server_opensave", {
 				c.width = svgCanvas.contentW;
 				c.height = svgCanvas.contentH;
 				canvg(c, data.svg);
-				var datauri = c.toDataURL('image/png');
 				
-				var uiStrings = svgEditor.uiStrings;
-				var note = '';
-				
-				// Check if there's issues
-				if(issues.length) {
-					var pre = "\n \u2022 ";
-					note += ("\n\n" + pre + issues.join(pre));
-				} 
-				
-				if(note.length) {
-					alert(note);
-				}
-				
-				var title = svgCanvas.getDocumentTitle();
-				var filename = title.replace(/[^a-z0-9\.\_\-]+/gi, '_');
-				
-				var form = $('<form>').attr({
-					method: 'post',
-					action: save_png_action,
-					target: 'output_frame'
-				})	.append('<input type="hidden" name="output_png" value="' + datauri + '">')
-					.append('<input type="hidden" name="filename" value="' + filename + '">')
-					.appendTo('body')
-					.submit().remove();
+				// Timeout to allow canvg to run a bit
+				setTimeout(function() {
+					var datauri = c.toDataURL('image/png');
+					
+					var uiStrings = svgEditor.uiStrings;
+					var note = '';
+					
+					// Check if there's issues
+					if(issues.length) {
+						var pre = "\n \u2022 ";
+						note += ("\n\n" + pre + issues.join(pre));
+					} 
+					
+					if(note.length) {
+						alert(note);
+					}
+					
+					var title = svgCanvas.getDocumentTitle();
+					var filename = title.replace(/[^a-z0-9\.\_\-]+/gi, '_');
+					
+					var form = $('<form>').attr({
+						method: 'post',
+						action: save_png_action,
+						target: 'output_frame'
+					})	.append('<input type="hidden" name="output_png" value="' + datauri + '">')
+						.append('<input type="hidden" name="filename" value="' + filename + '">')
+						.appendTo('body')
+						.submit().remove();
+				}, 1000);
 	
 				
 			}
