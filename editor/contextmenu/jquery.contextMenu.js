@@ -36,7 +36,7 @@ if(jQuery)( function() {
 					$(this).mouseup( function(e) {
 						var srcElement = $(this);
 						$(this).unbind('mouseup');
-						if( evt.button == 2 ) {
+						if( evt.button == 2 || o.allowLeft) {
 							e.stopPropagation();
 							// Hide context menus that may be showing
 							$(".contextMenu").hide();
@@ -51,8 +51,8 @@ if(jQuery)( function() {
 							var x_off = $(window).width() - menu.width(), 
 								y_off = $(window).height() - menu.height();
 							
-							if(x > x_off) x = x_off-5;
-							if(y > y_off) y = y_off-5;
+							if(x > x_off) x = x_off-15;
+							if(y > y_off) y = y_off-15;
 							
 							// Show the menu
 							$(document).unbind('click');
