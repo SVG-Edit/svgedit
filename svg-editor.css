@@ -190,7 +190,7 @@
 	padding: 0px;
 	padding-left: 2px;
 	padding-right: 2px;
-	width: 106px;
+	width: 123px;
 	height: 20px;
 	border-right: 1px solid #FFFFFF;
 	border-bottom: 1px solid #FFFFFF;
@@ -212,6 +212,10 @@
 	margin-right: 3px;
 }
 
+#svg_editor .layer_button:last-child {
+	margin-right: 0;
+}
+
 #svg_editor .layer_buttonpressed {
 	width: 14px;
 	height: 14px;
@@ -226,7 +230,7 @@
 #svg_editor #layerlist {
 	margin: 1px;
 	padding: 0px;
-	width: 110px;
+	width: 127px;
 	border-collapse: collapse;	
 	border: 1px solid #808080;
 	background-color: #FFFFFF;

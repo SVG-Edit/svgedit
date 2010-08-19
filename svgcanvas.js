@@ -826,7 +826,7 @@ var RemoveElementCommand = this.undoCmd.removeElement = function(elem, parent, t
 			delete svgTransformLists[this.elem.id];
 		}
 
-		this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); 
+		this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling);
 		if (this.parent == svgcontent) {
 			identifyLayers();
 		}		
@@ -8344,6 +8344,36 @@ this.createLayer = function(name) {
 	call("changed", [new_layer]);
 };
 
+// Function: cloneLayer
+// Creates a new top-level layer in the drawing with the given name, copies all the current layer's contents
+// to it, and then clears the selection  This function then calls the 'changed' handler.
+// This is an undoable action.
+//
+// Parameters:
+// name - The given name
+this.cloneLayer = function(name) {
+	var batchCmd = new BatchCommand("Duplicate Layer");
+	var new_layer = svgdoc.createElementNS(svgns, "g");
+	var layer_title = svgdoc.createElementNS(svgns, "title");
+	layer_title.textContent = name;
+	new_layer.appendChild(layer_title);
+	$(current_layer).after(new_layer);
+	var childs = current_layer.childNodes;
+	for(var i = 0; i < childs.length; i++) {
+		var ch = childs[i];
+		if(ch.localName == 'title') continue;
+		new_layer.appendChild(copyElem(ch));
+	}
+	
+	clearSelection();
+	identifyLayers();
+
+	batchCmd.addSubCommand(new InsertElementCommand(new_layer));
+	addCommandToHistory(batchCmd);
+	canvas.setCurrentLayer(name);
+	call("changed", [new_layer]);
+};
+
 // Function: deleteCurrentLayer
 // Deletes the current layer from the drawing and then clears the selection. This function 
 // then calls the 'changed' handler.  This is an undoable action.
@@ -8360,6 +8390,15 @@ this.deleteCurrentLayer = function() {
 		canvas.setCurrentLayer(all_layers[all_layers.length-1][0]);
 		call("changed", [svgcontent]);
 		return true;
+	}
+	return false;
+};
+
+// Function: hasLayer
+// Check if layer with given name already exists
+this.hasLayer = function(name) {
+	for(var i = 0; i < all_layers.length; i++) {
+		if(all_layers[i][0] == name) return true;
 	}
 	return false;
 };
@@ -8614,6 +8653,55 @@ this.moveSelectedToLayer = function(layername) {
 	
 	return true;
 };
+
+this.mergeLayer = function(skipHistory) {
+	var batchCmd = new BatchCommand("Merge Layer");
+	var prev = $(current_layer).prev()[0];
+	if(!prev) return;
+	var childs = current_layer.childNodes;
+	var len = childs.length;
+	batchCmd.addSubCommand(new RemoveElementCommand(current_layer, svgcontent));
+
+	while(current_layer.firstChild) {
+		var ch = current_layer.firstChild;
+		if(ch.localName == 'title') {
+			batchCmd.addSubCommand(new RemoveElementCommand(ch, current_layer));
+			current_layer.removeChild(ch);
+			continue;
+		}
+		var oldNextSibling = ch.nextSibling;
+		prev.appendChild(ch);
+		batchCmd.addSubCommand(new MoveElementCommand(ch, oldNextSibling, current_layer));
+	}
+	
+	// Remove current layer
+	svgcontent.removeChild(current_layer);
+	
+	if(!skipHistory) {
+		clearSelection();
+		identifyLayers();
+
+		call("changed", [svgcontent]);
+		
+		addCommandToHistory(batchCmd);
+	}
+	
+	current_layer = prev;
+	return batchCmd;
+}
+
+this.mergeAllLayers = function() {
+	var batchCmd = new BatchCommand("Merge all Layers");
+	current_layer = all_layers[all_layers.length-1][1];
+	while($(svgcontent).children('g').length > 1) {
+		batchCmd.addSubCommand(canvas.mergeLayer(true));
+	}
+	
+	clearSelection();
+	identifyLayers();
+	call("changed", [svgcontent]);
+	addCommandToHistory(batchCmd);
+}
 
 // Function: getLayerOpacity
 // Returns the opacity of the given layer.  If the input name is not a layer, null is returned.
