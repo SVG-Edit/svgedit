@@ -3353,6 +3353,9 @@
 				selLayerNames.empty();
 				var currentlayer = svgCanvas.getCurrentLayer();
 				var layer = svgCanvas.getNumLayers();
+				
+				layer_menu[(layer == 1?'dis':'en') + 'ableContextMenuItems']('#delete,#merge_down,#merge_all');
+				
 				var icon = $.getSvgIcon('eye');
 				// we get the layers in the reverse z-order (the layer rendered on top is listed first)
 				while (layer--) {
@@ -3385,6 +3388,8 @@
 						var row = $(this.parentNode);
 						row.addClass("layersel");
 						svgCanvas.setCurrentLayer(this.textContent);
+						var isLast = $('#layerlist tr.layer').length-1 == row.index();
+						layer_menu[(isLast?'dis':'en') + 'ableContextMenuItems']('#merge_down');
 						evt.preventDefault();
 					})
 					.mouseover(function(evt){
@@ -3409,7 +3414,7 @@
 				});
 				
 				// if there were too few rows, let's add a few to make it not so lonely
-				var num = 5 - $('#layerlist tr.layer').size();
+				var num = 5 - $('#layerlist tr.layer').length;
 				while (num-- > 0) {
 					// FIXME: there must a better way to do this
 					layerlist.append("<tr><td style=\"color:white\">_</td><td/></tr>");
