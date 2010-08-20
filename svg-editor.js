@@ -355,7 +355,6 @@
 					
 					'#layer_up':'go_up',
 					'#layer_down':'go_down',
-					'#layer_moreopts':'context_menu',
 					'#layerlist td.layervis':'eye',
 					
 					'#tool_source_save,#tool_docprops_save':'ok',
@@ -444,7 +443,6 @@
 				default_img_url = curConfig.imgPath + "logo.png",
 				workarea = $("#workarea"),
 				canv_menu = $("#cmenu_canvas"),
-				layer_menu = $("#cmenu_layers"),
 				show_save_warning = false, 
 				exportWindow = null, 
 				tool_scale = 1;
@@ -474,7 +472,7 @@
 					if(type == 'prompt') {
 						var input = $('<input type="text">').prependTo(btn_holder);
 						input.val(defText || '');
-						input.bind('keyup', 'return', function() {ok.click();});
+						input.bind('keydown', 'return', function() {ok.click();});
 					}
 					
 					if(type == 'process') {
@@ -580,6 +578,8 @@
 				c.width = svgCanvas.contentW;
 				c.height = svgCanvas.contentH;
 				canvg(c, data.svg);
+				
+				// T
 				setTimeout(function() {
 					var datauri = c.toDataURL('image/png');
 					exportWindow.location.href = datauri;
@@ -1501,7 +1501,7 @@
 					$('#selLayerNames').removeAttr('disabled').val(currentLayer);
 					
 					// Enable regular menu options
-					canv_menu.enableContextMenuItems('#delete,#cut,#copy');
+					canv_menu.enableContextMenuItems('#delete,#cut,#copy,#move_down,#move_up');
 				}
 				else {
 					$('#selLayerNames').attr('disabled', 'disabled');
@@ -2222,10 +2222,16 @@
 					svgCanvas.moveToTopSelectedElement();
 				}
 			};
-		
+			
 			var moveToBottomSelected = function() {
 				if (selectedElement != null) {
 					svgCanvas.moveToBottomSelectedElement();
+				}
+			};
+			
+			var moveUpDownSelected = function(dir) {
+				if (selectedElement != null) {
+					svgCanvas.moveUpDownSelected(dir);
 				}
 			};
 
@@ -2666,6 +2672,7 @@
 				if(size == curPrefs.size && !force) return;
 // 				return;
 // 				var elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
+				console.log('size', size);
 				
 				var sel_toscale = '#tools_top .toolset, #editor_panel > *, #history_panel > *,\
 				#main_button, #tools_left > *, #path_node_panel > *, #multiselected_panel > *,\
@@ -3121,7 +3128,7 @@
 			
 			// Test for embedImage support (use timeout to not interfere with page load)
 			setTimeout(function() {
-				svgCanvas.embedImage(curConfig.imgPath + 'logo.png', function(datauri) {
+				svgCanvas.embedImage('images/logo.png', function(datauri) {
 					if(!datauri) {
 						// Disable option
 						$('#image_save_opts [value=embed]').attr('disabled','disabled');
@@ -3176,24 +3183,30 @@
 			});
 			
 			$('#layer_new').click(function() {
-				var i = svgCanvas.getNumLayers();
-				do {
-					var uniqName = uiStrings.layer + " " + ++i;
-				} while(svgCanvas.hasLayer(uniqName));
+				var curNames = new Array(svgCanvas.getNumLayers());
+				for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getLayer(i); }
 				
+				var j = (curNames.length+1);
+				var uniqName = uiStrings.layer + " " + j;
+				while ($.inArray(uniqName, curNames) != -1) {
+					j++;
+					uniqName = uiStrings.layer + " " + j;
+				}
 				$.prompt(uiStrings.enterUniqueLayerName,uniqName, function(newName) {
 					if (!newName) return;
-					if (svgCanvas.hasLayer(newName)) {
+					if ($.inArray(newName, curNames) != -1) {
 						$.alert(uiStrings.dupeLayerName);
 						return;
 					}
 					svgCanvas.createLayer(newName);
 					updateContextPanel();
 					populateLayers();
+					$('#layerlist tr.layer').removeClass("layersel");
+					$('#layerlist tr.layer:first').addClass("layersel");
 				});
 			});
 			
-			function deleteLayer() {
+			$('#layer_delete').click(function() {
 				if (svgCanvas.deleteCurrentLayer()) {
 					updateContextPanel();
 					populateLayers();
@@ -3203,62 +3216,55 @@
 					$('#layerlist tr.layer').removeClass("layersel");
 					$('#layerlist tr.layer:first').addClass("layersel");
 				}
-			}
-			
-			function cloneLayer() {
-				var name = svgCanvas.getCurrentLayer() + ' copy';
-				
-				$.prompt(uiStrings.enterUniqueLayerName, name, function(newName) {
-					if (!newName) return;
-					if (svgCanvas.hasLayer(newName)) {
-						$.alert(uiStrings.dupeLayerName);
-						return;
-					}
-					svgCanvas.cloneLayer(newName);
-					updateContextPanel();
-					populateLayers();
-				});
-			}
-			
-			function mergeLayer() {
-				if($('#layerlist tr.layersel').index() == svgCanvas.getNumLayers()-1) return;
-				svgCanvas.mergeLayer();
-				updateContextPanel();
-				populateLayers();
-			}
-			
-			function moveLayer(pos) {
-				var curIndex = $('#layerlist tr.layersel').index();
-				var total = svgCanvas.getNumLayers();
-				if(curIndex > 0 || curIndex < total-1) {
-					curIndex += pos;
-					svgCanvas.setCurrentLayerPosition(total-curIndex-1);
-					populateLayers();
-				}
-			}
-			
-			$('#layer_delete').click(deleteLayer);
+			});
 			
 			$('#layer_up').click(function() {
-				moveLayer(-1);
+				// find index position of selected option
+				var curIndex = $('#layerlist tr.layersel').prevAll().length;
+				if (curIndex > 0) {
+					var total = $('#layerlist tr.layer').length;
+					curIndex--;
+					svgCanvas.setCurrentLayerPosition(total-curIndex-1);
+					populateLayers();
+					$('#layerlist tr.layer').removeClass("layersel");
+					$('#layerlist tr.layer:eq('+curIndex+')').addClass("layersel");
+				}
 			});
 		
 			$('#layer_down').click(function() {
-				moveLayer(1);
+				// find index position of selected option
+				var curIndex = $('#layerlist tr.layersel').prevAll().length;
+				var total = $('#layerlist tr.layer').length;
+				if (curIndex < total-1) {
+					curIndex++;
+					svgCanvas.setCurrentLayerPosition(total-curIndex-1);
+					populateLayers();
+					$('#layerlist tr.layer').removeClass("layersel");
+					$('#layerlist tr.layer:eq('+curIndex+')').addClass("layersel");
+				}
 			});
-
+		
 			$('#layer_rename').click(function() {
 				var curIndex = $('#layerlist tr.layersel').prevAll().length;
 				var oldName = $('#layerlist tr.layersel td.layername').text();
 				$.prompt(uiStrings.enterNewLayerName,"", function(newName) {
 					if (!newName) return;
-					if (oldName == newName || svgCanvas.hasLayer(newName)) {
+					if (oldName == newName) {
+						$.alert(uiStrings.layerHasThatName);
+						return;
+					}
+			
+					var curNames = new Array(svgCanvas.getNumLayers());
+					for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getLayer(i); }
+					if ($.inArray(newName, curNames) != -1) {
 						$.alert(uiStrings.layerHasThatName);
 						return;
 					}
 					
 					svgCanvas.renameCurrentLayer(newName);
 					populateLayers();
+					$('#layerlist tr.layer').removeClass("layersel");
+					$('#layerlist tr.layer:eq('+curIndex+')').addClass("layersel");
 				});
 			});
 			
@@ -3353,9 +3359,6 @@
 				selLayerNames.empty();
 				var currentlayer = svgCanvas.getCurrentLayer();
 				var layer = svgCanvas.getNumLayers();
-				
-				layer_menu[(layer == 1?'dis':'en') + 'ableContextMenuItems']('#delete,#merge_down,#merge_all');
-				
 				var icon = $.getSvgIcon('eye');
 				// we get the layers in the reverse z-order (the layer rendered on top is listed first)
 				while (layer--) {
@@ -3383,13 +3386,11 @@
 				}
 				// handle selection of layer
 				$('#layerlist td.layername')
-					.mouseup(function(evt){
+					.click(function(evt){
 						$('#layerlist tr.layer').removeClass("layersel");
 						var row = $(this.parentNode);
 						row.addClass("layersel");
 						svgCanvas.setCurrentLayer(this.textContent);
-						var isLast = $('#layerlist tr.layer').length-1 == row.index();
-						layer_menu[(isLast?'dis':'en') + 'ableContextMenuItems']('#merge_down');
 						evt.preventDefault();
 					})
 					.mouseover(function(evt){
@@ -3414,7 +3415,7 @@
 				});
 				
 				// if there were too few rows, let's add a few to make it not so lonely
-				var num = 5 - $('#layerlist tr.layer').length;
+				var num = 5 - $('#layerlist tr.layer').size();
 				while (num-- > 0) {
 					// FIXME: there must a better way to do this
 					layerlist.append("<tr><td style=\"color:white\">_</td><td/></tr>");
@@ -3753,46 +3754,19 @@
 						case 'paste_in_place':
 							svgCanvas.pasteElements('in_place');
 							break;
+						case 'move_down':
+							svgCanvas.moveUpDownSelected('Down');
+							break;
+						case 'move_up':
+							svgCanvas.moveUpDownSelected('Up');
+							break;
+
 					}
 					
 					if(svgCanvas.clipBoard.length) {
 						canv_menu.enableContextMenuItems('#paste,#paste_in_place');
 					}
-			});		
-			
-			var lmenu_func = function(action, el, pos) {
-				switch ( action ) {
-					case 'dupe':
-						cloneLayer();
-						break;
-					case 'delete':
-						deleteLayer();
-						break;
-					case 'merge_down':
-						mergeLayer();
-						break;
-					case 'merge_all':
-						svgCanvas.mergeAllLayers();
-						updateContextPanel();
-						populateLayers();
-						break;
-				}
-			}
-			
-			$("#layerlist").contextMenu({
-					menu: 'cmenu_layers',
-					inSpeed: 0
-				},
-				lmenu_func
-			);
-			
-			$("#layer_moreopts").contextMenu({
-					menu: 'cmenu_layers',
-					inSpeed: 0,
-					allowLeft: true
-				},
-				lmenu_func
-			);			
+			});
 			
 			$('.contextMenu li').mousedown(function(ev) {
 				ev.preventDefault();
