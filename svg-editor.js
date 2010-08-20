@@ -435,8 +435,8 @@
 			           "#aaaaff", "#d4aaff", "#ffaaff", "#ffaad4",
 			           ];
 	
-				isMac = false, //(navigator.platform.indexOf("Mac") != -1);
-				modKey = "", //(isMac ? "meta+" : "ctrl+");
+				isMac = (navigator.platform.indexOf("Mac") != -1);
+				modKey = (isMac ? "meta+" : "ctrl+"); // ⌘
 				path = svgCanvas.pathActions,
 				undoMgr = svgCanvas.undoMgr,
 				Utils = svgCanvas.Utils,
@@ -1477,7 +1477,7 @@
 				else if (multiselected) {
 					$('#multiselected_panel').show();
 				} else {
-					$('#cmenu_canvas li').disableContextMenuItems('#delete,#cut,#copy');
+					$('#cmenu_canvas li').disableContextMenuItems('#delete,#cut,#copy,#move_up,#move_down');
 				}
 				
 				// update history buttons
@@ -3527,17 +3527,17 @@
 					{sel:'#tool_text', fn: clickText, evt: 'click', key: 7},
 					{sel:'#tool_image', fn: clickImage, evt: 'mouseup', key: 8},
 					{sel:'#tool_zoom', fn: clickZoom, evt: 'mouseup', key: 9},
-					{sel:'#tool_clear', fn: clickClear, evt: 'mouseup', key: [modKey+'N', true]},
-					{sel:'#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'mouseup', key: [modKey+'S', true]},
+					{sel:'#tool_clear', fn: clickClear, evt: 'mouseup', key: ['N', true]},
+					{sel:'#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'mouseup', key: ['S', true]},
 					{sel:'#tool_export', fn: clickExport, evt: 'mouseup'},
-					{sel:'#tool_open', fn: clickOpen, evt: 'mouseup', key: [modKey+'O', true]},
+					{sel:'#tool_open', fn: clickOpen, evt: 'mouseup', key: ['O', true]},
 					{sel:'#tool_import', fn: clickImport, evt: 'mouseup'},
 					{sel:'#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
 					{sel:'#tool_wireframe', fn: clickWireframe, evt: 'click', key: ['F', true]},
 					{sel:'#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
 					{sel:'#tool_source_save', fn: saveSourceEditor, evt: 'click'},
 					{sel:'#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
-					{sel:'#tool_docprops', fn: showDocProperties, evt: 'mouseup', key: [modKey+'P', true]},
+					{sel:'#tool_docprops', fn: showDocProperties, evt: 'mouseup', key: ['P', true]},
 					{sel:'#tool_delete,#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
 					{sel:'#tool_reorient', fn: reorientPath, evt: 'click'},
 					{sel:'#tool_node_link', fn: linkControlPoints, evt: 'click'},
@@ -3548,10 +3548,10 @@
 					{sel:'#tool_move_top', fn: moveToTopSelected, evt: 'click', key: 'shift+up'},
 					{sel:'#tool_move_bottom', fn: moveToBottomSelected, evt: 'click', key: 'shift+down'},
 					{sel:'#tool_topath', fn: convertToPath, evt: 'click'},
-					{sel:'#tool_undo', fn: clickUndo, evt: 'click', key: [modKey+'Z', true]},
-					{sel:'#tool_redo', fn: clickRedo, evt: 'click', key: [modKey+'Y', true]},
-					{sel:'#tool_clone,#tool_clone_multi', fn: clickClone, evt: 'click', key: [modKey+'C', true]},
-					{sel:'#tool_group', fn: clickGroup, evt: 'click', key: [modKey+'G', true]},
+					{sel:'#tool_undo', fn: clickUndo, evt: 'click', key: ['Z', true]},
+					{sel:'#tool_redo', fn: clickRedo, evt: 'click', key: ['Y', true]},
+					{sel:'#tool_clone,#tool_clone_multi', fn: clickClone, evt: 'click', key: ['C', true]},
+					{sel:'#tool_group', fn: clickGroup, evt: 'click', key: ['G', true]},
 					{sel:'#tool_ungroup', fn: clickGroup, evt: 'click'},
 					{sel:'#tool_unlink_use', fn: clickGroup, evt: 'click'},
 					{sel:'[id^=tool_align]', fn: clickAlign, evt: 'click'},
@@ -3560,15 +3560,17 @@
 		// 			{sel:'#tools_ellipse_show', fn: clickEllipse, evt: 'click'},
 					{sel:'#tool_bold', fn: clickBold, evt: 'mousedown'},
 					{sel:'#tool_italic', fn: clickItalic, evt: 'mousedown'},
-					{sel:'#sidepanel_handle', fn: toggleSidePanel, key: [modKey+'X']},
+					{sel:'#sidepanel_handle', fn: toggleSidePanel, key: ['X']},
 					
 					// Shortcuts not associated with buttons
 					{key: 'shift+left', fn: function(){rotateSelected(0)}},
 					{key: 'shift+right', fn: function(){rotateSelected(1)}},
 					{key: 'shift+O', fn: selectPrev},
 					{key: 'shift+P', fn: selectNext},
-					{key: ['ctrl+up', true], fn: function(){zoomImage(2);}},
-					{key: ['ctrl+down', true], fn: function(){zoomImage(.5);}},
+					{key: [modKey+'up', true], fn: function(){zoomImage(2);}},
+					{key: [modKey+'down', true], fn: function(){zoomImage(.5);}},
+					{key: [modKey+'[', true], fn: function(){moveUpDownSelected('Down');}},
+					{key: [modKey+']', true], fn: function(){moveUpDownSelected('Up');}},
 					{key: ['up', true], fn: function(){moveSelected(0,-1);}},
 					{key: ['down', true], fn: function(){moveSelected(0,1);}},
 					{key: ['left', true], fn: function(){moveSelected(-1,0);}},
@@ -3755,10 +3757,10 @@
 							svgCanvas.pasteElements('in_place');
 							break;
 						case 'move_down':
-							svgCanvas.moveUpDownSelected('Down');
+							moveUpDownSelected('Down');
 							break;
 						case 'move_up':
-							svgCanvas.moveUpDownSelected('Up');
+							moveUpDownSelected('Up');
 							break;
 
 					}
