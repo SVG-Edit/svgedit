@@ -2033,11 +2033,15 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 
 	if (resultList == null || typeof(resultList.item) != "function") {
 		resultList = [];
-
-		var rubberBBox = rubberBox.getBBox();
-		$.each(rubberBBox, function(key, val) {
-			rubberBBox[key] = val / current_zoom;
-		});
+		
+		if(!rect) {
+			var rubberBBox = rubberBox.getBBox();
+			$.each(rubberBBox, function(key, val) {
+				rubberBBox[key] = val / current_zoom;
+			});
+		} else {
+			var rubberBBox = rect;
+		}
 		var i = curBBoxes.length;
 		while (i--) {
 			if(!rubberBBox.width || !rubberBBox.width) continue;
@@ -10474,6 +10478,41 @@ this.moveToBottomSelectedElement = function() {
 		addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, "bottom"));
 	}
 };
+
+// Function: moveUpDownSelected
+// Moves the select element up or down the stack, based on the visibly
+// intersecting elements
+//
+// Parameters: 
+// dir - String that's either 'Up' or 'Down'
+this.moveUpDownSelected = function(dir) {
+	var selected = selectedElements[0];
+	if (!selected) return;
+	
+	curBBoxes = [];
+	var closest, found_cur;
+	// jQuery sorts this list
+	var list = $(getIntersectionList(getStrokedBBox([selected]))).toArray();
+	if(dir == 'Down') list.reverse();
+
+	$.each(list, function() {
+		if(!found_cur) {
+			if(this == selected) {
+				found_cur = true;
+			}
+			return;
+		}
+		closest = this;
+		return false;
+	});
+	if(!closest) return;
+	
+	var t = selected;
+	var oldParent = t.parentNode;
+	var oldNextSibling = t.nextSibling;
+	$(closest)[dir == 'Down'?'before':'after'](t);
+	addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, "Move " + dir));
+}
 
 // Function: moveSelectedElements
 // Moves selected elements on the X/Y axis 
