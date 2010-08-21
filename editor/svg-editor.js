@@ -2973,9 +2973,11 @@
 				var i = shortcutButtons.length;
 				while (i--) {
 					var button = document.getElementById(shortcutButtons[i]);
-					var title = button.title;
-					var index = title.indexOf("Ctrl+");
-					button.title = [title.substr(0,index), "Cmd+", title.substr(index+5)].join('');
+					if (button != null) {
+						var title = button.title;
+						var index = title.indexOf("Ctrl+");
+						button.title = [title.substr(0, index), "Cmd+", title.substr(index + 5)].join('');
+					}
 				}
 			}
 			
