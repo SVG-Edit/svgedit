@@ -181,7 +181,10 @@ var isOpera = !!window.opera,
 		dimensions: [640, 480]
 	};
 	
-
+	
+	// Much faster than running getBBox() every time
+	var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
+// 	var hidElems = 'clipPath,defs,desc,feGaussianBlur,filter,linearGradient,marker,mask,metadata,pattern,radialGradient,stop,switch,symbol,title,textPath';
 	
 
 
@@ -7956,6 +7959,11 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		// are removed
 		walkTreePost(g, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
 		
+		// Give ID for any visible element missing one
+		$(g).find(visElems).each(function() {
+			if(!this.id) this.id = getNextId();
+		});
+		
 		clearSelection();
 		addToSelection([g]);
 		
@@ -7990,6 +7998,9 @@ this.setSvgString = function(xmlString) {
 	
 		// set new svg document
 		svgcontent = svgroot.appendChild(svgdoc.importNode(newDoc.documentElement, true));
+		
+		var content = $(svgcontent);
+		
 		// retrieve or set the nonce
 		n = svgcontent.getAttributeNS(se_ns, 'nonce');
 		if (n) {
@@ -8002,7 +8013,7 @@ this.setSvgString = function(xmlString) {
 			if (extensions["Arrows"])  call("setarrownonce", nonce) ;
 		}         
 		// change image href vals if possible
-		$(svgcontent).find('image').each(function() {
+		content.find('image').each(function() {
 			var image = this;
 			preventClickDefault(image);
 			var val = getHref(this);
@@ -8021,7 +8032,7 @@ this.setSvgString = function(xmlString) {
 		});
 	
 		// Wrap child SVGs in group elements
-		$(svgcontent).find('svg').each(function() {
+		content.find('svg').each(function() {
 			// Skip if it's in a <defs>
 			if($(this).closest('defs').length) return;
 		
@@ -8038,7 +8049,7 @@ this.setSvgString = function(xmlString) {
 		});
 		
 		// Set ref element for <use> elements
-		$(svgcontent).find('use').each(function() {
+		content.find('use').each(function() {
 			var id = getHref(this).substr(1);
 			var ref_elem = getElem(id);
 			$(this).data('ref', ref_elem);
@@ -8048,7 +8059,7 @@ this.setSvgString = function(xmlString) {
 		});
 		
 		// convert gradients with userSpaceOnUse to objectBoundingBox
-		$(svgcontent).find('linearGradient, radialGradient').each(function() {
+		content.find('linearGradient, radialGradient').each(function() {
 			var grad = this;
 			if($(grad).attr('gradientUnits') === 'userSpaceOnUse') {
 				// TODO: Support more than one element with this ref by duplicating parent grad
@@ -8098,8 +8109,6 @@ this.setSvgString = function(xmlString) {
 		// are removed
 		walkTreePost(svgcontent, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
 		
-		var content = $(svgcontent);
-		
 		var attrs = {
 			id: 'svgcontent',
 			overflow: curConfig.show_outside_canvas?'visible':'hidden'
@@ -8132,6 +8141,11 @@ this.setSvgString = function(xmlString) {
 		
 		// identify layers
 		identifyLayers();
+		
+		// Give ID for any visible layer children missing one
+		content.children().find(visElems).each(function() {
+			if(!this.id) this.id = getNextId();
+		});
 		
 		// Percentage width/height, so let's base it on visible elements
 		if(percs) {
@@ -8200,7 +8214,7 @@ this.importSvgString = function(xmlString) {
 
 		// import new svg document into our document
 		var svg = svgdoc.importNode(newDoc.documentElement, true);
-	
+		
 		var innerw = convertToNum('width', svg.getAttribute("width")),
 			innerh = convertToNum('height', svg.getAttribute("height")),
 			innervb = svg.getAttribute("viewBox"),
