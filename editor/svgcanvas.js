@@ -4276,13 +4276,15 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						pathActions.clear();
 					}
 					// else if it's a path, go into pathedit mode in mouseup
-
-					// insert a dummy transform so if the element(s) are moved it will have
-					// a transform to use for its translate
-					for (var i = 0; i < selectedElements.length; ++i) {
-						if(selectedElements[i] == null) continue;
-						var slist = getTransformList(selectedElements[i]);
-						slist.insertItemBefore(svgroot.createSVGTransform(), 0);
+					
+					if(!right_click) {
+						// insert a dummy transform so if the element(s) are moved it will have
+						// a transform to use for its translate
+						for (var i = 0; i < selectedElements.length; ++i) {
+							if(selectedElements[i] == null) continue;
+							var slist = getTransformList(selectedElements[i]);
+							slist.insertItemBefore(svgroot.createSVGTransform(), 0);
+						}
 					}
 				}
 				else if(!right_click){
@@ -8237,10 +8239,10 @@ this.importSvgString = function(xmlString) {
 		symbol.id = getNextId();
 		
 		var use_el = svgdoc.createElementNS(svgns, "use");
-		use_el.id = getNextId();
 		setHref(use_el, "#" + symbol.id);
 		findDefs().appendChild(symbol);
 		current_layer.appendChild(use_el);
+		use_el.id = getNextId();
 		clearSelection();
 		
 		use_el.setAttribute("transform", ts);
