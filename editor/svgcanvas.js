@@ -422,7 +422,7 @@ var Utils = this.Utils = function() {
 	
 // TODO: declare the variables and set them as null, then move this setup stuff to
 // an initialization function - probably just use clear()
-
+	console.log('r');
 var canvas = this,
 	
 	// Namespace constants
@@ -447,23 +447,30 @@ var canvas = this,
 	svgdoc = container.ownerDocument,
 	
 	// Array with width/height of canvas
-	dimensions = curConfig.dimensions,
+	dimensions = curConfig.dimensions;
 	
-	// Create Root SVG element. This is a container for the document being edited, not the document itself.
-	svgroot = svgdoc.importNode(Utils.text2xml('<svg id="svgroot" xmlns="' + svgns + '" xlinkns="' + xlinkns + '" ' +
-					'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
-					'<defs>' +
-						'<filter id="canvashadow" filterUnits="objectBoundingBox">' +
-							'<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>'+
-							'<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>'+
-							'<feMerge>'+
-								'<feMergeNode in="offsetBlur"/>'+
-								'<feMergeNode in="SourceGraphic"/>'+
-							'</feMerge>'+
-						'</filter>'+
-					'</defs>'+
-				'</svg>').documentElement, true);
-				
+	if($.browser.msie) {
+		var svgroot = document.createElementNS(svgns, 'svg');
+		svgroot.id = 'svgroot';
+		svgroot.setAttribute('width', dimensions[0]);
+		svgroot.setAttribute('height', dimensions[1]);
+		
+	} else {
+		// Create Root SVG element. This is a container for the document being edited, not the document itself.
+		var svgroot = svgdoc.importNode(Utils.text2xml('<svg id="svgroot" xmlns="' + svgns + '" xlinkns="' + xlinkns + '" ' +
+						'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
+						'<defs>' +
+							'<filter id="canvashadow" filterUnits="objectBoundingBox">' +
+								'<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>'+
+								'<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>'+
+								'<feMerge>'+
+									'<feMergeNode in="offsetBlur"/>'+
+									'<feMergeNode in="SourceGraphic"/>'+
+								'</feMerge>'+
+							'</filter>'+
+						'</defs>'+
+					'</svg>').documentElement, true);
+	}			
 
 	container.appendChild(svgroot);
 	
@@ -2039,9 +2046,13 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 		
 		if(!rect) {
 			var rubberBBox = rubberBox.getBBox();
+			var bb = {};
 			$.each(rubberBBox, function(key, val) {
-				rubberBBox[key] = val / current_zoom;
+				// Can't set values to a real BBox object, so make a fake one
+				bb[key] = val / current_zoom;
 			});
+			rubberBBox = bb;
+			
 		} else {
 			var rubberBBox = rect;
 		}
@@ -4221,6 +4232,12 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		var pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
 			mouse_x = pt.x * current_zoom,
 			mouse_y = pt.y * current_zoom;
+			
+		if($.browser.msie) {
+			mouse_x = evt.offsetX - svgCanvas.contentW*current_zoom;
+			mouse_y = evt.offsetY - svgCanvas.contentH*current_zoom;
+		}
+			
 		evt.preventDefault();
 
 		if(right_click) {
@@ -4298,6 +4315,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					}
 					start_x *= current_zoom;
 					start_y *= current_zoom;
+					console.log('p',[evt.pageX, evt.pageY]);					
+					console.log('c',[evt.clientX, evt.clientY]);	
+					console.log('o',[evt.offsetX, evt.offsetY]);	
+					console.log('s',[start_x, start_y]);
+					
 					assignAttributes(rubberBox, {
 						'x': start_x,
 						'y': start_y,
@@ -4537,6 +4559,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			mouse_y = pt.y * current_zoom,
 			shape = getElem(getId());
 	
+		if($.browser.msie) {
+			mouse_x = evt.offsetX - svgCanvas.contentW*current_zoom;
+			mouse_y = evt.offsetY - svgCanvas.contentH*current_zoom;
+		}
+
 		x = mouse_x / current_zoom;
 		y = mouse_y / current_zoom;
 	
