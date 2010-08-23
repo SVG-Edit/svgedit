@@ -938,6 +938,16 @@ span.zoom_tool {
 	z-index: 6;
 }
 
+#save_output_btns {
+	display: none;
+	text-align: left;
+}
+
+#save_output_btns p {
+	margin: .5em 1.5em;
+	display: inline-block;
+}
+
 #bg_blocks {
 	overflow: auto;
 	margin-left: 30px;
