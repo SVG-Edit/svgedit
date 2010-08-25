@@ -733,8 +733,8 @@
 </g>
 
 <g id="fontsize">
-<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg" xmlns:xml="http://www.w3.org/XML/1998/namespace">
-  <text fill="#606060" stroke="none" x="14.451" y="41.4587" id="svg_2" font-size="26" font-family="serif" text-anchor="middle" xml:space="preserve">T</text>
+<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+  <text fill="#606060" stroke="none" x="14.451" y="41.4587" id="svg_2" font-size="26" font-family="serif" text-anchor="middle">T</text>
   <text fill="#000000" stroke="none" x="28.853" y="41.8685" font-size="52" font-family="serif" text-anchor="middle" xml:space="preserve" id="svg_3">T</text>
 </svg>
 </g>
