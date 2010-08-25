@@ -403,13 +403,13 @@ var Utils = this.Utils = function() {
 		
 			var out;
 			try{
-				var dXML = ($.browser.msie)?new ActiveXObject("Microsoft.XMLDOM"):new DOMParser();
+				var dXML = (window.DOMParser)?new DOMParser():new ActiveXObject("Microsoft.XMLDOM");
 				dXML.async = false;
 			} catch(e){ 
 				throw new Error("XML Parser could not be instantiated"); 
 			};
 			try{
-				if($.browser.msie) out = (dXML.loadXML(sXML))?dXML:false;
+				if(dXML.loadXML) out = (dXML.loadXML(sXML))?dXML:false;
 				else out = dXML.parseFromString(sXML, "text/xml");
 			}
 			catch(e){ throw new Error("Error parsing XML string"); };
@@ -422,7 +422,6 @@ var Utils = this.Utils = function() {
 	
 // TODO: declare the variables and set them as null, then move this setup stuff to
 // an initialization function - probably just use clear()
-	console.log('r');
 var canvas = this,
 	
 	// Namespace constants
@@ -4315,10 +4314,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					}
 					start_x *= current_zoom;
 					start_y *= current_zoom;
-					console.log('p',[evt.pageX, evt.pageY]);					
-					console.log('c',[evt.clientX, evt.clientY]);	
-					console.log('o',[evt.offsetX, evt.offsetY]);	
-					console.log('s',[start_x, start_y]);
+// 					console.log('p',[evt.pageX, evt.pageY]);					
+// 					console.log('c',[evt.clientX, evt.clientY]);	
+// 					console.log('o',[evt.offsetX, evt.offsetY]);	
+// 					console.log('s',[start_x, start_y]);
 					
 					assignAttributes(rubberBox, {
 						'x': start_x,
