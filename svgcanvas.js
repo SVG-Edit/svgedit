@@ -2167,6 +2167,10 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 		if(full_bb) return;
 		if(!this.parentNode) return;
 		full_bb = getCheckedBBox(this);
+		var b = {};
+		for(var i in full_bb) b[i] = full_bb[i];
+		full_bb = b;
+
 	});
 	
 	// This shouldn't ever happen...
@@ -4205,6 +4209,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 
 // Mouse events
 (function() {
+	var off_x, off_y;
 	
 	var d_attr = null,
 		start_x = null,
@@ -4233,8 +4238,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			mouse_y = pt.y * current_zoom;
 			
 		if($.browser.msie) {
-			mouse_x = evt.offsetX - svgCanvas.contentW*current_zoom;
-			mouse_y = evt.offsetY - svgCanvas.contentH*current_zoom;
+			var off = $(container.parentNode).offset();
+			off_x = svgcontent.getAttribute('x')-0 + off.left - container.parentNode.scrollLeft;
+			off_y = svgcontent.getAttribute('y')-0 + off.top - container.parentNode.scrollTop;
+			mouse_x = -(off_x - evt.pageX);
+			mouse_y = -(off_y - evt.pageY);
 		}
 			
 		evt.preventDefault();
@@ -4558,9 +4566,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			mouse_y = pt.y * current_zoom,
 			shape = getElem(getId());
 	
+		// IE9 gives the wrong root_sctm
+		// TODO: Use non-browser sniffing way to make this work
 		if($.browser.msie) {
-			mouse_x = evt.offsetX - svgCanvas.contentW*current_zoom;
-			mouse_y = evt.offsetY - svgCanvas.contentH*current_zoom;
+			mouse_x = -(off_x - evt.pageX);
+			mouse_y = -(off_y - evt.pageY);
 		}
 
 		x = mouse_x / current_zoom;
@@ -10582,6 +10592,10 @@ this.moveSelectedElements = function(dx,dy,undoable) {
 			if (i==0)
 				selectedBBoxes[i] = getBBox(selected);
 			
+			var b = {};
+			for(var j in selectedBBoxes[i]) b[j] = selectedBBoxes[i][j];
+			selectedBBoxes[i] = b;
+			
 			var xform = svgroot.createSVGTransform();
 			var tlist = getTransformList(selected);
 			
@@ -10599,8 +10613,13 @@ this.moveSelectedElements = function(dx,dy,undoable) {
 				}
 				xform.setTranslate(dx,dy);
 			}
-			
-			tlist.insertItemBefore(xform, 0);
+
+			console.log('num:',tlist.numberOfItems);
+			if(tlist.numberOfItems) {
+				tlist.insertItemBefore(xform, 0);
+			} else {
+				tlist.appendItem(xform);
+			}
 			
 			var cmd = recalculateDimensions(selected);
 			if (cmd) {
