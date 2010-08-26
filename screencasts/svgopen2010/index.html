@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<!--
+  Copyright 2010 Google Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  Original slides: Marcin Wichary (mwichary@google.com)
+  Modifications: Ernest Delgado (ernestd@google.com)
+                 Alex Russell (slightlyoff@chromium.org)
+                 Brad Neuberg
+  SVG-edit presentation: Pavol Rusnak (stick@gk2.sk)
+-->
+<html>
+  <head>
+    <!--[if gte IE 9]>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <![endif]-->
+
+    <!--[if lt IE 9]>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge;chrome=1" />
+    <![endif]-->
+
+    <meta charset="utf-8" />
+    <title>SVG-edit, Pavol Rusnák, SVG Open 2010, Paris</title>
+    <link href="http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono" rel="stylesheet" type="text/css" />
+    <link type="text/css" rel="stylesheet" href="style.css" />
+
+  </head>
+  <body>
+    <div class="presentation">
+      <div id="presentation-counter"></div>
+      <div class="slides">
+
+        <div class="slide">
+          <section class="middle">
+            <h1 style="font-size: 220%;">SVG-edit</h1>
+            <p><img src="logo.svg" alt="logo" width="30%" height="30%" /></p>
+            <h2>Pavol Rusnák</h2>
+            <h3>SVG Open 2010, Paris</h3>
+          </section>
+        </div>
+
+        <div class="slide">
+          <section>
+           <header>
+            <h2>SVG-edit is ...</h2>
+           </header>
+            <ul class="bulleted">
+              <li>a web-based, JavaScript-driven SVG editor that works in any modern browser</li>
+              <li>not a full replacement for Inkscape</li>
+              <li>licensed under open source license (Apache License 2.0)</li>
+              <li>platform for other projects which need to edit SVG documents</li>
+              <li>pushing browsers to find their limits</li>
+              <li>always up-to-date</li>
+            </ul>
+          </section>
+        </div>
+
+        <div class="slide">
+          <section>
+           <header>
+            <h2>History: version 1.0 (13th Feb 2009)</h2>
+           </header>
+            <ul class="bulleted">
+              <li>draw path, line, freehand-circle, rectangle</li>
+              <li>clear drawn image</li>
+              <li>delete element</li>
+              <li>save image</li>
+            </ul>
+            <p><a href="http://svg-edit.googlecode.com/svn/branches/1.0/editor/svg-editor.html">_</a></p>
+          </section>
+        </div>
+
+        <div class="slide">
+          <section>
+           <header>
+            <h2>History: version 2.0 (3rd June 2009)</h2>
+           </header>
+            <ul class="bulleted">
+              <li>draw ellipse, square</li>
+              <li>change stroke-dasharray (line style)</li>
+              <li>rearranged whole code to OOP</li>
+              <li>GUI enhancement</li>
+            </ul>
+            <p><a href="http://svg-edit.googlecode.com/svn/branches/2.0/editor/svg-editor.html">_</a></p>
+          </section>
+        </div>
+
+        <div class="slide">
+          <section>
+           <header>
+            <h2>History: version 2.1 (17th June 2009)</h2>
+           </header>
+            <ul class="bulleted">
+              <li>tooltips added to all UI elements</li>
+              <li>edit of fill opacity, stroke opacity, group opacity</li>
+              <li>selection of elements</li>
+              <li>move/drag of elements</li>
+              <li>save SVG file to separate tab</li>
+              <li>create and edit text elements</li>
+              <li>contextual panel of tools</li>
+              <li>change rect radius, font-family, font-size</li>
+              <li>keystroke handling</li>
+            </ul>
+            <p><a href="http://svg-edit.googlecode.com/svn/branches/2.1/editor/svg-editor.html">_</a></p>
+          </section>
+        </div>
+
+        <div class="slide">
+          <section>
+           <header>
+            <h2>History: version 2.2 (8th July 2009)</h2>
+           </header>
+            <ul class="bulleted">
+              <li>Multiselect Mode</li>
+              <li>Undo/Redo Actions</li>
+              <li>Resize Elements</li>
+              <li>Contextual tools for rect, circle, ellipse, line, text elements</li>
+              <li>Some updated button images</li>
+              <li>Stretched the UI to fit the browser window</li>
+              <li>Resizing of the SVG canvas</li>
+            </ul>
+            <p><a href="http://svg-edit.googlecode.com/svn/branches/2.2/editor/svg-editor.html">_</a></p>
+          </section>
+        </div>
+
+        <div class="slide">
+          <section>
+           <header>
+            <h2>History: version 2.3 (8th Sept 2009)</h2>
+           </header>
+            <ul class="bulleted">
+              <li>Align Objects</li>
+              <li>Rotate Objects</li>
+              <li>Clone Objects</li>
+              <li>Select Next/Prev Object</li>
+              <li>Edit SVG Source</li>
+              <li>Gradient picking</li>
+              <li>Polygon Mode (Path Editing, Phase 1)</li>
+            </ul>
+            <p><a href="http://svg-edit.googlecode.com/svn/branches/2.3/editor/svg-editor.html">_</a></p>
+          </section>
+        </div>
+
+        <div class="slide">
+          <section>
+           <header>
+            <h2>History: version 2.4 (11th Jan 2010)</h2>
+           </header>
+            <ul class="bulleted">
+              <li>Raster Images</li>
+              <li>Select Non-Adjacent Elements</li>
+              <li>Group/Ungroup</li>
+              <li>Zoom</li>
+              <li>Layers</li>
+              <li>Curve Segments in Paths</li>
+              <li>UI Localization</li>
+              <li>Wireframe Mode</li>
+              <li>Change Background</li>
+              <li>Convert Shapes to Path</li>
+            </ul>
+            <p><a href="http://svg-edit.googlecode.com/svn/branches/2.4/editor/svg-editor.html">_</a></p>
+          </section>
+        </div>
+
+        <div class="slide">
+          <section>
+           <header>
+            <h2>History: version 2.5 (15th June 2010)</h2>
+           </header>
+            <ul class="bulleted">
+              <li>Open Local Files (Fx 3.6+, Chrome 6+ only)</li>
+              <li>Import SVG into Drawing (Fx 3.6+, Chrome 6+ only)</li>
+              <li>Connector lines and Arrows</li>
+              <li>Smoother freehand paths</li>
+              <li>Editing outside the canvas</li>
+              <li>Increased support for SVG elements</li>
+              <li>Add/edit Sub-paths</li>
+              <li>Multiple path segment selection</li>
+              <li>Support for foreign markup (MathML)</li>
+              <li>Radial Gradients</li>
+              <li>Eye-dropper tool</li>
+              <li>Stroke linejoin and linecap</li>
+              <li>Export to PNG</li>
+            </ul>
+            <p><a href="http://svg-edit.googlecode.com/svn/branches/2.5/editor/svg-editor.html">_</a></p>
+          </section>
+        </div>
+
+        <div class="slide">
+          <section>
+           <header>
+            <h2>Plugin Architecture</h2>
+           </header>
+           <pre>
+svgEditor.addExtension("Hello World", function() {
+
+        return {
+                svgicons: "extensions/helloworld-icon.xml",
+                buttons: [{...}],
+                mouseDown: function() {
+                        ...
+                },
+
+                mouseUp: function(opts) {
+                        ...
+                }
+        };
+});</pre>
+          </section>
+        </div>
+
+        <div class="slide">
+          <section>
+           <header>
+            <h2>Features being implemented right now</h2>
+           </header>
+            <ul class="bulleted">
+              <li>IE9 support</li>
+              <li>Linking off to clipart/image library sites</li>
+              <li>Context menus</li>
+            </ul>
+          </section>
+        </div>
+
+        <div class="slide">
+          <section class="middle">
+            <h2>Demo</h2>
+            <p><a href="http://svg-edit.googlecode.com/svn/tags/stable/editor/svg-editor.html">stable</a></p>
+            <p><a href="http://svg-edit.googlecode.com/svn/trunk/editor/svg-editor.html">trunk</a></p>
+          </section>
+        </div>
+
+        <div class="slide">
+          <section>
+           <header>
+            <h2>Projects based on SVG-edit</h2>
+           </header>
+            <ul class="bulleted">
+              <li>Firefox add-on</li>
+              <li>Opera widget</li>
+              <li>Google Wave gadget</li>
+              <li>Wiki extensions (Dokuwiki, Instiki, MoinMoin, XWiki)</li>
+              <li><a href="http://www.cloud-canvas.com/cloudcanvas.php">Cloud Canvas</a></li>
+              <li>Eduvid</li>
+              <li>Sesame</li>
+            </ul>
+          </section>
+        </div>
+
+        <div class="slide">
+          <section>
+           <header>
+            <h2>Resources</h2>
+           </header>
+            <ul class="bulleted">
+              <li><a href="http://svg-edit.googlecode.com">http://svg-edit.googlecode.com/</a> (demos, downloads, source, wiki, issue tracker)</li>
+              <li>#svg-edit on irc.freenode.net</li>
+              <li><a href="http://groups.google.com/group/svg-edit">http://groups.google.com/group/svg-edit</a></li>
+              <li><a href="http://en.wikipedia.org/wiki/SVG-edit">http://en.wikipedia.org/wiki/SVG-edit</a></li>
+            </ul>
+          </section>
+        </div>
+
+        <div class="slide">
+          <section class="middle">
+            <h2>Thank you!</h2>
+            <h3>Questions?</h3>
+          </section>
+        </div>
+
+      </div> <!-- slides -->
+
+    </div> <!-- presentation -->
+
+    <script src="script.js"></script>
+
+    <!--[if lt IE 9]>
+    <script
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">
+    </script>
+        <script>CFInstall.check({ mode: "overlay" });</script>
+    <![endif]-->
+
+  </body>
+</html>
