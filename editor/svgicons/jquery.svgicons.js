@@ -139,6 +139,7 @@ $(function() {
 				new_el.setAttribute(attr.nodeName, attr.nodeValue);
 			}
 			if(attr.nodeName == 'transform') {
+				
 				console.log('val1:', attr.nodeValue);
 				console.log('val2:', new_el.getAttribute('transform'));
 			}

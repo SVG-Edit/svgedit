@@ -2609,20 +2609,13 @@
 					console.log('NOTE: Icon image missing: ' + icon_id);
 					return;
 				}
-				icon = icon.clone();
-				$(elem).empty().append(icon);
-// 				if(forcedSize) {
-// 					var obj = {};
-// 					obj[elem + ' .svg_icon'] = forcedSize;
-// 					$.resizeSvgIcons(obj);
-// 				} else {
-// 					var size = curPrefs.iconsize;
-// 					if(size && size !== 'm') {
-// 						var icon_sizes = { s:16, m:24, l:32, xl:48}, obj = {};
-// 						obj[elem + ' .svg_icon'] = icon_sizes[size];
-// 						$.resizeSvgIcons(obj);
-// 					}
-// 				}
+				try {
+					icon = icon.clone();
+					$(elem).empty().append(icon);
+				} catch(e) {
+// 					icon = svgCanvas.copyElem(icon[0]);
+				}
+				
 			}
 		
 			var ua_prefix;
