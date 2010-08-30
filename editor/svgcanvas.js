@@ -2263,7 +2263,6 @@ var groupSvgElem = this.groupSvgElem = function(elem) {
 	$(g).append(elem).data('gsvg', elem)[0].id = getNextId();
 }
 
-
 // Function: copyElem
 // Create a clone of an element, updating its ID and its children's IDs when needed
 //
@@ -2785,7 +2784,11 @@ this.setRotationAngle = function(val, preventUndo) {
 		var center = transformPoint(cx,cy,transformListToTransform(tlist).matrix);
 		var R_nc = svgroot.createSVGTransform();
 		R_nc.setRotate(val, center.x, center.y);
-		tlist.insertItemBefore(R_nc,0);
+		if(tlist.numberOfItems) {
+			tlist.insertItemBefore(R_nc, 0);
+		} else {
+			tlist.appendItem(R_nc);
+		}
 	}
 	else if (tlist.numberOfItems == 0) {
 		elem.removeAttribute("transform");
@@ -10614,7 +10617,6 @@ this.moveSelectedElements = function(dx,dy,undoable) {
 				xform.setTranslate(dx,dy);
 			}
 
-			console.log('num:',tlist.numberOfItems);
 			if(tlist.numberOfItems) {
 				tlist.insertItemBefore(xform, 0);
 			} else {
