@@ -87,7 +87,7 @@
 		curseg = seglist.getItem(1);
 		equal(curseg.pathSegTypeAsLetter, "L", "Before conversion, segment #2 type");
 		curseg = seglist.getItem(2);
-		equal(curseg.pathSegType, 1, "Before conversion, segment #3 type");
+		equal(curseg.pathSegTypeAsLetter, "Z", "Before conversion, segment #3 type" + d_abs);
 		
 		// convert and verify segments
 		var d = convert(p1, true);
