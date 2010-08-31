@@ -724,7 +724,7 @@
 									opts.fn();
 								}
 								if(opts.icon) {
-									var icon = $.getSvgIcon(opts.icon).clone();
+									var icon = $.getSvgIcon(opts.icon, true);
 								} else {
 									// 
 									var icon = $(opts.sel).children().eq(0).clone();
@@ -2601,7 +2601,7 @@
 			}
 			
 			var setIcon = Editor.setIcon = function(elem, icon_id, forcedSize) {
-				var icon = (typeof icon_id == 'string') ? $.getSvgIcon(icon_id) : icon_id;
+				var icon = (typeof icon_id == 'string') ? $.getSvgIcon(icon_id, true) : icon_id;
 				if(!icon) {
 					console.log('NOTE: Icon image missing: ' + icon_id);
 					return;
