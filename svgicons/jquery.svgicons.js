@@ -161,7 +161,7 @@ $(function() {
 		return new_el;
 	}
 
-	var svg_icons = {};
+	var svg_icons = {}, fixIDs;
 
 	$.svgIcons = function(file, opts) {
 		var svgns = "http://www.w3.org/2000/svg",
@@ -424,7 +424,7 @@ $(function() {
 			
 		}
 		
-		function fixIDs(svg_el, svg_num, force) {
+		fixIDs = function(svg_el, svg_num, force) {
 			var defs = svg_el.find('defs');
 			if(!defs.length) return svg_el;
 			
@@ -498,7 +498,13 @@ $(function() {
 		}
 	}
 	
-	$.getSvgIcon = function(id) { return svg_icons[id]; }
+	$.getSvgIcon = function(id, uniqueClone) { 
+		var icon = svg_icons[id];
+		if(uniqueClone) {
+			icon = fixIDs(icon, 0, true).clone(true);
+		}
+		return icon; 
+	}
 	
 	$.resizeSvgIcons = function(obj) {
 		// FF2 and older don't detect .svg_icon, so we change it detect svg elems instead

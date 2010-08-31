@@ -2154,8 +2154,6 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 // 						bb.width = rmaxx - rminx;
 // 						bb.height = rmaxy - rminy;
 			}
-		
-			return bb;
 		} catch(e) { 
 			console.log(elem, e);
 			return null;
@@ -2167,9 +2165,11 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 		if(full_bb) return;
 		if(!this.parentNode) return;
 		full_bb = getCheckedBBox(this);
-		var b = {};
-		for(var i in full_bb) b[i] = full_bb[i];
-		full_bb = b;
+		if(full_bb) {
+			var b = {};
+			for(var i in full_bb) b[i] = full_bb[i];
+			full_bb = b;
+		}
 
 	});
 	
@@ -7496,7 +7496,7 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 		}
 	};
 	
-	var defelems = $(svgcontent).find("linearGradient, radialGradient, filter, marker");
+	var defelems = $(svgcontent).find("linearGradient, radialGradient, filter, marker, svg");
 		defelem_ids = [],
 		i = defelems.length;
 	while (i--) {
