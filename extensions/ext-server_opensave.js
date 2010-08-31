@@ -42,10 +42,7 @@ svgEditor.addExtension("server_opensave", {
 				
 				c.width = svgCanvas.contentW;
 				c.height = svgCanvas.contentH;
-				canvg(c, data.svg);
-				
-				// Timeout to allow canvg to run a bit
-				setTimeout(function() {
+				canvg(c, data.svg, {renderCallback: function() {
 					var datauri = c.toDataURL('image/png');
 					
 					var uiStrings = svgEditor.uiStrings;
@@ -72,7 +69,7 @@ svgEditor.addExtension("server_opensave", {
 						.append('<input type="hidden" name="filename" value="' + filename + '">')
 						.appendTo('body')
 						.submit().remove();
-				}, 1000);
+				}});
 	
 				
 			}
