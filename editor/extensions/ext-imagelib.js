@@ -90,7 +90,7 @@ svgEditor.addExtension("imagelib", function() {
 	function showBrowser() {
 		var browser = $('#imgbrowse');
 		if(!browser.length) {
-			$('<div id=imgbrowse_holder><div id=imgbrowse>\
+			$('<div id=imgbrowse_holder><div id=imgbrowse class=toolbar_button>\
 			</div></div>').insertAfter('#svg_docprops');
 			browser = $('#imgbrowse');
 
@@ -101,23 +101,26 @@ svgEditor.addExtension("imagelib", function() {
 			
 			var header = $('<h1>').prependTo(browser).text(all_libs);
 			
-			var cancel = $('<input type=button value=Cancel>').appendTo(browser).click(function() {
+			var cancel = $('<button>Cancel</button>').appendTo(browser).click(function() {
 				$('#imgbrowse_holder').hide();
 			}).css({
 				position: 'absolute',
 				top: 5,
-				right: 5
+				right: -10
 			});
 
-			var back = $('<input type=button value="Show libraries">').appendTo(browser).click(function() {
+			var back = $('<button>Show libraries</button>').appendTo(browser).click(function() {
 				frame.attr('src', 'about:blank').hide();
 				lib_opts.show();
 				header.text(all_libs);
 			}).css({
 				position: 'absolute',
 				top: 5,
-				left: 5
+				left: 10
 			});
+			
+			cancel.prepend($.getSvgIcon('cancel', true));
+			back.prepend($.getSvgIcon('tool_imagelib', true));
 			
 			$.each(img_libs, function(i, opts) {
 				$('<li>').appendTo(lib_opts).text(opts.name).click(function() {
@@ -175,7 +178,7 @@ svgEditor.addExtension("imagelib", function() {
 				#imgbrowse > div,\
 				#imgbrowse > ul {\
 					position: absolute;\
-					top: 36px;\
+					top: 45px;\
 					left: 10px;\
 					right: 10px;\
 					bottom: 10px;\
