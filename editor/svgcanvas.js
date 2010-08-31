@@ -3733,10 +3733,12 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		// if it was a translate, put back the rotate at the new center
 		if (operation == 2) {
 			if (angle) {
-				newcenter = {
-					x: oldcenter.x + m.e,
-					y: oldcenter.y + m.f
-				};
+				if(!hasMatrixTransform(tlist)) {
+					newcenter = {
+						x: oldcenter.x + m.e,
+						y: oldcenter.y + m.f
+					};
+				}
 				var newRot = svgroot.createSVGTransform();
 				newRot.setRotate(angle, newcenter.x, newcenter.y);
 				tlist.insertItemBefore(newRot, 0);
