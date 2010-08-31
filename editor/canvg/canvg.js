@@ -31,6 +31,8 @@ if(!Array.indexOf){
 	// opts: optional hash of options
 	//		 ignoreMouse: true => ignore mouse events
 	//		 ignoreAnimation: true => ignore animations
+	//		 renderCallback: function => will call the function after the first render is completed
+	//		 forceRedraw: function => will call the function on every frame, if it returns true, will redraw
 	this.canvg = function (target, s, opts) {
 		if (typeof target == 'string') {
 			target = document.getElementById(target);
@@ -69,6 +71,7 @@ if(!Array.indexOf){
 			svg.Definitions = {};
 			svg.Styles = {};
 			svg.Animations = [];
+			svg.Images = [];
 			svg.ctx = ctx;
 			svg.ViewPort = new (function () {
 				this.viewPorts = [];
@@ -86,6 +89,14 @@ if(!Array.indexOf){
 			});
 		}
 		svg.init();
+		
+		// images loaded
+		svg.ImagesLoaded = function() { 
+			for (var i=0; i<svg.Images.length; i++) {
+				if (!svg.Images[i].loaded) return false;
+			}
+			return true;
+		}
 
 		// trim
 		svg.trim = function(s) { return s.replace(/^\s+|\s+$/g, ''); }
@@ -996,6 +1007,7 @@ if(!Array.indexOf){
 			
 			this.getMarkers = function() {
 				var markers = [];
+
 				for (var i=0; i<this.points.length - 1; i++) {
 					markers.push([this.points[i], this.points[i].angleTo(this.points[i+1])]);
 				}
@@ -1777,25 +1789,14 @@ if(!Array.indexOf){
 			this.base = svg.Element.RenderedElementBase;
 			this.base(node);
 			
+			svg.Images.push(this);
 			this.img = document.createElement('img');
 			this.loaded = false;
-			
 			var that = this;
-			this.renderChildren = function(ctx) {
-				if (!this.loaded) {
-					var src = this.attribute('xlink:href').value;
-					this.img.onload = function() {
-						that.loaded = true;
-						that.drawImage(ctx);
-					}
-					this.img.src = src;					
-				}
-				else {
-					this.drawImage(ctx);
-				}
-			}
+			this.img.onload = function() { that.loaded = true; }
+			this.img.src = this.attribute('xlink:href').value;
 			
-			this.drawImage = function(ctx) {
+			this.renderChildren = function(ctx) {
 				var x = this.attribute('x').Length.toPixels('x');
 				var y = this.attribute('y').Length.toPixels('y');
 				
@@ -1958,32 +1959,53 @@ if(!Array.indexOf){
 			}
 			
 			// bind mouse
-			ctx.canvas.onclick = function(e) {
-				var p = mapXY(new svg.Point(e != null ? e.clientX : event.clientX, e != null ? e.clientY : event.clientY));
-				svg.Mouse.onclick(p.x, p.y);
-			}
-			ctx.canvas.onmousemove = function(e) {
-				var p = mapXY(new svg.Point(e != null ? e.clientX : event.clientX, e != null ? e.clientY : event.clientY));
-				svg.Mouse.onmousemove(p.x, p.y);
+			if (svg.opts == null || svg.opts['ignoreMouse'] != true) {
+				ctx.canvas.onclick = function(e) {
+					var p = mapXY(new svg.Point(e != null ? e.clientX : event.clientX, e != null ? e.clientY : event.clientY));
+					svg.Mouse.onclick(p.x, p.y);
+				};
+				ctx.canvas.onmousemove = function(e) {
+					var p = mapXY(new svg.Point(e != null ? e.clientX : event.clientX, e != null ? e.clientY : event.clientY));
+					svg.Mouse.onmousemove(p.x, p.y);
+				};
 			}
 		
 			var dom = svg.parseXml(xml);
 			var e = svg.CreateElement(dom.documentElement);
-			
-			// set canvas size
-			if (e.attribute('width').hasValue()) {
-				ctx.canvas.width = e.attribute('width').Length.toPixels(ctx.canvas.parentNode.clientWidth);
-			}
-			if (e.attribute('height').hasValue()) {
-				ctx.canvas.height = e.attribute('height').Length.toPixels(ctx.canvas.parentNode.clientHeight);
-			}
-			svg.ViewPort.SetCurrent(ctx.canvas.clientWidth, ctx.canvas.clientHeight);
-			
+					
 			// render loop
-			ctx.clearRect(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
-			e.render(ctx);
+			var isFirstRender = true;
+			var draw = function() {
+				// set canvas size
+				if (e.style('width').hasValue()) {
+					ctx.canvas.width = e.style('width').Length.toPixels(ctx.canvas.parentNode.clientWidth);
+				}
+				if (e.style('height').hasValue()) {
+					ctx.canvas.height = e.style('height').Length.toPixels(ctx.canvas.parentNode.clientHeight);
+				}
+				svg.ViewPort.SetCurrent(ctx.canvas.clientWidth, ctx.canvas.clientHeight);			
+			
+				// clear and render
+				ctx.clearRect(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
+				e.render(ctx);
+				if (isFirstRender) {
+					isFirstRender = false;
+					if (svg.opts != null && typeof(svg.opts['renderCallback']) == 'function') svg.opts['renderCallback']();
+				}			
+			}
+			
+			var waitingForImages = true;
+			if (svg.ImagesLoaded()) {
+				waitingForImages = false;
+				draw();
+			}
 			svg.intervalID = setInterval(function() { 
 				var needUpdate = false;
+				
+				if (waitingForImages && svg.ImagesLoaded()) {
+					waitingForImages = false;
+					needUpdate = true;
+				}
 			
 				// need update from mouse events?
 				if (svg.opts == null || svg.opts['ignoreMouse'] != true) {
@@ -1996,11 +2018,15 @@ if(!Array.indexOf){
 						needUpdate = needUpdate | svg.Animations[i].update(1000 / svg.FRAMERATE);
 					}
 				}
-
+				
+				// need update from redraw?
+				if (svg.opts != null && typeof(svg.opts['forceRedraw']) == 'function') {
+					if (svg.opts['forceRedraw']() == true) needUpdate = true;
+				}
+				
 				// render if needed
 				if (needUpdate) {
-					ctx.clearRect(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
-					e.render(ctx);
+					draw();				
 					svg.Mouse.runEvents(); // run and clear our events
 				}
 			}, 1000 / svg.FRAMERATE);
