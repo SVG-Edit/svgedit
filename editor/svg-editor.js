@@ -588,10 +588,7 @@
 				
 				c.width = svgCanvas.contentW;
 				c.height = svgCanvas.contentH;
-				canvg(c, data.svg);
-				
-				// T
-				setTimeout(function() {
+				canvg(c, data.svg, {renderCallback: function() {
 					var datauri = c.toDataURL('image/png');
 					exportWindow.location.href = datauri;
 					var done = $.pref('export_notice_done');
@@ -609,7 +606,7 @@
 						$.pref('export_notice_done', 'all'); 
 						exportWindow.alert(note);
 					}
-				},1000);
+				}});
 			};
 			
 			// called when we've selected a different element
