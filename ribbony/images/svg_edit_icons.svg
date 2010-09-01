@@ -1,0 +1,1004 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg">
+<!-- All images created with SVG-edit - http://svg-edit.googlecode.com/ -->
+
+<g id="logo">
+<svg viewBox="0 0 478 472" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <linearGradient id="svg_5" x1="0" y1="0" x2="1" y2="1">
+   <stop offset="0" stop-color="#ffffe0" stop-opacity="1"/>
+   <stop offset="1" stop-color="#edc39c" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="svg_10" x1="0.57031" y1="0.78125" x2="0.28906" y2="0.41406">
+   <stop offset="0" stop-color="#ff7f00" stop-opacity="1"/>
+   <stop offset="1" stop-color="#ffff00"/>
+  </linearGradient>
+  <linearGradient id="svg_18" x1="0.37891" y1="0.35938" x2="1" y2="1">
+   <stop offset="0" stop-color="#e0e0e0" stop-opacity="1"/>
+   <stop offset="1" stop-color="#666666" stop-opacity="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <path d="m68.82031,270.04688l-22,-33l17,-35l34,2l25,15l7,-35l28,-16l25,12l100,102l21,23l-15,35l-36,9l20,49l-31,24l-49,-17l-1,31l-33,21l-31,-19l-13,-35l-30,21l-30,-9l-5,-35l16,-31l-32,-6l-15,-19l3,-36l47,-18z" id="svg_19" fill="#ffffff"/>
+  <path fill="#1a171a" fill-rule="nonzero" id="path2902" d="m158.96452,155.03685c-25.02071,0 -45.37077,20.35121 -45.37077,45.3775c0,0.72217 0.01794,1.4399 0.0471,2.15645c-0.49339,-0.53604 -0.99355,-1.06085 -1.50603,-1.58452c-8.56077,-8.55519 -19.95982,-13.28413 -32.07432,-13.28413c-12.12122,0 -23.52027,4.72334 -32.08778,13.29646c-17.69347,17.69464 -17.69347,46.4619 0,64.17445c0.51809,0.51697 1.0485,1.0126 1.59015,1.50601c-0.72891,-0.03586 -1.45782,-0.04822 -2.19234,-0.04822c-25.02071,0 -45.37189,20.35117 -45.37189,45.37747c0,25.01398 20.35119,45.36517 45.37189,45.36517c0.72891,0 1.45221,-0.01236 2.1744,-0.04828c-0.5293,0.48221 -1.05412,0.98801 -1.56547,1.49368c-17.70021,17.68906 -17.70021,46.48654 -0.00628,64.18677c8.57872,8.56747 19.96655,13.2785 32.08778,13.2785c12.1145,0 23.5012,-4.71103 32.07433,-13.2785c0.51247,-0.51694 1.01823,-1.04849 1.50603,-1.57895c-0.02915,0.71213 -0.04709,1.44669 -0.04709,2.15759c0,25.01511 20.35007,45.37747 45.37077,45.37747c25.01398,0 45.37079,-20.3624 45.37079,-45.37747c0,-0.7222 -0.01689,-1.44553 -0.05266,-2.18112c0.48105,0.52933 0.97562,1.04849 1.48697,1.56662c8.57982,8.57977 19.97775,13.2908 32.1057,13.2908c12.11003,0 23.51358,-4.71103 32.0687,-13.2785c17.68906,-17.70013 17.68906,-46.48538 0,-64.17441c-0.50577,-0.4946 -1.01141,-1.00034 -1.54306,-1.48248c0.69983,0.03592 1.42316,0.04828 2.16992,0.04828c25.01514,0 45.35284,-20.35123 45.35284,-45.36517c0,-25.02631 -20.33774,-45.37747 -45.35284,-45.37747c-0.74683,0 -1.47009,0.01236 -2.19345,0.04822c0.53152,-0.49341 1.06082,-0.98904 1.59128,-1.50601c8.55521,-8.55521 13.2785,-19.94186 13.2785,-32.07545c0,-12.12793 -4.72336,-23.52028 -13.30319,-32.0934c-8.55515,-8.56076 -19.95866,-13.2841 -32.0687,-13.2841c-12.12122,0 -23.52025,4.72334 -32.08777,13.2841c-0.51137,0.5181 -1.01822,1.04851 -1.5049,1.57895c0.03586,-0.72331 0.05266,-1.43991 0.05266,-2.16881c0,-25.02629 -20.35681,-45.3775 -45.37079,-45.3775m0,20.71901c13.61607,0 24.65851,11.03122 24.65851,24.65849c0,6.62749 -2.651,12.62137 -6.9101,17.04979l0,51.67419l36.53975,-36.53523c0.12001,-6.14418 2.48277,-12.24686 7.18146,-16.94667c4.81305,-4.81305 11.12094,-7.22409 17.44116,-7.22409c6.30228,0 12.61577,2.41104 17.43552,7.22409c9.62166,9.63287 9.62166,25.24948 0,34.87669c-4.69977,4.68634 -10.80803,7.04915 -16.95334,7.18147l-36.5341,36.53305l51.66742,0c4.42841,-4.25351 10.42905,-6.90451 17.08008,-6.90451c13.59137,0 24.62933,11.03799 24.62933,24.66525c0,13.61606 -11.03796,24.66519 -24.62933,24.66519c-6.65106,0 -12.65167,-2.66333 -17.08008,-6.91681l-51.64836,0l36.50273,36.50946c6.16995,0.14465 12.26587,2.50522 16.96568,7.20618c9.6216,9.61487 9.6216,25.23151 0,34.85757c-4.80856,4.81979 -11.13327,7.22974 -17.43556,7.22974c-6.32019,0 -12.63371,-2.40991 -17.44786,-7.22974c-4.68074,-4.68744 -7.04802,-10.79572 -7.17473,-16.94098l-36.53975,-36.53415l0,51.66742c4.25908,4.44635 6.9101,10.43466 6.9101,17.0621c0,13.62729 -11.04243,24.66415 -24.65851,24.66415c-13.62166,0 -24.65848,-11.0369 -24.65848,-24.66415c0,-6.62744 2.64539,-12.61575 6.90335,-17.0621l0,-51.66742l-36.53864,36.54648c-0.12672,6.14413 -2.48838,12.26477 -7.18147,16.94098c-4.81416,4.81873 -11.12206,7.22974 -17.42882,7.22974c-6.31461,0 -12.6225,-2.41101 -17.43555,-7.22974c-9.63284,-9.62833 -9.63284,-25.24277 0,-34.8699c4.68073,-4.67627 10.79012,-7.05026 16.94101,-7.18262l36.533,-36.53302l-51.66632,0c-4.44075,4.25348 -10.42902,6.91681 -17.06211,6.91681c-13.61606,0 -24.65288,-11.04913 -24.65288,-24.66519c0,-13.62726 11.03682,-24.66525 24.65288,-24.66525c6.63309,0 12.62136,2.651 17.06211,6.90451l51.68537,0l-36.55208,-36.54538c-6.14527,-0.12 -12.25354,-2.49403 -16.94775,-7.19377c-9.62611,-9.61493 -9.62611,-25.23715 0,-34.86441c4.81419,-4.81305 11.12769,-7.22406 17.44228,-7.22406c6.30676,0 12.61465,2.41101 17.42883,7.22406c4.69978,4.69307 7.06034,10.80246 7.18144,16.94777l36.5386,36.53299l0,-51.66074c-4.25795,-4.42841 -6.90334,-10.42229 -6.90334,-17.04979c0,-13.62726 11.03682,-24.65848 24.65848,-24.65848"/>
+  <path d="m188.82031,210.04688l16,-47l155,-148l107,100l-158,156.99999l-44,12l-76,-74z" id="svg_6" fill="url(#svg_10)" stroke="none"/>
+  <path d="m335.57031,40.29688c-11.5,39.75 55.5,115.25 109.25,98.75l21,-20.99999l-103,-101l-27.25,23.25z" id="svg_11" fill="url(#svg_18)" stroke="none"/>
+  <rect x="272.80404" y="20.76382" width="42.35197" height="232.66835" id="svg_13" fill="#ffffff" stroke="none" transform="rotate(45.9094, 293.98, 137.1)" opacity="0.4"/>
+  <rect x="282.80404" y="22.76382" width="14" height="232.66835" fill="#ffffff" stroke="none" transform="rotate(45.9094, 289.805, 139.1)" opacity="0.4" id="svg_14"/>
+  <ellipse cx="415.13312" cy="64.38066" id="svg_12" fill="#ea7598" stroke="none" rx="67.79251" ry="34.82026" transform="rotate(39.4735, 415.133, 64.379)"/>
+  <path d="m212.07031,166.04688c-8.5,47 36.25,103.75 99.25,96.75l-152.5,53.25l53.25,-150z" id="svg_4" fill="url(#svg_5)" stroke="none"/>
+  <path d="m181.32031,242.54688c0.5,20.5 26.75,45 46.75,48.5l-66.25,20l19.5,-68.5z" id="svg_3" fill="#27382f" stroke="none"/>
+ </g>
+ <g>
+  <title>Layer 2</title>
+  <path d="m152.82031,317.04688l51,-152l157,-153c40,-12.00001 118,48 105,105l-157,152.99999l-156,47z" id="svg_1" fill="none" stroke="#800000" stroke-width="17"/>
+ </g>
+</svg>
+</g>
+
+
+<g id="select">
+	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+	  <path stroke="#ffffff" fill="#000000" id="svg_13" d="m7.38168,2.46948l0.07502,17.03258l3.30083,-2.62617l2.62566,5.62751l4.20105,-2.62617l-3.30082,-4.80214l4.57614,-0.37517l-11.47787,-12.23044z"/>
+	</svg>
+</g>
+
+<g id="select_node">
+	<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	  <circle stroke="#0000ff" fill="#00ffff" id="svg_44" r="3.87891" cy="5.3" cx="8.7" stroke-width="1.5"/>
+	  <path d="m9.18161,5.6695l0.07763,15.16198l3.41588,-2.33775l2.71718,5.00947l4.34748,-2.33775l-3.41587,-4.27474l4.73565,-0.33397l-11.87794,-10.88723z" id="svg_13" fill="#000000" stroke="#ffffff"/>
+	</svg>
+</g>
+
+<g id="square">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+ <defs>
+  <linearGradient id="svg_2" x1="0.36328" y1="0.10156" x2="1" y2="1">
+   <stop offset="0" stop-color="#ffffff" stop-opacity="1"/>
+   <stop offset="1" stop-color="#3b7e9b" stop-opacity="1"/>
+  </linearGradient>
+ </defs>
+  <rect x="1.5" y="1.5" width="20" height="20" id="svg_1" fill="url(#svg_2)" stroke="#000000"/>
+ </svg>
+</g>
+
+<g id="rect">
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient y2="1" x2="1" y1="0.10156" x1="0.36328" id="svg_2">
+   <stop stop-opacity="1" stop-color="#ffffff" offset="0"/>
+   <stop stop-opacity="1" stop-color="#3b7e9b" offset="1"/>
+  </linearGradient>
+ </defs>
+  <rect transform="matrix(1, 0, 0, 1, 0, 0)" stroke="#000000" fill="url(#svg_2)" id="svg_1" height="12" width="20" y="5.5" x="1.5"/>
+ </svg>
+</g>
+
+<g id="fh_rect">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+ <defs>
+  <linearGradient y2="1" x2="1" y1="0.10156" x1="0.36328" id="svg_2">
+
+   <stop stop-opacity="1" stop-color="#ffffff" offset="0"/>
+   <stop stop-opacity="1" stop-color="#3b7e9b" offset="1"/>
+  </linearGradient>
+  <linearGradient y2="0.3945" x2="0.6132" y1="0.1093" x1="0.3046" id="svg_9">
+   <stop stop-opacity="1" stop-color="#f9d225" offset="0"/>
+   <stop stop-opacity="1" stop-color="#bf5f00" offset="1"/>
+  </linearGradient>
+ </defs>
+  <rect stroke="#000000" stroke-width="2" fill="url(#svg_2)" id="svg_1" height="50" width="50" y="0.75" x="1.25"/>
+  <path stroke-width="2" stroke="#000000" fill="url(#svg_9)" id="svg_2" d="m31.5,0l-8.75,20.25l0.75,24l16.5,-16.5l6,-12.5"/>
+  <path stroke-width="2" stroke="#000000" fill="#fce0a9" id="svg_10" d="m39.5,28.5c-2,-9.25 -10.25,-11.75 -17,-7.4375l0.4843,24.4414z"/>
+  <path id="svg_11" stroke-width="2" stroke="#000000" fill="#000000" d="m26.9318,41.1745c-0.4491,-2.3511 -2.3021,-2.9866 -3.8181,-1.8905l0.1087,6.2126z"/>
+</svg>
+</g>
+
+
+<g id="circle">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54 54">
+ <defs>
+  <linearGradient y2="1.0" x2="1.0" y1="0.1875" x1="0.171875" id="svg_4">
+   <stop stop-opacity="1" stop-color="#ffffff" offset="0.0"/>
+   <stop stop-opacity="1" stop-color="#ff6666" offset="1.0"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <circle stroke-opacity="1" fill-opacity="1" stroke-width="2" stroke="#000000" fill="url(#svg_4)" id="svg_1" r="23" cy="27" cx="27"/>
+ </g>
+</svg>
+</g>
+
+<g id="ellipse">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54 54">
+ <defs>
+  <linearGradient y2="1.0" x2="1.0" y1="0.1875" x1="0.171875" id="svg_4">
+   <stop stop-opacity="1" stop-color="#ffffff" offset="0.0"/>
+   <stop stop-opacity="1" stop-color="#ff6666" offset="1.0"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <ellipse stroke-opacity="1" fill-opacity="1" stroke-width="2" stroke="#000000" fill="url(#svg_4)" id="svg_1" rx="23" ry="15" cy="27" cx="27"/>
+ </g>
+</svg>
+</g>
+
+<g id="fh_ellipse">
+<svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient id="svg_9" x1="0.3046" y1="0.1093" x2="0.6132" y2="0.3945">
+   <stop offset="0" stop-color="#f9d225" stop-opacity="1"/>
+   <stop offset="1" stop-color="#bf5f00" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="svg_4" x1="0.17188" y1="0.1875" x2="1" y2="1">
+   <stop offset="0" stop-color="#ffffff" stop-opacity="1"/>
+   <stop offset="1" stop-color="#ff6666" stop-opacity="1"/>
+  </linearGradient>
+ </defs>
+  <ellipse stroke-width="2" stroke="#000000" fill="url(#svg_4)" id="svg_1" rx="23" ry="12" cy="37" cx="27"/>
+  <path d="m31.5,0l-8.75,20.25l0.75,24l16.5,-16.5l6,-12.5" id="svg_2" fill="url(#svg_9)" stroke="#000000" stroke-width="2"/>
+  <path d="m39.5,28.5c-2,-9.25 -10.25,-11.75 -17,-7.4375l0.4843,24.4414z" id="svg_10" fill="#fce0a9" stroke="#000000" stroke-width="2"/>
+  <path d="m26.9318,41.1745c-0.4491,-2.3511 -2.3021,-2.9866 -3.8181,-1.8905l0.1087,6.2126z" fill="#000000" stroke="#000000" stroke-width="2" id="svg_11"/>
+ </svg>
+</g>
+
+<g id="pencil">
+<svg viewBox="0 0 48 52" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+   <linearGradient id="svg_9" x1="0.3046" y1="0.1093" x2="0.6132" y2="0.3945">
+    <stop offset="0.0" stop-color="#f9d225" stop-opacity="1"/>
+    <stop offset="1.0" stop-color="#bf5f00" stop-opacity="1"/>
+   </linearGradient>
+  </defs>
+  <path d="M31.5,0 l-8.75,20.25 l0.75,24 l16.5,-16.5 l6,-12.5" id="svg_2" fill="url(#svg_9)" stroke="#000000" stroke-width="2" fill-opacity="1" stroke-opacity="1"/>
+  <path d="M39.5,28.5 c-2,-9.25 -10.25,-11.75 -17,-7.4375 l0.4843,24.4414z" id="svg_10" fill="#fce0a9" stroke="#000000" stroke-width="2" fill-opacity="1" stroke-opacity="1"/>
+  <path d="M26.9318,41.1745 c-0.4491,-2.3511 -2.3021,-2.9866 -3.8181,-1.8905 l0.1087,6.2126z" fill="#000000" stroke="#000000" stroke-width="2" fill-opacity="1" stroke-opacity="1" id="svg_11"/>
+  <path d="M2.3132,4.6197 c12.4998,-1.6891 10.4729,7.0945 0,21.6215 c22.9729,-4.0539 12.1620,5.4053 12.1620,13.1756 c-0.3377,4.0539 8.7836,21.9594 26.0135,-1.3513" id="svg_12" fill="none" stroke="#000000" stroke-width="2" fill-opacity="1" stroke-opacity="1"/>
+</svg>
+</g>
+
+<g id="pen">
+	<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	 <defs>
+	  <linearGradient id="svg_16" x1="0.46484" y1="0.15625" x2="0.9375" y2="0.39453">
+	   <stop offset="0" stop-color="#f2feff" stop-opacity="1"/>
+	   <stop offset="1" stop-color="#14609b" stop-opacity="1"/>
+	  </linearGradient>
+	  <linearGradient id="svg_19" x1="0.18359" y1="0.26172" x2="0.77734" y2="0.56641">
+	   <stop offset="0" stop-color="#ffffff" stop-opacity="1"/>
+	   <stop offset="1" stop-color="#fce564" stop-opacity="1"/>
+	  </linearGradient>
+	 </defs>
+	  <line x1="0.99844" y1="1.49067" x2="12.97691" y2="21.14149" id="svg_5" stroke="#000000" fill="none"/>
+	  <path d="m14.05272,13.68732l-1.46451,7.52632l4.03769,-6.32571" id="svg_6" fill="#a0a0a0" stroke="#000000"/>
+	  <path d="m13.61215,10.26563c-0.38567,1.05257 -0.60723,2.40261 -0.50403,3.125l4.33468,1.81452c0.46153,-0.30769 1.6129,-1.71371 1.6129,-2.52016" id="svg_7" fill="url(#svg_19)" stroke="#000000"/>
+	  <path d="m16.61335,1.00028l-3.67325,8.60247l7.10285,3.47318l3.17783,-7.20549" id="svg_8" fill="url(#svg_16)" stroke="#000000"/>
+	</svg>
+</g>
+
+<g id="text">
+	<svg viewBox="0 0 158 128" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	  <text x="58" y="120" id="svg_1" fill="#000000" stroke="none" font-size="120pt" font-family="sans-serif" text-anchor="middle" fill-opacity="1" stroke-opacity="1" font-weight="bold">A</text>
+	  <line x1="136" y1="7" x2="136" y2="121" id="svg_2" stroke="#000000" fill="none" fill-opacity="1" stroke-opacity="1" stroke-width="5"/>
+	  <line x1="120" y1="4" x2="152" y2="4" id="svg_3" stroke="#000000" stroke-width="5" fill="none" fill-opacity="1" stroke-opacity="1"/>
+	 <line x1="120" y1="124" x2="152" y2="124" stroke="#000000" stroke-width="5" fill="none" fill-opacity="1" stroke-opacity="1" id="svg_4"/>
+	</svg>
+</g>
+
+
+<g id="path">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 124 124" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient y2="1" x2="1" y1="0.28125" x1="0.33594" id="svg_4">
+   <stop stop-opacity="1" stop-color="#ffffff" offset="0"/>
+   <stop stop-opacity="1" stop-color="#33a533" offset="1"/>
+  </linearGradient>
+ </defs>
+  <path stroke-dasharray="null" stroke-width="4" stroke="#000000" fill="url(#svg_4)" id="svg_1" d="m6,103l55,-87c85,33.64 -26,37.12 55,87l-110,0z"/>
+ </svg>
+</g>
+
+<g id="add_subpath">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 124 124" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient id="svg_4" x1="0.33594" y1="0.28125" x2="1" y2="1">
+   <stop offset="0" stop-color="#ffffff" stop-opacity="1"/>
+   <stop offset="1" stop-color="#33a533" stop-opacity="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <path d="m6,103l55,-87c85,33.64 -26,37.12 55,87l-110,0z" id="svg_1" fill="url(#svg_4)" stroke="#000000" stroke-width="4" stroke-dasharray="null"/>
+  <g id="svg_7">
+   <circle stroke-dasharray="null" stroke-width="5" stroke="#000000" fill="#ffffff" id="svg_6" r="22.63281" cy="88.5" cx="45.5"/>
+   <line stroke-dasharray="null" stroke-width="7" stroke="#000000" id="svg_2" y2="104.03768" x2="45.5" y1="72.96232" x1="45.5"/>
+   <line stroke-dasharray="null" stroke-width="7" stroke="#000000" id="svg_3" y2="88.5" x2="61.03768" y1="88.5" x1="29.96232"/>
+  </g>
+ </g>
+ </svg>
+</g>
+
+<g id="close_path">
+<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <g>
+  <path stroke="#000" stroke-width="15" fill="#ffc8c8" d="m121.5,40l-84,106l27,115l166,2l29,-111"/>
+  <line x1="240" y1="136" x2="169.5" y2="74" stroke="#A00" stroke-width="25" fill="none"/>
+  <path stroke="none" fill ="#A00" d="m158,65l31,74l-3,-50l51,-3z"/>
+  <g stroke-width="15" stroke="#00f" fill="#0ff">
+  <circle r="30" cy="41" cx="123"/>
+  <circle r="30" cy="146" cx="40"/>
+  <circle r="30" cy="260" cx="69"/>
+  <circle r="30" cy="260" cx="228"/>
+  <circle r="30" cy="148" cx="260"/>
+  </g>
+ </g>
+</svg>
+</g>
+
+<g id="open_path">
+<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <g>
+  <path stroke="#000" stroke-width="15" fill="#ffc8c8" d="m123.5,38l-84,106l27,115l166,2l29,-111"/>
+  <line x1="276.5" y1="153" x2="108.5" y2="24" stroke="#000" stroke-width="10" fill="none"/>
+  <g stroke-width="15" stroke="#00f" fill="#0ff">
+   <circle r="30" cy="41" cx="123"/>
+   <circle r="30" cy="146" cx="40"/>
+   <circle r="30" cy="260" cx="69"/>
+   <circle r="30" cy="260" cx="228"/>
+   <circle r="30" cy="148" cx="260"/>
+  </g>
+  <g  stroke="#A00" stroke-width="15" fill="none">
+   <line x1="168" y1="24" x2="210" y2="150"/>
+   <line x1="210" y1="24" x2="168" y2="150"/>
+  </g>
+ </g>
+</svg>
+</g>
+
+
+<g id="image">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+ <defs>
+  <linearGradient y2="1" x2="1" y1="0" x1="1" id="svg_25">
+   <stop stop-opacity="1" stop-color="#10284c" offset="0"/>
+   <stop stop-opacity="1" stop-color="#5374ad" offset="1"/>
+  </linearGradient>
+  <linearGradient y2="0.75781" x2="0.99609" y1="0" x1="1" id="svg_23">
+   <stop stop-opacity="1" stop-color="#162e84" offset="0"/>
+   <stop stop-opacity="1" stop-color="#97c4ef" offset="1"/>
+  </linearGradient>
+ </defs>
+  <rect x="1" y="3.83333" width="22" height="17" id="svg_18" fill="#202020" stroke="none"/>
+  <rect stroke-width="1.2" stroke="#ffffff" fill="#232947" id="svg_15" height="14" width="19" y="5.33333" x="2.5"/>
+  <rect fill="url(#svg_23)" id="svg_20" height="7.02244" width="15.96424" y="6.7266" x="4"/>
+  <rect fill="url(#svg_25)" id="svg_24" height="4.02393" width="15.96303" y="13.77454" x="4"/>
+  <circle fill="#ffffad" id="svg_26" r="1.83333" cy="9.82002" cx="7.13254"/>
+  <path d="m14.5696,13.77458l0.70243,-4.85313l-3.12899,4.85313l2.42656,0z" id="svg_14" fill="#404040" stroke="none"/>
+  <path d="m15.27203,8.98531c2.74584,0.06386 2.42657,4.21456 -0.63857,4.85313c0.70243,-1.27714 1.66028,-3.63985 0.63857,-4.85313z" id="svg_17" fill="#404040" stroke="none"/>
+</svg>
+</g>
+
+<g id="zoom">
+	<svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	 <defs>
+	  <linearGradient id="svg_30" x1="0" y1="0" x2="1" y2="0">
+	   <stop offset="0" stop-color="#d3d3d3" stop-opacity="1"/>
+	   <stop offset="1" stop-color="#424242" stop-opacity="1"/>
+	  </linearGradient>
+	 </defs>
+	  <path d="m107.14774,101.03477l-0.64774,43.96523c5.00857,4.72089 14.00811,5.27188 19,0l-0.31667,-44.16l-9.61514,-19.84l-8.42046,20.03477z" id="svg_29" fill="url(#svg_30)" stroke="#202020" stroke-width="2" transform="rotate(-45, 116, 114)"/>
+	  <circle cx="58" cy="58" r="51" id="svg_22" fill="#c0c0c0" stroke="#202020" stroke-width="5"/>
+	  <circle cx="58" cy="58" r="43" id="svg_27" fill="#aaccff" stroke="none"/>
+	  <path d="m15.68604,61.46511c38.13954,17.67442 48.13954,15.34883 85.11628,-0.46511c1.39536,18.60465 -19.30231,41.86047 -42.7907,40.93023c-21.6279,-0.93023 -42.7907,-21.86046 -42.32558,-40.46511z" id="svg_28" fill="#8cbaff" stroke="none"/>
+	</svg>
+</g>
+
+<g id="arrow_right">
+	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 50">
+	  <path stroke="#000000" fill="#000000" d="m0,0l0,50l25,-25l-25,-25z"/>
+	</svg>
+</g>
+
+<g id="arrow_right_big">
+	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 50">
+	  <path stroke="#000000" fill="#000000" d="m0,0l0,50l25,-25l-25,-25z"/>
+	</svg>
+</g>
+
+<g id="arrow_down">
+	<svg viewBox="0 0 50 40" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	  <path transform="rotate(90, 26, 13)" d="m14,-12l0,50l25,-25l-25,-25z" fill="#000000" stroke="#000000"/>
+	</svg>
+</g>
+
+<g id="fill">
+<svg width="32" height="33" xmlns="http://www.w3.org/2000/svg">
+  <g id="svg_5">
+   <path id="svg_4" d="m17.49167,10.97621c6.9875,-0.325 12.1875,2.70833 12.13333,7.36667l-0.325,10.075c-0.75833,4.0625 -2.275,3.0875 -3.03333,0.10833l0.21667,-9.64166c-0.43333,-0.975 -1.08333,-1.625 -1.95,-1.51667" stroke-linejoin="round" stroke="#606060" fill="#c0c0c0"/>
+   <path id="svg_1" d="m2.00055,17.1309l10.72445,-10.72445l12.67445,12.13279l-3.52056,0.05389l-9.15389,9.26223l-10.72445,-10.72445z" stroke-linejoin="round" stroke="#000000" fill="#c0c0c0"/>
+   <path id="svg_3" d="m14.35,13.57621c-0.1625,-3.95417 0.86667,-11.7 -1.84167,-11.59167c-2.70833,0.10833 -2.6,2.05833 -2.16667,6.93333" stroke-linejoin="round" stroke="#000000" fill="none"/>
+   <circle id="svg_2" r="1.60938" cy="15.20121" cx="14.45833" stroke-linejoin="round" stroke="#000000" fill="none"/>
+  </g>
+</svg>
+</g>
+
+<g id="stroke">
+<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+  <rect fill="none" stroke="#707070" stroke-width="10" x="8.625" y="8.625" width="32.75" height="32.75" id="svg_1"/>
+</svg>
+</g>
+
+<g id="opacity">
+<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <linearGradient y2="0.1" x2="0.9" y1="0.9" x1="0.1" id="svg_7">
+   <stop stop-color="#000000" offset="0"/>
+   <stop stop-opacity="0" stop-color="#000000" offset="1"/>
+  </linearGradient>
+ </defs>
+  <rect id="svg_4" height="50" width="50" y="0" x="0" fill="#ffffff"/>
+  <rect id="svg_1" height="25" width="25" y="0" x="0" fill="#a0a0a0"/>
+  <rect id="svg_2" height="25" width="25" y="25" x="25" fill="#a0a0a0"/>
+  <rect id="svg_3" height="50" width="50" y="0" x="0" stroke-width="2" stroke="url(#svg_7)" fill="url(#svg_7)"/>
+ </svg>
+</g>
+
+<g id="new_image">
+<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <rect x="2.42792" y="1.6692" width="18" height="21" id="svg_55" fill="#eaeaea" stroke="#606060"/>
+  <circle stroke="none" fill="url(#svg_9)" id="svg_65" r="6.300781" cy="7.529969" cx="17.761984"/>
+ <defs>
+  <radialGradient id="svg_9" cx="0.5" cy="0.5" r="0.5">
+   <stop offset="0.1" stop-color="#ffe500" stop-opacity="1"/>
+   <stop offset="1" stop-color="#ffff00" stop-opacity="0"/>
+  </radialGradient>
+ </defs>
+</svg>
+</g>
+
+<g id="save">
+	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+	 <defs>
+	  <linearGradient y2="0" x2="1" y1="0" x1="0" id="svg_41">
+	   <stop stop-opacity="1" stop-color="#727272" offset="0"/>
+	   <stop stop-opacity="1" stop-color="#d6d6d6" offset="1"/>
+	  </linearGradient>
+	  <linearGradient y2="0.875" x2="0.21484" y1="0.00391" x1="0.04297" id="svg_46">
+	   <stop stop-opacity="1" stop-color="#81bbf4" offset="0"/>
+	   <stop stop-opacity="1" stop-color="#376eb7" offset="1"/>
+	  </linearGradient>
+	 </defs>
+	   <path stroke="#202020" fill="#e0e0e0" id="svg_21" d="m1.51669,22.3458l21.13245,-0.10111l0,-6.06673l-2.62892,-9.80789l-16.27907,0.10111l-2.32558,9.20121l0.10111,6.67341z"/>
+	   <rect stroke="#efefef" fill="url(#svg_41)" id="svg_32" height="4.75108" width="19.21031" y="16.58227" x="2.42667"/>
+	   <path stroke="#ffffff" fill="#c0c0c0" id="svg_42" d="m4.55005,11.12235l0.70779,-2.83114l13.04348,0l0.70779,3.13448c-0.70779,2.52781 -4.04479,3.84227 -7.17897,3.84227c-2.72977,0 -6.37007,-1.41557 -7.28008,-4.1456z"/>
+	  <path stroke="#285582" fill="url(#svg_46)" id="svg_45" d="m7.14286,9.74903l5.21236,5.79151l5.50193,-5.88803l-2.50965,-0.09653l0,-2.79923c0,-2.3166 -2.3166,-5.59846 -6.56371,-5.59846c-4.05405,0 -6.27413,3.37838 -6.56371,6.75676c0.48263,-1.5444 2.7027,-4.53668 4.44015,-4.44015c2.12355,-0.09653 2.79923,1.64093 2.79923,3.37838l0.09653,2.79923l-2.41313,0.09653z"/>
+	</svg>
+</g>
+
+<g id="export">
+	<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+	 <defs>
+	  <linearGradient id="svg_5" x1="0.77734" y1="0.51172" x2="0.09375" y2="0.53516">
+	   <stop offset="0" stop-color="#81bbf4"/>
+	   <stop offset="1" stop-color="#376eb7"/>
+	  </linearGradient>
+	 </defs>
+	 <g>
+	  <rect x="7.22599" y="1.3603" width="15.76465" height="21.51735" id="svg_55" fill="#eaeaea" stroke="#606060"/>
+	  <circle fill="#31abed" stroke-width="0.5" cx="17.4206" cy="11.1278" r="4.69727" id="svg_3"/>
+	  <path fill="#ffcc00" stroke-width="0.5" d="m9.67673,20.24302l7.38701,-6.80778l2.91746,6.71323" id="svg_4"/>
+	  <rect fill="#ff5555" stroke-width="0.5" x="9.5385" y="2.94914" width="5.74652" height="5.74652" id="svg_2"/>
+	  <path d="m6.13727,17.94236l5.77328,-4.91041l-5.86949,-5.1832l-0.09622,2.36426l-4.64805,-0.06751l-0.04665,5.54694l4.79093,-0.02342l0.09623,2.27334z" id="svg_45" fill="url(#svg_5)" stroke="#285582"/>
+	 </g>
+	</svg>
+</g>
+
+<g id="open">
+<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient y2="0.91406" x2="0.65234" y1="0.14063" x1="0.42578" id="svg_76">
+   <stop stop-opacity="1" stop-color="#81bbf4" offset="0"/>
+   <stop stop-opacity="1" stop-color="#376eb7" offset="1"/>
+  </linearGradient>
+ </defs>
+  <rect x="1.65" y="3.75" width="9.8" height="16.72712" id="svg_98" fill="#c0c0c0" stroke="#606060"/>
+  <rect stroke="none" fill="#a0a0a0" id="svg_88" height="14.17459" width="6.39585" y="4.9758" x="2.89542"/>
+  <path d="m18.62576,4.54365l0,6.91443l-9.9395,0l-0.08643,-10.11236l6.828,0l3.19792,3.19793z" id="svg_99" fill="#e0e0e0" stroke="#404040"/>
+  <path d="m2.95,20.53644l1.65,-12.03644l16.2,0l-1.5,12l-16.35,0.03643z" id="svg_97" fill="url(#svg_76)" stroke="#285582"/>
+  <line fill="none" stroke="#606060" id="svg_89" y2="4.28436" x2="13.95851" y1="4.28436" x1="10.32844"/>
+  <line fill="none" stroke="#606060" id="svg_91" y2="6.53155" x2="14.82282" y1="6.53155" x1="10.32844"/>
+  <path stroke="none" fill="#ffffff" id="svg_100" d="m15.25895,1.95069l-0.00401,2.85225l2.89558,0.00004l-2.89157,-2.85229z"/>
+</svg>
+</g>
+
+<g id="import">
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient y2="0.875" x2="0.21484" y1="0.00391" x1="0.04297" id="svg_46_import">
+   <stop stop-opacity="1" stop-color="#81f4bb" offset="0"/>
+   <stop stop-opacity="1" stop-color="#37b76e" offset="1"/>
+  </linearGradient>
+ </defs>
+ <rect x="2.42792" y="1.6692" width="18" height="21" id="svg_55" fill="#eaeaea" stroke="#606060"/>
+	  <path stroke="#285582" fill="url(#svg_46_import)" id="svg_45" d="m7.14286,12.74903l5.21236,5.79151l5.50193,-5.88803l-2.50965,-0.09653l0,-2.79923c0,-2.3166 -2.3166,-5.59846 -6.56371,-5.59846c-4.05405,0 -6.27413,3.37838 -6.56371,6.75676c0.48263,-1.5444 2.7027,-4.53668 4.44015,-4.44015c2.12355,-0.09653 2.79923,1.64093 2.79923,3.37838l0.09653,2.79923l-2.41313,0.09653z"/>
+</svg>
+</g>
+
+<g id="docprops">
+	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+	 <defs>
+	  <linearGradient y2="1" x2="1" y1="0.5" x1="1" id="svg_53">
+	   <stop stop-opacity="1" stop-color="#606060" offset="0"/>
+	   <stop stop-opacity="0" stop-color="#5e5e5e" offset="1"/>
+	  </linearGradient>
+	 </defs>
+	  <rect stroke="#606060" fill="#eaeaea" id="svg_55" height="21" width="18" y="1.6692" x="2.42792"/>
+	  <line fill="none" stroke="#a0a0a0" id="svg_56" y2="4.37757" x2="14.89023" y1="4.37757" x1="6.696"/>
+	  <line fill="none" stroke="#a0a0a0" id="svg_57" y2="7.10804" x2="12.92026" y1="7.10804" x1="6.6948"/>
+	  <line fill="none" stroke="#a0a0a0" id="svg_58" y2="9.84241" x2="15.64716" y1="9.84241" x1="6.6942"/>
+	  <line fill="none" stroke="#a0a0a0" id="svg_59" y2="12.36585" x2="13.21805" y1="12.36585" x1="6.69691"/>
+	  <line fill="none" stroke="#a0a0a0" id="svg_60" y2="15.06507" x2="14.43591" y1="15.06507" x1="6.69691"/>
+	  <line fill="none" stroke="#a0a0a0" id="svg_61" y2="17.84241" x2="13.36979" y1="17.84241" x1="6.69691"/>
+	  <g id="svg_54">
+	   <path transform="rotate(-45, 12.5448, 11.7085)" stroke="none" fill="#606060" id="svg_31" d="m11.24329,8.73944l0,2.79974l2.53499,0.07777l0,-2.95528c1.78134,0.07777 2.26093,1.39987 2.12391,2.95528c-0.06851,1.63318 -1.30175,3.49967 -3.49418,3.26636c-2.19242,-0.31108 -2.87755,-1.39987 -3.15161,-2.72197c-0.27406,-1.39987 0.41108,-3.34413 1.98689,-3.4219z"/>
+	   <rect opacity="0.95" transform="rotate(-45, 16.2485, 15.1732)" stroke="none" fill="url(#svg_53)" id="svg_50" height="4.85445" width="2.57974" y="12.746" x="15.04047"/>
+	  </g>
+	</svg>
+</g>
+
+<g id="source">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 55 52">
+  <text xml:space="preserve" text-anchor="middle" font-family="monospace" font-size="24" stroke="none" fill="#019191" id="svg_40" y="15" x="28.23" font-weight="bold">s</text>
+  <text xml:space="preserve" text-anchor="middle" font-family="monospace" font-size="24" stroke="none" fill="#019191" id="svg_47" y="30" x="28.23" font-weight="bold">v</text>
+  <text xml:space="preserve" text-anchor="middle" font-family="monospace" font-size="24" stroke="none" fill="#019191" id="svg_48" y="44" x="28.23" font-weight="bold">g</text>
+  <line stroke-width="3" fill="none" stroke="#aa0000" id="svg_51" y2="43" x2="16" y1="25" x1="5"/>
+  <line id="svg_62" stroke-width="3" fill="none" stroke="#aa0000" y2="8" x2="16" y1="26" x1="5"/>
+  <line id="svg_63" stroke-width="3" fill="none" stroke="#aa0000" y2="43" x2="39" y1="25" x1="50"/>
+  <line id="svg_64" stroke-width="3" fill="none" stroke="#aa0000" y2="8" x2="39" y1="26" x1="51"/>
+ </svg>
+</g>
+ 
+<g id="wireframe">
+ <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <circle stroke="#000000" fill="none" id="svg_49" r="8" cy="9.5" cx="9.5"/>
+  <rect stroke="#000000" fill="none" id="svg_52" height="14" width="14" y="8.5" x="8.5"/>
+ </svg>
+</g>
+
+<g id="undo">
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient id="svg_66" x1="0.04297" y1="0.00391" x2="0.21484" y2="0.875">
+   <stop offset="0" stop-color="#f7f963" stop-opacity="1"/>
+   <stop offset="1" stop-color="#d3c310" stop-opacity="1"/>
+  </linearGradient>
+ </defs>
+  <path transform="rotate(-90, 10.3017, 11.5526)" d="m6.70188,10.72562l6.55493,-7.13388l6.65817,7.24912l-3.79441,0.03193l0,2.72259c-0.04257,2.74017 -2.76516,5.83068 -7.81235,6.02135c-5.18575,0 -7.1226,-3.75464 -7.49302,-7.41944c0.61736,1.6754 3.14913,3.78397 5.3716,3.67918c2.71635,0.1048 4.41501,-0.61714 4.41501,-2.50184l0,-2.64901l-3.89995,0z" id="svg_45" fill="url(#svg_66)" stroke="#b7a800"/>
+ </svg>
+</g>
+
+<g id="redo">
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient y2="1" x2="1" y1="0" x1="1" id="svg_71">
+   <stop stop-opacity="1" stop-color="#98fc46" offset="0"/>
+   <stop stop-opacity="1" stop-color="#56aa25" offset="1"/>
+  </linearGradient>
+ </defs>
+  <path transform="rotate(-90, 12.7299, 11.5526)" d="m9.11294,12.43144l6.54089,6.84566l6.6439,-6.95624l-3.78628,-0.03064l0,-2.61259c-0.04248,-2.62946 -2.75924,-5.5951 -7.79561,-5.77807c-5.17464,0 -7.10734,3.60294 -7.47697,7.11967c0.61604,-1.60771 3.14238,-3.63109 5.36009,-3.53053c2.71053,-0.10056 4.40555,0.59221 4.40555,2.40076l0,2.54198l-3.89159,0z" id="svg_45" fill="url(#svg_71)" stroke="#44aa00"/>
+ </svg>
+</g>
+
+<g id="clone">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+ <defs>
+  <linearGradient y2="1" x2="1" y1="0" x1="0" id="svg_36">
+   <stop stop-opacity="1" stop-color="#f9f3de" offset="0"/>
+   <stop stop-opacity="1" stop-color="#ccbd8f" offset="1"/>
+  </linearGradient>
+  <linearGradient y2="0.80078" x2="0.42578" y1="0" x1="0" id="svg_69">
+   <stop stop-opacity="1" stop-color="#f9f3de" offset="0"/>
+   <stop stop-opacity="1" stop-color="#af995b" offset="1"/>
+  </linearGradient>
+ </defs>
+  <path stroke="#8f5902" fill="url(#svg_69)" id="svg_34" d="m2.11676,16.32061l-0.13787,-5.05515l1.93015,-2.02206l10.11029,0l2.02206,2.29779l0,4.77941l-13.92463,0z"/>
+  <rect x="7.85379" y="6.30027" width="2.2932" height="4.3407" id="svg_38" fill="url(#svg_36)" stroke="#8f5902" rx="1" ry="1"/>
+  <circle stroke="#8f5902" fill="url(#svg_36)" id="svg_35" r="2.96392" cy="4.48149" cx="9.11757"/>
+  <line x1="2.44838" y1="12.03512" x2="15.5524" y2="12.03512" id="svg_39" stroke="#f9f3de" fill="none"/>
+  <path d="m6.72427,12.55859l4.74203,0l-2.30831,2.07258l-2.43372,-2.07258z" id="svg_43" fill="#000000" stroke="none"/>
+</svg>
+</g>
+
+<g id="delete">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <rect ry="3" rx="3" stroke="#800000" fill="#aa0000" id="svg_37" height="20.29514" width="21.17486" y="1.70304" x="1.42011"/>
+  <rect ry="3" rx="3" stroke="#ff5555" fill="#aa0000" id="svg_67" height="18.63022" width="19.61118" y="2.53597" x="2.20258"/>
+  <line stroke-width="2" fill="none" stroke="#ffffff" id="svg_68" y2="16.85127" x2="17.00646" y1="6.85127" x1="7.00646"/>
+  <line stroke-width="2" id="svg_70" fill="none" stroke="#ffffff" y2="16.85127" x2="7.00646" y1="6.85127" x1="17.00646"/>
+ </svg>
+</g>
+
+<g id="go_up">
+	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+	 <defs>
+	  <linearGradient y2="0" x2="0.7" y1="0" x1="0" id="svg_74">
+	   <stop stop-opacity="1" stop-color="#afe853" offset="0"/>
+	   <stop stop-opacity="1" stop-color="#52a310" offset="1"/>
+	  </linearGradient>
+	 </defs>
+	  <path stroke="#008000" fill="url(#svg_74)" id="svg_33" d="m5.38492,16.77043l7.07692,0l0,-5.23077l4.15385,0l-7.69231,-10.15385l-7.69231,10.15385l4.15385,0l0,5.23077z"/>
+	</svg>
+</g>
+
+<g id="go_down">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+ <defs>
+  <linearGradient y2="0" x2="0.7" y1="0" x1="0" id="svg_75">
+   <stop stop-opacity="1" stop-color="#afe853" offset="0"/>
+   <stop stop-opacity="1" stop-color="#52a310" offset="1"/>
+  </linearGradient>
+ </defs>
+  <path stroke="#008000" fill="url(#svg_75)" id="svg_33" d="m5.3015,1.69202l6.93483,0l0,5.07323l4.07045,0l-7.53786,9.84803l-7.53786,-9.84803l4.07045,0l0,-5.07323z"/>
+ </svg>
+</g>
+
+<g id="context_menu">
+	<svg width="120" height="120" xmlns="http://www.w3.org/2000/svg">
+	  <path stroke-width="0" id="svg_11" d="m4.5,46.5l52,0l-26,38l-26,-38z" stroke="#000" fill="#000"/>
+	  <g id="svg_16">
+	   <line stroke-width="10" id="svg_12" y2="27.5" x2="117.5" y1="27.5" x1="59.5" stroke="#000" fill="#000"/>
+	   <line id="svg_13" stroke-width="10" y2="51.5" x2="117.5" y1="51.5" x1="59.5" stroke="#000" fill="#000"/>
+	   <line id="svg_14" stroke-width="10" y2="73.5" x2="117.5" y1="73.5" x1="59.5" stroke="#000" fill="#000"/>
+	   <line id="svg_15" stroke-width="10" y2="97.5" x2="117.5" y1="97.5" x1="59.5" stroke="#000" fill="#000"/>
+	  </g>
+	</svg>
+</g>
+
+<g id="move_bottom">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23">
+ <defs>
+  <linearGradient y2="0" x2="1" y1="0" x1="0" id="svg_80">
+   <stop stop-opacity="1" stop-color="#bc7f05" offset="0"/>
+   <stop stop-opacity="1" stop-color="#fcfc9f" offset="1"/>
+  </linearGradient>
+ </defs>
+  <line stroke-width="2" fill="none" stroke="#000000" id="svg_72" y2="2.5" x2="22" y1="2.5" x1="10.5"/>
+  <line id="svg_73" stroke-width="2" fill="none" stroke="#000000" y2="6.5" x2="21.99844" y1="6.5" x1="10.49844"/>
+  <line id="svg_74" stroke-width="2" fill="none" stroke="#000000" y2="10.5" x2="21.99922" y1="10.5" x1="10.49922"/>
+  <line id="svg_75" stroke-width="2" fill="none" stroke="#000000" y2="14.5" x2="21.99922" y1="14.5" x1="10.49922"/>
+  <rect stroke="#000000" fill="url(#svg_80)" id="svg_77" height="2.2" width="20" y="17.65" x="1.65"/>
+  <path stroke="none" fill="#000000" id="svg_81" d="m4.25,1.55l2.35,0l0,11.05l2,0l-3.175,3.45l-3.175,-3.45l2,0l0,-11.05z"/>
+ </svg>
+</g>
+
+<g id="move_top">
+<svg viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient id="svg_86" x1="0" y1="0" x2="1" y2="0">
+   <stop offset="0" stop-color="#9fdcf4" stop-opacity="1"/>
+   <stop offset="1" stop-color="#617e96" stop-opacity="1"/>
+  </linearGradient>
+ </defs>
+  <line x1="1.3" y1="8.19922" x2="12.8" y2="8.19922" id="svg_72" stroke="#000000" fill="none" stroke-width="2"/>
+  <line x1="1.29844" y1="12.19922" x2="12.79844" y2="12.19922" stroke="#000000" fill="none" stroke-width="2" id="svg_73"/>
+  <line x1="1.29922" y1="16.19922" x2="12.79922" y2="16.19922" stroke="#000000" fill="none" stroke-width="2" id="svg_74"/>
+  <line x1="1.29922" y1="20.19922" x2="12.79922" y2="20.19922" stroke="#000000" fill="none" stroke-width="2" id="svg_75"/>
+  <rect x="1.55" y="1.85" width="20" height="3.2" id="svg_77" fill="url(#svg_86)" stroke="#000000"/>
+  <path d="m16.83475,21.14603l2.33207,0l0,-11.04578l1.98474,0l-3.15077,-3.44869l-3.15077,3.44869l1.98474,0l0,11.04578z" id="svg_81" fill="#000000" stroke="none"/>
+ </svg>
+</g>
+
+<g id="to_path">
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient y2="0.46875" x2="0.42969" y1="0.10156" x1="0.10547" id="svg_105">
+   <stop stop-color="#ff0000" offset="0"/>
+   <stop stop-opacity="0" stop-color="#ff0000" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <circle cx="21" cy="21.3125" r="18.44531" id="svg_120" fill="url(#svg_105)" stroke="#000000"/>
+  <path fill="none" stroke="#000000" d="m2.875,21.3125c-0.375,-9.25 7.75,-18.875 17.75,-18" id="svg_115"/>
+  <line x1="25.375" y1="3.0625" x2="8.5" y2="3.0625" id="svg_116" stroke="#808080" fill="none"/>
+  <line x1="2.625" y1="24.75" x2="2.625" y2="9.8125" id="svg_117" stroke="#808080" fill="none"/>
+  <circle cx="8.5" cy="2.9375" r="1.95313" fill="#00ffff" stroke="#0000ff" stroke-width="0.5" id="svg_118"/>
+  <circle cx="2.625" cy="9.8125" r="1.95313" fill="#00ffff" stroke="#0000ff" stroke-width="0.5" id="svg_119"/>
+  <circle cx="20.875" cy="3.1875" r="2.5" id="svg_112" fill="#00ffff" stroke="#0000ff"/>
+  <circle cx="2.875" cy="21.0625" r="2.5" fill="#00ffff" stroke="#0000ff" id="svg_114"/>
+ </g>
+</svg>
+</g>
+
+<g id="link_controls">
+<svg viewBox="0 0 24 24" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <path stroke-width="2" id="svg_102" d="m9.875,23c-2,-4.25 -1.6875,-7.375 1.6875,-10.5c3.375,-3.125 7.5625,-2.75 11.0625,2" stroke="#8dd35f" fill="none"/>
+  <line fill="none" stroke="#606060" id="svg_109" y2="4" x2="19" y1="19" x1="4"/>
+  <circle stroke="#0000ff" fill="#00ffff" id="svg_111" r="2.17578" cy="11.5" cx="11.5"/>
+  <circle stroke-width="0.5" id="svg_121" stroke="#0000ff" fill="#00ffff" r="2.26172" cy="4" cx="19"/>
+  <circle id="svg_123" stroke-width="0.5" stroke="#0000ff" fill="#00ffff" r="2.26172" cy="19" cx="4"/>
+</svg>
+</g>
+
+<g id="reorient">
+<svg viewBox="0 0 24 24" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <linearGradient y2="1" x2="1" y1="1" x1="0" id="svg_113">
+   <stop stop-opacity="0" stop-color="#0000ff" offset="0"/>
+   <stop stop-opacity="1" stop-color="#507ece" offset="1"/>
+  </linearGradient>
+ </defs>
+  <rect stroke-dasharray="2,2" stroke="#0000ff" fill="none" id="svg_108" height="19.125" width="18.625" y="2.625" x="2.875"/>
+  <rect transform="rotate(45, 12.2344, 12.1719)" stroke="#000000" fill="url(#svg_113)" id="svg_107" height="6.125" width="16" y="9.10848" x="4.23267"/>
+</svg>
+</g>
+
+<g id="group">
+<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient id="svg_90" x1="0" y1="0" x2="1" y2="1">
+   <stop offset="0" stop-color="#ccddff" stop-opacity="1"/>
+   <stop offset="1" stop-color="#789fed" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="svg_92" x1="0" y1="0" x2="1" y2="1">
+   <stop offset="0" stop-color="#70a1e5" stop-opacity="1"/>
+   <stop offset="1" stop-color="#4b6baf" stop-opacity="1"/>
+  </linearGradient>
+ </defs>
+  <rect x="13.5" y="0.5" width="2" height="2" fill="#a0a0a0" stroke="#555555" id="svg_79"/>
+  <rect x="13.5" y="13.5" width="2" height="2" fill="#a0a0a0" stroke="#555555" id="svg_82"/>
+  <rect x="0.5" y="13.5" width="2" height="2" fill="#a0a0a0" stroke="#555555" id="svg_83"/>
+  <rect x="2.5" y="2.5" width="8" height="7" fill="#a0a0a0" stroke="#555555" id="svg_85"/>
+  <rect x="2.5" y="2.5" width="8" height="7" fill="url(#svg_90)" stroke="url(#svg_92)" id="svg_87"/>
+  <rect x="5.5" y="6.5" width="8" height="7" id="svg_84" fill="#7399d6" stroke="url(#svg_92)"/>
+  <rect x="0.5" y="0.5" width="2" height="2" id="svg_78" fill="#a0a0a0" stroke="#555555"/>
+ </svg>
+</g>
+
+<g id="ungroup">
+<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient id="svg_90" x1="0" y1="0" x2="1" y2="1">
+   <stop offset="0" stop-color="#ccddff" stop-opacity="1"/>
+   <stop offset="1" stop-color="#789fed" stop-opacity="1"/>
+  </linearGradient>
+  <linearGradient id="svg_92" x1="0" y1="0" x2="1" y2="1">
+   <stop offset="0" stop-color="#70a1e5" stop-opacity="1"/>
+   <stop offset="1" stop-color="#4b6baf" stop-opacity="1"/>
+  </linearGradient>
+ </defs>
+  <rect x="2.5" y="2.5" width="8" height="7" fill="url(#svg_90)" stroke="url(#svg_92)" id="svg_87"/>
+  <rect x="5.5" y="6.5" width="8" height="7" id="svg_84" fill="#7399d6" stroke="url(#svg_92)"/>
+  <rect x="9.5" y="1.5" width="2" height="2" fill="#a0a0a0" stroke="#555555" id="svg_79"/>
+  <rect x="1.5" y="8.5" width="2" height="2" fill="#a0a0a0" stroke="#555555" id="svg_83"/>
+  <rect x="1.5" y="1.5" width="2" height="2" id="svg_78" fill="#a0a0a0" stroke="#555555"/>
+  <rect id="svg_93" x="12.5" y="5.5" width="2" height="2" fill="#a0a0a0" stroke="#555555"/>
+  <rect id="svg_94" x="12.5" y="12.5" width="2" height="2" fill="#a0a0a0" stroke="#555555"/>
+  <rect id="svg_95" x="4.5" y="12.5" width="2" height="2" fill="#a0a0a0" stroke="#555555"/>
+  <rect id="svg_96" x="4.5" y="5.5" width="2" height="2" fill="#a0a0a0" stroke="#555555"/>
+</svg>
+</g>
+
+<g id="unlink_use">
+<svg width="222" height="222" xmlns="http://www.w3.org/2000/svg">
+  <path id="svg_1" d="m93.75,118.44922c-4.5,13.58447 -14.66553,11.5 -28.25,11.5l-34,0c-13.58447,0 -24.5,-7.16553 -24.5,-21.5c0,-14.33447 10.91553,-20.5 24.5,-20.5l34,0c13.58447,0 19.75,-2.33447 26.5,10.75" stroke-width="13" stroke="#3f3f3f" fill="none"/>
+  <g id="svg_11">
+   <line id="svg_4" y2="65.94563" x2="83.07683" y1="28.27895" x1="45.41017" stroke-linecap="round" stroke-width="8" stroke="#007fff" fill="none"/>
+   <line id="svg_5" y2="15.01293" x2="109.41467" y1="65.94638" x1="109.41467" stroke-linecap="round" stroke-width="8" stroke="#007fff" fill="none"/>
+   <line id="svg_6" y2="29.31928" x2="177.58937" y1="65.94638" x1="140.96227" stroke-linecap="round" stroke-width="8" stroke="#007fff" fill="none"/>
+  </g>
+  <g id="svg_12" transform="rotate(-180, 108, 172.111)">
+   <line y2="190.94563" x2="79.57683" y1="153.27895" x1="41.91017" stroke-linecap="round" stroke-width="8" stroke="#007fff" fill="none" id="svg_13"/>
+   <line y2="140.01293" x2="105.91467" y1="190.94638" x1="105.91467" stroke-linecap="round" stroke-width="8" stroke="#007fff" fill="none" id="svg_14"/>
+   <line y2="154.31928" x2="174.08937" y1="190.94638" x1="137.46227" stroke-linecap="round" stroke-width="8" stroke="#007fff" fill="none" id="svg_15"/>
+  </g>
+  <path transform="rotate(-180, 172.125, 108.926)" id="svg_2" d="m215.5,118.44901c-4.5,13.58499 -14.6655,11.5 -28.25,11.5l-34,0c-13.5845,0 -24.5,-7.16501 -24.5,-21.5c0,-14.3343 10.9155,-20.4998 24.5,-20.4998l34,0c13.5845,0 19.75,-2.3345 26.5,10.75" stroke-width="13" stroke="#3f3f3f" fill="none"/>
+</svg>
+</g>
+
+<g id="width">
+	<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+	  <path id="svg_6" d="m19,42.5l-7.5,7.5l7.5,7.5l0,-15zm0,7.5l62,0l0,-7.5l7.5,7.5l-7.5,7.5l0,-7.5" stroke-width="8" stroke="#000000" fill="#000000"/>
+	</svg>
+</g>
+
+<g id="height">
+	<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+	  <path transform="rotate(90, 50, 50)" fill="#000000" stroke="#000000" stroke-width="8" d="m19,42.5l-7.5,7.5l7.5,7.5l0,-15zm0,7.5l62,0l0,-7.5l7.5,7.5l-7.5,7.5l0,-7.5" id="svg_6"/>
+	</svg>
+</g>
+
+<g id="c_radius">
+<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+  <rect stroke="#404040" fill="none" stroke-width="0.5" x="2.37501" y="2.4375" width="43.9375" height="43.9375" id="svg_1" rx="13" ry="13"/>
+  <path fill="none" stroke="#000000" d="m2.43674,15.88952l13.73722,0l0.08978,-13.46483m0.08978,14.08493" id="svg_3"/>
+  <line fill="none" stroke="#000000" x1="16.35107" y1="15.88934" x2="5.20504" y2="5.20504" id="svg_4" stroke-dasharray="2,2"/>
+</svg>
+</g>
+
+<g id="angle">
+<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+  <path stroke-width="2" stroke-dasharray="1,3" id="svg_6" d="m32.78778,41.03469c-0.40379,-8.68145 -4.50873,-16.79003 -12.11365,-20.5932" stroke="#000000" fill="none"/>
+  <path id="svg_7" d="m29.20348,7.67055l-24.20348,34.47921l41.16472,0" stroke-width="3" stroke="#404040" fill="none"/>
+</svg>
+</g>
+
+<g id="blur">
+<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <defs>
+  <filter id="svg_4_blur" x="-50%" y="-50%" width="200%" height="200%">
+   <feGaussianBlur stdDeviation="25"/>
+  </filter>
+ </defs>
+  <circle fill="#000000" stroke="#000000" stroke-width="5" stroke-dasharray="null" cx="150" cy="150" r="91.80151" id="svg_4" filter="url(#svg_4_blur)"/>
+</svg>
+</g>
+
+<g id="fontsize">
+<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+  <text fill="#606060" stroke="none" x="14.451" y="41.4587" id="svg_2" font-size="26" font-family="serif" text-anchor="middle">T</text>
+  <text fill="#000000" stroke="none" x="28.853" y="41.8685" font-size="52" font-family="serif" text-anchor="middle" xml:space="preserve" id="svg_3">T</text>
+</svg>
+</g>
+
+<g id="align">
+	<svg width="22" height="22" xmlns="http://www.w3.org/2000/svg">
+	  <rect stroke="#606060" fill="#c0c0c0" id="svg_4" height="7" width="12" y="7.5" x="4.5"/>
+	  <rect stroke="#c15909" fill="#ef9a23" id="svg_2" height="40" width="2" y="-10" x="9.5"/>
+	  <rect stroke="#ffffff" fill="none" id="svg_5" height="5" width="10" y="8.5" x="5.5"/>
+	</svg>
+</g>
+
+<g id="align_left">
+	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
+	  <rect stroke="#606060" fill="#ffffff" id="svg_4" height="7" width="12" y="2.5" x="2.5"/>
+	  <rect stroke="none" fill="#c0c0c0" id="svg_5" height="4" width="11" y="4" x="2"/>
+	  <rect id="svg_6" stroke="#606060" fill="#ffffff" height="7" width="18" y="12.5" x="2.5"/>
+	  <rect id="svg_7" stroke="none" fill="#c0c0c0" height="4" width="17" y="14" x="2"/>
+	  <rect stroke="#c15909" fill="#ef9a23" id="svg_2" height="40" width="2" y="-10" x="1.5"/>
+	</svg>
+</g>
+
+<g id="align_center">
+	<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	  <rect x="1.5" y="12.5" width="18" height="7" fill="#c0c0c0" stroke="#606060" id="svg_6"/>
+	  <rect x="4.5" y="2.5" width="12" height="7" id="svg_4" fill="#c0c0c0" stroke="#606060"/>
+	  <rect x="9.5" y="-10" width="2" height="40" id="svg_2" fill="#ef9a23" stroke="#c15909"/>
+	  <rect x="2.5" y="13.5" width="16" height="5" fill="none" stroke="#ffffff" id="svg_7"/>
+	  <rect x="5.5" y="3.5" width="10" height="5" id="svg_5" fill="none" stroke="#ffffff"/>
+	</svg>
+</g>
+
+<g id="align_right">
+	<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	  <rect x="7.5" y="2.5" width="12" height="7" id="svg_4" fill="#ffffff" stroke="#606060"/>
+	  <rect x="9" y="4" width="11" height="4" id="svg_5" fill="#c0c0c0" stroke="none"/>
+	  <rect x="1.5" y="12.5" width="18" height="7" fill="#ffffff" stroke="#606060" id="svg_6"/>
+	  <rect x="3" y="14" width="17" height="4" fill="#c0c0c0" stroke="none" id="svg_7"/>
+	  <rect x="18.5" y="-10" width="2" height="40" id="svg_2" fill="#ef9a23" stroke="#c15909"/>
+	</svg>
+</g>
+
+<g id="align_top">
+	<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	  <g transform="rotate(90, 11, 11)" id="svg_1">
+	   <rect x="2.5" y="3.5" width="12" height="7" id="svg_4" fill="#ffffff" stroke="#606060"/>
+	   <rect x="2" y="5" width="11" height="4" id="svg_5" fill="#c0c0c0" stroke="none"/>
+	   <rect x="2.5" y="13.5" width="18" height="7" fill="#ffffff" stroke="#606060" id="svg_6"/>
+	   <rect x="2" y="15" width="17" height="4" fill="#c0c0c0" stroke="none" id="svg_7"/>
+	   <rect x="1.5" y="-9" width="2" height="40" id="svg_2" fill="#ef9a23" stroke="#c15909"/>
+	  </g>
+	</svg>
+</g>
+
+<g id="align_middle">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
+  <g transform="rotate(90, 12, 11.5)" id="svg_1">
+   <rect id="svg_6" stroke="#606060" fill="#c0c0c0" height="7" width="18" y="14" x="3"/>
+   <rect stroke="#606060" fill="#c0c0c0" id="svg_4" height="7" width="12" y="4" x="6"/>
+   <rect stroke="#c15909" fill="#ef9a23" id="svg_2" height="40" width="2" y="-8.5" x="11"/>
+   <rect id="svg_7" stroke="#ffffff" fill="none" height="5" width="16" y="15" x="4"/>
+   <rect stroke="#ffffff" fill="none" id="svg_5" height="5" width="10" y="5" x="7"/>
+   </g>
+</svg>
+</g>
+
+<g id="align_bottom">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
+  <g transform="rotate(90, 11, 11)" id="svg_1">
+   <rect stroke="#606060" fill="#ffffff" id="svg_4" height="7" width="12" y="2.5" x="7.5"/>
+   <rect stroke="none" fill="#c0c0c0" id="svg_5" height="4" width="11" y="4" x="9"/>
+   <rect id="svg_6" stroke="#606060" fill="#ffffff" height="7" width="18" y="12.5" x="1.5"/>
+   <rect id="svg_7" stroke="none" fill="#c0c0c0" height="4" width="17" y="14" x="3"/>
+   <rect stroke="#c15909" fill="#ef9a23" id="svg_2" height="40" width="2" y="-10" x="18.5"/>
+   </g>
+</svg>
+</g>
+
+<g id="linecap_butt">
+<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:se="http://svg-edit.googlecode.com" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <defs>
+  <linearGradient id="svg_8" x1="0.8" y1="1" x2="0.2" y2="1">
+   <stop offset="0" stop-color="#000000" stop-opacity="1"/>
+   <stop offset="1" stop-color="#000000" stop-opacity="0"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <rect fill="url(#svg_8)" stroke="#a0a0a0" stroke-width="2" x="-15.20196" y="43.5974" width="94.8373" height="50.3728" id="svg_3" transform="rotate(-45, 32.2148, 68.7832)"/>
+  <path id="svg_1" d="m6.63133,95.07755l59.17514,-59.17514" stroke-width="3" stroke="#00ffff" fill="none"/>
+  <path id="svg_2" d="m51.62893,36.10742l13.05662,-13.05662l13.05661,13.05662l-13.05661,13.05662l-13.05662,-13.05662z" stroke="none" fill="#00ffff"/>
+ </g>
+</svg>
+</g>
+
+<g id="linecap_square">
+<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:se="http://svg-edit.googlecode.com" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <defs>
+  <linearGradient id="svg_8" x1="0.8" y1="1" x2="0.2" y2="1">
+   <stop offset="0" stop-color="#000000" stop-opacity="1"/>
+   <stop offset="1" stop-color="#000000" stop-opacity="0"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <rect fill="url(#svg_8)" stroke="none" x="-18.51568" y="35.5974" width="117.46469" height="50.3728" id="svg_3" transform="rotate(-45, 40.2168, 60.7832)"/>
+  <path id="svg_1" d="m6.63133,95.07755l59.17514,-59.17514" stroke-width="3" stroke="#00ffff" fill="none"/>
+  <path id="svg_2" d="m51.62893,36.10742l13.05662,-13.05662l13.05661,13.05662l-13.05661,13.05662l-13.05662,-13.05662z" stroke="none" fill="#00ffff"/>
+ </g>
+</svg>
+</g>
+
+<g id="linecap_round">
+<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:se="http://svg-edit.googlecode.com">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <defs>
+  <linearGradient y2="1" x2="0.2" y1="1" x1="0.8" id="svg_8">
+   <stop stop-opacity="1" stop-color="#000000" offset="0"/>
+   <stop stop-opacity="0" stop-color="#000000" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <path transform="rotate(-45, 41.5117, 59.4648)" id="svg_3" d="m-19.0679,34.2946l94.8359,0c36.499,-1.4142 33.67101,48.9569 0,50.3711l-94.8359,0l0,-50.3711z" stroke-width="2" stroke="#a0a0a0" fill="url(#svg_8)"/>
+  <path id="svg_1" d="m6.63133,95.07755l59.17515,-59.17515" stroke-width="3" stroke="#00ffff" fill="none"/>
+  <path id="svg_2" d="m51.62893,36.10742l13.05662,-13.05662l13.05661,13.05662l-13.05661,13.05662l-13.05662,-13.05662z" stroke="none" fill="#00ffff"/>
+ </g>
+</svg>
+</g>
+
+<g id="linejoin_miter">
+<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:se="http://svg-edit.googlecode.com">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <defs>
+  <linearGradient y2="1" x2="0.2" y1="1" x1="0.8" id="svg_8">
+   <stop stop-opacity="1" stop-color="#000000" offset="0"/>
+   <stop stop-opacity="0" stop-color="#000000" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <path fill="none" stroke="url(#svg_8)" stroke-width="49" d="m-15,-35l75,85l-75,75" id="svg_6"/>
+  <path transform="rotate(90, 57.8925, 50.2519)" fill="#00ffff" stroke="none" d="m44.83592,50.25187l13.05661,-13.05663l13.05661,13.05663l-13.05661,13.05662l-13.05661,-13.05662z" id="svg_2"/>
+  <path id="svg_4" d="m-15,-35l75,85l-75,75" stroke-width="3" stroke="#00ffff" fill="none"/>
+ </g>
+</svg>
+</g>
+
+<g id="linejoin_bevel">
+<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:se="http://svg-edit.googlecode.com">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <defs>
+  <linearGradient y2="1" x2="0.2" y1="1" x1="0.8" id="svg_8">
+   <stop stop-opacity="1" stop-color="#000000" offset="0"/>
+   <stop stop-opacity="0" stop-color="#000000" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <path stroke-linejoin="bevel" fill="none" stroke="url(#svg_8)" stroke-width="49" d="m-15,-35l75,85l-75,75" id="svg_6"/>
+  <path transform="rotate(90, 57.8925, 50.2519)" fill="#00ffff" stroke="none" d="m44.83592,50.25187l13.05661,-13.05663l13.05661,13.05663l-13.05661,13.05662l-13.05661,-13.05662z" id="svg_2"/>
+  <path id="svg_4" d="m-15,-35l75,85l-75,75" stroke-width="3" stroke="#00ffff" fill="none"/>
+ </g>
+</svg>
+</g>
+
+<g id="linejoin_round">
+<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:se="http://svg-edit.googlecode.com">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <defs>
+  <linearGradient y2="1" x2="0.2" y1="1" x1="0.8" id="svg_8">
+   <stop stop-opacity="1" stop-color="#000000" offset="0"/>
+   <stop stop-opacity="0" stop-color="#000000" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <path stroke-linejoin="round" fill="none" stroke="url(#svg_8)" stroke-width="49" d="m-15,-35l75,85l-75,75" id="svg_6"/>
+  <path transform="rotate(90, 57.8925, 50.2519)" fill="#00ffff" stroke="none" d="m44.83592,50.25187l13.05661,-13.05663l13.05661,13.05663l-13.05661,13.05662l-13.05661,-13.05662z" id="svg_2"/>
+  <path id="svg_4" d="m-15,-35l75,85l-75,75" stroke-width="3" stroke="#00ffff" fill="none"/>
+ </g>
+</svg>
+</g>
+
+<g id="eye">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17">
+ <defs>
+  <linearGradient y2="0.79688" x2="0.5625" y1="0.19141" x1="0.42969" id="svg_91">
+   <stop stop-opacity="1" stop-color="#d3a16b" offset="0"/>
+   <stop stop-opacity="1" stop-color="#a37c53" offset="1"/>
+  </linearGradient>
+ </defs>
+  <path stroke="none" fill="url(#svg_91)" id="svg_9" d="m0.12852,8.18338c3.59931,-7.71208 13.19749,-7.36932 16.75236,0.08569c-3.02165,7.5407 -13.59741,7.66924 -16.75236,-0.08569z"/>
+  <path id="svg_76" stroke="none" fill="#ffffff" d="m0.33033,8.2557c3.5173,-4.97159 12.89675,-4.75063 16.37062,0.05524c-2.95279,4.86111 -13.28756,4.94397 -16.37062,-0.05524z"/>
+  <circle stroke="none" fill="#4f92c1" id="svg_88" r="3.08008" cy="7.71116" cx="8.45861"/>
+  <circle stroke="none" fill="#000000" id="svg_89" r="1.27539" cy="7.6539" cx="8.43159"/>
+ </svg>
+</g>
+
+<g id="no_color">
+	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+	  <line fill="none" stroke="#d40000" id="svg_90" y2="24" x2="24" y1="0" x1="0"/>
+	  <line id="svg_92" fill="none" stroke="#d40000" y2="24" x2="0" y1="0" x1="24"/>
+	</svg>
+</g>
+
+<g id="ok">
+	<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+	 <defs>
+	  <linearGradient y2="0.65625" x2="0.94141" y1="0.43359" x1="0.42969" id="svg_106">
+	   <stop stop-opacity="1" stop-color="#38ff45" offset="0"/>
+	   <stop stop-opacity="1" stop-color="#127c0c" offset="1"/>
+	  </linearGradient>
+	 </defs>
+	  <path transform="rotate(45, 12, 10)" stroke="#005500" fill="url(#svg_106)" id="svg_101" d="m7.9,15.9l4.9,-0.05l0,-13.75l3.8,0l0,17.6l-8.7,0l0,-3.8z"/>
+	</svg>
+</g>
+
+<g id="cancel">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+ <defs>
+  <linearGradient y2="0.65625" x2="0.94141" y1="0.43359" x1="0.42969" id="svg_9">
+   <stop stop-opacity="1" stop-color="#ff3838" offset="0"/>
+   <stop stop-opacity="1" stop-color="#7a0c0c" offset="1"/>
+  </linearGradient>
+ </defs>
+  <path stroke="#550000" fill="url(#svg_9)" id="svg_101" d="m2.10526,10.52632l7.36842,0l0,-7.36842l3.68421,0l0,7.36842l7.36842,0l0,3.68421l-7.36842,0l0,7.36842l-3.68421,0l0,-7.36842l-7.36842,0l0,-3.68421z" transform="rotate(45, 11.3, 12.3)"/>
+ </svg>
+</g>
+
+<g id="warning">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+ <defs>
+  <linearGradient y2="0.98047" x2="0.57813" y1="0.44922" x1="0.56641" id="svg_110">
+   <stop stop-opacity="1" stop-color="#ffff00" offset="0"/>
+   <stop stop-opacity="1" stop-color="#9e9e00" offset="1"/>
+  </linearGradient>
+ </defs>
+  <path d="m1.42857,21.55559l10.71429,-19.36489l10.71429,19.20352l-21.42857,0.16137z" id="svg_44" fill="url(#svg_110)" stroke="#916d1f" stroke-width="2"/>
+  <path stroke="none" fill="#000000" id="svg_103" d="m11.98371,14.68571c-0.57143,-3.82857 -1.82857,-6.4 0.11429,-6.4c2.11429,0 0.74286,2.57143 0.11429,6.4l-0.22857,0z"/>
+  <circle stroke="none" fill="#000000" id="svg_104" r="1.17578" cy="17.37143" cx="12.14308"/>
+ </svg>
+</g>
+
+<g id="node_delete">
+<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+  <path stroke-width="2" id="svg_102" d="m4.1953,19.42128c15.49391,-15.53349 -0.21065,0.1581 15.61084,-15.57944" stroke="#8dd35f" fill="none"/>
+  <circle stroke-width="0.5" id="svg_121" stroke="#0000ff" fill="#00ffff" r="2.26172" cy="4" cx="19.75"/>
+  <circle id="svg_123" stroke-width="0.5" stroke="#0000ff" fill="#00ffff" r="2.26172" cy="19.40299" cx="4.0653"/>
+  <circle id="svg_7" stroke-width="0.5" stroke="#0000ff" fill="#00ffff" r="2.26172" cy="11.625" cx="11.9375"/>
+  <g transform="rotate(-45.291072845458984 9.81157112121582,9.244086265563965) " id="svg_6">
+   <line stroke-linecap="round" id="svg_4" y2="9.45264" x2="15.14996" y1="9.3943" x1="4.47318" stroke-dasharray="null" stroke-width="2" stroke="#ff0000" fill="none"/>
+   <line stroke-linecap="round" id="svg_5" y2="14.46579" x2="9.66571" y1="4.02238" x1="9.7824" stroke-dasharray="null" stroke-width="2" stroke="#ff0000" fill="none"/>
+  </g>
+</svg>
+</g>
+
+<g id="node_clone">
+<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+  <path stroke-width="2" id="svg_102" d="m4.1953,19.42128c15.49391,-15.53349 -0.21065,0.1581 15.61084,-15.57944" stroke="#8dd35f" fill="none"/>
+  <circle stroke-width="0.5" id="svg_121" stroke="#0000ff" fill="#00ffff" r="2.26172" cy="4" cx="19.75"/>
+  <circle id="svg_123" stroke-width="0.5" stroke="#0000ff" fill="#00ffff" r="2.26172" cy="19.40299" cx="4.0653"/>
+  <circle id="svg_7" stroke-width="0.5" stroke="#0000ff" fill="#00ffff" r="2.26172" cy="11.625" cx="11.9375"/>
+  <line stroke-linecap="round" id="svg_5" y2="14.46579" x2="9.66571" y1="4.02238" x1="9.7824" stroke-dasharray="null" stroke-width="2" stroke="#0000ff" fill="#0000ff"/>
+  <line stroke-linecap="round" id="svg_4" y2="9.45264" x2="15.14996" y1="9.3943" x1="4.47318" stroke-dasharray="null" stroke-width="2" stroke="#0000ff" fill="#0000ff"/>
+</svg>
+</g>
+
+<g id="svg_eof"/>
+
+</svg>
