@@ -2153,6 +2153,7 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 // 						bb.y = rminy;
 // 						bb.width = rmaxx - rminx;
 // 						bb.height = rmaxy - rminy;
+				return bb;
 			}
 		} catch(e) { 
 			console.log(elem, e);
