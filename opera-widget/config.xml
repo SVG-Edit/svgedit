@@ -9,7 +9,7 @@
   <icon>editor/images/logo.svg</icon>
   <id>
     <name>SVG Edit</name>
-    <revised>2009-09</revised>
+    <revised>2010-09</revised>
   </id>
   <feature name="http://xmlns.opera.com/fileio">
     <param name="folderhint" value="home" />

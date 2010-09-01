@@ -1,5 +1,5 @@
 NAME=svg-edit
-VERSION=2.5
+VERSION=2.6
 PACKAGE=$(NAME)-$(VERSION)
 MAKEDOCS=naturaldocs/NaturalDocs
 CLOSURE=build/tools/closure-compiler.jar
@@ -17,12 +17,12 @@ build/$(PACKAGE):
 	-find build/$(PACKAGE) -name .svn -type d -exec rm -rf {} \;
 # minify spin button
 	java -jar $(YUICOMPRESS)  build/$(PACKAGE)/spinbtn/JQuerySpinBtn.js                > build/$(PACKAGE)/spinbtn/JQuerySpinBtn.min.js
-	java -jar $(CLOSURE) --js build/$(PACKAGE)/spinbtn/JQuerySpinBtn.js --js_output_file build/$(PACKAGE)/spinbtn/JQuerySpinBtn.min-closure.js
+#	java -jar $(CLOSURE) --js build/$(PACKAGE)/spinbtn/JQuerySpinBtn.js --js_output_file build/$(PACKAGE)/spinbtn/JQuerySpinBtn.min-closure.js
 # minify SVG-edit files
 	java -jar $(YUICOMPRESS)  build/$(PACKAGE)/svg-editor.js                > build/$(PACKAGE)/svg-editor.min.js
-	java -jar $(CLOSURE) --js build/$(PACKAGE)/svg-editor.js --js_output_file build/$(PACKAGE)/svg-editor.min-closure.js
+#	java -jar $(CLOSURE) --js build/$(PACKAGE)/svg-editor.js --js_output_file build/$(PACKAGE)/svg-editor.min-closure.js
 	java -jar $(YUICOMPRESS)  build/$(PACKAGE)/svgcanvas.js                 > build/$(PACKAGE)/svgcanvas.min.js
-	java -jar $(CLOSURE) --js build/$(PACKAGE)/svgcanvas.js  --js_output_file build/$(PACKAGE)/svgcanvas.min-closure.js
+#	java -jar $(CLOSURE) --js build/$(PACKAGE)/svgcanvas.js  --js_output_file build/$(PACKAGE)/svgcanvas.min-closure.js
 # CSS files do not work remotely
 # java -jar $(YUICOMPRESS) build/$(PACKAGE)/spinbtn/JQuerySpinBtn.css > build/$(PACKAGE)/spinbtn/JQuerySpinBtn.min.css
 # java -jar $(YUICOMPRESS) build/$(PACKAGE)/svg-editor.css > build/$(PACKAGE)/svg-editor.min.css
