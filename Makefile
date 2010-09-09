@@ -29,6 +29,10 @@ build/$(PACKAGE):
 
 release: build/$(PACKAGE)
 	cd build ; $(ZIP) $(PACKAGE).zip -r $(PACKAGE) ; cd ..
+	tar -z -c -f build/$(PACKAGE)-src.tar.gz \
+	    --exclude-vcs \
+	    --exclude='build/*' \
+	    .
 
 firefox: build/$(PACKAGE)
 	mkdir -p build/firefox/content/editor
