@@ -644,8 +644,7 @@
 		
 			// called when any element has changed
 			var elementChanged = function(window,elems) {
-				
-				if(svgCanvas.getMode() == "select" && $('.tool_button_current')) {
+				if(svgCanvas.getMode() == "select") {
 					setSelectMode();
 				}
 				

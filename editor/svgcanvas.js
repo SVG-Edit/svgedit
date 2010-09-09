@@ -5211,6 +5211,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				}
 				// perform recalculation to weed out any stray identity transforms that might get stuck
 				recalculateAllSelectedDimensions();
+				call("changed", selectedElements);
 				break;
 			default:
 				// This could occur in an extension
