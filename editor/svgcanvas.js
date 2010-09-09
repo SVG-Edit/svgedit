@@ -9271,7 +9271,6 @@ this.getMode = function() {
 this.setMode = function(name) {
 	pathActions.clear(true);
 	textActions.clear();
-	
 	cur_properties = (selectedElements[0] && selectedElements[0].nodeName == 'text') ? cur_text : cur_shape;
 	current_mode = name;
 };
