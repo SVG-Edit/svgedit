@@ -501,9 +501,12 @@
 			}());
 			
 			var setSelectMode = function() {
-				$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
-				$('#tool_select').addClass('tool_button_current').removeClass('tool_button');
-				$('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all} #svgcanvas svg{cursor:default}');
+				var curr = $('.tool_button_current');
+				if(curr[0].id !== 'tool_select') {
+					curr.removeClass('tool_button_current').addClass('tool_button');
+					$('#tool_select').addClass('tool_button_current').removeClass('tool_button');
+					$('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all} #svgcanvas svg{cursor:default}');
+				}
 				svgCanvas.setMode('select');
 			};
 			
@@ -624,7 +627,6 @@
 					// select mode and this event fires - we need our UI to be in sync
 					
 					if (mode != "multiselect" && !is_node) {
-						setSelectMode();
 						updateToolbar();
 					} 
 					
@@ -642,6 +644,11 @@
 		
 			// called when any element has changed
 			var elementChanged = function(window,elems) {
+				
+				if(svgCanvas.getMode() == "select" && $('.tool_button_current')) {
+					setSelectMode();
+				}
+				
 				for (var i = 0; i < elems.length; ++i) {
 					var elem = elems[i];
 					

@@ -5251,6 +5251,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				t.id != "svgcanvas" && t.id != "svgroot") 
 			{
 				// switch into "select" mode if we've clicked on an element
+				clearSelection(true);
 				addToSelection([t], true);
 				canvas.setMode("select");
 			}
@@ -5283,10 +5284,14 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				} else if (current_mode == "text" || current_mode == "image" || current_mode == "foreignObject") {
 					// keep us in the tool we were in unless it was a text or image element
 					addToSelection([element], true);
+				} else {
+					clearSelection(true);
+					addToSelection([element], true);
 				}
 				// we create the insert command that is stored on the stack
 				// undo means to call cmd.unapply(), redo means to call cmd.apply()
 				addCommandToHistory(new InsertElementCommand(element));
+				
 				call("changed",[element]);
 			}, ani_dur * 1000);
 		}

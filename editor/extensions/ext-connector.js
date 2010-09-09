@@ -488,6 +488,10 @@ svgEditor.addExtension("Connector", function(S) {
 		},
 		selectedChanged: function(opts) {
 			
+			if(svgCanvas.getMode() == 'connector') {
+				svgCanvas.setMode('select');
+			}
+			
 			// Use this to update the current selected elements
 			selElems = opts.elems;
 			
