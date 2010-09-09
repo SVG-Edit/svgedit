@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+<!-- 
+	Sample icons file. This file looks like an SVG file with groups as its
+	children. Each group element has an ID that must match the ID of the button given
+	in the extension. The SVG inside the group makes up the actual icon, and
+	needs use a viewBox instead of width/height for it to scale	properly.
+	
+	Multiple icons can be included, each within their own group.
+-->
+	<g id="view_grid">
+	  <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+		<g>
+		  <rect fill="#ffffff" stroke="#848484" x="2" y="2" width="20" height="20"/>
+		  <line fill="none" stroke="#848484" x1="11.84375" y1="-1.53125" x2="11.84375" y2="18.46875" transform="rotate(90, 11.8429, 8.46955)"/>
+		  <line fill="none" stroke="#848484" x1="11.90625" y1="5.21875" x2="11.90625" y2="25.21875" transform="rotate(90, 11.9054, 15.2196)"/>
+		  <line fill="none" stroke="#848484" x1="8.5" y1="2.03125" x2="8.5" y2="22.03125"/>
+		  <line fill="none" stroke="#848484" x1="15.5" y1="2.03125" x2="15.5" y2="22.03125"/>
+		  <rect fill="#d8d8d8" stroke="#000000" stroke-width="0" x="3.25" y="3.28125" width="4" height="4"/>
+		  <rect fill="#d8d8d8" stroke="#000000" stroke-width="0" x="10" y="3.28125" width="4" height="4"/>
+		  <rect fill="#d8d8d8" stroke="#000000" stroke-width="0" x="16.75" y="3.28125" width="4" height="4"/>
+		  <rect fill="#d8d8d8" stroke="#000000" stroke-width="0" x="3.28125" y="9.75" width="4" height="4"/>
+		  <rect fill="#d8d8d8" stroke="#000000" stroke-width="0" x="10.03125" y="9.75" width="4" height="4"/>
+		  <rect fill="#d8d8d8" stroke="#000000" stroke-width="0" x="16.78125" y="9.75" width="4" height="4"/>
+		  <rect fill="#d8d8d8" stroke="#000000" stroke-width="0" x="3.3125" y="16.59375" width="4" height="4"/>
+		  <rect fill="#d8d8d8" stroke="#000000" stroke-width="0" x="10.0625" y="16.59375" width="4" height="4"/>
+		  <rect fill="#d8d8d8" stroke="#000000" stroke-width="0" x="16.8125" y="16.59375" width="4" height="4"/>
+		</g>
+	  </svg>
+	</g>
+</svg>
