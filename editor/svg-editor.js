@@ -48,10 +48,12 @@
 				langPath: 'locale/',
 				extPath: 'extensions/',
 				jGraduatePath: 'jgraduate/images/',
-				extensions: ['ext-markers.js','ext-connector.js', 'ext-eyedropper.js', 'ext-shapes.js', 'ext-imagelib.js'],
+				extensions: ['ext-markers.js','ext-connector.js', 'ext-eyedropper.js', 'ext-shapes.js', 'ext-imagelib.js','ext-grid.js'],
 				initTool: 'select',
 				wireframe: false,
-				colorPickerCSS: null
+				colorPickerCSS: null,
+				gridSnapping: true,
+				snappingStep: 1
 			},
 			uiStrings = Editor.uiStrings = {
 			"invalidAttrValGiven":"Invalid value given",
@@ -2587,6 +2589,10 @@
 				// set icon size
 				setIconSize($('#iconsize').val());
 				
+				// set grid setting
+				curConfig.gridSnapping = $('#grid_snapping_on').attr('checked');
+				curConfig.snappingStep = $('#grid_snapping_step').val();
+
 				updateCanvas();
 				hideDocProperties();
 			};

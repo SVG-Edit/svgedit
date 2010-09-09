@@ -31,7 +31,7 @@ if(window.opera) {
 	// - When getting attributes, a string that's a number is return as type number.
 	// - If an array is supplied as first parameter, multiple values are returned
 	// as an object with values for each given attributes
-	
+
 	var proxied = jQuery.fn.attr, svgns = "http://www.w3.org/2000/svg";
 	jQuery.fn.attr = function(key, value) {
 		var len = this.length;
@@ -393,6 +393,14 @@ var Utils = this.Utils = function() {
 			return {x:x, y:y, a:snapangle};
 		},
 		
+		// Function: snapToGrid
+		// round value to for snapping
+		"snapToGrid" : function(value){
+			var stepSize = svgEditor.curConfig.snappingStep;
+			value = Math.round(value/stepSize)*stepSize;
+			return value;
+		},
+
 		// Function: text2xml
 		// Cross-browser compatible method of converting a string to an XML tree
 		// found this function here: http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f
@@ -3034,15 +3042,42 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			changes.y = changes.y-0 + Math.min(0,changes.height);
 			changes.width = Math.abs(changes.width);
 			changes.height = Math.abs(changes.height);
+			if(svgEditor.curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
+				changes.x = Utils.snapToGrid(changes.x);
+				changes.y = Utils.snapToGrid(changes.y);
+				changes.width = Utils.snapToGrid(changes.width);
+				changes.height = Utils.snapToGrid(changes.height);
+			}
 			assignAttributes(selected, changes, 1000, true);
 			break;
 		case "ellipse":
 			changes.rx = Math.abs(changes.rx);
 			changes.ry = Math.abs(changes.ry);
+			if(svgEditor.curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
+				changes.cx = Utils.snapToGrid(changes.cx);
+				changes.cy = Utils.snapToGrid(changes.cy);
+				changes.rx = Utils.snapToGrid(changes.rx);
+				changes.ry = Utils.snapToGrid(changes.ry);
+			}
 		case "circle":
 			if(changes.r) changes.r = Math.abs(changes.r);
+			if(svgEditor.curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
+				changes.cx = Utils.snapToGrid(changes.cx);
+				changes.cy = Utils.snapToGrid(changes.cy);
+				changes.r = Utils.snapToGrid(changes.r);
+			}
 		case "line":
+			if(svgEditor.curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
+				changes.x1 = Utils.snapToGrid(changes.x1);
+				changes.y1 = Utils.snapToGrid(changes.y1);
+				changes.x2 = Utils.snapToGrid(changes.x2);
+				changes.y2 = Utils.snapToGrid(changes.y2);
+			}
 		case "text":
+			if(svgEditor.curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
+				changes.x = Utils.snapToGrid(changes.x);
+				changes.y = Utils.snapToGrid(changes.y);
+			}	
 		case "use":
 			assignAttributes(selected, changes, 1000, true);
 			break;
@@ -4269,7 +4304,12 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		
 		start_x = x;
 		start_y = y;
-		
+
+		if(svgEditor.curConfig.gridSnapping){
+			x = Utils.snapToGrid(x);
+			y = Utils.snapToGrid(y);
+		}
+
 		// if it is a selector grip, then it must be a single element selected, 
 		// set the mouse_target to that and update the mode to rotate/resize
 		if (mouse_target == selectorManager.selectorParentGroup && selectedElements[0] != null) {
@@ -4582,6 +4622,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		x = mouse_x / current_zoom;
 		y = mouse_y / current_zoom;
 	
+		if(svgEditor.curConfig.gridSnapping){
+			x = Utils.snapToGrid(x);
+			y = Utils.snapToGrid(y);
+			start_x = Utils.snapToGrid(start_x);
+			start_y = Utils.snapToGrid(start_y);
+		}
+
 		evt.preventDefault();
 		
 		switch (current_mode)
@@ -4594,6 +4641,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					var dx = x - start_x;
 					var dy = y - start_y;
 					
+					if(svgEditor.curConfig.gridSnapping){
+						dx = Utils.snapToGrid(dx);
+						dy = Utils.snapToGrid(dy);
+					}
+
 					if(evt.shiftKey) { var xya = Utils.snapToAngle(start_x,start_y,x,y); x=xya.x; y=xya.y; }
 
 					if (dx != 0 || dy != 0) {
@@ -4673,7 +4725,14 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					box=hasMatrix?init_bbox:getBBox(selected), 
 					left=box.x, top=box.y, width=box.width,
 					height=box.height, dx=(x-start_x), dy=(y-start_y);
-								
+				
+				if(svgEditor.curConfig.gridSnapping){
+					dx = Utils.snapToGrid(dx);
+					dy = Utils.snapToGrid(dy);
+					height = Utils.snapToGrid(height);
+					width = Utils.snapToGrid(width);
+				}
+
 				// if rotated, adjust the dx,dy values
 				var angle = getRotationAngle(selected);
 				if (angle) {
@@ -4712,6 +4771,14 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				var translateOrigin = svgroot.createSVGTransform(),
 					scale = svgroot.createSVGTransform(),
 					translateBack = svgroot.createSVGTransform();
+
+				if(svgEditor.curConfig.gridSnapping){
+					left = Utils.snapToGrid(left);
+					tx = Utils.snapToGrid(tx);
+					top = Utils.snapToGrid(top);
+					ty = Utils.snapToGrid(ty);
+				}
+
 				translateOrigin.setTranslate(-(left+tx),-(top+ty));
 				if(evt.shiftKey) {
 					if(sx == 1) sx = sy
@@ -4769,6 +4836,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				var handle = null;
 				if (!window.opera) svgroot.suspendRedraw(1000);
 
+				if(svgEditor.curConfig.gridSnapping){
+					x = Utils.snapToGrid(x);
+					y = Utils.snapToGrid(y);
+				}
+
 				var x2 = x;
 				var y2 = y;					
 
@@ -4798,6 +4870,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					new_y = Math.min(start_y,y);
 				}
 	
+				if(svgEditor.curConfig.gridSnapping){
+					w = Utils.snapToGrid(w);
+					h = Utils.snapToGrid(h);
+					new_x = Utils.snapToGrid(new_x);
+					new_y = Utils.snapToGrid(new_y);
+				}
+
 				assignAttributes(shape,{
 					'width': w,
 					'height': h,
@@ -4810,6 +4889,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				var c = $(shape).attr(["cx", "cy"]);
 				var cx = c.cx, cy = c.cy,
 					rad = Math.sqrt( (x-cx)*(x-cx) + (y-cy)*(y-cy) );
+				if(svgEditor.curConfig.gridSnapping){
+					rad = Utils.snapToGrid(rad);
+				}
 				shape.setAttributeNS(null, "r", rad);
 				break;
 			case "ellipse":
@@ -4818,6 +4900,12 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				// Opera has a problem with suspendRedraw() apparently
 					handle = null;
 				if (!window.opera) svgroot.suspendRedraw(1000);
+				if(svgEditor.curConfig.gridSnapping){
+					x = Utils.snapToGrid(x);
+					cx = Utils.snapToGrid(cx);
+					y = Utils.snapToGrid(y);
+					cy = Utils.snapToGrid(cy);
+				}
 				shape.setAttributeNS(null, "rx", Math.abs(x - cx) );
 				var ry = Math.abs(evt.shiftKey?(x - cx):(y - cy));
 				shape.setAttributeNS(null, "ry", ry );
@@ -4843,6 +4931,12 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				x *= current_zoom;
 				y *= current_zoom;
 				
+				if(svgEditor.curConfig.gridSnapping){
+					x = Utils.snapToGrid(x);
+					y = Utils.snapToGrid(y);
+					start_x = Utils.snapToGrid(start_x);
+					start_y = Utils.snapToGrid(start_y);
+				}
 				if(evt.shiftKey) {
 					var x1 = path.dragging?path.dragging[0]:start_x;
 					var y1 = path.dragging?path.dragging[1]:start_y;
@@ -4886,7 +4980,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				cx = center.x;
 				cy = center.y;
 				var angle = ((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360;
-				
+				if(svgEditor.curConfig.gridSnapping){
+					angle = Utils.snapToGrid(angle);
+				}
 				if(evt.shiftKey) { // restrict rotations to nice angles (WRS)
 					var snap = 45;
 					angle= Math.round(angle/snap)*snap;
@@ -4926,7 +5022,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			y = mouse_y / current_zoom,
 			element = getElem(getId()),
 			keep = false;
-				
+
 		started = false;
 		switch (current_mode)
 		{
@@ -6731,6 +6827,12 @@ var pathActions = this.pathActions = function() {
 				var x = mouse_x/current_zoom,
 					y = mouse_y/current_zoom,
 					stretchy = getElem("path_stretch_line");
+
+					if(svgEditor.curConfig.gridSnapping){
+						x = Utils.snapToGrid(x);
+						y = Utils.snapToGrid(y);
+					}
+
 				if (!stretchy) {
 					stretchy = document.createElementNS(svgns, "line");
 					assignAttributes(stretchy, {
