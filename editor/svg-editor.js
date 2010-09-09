@@ -1787,7 +1787,9 @@
 				$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 				$(button).addClass('tool_button_current').removeClass('tool_button');
 				// when a tool is selected, we should deselect any currently selected elements
-				svgCanvas.clearSelection();
+				if(button !== '#tool_select') {
+					svgCanvas.clearSelection();
+				}
 				return true;
 			};
 			
