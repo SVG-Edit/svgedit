@@ -52,8 +52,8 @@
 				initTool: 'select',
 				wireframe: false,
 				colorPickerCSS: null,
-				gridSnapping: true,
-				snappingStep: 1
+				gridSnapping: false,
+				snappingStep: 10
 			},
 			uiStrings = Editor.uiStrings = {
 			"invalidAttrValGiven":"Invalid value given",
@@ -2598,7 +2598,7 @@
 				setIconSize($('#iconsize').val());
 				
 				// set grid setting
-				curConfig.gridSnapping = $('#grid_snapping_on').attr('checked');
+				curConfig.gridSnapping = $('#grid_snapping_on')[0].checked;
 				curConfig.snappingStep = $('#grid_snapping_step').val();
 
 				updateCanvas();
@@ -3773,6 +3773,14 @@
 				
 				if(curConfig.showlayers) {
 					toggleSidePanel();
+				}
+				
+				if(curConfig.gridSnapping) {
+					$('#grid_snapping_on')[0].checked = true;
+				}
+				
+				if(curConfig.snappingStep) {
+					$('#grid_snapping_step').val(curConfig.snappingStep);
 				}
 			});
 			
