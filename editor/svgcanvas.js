@@ -427,6 +427,7 @@ var Utils = this.Utils = function() {
 
 }();
 
+var elData = $.data;
 	
 // TODO: declare the variables and set them as null, then move this setup stuff to
 // an initialization function - probably just use clear()
@@ -1159,58 +1160,17 @@ var SelectorManager;
 								}
 							}) );
 
-		// this holds a reference to the grip elements for this selector
-		this.selectorGrips = {	"nw":null,
-								"n":null,
-								"ne":null,
-								"e":null,
-								"se":null,
-								"s":null,
-								"sw":null,
-								"w":null
-								};
-		this.rotateGripConnector = this.selectorGroup.appendChild( addSvgElementFromJson({
-							"element": "line",
-							"attr": {
-								"id": ("selectorGrip_rotateconnector_" + this.id),
-								"stroke": "#22C",
-								"stroke-width": "1"
-							}
-						}) );
-						
-		this.rotateGrip = this.selectorGroup.appendChild( addSvgElementFromJson({
-							"element": "circle",
-							"attr": {
-								"id": ("selectorGrip_rotate_" + this.id),
-								"fill": "lime",
-								"r": 4,
-								"stroke": "#22C",
-								"stroke-width": 2,
-								"style": "cursor:url(" + curConfig.imgPath + "rotate.png) 12 12, auto;"
-							}
-						}) );
+		// this holds a reference to the grip coordinates for this selector
+		this.gripCoords = {	"nw":null,
+							"n":null,
+							"ne":null,
+							"e":null,
+							"se":null,
+							"s":null,
+							"sw":null,
+							"w":null
+							};
 		
-		// add the corner grips
-		for (var dir in this.selectorGrips) {
-			this.selectorGrips[dir] = this.selectorGroup.appendChild( 
-				addSvgElementFromJson({
-					"element": "circle",
-					"attr": {
-						"id": ("selectorGrip_resize_" + dir + "_" + this.id),
-						"fill": "#22C",
-						"r": 4,
-						"style": ("cursor:" + dir + "-resize"),
-						// This expands the mouse-able area of the grips making them
-						// easier to grab with the mouse.
-						// This works in Opera and WebKit, but does not work in Firefox
-						// see https://bugzilla.mozilla.org/show_bug.cgi?id=500174
-						"stroke-width": 2,
-						"pointer-events":"all",
-						"display":"none"
-					}
-				}) );
-		}
-
 		// Function: Selector.showGrips
 		// Show the resize grips of this selector
 		//
@@ -1219,13 +1179,12 @@ var SelectorManager;
 		this.showGrips = function(show) {
 			// TODO: use suspendRedraw() here
 			var bShow = show ? "inline" : "none";
-			this.rotateGrip.setAttribute("display", bShow);
-			this.rotateGripConnector.setAttribute("display", bShow);
+			selectorManager.selectorGripsGroup.setAttribute("display", bShow);
 			var elem = this.selectedElement;
-			for (var dir in this.selectorGrips) {
-				this.selectorGrips[dir].setAttribute("display", bShow);
+			if(elem && show) {
+				this.selectorGroup.appendChild(selectorManager.selectorGripsGroup);
+				this.updateGripCursors(getRotationAngle(elem));
 			}
-			if(elem) this.updateGripCursors(getRotationAngle(elem));
 		};
 		
 		// Function: Selector.updateGripCursors
@@ -1237,7 +1196,7 @@ var SelectorManager;
 			var dir_arr = [];
 			var steps = Math.round(angle / 45);
 			if(steps < 0) steps += 8;
-			for (var dir in this.selectorGrips) {
+			for (var dir in selectorManager.selectorGrips) {
 				dir_arr.push(dir);
 			}
 			while(steps > 0) {
@@ -1245,8 +1204,8 @@ var SelectorManager;
 				steps--;
 			}
 			var i = 0;
-			for (var dir in this.selectorGrips) {
-				this.selectorGrips[dir].setAttribute('style', ("cursor:" + dir_arr[i] + "-resize"));
+			for (var dir in selectorManager.selectorGrips) {
+				selectorManager.selectorGrips[dir].setAttribute('style', ("cursor:" + dir_arr[i] + "-resize"));
 				i++;
 			};
 		};
@@ -1255,7 +1214,8 @@ var SelectorManager;
 		// Updates the selector to match the element's size
 		this.resize = function() {
 			var selectedBox = this.selectorRect,
-				selectedGrips = this.selectorGrips,
+				mgr = selectorManager,
+				selectedGrips = mgr.selectorGrips,
 				selected = this.selectedElement,
 				 sw = selected.getAttribute("stroke-width");
 			var offset = 1/current_zoom;
@@ -1338,7 +1298,7 @@ var SelectorManager;
 						+ " " + nbax + "," + (nbay+nbah) + "z";
 			assignAttributes(selectedBox, {'d': dstr});
 			
-			var gripCoords = {
+			this.gripCoords = {
 				nw: [nbax, nbay],
 				ne: [nbax+nbaw, nbay],
 				sw: [nbax, nbay+nbah],
@@ -1350,8 +1310,8 @@ var SelectorManager;
 			};
 			
 			if(selected == selectedElements[0]) {
-				for(var dir in gripCoords) {
-					var coords = gripCoords[dir];
+				for(var dir in this.gripCoords) {
+					var coords = this.gripCoords[dir];
 					assignAttributes(selectedGrips[dir], {
 						cx: coords[0], cy: coords[1]
 					});
@@ -1366,11 +1326,11 @@ var SelectorManager;
 			}
 
 			// we want to go 20 pixels in the negative transformed y direction, ignoring scale
-			assignAttributes(this.rotateGripConnector, { x1: nbax + (nbaw)/2, 
+			assignAttributes(mgr.rotateGripConnector, { x1: nbax + (nbaw)/2, 
 														y1: nbay, 
 														x2: nbax + (nbaw)/2, 
 														y2: nbay- 20});
-			assignAttributes(this.rotateGrip, { cx: nbax + (nbaw)/2, 
+			assignAttributes(mgr.rotateGrip, { cx: nbax + (nbaw)/2, 
 												cy: nbay - 20 });
 			
 			svgroot.unsuspendRedraw(sr_handle);
@@ -1409,11 +1369,70 @@ var SelectorManager;
 			// create parent selector group and add it to svgroot
 			mgr.selectorParentGroup = svgdoc.createElementNS(svgns, "g");
 			mgr.selectorParentGroup.setAttribute("id", "selectorParentGroup");
+			mgr.selectorGripsGroup = svgdoc.createElementNS(svgns, "g");
 			svgroot.appendChild(mgr.selectorParentGroup);
+			mgr.selectorParentGroup.appendChild(mgr.selectorGripsGroup);
 			mgr.selectorMap = {};
 			mgr.selectors = [];
 			mgr.rubberBandBox = null;
 			
+			// this holds a reference to the grip elements
+			mgr.selectorGrips = {	"nw":null,
+									"n":null,
+									"ne":null,
+									"e":null,
+									"se":null,
+									"s":null,
+									"sw":null,
+									"w":null
+									};
+
+			// add the corner grips
+			for (var dir in mgr.selectorGrips) {
+				var grip = addSvgElementFromJson({
+					"element": "circle",
+					"attr": {
+						"id": ("selectorGrip_resize_" + dir),
+						"fill": "#22C",
+						"r": 4,
+						"style": ("cursor:" + dir + "-resize"),
+						// This expands the mouse-able area of the grips making them
+						// easier to grab with the mouse.
+						// This works in Opera and WebKit, but does not work in Firefox
+						// see https://bugzilla.mozilla.org/show_bug.cgi?id=500174
+						"stroke-width": 2,
+						"pointer-events":"all"
+					}
+				});
+				
+				elData(grip, "dir", dir);
+				elData(grip, "type", "resize");
+				this.selectorGrips[dir] = mgr.selectorGripsGroup.appendChild(grip);
+			}
+			
+			// add rotator elems
+			this.rotateGripConnector = this.selectorGripsGroup.appendChild( addSvgElementFromJson({
+								"element": "line",
+								"attr": {
+									"id": ("selectorGrip_rotateconnector"),
+									"stroke": "#22C",
+									"stroke-width": "1"
+								}
+							}) );
+							
+			this.rotateGrip = this.selectorGripsGroup.appendChild( addSvgElementFromJson({
+								"element": "circle",
+								"attr": {
+									"id": "selectorGrip_rotate",
+									"fill": "lime",
+									"r": 4,
+									"stroke": "#22C",
+									"stroke-width": 2,
+									"style": "cursor:url(" + curConfig.imgPath + "rotate.png) 12 12, auto;"
+								}
+							}) );
+			elData(this.rotateGrip, "type", "rotate");
+
 			if($("#canvasBackground").length) return;
 	
 			var canvasbg = svgdoc.createElementNS(svgns, "svg");
@@ -4317,17 +4336,18 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 
 		// if it is a selector grip, then it must be a single element selected, 
 		// set the mouse_target to that and update the mode to rotate/resize
+		
 		if (mouse_target == selectorManager.selectorParentGroup && selectedElements[0] != null) {
-			var gripid = evt.target.id,
-				griptype = gripid.substr(0,20);
+			var grip = evt.target;
+			var griptype = elData(grip, "type");
 			// rotating
-			if (griptype == "selectorGrip_rotate_") {
+			if (griptype == "rotate") {
 				current_mode = "rotate";
 			}
 			// resizing
-			else if(griptype == "selectorGrip_resize_") {
+			else if(griptype == "resize") {
 				current_mode = "resize";
-				current_resize_mode = gripid.substr(20,gripid.indexOf("_",20)-20);
+				current_resize_mode = elData(grip, "dir");
 			}
 			mouse_target = selectedElements[0];
 		}
