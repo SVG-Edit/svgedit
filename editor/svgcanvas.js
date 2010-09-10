@@ -4255,6 +4255,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	var d_attr = null,
 		start_x = null,
 		start_y = null,
+		r_start_x = null,
+		r_start_y = null,
 		init_bbox = {},
 		freehand = {
 			minx: null,
@@ -4302,12 +4304,15 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			y = mouse_y / current_zoom,
 			mouse_target = getMouseTarget(evt);
 		
-		start_x = x;
-		start_y = y;
+		// real_x/y ignores grid-snap value
+		var real_x = r_start_x = start_x = x;
+		var real_y = r_start_y = start_y = y;
 
 		if(svgEditor.curConfig.gridSnapping){
 			x = Utils.snapToGrid(x);
 			y = Utils.snapToGrid(y);
+			start_x = Utils.snapToGrid(start_x);
+			start_y = Utils.snapToGrid(start_y);
 		}
 
 		// if it is a selector grip, then it must be a single element selected, 
@@ -4366,16 +4371,16 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					if (rubberBox == null) {
 						rubberBox = selectorManager.getRubberBandBox();
 					}
-					start_x *= current_zoom;
-					start_y *= current_zoom;
+					r_start_x *= current_zoom;
+					r_start_y *= current_zoom;
 // 					console.log('p',[evt.pageX, evt.pageY]);					
 // 					console.log('c',[evt.clientX, evt.clientY]);	
 // 					console.log('o',[evt.offsetX, evt.offsetY]);	
 // 					console.log('s',[start_x, start_y]);
 					
 					assignAttributes(rubberBox, {
-						'x': start_x,
-						'y': start_y,
+						'x': r_start_x,
+						'y': r_start_y,
 						'width': 0,
 						'height': 0,
 						'display': 'inline'
@@ -4384,14 +4389,12 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				break;
 			case "zoom": 
 				started = true;
-				start_x = x;
-				start_y = y;
 				if (rubberBox == null) {
 					rubberBox = selectorManager.getRubberBandBox();
 				}
 				assignAttributes(rubberBox, {
-						'x': start_x * current_zoom,
-						'y': start_y * current_zoom,
+						'x': real_x * current_zoom,
+						'y': real_x * current_zoom,
 						'width': 0,
 						'height': 0,
 						'display': 'inline'
@@ -4619,14 +4622,12 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			mouse_y = -(off_y - evt.pageY);
 		}
 
-		x = mouse_x / current_zoom;
-		y = mouse_y / current_zoom;
-	
+		var real_x = x = mouse_x / current_zoom;
+		var real_y = y = mouse_y / current_zoom;
+
 		if(svgEditor.curConfig.gridSnapping){
 			x = Utils.snapToGrid(x);
 			y = Utils.snapToGrid(y);
-			start_x = Utils.snapToGrid(start_x);
-			start_y = Utils.snapToGrid(start_y);
 		}
 
 		evt.preventDefault();
@@ -4681,13 +4682,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				}
 				break;
 			case "multiselect":
-				x *= current_zoom;
-				y *= current_zoom;
+				real_x *= current_zoom;
+				real_y *= current_zoom;
 				assignAttributes(rubberBox, {
-					'x': Math.min(start_x,x),
-					'y': Math.min(start_y,y),
-					'width': Math.abs(x-start_x),
-					'height': Math.abs(y-start_y)
+					'x': Math.min(r_start_x, real_x),
+					'y': Math.min(r_start_y, real_y),
+					'width': Math.abs(real_x - r_start_x),
+					'height': Math.abs(real_y - r_start_y)
 				},100);
 
 				// for each selected:
@@ -4816,13 +4817,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				selectorManager.requestSelector(selected).resize();
 				break;
 			case "zoom":
-				x *= current_zoom;
-				y *= current_zoom;
+				real_x *= current_zoom;
+				real_y *= current_zoom;
 				assignAttributes(rubberBox, {
-					'x': Math.min(start_x*current_zoom,x),
-					'y': Math.min(start_y*current_zoom,y),
-					'width': Math.abs(x-start_x*current_zoom),
-					'height': Math.abs(y-start_y*current_zoom)
+					'x': Math.min(r_start_x*current_zoom, real_x),
+					'y': Math.min(r_start_y*current_zoom, real_y),
+					'width': Math.abs(real_x - r_start_x*current_zoom),
+					'height': Math.abs(real_y - r_start_y*current_zoom)
 				},100);			
 				break;
 			case "text":
@@ -4946,10 +4947,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				
 				if(rubberBox && rubberBox.getAttribute('display') != 'none') {
 					assignAttributes(rubberBox, {
-						'x': Math.min(start_x,x),
-						'y': Math.min(start_y,y),
-						'width': Math.abs(x-start_x),
-						'height': Math.abs(y-start_y)
+						'x': Math.min(r_start_x, real_x),
+						'y': Math.min(r_start_y, real_y),
+						'width': Math.abs(real_x - r_start_x),
+						'height': Math.abs(real_y - r_start_y)
 					},100);
 				}
 				
@@ -5023,6 +5024,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			element = getElem(getId()),
 			keep = false;
 
+		var real_x = x;
+		var real_y = y;
+
+		
 		started = false;
 		switch (current_mode)
 		{
@@ -5098,10 +5103,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				}
 				var factor = evt.shiftKey?.5:2;
 				call("zoomed", {
-					'x': Math.min(start_x,x),
-					'y': Math.min(start_y,y),
-					'width': Math.abs(x-start_x),
-					'height': Math.abs(y-start_y),
+					'x': Math.min(r_start_x, real_x),
+					'y': Math.min(r_start_y, real_y),
+					'width': Math.abs(real_x - r_start_x),
+					'height': Math.abs(real_y - r_start_y),
 					'factor': factor
 				});
 				return;
@@ -6833,11 +6838,11 @@ var pathActions = this.pathActions = function() {
 				var x = mouse_x/current_zoom,
 					y = mouse_y/current_zoom,
 					stretchy = getElem("path_stretch_line");
-
-					if(svgEditor.curConfig.gridSnapping){
-						x = Utils.snapToGrid(x);
-						y = Utils.snapToGrid(y);
-					}
+				
+				if(svgEditor.curConfig.gridSnapping){
+					x = Utils.snapToGrid(x);
+					y = Utils.snapToGrid(y);
+				}
 
 				if (!stretchy) {
 					stretchy = document.createElementNS(svgns, "line");
@@ -8199,6 +8204,8 @@ this.setSvgString = function(xmlString) {
 		});
 		
 		// Set ref element for <use> elements
+		
+		// TODO: This should also be done if the object is re-added through "redo"
 		content.find('use').each(function() {
 			var id = getHref(this).substr(1);
 			var ref_elem = getElem(id);
