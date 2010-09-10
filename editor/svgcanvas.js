@@ -5067,7 +5067,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					// always recalculate dimensions to strip off stray identity transforms
 					recalculateAllSelectedDimensions();
 					// if it was being dragged/resized
-					if (x != start_x || y != start_y) {
+					if (real_x != r_start_x || real_y != r_start_y) {
 						var len = selectedElements.length;
 						for	(var i = 0; i < len; ++i) {
 							if (selectedElements[i] == null) break;

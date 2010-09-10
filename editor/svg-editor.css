@@ -448,16 +448,7 @@
 	fill: #FFF !important;
 }
 
-#svg_editor #selected_panel,
-#svg_editor #multiselected_panel,
-#svg_editor #g_panel,
-#svg_editor #rect_panel,
-#svg_editor #circle_panel,
-#svg_editor #ellipse_panel,
-#svg_editor #line_panel,
-#svg_editor #image_panel,
-#svg_editor #text_panel,
-#svg_editor #path_node_panel {
+#tools_top div[id$="_panel"]:not(#editor_panel):not(#history_panel) {
 	display: none;
 }
 
