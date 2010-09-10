@@ -2511,6 +2511,12 @@
 				if(url) {
 					$('#canvas_bg_url').val(url);
 				}
+				$('grid_snapping_step').attr('value', curConfig.snappingStep);
+				if (curConfig.gridSnapping == true) {
+				    $('#grid_snapping_on').attr('checked', 'checked');
+				} else {
+				    $('#grid_snapping_on').removeAttr('checked');
+				}
 				
 				$('#svg_docprops').fadeIn();
 			};
