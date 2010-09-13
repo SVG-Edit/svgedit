@@ -500,7 +500,7 @@ $(function() {
 	
 	$.getSvgIcon = function(id, uniqueClone) { 
 		var icon = svg_icons[id];
-		if(uniqueClone) {
+		if(uniqueClone && icon) {
 			icon = fixIDs(icon, 0, true).clone(true);
 		}
 		return icon; 
