@@ -1370,6 +1370,7 @@ var SelectorManager;
 			mgr.selectorParentGroup = svgdoc.createElementNS(svgns, "g");
 			mgr.selectorParentGroup.setAttribute("id", "selectorParentGroup");
 			mgr.selectorGripsGroup = svgdoc.createElementNS(svgns, "g");
+			mgr.selectorGripsGroup.setAttribute('display','none');
 			svgroot.appendChild(mgr.selectorParentGroup);
 			mgr.selectorParentGroup.appendChild(mgr.selectorGripsGroup);
 			mgr.selectorMap = {};
