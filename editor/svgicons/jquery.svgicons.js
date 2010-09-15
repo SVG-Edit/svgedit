@@ -154,12 +154,13 @@ $(function() {
 				$.ajax({
 					url: file,
 					success: function(data) {
-						if(!data) {
-							$(useFallback);
-							return;
-						}
-						svgdoc = parser.parseFromString(data, "text/xml");
 						$(function() {
+							if(!data) {
+								useFallback();
+								return;
+							}
+							svgdoc = parser.parseFromString(data, "text/xml");
+
 							getIcons('ajax');
 						});
 					},
