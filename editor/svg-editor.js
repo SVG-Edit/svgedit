@@ -3115,70 +3115,45 @@
 				operaRepaint();
 			};
 			
-			if(window.DOMParser) {
-				// set up gradients to be used for the buttons
-				var svgdocbox = new DOMParser().parseFromString(
-					'<svg xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%"\
-					fill="#' + curConfig.initFill.color + '" opacity="' + curConfig.initFill.opacity + '"/>\
-					<linearGradient id="gradbox_">\
-							<stop stop-color="#000" offset="0.0"/>\
-							<stop stop-color="#FF0000" offset="1.0"/>\
-					</linearGradient></svg>', 'text/xml');
-				var docElem = svgdocbox.documentElement;
+			// set up gradients to be used for the buttons
+			var svgdocbox = new DOMParser().parseFromString(
+				'<svg xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%"\
+				fill="#' + curConfig.initFill.color + '" opacity="' + curConfig.initFill.opacity + '"/>\
+				<linearGradient id="gradbox_">\
+						<stop stop-color="#000" offset="0.0"/>\
+						<stop stop-color="#FF0000" offset="1.0"/>\
+				</linearGradient></svg>', 'text/xml');
+			var docElem = svgdocbox.documentElement;
 
 
-				var boxgrad = svgdocbox.getElementById('gradbox_');
-				boxgrad.id = 'gradbox_fill';
-				docElem.setAttribute('width',16.5);
-				$('#fill_color').append( document.importNode(docElem,true) );
-				
-				boxgrad.id = 'gradbox_stroke';	
-				docElem.setAttribute('width',16.5);
-				$('#stroke_color').append( document.importNode(docElem,true) );
-				$('#stroke_color rect').attr({
-					'fill': '#' + curConfig.initStroke.color,
-					'opacity': curConfig.initStroke.opacity
-				});
-				
-				$('#stroke_width').val(curConfig.initStroke.width);
-				$('#group_opacity').val(curConfig.initOpacity * 100);
-				
-				// Use this SVG elem to test vectorEffect support
-				var test_el = docElem.firstChild;
-				test_el.setAttribute('style','vector-effect:non-scaling-stroke');
-				var supportsNonSS = (test_el.style.vectorEffect == 'non-scaling-stroke');
-				test_el.removeAttribute('style');
-				
-				// Use this to test support for blur element. Seems to work to test support in Webkit
-				var blur_test = svgdocbox.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
-				if(typeof blur_test.stdDeviationX === "undefined") {
-					$('#tool_blur').hide();
-				}
-				$(blur_test).remove();
-			} else {
-				var svgns = "http://www.w3.org/2000/svg";
-				var svgdocbox = document.createElementNS(svgns, 'svg');
-				var rect = svgCanvas.addSvgElementFromJson({
-					element: 'rect',
-					attr: {
-						width: '100%',
-						height: '100%',
-						fill: '#' + curConfig.initFill.color,
-						opacity: curConfig.initFill.opacity
-					}
-				});
-				svgdocbox.appendChild(rect);
-				var linearGradient = svgCanvas.addSvgElementFromJson({
-					element: 'linearGradient',
-					attr: {
-						id: 'gradbox_'
-					}
-				});
-				svgdocbox.appendChild(linearGradient);
-				var docElem = svgdocbox;
+			var boxgrad = svgdocbox.getElementById('gradbox_');
+			boxgrad.id = 'gradbox_fill';
+			docElem.setAttribute('width',16.5);
+			$('#fill_color').append( document.importNode(docElem,true) );
+			
+			boxgrad.id = 'gradbox_stroke';	
+			docElem.setAttribute('width',16.5);
+			$('#stroke_color').append( document.importNode(docElem,true) );
+			$('#stroke_color rect').attr({
+				'fill': '#' + curConfig.initStroke.color,
+				'opacity': curConfig.initStroke.opacity
+			});
+			
+			$('#stroke_width').val(curConfig.initStroke.width);
+			$('#group_opacity').val(curConfig.initOpacity * 100);
+			
+			// Use this SVG elem to test vectorEffect support
+			var test_el = docElem.firstChild;
+			test_el.setAttribute('style','vector-effect:non-scaling-stroke');
+			var supportsNonSS = (test_el.style.vectorEffect == 'non-scaling-stroke');
+			test_el.removeAttribute('style');
+			
+			// Use this to test support for blur element. Seems to work to test support in Webkit
+			var blur_test = svgdocbox.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
+			if(typeof blur_test.stdDeviationX === "undefined") {
+				$('#tool_blur').hide();
 			}
-		
-
+			$(blur_test).remove();
 			
 			// Test for embedImage support (use timeout to not interfere with page load)
 			setTimeout(function() {

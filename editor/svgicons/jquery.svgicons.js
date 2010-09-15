@@ -128,39 +128,6 @@ $(function() {
 
 
 (function($) {
-	function makeSVG(el) {
-		// manually create a copy of the element
-		var new_el = document.createElementNS(el.namespaceURI, el.nodeName);
-		$.each(el.attributes, function(i, attr) {
-			var ns = attr.namespaceURI;
-			if(ns) {
-				new_el.setAttributeNS(ns, attr.nodeName, attr.nodeValue);
-			} else {
-				new_el.setAttribute(attr.nodeName, attr.nodeValue);
-			}
-			if(attr.nodeName == 'transform') {
-				
-				console.log('val1:', attr.nodeValue);
-				console.log('val2:', new_el.getAttribute('transform'));
-			}
-		});
-	
-		// now create copies of all children
-		$.each(el.childNodes, function(i, child) {
-			switch(child.nodeType) {
-				case 1: // element node
-					new_el.appendChild(makeSVG(child));
-					break;
-				case 3: // text node
-					new_el.textContent = child.nodeValue;
-					break;
-				default:
-					break;
-			}
-		});
-		return new_el;
-	}
-
 	var svg_icons = {}, fixIDs;
 
 	$.svgIcons = function(file, opts) {
@@ -177,18 +144,21 @@ $(function() {
 				var data_el = $('<object data="' + file + '" type=image/svg+xml>').appendTo('body').hide();
 				try {
 					svgdoc = data_el[0].contentDocument;
-					// TODO: IE still loads this, shouldn't even bother.
 					data_el.load(getIcons);
 					getIcons(0, true); // Opera will not run "load" event if file is already cached
 				} catch(err1) {
 					useFallback();
 				}
 			} else {
+				var parser = new DOMParser();
 				$.ajax({
 					url: file,
-					dataType: 'xml',
 					success: function(data) {
-						svgdoc = data;
+						if(!data) {
+							$(useFallback);
+							return;
+						}
+						svgdoc = parser.parseFromString(data, "text/xml");
 						$(function() {
 							getIcons('ajax');
 						});
@@ -201,17 +171,9 @@ $(function() {
 							});
 						} else {
 							if(err.responseXML) {
-								// Is there a non-ActiveX solution in IE9?
-								svgdoc = err.responseXML;
+								svgdoc = parser.parseFromString(err.responseXML, "text/xml");
 
 								if(!svgdoc.childNodes.length) {
-									if(window.ActiveXObject) { 
-										svgdoc = new ActiveXObject("Microsoft.XMLDOM");
-										svgdoc.loadXML(err.responseText);
-									} else {
-										$(useFallback);
-									}
-								} else {
 									$(useFallback);									
 								}
 								$(function() {
@@ -346,9 +308,7 @@ $(function() {
 					holder = $('#' + id);
 					if(elem.getElementsByTagNameNS) {
 						var svg = elem.getElementsByTagNameNS(svgns, 'svg')[0];
-					} else {
-						var svg = elem.getElementsByTagName('svg')[0];
-					}
+					} 
 					var svgroot = document.createElementNS(svgns, "svg");
 					svgroot.setAttributeNS(svgns, 'viewBox', [0,0,icon_w,icon_h].join(' '));
 					
@@ -375,13 +335,7 @@ $(function() {
 					// With cloning, causes issue in Opera/Win/Non-EN
 					if(!isOpera) svg = svg.cloneNode(true);
 					
-					// TODO: Figure out why makeSVG is necessary for IE9
-					try {
-						svgroot.appendChild(svg);
-					} catch(e) {
-						// For IE9
-						svgroot.appendChild(makeSVG(svg));
-					}
+					svgroot.appendChild(svg);
 			
 					if(toImage) {
 						// Without cloning, Safari will crash
@@ -402,12 +356,7 @@ $(function() {
 				$.each(opts.placement, function(sel, id) {
 					if(!svg_icons[id]) return;
 					$(sel).each(function(i) {
-						// TODO: Figure out why makeSVG is necessary for IE9
-						try {
-							var copy = svg_icons[id].clone();
-						} catch(e) {
-							var copy = makeSVG(svg_icons[id][0]);
-						}
+						var copy = svg_icons[id].clone();
 						setIcon($(this), copy, id);
 					})
 				});
