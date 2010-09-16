@@ -12,7 +12,7 @@
 
 (function() { 
 	// TODO: Find out what causes bugs in jQuery animate for IE9
-	if($.browser.msie) $.fx.off = true;
+// 	if($.browser.msie) $.fx.off = true;
 	
 	if(!window.svgEditor) window.svgEditor = function($) {
 		var svgCanvas;

@@ -457,28 +457,20 @@ var canvas = this,
 	// Array with width/height of canvas
 	dimensions = curConfig.dimensions;
 	
-	if($.browser.msie) {
-		var svgroot = document.createElementNS(svgns, 'svg');
-		svgroot.id = 'svgroot';
-		svgroot.setAttribute('width', dimensions[0]);
-		svgroot.setAttribute('height', dimensions[1]);
-		
-	} else {
-		// Create Root SVG element. This is a container for the document being edited, not the document itself.
-		var svgroot = svgdoc.importNode(Utils.text2xml('<svg id="svgroot" xmlns="' + svgns + '" xlinkns="' + xlinkns + '" ' +
-						'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
-						'<defs>' +
-							'<filter id="canvashadow" filterUnits="objectBoundingBox">' +
-								'<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>'+
-								'<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>'+
-								'<feMerge>'+
-									'<feMergeNode in="offsetBlur"/>'+
-									'<feMergeNode in="SourceGraphic"/>'+
-								'</feMerge>'+
-							'</filter>'+
-						'</defs>'+
-					'</svg>').documentElement, true);
-	}			
+	// Create Root SVG element. This is a container for the document being edited, not the document itself.
+	var svgroot = svgdoc.importNode(Utils.text2xml('<svg id="svgroot" xmlns="' + svgns + '" xlinkns="' + xlinkns + '" ' +
+					'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
+					'<defs>' +
+						'<filter id="canvashadow" filterUnits="objectBoundingBox">' +
+							'<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>'+
+							'<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>'+
+							'<feMerge>'+
+								'<feMergeNode in="offsetBlur"/>'+
+								'<feMergeNode in="SourceGraphic"/>'+
+							'</feMerge>'+
+						'</filter>'+
+					'</defs>'+
+				'</svg>').documentElement, true);
 
 	container.appendChild(svgroot);
 	
@@ -1231,9 +1223,11 @@ var SelectorManager;
 				// get the bbox based on its children. 
 				var stroked_bbox = getStrokedBBox(selected.childNodes);
 				if(stroked_bbox) {
+					var bb = {};
 					$.each(bbox, function(key, val) {
-						bbox[key] = stroked_bbox[key];
+						bb[key] = stroked_bbox[key];
 					});
+					bbox = bb;
 				}
 			}
 
@@ -3508,7 +3502,11 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 						if (childTlist) {
 							var newxlate = svgroot.createSVGTransform();
 							newxlate.setTranslate(tx,ty);
-							childTlist.insertItemBefore(newxlate, 0);
+							if(childTlist.numberOfItems) {
+								childTlist.insertItemBefore(newxlate, 0);
+							} else {
+								childTlist.appendItem(newxlate);
+							}
 							batchCmd.addSubCommand( recalculateDimensions(child) );
 							// If any <use> have this group as a parent and are 
 							// referencing this child, then impose a reverse translate on it
@@ -3568,7 +3566,11 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 			if (gangle) {
 				var newRot = svgroot.createSVGTransform();
 				newRot.setRotate(gangle,newcenter.x,newcenter.y);
-				tlist.insertItemBefore(newRot, 0);
+				if(tlist.numberOfItems) {
+					tlist.insertItemBefore(newRot, 0);
+				} else {
+					tlist.appendItem(newRot);
+				}
 			}
 			if (tlist.numberOfItems == 0) {
 				selected.removeAttribute("transform");
@@ -3586,7 +3588,11 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 			
 				var newRot = svgroot.createSVGTransform();
 				newRot.setRotate(gangle,newcenter.x,newcenter.y);
-				tlist.insertItemBefore(newRot, 0);
+				if(tlist.numberOfItems) {
+					tlist.insertItemBefore(newRot, 0);
+				} else {
+					tlist.appendItem(newRot);
+				}
 			}
 		}
 		// if it was a resize
@@ -3617,7 +3623,12 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 						var childTlist = getTransformList(child);
 						var newxlate = svgroot.createSVGTransform();
 						newxlate.setTranslate(tx,ty);
-						childTlist.insertItemBefore(newxlate, 0);
+						if(childTlist.numberOfItems) {
+							childTlist.insertItemBefore(newxlate, 0);
+						} else {
+							childTlist.appendItem(newxlate);
+						}
+
 						batchCmd.addSubCommand( recalculateDimensions(child) );
 						start_transform = old_start_transform;
 					}
@@ -3625,7 +3636,11 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 			}
 			
 			if (gangle) {
-				tlist.insertItemBefore(rnew, 0);
+				if(tlist.numberOfItems) {
+					tlist.insertItemBefore(rnew, 0);
+				} else {
+					tlist.appendItem(rnew);
+				}
 			}
 		}
 	}
@@ -3773,7 +3788,11 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 			if (angle) {
 				var newRot = svgroot.createSVGTransform();
 				newRot.setRotate(angle,newcenter.x,newcenter.y);
-				tlist.insertItemBefore(newRot, 0);
+				if(tlist.numberOfItems) {
+					tlist.insertItemBefore(newRot, 0);
+				} else {
+					tlist.appendItem(newRot);
+				}
 			}
 			if (tlist.numberOfItems == 0) {
 				selected.removeAttribute("transform");
@@ -3797,7 +3816,11 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 				}
 				var newRot = svgroot.createSVGTransform();
 				newRot.setRotate(angle, newcenter.x, newcenter.y);
-				tlist.insertItemBefore(newRot, 0);
+				if(tlist.numberOfItems) {
+					tlist.insertItemBefore(newRot, 0);
+				} else {
+					tlist.appendItem(newRot);
+				}
 			}
 		}
 		// [Rold][M][T][S][-T] became [Rold][M]
@@ -3817,7 +3840,11 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		
 			remapElement(selected,changes,extrat);
 			if (angle) {
-				tlist.insertItemBefore(rnew,0);
+				if(tlist.numberOfItems) {
+					tlist.insertItemBefore(rnew, 0);
+				} else {
+					tlist.appendItem(rnew);
+				}
 			}
 		}
 	} // a non-group
@@ -4382,7 +4409,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						for (var i = 0; i < selectedElements.length; ++i) {
 							if(selectedElements[i] == null) continue;
 							var slist = getTransformList(selectedElements[i]);
-							slist.insertItemBefore(svgroot.createSVGTransform(), 0);
+							if(slist.numberOfItems) {
+								slist.insertItemBefore(svgroot.createSVGTransform(), 0);
+							} else {
+								slist.appendItem(svgroot.createSVGTransform());
+							}
 						}
 					}
 				}
@@ -4429,9 +4460,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				// Getting the BBox from the selection box, since we know we
 				// want to orient around it
 				init_bbox = getBBox($('#selectedBox0')[0]);
+				var bb = {};
 				$.each(init_bbox, function(key, val) {
-					init_bbox[key] = val/current_zoom;
+					bb[key] = val/current_zoom;
 				});
+				init_bbox = bb;
 				
 				// append three dummy transforms to the tlist so that
 				// we can translate,scale,translate in mousemove
@@ -4820,21 +4853,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					tlist.replaceItem(scale, N-2);
 					tlist.replaceItem(translateOrigin, N-1);
 				}
-				var selectedBBox = selectedBBoxes[0];				
-				
-				if(selectedBBox) {
-					// reset selected bbox top-left position
-					selectedBBox.x = left;
-					selectedBBox.y = top;
-					
-					// if this is a translate, adjust the box position
-					if (tx) {
-						selectedBBox.x += dx;
-					}
-					if (ty) {
-						selectedBBox.y += dy;
-					}
-				}
+
 				selectorManager.requestSelector(selected).resize();
 				break;
 			case "zoom":
@@ -10581,13 +10600,21 @@ this.ungroupSelectedElement = function() {
 					}
 					
 					if (sangle) {
-						chtlist.insertItemBefore(r2, 0);
+						if(chtlist.numberOfItems) {
+							chtlist.insertItemBefore(r2, 0);
+						} else {
+							chtlist.appendItem(r2);
+						}
 					}
 
 					if (trm.e || trm.f) {
 						var tr = svgroot.createSVGTransform();
 						tr.setTranslate(trm.e, trm.f);
-						chtlist.insertItemBefore(tr, 0);
+						if(chtlist.numberOfItems) {
+							chtlist.insertItemBefore(tr, 0);
+						} else {
+							chtlist.appendItem(tr);
+						}
 					}
 				}
 				else { // more complicated than just a rotate
