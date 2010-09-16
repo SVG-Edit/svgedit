@@ -11,8 +11,6 @@
  */
 
 (function() { 
-	// TODO: Find out what causes bugs in jQuery animate for IE9
-// 	if($.browser.msie) $.fx.off = true;
 	
 	if(!window.svgEditor) window.svgEditor = function($) {
 		var svgCanvas;
@@ -359,6 +357,7 @@
 					
 					'#layer_up':'go_up',
 					'#layer_down':'go_down',
+					'#layer_moreopts':'context_menu',
 					'#layerlist td.layervis':'eye',
 					
 					'#tool_source_save,#tool_docprops_save':'ok',
@@ -447,6 +446,7 @@
 				default_img_url = curConfig.imgPath + "logo.png",
 				workarea = $("#workarea"),
 				canv_menu = $("#cmenu_canvas"),
+				layer_menu = $("#cmenu_layers"),
 				show_save_warning = false, 
 				exportWindow = null, 
 				tool_scale = 1;
@@ -1239,7 +1239,7 @@
 					// prevent undo on these canvas changes
 					svgCanvas.setColor('stroke', strokeColor, true);
 					svgCanvas.setPaintOpacity('stroke', strokeOpacity, true);
-		
+					
 					// update the rect inside #fill_color
 					$("#stroke_color rect").attr({
 						fill: strokeColor,
@@ -3212,30 +3212,24 @@
 			});
 			
 			$('#layer_new').click(function() {
-				var curNames = new Array(svgCanvas.getNumLayers());
-				for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getLayer(i); }
+				var i = svgCanvas.getNumLayers();
+				do {
+					var uniqName = uiStrings.layer + " " + ++i;
+				} while(svgCanvas.hasLayer(uniqName));
 				
-				var j = (curNames.length+1);
-				var uniqName = uiStrings.layer + " " + j;
-				while ($.inArray(uniqName, curNames) != -1) {
-					j++;
-					uniqName = uiStrings.layer + " " + j;
-				}
 				$.prompt(uiStrings.enterUniqueLayerName,uniqName, function(newName) {
 					if (!newName) return;
-					if ($.inArray(newName, curNames) != -1) {
+					if (svgCanvas.hasLayer(newName)) {
 						$.alert(uiStrings.dupeLayerName);
 						return;
 					}
 					svgCanvas.createLayer(newName);
 					updateContextPanel();
 					populateLayers();
-					$('#layerlist tr.layer').removeClass("layersel");
-					$('#layerlist tr.layer:first').addClass("layersel");
 				});
 			});
 			
-			$('#layer_delete').click(function() {
+			function deleteLayer() {
 				if (svgCanvas.deleteCurrentLayer()) {
 					updateContextPanel();
 					populateLayers();
@@ -3245,32 +3239,48 @@
 					$('#layerlist tr.layer').removeClass("layersel");
 					$('#layerlist tr.layer:first').addClass("layersel");
 				}
-			});
+			}
 			
-			$('#layer_up').click(function() {
-				// find index position of selected option
-				var curIndex = $('#layerlist tr.layersel').prevAll().length;
-				if (curIndex > 0) {
-					var total = $('#layerlist tr.layer').length;
-					curIndex--;
+			function cloneLayer() {
+				var name = svgCanvas.getCurrentLayer() + ' copy';
+				
+				$.prompt(uiStrings.enterUniqueLayerName, name, function(newName) {
+					if (!newName) return;
+					if (svgCanvas.hasLayer(newName)) {
+						$.alert(uiStrings.dupeLayerName);
+						return;
+					}
+					svgCanvas.cloneLayer(newName);
+					updateContextPanel();
+					populateLayers();
+				});
+			}
+			
+			function mergeLayer() {
+				if($('#layerlist tr.layersel').index() == svgCanvas.getNumLayers()-1) return;
+				svgCanvas.mergeLayer();
+				updateContextPanel();
+				populateLayers();
+			}
+			
+			function moveLayer(pos) {
+				var curIndex = $('#layerlist tr.layersel').index();
+				var total = svgCanvas.getNumLayers();
+				if(curIndex > 0 || curIndex < total-1) {
+					curIndex += pos;
 					svgCanvas.setCurrentLayerPosition(total-curIndex-1);
 					populateLayers();
-					$('#layerlist tr.layer').removeClass("layersel");
-					$('#layerlist tr.layer:eq('+curIndex+')').addClass("layersel");
 				}
+			}
+		
+			$('#layer_delete').click(deleteLayer);
+			
+			$('#layer_up').click(function() {
+				moveLayer(-1);
 			});
 		
 			$('#layer_down').click(function() {
-				// find index position of selected option
-				var curIndex = $('#layerlist tr.layersel').prevAll().length;
-				var total = $('#layerlist tr.layer').length;
-				if (curIndex < total-1) {
-					curIndex++;
-					svgCanvas.setCurrentLayerPosition(total-curIndex-1);
-					populateLayers();
-					$('#layerlist tr.layer').removeClass("layersel");
-					$('#layerlist tr.layer:eq('+curIndex+')').addClass("layersel");
-				}
+				moveLayer(1);
 			});
 		
 			$('#layer_rename').click(function() {
@@ -3278,22 +3288,13 @@
 				var oldName = $('#layerlist tr.layersel td.layername').text();
 				$.prompt(uiStrings.enterNewLayerName,"", function(newName) {
 					if (!newName) return;
-					if (oldName == newName) {
-						$.alert(uiStrings.layerHasThatName);
-						return;
-					}
-			
-					var curNames = new Array(svgCanvas.getNumLayers());
-					for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getLayer(i); }
-					if ($.inArray(newName, curNames) != -1) {
+					if (oldName == newName || svgCanvas.hasLayer(newName)) {
 						$.alert(uiStrings.layerHasThatName);
 						return;
 					}
 					
 					svgCanvas.renameCurrentLayer(newName);
 					populateLayers();
-					$('#layerlist tr.layer').removeClass("layersel");
-					$('#layerlist tr.layer:eq('+curIndex+')').addClass("layersel");
 				});
 			});
 			
@@ -3415,7 +3416,7 @@
 				}
 				// handle selection of layer
 				$('#layerlist td.layername')
-					.click(function(evt){
+					.mouseup(function(evt){
 						$('#layerlist tr.layer').removeClass("layersel");
 						var row = $(this.parentNode);
 						row.addClass("layersel");
@@ -3808,6 +3809,40 @@
 					}
 			});
 			
+			var lmenu_func = function(action, el, pos) {
+				switch ( action ) {
+					case 'dupe':
+						cloneLayer();
+						break;
+					case 'delete':
+						deleteLayer();
+						break;
+					case 'merge_down':
+						mergeLayer();
+						break;
+					case 'merge_all':
+						svgCanvas.mergeAllLayers();
+						updateContextPanel();
+						populateLayers();
+						break;
+				}
+			}
+			
+			$("#layerlist").contextMenu({
+					menu: 'cmenu_layers',
+					inSpeed: 0
+				},
+				lmenu_func
+			);
+			
+			$("#layer_moreopts").contextMenu({
+					menu: 'cmenu_layers',
+					inSpeed: 0,
+					allowLeft: true
+				},
+				lmenu_func
+			);
+			
 			$('.contextMenu li').mousedown(function(ev) {
 				ev.preventDefault();
 			})
@@ -4105,8 +4140,8 @@
 		
 		Editor.addExtension = function() {
 			var args = arguments;
-			$(function() {
-				if(svgCanvas) svgCanvas.addExtension.apply(this, args);
+			Editor.ready(function() {
+				svgCanvas.addExtension.apply(this, args);
 			});
 		};
 
