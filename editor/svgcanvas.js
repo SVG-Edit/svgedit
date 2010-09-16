@@ -11095,7 +11095,28 @@ this.getPrivateMethods = function() {
 	return obj;
 };
 
-// console.log('canvas.getPrivateMethods',canvas.getPrivateMethods);
+// Temporary fix until MS fixes:
+// https://connect.microsoft.com/IE/feedback/details/599257/
+function disableAdvancedTextEdit() {
+	var curtext;
+	var textInput = $('#text').css({
+		position: 'static'
+	});
+
+	$.each(['mouseDown','mouseUp','mouseMove', 'setCursor', 'init', 'select', 'toEditMode'], function() {
+		textActions[this] = $.noop;
+	});
+	
+	textActions.init = function(elem) {
+		curtext = elem;
+		$(curtext).unbind('dblclick').bind('dblclick', function() {
+			textInput.focus();
+		});
+	}
+	
+	canvas.textActions = textActions;
+	
+}
 
 // Test support for features/bugs
 (function() {
@@ -11116,6 +11137,19 @@ this.getPrivateMethods = function() {
 		support.pathInsertItemBefore = true;
 	} catch(err) {
 		support.pathInsertItemBefore = false;
+	}
+	
+	var text = document.createElementNS(svgns,'text');
+	text.textContent = 'a';
+	
+	// text character positioning
+	try {
+		text.getStartPositionOfChar(0);
+		support.textCharPos = true;
+	} catch(err) {
+		support.textCharPos = false;
+		
+		disableAdvancedTextEdit();
 	}
 	
 	// TODO: Find better way to check support for this
