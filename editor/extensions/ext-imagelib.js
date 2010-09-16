@@ -146,10 +146,10 @@ svgEditor.addExtension("imagelib", function() {
 					var data = this[1];
 					if(type == 'svg') {
 						svgCanvas.importSvgString(data);
-						svgCanvas.moveSelectedElements(i*20, i*20, false);
 					} else {
 						importImage(data);
 					}
+					svgCanvas.moveSelectedElements(i*20, i*20, false);
 				});
 				preview.empty();
 				multi_arr = [];
