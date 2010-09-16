@@ -11141,6 +11141,7 @@ function disableAdvancedTextEdit() {
 	
 	var text = document.createElementNS(svgns,'text');
 	text.textContent = 'a';
+	svgcontent.appendChild(text);
 	
 	// text character positioning
 	try {
@@ -11148,9 +11149,9 @@ function disableAdvancedTextEdit() {
 		support.textCharPos = true;
 	} catch(err) {
 		support.textCharPos = false;
-		
 		disableAdvancedTextEdit();
 	}
+	svgcontent.removeChild(text);
 	
 	// TODO: Find better way to check support for this
 	support.editableText = isOpera;
