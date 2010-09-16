@@ -1469,7 +1469,10 @@
 							$('#font_size').val(elem.getAttribute("font-size"));
 							$('#text').val(elem.textContent);
 							if (svgCanvas.addedNew) {
-								$('#text').focus().select();
+								// Timeout needed for IE9
+								setTimeout(function() {
+									$('#text').focus().select();
+								},100);
 							}
 						} // text
 						else if(el_name == 'image') {
