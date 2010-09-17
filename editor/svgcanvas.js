@@ -396,7 +396,7 @@ var Utils = this.Utils = function() {
 		// Function: snapToGrid
 		// round value to for snapping
 		"snapToGrid" : function(value){
-			var stepSize = svgEditor.curConfig.snappingStep;
+			var stepSize = curConfig.snappingStep;
 			value = Math.round(value/stepSize)*stepSize;
 			return value;
 		},
@@ -427,6 +427,7 @@ var Utils = this.Utils = function() {
 
 }();
 
+var snapToGrid = Utils.snapToGrid;
 var elData = $.data;
 	
 // TODO: declare the variables and set them as null, then move this setup stuff to
@@ -3057,41 +3058,41 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			changes.y = changes.y-0 + Math.min(0,changes.height);
 			changes.width = Math.abs(changes.width);
 			changes.height = Math.abs(changes.height);
-			if(svgEditor.curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
-				changes.x = Utils.snapToGrid(changes.x);
-				changes.y = Utils.snapToGrid(changes.y);
-				changes.width = Utils.snapToGrid(changes.width);
-				changes.height = Utils.snapToGrid(changes.height);
+			if(curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
+				changes.x = snapToGrid(changes.x);
+				changes.y = snapToGrid(changes.y);
+				changes.width = snapToGrid(changes.width);
+				changes.height = snapToGrid(changes.height);
 			}
 			assignAttributes(selected, changes, 1000, true);
 			break;
 		case "ellipse":
 			changes.rx = Math.abs(changes.rx);
 			changes.ry = Math.abs(changes.ry);
-			if(svgEditor.curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
-				changes.cx = Utils.snapToGrid(changes.cx);
-				changes.cy = Utils.snapToGrid(changes.cy);
-				changes.rx = Utils.snapToGrid(changes.rx);
-				changes.ry = Utils.snapToGrid(changes.ry);
+			if(curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
+				changes.cx = snapToGrid(changes.cx);
+				changes.cy = snapToGrid(changes.cy);
+				changes.rx = snapToGrid(changes.rx);
+				changes.ry = snapToGrid(changes.ry);
 			}
 		case "circle":
 			if(changes.r) changes.r = Math.abs(changes.r);
-			if(svgEditor.curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
-				changes.cx = Utils.snapToGrid(changes.cx);
-				changes.cy = Utils.snapToGrid(changes.cy);
-				changes.r = Utils.snapToGrid(changes.r);
+			if(curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
+				changes.cx = snapToGrid(changes.cx);
+				changes.cy = snapToGrid(changes.cy);
+				changes.r = snapToGrid(changes.r);
 			}
 		case "line":
-			if(svgEditor.curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
-				changes.x1 = Utils.snapToGrid(changes.x1);
-				changes.y1 = Utils.snapToGrid(changes.y1);
-				changes.x2 = Utils.snapToGrid(changes.x2);
-				changes.y2 = Utils.snapToGrid(changes.y2);
+			if(curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
+				changes.x1 = snapToGrid(changes.x1);
+				changes.y1 = snapToGrid(changes.y1);
+				changes.x2 = snapToGrid(changes.x2);
+				changes.y2 = snapToGrid(changes.y2);
 			}
 		case "text":
-			if(svgEditor.curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
-				changes.x = Utils.snapToGrid(changes.x);
-				changes.y = Utils.snapToGrid(changes.y);
+			if(curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
+				changes.x = snapToGrid(changes.x);
+				changes.y = snapToGrid(changes.y);
 			}	
 		case "use":
 			assignAttributes(selected, changes, 1000, true);
@@ -4244,11 +4245,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		return null;
 	}
 	var mouse_target = evt.target;
-	
+
 	// if it was a <use>, Opera and WebKit return the SVGElementInstance
-	if (mouse_target.correspondingUseElement)
+	if (mouse_target.correspondingUseElement) mouse_target = mouse_target.correspondingUseElement;
 	
-	mouse_target = mouse_target.correspondingUseElement;
 	// for foreign content, go up until we find the foreignObject
 	// WebKit browsers set the mouse target to the svgcanvas div 
 	if ($.inArray(mouse_target.namespaceURI, [mathns, htmlns]) != -1 && 
@@ -4256,6 +4256,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	{
 		while (mouse_target.nodeName != "foreignObject") {
 			mouse_target = mouse_target.parentNode;
+			if(!mouse_target) return svgroot;
 		}
 	}
 	
@@ -4355,11 +4356,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		var real_x = r_start_x = start_x = x;
 		var real_y = r_start_y = start_y = y;
 
-		if(svgEditor.curConfig.gridSnapping){
-			x = Utils.snapToGrid(x);
-			y = Utils.snapToGrid(y);
-			start_x = Utils.snapToGrid(start_x);
-			start_y = Utils.snapToGrid(start_y);
+		if(curConfig.gridSnapping){
+			x = snapToGrid(x);
+			y = snapToGrid(y);
+			start_x = snapToGrid(start_x);
+			start_y = snapToGrid(start_y);
 		}
 
 		// if it is a selector grip, then it must be a single element selected, 
@@ -4484,9 +4485,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			case "fhrect":
 			case "fhpath":
 				started = true;
-				start_x = x;
-				start_y = y;
-				d_attr = x + "," + y + " ";
+				d_attr = real_x + "," + real_y + " ";
 				var stroke_w = cur_shape.stroke_width == 0?1:cur_shape.stroke_width;
 				addSvgElementFromJson({
 					"element": "polyline",
@@ -4500,15 +4499,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						"style": "pointer-events:none"
 					}
 				});
-				freehand.minx = x;
-				freehand.maxx = x;
-				freehand.miny = y;
-				freehand.maxy = y;
+				freehand.minx = real_x;
+				freehand.maxx = real_x;
+				freehand.miny = real_y;
+				freehand.maxy = real_y;
 				break;
 			case "image":
 				started = true;
-				start_x = x;
-				start_y = y;
 				var newImage = addSvgElementFromJson({
 					"element": "image",
 					"attr": {
@@ -4679,9 +4676,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		var real_x = x = mouse_x / current_zoom;
 		var real_y = y = mouse_y / current_zoom;
 
-		if(svgEditor.curConfig.gridSnapping){
-			x = Utils.snapToGrid(x);
-			y = Utils.snapToGrid(y);
+		if(curConfig.gridSnapping){
+			x = snapToGrid(x);
+			y = snapToGrid(y);
 		}
 
 		evt.preventDefault();
@@ -4696,9 +4693,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					var dx = x - start_x;
 					var dy = y - start_y;
 					
-					if(svgEditor.curConfig.gridSnapping){
-						dx = Utils.snapToGrid(dx);
-						dy = Utils.snapToGrid(dy);
+					if(curConfig.gridSnapping){
+						dx = snapToGrid(dx);
+						dy = snapToGrid(dy);
 					}
 
 					if(evt.shiftKey) { var xya = Utils.snapToAngle(start_x,start_y,x,y); x=xya.x; y=xya.y; }
@@ -4781,11 +4778,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					left=box.x, top=box.y, width=box.width,
 					height=box.height, dx=(x-start_x), dy=(y-start_y);
 				
-				if(svgEditor.curConfig.gridSnapping){
-					dx = Utils.snapToGrid(dx);
-					dy = Utils.snapToGrid(dy);
-					height = Utils.snapToGrid(height);
-					width = Utils.snapToGrid(width);
+				if(curConfig.gridSnapping){
+					dx = snapToGrid(dx);
+					dy = snapToGrid(dy);
+					height = snapToGrid(height);
+					width = snapToGrid(width);
 				}
 
 				// if rotated, adjust the dx,dy values
@@ -4827,11 +4824,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					scale = svgroot.createSVGTransform(),
 					translateBack = svgroot.createSVGTransform();
 
-				if(svgEditor.curConfig.gridSnapping){
-					left = Utils.snapToGrid(left);
-					tx = Utils.snapToGrid(tx);
-					top = Utils.snapToGrid(top);
-					ty = Utils.snapToGrid(ty);
+				if(curConfig.gridSnapping){
+					left = snapToGrid(left);
+					tx = snapToGrid(tx);
+					top = snapToGrid(top);
+					ty = snapToGrid(ty);
 				}
 
 				translateOrigin.setTranslate(-(left+tx),-(top+ty));
@@ -4877,9 +4874,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				var handle = null;
 				if (!window.opera) svgroot.suspendRedraw(1000);
 
-				if(svgEditor.curConfig.gridSnapping){
-					x = Utils.snapToGrid(x);
-					y = Utils.snapToGrid(y);
+				if(curConfig.gridSnapping){
+					x = snapToGrid(x);
+					y = snapToGrid(y);
 				}
 
 				var x2 = x;
@@ -4911,11 +4908,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					new_y = Math.min(start_y,y);
 				}
 	
-				if(svgEditor.curConfig.gridSnapping){
-					w = Utils.snapToGrid(w);
-					h = Utils.snapToGrid(h);
-					new_x = Utils.snapToGrid(new_x);
-					new_y = Utils.snapToGrid(new_y);
+				if(curConfig.gridSnapping){
+					w = snapToGrid(w);
+					h = snapToGrid(h);
+					new_x = snapToGrid(new_x);
+					new_y = snapToGrid(new_y);
 				}
 
 				assignAttributes(shape,{
@@ -4930,8 +4927,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				var c = $(shape).attr(["cx", "cy"]);
 				var cx = c.cx, cy = c.cy,
 					rad = Math.sqrt( (x-cx)*(x-cx) + (y-cy)*(y-cy) );
-				if(svgEditor.curConfig.gridSnapping){
-					rad = Utils.snapToGrid(rad);
+				if(curConfig.gridSnapping){
+					rad = snapToGrid(rad);
 				}
 				shape.setAttributeNS(null, "r", rad);
 				break;
@@ -4941,11 +4938,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				// Opera has a problem with suspendRedraw() apparently
 					handle = null;
 				if (!window.opera) svgroot.suspendRedraw(1000);
-				if(svgEditor.curConfig.gridSnapping){
-					x = Utils.snapToGrid(x);
-					cx = Utils.snapToGrid(cx);
-					y = Utils.snapToGrid(y);
-					cy = Utils.snapToGrid(cy);
+				if(curConfig.gridSnapping){
+					x = snapToGrid(x);
+					cx = snapToGrid(cx);
+					y = snapToGrid(y);
+					cy = snapToGrid(cy);
 				}
 				shape.setAttributeNS(null, "rx", Math.abs(x - cx) );
 				var ry = Math.abs(evt.shiftKey?(x - cx):(y - cy));
@@ -4954,15 +4951,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				break;
 			case "fhellipse":
 			case "fhrect":
-				freehand.minx = Math.min(x, freehand.minx);
-				freehand.maxx = Math.max(x, freehand.maxx);
-				freehand.miny = Math.min(y, freehand.miny);
-				freehand.maxy = Math.max(y, freehand.maxy);
+				freehand.minx = Math.min(real_x, freehand.minx);
+				freehand.maxx = Math.max(real_x, freehand.maxx);
+				freehand.miny = Math.min(real_y, freehand.miny);
+				freehand.maxy = Math.max(real_y, freehand.maxy);
 			// break; missing on purpose
 			case "fhpath":
-				start_x = x;
-				start_y = y;
-				d_attr += + x + "," + y + " ";
+				d_attr += + real_x + "," + real_y + " ";
 				shape.setAttributeNS(null, "points", d_attr);
 				break;
 			// update path stretch line coordinates
@@ -4972,11 +4967,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				x *= current_zoom;
 				y *= current_zoom;
 				
-				if(svgEditor.curConfig.gridSnapping){
-					x = Utils.snapToGrid(x);
-					y = Utils.snapToGrid(y);
-					start_x = Utils.snapToGrid(start_x);
-					start_y = Utils.snapToGrid(start_y);
+				if(curConfig.gridSnapping){
+					x = snapToGrid(x);
+					y = snapToGrid(y);
+					start_x = snapToGrid(start_x);
+					start_y = snapToGrid(start_y);
 				}
 				if(evt.shiftKey) {
 					var x1 = path.dragging?path.dragging[0]:start_x;
@@ -5021,8 +5016,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				cx = center.x;
 				cy = center.y;
 				var angle = ((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360;
-				if(svgEditor.curConfig.gridSnapping){
-					angle = Utils.snapToGrid(angle);
+				if(curConfig.gridSnapping){
+					angle = snapToGrid(angle);
 				}
 				if(evt.shiftKey) { // restrict rotations to nice angles (WRS)
 					var snap = 45;
@@ -6879,9 +6874,11 @@ var pathActions = this.pathActions = function() {
 					y = mouse_y/current_zoom,
 					stretchy = getElem("path_stretch_line");
 				
-				if(svgEditor.curConfig.gridSnapping){
-					x = Utils.snapToGrid(x);
-					y = Utils.snapToGrid(y);
+				if(curConfig.gridSnapping){
+					x = snapToGrid(x);
+					y = snapToGrid(y);
+					mouse_x = snapToGrid(mouse_x);
+					mouse_y = snapToGrid(mouse_y);
 				}
 
 				if (!stretchy) {
