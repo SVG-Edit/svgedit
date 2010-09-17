@@ -1256,6 +1256,7 @@ var SelectorManager;
 			// now if the shape is rotated, un-rotate it
 			var cx = nbax + nbaw/2,
 				cy = nbay + nbah/2;
+				
 			var angle = getRotationAngle(selected);
 			if (angle) {
 				
@@ -2615,14 +2616,14 @@ var getBBox = this.getBBox = function(elem) {
 		selected.textContent = '';
 	} else if(elem.nodeName == 'path' && isWebkit) {
 		ret = getPathBBox(selected);
-	} else if(elem.nodeName == 'use' && !isWebkit) {
+	} else if(elem.nodeName == 'use' && !isWebkit || elem.nodeName == 'foreignObject') {
 		ret = selected.getBBox();
-		ret.x += parseFloat(selected.getAttribute('x')||0);
-		ret.y += parseFloat(selected.getAttribute('y')||0);
-	} else if(elem.nodeName == 'foreignObject') {
-		ret = selected.getBBox();
-		ret.x += parseFloat(selected.getAttribute('x')||0);
-		ret.y += parseFloat(selected.getAttribute('y')||0);
+		var bb = {};
+		bb.width = ret.width;
+		bb.height = ret.height;
+		bb.x = ret.x + parseFloat(selected.getAttribute('x')||0);
+		bb.y = ret.y + parseFloat(selected.getAttribute('y')||0);
+		ret = bb;
 	} else {
 		try { ret = selected.getBBox(); } 
 		catch(e) { 
@@ -3158,7 +3159,6 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			selected.setAttribute("d", dstr);
 			break;
 	}
-	
 };
 
 // Function: updateClipPath
