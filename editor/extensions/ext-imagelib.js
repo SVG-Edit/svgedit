@@ -46,13 +46,20 @@ svgEditor.addExtension("imagelib", function() {
 
 	var mode = 's';
 	var multi_arr = [];
-
+	var cur_meta;
+	var tranfer_stopped = false;
+	var pending = {};
+	
 	 window.addEventListener("message", function(evt) {
 		// Receive postMessage data
 		var response = evt.data;
 		
 		if(!response) {
-			$.alert('No data was given', closeBrowser);
+			$.alert('No data was given', function() {
+				if(mode !== 'm') {
+					closeBrowser();
+				}
+			});
 			return;
 		}
 		
@@ -61,7 +68,47 @@ svgEditor.addExtension("imagelib", function() {
 		var svg_str;
 		var img_str;
 		
+		if(char1 != "{" && tranfer_stopped) {
+			tranfer_stopped = false;
+			return;
+		}
+		
+		if(char1 == '|') {
+			var secondpos = response.indexOf('|', 1);
+			var id = response.substr(1, secondpos-1);
+			response = response.substr(secondpos+1);
+			char1 = response.charAt(0);
+
+		}
+		
+		
+		// Hide possible transfer dialog box
+		$('#dialog_box').hide();
+		
 		switch (char1) {
+			case '{':
+				// Metadata
+				tranfer_stopped = false;
+				var cur_meta = JSON.parse(response);
+				
+				pending[cur_meta.id] = cur_meta;
+				
+				var message = 'Retrieving "' + (cur_meta.name || 'file') + '"...';
+				
+				if(mode != 'm') {
+					$.process_cancel(message, function() {
+						tranfer_stopped = true;
+						// Should a message be sent back to the frame?
+						
+						$('#dialog_box').hide();
+					});
+				} else {
+					var entry = $('<div>' + message + '</div>').data('id', cur_meta.id);
+					preview.append(entry);
+					cur_meta.entry = entry;
+				}
+				
+				return;
 			case '<':
 				svg_str = true;
 				break;
@@ -84,7 +131,13 @@ svgEditor.addExtension("imagelib", function() {
 				// Assume it's raw image data
 // 				importImage(str);
 			
-				$.alert('Unexpected data was returned: ' + response, closeBrowser);
+				$.alert('Unexpected data was returned: ' + response, function() {
+					if(mode !== 'm') {
+						closeBrowser();
+					} else {
+						pending[id].entry.remove();
+					}
+				});
 				return;
 		}
 		
@@ -101,12 +154,44 @@ svgEditor.addExtension("imagelib", function() {
 			case 'm':
 				// Import multiple
 				multi_arr.push([(svg_str ? 'svg' : 'img'), response]);
+				var cur_meta = pending[id];
 				if(svg_str) {
-					var xml = new DOMParser().parseFromString(response, 'text/xml').documentElement;
-					var title = $(xml).children('title').first().text() || '(SVG #' + response.length + ')';
-					preview.append('<div>'+title+'</div>');
+					if(cur_meta && cur_meta.name) {
+						title = cur_meta.name;
+					}  else {
+						// Try to find a title
+						var xml = new DOMParser().parseFromString(response, 'text/xml').documentElement;
+						var title = $(xml).children('title').first().text() || '(SVG #' + response.length + ')';
+					}
+					if(cur_meta) {
+						preview.children().each(function() {
+							if($(this).data('id') == id) {
+								$(this).text(title);
+							}
+						});
+					} else {
+						preview.append('<div>'+title+'</div>');
+					}
 				} else {
-					preview.append('<div>Raster image #' + response.length + '</div>');
+					if(cur_meta && cur_meta.preview_url) {
+						var title = cur_meta.name || '';
+					}
+					if(cur_meta && cur_meta.preview_url) {
+						var entry = '<img src="' + cur_meta.preview_url + '">' + title;
+					} else {
+						var entry = '<img src="' + response + '">';
+					}
+				
+					if(cur_meta) {
+						preview.children().each(function() {
+							if($(this).data('id') == id) {
+								$(this).html(entry);
+							}
+						});
+					} else {
+						preview.append($('<div>').append(entry));
+					}
+
 				}
 				break;
 			case 'o':
@@ -293,6 +378,12 @@ svgEditor.addExtension("imagelib", function() {
 				}\
 				#imglib_preview > div {\
 					padding: 5px;\
+					font-size: 12px;\
+				}\
+				#imglib_preview img {\
+					display: block;\
+					margin: 0 auto;\
+					max-height: 100px;\
 				}\
 				#imgbrowse li {\
 					list-style: none;\

@@ -13,10 +13,18 @@
 <script>
 
 $('a').click(function() {
+	var href = this.href;
 	
 	// Convert Non-SVG images to data URL first 
 	// (this could also have been done server-side by the library)
 	if(this.href.indexOf('.svg') === -1) {
+
+		var meta_str = JSON.stringify({
+			name: $(this).text(),
+			id: href
+		});
+		window.top.postMessage(meta_str, "*");
+	
 		var img = new Image();
 		img.onload = function() {
 			var canvas = document.createElement("canvas");
@@ -32,13 +40,19 @@ $('a').click(function() {
 				alert("Data URL conversion failed: " + err);
 				var dataurl = "";
 			}
-			window.top.postMessage(dataurl, "*");
+			window.top.postMessage('|' + href + '|' + dataurl, "*");
 		}
-		img.src = this.href;
+		img.src = href;
 	} else {
+		// Send metadata (also indicates file is about to be sent)
+		var meta_str = JSON.stringify({
+			name: $(this).text(),
+			id: href
+		});
+		window.top.postMessage(meta_str, "*");
 		// Do ajax request for image's href value
-		$.get(this.href, function(data) {
-		
+		$.get(href, function(data) {
+			data = '|' + href + '|' + data;
 			// This is where the magic happens!
 			window.top.postMessage(data, "*");
 			
