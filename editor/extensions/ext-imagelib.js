@@ -157,7 +157,7 @@ svgEditor.addExtension("imagelib", function() {
 				var cur_meta = pending[id];
 				if(svg_str) {
 					if(cur_meta && cur_meta.name) {
-						title = cur_meta.name;
+						var title = cur_meta.name;
 					}  else {
 						// Try to find a title
 						var xml = new DOMParser().parseFromString(response, 'text/xml').documentElement;
@@ -166,7 +166,11 @@ svgEditor.addExtension("imagelib", function() {
 					if(cur_meta) {
 						preview.children().each(function() {
 							if($(this).data('id') == id) {
-								$(this).text(title);
+								if(cur_meta.preview_url) {
+									$(this).html('<img src="' + cur_meta.preview_url + '">' + title);
+								} else {
+									$(this).text(title);
+								}
 							}
 						});
 					} else {
