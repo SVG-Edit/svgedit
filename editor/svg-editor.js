@@ -2609,6 +2609,7 @@
 				// set grid setting
 				curConfig.gridSnapping = $('#grid_snapping_on')[0].checked;
 				curConfig.snappingStep = $('#grid_snapping_step').val();
+				svgCanvas.setConfig(curConfig);
 
 				updateCanvas();
 				hideDocProperties();
