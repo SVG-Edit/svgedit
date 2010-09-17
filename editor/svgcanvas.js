@@ -4067,6 +4067,7 @@ var clearSelection = this.clearSelection = function(noCall) {
 
 // TODO: do we need to worry about selectedBBoxes here?
 
+
 // Function: addToSelection
 // Adds a list of elements to the selection.  The 'selected' handler is then called.
 //
@@ -4132,6 +4133,16 @@ var addToSelection = this.addToSelection = function(elemsToAdd, showGrips) {
 	while(selectedElements[0] == null) selectedElements.shift(0);
 };
 
+// Function: selectOnly()
+// Selects only the given elements, shortcut for clearSelection(); addToSelection()
+//
+// Parameters:
+// elems - an array of DOM elements to be selected
+var selectOnly = this.selectOnly = function(elems, showGrips) {
+	clearSelection(true);
+	addToSelection(elems, showGrips);
+}
+
 // TODO: could use slice here to make this faster?
 // TODO: should the 'selected' handler
 
@@ -4170,13 +4181,10 @@ var removeFromSelection = this.removeFromSelection = function(elemsToRemove) {
 
 // Function: selectAllInCurrentLayer
 // Clears the selection, then adds all elements in the current layer to the selection.
-// This function then fires the selected event.
 this.selectAllInCurrentLayer = function() {
 	if (current_layer) {
-		clearSelection();
-		addToSelection($(current_layer).children());
+		selectOnly($(current_layer).children());
 		current_mode = "select";
-		call("selected", selectedElements);			
 	}
 };
 
@@ -5292,9 +5300,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				t.id != "svgcanvas" && t.id != "svgroot") 
 			{
 				// switch into "select" mode if we've clicked on an element
-				clearSelection(true);
-				addToSelection([t], true);
 				canvas.setMode("select");
+				selectOnly([t], true);
 			}
 			
 		} else if (element != null) {
@@ -5326,8 +5333,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					// keep us in the tool we were in unless it was a text or image element
 					addToSelection([element], true);
 				} else {
-					clearSelection(true);
-					addToSelection([element], true);
+					selectOnly([element], true);
 				}
 				// we create the insert command that is stored on the stack
 				// undo means to call cmd.unapply(), redo means to call cmd.apply()
@@ -8156,8 +8162,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 			if(!this.id) this.id = getNextId();
 		});
 		
-		clearSelection();
-		addToSelection([g]);
+		selectOnly([g]);
 		
 		addCommandToHistory(batchCmd);
 		
@@ -10400,8 +10405,7 @@ this.pasteElements = function(type) {
 		batchCmd.addSubCommand(new InsertElementCommand(copy));
 	}
 	
-	clearSelection(true);
-	addToSelection(pasted);
+	selectOnly(pasted);
 	
 	if(type !== 'in_place') {
 		var bbox = getStrokedBBox(pasted);
@@ -10450,8 +10454,7 @@ this.groupSelectedElements = function() {
 	if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
 	
 	// update selection
-	clearSelection();
-	addToSelection([g], true);
+	selectOnly([g], true);
 };
 
 // Function: ungroupSelectedElement
@@ -10813,7 +10816,7 @@ this.cloneSelectedElements = function() {
 	}
 	// use slice to quickly get the subset of elements we need
 	var copiedElements = selectedElements.slice(0,i);
-	this.clearSelection();
+	this.clearSelection(true);
 	// note that we loop in the reverse way because of the way elements are added
 	// to the selectedElements array (top-first)
 	var i = copiedElements.length;
@@ -10828,7 +10831,6 @@ this.cloneSelectedElements = function() {
 		addToSelection(copiedElements.reverse()); // Need to reverse for correct selection-adding
 		this.moveSelectedElements(20,20,false);
 		addCommandToHistory(batchCmd);
-		call("selected", selectedElements);
 	}
 };
 
@@ -11027,8 +11029,7 @@ this.cycleElement = function(next) {
 			} 
 		}
 	}		
-	clearSelection();
-	addToSelection([elem], true);
+	selectOnly([elem], true);
 	call("selected", selectedElements);
 }
 

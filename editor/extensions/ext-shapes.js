@@ -367,8 +367,6 @@ svgEditor.addExtension("shapes", function() {
 				}
 			}
 			
-			canv.clearSelection();
-			
 			return {
 				keep: true,
 				element: cur_shape,
