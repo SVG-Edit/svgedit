@@ -313,7 +313,7 @@ $(function() {
 
 					// Without cloning, Firefox will make another GET request.
 					// With cloning, causes issue in Opera/Win/Non-EN
-// 					if(!isOpera) svg = svg.cloneNode(true);
+					if(!isOpera) svg = svg.cloneNode(true);
 					
 					svgroot.appendChild(svg);
 			
