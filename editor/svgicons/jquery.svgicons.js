@@ -208,26 +208,6 @@ $(function() {
 				}
 				data_loaded = true;
 			}
-			// Clean source SVGs (mostly for Inkscape files)
-			// TODO: Find a way to do this without crashing Safari (when converting to IMG)
-			$(svgdoc).find('metadata').remove().end()
-				.find('*').each(function(i, el) {
-				if(el.nodeName.indexOf(':') != -1) {
-					$(el).remove();
-				}
-				var attrs = $.extend(false, el.attributes, {});
-				for(i in attrs) {
-					var attr = attrs[i];
-					var fullattr = attr.prefix?attr.prefix + ':' + attr.localName:'';
-					if(attr.prefix) {
-						el.removeAttribute(attr.localName); // for Opera
-						el.removeAttribute(fullattr); // for Webkit
-					} 
-					if(fullattr == 'xlink:href') {
-						el.setAttribute('xlink:href', attr.nodeValue);
-					}
-				}
-			});
 			
 			elems = $(svgdoc.firstChild).children(); //.getElementsByTagName('foreignContent');
 			
@@ -253,35 +233,35 @@ $(function() {
 			}
 		}
 		
+		var setIcon = function(target, icon, id, setID) {
+			if(isOpera) icon.css('visibility','hidden');
+			if(opts.replace) {
+				if(setID) icon.attr('id',id);
+				var cl = target.attr('class');
+				if(cl) icon.attr('class','svg_icon '+cl);
+				target.replaceWith(icon);
+			} else {
+				
+				target.append(icon);
+			}
+			if(isOpera) {
+				setTimeout(function() {
+					icon.removeAttr('style');
+				},1);
+			}
+		}
+		
+		var addIcon = function(icon, id) {
+			if(opts.id_match === undefined || opts.id_match !== false) {
+				setIcon(holder, icon, id, true);
+			}
+			svg_icons[id] = icon;
+		}
+		
 		function makeIcons(toImage, fallback) {
 			if(icons_made) return;
 			if(opts.no_img) toImage = false;
 			var holder;
-			
-			var setIcon = function(target, icon, id, setID) {
-				if(isOpera) icon.css('visibility','hidden');
-				if(opts.replace) {
-					if(setID) icon.attr('id',id);
-					var cl = target.attr('class');
-					if(cl) icon.attr('class','svg_icon '+cl);
-					target.replaceWith(icon);
-				} else {
-					
-					target.append(icon);
-				}
-				if(isOpera) {
-					setTimeout(function() {
-						icon.removeAttr('style');
-					},1);
-				}
-			}
-			
-			var addIcon = function(icon, id) {
-				if(opts.id_match === undefined || opts.id_match !== false) {
-					setIcon(holder, icon, id, true);
-				}
-				svg_icons[id] = icon;
-			}
 			
 			if(toImage) {
 				var temp_holder = $(document.createElement('div'));
@@ -303,13 +283,13 @@ $(function() {
 					addIcon(icon, id);
 				});
 			} else {
-				$.each(elems, function(i, elem) {
-					var id = elem.getAttribute('id');
-					if(id == 'svg_eof') return;
+				var len = elems.length;
+				for(var i = 0; i < len; i++) {
+					var elem = elems[i];
+					var id = elem.id;
+					if(id === 'svg_eof') break;
 					holder = $('#' + id);
-					if(elem.getElementsByTagNameNS) {
-						var svg = elem.getElementsByTagNameNS(svgns, 'svg')[0];
-					} 
+					var svg = elem.getElementsByTagNameNS(svgns, 'svg')[0];
 					var svgroot = document.createElementNS(svgns, "svg");
 					svgroot.setAttributeNS(svgns, 'viewBox', [0,0,icon_w,icon_h].join(' '));
 					
@@ -324,17 +304,16 @@ $(function() {
 						svg.setAttribute('viewBox', [0,0,w,h].join(' '));
 					}
 					
-					$(svgroot).attr({
-						"xmlns": svgns,
-						"width": icon_w,
-						"height": icon_h,
-						"xmlns:xlink": xlinkns,
-						"class": 'svg_icon'
-					});
+					// Not using jQuery to be a bit faster
+					svgroot.setAttribute('xmlns', svgns);
+					svgroot.setAttribute('width', icon_w);
+					svgroot.setAttribute('height', icon_h);
+					svgroot.setAttribute("xmlns:xlink", xlinkns);
+					svgroot.setAttribute("class", 'svg_icon');
 
 					// Without cloning, Firefox will make another GET request.
 					// With cloning, causes issue in Opera/Win/Non-EN
-					if(!isOpera) svg = svg.cloneNode(true);
+// 					if(!isOpera) svg = svg.cloneNode(true);
 					
 					svgroot.appendChild(svg);
 			
@@ -350,7 +329,8 @@ $(function() {
 						var icon = fixIDs($(svgroot), i);
 					}
 					addIcon(icon, id);
-				});
+				}
+
 			}
 			
 			if(opts.placement) {
@@ -370,9 +350,8 @@ $(function() {
 			}
 			if(opts.resize) $.resizeSvgIcons(opts.resize);
 			icons_made = true;
-			
+
 			if(opts.callback) opts.callback(svg_icons);
-			
 		}
 		
 		fixIDs = function(svg_el, svg_num, force) {
@@ -385,18 +364,18 @@ $(function() {
 				if(isOpera) no_dupes = false; // Opera didn't clone svg_el, so not reliable
 				// if(!force && no_dupes) return;
 				var new_id = 'x' + id + svg_num + i;
-				$(this).attr('id', new_id);			
-	
+				this.id = new_id;
+
 				svg_el.find('[fill="url(#' + id + ')"]').each(function() {
-					$(this).attr('fill', 'url(#' + new_id + ')');
+					this.setAttribute('fill', 'url(#' + new_id + ')');
 				}).end().find('[stroke="url(#' + id + ')"]').each(function() {
-					$(this).attr('stroke', 'url(#' + new_id + ')');
+					this.setAttribute('stroke', 'url(#' + new_id + ')');
 				}).end().find('use').each(function() {
 					if(this.getAttribute('xlink:href') == '#' + id) {
 						this.setAttributeNS(xlinkns,'href','#' + new_id);
 					}
 				}).end().find('[filter="url(#' + id + ')"]').each(function() {
-					$(this).attr('filter', 'url(#' + new_id + ')');
+					this.setAttribute('filter', 'url(#' + new_id + ')');
 				});
 			});
 			return svg_el;
