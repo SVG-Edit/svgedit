@@ -55,11 +55,7 @@ svgEditor.addExtension("imagelib", function() {
 		var response = evt.data;
 		
 		if(!response) {
-			$.alert('No data was given', function() {
-				if(mode !== 'm') {
-					closeBrowser();
-				}
-			});
+			// Do nothing
 			return;
 		}
 		
@@ -131,13 +127,19 @@ svgEditor.addExtension("imagelib", function() {
 				// Assume it's raw image data
 // 				importImage(str);
 			
-				$.alert('Unexpected data was returned: ' + response, function() {
-					if(mode !== 'm') {
-						closeBrowser();
-					} else {
-						pending[id].entry.remove();
-					}
-				});
+				// Don't give warning as postMessage may have been used by something else
+				if(mode !== 'm') {
+					closeBrowser();
+				} else {
+					pending[id].entry.remove();
+				}
+// 				$.alert('Unexpected data was returned: ' + response, function() {
+// 					if(mode !== 'm') {
+// 						closeBrowser();
+// 					} else {
+// 						pending[id].entry.remove();
+// 					}
+// 				});
 				return;
 		}
 		
