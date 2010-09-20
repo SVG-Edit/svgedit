@@ -227,9 +227,9 @@
 			}
 			
 			// Load extensions
-			// Bit of a hack to run extensions in local Opera
-			if(window.opera && document.location.protocol === 'file:') {
-				setTimeout(extFunc, 1000);
+			// Bit of a hack to run extensions in local Opera/IE9
+			if(document.location.protocol === 'file:') {
+				setTimeout(extFunc, 100);
 			} else {
 				extFunc();
 			}
@@ -4144,8 +4144,11 @@
 		
 		Editor.addExtension = function() {
 			var args = arguments;
-			Editor.ready(function() {
-				svgCanvas.addExtension.apply(this, args);
+			
+			// Note that we don't want this on Editor.ready since some extensions
+			// may want to run before then (like server_opensave).
+			$(function() {
+				if(svgCanvas) svgCanvas.addExtension.apply(this, args);
 			});
 		};
 
