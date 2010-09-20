@@ -358,6 +358,7 @@ $(function() {
 					if(!svg_icons[id]) return;
 					$(sel).each(function(i) {
 						var copy = svg_icons[id].clone();
+						if(i > 0 && !toImage) copy = fixIDs(copy, i, true);
 						setIcon($(this), copy, id);
 					})
 				});
