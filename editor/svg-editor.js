@@ -2630,13 +2630,8 @@
 					console.log('NOTE: Icon image missing: ' + icon_id);
 					return;
 				}
-				try {
-					icon = icon.clone();
-					$(elem).empty().append(icon);
-				} catch(e) {
-// 					icon = svgCanvas.copyElem(icon[0]);
-				}
-				
+
+				$(elem).empty().append(icon);
 			}
 		
 			var ua_prefix;
