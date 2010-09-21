@@ -10744,7 +10744,7 @@ this.moveUpDownSelected = function(dir) {
 //
 // Returns:
 // Batch command for the move
-this.moveSelectedElements = function(dx,dy,undoable) {
+this.moveSelectedElements = function(dx, dy, undoable) {
 	// if undoable is not sent, default to true
 	// if single values, scale them to the zoom
 	if (dx.constructor != Array) {
@@ -10792,6 +10792,7 @@ this.moveSelectedElements = function(dx,dy,undoable) {
 			if (cmd) {
 				batchCmd.addSubCommand(cmd);
 			}
+			
 			selectorManager.requestSelector(selected).resize();
 		}
 	}

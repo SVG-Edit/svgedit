@@ -2270,6 +2270,12 @@
 		
 			var moveSelected = function(dx,dy) {
 				if (selectedElement != null || multiselected) {
+					if(curConfig.gridSnapping) {
+						// Use grid snap value regardless of zoom level
+						var multi = svgCanvas.getZoom() * curConfig.snappingStep;
+						dx *= multi;
+						dy *= multi;
+					}
 					svgCanvas.moveSelectedElements(dx,dy);
 				}
 			};
@@ -3593,8 +3599,8 @@
 					{sel:'#copy_save_done', fn: cancelOverlays, evt: 'click'},
 					
 					// Shortcuts not associated with buttons
-					{key: 'shift+left', fn: function(){rotateSelected(0)}},
-					{key: 'shift+right', fn: function(){rotateSelected(1)}},
+					{key: 'ctrl+shift+left', fn: function(){rotateSelected(0)}},
+					{key: 'ctrl+shift+right', fn: function(){rotateSelected(1)}},
 					{key: 'shift+O', fn: selectPrev},
 					{key: 'shift+P', fn: selectNext},
 					{key: [modKey+'up', true], fn: function(){zoomImage(2);}},
@@ -3605,6 +3611,10 @@
 					{key: ['down', true], fn: function(){moveSelected(0,1);}},
 					{key: ['left', true], fn: function(){moveSelected(-1,0);}},
 					{key: ['right', true], fn: function(){moveSelected(1,0);}},
+					{key: 'shift+up', fn: function(){moveSelected(0,-10)}},
+					{key: 'shift+down', fn: function(){moveSelected(0,10)}},
+					{key: 'shift+left', fn: function(){moveSelected(-10,0)}},
+					{key: 'shift+right', fn: function(){moveSelected(10,0)}},
 					{key: 'A', fn: function(){svgCanvas.selectAllInCurrentLayer();}}
 				];
 				
