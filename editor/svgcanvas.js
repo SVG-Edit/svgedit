@@ -6642,7 +6642,10 @@ var pathActions = this.pathActions = function() {
 						d_attr += "L" + round(x) + "," + round(y) + " ";
 
 						newpath.setAttribute("d", d_attr);
-
+						
+						x *= current_zoom;
+						y *= current_zoom;
+						
 						// set stretchy line to latest point
 						assignAttributes(stretchy, {
 							'x1': x,
@@ -7973,6 +7976,12 @@ var identifyLayers = function() {
 		if (child && child.nodeType == 1) {
 			if (child.tagName == "g") {
 				var name = $("title",child).text();
+				
+				// Hack for Opera 10.60
+				if(!name && isOpera && child.querySelectorAll) {
+					name = $(child.querySelectorAll('title')).text();
+				}
+
 				// store layer and name in global variable
 				if (name) {
 					layernames.push(name);
