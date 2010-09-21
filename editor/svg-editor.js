@@ -393,9 +393,9 @@
 						// Check if there's an icon here
 						if(!shower.children('svg, img').length) {
 							var clone = $(sel).children().clone();
-							clone[0].removeAttribute('style'); //Needed for Opera
 							shower.append(clone);
 						}
+						if(window.opera) shower.children().removeAttr('style');
 					});
 					
 					svgEditor.runCallbacks();
