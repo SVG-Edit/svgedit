@@ -293,7 +293,7 @@ svgEditor.addExtension("imagelib", function() {
 				'margin-right': 5
 			});
 			
-			var type = $('<select><option value=s>Import single</option><option value=m>Import multiple</option><option value=o>Open for editing</option></select>').appendTo(leftBlock).change(function() {
+			var type = $('<select><option value=s>Import single</option><option value=m>Import multiple</option><option value=o>Open as new document</option></select>').appendTo(leftBlock).change(function() {
 				mode = $(this).val();
 				switch (mode) {
 					case 's':

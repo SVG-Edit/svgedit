@@ -90,7 +90,6 @@ svgEditor.addExtension("shapes", function() {
 		
 		if(!lib) {
 			$('#shape_buttons').html('Loading...');
-			console.log('extensions/shapelib/' + cat_id + '.json');
 			$.getJSON('extensions/shapelib/' + cat_id + '.json', function(result, textStatus) {
 				cur_lib = library[cat_id] = {
 					data: result.data,
@@ -114,7 +113,6 @@ svgEditor.addExtension("shapes", function() {
 		var off = size * .05;
 		var vb = [-off, -off, size + off*2, size + off*2].join(' ');
 		var stroke = fill ? 0: (size/30);
-		console.log(vb);
 		
 		var shape_icon = new DOMParser().parseFromString(
 			'<svg xmlns="http://www.w3.org/2000/svg"><svg viewBox="' + vb + '"><path fill="'+(fill?'#333':'none')+'" stroke="#000000" stroke-width="' + stroke + '" /><\/svg><\/svg>',
