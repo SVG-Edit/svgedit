@@ -3229,7 +3229,7 @@
 					{sel:'#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
 					{sel:'#tool_source_save', fn: saveSourceEditor, evt: 'click'},
 					{sel:'#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
-					{sel:'#tool_docprops', fn: showDocProperties, evt: 'mouseup', key: [modKey+'P', true]},
+					{sel:'#tool_docprops', fn: showDocProperties, evt: 'mouseup', key: ['P', true]},
 					{sel:'#tool_delete,#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
 					{sel:'#tool_reorient', fn: reorientPath, evt: 'click'},
 					{sel:'#tool_node_link', fn: linkControlPoints, evt: 'click'},
