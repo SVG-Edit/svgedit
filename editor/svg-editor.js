@@ -502,7 +502,7 @@
 			
 			var setSelectMode = function() {
 				var curr = $('.tool_button_current');
-				if(curr[0].id !== 'tool_select') {
+				if(curr.length && curr[0].id !== 'tool_select') {
 					curr.removeClass('tool_button_current').addClass('tool_button');
 					$('#tool_select').addClass('tool_button_current').removeClass('tool_button');
 					$('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all} #svgcanvas svg{cursor:default}');
