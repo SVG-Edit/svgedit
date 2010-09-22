@@ -8216,6 +8216,11 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		
 		selectOnly([g]);
 		
+		// Temporary hack to get rid of matrix
+		// TODO: See what ungroupSelectedElement does to absorb matrix
+		canvas.ungroupSelectedElement();
+		canvas.groupSelectedElements();
+		
 		addCommandToHistory(batchCmd);
 		
 	} else {
