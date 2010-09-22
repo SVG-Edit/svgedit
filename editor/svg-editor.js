@@ -173,6 +173,20 @@
 		}
 
 		Editor.init = function() {
+			// For external openers
+			(function() {
+				// let the opener know SVG Edit is ready
+				var w = window.opener;
+				if (w) {
+			    		try {
+						var svgEditorReadyEvent = w.document.createEvent("Event");
+						svgEditorReadyEvent.initEvent("svgEditorReady", true, true);
+						w.document.documentElement.dispatchEvent(svgEditorReadyEvent);
+			    		}
+					catch(e) {}
+				}
+			})();
+
 			(function() {
 				// Load config/data from URL if given
 				var urldata = $.deparam.querystring(true);
