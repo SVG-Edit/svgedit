@@ -470,21 +470,10 @@ var canvas = this,
 								'<feMergeNode in="SourceGraphic"/>'+
 							'</feMerge>'+
 						'</filter>'+
-						'<mask id="se_opac_mask">' +
-						  '<rect width="100%" height="100%" fill="#888" />' +
-						'</mask>' +
-// 						'<mask id="se_no_mask">' +
-// 						  '<rect width="100%" height="100%" fill="#FFF" />' +
-// 						'</mask>' +
 					'</defs>'+
 				'</svg>').documentElement, true);
 
 	container.appendChild(svgroot);
-	
-// This style element is for globally changing the opacity of 
-// elements during in-group editing
-var root_style = svgdoc.createElementNS(svgns, "style");
-svgroot.appendChild(root_style);
 	
 // The actual element that represents the final output SVG element
 var svgcontent = svgdoc.createElementNS(svgns, "svg");
