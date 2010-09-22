@@ -470,10 +470,21 @@ var canvas = this,
 								'<feMergeNode in="SourceGraphic"/>'+
 							'</feMerge>'+
 						'</filter>'+
+						'<mask id="se_opac_mask">' +
+						  '<rect width="100%" height="100%" fill="#888" />' +
+						'</mask>' +
+// 						'<mask id="se_no_mask">' +
+// 						  '<rect width="100%" height="100%" fill="#FFF" />' +
+// 						'</mask>' +
 					'</defs>'+
 				'</svg>').documentElement, true);
 
 	container.appendChild(svgroot);
+	
+// This style element is for globally changing the opacity of 
+// elements during in-group editing
+var root_style = svgdoc.createElementNS(svgns, "style");
+svgroot.appendChild(root_style);
 	
 // The actual element that represents the final output SVG element
 var svgcontent = svgdoc.createElementNS(svgns, "svg");
@@ -1455,6 +1466,7 @@ var SelectorManager;
 				'fill': '#FFF',
 				'style': 'pointer-events:none'
 			});
+			
 			// Both Firefox and WebKit are too slow with this filter region (especially at higher
 			// zoom levels) and Opera has at least one bug
 	//			if (!window.opera) rect.setAttribute('filter', 'url(#canvashadow)');
@@ -1844,7 +1856,7 @@ var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
 	if (!shape) {
 		shape = svgdoc.createElementNS(svgns, data.element);
 		if (current_layer) {
-			current_layer.appendChild(shape);
+			(current_group || current_layer).appendChild(shape);
 		}
 	}
 	if(data.curStyles) {
@@ -1892,6 +1904,12 @@ var all_layers = [],
 	
 	// pointer to the current layer <g>
 	current_layer = null,
+	
+	// pointer to current group (for in-group editing)
+	current_group = null,
+	
+	// Array with current disabled elements (for in-group editing)
+	disabled_elems = [],
 	
 	// Object with save options
 	save_options = {round_digits: 5},
@@ -2054,14 +2072,16 @@ var round = this.round = function(val) {
 var getIntersectionList = this.getIntersectionList = function(rect) {
 	if (rubberBox == null) { return null; }
 
+	var parent = current_group || current_layer;
+	
 	if(!curBBoxes.length) {
 		// Cache all bboxes
-		curBBoxes = getVisibleElements(current_layer, true);
+		curBBoxes = getVisibleElements(parent, true);
 	}
 	
 	var resultList = null;
 	try {
-		resultList = current_layer.getIntersectionList(rect, null);
+		resultList = parent.getIntersectionList(rect, null);
 	} catch(e) { }
 
 	if (resultList == null || typeof(resultList.item) != "function") {
@@ -4183,7 +4203,7 @@ var removeFromSelection = this.removeFromSelection = function(elemsToRemove) {
 // Clears the selection, then adds all elements in the current layer to the selection.
 this.selectAllInCurrentLayer = function() {
 	if (current_layer) {
-		selectOnly($(current_layer).children());
+		selectOnly($(current_group || current_layer).children());
 		current_mode = "select";
 	}
 };
@@ -4253,7 +4273,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		return null;
 	}
 	var mouse_target = evt.target;
-
+	
 	// if it was a <use>, Opera and WebKit return the SVGElementInstance
 	if (mouse_target.correspondingUseElement) mouse_target = mouse_target.correspondingUseElement;
 	
@@ -4282,11 +4302,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		// this makes it easier to indentify as being a selector grip
 		return selectorManager.selectorParentGroup;
 	}
-
-	while (mouse_target.parentNode !== current_layer) {
+	
+	while (mouse_target.parentNode !== (current_group || current_layer)) {
 		mouse_target = mouse_target.parentNode;
 	}
-	
 	return mouse_target;
 	
 	
@@ -5345,6 +5364,44 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		
 		start_transform = null;
 	};
+	
+	var dblClick = function(evt) {
+		var evt_target = evt.target;
+		var parent = evt_target.parentNode;
+		
+		// Do nothing if already in current group
+		if(parent === current_group) return;
+		
+		var mouse_target = getMouseTarget(evt);
+		
+		if(getRotationAngle(mouse_target)) {
+			// Don't do for rotated groups for now
+			return;
+		}
+		
+		// Enable all elements
+		enableElements();
+		
+		if(parent.tagName !== 'g' || parent === current_layer) {
+			// Escape from in-group edit
+			return;
+		}
+
+		// Edit inside this group		
+		current_group = mouse_target;
+		
+		// Disable other elements
+		$(mouse_target).parentsUntil('#svgcontent').andSelf().siblings().each(function() {
+			var opac = this.getAttribute('opacity') || 1;
+			// Store the original's opacity
+			elData(this, 'orig_opac', opac);
+			this.setAttribute('opacity', opac * .33);
+			this.setAttribute('style', 'pointer-events: none');
+			disabled_elems.push(this);
+		});
+
+		clearSelection();
+	}
 
 	// prevent links from being followed in the canvas
 	var handleLinkInCanvas = function(e) {
@@ -5352,7 +5409,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		return false;
 	};
 	
-	$(container).mousedown(mouseDown).mousemove(mouseMove).click(handleLinkInCanvas);
+	$(container).mousedown(mouseDown).mousemove(mouseMove).click(handleLinkInCanvas).dblclick(dblClick);
 	$(window).mouseup(mouseUp);
 	
 	$(container).bind("mousewheel DOMMouseScroll", function(e){
@@ -7696,6 +7753,12 @@ var svgCanvasToString = this.svgCanvasToString = function() {
 		}
 	});
 	
+	// Move out of in-group editing mode
+	if(current_group) {
+		enableElements();
+		selectOnly([current_group]);
+	}
+	
 	var naked_svgs = [];
 	
 	// Unwrap gsvg if it has no special attributes (only id and style)
@@ -7794,20 +7857,20 @@ var svgToString = this.svgToString = function(elem, indent) {
 				//remove bogus attributes added by Gecko
 				if ($.inArray(attr.localName, ['-moz-math-font-style', '_moz-math-font-style']) !== -1) continue;
 				if (attrVal != "") {
-					if(attrVal.indexOf('pointer-events') == 0) continue;
-					if(attr.localName == "class" && attrVal.indexOf('se_') == 0) continue;
+					if(attrVal.indexOf('pointer-events') === 0) continue;
+					if(attr.localName === "class" && attrVal.indexOf('se_') === 0) continue;
 					out.push(" "); 
-					if(attr.localName == 'd') attrVal = pathActions.convertPath(elem, true);
+					if(attr.localName === 'd') attrVal = pathActions.convertPath(elem, true);
 					if(!isNaN(attrVal)) {
 						attrVal = shortFloat(attrVal);
 					}
 					
 					// Embed images when saving 
 					if(save_options.apply
-						&& elem.nodeName == 'image' 
-						&& attr.localName == 'href'
+						&& elem.nodeName === 'image' 
+						&& attr.localName === 'href'
 						&& save_options.images
-						&& save_options.images == 'embed') 
+						&& save_options.images === 'embed') 
 					{
 						var img = encodableImages[attrVal];
 						if(img) attrVal = img;
@@ -8487,6 +8550,7 @@ this.importSvgString = function(xmlString) {
 // Updates layer system
 var identifyLayers = function() {
 	all_layers = [];
+	enableElements();
 	var numchildren = svgcontent.childNodes.length;
 	// loop through all children of svgcontent
 	var orphans = [], layernames = [];
@@ -8966,6 +9030,28 @@ this.setLayerOpacity = function(layername, opacity) {
 		}
 	}
 };
+
+// Function: enableElements
+// Make any previously disabled elements enabled again
+var enableElements = this.enableElements = function() {
+	var len = disabled_elems.length;
+	if(len) {
+		for(var i = 0; i < len; i++) {
+			var elem = disabled_elems[i];
+			
+			var orig = elData(elem, 'orig_opac');
+			if(orig !== 1) {
+				elem.setAttribute('opacity', orig);
+			} else {
+				elem.removeAttribute('opacity');
+			}
+			elem.setAttribute('style', 'pointer-events: inherit');
+		}
+		disabled_elems = [];
+		clearSelection(true);
+	}
+	current_group = null;
+}
 
 // Group: Document functions
 
