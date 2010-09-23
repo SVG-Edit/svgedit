@@ -548,6 +548,8 @@
 			var multiselected = false;
 			var editingsource = false;
 			var docprops = false;
+			var cur_context = '';
+			var orig_title = $('title:first').text();
 			
 			var fillPaint = new $.jGraduate.Paint({solidColor: curConfig.initFill.color});
 			var strokePaint = new $.jGraduate.Paint({solidColor: curConfig.initStroke.color});
@@ -717,6 +719,51 @@
 					setSelectMode();
 				}
 				zoomDone();
+			}
+			
+			$('#cur_context_panel').delegate('a', 'click', function() {
+				var link = $(this);
+				if(link.attr('data-root')) {
+					svgCanvas.leaveContext();
+				} else {
+					svgCanvas.setContext(link.text());
+				}
+				return false;
+			});
+			
+			var contextChanged = function(win, context) {
+				$('#workarea,#sidepanels').css('top', context?100:75);
+				if(cur_context && !context) {
+					// Back to normal
+					workarea[0].scrollTop -= 25;
+				} else if(!cur_context && context) {
+					workarea[0].scrollTop += 25;
+				}
+				
+				var link_str = '';
+				if(context) {
+					var str = '';
+					link_str = '<a href="#" data-root="y">' + svgCanvas.getCurrentLayer() + '</a>';
+					
+					$(context).parentsUntil('#svgcontent > g').andSelf().each(function() {
+						if(this.id) {
+							str += ' > ' + this.id;
+							if(this !== context) {
+								link_str += ' > <a href="#">' + this.id + '</a>';
+							} else {
+								link_str += ' > ' + this.id;
+							}
+						}
+					});
+
+					cur_context = str;
+				} else {
+					cur_context = null;
+				}
+				$('#cur_context_panel').toggle(!!context).html(link_str);
+
+				
+				updateTitle();
 			}
 			
 			var flyout_funcs = {};
@@ -1550,6 +1597,7 @@
 			svgCanvas.bind("saved", saveHandler);
 			svgCanvas.bind("exported", exportHandler);
 			svgCanvas.bind("zoomed", zoomChanged);
+			svgCanvas.bind("contextset", contextChanged);
 			svgCanvas.bind("extension_added", extAdded);
 			svgCanvas.textActions.setInputElem($("#text")[0]);
 		
@@ -2558,7 +2606,7 @@
 					hideSourceEditor();
 					zoomImage();
 					populateLayers();
-					setTitle(svgCanvas.getDocumentTitle());
+					updateTitle();
 				}
 		
 				if (!svgCanvas.setSvgString($('#svg_source_textarea').val())) {
@@ -2572,16 +2620,19 @@
 				setSelectMode();		
 			};
 			
-			var setTitle = function(title) {
-				var editor_title = $('title:first').text().split(':')[0];
-				var new_title = editor_title + (title?': ' + title:'');
+			var updateTitle = function(title) {
+				title = title || svgCanvas.getDocumentTitle();
+				var new_title = orig_title + (title?': ' + title:'');
+				if(cur_context) {
+					new_title = new_title + cur_context;
+				}
 				$('title:first').text(new_title);
 			}
 			
 			var saveDocProperties = function(){
 				// set title
 				var new_title = $('#canvas_title').val();
-				setTitle(new_title);
+				updateTitle(new_title);
 				svgCanvas.setDocumentTitle(new_title);
 			
 				// update resolution
@@ -2925,7 +2976,12 @@
 		
 			var cancelOverlays = function() {
 				$('#dialog_box').hide();
-				if (!editingsource && !docprops) return;
+				if (!editingsource && !docprops) {
+					if(cur_context) {
+						svgCanvas.leaveContext();
+					}
+					return;
+				};
 		
 				if (editingsource) {
 					var oldString = svgCanvas.getSvgString();

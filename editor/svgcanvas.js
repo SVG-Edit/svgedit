@@ -2080,10 +2080,10 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 		if(!rect) {
 			var rubberBBox = rubberBox.getBBox();
 			var bb = {};
-			$.each(rubberBBox, function(key, val) {
-				// Can't set values to a real BBox object, so make a fake one
-				bb[key] = val / current_zoom;
-			});
+			
+			for(var o in rubberBBox) {
+				bb[o] = rubberBBox[o] / current_zoom;
+			}
 			rubberBBox = bb;
 			
 		} else {
@@ -2414,6 +2414,7 @@ var getId, getNextId;
 		return id;
 	};
 	
+	// Function: call
 	// Run the callback function associated with the given event
 	//
 	// Parameters:
@@ -4294,7 +4295,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		// this makes it easier to indentify as being a selector grip
 		return selectorManager.selectorParentGroup;
 	}
-	
+
 	while (mouse_target.parentNode !== (current_group || current_layer)) {
 		mouse_target = mouse_target.parentNode;
 	}
@@ -4786,6 +4787,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				
 				if (elemsToAdd.length > 0) 
 					addToSelection(elemsToAdd);
+					
 				break;
 			case "resize":
 				// we track the resize bounding box and translate/scale the selected element
@@ -5371,28 +5373,16 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			return;
 		}
 		
-		// Enable all elements
-		enableElements();
+		// Reset context
+		if(current_group) {
+			leaveContext();
+		}
 		
-		if(parent.tagName !== 'g' || parent === current_layer) {
+		if(parent.tagName !== 'g' || parent === current_layer || mouse_target === selectorManager.selectorParentGroup) {
 			// Escape from in-group edit
 			return;
 		}
-
-		// Edit inside this group		
-		current_group = mouse_target;
-		
-		// Disable other elements
-		$(mouse_target).parentsUntil('#svgcontent').andSelf().siblings().each(function() {
-			var opac = this.getAttribute('opacity') || 1;
-			// Store the original's opacity
-			elData(this, 'orig_opac', opac);
-			this.setAttribute('opacity', opac * .33);
-			this.setAttribute('style', 'pointer-events: none');
-			disabled_elems.push(this);
-		});
-
-		clearSelection();
+		setContext(mouse_target);
 	}
 
 	// prevent links from being followed in the canvas
@@ -7747,7 +7737,7 @@ var svgCanvasToString = this.svgCanvasToString = function() {
 	
 	// Move out of in-group editing mode
 	if(current_group) {
-		enableElements();
+		leaveContext();
 		selectOnly([current_group]);
 	}
 	
@@ -8514,7 +8504,7 @@ this.importSvgString = function(xmlString) {
 		var use_el = svgdoc.createElementNS(svgns, "use");
 		setHref(use_el, "#" + symbol.id);
 		findDefs().appendChild(symbol);
-		current_layer.appendChild(use_el);
+		(current_group || current_layer).appendChild(use_el);
 		use_el.id = getNextId();
 		clearSelection();
 		
@@ -8547,7 +8537,7 @@ this.importSvgString = function(xmlString) {
 // Updates layer system
 var identifyLayers = function() {
 	all_layers = [];
-	enableElements();
+	leaveContext();
 	var numchildren = svgcontent.childNodes.length;
 	// loop through all children of svgcontent
 	var orphans = [], layernames = [];
@@ -9028,9 +9018,10 @@ this.setLayerOpacity = function(layername, opacity) {
 	}
 };
 
-// Function: enableElements
-// Make any previously disabled elements enabled again
-var enableElements = this.enableElements = function() {
+// Function: leaveContext
+// Return from a group context to the regular kind, make any previously
+// disabled elements enabled again
+var leaveContext = this.leaveContext = function() {
 	var len = disabled_elems.length;
 	if(len) {
 		for(var i = 0; i < len; i++) {
@@ -9046,8 +9037,33 @@ var enableElements = this.enableElements = function() {
 		}
 		disabled_elems = [];
 		clearSelection(true);
+		call("contextset", null);
 	}
 	current_group = null;
+}
+
+// Function: setContext
+// Set the current context (for in-group editing)
+var setContext = this.setContext = function(elem) {
+	if(typeof elem === 'string') {
+		elem = getElem(elem);
+	}
+
+	// Edit inside this group
+	current_group = elem;
+	
+	// Disable other elements
+	$(elem).parentsUntil('#svgcontent').andSelf().siblings().each(function() {
+		var opac = this.getAttribute('opacity') || 1;
+		// Store the original's opacity
+		elData(this, 'orig_opac', opac);
+		this.setAttribute('opacity', opac * .33);
+		this.setAttribute('style', 'pointer-events: none');
+		disabled_elems.push(this);
+	});
+
+	clearSelection();
+	call("contextset", current_group);
 }
 
 // Group: Document functions
@@ -10484,7 +10500,7 @@ this.pasteElements = function(type) {
 		if(!getElem(elem.id)) copy.id = elem.id;
 		
 		pasted.push(copy);
-		current_layer.appendChild(copy);
+		(current_group || current_layer).appendChild(copy);
 		batchCmd.addSubCommand(new InsertElementCommand(copy));
 	}
 	
@@ -10907,7 +10923,7 @@ this.cloneSelectedElements = function() {
 	while (i--) {
 		// clone each element and replace it within copiedElements
 		var elem = copiedElements[i] = copyElem(copiedElements[i]);
-		current_layer.appendChild(elem);
+		(current_group || current_layer).appendChild(elem);
 		batchCmd.addSubCommand(new InsertElementCommand(elem));
 	}
 	
@@ -11094,7 +11110,7 @@ this.setBackground = function(color, url) {
 this.cycleElement = function(next) {
 	var cur_elem = selectedElements[0];
 	var elem = false;
-	var all_elems = getVisibleElements(current_layer);
+	var all_elems = getVisibleElements(current_group || current_layer);
 	if (cur_elem == null) {
 		var num = next?all_elems.length-1:0;
 		elem = all_elems[num];
