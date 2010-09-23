@@ -184,6 +184,7 @@ var isOpera = !!window.opera,
 	
 	// Much faster than running getBBox() every time
 	var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
+	var visElems_arr = visElems.split(',');
 // 	var hidElems = 'clipPath,defs,desc,feGaussianBlur,filter,linearGradient,marker,mask,metadata,pattern,radialGradient,stop,switch,symbol,title,textPath';
 	
 
@@ -2620,13 +2621,15 @@ var getBBox = this.getBBox = function(elem) {
 	var selected = elem || selectedElements[0];
 	if (elem.nodeType != 1) return null;
 	var ret = null;
-	if(elem.nodeName == 'text' && selected.textContent == '') {
+	var elname = selected.nodeName;
+	
+	if(elname === 'text' && selected.textContent === '') {
 		selected.textContent = 'a'; // Some character needed for the selector to use.
 		ret = selected.getBBox();
 		selected.textContent = '';
-	} else if(elem.nodeName == 'path' && isWebkit) {
+	} else if(elname === 'path' && isWebkit) {
 		ret = getPathBBox(selected);
-	} else if(elem.nodeName == 'use' && !isWebkit || elem.nodeName == 'foreignObject') {
+	} else if(elname === 'use' && !isWebkit || elname === 'foreignObject') {
 		ret = selected.getBBox();
 		var bb = {};
 		bb.width = ret.width;
@@ -2634,8 +2637,8 @@ var getBBox = this.getBBox = function(elem) {
 		bb.x = ret.x + parseFloat(selected.getAttribute('x')||0);
 		bb.y = ret.y + parseFloat(selected.getAttribute('y')||0);
 		ret = bb;
-	} else {
-		try { ret = selected.getBBox(); } 
+	} else if(~$.inArray(elname, visElems_arr)) {
+		try { ret = selected.getBBox();} 
 		catch(e) { 
 			// Check if element is child of a foreignObject
 			var fo = $(selected).closest("foreignObject");
