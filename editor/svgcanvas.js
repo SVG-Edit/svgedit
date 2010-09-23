@@ -5373,11 +5373,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			return;
 		}
 		
-		// Reset context
-		if(current_group) {
-			leaveContext();
-		}
-		
 		if(parent.tagName !== 'g' || parent === current_layer || mouse_target === selectorManager.selectorParentGroup) {
 			// Escape from in-group edit
 			return;
@@ -9045,6 +9040,7 @@ var leaveContext = this.leaveContext = function() {
 // Function: setContext
 // Set the current context (for in-group editing)
 var setContext = this.setContext = function(elem) {
+	leaveContext();
 	if(typeof elem === 'string') {
 		elem = getElem(elem);
 	}
