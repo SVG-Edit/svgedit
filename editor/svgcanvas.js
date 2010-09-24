@@ -950,22 +950,22 @@ var BatchCommand = this.undoCmd.batch = function(text) {
 	this.isEmpty = function() { return this.stack.length == 0; };
 }
 
-// Set scope for these undo functions
-var resetUndoStack, addCommandToHistory;
+// Set scope for addCommandToHistory
+var addCommandToHistory;
 
 // Undo/redo stack related functions
 (function(c) {
 	var undoStackPointer = 0, 
 		undoStack = [];
 	
-	// Function: resetUndoStack
-	// Resets the undo stack, effectively clearing the undo/redo history
-	resetUndoStack = function() {
-		undoStack = [];
-		undoStackPointer = 0;
-	};
-	
 	c.undoMgr = {
+		// Function: undoMgr.resetUndoStack
+		// Resets the undo stack, effectively clearing the undo/redo history
+		resetUndoStack: function() {
+			undoStack = [];
+			undoStackPointer = 0;
+		},
+	
 		// Function: undoMgr.getUndoStackSize
 		// Returns: 
 		// Integer with the current size of the undo history stack
@@ -9086,7 +9086,7 @@ this.clear = function() {
 	canvas.createLayer("Layer 1");
 	
 	// clear the undo stack
-	resetUndoStack();
+	canvas.undoMgr.resetUndoStack();
 	// reset the selector manager
 	selectorManager.initGroup();
 	// reset the rubber band box
