@@ -1554,12 +1554,9 @@
 							} else {
 								label.removeAttribute(d);
 							}
-							if(el_name === 'g') {
-								menu_items.enableContextMenuItems('#ungroup');
-							}
 						}
 					}
-
+					menu_items[(el_name === 'g' ? 'en':'dis') + 'ableContextMenuItems']('#ungroup');
 				} // if (elem != null)
 				else if (multiselected) {
 					$('#multiselected_panel').show();
