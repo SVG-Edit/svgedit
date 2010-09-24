@@ -1794,11 +1794,12 @@
 				var inp = $('<input type="hidden">');
 				$(this).append(inp);
 				inp.focus().remove();
-			});
-		
-			$('.palette_item').click(function(evt){
-				var picker = (evt.shiftKey ? "stroke" : "fill");
-				var id = (evt.shiftKey ? '#stroke_' : '#fill_');
+			})
+			
+			$('.palette_item').mousedown(function(evt){
+				var right_click = evt.button === 2;
+				var picker = ((evt.shiftKey || right_click) ? "stroke" : "fill");
+				var id = ((evt.shiftKey || right_click) ? '#stroke_' : '#fill_');
 				var color = $(this).attr('data-rgb');
 				var rectbox = document.getElementById("gradbox_"+picker).parentNode.firstChild;
 				var paint = null;
@@ -1833,7 +1834,7 @@
 					}
 				}
 				updateToolButtonState();
-			});
+			}).bind('contextmenu', function(e) {e.preventDefault()});
 		
 			$("#toggle_stroke_tools").toggle(function() {
 				$(".stroke_tool").css('display','table-cell');
