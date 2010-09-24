@@ -1266,9 +1266,9 @@ span.zoom_tool {
 }
 
 .contextMenu .shortcut {
-width: 80px;           
-text-align:right;
-float:right;
+	width: 80px;           
+	text-align:right;
+	float:right;
 }
 
 .contextMenu A {
