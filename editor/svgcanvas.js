@@ -5342,9 +5342,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				cleanupElement(element);
 				if(current_mode == "path") {
 					pathActions.toEditMode(element);
-				} else if (current_mode == "text" || current_mode == "image" || current_mode == "foreignObject") {
-					// keep us in the tool we were in unless it was a text or image element
-					addToSelection([element], true);
 				} else {
 					selectOnly([element], true);
 				}

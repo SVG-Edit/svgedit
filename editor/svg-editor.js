@@ -1853,10 +1853,6 @@
 				$('#styleoverrides').text('');
 				$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 				$(button).addClass('tool_button_current').removeClass('tool_button');
-				// when a tool is selected, we should deselect any currently selected elements
-				if(button !== '#tool_select') {
-					svgCanvas.clearSelection();
-				}
 				return true;
 			};
 			
@@ -2273,13 +2269,15 @@
 			};
 		
 			var clickText = function(){
-				toolButtonClick('#tool_text');
-				svgCanvas.setMode('text');
+				if (toolButtonClick('#tool_text')) {
+					svgCanvas.setMode('text');
+				}
 			};
 			
 			var clickPath = function(){
-				toolButtonClick('#tool_path');
-				svgCanvas.setMode('path');
+				if (toolButtonClick('#tool_path')) {
+					svgCanvas.setMode('path');
+				}
 			};
 			
 			// Delete is a contextual tool that only appears in the ribbon if
