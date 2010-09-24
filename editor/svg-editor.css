@@ -1265,6 +1265,12 @@ span.zoom_tool {
 	margin: 0px;
 }
 
+.contextMenu .shortcut {
+width: 80px;           
+text-align:right;
+float:right;
+}
+
 .contextMenu A {
 	-moz-user-select: none;
 	-webkit-user-select: none;
