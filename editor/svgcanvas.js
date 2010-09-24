@@ -4196,8 +4196,8 @@ var removeFromSelection = this.removeFromSelection = function(elemsToRemove) {
 // Clears the selection, then adds all elements in the current layer to the selection.
 this.selectAllInCurrentLayer = function() {
 	if (current_layer) {
-		selectOnly($(current_group || current_layer).children());
 		current_mode = "select";
+		selectOnly($(current_group || current_layer).children());
 	}
 };
 
@@ -11107,6 +11107,7 @@ this.cycleElement = function(next) {
 	var cur_elem = selectedElements[0];
 	var elem = false;
 	var all_elems = getVisibleElements(current_group || current_layer);
+	if(!all_elems.length) return;
 	if (cur_elem == null) {
 		var num = next?all_elems.length-1:0;
 		elem = all_elems[num];
