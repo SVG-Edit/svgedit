@@ -463,7 +463,8 @@
 				layer_menu = $("#cmenu_layers"),
 				show_save_warning = false, 
 				exportWindow = null, 
-				tool_scale = 1;
+				tool_scale = 1,
+				ui_context = 'toolbars';
 
 			// This sets up alternative dialog boxes. They mostly work the same way as
 			// their UI counterparts, expect instead of returning the result, a callback
@@ -633,6 +634,7 @@
 			// called when we've selected a different element
 			var selectedChanged = function(window,elems) {
 				var mode = svgCanvas.getMode();
+				if(mode === "select") setSelectMode();
 				var is_node = (mode == "pathedit");
 				// if elems[1] is present, then we have more than one element
 				selectedElement = (elems.length == 1 || elems[1] == null ? elems[0] : null);
@@ -2180,19 +2182,19 @@
 					$(inp).blur();
 				}
 				
-				// Do not include the #text input, as it needs to remain focused 
-				// when clicking on an SVG text element.
-				$('#svg_editor input:text:not(#text)').focus(function() {
+				$('#svg_editor').find('button, select, input:not(#text)').focus(function() {
 					inp = this;
+					ui_context = 'toolbars';
 					workarea.mousedown(unfocus);
 				}).blur(function() {
+					ui_context = 'canvas';
 					workarea.unbind('mousedown', unfocus);
-					
 					// Go back to selecting text if in textedit mode
 					if(svgCanvas.getMode() == 'textedit') {
 						$('#text').focus();
 					}
 				});
+				
 			}());
 
 			var clickSelect = function() {
@@ -3770,6 +3772,18 @@
 						$('.attr_changer, #image_url').bind('keydown', 'return', 
 							function(evt) {$(this).change();evt.preventDefault();}
 						);
+						
+						$(window).bind('keydown', 'tab', function(e) {
+							if(ui_context === 'canvas') {
+								e.preventDefault();
+								selectNext();
+							}
+						}).bind('keydown', 'shift+tab', function(e) {
+							if(ui_context === 'canvas') {
+								e.preventDefault();
+								selectPrev();
+							}
+						});
 						
 						$('#tool_zoom').dblclick(dblclickZoom);
 					},
