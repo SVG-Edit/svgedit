@@ -5369,6 +5369,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			// Don't do for rotated groups for now
 			return;
 		}
+		// Reset context
+		if(current_group) {
+			leaveContext();
+		}
 		
 		if(parent.tagName !== 'g' || parent === current_layer || mouse_target === selectorManager.selectorParentGroup) {
 			// Escape from in-group edit
