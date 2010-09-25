@@ -2396,9 +2396,8 @@
 				svgCanvas.cycleElement(0);
 			};
 			
-			var rotateSelected = function(cw) {
+			var rotateSelected = function(cw,step) {
 				if (selectedElement == null || multiselected) return;
-				var step = 5;
 				if(!cw) step *= -1;
 				var new_angle = $('#angle').val()*1 + step;
 				svgCanvas.setRotationAngle(new_angle);
@@ -3676,8 +3675,10 @@
 					{sel:'#copy_save_done', fn: cancelOverlays, evt: 'click'},
 					
 					// Shortcuts not associated with buttons
-					{key: 'ctrl+shift+left', fn: function(){rotateSelected(0)}},
-					{key: 'ctrl+shift+right', fn: function(){rotateSelected(1)}},
+					{key: 'ctrl+left', fn: function(){rotateSelected(0,1)}},
+					{key: 'ctrl+right', fn: function(){rotateSelected(1,1)}},
+					{key: 'ctrl+shift+left', fn: function(){rotateSelected(0,5)}},					
+					{key: 'ctrl+shift+right', fn: function(){rotateSelected(1,5)}},
 					{key: 'shift+O', fn: selectPrev},
 					{key: 'shift+P', fn: selectNext},
 					{key: [modKey+'up', true], fn: function(){zoomImage(2);}},
