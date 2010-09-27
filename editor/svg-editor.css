@@ -1251,7 +1251,7 @@ span.zoom_tool {
 	padding: 5px 0;
 	margin: 0px;
 	display: none;
-	font: 14px/17px Lucida Sans, Helvetica, Verdana, sans-serif;
+	font: 12px/15px Lucida Sans, Helvetica, Verdana, sans-serif;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-moz-box-shadow: 2px 5px 10px rgba(0,0,0,.3);
@@ -1266,7 +1266,7 @@ span.zoom_tool {
 }
 
 .contextMenu .shortcut {
-	width: 80px;           
+	width: 115px;           
 	text-align:right;
 	float:right;
 }

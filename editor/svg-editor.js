@@ -1565,7 +1565,7 @@
 						.enableContextMenuItems('#group')
 						.disableContextMenuItems('#ungroup');
 				} else {
-					menu_items.disableContextMenuItems('#delete,#cut,#copy,#group,#ungroup,#move_up,#move_down');
+					menu_items.disableContextMenuItems('#delete,#cut,#copy,#group,#ungroup,#move_front,#move_up,#move_down,#move_back');
 				}
 				
 				// update history buttons
@@ -1589,7 +1589,7 @@
 					$('#selLayerNames').removeAttr('disabled').val(currentLayer);
 					
 					// Enable regular menu options
-					canv_menu.enableContextMenuItems('#delete,#cut,#copy,#move_down,#move_up');
+					canv_menu.enableContextMenuItems('#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back');
 				}
 				else {
 					$('#selLayerNames').attr('disabled', 'disabled');
@@ -3656,8 +3656,8 @@
 					{sel:'#tool_node_delete', fn: deletePathNode, evt: 'click'},
 					{sel:'#tool_openclose_path', fn: opencloseSubPath, evt: 'click'},
 					{sel:'#tool_add_subpath', fn: addSubPath, evt: 'click'},
-					{sel:'#tool_move_top', fn: moveToTopSelected, evt: 'click', key: 'shift+up'},
-					{sel:'#tool_move_bottom', fn: moveToBottomSelected, evt: 'click', key: 'shift+down'},
+					{sel:'#tool_move_top', fn: moveToTopSelected, evt: 'click', key: 'ctrl+shift+]'},
+					{sel:'#tool_move_bottom', fn: moveToBottomSelected, evt: 'click', key: 'ctrl+shift+['},
 					{sel:'#tool_topath', fn: convertToPath, evt: 'click'},
 					{sel:'#tool_undo', fn: clickUndo, evt: 'click', key: ['Z', true]},
 					{sel:'#tool_redo', fn: clickRedo, evt: 'click', key: ['Y', true]},
@@ -3683,8 +3683,8 @@
 					{key: 'shift+P', fn: selectNext},
 					{key: [modKey+'up', true], fn: function(){zoomImage(2);}},
 					{key: [modKey+'down', true], fn: function(){zoomImage(.5);}},
-					{key: [modKey+'[', true], fn: function(){moveUpDownSelected('Down');}},
 					{key: [modKey+']', true], fn: function(){moveUpDownSelected('Up');}},
+                                        {key: [modKey+'[', true], fn: function(){moveUpDownSelected('Down');}},
 					{key: ['up', true], fn: function(){moveSelected(0,-1);}},
 					{key: ['down', true], fn: function(){moveSelected(0,1);}},
 					{key: ['left', true], fn: function(){moveSelected(-1,0);}},
@@ -3900,11 +3900,17 @@
 						case 'ungroup':         
 							svgCanvas.ungroupSelectedElement();  
 							break;
+                                                case 'move_front':
+                                                        moveToTopSelected();
+                                                        break;
+                                                case 'move_up':
+                                                        moveUpDownSelected('Up');
+                                                        break;
 						case 'move_down':
 							moveUpDownSelected('Down');
 							break;
-						case 'move_up':
-							moveUpDownSelected('Up');
+						case 'move_back':
+							moveToBottomSelected();
 							break;
 
 					}
