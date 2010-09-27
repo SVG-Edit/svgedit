@@ -464,6 +464,8 @@
 				show_save_warning = false, 
 				exportWindow = null, 
 				tool_scale = 1,
+				zoomInIcon = 'crosshair',
+				zoomOutIcon = 'crosshair',
 				ui_context = 'toolbars';
 
 			// This sets up alternative dialog boxes. They mostly work the same way as
@@ -523,6 +525,7 @@
 					$('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all} #svgcanvas svg{cursor:default}');
 				}
 				svgCanvas.setMode('select');
+				workarea.css('cursor','auto');
 			};
 			
 			var togglePathEditMode = function(editmode, elems) {
@@ -703,7 +706,6 @@
 					res = svgCanvas.getResolution(),
 					w_area = workarea,
 					canvas_pos = $('#svgcanvas').position();
-				w_area.css('cursor','auto');
 				var z_info = svgCanvas.setBBoxZoom(bbox, w_area.width()-scrbar, w_area.height()-scrbar);
 				if(!z_info) return;
 				var zoomlevel = z_info.zoom,
@@ -720,6 +722,7 @@
 					// Go to select if a zoom box was drawn
 					setSelectMode();
 				}
+				
 				zoomDone();
 			}
 			
@@ -1858,6 +1861,7 @@
 					$('.tools_flyout').fadeOut(fadeFlyouts);
 				}
 				$('#styleoverrides').text('');
+				workarea.css('cursor','auto');
 				$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 				$(button).addClass('tool_button_current').removeClass('tool_button');
 				return true;
@@ -1897,7 +1901,15 @@
 				}).bind('keyup', 'space', function(evt) {
 					evt.preventDefault();
 					svgCanvas.spaceKey = keypan = false;
-				});
+				}).bind('keydown', 'shift', function(evt) {
+					if(svgCanvas.getMode() === 'zoom') {
+						workarea.css('cursor', zoomOutIcon);
+					}
+				}).bind('keyup', 'shift', function(evt) {
+					if(svgCanvas.getMode() === 'zoom') {
+						workarea.css('cursor', zoomInIcon);
+					}
+				})
 			}());
 			
 			
@@ -2263,8 +2275,8 @@
 		
 			var clickZoom = function(){
 				if (toolButtonClick('#tool_zoom')) {
-					workarea.css('cursor','crosshair');
 					svgCanvas.setMode('zoom');
+					workarea.css('cursor', zoomInIcon);
 				}
 			};
 		
@@ -3226,7 +3238,7 @@
 			// Use this SVG elem to test vectorEffect support
 			var test_el = docElem.firstChild;
 			test_el.setAttribute('style','vector-effect:non-scaling-stroke');
-			var supportsNonSS = (test_el.style.vectorEffect == 'non-scaling-stroke');
+			var supportsNonSS = (test_el.style.vectorEffect === 'non-scaling-stroke');
 			test_el.removeAttribute('style');
 			
 			// Use this to test support for blur element. Seems to work to test support in Webkit
@@ -3235,6 +3247,20 @@
 				$('#tool_blur').hide();
 			}
 			$(blur_test).remove();
+			
+			// Test for zoom icon support
+			(function() {
+				var pre = '-' + ua_prefix.toLowerCase() + '-zoom-';
+				var zoom = pre + 'in';
+				workarea.css('cursor', zoom);
+				if(workarea.css('cursor') === zoom) {
+					zoomInIcon = zoom;
+					zoomOutIcon = pre + 'out';
+				}
+				workarea.css('cursor', 'auto');
+			}());
+
+			
 			
 			// Test for embedImage support (use timeout to not interfere with page load)
 			setTimeout(function() {
