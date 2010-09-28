@@ -3704,7 +3704,6 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		var operation = 0;
 		var N = tlist.numberOfItems;
 		
-		
 		// Check if it has a gradient with userSpaceOnUse, in which case
 		// adjust it by recalculating the matrix transform.
 		// TODO: Make this work in Webkit using SVGEditTransformList
@@ -3713,6 +3712,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 			if(fill && fill.indexOf('url(') === 0) {
 				var grad = getElem(getUrlFromAttr(fill).substr(1));
 				if(grad.getAttribute('gradientUnits') === 'userSpaceOnUse') {
+				
 					//Update the userSpaceOnUse element
 					var grad = $(grad);
 					m = transformListToTransform(tlist).matrix;
@@ -8116,6 +8116,57 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 	obj_num++;
 }
 
+// Function convertGradients
+// Converts gradients from userSpaceOnUse to objectBoundingBox
+var convertGradients = this.convertGradients = function(elem) {
+	$(elem).find('linearGradient, radialGradient').each(function() {
+		var grad = this;
+		if($(grad).attr('gradientUnits') === 'userSpaceOnUse') {
+			// TODO: Support more than one element with this ref by duplicating parent grad
+			var elems = $(svgcontent).find('[fill=url(#' + grad.id + ')],[stroke=url(#' + grad.id + ')]');
+			if(!elems.length) return;
+			
+			// get object's bounding box
+			var bb = elems[0].getBBox();
+			
+			if(grad.tagName === 'linearGradient') {
+				var g_coords = $(grad).attr(['x1', 'y1', 'x2', 'y2']);
+				
+				$(grad).attr({
+					x1: (g_coords.x1 - bb.x) / bb.width,
+					y1: (g_coords.y1 - bb.y) / bb.height,
+					x2: (g_coords.x2 - bb.x) / bb.width,
+					y2: (g_coords.y2 - bb.y) / bb.height
+				});
+				
+				grad.removeAttribute('gradientUnits');
+			} else {
+				// Note: radialGradient elements cannot be easily converted 
+				// because userSpaceOnUse will keep circular gradients, while
+				// objectBoundingBox will x/y scale the gradient according to
+				// its bbox. 
+				
+				// For now we'll do nothing, though we should probably have
+				// the gradient be updated as the element is moved, as 
+				// inkscape/illustrator do.
+			
+//         				var g_coords = $(grad).attr(['cx', 'cy', 'r']);
+//         				
+// 						$(grad).attr({
+// 							cx: (g_coords.cx - bb.x) / bb.width,
+// 							cy: (g_coords.cy - bb.y) / bb.height,
+// 							r: g_coords.r
+// 						});
+// 						
+// 	        			grad.removeAttribute('gradientUnits');
+			}
+			
+
+		}
+	});
+}
+
+
 // Function: convertToGroup
 // Converts selected/given <use> or child SVG element to a group
 var convertToGroup = this.convertToGroup = function(elem) {
@@ -8189,7 +8240,8 @@ var convertToGroup = this.convertToGroup = function(elem) {
 			}
 			batchCmd.addSubCommand(new InsertElementCommand(g));
 		}
-	
+		convertGradients(g);
+		
 		// recalculate dimensions on the top-level children so that unnecessary transforms
 		// are removed
 		walkTreePost(g, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
@@ -8299,52 +8351,7 @@ this.setSvgString = function(xmlString) {
 			}
 		});
 		
-		// convert gradients with userSpaceOnUse to objectBoundingBox
-		content.find('linearGradient, radialGradient').each(function() {
-			var grad = this;
-			if($(grad).attr('gradientUnits') === 'userSpaceOnUse') {
-				// TODO: Support more than one element with this ref by duplicating parent grad
-				var elems = $(svgcontent).find('[fill=url(#' + grad.id + ')],[stroke=url(#' + grad.id + ')]');
-				if(!elems.length) return;
-				
-				// get object's bounding box
-				var bb = elems[0].getBBox();
-				
-				if(grad.tagName === 'linearGradient') {
-					var g_coords = $(grad).attr(['x1', 'y1', 'x2', 'y2']);
-					
-					$(grad).attr({
-						x1: (g_coords.x1 - bb.x) / bb.width,
-						y1: (g_coords.y1 - bb.y) / bb.height,
-						x2: (g_coords.x2 - bb.x) / bb.width,
-						y2: (g_coords.y1 - bb.y) / bb.height
-					});
-					
-					grad.removeAttribute('gradientUnits');
-				} else {
-					// Note: radialGradient elements cannot be easily converted 
-					// because userSpaceOnUse will keep circular gradients, while
-					// objectBoundingBox will x/y scale the gradient according to
-					// its bbox. 
-					
-					// For now we'll do nothing, though we should probably have
-					// the gradient be updated as the element is moved, as 
-					// inkscape/illustrator do.
-				
-//         				var g_coords = $(grad).attr(['cx', 'cy', 'r']);
-//         				
-// 						$(grad).attr({
-// 							cx: (g_coords.cx - bb.x) / bb.width,
-// 							cy: (g_coords.cy - bb.y) / bb.height,
-// 							r: g_coords.r
-// 						});
-// 						
-// 	        			grad.removeAttribute('gradientUnits');
-				}
-				
-
-			}
-		});
+		convertGradients(content[0]);
 		
 		// recalculate dimensions on the top-level children so that unnecessary transforms
 		// are removed
@@ -8496,6 +8503,7 @@ this.importSvgString = function(xmlString) {
 		var use_el = svgdoc.createElementNS(svgns, "use");
 		setHref(use_el, "#" + symbol.id);
 		findDefs().appendChild(symbol);
+	
 		(current_group || current_layer).appendChild(use_el);
 		use_el.id = getNextId();
 		clearSelection();
@@ -10643,6 +10651,9 @@ this.ungroupSelectedElement = function() {
 			}
 			
 			var chtlist = getTransformList(elem);
+
+			// Don't process gradient transforms
+			if(~elem.tagName.indexOf('Gradient')) chtlist = null;
 			
 			// Hopefully not a problem to add this. Necessary for elements like <desc/>
 			if(!chtlist) continue;
