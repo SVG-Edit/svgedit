@@ -5139,9 +5139,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						if (selectedElements[0].nodeName == "path" && selectedElements[1] == null) {
 							pathActions.select(t);
 						} // if it was a path
-						else if (selectedElements[0].nodeName == "text" && selectedElements[1] == null) {
-							textActions.select(t, x, y);
-						} // if it was a path
 						// else, if it was selected and this is a shift-click, remove it from selection
 						else if (evt.shiftKey) {
 							if(tempJustSelected != t) {
@@ -5239,7 +5236,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				break;
 			case "text":
 				keep = true;
-				addToSelection([element]);
+				selectOnly([element]);
 				textActions.start(element);
 				break;
 			case "path":
@@ -5319,6 +5316,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			
 		} else if (element != null) {
 			canvas.addedNew = true;
+			
 			var ani_dur = .2, c_ani;
 			if(opac_ani.beginElement && element.getAttribute('opacity') != cur_shape.opacity) {
 				c_ani = $(opac_ani).clone().attr({
@@ -5364,6 +5362,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		if(parent === current_group) return;
 		
 		var mouse_target = getMouseTarget(evt);
+		
+		if(mouse_target.tagName === 'text' && current_mode !== 'textedit') {
+			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
+			textActions.select(mouse_target, pt.x, pt.y);
+		}
 		
 		if(getRotationAngle(mouse_target)) {
 			// Don't do for rotated groups for now
@@ -5437,7 +5440,7 @@ var preventClickDefault = function(img) {
 // Group: Text edit functions
 // Functions relating to editing text elements
 var textActions = canvas.textActions = function() {
-	var curtext, current_text;
+	var curtext;
 	var textinput;
 	var cursor;
 	var selblock;
@@ -5556,7 +5559,6 @@ var textActions = canvas.textActions = function() {
 
 		// No content, so return 0
 		if(chardata.length == 1) return 0;
-		
 		// Determine if cursor should be on left or right of character
 		var charpos = curtext.getCharNumAtPosition(pt);
 		if(charpos < 0) {
@@ -5637,7 +5639,7 @@ var textActions = canvas.textActions = function() {
 	}
 
 	function selectWord(evt) {
-		if(!allow_dbl) return;
+		if(!allow_dbl || !curtext) return;
 	
 		var ept = transformPoint( evt.pageX, evt.pageY, root_sctm ),
 			mouse_x = ept.x * current_zoom,
@@ -5661,13 +5663,8 @@ var textActions = canvas.textActions = function() {
 
 	return {
 		select: function(target, x, y) {
-			if (current_text == target) {
-				curtext = target;
-				textActions.toEditMode(x, y);
-			} // going into pathedit mode
-			else {
-				current_text = target;
-			}	
+			curtext = target;
+			textActions.toEditMode(x, y);
 		},
 		start: function(elem) {
 			curtext = elem;
@@ -5711,6 +5708,7 @@ var textActions = canvas.textActions = function() {
 			var sel = selectorManager.requestSelector(curtext).selectorRect;
 			
 			textActions.init();
+
 			$(curtext).css('cursor', 'text');
 			
 // 				if(support.editableText) {
@@ -5762,7 +5760,6 @@ var textActions = canvas.textActions = function() {
 // 			$(textinput).blur(hideCursor);
 		},
 		clear: function() {
-			current_text = null;
 			if(current_mode == "textedit") {
 				textActions.toSelectMode();
 			}
@@ -5820,7 +5817,6 @@ var textActions = canvas.textActions = function() {
 				x: end.x,
 				width: 0
 			});
-			
 			setSelection(textinput.selectionStart, textinput.selectionEnd, true);
 		}
 	}
