@@ -8119,7 +8119,15 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 // Function convertGradients
 // Converts gradients from userSpaceOnUse to objectBoundingBox
 var convertGradients = this.convertGradients = function(elem) {
-	$(elem).find('linearGradient, radialGradient').each(function() {
+	var elems = $(elem).find('linearGradient, radialGradient');
+	if(!elems.length && isWebkit) {
+		// Bug in webkit prevents regular *Gradient selector search
+		elems = $(elem).find('*').filter(function() {
+			return (this.tagName.indexOf('Gradient') !== -1);
+		});
+	}
+	
+	elems.each(function() {
 		var grad = this;
 		if($(grad).attr('gradientUnits') === 'userSpaceOnUse') {
 			// TODO: Support more than one element with this ref by duplicating parent grad
@@ -8240,6 +8248,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 			}
 			batchCmd.addSubCommand(new InsertElementCommand(g));
 		}
+		
 		convertGradients(g);
 		
 		// recalculate dimensions on the top-level children so that unnecessary transforms
