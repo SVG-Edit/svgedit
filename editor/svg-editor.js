@@ -648,7 +648,7 @@
 					// select mode and this event fires - we need our UI to be in sync
 
 					if (mode !== "multiselect" && !is_node) {
-						console.log('ut');
+						// FIXME: This also needs to fire if only one element is selected via multiselect
 						updateToolbar();
 					} 
 					
