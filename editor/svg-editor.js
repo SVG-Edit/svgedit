@@ -93,7 +93,7 @@
 			if(val) curPrefs[key] = val;
 			key = 'svg-edit-'+key;
 			var host = location.hostname,
-				onweb = host && host.indexOf('.') != -1,
+				onweb = host && host.indexOf('.') >= 0,
 				store = (val != undefined),
 				storage = false;
 			// Some FF versions throw security errors here
@@ -452,7 +452,7 @@
 			           "#aaaaff", "#d4aaff", "#ffaaff", "#ffaad4",
 			           ];
 	
-				isMac = (navigator.platform.indexOf("Mac") != -1);
+				isMac = (navigator.platform.indexOf("Mac") >= 0);
 				modKey = (isMac ? "meta+" : "ctrl+"); // ⌘
 				path = svgCanvas.pathActions,
 				undoMgr = svgCanvas.undoMgr,
@@ -1282,7 +1282,7 @@
 			// updates the toolbar (colors, opacity, etc) based on the selected element
 			// This function also updates the opacity and id elements that are in the context panel
 			var updateToolbar = function() {
-				if (selectedElement != null && $.inArray(selectedElement.tagName, ['use', 'image', 'foreignObject', 'g', 'a']) === -1) {
+				if (selectedElement != null && ['use', 'image', 'foreignObject', 'g', 'a'].indexOf(selectedElement.tagName) === -1) {
 				
 					// get opacity values
 					var fillOpacity = parseFloat(selectedElement.getAttribute("fill-opacity"));
@@ -1445,12 +1445,12 @@
 					if(!is_node && currentMode != 'pathedit') {
 						$('#selected_panel').show();
 						// Elements in this array already have coord fields
-						if($.inArray(elname, ['line', 'circle', 'ellipse']) != -1) {
+						if(['line', 'circle', 'ellipse'].indexOf(elname) >= 0) {
 							$('#xy_panel').hide();
 						} else {
 							var x,y;
 							// Get BBox vals for g, polyline and path
-							if($.inArray(elname, ['g', 'polyline', 'path']) != -1) {
+							if(['g', 'polyline', 'path'].indexOf(elname) >= 0) {
 								var bb = svgCanvas.getStrokedBBox([elem]);
 								if(bb) {
 									x = bb.x;
@@ -1466,7 +1466,7 @@
 						}
 						
 						// Elements in this array cannot be converted to a path
-						var no_path = $.inArray(elname, ['image', 'text', 'path', 'g', 'use']) == -1;
+						var no_path = ['image', 'text', 'path', 'g', 'use'].indexOf(elname) == -1;
 						$('#tool_topath').toggle(no_path);
 						$('#tool_reorient').toggle(elname == 'path');
 						$('#tool_reorient').toggleClass('disabled', angle == 0);
@@ -1659,7 +1659,7 @@
 			
 			var changeStrokeWidth = function(ctl) {
 				var val = ctl.value;
-				if(val == 0 && selectedElement && $.inArray(selectedElement.nodeName, ['line', 'polyline']) != -1) {
+				if(val == 0 && selectedElement && ['line', 'polyline'].indexOf(selectedElement.nodeName) >= 0) {
 					val = ctl.value = 1;
 				}
 				svgCanvas.setStrokeWidth(val);

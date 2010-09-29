@@ -90,7 +90,7 @@ if(window.opera) {
 $.SvgCanvas = function(container, config)
 {
 var isOpera = !!window.opera,
-	isWebkit = navigator.userAgent.indexOf("AppleWebKit") != -1,
+	isWebkit = navigator.userAgent.indexOf("AppleWebKit") >= 0,
 	
 	// Object populated later with booleans indicating support for features	
 	support = {},
@@ -406,7 +406,7 @@ var Utils = this.Utils = function() {
 		// Cross-browser compatible method of converting a string to an XML tree
 		// found this function here: http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f
 		"text2xml": function(sXML) {
-			if(sXML.indexOf('<svg:svg') !== -1) {
+			if(sXML.indexOf('<svg:svg') >= 0) {
 				sXML = sXML.replace(/<(\/?)svg:/g, '<$1').replace('xmlns:svg', 'xmlns');
 			}
 		
@@ -513,7 +513,7 @@ var svgWhiteListNS = {};
 $.each(svgWhiteList, function(elt,atts){
 	var attNS = {};
 	$.each(atts, function(i, att){
-		if (att.indexOf(':') != -1) {
+		if (att.indexOf(':') >= 0) {
 			var v = att.split(':');
 			attNS[v[1]] = nsRevMap[v[0]];
 		} else {
@@ -559,9 +559,9 @@ var convertToNum, convertToUnit, setUnitAttr;
 			var num = val.substr(0, val.length-1)/100;
 			var res = getResolution();
 			
-			if($.inArray(attr, w_attrs) !== -1) {
+			if(w_attrs.indexOf(attr) >= 0) {
 				return num * res.w;
-			} else if($.inArray(attr, h_attrs) !== -1) {
+			} else if(h_attrs.indexOf(attr) >= 0) {
 				return num * res.h;
 			} else {
 				return num * Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
@@ -594,9 +594,9 @@ var convertToNum, convertToUnit, setUnitAttr;
 					var res = getResolution();
 					unit = '%';
 					val *= 100;
-					if($.inArray(attr, w_attrs) !== -1) {
+					if(w_attrs.indexOf(attr) >= 0) {
 						val = val / res.w;
-					} else if($.inArray(attr, h_attrs) !== -1) {
+					} else if(h_attrs.indexOf(attr) >= 0) {
 						val = val / res.h;
 					} else {
 						return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
@@ -621,7 +621,7 @@ var convertToNum, convertToUnit, setUnitAttr;
 	// val - String with the attribute value to check
 	canvas.isValidUnit = function(attr, val) {
 		var valid = false;
-		if($.inArray(attr, unit_attrs) != -1) {
+		if(unit_attrs.indexOf(attr) >= 0) {
 			// True if it's just a number
 			if(!isNaN(val)) {
 				valid = true;
@@ -2133,7 +2133,7 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 				
 				// Get the BBox from the raw path for these elements
 				var elemNames = ['ellipse','path','line','polyline','polygon'];
-				if($.inArray(elem.tagName, elemNames) != -1) {
+				if(elemNames.indexOf(elem.tagName) >= 0) {
 					bb = good_bb = canvas.convertToPath(elem, true);
 				} else if(elem.tagName == 'rect') {
 					// Look for radius
@@ -2514,7 +2514,7 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 				while(p--) {
 					var nv = props[p].split(":");
 					// now check that this attribute is supported
-					if (allowedAttrs.indexOf(nv[0]) != -1) {
+					if (allowedAttrs.indexOf(nv[0]) >= 0) {
 						node.setAttribute(nv[0],nv[1]);
 					}
 				}
@@ -2530,8 +2530,8 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 		// (but not for links)
 		var href = getHref(node);
 		if(href && 
-		   $.inArray(node.nodeName, ["filter", "linearGradient", "pattern", 
-									 "radialGradient", "textPath", "use"]) != -1)
+		   ["filter", "linearGradient", "pattern",
+		   "radialGradient", "textPath", "use"].indexOf(node.nodeName) >= 0)
 		{
 			// TODO: we simply check if the first character is a #, is this bullet-proof?
 			if (href[0] != "#") {
@@ -2638,7 +2638,7 @@ var getBBox = this.getBBox = function(elem) {
 		bb.x = ret.x + parseFloat(selected.getAttribute('x')||0);
 		bb.y = ret.y + parseFloat(selected.getAttribute('y')||0);
 		ret = bb;
-	} else if(~$.inArray(elname, visElems_arr)) {
+	} else if(~visElems_arr.indexOf(elname)) {
 		try { ret = selected.getBBox();} 
 		catch(e) { 
 			// Check if element is child of a foreignObject
@@ -3502,7 +3502,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 						if(child.getAttribute('clip-path')) {
 							// tx, ty
 							var attr = child.getAttribute('clip-path');
-							if($.inArray(attr, clipPaths_done) === -1) {
+							if(clipPaths_done.indexOf(attr) === -1) {
 								updateClipPath(attr, tx, ty);
 								clipPaths_done.push(attr);
 							}							
@@ -4256,7 +4256,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	
 	// for foreign content, go up until we find the foreignObject
 	// WebKit browsers set the mouse target to the svgcanvas div 
-	if ($.inArray(mouse_target.namespaceURI, [mathns, htmlns]) != -1 && 
+	if ([mathns, htmlns].indexOf(mouse_target.namespaceURI) >= 0 && 
 		mouse_target.id != "svgcanvas") 
 	{
 		while (mouse_target.nodeName != "foreignObject") {
@@ -4267,7 +4267,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	
 	// Get the desired mouse_target with jQuery selector-fu
 	// If it's root-like, select the root
-	if($.inArray(mouse_target, [svgroot, container, svgcontent, current_layer]) !== -1) {
+	if([svgroot, container, svgcontent, current_layer].indexOf(mouse_target) >= 0) {
 		return svgroot;
 	}
 	
@@ -4348,7 +4348,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		}
 		
 		// This would seem to be unnecessary...
-// 		if($.inArray(current_mode, ['select', 'resize']) == -1) {
+// 		if(['select', 'resize'].indexOf(current_mode) == -1) {
 // 			setGradient();
 // 		}
 		
@@ -4813,13 +4813,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					sy = height ? (height+dy)/height : 1, 
 					sx = width ? (width+dx)/width : 1;
 				// if we are dragging on the north side, then adjust the scale factor and ty
-				if(current_resize_mode.indexOf("n") != -1) {
+				if(current_resize_mode.indexOf("n") >= 0) {
 					sy = height ? (height-dy)/height : 1;
 					ty = height;
 				}
 				
 				// if we dragging on the east side, then adjust the scale factor and tx
-				if(current_resize_mode.indexOf("w") != -1) {
+				if(current_resize_mode.indexOf("w") >= 0) {
 					sx = width ? (width-dx)/width : 1;
 					tx = width;
 				}
@@ -6425,7 +6425,7 @@ var pathActions = this.pathActions = function() {
 				var index = indexes[i];
 				var seg = p.segs[index];
 				if(seg.ptgrip) {
-					if($.inArray(index, p.selected_pts) == -1 && index >= 0) {
+					if(p.selected_pts.indexOf(index) == -1 && index >= 0) {
 						p.selected_pts.push(index);
 					}
 				}
@@ -6449,7 +6449,7 @@ var pathActions = this.pathActions = function() {
 		}
 
 		this.removePtFromSelection = function(index) {
-			var pos = $.inArray(index, p.selected_pts);
+			var pos = p.selected_pts.indexOf(index);
 			if(pos == -1) {
 				return;
 			} 
@@ -7674,7 +7674,7 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 	while (i--) {
 		var defelem = defelems[i];
 		var id = defelem.id;
-		if($.inArray(id, defelem_uses) == -1) {
+		if(defelem_uses.indexOf(id) == -1) {
 			// Not found, so remove
 			defelem.parentNode.removeChild(defelem);
 			numRemoved++;
@@ -7706,7 +7706,7 @@ var svgCanvasToString = this.svgCanvasToString = function() {
 	
 	// Keep SVG-Edit comment on top
 	$.each(svgcontent.childNodes, function(i, node) {
-		if(i && node.nodeType == 8 && node.data.indexOf('Created with') != -1) {
+		if(i && node.nodeType == 8 && node.data.indexOf('Created with') >= 0) {
 			svgcontent.insertBefore(node, svgcontent.firstChild);
 		}
 	});
@@ -7798,7 +7798,7 @@ var svgToString = this.svgToString = function(elem, indent) {
 
 				// only serialize attributes we don't use internally
 				if (attrVal != "" && 
-					$.inArray(attr.localName, ['width','height','xmlns','x','y','viewBox','id','overflow']) == -1) 
+					['width','height','xmlns','x','y','viewBox','id','overflow'].indexOf(attr.localName) == -1) 
 				{
 
 					if(!attr.namespaceURI || nsMap[attr.namespaceURI]) {
@@ -7813,7 +7813,7 @@ var svgToString = this.svgToString = function(elem, indent) {
 				attr = attrs.item(i);
 				var attrVal = toXml(attr.nodeValue);
 				//remove bogus attributes added by Gecko
-				if ($.inArray(attr.localName, ['-moz-math-font-style', '_moz-math-font-style']) !== -1) continue;
+				if (['-moz-math-font-style', '_moz-math-font-style'].indexOf(attr.localName) >= 0) continue;
 				if (attrVal != "") {
 					if(attrVal.indexOf('pointer-events') === 0) continue;
 					if(attr.localName === "class" && attrVal.indexOf('se_') === 0) continue;
@@ -8054,8 +8054,8 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 			var href = getHref(n);
 			// TODO: what if an <image> or <a> element refers to an element internally?
 			if(href && 
-				$.inArray(n.nodeName, ["filter", "linearGradient", "pattern", 
-							 "radialGradient", "textPath", "use"]) != -1)
+				["filter", "linearGradient", "pattern",
+				"radialGradient", "textPath", "use"].indexOf(n.nodeName) >= 0)
 			{
 				var refid = href.substr(1);
 				if (!(refid in ids)) {
@@ -8107,7 +8107,7 @@ var convertGradients = this.convertGradients = function(elem) {
 	if(!elems.length && isWebkit) {
 		// Bug in webkit prevents regular *Gradient selector search
 		elems = $(elem).find('*').filter(function() {
-			return (this.tagName.indexOf('Gradient') !== -1);
+			return (this.tagName.indexOf('Gradient') >= 0);
 		});
 	}
 	
@@ -8569,7 +8569,7 @@ var identifyLayers = function() {
 	// create a new layer and add all the orphans to it
 	if (orphans.length > 0) {
 		var i = 1;
-		while ($.inArray(("Layer " + i), layernames) != -1) { i++; }
+		while (layernames.indexOf(("Layer " + i)) >= 0) { i++; }
 		var newname = "Layer " + i;
 		current_layer = svgdoc.createElementNS(svgns, "g");
 		var layer_title = svgdoc.createElementNS(svgns, "title");
@@ -9649,7 +9649,7 @@ this.getStrokeWidth = function() {
 // Parameters:
 // val - A Float indicating the new stroke width value
 this.setStrokeWidth = function(val) {
-	if(val == 0 && $.inArray(current_mode, ['line', 'path']) != -1) {
+	if(val == 0 && ['line', 'path'].indexOf(current_mode) >= 0) {
 		canvas.setStrokeWidth(1);
 		return;
 	}
@@ -10305,7 +10305,7 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		}
 		
 		// Set x,y vals on elements that don't have them
-		if((attr == 'x' || attr == 'y') && $.inArray(elem.tagName, ['g', 'polyline', 'path']) != -1) {
+		if((attr == 'x' || attr == 'y') && ['g', 'polyline', 'path'].indexOf(elem.tagName) >= 0) {
 			var bbox = getStrokedBBox([elem]);
 			var diff_x = attr == 'x' ? newValue - bbox.x : 0;
 			var diff_y = attr == 'y' ? newValue - bbox.y : 0;
@@ -10314,7 +10314,7 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		}
 		
 		// only allow the transform/opacity attribute to change on <g> elements, slightly hacky
-		if (elem.tagName == "g" && $.inArray(attr, ['transform', 'opacity', 'filter']) !== -1);
+		if (elem.tagName == "g" && ['transform', 'opacity', 'filter'].indexOf(attr) >= 0);
 		var oldval = attr == "#text" ? elem.textContent : elem.getAttribute(attr);
 		if (oldval == null)  oldval = "";
 		if (oldval != String(newValue)) {
@@ -10348,7 +10348,7 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 			// Use the Firefox ffClone hack for text elements with gradients or
 			// where other text attributes are changed. 
 			if(elem.nodeName == 'text') {
-				if((newValue+'').indexOf('url') == 0 || $.inArray(attr, ['font-size','font-family','x','y']) != -1 && elem.textContent) {
+				if((newValue+'').indexOf('url') == 0 || ['font-size','font-family','x','y'].indexOf(attr) >= 0 && elem.textContent) {
 					elem = ffClone(elem);
 				}
 			}
@@ -10356,7 +10356,7 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 			// codedread: it is now possible for this function to be called with elements
 			// that are not in the selectedElements array, we need to only request a
 			// selector if the element is in that array
-			if ($.inArray(elem, selectedElements) != -1) {
+			if (selectedElements.indexOf(elem) >= 0) {
 				setTimeout(function() {
 					// Due to element replacement, this element may no longer
 					// be part of the DOM
