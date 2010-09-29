@@ -173,10 +173,12 @@ svgEditor.addExtension("imagelib", function() {
 								} else {
 									$(this).text(title);
 								}
+								submit.removeAttr('disabled');
 							}
 						});
 					} else {
 						preview.append('<div>'+title+'</div>');
+						submit.removeAttr('disabled');
 					}
 				} else {
 					if(cur_meta && cur_meta.preview_url) {
@@ -192,10 +194,12 @@ svgEditor.addExtension("imagelib", function() {
 						preview.children().each(function() {
 							if($(this).data('id') == id) {
 								$(this).html(entry);
+								submit.removeAttr('disabled');
 							}
 						});
 					} else {
 						preview.append($('<div>').append(entry));
+						submit.removeAttr('disabled');
 					}
 
 				}
@@ -214,11 +218,10 @@ svgEditor.addExtension("imagelib", function() {
 		}
 	}, true);
 	
-	var preview;
+	var preview, submit;
 
 	function toggleMulti(show) {
-		var submit;
-		
+	
 		$('#lib_framewrap, #imglib_opts').css({right: (show ? 200 : 10)});
 		if(!preview) {
 			preview = $('<div id=imglib_preview>').css({
@@ -231,7 +234,7 @@ svgEditor.addExtension("imagelib", function() {
 				overflow: 'auto'
 			}).insertAfter('#lib_framewrap');
 			
-			submit = $('<button>Import selected</button>').appendTo('#imgbrowse').click(function() {
+			submit = $('<button disabled>Import selected</button>').appendTo('#imgbrowse').click(function() {
 				$.each(multi_arr, function(i) {
 					var type = this[0];
 					var data = this[1];
@@ -254,6 +257,7 @@ svgEditor.addExtension("imagelib", function() {
 		}
 		
 		preview.toggle(show);
+		submit.toggle(show);
 	}
 
 	function showBrowser() {
