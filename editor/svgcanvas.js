@@ -3901,9 +3901,6 @@ var isIdentity = function(m) {
 	return (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && m.e == 0 && m.f == 0);
 }
 
-// matrixMultiply() is provided because WebKit didn't implement multiply() correctly
-// on the SVGMatrix interface.  See https://bugs.webkit.org/show_bug.cgi?id=16062
-
 // Function: matrixMultiply
 // This function tries to return a SVGMatrix that is the multiplication m1*m2.
 // We also round to zero when it's near zero
@@ -3915,21 +3912,11 @@ var isIdentity = function(m) {
 // The matrix object resulting from the calculation
 var matrixMultiply = this.matrixMultiply = function() {
 	var NEAR_ZERO = 1e-14,
-		multi2 = function(m1, m2) {
-			var m = svgroot.createSVGMatrix();
-			m.a = m1.a*m2.a + m1.c*m2.b;
-			m.b = m1.b*m2.a + m1.d*m2.b,
-			m.c = m1.a*m2.c + m1.c*m2.d,
-			m.d = m1.b*m2.c + m1.d*m2.d,
-			m.e = m1.a*m2.e + m1.c*m2.f + m1.e,
-			m.f = m1.b*m2.e + m1.d*m2.f + m1.f;
-			return m;
-		},
 		args = arguments, i = args.length, m = args[i-1];
 	
 	while(i-- > 1) {
 		var m1 = args[i-1];
-		m = multi2(m1, m);
+		m = m1.multiply(m);
 	}
 	if (Math.abs(m.a) < NEAR_ZERO) m.a = 0;
 	if (Math.abs(m.b) < NEAR_ZERO) m.b = 0;
@@ -4169,8 +4156,7 @@ var removeFromSelection = this.removeFromSelection = function(elemsToRemove) {
 	if (elemsToRemove.length == 0) { return; }
 
 	// find every element and remove it from our array copy
-	var newSelectedItems = new Array(selectedElements.length),
-		newSelectedBBoxes = new Array(selectedBBoxes.length),
+	var newSelectedItems = new Array(selectedElements.length);
 		j = 0,
 		len = selectedElements.length;
 	for (var i = 0; i < len; ++i) {
@@ -4179,7 +4165,6 @@ var removeFromSelection = this.removeFromSelection = function(elemsToRemove) {
 			// keep the item
 			if (elemsToRemove.indexOf(elem) == -1) {
 				newSelectedItems[j] = elem;
-				if (j==0) newSelectedBBoxes[j] = selectedBBoxes[i];
 				j++;
 			}
 			else { // remove the item and its selector
@@ -4189,7 +4174,6 @@ var removeFromSelection = this.removeFromSelection = function(elemsToRemove) {
 	}
 	// the copy becomes the master now
 	selectedElements = newSelectedItems;
-	selectedBBoxes = newSelectedBBoxes;
 };
 
 // Function: selectAllInCurrentLayer
