@@ -646,8 +646,9 @@
 					// unless we're already in always set the mode of the editor to select because
 					// upon creation of a text element the editor is switched into
 					// select mode and this event fires - we need our UI to be in sync
-					
-					if (mode != "multiselect" && !is_node) {
+
+					if (mode !== "multiselect" && !is_node) {
+						console.log('ut');
 						updateToolbar();
 					} 
 					
@@ -2714,7 +2715,7 @@
 			}
 			
 			var setIcon = Editor.setIcon = function(elem, icon_id, forcedSize) {
-				var icon = (typeof icon_id == 'string') ? $.getSvgIcon(icon_id, true) : icon_id;
+				var icon = (typeof icon_id === 'string') ? $.getSvgIcon(icon_id, true) : icon_id.clone();
 				if(!icon) {
 					console.log('NOTE: Icon image missing: ' + icon_id);
 					return;
