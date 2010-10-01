@@ -54,6 +54,59 @@
 	background: -webkit-gradient(radial, center center, 3, center center, 1000, from(#bbb), to(#222));
 }
 
+#rulers > div {
+	position: absolute;
+	background: #DDD;
+	z-index: 1;
+	overflow: hidden;
+}
+
+#ruler_corner {
+	top: 76px;
+	left: 41px;
+	width: 15px;
+	height: 15px;
+}
+
+#ruler_x {
+	height: 15px;
+	top: 76px;
+	left: 56px;
+	right: 30px;
+	border-bottom: 1px solid;
+	border-left: 1px solid #777;
+}
+
+#rulers.moved #ruler_corner,
+#rulers.moved #ruler_x {
+	top: 101px;
+}
+
+#ruler_y {
+	width: 15px;
+	top: 91px;
+	left: 41px;
+	bottom: 78px;
+	border-right: 1px solid;
+	border-top: 1px solid #777;
+}
+
+#rulers.moved #ruler_y {
+	top: 116px;
+}
+
+
+#ruler_x canvas {
+	margin-left: -16px;
+}
+
+#ruler_y canvas {
+	margin-top: -16px;
+}
+
+
+
+
 #svg_editor div#palette_holder {
 	overflow-x: scroll;
 	overflow-y: hidden;
@@ -721,6 +774,7 @@ span.zoom_tool {
 	display: none;
 	cursor: pointer;
 	width: 400px;
+	z-index: 1;
 }
 
 #svg_editor .tools_flyout_v {
