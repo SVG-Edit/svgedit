@@ -49,9 +49,21 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 <body>
 <div id="svg_editor">
 
+<div id="rulers">
+	<div id="ruler_corner"></div>
+	<div id="ruler_x">
+		<canvas height="15"></canvas>
+	</div>
+	<div id="ruler_y">
+		<canvas width="15"></canvas>
+	</div>
+</div>
+
 <div id="workarea">
 <style id="styleoverrides" type="text/css" media="screen" scoped="scoped"></style>
-<div id="svgcanvas"></div>
+<div id="svgcanvas" style="position:relative">
+
+</div>
 </div>
 
 <div id="sidepanels">
@@ -665,6 +677,11 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 				<legend id="svginfo_grid_settings">Grid</legend>
 				<label><span id="svginfo_snap_onoff">Snapping on/off</span><input type="checkbox" value="snapping_on" id="grid_snapping_on"></label>
 				<label><span id="svginfo_snap_step">Snapping Step-Size:</span> <input type="text" id="grid_snapping_step" size="3" value="10"/></label>
+			</fieldset>
+
+			<fieldset id="units_rulers">
+				<legend id="svginfo_units_rulers">Units & Rulers</legend>
+				<label><span id="svginfo_rulers_onoff">Show rulers</span><input type="checkbox" value="show_rulers" id="show_rulers" checked></label>
 			</fieldset>
 
 		</fieldset>

@@ -51,7 +51,8 @@
 				wireframe: false,
 				colorPickerCSS: null,
 				gridSnapping: false,
-				snappingStep: 10
+				snappingStep: 10,
+				showRulers: true
 			},
 			uiStrings = Editor.uiStrings = {
 			"invalidAttrValGiven":"Invalid value given",
@@ -739,6 +740,7 @@
 			
 			var contextChanged = function(win, context) {
 				$('#workarea,#sidepanels').css('top', context?100:75);
+				$('#rulers').toggleClass('moved', context);
 				if(cur_context && !context) {
 					// Back to normal
 					workarea[0].scrollTop -= 25;
@@ -2699,6 +2701,11 @@
 				// set grid setting
 				curConfig.gridSnapping = $('#grid_snapping_on')[0].checked;
 				curConfig.snappingStep = $('#grid_snapping_step').val();
+				curConfig.showRulers = $('#show_rulers')[0].checked;
+				
+				$('#rulers').toggle(curConfig.showRulers);
+				if(curConfig.showRulers) updateRulers();
+				
 				svgCanvas.setConfig(curConfig);
 
 				updateCanvas();
@@ -3045,6 +3052,14 @@
 					win_wh[type] = curval;
 				});
 			});
+			
+			(function() {
+				workarea.scroll(function() {
+					$('#ruler_x')[0].scrollLeft = workarea[0].scrollLeft;
+					$('#ruler_y')[0].scrollTop = workarea[0].scrollTop;
+				});
+
+			}());
 			
 			$('#url_notice').click(function() {
 				$.alert(this.title);
@@ -3434,6 +3449,8 @@
 				workarea.css('right', parseInt(workarea.css('right'))+deltax);
 				sidepanels.css('width', parseInt(sidepanels.css('width'))+deltax);
 				layerpanel.css('width', parseInt(layerpanel.css('width'))+deltax);
+				var ruler_x = $('#ruler_x');
+				ruler_x.css('right', parseInt(ruler_x.css('right')) + deltax);
 			}
 			
 			$('#sidepanel_handle')
@@ -3465,9 +3482,11 @@
 				var deltax = (w > 2 || close ? 2 : SIDEPANEL_OPENWIDTH) - w;
 				var sidepanels = $('#sidepanels');
 				var layerpanel = $('#layerpanel');
-				workarea.css('right', parseInt(workarea.css('right'))+deltax);
-				sidepanels.css('width', parseInt(sidepanels.css('width'))+deltax);
-				layerpanel.css('width', parseInt(layerpanel.css('width'))+deltax);
+				var ruler_x = $('#ruler_x');
+				workarea.css('right', parseInt(workarea.css('right')) + deltax);
+				sidepanels.css('width', parseInt(sidepanels.css('width')) + deltax);
+				layerpanel.css('width', parseInt(layerpanel.css('width')) + deltax);
+				ruler_x.css('right', parseInt(ruler_x.css('right')) + deltax);
 			};
 			
 			// this function highlights the layer passed in (by fading out the other layers)
@@ -4111,6 +4130,108 @@
 				} else {
 					w_area[0].scrollLeft = new_ctr.x - w_orig/2;
 					w_area[0].scrollTop = new_ctr.y - h_orig/2;
+				}
+				
+				if(curConfig.showRulers) {
+					updateRulers(cnvs, zoom);
+					workarea.scroll();
+				}
+			}
+			
+			// Make [1,2,5] array
+			var r_intervals = [];
+			for(var i = .1; i < 1E5; i *= 10) {
+				r_intervals.push(1 * i);
+				r_intervals.push(2 * i);
+				r_intervals.push(5 * i);
+			}
+			
+			function updateRulers(scanvas, zoom) {
+				if(!zoom) zoom = svgCanvas.getZoom();
+				if(!scanvas) scanvas = $("#svgcanvas");
+				
+				var c_elem = svgCanvas.getContentElem();
+				
+				for(var d = 0; d < 2; d++) {
+					var is_x = (d === 0);
+					var dim = is_x ? 'x' : 'y';
+					var lentype = is_x?'width':'height';
+					
+					var content_d = c_elem.getAttribute(dim)-0;
+					
+					var hcanv = $('#ruler_' + dim + ' canvas')[0];
+					// Set the canvas size to the width of the container
+					var len = hcanv[lentype] = scanvas[lentype]();
+					var ctx = hcanv.getContext("2d");
+					
+					var unit = 1; // 1 = 1px
+					
+					// Calculate the main number interval
+					var raw_m = 50 / zoom;
+					
+					var multi = 1;
+					for(var i = 0; i < r_intervals.length; i++) {
+						var num = r_intervals[i];
+						multi = num;
+						if(raw_m <= num) {
+							break;
+						}
+					}
+					
+					var big_int = unit * multi * zoom;
+					
+					ctx.font = "10px sans-serif";
+					
+					var ruler_d = ((content_d / zoom) % multi) * zoom;
+					
+					for (; ruler_d < len; ruler_d += big_int) {
+						var real_d = Math.round((ruler_d) - content_d );
+	
+						var cur_d = Math.round(ruler_d) + .5;
+						if(is_x) {
+							ctx.moveTo(cur_d, 15);
+							ctx.lineTo(cur_d, 0);
+						} else {
+							ctx.moveTo(15, cur_d);
+							ctx.lineTo(0, cur_d);
+						}
+	
+						var label = Math.round(real_d / zoom);
+						
+						// Do anything special for negative numbers?
+// 						var is_neg = label < 0;
+// 						real_d2 = Math.abs(real_d2);
+						
+						// Change 1000s to Ks
+						if(label !== 0 && label !== 1000 && label % 1000 === 0) {
+							label = (label / 1000) + 'K';
+						}
+						
+						if(is_x) {
+							ctx.fillText(label, ruler_d+2, 8);
+						} else {
+							var str = (label+'').split('');
+							for(var i = 0; i < str.length; i++) {
+								ctx.fillText(str[i], 1, (ruler_d+9) + i*9);
+							}
+						}
+						
+						var part = big_int / 10;
+						for(var i = 1; i < 10; i++) {
+							var sub_d = Math.round(ruler_d + part * i) + .5;
+							var line_num = (i % 2)?12:10;
+							if(is_x) {
+								ctx.moveTo(sub_d, 15);
+								ctx.lineTo(sub_d, line_num);
+							} else {
+								ctx.moveTo(15, sub_d);
+								ctx.lineTo(line_num ,sub_d);
+							}
+						}
+					}
+					
+					ctx.strokeStyle = "#000";
+					ctx.stroke();
 				}
 			}
 		
