@@ -89,8 +89,11 @@ if(window.opera) {
 // config - An object that contains configuration data
 $.SvgCanvas = function(container, config)
 {
-var isOpera = !!window.opera,
-	isWebkit = navigator.userAgent.indexOf("AppleWebKit") >= 0,
+var userAgent = navigator.userAgent, 
+	// Note: Browser sniffing should only be used if no other detection method is possible
+	isOpera = !!window.opera,
+	isWebkit = userAgent.indexOf("AppleWebKit") >= 0,
+	isGecko = userAgent.indexOf('Gecko/') >= 0,
 	
 	// Object populated later with booleans indicating support for features	
 	support = {},
@@ -2669,7 +2672,7 @@ var getBBox = this.getBBox = function(elem) {
 // Parameters: 
 // elem - The (text) DOM element to clone
 var ffClone = function(elem) {
-	if(navigator.userAgent.indexOf('Gecko/') == -1) return elem;
+	if(isGecko) return elem;
 	var clone = elem.cloneNode(true)
 	elem.parentNode.insertBefore(clone, elem);
 	elem.parentNode.removeChild(elem);
@@ -3215,24 +3218,24 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		var k = tlist.numberOfItems;
 		while (k--) {
 			var xform = tlist.getItem(k);
-			if (xform.type == 0) {
+			if (xform.type === 0) {
 				tlist.removeItem(k);
 			}
 			// remove identity matrices
-			else if (xform.type == 1) {
+			else if (xform.type === 1) {
 				if (isIdentity(xform.matrix)) {
 					tlist.removeItem(k);
 				}
 			}
 			// remove zero-degree rotations
-			else if (xform.type == 4) {
-				if (xform.angle == 0) {
+			else if (xform.type === 4) {
+				if (xform.angle === 0) {
 					tlist.removeItem(k);
 				}
 			}
 		}
 		// End here if all it has is a rotation
-		if(tlist.numberOfItems == 1 && getRotationAngle(selected)) return null;
+		if(tlist.numberOfItems === 1 && getRotationAngle(selected)) return null;
 	}
 	
 	// if this element had no transforms, we are done
@@ -3240,6 +3243,43 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		selected.removeAttribute("transform");
 		return null;
 	}
+
+	// TODO: Make this work for more than 2
+	if (tlist) {
+		var k = tlist.numberOfItems;
+		var mxs = [];
+		while (k--) {
+			var xform = tlist.getItem(k);
+			if (xform.type === 1) {
+				mxs.push([xform.matrix, k]);
+			} else if(mxs.length) {
+				mxs = [];
+			}
+		}
+		if(mxs.length === 2) {
+			var m_new = svgroot.createSVGTransformFromMatrix(matrixMultiply(mxs[1][0], mxs[0][0]));
+			tlist.removeItem(mxs[0][1]);
+			tlist.removeItem(mxs[1][1]);
+			tlist.insertItemBefore(m_new, mxs[1][1]);
+		}
+		
+		// combine matrix + translate
+		k = tlist.numberOfItems;
+		
+		if(k === 2 && tlist.getItem(0).type === 1 && tlist.getItem(1).type === 2) {
+			var mt = svgroot.createSVGTransform();
+			logMatrix(tlist.getItem(0).matrix);
+			logMatrix(transformListToTransform(tlist).matrix);
+			
+			mt.setMatrix(transformListToTransform(tlist).matrix);
+			tlist.clear();
+			tlist.appendItem(mt);
+		}
+	}
+	
+	
+	
+	
 	
 	// Grouped SVG element 
 	var gsvg = $(selected).data('gsvg');
@@ -8119,7 +8159,7 @@ var convertGradients = this.convertGradients = function(elem) {
 			if(!elems.length) return;
 			
 			// get object's bounding box
-			var bb = elems[0].getBBox();
+			var bb = getBBox(elems[0]);
 			
 			if(grad.tagName === 'linearGradient') {
 				var g_coords = $(grad).attr(['x1', 'y1', 'x2', 'y2']);
@@ -8190,9 +8230,14 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		
 		ts = $elem.attr('transform');
 		var pos = $elem.attr(['x','y']);
-		
+
+// 		if(ts.length) {
+// 
+// 			ts += " ";
+// 		}
+
 		// Not ideal, but works
-		ts += "translate(" + pos.x + "," + pos.y + ")";
+		ts += "translate(" + (pos.x || 0) + "," + (pos.x || 0) + ")";
 		
 		var prev = $elem.prev();
 		
@@ -8214,6 +8259,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 // 			g.appendChild(elem.firstChild.cloneNode(true));
 		if (ts)
 			g.setAttribute("transform", ts);
+			console.log('t',g.getAttribute('transform'));
 		
 		var parent = elem.parentNode;
 		
@@ -8248,9 +8294,9 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		
 		// Temporary hack to get rid of matrix
 		// TODO: See what ungroupSelectedElement does to absorb matrix
-		canvas.ungroupSelectedElement();
-		canvas.groupSelectedElements();
-		
+// 		canvas.ungroupSelectedElement();
+// 		canvas.groupSelectedElements();
+// 		
 		addCommandToHistory(batchCmd);
 		
 	} else {
@@ -8331,6 +8377,12 @@ this.setSvgString = function(xmlString) {
 				groupSvgElem(this);
 			}
 		});
+		
+		// For Firefox: Put all gradients in defs
+		if(isGecko) {
+			content.find('linearGradient, radialGradient').appendTo(findDefs());
+		}
+
 		
 		// Set ref element for <use> elements
 		
@@ -8481,16 +8533,23 @@ this.importSvgString = function(xmlString) {
 		
 		// Uncomment this once Firefox has fixed their symbol bug:
 		// https://bugzilla.mozilla.org/show_bug.cgi?id=353575
-// 		var symbol = svgdoc.createElementNS(svgns, "symbol");
-// 		while (svg.firstChild) {
-// 			symbol.appendChild(svg.firstChild);
-// 		}
-// 		var attrs = svg.attributes;
-// 		for(var i=0; i < attrs.length; i++) {
-// 			var attr = attrs[i];
-// 			symbol.setAttribute(attr.nodeName, attr.nodeValue);
-// 		}
-		var symbol = svg;
+		var symbol = svgdoc.createElementNS(svgns, "symbol");
+		var defs = findDefs();
+		
+		while (svg.firstChild) {
+			var first = svg.firstChild;
+			if(isGecko && first.tagName === 'defs') {
+				// Move all gradients into root for Firefox
+				$(first).find('linearGradient, radialGradient').appendTo(defs);
+			}
+			symbol.appendChild(first);
+		}
+		var attrs = svg.attributes;
+		for(var i=0; i < attrs.length; i++) {
+			var attr = attrs[i];
+			symbol.setAttribute(attr.nodeName, attr.nodeValue);
+		}
+// 		var symbol = svg;
 		symbol.id = getNextId();
 		
 		var use_el = svgdoc.createElementNS(svgns, "use");
@@ -10558,6 +10617,12 @@ this.ungroupSelectedElement = function() {
 	if($(g).data('gsvg') || $(g).data('symbol')) {
 		// Is svg, so actually convert to group
 
+		convertToGroup(g);
+		return;
+	} else if(g.tagName === 'use') {
+		// Somehow doesn't have data set, so retrieve
+		var symbol = getElem(getHref(g).substr(1));
+		$(g).data('symbol', symbol);
 		convertToGroup(g);
 		return;
 	}
