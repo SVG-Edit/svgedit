@@ -252,7 +252,7 @@
 			$.svgIcons(curConfig.imgPath + 'svg_edit_icons.svg', {
 				w:24, h:24,
 				id_match: false,
-				no_img: true,
+ 				no_img: (!!window.opera), // Opera gives odd behavior w/images
 				fallback_path: curConfig.imgPath,
 				fallback:{
 					'new_image':'clear.png',
@@ -436,6 +436,12 @@
 					});
 					
 					svgEditor.runCallbacks();
+					
+					setTimeout(function() {
+						$('.flyout_arrow_horiz:empty').each(function() {
+							$(this).append($.getSvgIcon('arrow_right').width(5).height(5));
+						});
+					}, 1);
 				}
 			});
 
@@ -1240,7 +1246,7 @@
 					$.svgIcons(svgicons, {
 						w:24, h:24,
 						id_match: false,
-						no_img: true,
+						no_img: (!!window.opera),
 						fallback: fallback_obj,
 						placement: placement_obj,
 						callback: function(icons) {
@@ -4180,7 +4186,7 @@
 					
 					var big_int = unit * multi * zoom;
 					
-					ctx.font = "10px sans-serif";
+					ctx.font = "9px sans-serif";
 					
 					var ruler_d = ((content_d / zoom) % multi) * zoom;
 					
