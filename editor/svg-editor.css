@@ -1020,7 +1020,8 @@ span.zoom_tool {
 	margin-left: 30px;
 }
 
-#svg_docprops #svg_docprops_container {
+#svg_docprops #svg_docprops_container,
+#svg_prefs #svg_prefs_container {
 	position: absolute;
 	top: 50px;
 	padding: 10px;
@@ -1042,40 +1043,45 @@ span.zoom_tool {
 	max-width: 14em;
 }
 
-#tool_docprops_back {
+#tool_docprops_back, 
+#tool_prefs_back {
 	margin-left: 1em;
 	overflow: auto;
 }
 
 #svg_docprops_container #svg_docprops_docprops, 
-#svg_docprops_container #svg_docprops_prefs {
+#svg_prefs #svg_docprops_prefs {
 	float: left;
 	width: 221px;
 	margin: 5px .7em; 
 	overflow: hidden;
 }
 
-#svg_docprops_container #svg_docprops_prefs {
+#svg_prefs_container fieldset + fieldset {
 	float: right;
 }
 
-#svg_docprops legend {
+#svg_docprops legend, 
+#svg_prefs legend {
 	max-width: 195px;
 }
 
-#svg_docprops_docprops > legend, #svg_docprops_prefs > legend {
+#svg_docprops_docprops > legend, 
+#svg_prefs_container > fieldset > legend {
 	font-weight: bold;
 	font-size: 1.1em;
 }
 
 
-#svg_docprops_container fieldset {
+#svg_docprops_container fieldset,
+#svg_prefs fieldset {
 	padding: 5px;
 	margin: 5px;
 	border: 1px solid #DDD;
 }
 
-#svg_docprops_container label {
+#svg_docprops_container label,
+#svg_prefs_container label {
 	display: block;
 	margin: .5em;
 }
@@ -1105,7 +1111,7 @@ span.zoom_tool {
 	padding-left: 20px;
 }
 
-#svg_docprops_container div.color_block {
+#svg_prefs_container div.color_block {
 	float: left;
 	margin: 2px;
 	padding: 20px;
@@ -1123,12 +1129,14 @@ span.zoom_tool {
 	text-align: left;
 }
 
-#svg_docprops button {
+#svg_docprops button,
+#svg_prefs button {
 	margin-top: 0;
 	margin-bottom: 5px;
 }
 
-#svg_docprops {
+#svg_docprops,
+#svg_prefs {
 	display: none;
 }
 
@@ -1140,7 +1148,8 @@ span.zoom_tool {
 	margin-left: 0;
 }
 
-#svg_docprops #svg_docprops_overlay {
+#svg_docprops #svg_docprops_overlay,
+#svg_prefs #svg_prefs_overlay {
 	position: absolute;
 	top: 0px;
 	right: 0px;
@@ -1149,6 +1158,10 @@ span.zoom_tool {
 	background-color: black;
 	opacity: 0.6;
 	z-index: 20000;
+}
+
+#tool_prefs_option {
+	float: right;
 }
 
 .toolbar_button button {
