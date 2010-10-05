@@ -253,7 +253,7 @@
 			$.svgIcons(curConfig.imgPath + 'svg_edit_icons.svg', {
 				w:24, h:24,
 				id_match: false,
- 				no_img: (!!window.opera), // Opera gives odd behavior w/images
+ 				no_img: !isWebkit, // Opera & Firefox 4 gives odd behavior w/images
 				fallback_path: curConfig.imgPath,
 				fallback:{
 					'new_image':'clear.png',
@@ -458,10 +458,10 @@
 			           "#ffaaaa", "#ffd4aa", "#ffffaa", "#d4ffaa",
 			           "#aaffaa", "#aaffd4", "#aaffff", "#aad4ff",
 			           "#aaaaff", "#d4aaff", "#ffaaff", "#ffaad4",
-			           ];
-	
-				isMac = (navigator.platform.indexOf("Mac") >= 0);
-				modKey = (isMac ? "meta+" : "ctrl+"); // ⌘
+			           ],
+				isMac = (navigator.platform.indexOf("Mac") >= 0),
+				isWebkit = (navigator.userAgent.indexOf("AppleWebKit") >= 0),
+				modKey = (isMac ? "meta+" : "ctrl+"), // ⌘
 				path = svgCanvas.pathActions,
 				undoMgr = svgCanvas.undoMgr,
 				Utils = svgCanvas.Utils,
@@ -474,7 +474,7 @@
 				tool_scale = 1,
 				zoomInIcon = 'crosshair',
 				zoomOutIcon = 'crosshair',
-				ui_context = 'toolbars';
+				ui_context = 'toolbars'; alert(isWebkit);
 
 			// This sets up alternative dialog boxes. They mostly work the same way as
 			// their UI counterparts, expect instead of returning the result, a callback
