@@ -474,7 +474,7 @@
 				tool_scale = 1,
 				zoomInIcon = 'crosshair',
 				zoomOutIcon = 'crosshair',
-				ui_context = 'toolbars'; alert(isWebkit);
+				ui_context = 'toolbars';
 
 			// This sets up alternative dialog boxes. They mostly work the same way as
 			// their UI counterparts, expect instead of returning the result, a callback
