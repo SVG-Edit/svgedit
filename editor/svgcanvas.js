@@ -7870,7 +7870,7 @@ var svgToString = this.svgToString = function(elem, indent) {
 		
 		for (var i=0; i<indent; i++) out.push(" ");
 		out.push("<"); out.push(elem.nodeName);			
-		if(elem.id == 'svgcontent') {
+		if(elem.id === 'svgcontent') {
 			// Process root element separately
 			var res = getResolution();
 			out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'"');
@@ -7890,6 +7890,7 @@ var svgToString = this.svgToString = function(elem, indent) {
 			});
 			
 			var i = attrs.length;
+			var attr_names = ['width','height','xmlns','x','y','viewBox','id','overflow'];
 			while (i--) {
 				attr = attrs.item(i);
 				var attrVal = toXml(attr.nodeValue);
@@ -7898,8 +7899,7 @@ var svgToString = this.svgToString = function(elem, indent) {
 				if(attr.nodeName.indexOf('xmlns:') === 0) continue;
 
 				// only serialize attributes we don't use internally
-				if (attrVal != "" && 
-					['width','height','xmlns','x','y','viewBox','id','overflow'].indexOf(attr.localName) == -1) 
+				if (attrVal != "" && attr_names.indexOf(attr.localName) >= 0) 
 				{
 
 					if(!attr.namespaceURI || nsMap[attr.namespaceURI]) {
@@ -7910,11 +7910,12 @@ var svgToString = this.svgToString = function(elem, indent) {
 				}
 			}
 		} else {
+			var moz_attrs = ['-moz-math-font-style', '_moz-math-font-style'];
 			for (var i=attrs.length-1; i>=0; i--) {
 				attr = attrs.item(i);
 				var attrVal = toXml(attr.nodeValue);
 				//remove bogus attributes added by Gecko
-				if (['-moz-math-font-style', '_moz-math-font-style'].indexOf(attr.localName) >= 0) continue;
+				if (moz_attrs.indexOf(attr.localName) >= 0) continue;
 				if (attrVal != "") {
 					if(attrVal.indexOf('pointer-events') === 0) continue;
 					if(attr.localName === "class" && attrVal.indexOf('se_') === 0) continue;
@@ -8122,6 +8123,9 @@ this.randomizeIds = function() {
 // g - The parent element of the tree to give unique IDs
 var uniquifyElems = this.uniquifyElems = function(g) {
 	var ids = {};
+	var ref_attrs = ["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"];
+	var ref_elems = ["filter", "linearGradient", "pattern",	"radialGradient", "textPath", "use"];
+	
 	walkTree(g, function(n) {
 		// if it's an element node
 		if (n.nodeType == 1) {
@@ -8137,7 +8141,7 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 			
 			// now search for all attributes on this element that might refer
 			// to other elements
-			$.each(["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"],function(i,attr) {
+			$.each(ref_attrs,function(i,attr) {
 				var attrnode = n.getAttributeNode(attr);
 				if (attrnode) {
 					// the incoming file has been sanitized, so we should be able to safely just strip off the leading #
@@ -8156,9 +8160,7 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 			// check xlink:href now
 			var href = getHref(n);
 			// TODO: what if an <image> or <a> element refers to an element internally?
-			if(href && 
-				["filter", "linearGradient", "pattern",
-				"radialGradient", "textPath", "use"].indexOf(n.nodeName) >= 0)
+			if(href && ref_elems.indexOf(n.nodeName) >= 0)
 			{
 				var refid = href.substr(1);
 				if (!(refid in ids)) {
@@ -10417,6 +10419,9 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 	}
 	var elems = elems || selectedElements;
 	var i = elems.length;
+	var no_xy_elems = ['g', 'polyline', 'path'];
+	var good_g_attrs = ['transform', 'opacity', 'filter'];
+	
 	while (i--) {
 		var elem = elems[i];
 		if (elem == null) continue;
@@ -10427,19 +10432,19 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		}
 		
 		// Set x,y vals on elements that don't have them
-		if((attr == 'x' || attr == 'y') && ['g', 'polyline', 'path'].indexOf(elem.tagName) >= 0) {
+		if((attr === 'x' || attr === 'y') && no_xy_elems.indexOf(elem.tagName) >= 0) {
 			var bbox = getStrokedBBox([elem]);
-			var diff_x = attr == 'x' ? newValue - bbox.x : 0;
-			var diff_y = attr == 'y' ? newValue - bbox.y : 0;
+			var diff_x = attr === 'x' ? newValue - bbox.x : 0;
+			var diff_y = attr === 'y' ? newValue - bbox.y : 0;
 			canvas.moveSelectedElements(diff_x*current_zoom, diff_y*current_zoom, true);
 			continue;
 		}
 		
-		// only allow the transform/opacity attribute to change on <g> elements, slightly hacky
-		if (elem.tagName == "g" && ['transform', 'opacity', 'filter'].indexOf(attr) >= 0);
-		var oldval = attr == "#text" ? elem.textContent : elem.getAttribute(attr);
+		// only allow the transform/opacity/filter attribute to change on <g> elements, slightly hacky
+		if (elem.tagName === "g" && good_g_attrs.indexOf(attr) >= 0);
+		var oldval = attr === "#text" ? elem.textContent : elem.getAttribute(attr);
 		if (oldval == null)  oldval = "";
-		if (oldval != String(newValue)) {
+		if (oldval !== String(newValue)) {
 			if (attr == "#text") {
 				var old_w = getBBox(elem).width;
 				elem.textContent = newValue;
