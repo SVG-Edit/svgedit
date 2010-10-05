@@ -51,6 +51,7 @@
 				wireframe: false,
 				colorPickerCSS: null,
 				gridSnapping: false,
+				baseUnit: 'px',
 				snappingStep: 10,
 				showRulers: true
 			},
@@ -375,8 +376,8 @@
 					'#layer_moreopts':'context_menu',
 					'#layerlist td.layervis':'eye',
 					
-					'#tool_source_save,#tool_docprops_save':'ok',
-					'#tool_source_cancel,#tool_docprops_cancel':'cancel',
+					'#tool_source_save,#tool_docprops_save,#tool_prefs_save':'ok',
+					'#tool_source_cancel,#tool_docprops_cancel,#tool_prefs_cancel':'cancel',
 					
 					'#rwidthLabel, #iwidthLabel':'width',
 					'#rheightLabel, #iheightLabel':'height',
@@ -559,6 +560,7 @@
 			var multiselected = false;
 			var editingsource = false;
 			var docprops = false;
+			var preferences = false;
 			var cur_context = '';
 			var orig_title = $('title:first').text();
 			
@@ -1789,6 +1791,13 @@
 					this.value = selectedElement.getAttribute(attr);
 					return false;
 				}
+				
+				// Convert unitless value to one with given unit
+				if(curConfig.baseUnit !== 'px' && !isNaN(val) ) {
+					val += curConfig.baseUnit;
+					this.value = val;
+				}
+				
 				// if the user is changing the id, then de-select the element first
 				// change the ID, then re-select it with the new ID
 				if (attr == "id") {
@@ -2578,7 +2587,7 @@
 				$('#svg_source_textarea').focus();
 			};
 			
-			$('#svg_docprops_container').draggable({cancel:'button,fieldset'});
+			$('#svg_docprops_container, #svg_prefs_container').draggable({cancel:'button,fieldset'});
 			
 			var showDocProperties = function(){
 				if (docprops) return;
@@ -2592,6 +2601,15 @@
 				$('#canvas_width').val(res.w);
 				$('#canvas_height').val(res.h);
 				$('#canvas_title').val(svgCanvas.getDocumentTitle());
+				
+				$('#svg_docprops').fadeIn();
+			};
+			
+			
+			var showPreferences = function(){
+				if (preferences) return;
+				preferences = true;
+				$('#main_menu').hide();
 				
 				// Update background color with current one
 				var blocks = $('#bg_blocks div');
@@ -2616,8 +2634,8 @@
 				    $('#grid_snapping_on').removeAttr('checked');
 				}
 				
-				$('#svg_docprops').fadeIn();
-			};
+				$('#svg_prefs').fadeIn();
+			};			
 			
 			var properlySourceSizeTextArea = function(){
 				// TODO: remove magic numbers here and get values from CSS
@@ -2690,7 +2708,11 @@
 				// set image save option
 				curPrefs.img_save = $('#image_save_opts :checked').val();
 				$.pref('img_save',curPrefs.img_save);
-				
+				updateCanvas();
+				hideDocProperties();
+			};
+			
+			var savePreferences = function() {
 				// set background
 				var color = $('#bg_blocks div.cur_background').css('background-color') || '#FFF';
 				setBackground(color, $('#canvas_bg_url').val());
@@ -2711,12 +2733,13 @@
 				
 				$('#rulers').toggle(curConfig.showRulers);
 				if(curConfig.showRulers) updateRulers();
+				curConfig.baseUnit = $('#base_unit').val();
 				
 				svgCanvas.setConfig(curConfig);
 
 				updateCanvas();
-				hideDocProperties();
-			};
+				hidePreferences();
+			}
 			
 			function setBackground(color, url) {
 // 				if(color == curPrefs.bkgd_color && url == curPrefs.bkgd_url) return;
@@ -3008,7 +3031,7 @@
 		
 			var cancelOverlays = function() {
 				$('#dialog_box').hide();
-				if (!editingsource && !docprops) {
+				if (!editingsource && !docprops && !preferences) {
 					if(cur_context) {
 						svgCanvas.leaveContext();
 					}
@@ -3027,6 +3050,8 @@
 				}
 				else if (docprops) {
 					hideDocProperties();
+				} else if (preferences) {
+					hidePreferences();
 				}
 		
 			};
@@ -3043,6 +3068,11 @@
 				$('#resolution')[0].selectedIndex = 0;
 				$('#image_save_opts input').val([curPrefs.img_save]);
 				docprops = false;
+			};
+			
+			var hidePreferences = function(){
+				$('#svg_prefs').hide();
+				preferences = false;
 			};
 
 			var win_wh = {width:$(window).width(), height:$(window).height()};
@@ -3697,10 +3727,12 @@
 					{sel:'#tool_import', fn: clickImport, evt: 'mouseup'},
 					{sel:'#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
 					{sel:'#tool_wireframe', fn: clickWireframe, evt: 'click', key: ['F', true]},
-					{sel:'#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
+					{sel:'#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel,#tool_prefs_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
 					{sel:'#tool_source_save', fn: saveSourceEditor, evt: 'click'},
 					{sel:'#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
 					{sel:'#tool_docprops', fn: showDocProperties, evt: 'mouseup', key: ['P', true]},
+					{sel:'#tool_prefs_save', fn: savePreferences, evt: 'click'},
+					{sel:'#tool_prefs_option', fn: function() {showPreferences();return false}, evt: 'mouseup', key: ['I', true]},
 					{sel:'#tool_delete,#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
 					{sel:'#tool_reorient', fn: reorientPath, evt: 'click'},
 					{sel:'#tool_node_link', fn: linkControlPoints, evt: 'click'},
@@ -3910,6 +3942,10 @@
 				
 				if(curConfig.gridSnapping) {
 					$('#grid_snapping_on')[0].checked = true;
+				}
+
+				if(curConfig.baseUnit) {
+					$('#base_unit').val(curConfig.baseUnit);
 				}
 				
 				if(curConfig.snappingStep) {
@@ -4158,6 +4194,9 @@
 				
 				var c_elem = svgCanvas.getContentElem();
 				
+				var units = svgCanvas.getUnits();
+				var unit = units[curConfig.baseUnit]; // 1 = 1px
+			
 				for(var d = 0; d < 2; d++) {
 					var is_x = (d === 0);
 					var dim = is_x ? 'x' : 'y';
@@ -4170,11 +4209,10 @@
 					var len = hcanv[lentype] = scanvas[lentype]();
 					var ctx = hcanv.getContext("2d");
 					
-					var unit = 1; // 1 = 1px
+					var u_multi = unit * zoom;
 					
 					// Calculate the main number interval
-					var raw_m = 50 / zoom;
-					
+					var raw_m = 50 / u_multi;
 					var multi = 1;
 					for(var i = 0; i < r_intervals.length; i++) {
 						var num = r_intervals[i];
@@ -4184,11 +4222,11 @@
 						}
 					}
 					
-					var big_int = unit * multi * zoom;
-					
+					var big_int = multi * u_multi;
+
 					ctx.font = "9px sans-serif";
 					
-					var ruler_d = ((content_d / zoom) % multi) * zoom;
+					var ruler_d = ((content_d / u_multi) % multi) * u_multi;
 					
 					for (; ruler_d < len; ruler_d += big_int) {
 						var real_d = Math.round((ruler_d) - content_d );
@@ -4202,7 +4240,14 @@
 							ctx.lineTo(0, cur_d);
 						}
 	
-						var label = Math.round(real_d / zoom);
+	
+						var num = real_d / u_multi;
+						if(multi >= 1) {
+							label = Math.round(num);
+						} else {
+							var decs = (multi+'').split('.')[1].length;
+							label = num.toFixed(decs)-0;
+						}
 						
 						// Do anything special for negative numbers?
 // 						var is_neg = label < 0;

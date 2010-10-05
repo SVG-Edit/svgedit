@@ -137,12 +137,17 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 				Document Properties [P]
 			</li>
 		</ul>
-		
+
 		<p>
 			<a href="http://svg-edit.googlecode.com/" target="_blank">
 				SVG-edit Home Page
 			</a>
 		</p>
+
+		<button id="tool_prefs_option">
+			Editor Options
+		</button>
+
 
 	</div>
 </div>
@@ -587,6 +592,7 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 	</div>
 </div>
 
+
 <div id="svg_docprops">
 	<div id="svg_docprops_overlay"></div>
 	<div id="svg_docprops_container">
@@ -628,11 +634,20 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 				<label><input type="radio" name="image_opt" value="embed" checked="checked"/> <span id="image_opt_embed">Embed data (local files)</span> </label>
 				<label><input type="radio" name="image_opt" value="ref"/> <span id="image_opt_ref">Use file reference</span> </label>
 			</fieldset>			
-
-
 		</fieldset>
 
-		<fieldset id="svg_docprops_prefs">
+	</div>
+</div>
+
+<div id="svg_prefs">
+	<div id="svg_prefs_overlay"></div>
+	<div id="svg_prefs_container">
+		<div id="tool_prefs_back" class="toolbar_button">
+			<button id="tool_prefs_save">OK</button>
+			<button id="tool_prefs_cancel">Cancel</button>
+		</div>
+
+		<fieldset>
 			<legend id="svginfo_editor_prefs">Editor Preferences</legend>
 
 			<label><span id="svginfo_lang">Language:</span>
@@ -682,8 +697,21 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 			<fieldset id="units_rulers">
 				<legend id="svginfo_units_rulers">Units & Rulers</legend>
 				<label><span id="svginfo_rulers_onoff">Show rulers</span><input type="checkbox" value="show_rulers" id="show_rulers" checked></label>
+				<label>
+					<span id="svginfo_unit">Base Unit:</span>
+					<select id="base_unit">
+						<option value="px" selected>Pixels</option>
+						<option value="cm">Centimeters</option>
+						<option value="mm">Millimeters</option>
+						<option value="pt">Points</option>
+						<option value="pc">Picas</option>
+						<option value="em">Ems</option>
+						<option value="ex">Exs</option>
+					</select>
+				</label>
+				</label>
 			</fieldset>
-
+	
 		</fieldset>
 
 	</div>

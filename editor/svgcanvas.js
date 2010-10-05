@@ -447,8 +447,8 @@ var canvas = this,
 	htmlns = "http://www.w3.org/1999/xhtml",
 	mathns = "http://www.w3.org/1998/Math/MathML",
 	
-	// Map of units, those set to 0 are updated later based on calculations
-	unit_types = {'em':0,'ex':0,'px':1,'cm':35.43307,'mm':3.543307,'in':90,'pt':1.25,'pc':15,'%':0},
+	// Map of units, updated later based on px conversion.
+	unit_types = {px: 1},
 
 	//nonce to uniquify id's
 	nonce = Math.floor(Math.random()*100001),
@@ -538,7 +538,7 @@ $(opac_ani).attr({
 // Group: Unit conversion functions
 
 // Set the scope for these functions
-var convertToNum, convertToUnit, setUnitAttr;
+var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 
 (function() {
 	var w_attrs = ['x', 'x1', 'cx', 'rx', 'width'];
@@ -590,7 +590,7 @@ var convertToNum, convertToUnit, setUnitAttr;
 			// New value is a number, so check currently used unit
 			var old_val = elem.getAttribute(attr);
 			
-			if(old_val !== null && isNaN(old_val)) {
+			if(old_val !== null && (isNaN(old_val) || curConfig.baseUnit !== 'px')) {
 				// Old value was a number, so get unit, then convert
 				var unit;
 				if(old_val.substr(-1) === '%') {
@@ -604,9 +604,12 @@ var convertToNum, convertToUnit, setUnitAttr;
 					} else {
 						return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
 					}
-
 				} else {
-					unit = old_val.substr(-2);
+					if(curConfig.baseUnit !== 'px') {
+						unit = curConfig.baseUnit;
+					} else {
+						unit = old_val.substr(-2);
+					}
 					val = val / unit_types[unit];
 				}
 				
@@ -654,6 +657,56 @@ var convertToNum, convertToUnit, setUnitAttr;
 		} else valid = true;			
 		
 		return valid;
+	}
+	
+	// Function: getUnits
+	// Returns the unit object with values for each unit
+	canvas.getUnits = function() {
+		return unit_types;
+	}
+	
+	// Function: unitConvertAttrs
+	// Converts all applicable attributes to the given baseUnit
+	unitConvertAttrs = canvas.unitConvertAttrs = function(element) {
+		var elName = element.tagName;
+		var unit = curConfig.baseUnit;
+		var attrs;
+		switch (elName)
+		{
+			case "line":
+				attrs = ['x1', 'x2', 'y1', 'y2'];
+				break;
+			case "circle":
+				attrs = ['cx', 'cy', 'r'];
+				break;
+			case "ellipse":
+				attrs = ['cx', 'cy', 'rx', 'ry'];
+				break;
+			case "foreignObject":
+			case "rect":
+			case "image":
+			case "use":
+				attrs = ['x', 'y', 'width', 'height'];
+				break;
+			case "text":
+				attrs = ['x', 'y'];
+				break;
+		}
+		if(!attrs) return;
+		var len = attrs.length
+		for(var i = 0; i < len; i++) {
+			var attr = attrs[i];
+			var cur = element.getAttribute(attr);
+			if(cur) {
+				if(!isNaN(cur)) {
+					element.setAttribute(attr, (cur / unit_types[unit]) + unit);
+				} else {
+					// Convert existing?
+				}
+			}
+		}
+		
+		
 	}
 	
 })();
@@ -2045,6 +2098,8 @@ var shortFloat = function(val) {
 		return Number(Number(val).toFixed(digits));
 	} else if($.isArray(val)) {
 		return shortFloat(val[0]) + ',' + shortFloat(val[1]);
+	} else {
+		return parseFloat(val).toFixed(digits) - 0;
 	}
 }
 	
@@ -5106,7 +5161,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 
 		var real_x = x;
 		var real_y = y;
-
+		
+		var useUnit = (curConfig.baseUnit !== 'px');
 		
 		started = false;
 		switch (current_mode)
@@ -5340,6 +5396,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			
 		} else if (element != null) {
 			canvas.addedNew = true;
+			
+			if(useUnit) unitConvertAttrs(element);
 			
 			var ani_dur = .2, c_ani;
 			if(opac_ani.beginElement && element.getAttribute('opacity') != cur_shape.opacity) {
@@ -7799,6 +7857,9 @@ var svgCanvasToString = this.svgCanvasToString = function() {
 // String with the given element as an SVG tag
 var svgToString = this.svgToString = function(elem, indent) {
 	var out = new Array(), toXml = Utils.toXml;
+	
+	var unit = curConfig.baseUnit
+	var unit_re = new RegExp('^-?[\\d\\.]+' + unit + '$');
 
 	if (elem) {
 		cleanupElement(elem);
@@ -7861,6 +7922,8 @@ var svgToString = this.svgToString = function(elem, indent) {
 					if(attr.localName === 'd') attrVal = pathActions.convertPath(elem, true);
 					if(!isNaN(attrVal)) {
 						attrVal = shortFloat(attrVal);
+					} else if(unit_re.test(attrVal)) {
+						attrVal = shortFloat(attrVal) + unit;
 					}
 					
 					// Embed images when saving 
@@ -11331,10 +11394,18 @@ function disableAdvancedTextEdit() {
 	var rect = document.createElementNS(svgns,'rect');
 	rect.setAttribute('width',"1em");
 	rect.setAttribute('height',"1ex");
+	rect.setAttribute('x',"1in");
 	svgcontent.appendChild(rect);
 	var bb = rect.getBBox();
 	unit_types.em = bb.width;
 	unit_types.ex = bb.height;
+	var inch = bb.x;
+	unit_types['in'] = inch;
+	unit_types.cm = inch / 2.54;
+	unit_types.mm = inch / 25.4;
+	unit_types.pt = inch / 72;
+	unit_types.pc = inch / 6;
+	unit_types['%'] = 0;
 	svgcontent.removeChild(rect);
 }());
 
