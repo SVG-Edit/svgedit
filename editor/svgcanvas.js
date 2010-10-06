@@ -1,4 +1,4 @@
-﻿/*
+/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -7899,7 +7899,7 @@ var svgToString = this.svgToString = function(elem, indent) {
 				if(attr.nodeName.indexOf('xmlns:') === 0) continue;
 
 				// only serialize attributes we don't use internally
-				if (attrVal != "" && attr_names.indexOf(attr.localName) >= 0) 
+				if (attrVal != "" && attr_names.indexOf(attr.localName) == -1) 
 				{
 
 					if(!attr.namespaceURI || nsMap[attr.namespaceURI]) {
