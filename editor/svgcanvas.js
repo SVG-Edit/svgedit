@@ -2976,6 +2976,7 @@ var logMatrix = function(m) {
 // changes - Object with changes to be remapped
 // m - Matrix object to use for remapping coordinates
 var remapElement = this.remapElement = function(selected,changes,m) {
+
 	var remap = function(x,y) { return transformPoint(x,y,m); },
 		scalew = function(w) { return m.a*w; },
 		scaleh = function(h) { return m.d*h; },
@@ -3666,6 +3667,15 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 					
 					batchCmd.addSubCommand( recalculateDimensions(child) );
 					start_transform = old_start_transform;
+					
+					// Convert stroke
+					// TODO: Find out if this should actually happen somewhere else
+					var sw = child.getAttribute("stroke-width");
+					if (child.getAttribute("stroke") !== "none" && !isNaN(sw)) {
+						var avg = (Math.abs(em.a) + Math.abs(em.d)) / 2;
+						child.setAttribute('stroke-width', sw * avg);
+					}
+
 				}
 			}
 			tlist.clear();
@@ -8325,7 +8335,6 @@ var convertToGroup = this.convertToGroup = function(elem) {
 // 			g.appendChild(elem.firstChild.cloneNode(true));
 		if (ts)
 			g.setAttribute("transform", ts);
-			console.log('t',g.getAttribute('transform'));
 		
 		var parent = elem.parentNode;
 		
@@ -10702,6 +10711,7 @@ this.ungroupSelectedElement = function() {
 		var anchor = g.nextSibling;
 		var children = new Array(g.childNodes.length);
 		var xform = g.getAttribute("transform");
+		
 		// get consolidated matrix
 		var glist = getTransformList(g);
 		var m = transformListToTransform(glist).matrix;
