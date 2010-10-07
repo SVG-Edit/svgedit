@@ -5462,8 +5462,14 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		}
 		
 		if(getRotationAngle(mouse_target)) {
-			// Don't do for rotated groups for now
-			return;
+			// TODO: Allow method of in-group editing without having to do 
+			// this (similar to editing rotated paths)
+		
+			// Ungroup and regroup
+			canvas.ungroupSelectedElement();
+			canvas.groupSelectedElements();
+			mouse_target = selectedElements[0];
+			clearSelection(true);
 		}
 		// Reset context
 		if(current_group) {
