@@ -1,4 +1,4 @@
-/*
+﻿/*
  * svgcanvas.js
  *
  * Licensed under the Apache License, Version 2
@@ -4707,7 +4707,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						"font-size": cur_text.font_size,
 						"font-family": cur_text.font_family,
 						"text-anchor": "middle",
-						"xml:space": "preserve"
+						"xml:space": "preserve",
+						"opacity": cur_shape.opacity
 					}
 				});
 // 					newText.textContent = "text";
@@ -8596,17 +8597,17 @@ this.importSvgString = function(xmlString) {
 		// Hack to make recalculateDimensions understand how to scale
 		ts = "translate(0) " + ts + " translate(0)";
 		
-		// Uncomment this once Firefox has fixed their symbol bug:
-		// https://bugzilla.mozilla.org/show_bug.cgi?id=353575
 		var symbol = svgdoc.createElementNS(svgns, "symbol");
 		var defs = findDefs();
 		
+		if(isGecko) {
+			// Move all gradients into root for Firefox, workaround for this bug:
+			// https://bugzilla.mozilla.org/show_bug.cgi?id=353575
+			$(svg).find('linearGradient, radialGradient').appendTo(defs);
+		}
+
 		while (svg.firstChild) {
 			var first = svg.firstChild;
-			if(isGecko && first.tagName === 'defs') {
-				// Move all gradients into root for Firefox
-				$(first).find('linearGradient, radialGradient').appendTo(defs);
-			}
 			symbol.appendChild(first);
 		}
 		var attrs = svg.attributes;
