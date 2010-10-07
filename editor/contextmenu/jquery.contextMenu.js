@@ -14,6 +14,9 @@
 //   and the MIT License and is copyright A Beautiful Site, LLC.
 //
 if(jQuery)( function() {
+	var win = $(window);
+	var doc = $(document);
+
 	$.extend($.fn, {
 		
 		contextMenu: function(o, callback) {
@@ -28,75 +31,78 @@ if(jQuery)( function() {
 			$(this).each( function() {
 				var el = $(this);
 				var offset = $(el).offset();
+			
+				var menu = $('#' + o.menu);
+
 				// Add contextMenu class
-				$('#' + o.menu).addClass('contextMenu');
+				menu.addClass('contextMenu');
+				
 				// Simulate a true right click
 				$(this).mousedown( function(e) {
 					var evt = e;
 					$(this).mouseup( function(e) {
 						var srcElement = $(this);
-						$(this).unbind('mouseup');
-						if( evt.button == 2 || o.allowLeft) {
+						srcElement.unbind('mouseup');
+						if( evt.button === 2 || o.allowLeft) {
 							e.stopPropagation();
 							// Hide context menus that may be showing
 							$(".contextMenu").hide();
 							// Get this context menu
-							var menu = $('#' + o.menu);
-							
-							if( $(el).hasClass('disabled') ) return false;
+						
+							if( el.hasClass('disabled') ) return false;
 							
 							// Detect mouse position
 							var d = {}, x = e.pageX, y = e.pageY;
 							
-							var x_off = $(window).width() - menu.width(), 
-								y_off = $(window).height() - menu.height();
+							var x_off = win.width() - menu.width(), 
+								y_off = win.height() - menu.height();
 
-							if(x > x_off) x = x_off-15;
-							if(y > y_off) y = y_off-30; // 30 is needed to prevent scrollbars in FF
+							if(x > x_off - 15) x = x_off-15;
+							if(y > y_off - 30) y = y_off-30; // 30 is needed to prevent scrollbars in FF
 							
 							// Show the menu
-							$(document).unbind('click');
-							$(menu).css({ top: y, left: x }).fadeIn(o.inSpeed);
+							doc.unbind('click');
+							menu.css({ top: y, left: x }).fadeIn(o.inSpeed);
 							// Hover events
-							$(menu).find('A').mouseover( function() {
-								$(menu).find('LI.hover').removeClass('hover');
+							menu.find('A').mouseover( function() {
+								menu.find('LI.hover').removeClass('hover');
 								$(this).parent().addClass('hover');
 							}).mouseout( function() {
-								$(menu).find('LI.hover').removeClass('hover');
+								menu.find('LI.hover').removeClass('hover');
 							});
 							
 							// Keyboard
-							$(document).keypress( function(e) {
+							doc.keypress( function(e) {
 								switch( e.keyCode ) {
 									case 38: // up
-										if( $(menu).find('LI.hover').size() == 0 ) {
-											$(menu).find('LI:last').addClass('hover');
+										if( !menu.find('LI.hover').length ) {
+											menu.find('LI:last').addClass('hover');
 										} else {
-											$(menu).find('LI.hover').removeClass('hover').prevAll('LI:not(.disabled)').eq(0).addClass('hover');
-											if( $(menu).find('LI.hover').size() == 0 ) $(menu).find('LI:last').addClass('hover');
+											menu.find('LI.hover').removeClass('hover').prevAll('LI:not(.disabled)').eq(0).addClass('hover');
+											if( !menu.find('LI.hover').length ) menu.find('LI:last').addClass('hover');
 										}
 									break;
 									case 40: // down
-										if( $(menu).find('LI.hover').size() == 0 ) {
-											$(menu).find('LI:first').addClass('hover');
+										if( menu.find('LI.hover').length == 0 ) {
+											menu.find('LI:first').addClass('hover');
 										} else {
-											$(menu).find('LI.hover').removeClass('hover').nextAll('LI:not(.disabled)').eq(0).addClass('hover');
-											if( $(menu).find('LI.hover').size() == 0 ) $(menu).find('LI:first').addClass('hover');
+											menu.find('LI.hover').removeClass('hover').nextAll('LI:not(.disabled)').eq(0).addClass('hover');
+											if( !menu.find('LI.hover').length ) menu.find('LI:first').addClass('hover');
 										}
 									break;
 									case 13: // enter
-										$(menu).find('LI.hover A').trigger('click');
+										menu.find('LI.hover A').trigger('click');
 									break;
 									case 27: // esc
-										$(document).trigger('click');
+										doc.trigger('click');
 									break
 								}
 							});
 							
 							// When items are selected
-							$('#' + o.menu).find('A').unbind('mouseup');
-							$('#' + o.menu).find('LI:not(.disabled) A').mouseup( function() {
-								$(document).unbind('click').unbind('keypress');
+							menu.find('A').unbind('mouseup');
+							menu.find('LI:not(.disabled) A').mouseup( function() {
+								doc.unbind('click').unbind('keypress');
 								$(".contextMenu").hide();
 								// Callback
 								if( callback ) callback( $(this).attr('href').substr(1), $(srcElement), {x: x - offset.left, y: y - offset.top, docX: x, docY: y} );
@@ -105,9 +111,9 @@ if(jQuery)( function() {
 							
 							// Hide bindings
 							setTimeout( function() { // Delay for Mozilla
-								$(document).click( function() {
-									$(document).unbind('click').unbind('keypress');
-									$(menu).fadeOut(o.outSpeed);
+								doc.click( function() {
+									doc.unbind('click').unbind('keypress');
+									menu.fadeOut(o.outSpeed);
 									return false;
 								});
 							}, 0);
