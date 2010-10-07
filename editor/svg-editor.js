@@ -2668,9 +2668,11 @@
 			var updateTitle = function(title) {
 				title = title || svgCanvas.getDocumentTitle();
 				var new_title = orig_title + (title?': ' + title:'');
-				if(cur_context) {
-					new_title = new_title + cur_context;
-				}
+				
+				// Remove title update with current context info, isn't really necessary
+// 				if(cur_context) {
+// 					new_title = new_title + cur_context;
+// 				}
 				$('title:first').text(new_title);
 			}
 			

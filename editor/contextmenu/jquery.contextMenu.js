@@ -50,9 +50,9 @@ if(jQuery)( function() {
 							
 							var x_off = $(window).width() - menu.width(), 
 								y_off = $(window).height() - menu.height();
-							
+
 							if(x > x_off) x = x_off-15;
-							if(y > y_off) y = y_off-15;
+							if(y > y_off) y = y_off-30; // 30 is needed to prevent scrollbars in FF
 							
 							// Show the menu
 							$(document).unbind('click');
