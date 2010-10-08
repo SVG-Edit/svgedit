@@ -4406,9 +4406,15 @@
 		
 		var callbacks = [];
 		
-		function loadSvgString(str) {
-			if(!svgCanvas.setSvgString(str)) {
-				$.alert('Error: Unable to load SVG data.');
+		function loadSvgString(str, callback) {
+			var success = svgCanvas.setSvgString(str) !== false;
+			callback = callback || $.noop;
+			if(success) {
+				callback(true);
+			} else {
+				$.alert('Error: Unable to load SVG data', function() {
+					callback(false);
+				});
 			}
 		}
 		
@@ -4433,18 +4439,23 @@
 			});
 		};
 		
-		Editor.loadFromURL = function(url, cache) {
+		Editor.loadFromURL = function(url, opts) {
+			var cache = opts.cache;
+			var cb = opts.callback;
+		
 			Editor.ready(function() {
 				$.ajax({
 					'url': url,
 					'dataType': 'text',
 					cache: !!cache,
-					success: loadSvgString,
+					success: function(str) {
+						loadSvgString(str, cb);
+					},
 					error: function(xhr, stat, err) {
-						if(xhr.responseText) {
-							loadSvgString(xhr.responseText);
+						if(xhr.status != 404 && xhr.responseText) {
+							loadSvgString(xhr.responseText, cb);
 						} else {
-							$.alert("Unable to load from URL. Error: \n"+err+'');
+							$.alert("Unable to load from URL. Error: \n"+err+'', cb);
 						}
 					}
 				});
