@@ -207,10 +207,15 @@
 
 					svgEditor.setConfig(urldata);
 					
-					// FIXME: This is null if Data URL ends with '='. 
 					var src = urldata.source;
 					var qstr = $.param.querystring();
-
+					
+					if(!src) { // urldata.source may have been null if it ended with '='
+						if(qstr.indexOf('source=data:' >= 0)) {
+							src = qstr.match(/source=(data:[^&]*)/)[1];
+						}
+					}
+					
 					if(src) {
 						if(src.indexOf("data:") === 0) {
 							// plusses get replaced by spaces, so re-insert
@@ -4086,7 +4091,7 @@
 						if(f.files.length==1) {
 							var reader = new FileReader();
 							reader.onloadend = function(e) {
-								svgCanvas.setSvgString(e.target.result);
+								loadSvgString(e.target.result);
 								updateCanvas();
 							};
 							reader.readAsText(f.files[0]);
@@ -4401,6 +4406,12 @@
 		
 		var callbacks = [];
 		
+		function loadSvgString(str) {
+			if(!svgCanvas.setSvgString(str)) {
+				$.alert('Error: Unable to load SVG data.');
+			}
+		}
+		
 		Editor.ready = function(cb) {
 			if(!is_ready) {
 				callbacks.push(cb);
@@ -4418,7 +4429,7 @@
 		
 		Editor.loadFromString = function(str) {
 			Editor.ready(function() {
-				svgCanvas.setSvgString(str);
+				loadSvgString(str);
 			});
 		};
 		
@@ -4428,10 +4439,10 @@
 					'url': url,
 					'dataType': 'text',
 					cache: !!cache,
-					success: svgCanvas.setSvgString,
+					success: loadSvgString,
 					error: function(xhr, stat, err) {
 						if(xhr.responseText) {
-							svgCanvas.setSvgString(xhr.responseText);
+							loadSvgString(xhr.responseText);
 						} else {
 							$.alert("Unable to load from URL. Error: \n"+err+'');
 						}
@@ -4442,10 +4453,9 @@
 		
 		Editor.loadFromDataURI = function(str) {
 			Editor.ready(function() {
-				svgCanvas.setSvgString(str);
 				var pre = 'data:image/svg+xml;base64,';
 				var src = str.substring(pre.length);
-				svgCanvas.setSvgString(Utils.decode64(src));
+				loadSvgString(svgCanvas.Utils.decode64(src));
 			});
 		};
 		
