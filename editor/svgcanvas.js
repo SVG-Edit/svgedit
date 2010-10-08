@@ -3038,15 +3038,26 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 		case "foreignObject":
 		case "rect":
 		case "image":
-			var pt1 = remap(changes.x,changes.y);
 			
-			changes.width = scalew(changes.width);
-			changes.height = scaleh(changes.height);
-			
-			changes.x = pt1.x + Math.min(0,changes.width);
-			changes.y = pt1.y + Math.min(0,changes.height);
-			changes.width = Math.abs(changes.width);
-			changes.height = Math.abs(changes.height);
+			// Allow images to be inverted (give them matrix when flipped)
+			if(elName === 'image' && (m.a < 0 || m.d < 0)) {
+				// Convert to matrix
+				var chlist = getTransformList(selected);
+				var mt = svgroot.createSVGTransform();
+				mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix,m));
+				chlist.clear();
+				chlist.appendItem(mt);
+			} else {
+				var pt1 = remap(changes.x,changes.y);
+				
+				changes.width = scalew(changes.width);
+				changes.height = scaleh(changes.height);
+				
+				changes.x = pt1.x + Math.min(0,changes.width);
+				changes.y = pt1.y + Math.min(0,changes.height);
+				changes.width = Math.abs(changes.width);
+				changes.height = Math.abs(changes.height);
+			}
 			finishUp();
 			break;
 		case "ellipse":
