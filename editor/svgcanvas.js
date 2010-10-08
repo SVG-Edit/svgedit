@@ -190,6 +190,7 @@ var userAgent = navigator.userAgent,
 	var visElems_arr = visElems.split(',');
 // 	var hidElems = 'clipPath,defs,desc,feGaussianBlur,filter,linearGradient,marker,mask,metadata,pattern,radialGradient,stop,switch,symbol,title,textPath';
 	
+	var ref_attrs = ["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"];
 
 
 // Update config with new one if given
@@ -712,6 +713,22 @@ var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 })();
 
 
+var restoreRefElems = function(elem) {
+	// Look for missing reference elements, restore any found
+	var attrs = $(elem).attr(ref_attrs);
+	for(var o in attrs) {
+		var val = attrs[o];
+		if (val && val.indexOf('url(') === 0) {
+			var id = getUrlFromAttr(val).substr(1);
+			var ref = getElem(id);
+			if(!ref) {
+				findDefs().appendChild(removedElements[id]);
+				delete removedElements[id];
+			}
+		}
+	}
+}
+
 // Group: Undo/Redo history management
 
 this.undoCmd = {};
@@ -841,6 +858,9 @@ var InsertElementCommand = this.undoCmd.insertElement = function(elem, text) {
 	// Re-Inserts the new element
 	this.apply = function() { 
 		this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); 
+		
+		restoreRefElems(this.elem);
+		
 		if (this.parent == svgcontent) {
 			identifyLayers();
 		}		
@@ -894,8 +914,11 @@ var RemoveElementCommand = this.undoCmd.removeElement = function(elem, parent, t
 			delete svgTransformLists[this.elem.id];
 		}
 
-		this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling);
-		if (this.parent == svgcontent) {
+		this.parent.insertBefore(this.elem, this.elem.nextSibling);
+		
+		restoreRefElems(this.elem);
+		
+		if (this.parent === svgcontent) {
 			identifyLayers();
 		}		
 	};
@@ -2035,7 +2058,10 @@ var cur_shape = all_properties.shape,
 	extensions = {},
 	
 	// Canvas point for the most recent right click
-	lastClickPoint = null;
+	lastClickPoint = null,
+	
+	// Map of deleted reference elements
+	removedElements = {}
 
 // Clipboard for cut, copy&pasted elements
 canvas.clipBoard = [];
@@ -2417,11 +2443,6 @@ var copyElem = function(el) {
 // Parameters:
 // id - String with the element's new ID
 function getElem(id) {
-// 	if(svgroot.getElementById) {
-// 		// getElementById lookup
-// 		return svgroot.getElementById(id);
-// 	} else 
-	
 	if(svgroot.querySelector) {
 		// querySelector lookup
 		return svgroot.querySelector('#'+id);
@@ -7789,8 +7810,9 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 	while (i--) {
 		var defelem = defelems[i];
 		var id = defelem.id;
-		if(defelem_uses.indexOf(id) == -1) {
-			// Not found, so remove
+		if(defelem_uses.indexOf(id) < 0) {
+			// Not found, so remove (but remember)
+			removedElements[id] = defelem;
 			defelem.parentNode.removeChild(defelem);
 			numRemoved++;
 		}
@@ -8140,7 +8162,6 @@ this.randomizeIds = function() {
 // g - The parent element of the tree to give unique IDs
 var uniquifyElems = this.uniquifyElems = function(g) {
 	var ids = {};
-	var ref_attrs = ["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"];
 	var ref_elems = ["filter", "linearGradient", "pattern",	"radialGradient", "textPath", "use"];
 	
 	walkTree(g, function(n) {
