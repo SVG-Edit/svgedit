@@ -2,6 +2,7 @@
 <head>  
   <link rel="stylesheet" href="qunit/qunit.css" type="text/css"/>  
   <script src="../editor/jquery.js"></script>  
+  <script type="text/javascript" src="../editor/jquery-ui/jquery-ui-1.8.custom.min.js"></script>
   <script type="text/javascript" src="../editor/svgicons/jquery.svgicons.js"></script>
   <script type="text/javascript" src="../editor/locale/locale.js"></script>
   <script type="text/javascript" src="../editor/svgcanvas.js"></script>
@@ -67,7 +68,7 @@
 		// "m 0,0 l 200,0 l 0,100 L 0,100"
 	
 		svgCanvas.setSvgString("<svg xmlns='http://www.w3.org/2000/svg' width='400' x='300'>" +
-								  "<path id='p1' d='M100,100 L200,100 Z'/>" +
+								  "<path id='p1' d='M100,100 L200,100 L100,100Z'/>" +
 								  "<path id='p2' d='m 0,0 l 200,0 l 0,100 L 0,100'/>" +
 								"</svg>");
 		
@@ -79,19 +80,19 @@
 			
 		equal(p1.nodeName, "path", "Expected 'path', got");
 		
-		equal(seglist.numberOfItems, 3, "Number of segments before conversion");
+		equal(seglist.numberOfItems, 4, "Number of segments before conversion");
 		
 		// verify segments before conversion
 		curseg = seglist.getItem(0);
-		equal(curseg.pathSegTypeAsLetter, "M", "Before conversion, segment #1 type");
+		equal(curseg.pathSegTypeAsLetter.toUpperCase(), "M", "Before conversion, segment #1 type");
 		curseg = seglist.getItem(1);
-		equal(curseg.pathSegTypeAsLetter, "L", "Before conversion, segment #2 type");
-		curseg = seglist.getItem(2);
-		equal(curseg.pathSegTypeAsLetter, "Z", "Before conversion, segment #3 type" + d_abs);
+		equal(curseg.pathSegTypeAsLetter.toUpperCase(), "L", "Before conversion, segment #2 type");
+		curseg = seglist.getItem(3);
+		equal(curseg.pathSegTypeAsLetter.toUpperCase(), "Z", "Before conversion, segment #3 type" + d_abs);
 		
 		// convert and verify segments
 		var d = convert(p1, true);
-		equal(d, "m100,100l100,0z", "Converted path to relative string");
+		equal(d, "m100,100l100,0l-100,0z", "Converted path to relative string");
 		
 		// TODO: see why this isn't working in SVG-edit
 		d = convert(p2, true);
@@ -188,15 +189,19 @@
 	// This test makes sure import/export properly handles namespaced attributes
 	test("Test importing/exporting namespaced attributes", function() {
 		expect(5);
-		var set = svgCanvas.setSvgString('<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:se="http://svg-edit.googlecode.com" xmlns:foo="http://example.com">'+
+		var setStr = svgCanvas.setSvgString('<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:se="http://svg-edit.googlecode.com" xmlns:foo="http://example.com">'+
 				'<image xlink:href="../editor/images/logo.png"/>' +
-				'<polyline id="se_test_elem" se:foo="bar"/>' +
+				'<polyline id="se_test_elem" se:foo="bar" foo:bar="baz"/>' +
 				'</svg>');
 		var attrVal = document.getElementById('se_test_elem').getAttributeNS("http://svg-edit.googlecode.com", "foo");
 		
 		equal(attrVal === "bar", true, "Preserved namespaced attribute on import");
-				
+// 				
+// 		console.log('getSvgString' in svgCanvas)
+
 		var output = svgCanvas.getSvgString();
+// 		} catch(e) {console.log(e)}
+// 		console.log('output',output);
 		var has_xlink = output.indexOf('xmlns:xlink="http://www.w3.org/1999/xlink"') !== -1;
 		var has_se = output.indexOf('xmlns:se=') !== -1;
 		var has_foo = output.indexOf('xmlns:foo=') !== -1;
@@ -233,9 +238,9 @@
 	test("Test escaping XML entities", function() {
 		expect(3);
 		
-		equal(svgCanvas.getPrivateMethods().toXml("<"), "&lt;", "Escaped < properly");
-		equal(svgCanvas.getPrivateMethods().toXml(">"), "&gt;", "Escaped > properly");
-		equal(svgCanvas.getPrivateMethods().toXml("&"), "&amp;", "Escaped & properly");
+		equal(svgCanvas.Utils.toXml("<"), "&lt;", "Escaped < properly");
+		equal(svgCanvas.Utils.toXml(">"), "&gt;", "Escaped > properly");
+		equal(svgCanvas.Utils.toXml("&"), "&amp;", "Escaped & properly");
 		// TODO: what about &quot; and &apos; ?
 	});
 	
