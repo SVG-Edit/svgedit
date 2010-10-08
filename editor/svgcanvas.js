@@ -8610,6 +8610,8 @@ this.importSvgString = function(xmlString) {
 		// import new svg document into our document
 		var svg = svgdoc.importNode(newDoc.documentElement, true);
 		
+		uniquifyElems(svg);
+		
 		var innerw = convertToNum('width', svg.getAttribute("width")),
 			innerh = convertToNum('height', svg.getAttribute("height")),
 			innervb = svg.getAttribute("viewBox"),
