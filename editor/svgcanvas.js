@@ -3001,79 +3001,107 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 	var remap = function(x,y) { return transformPoint(x,y,m); },
 		scalew = function(w) { return m.a*w; },
 		scaleh = function(h) { return m.d*h; },
+		doSnapping = curConfig.gridSnapping && selected.parentNode.parentNode.localName === "svg",
+		finishUp = function() {
+			if(doSnapping) for(var o in changes) changes[o] = snapToGrid(changes[o]);
+			assignAttributes(selected, changes, 1000, true);
+		}
 		box = getBBox(selected);
 
+	if(selected.tagName === "g" || selected.tagName === "text") {
+		// if it was a translate, then just update x,y
+		if (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && 
+			(m.e != 0 || m.f != 0) ) 
+		{
+			// [T][M] = [M][T']
+			// therefore [T'] = [M_inv][T][M]
+			var existing = transformListToTransform(selected).matrix,
+				t_new = matrixMultiply(existing.inverse(), m, existing);
+			changes.x = parseFloat(changes.x) + t_new.e;
+			changes.y = parseFloat(changes.y) + t_new.f;
+		}
+		else {
+			// we just absorb all matrices into the element and don't do any remapping
+			var chlist = getTransformList(selected);
+			var mt = svgroot.createSVGTransform();
+			mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix,m));
+			chlist.clear();
+			chlist.appendItem(mt);
+		}
+	}
+	
+	// now we have a set of changes and an applied reduced transform list
+	// we apply the changes directly to the DOM
 	switch (selected.tagName)
 	{
-		case "line":
-			var pt1 = remap(changes["x1"],changes["y1"]),
-				pt2 = remap(changes["x2"],changes["y2"]);
-			changes["x1"] = pt1.x;
-			changes["y1"] = pt1.y;
-			changes["x2"] = pt2.x;
-			changes["y2"] = pt2.y;
-			break;
-		case "circle":
-			var c = remap(changes["cx"],changes["cy"]);
-			changes["cx"] = c.x;
-			changes["cy"] = c.y;
-			// take the minimum of the new selected box's dimensions for the new circle radius
-			var tbox = transformBox(box.x, box.y, box.width, box.height, m);
-			var w = tbox.tr.x - tbox.tl.x, h = tbox.bl.y - tbox.tl.y;
-			changes["r"] = Math.min(w/2, h/2);
-			break;
-		case "ellipse":
-			var c = remap(changes["cx"],changes["cy"]);
-			changes["cx"] = c.x;
-			changes["cy"] = c.y;
-			changes["rx"] = scalew(changes["rx"]);
-			changes["ry"] = scaleh(changes["ry"]);
-			break;
 		case "foreignObject":
 		case "rect":
 		case "image":
-			var pt1 = remap(changes["x"],changes["y"]);
-			changes["x"] = pt1.x;
-			changes["y"] = pt1.y;
-			changes["width"] = scalew(changes["width"]);
-			changes["height"] = scaleh(changes["height"]);
+			var pt1 = remap(changes.x,changes.y);
+			changes.x = pt1.x + Math.min(0,changes.width);
+			changes.y = pt1.y + Math.min(0,changes.height);
+			changes.width = Math.abs(scalew(changes.width));
+			changes.height = Math.abs(scaleh(changes.height));
+			finishUp();
 			break;
-		case "use":
-// 			var pt1 = remap(changes["x"],changes["y"]);
-// 			changes["x"] = pt1.x;
-// 			changes["y"] = pt1.y;
-// 			break;
-		case "g":
+		case "ellipse":
+			var c = remap(changes.cx,changes.cy);
+			changes.cx = c.x;
+			changes.cy = c.y;
+			changes.rx = scalew(changes.rx);
+			changes.ry = scaleh(changes.ry);
+		
+			changes.rx = Math.abs(changes.rx);
+			changes.ry = Math.abs(changes.ry);
+			finishUp();
+			break;
+		case "circle":
+			var c = remap(changes.cx,changes.cy);
+			changes.cx = c.x;
+			changes.cy = c.y;
+			// take the minimum of the new selected box's dimensions for the new circle radius
+			var tbox = transformBox(box.x, box.y, box.width, box.height, m);
+			var w = tbox.tr.x - tbox.tl.x, h = tbox.bl.y - tbox.tl.y;
+			changes.r = Math.min(w/2, h/2);
+
+			if(changes.r) changes.r = Math.abs(changes.r);
+			finishUp();
+			break;
+		case "line":
+			var pt1 = remap(changes.x1,changes.y1),
+				pt2 = remap(changes.x2,changes.y2);
+			changes.x1 = pt1.x;
+			changes.y1 = pt1.y;
+			changes.x2 = pt2.x;
+			changes.y2 = pt2.y;
+			
 		case "text":
-			// if it was a translate, then just update x,y
-			if (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && 
-				(m.e != 0 || m.f != 0) ) 
-			{
-				// [T][M] = [M][T']
-				// therefore [T'] = [M_inv][T][M]
-				var existing = transformListToTransform(selected).matrix,
-					t_new = matrixMultiply(existing.inverse(), m, existing);
-				changes["x"] = parseFloat(changes["x"]) + t_new.e;
-				changes["y"] = parseFloat(changes["y"]) + t_new.f;
-			}
-			else {
-				// we just absorb all matrices into the element and don't do any remapping
-				var chlist = getTransformList(selected);
-				var mt = svgroot.createSVGTransform();
-				mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix,m));
-				chlist.clear();
-				chlist.appendItem(mt);
+		case "use":
+			finishUp();
+			break;
+		case "g":
+			var gsvg = $(selected).data('gsvg');
+			if(gsvg) {
+				assignAttributes(gsvg, changes, 1000, true);
 			}
 			break;
-		case "polygon":
 		case "polyline":
-			var len = changes["points"].length;
+		case "polygon":
+			var len = changes.points.length;
 			for (var i = 0; i < len; ++i) {
-				var pt = changes["points"][i];
+				var pt = changes.points[i];
 				pt = remap(pt.x,pt.y);
-				changes["points"][i].x = pt.x;
-				changes["points"][i].y = pt.y;
+				changes.points[i].x = pt.x;
+				changes.points[i].y = pt.y;
 			}
+
+			var len = changes.points.length;
+			var pstr = "";
+			for (var i = 0; i < len; ++i) {
+				var pt = changes.points[i];
+				pstr += pt.x + "," + pt.y + " ";
+			}
+			selected.setAttribute("points", pstr);
 			break;
 		case "path":
 			var segList = selected.pathSegList;
@@ -3097,13 +3125,13 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 				};
 			}
 			
-			var len = changes["d"].length,
-				firstseg = changes["d"][0],
+			var len = changes.d.length,
+				firstseg = changes.d[0],
 				currentpt = remap(firstseg.x,firstseg.y);
-			changes["d"][0].x = currentpt.x;
-			changes["d"][0].y = currentpt.y;
+			changes.d[0].x = currentpt.x;
+			changes.d[0].y = currentpt.y;
 			for (var i = 1; i < len; ++i) {
-				var seg = changes["d"][i];
+				var seg = changes.d[i];
 				var type = seg.type;
 				// if absolute or first segment, we want to remap x, y, x1, y1, x2, y2
 				// if relative, we want to scalew, scaleh
@@ -3136,81 +3164,11 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 				if (seg.x) currentpt.x = seg.x;
 				if (seg.y) currentpt.y = seg.y;
 			} // for each segment
-			break;
-	} // switch on element type to get initial values
-	
-	// now we have a set of changes and an applied reduced transform list
-	// we apply the changes directly to the DOM
-	// TODO: merge this switch with the above one and optimize
-	switch (selected.tagName)
-	{
-		case "foreignObject":
-		case "rect":
-		case "image":
-			changes.x = changes.x-0 + Math.min(0,changes.width);
-			changes.y = changes.y-0 + Math.min(0,changes.height);
-			changes.width = Math.abs(changes.width);
-			changes.height = Math.abs(changes.height);
-			if(curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
-				changes.x = snapToGrid(changes.x);
-				changes.y = snapToGrid(changes.y);
-				changes.width = snapToGrid(changes.width);
-				changes.height = snapToGrid(changes.height);
-			}
-			assignAttributes(selected, changes, 1000, true);
-			break;
-		case "ellipse":
-			changes.rx = Math.abs(changes.rx);
-			changes.ry = Math.abs(changes.ry);
-			if(curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
-				changes.cx = snapToGrid(changes.cx);
-				changes.cy = snapToGrid(changes.cy);
-				changes.rx = snapToGrid(changes.rx);
-				changes.ry = snapToGrid(changes.ry);
-			}
-		case "circle":
-			if(changes.r) changes.r = Math.abs(changes.r);
-			if(curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
-				changes.cx = snapToGrid(changes.cx);
-				changes.cy = snapToGrid(changes.cy);
-				changes.r = snapToGrid(changes.r);
-			}
-		case "line":
-			if(curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
-				changes.x1 = snapToGrid(changes.x1);
-				changes.y1 = snapToGrid(changes.y1);
-				changes.x2 = snapToGrid(changes.x2);
-				changes.y2 = snapToGrid(changes.y2);
-			}
-		case "text":
-			if(curConfig.gridSnapping && selected.parentNode.parentNode.localName == "svg"){
-				changes.x = snapToGrid(changes.x);
-				changes.y = snapToGrid(changes.y);
-			}	
-		case "use":
-			assignAttributes(selected, changes, 1000, true);
-			break;
-		case "g":
-			var gsvg = $(selected).data('gsvg');
-			if(gsvg) {
-				assignAttributes(gsvg, changes, 1000, true);
-			}
-			break;
-		case "polyline":
-		case "polygon":
-			var len = changes["points"].length;
-			var pstr = "";
-			for (var i = 0; i < len; ++i) {
-				var pt = changes["points"][i];
-				pstr += pt.x + "," + pt.y + " ";
-			}
-			selected.setAttribute("points", pstr);
-			break;
-		case "path":
+		
 			var dstr = "";
-			var len = changes["d"].length;
+			var len = changes.d.length;
 			for (var i = 0; i < len; ++i) {
-				var seg = changes["d"][i];
+				var seg = changes.d[i];
 				var type = seg.type;
 				dstr += pathMap[type];
 				switch(type) {
