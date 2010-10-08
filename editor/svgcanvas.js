@@ -3008,7 +3008,8 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 		}
 		box = getBBox(selected);
 
-	if(selected.tagName === "g" || selected.tagName === "text") {
+	var elName = selected.tagName;
+	if(elName === "g" || elName === "text") {
 		// if it was a translate, then just update x,y
 		if (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && 
 			(m.e != 0 || m.f != 0) ) 
@@ -3032,16 +3033,20 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 	
 	// now we have a set of changes and an applied reduced transform list
 	// we apply the changes directly to the DOM
-	switch (selected.tagName)
+	switch (elName)
 	{
 		case "foreignObject":
 		case "rect":
 		case "image":
 			var pt1 = remap(changes.x,changes.y);
+			
+			changes.width = scalew(changes.width);
+			changes.height = scaleh(changes.height);
+			
 			changes.x = pt1.x + Math.min(0,changes.width);
 			changes.y = pt1.y + Math.min(0,changes.height);
-			changes.width = Math.abs(scalew(changes.width));
-			changes.height = Math.abs(scaleh(changes.height));
+			changes.width = Math.abs(changes.width);
+			changes.height = Math.abs(changes.height);
 			finishUp();
 			break;
 		case "ellipse":
