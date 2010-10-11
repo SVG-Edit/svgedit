@@ -1856,11 +1856,11 @@ var assignAttributes = this.assignAttributes = function(node, attrs, suspendLeng
 	if(!suspendLength) suspendLength = 0;
 	// Opera has a problem with suspendRedraw() apparently
 	var handle = null;
-	if (!window.opera) svgroot.suspendRedraw(suspendLength);
+	if (!isOpera) svgroot.suspendRedraw(suspendLength);
 
 	for (var i in attrs) {
-		var ns = (i.substr(0,4) == "xml:" ? xmlns : 
-			i.substr(0,6) == "xlink:" ? xlinkns : null);
+		var ns = (i.substr(0,4) === "xml:" ? xmlns : 
+			i.substr(0,6) === "xlink:" ? xlinkns : null);
 			
 		if(ns || !unitCheck) {
 			node.setAttributeNS(ns, i, attrs[i]);
