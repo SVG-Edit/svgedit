@@ -1295,6 +1295,7 @@ var SelectorManager;
 			if (selected.getAttribute("stroke") != "none" && !isNaN(sw)) {
 				offset += (sw/2);
 			}
+			
 			if (selected.tagName == "text") {
 				offset += 2/current_zoom;
 			}
@@ -1321,18 +1322,19 @@ var SelectorManager;
 			m.f *= current_zoom;
 			
 			// apply the transforms
-			var l=bbox.x-offset, t=bbox.y-offset, w=bbox.width+(offset*2), h=bbox.height+(offset*2),
+			var l=bbox.x, t=bbox.y, w=bbox.width, h=bbox.height,
 				bbox = {x:l, y:t, width:w, height:h};
+
 			
 			// we need to handle temporary transforms too
 			// if skewed, get its transformed box, then find its axis-aligned bbox
 			
 			//*
 			var nbox = transformBox(l*current_zoom, t*current_zoom, w*current_zoom, h*current_zoom, m),
-				nbax = nbox.aabox.x,
-				nbay = nbox.aabox.y,
-				nbaw = nbox.aabox.width,
-				nbah = nbox.aabox.height;
+				nbax = nbox.aabox.x - offset,
+				nbay = nbox.aabox.y - offset,
+				nbaw = nbox.aabox.width + (offset * 2),
+				nbah = nbox.aabox.height + (offset * 2);
 				
 			// now if the shape is rotated, un-rotate it
 			var cx = nbax + nbaw/2,
@@ -1355,10 +1357,10 @@ var SelectorManager;
 					maxx = nbox.tl.x,
 					maxy = nbox.tl.y;
 				
-				minx = Math.min(minx, Math.min(nbox.tr.x, Math.min(nbox.bl.x, nbox.br.x) ) );
-				miny = Math.min(miny, Math.min(nbox.tr.y, Math.min(nbox.bl.y, nbox.br.y) ) );
-				maxx = Math.max(maxx, Math.max(nbox.tr.x, Math.max(nbox.bl.x, nbox.br.x) ) );
-				maxy = Math.max(maxy, Math.max(nbox.tr.y, Math.max(nbox.bl.y, nbox.br.y) ) );
+				minx = Math.min(minx, Math.min(nbox.tr.x, Math.min(nbox.bl.x, nbox.br.x) ) ) - offset;
+				miny = Math.min(miny, Math.min(nbox.tr.y, Math.min(nbox.bl.y, nbox.br.y) ) ) - offset;
+				maxx = Math.max(maxx, Math.max(nbox.tr.x, Math.max(nbox.bl.x, nbox.br.x) ) ) + offset;
+				maxy = Math.max(maxy, Math.max(nbox.tr.y, Math.max(nbox.bl.y, nbox.br.y) ) ) + offset;
 				
 				nbax = minx;
 				nbay = miny;
@@ -3009,7 +3011,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 		box = getBBox(selected);
 
 	var elName = selected.tagName;
-	if(elName === "g" || elName === "text") {
+	if(elName === "g" || elName === "text" || elName === "use") {
 		// if it was a translate, then just update x,y
 		if (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && 
 			(m.e != 0 || m.f != 0) ) 
@@ -3319,8 +3321,8 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		
 		if(k === 2 && tlist.getItem(0).type === 1 && tlist.getItem(1).type === 2) {
 			var mt = svgroot.createSVGTransform();
-			logMatrix(tlist.getItem(0).matrix);
-			logMatrix(transformListToTransform(tlist).matrix);
+// 			logMatrix(tlist.getItem(0).matrix);
+// 			logMatrix(transformListToTransform(tlist).matrix);
 			
 			mt.setMatrix(transformListToTransform(tlist).matrix);
 			tlist.clear();
@@ -3527,8 +3529,8 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 						childxforms.push(translateBack);
 						childxforms.push(scale);
 						childxforms.push(translateOrigin);
-						logMatrix(translateBack.matrix);
-						logMatrix(scale.matrix);
+// 						logMatrix(translateBack.matrix);
+// 						logMatrix(scale.matrix);
 					} // not rotated
 					batchCmd.addSubCommand( recalculateDimensions(child) );
 					// TODO: If any <use> have this group as a parent and are 
@@ -4583,6 +4585,14 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					tlist.appendItem(svgroot.createSVGTransform());
 					tlist.appendItem(svgroot.createSVGTransform());
 					tlist.appendItem(svgroot.createSVGTransform());
+					
+					if(support.nonScalingStroke) {
+						mouse_target.style.vectorEffect = 'non-scaling-stroke';
+						var all = mouse_target.getElementsByTagName('*'), len = all.length;
+						for(var i = 0; i < all.length; i++) {
+							all[i].style.vectorEffect = 'non-scaling-stroke';
+						}
+					}
 				}
 				break;
 			case "fhellipse":
@@ -5232,6 +5242,16 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 							}
 						}
 					} // no change in mouse position
+					
+					// Remove non-scaling stroke
+					if(support.nonScalingStroke) {
+						var elem = selectedElements[0];
+						elem.removeAttribute('style');
+						walkTree(elem, function(elem) {
+							elem.removeAttribute('style');
+						});
+					}
+
 				}
 				// we return immediately from select so that the obj_num is not incremented
 				return;
@@ -7778,7 +7798,7 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 		}
 	};
 	
-	var defelems = $(svgcontent).find("linearGradient, radialGradient, filter, marker, svg");
+	var defelems = $(svgcontent).find("linearGradient, radialGradient, filter, marker, svg, symbol");
 		defelem_ids = [],
 		i = defelems.length;
 	while (i--) {
@@ -11425,6 +11445,10 @@ function disableAdvancedTextEdit() {
 	unit_types.pt = inch / 72;
 	unit_types.pc = inch / 6;
 	unit_types['%'] = 0;
+	
+	rect.setAttribute('style','vector-effect:non-scaling-stroke');
+	support.nonScalingStroke = (rect.style.vectorEffect === 'non-scaling-stroke');
+
 	svgcontent.removeChild(rect);
 }());
 
