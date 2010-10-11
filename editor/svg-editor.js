@@ -211,7 +211,7 @@
 					var qstr = $.param.querystring();
 					
 					if(!src) { // urldata.source may have been null if it ended with '='
-						if(qstr.indexOf('source=data:' >= 0)) {
+						if(qstr.indexOf('source=data:') >= 0) {
 							src = qstr.match(/source=(data:[^&]*)/)[1];
 						}
 					}
@@ -4440,6 +4440,8 @@
 		};
 		
 		Editor.loadFromURL = function(url, opts) {
+			if(!opts) opts = {};
+
 			var cache = opts.cache;
 			var cb = opts.callback;
 		
