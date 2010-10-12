@@ -677,7 +677,8 @@
 		
 			// called when any element has changed
 			var elementChanged = function(window,elems) {
-				if(svgCanvas.getMode() == "select") {
+				var mode = svgCanvas.getMode();
+				if(mode === "select") {
 					setSelectMode();
 				}
 				
@@ -707,6 +708,12 @@
 				// we tell it to skip focusing the text control if the
 				// text element was previously in focus
 				updateContextPanel();
+				
+				// In the event a gradient was flipped:
+				if(selectedElement && mode === "select") {
+					paintBox.fill.update();
+					paintBox.stroke.update();
+				}
 				
 				svgCanvas.runExtensions("elementChanged", {
 					elems: elems
@@ -1308,39 +1315,8 @@
 			var updateToolbar = function() {
 				if (selectedElement != null && ['use', 'image', 'foreignObject', 'g', 'a'].indexOf(selectedElement.tagName) === -1) {
 				
-					// For fill and stroke
-					for(var i = 0; i < 2; i++) {
-						var isFill = i === 0;
-						var type = isFill ? 'fill': 'stroke';
-						
-						var paintOpacity = parseFloat(selectedElement.getAttribute(type + "-opacity"));
-						if (isNaN(paintOpacity)) {
-							paintOpacity = 1.0;
-						}
-						
-						var defColor = isFill ? "black" : "none";
-						var paintColor = selectedElement.getAttribute(type) || defColor;
-						// prevent undo on these canvas changes
-						svgCanvas.setColor(type, paintColor, true);
-						svgCanvas.setPaintOpacity(type, paintOpacity, true);
-
-						
-						paintOpacity *= 100;
-						
-						var paint = getPaint(paintColor, paintOpacity, type);
-						
-						// update the rect inside #fill_color/#stroke_color
-						paintBox[type].setPaint(paint);
-						
-// 						if(paint.type.indexOf('Gradient') >= 0) {
-// 							var elem = paint[paint.type];
-// 							if(elem) {
-// 								elem.id = 'gradbox_' + type;
-// 								$("#" + type + "_color defs").empty().append(elem);
-// 								paint_rect.attr('fill', 'url(#gradbox_' + type + ')');
-// 							}
-// 						}
-					}
+					paintBox.fill.update(true);
+					paintBox.stroke.update(true);
 					
 					$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1).change();
 					$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none").change();
@@ -3280,6 +3256,29 @@
 						svgCanvas.setColor(this.type, paintColor, true);
 						svgCanvas.setPaintOpacity(this.type, paintOpacity, true);
 					}
+				}
+				
+				this.update = function(apply) {
+					if(!selectedElement) return;
+					var type = this.type;
+					var paintOpacity = parseFloat(selectedElement.getAttribute(type + "-opacity"));
+					if (isNaN(paintOpacity)) {
+						paintOpacity = 1.0;
+					}
+					
+					var defColor = type === "fill" ? "black" : "none";
+					var paintColor = selectedElement.getAttribute(type) || defColor;
+					
+					if(apply) {
+						svgCanvas.setColor(type, paintColor, true);
+						svgCanvas.setPaintOpacity(type, paintOpacity, true);
+					}
+					
+					paintOpacity *= 100;
+					
+					var paint = getPaint(paintColor, paintOpacity, type);
+					// update the rect inside #fill_color/#stroke_color
+					this.setPaint(paint);
 				}
 				
 				this.prep = function() {
