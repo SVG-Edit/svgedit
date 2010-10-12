@@ -479,7 +479,8 @@
 				tool_scale = 1,
 				zoomInIcon = 'crosshair',
 				zoomOutIcon = 'crosshair',
-				ui_context = 'toolbars';
+				ui_context = 'toolbars',
+				orig_source = '';
 
 			// This sets up alternative dialog boxes. They mostly work the same way as
 			// their UI counterparts, expect instead of returning the result, a callback
@@ -589,7 +590,6 @@
 					showSourceEditor(0,true);
 					return;	
 				}
-				
 				var win = window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
 				
 				// Alert will only appear the first time saved OR the first time the bug is encountered
@@ -688,7 +688,7 @@
 					var elem = elems[i];
 					
 					// if the element changed was the svg, then it could be a resolution change
-					if (elem && elem.tagName == "svg") {
+					if (elem && elem.tagName === "svg") {
 						populateLayers();
 						updateCanvas();
 					} 
@@ -785,6 +785,22 @@
 
 				
 				updateTitle();
+			}
+			
+			// Makes sure the current selected paint is available to work with
+			var prepPaints = function() {
+				for(var i = 0; i < 2; i++) {
+					var type = i === 0 ? 'fill': 'stroke';
+					var cur = $('#' + type + '_color rect').attr('fill');
+					if(cur.indexOf('url(') === 0) {
+						var grad = $('#' + type + '_color defs *')[0];
+						var obj = {};
+						obj.type = grad.tagName;
+						obj[grad.tagName] = grad;
+						var paint = new $.jGraduate.Paint(obj);
+						svgCanvas.setPaint(type, paint);
+					}
+				}
 			}
 			
 			var flyout_funcs = {};
@@ -1271,15 +1287,21 @@
 				runCallback();
 			};
 			
-			var getPaint = function(color, opac) {
+			var getPaint = function(color, opac, type) {
 				// update the editor's fill paint
 				var opts = null;
-				if (color.substr(0,5) == "url(#") {
-					var grad = document.getElementById(color.substr(5,color.length-6));
+				if (color.indexOf("url(#") === 0) {
+					var refElem = svgCanvas.getRefElem(color);
+					if(refElem) {
+						refElem = refElem.cloneNode(true);
+					} else {
+						refElem =  $("#" + type + "_color defs *")[0];
+					}
+					
 					opts = { alpha: opac };
-					opts[grad.tagName] = grad;
+					opts[refElem.tagName] = refElem;
 				} 
-				else if (color.substr(0,1) == "#") {
+				else if (color.indexOf("#") === 0) {
 					opts = {
 						alpha: opac,
 						solidColor: color.substr(1)
@@ -1299,57 +1321,42 @@
 			var updateToolbar = function() {
 				if (selectedElement != null && ['use', 'image', 'foreignObject', 'g', 'a'].indexOf(selectedElement.tagName) === -1) {
 				
-					// get opacity values
-					var fillOpacity = parseFloat(selectedElement.getAttribute("fill-opacity"));
-					if (isNaN(fillOpacity)) {
-						fillOpacity = 1.0;
-					}
-					
-					var strokeOpacity = parseFloat(selectedElement.getAttribute("stroke-opacity"));
-					if (isNaN(strokeOpacity)) {
-						strokeOpacity = 1.0;
-					}
-		
-					// update fill color and opacity
-					var fillColor = selectedElement.getAttribute("fill")||"black";
-					// prevent undo on these canvas changes
-					svgCanvas.setColor('fill', fillColor, true);
-					svgCanvas.setPaintOpacity('fill', fillOpacity, true);
-		
-					// update stroke color and opacity
-					var strokeColor = selectedElement.getAttribute("stroke")||"none";
-					// prevent undo on these canvas changes
-					svgCanvas.setColor('stroke', strokeColor, true);
-					svgCanvas.setPaintOpacity('stroke', strokeOpacity, true);
-					
-					// update the rect inside #fill_color
-					$("#stroke_color rect").attr({
-						fill: strokeColor,
-						opacity: strokeOpacity
-					});
-
-					// update the rect inside #fill_color
-					$("#fill_color rect").attr({
-						fill: fillColor,
-						opacity: fillOpacity
-					});
-		
-					fillOpacity *= 100;
-					strokeOpacity *= 100;
-					
-					fillPaint = getPaint(fillColor, fillOpacity);
-					strokePaint = getPaint(strokeColor, strokeOpacity);
-					
-					fillOpacity = fillOpacity + " %";
-					strokeOpacity = strokeOpacity + " %";
-		
-					// update fill color
-					if (fillColor == "none") {
-						fillOpacity = "N/A";
-					}
-					if (strokeColor == null || strokeColor == "" || strokeColor == "none") {
-						strokeColor = "none";
-						strokeOpacity = "N/A";
+					// For fill and stroke
+					for(var i = 0; i < 2; i++) {
+						var isFill = i === 0;
+						var type = isFill ? 'fill': 'stroke';
+						
+						var paintOpacity = parseFloat(selectedElement.getAttribute(type + "-opacity"));
+						if (isNaN(paintOpacity)) {
+							paintOpacity = 1.0;
+						}
+						
+						var defColor = isFill ? "black" : "none";
+						var paintColor = selectedElement.getAttribute(type) || defColor;
+						// prevent undo on these canvas changes
+						svgCanvas.setColor(type, paintColor, true);
+						svgCanvas.setPaintOpacity(type, paintOpacity, true);
+	
+						// update the rect inside #fill_color/#stroke_color
+						var paint_rect = $("#" + type + "_color rect");
+						paint_rect.attr('opacity', paintOpacity);
+						
+						paintOpacity *= 100;
+						
+						if(isFill) {
+							var paint = fillPaint = getPaint(paintColor, paintOpacity, type);
+						} else {
+							var paint = strokePaint = getPaint(paintColor, paintOpacity, type);
+						}
+						
+						if(paint.type.indexOf('Gradient') >= 0) {
+							var elem = paint[paint.type];
+							if(elem) {
+								elem.id = 'gradbox_' + type;
+								$("#" + type + "_color defs").empty().append(elem);
+								paint_rect.attr('fill', 'url(#gradbox_' + type + ')');
+							}
+						}
 					}
 					
 					$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1).change();
@@ -2450,6 +2457,7 @@
 					zoomImage();
 					populateLayers();
 					updateContextPanel();
+					prepPaints();
 				});
 			};
 			
@@ -2585,7 +2593,7 @@
 				$('#save_output_btns').toggle(!!forSaving);
 				$('#tool_source_back').toggle(!forSaving);
 				
-				var str = svgCanvas.getSvgString();
+				var str = orig_source = svgCanvas.getSvgString();
 				$('#svg_source_textarea').val(str);
 				$('#svg_source_editor').fadeIn();
 				properlySourceSizeTextArea();
@@ -2657,6 +2665,7 @@
 					zoomImage();
 					populateLayers();
 					updateTitle();
+					prepPaints();
 				}
 		
 				if (!svgCanvas.setSvgString($('#svg_source_textarea').val())) {
@@ -3046,8 +3055,7 @@
 				};
 		
 				if (editingsource) {
-					var oldString = svgCanvas.getSvgString();
-					if (oldString != $('#svg_source_textarea').val()) {
+					if (orig_source !== $('#svg_source_textarea').val()) {
 						$.confirm(uiStrings.QignoreSourceChanges, function(ok) {
 							if(ok) hideSourceEditor();
 						});
@@ -3180,11 +3188,12 @@
 						paint = new $.jGraduate.Paint(p);
 						
 						var oldgrad = document.getElementById("gradbox_"+picker);
-						var svgbox = oldgrad.parentNode;
-						var rectbox = svgbox.firstChild;
-						if (paint.type == "linearGradient" || paint.type == "radialGradient") {
-							svgbox.removeChild(oldgrad);
-							var newgrad = svgbox.appendChild(document.importNode(paint[paint.type], true));
+						var svgbox = oldgrad.ownerSVGElement;
+						var rectbox = svgbox.getElementsByTagName('rect')[0];
+						var defs = svgbox.getElementsByTagName('defs')[0];
+						if (paint.type === "linearGradient" || paint.type === "radialGradient") {
+							oldgrad.parentNode.removeChild(oldgrad);
+							var newgrad = defs.appendChild(document.importNode(paint[paint.type], true));
 							newgrad.id = "gradbox_"+picker;
 							rectbox.setAttribute("fill", "url(#gradbox_" + picker + ")");
 							rectbox.setAttribute("opacity", paint.alpha/100);
@@ -3271,10 +3280,10 @@
 			var svgdocbox = new DOMParser().parseFromString(
 				'<svg xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%"\
 				fill="#' + curConfig.initFill.color + '" opacity="' + curConfig.initFill.opacity + '"/>\
-				<linearGradient id="gradbox_">\
+				<defs><linearGradient id="gradbox_">\
 						<stop stop-color="#000" offset="0.0"/>\
 						<stop stop-color="#FF0000" offset="1.0"/>\
-				</linearGradient></svg>', 'text/xml');
+				</linearGradient></defs></svg>', 'text/xml');
 			var docElem = svgdocbox.documentElement;
 
 
@@ -4114,6 +4123,7 @@
 			}
 			
 			var updateCanvas = Editor.updateCanvas = function(center, new_ctr) {
+		
 				var w = workarea.width(), h = workarea.height();
 				var w_orig = w, h_orig = h;
 				var zoom = svgCanvas.getZoom();

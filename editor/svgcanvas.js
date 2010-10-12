@@ -2634,7 +2634,7 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 			if (val) {
 				val = getUrlFromAttr(val);
 				// simply check for first character being a '#'
-				if (val && val[0] != "#") {
+				if (val && val[0] !== "#") {
 					node.setAttribute(attr, "");
 					node.removeAttribute(attr);
 				}
@@ -2679,19 +2679,28 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 var getUrlFromAttr = this.getUrlFromAttr = function(attrVal) {
 	if (attrVal) {		
 		// url("#somegrad")
-		if (attrVal.indexOf('url("') == 0) {
+		if (attrVal.indexOf('url("') === 0) {
 			return attrVal.substring(5,attrVal.indexOf('"',6));
 		}
 		// url('#somegrad')
-		else if (attrVal.indexOf("url('") == 0) {
+		else if (attrVal.indexOf("url('") === 0) {
 			return attrVal.substring(5,attrVal.indexOf("'",6));
 		}
-		else if (attrVal.indexOf("url(") == 0) {
+		else if (attrVal.indexOf("url(") === 0) {
 			return attrVal.substring(4,attrVal.indexOf(')'));
 		}
 	}
 	return null;
 };
+
+// Function getRefElem
+// Get the reference element associated with the given attribute value
+//
+// Parameters:
+// attrVal - The attribute value as a string
+var getRefElem = this.getRefElem = function(attrVal) {
+	return getElem(getUrlFromAttr(attrVal).substr(1));
+}
 
 // Function: getBBox
 // Get the given/selected element's bounding box object, convert it to be more
@@ -3239,8 +3248,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 // tx - The translation's x value
 // ty - The translation's y value
 var updateClipPath = function(attr, tx, ty) {
-	var id = getUrlFromAttr(attr).substr(1);
-	var path = getElem(id).firstChild;
+	var path = getRefElem(attr).firstChild;
 	
 	var cp_xform = getTransformList(path);
 	
@@ -3812,7 +3820,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		if(!isWebkit) {
 			var fill = selected.getAttribute('fill');
 			if(fill && fill.indexOf('url(') === 0) {
-				var grad = getElem(getUrlFromAttr(fill).substr(1));
+				var grad = getRefElem(fill);
 				if(grad.getAttribute('gradientUnits') === 'userSpaceOnUse') {
 				
 					//Update the userSpaceOnUse element
@@ -7793,7 +7801,7 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 		
 		// gradients can refer to other gradients
 		var href = getHref(el);
-		if (href && href.indexOf('#') == 0) {
+		if (href && href.indexOf('#') === 0) {
 			defelem_uses.push(href.substr(1));
 		}
 	};
@@ -10788,14 +10796,14 @@ this.ungroupSelectedElement = function() {
 				if(!orig_cblur) {
 					// Set group's filter to use first child's ID
 					if(!gfilter) {
-						gfilter = getElem(getUrlFromAttr(gattrs.filter).substr(1));
+						gfilter = getRefElem(gattrs.filter);
 					} else {
 						// Clone the group's filter
 						gfilter = copyElem(gfilter);
 						findDefs().appendChild(gfilter);
 					}
 				} else {
-					gfilter = getElem(getUrlFromAttr(elem.getAttribute('filter')).substr(1));
+					gfilter = getRefElem(elem.getAttribute('filter'));
 				}
 
 				// Change this in future for different filters
