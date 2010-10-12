@@ -3018,6 +3018,38 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			assignAttributes(selected, changes, 1000, true);
 		}
 		box = getBBox(selected);
+	
+	for(var i = 0; i < 2; i++) {
+		var type = i === 0 ? 'fill' : 'stroke';
+		var attrVal = selected.getAttribute(type);
+		if(attrVal && attrVal.indexOf('url(') === 0) {
+			if(m.a < 0 || m.d < 0) {
+				var grad = getRefElem(attrVal);
+				var newgrad = grad.cloneNode(true);
+	
+				if(m.a < 0) {
+					//flip x
+					var x1 = newgrad.getAttribute('x1');
+					var x2 = newgrad.getAttribute('x2');
+					newgrad.setAttribute('x1', -(x1 - 1));
+					newgrad.setAttribute('x2', -(x2 - 1));
+				} 
+				
+				if(m.d < 0) {
+					//flip y
+					var y1 = newgrad.getAttribute('y1');
+					var y2 = newgrad.getAttribute('y2');
+					newgrad.setAttribute('y1', -(y1 - 1));
+					newgrad.setAttribute('y2', -(y2 - 1));
+				}
+				newgrad.id = getNextId();
+				findDefs().appendChild(newgrad);
+				selected.setAttribute(type, 'url(#' + newgrad.id + ')');
+			}
+		}
+		
+	}
+
 
 	var elName = selected.tagName;
 	if(elName === "g" || elName === "text" || elName === "use") {
