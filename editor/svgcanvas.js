@@ -2231,12 +2231,13 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 				}
 				
 				if(!good_bb) {
+					// Must use clone else FF freaks out
+					var clone = elem.cloneNode(true); 
 					var g = document.createElementNS(svgns, "g");
 					var parent = elem.parentNode;
-					parent.replaceChild(g, elem);
-					g.appendChild(elem);
+					parent.appendChild(g);
+					g.appendChild(clone);
 					bb = g.getBBox();
-					parent.insertBefore(elem,g);
 					parent.removeChild(g);
 				}
 				
