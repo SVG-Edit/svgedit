@@ -1318,8 +1318,8 @@
 					paintBox.fill.update(true);
 					paintBox.stroke.update(true);
 					
-					$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1).change();
-					$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none").change();
+					$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1);
+					$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
 
 					var attr = selectedElement.getAttribute("stroke-linejoin") || 'miter';
 					
