@@ -118,7 +118,7 @@ var userAgent = navigator.userAgent,
 	"mask": ["class", "height", "id", "maskContentUnits", "maskUnits", "width", "x", "y"],
 	"metadata": ["class", "id"],
 	"path": ["class", "clip-path", "clip-rule", "d", "fill", "fill-opacity", "fill-rule", "filter", "id", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"pattern": ["class", "height", "id", "patternContentUnits", "patternTransform", "patternUnits", "requiredFeatures", "style", "systemLanguage", "width", "x", "xlink:href", "y"],
+	"pattern": ["class", "height", "id", "patternContentUnits", "patternTransform", "patternUnits", "requiredFeatures", "style", "systemLanguage", "viewBox", "width", "x", "xlink:href", "y"],
 	"polygon": ["class", "clip-path", "clip-rule", "id", "fill", "fill-opacity", "fill-rule", "filter", "id", "class", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"polyline": ["class", "clip-path", "clip-rule", "id", "fill", "fill-opacity", "fill-rule", "filter", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"radialGradient": ["class", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "id", "r", "requiredFeatures", "spreadMethod", "systemLanguage", "xlink:href"],
@@ -2965,6 +2965,10 @@ var getTransformList = this.getTransformList = function(elem) {
 	else if (elem.gradientTransform) {
 		return elem.gradientTransform.baseVal;
 	}
+	else if (elem.patternTransform) {
+		return elem.patternTransform.baseVal;
+	}
+
 	return null;
 };
 
@@ -3852,17 +3856,18 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		if(!isWebkit) {
 			var fill = selected.getAttribute('fill');
 			if(fill && fill.indexOf('url(') === 0) {
-				var grad = getRefElem(fill);
-				if(grad.getAttribute('gradientUnits') === 'userSpaceOnUse') {
-				
+				var paint = getRefElem(fill);
+				var type = 'pattern';
+				if(paint.tagName !== type) type = 'gradient';
+				var attrVal = paint.getAttribute(type + 'Units');
+				if(attrVal === 'userSpaceOnUse') {
 					//Update the userSpaceOnUse element
-					var grad = $(grad);
 					m = transformListToTransform(tlist).matrix;
-					var gtlist = getTransformList(grad[0]);
+					var gtlist = getTransformList(paint);
 					var gmatrix = transformListToTransform(gtlist).matrix;
 					m = matrixMultiply(m, gmatrix);
 					var m_str = "matrix(" + [m.a,m.b,m.c,m.d,m.e,m.f].join(",") + ")";
-					grad.attr('gradientTransform', m_str);
+					paint.setAttribute(type + 'Transform', m_str);
 				}
 			}
 		}
@@ -8514,9 +8519,9 @@ this.setSvgString = function(xmlString) {
 			}
 		});
 		
-		// For Firefox: Put all gradients in defs
+		// For Firefox: Put all paint elems in defs
 		if(isGecko) {
-			content.find('linearGradient, radialGradient').appendTo(findDefs());
+			content.find('linearGradient, radialGradient, pattern').appendTo(findDefs());
 		}
 
 		
@@ -8675,7 +8680,7 @@ this.importSvgString = function(xmlString) {
 		if(isGecko) {
 			// Move all gradients into root for Firefox, workaround for this bug:
 			// https://bugzilla.mozilla.org/show_bug.cgi?id=353575
-			$(svg).find('linearGradient, radialGradient').appendTo(defs);
+			$(svg).find('linearGradient, radialGradient, pattern').appendTo(defs);
 		}
 
 		while (svg.firstChild) {
@@ -8693,7 +8698,7 @@ this.importSvgString = function(xmlString) {
 		var use_el = svgdoc.createElementNS(svgns, "use");
 		setHref(use_el, "#" + symbol.id);
 		findDefs().appendChild(symbol);
-	
+		
 		(current_group || current_layer).appendChild(use_el);
 		use_el.id = getNextId();
 		clearSelection();
