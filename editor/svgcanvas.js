@@ -8303,6 +8303,10 @@ var convertGradients = this.convertGradients = function(elem) {
 			// get object's bounding box
 			var bb = getBBox(elems[0]);
 			
+			// This will occur if the element is inside a <defs> or a <symbol>,
+			// in which we shouldn't need to convert anyway.
+			if(!bb) return;
+			
 			if(grad.tagName === 'linearGradient') {
 				var g_coords = $(grad).attr(['x1', 'y1', 'x2', 'y2']);
 				
@@ -8326,7 +8330,6 @@ var convertGradients = this.convertGradients = function(elem) {
 					x2: (g_coords.x2 - bb.x) / bb.width,
 					y2: (g_coords.y2 - bb.y) / bb.height
 				});
-				
 				grad.removeAttribute('gradientUnits');
 			} else {
 				// Note: radialGradient elements cannot be easily converted 
