@@ -289,10 +289,11 @@ svgEditor.addExtension("imagelib", function() {
 			
 			var leftBlock = $('<span>').css({position:'absolute',top:5,left:10}).appendTo(browser);
 			
-			var back = $('<button>Show libraries</button>').appendTo(leftBlock).click(function() {
+			var back = $('<button hidden>Show library list</button>').appendTo(leftBlock).click(function() {
 				frame.attr('src', 'about:blank').hide();
 				lib_opts.show();
 				header.text(all_libs);
+				back.hide();
 			}).css({
 				'margin-right': 5
 			});
@@ -321,6 +322,7 @@ svgEditor.addExtension("imagelib", function() {
 					frame.attr('src', opts.url).show();
 					header.text(opts.name);
 					lib_opts.hide();
+					back.show();
 				}).append('<span>' + opts.description + '</span>');
 			});
 			
