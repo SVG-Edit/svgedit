@@ -8306,6 +8306,20 @@ var convertGradients = this.convertGradients = function(elem) {
 			if(grad.tagName === 'linearGradient') {
 				var g_coords = $(grad).attr(['x1', 'y1', 'x2', 'y2']);
 				
+				// If has transform, convert
+				var tlist = grad.gradientTransform.baseVal;
+				if(tlist && tlist.numberOfItems > 0) {
+					var m = transformListToTransform(tlist).matrix;
+					var pt1 = transformPoint(g_coords.x1, g_coords.y1, m);
+					var pt2 = transformPoint(g_coords.x2, g_coords.y2, m);
+					
+					g_coords.x1 = pt1.x;
+					g_coords.y1 = pt1.y;
+					g_coords.x2 = pt2.x;
+					g_coords.y2 = pt2.y;
+					grad.removeAttribute('gradientTransform');
+				}
+				
 				$(grad).attr({
 					x1: (g_coords.x1 - bb.x) / bb.width,
 					y1: (g_coords.y1 - bb.y) / bb.height,
