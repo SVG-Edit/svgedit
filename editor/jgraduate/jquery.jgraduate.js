@@ -567,8 +567,8 @@ jQuery.fn.jGraduate =
 							images: { clientPath: $settings.images.clientPath },
 							color: { active: color, alphaSupport: true }
 						}, function(color){
-							beginColor = color.get_Hex() ? ('#'+color.get_Hex()) : "none";
-							beginOpacity = color.get_A() ? color.get_A()/100 : 1;
+							beginColor = color.val('hex') ? ('#'+color.val('hex')) : "none";
+							beginOpacity = color.val('ahex') ? color.val('ahex')/100 : 1;
 							colorbox.css('background', beginColor);
 							$('#'+id+'_jGraduate_beginOpacity').html(parseInt(beginOpacity*100)+'%');
 							stops[0].setAttribute('stop-color', beginColor);
@@ -591,8 +591,8 @@ jQuery.fn.jGraduate =
 							images: { clientPath: $settings.images.clientPath },
 							color: { active: color, alphaSupport: true }
 						}, function(color){
-							endColor = color.get_Hex() ? ('#'+color.get_Hex()) : "none";
-							endOpacity = color.get_A() ? color.get_A()/100 : 1;
+							endColor = color.val('hex') ? ('#'+color.val('hex')) : "none";
+							endOpacity = color.val('ahex') ? color.val('ahex')/100 : 1;
 							colorbox.css('background', endColor);
 							$('#'+id+'_jGraduate_endOpacity').html(parseInt(endOpacity*100)+'%');
 							stops[1].setAttribute('stop-color', endColor);
@@ -609,16 +609,20 @@ jQuery.fn.jGraduate =
 				var thisAlpha = ($this.paint.alpha*255/100).toString(16);
 				while (thisAlpha.length < 2) { thisAlpha = "0" + thisAlpha; }
 				color = $this.paint.solidColor == "none" ? "" : $this.paint.solidColor + thisAlpha;
+				
+				$.extend($.fn.jPicker.defaults.window, {
+					alphaSupport: true, effects: {type: 'show',speed: 0}
+				});
+				
 				colPicker.jPicker(
 					{
-						window: { title: $settings.window.pickerTitle },
+						window: { title: $settings.window.pickerTitle},
 						images: { clientPath: $settings.images.clientPath },
 						color: { active: color, alphaSupport: true }
 					},
 					function(color) {
-						$this.paint.type = "solidColor";
-						$this.paint.alpha = color.get_A() ? color.get_A() : 100;
-						$this.paint.solidColor = color.get_Hex() ? color.get_Hex() : "none";
+						$this.paint.alpha = color.val('ahex') ? Math.round((color.val('a') / 255) * 100)  : 100;
+						$this.paint.solidColor = color.val('hex') ? color.val('hex') : "none";
 						$this.paint.linearGradient = null;
 						okClicked(); 
 					},
@@ -984,8 +988,8 @@ jQuery.fn.jGraduate =
 							images: { clientPath: $settings.images.clientPath },
 							color: { active: color, alphaSupport: true }
 						}, function(color){
-							centerColor = color.get_Hex() ? ('#'+color.get_Hex()) : "none";
-							centerOpacity = color.get_A() ? color.get_A()/100 : 1;
+							centerColor = color.val('hex') ? ('#'+color.val('hex')) : "none";
+							centerOpacity = color.val('ahex') ? color.val('ahex')/100 : 1;
 							colorbox.css('background', centerColor);
 							$('#'+id+'_rg_jGraduate_centerOpacity').html(parseInt(centerOpacity*100)+'%');
 							stops[0].setAttribute('stop-color', centerColor);
@@ -1008,8 +1012,8 @@ jQuery.fn.jGraduate =
 							images: { clientPath: $settings.images.clientPath },
 							color: { active: color, alphaSupport: true }
 						}, function(color){
-							outerColor = color.get_Hex() ? ('#'+color.get_Hex()) : "none";
-							outerOpacity = color.get_A() ? color.get_A()/100 : 1;
+							outerColor = color.val('hex') ? ('#'+color.val('hex')) : "none";
+							outerOpacity = color.val('ahex') ? color.val('ahex')/100 : 1;
 							colorbox.css('background', outerColor);
 							$('#'+id+'_jGraduate_outerOpacity').html(parseInt(outerOpacity*100)+'%');
 							stops[1].setAttribute('stop-color', outerColor);
@@ -1034,8 +1038,8 @@ jQuery.fn.jGraduate =
 					},
 					function(color) {
 						$this.paint.type = "solidColor";
-						$this.paint.alpha = color.get_A() ? color.get_A() : 100;
-						$this.paint.solidColor = color.get_Hex() ? color.get_Hex() : "none";
+						$this.paint.alpha = color.val('ahex') ? Math.round((color.val('a') / 255) * 100) : 100;
+						$this.paint.solidColor = color.val('hex') ? color.val('hex') : "none";
 						$this.paint.radialGradient = null;
 						okClicked(); 
 					},
@@ -1051,7 +1055,6 @@ jQuery.fn.jGraduate =
 				$(idref + " > div").hide();
 				$(idref + ' .jGraduate_' +  $(this).attr('data-type') + 'Pick').show();
 			});
-			
 			$(idref + " > div").hide();
 			tabs.removeClass('jGraduate_tab_current');
 			var tab;
@@ -1066,9 +1069,12 @@ jQuery.fn.jGraduate =
 					tab = $(idref + ' .jGraduate_tab_color');
 					break;
 			}
-			tab.addClass('jGraduate_tab_current').click();	
-
 			$this.show();
+			
+			// jPicker will try to show after a 0ms timeout, so need to fire this after that
+			setTimeout(function() {
+				tab.addClass('jGraduate_tab_current').click();	
+			}, 10);
 		});
 	};
 })();
