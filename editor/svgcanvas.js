@@ -1708,6 +1708,7 @@ var SVGEditTransformList = function(elem) {
 				var bits = x.split(/\s*\(/);
 				var name = bits[0];
 				var val_bits = bits[1].match(/\s*(.*?)\s*\)/);
+				val_bits[1] = val_bits[1].replace(/(\d)-/g, "$1 -");
 				var val_arr = val_bits[1].split(/[, ]+/);
 				var letters = 'abcdef'.split('');
 				var mtx = svgroot.createSVGMatrix();
