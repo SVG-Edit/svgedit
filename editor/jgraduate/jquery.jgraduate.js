@@ -61,7 +61,7 @@ $.jGraduate = {
 	Paint:
 		function(opt) {
 			var options = opt || {};
-			this.alpha = options.alpha || 100;
+			this.alpha = isNaN(options.alpha) ? 100 : options.alpha;
 			// copy paint object
     		if (options.copy) {
     			this.type = options.copy.type;
@@ -605,32 +605,7 @@ jQuery.fn.jGraduate =
 						});
 				});            
 				
-				// --------------
-				var thisAlpha = ($this.paint.alpha*255/100).toString(16);
-				while (thisAlpha.length < 2) { thisAlpha = "0" + thisAlpha; }
-				color = $this.paint.solidColor == "none" ? "" : $this.paint.solidColor + thisAlpha;
-				
-				$.extend($.fn.jPicker.defaults.window, {
-					alphaSupport: true, effects: {type: 'show',speed: 0}
-				});
-				
-				colPicker.jPicker(
-					{
-						window: { title: $settings.window.pickerTitle},
-						images: { clientPath: $settings.images.clientPath },
-						color: { active: color, alphaSupport: true }
-					},
-					function(color) {
-						$this.paint.alpha = color.val('ahex') ? Math.round((color.val('a') / 255) * 100)  : 100;
-						$this.paint.solidColor = color.val('hex') ? color.val('hex') : "none";
-						$this.paint.linearGradient = null;
-						okClicked(); 
-					},
-					null,
-					function(){ cancelClicked(); }
-					);
 			}());	
-			
 			
 			// Radial gradient
 			(function() {
@@ -1029,7 +1004,14 @@ jQuery.fn.jGraduate =
 				// --------------
 				var thisAlpha = ($this.paint.alpha*255/100).toString(16);
 				while (thisAlpha.length < 2) { thisAlpha = "0" + thisAlpha; }
+				thisAlpha = thisAlpha.split(".")[0];
 				color = $this.paint.solidColor == "none" ? "" : $this.paint.solidColor + thisAlpha;
+				
+				// This should be done somewhere else, probably
+				$.extend($.fn.jPicker.defaults.window, {
+					alphaSupport: true, effects: {type: 'show',speed: 0}
+				});
+				
 				colPicker.jPicker(
 					{
 						window: { title: $settings.window.pickerTitle },
