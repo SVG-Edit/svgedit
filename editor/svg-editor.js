@@ -3130,7 +3130,7 @@
 				var was_none = false;
 				var pos = elem.position();
 				$("#color_picker")
-					.draggable({cancel:'.jPicker_table,.jGraduate_lgPick,.jGraduate_rgPick'})
+					.draggable({cancel:'.jGraduate_tabs,.jGraduate_colPick,.jGraduate_lgPick,.jGraduate_rgPick'})
 					.css(curConfig.colorPickerCSS || {'left': pos.left, 'bottom': 50 - pos.top})
 					.jGraduate(
 					{ 

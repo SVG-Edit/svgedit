@@ -2589,6 +2589,18 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 				node.setAttribute('d',pathActions.convertPath(node));
 				pathActions.fixEnd(node);
 			}
+			
+			// Add spaces before negative signs where necessary
+			if(isGecko) {
+				switch ( attrName ) {
+				case "transform":
+				case "gradientTransform":
+				case "patternTransform":
+					var val = attr.nodeValue.replace(/(\d)-/g, "$1 -");
+					node.setAttribute(attrName, val);
+				}
+			}
+			
 			// for the style attribute, rewrite it in terms of XML presentational attributes
 			if (attrName == "style") {
 				var props = attr.nodeValue.split(";"),
