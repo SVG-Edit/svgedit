@@ -5291,8 +5291,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					// no change in position/size, so maybe we should move to pathedit
 					else {
 						var t = evt.target;
-						if (selectedElements[0].nodeName == "path" && selectedElements[1] == null) {
-							pathActions.select(t);
+						if (selectedElements[0].nodeName === "path" && selectedElements[1] == null) {
+							pathActions.select(selectedElements[0]);
 						} // if it was a path
 						// else, if it was selected and this is a shift-click, remove it from selection
 						else if (evt.shiftKey) {
@@ -5505,7 +5505,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				element.setAttribute("opacity", cur_shape.opacity);
 				element.setAttribute("style", "pointer-events:inherit");
 				cleanupElement(element);
-				if(current_mode == "path") {
+				if(current_mode === "path") {
 					pathActions.toEditMode(element);
 				} else {
 					selectOnly([element], true);
@@ -5529,13 +5529,14 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		if(parent === current_group) return;
 		
 		var mouse_target = getMouseTarget(evt);
+		var tagName = mouse_target.tagName;
 		
-		if(mouse_target.tagName === 'text' && current_mode !== 'textedit') {
+		if(tagName === 'text' && current_mode !== 'textedit') {
 			var pt = transformPoint( evt.pageX, evt.pageY, root_sctm );
 			textActions.select(mouse_target, pt.x, pt.y);
 		}
 		
-		if(getRotationAngle(mouse_target)) {
+		if(tagName === "g" && getRotationAngle(mouse_target)) {
 			// TODO: Allow method of in-group editing without having to do 
 			// this (similar to editing rotated paths)
 		
@@ -6502,6 +6503,9 @@ var pathActions = this.pathActions = function() {
 			if(getRotationAngle(p.elem)) {
 				p.matrix = getMatrix(path.elem);
 				p.imatrix = p.matrix.inverse();
+			} else {
+				p.matrix = null;
+				p.imatrix = null;
 			}
 
 			p.eachSeg(function(i) {
@@ -7309,7 +7313,7 @@ var pathActions = this.pathActions = function() {
 			}
 		},
 		select: function(target) {
-			if (current_path == target) {
+			if (current_path === target) {
 				pathActions.toEditMode(target);
 				current_mode = "pathedit";
 			} // going into pathedit mode
