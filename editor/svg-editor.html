@@ -701,16 +701,30 @@ script type="text/javascript" src="locale/locale.min.js"></script-->
 				<label>
 					<span id="svginfo_unit">Base Unit:</span>
 					<select id="base_unit">
-						<option value="px" selected>Pixels</option>
+						<option value="px">Pixels</option>
 						<option value="cm">Centimeters</option>
 						<option value="mm">Millimeters</option>
+						<option value="in">Inches</option>
 						<option value="pt">Points</option>
 						<option value="pc">Picas</option>
 						<option value="em">Ems</option>
 						<option value="ex">Exs</option>
 					</select>
 				</label>
+				<!-- Should this be an export option instead? -->
+<!-- 
+				<span id="svginfo_unit_system">Unit System:</span>
+				<label>
+					<input type="radio" name="unit_system" value="single" checked="checked"/>
+					<span id="svginfo_single_type_unit">Single type unit</span>
+					<small id="svginfo_single_type_unit_sub">CSS unit type is set on root element. If a different unit type is entered in a text field, it is converted back to user units on export.</small>
 				</label>
+				<label>
+					<input type="radio" name="unit_system" value="multi"/>
+					<span id="svginfo_multi_units">Multiple CSS units</span> 
+					<small id="svginfo_single_type_unit_sub">Attributes can be given different CSS units, which may lead to inconsistant results among viewers.</small>
+				</label>
+ -->
 			</fieldset>
 	
 		</fieldset>

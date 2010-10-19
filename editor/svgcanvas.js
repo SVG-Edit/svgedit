@@ -78,7 +78,7 @@ if(window.opera) {
 		}
 		return this;
 	};
-
+	
 }());
 
 // Class: SvgCanvas
@@ -427,9 +427,17 @@ var Utils = this.Utils = function() {
 			}
 			catch(e){ throw new Error("Error parsing XML string"); };
 			return out;
+		},
+		
+		bboxToObj: function(bbox) {
+			return {
+				x: bbox.x,
+				y: bbox.y,
+				width: bbox.width,
+				height: bbox.height
+			}
 		}
 	}
-
 }();
 
 var snapToGrid = Utils.snapToGrid;
@@ -545,6 +553,20 @@ var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 	var w_attrs = ['x', 'x1', 'cx', 'rx', 'width'];
 	var h_attrs = ['y', 'y1', 'cy', 'ry', 'height'];
 	var unit_attrs = $.merge(['r','radius'], w_attrs);
+	
+	var unitNumMap = {
+			'%': 2,
+			em: 3,
+			ex: 4,
+			px: 5,
+			cm: 6,
+			mm: 7,
+			'in': 8,
+			pt: 9,
+			pc: 10
+	};
+	
+
 	$.merge(unit_attrs, h_attrs);
 	
 	// Function: convertToNum
@@ -554,7 +576,7 @@ var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 	// Parameters:
 	// attr - String with the name of the attribute associated with the value
 	// val - String with the attribute value to convert
-	convertToNum = function(attr, val) {
+	convertToNum = canvas.convertToNum = function(attr, val) {
 		// Return a number if that's what it already is
 		if(!isNaN(val)) return val-0;
 		
@@ -591,31 +613,32 @@ var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 			// New value is a number, so check currently used unit
 			var old_val = elem.getAttribute(attr);
 			
-			if(old_val !== null && (isNaN(old_val) || curConfig.baseUnit !== 'px')) {
-				// Old value was a number, so get unit, then convert
-				var unit;
-				if(old_val.substr(-1) === '%') {
-					var res = getResolution();
-					unit = '%';
-					val *= 100;
-					if(w_attrs.indexOf(attr) >= 0) {
-						val = val / res.w;
-					} else if(h_attrs.indexOf(attr) >= 0) {
-						val = val / res.h;
-					} else {
-						return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
-					}
-				} else {
-					if(curConfig.baseUnit !== 'px') {
-						unit = curConfig.baseUnit;
-					} else {
-						unit = old_val.substr(-2);
-					}
-					val = val / unit_types[unit];
-				}
-				
-				val += unit;
-			}
+			// Enable this for alternate mode
+// 			if(old_val !== null && (isNaN(old_val) || curConfig.baseUnit !== 'px')) {
+// 				// Old value was a number, so get unit, then convert
+// 				var unit;
+// 				if(old_val.substr(-1) === '%') {
+// 					var res = getResolution();
+// 					unit = '%';
+// 					val *= 100;
+// 					if(w_attrs.indexOf(attr) >= 0) {
+// 						val = val / res.w;
+// 					} else if(h_attrs.indexOf(attr) >= 0) {
+// 						val = val / res.h;
+// 					} else {
+// 						return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
+// 					}
+// 				} else {
+// 					if(curConfig.baseUnit !== 'px') {
+// 						unit = curConfig.baseUnit;
+// 					} else {
+// 						unit = old_val.substr(-2);
+// 					}
+// 					val = val / unit_types[unit];
+// 				}
+// 				
+// 				val += unit;
+// 			}
 		}
 		elem.setAttribute(attr, val);
 	}
@@ -664,6 +687,16 @@ var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 	// Returns the unit object with values for each unit
 	canvas.getUnits = function() {
 		return unit_types;
+	}
+	
+	// Function: convertUnit
+	// Converts the number to given unit or baseUnit
+	canvas.convertUnit = function(val, unit) {
+		unit = unit || curConfig.baseUnit;
+// 		baseVal.convertToSpecifiedUnits(unitNumMap[unit]);
+// 		var val = baseVal.valueInSpecifiedUnits;
+// 		baseVal.convertToSpecifiedUnits(1);
+		return shortFloat(val / unit_types[unit]);
 	}
 	
 	// Function: unitConvertAttrs
@@ -1292,7 +1325,7 @@ var SelectorManager;
 				selected = this.selectedElement,
 				 sw = selected.getAttribute("stroke-width");
 			var offset = 1/current_zoom;
-			if (selected.getAttribute("stroke") != "none" && !isNaN(sw)) {
+			if (selected.getAttribute("stroke") !== "none" && !isNaN(sw)) {
 				offset += (sw/2);
 			}
 			
@@ -1305,11 +1338,7 @@ var SelectorManager;
 				// get the bbox based on its children. 
 				var stroked_bbox = getStrokedBBox(selected.childNodes);
 				if(stroked_bbox) {
-					var bb = {};
-					$.each(bbox, function(key, val) {
-						bb[key] = stroked_bbox[key];
-					});
-					bbox = bb;
+					bbox = stroked_bbox;
 				}
 			}
 
@@ -2238,7 +2267,7 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 					var parent = elem.parentNode;
 					parent.appendChild(g);
 					g.appendChild(clone);
-					bb = g.getBBox();
+					bb = bboxToObj(g.getBBox());
 					parent.removeChild(g);
 				}
 				
@@ -2288,12 +2317,6 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 		if(full_bb) return;
 		if(!this.parentNode) return;
 		full_bb = getCheckedBBox(this);
-		if(full_bb) {
-			var b = {};
-			for(var i in full_bb) b[i] = full_bb[i];
-			full_bb = b;
-		}
-
 	});
 	
 	// This shouldn't ever happen...
@@ -2716,6 +2739,8 @@ var getRefElem = this.getRefElem = function(attrVal) {
 	return getElem(getUrlFromAttr(attrVal).substr(1));
 }
 
+var bboxToObj = Utils.bboxToObj;
+
 // Function: getBBox
 // Get the given/selected element's bounding box object, convert it to be more
 // usable when necessary
@@ -2757,6 +2782,9 @@ var getBBox = this.getBBox = function(elem) {
 				ret = null;
 			}
 		}
+	}
+	if(ret) {
+		ret = bboxToObj(ret);
 	}
 
 	// get the bounding box from the DOM (which is in that element's coordinate system)
@@ -3376,15 +3404,22 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		
 		// combine matrix + translate
 		k = tlist.numberOfItems;
-		
-		if(k === 2 && tlist.getItem(0).type === 1 && tlist.getItem(1).type === 2) {
+		if(k >= 2 && tlist.getItem(k-2).type === 1 && tlist.getItem(k-1).type === 2) {
+			console.log('combine')
 			var mt = svgroot.createSVGTransform();
 // 			logMatrix(tlist.getItem(0).matrix);
 // 			logMatrix(transformListToTransform(tlist).matrix);
-			
 			mt.setMatrix(transformListToTransform(tlist).matrix);
 			tlist.clear();
 			tlist.appendItem(mt);
+			console.log(selected.getAttribute('transform'));
+			
+// 			mt.setMatrix(transformListToTransform(tlist).matrix, 1, 2);
+// 			tlist.removeItem(k-2);
+// 			tlist.removeItem(k-2);
+// 			tlist.appendItem(mt);
+// 			console.log(selected.getAttribute('transform'));
+
 		}
 	}
 	
@@ -5237,7 +5272,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		var real_x = x;
 		var real_y = y;
 		
-		var useUnit = (curConfig.baseUnit !== 'px');
+		// TODO: Make true when in multi-unit mode
+		var useUnit = false; // (curConfig.baseUnit !== 'px');
 		
 		started = false;
 		switch (current_mode)
@@ -7900,7 +7936,7 @@ var svgCanvasToString = this.svgCanvasToString = function() {
 	
 	// Keep SVG-Edit comment on top
 	$.each(svgcontent.childNodes, function(i, node) {
-		if(i && node.nodeType == 8 && node.data.indexOf('Created with') >= 0) {
+		if(i && node.nodeType === 8 && node.data.indexOf('Created with') >= 0) {
 			svgcontent.insertBefore(node, svgcontent.firstChild);
 		}
 	});
@@ -7969,7 +8005,21 @@ var svgToString = this.svgToString = function(elem, indent) {
 		if(elem.id === 'svgcontent') {
 			// Process root element separately
 			var res = getResolution();
-			out.push(' width="' + res.w + '" height="' + res.h + '" xmlns="'+svgns+'"');
+			
+			var vb = "";
+			// TODO: Allow this by dividing all values by current baseVal
+			// Note that this also means we should properly deal with this on import
+// 			if(curConfig.baseUnit !== "px") {
+// 				var unit = curConfig.baseUnit;
+// 				var unit_m = unit_types[unit];
+// 				res.w = shortFloat(res.w / unit_m)
+// 				res.h = shortFloat(res.h / unit_m)
+// 				vb = ' viewBox="' + [0, 0, res.w, res.h].join(' ') + '"';				
+// 				res.w += unit;
+// 				res.h += unit;
+// 			}
+			
+			out.push(' width="' + res.w + '" height="' + res.h + '"' + vb + ' xmlns="'+svgns+'"');
 			
 			var nsuris = {};
 			
