@@ -1389,6 +1389,8 @@
 					$('#tool_reorient').toggleClass('disabled', ang == 0);
 					return;
 				}
+				var unit = curConfig.baseUnit !== 'px' ? curConfig.baseUnit : null;
+				
 				var is_node = currentMode == 'pathedit'; //elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
 				var menu_items = $('#cmenu_canvas li');
 				$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,\
@@ -1412,7 +1414,7 @@
 					$('#blur_slider').slider('option', 'value', blurval);
 					
 					if(svgCanvas.addedNew) {
-						if(elname == 'image') {
+						if(elname === 'image') {
 							// Prompt for URL if not a data URL
 							if(svgCanvas.getHref(elem).indexOf('data:') !== 0) {
 								promptImgURL();
@@ -1429,6 +1431,7 @@
 							$('#xy_panel').hide();
 						} else {
 							var x,y;
+							
 							// Get BBox vals for g, polyline and path
 							if(['g', 'polyline', 'path'].indexOf(elname) >= 0) {
 								var bb = svgCanvas.getStrokedBBox([elem]);
@@ -1440,6 +1443,12 @@
 								x = elem.getAttribute('x');
 								y = elem.getAttribute('y');
 							}
+							
+							if(unit) {
+								x = svgCanvas.convertUnit(x);
+								y = svgCanvas.convertUnit(y);
+							}							
+							
 							$('#selected_x').val(x || 0);
 							$('#selected_y').val(y || 0);
 							$('#xy_panel').show();
@@ -1460,6 +1469,10 @@
 						
 						if(point) {
 							var seg_type = $('#seg_type');
+							if(unit) {
+								point.x = svgCanvas.convertUnit(point.x);
+								point.y = svgCanvas.convertUnit(point.y);
+							}
 							$('#path_node_x').val(point.x);
 							$('#path_node_y').val(point.y);
 							if(point.type) {
@@ -1496,7 +1509,13 @@
 						$('#' + el_name + '_panel').show();
 			
 						$.each(cur_panel, function(i, item) {
-							$('#' + el_name + '_' + item).val(elem.getAttribute(item) || 0);
+							var attrVal = elem.getAttribute(item);
+							if(curConfig.baseUnit !== 'px' && elem[item]) {
+								var bv = elem[item].baseVal.value;
+								attrVal = svgCanvas.convertUnit(bv);
+							}
+						
+							$('#' + el_name + '_' + item).val(attrVal || 0);
 						});
 						
 						if(el_name == 'text') {
@@ -1762,15 +1781,25 @@
 					return false;
 				}
 				
-				// Convert unitless value to one with given unit
-				if(curConfig.baseUnit !== 'px' && !isNaN(val) ) {
-					val += curConfig.baseUnit;
-					this.value = val;
+				if(isNaN(val)) {
+					val = svgCanvas.convertToNum(attr, val);
+				} else if(curConfig.baseUnit !== 'px') {
+					// Convert unitless value to one with given unit
+				
+// 					val = svgCanvas.convertUnit(bv, "px");
+// 					selectedElement[attr].baseVal.newValueSpecifiedUnits();
+// 					this.value = val;
+// 					selectedElement[attr].baseVal
+					var unitData = svgCanvas.getUnits();
+
+					if(selectedElement[attr] || svgCanvas.getMode() === "pathedit" || attr === "x" || attr === "y") {
+						val *= unitData[curConfig.baseUnit];
+					}
 				}
 				
 				// if the user is changing the id, then de-select the element first
 				// change the ID, then re-select it with the new ID
-				if (attr == "id") {
+				if (attr === "id") {
 					var elem = selectedElement;
 					svgCanvas.clearSelection();
 					elem.id = val;
