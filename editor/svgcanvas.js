@@ -1287,6 +1287,7 @@ var SelectorManager;
 			var bShow = show ? "inline" : "none";
 			selectorManager.selectorGripsGroup.setAttribute("display", bShow);
 			var elem = this.selectedElement;
+			this.hasGrips = show;
 			if(elem && show) {
 				this.selectorGroup.appendChild(selectorManager.selectorGripsGroup);
 				this.updateGripCursors(getRotationAngle(elem));
@@ -1323,17 +1324,21 @@ var SelectorManager;
 				mgr = selectorManager,
 				selectedGrips = mgr.selectorGrips,
 				selected = this.selectedElement,
-				 sw = selected.getAttribute("stroke-width");
+				sw = selected.getAttribute("stroke-width");
 			var offset = 1/current_zoom;
 			if (selected.getAttribute("stroke") !== "none" && !isNaN(sw)) {
 				offset += (sw/2);
 			}
 			
-			if (selected.tagName == "text") {
+			var tagName = selected.tagName;
+			
+			if (tagName === "text") {
 				offset += 2/current_zoom;
 			}
+			
 			var bbox = getBBox(selected);
-			if(selected.tagName == 'g' && !$(selected).data('gsvg')) {
+
+			if(tagName === 'g' && !elData(selected, 'gsvg')) {
 				// The bbox for a group does not include stroke vals, so we
 				// get the bbox based on its children. 
 				var stroked_bbox = getStrokedBBox(selected.childNodes);
@@ -1341,7 +1346,6 @@ var SelectorManager;
 					bbox = stroked_bbox;
 				}
 			}
-
 			// loop and transform our bounding box until we reach our first rotation
 			var m = getMatrix(selected);
 
@@ -1360,10 +1364,11 @@ var SelectorManager;
 			
 			//*
 			var nbox = transformBox(l*current_zoom, t*current_zoom, w*current_zoom, h*current_zoom, m),
-				nbax = nbox.aabox.x - offset,
-				nbay = nbox.aabox.y - offset,
-				nbaw = nbox.aabox.width + (offset * 2),
-				nbah = nbox.aabox.height + (offset * 2);
+				aabox = nbox.aabox,
+				nbax = aabox.x - offset,
+				nbay = aabox.y - offset,
+				nbaw = aabox.width + (offset * 2),
+				nbah = aabox.height + (offset * 2);
 				
 			// now if the shape is rotated, un-rotate it
 			var cx = nbax + nbaw/2,
@@ -1381,15 +1386,18 @@ var SelectorManager;
 				nbox.br = transformPoint(nbox.br.x,nbox.br.y,rotm);
 				
 				// calculate the axis-aligned bbox
-				var minx = nbox.tl.x,
-					miny = nbox.tl.y,
-					maxx = nbox.tl.x,
-					maxy = nbox.tl.y;
+				var tl = nbox.tl;
+				var minx = tl.x,
+					miny = tl.y,
+					maxx = tl.x,
+					maxy = tl.y;
 				
-				minx = Math.min(minx, Math.min(nbox.tr.x, Math.min(nbox.bl.x, nbox.br.x) ) ) - offset;
-				miny = Math.min(miny, Math.min(nbox.tr.y, Math.min(nbox.bl.y, nbox.br.y) ) ) - offset;
-				maxx = Math.max(maxx, Math.max(nbox.tr.x, Math.max(nbox.bl.x, nbox.br.x) ) ) + offset;
-				maxy = Math.max(maxy, Math.max(nbox.tr.y, Math.max(nbox.bl.y, nbox.br.y) ) ) + offset;
+				var Min = Math.min, Max = Math.max;
+				
+				minx = Min(minx, Min(nbox.tr.x, Min(nbox.bl.x, nbox.br.x) ) ) - offset;
+				miny = Min(miny, Min(nbox.tr.y, Min(nbox.bl.y, nbox.br.y) ) ) - offset;
+				maxx = Max(maxx, Max(nbox.tr.x, Max(nbox.bl.x, nbox.br.x) ) ) + offset;
+				maxy = Max(maxy, Max(nbox.tr.y, Max(nbox.bl.y, nbox.br.y) ) ) + offset;
 				
 				nbax = minx;
 				nbay = miny;
@@ -1403,43 +1411,39 @@ var SelectorManager;
 						+ " L" + (nbax+nbaw) + "," + nbay
 						+ " " + (nbax+nbaw) + "," + (nbay+nbah)
 						+ " " + nbax + "," + (nbay+nbah) + "z";
-			assignAttributes(selectedBox, {'d': dstr});
+			selectedBox.setAttribute('d', dstr);
 			
-			this.gripCoords = {
-				nw: [nbax, nbay],
-				ne: [nbax+nbaw, nbay],
-				sw: [nbax, nbay+nbah],
-				se: [nbax+nbaw, nbay+nbah],
-				n:  [nbax + (nbaw)/2, nbay],
-				w:	[nbax, nbay + (nbah)/2],
-				e:	[nbax + nbaw, nbay + (nbah)/2],
-				s:	[nbax + (nbaw)/2, nbay + nbah]
-			};
+			var xform = angle ? "rotate(" + [angle,cx,cy].join(",") + ")" : "";
+			this.selectorGroup.setAttribute("transform", xform);
+
+			if(selected === selectedElements[0]) {
+				this.gripCoords = {
+					nw: [nbax, nbay],
+					ne: [nbax+nbaw, nbay],
+					sw: [nbax, nbay+nbah],
+					se: [nbax+nbaw, nbay+nbah],
+					n:  [nbax + (nbaw)/2, nbay],
+					w:	[nbax, nbay + (nbah)/2],
+					e:	[nbax + nbaw, nbay + (nbah)/2],
+					s:	[nbax + (nbaw)/2, nbay + nbah]
+				};
 			
-			if(selected == selectedElements[0]) {
 				for(var dir in this.gripCoords) {
 					var coords = this.gripCoords[dir];
 					assignAttributes(selectedGrips[dir], {
 						cx: coords[0], cy: coords[1]
 					});
 				};
+
+				// we want to go 20 pixels in the negative transformed y direction, ignoring scale
+				assignAttributes(mgr.rotateGripConnector, { x1: nbax + (nbaw)/2, 
+															y1: nbay, 
+															x2: nbax + (nbaw)/2, 
+															y2: nbay- 20});
+				assignAttributes(mgr.rotateGrip, { cx: nbax + (nbaw)/2, 
+													cy: nbay - 20 });
 			}
 
-			if (angle) {
-				this.selectorGroup.setAttribute("transform", "rotate(" + [angle,cx,cy].join(",") + ")");
-			}
-			else {
-				this.selectorGroup.setAttribute("transform", "");
-			}
-
-			// we want to go 20 pixels in the negative transformed y direction, ignoring scale
-			assignAttributes(mgr.rotateGripConnector, { x1: nbax + (nbaw)/2, 
-														y1: nbay, 
-														x2: nbax + (nbaw)/2, 
-														y2: nbay- 20});
-			assignAttributes(mgr.rotateGrip, { cx: nbax + (nbaw)/2, 
-												cy: nbay - 20 });
-			
 			svgroot.unsuspendRedraw(sr_handle);
 		};
 
@@ -1894,8 +1898,10 @@ var assignAttributes = this.assignAttributes = function(node, attrs, suspendLeng
 		var ns = (i.substr(0,4) === "xml:" ? xmlns : 
 			i.substr(0,6) === "xlink:" ? xlinkns : null);
 			
-		if(ns || !unitCheck) {
+		if(ns) {
 			node.setAttributeNS(ns, i, attrs[i]);
+		} else if(!unitCheck) {
+			node.setAttribute(i, attrs[i]);
 		} else {
 			setUnitAttr(node, i, attrs[i]);
 		}
@@ -2153,7 +2159,8 @@ this.addExtension = function(name, ext_func) {
 var shortFloat = function(val) {
 	var digits = save_options.round_digits;
 	if(!isNaN(val)) {
-		return Number(Number(val).toFixed(digits));
+		// Note that + converts to Number
+		return +((+val).toFixed(digits));
 	} else if($.isArray(val)) {
 		return shortFloat(val[0]) + ',' + shortFloat(val[1]);
 	} else {
@@ -3304,8 +3311,8 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 						break;
 					case 11: // relative elliptical arc (a)
 					case 10: // absolute elliptical arc (A)
-						dstr += seg.r1 + "," + seg.r2 + " " + seg.angle + " " + Number(seg.largeArcFlag) +
-							" " + Number(seg.sweepFlag) + " " + seg.x + "," + seg.y + " ";
+						dstr += seg.r1 + "," + seg.r2 + " " + seg.angle + " " + (+seg.largeArcFlag) +
+							" " + (+seg.sweepFlag) + " " + seg.x + "," + seg.y + " ";
 						break;
 					case 17: // relative smooth cubic (s)
 					case 16: // absolute smooth cubic (S)
@@ -3382,7 +3389,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		selected.removeAttribute("transform");
 		return null;
 	}
-
+	
 	// TODO: Make this work for more than 2
 	if (tlist) {
 		var k = tlist.numberOfItems;
@@ -3405,27 +3412,18 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		// combine matrix + translate
 		k = tlist.numberOfItems;
 		if(k >= 2 && tlist.getItem(k-2).type === 1 && tlist.getItem(k-1).type === 2) {
-			console.log('combine')
 			var mt = svgroot.createSVGTransform();
-// 			logMatrix(tlist.getItem(0).matrix);
-// 			logMatrix(transformListToTransform(tlist).matrix);
-			mt.setMatrix(transformListToTransform(tlist).matrix);
-			tlist.clear();
-			tlist.appendItem(mt);
-			console.log(selected.getAttribute('transform'));
 			
-// 			mt.setMatrix(transformListToTransform(tlist).matrix, 1, 2);
-// 			tlist.removeItem(k-2);
-// 			tlist.removeItem(k-2);
-// 			tlist.appendItem(mt);
-// 			console.log(selected.getAttribute('transform'));
-
+			var m = matrixMultiply(
+				tlist.getItem(k-2).matrix, 
+				tlist.getItem(k-1).matrix
+			);		
+			mt.setMatrix(m);
+			tlist.removeItem(k-2);
+			tlist.removeItem(k-2);
+			tlist.appendItem(mt);
 		}
 	}
-	
-	
-	
-	
 	
 	// Grouped SVG element 
 	var gsvg = $(selected).data('gsvg');
@@ -4094,7 +4092,7 @@ var transformPoint = function(x, y, m) {
 // Returns:
 // Boolean indicating whether or not the matrix is 1,0,0,1,0,0
 var isIdentity = function(m) {
-	return (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && m.e == 0 && m.f == 0);
+	return (m.a === 1 && m.b === 0 && m.c === 0 && m.d === 1 && m.e === 0 && m.f === 0);
 }
 
 // Function: matrixMultiply
@@ -4898,7 +4896,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				// we temporarily use a translate on the element(s) being dragged
 				// this transform is removed upon mousing up and the element is 
 				// relocated to the new location
-				if (selectedElements[0] != null) {
+				if (selectedElements[0] !== null) {
 					var dx = x - start_x;
 					var dy = y - start_y;
 					
@@ -8464,7 +8462,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 // 		}
 
 		// Not ideal, but works
-		ts += "translate(" + (pos.x || 0) + "," + (pos.x || 0) + ")";
+		ts += "translate(" + (pos.x || 0) + "," + (pos.y || 0) + ")";
 		
 		var prev = $elem.prev();
 		
@@ -8742,11 +8740,11 @@ this.importSvgString = function(xmlString) {
 			// if no explicit viewbox, create one out of the width and height
 			vb = innervb ? innervb.split(" ") : [0,0,innerw,innerh];
 		for (var j = 0; j < 4; ++j)
-			vb[j] = Number(vb[j]);
+			vb[j] = +(vb[j]);
 
 		// TODO: properly handle preserveAspectRatio
-		var canvasw = Number(svgcontent.getAttribute("width")),
-			canvash = Number(svgcontent.getAttribute("height"));
+		var canvasw = +svgcontent.getAttribute("width"),
+			canvash = +svgcontent.getAttribute("height");
 		// imported content should be 1/3 of the canvas on its largest dimension
 		
 		if (innerh > innerw) {
