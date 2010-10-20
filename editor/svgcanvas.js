@@ -2808,7 +2808,7 @@ var getBBox = this.getBBox = function(elem) {
 // Parameters: 
 // elem - The (text) DOM element to clone
 var ffClone = function(elem) {
-	if(isGecko) return elem;
+	if(!isGecko) return elem;
 	var clone = elem.cloneNode(true)
 	elem.parentNode.insertBefore(clone, elem);
 	elem.parentNode.removeChild(elem);
@@ -5575,8 +5575,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			// this (similar to editing rotated paths)
 		
 			// Ungroup and regroup
-			canvas.ungroupSelectedElement();
-			canvas.groupSelectedElements();
+			pushGroupProperties(mouse_target);
 			mouse_target = selectedElements[0];
 			clearSelection(true);
 		}
@@ -8518,8 +8517,9 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		
 		// Temporary hack to get rid of matrix
 		// TODO: See what ungroupSelectedElement does to absorb matrix
-		canvas.ungroupSelectedElement();
-		canvas.groupSelectedElements();
+// 		canvas.ungroupSelectedElement();
+// 		canvas.groupSelectedElements();
+		batchCmd.addSubCommand(pushGroupProperties(g, true));
 // 		
 		addCommandToHistory(batchCmd);
 		
@@ -10838,6 +10838,187 @@ this.groupSelectedElements = function() {
 	selectOnly([g], true);
 };
 
+
+// Function: pushGroupProperties
+// Pushes all appropriate parent group properties down to its children, then
+// removes them from the group
+var pushGroupProperties = this.pushGroupProperties = function(g, undoable) {
+
+	var children = g.childNodes;
+	var len = children.length;
+	var xform = g.getAttribute("transform");
+
+	var glist = getTransformList(g);
+	var m = transformListToTransform(glist).matrix;
+	
+	var batchCmd = new BatchCommand("Push group properties");
+
+	// TODO: get all fill/stroke properties from the group that we are about to destroy
+	// "fill", "fill-opacity", "fill-rule", "stroke", "stroke-dasharray", "stroke-dashoffset", 
+	// "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", 
+	// "stroke-width"
+	// and then for each child, if they do not have the attribute (or the value is 'inherit')
+	// then set the child's attribute
+	
+	var i = 0;
+	var gangle = getRotationAngle(g);
+	
+	var gattrs = $(g).attr(['filter', 'opacity']);
+	var gfilter, gblur;
+	
+	for(var i = 0; i < len; i++) {
+		var elem = children[i];
+		
+		if(gattrs.opacity !== null && gattrs.opacity !== 1) {
+			var c_opac = elem.getAttribute('opacity') || 1;
+			var new_opac = Math.round((elem.getAttribute('opacity') || 1) * gattrs.opacity * 100)/100;
+			changeSelectedAttribute('opacity', new_opac, [elem]);
+		}
+
+		if(gattrs.filter) {
+			var cblur = this.getBlur(elem);
+			var orig_cblur = cblur;
+			if(!gblur) gblur = this.getBlur(g);
+			if(cblur) {
+				// Is this formula correct?
+				cblur = (gblur-0) + (cblur-0);
+			} else if(cblur === 0) {
+				cblur = gblur;
+			}
+			
+			// If child has no current filter, get group's filter or clone it.
+			if(!orig_cblur) {
+				// Set group's filter to use first child's ID
+				if(!gfilter) {
+					gfilter = getRefElem(gattrs.filter);
+				} else {
+					// Clone the group's filter
+					gfilter = copyElem(gfilter);
+					findDefs().appendChild(gfilter);
+				}
+			} else {
+				gfilter = getRefElem(elem.getAttribute('filter'));
+			}
+
+			// Change this in future for different filters
+			var suffix = (gfilter.firstChild.tagName === 'feGaussianBlur')?'blur':'filter'; 
+			gfilter.id = elem.id + '_' + suffix;
+			changeSelectedAttribute('filter', 'url(#' + gfilter.id + ')', [elem]);
+			
+			// Update blur value 
+			if(cblur) {
+				changeSelectedAttribute('stdDeviation', cblur, [gfilter.firstChild]);
+				canvas.setBlurOffsets(gfilter, cblur);
+			}
+		}
+		
+		var chtlist = getTransformList(elem);
+
+		// Don't process gradient transforms
+		if(~elem.tagName.indexOf('Gradient')) chtlist = null;
+		
+		// Hopefully not a problem to add this. Necessary for elements like <desc/>
+		if(!chtlist) continue;
+		
+		if (glist.numberOfItems) {
+			// TODO: if the group's transform is just a rotate, we can always transfer the
+			// rotate() down to the children (collapsing consecutive rotates and factoring
+			// out any translates)
+			if (gangle && glist.numberOfItems == 1) {
+				// [Rg] [Rc] [Mc]
+				// we want [Tr] [Rc2] [Mc] where:
+				// 	- [Rc2] is at the child's current center but has the 
+				//	  sum of the group and child's rotation angles
+				// 	- [Tr] is the equivalent translation that this child 
+				// 	  undergoes if the group wasn't there
+				
+				// [Tr] = [Rg] [Rc] [Rc2_inv]
+				
+				// get group's rotation matrix (Rg)
+				var rgm = glist.getItem(0).matrix;
+				
+				// get child's rotation matrix (Rc)
+				var rcm = svgroot.createSVGMatrix();
+				var cangle = getRotationAngle(elem);
+				if (cangle) {
+					rcm = chtlist.getItem(0).matrix;
+				}
+				
+				// get child's old center of rotation
+				var cbox = getBBox(elem);
+				var ceqm = transformListToTransform(chtlist).matrix;
+				var coldc = transformPoint(cbox.x+cbox.width/2, cbox.y+cbox.height/2,ceqm);
+				
+				// sum group and child's angles
+				var sangle = gangle + cangle;
+				
+				// get child's rotation at the old center (Rc2_inv)
+				var r2 = svgroot.createSVGTransform();
+				r2.setRotate(sangle, coldc.x, coldc.y);
+				
+				// calculate equivalent translate
+				var trm = matrixMultiply(rgm, rcm, r2.matrix.inverse());
+				
+				// set up tlist
+				if (cangle) {
+					chtlist.removeItem(0);
+				}
+				
+				if (sangle) {
+					if(chtlist.numberOfItems) {
+						chtlist.insertItemBefore(r2, 0);
+					} else {
+						chtlist.appendItem(r2);
+					}
+				}
+
+				if (trm.e || trm.f) {
+					var tr = svgroot.createSVGTransform();
+					tr.setTranslate(trm.e, trm.f);
+					if(chtlist.numberOfItems) {
+						chtlist.insertItemBefore(tr, 0);
+					} else {
+						chtlist.appendItem(tr);
+					}
+				}
+			}
+			else { // more complicated than just a rotate
+				// transfer the group's transform down to each child and then
+				// call recalculateDimensions()				
+				var oldxform = elem.getAttribute("transform");
+				var changes = {};
+				changes["transform"] = oldxform ? oldxform : "";
+
+				var newxform = svgroot.createSVGTransform();
+
+				// [ gm ] [ chm ] = [ chm ] [ gm' ]
+				// [ gm' ] = [ chm_inv ] [ gm ] [ chm ]
+				var chm = transformListToTransform(chtlist).matrix,
+					chm_inv = chm.inverse();
+				var gm = matrixMultiply( chm_inv, m, chm );
+				newxform.setMatrix(gm);
+				chtlist.appendItem(newxform);
+			}
+			batchCmd.addSubCommand(recalculateDimensions(elem));
+		}
+	}
+
+	
+	// remove transform and make it undo-able
+	if (xform) {
+		var changes = {};
+		changes["transform"] = xform;
+		g.setAttribute("transform", "");
+		g.removeAttribute("transform");				
+		batchCmd.addSubCommand(new ChangeElementCommand(g, changes));
+	}
+	
+	if (undoable && !batchCmd.isEmpty()) {
+		return batchCmd;
+	}
+}
+
+
 // Function: ungroupSelectedElement
 // Unwraps all the elements in a selected group (g) element. This requires
 // significant recalculations to apply group's transforms, etc to its children
@@ -10855,30 +11036,17 @@ this.ungroupSelectedElement = function() {
 		convertToGroup(g);
 		return;
 	}
-	if (g.tagName == "g") {
+	if (g.tagName === "g") {
 	
 		var batchCmd = new BatchCommand("Ungroup Elements");
+		var cmd = pushGroupProperties(g, true);
+		if(cmd) batchCmd.addSubCommand(cmd);
+		
 		var parent = g.parentNode;
 		var anchor = g.nextSibling;
 		var children = new Array(g.childNodes.length);
-		var xform = g.getAttribute("transform");
-		
-		// get consolidated matrix
-		var glist = getTransformList(g);
-		var m = transformListToTransform(glist).matrix;
-
-		// TODO: get all fill/stroke properties from the group that we are about to destroy
-		// "fill", "fill-opacity", "fill-rule", "stroke", "stroke-dasharray", "stroke-dashoffset", 
-		// "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", 
-		// "stroke-width"
-		// and then for each child, if they do not have the attribute (or the value is 'inherit')
-		// then set the child's attribute
 		
 		var i = 0;
-		var gangle = getRotationAngle(g);
-		
-		var gattrs = $(g).attr(['filter', 'opacity']);
-		var gfilter, gblur;
 		
 		while (g.firstChild) {
 			var elem = g.firstChild;
@@ -10886,7 +11054,7 @@ this.ungroupSelectedElement = function() {
 			var oldParent = elem.parentNode;
 			
 			// Remove child title elements
-			if(elem.tagName == 'title') {
+			if(elem.tagName === 'title') {
 				batchCmd.addSubCommand(new RemoveElementCommand(elem, oldParent));
 				oldParent.removeChild(elem);
 				continue;
@@ -10894,149 +11062,6 @@ this.ungroupSelectedElement = function() {
 			
 			children[i++] = elem = parent.insertBefore(elem, anchor);
 			batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
-			
-			if(gattrs.opacity !== null && gattrs.opacity !== 1) {
-				var c_opac = elem.getAttribute('opacity') || 1;
-				var new_opac = Math.round((elem.getAttribute('opacity') || 1) * gattrs.opacity * 100)/100;
-				changeSelectedAttribute('opacity', new_opac, [elem]);
-			}
-
-			if(gattrs.filter) {
-				var cblur = this.getBlur(elem);
-				var orig_cblur = cblur;
-				if(!gblur) gblur = this.getBlur(g);
-				if(cblur) {
-					// Is this formula correct?
-					cblur = (gblur-0) + (cblur-0);
-				} else if(cblur === 0) {
-					cblur = gblur;
-				}
-				
-				// If child has no current filter, get group's filter or clone it.
-				if(!orig_cblur) {
-					// Set group's filter to use first child's ID
-					if(!gfilter) {
-						gfilter = getRefElem(gattrs.filter);
-					} else {
-						// Clone the group's filter
-						gfilter = copyElem(gfilter);
-						findDefs().appendChild(gfilter);
-					}
-				} else {
-					gfilter = getRefElem(elem.getAttribute('filter'));
-				}
-
-				// Change this in future for different filters
-				var suffix = (gfilter.firstChild.tagName === 'feGaussianBlur')?'blur':'filter'; 
-				gfilter.id = elem.id + '_' + suffix;
-				changeSelectedAttribute('filter', 'url(#' + gfilter.id + ')', [elem]);
-				
-				// Update blur value 
-				if(cblur) {
-					changeSelectedAttribute('stdDeviation', cblur, [gfilter.firstChild]);
-					canvas.setBlurOffsets(gfilter, cblur);
-				}
-			}
-			
-			var chtlist = getTransformList(elem);
-
-			// Don't process gradient transforms
-			if(~elem.tagName.indexOf('Gradient')) chtlist = null;
-			
-			// Hopefully not a problem to add this. Necessary for elements like <desc/>
-			if(!chtlist) continue;
-			
-			if (glist.numberOfItems) {
-				// TODO: if the group's transform is just a rotate, we can always transfer the
-				// rotate() down to the children (collapsing consecutive rotates and factoring
-				// out any translates)
-				if (gangle && glist.numberOfItems == 1) {
-					// [Rg] [Rc] [Mc]
-					// we want [Tr] [Rc2] [Mc] where:
-					// 	- [Rc2] is at the child's current center but has the 
-					//	  sum of the group and child's rotation angles
-					// 	- [Tr] is the equivalent translation that this child 
-					// 	  undergoes if the group wasn't there
-					
-					// [Tr] = [Rg] [Rc] [Rc2_inv]
-					
-					// get group's rotation matrix (Rg)
-					var rgm = glist.getItem(0).matrix;
-					
-					// get child's rotation matrix (Rc)
-					var rcm = svgroot.createSVGMatrix();
-					var cangle = getRotationAngle(elem);
-					if (cangle) {
-						rcm = chtlist.getItem(0).matrix;
-					}
-					
-					// get child's old center of rotation
-					var cbox = getBBox(elem);
-					var ceqm = transformListToTransform(chtlist).matrix;
-					var coldc = transformPoint(cbox.x+cbox.width/2, cbox.y+cbox.height/2,ceqm);
-					
-					// sum group and child's angles
-					var sangle = gangle + cangle;
-					
-					// get child's rotation at the old center (Rc2_inv)
-					var r2 = svgroot.createSVGTransform();
-					r2.setRotate(sangle, coldc.x, coldc.y);
-					
-					// calculate equivalent translate
-					var trm = matrixMultiply(rgm, rcm, r2.matrix.inverse());
-					
-					// set up tlist
-					if (cangle) {
-						chtlist.removeItem(0);
-					}
-					
-					if (sangle) {
-						if(chtlist.numberOfItems) {
-							chtlist.insertItemBefore(r2, 0);
-						} else {
-							chtlist.appendItem(r2);
-						}
-					}
-
-					if (trm.e || trm.f) {
-						var tr = svgroot.createSVGTransform();
-						tr.setTranslate(trm.e, trm.f);
-						if(chtlist.numberOfItems) {
-							chtlist.insertItemBefore(tr, 0);
-						} else {
-							chtlist.appendItem(tr);
-						}
-					}
-				}
-				else { // more complicated than just a rotate
-					// transfer the group's transform down to each child and then
-					// call recalculateDimensions()				
-					var oldxform = elem.getAttribute("transform");
-					var changes = {};
-					changes["transform"] = oldxform ? oldxform : "";
-
-					var newxform = svgroot.createSVGTransform();
-
-					// [ gm ] [ chm ] = [ chm ] [ gm' ]
-					// [ gm' ] = [ chm_inv ] [ gm ] [ chm ]
-					var chm = transformListToTransform(chtlist).matrix,
-						chm_inv = chm.inverse();
-					var gm = matrixMultiply( chm_inv, m, chm );
-					newxform.setMatrix(gm);
-					chtlist.appendItem(newxform);
-				}
-				batchCmd.addSubCommand(recalculateDimensions(elem));
-			}
-		}
-
-		
-		// remove transform and make it undo-able
-		if (xform) {
-			var changes = {};
-			changes["transform"] = xform;
-			g.setAttribute("transform", "");
-			g.removeAttribute("transform");				
-			batchCmd.addSubCommand(new ChangeElementCommand(g, changes));
 		}
 
 		// remove the group from the selection			
