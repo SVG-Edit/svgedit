@@ -402,6 +402,10 @@ var Utils = this.Utils = function() {
 		// round value to for snapping
 		"snapToGrid" : function(value){
 			var stepSize = curConfig.snappingStep;
+			var unit = curConfig.baseUnit;
+			if(unit !== "px") {
+				stepSize *= unit_types[unit];
+			}
 			value = Math.round(value/stepSize)*stepSize;
 			return value;
 		},
@@ -487,6 +491,7 @@ var canvas = this,
 				'</svg>').documentElement, true);
 
 	container.appendChild(svgroot);
+	
 	
 // The actual element that represents the final output SVG element
 var svgcontent = svgdoc.createElementNS(svgns, "svg");
@@ -8515,10 +8520,6 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		
 		selectOnly([g]);
 		
-		// Temporary hack to get rid of matrix
-		// TODO: See what ungroupSelectedElement does to absorb matrix
-// 		canvas.ungroupSelectedElement();
-// 		canvas.groupSelectedElements();
 		batchCmd.addSubCommand(pushGroupProperties(g, true));
 // 		
 		addCommandToHistory(batchCmd);
