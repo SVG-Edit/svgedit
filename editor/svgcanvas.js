@@ -1560,7 +1560,7 @@ var SelectorManager;
 				'height': dims[1],
 				'x': 0,
 				'y': 0,
-				'overflow': 'visible',
+				'overflow': (isWebkit ? 'none' : 'visible'), // Chrome 7 has a problem with this when zooming out
 				'style': 'pointer-events:none'
 			});
 			
@@ -2444,7 +2444,7 @@ var copyElem = function(el) {
 	
 	// Opera's "d" value needs to be reset for Opera/Win/non-EN
 	// Also needed for webkit (else does not keep curved segments on clone)
-	if((isWebkit) && el.nodeName == 'path') {
+	if(isWebkit && el.nodeName == 'path') {
 		var fixed_d = pathActions.convertPath(el);
 		new_el.setAttribute('d', fixed_d);
 	}

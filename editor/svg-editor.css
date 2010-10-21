@@ -96,12 +96,21 @@
 }
 
 
-#ruler_x canvas {
+#ruler_x canvas:first-child {
 	margin-left: -16px;
+}
+
+#ruler_x canvas {
+	float: left;
 }
 
 #ruler_y canvas {
 	margin-top: -16px;
+}
+
+#ruler_x > div, 
+#ruler_y > div {
+	overflow: hidden;
 }
 
 
