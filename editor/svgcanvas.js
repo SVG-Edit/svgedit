@@ -1643,7 +1643,7 @@ var SelectorManager;
 		// Function: SelectorManager.getRubberBandBox
 		// Returns the rubberBandBox DOM element. This is the rectangle drawn by the user for selecting/zooming
 		this.getRubberBandBox = function() {
-			if (this.rubberBandBox == null) {
+			if (!this.rubberBandBox) {
 				this.rubberBandBox = this.selectorParentGroup.appendChild(
 						addSvgElementFromJson({ "element": "rect",
 							"attr": {
@@ -5193,15 +5193,16 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					x=xya.x; y=xya.y;
 				}
 				
-				if(rubberBox && rubberBox.getAttribute('display') != 'none') {
+				if(rubberBox && rubberBox.getAttribute('display') !== 'none') {
+					real_x *= current_zoom;
+					real_y *= current_zoom;
 					assignAttributes(rubberBox, {
-						'x': Math.min(r_start_x, real_x),
-						'y': Math.min(r_start_y, real_y),
-						'width': Math.abs(real_x - r_start_x),
-						'height': Math.abs(real_y - r_start_y)
-					},100);
+						'x': Math.min(r_start_x*current_zoom, real_x),
+						'y': Math.min(r_start_y*current_zoom, real_y),
+						'width': Math.abs(real_x - r_start_x*current_zoom),
+						'height': Math.abs(real_y - r_start_y*current_zoom)
+					},100);	
 				}
-				
 				pathActions.mouseMove(x, y);
 				
 				break;
