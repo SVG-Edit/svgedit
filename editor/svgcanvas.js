@@ -1368,6 +1368,8 @@ var SelectorManager;
 			// if skewed, get its transformed box, then find its axis-aligned bbox
 			
 			//*
+			offset *= current_zoom;
+			
 			var nbox = transformBox(l*current_zoom, t*current_zoom, w*current_zoom, h*current_zoom, m),
 				aabox = nbox.aabox,
 				nbax = aabox.x - offset,
