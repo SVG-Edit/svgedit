@@ -1,5 +1,5 @@
 ﻿body {
-	background: #D8D8D8;
+	background: #D0D0D0;
 }
 
 #svg_editor * {
@@ -223,7 +223,7 @@
 #svg_editor #sidepanel_handle {
 	display: inline-block;
 	position: absolute;
-	background-color: #D8D8D8;
+	background-color: #D0D0D0;
 	font-weight: bold;
 	left: 0px;
 	top: 40%;
@@ -485,7 +485,7 @@
 	top: 75px;
 	left: 0;
 	padding-left: 2px;
-	background: #D8D8D8; /* Needed so flyout icons don't appear on the left */
+	background: #D0D0D0; /* Needed so flyout icons don't appear on the left */
 	z-index: 4;
 }
 
