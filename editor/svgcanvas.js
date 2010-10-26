@@ -1622,37 +1622,10 @@ var SVGEditTransformList = function(elem) {
 
 // Group: Helper functions
 
-// Function: walkTree
-// Walks the tree and executes the callback on each element in a top-down fashion
-//
-// Parameters:
-// elem - DOM element to traverse
-// cbFn - Callback function to run on each element
-function walkTree(elem, cbFn){
-	if (elem && elem.nodeType == 1) {
-		cbFn(elem);
-		var i = elem.childNodes.length;
-		while (i--) {
-			walkTree(elem.childNodes.item(i), cbFn);
-		}
-	}
-};
-
-// Function: walkTreePost
-// Walks the tree and executes the callback on each element in a depth-first fashion
-//
-// Parameters:
-// elem - DOM element to traverse
-// cbFn - Callback function to run on each element
-function walkTreePost(elem, cbFn) {
-	if (elem && elem.nodeType == 1) {
-		var i = elem.childNodes.length;
-		while (i--) {
-			walkTree(elem.childNodes.item(i), cbFn);
-		}
-		cbFn(elem);
-	}
-};
+// "Import" from svgutils.js
+var walkTree = this.walkTree = svgedit.Utilities.walkTree;
+var walkTreePost = this.walkTreePost = svgedit.Utilities.walkTreePost;
+var getUrlFromAttr = this.getUrlFromAttr = svgedit.Utilities.getUrlFromAttr;
 
 // Function: assignAttributes
 // Assigns multiple attributes to an element.
@@ -2480,35 +2453,6 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 		while (i--) { sanitizeSvg(children[i]); }
 
 	}
-};
-
-// Function: getUrlFromAttr
-// Extracts the URL from the url(...) syntax of some attributes.  
-// Three variants:
-// 	* <circle fill="url(someFile.svg#foo)" />
-//  * <circle fill="url('someFile.svg#foo')" />
-//  * <circle fill='url("someFile.svg#foo")' />
-//
-// Parameters:
-// attrVal - The attribute value as a string
-// 
-// Returns:
-// String with just the URL, like someFile.svg#foo
-var getUrlFromAttr = this.getUrlFromAttr = function(attrVal) {
-	if (attrVal) {		
-		// url("#somegrad")
-		if (attrVal.indexOf('url("') === 0) {
-			return attrVal.substring(5,attrVal.indexOf('"',6));
-		}
-		// url('#somegrad')
-		else if (attrVal.indexOf("url('") === 0) {
-			return attrVal.substring(5,attrVal.indexOf("'",6));
-		}
-		else if (attrVal.indexOf("url(") === 0) {
-			return attrVal.substring(4,attrVal.indexOf(')'));
-		}
-	}
-	return null;
 };
 
 // Function getRefElem
