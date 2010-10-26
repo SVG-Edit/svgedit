@@ -5279,7 +5279,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			// if we are not in the middle of creating a path, and we've clicked on some shape, 
 			// then go to Select mode.
 			// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
-			if ( (current_mode != "path" || current_path_pts.length == 0) &&
+			if ( (current_mode != "path" || !drawn_path) &&
 				t.parentNode.id != "selectorParentGroup" &&
 				t.id != "svgcanvas" && t.id != "svgroot") 
 			{
@@ -6593,7 +6593,8 @@ var pathActions = this.pathActions = function() {
 	
 	var pathFuncs = [],
 		current_path = null,
-		current_path_pts = [],
+// 		current_path_pts = [],
+		drawn_path = null,
 		link_control_pts = false,
 		hasMoved = false;
 	
@@ -6917,11 +6918,9 @@ var pathActions = this.pathActions = function() {
 				var keep = null;
 				
 				// if pts array is empty, create path element with M at current point
-				if (current_path_pts.length == 0) {
-					current_path_pts.push(x);
-					current_path_pts.push(y);
+				if (!drawn_path) {
 					d_attr = "M" + x + "," + y + " ";
-					addSvgElementFromJson({
+					drawn_path = addSvgElementFromJson({
 						"element": "path",
 						"curStyles": true,
 						"attr": {
@@ -6943,12 +6942,14 @@ var pathActions = this.pathActions = function() {
 				}
 				else {
 					// determine if we clicked on an existing point
-					var i = current_path_pts.length;
+					var seglist = drawn_path.pathSegList;
+					var i = seglist.numberOfItems;
 					var FUZZ = 6/current_zoom;
 					var clickOnPoint = false;
 					while(i) {
-						i -= 2;
-						var px = current_path_pts[i], py = current_path_pts[i+1];
+						i --;
+						var item = seglist.getItem(i);
+						var px = item.x, py = item.y;
 						// found a matching point
 						if ( x >= (px-FUZZ) && x <= (px+FUZZ) && y >= (py-FUZZ) && y <= (py+FUZZ) ) {
 							clickOnPoint = true;
@@ -6964,7 +6965,7 @@ var pathActions = this.pathActions = function() {
 					
 					var newpath = getElem(id);
 					
-					var len = current_path_pts.length;
+					var len = seglist.numberOfItems;
 					// if we clicked on an existing point, then we are done this path, commit it
 					// (i,i+1) are the x,y that were clicked on
 					if (clickOnPoint) {
@@ -6972,10 +6973,10 @@ var pathActions = this.pathActions = function() {
 						// the first point was clicked on and there are less than 3 points
 						// then leave the path open
 						// otherwise, close the path
-						if (i == 0 && len >= 6) {
+						if (i == 0 && len >= 3) {
 							// Create end segment
-							var abs_x = current_path_pts[0];
-							var abs_y = current_path_pts[1];
+							var abs_x = seglist.getItem(0).x;
+							var abs_y = seglist.getItem(0).y;
 							d_attr += ['L',abs_x,',',abs_y,'z'].join('');
 							newpath.setAttribute("d", d_attr);
 						} else if(len < 3) {
@@ -6986,7 +6987,7 @@ var pathActions = this.pathActions = function() {
 						
 						// this will signal to commit the path
 						element = newpath;
-						current_path_pts = [];
+						drawn_path = null;
 						started = false;
 						
 						if(subpath) {
@@ -7007,7 +7008,7 @@ var pathActions = this.pathActions = function() {
 							return false;
 						}
 					}
-					// else, create a new point, append to pts array, update path element
+					// else, create a new point, update path element
 					else {
 						// Checks if current target or parents are #svgcontent
 						if(!$.contains(container, getMouseTarget(evt))) {
@@ -7016,13 +7017,12 @@ var pathActions = this.pathActions = function() {
 							return false;
 						}
 
-						var lastx = current_path_pts[len-2], lasty = current_path_pts[len-1];
+						var num = drawn_path.pathSegList.numberOfItems;
+						var last = drawn_path.pathSegList.getItem(num -1);
+						var lastx = last.x, lasty = last.y;
 
 						if(evt.shiftKey) { var xya=Utils.snapToAngle(lastx,lasty,x,y); x=xya.x; y=xya.y; }
 
-						// we store absolute values in our path points array for easy checking above
-						current_path_pts.push(x);
-						current_path_pts.push(y);
 						d_attr += "L" + round(x) + "," + round(y) + " ";
 
 						newpath.setAttribute("d", d_attr);
@@ -7037,7 +7037,7 @@ var pathActions = this.pathActions = function() {
 							'x2': x,
 							'y2': y
 						});
-						var index = (current_path_pts.length/2 - 1);
+						var index = num;
 						if(subpath) index += path.segs.length;
 						addPointGrip(index, x, y);
 					}
@@ -7157,12 +7157,12 @@ var pathActions = this.pathActions = function() {
 		
 		clear: function(remove) {
 			current_path = null;
-			if (current_mode == "path" && current_path_pts.length > 0) {
+			if (current_mode == "path" && !drawn_path) {
 				var elem = getElem(getId());
 				$(getElem("path_stretch_line")).remove();
 				$(elem).remove();
 				$(getElem("pathpointgrip_container")).find('*').attr('display', 'none');
-				current_path_pts = [];
+				drawn_path = null;
 				started = false;
 			} else if (current_mode == "pathedit") {
 				this.toSelectMode();
@@ -11317,6 +11317,7 @@ function disableAdvancedTextEdit() {
 	rect.setAttribute('x',"1in");
 	svgcontent.appendChild(rect);
 	var bb = rect.getBBox();
+	rect.parentNode.removeChild(rect);
 	unit_types.em = bb.width;
 	unit_types.ex = bb.height;
 	var inch = bb.x;
