@@ -19,6 +19,8 @@ build/$(PACKAGE):
 	java -jar $(YUICOMPRESS)  build/$(PACKAGE)/spinbtn/JQuerySpinBtn.js                > build/$(PACKAGE)/spinbtn/JQuerySpinBtn.min.js
 #	java -jar $(CLOSURE) --js build/$(PACKAGE)/spinbtn/JQuerySpinBtn.js --js_output_file build/$(PACKAGE)/spinbtn/JQuerySpinBtn.min-closure.js
 # minify SVG-edit files
+	java -jar $(YUICOMPRESS)  build/$(PACKAGE)/svgutils.js                  > build/$(PACKAGE)/svgutils.min.js
+	java -jar $(YUICOMPRESS)  build/$(PACKAGE)/browsersupport.js            > build/$(PACKAGE)/browsersupport.min.js
 	java -jar $(YUICOMPRESS)  build/$(PACKAGE)/svg-editor.js                > build/$(PACKAGE)/svg-editor.min.js
 #	java -jar $(CLOSURE) --js build/$(PACKAGE)/svg-editor.js --js_output_file build/$(PACKAGE)/svg-editor.min-closure.js
 	java -jar $(YUICOMPRESS)  build/$(PACKAGE)/svgcanvas.js                 > build/$(PACKAGE)/svgcanvas.min.js
