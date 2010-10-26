@@ -89,10 +89,10 @@ if(window.opera) {
 // config - An object that contains configuration data
 $.SvgCanvas = function(container, config)
 {
-var isOpera = BrowserSupport.isOpera,
-	isWebkit = BrowserSupport.isWebkit,
-	isGecko = BrowserSupport.isGecko,
-	support = BrowserSupport,
+var support = svgedit.BrowserSupport,
+	isOpera = support.isOpera,
+	isWebkit = support.isWebkit,
+	isGecko = support.isGecko,
 
 	// this defines which elements and attributes that we support
 	svgWhiteList = {
@@ -196,7 +196,7 @@ if(config) {
 	
 // Static class for various utility functions
 // See svgutils.js.
-var Utils = this.Utils = SVGEditUtilities;
+var Utils = this.Utils = svgedit.Utilities;
 
 // Function: snapToGrid
 // round value to for snapping
@@ -8563,11 +8563,9 @@ this.importSvgString = function(xmlString) {
 		addToSelection([use_el]);
 		return true;
 
-		
 		// TODO: Find way to add this in a recalculateDimensions-parsable way
 // 				if (vb[0] != 0 || vb[1] != 0)
 // 					ts = "translate(" + (-vb[0]) + "," + (-vb[1]) + ") " + ts;
-
 
 	} catch(e) {
 		console.log(e);
@@ -11306,7 +11304,7 @@ function disableAdvancedTextEdit() {
 }
 
 (function() {
-	if (!BrowserSupport.textCharPos) {
+	if (!svgedit.BrowserSupport.textCharPos) {
 		disableAdvancedTextEdit();
 	}
 
