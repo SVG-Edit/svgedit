@@ -89,14 +89,10 @@ if(window.opera) {
 // config - An object that contains configuration data
 $.SvgCanvas = function(container, config)
 {
-var userAgent = navigator.userAgent, 
-	// Note: Browser sniffing should only be used if no other detection method is possible
-	isOpera = !!window.opera,
-	isWebkit = userAgent.indexOf("AppleWebKit") >= 0,
-	isGecko = userAgent.indexOf('Gecko/') >= 0,
-	
-	// Object populated later with booleans indicating support for features	
-	support = {},
+var isOpera = BrowserSupport.isOpera,
+	isWebkit = BrowserSupport.isWebkit,
+	isGecko = BrowserSupport.isGecko,
+	support = BrowserSupport,
 
 	// this defines which elements and attributes that we support
 	svgWhiteList = {
@@ -11309,54 +11305,11 @@ function disableAdvancedTextEdit() {
 	
 }
 
-// Test support for features/bugs
 (function() {
-	// segList functions (for FF1.5 and 2.0)
-	var path = document.createElementNS(svgns,'path');
-	path.setAttribute('d','M0,0 10,10');
-	var seglist = path.pathSegList;
-	var seg = path.createSVGPathSegLinetoAbs(5,5);
-	try {
-		seglist.replaceItem(seg, 0);
-		support.pathReplaceItem = true;
-	} catch(err) {
-		support.pathReplaceItem = false;
-	}
-	
-	try {
-		seglist.insertItemBefore(seg, 0);
-		support.pathInsertItemBefore = true;
-	} catch(err) {
-		support.pathInsertItemBefore = false;
-	}
-	
-	var text = document.createElementNS(svgns,'text');
-	text.textContent = 'a';
-	svgcontent.appendChild(text);
-	
-	// text character positioning
-	try {
-		text.getStartPositionOfChar(0);
-		support.textCharPos = true;
-	} catch(err) {
-		support.textCharPos = false;
+	if (!BrowserSupport.textCharPos) {
 		disableAdvancedTextEdit();
 	}
-	svgcontent.removeChild(text);
-	
-	// TODO: Find better way to check support for this
-	support.editableText = isOpera;
-	
-	// Correct decimals on clone attributes (Opera < 10.5/win/non-en)
-	var rect = document.createElementNS(svgns,'rect');
-	rect.setAttribute('x',.1);
-	var crect = rect.cloneNode(false);
-	support.goodDecimals = (crect.getAttribute('x').indexOf(',') == -1);
-	if(!support.goodDecimals) {
-		$.alert("NOTE: This version of Opera is known to contain bugs in SVG-edit.\n\
-		Please upgrade to the <a href='http://opera.com'>latest version</a> in which the problems have been fixed.");
-	}
-	
+
 	// Get correct em/ex values
 	var rect = document.createElementNS(svgns,'rect');
 	rect.setAttribute('width',"1em");
@@ -11373,11 +11326,7 @@ function disableAdvancedTextEdit() {
 	unit_types.pt = inch / 72;
 	unit_types.pc = inch / 6;
 	unit_types['%'] = 0;
-	
-	rect.setAttribute('style','vector-effect:non-scaling-stroke');
-	support.nonScalingStroke = (rect.style.vectorEffect === 'non-scaling-stroke');
 
-	svgcontent.removeChild(rect);
-}());
+})();
 
 }
