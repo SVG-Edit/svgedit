@@ -7,15 +7,22 @@
  * Copyright(c) 2010 Jeff Schiller
  */
 
-// NOTE: Requires jQuery to be loaded.
+// Dependencies:
+// 1) jQuery
 
-SVGEditUtilities = {
+(function() {
+
+if (window.svgedit == undefined) {
+	window.svgedit = {};
+}
+
+svgedit.Utilities = {
 };
 
 // String used to encode base64.
-SVGEditUtilities._keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+svgedit.Utilities._keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
-// Function: SVGEditUtilities.toXml
+// Function: svgedit.Utilities.toXml
 // Converts characters in a string to XML-friendly entities.
 //
 // Example: "&" becomes "&amp;"
@@ -25,11 +32,11 @@ SVGEditUtilities._keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 //
 // Returns:
 // The converted string
-SVGEditUtilities.toXml = function(str) {
+svgedit.Utilities.toXml = function(str) {
 	return $('<p/>').text(str).html();
 };
 	
-// Function: SVGEditUtilities.fromXml
+// Function: svgedit.Utilities.fromXml
 // Converts XML entities in a string to single characters. 
 // Example: "&amp;" becomes "&"
 //
@@ -38,7 +45,7 @@ SVGEditUtilities.toXml = function(str) {
 //
 // Returns: 
 // The converted string
-SVGEditUtilities.fromXml = function(str) {
+svgedit.Utilities.fromXml = function(str) {
 	return $('<p/>').html(str).text();
 };
 
@@ -52,12 +59,12 @@ SVGEditUtilities.fromXml = function(str) {
 
 // Function: Utils.encode64
 // Converts a string to base64
-SVGEditUtilities.encode64 = function(input) {
+svgedit.Utilities.encode64 = function(input) {
 	// base64 strings are 4/3 larger than the original string
 //	input = Utils.encodeUTF8(input); // convert non-ASCII characters
 	input = Utils.convertToXMLReferences(input);
 	if(window.btoa) return window.btoa(input); // Use native if available
-	var _keyStr = SVGEditUtilities._keyStr;
+	var _keyStr = svgedit.Utilities._keyStr;
 	var output = new Array( Math.floor( (input.length + 2) / 3 ) * 4 );
 	var chr1, chr2, chr3;
 	var enc1, enc2, enc3, enc4;
@@ -90,7 +97,7 @@ SVGEditUtilities.encode64 = function(input) {
 
 // Function: Utils.decode64
 // Converts a string from base64
-SVGEditUtilities.decode64 = function(input) {
+svgedit.Utilities.decode64 = function(input) {
 	if(window.atob) return window.atob(input);
 	var output = "";
 	var chr1, chr2, chr3 = "";
@@ -150,9 +157,9 @@ SVGEditUtilities.decode64 = function(input) {
 // 			return output;
 // 		},
 
-// Function: Utils.convertToXMLReferences 
+// Function: svgedit.Utilities.convertToXMLReferences 
 // Converts a string to use XML references
-SVGEditUtilities.convertToXMLReferences = function(input) {
+svgedit.Utilities.convertToXMLReferences = function(input) {
 	var output = '';
 	for (var n = 0; n < input.length; n++){
 		var c = input.charCodeAt(n);
@@ -175,7 +182,7 @@ SVGEditUtilities.convertToXMLReferences = function(input) {
 //
 // Returns:
 // Boolean that's true if rectangles intersect
-SVGEditUtilities.rectsIntersect = function(r1, r2) {
+svgedit.Utilities.rectsIntersect = function(r1, r2) {
 	return r2.x < (r1.x+r1.width) && 
 		(r2.x+r2.width) > r1.x &&
 		r2.y < (r1.y+r1.height) &&
@@ -197,7 +204,7 @@ SVGEditUtilities.rectsIntersect = function(r1, r2) {
 // x - The angle-snapped x value
 // y - The angle-snapped y value
 // snapangle - The angle at which to snap
-SVGEditUtilities.snapToAngle = function(x1,y1,x2,y2) {
+svgedit.Utilities.snapToAngle = function(x1,y1,x2,y2) {
 	var snap = Math.PI/4; // 45 degrees
 	var dx = x2 - x1;
 	var dy = y2 - y1;
@@ -213,7 +220,7 @@ SVGEditUtilities.snapToAngle = function(x1,y1,x2,y2) {
 // Function: text2xml
 // Cross-browser compatible method of converting a string to an XML tree
 // found this function here: http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f
-SVGEditUtilities.text2xml = function(sXML) {
+svgedit.Utilities.text2xml = function(sXML) {
 	if(sXML.indexOf('<svg:svg') >= 0) {
 		sXML = sXML.replace(/<(\/?)svg:/g, '<$1').replace('xmlns:svg', 'xmlns');
 	}
@@ -241,7 +248,7 @@ SVGEditUtilities.text2xml = function(sXML) {
 // 
 // Returns:
 // An object with properties names x, y, width, height.
-SVGEditUtilities.bboxToObj = function(bbox) {
+svgedit.Utilities.bboxToObj = function(bbox) {
 	return {
 		x: bbox.x,
 		y: bbox.y,
@@ -249,3 +256,5 @@ SVGEditUtilities.bboxToObj = function(bbox) {
 		height: bbox.height
 	}
 };
+
+})();

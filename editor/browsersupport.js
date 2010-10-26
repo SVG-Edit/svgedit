@@ -12,15 +12,19 @@
 
 (function() {
 
-BrowserSupport = {};
+if (window.svgedit == undefined) {
+	window.svgedit = {};
+}
+
+svgedit.BrowserSupport = {};
 
 var svgns = 'http://www.w3.org/2000/svg';
 var userAgent = navigator.userAgent;
 
 // Note: Browser sniffing should only be used if no other detection method is possible
-BrowserSupport.isOpera = !!window.opera;
-BrowserSupport.isWebkit = userAgent.indexOf("AppleWebKit") >= 0;
-BrowserSupport.isGecko = userAgent.indexOf('Gecko/') >= 0;
+svgedit.BrowserSupport.isOpera = !!window.opera;
+svgedit.BrowserSupport.isWebkit = userAgent.indexOf("AppleWebKit") >= 0;
+svgedit.BrowserSupport.isGecko = userAgent.indexOf('Gecko/') >= 0;
 
 // segList functions (for FF1.5 and 2.0)
 function getPathReplaceItem() {
@@ -65,7 +69,7 @@ function getTextCharPos() {
 
 function getEditableText() {
 	// TODO: Find better way to check support for this
-	return BrowserSupport.isOpera;
+	return svgedit.BrowserSupport.isOpera;
 }
 
 function getGoodDecimals() {
@@ -87,11 +91,11 @@ function getNonScalingStroke() {
 	return rect.style.vectorEffect === 'non-scaling-stroke';
 }
 
-BrowserSupport.pathReplaceItem = getPathReplaceItem();
-BrowserSupport.pathInsertItemBefore = getPathInsertItemBefore();
-BrowserSupport.textCharPos = getTextCharPos();
-BrowserSupport.editableText = getEditableText();
-BrowserSupport.goodDecimals = getGoodDecimals();
-BrowserSupport.nonScalingStroke = getNonScalingStroke();
+svgedit.BrowserSupport.pathReplaceItem = getPathReplaceItem();
+svgedit.BrowserSupport.pathInsertItemBefore = getPathInsertItemBefore();
+svgedit.BrowserSupport.textCharPos = getTextCharPos();
+svgedit.BrowserSupport.editableText = getEditableText();
+svgedit.BrowserSupport.goodDecimals = getGoodDecimals();
+svgedit.BrowserSupport.nonScalingStroke = getNonScalingStroke();
 
 })();
