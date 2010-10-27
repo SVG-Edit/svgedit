@@ -1797,10 +1797,6 @@
 				} else if(curConfig.baseUnit !== 'px') {
 					// Convert unitless value to one with given unit
 				
-// 					val = svgCanvas.convertUnit(bv, "px");
-// 					selectedElement[attr].baseVal.newValueSpecifiedUnits();
-// 					this.value = val;
-// 					selectedElement[attr].baseVal
 					var unitData = svgCanvas.getUnits();
 
 					if(selectedElement[attr] || svgCanvas.getMode() === "pathedit" || attr === "x" || attr === "y") {
@@ -2605,6 +2601,11 @@
 				
 				// update resolution option with actual resolution
 				var res = svgCanvas.getResolution();
+				if(curConfig.baseUnit !== "px") {
+					res.w = svgCanvas.convertUnit(res.w) + curConfig.baseUnit;
+					res.h = svgCanvas.convertUnit(res.h) + curConfig.baseUnit;
+				}
+				
 				$('#canvas_width').val(res.w);
 				$('#canvas_height').val(res.h);
 				$('#canvas_title').val(svgCanvas.getDocumentTitle());
