@@ -9907,8 +9907,14 @@ this.getBlur = function(elem) {
 			changeSelectedAttributeNoUndo("filter", "");
 			filterHidden = true;
 		} else {
+			var elem = selectedElements[0];
 			if(filterHidden) {
-				changeSelectedAttributeNoUndo("filter", 'url(#' + selectedElements[0].id + '_blur)');
+				changeSelectedAttributeNoUndo("filter", 'url(#' + elem.id + '_blur)');
+			}
+			if(isWebkit) {
+				console.log('e', elem);
+				elem.removeAttribute('filter');
+				elem.setAttribute('filter', 'url(#' + elem.id + '_blur)');
 			}
 			changeSelectedAttributeNoUndo("stdDeviation", val, [filter.firstChild]);
 			canvas.setBlurOffsets(filter, val);
@@ -9940,10 +9946,13 @@ this.getBlur = function(elem) {
 				height: '200%',
 			}, 100);
 		} else {
-			filter.removeAttribute('x');
-			filter.removeAttribute('y');
-			filter.removeAttribute('width');
-			filter.removeAttribute('height');
+			// Removing these attributes hides text in Chrome (see Issue 579)
+			if(!isWebkit) {
+				filter.removeAttribute('x');
+				filter.removeAttribute('y');
+				filter.removeAttribute('width');
+				filter.removeAttribute('height');
+			}
 		}
 	}
 
