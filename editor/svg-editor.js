@@ -489,7 +489,7 @@
 			// In the future we may want to add additional types of dialog boxes, since 
 			// they should be easy to handle this way.
 			(function() {
-				$('#dialog_container').draggable({cancel:'#dialog_content, #dialog_buttons *'});
+				$('#dialog_container').draggable({cancel:'#dialog_content, #dialog_buttons *', containment: 'window'});
 				var box = $('#dialog_box'), btn_holder = $('#dialog_buttons');
 				
 				var dbox = function(type, msg, callback, defText) {
@@ -2590,7 +2590,7 @@
 				$('#svg_source_textarea').focus();
 			};
 			
-			$('#svg_docprops_container, #svg_prefs_container').draggable({cancel:'button,fieldset'});
+			$('#svg_docprops_container, #svg_prefs_container').draggable({cancel:'button,fieldset', containment: 'window'});
 			
 			var showDocProperties = function(){
 				if (docprops) return;
@@ -3171,7 +3171,7 @@
 				var was_none = false;
 				var pos = elem.position();
 				$("#color_picker")
-					.draggable({cancel:'.jGraduate_tabs,.jGraduate_colPick,.jGraduate_lgPick,.jGraduate_rgPick'})
+					.draggable({cancel:'.jGraduate_tabs,.jGraduate_colPick,.jGraduate_lgPick,.jGraduate_rgPick', containment: 'window'})
 					.css(curConfig.colorPickerCSS || {'left': pos.left, 'bottom': 50 - pos.top})
 					.jGraduate(
 					{ 
