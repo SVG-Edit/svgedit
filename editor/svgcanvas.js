@@ -7022,6 +7022,9 @@ var pathActions = this.pathActions = function() {
 						if(last.pathSegType === 6) {
 							last_x += (last_x - last.x2);
 							last_y += (last_y - last.y2);
+						} else if(firstCtrl) {
+							last_x = firstCtrl[0];
+							last_y = firstCtrl[1];
 						}
 						replacePathSeg(6, index, [pt_x, pt_y, last_x, last_y, alt_x, alt_y], drawn_path);
 					}
@@ -7845,6 +7848,11 @@ var svgToString = this.svgToString = function(elem, indent) {
 // 				res.w += unit;
 // 				res.h += unit;
 // 			}
+			
+			if(unit !== "px") {
+				res.w = canvas.convertUnit(res.w, unit) + unit;
+				res.h = canvas.convertUnit(res.h, unit) + unit;
+			}
 			
 			out.push(' width="' + res.w + '" height="' + res.h + '"' + vb + ' xmlns="'+svgns+'"');
 			
@@ -9222,10 +9230,13 @@ this.getSelectedElems = function() { return selectedElements; };
 var getResolution = this.getResolution = function() {
 // 		var vb = svgcontent.getAttribute("viewBox").split(' ');
 // 		return {'w':vb[2], 'h':vb[3], 'zoom': current_zoom};
-		
+	
+	var width = svgcontent.getAttribute("width")/current_zoom;
+	var height = svgcontent.getAttribute("height")/current_zoom;
+	
 	return {
-		'w':svgcontent.getAttribute("width")/current_zoom,
-		'h':svgcontent.getAttribute("height")/current_zoom,
+		'w': width,
+		'h': height,
 		'zoom': current_zoom
 	};
 };
@@ -9413,11 +9424,13 @@ this.setResolution = function(x, y) {
 		if(!batchCmd) {
 			batchCmd = new BatchCommand("Change Image Dimensions");
 		}
+
 		x = convertToNum('width', x);
 		y = convertToNum('height', y);
 		
 		svgcontent.setAttribute('width', x);
 		svgcontent.setAttribute('height', y);
+		
 		this.contentW = x;
 		this.contentH = y;
 		batchCmd.addSubCommand(new ChangeElementCommand(svgcontent, {"width":w, "height":h}));
