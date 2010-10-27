@@ -5756,6 +5756,7 @@ var pathActions = this.pathActions = function() {
 	var pathData = {};
 	var current_path;
 	var path;
+	var newPoint, firstCtrl;
 	var segData = {
 		2: ['x','y'],
 		4: ['x','y'],
@@ -5856,6 +5857,26 @@ var pathActions = this.pathActions = function() {
 		return pointGrip;
 	};
 	
+	var addCtrlGrip = function(id) {
+		var pointGrip = getElem("ctrlpointgrip_"+id);
+		if(pointGrip) return pointGrip;
+		
+		pointGrip = document.createElementNS(svgns, "circle");
+		assignAttributes(pointGrip, {
+			'id': "ctrlpointgrip_" + id,
+			'display': "none",
+			'r': 4,
+			'fill': "#0FF",
+			'stroke': "#55F",
+			'stroke-width': 1,
+			'cursor': 'move',
+			'style': 'pointer-events:all',
+			'xlink:title': uiStrings.pathCtrlPtTooltip
+		});
+		getGripContainer().appendChild(pointGrip);
+		return pointGrip;
+	}
+	
 	var getPointGrip = function(seg, update) {
 		var index = seg.index;
 		var pointGrip = addPointGrip(index);
@@ -5914,6 +5935,21 @@ var pathActions = this.pathActions = function() {
 		return segLine;
 	}
 	
+	var getCtrlLine = function(id) {
+		var ctrlLine = getElem("ctrlLine_"+id);
+		if(ctrlLine) return ctrlLine;
+		
+		ctrlLine = document.createElementNS(svgns, "line");
+		assignAttributes(ctrlLine, {
+			'id': "ctrlLine_"+id,
+			'stroke': "#555",
+			'stroke-width': 1,
+			"style": "pointer-events:none"
+		});
+		getGripContainer().appendChild(ctrlLine);
+		return ctrlLine;
+	}
+	
 	var getControlPoints = function(seg) {
 		var item = seg.item;
 		var index = seg.index;
@@ -5928,18 +5964,8 @@ var pathActions = this.pathActions = function() {
 		
 		for(var i=1; i<3; i++) {
 			var id = index + 'c' + i;
-			var ctrlLine = cpt['c' + i + '_line'] = getElem("ctrlLine_"+id);
 			
-			if(!ctrlLine) {
-				ctrlLine = document.createElementNS(svgns, "line");
-				assignAttributes(ctrlLine, {
-					'id': "ctrlLine_"+id,
-					'stroke': "#555",
-					'stroke-width': 1,
-					"style": "pointer-events:none"
-				});
-				pointGripContainer.appendChild(ctrlLine);
-			}
+			var ctrlLine = cpt['c' + i + '_line'] = getCtrlLine(id);
 			
 			var pt = getGripPt(seg, {x:item['x' + i], y:item['y' + i]});
 			var gpt = getGripPt(seg, {x:seg_items[i-1].x, y:seg_items[i-1].y});
@@ -5954,23 +5980,8 @@ var pathActions = this.pathActions = function() {
 			
 			cpt['c' + i + '_line'] = ctrlLine;
 				
-			var pointGrip = cpt['c' + i] = getElem("ctrlpointgrip_"+id);
 			// create it
-			if (!pointGrip) {
-				pointGrip = document.createElementNS(svgns, "circle");
-				assignAttributes(pointGrip, {
-					'id': "ctrlpointgrip_" + id,
-					'display': "none",
-					'r': 4,
-					'fill': "#0FF",
-					'stroke': "#55F",
-					'stroke-width': 1,
-					'cursor': 'move',
-					'style': 'pointer-events:all',
-					'xlink:title': uiStrings.pathCtrlPtTooltip
-				});
-				pointGripContainer.appendChild(pointGrip);
-			}
+			pointGrip = cpt['c' + i] = addCtrlGrip(id);
 			
 			assignAttributes(pointGrip, {
 				'cx': pt.x,
@@ -6121,6 +6132,7 @@ var pathActions = this.pathActions = function() {
 				if(!seg) return;
 				pt = seg.item;
 			}
+
 			var item = seg.item;
 			
 			item['x' + anum] = pt.x + (pt.x - s.item['x' + num]);
@@ -6537,9 +6549,8 @@ var pathActions = this.pathActions = function() {
 	
 	var pathFuncs = [],
 		current_path = null,
-// 		current_path_pts = [],
 		drawn_path = null,
-		link_control_pts = false,
+		link_control_pts = true,
 		hasMoved = false;
 	
 	// This function converts a polyline (created by the fh_path tool) into
@@ -6729,7 +6740,185 @@ var pathActions = this.pathActions = function() {
 			return path;
 		},
 		mouseDown: function(evt, mouse_target, start_x, start_y) {
-			if(current_mode == "path") return;
+			if(current_mode === "path") {
+				mouse_x = start_x;
+				mouse_y = start_y;
+				
+				var x = mouse_x/current_zoom,
+					y = mouse_y/current_zoom,
+					stretchy = getElem("path_stretch_line");
+				newPoint = [x, y];	
+				
+				if(curConfig.gridSnapping){
+					x = snapToGrid(x);
+					y = snapToGrid(y);
+					mouse_x = snapToGrid(mouse_x);
+					mouse_y = snapToGrid(mouse_y);
+				}
+
+				if (!stretchy) {
+					stretchy = document.createElementNS(svgns, "path");
+					assignAttributes(stretchy, {
+						'id': "path_stretch_line",
+						'stroke': "#22C",
+						'stroke-width': "0.5",
+						'fill': 'none'
+					});
+					stretchy = getElem("selectorParentGroup").appendChild(stretchy);
+				}
+				stretchy.setAttribute("display", "inline");
+				
+				var keep = null;
+				
+				// if pts array is empty, create path element with M at current point
+				if (!drawn_path) {
+					d_attr = "M" + x + "," + y + " ";
+					drawn_path = addSvgElementFromJson({
+						"element": "path",
+						"curStyles": true,
+						"attr": {
+							"d": d_attr,
+							"id": getNextId(),
+							"opacity": cur_shape.opacity / 2,
+
+						}
+					});
+					// set stretchy line to first point
+					stretchy.setAttribute('d', ['M', mouse_x, mouse_y, mouse_x, mouse_y].join(' '));
+					var index = subpath ? path.segs.length : 0;
+					addPointGrip(index, mouse_x, mouse_y);
+				}
+				else {
+					// determine if we clicked on an existing point
+					var seglist = drawn_path.pathSegList;
+					var i = seglist.numberOfItems;
+					var FUZZ = 6/current_zoom;
+					var clickOnPoint = false;
+					while(i) {
+						i --;
+						var item = seglist.getItem(i);
+						var px = item.x, py = item.y;
+						// found a matching point
+						if ( x >= (px-FUZZ) && x <= (px+FUZZ) && y >= (py-FUZZ) && y <= (py+FUZZ) ) {
+							clickOnPoint = true;
+							break;
+						}
+					}
+					
+					// get path element that we are in the process of creating
+					var id = getId();
+				
+					// Remove previous path object if previously created
+					if(id in pathData) delete pathData[id];
+					
+					var newpath = getElem(id);
+					
+					var len = seglist.numberOfItems;
+					// if we clicked on an existing point, then we are done this path, commit it
+					// (i,i+1) are the x,y that were clicked on
+					if (clickOnPoint) {
+						// if clicked on any other point but the first OR
+						// the first point was clicked on and there are less than 3 points
+						// then leave the path open
+						// otherwise, close the path
+						if (i <= 1 && len >= 2) {
+							// Create end segment
+							var abs_x = seglist.getItem(0).x;
+							var abs_y = seglist.getItem(0).y;
+							
+
+							var s_seg = stretchy.pathSegList.getItem(1);
+							if(s_seg.pathSegType === 4) {
+								var newseg = drawn_path.createSVGPathSegLinetoAbs(abs_x, abs_y);
+							} else {
+								var newseg = drawn_path.createSVGPathSegCurvetoCubicAbs(
+									abs_x,
+									abs_y,
+									s_seg.x1 / current_zoom,
+									s_seg.y1 / current_zoom,
+									abs_x,
+									abs_y
+								);
+							}
+							
+							var endseg = drawn_path.createSVGPathSegClosePath();
+							seglist.appendItem(newseg);
+							seglist.appendItem(endseg);
+						} else if(len < 3) {
+							keep = false;
+							return keep;
+						}
+						$(stretchy).remove();
+						
+						// this will signal to commit the path
+						element = newpath;
+						drawn_path = null;
+						started = false;
+						
+						if(subpath) {
+							if(path.matrix) {
+								remapElement(newpath, {}, path.matrix.inverse());
+							}
+						
+							var new_d = newpath.getAttribute("d");
+							var orig_d = $(path.elem).attr("d");
+							$(path.elem).attr("d", orig_d + new_d);
+							$(newpath).remove();
+							if(path.matrix) {
+								recalcRotatedPath();
+							}
+							path.init();
+							pathActions.toEditMode(path.elem);
+							path.selectPt();
+							return false;
+						}
+					}
+					// else, create a new point, update path element
+					else {
+						// Checks if current target or parents are #svgcontent
+						if(!$.contains(container, getMouseTarget(evt))) {
+							// Clicked outside canvas, so don't make point
+							console.log("Clicked outside canvas");
+							return false;
+						}
+
+						var num = drawn_path.pathSegList.numberOfItems;
+						var last = drawn_path.pathSegList.getItem(num -1);
+						var lastx = last.x, lasty = last.y;
+
+						if(evt.shiftKey) { var xya=Utils.snapToAngle(lastx,lasty,x,y); x=xya.x; y=xya.y; }
+						
+						// Use the segment defined by stretchy
+						var s_seg = stretchy.pathSegList.getItem(1);
+						if(s_seg.pathSegType === 4) {
+							var newseg = drawn_path.createSVGPathSegLinetoAbs(round(x), round(y));
+						} else {
+							var newseg = drawn_path.createSVGPathSegCurvetoCubicAbs(
+								round(x),
+								round(y),
+								s_seg.x1 / current_zoom,
+								s_seg.y1 / current_zoom,
+								s_seg.x2 / current_zoom,
+								s_seg.y2 / current_zoom
+							);
+						}
+						
+						drawn_path.pathSegList.appendItem(newseg);
+						
+						x *= current_zoom;
+						y *= current_zoom;
+						
+						// set stretchy line to latest point
+						stretchy.setAttribute('d', ['M', x, y, x, y].join(' '));
+						var index = num;
+						if(subpath) index += path.segs.length;
+						addPointGrip(index, x, y);
+					}
+// 					keep = true;
+				}
+				
+				return;
+			}
 			
 			// TODO: Make sure current_path isn't null at this point
 			if(!path) return;
@@ -6780,11 +6969,76 @@ var pathActions = this.pathActions = function() {
 		},
 		mouseMove: function(mouse_x, mouse_y) {
 			hasMoved = true;
-			if(current_mode == "path") {
-				var line = getElem("path_stretch_line");
-				if (line) {
-					line.setAttribute("x2", mouse_x);
-					line.setAttribute("y2", mouse_y);
+			if(current_mode === "path") {
+				if(!drawn_path) return;
+				var seglist = drawn_path.pathSegList;
+				var index = seglist.numberOfItems - 1;
+
+				if(newPoint) {
+					// First point
+// 					if(!index) return;
+
+					// Set control points
+					var pointGrip1 = addCtrlGrip('1c1');
+					var pointGrip2 = addCtrlGrip('0c2');
+					
+					// dragging pointGrip1
+					pointGrip1.setAttribute('cx', mouse_x);
+					pointGrip1.setAttribute('cy', mouse_y);
+					pointGrip1.setAttribute('display', 'inline');
+
+					var pt_x = newPoint[0];
+					var pt_y = newPoint[1];
+					
+					// set curve
+					var seg = seglist.getItem(index);
+					var cur_x = mouse_x / current_zoom;
+					var cur_y = mouse_y / current_zoom;
+					var alt_x = (pt_x + (pt_x - cur_x));
+					var alt_y = (pt_y + (pt_y - cur_y));
+					
+					pointGrip2.setAttribute('cx', alt_x * current_zoom);
+					pointGrip2.setAttribute('cy', alt_y * current_zoom);
+					pointGrip2.setAttribute('display', 'inline');
+					
+					var ctrlLine = getCtrlLine(1);
+					assignAttributes(ctrlLine, {
+						x1: mouse_x,
+						y1: mouse_y,
+						x2: alt_x * current_zoom,
+						y2: alt_y * current_zoom,
+						display: 'inline'
+					});
+
+					if(index === 0) {
+						firstCtrl = [mouse_x, mouse_y];
+					} else {
+						var last_x, last_y;
+						
+						var last = seglist.getItem(index - 1);
+						var last_x = last.x;
+						var last_y = last.y
+	
+						if(last.pathSegType === 6) {
+							last_x += (last_x - last.x2);
+							last_y += (last_y - last.y2);
+						}
+						replacePathSeg(6, index, [pt_x, pt_y, last_x, last_y, alt_x, alt_y], drawn_path);
+					}
+				} else {
+					var stretchy = getElem("path_stretch_line");
+					if (stretchy) {
+						var prev = seglist.getItem(index);
+						if(prev.pathSegType === 6) {
+							var prev_x = prev.x + (prev.x - prev.x2);
+							var prev_y = prev.y + (prev.y - prev.y2);
+							replacePathSeg(6, 1, [mouse_x, mouse_y, prev_x * current_zoom, prev_y * current_zoom, mouse_x, mouse_y], stretchy);							
+						} else if(firstCtrl) {
+							replacePathSeg(6, 1, [mouse_x, mouse_y, firstCtrl[0], firstCtrl[1], mouse_x, mouse_y], stretchy);
+						} else {
+							replacePathSeg(4, 1, [mouse_x, mouse_y], stretchy);
+						}
+					}
 				}
 				return;
 			}
@@ -6836,159 +7090,16 @@ var pathActions = this.pathActions = function() {
 		mouseUp: function(evt, element, mouse_x, mouse_y) {
 			
 			// Create mode
-			if(current_mode == "path") {
-				var x = mouse_x/current_zoom,
-					y = mouse_y/current_zoom,
-					stretchy = getElem("path_stretch_line");
-				
-				if(curConfig.gridSnapping){
-					x = snapToGrid(x);
-					y = snapToGrid(y);
-					mouse_x = snapToGrid(mouse_x);
-					mouse_y = snapToGrid(mouse_y);
+			if(current_mode === "path") {
+				newPoint = null;
+				if(!drawn_path) {
+					element = getElem(getId());
+					started = false;
+					firstCtrl = null;
 				}
 
-				if (!stretchy) {
-					stretchy = document.createElementNS(svgns, "line");
-					assignAttributes(stretchy, {
-						'id': "path_stretch_line",
-						'stroke': "#22C",
-						'stroke-width': "0.5"
-					});
-					stretchy = getElem("selectorParentGroup").appendChild(stretchy);
-				}
-				stretchy.setAttribute("display", "inline");
-				
-				var keep = null;
-				
-				// if pts array is empty, create path element with M at current point
-				if (!drawn_path) {
-					d_attr = "M" + x + "," + y + " ";
-					drawn_path = addSvgElementFromJson({
-						"element": "path",
-						"curStyles": true,
-						"attr": {
-							"d": d_attr,
-							"id": getNextId(),
-							"opacity": cur_shape.opacity / 2,
-
-						}
-					});
-					// set stretchy line to first point
-					assignAttributes(stretchy, {
-						'x1': mouse_x,
-						'y1': mouse_y,
-						'x2': mouse_x,
-						'y2': mouse_y
-					});
-					var index = subpath ? path.segs.length : 0;
-					addPointGrip(index, mouse_x, mouse_y);
-				}
-				else {
-					// determine if we clicked on an existing point
-					var seglist = drawn_path.pathSegList;
-					var i = seglist.numberOfItems;
-					var FUZZ = 6/current_zoom;
-					var clickOnPoint = false;
-					while(i) {
-						i --;
-						var item = seglist.getItem(i);
-						var px = item.x, py = item.y;
-						// found a matching point
-						if ( x >= (px-FUZZ) && x <= (px+FUZZ) && y >= (py-FUZZ) && y <= (py+FUZZ) ) {
-							clickOnPoint = true;
-							break;
-						}
-					}
-					
-					// get path element that we are in the process of creating
-					var id = getId();
-				
-					// Remove previous path object if previously created
-					if(id in pathData) delete pathData[id];
-					
-					var newpath = getElem(id);
-					
-					var len = seglist.numberOfItems;
-					// if we clicked on an existing point, then we are done this path, commit it
-					// (i,i+1) are the x,y that were clicked on
-					if (clickOnPoint) {
-						// if clicked on any other point but the first OR
-						// the first point was clicked on and there are less than 3 points
-						// then leave the path open
-						// otherwise, close the path
-						if (i == 0 && len >= 3) {
-							// Create end segment
-							var abs_x = seglist.getItem(0).x;
-							var abs_y = seglist.getItem(0).y;
-							d_attr += ['L',abs_x,',',abs_y,'z'].join('');
-							newpath.setAttribute("d", d_attr);
-						} else if(len < 3) {
-							keep = false;
-							return keep;
-						}
-						$(stretchy).remove();
-						
-						// this will signal to commit the path
-						element = newpath;
-						drawn_path = null;
-						started = false;
-						
-						if(subpath) {
-							if(path.matrix) {
-								remapElement(newpath, {}, path.matrix.inverse());
-							}
-						
-							var new_d = newpath.getAttribute("d");
-							var orig_d = $(path.elem).attr("d");
-							$(path.elem).attr("d", orig_d + new_d);
-							$(newpath).remove();
-							if(path.matrix) {
-								recalcRotatedPath();
-							}
-							path.init();
-							pathActions.toEditMode(path.elem);
-							path.selectPt();
-							return false;
-						}
-					}
-					// else, create a new point, update path element
-					else {
-						// Checks if current target or parents are #svgcontent
-						if(!$.contains(container, getMouseTarget(evt))) {
-							// Clicked outside canvas, so don't make point
-							console.log("Clicked outside canvas");
-							return false;
-						}
-
-						var num = drawn_path.pathSegList.numberOfItems;
-						var last = drawn_path.pathSegList.getItem(num -1);
-						var lastx = last.x, lasty = last.y;
-
-						if(evt.shiftKey) { var xya=Utils.snapToAngle(lastx,lasty,x,y); x=xya.x; y=xya.y; }
-
-						d_attr += "L" + round(x) + "," + round(y) + " ";
-
-						newpath.setAttribute("d", d_attr);
-						
-						x *= current_zoom;
-						y *= current_zoom;
-						
-						// set stretchy line to latest point
-						assignAttributes(stretchy, {
-							'x1': x,
-							'y1': y,
-							'x2': x,
-							'y2': y
-						});
-						var index = num;
-						if(subpath) index += path.segs.length;
-						addPointGrip(index, x, y);
-					}
-					keep = true;
-				}
 				return {
-					keep: keep,
+					keep: true,
 					element: element
 				}
 			}
@@ -7101,12 +7212,12 @@ var pathActions = this.pathActions = function() {
 		
 		clear: function(remove) {
 			current_path = null;
-			if (current_mode == "path" && !drawn_path) {
+			if (drawn_path) {
 				var elem = getElem(getId());
 				$(getElem("path_stretch_line")).remove();
 				$(elem).remove();
 				$(getElem("pathpointgrip_container")).find('*').attr('display', 'none');
-				drawn_path = null;
+				drawn_path = firstCtrl = null;
 				started = false;
 			} else if (current_mode == "pathedit") {
 				this.toSelectMode();
