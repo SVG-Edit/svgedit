@@ -57,12 +57,12 @@ svgedit.Utilities.fromXml = function(str) {
 // schiller: Removed string concatenation in favour of Array.join() optimization,
 //           also precalculate the size of the array needed.
 
-// Function: Utils.encode64
+// Function: svgedit.Utilities.encode64
 // Converts a string to base64
 svgedit.Utilities.encode64 = function(input) {
 	// base64 strings are 4/3 larger than the original string
-//	input = Utils.encodeUTF8(input); // convert non-ASCII characters
-	input = Utils.convertToXMLReferences(input);
+//	input = svgedit.Utilities.encodeUTF8(input); // convert non-ASCII characters
+	input = svgedit.Utilities.convertToXMLReferences(input);
 	if(window.btoa) return window.btoa(input); // Use native if available
 	var _keyStr = svgedit.Utilities._keyStr;
 	var output = new Array( Math.floor( (input.length + 2) / 3 ) * 4 );
@@ -95,7 +95,7 @@ svgedit.Utilities.encode64 = function(input) {
 	return output.join('');
 };
 
-// Function: Utils.decode64
+// Function: svgedit.Utilities.decode64
 // Converts a string from base64
 svgedit.Utilities.decode64 = function(input) {
 	if(window.atob) return window.atob(input);
