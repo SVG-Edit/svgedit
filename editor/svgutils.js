@@ -16,8 +16,9 @@ if (!window.svgedit) {
 	window.svgedit = {};
 }
 
-svgedit.Utilities = {
-};
+if (!svgedit.Utilities) {
+	svgedit.Utilities = {};
+}
 
 // String used to encode base64.
 svgedit.Utilities._keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
