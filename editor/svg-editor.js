@@ -3198,7 +3198,7 @@
 				var buttonsNeedingStroke = [ '#tool_fhpath', '#tool_line' ];
 				var buttonsNeedingFillAndStroke = [ '#tools_rect .tool_button', '#tools_ellipse .tool_button', '#tool_text', '#tool_path'];
 				if (bNoStroke) {
-					for (index in buttonsNeedingStroke) {
+					for (var index in buttonsNeedingStroke) {
 						var button = buttonsNeedingStroke[index];
 						if ($(button).hasClass('tool_button_current')) {
 							clickSelect();
@@ -3207,14 +3207,14 @@
 					}
 				}
 				else {
-					for (index in buttonsNeedingStroke) {
+					for (var index in buttonsNeedingStroke) {
 						var button = buttonsNeedingStroke[index];
 						$(button).removeClass('disabled');
 					}
 				}
 		
 				if (bNoStroke && bNoFill) {
-					for (index in buttonsNeedingFillAndStroke) {
+					for (var index in buttonsNeedingFillAndStroke) {
 						var button = buttonsNeedingFillAndStroke[index];
 						if ($(button).hasClass('tool_button_current')) {
 							clickSelect();
@@ -3223,7 +3223,7 @@
 					}
 				}
 				else {
-					for (index in buttonsNeedingFillAndStroke) {
+					for (var index in buttonsNeedingFillAndStroke) {
 						var button = buttonsNeedingFillAndStroke[index];
 						$(button).removeClass('disabled');
 					}
