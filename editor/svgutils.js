@@ -12,7 +12,7 @@
 
 (function() {
 
-if (window.svgedit == undefined) {
+if (!window.svgedit) {
 	window.svgedit = {};
 }
 
