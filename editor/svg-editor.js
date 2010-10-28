@@ -462,7 +462,7 @@
 			           "#00007f", "#3f007f", "#7f007f", "#7f003f",
 			           "#ffaaaa", "#ffd4aa", "#ffffaa", "#d4ffaa",
 			           "#aaffaa", "#aaffd4", "#aaffff", "#aad4ff",
-			           "#aaaaff", "#d4aaff", "#ffaaff", "#ffaad4",
+			           "#aaaaff", "#d4aaff", "#ffaaff", "#ffaad4"
 			           ],
 				isMac = (navigator.platform.indexOf("Mac") >= 0),
 				isWebkit = (navigator.userAgent.indexOf("AppleWebKit") >= 0),
@@ -2921,7 +2921,7 @@
 					"div#workarea": {
 						'left': 38,
 						'top': 74
-					},
+					}
 // 					"#tools_bottom": {
 // 						'left': {s: '27px', l: '46px', xl: '65px'},
 // 						'height': {s: '58px', l: '98px', xl: '145px'}

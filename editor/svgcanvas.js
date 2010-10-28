@@ -13,7 +13,8 @@
 // 1) jQuery
 // 2) browsersupport.js
 // 3) svgtransformlist.js
-// 4) svgutils.js
+// 4) math.js
+// 5) svgutils.js
 
 if(!window.console) {
 	window.console = {};
@@ -3610,110 +3611,13 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 // Root Current Transformation Matrix in user units
 var root_sctm = null;
 
-// Function: transformPoint
-// A (hopefully) quicker function to transform a point by a matrix
-// (this function avoids any DOM calls and just does the math)
-// 
-// Parameters:
-// x - Float representing the x coordinate
-// y - Float representing the y coordinate
-// m - Matrix object to transform the point with
-// Returns a x,y object representing the transformed point
-var transformPoint = function(x, y, m) {
-	return { x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f};
-};
-
-// Function: isIdentity
-// Helper function to check if the matrix performs no actual transform 
-// (i.e. exists for identity purposes)
-//
-// Parameters: 
-// m - The matrix object to check
-//
-// Returns:
-// Boolean indicating whether or not the matrix is 1,0,0,1,0,0
-var isIdentity = function(m) {
-	return (m.a === 1 && m.b === 0 && m.c === 0 && m.d === 1 && m.e === 0 && m.f === 0);
-}
-
-// Function: matrixMultiply
-// This function tries to return a SVGMatrix that is the multiplication m1*m2.
-// We also round to zero when it's near zero
-// 
-// Parameters:
-// >= 2 Matrix objects to multiply
-//
-// Returns: 
-// The matrix object resulting from the calculation
-var matrixMultiply = this.matrixMultiply = function() {
-	var NEAR_ZERO = 1e-14,
-		args = arguments, i = args.length, m = args[i-1];
-	
-	while(i-- > 1) {
-		var m1 = args[i-1];
-		m = m1.multiply(m);
-	}
-	if (Math.abs(m.a) < NEAR_ZERO) m.a = 0;
-	if (Math.abs(m.b) < NEAR_ZERO) m.b = 0;
-	if (Math.abs(m.c) < NEAR_ZERO) m.c = 0;
-	if (Math.abs(m.d) < NEAR_ZERO) m.d = 0;
-	if (Math.abs(m.e) < NEAR_ZERO) m.e = 0;
-	if (Math.abs(m.f) < NEAR_ZERO) m.f = 0;
-	
-	return m;
-}
-
-// Function: transformListToTransform
-// This returns a single matrix Transform for a given Transform List
-// (this is the equivalent of SVGTransformList.consolidate() but unlike
-//  that method, this one does not modify the actual SVGTransformList)
-// This function is very liberal with its min,max arguments
-// 
-// Parameters:
-// tlist - The transformlist object
-// min - Optional integer indicating start transform position
-// max - Optional integer indicating end transform position
-//
-// Returns:
-// A single matrix transform object
-var transformListToTransform = this.transformListToTransform = function(tlist, min, max) {
-	if(tlist == null) {
-		// Or should tlist = null have been prevented before this?
-		return svgroot.createSVGTransformFromMatrix(svgroot.createSVGMatrix());
-	}
-	var min = min == undefined ? 0 : min;
-	var max = max == undefined ? (tlist.numberOfItems-1) : max;
-	min = parseInt(min);
-	max = parseInt(max);
-	if (min > max) { var temp = max; max = min; min = temp; }
-	var m = svgroot.createSVGMatrix();
-	for (var i = min; i <= max; ++i) {
-		// if our indices are out of range, just use a harmless identity matrix
-		var mtom = (i >= 0 && i < tlist.numberOfItems ? 
-						tlist.getItem(i).matrix :
-						svgroot.createSVGMatrix());
-		m = matrixMultiply(m, mtom);
-	}
-	return svgroot.createSVGTransformFromMatrix(m);
-};
-
-// Function: hasMatrixTransform
-// See if the given transformlist includes a non-indentity matrix transform
-//
-// Parameters: 
-// tlist - The transformlist to check
-//
-// Returns: 
-// Boolean on whether or not a matrix transform was found
-var hasMatrixTransform = this.hasMatrixTransform = function(tlist) {
-	if(!tlist) return false;
-	var num = tlist.numberOfItems;
-	while (num--) {
-		var xform = tlist.getItem(num);
-		if (xform.type == 1 && !isIdentity(xform.matrix)) return true;
-	}
-	return false;
-}
+// "Import" math.js.
+var transformPoint = svgedit.math.transformPoint;
+var isIdentity = svgedit.math.isIdentity;
+var matrixMultiply = this.matrixMultiply = svgedit.math.matrixMultiply;
+var hasMatrixTransform = this.hasMatrixTransform = svgedit.math.hasMatrixTransform;
+var transformBox = this.transformBox = svgedit.math.transformBox;
+var transformListToTransform = this.transformListToTransform = svgedit.math.transformListToTransform;
 
 // Function: getMatrix
 // Get the matrix object for a given element
@@ -3727,58 +3631,6 @@ var getMatrix = function(elem) {
 	var tlist = getTransformList(elem);
 	return transformListToTransform(tlist).matrix;
 }
-
-// Function: transformBox
-// Transforms a rectangle based on the given matrix
-//
-// Parameters:
-// l - Float with the box's left coordinate
-// t - Float with the box's top coordinate
-// w - Float with the box width
-// h - Float with the box height
-// m - Matrix object to transform the box by
-// 
-// Returns:
-// An object with the following values:
-// * tl - The top left coordinate (x,y object)
-// * tr - The top right coordinate (x,y object)
-// * bl - The bottom left coordinate (x,y object)
-// * br - The bottom right coordinate (x,y object)
-// * aabox - Object with the following values:
-// * Float with the axis-aligned x coordinate
-// * Float with the axis-aligned y coordinate
-// * Float with the axis-aligned width coordinate
-// * Float with the axis-aligned height coordinate
-var transformBox = this.transformBox = function(l, t, w, h, m) {
-	var topleft = {x:l,y:t},
-		topright = {x:(l+w),y:t},
-		botright = {x:(l+w),y:(t+h)},
-		botleft = {x:l,y:(t+h)};
-	topleft = transformPoint( topleft.x, topleft.y, m );
-	var minx = topleft.x,
-		maxx = topleft.x,
-		miny = topleft.y,
-		maxy = topleft.y;
-	topright = transformPoint( topright.x, topright.y, m );
-	minx = Math.min(minx, topright.x);
-	maxx = Math.max(maxx, topright.x);
-	miny = Math.min(miny, topright.y);
-	maxy = Math.max(maxy, topright.y);
-	botleft = transformPoint( botleft.x, botleft.y, m);
-	minx = Math.min(minx, botleft.x);
-	maxx = Math.max(maxx, botleft.x);
-	miny = Math.min(miny, botleft.y);
-	maxy = Math.max(maxy, botleft.y);
-	botright = transformPoint( botright.x, botright.y, m );
-	minx = Math.min(minx, botright.x);
-	maxx = Math.max(maxx, botright.x);
-	miny = Math.min(miny, botright.y);
-	maxy = Math.max(maxy, botright.y);
-
-	return {tl:topleft, tr:topright, bl:botleft, br:botright, 
-			aabox: {x:minx, y:miny, width:(maxx-minx), height:(maxy-miny)} };
-};
-
 
 // Group: Selection
 
@@ -4018,8 +3870,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	while (mouse_target.parentNode !== (current_group || current_layer)) {
 		mouse_target = mouse_target.parentNode;
 	}
-	return mouse_target;
-	
 	
 // 	
 // 	// go up until we hit a child of a layer
@@ -6602,8 +6452,7 @@ var pathActions = this.pathActions = function() {
 						"attr": {
 							"d": d_attr,
 							"id": getNextId(),
-							"opacity": cur_shape.opacity / 2,
-
+							"opacity": cur_shape.opacity / 2
 						}
 					});
 					// set stretchy line to first point
@@ -8447,7 +8296,6 @@ this.importSvgString = function(xmlString) {
 		recalculateDimensions(use_el);
 		$(use_el).data('symbol', symbol);
 		addToSelection([use_el]);
-		return true;
 
 		// TODO: Find way to add this in a recalculateDimensions-parsable way
 // 				if (vb[0] != 0 || vb[1] != 0)
@@ -9766,7 +9614,7 @@ this.getBlur = function(elem) {
 				x: '-50%',
 				y: '-50%',
 				width: '200%',
-				height: '200%',
+				height: '200%'
 			}, 100);
 		} else {
 			// Removing these attributes hides text in Chrome (see Issue 579)
@@ -10271,6 +10119,7 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		}
 		
 		// only allow the transform/opacity/filter attribute to change on <g> elements, slightly hacky
+		// TODO: FIXME: This doesn't seem right.  Where's the body of this if statement?
 		if (elem.tagName === "g" && good_g_attrs.indexOf(attr) >= 0);
 		var oldval = attr === "#text" ? elem.textContent : elem.getAttribute(attr);
 		if (oldval == null)  oldval = "";
