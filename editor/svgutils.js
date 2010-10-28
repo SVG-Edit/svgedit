@@ -290,7 +290,7 @@ svgedit.Utilities.walkTreePost = function(elem, cbFn) {
 	}
 };
 
-// Function: getUrlFromAttr
+// Function: svgedit.Utilities.getUrlFromAttr
 // Extracts the URL from the url(...) syntax of some attributes.  
 // Three variants:
 // 	* <circle fill="url(someFile.svg#foo)" />
@@ -317,6 +317,37 @@ svgedit.Utilities.getUrlFromAttr = function(attrVal) {
 		}
 	}
 	return null;
+};
+
+// Function: svgedit.Utilities.getHref
+// Returns the given element's xlink:href value
+svgedit.Utilities.getHref = function(elem) {
+	return elem.getAttributeNS(xlinkns, "href");
+}
+
+// Function: svgedit.Utilities.setHref
+// Sets the given element's xlink:href value
+svgedit.Utilities.setHref = function(elem, val) {
+	elem.setAttributeNS(xlinkns, "xlink:href", val);
+}
+
+// Function: findDefs
+// Parameters:
+// svgElement - The <svg> element.
+//
+// Returns:
+// The document's <defs> element, create it first if necessary
+svgedit.Utilities.findDefs = function(svgElement) {
+	var svgElement = svgDoc.documentElement;
+	var defs = svgElement.getElementsByTagNameNS(svgns, "defs");
+	if (defs.length > 0) {
+		defs = defs[0];
+	}
+	else {
+		// first child is a comment, so call nextSibling
+		defs = svgElement.insertBefore( svgElement.ownerDocument.createElementNS(svgns, "defs" ), svgElement.firstChild.nextSibling);
+	}
+	return defs;
 };
 
 })();
