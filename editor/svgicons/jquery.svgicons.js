@@ -357,25 +357,52 @@ $(function() {
 			var defs = svg_el.find('defs');
 			if(!defs.length) return svg_el;
 			
-			defs.find('[id]').each(function(i) {
+			if(isOpera) {
+				var id_elems = defs.find('*').filter(function() {
+					return !!this.id;
+				});
+			} else {
+				var id_elems = defs.find('[id]');
+			}
+			
+			var all_elems = svg_el[0].getElementsByTagName('*'), len = all_elems.length;
+			
+			id_elems.each(function(i) {
 				var id = this.id;
 				var no_dupes = ($(svgdoc).find('#' + id).length <= 1);
 				if(isOpera) no_dupes = false; // Opera didn't clone svg_el, so not reliable
 				// if(!force && no_dupes) return;
 				var new_id = 'x' + id + svg_num + i;
 				this.id = new_id;
+				
+				var old_val = 'url(#' + id + ')';
+				var new_val = 'url(#' + new_id + ')';
+				
+				// Selector method, possibly faster but fails in Opera / jQuery 1.4.3
+// 				svg_el.find('[fill="url(#' + id + ')"]').each(function() {
+// 					this.setAttribute('fill', 'url(#' + new_id + ')');
+// 				}).end().find('[stroke="url(#' + id + ')"]').each(function() {
+// 					this.setAttribute('stroke', 'url(#' + new_id + ')');
+// 				}).end().find('use').each(function() {
+// 					if(this.getAttribute('xlink:href') == '#' + id) {
+// 						this.setAttributeNS(xlinkns,'href','#' + new_id);
+// 					}
+// 				}).end().find('[filter="url(#' + id + ')"]').each(function() {
+// 					this.setAttribute('filter', 'url(#' + new_id + ')');
+// 				});
 
-				svg_el.find('[fill="url(#' + id + ')"]').each(function() {
-					this.setAttribute('fill', 'url(#' + new_id + ')');
-				}).end().find('[stroke="url(#' + id + ')"]').each(function() {
-					this.setAttribute('stroke', 'url(#' + new_id + ')');
-				}).end().find('use').each(function() {
-					if(this.getAttribute('xlink:href') == '#' + id) {
-						this.setAttributeNS(xlinkns,'href','#' + new_id);
+				for(var i = 0; i < len; i++) {
+					var elem = all_elems[i];
+					if(elem.getAttribute('fill') === old_val) {
+						elem.setAttribute('fill', new_val);
 					}
-				}).end().find('[filter="url(#' + id + ')"]').each(function() {
-					this.setAttribute('filter', 'url(#' + new_id + ')');
-				});
+					if(elem.getAttribute('stroke') === old_val) {
+						elem.setAttribute('stroke', new_val);
+					}
+					if(elem.getAttribute('filter') === old_val) {
+						elem.setAttribute('filter', new_val);
+					}
+				}
 			});
 			return svg_el;
 		}
