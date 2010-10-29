@@ -1321,11 +1321,30 @@
 			// This function also updates the opacity and id elements that are in the context panel
 			var updateToolbar = function() {
 				if (selectedElement != null && ['use', 'image', 'foreignObject', 'g', 'a'].indexOf(selectedElement.tagName) === -1) {
+					var all_swidth = null;
+
+// 					if(selectedElement.tagName === "g" || selectedElement.tagName === "a") {
+// 						// Look for common styles
+// 						var childs = selectedElement.getElementsByTagName('*');
+// 						console.log('ch', childs);
+// 						for(var i = 0, len = childs.length; i < len; i++) {
+// 							var elem = childs[i];
+// 							var swidth = elem.getAttribute("stroke-width");
+// 						 	if(swidth && swidth !== all_swidth) {
+// 						 		// different, so do don't check more
+// 						 		all_swidth = null;
+// 						 		break;
+// 						 	} else if(swidth) {
+// 						 		console.log('e', elem, swidth);
+// 						 		all_swidth = swidth;
+// 						 	}
+// 						}
+// 					}
 				
 					paintBox.fill.update(true);
 					paintBox.stroke.update(true);
 					
-					$('#stroke_width').val(selectedElement.getAttribute("stroke-width")||1);
+					$('#stroke_width').val(all_swidth || selectedElement.getAttribute("stroke-width") || 1);
 					$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
 
 					var attr = selectedElement.getAttribute("stroke-linejoin") || 'miter';
@@ -3972,7 +3991,8 @@
 			
 			// Select given tool
 			Editor.ready(function() {
-				var itool = curConfig.initTool,
+				var tool,
+					itool = curConfig.initTool,
 					container = $("#tools_left, #svg_editor .tools_flyout"),
 					pre_tool = container.find("#tool_" + itool),
 					reg_tool = container.find("#" + itool);
@@ -4329,6 +4349,7 @@
 						}
 	
 						var num = (label_pos - content_d) / u_multi;
+						var label;
 						if(multi >= 1) {
 							label = Math.round(num);
 						} else {
@@ -4405,7 +4426,7 @@
 			
 			// Callback handler for embedapi.js
  			try{
- 				json_encode = function(obj){
+ 				var json_encode = function(obj){
  			  //simple partial JSON encoder implementation
  			  if(window.JSON && JSON.stringify) return JSON.stringify(obj);
  			  var enc = arguments.callee; //for purposes of recursion

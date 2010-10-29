@@ -2071,7 +2071,7 @@ function getElem(id) {
 }
 
 // Set scope for these functions
-var getId, getNextId;
+var getId, getNextId, call;
 
 (function(c) {
 
