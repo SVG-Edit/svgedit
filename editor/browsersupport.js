@@ -12,11 +12,13 @@
 
 (function() {
 
-if (window.svgedit == undefined) {
+if (!window.svgedit) {
 	window.svgedit = {};
 }
 
-svgedit.BrowserSupport = {};
+if (!svgedit.BrowserSupport) {
+	svgedit.BrowserSupport = {};
+}
 
 var svgns = 'http://www.w3.org/2000/svg';
 var userAgent = navigator.userAgent;
@@ -27,7 +29,7 @@ svgedit.BrowserSupport.isWebkit = userAgent.indexOf("AppleWebKit") >= 0;
 svgedit.BrowserSupport.isGecko = userAgent.indexOf('Gecko/') >= 0;
 
 // segList functions (for FF1.5 and 2.0)
-function getPathReplaceItem() {
+function supportPathReplaceItem() {
 	var path = document.createElementNS(svgns,'path');
 	path.setAttribute('d','M0,0 10,10');
 	var seglist = path.pathSegList;
@@ -39,7 +41,7 @@ function getPathReplaceItem() {
 	return false;
 }
 
-function getPathInsertItemBefore() {
+function supportPathInsertItemBefore() {
 	var path = document.createElementNS(svgns,'path');
 	path.setAttribute('d','M0,0 10,10');
 	var seglist = path.pathSegList;
@@ -52,7 +54,7 @@ function getPathInsertItemBefore() {
 }
 
 // text character positioning
-function getTextCharPos() {
+function supportTextCharPos() {
 	var retValue = false;
 	var svgcontent = document.createElementNS(svgns, 'svg');
 	document.documentElement.appendChild(svgcontent);
@@ -67,12 +69,12 @@ function getTextCharPos() {
 	return retValue;
 }
 
-function getEditableText() {
+function supportEditableText() {
 	// TODO: Find better way to check support for this
 	return svgedit.BrowserSupport.isOpera;
 }
 
-function getGoodDecimals() {
+function supportGoodDecimals() {
 	// Correct decimals on clone attributes (Opera < 10.5/win/non-en)
 	var rect = document.createElementNS(svgns,'rect');
 	rect.setAttribute('x',.1);
@@ -85,17 +87,17 @@ function getGoodDecimals() {
 	return retValue;
 }
 
-function getNonScalingStroke() {
+function supportNonScalingStroke() {
 	var rect = document.createElementNS(svgns,'rect');
 	rect.setAttribute('style','vector-effect:non-scaling-stroke');
 	return rect.style.vectorEffect === 'non-scaling-stroke';
 }
 
-svgedit.BrowserSupport.pathReplaceItem = getPathReplaceItem();
-svgedit.BrowserSupport.pathInsertItemBefore = getPathInsertItemBefore();
-svgedit.BrowserSupport.textCharPos = getTextCharPos();
-svgedit.BrowserSupport.editableText = getEditableText();
-svgedit.BrowserSupport.goodDecimals = getGoodDecimals();
-svgedit.BrowserSupport.nonScalingStroke = getNonScalingStroke();
+svgedit.BrowserSupport.pathReplaceItem = supportPathReplaceItem();
+svgedit.BrowserSupport.pathInsertItemBefore = supportPathInsertItemBefore();
+svgedit.BrowserSupport.textCharPos = supportTextCharPos();
+svgedit.BrowserSupport.editableText = supportEditableText();
+svgedit.BrowserSupport.goodDecimals = supportGoodDecimals();
+svgedit.BrowserSupport.nonScalingStroke = supportNonScalingStroke();
 
 })();

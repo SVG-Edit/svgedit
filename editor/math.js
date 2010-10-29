@@ -184,4 +184,33 @@ svgedit.math.transformListToTransform = function(tlist, min, max) {
 	return svg.createSVGTransformFromMatrix(m);
 };
 
+
+// Function: svgedit.math.snapToAngle
+// Returns a 45 degree angle coordinate associated with the two given 
+// coordinates
+// 
+// Parameters:
+// x1 - First coordinate's x value
+// x2 - Second coordinate's x value
+// y1 - First coordinate's y value
+// y2 - Second coordinate's y value
+//
+// Returns: 
+// Object with the following values:
+// x - The angle-snapped x value
+// y - The angle-snapped y value
+// snapangle - The angle at which to snap
+svgedit.math.snapToAngle = function(x1,y1,x2,y2) {
+	var snap = Math.PI/4; // 45 degrees
+	var dx = x2 - x1;
+	var dy = y2 - y1;
+	var angle = Math.atan2(dy,dx);
+	var dist = Math.sqrt(dx * dx + dy * dy);
+	var snapangle= Math.round(angle/snap)*snap;
+	var x = x1 + dist*Math.cos(snapangle);	
+	var y = y1 + dist*Math.sin(snapangle);
+	//console.log(x1,y1,x2,y2,x,y,angle)
+	return {x:x, y:y, a:snapangle};
+};
+
 })();

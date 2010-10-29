@@ -20,8 +20,11 @@ if (!svgedit.Utilities) {
 	svgedit.Utilities = {};
 }
 
+// Constants
+
 // String used to encode base64.
-svgedit.Utilities._keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+var KEYSTR = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+var XLINKNS = "http://www.w3.org/1999/xlink";
 
 // Function: svgedit.Utilities.toXml
 // Converts characters in a string to XML-friendly entities.
@@ -65,7 +68,6 @@ svgedit.Utilities.encode64 = function(input) {
 //	input = svgedit.Utilities.encodeUTF8(input); // convert non-ASCII characters
 	input = svgedit.Utilities.convertToXMLReferences(input);
 	if(window.btoa) return window.btoa(input); // Use native if available
-	var _keyStr = svgedit.Utilities._keyStr;
 	var output = new Array( Math.floor( (input.length + 2) / 3 ) * 4 );
 	var chr1, chr2, chr3;
 	var enc1, enc2, enc3, enc4;
@@ -87,10 +89,10 @@ svgedit.Utilities.encode64 = function(input) {
 			enc4 = 64;
 		}
 
-		output[p++] = _keyStr.charAt(enc1);
-		output[p++] = _keyStr.charAt(enc2);
-		output[p++] = _keyStr.charAt(enc3);
-		output[p++] = _keyStr.charAt(enc4);
+		output[p++] = KEYSTR.charAt(enc1);
+		output[p++] = KEYSTR.charAt(enc2);
+		output[p++] = KEYSTR.charAt(enc3);
+		output[p++] = KEYSTR.charAt(enc4);
 	} while (i < input.length);
 
 	return output.join('');
@@ -109,10 +111,10 @@ svgedit.Utilities.decode64 = function(input) {
 	 input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
 
 	 do {
-		enc1 = _keyStr.indexOf(input.charAt(i++));
-		enc2 = _keyStr.indexOf(input.charAt(i++));
-		enc3 = _keyStr.indexOf(input.charAt(i++));
-		enc4 = _keyStr.indexOf(input.charAt(i++));
+		enc1 = KEYSTR.indexOf(input.charAt(i++));
+		enc2 = KEYSTR.indexOf(input.charAt(i++));
+		enc3 = KEYSTR.indexOf(input.charAt(i++));
+		enc4 = KEYSTR.indexOf(input.charAt(i++));
 
 		chr1 = (enc1 << 2) | (enc2 >> 4);
 		chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
@@ -189,34 +191,6 @@ svgedit.Utilities.rectsIntersect = function(r1, r2) {
 		r2.y < (r1.y+r1.height) &&
 		(r2.y+r2.height) > r1.y;
 };
-
-// Function: snapToAngle
-// Returns a 45 degree angle coordinate associated with the two given 
-// coordinates
-// 
-// Parameters:
-// x1 - First coordinate's x value
-// x2 - Second coordinate's x value
-// y1 - First coordinate's y value
-// y2 - Second coordinate's y value
-//
-// Returns: 
-// Object with the following values:
-// x - The angle-snapped x value
-// y - The angle-snapped y value
-// snapangle - The angle at which to snap
-svgedit.Utilities.snapToAngle = function(x1,y1,x2,y2) {
-	var snap = Math.PI/4; // 45 degrees
-	var dx = x2 - x1;
-	var dy = y2 - y1;
-	var angle = Math.atan2(dy,dx);
-	var dist = Math.sqrt(dx * dx + dy * dy);
-	var snapangle= Math.round(angle/snap)*snap;
-	var x = x1 + dist*Math.cos(snapangle);	
-	var y = y1 + dist*Math.sin(snapangle);
-	//console.log(x1,y1,x2,y2,x,y,angle)
-	return {x:x, y:y, a:snapangle};
-},
 
 // Function: text2xml
 // Cross-browser compatible method of converting a string to an XML tree
@@ -323,13 +297,13 @@ svgedit.Utilities.getUrlFromAttr = function(attrVal) {
 // Function: svgedit.Utilities.getHref
 // Returns the given element's xlink:href value
 svgedit.Utilities.getHref = function(elem) {
-	return elem.getAttributeNS(xlinkns, "href");
+	return elem.getAttributeNS(XLINKNS, "href");
 }
 
 // Function: svgedit.Utilities.setHref
 // Sets the given element's xlink:href value
 svgedit.Utilities.setHref = function(elem, val) {
-	elem.setAttributeNS(xlinkns, "xlink:href", val);
+	elem.setAttributeNS(XLINKNS, "xlink:href", val);
 }
 
 // Function: findDefs

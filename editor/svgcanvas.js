@@ -1444,12 +1444,19 @@ var SelectorManager;
 var SVGEditTransformList = svgedit.SVGTransformList;
 var svgTransformLists = {};
 
-// Group: Helper functions
-
 // "Import" from svgutils.js
 var walkTree = this.walkTree = svgedit.Utilities.walkTree;
 var walkTreePost = this.walkTreePost = svgedit.Utilities.walkTreePost;
 var getUrlFromAttr = this.getUrlFromAttr = svgedit.Utilities.getUrlFromAttr;
+
+// "Import" from math.js.
+var transformPoint = svgedit.math.transformPoint;
+var isIdentity = svgedit.math.isIdentity;
+var matrixMultiply = this.matrixMultiply = svgedit.math.matrixMultiply;
+var hasMatrixTransform = this.hasMatrixTransform = svgedit.math.hasMatrixTransform;
+var transformBox = this.transformBox = svgedit.math.transformBox;
+var transformListToTransform = this.transformListToTransform = svgedit.math.transformListToTransform;
+var snapToAngle = svgedit.math.snapToAngle;
 
 // Function: assignAttributes
 // Assigns multiple attributes to an element.
@@ -3611,14 +3618,6 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 // Root Current Transformation Matrix in user units
 var root_sctm = null;
 
-// "Import" math.js.
-var transformPoint = svgedit.math.transformPoint;
-var isIdentity = svgedit.math.isIdentity;
-var matrixMultiply = this.matrixMultiply = svgedit.math.matrixMultiply;
-var hasMatrixTransform = this.hasMatrixTransform = svgedit.math.hasMatrixTransform;
-var transformBox = this.transformBox = svgedit.math.transformBox;
-var transformListToTransform = this.transformListToTransform = svgedit.math.transformListToTransform;
-
 // Function: getMatrix
 // Get the matrix object for a given element
 //
@@ -4296,7 +4295,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						dy = snapToGrid(dy);
 					}
 
-					if(evt.shiftKey) { var xya = Utils.snapToAngle(start_x,start_y,x,y); x=xya.x; y=xya.y; }
+					if(evt.shiftKey) { var xya = snapToAngle(start_x,start_y,x,y); x=xya.x; y=xya.y; }
 
 					if (dx != 0 || dy != 0) {
 						var len = selectedElements.length;
@@ -4481,7 +4480,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				var x2 = x;
 				var y2 = y;					
 
-				if(evt.shiftKey) { var xya=Utils.snapToAngle(start_x,start_y,x2,y2); x2=xya.x; y2=xya.y; }
+				if(evt.shiftKey) { var xya = snapToAngle(start_x,start_y,x2,y2); x2=xya.x; y2=xya.y; }
 				
 				shape.setAttributeNS(null, "x2", x2);
 				shape.setAttributeNS(null, "y2", y2);
@@ -4575,7 +4574,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				if(evt.shiftKey) {
 					var x1 = path.dragging?path.dragging[0]:start_x;
 					var y1 = path.dragging?path.dragging[1]:start_y;
-					var xya=Utils.snapToAngle(x1,y1,x,y);
+					var xya = snapToAngle(x1,y1,x,y);
 					x=xya.x; y=xya.y;
 				}
 				
@@ -6558,7 +6557,7 @@ var pathActions = this.pathActions = function() {
 						var last = drawn_path.pathSegList.getItem(num -1);
 						var lastx = last.x, lasty = last.y;
 
-						if(evt.shiftKey) { var xya=Utils.snapToAngle(lastx,lasty,x,y); x=xya.x; y=xya.y; }
+						if(evt.shiftKey) { var xya = snapToAngle(lastx,lasty,x,y); x=xya.x; y=xya.y; }
 						
 						// Use the segment defined by stretchy
 						var s_seg = stretchy.pathSegList.getItem(1);
