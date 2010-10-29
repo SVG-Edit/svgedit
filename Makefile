@@ -18,27 +18,19 @@ build/$(PACKAGE):
 # minify spin button
 	java -jar $(YUICOMPRESS)  build/$(PACKAGE)/spinbtn/JQuerySpinBtn.js                > build/$(PACKAGE)/spinbtn/JQuerySpinBtn.min.js
 # minify SVG-edit files
-	java -jar $(YUICOMPRESS)  build/$(PACKAGE)/svgutils.js                  > build/$(PACKAGE)/svgutils.min.js
-	java -jar $(YUICOMPRESS)  build/$(PACKAGE)/browsersupport.js            > build/$(PACKAGE)/browsersupport.min.js
-	java -jar $(YUICOMPRESS)  build/$(PACKAGE)/svgtransformlist.js          > build/$(PACKAGE)/svgtransformlist.min.js
-	java -jar $(YUICOMPRESS)  build/$(PACKAGE)/math.js                      > build/$(PACKAGE)/math.min.js
 	java -jar $(YUICOMPRESS)  build/$(PACKAGE)/svg-editor.js                > build/$(PACKAGE)/svg-editor.min.js
 	java -jar $(YUICOMPRESS)  build/$(PACKAGE)/svgcanvas.js                 > build/$(PACKAGE)/svgcanvas.min.js
 
-# codedread: This is how to compile everything into one big JS file.  This
-#            would replace the 7 lines above.  Seems to work for me but
-#            leaving compiled out for now for additional testing.
-#            NOTE: Some files are not ready for the Closure compiler:
-#                  jquery, jgraduate.
-# java -jar $(CLOSURE) \
-#   --js browsersupport.js \
-#   --js svgtransformlist.js \
-#   --js math.js \
-#   --js svgutils.js \
-#   --js svgcanvas.js \
-#   --js svg-editor.js \
-#   --js locale/locale.js \
-#   --js_output_file svgedit.compiled.js
+# codedread: NOTE: Some files are not ready for the Closure compiler: (jquery)
+	java -jar $(CLOSURE) \
+	   --js browsersupport.js \
+	   --js svgtransformlist.js \
+	   --js math.js \
+	   --js svgutils.js \
+	   --js svgcanvas.js \
+	   --js svg-editor.js \
+	   --js locale/locale.js \
+	   --js_output_file svgedit.compiled.js
 
 # CSS files do not work remotely
 # java -jar $(YUICOMPRESS) build/$(PACKAGE)/spinbtn/JQuerySpinBtn.css > build/$(PACKAGE)/spinbtn/JQuerySpinBtn.min.css

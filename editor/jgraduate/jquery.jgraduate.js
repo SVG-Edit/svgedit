@@ -116,11 +116,11 @@ $.jGraduate = {
 jQuery.fn.jGraduateDefaults = {
 	paint: new $.jGraduate.Paint(),
 	window: {
-		pickerTitle: "Drag markers to pick a paint",
+		pickerTitle: "Drag markers to pick a paint"
 	},
 	images: {
-		clientPath: "images/",
-	},
+		clientPath: "images/"
+	}
 };
 
 jQuery.fn.jGraduate =
@@ -160,7 +160,7 @@ jQuery.fn.jGraduate =
               	// make a copy of the incoming paint
                 paint: new $.jGraduate.Paint({copy: $settings.paint}),
                 okCallback: $.isFunction($arguments[1]) && $arguments[1] || null,
-                cancelCallback: $.isFunction($arguments[2]) && $arguments[2] || null,
+                cancelCallback: $.isFunction($arguments[2]) && $arguments[2] || null
               });
 
 			var pos = $this.position(),
