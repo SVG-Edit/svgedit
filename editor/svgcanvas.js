@@ -15,6 +15,7 @@
 // 3) svgtransformlist.js
 // 4) math.js
 // 5) svgutils.js
+// 6) units.js
 
 if(!window.console) {
 	window.console = {};
@@ -96,10 +97,49 @@ if(window.opera) {
 // config - An object that contains configuration data
 $.SvgCanvas = function(container, config)
 {
-var support = svgedit.BrowserSupport,
-	isOpera = support.isOpera,
-	isWebkit = support.isWebkit,
-	isGecko = support.isGecko,
+
+// import svgtransformlist.js
+var getTransformList = this.getTransformList = svgedit.transformlist.getTransformList;
+
+// import from math.js.
+var transformPoint = svgedit.math.transformPoint;
+var isIdentity = svgedit.math.isIdentity;
+var matrixMultiply = this.matrixMultiply = svgedit.math.matrixMultiply;
+var hasMatrixTransform = this.hasMatrixTransform = svgedit.math.hasMatrixTransform;
+var transformBox = this.transformBox = svgedit.math.transformBox;
+var transformListToTransform = this.transformListToTransform = svgedit.math.transformListToTransform;
+var snapToAngle = svgedit.math.snapToAngle;
+
+// import from units.js
+svgedit.units.init();
+var unit_types = svgedit.units.typeMap;
+
+// import from svgutils.js
+var getUrlFromAttr = this.getUrlFromAttr = svgedit.utilities.getUrlFromAttr;
+var getHref = this.getHref = svgedit.utilities.getHref;
+var setHref = this.setHref = svgedit.utilities.setHref;
+var getPathBBox = svgedit.utilities.getPathBBox;
+var getBBox = this.getBBox = svgedit.utilities.getBBox;
+var getRotationAngle = this.getRotationAngle = svgedit.utilities.getRotationAngle;
+
+// Function: snapToGrid
+// round value to for snapping
+// NOTE: This function did not move to svgutils.js since it depends on curConfig.
+svgedit.utilities.snapToGrid = function(value){
+	var stepSize = curConfig.snappingStep;
+	var unit = curConfig.baseUnit;
+	if(unit !== "px") {
+		stepSize *= svgedit.units.typeMap[unit];
+	}
+	value = Math.round(value/stepSize)*stepSize;
+	return value;
+};
+var snapToGrid = svgedit.utilities.snapToGrid;
+
+
+var isOpera = svgedit.browsersupport.isOpera,
+	isWebkit = svgedit.browsersupport.isWebkit,
+	isGecko = svgedit.browsersupport.isGecko,
 
 	// this defines which elements and attributes that we support
 	svgWhiteList = {
@@ -186,12 +226,9 @@ var support = svgedit.BrowserSupport,
 		show_outside_canvas: true,
 		dimensions: [640, 480]
 	};
-	
 
 	var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
-	
 	var ref_attrs = ["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"];
-
 
 // Update config with new one if given
 if(config) {
@@ -212,9 +249,6 @@ var canvas = this,
 	se_ns = "http://svg-edit.googlecode.com",
 	htmlns = "http://www.w3.org/1999/xhtml",
 	mathns = "http://www.w3.org/1998/Math/MathML",
-	
-	// Map of units, updated later based on px conversion.
-	unit_types = {px: 1},
 
 	//nonce to uniquify id's
 	nonce = Math.floor(Math.random()*100001),
@@ -229,7 +263,7 @@ var canvas = this,
 	dimensions = curConfig.dimensions;
 	
 	// Create Root SVG element. This is a container for the document being edited, not the document itself.
-	var svgroot = svgdoc.importNode(svgedit.Utilities.text2xml(
+	var svgroot = svgdoc.importNode(svgedit.utilities.text2xml(
 				'<svg id="svgroot" xmlns="' + svgns + '" xlinkns="' + xlinkns + '" ' +
 					'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
 					'<defs>' +
@@ -255,7 +289,7 @@ $(svgcontent).attr({
 	height: dimensions[1],
 	x: dimensions[0],
 	y: dimensions[1],
-	overflow: curConfig.show_outside_canvas?'visible':'hidden',
+	overflow: curConfig.show_outside_canvas ? 'visible' : 'hidden',
 	xmlns: svgns,
 	"xmlns:se": se_ns,
 	"xmlns:xlink": xlinkns
@@ -312,7 +346,7 @@ var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 	var w_attrs = ['x', 'x1', 'cx', 'rx', 'width'];
 	var h_attrs = ['y', 'y1', 'cy', 'ry', 'height'];
 	var unit_attrs = $.merge(['r','radius'], w_attrs);
-	
+
 	var unitNumMap = {
 			'%': 2,
 			em: 3,
@@ -324,7 +358,6 @@ var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 			pt: 9,
 			pc: 10
 	};
-	
 
 	$.merge(unit_attrs, h_attrs);
 	
@@ -400,7 +433,7 @@ var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 // 			}
 		}
 		elem.setAttribute(attr, val);
-	}
+	};
 
 	// Function: isValidUnit
 	// Check if an attribute's value is in a valid format
@@ -440,13 +473,13 @@ var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 		} else valid = true;			
 		
 		return valid;
-	}
-	
+	};
+
 	// Function: getUnits
 	// Returns the unit object with values for each unit
 	canvas.getUnits = function() {
 		return unit_types;
-	}
+	};
 	
 	// Function: convertUnit
 	// Converts the number to given unit or baseUnit
@@ -456,7 +489,7 @@ var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 // 		var val = baseVal.valueInSpecifiedUnits;
 // 		baseVal.convertToSpecifiedUnits(1);
 		return shortFloat(val / unit_types[unit]);
-	}
+	};
 	
 	// Function: unitConvertAttrs
 	// Converts all applicable attributes to the given baseUnit
@@ -498,9 +531,7 @@ var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 				}
 			}
 		}
-		
-		
-	}
+	};
 	
 })();
 
@@ -1412,41 +1443,6 @@ var SelectorManager;
 	};
 }());
 
-
-// import svgtransformlist.js
-var getTransformList = this.getTransformList = svgedit.transformlist.getTransformList;
-
-// import from svgutils.js
-var getUrlFromAttr = this.getUrlFromAttr = svgedit.Utilities.getUrlFromAttr;
-var getHref = this.getHref = svgedit.Utilities.getHref;
-var setHref = this.setHref = svgedit.Utilities.setHref;
-var getPathBBox = svgedit.Utilities.getPathBBox;
-var getBBox = this.getBBox = svgedit.Utilities.getBBox;
-var getRotationAngle = this.getRotationAngle = svgedit.Utilities.getRotationAngle;
-
-// Function: snapToGrid
-// round value to for snapping
-// NOTE: This function did not move to svgutils.js since it depends on unit_types and curConfig.
-svgedit.Utilities.snapToGrid = function(value){
-	var stepSize = curConfig.snappingStep;
-	var unit = curConfig.baseUnit;
-	if(unit !== "px") {
-		stepSize *= unit_types[unit];
-	}
-	value = Math.round(value/stepSize)*stepSize;
-	return value;
-};
-var snapToGrid = svgedit.Utilities.snapToGrid;
-
-// import from math.js.
-var transformPoint = svgedit.math.transformPoint;
-var isIdentity = svgedit.math.isIdentity;
-var matrixMultiply = this.matrixMultiply = svgedit.math.matrixMultiply;
-var hasMatrixTransform = this.hasMatrixTransform = svgedit.math.hasMatrixTransform;
-var transformBox = this.transformBox = svgedit.math.transformBox;
-var transformListToTransform = this.transformListToTransform = svgedit.math.transformListToTransform;
-var snapToAngle = svgedit.math.snapToAngle;
-
 // Function: assignAttributes
 // Assigns multiple attributes to an element.
 //
@@ -1782,7 +1778,7 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 		var i = curBBoxes.length;
 		while (i--) {
 			if(!rubberBBox.width || !rubberBBox.width) continue;
-			if (svgedit.Utilities.rectsIntersect(rubberBBox, curBBoxes[i].bbox))  {
+			if (svgedit.utilities.rectsIntersect(rubberBBox, curBBoxes[i].bbox))  {
 				resultList.push(curBBoxes[i].elem);
 			}
 		}
@@ -1842,7 +1838,7 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 					var parent = elem.parentNode;
 					parent.appendChild(g);
 					g.appendChild(clone);
-					bb = svgedit.Utilities.bboxToObj(g.getBBox());
+					bb = svgedit.utilities.bboxToObj(g.getBBox());
 					parent.removeChild(g);
 				}
 				
@@ -3865,7 +3861,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					tlist.appendItem(svgroot.createSVGTransform());
 					tlist.appendItem(svgroot.createSVGTransform());
 					
-					if(support.nonScalingStroke) {
+					if(svgedit.browsersupport.nonScalingStroke) {
 						mouse_target.style.vectorEffect = 'non-scaling-stroke';
 						var all = mouse_target.getElementsByTagName('*'), len = all.length;
 						for(var i = 0; i < all.length; i++) {
@@ -4525,10 +4521,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					} // no change in mouse position
 					
 					// Remove non-scaling stroke
-					if(support.nonScalingStroke) {
+					if(svgedit.browsersupport.nonScalingStroke) {
 						var elem = selectedElements[0];
 						elem.removeAttribute('style');
-						svgedit.Utilities.walkTree(elem, function(elem) {
+						svgedit.utilities.walkTree(elem, function(elem) {
 							elem.removeAttribute('style');
 						});
 					}
@@ -5086,7 +5082,7 @@ var textActions = canvas.textActions = function() {
 			
 			// TODO: Find a way to make this work: Use transformed BBox instead of evt.target 
 // 				if(last_x === mouse_x && last_y === mouse_y
-// 					&& !svgedit.Utilities.rectsIntersect(transbb, {x: pt.x, y: pt.y, width:0, height:0})) {
+// 					&& !svgedit.utilities.rectsIntersect(transbb, {x: pt.x, y: pt.y, width:0, height:0})) {
 // 					textActions.toSelectMode(true);				
 // 				}
 			if(last_x === mouse_x && last_y === mouse_y && evt.target !== curtext) {
@@ -5106,7 +5102,7 @@ var textActions = canvas.textActions = function() {
 
 			$(curtext).css('cursor', 'text');
 			
-// 				if(support.editableText) {
+// 				if(svgedit.browsersupport.editableText) {
 // 					curtext.setAttribute('editable', 'simple');
 // 					return;
 // 				}
@@ -5146,7 +5142,7 @@ var textActions = canvas.textActions = function() {
 			
 			curtext = false;
 			
-// 				if(support.editableText) {
+// 				if(svgedit.browsersupport.editableText) {
 // 					curtext.removeAttribute('editable');
 // 				}
 		},
@@ -5162,7 +5158,7 @@ var textActions = canvas.textActions = function() {
 		init: function(inputElem) {
 			if(!curtext) return;
 
-// 				if(support.editableText) {
+// 				if(svgedit.browsersupport.editableText) {
 // 					curtext.select();
 // 					return;
 // 				}
@@ -5250,7 +5246,7 @@ var pathActions = this.pathActions = function() {
 		// Support insertItemBefore on paths for FF2
 		var list = elem.pathSegList;
 		
-		if(support.pathInsertItemBefore) {
+		if(svgedit.browsersupport.pathInsertItemBefore) {
 			list.insertItemBefore(newseg, index);
 			return;
 		}
@@ -6097,7 +6093,7 @@ var pathActions = this.pathActions = function() {
 		var func = 'createSVGPathSeg' + pathFuncs[type];
 		var seg = path[func].apply(path, pts);
 		
-		if(support.pathReplaceItem) {
+		if(svgedit.browsersupport.pathReplaceItem) {
 			path.pathSegList.replaceItem(seg, index);
 		} else {
 			var segList = path.pathSegList;
@@ -6549,7 +6545,7 @@ var pathActions = this.pathActions = function() {
 						height: 0
 					};
 				
-					var sel = svgedit.Utilities.rectsIntersect(rbb, pt_bb);
+					var sel = svgedit.utilities.rectsIntersect(rbb, pt_bb);
 
 					this.select(sel);
 					//Note that addPtsToSelection is not being run
@@ -7286,9 +7282,8 @@ var svgCanvasToString = this.svgCanvasToString = function() {
 // Returns: 
 // String with the given element as an SVG tag
 var svgToString = this.svgToString = function(elem, indent) {
-	var out = new Array(), toXml = svgedit.Utilities.toXml;
-	
-	var unit = curConfig.baseUnit
+	var out = new Array(), toXml = svgedit.utilities.toXml;
+	var unit = curConfig.baseUnit;
 	var unit_re = new RegExp('^-?[\\d\\.]+' + unit + '$');
 
 	if (elem) {
@@ -7299,7 +7294,7 @@ var svgToString = this.svgToString = function(elem, indent) {
 			childs = elem.childNodes;
 		
 		for (var i=0; i<indent; i++) out.push(" ");
-		out.push("<"); out.push(elem.nodeName);			
+		out.push("<"); out.push(elem.nodeName);
 		if(elem.id === 'svgcontent') {
 			// Process root element separately
 			var res = getResolution();
@@ -7574,7 +7569,7 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 	var ids = {};
 	var ref_elems = ["filter", "linearGradient", "pattern",	"radialGradient", "textPath", "use"];
 	
-	svgedit.Utilities.walkTree(g, function(n) {
+	svgedit.utilities.walkTree(g, function(n) {
 		// if it's an element node
 		if (n.nodeType == 1) {
 			// and the element has an ID
@@ -7811,7 +7806,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		
 		// recalculate dimensions on the top-level children so that unnecessary transforms
 		// are removed
-		svgedit.Utilities.walkTreePost(g, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
+		svgedit.utilities.walkTreePost(g, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
 		
 		// Give ID for any visible element missing one
 		$(g).find(visElems).each(function() {
@@ -7841,7 +7836,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 this.setSvgString = function(xmlString) {
 	try {
 		// convert string into XML document
-		var newDoc = svgedit.Utilities.text2xml(xmlString);
+		var newDoc = svgedit.utilities.text2xml(xmlString);
 		// run it through our sanitizer to remove anything we do not support
 		sanitizeSvg(newDoc.documentElement);
 
@@ -7925,7 +7920,7 @@ this.setSvgString = function(xmlString) {
 		
 		// recalculate dimensions on the top-level children so that unnecessary transforms
 		// are removed
-		svgedit.Utilities.walkTreePost(svgcontent, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
+		svgedit.utilities.walkTreePost(svgcontent, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
 		
 		var attrs = {
 			id: 'svgcontent',
@@ -8024,7 +8019,7 @@ this.setSvgString = function(xmlString) {
 this.importSvgString = function(xmlString) {
 	try {
 		// convert string into XML document
-		var newDoc = svgedit.Utilities.text2xml(xmlString);
+		var newDoc = svgedit.utilities.text2xml(xmlString);
 		// run it through our sanitizer to remove anything we do not support
 		sanitizeSvg(newDoc.documentElement);
 
@@ -8134,7 +8129,7 @@ var identifyLayers = function() {
 					layernames.push(name);
 					all_layers.push( [name,child] );
 					current_layer = child;
-					svgedit.Utilities.walkTree(child, function(e){e.setAttribute("style", "pointer-events:inherit");});
+					svgedit.utilities.walkTree(child, function(e){e.setAttribute("style", "pointer-events:inherit");});
 					current_layer.setAttribute("style", "pointer-events:none");
 				}
 				// if group did not have a name, it is an orphan
@@ -8164,7 +8159,7 @@ var identifyLayers = function() {
 		current_layer = svgcontent.appendChild(current_layer);
 		all_layers.push( [newname, current_layer] );
 	}
-	svgedit.Utilities.walkTree(current_layer, function(e){e.setAttribute("style","pointer-events:inherit");});
+	svgedit.utilities.walkTree(current_layer, function(e){e.setAttribute("style","pointer-events:inherit");});
 	current_layer.setAttribute("style","pointer-events:all");
 };
 
@@ -8298,7 +8293,7 @@ this.getCurrentLayer = function() {
 // Returns:
 // true if the current layer was switched, otherwise false
 this.setCurrentLayer = function(name) {
-	name = svgedit.Utilities.toXml(name);
+	name = svgedit.utilities.toXml(name);
 	for (var i = 0; i < all_layers.length; ++i) {
 		if (name == all_layers[i][0]) {
 			if (current_layer != all_layers[i][1]) {
@@ -8334,7 +8329,7 @@ this.renameCurrentLayer = function(newname) {
 				if (all_layers[i][1] == oldLayer) break;
 			}
 			var oldname = all_layers[i][0];
-			all_layers[i][0] = svgedit.Utilities.toXml(newname);
+			all_layers[i][0] = svgedit.utilities.toXml(newname);
 		
 			// now change the underlying title element contents
 			var len = oldLayer.childNodes.length;
@@ -9016,7 +9011,7 @@ this.setColor = function(type, val, preventUndo) {
 		var elem = selectedElements[i];
 		if (elem) {
 			if (elem.tagName == "g")
-				svgedit.Utilities.walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
+				svgedit.utilities.walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
 			else {
 				if(type == 'fill') {
 					if(elem.tagName != "polyline" && elem.tagName != "line") {
@@ -9236,7 +9231,7 @@ this.setStrokeWidth = function(val) {
 		var elem = selectedElements[i];
 		if (elem) {
 			if (elem.tagName == "g")
-				svgedit.Utilities.walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
+				svgedit.utilities.walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
 			else 
 				elems.push(elem);
 		}
@@ -9261,7 +9256,7 @@ this.setStrokeAttr = function(attr, val) {
 		var elem = selectedElements[i];
 		if (elem) {
 			if (elem.tagName == "g")
-				svgedit.Utilities.walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
+				svgedit.utilities.walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
 			else 
 				elems.push(elem);
 		}
@@ -10806,7 +10801,7 @@ this.getPrivateMethods = function() {
 		transformBox: transformBox,
 		transformListToTransform: transformListToTransform,
 		transformPoint: transformPoint,
-		walkTree: svgedit.Utilities.walkTree
+		walkTree: svgedit.utilities.walkTree
 	}
 	return obj;
 };
@@ -10835,28 +10830,9 @@ function disableAdvancedTextEdit() {
 }
 
 (function() {
-	if (!svgedit.BrowserSupport.textCharPos) {
+	if (!svgedit.browsersupport.textCharPos) {
 		disableAdvancedTextEdit();
 	}
-
-	// Get correct em/ex values
-	var rect = document.createElementNS(svgns,'rect');
-	rect.setAttribute('width',"1em");
-	rect.setAttribute('height',"1ex");
-	rect.setAttribute('x',"1in");
-	svgcontent.appendChild(rect);
-	var bb = rect.getBBox();
-	rect.parentNode.removeChild(rect);
-	unit_types.em = bb.width;
-	unit_types.ex = bb.height;
-	var inch = bb.x;
-	unit_types['in'] = inch;
-	unit_types.cm = inch / 2.54;
-	unit_types.mm = inch / 25.4;
-	unit_types.pt = inch / 72;
-	unit_types.pc = inch / 6;
-	unit_types['%'] = 0;
-
 })();
 
 }

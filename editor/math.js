@@ -1,5 +1,5 @@
 /**
- * SVG-edit Math Utilities
+ * Package: svedit.math
  *
  * Licensed under the Apache License, Version 2
  *
