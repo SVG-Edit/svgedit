@@ -1414,19 +1414,15 @@ var SelectorManager;
 
 
 // import svgtransformlist.js
-var SVGEditTransformList = svgedit.transformlist.SVGTransformList;
 var getTransformList = this.getTransformList = svgedit.transformlist.getTransformList;
 
-
 // import from svgutils.js
-var walkTree = this.walkTree = svgedit.Utilities.walkTree;
-var walkTreePost = this.walkTreePost = svgedit.Utilities.walkTreePost;
 var getUrlFromAttr = this.getUrlFromAttr = svgedit.Utilities.getUrlFromAttr;
 var getHref = this.getHref = svgedit.Utilities.getHref;
 var setHref = this.setHref = svgedit.Utilities.setHref;
 var getPathBBox = svgedit.Utilities.getPathBBox;
-var bboxToObj = svgedit.Utilities.bboxToObj;
 var getBBox = this.getBBox = svgedit.Utilities.getBBox;
+var getRotationAngle = this.getRotationAngle = svgedit.Utilities.getRotationAngle;
 
 // Function: snapToGrid
 // round value to for snapping
@@ -1441,7 +1437,6 @@ svgedit.Utilities.snapToGrid = function(value){
 	return value;
 };
 var snapToGrid = svgedit.Utilities.snapToGrid;
-
 
 // import from math.js.
 var transformPoint = svgedit.math.transformPoint;
@@ -1847,7 +1842,7 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 					var parent = elem.parentNode;
 					parent.appendChild(g);
 					g.appendChild(clone);
-					bb = bboxToObj(g.getBBox());
+					bb = svgedit.Utilities.bboxToObj(g.getBBox());
 					parent.removeChild(g);
 				}
 				
@@ -2317,33 +2312,6 @@ var ffClone = function(elem) {
 // 	$(svgroot).children().each(cb);
 // };
 
-
-// Group: Element Transforms
-
-// TODO(codedread): Migrate this into svgutils.js
-// Function: getRotationAngle
-// Get the rotation angle of the given/selected DOM element
-//
-// Parameters:
-// elem - Optional DOM element to get the angle for
-// to_rad - Boolean that when true returns the value in radians rather than degrees
-//
-// Returns:
-// Float with the angle in degrees or radians
-var getRotationAngle = this.getRotationAngle = function(elem, to_rad) {
-	var selected = elem || selectedElements[0];
-	// find the rotation transform (if any) and set it
-	var tlist = getTransformList(selected);
-	if(!tlist) return 0; // <svg> elements have no tlist
-	var N = tlist.numberOfItems;
-	for (var i = 0; i < N; ++i) {
-		var xform = tlist.getItem(i);
-		if (xform.type == 4) {
-			return to_rad ? xform.angle * Math.PI / 180.0 : xform.angle;
-		}
-	}
-	return 0.0;
-};
 
 // Function: setRotationAngle
 // Removes any old rotations if present, prepends a new rotation at the
@@ -4560,7 +4528,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					if(support.nonScalingStroke) {
 						var elem = selectedElements[0];
 						elem.removeAttribute('style');
-						walkTree(elem, function(elem) {
+						svgedit.Utilities.walkTree(elem, function(elem) {
 							elem.removeAttribute('style');
 						});
 					}
@@ -7606,7 +7574,7 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 	var ids = {};
 	var ref_elems = ["filter", "linearGradient", "pattern",	"radialGradient", "textPath", "use"];
 	
-	walkTree(g, function(n) {
+	svgedit.Utilities.walkTree(g, function(n) {
 		// if it's an element node
 		if (n.nodeType == 1) {
 			// and the element has an ID
@@ -7843,7 +7811,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		
 		// recalculate dimensions on the top-level children so that unnecessary transforms
 		// are removed
-		walkTreePost(g, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
+		svgedit.Utilities.walkTreePost(g, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
 		
 		// Give ID for any visible element missing one
 		$(g).find(visElems).each(function() {
@@ -7957,7 +7925,7 @@ this.setSvgString = function(xmlString) {
 		
 		// recalculate dimensions on the top-level children so that unnecessary transforms
 		// are removed
-		walkTreePost(svgcontent, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
+		svgedit.Utilities.walkTreePost(svgcontent, function(n){try{recalculateDimensions(n)}catch(e){console.log(e)}});
 		
 		var attrs = {
 			id: 'svgcontent',
@@ -8166,7 +8134,7 @@ var identifyLayers = function() {
 					layernames.push(name);
 					all_layers.push( [name,child] );
 					current_layer = child;
-					walkTree(child, function(e){e.setAttribute("style", "pointer-events:inherit");});
+					svgedit.Utilities.walkTree(child, function(e){e.setAttribute("style", "pointer-events:inherit");});
 					current_layer.setAttribute("style", "pointer-events:none");
 				}
 				// if group did not have a name, it is an orphan
@@ -8196,7 +8164,7 @@ var identifyLayers = function() {
 		current_layer = svgcontent.appendChild(current_layer);
 		all_layers.push( [newname, current_layer] );
 	}
-	walkTree(current_layer, function(e){e.setAttribute("style","pointer-events:inherit");});
+	svgedit.Utilities.walkTree(current_layer, function(e){e.setAttribute("style","pointer-events:inherit");});
 	current_layer.setAttribute("style","pointer-events:all");
 };
 
@@ -9048,7 +9016,7 @@ this.setColor = function(type, val, preventUndo) {
 		var elem = selectedElements[i];
 		if (elem) {
 			if (elem.tagName == "g")
-				walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
+				svgedit.Utilities.walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
 			else {
 				if(type == 'fill') {
 					if(elem.tagName != "polyline" && elem.tagName != "line") {
@@ -9268,7 +9236,7 @@ this.setStrokeWidth = function(val) {
 		var elem = selectedElements[i];
 		if (elem) {
 			if (elem.tagName == "g")
-				walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
+				svgedit.Utilities.walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
 			else 
 				elems.push(elem);
 		}
@@ -9293,7 +9261,7 @@ this.setStrokeAttr = function(attr, val) {
 		var elem = selectedElements[i];
 		if (elem) {
 			if (elem.tagName == "g")
-				walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
+				svgedit.Utilities.walkTree(elem, function(e){if(e.nodeName!="g") elems.push(e);});
 			else 
 				elems.push(elem);
 		}
@@ -10832,13 +10800,13 @@ this.getPrivateMethods = function() {
 		SelectorManager: SelectorManager,
 		shortFloat: shortFloat,
 		svgCanvasToString: svgCanvasToString,
-		SVGEditTransformList: SVGEditTransformList,
+		SVGEditTransformList: svgedit.transformlist.SVGTransformList,
 		svgToString: svgToString,
 		toString: toString,
 		transformBox: transformBox,
 		transformListToTransform: transformListToTransform,
 		transformPoint: transformPoint,
-		walkTree: walkTree
+		walkTree: svgedit.Utilities.walkTree
 	}
 	return obj;
 };

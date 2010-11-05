@@ -10,6 +10,7 @@
 // Dependencies:
 // 1) jQuery
 // 2) browsersupport.js
+// 3) svgtransformlist.js
 
 (function() {
 
@@ -462,5 +463,28 @@ svgedit.Utilities.getBBox = function(elem) {
 	return ret;
 };
 
+// Function: svgedit.Utilities.getRotationAngle
+// Get the rotation angle of the given/selected DOM element
+//
+// Parameters:
+// elem - Optional DOM element to get the angle for
+// to_rad - Boolean that when true returns the value in radians rather than degrees
+//
+// Returns:
+// Float with the angle in degrees or radians
+svgedit.Utilities.getRotationAngle = function(elem, to_rad) {
+	var selected = elem || selectedElements[0];
+	// find the rotation transform (if any) and set it
+	var tlist = svgedit.transformlist.getTransformList(selected);
+	if(!tlist) return 0; // <svg> elements have no tlist
+	var N = tlist.numberOfItems;
+	for (var i = 0; i < N; ++i) {
+		var xform = tlist.getItem(i);
+		if (xform.type == 4) {
+			return to_rad ? xform.angle * Math.PI / 180.0 : xform.angle;
+		}
+	}
+	return 0.0;
+};
 
 })();
