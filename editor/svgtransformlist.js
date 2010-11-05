@@ -53,6 +53,20 @@ function transformToString(xform) {
  */
 svgedit.transformlist.listMap = {};
 
+svgedit.transformlist.resetListMap = function() {
+	svgedit.transformlist.listMap = {};
+};
+
+/**
+ * Parameters:
+ * elem - a DOM Element
+ */
+svgedit.transformlist.removeElementFromListMap = function(elem) {
+	if (elem.id && svgedit.transformlist.listMap[elem.id]) {
+		delete svgedit.transformlist.listMap[elem.id];
+	}
+};
+
 
 // **************************************************************************************
 // SVGTransformList implementation for Webkit 
