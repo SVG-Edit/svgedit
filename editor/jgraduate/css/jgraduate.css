@@ -190,6 +190,15 @@ div.jGraduate_Form_Section {
 	overflow: auto;
 }
 
+div.jGraduate_Form_Section label {
+	padding: 0 2px;
+}
+
+div.jGraduate_StopSection input[type=text],
+div.jGraduate_Slider input[type=text] {
+	width: 33px;
+}
+
 div.jGraduate_LightBox {
 	position: fixed;
 	top: 0px;
