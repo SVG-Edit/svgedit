@@ -8,7 +8,7 @@
  */
 
 // Dependencies:
-// 1) browwsersupport.js
+// 1) browsersupport.js
 
 (function() {
 
@@ -230,7 +230,7 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 // Parameters:
 // elem - DOM element to get a transformlist from
 svgedit.transformlist.getTransformList = function(elem) {
-	if (svgedit.BrowserSupport.isWebkit) {
+	if (svgedit.browsersupport.isWebkit) {
 		var id = elem.id;
 		if(!id) {
 			// Get unique ID for temporary element

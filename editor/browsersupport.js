@@ -1,5 +1,5 @@
 /**
- * Browser Support module for SVG-edit
+ * Package: svgedit.browsersupport
  *
  * Licensed under the Apache License, Version 2
  *
@@ -16,17 +16,17 @@ if (!window.svgedit) {
 	window.svgedit = {};
 }
 
-if (!svgedit.BrowserSupport) {
-	svgedit.BrowserSupport = {};
+if (!svgedit.browsersupport) {
+	svgedit.browsersupport = {};
 }
 
 var svgns = 'http://www.w3.org/2000/svg';
 var userAgent = navigator.userAgent;
 
 // Note: Browser sniffing should only be used if no other detection method is possible
-svgedit.BrowserSupport.isOpera = !!window.opera;
-svgedit.BrowserSupport.isWebkit = userAgent.indexOf("AppleWebKit") >= 0;
-svgedit.BrowserSupport.isGecko = userAgent.indexOf('Gecko/') >= 0;
+svgedit.browsersupport.isOpera = !!window.opera;
+svgedit.browsersupport.isWebkit = userAgent.indexOf("AppleWebKit") >= 0;
+svgedit.browsersupport.isGecko = userAgent.indexOf('Gecko/') >= 0;
 
 // segList functions (for FF1.5 and 2.0)
 function supportPathReplaceItem() {
@@ -71,7 +71,7 @@ function supportTextCharPos() {
 
 function supportEditableText() {
 	// TODO: Find better way to check support for this
-	return svgedit.BrowserSupport.isOpera;
+	return svgedit.browsersupport.isOpera;
 }
 
 function supportGoodDecimals() {
@@ -93,11 +93,11 @@ function supportNonScalingStroke() {
 	return rect.style.vectorEffect === 'non-scaling-stroke';
 }
 
-svgedit.BrowserSupport.pathReplaceItem = supportPathReplaceItem();
-svgedit.BrowserSupport.pathInsertItemBefore = supportPathInsertItemBefore();
-svgedit.BrowserSupport.textCharPos = supportTextCharPos();
-svgedit.BrowserSupport.editableText = supportEditableText();
-svgedit.BrowserSupport.goodDecimals = supportGoodDecimals();
-svgedit.BrowserSupport.nonScalingStroke = supportNonScalingStroke();
+svgedit.browsersupport.pathReplaceItem = supportPathReplaceItem();
+svgedit.browsersupport.pathInsertItemBefore = supportPathInsertItemBefore();
+svgedit.browsersupport.textCharPos = supportTextCharPos();
+svgedit.browsersupport.editableText = supportEditableText();
+svgedit.browsersupport.goodDecimals = supportGoodDecimals();
+svgedit.browsersupport.nonScalingStroke = supportNonScalingStroke();
 
 })();
