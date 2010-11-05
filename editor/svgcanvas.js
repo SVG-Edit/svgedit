@@ -643,9 +643,7 @@ var ChangeElementCommand = this.undoCmd.changeElement = function(elem, attrs, te
 		}		
 		
 		// Remove transformlist to prevent confusion that causes bugs like 575.
-		if (svgTransformLists[this.elem.id]) {
-			delete svgTransformLists[this.elem.id];
-		}	
+		svgedit.transformlist.removeElementFromListMap(this.elem);
 		
 		return true;
 	};
@@ -708,9 +706,7 @@ var RemoveElementCommand = this.undoCmd.removeElement = function(elem, parent, t
 	// Function: RemoveElementCommand.apply
 	// Re-removes the new element
 	this.apply = function() {	
-		if (svgTransformLists[this.elem.id]) {
-			delete svgTransformLists[this.elem.id];
-		}	
+		svgedit.transformlist.removeElementFromListMap(this.elem);
 	
 		this.parent = this.elem.parentNode;
 		this.elem = this.parent.removeChild(this.elem);
@@ -722,9 +718,7 @@ var RemoveElementCommand = this.undoCmd.removeElement = function(elem, parent, t
 	// Function: RemoveElementCommand.unapply
 	// Re-adds the new element
 	this.unapply = function() { 
-		if (svgTransformLists[this.elem.id]) {
-			delete svgTransformLists[this.elem.id];
-		}
+		svgedit.transformlist.removeElementFromListMap(this.elem);
 
 		this.parent.insertBefore(this.elem, this.elem.nextSibling);
 		
@@ -740,9 +734,7 @@ var RemoveElementCommand = this.undoCmd.removeElement = function(elem, parent, t
 	this.elements = function() { return [this.elem]; };
 	
 	// special hack for webkit: remove this element's entry in the svgTransformLists map
-	if (svgTransformLists[elem.id]) {
-		delete svgTransformLists[elem.id];
-	}
+	svgedit.transformlist.removeElementFromListMap(elem);
 }
 
 // Function: MoveElementCommand
@@ -1440,19 +1432,18 @@ var SelectorManager;
 	};
 }());
 
-// "Import" from svgtransformlist.js
+// import svgtransformlist.js
 var SVGEditTransformList = svgedit.transformlist.SVGTransformList;
-var svgTransformLists = svgedit.transformlist.transforms;
 var getTransformList = this.getTransformList = svgedit.transformlist.getTransformList;
 
-// "Import" from svgutils.js
+// import from svgutils.js
 var walkTree = this.walkTree = svgedit.Utilities.walkTree;
 var walkTreePost = this.walkTreePost = svgedit.Utilities.walkTreePost;
 var getUrlFromAttr = this.getUrlFromAttr = svgedit.Utilities.getUrlFromAttr;
 var getHref = this.getHref = svgedit.Utilities.getHref;
 var setHref = this.setHref = svgedit.Utilities.setHref;
 
-// "Import" from math.js.
+// import from math.js.
 var transformPoint = svgedit.math.transformPoint;
 var isIdentity = svgedit.math.isIdentity;
 var matrixMultiply = this.matrixMultiply = svgedit.math.matrixMultiply;
@@ -8163,7 +8154,7 @@ this.setSvgString = function(xmlString) {
 		current_zoom = 1;
 		
 		// reset transform lists
-		svgTransformLists = {};
+		svgedit.transformlist.resetListMap();
 		clearSelection();
 		pathActions.clearData();
 		svgroot.appendChild(selectorManager.selectorParentGroup);
