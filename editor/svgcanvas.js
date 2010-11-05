@@ -207,7 +207,7 @@ var Utils = this.Utils = svgedit.Utilities;
 
 // Function: snapToGrid
 // round value to for snapping
-// NOTE: This function did not move to svgutils.js since it depends on unit_types.
+// NOTE: This function did not move to svgutils.js since it depends on unit_types and curConfig.
 Utils.snapToGrid = function(value){
 	var stepSize = curConfig.snappingStep;
 	var unit = curConfig.baseUnit;
@@ -1441,13 +1441,16 @@ var SelectorManager;
 }());
 
 // "Import" from svgtransformlist.js
-var SVGEditTransformList = svgedit.SVGTransformList;
-var svgTransformLists = {};
+var SVGEditTransformList = svgedit.transformlist.SVGTransformList;
+var svgTransformLists = svgedit.transformlist.transforms;
+var getTransformList = this.getTransformList = svgedit.transformlist.getTransformList;
 
 // "Import" from svgutils.js
 var walkTree = this.walkTree = svgedit.Utilities.walkTree;
 var walkTreePost = this.walkTreePost = svgedit.Utilities.walkTreePost;
 var getUrlFromAttr = this.getUrlFromAttr = svgedit.Utilities.getUrlFromAttr;
+var getHref = this.getHref = svgedit.Utilities.getHref;
+var setHref = this.setHref = svgedit.Utilities.setHref;
 
 // "Import" from math.js.
 var transformPoint = svgedit.math.transformPoint;
@@ -2536,40 +2539,6 @@ this.setRotationAngle = function(val, preventUndo) {
 	selector.updateGripCursors(val);
 };
 
-
-// Function: getTransformList
-// Returns an object that behaves like a SVGTransformList for the given DOM element
-//
-// Parameters:
-// elem - DOM element to get a transformlist from
-var getTransformList = this.getTransformList = function(elem) {
-	if (isWebkit) {
-		var id = elem.id;
-		if(!id) {
-			// Get unique ID for temporary element
-			id = 'temp';
-		}
-		var t = svgTransformLists[id];
-		if (!t || id == 'temp') {
-			svgTransformLists[id] = new SVGEditTransformList(elem);
-			svgTransformLists[id]._init();
-			t = svgTransformLists[id];
-		}
-		return t;
-	}
-	else if (elem.transform) {
-		return elem.transform.baseVal;
-	}
-	else if (elem.gradientTransform) {
-		return elem.gradientTransform.baseVal;
-	}
-	else if (elem.patternTransform) {
-		return elem.patternTransform.baseVal;
-	}
-
-	return null;
-};
-
 // Function: recalculateAllSelectedDimensions
 // Runs recalculateDimensions on the selected elements, 
 // adding the changes to a single batch command
@@ -3448,7 +3417,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		
 		// Check if it has a gradient with userSpaceOnUse, in which case
 		// adjust it by recalculating the matrix transform.
-		// TODO: Make this work in Webkit using SVGEditTransformList
+		// TODO: Make this work in Webkit using svgedit.transformlist.SVGTransformList
 		if(!isWebkit) {
 			var fill = selected.getAttribute('fill');
 			if(fill && fill.indexOf('url(') === 0) {
@@ -8953,19 +8922,6 @@ this.getTitle = function(elem) {
 	}
 	return '';
 }
-
-// Function: getHref
-// Returns the given element's xlink:href value
-var getHref = this.getHref = function(elem) {
-	return elem.getAttributeNS(xlinkns, "href");
-}
-
-// Function: setHref
-// Sets the given element's xlink:href value
-var setHref = this.setHref = function(elem, val) {
-	elem.setAttributeNS(xlinkns, "xlink:href", val);
-}
-
 
 // Function: setGroupTitle
 // Sets the group/SVG's title content

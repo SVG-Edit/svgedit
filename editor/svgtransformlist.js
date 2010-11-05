@@ -7,10 +7,16 @@
  * Copyright(c) 2010 Jeff Schiller
  */
 
+// Dependencies:
+// 1) browwsersupport.js
+
 (function() {
 
 if (!window.svgedit) {
 	window.svgedit = {};
+}
+if (!svgedit.transformlist) {
+	svgedit.transformlist = {};
 }
 
 // Helper function.
@@ -42,6 +48,12 @@ function transformToString(xform) {
 	return text;
 };
 
+/**
+ * Map of SVGTransformList objects.
+ */
+svgedit.transformlist.listMap = {};
+
+
 // **************************************************************************************
 // SVGTransformList implementation for Webkit 
 // These methods do not currently raise any exceptions.
@@ -62,7 +74,7 @@ function transformToString(xform) {
 //		NOT IMPLEMENTED: SVGTransform consolidate (  );
 //	}
 // **************************************************************************************
-svgedit.SVGTransformList = function(elem) {
+svgedit.transformlist.SVGTransformList = function(elem) {
 	this._elem = elem || null;
 	this._xforms = [];
 	// TODO: how do we capture the undo-ability in the changed transform list?
@@ -196,5 +208,40 @@ svgedit.SVGTransformList = function(elem) {
 		return newItem;
 	};
 };
+
+
+// Function: getTransformList
+// Returns an object that behaves like a SVGTransformList for the given DOM element
+//
+// Parameters:
+// elem - DOM element to get a transformlist from
+svgedit.transformlist.getTransformList = function(elem) {
+	if (svgedit.BrowserSupport.isWebkit) {
+		var id = elem.id;
+		if(!id) {
+			// Get unique ID for temporary element
+			id = 'temp';
+		}
+		var t = svgedit.transformlist.listMap[id];
+		if (!t || id == 'temp') {
+			svgedit.transformlist.listMap[id] = new svgedit.transformlist.SVGTransformList(elem);
+			svgedit.transformlist.listMap[id]._init();
+			t = svgedit.transformlist.listMap[id];
+		}
+		return t;
+	}
+	else if (elem.transform) {
+		return elem.transform.baseVal;
+	}
+	else if (elem.gradientTransform) {
+		return elem.gradientTransform.baseVal;
+	}
+	else if (elem.patternTransform) {
+		return elem.patternTransform.baseVal;
+	}
+
+	return null;
+};
+
 
 })();
