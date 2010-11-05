@@ -1,5 +1,5 @@
 /**
- * SVG-edit Utilities
+ * Package: svgedit.Utilities
  *
  * Licensed under the Apache License, Version 2
  *
@@ -9,6 +9,7 @@
 
 // Dependencies:
 // 1) jQuery
+// 2) browsersupport.js
 
 (function() {
 
@@ -25,6 +26,11 @@ if (!svgedit.Utilities) {
 // String used to encode base64.
 var KEYSTR = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 var XLINKNS = "http://www.w3.org/1999/xlink";
+
+// Much faster than running getBBox() every time
+var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
+var visElems_arr = visElems.split(',');
+//var hidElems = 'clipPath,defs,desc,feGaussianBlur,filter,linearGradient,marker,mask,metadata,pattern,radialGradient,stop,switch,symbol,title,textPath';
 
 // Function: svgedit.Utilities.toXml
 // Converts characters in a string to XML-friendly entities.
@@ -324,5 +330,137 @@ svgedit.Utilities.findDefs = function(svgElement) {
 	}
 	return defs;
 };
+
+// Function: svgedit.Utilities.getPathBBox
+// Get correct BBox for a path in Webkit
+// Converted from code found here:
+// http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html
+// 
+// Parameters:
+// path - The path DOM element to get the BBox for
+//
+// Returns:
+// A BBox-like object
+svgedit.Utilities.getPathBBox = function(path) {
+	var seglist = path.pathSegList;
+	var tot = seglist.numberOfItems;
+	
+	var bounds = [[], []];
+	var start = seglist.getItem(0);
+	var P0 = [start.x, start.y];
+	
+	for(var i=0; i < tot; i++) {
+		var seg = seglist.getItem(i);
+		if(!seg.x) continue;
+		
+		// Add actual points to limits
+		bounds[0].push(P0[0]);
+		bounds[1].push(P0[1]);
+		
+		if(seg.x1) {
+			var P1 = [seg.x1, seg.y1],
+				P2 = [seg.x2, seg.y2],
+				P3 = [seg.x, seg.y];
+
+			for(var j=0; j < 2; j++) {
+
+				var calc = function(t) {
+					return Math.pow(1-t,3) * P0[j] 
+						+ 3 * Math.pow(1-t,2) * t * P1[j]
+						+ 3 * (1-t) * Math.pow(t,2) * P2[j]
+						+ Math.pow(t,3) * P3[j];
+				};
+
+				var b = 6 * P0[j] - 12 * P1[j] + 6 * P2[j];
+				var a = -3 * P0[j] + 9 * P1[j] - 9 * P2[j] + 3 * P3[j];
+				var c = 3 * P1[j] - 3 * P0[j];
+				
+				if(a == 0) {
+					if(b == 0) {
+						continue;
+					}
+					var t = -c / b;
+					if(0 < t && t < 1) {
+						bounds[j].push(calc(t));
+					}
+					continue;
+				}
+				
+				var b2ac = Math.pow(b,2) - 4 * c * a;
+				if(b2ac < 0) continue;
+				var t1 = (-b + Math.sqrt(b2ac))/(2 * a);
+				if(0 < t1 && t1 < 1) bounds[j].push(calc(t1));
+				var t2 = (-b - Math.sqrt(b2ac))/(2 * a);
+				if(0 < t2 && t2 < 1) bounds[j].push(calc(t2));
+			}
+			P0 = P3;
+		} else {
+			bounds[0].push(seg.x);
+			bounds[1].push(seg.y);
+		}
+	}
+	
+	var x = Math.min.apply(null, bounds[0]);
+	var w = Math.max.apply(null, bounds[0]) - x;
+	var y = Math.min.apply(null, bounds[1]);
+	var h = Math.max.apply(null, bounds[1]) - y;
+	return {
+		'x': x,
+		'y': y,
+		'width': w,
+		'height': h
+	};
+};
+
+// Function: svgedit.Utilities.getBBox
+// Get the given/selected element's bounding box object, convert it to be more
+// usable when necessary
+//
+// Parameters:
+// elem - Optional DOM element to get the BBox for
+svgedit.Utilities.getBBox = function(elem) {
+	var selected = elem || selectedElements[0];
+	if (elem.nodeType != 1) return null;
+	var ret = null;
+	var elname = selected.nodeName;
+	
+	if(elname === 'text' && selected.textContent === '') {
+		selected.textContent = 'a'; // Some character needed for the selector to use.
+		ret = selected.getBBox();
+		selected.textContent = '';
+	} else if(elname === 'path' && svgedit.BrowserSupport.isWebkit) {
+		ret = svgedit.Utilities.getPathBBox(selected);
+	} else if(elname === 'use' && !svgedit.BrowserSupport.isWebkit || elname === 'foreignObject') {
+		ret = selected.getBBox();
+		var bb = {};
+		bb.width = ret.width;
+		bb.height = ret.height;
+		bb.x = ret.x + parseFloat(selected.getAttribute('x')||0);
+		bb.y = ret.y + parseFloat(selected.getAttribute('y')||0);
+		ret = bb;
+	} else if(~visElems_arr.indexOf(elname)) {
+		try { ret = selected.getBBox();} 
+		catch(e) { 
+			// Check if element is child of a foreignObject
+			var fo = $(selected).closest("foreignObject");
+			if(fo.length) {
+				try {
+					ret = fo[0].getBBox();
+				} catch(e) {
+					ret = null;
+				}
+			} else {
+				ret = null;
+			}
+		}
+	}
+	if(ret) {
+		ret = svgedit.Utilities.bboxToObj(ret);
+	}
+
+	// get the bounding box from the DOM (which is in that element's coordinate system)
+	return ret;
+};
+
 
 })();

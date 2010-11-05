@@ -187,11 +187,8 @@ var support = svgedit.BrowserSupport,
 		dimensions: [640, 480]
 	};
 	
-	
-	// Much faster than running getBBox() every time
+
 	var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
-	var visElems_arr = visElems.split(',');
-// 	var hidElems = 'clipPath,defs,desc,feGaussianBlur,filter,linearGradient,marker,mask,metadata,pattern,radialGradient,stop,switch,symbol,title,textPath';
 	
 	var ref_attrs = ["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"];
 
@@ -200,25 +197,7 @@ var support = svgedit.BrowserSupport,
 if(config) {
 	$.extend(curConfig, config);
 }
-	
-// Static class for various utility functions
-// See svgutils.js.
-var Utils = this.Utils = svgedit.Utilities;
 
-// Function: snapToGrid
-// round value to for snapping
-// NOTE: This function did not move to svgutils.js since it depends on unit_types and curConfig.
-Utils.snapToGrid = function(value){
-	var stepSize = curConfig.snappingStep;
-	var unit = curConfig.baseUnit;
-	if(unit !== "px") {
-		stepSize *= unit_types[unit];
-	}
-	value = Math.round(value/stepSize)*stepSize;
-	return value;
-};
-
-var snapToGrid = Utils.snapToGrid;
 var elData = $.data;
 	
 // TODO: declare the variables and set them as null, then move this setup stuff to
@@ -250,7 +229,8 @@ var canvas = this,
 	dimensions = curConfig.dimensions;
 	
 	// Create Root SVG element. This is a container for the document being edited, not the document itself.
-	var svgroot = svgdoc.importNode(Utils.text2xml('<svg id="svgroot" xmlns="' + svgns + '" xlinkns="' + xlinkns + '" ' +
+	var svgroot = svgdoc.importNode(svgedit.Utilities.text2xml(
+				'<svg id="svgroot" xmlns="' + svgns + '" xlinkns="' + xlinkns + '" ' +
 					'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
 					'<defs>' +
 						'<filter id="canvashadow" filterUnits="objectBoundingBox">' +
@@ -1432,9 +1412,11 @@ var SelectorManager;
 	};
 }());
 
+
 // import svgtransformlist.js
 var SVGEditTransformList = svgedit.transformlist.SVGTransformList;
 var getTransformList = this.getTransformList = svgedit.transformlist.getTransformList;
+
 
 // import from svgutils.js
 var walkTree = this.walkTree = svgedit.Utilities.walkTree;
@@ -1442,6 +1424,24 @@ var walkTreePost = this.walkTreePost = svgedit.Utilities.walkTreePost;
 var getUrlFromAttr = this.getUrlFromAttr = svgedit.Utilities.getUrlFromAttr;
 var getHref = this.getHref = svgedit.Utilities.getHref;
 var setHref = this.setHref = svgedit.Utilities.setHref;
+var getPathBBox = svgedit.Utilities.getPathBBox;
+var bboxToObj = svgedit.Utilities.bboxToObj;
+var getBBox = this.getBBox = svgedit.Utilities.getBBox;
+
+// Function: snapToGrid
+// round value to for snapping
+// NOTE: This function did not move to svgutils.js since it depends on unit_types and curConfig.
+svgedit.Utilities.snapToGrid = function(value){
+	var stepSize = curConfig.snappingStep;
+	var unit = curConfig.baseUnit;
+	if(unit !== "px") {
+		stepSize *= unit_types[unit];
+	}
+	value = Math.round(value/stepSize)*stepSize;
+	return value;
+};
+var snapToGrid = svgedit.Utilities.snapToGrid;
+
 
 // import from math.js.
 var transformPoint = svgedit.math.transformPoint;
@@ -1787,7 +1787,7 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 		var i = curBBoxes.length;
 		while (i--) {
 			if(!rubberBBox.width || !rubberBBox.width) continue;
-			if (Utils.rectsIntersect(rubberBBox, curBBoxes[i].bbox))  {
+			if (svgedit.Utilities.rectsIntersect(rubberBBox, curBBoxes[i].bbox))  {
 				resultList.push(curBBoxes[i].elem);
 			}
 		}
@@ -1798,6 +1798,7 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 	return resultList;
 };
 
+// TODO(codedread): Migrate this into svgutils.js
 // Function: getStrokedBBox
 // Get the bounding box for one or more stroked and/or transformed elements
 // 
@@ -2289,59 +2290,6 @@ var getRefElem = this.getRefElem = function(attrVal) {
 	return getElem(getUrlFromAttr(attrVal).substr(1));
 }
 
-var bboxToObj = Utils.bboxToObj;
-
-// Function: getBBox
-// Get the given/selected element's bounding box object, convert it to be more
-// usable when necessary
-//
-// Parameters:
-// elem - Optional DOM element to get the BBox for
-var getBBox = this.getBBox = function(elem) {
-	var selected = elem || selectedElements[0];
-	if (elem.nodeType != 1) return null;
-	var ret = null;
-	var elname = selected.nodeName;
-	
-	if(elname === 'text' && selected.textContent === '') {
-		selected.textContent = 'a'; // Some character needed for the selector to use.
-		ret = selected.getBBox();
-		selected.textContent = '';
-	} else if(elname === 'path' && isWebkit) {
-		ret = getPathBBox(selected);
-	} else if(elname === 'use' && !isWebkit || elname === 'foreignObject') {
-		ret = selected.getBBox();
-		var bb = {};
-		bb.width = ret.width;
-		bb.height = ret.height;
-		bb.x = ret.x + parseFloat(selected.getAttribute('x')||0);
-		bb.y = ret.y + parseFloat(selected.getAttribute('y')||0);
-		ret = bb;
-	} else if(~visElems_arr.indexOf(elname)) {
-		try { ret = selected.getBBox();} 
-		catch(e) { 
-			// Check if element is child of a foreignObject
-			var fo = $(selected).closest("foreignObject");
-			if(fo.length) {
-				try {
-					ret = fo[0].getBBox();						
-				} catch(e) {
-					ret = null;
-				}
-			} else {
-				ret = null;
-			}
-		}
-	}
-	if(ret) {
-		ret = bboxToObj(ret);
-	}
-
-	// get the bounding box from the DOM (which is in that element's coordinate system)
-	return ret;
-};
-
-
 // Function: ffClone
 // Hack for Firefox bugs where text element features aren't updated.
 // This function clones the element and re-selects it 
@@ -2361,86 +2309,6 @@ var ffClone = function(elem) {
 	return clone;
 }
 
-// Function: getPathBBox
-// Get correct BBox for a path in Webkit
-// Converted from code found here:
-// http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html
-// 
-// Parameters:
-// path - The path DOM element to get the BBox for
-//
-// Returns:
-// A BBox-like object
-var getPathBBox = function(path) {
-	var seglist = path.pathSegList;
-	var tot = seglist.numberOfItems;
-	
-	var bounds = [[], []];
-	var start = seglist.getItem(0);
-	var P0 = [start.x, start.y];
-	
-	for(var i=0; i < tot; i++) {
-		var seg = seglist.getItem(i);
-		if(!seg.x) continue;
-		
-		// Add actual points to limits
-		bounds[0].push(P0[0]);
-		bounds[1].push(P0[1]);
-		
-		if(seg.x1) {
-			var P1 = [seg.x1, seg.y1],
-				P2 = [seg.x2, seg.y2],
-				P3 = [seg.x, seg.y];
-
-			for(var j=0; j < 2; j++) {
-
-				var calc = function(t) {
-					return Math.pow(1-t,3) * P0[j] 
-						+ 3 * Math.pow(1-t,2) * t * P1[j]
-						+ 3 * (1-t) * Math.pow(t,2) * P2[j]
-						+ Math.pow(t,3) * P3[j];
-				};
-
-				var b = 6 * P0[j] - 12 * P1[j] + 6 * P2[j];
-				var a = -3 * P0[j] + 9 * P1[j] - 9 * P2[j] + 3 * P3[j];
-				var c = 3 * P1[j] - 3 * P0[j];
-				
-				if(a == 0) {
-					if(b == 0) {
-						continue;
-					}
-					var t = -c / b;
-					if(0 < t && t < 1) {
-						bounds[j].push(calc(t));
-					}
-					continue;
-				}
-				
-				var b2ac = Math.pow(b,2) - 4 * c * a;
-				if(b2ac < 0) continue;
-				var t1 = (-b + Math.sqrt(b2ac))/(2 * a);
-				if(0 < t1 && t1 < 1) bounds[j].push(calc(t1));
-				var t2 = (-b - Math.sqrt(b2ac))/(2 * a);
-				if(0 < t2 && t2 < 1) bounds[j].push(calc(t2));
-			}
-			P0 = P3;
-		} else {
-			bounds[0].push(seg.x);
-			bounds[1].push(seg.y);
-		}
-	}
-	
-	var x = Math.min.apply(null, bounds[0]);
-	var w = Math.max.apply(null, bounds[0]) - x;
-	var y = Math.min.apply(null, bounds[1]);
-	var h = Math.max.apply(null, bounds[1]) - y;
-	return {
-		'x': x,
-		'y': y,
-		'width': w,
-		'height': h
-	};
-}
 
 // this.each is deprecated, if any extension used this it can be recreated by doing this:
 // $(canvas.getRootElem()).children().each(...)
@@ -2452,6 +2320,7 @@ var getPathBBox = function(path) {
 
 // Group: Element Transforms
 
+// TODO(codedread): Migrate this into svgutils.js
 // Function: getRotationAngle
 // Get the rotation angle of the given/selected DOM element
 //
@@ -5249,7 +5118,7 @@ var textActions = canvas.textActions = function() {
 			
 			// TODO: Find a way to make this work: Use transformed BBox instead of evt.target 
 // 				if(last_x === mouse_x && last_y === mouse_y
-// 					&& !Utils.rectsIntersect(transbb, {x: pt.x, y: pt.y, width:0, height:0})) {
+// 					&& !svgedit.Utilities.rectsIntersect(transbb, {x: pt.x, y: pt.y, width:0, height:0})) {
 // 					textActions.toSelectMode(true);				
 // 				}
 			if(last_x === mouse_x && last_y === mouse_y && evt.target !== curtext) {
@@ -6712,7 +6581,7 @@ var pathActions = this.pathActions = function() {
 						height: 0
 					};
 				
-					var sel = Utils.rectsIntersect(rbb, pt_bb);
+					var sel = svgedit.Utilities.rectsIntersect(rbb, pt_bb);
 
 					this.select(sel);
 					//Note that addPtsToSelection is not being run
@@ -7449,7 +7318,7 @@ var svgCanvasToString = this.svgCanvasToString = function() {
 // Returns: 
 // String with the given element as an SVG tag
 var svgToString = this.svgToString = function(elem, indent) {
-	var out = new Array(), toXml = Utils.toXml;
+	var out = new Array(), toXml = svgedit.Utilities.toXml;
 	
 	var unit = curConfig.baseUnit
 	var unit_re = new RegExp('^-?[\\d\\.]+' + unit + '$');
@@ -7891,7 +7760,6 @@ var convertGradients = this.convertGradients = function(elem) {
 	});
 }
 
-
 // Function: convertToGroup
 // Converts selected/given <use> or child SVG element to a group
 var convertToGroup = this.convertToGroup = function(elem) {
@@ -8005,7 +7873,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 this.setSvgString = function(xmlString) {
 	try {
 		// convert string into XML document
-		var newDoc = Utils.text2xml(xmlString);
+		var newDoc = svgedit.Utilities.text2xml(xmlString);
 		// run it through our sanitizer to remove anything we do not support
 		sanitizeSvg(newDoc.documentElement);
 
@@ -8188,7 +8056,7 @@ this.setSvgString = function(xmlString) {
 this.importSvgString = function(xmlString) {
 	try {
 		// convert string into XML document
-		var newDoc = Utils.text2xml(xmlString);
+		var newDoc = svgedit.Utilities.text2xml(xmlString);
 		// run it through our sanitizer to remove anything we do not support
 		sanitizeSvg(newDoc.documentElement);
 
@@ -8462,7 +8330,7 @@ this.getCurrentLayer = function() {
 // Returns:
 // true if the current layer was switched, otherwise false
 this.setCurrentLayer = function(name) {
-	name = Utils.toXml(name);
+	name = svgedit.Utilities.toXml(name);
 	for (var i = 0; i < all_layers.length; ++i) {
 		if (name == all_layers[i][0]) {
 			if (current_layer != all_layers[i][1]) {
@@ -8498,7 +8366,7 @@ this.renameCurrentLayer = function(newname) {
 				if (all_layers[i][1] == oldLayer) break;
 			}
 			var oldname = all_layers[i][0];
-			all_layers[i][0] = Utils.toXml(newname);
+			all_layers[i][0] = svgedit.Utilities.toXml(newname);
 		
 			// now change the underlying title element contents
 			var len = oldLayer.childNodes.length;
