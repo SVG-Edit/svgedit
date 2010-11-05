@@ -26,6 +26,7 @@ build/$(PACKAGE):
 	   --js browsersupport.js \
 	   --js svgtransformlist.js \
 	   --js math.js \
+	   --js units.js \
 	   --js svgutils.js \
 	   --js svgcanvas.js \
 	   --js svg-editor.js \
