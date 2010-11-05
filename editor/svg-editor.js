@@ -469,7 +469,7 @@
 				modKey = (isMac ? "meta+" : "ctrl+"), // ⌘
 				path = svgCanvas.pathActions,
 				undoMgr = svgCanvas.undoMgr,
-				Utils = svgCanvas.Utils,
+				Utils = svgedit.utilities,
 				default_img_url = curConfig.imgPath + "logo.png",
 				workarea = $("#workarea"),
 				canv_menu = $("#cmenu_canvas"),
