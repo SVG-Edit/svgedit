@@ -795,6 +795,7 @@ jQuery.fn.jGraduate =
 
 			
 			$('#' + id + ' div.grad_coord').mousedown(function(evt) {
+				evt.preventDefault();
 				draggingCoord = $(this);
 				var s_pos = draggingCoord.offset();
 				offset = draggingCoord.parent().offset();
