@@ -10,6 +10,9 @@
  *
  */
 
+// Dependencies:
+// 1) svgcanvas.js
+
 (function() { 
 	
 	if(!window.svgEditor) window.svgEditor = function($) {
@@ -1816,7 +1819,7 @@
 				} else if(curConfig.baseUnit !== 'px') {
 					// Convert unitless value to one with given unit
 				
-					var unitData = svgCanvas.getUnits();
+					var unitData = svgedit.units.getTypeMap();
 
 					if(selectedElement[attr] || svgCanvas.getMode() === "pathedit" || attr === "x" || attr === "y") {
 						val *= unitData[curConfig.baseUnit];
@@ -4270,7 +4273,7 @@
 				
 				var c_elem = svgCanvas.getContentElem();
 				
-				var units = svgCanvas.getUnits();
+				var units = svgedit.units.getTypeMap();
 				var unit = units[curConfig.baseUnit]; // 1 = 1px
 			
 				for(var d = 0; d < 2; d++) {
