@@ -97,6 +97,16 @@ if(window.opera) {
 // config - An object that contains configuration data
 $.SvgCanvas = function(container, config)
 {
+// Default configuration options
+var curConfig = {
+	show_outside_canvas: true,
+	dimensions: [640, 480]
+};
+
+// Update config with new one if given
+if(config) {
+	$.extend(curConfig, config);
+}
 
 // import svgtransformlist.js
 var getTransformList = this.getTransformList = svgedit.transformlist.getTransformList;
@@ -111,8 +121,9 @@ var transformListToTransform = this.transformListToTransform = svgedit.math.tran
 var snapToAngle = svgedit.math.snapToAngle;
 
 // import from units.js
-svgedit.units.init();
-var unit_types = svgedit.units.typeMap;
+svgedit.units.init(curConfig);
+var unit_types = svgedit.units.getTypeMap();
+
 
 // import from svgutils.js
 var getUrlFromAttr = this.getUrlFromAttr = svgedit.utilities.getUrlFromAttr;
@@ -129,7 +140,7 @@ svgedit.utilities.snapToGrid = function(value){
 	var stepSize = curConfig.snappingStep;
 	var unit = curConfig.baseUnit;
 	if(unit !== "px") {
-		stepSize *= svgedit.units.typeMap[unit];
+	stepSize *= svgedit.units.typeMap[unit];
 	}
 	value = Math.round(value/stepSize)*stepSize;
 	return value;
@@ -219,21 +230,10 @@ var isOpera = svgedit.browsersupport.isOpera,
 		"exportNoforeignObject": "foreignObject elements will not appear",
 		"exportNoDashArray": "Strokes will appear filled",
 		"exportNoText": "Text may not appear as expected"
-	},
-	
-	// Default configuration options
-	curConfig = {
-		show_outside_canvas: true,
-		dimensions: [640, 480]
 	};
-
-	var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
-	var ref_attrs = ["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"];
-
-// Update config with new one if given
-if(config) {
-	$.extend(curConfig, config);
-}
+	
+var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
+var ref_attrs = ["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"];
 
 var elData = $.data;
 	
@@ -339,10 +339,12 @@ $(opac_ani).attr({
 
 // Group: Unit conversion functions
 
+// TODO(codedread): Migrate this into units.js
 // Set the scope for these functions
-var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
+var convertToNum, unitConvertAttrs;
 
 (function() {
+	// TODO(codedread): Remove these arrays and maps, they are now in units.js.
 	var w_attrs = ['x', 'x1', 'cx', 'rx', 'width'];
 	var h_attrs = ['y', 'y1', 'cy', 'ry', 'height'];
 	var unit_attrs = $.merge(['r','radius'], w_attrs);
@@ -391,49 +393,6 @@ var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 			return num * unit_types[unit];
 		}
 	};
-	
-	
-	// Function: setUnitAttr
-	// Sets an element's attribute based on the unit in its current value.
-	//
-	// Parameters: 
-	// elem - DOM element to be changed
-	// attr - String with the name of the attribute associated with the value
-	// val - String with the attribute value to convert
-	setUnitAttr = function(elem, attr, val) {
-		if(!isNaN(val)) {
-			// New value is a number, so check currently used unit
-			var old_val = elem.getAttribute(attr);
-			
-			// Enable this for alternate mode
-// 			if(old_val !== null && (isNaN(old_val) || curConfig.baseUnit !== 'px')) {
-// 				// Old value was a number, so get unit, then convert
-// 				var unit;
-// 				if(old_val.substr(-1) === '%') {
-// 					var res = getResolution();
-// 					unit = '%';
-// 					val *= 100;
-// 					if(w_attrs.indexOf(attr) >= 0) {
-// 						val = val / res.w;
-// 					} else if(h_attrs.indexOf(attr) >= 0) {
-// 						val = val / res.h;
-// 					} else {
-// 						return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
-// 					}
-// 				} else {
-// 					if(curConfig.baseUnit !== 'px') {
-// 						unit = curConfig.baseUnit;
-// 					} else {
-// 						unit = old_val.substr(-2);
-// 					}
-// 					val = val / unit_types[unit];
-// 				}
-// 				
-// 				val += unit;
-// 			}
-		}
-		elem.setAttribute(attr, val);
-	};
 
 	// Function: isValidUnit
 	// Check if an attribute's value is in a valid format
@@ -475,22 +434,6 @@ var convertToNum, convertToUnit, setUnitAttr, unitConvertAttrs;
 		return valid;
 	};
 
-	// Function: getUnits
-	// Returns the unit object with values for each unit
-	canvas.getUnits = function() {
-		return unit_types;
-	};
-	
-	// Function: convertUnit
-	// Converts the number to given unit or baseUnit
-	canvas.convertUnit = function(val, unit) {
-		unit = unit || curConfig.baseUnit;
-// 		baseVal.convertToSpecifiedUnits(unitNumMap[unit]);
-// 		var val = baseVal.valueInSpecifiedUnits;
-// 		baseVal.convertToSpecifiedUnits(1);
-		return shortFloat(val / unit_types[unit]);
-	};
-	
 	// Function: unitConvertAttrs
 	// Converts all applicable attributes to the given baseUnit
 	unitConvertAttrs = canvas.unitConvertAttrs = function(element) {
@@ -1450,7 +1393,7 @@ var SelectorManager;
 // node - DOM element to apply new attribute values to
 // attrs - Object with attribute keys/values
 // suspendLength - Optional integer of milliseconds to suspend redraw
-// unitCheck - Boolean to indicate the need to use setUnitAttr
+// unitCheck - Boolean to indicate the need to use svgedit.units.setUnitAttr
 var assignAttributes = this.assignAttributes = function(node, attrs, suspendLength, unitCheck) {
 	if(!suspendLength) suspendLength = 0;
 	// Opera has a problem with suspendRedraw() apparently
@@ -1466,7 +1409,7 @@ var assignAttributes = this.assignAttributes = function(node, attrs, suspendLeng
 		} else if(!unitCheck) {
 			node.setAttribute(i, attrs[i]);
 		} else {
-			setUnitAttr(node, i, attrs[i]);
+			svgedit.units.setUnitAttr(node, i, attrs[i]);
 		}
 		
 	}
@@ -1730,6 +1673,10 @@ var shortFloat = function(val) {
 		return parseFloat(val).toFixed(digits) - 0;
 	}
 }
+
+this.convertUnit = function(val, unit) {
+	return shortFloat(svgedit.units.convertUnit(val, unit));
+};
 	
 // This method rounds the incoming value to the nearest value based on the current_zoom
 var round = this.round = function(val) {
@@ -7313,8 +7260,8 @@ var svgToString = this.svgToString = function(elem, indent) {
 // 			}
 			
 			if(unit !== "px") {
-				res.w = canvas.convertUnit(res.w, unit) + unit;
-				res.h = canvas.convertUnit(res.h, unit) + unit;
+				res.w = shortFloat(svgedit.units.convertUnit(res.w, unit)) + unit;
+				res.h = shortFloat(svgedit.units.convertUnit(res.h, unit)) + unit;
 			}
 			
 			out.push(' width="' + res.w + '" height="' + res.h + '"' + vb + ' xmlns="'+svgns+'"');

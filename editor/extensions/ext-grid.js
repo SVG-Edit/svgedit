@@ -8,6 +8,10 @@
  *
  */
 
+// Dependencies:
+// 1) units.js
+// 2) everything else
+
 svgEditor.addExtension("view_grid", function(s) {
 
     var svgdoc = document.getElementById("svgcanvas").ownerDocument,
@@ -78,7 +82,7 @@ svgEditor.addExtension("view_grid", function(s) {
 		var bgwidth = +canvBG.attr('width');
 		var bgheight = +canvBG.attr('height');
 		
-		var units = svgCanvas.getUnits();
+		var units = svgedit.units.getTypeMap();
 		var unit = units[svgEditor.curConfig.baseUnit]; // 1 = 1px
 		var r_intervals = [.01, .1, 1, 10, 100, 1000];
 	
