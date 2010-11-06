@@ -124,7 +124,6 @@ var snapToAngle = svgedit.math.snapToAngle;
 svgedit.units.init(curConfig);
 var unit_types = svgedit.units.getTypeMap();
 
-
 // import from svgutils.js
 var getUrlFromAttr = this.getUrlFromAttr = svgedit.utilities.getUrlFromAttr;
 var getHref = this.getHref = svgedit.utilities.getHref;
@@ -140,7 +139,7 @@ svgedit.utilities.snapToGrid = function(value){
 	var stepSize = curConfig.snappingStep;
 	var unit = curConfig.baseUnit;
 	if(unit !== "px") {
-	stepSize *= svgedit.units.typeMap[unit];
+	stepSize *= svgedit.units.getTypeMap()[unit];
 	}
 	value = Math.round(value/stepSize)*stepSize;
 	return value;
@@ -341,7 +340,7 @@ $(opac_ani).attr({
 
 // TODO(codedread): Migrate this into units.js
 // Set the scope for these functions
-var convertToNum, unitConvertAttrs;
+var convertToNum;
 
 (function() {
 	// TODO(codedread): Remove these arrays and maps, they are now in units.js.
@@ -432,48 +431,6 @@ var convertToNum, unitConvertAttrs;
 		} else valid = true;			
 		
 		return valid;
-	};
-
-	// Function: unitConvertAttrs
-	// Converts all applicable attributes to the given baseUnit
-	unitConvertAttrs = canvas.unitConvertAttrs = function(element) {
-		var elName = element.tagName;
-		var unit = curConfig.baseUnit;
-		var attrs;
-		switch (elName)
-		{
-			case "line":
-				attrs = ['x1', 'x2', 'y1', 'y2'];
-				break;
-			case "circle":
-				attrs = ['cx', 'cy', 'r'];
-				break;
-			case "ellipse":
-				attrs = ['cx', 'cy', 'rx', 'ry'];
-				break;
-			case "foreignObject":
-			case "rect":
-			case "image":
-			case "use":
-				attrs = ['x', 'y', 'width', 'height'];
-				break;
-			case "text":
-				attrs = ['x', 'y'];
-				break;
-		}
-		if(!attrs) return;
-		var len = attrs.length
-		for(var i = 0; i < len; i++) {
-			var attr = attrs[i];
-			var cur = element.getAttribute(attr);
-			if(cur) {
-				if(!isNaN(cur)) {
-					element.setAttribute(attr, (cur / unit_types[unit]) + unit);
-				} else {
-					// Convert existing?
-				}
-			}
-		}
 	};
 	
 })();
@@ -4647,7 +4604,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		} else if (element != null) {
 			canvas.addedNew = true;
 			
-			if(useUnit) unitConvertAttrs(element);
+			if(useUnit) svgedit.units.convertAttrs(element);
 			
 			var ani_dur = .2, c_ani;
 			if(opac_ani.beginElement && element.getAttribute('opacity') != cur_shape.opacity) {
@@ -7260,8 +7217,8 @@ var svgToString = this.svgToString = function(elem, indent) {
 // 			}
 			
 			if(unit !== "px") {
-				res.w = shortFloat(svgedit.units.convertUnit(res.w, unit)) + unit;
-				res.h = shortFloat(svgedit.units.convertUnit(res.h, unit)) + unit;
+				res.w = this.convertUnit(res.w, unit) + unit;
+				res.h = this.convertUnit(res.h, unit) + unit;
 			}
 			
 			out.push(' width="' + res.w + '" height="' + res.h + '"' + vb + ' xmlns="'+svgns+'"');
