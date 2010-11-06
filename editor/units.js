@@ -138,4 +138,39 @@ svgedit.units.setUnitAttr = function(elem, attr, val) {
 	elem.setAttribute(attr, val);
 };
 
+var attrsToConvert = {
+	"line": ['x1', 'x2', 'y1', 'y2'],
+	"circle": ['cx', 'cy', 'r'],
+	"ellipse": ['cx', 'cy', 'rx', 'ry'],
+	"foreignObject": ['x', 'y', 'width', 'height'],
+	"rect": ['x', 'y', 'width', 'height'],
+	"image": ['x', 'y', 'width', 'height'],
+	"use": ['x', 'y', 'width', 'height'],
+	"text": ['x', 'y']
+};
+
+// Function: svgedit.units.convertAttrs
+// Converts all applicable attributes to the configured baseUnit
+//
+// Parameters:
+// element - a DOM element whose attributes should be converted
+svgedit.units.convertAttrs = function(element) {
+	var elName = element.tagName;
+	var unit = svgedit.units.config_.baseUnit;
+	var attrs = attrsToConvert[elName];
+	if(!attrs) return;
+	var len = attrs.length
+	for(var i = 0; i < len; i++) {
+		var attr = attrs[i];
+		var cur = element.getAttribute(attr);
+		if(cur) {
+			if(!isNaN(cur)) {
+				element.setAttribute(attr, (cur / svgedit.units.typeMap_[unit]) + unit);
+			} else {
+				// Convert existing?
+			}
+		}
+	}
+};
+
 })();
