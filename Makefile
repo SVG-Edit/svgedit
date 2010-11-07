@@ -28,6 +28,7 @@ build/$(PACKAGE):
 	   --js math.js \
 	   --js units.js \
 	   --js svgutils.js \
+	   --js sanitize.js \
 	   --js svgcanvas.js \
 	   --js svg-editor.js \
 	   --js locale/locale.js \

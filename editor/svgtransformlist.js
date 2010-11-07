@@ -19,6 +19,8 @@ if (!svgedit.transformlist) {
 	svgedit.transformlist = {};
 }
 
+var svgroot = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+
 // Helper function.
 function transformToString(xform) {
 	var m = xform.matrix,
@@ -51,10 +53,10 @@ function transformToString(xform) {
 /**
  * Map of SVGTransformList objects.
  */
-svgedit.transformlist.listMap = {};
+var listMap_ = {};
 
 svgedit.transformlist.resetListMap = function() {
-	svgedit.transformlist.listMap = {};
+	listMap_ = {};
 };
 
 /**
@@ -62,8 +64,8 @@ svgedit.transformlist.resetListMap = function() {
  * elem - a DOM Element
  */
 svgedit.transformlist.removeElementFromListMap = function(elem) {
-	if (elem.id && svgedit.transformlist.listMap[elem.id]) {
-		delete svgedit.transformlist.listMap[elem.id];
+	if (elem.id && listMap_[elem.id]) {
+		delete listMap_[elem.id];
 	}
 };
 
@@ -230,17 +232,17 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 // Parameters:
 // elem - DOM element to get a transformlist from
 svgedit.transformlist.getTransformList = function(elem) {
-	if (svgedit.browsersupport.isWebkit) {
+	if (svgedit.browsersupport.isWebkit()) {
 		var id = elem.id;
 		if(!id) {
 			// Get unique ID for temporary element
 			id = 'temp';
 		}
-		var t = svgedit.transformlist.listMap[id];
+		var t = listMap_[id];
 		if (!t || id == 'temp') {
-			svgedit.transformlist.listMap[id] = new svgedit.transformlist.SVGTransformList(elem);
-			svgedit.transformlist.listMap[id]._init();
-			t = svgedit.transformlist.listMap[id];
+			listMap_[id] = new svgedit.transformlist.SVGTransformList(elem);
+			listMap_[id]._init();
+			t = listMap_[id];
 		}
 		return t;
 	}

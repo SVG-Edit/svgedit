@@ -24,9 +24,13 @@ var svgns = 'http://www.w3.org/2000/svg';
 var userAgent = navigator.userAgent;
 
 // Note: Browser sniffing should only be used if no other detection method is possible
-svgedit.browsersupport.isOpera = !!window.opera;
-svgedit.browsersupport.isWebkit = userAgent.indexOf("AppleWebKit") >= 0;
-svgedit.browsersupport.isGecko = userAgent.indexOf('Gecko/') >= 0;
+var isOpera_ = !!window.opera;
+var isWebkit_ = userAgent.indexOf("AppleWebKit") >= 0;
+var isGecko_ = userAgent.indexOf('Gecko/') >= 0;
+
+svgedit.browsersupport.isOpera = function() { return isOpera_; }
+svgedit.browsersupport.isWebkit = function() { return isWebkit_; }
+svgedit.browsersupport.isGecko = function() { return isGecko_; }
 
 // segList functions (for FF1.5 and 2.0)
 function supportPathReplaceItem() {
@@ -71,7 +75,7 @@ function supportTextCharPos() {
 
 function supportEditableText() {
 	// TODO: Find better way to check support for this
-	return svgedit.browsersupport.isOpera;
+	return svgedit.browsersupport.isOpera();
 }
 
 function supportGoodDecimals() {

@@ -14,8 +14,9 @@
 // 2) browsersupport.js
 // 3) svgtransformlist.js
 // 4) math.js
-// 5) svgutils.js
-// 6) units.js
+// 5) units.js
+// 6) svgutils.js
+// 7) sanitize.js
 
 if(!window.console) {
 	window.console = {};
@@ -179,6 +180,10 @@ var getPathBBox = svgedit.utilities.getPathBBox;
 var getBBox = this.getBBox = svgedit.utilities.getBBox;
 var getRotationAngle = this.getRotationAngle = svgedit.utilities.getRotationAngle;
 
+// import from sanitize.js
+var nsMap = svgedit.sanitize.getNSMap();
+var sanitizeSvg = this.sanitizeSvg = svgedit.sanitize.sanitizeSvg;
+
 // Function: snapToGrid
 // round value to for snapping
 // NOTE: This function did not move to svgutils.js since it depends on curConfig.
@@ -193,90 +198,6 @@ svgedit.utilities.snapToGrid = function(value){
 };
 var snapToGrid = svgedit.utilities.snapToGrid;
 
-var isOpera = svgedit.browsersupport.isOpera,
-	isWebkit = svgedit.browsersupport.isWebkit,
-	isGecko = svgedit.browsersupport.isGecko,
-
-	// this defines which elements and attributes that we support
-	svgWhiteList = {
-	// SVG Elements
-	"a": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "xlink:href", "xlink:title"],
-	"circle": ["class", "clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "r", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"clipPath": ["class", "clipPathUnits", "id"],
-	"defs": [],
-	"desc": [],
-	"ellipse": ["class", "clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"feGaussianBlur": ["class", "color-interpolation-filters", "id", "requiredFeatures", "stdDeviation"],
-	"filter": ["class", "color-interpolation-filters", "filterRes", "filterUnits", "height", "id", "primitiveUnits", "requiredFeatures", "width", "x", "xlink:href", "y"],
-	"foreignObject": ["class", "font-size", "height", "id", "opacity", "requiredFeatures", "style", "transform", "width", "x", "y"],
-	"g": ["class", "clip-path", "clip-rule", "id", "display", "fill", "fill-opacity", "fill-rule", "filter", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "font-family", "font-size", "font-style", "font-weight", "text-anchor"],
-	"image": ["class", "clip-path", "clip-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "style", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
-	"line": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
-	"linearGradient": ["class", "id", "gradientTransform", "gradientUnits", "requiredFeatures", "spreadMethod", "systemLanguage", "x1", "x2", "xlink:href", "y1", "y2"],
-	"marker": ["id", "class", "markerHeight", "markerUnits", "markerWidth", "orient", "preserveAspectRatio", "refX", "refY", "systemLanguage", "viewBox"],
-	"mask": ["class", "height", "id", "maskContentUnits", "maskUnits", "width", "x", "y"],
-	"metadata": ["class", "id"],
-	"path": ["class", "clip-path", "clip-rule", "d", "fill", "fill-opacity", "fill-rule", "filter", "id", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"pattern": ["class", "height", "id", "patternContentUnits", "patternTransform", "patternUnits", "requiredFeatures", "style", "systemLanguage", "viewBox", "width", "x", "xlink:href", "y"],
-	"polygon": ["class", "clip-path", "clip-rule", "id", "fill", "fill-opacity", "fill-rule", "filter", "id", "class", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"polyline": ["class", "clip-path", "clip-rule", "id", "fill", "fill-opacity", "fill-rule", "filter", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "points", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
-	"radialGradient": ["class", "cx", "cy", "fx", "fy", "gradientTransform", "gradientUnits", "id", "r", "requiredFeatures", "spreadMethod", "systemLanguage", "xlink:href"],
-	"rect": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "width", "x", "y"],
-	"stop": ["class", "id", "offset", "requiredFeatures", "stop-color", "stop-opacity", "style", "systemLanguage"],
-	"svg": ["class", "clip-path", "clip-rule", "filter", "id", "height", "mask", "preserveAspectRatio", "requiredFeatures", "style", "systemLanguage", "viewBox", "width", "x", "xmlns", "xmlns:se", "xmlns:xlink", "y"],
-	"switch": ["class", "id", "requiredFeatures", "systemLanguage"],
-	"symbol": ["class", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "opacity", "preserveAspectRatio", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "viewBox"],
-	"text": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "text-anchor", "transform", "x", "xml:space", "y"],
-	"textPath": ["class", "id", "method", "requiredFeatures", "spacing", "startOffset", "style", "systemLanguage", "transform", "xlink:href"],
-	"title": [],
-	"tspan": ["class", "clip-path", "clip-rule", "dx", "dy", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "mask", "opacity", "requiredFeatures", "rotate", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "text-anchor", "textLength", "transform", "x", "xml:space", "y"],
-	"use": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "height", "id", "mask", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "transform", "width", "x", "xlink:href", "y"],
-	
-	// MathML Elements
-	"annotation": ["encoding"],
-	"annotation-xml": ["encoding"],
-	"maction": ["actiontype", "other", "selection"],
-	"math": ["class", "id", "display", "xmlns"],
-	"menclose": ["notation"],
-	"merror": [],
-	"mfrac": ["linethickness"],
-	"mi": ["mathvariant"],
-	"mmultiscripts": [],
-	"mn": [],
-	"mo": ["fence", "lspace", "maxsize", "minsize", "rspace", "stretchy"],
-	"mover": [],
-	"mpadded": ["lspace", "width"],
-	"mphantom": [],
-	"mprescripts": [],
-	"mroot": [],
-	"mrow": ["xlink:href", "xlink:type", "xmlns:xlink"],
-	"mspace": ["depth", "height", "width"],
-	"msqrt": [],
-	"mstyle": ["displaystyle", "mathbackground", "mathcolor", "mathvariant", "scriptlevel"],
-	"msub": [],
-	"msubsup": [],
-	"msup": [],
-	"mtable": ["align", "columnalign", "columnlines", "columnspacing", "displaystyle", "equalcolumns", "equalrows", "frame", "rowalign", "rowlines", "rowspacing", "width"],
-	"mtd": ["columnalign", "columnspan", "rowalign", "rowspan"],
-	"mtext": [],
-	"mtr": ["columnalign", "rowalign"],
-	"munder": [],
-	"munderover": [],
-	"none": [],
-	"semantics": []
-	},
-
-	// Interface strings, usually for title elements
-	uiStrings = {
-		"pathNodeTooltip": "Drag node to move it. Double-click node to change segment type",
-		"pathCtrlPtTooltip": "Drag control point to adjust curve properties",
-		"exportNoBlur": "Blurred elements will appear as un-blurred",
-		"exportNoImage": "Image elements will not appear",
-		"exportNoforeignObject": "foreignObject elements will not appear",
-		"exportNoDashArray": "Strokes will appear filled",
-		"exportNoText": "Text may not appear as expected"
-	};
-	
 var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
 var ref_attrs = ["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"];
 
@@ -327,36 +248,6 @@ $(svgcontent).attr({
 
 // Set nonce if randomize_ids = true
 if (randomize_ids) svgcontent.setAttributeNS(se_ns, 'se:nonce', nonce);
-
-// map namespace URIs to prefixes
-var nsMap = {};
-nsMap[xlinkns] = 'xlink';
-nsMap[xmlns] = 'xml';
-nsMap[xmlnsns] = 'xmlns';
-nsMap[se_ns] = 'se';
-nsMap[htmlns] = 'xhtml';
-nsMap[mathns] = 'mathml';
-
-// map prefixes to namespace URIs
-var nsRevMap = {};
-$.each(nsMap, function(key,value){
-	nsRevMap[value] = key;
-});
-
-// Produce a Namespace-aware version of svgWhitelist
-var svgWhiteListNS = {};
-$.each(svgWhiteList, function(elt,atts){
-	var attNS = {};
-	$.each(atts, function(i, att){
-		if (att.indexOf(':') >= 0) {
-			var v = att.split(':');
-			attNS[v[1]] = nsRevMap[v[0]];
-		} else {
-			attNS[att] = att == 'xmlns' ? xmlnsns : null;
-		}
-	});
-	svgWhiteListNS[elt] = attNS;
-});
 
 // Animation element to change the opacity of any newly created element
 var opac_ani = document.createElementNS(svgns, 'animate');
@@ -1171,7 +1062,7 @@ var SelectorManager;
 				'height': dims[1],
 				'x': 0,
 				'y': 0,
-				'overflow': (isWebkit ? 'none' : 'visible'), // Chrome 7 has a problem with this when zooming out
+				'overflow': (svgedit.browsersupport.isWebkit() ? 'none' : 'visible'), // Chrome 7 has a problem with this when zooming out
 				'style': 'pointer-events:none'
 			});
 			
@@ -1287,7 +1178,7 @@ var assignAttributes = this.assignAttributes = function(node, attrs, suspendLeng
 	if(!suspendLength) suspendLength = 0;
 	// Opera has a problem with suspendRedraw() apparently
 	var handle = null;
-	if (!isOpera) svgroot.suspendRedraw(suspendLength);
+	if (!svgedit.browsersupport.isOpera()) svgroot.suspendRedraw(suspendLength);
 
 	for (var i in attrs) {
 		var ns = (i.substr(0,4) === "xml:" ? xmlns : 
@@ -1303,7 +1194,7 @@ var assignAttributes = this.assignAttributes = function(node, attrs, suspendLeng
 		
 	}
 	
-	if (!window.opera) svgroot.unsuspendRedraw(handle);
+	if (!svgedit.browsersupport.isOpera()) svgroot.unsuspendRedraw(handle);
 };
 
 // Function: cleanupElement
@@ -1837,7 +1728,7 @@ var copyElem = function(el) {
 	
 	// Opera's "d" value needs to be reset for Opera/Win/non-EN
 	// Also needed for webkit (else does not keep curved segments on clone)
-	if(isWebkit && el.nodeName == 'path') {
+	if(svgedit.browsersupport.isWebkit() && el.nodeName == 'path') {
 		var fixed_d = pathActions.convertPath(el);
 		new_el.setAttribute('d', fixed_d);
 	}
@@ -1941,149 +1832,20 @@ var getId, getNextId, call;
 	};
 }(canvas));
 
-
-// Function: sanitizeSvg
-// Sanitizes the input node and its children
-// It only keeps what is allowed from our whitelist defined above
+// Function: canvas.prepareSvg
+// Runs the SVG Document through the sanitizer and then updates its paths.
 //
 // Parameters:
-// node - The DOM element to be checked, will also check its children
-var sanitizeSvg = this.sanitizeSvg = function(node) {
-	// we only care about element nodes
-	// automatically return for all comment, etc nodes
-	// for text, we do a whitespace trim
-	if (node.nodeType == 3) {
-		node.nodeValue = node.nodeValue.replace(/^\s+|\s+$/g, "");
-		// Remove empty text nodes
-		if(!node.nodeValue.length) node.parentNode.removeChild(node);
-	}
-	if (node.nodeType != 1) return;
-	var doc = node.ownerDocument;
-	var parent = node.parentNode;
-	// can parent ever be null here?  I think the root node's parent is the document...
-	if (!doc || !parent) return;
-	
-	var allowedAttrs = svgWhiteList[node.nodeName];
-	var allowedAttrsNS = svgWhiteListNS[node.nodeName];
+// newDoc - The SVG DOM document
+this.prepareSvg = function(newDoc) {
+	this.sanitizeSvg(newDoc.documentElement);
 
-	// if this element is allowed
-	if (allowedAttrs != undefined) {
-
-		var se_attrs = [];
-	
-		var i = node.attributes.length;
-		while (i--) {
-			// if the attribute is not in our whitelist, then remove it
-			// could use jQuery's inArray(), but I don't know if that's any better
-			var attr = node.attributes.item(i);
-			var attrName = attr.nodeName;
-			var attrLocalName = attr.localName;
-			var attrNsURI = attr.namespaceURI;
-			// Check that an attribute with the correct localName in the correct namespace is on 
-			// our whitelist or is a namespace declaration for one of our allowed namespaces
-			if (!(allowedAttrsNS.hasOwnProperty(attrLocalName) && attrNsURI == allowedAttrsNS[attrLocalName] && attrNsURI != xmlnsns) &&
-				!(attrNsURI == xmlnsns && nsMap[attr.nodeValue]) ) 
-			{
-				// TODO(codedread): Programmatically add the se: attributes to the NS-aware whitelist.
-				// Bypassing the whitelist to allow se: prefixes. Is there
-				// a more appropriate way to do this?
-				if(attrName.indexOf('se:') == 0) {
-					se_attrs.push([attrName, attr.nodeValue]);
-				} 
-				node.removeAttributeNS(attrNsURI, attrLocalName);
-			}
-			// TODO(codedread): Do this in a separate sweep, this has nothing to do with sanitizing the markup.
-			// special handling for path d attribute
-			if (node.nodeName == 'path' && attrName == 'd') {
-				// Convert to absolute
-				node.setAttribute('d',pathActions.convertPath(node));
-				pathActions.fixEnd(node);
-			}
-			
-			// Add spaces before negative signs where necessary
-			if(isGecko) {
-				switch ( attrName ) {
-				case "transform":
-				case "gradientTransform":
-				case "patternTransform":
-					var val = attr.nodeValue.replace(/(\d)-/g, "$1 -");
-					node.setAttribute(attrName, val);
-				}
-			}
-			
-			// for the style attribute, rewrite it in terms of XML presentational attributes
-			if (attrName == "style") {
-				var props = attr.nodeValue.split(";"),
-					p = props.length;
-				while(p--) {
-					var nv = props[p].split(":");
-					// now check that this attribute is supported
-					if (allowedAttrs.indexOf(nv[0]) >= 0) {
-						node.setAttribute(nv[0],nv[1]);
-					}
-				}
-				node.removeAttribute('style');
-			}
-		}
-		
-		$.each(se_attrs, function(i, attr) {
-			node.setAttributeNS(se_ns, attr[0], attr[1]);
-		});
-		
-		// for some elements that have a xlink:href, ensure the URI refers to a local element
-		// (but not for links)
-		var href = svgedit.utilities.getHref(node);
-		if(href && 
-		   ["filter", "linearGradient", "pattern",
-		   "radialGradient", "textPath", "use"].indexOf(node.nodeName) >= 0)
-		{
-			// TODO: we simply check if the first character is a #, is this bullet-proof?
-			if (href[0] != "#") {
-				// remove the attribute (but keep the element)
-				svgedit.utilities.setHref(node, "");
-				node.removeAttributeNS(xlinkns, "href");
-			}
-		}
-		
-		// Safari crashes on a <use> without a xlink:href, so we just remove the node here
-		if (node.nodeName == "use" && !svgedit.utilities.getHref(node)) {
-			parent.removeChild(node);
-			return;
-		}
-		// if the element has attributes pointing to a non-local reference, 
-		// need to remove the attribute
-		$.each(["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"],function(i,attr) {
-			var val = node.getAttribute(attr);
-			if (val) {
-				val = svgedit.utilities.getUrlFromAttr(val);
-				// simply check for first character being a '#'
-				if (val && val[0] !== "#") {
-					node.setAttribute(attr, "");
-					node.removeAttribute(attr);
-				}
-			}
-		});
-		
-		// recurse to children
-		i = node.childNodes.length;
-		while (i--) { sanitizeSvg(node.childNodes.item(i)); }
-	}
-	// else, remove this element
-	else {
-		// remove all children from this node and insert them before this node
-		// FIXME: in the case of animation elements this will hardly ever be correct
-		var children = [];
-		while (node.hasChildNodes()) {
-			children.push(parent.insertBefore(node.firstChild, node));
-		}
-
-		// remove this node from the document altogether
-		parent.removeChild(node);
-
-		// call sanitizeSvg on each of those children
-		var i = children.length;
-		while (i--) { sanitizeSvg(children[i]); }
-
+	// convert paths into absolute commands
+	var paths = newDoc.getElementsByTagNameNS(svgns, "path");
+	for (var i = 0, len = paths.length; i < len; ++i) {
+		var path = paths[i];
+		path.setAttribute('d', pathActions.convertPath(path));
+		pathActions.fixEnd(path);
 	}
 };
 
@@ -2105,7 +1867,7 @@ var getRefElem = this.getRefElem = function(attrVal) {
 // Parameters: 
 // elem - The (text) DOM element to clone
 var ffClone = function(elem) {
-	if(!isGecko) return elem;
+	if(!svgedit.browsersupport.isGecko()) return elem;
 	var clone = elem.cloneNode(true)
 	elem.parentNode.insertBefore(clone, elem);
 	elem.parentNode.removeChild(elem);
@@ -3057,7 +2819,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		// Check if it has a gradient with userSpaceOnUse, in which case
 		// adjust it by recalculating the matrix transform.
 		// TODO: Make this work in Webkit using svgedit.transformlist.SVGTransformList
-		if(!isWebkit) {
+		if(!svgedit.browsersupport.isWebkit()) {
 			var fill = selected.getAttribute('fill');
 			if(fill && fill.indexOf('url(') === 0) {
 				var paint = getRefElem(fill);
@@ -4268,7 +4030,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 
 		var real_x = x;
 		var real_y = y;
-		
+
 		// TODO: Make true when in multi-unit mode
 		var useUnit = false; // (curConfig.baseUnit !== 'px');
 		
@@ -5632,7 +5394,7 @@ var pathActions = this.pathActions = function() {
 		}
 		
 		this.endChanges = function(text) {
-			if(isWebkit) resetD(p.elem);
+			if(svgedit.browsersupport.isWebkit()) resetD(p.elem);
 			var cmd = new ChangeElementCommand(elem, {d: p.last_d}, text);
 			addCommandToHistory(cmd);
 			call("changed", [elem]);
@@ -6812,7 +6574,7 @@ var pathActions = this.pathActions = function() {
 					
 				}
 			}
-			if(isWebkit) resetD(elem);
+			if(svgedit.browsersupport.isWebkit()) resetD(elem);
 		},
 		// Convert a path to one with only absolute or relative values
 		convertPath: function(path, toRel) {
@@ -7466,7 +7228,7 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 // Converts gradients from userSpaceOnUse to objectBoundingBox
 var convertGradients = this.convertGradients = function(elem) {
 	var elems = $(elem).find('linearGradient, radialGradient');
-	if(!elems.length && isWebkit) {
+	if(!elems.length && svgedit.browsersupport.isWebkit()) {
 		// Bug in webkit prevents regular *Gradient selector search
 		elems = $(elem).find('*').filter(function() {
 			return (this.tagName.indexOf('Gradient') >= 0);
@@ -7651,8 +7413,8 @@ this.setSvgString = function(xmlString) {
 	try {
 		// convert string into XML document
 		var newDoc = svgedit.utilities.text2xml(xmlString);
-		// run it through our sanitizer to remove anything we do not support
-		sanitizeSvg(newDoc.documentElement);
+
+		this.prepareSvg(newDoc);
 
 		var batchCmd = new BatchCommand("Change Source");
 
@@ -7713,7 +7475,7 @@ this.setSvgString = function(xmlString) {
 		});
 		
 		// For Firefox: Put all paint elems in defs
-		if(isGecko) {
+		if(svgedit.browsersupport.isGecko()) {
 			content.find('linearGradient, radialGradient, pattern').appendTo(findDefs());
 		}
 
@@ -7834,8 +7596,8 @@ this.importSvgString = function(xmlString) {
 	try {
 		// convert string into XML document
 		var newDoc = svgedit.utilities.text2xml(xmlString);
-		// run it through our sanitizer to remove anything we do not support
-		sanitizeSvg(newDoc.documentElement);
+
+		this.prepareSvg(newDoc);
 
 		var batchCmd = new BatchCommand("Change Source");
 
@@ -7870,7 +7632,7 @@ this.importSvgString = function(xmlString) {
 		var symbol = svgdoc.createElementNS(svgns, "symbol");
 		var defs = findDefs();
 		
-		if(isGecko) {
+		if(svgedit.browsersupport.isGecko()) {
 			// Move all gradients into root for Firefox, workaround for this bug:
 			// https://bugzilla.mozilla.org/show_bug.cgi?id=353575
 			$(svg).find('linearGradient, radialGradient, pattern').appendTo(defs);
@@ -7934,7 +7696,7 @@ var identifyLayers = function() {
 				var name = $("title",child).text();
 				
 				// Hack for Opera 10.60
-				if(!name && isOpera && child.querySelectorAll) {
+				if(!name && svgedit.browsersupport.isOpera() && child.querySelectorAll) {
 					name = $(child.querySelectorAll('title')).text();
 				}
 
@@ -9173,7 +8935,7 @@ this.getBlur = function(elem) {
 			if(filterHidden) {
 				changeSelectedAttributeNoUndo("filter", 'url(#' + elem.id + '_blur)');
 			}
-			if(isWebkit) {
+			if(svgedit.browsersupport.isWebkit()) {
 				console.log('e', elem);
 				elem.removeAttribute('filter');
 				elem.setAttribute('filter', 'url(#' + elem.id + '_blur)');
@@ -9209,7 +8971,7 @@ this.getBlur = function(elem) {
 			}, 100);
 		} else {
 			// Removing these attributes hides text in Chrome (see Issue 579)
-			if(!isWebkit) {
+			if(!svgedit.browsersupport.isWebkit()) {
 				filter.removeAttribute('x');
 				filter.removeAttribute('y');
 				filter.removeAttribute('width');
@@ -10618,30 +10380,29 @@ this.getPrivateMethods = function() {
 	return obj;
 };
 
-// Temporary fix until MS fixes:
-// https://connect.microsoft.com/IE/feedback/details/599257/
-function disableAdvancedTextEdit() {
-	var curtext;
-	var textInput = $('#text').css({
-		position: 'static'
-	});
-
-	$.each(['mouseDown','mouseUp','mouseMove', 'setCursor', 'init', 'select', 'toEditMode'], function() {
-		textActions[this] = $.noop;
-	});
-	
-	textActions.init = function(elem) {
-		curtext = elem;
-		$(curtext).unbind('dblclick').bind('dblclick', function() {
-			textInput.focus();
-		});
-	}
-	
-	canvas.textActions = textActions;
-	
-}
-
 (function() {
+	// Temporary fix until MS fixes:
+	// https://connect.microsoft.com/IE/feedback/details/599257/
+	var disableAdvancedTextEdit = function() {
+		var curtext;
+		var textInput = $('#text').css({
+			position: 'static'
+		});
+
+		$.each(['mouseDown','mouseUp','mouseMove', 'setCursor', 'init', 'select', 'toEditMode'], function() {
+			textActions[this] = $.noop;
+		});
+	
+		textActions.init = function(elem) {
+			curtext = elem;
+			$(curtext).unbind('dblclick').bind('dblclick', function() {
+				textInput.focus();
+			});
+		}
+	
+		canvas.textActions = textActions;
+	}
+
 	if (!svgedit.browsersupport.textCharPos) {
 		disableAdvancedTextEdit();
 	}
