@@ -155,14 +155,12 @@ var getTransformList = this.getTransformList = svgedit.transformlist.getTransfor
 
 // import from math.js.
 var transformPoint = svgedit.math.transformPoint;
-var isIdentity = svgedit.math.isIdentity;
 var matrixMultiply = this.matrixMultiply = svgedit.math.matrixMultiply;
 var hasMatrixTransform = this.hasMatrixTransform = svgedit.math.hasMatrixTransform;
-var transformBox = this.transformBox = svgedit.math.transformBox;
 var transformListToTransform = this.transformListToTransform = svgedit.math.transformListToTransform;
 var snapToAngle = svgedit.math.snapToAngle;
 
-// import from units.js
+// initialize from units.js
 // send in an object implementing the ElementContainer interface (see units.js)
 svgedit.units.init({
 	getBaseUnit: function() { return curConfig.baseUnit; },
@@ -170,7 +168,7 @@ svgedit.units.init({
 	getHeight: function() { return svgcontent.getAttribute("height")/current_zoom; },
 	getWidth: function() { return svgcontent.getAttribute("width")/current_zoom; }
 });
-var unit_types = svgedit.units.getTypeMap();
+// import from units.js
 var convertToNum = this.convertToNum = svgedit.units.convertToNum;
 
 // import from svgutils.js
@@ -369,8 +367,6 @@ $(opac_ani).attr({
 	fill: 'freeze'
 }).appendTo(svgroot);
 
-// Group: Unit conversion functions
-
 var restoreRefElems = function(elem) {
 	// Look for missing reference elements, restore any found
 	var attrs = $(elem).attr(ref_attrs);
@@ -407,7 +403,7 @@ var ChangeElementCommand = this.undoCmd.changeElement = function(elem, attrs, te
 	this.oldValues = attrs;
 	for (var attr in attrs) {
 		if (attr == "#text") this.newValues[attr] = elem.textContent;
-		else if (attr == "#href") this.newValues[attr] = getHref(elem);
+		else if (attr == "#href") this.newValues[attr] = svgedit.utilities.getHref(elem);
 		else this.newValues[attr] = elem.getAttribute(attr);
 	}
 
@@ -418,7 +414,7 @@ var ChangeElementCommand = this.undoCmd.changeElement = function(elem, attrs, te
 		for(var attr in this.newValues ) {
 			if (this.newValues[attr]) {
 				if (attr == "#text") this.elem.textContent = this.newValues[attr];
-				else if (attr == "#href") setHref(this.elem, this.newValues[attr])
+				else if (attr == "#href") svgedit.utilities.setHref(this.elem, this.newValues[attr])
 				else this.elem.setAttribute(attr, this.newValues[attr]);
 			}
 			else {
@@ -435,7 +431,7 @@ var ChangeElementCommand = this.undoCmd.changeElement = function(elem, attrs, te
 		}
 		// relocate rotational transform, if necessary
 		if(!bChangedTransform) {
-			var angle = getRotationAngle(elem);
+			var angle = svgedit.utilities.getRotationAngle(elem);
 			if (angle) {
 				var bbox = elem.getBBox();
 				var cx = bbox.x + bbox.width/2,
@@ -460,7 +456,7 @@ var ChangeElementCommand = this.undoCmd.changeElement = function(elem, attrs, te
 		for(var attr in this.oldValues ) {
 			if (this.oldValues[attr]) {
 				if (attr == "#text") this.elem.textContent = this.oldValues[attr];
-				else if (attr == "#href") setHref(this.elem, this.oldValues[attr]);
+				else if (attr == "#href") svgedit.utilities.setHref(this.elem, this.oldValues[attr]);
 				else this.elem.setAttribute(attr, this.oldValues[attr]);
 				
 				if (attr == "stdDeviation") canvas.setBlurOffsets(this.elem.parentNode, this.oldValues[attr]);
@@ -473,7 +469,7 @@ var ChangeElementCommand = this.undoCmd.changeElement = function(elem, attrs, te
 		}
 		// relocate rotational transform, if necessary
 		if(!bChangedTransform) {
-			var angle = getRotationAngle(elem);
+			var angle = svgedit.utilities.getRotationAngle(elem);
 			if (angle) {
 				var bbox = elem.getBBox();
 				var cx = bbox.x + bbox.width/2,
@@ -908,7 +904,7 @@ var SelectorManager;
 			this.hasGrips = show;
 			if(elem && show) {
 				this.selectorGroup.appendChild(selectorManager.selectorGripsGroup);
-				this.updateGripCursors(getRotationAngle(elem));
+				this.updateGripCursors(svgedit.utilities.getRotationAngle(elem));
 			}
 		};
 		
@@ -983,7 +979,7 @@ var SelectorManager;
 			//*
 			offset *= current_zoom;
 			
-			var nbox = transformBox(l*current_zoom, t*current_zoom, w*current_zoom, h*current_zoom, m),
+			var nbox = svgedit.math.transformBox(l*current_zoom, t*current_zoom, w*current_zoom, h*current_zoom, m),
 				aabox = nbox.aabox,
 				nbax = aabox.x - offset,
 				nbay = aabox.y - offset,
@@ -994,7 +990,7 @@ var SelectorManager;
 			var cx = nbax + nbaw/2,
 				cy = nbay + nbah/2;
 				
-			var angle = getRotationAngle(selected);
+			var angle = svgedit.utilities.getRotationAngle(selected);
 			if (angle) {
 				
 				var rot = svgroot.createSVGTransform();
@@ -1393,7 +1389,7 @@ var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
 	//	var svgthumb = svgdoc.createElementNS(svgns, "use");
 	//	svgthumb.setAttribute('width', '100');
 	//	svgthumb.setAttribute('height', '100');
-	//	setHref(svgthumb, '#svgcontent');
+	//	svgedit.utilities.setHref(svgthumb, '#svgcontent');
 	//	svgroot.appendChild(svgthumb);
 
 })();
@@ -1649,7 +1645,7 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 			
 			var bb = getBBox(elem);
 			
-			var angle = getRotationAngle(elem);
+			var angle = svgedit.utilities.getRotationAngle(elem);
 			if ((angle && angle % 90) || hasMatrixTransform(getTransformList(elem))) {
 				// Accurate way to get BBox of rotated element in Firefox:
 				// Put element in group and get its BBox
@@ -1988,6 +1984,7 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 			if (!(allowedAttrsNS.hasOwnProperty(attrLocalName) && attrNsURI == allowedAttrsNS[attrLocalName] && attrNsURI != xmlnsns) &&
 				!(attrNsURI == xmlnsns && nsMap[attr.nodeValue]) ) 
 			{
+				// TODO(codedread): Programmatically add the se: attributes to the NS-aware whitelist.
 				// Bypassing the whitelist to allow se: prefixes. Is there
 				// a more appropriate way to do this?
 				if(attrName.indexOf('se:') == 0) {
@@ -1995,6 +1992,7 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 				} 
 				node.removeAttributeNS(attrNsURI, attrLocalName);
 			}
+			// TODO(codedread): Do this in a separate sweep, this has nothing to do with sanitizing the markup.
 			// special handling for path d attribute
 			if (node.nodeName == 'path' && attrName == 'd') {
 				// Convert to absolute
@@ -2034,7 +2032,7 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 		
 		// for some elements that have a xlink:href, ensure the URI refers to a local element
 		// (but not for links)
-		var href = getHref(node);
+		var href = svgedit.utilities.getHref(node);
 		if(href && 
 		   ["filter", "linearGradient", "pattern",
 		   "radialGradient", "textPath", "use"].indexOf(node.nodeName) >= 0)
@@ -2042,13 +2040,13 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 			// TODO: we simply check if the first character is a #, is this bullet-proof?
 			if (href[0] != "#") {
 				// remove the attribute (but keep the element)
-				setHref(node, "");
+				svgedit.utilities.setHref(node, "");
 				node.removeAttributeNS(xlinkns, "href");
 			}
 		}
 		
 		// Safari crashes on a <use> without a xlink:href, so we just remove the node here
-		if (node.nodeName == "use" && !getHref(node)) {
+		if (node.nodeName == "use" && !svgedit.utilities.getHref(node)) {
 			parent.removeChild(node);
 			return;
 		}
@@ -2057,7 +2055,7 @@ var sanitizeSvg = this.sanitizeSvg = function(node) {
 		$.each(["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"],function(i,attr) {
 			var val = node.getAttribute(attr);
 			if (val) {
-				val = getUrlFromAttr(val);
+				val = svgedit.utilities.getUrlFromAttr(val);
 				// simply check for first character being a '#'
 				if (val && val[0] !== "#") {
 					node.setAttribute(attr, "");
@@ -2331,7 +2329,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			changes.cx = c.x;
 			changes.cy = c.y;
 			// take the minimum of the new selected box's dimensions for the new circle radius
-			var tbox = transformBox(box.x, box.y, box.width, box.height, m);
+			var tbox = svgedit.math.transformBox(box.x, box.y, box.width, box.height, m);
 			var w = tbox.tr.x - tbox.tl.x, h = tbox.bl.y - tbox.tl.y;
 			changes.r = Math.min(w/2, h/2);
 
@@ -2528,7 +2526,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 			}
 			// remove identity matrices
 			else if (xform.type === 1) {
-				if (isIdentity(xform.matrix)) {
+				if (svgedit.math.isIdentity(xform.matrix)) {
 					tlist.removeItem(k);
 				}
 			}
@@ -7120,7 +7118,7 @@ this.svgToString = function(elem, indent) {
 			// Note that this also means we should properly deal with this on import
 // 			if(curConfig.baseUnit !== "px") {
 // 				var unit = curConfig.baseUnit;
-// 				var unit_m = unit_types[unit];
+// 				var unit_m = svgedit.units.getTypeMap()[unit];
 // 				res.w = shortFloat(res.w / unit_m)
 // 				res.h = shortFloat(res.h / unit_m)
 // 				vb = ' viewBox="' + [0, 0, res.w, res.h].join(' ') + '"';				
@@ -10595,7 +10593,7 @@ this.getPrivateMethods = function() {
 		hasMatrixTransform: hasMatrixTransform,
 		identifyLayers: identifyLayers,
 		InsertElementCommand: InsertElementCommand,
-		isIdentity: isIdentity,
+		isIdentity: svgedit.math.isIdentity,
 		logMatrix: logMatrix,
 		matrixMultiply: matrixMultiply,
 		MoveElementCommand: MoveElementCommand,
@@ -10612,7 +10610,7 @@ this.getPrivateMethods = function() {
 		shortFloat: shortFloat,
 		SVGEditTransformList: svgedit.transformlist.SVGTransformList,
 		toString: toString,
-		transformBox: transformBox,
+		transformBox: svgedit.math.transformBox,
 		transformListToTransform: transformListToTransform,
 		transformPoint: transformPoint,
 		walkTree: svgedit.utilities.walkTree

@@ -89,6 +89,8 @@ svgedit.units.init = function(elementContainer) {
 	typeMap_['%'] = 0;
 };
 
+// Group: Unit conversion functions
+
 // Function: svgedit.units.getTypeMap
 // Returns the unit object with values for each unit
 svgedit.units.getTypeMap = function() {
@@ -118,7 +120,7 @@ svgedit.units.setUnitAttr = function(elem, attr, val) {
 		var old_val = elem.getAttribute(attr);
 		
 		// Enable this for alternate mode
-//		if(old_val !== null && (isNaN(old_val) || curConfig.baseUnit !== 'px')) {
+//		if(old_val !== null && (isNaN(old_val) || elementContainer_.getBaseUnit() !== 'px')) {
 //			// Old value was a number, so get unit, then convert
 //			var unit;
 //			if(old_val.substr(-1) === '%') {
@@ -133,7 +135,7 @@ svgedit.units.setUnitAttr = function(elem, attr, val) {
 //					return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
 //				}
 //			} else {
-//				if(curConfig.baseUnit !== 'px') {
+//				if(elementContainer_.getBaseUnit() !== 'px') {
 //					unit = elementContainer_.getBaseUnit();
 //				} else {
 //					unit = old_val.substr(-2);
