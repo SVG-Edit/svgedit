@@ -38,23 +38,32 @@ var unitNumMap = {
 
 $.merge(unit_attrs, h_attrs);
 
-// Read-only copy of configuration options.
-svgedit.units.config_;
+// Container of elements.
+var elementContainer_;
 
 /**
  * Stores mapping of unit type to user coordinates.
  */
-svgedit.units.typeMap_ = {px: 1};
+var typeMap_ = {px: 1};
+
+/**
+ * ElementContainer interface
+ *
+ * function getBaseUnit() - returns a string of the base unit type of the container ("em")
+ * function getElement() - returns an element in the container given an id
+ * function getHeight() - returns the container's height
+ * function getWidth() - returns the container's width
+ */
 
 /**
  * Function: svgedit.units.init()
  * Initializes this module.
  *
  * Parameters:
- * config - an object containing configuration options.
+ * elementContainer - an object implemnting the ElementContainer interface.
  */
-svgedit.units.init = function(config) {
-	svgedit.units.config_ = config;
+svgedit.units.init = function(elementContainer) {
+	elementContainer_ = elementContainer;
 
 	var svgns = 'http://www.w3.org/2000/svg';
 
@@ -70,30 +79,30 @@ svgedit.units.init = function(config) {
 	document.body.removeChild(svg);
 
 	var inch = bb.x;
-	svgedit.units.typeMap_['em'] = bb.width;
-	svgedit.units.typeMap_['ex'] = bb.height;
-	svgedit.units.typeMap_['in'] = inch;
-	svgedit.units.typeMap_['cm'] = inch / 2.54;
-	svgedit.units.typeMap_['mm'] = inch / 25.4;
-	svgedit.units.typeMap_['pt'] = inch / 72;
-	svgedit.units.typeMap_['pc'] = inch / 6;
-	svgedit.units.typeMap_['%'] = 0;
+	typeMap_['em'] = bb.width;
+	typeMap_['ex'] = bb.height;
+	typeMap_['in'] = inch;
+	typeMap_['cm'] = inch / 2.54;
+	typeMap_['mm'] = inch / 25.4;
+	typeMap_['pt'] = inch / 72;
+	typeMap_['pc'] = inch / 6;
+	typeMap_['%'] = 0;
 };
 
 // Function: svgedit.units.getTypeMap
 // Returns the unit object with values for each unit
 svgedit.units.getTypeMap = function() {
-	return svgedit.units.typeMap_;
+	return typeMap_;
 };
 
 // Function: svgedit.units.convertUnit
 // Converts the number to given unit or baseUnit
 svgedit.units.convertUnit = function(val, unit) {
-	unit = unit || svgedit.units.config_.baseUnit;
+	unit = unit || elementContainer_.getBaseUnit();
 //	baseVal.convertToSpecifiedUnits(unitNumMap[unit]);
 //	var val = baseVal.valueInSpecifiedUnits;
 //	baseVal.convertToSpecifiedUnits(1);
-	return val / svgedit.units.typeMap_[unit];
+	return val / typeMap_[unit];
 };
 
 // Function: svgedit.units.setUnitAttr
@@ -125,11 +134,11 @@ svgedit.units.setUnitAttr = function(elem, attr, val) {
 //				}
 //			} else {
 //				if(curConfig.baseUnit !== 'px') {
-//					unit = svgedit.units.config_.baseUnit;
+//					unit = elementContainer_.getBaseUnit();
 //				} else {
 //					unit = old_val.substr(-2);
 //				}
-//				val = val / svgedit.units.typeMap_[unit];
+//				val = val / typeMap_[unit];
 //			}
 //		
 //		val += unit;
@@ -156,7 +165,7 @@ var attrsToConvert = {
 // element - a DOM element whose attributes should be converted
 svgedit.units.convertAttrs = function(element) {
 	var elName = element.tagName;
-	var unit = svgedit.units.config_.baseUnit;
+	var unit = elementContainer_.getBaseUnit();
 	var attrs = attrsToConvert[elName];
 	if(!attrs) return;
 	var len = attrs.length
@@ -165,12 +174,85 @@ svgedit.units.convertAttrs = function(element) {
 		var cur = element.getAttribute(attr);
 		if(cur) {
 			if(!isNaN(cur)) {
-				element.setAttribute(attr, (cur / svgedit.units.typeMap_[unit]) + unit);
+				element.setAttribute(attr, (cur / typeMap_[unit]) + unit);
 			} else {
 				// Convert existing?
 			}
 		}
 	}
 };
+
+// Function: svgedit.units.convertToNum
+// Converts given values to numbers. Attributes must be supplied in 
+// case a percentage is given
+//
+// Parameters:
+// attr - String with the name of the attribute associated with the value
+// val - String with the attribute value to convert
+svgedit.units.convertToNum = function(attr, val) {
+	// Return a number if that's what it already is
+	if(!isNaN(val)) return val-0;
+	
+	if(val.substr(-1) === '%') {
+		// Deal with percentage, depends on attribute
+		var num = val.substr(0, val.length-1)/100;
+		var width = elementContainer_.getWidth();
+		var height = elementContainer_.getHeight();
+		
+		if(w_attrs.indexOf(attr) >= 0) {
+			return num * width;
+		} else if(h_attrs.indexOf(attr) >= 0) {
+			return num * height;
+		} else {
+			return num * Math.sqrt((width*width) + (height*height))/Math.sqrt(2);
+		}
+	} else {
+		var unit = val.substr(-2);
+		var num = val.substr(0, val.length-2);
+		// Note that this multiplication turns the string into a number
+		return num * typeMap_[unit];
+	}
+};
+
+// Function: svgedit.units.isValidUnit
+// Check if an attribute's value is in a valid format
+//
+// Parameters: 
+// attr - String with the name of the attribute associated with the value
+// val - String with the attribute value to check
+svgedit.units.isValidUnit = function(attr, val) {
+	var valid = false;
+	if(unit_attrs.indexOf(attr) >= 0) {
+		// True if it's just a number
+		if(!isNaN(val)) {
+			valid = true;
+		} else {
+		// Not a number, check if it has a valid unit
+			val = val.toLowerCase();
+			$.each(typeMap_, function(unit) {
+				if(valid) return;
+				var re = new RegExp('^-?[\\d\\.]+' + unit + '$');
+				if(re.test(val)) valid = true;
+			});
+		}
+	} else if (attr == "id") {
+		// if we're trying to change the id, make sure it's not already present in the doc
+		// and the id value is valid.
+
+		var result = false;
+		// because getElem() can throw an exception in the case of an invalid id
+		// (according to http://www.w3.org/TR/xml-id/ IDs must be a NCName)
+		// we wrap it in an exception and only return true if the ID was valid and
+		// not already present
+		try {
+			var elem = elementContainer_.getElement(val);
+			result = (elem == null);
+		} catch(e) {}
+		return result;
+	} else valid = true;			
+	
+	return valid;
+};
+
 
 })();
