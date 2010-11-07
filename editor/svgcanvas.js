@@ -97,6 +97,15 @@ if(window.opera) {
 // config - An object that contains configuration data
 $.SvgCanvas = function(container, config)
 {
+// Namespace constants
+var svgns = "http://www.w3.org/2000/svg",
+	xlinkns = "http://www.w3.org/1999/xlink",
+	xmlns = "http://www.w3.org/XML/1998/namespace",
+	xmlnsns = "http://www.w3.org/2000/xmlns/", // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
+	se_ns = "http://svg-edit.googlecode.com",
+	htmlns = "http://www.w3.org/1999/xhtml",
+	mathns = "http://www.w3.org/1998/Math/MathML";
+
 // Default configuration options
 var curConfig = {
 	show_outside_canvas: true,
@@ -107,6 +116,39 @@ var curConfig = {
 if(config) {
 	$.extend(curConfig, config);
 }
+
+// "document" element associated with the container (same as window.document using default svg-editor.js)
+var svgdoc = container.ownerDocument;
+
+// The actual element that represents the final output SVG element
+var svgcontent = svgdoc.createElementNS(svgns, "svg");
+
+// This is a container for the document being edited, not the document itself.  Initialized later.
+var svgroot = null;
+
+// Float displaying the current zoom level (1 = 100%, .5 = 50%, etc)
+var current_zoom = 1;
+
+// Function: getElem
+// Get a DOM element by ID within the SVG root element.
+//
+// Parameters:
+// id - String with the element's new ID
+var getElem = function(id) {
+	if(svgroot.querySelector) {
+		// querySelector lookup
+		return svgroot.querySelector('#'+id);
+	} else if(svgdoc.evaluate) {
+		// xpath lookup
+		return svgdoc.evaluate('svg:svg[@id="svgroot"]//svg:*[@id="'+id+'"]', container, function() { return "http://www.w3.org/2000/svg"; }, 9, null).singleNodeValue;
+	} else {
+		// jQuery lookup: twice as slow as xpath in FF
+		return $(svgroot).find('[id=' + id + ']')[0];
+	}
+	
+	// getElementById lookup: includes icons, not good
+	// return svgdoc.getElementById(id);
+};
 
 // import svgtransformlist.js
 var getTransformList = this.getTransformList = svgedit.transformlist.getTransformList;
@@ -121,8 +163,15 @@ var transformListToTransform = this.transformListToTransform = svgedit.math.tran
 var snapToAngle = svgedit.math.snapToAngle;
 
 // import from units.js
-svgedit.units.init(curConfig);
+// send in an object implementing the ElementContainer interface (see units.js)
+svgedit.units.init({
+	getBaseUnit: function() { return curConfig.baseUnit; },
+	getElement: getElem,
+	getHeight: function() { return svgcontent.getAttribute("height")/current_zoom; },
+	getWidth: function() { return svgcontent.getAttribute("width")/current_zoom; }
+});
 var unit_types = svgedit.units.getTypeMap();
+var convertToNum = this.convertToNum = svgedit.units.convertToNum;
 
 // import from svgutils.js
 var getUrlFromAttr = this.getUrlFromAttr = svgedit.utilities.getUrlFromAttr;
@@ -145,7 +194,6 @@ svgedit.utilities.snapToGrid = function(value){
 	return value;
 };
 var snapToGrid = svgedit.utilities.snapToGrid;
-
 
 var isOpera = svgedit.browsersupport.isOpera,
 	isWebkit = svgedit.browsersupport.isWebkit,
@@ -240,29 +288,17 @@ var elData = $.data;
 // an initialization function - probably just use clear()
 var canvas = this,
 	
-	// Namespace constants
-	svgns = "http://www.w3.org/2000/svg",
-	xlinkns = "http://www.w3.org/1999/xlink",
-	xmlns = "http://www.w3.org/XML/1998/namespace",
-	xmlnsns = "http://www.w3.org/2000/xmlns/", // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
-	se_ns = "http://svg-edit.googlecode.com",
-	htmlns = "http://www.w3.org/1999/xhtml",
-	mathns = "http://www.w3.org/1998/Math/MathML",
-
-	//nonce to uniquify id's
+	// nonce to uniquify id's
 	nonce = Math.floor(Math.random()*100001),
 	
 	// Boolean to indicate whether or not IDs given to elements should be random
 	randomize_ids = false, 
 	
-	// "document" element associated with the container (same as window.document using default svg-editor.js)
-	svgdoc = container.ownerDocument,
-	
 	// Array with width/height of canvas
 	dimensions = curConfig.dimensions;
 	
 	// Create Root SVG element. This is a container for the document being edited, not the document itself.
-	var svgroot = svgdoc.importNode(svgedit.utilities.text2xml(
+	svgroot = svgdoc.importNode(svgedit.utilities.text2xml(
 				'<svg id="svgroot" xmlns="' + svgns + '" xlinkns="' + xlinkns + '" ' +
 					'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
 					'<defs>' +
@@ -279,9 +315,6 @@ var canvas = this,
 
 	container.appendChild(svgroot);
 	
-	
-// The actual element that represents the final output SVG element
-var svgcontent = svgdoc.createElementNS(svgns, "svg");
 $(svgcontent).attr({
 	id: 'svgcontent',
 	width: dimensions[0],
@@ -338,104 +371,6 @@ $(opac_ani).attr({
 
 // Group: Unit conversion functions
 
-// TODO(codedread): Migrate this into units.js
-// Set the scope for these functions
-var convertToNum;
-
-(function() {
-	// TODO(codedread): Remove these arrays and maps, they are now in units.js.
-	var w_attrs = ['x', 'x1', 'cx', 'rx', 'width'];
-	var h_attrs = ['y', 'y1', 'cy', 'ry', 'height'];
-	var unit_attrs = $.merge(['r','radius'], w_attrs);
-
-	var unitNumMap = {
-			'%': 2,
-			em: 3,
-			ex: 4,
-			px: 5,
-			cm: 6,
-			mm: 7,
-			'in': 8,
-			pt: 9,
-			pc: 10
-	};
-
-	$.merge(unit_attrs, h_attrs);
-	
-	// Function: convertToNum
-	// Converts given values to numbers. Attributes must be supplied in 
-	// case a percentage is given
-	//
-	// Parameters:
-	// attr - String with the name of the attribute associated with the value
-	// val - String with the attribute value to convert
-	convertToNum = canvas.convertToNum = function(attr, val) {
-		// Return a number if that's what it already is
-		if(!isNaN(val)) return val-0;
-		
-		if(val.substr(-1) === '%') {
-			// Deal with percentage, depends on attribute
-			var num = val.substr(0, val.length-1)/100;
-			var res = getResolution();
-			
-			if(w_attrs.indexOf(attr) >= 0) {
-				return num * res.w;
-			} else if(h_attrs.indexOf(attr) >= 0) {
-				return num * res.h;
-			} else {
-				return num * Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
-			}
-		} else {
-			var unit = val.substr(-2);
-			var num = val.substr(0, val.length-2);
-			// Note that this multiplication turns the string into a number
-			return num * unit_types[unit];
-		}
-	};
-
-	// Function: isValidUnit
-	// Check if an attribute's value is in a valid format
-	//
-	// Parameters: 
-	// attr - String with the name of the attribute associated with the value
-	// val - String with the attribute value to check
-	canvas.isValidUnit = function(attr, val) {
-		var valid = false;
-		if(unit_attrs.indexOf(attr) >= 0) {
-			// True if it's just a number
-			if(!isNaN(val)) {
-				valid = true;
-			} else {
-			// Not a number, check if it has a valid unit
-				val = val.toLowerCase();
-				$.each(unit_types, function(unit) {
-					if(valid) return;
-					var re = new RegExp('^-?[\\d\\.]+' + unit + '$');
-					if(re.test(val)) valid = true;
-				});
-			}
-		} else if (attr == "id") {
-			// if we're trying to change the id, make sure it's not already present in the doc
-			// and the id value is valid.
-
-			var result = false;
-			// because getElem() can throw an exception in the case of an invalid id
-			// (according to http://www.w3.org/TR/xml-id/ IDs must be a NCName)
-			// we wrap it in an exception and only return true if the ID was valid and
-			// not already present
-			try {
-				var elem = getElem(val);
-				result = (elem == null);
-			} catch(e) {}
-			return result;
-		} else valid = true;			
-		
-		return valid;
-	};
-	
-})();
-
-
 var restoreRefElems = function(elem) {
 	// Look for missing reference elements, restore any found
 	var attrs = $(elem).attr(ref_attrs);
@@ -451,6 +386,7 @@ var restoreRefElems = function(elem) {
 		}
 	}
 }
+
 
 // Group: Undo/Redo history management
 
@@ -1533,9 +1469,6 @@ var cur_shape = all_properties.shape,
 	// Current general properties
 	cur_properties = cur_shape,
 	
-	// Float displaying the current zoom level (1 = 100%, .5 = 50%, etc)
-	current_zoom = 1,
-	
 	// Array with all the currently selected elements
 	// default size of 1 until it needs to grow bigger
 	selectedElements = new Array(1),
@@ -1609,7 +1542,8 @@ this.addExtension = function(name, ext_func) {
 		console.log('Cannot add extension "' + name + '", an extension by that name already exists"');
 	}
 };
-	
+
+
 // Function: shortFloat
 // Rounds a given value to a float with number of digits defined in save_options
 //
@@ -1938,27 +1872,6 @@ var copyElem = function(el) {
 	}
 	return new_el;
 };
-
-// Function: getElem
-// Get a DOM element by ID within the SVG root element.
-//
-// Parameters:
-// id - String with the element's new ID
-function getElem(id) {
-	if(svgroot.querySelector) {
-		// querySelector lookup
-		return svgroot.querySelector('#'+id);
-	} else if(svgdoc.evaluate) {
-		// xpath lookup
-		return svgdoc.evaluate('svg:svg[@id="svgroot"]//svg:*[@id="'+id+'"]', container, function() { return "http://www.w3.org/2000/svg"; }, 9, null).singleNodeValue;
-	} else {
-		// jQuery lookup: twice as slow as xpath in FF
-		return $(svgroot).find('[id=' + id + ']')[0];
-	}
-	
-	// getElementById lookup: includes icons, not good
-	// return svgdoc.getElementById(id);
-}
 
 // Set scope for these functions
 var getId, getNextId, call;
@@ -7126,7 +7039,7 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 //
 // Returns: 
 // String containing the SVG image for output
-var svgCanvasToString = this.svgCanvasToString = function() {
+this.svgCanvasToString = function() {
 	// keep calling it until there are none to remove
 	while (removeUnusedDefElems() > 0) {};
 	
@@ -7163,8 +7076,7 @@ var svgCanvasToString = this.svgCanvasToString = function() {
 			$(this).replaceWith(svg);
 		}
 	});
-	
-	var output = svgToString(svgcontent, 0);
+	var output = this.svgToString(svgcontent, 0);
 	
 	// Rewrap gsvg
 	if(naked_svgs.length) {
@@ -7174,7 +7086,7 @@ var svgCanvasToString = this.svgCanvasToString = function() {
 	}
 	
 	return output;
-}
+};
 
 // Function: svgToString
 // Sub function ran on each SVG element to convert it to a string as desired
@@ -7185,7 +7097,7 @@ var svgCanvasToString = this.svgCanvasToString = function() {
 //
 // Returns: 
 // String with the given element as an SVG tag
-var svgToString = this.svgToString = function(elem, indent) {
+this.svgToString = function(elem, indent) {
 	var out = new Array(), toXml = svgedit.utilities.toXml;
 	var unit = curConfig.baseUnit;
 	var unit_re = new RegExp('^-?[\\d\\.]+' + unit + '$');
@@ -7307,7 +7219,7 @@ var svgToString = this.svgToString = function(elem, indent) {
 				switch(child.nodeType) {
 				case 1: // element node
 					out.push("\n");
-					out.push(svgToString(childs.item(i), indent));
+					out.push(this.svgToString(childs.item(i), indent));
 					break;
 				case 3: // text node
 					var str = child.nodeValue.replace(/^\s+|\s+$/g, "");
@@ -7393,7 +7305,7 @@ this.save = function(opts) {
 	save_options.apply = true;
 	
 	// no need for doctype, see http://jwatt.org/svg/authoring/#doctype-declaration
-	var str = svgCanvasToString();
+	var str = this.svgCanvasToString();
 	call("saved", str);
 };
 
@@ -7426,7 +7338,7 @@ this.rasterExport = function() {
 		}
 	});
 
-	var str = svgCanvasToString();
+	var str = this.svgCanvasToString();
 	call("exported", {svg: str, issues: issues});
 };
 
@@ -7437,7 +7349,7 @@ this.rasterExport = function() {
 // The current drawing as raw SVG XML text.
 this.getSvgString = function() {
 	save_options.apply = false;
-	return svgCanvasToString();
+	return this.svgCanvasToString();
 };
 
 //function randomizeIds
@@ -10698,9 +10610,7 @@ this.getPrivateMethods = function() {
 		sanitizeSvg: sanitizeSvg,
 		SelectorManager: SelectorManager,
 		shortFloat: shortFloat,
-		svgCanvasToString: svgCanvasToString,
 		SVGEditTransformList: svgedit.transformlist.SVGTransformList,
-		svgToString: svgToString,
 		toString: toString,
 		transformBox: transformBox,
 		transformListToTransform: transformListToTransform,

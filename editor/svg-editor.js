@@ -11,7 +11,8 @@
  */
 
 // Dependencies:
-// 1) svgcanvas.js
+// 1) units.js
+// 2) svgcanvas.js
 
 (function() { 
 	
@@ -1806,7 +1807,7 @@
 			$('.attr_changer').change(function() {
 				var attr = this.getAttribute("data-attr");
 				var val = this.value;
-				var valid = svgCanvas.isValidUnit(attr, val);
+				var valid = svgedit.units.isValidUnit(attr, val);
 				
 				if(!valid) {
 					$.alert(uiStrings.invalidAttrValGiven);
@@ -2717,7 +2718,7 @@
 				var width = $('#canvas_width'), w = width.val();
 				var height = $('#canvas_height'), h = height.val();
 		
-				if(w != "fit" && !svgCanvas.isValidUnit('width', w)) {
+				if(w != "fit" && !svgedit.units.isValidUnit('width', w)) {
 					$.alert(uiStrings.invalidAttrValGiven);
 					width.parent().addClass('error');
 					return false;
@@ -2725,7 +2726,7 @@
 				
 				width.parent().removeClass('error');
 				
-				if(h != "fit" && !svgCanvas.isValidUnit('height', h)) {
+				if(h != "fit" && !svgedit.units.isValidUnit('height', h)) {
 					$.alert(uiStrings.invalidAttrValGiven);
 					height.parent().addClass('error');
 					return false;
