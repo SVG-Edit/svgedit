@@ -22,6 +22,7 @@ if (!svgedit.browsersupport) {
 
 var svgns = 'http://www.w3.org/2000/svg';
 var userAgent = navigator.userAgent;
+var svg = document.createElementNS(svgns, 'svg');
 
 // Note: Browser sniffing should only be used if no other detection method is possible
 var isOpera_ = !!window.opera;
@@ -34,7 +35,7 @@ svgedit.browsersupport.isGecko = function() { return isGecko_; }
 
 // segList functions (for FF1.5 and 2.0)
 function supportPathReplaceItem() {
-	var path = document.createElementNS(svgns,'path');
+	var path = document.createElementNS(svgns, 'path');
 	path.setAttribute('d','M0,0 10,10');
 	var seglist = path.pathSegList;
 	var seg = path.createSVGPathSegLinetoAbs(5,5);
@@ -80,7 +81,7 @@ function supportEditableText() {
 
 function supportGoodDecimals() {
 	// Correct decimals on clone attributes (Opera < 10.5/win/non-en)
-	var rect = document.createElementNS(svgns,'rect');
+	var rect = document.createElementNS(svgns, 'rect');
 	rect.setAttribute('x',.1);
 	var crect = rect.cloneNode(false);
 	var retValue = (crect.getAttribute('x').indexOf(',') == -1);
@@ -92,9 +93,18 @@ function supportGoodDecimals() {
 }
 
 function supportNonScalingStroke() {
-	var rect = document.createElementNS(svgns,'rect');
+	var rect = document.createElementNS(svgns, 'rect');
 	rect.setAttribute('style','vector-effect:non-scaling-stroke');
 	return rect.style.vectorEffect === 'non-scaling-stroke';
+}
+
+function supportNativeSVGTransformLists() {
+	var rect = document.createElementNS(svgns, 'rect');
+	var rxform = rect.transform.baseVal;
+	
+	var t1 = svg.createSVGTransform();
+	rxform.appendItem(t1);
+	return rxform.getItem(0) == t1;
 }
 
 svgedit.browsersupport.pathReplaceItem = supportPathReplaceItem();
@@ -103,5 +113,6 @@ svgedit.browsersupport.textCharPos = supportTextCharPos();
 svgedit.browsersupport.editableText = supportEditableText();
 svgedit.browsersupport.goodDecimals = supportGoodDecimals();
 svgedit.browsersupport.nonScalingStroke = supportNonScalingStroke();
+svgedit.browsersupport.nativeTransformLists = supportNativeSVGTransformLists();
 
 })();

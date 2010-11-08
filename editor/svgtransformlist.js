@@ -135,20 +135,22 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 		}
 	};
 	this._removeFromOtherLists = function(item) {
-		// Check if this transform is already in a transformlist, and
-		// remove it if so.
-		var found = false;
-		for (var id in listMap_) {
-			var tl = listMap_[id];
-			for (var i = 0, len = tl._xforms.length; i < len; ++i) {
-				if(tl._xforms[i] == item) {
-					found = true;
-					tl.removeItem(i);
+		if (item) {
+			// Check if this transform is already in a transformlist, and
+			// remove it if so.
+			var found = false;
+			for (var id in listMap_) {
+				var tl = listMap_[id];
+				for (var i = 0, len = tl._xforms.length; i < len; ++i) {
+					if(tl._xforms[i] == item) {
+						found = true;
+						tl.removeItem(i);
+						break;
+					}
+				}
+				if (found) {
 					break;
 				}
-			}
-			if (found) {
-				break;
 			}
 		}
 	};
@@ -169,7 +171,7 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 		if (index < this.numberOfItems && index >= 0) {
 			return this._xforms[index];
 		}
-		return null;
+		throw {code: 1}; // DOMException with code=INDEX_SIZE_ERR
 	};
 	
 	this.insertItemBefore = function(newItem, index) {
@@ -210,7 +212,6 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 	};
 	
 	this.removeItem = function(index) {
-		var retValue = null;
 		if (index < this.numberOfItems && index >= 0) {
 			var retValue = this._xforms[index];
 			var newxforms = new Array(this.numberOfItems - 1);
@@ -223,8 +224,10 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 			this.numberOfItems--;
 			this._xforms = newxforms;
 			this._list._update();
+			return retValue;
+		} else {
+			throw {code: 1}; // DOMException with code=INDEX_SIZE_ERR
 		}
-		return retValue;
 	};
 	
 	this.appendItem = function(newItem) {
@@ -258,7 +261,7 @@ svgedit.transformlist.removeElementFromListMap = function(elem) {
 // Parameters:
 // elem - DOM element to get a transformlist from
 svgedit.transformlist.getTransformList = function(elem) {
-	if (svgedit.browsersupport.isWebkit()) {
+	if (!svgedit.browsersupport.nativeTransformLists) {
 		var id = elem.id;
 		if(!id) {
 			// Get unique ID for temporary element
