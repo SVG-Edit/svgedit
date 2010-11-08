@@ -1,0 +1,245 @@
+<html>  
+<head>  
+  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>  
+  <script src='../editor/jquery.js'></script>
+  <script>
+    // Mock for browsersupport
+    window.svgedit = {};
+    svgedit.browsersupport = {};
+    svgedit.browsersupport.isWebkit_ = true;
+    svgedit.browsersupport.isWebkit = function() { return svgedit.browsersupport.isWebkit_; }
+  </script>
+  <script type='text/javascript' src='../editor/svgtransformlist.js'></script>
+  <script type='text/javascript' src='qunit/qunit.js'></script>  
+  <script type='text/javascript'>
+  $(function() {
+  	// log function
+  	QUnit.log = function(result, message) {
+		if (window.console && window.console.log) {
+			window.console.log(result +' :: '+ message);
+		}
+	};
+	
+	var svgns = 'http://www.w3.org/2000/svg';
+	var svgroot = document.getElementById('svgroot');
+	var svgcontent, rect, circle;
+
+	function setUp() {
+		svgcontent = svgroot.appendChild(document.createElementNS(svgns, 'svg'));
+		rect = svgcontent.appendChild(document.createElementNS(svgns, 'rect'));
+		rect.id = 'r';
+		circle = svgcontent.appendChild(document.createElementNS(svgns, 'circle'));
+		circle.id = 'c';
+	}
+	
+	function tearDown() {
+		svgedit.transformlist.resetListMap();
+		while (svgroot.hasChildNodes()) {
+			svgroot.removeChild(svgroot.firstChild);
+		}
+	}
+
+	module('svgedit.svgtransformlist Module');
+
+	test('Test svgedit.transformlist package', function() {
+		expect(2);
+		
+		ok(svgedit.transformlist);
+		ok(svgedit.transformlist.getTransformList);
+	});
+
+	test('Test svgedit.transformlist.getTransformList() function', function() {
+		expect(4);
+		setUp();
+		
+		var rxform = svgedit.transformlist.getTransformList(rect);
+		var cxform = svgedit.transformlist.getTransformList(circle);
+		
+		ok(rxform);
+		ok(cxform);
+		equals(typeof rxform, typeof {});
+		equals(typeof cxform, typeof {});
+		
+		tearDown();
+	});
+
+	test('Test SVGTransformList.numberOfItems property', function() {
+		expect(2);
+		setUp();
+		
+		var rxform = svgedit.transformlist.getTransformList(rect);
+		
+		equals(typeof rxform.numberOfItems, typeof 0);
+		equals(rxform.numberOfItems, 0);
+		
+		tearDown();
+	});
+
+	test('Test SVGTransformList.initialize()', function() {
+		expect(7);
+		setUp();
+		
+		var rxform = svgedit.transformlist.getTransformList(rect);
+		var cxform = svgedit.transformlist.getTransformList(circle);
+		
+		var t = svgcontent.createSVGTransform();
+		ok(t);
+		ok(rxform.initialize);
+		equals(typeof rxform.initialize, typeof function(){});
+		rxform.initialize(t);
+		equals(rxform.numberOfItems, 1);
+		equals(cxform.numberOfItems, 0);
+
+		// If a transform was already in a transform list, this should
+		// remove it from its old list and add it to this list.
+		cxform.initialize(t);
+		equals(rxform.numberOfItems, 0);
+		equals(cxform.numberOfItems, 1);
+		
+		tearDown();
+	});
+
+	test('Test SVGTransformList.appendItem() and getItem()', function() {
+		expect(15);
+		setUp();
+		
+		var rxform = svgedit.transformlist.getTransformList(rect);
+		var cxform = svgedit.transformlist.getTransformList(circle);
+		
+		var t1 = svgcontent.createSVGTransform(),
+			t2 = svgcontent.createSVGTransform(),
+			t3 = svgcontent.createSVGTransform();
+		
+		ok(rxform.appendItem);
+		ok(rxform.getItem);
+		equals(typeof rxform.appendItem, typeof function(){});
+		equals(typeof rxform.getItem, typeof function(){});
+
+		rxform.appendItem(t1);
+		rxform.appendItem(t2);
+		rxform.appendItem(t3);
+		
+		equals(rxform.numberOfItems, 3);
+		equals(rxform.getItem(0), t1);
+		equals(rxform.getItem(1), t2);
+		equals(rxform.getItem(2), t3);
+
+		ok(!rxform.getItem(-1));
+		ok(!rxform.getItem(3));
+		
+		cxform.appendItem(t1);
+		equals(rxform.numberOfItems, 2);
+		equals(rxform.getItem(0), t2);
+		equals(rxform.getItem(1), t3);
+
+		equals(cxform.numberOfItems, 1);
+		equals(cxform.getItem(0), t1);
+		
+		tearDown();
+	});
+
+	test('Test SVGTransformList.removeItem()', function() {
+		expect(7);
+		setUp();
+		
+		var rxform = svgedit.transformlist.getTransformList(rect);
+		
+		var t1 = svgcontent.createSVGTransform(),
+			t2 = svgcontent.createSVGTransform();
+		ok(rxform.removeItem);
+		equals(typeof rxform.removeItem, typeof function(){});
+		rxform.appendItem(t1);
+		rxform.appendItem(t2);
+		
+		var removedTransform = rxform.removeItem(0);
+		equals(rxform.numberOfItems, 1);
+		equals(removedTransform, t1);
+		equals(rxform.getItem(0), t2);
+		
+		ok(!rxform.removeItem(-1));
+		ok(!rxform.removeItem(1));
+		
+		tearDown();
+	});
+
+	test('Test SVGTransformList.replaceItem()', function() {
+		expect(10);
+		setUp();
+		
+		var rxform = svgedit.transformlist.getTransformList(rect);
+		var cxform = svgedit.transformlist.getTransformList(circle);
+		
+		ok(rxform.replaceItem);
+		equals(typeof rxform.replaceItem, typeof function(){});
+
+		var t1 = svgcontent.createSVGTransform(),
+			t2 = svgcontent.createSVGTransform(),
+			t3 = svgcontent.createSVGTransform();
+		
+		rxform.appendItem(t1);
+		rxform.appendItem(t2);
+		cxform.appendItem(t3);
+		
+		var newItem = rxform.replaceItem(t3, 0);
+		equals(rxform.numberOfItems, 2);
+		equals(newItem, t3);
+		equals(rxform.getItem(0), t3);
+		equals(rxform.getItem(1), t2);
+		equals(cxform.numberOfItems, 0);
+		
+		// test replaceItem within a list
+		rxform.appendItem(t1);
+		rxform.replaceItem(t1, 0);
+		equals(rxform.numberOfItems, 2);
+		equals(rxform.getItem(0), t1);
+		equals(rxform.getItem(1), t2);
+		
+		tearDown();
+	});
+
+	test('Test SVGTransformList.insertItemBefore()', function() {
+		expect(12);
+		setUp();
+		
+		var rxform = svgedit.transformlist.getTransformList(rect);
+		var cxform = svgedit.transformlist.getTransformList(circle);
+		
+		ok(rxform.insertItemBefore);
+		equals(typeof rxform.insertItemBefore, typeof function(){});
+
+		var t1 = svgcontent.createSVGTransform(),
+			t2 = svgcontent.createSVGTransform(),
+			t3 = svgcontent.createSVGTransform();
+		
+		rxform.appendItem(t1);
+		rxform.appendItem(t2);
+		cxform.appendItem(t3);
+		
+		var newItem = rxform.insertItemBefore(t3, 0);
+		equals(rxform.numberOfItems, 3);
+		equals(newItem, t3);
+		equals(rxform.getItem(0), t3);
+		equals(rxform.getItem(1), t1);
+		equals(rxform.getItem(2), t2);
+		equals(cxform.numberOfItems, 0);
+
+		rxform.insertItemBefore(t2, 1);
+		equals(rxform.numberOfItems, 3);
+		equals(rxform.getItem(0), t3);
+		equals(rxform.getItem(1), t2);
+		equals(rxform.getItem(2), t1);
+		tearDown();
+	});
+
+  }); 
+  </script>  
+</head>  
+<body>  
+  <h1 id='qunit-header'>Unit Tests for svgtransformlist.js</h1>
+  <h2 id='qunit-banner'></h2>
+  <h2 id='qunit-userAgent'></h2>
+  <ol id='qunit-tests'>
+  </ol>
+  <div id='svgroot' style='visibility:hidden'></div>
+</body>  
+</html>

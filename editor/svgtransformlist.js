@@ -50,41 +50,27 @@ function transformToString(xform) {
 	return text;
 };
 
+
 /**
  * Map of SVGTransformList objects.
  */
 var listMap_ = {};
 
-svgedit.transformlist.resetListMap = function() {
-	listMap_ = {};
-};
-
-/**
- * Parameters:
- * elem - a DOM Element
- */
-svgedit.transformlist.removeElementFromListMap = function(elem) {
-	if (elem.id && listMap_[elem.id]) {
-		delete listMap_[elem.id];
-	}
-};
-
 
 // **************************************************************************************
 // SVGTransformList implementation for Webkit 
 // These methods do not currently raise any exceptions.
-// These methods also do not check that transforms are being inserted or handle if
-// a transform is already in the list, etc.  This is basically implementing as much
-// of SVGTransformList that we need to get the job done.
+// These methods also do not check that transforms are being inserted.  This is basically
+// implementing as much of SVGTransformList that we need to get the job done.
 //
 //  interface SVGEditTransformList { 
 //		attribute unsigned long numberOfItems;
 //		void   clear (  )
 //		SVGTransform initialize ( in SVGTransform newItem )
-//		SVGTransform getItem ( in unsigned long index )
-//		SVGTransform insertItemBefore ( in SVGTransform newItem, in unsigned long index )
-//		SVGTransform replaceItem ( in SVGTransform newItem, in unsigned long index )
-//		SVGTransform removeItem ( in unsigned long index )
+//		SVGTransform getItem ( in unsigned long index ) (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+//		SVGTransform insertItemBefore ( in SVGTransform newItem, in unsigned long index ) (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+//		SVGTransform replaceItem ( in SVGTransform newItem, in unsigned long index ) (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+//		SVGTransform removeItem ( in unsigned long index ) (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
 //		SVGTransform appendItem ( in SVGTransform newItem )
 //		NOT IMPLEMENTED: SVGTransform createSVGTransformFromMatrix ( in SVGMatrix matrix );
 //		NOT IMPLEMENTED: SVGTransform consolidate (  );
@@ -144,7 +130,25 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 				this._list.appendItem(xform);
 			}
 		}
-	}
+	};
+	this._removeFromOtherLists = function(item) {
+		// Check if this transform is already in a transformlist, and
+		// remove it if so.
+		var found = false;
+		for (var id in listMap_) {
+			var tl = listMap_[id];
+			for (var i = 0, len = tl._xforms.length; i < len; ++i) {
+				if(tl._xforms[i] == item) {
+					found = true;
+					tl.removeItem(i);
+					break;
+				}
+			}
+			if (found) {
+				break;
+			}
+		}
+	};
 	
 	this.numberOfItems = 0;
 	this.clear = function() { 
@@ -154,6 +158,7 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 	
 	this.initialize = function(newItem) {
 		this.numberOfItems = 1;
+		this._removeFromOtherLists(newItem);
 		this._xforms = [newItem];
 	};
 	
@@ -168,6 +173,7 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 		var retValue = null;
 		if (index >= 0) {
 			if (index < this.numberOfItems) {
+				this._removeFromOtherLists(newItem);
 				var newxforms = new Array(this.numberOfItems + 1);
 				// TODO: use array copying and slicing
 				for ( var i = 0; i < index; ++i) {
@@ -192,6 +198,7 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 	this.replaceItem = function(newItem, index) {
 		var retValue = null;
 		if (index < this.numberOfItems && index >= 0) {
+			this._removeFromOtherLists(newItem);
 			this._xforms[index] = newItem;
 			retValue = newItem;
 			this._list._update();
@@ -218,6 +225,7 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 	};
 	
 	this.appendItem = function(newItem) {
+		this._removeFromOtherLists(newItem);
 		this._xforms.push(newItem);
 		this.numberOfItems++;
 		this._list._update();
@@ -225,6 +233,21 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 	};
 };
 
+
+svgedit.transformlist.resetListMap = function() {
+	listMap_ = {};
+};
+
+/**
+ * Removes transforms of the given element from the map.
+ * Parameters:
+ * elem - a DOM Element
+ */
+svgedit.transformlist.removeElementFromListMap = function(elem) {
+	if (elem.id && listMap_[elem.id]) {
+		delete listMap_[elem.id];
+	}
+};
 
 // Function: getTransformList
 // Returns an object that behaves like a SVGTransformList for the given DOM element
