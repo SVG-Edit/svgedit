@@ -1503,7 +1503,7 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 		var i = curBBoxes.length;
 		while (i--) {
 			if(!rubberBBox.width || !rubberBBox.width) continue;
-			if (svgedit.utilities.rectsIntersect(rubberBBox, curBBoxes[i].bbox))  {
+			if (svgedit.math.rectsIntersect(rubberBBox, curBBoxes[i].bbox))  {
 				resultList.push(curBBoxes[i].elem);
 			}
 		}
@@ -4660,7 +4660,7 @@ var textActions = canvas.textActions = function() {
 			
 			// TODO: Find a way to make this work: Use transformed BBox instead of evt.target 
 // 				if(last_x === mouse_x && last_y === mouse_y
-// 					&& !svgedit.utilities.rectsIntersect(transbb, {x: pt.x, y: pt.y, width:0, height:0})) {
+// 					&& !svgedit.math.rectsIntersect(transbb, {x: pt.x, y: pt.y, width:0, height:0})) {
 // 					textActions.toSelectMode(true);				
 // 				}
 			if(last_x === mouse_x && last_y === mouse_y && evt.target !== curtext) {
@@ -6123,7 +6123,7 @@ var pathActions = this.pathActions = function() {
 						height: 0
 					};
 				
-					var sel = svgedit.utilities.rectsIntersect(rbb, pt_bb);
+					var sel = svgedit.math.rectsIntersect(rbb, pt_bb);
 
 					this.select(sel);
 					//Note that addPtsToSelection is not being run

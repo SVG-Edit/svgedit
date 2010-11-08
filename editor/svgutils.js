@@ -183,22 +183,6 @@ svgedit.utilities.convertToXMLReferences = function(input) {
 	return output;
 };
 
-// Function: rectsIntersect
-// Check if two rectangles (BBoxes objects) intersect each other
-//
-// Paramaters:
-// r1 - The first BBox-like object
-// r2 - The second BBox-like object
-//
-// Returns:
-// Boolean that's true if rectangles intersect
-svgedit.utilities.rectsIntersect = function(r1, r2) {
-	return r2.x < (r1.x+r1.width) && 
-		(r2.x+r2.width) > r1.x &&
-		r2.y < (r1.y+r1.height) &&
-		(r2.y+r2.height) > r1.y;
-};
-
 // Function: text2xml
 // Cross-browser compatible method of converting a string to an XML tree
 // found this function here: http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f
@@ -331,6 +315,8 @@ svgedit.utilities.findDefs = function(svgElement) {
 	}
 	return defs;
 };
+
+// TODO(codedread): Consider moving the next to functions to bbox.js
 
 // Function: svgedit.utilities.getPathBBox
 // Get correct BBox for a path in Webkit
