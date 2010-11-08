@@ -1534,10 +1534,11 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 			// fine in FF, but not in other browsers (same problem mentioned
 			// in Issue 339 comment #2).
 			
-			var bb = getBBox(elem);
+			var bb = svgedit.utilities.getBBox(elem);
 			
 			var angle = svgedit.utilities.getRotationAngle(elem);
-			if ((angle && angle % 90) || hasMatrixTransform(getTransformList(elem))) {
+			if ((angle && angle % 90) ||
+			    svgedit.math.hasMatrixTransform(getTransformList(elem))) {
 				// Accurate way to get BBox of rotated element in Firefox:
 				// Put element in group and get its BBox
 				
@@ -9431,7 +9432,7 @@ this.convertToPath = function(elem, getBBox) {
 		path.parentNode.removeChild(path);
 		return bb;
 	}
-}
+};
 
 
 // Function: changeSelectedAttributeNoUndo
