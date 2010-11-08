@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>  
 <head>  
   <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>  
@@ -265,7 +266,7 @@
 		equals(1, rxform.numberOfItems);
 
 		var translate = rxform.getItem(0);
-		equals(2, translate.type);
+		equals(translate.type, 2);
 
 		var m = translate.matrix;
 		equals(m.a, 1);
