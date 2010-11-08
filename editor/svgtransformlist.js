@@ -121,9 +121,12 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 				var fname = 'set' + name.charAt(0).toUpperCase() + name.slice(1);
 				var values = name=='matrix'?[mtx]:val_arr;
 				
-				if(name == 'scale' && values.length == 1) {
+				if (name == 'scale' && values.length == 1) {
 					values.push(values[0]);
-				} else if(name == 'translate' && values.length == 1) {
+				} else if (name == 'translate' && values.length == 1) {
+					values.push(0);
+				} else if (name == 'rotate' && values.length == 1) {
+					values.push(0);
 					values.push(0);
 				}
 				xform[fname].apply(xform, values);

@@ -23,6 +23,12 @@
 	var svgns = 'http://www.w3.org/2000/svg';
 	var svgroot = document.getElementById('svgroot');
 	var svgcontent, rect, circle;
+	
+	var NEAR_ZERO = 1e-7;
+	function almostEquals(a, b, msg) {
+		msg = msg || (a + ' did not equal ' + b);
+		ok(Math.abs(a - b) < NEAR_ZERO, msg);
+	}
 
 	function setUp() {
 		svgcontent = svgroot.appendChild(document.createElementNS(svgns, 'svg'));
@@ -228,6 +234,132 @@
 		equals(rxform.getItem(0), t3);
 		equals(rxform.getItem(1), t2);
 		equals(rxform.getItem(2), t1);
+		tearDown();
+	});
+
+	test('Test SVGTransformList.init() for translate(200,100)', function() {
+		expect(8);
+		setUp();
+		rect.setAttribute('transform', 'translate(200,100)');
+
+		var rxform = svgedit.transformlist.getTransformList(rect);
+		equals(1, rxform.numberOfItems);
+
+		var translate = rxform.getItem(0);
+		equals(2, translate.type);
+
+		var m = translate.matrix;
+		equals(m.a, 1);
+		equals(m.b, 0);
+		equals(m.c, 0);
+		equals(m.d, 1);
+		equals(m.e, 200);
+		equals(m.f, 100);
+
+		tearDown();
+	});
+
+	test('Test SVGTransformList.init() for scale(4)', function() {
+		expect(8);
+		setUp();
+		rect.setAttribute('transform', 'scale(4)');
+
+		var rxform = svgedit.transformlist.getTransformList(rect);
+		equals(1, rxform.numberOfItems);
+
+		var scale = rxform.getItem(0);
+		equals(3, scale.type);
+
+		var m = scale.matrix;
+		equals(m.a, 4);
+		equals(m.b, 0);
+		equals(m.c, 0);
+		equals(m.d, 4);
+		equals(m.e, 0);
+		equals(m.f, 0);
+
+		tearDown();
+	});
+
+	test('Test SVGTransformList.init() for scale(4,3)', function() {
+		expect(8);
+		setUp();
+		rect.setAttribute('transform', 'scale(4,3)');
+
+		var rxform = svgedit.transformlist.getTransformList(rect);
+		equals(1, rxform.numberOfItems);
+
+		var scale = rxform.getItem(0);
+		equals(3, scale.type);
+
+		var m = scale.matrix;
+		equals(m.a, 4);
+		equals(m.b, 0);
+		equals(m.c, 0);
+		equals(m.d, 3);
+		equals(m.e, 0);
+		equals(m.f, 0);
+
+		tearDown();
+	});
+
+	test('Test SVGTransformList.init() for rotate(45)', function() {
+		expect(9);
+		setUp();
+		rect.setAttribute('transform', 'rotate(45)');
+
+		var rxform = svgedit.transformlist.getTransformList(rect);
+		equals(1, rxform.numberOfItems);
+
+		var rotate = rxform.getItem(0);
+		equals(4, rotate.type);
+		equals(45, rotate.angle);
+
+		var m = rotate.matrix;
+		almostEquals(m.a, 1/Math.sqrt(2));
+		almostEquals(m.b, 1/Math.sqrt(2));
+		almostEquals(m.c, -1/Math.sqrt(2));
+		almostEquals(m.d, 1/Math.sqrt(2));
+		equals(m.e, 0);
+		equals(m.f, 0);
+
+		tearDown();
+	});
+
+	test('Test SVGTransformList.init() for rotate(45, 100, 200)', function() {
+		expect(9);
+		setUp();
+		rect.setAttribute('transform', 'rotate(45, 100, 200)');
+
+		var rxform = svgedit.transformlist.getTransformList(rect);
+		equals(1, rxform.numberOfItems);
+
+		var rotate = rxform.getItem(0);
+		equals(4, rotate.type);
+		equals(45, rotate.angle);
+
+		var m = rotate.matrix;
+		almostEquals(m.a, 1/Math.sqrt(2));
+		almostEquals(m.b, 1/Math.sqrt(2));
+		almostEquals(m.c, -1/Math.sqrt(2));
+		almostEquals(m.d, 1/Math.sqrt(2));
+		// TODO(codedread): calculation
+
+		var r = svgcontent.createSVGMatrix();
+		r.a = 1/Math.sqrt(2); r.b = 1/Math.sqrt(2);
+		r.c = -1/Math.sqrt(2); r.d = 1/Math.sqrt(2);
+
+		var t = svgcontent.createSVGMatrix();
+		t.e = -100; t.f = -200;
+
+		var t_ = svgcontent.createSVGMatrix();
+		t_.e = 100; t_.f = 200;
+		
+		var result = t_.multiply(r).multiply(t);
+		
+		almostEquals(m.e, result.e);
+		almostEquals(m.f, result.f);
+
 		tearDown();
 	});
 
