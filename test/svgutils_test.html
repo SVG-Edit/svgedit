@@ -1,0 +1,83 @@
+<html>  
+<head>  
+  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>  
+  <script src='../editor/jquery.js'></script>
+  <!-- svgutils.js depends on these two... mock out? -->
+  <script type='text/javascript' src='../editor/browsersupport.js'></script>
+  <script type='text/javascript' src='../editor/svgtransformlist.js'></script>
+  <script type='text/javascript' src='../editor/svgutils.js'></script>
+  <script type='text/javascript' src='qunit/qunit.js'></script>  
+  <script type='text/javascript'>
+  $(function() {
+  	// log function
+  	QUnit.log = function(result, message) {
+		if (window.console && window.console.log) {
+			window.console.log(result +' :: '+ message);
+		}
+	};
+
+	module('svgedit.utilities Module');
+
+	test('Test svgedit.utilities package', function() {
+		expect(3);
+		
+		ok(svgedit.utilities);
+		ok(svgedit.utilities.toXml);
+		equals(typeof svgedit.utilities.toXml, typeof function(){});
+	});
+
+	test('Test svgedit.utilities.toXml() function', function() {
+		expect(6);
+		var toXml = svgedit.utilities.toXml;
+		
+		equals(toXml('a'), 'a');
+		equals(toXml('ABC_'), 'ABC_');
+		equals(toXml('PB&J'), 'PB&amp;J');
+		equals(toXml('2 < 5'), '2 &lt; 5');
+		equals(toXml('5 > 2'), '5 &gt; 2');
+		equals(toXml('\'<&>"'), '\'&lt;&amp;&gt;"');
+	});
+
+	test('Test svgedit.utilities.fromXml() function', function() {
+		expect(6);
+		var fromXml = svgedit.utilities.fromXml;
+
+		equals(fromXml('a'), 'a');
+		equals(fromXml('ABC_'), 'ABC_');
+		equals(fromXml('PB&amp;J'), 'PB&J');
+		equals(fromXml('2 &lt; 5'), '2 < 5');
+		equals(fromXml('5 &gt; 2'), '5 > 2');
+		equals(fromXml('&lt;&amp;&gt;'), '<&>');
+	});
+
+	test('Test svgedit.utilities.encode64() function', function() {
+		expect(4);
+		var encode64 = svgedit.utilities.encode64;
+
+		equals(encode64('abcdef'), 'YWJjZGVm');
+		equals(encode64('12345'), 'MTIzNDU=');
+		equals(encode64(' '), 'IA==');
+		equals(encode64('`~!@#$%^&*()-_=+[{]}\\|;:\'",<.>/?'), 'YH4hQCMkJV4mKigpLV89K1t7XX1cfDs6JyIsPC4+Lz8=');
+	});
+
+	test('Test svgedit.utilities.decode64() function', function() {
+		expect(4);
+		var decode64 = svgedit.utilities.decode64;
+
+		equals(decode64('YWJjZGVm'), 'abcdef');
+		equals(decode64('MTIzNDU='), '12345');
+		equals(decode64('IA=='), ' ');
+		equals(decode64('YH4hQCMkJV4mKigpLV89K1t7XX1cfDs6JyIsPC4+Lz8='), '`~!@#$%^&*()-_=+[{]}\\|;:\'",<.>/?');
+	});
+
+  }); 
+  </script>  
+</head>  
+<body>  
+  <h1 id='qunit-header'>Unit Tests for svgutils.js</h1>
+  <h2 id='qunit-banner'></h2>
+  <h2 id='qunit-userAgent'></h2>
+  <ol id='qunit-tests'>
+  </ol>
+</body>  
+</html>
