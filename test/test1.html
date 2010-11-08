@@ -241,15 +241,6 @@
 		equal(math.namespaceURI, "http://www.w3.org/1998/Math/MathML", "Preserved MathML namespace");
 	});
 	
-	test("Test escaping XML entities", function() {
-		expect(3);
-		
-		equal(svgCanvas.Utils.toXml("<"), "&lt;", "Escaped < properly");
-		equal(svgCanvas.Utils.toXml(">"), "&gt;", "Escaped > properly");
-		equal(svgCanvas.Utils.toXml("&"), "&amp;", "Escaped & properly");
-		// TODO: what about &quot; and &apos; ?
-	});
-	
 	test("Test importing SVG into existing drawing", function() {
 		expect(3);
 		

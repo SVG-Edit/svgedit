@@ -16,6 +16,9 @@
 		}
 	};
 
+	var svgns = 'http://www.w3.org/2000/svg';
+	var svg = document.createElementNS(svgns, 'svg');
+
 	module('svgedit.utilities Module');
 
 	test('Test svgedit.utilities package', function() {
@@ -68,6 +71,24 @@
 		equals(decode64('MTIzNDU='), '12345');
 		equals(decode64('IA=='), ' ');
 		equals(decode64('YH4hQCMkJV4mKigpLV89K1t7XX1cfDs6JyIsPC4+Lz8='), '`~!@#$%^&*()-_=+[{]}\\|;:\'",<.>/?');
+	});
+
+	test('Test svgedit.utilities.bboxToObj() function', function() {
+		expect(5);
+		var bboxToObj = svgedit.utilities.bboxToObj;
+
+		var rect = svg.createSVGRect();
+		rect.x = 1;
+		rect.y = 2;
+		rect.width = 3;
+		rect.height = 4;
+		
+		var obj = bboxToObj(rect);
+		equals(typeof obj, typeof {});
+		equals(obj.x, 1);
+		equals(obj.y, 2);
+		equals(obj.width, 3);
+		equals(obj.height, 4);
 	});
 
   }); 
