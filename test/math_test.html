@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>  
+<head>  
+  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>  
+  <script src='../editor/jquery.js'></script>
+  <script type='text/javascript' src='../editor/math.js'></script>
+  <script type='text/javascript' src='qunit/qunit.js'></script>  
+  <script type='text/javascript'>
+  $(function() {
+  	// log function
+  	QUnit.log = function(result, message) {
+		if (window.console && window.console.log) {
+			window.console.log(result +' :: '+ message);
+		}
+	};
+
+	var svgns = 'http://www.w3.org/2000/svg';
+	var svg = document.createElementNS(svgns, 'svg');
+
+	module('svgedit.math Module');
+
+	test('Test svgedit.math package', function() {
+		expect(3);
+		
+		ok(svgedit.math);
+		ok(svgedit.math.transformPoint);
+		equals(typeof svgedit.math.transformPoint, typeof function(){});
+	});
+
+	test('Test svgedit.math.transportPoint() function', function() {
+		expect(6);
+		var transformPoint = svgedit.math.transformPoint;
+
+		var m = svg.createSVGMatrix();
+		m.a = 1; m.b = 0;
+		m.c = 0; m.d = 1;
+		m.e = 0; m.f = 0;
+		var pt = transformPoint(100, 200, m);
+		equals(pt.x, 100);
+		equals(pt.y, 200);
+		
+		m.e = 300; m.f = 400;
+		pt = transformPoint(100, 200, m);
+		equals(pt.x, 400);
+		equals(pt.y, 600);
+		
+		m.a = 0.5; m.b = 0.75;
+		m.c = 1.25; m.d = 2;
+		pt = transformPoint(100, 200, m);
+		equals(pt.x, 100 * m.a + 200 * m.c + m.e);
+		equals(pt.y, 100 * m.b + 200 * m.d + m.f);
+	});
+
+  }); 
+  </script>  
+</head>  
+<body>  
+  <h1 id='qunit-header'>Unit Tests for math.js</h1>
+  <h2 id='qunit-banner'></h2>
+  <h2 id='qunit-userAgent'></h2>
+  <ol id='qunit-tests'>
+  </ol>
+</body>  
+</html>
