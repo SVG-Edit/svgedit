@@ -20,14 +20,18 @@
 	module('svgedit.math Module');
 
 	test('Test svgedit.math package', function() {
-		expect(3);
+		expect(7);
 		
 		ok(svgedit.math);
 		ok(svgedit.math.transformPoint);
+		ok(svgedit.math.isIdentity);
+		ok(svgedit.math.matrixMultiply);
 		equals(typeof svgedit.math.transformPoint, typeof function(){});
+		equals(typeof svgedit.math.isIdentity, typeof function(){});
+		equals(typeof svgedit.math.matrixMultiply, typeof function(){});
 	});
 
-	test('Test svgedit.math.transportPoint() function', function() {
+	test('Test svgedit.math.transformPoint() function', function() {
 		expect(6);
 		var transformPoint = svgedit.math.transformPoint;
 
@@ -50,7 +54,53 @@
 		equals(pt.x, 100 * m.a + 200 * m.c + m.e);
 		equals(pt.y, 100 * m.b + 200 * m.d + m.f);
 	});
+	
+	test('Test svgedit.math.isIdentity() function', function() {
+		expect(2);
 
+		ok(svgedit.math.isIdentity(svg.createSVGMatrix()));
+
+		var m = svg.createSVGMatrix();
+		m.a = 1; m.b = 0;
+		m.c = 0; m.d = 1;
+		m.e = 0; m.f = 0;
+		ok(svgedit.math.isIdentity(m));
+	});
+
+	test('Test svgedit.math.matrixMultiply() function', function() {
+		expect(5);
+		var mult = svgedit.math.matrixMultiply;
+		var isIdentity = svgedit.math.isIdentity;
+
+		// translate there and back
+		var tr_1 = svg.createSVGMatrix().translate(100,50),
+			tr_2 = svg.createSVGMatrix().translate(-90,0),
+			tr_3 = svg.createSVGMatrix().translate(-10,-50),
+			I = mult(tr_1,tr_2,tr_3);
+		ok(isIdentity(I), 'Expected identity matrix when translating there and back');
+
+		// rotate there and back
+		// TODO: currently Mozilla fails this when rotating back at -50 and then -40 degrees
+		// (b and c are *almost* zero, but not zero)
+		var rot_there = svg.createSVGMatrix().rotate(90),
+			rot_back = svg.createSVGMatrix().rotate(-90); // TODO: set this to -50
+			rot_back_more = svg.createSVGMatrix().rotate(0); // TODO: set this to -40
+		I = mult(rot_there, rot_back, rot_back_more);
+		ok(isIdentity(I), 'Expected identity matrix when rotating there and back');
+
+		// scale up and down
+		var scale_up = svg.createSVGMatrix().scale(4),
+			scale_down = svg.createSVGMatrix().scaleNonUniform(0.25,1);
+			scale_down_more = svg.createSVGMatrix().scaleNonUniform(1,0.25);
+		I = mult(scale_up, scale_down, scale_down_more);
+		ok(isIdentity(I), 'Expected identity matrix when scaling up and down');
+
+		// test multiplication with its inverse 
+		I = mult(rot_there, rot_there.inverse());
+		ok(isIdentity(I), 'Expected identity matrix when multiplying a matrix by its inverse');
+		I = mult(rot_there.inverse(), rot_there);
+		ok(isIdentity(I), 'Expected identity matrix when multiplying a matrix by its inverse');
+	});
   }); 
   </script>  
 </head>  
