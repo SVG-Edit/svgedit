@@ -107,46 +107,6 @@
 		QUnit.log(d);
 	});
 	
-	module("Transform Module");
-
-	test("Test matrixMultiply", function() {
-		expect(5);
-
-		// translate there and back
-		var tr_1 = svgroot.createSVGMatrix().translate(100,50),
-			tr_2 = svgroot.createSVGMatrix().translate(-90,0),
-			tr_3 = svgroot.createSVGMatrix().translate(-10,-50),
-			I = svgCanvas.matrixMultiply(tr_1,tr_2,tr_3);
-		equal(isIdentity(I), true,
-			"Expected identity matrix when translating there and back, got " + matrixString(I));
-
-		// rotate there and back
-		// TODO: currently Mozilla fails this when rotating back at -50 and then -40 degrees
-		// (b and c are *almost* zero, but not zero)
-		var rot_there = svgroot.createSVGMatrix().rotate(90),
-			rot_back = svgroot.createSVGMatrix().rotate(-90); // TODO: set this to -50
-			rot_back_more = svgroot.createSVGMatrix().rotate(0); // TODO: set this to -40
-		I = svgCanvas.matrixMultiply(rot_there, rot_back, rot_back_more);
-		equal(isIdentity(I), true,
-			"Expected identity matrix when rotating there and back, got " + matrixString(I));
-
-		// scale up and down
-		var scale_up = svgroot.createSVGMatrix().scale(4),
-			scale_down = svgroot.createSVGMatrix().scaleNonUniform(0.25,1);
-			scale_down_more = svgroot.createSVGMatrix().scaleNonUniform(1,0.25);
-		I = svgCanvas.matrixMultiply(scale_up, scale_down, scale_down_more);
-		equal(isIdentity(I), true,
-			"Expected identity matrix when scaling up and down, got " + matrixString(I));
-
-		// test multiplication with its inverse 
-		I = svgCanvas.matrixMultiply(rot_there, rot_there.inverse());
-		equal(isIdentity(I), true,
-			"Expected identity matrix when multiplying a matrix by its inverse, got " + matrixString(I));
-		I = svgCanvas.matrixMultiply(rot_there.inverse(), rot_there);
-		equal(isIdentity(I), true,
-			"Expected identity matrix when multiplying a matrix by its inverse, got " + matrixString(I));
-	});
-	
 	module("Import Module");
 	
 	test("Test import use", function() {
