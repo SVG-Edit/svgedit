@@ -74,6 +74,15 @@
 		equals(decode64('YH4hQCMkJV4mKigpLV89K1t7XX1cfDs6JyIsPC4+Lz8='), '`~!@#$%^&*()-_=+[{]}\\|;:\'",<.>/?');
 	});
 
+	test('Test svgedit.utilities.convertToXMLReferences() function', function() {
+		expect(1);
+		
+		var convert = svgedit.utilities.convertToXMLReferences;
+		equals(convert('ABC'), 'ABC');
+//		equals(convert('ÀBC'), '&#192;BC');
+//		alert(convert('ÿBC', true));
+	});
+
 	test('Test svgedit.utilities.bboxToObj() function', function() {
 		expect(5);
 		var bboxToObj = svgedit.utilities.bboxToObj;

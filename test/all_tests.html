@@ -8,13 +8,14 @@
   <p>This file frames all SVG-edit test pages.  This should only include tests known to work.  These tests are known to pass 100% in the following:  Firefox 3.6, Chrome 7, IE9 Preview 6 (1.9.8006.6000), Opera 10.63.  If a test is broken in this page, it is possible that <em>YOU</em> broke it.  Please do not submit code that breaks any of these tests.</p>
   <iframe src='svgtransformlist_test.html' width='100%' height='300'></iframe>
   <iframe src='svgutils_test.html' width='100%' height='300'></iframe>
+  <iframe src='math_test.html' width='100%' height='300'></iframe>
 </body>
 <script>
 window.setTimeout(function() {
   var iframes = document.getElementsByTagName('iframe');
   for (var i = 0, len = iframes.length; i < len; ++i) {
     var f = iframes[i];
-    f.style.height = f.contentDocument.body.scrollHeight + 'px';
+    f.style.height = (f.contentDocument.body.scrollHeight + 20) + 'px';
   }
 }, 1000);
 </script>
