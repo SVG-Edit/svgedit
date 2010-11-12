@@ -11,6 +11,7 @@
   <script type="text/javascript" src="../editor/units.js"></script>
   <script type="text/javascript" src="../editor/svgutils.js"></script>
   <script type="text/javascript" src="../editor/sanitize.js"></script>
+  <script type="text/javascript" src="../editor/history.js"></script>
   <script type="text/javascript" src="../editor/svgcanvas.js"></script>
   <script type="text/javascript" src="qunit/qunit.js"></script>  
   <script type="text/javascript">
@@ -126,15 +127,6 @@
 		equal((u && u.nodeName == "use"), true, "Did not import <use> element");
 		equal(fu, null, "Removed <use> element that had a foreign href");
 		equal(nfu, null, "Removed <use> element that had no href");
-	});
-	
-	test("Test getUrlFromAttr", function() {
-		expect(4);
-		
-		equal(svgCanvas.getUrlFromAttr("url(#foo)"), "#foo");
-		equal(svgCanvas.getUrlFromAttr("url(somefile.svg#foo)"), "somefile.svg#foo");
-		equal(svgCanvas.getUrlFromAttr("url('#foo')"), "#foo");
-		equal(svgCanvas.getUrlFromAttr('url("#foo")'), "#foo");
 	});
 	
 	// This test shows that an element with an invalid attribute is still parsed in properly

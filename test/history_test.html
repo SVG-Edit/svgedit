@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
+  <script src='../editor/jquery.js'></script>
+  <script type='text/javascript' src='../editor/svgtransformlist.js'></script>
+  <script type='text/javascript' src='../editor/history.js'></script>
+  <script type='text/javascript' src='../editor/svgutils.js'></script>
+  <script type='text/javascript' src='qunit/qunit.js'></script>  
+  <script type='text/javascript'>
+  $(function() {
+  	// log function
+  	QUnit.log = function(result, message) {
+		if (window.console && window.console.log) {
+			window.console.log(result +' :: '+ message);
+		}
+	};
+
+	var svgns = 'http://www.w3.org/2000/svg';
+	var svg = document.createElementNS(svgns, 'svg');
+
+	module('svgedit.history Module');
+
+	test('Test svgedit.history package', function() {
+		expect(13);
+		
+		ok(svgedit.history);
+		ok(svgedit.history.MoveElementCommand);
+		ok(svgedit.history.InsertElementCommand);
+		ok(svgedit.history.ChangeElementCommand);
+		ok(svgedit.history.RemoveElementCommand);
+		ok(svgedit.history.BatchCommand);
+		ok(svgedit.history.UndoManager);
+		equals(typeof svgedit.history.MoveElementCommand, typeof function(){});
+		equals(typeof svgedit.history.InsertElementCommand, typeof function(){});
+		equals(typeof svgedit.history.ChangeElementCommand, typeof function(){});
+		equals(typeof svgedit.history.RemoveElementCommand, typeof function(){});
+		equals(typeof svgedit.history.BatchCommand, typeof function(){});
+		equals(typeof svgedit.history.UndoManager, typeof function(){});
+	});
+  });
+  </script>
+</head>  
+<body>  
+  <h1 id='qunit-header'>Unit Tests for history.js</h1>
+  <h2 id='qunit-banner'></h2>
+  <h2 id='qunit-userAgent'></h2>
+  <ol id='qunit-tests'>
+  </ol>
+</body>  
+</html>
