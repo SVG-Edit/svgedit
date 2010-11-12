@@ -175,8 +175,7 @@ svgedit.utilities.convertToXMLReferences = function(input) {
 		var c = input.charCodeAt(n);
 		if (c < 128) {
 			output += input[n];
-		}
-		else if(c > 127) {
+		} else if(c > 127) {
 			output += ("&#" + c + ";");
 		}
 	}

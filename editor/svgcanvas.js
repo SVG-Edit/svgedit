@@ -17,6 +17,7 @@
 // 5) units.js
 // 6) svgutils.js
 // 7) sanitize.js
+// 8) history.js
 
 if(!window.console) {
 	window.console = {};
@@ -25,7 +26,7 @@ if(!window.console) {
 }
 
 if(window.opera) {
-	window.console.log = function(str) {opera.postError(str);};
+	window.console.log = function(str) { opera.postError(str); };
 	window.console.dir = function(str) {};
 }
 
@@ -118,6 +119,8 @@ if(config) {
 	$.extend(curConfig, config);
 }
 
+var canvas = this;
+
 // "document" element associated with the container (same as window.document using default svg-editor.js)
 var svgdoc = container.ownerDocument;
 
@@ -152,13 +155,13 @@ var getElem = function(id) {
 };
 
 // import svgtransformlist.js
-var getTransformList = this.getTransformList = svgedit.transformlist.getTransformList;
+var getTransformList = canvas.getTransformList = svgedit.transformlist.getTransformList;
 
 // import from math.js.
 var transformPoint = svgedit.math.transformPoint;
-var matrixMultiply = this.matrixMultiply = svgedit.math.matrixMultiply;
-var hasMatrixTransform = this.hasMatrixTransform = svgedit.math.hasMatrixTransform;
-var transformListToTransform = this.transformListToTransform = svgedit.math.transformListToTransform;
+var matrixMultiply = canvas.matrixMultiply = svgedit.math.matrixMultiply;
+var hasMatrixTransform = canvas.hasMatrixTransform = svgedit.math.hasMatrixTransform;
+var transformListToTransform = canvas.transformListToTransform = svgedit.math.transformListToTransform;
 var snapToAngle = svgedit.math.snapToAngle;
 
 // initialize from units.js
@@ -170,19 +173,73 @@ svgedit.units.init({
 	getWidth: function() { return svgcontent.getAttribute("width")/current_zoom; }
 });
 // import from units.js
-var convertToNum = this.convertToNum = svgedit.units.convertToNum;
+var convertToNum = canvas.convertToNum = svgedit.units.convertToNum;
 
 // import from svgutils.js
-var getUrlFromAttr = this.getUrlFromAttr = svgedit.utilities.getUrlFromAttr;
-var getHref = this.getHref = svgedit.utilities.getHref;
-var setHref = this.setHref = svgedit.utilities.setHref;
+var getUrlFromAttr = canvas.getUrlFromAttr = svgedit.utilities.getUrlFromAttr;
+var getHref = canvas.getHref = svgedit.utilities.getHref;
+var setHref = canvas.setHref = svgedit.utilities.setHref;
 var getPathBBox = svgedit.utilities.getPathBBox;
-var getBBox = this.getBBox = svgedit.utilities.getBBox;
-var getRotationAngle = this.getRotationAngle = svgedit.utilities.getRotationAngle;
+var getBBox = canvas.getBBox = svgedit.utilities.getBBox;
+var getRotationAngle = canvas.getRotationAngle = svgedit.utilities.getRotationAngle;
 
 // import from sanitize.js
 var nsMap = svgedit.sanitize.getNSMap();
-var sanitizeSvg = this.sanitizeSvg = svgedit.sanitize.sanitizeSvg;
+var sanitizeSvg = canvas.sanitizeSvg = svgedit.sanitize.sanitizeSvg;
+
+// import from history.js
+var MoveElementCommand = svgedit.history.MoveElementCommand;
+var InsertElementCommand = svgedit.history.InsertElementCommand;
+var RemoveElementCommand = svgedit.history.RemoveElementCommand;
+var ChangeElementCommand = svgedit.history.ChangeElementCommand;
+var BatchCommand = svgedit.history.BatchCommand;
+// Implement the svgedit.history.HistoryEventHandler interface.
+canvas.undoMgr = new svgedit.history.UndoManager({
+	handleHistoryEvent: function(eventType, cmd) {
+		var EventTypes = svgedit.history.HistoryEventTypes;
+		// TODO: handle setBlurOffsets.
+		if (eventType == EventTypes.BEFORE_UNAPPLY || eventType == EventTypes.BEFORE_APPLY) {
+			canvas.clearSelection();
+		} else if (eventType == EventTypes.AFTER_APPLY || eventType == EventTypes.AFTER_UNAPPLY) {
+			var elems = cmd.elements();
+			canvas.pathActions.clear();
+			call("changed", elems);
+			
+			var cmdType = cmd.type();
+			var isApply = eventType == EventTypes.AFTER_APPLY;
+			if (cmdType == MoveElementCommand.type()) {
+				var parent = isApply ? cmd.newParent : cmd.oldParent;
+				if (parent == svgcontent) {
+					canvas.identifyLayers();
+				}
+			} else if (cmdType == InsertElementCommand.type() ||
+					cmdType == RemoveElementCommand.type()) {
+				if (cmd.parent == svgcontent) {
+					canvas.identifyLayers();
+				}
+				if (cmdType == InsertElementCommand.type()) {
+					if (isApply) restoreRefElems(cmd.elem);
+				} else {
+					if (!isApply) restoreRefElems(cmd.elem);
+				}
+			} else if (cmdType == ChangeElementCommand.type()) {
+				// if we are changing layer names, re-identify all layers
+				if (cmd.elem.tagName == "title" && cmd.elem.parentNode.parentNode == svgcontent) {
+					canvas.identifyLayers();
+				}
+				var values = isApply ? cmd.newValues : cmd.oldValues;
+				// If stdDeviation was changed, update the blur.
+				if (values["stdDeviation"]) {
+					canvas.setBlurOffsets(cmd.elem.parentNode, values["stdDeviation"]);
+				}
+			}
+		}
+	}
+});
+var addCommandToHistory = function(cmd) {
+	canvas.undoMgr.addCommandToHistory(cmd);
+};
+
 
 // Function: snapToGrid
 // round value to for snapping
@@ -202,13 +259,9 @@ var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polylin
 var ref_attrs = ["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"];
 
 var elData = $.data;
-	
-// TODO: declare the variables and set them as null, then move this setup stuff to
-// an initialization function - probably just use clear()
-var canvas = this,
-	
-	// nonce to uniquify id's
-	nonce = Math.floor(Math.random()*100001),
+
+// nonce to uniquify id's
+var nonce = Math.floor(Math.random()*100001),
 	
 	// Boolean to indicate whether or not IDs given to elements should be random
 	randomize_ids = false, 
@@ -272,453 +325,7 @@ var restoreRefElems = function(elem) {
 			}
 		}
 	}
-}
-
-
-// Group: Undo/Redo history management
-
-this.undoCmd = {};
-
-// Function: ChangeElementCommand
-// History command to make a change to an element. 
-// Usually an attribute change, but can also be textcontent.
-//
-// Parameters:
-// elem - The DOM element that was changed
-// attrs - An object with the attributes to be changed and the values they had *before* the change
-// text - An optional string visible to user related to this change
-var ChangeElementCommand = this.undoCmd.changeElement = function(elem, attrs, text) {
-	this.elem = elem;
-	this.text = text ? ("Change " + elem.tagName + " " + text) : ("Change " + elem.tagName);
-	this.newValues = {};
-	this.oldValues = attrs;
-	for (var attr in attrs) {
-		if (attr == "#text") this.newValues[attr] = elem.textContent;
-		else if (attr == "#href") this.newValues[attr] = svgedit.utilities.getHref(elem);
-		else this.newValues[attr] = elem.getAttribute(attr);
-	}
-
-	// Function: ChangeElementCommand.apply
-	// Performs the stored change action
-	this.apply = function() {
-		var bChangedTransform = false;
-		for(var attr in this.newValues ) {
-			if (this.newValues[attr]) {
-				if (attr == "#text") this.elem.textContent = this.newValues[attr];
-				else if (attr == "#href") svgedit.utilities.setHref(this.elem, this.newValues[attr])
-				else this.elem.setAttribute(attr, this.newValues[attr]);
-			}
-			else {
-				if (attr == "#text") this.elem.textContent = "";
-				else {
-					this.elem.setAttribute(attr, "");
-					this.elem.removeAttribute(attr);
-				}
-			}
-			
-			if (attr == "transform") { bChangedTransform = true; }
-			else if (attr == "stdDeviation") { canvas.setBlurOffsets(this.elem.parentNode, this.newValues[attr]); }
-			
-		}
-		// relocate rotational transform, if necessary
-		if(!bChangedTransform) {
-			var angle = svgedit.utilities.getRotationAngle(elem);
-			if (angle) {
-				var bbox = elem.getBBox();
-				var cx = bbox.x + bbox.width/2,
-					cy = bbox.y + bbox.height/2;
-				var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
-				if (rotate != elem.getAttribute("transform")) {
-					elem.setAttribute("transform", rotate);
-				}
-			}
-		}
-		// if we are changing layer names, re-identify all layers
-		if (this.elem.tagName == "title" && this.elem.parentNode.parentNode == svgcontent) {
-			identifyLayers();
-		}		
-		return true;
-	};
-
-	// Function: ChangeElementCommand.unapply
-	// Reverses the stored change action
-	this.unapply = function() {
-		var bChangedTransform = false;
-		for(var attr in this.oldValues ) {
-			if (this.oldValues[attr]) {
-				if (attr == "#text") this.elem.textContent = this.oldValues[attr];
-				else if (attr == "#href") svgedit.utilities.setHref(this.elem, this.oldValues[attr]);
-				else this.elem.setAttribute(attr, this.oldValues[attr]);
-				
-				if (attr == "stdDeviation") canvas.setBlurOffsets(this.elem.parentNode, this.oldValues[attr]);
-			}
-			else {
-				if (attr == "#text") this.elem.textContent = "";
-				else this.elem.removeAttribute(attr);
-			}
-			if (attr == "transform") { bChangedTransform = true; }
-		}
-		// relocate rotational transform, if necessary
-		if(!bChangedTransform) {
-			var angle = svgedit.utilities.getRotationAngle(elem);
-			if (angle) {
-				var bbox = elem.getBBox();
-				var cx = bbox.x + bbox.width/2,
-					cy = bbox.y + bbox.height/2;
-				var rotate = ["rotate(", angle, " ", cx, ",", cy, ")"].join('');
-				if (rotate != elem.getAttribute("transform")) {
-					elem.setAttribute("transform", rotate);
-				}
-			}
-		}
-		// if we are changing layer names, re-identify all layers
-		if (this.elem.tagName == "title" && this.elem.parentNode.parentNode == svgcontent) {
-			identifyLayers();
-		}		
-		
-		// Remove transformlist to prevent confusion that causes bugs like 575.
-		svgedit.transformlist.removeElementFromListMap(this.elem);
-		
-		return true;
-	};
-
-	// Function: ChangeElementCommand.elements
-	// Returns array with element associated with this command
-	this.elements = function() { return [this.elem]; }
-}
-
-// Function: InsertElementCommand
-// History command for an element that was added to the DOM
-//
-// Parameters:
-// elem - The newly added DOM element
-// text - An optional string visible to user related to this change
-var InsertElementCommand = this.undoCmd.insertElement = function(elem, text) {
-	this.elem = elem;
-	this.text = text || ("Create " + elem.tagName);
-	this.parent = elem.parentNode;
-	
-	// Function: InsertElementCommand.apply
-	// Re-Inserts the new element
-	this.apply = function() { 
-		this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); 
-		
-		restoreRefElems(this.elem);
-		
-		if (this.parent == svgcontent) {
-			identifyLayers();
-		}		
-	};
-
-	// Function: InsertElementCommand.unapply
-	// Removes the element
-	this.unapply = function() {
-		this.parent = this.elem.parentNode;
-		this.elem = this.elem.parentNode.removeChild(this.elem);
-		if (this.parent == svgcontent) {
-			identifyLayers();
-		}		
-	};
-
-	// Function: InsertElementCommand.elements
-	// Returns array with element associated with this command
-	this.elements = function() { return [this.elem]; };
-}
-
-// Function: RemoveElementCommand
-// History command for an element removed from the DOM
-//
-// Parameters:
-// elem - The removed DOM element
-// parent - The DOM element's parent
-// text - An optional string visible to user related to this change
-var RemoveElementCommand = this.undoCmd.removeElement = function(elem, parent, text) {
-	this.elem = elem;
-	this.text = text || ("Delete " + elem.tagName);
-	this.parent = parent;
-
-	// Function: RemoveElementCommand.apply
-	// Re-removes the new element
-	this.apply = function() {	
-		svgedit.transformlist.removeElementFromListMap(this.elem);
-	
-		this.parent = this.elem.parentNode;
-		this.elem = this.parent.removeChild(this.elem);
-		if (this.parent == svgcontent) {
-			identifyLayers();
-		}		
-	};
-
-	// Function: RemoveElementCommand.unapply
-	// Re-adds the new element
-	this.unapply = function() { 
-		svgedit.transformlist.removeElementFromListMap(this.elem);
-
-		this.parent.insertBefore(this.elem, this.elem.nextSibling);
-		
-		restoreRefElems(this.elem);
-		
-		if (this.parent === svgcontent) {
-			identifyLayers();
-		}		
-	};
-
-	// Function: RemoveElementCommand.elements
-	// Returns array with element associated with this command
-	this.elements = function() { return [this.elem]; };
-	
-	// special hack for webkit: remove this element's entry in the svgTransformLists map
-	svgedit.transformlist.removeElementFromListMap(elem);
-}
-
-// Function: MoveElementCommand
-// History command for an element that had its DOM position changed
-//
-// Parameters:
-// elem - The DOM element that was moved
-// oldNextSibling - The element's next sibling before it was moved
-// oldParent - The element's parent before it was moved
-// text - An optional string visible to user related to this change
-var MoveElementCommand = this.undoCmd.moveElement = function(elem, oldNextSibling, oldParent, text) {
-	this.elem = elem;
-	this.text = text ? ("Move " + elem.tagName + " to " + text) : ("Move " + elem.tagName);
-	this.oldNextSibling = oldNextSibling;
-	this.oldParent = oldParent;
-	this.newNextSibling = elem.nextSibling;
-	this.newParent = elem.parentNode;
-
-	// Function: MoveElementCommand.unapply
-	// Re-positions the element
-	this.apply = function() {
-		this.elem = this.newParent.insertBefore(this.elem, this.newNextSibling);
-		if (this.newParent == svgcontent) {
-			identifyLayers();
-		}
-	};
-
-	// Function: MoveElementCommand.unapply
-	// Positions the element back to its original location
-	this.unapply = function() {
-		this.elem = this.oldParent.insertBefore(this.elem, this.oldNextSibling);
-		if (this.oldParent == svgcontent) {
-			identifyLayers();
-		}
-	};
-
-	// Function: MoveElementCommand.elements
-	// Returns array with element associated with this command
-	this.elements = function() { return [this.elem]; };
-}
-
-// TODO: create a 'typing' command object that tracks changes in text
-// if a new Typing command is created and the top command on the stack is also a Typing
-// and they both affect the same element, then collapse the two commands into one
-
-// Function: BatchCommand
-// History command that can contain/execute multiple other commands
-//
-// Parameters:
-// text - An optional string visible to user related to this change
-var BatchCommand = this.undoCmd.batch = function(text) {
-	this.text = text || "Batch Command";
-	this.stack = [];
-
-	// Function: BatchCommand.apply
-	// Runs "apply" on all subcommands
-	this.apply = function() {
-		var len = this.stack.length;
-		for (var i = 0; i < len; ++i) {
-			this.stack[i].apply();
-		}
-	};
-
-	// Function: BatchCommand.unapply
-	// Runs "unapply" on all subcommands
-	this.unapply = function() {
-		for (var i = this.stack.length-1; i >= 0; i--) {
-			this.stack[i].unapply();
-		}
-	};
-
-	// Function: BatchCommand.elements
-	// Iterate through all our subcommands and returns all the elements we are changing
-	this.elements = function() {
-		var elems = [];
-		var cmd = this.stack.length;
-		while (cmd--) {
-			var thisElems = this.stack[cmd].elements();
-			var elem = thisElems.length;
-			while (elem--) {
-				if (elems.indexOf(thisElems[elem]) == -1) elems.push(thisElems[elem]);
-			}
-		}
-		return elems; 
-	};
-
-	// Function: BatchCommand.addSubCommand
-	// Adds a given command to the history stack
-	//
-	// Parameters:
-	// cmd - The undo command object to add
-	this.addSubCommand = function(cmd) { this.stack.push(cmd); };
-
-	// Function: BatchCommand.isEmpty
-	// Returns a boolean indicating whether or not the batch command is empty
-	this.isEmpty = function() { return this.stack.length == 0; };
-}
-
-// Set scope for addCommandToHistory
-var addCommandToHistory;
-
-// Undo/redo stack related functions
-(function(c) {
-	var undoStackPointer = 0, 
-		undoStack = [];
-	
-	c.undoMgr = {
-		// Function: undoMgr.resetUndoStack
-		// Resets the undo stack, effectively clearing the undo/redo history
-		resetUndoStack: function() {
-			undoStack = [];
-			undoStackPointer = 0;
-		},
-	
-		// Function: undoMgr.getUndoStackSize
-		// Returns: 
-		// Integer with the current size of the undo history stack
-		getUndoStackSize: function() { return undoStackPointer; },
-		
-		// Function: undoMgr.getRedoStackSize
-		// Returns: 
-		// Integer with the current size of the redo history stack
-		getRedoStackSize: function() { return undoStack.length - undoStackPointer; },
-		
-		// Function: undoMgr.getNextUndoCommandText
-		// Returns: 
-		// String associated with the next undo command
-		getNextUndoCommandText: function() { 
-			if (undoStackPointer > 0) 
-				return undoStack[undoStackPointer-1].text;
-			return "";
-		},
-		
-		// Function: undoMgr.getNextRedoCommandText
-		// Returns: 
-		// String associated with the next redo command
-		getNextRedoCommandText: function() { 
-			if (undoStackPointer < undoStack.length) 
-				return undoStack[undoStackPointer].text;
-			return "";
-		},
-		
-		// Function: undoMgr.undo
-		// Performs an undo step
-		undo: function() {
-			if (undoStackPointer > 0) {
-				c.clearSelection();
-				var cmd = undoStack[--undoStackPointer];
-				cmd.unapply();
-				pathActions.clear();
-				call("changed", cmd.elements());
-			}
-		},
-
-		// Function: undoMgr.redo		
-		// Performs a redo step
-		redo: function() {
-			if (undoStackPointer < undoStack.length && undoStack.length > 0) {
-				c.clearSelection();
-				var cmd = undoStack[undoStackPointer++];
-				cmd.apply();
-				pathActions.clear();
-				call("changed", cmd.elements());
-			}
-		}
-	};
-	
-	// Function: addCommandToHistory
-	// Adds a command object to the undo history stack
-	//
-	// Parameters: 
-	// cmd - The command object to add
-	addCommandToHistory = c.undoCmd.add = function(cmd) {
-	// FIXME: we MUST compress consecutive text changes to the same element
-	// (right now each keystroke is saved as a separate command that includes the
-	// entire text contents of the text element)
-	// TODO: consider limiting the history that we store here (need to do some slicing)
-	
-		// if our stack pointer is not at the end, then we have to remove
-		// all commands after the pointer and insert the new command
-		if (undoStackPointer < undoStack.length && undoStack.length > 0) {
-			undoStack = undoStack.splice(0, undoStackPointer);
-		}
-		undoStack.push(cmd);
-		undoStackPointer = undoStack.length;
-	};
-	
-}(canvas));
-
-(function(c) {
-
-	// New functions for refactoring of Undo/Redo
-	
-	// this is the stack that stores the original values, the elements and
-	// the attribute name for begin/finish
-	var undoChangeStackPointer = -1;
-	var undoableChangeStack = [];
-	
-	// Function: beginUndoableChange
-	// This function tells the canvas to remember the old values of the 
-	// attrName attribute for each element sent in.  The elements and values 
-	// are stored on a stack, so the next call to finishUndoableChange() will 
-	// pop the elements and old values off the stack, gets the current values
-	// from the DOM and uses all of these to construct the undo-able command.
-	//
-	// Parameters: 
-	// attrName - The name of the attribute being changed
-	// elems - Array of DOM elements being changed
-	c.beginUndoableChange = function(attrName, elems) {
-		var p = ++undoChangeStackPointer;
-		var i = elems.length;
-		var oldValues = new Array(i), elements = new Array(i);
-		while (i--) {
-			var elem = elems[i];
-			if (elem == null) continue;
-			elements[i] = elem;
-			oldValues[i] = elem.getAttribute(attrName);
-		}
-		undoableChangeStack[p] = {'attrName': attrName,
-								'oldValues': oldValues,
-								'elements': elements};
-	};
-	
-	// Function: finishUndoableChange
-	// This function returns a BatchCommand object which summarizes the
-	// change since beginUndoableChange was called.  The command can then
-	// be added to the command history
-	//
-	// Returns: 
-	// Batch command object with resulting changes
-	c.finishUndoableChange = function() {
-		var p = undoChangeStackPointer--;
-		var changeset = undoableChangeStack[p];
-		var i = changeset['elements'].length;
-		var attrName = changeset['attrName'];
-		var batchCmd = new BatchCommand("Change " + attrName);
-		while (i--) {
-			var elem = changeset['elements'][i];
-			if (elem == null) continue;
-			var changes = {};
-			changes[attrName] = changeset['oldValues'][i];
-			if (changes[attrName] != elem.getAttribute(attrName)) {
-				batchCmd.addSubCommand(new ChangeElementCommand(elem, changes, attrName));
-			}
-		}
-		undoableChangeStack[p] = null;
-		return batchCmd;
-	};
-
-}(canvas));
+};
 
 // Put SelectorManager in this scope
 var SelectorManager;
@@ -1607,8 +1214,8 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 			console.log(elem, e);
 			return null;
 		} 
+	};
 
-	}
 	var full_bb;
 	$.each(elems, function() {
 		if(full_bb) return;
@@ -1804,7 +1411,7 @@ var getId, getNextId, call;
 	// arg - Argument to pass through to the callback function
 	call = c.call = function(event, arg) {
 		if (events[event]) {
-			return events[event](this,arg);
+			return events[event](this, arg);
 		}
 	};
 	
@@ -3598,7 +3205,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			case "rotate":
 				started = true;
 				// we are starting an undoable change (a drag-rotation)
-				canvas.beginUndoableChange("transform", selectedElements);
+				canvas.undoMgr.beginUndoableChange("transform", selectedElements);
 				break;
 			default:
 				// This could occur in an extension
@@ -4224,7 +3831,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				keep = true;
 				element = null;
 				current_mode = "select";
-				var batchCmd = canvas.finishUndoableChange();
+				var batchCmd = canvas.undoMgr.finishUndoableChange();
 				if (!batchCmd.isEmpty()) { 
 					addCommandToHistory(batchCmd);
 				}
@@ -4793,7 +4400,7 @@ var textActions = canvas.textActions = function() {
 
 // Group: Path edit functions
 // Functions relating to editing path elements
-var pathActions = this.pathActions = function() {
+var pathActions = canvas.pathActions = function() {
 	
 	var subpath = false;
 	var pathData = {};
@@ -7683,7 +7290,7 @@ this.importSvgString = function(xmlString) {
 
 // Function: identifyLayers
 // Updates layer system
-var identifyLayers = function() {
+var identifyLayers = canvas.identifyLayers = function() {
 	all_layers = [];
 	leaveContext();
 	var numchildren = svgcontent.childNodes.length;
@@ -8947,7 +8554,7 @@ this.getBlur = function(elem) {
 	}
 	
 	function finishChange() {
-		var bCmd = canvas.finishUndoableChange();
+		var bCmd = canvas.undoMgr.finishUndoableChange();
 		cur_command.addSubCommand(bCmd);
 		addCommandToHistory(cur_command);
 		cur_command = null;	
@@ -9043,7 +8650,7 @@ this.getBlur = function(elem) {
 		}
 		
 		cur_command = batchCmd;
-		canvas.beginUndoableChange("stdDeviation", [filter?filter.firstChild:null]);
+		canvas.undoMgr.beginUndoableChange("stdDeviation", [filter?filter.firstChild:null]);
 		if(complete) {
 			canvas.setBlurNoUndo(val);
 			finishChange();
@@ -9564,12 +9171,12 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 // elems - The DOM elements to apply the change to
 var changeSelectedAttribute = this.changeSelectedAttribute = function(attr, val, elems) {
 	var elems = elems || selectedElements;
-	canvas.beginUndoableChange(attr, elems);
+	canvas.undoMgr.beginUndoableChange(attr, elems);
 	var i = elems.length;
 
 	changeSelectedAttributeNoUndo(attr, val, elems);
 
-	var batchCmd = canvas.finishUndoableChange();
+	var batchCmd = canvas.undoMgr.finishUndoableChange();
 	if (!batchCmd.isEmpty()) { 
 		addCommandToHistory(batchCmd);
 	}

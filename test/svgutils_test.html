@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html>  
-<head>  
-  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>  
+<html>
+<head>
+  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
   <script src='../editor/jquery.js'></script>
   <!-- svgutils.js depends on these two... mock out? -->
   <script type='text/javascript' src='../editor/browsersupport.js'></script>
@@ -80,7 +80,6 @@
 		var convert = svgedit.utilities.convertToXMLReferences;
 		equals(convert('ABC'), 'ABC');
 //		equals(convert('ÀBC'), '&#192;BC');
-//		alert(convert('ÿBC', true));
 	});
 
 	test('Test svgedit.utilities.bboxToObj() function', function() {
@@ -99,6 +98,16 @@
 		equals(obj.y, 2);
 		equals(obj.width, 3);
 		equals(obj.height, 4);
+	});
+
+	
+	test("Test getUrlFromAttr", function() {
+		expect(4);
+		
+		equal(svgedit.utilities.getUrlFromAttr("url(#foo)"), "#foo");
+		equal(svgedit.utilities.getUrlFromAttr("url(somefile.svg#foo)"), "somefile.svg#foo");
+		equal(svgedit.utilities.getUrlFromAttr("url('#foo')"), "#foo");
+		equal(svgedit.utilities.getUrlFromAttr('url("#foo")'), "#foo");
 	});
 
   }); 
