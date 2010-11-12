@@ -18,8 +18,35 @@
 
 	var svgns = 'http://www.w3.org/2000/svg';
 	var svg = document.createElementNS(svgns, 'svg');
+	var undoMgr = null;
 
 	module('svgedit.history Module');
+
+	var MockCommand = function(opt_text) {
+		this.text_ = opt_text;
+	};
+	MockCommand.prototype.apply = function() {
+	};
+	MockCommand.prototype.unapply = function() {
+	};
+	MockCommand.prototype.getText = function() {
+		return this.text_;
+	};
+	MockCommand.prototype.elements = function() {
+		return [];
+	};
+
+	var MockHistoryEventHandler = function() {
+	};
+	MockHistoryEventHandler.prototype.handleHistoryEvent = function(eventType, command) {
+	};
+
+	function setUp() {
+		undoMgr = new svgedit.history.UndoManager();
+	}
+	function tearDown() {
+		undoMgr = null;
+	}
 
 	test('Test svgedit.history package', function() {
 		expect(13);
@@ -38,6 +65,183 @@
 		equals(typeof svgedit.history.BatchCommand, typeof function(){});
 		equals(typeof svgedit.history.UndoManager, typeof function(){});
 	});
+	
+	test('Test UndoManager methods', function() {
+		expect(14);
+		setUp();
+		
+		ok(undoMgr);
+		ok(undoMgr.addCommandToHistory);
+		ok(undoMgr.getUndoStackSize);
+		ok(undoMgr.getRedoStackSize);
+		ok(undoMgr.resetUndoStack);
+		ok(undoMgr.getNextUndoCommandText);
+		ok(undoMgr.getNextRedoCommandText);
+
+		equals(typeof undoMgr, typeof {});
+		equals(typeof undoMgr.addCommandToHistory, typeof function(){});
+		equals(typeof undoMgr.getUndoStackSize, typeof function(){});
+		equals(typeof undoMgr.getRedoStackSize, typeof function(){});
+		equals(typeof undoMgr.resetUndoStack, typeof function(){});
+		equals(typeof undoMgr.getNextUndoCommandText, typeof function(){});
+		equals(typeof undoMgr.getNextRedoCommandText, typeof function(){});
+			
+		tearDown();
+	});
+	
+	test('Test UndoManager.addCommandToHistory() function', function() {
+		expect(3);
+		
+		setUp();
+
+		equals(undoMgr.getUndoStackSize(), 0);
+		undoMgr.addCommandToHistory(new MockCommand());
+		equals(undoMgr.getUndoStackSize(), 1);
+		undoMgr.addCommandToHistory(new MockCommand());
+		equals(undoMgr.getUndoStackSize(), 2);
+
+		tearDown();
+	});
+	
+	test('Test UndoManager.getUndoStackSize() and getRedoStackSize() functions', function() {
+		expect(18);
+		
+		setUp();
+
+		undoMgr.addCommandToHistory(new MockCommand());
+		undoMgr.addCommandToHistory(new MockCommand());
+		undoMgr.addCommandToHistory(new MockCommand());
+
+		equals(undoMgr.getUndoStackSize(), 3);
+		equals(undoMgr.getRedoStackSize(), 0);
+		
+		undoMgr.undo();
+		equals(undoMgr.getUndoStackSize(), 2);
+		equals(undoMgr.getRedoStackSize(), 1);
+
+		undoMgr.undo();
+		equals(undoMgr.getUndoStackSize(), 1);
+		equals(undoMgr.getRedoStackSize(), 2);
+
+		undoMgr.undo();
+		equals(undoMgr.getUndoStackSize(), 0);
+		equals(undoMgr.getRedoStackSize(), 3);
+
+		undoMgr.undo();
+		equals(undoMgr.getUndoStackSize(), 0);
+		equals(undoMgr.getRedoStackSize(), 3);
+
+		undoMgr.redo();
+		equals(undoMgr.getUndoStackSize(), 1);
+		equals(undoMgr.getRedoStackSize(), 2);
+
+		undoMgr.redo();
+		equals(undoMgr.getUndoStackSize(), 2);
+		equals(undoMgr.getRedoStackSize(), 1);
+
+		undoMgr.redo();
+		equals(undoMgr.getUndoStackSize(), 3);
+		equals(undoMgr.getRedoStackSize(), 0);
+
+		undoMgr.redo();
+		equals(undoMgr.getUndoStackSize(), 3);
+		equals(undoMgr.getRedoStackSize(), 0);
+		
+		tearDown();
+	});
+	
+	test('Test UndoManager.resetUndoStackSize() function', function() {
+		expect(4);
+		
+		setUp();
+
+		undoMgr.addCommandToHistory(new MockCommand());
+		undoMgr.addCommandToHistory(new MockCommand());
+		undoMgr.addCommandToHistory(new MockCommand());
+		undoMgr.undo();
+		
+		equals(undoMgr.getUndoStackSize(), 2);
+		equals(undoMgr.getRedoStackSize(), 1);
+		
+		undoMgr.resetUndoStack();
+
+		equals(undoMgr.getUndoStackSize(), 0);
+		equals(undoMgr.getRedoStackSize(), 0);
+		
+		tearDown();
+	});
+
+	test('Test UndoManager.getNextUndoCommandText() function', function() {
+		expect(9);
+
+		setUp();
+
+		equals(undoMgr.getNextUndoCommandText(), '');
+
+		undoMgr.addCommandToHistory(new MockCommand('First'));
+		undoMgr.addCommandToHistory(new MockCommand('Second'));
+		undoMgr.addCommandToHistory(new MockCommand('Third'));
+
+		equals(undoMgr.getNextUndoCommandText(), 'Third');
+
+		undoMgr.undo();
+		equals(undoMgr.getNextUndoCommandText(), 'Second');
+
+		undoMgr.undo();
+		equals(undoMgr.getNextUndoCommandText(), 'First');
+
+		undoMgr.undo();
+		equals(undoMgr.getNextUndoCommandText(), '');
+
+		undoMgr.redo();
+		equals(undoMgr.getNextUndoCommandText(), 'First');
+
+		undoMgr.redo();
+		equals(undoMgr.getNextUndoCommandText(), 'Second');
+
+		undoMgr.redo();
+		equals(undoMgr.getNextUndoCommandText(), 'Third');
+
+		undoMgr.redo();
+		equals(undoMgr.getNextUndoCommandText(), 'Third');
+
+		tearDown();
+	});
+
+	test('Test UndoManager.getNextRedoCommandText() function', function() {
+		expect(8);
+
+		setUp();
+
+		equals(undoMgr.getNextRedoCommandText(), '');
+
+		undoMgr.addCommandToHistory(new MockCommand('First'));
+		undoMgr.addCommandToHistory(new MockCommand('Second'));
+		undoMgr.addCommandToHistory(new MockCommand('Third'));
+
+		equals(undoMgr.getNextRedoCommandText(), '');
+
+		undoMgr.undo();
+		equals(undoMgr.getNextRedoCommandText(), 'Third');
+
+		undoMgr.undo();
+		equals(undoMgr.getNextRedoCommandText(), 'Second');
+
+		undoMgr.undo();
+		equals(undoMgr.getNextRedoCommandText(), 'First');
+
+		undoMgr.redo();
+		equals(undoMgr.getNextRedoCommandText(), 'Second');
+
+		undoMgr.redo();
+		equals(undoMgr.getNextRedoCommandText(), 'Third');
+
+		undoMgr.redo();
+		equals(undoMgr.getNextRedoCommandText(), '');
+
+		tearDown();
+	});
+
   });
   </script>
 </head>  
