@@ -41,7 +41,9 @@ var removedElements = {};
  *   void apply();
  *   void unapply();
  *   Element[] elements();
- *   static type();
+ *   String getText();
+ *
+ *   static String type();
  * }
  */
 
@@ -53,8 +55,8 @@ var removedElements = {};
 // elem - The DOM element that was moved
 // oldNextSibling - The element's next sibling before it was moved
 // oldParent - The element's parent before it was moved
-// opt_desc - An optional string visible to user related to this change
-svgedit.history.MoveElementCommand = function(elem, oldNextSibling, oldParent, opt_desc) {
+// text - An optional string visible to user related to this change
+svgedit.history.MoveElementCommand = function(elem, oldNextSibling, oldParent, text) {
 	this.elem = elem;
 	this.text = text ? ("Move " + elem.tagName + " to " + text) : ("Move " + elem.tagName);
 	this.oldNextSibling = oldNextSibling;
@@ -64,6 +66,11 @@ svgedit.history.MoveElementCommand = function(elem, oldNextSibling, oldParent, o
 };
 svgedit.history.MoveElementCommand.type = function() { return 'svgedit.history.MoveElementCommand'; }
 svgedit.history.MoveElementCommand.prototype.type = svgedit.history.MoveElementCommand.type;
+
+// Function: svgedit.history.MoveElementCommand.getText
+svgedit.history.MoveElementCommand.prototype.getText = function() {
+	return this.text;
+};
 
 // Function: svgedit.history.MoveElementCommand.apply
 // Re-positions the element
@@ -98,6 +105,11 @@ svgedit.history.InsertElementCommand = function(elem, text) {
 };
 svgedit.history.InsertElementCommand.type = function() { return 'svgedit.history.InsertElementCommand'; }
 svgedit.history.InsertElementCommand.prototype.type = svgedit.history.InsertElementCommand.type;
+
+// Function: svgedit.history.InsertElementCommand.getText
+svgedit.history.InsertElementCommand.prototype.getText = function() {
+	return this.text;
+};
 
 // Function: svgedit.history.InsertElementCommand.apply
 // Re-Inserts the new element
@@ -137,6 +149,11 @@ svgedit.history.RemoveElementCommand = function(elem, parent, text) {
 };
 svgedit.history.RemoveElementCommand.type = function() { return 'svgedit.history.RemoveElementCommand'; }
 svgedit.history.RemoveElementCommand.prototype.type = svgedit.history.RemoveElementCommand.type;
+
+// Function: svgedit.history.RemoveElementCommand.getText
+svgedit.history.RemoveElementCommand.prototype.getText = function() {
+	return this.text;
+};
 
 // Function: RemoveElementCommand.apply
 // Re-removes the new element
@@ -184,6 +201,11 @@ svgedit.history.ChangeElementCommand = function(elem, attrs, text) {
 };
 svgedit.history.ChangeElementCommand.type = function() { return 'svgedit.history.ChangeElementCommand'; }
 svgedit.history.ChangeElementCommand.prototype.type = svgedit.history.ChangeElementCommand.type;
+
+// Function: svgedit.history.ChangeElementCommand.getText
+svgedit.history.ChangeElementCommand.prototype.getText = function() {
+	return this.text;
+};
 
 // Function: svgedit.history.ChangeElementCommand.apply
 // Performs the stored change action
@@ -283,6 +305,11 @@ svgedit.history.BatchCommand = function(text) {
 svgedit.history.BatchCommand.type = function() { return 'svgedit.history.BatchCommand'; }
 svgedit.history.BatchCommand.prototype.type = svgedit.history.BatchCommand.type;
 
+// Function: svgedit.history.BatchCommand.getText
+svgedit.history.BatchCommand.prototype.getText = function() {
+	return this.text;
+};
+
 // Function: svgedit.history.BatchCommand.apply
 // Runs "apply" on all subcommands
 svgedit.history.BatchCommand.prototype.apply = function() {
@@ -348,7 +375,7 @@ svgedit.history.BatchCommand.prototype.isEmpty = function() {
 // historyEventHandler - an object that conforms to the HistoryEventHandler interface
 // (see above)
 svgedit.history.UndoManager = function(historyEventHandler) {
-	this.handler_ = historyEventHandler;
+	this.handler_ = historyEventHandler || null;
 	this.undoStackPointer = 0;
 	this.undoStack = [];
 
@@ -383,14 +410,14 @@ svgedit.history.UndoManager.prototype.getRedoStackSize = function() {
 // Returns: 
 // String associated with the next undo command
 svgedit.history.UndoManager.prototype.getNextUndoCommandText = function() { 
-	return this.undoStackPointer > 0 ? this.undoStack[this.undoStackPointer-1].text : "";
+	return this.undoStackPointer > 0 ? this.undoStack[this.undoStackPointer-1].getText() : "";
 };
 
 // Function: svgedit.history.UndoManager.getNextRedoCommandText
 // Returns: 
 // String associated with the next redo command
 svgedit.history.UndoManager.prototype.getNextRedoCommandText = function() { 
-	return this.undoStackPointer < this.undoStack.length ? this.undoStack[this.undoStackPointer].text : "";
+	return this.undoStackPointer < this.undoStack.length ? this.undoStack[this.undoStackPointer].getText() : "";
 };
 
 // Function: svgedit.history.UndoManager.undo
@@ -399,11 +426,15 @@ svgedit.history.UndoManager.prototype.undo = function() {
 	if (this.undoStackPointer > 0) {
 		var cmd = this.undoStack[--this.undoStackPointer];
 		
-		this.handler_.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_UNAPPLY, cmd);
+		if (this.handler_ != null) {
+			this.handler_.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_UNAPPLY, cmd);
+		}
 		
 		cmd.unapply();
 		
-		this.handler_.handleHistoryEvent(svgedit.history.HistoryEventTypes.AFTER_UNAPPLY, cmd);
+		if (this.handler_ != null) {
+			this.handler_.handleHistoryEvent(svgedit.history.HistoryEventTypes.AFTER_UNAPPLY, cmd);
+		}
 	}
 };
 
@@ -413,11 +444,15 @@ svgedit.history.UndoManager.prototype.redo = function() {
 	if (this.undoStackPointer < this.undoStack.length && this.undoStack.length > 0) {
 		var cmd = this.undoStack[this.undoStackPointer++];
 
-		this.handler_.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_APPLY, cmd);
+		if (this.handler_ != null) {
+			this.handler_.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_APPLY, cmd);
+		}
 
 		cmd.apply();
 
-		this.handler_.handleHistoryEvent(svgedit.history.HistoryEventTypes.AFTER_APPLY, cmd);
+		if (this.handler_ != null) {
+			this.handler_.handleHistoryEvent(svgedit.history.HistoryEventTypes.AFTER_APPLY, cmd);
+		}
 	}
 };
 	
