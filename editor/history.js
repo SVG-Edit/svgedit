@@ -75,6 +75,7 @@ svgedit.history.MoveElementCommand.prototype.getText = function() {
 // Function: svgedit.history.MoveElementCommand.apply
 // Re-positions the element
 svgedit.history.MoveElementCommand.prototype.apply = function(handler) {
+	// TODO(codedread): Refactor this common event code into a base HistoryCommand class.
 	if (handler) {
 		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_APPLY, this);
 	}
@@ -385,7 +386,7 @@ svgedit.history.BatchCommand.prototype.apply = function(handler) {
 
 	var len = this.stack.length;
 	for (var i = 0; i < len; ++i) {
-		this.stack[i].apply();
+		this.stack[i].apply(handler);
 	}
 
 	if (handler) {
