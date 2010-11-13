@@ -6950,7 +6950,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		var prev = $elem.prev();
 		
 		// Remove <use> element
-		batchCmd.addSubCommand(new RemoveElementCommand($elem[0], $elem[0].parentNode));
+		batchCmd.addSubCommand(new RemoveElementCommand($elem[0], $elem[0].nextSibling, $elem[0].parentNode));
 		$elem.remove();
 		
 		// See if other elements reference this symbol
@@ -6980,8 +6980,9 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		if(parent) {
 			if(!has_more) {
 				// remove symbol/svg element
+				var nextSibling = elem.nextSibling;
 				parent.removeChild(elem);
-				batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
+				batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
 			}
 			batchCmd.addSubCommand(new InsertElementCommand(g));
 		}
@@ -7027,8 +7028,9 @@ this.setSvgString = function(xmlString) {
 		var batchCmd = new BatchCommand("Change Source");
 
 		// remove old svg document
+		var nextSibling = svgcontent.nextSibling;
 		var oldzoom = svgroot.removeChild(svgcontent);
-		batchCmd.addSubCommand(new RemoveElementCommand(oldzoom, svgroot));
+		batchCmd.addSubCommand(new RemoveElementCommand(oldzoom, nextSibling, svgroot));
 	
 		// set new svg document
 		svgcontent = svgroot.appendChild(svgdoc.importNode(newDoc.documentElement, true));
@@ -7407,7 +7409,8 @@ this.deleteCurrentLayer = function() {
 		var batchCmd = new BatchCommand("Delete Layer");
 		// actually delete from the DOM and store in our Undo History
 		var parent = current_layer.parentNode;
-		batchCmd.addSubCommand(new RemoveElementCommand(current_layer, parent));
+		var nextSibling = current_layer.nextSibling;
+		batchCmd.addSubCommand(new RemoveElementCommand(current_layer, nextSibling, parent));
 		parent.removeChild(current_layer);
 		addCommandToHistory(batchCmd);
 		clearSelection();
@@ -7685,12 +7688,14 @@ this.mergeLayer = function(skipHistory) {
 	if(!prev) return;
 	var childs = current_layer.childNodes;
 	var len = childs.length;
-	batchCmd.addSubCommand(new RemoveElementCommand(current_layer, svgcontent));
+	var layerNextSibling = current_layer.nextSibling;
+	batchCmd.addSubCommand(new RemoveElementCommand(current_layer, layerNextSibling, svgcontent));
 
 	while(current_layer.firstChild) {
 		var ch = current_layer.firstChild;
 		if(ch.localName == 'title') {
-			batchCmd.addSubCommand(new RemoveElementCommand(ch, current_layer));
+			var chNextSibling = ch.nextSibling;
+			batchCmd.addSubCommand(new RemoveElementCommand(ch, chNextSibling, current_layer));
 			current_layer.removeChild(ch);
 			continue;
 		}
@@ -7942,7 +7947,8 @@ this.setGroupTitle = function(val) {
 	
 	if(!val.length) {
 		// Remove title element
-		batchCmd.addSubCommand(new RemoveElementCommand(ts[0], elem));
+		var tsNextSibling = ts.nextSibling;
+		batchCmd.addSubCommand(new RemoveElementCommand(ts[0], tsNextSibling, elem));
 		ts.remove();
 	} else if(ts.length) {
 		// Change title contents
@@ -9016,7 +9022,8 @@ this.convertToPath = function(elem, getBBox) {
 			}
 		}
 		
-		batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
+		var nextSibling = elem.nextSibling;
+		batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
 		batchCmd.addSubCommand(new InsertElementCommand(path));
 
 		clearSelection();
@@ -9197,10 +9204,11 @@ this.deleteSelectedElements = function() {
 		var t = selected;
 		// this will unselect the element and remove the selectedOutline
 		selectorManager.releaseSelector(t);
+		var nextSibling = t.nextSibling;
 		var elem = parent.removeChild(t);
-		selectedCopy.push(selected) //for the copy
+		selectedCopy.push(selected); //for the copy
 		selectedElements[i] = null;
-		batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
+		batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
 	}
 	if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
 	call("changed", selectedCopy);
@@ -9224,10 +9232,11 @@ this.cutSelectedElements = function() {
 		var t = selected;
 		// this will unselect the element and remove the selectedOutline
 		selectorManager.releaseSelector(t);
+		var nextSibling = t.nextSibling;
 		var elem = parent.removeChild(t);
-		selectedCopy.push(selected) //for the copy
+		selectedCopy.push(selected); //for the copy
 		selectedElements[i] = null;
-		batchCmd.addSubCommand(new RemoveElementCommand(elem, parent));
+		batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
 	}
 	if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
 	call("changed", selectedCopy);
@@ -9534,7 +9543,8 @@ this.ungroupSelectedElement = function() {
 			
 			// Remove child title elements
 			if(elem.tagName === 'title') {
-				batchCmd.addSubCommand(new RemoveElementCommand(elem, oldParent));
+				var nextSibling = elem.nextSibling;
+				batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, oldParent));
 				oldParent.removeChild(elem);
 				continue;
 			}
@@ -9547,8 +9557,9 @@ this.ungroupSelectedElement = function() {
 		clearSelection();
 		
 		// delete the group element (but make undo-able)
+		var gNextSibling = g.nextSibling;
 		g = parent.removeChild(g);
-		batchCmd.addSubCommand(new RemoveElementCommand(g, parent));
+		batchCmd.addSubCommand(new RemoveElementCommand(g, gNextSibling, parent));
 
 		if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
 		
