@@ -242,6 +242,61 @@
 		tearDown();
 	});
 
+	test('Test UndoManager.undo() and redo() functions', function() {
+		expect(10);
+
+		setUp();
+
+		var lastCalled = null;
+		var cmd1 = new MockCommand();
+		var cmd2 = new MockCommand();
+		var cmd3 = new MockCommand();
+		cmd1.apply = function() { lastCalled = 'cmd1.apply'; };
+		cmd2.apply = function() { lastCalled = 'cmd2.apply'; };
+		cmd3.apply = function() { lastCalled = 'cmd3.apply'; };
+		cmd1.unapply = function() { lastCalled = 'cmd1.unapply'; };
+		cmd2.unapply = function() { lastCalled = 'cmd2.unapply'; };
+		cmd3.unapply = function() { lastCalled = 'cmd3.unapply'; };
+
+		undoMgr.addCommandToHistory(cmd1);
+		undoMgr.addCommandToHistory(cmd2);
+		undoMgr.addCommandToHistory(cmd3);
+
+		ok(!lastCalled);
+
+		undoMgr.undo();
+		equals(lastCalled, 'cmd3.unapply');
+
+		undoMgr.redo();
+		equals(lastCalled, 'cmd3.apply');
+
+		undoMgr.undo();
+		undoMgr.undo();
+		equals(lastCalled, 'cmd2.unapply');
+		
+		undoMgr.undo();
+		equals(lastCalled, 'cmd1.unapply');
+		lastCalled = null;
+
+		undoMgr.undo();
+		ok(!lastCalled);
+
+		undoMgr.redo();
+		equals(lastCalled, 'cmd1.apply');
+		
+		undoMgr.redo();
+		equals(lastCalled, 'cmd2.apply');
+
+		undoMgr.redo();
+		equals(lastCalled, 'cmd3.apply');
+		lastCalled = null;
+
+		undoMgr.redo();
+		ok(!lastCalled);
+
+		tearDown();
+	});
+
   });
   </script>
 </head>  
