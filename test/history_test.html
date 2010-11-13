@@ -3,15 +3,18 @@
 <head>
   <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
   <script src='../editor/jquery.js'></script>
-  <script type='text/javascript' src='../editor/svgutils.js'></script>
   <script type='text/javascript' src='../editor/history.js'></script>
   <script type='text/javascript' src='qunit/qunit.js'></script>  
   <script type='text/javascript'>
   $(function() {
 
-	// Mocked out method.
+	// Mocked out methods.
 	svgedit.transformlist = {};
 	svgedit.transformlist.removeElementFromListMap = function(elem) {};
+	svgedit.utilities = {};
+	svgedit.utilities.getHref = function(elem) { return '#foo'; };
+	svgedit.utilities.setHref = function(elem, val) {};
+	svgedit.utilities.getRotationAngle = function(elem) { return 0; };
 
   	// log function
   	QUnit.log = function(result, message) {
@@ -440,6 +443,81 @@
 		equals(divparent.firstElementChild, div1);
 		equals(div1.nextElementSibling, div2);
 		equals(div2.nextElementSibling, div3);
+
+		tearDown();
+	});
+
+	test('Test ChangeElementCommand', function() {
+		expect(20);
+
+		setUp();
+
+		div1.setAttribute('title', 'new title');
+		var change = new svgedit.history.ChangeElementCommand(div1,
+			{'title': 'old title', 'class': 'foo'});
+		ok(change.unapply);
+		ok(change.apply);
+		equals(typeof change.unapply, typeof function(){});
+		equals(typeof change.apply, typeof function(){});
+
+		change.unapply();
+		equals(div1.getAttribute('title'), 'old title');
+		equals(div1.getAttribute('class'), 'foo');
+
+		change.apply();
+		equals(div1.getAttribute('title'), 'new title');
+		ok(!div1.getAttribute('class'));
+
+		div1.textContent = 'inner text';
+		change = new svgedit.history.ChangeElementCommand(div1,
+			{'#text': null});
+
+		change.unapply();
+		ok(!div1.textContent);
+
+		change.apply();
+		equals(div1.textContent, 'inner text');
+
+		div1.textContent = '';
+		change = new svgedit.history.ChangeElementCommand(div1,
+			{'#text': 'old text'});
+
+		change.unapply();
+		equals(div1.textContent, 'old text');
+
+		change.apply();
+		ok(!div1.textContent);
+
+		// TODO(codedread): Refactor this #href stuff in history.js and svgcanvas.js
+		var rect = document.createElementNS(svgns, 'rect');
+		var justCalled = null;
+		var gethrefvalue = null;
+		var sethrefvalue = null;
+		svgedit.utilities.getHref = function(elem) {
+			equals(elem, rect);
+			justCalled = 'getHref';
+			return gethrefvalue;
+		};
+		svgedit.utilities.setHref = function(elem, val) {
+			equals(elem, rect);
+			equals(val, sethrefvalue);
+			justCalled = 'setHref';
+		};
+
+		gethrefvalue = '#newhref';
+		change = new svgedit.history.ChangeElementCommand(rect,
+			{'#href': '#oldhref'});
+		equals(justCalled, 'getHref');
+
+		justCalled = null;
+		sethrefvalue = '#oldhref';
+		change.unapply();
+		equals(justCalled, 'setHref');
+
+		justCalled = null;
+		sethrefvalue = '#newhref';
+		change.apply();
+		equals(justCalled, 'setHref');
 
 		tearDown();
 	});
