@@ -272,7 +272,9 @@ svgedit.history.ChangeElementCommand.prototype.apply = function(handler) {
 			else this.elem.setAttribute(attr, this.newValues[attr]);
 		}
 		else {
-			if (attr == "#text") this.elem.textContent = "";
+			if (attr == "#text") {
+				this.elem.textContent = "";
+			}
 			else {
 				this.elem.setAttribute(attr, "");
 				this.elem.removeAttribute(attr);
@@ -318,7 +320,9 @@ svgedit.history.ChangeElementCommand.prototype.unapply = function(handler) {
 			else this.elem.setAttribute(attr, this.oldValues[attr]);
 		}
 		else {
-			if (attr == "#text") this.elem.textContent = "";
+			if (attr == "#text") {
+				this.elem.textContent = "";
+			}
 			else this.elem.removeAttribute(attr);
 		}
 		if (attr == "transform") { bChangedTransform = true; }
