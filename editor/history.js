@@ -74,14 +74,30 @@ svgedit.history.MoveElementCommand.prototype.getText = function() {
 
 // Function: svgedit.history.MoveElementCommand.apply
 // Re-positions the element
-svgedit.history.MoveElementCommand.prototype.apply = function() {
+svgedit.history.MoveElementCommand.prototype.apply = function(handler) {
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_APPLY, this);
+	}
+
 	this.elem = this.newParent.insertBefore(this.elem, this.newNextSibling);
+
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.AFTER_APPLY, this);
+	}
 };
 
 // Function: svgedit.history.MoveElementCommand.unapply
 // Positions the element back to its original location
-svgedit.history.MoveElementCommand.prototype.unapply = function() {
+svgedit.history.MoveElementCommand.prototype.unapply = function(handler) {
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_UNAPPLY, this);
+	}
+		
 	this.elem = this.oldParent.insertBefore(this.elem, this.oldNextSibling);
+
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.AFTER_UNAPPLY, this);
+	}
 };
 
 // Function: svgedit.history.MoveElementCommand.elements
@@ -102,6 +118,7 @@ svgedit.history.InsertElementCommand = function(elem, text) {
 	this.elem = elem;
 	this.text = text || ("Create " + elem.tagName);
 	this.parent = elem.parentNode;
+	this.nextSibling = this.elem.nextSibling;
 };
 svgedit.history.InsertElementCommand.type = function() { return 'svgedit.history.InsertElementCommand'; }
 svgedit.history.InsertElementCommand.prototype.type = svgedit.history.InsertElementCommand.type;
@@ -113,15 +130,31 @@ svgedit.history.InsertElementCommand.prototype.getText = function() {
 
 // Function: svgedit.history.InsertElementCommand.apply
 // Re-Inserts the new element
-svgedit.history.InsertElementCommand.prototype.apply = function() { 
-	this.elem = this.parent.insertBefore(this.elem, this.elem.nextSibling); 
+svgedit.history.InsertElementCommand.prototype.apply = function(handler) { 
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_APPLY, this);
+	}
+
+	this.elem = this.parent.insertBefore(this.elem, this.nextSibling); 
+
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.AFTER_APPLY, this);
+	}
 };
 
 // Function: svgedit.history.InsertElementCommand.unapply
 // Removes the element
-svgedit.history.InsertElementCommand.prototype.unapply = function() {
+svgedit.history.InsertElementCommand.prototype.unapply = function(handler) {
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_UNAPPLY, this);
+	}
+
 	this.parent = this.elem.parentNode;
 	this.elem = this.elem.parentNode.removeChild(this.elem);
+
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.AFTER_UNAPPLY, this);
+	}
 };
 
 // Function: svgedit.history.InsertElementCommand.elements
@@ -137,12 +170,14 @@ svgedit.history.InsertElementCommand.prototype.elements = function() {
 //
 // Parameters:
 // elem - The removed DOM element
-// parent - The DOM element's parent
+// oldNextSibling - the DOM element's nextSibling when it was in the DOM
+// oldParent - The DOM element's parent
 // text - An optional string visible to user related to this change
-svgedit.history.RemoveElementCommand = function(elem, parent, text) {
+svgedit.history.RemoveElementCommand = function(elem, oldNextSibling, oldParent, text) {
 	this.elem = elem;
 	this.text = text || ("Delete " + elem.tagName);
-	this.parent = parent;
+	this.nextSibling = oldNextSibling;
+	this.parent = oldParent;
 
 	// special hack for webkit: remove this element's entry in the svgTransformLists map
 	svgedit.transformlist.removeElementFromListMap(elem);
@@ -157,19 +192,33 @@ svgedit.history.RemoveElementCommand.prototype.getText = function() {
 
 // Function: RemoveElementCommand.apply
 // Re-removes the new element
-svgedit.history.RemoveElementCommand.prototype.apply = function() {	
-	svgedit.transformlist.removeElementFromListMap(this.elem);
+svgedit.history.RemoveElementCommand.prototype.apply = function(handler) {	
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_APPLY, this);
+	}
 
+	svgedit.transformlist.removeElementFromListMap(this.elem);
 	this.parent = this.elem.parentNode;
 	this.elem = this.parent.removeChild(this.elem);
+
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.AFTER_APPLY, this);
+	}
 };
 
 // Function: RemoveElementCommand.unapply
 // Re-adds the new element
-svgedit.history.RemoveElementCommand.prototype.unapply = function() { 
-	svgedit.transformlist.removeElementFromListMap(this.elem);
+svgedit.history.RemoveElementCommand.prototype.unapply = function(handler) { 
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_UNAPPLY, this);
+	}
 
-	this.parent.insertBefore(this.elem, this.elem.nextSibling);
+	svgedit.transformlist.removeElementFromListMap(this.elem);
+	this.parent.insertBefore(this.elem, this.nextSibling);
+
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.AFTER_UNAPPLY, this);
+	}
 };
 
 // Function: RemoveElementCommand.elements
@@ -209,7 +258,11 @@ svgedit.history.ChangeElementCommand.prototype.getText = function() {
 
 // Function: svgedit.history.ChangeElementCommand.apply
 // Performs the stored change action
-svgedit.history.ChangeElementCommand.prototype.apply = function() {
+svgedit.history.ChangeElementCommand.prototype.apply = function(handler) {
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_APPLY, this);
+	}
+
 	var bChangedTransform = false;
 	for(var attr in this.newValues ) {
 		if (this.newValues[attr]) {
@@ -241,12 +294,21 @@ svgedit.history.ChangeElementCommand.prototype.apply = function() {
 			}
 		}
 	}
+
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.AFTER_APPLY, this);
+	}
+
 	return true;
 };
 
 // Function: svgedit.history.ChangeElementCommand.unapply
 // Reverses the stored change action
-svgedit.history.ChangeElementCommand.prototype.unapply = function() {
+svgedit.history.ChangeElementCommand.prototype.unapply = function(handler) {
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_UNAPPLY, this);
+	}
+
 	var bChangedTransform = false;
 	for(var attr in this.oldValues ) {
 		if (this.oldValues[attr]) {
@@ -276,6 +338,10 @@ svgedit.history.ChangeElementCommand.prototype.unapply = function() {
 
 	// Remove transformlist to prevent confusion that causes bugs like 575.
 	svgedit.transformlist.removeElementFromListMap(this.elem);
+
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.AFTER_UNAPPLY, this);
+	}
 
 	return true;
 };
@@ -312,18 +378,34 @@ svgedit.history.BatchCommand.prototype.getText = function() {
 
 // Function: svgedit.history.BatchCommand.apply
 // Runs "apply" on all subcommands
-svgedit.history.BatchCommand.prototype.apply = function() {
+svgedit.history.BatchCommand.prototype.apply = function(handler) {
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_APPLY, this);
+	}
+
 	var len = this.stack.length;
 	for (var i = 0; i < len; ++i) {
 		this.stack[i].apply();
+	}
+
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.AFTER_APPLY, this);
 	}
 };
 
 // Function: svgedit.history.BatchCommand.unapply
 // Runs "unapply" on all subcommands
-svgedit.history.BatchCommand.prototype.unapply = function() {
+svgedit.history.BatchCommand.prototype.unapply = function(handler) {
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_UNAPPLY, this);
+	}
+
 	for (var i = this.stack.length-1; i >= 0; i--) {
-		this.stack[i].unapply();
+		this.stack[i].unapply(handler);
+	}
+
+	if (handler) {
+		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.AFTER_UNAPPLY, this);
 	}
 };
 
@@ -425,16 +507,7 @@ svgedit.history.UndoManager.prototype.getNextRedoCommandText = function() {
 svgedit.history.UndoManager.prototype.undo = function() {
 	if (this.undoStackPointer > 0) {
 		var cmd = this.undoStack[--this.undoStackPointer];
-		
-		if (this.handler_ != null) {
-			this.handler_.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_UNAPPLY, cmd);
-		}
-		
-		cmd.unapply();
-		
-		if (this.handler_ != null) {
-			this.handler_.handleHistoryEvent(svgedit.history.HistoryEventTypes.AFTER_UNAPPLY, cmd);
-		}
+		cmd.unapply(this.handler_);
 	}
 };
 
@@ -443,16 +516,7 @@ svgedit.history.UndoManager.prototype.undo = function() {
 svgedit.history.UndoManager.prototype.redo = function() {
 	if (this.undoStackPointer < this.undoStack.length && this.undoStack.length > 0) {
 		var cmd = this.undoStack[this.undoStackPointer++];
-
-		if (this.handler_ != null) {
-			this.handler_.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_APPLY, cmd);
-		}
-
-		cmd.apply();
-
-		if (this.handler_ != null) {
-			this.handler_.handleHistoryEvent(svgedit.history.HistoryEventTypes.AFTER_APPLY, cmd);
-		}
+		cmd.apply(this.handler_);
 	}
 };
 	

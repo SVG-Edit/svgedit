@@ -3,12 +3,16 @@
 <head>
   <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
   <script src='../editor/jquery.js'></script>
-  <script type='text/javascript' src='../editor/svgtransformlist.js'></script>
-  <script type='text/javascript' src='../editor/history.js'></script>
   <script type='text/javascript' src='../editor/svgutils.js'></script>
+  <script type='text/javascript' src='../editor/history.js'></script>
   <script type='text/javascript' src='qunit/qunit.js'></script>  
   <script type='text/javascript'>
   $(function() {
+
+	// Mocked out method.
+	svgedit.transformlist = {};
+	svgedit.transformlist.removeElementFromListMap = function(elem) {};
+
   	// log function
   	QUnit.log = function(result, message) {
 		if (window.console && window.console.log) {
@@ -19,8 +23,14 @@
 	var svgns = 'http://www.w3.org/2000/svg';
 	var svg = document.createElementNS(svgns, 'svg');
 	var undoMgr = null;
+	var divparent = document.getElementById('divparent');
+	var div1 = document.getElementById('div1');
+	var div2 = document.getElementById('div2');
+	var div3 = document.getElementById('div3');
+	var div4 = document.getElementById('div4');
+	var div5 = document.getElementById('div5');
 
-	module('svgedit.history Module');
+	module('svgedit.history');
 
 	var MockCommand = function(opt_text) {
 		this.text_ = opt_text;
@@ -297,6 +307,143 @@
 		tearDown();
 	});
 
+	test('Test MoveElementCommand', function() {
+		expect(26);
+
+		setUp();
+
+		var move = new svgedit.history.MoveElementCommand(div3, div1, divparent);
+		ok(move.unapply);
+		ok(move.apply);
+		equals(typeof move.unapply, typeof function(){});
+		equals(typeof move.apply, typeof function(){});
+
+		move.unapply();
+		equals(divparent.firstElementChild, div3);
+		equals(divparent.firstElementChild.nextElementSibling, div1);
+		equals(divparent.lastElementChild, div2);
+
+		move.apply();
+		equals(divparent.firstElementChild, div1);
+		equals(divparent.firstElementChild.nextElementSibling, div2);
+		equals(divparent.lastElementChild, div3);
+
+		move = new svgedit.history.MoveElementCommand(div1, null, divparent);
+
+		move.unapply();
+		equals(divparent.firstElementChild, div2);
+		equals(divparent.firstElementChild.nextElementSibling, div3);
+		equals(divparent.lastElementChild, div1);
+
+		move.apply();
+		equals(divparent.firstElementChild, div1);
+		equals(divparent.firstElementChild.nextElementSibling, div2);
+		equals(divparent.lastElementChild, div3);
+
+		move = new svgedit.history.MoveElementCommand(div2, div5, div4);
+
+		move.unapply();
+		equals(divparent.firstElementChild, div1);
+		equals(divparent.firstElementChild.nextElementSibling, div3);
+		equals(divparent.lastElementChild, div3);
+		equals(div4.firstElementChild, div2);
+		equals(div4.firstElementChild.nextElementSibling, div5);
+
+		move.apply();
+		equals(divparent.firstElementChild, div1);
+		equals(divparent.firstElementChild.nextElementSibling, div2);
+		equals(divparent.lastElementChild, div3);
+		equals(div4.firstElementChild, div5);
+		equals(div4.lastElementChild, div5);
+
+		tearDown();
+	});
+
+	test('Test InsertElementCommand', function() {
+		expect(20);
+
+		setUp();
+
+		var insert = new svgedit.history.InsertElementCommand(div3);
+		ok(insert.unapply);
+		ok(insert.apply);
+		equals(typeof insert.unapply, typeof function(){});
+		equals(typeof insert.apply, typeof function(){});
+
+		insert.unapply();
+		equals(divparent.childElementCount, 2);
+		equals(divparent.firstElementChild, div1);
+		equals(div1.nextElementSibling, div2);
+		equals(divparent.lastElementChild, div2);
+
+		insert.apply();
+		equals(divparent.childElementCount, 3);
+		equals(divparent.firstElementChild, div1);
+		equals(div1.nextElementSibling, div2);
+		equals(div2.nextElementSibling, div3);
+
+		insert = new svgedit.history.InsertElementCommand(div2);
+
+		insert.unapply();
+		equals(divparent.childElementCount, 2);
+		equals(divparent.firstElementChild, div1);
+		equals(div1.nextElementSibling, div3);
+		equals(divparent.lastElementChild, div3);
+
+		insert.apply();
+		equals(divparent.childElementCount, 3);
+		equals(divparent.firstElementChild, div1);
+		equals(div1.nextElementSibling, div2);
+		equals(div2.nextElementSibling, div3);
+
+		tearDown();
+	});
+
+	test('Test RemoveElementCommand', function() {
+		expect(22);
+
+		setUp();
+
+		var div6 = document.createElement('div');
+		div6.id = 'div6';
+
+		var remove = new svgedit.history.RemoveElementCommand(div6, null, divparent);
+		ok(remove.unapply);
+		ok(remove.apply);
+		equals(typeof remove.unapply, typeof function(){});
+		equals(typeof remove.apply, typeof function(){});
+
+		remove.unapply();
+		equals(divparent.childElementCount, 4);
+		equals(divparent.firstElementChild, div1);
+		equals(div1.nextElementSibling, div2);
+		equals(div2.nextElementSibling, div3);
+		equals(div3.nextElementSibling, div6);
+
+		remove.apply();
+		equals(divparent.childElementCount, 3);
+		equals(divparent.firstElementChild, div1);
+		equals(div1.nextElementSibling, div2);
+		equals(div2.nextElementSibling, div3);
+
+		remove = new svgedit.history.RemoveElementCommand(div6, div2, divparent);
+
+		remove.unapply();
+		equals(divparent.childElementCount, 4);
+		equals(divparent.firstElementChild, div1);
+		equals(div1.nextElementSibling, div6);
+		equals(div6.nextElementSibling, div2);
+		equals(div2.nextElementSibling, div3);
+
+		remove.apply();
+		equals(divparent.childElementCount, 3);
+		equals(divparent.firstElementChild, div1);
+		equals(div1.nextElementSibling, div2);
+		equals(div2.nextElementSibling, div3);
+
+		tearDown();
+	});
+
   });
   </script>
 </head>  
@@ -306,5 +453,13 @@
   <h2 id='qunit-userAgent'></h2>
   <ol id='qunit-tests'>
   </ol>
+  <div id='divparent' style='visibility:hidden'>
+    <div id='div1'></div>
+    <div id='div2'></div>
+    <div id='div3'></div>
+  </div>
+  <div id='div4' style='visibility:hidden'>
+    <div id='div5'></div>
+  </div>
 </body>  
 </html>
