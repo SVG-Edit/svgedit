@@ -35,24 +35,14 @@
 
 	module('svgedit.history');
 
-	var MockCommand = function(opt_text) {
-		this.text_ = opt_text;
-	};
-	MockCommand.prototype.apply = function() {
-	};
-	MockCommand.prototype.unapply = function() {
-	};
-	MockCommand.prototype.getText = function() {
-		return this.text_;
-	};
-	MockCommand.prototype.elements = function() {
-		return [];
-	};
+	var MockCommand = function(opt_text) { this.text_ = opt_text; };
+	MockCommand.prototype.apply = function() {};
+	MockCommand.prototype.unapply = function() {};
+	MockCommand.prototype.getText = function() { return this.text_; };
+	MockCommand.prototype.elements = function() { return []; };
 
-	var MockHistoryEventHandler = function() {
-	};
-	MockHistoryEventHandler.prototype.handleHistoryEvent = function(eventType, command) {
-	};
+	var MockHistoryEventHandler = function() {};
+	MockHistoryEventHandler.prototype.handleHistoryEvent = function(eventType, command) {};
 
 	function setUp() {
 		undoMgr = new svgedit.history.UndoManager();
@@ -521,6 +511,45 @@
 
 		tearDown();
 	});
+
+	test('Test BatchCommand', function() {
+		expect(13);
+
+		setUp();
+
+		var concatResult = '';
+		MockCommand.prototype.apply = function() { concatResult += this.text_; };
+
+		var batch = new svgedit.history.BatchCommand();
+		ok(batch.unapply);
+		ok(batch.apply);
+		ok(batch.addSubCommand);
+		ok(batch.isEmpty);
+		equals(typeof batch.unapply, typeof function(){});
+		equals(typeof batch.apply, typeof function(){});
+		equals(typeof batch.addSubCommand, typeof function(){});
+		equals(typeof batch.isEmpty, typeof function(){});
+
+		ok(batch.isEmpty());
+
+		batch.addSubCommand(new MockCommand('a'));
+		ok(!batch.isEmpty());
+		batch.addSubCommand(new MockCommand('b'));
+		batch.addSubCommand(new MockCommand('c'));
+
+		ok(!concatResult);
+		batch.apply();
+		equals(concatResult, 'abc');
+
+		MockCommand.prototype.apply = function() {};
+		MockCommand.prototype.unapply = function() { concatResult += this.text_; };
+		concatResult = '';
+		batch.unapply();
+		equals(concatResult, 'cba');
+
+		tearDown();
+	});
+
 
   });
   </script>
