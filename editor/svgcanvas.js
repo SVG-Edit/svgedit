@@ -1084,7 +1084,7 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 	
 	if(!curBBoxes.length) {
 		// Cache all bboxes
-		curBBoxes = getVisibleElements(parent, true);
+		curBBoxes = getVisibleElementsAndBBoxes(parent);
 	}
 	
 	var resultList = null;
@@ -1279,28 +1279,48 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 //
 // Parameters:
 // parent - The parent DOM element to search within
-// includeBBox - Boolean to indicate that an object should return with the element and its bbox
 //
 // Returns:
-// An array with all "visible" elements, or if includeBBox is true, an array with
-// objects that include:
-// * elem - The element
-// * bbox - The element's BBox as retrieved from getStrokedBBox
-var getVisibleElements = this.getVisibleElements = function(parent, includeBBox) {
+// An array with all "visible" elements.
+var getVisibleElements = this.getVisibleElements = function(parent) {
 	if(!parent) parent = $(svgcontent).children(); // Prevent layers from being included
 	
 	var contentElems = [];
 	$(parent).children().each(function(i, elem) {
 		try {
-			var box = elem.getBBox();
-			if (box) {
-				var item = includeBBox?{'elem':elem, 'bbox':getStrokedBBox([elem])}:elem;
-				contentElems.push(item);
+			if (elem.getBBox()) {
+				contentElems.push(elem);
 			}
 		} catch(e) {}
 	});
 	return contentElems.reverse();
-}
+};
+
+// Function: getVisibleElementsAndBBoxes
+// Get all elements that have a BBox (excludes <defs>, <title>, etc).
+// Note that 0-opacity, off-screen etc elements are still considered "visible"
+// for this function
+//
+// Parameters:
+// parent - The parent DOM element to search within
+//
+// Returns:
+// An array with objects that include:
+// * elem - The element
+// * bbox - The element's BBox as retrieved from getStrokedBBox
+var getVisibleElementsAndBBoxes = this.getVisibleElementsAndBBoxes = function(parent) {
+	if(!parent) parent = $(svgcontent).children(); // Prevent layers from being included
+	
+	var contentElems = [];
+	$(parent).children().each(function(i, elem) {
+		try {
+			if (elem.getBBox()) {
+				contentElems.push({'elem':elem, 'bbox':getStrokedBBox([elem])});
+			}
+		} catch(e) {}
+	});
+	return contentElems.reverse();
+};
 
 // Function: groupSvgElem
 // Wrap an SVG element into a group element, mark the group as 'gsvg'
