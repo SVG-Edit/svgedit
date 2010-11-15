@@ -11,6 +11,7 @@
 // 1) jQuery
 // 2) browsersupport.js
 // 3) svgtransformlist.js
+// 4) math.js
 
 (function() {
 

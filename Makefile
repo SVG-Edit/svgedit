@@ -30,6 +30,7 @@ build/$(PACKAGE):
 	   --js svgutils.js \
 	   --js sanitize.js \
 	   --js history.js \
+	   --js select.js \
 	   --js svgcanvas.js \
 	   --js svg-editor.js \
 	   --js locale/locale.js \

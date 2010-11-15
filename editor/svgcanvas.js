@@ -119,19 +119,84 @@ if(config) {
 	$.extend(curConfig, config);
 }
 
+// Array with width/height of canvas
+var dimensions = curConfig.dimensions;
+
 var canvas = this;
 
 // "document" element associated with the container (same as window.document using default svg-editor.js)
 var svgdoc = container.ownerDocument;
 
+// This is a container for the document being edited, not the document itself.
+var svgroot = svgdoc.importNode(svgedit.utilities.text2xml(
+		'<svg id="svgroot" xmlns="' + svgns + '" xlinkns="' + xlinkns + '" ' +
+			'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
+			'<defs>' +
+				'<filter id="canvashadow" filterUnits="objectBoundingBox">' +
+					'<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>'+
+					'<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>'+
+					'<feMerge>'+
+						'<feMergeNode in="offsetBlur"/>'+
+						'<feMergeNode in="SourceGraphic"/>'+
+					'</feMerge>'+
+				'</filter>'+
+			'</defs>'+
+		'</svg>').documentElement, true);
+container.appendChild(svgroot);
+
 // The actual element that represents the final output SVG element
 var svgcontent = svgdoc.createElementNS(svgns, "svg");
 
-// This is a container for the document being edited, not the document itself.  Initialized later.
-var svgroot = null;
+$(svgcontent).attr({
+	id: 'svgcontent',
+	width: dimensions[0],
+	height: dimensions[1],
+	x: dimensions[0],
+	y: dimensions[1],
+	overflow: curConfig.show_outside_canvas ? 'visible' : 'hidden',
+	xmlns: svgns,
+	"xmlns:se": se_ns,
+	"xmlns:xlink": xlinkns
+}).appendTo(svgroot);
+
 
 // Float displaying the current zoom level (1 = 100%, .5 = 50%, etc)
 var current_zoom = 1;
+
+// pointer to the current layer <g>
+var current_layer = null;
+
+// pointer to current group (for in-group editing)
+var current_group = null;
+
+// Object containing data for the currently selected styles
+var all_properties = {
+	shape: {
+		fill: "#" + curConfig.initFill.color,
+		fill_paint: null,
+		fill_opacity: curConfig.initFill.opacity,
+		stroke: "#" + curConfig.initStroke.color,
+		stroke_paint: null,
+		stroke_opacity: curConfig.initStroke.opacity,
+		stroke_width: curConfig.initStroke.width,
+		stroke_dasharray: 'none',
+		stroke_linejoin: 'miter',
+		stroke_linecap: 'butt',
+		opacity: curConfig.initOpacity
+	}
+};
+
+all_properties.text = $.extend(true, {}, all_properties.shape);
+$.extend(all_properties.text, {
+	fill: "#000000",
+	stroke_width: 0,
+	font_size: 24,
+	font_family: 'serif'
+});
+
+// Current shape style properties
+var cur_shape = all_properties.shape;
+
 
 // Function: getElem
 // Get a DOM element by ID within the SVG root element.
@@ -153,6 +218,112 @@ var getElem = function(id) {
 	// getElementById lookup: includes icons, not good
 	// return svgdoc.getElementById(id);
 };
+
+// Function: assignAttributes
+// Assigns multiple attributes to an element.
+//
+// Parameters: 
+// node - DOM element to apply new attribute values to
+// attrs - Object with attribute keys/values
+// suspendLength - Optional integer of milliseconds to suspend redraw
+// unitCheck - Boolean to indicate the need to use svgedit.units.setUnitAttr
+var assignAttributes = canvas.assignAttributes = function(node, attrs, suspendLength, unitCheck) {
+	if(!suspendLength) suspendLength = 0;
+	// Opera has a problem with suspendRedraw() apparently
+	var handle = null;
+	if (!svgedit.browsersupport.isOpera()) svgroot.suspendRedraw(suspendLength);
+
+	for (var i in attrs) {
+		var ns = (i.substr(0,4) === "xml:" ? xmlns : 
+			i.substr(0,6) === "xlink:" ? xlinkns : null);
+			
+		if(ns) {
+			node.setAttributeNS(ns, i, attrs[i]);
+		} else if(!unitCheck) {
+			node.setAttribute(i, attrs[i]);
+		} else {
+			svgedit.units.setUnitAttr(node, i, attrs[i]);
+		}
+		
+	}
+	
+	if (!svgedit.browsersupport.isOpera()) svgroot.unsuspendRedraw(handle);
+};
+
+// Function: cleanupElement
+// Remove unneeded (default) attributes, makes resulting SVG smaller
+//
+// Parameters:
+// element - DOM element to clean up
+var cleanupElement = this.cleanupElement = function(element) {
+	var handle = svgroot.suspendRedraw(60);
+	var defaults = {
+		'fill-opacity':1,
+		'stop-opacity':1,
+		'opacity':1,
+		'stroke':'none',
+		'stroke-dasharray':'none',
+		'stroke-linejoin':'miter',
+		'stroke-linecap':'butt',
+		'stroke-opacity':1,
+		'stroke-width':1,
+		'rx':0,
+		'ry':0
+	}
+	
+	for(var attr in defaults) {
+		var val = defaults[attr];
+		if(element.getAttribute(attr) == val) {
+			element.removeAttribute(attr);
+		}
+	}
+	
+	svgroot.unsuspendRedraw(handle);
+};
+
+// Function: addSvgElementFromJson
+// Create a new SVG element based on the given object keys/values and add it to the current layer
+// The element will be ran through cleanupElement before being returned 
+//
+// Parameters:
+// data - Object with the following keys/values:
+// * element - tag name of the SVG element to create
+// * attr - Object with attributes key-values to assign to the new element
+// * curStyles - Boolean indicating that current style attributes should be applied first
+//
+// Returns: The new element
+var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
+	var shape = getElem(data.attr.id);
+	// if shape is a path but we need to create a rect/ellipse, then remove the path
+	if (shape && data.element != shape.tagName) {
+		current_layer.removeChild(shape);
+		shape = null;
+	}
+	if (!shape) {
+		shape = svgdoc.createElementNS(svgns, data.element);
+		if (current_layer) {
+			(current_group || current_layer).appendChild(shape);
+		}
+	}
+	if(data.curStyles) {
+		assignAttributes(shape, {
+			"fill": cur_shape.fill,
+			"stroke": cur_shape.stroke,
+			"stroke-width": cur_shape.stroke_width,
+			"stroke-dasharray": cur_shape.stroke_dasharray,
+			"stroke-linejoin": cur_shape.stroke_linejoin,
+			"stroke-linecap": cur_shape.stroke_linecap,
+			"stroke-opacity": cur_shape.stroke_opacity,
+			"fill-opacity": cur_shape.fill_opacity,
+			"opacity": cur_shape.opacity / 2,
+			"style": "pointer-events:inherit"
+		}, 100);
+	}
+	assignAttributes(shape, data.attr, 100);
+	cleanupElement(shape);
+	return shape;
+};
+
 
 // import svgtransformlist.js
 var getTransformList = canvas.getTransformList = svgedit.transformlist.getTransformList;
@@ -240,6 +411,17 @@ var addCommandToHistory = function(cmd) {
 	canvas.undoMgr.addCommandToHistory(cmd);
 };
 
+// import from select.js
+svgedit.select.init(curConfig, {
+	createSVGElement: function(jsonMap) { return canvas.addSvgElementFromJson(jsonMap); },
+	svgRoot: function() { return svgroot; },
+	svgContent: function() { return svgcontent; },
+	currentZoom: function() { return current_zoom; },
+	// TODO(codedread): Remove when getStrokedBBox() has been put into svgutils.js.
+	getStrokedBBox: function(elems) { return canvas.getStrokedBBox([elems]); }
+});
+// this object manages selectors for us
+var selectorManager = this.selectorManager = svgedit.select.getSelectorManager();
 
 // Function: snapToGrid
 // round value to for snapping
@@ -272,43 +454,10 @@ var ref_attrs = ["clip-path", "fill", "filter", "marker-end", "marker-mid", "mar
 var elData = $.data;
 
 // nonce to uniquify id's
-var nonce = Math.floor(Math.random()*100001),
-	
-	// Boolean to indicate whether or not IDs given to elements should be random
-	randomize_ids = false, 
-	
-	// Array with width/height of canvas
-	dimensions = curConfig.dimensions;
-	
-	// Create Root SVG element. This is a container for the document being edited, not the document itself.
-	svgroot = svgdoc.importNode(svgedit.utilities.text2xml(
-				'<svg id="svgroot" xmlns="' + svgns + '" xlinkns="' + xlinkns + '" ' +
-					'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
-					'<defs>' +
-						'<filter id="canvashadow" filterUnits="objectBoundingBox">' +
-							'<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>'+
-							'<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>'+
-							'<feMerge>'+
-								'<feMergeNode in="offsetBlur"/>'+
-								'<feMergeNode in="SourceGraphic"/>'+
-							'</feMerge>'+
-						'</filter>'+
-					'</defs>'+
-				'</svg>').documentElement, true);
+var nonce = Math.floor(Math.random() * 100001);
 
-	container.appendChild(svgroot);
-	
-$(svgcontent).attr({
-	id: 'svgcontent',
-	width: dimensions[0],
-	height: dimensions[1],
-	x: dimensions[0],
-	y: dimensions[1],
-	overflow: curConfig.show_outside_canvas ? 'visible' : 'hidden',
-	xmlns: svgns,
-	"xmlns:se": se_ns,
-	"xmlns:xlink": xlinkns
-}).appendTo(svgroot);
+// Boolean to indicate whether or not IDs given to elements should be random
+var randomize_ids = false;
 
 // Set nonce if randomize_ids = true
 if (randomize_ids) svgcontent.setAttributeNS(se_ns, 'se:nonce', nonce);
@@ -338,557 +487,6 @@ var restoreRefElems = function(elem) {
 	}
 };
 
-// Put SelectorManager in this scope
-var SelectorManager;
-
-(function() {
-	// Interface: Selector
-	// Private class for DOM element selection boxes
-	// 
-	// Parameters:
-	// id - integer to internally indentify the selector
-	// elem - DOM element associated with this selector
-	function Selector(id, elem) {
-		// this is the selector's unique number
-		this.id = id;
-
-		// this holds a reference to the element for which this selector is being used
-		this.selectedElement = elem;
-
-		// this is a flag used internally to track whether the selector is being used or not
-		this.locked = true;
-
-		// Function: Selector.reset 
-		// Used to reset the id and element that the selector is attached to
-		//
-		// Parameters: 
-		// e - DOM element associated with this selector
-		this.reset = function(e) {
-			this.locked = true;
-			this.selectedElement = e;
-			this.resize();
-			this.selectorGroup.setAttribute("display", "inline");
-		};
-
-		// this holds a reference to the <g> element that holds all visual elements of the selector
-		this.selectorGroup = addSvgElementFromJson({ "element": "g",
-													"attr": {"id": ("selectorGroup"+this.id)}
-													});
-
-		// this holds a reference to the path rect
-		this.selectorRect = this.selectorGroup.appendChild( addSvgElementFromJson({
-								"element": "path",
-								"attr": {
-									"id": ("selectedBox"+this.id),
-									"fill": "none",
-									"stroke": "#22C",
-									"stroke-width": "1",
-									"stroke-dasharray": "5,5",
-									// need to specify this so that the rect is not selectable
-									"style": "pointer-events:none"
-								}
-							}) );
-
-		// this holds a reference to the grip coordinates for this selector
-		this.gripCoords = {	"nw":null,
-							"n":null,
-							"ne":null,
-							"e":null,
-							"se":null,
-							"s":null,
-							"sw":null,
-							"w":null
-							};
-		
-		// Function: Selector.showGrips
-		// Show the resize grips of this selector
-		//
-		// Parameters:
-		// show - boolean indicating whether grips should be shown or not
-		this.showGrips = function(show) {
-			// TODO: use suspendRedraw() here
-			var bShow = show ? "inline" : "none";
-			selectorManager.selectorGripsGroup.setAttribute("display", bShow);
-			var elem = this.selectedElement;
-			this.hasGrips = show;
-			if(elem && show) {
-				this.selectorGroup.appendChild(selectorManager.selectorGripsGroup);
-				this.updateGripCursors(svgedit.utilities.getRotationAngle(elem));
-			}
-		};
-		
-		// Function: Selector.updateGripCursors
-		// Updates cursors for corner grips on rotation so arrows point the right way
-		//
-		// Parameters:
-		// angle - Float indicating current rotation angle in degrees
-		this.updateGripCursors = function(angle) {
-			var dir_arr = [];
-			var steps = Math.round(angle / 45);
-			if(steps < 0) steps += 8;
-			for (var dir in selectorManager.selectorGrips) {
-				dir_arr.push(dir);
-			}
-			while(steps > 0) {
-				dir_arr.push(dir_arr.shift());
-				steps--;
-			}
-			var i = 0;
-			for (var dir in selectorManager.selectorGrips) {
-				selectorManager.selectorGrips[dir].setAttribute('style', ("cursor:" + dir_arr[i] + "-resize"));
-				i++;
-			};
-		};
-		
-		// Function: Selector.resize
-		// Updates the selector to match the element's size
-		this.resize = function() {
-			var selectedBox = this.selectorRect,
-				mgr = selectorManager,
-				selectedGrips = mgr.selectorGrips,
-				selected = this.selectedElement,
-				sw = selected.getAttribute("stroke-width");
-			var offset = 1/current_zoom;
-			if (selected.getAttribute("stroke") !== "none" && !isNaN(sw)) {
-				offset += (sw/2);
-			}
-			
-			var tagName = selected.tagName;
-			
-			if (tagName === "text") {
-				offset += 2/current_zoom;
-			}
-			
-			var bbox = getBBox(selected);
-
-			if(tagName === 'g' && !elData(selected, 'gsvg')) {
-				// The bbox for a group does not include stroke vals, so we
-				// get the bbox based on its children. 
-				var stroked_bbox = getStrokedBBox(selected.childNodes);
-				if(stroked_bbox) {
-					bbox = stroked_bbox;
-				}
-			}
-			// loop and transform our bounding box until we reach our first rotation
-			var m = getMatrix(selected);
-
-			// This should probably be handled somewhere else, but for now
-			// it keeps the selection box correctly positioned when zoomed
-			m.e *= current_zoom;
-			m.f *= current_zoom;
-			
-			// apply the transforms
-			var l=bbox.x, t=bbox.y, w=bbox.width, h=bbox.height,
-				bbox = {x:l, y:t, width:w, height:h};
-
-			
-			// we need to handle temporary transforms too
-			// if skewed, get its transformed box, then find its axis-aligned bbox
-			
-			//*
-			offset *= current_zoom;
-			
-			var nbox = svgedit.math.transformBox(l*current_zoom, t*current_zoom, w*current_zoom, h*current_zoom, m),
-				aabox = nbox.aabox,
-				nbax = aabox.x - offset,
-				nbay = aabox.y - offset,
-				nbaw = aabox.width + (offset * 2),
-				nbah = aabox.height + (offset * 2);
-				
-			// now if the shape is rotated, un-rotate it
-			var cx = nbax + nbaw/2,
-				cy = nbay + nbah/2;
-				
-			var angle = svgedit.utilities.getRotationAngle(selected);
-			if (angle) {
-				
-				var rot = svgroot.createSVGTransform();
-				rot.setRotate(-angle,cx,cy);
-				var rotm = rot.matrix;
-				nbox.tl = transformPoint(nbox.tl.x,nbox.tl.y,rotm);
-				nbox.tr = transformPoint(nbox.tr.x,nbox.tr.y,rotm);
-				nbox.bl = transformPoint(nbox.bl.x,nbox.bl.y,rotm);
-				nbox.br = transformPoint(nbox.br.x,nbox.br.y,rotm);
-				
-				// calculate the axis-aligned bbox
-				var tl = nbox.tl;
-				var minx = tl.x,
-					miny = tl.y,
-					maxx = tl.x,
-					maxy = tl.y;
-				
-				var Min = Math.min, Max = Math.max;
-				
-				minx = Min(minx, Min(nbox.tr.x, Min(nbox.bl.x, nbox.br.x) ) ) - offset;
-				miny = Min(miny, Min(nbox.tr.y, Min(nbox.bl.y, nbox.br.y) ) ) - offset;
-				maxx = Max(maxx, Max(nbox.tr.x, Max(nbox.bl.x, nbox.br.x) ) ) + offset;
-				maxy = Max(maxy, Max(nbox.tr.y, Max(nbox.bl.y, nbox.br.y) ) ) + offset;
-				
-				nbax = minx;
-				nbay = miny;
-				nbaw = (maxx-minx);
-				nbah = (maxy-miny);
-			}
-
-			var sr_handle = svgroot.suspendRedraw(100);
-
-			var dstr = "M" + nbax + "," + nbay
-						+ " L" + (nbax+nbaw) + "," + nbay
-						+ " " + (nbax+nbaw) + "," + (nbay+nbah)
-						+ " " + nbax + "," + (nbay+nbah) + "z";
-			selectedBox.setAttribute('d', dstr);
-			
-			var xform = angle ? "rotate(" + [angle,cx,cy].join(",") + ")" : "";
-			this.selectorGroup.setAttribute("transform", xform);
-
-			if(selected === selectedElements[0]) {
-				this.gripCoords = {
-					nw: [nbax, nbay],
-					ne: [nbax+nbaw, nbay],
-					sw: [nbax, nbay+nbah],
-					se: [nbax+nbaw, nbay+nbah],
-					n:  [nbax + (nbaw)/2, nbay],
-					w:	[nbax, nbay + (nbah)/2],
-					e:	[nbax + nbaw, nbay + (nbah)/2],
-					s:	[nbax + (nbaw)/2, nbay + nbah]
-				};
-			
-				for(var dir in this.gripCoords) {
-					var coords = this.gripCoords[dir];
-					assignAttributes(selectedGrips[dir], {
-						cx: coords[0], cy: coords[1]
-					});
-				};
-
-				// we want to go 20 pixels in the negative transformed y direction, ignoring scale
-				assignAttributes(mgr.rotateGripConnector, { x1: nbax + (nbaw)/2, 
-															y1: nbay, 
-															x2: nbax + (nbaw)/2, 
-															y2: nbay- 20});
-				assignAttributes(mgr.rotateGrip, { cx: nbax + (nbaw)/2, 
-													cy: nbay - 20 });
-			}
-
-			svgroot.unsuspendRedraw(sr_handle);
-		};
-
-		// now initialize the selector
-		this.reset(elem);
-	};
-
-	// Interface: SelectorManager
-	// Public class to manage all selector objects (selection boxes)
-	SelectorManager = function() {
-	
-		// this will hold the <g> element that contains all selector rects/grips
-		this.selectorParentGroup = null;
-	
-		// this is a special rect that is used for multi-select
-		this.rubberBandBox = null;
-	
-		// this will hold objects of type Selector (see above)
-		this.selectors = [];
-	
-		// this holds a map of SVG elements to their Selector object
-		this.selectorMap = {};
-	
-		// local reference to this object
-		var mgr = this;
-		
-		// Function: SelectorManager.initGroup
-		// Resets the parent selector group element
-		this.initGroup = function() {
-			// remove old selector parent group if it existed
-			if (mgr.selectorParentGroup && mgr.selectorParentGroup.parentNode) {
-				mgr.selectorParentGroup.parentNode.removeChild(mgr.selectorParentGroup);
-			}
-			// create parent selector group and add it to svgroot
-			mgr.selectorParentGroup = svgdoc.createElementNS(svgns, "g");
-			mgr.selectorParentGroup.setAttribute("id", "selectorParentGroup");
-			mgr.selectorGripsGroup = svgdoc.createElementNS(svgns, "g");
-			mgr.selectorGripsGroup.setAttribute('display','none');
-			svgroot.appendChild(mgr.selectorParentGroup);
-			mgr.selectorParentGroup.appendChild(mgr.selectorGripsGroup);
-			mgr.selectorMap = {};
-			mgr.selectors = [];
-			mgr.rubberBandBox = null;
-			
-			// this holds a reference to the grip elements
-			mgr.selectorGrips = {	"nw":null,
-									"n":null,
-									"ne":null,
-									"e":null,
-									"se":null,
-									"s":null,
-									"sw":null,
-									"w":null
-									};
-
-			// add the corner grips
-			for (var dir in mgr.selectorGrips) {
-				var grip = addSvgElementFromJson({
-					"element": "circle",
-					"attr": {
-						"id": ("selectorGrip_resize_" + dir),
-						"fill": "#22C",
-						"r": 4,
-						"style": ("cursor:" + dir + "-resize"),
-						// This expands the mouse-able area of the grips making them
-						// easier to grab with the mouse.
-						// This works in Opera and WebKit, but does not work in Firefox
-						// see https://bugzilla.mozilla.org/show_bug.cgi?id=500174
-						"stroke-width": 2,
-						"pointer-events":"all"
-					}
-				});
-				
-				elData(grip, "dir", dir);
-				elData(grip, "type", "resize");
-				this.selectorGrips[dir] = mgr.selectorGripsGroup.appendChild(grip);
-			}
-			
-			// add rotator elems
-			this.rotateGripConnector = this.selectorGripsGroup.appendChild( addSvgElementFromJson({
-								"element": "line",
-								"attr": {
-									"id": ("selectorGrip_rotateconnector"),
-									"stroke": "#22C",
-									"stroke-width": "1"
-								}
-							}) );
-							
-			this.rotateGrip = this.selectorGripsGroup.appendChild( addSvgElementFromJson({
-								"element": "circle",
-								"attr": {
-									"id": "selectorGrip_rotate",
-									"fill": "lime",
-									"r": 4,
-									"stroke": "#22C",
-									"stroke-width": 2,
-									"style": "cursor:url(" + curConfig.imgPath + "rotate.png) 12 12, auto;"
-								}
-							}) );
-			elData(this.rotateGrip, "type", "rotate");
-
-			if($("#canvasBackground").length) return;
-	
-			var canvasbg = svgdoc.createElementNS(svgns, "svg");
-			var dims = curConfig.dimensions;
-			assignAttributes(canvasbg, {
-				'id':'canvasBackground',
-				'width': dims[0],
-				'height': dims[1],
-				'x': 0,
-				'y': 0,
-				'overflow': (svgedit.browsersupport.isWebkit() ? 'none' : 'visible'), // Chrome 7 has a problem with this when zooming out
-				'style': 'pointer-events:none'
-			});
-			
-			var rect = svgdoc.createElementNS(svgns, "rect");
-			assignAttributes(rect, {
-				'width': '100%',
-				'height': '100%',
-				'x': 0,
-				'y': 0,
-				'stroke-width': 1,
-				'stroke': '#000',
-				'fill': '#FFF',
-				'style': 'pointer-events:none'
-			});
-			
-			// Both Firefox and WebKit are too slow with this filter region (especially at higher
-			// zoom levels) and Opera has at least one bug
-	//			if (!window.opera) rect.setAttribute('filter', 'url(#canvashadow)');
-			canvasbg.appendChild(rect);
-			svgroot.insertBefore(canvasbg, svgcontent);
-		};
-		
-		// Function: SelectorManager.requestSelector
-		// Returns the selector based on the given element
-		//
-		// Parameters:
-		// elem - DOM element to get the selector for
-		this.requestSelector = function(elem) {
-			if (elem == null) return null;
-			var N = this.selectors.length;
-			// if we've already acquired one for this element, return it
-			if (typeof(this.selectorMap[elem.id]) == "object") {
-				this.selectorMap[elem.id].locked = true;
-				return this.selectorMap[elem.id];
-			}
-			for (var i = 0; i < N; ++i) {
-				if (this.selectors[i] && !this.selectors[i].locked) {
-					this.selectors[i].locked = true;
-					this.selectors[i].reset(elem);
-					this.selectorMap[elem.id] = this.selectors[i];
-					return this.selectors[i];
-				}
-			}
-			// if we reached here, no available selectors were found, we create one
-			this.selectors[N] = new Selector(N, elem);
-			this.selectorParentGroup.appendChild(this.selectors[N].selectorGroup);
-			this.selectorMap[elem.id] = this.selectors[N];
-			return this.selectors[N];
-		};
-		
-		// Function: SelectorManager.releaseSelector
-		// Removes the selector of the given element (hides selection box) 
-		//
-		// Parameters:
-		// elem - DOM element to remove the selector for
-		this.releaseSelector = function(elem) {
-			if (elem == null) return;
-			var N = this.selectors.length,
-				sel = this.selectorMap[elem.id];
-			for (var i = 0; i < N; ++i) {
-				if (this.selectors[i] && this.selectors[i] == sel) {
-					if (sel.locked == false) {
-						console.log("WARNING! selector was released but was already unlocked");
-					}
-					delete this.selectorMap[elem.id];
-					sel.locked = false;
-					sel.selectedElement = null;
-					sel.showGrips(false);
-	
-					// remove from DOM and store reference in JS but only if it exists in the DOM
-					try {
-						sel.selectorGroup.setAttribute("display", "none");
-					} catch(e) { }
-	
-					break;
-				}
-			}
-		};
-	
-		// Function: SelectorManager.getRubberBandBox
-		// Returns the rubberBandBox DOM element. This is the rectangle drawn by the user for selecting/zooming
-		this.getRubberBandBox = function() {
-			if (!this.rubberBandBox) {
-				this.rubberBandBox = this.selectorParentGroup.appendChild(
-						addSvgElementFromJson({ "element": "rect",
-							"attr": {
-								"id": "selectorRubberBand",
-								"fill": "#22C",
-								"fill-opacity": 0.15,
-								"stroke": "#22C",
-								"stroke-width": 0.5,
-								"display": "none",
-								"style": "pointer-events:none"
-							}
-						}));
-			}
-			return this.rubberBandBox;
-		};
-	
-		this.initGroup();
-	};
-}());
-
-// Function: assignAttributes
-// Assigns multiple attributes to an element.
-//
-// Parameters: 
-// node - DOM element to apply new attribute values to
-// attrs - Object with attribute keys/values
-// suspendLength - Optional integer of milliseconds to suspend redraw
-// unitCheck - Boolean to indicate the need to use svgedit.units.setUnitAttr
-var assignAttributes = this.assignAttributes = function(node, attrs, suspendLength, unitCheck) {
-	if(!suspendLength) suspendLength = 0;
-	// Opera has a problem with suspendRedraw() apparently
-	var handle = null;
-	if (!svgedit.browsersupport.isOpera()) svgroot.suspendRedraw(suspendLength);
-
-	for (var i in attrs) {
-		var ns = (i.substr(0,4) === "xml:" ? xmlns : 
-			i.substr(0,6) === "xlink:" ? xlinkns : null);
-			
-		if(ns) {
-			node.setAttributeNS(ns, i, attrs[i]);
-		} else if(!unitCheck) {
-			node.setAttribute(i, attrs[i]);
-		} else {
-			svgedit.units.setUnitAttr(node, i, attrs[i]);
-		}
-		
-	}
-	
-	if (!svgedit.browsersupport.isOpera()) svgroot.unsuspendRedraw(handle);
-};
-
-// Function: cleanupElement
-// Remove unneeded (default) attributes, makes resulting SVG smaller
-//
-// Parameters:
-// element - DOM element to clean up
-var cleanupElement = this.cleanupElement = function(element) {
-	var handle = svgroot.suspendRedraw(60);
-	var defaults = {
-		'fill-opacity':1,
-		'stop-opacity':1,
-		'opacity':1,
-		'stroke':'none',
-		'stroke-dasharray':'none',
-		'stroke-linejoin':'miter',
-		'stroke-linecap':'butt',
-		'stroke-opacity':1,
-		'stroke-width':1,
-		'rx':0,
-		'ry':0
-	}
-	
-	for(var attr in defaults) {
-		var val = defaults[attr];
-		if(element.getAttribute(attr) == val) {
-			element.removeAttribute(attr);
-		}
-	}
-	
-	svgroot.unsuspendRedraw(handle);
-};
-
-// Function: addSvgElementFromJson
-// Create a new SVG element based on the given object keys/values and add it to the current layer
-// The element will be ran through cleanupElement before being returned 
-//
-// Parameters:
-// data - Object with the following keys/values:
-// * element - DOM element to create
-// * attr - Object with attributes/values to assign to the new element
-// * curStyles - Boolean indicating that current style attributes should be applied first
-//
-// Returns: The new element
-var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
-	var shape = getElem(data.attr.id);
-	// if shape is a path but we need to create a rect/ellipse, then remove the path
-	if (shape && data.element != shape.tagName) {
-		current_layer.removeChild(shape);
-		shape = null;
-	}
-	if (!shape) {
-		shape = svgdoc.createElementNS(svgns, data.element);
-		if (current_layer) {
-			(current_group || current_layer).appendChild(shape);
-		}
-	}
-	if(data.curStyles) {
-		assignAttributes(shape, {
-			"fill": cur_shape.fill,
-			"stroke": cur_shape.stroke,
-			"stroke-width": cur_shape.stroke_width,
-			"stroke-dasharray": cur_shape.stroke_dasharray,
-			"stroke-linejoin": cur_shape.stroke_linejoin,
-			"stroke-linecap": cur_shape.stroke_linecap,
-			"stroke-opacity": cur_shape.stroke_opacity,
-			"fill-opacity": cur_shape.fill_opacity,
-			"opacity": cur_shape.opacity / 2,
-			"style": "pointer-events:inherit"
-		}, 100);
-	}
-	assignAttributes(shape, data.attr, 100);
-	cleanupElement(shape);
-	return shape;
-};
-
 (function() {
 	// TODO: make this string optional and set by the client
 	var comment = svgdoc.createComment(" Created with SVG-edit - http://svg-edit.googlecode.com/ ");
@@ -913,12 +511,6 @@ var all_layers = [],
 	// String with image URL of last loadable image
 	last_good_img_url = curConfig.imgPath + 'logo.png',
 	
-	// pointer to the current layer <g>
-	current_layer = null,
-	
-	// pointer to current group (for in-group editing)
-	current_group = null,
-	
 	// Array with current disabled elements (for in-group editing)
 	disabled_elems = [],
 	
@@ -938,38 +530,10 @@ var all_layers = [],
 	current_mode = "select",
 	
 	// String with the current direction in which an element is being resized
-	current_resize_mode = "none",
-	
-	// Object containing data for the currently selected styles
-	all_properties = {
-		shape: {
-			fill: "#" + curConfig.initFill.color,
-			fill_paint: null,
-			fill_opacity: curConfig.initFill.opacity,
-			stroke: "#" + curConfig.initStroke.color,
-			stroke_paint: null,
-			stroke_opacity: curConfig.initStroke.opacity,
-			stroke_width: curConfig.initStroke.width,
-			stroke_dasharray: 'none',
-			stroke_linejoin: 'miter',
-			stroke_linecap: 'butt',
-			opacity: curConfig.initOpacity
-		}
-	};
+	current_resize_mode = "none";
 
-all_properties.text = $.extend(true, {}, all_properties.shape);
-$.extend(all_properties.text, {
-	fill: "#000000",
-	stroke_width: 0,
-	font_size: 24,
-	font_family: 'serif'
-});
-
-// Current shape style properties
-var cur_shape = all_properties.shape,
-
-	// Current text style properties
-	cur_text = all_properties.text,
+// Current text style properties
+var cur_text = all_properties.text,
 	
 	// Current general properties
 	cur_properties = cur_shape,
@@ -983,9 +547,6 @@ var cur_shape = all_properties.shape,
 	
 	// The DOM element that was just selected
 	justSelected = null,
-	
-	// this object manages selectors for us
-	selectorManager = this.selectorManager = new SelectorManager(),
 	
 	// DOM element for selection rectangle drawn by the user
 	rubberBox = null,
@@ -1141,7 +702,7 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 // 
 // Returns:
 // A single bounding box object
-var getStrokedBBox = this.getStrokedBBox = function(elems) {
+getStrokedBBox = this.getStrokedBBox = function(elems) {
 	if(!elems) elems = getVisibleElements();
 	if(!elems.length) return false;
 	// Make sure the expected BBox is returned if the element is a group
@@ -1156,7 +717,7 @@ var getStrokedBBox = this.getStrokedBBox = function(elems) {
 			
 			var angle = svgedit.utilities.getRotationAngle(elem);
 			if ((angle && angle % 90) ||
-			    svgedit.math.hasMatrixTransform(getTransformList(elem))) {
+			    svgedit.math.hasMatrixTransform(svgedit.transformlist.getTransformList(elem))) {
 				// Accurate way to get BBox of rotated element in Firefox:
 				// Put element in group and get its BBox
 				
@@ -8894,6 +8455,7 @@ this.setSegType = function(new_type) {
 	pathActions.setSegType(new_type);
 }
 
+// TODO(codedread): Remove the getBBox argument and split this function into two.
 // Function: convertToPath
 // Convert selected element to a path, or get the BBox of an element-as-path
 //
@@ -10018,7 +9580,6 @@ this.getPrivateMethods = function() {
 		round: round,
 		runExtensions: runExtensions,
 		sanitizeSvg: sanitizeSvg,
-		SelectorManager: SelectorManager,
 		shortFloat: shortFloat,
 		SVGEditTransformList: svgedit.transformlist.SVGTransformList,
 		toString: toString,
