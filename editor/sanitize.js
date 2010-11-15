@@ -112,17 +112,6 @@ var svgWhiteList_ = {
 	"munderover": [],
 	"none": [],
 	"semantics": []
-	},
-
-	// Interface strings, usually for title elements
-	uiStrings = {
-		"pathNodeTooltip": "Drag node to move it. Double-click node to change segment type",
-		"pathCtrlPtTooltip": "Drag control point to adjust curve properties",
-		"exportNoBlur": "Blurred elements will appear as un-blurred",
-		"exportNoImage": "Image elements will not appear",
-		"exportNoforeignObject": "foreignObject elements will not appear",
-		"exportNoDashArray": "Strokes will appear filled",
-		"exportNoText": "Text may not appear as expected"
 };
 
 // Produce a Namespace-aware version of svgWhitelist
