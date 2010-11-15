@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
+  <script src='../editor/jquery.js'></script>
+  <script type='text/javascript' src='../editor/select.js'></script>
+  <script type='text/javascript' src='qunit/qunit.js'></script>
+  <script type='text/javascript'>
+  $(function() {
+  	// log function
+  	QUnit.log = function(result, message) {
+		if (window.console && window.console.log) {
+			window.console.log(result +' :: '+ message);
+		}
+	};
+
+	module('svgedit.select');
+
+	test('Test svgedit.select package', function() {
+		expect(10);
+
+		ok(svgedit.select);
+		ok(svgedit.select.Selector);
+		ok(svgedit.select.SelectorManager);
+		ok(svgedit.select.init);
+		ok(svgedit.select.getSelectorManager);
+		equals(typeof svgedit.select, typeof {});
+		equals(typeof svgedit.select.Selector, typeof function(){});
+		equals(typeof svgedit.select.SelectorManager, typeof function(){});
+		equals(typeof svgedit.select.init, typeof function(){});
+		equals(typeof svgedit.select.getSelectorManager, typeof function(){});
+	});
+
+  }); 
+  </script>  
+</head>  
+<body>  
+  <h1 id='qunit-header'>Unit Tests for select.js</h1>
+  <h2 id='qunit-banner'></h2>
+  <h2 id='qunit-userAgent'></h2>
+  <ol id='qunit-tests'>
+  </ol>
+</body>  
+</html>

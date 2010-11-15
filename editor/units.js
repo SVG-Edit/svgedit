@@ -60,7 +60,7 @@ var typeMap_ = {px: 1};
  * Initializes this module.
  *
  * Parameters:
- * elementContainer - an object implemnting the ElementContainer interface.
+ * elementContainer - an object implementing the ElementContainer interface.
  */
 svgedit.units.init = function(elementContainer) {
 	elementContainer_ = elementContainer;
