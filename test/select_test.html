@@ -3,6 +3,9 @@
 <head>
   <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
   <script src='../editor/jquery.js'></script>
+  <script type='text/javascript' src='../editor/browsersupport.js'></script>
+  <script type='text/javascript' src='../editor/math.js'></script>
+  <script type='text/javascript' src='../editor/svgutils.js'></script>
   <script type='text/javascript' src='../editor/select.js'></script>
   <script type='text/javascript' src='qunit/qunit.js'></script>
   <script type='text/javascript'>
@@ -15,6 +18,60 @@
 	};
 
 	module('svgedit.select');
+
+	var svgns = 'http://www.w3.org/2000/svg';
+	var sandbox = document.getElementById('sandbox');
+	var svgroot;
+	var svgcontent;
+	var rect;
+	var mockConfig = {
+		dimensions: [640,480]
+	};
+	var mockFactory = {
+		createSVGElement: function(jsonMap) {
+			var elem = document.createElementNS(svgns, jsonMap['element']);
+			for (var attr in jsonMap['attr']) {
+				elem.setAttribute(attr, jsonMap['attr'][attr]);
+			}
+			return elem;
+		},
+		svgRoot: function() { return svgroot; },
+		svgContent: function() { return svgcontent; }
+	};
+
+    function setUp() {
+		svgroot = mockFactory.createSVGElement({
+			'element': 'svg',
+			'attr': {'id': 'svgroot'}
+		});
+		svgcontent = svgroot.appendChild(
+			mockFactory.createSVGElement({
+				'element': 'svg',
+				'attr': {'id': 'svgcontent'}
+			})
+		);
+		rect = svgcontent.appendChild(
+			mockFactory.createSVGElement({
+				'element': 'rect',
+				'attr': {
+					'id': 'rect',
+					'x': '50',
+					'y': '75',
+					'width': '200',
+					'height': '100'
+				}
+			})
+		);
+		sandbox.appendChild(svgroot);
+
+		svgedit.select.init(mockConfig, mockFactory);
+	}
+	
+	function tearDown() {
+		while (sandbox.hasChildNodes()) {
+			sandbox.removeChild(sandbox.firstChild);
+		}
+	}
 
 	test('Test svgedit.select package', function() {
 		expect(10);
@@ -30,6 +87,44 @@
 		equals(typeof svgedit.select.init, typeof function(){});
 		equals(typeof svgedit.select.getSelectorManager, typeof function(){});
 	});
+	
+	test('Test Selector DOM structure', function() {
+		expect(20);
+
+		setUp();
+
+		ok(svgroot);
+		ok(svgroot.hasChildNodes());
+		equals(svgroot.childNodes.length, 3);
+
+		// Verify existence of canvas background.
+		var cb = svgroot.childNodes.item(0);
+		ok(cb);
+		equals(cb.id, 'canvasBackground');
+
+		ok(svgroot.childNodes.item(1));
+		equals(svgroot.childNodes.item(1), svgcontent);
+
+		// Verify existence of selectorParentGroup.
+		var spg = svgroot.childNodes.item(2);
+		ok(spg);
+		equals(spg.id, 'selectorParentGroup');
+		equals(spg.tagName, 'g');
+
+		// Verify existence of all grip elements.
+		ok(spg.querySelector('#selectorGrip_resize_nw'));
+		ok(spg.querySelector('#selectorGrip_resize_n'));
+		ok(spg.querySelector('#selectorGrip_resize_ne'));
+		ok(spg.querySelector('#selectorGrip_resize_e'));
+		ok(spg.querySelector('#selectorGrip_resize_se'));
+		ok(spg.querySelector('#selectorGrip_resize_s'));
+		ok(spg.querySelector('#selectorGrip_resize_sw'));
+		ok(spg.querySelector('#selectorGrip_resize_w'));
+		ok(spg.querySelector('#selectorGrip_rotateconnector'));
+		ok(spg.querySelector('#selectorGrip_rotate'));
+
+		tearDown();
+	});
 
   }); 
   </script>  
@@ -40,5 +135,6 @@
   <h2 id='qunit-userAgent'></h2>
   <ol id='qunit-tests'>
   </ol>
+  <div id='sandbox'></div>
 </body>  
 </html>

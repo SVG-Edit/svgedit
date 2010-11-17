@@ -123,8 +123,8 @@ svgedit.select.Selector.prototype.updateGripCursors = function(angle) {
 // show - boolean indicating whether grips should be shown or not
 svgedit.select.Selector.prototype.showGrips = function(show) {
 	// TODO: use suspendRedraw() here
-	var bShow = show ? "inline" : "none";
-	selectorManager_.selectorGripsGroup.setAttribute("display", bShow);
+	var bShow = show ? 'inline' : 'none';
+	selectorManager_.selectorGripsGroup.setAttribute('display', bShow);
 	var elem = this.selectedElement;
 	this.hasGrips = show;
 	if(elem && show) {
@@ -140,15 +140,15 @@ svgedit.select.Selector.prototype.resize = function() {
 		mgr = selectorManager_,
 		selectedGrips = mgr.selectorGrips,
 		selected = this.selectedElement,
-		sw = selected.getAttribute("stroke-width"),
+		sw = selected.getAttribute('stroke-width'),
 		current_zoom = svgFactory_.currentZoom();
 	var offset = 1/current_zoom;
-	if (selected.getAttribute("stroke") !== "none" && !isNaN(sw)) {
+	if (selected.getAttribute('stroke') !== 'none' && !isNaN(sw)) {
 		offset += (sw/2);
 	}
 
 	var tagName = selected.tagName;
-	if (tagName === "text") {
+	if (tagName === 'text') {
 		offset += 2/current_zoom;
 	}
 
@@ -223,26 +223,26 @@ svgedit.select.Selector.prototype.resize = function() {
 	}
 	var sr_handle = svgFactory_.svgRoot().suspendRedraw(100);
 
-	var dstr = "M" + nbax + "," + nbay
-				+ " L" + (nbax+nbaw) + "," + nbay
-				+ " " + (nbax+nbaw) + "," + (nbay+nbah)
-				+ " " + nbax + "," + (nbay+nbah) + "z";
+	var dstr = 'M' + nbax + ',' + nbay
+				+ ' L' + (nbax+nbaw) + ',' + nbay
+				+ ' ' + (nbax+nbaw) + ',' + (nbay+nbah)
+				+ ' ' + nbax + ',' + (nbay+nbah) + 'z';
 	selectedBox.setAttribute('d', dstr);
 	
-	var xform = angle ? "rotate(" + [angle,cx,cy].join(",") + ")" : "";
-	this.selectorGroup.setAttribute("transform", xform);
+	var xform = angle ? 'rotate(' + [angle,cx,cy].join(',') + ')' : '';
+	this.selectorGroup.setAttribute('transform', xform);
 
 	// TODO(codedread): Is this if needed?
 //	if(selected === selectedElements[0]) {
 		this.gripCoords = {
-			nw: [nbax, nbay],
-			ne: [nbax+nbaw, nbay],
-			sw: [nbax, nbay+nbah],
-			se: [nbax+nbaw, nbay+nbah],
-			n:  [nbax + (nbaw)/2, nbay],
-			w:	[nbax, nbay + (nbah)/2],
-			e:	[nbax + nbaw, nbay + (nbah)/2],
-			s:	[nbax + (nbaw)/2, nbay + nbah]
+			'nw': [nbax, nbay],
+			'ne': [nbax+nbaw, nbay],
+			'sw': [nbax, nbay+nbah],
+			'se': [nbax+nbaw, nbay+nbah],
+			'n':  [nbax + (nbaw)/2, nbay],
+			'w':	[nbax, nbay + (nbah)/2],
+			'e':	[nbax + nbaw, nbay + (nbah)/2],
+			's':	[nbax + (nbaw)/2, nbay + nbah]
 		};
 
 		for(var dir in this.gripCoords) {
@@ -370,9 +370,9 @@ svgedit.select.SelectorManager.prototype.initGroup = function() {
 			}
 		})
 	);
-	$.data(this.rotateGrip, "type", "rotate");
+	$.data(this.rotateGrip, 'type', 'rotate');
 
-	if($("#canvasBackground").length) return;
+	if($('#canvasBackground').length) return;
 
 	var dims = config_.dimensions;
 	var canvasbg = svgFactory_.createSVGElement({
@@ -450,7 +450,7 @@ svgedit.select.SelectorManager.prototype.releaseSelector = function(elem) {
 		if (this.selectors[i] && this.selectors[i] == sel) {
 			if (sel.locked == false) {
 				// TODO(codedread): Ensure this exists in this module.
-				console.log("WARNING! selector was released but was already unlocked");
+				console.log('WARNING! selector was released but was already unlocked');
 			}
 			delete this.selectorMap[elem.id];
 			sel.locked = false;
@@ -459,7 +459,7 @@ svgedit.select.SelectorManager.prototype.releaseSelector = function(elem) {
 
 			// remove from DOM and store reference in JS but only if it exists in the DOM
 			try {
-				sel.selectorGroup.setAttribute("display", "none");
+				sel.selectorGroup.setAttribute('display', 'none');
 			} catch(e) { }
 
 			break;
@@ -474,14 +474,14 @@ svgedit.select.SelectorManager.prototype.getRubberBandBox = function() {
 		this.rubberBandBox = this.selectorParentGroup.appendChild(
 			svgFactory_.createSVGElement({
 				'element': 'rect',
-				"attr": {
-					"id": "selectorRubberBand",
-					"fill": "#22C",
-					"fill-opacity": 0.15,
-					"stroke": "#22C",
-					"stroke-width": 0.5,
-					"display": "none",
-					"style": "pointer-events:none"
+				'attr': {
+					'id': 'selectorRubberBand',
+					'fill': '#22C',
+					'fill-opacity': 0.15,
+					'stroke': '#22C',
+					'stroke-width': 0.5,
+					'display': 'none',
+					'style': 'pointer-events:none'
 				}
 			})
 		);
@@ -499,7 +499,7 @@ svgedit.select.SelectorManager.prototype.getRubberBandBox = function() {
  *   SVGSVGElement svgRoot();
  *   SVGSVGElement svgContent();
  *
- *   Number: currentZoom();
+ *   Number currentZoom();
  *   Object getStrokedBBox(Element[]); // TODO(codedread): Remove when getStrokedBBox() has been put into svgutils.js
  * }
  */
