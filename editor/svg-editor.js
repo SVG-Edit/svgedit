@@ -4586,7 +4586,7 @@
 			Editor.ready(function() {
 				var pre = 'data:image/svg+xml;base64,';
 				var src = str.substring(pre.length);
-				loadSvgString(svgCanvas.Utils.decode64(src));
+				loadSvgString(svgedit.utilities.decode64(src));
 			});
 		};
 		

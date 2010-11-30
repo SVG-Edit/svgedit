@@ -2247,9 +2247,17 @@ var addToSelection = this.addToSelection = function(elemsToAdd, showGrips) {
 	while (i--) {
 		var elem = elemsToAdd[i];
 		if (!elem || !getBBox(elem)) continue;
+
+		if(elem.tagName === 'a' && elem.childNodes.length === 1) {
+			// Make "a" element's child be the selected element 
+			elem = elem.firstChild;
+		}
+
 		// if it's not already there, add it
 		if (selectedElements.indexOf(elem) == -1) {
+
 			selectedElements[j] = elem;
+
 			// only the first selectedBBoxes element is ever used in the codebase these days
 			if (j == 0) selectedBBoxes[j] = getBBox(elem);
 			j++;
@@ -2260,11 +2268,6 @@ var addToSelection = this.addToSelection = function(elemsToAdd, showGrips) {
 			}
 		}
 	}
-	if(selectedElements[0] && selectedElements.length === 1 && selectedElements[0].tagName == 'a') {
-		// Make "a" element's child be the selected element 
-		selectedElements[0] = selectedElements[0].firstChild;
-	}
-	
 	call("selected", selectedElements);
 	
 	if (showGrips || selectedElements.length == 1) {
@@ -2509,6 +2512,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		var x = mouse_x / current_zoom,
 			y = mouse_y / current_zoom,
 			mouse_target = getMouseTarget(evt);
+		
+		if(mouse_target.tagName === 'a' && mouse_target.childNodes.length === 1) {
+			mouse_target = mouse_target.firstChild;
+		}
 		
 		// real_x/y ignores grid-snap value
 		var real_x = r_start_x = start_x = x;
@@ -2916,6 +2923,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				var elemsToRemove = [], elemsToAdd = [],
 					newList = getIntersectionList(),
 					len = selectedElements.length;
+				
 				for (var i = 0; i < len; ++i) {
 					var ind = newList.indexOf(selectedElements[i]);
 					if (ind == -1) {
@@ -3277,7 +3285,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						var len = selectedElements.length;
 						for	(var i = 0; i < len; ++i) {
 							if (selectedElements[i] == null) break;
-							if(selectedElements[i].tagName != 'g') {
+							if(!selectedElements[i].firstChild) {
 								// Not needed for groups (incorrectly resizes elems), possibly not needed at all?
 								selectorManager.requestSelector(selectedElements[i]).resize();
 							}
