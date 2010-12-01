@@ -392,6 +392,7 @@
 					'#rheightLabel, #iheightLabel':'height',
 					'#cornerRadiusLabel span':'c_radius',
 					'#angleLabel':'angle',
+					'#linkLabel,#tool_make_link,#tool_make_link_multi':'globe_link',
 					'#zoomLabel':'zoom',
 					'#tool_fill label': 'fill',
 					'#tool_stroke .icon_label': 'stroke',
@@ -1424,7 +1425,7 @@
 				var is_node = currentMode == 'pathedit'; //elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
 				var menu_items = $('#cmenu_canvas li');
 				$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,\
-					#ellipse_panel, #line_panel, #text_panel, #image_panel, #container_panel, #use_panel').hide();
+					#ellipse_panel, #line_panel, #text_panel, #image_panel, #container_panel, #use_panel, #a_panel').hide();
 				if (elem != null) {
 					var elname = elem.nodeName;
 					
@@ -1517,6 +1518,7 @@
 					// update contextual tools here
 					var panels = {
 						g: [],
+						a: [],
 						rect: ['rx','width','height'],
 						image: ['width','height'],
 						circle: ['cx','cy','r'],
@@ -1532,9 +1534,28 @@
 // 						$('#g_panel').show();
 // 					}
 					
+					var link_href = null;
+					if (el_name === 'a') {
+						link_href = svgCanvas.getHref(elem);
+						$('#g_panel').show();
+					}
+					
+					if(elem.parentNode.tagName === 'a') {
+						if(!$(elem).siblings().length) {
+							$('#a_panel').show();
+							link_href = svgCanvas.getHref(elem.parentNode);
+						}
+					}
+					
+					// Hide/show the make_link buttons
+					$('#tool_make_link, #tool_make_link').toggle(!link_href);
+					
+					if(link_href) {
+						$('#link_url').val(link_href);
+					}
+					
 					if(panels[el_name]) {
 						var cur_panel = panels[el_name];
-						
 						
 						$('#' + el_name + '_panel').show();
 			
@@ -1798,10 +1819,12 @@
 				setImageURL(this.value); 
 			});
 			
-			$('#g_title').change(function() {
-				svgCanvas.setGroupTitle(this.value);
-				setInputWidth(this);
-
+			$('#link_url').change(function() {
+				if(this.value.length) {
+					svgCanvas.setLinkURL(this.value);
+				} else {
+					svgCanvas.removeHyperlink();
+				}
 			});
 		
 			$('.attr_changer').change(function() {
@@ -2389,6 +2412,14 @@
 			var reorientPath = function() {
 				if (selectedElement != null) {
 					path.reorient();
+				}
+			}
+		
+			var makeHyperlink = function() {
+				if (selectedElement != null || multiselected) {
+					$.prompt("Set URL for hyperlink", "http://", function(url) {
+						if(url) svgCanvas.makeHyperlink(url);
+					});
 				}
 			}
 		
@@ -3819,6 +3850,7 @@
 					{sel:'#tool_move_top', fn: moveToTopSelected, evt: 'click', key: 'ctrl+shift+]'},
 					{sel:'#tool_move_bottom', fn: moveToBottomSelected, evt: 'click', key: 'ctrl+shift+['},
 					{sel:'#tool_topath', fn: convertToPath, evt: 'click'},
+					{sel:'#tool_make_link,#tool_make_link_multi', fn: makeHyperlink, evt: 'click'},
 					{sel:'#tool_undo', fn: clickUndo, evt: 'click', key: ['Z', true]},
 					{sel:'#tool_redo', fn: clickRedo, evt: 'click', key: ['Y', true]},
 					{sel:'#tool_clone,#tool_clone_multi', fn: clickClone, evt: 'click', key: ['C', true]},

@@ -251,7 +251,7 @@ svgEditor.addExtension("Connector", function(S) {
 		
 		svgCanvas.groupSelectedElements = function() {
 			svgCanvas.removeFromSelection($(conn_sel).toArray());
-			gse();
+			return gse.apply(this, arguments);
 		}
 		
 		var mse = svgCanvas.moveSelectedElements;

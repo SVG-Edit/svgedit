@@ -3539,7 +3539,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			textActions.select(mouse_target, pt.x, pt.y);
 		}
 		
-		if(tagName === "g" && getRotationAngle(mouse_target)) {
+		if((tagName === "g" || tagName === "a") && getRotationAngle(mouse_target)) {
 			// TODO: Allow method of in-group editing without having to do 
 			// this (similar to editing rotated paths)
 		
@@ -3553,7 +3553,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			leaveContext();
 		}
 		
-		if(parent.tagName !== 'g' || parent === current_layer || mouse_target === selectorManager.selectorParentGroup) {
+		if((parent.tagName !== 'g' && parent.tagName !== 'a') || parent === current_layer || mouse_target === selectorManager.selectorParentGroup) {
 			// Escape from in-group edit
 			return;
 		}
@@ -8433,6 +8433,39 @@ this.setImageURL = function(val) {
 	}
 };
 
+// Function: setLinkURL
+// Sets the new link URL for the selected anchor element.
+// 
+// Parameters:
+// val - String with the link URL/path
+this.setLinkURL = function(val) {
+	var elem = selectedElements[0];
+	if(!elem) return;
+	if(elem.tagName !== 'a') {
+		// See if parent is an anchor
+		var parents_a = $(elem).parents('a');
+		if(parents_a.length) {
+			elem = parents_a[0];
+		} else {
+			return;
+		}
+	}
+	
+	var cur_href = getHref(elem);
+	
+	if(cur_href === val) return;
+	
+	var batchCmd = new BatchCommand("Change Link URL");
+
+	setHref(elem, val);
+	batchCmd.addSubCommand(new ChangeElementCommand(elem, {
+		"#href": cur_href
+	}));
+
+	addCommandToHistory(batchCmd);
+};
+
+
 // Function: setRectRadius
 // Sets the rx & ry values to the selected rect element to change its corner radius
 // 
@@ -8450,6 +8483,21 @@ this.setRectRadius = function(val) {
 		}
 	}
 };
+
+// Function: makeHyperlink
+// Wraps the selected element(s) in an anchor element or converts group to one
+this.makeHyperlink = function(url) {
+	canvas.groupSelectedElements('a', url);
+	
+	// TODO: If element is a single "g", convert to "a"
+	//	if(selectedElements.length > 1 && selectedElements[1]) {
+
+}
+
+// Function: removeHyperlink
+this.removeHyperlink = function() {
+	canvas.ungroupSelectedElement();
+}
 
 // Group: Element manipulation
 
@@ -8899,16 +8947,39 @@ this.pasteElements = function(type) {
 
 // Function: groupSelectedElements
 // Wraps all the selected elements in a group (g) element
-this.groupSelectedElements = function() {
-	var batchCmd = new BatchCommand("Group Elements");
+
+// Parameters: 
+// type - type of element to group into, defaults to <g>
+this.groupSelectedElements = function(type) {
+	if(!type) type = 'g';
+	var cmd_str = '';
+	
+	switch ( type ) {
+		case "a":
+			cmd_str = "Make hyperlink";
+			var url = '';
+			if(arguments.length > 1) {
+				url = arguments[1];
+			}
+			break;
+		default:
+			type = 'g';
+			cmd_str = "Group Elements";
+			break;
+	}
+	
+	var batchCmd = new BatchCommand(cmd_str);
 	
 	// create and insert the group element
 	var g = addSvgElementFromJson({
-							"element": "g",
+							"element": type,
 							"attr": {
 								"id": getNextId()
 							}
 						});
+	if(type === 'a') {
+		setHref(g, url);
+	}
 	batchCmd.addSubCommand(new InsertElementCommand(g));
 	
 	// now move all children into the group
@@ -8916,6 +8987,11 @@ this.groupSelectedElements = function() {
 	while (i--) {
 		var elem = selectedElements[i];
 		if (elem == null) continue;
+		
+		if (elem.parentNode.tagName === 'a' && elem.parentNode.childNodes.length === 1) {
+			elem = elem.parentNode;
+		}
+		
 		var oldNextSibling = elem.nextSibling;
 		var oldParent = elem.parentNode;
 		g.appendChild(elem);
@@ -9125,8 +9201,14 @@ this.ungroupSelectedElement = function() {
 		convertToGroup(g);
 		return;
 	}
-	if (g.tagName === "g") {
+	var parents_a = $(g).parents('a');
+	if(parents_a.length) {
+		g = parents_a[0];
+	}
 	
+	// Look for parent "a"
+	if (g.tagName === "g" || g.tagName === "a") {
+		
 		var batchCmd = new BatchCommand("Ungroup Elements");
 		var cmd = pushGroupProperties(g, true);
 		if(cmd) batchCmd.addSubCommand(cmd);
