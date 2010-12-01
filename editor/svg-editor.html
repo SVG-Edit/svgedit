@@ -189,6 +189,7 @@
 			<div class="push_button" id="tool_move_bottom" title="Send to Back [ Ctrl+Shift+[ ]"></div>
 			<div class="push_button" id="tool_topath" title="Convert to Path"></div>
 			<div class="push_button" id="tool_reorient" title="Reorient path"></div>
+			<div class="push_button" id="tool_make_link" title="Make (hyper)link"></div>
 			<div class="tool_sep"></div>
 			<label id="idLabel" title="Identify the element">
 				<span>id:</span>
@@ -228,7 +229,7 @@
 			</label>
 		</div>
 	</div>
-
+	
 	<!-- Buttons when multiple elements are selected -->
 	<div id="multiselected_panel">
 		<div class="tool_sep"></div>
@@ -236,6 +237,7 @@
 		<div class="push_button" id="tool_delete_multi" title="Delete Selected Elements [Delete/Backspace]"></div>
 		<div class="tool_sep"></div>
 		<div class="push_button" id="tool_group" title="Group Elements [G]"></div>
+		<div class="push_button" id="tool_make_link_multi" title="Make (hyper)link"></div>
 		<div class="push_button" id="tool_alignleft" title="Align Left"></div>
 		<div class="push_button" id="tool_aligncenter" title="Align Center"></div>
 		<div class="push_button" id="tool_alignright" title="Align Right"></div>
@@ -398,6 +400,13 @@
 		<div class="push_button" id="tool_ungroup" title="Ungroup Elements [G]"></div>
 	</div>
 
+	<!-- For anchor elements -->
+	<div id="a_panel">
+		<label id="tool_link_url" title="Set link URL (leave empty to remove)">
+			<span id="linkLabel" class="icon_label"></span>
+			<input id="link_url" type="text" size="35"/>
+		</label>	
+	</div>
 	
 	<div id="path_node_panel">
 		<div class="tool_sep"></div>

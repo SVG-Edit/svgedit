@@ -163,6 +163,11 @@
 	padding-top: 4px
 }
 
+#svg_editor #linkLabel > svg {
+	height: 20px;
+	padding-top: 4px;
+}
+
 #color_tools .icon_label > * {
 	position: relative;
 	top: 1px;
