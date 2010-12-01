@@ -530,7 +530,10 @@ var all_layers = [],
 	current_mode = "select",
 	
 	// String with the current direction in which an element is being resized
-	current_resize_mode = "none";
+	current_resize_mode = "none",
+	
+	// Object with IDs for imported files, to see if one was already added
+	import_ids = {};
 
 // Current text style properties
 var cur_text = all_properties.text,
@@ -6803,66 +6806,84 @@ this.setSvgString = function(xmlString) {
 // was obtained
 // * import should happen in top-left of current zoomed viewport	
 this.importSvgString = function(xmlString) {
+
 	try {
-		// convert string into XML document
-		var newDoc = svgedit.utilities.text2xml(xmlString);
-
-		this.prepareSvg(newDoc);
-
-		var batchCmd = new BatchCommand("Change Source");
-
-		// import new svg document into our document
-		var svg = svgdoc.importNode(newDoc.documentElement, true);
 		
-		uniquifyElems(svg);
+		// Get unique ID
+		var uid = svgedit.utilities.encode64(xmlString.length + xmlString).substr(0,32);
 		
-		var innerw = convertToNum('width', svg.getAttribute("width")),
-			innerh = convertToNum('height', svg.getAttribute("height")),
-			innervb = svg.getAttribute("viewBox"),
-			// if no explicit viewbox, create one out of the width and height
-			vb = innervb ? innervb.split(" ") : [0,0,innerw,innerh];
-		for (var j = 0; j < 4; ++j)
-			vb[j] = +(vb[j]);
-
-		// TODO: properly handle preserveAspectRatio
-		var canvasw = +svgcontent.getAttribute("width"),
-			canvash = +svgcontent.getAttribute("height");
-		// imported content should be 1/3 of the canvas on its largest dimension
-		
-		if (innerh > innerw) {
-			var ts = "scale(" + (canvash/3)/vb[3] + ")";
+		if(import_ids[uid]) {
+			var symbol = import_ids[uid].symbol;
+			var ts = import_ids[uid].xform;
+		} else {
+			// convert string into XML document
+			var newDoc = svgedit.utilities.text2xml(xmlString);
+	
+			this.prepareSvg(newDoc);
+	
+			var batchCmd = new BatchCommand("Change Source");
+	
+			// import new svg document into our document
+			var svg = svgdoc.importNode(newDoc.documentElement, true);
+			
+			uniquifyElems(svg);
+			
+			var innerw = convertToNum('width', svg.getAttribute("width")),
+				innerh = convertToNum('height', svg.getAttribute("height")),
+				innervb = svg.getAttribute("viewBox"),
+				// if no explicit viewbox, create one out of the width and height
+				vb = innervb ? innervb.split(" ") : [0,0,innerw,innerh];
+			for (var j = 0; j < 4; ++j)
+				vb[j] = +(vb[j]);
+	
+			// TODO: properly handle preserveAspectRatio
+			var canvasw = +svgcontent.getAttribute("width"),
+				canvash = +svgcontent.getAttribute("height");
+			// imported content should be 1/3 of the canvas on its largest dimension
+			
+			if (innerh > innerw) {
+				var ts = "scale(" + (canvash/3)/vb[3] + ")";
+			}
+			else {
+				var ts = "scale(" + (canvash/3)/vb[2] + ")";
+			}
+			
+			// Hack to make recalculateDimensions understand how to scale
+			ts = "translate(0) " + ts + " translate(0)";
+			
+			var symbol = svgdoc.createElementNS(svgns, "symbol");
+			var defs = findDefs();
+			
+			if(svgedit.browsersupport.isGecko()) {
+				// Move all gradients into root for Firefox, workaround for this bug:
+				// https://bugzilla.mozilla.org/show_bug.cgi?id=353575
+				$(svg).find('linearGradient, radialGradient, pattern').appendTo(defs);
+			}
+	
+			while (svg.firstChild) {
+				var first = svg.firstChild;
+				symbol.appendChild(first);
+			}
+			var attrs = svg.attributes;
+			for(var i=0; i < attrs.length; i++) {
+				var attr = attrs[i];
+				symbol.setAttribute(attr.nodeName, attr.nodeValue);
+			}
+	// 		var symbol = svg;
+			symbol.id = getNextId();
+			
+			// Store data
+			import_ids[uid] = {
+				symbol: symbol,
+				xform: ts
+			}
+			
+			findDefs().appendChild(symbol);
 		}
-		else {
-			var ts = "scale(" + (canvash/3)/vb[2] + ")";
-		}
 		
-		// Hack to make recalculateDimensions understand how to scale
-		ts = "translate(0) " + ts + " translate(0)";
-		
-		var symbol = svgdoc.createElementNS(svgns, "symbol");
-		var defs = findDefs();
-		
-		if(svgedit.browsersupport.isGecko()) {
-			// Move all gradients into root for Firefox, workaround for this bug:
-			// https://bugzilla.mozilla.org/show_bug.cgi?id=353575
-			$(svg).find('linearGradient, radialGradient, pattern').appendTo(defs);
-		}
-
-		while (svg.firstChild) {
-			var first = svg.firstChild;
-			symbol.appendChild(first);
-		}
-		var attrs = svg.attributes;
-		for(var i=0; i < attrs.length; i++) {
-			var attr = attrs[i];
-			symbol.setAttribute(attr.nodeName, attr.nodeValue);
-		}
-// 		var symbol = svg;
-		symbol.id = getNextId();
 		
 		var use_el = svgdoc.createElementNS(svgns, "use");
 		setHref(use_el, "#" + symbol.id);
-		findDefs().appendChild(symbol);
 		
 		(current_group || current_layer).appendChild(use_el);
 		use_el.id = getNextId();
@@ -6872,7 +6893,7 @@ this.importSvgString = function(xmlString) {
 		recalculateDimensions(use_el);
 		$(use_el).data('symbol', symbol);
 		addToSelection([use_el]);
-
+		
 		// TODO: Find way to add this in a recalculateDimensions-parsable way
 // 				if (vb[0] != 0 || vb[1] != 0)
 // 					ts = "translate(" + (-vb[0]) + "," + (-vb[1]) + ") " + ts;
