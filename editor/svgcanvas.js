@@ -197,6 +197,10 @@ $.extend(all_properties.text, {
 // Current shape style properties
 var cur_shape = all_properties.shape;
 
+// Array with all the currently selected elements
+// default size of 1 until it needs to grow bigger
+var selectedElements = new Array(1);
+
 
 // Function: getElem
 // Get a DOM element by ID within the SVG root element.
@@ -347,6 +351,10 @@ svgedit.units.init({
 var convertToNum = canvas.convertToNum = svgedit.units.convertToNum;
 
 // import from svgutils.js
+svgedit.utilities.init({
+	getSelectedElements: function() { return selectedElements; },
+	getSVGContent: function() { return svgcontent; }
+});
 var getUrlFromAttr = canvas.getUrlFromAttr = svgedit.utilities.getUrlFromAttr;
 var getHref = canvas.getHref = svgedit.utilities.getHref;
 var setHref = canvas.setHref = svgedit.utilities.setHref;
@@ -540,10 +548,6 @@ var cur_text = all_properties.text,
 	
 	// Current general properties
 	cur_properties = cur_shape,
-	
-	// Array with all the currently selected elements
-	// default size of 1 until it needs to grow bigger
-	selectedElements = new Array(1),
 	
 	// Array with selected elements' Bounding box object
 	selectedBBoxes = new Array(1),

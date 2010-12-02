@@ -63,7 +63,10 @@
 			})
 		);
 		sandbox.appendChild(svgroot);
+	}
 
+	function setUpWithInit() {
+		setUp();
 		svgedit.select.init(mockConfig, mockFactory);
 	}
 	
@@ -89,12 +92,20 @@
 	});
 	
 	test('Test Selector DOM structure', function() {
-		expect(20);
+		expect(24);
 
 		setUp();
 
 		ok(svgroot);
 		ok(svgroot.hasChildNodes());
+
+		// Verify non-existence of Selector DOM nodes
+		equals(svgroot.childNodes.length, 1);
+		equals(svgroot.childNodes.item(0), svgcontent);
+		ok(!svgroot.querySelector('#selectorParentGroup'));
+
+		svgedit.select.init(mockConfig, mockFactory);
+
 		equals(svgroot.childNodes.length, 3);
 
 		// Verify existence of canvas background.
@@ -108,6 +119,7 @@
 		// Verify existence of selectorParentGroup.
 		var spg = svgroot.childNodes.item(2);
 		ok(spg);
+		equals(svgroot.querySelector('#selectorParentGroup'), spg);
 		equals(spg.id, 'selectorParentGroup');
 		equals(spg.tagName, 'g');
 
