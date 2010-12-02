@@ -23,20 +23,6 @@ if (!svgedit.utilities) {
 	svgedit.utilities = {};
 }
 
-/**
- * @interface
- */
-svgedit.utilities.FooInterface = function() {
-};
-svgedit.utilities.prototype.FooInterface.funky = function() {};
-
-/**
- * @constructor
- * @implements {svgedit.utilities.FooInterface}
- */
-svgedit.utilities.FooImplementor = function() {
-};
-
 // Constants
 
 // String used to encode base64.
