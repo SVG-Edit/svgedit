@@ -1,0 +1,64 @@
+<!doctype html>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+
+
+<body>
+
+<h1>Select an image:</h1>
+<a href="smiley.svg">smiley.svg</a>
+<br>
+<a href="../../images/logo.png">logo.png</a>
+</body>
+
+<script>
+
+$('a').click(function() {
+	var href = this.href;
+	
+	// Convert Non-SVG images to data URL first 
+	// (this could also have been done server-side by the library)
+	if(this.href.indexOf('.svg') === -1) {
+
+		var meta_str = JSON.stringify({
+			name: $(this).text(),
+			id: href
+		});
+		window.top.postMessage(meta_str, "*");
+	
+		var img = new Image();
+		img.onload = function() {
+			var canvas = document.createElement("canvas");
+			canvas.width = this.width;
+			canvas.height = this.height;
+			// load the raster image into the canvas
+			canvas.getContext("2d").drawImage(this,0,0);
+			// retrieve the data: URL
+			try {
+				var dataurl = canvas.toDataURL();
+			} catch(err) {
+				// This fails in Firefox with file:// URLs :(
+				alert("Data URL conversion failed: " + err);
+				var dataurl = "";
+			}
+			window.top.postMessage('|' + href + '|' + dataurl, "*");
+		}
+		img.src = href;
+	} else {
+		// Send metadata (also indicates file is about to be sent)
+		var meta_str = JSON.stringify({
+			name: $(this).text(),
+			id: href
+		});
+		window.top.postMessage(meta_str, "*");
+		// Do ajax request for image's href value
+		$.get(href, function(data) {
+			data = '|' + href + '|' + data;
+			// This is where the magic happens!
+			window.top.postMessage(data, "*");
+			
+		}, 'html'); // 'html' is necessary to keep returned data as a string
+	}
+	return false;
+});
+
+</script>

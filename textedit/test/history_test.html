@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
+  <script src='../editor/jquery.js'></script>
+  <script type='text/javascript' src='../editor/history.js'></script>
+  <script type='text/javascript' src='qunit/qunit.js'></script>  
+  <script type='text/javascript'>
+  $(function() {
+	// TODO(codedread): Write tests for handling history events.
+
+	// Mocked out methods.
+	svgedit.transformlist = {};
+	svgedit.transformlist.removeElementFromListMap = function(elem) {};
+	svgedit.utilities = {};
+	svgedit.utilities.getHref = function(elem) { return '#foo'; };
+	svgedit.utilities.setHref = function(elem, val) {};
+	svgedit.utilities.getRotationAngle = function(elem) { return 0; };
+
+  	// log function
+  	QUnit.log = function(result, message) {
+		if (window.console && window.console.log) {
+			window.console.log(result +' :: '+ message);
+		}
+	};
+
+	var svgns = 'http://www.w3.org/2000/svg';
+	var svg = document.createElementNS(svgns, 'svg');
+	var undoMgr = null;
+	var divparent = document.getElementById('divparent');
+	var div1 = document.getElementById('div1');
+	var div2 = document.getElementById('div2');
+	var div3 = document.getElementById('div3');
+	var div4 = document.getElementById('div4');
+	var div5 = document.getElementById('div5');
+
+	module('svgedit.history');
+
+	var MockCommand = function(opt_text) { this.text_ = opt_text; };
+	MockCommand.prototype.apply = function() {};
+	MockCommand.prototype.unapply = function() {};
+	MockCommand.prototype.getText = function() { return this.text_; };
+	MockCommand.prototype.elements = function() { return []; };
+
+	var MockHistoryEventHandler = function() {};
+	MockHistoryEventHandler.prototype.handleHistoryEvent = function(eventType, command) {};
+
+	function setUp() {
+		undoMgr = new svgedit.history.UndoManager();
+	}
+	function tearDown() {
+		undoMgr = null;
+	}
+
+	test('Test svgedit.history package', function() {
+		expect(13);
+		
+		ok(svgedit.history);
+		ok(svgedit.history.MoveElementCommand);
+		ok(svgedit.history.InsertElementCommand);
+		ok(svgedit.history.ChangeElementCommand);
+		ok(svgedit.history.RemoveElementCommand);
+		ok(svgedit.history.BatchCommand);
+		ok(svgedit.history.UndoManager);
+		equals(typeof svgedit.history.MoveElementCommand, typeof function(){});
+		equals(typeof svgedit.history.InsertElementCommand, typeof function(){});
+		equals(typeof svgedit.history.ChangeElementCommand, typeof function(){});
+		equals(typeof svgedit.history.RemoveElementCommand, typeof function(){});
+		equals(typeof svgedit.history.BatchCommand, typeof function(){});
+		equals(typeof svgedit.history.UndoManager, typeof function(){});
+	});
+	
+	test('Test UndoManager methods', function() {
+		expect(14);
+		setUp();
+		
+		ok(undoMgr);
+		ok(undoMgr.addCommandToHistory);
+		ok(undoMgr.getUndoStackSize);
+		ok(undoMgr.getRedoStackSize);
+		ok(undoMgr.resetUndoStack);
+		ok(undoMgr.getNextUndoCommandText);
+		ok(undoMgr.getNextRedoCommandText);
+
+		equals(typeof undoMgr, typeof {});
+		equals(typeof undoMgr.addCommandToHistory, typeof function(){});
+		equals(typeof undoMgr.getUndoStackSize, typeof function(){});
+		equals(typeof undoMgr.getRedoStackSize, typeof function(){});
+		equals(typeof undoMgr.resetUndoStack, typeof function(){});
+		equals(typeof undoMgr.getNextUndoCommandText, typeof function(){});
+		equals(typeof undoMgr.getNextRedoCommandText, typeof function(){});
+			
+		tearDown();
+	});
+	
+	test('Test UndoManager.addCommandToHistory() function', function() {
+		expect(3);
+		
+		setUp();
+
+		equals(undoMgr.getUndoStackSize(), 0);
+		undoMgr.addCommandToHistory(new MockCommand());
+		equals(undoMgr.getUndoStackSize(), 1);
+		undoMgr.addCommandToHistory(new MockCommand());
+		equals(undoMgr.getUndoStackSize(), 2);
+
+		tearDown();
+	});
+	
+	test('Test UndoManager.getUndoStackSize() and getRedoStackSize() functions', function() {
+		expect(18);
+		
+		setUp();
+
+		undoMgr.addCommandToHistory(new MockCommand());
+		undoMgr.addCommandToHistory(new MockCommand());
+		undoMgr.addCommandToHistory(new MockCommand());
+
+		equals(undoMgr.getUndoStackSize(), 3);
+		equals(undoMgr.getRedoStackSize(), 0);
+		
+		undoMgr.undo();
+		equals(undoMgr.getUndoStackSize(), 2);
+		equals(undoMgr.getRedoStackSize(), 1);
+
+		undoMgr.undo();
+		equals(undoMgr.getUndoStackSize(), 1);
+		equals(undoMgr.getRedoStackSize(), 2);
+
+		undoMgr.undo();
+		equals(undoMgr.getUndoStackSize(), 0);
+		equals(undoMgr.getRedoStackSize(), 3);
+
+		undoMgr.undo();
+		equals(undoMgr.getUndoStackSize(), 0);
+		equals(undoMgr.getRedoStackSize(), 3);
+
+		undoMgr.redo();
+		equals(undoMgr.getUndoStackSize(), 1);
+		equals(undoMgr.getRedoStackSize(), 2);
+
+		undoMgr.redo();
+		equals(undoMgr.getUndoStackSize(), 2);
+		equals(undoMgr.getRedoStackSize(), 1);
+
+		undoMgr.redo();
+		equals(undoMgr.getUndoStackSize(), 3);
+		equals(undoMgr.getRedoStackSize(), 0);
+
+		undoMgr.redo();
+		equals(undoMgr.getUndoStackSize(), 3);
+		equals(undoMgr.getRedoStackSize(), 0);
+		
+		tearDown();
+	});
+	
+	test('Test UndoManager.resetUndoStackSize() function', function() {
+		expect(4);
+		
+		setUp();
+
+		undoMgr.addCommandToHistory(new MockCommand());
+		undoMgr.addCommandToHistory(new MockCommand());
+		undoMgr.addCommandToHistory(new MockCommand());
+		undoMgr.undo();
+		
+		equals(undoMgr.getUndoStackSize(), 2);
+		equals(undoMgr.getRedoStackSize(), 1);
+		
+		undoMgr.resetUndoStack();
+
+		equals(undoMgr.getUndoStackSize(), 0);
+		equals(undoMgr.getRedoStackSize(), 0);
+		
+		tearDown();
+	});
+
+	test('Test UndoManager.getNextUndoCommandText() function', function() {
+		expect(9);
+
+		setUp();
+
+		equals(undoMgr.getNextUndoCommandText(), '');
+
+		undoMgr.addCommandToHistory(new MockCommand('First'));
+		undoMgr.addCommandToHistory(new MockCommand('Second'));
+		undoMgr.addCommandToHistory(new MockCommand('Third'));
+
+		equals(undoMgr.getNextUndoCommandText(), 'Third');
+
+		undoMgr.undo();
+		equals(undoMgr.getNextUndoCommandText(), 'Second');
+
+		undoMgr.undo();
+		equals(undoMgr.getNextUndoCommandText(), 'First');
+
+		undoMgr.undo();
+		equals(undoMgr.getNextUndoCommandText(), '');
+
+		undoMgr.redo();
+		equals(undoMgr.getNextUndoCommandText(), 'First');
+
+		undoMgr.redo();
+		equals(undoMgr.getNextUndoCommandText(), 'Second');
+
+		undoMgr.redo();
+		equals(undoMgr.getNextUndoCommandText(), 'Third');
+
+		undoMgr.redo();
+		equals(undoMgr.getNextUndoCommandText(), 'Third');
+
+		tearDown();
+	});
+
+	test('Test UndoManager.getNextRedoCommandText() function', function() {
+		expect(8);
+
+		setUp();
+
+		equals(undoMgr.getNextRedoCommandText(), '');
+
+		undoMgr.addCommandToHistory(new MockCommand('First'));
+		undoMgr.addCommandToHistory(new MockCommand('Second'));
+		undoMgr.addCommandToHistory(new MockCommand('Third'));
+
+		equals(undoMgr.getNextRedoCommandText(), '');
+
+		undoMgr.undo();
+		equals(undoMgr.getNextRedoCommandText(), 'Third');
+
+		undoMgr.undo();
+		equals(undoMgr.getNextRedoCommandText(), 'Second');
+
+		undoMgr.undo();
+		equals(undoMgr.getNextRedoCommandText(), 'First');
+
+		undoMgr.redo();
+		equals(undoMgr.getNextRedoCommandText(), 'Second');
+
+		undoMgr.redo();
+		equals(undoMgr.getNextRedoCommandText(), 'Third');
+
+		undoMgr.redo();
+		equals(undoMgr.getNextRedoCommandText(), '');
+
+		tearDown();
+	});
+
+	test('Test UndoManager.undo() and redo() functions', function() {
+		expect(10);
+
+		setUp();
+
+		var lastCalled = null;
+		var cmd1 = new MockCommand();
+		var cmd2 = new MockCommand();
+		var cmd3 = new MockCommand();
+		cmd1.apply = function() { lastCalled = 'cmd1.apply'; };
+		cmd2.apply = function() { lastCalled = 'cmd2.apply'; };
+		cmd3.apply = function() { lastCalled = 'cmd3.apply'; };
+		cmd1.unapply = function() { lastCalled = 'cmd1.unapply'; };
+		cmd2.unapply = function() { lastCalled = 'cmd2.unapply'; };
+		cmd3.unapply = function() { lastCalled = 'cmd3.unapply'; };
+
+		undoMgr.addCommandToHistory(cmd1);
+		undoMgr.addCommandToHistory(cmd2);
+		undoMgr.addCommandToHistory(cmd3);
+
+		ok(!lastCalled);
+
+		undoMgr.undo();
+		equals(lastCalled, 'cmd3.unapply');
+
+		undoMgr.redo();
+		equals(lastCalled, 'cmd3.apply');
+
+		undoMgr.undo();
+		undoMgr.undo();
+		equals(lastCalled, 'cmd2.unapply');
+		
+		undoMgr.undo();
+		equals(lastCalled, 'cmd1.unapply');
+		lastCalled = null;
+
+		undoMgr.undo();
+		ok(!lastCalled);
+
+		undoMgr.redo();
+		equals(lastCalled, 'cmd1.apply');
+		
+		undoMgr.redo();
+		equals(lastCalled, 'cmd2.apply');
+
+		undoMgr.redo();
+		equals(lastCalled, 'cmd3.apply');
+		lastCalled = null;
+
+		undoMgr.redo();
+		ok(!lastCalled);
+
+		tearDown();
+	});
+
+	test('Test MoveElementCommand', function() {
+		expect(26);
+
+		setUp();
+
+		var move = new svgedit.history.MoveElementCommand(div3, div1, divparent);
+		ok(move.unapply);
+		ok(move.apply);
+		equals(typeof move.unapply, typeof function(){});
+		equals(typeof move.apply, typeof function(){});
+
+		move.unapply();
+		equals(divparent.firstElementChild, div3);
+		equals(divparent.firstElementChild.nextElementSibling, div1);
+		equals(divparent.lastElementChild, div2);
+
+		move.apply();
+		equals(divparent.firstElementChild, div1);
+		equals(divparent.firstElementChild.nextElementSibling, div2);
+		equals(divparent.lastElementChild, div3);
+
+		move = new svgedit.history.MoveElementCommand(div1, null, divparent);
+
+		move.unapply();
+		equals(divparent.firstElementChild, div2);
+		equals(divparent.firstElementChild.nextElementSibling, div3);
+		equals(divparent.lastElementChild, div1);
+
+		move.apply();
+		equals(divparent.firstElementChild, div1);
+		equals(divparent.firstElementChild.nextElementSibling, div2);
+		equals(divparent.lastElementChild, div3);
+
+		move = new svgedit.history.MoveElementCommand(div2, div5, div4);
+
+		move.unapply();
+		equals(divparent.firstElementChild, div1);
+		equals(divparent.firstElementChild.nextElementSibling, div3);
+		equals(divparent.lastElementChild, div3);
+		equals(div4.firstElementChild, div2);
+		equals(div4.firstElementChild.nextElementSibling, div5);
+
+		move.apply();
+		equals(divparent.firstElementChild, div1);
+		equals(divparent.firstElementChild.nextElementSibling, div2);
+		equals(divparent.lastElementChild, div3);
+		equals(div4.firstElementChild, div5);
+		equals(div4.lastElementChild, div5);
+
+		tearDown();
+	});
+
+	test('Test InsertElementCommand', function() {
+		expect(20);
+
+		setUp();
+
+		var insert = new svgedit.history.InsertElementCommand(div3);
+		ok(insert.unapply);
+		ok(insert.apply);
+		equals(typeof insert.unapply, typeof function(){});
+		equals(typeof insert.apply, typeof function(){});
+
+		insert.unapply();
+		equals(divparent.childElementCount, 2);
+		equals(divparent.firstElementChild, div1);
+		equals(div1.nextElementSibling, div2);
+		equals(divparent.lastElementChild, div2);
+
+		insert.apply();
+		equals(divparent.childElementCount, 3);
+		equals(divparent.firstElementChild, div1);
+		equals(div1.nextElementSibling, div2);
+		equals(div2.nextElementSibling, div3);
+
+		insert = new svgedit.history.InsertElementCommand(div2);
+
+		insert.unapply();
+		equals(divparent.childElementCount, 2);
+		equals(divparent.firstElementChild, div1);
+		equals(div1.nextElementSibling, div3);
+		equals(divparent.lastElementChild, div3);
+
+		insert.apply();
+		equals(divparent.childElementCount, 3);
+		equals(divparent.firstElementChild, div1);
+		equals(div1.nextElementSibling, div2);
+		equals(div2.nextElementSibling, div3);
+
+		tearDown();
+	});
+
+	test('Test RemoveElementCommand', function() {
+		expect(22);
+
+		setUp();
+
+		var div6 = document.createElement('div');
+		div6.id = 'div6';
+
+		var remove = new svgedit.history.RemoveElementCommand(div6, null, divparent);
+		ok(remove.unapply);
+		ok(remove.apply);
+		equals(typeof remove.unapply, typeof function(){});
+		equals(typeof remove.apply, typeof function(){});
+
+		remove.unapply();
+		equals(divparent.childElementCount, 4);
+		equals(divparent.firstElementChild, div1);
+		equals(div1.nextElementSibling, div2);
+		equals(div2.nextElementSibling, div3);
+		equals(div3.nextElementSibling, div6);
+
+		remove.apply();
+		equals(divparent.childElementCount, 3);
+		equals(divparent.firstElementChild, div1);
+		equals(div1.nextElementSibling, div2);
+		equals(div2.nextElementSibling, div3);
+
+		remove = new svgedit.history.RemoveElementCommand(div6, div2, divparent);
+
+		remove.unapply();
+		equals(divparent.childElementCount, 4);
+		equals(divparent.firstElementChild, div1);
+		equals(div1.nextElementSibling, div6);
+		equals(div6.nextElementSibling, div2);
+		equals(div2.nextElementSibling, div3);
+
+		remove.apply();
+		equals(divparent.childElementCount, 3);
+		equals(divparent.firstElementChild, div1);
+		equals(div1.nextElementSibling, div2);
+		equals(div2.nextElementSibling, div3);
+
+		tearDown();
+	});
+
+	test('Test ChangeElementCommand', function() {
+		expect(20);
+
+		setUp();
+
+		div1.setAttribute('title', 'new title');
+		var change = new svgedit.history.ChangeElementCommand(div1,
+			{'title': 'old title', 'class': 'foo'});
+		ok(change.unapply);
+		ok(change.apply);
+		equals(typeof change.unapply, typeof function(){});
+		equals(typeof change.apply, typeof function(){});
+
+		change.unapply();
+		equals(div1.getAttribute('title'), 'old title');
+		equals(div1.getAttribute('class'), 'foo');
+
+		change.apply();
+		equals(div1.getAttribute('title'), 'new title');
+		ok(!div1.getAttribute('class'));
+
+		div1.textContent = 'inner text';
+		change = new svgedit.history.ChangeElementCommand(div1,
+			{'#text': null});
+
+		change.unapply();
+		ok(!div1.textContent);
+
+		change.apply();
+		equals(div1.textContent, 'inner text');
+
+		div1.textContent = '';
+		change = new svgedit.history.ChangeElementCommand(div1,
+			{'#text': 'old text'});
+
+		change.unapply();
+		equals(div1.textContent, 'old text');
+
+		change.apply();
+		ok(!div1.textContent);
+
+		// TODO(codedread): Refactor this #href stuff in history.js and svgcanvas.js
+		var rect = document.createElementNS(svgns, 'rect');
+		var justCalled = null;
+		var gethrefvalue = null;
+		var sethrefvalue = null;
+		svgedit.utilities.getHref = function(elem) {
+			equals(elem, rect);
+			justCalled = 'getHref';
+			return gethrefvalue;
+		};
+		svgedit.utilities.setHref = function(elem, val) {
+			equals(elem, rect);
+			equals(val, sethrefvalue);
+			justCalled = 'setHref';
+		};
+
+		gethrefvalue = '#newhref';
+		change = new svgedit.history.ChangeElementCommand(rect,
+			{'#href': '#oldhref'});
+		equals(justCalled, 'getHref');
+
+		justCalled = null;
+		sethrefvalue = '#oldhref';
+		change.unapply();
+		equals(justCalled, 'setHref');
+
+		justCalled = null;
+		sethrefvalue = '#newhref';
+		change.apply();
+		equals(justCalled, 'setHref');
+
+		tearDown();
+	});
+
+	test('Test BatchCommand', function() {
+		expect(13);
+
+		setUp();
+
+		var concatResult = '';
+		MockCommand.prototype.apply = function() { concatResult += this.text_; };
+
+		var batch = new svgedit.history.BatchCommand();
+		ok(batch.unapply);
+		ok(batch.apply);
+		ok(batch.addSubCommand);
+		ok(batch.isEmpty);
+		equals(typeof batch.unapply, typeof function(){});
+		equals(typeof batch.apply, typeof function(){});
+		equals(typeof batch.addSubCommand, typeof function(){});
+		equals(typeof batch.isEmpty, typeof function(){});
+
+		ok(batch.isEmpty());
+
+		batch.addSubCommand(new MockCommand('a'));
+		ok(!batch.isEmpty());
+		batch.addSubCommand(new MockCommand('b'));
+		batch.addSubCommand(new MockCommand('c'));
+
+		ok(!concatResult);
+		batch.apply();
+		equals(concatResult, 'abc');
+
+		MockCommand.prototype.apply = function() {};
+		MockCommand.prototype.unapply = function() { concatResult += this.text_; };
+		concatResult = '';
+		batch.unapply();
+		equals(concatResult, 'cba');
+
+		MockCommand.prototype.unapply = function() {};
+
+		tearDown();
+	});
+
+
+  });
+  </script>
+</head>  
+<body>  
+  <h1 id='qunit-header'>Unit Tests for history.js</h1>
+  <h2 id='qunit-banner'></h2>
+  <h2 id='qunit-userAgent'></h2>
+  <ol id='qunit-tests'>
+  </ol>
+  <div id='divparent' style='visibility:hidden'>
+    <div id='div1'></div>
+    <div id='div2'></div>
+    <div id='div3'></div>
+  </div>
+  <div id='div4' style='visibility:hidden'>
+    <div id='div5'></div>
+  </div>
+</body>  
+</html>
