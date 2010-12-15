@@ -868,7 +868,7 @@
 					shower.mousedown(function(evt) {
 						if(shower.hasClass('disabled')) return false;
 						var holder = $(show_sel.replace('_show',''));
-						var l = holder.css('left');
+						var l = holder[0].style.left;
 						var w = holder.width()*-1;
 						var time = holder.data('shown_popop')?200:0;
 						timer = setTimeout(function() {
@@ -1275,7 +1275,7 @@
 					$.svgIcons(svgicons, {
 						w:24, h:24,
 						id_match: false,
-						no_img: (!!window.opera),
+						no_img: (!isWebkit),
 						fallback: fallback_obj,
 						placement: placement_obj,
 						callback: function(icons) {
