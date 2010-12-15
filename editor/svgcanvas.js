@@ -8876,8 +8876,16 @@ this.deleteSelectedElements = function() {
 
 		var parent = selected.parentNode;
 		var t = selected;
+		
 		// this will unselect the element and remove the selectedOutline
 		selectorManager.releaseSelector(t);
+		
+		// Get the parent if it's a single-child anchor
+		if(parent.tagName === 'a' && parent.childNodes.length === 1) {
+			t = parent;
+			parent = parent.parentNode;
+		}
+		
 		var nextSibling = t.nextSibling;
 		var elem = parent.removeChild(t);
 		selectedCopy.push(selected); //for the copy
