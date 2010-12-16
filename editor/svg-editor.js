@@ -4315,20 +4315,28 @@
 					var lentype = is_x?'width':'height';
 					var content_d = c_elem.getAttribute(dim)-0;
 					
-					var $hcanv = $('#ruler_' + dim + ' canvas:first');
+					var $hcanv_orig = $('#ruler_' + dim + ' canvas:first');
+					
+					// Bit of a hack to fully clear the canvas in Safari & IE9
+					$hcanv = $hcanv_orig.clone();
+					$hcanv_orig.replaceWith($hcanv);
+					
 					var hcanv = $hcanv[0];
 					
 					// Set the canvas size to the width of the container
-					hcanv.setAttribute(lentype, 0);
 					var ruler_len = scanvas[lentype]();
 					var total_len = ruler_len;
 					hcanv.parentNode.style[lentype] = total_len + 'px';
+					
 					
 					var canv_count = 1;
 					var ctx_num = 0;
 					var ctx_arr;
 					var ctx = hcanv.getContext("2d");
-
+					
+					ctx.fillStyle = "rgb(200,0,0)"; 
+					ctx.fillRect(0,0,hcanv.width,hcanv.height); 
+					
 					// Remove any existing canvasses
 					$hcanv.siblings().remove();
 					
@@ -4437,7 +4445,8 @@
 							}
 						}
 					}
-					
+
+					// console.log('ctx', ctx);
 					ctx.strokeStyle = "#000";
 					ctx.stroke();
 				}
