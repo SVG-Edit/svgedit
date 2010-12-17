@@ -511,7 +511,7 @@
 	stroke: none;
 }
 
-#workarea.wireframe #canvasBackground rect {
+#workarea.wireframe #canvasBackground > rect {
 	fill: #FFF !important;
 }
 

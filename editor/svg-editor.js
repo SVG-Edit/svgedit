@@ -78,6 +78,10 @@
 			"loadingImage":"Loading image, please wait...",
 			"saveFromBrowser": "Select \"Save As...\" in your browser to save this image as a %s file.",
 			"noteTheseIssues": "Also note the following issues: ",
+			"unsavedChanges": "There are unsaved changes.",
+			"enterNewLinkURL": "Enter the new hyperlink URL",
+			"errorLoadingSVG": "Error: Unable to load SVG data",
+			"URLloadFail": "Unable to load from URL",
 			"ok":"OK",
 			"cancel":"Cancel",
 			"key_up":"Up",
@@ -249,6 +253,15 @@
 						}
 					});
 				});
+				
+				var good_langs = [];
+	
+				$('#lang_select option').each(function() {
+					good_langs.push(this.value);
+				});
+				
+	// 			var lang = ('lang' in curPrefs) ? curPrefs.lang : null;
+				Editor.putLocale(null, good_langs);
 			}
 			
 			// Load extensions
@@ -2417,7 +2430,7 @@
 		
 			var makeHyperlink = function() {
 				if (selectedElement != null || multiselected) {
-					$.prompt("Set URL for hyperlink", "http://", function(url) {
+					$.prompt(uiStrings.enterNewLinkURL, "http://", function(url) {
 						if(url) svgCanvas.makeHyperlink(url);
 					});
 				}
@@ -4167,7 +4180,7 @@
 				// show_save_warning is set to "false" when the page is saved.
 				if(!curConfig.no_save_warning && show_save_warning) {
 					// Browser already asks question about closing the page
-					return "There are unsaved changes."; 
+					return uiStrings.unsavedChanges; 
 				}
 			};
 			
@@ -4460,15 +4473,6 @@
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute("title", revnums);
 		
-			var good_langs = [];
-
-			$('#lang_select option').each(function() {
-				good_langs.push(this.value);
-			});
-			
-// 			var lang = ('lang' in curPrefs) ? curPrefs.lang : null;
-			Editor.putLocale(null, good_langs);
-			
 			// Callback handler for embedapi.js
  			try{
  				var json_encode = function(obj){
@@ -4571,7 +4575,7 @@
 			if(success) {
 				callback(true);
 			} else {
-				$.alert('Error: Unable to load SVG data', function() {
+				$.alert(uiStrings.errorLoadingSVG, function() {
 					callback(false);
 				});
 			}
@@ -4616,7 +4620,7 @@
 						if(xhr.status != 404 && xhr.responseText) {
 							loadSvgString(xhr.responseText, cb);
 						} else {
-							$.alert("Unable to load from URL. Error: \n"+err+'', cb);
+							$.alert(uiStrings.URLloadFail + ": \n"+err+'', cb);
 						}
 					}
 				});
