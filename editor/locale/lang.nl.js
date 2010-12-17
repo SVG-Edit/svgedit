@@ -139,6 +139,20 @@
 {"id": "url_notice", "title": "Let op: Dit plaatje kan niet worden geintegreerd (embeded). Het hangt af van dit pad om te worden afgebeeld."},
 {"id": "zoom_panel", "title": "In-/uitzoomen"},
 {"id": "sidepanel_handle", "textContent": "L a g e n", "title": "Sleep naar links/rechts om het zijpaneel te vergroten/verkleinen"},
+
+// {"id": "tool_prefs_cancel", "textContent": "Annuleren"},
+// {"id": "tool_prefs_save", "textContent": "Ok"},
+// {"id": "tool_imagelib", "textContent": "!!! Image Library"},
+// {"id": "tool_prefs_option", "textContent": "!!! Editor Options"},
+// {"id": "svginfo_units_rulers", "textContent": "!!! Units & Rulers"},
+// {"id": "svginfo_rulers_onoff", "textContent": "!!! Show rulers"},
+// {"id": "show_rulers", "textContent": "!!! Show rulers"},
+// {"id": "svginfo_unit", "textContent": "!!! Base Unit:"},
+// {"id": "svginfo_snap_onoff", "textContent": "!!! Snapping on/off"},
+// {"id": "svginfo_snap_step", "textContent": "!!! Snapping Step-Size:"},
+// {"id": "svginfo_grid_settings", "textContent": "!!! Grid"},
+// {"id": "view_grid", "title": "!!! Show/Hide Grid"},
+
 {
  "js_strings": {
   "QerrorsRevertToSource": "Er waren analyse fouten in je SVG bron.\nTeruggaan naar de originele SVG bron?", 
@@ -170,7 +184,12 @@
   "ok": "Ok", 
   "pathCtrlPtTooltip": "Versleep het controle punt om de boog eigenschappen te veranderen", 
   "pathNodeTooltip": "Versleep knooppunt om hem te verslepen. Dubbel klik knooppunt om het segment type te veranderen", 
-  "saveFromBrowser": "Kies \"Save As...\" in je browser om dit plaatje op te slaan als een %s bestand."
+  "saveFromBrowser": "Kies \"Save As...\" in je browser om dit plaatje op te slaan als een %s bestand.",
+  
+//   "unsavedChanges": "There are unsaved changes.",
+//   "enterNewLinkURL": "Enter the new hyperlink URL",
+//   "errorLoadingSVG": "Error: Unable to load SVG data",
+//   "URLloadFail": "Unable to load from URL",
  }
 }
 ]
