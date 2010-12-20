@@ -1338,15 +1338,23 @@
 			// updates the toolbar (colors, opacity, etc) based on the selected element
 			// This function also updates the opacity and id elements that are in the context panel
 			var updateToolbar = function() {
-				if (selectedElement != null && ['use', 'image', 'foreignObject', 'g', 'a'].indexOf(selectedElement.tagName) === -1) {
+				if (selectedElement != null) {
+				
 					var all_swidth = null;
-
-// 					if(selectedElement.tagName === "g" || selectedElement.tagName === "a") {
-// 						// Look for common styles
+				
+					switch ( selectedElement.tagName ) {
+					case 'use':
+					case 'image':
+					case 'foreignObject':
+						break;
+					case 'g':
+					case 'a':
+						// Look for common styles
+						
+// 						var gFill = null;
+// 						
 // 						var childs = selectedElement.getElementsByTagName('*');
-// 						console.log('ch', childs);
 // 						for(var i = 0, len = childs.length; i < len; i++) {
-// 							var elem = childs[i];
 // 							var swidth = elem.getAttribute("stroke-width");
 // 						 	if(swidth && swidth !== all_swidth) {
 // 						 		// different, so do don't check more
@@ -1357,23 +1365,30 @@
 // 						 		all_swidth = swidth;
 // 						 	}
 // 						}
-// 					}
-				
-					paintBox.fill.update(true);
-					paintBox.stroke.update(true);
-					
-					$('#stroke_width').val(all_swidth || selectedElement.getAttribute("stroke-width") || 1);
-					$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
+// 						
+						paintBox.fill.update(true);
+						paintBox.stroke.update(true);
 
-					var attr = selectedElement.getAttribute("stroke-linejoin") || 'miter';
-					
-					if ($('#linejoin_' + attr).length != 0)
-						setStrokeOpt($('#linejoin_' + attr)[0]);
-					
-					attr = selectedElement.getAttribute("stroke-linecap") || 'butt';
-					
-					if ($('#linecap_' + attr).length != 0)
-						setStrokeOpt($('#linecap_' + attr)[0]);
+						
+						break;
+					default:
+						paintBox.fill.update(true);
+						paintBox.stroke.update(true);
+						
+						$('#stroke_width').val(all_swidth || selectedElement.getAttribute("stroke-width") || 1);
+						$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
+	
+						var attr = selectedElement.getAttribute("stroke-linejoin") || 'miter';
+						
+						if ($('#linejoin_' + attr).length != 0)
+							setStrokeOpt($('#linejoin_' + attr)[0]);
+						
+						attr = selectedElement.getAttribute("stroke-linecap") || 'butt';
+						
+						if ($('#linecap_' + attr).length != 0)
+							setStrokeOpt($('#linecap_' + attr)[0]);
+					}
+	
 				}
 				
 				// All elements including image and group have opacity
@@ -3369,20 +3384,44 @@
 				this.update = function(apply) {
 					if(!selectedElement) return;
 					var type = this.type;
-					var paintOpacity = parseFloat(selectedElement.getAttribute(type + "-opacity"));
-					if (isNaN(paintOpacity)) {
-						paintOpacity = 1.0;
+					
+					if(selectedElement.tagName === 'g') {
+						var gPaint = null;
+					
+						var childs = selectedElement.getElementsByTagName('*');
+						for(var i = 0, len = childs.length; i < len; i++) {
+							var elem = childs[i];
+							var p = elem.getAttribute(type);
+							if(i === 0) {
+								gPaint = p;
+							} else if(gPaint !== p) {
+								gPaint = null;
+							}
+						}
+						if(gPaint === null) {
+							// No common color, don't update anything
+							return;
+						}
+						var paintColor = gPaint;
+						
+						var paintOpacity = 1;
+
+					} else {
+						var paintOpacity = parseFloat(selectedElement.getAttribute(type + "-opacity"));
+						if (isNaN(paintOpacity)) {
+							paintOpacity = 1.0;
+						}
+						
+						var defColor = type === "fill" ? "black" : "none";
+						var paintColor = selectedElement.getAttribute(type) || defColor;
 					}
-					
-					var defColor = type === "fill" ? "black" : "none";
-					var paintColor = selectedElement.getAttribute(type) || defColor;
-					
+
 					if(apply) {
 						svgCanvas.setColor(type, paintColor, true);
 						svgCanvas.setPaintOpacity(type, paintOpacity, true);
 					}
-					
-					paintOpacity *= 100;
+
+					paintOpacity *= 100;					
 					
 					var paint = getPaint(paintColor, paintOpacity, type);
 					// update the rect inside #fill_color/#stroke_color

@@ -1225,6 +1225,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 				findDefs().appendChild(newgrad);
 				selected.setAttribute(type, 'url(#' + newgrad.id + ')');
 			}
+
 		}
 		
 	}
