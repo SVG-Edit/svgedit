@@ -6554,11 +6554,6 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		ts = $elem.attr('transform');
 		var pos = $elem.attr(['x','y']);
 
-// 		if(ts.length) {
-// 
-// 			ts += " ";
-// 		}
-
 		// Not ideal, but works
 		ts += "translate(" + (pos.x || 0) + "," + (pos.y || 0) + ")";
 		
@@ -6578,14 +6573,23 @@ var convertToGroup = this.convertToGroup = function(elem) {
 			g.appendChild(childs[i].cloneNode(true));
 		}
 		
-// 		while (elem.hasChildNodes())
-// 			g.appendChild(elem.firstChild.cloneNode(true));
+		// Duplicate the gradients for Gecko, since they weren't included in the <symbol>
+		if(svgedit.browsersupport.isGecko()) {
+			var dupeGrads = $(findDefs()).children('linearGradient,radialGradient,pattern').clone();
+			$(g).append(dupeGrads);
+		}
+		
 		if (ts)
 			g.setAttribute("transform", ts);
 		
 		var parent = elem.parentNode;
 		
 		uniquifyElems(g);
+		
+		// Put the dupe gradients back into <defs> (after uniquifying them)
+		if(svgedit.browsersupport.isGecko()) {
+			$(findDefs()).append( $(g).find('linearGradient,radialGradient,pattern') );
+		}
 	
 		// now give the g itself a new id
 		g.id = getNextId();
