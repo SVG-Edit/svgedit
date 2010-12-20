@@ -6816,7 +6816,16 @@ this.importSvgString = function(xmlString) {
 		// Get unique ID
 		var uid = svgedit.utilities.encode64(xmlString.length + xmlString).substr(0,32);
 		
+		var useExisting = false;
+
+		// Look for symbol and make sure symbol exists in image
 		if(import_ids[uid]) {
+			if( $(import_ids[uid].symbol).parents('#svgroot').length ) {
+				useExisting = true;
+			}
+		}
+		
+		if(useExisting) {
 			var symbol = import_ids[uid].symbol;
 			var ts = import_ids[uid].xform;
 		} else {
@@ -6923,11 +6932,13 @@ var identifyLayers = canvas.identifyLayers = function() {
 	var numchildren = svgcontent.childNodes.length;
 	// loop through all children of svgcontent
 	var orphans = [], layernames = [];
+	var childgroups = false;
 	for (var i = 0; i < numchildren; ++i) {
 		var child = svgcontent.childNodes.item(i);
 		// for each g, find its layer name
 		if (child && child.nodeType == 1) {
 			if (child.tagName == "g") {
+				childgroups = true;
 				var name = $("title",child).text();
 				
 				// Hack for Opera 10.60
@@ -6955,8 +6966,9 @@ var identifyLayers = canvas.identifyLayers = function() {
 			}
 		}
 	}
+	
 	// create a new layer and add all the orphans to it
-	if (orphans.length > 0) {
+	if (orphans.length > 0 || !childgroups) {
 		var i = 1;
 		while (layernames.indexOf(("Layer " + i)) >= 0) { i++; }
 		var newname = "Layer " + i;
@@ -7856,8 +7868,13 @@ var findDefs = function() {
 		defs = defs[0];
 	}
 	else {
-		// first child is a comment, so call nextSibling
-		defs = svgcontent.insertBefore( svgdoc.createElementNS(svgns, "defs" ), svgcontent.firstChild.nextSibling);
+		defs = svgdoc.createElementNS(svgns, "defs" );
+		if(svgcontent.firstChild) {
+			// first child is a comment, so call nextSibling
+			svgcontent.insertBefore( defs, svgcontent.firstChild.nextSibling);
+		} else {
+			svgcontent.appendChild(defs);
+		}
 	}
 	return defs;
 };
