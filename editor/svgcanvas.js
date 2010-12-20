@@ -1342,6 +1342,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			selected.setAttribute("points", pstr);
 			break;
 		case "path":
+		
 			var segList = selected.pathSegList;
 			var len = segList.numberOfItems;
 			changes.d = new Array(len);
@@ -1398,9 +1399,6 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 					seg.r1 = scalew(seg.r1),
 					seg.r2 = scaleh(seg.r2);
 				}
-				// tracks the current position (for H,V commands)
-				if (seg.x) currentpt.x = seg.x;
-				if (seg.y) currentpt.y = seg.y;
 			} // for each segment
 		
 			var dstr = "";
@@ -1446,6 +1444,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 						break;
 				}
 			}
+
 			selected.setAttribute("d", dstr);
 			break;
 	}
@@ -5503,6 +5502,8 @@ var pathActions = canvas.pathActions = function() {
 // 				segList = path.pathSegList;
 // 				var len = segList.numberOfItems;
 // 			}
+			var last_x, last_y;
+
 			for (var i = 0; i < len; ++i) {
 				var seg = segList.getItem(i);
 				var type = seg.pathSegType;
@@ -5510,13 +5511,14 @@ var pathActions = canvas.pathActions = function() {
 				var pts = [];
 				$.each(['',1,2], function(j, n) {
 					var x = seg['x'+n], y = seg['y'+n];
-					if(x && y) {
+					if(x !== undefined && y !== undefined) {
 						var pt = transformPoint(x, y, m);
 						pts.splice(pts.length, 0, pt.x, pt.y);
 					}
 				});
 				replacePathSeg(type, i, pts, path);
 			}
+
 		},
 		zoomChange: function() {
 			if(current_mode == "pathedit") {
@@ -5831,22 +5833,28 @@ var pathActions = canvas.pathActions = function() {
 					case 13: // relative horizontal line (h)
 						if(toRel) {
 							curx += x;
+							letter = 'l';
 						} else {
 							x += curx;
 							curx = x;
+							letter = 'L';
 						}
-						addToD([[x]]);
+						// Convert to "line" for easier editing
+						addToD([[x, cury]]);
 						break;
 					case 14: // absolute vertical line (V)
 						y -= cury;
 					case 15: // relative vertical line (v)
 						if(toRel) {
 							cury += y;
+							letter = 'l';
 						} else {
 							y += cury;
 							cury = y;
+							letter = 'L';
 						}
-						addToD([[y]]);
+						// Convert to "line" for easier editing
+						addToD([[curx, y]]);
 						break;
 					case 2: // absolute move (M)
 					case 4: // absolute line (L)
