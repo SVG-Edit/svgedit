@@ -1340,8 +1340,6 @@
 			var updateToolbar = function() {
 				if (selectedElement != null) {
 				
-					var all_swidth = null;
-				
 					switch ( selectedElement.tagName ) {
 					case 'use':
 					case 'image':
@@ -1351,21 +1349,21 @@
 					case 'a':
 						// Look for common styles
 						
-// 						var gFill = null;
-// 						
-// 						var childs = selectedElement.getElementsByTagName('*');
-// 						for(var i = 0, len = childs.length; i < len; i++) {
-// 							var swidth = elem.getAttribute("stroke-width");
-// 						 	if(swidth && swidth !== all_swidth) {
-// 						 		// different, so do don't check more
-// 						 		all_swidth = null;
-// 						 		break;
-// 						 	} else if(swidth) {
-// 						 		console.log('e', elem, swidth);
-// 						 		all_swidth = swidth;
-// 						 	}
-// 						}
-// 						
+						var gWidth = null;
+						
+						var childs = selectedElement.getElementsByTagName('*');
+						for(var i = 0, len = childs.length; i < len; i++) {
+							var swidth = childs[i].getAttribute("stroke-width");
+							
+							if(i === 0) {
+								gWidth = swidth;
+							} else if(gWidth !== swidth) {
+								gWidth = null;
+							}
+						}
+						
+						$('#stroke_width').val(gWidth === null ? "" : gWidth);
+						
 						paintBox.fill.update(true);
 						paintBox.stroke.update(true);
 
@@ -1375,7 +1373,7 @@
 						paintBox.fill.update(true);
 						paintBox.stroke.update(true);
 						
-						$('#stroke_width').val(all_swidth || selectedElement.getAttribute("stroke-width") || 1);
+						$('#stroke_width').val(selectedElement.getAttribute("stroke-width") || 1);
 						$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
 	
 						var attr = selectedElement.getAttribute("stroke-linejoin") || 'miter';
@@ -1917,17 +1915,13 @@
 				paintBox[picker].setPaint(paint);
 				
 				if (isStroke) {
-					if (svgCanvas.getColor('stroke') != color) {
-						svgCanvas.setColor('stroke', color);
-					}
+					svgCanvas.setColor('stroke', color);
 					if (color != 'none' && svgCanvas.getStrokeOpacity() != 1) {
 						svgCanvas.setPaintOpacity('stroke', 1.0);
 					}
 				} else {
-					if (svgCanvas.getColor('fill') != color) {
-						svgCanvas.setColor('fill', color);
-					}
-					if (color != 'none' && svgCanvas.getFillOpacity('fill') != 1) {
+					svgCanvas.setColor('fill', color);
+					if (color != 'none' && svgCanvas.getFillOpacity() != 1) {
 						svgCanvas.setPaintOpacity('fill', 1.0);
 					}
 				}
@@ -3396,10 +3390,12 @@
 								gPaint = p;
 							} else if(gPaint !== p) {
 								gPaint = null;
+								break;
 							}
 						}
 						if(gPaint === null) {
 							// No common color, don't update anything
+							var paintColor = null;
 							return;
 						}
 						var paintColor = gPaint;
