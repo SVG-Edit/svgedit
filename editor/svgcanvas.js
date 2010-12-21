@@ -1225,9 +1225,12 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 				findDefs().appendChild(newgrad);
 				selected.setAttribute(type, 'url(#' + newgrad.id + ')');
 			}
-
+			
+			// Not really working :(
+// 			if(selected.tagName === 'path') {
+// 				reorientGrads(selected, m);
+// 			}
 		}
-		
 	}
 
 
@@ -2044,7 +2047,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 				}
 			}
 		}
-		
+
 		// first, if it was a scale of a non-skewed element, then the second-last  
 		// transform will be the [S]
 		// if we had [M][T][S][T] we want to extract the matrix equivalent of
@@ -2122,6 +2125,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 			if (angle) {
 				var newRot = svgroot.createSVGTransform();
 				newRot.setRotate(angle,newcenter.x,newcenter.y);
+				
 				if(tlist.numberOfItems) {
 					tlist.insertItemBefore(newRot, 0);
 				} else {
@@ -5505,6 +5509,7 @@ var pathActions = canvas.pathActions = function() {
 // 			}
 			var last_x, last_y;
 
+
 			for (var i = 0; i < len; ++i) {
 				var seg = segList.getItem(i);
 				var type = seg.pathSegType;
@@ -5519,6 +5524,9 @@ var pathActions = canvas.pathActions = function() {
 				});
 				replacePathSeg(type, i, pts, path);
 			}
+			
+			reorientGrads(path, m);
+
 
 		},
 		zoomChange: function() {
@@ -6607,7 +6615,11 @@ var convertToGroup = this.convertToGroup = function(elem) {
 			batchCmd.addSubCommand(new InsertElementCommand(g));
 		}
 		
-		convertGradients(g);
+		if(svgedit.browsersupport.isGecko()) {
+			convertGradients(findDefs());
+		} else {
+			convertGradients(g);
+		}
 		
 		// recalculate dimensions on the top-level children so that unnecessary transforms
 		// are removed
@@ -7980,6 +7992,48 @@ var findDuplicateGradient = function(grad) {
 	return null;
 };
 
+function reorientGrads(elem, m) {
+	var bb = getBBox(elem);
+	for(var i = 0; i < 2; i++) {
+		var type = i === 0 ? 'fill' : 'stroke';
+		var attrVal = elem.getAttribute(type);
+		if(attrVal && attrVal.indexOf('url(') === 0) {
+			var grad = getRefElem(attrVal);
+			if(grad.tagName === 'linearGradient') {
+				var x1 = grad.getAttribute('x1') || 0;
+				var y1 = grad.getAttribute('y1') || 0;
+				var x2 = grad.getAttribute('x2') || 1;
+				var y2 = grad.getAttribute('y2') || 0;
+				
+				// Convert to USOU points
+				x1 = (bb.width * x1) + bb.x;
+				y1 = (bb.height * y1) + bb.y;
+				x2 = (bb.width * x2) + bb.x;
+				y2 = (bb.height * y2) + bb.y;
+			
+				// Transform those points
+				var pt1 = transformPoint(x1, y1, m);
+				var pt2 = transformPoint(x2, y2, m);
+				
+				// Convert back to BB points
+				var g_coords = {};
+				
+				g_coords.x1 = (pt1.x - bb.x) / bb.width;
+				g_coords.y1 = (pt1.y - bb.y) / bb.height;
+				g_coords.x2 = (pt2.x - bb.x) / bb.width;
+				g_coords.y2 = (pt2.y - bb.y) / bb.height;
+		
+				var newgrad = grad.cloneNode(true);
+				$(newgrad).attr(g_coords);
+	
+				newgrad.id = getNextId();
+				findDefs().appendChild(newgrad);
+				elem.setAttribute(type, 'url(#' + newgrad.id + ')');
+			}
+		}
+	}
+}
+
 // Function: setPaint
 // Set a color/gradient to a fill/stroke
 //
@@ -9148,6 +9202,9 @@ var pushGroupProperties = this.pushGroupProperties = function(g, undoable) {
 		// Hopefully not a problem to add this. Necessary for elements like <desc/>
 		if(!chtlist) continue;
 		
+		// Apparently <defs> can get get a transformlist, but we don't want it to have one!
+		if(elem.tagName === 'defs') continue;
+		
 		if (glist.numberOfItems) {
 			// TODO: if the group's transform is just a rotate, we can always transfer the
 			// rotate() down to the children (collapsing consecutive rotates and factoring
@@ -9211,6 +9268,7 @@ var pushGroupProperties = this.pushGroupProperties = function(g, undoable) {
 				}
 			}
 			else { // more complicated than just a rotate
+			
 				// transfer the group's transform down to each child and then
 				// call recalculateDimensions()				
 				var oldxform = elem.getAttribute("transform");
