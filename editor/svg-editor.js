@@ -4559,10 +4559,13 @@
 			});
 		
 		
-			Editor.setLang = function(lang, strings) {
+			Editor.setLang = function(lang, allStrings) {
 				$.pref('lang', lang);
 				$('#lang_select').val(lang);
-				if(strings) {
+				if(allStrings) {
+				
+					var strings = allStrings.notification;
+				
 					// $.extend will only replace the given strings
 					var oldLayerName = $('#layerlist tr.layersel td.layername').text();
 					var rename_layer = (oldLayerName == uiStrings.layer + ' 1');
