@@ -7569,7 +7569,7 @@ this.getVersion = function() {
 // Parameters:
 // strs - Object with strings (see uiStrings for examples)
 this.setUiStrings = function(strs) {
-	$.extend(uiStrings, strs);
+	$.extend(uiStrings, strs.notification);
 }
 
 // Function: setConfig
