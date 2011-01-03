@@ -60,35 +60,41 @@
 				showRulers: true
 			},
 			uiStrings = Editor.uiStrings = {
-			"invalidAttrValGiven":"Invalid value given",
-			"noContentToFitTo":"No content to fit to",
-			"layer":"Layer",
-			"dupeLayerName":"There is already a layer named that!",
-			"enterUniqueLayerName":"Please enter a unique layer name",
-			"enterNewLayerName":"Please enter the new layer name",
-			"layerHasThatName":"Layer already has that name",
-			"QmoveElemsToLayer":"Move selected elements to layer \"%s\"?",
-			"QwantToClear":"Do you want to clear the drawing?\nThis will also erase your undo history!",
-			"QwantToOpen":"Do you want to open a new file?\nThis will also erase your undo history!",
-			"QerrorsRevertToSource":"There were parsing errors in your SVG source.\nRevert back to original SVG source?",
-			"QignoreSourceChanges":"Ignore changes made to SVG source?",
-			"featNotSupported":"Feature not supported",
-			"enterNewImgURL":"Enter the new image URL",
-			"defsFailOnSave": "NOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.",
-			"loadingImage":"Loading image, please wait...",
-			"saveFromBrowser": "Select \"Save As...\" in your browser to save this image as a %s file.",
-			"noteTheseIssues": "Also note the following issues: ",
-			"unsavedChanges": "There are unsaved changes.",
-			"enterNewLinkURL": "Enter the new hyperlink URL",
-			"errorLoadingSVG": "Error: Unable to load SVG data",
-			"URLloadFail": "Unable to load from URL",
-			"ok":"OK",
-			"cancel":"Cancel",
-			"key_up":"Up",
-			"key_down":"Down",
-			"key_backspace":"Backspace",
-			"key_del":"Del"
-		};
+				common: {
+					"ok":"OK",
+					"cancel":"Cancel",
+					"key_up":"Up",
+					"key_down":"Down",
+					"key_backspace":"Backspace",
+					"key_del":"Del"
+	
+				},
+				notification: {
+					"invalidAttrValGiven":"Invalid value given",
+					"noContentToFitTo":"No content to fit to",
+					"layer":"Layer",
+					"dupeLayerName":"There is already a layer named that!",
+					"enterUniqueLayerName":"Please enter a unique layer name",
+					"enterNewLayerName":"Please enter the new layer name",
+					"layerHasThatName":"Layer already has that name",
+					"QmoveElemsToLayer":"Move selected elements to layer \"%s\"?",
+					"QwantToClear":"Do you want to clear the drawing?\nThis will also erase your undo history!",
+					"QwantToOpen":"Do you want to open a new file?\nThis will also erase your undo history!",
+					"QerrorsRevertToSource":"There were parsing errors in your SVG source.\nRevert back to original SVG source?",
+					"QignoreSourceChanges":"Ignore changes made to SVG source?",
+					"featNotSupported":"Feature not supported",
+					"enterNewImgURL":"Enter the new image URL",
+					"defsFailOnSave": "NOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.",
+					"loadingImage":"Loading image, please wait...",
+					"saveFromBrowser": "Select \"Save As...\" in your browser to save this image as a %s file.",
+					"noteTheseIssues": "Also note the following issues: ",
+					"unsavedChanges": "There are unsaved changes.",
+					"enterNewLinkURL": "Enter the new hyperlink URL",
+					"errorLoadingSVG": "Error: Unable to load SVG data",
+					"URLloadFail": "Unable to load from URL",
+					"retrieving": 'Retrieving "%s" ...'
+				}
+			};
 		
 		var curPrefs = {}; //$.extend({}, defaultPrefs);
 		
@@ -515,10 +521,10 @@
 						.toggleClass('prompt',(type=='prompt'));
 					btn_holder.empty();
 					
-					var ok = $('<input type="button" value="' + uiStrings.ok + '">').appendTo(btn_holder);
+					var ok = $('<input type="button" value="' + uiStrings.common.ok + '">').appendTo(btn_holder);
 				
 					if(type != 'alert') {
-						$('<input type="button" value="' + uiStrings.cancel + '">')
+						$('<input type="button" value="' + uiStrings.common.cancel + '">')
 							.appendTo(btn_holder)
 							.click(function() { box.hide();callback(false)});
 					}
@@ -612,12 +618,12 @@
 				var done = $.pref('save_notice_done');
 				if(done !== "all") {
 		
-					var note = uiStrings.saveFromBrowser.replace('%s', 'SVG');
+					var note = uiStrings.notification.saveFromBrowser.replace('%s', 'SVG');
 					
 					// Check if FF and has <defs/>
 					if(ua.indexOf('Gecko/') !== -1) {
 						if(svg.indexOf('<defs') !== -1) {
-							note += "\n\n" + uiStrings.defsFailOnSave;
+							note += "\n\n" + uiStrings.notification.defsFailOnSave;
 							$.pref('save_notice_done', 'all');
 							done = "all";
 						} else {
@@ -648,12 +654,12 @@
 					exportWindow.location.href = datauri;
 					var done = $.pref('export_notice_done');
 					if(done !== "all") {
-						var note = uiStrings.saveFromBrowser.replace('%s', 'PNG');
+						var note = uiStrings.notification.saveFromBrowser.replace('%s', 'PNG');
 						
 						// Check if there's issues
 						if(issues.length) {
 							var pre = "\n \u2022 ";
-							note += ("\n\n" + uiStrings.noteTheseIssues + pre + issues.join(pre));
+							note += ("\n\n" + uiStrings.notification.noteTheseIssues + pre + issues.join(pre));
 						} 
 						
 						// Note that this will also prevent the notice even though new issues may appear later.
@@ -939,6 +945,8 @@
 			var setFlyoutTitles = function() {
 				$('.tools_flyout').each(function() {
 					var shower = $('#' + this.id + '_show');
+					if(shower.data('isLibrary')) return;
+					
 					var tooltips = [];
 					$(this).children().each(function() {
 						tooltips.push(this.title);
@@ -1812,7 +1820,7 @@
 			var promptMoveLayerOnce = false;
 			$('#selLayerNames').change(function(){
 				var destLayer = this.options[this.selectedIndex].value;
-				var confirm_str = uiStrings.QmoveElemsToLayer.replace('%s',destLayer);
+				var confirm_str = uiStrings.notification.QmoveElemsToLayer.replace('%s',destLayer);
 				var moveToLayer = function(ok) {
 					if(!ok) return;
 					promptMoveLayerOnce = true;
@@ -1859,7 +1867,7 @@
 				var valid = svgedit.units.isValidUnit(attr, val);
 				
 				if(!valid) {
-					$.alert(uiStrings.invalidAttrValGiven);
+					$.alert(uiStrings.notification.invalidAttrValGiven);
 					this.value = selectedElement.getAttribute(attr);
 					return false;
 				}
@@ -2439,7 +2447,7 @@
 		
 			var makeHyperlink = function() {
 				if (selectedElement != null || multiselected) {
-					$.prompt(uiStrings.enterNewLinkURL, "http://", function(url) {
+					$.prompt(uiStrings.notification.enterNewLinkURL, "http://", function(url) {
 						if(url) svgCanvas.makeHyperlink(url);
 					});
 				}
@@ -2514,7 +2522,7 @@
 			
 			var clickClear = function(){
 				var dims = curConfig.dimensions;
-				$.confirm(uiStrings.QwantToClear, function(ok) {
+				$.confirm(uiStrings.notification.QwantToClear, function(ok) {
 					if(!ok) return;
 					setSelectMode();
 					svgCanvas.clear();
@@ -2551,7 +2559,7 @@
 			var clickExport = function() {
 				// Open placeholder window (prevents popup)
 				if(!customHandlers.pngsave)  {
-					var str = uiStrings.loadingImage;
+					var str = uiStrings.notification.loadingImage;
 					exportWindow = window.open("data:text/html;charset=utf-8,<title>" + str + "<\/title><h1>" + str + "<\/h1>");
 				}
 
@@ -2740,7 +2748,7 @@
 				}
 		
 				if (!svgCanvas.setSvgString($('#svg_source_textarea').val())) {
-					$.confirm(uiStrings.QerrorsRevertToSource, function(ok) {
+					$.confirm(uiStrings.notification.QerrorsRevertToSource, function(ok) {
 						if(!ok) return false;
 						saveChanges();
 					});
@@ -2772,7 +2780,7 @@
 				var height = $('#canvas_height'), h = height.val();
 		
 				if(w != "fit" && !svgedit.units.isValidUnit('width', w)) {
-					$.alert(uiStrings.invalidAttrValGiven);
+					$.alert(uiStrings.notification.invalidAttrValGiven);
 					width.parent().addClass('error');
 					return false;
 				}
@@ -2780,7 +2788,7 @@
 				width.parent().removeClass('error');
 				
 				if(h != "fit" && !svgedit.units.isValidUnit('height', h)) {
-					$.alert(uiStrings.invalidAttrValGiven);
+					$.alert(uiStrings.notification.invalidAttrValGiven);
 					height.parent().addClass('error');
 					return false;
 				} 
@@ -2788,7 +2796,7 @@
 				height.parent().removeClass('error');
 				
 				if(!svgCanvas.setResolution(w, h)) {
-					$.alert(uiStrings.noContentToFitTo);
+					$.alert(uiStrings.notification.noContentToFitTo);
 					return false;
 				}
 				
@@ -3127,7 +3135,7 @@
 		
 				if (editingsource) {
 					if (orig_source !== $('#svg_source_textarea').val()) {
-						$.confirm(uiStrings.QignoreSourceChanges, function(ok) {
+						$.confirm(uiStrings.notification.QignoreSourceChanges, function(ok) {
 							if(ok) hideSourceEditor();
 						});
 					} else {
@@ -3192,7 +3200,7 @@
 			function promptImgURL() {
 				var curhref = svgCanvas.getHref(selectedElement);
 				curhref = curhref.indexOf("data:") === 0?"":curhref;
-				$.prompt(uiStrings.enterNewImgURL, curhref, function(url) {
+				$.prompt(uiStrings.notification.enterNewImgURL, curhref, function(url) {
 					if(url) setImageURL(url);
 				});
 			}
@@ -3477,7 +3485,7 @@
 						$('#image_save_opts [value=embed]').attr('disabled','disabled');
 						$('#image_save_opts input').val(['ref']);
 						curPrefs.img_save = 'ref';
-						$('#image_opt_embed').css('color','#666').attr('title',uiStrings.featNotSupported);
+						$('#image_opt_embed').css('color','#666').attr('title',uiStrings.notification.featNotSupported);
 					}
 				});
 			},1000);
@@ -3528,13 +3536,13 @@
 			$('#layer_new').click(function() {
 				var i = svgCanvas.getNumLayers();
 				do {
-					var uniqName = uiStrings.layer + " " + ++i;
+					var uniqName = uiStrings.notification.layer + " " + ++i;
 				} while(svgCanvas.hasLayer(uniqName));
 				
-				$.prompt(uiStrings.enterUniqueLayerName,uniqName, function(newName) {
+				$.prompt(uiStrings.notification.enterUniqueLayerName,uniqName, function(newName) {
 					if (!newName) return;
 					if (svgCanvas.hasLayer(newName)) {
-						$.alert(uiStrings.dupeLayerName);
+						$.alert(uiStrings.notification.dupeLayerName);
 						return;
 					}
 					svgCanvas.createLayer(newName);
@@ -3558,10 +3566,10 @@
 			function cloneLayer() {
 				var name = svgCanvas.getCurrentLayer() + ' copy';
 				
-				$.prompt(uiStrings.enterUniqueLayerName, name, function(newName) {
+				$.prompt(uiStrings.notification.enterUniqueLayerName, name, function(newName) {
 					if (!newName) return;
 					if (svgCanvas.hasLayer(newName)) {
-						$.alert(uiStrings.dupeLayerName);
+						$.alert(uiStrings.notification.dupeLayerName);
 						return;
 					}
 					svgCanvas.cloneLayer(newName);
@@ -3600,10 +3608,10 @@
 			$('#layer_rename').click(function() {
 				var curIndex = $('#layerlist tr.layersel').prevAll().length;
 				var oldName = $('#layerlist tr.layersel td.layername').text();
-				$.prompt(uiStrings.enterNewLayerName,"", function(newName) {
+				$.prompt(uiStrings.notification.enterNewLayerName,"", function(newName) {
 					if (!newName) return;
 					if (oldName == newName || svgCanvas.hasLayer(newName)) {
-						$.alert(uiStrings.layerHasThatName);
+						$.alert(uiStrings.notification.layerHasThatName);
 						return;
 					}
 					
@@ -4215,7 +4223,7 @@
 				// show_save_warning is set to "false" when the page is saved.
 				if(!curConfig.no_save_warning && show_save_warning) {
 					// Browser already asks question about closing the page
-					return uiStrings.unsavedChanges; 
+					return uiStrings.notification.unsavedChanges; 
 				}
 			};
 			
@@ -4224,7 +4232,7 @@
 				if(undoMgr.getUndoStackSize() === 0) {
 					func(true);
 				} else {
-					$.confirm(uiStrings.QwantToOpen, func);
+					$.confirm(uiStrings.notification.QwantToOpen, func);
 				}
 			}
 			
@@ -4564,18 +4572,20 @@
 				$('#lang_select').val(lang);
 				if(allStrings) {
 				
-					var strings = allStrings.notification;
+					var notif = allStrings.notification;
+
+
 				
 					// $.extend will only replace the given strings
 					var oldLayerName = $('#layerlist tr.layersel td.layername').text();
-					var rename_layer = (oldLayerName == uiStrings.layer + ' 1');
+					var rename_layer = (oldLayerName == uiStrings.common.layer + ' 1');
 					
-					$.extend(uiStrings,strings);
-					svgCanvas.setUiStrings(strings);
+					$.extend(uiStrings, allStrings);
+					svgCanvas.setUiStrings(allStrings);
 					Actions.setTitles();
 					
 					if(rename_layer) {
-						svgCanvas.renameCurrentLayer(uiStrings.layer + ' 1');
+						svgCanvas.renameCurrentLayer(uiStrings.common.layer + ' 1');
 						populateLayers();				
 					}
 					
@@ -4613,7 +4623,7 @@
 			if(success) {
 				callback(true);
 			} else {
-				$.alert(uiStrings.errorLoadingSVG, function() {
+				$.alert(uiStrings.notification.errorLoadingSVG, function() {
 					callback(false);
 				});
 			}
@@ -4658,7 +4668,7 @@
 						if(xhr.status != 404 && xhr.responseText) {
 							loadSvgString(xhr.responseText, cb);
 						} else {
-							$.alert(uiStrings.URLloadFail + ": \n"+err+'', cb);
+							$.alert(uiStrings.notification.URLloadFail + ": \n"+err+'', cb);
 						}
 					}
 				});

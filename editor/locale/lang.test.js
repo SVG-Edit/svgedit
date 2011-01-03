@@ -6,8 +6,9 @@
 		"key_del": "delete", 
 		"key_down": "down", 
 		"key_up": "up", 
-		"layer": "Layer"
-		
+		"layer": "Layer",
+		"more_opts": "More Options",
+		"url": "URL"
 	},
 	misc: {
 		"copyrightLabel": "Powered by"
@@ -130,6 +131,8 @@
 		"tool_delete": "Delete Element",
 		"tool_delete_multi": "Delete Selected Elements",
 		"tool_group": "Group Elements",
+		"tool_make_link": "Make (hyper)link",
+		"tool_link_url": "Set link URL (leave empty to remove)",
 		"tool_topath": "Convert to Path",
 		"tool_reorient": "Reorient path",
 		"tool_ungroup": "Ungroup Elements",
@@ -149,7 +152,20 @@
 		"tool_source_save": "Apply Changes",
 
 		"tool_eyedropper": "Eye Dropper Tool",		
-		"mode_connect": "Connect two objects"
+		"mode_connect": "Connect two objects",
+		"tools_shapelib_show": "Shape library",
+		
+		"cut": "Cut",
+		"copy": "Copy",
+		"paste": "Paste",
+		"paste_in_place": "Paste in Place",
+		"delete": "Delete",
+		"group": "Group",
+		"ungroup": "Ungroup",
+		"move_front": "Bring to Front",
+		"move_up": "Bring Forward",
+		"move_down": "Send Backward",
+		"move_back": "Send to Back"
 	},
 	layers: {
 		"layersLabel": "Layers:",
@@ -158,9 +174,12 @@
 		"layer_new": "New Layer",
 		"layer_rename": "Rename Layer",
 		"layer_up": "Move Layer Up",
+		"dupe": "Duplicate Layer",
+		"merge_down": "Merge Down",
+		"merge_all": "Merge All",
 		"selLayerLabel": "Move elements to:",
 		"selLayerNames": "Move selected elements to a different layer",
-		"sidepanel_handle": "L a y e r s", // "title": "Drag left/right to resize side panel"},
+		"sidepanel_handle": "L a y e r s" // "title": "Drag left/right to resize side panel"},
 
 	},
 	config: {
@@ -169,11 +188,16 @@
 		"svginfo_dim": "Canvas Dimensions",
 		"svginfo_width": "Width:",
 		"svginfo_height": "Height:",
+		
+		"includedImages": "Included Images",
+		"image_opt_embed": "Embed data (local files)",
+		"image_opt_ref": "Use file reference",
 
 		"svginfo_editor_prefs": "Editor Preferences",
 		"svginfo_icons": "Icon size",
 		"svginfo_lang": "Language",
 		"svginfo_change_background": "Editor Background",
+		"image_url": "Image URL",
 		"svginfo_bg_note": "Note: Background will not be saved with image.",
 		"icon_large": "Large",
 		"icon_medium": "Medium",
@@ -182,9 +206,38 @@
 
 		"selectedPredefined": "Select predefined:",
 		
-		"includedImages": "Included Images",
-		"image_opt_embed": "Embed data (local files)",
-		"image_opt_ref": "Use file reference"
+		units_and_rulers: "Units & Rulers",
+		show_rulers: "Show rulers",
+		base_unit: "Base Unit:",
+		
+		grid: "Grid",
+		snapping_onoff: "Snapping on/off",
+		snapping_stepsize: "Snapping Step-Size:"
+
+	
+	},
+	shape_cats: {
+		basic: 'Basic',
+		object: 'Objects',
+		symbol: 'Symbols',
+		arrow: 'Arrows',
+		flowchart: 'Flowchart',
+		animal: 'Animals',
+		game: 'Cards & Chess',
+		dialog_balloon: 'Dialog balloons',
+		electronics: 'Electronics',
+		math: 'Mathematical',
+		music: 'Music',
+		misc: 'Miscellaneous',
+		raphael_1: 'raphaeljs.com set 1',
+		raphael_2: 'raphaeljs.com set 2'
+	},
+	imagelib: {
+		select_lib: 'Select an image library',
+		show_list: 'Show library list',
+		import_single: 'Import single',
+		import_multi: 'Import multiple',
+		open: 'Open as new document'
 	},
 	notification: {
 		"invalidAttrValGiven":"Invalid value given",
@@ -209,6 +262,7 @@
 		"enterNewLinkURL": "Enter the new hyperlink URL",
 		"errorLoadingSVG": "Error: Unable to load SVG data",
 		"URLloadFail": "Unable to load from URL",
+		"retrieving": 'Retrieving "%s"...',
 		"ok":"OK",
 		"cancel":"Cancel",
 		"key_up":"Up",

@@ -27,14 +27,14 @@ var svgEditor = (function($, Editor) {
 						for(var i = 0; i < elem.childNodes.length; i++) {
 							var node = elem.childNodes[i];
 							if(node.nodeType === 3 && node.textContent.replace(/\s/g,'')) {
-								node.textContent = '!!!' + val;
+								node.textContent = val;
 								break;
 							}
 						}
 						break;
 					
 					case 'title':
-						elem.title = '!!!' + val;
+						elem.title = val;
 						break;
 				}
 				
@@ -129,6 +129,7 @@ var svgEditor = (function($, Editor) {
 				smallest_object: tools.smallest_object,
 				straight_segments: properties.straight_segments,
 				
+				svginfo_bg_url: config.image_url + ":",
 				svginfo_bg_note: config.svginfo_bg_note,
 				svginfo_change_background: config.svginfo_change_background,
 				svginfo_dim: config.svginfo_dim,
@@ -145,6 +146,10 @@ var svgEditor = (function($, Editor) {
 
 				tool_source_cancel: common.cancel,
 				tool_source_save: common.ok,
+				
+				tool_prefs_cancel: common.cancel,
+				tool_prefs_save: common.ok,
+
 				sidepanel_handle: layers.sidepanel_handle,
 
 				tool_clear: tools.tool_clear,
@@ -153,9 +158,43 @@ var svgEditor = (function($, Editor) {
 				tool_import: tools.tool_import,
 				tool_imagelib: tools.tool_imagelib,
 				tool_open: tools.tool_open,
-				tool_save: tools.tool_save
+				tool_save: tools.tool_save,
+				
+				svginfo_units_rulers: config.units_and_rulers,
+				svginfo_rulers_onoff: config.show_rulers,
+				svginfo_unit: config.base_unit,
+				
+				svginfo_grid_settings: config.grid,
+				svginfo_snap_onoff: config.snapping_onoff,
+				svginfo_snap_step: config.snapping_stepsize,
+
 
 			}, true);
+			
+			// Shape categories
+			var cats = {};
+			for (var o in langData.shape_cats) {
+				cats['#shape_cats [data-cat="' + o + '"]'] = langData.shape_cats[o];
+			}
+			
+			// TODO: Find way to make this run after shapelib ext has loaded
+			setTimeout(function() {
+				setStrings('content', cats);
+			}, 2000);
+			
+			// Context menus
+			var opts = {};
+			$.each(['cut','copy','paste', 'paste_in_place', 'delete', 'group', 'ungroup', 'move_front', 'move_up', 'move_down', 'move_back'], function() {
+				opts['#cmenu_canvas a[href="#' + this + '"]'] = tools[this];
+			});
+
+			$.each(['dupe','delete','merge_down', 'merge_all'], function() {
+				opts['#cmenu_layers a[href="#' + this + '"]'] = layers[this];
+			});
+
+			opts['#cmenu_layers a[href="#delete"]'] = layers.layer_delete;
+			
+			setStrings('content', opts);
 			
 			setStrings('title', {
  				align_relative_to: tools.align_relative_to,
@@ -178,6 +217,7 @@ var svgEditor = (function($, Editor) {
 				layer_down: layers.layer_down,
 				layer_new: layers.layer_new,
 				layer_rename: layers.layer_rename,
+				layer_moreopts: common.more_opts,
 				layer_up: layers.layer_up,
 				line_x1: properties.line_x1,
 				line_x2: properties.line_x2,
@@ -191,6 +231,7 @@ var svgEditor = (function($, Editor) {
 				linejoin_round: properties.linejoin_round,
 				main_icon: tools.main_icon,
 				mode_connect: tools.mode_connect,
+				tools_shapelib_show: tools.tools_shapelib_show,
 				palette: ui.palette,
 				zoom_panel: ui.zoom_panel,
 				path_node_x: properties.path_node_x,
@@ -229,6 +270,8 @@ var svgEditor = (function($, Editor) {
 				tool_fhrect: tools.tool_fhrect,
 				tool_font_size: properties.tool_font_size,
 				tool_group: tools.tool_group,
+				tool_make_link: tools.tool_make_link,
+				tool_link_url: tools.tool_link_url,
 				tool_image: tools.tool_image,
 				tool_italic: properties.tool_italic,
 				tool_line: tools.tool_line,
@@ -252,7 +295,7 @@ var svgEditor = (function($, Editor) {
 				tool_undo: tools.tool_undo,
 				tool_ungroup: tools.tool_ungroup,
 				tool_wireframe: tools.tool_wireframe,
-				tool_view_grid: tools.view_grid,
+				view_grid: tools.view_grid,
 				tool_zoom: tools.tool_zoom,
 				url_notice: tools.url_notice
 
@@ -260,6 +303,8 @@ var svgEditor = (function($, Editor) {
 			, true);
 			
 			Editor.setLang(lang_param, langData);
+			
+			
 			
 // 			$.each(langData, function(i, data) {
 // 				if(data.id) {
