@@ -61,7 +61,7 @@ var svgEditor = (function($, Editor) {
 					return;
 			}
 			
-			console.log(lang_param)
+			console.log('Lang: ' + lang_param);
 			
 			// Set to English if language is not in list of good langs
 			if($.inArray(lang_param, good_langs) == -1 && lang_param !== 'test') {
@@ -100,8 +100,7 @@ var svgEditor = (function($, Editor) {
 				ui = langData.ui;
 			
 			setStrings('content', {
-				connector_no_arrow: tools.connector_no_arrow,
-				copyrightLabel: misc.copyrightLabel,
+				copyrightLabel: misc.powered_by,
 				curve_segments: properties.curve_segments,
 				fitToContent: tools.fitToContent,
 				fit_to_all: tools.fit_to_all,
@@ -115,31 +114,31 @@ var svgEditor = (function($, Editor) {
 				icon_xlarge: config.icon_xlarge,
 				image_opt_embed: config.image_opt_embed,
 				image_opt_ref: config.image_opt_ref,
-				includedImages: config.includedImages,
+				includedImages: config.included_images,
 				
 				largest_object: tools.largest_object,
 				
-				layersLabel: layers.layersLabel,
+				layersLabel: layers.layers,
 				page: tools.page,
-				relativeToLabel: tools.relativeToLabel,
-				selLayerLabel: layers.selLayerLabel,
-				selectedPredefined: config.selectedPredefined,
+				relativeToLabel: tools.relativeTo,
+				selLayerLabel: layers.move_elems_to,
+				selectedPredefined: config.select_predefined,
 				
 				selected_objects: tools.selected_objects,
 				smallest_object: tools.smallest_object,
 				straight_segments: properties.straight_segments,
 				
-				svginfo_bg_url: config.image_url + ":",
-				svginfo_bg_note: config.svginfo_bg_note,
-				svginfo_change_background: config.svginfo_change_background,
-				svginfo_dim: config.svginfo_dim,
-				svginfo_editor_prefs: config.svginfo_editor_prefs,
-				svginfo_height: config.svginfo_height,
-				svginfo_icons: config.svginfo_icons,
-				svginfo_image_props: config.svginfo_image_props,
-				svginfo_lang: config.svginfo_lang,
-				svginfo_title: config.svginfo_title,
-				svginfo_width: config.svginfo_width,
+				svginfo_bg_url: config.editor_img_url + ":",
+				svginfo_bg_note: config.editor_bg_note,
+				svginfo_change_background: config.background,
+				svginfo_dim: config.doc_dims,
+				svginfo_editor_prefs: config.editor_prefs,
+				svginfo_height: common.height,
+				svginfo_icons: config.icon_size,
+				svginfo_image_props: config.image_props,
+				svginfo_lang: config.language,
+				svginfo_title: config.doc_title,
+				svginfo_width: common.width,
 				
 				tool_docprops_cancel: common.cancel,
 				tool_docprops_save: common.ok,
@@ -150,15 +149,15 @@ var svgEditor = (function($, Editor) {
 				tool_prefs_cancel: common.cancel,
 				tool_prefs_save: common.ok,
 
-				sidepanel_handle: layers.sidepanel_handle,
+				sidepanel_handle: layers.layers.split('').join(' '),
 
-				tool_clear: tools.tool_clear,
-				tool_docprops: tools.tool_docprops,
-				tool_export: tools.tool_export,
-				tool_import: tools.tool_import,
-				tool_imagelib: tools.tool_imagelib,
-				tool_open: tools.tool_open,
-				tool_save: tools.tool_save,
+				tool_clear: tools.new_doc,
+				tool_docprops: tools.docprops,
+				tool_export: tools.export_png,
+				tool_import: tools.import_doc,
+				tool_imagelib: tools.imagelib,
+				tool_open: tools.open_doc,
+				tool_save: tools.save_doc,
 				
 				svginfo_units_rulers: config.units_and_rulers,
 				svginfo_rulers_onoff: config.show_rulers,
@@ -188,37 +187,36 @@ var svgEditor = (function($, Editor) {
 				opts['#cmenu_canvas a[href="#' + this + '"]'] = tools[this];
 			});
 
-			$.each(['dupe','delete','merge_down', 'merge_all'], function() {
+			$.each(['dupe','merge_down', 'merge_all'], function() {
 				opts['#cmenu_layers a[href="#' + this + '"]'] = layers[this];
 			});
 
-			opts['#cmenu_layers a[href="#delete"]'] = layers.layer_delete;
+			opts['#cmenu_layers a[href="#delete"]'] = layers.del;
 			
 			setStrings('content', opts);
 			
 			setStrings('title', {
  				align_relative_to: tools.align_relative_to,
-				bkgnd_color: tools.bkgnd_color,
 				circle_cx: properties.circle_cx,
 				circle_cy: properties.circle_cy,
 				circle_r: properties.circle_r,
-				cornerRadiusLabel: properties.cornerRadiusLabel,
+				cornerRadiusLabel: properties.corner_radius,
 				ellipse_cx: properties.ellipse_cx,
 				ellipse_cy: properties.ellipse_cy,
 				ellipse_rx: properties.ellipse_rx,
 				ellipse_ry: properties.ellipse_ry,
 				fill_color: properties.fill_color,
 				font_family: properties.font_family,
-				idLabel: properties.idLabel,
+				idLabel: properties.id,
 				image_height: properties.image_height,
 				image_url: properties.image_url,
 				image_width: properties.image_width,
-				layer_delete: layers.layer_delete,
-				layer_down: layers.layer_down,
-				layer_new: layers.layer_new,
-				layer_rename: layers.layer_rename,
+				layer_delete: layers.del,
+				layer_down: layers.move_down,
+				layer_new: layers['new'],
+				layer_rename: layers.rename,
 				layer_moreopts: common.more_opts,
-				layer_up: layers.layer_up,
+				layer_up: layers.move_up,
 				line_x1: properties.line_x1,
 				line_x2: properties.line_x2,
 				line_y1: properties.line_y1,
@@ -229,102 +227,80 @@ var svgEditor = (function($, Editor) {
 				linejoin_bevel: properties.linejoin_bevel,
 				linejoin_miter: properties.linejoin_miter,
 				linejoin_round: properties.linejoin_round,
-				main_icon: tools.main_icon,
+				main_icon: tools.main_menu,
 				mode_connect: tools.mode_connect,
-				tools_shapelib_show: tools.tools_shapelib_show,
-				palette: ui.palette,
-				zoom_panel: ui.zoom_panel,
-				path_node_x: properties.path_node_x,
-				path_node_y: properties.path_node_y,
-				rect_height_tool: properties.rect_height_tool,
-				rect_width_tool: properties.rect_width_tool,
+				tools_shapelib_show: tools.mode_shapelib,
+				palette: ui.palette_info,
+				zoom_panel: ui.zoom_level,
+				path_node_x: properties.node_x,
+				path_node_y: properties.node_y,
+				rect_height_tool: properties.rect_height,
+				rect_width_tool: properties.rect_width,
 				seg_type: properties.seg_type,
-				selLayerNames: layers.selLayerNames,
-				selected_x: properties.selected_x,
-				selected_y: properties.selected_y,
+				selLayerNames: layers.move_selected,
+				selected_x: properties.pos_x,
+				selected_y: properties.pos_y,
 				stroke_color: properties.stroke_color,
 				stroke_style: properties.stroke_style,
 				stroke_width: properties.stroke_width,
-				svginfo_title: config.svginfo_title,
-				text: properties.text,
+				svginfo_title: config.doc_title,
+				text: properties.text_contents,
 				toggle_stroke_tools: ui.toggle_stroke_tools,
-				tool_add_subpath: tools.tool_add_subpath,
-				tool_alignbottom: tools.tool_alignbottom,
-				tool_aligncenter: tools.tool_aligncenter,
-				tool_alignleft: tools.tool_alignleft,
-				tool_alignmiddle: tools.tool_alignmiddle,
-				tool_alignright: tools.tool_alignright,
-				tool_aligntop: tools.tool_aligntop,
-				tool_angle: properties.tool_angle,
-				tool_blur: properties.tool_blur,
-				tool_bold: properties.tool_bold,
-				tool_circle: tools.tool_circle,
-				tool_clone: tools.tool_clone,
-				tool_clone_multi: tools.tool_clone_multi,
-				tool_delete: tools.tool_delete,
-				tool_delete_multi: tools.tool_delete_multi,
-				tool_ellipse: tools.tool_ellipse,
-				tool_eyedropper: tools.tool_eyedropper,
-				tool_fhellipse: tools.tool_fhellipse,
-				tool_fhpath: tools.tool_fhpath,
-				tool_fhrect: tools.tool_fhrect,
-				tool_font_size: properties.tool_font_size,
-				tool_group: tools.tool_group,
-				tool_make_link: tools.tool_make_link,
-				tool_link_url: tools.tool_link_url,
-				tool_image: tools.tool_image,
-				tool_italic: properties.tool_italic,
-				tool_line: tools.tool_line,
-				tool_move_bottom: tools.tool_move_bottom,
-				tool_move_top: tools.tool_move_top,
-				tool_node_clone: tools.tool_node_clone,
-				tool_node_delete: tools.tool_node_delete,
-				tool_node_link: tools.tool_node_link,
-				tool_opacity: properties.tool_opacity,
-				tool_openclose_path: tools.tool_openclose_path,
-				tool_path: tools.tool_path,
-				tool_position: tools.tool_position,
-				tool_rect: tools.tool_rect,
-				tool_redo: tools.tool_redo,
-				tool_reorient: tools.tool_reorient,
-				tool_select: tools.tool_select,
-				tool_source: tools.tool_source,
-				tool_square: tools.tool_square,
-				tool_text: tools.tool_text,
-				tool_topath: tools.tool_topath,
-				tool_undo: tools.tool_undo,
-				tool_ungroup: tools.tool_ungroup,
-				tool_wireframe: tools.tool_wireframe,
-				view_grid: tools.view_grid,
-				tool_zoom: tools.tool_zoom,
-				url_notice: tools.url_notice
+				tool_add_subpath: tools.add_subpath,
+				tool_alignbottom: tools.align_bottom,
+				tool_aligncenter: tools.align_center,
+				tool_alignleft: tools.align_left,
+				tool_alignmiddle: tools.align_middle,
+				tool_alignright: tools.align_right,
+				tool_aligntop: tools.align_top,
+				tool_angle: properties.angle,
+				tool_blur: properties.blur,
+				tool_bold: properties.bold,
+				tool_circle: tools.mode_circle,
+				tool_clone: tools.clone,
+				tool_clone_multi: tools.clone,
+				tool_delete: tools.del,
+				tool_delete_multi: tools.del,
+				tool_ellipse: tools.mode_ellipse,
+				tool_eyedropper: tools.mode_eyedropper,
+				tool_fhellipse: tools.mode_fhellipse,
+				tool_fhpath: tools.mode_fhpath,
+				tool_fhrect: tools.mode_fhrect,
+				tool_font_size: properties.font_size,
+				tool_group: tools.group,
+				tool_make_link: tools.make_link,
+				tool_link_url: tools.set_link_url,
+				tool_image: tools.mode_image,
+				tool_italic: properties.italic,
+				tool_line: tools.mode_line,
+				tool_move_bottom: tools.move_bottom,
+				tool_move_top: tools.move_top,
+				tool_node_clone: tools.node_clone,
+				tool_node_delete: tools.node_delete,
+				tool_node_link: tools.node_link,
+				tool_opacity: properties.opacity,
+				tool_openclose_path: tools.openclose_path,
+				tool_path: tools.mode_path,
+				tool_position: tools.align_to_page,
+				tool_rect: tools.mode_rect,
+				tool_redo: tools.redo,
+				tool_reorient: tools.reorient_path,
+				tool_select: tools.mode_select,
+				tool_source: tools.source_save,
+				tool_square: tools.mode_square,
+				tool_text: tools.mode_text,
+				tool_topath: tools.to_path,
+				tool_undo: tools.undo,
+				tool_ungroup: tools.ungroup,
+				tool_wireframe: tools.wireframe_mode,
+				view_grid: tools.toggle_grid,
+				tool_zoom: tools.mode_zoom,
+				url_notice: tools.no_embed
 
 				}
 			, true);
 			
 			Editor.setLang(lang_param, langData);
-			
-			
-			
-// 			$.each(langData, function(i, data) {
-// 				if(data.id) {
-// 					var elem = $('#svg_editor').parent().find('#'+data.id)[0];
-// 					if(elem) {
-// 						if(data.title)
-// 							elem.title = data.title;
-// 						if(data.textContent) {
-// 							// Only replace non-empty text nodes, not elements
-// 							$.each(elem.childNodes, function(j, node) {
-// 								if(node.nodeType == 3 && $.trim(node.textContent)) {
-// 									node.textContent = data.textContent;
-// 								}
-// 							});
-// 						}
-// 					}
-// 				} else if(data.js_strings) {
-// 					js_strings = data.js_strings;
-// 				}
-// 			});
 		}
 		
 		$.ajax({
