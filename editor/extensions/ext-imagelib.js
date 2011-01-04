@@ -10,6 +10,16 @@
 svgEditor.addExtension("imagelib", function() {
 
 	var uiStrings = svgEditor.uiStrings;
+	
+	$.extend(uiStrings, {
+		imagelib: {
+			select_lib: 'Select an image library',
+			show_list: 'Show library list',
+			import_single: 'Import single',
+			import_multi: 'Import multiple',
+			open: 'Open as new document'
+		}
+	});
 
 	var img_libs = [{
 			name: 'Demo library (local)',
