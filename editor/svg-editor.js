@@ -3261,7 +3261,8 @@
 					{ 
 						paint: paint,
 						window: { pickerTitle: title },
-						images: { clientPath: curConfig.jGraduatePath }
+						images: { clientPath: curConfig.jGraduatePath },
+						newstop: 'inverse'
 					},
 					function(p) {
 						paint = new $.jGraduate.Paint(p);
