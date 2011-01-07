@@ -91,7 +91,6 @@ div.jGraduate_GradContainer {
 div.jGraduate_GradContainer div.grad_coord {
 	background: #000;
 	border: 1px solid #fff;
-	z-index: 2;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	width: 10px;

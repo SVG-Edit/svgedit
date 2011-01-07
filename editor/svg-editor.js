@@ -2694,7 +2694,7 @@
 				$('#canvas_height').val(res.h);
 				$('#canvas_title').val(svgCanvas.getDocumentTitle());
 				
-				$('#svg_docprops').fadeIn();
+				$('#svg_docprops').show();
 			};
 			
 			
@@ -2726,7 +2726,7 @@
 				    $('#grid_snapping_on').removeAttr('checked');
 				}
 				
-				$('#svg_prefs').fadeIn();
+				$('#svg_prefs').show();
 			};			
 			
 			var properlySourceSizeTextArea = function(){
