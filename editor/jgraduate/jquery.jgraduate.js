@@ -16,7 +16,9 @@ where options is an object literal:
 	{
 		window: { title: "Pick the start color and opacity for the gradient" },
 		images: { clientPath: "images/" },
-		paint: a Paint object
+		paint: a Paint object,
+		newstop: String of value "same", "inverse", "black" or "white" 
+				 OR object with one or both values {color: #Hex color, opac: number 0-1}
 	}
  
 - the Paint object is:
@@ -120,7 +122,8 @@ jQuery.fn.jGraduateDefaults = {
 	},
 	images: {
 		clientPath: "images/"
-	}
+	},
+	newstop: 'inverse' // same, inverse, black, white
 };
 
 var isGecko = navigator.userAgent.indexOf('Gecko/') >= 0;
@@ -363,7 +366,40 @@ jQuery.fn.jGraduate =
 				grad = curGradient = $('#' + id + '_lg_jgraduate_grad')[0];
 				var color = $this.paint[curType];
 				mkStop(0, '#' + color, 1);
-				mkStop(1, '#' + color, 0.5);
+				
+				var type = typeof $settings.newstop;
+				
+				if(type === 'string') {
+					switch ( $settings.newstop ) {
+						case 'same':
+							mkStop(1, '#' + color, 1);				
+							break;
+
+						case 'inverse':
+							// Invert current color for second stop
+							var inverted = '';
+							
+							for(var i = 0; i < 6; i += 2) {
+								var ch = color.substr(i, 2);
+								var inv = (255 - parseInt(color.substr(i, 2), 16)).toString(16);
+								if(inv.length < 2) inv = 0 + inv;
+								inverted += inv;
+							}
+							mkStop(1, '#' + inverted, 1);
+							break;
+						
+						case 'white':
+							mkStop(1, '#ffffff', 1);
+							break;
+	
+						case 'black':
+							mkStop(1, '#000000', 1);
+							break;
+					}
+				} else if(type === 'object'){
+					var opac = ('opac' in $settings.newstop) ? $settings.newstop.opac : 1;
+					mkStop(1, ($settings.newstop.color || '#' + color), opac);
+				}
 			}
 
 			
@@ -420,15 +456,15 @@ jQuery.fn.jGraduate =
 			
 			var coords = $(idref + ' .grad_coord');
 			
-			$(container).hover(function() {
-				coords.animate({
-					opacity: 1
-				}, 500);
-			}, function() {
-				coords.animate({
-					opacity: .2
-				}, 500);				
-			});
+// 			$(container).hover(function() {
+// 				coords.animate({
+// 					opacity: 1
+// 				}, 500);
+// 			}, function() {
+// 				coords.animate({
+// 					opacity: .2
+// 				}, 500);				
+// 			});
 			
 			$.each(['x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'fx', 'fy'], function(i, attr) {
 				var attrval = curGradient.getAttribute(attr);
@@ -785,8 +821,6 @@ jQuery.fn.jGraduate =
 			spreadMethodOpt.val(curGradient.getAttribute('spreadMethod') || 'pad');
 
 			var offset;
-			
-			
 			
 			// No match, so show focus point
 			var showFocus = false; 
