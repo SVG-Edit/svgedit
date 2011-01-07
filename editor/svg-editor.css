@@ -780,7 +780,7 @@ span.zoom_tool {
 	display: none;
 	background: #E8E8E8;
 	height: 350px;
-	z-index: 4;
+	z-index: 5;
 }
 
 #svg_editor .tools_flyout {
