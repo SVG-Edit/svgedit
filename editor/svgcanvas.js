@@ -2491,7 +2491,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	//   and do nothing else
 	var mouseDown = function(evt)
 	{
-		if(canvas.spaceKey) return;
+		if(canvas.spaceKey || evt.button === 1) return;
 		
 		var right_click = evt.button === 2;
 		
