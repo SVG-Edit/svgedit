@@ -72,7 +72,6 @@
 				notification: {
 					"invalidAttrValGiven":"Invalid value given",
 					"noContentToFitTo":"No content to fit to",
-					"layer":"Layer",
 					"dupeLayerName":"There is already a layer named that!",
 					"enterUniqueLayerName":"Please enter a unique layer name",
 					"enterNewLayerName":"Please enter the new layer name",
@@ -3537,7 +3536,7 @@
 			$('#layer_new').click(function() {
 				var i = svgCanvas.getNumLayers();
 				do {
-					var uniqName = uiStrings.notification.layer + " " + ++i;
+					var uniqName = uiStrings.layers.layer + " " + ++i;
 				} while(svgCanvas.hasLayer(uniqName));
 				
 				$.prompt(uiStrings.notification.enterUniqueLayerName,uniqName, function(newName) {
