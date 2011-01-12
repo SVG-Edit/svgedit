@@ -7,12 +7,18 @@
  *
  */
 
+// Dependencies:
+// 1) jQuery
+// 2) history.js
+// 3) svg_editor.js
+// 4) svgcanvas.js
+
 svgEditor.addExtension("eyedropper", function(S) {
 		var svgcontent = S.svgcontent,
 			svgns = "http://www.w3.org/2000/svg",
 			svgdoc = S.svgroot.parentNode.ownerDocument,
-			ChangeElementCommand = svgCanvas.getPrivateMethods().ChangeElementCommand,
-			addToHistory = svgCanvas.getPrivateMethods().addCommandToHistory,
+			ChangeElementCommand = svgedit.history.ChangeElementCommand,
+			addToHistory = function(cmd) { canvas.undoMgr.addCommandToHistory(cmd); },
 			currentStyle = {fillPaint: "red", fillOpacity: 1.0,
 							strokePaint: "black", strokeOpacity: 1.0, 
 							strokeWidth: 5, strokeDashArray: null,
