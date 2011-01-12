@@ -4105,6 +4105,9 @@
 					toggleSidePanel();
 				}
 				
+				$('#rulers').toggle(!!curConfig.showRulers);
+				$('#show_rulers')[0].checked = curConfig.showRulers;
+				
 				if(curConfig.gridSnapping) {
 					$('#grid_snapping_on')[0].checked = true;
 				}
@@ -4339,7 +4342,6 @@
 					w_area[0].scrollLeft = new_ctr.x - w_orig/2;
 					w_area[0].scrollTop = new_ctr.y - h_orig/2;
 				}
-				
 				if(curConfig.showRulers) {
 					updateRulers(cnvs, zoom);
 					workarea.scroll();
