@@ -6422,17 +6422,20 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 			if(href && ref_elems.indexOf(n.nodeName) >= 0)
 			{
 				var refid = href.substr(1);
-				if (!(refid in ids)) {
-					// add this id to our map
-					ids[refid] = {elem:null, attrs:[], hrefs:[]};
+				if (refid) {
+					if (!(refid in ids)) {
+						// add this id to our map
+						ids[refid] = {elem:null, attrs:[], hrefs:[]};
+					}
+					ids[refid]["hrefs"].push(n);
 				}
-				ids[refid]["hrefs"].push(n);
 			}						
 		}
 	});
 	
 	// in ids, we now have a map of ids, elements and attributes, let's re-identify
 	for (var oldid in ids) {
+		if (!oldid) continue;
 		var elem = ids[oldid]["elem"];
 		if (elem) {
 			var newid = getNextId();
