@@ -6375,7 +6375,15 @@ this.randomizeIds = function() {
 // g - The parent element of the tree to give unique IDs
 var uniquifyElems = this.uniquifyElems = function(g) {
 	var ids = {};
-	var ref_elems = ["filter", "linearGradient", "pattern",	"radialGradient", "textPath", "use"];
+	// TODO: Handle markers and connectors.  These are not yet re-identified properly
+	// as their referring elements do not get remapped.
+	//
+	// <marker id='se_marker_end_svg_7'/>
+	// <polyline id='svg_7' se:connector='svg_1 svg_6' marker-end='url(#se_marker_end_svg_7)'/>
+	// 
+	// Problem #1: if svg_1 gets renamed, we do not update the polyline's se:connector attribute
+	// Problem #2: if the polyline svg_7 gets renamed, we do not update the marker id nor the polyline's marker-end attribute
+	var ref_elems = ["filter", "linearGradient", "pattern",	"radialGradient", "symbol", "textPath", "use"];
 	
 	svgedit.utilities.walkTree(g, function(n) {
 		// if it's an element node
@@ -6396,7 +6404,7 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 				var attrnode = n.getAttributeNode(attr);
 				if (attrnode) {
 					// the incoming file has been sanitized, so we should be able to safely just strip off the leading #
-					var url = getUrlFromAttr(attrnode.value),								
+					var url = getUrlFromAttr(attrnode.value),
 						refid = url ? url.substr(1) : null;
 					if (refid) {
 						if (!(refid in ids)) {
