@@ -6404,7 +6404,7 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 				var attrnode = n.getAttributeNode(attr);
 				if (attrnode) {
 					// the incoming file has been sanitized, so we should be able to safely just strip off the leading #
-					var url = getUrlFromAttr(attrnode.value),
+					var url = svgedit.utilities.getUrlFromAttr(attrnode.value),
 						refid = url ? url.substr(1) : null;
 					if (refid) {
 						if (!(refid in ids)) {
@@ -6458,7 +6458,7 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 			var k = hreffers.length;
 			while (k--) {
 				var hreffer = hreffers[k];
-				setHref(hreffer, "#"+newid);
+				svgedit.utilities.setHref(hreffer, "#"+newid);
 			}
 		}
 	}
