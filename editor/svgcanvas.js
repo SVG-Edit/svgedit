@@ -6870,7 +6870,7 @@ this.importSvgString = function(xmlString) {
 	
 			this.prepareSvg(newDoc);
 	
-			var batchCmd = new BatchCommand("Change Source");
+			var batchCmd = new BatchCommand("Import SVG");
 	
 			// import new svg document into our document
 			var svg = svgdoc.importNode(newDoc.documentElement, true);
@@ -6906,6 +6906,7 @@ this.importSvgString = function(xmlString) {
 			if(svgedit.browsersupport.isGecko()) {
 				// Move all gradients into root for Firefox, workaround for this bug:
 				// https://bugzilla.mozilla.org/show_bug.cgi?id=353575
+				// TODO: Make this properly undo-able.
 				$(svg).find('linearGradient, radialGradient, pattern').appendTo(defs);
 			}
 	
@@ -6918,7 +6919,6 @@ this.importSvgString = function(xmlString) {
 				var attr = attrs[i];
 				symbol.setAttribute(attr.nodeName, attr.nodeValue);
 			}
-	// 		var symbol = svg;
 			symbol.id = getNextId();
 			
 			// Store data
@@ -6928,14 +6928,16 @@ this.importSvgString = function(xmlString) {
 			}
 			
 			findDefs().appendChild(symbol);
+			batchCmd.addSubCommand(new InsertElementCommand(symbol));
 		}
 		
 		
 		var use_el = svgdoc.createElementNS(svgns, "use");
 		setHref(use_el, "#" + symbol.id);
 		
-		(current_group || current_layer).appendChild(use_el);
 		use_el.id = getNextId();
+		(current_group || current_layer).appendChild(use_el);
+		batchCmd.addSubCommand(new InsertElementCommand(use_el));
 		clearSelection();
 		
 		use_el.setAttribute("transform", ts);
@@ -6946,6 +6948,8 @@ this.importSvgString = function(xmlString) {
 		// TODO: Find way to add this in a recalculateDimensions-parsable way
 // 				if (vb[0] != 0 || vb[1] != 0)
 // 					ts = "translate(" + (-vb[0]) + "," + (-vb[1]) + ") " + ts;
+		addCommandToHistory(batchCmd);
+		call("changed", [svgcontent]);
 
 	} catch(e) {
 		console.log(e);
