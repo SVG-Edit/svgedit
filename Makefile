@@ -23,7 +23,7 @@ build/$(PACKAGE):
 
 # codedread: NOTE: Some files are not ready for the Closure compiler: (jquery)
 	java -jar $(CLOSURE) \
-	   --js browsersupport.js \
+	   --js browser.js \
 	   --js svgtransformlist.js \
 	   --js math.js \
 	   --js units.js \

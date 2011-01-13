@@ -9,7 +9,7 @@
 
 // Dependencies:
 // 1) jQuery
-// 2) browsersupport.js
+// 2) browser.js
 // 3) math.js
 // 4) svgutils.js
 
@@ -383,7 +383,7 @@ svgedit.select.SelectorManager.prototype.initGroup = function() {
 			'height': dims[1],
 			'x': 0,
 			'y': 0,
-			'overflow': (svgedit.browsersupport.isWebkit() ? 'none' : 'visible'), // Chrome 7 has a problem with this when zooming out
+			'overflow': (svgedit.browser.isWebkit() ? 'none' : 'visible'), // Chrome 7 has a problem with this when zooming out
 			'style': 'pointer-events:none'
 		}
 	});
@@ -404,7 +404,7 @@ svgedit.select.SelectorManager.prototype.initGroup = function() {
 
 	// Both Firefox and WebKit are too slow with this filter region (especially at higher
 	// zoom levels) and Opera has at least one bug
-//	if (!svgedit.browsersupport.isOpera()) rect.setAttribute('filter', 'url(#canvashadow)');
+//	if (!svgedit.browser.isOpera()) rect.setAttribute('filter', 'url(#canvashadow)');
 	canvasbg.appendChild(rect);
 	svgFactory_.svgRoot().insertBefore(canvasbg, svgFactory_.svgContent());
 };

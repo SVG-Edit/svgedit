@@ -8,7 +8,7 @@
  */
 
 // Dependencies:
-// 1) browsersupport.js
+// 1) browser.js
 // 2) svgutils.js
 
 (function() {
@@ -184,7 +184,7 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 			}
 			
 			// Add spaces before negative signs where necessary
-			if(svgedit.browsersupport.isGecko()) {
+			if(svgedit.browser.isGecko()) {
 				switch ( attrName ) {
 				case "transform":
 				case "gradientTransform":

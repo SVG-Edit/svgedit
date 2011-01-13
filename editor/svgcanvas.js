@@ -11,7 +11,7 @@
 
 // Dependencies:
 // 1) jQuery
-// 2) browsersupport.js
+// 2) browser.js
 // 3) svgtransformlist.js
 // 4) math.js
 // 5) units.js
@@ -219,12 +219,12 @@ var selectedElements = new Array(1);
 // Parameters:
 // id - String with the element's new ID
 var getElem = null;
-if (svgedit.browsersupport.supportsSelectors()) {
+if (svgedit.browser.supportsSelectors()) {
 	getElem = function(id) {
 		// querySelector lookup
 		return svgroot.querySelector('#'+id);
 	};
-} else if (svgedit.browsersupport.supportsXpath()) {
+} else if (svgedit.browser.supportsXpath()) {
 	getElem = function(id) {
 		// xpath lookup
 		return svgdoc.evaluate('svg:svg[@id="svgroot"]//svg:*[@id="'+id+'"]',
@@ -251,7 +251,7 @@ var assignAttributes = canvas.assignAttributes = function(node, attrs, suspendLe
 	if(!suspendLength) suspendLength = 0;
 	// Opera has a problem with suspendRedraw() apparently
 	var handle = null;
-	if (!svgedit.browsersupport.isOpera()) svgroot.suspendRedraw(suspendLength);
+	if (!svgedit.browser.isOpera()) svgroot.suspendRedraw(suspendLength);
 
 	for (var i in attrs) {
 		var ns = (i.substr(0,4) === "xml:" ? xmlns : 
@@ -267,7 +267,7 @@ var assignAttributes = canvas.assignAttributes = function(node, attrs, suspendLe
 		
 	}
 	
-	if (!svgedit.browsersupport.isOpera()) svgroot.unsuspendRedraw(handle);
+	if (!svgedit.browser.isOpera()) svgroot.unsuspendRedraw(handle);
 };
 
 // Function: cleanupElement
@@ -940,7 +940,7 @@ var copyElem = function(el) {
 	
 	// Opera's "d" value needs to be reset for Opera/Win/non-EN
 	// Also needed for webkit (else does not keep curved segments on clone)
-	if(svgedit.browsersupport.isWebkit() && el.nodeName == 'path') {
+	if(svgedit.browser.isWebkit() && el.nodeName == 'path') {
 		var fixed_d = pathActions.convertPath(el);
 		new_el.setAttribute('d', fixed_d);
 	}
@@ -1080,7 +1080,7 @@ var getRefElem = this.getRefElem = function(attrVal) {
 // Parameters: 
 // elem - The (text) DOM element to clone
 var ffClone = function(elem) {
-	if(!svgedit.browsersupport.isGecko()) return elem;
+	if(!svgedit.browser.isGecko()) return elem;
 	var clone = elem.cloneNode(true)
 	elem.parentNode.insertBefore(clone, elem);
 	elem.parentNode.removeChild(elem);
@@ -2035,7 +2035,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		// Check if it has a gradient with userSpaceOnUse, in which case
 		// adjust it by recalculating the matrix transform.
 		// TODO: Make this work in Webkit using svgedit.transformlist.SVGTransformList
-		if(!svgedit.browsersupport.isWebkit()) {
+		if(!svgedit.browser.isWebkit()) {
 			var fill = selected.getAttribute('fill');
 			if(fill && fill.indexOf('url(') === 0) {
 				var paint = getRefElem(fill);
@@ -2662,7 +2662,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					tlist.appendItem(svgroot.createSVGTransform());
 					tlist.appendItem(svgroot.createSVGTransform());
 					
-					if(svgedit.browsersupport.supportsNonScalingStroke()) {
+					if(svgedit.browser.supportsNonScalingStroke()) {
 						mouse_target.style.vectorEffect = 'non-scaling-stroke';
 						var all = mouse_target.getElementsByTagName('*'), len = all.length;
 						for(var i = 0; i < all.length; i++) {
@@ -3323,7 +3323,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					} // no change in mouse position
 					
 					// Remove non-scaling stroke
-					if(svgedit.browsersupport.supportsNonScalingStroke()) {
+					if(svgedit.browser.supportsNonScalingStroke()) {
 						var elem = selectedElements[0];
 						elem.removeAttribute('style');
 						svgedit.utilities.walkTree(elem, function(elem) {
@@ -3903,7 +3903,7 @@ var textActions = canvas.textActions = function() {
 
 			$(curtext).css('cursor', 'text');
 			
-// 				if(svgedit.browsersupport.supportsEditableText()) {
+// 				if(svgedit.browser.supportsEditableText()) {
 // 					curtext.setAttribute('editable', 'simple');
 // 					return;
 // 				}
@@ -3943,7 +3943,7 @@ var textActions = canvas.textActions = function() {
 			
 			curtext = false;
 			
-// 				if(svgedit.browsersupport.supportsEditableText()) {
+// 				if(svgedit.browser.supportsEditableText()) {
 // 					curtext.removeAttribute('editable');
 // 				}
 		},
@@ -3959,7 +3959,7 @@ var textActions = canvas.textActions = function() {
 		init: function(inputElem) {
 			if(!curtext) return;
 
-// 				if(svgedit.browsersupport.supportsEditableText()) {
+// 				if(svgedit.browser.supportsEditableText()) {
 // 					curtext.select();
 // 					return;
 // 				}
@@ -4047,7 +4047,7 @@ var pathActions = canvas.pathActions = function() {
 		// Support insertItemBefore on paths for FF2
 		var list = elem.pathSegList;
 		
-		if(svgedit.browsersupport.supportsPathInsertItemBefore()) {
+		if(svgedit.browser.supportsPathInsertItemBefore()) {
 			list.insertItemBefore(newseg, index);
 			return;
 		}
@@ -4618,7 +4618,7 @@ var pathActions = canvas.pathActions = function() {
 		}
 		
 		this.endChanges = function(text) {
-			if(svgedit.browsersupport.isWebkit()) resetD(p.elem);
+			if(svgedit.browser.isWebkit()) resetD(p.elem);
 			var cmd = new ChangeElementCommand(elem, {d: p.last_d}, text);
 			addCommandToHistory(cmd);
 			call("changed", [elem]);
@@ -4894,7 +4894,7 @@ var pathActions = canvas.pathActions = function() {
 		var func = 'createSVGPathSeg' + pathFuncs[type];
 		var seg = path[func].apply(path, pts);
 		
-		if(svgedit.browsersupport.supportsPathReplaceItem()) {
+		if(svgedit.browser.supportsPathReplaceItem()) {
 			path.pathSegList.replaceItem(seg, index);
 		} else {
 			var segList = path.pathSegList;
@@ -5805,7 +5805,7 @@ var pathActions = canvas.pathActions = function() {
 					
 				}
 			}
-			if(svgedit.browsersupport.isWebkit()) resetD(elem);
+			if(svgedit.browser.isWebkit()) resetD(elem);
 		},
 		// Convert a path to one with only absolute or relative values
 		convertPath: function(path, toRel) {
@@ -6471,7 +6471,7 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 // Converts gradients from userSpaceOnUse to objectBoundingBox
 var convertGradients = this.convertGradients = function(elem) {
 	var elems = $(elem).find('linearGradient, radialGradient');
-	if(!elems.length && svgedit.browsersupport.isWebkit()) {
+	if(!elems.length && svgedit.browser.isWebkit()) {
 		// Bug in webkit prevents regular *Gradient selector search
 		elems = $(elem).find('*').filter(function() {
 			return (this.tagName.indexOf('Gradient') >= 0);
@@ -6594,7 +6594,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		}
 		
 		// Duplicate the gradients for Gecko, since they weren't included in the <symbol>
-		if(svgedit.browsersupport.isGecko()) {
+		if(svgedit.browser.isGecko()) {
 			var dupeGrads = $(findDefs()).children('linearGradient,radialGradient,pattern').clone();
 			$(g).append(dupeGrads);
 		}
@@ -6607,7 +6607,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		uniquifyElems(g);
 		
 		// Put the dupe gradients back into <defs> (after uniquifying them)
-		if(svgedit.browsersupport.isGecko()) {
+		if(svgedit.browser.isGecko()) {
 			$(findDefs()).append( $(g).find('linearGradient,radialGradient,pattern') );
 		}
 	
@@ -6626,7 +6626,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 			batchCmd.addSubCommand(new InsertElementCommand(g));
 		}
 		
-		if(svgedit.browsersupport.isGecko()) {
+		if(svgedit.browser.isGecko()) {
 			convertGradients(findDefs());
 		} else {
 			convertGradients(g);
@@ -6728,7 +6728,7 @@ this.setSvgString = function(xmlString) {
 		});
 		
 		// For Firefox: Put all paint elems in defs
-		if(svgedit.browsersupport.isGecko()) {
+		if(svgedit.browser.isGecko()) {
 			content.find('linearGradient, radialGradient, pattern').appendTo(findDefs());
 		}
 
@@ -6903,7 +6903,7 @@ this.importSvgString = function(xmlString) {
 			var symbol = svgdoc.createElementNS(svgns, "symbol");
 			var defs = findDefs();
 			
-			if(svgedit.browsersupport.isGecko()) {
+			if(svgedit.browser.isGecko()) {
 				// Move all gradients into root for Firefox, workaround for this bug:
 				// https://bugzilla.mozilla.org/show_bug.cgi?id=353575
 				// TODO: Make this properly undo-able.
@@ -6982,7 +6982,7 @@ var identifyLayers = canvas.identifyLayers = function() {
 				var name = $("title",child).text();
 				
 				// Hack for Opera 10.60
-				if(!name && svgedit.browsersupport.isOpera() && child.querySelectorAll) {
+				if(!name && svgedit.browser.isOpera() && child.querySelectorAll) {
 					name = $(child.querySelectorAll('title')).text();
 				}
 
@@ -8273,7 +8273,7 @@ this.getBlur = function(elem) {
 			if(filterHidden) {
 				changeSelectedAttributeNoUndo("filter", 'url(#' + elem.id + '_blur)');
 			}
-			if(svgedit.browsersupport.isWebkit()) {
+			if(svgedit.browser.isWebkit()) {
 				console.log('e', elem);
 				elem.removeAttribute('filter');
 				elem.setAttribute('filter', 'url(#' + elem.id + '_blur)');
@@ -8309,7 +8309,7 @@ this.getBlur = function(elem) {
 			}, 100);
 		} else {
 			// Removing these attributes hides text in Chrome (see Issue 579)
-			if(!svgedit.browsersupport.isWebkit()) {
+			if(!svgedit.browser.isWebkit()) {
 				filter.removeAttribute('x');
 				filter.removeAttribute('y');
 				filter.removeAttribute('width');
@@ -9840,7 +9840,7 @@ this.getPrivateMethods = function() {
 		canvas.textActions = textActions;
 	}
 
-	if (!svgedit.browsersupport.supportsTextCharPos()) {
+	if (!svgedit.browser.supportsTextCharPos()) {
 		disableAdvancedTextEdit();
 	}
 })();

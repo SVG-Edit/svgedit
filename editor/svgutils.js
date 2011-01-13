@@ -9,7 +9,7 @@
 
 // Dependencies:
 // 1) jQuery
-// 2) browsersupport.js
+// 2) browser.js
 // 3) svgtransformlist.js
 // 4) math.js
 
@@ -421,9 +421,9 @@ svgedit.utilities.getBBox = function(elem) {
 		selected.textContent = 'a'; // Some character needed for the selector to use.
 		ret = selected.getBBox();
 		selected.textContent = '';
-	} else if(elname === 'path' && svgedit.browsersupport.isWebkit()) {
+	} else if(elname === 'path' && svgedit.browser.isWebkit()) {
 		ret = svgedit.utilities.getPathBBox(selected);
-	} else if(elname === 'use' && !svgedit.browsersupport.isWebkit() || elname === 'foreignObject') {
+	} else if(elname === 'use' && !svgedit.browser.isWebkit() || elname === 'foreignObject') {
 		ret = selected.getBBox();
 		var bb = {};
 		bb.width = ret.width;
