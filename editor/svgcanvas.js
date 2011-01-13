@@ -218,22 +218,27 @@ var selectedElements = new Array(1);
 //
 // Parameters:
 // id - String with the element's new ID
-var getElem = function(id) {
-	if(svgroot.querySelector) {
+var getElem = null;
+if (svgedit.browsersupport.supportsSelectors()) {
+	getElem = function(id) {
 		// querySelector lookup
 		return svgroot.querySelector('#'+id);
-	} else if(svgdoc.evaluate) {
+	};
+} else if (svgedit.browsersupport.supportsXpath()) {
+	getElem = function(id) {
 		// xpath lookup
-		return svgdoc.evaluate('svg:svg[@id="svgroot"]//svg:*[@id="'+id+'"]', container, function() { return "http://www.w3.org/2000/svg"; }, 9, null).singleNodeValue;
-	} else {
+		return svgdoc.evaluate('svg:svg[@id="svgroot"]//svg:*[@id="'+id+'"]',
+			container, function() { return "http://www.w3.org/2000/svg"; },
+			9, null).singleNodeValue;
+	};
+} else {
+	getElem = function(id) {
 		// jQuery lookup: twice as slow as xpath in FF
 		return $(svgroot).find('[id=' + id + ']')[0];
-	}
+	};
+}
+canvas.getElem = getElem;
 	
-	// getElementById lookup: includes icons, not good
-	// return svgdoc.getElementById(id);
-};
-
 // Function: assignAttributes
 // Assigns multiple attributes to an element.
 //
@@ -2657,7 +2662,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					tlist.appendItem(svgroot.createSVGTransform());
 					tlist.appendItem(svgroot.createSVGTransform());
 					
-					if(svgedit.browsersupport.nonScalingStroke) {
+					if(svgedit.browsersupport.supportsNonScalingStroke()) {
 						mouse_target.style.vectorEffect = 'non-scaling-stroke';
 						var all = mouse_target.getElementsByTagName('*'), len = all.length;
 						for(var i = 0; i < all.length; i++) {
@@ -3318,7 +3323,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					} // no change in mouse position
 					
 					// Remove non-scaling stroke
-					if(svgedit.browsersupport.nonScalingStroke) {
+					if(svgedit.browsersupport.supportsNonScalingStroke()) {
 						var elem = selectedElements[0];
 						elem.removeAttribute('style');
 						svgedit.utilities.walkTree(elem, function(elem) {
@@ -3898,7 +3903,7 @@ var textActions = canvas.textActions = function() {
 
 			$(curtext).css('cursor', 'text');
 			
-// 				if(svgedit.browsersupport.editableText) {
+// 				if(svgedit.browsersupport.supportsEditableText()) {
 // 					curtext.setAttribute('editable', 'simple');
 // 					return;
 // 				}
@@ -3938,7 +3943,7 @@ var textActions = canvas.textActions = function() {
 			
 			curtext = false;
 			
-// 				if(svgedit.browsersupport.editableText) {
+// 				if(svgedit.browsersupport.supportsEditableText()) {
 // 					curtext.removeAttribute('editable');
 // 				}
 		},
@@ -3954,7 +3959,7 @@ var textActions = canvas.textActions = function() {
 		init: function(inputElem) {
 			if(!curtext) return;
 
-// 				if(svgedit.browsersupport.editableText) {
+// 				if(svgedit.browsersupport.supportsEditableText()) {
 // 					curtext.select();
 // 					return;
 // 				}
@@ -4042,7 +4047,7 @@ var pathActions = canvas.pathActions = function() {
 		// Support insertItemBefore on paths for FF2
 		var list = elem.pathSegList;
 		
-		if(svgedit.browsersupport.pathInsertItemBefore) {
+		if(svgedit.browsersupport.supportsPathInsertItemBefore()) {
 			list.insertItemBefore(newseg, index);
 			return;
 		}
@@ -4889,7 +4894,7 @@ var pathActions = canvas.pathActions = function() {
 		var func = 'createSVGPathSeg' + pathFuncs[type];
 		var seg = path[func].apply(path, pts);
 		
-		if(svgedit.browsersupport.pathReplaceItem) {
+		if(svgedit.browsersupport.supportsPathReplaceItem()) {
 			path.pathSegList.replaceItem(seg, index);
 		} else {
 			var segList = path.pathSegList;
@@ -9835,7 +9840,7 @@ this.getPrivateMethods = function() {
 		canvas.textActions = textActions;
 	}
 
-	if (!svgedit.browsersupport.textCharPos) {
+	if (!svgedit.browsersupport.supportsTextCharPos()) {
 		disableAdvancedTextEdit();
 	}
 })();
