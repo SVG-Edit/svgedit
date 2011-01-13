@@ -18,6 +18,7 @@
 // 6) svgutils.js
 // 7) sanitize.js
 // 8) history.js
+// 9) select.js
 
 if(!window.console) {
 	window.console = {};
@@ -125,6 +126,7 @@ var dimensions = curConfig.dimensions;
 var canvas = this;
 
 // "document" element associated with the container (same as window.document using default svg-editor.js)
+// NOTE: This is not actually a SVG document, but a HTML document.
 var svgdoc = container.ownerDocument;
 
 // This is a container for the document being edited, not the document itself.
@@ -158,6 +160,15 @@ $(svgcontent).attr({
 	"xmlns:se": se_ns,
 	"xmlns:xlink": xlinkns
 }).appendTo(svgroot);
+
+// nonce to uniquify id's
+var nonce = Math.floor(Math.random() * 100001);
+
+// Boolean to indicate whether or not IDs given to elements should be random
+var randomize_ids = false;
+
+// Set nonce if randomize_ids = true
+if (randomize_ids) svgcontent.setAttributeNS(se_ns, 'se:nonce', nonce);
 
 
 // Float displaying the current zoom level (1 = 100%, .5 = 50%, etc)
@@ -461,15 +472,6 @@ var ref_attrs = ["clip-path", "fill", "filter", "marker-end", "marker-mid", "mar
 
 var elData = $.data;
 
-// nonce to uniquify id's
-var nonce = Math.floor(Math.random() * 100001);
-
-// Boolean to indicate whether or not IDs given to elements should be random
-var randomize_ids = false;
-
-// Set nonce if randomize_ids = true
-if (randomize_ids) svgcontent.setAttributeNS(se_ns, 'se:nonce', nonce);
-
 // Animation element to change the opacity of any newly created element
 var opac_ani = document.createElementNS(svgns, 'animate');
 $(opac_ani).attr({
@@ -529,7 +531,7 @@ var all_layers = [],
 	started = false,
 	
 	// Integer with internal ID number for the latest element
-	obj_num = 1,
+	obj_num = 0,
 	
 	// String with an element's initial transform attribute value
 	start_transform = null,
@@ -930,8 +932,6 @@ var copyElem = function(el) {
 	// set the copied element's new id
 	new_el.removeAttribute("id");
 	new_el.id = getNextId();
-	// manually increment obj_num because our cloned elements are not in the DOM yet
-	obj_num++; 
 	
 	// Opera's "d" value needs to be reset for Opera/Win/non-EN
 	// Also needed for webkit (else does not keep curved segments on clone)
@@ -981,7 +981,6 @@ var getId, getNextId, call;
 	// Function: getId
 	// Returns the last created DOM element ID string
 	getId = c.getId = function() {
-		if (events["getid"]) return call("getid", obj_num);
 		if (randomize_ids) {
 			return idprefix + nonce +'_' + obj_num;
 		} else {
@@ -992,9 +991,11 @@ var getId, getNextId, call;
 	// Function: getNextId
 	// Creates and returns a unique ID string for a DOM element
 	getNextId = c.getNextId = function() {
+		// always increment the obj_num every time we call getNextId()
+		obj_num++;
+
 		// ensure the ID does not exist
 		var id = getId();
-		
 		while (getElem(id)) {
 			obj_num++;
 			id = getId();
@@ -3326,7 +3327,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					}
 
 				}
-				// we return immediately from select so that the obj_num is not incremented
 				return;
 				break;
 			case "zoom":
@@ -6439,8 +6439,6 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 		var elem = ids[oldid]["elem"];
 		if (elem) {
 			var newid = getNextId();
-			// manually increment obj_num because our cloned elements are not in the DOM yet
-			obj_num++;
 			
 			// assign element its new id
 			elem.id = newid;
@@ -6462,9 +6460,6 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 			}
 		}
 	}
-	
-	// manually increment obj_num because our cloned elements are not in the DOM yet
-	obj_num++;
 }
 
 // Function convertGradients

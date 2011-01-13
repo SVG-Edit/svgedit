@@ -31,6 +31,7 @@ build/$(PACKAGE):
 	   --js sanitize.js \
 	   --js history.js \
 	   --js select.js \
+	   --js document.js \
 	   --js svgcanvas.js \
 	   --js svg-editor.js \
 	   --js locale/locale.js \
