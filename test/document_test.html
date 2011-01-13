@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
+  <script src='../editor/jquery.js'></script>
+  <script type='text/javascript' src='../editor/document.js'></script>
+  <script type='text/javascript' src='qunit/qunit.js'></script>  
+  <script type='text/javascript'>
+  $(function() {
+  	// log function
+  	QUnit.log = function(result, message) {
+		if (window.console && window.console.log) {
+			window.console.log(result +' :: '+ message);
+		}
+	};
+
+	var SVGNS = 'http://www.w3.org/2000/svg';
+	var SENS = "http://svg-edit.googlecode.com";
+	var XMLNSNS = "http://www.w3.org/2000/xmlns/";
+	var NONCE = 'foo';
+
+	var svg = document.createElementNS(SVGNS, 'svg');
+
+	// Set up <svg> with nonce.
+	var svg_n = document.createElementNS(SVGNS, 'svg');
+	svg_n.setAttributeNS(XMLNSNS, 'xmlns:se', SENS);
+	svg_n.setAttributeNS(SENS, 'se:nonce', NONCE); 
+
+	test('Test document module', function() {
+		expect(4);
+		
+		ok(svgedit.document);
+		equals(typeof svgedit.document, typeof {});
+
+		ok(svgedit.document.Document);
+		equals(typeof svgedit.document.Document, typeof function(){});
+	});
+	
+	test('Test document creation', function() {
+		expect(3);
+		
+		try {
+			var doc = new svgedit.document.Document();
+			ok(false, 'Created document without a valid <svg> element');
+		} catch(e) {
+			ok(true);
+		}
+
+		try {
+			var doc = new svgedit.document.Document(svg);
+			ok(doc);
+			equals(typeof doc, typeof {});
+		} catch(e) {
+			ok(false, 'Could not create document from valid <svg> element: ' + e)
+		}
+	});
+
+	test('Test nonce', function() {
+		expect(2);
+		
+		var doc = new svgedit.document.Document(svg);
+		equals(doc.getNonce(), "");
+
+		doc = new svgedit.document.Document(svg_n);
+		equals(doc.getNonce(), NONCE);
+	});
+
+	test('Test getId() and getNextId() without nonce', function() {
+		expect(7);
+		
+		var elem2 = document.createElementNS(SVGNS, 'circle');
+		elem2.id = 'svg_2';
+		svg.appendChild(elem2);
+
+		var doc = new svgedit.document.Document(svg);
+
+		equals(doc.getId(), "svg_0");
+
+		equals(doc.getNextId(), "svg_1");
+		equals(doc.getId(), "svg_1");
+
+		equals(doc.getNextId(), "svg_3");
+		equals(doc.getId(), "svg_3");
+
+		equals(doc.getNextId(), "svg_4");
+		equals(doc.getId(), "svg_4");
+		
+		// clean out svg document
+		while(svg.firstChild) {svg.removeChild(svg.firstChild);}
+	});
+
+	test('Test getId() and getNextId() with prefix without nonce', function() {
+		expect(7);
+
+		var prefix = 'Bar-';
+		var doc = new svgedit.document.Document(svg, prefix);
+
+		equals(doc.getId(), prefix+"0");
+
+		equals(doc.getNextId(), prefix+"1");
+		equals(doc.getId(), prefix+"1");
+
+		equals(doc.getNextId(), prefix+"2");
+		equals(doc.getId(), prefix+"2");
+
+		equals(doc.getNextId(), prefix+"3");
+		equals(doc.getId(), prefix+"3");
+
+		while(svg.firstChild) {svg.removeChild(svg.firstChild);}
+	});
+
+	test('Test getId() and getNextId() with nonce', function() {
+		expect(7);
+		
+		var prefix = "svg_" + NONCE;
+
+		var elem2 = document.createElementNS(SVGNS, 'circle');
+		elem2.id = prefix+'_2';
+		svg_n.appendChild(elem2);
+
+		var doc = new svgedit.document.Document(svg_n);
+
+		equals(doc.getId(), prefix+"_0");
+
+		equals(doc.getNextId(), prefix+"_1");
+		equals(doc.getId(), prefix+"_1");
+
+		equals(doc.getNextId(), prefix+"_3");
+		equals(doc.getId(), prefix+"_3");
+
+		equals(doc.getNextId(), prefix+"_4");
+		equals(doc.getId(), prefix+"_4");
+		while(svg_n.firstChild) {svg_n.removeChild(svg_n.firstChild);}
+	});
+
+	test('Test getId() and getNextId() with prefix with nonce', function() {
+		expect(7);
+
+		var PREFIX = 'Bar-';
+		var doc = new svgedit.document.Document(svg_n, PREFIX);
+
+		var prefix = PREFIX + NONCE + "_";
+		equals(doc.getId(), prefix+"0");
+
+		equals(doc.getNextId(), prefix+"1");
+		equals(doc.getId(), prefix+"1");
+
+		equals(doc.getNextId(), prefix+"2");
+		equals(doc.getId(), prefix+"2");
+
+		equals(doc.getNextId(), prefix+"3");
+		equals(doc.getId(), prefix+"3");
+
+		while(svg_n.firstChild) {svg_n.removeChild(svg.firstChild);}
+	});
+  });
+  </script>
+</head>  
+<body>  
+  <h1 id='qunit-header'>Unit Tests for document.js</h1>
+  <h2 id='qunit-banner'></h2>
+  <h2 id='qunit-userAgent'></h2>
+  <ol id='qunit-tests'>
+  </ol>
+  <div id='anchor' style='visibility:hidden'>
+  </div>
+</body>  
+</html>
