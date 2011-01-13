@@ -112,6 +112,7 @@ var svgns = "http://www.w3.org/2000/svg",
 // Default configuration options
 var curConfig = {
 	show_outside_canvas: true,
+	selectNew: true,
 	dimensions: [640, 480]
 };
 
@@ -3527,7 +3528,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				if(current_mode === "path") {
 					pathActions.toEditMode(element);
 				} else {
-					selectOnly([element], true);
+					if(curConfig.selectNew) {
+						selectOnly([element], true);
+					}
 				}
 				// we create the insert command that is stored on the stack
 				// undo means to call cmd.unapply(), redo means to call cmd.apply()
