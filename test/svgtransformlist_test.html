@@ -4,10 +4,10 @@
   <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>  
   <script src='../editor/jquery.js'></script>
   <script>
-    // Mock for browsersupport
+    // Mock for browser.js
     window.svgedit = {};
-    svgedit.browsersupport = {};
-    svgedit.browsersupport.nativeTransformLists = false;
+    svgedit.browser = {};
+    svgedit.browser.supportsNativeTransformLists = function() { return false;}
   </script>
   <script type='text/javascript' src='../editor/svgtransformlist.js'></script>
   <script type='text/javascript' src='qunit/qunit.js'></script>  

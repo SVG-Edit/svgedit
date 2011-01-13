@@ -12,7 +12,8 @@
 
 // Dependencies:
 // 1) units.js
-// 2) svgcanvas.js
+// 2) browser.js
+// 3) svgcanvas.js
 
 (function() { 
 	
@@ -279,7 +280,7 @@
 			$.svgIcons(curConfig.imgPath + 'svg_edit_icons.svg', {
 				w:24, h:24,
 				id_match: false,
- 				no_img: !svgedit.browsersupport.isWebkit(), // Opera & Firefox 4 gives odd behavior w/images
+ 				no_img: !svgedit.browser.isWebkit(), // Opera & Firefox 4 gives odd behavior w/images
 				fallback_path: curConfig.imgPath,
 				fallback:{
 					'new_image':'clear.png',

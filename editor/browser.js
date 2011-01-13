@@ -1,5 +1,5 @@
 /**
- * Package: svgedit.browsersupport
+ * Package: svgedit.browser
  *
  * Licensed under the Apache License, Version 2
  *
@@ -16,8 +16,8 @@ if (!window.svgedit) {
 	window.svgedit = {};
 }
 
-if (!svgedit.browsersupport) {
-	svgedit.browsersupport = {};
+if (!svgedit.browser) {
+	svgedit.browser = {};
 }
 
 var svgns = 'http://www.w3.org/2000/svg';
@@ -113,19 +113,19 @@ var supportsNativeSVGTransformLists_ = (function() {
 
 // Public API
 
-svgedit.browsersupport.isOpera = function() { return isOpera_; }
-svgedit.browsersupport.isWebkit = function() { return isWebkit_; }
-svgedit.browsersupport.isGecko = function() { return isGecko_; }
+svgedit.browser.isOpera = function() { return isOpera_; }
+svgedit.browser.isWebkit = function() { return isWebkit_; }
+svgedit.browser.isGecko = function() { return isGecko_; }
 
-svgedit.browsersupport.supportsSelectors = function() { return supportsSelectors_; }
-svgedit.browsersupport.supportsXpath = function() { return supportsXpath_; }
+svgedit.browser.supportsSelectors = function() { return supportsSelectors_; }
+svgedit.browser.supportsXpath = function() { return supportsXpath_; }
 
-svgedit.browsersupport.supportsPathReplaceItem = function() { return supportsPathReplaceItem_; }
-svgedit.browsersupport.supportsPathInsertItemBefore = function() { return supportsPathInsertItemBefore_; }
-svgedit.browsersupport.supportsTextCharPos = function() { return supportsTextCharPos_; }
-svgedit.browsersupport.supportsEditableText = function() { return supportsEditableText_; }
-svgedit.browsersupport.supportsGoodDecimals = function() { return supportsGoodDecimals_; }
-svgedit.browsersupport.supportsNonScalingStroke = function() { return supportsNonScalingStroke_; }
-svgedit.browsersupport.supportsNativeTransformLists = function() { return supportsNativeSVGTransformLists_; }
+svgedit.browser.supportsPathReplaceItem = function() { return supportsPathReplaceItem_; }
+svgedit.browser.supportsPathInsertItemBefore = function() { return supportsPathInsertItemBefore_; }
+svgedit.browser.supportsTextCharPos = function() { return supportsTextCharPos_; }
+svgedit.browser.supportsEditableText = function() { return supportsEditableText_; }
+svgedit.browser.supportsGoodDecimals = function() { return supportsGoodDecimals_; }
+svgedit.browser.supportsNonScalingStroke = function() { return supportsNonScalingStroke_; }
+svgedit.browser.supportsNativeTransformLists = function() { return supportsNativeSVGTransformLists_; }
 
 })();
