@@ -153,6 +153,24 @@
 
 		while(svg_n.firstChild) {svg_n.removeChild(svg.firstChild);}
 	});
+	
+	test('Test releaseId()', function() {
+		expect(6);
+
+		var doc = new svgedit.document.Document(svg);
+
+		var firstId = doc.getNextId();
+		var secondId = doc.getNextId();
+
+		var result = doc.releaseId(firstId);
+		ok(result);
+		equals(doc.getNextId(), firstId);
+		equals(doc.getNextId(), "svg_3");
+		
+		ok(!doc.releaseId("bad-id"));
+		ok(doc.releaseId(firstId));
+		ok(!doc.releaseId(firstId));
+	});
   });
   </script>
 </head>  

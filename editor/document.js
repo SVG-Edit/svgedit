@@ -10,7 +10,6 @@
  TODOs:
 
  Phase 1:
- - migrate svgcanvas to using a Document object for its calls to getNextId() and getId()
  - migrate usages of randomizeIds() to proxy into the Document
 
  Phase 2:
@@ -51,6 +50,7 @@ svgedit.document.Document = function(svgElem, opt_idPrefix) {
 	this.svgElem_ = svgElem;
 	this.obj_num = 0;
 	this.idPrefix = opt_idPrefix || "svg_";
+	this.releasedNums = [];
 
 	// Determine if the <svg> element has a nonce on it
 	this.nonce_ = this.svgElem_.getAttributeNS(se_ns, 'nonce') || "";
@@ -89,16 +89,65 @@ svgedit.document.Document.prototype.getId = function() {
  * @return {String} The next object Id to use.
  */
 svgedit.document.Document.prototype.getNextId = function() {
-	// always increment the obj_num every time we call getNextId()
-	this.obj_num++;
+	var oldObjNum = this.obj_num;
+	var restoreOldObjNum = false;
 
-	// ensure the ID does not exist
+	// If there are any released numbers in the release stack, 
+	// use the last one instead of the next obj_num.
+	// We need to temporarily use obj_num as that is what getId() depends on.
+	if (this.releasedNums.length > 0) {
+		this.obj_num = this.releasedNums.pop();
+		restoreOldObjNum = true;
+	} else {
+		// If we are not using a released id, then increment the obj_num.
+		this.obj_num++;
+	}
+
+	// Ensure the ID does not exist.
 	var id = this.getId();
 	while (this.getElem_(id)) {
+		if (restoreOldObjNum) {
+			this.obj_num = oldObjNum;
+			restoreOldObjNum = false;
+		}
 		this.obj_num++;
 		id = this.getId();
 	}
+	// Restore the old object number if required.
+	if (restoreOldObjNum) {
+		this.obj_num = oldObjNum;
+	}
 	return id;
+};
+
+/**
+ * Releases the object Id, letting it be used as the next id in getNextId().
+ * This method DOES NOT remove any elements from the DOM, it is expected
+ * that client code will do this.
+ *
+ * @param {String} The id to release.
+ * @return {boolean} Returns true if the id was valid to be released,
+ *   false otherwise.
+ */
+svgedit.document.Document.prototype.releaseId = function(id) {
+	// confirm if this is a valid id for this Document, else return false
+	var front = this.idPrefix + (this.nonce_ ? this.nonce_ +'_' : '');
+	if (typeof id != typeof '' || id.indexOf(front) != 0) {
+		return false;
+	}
+	// extract the obj_num of this id
+	var num = parseInt(id.substr(front.length));
+
+	// if we didn't get a positive number or we already released this number
+	// then return false.
+	if (typeof num != typeof 1 || num <= 0 || this.releasedNums.indexOf(num) != -1) {
+		return false;
+	}
+	
+	// push the released number into the released queue
+	this.releasedNums.push(num);
+
+	return true;
 };
 
 })();
