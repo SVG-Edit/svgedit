@@ -19,6 +19,7 @@
 // 7) sanitize.js
 // 8) history.js
 // 9) select.js
+// 10) document.js
 
 if(!window.console) {
 	window.console = {};
@@ -162,6 +163,18 @@ $(svgcontent).attr({
 	"xmlns:xlink": xlinkns
 }).appendTo(svgroot);
 
+// Prefix string for element IDs
+var idprefix = "svg_";
+
+// Function: setIdPrefix
+// Changes the ID prefix to the given value
+//
+// Parameters: 
+// p - String with the new prefix 
+canvas.setIdPrefix = function(p) {
+	idprefix = p;
+};
+
 // nonce to uniquify id's
 var nonce = Math.floor(Math.random() * 100001);
 
@@ -171,6 +184,16 @@ var randomize_ids = false;
 // Set nonce if randomize_ids = true
 if (randomize_ids) svgcontent.setAttributeNS(se_ns, 'se:nonce', nonce);
 
+// Current svgedit.document.Document object
+// @type {svgedit.document.Document}
+var current_doc = new svgedit.document.Document(svgcontent, idprefix);
+
+// Function: getCurrentDoc
+// Returns the current Document JS object.
+// @return {svgedit.document.Document}
+canvas.getCurrentDoc = function() {
+	return current_doc;
+};
 
 // Float displaying the current zoom level (1 = 100%, .5 = 50%, etc)
 var current_zoom = 1;
@@ -535,9 +558,6 @@ var all_layers = [],
 	
 	// Boolean indicating whether or not a draw action has been started
 	started = false,
-	
-	// Integer with internal ID number for the latest element
-	obj_num = 0,
 	
 	// String with an element's initial transform attribute value
 	start_transform = null,
@@ -981,31 +1001,17 @@ var getId, getNextId, call;
 	// Object to contain editor event names and callback functions
 	var events = {};
 
-	// Prefix string for element IDs
-	var idprefix = "svg_";
-
 	// Function: getId
 	// Returns the last created DOM element ID string
 	getId = c.getId = function() {
-		if (randomize_ids) {
-			return idprefix + nonce +'_' + obj_num;
-		} else {
-			return idprefix + obj_num;
-		}
+		return current_doc.getId();
 	};
 	
 	// Function: getNextId
 	// Creates and returns a unique ID string for a DOM element
 	getNextId = c.getNextId = function() {
-		// always increment the obj_num every time we call getNextId()
-		obj_num++;
-
-		// ensure the ID does not exist
-		var id = getId();
-		while (getElem(id)) {
-			obj_num++;
-			id = getId();
-		}
+		var id = current_doc.getNextId();
+		console.log("getNextId() returned " + id);
 		return id;
 	};
 	
@@ -1036,14 +1042,6 @@ var getId, getNextId, call;
 		return old;
 	};
 	
-	// Function: setIdPrefix
-	// Changes the ID prefix to the given value
-	//
-	// Parameters: 
-	// p - String with the new prefix 
-	c.setIdPrefix = function(p) {
-		idprefix = p;
-	};
 }(canvas));
 
 // Function: canvas.prepareSvg
@@ -3259,7 +3257,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 
 		// TODO: Make true when in multi-unit mode
 		var useUnit = false; // (curConfig.baseUnit !== 'px');
-		
 		started = false;
 		switch (current_mode)
 		{
@@ -3476,6 +3473,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		});
 		
 		if (!keep && element != null) {
+			current_doc.releaseId(getId());
 			element.parentNode.removeChild(element);
 			element = null;
 			
@@ -6693,7 +6691,10 @@ this.setSvgString = function(xmlString) {
 			svgcontent.setAttributeNS(xmlnsns, 'xmlns:se', se_ns);
 			svgcontent.setAttributeNS(se_ns, 'se:nonce', nonce); 
 			if (extensions["Arrows"])  call("setarrownonce", nonce) ;
-		}         
+		}
+		
+		current_doc = new svgedit.document.Document(svgcontent, idprefix);
+
 		// change image href vals if possible
 		content.find('image').each(function() {
 			var image = this;
