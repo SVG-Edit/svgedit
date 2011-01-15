@@ -490,7 +490,6 @@ var uiStrings = {
 	"pathNodeTooltip": "Drag node to move it. Double-click node to change segment type",
 	"pathCtrlPtTooltip": "Drag control point to adjust curve properties",
 	"exportNoBlur": "Blurred elements will appear as un-blurred",
-	"exportNoImage": "Image elements will not appear",
 	"exportNoforeignObject": "foreignObject elements will not appear",
 	"exportNoDashArray": "Strokes will appear filled",
 	"exportNoText": "Text may not appear as expected"
@@ -6576,7 +6575,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		var pos = $elem.attr(['x','y']);
 
 		// Not ideal, but works
-		ts += "translate(" + (pos.x || 0) + "," + (pos.y || 0) + ")";
+		ts += " translate(" + (pos.x || 0) + "," + (pos.y || 0) + ")";
 		
 		var prev = $elem.prev();
 		
@@ -6852,7 +6851,6 @@ this.setSvgString = function(xmlString) {
 this.importSvgString = function(xmlString) {
 
 	try {
-		
 		// Get unique ID
 		var uid = svgedit.utilities.encode64(xmlString.length + xmlString).substr(0,32);
 		
@@ -6937,9 +6935,9 @@ this.importSvgString = function(xmlString) {
 		
 		
 		var use_el = svgdoc.createElementNS(svgns, "use");
+		use_el.id = getNextId();
 		setHref(use_el, "#" + symbol.id);
 		
-		use_el.id = getNextId();
 		(current_group || current_layer).appendChild(use_el);
 		batchCmd.addSubCommand(new InsertElementCommand(use_el));
 		clearSelection();
