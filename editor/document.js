@@ -7,6 +7,8 @@
  */
 
 /*
+ TODO: consider renaming this package to "draw" and the class to "Drawing"
+
  TODOs:
 
  Phase 1:
