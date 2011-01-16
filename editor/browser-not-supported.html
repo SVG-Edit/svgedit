@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+<link rel="icon" type="image/png" href="images/logo.png"/>
+<link rel="stylesheet" href="svg-editor.css" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<title>Browser does not support SVG | SVG-edit</title>
+</head>
+<body>
+
+<img style="float:left;padding:10px;" src="images/logo.png" width="48" height="48" alt="SVG-edit logo" /><br />
+<p>Sorry, but your browser does not support SVG. Below is a list of alternate browsers and versions that support SVG and SVG-edit (from <a href="http://caniuse.com/#cats=SVG">caniuse.com</a>).</p>
+
+<script type="text/javascript">
+var viewportHeight =(window.innerHeight ? window.innerHeight : $(window).height()) - 100;
+document.write('<iframe width="100%" height="'+viewportHeight+'" src="http://caniuse.com/#cats=SVG"></iframe>');
+</script>
+
+</body>
+</html>
