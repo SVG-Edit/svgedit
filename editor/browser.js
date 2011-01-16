@@ -20,6 +20,15 @@ if (!svgedit.browser) {
 	svgedit.browser = {};
 }
 
+var supportsSvg_ = (function() {
+        return !!document.createElementNS && !!document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect;
+})();
+svgedit.browser.supportsSvg = function() { return supportsSvg_; }
+if(!svgedit.browser.supportsSvg()) {
+        window.location = "browser-not-supported.html";  
+}
+else{
+
 var svgns = 'http://www.w3.org/2000/svg';
 var userAgent = navigator.userAgent;
 var svg = document.createElementNS(svgns, 'svg');
@@ -127,5 +136,7 @@ svgedit.browser.supportsEditableText = function() { return supportsEditableText_
 svgedit.browser.supportsGoodDecimals = function() { return supportsGoodDecimals_; }
 svgedit.browser.supportsNonScalingStroke = function() { return supportsNonScalingStroke_; }
 svgedit.browser.supportsNativeTransformLists = function() { return supportsNativeSVGTransformLists_; }
+
+}
 
 })();
