@@ -14,7 +14,7 @@
 
 $('a').click(function() {
 	var href = this.href;
-	
+	var target = window.parent;
 	// Convert Non-SVG images to data URL first 
 	// (this could also have been done server-side by the library)
 	if(this.href.indexOf('.svg') === -1) {
@@ -23,7 +23,7 @@ $('a').click(function() {
 			name: $(this).text(),
 			id: href
 		});
-		window.top.postMessage(meta_str, "*");
+		target.postMessage(meta_str, "*");
 	
 		var img = new Image();
 		img.onload = function() {
@@ -40,7 +40,7 @@ $('a').click(function() {
 				alert("Data URL conversion failed: " + err);
 				var dataurl = "";
 			}
-			window.top.postMessage('|' + href + '|' + dataurl, "*");
+			target.postMessage('|' + href + '|' + dataurl, "*");
 		}
 		img.src = href;
 	} else {
@@ -49,12 +49,12 @@ $('a').click(function() {
 			name: $(this).text(),
 			id: href
 		});
-		window.top.postMessage(meta_str, "*");
+		target.postMessage(meta_str, "*");
 		// Do ajax request for image's href value
 		$.get(href, function(data) {
 			data = '|' + href + '|' + data;
 			// This is where the magic happens!
-			window.top.postMessage(data, "*");
+			target.postMessage(data, "*");
 			
 		}, 'html'); // 'html' is necessary to keep returned data as a string
 	}
