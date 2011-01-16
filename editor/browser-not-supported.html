@@ -10,13 +10,18 @@
 </head>
 <body>
 
+<div id="browser-not-supported">
 <img style="float:left;padding:10px;" src="images/logo.png" width="48" height="48" alt="SVG-edit logo" /><br />
 <p>Sorry, but your browser does not support SVG. Below is a list of alternate browsers and versions that support SVG and SVG-edit (from <a href="http://caniuse.com/#cats=SVG">caniuse.com</a>).</p>
+<p>Try the latest version of <a href="http://www.getfirefox.com">Firefox</a>, <a href="http://www.google.com/chrome/">Google Chrome</a>, <a href="http://www.apple.com/safari/download/">Safari</a> or <a href="http://www.opera.com/download/">Opera</a>.</p>
+<p>If you are unable to install one of these and must use an old version of Internet Explorer, you can install the <a href="http://code.google.com/chrome/chromeframe/">Google Chrome Frame plugin</a>.</p>
 
 <script type="text/javascript">
-var viewportHeight =(window.innerHeight ? window.innerHeight : $(window).height()) - 100;
+var viewportHeight =(window.innerHeight ? window.innerHeight : $(window).height()) - 140;
 document.write('<iframe width="100%" height="'+viewportHeight+'" src="http://caniuse.com/#cats=SVG"></iframe>');
 </script>
+
+</div>
 
 </body>
 </html>
