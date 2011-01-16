@@ -70,6 +70,10 @@
 					"key_del":"Del"
 	
 				},
+				// This is needed if the locale is English, since the locale strings are not read in that instance.
+				layers: {
+					"layer":"Layer"
+				},
 				notification: {
 					"invalidAttrValGiven":"Invalid value given",
 					"noContentToFitTo":"No content to fit to",

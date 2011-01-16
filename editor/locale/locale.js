@@ -67,8 +67,6 @@ var svgEditor = (function($, Editor) {
 			common = langData.common,
 			ui = langData.ui;
 		
-		Editor.uiStrings['layers'] = layers;
-
 		setStrings('content', {
 			copyrightLabel: misc.powered_by,
 			curve_segments: properties.curve_segments,
