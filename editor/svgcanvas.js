@@ -539,12 +539,8 @@ var restoreRefElems = function(elem) {
 
 })();
 
-// z-ordered array of tuples containing layer names and <g> elements
-// the first layer is the one at the bottom of the rendering
-var all_layers = [],
-
-	// Object to contain image data for raster images that were found encodable
-	encodableImages = {},
+// Object to contain image data for raster images that were found encodable
+var encodableImages = {},
 	
 	// String with image URL of last loadable image
 	last_good_img_url = curConfig.imgPath + 'logo.png',
@@ -6422,7 +6418,7 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 			});
 			
 			// check xlink:href now
-			var href = getHref(n);
+			var href = svgedit.utilities.getHref(n);
 			// TODO: what if an <image> or <a> element refers to an element internally?
 			if(href && ref_elems.indexOf(n.nodeName) >= 0)
 			{
@@ -6969,7 +6965,7 @@ this.importSvgString = function(xmlString) {
 // Function: identifyLayers
 // Updates layer system
 var identifyLayers = canvas.identifyLayers = function() {
-	all_layers = [];
+	current_doc.all_layers = [];
 	leaveContext();
 	var numchildren = svgcontent.childNodes.length;
 	// loop through all children of svgcontent
@@ -6991,7 +6987,7 @@ var identifyLayers = canvas.identifyLayers = function() {
 				// store layer and name in global variable
 				if (name) {
 					layernames.push(name);
-					all_layers.push( [name,child] );
+					current_doc.all_layers.push( [name,child] );
 					current_layer = child;
 					svgedit.utilities.walkTree(child, function(e){e.setAttribute("style", "pointer-events:inherit");});
 					current_layer.setAttribute("style", "pointer-events:none");
@@ -7022,7 +7018,7 @@ var identifyLayers = canvas.identifyLayers = function() {
 			current_layer.appendChild(orphans[j]);
 		}
 		current_layer = svgcontent.appendChild(current_layer);
-		all_layers.push( [newname, current_layer] );
+		current_doc.all_layers.push( [newname, current_layer] );
 	}
 	svgedit.utilities.walkTree(current_layer, function(e){e.setAttribute("style","pointer-events:inherit");});
 	current_layer.setAttribute("style","pointer-events:all");
@@ -7084,7 +7080,7 @@ this.cloneLayer = function(name) {
 // Deletes the current layer from the drawing and then clears the selection. This function 
 // then calls the 'changed' handler.  This is an undoable action.
 this.deleteCurrentLayer = function() {
-	if (current_layer && all_layers.length > 1) {
+	if (current_layer && current_doc.all_layers.length > 1) {
 		var batchCmd = new BatchCommand("Delete Layer");
 		// actually delete from the DOM and store in our Undo History
 		var parent = current_layer.parentNode;
@@ -7094,7 +7090,7 @@ this.deleteCurrentLayer = function() {
 		addCommandToHistory(batchCmd);
 		clearSelection();
 		identifyLayers();
-		canvas.setCurrentLayer(all_layers[all_layers.length-1][0]);
+		canvas.setCurrentLayer(current_doc.all_layers[current_doc.all_layers.length-1][0]);
 		call("changed", [svgcontent]);
 		return true;
 	}
@@ -7104,8 +7100,8 @@ this.deleteCurrentLayer = function() {
 // Function: hasLayer
 // Check if layer with given name already exists
 this.hasLayer = function(name) {
-	for(var i = 0; i < all_layers.length; i++) {
-		if(all_layers[i][0] == name) return true;
+	for(var i = 0; i < current_doc.all_layers.length; i++) {
+		if(current_doc.all_layers[i][0] == name) return true;
 	}
 	return false;
 };
@@ -7116,7 +7112,7 @@ this.hasLayer = function(name) {
 // Returns:
 // The number of layers in the current drawing.
 this.getNumLayers = function() {
-	return all_layers.length;
+	return current_doc.all_layers.length;
 };
 
 // Function: getLayer
@@ -7129,7 +7125,7 @@ this.getNumLayers = function() {
 // The name of the ith layer
 this.getLayer = function(i) {
 	if (i >= 0 && i < canvas.getNumLayers()) {
-		return all_layers[i][0];
+		return current_doc.all_layers[i][0];
 	}
 	return "";
 };
@@ -7141,9 +7137,9 @@ this.getLayer = function(i) {
 // Returns:
 // The name of the currently active layer.
 this.getCurrentLayer = function() {
-	for (var i = 0; i < all_layers.length; ++i) {
-		if (all_layers[i][1] == current_layer) {
-			return all_layers[i][0];
+	for (var i = 0; i < current_doc.all_layers.length; ++i) {
+		if (current_doc.all_layers[i][1] == current_layer) {
+			return current_doc.all_layers[i][0];
 		}
 	}
 	return "";
@@ -7160,12 +7156,12 @@ this.getCurrentLayer = function() {
 // true if the current layer was switched, otherwise false
 this.setCurrentLayer = function(name) {
 	name = svgedit.utilities.toXml(name);
-	for (var i = 0; i < all_layers.length; ++i) {
-		if (name == all_layers[i][0]) {
-			if (current_layer != all_layers[i][1]) {
+	for (var i = 0; i < current_doc.all_layers.length; ++i) {
+		if (name == current_doc.all_layers[i][0]) {
+			if (current_layer != current_doc.all_layers[i][1]) {
 				clearSelection();
 				current_layer.setAttribute("style", "pointer-events:none");
-				current_layer = all_layers[i][1];
+				current_layer = current_doc.all_layers[i][1];
 				current_layer.setAttribute("style", "pointer-events:all");
 			}
 			return true;
@@ -7191,11 +7187,11 @@ this.renameCurrentLayer = function(newname) {
 		if (!canvas.setCurrentLayer(newname)) {
 			var batchCmd = new BatchCommand("Rename Layer");
 			// find the index of the layer
-			for (var i = 0; i < all_layers.length; ++i) {
-				if (all_layers[i][1] == oldLayer) break;
+			for (var i = 0; i < current_doc.all_layers.length; ++i) {
+				if (current_doc.all_layers[i][1] == oldLayer) break;
 			}
-			var oldname = all_layers[i][0];
-			all_layers[i][0] = svgedit.utilities.toXml(newname);
+			var oldname = current_doc.all_layers[i][0];
+			current_doc.all_layers[i][0] = svgedit.utilities.toXml(newname);
 		
 			// now change the underlying title element contents
 			var len = oldLayer.childNodes.length;
@@ -7231,31 +7227,31 @@ this.renameCurrentLayer = function(newname) {
 // Returns:
 // true if the current layer position was changed, false otherwise.
 this.setCurrentLayerPosition = function(newpos) {
-	if (current_layer && newpos >= 0 && newpos < all_layers.length) {
-		for (var oldpos = 0; oldpos < all_layers.length; ++oldpos) {
-			if (all_layers[oldpos][1] == current_layer) break;
+	if (current_layer && newpos >= 0 && newpos < current_doc.all_layers.length) {
+		for (var oldpos = 0; oldpos < current_doc.all_layers.length; ++oldpos) {
+			if (current_doc.all_layers[oldpos][1] == current_layer) break;
 		}
 		// some unknown error condition (current_layer not in all_layers)
-		if (oldpos == all_layers.length) { return false; }
+		if (oldpos == current_doc.all_layers.length) { return false; }
 		
 		if (oldpos != newpos) {
 			// if our new position is below us, we need to insert before the node after newpos
 			var refLayer = null;
 			var oldNextSibling = current_layer.nextSibling;
 			if (newpos > oldpos ) {
-				if (newpos < all_layers.length-1) {
-					refLayer = all_layers[newpos+1][1];
+				if (newpos < current_doc.all_layers.length-1) {
+					refLayer = current_doc.all_layers[newpos+1][1];
 				}
 			}
 			// if our new position is above us, we need to insert before the node at newpos
 			else {
-				refLayer = all_layers[newpos][1];
+				refLayer = current_doc.all_layers[newpos][1];
 			}
 			svgcontent.insertBefore(current_layer, refLayer);
 			addCommandToHistory(new MoveElementCommand(current_layer, oldNextSibling, svgcontent));
 			
 			identifyLayers();
-			canvas.setCurrentLayer(all_layers[newpos][0]);
+			canvas.setCurrentLayer(current_doc.all_layers[newpos][0]);
 			
 			return true;
 		}
@@ -7276,9 +7272,9 @@ this.setCurrentLayerPosition = function(newpos) {
 this.getLayerVisibility = function(layername) {
 	// find the layer
 	var layer = null;
-	for (var i = 0; i < all_layers.length; ++i) {
-		if (all_layers[i][0] == layername) {
-			layer = all_layers[i][1];
+	for (var i = 0; i < current_doc.all_layers.length; ++i) {
+		if (current_doc.all_layers[i][0] == layername) {
+			layer = current_doc.all_layers[i][1];
 			break;
 		}
 	}
@@ -7299,9 +7295,9 @@ this.getLayerVisibility = function(layername) {
 this.setLayerVisibility = function(layername, bVisible) {
 	// find the layer
 	var layer = null;
-	for (var i = 0; i < all_layers.length; ++i) {
-		if (all_layers[i][0] == layername) {
-			layer = all_layers[i][1];
+	for (var i = 0; i < current_doc.all_layers.length; ++i) {
+		if (current_doc.all_layers[i][0] == layername) {
+			layer = current_doc.all_layers[i][1];
 			break;
 		}
 	}
@@ -7333,9 +7329,9 @@ this.setLayerVisibility = function(layername, bVisible) {
 this.moveSelectedToLayer = function(layername) {
 	// find the layer
 	var layer = null;
-	for (var i = 0; i < all_layers.length; ++i) {
-		if (all_layers[i][0] == layername) {
-			layer = all_layers[i][1];
+	for (var i = 0; i < current_doc.all_layers.length; ++i) {
+		if (current_doc.all_layers[i][0] == layername) {
+			layer = current_doc.all_layers[i][1];
 			break;
 		}
 	}
@@ -7401,7 +7397,7 @@ this.mergeLayer = function(skipHistory) {
 
 this.mergeAllLayers = function() {
 	var batchCmd = new BatchCommand("Merge all Layers");
-	current_layer = all_layers[all_layers.length-1][1];
+	current_layer = current_doc.all_layers[current_doc.all_layers.length-1][1];
 	while($(svgcontent).children('g').length > 1) {
 		batchCmd.addSubCommand(canvas.mergeLayer(true));
 	}
@@ -7422,9 +7418,9 @@ this.mergeAllLayers = function() {
 // The opacity value of the given layer.  This will be a value between 0.0 and 1.0, or null
 // if layername is not a valid layer
 this.getLayerOpacity = function(layername) {
-	for (var i = 0; i < all_layers.length; ++i) {
-		if (all_layers[i][0] == layername) {
-			var g = all_layers[i][1];
+	for (var i = 0; i < current_doc.all_layers.length; ++i) {
+		if (current_doc.all_layers[i][0] == layername) {
+			var g = current_doc.all_layers[i][1];
 			var opacity = g.getAttribute("opacity");
 			if (!opacity) {
 				opacity = "1.0";
@@ -7448,9 +7444,9 @@ this.getLayerOpacity = function(layername) {
 // opacity - a float value in the range 0.0-1.0
 this.setLayerOpacity = function(layername, opacity) {
 	if (opacity < 0.0 || opacity > 1.0) return;
-	for (var i = 0; i < all_layers.length; ++i) {
-		if (all_layers[i][0] == layername) {
-			var g = all_layers[i][1];
+	for (var i = 0; i < current_doc.all_layers.length; ++i) {
+		if (current_doc.all_layers[i][0] == layername) {
+			var g = current_doc.all_layers[i][1];
 			g.setAttribute("opacity", opacity);
 			break;
 		}
@@ -7526,7 +7522,8 @@ this.clear = function() {
 		}
 	}
 	// create empty first layer
-	all_layers = [];
+	current_doc.all_layers = [];
+	
 	canvas.createLayer("Layer 1");
 	
 	// clear the undo stack

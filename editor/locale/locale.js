@@ -49,6 +49,7 @@ var svgEditor = (function($, Editor) {
 
 		
 	Editor.readLang = function(langData) {
+debugger;
 		var more = Editor.canvas.runExtensions("addlangData", lang_param, true);
 		$.each(more, function(i, m) {
 			if(m.data) {
@@ -67,6 +68,8 @@ var svgEditor = (function($, Editor) {
 			common = langData.common,
 			ui = langData.ui;
 		
+		Editor.uiStrings['layers'] = layers;
+
 		setStrings('content', {
 			copyrightLabel: misc.powered_by,
 			curve_segments: properties.curve_segments,

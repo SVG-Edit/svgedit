@@ -35,6 +35,25 @@ var svg_ns = "http://www.w3.org/2000/svg";
 var se_ns = "http://svg-edit.googlecode.com";
 
 /**
+ * This class encapsulates the concept of a layer in the document.
+ * @param name {String} Layer name
+ * @param child {SVGGElement} Layer SVG group.
+ */
+svgedit.document.Layer = function(name, group) {
+	this.name_ = name;
+	this.group_ = group;
+};
+
+svgedit.document.Layer.prototype.getName = function() {
+	return this.name_;
+};
+
+svgedit.document.Layer.prototype.getGroup = function() {
+	return this.group_;
+};
+
+
+/**
  * This class encapsulates the concept of a SVG-edit document.
  *
  * @param svgElem {SVGSVGElement} The SVG DOM Element that this JS object
@@ -53,6 +72,10 @@ svgedit.document.Document = function(svgElem, opt_idPrefix) {
 	this.obj_num = 0;
 	this.idPrefix = opt_idPrefix || "svg_";
 	this.releasedNums = [];
+
+	// z-ordered array of tuples containing layer names and <g> elements
+	// the first layer is the one at the bottom of the rendering
+	this.all_layers = [];
 
 	// Determine if the <svg> element has a nonce on it
 	this.nonce_ = this.svgElem_.getAttributeNS(se_ns, 'nonce') || "";
