@@ -7086,17 +7086,6 @@ this.deleteCurrentLayer = function() {
 	return false;
 };
 
-// Function: hasLayer
-// Check if layer with given name already exists
-this.hasLayer = function(name) {
-	for(var i = 0; i < current_drawing.all_layers.length; i++) {
-		if(current_drawing.all_layers[i][0] == name) return true;
-	}
-	return false;
-};
-
-this.getNumLayers = function() { return current_drawing.getNumLayers(); };
-
 // Function: getLayer
 // Returns the name of the ith layer. If the index is out of range, an empty string is returned.
 //

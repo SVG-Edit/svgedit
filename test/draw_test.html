@@ -177,6 +177,15 @@
 		var doc = new svgedit.draw.Drawing(svg);
 		equals(typeof doc.getNumLayers, typeof function() {});
 		equals(doc.getNumLayers(), 0);
+		// TODO(codedread): More here once identifyLayers works.
+	});
+
+	test('Test hasLayer', function() {
+		expect(2);
+		var doc = new svgedit.draw.Drawing(svg);
+		equals(typeof doc.hasLayer, typeof function() {});
+		ok(!doc.hasLayer('invalid-layer'));
+		// TODO(codedread): More here once identifyLayers works.
 	});
   });
   </script>

@@ -3541,11 +3541,11 @@
 				var i = svgCanvas.getCurrentDrawing().getNumLayers();
 				do {
 					var uniqName = uiStrings.layers.layer + " " + ++i;
-				} while(svgCanvas.hasLayer(uniqName));
+				} while(svgCanvas.getCurrentDrawing().hasLayer(uniqName));
 				
 				$.prompt(uiStrings.notification.enterUniqueLayerName,uniqName, function(newName) {
 					if (!newName) return;
-					if (svgCanvas.hasLayer(newName)) {
+					if (svgCanvas.getCurrentDrawing().hasLayer(newName)) {
 						$.alert(uiStrings.notification.dupeLayerName);
 						return;
 					}
@@ -3572,7 +3572,7 @@
 				
 				$.prompt(uiStrings.notification.enterUniqueLayerName, name, function(newName) {
 					if (!newName) return;
-					if (svgCanvas.hasLayer(newName)) {
+					if (svgCanvas.getCurrentDrawing().hasLayer(newName)) {
 						$.alert(uiStrings.notification.dupeLayerName);
 						return;
 					}
@@ -3614,7 +3614,7 @@
 				var oldName = $('#layerlist tr.layersel td.layername').text();
 				$.prompt(uiStrings.notification.enterNewLayerName,"", function(newName) {
 					if (!newName) return;
-					if (oldName == newName || svgCanvas.hasLayer(newName)) {
+					if (oldName == newName || svgCanvas.getCurrentDrawing().hasLayer(newName)) {
 						$.alert(uiStrings.notification.layerHasThatName);
 						return;
 					}

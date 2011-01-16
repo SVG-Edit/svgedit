@@ -132,15 +132,16 @@ svgedit.draw.Drawing.prototype.getNextId = function() {
 	return id;
 };
 
-/**
- * Releases the object Id, letting it be used as the next id in getNextId().
- * This method DOES NOT remove any elements from the DOM, it is expected
- * that client code will do this.
- *
- * @param {String} The id to release.
- * @return {boolean} Returns true if the id was valid to be released,
- *   false otherwise.
- */
+// Function: svgedit.draw.Drawing.releaseId
+// Releases the object Id, letting it be used as the next id in getNextId().
+// This method DOES NOT remove any elements from the DOM, it is expected
+// that client code will do this.
+//
+// Parameters:
+// id - The id to release.
+//
+// Returns:
+// True if the id was valid to be released, false otherwise.
 svgedit.draw.Drawing.prototype.releaseId = function(id) {
 	// confirm if this is a valid id for this Document, else return false
 	var front = this.idPrefix + (this.nonce_ ? this.nonce_ +'_' : '');
@@ -162,7 +163,7 @@ svgedit.draw.Drawing.prototype.releaseId = function(id) {
 	return true;
 };
 
-// Function: getNumLayers
+// Function: svgedit.draw.Drawing.getNumLayers
 // Returns the number of layers in the current drawing.
 // 
 // Returns:
@@ -170,5 +171,15 @@ svgedit.draw.Drawing.prototype.releaseId = function(id) {
 svgedit.draw.Drawing.prototype.getNumLayers = function() {
 	return this.all_layers.length;
 };
+
+// Function: svgedit.draw.Drawing.hasLayer
+// Check if layer with given name already exists
+svgedit.draw.Drawing.prototype.hasLayer = function(name) {
+	for(var i = 0; i < this.getNumLayers(); i++) {
+		if(this.all_layers[i][0] == name) return true;
+	}
+	return false;
+};
+
 
 })();
