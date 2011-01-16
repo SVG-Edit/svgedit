@@ -3536,7 +3536,6 @@
 			$('#layer_new').click(function() {
 				var i = svgCanvas.getNumLayers();
 				do {
-					debugger;
 					var uniqName = uiStrings.layers.layer + " " + ++i;
 				} while(svgCanvas.hasLayer(uniqName));
 				
