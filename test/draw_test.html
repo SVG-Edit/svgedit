@@ -3,7 +3,7 @@
 <head>
   <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
   <script src='../editor/jquery.js'></script>
-  <script type='text/javascript' src='../editor/document.js'></script>
+  <script type='text/javascript' src='../editor/draw.js'></script>
   <script type='text/javascript' src='qunit/qunit.js'></script>  
   <script type='text/javascript'>
   $(function() {
@@ -26,28 +26,28 @@
 	svg_n.setAttributeNS(XMLNSNS, 'xmlns:se', SENS);
 	svg_n.setAttributeNS(SENS, 'se:nonce', NONCE); 
 
-	test('Test document module', function() {
+	test('Test draw module', function() {
 		expect(4);
 		
-		ok(svgedit.document);
-		equals(typeof svgedit.document, typeof {});
+		ok(svgedit.draw);
+		equals(typeof svgedit.draw, typeof {});
 
-		ok(svgedit.document.Document);
-		equals(typeof svgedit.document.Document, typeof function(){});
+		ok(svgedit.draw.Drawing);
+		equals(typeof svgedit.draw.Drawing, typeof function(){});
 	});
 	
 	test('Test document creation', function() {
 		expect(3);
 		
 		try {
-			var doc = new svgedit.document.Document();
-			ok(false, 'Created document without a valid <svg> element');
+			var doc = new svgedit.draw.Drawing();
+			ok(false, 'Created drawing without a valid <svg> element');
 		} catch(e) {
 			ok(true);
 		}
 
 		try {
-			var doc = new svgedit.document.Document(svg);
+			var doc = new svgedit.draw.Drawing(svg);
 			ok(doc);
 			equals(typeof doc, typeof {});
 		} catch(e) {
@@ -58,10 +58,10 @@
 	test('Test nonce', function() {
 		expect(2);
 		
-		var doc = new svgedit.document.Document(svg);
+		var doc = new svgedit.draw.Drawing(svg);
 		equals(doc.getNonce(), "");
 
-		doc = new svgedit.document.Document(svg_n);
+		doc = new svgedit.draw.Drawing(svg_n);
 		equals(doc.getNonce(), NONCE);
 	});
 
@@ -72,7 +72,7 @@
 		elem2.id = 'svg_2';
 		svg.appendChild(elem2);
 
-		var doc = new svgedit.document.Document(svg);
+		var doc = new svgedit.draw.Drawing(svg);
 
 		equals(doc.getId(), "svg_0");
 
@@ -93,7 +93,7 @@
 		expect(7);
 
 		var prefix = 'Bar-';
-		var doc = new svgedit.document.Document(svg, prefix);
+		var doc = new svgedit.draw.Drawing(svg, prefix);
 
 		equals(doc.getId(), prefix+"0");
 
@@ -118,7 +118,7 @@
 		elem2.id = prefix+'_2';
 		svg_n.appendChild(elem2);
 
-		var doc = new svgedit.document.Document(svg_n);
+		var doc = new svgedit.draw.Drawing(svg_n);
 
 		equals(doc.getId(), prefix+"_0");
 
@@ -137,7 +137,7 @@
 		expect(7);
 
 		var PREFIX = 'Bar-';
-		var doc = new svgedit.document.Document(svg_n, PREFIX);
+		var doc = new svgedit.draw.Drawing(svg_n, PREFIX);
 
 		var prefix = PREFIX + NONCE + "_";
 		equals(doc.getId(), prefix+"0");
@@ -157,7 +157,7 @@
 	test('Test releaseId()', function() {
 		expect(6);
 
-		var doc = new svgedit.document.Document(svg);
+		var doc = new svgedit.draw.Drawing(svg);
 
 		var firstId = doc.getNextId();
 		var secondId = doc.getNextId();
@@ -171,11 +171,18 @@
 		ok(doc.releaseId(firstId));
 		ok(!doc.releaseId(firstId));
 	});
+	
+	test('Test getNumLayers', function() {
+		expect(2);
+		var doc = new svgedit.draw.Drawing(svg);
+		equals(typeof doc.getNumLayers, typeof function() {});
+		equals(doc.getNumLayers(), 0);
+	});
   });
   </script>
 </head>  
 <body>  
-  <h1 id='qunit-header'>Unit Tests for document.js</h1>
+  <h1 id='qunit-header'>Unit Tests for draw.js</h1>
   <h2 id='qunit-banner'></h2>
   <h2 id='qunit-userAgent'></h2>
   <ol id='qunit-tests'>

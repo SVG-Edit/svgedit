@@ -3538,7 +3538,7 @@
 			});
 			
 			$('#layer_new').click(function() {
-				var i = svgCanvas.getNumLayers();
+				var i = svgCanvas.getCurrentDrawing().getNumLayers();
 				do {
 					var uniqName = uiStrings.layers.layer + " " + ++i;
 				} while(svgCanvas.hasLayer(uniqName));
@@ -3583,7 +3583,7 @@
 			}
 			
 			function mergeLayer() {
-				if($('#layerlist tr.layersel').index() == svgCanvas.getNumLayers()-1) return;
+				if($('#layerlist tr.layersel').index() == svgCanvas.getCurrentDrawing().getNumLayers()-1) return;
 				svgCanvas.mergeLayer();
 				updateContextPanel();
 				populateLayers();
@@ -3591,7 +3591,7 @@
 			
 			function moveLayer(pos) {
 				var curIndex = $('#layerlist tr.layersel').index();
-				var total = svgCanvas.getNumLayers();
+				var total = svgCanvas.getCurrentDrawing().getNumLayers();
 				if(curIndex > 0 || curIndex < total-1) {
 					curIndex += pos;
 					svgCanvas.setCurrentLayerPosition(total-curIndex-1);
@@ -3695,7 +3695,7 @@
 			// this function highlights the layer passed in (by fading out the other layers)
 			// if no layer is passed in, this function restores the other layers
 			var toggleHighlightLayer = function(layerNameToHighlight) {
-				var curNames = new Array(svgCanvas.getNumLayers());
+				var curNames = new Array(svgCanvas.getCurrentDrawing().getNumLayers());
 				for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getLayer(i); }
 			
 				if (layerNameToHighlight) {
@@ -3718,7 +3718,7 @@
 				layerlist.empty();
 				selLayerNames.empty();
 				var currentlayer = svgCanvas.getCurrentLayer();
-				var layer = svgCanvas.getNumLayers();
+				var layer = svgCanvas.getCurrentDrawing().getNumLayers();
 				var icon = $.getSvgIcon('eye');
 				// we get the layers in the reverse z-order (the layer rendered on top is listed first)
 				while (layer--) {
