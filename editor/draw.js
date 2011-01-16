@@ -1,24 +1,11 @@
 /**
- * Package: svgedit.document
+ * Package: svgedit.draw
  *
  * Licensed under the Apache License, Version 2
  *
- * Copyright(c) 2010 Jeff Schiller
+ * Copyright(c) 2011 Jeff Schiller
  */
 
-/*
- TODO: consider renaming this package to "draw" and the class to "Drawing"
-
- TODOs:
-
- Phase 1:
- - migrate usages of randomizeIds() to proxy into the Document
-
- Phase 2:
- - migrate uniquifyElems into this module
- - migrate as many usages of svgcontent in svgcanvas to using a Document instance as possible
-
- */
 // Dependencies:
 // 1) jQuery
 
@@ -27,34 +14,34 @@ if (!window.svgedit) {
 	window.svgedit = {};
 }
 
-if (!svgedit.document) {
-	svgedit.document = {};
+if (!svgedit.draw) {
+	svgedit.draw = {};
 }
 
 var svg_ns = "http://www.w3.org/2000/svg";
 var se_ns = "http://svg-edit.googlecode.com";
 
 /**
- * This class encapsulates the concept of a layer in the document.
+ * This class encapsulates the concept of a layer in the drawing
  * @param name {String} Layer name
  * @param child {SVGGElement} Layer SVG group.
  */
-svgedit.document.Layer = function(name, group) {
+svgedit.draw.Layer = function(name, group) {
 	this.name_ = name;
 	this.group_ = group;
 };
 
-svgedit.document.Layer.prototype.getName = function() {
+svgedit.draw.Layer.prototype.getName = function() {
 	return this.name_;
 };
 
-svgedit.document.Layer.prototype.getGroup = function() {
+svgedit.draw.Layer.prototype.getGroup = function() {
 	return this.group_;
 };
 
 
 /**
- * This class encapsulates the concept of a SVG-edit document.
+ * This class encapsulates the concept of a SVG-edit drawing
  *
  * @param svgElem {SVGSVGElement} The SVG DOM Element that this JS object
  *     encapsulates.  If the svgElem has a se:nonce attribute on it, then
@@ -62,10 +49,10 @@ svgedit.document.Layer.prototype.getGroup = function() {
  * @param opt_idPrefix {String} The ID prefix to use.  Defaults to "svg_"
  *     if not specified.
  */
-svgedit.document.Document = function(svgElem, opt_idPrefix) {
+svgedit.draw.Drawing = function(svgElem, opt_idPrefix) {
 	if (!svgElem || !svgElem.tagName || !svgElem.namespaceURI ||
 		svgElem.tagName != 'svg' || svgElem.namespaceURI != svg_ns) {
-		throw "Error: svgedit.document.Document instance initialized without a <svg> element";
+		throw "Error: svgedit.draw.Drawing instance initialized without a <svg> element";
 	}
 
 	this.svgElem_ = svgElem;
@@ -81,7 +68,7 @@ svgedit.document.Document = function(svgElem, opt_idPrefix) {
 	this.nonce_ = this.svgElem_.getAttributeNS(se_ns, 'nonce') || "";
 };
 
-svgedit.document.Document.prototype.getElem_ = function(id) {
+svgedit.draw.Drawing.prototype.getElem_ = function(id) {
 	if(this.svgElem_.querySelector) {
 		// querySelector lookup
 		return this.svgElem_.querySelector('#'+id);
@@ -91,11 +78,11 @@ svgedit.document.Document.prototype.getElem_ = function(id) {
 	}
 };
 
-svgedit.document.Document.prototype.getSvgElem = function() {
+svgedit.draw.Drawing.prototype.getSvgElem = function() {
 	return this.svgElem_;
 }
 
-svgedit.document.Document.prototype.getNonce = function() {
+svgedit.draw.Drawing.prototype.getNonce = function() {
 	return this.nonce_;
 };
 
@@ -103,7 +90,7 @@ svgedit.document.Document.prototype.getNonce = function() {
  * Returns the latest object id as a string.
  * @return {String} The latest object Id.
  */
-svgedit.document.Document.prototype.getId = function() {
+svgedit.draw.Drawing.prototype.getId = function() {
 	return this.nonce_ ?
 		this.idPrefix + this.nonce_ +'_' + this.obj_num :
  		this.idPrefix + this.obj_num;
@@ -113,7 +100,7 @@ svgedit.document.Document.prototype.getId = function() {
  * Returns the next object Id as a string.
  * @return {String} The next object Id to use.
  */
-svgedit.document.Document.prototype.getNextId = function() {
+svgedit.draw.Drawing.prototype.getNextId = function() {
 	var oldObjNum = this.obj_num;
 	var restoreOldObjNum = false;
 
@@ -154,7 +141,7 @@ svgedit.document.Document.prototype.getNextId = function() {
  * @return {boolean} Returns true if the id was valid to be released,
  *   false otherwise.
  */
-svgedit.document.Document.prototype.releaseId = function(id) {
+svgedit.draw.Drawing.prototype.releaseId = function(id) {
 	// confirm if this is a valid id for this Document, else return false
 	var front = this.idPrefix + (this.nonce_ ? this.nonce_ +'_' : '');
 	if (typeof id != typeof '' || id.indexOf(front) != 0) {
@@ -173,6 +160,15 @@ svgedit.document.Document.prototype.releaseId = function(id) {
 	this.releasedNums.push(num);
 
 	return true;
+};
+
+// Function: getNumLayers
+// Returns the number of layers in the current drawing.
+// 
+// Returns:
+// The number of layers in the current drawing.
+svgedit.draw.Drawing.prototype.getNumLayers = function() {
+	return this.all_layers.length;
 };
 
 })();

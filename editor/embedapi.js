@@ -66,7 +66,7 @@ function embedded_svg_edit(frame){
   //Run in firebug on http://svg-edit.googlecode.com/svn/trunk/docs/files/svgcanvas-js.html
   
   //for(var i=0,q=[],f = document.querySelectorAll("div.CFunction h3.CTitle a");i<f.length;i++){q.push(f[i].name)};q
-  //var functions = ["clearSelection", "addToSelection", "removeFromSelection", "open", "save", "getSvgString", "setSvgString", "createLayer", "deleteCurrentLayer", "getNumLayers", "getLayer", "getCurrentLayer", "setCurrentLayer", "renameCurrentLayer", "setCurrentLayerPosition", "getLayerVisibility", "setLayerVisibility", "moveSelectedToLayer", "getLayerOpacity", "setLayerOpacity", "clear"];
+  //var functions = ["clearSelection", "addToSelection", "removeFromSelection", "open", "save", "getSvgString", "setSvgString", "createLayer", "deleteCurrentLayer", "getLayer", "getCurrentLayer", "setCurrentLayer", "renameCurrentLayer", "setCurrentLayerPosition", "getLayerVisibility", "setLayerVisibility", "moveSelectedToLayer", "getLayerOpacity", "setLayerOpacity", "clear"];
   
   
   //Newer, well, it extracts things that aren't documented as well. All functions accessible through the normal thingy can now be accessed though the API
