@@ -28,6 +28,30 @@
 	svg_n.setAttributeNS(XMLNSNS, 'xmlns:se', SENS);
 	svg_n.setAttributeNS(SENS, 'se:nonce', NONCE); 
 
+	var setupSvgWith3Layers = function(svgElem) {
+		var layer1 = document.createElementNS(SVGNS, 'g');
+		var layer1_title = document.createElementNS(SVGNS, 'title');
+		layer1_title.appendChild(document.createTextNode('Layer 1'));
+		layer1.appendChild(layer1_title);
+		svgElem.appendChild(layer1);
+
+		var layer2 = document.createElementNS(SVGNS, 'g');
+		var layer2_title = document.createElementNS(SVGNS, 'title');
+		layer2_title.appendChild(document.createTextNode('Layer 2'));
+		layer2.appendChild(layer2_title);
+		svgElem.appendChild(layer2);
+
+		var layer3 = document.createElementNS(SVGNS, 'g');
+		var layer3_title = document.createElementNS(SVGNS, 'title');
+		layer3_title.appendChild(document.createTextNode('Layer 3'));
+		layer3.appendChild(layer3_title);
+		svgElem.appendChild(layer3);
+	};
+	
+	var cleanupSvg = function(svgElem) {
+		while(svgElem.firstChild) {svgElem.removeChild(svgElem.firstChild);}
+	};
+
 	test('Test draw module', function() {
 		expect(4);
 		
@@ -88,7 +112,7 @@
 		equals(doc.getId(), "svg_4");
 		
 		// clean out svg document
-		while(svg.firstChild) {svg.removeChild(svg.firstChild);}
+		cleanupSvg(svg);
 	});
 
 	test('Test getId() and getNextId() with prefix without nonce', function() {
@@ -108,7 +132,7 @@
 		equals(doc.getNextId(), prefix+"3");
 		equals(doc.getId(), prefix+"3");
 
-		while(svg.firstChild) {svg.removeChild(svg.firstChild);}
+		cleanupSvg(svg);
 	});
 
 	test('Test getId() and getNextId() with nonce', function() {
@@ -132,7 +156,8 @@
 
 		equals(doc.getNextId(), prefix+"_4");
 		equals(doc.getId(), prefix+"_4");
-		while(svg_n.firstChild) {svg_n.removeChild(svg_n.firstChild);}
+
+		cleanupSvg(svg_n);
 	});
 
 	test('Test getId() and getNextId() with prefix with nonce', function() {
@@ -153,7 +178,7 @@
 		equals(doc.getNextId(), prefix+"3");
 		equals(doc.getId(), prefix+"3");
 
-		while(svg_n.firstChild) {svg_n.removeChild(svg_n.firstChild);}
+		cleanupSvg(svg_n);
 	});
 	
 	test('Test releaseId()', function() {
@@ -172,22 +197,39 @@
 		ok(!doc.releaseId("bad-id"));
 		ok(doc.releaseId(firstId));
 		ok(!doc.releaseId(firstId));
+
+		cleanupSvg(svg);
 	});
 	
 	test('Test getNumLayers', function() {
-		expect(2);
-		var doc = new svgedit.draw.Drawing(svg);
-		equals(typeof doc.getNumLayers, typeof function() {});
-		equals(doc.getNumLayers(), 0);
-		// TODO(codedread): More here once identifyLayers works.
+		expect(3);
+		var drawing = new svgedit.draw.Drawing(svg);
+		equals(typeof drawing.getNumLayers, typeof function() {});
+		equals(drawing.getNumLayers(), 0);
+
+		setupSvgWith3Layers(svg);
+		drawing.identifyLayers();
+		
+		equals(drawing.getNumLayers(), 3);
+
+		cleanupSvg(svg);
 	});
 
 	test('Test hasLayer', function() {
-		expect(2);
-		var doc = new svgedit.draw.Drawing(svg);
-		equals(typeof doc.hasLayer, typeof function() {});
-		ok(!doc.hasLayer('invalid-layer'));
-		// TODO(codedread): More here once identifyLayers works.
+		expect(5);
+
+		setupSvgWith3Layers(svg);
+		var drawing = new svgedit.draw.Drawing(svg);
+		drawing.identifyLayers();
+		
+		equals(typeof drawing.hasLayer, typeof function() {});
+		ok(!drawing.hasLayer('invalid-layer'));
+
+		ok(drawing.hasLayer("Layer 3"));
+		ok(drawing.hasLayer("Layer 2"));
+		ok(drawing.hasLayer("Layer 1"));
+
+		cleanupSvg(svg);
 	});
 	
 	test('Test identifyLayers() with empty document', function() {
@@ -213,33 +255,17 @@
 		var firstChild = empty_layer.childNodes.item(0);
 		equals(firstChild.tagName, 'title');
 
-		while(svg.firstChild) {svg.removeChild(svg.firstChild);}
+		cleanupSvg(svg);
 	});
 	
 	test('Test identifyLayers() with some layers', function() {
 		expect(5);
 		
-		var layer1 = document.createElementNS(SVGNS, 'g');
-		var layer1_title = document.createElementNS(SVGNS, 'title');
-		layer1_title.appendChild(document.createTextNode('Layer 1'));
-		layer1.appendChild(layer1_title);
+		var drawing = new svgedit.draw.Drawing(svg);
+		setupSvgWith3Layers(svg);
 
-		var layer2 = document.createElementNS(SVGNS, 'g');
-		var layer2_title = document.createElementNS(SVGNS, 'title');
-		layer2_title.appendChild(document.createTextNode('Layer 2'));
-		layer2.appendChild(layer2_title);
-
-		var layer3 = document.createElementNS(SVGNS, 'g');
-		var layer3_title = document.createElementNS(SVGNS, 'title');
-		layer3_title.appendChild(document.createTextNode('Layer 3'));
-		layer3.appendChild(layer3_title);
-		
-		svg.appendChild(layer1);
-		svg.appendChild(layer2);
-		svg.appendChild(layer3);
 		equals(svg.childNodes.length, 3);
 		
-		var drawing = new svgedit.draw.Drawing(svg);
 		drawing.identifyLayers();
 		
 		equals(drawing.getNumLayers(), 3);
@@ -247,45 +273,53 @@
 		equals(drawing.all_layers[1][1], svg.childNodes.item(1));
 		equals(drawing.all_layers[2][1], svg.childNodes.item(2));
 
-		while(svg.firstChild) {svg.removeChild(svg.firstChild);}
+		cleanupSvg(svg);
 	});
 
 	test('Test identifyLayers() with some layers and orphans', function() {
-		expect(9);
+		expect(10);
 		
-		var layer1 = document.createElementNS(SVGNS, 'g');
-		var layer1_title = document.createElementNS(SVGNS, 'title');
-		layer1_title.appendChild(document.createTextNode('Layer 1'));
-		layer1.appendChild(layer1_title);
-		svg.appendChild(layer1);
-
-		var layer2 = document.createElementNS(SVGNS, 'g');
-		var layer2_title = document.createElementNS(SVGNS, 'title');
-		layer2_title.appendChild(document.createTextNode('Layer 2'));
-		layer2.appendChild(layer2_title);
-		svg.appendChild(layer2);
+		setupSvgWith3Layers(svg);
 
 		var orphan1 = document.createElementNS(SVGNS, 'rect');
 		var orphan2 = document.createElementNS(SVGNS, 'rect');
 		svg.appendChild(orphan1);
 		svg.appendChild(orphan2);
 		
-		equals(svg.childNodes.length, 4);
+		equals(svg.childNodes.length, 5);
 		
 		var drawing = new svgedit.draw.Drawing(svg);
 		drawing.identifyLayers();
 		
-		equals(drawing.getNumLayers(), 3);
+		equals(drawing.getNumLayers(), 4);
 		equals(drawing.all_layers[0][1], svg.childNodes.item(0));
 		equals(drawing.all_layers[1][1], svg.childNodes.item(1));
 		equals(drawing.all_layers[2][1], svg.childNodes.item(2));
-		var layer3 = drawing.all_layers[2][1];
-		equals(layer3.tagName, 'g');
-		equals(layer3.childNodes.length, 3);
-		equals(layer3.childNodes.item(1), orphan1);
-		equals(layer3.childNodes.item(2), orphan2);
+		equals(drawing.all_layers[3][1], svg.childNodes.item(3));
 
-		while(svg.firstChild) {svg.removeChild(svg.firstChild);}
+		var layer4 = drawing.all_layers[3][1];
+		equals(layer4.tagName, 'g');
+		equals(layer4.childNodes.length, 3);
+		equals(layer4.childNodes.item(1), orphan1);
+		equals(layer4.childNodes.item(2), orphan2);
+
+		cleanupSvg(svg);
+	});
+
+	test('Test getLayer()', function() {
+		expect(4);
+		
+		var drawing = new svgedit.draw.Drawing(svg);
+		setupSvgWith3Layers(svg);
+
+		drawing.identifyLayers();
+		
+		equals(drawing.getNumLayers(), 3);
+		equals(drawing.getLayer(0), "Layer 1");
+		equals(drawing.getLayer(1), "Layer 2");
+		equals(drawing.getLayer(2), "Layer 3");
+
+		cleanupSvg(svg);
 	});
 
   });
