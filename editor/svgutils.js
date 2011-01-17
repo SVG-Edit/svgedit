@@ -9,9 +9,8 @@
 
 // Dependencies:
 // 1) jQuery
-// 2) browser.js
-// 3) svgtransformlist.js
-// 4) math.js
+// 2) browser.js: only for getBBox()
+// 3) svgtransformlist.js: only for getRotationAngle()
 
 (function() {
 

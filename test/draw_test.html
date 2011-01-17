@@ -2,7 +2,9 @@
 <html>
 <head>
   <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
-  <script src='../editor/jquery.js'></script>
+  <script type='text/javascript' src='../editor/jquery.js'></script>
+  <script type='text/javascript' src='../editor/browser.js'></script>
+  <script type='text/javascript' src='../editor/svgutils.js'></script>
   <script type='text/javascript' src='../editor/draw.js'></script>
   <script type='text/javascript' src='qunit/qunit.js'></script>  
   <script type='text/javascript'>
@@ -151,7 +153,7 @@
 		equals(doc.getNextId(), prefix+"3");
 		equals(doc.getId(), prefix+"3");
 
-		while(svg_n.firstChild) {svg_n.removeChild(svg.firstChild);}
+		while(svg_n.firstChild) {svg_n.removeChild(svg_n.firstChild);}
 	});
 	
 	test('Test releaseId()', function() {
@@ -187,6 +189,105 @@
 		ok(!doc.hasLayer('invalid-layer'));
 		// TODO(codedread): More here once identifyLayers works.
 	});
+	
+	test('Test identifyLayers() with empty document', function() {
+		expect(9);
+
+		var drawing = new svgedit.draw.Drawing(svg);
+		
+		// By default, an empty document gets an empty group created.
+		drawing.identifyLayers();
+
+		// Check that <svg> element now has one child node
+		ok(drawing.getSvgElem().hasChildNodes());
+		equals(drawing.getSvgElem().childNodes.length, 1);
+
+		// Check that all_layers is correctly set up.
+		equals(drawing.getNumLayers(), 1);
+		var empty_layer = drawing.all_layers[0][1];
+		ok(empty_layer);
+		equals(empty_layer, drawing.getSvgElem().firstChild);
+		equals(empty_layer.tagName, 'g');
+		ok(empty_layer.hasChildNodes());
+		equals(empty_layer.childNodes.length, 1);
+		var firstChild = empty_layer.childNodes.item(0);
+		equals(firstChild.tagName, 'title');
+
+		while(svg.firstChild) {svg.removeChild(svg.firstChild);}
+	});
+	
+	test('Test identifyLayers() with some layers', function() {
+		expect(5);
+		
+		var layer1 = document.createElementNS(SVGNS, 'g');
+		var layer1_title = document.createElementNS(SVGNS, 'title');
+		layer1_title.appendChild(document.createTextNode('Layer 1'));
+		layer1.appendChild(layer1_title);
+
+		var layer2 = document.createElementNS(SVGNS, 'g');
+		var layer2_title = document.createElementNS(SVGNS, 'title');
+		layer2_title.appendChild(document.createTextNode('Layer 2'));
+		layer2.appendChild(layer2_title);
+
+		var layer3 = document.createElementNS(SVGNS, 'g');
+		var layer3_title = document.createElementNS(SVGNS, 'title');
+		layer3_title.appendChild(document.createTextNode('Layer 3'));
+		layer3.appendChild(layer3_title);
+		
+		svg.appendChild(layer1);
+		svg.appendChild(layer2);
+		svg.appendChild(layer3);
+		equals(svg.childNodes.length, 3);
+		
+		var drawing = new svgedit.draw.Drawing(svg);
+		drawing.identifyLayers();
+		
+		equals(drawing.getNumLayers(), 3);
+		equals(drawing.all_layers[0][1], svg.childNodes.item(0));
+		equals(drawing.all_layers[1][1], svg.childNodes.item(1));
+		equals(drawing.all_layers[2][1], svg.childNodes.item(2));
+
+		while(svg.firstChild) {svg.removeChild(svg.firstChild);}
+	});
+
+	test('Test identifyLayers() with some layers and orphans', function() {
+		expect(9);
+		
+		var layer1 = document.createElementNS(SVGNS, 'g');
+		var layer1_title = document.createElementNS(SVGNS, 'title');
+		layer1_title.appendChild(document.createTextNode('Layer 1'));
+		layer1.appendChild(layer1_title);
+		svg.appendChild(layer1);
+
+		var layer2 = document.createElementNS(SVGNS, 'g');
+		var layer2_title = document.createElementNS(SVGNS, 'title');
+		layer2_title.appendChild(document.createTextNode('Layer 2'));
+		layer2.appendChild(layer2_title);
+		svg.appendChild(layer2);
+
+		var orphan1 = document.createElementNS(SVGNS, 'rect');
+		var orphan2 = document.createElementNS(SVGNS, 'rect');
+		svg.appendChild(orphan1);
+		svg.appendChild(orphan2);
+		
+		equals(svg.childNodes.length, 4);
+		
+		var drawing = new svgedit.draw.Drawing(svg);
+		drawing.identifyLayers();
+		
+		equals(drawing.getNumLayers(), 3);
+		equals(drawing.all_layers[0][1], svg.childNodes.item(0));
+		equals(drawing.all_layers[1][1], svg.childNodes.item(1));
+		equals(drawing.all_layers[2][1], svg.childNodes.item(2));
+		var layer3 = drawing.all_layers[2][1];
+		equals(layer3.tagName, 'g');
+		equals(layer3.childNodes.length, 3);
+		equals(layer3.childNodes.item(1), orphan1);
+		equals(layer3.childNodes.item(2), orphan2);
+
+		while(svg.firstChild) {svg.removeChild(svg.firstChild);}
+	});
+
   });
   </script>
 </head>  

@@ -6953,64 +6953,11 @@ this.importSvgString = function(xmlString) {
 
 // Function: identifyLayers
 // Updates layer system
+// TODO(codedread): Remove this completely once current_context and current_layer are part of Drawing.
 var identifyLayers = canvas.identifyLayers = function() {
-	current_drawing.all_layers = [];
 	leaveContext();
-	var numchildren = svgcontent.childNodes.length;
-	// loop through all children of svgcontent
-	var orphans = [], layernames = [];
-	var childgroups = false;
-	for (var i = 0; i < numchildren; ++i) {
-		var child = svgcontent.childNodes.item(i);
-		// for each g, find its layer name
-		if (child && child.nodeType == 1) {
-			if (child.tagName == "g") {
-				childgroups = true;
-				var name = $("title",child).text();
-				
-				// Hack for Opera 10.60
-				if(!name && svgedit.browser.isOpera() && child.querySelectorAll) {
-					name = $(child.querySelectorAll('title')).text();
-				}
-
-				// store layer and name in global variable
-				if (name) {
-					layernames.push(name);
-					current_drawing.all_layers.push( [name,child] );
-					current_layer = child;
-					svgedit.utilities.walkTree(child, function(e){e.setAttribute("style", "pointer-events:inherit");});
-					current_layer.setAttribute("style", "pointer-events:none");
-				}
-				// if group did not have a name, it is an orphan
-				else {
-					orphans.push(child);
-				}
-			}
-			// if child has a bbox (i.e. not a <title> or <defs> element), then it is an orphan
-			else if(getBBox(child) && child.nodeName != 'defs') { // Opera returns a BBox for defs
-				var bb = getBBox(child);
-				orphans.push(child);
-			}
-		}
-	}
-	
-	// create a new layer and add all the orphans to it
-	if (orphans.length > 0 || !childgroups) {
-		var i = 1;
-		while (layernames.indexOf(("Layer " + i)) >= 0) { i++; }
-		var newname = "Layer " + i;
-		current_layer = svgdoc.createElementNS(svgns, "g");
-		var layer_title = svgdoc.createElementNS(svgns, "title");
-		layer_title.textContent = newname;
-		current_layer.appendChild(layer_title);
-		for (var j = 0; j < orphans.length; ++j) {
-			current_layer.appendChild(orphans[j]);
-		}
-		current_layer = svgcontent.appendChild(current_layer);
-		current_drawing.all_layers.push( [newname, current_layer] );
-	}
-	svgedit.utilities.walkTree(current_layer, function(e){e.setAttribute("style","pointer-events:inherit");});
-	current_layer.setAttribute("style","pointer-events:all");
+	current_drawing.identifyLayers();
+	current_layer = current_drawing.all_layers[current_drawing.getNumLayers() - 1][1];
 };
 
 // Function: createLayer
