@@ -8,6 +8,11 @@
  *
  */
 
+// Dependencies
+// 1) jQuery
+// 2) svgcanvas.js
+// 3) svg-editor.js
+
 var svgEditor = (function($, Editor) {
 
 	var lang_param;
@@ -47,7 +52,6 @@ var svgEditor = (function($, Editor) {
 		}
 	}
 
-		
 	Editor.readLang = function(langData) {
 		var more = Editor.canvas.runExtensions("addlangData", lang_param, true);
 		$.each(more, function(i, m) {
@@ -133,9 +137,7 @@ var svgEditor = (function($, Editor) {
 			
 			svginfo_grid_settings: config.grid,
 			svginfo_snap_onoff: config.snapping_onoff,
-			svginfo_snap_step: config.snapping_stepsize,
-
-
+			svginfo_snap_step: config.snapping_stepsize
 		}, true);
 		
 		// Shape categories

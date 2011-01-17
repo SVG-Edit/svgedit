@@ -262,7 +262,7 @@ if (svgedit.browser.supportsSelectors()) {
 	};
 }
 canvas.getElem = getElem;
-	
+
 // Function: assignAttributes
 // Assigns multiple attributes to an element.
 //
@@ -2827,9 +2827,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	
 	// in this function we do not record any state changes yet (but we do update
 	// any elements that are still being created, moved or resized on the canvas)
-	// TODO: svgcanvas should just retain a reference to the image being dragged instead
-	// of the getId() and getElementById() funkiness - this will help us customize the ids 
-	// a little bit for squares and paths
 	var mouseMove = function(evt)
 	{
 		if (!started) return;
@@ -2839,7 +2836,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			mouse_x = pt.x * current_zoom,
 			mouse_y = pt.y * current_zoom,
 			shape = getElem(getId());
-	
 		// IE9 gives the wrong root_sctm
 		// TODO: Use non-browser sniffing way to make this work
 		if($.browser.msie) {
@@ -3567,8 +3563,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		return false;
 	};
 	
-	$(container).mousedown(mouseDown).mousemove(mouseMove).click(handleLinkInCanvas).dblclick(dblClick);
-	$(window).mouseup(mouseUp);
+	// Added mouseup to the container here.
+	// TODO(codedread): Figure out why after the Closure compiler, the window mouseup is ignored.
+	$(container).mousedown(mouseDown).mousemove(mouseMove).click(handleLinkInCanvas).dblclick(dblClick).mouseup(mouseUp);
+//	$(window).mouseup(mouseUp);
 	
 	$(container).bind("mousewheel DOMMouseScroll", function(e){
 		if(!e.shiftKey) return;
@@ -7016,7 +7014,7 @@ this.cloneLayer = function(name) {
 // Deletes the current layer from the drawing and then clears the selection. This function 
 // then calls the 'changed' handler.  This is an undoable action.
 this.deleteCurrentLayer = function() {
-	if (current_layer && current_drawing.all_layers.length > 1) {
+	if (current_layer && current_drawing.getNumLayers() > 1) {
 		var batchCmd = new BatchCommand("Delete Layer");
 		// actually delete from the DOM and store in our Undo History
 		var parent = current_layer.parentNode;
@@ -7026,7 +7024,7 @@ this.deleteCurrentLayer = function() {
 		addCommandToHistory(batchCmd);
 		clearSelection();
 		identifyLayers();
-		canvas.setCurrentLayer(current_drawing.all_layers[current_drawing.all_layers.length-1][0]);
+		canvas.setCurrentLayer(current_drawing.getLayer(current_drawing.getNumLayers()));
 		call("changed", [svgcontent]);
 		return true;
 	}
@@ -7042,7 +7040,7 @@ this.deleteCurrentLayer = function() {
 this.getCurrentLayer = function() {
 	for (var i = 0; i < current_drawing.getNumLayers(); ++i) {
 		if (current_drawing.all_layers[i][1] == current_layer) {
-			return current_drawing.all_layers[i][0];
+			return current_drawing.getLayer(i);
 		}
 	}
 	return "";
@@ -7059,8 +7057,8 @@ this.getCurrentLayer = function() {
 // true if the current layer was switched, otherwise false
 this.setCurrentLayer = function(name) {
 	name = svgedit.utilities.toXml(name);
-	for (var i = 0; i < current_drawing.all_layers.length; ++i) {
-		if (name == current_drawing.all_layers[i][0]) {
+	for (var i = 0; i < current_drawing.getNumLayers(); ++i) {
+		if (name == current_drawing.getLayer(i)) {
 			if (current_layer != current_drawing.all_layers[i][1]) {
 				clearSelection();
 				current_layer.setAttribute("style", "pointer-events:none");
@@ -7090,10 +7088,10 @@ this.renameCurrentLayer = function(newname) {
 		if (!canvas.setCurrentLayer(newname)) {
 			var batchCmd = new BatchCommand("Rename Layer");
 			// find the index of the layer
-			for (var i = 0; i < current_drawing.all_layers.length; ++i) {
+			for (var i = 0; i < current_drawing.getNumLayers(); ++i) {
 				if (current_drawing.all_layers[i][1] == oldLayer) break;
 			}
-			var oldname = current_drawing.all_layers[i][0];
+			var oldname = current_drawing.getLayer(i);
 			current_drawing.all_layers[i][0] = svgedit.utilities.toXml(newname);
 		
 			// now change the underlying title element contents
@@ -7130,19 +7128,19 @@ this.renameCurrentLayer = function(newname) {
 // Returns:
 // true if the current layer position was changed, false otherwise.
 this.setCurrentLayerPosition = function(newpos) {
-	if (current_layer && newpos >= 0 && newpos < current_drawing.all_layers.length) {
-		for (var oldpos = 0; oldpos < current_drawing.all_layers.length; ++oldpos) {
+	if (current_layer && newpos >= 0 && newpos < current_drawing.getNumLayers()) {
+		for (var oldpos = 0; oldpos < current_drawing.getNumLayers(); ++oldpos) {
 			if (current_drawing.all_layers[oldpos][1] == current_layer) break;
 		}
 		// some unknown error condition (current_layer not in all_layers)
-		if (oldpos == current_drawing.all_layers.length) { return false; }
+		if (oldpos == current_drawing.getNumLayers()) { return false; }
 		
 		if (oldpos != newpos) {
 			// if our new position is below us, we need to insert before the node after newpos
 			var refLayer = null;
 			var oldNextSibling = current_layer.nextSibling;
 			if (newpos > oldpos ) {
-				if (newpos < current_drawing.all_layers.length-1) {
+				if (newpos < current_drawing.getNumLayers()-1) {
 					refLayer = current_drawing.all_layers[newpos+1][1];
 				}
 			}
@@ -7154,7 +7152,7 @@ this.setCurrentLayerPosition = function(newpos) {
 			addCommandToHistory(new MoveElementCommand(current_layer, oldNextSibling, svgcontent));
 			
 			identifyLayers();
-			canvas.setCurrentLayer(current_drawing.all_layers[newpos][0]);
+			canvas.setCurrentLayer(current_drawing.getLayer(newpos));
 			
 			return true;
 		}
@@ -7175,8 +7173,8 @@ this.setCurrentLayerPosition = function(newpos) {
 this.getLayerVisibility = function(layername) {
 	// find the layer
 	var layer = null;
-	for (var i = 0; i < current_drawing.all_layers.length; ++i) {
-		if (current_drawing.all_layers[i][0] == layername) {
+	for (var i = 0; i < current_drawing.getNumLayers(); ++i) {
+		if (current_drawing.getLayer(i) == layername) {
 			layer = current_drawing.all_layers[i][1];
 			break;
 		}
@@ -7198,8 +7196,8 @@ this.getLayerVisibility = function(layername) {
 this.setLayerVisibility = function(layername, bVisible) {
 	// find the layer
 	var layer = null;
-	for (var i = 0; i < current_drawing.all_layers.length; ++i) {
-		if (current_drawing.all_layers[i][0] == layername) {
+	for (var i = 0; i < current_drawing.getNumLayers(); ++i) {
+		if (current_drawing.getLayer(i) == layername) {
 			layer = current_drawing.all_layers[i][1];
 			break;
 		}
@@ -7232,8 +7230,8 @@ this.setLayerVisibility = function(layername, bVisible) {
 this.moveSelectedToLayer = function(layername) {
 	// find the layer
 	var layer = null;
-	for (var i = 0; i < current_drawing.all_layers.length; ++i) {
-		if (current_drawing.all_layers[i][0] == layername) {
+	for (var i = 0; i < current_drawing.getNumLayers(); ++i) {
+		if (current_drawing.getLayer(i) == layername) {
 			layer = current_drawing.all_layers[i][1];
 			break;
 		}
@@ -7300,7 +7298,7 @@ this.mergeLayer = function(skipHistory) {
 
 this.mergeAllLayers = function() {
 	var batchCmd = new BatchCommand("Merge all Layers");
-	current_layer = current_drawing.all_layers[current_drawing.all_layers.length-1][1];
+	current_layer = current_drawing.all_layers[current_drawing.getNumLayers()-1][1];
 	while($(svgcontent).children('g').length > 1) {
 		batchCmd.addSubCommand(canvas.mergeLayer(true));
 	}
@@ -7321,8 +7319,8 @@ this.mergeAllLayers = function() {
 // The opacity value of the given layer.  This will be a value between 0.0 and 1.0, or null
 // if layername is not a valid layer
 this.getLayerOpacity = function(layername) {
-	for (var i = 0; i < current_drawing.all_layers.length; ++i) {
-		if (current_drawing.all_layers[i][0] == layername) {
+	for (var i = 0; i < current_drawing.getNumLayers(); ++i) {
+		if (current_drawing.getLayer(i) == layername) {
 			var g = current_drawing.all_layers[i][1];
 			var opacity = g.getAttribute("opacity");
 			if (!opacity) {
@@ -7347,8 +7345,8 @@ this.getLayerOpacity = function(layername) {
 // opacity - a float value in the range 0.0-1.0
 this.setLayerOpacity = function(layername, opacity) {
 	if (opacity < 0.0 || opacity > 1.0) return;
-	for (var i = 0; i < current_drawing.all_layers.length; ++i) {
-		if (current_drawing.all_layers[i][0] == layername) {
+	for (var i = 0; i < current_drawing.getNumLayers(); ++i) {
+		if (current_drawing.getLayer(i) == layername) {
 			var g = current_drawing.all_layers[i][1];
 			g.setAttribute("opacity", opacity);
 			break;

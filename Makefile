@@ -3,48 +3,57 @@ VERSION=2.6
 PACKAGE=$(NAME)-$(VERSION)
 MAKEDOCS=naturaldocs/NaturalDocs
 CLOSURE=build/tools/closure-compiler.jar
-YUICOMPRESS=build/tools/yuicompressor.jar
 ZIP=zip
+
+# All files that will be compiled by the Closure compiler.
+JS_FILES=\
+	browser.js \
+	svgtransformlist.js \
+	math.js \
+	units.js \
+	svgutils.js \
+	sanitize.js \
+	history.js \
+	select.js \
+	draw.js \
+	svgcanvas.js \
+	svg-editor.js \
+	locale/locale.js
+
+JS_INPUT_FILES=$(addprefix editor/, $(JS_FILES))
+JS_BUILD_FILES=$(addprefix build/$(PACKAGE)/, $(JS_FILES))
+CLOSURE_JS_ARGS=$(addprefix --js , $(JS_INPUT_FILES))
+COMPILED_JS=editor/svgedit.compiled.js
 
 all: release firefox opera
 
-build/$(PACKAGE):
+# The build directory relies on the JS being compiled.
+build/$(PACKAGE): $(COMPILED_JS)
 	rm -rf config
 	mkdir config
 	if [ -x $(MAKEDOCS) ] ; then $(MAKEDOCS) -i editor/ -o html docs/ -p config/ -oft -r ; fi
+
+	# Make build directory and copy all editor contents into it
 	mkdir -p build/$(PACKAGE)
 	cp -r editor/* build/$(PACKAGE)
-	-find build/$(PACKAGE) -name .svn -type d -exec rm -rf {} \;
-# minify spin button
-	java -jar $(YUICOMPRESS)  build/$(PACKAGE)/spinbtn/JQuerySpinBtn.js                > build/$(PACKAGE)/spinbtn/JQuerySpinBtn.min.js
-# minify SVG-edit files
-	java -jar $(YUICOMPRESS)  build/$(PACKAGE)/svg-editor.js                > build/$(PACKAGE)/svg-editor.min.js
-	java -jar $(YUICOMPRESS)  build/$(PACKAGE)/svgcanvas.js                 > build/$(PACKAGE)/svgcanvas.min.js
+
+	# Remove all hidden .svn directories
+	-find build/$(PACKAGE) -name .svn -type d | xargs rm -rf {} \;
+
+	# Remove all JS files that were compiled
+	rm $(JS_BUILD_FILES)
 
 # codedread: NOTE: Some files are not ready for the Closure compiler: (jquery)
+$(COMPILED_JS):
 	java -jar $(CLOSURE) \
-	   --js browser.js \
-	   --js svgtransformlist.js \
-	   --js math.js \
-	   --js units.js \
-	   --js svgutils.js \
-	   --js sanitize.js \
-	   --js history.js \
-	   --js select.js \
-	   --js draw.js \
-	   --js svgcanvas.js \
-	   --js svg-editor.js \
-	   --js locale/locale.js \
-	   --js_output_file svgedit.compiled.js
-
-# CSS files do not work remotely
-# java -jar $(YUICOMPRESS) build/$(PACKAGE)/spinbtn/JQuerySpinBtn.css > build/$(PACKAGE)/spinbtn/JQuerySpinBtn.min.css
-# java -jar $(YUICOMPRESS) build/$(PACKAGE)/svg-editor.css > build/$(PACKAGE)/svg-editor.min.css
+		--compilation_level WHITESPACE_ONLY \
+		$(CLOSURE_JS_ARGS) \
+		--js_output_file $(COMPILED_JS)
 
 release: build/$(PACKAGE)
 	cd build ; $(ZIP) $(PACKAGE).zip -r $(PACKAGE) ; cd ..
 	tar -z -c -f build/$(PACKAGE)-src.tar.gz \
-	    --exclude-vcs \
+	    --exclude='\.svn' \
 	    --exclude='build/*' \
 	    .
 
@@ -66,3 +75,4 @@ clean:
 	rm -rf build/$(PACKAGE)
 	rm -rf build/firefox
 	rm -rf build/opera
+	rm -rf $(COMPILED_JS)
