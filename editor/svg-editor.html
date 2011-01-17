@@ -9,38 +9,39 @@
 <link rel="stylesheet" href="jgraduate/css/jgraduate.css" type="text/css"/>
 <link rel="stylesheet" href="svg-editor.css" type="text/css"/>
 <link rel="stylesheet" href="spinbtn/JQuerySpinBtn.css" type="text/css"/>
-<!-- Development version of script tags: -->
-<script type="text/javascript" src="jquery.js"></script>
-<!--script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.js"></script-->
-<script type="text/javascript" src="js-hotkeys/jquery.hotkeys.min.js"></script>
-<script type="text/javascript" src="jgraduate/jquery.jgraduate.js"></script>
-<script type="text/javascript" src="svgicons/jquery.svgicons.js"></script>
-<script type="text/javascript" src="jquerybbq/jquery.bbq.min.js"></script>
-<script type="text/javascript" src="spinbtn/JQuerySpinBtn.js"></script>
-<script type="text/javascript" src="contextmenu/jquery.contextMenu.js"></script>
-<script type="text/javascript" src="browser.js"></script>
-<script type="text/javascript" src="svgtransformlist.js"></script>
-<script type="text/javascript" src="math.js"></script>
-<script type="text/javascript" src="units.js"></script>
-<script type="text/javascript" src="svgutils.js"></script>
-<script type="text/javascript" src="sanitize.js"></script>
-<script type="text/javascript" src="history.js"></script>
-<script type="text/javascript" src="select.js"></script>
-<script type="text/javascript" src="draw.js"></script>
-<script type="text/javascript" src="svgcanvas.js"></script>
-<script type="text/javascript" src="svg-editor.js"></script>
-<script type="text/javascript" src="locale/locale.js"></script>
-<!-- you can load extensions here -->
-<!-- <script type="text/javascript" src="extensions/ext-helloworld.js"></script> -->
 
-<!-- Release version of script tags: >
-<script type="text/javascript" src="jquery.js"></script>
-<script type="text/javascript" src="js-hotkeys/jquery.hotkeys-0.7.9.js"></script>
+<!--{if jquery_release}>
+  <script type="text/javascript" src="jquery.js"></script>
+<!{else}-->
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.js"></script>
+<!--{endif}-->
+
+<script type="text/javascript" src="js-hotkeys/jquery.hotkeys.min.js"></script>
 <script type="text/javascript" src="jquerybbq/jquery.bbq.min.js"></script>
+<script type="text/javascript" src="svgicons/jquery.svgicons.js"></script>
 <script type="text/javascript" src="jgraduate/jquery.jgraduate.min.js"></script>
 <script type="text/javascript" src="spinbtn/JQuerySpinBtn.min.js"></script>
-<script type="text/javascript" src="svgedit.compiled.js"></script>
--->
+<script type="text/javascript" src="contextmenu/jquery.contextMenu.min.js"></script>
+
+<!--{if svg_edit_release}>
+  <script type="text/javascript" src="svgedit.compiled.js"></script>
+<{else}-->
+  <script type="text/javascript" src="browser.js"></script>
+  <script type="text/javascript" src="svgtransformlist.js"></script>
+  <script type="text/javascript" src="math.js"></script>
+  <script type="text/javascript" src="units.js"></script>
+  <script type="text/javascript" src="svgutils.js"></script>
+  <script type="text/javascript" src="sanitize.js"></script>
+  <script type="text/javascript" src="history.js"></script>
+  <script type="text/javascript" src="select.js"></script>
+  <script type="text/javascript" src="draw.js"></script>
+  <script type="text/javascript" src="svgcanvas.js"></script>
+  <script type="text/javascript" src="svg-editor.js"></script>
+  <script type="text/javascript" src="locale/locale.js"></script>
+<!--{endif}-->
+
+<!-- you can load extensions here -->
+<!-- <script type="text/javascript" src="extensions/ext-helloworld.js"></script> -->
 
 <!-- always minified scripts -->
 <script type="text/javascript" src="jquery-ui/jquery-ui-1.8.custom.min.js"></script>
