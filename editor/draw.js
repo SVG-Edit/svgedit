@@ -248,4 +248,20 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 };
 
 
+// Function: svgedit.draw.Drawing.getLayer
+// Returns the name of the ith layer. If the index is out of range, an empty string is returned.
+//
+// Parameters:
+// i - the zero-based index of the layer you are querying.
+// 
+// Returns:
+// The name of the ith layer
+svgedit.draw.Drawing.prototype.getLayer = function(i) {
+	if (i >= 0 && i < this.getNumLayers()) {
+		return this.all_layers[i][0];
+	}
+	return "";
+};
+
+
 })();

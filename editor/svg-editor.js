@@ -3696,7 +3696,7 @@
 			// if no layer is passed in, this function restores the other layers
 			var toggleHighlightLayer = function(layerNameToHighlight) {
 				var curNames = new Array(svgCanvas.getCurrentDrawing().getNumLayers());
-				for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getLayer(i); }
+				for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getCurrentDrawing().getLayer(i); }
 			
 				if (layerNameToHighlight) {
 					for (var i = 0; i < curNames.length; ++i) {
@@ -3722,7 +3722,7 @@
 				var icon = $.getSvgIcon('eye');
 				// we get the layers in the reverse z-order (the layer rendered on top is listed first)
 				while (layer--) {
-					var name = svgCanvas.getLayer(layer);
+					var name = svgCanvas.getCurrentDrawing().getLayer(layer);
 					// contenteditable=\"true\"
 					var appendstr = "<tr class=\"layer";
 					if (name == currentlayer) {

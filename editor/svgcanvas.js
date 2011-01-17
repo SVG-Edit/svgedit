@@ -7033,21 +7033,6 @@ this.deleteCurrentLayer = function() {
 	return false;
 };
 
-// Function: getLayer
-// Returns the name of the ith layer. If the index is out of range, an empty string is returned.
-//
-// Parameters:
-// i - the zero-based index of the layer you are querying.
-// 
-// Returns:
-// The name of the ith layer
-this.getLayer = function(i) {
-	if (i >= 0 && i < current_drawing.getNumLayers()) {
-		return current_drawing.all_layers[i][0];
-	}
-	return "";
-};
-
 // Function: getCurrentLayer
 // Returns the name of the currently selected layer. If an error occurs, an empty string 
 // is returned.
