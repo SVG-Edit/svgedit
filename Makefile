@@ -40,8 +40,8 @@ build/$(PACKAGE): $(COMPILED_JS)
 	# Remove all hidden .svn directories
 	-find build/$(PACKAGE) -name .svn -type d | xargs rm -rf {} \;
 
-	# Remove all JS files that were compiled
-	rm $(JS_BUILD_FILES)
+	# Create the release version of the main HTML file.
+	build/tools/ship.py --i=editor/svg-editor.html --on=svg_edit_release > build/$(PACKAGE)/svg-editor.html
 
 # codedread: NOTE: Some files are not ready for the Closure compiler: (jquery)
 $(COMPILED_JS):
@@ -75,4 +75,8 @@ clean:
 	rm -rf build/$(PACKAGE)
 	rm -rf build/firefox
 	rm -rf build/opera
+	rm -rf build/$(PACKAGE).zip
+	rm -rf build/$(PACKAGE)-src.tar.gz
+	rm -rf build/$(PACKAGE).xpi
+	rm -rf build/$(PACKAGE).wgt
 	rm -rf $(COMPILED_JS)
