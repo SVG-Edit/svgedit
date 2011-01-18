@@ -13,11 +13,9 @@
 // 3) math.js
 // 4) svgutils.js
 
-(function() {
+var svgedit = svgedit || {};
 
-if (!window.svgedit) {
-	window.svgedit = {};
-}
+(function() {
 
 if (!svgedit.select) {
 	svgedit.select = {};

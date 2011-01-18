@@ -10,11 +10,10 @@
 // Dependencies:
 // 1) browser.js
 
+var svgedit = svgedit || {};
+
 (function() {
 
-if (!window.svgedit) {
-	window.svgedit = {};
-}
 if (!svgedit.transformlist) {
 	svgedit.transformlist = {};
 }

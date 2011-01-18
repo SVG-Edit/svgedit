@@ -11,10 +11,9 @@
 // 2) browser.js
 // 3) svgutils.js
 
+var svgedit = svgedit || {};
+
 (function() {
-if (!window.svgedit) {
-	window.svgedit = {};
-}
 
 if (!svgedit.draw) {
 	svgedit.draw = {};

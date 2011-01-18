@@ -11,11 +11,9 @@
 // 2) svgtransformlist.js
 // 3) svgutils.js
 
-(function() {
+var svgedit = svgedit || {};
 
-if (!window.svgedit) {
-	window.svgedit = {};
-}
+(function() {
 
 if (!svgedit.history) {
 	svgedit.history = {};
