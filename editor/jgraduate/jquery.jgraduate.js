@@ -690,7 +690,7 @@ jQuery.fn.jGraduate =
 			
 			stopMakerSVG = mkElem('svg', {
 				width: '100%',
-				height: 45,
+				height: 45
 			}, stopMakerDiv[0]);
 			
 			var trans_pattern = mkElem('pattern', {
@@ -1012,7 +1012,7 @@ jQuery.fn.jGraduate =
 						elem: handle,
 						input: $(data.input),
 						parent: parent,
-						offset: parent.offset(),
+						offset: parent.offset()
 					};
 					$win.mousemove(dragSlider).mouseup(stopSlider);
 					evt.preventDefault();
