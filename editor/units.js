@@ -10,11 +10,9 @@
 // Dependencies:
 // 1) jQuery
 
-(function() {
+var svgedit = svgedit || {};
 
-if (!window.svgedit) {
-	window.svgedit = {};
-}
+(function() {
 
 if (!svgedit.units) {
 	svgedit.units = {};

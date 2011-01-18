@@ -43,10 +43,11 @@ build/$(PACKAGE): $(COMPILED_JS)
 	# Create the release version of the main HTML file.
 	build/tools/ship.py --i=editor/svg-editor.html --on=svg_edit_release > build/$(PACKAGE)/svg-editor.html
 
-# codedread: NOTE: Some files are not ready for the Closure compiler: (jquery)
+# NOTE: Some files are not ready for the Closure compiler: (jquery)
+# NOTE: Our code is *not* ready for ADVANCED_OPTIMIZATIONS
 $(COMPILED_JS):
 	java -jar $(CLOSURE) \
-		--compilation_level WHITESPACE_ONLY \
+		--compilation_level SIMPLE_OPTIMIZATIONS \
 		$(CLOSURE_JS_ARGS) \
 		--js_output_file $(COMPILED_JS)
 

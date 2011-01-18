@@ -10,11 +10,9 @@
 // Dependencies:
 // 1) jQuery (for $.alert())
 
-(function() {
+var svgedit = svgedit || {};
 
-if (!window.svgedit) {
-	window.svgedit = {};
-}
+(function() {
 
 if (!svgedit.browser) {
 	svgedit.browser = {};
@@ -25,7 +23,7 @@ var supportsSvg_ = (function() {
 })();
 svgedit.browser.supportsSvg = function() { return supportsSvg_; }
 if(!svgedit.browser.supportsSvg()) {
-        window.location = "browser-not-supported.html";  
+	window.location = "browser-not-supported.html";
 }
 else{
 

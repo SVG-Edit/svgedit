@@ -11,11 +11,9 @@
 // 1) browser.js
 // 2) svgutils.js
 
-(function() {
+var svgedit = svgedit || {};
 
-if (!window.svgedit) {
-	window.svgedit = {};
-}
+(function() {
 
 if (!svgedit.sanitize) {
 	svgedit.sanitize = {};

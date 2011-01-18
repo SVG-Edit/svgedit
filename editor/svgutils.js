@@ -12,11 +12,9 @@
 // 2) browser.js: only for getBBox()
 // 3) svgtransformlist.js: only for getRotationAngle()
 
-(function() {
+var svgedit = svgedit || {};
 
-if (!window.svgedit) {
-	window.svgedit = {};
-}
+(function() {
 
 if (!svgedit.utilities) {
 	svgedit.utilities = {};
