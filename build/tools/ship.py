@@ -91,6 +91,10 @@ def parseComment(line, line_num, enabled_flags):
       print 'Fatal Error: {else} found without {if} on line ' + str(line_num)
       print line
       quit()
+    if inside_if == 'else':
+      print 'Fatal Error: Multiple {else} clauses found in the same if on line ' + str(line_num)
+      print line
+      quit()
 
     if last_if_true:
       line = '<!--{else}>'
@@ -99,6 +103,9 @@ def parseComment(line, line_num, enabled_flags):
 
     # invert the logic so the endif clause is closed properly
     last_if_true = not last_if_true
+
+    # ensure we don't have two else statements in the same if
+    inside_if = 'else'
 
   elif statement == 'endif':
     if inside_if == False:
