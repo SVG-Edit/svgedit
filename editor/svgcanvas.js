@@ -191,15 +191,12 @@ var current_drawing = new svgedit.draw.Drawing(svgcontent, idprefix);
 // Function: getCurrentDrawing
 // Returns the current Drawing.
 // @return {svgedit.draw.Drawing}
-canvas.getCurrentDrawing = function() {
+var getCurrentDrawing = canvas.getCurrentDrawing = function() {
 	return current_drawing;
 };
 
 // Float displaying the current zoom level (1 = 100%, .5 = 50%, etc)
 var current_zoom = 1;
-
-// pointer to the current layer <g>
-var current_layer = null;
 
 // pointer to current group (for in-group editing)
 var current_group = null;
@@ -339,6 +336,7 @@ var cleanupElement = this.cleanupElement = function(element) {
 var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
 	var shape = getElem(data.attr.id);
 	// if shape is a path but we need to create a rect/ellipse, then remove the path
+	var current_layer = getCurrentDrawing().getCurrentLayer();
 	if (shape && data.element != shape.tagName) {
 		current_layer.removeChild(shape);
 		shape = null;
@@ -682,7 +680,7 @@ var round = this.round = function(val) {
 var getIntersectionList = this.getIntersectionList = function(rect) {
 	if (rubberBox == null) { return null; }
 
-	var parent = current_group || current_layer;
+	var parent = current_group || getCurrentDrawing().getCurrentLayer();
 	
 	if(!curBBoxes.length) {
 		// Cache all bboxes
@@ -996,8 +994,8 @@ var getId, getNextId, call;
 	// Object to contain editor event names and callback functions
 	var events = {};
 
-	getId = c.getId = function() { return current_drawing.getId(); };
-	getNextId = c.getNextId = function() { return current_drawing.getNextId(); };
+	getId = c.getId = function() { return getCurrentDrawing().getId(); };
+	getNextId = c.getNextId = function() { return getCurrentDrawing().getNextId(); };
 	
 	// Function: call
 	// Run the callback function associated with the given event
@@ -2338,6 +2336,7 @@ var removeFromSelection = this.removeFromSelection = function(elemsToRemove) {
 // Function: selectAllInCurrentLayer
 // Clears the selection, then adds all elements in the current layer to the selection.
 this.selectAllInCurrentLayer = function() {
+	var current_layer = getCurrentDrawing().getCurrentLayer();
 	if (current_layer) {
 		current_mode = "select";
 		selectOnly($(current_group || current_layer).children());
@@ -2426,6 +2425,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	
 	// Get the desired mouse_target with jQuery selector-fu
 	// If it's root-like, select the root
+	var current_layer = getCurrentDrawing().getCurrentLayer();
 	if([svgroot, container, svgcontent, current_layer].indexOf(mouse_target) >= 0) {
 		return svgroot;
 	}
@@ -3453,7 +3453,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		});
 		
 		if (!keep && element != null) {
-			current_drawing.releaseId(getId());
+			getCurrentDrawing().releaseId(getId());
 			element.parentNode.removeChild(element);
 			element = null;
 			
@@ -3550,7 +3550,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			leaveContext();
 		}
 		
-		if((parent.tagName !== 'g' && parent.tagName !== 'a') || parent === current_layer || mouse_target === selectorManager.selectorParentGroup) {
+		if((parent.tagName !== 'g' && parent.tagName !== 'a') ||
+			parent === getCurrentDrawing().getCurrentLayer() ||
+			mouse_target === selectorManager.selectorParentGroup)
+		{
 			// Escape from in-group edit
 			return;
 		}
@@ -6921,7 +6924,7 @@ this.importSvgString = function(xmlString) {
 		use_el.id = getNextId();
 		setHref(use_el, "#" + symbol.id);
 		
-		(current_group || current_layer).appendChild(use_el);
+		(current_group || getCurrentDrawing().getCurrentLayer()).appendChild(use_el);
 		batchCmd.addSubCommand(new InsertElementCommand(use_el));
 		clearSelection();
 		
@@ -6951,11 +6954,10 @@ this.importSvgString = function(xmlString) {
 
 // Function: identifyLayers
 // Updates layer system
-// TODO(codedread): Remove this completely once current_context and current_layer are part of Drawing.
 var identifyLayers = canvas.identifyLayers = function() {
 	leaveContext();
 	current_drawing.identifyLayers();
-	current_layer = current_drawing.all_layers[current_drawing.getNumLayers() - 1][1];
+	current_drawing.current_layer = current_drawing.all_layers[current_drawing.getNumLayers() - 1][1];
 };
 
 // Function: createLayer
@@ -6993,8 +6995,8 @@ this.cloneLayer = function(name) {
 	var layer_title = svgdoc.createElementNS(svgns, "title");
 	layer_title.textContent = name;
 	new_layer.appendChild(layer_title);
-	$(current_layer).after(new_layer);
-	var childs = current_layer.childNodes;
+	$(current_drawing.current_layer).after(new_layer);
+	var childs = current_drawing.current_layer.childNodes;
 	for(var i = 0; i < childs.length; i++) {
 		var ch = childs[i];
 		if(ch.localName == 'title') continue;
@@ -7014,13 +7016,13 @@ this.cloneLayer = function(name) {
 // Deletes the current layer from the drawing and then clears the selection. This function 
 // then calls the 'changed' handler.  This is an undoable action.
 this.deleteCurrentLayer = function() {
-	if (current_layer && current_drawing.getNumLayers() > 1) {
+	if (current_drawing.current_layer && current_drawing.getNumLayers() > 1) {
 		var batchCmd = new BatchCommand("Delete Layer");
 		// actually delete from the DOM and store in our Undo History
-		var parent = current_layer.parentNode;
-		var nextSibling = current_layer.nextSibling;
-		batchCmd.addSubCommand(new RemoveElementCommand(current_layer, nextSibling, parent));
-		parent.removeChild(current_layer);
+		var parent = current_drawing.current_layer.parentNode;
+		var nextSibling = current_drawing.current_layer.nextSibling;
+		batchCmd.addSubCommand(new RemoveElementCommand(current_drawing.current_layer, nextSibling, parent));
+		parent.removeChild(current_drawing.current_layer);
 		addCommandToHistory(batchCmd);
 		clearSelection();
 		identifyLayers();
@@ -7039,7 +7041,7 @@ this.deleteCurrentLayer = function() {
 // The name of the currently active layer.
 this.getCurrentLayer = function() {
 	for (var i = 0; i < current_drawing.getNumLayers(); ++i) {
-		if (current_drawing.all_layers[i][1] == current_layer) {
+		if (current_drawing.all_layers[i][1] == current_drawing.current_layer) {
 			return current_drawing.getLayer(i);
 		}
 	}
@@ -7059,11 +7061,11 @@ this.setCurrentLayer = function(name) {
 	name = svgedit.utilities.toXml(name);
 	for (var i = 0; i < current_drawing.getNumLayers(); ++i) {
 		if (name == current_drawing.getLayer(i)) {
-			if (current_layer != current_drawing.all_layers[i][1]) {
+			if (current_drawing.current_layer != current_drawing.all_layers[i][1]) {
 				clearSelection();
-				current_layer.setAttribute("style", "pointer-events:none");
-				current_layer = current_drawing.all_layers[i][1];
-				current_layer.setAttribute("style", "pointer-events:all");
+				current_drawing.current_layer.setAttribute("style", "pointer-events:none");
+				current_drawing.current_layer = current_drawing.all_layers[i][1];
+				current_drawing.current_layer.setAttribute("style", "pointer-events:all");
 			}
 			return true;
 		}
@@ -7082,9 +7084,10 @@ this.setCurrentLayer = function(name) {
 // Returns:
 // true if the rename succeeded, false otherwise.
 this.renameCurrentLayer = function(newname) {
-	if (current_layer) {
-		var oldLayer = current_layer;
-		// setCurrentLayer will return false if the name doesn't already exists
+	if (current_drawing.current_layer) {
+		var oldLayer = current_drawing.current_layer;
+		// setCurrentLayer will return false if the name doesn't already exist
+		// this means we are free to rename our oldLayer
 		if (!canvas.setCurrentLayer(newname)) {
 			var batchCmd = new BatchCommand("Rename Layer");
 			// find the index of the layer
@@ -7111,7 +7114,7 @@ this.renameCurrentLayer = function(newname) {
 				}
 			}
 		}
-		current_layer = oldLayer;
+		current_drawing.current_layer = oldLayer;
 	}
 	return false;
 };
@@ -7128,9 +7131,9 @@ this.renameCurrentLayer = function(newname) {
 // Returns:
 // true if the current layer position was changed, false otherwise.
 this.setCurrentLayerPosition = function(newpos) {
-	if (current_layer && newpos >= 0 && newpos < current_drawing.getNumLayers()) {
+	if (current_drawing.current_layer && newpos >= 0 && newpos < current_drawing.getNumLayers()) {
 		for (var oldpos = 0; oldpos < current_drawing.getNumLayers(); ++oldpos) {
-			if (current_drawing.all_layers[oldpos][1] == current_layer) break;
+			if (current_drawing.all_layers[oldpos][1] == current_drawing.current_layer) break;
 		}
 		// some unknown error condition (current_layer not in all_layers)
 		if (oldpos == current_drawing.getNumLayers()) { return false; }
@@ -7138,7 +7141,7 @@ this.setCurrentLayerPosition = function(newpos) {
 		if (oldpos != newpos) {
 			// if our new position is below us, we need to insert before the node after newpos
 			var refLayer = null;
-			var oldNextSibling = current_layer.nextSibling;
+			var oldNextSibling = current_drawing.current_layer.nextSibling;
 			if (newpos > oldpos ) {
 				if (newpos < current_drawing.getNumLayers()-1) {
 					refLayer = current_drawing.all_layers[newpos+1][1];
@@ -7148,8 +7151,8 @@ this.setCurrentLayerPosition = function(newpos) {
 			else {
 				refLayer = current_drawing.all_layers[newpos][1];
 			}
-			svgcontent.insertBefore(current_layer, refLayer);
-			addCommandToHistory(new MoveElementCommand(current_layer, oldNextSibling, svgcontent));
+			svgcontent.insertBefore(current_drawing.current_layer, refLayer);
+			addCommandToHistory(new MoveElementCommand(current_drawing.current_layer, oldNextSibling, svgcontent));
 			
 			identifyLayers();
 			canvas.setCurrentLayer(current_drawing.getLayer(newpos));
@@ -7209,7 +7212,7 @@ this.setLayerVisibility = function(layername, bVisible) {
 	layer.setAttribute("display", bVisible ? "inline" : "none");
 	addCommandToHistory(new ChangeElementCommand(layer, {"display":oldDisplay}, "Layer Visibility"));
 	
-	if (layer == current_layer) {
+	if (layer == current_drawing.current_layer) {
 		clearSelection();
 		pathActions.clear();
 	}
@@ -7260,28 +7263,28 @@ this.moveSelectedToLayer = function(layername) {
 
 this.mergeLayer = function(skipHistory) {
 	var batchCmd = new BatchCommand("Merge Layer");
-	var prev = $(current_layer).prev()[0];
+	var prev = $(current_drawing.current_layer).prev()[0];
 	if(!prev) return;
-	var childs = current_layer.childNodes;
+	var childs = current_drawing.current_layer.childNodes;
 	var len = childs.length;
-	var layerNextSibling = current_layer.nextSibling;
-	batchCmd.addSubCommand(new RemoveElementCommand(current_layer, layerNextSibling, svgcontent));
+	var layerNextSibling = current_drawing.current_layer.nextSibling;
+	batchCmd.addSubCommand(new RemoveElementCommand(current_drawing.current_layer, layerNextSibling, svgcontent));
 
-	while(current_layer.firstChild) {
-		var ch = current_layer.firstChild;
+	while(current_drawing.current_layer.firstChild) {
+		var ch = current_drawing.current_layer.firstChild;
 		if(ch.localName == 'title') {
 			var chNextSibling = ch.nextSibling;
-			batchCmd.addSubCommand(new RemoveElementCommand(ch, chNextSibling, current_layer));
-			current_layer.removeChild(ch);
+			batchCmd.addSubCommand(new RemoveElementCommand(ch, chNextSibling, current_drawing.current_layer));
+			current_drawing.current_layer.removeChild(ch);
 			continue;
 		}
 		var oldNextSibling = ch.nextSibling;
 		prev.appendChild(ch);
-		batchCmd.addSubCommand(new MoveElementCommand(ch, oldNextSibling, current_layer));
+		batchCmd.addSubCommand(new MoveElementCommand(ch, oldNextSibling, current_drawing.current_layer));
 	}
 	
 	// Remove current layer
-	svgcontent.removeChild(current_layer);
+	svgcontent.removeChild(current_drawing.current_layer);
 	
 	if(!skipHistory) {
 		clearSelection();
@@ -7292,13 +7295,13 @@ this.mergeLayer = function(skipHistory) {
 		addCommandToHistory(batchCmd);
 	}
 	
-	current_layer = prev;
+	current_drawing.current_layer = prev;
 	return batchCmd;
 }
 
 this.mergeAllLayers = function() {
 	var batchCmd = new BatchCommand("Merge all Layers");
-	current_layer = current_drawing.all_layers[current_drawing.getNumLayers()-1][1];
+	current_drawing.current_layer = current_drawing.all_layers[current_drawing.getNumLayers()-1][1];
 	while($(svgcontent).children('g').length > 1) {
 		batchCmd.addSubCommand(canvas.mergeLayer(true));
 	}
@@ -7711,7 +7714,7 @@ this.setBBoxZoom = function(val, editor_w, editor_h) {
 			bb = getStrokedBBox();
 			break;
 		case 'layer':
-			bb = getStrokedBBox(getVisibleElements(current_layer));
+			bb = getStrokedBBox(getVisibleElements(getCurrentDrawing().getCurrentLayer()));
 			break;
 		default:
 			return;
@@ -8951,7 +8954,7 @@ this.pasteElements = function(type) {
 		if(!getElem(elem.id)) copy.id = elem.id;
 		
 		pasted.push(copy);
-		(current_group || current_layer).appendChild(copy);
+		(current_group || getCurrentDrawing().getCurrentLayer()).appendChild(copy);
 		batchCmd.addSubCommand(new InsertElementCommand(copy));
 	}
 	
@@ -9449,7 +9452,7 @@ this.cloneSelectedElements = function() {
 	while (i--) {
 		// clone each element and replace it within copiedElements
 		var elem = copiedElements[i] = copyElem(copiedElements[i]);
-		(current_group || current_layer).appendChild(elem);
+		(current_group || getCurrentDrawing().getCurrentLayer()).appendChild(elem);
 		batchCmd.addSubCommand(new InsertElementCommand(elem));
 	}
 	
@@ -9636,7 +9639,7 @@ this.setBackground = function(color, url) {
 this.cycleElement = function(next) {
 	var cur_elem = selectedElements[0];
 	var elem = false;
-	var all_elems = getVisibleElements(current_group || current_layer);
+	var all_elems = getVisibleElements(current_group || getCurrentDrawing().getCurrentLayer());
 	if(!all_elems.length) return;
 	if (cur_elem == null) {
 		var num = next?all_elems.length-1:0;

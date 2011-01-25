@@ -56,16 +56,48 @@ svgedit.draw.Drawing = function(svgElem, opt_idPrefix) {
 		throw "Error: svgedit.draw.Drawing instance initialized without a <svg> element";
 	}
 
+	/**
+	 * The SVG DOM Element that represents this drawing.
+	 * @type {SVGSVGElement}
+	 */
 	this.svgElem_ = svgElem;
+	
+	/**
+	 * The latest object number used in this drawing.
+	 * @type {number}
+	 */
 	this.obj_num = 0;
+	
+	/**
+	 * The prefix to prepend to each element id in the drawing.
+	 * @type {String}
+	 */
 	this.idPrefix = opt_idPrefix || "svg_";
+	
+	/**
+	 * An array of released element ids to immediately reuse.
+	 * @type {Array.<number>}
+	 */
 	this.releasedNums = [];
 
-	// z-ordered array of tuples containing layer names and <g> elements
-	// the first layer is the one at the bottom of the rendering
+	/**
+	 * The z-ordered array of tuples containing layer names and <g> elements.
+	 * The first layer is the one at the bottom of the rendering.
+	 * TODO: Turn this into an Array.<Layer>
+	 * @type {Array.<Array.<String, SVGGElement>>}
+	 */
 	this.all_layers = [];
 
-	// Determine if the <svg> element has a nonce on it
+	/**
+	 * The current layer being used.
+	 * @type {SVGGElement}
+	 */
+	this.current_layer = null;
+
+	/**
+	 * The nonce to use to uniquely identify elements across drawings.
+	 * @type {!String}
+	 */
 	this.nonce_ = this.svgElem_.getAttributeNS(se_ns, 'nonce') || "";
 };
 
@@ -81,7 +113,11 @@ svgedit.draw.Drawing.prototype.getElem_ = function(id) {
 
 svgedit.draw.Drawing.prototype.getSvgElem = function() {
 	return this.svgElem_;
-}
+};
+
+svgedit.draw.Drawing.prototype.getCurrentLayer = function() {
+	return this.current_layer;
+};
 
 svgedit.draw.Drawing.prototype.getNonce = function() {
 	return this.nonce_;
@@ -189,7 +225,7 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 	var numchildren = this.svgElem_.childNodes.length;
 	// loop through all children of SVG element
 	var orphans = [], layernames = [];
-	var current_layer = null;
+	var a_layer = null;
 	var childgroups = false;
 	for (var i = 0; i < numchildren; ++i) {
 		var child = this.svgElem_.childNodes.item(i);
@@ -208,9 +244,9 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 				if (name) {
 					layernames.push(name);
 					this.all_layers.push( [name,child] );
-					current_layer = child;
+					a_layer = child;
 					svgedit.utilities.walkTree(child, function(e){e.setAttribute("style", "pointer-events:inherit");});
-					current_layer.setAttribute("style", "pointer-events:none");
+					a_layer.setAttribute("style", "pointer-events:none");
 				}
 				// if group did not have a name, it is an orphan
 				else {
@@ -232,18 +268,19 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 		// TODO(codedread): What about internationalization of "Layer"?
 		while (layernames.indexOf(("Layer " + i)) >= 0) { i++; }
 		var newname = "Layer " + i;
-		current_layer = svgdoc.createElementNS(svg_ns, "g");
+		a_layer = svgdoc.createElementNS(svg_ns, "g");
 		var layer_title = svgdoc.createElementNS(svg_ns, "title");
 		layer_title.textContent = newname;
-		current_layer.appendChild(layer_title);
+		a_layer.appendChild(layer_title);
 		for (var j = 0; j < orphans.length; ++j) {
-			current_layer.appendChild(orphans[j]);
+			a_layer.appendChild(orphans[j]);
 		}
-		this.svgElem_.appendChild(current_layer);
-		this.all_layers.push( [newname, current_layer] );
+		this.svgElem_.appendChild(a_layer);
+		this.all_layers.push( [newname, a_layer] );
 	}
-	svgedit.utilities.walkTree(current_layer, function(e){e.setAttribute("style","pointer-events:inherit");});
-	current_layer.setAttribute("style","pointer-events:all");
+	svgedit.utilities.walkTree(a_layer, function(e){e.setAttribute("style","pointer-events:inherit");});
+	this.current_layer = a_layer;
+	this.current_layer.setAttribute("style","pointer-events:all");
 };
 
 
