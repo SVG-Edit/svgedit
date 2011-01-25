@@ -322,6 +322,19 @@
 		cleanupSvg(svg);
 	});
 
+	test('Test getCurrentLayer()', function() {
+		expect(4);
+		
+		var drawing = new svgedit.draw.Drawing(svg);
+		setupSvgWith3Layers(svg);
+		
+		drawing.identifyLayers();
+		ok(drawing.getCurrentLayer);
+		equals(typeof drawing.getCurrentLayer, typeof function(){});
+		ok(drawing.getCurrentLayer());
+		equals(drawing.getCurrentLayer(), drawing.all_layers[2][1]);
+	});
+
   });
   </script>
 </head>  
