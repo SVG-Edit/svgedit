@@ -802,7 +802,7 @@
 				var link_str = '';
 				if(context) {
 					var str = '';
-					link_str = '<a href="#" data-root="y">' + svgCanvas.getCurrentLayer() + '</a>';
+					link_str = '<a href="#" data-root="y">' + svgCanvas.getCurrentLayerName() + '</a>';
 					
 					$(context).parentsUntil('#svgcontent > g').andSelf().each(function() {
 						if(this.id) {
@@ -1448,7 +1448,7 @@
 				var elem = selectedElement;
 				// If element has just been deleted, consider it null
 				if(elem != null && !elem.parentNode) elem = null;
-				var currentLayer = svgCanvas.getCurrentLayer();
+				var currentLayerName = svgCanvas.getCurrentLayerName();
 				var currentMode = svgCanvas.getMode();
 				// No need to update anything else in rotate mode
 				if (currentMode == 'rotate' && elem != null) {
@@ -1473,7 +1473,6 @@
 // 						elem = elem.firstChild;
 // 					}
 
-					
 					var angle = svgCanvas.getRotationAngle(elem);
 					$('#angle').val(angle);
 					
@@ -1677,7 +1676,7 @@
 		
 				if ( (elem && !is_node)	|| multiselected) {
 					// update the selected elements' layer
-					$('#selLayerNames').removeAttr('disabled').val(currentLayer);
+					$('#selLayerNames').removeAttr('disabled').val(currentLayerName);
 					
 					// Enable regular menu options
 					canv_menu.enableContextMenuItems('#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back');
@@ -3568,7 +3567,7 @@
 			}
 			
 			function cloneLayer() {
-				var name = svgCanvas.getCurrentLayer() + ' copy';
+				var name = svgCanvas.getCurrentLayerName() + ' copy';
 				
 				$.prompt(uiStrings.notification.enterUniqueLayerName, name, function(newName) {
 					if (!newName) return;
@@ -3696,7 +3695,7 @@
 			// if no layer is passed in, this function restores the other layers
 			var toggleHighlightLayer = function(layerNameToHighlight) {
 				var curNames = new Array(svgCanvas.getCurrentDrawing().getNumLayers());
-				for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getCurrentDrawing().getLayer(i); }
+				for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getCurrentDrawing().getLayerName(i); }
 			
 				if (layerNameToHighlight) {
 					for (var i = 0; i < curNames.length; ++i) {
@@ -3717,15 +3716,15 @@
 				var selLayerNames = $('#selLayerNames');
 				layerlist.empty();
 				selLayerNames.empty();
-				var currentlayer = svgCanvas.getCurrentLayer();
+				var currentLayerName = svgCanvas.getCurrentLayerName();
 				var layer = svgCanvas.getCurrentDrawing().getNumLayers();
 				var icon = $.getSvgIcon('eye');
 				// we get the layers in the reverse z-order (the layer rendered on top is listed first)
 				while (layer--) {
-					var name = svgCanvas.getCurrentDrawing().getLayer(layer);
+					var name = svgCanvas.getCurrentDrawing().getLayerName(layer);
 					// contenteditable=\"true\"
 					var appendstr = "<tr class=\"layer";
-					if (name == currentlayer) {
+					if (name == currentLayerName) {
 						appendstr += " layersel"
 					}
 					appendstr += "\">";
