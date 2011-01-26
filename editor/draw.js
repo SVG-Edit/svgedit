@@ -90,6 +90,7 @@ svgedit.draw.Drawing = function(svgElem, opt_idPrefix) {
 
 	/**
 	 * The current layer being used.
+	 * TODO: Make this a {Layer}.
 	 * @type {SVGGElement}
 	 */
 	this.current_layer = null;
@@ -113,10 +114,6 @@ svgedit.draw.Drawing.prototype.getElem_ = function(id) {
 
 svgedit.draw.Drawing.prototype.getSvgElem = function() {
 	return this.svgElem_;
-};
-
-svgedit.draw.Drawing.prototype.getCurrentLayer = function() {
-	return this.current_layer;
 };
 
 svgedit.draw.Drawing.prototype.getNonce = function() {
@@ -218,6 +215,67 @@ svgedit.draw.Drawing.prototype.hasLayer = function(name) {
 	return false;
 };
 
+
+// Function: svgedit.draw.Drawing.getLayerName
+// Returns the name of the ith layer. If the index is out of range, an empty string is returned.
+//
+// Parameters:
+// i - the zero-based index of the layer you are querying.
+// 
+// Returns:
+// The name of the ith layer
+svgedit.draw.Drawing.prototype.getLayerName = function(i) {
+	if (i >= 0 && i < this.getNumLayers()) {
+		return this.all_layers[i][0];
+	}
+	return "";
+};
+
+// Function: svgedit.draw.Drawing.getCurrentLayer
+// Returns:
+// The SVGGElement representing the current layer.
+svgedit.draw.Drawing.prototype.getCurrentLayer = function() {
+	return this.current_layer;
+};
+
+// Function: getCurrentLayerName
+// Returns the name of the currently selected layer. If an error occurs, an empty string 
+// is returned.
+//
+// Returns:
+// The name of the currently active layer.
+svgedit.draw.Drawing.prototype.getCurrentLayerName = function() {
+	for (var i = 0; i < this.getNumLayers(); ++i) {
+		if (this.all_layers[i][1] == this.current_layer) {
+			return this.getLayerName(i);
+		}
+	}
+	return "";
+};
+
+// Function: setCurrentLayer
+// Sets the current layer. If the name is not a valid layer name, then this function returns
+// false. Otherwise it returns true. This is not an undo-able action.
+//
+// Parameters:
+// name - the name of the layer you want to switch to.
+//
+// Returns:
+// true if the current layer was switched, otherwise false
+svgedit.draw.Drawing.prototype.setCurrentLayer = function(name) {
+	for (var i = 0; i < this.getNumLayers(); ++i) {
+		if (name == this.getLayerName(i)) {
+			if (this.current_layer != this.all_layers[i][1]) {
+				this.current_layer.setAttribute("style", "pointer-events:none");
+				this.current_layer = this.all_layers[i][1];
+				this.current_layer.setAttribute("style", "pointer-events:all");
+			}
+			return true;
+		}
+	}
+	return false;
+};
+
 // Function: svgedit.draw.Drawing.identifyLayers
 // Updates layer system
 svgedit.draw.Drawing.prototype.identifyLayers = function() {
@@ -281,22 +339,6 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 	svgedit.utilities.walkTree(a_layer, function(e){e.setAttribute("style","pointer-events:inherit");});
 	this.current_layer = a_layer;
 	this.current_layer.setAttribute("style","pointer-events:all");
-};
-
-
-// Function: svgedit.draw.Drawing.getLayer
-// Returns the name of the ith layer. If the index is out of range, an empty string is returned.
-//
-// Parameters:
-// i - the zero-based index of the layer you are querying.
-// 
-// Returns:
-// The name of the ith layer
-svgedit.draw.Drawing.prototype.getLayer = function(i) {
-	if (i >= 0 && i < this.getNumLayers()) {
-		return this.all_layers[i][0];
-	}
-	return "";
 };
 
 
