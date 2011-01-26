@@ -4869,7 +4869,7 @@ var pathActions = canvas.pathActions = function() {
 					"fill": "none"
 				}
 			});
-			call("changed",[element]);
+			// No need to call "changed", as this is already done under mouseUp
 		}
 		return element;
 	};
