@@ -1124,6 +1124,7 @@ this.setRotationAngle = function(val, preventUndo) {
 		var newTransform = elem.getAttribute("transform");
 		elem.setAttribute("transform", oldTransform);
 		changeSelectedAttribute("transform",newTransform,selectedElements);
+		call("changed", selectedElements);
 	}
 	var pointGripContainer = getElem("pathpointgrip_container");
 // 		if(elem.nodeName == "path" && pointGripContainer) {
@@ -2899,6 +2900,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 							// update our internal bbox that we're tracking while dragging
 							selectorManager.requestSelector(selected).resize();
 						}
+						
+						call("transition", selectedElements);
 					}
 				}
 				break;
@@ -3024,6 +3027,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				}
 
 				selectorManager.requestSelector(selected).resize();
+				
+				call("transition", selectedElements);
+				
 				break;
 			case "zoom":
 				real_x *= current_zoom;
@@ -3198,7 +3204,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				}
 
 				canvas.setRotationAngle(angle<-180?(360+angle):angle, true);
-				call("changed", selectedElements);
+				call("transition", selectedElements);
 				break;
 			default:
 				break;
