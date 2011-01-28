@@ -277,7 +277,8 @@ svgedit.draw.Drawing.prototype.setCurrentLayer = function(name) {
 };
 
 // Function: svgedit.draw.Drawing.identifyLayers
-// Updates layer system
+// Updates layer system and sets the current layer to the
+// top-most layer (last <g> child of this drawing).
 svgedit.draw.Drawing.prototype.identifyLayers = function() {
 	this.all_layers = [];
 	var numchildren = this.svgElem_.childNodes.length;
@@ -341,5 +342,25 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 	this.current_layer.setAttribute("style","pointer-events:all");
 };
 
+// Function: svgedit.draw.Drawing.createLayer
+// Creates a new top-level layer in the drawing with the given name and 
+// sets the current layer to it.
+//
+// Parameters:
+// name - The given name
+//
+// Returns:
+// The SVGGElement of the new layer, which is also the current layer
+// of this drawing.
+svgedit.draw.Drawing.prototype.createLayer = function(name) {
+	var svgdoc = this.svgElem_.ownerDocument;
+	var new_layer = svgdoc.createElementNS(svg_ns, "g");
+	var layer_title = svgdoc.createElementNS(svg_ns, "title");
+	layer_title.textContent = name;
+	new_layer.appendChild(layer_title);
+	this.svgElem_.appendChild(new_layer);
+	this.identifyLayers();
+	return new_layer;
+};
 
 })();

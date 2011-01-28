@@ -355,6 +355,27 @@
 		drawing.setCurrentLayer(LAYER3);
 		equals(drawing.getCurrentLayerName(LAYER3), LAYER3);
 		equals(drawing.getCurrentLayer(), drawing.all_layers[2][1]);
+
+		cleanupSvg(svg);
+	});
+	
+	test('Test createLayer()', function() {
+		expect(6);
+		
+		var drawing = new svgedit.draw.Drawing(svg);
+		setupSvgWith3Layers(svg);
+		
+		ok(drawing.createLayer);
+		equals(typeof drawing.createLayer, typeof function(){});
+		
+		var NEW_LAYER_NAME = 'Layer A';
+		var layer_g = drawing.createLayer(NEW_LAYER_NAME);
+		equals(4, drawing.getNumLayers());
+		equals(layer_g, drawing.getCurrentLayer());
+		equals(NEW_LAYER_NAME, drawing.getCurrentLayerName());
+		equals(NEW_LAYER_NAME, drawing.getLayerName(3));
+		
+		cleanupSvg(svg);
 	});
 
   });

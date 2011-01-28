@@ -6974,16 +6974,10 @@ var identifyLayers = canvas.identifyLayers = function() {
 // name - The given name
 this.createLayer = function(name) {
 	var batchCmd = new BatchCommand("Create Layer");
-	var new_layer = svgdoc.createElementNS(svgns, "g");
-	var layer_title = svgdoc.createElementNS(svgns, "title");
-	layer_title.textContent = name;
-	new_layer.appendChild(layer_title);
-	new_layer = svgcontent.appendChild(new_layer);
+	var new_layer = getCurrentDrawing().createLayer(name);
 	batchCmd.addSubCommand(new InsertElementCommand(new_layer));
 	addCommandToHistory(batchCmd);
 	clearSelection();
-	identifyLayers();
-	canvas.setCurrentLayer(name);
 	call("changed", [new_layer]);
 };
 
