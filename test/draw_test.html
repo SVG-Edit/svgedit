@@ -364,6 +364,7 @@
 		
 		var drawing = new svgedit.draw.Drawing(svg);
 		setupSvgWith3Layers(svg);
+		drawing.identifyLayers();
 		
 		ok(drawing.createLayer);
 		equals(typeof drawing.createLayer, typeof function(){});
@@ -376,6 +377,34 @@
 		equals(NEW_LAYER_NAME, drawing.getLayerName(3));
 		
 		cleanupSvg(svg);
+	});
+	
+	test('Test getLayerVisibility()', function() {
+		expect(5);
+		
+		var drawing = new svgedit.draw.Drawing(svg);
+		setupSvgWith3Layers(svg);
+		drawing.identifyLayers();
+		
+		ok(drawing.getLayerVisibility);
+		equals(typeof drawing.getLayerVisibility, typeof function(){});
+		ok(drawing.getLayerVisibility(LAYER1));
+		ok(drawing.getLayerVisibility(LAYER2));
+		ok(drawing.getLayerVisibility(LAYER3));
+	});
+
+	test('Test getLayerOpacity()', function() {
+		expect(5);
+		
+		var drawing = new svgedit.draw.Drawing(svg);
+		setupSvgWith3Layers(svg);
+		drawing.identifyLayers();
+		
+		ok(drawing.getLayerOpacity);
+		equals(typeof drawing.getLayerOpacity, typeof function(){});
+		ok(drawing.getLayerOpacity(LAYER1) == 1.0);
+		ok(drawing.getLayerOpacity(LAYER2) == 1.0);
+		ok(drawing.getLayerOpacity(LAYER3) == 1.0);
 	});
 
   });
