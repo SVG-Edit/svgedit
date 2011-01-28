@@ -6994,8 +6994,9 @@ this.cloneLayer = function(name) {
 	var layer_title = svgdoc.createElementNS(svgns, "title");
 	layer_title.textContent = name;
 	new_layer.appendChild(layer_title);
-	$(current_drawing.current_layer).after(new_layer);
-	var childs = current_drawing.current_layer.childNodes;
+	var current_layer = getCurrentDrawing().getCurrentLayer();
+	$(current_layer).after(new_layer);
+	var childs = current_layer.childNodes;
 	for(var i = 0; i < childs.length; i++) {
 		var ch = childs[i];
 		if(ch.localName == 'title') continue;
@@ -7160,16 +7161,7 @@ this.setCurrentLayerPosition = function(newpos) {
 // Returns:
 // The visibility state of the layer, or false if the layer name was invalid.
 this.getLayerVisibility = function(layername) {
-	// find the layer
-	var layer = null;
-	for (var i = 0; i < current_drawing.getNumLayers(); ++i) {
-		if (current_drawing.getLayerName(i) == layername) {
-			layer = current_drawing.all_layers[i][1];
-			break;
-		}
-	}
-	if (!layer) return false;
-	return (layer.getAttribute("display") != "none");
+	return getCurrentDrawing().getLayerVisibility(layername);
 };
 
 // Function: setLayerVisibility
@@ -7308,18 +7300,7 @@ this.mergeAllLayers = function() {
 // The opacity value of the given layer.  This will be a value between 0.0 and 1.0, or null
 // if layername is not a valid layer
 this.getLayerOpacity = function(layername) {
-	for (var i = 0; i < current_drawing.getNumLayers(); ++i) {
-		if (current_drawing.getLayerName(i) == layername) {
-			var g = current_drawing.all_layers[i][1];
-			var opacity = g.getAttribute("opacity");
-			if (!opacity) {
-				opacity = "1.0";
-			}
-			return parseFloat(opacity);
-		}
-	}
-	
-	return null;
+	return getCurrentDrawing().getLayerOpacity(layername);
 };
 
 // Function: setLayerOpacity

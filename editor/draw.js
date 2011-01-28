@@ -363,4 +363,49 @@ svgedit.draw.Drawing.prototype.createLayer = function(name) {
 	return new_layer;
 };
 
+// Function: svgedit.draw.Drawing.getLayerVisibility
+// Returns whether the layer is visible.  If the layer name is not valid, then this function
+// returns false.
+//
+// Parameters:
+// layername - the name of the layer which you want to query.
+//
+// Returns:
+// The visibility state of the layer, or false if the layer name was invalid.
+svgedit.draw.Drawing.prototype.getLayerVisibility = function(layername) {
+	// find the layer
+	var layer = null;
+	for (var i = 0; i < this.getNumLayers(); ++i) {
+		if (this.getLayerName(i) == layername) {
+			layer = this.all_layers[i][1];
+			break;
+		}
+	}
+	if (!layer) return false;
+	return (layer.getAttribute('display') != 'none');
+};
+
+// Function: svgedit.draw.Drawing.getLayerOpacity
+// Returns the opacity of the given layer.  If the input name is not a layer, null is returned.
+//
+// Parameters: 
+// layername - name of the layer on which to get the opacity
+//
+// Returns:
+// The opacity value of the given layer.  This will be a value between 0.0 and 1.0, or null
+// if layername is not a valid layer
+svgedit.draw.Drawing.prototype.getLayerOpacity = function(layername) {
+	for (var i = 0; i < this.getNumLayers(); ++i) {
+		if (this.getLayerName(i) == layername) {
+			var g = this.all_layers[i][1];
+			var opacity = g.getAttribute('opacity');
+			if (!opacity) {
+				opacity = '1.0';
+			}
+			return parseFloat(opacity);
+		}
+	}
+	return null;
+};
+
 })();
