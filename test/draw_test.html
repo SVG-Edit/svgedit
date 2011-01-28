@@ -393,6 +393,28 @@
 		ok(drawing.getLayerVisibility(LAYER3));
 	});
 
+	test('Test setLayerVisibility()', function() {
+		expect(6);
+		
+		var drawing = new svgedit.draw.Drawing(svg);
+		setupSvgWith3Layers(svg);
+		drawing.identifyLayers();
+		
+		ok(drawing.setLayerVisibility);
+		equals(typeof drawing.setLayerVisibility, typeof function(){});
+
+		drawing.setLayerVisibility(LAYER3, false);
+		drawing.setLayerVisibility(LAYER2, true);
+		drawing.setLayerVisibility(LAYER1, false);
+
+		ok(!drawing.getLayerVisibility(LAYER1));
+		ok(drawing.getLayerVisibility(LAYER2));
+		ok(!drawing.getLayerVisibility(LAYER3));
+		
+		drawing.setLayerVisibility(LAYER3, 'test-string');
+		ok(!drawing.getLayerVisibility(LAYER3));		
+	});
+
 	test('Test getLayerOpacity()', function() {
 		expect(5);
 		
@@ -404,6 +426,29 @@
 		equals(typeof drawing.getLayerOpacity, typeof function(){});
 		ok(drawing.getLayerOpacity(LAYER1) == 1.0);
 		ok(drawing.getLayerOpacity(LAYER2) == 1.0);
+		ok(drawing.getLayerOpacity(LAYER3) == 1.0);
+	});
+
+	test('Test setLayerOpacity()', function() {
+		expect(6);
+		
+		var drawing = new svgedit.draw.Drawing(svg);
+		setupSvgWith3Layers(svg);
+		drawing.identifyLayers();
+		
+		ok(drawing.setLayerOpacity);
+		equals(typeof drawing.setLayerOpacity, typeof function(){});
+
+		drawing.setLayerOpacity(LAYER1, 0.4);
+		drawing.setLayerOpacity(LAYER2, 'invalid-string');
+		drawing.setLayerOpacity(LAYER3, -1.4);
+
+		ok(drawing.getLayerOpacity(LAYER1) == 0.4);
+		QUnit.log('layer2 opacity', drawing.getLayerOpacity(LAYER2));
+		ok(drawing.getLayerOpacity(LAYER2) == 1.0);
+		ok(drawing.getLayerOpacity(LAYER3) == 1.0);
+
+		drawing.setLayerOpacity(LAYER3, 100);
 		ok(drawing.getLayerOpacity(LAYER3) == 1.0);
 	});
 
