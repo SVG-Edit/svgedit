@@ -2441,6 +2441,14 @@
 				}
 			};
 			
+			var pasteInCenter = function() {
+				var zoom = svgCanvas.getZoom();
+				
+				var x = (workarea[0].scrollLeft + workarea.width()/2)/zoom  - svgCanvas.contentW; 
+				var y = (workarea[0].scrollTop + workarea.height()/2)/zoom  - svgCanvas.contentH;
+				svgCanvas.pasteElements('point', x, y); 
+			}
+			
 			var moveToTopSelected = function() {
 				if (selectedElement != null) {
 					svgCanvas.moveToTopSelectedElement();
@@ -3258,7 +3266,7 @@
 			// switch modifier key in tooltips if mac
 			// NOTE: This code is not used yet until I can figure out how to successfully bind ctrl/meta
 			// in Opera and Chrome
-			if (isMac) {
+			if (isMac && !window.opera) {
 				var shortcutButtons = ["tool_clear", "tool_save", "tool_source", "tool_undo", "tool_redo", "tool_clone"];
 				var i = shortcutButtons.length;
 				while (i--) {
@@ -3950,6 +3958,7 @@
 					{sel:'#copy_save_done', fn: cancelOverlays, evt: 'click'},
 					
 					// Shortcuts not associated with buttons
+					
 					{key: 'ctrl+left', fn: function(){rotateSelected(0,1)}},
 					{key: 'ctrl+right', fn: function(){rotateSelected(1,1)}},
 					{key: 'ctrl+shift+left', fn: function(){rotateSelected(0,5)}},					
@@ -3968,7 +3977,18 @@
 					{key: 'shift+down', fn: function(){moveSelected(0,10)}},
 					{key: 'shift+left', fn: function(){moveSelected(-10,0)}},
 					{key: 'shift+right', fn: function(){moveSelected(10,0)}},
-					{key: 'A', fn: function(){svgCanvas.selectAllInCurrentLayer();}}
+					{key: 'A', fn: function(){svgCanvas.selectAllInCurrentLayer();}},
+
+					// Standard shortcuts
+					{key: modKey+'z', fn: clickUndo},
+					{key: modKey + 'shift+z', fn: clickRedo},
+					{key: modKey + 'y', fn: clickRedo},
+					
+					{key: modKey+'x', fn: cutSelected},
+					{key: modKey+'c', fn: copySelected},
+					{key: modKey+'v', fn: pasteInCenter}
+					
+
 				];
 				
 				// Tooltips not directly associated with a single function
@@ -4183,12 +4203,12 @@
 						case 'ungroup':         
 							svgCanvas.ungroupSelectedElement();  
 							break;
-                                                case 'move_front':
-                                                        moveToTopSelected();
-                                                        break;
-                                                case 'move_up':
-                                                        moveUpDownSelected('Up');
-                                                        break;
+						case 'move_front':
+							moveToTopSelected();
+							break;
+						case 'move_up':
+							moveUpDownSelected('Up');
+							break;
 						case 'move_down':
 							moveUpDownSelected('Down');
 							break;

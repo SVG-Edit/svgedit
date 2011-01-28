@@ -8849,7 +8849,7 @@ this.copySelectedElements = function() {
 	canvas.clipBoard = $.merge([], selectedElements);
 };
 
-this.pasteElements = function(type) {
+this.pasteElements = function(type, x, y) {
 	var cb = canvas.clipBoard;
 	var len = cb.length;
 	if(!len) return;
@@ -8875,9 +8875,20 @@ this.pasteElements = function(type) {
 	selectOnly(pasted);
 	
 	if(type !== 'in_place') {
+		
+		var ctr_x, ctr_y;
+		
+		if(!type) {
+			ctr_x = lastClickPoint.x;
+			ctr_y = lastClickPoint.y;
+		} else if(type === 'point') {
+			ctr_x = x;
+			ctr_y = y;
+		} 
+		
 		var bbox = getStrokedBBox(pasted);
-		var cx = lastClickPoint.x - (bbox.x + bbox.width/2),
-			cy = lastClickPoint.y - (bbox.y + bbox.height/2),
+		var cx = ctr_x - (bbox.x + bbox.width/2),
+			cy = ctr_y - (bbox.y + bbox.height/2),
 			dx = [],
 			dy = [];
 	
@@ -8889,6 +8900,8 @@ this.pasteElements = function(type) {
 		var cmd = canvas.moveSelectedElements(dx, dy, false);
 		batchCmd.addSubCommand(cmd);
 	}
+	
+
 	
 	addCommandToHistory(batchCmd);
 	call("changed", pasted);
