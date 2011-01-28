@@ -3756,13 +3756,13 @@
 				if (layerNameToHighlight) {
 					for (var i = 0; i < curNames.length; ++i) {
 						if (curNames[i] != layerNameToHighlight) {
-							svgCanvas.setLayerOpacity(curNames[i], 0.5);
+							svgCanvas.getCurrentDrawing().setLayerOpacity(curNames[i], 0.5);
 						}
 					}
 				}
 				else {
 					for (var i = 0; i < curNames.length; ++i) {
-						svgCanvas.setLayerOpacity(curNames[i], 1.0);
+						svgCanvas.getCurrentDrawing().setLayerOpacity(curNames[i], 1.0);
 					}
 				}
 			};
@@ -3785,7 +3785,7 @@
 					}
 					appendstr += "\">";
 					
-					if (svgCanvas.getLayerVisibility(name)) {
+					if (svgCanvas.getCurrentDrawing().getLayerVisibility(name)) {
 						appendstr += "<td class=\"layervis\"/><td class=\"layername\" >" + name + "</td></tr>";
 					}
 					else {

@@ -385,6 +385,37 @@ svgedit.draw.Drawing.prototype.getLayerVisibility = function(layername) {
 	return (layer.getAttribute('display') != 'none');
 };
 
+// Function: svgedit.draw.Drawing.setLayerVisibility
+// Sets the visibility of the layer. If the layer name is not valid, this function return 
+// false, otherwise it returns true. This is an undo-able action.
+//
+// Parameters:
+// layername - the name of the layer to change the visibility
+// bVisible - true/false, whether the layer should be visible
+//
+// Returns:
+// The SVGGElement representing the layer if the layername was valid, otherwise null.
+svgedit.draw.Drawing.prototype.setLayerVisibility = function(layername, bVisible) {
+	if (typeof bVisible != typeof true) {
+		return null;
+	}
+	// find the layer
+	var layer = null;
+	for (var i = 0; i < this.getNumLayers(); ++i) {
+		if (this.getLayerName(i) == layername) {
+			layer = this.all_layers[i][1];
+			break;
+		}
+	}
+	if (!layer) return null;
+	
+	var oldDisplay = layer.getAttribute("display");
+	if (!oldDisplay) oldDisplay = "inline";
+	layer.setAttribute("display", bVisible ? "inline" : "none");
+	return layer;
+};
+
+
 // Function: svgedit.draw.Drawing.getLayerOpacity
 // Returns the opacity of the given layer.  If the input name is not a layer, null is returned.
 //
@@ -406,6 +437,26 @@ svgedit.draw.Drawing.prototype.getLayerOpacity = function(layername) {
 		}
 	}
 	return null;
+};
+
+// Function: svgedit.draw.Drawing.setLayerOpacity
+// Sets the opacity of the given layer.  If the input name is not a layer, nothing happens.
+// If opacity is not a value between 0.0 and 1.0, then nothing happens.
+//
+// Parameters:
+// layername - name of the layer on which to set the opacity
+// opacity - a float value in the range 0.0-1.0
+svgedit.draw.Drawing.prototype.setLayerOpacity = function(layername, opacity) {
+	if (typeof opacity != typeof 1.0 || opacity < 0.0 || opacity > 1.0) {
+		return;
+	}
+	for (var i = 0; i < this.getNumLayers(); ++i) {
+		if (this.getLayerName(i) == layername) {
+			var g = this.all_layers[i][1];
+			g.setAttribute("opacity", opacity);
+			break;
+		}
+	}
 };
 
 })();
