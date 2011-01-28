@@ -711,7 +711,6 @@
 				if(!elem) return;
 				
 				multiselected = (elems.length >= 2 && elems[1] != null);
-				
 				// Only updating fields for single elements for now
 				if(!multiselected) {
 					switch ( mode ) {
@@ -721,9 +720,10 @@
 							$('#tool_reorient').toggleClass('disabled', ang == 0);
 							break;
 						
-						case "select":
-							updateCoords(elem);
-							break;
+						// TODO: Update values that change on move/resize, etc
+// 						case "select":
+// 						case "resize":
+// 							break;
 					}
 				}
 				svgCanvas.runExtensions("elementTransition", {
@@ -1374,40 +1374,8 @@
 				}
 				return new $.jGraduate.Paint(opts);
 			};	
-		
-			// Updates coordinate data of given elements. Could use optimization!
-			var updateCoords = function(elem) {
-				var elname = elem.tagName;
-				var unit = curConfig.baseUnit !== 'px' ? curConfig.baseUnit : null;
-				var x, y;
-				
-				// Get BBox vals for g, polyline and path
-				if(['g', 'polyline', 'path'].indexOf(elname) >= 0) {
-					var bb = svgCanvas.getStrokedBBox([elem]);
-					if(bb) {
-						x = bb.x;
-						y = bb.y;
-					}
-				} else {
-					x = elem.getAttribute('x');
-					y = elem.getAttribute('y');
-				}
-				
-				// Transform point
-				var newPt = svgedit.math.transformPoint(x, y, svgCanvas.transformListToTransform(svgCanvas.getTransformList(elem)).matrix);
-				
-				x = newPt.x;
-				y = newPt.y;
-				
-				if(unit) {
-					x = svgCanvas.convertUnit(x);
-					y = svgCanvas.convertUnit(y);
-				}							
-				$('#selected_x').val(x || 0);
-				$('#selected_y').val(y || 0);
-			}
+			
 
-		
 			// updates the toolbar (colors, opacity, etc) based on the selected element
 			// This function also updates the opacity and id elements that are in the context panel
 			var updateToolbar = function() {
