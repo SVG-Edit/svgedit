@@ -17,8 +17,9 @@ svgEditor.addExtension("eyedropper", function(S) {
 		var svgcontent = S.svgcontent,
 			svgns = "http://www.w3.org/2000/svg",
 			svgdoc = S.svgroot.parentNode.ownerDocument,
+			svgCanvas = svgEditor.canvas,
 			ChangeElementCommand = svgedit.history.ChangeElementCommand,
-			addToHistory = function(cmd) { canvas.undoMgr.addCommandToHistory(cmd); },
+			addToHistory = function(cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); },
 			currentStyle = {fillPaint: "red", fillOpacity: 1.0,
 							strokePaint: "black", strokeOpacity: 1.0, 
 							strokeWidth: 5, strokeDashArray: null,
@@ -35,7 +36,7 @@ svgEditor.addExtension("eyedropper", function(S) {
 			var elem = null;
 			var tool = $('#tool_eyedropper');
 			// enable-eye-dropper if one element is selected
-			if (opts.elems.length == 1 && opts.elems[0] && 
+			if (!opts.multiselected && opts.elems[0] &&
 				$.inArray(opts.elems[0].nodeName, ['svg', 'g', 'use']) == -1) 
 			{
 				elem = opts.elems[0];
