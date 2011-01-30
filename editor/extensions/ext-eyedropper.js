@@ -66,6 +66,7 @@ svgEditor.addExtension("eyedropper", function(S) {
 				id: "tool_eyedropper",
 				type: "mode",
 				title: "Eye Dropper Tool",
+				key: "I",
 				events: {
 					"click": function() {
 						svgCanvas.setMode("eyedropper");

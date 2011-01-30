@@ -162,7 +162,7 @@ svgEditor.addExtension("view_grid", function(s) {
             id: "view_grid",
             type: "context",
             panel: "editor_panel",
-            title: "Show/Hide Grid [G]",
+            title: "Show/Hide Grid",
             events: {
                 'click': function() {
                     var gr = !$('#view_grid').hasClass('push_button_pressed');
