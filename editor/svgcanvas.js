@@ -2484,7 +2484,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		if(canvas.spaceKey || evt.button === 1) return;
 		
 		var right_click = evt.button === 2;
-		
+	
+		if(evt.altKey) { // duplicate when  dragging
+			svgCanvas.cloneSelectedElements(0,0);
+		}
+	
 		root_sctm = svgcontent.getScreenCTM().inverse();
 		var pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
 			mouse_x = pt.x * current_zoom,
@@ -9362,7 +9366,7 @@ this.moveSelectedElements = function(dx, dy, undoable) {
 // Function: cloneSelectedElements
 // Create deep DOM copies (clones) of all selected elements and move them slightly 
 // from their originals
-this.cloneSelectedElements = function() {
+this.cloneSelectedElements = function(x,y) {
 	var batchCmd = new BatchCommand("Clone Elements");
 	// find all the elements selected (stop at first null)
 	var len = selectedElements.length;
@@ -9385,7 +9389,7 @@ this.cloneSelectedElements = function() {
 	
 	if (!batchCmd.isEmpty()) {
 		addToSelection(copiedElements.reverse()); // Need to reverse for correct selection-adding
-		this.moveSelectedElements(20,20,false);
+		this.moveSelectedElements(x,y,false);
 		addCommandToHistory(batchCmd);
 	}
 };

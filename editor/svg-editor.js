@@ -2643,7 +2643,7 @@
 			};
 			
 			var clickClone = function(){
-				svgCanvas.cloneSelectedElements();
+				svgCanvas.cloneSelectedElements(20,20);
 			};
 			
 			var clickAlign = function() {
@@ -3944,7 +3944,7 @@
 					{sel:'#tool_make_link,#tool_make_link_multi', fn: makeHyperlink, evt: 'click'},
 					{sel:'#tool_undo', fn: clickUndo, evt: 'click', key: ['Z', true]},
 					{sel:'#tool_redo', fn: clickRedo, evt: 'click', key: ['Y', true]},
-					{sel:'#tool_clone,#tool_clone_multi', fn: clickClone, evt: 'click', key: ['C', true]},
+					{sel:'#tool_clone,#tool_clone_multi', fn: clickClone, evt: 'click', key: ['D', true]},
 					{sel:'#tool_group', fn: clickGroup, evt: 'click', key: ['G', true]},
 					{sel:'#tool_ungroup', fn: clickGroup, evt: 'click'},
 					{sel:'#tool_unlink_use', fn: clickGroup, evt: 'click'},
@@ -3977,6 +3977,14 @@
 					{key: 'shift+down', fn: function(){moveSelected(0,10)}},
 					{key: 'shift+left', fn: function(){moveSelected(-10,0)}},
 					{key: 'shift+right', fn: function(){moveSelected(10,0)}},
+					{key: ['alt+up', true], fn: function(){svgCanvas.cloneSelectedElements(0,-1)}},
+					{key: ['alt+down', true], fn: function(){svgCanvas.cloneSelectedElements(0,1)}},
+					{key: ['alt+left', true], fn: function(){svgCanvas.cloneSelectedElements(-1,0)}},
+					{key: ['alt+right', true], fn: function(){svgCanvas.cloneSelectedElements(1,0)}},
+					{key: ['alt+shift+up', true], fn: function(){svgCanvas.cloneSelectedElements(0,-10)}},
+					{key: ['alt+shift+down', true], fn: function(){svgCanvas.cloneSelectedElements(0,10)}},
+					{key: ['alt+shift+left', true], fn: function(){svgCanvas.cloneSelectedElements(-10,0)}},
+					{key: ['alt+shift+right', true], fn: function(){svgCanvas.cloneSelectedElements(10,0)}},	
 					{key: 'A', fn: function(){svgCanvas.selectAllInCurrentLayer();}},
 
 					// Standard shortcuts
