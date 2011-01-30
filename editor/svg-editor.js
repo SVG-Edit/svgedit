@@ -831,7 +831,7 @@
 				var link_str = '';
 				if(context) {
 					var str = '';
-					link_str = '<a href="#" data-root="y">' + svgCanvas.getCurrentLayerName() + '</a>';
+					link_str = '<a href="#" data-root="y">' + svgCanvas.getCurrentDrawing().getCurrentLayerName() + '</a>';
 					
 					$(context).parentsUntil('#svgcontent > g').andSelf().each(function() {
 						if(this.id) {
@@ -1478,7 +1478,7 @@
 				var elem = selectedElement;
 				// If element has just been deleted, consider it null
 				if(elem != null && !elem.parentNode) elem = null;
-				var currentLayerName = svgCanvas.getCurrentLayerName();
+				var currentLayerName = svgCanvas.getCurrentDrawing().getCurrentLayerName();
 				var currentMode = svgCanvas.getMode();
 				var unit = curConfig.baseUnit !== 'px' ? curConfig.baseUnit : null;
 				
@@ -3599,7 +3599,7 @@
 			}
 			
 			function cloneLayer() {
-				var name = svgCanvas.getCurrentLayerName() + ' copy';
+				var name = svgCanvas.getCurrentDrawing().getCurrentLayerName() + ' copy';
 				
 				$.prompt(uiStrings.notification.enterUniqueLayerName, name, function(newName) {
 					if (!newName) return;
@@ -3748,7 +3748,7 @@
 				var selLayerNames = $('#selLayerNames');
 				layerlist.empty();
 				selLayerNames.empty();
-				var currentLayerName = svgCanvas.getCurrentLayerName();
+				var currentLayerName = svgCanvas.getCurrentDrawing().getCurrentLayerName();
 				var layer = svgCanvas.getCurrentDrawing().getNumLayers();
 				var icon = $.getSvgIcon('eye');
 				// we get the layers in the reverse z-order (the layer rendered on top is listed first)
