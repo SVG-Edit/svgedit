@@ -330,8 +330,8 @@
 		
 		var drawing = new svgedit.draw.Drawing(svg);
 		setupSvgWith3Layers(svg);
-		
 		drawing.identifyLayers();
+
 		ok(drawing.getCurrentLayer);
 		equals(typeof drawing.getCurrentLayer, typeof function(){});
 		ok(drawing.getCurrentLayer());
@@ -343,8 +343,8 @@
 		
 		var drawing = new svgedit.draw.Drawing(svg);
 		setupSvgWith3Layers(svg);
-		
 		drawing.identifyLayers();
+
 		ok(drawing.setCurrentLayer);
 		equals(typeof drawing.setCurrentLayer, typeof function(){});
 		
@@ -391,6 +391,8 @@
 		ok(drawing.getLayerVisibility(LAYER1));
 		ok(drawing.getLayerVisibility(LAYER2));
 		ok(drawing.getLayerVisibility(LAYER3));
+		
+		cleanupSvg(svg);
 	});
 
 	test('Test setLayerVisibility()', function() {
@@ -413,6 +415,8 @@
 		
 		drawing.setLayerVisibility(LAYER3, 'test-string');
 		ok(!drawing.getLayerVisibility(LAYER3));		
+		
+		cleanupSvg(svg);
 	});
 
 	test('Test getLayerOpacity()', function() {
@@ -427,6 +431,8 @@
 		ok(drawing.getLayerOpacity(LAYER1) == 1.0);
 		ok(drawing.getLayerOpacity(LAYER2) == 1.0);
 		ok(drawing.getLayerOpacity(LAYER3) == 1.0);
+		
+		cleanupSvg(svg);
 	});
 
 	test('Test setLayerOpacity()', function() {
@@ -450,6 +456,28 @@
 
 		drawing.setLayerOpacity(LAYER3, 100);
 		ok(drawing.getLayerOpacity(LAYER3) == 1.0);
+		
+		cleanupSvg(svg);
+	});
+	
+	test('Test deleteCurrentLayer()', function() {
+		expect(6);
+
+		var drawing = new svgedit.draw.Drawing(svg);
+		setupSvgWith3Layers(svg);
+		drawing.identifyLayers();
+		
+		drawing.setCurrentLayer(LAYER2);
+
+		var curLayer = drawing.getCurrentLayer();
+		equals(curLayer, drawing.all_layers[1][1]);
+		var deletedLayer = drawing.deleteCurrentLayer();
+		
+		equals(curLayer, deletedLayer);
+		equals(2, drawing.getNumLayers());
+		equals(LAYER1, drawing.all_layers[0][0]);
+		equals(LAYER3, drawing.all_layers[1][0]);
+		equals(drawing.getCurrentLayer(), drawing.all_layers[1][1]);
 	});
 
   });

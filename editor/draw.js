@@ -276,6 +276,24 @@ svgedit.draw.Drawing.prototype.setCurrentLayer = function(name) {
 	return false;
 };
 
+
+// Function: svgedit.draw.Drawing.deleteCurrentLayer
+// Deletes the current layer from the drawing and then clears the selection. This function 
+// then calls the 'changed' handler.  This is an undoable action.
+// Returns:
+// The SVGGElement of the layer removed or null.
+svgedit.draw.Drawing.prototype.deleteCurrentLayer = function() {
+	if (this.current_layer && this.getNumLayers() > 1) {
+		// actually delete from the DOM and return it
+		var parent = this.current_layer.parentNode;
+		var nextSibling = this.current_layer.nextSibling;
+		var oldLayerGroup = parent.removeChild(this.current_layer);
+		this.identifyLayers();
+		return oldLayerGroup;
+	}
+	return null;
+};
+
 // Function: svgedit.draw.Drawing.identifyLayers
 // Updates layer system and sets the current layer to the
 // top-most layer (last <g> child of this drawing).

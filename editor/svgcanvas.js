@@ -7020,31 +7020,20 @@ this.cloneLayer = function(name) {
 // Deletes the current layer from the drawing and then clears the selection. This function 
 // then calls the 'changed' handler.  This is an undoable action.
 this.deleteCurrentLayer = function() {
-	if (current_drawing.current_layer && current_drawing.getNumLayers() > 1) {
+	var current_layer = current_drawing.getCurrentLayer();
+	var nextSibling = current_layer.nextSibling;
+	var parent = current_layer.parentNode;
+	current_layer = current_drawing.deleteCurrentLayer();
+	if (current_layer) {
 		var batchCmd = new BatchCommand("Delete Layer");
-		// actually delete from the DOM and store in our Undo History
-		var parent = current_drawing.current_layer.parentNode;
-		var nextSibling = current_drawing.current_layer.nextSibling;
-		batchCmd.addSubCommand(new RemoveElementCommand(current_drawing.current_layer, nextSibling, parent));
-		parent.removeChild(current_drawing.current_layer);
+		// store in our Undo History
+		batchCmd.addSubCommand(new RemoveElementCommand(current_layer, nextSibling, parent));
 		addCommandToHistory(batchCmd);
 		clearSelection();
-		identifyLayers();
-		canvas.setCurrentLayer(current_drawing.getLayerName(current_drawing.getNumLayers()));
-		call("changed", [svgcontent]);
+		call("changed", [parent]);
 		return true;
 	}
 	return false;
-};
-
-// Function: getCurrentLayerName
-// Returns the name of the currently selected layer in the current drawing. If an error occurs, an empty string 
-// is returned.
-//
-// Returns:
-// The name of the currently active layer in the current drawing.
-this.getCurrentLayerName = function() {
-	return getCurrentDrawing().getCurrentLayerName();
 };
 
 // Function: setCurrentLayer
@@ -7417,7 +7406,7 @@ this.setConfig = function(opts) {
 	$.extend(curConfig, opts);
 }
 
-// Function: getDocumentTitle
+// Function: getTitle
 // Returns the current group/SVG's title contents
 this.getTitle = function(elem) {
 	elem = elem || selectedElements[0];
