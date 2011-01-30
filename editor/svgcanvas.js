@@ -9231,7 +9231,12 @@ this.moveToTopSelectedElement = function() {
 		var oldParent = t.parentNode;
 		var oldNextSibling = t.nextSibling;
 		t = t.parentNode.appendChild(t);
-		addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, "top"));
+		// If the element actually moved position, add the command and fire the changed
+		// event handler.
+		if (oldNextSibling != t.nextSibling) {
+			addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, "top"));
+			call("changed", [t]);
+		}
 	}
 };
 
@@ -9254,7 +9259,12 @@ this.moveToBottomSelectedElement = function() {
 			firstChild = firstChild.nextSibling;
 		}
 		t = t.parentNode.insertBefore(t, firstChild);
-		addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, "bottom"));
+		// If the element actually moved position, add the command and fire the changed
+		// event handler.
+		if (oldNextSibling != t.nextSibling) {
+			addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, "bottom"));
+			call("changed", [t]);
+		}
 	}
 };
 
@@ -9290,8 +9300,13 @@ this.moveUpDownSelected = function(dir) {
 	var oldParent = t.parentNode;
 	var oldNextSibling = t.nextSibling;
 	$(closest)[dir == 'Down'?'before':'after'](t);
-	addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, "Move " + dir));
-}
+	// If the element actually moved position, add the command and fire the changed
+	// event handler.
+	if (oldNextSibling != t.nextSibling) {
+		addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, "Move " + dir));
+		call("changed", [t]);
+	}
+};
 
 // Function: moveSelectedElements
 // Moves selected elements on the X/Y axis 
