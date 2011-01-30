@@ -3905,19 +3905,19 @@
 			var Actions = function() {
 				// sel:'selector', fn:function, evt:'event', key:[key, preventDefault, NoDisableInInput]
 				var tool_buttons = [
-					{sel:'#tool_select', fn: clickSelect, evt: 'click', key: 1},
-					{sel:'#tool_fhpath', fn: clickFHPath, evt: 'click', key: 2},
-					{sel:'#tool_line', fn: clickLine, evt: 'click', key: 3},
-					{sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'},
-					{sel:'#tool_square', fn: clickSquare, evt: 'mouseup', key: 'Shift+4', parent: '#tools_rect', icon: 'square'},
+					{sel:'#tool_select', fn: clickSelect, evt: 'click', key: ['V', true]},
+					{sel:'#tool_fhpath', fn: clickFHPath, evt: 'click', key: ['Q', true]},
+					{sel:'#tool_line', fn: clickLine, evt: 'click', key: ['L', true]},
+					{sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: ['R', true], parent: '#tools_rect', icon: 'rect'},
+					{sel:'#tool_square', fn: clickSquare, evt: 'mouseup', parent: '#tools_rect', icon: 'square'},
 					{sel:'#tool_fhrect', fn: clickFHRect, evt: 'mouseup', parent: '#tools_rect', icon: 'fh_rect'},
-					{sel:'#tool_ellipse', fn: clickEllipse, evt: 'mouseup', key: 5, parent: '#tools_ellipse', icon: 'ellipse'},
-					{sel:'#tool_circle', fn: clickCircle, evt: 'mouseup', key: 'Shift+5', parent: '#tools_ellipse', icon: 'circle'},
+					{sel:'#tool_ellipse', fn: clickEllipse, evt: 'mouseup', key: ['E', true], parent: '#tools_ellipse', icon: 'ellipse'},
+					{sel:'#tool_circle', fn: clickCircle, evt: 'mouseup', parent: '#tools_ellipse', icon: 'circle'},
 					{sel:'#tool_fhellipse', fn: clickFHEllipse, evt: 'mouseup', parent: '#tools_ellipse', icon: 'fh_ellipse'},
-					{sel:'#tool_path', fn: clickPath, evt: 'click', key: 6},
-					{sel:'#tool_text', fn: clickText, evt: 'click', key: 7},
-					{sel:'#tool_image', fn: clickImage, evt: 'mouseup', key: 8},
-					{sel:'#tool_zoom', fn: clickZoom, evt: 'mouseup', key: 9},
+					{sel:'#tool_path', fn: clickPath, evt: 'click', key: ['P', true]},
+					{sel:'#tool_text', fn: clickText, evt: 'click', key: ['T', true]},
+					{sel:'#tool_image', fn: clickImage, evt: 'mouseup'},
+					{sel:'#tool_zoom', fn: clickZoom, evt: 'mouseup', key: ['Z', true]},
 					{sel:'#tool_clear', fn: clickClear, evt: 'mouseup', key: ['N', true]},
 					{sel:'#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'mouseup', key: ['S', true]},
 					{sel:'#tool_export', fn: clickExport, evt: 'mouseup'},
@@ -3928,9 +3928,9 @@
 					{sel:'#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel,#tool_prefs_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
 					{sel:'#tool_source_save', fn: saveSourceEditor, evt: 'click'},
 					{sel:'#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
-					{sel:'#tool_docprops', fn: showDocProperties, evt: 'mouseup', key: ['P', true]},
+					{sel:'#tool_docprops', fn: showDocProperties, evt: 'mouseup', key: ['D', true]},
 					{sel:'#tool_prefs_save', fn: savePreferences, evt: 'click'},
-					{sel:'#tool_prefs_option', fn: function() {showPreferences();return false}, evt: 'mouseup', key: ['I', true]},
+					{sel:'#tool_prefs_option', fn: function() {showPreferences();return false}, evt: 'mouseup'},
 					{sel:'#tool_delete,#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
 					{sel:'#tool_reorient', fn: reorientPath, evt: 'click'},
 					{sel:'#tool_node_link', fn: linkControlPoints, evt: 'click'},
@@ -4061,7 +4061,7 @@
 								
 								// Put shortcut in title
 								if(opts.sel && !opts.hidekey) {
-									var new_title = btn.attr('title').split('[')[0] + '[' + keyval + ']';
+									var new_title = btn.attr('title').split('[')[0] + ' (' + keyval + ')';
 									key_assocs[keyval] = opts.sel;
 									// Disregard for menu items
 									if(!btn.parents('#main_menu').length) {

@@ -305,7 +305,6 @@ svgEditor.addExtension("Connector", function(S) {
 			type: "mode",
 			icon: "images/cut.png",
 			title: "Connect two objects",
-			key: "Shift+3",
 			includeWith: {
 				button: '#tool_line',
 				isDefault: false,
