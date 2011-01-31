@@ -530,9 +530,10 @@
 
 #cur_context_panel {
 	position: absolute;
-	top: 70px;
-	left: -10px;
+	top: 77px;
+	left: 40px;
 	right: -2px;
+	line-height: 22px;
 	overflow: auto;
 	border: 1px solid #777;
 	border-bottom: none;
