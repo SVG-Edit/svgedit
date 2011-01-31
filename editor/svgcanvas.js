@@ -1053,7 +1053,8 @@ var getRefElem = this.getRefElem = function(attrVal) {
 }
 
 // Function: ffClone
-// Hack for Firefox bugs where text element features aren't updated.
+// Hack for Firefox bugs where text element features aren't updated or get 
+// messed up. See issue 136 and issue 137.
 // This function clones the element and re-selects it 
 // TODO: Test for this bug on load and add it to "support" object instead of 
 // browser sniffing
@@ -8695,7 +8696,11 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 			if (attr == "#text") {
 				var old_w = getBBox(elem).width;
 				elem.textContent = newValue;
-				elem = ffClone(elem);
+				
+				// FF bug occurs on on transformed elements
+				if(elem.getAttribute('transform')) {
+					elem = ffClone(elem);
+				}
 				
 				// Hoped to solve the issue of moving text with text-anchor="start",
 				// but this doesn't actually fix it. Hopefully on the right track, though. -Fyrd
