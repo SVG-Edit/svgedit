@@ -8697,8 +8697,8 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 				var old_w = getBBox(elem).width;
 				elem.textContent = newValue;
 				
-				// FF bug occurs on on transformed elements
-				if(elem.getAttribute('transform')) {
+				// FF bug occurs on on rotated elements
+				if(/rotate/.test(elem.getAttribute('transform'))) {
 					elem = ffClone(elem);
 				}
 				
