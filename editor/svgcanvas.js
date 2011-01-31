@@ -6463,6 +6463,19 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 	}
 }
 
+// Function setUseData
+// Assigns reference data for each use element
+var setUseData = this.setUseData = function(parent) {
+	$(parent).find('use').each(function() {
+		var id = getHref(this).substr(1);
+		var ref_elem = getElem(id);
+		$(this).data('ref', ref_elem);
+		if(ref_elem.tagName == 'symbol' || ref_elem.tagName == 'svg') {
+			$(this).data('symbol', ref_elem);
+		}
+	});
+}
+
 // Function convertGradients
 // Converts gradients from userSpaceOnUse to objectBoundingBox
 var convertGradients = this.convertGradients = function(elem) {
@@ -6570,6 +6583,14 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		ts = $elem.attr('transform');
 		var pos = $elem.attr(['x','y']);
 
+		var vb = elem.getAttribute('viewBox');
+		
+		if(vb) {
+			var nums = vb.split(' ');
+			pos.x -= +nums[0];
+			pos.y -= +nums[1];
+		}
+		
 		// Not ideal, but works
 		ts += " translate(" + (pos.x || 0) + "," + (pos.y || 0) + ")";
 		
@@ -6595,8 +6616,9 @@ var convertToGroup = this.convertToGroup = function(elem) {
 			$(g).append(dupeGrads);
 		}
 		
-		if (ts)
+		if (ts) {
 			g.setAttribute("transform", ts);
+		}
 		
 		var parent = elem.parentNode;
 		
@@ -6621,6 +6643,8 @@ var convertToGroup = this.convertToGroup = function(elem) {
 			}
 			batchCmd.addSubCommand(new InsertElementCommand(g));
 		}
+		
+		setUseData(g);
 		
 		if(svgedit.browser.isGecko()) {
 			convertGradients(findDefs());
@@ -6735,14 +6759,7 @@ this.setSvgString = function(xmlString) {
 		// Set ref element for <use> elements
 		
 		// TODO: This should also be done if the object is re-added through "redo"
-		content.find('use').each(function() {
-			var id = getHref(this).substr(1);
-			var ref_elem = getElem(id);
-			$(this).data('ref', ref_elem);
-			if(ref_elem.tagName == 'symbol' || ref_elem.tagName == 'svg') {
-				$(this).data('symbol', ref_elem);
-			}
-		});
+		setUseData(content);
 		
 		convertGradients(content[0]);
 		
