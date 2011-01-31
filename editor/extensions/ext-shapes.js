@@ -280,7 +280,7 @@ svgEditor.addExtension("shapes", function() {
 			});
 			
 			// Make sure shape uses absolute values
-			if(current_d.charAt(0) === 'm') {
+			if(/[a-z]/.test(current_d)) {
 				current_d = cur_lib.data[cur_shape_id] = canv.pathActions.convertPath(cur_shape);
 				cur_shape.setAttribute('d', current_d);
 				canv.pathActions.fixEnd(cur_shape);
