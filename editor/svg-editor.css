@@ -485,9 +485,7 @@
 	top: 2px;
 	height: 72px;
 	border-bottom: none;
-	/* Ideally this should be auto (makes scrollbar if needed), but currently hides 
-	the .dropdown lists.
-/*	overflow: auto;*/
+	overflow: auto;
 }
 
 #svg_editor #tools_left {
@@ -671,7 +669,7 @@ span.zoom_tool {
 	background: #FFC;
 }
 
-#font_family_dropdown li {
+#font_family_dropdown-list li {
 	font-size: 1.4em;
 }
 
@@ -914,7 +912,7 @@ span.zoom_tool {
 
 #tools_top .dropdown .icon_label {
 	border: 1px solid transparent;
-	margin-top: 3px;
+/*	margin-top: 3px;*/
 	height: auto;
 }
 

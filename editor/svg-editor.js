@@ -2130,13 +2130,19 @@
 			// TODO: Group UI functions into a public svgEditor.ui interface.
 			Editor.addDropDown = function(elem, callback, dropUp) {
 				var button = $(elem).find('button');
-				var list = $(elem).find('ul');
+				var list = $(elem).find('ul').attr('id', $(elem)[0].id + '-list');
+				
+				if(!dropUp) {
+					// Move list to place where it can overflow container
+					$('#option_lists').append(list);
+				}
+				
 				var on_button = false;
 				if(dropUp) {
 					$(elem).addClass('dropup');
 				}
 			
-				$(elem).find('li').bind('mouseup', callback);
+				list.find('li').bind('mouseup', callback);
 				
 				$(window).mouseup(function(evt) {
 					if(!on_button) {
@@ -2149,7 +2155,16 @@
 				button.bind('mousedown',function() {
 					if (!button.hasClass('down')) {
 						button.addClass('down');
+						
+						if(!dropUp) {
+							var pos = $(elem).position();
+							list.css({
+								top: pos.top + 24,
+								left: pos.left - 10
+							});
+						}
 						list.show();
+						
 						on_button = true;
 					} else {
 						button.removeClass('down');
@@ -2249,8 +2264,7 @@
 				}
 			});
 		
-			Editor.addDropDown('#blur_dropdown', function() {
-			});
+			Editor.addDropDown('#blur_dropdown', $.noop);
 			
 			var slideStart = false;
 			
