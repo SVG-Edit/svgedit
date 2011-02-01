@@ -21,6 +21,9 @@ if (!svgedit.draw) {
 
 var svg_ns = "http://www.w3.org/2000/svg";
 var se_ns = "http://svg-edit.googlecode.com";
+var xmlns_ns = "http://www.w3.org/2000/xmlns/";
+
+var randomize_ids = false;
 
 /**
  * This class encapsulates the concept of a layer in the drawing
@@ -40,6 +43,12 @@ svgedit.draw.Layer.prototype.getGroup = function() {
 	return this.group_;
 };
 
+
+// Called to ensure that drawings will or will not have
+// randomized ids.
+svgedit.draw.randomizeIds = function(enableRandomization) {
+	randomize_ids = enableRandomization;
+};
 
 /**
  * This class encapsulates the concept of a SVG-edit drawing
@@ -99,7 +108,17 @@ svgedit.draw.Drawing = function(svgElem, opt_idPrefix) {
 	 * The nonce to use to uniquely identify elements across drawings.
 	 * @type {!String}
 	 */
-	this.nonce_ = this.svgElem_.getAttributeNS(se_ns, 'nonce') || "";
+	this.nonce_ = "";
+	var n = this.svgElem_.getAttributeNS(se_ns, 'nonce');
+	// If already set in the DOM, use the nonce throughout the document
+	// else, if randomizeIds(true) has been called, create and set the nonce.
+	if (!!n) {
+		this.nonce_ = n;
+	} else if (randomize_ids) {
+		this.nonce_ = Math.floor(Math.random() * 100001);
+		this.svgElem_.setAttributeNS(xmlns_ns, 'xmlns:se', se_ns);
+		this.svgElem_.setAttributeNS(se_ns, 'se:nonce', this.nonce_);
+	}
 };
 
 svgedit.draw.Drawing.prototype.getElem_ = function(id) {

@@ -86,7 +86,7 @@
 
 	test('Test nonce', function() {
 		expect(2);
-		
+
 		var doc = new svgedit.draw.Drawing(svg);
 		equals(doc.getNonce(), "");
 
@@ -478,6 +478,18 @@
 		equals(LAYER1, drawing.all_layers[0][0]);
 		equals(LAYER3, drawing.all_layers[1][0]);
 		equals(drawing.getCurrentLayer(), drawing.all_layers[1][1]);
+	});
+	
+	test('Test svgedit.draw.randomizeIds()', function() {
+		expect(2);
+		
+		svgedit.draw.randomizeIds(true);
+		var drawing = new svgedit.draw.Drawing(svg.cloneNode(true));
+		ok(!!drawing.getNonce());
+
+		svgedit.draw.randomizeIds(false);
+		var drawing = new svgedit.draw.Drawing(svg);
+		ok(!drawing.getNonce());
 	});
 
   });
