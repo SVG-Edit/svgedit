@@ -418,7 +418,7 @@ svgedit.utilities.getBBox = function(elem) {
 		selected.textContent = 'a'; // Some character needed for the selector to use.
 		ret = selected.getBBox();
 		selected.textContent = '';
-	} else if(elname === 'path' && svgedit.browser.isWebkit()) {
+	} else if(elname === 'path' && !svgedit.browser.supportsPathBBox()) {
 		ret = svgedit.utilities.getPathBBox(selected);
 	} else if(elname === 'use' && !svgedit.browser.isWebkit() || elname === 'foreignObject') {
 		ret = selected.getBBox();

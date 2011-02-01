@@ -85,6 +85,17 @@ var supportsTextCharPos_ = (function() {
 	return retValue;
 })();
 
+var supportsPathBBox_ = (function() {
+	var svgcontent = document.createElementNS(svgns, 'svg');
+	document.documentElement.appendChild(svgcontent);
+	var path = document.createElementNS(svgns, 'path');
+	path.setAttribute('d','M0,0 C0,0 10,10 10,0');
+	svgcontent.appendChild(path);
+	var bbox = path.getBBox();
+	document.documentElement.removeChild(svgcontent);
+	return (bbox.height > 4 && bbox.height < 5);
+})();
+
 var supportsEditableText_ = (function() {
 	// TODO: Find better way to check support for this
 	return isOpera_;
@@ -129,6 +140,7 @@ svgedit.browser.supportsXpath = function() { return supportsXpath_; }
 
 svgedit.browser.supportsPathReplaceItem = function() { return supportsPathReplaceItem_; }
 svgedit.browser.supportsPathInsertItemBefore = function() { return supportsPathInsertItemBefore_; }
+svgedit.browser.supportsPathBBox = function() { return supportsPathBBox_; }
 svgedit.browser.supportsTextCharPos = function() { return supportsTextCharPos_; }
 svgedit.browser.supportsEditableText = function() { return supportsEditableText_; }
 svgedit.browser.supportsGoodDecimals = function() { return supportsGoodDecimals_; }
