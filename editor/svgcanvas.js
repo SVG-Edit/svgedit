@@ -8715,8 +8715,8 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 				selectedBBoxes[i] = getBBox(elem);
 			// Use the Firefox ffClone hack for text elements with gradients or
 			// where other text attributes are changed. 
-			if(elem.nodeName == 'text') {
-				if((newValue+'').indexOf('url') == 0 || ['font-size','font-family','x','y'].indexOf(attr) >= 0 && elem.textContent) {
+			if(svgedit.browser.isGecko() && elem.nodeName === 'text' && /rotate/.test(elem.getAttribute('transform'))) {
+				if((newValue+'').indexOf('url') === 0 || ['font-size','font-family','x','y'].indexOf(attr) >= 0 && elem.textContent) {
 					elem = ffClone(elem);
 				}
 			}
