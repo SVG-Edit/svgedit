@@ -7332,6 +7332,8 @@ var setContext = this.setContext = function(elem) {
 this.clear = function() {
 	pathActions.clear();
 
+	clearSelection();
+
 	// clear the svgcontent node
 	canvas.clearSvgContentElement();
 
