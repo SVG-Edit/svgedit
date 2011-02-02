@@ -45,6 +45,27 @@
 		equals(shortFloat(1.23443), 1.2344);
 		equals(shortFloat(1.23455), 1.2346);
 	});
+
+	test('Test svgedit.units.isValidUnit()', function() {
+		expect(12);
+
+		setUp();
+		
+		ok(svgedit.units.isValidUnit);
+		equals(typeof svgedit.units.isValidUnit, typeof function(){});
+
+		var isValidUnit = svgedit.units.isValidUnit;
+		ok(isValidUnit("0"));
+		ok(isValidUnit("1"));
+		ok(isValidUnit("1.1"));
+		ok(isValidUnit("-1.1"));
+		ok(isValidUnit(".6mm"));
+		ok(isValidUnit("-.6cm"));
+		ok(isValidUnit("6000in"));
+		ok(isValidUnit("6px"));
+		ok(isValidUnit("6.3pc"));
+		ok(isValidUnit("-0.4em"));
+	});
   });
   </script>
 </head>  
