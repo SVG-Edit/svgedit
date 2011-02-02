@@ -385,7 +385,8 @@ svgedit.units.init({
 	getBaseUnit: function() { return curConfig.baseUnit; },
 	getElement: getElem,
 	getHeight: function() { return svgcontent.getAttribute("height")/current_zoom; },
-	getWidth: function() { return svgcontent.getAttribute("width")/current_zoom; }
+	getWidth: function() { return svgcontent.getAttribute("width")/current_zoom; },
+	getRoundDigits: function() { return save_options.round_digits; }
 });
 // import from units.js
 var convertToNum = canvas.convertToNum = svgedit.units.convertToNum;
@@ -425,7 +426,7 @@ canvas.undoMgr = new svgedit.history.UndoManager({
 			call("changed", elems);
 			
 			var cmdType = cmd.type();
-			var isApply = eventType == EventTypes.AFTER_APPLY;
+			var isApply = (eventType == EventTypes.AFTER_APPLY);
 			if (cmdType == MoveElementCommand.type()) {
 				var parent = isApply ? cmd.newParent : cmd.oldParent;
 				if (parent == svgcontent) {
@@ -633,32 +634,6 @@ this.addExtension = function(name, ext_func) {
 	} else {
 		console.log('Cannot add extension "' + name + '", an extension by that name already exists"');
 	}
-};
-
-
-// Function: shortFloat
-// Rounds a given value to a float with number of digits defined in save_options
-//
-// Parameters: 
-// val - The value as a String, Number or Array of two numbers to be rounded
-//
-// Returns:
-// If a string/number was given, returns a Float. If an array, return a string
-// with comma-seperated floats
-var shortFloat = function(val) {
-	var digits = save_options.round_digits;
-	if(!isNaN(val)) {
-		// Note that + converts to Number
-		return +((+val).toFixed(digits));
-	} else if($.isArray(val)) {
-		return shortFloat(val[0]) + ',' + shortFloat(val[1]);
-	} else {
-		return parseFloat(val).toFixed(digits) - 0;
-	}
-}
-
-this.convertUnit = function(val, unit) {
-	return shortFloat(svgedit.units.convertUnit(val, unit));
 };
 	
 // This method rounds the incoming value to the nearest value based on the current_zoom
@@ -5826,9 +5801,9 @@ var pathActions = canvas.pathActions = function() {
 				var addToD = function(pnts, more, last) {
 					var str = '';
 					var more = more?' '+more.join(' '):'';
-					var last = last?' '+shortFloat(last):'';
+					var last = last?' '+svgedit.units.shortFloat(last):'';
 					$.each(pnts, function(i, pnt) {
-						pnts[i] = shortFloat(pnt);
+						pnts[i] = svgedit.units.shortFloat(pnt);
 					});
 					d += letter + pnts.join(' ') + more + last;
 				}
@@ -6113,16 +6088,16 @@ this.svgToString = function(elem, indent) {
 // 			if(curConfig.baseUnit !== "px") {
 // 				var unit = curConfig.baseUnit;
 // 				var unit_m = svgedit.units.getTypeMap()[unit];
-// 				res.w = shortFloat(res.w / unit_m)
-// 				res.h = shortFloat(res.h / unit_m)
+// 				res.w = svgedit.units.shortFloat(res.w / unit_m)
+// 				res.h = svgedit.units.shortFloat(res.h / unit_m)
 // 				vb = ' viewBox="' + [0, 0, res.w, res.h].join(' ') + '"';				
 // 				res.w += unit;
 // 				res.h += unit;
 // 			}
 			
 			if(unit !== "px") {
-				res.w = this.convertUnit(res.w, unit) + unit;
-				res.h = this.convertUnit(res.h, unit) + unit;
+				res.w = svgedit.units.convertUnit(res.w, unit) + unit;
+				res.h = svgedit.units.convertUnit(res.h, unit) + unit;
 			}
 			
 			out.push(' width="' + res.w + '" height="' + res.h + '"' + vb + ' xmlns="'+svgns+'"');
@@ -6174,9 +6149,9 @@ this.svgToString = function(elem, indent) {
 					out.push(" "); 
 					if(attr.localName === 'd') attrVal = pathActions.convertPath(elem, true);
 					if(!isNaN(attrVal)) {
-						attrVal = shortFloat(attrVal);
+						attrVal = svgedit.units.shortFloat(attrVal);
 					} else if(unit_re.test(attrVal)) {
-						attrVal = shortFloat(attrVal) + unit;
+						attrVal = svgedit.units.shortFloat(attrVal) + unit;
 					}
 					
 					// Embed images when saving 
@@ -9657,7 +9632,6 @@ this.getPrivateMethods = function() {
 		round: round,
 		runExtensions: runExtensions,
 		sanitizeSvg: sanitizeSvg,
-		shortFloat: shortFloat,
 		SVGEditTransformList: svgedit.transformlist.SVGTransformList,
 		toString: toString,
 		transformBox: svgedit.math.transformBox,
