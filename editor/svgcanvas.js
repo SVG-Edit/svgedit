@@ -5983,6 +5983,8 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 	var defs = svgcontent.getElementsByTagNameNS(svgns, "defs");
 	if(!defs || !defs.length) return 0;
 	
+// 	if(!defs.firstChild) return;
+	
 	var defelem_uses = [],
 		numRemoved = 0;
 	var attrs = ['fill', 'stroke', 'filter', 'marker-start', 'marker-mid', 'marker-end'];
@@ -5995,7 +5997,9 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 		var el = all_els[i];
 		for(var j = 0; j < alen; j++) {
 			var ref = getUrlFromAttr(el.getAttribute(attrs[j]));
-			if(ref) defelem_uses.push(ref.substr(1));
+			if(ref) {
+				defelem_uses.push(ref.substr(1));
+			}
 		}
 		
 		// gradients can refer to other gradients
@@ -6018,16 +6022,7 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 			numRemoved++;
 		}
 	}
-	
-	// Remove defs if empty
-	var i = defs.length;
-	while (i--) {
-		var def = defs[i];
-		if(!def.getElementsByTagNameNS(svgns,'*').length) {
-			def.parentNode.removeChild(def);
-		}
-	}
-	
+
 	return numRemoved;
 }
 
@@ -6167,6 +6162,9 @@ this.svgToString = function(elem, indent) {
 				}
 			}
 		} else {
+			// Skip empty defs
+			if(elem.nodeName === 'defs' && !elem.firstChild) return;
+		
 			var moz_attrs = ['-moz-math-font-style', '_moz-math-font-style'];
 			for (var i=attrs.length-1; i>=0; i--) {
 				attr = attrs.item(i);
@@ -9016,6 +9014,8 @@ var pushGroupProperties = this.pushGroupProperties = function(g, undoable) {
 	
 	for(var i = 0; i < len; i++) {
 		var elem = children[i];
+		
+		if(elem.nodeType !== 1) continue;
 		
 		if(gattrs.opacity !== null && gattrs.opacity !== 1) {
 			var c_opac = elem.getAttribute('opacity') || 1;

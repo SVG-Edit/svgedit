@@ -223,7 +223,11 @@ svgedit.history.RemoveElementCommand.prototype.unapply = function(handler) {
 	}
 
 	svgedit.transformlist.removeElementFromListMap(this.elem);
+	if(this.nextSibling == null) {
+		console.log('Error: reference element was lost');
+	}
 	this.parent.insertBefore(this.elem, this.nextSibling);
+
 
 	if (handler) {
 		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.AFTER_UNAPPLY, this);
