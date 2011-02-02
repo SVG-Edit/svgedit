@@ -528,6 +528,14 @@ var restoreRefElems = function(elem) {
 			}
 		}
 	}
+	
+	var childs = elem.getElementsByTagName('*');
+	
+	if(childs.length) {
+		for(var i = 0, l = childs.length; i < l; i++) {
+			restoreRefElems(childs[i]);
+		}
+	}
 };
 
 (function() {
@@ -6466,6 +6474,7 @@ var setUseData = this.setUseData = function(parent) {
 	elems.each(function() {
 		var id = getHref(this).substr(1);
 		var ref_elem = getElem(id);
+		if(!ref_elem) return;
 		$(this).data('ref', ref_elem);
 		if(ref_elem.tagName == 'symbol' || ref_elem.tagName == 'svg') {
 			$(this).data('symbol', ref_elem);
