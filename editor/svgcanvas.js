@@ -442,6 +442,10 @@ canvas.undoMgr = new svgedit.history.UndoManager({
 				} else {
 					if (!isApply) restoreRefElems(cmd.elem);
 				}
+				
+				if(cmd.elem.tagName === 'use') {
+					setUseData(cmd.elem);
+				}
 			} else if (cmdType == ChangeElementCommand.type()) {
 				// if we are changing layer names, re-identify all layers
 				if (cmd.elem.tagName == "title" && cmd.elem.parentNode.parentNode == svgcontent) {
@@ -1516,6 +1520,23 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		}
 	}
 	
+	// If it still has a single [M] or [R][M], return null too (prevents BatchCommand from being returned).
+	switch ( selected.tagName ) {
+		// Ignore these elements, as they can absorb the [M]
+		case 'line':
+		case 'polyline':
+		case 'polygon':
+		case 'path':
+			break;
+		default:
+			if(
+				(tlist.numberOfItems === 1 && tlist.getItem(0).type === 1)
+				||  (tlist.numberOfItems === 2 && tlist.getItem(0).type === 1 && tlist.getItem(0).type === 4)
+			) {
+				return null;
+			}
+	}
+	
 	// Grouped SVG element 
 	var gsvg = $(selected).data('gsvg');
 	
@@ -2153,6 +2174,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 	if (tlist.numberOfItems == 0) {
 		selected.removeAttribute("transform");
 	}
+	
 	batchCmd.addSubCommand(new ChangeElementCommand(selected, initial));
 	
 	return batchCmd;
@@ -6435,7 +6457,13 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 // Function setUseData
 // Assigns reference data for each use element
 var setUseData = this.setUseData = function(parent) {
-	$(parent).find('use').each(function() {
+	var elems = $(parent);
+	
+	if(parent.tagName !== 'use') {
+		elems = elems.find('use');
+	}
+	
+	elems.each(function() {
 		var id = getHref(this).substr(1);
 		var ref_elem = getElem(id);
 		$(this).data('ref', ref_elem);
@@ -6632,8 +6660,11 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		
 		selectOnly([g]);
 		
-		batchCmd.addSubCommand(pushGroupProperties(g, true));
-// 		
+		var cm = pushGroupProperties(g, true);
+		if(cm) {
+			batchCmd.addSubCommand(cm);
+		}
+
 		addCommandToHistory(batchCmd);
 		
 	} else {
@@ -9111,7 +9142,8 @@ var pushGroupProperties = this.pushGroupProperties = function(g, undoable) {
 				newxform.setMatrix(gm);
 				chtlist.appendItem(newxform);
 			}
-			batchCmd.addSubCommand(recalculateDimensions(elem));
+			var cmd = recalculateDimensions(elem);
+			if(cmd)	batchCmd.addSubCommand(cmd);
 		}
 	}
 
