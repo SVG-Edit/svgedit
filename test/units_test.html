@@ -47,7 +47,7 @@
 	});
 
 	test('Test svgedit.units.isValidUnit()', function() {
-		expect(12);
+		expect(14);
 
 		setUp();
 		
@@ -65,6 +65,8 @@
 		ok(isValidUnit("6px"));
 		ok(isValidUnit("6.3pc"));
 		ok(isValidUnit("-0.4em"));
+		ok(isValidUnit("-0.ex"));
+		ok(isValidUnit("40.123%"));
 	});
   });
   </script>
