@@ -51,6 +51,7 @@ var typeMap_ = {px: 1};
  * function getElement() - returns an element in the container given an id
  * function getHeight() - returns the container's height
  * function getWidth() - returns the container's width
+ * function getRoundDigits() - returns the number of digits number should be rounded to
  */
 
 /**
@@ -95,6 +96,26 @@ svgedit.units.getTypeMap = function() {
 	return typeMap_;
 };
 
+// Function: svgedit.units.shortFloat
+// Rounds a given value to a float with number of digits defined in save_options
+//
+// Parameters: 
+// val - The value as a String, Number or Array of two numbers to be rounded
+//
+// Returns:
+// If a string/number was given, returns a Float. If an array, return a string
+// with comma-seperated floats
+svgedit.units.shortFloat = function(val) {
+	var digits = elementContainer_.getRoundDigits();
+	if(!isNaN(val)) {
+		// Note that + converts to Number
+		return +((+val).toFixed(digits));
+	} else if($.isArray(val)) {
+		return svgedit.units.shortFloat(val[0]) + ',' + svgedit.units.shortFloat(val[1]);
+	}
+	return parseFloat(val).toFixed(digits) - 0;
+};
+
 // Function: svgedit.units.convertUnit
 // Converts the number to given unit or baseUnit
 svgedit.units.convertUnit = function(val, unit) {
@@ -102,7 +123,7 @@ svgedit.units.convertUnit = function(val, unit) {
 //	baseVal.convertToSpecifiedUnits(unitNumMap[unit]);
 //	var val = baseVal.valueInSpecifiedUnits;
 //	baseVal.convertToSpecifiedUnits(1);
-	return val / typeMap_[unit];
+	return svgedit.unit.shortFloat(val / typeMap_[unit]);
 };
 
 // Function: svgedit.units.setUnitAttr
@@ -249,7 +270,9 @@ svgedit.units.isValidUnit = function(attr, val) {
 			result = (elem == null);
 		} catch(e) {}
 		return result;
-	} else valid = true;			
+	} else {
+		valid = true;
+	}
 	
 	return valid;
 };

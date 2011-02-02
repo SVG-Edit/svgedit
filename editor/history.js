@@ -36,13 +36,23 @@ var removedElements = {};
  * An interface that all command objects must implement.
  *
  * interface svgedit.history.HistoryCommand {
- *   void apply();
- *   void unapply();
+ *   void apply(svgedit.history.HistoryEventHandler);
+ *   void unapply(svgedit.history.HistoryEventHandler);
  *   Element[] elements();
  *   String getText();
  *
  *   static String type();
  * }
+ *
+ * Interface: svgedit.history.HistoryEventHandler
+ * An interface for objects that will handle history events.
+ *
+ * interface svgedit.history.HistoryEventHandler {
+ *   void handleHistoryEvent(eventType, command);
+ * }
+ *
+ * eventType is a string conforming to one of the HistoryEvent types.
+ * command is an object fulfilling the HistoryCommand interface.
  */
 
 // Class: svgedit.history.MoveElementCommand
@@ -442,18 +452,6 @@ svgedit.history.BatchCommand.prototype.isEmpty = function() {
 	return this.stack.length == 0;
 };
 
-
-/**
- * Interface: svgedit.history.HistoryEventHandler
- * An interface for objects that will handle history events.
- *
- * interface svgedit.history.HistoryEventHandler {
- *   void handleHistoryEvent(eventType, command);
- * }
- *
- * eventType is a string conforming to one of the HistoryEvent types (see above).
- * command is an object fulfilling the HistoryCommand interface (see above).
- */
 
 // Class: svgedit.history.UndoManager
 // Parameters:

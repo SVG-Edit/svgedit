@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
+  <script type='text/javascript' src='../editor/jquery.js'></script>
+  <script type='text/javascript' src='../editor/units.js'></script>
+  <script type='text/javascript' src='qunit/qunit.js'></script>  
+  <script type='text/javascript'>
+  $(function() {
+  	// log function
+  	QUnit.log = function(result, message) {
+		if (window.console && window.console.log) {
+			window.console.log(result +' :: '+ message);
+		}
+	};
+
+    function setUp() {
+		svgedit.units.init({
+			getBaseUnit: function() { return "cm"; },
+			getElement: function() { return null; },
+			getHeight: function() { return 600; },
+			getWidth: function() { return 800; },
+			getRoundDigits: function() { return 4; }
+		});
+	}
+	
+	test('Test svgedit.units package', function() {
+		expect(2);
+		ok(svgedit.units);
+		equals(typeof svgedit.units, typeof {});
+	});
+
+	test('Test svgedit.units.shortFloat()', function() {
+		expect(7);
+
+		setUp();
+		
+		ok(svgedit.units.shortFloat);
+		equals(typeof svgedit.units.shortFloat, typeof function(){});
+
+		var shortFloat = svgedit.units.shortFloat;
+		equals(shortFloat(0.00000001), 0);
+		equals(shortFloat(1), 1);
+		equals(shortFloat(3.45678), 3.4568);
+		equals(shortFloat(1.23443), 1.2344);
+		equals(shortFloat(1.23455), 1.2346);
+	});
+  });
+  </script>
+</head>  
+<body>  
+  <h1 id='qunit-header'>Unit Tests for units.js</h1>
+  <h2 id='qunit-banner'></h2>
+  <h2 id='qunit-userAgent'></h2>
+  <ol id='qunit-tests'>
+  </ol>
+  <div id='anchor' style='visibility:hidden'>
+  </div>
+</body>  
+</html>
