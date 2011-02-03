@@ -44,10 +44,18 @@ svgedit.draw.Layer.prototype.getGroup = function() {
 };
 
 
-// Called to ensure that drawings will or will not have
-// randomized ids.
-svgedit.draw.randomizeIds = function(enableRandomization) {
+// Called to ensure that drawings will or will not have randomized ids.
+// The current_drawing will have its nonce set if it doesn't already.
+// 
+// Params:
+// enableRandomization - flag indicating if documents should have randomized ids
+svgedit.draw.randomizeIds = function(enableRandomization, current_drawing) {
 	randomize_ids = enableRandomization;
+
+	if (enableRandomization && !current_drawing.getNonce()) {
+		current_drawing.setNonce(Math.floor(Math.random() * 100001));
+	}
+	
 };
 
 /**
@@ -137,6 +145,12 @@ svgedit.draw.Drawing.prototype.getSvgElem = function() {
 
 svgedit.draw.Drawing.prototype.getNonce = function() {
 	return this.nonce_;
+};
+
+svgedit.draw.Drawing.prototype.setNonce = function(n) {
+	this.svgElem_.setAttributeNS(xmlns_ns, 'xmlns:se', se_ns);
+	this.svgElem_.setAttributeNS(se_ns, 'se:nonce', n);
+	this.nonce_ = n;
 };
 
 /**
