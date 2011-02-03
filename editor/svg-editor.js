@@ -4721,6 +4721,13 @@
 			});
 		};
 		
+		Editor.disableUI = function(featList) {
+// 			$(function() {
+// 				$('#tool_wireframe, #tool_image, #main_button, #tool_source, #sidepanels').remove();
+// 				$('#tools_top').css('left', 5);
+// 			});
+		};
+		
 		Editor.loadFromURL = function(url, opts) {
 			if(!opts) opts = {};
 
