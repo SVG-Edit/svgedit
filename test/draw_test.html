@@ -85,15 +85,24 @@
 	});
 
 	test('Test nonce', function() {
-		expect(2);
+		expect(7);
 
 		var doc = new svgedit.draw.Drawing(svg);
 		equals(doc.getNonce(), "");
 
 		doc = new svgedit.draw.Drawing(svg_n);
 		equals(doc.getNonce(), NONCE);
+		equals(doc.getSvgElem().getAttributeNS(SENS, 'nonce'), NONCE);
+		
+		doc.clearNonce();
+		ok(!doc.getNonce());
+		ok(!doc.getSvgElem().getAttributeNS(SENS, 'se:nonce'));
+		
+		doc.setNonce(NONCE);
+		equals(doc.getNonce(), NONCE);
+		equals(doc.getSvgElem().getAttributeNS(SENS, 'nonce'), NONCE);
 	});
-
+	
 	test('Test getId() and getNextId() without nonce', function() {
 		expect(7);
 		
@@ -481,14 +490,37 @@
 	});
 	
 	test('Test svgedit.draw.randomizeIds()', function() {
-		expect(2);
+		expect(9);
+
+		// Confirm in LET_DOCUMENT_DECIDE mode that the document decides
+		// if there is a nonce.
+		var drawing = new svgedit.draw.Drawing(svg_n.cloneNode(true));
+		ok(!!drawing.getNonce());
 		
-		svgedit.draw.randomizeIds(true);
-		var drawing = new svgedit.draw.Drawing(svg.cloneNode(true));
+		drawing = new svgedit.draw.Drawing(svg.cloneNode(true));
+		ok(!drawing.getNonce());
+
+		// Confirm that a nonce is set once we're in ALWAYS_RANDOMIZE mode.
+		svgedit.draw.randomizeIds(true, drawing);
 		ok(!!drawing.getNonce());
 
-		svgedit.draw.randomizeIds(false);
-		var drawing = new svgedit.draw.Drawing(svg);
+		// Confirm new drawings in ALWAYS_RANDOMIZE mode have a nonce.
+		drawing = new svgedit.draw.Drawing(svg.cloneNode(true));
+		ok(!!drawing.getNonce());
+
+		drawing.clearNonce();
+		ok(!drawing.getNonce());
+
+		// Confirm new drawings in NEVER_RANDOMIZE mode do not have a nonce
+		// but that their se:nonce attribute is left alone.
+		svgedit.draw.randomizeIds(false, drawing);
+		ok(!drawing.getNonce());
+		ok(!!drawing.getSvgElem().getAttributeNS(SENS, 'nonce'));
+
+		drawing = new svgedit.draw.Drawing(svg.cloneNode(true));
+		ok(!drawing.getNonce());
+		
+		drawing = new svgedit.draw.Drawing(svg_n.cloneNode(true));
 		ok(!drawing.getNonce());
 	});
 
