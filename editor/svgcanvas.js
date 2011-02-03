@@ -6360,9 +6360,9 @@ this.getSvgString = function() {
 //
 this.randomizeIds = function() {
 	if (arguments.length > 0 && arguments[0] == false) {
-		svgedit.draw.randomizeIds(false);
+		svgedit.draw.randomizeIds(false, getCurrentDrawing());
 	} else {
-		svgedit.draw.randomizeIds(true);
+		svgedit.draw.randomizeIds(true, getCurrentDrawing());
 	}
 };
 
