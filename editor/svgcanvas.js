@@ -6879,6 +6879,8 @@ this.importSvgString = function(xmlString) {
 			}
 		}
 		
+		var batchCmd = new BatchCommand("Import SVG");
+	
 		if(useExisting) {
 			var symbol = import_ids[uid].symbol;
 			var ts = import_ids[uid].xform;
@@ -6887,8 +6889,6 @@ this.importSvgString = function(xmlString) {
 			var newDoc = svgedit.utilities.text2xml(xmlString);
 	
 			this.prepareSvg(newDoc);
-	
-			var batchCmd = new BatchCommand("Import SVG");
 	
 			// import new svg document into our document
 			var svg = svgdoc.importNode(newDoc.documentElement, true);
