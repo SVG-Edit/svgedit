@@ -532,7 +532,7 @@
 	position: absolute;
 	top: 77px;
 	left: 40px;
-	right: -2px;
+	right: 0;
 	line-height: 22px;
 	overflow: auto;
 	border: 1px solid #777;
