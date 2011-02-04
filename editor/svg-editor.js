@@ -1887,6 +1887,10 @@
 				}
 			});
 		
+			$('#g_title').change(function() {
+				svgCanvas.setGroupTitle(this.value);
+			});
+		
 			$('.attr_changer').change(function() {
 				var attr = this.getAttribute("data-attr");
 				var val = this.value;
