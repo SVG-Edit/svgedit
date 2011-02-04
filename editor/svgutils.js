@@ -9,7 +9,7 @@
 
 // Dependencies:
 // 1) jQuery
-// 2) browser.js: only for getBBox()
+// 2) browser.js: for getBBox(), getElem(), assignAttributes()
 // 3) svgtransformlist.js: only for getRotationAngle()
 
 var svgedit = svgedit || {};
@@ -26,6 +26,7 @@ if (!svgedit.utilities) {
 var KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 var SVGNS = 'http://www.w3.org/2000/svg';
 var XLINKNS = 'http://www.w3.org/1999/xlink';
+var XMLNS = "http://www.w3.org/XML/1998/namespace";
 
 // Much faster than running getBBox() every time
 var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
@@ -33,9 +34,15 @@ var visElems_arr = visElems.split(',');
 //var hidElems = 'clipPath,defs,desc,feGaussianBlur,filter,linearGradient,marker,mask,metadata,pattern,radialGradient,stop,switch,symbol,title,textPath';
 
 var editorContext_ = null;
+var domdoc_ = null;
+var domcontainer_ = null;
+var svgroot_ = null;
 
 svgedit.utilities.init = function(editorContext) {
 	editorContext_ = editorContext;
+	domdoc_ = editorContext.getDOMDocument();
+	domcontainer_ = editorContext.getDOMContainer();
+	svgroot_ = editorContext.getSVGRoot();
 };
 
 // Function: svgedit.utilities.toXml
@@ -474,6 +481,64 @@ svgedit.utilities.getRotationAngle = function(elem, to_rad) {
 		}
 	}
 	return 0.0;
+};
+
+// Function: getElem
+// Get a DOM element by ID within the SVG root element.
+//
+// Parameters:
+// id - String with the element's new ID
+if (svgedit.browser.supportsSelectors()) {
+	svgedit.utilities.getElem = function(id) {
+		// querySelector lookup
+		return svgroot_.querySelector('#'+id);
+	};
+} else if (svgedit.browser.supportsXpath()) {
+	svgedit.utilities.getElem = function(id) {
+		// xpath lookup
+		return domdoc_.evaluate(
+			'svg:svg[@id="svgroot"]//svg:*[@id="'+id+'"]',
+			domcontainer_, 
+			function() { return "http://www.w3.org/2000/svg"; },
+			9,
+			null).singleNodeValue;
+	};
+} else {
+	svgedit.utilities.getElem = function(id) {
+		// jQuery lookup: twice as slow as xpath in FF
+		return $(svgroot_).find('[id=' + id + ']')[0];
+	};
+}
+
+// Function: assignAttributes
+// Assigns multiple attributes to an element.
+//
+// Parameters: 
+// node - DOM element to apply new attribute values to
+// attrs - Object with attribute keys/values
+// suspendLength - Optional integer of milliseconds to suspend redraw
+// unitCheck - Boolean to indicate the need to use svgedit.units.setUnitAttr
+svgedit.utilities.assignAttributes = function(node, attrs, suspendLength, unitCheck) {
+	if(!suspendLength) suspendLength = 0;
+	// Opera has a problem with suspendRedraw() apparently
+	var handle = null;
+	if (!svgedit.browser.isOpera()) svgroot_.suspendRedraw(suspendLength);
+
+	for (var i in attrs) {
+		var ns = (i.substr(0,4) === "xml:" ? XMLNS : 
+			i.substr(0,6) === "xlink:" ? XLINKNS : null);
+			
+		if(ns) {
+			node.setAttributeNS(ns, i, attrs[i]);
+		} else if(!unitCheck) {
+			node.setAttribute(i, attrs[i]);
+		} else {
+			svgedit.units.setUnitAttr(node, i, attrs[i]);
+		}
+		
+	}
+	
+	if (!svgedit.browser.isOpera()) svgroot_.unsuspendRedraw(handle);
 };
 
 })();
