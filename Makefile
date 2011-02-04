@@ -16,6 +16,7 @@ JS_FILES=\
 	history.js \
 	select.js \
 	draw.js \
+	path.js \
 	svgcanvas.js \
 	svg-editor.js \
 	locale/locale.js

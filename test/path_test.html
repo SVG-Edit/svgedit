@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
+  <script type='text/javascript' src='../editor/jquery.js'></script>
+  <script type='text/javascript' src='../editor/path.js'></script>
+  <script type='text/javascript' src='qunit/qunit.js'></script>  
+  <script type='text/javascript'>
+  $(function() {
+  	// log function
+  	QUnit.log = function(result, message) {
+		if (window.console && window.console.log) {
+			window.console.log(result +' :: '+ message);
+		}
+	};
+
+  });
+  </script>
+</head>  
+<body>  
+  <h1 id='qunit-header'>Unit Tests for path.js</h1>
+  <h2 id='qunit-banner'></h2>
+  <h2 id='qunit-userAgent'></h2>
+  <ol id='qunit-tests'>
+  </ol>
+  <div id='anchor' style='visibility:hidden'>
+  </div>
+</body>  
+</html>
