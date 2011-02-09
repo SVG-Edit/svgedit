@@ -321,6 +321,7 @@ var matrixMultiply = canvas.matrixMultiply = svgedit.math.matrixMultiply;
 var hasMatrixTransform = canvas.hasMatrixTransform = svgedit.math.hasMatrixTransform;
 var transformListToTransform = canvas.transformListToTransform = svgedit.math.transformListToTransform;
 var snapToAngle = svgedit.math.snapToAngle;
+var getMatrix = svgedit.math.getMatrix;
 
 // initialize from units.js
 // send in an object implementing the ElementContainer interface (see units.js)
@@ -438,7 +439,8 @@ var selectorManager = this.selectorManager = svgedit.select.getSelectorManager()
 
 // Import from path.js
 svgedit.path.init({
-	currentZoom: function() { return current_zoom; }
+	getCurrentZoom: function() { return current_zoom; },
+	getSVGRoot: function() { return svgroot; }
 });
 
 // Function: snapToGrid
@@ -2154,19 +2156,6 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 // Root Current Transformation Matrix in user units
 var root_sctm = null;
 
-// Function: getMatrix
-// Get the matrix object for a given element
-//
-// Parameters:
-// elem - The DOM element to check
-// 
-// Returns:
-// The matrix object associated with the element's transformlist
-var getMatrix = function(elem) {
-	var tlist = getTransformList(elem);
-	return transformListToTransform(tlist).matrix;
-}
-
 // Group: Selection
 
 // Function: clearSelection
@@ -2310,58 +2299,6 @@ this.selectAllInCurrentLayer = function() {
 		selectOnly($(current_group || current_layer).children());
 	}
 };
-
-// Function: smoothControlPoints
-// Takes three points and creates a smoother line based on them
-// 
-// Parameters: 
-// ct1 - Object with x and y values (first control point)
-// ct2 - Object with x and y values (second control point)
-// pt - Object with x and y values (third point)
-//
-// Returns: 
-// Array of two "smoothed" point objects
-var smoothControlPoints = this.smoothControlPoints = function(ct1, ct2, pt) {
-	// each point must not be the origin
-	var x1 = ct1.x - pt.x,
-		y1 = ct1.y - pt.y,
-		x2 = ct2.x - pt.x,
-		y2 = ct2.y - pt.y;
-		
-	if ( (x1 != 0 || y1 != 0) && (x2 != 0 || y2 != 0) ) {
-		var anglea = Math.atan2(y1,x1),
-			angleb = Math.atan2(y2,x2),
-			r1 = Math.sqrt(x1*x1+y1*y1),
-			r2 = Math.sqrt(x2*x2+y2*y2),
-			nct1 = svgroot.createSVGPoint(),
-			nct2 = svgroot.createSVGPoint();				
-		if (anglea < 0) { anglea += 2*Math.PI; }
-		if (angleb < 0) { angleb += 2*Math.PI; }
-		
-		var angleBetween = Math.abs(anglea - angleb),
-			angleDiff = Math.abs(Math.PI - angleBetween)/2;
-		
-		var new_anglea, new_angleb;
-		if (anglea - angleb > 0) {
-			new_anglea = angleBetween < Math.PI ? (anglea + angleDiff) : (anglea - angleDiff);
-			new_angleb = angleBetween < Math.PI ? (angleb - angleDiff) : (angleb + angleDiff);
-		}
-		else {
-			new_anglea = angleBetween < Math.PI ? (anglea - angleDiff) : (anglea + angleDiff);
-			new_angleb = angleBetween < Math.PI ? (angleb + angleDiff) : (angleb - angleDiff);
-		}
-		
-		// rotate the points
-		nct1.x = r1 * Math.cos(new_anglea) + pt.x;
-		nct1.y = r1 * Math.sin(new_anglea) + pt.y;
-		nct2.x = r2 * Math.cos(new_angleb) + pt.x;
-		nct2.y = r2 * Math.sin(new_angleb) + pt.y;
-		
-		return [nct1, nct2];
-	}
-	return undefined;
-};
-
 
 // Function: getMouseTarget
 // Gets the desired element from a mouse event
@@ -3994,25 +3931,6 @@ var pathActions = canvas.pathActions = function() {
 	}
 
 	// TODO: Move into path.js
-		// Update position of all points
-		svgedit.path.Path.prototype.update = function() {
-			var elem = this.elem;
-			if(getRotationAngle(elem)) {
-				this.matrix = getMatrix(elem);
-				this.imatrix = this.matrix.inverse();
-			} else {
-				this.matrix = null;
-				this.imatrix = null;
-			}
-
-			this.eachSeg(function(i) {
-				this.item = elem.pathSegList.getItem(i);
-				this.update();
-			});
-			
-			return this;
-		}
-		
 		svgedit.path.Path.prototype.endChanges = function(text) {
 			if(svgedit.browser.isWebkit()) resetD(this.elem);
 			var cmd = new ChangeElementCommand(this.elem, {d: this.last_d}, text);
@@ -4091,7 +4009,7 @@ var pathActions = canvas.pathActions = function() {
 				// if the previous segment had a control point, we want to smooth out
 				// the control points on both sides
 				if (prevCtlPt) {
-					var newpts = smoothControlPoints( prevCtlPt, ct1, curpos );
+					var newpts = svgedit.path.smoothControlPoints( prevCtlPt, ct1, curpos );
 					if (newpts && newpts.length == 2) {
 						var prevArr = d[d.length-1].split(',');
 						prevArr[2] = newpts[0].x;

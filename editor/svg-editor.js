@@ -1509,9 +1509,9 @@
 							if(svgCanvas.getHref(elem).indexOf('data:') !== 0) {
 								promptImgURL();
 							}
-						} else if(elname == 'text') {
+						} /*else if(elname == 'text') {
 							// TODO: Do something here for new text
-						}
+						}*/
 					}
 					
 					if(!is_node && currentMode != 'pathedit') {
