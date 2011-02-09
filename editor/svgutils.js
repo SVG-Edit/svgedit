@@ -409,6 +409,52 @@ svgedit.utilities.getPathBBox = function(path) {
 	};
 };
 
+// Function: groupBBFix
+// Get the given/selected element's bounding box object, checking for
+// horizontal/vertical lines (see issue 717)
+// Note that performance is currently terrible, so some way to improve would
+// be great.
+//
+// Parameters: 
+// selected - Container or <use> DOM element
+function groupBBFix(selected) {
+	if(svgedit.browser.supportsHVLineContainerBBox()) {
+		try { return selected.getBBox();} catch(e){} 
+	}
+	var ref = $.data(selected, 'ref');
+	var matched = null;
+	
+	if(ref) {
+		var copy = $(ref).children().clone().attr('visibility', 'hidden');
+		$(svgroot_).append(copy);
+		matched = copy.filter('line, path');
+	} else {
+		matched = $(selected).find('line, path');
+	}
+	
+	var issue = false;
+	if(matched.length) {
+		matched.each(function() {
+			var bb = this.getBBox();
+			if(!bb.width || !bb.height) {
+				issue = true;
+			}
+		});
+		if(issue) {
+			var elems = ref ? copy : $(selected).children();
+			ret = getStrokedBBox(elems);
+		} else {
+			ret = selected.getBBox();
+		}
+	} else {
+		ret = selected.getBBox();
+	}
+	if(ref) {
+		copy.remove();
+	}
+	return ret;
+}
+
 // Function: svgedit.utilities.getBBox
 // Get the given/selected element's bounding box object, convert it to be more
 // usable when necessary
@@ -440,28 +486,16 @@ svgedit.utilities.getBBox = function(elem) {
 		break;
 	case 'g':
 	case 'a':
-		var matched = $(selected).find('line, path');
-		var issue = false;
-		if(matched.length) {
-			matched.each(function() {
-				var bb = this.getBBox();
-				if(!bb.width || !bb.height) {
-					issue = true;
-				}
-			});
-			if(issue) {
-				ret = getStrokedBBox($(selected).children());
-			} else {
-				ret = selected.getBBox();
-			}
-		} else {
-			ret = selected.getBBox();
-		}
+		ret = groupBBFix(selected);
 		break;
 	default:
+
+		if(elname === 'use') {
+			ret = groupBBFix(selected, true);
+		}
 		
-		if(elname === 'use' && !svgedit.browser.isWebkit() || elname === 'foreignObject') {
-			ret = selected.getBBox();
+		if((elname === 'use' && !svgedit.browser.isWebkit()) || elname === 'foreignObject') {
+			if(!ret) ret = selected.getBBox();
 			var bb = {};
 			bb.width = ret.width;
 			bb.height = ret.height;
