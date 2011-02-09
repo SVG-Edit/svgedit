@@ -183,6 +183,20 @@ svgedit.math.transformListToTransform = function(tlist, min, max) {
 };
 
 
+// Function: svgedit.math.getMatrix
+// Get the matrix object for a given element
+//
+// Parameters:
+// elem - The DOM element to check
+// 
+// Returns:
+// The matrix object associated with the element's transformlist
+svgedit.math.getMatrix = function(elem) {
+	var tlist = svgedit.transformlist.getTransformList(elem);
+	return svgedit.math.transformListToTransform(tlist).matrix;
+};
+
+
 // Function: svgedit.math.snapToAngle
 // Returns a 45 degree angle coordinate associated with the two given 
 // coordinates

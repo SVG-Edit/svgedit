@@ -45,7 +45,9 @@ build/$(PACKAGE): $(COMPILED_JS)
 	build/tools/ship.py --i=editor/svg-editor.html --on=svg_edit_release > build/$(PACKAGE)/svg-editor.html
 
 # NOTE: Some files are not ready for the Closure compiler: (jquery)
+# NOTE: Our code safely compiles under SIMPLE_OPTIMIZATIONS
 # NOTE: Our code is *not* ready for ADVANCED_OPTIMIZATIONS
+# NOTE: WHITESPACE_ONLY and --formatting PRETTY_PRINT is helpful for debugging.
 $(COMPILED_JS):
 	java -jar $(CLOSURE) \
 		--compilation_level SIMPLE_OPTIMIZATIONS \

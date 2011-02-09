@@ -108,8 +108,8 @@ svgedit.path.getGripPt = function(seg, alt_pt) {
 		out = pt;
 	}
 
-	out.x *= editorContext_.currentZoom();
-	out.y *= editorContext_.currentZoom();
+	out.x *= editorContext_.getCurrentZoom();
+	out.y *= editorContext_.getCurrentZoom();
 
 	return out;
 };
@@ -126,8 +126,8 @@ svgedit.path.getPointFromGrip = function(pt, path) {
 		out.y = pt.y;
 	}
 
-	out.x /= editorContext_.currentZoom();
-	out.y /= editorContext_.currentZoom();
+	out.x /= editorContext_.getCurrentZoom();
+	out.y /= editorContext_.getCurrentZoom();
 
 	return out;
 };
@@ -340,6 +340,57 @@ svgedit.path.getSegSelector = function(seg, update) {
 		svgedit.path.replacePathSeg(seg.type, 1, pts, segLine);
 	}
 	return segLine;
+};
+
+// Function: smoothControlPoints
+// Takes three points and creates a smoother line based on them
+// 
+// Parameters: 
+// ct1 - Object with x and y values (first control point)
+// ct2 - Object with x and y values (second control point)
+// pt - Object with x and y values (third point)
+//
+// Returns: 
+// Array of two "smoothed" point objects
+svgedit.path.smoothControlPoints = this.smoothControlPoints = function(ct1, ct2, pt) {
+	// each point must not be the origin
+	var x1 = ct1.x - pt.x,
+		y1 = ct1.y - pt.y,
+		x2 = ct2.x - pt.x,
+		y2 = ct2.y - pt.y;
+		
+	if ( (x1 != 0 || y1 != 0) && (x2 != 0 || y2 != 0) ) {
+		var anglea = Math.atan2(y1,x1),
+			angleb = Math.atan2(y2,x2),
+			r1 = Math.sqrt(x1*x1+y1*y1),
+			r2 = Math.sqrt(x2*x2+y2*y2),
+			nct1 = editorContext_.getSVGRoot().createSVGPoint(),
+			nct2 = editorContext_.getSVGRoot().createSVGPoint();				
+		if (anglea < 0) { anglea += 2*Math.PI; }
+		if (angleb < 0) { angleb += 2*Math.PI; }
+		
+		var angleBetween = Math.abs(anglea - angleb),
+			angleDiff = Math.abs(Math.PI - angleBetween)/2;
+		
+		var new_anglea, new_angleb;
+		if (anglea - angleb > 0) {
+			new_anglea = angleBetween < Math.PI ? (anglea + angleDiff) : (anglea - angleDiff);
+			new_angleb = angleBetween < Math.PI ? (angleb - angleDiff) : (angleb + angleDiff);
+		}
+		else {
+			new_anglea = angleBetween < Math.PI ? (anglea - angleDiff) : (anglea + angleDiff);
+			new_angleb = angleBetween < Math.PI ? (angleb + angleDiff) : (angleb - angleDiff);
+		}
+		
+		// rotate the points
+		nct1.x = r1 * Math.cos(new_anglea) + pt.x;
+		nct1.y = r1 * Math.sin(new_anglea) + pt.y;
+		nct2.x = r2 * Math.cos(new_angleb) + pt.x;
+		nct2.y = r2 * Math.sin(new_angleb) + pt.y;
+		
+		return [nct1, nct2];
+	}
+	return undefined;
 };
 
 svgedit.path.Segment = function(index, item) {
@@ -803,6 +854,25 @@ svgedit.path.Path.prototype.selectPt = function(pt, ctrl_num) {
 			this.segs[pt].setLinked(ctrl_num);
 		}
 	}
+};
+
+// Update position of all points
+svgedit.path.Path.prototype.update = function() {
+	var elem = this.elem;
+	if(svgedit.utilities.getRotationAngle(elem)) {
+		this.matrix = svgedit.math.getMatrix(elem);
+		this.imatrix = this.matrix.inverse();
+	} else {
+		this.matrix = null;
+		this.imatrix = null;
+	}
+
+	this.eachSeg(function(i) {
+		this.item = elem.pathSegList.getItem(i);
+		this.update();
+	});
+
+	return this;
 };
 
 })();
