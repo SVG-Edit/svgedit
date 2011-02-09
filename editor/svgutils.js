@@ -421,6 +421,81 @@ svgedit.utilities.getBBox = function(elem) {
 	var ret = null;
 	var elname = selected.nodeName;
 	
+	switch ( elname ) {
+	case 'text':
+		if(selected.textContent === '') {
+			selected.textContent = 'a'; // Some character needed for the selector to use.
+			ret = selected.getBBox();
+			selected.textContent = '';
+		} else {
+			try { ret = selected.getBBox();} catch(e){}
+		}
+		break;
+	case 'path':
+		if(!svgedit.browser.supportsPathBBox()) {
+			ret = svgedit.utilities.getPathBBox(selected);
+		} else {
+			try { ret = selected.getBBox();} catch(e){}
+		}
+		break;
+	case 'g':
+	case 'a':
+		var matched = $(selected).find('line, path');
+		var issue = false;
+		if(matched.length) {
+			matched.each(function() {
+				var bb = this.getBBox();
+				if(!bb.width || !bb.height) {
+					issue = true;
+				}
+			});
+			if(issue) {
+				console.log('get from kids');
+				ret = getStrokedBBox($(selected).children());
+				console.log('ret',ret);
+			} else {
+				ret = selected.getBBox();
+			}
+		} else {
+			ret = selected.getBBox();
+		}
+		break;
+	default:
+		
+		if(elname === 'use' && !svgedit.browser.isWebkit() || elname === 'foreignObject') {
+			ret = selected.getBBox();
+			var bb = {};
+			bb.width = ret.width;
+			bb.height = ret.height;
+			bb.x = ret.x + parseFloat(selected.getAttribute('x')||0);
+			bb.y = ret.y + parseFloat(selected.getAttribute('y')||0);
+			ret = bb;
+		} else if(~visElems_arr.indexOf(elname)) {
+			try { ret = selected.getBBox();} 
+			catch(e) { 
+				// Check if element is child of a foreignObject
+				var fo = $(selected).closest("foreignObject");
+				if(fo.length) {
+					try {
+						ret = fo[0].getBBox();
+					} catch(e) {
+						ret = null;
+					}
+				} else {
+					ret = null;
+				}
+			}
+		}
+	}
+	
+	if(ret) {
+		ret = svgedit.utilities.bboxToObj(ret);
+	}
+
+	// get the bounding box from the DOM (which is in that element's coordinate system)
+	return ret;
+
+	
 	if(elname === 'text' && selected.textContent === '') {
 		selected.textContent = 'a'; // Some character needed for the selector to use.
 		ret = selected.getBBox();
