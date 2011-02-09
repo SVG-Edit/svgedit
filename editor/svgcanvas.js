@@ -3060,8 +3060,14 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					start_y = snapToGrid(start_y);
 				}
 				if(evt.shiftKey) {
-					var x1 = path.dragging?path.dragging[0]:start_x;
-					var y1 = path.dragging?path.dragging[1]:start_y;
+					var path = svgedit.path.path;
+					if(path) {
+						var x1 = path.dragging?path.dragging[0]:start_x;
+						var y1 = path.dragging?path.dragging[1]:start_y;
+					} else {
+						var x1 = start_x;
+						var y1 = start_y;
+					}
 					var xya = snapToAngle(x1,y1,x,y);
 					x=xya.x; y=xya.y;
 				}
