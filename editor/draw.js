@@ -23,6 +23,9 @@ var svg_ns = "http://www.w3.org/2000/svg";
 var se_ns = "http://svg-edit.googlecode.com";
 var xmlns_ns = "http://www.w3.org/2000/xmlns/";
 
+var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
+var visElems_arr = visElems.split(',');
+
 var RandomizeModes = {
 	LET_DOCUMENT_DECIDE: 0,
 	ALWAYS_RANDOMIZE: 1,
@@ -375,8 +378,8 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 					orphans.push(child);
 				}
 			}
-			// if child has a bbox (i.e. not a <title> or <defs> element), then it is an orphan
-			else if(svgedit.utilities.getBBox(child) && child.nodeName != 'defs') { // Opera returns a BBox for defs
+			// if child has is "visible" (i.e. not a <title> or <defs> element), then it is an orphan
+			else if(~visElems_arr.indexOf(child.nodeName)) {
 				var bb = svgedit.utilities.getBBox(child);
 				orphans.push(child);
 			}
