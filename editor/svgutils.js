@@ -9,8 +9,8 @@
 
 // Dependencies:
 // 1) jQuery
-// 2) browser.js: for getBBox(), getElem(), assignAttributes()
-// 3) svgtransformlist.js: only for getRotationAngle()
+// 2) browser.js
+// 3) svgtransformlist.js
 
 var svgedit = svgedit || {};
 
@@ -609,5 +609,37 @@ svgedit.utilities.assignAttributes = function(node, attrs, suspendLength, unitCh
 	
 	if (!svgedit.browser.isOpera()) svgroot_.unsuspendRedraw(handle);
 };
+
+// Function: cleanupElement
+// Remove unneeded (default) attributes, makes resulting SVG smaller
+//
+// Parameters:
+// element - DOM element to clean up
+svgedit.utilities.cleanupElement = function(element) {
+	var handle = svgroot_.suspendRedraw(60);
+	var defaults = {
+		'fill-opacity':1,
+		'stop-opacity':1,
+		'opacity':1,
+		'stroke':'none',
+		'stroke-dasharray':'none',
+		'stroke-linejoin':'miter',
+		'stroke-linecap':'butt',
+		'stroke-opacity':1,
+		'stroke-width':1,
+		'rx':0,
+		'ry':0
+	}
+	
+	for(var attr in defaults) {
+		var val = defaults[attr];
+		if(element.getAttribute(attr) == val) {
+			element.removeAttribute(attr);
+		}
+	}
+	
+	svgroot_.unsuspendRedraw(handle);
+};
+
 
 })();

@@ -236,37 +236,6 @@ var cur_shape = all_properties.shape;
 // default size of 1 until it needs to grow bigger
 var selectedElements = new Array(1);
 
-// Function: cleanupElement
-// Remove unneeded (default) attributes, makes resulting SVG smaller
-//
-// Parameters:
-// element - DOM element to clean up
-var cleanupElement = this.cleanupElement = function(element) {
-	var handle = svgroot.suspendRedraw(60);
-	var defaults = {
-		'fill-opacity':1,
-		'stop-opacity':1,
-		'opacity':1,
-		'stroke':'none',
-		'stroke-dasharray':'none',
-		'stroke-linejoin':'miter',
-		'stroke-linecap':'butt',
-		'stroke-opacity':1,
-		'stroke-width':1,
-		'rx':0,
-		'ry':0
-	}
-	
-	for(var attr in defaults) {
-		var val = defaults[attr];
-		if(element.getAttribute(attr) == val) {
-			element.removeAttribute(attr);
-		}
-	}
-	
-	svgroot.unsuspendRedraw(handle);
-};
-
 // Function: addSvgElementFromJson
 // Create a new SVG element based on the given object keys/values and add it to the current layer
 // The element will be ran through cleanupElement before being returned 
@@ -279,7 +248,7 @@ var cleanupElement = this.cleanupElement = function(element) {
 //
 // Returns: The new element
 var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
-	var shape = getElem(data.attr.id);
+	var shape = svgedit.utilities.getElem(data.attr.id);
 	// if shape is a path but we need to create a rect/ellipse, then remove the path
 	var current_layer = getCurrentDrawing().getCurrentLayer();
 	if (shape && data.element != shape.tagName) {
@@ -293,7 +262,7 @@ var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
 		}
 	}
 	if(data.curStyles) {
-		assignAttributes(shape, {
+		svgedit.utilities.assignAttributes(shape, {
 			"fill": cur_shape.fill,
 			"stroke": cur_shape.stroke,
 			"stroke-width": cur_shape.stroke_width,
@@ -306,8 +275,8 @@ var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
 			"style": "pointer-events:inherit"
 		}, 100);
 	}
-	assignAttributes(shape, data.attr, 100);
-	cleanupElement(shape);
+	svgedit.utilities.assignAttributes(shape, data.attr, 100);
+	svgedit.utilities.cleanupElement(shape);
 	return shape;
 };
 
@@ -327,7 +296,7 @@ var getMatrix = svgedit.math.getMatrix;
 // send in an object implementing the ElementContainer interface (see units.js)
 svgedit.units.init({
 	getBaseUnit: function() { return curConfig.baseUnit; },
-	getElement: getElem,
+	getElement: svgedit.utilities.getElem,
 	getHeight: function() { return svgcontent.getAttribute("height")/current_zoom; },
 	getWidth: function() { return svgcontent.getAttribute("width")/current_zoom; },
 	getRoundDigits: function() { return save_options.round_digits; }
@@ -352,6 +321,7 @@ var getBBox = canvas.getBBox = svgedit.utilities.getBBox;
 var getRotationAngle = canvas.getRotationAngle = svgedit.utilities.getRotationAngle;
 var getElem = canvas.getElem = svgedit.utilities.getElem;
 var assignAttributes = canvas.assignAttributes = svgedit.utilities.assignAttributes;
+var cleanupElement = this.cleanupElement = svgedit.utilities.cleanupElement;
 
 // import from sanitize.js
 var nsMap = svgedit.sanitize.getNSMap();
@@ -6109,7 +6079,7 @@ this.importSvgString = function(xmlString) {
 	return true;
 };
 
-
+// TODO(codedread): Move all layer/context functions in draw.js
 // Layer API Functions
 
 // Group: Layers
@@ -8777,7 +8747,6 @@ this.getPrivateMethods = function() {
 		BatchCommand: BatchCommand,
 		call: call,
 		ChangeElementCommand: ChangeElementCommand,
-		cleanupElement: cleanupElement,
 		copyElem: copyElem,
 		ffClone: ffClone,
 		findDefs: findDefs,
