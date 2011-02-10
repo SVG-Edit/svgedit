@@ -241,7 +241,7 @@ svgedit.units.convertToNum = function(attr, val) {
 // Parameters: 
 // attr - String with the name of the attribute associated with the value
 // val - String with the attribute value to check
-svgedit.units.isValidUnit = function(attr, val) {debugger;
+svgedit.units.isValidUnit = function(attr, val) {
 	var valid = false;
 	if(unit_attrs.indexOf(attr) >= 0) {
 		// True if it's just a number
