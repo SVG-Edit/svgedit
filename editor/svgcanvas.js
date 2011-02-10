@@ -5577,7 +5577,7 @@ var setUseData = this.setUseData = function(parent) {
 		if(!ref_elem) return;
 		$(this).data('ref', ref_elem);
 		if(ref_elem.tagName == 'symbol' || ref_elem.tagName == 'svg') {
-			$(this).data('symbol', ref_elem);
+			$(this).data('symbol', ref_elem).data('ref', ref_elem);
 		}
 	});
 }
@@ -6062,7 +6062,7 @@ this.importSvgString = function(xmlString) {
 		
 		use_el.setAttribute("transform", ts);
 		recalculateDimensions(use_el);
-		$(use_el).data('symbol', symbol);
+		$(use_el).data('symbol', symbol).data('ref', symbol);
 		addToSelection([use_el]);
 		
 		// TODO: Find way to add this in a recalculateDimensions-parsable way
@@ -8287,7 +8287,7 @@ this.ungroupSelectedElement = function() {
 	} else if(g.tagName === 'use') {
 		// Somehow doesn't have data set, so retrieve
 		var symbol = getElem(getHref(g).substr(1));
-		$(g).data('symbol', symbol);
+		$(g).data('symbol', symbol).data('ref', symbol);
 		convertToGroup(g);
 		return;
 	}
