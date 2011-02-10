@@ -1902,15 +1902,17 @@
 					return false;
 				}
 				
-				if(isNaN(val)) {
-					val = svgCanvas.convertToNum(attr, val);
-				} else if(curConfig.baseUnit !== 'px') {
-					// Convert unitless value to one with given unit
+				if (attr !== "id") {
+					if (isNaN(val)) {
+						val = svgCanvas.convertToNum(attr, val);
+					} else if(curConfig.baseUnit !== 'px') {
+						// Convert unitless value to one with given unit
 				
-					var unitData = svgedit.units.getTypeMap();
+						var unitData = svgedit.units.getTypeMap();
 
-					if(selectedElement[attr] || svgCanvas.getMode() === "pathedit" || attr === "x" || attr === "y") {
-						val *= unitData[curConfig.baseUnit];
+						if(selectedElement[attr] || svgCanvas.getMode() === "pathedit" || attr === "x" || attr === "y") {
+							val *= unitData[curConfig.baseUnit];
+						}
 					}
 				}
 				
