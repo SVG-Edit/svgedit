@@ -66,6 +66,7 @@ firefox: build/$(PACKAGE)
 	cp -r firefox-extension/* build/firefox
 	rm -rf build/firefox/content/.svn
 	cp -r build/$(PACKAGE)/* build/firefox/content/editor
+	rm -f build/firefox/content/editor/embedapi.js
 	cd build/firefox ; $(ZIP) ../$(PACKAGE).xpi -r * ; cd ../..
 
 opera: build/$(PACKAGE)
