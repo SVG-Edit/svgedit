@@ -304,15 +304,15 @@ var svgEditor = (function($, Editor) {
 		
 		var url = conf.langPath + "lang." + lang_param + ".js";
 		
-		$.ajax({
-			'url': url,
-			'dataType': "script",
-			error: function(xhr) {
-				if(xhr.responseText) {
-					Editor.readLang(eval(xhr.responseText));
-				}
+		$.getScript(url, function(d) {
+			// Fails locally in Chrome 5+
+			if(!d) {
+				var s = document.createElement('script');
+				s.src = url;
+				document.querySelector('head').appendChild(s);
 			}
 		});
+		
 	};
 	
 	return Editor;
