@@ -3766,13 +3766,12 @@ var textActions = canvas.textActions = function() {
 // 					textActions.toSelectMode(true);				
 // 				}
 
-			// For some reason points in IE are off by 1
-			if(svgedit.browser.isIE()) {
-				mouse_x++;
-				mouse_y++;
-			}
-
-			if(last_x === mouse_x && last_y === mouse_y && evt.target !== curtext) {
+			if(
+				evt.target !== curtext
+				&&	mouse_x < last_x + 2
+				&& mouse_x > last_x - 2
+				&&	mouse_y < last_y + 2
+				&& mouse_y > last_y - 2) {
 
 				textActions.toSelectMode(true);
 			}
@@ -3883,6 +3882,9 @@ var textActions = canvas.textActions = function() {
 					var offset = canvas.contentW * current_zoom;
 					start.x -= offset;
 					end.x -= offset;
+					
+					start.x /= current_zoom;
+					end.x /= current_zoom;
 				}
 				
 				// Get a "bbox" equivalent for each character. Uses the
