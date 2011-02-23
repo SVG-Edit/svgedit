@@ -34,6 +34,7 @@ var svg = document.createElementNS(svgns, 'svg');
 var isOpera_ = !!window.opera;
 var isWebkit_ = userAgent.indexOf("AppleWebKit") >= 0;
 var isGecko_ = userAgent.indexOf('Gecko/') >= 0;
+var isIE_ = userAgent.indexOf('MSIE') >= 0;
 
 var supportsSelectors_ = (function() {
 	return !!svg.querySelector;
@@ -151,6 +152,7 @@ var supportsNativeSVGTransformLists_ = (function() {
 svgedit.browser.isOpera = function() { return isOpera_; }
 svgedit.browser.isWebkit = function() { return isWebkit_; }
 svgedit.browser.isGecko = function() { return isGecko_; }
+svgedit.browser.isIE = function() { return isIE_; }
 
 svgedit.browser.supportsSelectors = function() { return supportsSelectors_; }
 svgedit.browser.supportsXpath = function() { return supportsXpath_; }

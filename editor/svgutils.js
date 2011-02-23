@@ -496,12 +496,14 @@ svgedit.utilities.getBBox = function(elem) {
 		
 		if(elname === 'use' || elname === 'foreignObject') {
 			if(!ret) ret = selected.getBBox();
-			var bb = {};
-			bb.width = ret.width;
-			bb.height = ret.height;
-			bb.x = ret.x + parseFloat(selected.getAttribute('x')||0);
-			bb.y = ret.y + parseFloat(selected.getAttribute('y')||0);
-			ret = bb;
+			if(!svgedit.browser.isWebkit()) {
+				var bb = {};
+				bb.width = ret.width;
+				bb.height = ret.height;
+				bb.x = ret.x + parseFloat(selected.getAttribute('x')||0);
+				bb.y = ret.y + parseFloat(selected.getAttribute('y')||0);
+				ret = bb;
+			}
 		} else if(~visElems_arr.indexOf(elname)) {
 			try { ret = selected.getBBox();} 
 			catch(e) { 
