@@ -3862,8 +3862,8 @@ var textActions = canvas.textActions = function() {
 			for(var i=0; i<len; i++) {
 				var start = curtext.getStartPositionOfChar(i);
 				var end = curtext.getEndPositionOfChar(i);
-				// TODO: Make support property for this
-				if(svgedit.browser.isIE()) {
+				
+				if(!svgedit.browser.supportsGoodTextCharPos()) {
 					var offset = canvas.contentW * current_zoom;
 					start.x -= offset;
 					end.x -= offset;
@@ -8782,33 +8782,5 @@ this.getPrivateMethods = function() {
 	}
 	return obj;
 };
-
-(function() {
-	// Temporary fix until MS fixes:
-	// https://connect.microsoft.com/IE/feedback/details/599257/
-	var disableAdvancedTextEdit = function() {
-		var curtext;
-		var textInput = $('#text').css({
-			position: 'static'
-		});
-
-		$.each(['mouseDown','mouseUp','mouseMove', 'setCursor', 'init', 'select', 'toEditMode'], function() {
-			textActions[this] = $.noop;
-		});
-	
-		textActions.init = function(elem) {
-			curtext = elem;
-			$(curtext).unbind('dblclick').bind('dblclick', function() {
-				textInput.focus();
-			});
-		}
-	
-		canvas.textActions = textActions;
-	}
-
-	if (!svgedit.browser.supportsTextCharPos()) {
-		disableAdvancedTextEdit();
-	}
-})();
 
 }
