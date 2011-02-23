@@ -2334,8 +2334,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 
 // Mouse events
 (function() {
-	var off_x, off_y;
-	
 	var d_attr = null,
 		start_x = null,
 		start_y = null,
@@ -2364,18 +2362,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		}
 	
 		root_sctm = svgcontent.getScreenCTM().inverse();
+		
 		var pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
 			mouse_x = pt.x * current_zoom,
 			mouse_y = pt.y * current_zoom;
-		
-		// TODO: Use feature detection
-		if(svgedit.browser.isIE()) {
-			var off = $(container.parentNode).offset();
-			off_x = svgcontent.getAttribute('x')-0 + off.left - container.parentNode.scrollLeft;
-			off_y = svgcontent.getAttribute('y')-0 + off.top - container.parentNode.scrollTop;
-			mouse_x = -(off_x - evt.pageX);
-			mouse_y = -(off_y - evt.pageY);
-		}
 			
 		evt.preventDefault();
 
@@ -2711,17 +2701,12 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	{
 		if (!started) return;
 		if(evt.button === 1 || canvas.spaceKey) return;
+
 		var selected = selectedElements[0],
 			pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
 			mouse_x = pt.x * current_zoom,
 			mouse_y = pt.y * current_zoom,
 			shape = getElem(getId());
-		// IE9 gives the wrong root_sctm
-		// TODO: Use non-browser sniffing way to make this work
-		if(svgedit.browser.isIE()) {
-			mouse_x = -(off_x - evt.pageX);
-			mouse_y = -(off_y - evt.pageY);
-		}
 
 		var real_x = x = mouse_x / current_zoom;
 		var real_y = y = mouse_y / current_zoom;
