@@ -44,6 +44,10 @@ var pathFuncs = [];
 
 var link_control_pts = true;
 
+// Stores references to paths via IDs.
+// TODO: Make this cross-document happy.
+var pathData = {};
+
 svgedit.path.setLinkControlPoints = function(lcp) {
 	link_control_pts = lcp;
 };
@@ -873,6 +877,24 @@ svgedit.path.Path.prototype.update = function() {
 	});
 
 	return this;
+};
+
+// TODO: This creates 
+svgedit.path.getPath_ = function(elem) {
+	var p = pathData[elem.id];
+	if(!p) p = pathData[elem.id] = new svgedit.path.Path(elem);
+	return p;
+};
+
+svgedit.path.removePath_ = function(id) {
+	if(id in pathData) delete pathData[id];
+};
+
+// ====================================
+// Public API starts here
+
+svgedit.path.clearData =  function() {
+	pathData = {};
 };
 
 })();

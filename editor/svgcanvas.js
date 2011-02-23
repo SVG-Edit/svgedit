@@ -3913,7 +3913,6 @@ var textActions = canvas.textActions = function() {
 var pathActions = canvas.pathActions = function() {
 	
 	var subpath = false;
-	var pathData = {};
 	var current_path;
 	var newPoint, firstCtrl;
 	
@@ -3958,13 +3957,6 @@ var pathActions = canvas.pathActions = function() {
 			call("selected", grips);
 		}
 
-	function getPath(elem) {
-		var p = pathData[elem.id];
-		if(!p) p = pathData[elem.id] = new svgedit.path.Path(elem);
-		return p;
-	}
-	
-	
 	var current_path = null,
 		drawn_path = null,
 		hasMoved = false;
@@ -4192,7 +4184,7 @@ var pathActions = canvas.pathActions = function() {
 					var id = getId();
 				
 					// Remove previous path object if previously created
-					if(id in pathData) delete pathData[id];
+					svgedit.path.removePath_(id);
 					
 					var newpath = getElem(id);
 					
@@ -4522,11 +4514,8 @@ var pathActions = canvas.pathActions = function() {
 			}
 			hasMoved = false;
 		},
-		clearData: function() {
-			pathData = {};
-		},
 		toEditMode: function(element) {
-			svgedit.path.path = getPath(element);
+			svgedit.path.path = svgedit.path.getPath_(element);
 			current_mode = "pathedit";
 			clearSelection();
 			svgedit.path.path.show(true).update();
@@ -4588,7 +4577,7 @@ var pathActions = canvas.pathActions = function() {
 			addCommandToHistory(batchCmd);
 
 			// Set matrix to null
-			getPath(elem).show(false).matrix = null; 
+			svgedit.path.getPath_(elem).show(false).matrix = null; 
 
 			this.clear();
 	
@@ -5952,7 +5941,7 @@ this.setSvgString = function(xmlString) {
 		// reset transform lists
 		svgedit.transformlist.resetListMap();
 		clearSelection();
-		pathActions.clearData();
+		svgedit.path.clearData();
 		svgroot.appendChild(selectorManager.selectorParentGroup);
 		
 		addCommandToHistory(batchCmd);
