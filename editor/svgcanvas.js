@@ -7921,6 +7921,9 @@ this.deleteSelectedElements = function() {
 		// this will unselect the element and remove the selectedOutline
 		selectorManager.releaseSelector(t);
 		
+		// Remove the path if present.
+		svgedit.path.removePath_(t.id);
+		
 		// Get the parent if it's a single-child anchor
 		if(parent.tagName === 'a' && parent.childNodes.length === 1) {
 			t = parent;
@@ -7953,8 +7956,13 @@ this.cutSelectedElements = function() {
 
 		var parent = selected.parentNode;
 		var t = selected;
+
 		// this will unselect the element and remove the selectedOutline
 		selectorManager.releaseSelector(t);
+
+		// Remove the path if present.
+		svgedit.path.removePath_(t.id);
+
 		var nextSibling = t.nextSibling;
 		var elem = parent.removeChild(t);
 		selectedCopy.push(selected); //for the copy
