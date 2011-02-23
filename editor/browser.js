@@ -69,20 +69,20 @@ var supportsPathInsertItemBefore_ = (function() {
 	return false;
 })();
 
-// text character positioning
-var supportsTextCharPos_ = (function() {
+// text character positioning (for IE9)
+var supportsGoodTextCharPos_ = (function() {
 	var retValue = false;
+	var svgroot = document.createElementNS(svgns, 'svg');
 	var svgcontent = document.createElementNS(svgns, 'svg');
-	document.documentElement.appendChild(svgcontent);
-	try {
-		var text = document.createElementNS(svgns,'text');
-		text.textContent = 'a';
-		svgcontent.appendChild(text);
-		text.getStartPositionOfChar(0);
-		retValue = true;
-	} catch(err) {}
-	document.documentElement.removeChild(svgcontent);
-	return retValue;
+	document.documentElement.appendChild(svgroot);
+	svgcontent.setAttribute('x', 5);
+	svgroot.appendChild(svgcontent);
+	var text = document.createElementNS(svgns,'text');
+	text.textContent = 'a';
+	svgcontent.appendChild(text);
+	var pos = text.getStartPositionOfChar(0).x;
+	document.documentElement.removeChild(svgroot);
+	return (pos === 0);
 })();
 
 var supportsPathBBox_ = (function() {
@@ -161,7 +161,7 @@ svgedit.browser.supportsPathReplaceItem = function() { return supportsPathReplac
 svgedit.browser.supportsPathInsertItemBefore = function() { return supportsPathInsertItemBefore_; }
 svgedit.browser.supportsPathBBox = function() { return supportsPathBBox_; }
 svgedit.browser.supportsHVLineContainerBBox = function() { return supportsHVLineContainerBBox_; }
-svgedit.browser.supportsTextCharPos = function() { return supportsTextCharPos_; }
+svgedit.browser.supportsGoodTextCharPos = function() { return supportsGoodTextCharPos_; }
 svgedit.browser.supportsEditableText = function() { return supportsEditableText_; }
 svgedit.browser.supportsGoodDecimals = function() { return supportsGoodDecimals_; }
 svgedit.browser.supportsNonScalingStroke = function() { return supportsNonScalingStroke_; }
