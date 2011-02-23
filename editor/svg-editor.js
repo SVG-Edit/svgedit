@@ -3225,6 +3225,40 @@
 
 			var win_wh = {width:$(window).width(), height:$(window).height()};
 			
+			// Fix for Issue 781: Drawing area jumps to top-left corner on window resize (IE9)
+			if(svgedit.browser.isIE()) {
+				(function() {
+					var resetPos = function() {
+						if(workarea[0].scrollLeft === 0 
+						&& workarea[0].scrollTop === 0) {
+							workarea[0].scrollLeft = cur_pos.left;
+							workarea[0].scrollTop = cur_pos.top;
+						}
+					}
+				
+					var cur_pos = {
+						left: workarea[0].scrollLeft,
+						top: workarea[0].scrollTop
+					};
+					
+					$(window).resize(resetPos);
+					svgEditor.ready(function() {
+						// TODO: Find better way to detect when to do this to minimize
+						// flickering effect
+						setTimeout(function() {
+							resetPos();
+						}, 500);
+					});
+					
+					workarea.scroll(function() {
+						cur_pos = {
+							left: workarea[0].scrollLeft,
+							top: workarea[0].scrollTop
+						};
+					});
+				}());
+			}
+			
 			$(window).resize(function(evt) {
 				if (editingsource) {
 					properlySourceSizeTextArea();
