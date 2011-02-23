@@ -1971,9 +1971,11 @@
 			$("#toggle_stroke_tools").toggle(function() {
 				$(".stroke_tool").css('display','table-cell');
 				$(this).text('<<');
+				resetScrollPos();
 			}, function() {
 				$(".stroke_tool").css('display','none');
 				$(this).text('>>');
+				resetScrollPos();
 			});
 		
 			// This is a common function used when a tool has been clicked (chosen)
@@ -3201,7 +3203,7 @@
 				} else if (preferences) {
 					hidePreferences();
 				}
-		
+				resetScrollPos();
 			};
 		
 			var hideSourceEditor = function(){
@@ -3225,33 +3227,35 @@
 
 			var win_wh = {width:$(window).width(), height:$(window).height()};
 			
+			var resetScrollPos = $.noop, curScrollPos;
+			
 			// Fix for Issue 781: Drawing area jumps to top-left corner on window resize (IE9)
 			if(svgedit.browser.isIE()) {
 				(function() {
-					var resetPos = function() {
+					resetScrollPos = function() {
 						if(workarea[0].scrollLeft === 0 
 						&& workarea[0].scrollTop === 0) {
-							workarea[0].scrollLeft = cur_pos.left;
-							workarea[0].scrollTop = cur_pos.top;
+							workarea[0].scrollLeft = curScrollPos.left;
+							workarea[0].scrollTop = curScrollPos.top;
 						}
 					}
 				
-					var cur_pos = {
+					curScrollPos = {
 						left: workarea[0].scrollLeft,
 						top: workarea[0].scrollTop
 					};
 					
-					$(window).resize(resetPos);
+					$(window).resize(resetScrollPos);
 					svgEditor.ready(function() {
 						// TODO: Find better way to detect when to do this to minimize
 						// flickering effect
 						setTimeout(function() {
-							resetPos();
+							resetScrollPos();
 						}, 500);
 					});
 					
 					workarea.scroll(function() {
-						cur_pos = {
+						curScrollPos = {
 							left: workarea[0].scrollLeft,
 							top: workarea[0].scrollTop
 						};
@@ -4236,7 +4240,9 @@
 			$('#font_size').SpinButton({ step: 1, min: 0.001, stepfunc: stepFontSize, callback: changeFontSize });
 			$('#group_opacity').SpinButton({ step: 5, min: 0, max: 100, callback: changeOpacity });
 			$('#blur').SpinButton({ step: .1, min: 0, max: 10, callback: changeBlur });
-			$('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom });
+			$('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom })
+				// Set default zoom 
+				.val(svgCanvas.getZoom() * 100);
 			
 			$("#workarea").contextMenu({
 					menu: 'cmenu_canvas',
