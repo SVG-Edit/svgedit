@@ -2367,8 +2367,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		var pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
 			mouse_x = pt.x * current_zoom,
 			mouse_y = pt.y * current_zoom;
-			
-		if($.browser.msie) {
+		
+		// TODO: Use feature detection
+		if(svgedit.browser.isIE()) {
 			var off = $(container.parentNode).offset();
 			off_x = svgcontent.getAttribute('x')-0 + off.left - container.parentNode.scrollLeft;
 			off_y = svgcontent.getAttribute('y')-0 + off.top - container.parentNode.scrollTop;
@@ -2717,7 +2718,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			shape = getElem(getId());
 		// IE9 gives the wrong root_sctm
 		// TODO: Use non-browser sniffing way to make this work
-		if($.browser.msie) {
+		if(svgedit.browser.isIE()) {
 			mouse_x = -(off_x - evt.pageX);
 			mouse_y = -(off_y - evt.pageY);
 		}
@@ -3764,7 +3765,15 @@ var textActions = canvas.textActions = function() {
 // 					&& !svgedit.math.rectsIntersect(transbb, {x: pt.x, y: pt.y, width:0, height:0})) {
 // 					textActions.toSelectMode(true);				
 // 				}
+
+			// For some reason points in IE are off by 1
+			if(svgedit.browser.isIE()) {
+				mouse_x++;
+				mouse_y++;
+			}
+
 			if(last_x === mouse_x && last_y === mouse_y && evt.target !== curtext) {
+
 				textActions.toSelectMode(true);
 			}
 
@@ -3869,6 +3878,12 @@ var textActions = canvas.textActions = function() {
 			for(var i=0; i<len; i++) {
 				var start = curtext.getStartPositionOfChar(i);
 				var end = curtext.getEndPositionOfChar(i);
+				// TODO: Make support property for this
+				if(svgedit.browser.isIE()) {
+					var offset = canvas.contentW * current_zoom;
+					start.x -= offset;
+					end.x -= offset;
+				}
 				
 				// Get a "bbox" equivalent for each character. Uses the
 				// bbox data of the actual text for y, height purposes
