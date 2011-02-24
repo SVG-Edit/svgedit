@@ -879,7 +879,32 @@ svgedit.path.Path.prototype.update = function() {
 	return this;
 };
 
-// TODO: This creates 
+svgedit.path.getRotVals_ = function(x, y) {
+	dx = x - oldcx;
+	dy = y - oldcy;
+	
+	// rotate the point around the old center
+	r = Math.sqrt(dx*dx + dy*dy);
+	theta = Math.atan2(dy,dx) + angle;
+	dx = r * Math.cos(theta) + oldcx;
+	dy = r * Math.sin(theta) + oldcy;
+	
+	// dx,dy should now hold the actual coordinates of each
+	// point after being rotated
+
+	// now we want to rotate them around the new center in the reverse direction
+	dx -= newcx;
+	dy -= newcy;
+	
+	r = Math.sqrt(dx*dx + dy*dy);
+	theta = Math.atan2(dy,dx) - angle;
+	
+	return {'x':(r * Math.cos(theta) + newcx)/1,
+		'y':(r * Math.sin(theta) + newcy)/1};
+};
+
+
+
 svgedit.path.getPath_ = function(elem) {
 	var p = pathData[elem.id];
 	if(!p) p = pathData[elem.id] = new svgedit.path.Path(elem);

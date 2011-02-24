@@ -517,7 +517,7 @@ var cur_text = all_properties.text,
 	cur_properties = cur_shape,
 	
 	// Array with selected elements' Bounding box object
-	selectedBBoxes = new Array(1),
+//	selectedBBoxes = new Array(1),
 	
 	// The DOM element that was just selected
 	justSelected = null,
@@ -1013,7 +1013,7 @@ this.setRotationAngle = function(val, preventUndo) {
 	val = parseFloat(val);
 	var elem = selectedElements[0];
 	var oldTransform = elem.getAttribute("transform");
-	var bbox = getBBox(elem);
+	var bbox = svgedit.utilities.getBBox(elem);
 	var cx = bbox.x+bbox.width/2, cy = bbox.y+bbox.height/2;
 	var tlist = getTransformList(elem);
 	
@@ -1105,7 +1105,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			if(doSnapping) for(var o in changes) changes[o] = snapToGrid(changes[o]);
 			assignAttributes(selected, changes, 1000, true);
 		}
-		box = getBBox(selected);
+		box = svgedit.utilities.getBBox(selected);
 	
 	for(var i = 0; i < 2; i++) {
 		var type = i === 0 ? 'fill' : 'stroke';
@@ -1553,7 +1553,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 	
 	// if it's a regular group, we have special processing to flatten transforms
 	if ((selected.tagName == "g" && !gsvg) || selected.tagName == "a") {
-		var box = getBBox(selected),
+		var box = svgedit.utilities.getBBox(selected),
 			oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2},
 			newcenter = transformPoint(box.x+box.width/2, box.y+box.height/2,
 							transformListToTransform(tlist).matrix),
@@ -1910,7 +1910,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 	else {
 
 		// FIXME: box might be null for some elements (<metadata> etc), need to handle this
-		var box = getBBox(selected);
+		var box = svgedit.utilities.getBBox(selected);
 
 		// Paths (and possbly other shapes) will have no BBox while still in <defs>,
 		// but we still may need to recalculate them (see issue 595).
@@ -2141,7 +2141,7 @@ var clearSelection = this.clearSelection = function(noCall) {
 			selectorManager.releaseSelector(elem);
 			selectedElements[i] = null;
 		}
-		selectedBBoxes[0] = null;
+//		selectedBBoxes[0] = null;
 	}
 	if(!noCall) call("selected", selectedElements);
 };
@@ -2171,7 +2171,7 @@ var addToSelection = this.addToSelection = function(elemsToAdd, showGrips) {
 	var i = elemsToAdd.length;
 	while (i--) {
 		var elem = elemsToAdd[i];
-		if (!elem || !getBBox(elem)) continue;
+		if (!elem || !svgedit.utilities.getBBox(elem)) continue;
 
 		if(elem.tagName === 'a' && elem.childNodes.length === 1) {
 			// Make "a" element's child be the selected element 
@@ -2184,7 +2184,7 @@ var addToSelection = this.addToSelection = function(elemsToAdd, showGrips) {
 			selectedElements[j] = elem;
 
 			// only the first selectedBBoxes element is ever used in the codebase these days
-			if (j == 0) selectedBBoxes[j] = getBBox(elem);
+//			if (j == 0) selectedBBoxes[0] = svgedit.utilities.getBBox(elem);
 			j++;
 			var sel = selectorManager.requestSelector(elem);
 	
@@ -2495,7 +2495,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				
 				// Getting the BBox from the selection box, since we know we
 				// want to orient around it
-				init_bbox = getBBox($('#selectedBox0')[0]);
+				init_bbox = svgedit.utilities.getBBox($('#selectedBox0')[0]);
 				var bb = {};
 				$.each(init_bbox, function(key, val) {
 					bb[key] = val/current_zoom;
@@ -2740,11 +2740,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						for (var i = 0; i < len; ++i) {
 							var selected = selectedElements[i];
 							if (selected == null) break;
-							if (i==0) {
-								var box = getBBox(selected);
+//							if (i==0) {
+//								var box = svgedit.utilities.getBBox(selected);
 // 									selectedBBoxes[i].x = box.x + dx;
 // 									selectedBBoxes[i].y = box.y + dy;
-							}
+//							}
 
 							// update the dummy transform in our transform list
 							// to be a translate
@@ -2813,7 +2813,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				// the shape's coordinates
 				var tlist = getTransformList(selected),
 					hasMatrix = hasMatrixTransform(tlist),
-					box=hasMatrix?init_bbox:getBBox(selected), 
+					box = hasMatrix ? init_bbox : svgedit.utilities.getBBox(selected), 
 					left=box.x, top=box.y, width=box.width,
 					height=box.height, dx=(x-start_x), dy=(y-start_y);
 				
@@ -3057,7 +3057,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				
 				break;
 			case "rotate":
-				var box = getBBox(selected),
+				var box = svgedit.utilities.getBBox(selected),
 					cx = box.x + box.width/2, 
 					cy = box.y + box.height/2,
 					m = getMatrix(selected),
@@ -3846,7 +3846,7 @@ var textActions = canvas.textActions = function() {
 			
 			var xform = curtext.getAttribute('transform');
 
-			textbb = getBBox(curtext);
+			textbb = svgedit.utilities.getBBox(curtext);
 			
 			matrix = xform?getMatrix(curtext):null;
 
@@ -4026,11 +4026,11 @@ var pathActions = canvas.pathActions = function() {
 	// be optimized or even taken care of by recalculateDimensions
 	var recalcRotatedPath = function() {
 		var current_path = svgedit.path.path.elem;
-		var angle = getRotationAngle(current_path, true);
+		var angle = svgedit.utilities.getRotationAngle(current_path, true);
 		if(!angle) return;
-		selectedBBoxes[0] = svgedit.path.path.oldbbox;
-		var box = getBBox(current_path),
-			oldbox = selectedBBoxes[0],
+//		selectedBBoxes[0] = svgedit.path.path.oldbbox;
+		var box = svgedit.utilities.getBBox(current_path),
+			oldbox = svgedit.path.path.oldbbox,//selectedBBoxes[0],
 			oldcx = oldbox.x + oldbox.width/2,
 			oldcy = oldbox.y + oldbox.height/2,
 			newcx = box.x + box.width/2,
@@ -4045,30 +4045,6 @@ var pathActions = canvas.pathActions = function() {
 		newcx = r * Math.cos(theta) + oldcx;
 		newcy = r * Math.sin(theta) + oldcy;
 		
-		var getRotVals = function(x, y) {
-			dx = x - oldcx;
-			dy = y - oldcy;
-			
-			// rotate the point around the old center
-			r = Math.sqrt(dx*dx + dy*dy);
-			theta = Math.atan2(dy,dx) + angle;
-			dx = r * Math.cos(theta) + oldcx;
-			dy = r * Math.sin(theta) + oldcy;
-			
-			// dx,dy should now hold the actual coordinates of each
-			// point after being rotated
-
-			// now we want to rotate them around the new center in the reverse direction
-			dx -= newcx;
-			dy -= newcy;
-			
-			r = Math.sqrt(dx*dx + dy*dy);
-			theta = Math.atan2(dy,dx) - angle;
-			
-			return {'x':(r * Math.cos(theta) + newcx)/1,
-				'y':(r * Math.sin(theta) + newcy)/1};
-		}
-		
 		var list = current_path.pathSegList,
 			i = list.numberOfItems;
 		while (i) {
@@ -4077,23 +4053,23 @@ var pathActions = canvas.pathActions = function() {
 				type = seg.pathSegType;
 			if(type == 1) continue;
 			
-			var rvals = getRotVals(seg.x,seg.y),
+			var rvals = svgedit.path.getRotVals_(seg.x,seg.y),
 				points = [rvals.x, rvals.y];
 			if(seg.x1 != null && seg.x2 != null) {
-				c_vals1 = getRotVals(seg.x1, seg.y1);
-				c_vals2 = getRotVals(seg.x2, seg.y2);
+				c_vals1 = svgedit.path.getRotVals_(seg.x1, seg.y1);
+				c_vals2 = svgedit.path.getRotVals_(seg.x2, seg.y2);
 				points.splice(points.length, 0, c_vals1.x , c_vals1.y, c_vals2.x, c_vals2.y);
 			}
 			svgedit.path.replacePathSeg(type, i, points);
 		} // loop for each point
 
-		box = getBBox(current_path);						
-		selectedBBoxes[0].x = box.x; selectedBBoxes[0].y = box.y;
-		selectedBBoxes[0].width = box.width; selectedBBoxes[0].height = box.height;
+		box = svgedit.utilities.getBBox(current_path);						
+//		selectedBBoxes[0].x = box.x; selectedBBoxes[0].y = box.y;
+//		selectedBBoxes[0].width = box.width; selectedBBoxes[0].height = box.height;
 		
 		// now we must set the new transform to be rotated around the new center
 		var R_nc = svgroot.createSVGTransform(),
-			tlist = getTransformList(current_path);
+			tlist = svgedit.transformlist.getTransformList(current_path);
 		R_nc.setRotate((angle * 180.0 / Math.PI), newcx, newcy);
 		tlist.replaceItem(R_nc,0);
 	}
@@ -4506,7 +4482,7 @@ var pathActions = canvas.pathActions = function() {
 			current_mode = "pathedit";
 			clearSelection();
 			svgedit.path.path.show(true).update();
-			svgedit.path.path.oldbbox = getBBox(svgedit.path.path.elem);
+			svgedit.path.path.oldbbox = svgedit.utilities.getBBox(svgedit.path.path.elem);
 			subpath = false;
 		},
 		toSelectMode: function(elem) {
@@ -5592,7 +5568,7 @@ var convertGradients = this.convertGradients = function(elem) {
 			if(!elems.length) return;
 			
 			// get object's bounding box
-			var bb = getBBox(elems[0]);
+			var bb = svgedit.utilities.getBBox(elems[0]);
 			
 			// This will occur if the element is inside a <defs> or a <symbol>,
 			// in which we shouldn't need to convert anyway.
@@ -6933,7 +6909,7 @@ var findDuplicateGradient = function(grad) {
 };
 
 function reorientGrads(elem, m) {
-	var bb = getBBox(elem);
+	var bb = svgedit.utilities.getBBox(elem);
 	for(var i = 0; i < 2; i++) {
 		var type = i === 0 ? 'fill' : 'stroke';
 		var attrVal = elem.getAttribute(type);
@@ -7791,7 +7767,7 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		if (oldval == null)  oldval = "";
 		if (oldval !== String(newValue)) {
 			if (attr == "#text") {
-				var old_w = getBBox(elem).width;
+				var old_w = svgedit.utilities.getBBox(elem).width;
 				elem.textContent = newValue;
 				
 				// FF bug occurs on on rotated elements
@@ -7819,8 +7795,8 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 				setHref(elem, newValue);
 			}
 			else elem.setAttribute(attr, newValue);
-			if (i==0)
-				selectedBBoxes[i] = getBBox(elem);
+//			if (i==0)
+//				selectedBBoxes[0] = svgedit.utilities.getBBox(elem);
 			// Use the Firefox ffClone hack for text elements with gradients or
 			// where other text attributes are changed. 
 			if(svgedit.browser.isGecko() && elem.nodeName === 'text' && /rotate/.test(elem.getAttribute('transform'))) {
@@ -7852,7 +7828,7 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 						// remove old rotate
 						tlist.removeItem(n);
 						
-						var box = getBBox(elem);
+						var box = svgedit.utilities.getBBox(elem);
 						var center = transformPoint(box.x+box.width/2, box.y+box.height/2, transformListToTransform(tlist).matrix);
 						var cx = center.x,
 							cy = center.y;
@@ -8197,7 +8173,7 @@ var pushGroupProperties = this.pushGroupProperties = function(g, undoable) {
 				}
 				
 				// get child's old center of rotation
-				var cbox = getBBox(elem);
+				var cbox = svgedit.utilities.getBBox(elem);
 				var ceqm = transformListToTransform(chtlist).matrix;
 				var coldc = transformPoint(cbox.x+cbox.width/2, cbox.y+cbox.height/2,ceqm);
 				
@@ -8450,28 +8426,28 @@ this.moveSelectedElements = function(dx, dy, undoable) {
 	while (i--) {
 		var selected = selectedElements[i];
 		if (selected != null) {
-			if (i==0)
-				selectedBBoxes[i] = getBBox(selected);
+//			if (i==0)
+//				selectedBBoxes[0] = svgedit.utilities.getBBox(selected);
 			
-			var b = {};
-			for(var j in selectedBBoxes[i]) b[j] = selectedBBoxes[i][j];
-			selectedBBoxes[i] = b;
+//			var b = {};
+//			for(var j in selectedBBoxes[i]) b[j] = selectedBBoxes[i][j];
+//			selectedBBoxes[i] = b;
 			
 			var xform = svgroot.createSVGTransform();
 			var tlist = getTransformList(selected);
 			
 			// dx and dy could be arrays
 			if (dx.constructor == Array) {
-				if (i==0) {
-					selectedBBoxes[i].x += dx[i];
-					selectedBBoxes[i].y += dy[i];
-				}
+//				if (i==0) {
+//					selectedBBoxes[0].x += dx[0];
+//					selectedBBoxes[0].y += dy[0];
+//				}
 				xform.setTranslate(dx[i],dy[i]);
 			} else {
-				if (i==0) {
-					selectedBBoxes[i].x += dx;
-					selectedBBoxes[i].y += dy;
-				}
+//				if (i==0) {
+//					selectedBBoxes[0].x += dx;
+//					selectedBBoxes[0].y += dy;
+//				}
 				xform.setTranslate(dx,dy);
 			}
 
