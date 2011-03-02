@@ -191,7 +191,9 @@ $.extend(all_properties.text, {
 	fill: "#000000",
 	stroke_width: 0,
 	font_size: 24,
-	font_family: 'serif'
+	font_family: 'DroidSerif',
+	font_weight: 'normal',
+	font_style: 'normal'
 });
 
 // Current shape style properties
@@ -239,7 +241,8 @@ var assignAttributes = canvas.assignAttributes = function(node, attrs, suspendLe
 
 	for (var i in attrs) {
 		var ns = (i.substr(0,4) === "xml:" ? xmlns : 
-			i.substr(0,6) === "xlink:" ? xlinkns : null);
+			i.substr(0,6) === "xlink:" ? xlinkns : 
+			i.substr(0,2) == "se" ? se_ns : null);		
 			
 		if(ns) {
 			node.setAttributeNS(ns, i, attrs[i]);
@@ -572,6 +575,2526 @@ var cur_text = all_properties.text,
 
 // Clipboard for cut, copy&pasted elements
 canvas.clipBoard = [];
+
+
+//TextUtils
+// a series of functions used to assist in the 
+// manipulation of the in memory text object representation
+var TextUtils = this.TextUtils = function() {
+
+	return {
+		
+		setAttribute: function( element, attr, value ) {
+			// append an attribute to the xml element
+			// assume incoming <tspan> like thing
+			// or <tspan x="300">
+			// 
+			
+			// trim off that last ">"
+			var elem = element.substring(0,( element.length - 1 ));
+			elem = elem + " " + attr + "=\"" + value + "\">";
+			return elem;
+		},
+		
+		setContent:  function( element, value ) {
+			// set the content for the element and finish with the closing tag
+			var elem = element + value;
+			return elem;
+		}
+		
+		
+	};
+	
+}();
+
+// FontManager
+// simple class to manage the list of Fonts pulled in by the insertSVG.jsp ajax call
+// when the font dropdown list is built
+var FontElement = function( args ) {
+	
+	this.font_family = args.family;
+	this.ascent = args.ascent;
+	this.descent = args.descent;
+	this.leading = args.leading;	
+	this.boldInd = args.boldInd;
+	this.italicInd = args.italicInd;
+	this.boldItalicInd = args.boldItalicInd;
+	
+};
+
+var FontManager;
+(function() {
+	FontManager = function() {
+		this.fontList = {};
+		
+		var self = this;
+		
+		this.addFontElement = function( fontArgs ) {
+			var args = {
+					family: fontArgs.fontName,
+					ascent: fontArgs.ascent, 
+					descent: fontArgs.descent,
+					leading: fontArgs.leading,
+					boldInd: fontArgs.boldInd,
+					italicInd: fontArgs.italicInd,
+					boldItalicInd: fontArgs.boldItalicInd						
+			};
+			var fontElement = new FontElement( args );
+			this.fontList[fontArgs.fontName] = fontElement;	
+		};
+		
+		this.getFontElement = function( family ) {
+			var fontElement = self.fontList[family];
+			return fontElement;
+		};
+		
+		this.calcHeight = function( family, size ) {
+			// calculate the height for a font family
+			var font = self.fontList[family];
+			var locHeight = -1;
+			if( font !== null ) {
+				locHeight = (size * font.leading) + (size * font.ascent) + (size * font.descent);	
+			}
+			return locHeight;
+		};
+		
+		this.getFontList = function() {
+			return self.fontList;
+		};
+	};
+}());
+
+var fontManager = this.fontManager = new FontManager();
+	
+	
+
+// put TextManager here
+// CharacterAttribute class
+// extend the all_properties.text just so we have a default starting point
+// this will/can be different from the cur_text values of the interface
+// this is used for the internal representation of a character
+var CharacterAttributes = function() {
+	
+
+		this.attr = $.extend(true,{
+												ascent: 0,
+												descent: 0,
+												height: 0,
+												leading: 0
+											}, all_properties.text);
+											
+		this.compareAttr = function (obj) {
+			// compare two CharacterAttribute objects by looping through their
+			// attributes based on the whitelist
+			var retVal = false;
+			var obj1Attr; 
+			var obj2Attr;
+			var key;
+			
+			// return null if the incoming object is null
+			if( obj == null ) {
+				return false;
+			}
+							
+			for( var i=0; i<CharacterAttributeWhiteList.cattr.length; i++) {
+				key = CharacterAttributeWhiteList.cattr[i].replace("-","_");
+				
+				obj1Attr = obj.attr[key];
+				obj2Attr = this.attr[ key ];
+				
+				retVal = (obj1Attr == obj2Attr) ? true : false;	
+				
+				if( !retVal ) {
+					//found a property that's not equal -- return false
+					return false;
+				}		
+			}
+			
+			return retVal;
+		};
+
+		// initialize the ascend, descent, and leading based on the
+		// current font-family in the attributes		
+		this.initializeADL = function() {
+			font = fontManager.getFontElement( this.attr.font_family );
+			fontHeight = fontManager.calcHeight( font.font_family, this.attr.font_family );
+
+			this.attr.height = fontHeight;
+			this.attr.ascent = font.ascent;
+			this.attr.descent = font.descent;
+			this.attr.leading = font.leading;			
+			
+		};
+		
+		this.setAttrFromSVG = function( element ) {
+			// loop through the whitelisted elements and set the font attributes
+			var dashKey;
+			for( var key in this.attr ) {
+				dashKey = key.replace("_","-");
+				this.attr[key] = element.getAttribute(dashKey);
+			}
+			
+			// set the height
+			font = fontManager.getFontElement( element.getAttribute('font-family') );
+			fontHeight = fontManager.calcHeight( font.font_family, element.getAttribute('font-size') );
+
+			this.attr['height'] = fontHeight;
+			this.attr['ascent'] = font.ascent;
+			this.attr['descent'] = font.descent;
+			this.attr['leading'] = font.leading;
+							
+		};	
+		
+		// loop through the Attributes and set the values to an
+		// SVG element
+		this.setSVGFromAttr = function( element ) {
+			var dashKey;
+			var myAttrList = {};
+			
+			for( var z=0; z<CharacterAttributeWhiteList.cattr.length; z++ ) {
+				key = CharacterAttributeWhiteList.cattr[z];
+				dashKey = key.replace("-","_");
+				val = this.attr[dashKey];
+				if( val !== null ) {
+					//element.setAttribute(key, val);
+					myAttrList[key] = val;
+				}
+			}
+			assignAttributes( element, myAttrList, 10 );
+			
+		}
+		
+		this.getAttrElement = function( pos ) {
+			return this.attr[pos];
+		};	
+		
+		// perform a deep copy of this.attr
+		this.deepClone = function() {
+			
+			var newCharAttr = new CharacterAttributes();
+			
+			for( var i in this.attr ) {
+				newCharAttr.attr[i] = this.attr[i];
+			}
+			return newCharAttr;
+			
+		};	
+};
+
+var CharacterElement = function(locChar) {
+		this.x = null;
+		this.y = null;
+		this.width = null;
+		this.dy = null;
+		this.value = (locChar !== null) ? locChar : "";
+		this.se_newline = "";
+		this.se_emptyline = "";
+		this.characterAttribute = null;
+		this.bbox = null;
+		
+		this.setBBox = function( charAttr ) {
+			// precompute the bounding box coordinates for the 
+			// character
+			this.bbox = {
+						ul: {
+								x: this.x,
+								y: this.y - (charAttr.attr.font_size * charAttr.attr.ascent)
+							},
+						ur: {
+								x: this.x + this.width,
+								y: this.y - (charAttr.attr.font_size * charAttr.attr.ascent)
+							},
+						ll: {
+								x: this.x,
+								y: this.y + /*(charAttr.attr.font_size * charAttr.attr.leading) +*/ (charAttr.attr.font_size * charAttr.attr.descent)
+							},
+						lr: {
+								x: this.x + this.width,
+								y: this.y + /* (charAttr.attr.font_size * charAttr.attr.leading) + */ (charAttr.attr.font_size * charAttr.attr.descent)
+							}
+			};
+
+		};
+
+};
+
+var CharacterAttributeWhiteList = {
+		cattr:  [
+					"fill",
+					"fill-opacity",
+					//"fill-paint",
+					"font-family",
+					"font-size",
+					"font-style",
+					"font-weight",
+					"opacity",
+					"stroke",
+					"stroke-dasharray",
+					"stroke-linecap",
+					"stroke-linejoin",
+					"stroke-opacity",
+					//"stroke-paint",
+					"stroke-width"
+				],
+		celem: [
+					"ascent",
+					"descent",		
+					"height",
+					"leading"
+				],
+		cpos: [
+					"x",		
+					"y",	
+					"dy",
+					"se:newline",
+					"se:emptyline",				
+					"width"									
+				]
+};
+
+
+
+	
+
+// TextManager class
+// Maintains the internal representation of the currently selected Text object on the screen
+// switching over to an internally managed text processor due to the variability in performance 
+// of the getBBox method.
+var TextManager;
+
+(function() {
+	TextManager = function() {
+	
+		this.characterAttributes = []; 
+		
+		// internal representation of the TextArea -- newlines and all
+		this.textArray = [];
+		
+		// current position in the textArray
+		this.curPos = 0; 
+		
+		// previous position in the textArray
+		this.prevPos = 0; 
+		
+		// current character attribute
+		this.curAttrib = 0;
+		
+		// reference to self
+		var self = this;
+		
+		// *********************
+		//   initTextArray
+		// *********************		
+		this.initTextArray = function( element ) {
+			
+//debugger;
+
+			// element should be a text object
+			// loop through and build the internal textArray and characterAttributes map
+			var sibling = element.firstChild;
+			var textarea = $('#text')[0];
+
+			textarea.value = "";
+			this.textArray = [];
+			this.characterAttributes = [];
+			var tmpstring = "";
+			var z = 0;
+						
+			var tspanLineCount = 0;
+			
+			while( sibling != null ) {
+				if( sibling.nodeName == 'tspan' ) {
+					
+					// set/reset the # of tspans on the line
+					if( sibling.getAttribute('dy') ) {
+						tspanLineCount = 1;
+					}
+					else {
+						tspanLineCount++;	
+					}
+					
+					var isSeNewLineSet = sibling.getAttribute('se:newline');
+					if( isSeNewLineSet == null ) {
+						isSeNewLineSet = false;
+					}
+					else {
+						isSeNewLineSet = true;
+					}
+					var isSeEmptyLineSet = sibling.getAttribute('se:emptyline');
+					if( isSeEmptyLineSet == null ) {
+						isSeEmptyLineSet = false;
+					}
+					else {
+						isSeEmptyLineSet = true;
+					}					
+					
+					
+					var charAttr = new CharacterAttributes();		
+					charAttr.setAttrFromSVG( sibling );		
+						
+					var charAttrId = this.isInAttributeList( charAttr );
+			
+					if( charAttrId == null ) {
+						//first character Attribute element.. add it to the list;
+						this.characterAttributes.push( charAttr );
+						charAttrId = this.characterAttributes.length - 1;
+					}
+					
+					// keep curAttrib updated to be the most recent attribute
+					self.curAttrib = charAttrId;
+							
+					// let myChar live out here so that we at least get
+					// the characteristics of the last character of the tspan	
+					var myChar;
+					for( var i=0; i< sibling.textContent.length; i++ ) {
+						myChar = new CharacterElement( sibling.textContent[i] );
+						var start = sibling.getStartPositionOfChar(i);
+						var end = sibling.getEndPositionOfChar(i);
+						myChar.x = start.x;
+						myChar.y = start.y;
+						myChar.width = end.x - start.x;
+						
+						// only set the dy on the first
+						var dyval = sibling.getAttribute('dy');
+						if( (i == 0) && (dyval !== null) ) {
+							myChar.dy = dyval; 
+						}
+						else {
+							myChar.dy = null;
+						}
+						
+						myChar.characterAttribute = charAttrId;
+						
+						// curAttrib will always be the most recent
+						// CharacterAttribute array reference
+						self.curAttrib = charAttrId;	
+										
+						myChar.setBBox( charAttr );
+						
+
+
+						if( sibling.textContent.length == 1 && sibling.textContent[0] == " " && isSeEmptyLineSet ) {
+ 								// skipping the space hack  se:emptyline se:newline thing
+						}
+						else {
+							this.textArray[z++] = myChar;
+						}	
+					}
+					if( isSeNewLineSet )  {
+						// plain old \n at the end of the line
+						var newLine = new CharacterElement("\n");
+						newLine.characterAttribute = charAttrId;
+						newLine.width = 0;
+						newLine.se_newline = "se:newline";
+						this.textArray[z++] = newLine;						
+					}				
+
+					
+					
+				}
+				sibling = sibling.nextSibling;
+			}
+			
+			
+			for(var i=0; i<this.textArray.length; i++ ) {
+				tmpstring += this.textArray[i].value;	
+			}
+			textarea.value = tmpstring;
+			
+			// by default set the curPos to the last position
+			// in the text array or 0
+//			if( self.textArray.length == 0 ) {
+//				self.curPos = 0;
+//			}
+//			else {
+//				self.curPos = (self.textArray.length - 1) < 0 ? 0 : (self.textArray.length - 1);
+				self.curPos = self.textArray.length - 1;  // original line
+//			}
+				
+		};
+		
+		this.writeArray = function( element ) {
+			// write out the textArray and apply characterAttributes.
+			// element is the text Object that's going to be filled.
+			// remove child tspans, loop through textArray and write 1 tspan per character
+		};
+		
+		this.isInAttributeList = function( attrObj ) {
+			// search the characterAttributes array for a matching element.
+			var retVal = null;
+			for( var i=0; i<this.characterAttributes.length; i++ ) {
+					charAttr = this.characterAttributes[i];
+					var value = charAttr.compareAttr( attrObj );
+					if( value ) {
+						retVal = i;
+						i = this.characterAttributes.length;
+					}
+			}
+			return retVal;
+		};	
+		
+		// *********************
+		//   renderTextSVG
+		// *********************		
+		this.renderTextSVG = function( textObj, drawCursorFlag, redrawModeFlag ) {
+			// output the textArray as a series of tspans into the input textObj
+			// the existance of dy !== null means that we need to use the x and are
+			// at the beginning of a new line.
+			
+			// TODO build string and apply to the dom all at once like the
+			// source code editor does "Apply Changes"
+			//console.log("suspended draw version");
+
+			var drawCursor = false;
+			
+			// by default, redraw all tspan elements of the text object
+			var redrawMode = true;
+			
+			if( drawCursorFlag === undefined ) {
+				drawCursor = false;	
+			}			
+			else {
+				drawCursor = drawCursorFlag;
+			}
+			
+			if( redrawModeFlag === undefined ) {
+				redrawMode = true;
+			}
+			else {
+				redrawMode = false;
+			}
+			
+			// specific character in textArray where to draw the
+			// cursor. This gets us the ascent,descent, and leading to draw the
+			// line
+			var cursorTextPos = 0;
+			
+			// potential Cursor position based on XY of mouse click
+			var potentialCursorPos = 0;
+			var isPotentialFound = false;
+			var isRealFound = false;
+			var realCursorPos = null;
+						
+
+			var myId = 1000;
+
+			obj_num++;
+			var tspanElem = null;
+			var suspendid = null;  
+			
+			var prevCharAttr, curCharAttr = null;
+			
+			// the list of tspan elements for the current line
+			var tspanLineList = [];
+			var t = 0;
+			
+			// factors for tracking the components to track the
+			// value used to generate the dy for the line
+			var maxDescentPrevLine = 0;
+			var maxDescentCurLine = 0;
+			var maxAscentCurLine = 0;
+			var maxLeadingCurLine = 0;
+			
+			// looking for start Selection XY information interlock
+			var lookingForStartSelection = true;
+			var lookingForToSelection = true;
+			var selectionStartXY = {};
+			
+			// temp vars to park value for future dy calc.
+			var leading = 0;
+			var ascent = 0;
+			var descent = 0;
+			
+			// additional flag to indicate a new tspan needs to be created
+			var mkNewTspan = true;
+			
+			var firstLine = true;
+			
+			// totalizer for the "current line width" (subjective due to autowrapping)
+			var curLineWidth = 0;
+			
+			var maxLineWidth = 0;
+			
+			// cummulative dy value used in cursor placement
+			var totalDy = 0;
+			
+			
+			// Cursor Information about location attributes
+			var cursorAttr = null;
+			var cursorX = 0;
+			var cursorY = 0;
+			var cursorUpY = 0;
+			var cursorDownY = 0;
+			
+			// Flags to use to determine when the correct cursor information has been found
+			var lookingForX = true;
+			var lookingForY = true;
+			var lookingForAttr = true;
+			var lookingForDownY = false;
+			
+			// rebuild the text object...  
+			
+			if( redrawMode ) {
+				suspendid = svgroot.suspendRedraw(100);
+				while( textObj.hasChildNodes() ) {
+					textObj.removeChild( textObj.firstChild );
+				}
+				svgroot.unsuspendRedraw(suspendid);
+				
+				suspendid = svgroot.suspendRedraw(100);
+			}
+			
+			// everything is in a try/catch block so that we don't even interrupt 
+			// the unsuspendredraw.  Doing so completely hoses the display
+			try {
+				// pull the leading on the text object
+				var textObjLeading = (textObj.getAttribute('se:leading') != null) ? (textObj.getAttribute('se:leading') - 0) : 0;
+				var textObjAutowrap = (textObj.getAttribute('se:autowrap') != null) ? (textObj.getAttribute('se:autowrap') - 0) : 0; 
+			
+				var charAttr = null;
+				
+				
+				// If there is nothing in the textArray that probably means that we need to render the very first
+				// empty tspan with se:emptyline set to true
+				// for now pick this.characterAttributes[0] for the tspan attribs.
+				if( self.textArray.length == 0 ) {
+
+						// set the characterAttributes
+						charAttr = self.characterAttributes[ self.curAttrib ];
+
+						if( redrawMode ) {
+							tspanElem = svgdoc.createElementNS(svgns, "tspan");
+							tspanElem.setAttributeNS(xmlns,"xml:space", "preserve" );
+							tspanElem.setAttribute('id', getNextId() );
+							obj_num++;			
+	
+							charAttr.setSVGFromAttr( tspanElem );
+							tspanElem.setAttributeNS(se_ns,'se:emptyline','true');		
+							tspanElem.setAttribute('dy', 0);
+							tspanElem.setAttribute('x', (textObj.getAttribute('x') - 0));	
+							tspanElem.textContent = " ";
+							textObj.appendChild( tspanElem );
+						}
+						
+						cursorAttr = charAttr;
+						cursorY = 0;
+						cursorX = 0;
+				}
+	
+				for( var i=0; i<this.textArray.length; i++) {
+					var c = this.textArray[i];
+	
+					curCharAttr = c.characterAttribute;
+					
+					if( c.width != null ) {
+						curLineWidth += c.width;
+					}
+							
+			
+					if( ( mkNewTspan) || (prevCharAttr != curCharAttr) ) {
+						mkNewTspan = false;
+						
+						// set the characterAttributes
+						charAttr = this.characterAttributes[ c.characterAttribute ];						
+						curFontSize = charAttr.attr['font_size'];
+						
+						// calculate the max values for dy calc
+						leading = (charAttr.attr['leading'] - 0) * (curFontSize - 0);
+						ascent  = (charAttr.attr['ascent']  - 0) * (curFontSize - 0);
+						descent = (charAttr.attr['descent'] - 0) * (curFontSize - 0);
+						
+						maxAscentCurLine = (ascent > maxAscentCurLine) ? ascent : maxAscentCurLine;
+						maxLeadingCurLine = (leading > maxLeadingCurLine) ? leading : maxLeadingCurLine;
+						maxDescentCurLine = (descent > maxDescentCurLine) ? descent : maxDescentCurLine;						
+							
+						if( redrawMode ) {
+							tspanElem = svgdoc.createElementNS(svgns, "tspan");
+							tspanElem.setAttributeNS(xmlns,"xml:space", "preserve" );
+							tspanElem.setAttribute('id', getNextId() );
+							obj_num++;
+		
+							charAttr.setSVGFromAttr( tspanElem );
+							tspanLineList[t++] = tspanElem;
+						}
+					}
+					
+					
+					if (drawCursor) {
+						if (textUIManager.isDrawCursorByPosition()) {
+							// do something different for when we are just drawing the cursor by character position
+							// bookmark the appropriate values for the textUIManager.setCursor function
+							
+							if( !isRealFound ) {		
+								if( i == (self.curPos) ) {
+									
+									cursorAttr = self.characterAttributes[ self.textArray[self.curPos].characterAttribute ];
+									isRealFound = true;						
+									
+									lookingForX = false;
+									lookingForY = true;
+									lookingForAttr = false;
+													
+									if ( textUIManager.isDrawCursorBeginning() ) {
+										cursorX = curLineWidth - c.width;
+									} else {
+										if (c.value == "\n") {
+											lookingForY = true;
+											lookingForAttr = true;
+											cursorX = 0;
+										} else {
+											cursorX = curLineWidth;
+										}
+									}
+									cursorY = totalDy;
+								}
+							}
+							else if ( lookingForY && !lookingForX && lookingForAttr) {
+								lookingForAttr = false;
+								cursorAttr = self.characterAttributes[ self.textArray[self.curPos].characterAttribute ];
+							}							
+						} else {
+							if ( lookingForX ) {							
+								var xValue = (textObj.getAttribute('x') - 0) + curLineWidth;
+								var cursXValue = textUIManager.getCursorXY().x;
+								potentialCursorPos = i;	
+								cursorX = 0;
+								textUIManager.setDrawCursorBeginning( true );
+								if( xValue > cursXValue || c.value == "\n" ) {
+
+									lookingForAttr = false;
+
+									//bookmark the current width
+									cursorX = curLineWidth;
+									cursorAttr = self.characterAttributes[ self.textArray[i].characterAttribute ];
+
+									// here we should check to see the 50% ratio to determine if potential is really the previous character
+									var less50centVal = curLineWidth - ( c.width / 2 ) + (textObj.getAttribute('x') - 0);
+									if( less50centVal > cursXValue ) {
+										cursorX = curLineWidth - c.width;
+									} else {
+										lookingForAttr = true;
+										if (c.value != "\n") {
+											textUIManager.setDrawCursorBeginning( false );
+										}
+									}
+
+									// reset the flag so we don't keep updating the potential value
+									lookingForX = false;
+									lookingForY = true;
+								}
+							}
+							else if ( lookingForY && !lookingForX && lookingForAttr) {
+								lookingForAttr = false;
+								cursorAttr = self.characterAttributes[ self.textArray[self.curPos].characterAttribute ];
+							}							
+	
+						}						
+					} /* if drawing a cursor */
+					
+					// if we are in selection mode then bookmark some positional stuff
+					if( textUIManager.getStartSelectionPos() != null ) {
+						var selPos = textUIManager.getStartSelectionPos();
+						var selXY = textUIManager.getSelectionStartXY();
+						if( i == selPos ) {
+//								selXY.is_cursor_beginning = textUIManager.isDrawCursorBeginning();
+//								if( selXY.is_cursor_beginning ) {
+//									var calcLineWidth = curLineWidth - c.width;
+//									
+//									if( calcLineWidth < 0 ) {
+//										selXY.cursor_x = 0;
+//									}
+//									else {
+//										selXY.cursor_x = curLineWidth - c.width;
+//									}
+//											
+//								}
+//								else {
+									selXY.cursor_x = curLineWidth;
+//								}
+						}	
+					}
+					
+						
+					//append to the current tspanElem
+					// do on '\n' or the very last character in the textarea as there may or may
+					// not be a \n... probably not
+					
+					// if you are at the end of a line or at the very last character of the textArray, handle all the 
+					// final end of scenario stuff.
+					if( (c.value == "\n") || (this.textArray[i+1] == undefined) ) {
+						
+						// only do this if there is a real newline, but not the very last line as it doesn't 
+						// get a se:newline
+						if( (c.value == "\n") && redrawMode ) {
+							tspanElem.setAttributeNS(se_ns,'se:newline','true');
+						}
+						
+						
+						if( redrawMode ) {						
+							// after creating a tspan.. if the length is 0 and the character is a "\n", then just
+							// enter a space.
+							if( tspanElem.textContent.length == 0 && c.value == "\n" ) {
+								tspanElem.textContent = " ";
+								tspanElem.setAttributeNS(se_ns,'se:emptyline','true');
+							}
+							else if( this.textArray[i+1] == undefined && (c.value != "\n")) {
+								// append that last character of the entire text array
+								tspanElem.textContent += c.value;	
+							}
+						}
+						
+						mkNewTspan = true;
+						
+						// if it's the first line... dy is set to 0 and move on
+						var locTspan = tspanLineList[0];
+
+						newDy = maxDescentPrevLine + maxLeadingCurLine + maxAscentCurLine;
+						maxDescentPrevLine = maxDescentCurLine;
+						
+						if( firstLine ) {
+							if( redrawMode ) {
+								locTspan.setAttribute('dy', 0);
+								locTspan.setAttribute('x', (textObj.getAttribute('x') - 0));
+							}	
+							firstLine = false;
+						}
+						else {
+							//not first line... adjust the dy appropriately	
+							if( redrawMode ) {
+								locTspan.setAttribute('dy', newDy);
+								locTspan.setAttribute('x', (textObj.getAttribute('x') - 0));
+							}
+							totalDy += newDy;
+						}
+
+						if ( lookingForDownY ) {
+							cursorDownY = totalDy;
+							lookingForDownY = false;
+						}
+						
+						if ( lookingForY && !lookingForAttr && textUIManager.isDrawCursorByPosition()) {
+							cursorY = totalDy;
+							lookingForY = false;
+
+							cursorUpY = totalDy-newDy;
+							
+							cursorDownY = totalDy;
+							lookingForDownY = true;
+
+							// need to set the To Selection maxAscent and maxDescent for the line that
+							// the cursor would appear on
+							if( textUIManager.getStartSelectionPos() != null && lookingForToSelection ) {
+								var toXY = textUIManager.getSelectionToXY();	
+
+								if( i >= realCursorPos ) {
+									lookingForToSelection = false;	
+									toXY.cursor_y = totalDy;						
+									toXY.max_ascent = maxAscentCurLine;
+									toXY.max_descent = maxDescentCurLine;
+								}
+							}	
+							
+						}
+						
+
+						if( !lookingForX && lookingForY && !textUIManager.isDrawCursorByPosition() && !isRealFound ) {
+							// we have cursor XY position information
+							if( (textObj.getAttribute('y') - 0) + totalDy + maxDescentCurLine > textUIManager.getCursorXY().y ) {
+							// potentialCursorPos is the good position
+	//debugger;
+								// no potential found, just set the cursorX to the curLineWidth... probably in the
+								// last line of the text object
+								if( lookingForX ) {
+									realCursorPos = i;
+									textUIManager.setDrawCursorBeginning( true );
+								}
+								else {	
+									realCursorPos = potentialCursorPos;
+								}
+								// cursorTotalWidth is already stored
+								cursorY = totalDy;
+								lookingForY = false;
+								
+								cursorUpY = totalDy-newDy;
+								
+								cursorDownY = totalDy;
+								lookingForDownY = true;
+								
+								isRealFound = true;
+								
+								// crutch... update the text area for visual feedback, but not necessary
+								if (textUIManager.isDrawCursorBeginning()) {
+									$('#text')[0].setSelectionRange( realCursorPos, realCursorPos);
+								} else {
+									$('#text')[0].setSelectionRange( realCursorPos + 1, realCursorPos + 1);
+								}
+								// set the internal cursor position
+								self.setCurPos( realCursorPos );	
+								cursorAttr = self.characterAttributes[ self.textArray[ realCursorPos ].characterAttribute ];
+								
+								// need to set the To Selection maxAscent and maxDescent for the line that
+								// the cursor would appear on
+								if( textUIManager.getStartSelectionPos() != null && lookingForToSelection ) {
+									var toXY = textUIManager.getSelectionToXY();	
+
+									if( i >= realCursorPos ) {
+										lookingForToSelection = false;	
+										toXY.cursor_y = totalDy;						
+										toXY.max_ascent = maxAscentCurLine;
+										toXY.max_descent = maxDescentCurLine;
+									}
+								}										
+															
+							} else {
+								lookingForX = true;
+							}
+						}			
+						
+						// if we are in selection mode then bookmark some positional stuff
+						// only look if the current position is >= the selection start position... 
+						// find the first occurrence and then toggle off looking for start selection
+						if( textUIManager.getStartSelectionPos() != null && lookingForStartSelection ) {
+							var selPos = textUIManager.getStartSelectionPos();
+							var selXY = textUIManager.getSelectionStartXY();
+							
+							if( i >= selPos ) {
+								lookingForStartSelection = false;							
+								selXY.cursor_y = totalDy;
+								selXY.max_ascent = maxAscentCurLine;
+								selXY.max_descent = maxDescentCurLine;
+							}	
+						}
+
+						// what if you are at the end of the text Array and you end in a newline?
+						// create a new tspan 
+						// very end edge case pretty much at the end of the textArray
+						if( (c.value == "\n") && ( i+1 >= self.textArray.length )) {
+							
+							// set the characterAttributes
+							charAttr = this.characterAttributes[ c.characterAttribute ];
+							
+							// calculate the max values for dy calc
+							leading = (charAttr.attr['leading'] - 0) * (curFontSize - 0);
+							ascent  = (charAttr.attr['ascent']  - 0) * (curFontSize - 0);
+						
+							maxAscentCurLine = (ascent > maxAscentCurLine) ? ascent : maxAscentCurLine;
+							maxLeadingCurLine = (leading > maxLeadingCurLine) ? leading : maxLeadingCurLine;
+							maxDescentCurLine = (descent > maxDescentCurLine) ? descent : maxDescentCurLine;
+							
+							// adjust the dy appropriately	
+							newDy = maxDescentPrevLine + maxLeadingCurLine + maxAscentCurLine;
+														
+							totalDy += newDy;
+							
+							// reset the cursor width to 0 so the cursor will display to the far left of the
+							// line if a cursor position was not found
+							if( !isRealFound && !textUIManager.isDrawCursorByPosition() ) {	
+
+								cursorX = 0;	
+								cursorY = totalDy;
+								self.setCurPos( i );
+								cursorAttr = charAttr;
+								isRealFound = true;
+							}
+							
+							if ( lookingForY ) {
+								cursorUpY = totalDy-newDy;
+								cursorDownY = totalDy;
+								textUIManager.setDrawCursorBeginning( false );
+								cursorY = totalDy;
+								lookingForY = false;
+							}
+							
+							if (lookingForDownY) {
+								cursorDownY = totalDy;
+							}							
+																					
+							if( redrawMode ) {
+								tspanElem = svgdoc.createElementNS(svgns, "tspan");
+								tspanElem.setAttributeNS(xmlns,"xml:space", "preserve" );
+								tspanElem.setAttribute('id', getNextId() );
+								obj_num++;
+	
+								charAttr.setSVGFromAttr( tspanElem );
+								tspanElem.textContent = " ";
+								tspanElem.setAttributeNS(se_ns,'se:emptyline','true');	
+	
+								tspanElem.setAttribute('dy', newDy);
+								tspanElem.setAttribute('x', (textObj.getAttribute('x') - 0));
+								tspanLineList[t++] = tspanElem;
+							}							
+	
+						}
+	
+	
+						if( redrawMode ) {
+							// loop through the tspanLineList and append it to the 
+							// textObj
+							for( var l=0; l<tspanLineList.length; l++) {
+								textObj.appendChild( tspanLineList[l] );	
+							}					
+						}
+						
+						// reset the list
+						tspanLineList = [];
+						t=0;
+						
+						maxLineWidth = (curLineWidth > maxLineWidth) ? curLineWidth : maxLineWidth;
+						curLineWidth = 0;
+	
+						maxDescentCurLine = 0;
+						maxAscentCurLine = 0;
+						maxLeadingCurLine = 0;					
+						
+						// reset the potential cursor flag 
+						isPotentialFound = false;
+					}
+					else {
+						if( redrawMode ) {
+							tspanElem.textContent += c.value;
+						}
+					}
+
+					prevCharAttr = curCharAttr;
+				} // end for loop through textArray
+
+				// set the curAttrib value
+				if( self.getCurPos() == -1 ) {
+					self.curAttrib = 0;
+					cursorAttr = self.characterAttributes[ self.curAttrib ];
+				}
+				else {
+					if( self.textArray[ self.getCurPos() ] !== undefined ) {
+						self.curAttrib = self.textArray[ self.getCurPos() ].characterAttribute;
+					}
+					else {
+						self.curAttrib = 0;
+					}
+					cursorAttr = self.characterAttributes[ self.curAttrib ];
+				}	
+	
+				if( drawCursor ) {				
+					textUIManager.setUpCursor((textObj.getAttribute('x') - 0) + cursorX, (textObj.getAttribute('y') - 0) + cursorUpY);
+					textUIManager.setDownCursor((textObj.getAttribute('x') - 0) + cursorX, (textObj.getAttribute('y') - 0) + cursorDownY);
+					
+					textUIManager.setCursor( cursorAttr, cursorY, cursorX, textObj );
+					
+					// change modes if we were drawing by mouse click coordinates 
+					// and a real position was found
+					// flip into drawCursorByPosition mode because we now have a good spot to 
+					// begin spliting somewhere in the middle of the textArray
+					if( (isRealFound || self.textArray.length == 0)  && !textUIManager.isDrawCursorByPosition() ) {
+						textUIManager.setDrawCursorByPosition( true );				
+					}
+
+				}
+				
+//console.log("               in renderer,tblshoot is_cursor_beginning -- startselectionpos: " + textUIManager.getStartSelectionPos());
+
+								
+				// draw Selection box if necessary
+				if( textUIManager.getStartSelectionPos() != null  ) {
+					
+					// bookmark the final position information
+					var selToXY = textUIManager.getSelectionToXY();
+					selToXY.cursor_x = cursorX;
+					//selToXY.cursor_y = cursorY;
+					selToXY.is_cursor_beginning = textUIManager.isDrawCursorBeginning();
+
+				
+//console.log("               in renderer, setting textUIManager.getSelectionToXY().is_cursor_beginning: " + selToXY.is_cursor_beginning);					
+//
+//$('#metric_start_x')[0].textContent = textUIManager.getSelectionStartXY().cursor_x.toFixed(4);								
+//$('#metric_start_y')[0].textContent = textUIManager.getSelectionStartXY().cursor_y.toFixed(4);
+//$('#metric_start_ascent')[0].textContent = textUIManager.getSelectionStartXY().max_ascent.toFixed(4);			
+//$('#metric_start_descent')[0].textContent = textUIManager.getSelectionStartXY().max_descent.toFixed(4);
+//					
+//$('#metric_to_x')[0].textContent = textUIManager.getSelectionToXY().cursor_x.toFixed(4);								
+//$('#metric_to_y')[0].textContent = textUIManager.getSelectionToXY().cursor_y.toFixed(4);
+//$('#metric_to_ascent')[0].textContent = textUIManager.getSelectionToXY().max_ascent.toFixed(4);			
+//$('#metric_to_descent')[0].textContent = textUIManager.getSelectionToXY().max_descent.toFixed(4);
+					
+					
+					textUIManager.setSelectionBox( textObj, maxLineWidth );	
+				}
+				
+				
+				// go ahead and update the global attributes
+				locCharAttr = self.characterAttributes[ self.curAttrib ];
+			
+
+				// reset the font characteristics based on the first character of the
+				// selected region
+				if( textUIManager.isTextSelected() ) {
+					var selRegion = textUIManager.getSelectBoxFromToPositions();
+					var firstSelChar = self.textArray[ selRegion.fromPos ];
+					
+					locCharAttr = self.characterAttributes[ firstSelChar.characterAttribute ];
+				}		
+						
+				cur_text.fill = locCharAttr.attr.fill;
+				cur_text.font_style = locCharAttr.attr.font_style;
+				cur_text.font_weight = locCharAttr.attr.font_weight;
+				cur_text.font_size = locCharAttr.attr.font_size;
+				cur_text.font_family = locCharAttr.attr.font_family;	
+				
+				var fontFmtEvt = getFontFormatEvent();
+//console.log("                 fontFormateEvent:  " + fontFmtEvt);
+				if( fontFmtEvt == "" ) {
+					textUIManager.updateFontUIFormElements();
+				}			
+				
+						
+			}
+			catch (ex) {
+				console.error(ex);
+			}		
+			
+			if( redrawMode ) {
+				svgroot.unsuspendRedraw(suspendid);
+			}
+			
+		};
+		
+		this.setCurPos = function( pos ) {
+			this.curPos = pos;
+		};
+		
+		this.getCurPos = function() {
+			return self.curPos;
+		};
+		
+		this.setPrevPos = function( pos ) {
+			this.prevPos = pos;
+		};
+		
+		this.getPrevPos = function() {
+			return self.prevPos;
+		};
+		
+		this.getCharacterAttributes = function() {
+			return self.characterAttributes;
+		};
+		
+		
+		// *********************
+		//   insertChar
+		// *********************		
+		// insert character c as position pos
+		this.insertChar = function( c, pos ) {
+//debugger;
+			var locpos;
+			if( pos === undefined ) {
+				locpos = self.getCurPos();
+			}
+			else {
+				locpos = pos;	
+			}
+			
+			var newlineArray = [];
+			var spaceChar;
+			var newCharAttributes = null;
+			var locAttribId = self.curAttrib;
+			
+			// there shouldn't be a fontFormat event... but maybe
+			// reset the font characteristics based on the first character of the
+			// selected region
+			// pretty much guaranteed at this point that the characterAttrib
+			// will be in the characterAttributes array.
+			// Concept -- use the first character as the font format for the 
+			// replacement character
+			if( textUIManager.isTextSelected() ) {
+				var selRegion = textUIManager.getSelectBoxFromToPositions();
+				var firstSelChar = self.textArray[ selRegion.fromPos ];
+				
+				locAttribId =  firstSelChar.characterAttribute;
+			}	
+						
+			
+			var fromPos = textUIManager.getStartSelectionPos();
+			var toPos = self.getCurPos();
+			var f, t;
+			var doCharDelete = true;
+			
+			//do some magic if you have a set of text selected
+			if( fromPos != null ) {
+				
+try {
+				var start_is_cursor_beginning = textUIManager.getSelectionStartXY().is_cursor_beginning;
+				var to_is_cursor_beginning = textUIManager.getSelectionToXY().is_cursor_beginning;
+
+				// pick the correct characters using the 
+				// cursor position
+				if( toPos < fromPos && ( fromPos - toPos == 1) && to_is_cursor_beginning == false && start_is_cursor_beginning == true ) {
+					locpos = toPos - 1;
+					textUIManager.setDrawCursorBeginning( false );	
+					
+					fromPos--;
+				}
+				else if( toPos < fromPos && to_is_cursor_beginning == true && start_is_cursor_beginning == false ) {
+					locpos = toPos - 1;
+					textUIManager.setDrawCursorBeginning( false );	
+				}
+				else if( toPos < fromPos && to_is_cursor_beginning == true && start_is_cursor_beginning == true ) {
+					locpos = toPos - 1;
+					textUIManager.setDrawCursorBeginning( false );						
+					fromPos--;
+				}
+				else if( toPos < fromPos && to_is_cursor_beginning == false && start_is_cursor_beginning == false ) {
+					locpos = toPos;
+					textUIManager.setDrawCursorBeginning( false );						
+					toPos++;	
+				}
+				else if( toPos < fromPos && to_is_cursor_beginning == false && start_is_cursor_beginning == true ) {
+					locpos = toPos;
+					textUIManager.setDrawCursorBeginning( false );						
+					toPos++;
+					fromPos--;
+				}
+				else if( fromPos < toPos && ( toPos - fromPos == 1) && start_is_cursor_beginning == false && to_is_cursor_beginning == true ) {
+					locpos = fromPos - 1;
+					textUIManager.setDrawCursorBeginning(false);
+					toPos--;
+				}
+				else if( fromPos < toPos && start_is_cursor_beginning == true && to_is_cursor_beginning == false) {
+					locpos = fromPos - 1;
+					textUIManager.setDrawCursorBeginning(false);
+				}					
+				else if( fromPos < toPos && start_is_cursor_beginning == true && to_is_cursor_beginning == true) {
+					locpos = fromPos - 1;
+					textUIManager.setDrawCursorBeginning(false);
+					
+					toPos--;	
+				}
+				else if( fromPos < toPos && start_is_cursor_beginning == false && to_is_cursor_beginning == false ) {
+					locpos = fromPos;
+					textUIManager.setDrawCursorBeginning(false);
+					fromPos++;
+				}
+				else if( fromPos < toPos && start_is_cursor_beginning == false && to_is_cursor_beginning == true ) {
+					locpos = fromPos;
+					textUIManager.setDrawCursorBeginning(false);
+					
+					fromPos++;
+					toPos--;	
+				}
+				else if( fromPos == toPos && start_is_cursor_beginning == true && to_is_cursor_beginning == true ) {
+					locpos = toPos - 1;
+					textUIManager.setDrawCursorBeginning( false );	
+					
+					doCharDelete = false;					
+				}	
+				else if( fromPos == toPos && start_is_cursor_beginning == false && to_is_cursor_beginning == false) {
+					locpos = fromPos;
+					textUIManager.setDrawCursorBeginning( false );
+					doCharDelete = false;
+				}
+				else if( fromPos == toPos && start_is_cursor_beginning == true && to_is_cursor_beginning == false ) {
+					locpos = fromPos - 1;	
+					textUIManager.setDrawCursorBeginning( false );
+				}
+				else if( fromPos == toPos && start_is_cursor_beginning == true && to_is_cursor_beginning == false ) {
+					locpos = fromPos -1 ;	
+					textUIManager.setDrawCursorBeginning( false );
+				}				
+
+				// reset the order:
+				if( fromPos <= toPos ) {
+					f = fromPos;
+					t = toPos;
+				}
+				else {
+					f = toPos;
+					t = fromPos;
+				}
+	
+				var nbrCharToSpliceOut = (t - f) + 1;	
+				
+				if( doCharDelete ) {			
+					this.textArray.splice( f, nbrCharToSpliceOut );
+				}
+
+
+} 
+catch (ex) {
+console.debug( ex);	
+}						
+			}
+			
+			// curAttrib will have to eventually be set based on the position of the dbl_click
+			
+			var fontFmtEvt = getFontFormatEvent();
+			if( fontFmtEvt != "" ) {
+				// reset the fontFormatEvent
+				setFontFormatEvent("");
+
+				newCharAttributes = new CharacterAttributes();
+				newCharAttributes.initializeADL();
+
+				var charAttrId = self.isInAttributeList( newCharAttributes );
+
+				if( charAttrId == null ) {
+					self.characterAttributes.push( newCharAttributes );
+					locAttribId = this.characterAttributes.length - 1;
+				}
+				else {
+					locAttribId = charAttrId;
+				}
+
+			}
+			
+			var charAttr = this.characterAttributes[locAttribId];			
+			
+			var myChar = new CharacterElement(c);			
+			var textIO = getElem("text_io_element");
+			if( c != "\n" ) {
+				textIO.textContent = c;
+				
+				// set the text_io_element to the correct character attributes
+				charAttr.setSVGFromAttr( textIO );
+				var start = textIO.getStartPositionOfChar(0);
+				var end = textIO.getEndPositionOfChar(0);
+				myChar.width = end.x - start.x;				
+			}
+			else {
+				myChar.width = 0;
+			}
+			
+			myChar.characterAttribute = locAttribId;
+
+
+			if( textUIManager.isDrawCursorBeginning() ) {
+				textUIManager.setDrawCursorBeginning( false );
+			} else {
+				locpos++;
+			}
+			
+			this.textArray.splice( locpos, 0, myChar );
+			self.setCurPos( locpos );
+			
+			if( textUIManager.getStartSelectionPos() != null ) {
+				// probably need to reset all the start position stuff?
+				textUIManager.setStartSelectionPos( null );
+				textUIManager.hideSelectionBox();							
+				textUIManager.resetSelectionStartXY();
+				textUIManager.resetSelectionToXY();	
+			}				
+		};
+		
+		// *********************
+		//   removeChar
+		// *********************
+		// remove character at position pos
+		this.removeChar = function( pos ) {
+//debugger;
+			var locpos;
+			if( pos === undefined ) {
+				locpos = self.getCurPos();
+			}
+			else {
+				locpos = pos;	
+			}			
+			
+			var fromPos = textUIManager.getStartSelectionPos();
+			var toPos = self.getCurPos();
+			var f, t;
+			
+			//do some magic if you have a set of text selected
+			if( fromPos != null ) {
+				
+try {
+				var start_is_cursor_beginning = textUIManager.getSelectionStartXY().is_cursor_beginning;
+				var to_is_cursor_beginning = textUIManager.getSelectionToXY().is_cursor_beginning;
+
+				// pick the correct characters using the 
+				// cursor position
+				if( toPos < fromPos && ( fromPos - toPos == 1) && to_is_cursor_beginning == false && start_is_cursor_beginning == true ) {
+					locpos = toPos - 1;
+					textUIManager.setDrawCursorBeginning( false );	
+					
+					fromPos--;
+				}
+				else if( toPos < fromPos && to_is_cursor_beginning == true && start_is_cursor_beginning == false ) {
+					locpos = toPos - 1;
+					textUIManager.setDrawCursorBeginning( false );	
+				}
+				else if( toPos < fromPos && to_is_cursor_beginning == true && start_is_cursor_beginning == true ) {
+					locpos = toPos - 1;
+					textUIManager.setDrawCursorBeginning( false );						
+					fromPos--;
+				}
+				else if( toPos < fromPos && to_is_cursor_beginning == false && start_is_cursor_beginning == false ) {
+					locpos = toPos;
+					textUIManager.setDrawCursorBeginning( false );						
+					toPos++;	
+				}
+				else if( toPos < fromPos && to_is_cursor_beginning == false && start_is_cursor_beginning == true ) {
+					locpos = toPos;
+					textUIManager.setDrawCursorBeginning( false );						
+					toPos++;
+					fromPos--;
+				}
+				else if( fromPos < toPos && ( toPos - fromPos == 1) && start_is_cursor_beginning == false && to_is_cursor_beginning == true ) {
+					locpos = fromPos - 1;
+					textUIManager.setDrawCursorBeginning(false);
+					toPos--;
+				}
+				else if( fromPos < toPos && start_is_cursor_beginning == true && to_is_cursor_beginning == false) {
+					locpos = fromPos - 1;
+					textUIManager.setDrawCursorBeginning(false);
+				}					
+				else if( fromPos < toPos && start_is_cursor_beginning == true && to_is_cursor_beginning == true) {
+					locpos = fromPos - 1;
+					textUIManager.setDrawCursorBeginning(false);
+					
+					toPos--;	
+				}
+				else if( fromPos < toPos && start_is_cursor_beginning == false && to_is_cursor_beginning == false ) {
+					locpos = fromPos;
+					textUIManager.setDrawCursorBeginning(false);
+					fromPos++;
+				}
+				else if( fromPos < toPos && start_is_cursor_beginning == false && to_is_cursor_beginning == true ) {
+					locpos = fromPos;
+					textUIManager.setDrawCursorBeginning(false);
+					
+					fromPos++;
+					toPos--;	
+				}
+				else if( fromPos == toPos && start_is_cursor_beginning == true && to_is_cursor_beginning == true ) {
+					locpos = toPos - 2;
+					textUIManager.setDrawCursorBeginning( false );						
+					fromPos--;
+					toPos--;
+				}	
+				else if( fromPos == toPos && start_is_cursor_beginning == false && to_is_cursor_beginning == false) {
+					locpos = fromPos - 1;
+					textUIManager.setDrawCursorBeginning( false );
+				}
+				else if( fromPos == toPos && start_is_cursor_beginning == true && to_is_cursor_beginning == false ) {
+					locpos = fromPos -1 ;	
+					textUIManager.setDrawCursorBeginning( false );
+				}
+				else if( fromPos == toPos && start_is_cursor_beginning == true && to_is_cursor_beginning == false ) {
+					locpos = fromPos -1 ;	
+					textUIManager.setDrawCursorBeginning( false );
+				}				
+
+				// reset the order:
+				if( fromPos <= toPos ) {
+					f = fromPos;
+					t = toPos;
+				}
+				else {
+					f = toPos;
+					t = fromPos;
+				}
+	
+				var nbrCharToSpliceOut = (t - f) + 1;				
+				this.textArray.splice( f, nbrCharToSpliceOut );
+
+} 
+catch (ex) {
+console.debug( ex);	
+}			
+				
+			}
+
+			if( locpos < 0 ) {
+				locpos = 0;
+				textUIManager.setDrawCursorBeginning(true);
+			}
+			else if( locpos == 0 ) {
+				if( !textUIManager.isDrawCursorBeginning() ) {
+					
+					// only do this when not in selection mode
+					if( textUIManager.getStartSelectionPos() == null ) {
+						this.textArray.splice( 0, 1);
+						textUIManager.setDrawCursorBeginning(true);
+					}
+					
+					
+				}
+			} else {
+				
+				// only do this when not in selection mode
+				if( textUIManager.getStartSelectionPos() == null) {
+					if( textUIManager.isDrawCursorBeginning() ) {
+						this.textArray.splice( locpos - 1, 1);					
+					} else {
+						this.textArray.splice( locpos, 1);				
+					}
+					locpos--;
+				}
+			}
+			self.setCurPos( locpos );
+			
+			if( textUIManager.getStartSelectionPos() != null ) {
+				// probably need to reset all the start position stuff?
+				textUIManager.setStartSelectionPos( null );
+				textUIManager.hideSelectionBox();							
+				textUIManager.resetSelectionStartXY();
+				textUIManager.resetSelectionToXY();	
+			}				
+
+		};		
+		
+		
+		// *********************
+		//   moveLeftChar
+		// *********************
+		// move cursor left one character
+		this.moveLeftChar = function( pos ) {
+//debugger;
+			var locpos;
+			if( pos === undefined ) {
+				locpos = self.getCurPos();
+			}
+			else {
+				locpos = pos;	
+			}			
+
+			if( locpos == 0 ) {
+				if( !textUIManager.isDrawCursorBeginning() ) {
+					textUIManager.setDrawCursorBeginning(true);					
+				}
+			} else {
+				locpos--;
+			}
+			self.setCurPos( locpos );
+		};		
+		
+		// *********************
+		//   moveRightChar
+		// *********************		
+		// move one character to the right
+		this.moveRightChar = function( c, pos ) {
+//debugger;
+			var locpos;
+			if( pos === undefined ) {
+				locpos = self.getCurPos();
+			}
+			else {
+				locpos = pos;	
+			}
+			
+			if( textUIManager.isDrawCursorBeginning() ) {
+				textUIManager.setDrawCursorBeginning( false );
+			}	else {
+				locpos++;
+			}
+			if( locpos+1 > this.textArray.length) {
+				locpos = this.textArray.length -1;
+			}
+			self.setCurPos( locpos );	
+			
+		};
+		
+		this.getTextArray = function() {
+			return this.textArray;
+		};		
+		
+		this.getChar = function( pos ) {
+			return this.textArray[ pos ];
+		};
+		
+		this.getCurAttr = function() {
+			return this.curAttrib;
+		};
+		
+		this.setCurAttr = function( attr ) {
+			this.curAttrib = attr;
+		};
+		
+		// return a CharacterAttribute object pointed to 
+		// by curAttrib
+		this.getCurCharacterAttribute = function( pos ) {
+			var locAttrib;
+			if(!arguments.length) {
+				locAttrib = self.curAttrib;
+			}   	
+			else {
+				locAttrib = pos;
+			}
+			return self.characterAttributes[ locAttrib ];
+		};
+		
+	};
+	
+}());
+var textManager = this.textManager = new TextManager();
+
+// TextUIManager class
+// maintains all the UI specific goodness for multi-line text
+// edit
+var TextUIManager;
+
+(function() {
+	TextUIManager = function() {
+		
+		this.matrix = null;
+		this.textIOElement = null;
+		this.allow_dbl = null;
+		this.cursor = null;
+		this.blinker = null;
+		
+		// hold a reference to the selection box highlighter
+		this.selectBox = null;
+		
+		// flag interlocks for knowing when to draw by cursor position in the textArray
+		// or draw by mouse click position.
+		this.drawCursorByPosition = true;
+		this.cursorPos = null;
+		this.cursorXY = null;
+		
+		//Used for up down reposition movements
+		this.downCursor = {x:0,y:0};
+		this.upCursor = {x:0,y:0};
+		
+		// does cursor need to be drawn at the beginning of the curPos or 
+		// after the curPos...  Basically flag to indicate if you add current 
+		// character Width or subtract 
+		// current character width from cursorX
+		this.drawCursorBeginning = false;		// original line == false
+		
+		this.last_x = null;
+		this.last_y = null;
+		
+		// this ensures that a click on the text object will put
+		// it into select mode first, then a second click will 
+		// put it into edit mode
+		this.selectModeToggle = null; 
+		
+	   // global toggle to detect if shiftKey is pressed
+      this.shiftKeyPressed = false;
+      
+      // hold the current character position in the textArray to be used
+      // as the start for selection of text
+      this.startSelectionPos = null;
+      this.selectionStartXY = {
+      						'is_cursor_beginning':'',
+								'cursor_x': 0,
+								'cursor_y': 0,
+								'max_ascent': 0,
+								'max_descent': 0
+		};
+		this.selectionToXY = {
+      						'is_cursor_beginning':'',			
+								'cursor_x': 0,
+								'cursor_y': 0,
+								'max_ascent': 0,
+								'max_descent': 0			
+		};
+		
+		// flag to denote if mouse movement was happening
+		// before the mouse up event.
+		this.ismoving = false;
+	
+		var self = this;
+		
+		this.init = function(inputElem) {
+			//if(inputElem) {
+			//	selectorManager.requestSelector(selectedElements[0]).showGrips(false);
+			//}	
+			
+			var xform = selectedElements[0].getAttribute('transform');
+			self.matrix = xform?getMatrix(selectedElements[0]):null;
+			
+			$('#text')[0].focus();
+			
+			// rebind the dblclick?
+			// this is original code... need to figure how to 
+			// put this back in
+			//$(curtext).unbind('dblclick', selectWord).dblclick(selectWord);	
+			
+			// initialize the offscreen text input
+			self.textIOElement = getElem("text_io_element");
+			if( !self.textIOElement ) {
+				self.textIOElement = copyElem(selectedElements[0],false);
+				assignAttributes( self.textIOElement, {
+						'id': 'text_io_element',
+						'x': 0,
+						'y': 0,
+						'visibility': 'hidden'
+				});
+				self.textIOElement = getElem("selectorParentGroup").appendChild(self.textIOElement);
+			}	
+		};
+
+		this.toEditMode = function(x, y) {
+//debugger;
+			var enableRedrawMode;
+
+			self.allow_dbl = false;
+//console.log("   changing current_mode = textedit");
+			current_mode = "textedit";
+			selectorManager.requestSelector(selectedElements[0]).showGrips(false);
+					
+			// Make selector group accept clicks
+			sel = selectorManager.requestSelector(selectedElements[0]).selectorRect;			
+			
+			self.init();
+			textManager.initTextArray( selectedElements[0] );
+			
+			if( !arguments.length ) {
+//				self.cursorPos = (textManager.getTextArray().length - 1); //original line
+				self.cursorPos = (textManager.getTextArray().length - 1) < 0 ? 0 : (textManager.getTextArray().length - 1);
+				self.cursorXY = null;
+				self.drawCursorByPosition = true;
+				enableRedrawMode = true;
+			}
+			else {
+				self.cursorPos = null;
+				self.cursorXY = self.screenToPt( x, y );
+				self.drawCursorByPosition = false;
+				enableRedrawMode = false;
+			}
+			
+			// textArray is 0, initTextArray puts the getCurPos == -1
+			if( textManager.getCurPos() == -1 ) {
+				textUIManager.setDrawCursorBeginning( false );
+			}
+			
+			// reset the fontFormatEvent
+			setFontFormatEvent("");	
+			
+			textManager.renderTextSVG( selectedElements[0], true, enableRedrawMode);
+			
+			//self.setCursor();
+			
+			// or use the x, y to know where the cursor should be placed in the textArray
+			
+			// wait a bit before handling doubleclicks
+			setTimeout(function() {
+				self.allow_dbl = true;
+			},300);			
+			
+		};
+		
+		this.toSelectMode = function(selectElem) {
+//console.log("   changing current_mode = select");
+			current_mode = "select";
+			clearInterval(self.blinker);
+			self.blinker = null;
+			//if(selblock) $(selblock).attr('display','none');
+			if(self.cursor) $(self.cursor).attr('visibility','hidden');
+			
+			// reset selection stuff
+			if(self.selectBox) textUIManager.hideSelectionBox();
+			textUIManager.setStartSelectionPos( null );
+			textUIManager.setShiftKeyStatus( false );
+			
+			textUIManager.resetSelectionStartXY();
+			textUIManager.resetSelectionToXY();
+			
+//$('#metric_shift_status')[0].textContent = textUIManager.isShiftKeyPressed();								
+//$('#metric_start_pos')[0].textContent = (textUIManager.getStartSelectionPos() == null) ? "none": textUIManager.getStartSelectionPos() ;
+//$('#metric_cur_pos')[0].textContent = textManager.getCurPos();		
+//$('#metric_cur_char')[0].textContent = svgCanvas.textManager.getTextArray()[ svgCanvas.textManager.getCurPos() ].value;
+//if( textUIManager.getStartSelectionPos() != null ) {
+//	$('#metric_start_char')[0].textContent = textManager.getTextArray()[ textUIManager.getStartSelectionPos() ].value;
+//}
+//else {
+//	$('#metric_start_char')[0].textContent = "-----";
+//} 	
+//$('#metric_start_begins')[0].textContent = ((textUIManager.getSelectionStartXY().is_cursor_beginning == '') || (textUIManager.getSelectionStartXY().is_cursor_beginning == false)) ? "-----": textUIManager.getSelectionStartXY().is_cursor_beginning;
+//$('#metric_cur_begins')[0].textContent = ((textUIManager.getSelectionToXY().is_cursor_beginning == '') || (textUIManager.getSelectionStartXY().is_cursor_beginning == false)) ? "-----" : textUIManager.getSelectionToXY().is_cursor_beginning;	
+			
+			//$(curtext).css('cursor', 'move');
+			
+			if(selectElem) {
+				var curtext = selectedElements[0];
+				clearSelection();
+				//$(curtext).css('cursor', 'move');
+				
+				call("selected", [curtext]);
+				addToSelection([curtext], true);
+			}
+			
+			var curtext = selectedElements[0];
+			if( curtext && !curtext.textContent.length) {
+				canvas.deleteSelectedElements();
+			}
+			
+			$('#text')[0].blur();
+		};		
+		
+		// set the position of the cursor 
+		//
+		// charAttr -- CharacterAttributes object
+		// dyVal -- sum of dy up through the current line
+		// lineWidth -- total Width of line up to current point
+		// textObj -- parent Text Object
+		//
+		this.setCursor = function( charAttr, dyVal, lineWidth, textObj ) {
+			
+			var empty = ($('#text')[0].value === "");
+			$('#text')[0].focus();
+
+			self.cursor = getElem("text_cursor");
+			if (!self.cursor) {
+				self.cursor = document.createElementNS(svgns, "line");
+				assignAttributes(self.cursor, {
+					'id': "text_cursor",
+					'stroke': "#333",
+					'stroke-width': 1
+				});
+				self.cursor = getElem("selectorParentGroup").appendChild(self.cursor);
+			}
+
+			if(!self.blinker) {
+				self.blinker = setInterval(function() {
+					var show = (self.cursor.getAttribute('visibility') === 'hidden');
+					self.cursor.setAttribute('visibility', show?'visible':'hidden');
+				}, 600);
+	
+			}
+
+			// need to get the correct X/Y positions for the cursor
+			locX = (textObj.getAttribute('x') - 0) + lineWidth;
+			locUrY = (textObj.getAttribute('y') - 0) + dyVal - ( charAttr.attr.font_size * charAttr.attr.ascent );
+			locLrY = (textObj.getAttribute('y') - 0) + dyVal + ( charAttr.attr.font_size * charAttr.attr.descent );
+			
+			var start_pt = self.ptToScreen(locX, locLrY);
+			var end_pt = self.ptToScreen(locX, locUrY);
+			
+			assignAttributes(self.cursor, {
+				x1: start_pt.x,
+				y1: start_pt.y,
+				x2: end_pt.x,
+				y2: end_pt.y,
+				visibility: 'visible',
+				display: 'inline'
+			});	
+		};
+		
+		this.setSelectionBox = function( textObj, maxLineWidth ) {
+			
+			self.selectBox = getElem("text_selection_box");
+			if( !self.selectBox ) {
+				self.selectBox = document.createElementNS(svgns, "path");
+				assignAttributes( self.selectBox, {
+					'id': "text_selection_box",
+					'fill': "green",
+					'opacity': .5,
+					'style': "pointer-events:none"
+				});
+				self.selectBox = getElem("selectorParentGroup").appendChild(self.selectBox);				
+			}
+			
+			// now actually do the drawing of the poly
+			var tbbox = textObj.getBBox();
+//$('#metric_tbbox_x')[0].textContent = tbbox.x.toFixed(4);
+//$('#metric_tbbox_y')[0].textContent = tbbox.y.toFixed(4);
+//$('#metric_tbbox_width')[0].textContent = tbbox.width.toFixed(4);
+//$('#metric_tbbox_height')[0].textContent = tbbox.height.toFixed(4);
+//$('#metric_maxline_width')[0].textContent = maxLineWidth.toFixed(4);			
+			
+			var myWidth = maxLineWidth;
+			
+			var textX = (textObj.getAttribute('x') - 0);
+			var textY = (textObj.getAttribute('y') - 0); 
+			
+			// transform the selectionStartXY.cursor_x and selectionToXY.cursor_x incorporating the cursor begins flag.
+			
+			var startXYcursorX = 0;
+			var toXYcursorX = 0;
+			var c; // character from the appropriate position in the text array
+			
+			c = textManager.getTextArray()[ self.startSelectionPos ];
+			if( self.selectionStartXY.is_cursor_beginning ) {
+				startXYcursorX = self.selectionStartXY.cursor_x - c.width;
+				if( startXYcursorX < 0 ) {
+					startXYcursorX = 0;
+				}	
+			}
+			else {
+				startXYcursorX = self.selectionStartXY.cursor_x;
+			}
+			
+//			c = textManager.getTextArray()[ textManager.getCurPos() ];
+//			if( self.selectionToXY.is_cursor_beginning ) {
+//				toXYcursorX = self.selectionToXY.cursor_x - c.width;
+//				if( toXYcursorX < 0 ) {
+//					toXYcursorX = 0;
+//				}	
+//			}
+//			else {
+				toXYcursorX = self.selectionToXY.cursor_x;
+//			}			
+					
+			
+
+			// calculate the 8 points of the selection polygon
+			var ptList = new Array(8);
+			
+			ptList[0] = self.ptToScreen(textX + startXYcursorX, (textY + self.selectionStartXY.cursor_y + self.selectionStartXY.max_descent) );
+			ptList[1] = self.ptToScreen(textX + startXYcursorX, (textY + self.selectionStartXY.cursor_y - self.selectionStartXY.max_ascent) );
+			
+			ptList[4] = self.ptToScreen(textX + toXYcursorX, (textY + self.selectionToXY.cursor_y - self.selectionToXY.max_ascent) );		
+			ptList[5] = self.ptToScreen(textX + toXYcursorX, (textY + self.selectionToXY.cursor_y + self.selectionToXY.max_descent) );				
+			
+			if( self.selectionStartXY.cursor_y == self.selectionToXY.cursor_y ) {
+				ptList[2] = self.ptToScreen(textX + toXYcursorX, (textY + self.selectionToXY.cursor_y - self.selectionToXY.max_ascent) );		
+				ptList[3] = self.ptToScreen(textX + toXYcursorX, (textY + self.selectionToXY.cursor_y + self.selectionToXY.max_descent) );	
+				
+				ptList[6] = self.ptToScreen(textX + startXYcursorX, (textY + self.selectionStartXY.cursor_y + self.selectionStartXY.max_descent) );
+				
+				ptList[7] = self.ptToScreen(textX + startXYcursorX, (textY + self.selectionStartXY.cursor_y + self.selectionStartXY.max_descent) );										
+			}
+			else {
+				ptList[2] = self.ptToScreen(textX + maxLineWidth, (textY + self.selectionStartXY.cursor_y - self.selectionStartXY.max_ascent) );	
+				ptList[3] = self.ptToScreen(textX + maxLineWidth, (textY + self.selectionToXY.cursor_y - self.selectionToXY.max_ascent) );		
+				
+				ptList[6] = self.ptToScreen(textX, (textY + self.selectionToXY.cursor_y + self.selectionToXY.max_descent) );
+				
+				ptList[7] = self.ptToScreen(textX, (textY + self.selectionStartXY.cursor_y + self.selectionStartXY.max_descent) );										
+			}
+	
+			var dList = "M" + ptList[0].x + " " + ptList[0].y + " ";
+			for( var i=1; i<8; i++ ) {
+					dList += "L" + ptList[i].x + " " + ptList[i].y + " ";
+			}		
+			dList += " Z";
+			
+			assignAttributes( self.selectBox, {
+					'd': dList,
+					'visibility': 'visible'
+			});
+
+		};
+		
+		this.mouseDown = function(evt, mouse_target, start_x, start_y) {
+//console.log("   textUIManager: mouseDown -- shiftState " + evt.shiftKey);
+			var pt = self.screenToPt(start_x, start_y);
+//console.log("   textUIManager: mouseDown -- " + mouse_target.nodeName + mouse_target.id + " = " + start_x + "  " + start_y + " == " + pt.x + " " + pt.y);			
+		
+			$('#text')[0].focus();
+			
+			
+			// original code... set the cursor point based on the mouse click only...  
+			// Mode technically says in select mode
+			//setCursorFromPoint(pt.x, pt.y);
+			
+			self.last_x = start_x;
+			self.last_y = start_y;
+			
+			if( current_mode == "textedit" ) {
+				self.toEditMode( start_x, start_y );
+			}			
+
+			if( (textUIManager.getStartSelectionPos() == null) && evt.shiftKey == false ) {
+				// don't go into select mode if you happen to have the shift key held down when you are pressing
+				// the backspace
+				textUIManager.setStartSelectionPos( textManager.getCurPos() );
+				svgCanvas.textUIManager.getSelectionStartXY().is_cursor_beginning = textUIManager.isDrawCursorBeginning();
+			}			
+
+			// TODO: Find way to block native selection
+			self.ismoving = false;
+		};		
+		
+		
+		this.mouseMove = function(evt, mouse_x, mouse_y) {
+			self.ismoving = true;
+			var pt = self.screenToPt(mouse_x, mouse_y);
+			//setEndSelectionFromPoint(pt.x, pt.y);
+			
+			
+			pt.x = (mouse_x / current_zoom);
+			pt.y = (mouse_y / current_zoom);
+
+			if( (textUIManager.getStartSelectionPos() == null) ) {
+				// don't go into select mode if you happen to have the shift key held down when you are pressing
+				// the backspace
+				textUIManager.setStartSelectionPos( textManager.getCurPos() );
+				svgCanvas.textUIManager.getSelectionStartXY().is_cursor_beginning = textUIManager.isDrawCursorBeginning();
+			}	
+			
+			self.toEditMode( pt.x, pt.y );			
+
+		}			
+		
+		this.mouseUp = function(evt, mouse_x, mouse_y) {
+//console.log("   textUIManager: mouseUp -- shiftState " + evt.shiftKey);			
+//console.log("   textUIManager: mouseUp -- " + evt.target.id + " = " + selectedElements[0].id + " = " + mouse_x + "  " + mouse_y + 
+//			" === *zoom: " + (mouse_x / current_zoom) + " - " + (mouse_y / current_zoom) + " === " + self.last_x + " " + self.last_y +
+//			" === shiftKey: " + evt.shiftKey);
+			var pt = self.screenToPt(mouse_x, mouse_y);
+
+			if( (textUIManager.getStartSelectionPos() != null) && evt.shiftKey == false && self.ismoving == false ) {
+				textUIManager.setStartSelectionPos( textManager.getCurPos() );	
+				textUIManager.hideSelectionBox();	
+				textUIManager.resetSelectionStartXY();
+				textUIManager.resetSelectionToXY();
+				
+				textUIManager.getSelectionStartXY().is_cursor_beginning = textUIManager.isDrawCursorBeginning();
+				textUIManager.getSelectionToXY().is_cursor_beginning = textUIManager.isDrawCursorBeginning();
+									
+			}	
+			
+			//setEndSelectionFromPoint(pt.x, pt.y, true);
+			
+			// TODO: Find a way to make this work: Use transformed BBox instead of evt.target 
+// 				if(last_x === mouse_x && last_y === mouse_y
+// 					&& !Utils.rectsIntersect(transbb, {x: pt.x, y: pt.y, width:0, height:0})) {
+// 					textActions.toSelectMode(true);				
+// 				}
+
+			self.ismoving = false;
+			if( self.last_x === (mouse_x / current_zoom) && self.last_y === (mouse_y / current_zoom) && evt.target.parentNode !== selectedElements[0]) {
+			//if( evt.target !== selectedElements[0] ) {
+//console.log("   textUIManager: mouseUp -- going into SelectMode");				
+				self.toSelectMode(true);
+			}
+
+		};		
+
+		this.select = function(target, x, y) {
+			// x and y are already xformed into the local screen zoom coordinates
+//console.log("   textUIManager: select -- " + self.selectModeToggle + " == " + target.nodeName+target.id + " = " + x + "  " + y);
+
+			// this is the toggle for knowing when to go into edit mode...
+			if( self.selectModeToggle == target ) {
+				var pt = self.screenToPt( x, y );
+//console.log("   textUIManager: select call toEditMode -- " + x + " " + y + " === " + pt.x + " " + pt.y );	
+				self.toEditMode(x, y);
+				
+				if( (textUIManager.getStartSelectionPos() == null) /* && evt.shiftKey */) {
+					// don't go into select mode if you happen to have the shift key held down when you are pressing
+					// the backspace
+					textUIManager.setStartSelectionPos( textManager.getCurPos() );
+					textUIManager.getSelectionStartXY().is_cursor_beginning = textUIManager.isDrawCursorBeginning();
+					
+					// set this the same as the start
+					textUIManager.getSelectionToXY().is_cursor_beginning = textUIManager.isDrawCursorBeginning();
+				}				
+			}
+			else {
+				self.selectModeToggle = target;
+			}		
+		};		
+		
+		// this is based on the ffClone hack from vanilla SVG-edit but applied 
+		// to the text_io_element.  Used because for whatever reason Gecko 
+		// browsers: including firefox and chrome, don't like to have 
+		// the textContent updated and have graphical things available
+		// 
+		// don't need to do all the selector stuff from the vanilla
+		this.textClone = function(elem) {
+			if(navigator.userAgent.indexOf('Gecko/') == -1) return elem;
+			var clone = elem.cloneNode(true);
+			elem.parentNode.insertBefore(clone, elem);
+			elem.parentNode.removeChild(elem);
+			return clone;
+		}		
+
+		// verify that this is a printable character
+		// http://www.codingforums.com/archive/index.php/t-17925.html
+		this.isPrintable = function( c ) {
+			var re=/[^\x20-\x7e]$/;
+			return !re.test(c);			
+		};
+
+		// transform a screen coordinate to object x,y
+		this.ptToScreen = function(x_in, y_in) {
+			var out = {
+				x: x_in,
+				y: y_in
+			}
+			
+			if(self.matrix) {
+				var pt = transformPoint(out.x, out.y, self.matrix);
+				out.x = pt.x;
+				out.y = pt.y;
+			}
+			
+			out.x *= current_zoom;
+			out.y *= current_zoom;
+			
+			return out;
+		};	
+
+		// transform an object x,y to screen coordinate
+		this.screenToPt = function(x_in, y_in) {
+			var out = {
+				x: x_in,
+				y: y_in
+			}
+			
+			//out.x /= current_zoom;
+			//out.y /= current_zoom;			
+	
+			if(self.matrix) {
+				var pt = transformPoint(out.x, out.y, self.matrix.inverse());
+				out.x = pt.x;
+				out.y = pt.y;
+			}
+			
+			return out;
+		};	
+
+		this.hideCursor = function() {
+			
+			clearInterval(self.blinker);
+			self.blinker = null;
+
+			if(self.cursor) $(self.cursor).attr('visibility','hidden');			
+			if(self.cursor) {
+				self.cursor.setAttribute('visibility', 'hidden');
+			}
+		};	
+		
+		this.hideSelectionBox = function() {
+			if(self.selectBox){
+				self.selectBox.setAttribute('visibility','hidden');
+			}
+		};
+		
+		this.setCursorPos = function( pos ) {
+			self.cursorPos = pos;			
+		};
+		
+		this.getCursorPos = function() {
+			return self.cursorPos;
+		};
+		
+		this.isDrawCursorByPosition = function() {
+			return self.drawCursorByPosition;	
+		};
+		
+		this.setDrawCursorByPosition = function( val ) {
+			self.drawCursorByPosition = val;
+		};
+		
+		this.getCursorXY = function () {
+			return self.cursorXY;
+		};
+		
+		this.setCursorXY = function( val ) {
+			self.cursorXY = val;
+		};
+		
+		this.setDrawCursorBeginning = function( val ) {
+			self.drawCursorBeginning = val;
+		};
+		
+		this.isDrawCursorBeginning = function() {
+			return self.drawCursorBeginning;
+		};
+		
+		this.setDownCursor = function(x_in,y_in) {
+			self.downCursor.x = x_in;
+			self.downCursor.y = y_in;
+		};
+		
+		this.getDownCursor = function() {
+			return self.downCursor;
+		};
+		
+		this.setUpCursor = function(x_in,y_in) {
+			self.upCursor.x = x_in;
+			self.upCursor.y = y_in;
+		};
+		
+		this.getUpCursor = function() {
+			return self.upCursor;
+		};
+		
+		this.getStartSelectionPos = function() {
+			return self.startSelectionPos;
+		};
+		
+		this.setStartSelectionPos = function( val ) {
+			self.startSelectionPos = val;
+		};
+		
+		this.getSelectionStartXY = function() {
+			return self.selectionStartXY;
+		};
+		
+		this.setSelectionStartXY = function( val ) {
+			self.selectionStartXY = val;
+		};
+		
+		this.getSelectionToXY = function() {
+			return self.selectionToXY;
+		};
+		
+		this.setSelectionToXY = function( val ) {
+			self.selectionToXY = val;
+		};		
+		
+		this.resetSelectionStartXY = function() {
+	      self.selectionStartXY = {
+	      						'is_cursor_beginning':'',
+									'cursor_x': 0,
+									'cursor_y': 0,
+									'max_ascent': 0,
+									'max_descent': 0
+			};			
+		};
+		
+		this.resetSelectionToXY = function() {
+	      self.selectionToXY = {
+	      						'is_cursor_beginning':'',
+									'cursor_x': 0,
+									'cursor_y': 0,
+									'max_ascent': 0,
+									'max_descent': 0
+			};			
+		};		
+		
+		
+      // *********************
+      //   shiftKeyPressed
+      // *********************
+      this.isShiftKeyPressed = function() {
+			return self.shiftKeyPressed;
+      };
+  
+  
+      // *********************
+      //   setShiftKeyStatus
+      // *********************
+      this.setShiftKeyStatus = function( val ) {
+			self.shiftKeyPressed = val;			
+      };
+  
+		// *********************
+		//   moveUpChar
+		// *********************
+		// move cursor up one line
+		this.moveUpChar = function( ) {
+			self.cursorPos = null;
+			self.setCursorXY(self.getUpCursor());
+			self.drawCursorByPosition = false;
+		};		
+		
+		// *********************
+		//   moveDownChar
+		// *********************
+		// move cursor down one line
+		this.moveDownChar = function( ) {
+			self.cursorPos = null;
+			self.setCursorXY(self.getDownCursor());
+			self.drawCursorByPosition = false;
+		};
+		
+		// **************************************
+		// update Font Characteristic UI Elements
+		// **************************************
+		// typically you don't want your lower levels updating the user interface, but this
+		// is a special case because just calling updateContextPanel() after a keypress
+		// has lots of bad side effects
+		this.updateFontUIFormElements = function (){
+			if (canvas.getItalic()) {
+				$('#tool_italic').addClass('push_button_pressed').removeClass('tool_button');
+			}
+			else {
+				$('#tool_italic').removeClass('push_button_pressed').addClass('tool_button');
+			}
+			if (canvas.getBold()) {
+				$('#tool_bold').addClass('push_button_pressed').removeClass('tool_button');
+			}
+			else {
+				$('#tool_bold').removeClass('push_button_pressed').addClass('tool_button');
+			}
+			
+			window.svgEditor.fontCharacteristics(canvas.getFontFamily());//show or hide bold and italic buttons based on font
+			
+			//$('#font_family').val(elem.getAttribute("font-family"));
+			$('#font_family').val(canvas.getFontFamily());
+			//$('#font_size').val(elem.getAttribute("font-size"));
+			$('#font_size').val(canvas.getFontSize());			
+			
+		};
+		
+		// ************************************
+		// propagateSelectionChanges
+		// ************************************
+		// called when the font characteristics of a selected region are changed by the user
+		// loop through the selected elements and change each characterAttribute appropriately
+		// do some characterAttribute object magic to only create them as necessary
+		this.propagateSelectionChanges = function( args ) {
+
+			var new_attribute = args.attribute;
+			var new_val = args.value;
+			
+			var selectedCharAttributes = {};
+			var newCharAttributes = {};
+			
+			var fromPos = self.startSelectionPos;
+			var toPos = textManager.getCurPos();
+			var f, t;
+			
+			// pick the correct characters using the 
+			// cursor position
+			var start_is_cursor_beginning = textUIManager.getSelectionStartXY().is_cursor_beginning;
+			var to_is_cursor_beginning = textUIManager.getSelectionToXY().is_cursor_beginning;
+
+			// pick the correct characters using the 
+			// cursor position
+			if( toPos < fromPos && ( fromPos - toPos == 1) && to_is_cursor_beginning == false && start_is_cursor_beginning == true ) {
+				locpos = toPos - 1;
+				//textUIManager.setDrawCursorBeginning( false );	
+				
+				fromPos--;
+			}
+			else if( toPos < fromPos && to_is_cursor_beginning == true && start_is_cursor_beginning == false ) {
+				locpos = toPos - 1;
+				//textUIManager.setDrawCursorBeginning( false );	
+			}
+			else if( toPos < fromPos && to_is_cursor_beginning == true && start_is_cursor_beginning == true ) {
+				locpos = toPos - 1;
+				//textUIManager.setDrawCursorBeginning( false );						
+				fromPos--;
+			}
+			else if( toPos < fromPos && to_is_cursor_beginning == false && start_is_cursor_beginning == false ) {
+				locpos = toPos;
+				//textUIManager.setDrawCursorBeginning( false );						
+				toPos++;	
+			}
+			else if( toPos < fromPos && to_is_cursor_beginning == false && start_is_cursor_beginning == true ) {
+				locpos = toPos;
+				//textUIManager.setDrawCursorBeginning( false );						
+				toPos++;
+				fromPos--;
+			}
+			else if( fromPos < toPos && ( toPos - fromPos == 1) && start_is_cursor_beginning == false && to_is_cursor_beginning == true ) {
+				locpos = fromPos - 1;
+				//textUIManager.setDrawCursorBeginning(false);
+				toPos--;
+			}
+			else if( fromPos < toPos && start_is_cursor_beginning == true && to_is_cursor_beginning == false) {
+				locpos = fromPos - 1;
+				textUIManager.setDrawCursorBeginning(false);
+			}					
+			else if( fromPos < toPos && start_is_cursor_beginning == true && to_is_cursor_beginning == true) {
+				locpos = fromPos - 1;
+				//textUIManager.setDrawCursorBeginning(false);
+				
+				toPos--;	
+			}
+			else if( fromPos < toPos && start_is_cursor_beginning == false && to_is_cursor_beginning == false ) {
+				locpos = fromPos;
+				//textUIManager.setDrawCursorBeginning(false);
+				fromPos++;
+			}
+			else if( fromPos < toPos && start_is_cursor_beginning == false && to_is_cursor_beginning == true ) {
+				locpos = fromPos;
+				//textUIManager.setDrawCursorBeginning(false);
+				
+				fromPos++;
+				toPos--;	
+			}
+			else if( fromPos == toPos && start_is_cursor_beginning == true && to_is_cursor_beginning == true ) {
+				locpos = toPos;
+				//textUIManager.setDrawCursorBeginning( false );	
+				return;					
+			}	
+			else if( fromPos == toPos && start_is_cursor_beginning == false && to_is_cursor_beginning == false) {
+				locpos = fromPos;
+				//textUIManager.setDrawCursorBeginning( false );
+				return;
+			}
+			else if( fromPos == toPos && start_is_cursor_beginning == true && to_is_cursor_beginning == false ) {
+				locpos = fromPos -1 ;	
+				//textUIManager.setDrawCursorBeginning( false );
+			}
+			else if( fromPos == toPos && start_is_cursor_beginning == true && to_is_cursor_beginning == false ) {
+				locpos = fromPos -1 ;	
+				//textUIManager.setDrawCursorBeginning( false );
+			}				
+
+			// reset the order:
+			if( fromPos <= toPos ) {
+				f = fromPos;
+				t = toPos;
+			}
+			else {
+				f = toPos;
+				t = fromPos;
+			}			
+			
+			// build list of unique characterAttributes;
+			for( var i = f; i <= t; i++ ) {
+				var taCharAttrId = textManager.getTextArray()[i].characterAttribute;
+				selectedCharAttributes[taCharAttrId] = taCharAttrId;
+			};
+			
+			
+			// clone each unique characterAttribute
+			var characterAttributeArray = textManager.getCharacterAttributes();
+
+			for( var key in selectedCharAttributes ) {
+				var oldCharAttr = characterAttributeArray[ key ];
+				var newCharAttr = oldCharAttr.deepClone();
+				
+				newCharAttr.attr[new_attribute] = new_val;
+
+//console.log(" old:  " + oldCharAttr.attr.font_size + " == new: " + newCharAttr.attr.font_size);
+
+			// add to the textManager.characterAttributes list;
+				characterAttributeArray.push( newCharAttr );
+				var newCharAttrId = characterAttributeArray.length - 1;
+				
+				newCharAttributes[key] = {
+									'newId': newCharAttrId,
+									'value': newCharAttr
+				};				
+			}
+			
+			// update each character in the selection region with the new characterAttribute
+			// based on the original
+			for( var i = f; i <= t; i++ ) {
+				var charElement = textManager.getTextArray()[i];
+				charElement.characterAttribute = newCharAttributes[charElement.characterAttribute].newId;
+				
+				// also need to recalculate the width of each effected character
+				var myWidth = self.generateCharacterWidth( characterAttributeArray[charElement.characterAttribute], charElement.value);
+				charElement.width = myWidth;
+				
+			};								
+		};
+		
+		// ************************************
+		// generateCharacterWidth
+		// ************************************
+		// genenerate a width for a character using the characters
+		// attributes and the offscreen text object		
+		this.generateCharacterWidth = function( charAttr, locChar ) {
+			var textIO = getElem("text_io_element");
+			var locWidth = 0;
+			
+			if( locChar != "\n" ) {
+				textIO.textContent = locChar;
+				
+				// set the text_io_element to the correct character attributes
+				charAttr.setSVGFromAttr( textIO );
+				var start = textIO.getStartPositionOfChar(0);
+				var end = textIO.getEndPositionOfChar(0);
+				locWidth = end.x - start.x;				
+			}
+			else {
+				locWidth = 0;
+			}	
+			
+			return locWidth;		
+		};
+		
+		//******************************
+		// isTextSelected 
+		//******************************
+		//  determines if there is text that is really selected checking the 
+		//  state of all selection variables
+		this.isTextSelected = function () {
+			var fromPos = self.startSelectionPos;
+			var toPos = textManager.getCurPos();
+			var f, t;
+			
+			// pick the correct characters using the 
+			// cursor position
+			var start_is_cursor_beginning = textUIManager.getSelectionStartXY().is_cursor_beginning;
+			var to_is_cursor_beginning = textUIManager.getSelectionToXY().is_cursor_beginning;
+		
+			// fromPos will be null in ALL cases where you are just moving around via 
+			// arrow keys.
+			// fromPos is always set in some fassion when using the mouse which is why
+			// we need to check the start and to cursor positions.
+			if( fromPos == toPos && start_is_cursor_beginning == true && to_is_cursor_beginning == true ) {
+				return false;					
+			}	
+			else if( fromPos == toPos && start_is_cursor_beginning == false && to_is_cursor_beginning == false) {
+				return false;
+			}
+			else if( fromPos == null && toPos != null ) {
+				return false;
+			}
+			else {
+				return true;
+			}
+		};
+		
+		//*******************************
+		// resetTextSelectedRegion
+		//*******************************
+		// convenience method to reset the text selection states, should prevent rerendering and lockups
+		this.resetTextSelectedRegion = function() {
+				// probably need to reset all the start position stuff?
+				self.setStartSelectionPos( null );
+				self.hideSelectionBox();							
+				self.resetSelectionStartXY();
+				self.resetSelectionToXY();				
+		};
+		
+		//*******************************
+		// getSelectBoxFromToPositions
+		//*******************************
+		// return the from and to positions in the textArray
+		this.getSelectBoxFromToPositions = function() {
+			var fromPos = self.startSelectionPos;
+			var toPos = textManager.getCurPos();
+			var f, t;
+			
+			// pick the correct characters using the 
+			// cursor position
+			var start_is_cursor_beginning = textUIManager.getSelectionStartXY().is_cursor_beginning;
+			var to_is_cursor_beginning = textUIManager.getSelectionToXY().is_cursor_beginning;
+
+			// pick the correct characters using the 
+			// cursor position
+			if( toPos < fromPos && ( fromPos - toPos == 1) && to_is_cursor_beginning == false && start_is_cursor_beginning == true ) {
+				fromPos--;
+			}
+			else if( toPos < fromPos && to_is_cursor_beginning == true && start_is_cursor_beginning == false ) {
+				locpos = toPos - 1;
+			}
+			else if( toPos < fromPos && to_is_cursor_beginning == true && start_is_cursor_beginning == true ) {						
+				fromPos--;
+			}
+			else if( toPos < fromPos && to_is_cursor_beginning == false && start_is_cursor_beginning == false ) {					
+				toPos++;	
+			}
+			else if( toPos < fromPos && to_is_cursor_beginning == false && start_is_cursor_beginning == true ) {						
+				toPos++;
+				fromPos--;
+			}
+			else if( fromPos < toPos && ( toPos - fromPos == 1) && start_is_cursor_beginning == false && to_is_cursor_beginning == true ) {
+				toPos--;
+			}
+			else if( fromPos < toPos && start_is_cursor_beginning == true && to_is_cursor_beginning == false) {
+			}					
+			else if( fromPos < toPos && start_is_cursor_beginning == true && to_is_cursor_beginning == true) {
+				toPos--;	
+			}
+			else if( fromPos < toPos && start_is_cursor_beginning == false && to_is_cursor_beginning == false ) {
+				fromPos++;
+			}
+			else if( fromPos < toPos && start_is_cursor_beginning == false && to_is_cursor_beginning == true ) {
+				fromPos++;
+				toPos--;	
+			}				
+
+			// reset the order:
+			if( fromPos <= toPos ) {
+				f = fromPos;
+				t = toPos;
+			}
+			else {
+				f = toPos;
+				t = fromPos;
+			}	
+			
+			return ( { 'fromPos': f, 'toPos': t } );
+						
+		};
+
+	};	
+}());
+var textUIManager = this.textUIManager = new TextUIManager();
+
+
 
 // Should this return an array by default, so extension results aren't overwritten?
 var runExtensions = this.runExtensions = function(action, vars, returnArray) {
@@ -3843,6 +6366,83 @@ var textActions = canvas.textActions = function() {
 		}, 300);
 		
 	}
+	
+	// selected -- text object
+	// changes -- JSON of attributes that you want to change, must minimally contain x and y
+	// attr -- the specific attribute to change -- generally optional
+	function propagateTextChanges( selected, changes, attr ) {
+
+		// MJN Hack
+		// This is the bottom of the pyramid.
+		// loop through all the child tspans and apply the x and y
+		// MJN TODO will need to make this a better function to recalculate y values + offset
+		// MJN TODO tuneup the repeated isFirstChild stuff
+		var child = selected.firstChild;
+		var isFirstChild = true;
+		var prevTspanY = 0;
+		var resetSelectorBox = false;
+		  
+		while( child != null ) {
+			if( child.nodeName == "tspan" && (attr == 'font-family' || attr == 'font-size' || attr == 'font-weight' || attr == 'font-style' ) ) {
+			   	//var xchange = {};
+					//xchange['font-family'] = changes['font-family'];
+					//assignAttributes(child, xchange, 100, true);
+					
+					assignAttributes(child, changes, 100, true);
+					
+					//if( textActions.isFirstTspanOfLine( child ) ) {
+					//	textActions.setNewDyValueForLine(child);	
+					//}	
+					resetSelectorBox = true;					
+			}
+			else if( child.nodeName == "tspan" && (attr == 'fill')) {
+				assignAttributes(child, changes, 100, true);
+			}			
+			else if( child.nodeName == "tspan" && child.getAttribute('x')) {
+				var xchange = {};
+
+				if( attr == 'x' ) {
+                  xchange['x'] = changes['x'];
+				}
+				else if( attr == 'font-size' ) {
+					// parent element has the new font-size applied at this time
+					// the y position of the firstChild should not change
+					// remainder tspans need to change based on the new height of the
+					// current (child) tspan
+					if( isFirstChild ) {
+						isFirstChild = false;
+					}	
+					else {
+              	        xchange['dy'] = (getBBox(child).height - 0);
+					}
+              	
+				}
+				else {
+                 	xchange['x'] = changes['x'];
+                 	
+                 	// don't need  to propagate Y changes because
+                 	// all child tspan elements are all dx/dy from the bounding box of the text element
+/*                 	if( isFirstChild ) {
+                 	        xchange['y'] = changes['y'];
+                 	        isFirstChild = false;
+                 	        prevTspanY = changes['y'];
+                 	}
+                 	else {
+                 	        prevTspanY = prevTspanY + getBBox(child).height;
+                 	        xchange['y'] = prevTspanY;
+                 	}*/
+				}
+
+				assignAttributes(child, xchange, 1000, true);
+			}		
+         child = child.nextSibling;
+		}
+		
+		//resize the box
+		if( (current_mode == 'select') && (resetSelectorBox) ) {
+			selectorManager.requestSelector(selected).resize();
+		}
+	}	
 
 	return {
 		select: function(target, x, y) {
@@ -3947,6 +6547,7 @@ var textActions = canvas.textActions = function() {
 				textActions.toSelectMode();
 			}
 		},
+		propagateTextChanges: propagateTextChanges,
 		init: function(inputElem) {
 			if(!curtext) return;
 
@@ -8790,6 +11391,47 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 			} else if (attr == "#href") {
 				setHref(elem, newValue);
 			}
+			else if( (current_mode == "select") && (elem.nodeName == "text") ) {
+				// MJN Hack
+				// If we've fallen to here, then most likely we just need to detect if
+				// the current element is a text object and perform some magic to 
+				// change the dy value for all tspan child objects
+				// x changes need to propagate down -- no dy recalculation
+				// all other attribute changes need a dy recalculation 
+				//		get a perspective height from making an invisible text object with the same
+				//		attributes as the current text object
+				//		set some text and get the height of the bounding box
+				//		use that as the new dy + some pixel gap constant
+				//		remove temp text object and propagate the dy value down
+				//
+				// 2010-08-03 this should only fire if you've changed the x, y, or font-size using the
+				// UI and manually changing the values
+
+				
+				// Always set the text object parent element -- except for the fill
+				if( attr != 'fill' ) {
+					$(elem).attr(attr, newValue);
+				}				
+
+				var tspanAttrWhiteList = [ 'x', 'fill' ];
+				// only set attributes in the tspan children if it is in the 
+				// tspanAttrWhiteList
+				if( $.inArray( attr, tspanAttrWhiteList) !== -1  ) {
+					
+					//  MJN TODO -- this will need to change to a more intelligent routine that will recalculate all the x/y values as necessary
+					var changes = {};
+					
+					if( parseInt( newValue ) ) {
+						changes[attr] = (newValue - 0);
+					}
+					else {
+						changes[attr] = newValue;	
+					}
+
+					textActions.propagateTextChanges( elem, changes, attr );			
+				}
+			}			
+
 			else elem.setAttribute(attr, newValue);
 			if (i==0)
 				selectedBBoxes[i] = getBBox(elem);
@@ -8797,7 +11439,10 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 			// where other text attributes are changed. 
 			if(elem.nodeName == 'text') {
 				if((newValue+'').indexOf('url') == 0 || ['font-size','font-family','x','y'].indexOf(attr) >= 0 && elem.textContent) {
-					elem = ffClone(elem);
+					var _locelem = ffClone(elem);
+					if( _locelem ) {
+						elem = _locelem;
+					}
 				}
 			}
 			// Timeout needed for Opera & Firefox
