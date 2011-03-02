@@ -311,6 +311,10 @@
 		
 					'go_up':'go-up.png',
 					'go_down':'go-down.png',
+					
+					'format_justify_center':'format_justify_center',
+					'format_justify_left':'format_justify_left',
+					'format_justify_right':'format_justify_right',										
 		
 					'ok':'save.png',
 					'cancel':'cancel.png',
@@ -373,7 +377,11 @@
 					'#linecap_butt,#cur_linecap':'linecap_butt',
 					'#linecap_round':'linecap_round',
 					'#linecap_square':'linecap_square',
-					
+
+					'#tool_format_justify_center':'format_justify_center',
+					'#tool_format_justify_right':'format_justify_right',
+					'#tool_format_justify_left':'format_justify_left',
+						
 					'#linejoin_miter,#cur_linejoin':'linejoin_miter',
 					'#linejoin_round':'linejoin_round',
 					'#linejoin_bevel':'linejoin_bevel',
