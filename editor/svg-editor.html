@@ -349,6 +349,16 @@
 	</div>
 
 	<div id="text_panel">
+		 <div class="tool_sep"></div>
+		
+		 <div class="toolset" style="clear:left;">
+		      <div class="push_button" id="tool_format_justify_left" title="Text Align Left"></div>
+		      <div class="push_button" id="tool_format_justify_center" title="Text Align Center"></div>
+		      <div class="push_button" id="tool_format_justify_right" title="Text Align Right"></div>
+		 </div>
+		 
+		 <div class="tool_sep"></div>		 
+
 		<div class="toolset">
 			<div class="tool_button" id="tool_bold" title="Bold Text [B]"><span></span>B</div>
 			<div class="tool_button" id="tool_italic" title="Italic Text [I]"><span></span>i</div>
@@ -362,6 +372,7 @@
 			<div id="font_family_dropdown" class="dropdown">
 				<button></button>
 				<ul>
+					<li lyb:b="Y" lyb:i="Y" lyb:bi="Y" lyb:asc="0.9312" lyb:dsc="0.2403" lyb:le="0" lyb:fn="DroidSerif" style="font-family:DroidSerif">DroidSerif</li>				
 					<li style="font-family:serif">Serif</li>
 					<li style="font-family:sans-serif">Sans-serif</li>
 					<li style="font-family:cursive">Cursive</li>
@@ -377,7 +388,9 @@
 		</label>
 		
 		<!-- Not visible, but still used -->
-		<input id="text" type="text" size="35"/>
+		<!-- <input id="text" type="text" size="35"/> -->
+  		<input id="texta" type="text" size="35"/>
+  		<textarea id="text" rows="10" cols="40"></textarea>  		
 	</div>
 
 	<!-- formerly gsvg_panel -->
