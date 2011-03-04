@@ -203,6 +203,10 @@ var cur_shape = all_properties.shape;
 // default size of 1 until it needs to grow bigger
 var selectedElements = new Array(1);
 
+	// MJN Hack -- set this to the font formating event when the user clicks on the
+	// specific event.  Used to indicate that a new tspan could be created in the keydown event
+var fontFormatEvent = "";
+
 
 // Function: getElem
 // Get a DOM element by ID within the SVG root element.
@@ -665,6 +669,119 @@ var FontManager;
 }());
 
 var fontManager = this.fontManager = new FontManager();
+
+//just set some fontElement data
+(function() {
+	fontManager.addFontElement(         
+	 			{ 
+	 				"ascent" : 0.9312000000000000277111666946,
+	            "boldInd" : "Y",
+	            "boldItalicInd" : "Y",
+	            "cfgFontId" : 121,
+	            "descent" : 0.2403000000000000135891298214,
+	            "fontLocation" : "Droid-Serif/DroidSerif",
+	            "fontName" : "DroidSerif",
+	            "italicInd" : "Y",
+	            "latestDate" : "1281934800000",
+	            "leading" : 0
+          });
+          
+   fontManager.addFontElement(
+             { "ascent" : 0.8921000000000000040856207306,
+            "boldInd" : "N",
+            "boldItalicInd" : "N",
+            "cfgFontId" : 104,
+            "descent" : 0.2587999999999999745092793546,
+            "fontLocation" : "ArtBrush/Artbrush",
+            "fontName" : "ArtBrush",
+            "italicInd" : "N",
+            "latestDate" : "1281934800000",
+            "leading" : 0
+          });
+   
+   fontManager.addFontElement(
+             { "ascent" : 0.9283000000000000140332190313,
+            "boldInd" : "Y",
+            "boldItalicInd" : "Y",
+            "cfgFontId" : 107,
+            "descent" : 0.2358999999999999985789145285,
+            "fontLocation" : "Bitstream-Vera-Sans-Mono/VeraMono",
+            "fontName" : "BitstreamVeraSansMono",
+            "italicInd" : "Y",
+            "latestDate" : "1281934800000",
+            "leading" : 0
+          });
+          
+	fontManager.addFontElement(
+          { "ascent" : 1.187000000000000055067062021,
+            "boldInd" : "N",
+            "boldItalicInd" : "N",
+            "cfgFontId" : 108,
+            "descent" : 0.2819999999999999729105581991,
+            "fontLocation" : "Blazing/BlazingItalic",
+            "fontName" : "BlazingItalic",
+            "italicInd" : "N",
+            "latestDate" : "1281934800000",
+            "leading" : 0
+          }	
+	);
+	
+	fontManager.addFontElement(
+          { "ascent" : 0.9312000000000000277111666946,
+            "boldInd" : "N",
+            "boldItalicInd" : "N",
+            "cfgFontId" : 120,
+            "descent" : 0.2403000000000000135891298214,
+            "fontLocation" : "Droid-Sans-Mono/DroidSansMono",
+            "fontName" : "DroidSansMono",
+            "italicInd" : "N",
+            "latestDate" : "1281934800000",
+            "leading" : 0
+          }	
+	);
+	
+	fontManager.addFontElement(
+          { "ascent" : 0.9283000000000000140332190313,
+            "boldInd" : "N",
+            "boldItalicInd" : "N",
+            "cfgFontId" : 118,
+            "descent" : 0.2358999999999999985789145285,
+            "fontLocation" : "DejaVu-Sans/DejaVuSans",
+            "fontName" : "DejaVuSans",
+            "italicInd" : "Y",
+            "latestDate" : "1281934800000",
+            "leading" : 0
+          }	
+	);
+	
+	fontManager.addFontElement(
+          { "ascent" : 1.148500000000000076383344094,
+            "boldInd" : "Y",
+            "boldItalicInd" : "N",
+            "cfgFontId" : 131,
+            "descent" : 0.1734999999999999875655021242,
+            "fontLocation" : "HighlandGothicFLF/HighlandGothicFLF",
+            "fontName" : "HighlandGothicFLF",
+            "italicInd" : "N",
+            "latestDate" : "1281934800000",
+            "leading" : 0.09700000000000000288657986403
+          }	
+	);
+	
+	fontManager.addFontElement(
+          { "ascent" : 0.9020000000000000239808173319,
+            "boldInd" : "N",
+            "boldItalicInd" : "N",
+            "cfgFontId" : 183,
+            "descent" : 0.2660000000000000142108547152,
+            "fontLocation" : "ZephyrScriptFLF/ZephyrScriptFLF",
+            "fontName" : "ZephyrScriptFLF",
+            "italicInd" : "N",
+            "latestDate" : "1281934800000",
+            "leading" : 0.08000000000000000166533453694
+          }	
+	); 	          
+}());
 	
 	
 
@@ -2516,6 +2633,7 @@ var TextUIManager;
 		}			
 		
 		this.mouseUp = function(evt, mouse_x, mouse_y) {
+console.log("textUIManager.mouseUp");
 //console.log("   textUIManager: mouseUp -- shiftState " + evt.shiftKey);			
 //console.log("   textUIManager: mouseUp -- " + evt.target.id + " = " + selectedElements[0].id + " = " + mouse_x + "  " + mouse_y + 
 //			" === *zoom: " + (mouse_x / current_zoom) + " - " + (mouse_y / current_zoom) + " === " + self.last_x + " " + self.last_y +
@@ -3094,6 +3212,13 @@ var TextUIManager;
 }());
 var textUIManager = this.textUIManager = new TextUIManager();
 
+var getFontFormatEvent = this.getFontFormatEvent = function() {
+		return fontFormatEvent;
+}
+
+var setFontFormatEvent = this.setFontFormatEvent = function( val ) {
+		fontFormatEvent = val;	
+}
 
 
 // Should this return an array by default, so extension results aren't overwritten?
@@ -3839,6 +3964,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 		case "text":
 		case "use":
 			finishUp();
+			textActions.propagateTextChanges( selected, changes );
 			break;
 		case "g":
 			var gsvg = $(selected).data('gsvg');
@@ -4776,6 +4902,17 @@ var addToSelection = this.addToSelection = function(elemsToAdd, showGrips) {
 	var i = elemsToAdd.length;
 	while (i--) {
 		var elem = elemsToAdd[i];
+
+		// MJN Hacking
+		// if a tspan has somehow been added, get it's parent and add that instead...
+		// selectedTspanElem global variable should be set if you really need to 
+		// know if a tspan has been selected
+		if( elem.nodeName == 'tspan') {
+			textPar = getElem(elem.id);
+			elem = elem.parentNode;
+		}		
+		
+		
 		if (!elem || !getBBox(elem)) continue;
 
 		if(elem.tagName === 'a' && elem.childNodes.length === 1) {
@@ -4943,6 +5080,23 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	// if it was a <use>, Opera and WebKit return the SVGElementInstance
 	if (mouse_target.correspondingUseElement) mouse_target = mouse_target.correspondingUseElement;
 	
+	// MJN Hack
+   // Need to hold on to the tspan reference if one is clicked.
+   // critical for the rest of the app to know which tspan should be edited
+   // still let the parent Text object flow back into the main app for 
+   // intelligent Text object selection
+   if( mouse_target.nodeName == "tspan" ) {
+
+   	//setSelectedTspanElem(mouse_target.id);   	
+//console.log(" getMouseTarget elem.id:  " + mouse_target.id + "  nodeName: " + mouse_target.nodeName + "   current_mode: " + current_mode );
+		textPar = getElem( mouse_target.parentNode.id );
+//console.log(" getMouseTarget textpar.id:  " + textPar.id + "  nodeName: " + textPar.nodeName + "   current_mode: " + current_mode );
+		mouse_target = textPar;
+   }	
+   else {
+   	//setSelectedTspanElem(null);
+   }
+	
 	// for foreign content, go up until we find the foreignObject
 	// WebKit browsers set the mouse target to the svgcanvas div 
 	if ([mathns, htmlns].indexOf(mouse_target.namespaceURI) >= 0 && 
@@ -5078,6 +5232,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		
 		start_transform = mouse_target.getAttribute("transform");
 		var tlist = getTransformList(mouse_target);
+		
+console.log("Mouse Down: " + current_mode);
+
 		switch (current_mode) {
 			case "select":
 				started = true;
@@ -5298,6 +5455,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				});
 				break;
 			case "text":
+console.log("Emit Text");
 				started = true;
 				var newText = addSvgElementFromJson({
 					"element": "text",
@@ -5306,15 +5464,36 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						"x": x,
 						"y": y,
 						"id": getNextId(),
-						"fill": cur_text.fill,
 						"stroke-width": cur_text.stroke_width,
-						"font-size": cur_text.font_size,
-						"font-family": cur_text.font_family,
-						"text-anchor": "middle",
-						"xml:space": "preserve",
-						"opacity": cur_shape.opacity
+						"text-anchor": "start",
+						"xml:space": "preserve"
 					}
 				});
+				
+				// the fill attribute gets set as a default in addSvgElementFromJson...
+				// just quickly remove it
+				//newText.removeAttribute('fill');
+
+				//This section of code only gets hit when you have clicked on the text tool and then clicked in the
+				//canvas area.  addSvgElementFromJson has added the parent Text object to the SVG
+				//now we just need to add a tspan child and move on
+				tspanElem = svgdoc.createElementNS(svgns, "tspan");
+				assignAttributes(tspanElem, {
+						"xml:space": "preserve",
+						"x": x,
+						"dy": 0,
+						"id": getNextId(),
+						"fill": cur_text.fill,							
+						"font-style": cur_text.font_style,
+						"font-weight": cur_text.font_weight,
+						"font-size": cur_text.font_size,
+						"font-family": cur_text.font_family,
+						"se:emptyline": "true"					
+				}, 100);
+				tspanElem.textContent = " ";
+				cleanupElement(tspanElem);
+				newText.appendChild(tspanElem);				
+				
 // 					newText.textContent = "text";
 				break;
 			case "path":
@@ -5326,9 +5505,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				started = true;
 				break;
 			case "textedit":
-				start_x *= current_zoom;
-				start_y *= current_zoom;
-				textActions.mouseDown(evt, mouse_target, start_x, start_y);
+				//start_x *= current_zoom;
+				//start_y *= current_zoom;
+				//textActions.mouseDown(evt, mouse_target, start_x, start_y);
+				textUIManager.mouseDown(evt, mouse_target, start_x, start_y);
 				started = true;
 				break;
 			case "rotate":
@@ -5386,7 +5566,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		}
 
 		evt.preventDefault();
-		
+
 		switch (current_mode)
 		{
 			case "select":
@@ -5711,7 +5891,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 // 						},100);
 // 					}
 				
-				textActions.mouseMove(mouse_x, mouse_y);
+				//textActions.mouseMove(mouse_x, mouse_y);
+				textUIManager.mouseMove( evt, mouse_x, mouse_y );
 				
 				break;
 			case "rotate":
@@ -5773,6 +5954,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		var useUnit = false; // (curConfig.baseUnit !== 'px');
 		
 		started = false;
+console.log("Mouse Up:  " + current_mode);		
 		switch (current_mode)
 		{
 			// intentionally fall-through to select here
@@ -5800,8 +5982,46 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 							cur_properties.stroke_linecap = selected.getAttribute("stroke-linecap");
 						}
 						if (selected.tagName == "text") {
-							cur_text.font_size = selected.getAttribute("font-size");
-							cur_text.font_family = selected.getAttribute("font-family");
+							//MJN Hack
+							//this is setting the global font formatting state based on the
+							//selected text object.
+							//need to alter this to add the additional font-style and font-weight
+							//and use the current selected tspan as the source--if not null of course.
+							//cur_text.font_size = selected.getAttribute("font-size");
+							//cur_text.font_family = selected.getAttribute("font-family");
+							
+							var curCharacterAttrib = textManager.getCurCharacterAttribute();
+
+							try {
+								//cur_text.fill = tspanElem.getAttribute('fill');
+								//cur_text.font_style = tspanElem.getAttribute('font-style');
+								//cur_text.font_weight = tspanElem.getAttribute('font-weight');	
+								//cur_text.font_size = tspanElem.getAttribute('font-size');	
+								//cur_text.font_family = tspanElem.getAttribute("font-family");
+
+								cur_text.fill = curCharacterAttrib.attr.fill;
+								cur_text.font_style = curCharacterAttrib.attr.font_style;
+								cur_text.font_weight = curCharacterAttrib.attr.font_weight;
+								cur_text.font_size = curCharacterAttrib.attr.font_size;
+								cur_text.font_family = curCharacterAttrib.attr.font_family;
+								
+								
+								//textManager.initTextArray( selected );
+							}
+							catch(ex) {
+								// possible to reach this point if you have just selected
+								// the dots on the border
+								// should probably do something here as there's a good chance that null or blank values
+								// will go into the font formatting
+								// for sake of argument, just reset to defaults
+								//console.log( $.dump(all_properties) );
+								cur_text.fill = all_properties.text.fill;
+								cur_text.font_style = all_properties.text.font_style;
+								cur_text.font_weight = all_properties.text.font_weight;
+								cur_text.font_size = all_properties.text.font_size;
+								cur_text.font_family = all_properties.text.font_family;
+							}													
+
 						}
 						selectorManager.requestSelector(selected).showGrips(true);
 						
@@ -5827,6 +6047,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						if (selectedElements[0].nodeName === "path" && selectedElements[1] == null) {
 							pathActions.select(selectedElements[0]);
 						} // if it was a path
+						else if (selectedElements[0].nodeName == "text" && selectedElements[1] == null) {				
+							textActions.cleanupTextObject( t );
+							//textActions.select(t, x, y);	
+							textUIManager.select(t, x, y);					
+						} // if it was a path						
 						// else, if it was selected and this is a shift-click, remove it from selection
 						else if (evt.shiftKey) {
 							if(tempJustSelected != t) {
@@ -5934,7 +6159,16 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				break;
 			case "text":
 				keep = true;
-				selectOnly([element]);
+				
+				// if the node is a tspan, then put the selector graphics on the parent
+				if( element.nodeName == "tspan") {
+// check for disappearing tspan child -- debugger;
+					selectOnly([element.parentNode]);
+				}
+				else {
+					selectOnly([element]);
+				}				
+//debugger;
 				textActions.start(element);
 				break;
 			case "path":
@@ -5955,7 +6189,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			case "textedit":
 				keep = false;
 				element = null;
-				textActions.mouseUp(evt, mouse_x, mouse_y);
+				//textActions.mouseUp(evt, mouse_x, mouse_y);
+				textUIManager.mouseUp(evt, mouse_x, mouse_y);				
 				break;
 			case "rotate":
 				keep = true;
@@ -6035,12 +6270,22 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			// but that doesn't seem to be supported in Webkit
 			setTimeout(function() {
 				if(c_ani) c_ani.remove();
+				
+				// MJN Hack
+				// Handle the scenario when the element is a tspan -- vanilla code expects
+				// element to be the text Object
+				// for some reason a reference to the parentNode of the tspan element is
+				// null... go back to the selectedElements array
+				if( element.nodeName == 'tspan' ) {
+					element = getElem( selectedElements[0].id );
+				}				
+				
 				element.setAttribute("opacity", cur_shape.opacity);
 				element.setAttribute("style", "pointer-events:inherit");
 				cleanupElement(element);
 				if(current_mode === "path") {
 					pathActions.toEditMode(element);
-				} else {
+				} else if( current_mode != "textedit") {
 					selectOnly([element], true);
 				}
 				// we create the insert command that is stored on the stack
@@ -6142,6 +6387,90 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 var preventClickDefault = function(img) {
 	$(img).click(function(e){e.preventDefault()});
 }
+
+
+//Function: formatJustifyText
+//changes the text-anchor property on a selected text object
+//minor enhancement is that it tries to do it's best to not make the text object jump around
+//the screen.  Keeps a relatively "sane" location for the text object
+//
+//Parameters:
+//type of justification:  "left", "center", "right"
+//
+var formatJustifyText = this.formatJustifyText = function( action ) {
+	// you must be in select mode in order to justify text
+	if( current_mode != "select" ) return;
+	var anchorTag = null;
+	switch( action ) {
+		case "left":
+			anchorTag = "start";
+		break;
+		
+		case "center":
+			anchorTag = "middle";
+		break;
+		
+		case "right":
+			anchorTag = "end";
+		break;
+		
+		default:
+			anchorTag = "start";
+		break;	
+	}
+	
+	var curTextObj = selectedElements[0];
+	var curAnchorTag = curTextObj.getAttribute("text-anchor");
+
+	
+	if( anchorTag != curAnchorTag ) {	
+		
+		var curTextXPos = curTextObj.getAttribute("x");
+		var curTextObjBB = curTextObj.getBBox();
+		var newX;
+
+		// figure out if you need to add or subtract the BBox width
+		var addSubFlag = "add";
+		if( curAnchorTag == "start" && anchorTag == "middle" ) {
+			addSubFlag = "add";
+			newX = (curTextXPos - 0) + Math.round(curTextObjBB.width/2);
+		}
+		else if( curAnchorTag == "middle" && anchorTag == "start" ) {
+			addSubFlag = "subtract";
+			newX = (curTextXPos - 0) - Math.round(curTextObjBB.width/2);
+		}
+		else if( curAnchorTag == "end" && anchorTag == "middle" ) {
+			addSubFlag = "subtract";
+			newX = (curTextXPos - 0) - Math.round(curTextObjBB.width/2);
+		}
+		else if( curAnchorTag == "middle" && anchorTag == "end" ) {
+			addSubFlag = "add";
+			newX = (curTextXPos - 0) + Math.round(curTextObjBB.width/2);
+		}
+		else if( curAnchorTag == "start" && anchorTag == "end" ) {
+			addSubFlag = "add";
+			newX = (curTextXPos - 0) + curTextObjBB.width;
+		}
+		else if( curAnchorTag == "end" && anchorTag == "start" ) {
+			addSubFlag = "subtract";
+			newX = (curTextXPos - 0) - curTextObjBB.width;
+		}
+				
+		var changes = {
+				"x": newX
+		};
+
+		assignAttributes(curTextObj, {
+				"text-anchor": anchorTag,
+				"x": newX
+		});		
+		textActions.propagateTextChanges(curTextObj, changes, "x" );
+
+		selectorManager.requestSelector(curTextObj).resize();
+	}	
+}
+
+
 
 // Group: Text edit functions
 // Functions relating to editing text elements
@@ -6443,6 +6772,62 @@ var textActions = canvas.textActions = function() {
 			selectorManager.requestSelector(selected).resize();
 		}
 	}	
+	
+	//
+	// Function:  cleanupTextObject
+	// loop through the text object that contains the input parameter tspan and perform
+	// various operations to cleans the object.
+	// There are some specific things that will "break" svg-edit's ability to manage a text
+	// object with the multi-line editing enhancements.
+	//
+	// Empty tspans are one:
+	//		<tspan --attributes-- />
+	//    and empty tspan is allowed by the SVG XML spec however it has no graphical properties which
+	//		breaks all of the text editing
+	//
+	function cleanupTextObject( tspan ) {
+		var locTspan = null;
+		if(!arguments.length) {
+			locTspan = curtext;
+		}   	
+		else {
+			locTspan = tspan;
+		}		
+		  
+		var tspanPar = locTspan.parentNode;
+		var child = tspanPar.firstChild;
+		var childToRemove = null;
+		var delChild = false;	
+		var removeYAttribute = false;	  
+
+		while( child != null ) {
+			// skip over everything that isn't a tspan
+			if( child.nodeName == "tspan") {
+
+				if( child.textContent == "" ) {
+					// remove a tspan node that has an empty tspan				
+					delChild = true;
+				}
+				else if( child.getAttribute('y') != null ) {
+					// remove if there is a y attribute.
+					removeYAttribute = true;
+				}
+			}
+			childToRemove = child;
+         child = child.nextSibling;
+         
+         if( delChild ) {
+         	delChild = false;
+	        	tspanPar.removeChild( childToRemove );	
+         }
+         else if( removeYAttribute ) {
+         	removeYAttribute = false;
+         	childToRemove.removeAttribute('y');
+         }
+         
+		}		
+		
+	}	
 
 	return {
 		select: function(target, x, y) {
@@ -6450,8 +6835,25 @@ var textActions = canvas.textActions = function() {
 			textActions.toEditMode(x, y);
 		},
 		start: function(elem) {
-			curtext = elem;
-			textActions.toEditMode();
+			// MJN Hack
+			// if the incoming elem is not null, then set the curtext otherwise
+			// assume it has been set somewhere else
+			if( elem != null) {
+				curtext = elem;
+			}
+			
+			if( elem == null ) {
+				// assume that the curtext element has been set somewhere else
+				// need to set the textinput to be the textContent of the curtext
+				// this is only updated in 1 other place in the codebase:  updateContextPanel in svg-editor.js
+				// and also in the textActions.select method.
+				$(textinput).val(curtext.textContent);	
+			}
+			//textActions.toEditMode();
+			
+			// reset any previously selected Text Regions
+			textUIManager.resetTextSelectedRegion();
+			textUIManager.toEditMode();			
 		},
 		mouseDown: function(evt, mouse_target, start_x, start_y) {
 			var pt = screenToPt(start_x, start_y);
@@ -6486,9 +6888,37 @@ var textActions = canvas.textActions = function() {
 		toEditMode: function(x, y) {
 			allow_dbl = false;
 			current_mode = "textedit";
-			selectorManager.requestSelector(curtext).showGrips(false);
-			// Make selector group accept clicks
-			var sel = selectorManager.requestSelector(curtext).selectorRect;
+			
+			var sel;
+			// MJN Hacking
+			// by now you've probably selected a tspan object yet the 
+			// selector bbox is going to be around the Text object
+			// find the parent and pass that to the selectorManager
+			if( curtext.nodeName == 'tspan') {
+				foobar = getElem(curtext.id);
+				try {
+					selectorManager.requestSelector(curtext.parentNode).showGrips(false);
+					
+					// Make selector group accept clicks
+					sel = selectorManager.requestSelector(curtext.parentNode).selectorRect;
+				}
+				catch(ex) {
+					//debugger;
+				}
+			}
+			else {
+				selectorManager.requestSelector(curtext).showGrips(false);
+				
+				// Make selector group accept clicks
+				sel = selectorManager.requestSelector(curtext).selectorRect;				
+			}	
+					
+			// MJN Hacking
+			// add reference to the tspan for future calls... 
+			// will probably need to copy this into the textActions.init();	
+			selectedTspanElem = curtext.id;
+			
+			textUIManager.init( selectedElements[0] );
 			
 			textActions.init();
 
@@ -6548,6 +6978,7 @@ var textActions = canvas.textActions = function() {
 			}
 		},
 		propagateTextChanges: propagateTextChanges,
+		cleanupTextObject: cleanupTextObject,
 		init: function(inputElem) {
 			if(!curtext) return;
 
@@ -6601,7 +7032,10 @@ var textActions = canvas.textActions = function() {
 				x: end.x,
 				width: 0
 			});
-			setSelection(textinput.selectionStart, textinput.selectionEnd, true);
+			
+			textManager.initTextArray(textParent);
+			
+//			setSelection(textinput.selectionStart, textinput.selectionEnd, true);
 		}
 	}
 }();
@@ -10896,14 +11330,40 @@ this.getBlur = function(elem) {
 // Returns:
 // Boolean indicating whether or not element is bold
 this.getBold = function() {
-	// should only have one element selected
-	var selected = selectedElements[0];
-	if (selected != null && selected.tagName  == "text" &&
-		selectedElements[1] == null) 
-	{
-		return (selected.getAttribute("font-weight") == "bold");
+	var globalStyle = "";
+	var localStyle = "";
+	var finalStyle = "";
+
+	// check the global setting
+	// technically this will be set globally in the mouseDown event, but 
+	// updateContextPanel runs before the mouseDown event
+	if( cur_text.font_weight == "bold" ) {
+		globalStyle = "bold";
 	}
-	return false;
+	else if (cur_text.font_weight == "normal" ) {
+		globalStyle = "normal";
+	}
+	
+	var charAttribute = textManager.getCurCharacterAttribute();
+	
+	if( charAttribute != null ) {
+		localStyle = charAttribute.attr.font_weight;	
+	}
+	
+	if( getFontFormatEvent() == "clickBold" ) {
+		(globalStyle == "bold") ? retval = true : retval = false;	
+	}
+	else if( localStyle == "" ) {
+		(globalStyle == "bold") ? retval = true : retval = false;	
+	}
+	else if (globalStyle != localStyle) {
+		(localStyle == "bold") ? retval = true : retval = false;	
+	}
+	else {
+		(globalStyle == "bold") ? retval = true : retval = false;	
+	}
+	
+	return retval;
 };
 
 // Function: setBold
@@ -10912,15 +11372,34 @@ this.getBold = function() {
 // Parameters:
 // b - Boolean indicating bold (true) or normal (false)
 this.setBold = function(b) {
-	var selected = selectedElements[0];
-	if (selected != null && selected.tagName  == "text" &&
-		selectedElements[1] == null) 
-	{
-		changeSelectedAttribute("font-weight", b ? "bold" : "normal");
+	cur_text.font_weight = b ? "bold" : "normal";	
+	
+	// If you are in select mode and the selectedElement[0] is a text object, then
+	// apply the font-weight to all tspan objects as well as reset the dy value
+	// on all first-line tspans
+	// should also reset the fontchange event because we don't want to be doing
+	// anything on the next characters that get written
+	var curObj = selectedElements[0];
+	if( current_mode == 'select' && curObj.nodeName == 'text' ) {
+		setFontFormatEvent("");
+		textActions.propagateTextChanges(curObj, { 'font-weight': cur_text.font_weight }, 'font-weight');
 	}
-	if(!selectedElements[0].textContent) {
-		textActions.setCursor();
-	}
+	else if ( current_mode == 'textedit' && textUIManager.getStartSelectionPos() != null && textUIManager.isTextSelected()  ) {
+		// currently have some text selected in the text area	and you are in textedit mode	
+
+		textUIManager.propagateSelectionChanges( {
+													'attribute': 'font_weight',
+													'value': cur_text.font_weight
+		});
+		
+		// rerender
+		textManager.renderTextSVG( selectedElements[0], true );		
+		selectorManager.requestSelector( selectedElements[0]).resize();	
+		setFontFormatEvent("");		
+		
+		
+	}	
+
 };
 
 // Function: getItalic
@@ -10929,13 +11408,40 @@ this.setBold = function(b) {
 // Returns:
 // Boolean indicating whether or not element is italic
 this.getItalic = function() {
-	var selected = selectedElements[0];
-	if (selected != null && selected.tagName  == "text" &&
-		selectedElements[1] == null) 
-	{
-		return (selected.getAttribute("font-style") == "italic");
+	var globalStyle = "";
+	var localStyle = "";
+	var finalStyle = "";
+
+	// check the global setting
+	// technically this will be set globally in the mouseDown event, but 
+	// updateContextPanel runs before the mouseDown event
+	if( cur_text.font_style == "italic" ) {
+		globalStyle = "italic";
 	}
-	return false;
+	else if (cur_text.font_style == "normal" ) {
+		globalStyle = "normal";
+	}
+	
+	var charAttribute = textManager.getCurCharacterAttribute();
+	
+	if( charAttribute != null ) {
+		localStyle = charAttribute.attr.font_style;	
+	}
+	
+	if( getFontFormatEvent() == "clickItalic" ) {
+		(globalStyle == "italic") ? retval = true : retval = false;	
+	}
+	else if( localStyle == "" ) {
+		(globalStyle == "italic") ? retval = true : retval = false;	
+	}
+	else if (globalStyle != localStyle) {
+		(localStyle == "italic") ? retval = true : retval = false;	
+	}
+	else {
+		(globalStyle == "italic") ? retval = true : retval = false;	
+	}
+	
+	return retval;
 };
 
 // Function: setItalic
@@ -10944,21 +11450,73 @@ this.getItalic = function() {
 // Parameters:
 // b - Boolean indicating italic (true) or normal (false)
 this.setItalic = function(i) {
-	var selected = selectedElements[0];
-	if (selected != null && selected.tagName  == "text" &&
-		selectedElements[1] == null) 
-	{
-		changeSelectedAttribute("font-style", i ? "italic" : "normal");
+	cur_text.font_style = i ? "italic" : "normal";
+
+	// If you are in select mode and the selectedElement[0] is a text object, then
+	// apply the font-style to all tspan objects as well as reset the dy value
+	// on all first-line tspans
+	// should also reset the fontchange event because we don't want to be doing
+	// anything on the next characters that get written
+	var curObj = selectedElements[0];
+	if( current_mode == 'select' && curObj.nodeName == 'text' ) {
+		setFontFormatEvent("");
+		textActions.propagateTextChanges(curObj, { 'font-style': cur_text.font_style }, 'font-style');
 	}
-	if(!selectedElements[0].textContent) {
-		textActions.setCursor();
-	}
+	else if ( current_mode == 'textedit' && textUIManager.getStartSelectionPos() != null && textUIManager.isTextSelected()  ) {
+		// currently have some text selected in the text area	and you are in textedit mode
+
+		textUIManager.propagateSelectionChanges( {
+													'attribute': 'font_style',
+													'value': cur_text.font_style
+		});
+
+		// rerender
+		textManager.renderTextSVG( selectedElements[0], true );		
+		selectorManager.requestSelector( selectedElements[0]).resize();		
+		setFontFormatEvent("");			
+		
+	}	
+
+
 };
 
 // Function: getFontFamily
 // Returns the current font family
 this.getFontFamily = function() {
-	return cur_text.font_family;
+	//return cur_text.font_family;
+	//return cur_text.font_size;
+
+	var globalFontFamily = "";
+	var localFontFamily = "";
+	var finalFontFamily = "";
+
+	// set the globalFontFamily
+	// technically this will be set globally in the mouseDown event, but 
+	// updateContextPanel runs before the mouseDown event
+	globalFontFamily = cur_text.font_family;
+	
+	var charAttribute = textManager.getCurCharacterAttribute();
+	
+	if( charAttribute != null ) {
+		localStyle = charAttribute.attr.font_family;	
+	}
+
+	if( getFontFormatEvent() == "clickFontFamily" ) {
+		retval = globalFontFamily;
+	}
+	else if( localFontFamily == "" ) {
+		retval = globalFontFamily;
+	}
+	else if (globalFontFamily != localFontFamily) {
+		retval = localFontFamily;
+	}
+	else {
+		retval = globalFontFamily;
+	}
+	
+//console.log("in getFontFamily:  " + retval);
+	
+	return retval;
 };
 
 // Function: setFontFamily
@@ -10968,16 +11526,70 @@ this.getFontFamily = function() {
 // val - String with the new font family
 this.setFontFamily = function(val) {
 	cur_text.font_family = val;
-	changeSelectedAttribute("font-family", val);
-	if(selectedElements[0] && !selectedElements[0].textContent) {
-		textActions.setCursor();
+	
+	// If you are in select mode and the selectedElement[0] is a text object, then
+	// apply the font-family to all tspan objects as well as reset the dy value
+	// on all first-line tspans
+	// should also reset the fontchange event because we don't want to be doing
+	// anything on the next characters that get written
+	var curObj = selectedElements[0];
+	if( current_mode == 'select' && curObj.nodeName == 'text' ) {
+		setFontFormatEvent("");
+		textActions.propagateTextChanges(curObj, { 'font-family': val }, 'font-family');
 	}
+	else if ( current_mode == 'textedit' && textUIManager.getStartSelectionPos() != null && textUIManager.isTextSelected()  ) {
+		// currently have some text selected in the text area	and you are in textedit mode
+	
+		textUIManager.propagateSelectionChanges( {
+													'attribute': 'font_family',
+													'value': val 
+		});
+		
+		// rerender
+		textManager.renderTextSVG( selectedElements[0], true );		
+		selectorManager.requestSelector( selectedElements[0]).resize();		
+		setFontFormatEvent("");			
+		
+	}	
+
 };
 
 // Function: getFontSize
 // Returns the current font size
 this.getFontSize = function() {
-	return cur_text.font_size;
+	//return cur_text.font_size;
+
+	var globalFontSize = "";
+	var localFontSize = "";
+	var finalFontSize = "";
+
+	// set the globalFontSize
+	// technically this will be set globally in the mouseDown event, but 
+	// updateContextPanel runs before the mouseDown event
+	globalFontSize = cur_text.font_size;
+
+	var charAttribute = textManager.getCurCharacterAttribute();
+	
+	if( charAttribute != null ) {
+		localStyle = charAttribute.attr.font_size;	
+	}
+
+	if( getFontFormatEvent() == "clickFontSize" ) {
+		retval = globalFontSize;
+	}
+	else if( localFontSize == "" ) {
+		retval = globalFontSize;
+	}
+	else if (globalFontSize != localFontSize) {
+		retval = localFontSize;
+	}
+	else {
+		retval = globalFontSize;
+	}
+	
+//console.log("in getFontSize:  " + retval);
+	
+	return retval;
 };
 
 // Function: setFontSize
@@ -10987,10 +11599,26 @@ this.getFontSize = function() {
 // val - Float with the new font size
 this.setFontSize = function(val) {
 	cur_text.font_size = val;
-	changeSelectedAttribute("font-size", val);
-	if(!selectedElements[0].textContent) {
-		textActions.setCursor();
+
+	var curObj = selectedElements[0];
+	if( current_mode == 'select' && curObj.nodeName == 'text' ) {
+		setFontFormatEvent("");
+		textActions.propagateTextChanges(curObj, {'font-size':val }, 'font-size');
 	}
+	else if ( current_mode == 'textedit' && textUIManager.getStartSelectionPos() != null && textUIManager.isTextSelected() ) {
+		// currently have some text selected in the text area	and you are in textedit mode
+		
+		textUIManager.propagateSelectionChanges( {
+													'attribute': 'font_size',
+													'value': val 
+		});
+		
+		// rerender
+		textManager.renderTextSVG( selectedElements[0], true );		
+		selectorManager.requestSelector( selectedElements[0]).resize();			
+		setFontFormatEvent("");
+	}
+
 };
 
 // Function: getText
@@ -11006,11 +11634,152 @@ this.getText = function() {
 //
 // Parameters:
 // val - String with the new text
-this.setTextContent = function(val) {
-	changeSelectedAttribute("#text", val);
-	textActions.init(val);
-	textActions.setCursor();
+this.setTextContent = function(val, keybdEvent) {
+//
+//console.log("Keypressed:  " + keybdEvent.keyCode);
+	var textinput = $('#text')[0];
+	
+	// MJN Hack -- whitelist of directional keys:
+	navKeys = [
+			37, /* right_arrow */
+			38, /* up_arrow */
+			39, /* left_arrow */
+			40, /* down_arrow */
+			13, /* carriage_return */
+			8   /* delete_key */
+			];
+				
+	//var curTspan = getSelectedTspanElem();
+	//var curTspanParId = curTspan.parentNode.id;
+	
+	
+	switch( keybdEvent.keyCode ) {
+		
+		//*****************************
+		//    DELETE KEYPRESS
+		//*****************************	
+		// for now we inhibit the use of the delete key... must backspace over text to delete 	
+//		case 46:
+//			var holdPos = textinput.selectionEnd;
+//			textinput.value = curTspan.textContent;
+//			textActions.setCursor(holdPos);
+//		break;
+
+		//*****************************
+		//    CARRIAGE RETURN
+		//*****************************
+		case 13: // CARRIAGE RETURN
+//debugger;
+			var locMyChar = "\n";
+			textManager.insertChar( locMyChar );
+			textManager.renderTextSVG( selectedElements[0], true );
+			selectorManager.requestSelector( selectedElements[0]).resize();				
+		break;
+		
+		//*******************************
+		//   UP ARROW 
+		//*******************************
+		case 38: // UP ARROW
+			textUIManager.moveUpChar();
+			
+			// reset the fontFormatEvent
+			setFontFormatEvent("");			
+			textManager.renderTextSVG( selectedElements[0], true, false );
+//$('#metric_start_pos')[0].textContent = textUIManager.getStartSelectionPos();
+//$('#metric_cur_pos')[0].textContent = textManager.getCurPos();				
+		break;
+		
+		//*****************************
+		//   DOWN ARROW
+		//*****************************
+		case 40:  // DOWN ARROW 
+			textUIManager.moveDownChar();
+			// reset the fontFormatEvent
+			setFontFormatEvent("");				
+			textManager.renderTextSVG( selectedElements[0], true, false );
+//$('#metric_start_pos')[0].textContent = textUIManager.getStartSelectionPos();
+//$('#metric_cur_pos')[0].textContent = textManager.getCurPos();				
+		break;
+		
+		// ******************************
+		//    LEFT ARROW / DELETE KEY    
+		// ******************************
+		case 37:  // LEFT ARROW
+				textManager.moveLeftChar();
+				// reset the fontFormatEvent
+				setFontFormatEvent("");					
+				textManager.renderTextSVG( selectedElements[0], true, false );
+//$('#metric_start_pos')[0].textContent = textUIManager.getStartSelectionPos();
+//$('#metric_cur_pos')[0].textContent = textManager.getCurPos();				
+				//selectorManager.requestSelector( selectedElements[0]).resize();			
+		break;
+
+		case 8:   // DELETE KEY
+//debugger;
+				textManager.removeChar();
+				// reset the fontFormatEvent
+				setFontFormatEvent("");					
+				textManager.renderTextSVG( selectedElements[0], true );
+				selectorManager.requestSelector( selectedElements[0]).resize();					
+		break;
+		
+		//************************
+		//   RIGHT ARROW
+		//************************
+		case 39:  // RIGHT ARROW
+				textManager.moveRightChar();
+				// reset the fontFormatEvent
+				setFontFormatEvent("");					
+				textManager.renderTextSVG( selectedElements[0], true, false );
+//$('#metric_start_pos')[0].textContent = textUIManager.getStartSelectionPos();
+//$('#metric_cur_pos')[0].textContent = textManager.getCurPos();					
+		break;		
+		default:
+			/**********************************/
+			/*      Regular Key Press			 */
+			/**********************************/
+			// Hey... You just added a single character
+			//changeSelectedAttribute("#text", val);
+			var locMyChar = String.fromCharCode( keybdEvent.charCode);
+			var isPrintable = textUIManager.isPrintable( locMyChar );
+			
+			if( isPrintable ) {
+//debugger;
+				textManager.insertChar( locMyChar );
+				textManager.renderTextSVG( selectedElements[0], true );
+				selectorManager.requestSelector( selectedElements[0]).resize();				
+			}
+//console.log("curPos: " + textManager.getCurPos() );
+			
+		break;
+		
+		
+	} // end switch on keypress
+	
+	//console.log("textarea pos: " + $('#text')[0].selectionEnd + " char: " + $('#text')[0].value[ $('#text')[0].selectionEnd ]);
+
+//	textActions.setPrevCharPos( textinput.selectionEnd );	
+	
+// MJNHack Leave for now	
+//	tspanLine = textActions.getTotalLineWidth( getElem(curTspan.id) );
+
+//	if( tspanLine.total_width > autowrapSize ) {
+//		doAutowrap( autowrapSize, true, tspanLine.tspan_list);
+//	}
+	
+	/// TODO 2010-09-09 refresh the toolbars here from the getSelectedTspanElem()
+	
+//			console.log( "Out Event:  " + keybdEvent.keyCode + " prevPos: " + textActions.getPrevCharPos() + " curPos:  " + textinput.selectionEnd + 
+//								" textLen: " + textinput.textLength + " Next Tspan:  " + ((nextTspan == null) ? 'none' : nextTspan.id) + "  current_mode: " + current_mode );				
+
 };
+
+
+
+
+
+
+
 
 // Function: setImageURL
 // Sets the new image URL for the selected image element. Updates its size if

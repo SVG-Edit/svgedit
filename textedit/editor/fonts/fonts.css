@@ -1,5 +1,165 @@
-/* Fonts used in LIVEyearbook */
-/* stil some issues with the svg-edit side */
+
+@font-face {
+	font-family: 'ArtBrush';
+	src: url('Artbrush-webfont.eot');
+	src: url('ArtBrush/Artbrush-webfont.woff') format('woff'), url('ArtBrush/Artbrush-webfont.ttf') format('truetype'), url('ArtBrush/Artbrush-webfont.svg#webfont') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'ArtBrush';
+	src: url('Artbrush-webfont.eot');
+	src: url('ArtBrush/Artbrush-webfont.woff') format('woff'), url('ArtBrush/Artbrush-webfont.ttf') format('truetype'), url('ArtBrush/Artbrush-webfont.svg#webfont') format('svg');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'ArtBrush';
+	src: url('Artbrush-webfont.eot');
+	src: url('ArtBrush/Artbrush-webfont.woff') format('woff'), url('ArtBrush/Artbrush-webfont.ttf') format('truetype'), url('ArtBrush/Artbrush-webfont.svg#webfont') format('svg');
+	font-weight: normal;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'ArtBrush';
+	src: url('Artbrush-webfont.eot');
+	src: url('ArtBrush/Artbrush-webfont.woff') format('woff'), url('ArtBrush/Artbrush-webfont.ttf') format('truetype'), url('ArtBrush/Artbrush-webfont.svg#webfont') format('svg');
+	font-weight: bold;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'BitstreamVeraSansMono';
+	src: url('Bitstream-Vera-Sans-Mono/VeraMono-webfont.eot');
+	src: url('Bitstream-Vera-Sans-Mono/VeraMono-webfont.woff') format('woff'), url('Bitstream-Vera-Sans-Mono/VeraMono-webfont.ttf') format('truetype'), url('Bitstream-Vera-Sans-Mono/VeraMono-webfont.svg#webfont') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'BitstreamVeraSansMono';
+	src: url('Bitstream-Vera-Sans-Mono/VeraMono-Italic-webfont.eot');
+	src: url('Bitstream-Vera-Sans-Mono/VeraMono-Italic-webfont.woff') format('woff'), url('Bitstream-Vera-Sans-Mono/VeraMono-Italic-webfont.ttf') format('truetype'), url('Bitstream-Vera-Sans-Mono/VeraMono-Italic-webfont.svg#webfont') format('svg');
+	font-weight: normal;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'BitstreamVeraSansMono';
+	src: url('Bitstream-Vera-Sans-Mono/VeraMono-Bold-webfont.eot');
+	src: url('Bitstream-Vera-Sans-Mono/VeraMono-Bold-webfont.woff') format('woff'), url('Bitstream-Vera-Sans-Mono/VeraMono-Bold-webfont.ttf') format('truetype'), url('Bitstream-Vera-Sans-Mono/VeraMono-Bold-webfont.svg#webfont') format('svg');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'BitstreamVeraSansMono';
+	src: url('Bitstream-Vera-Sans-Mono/VeraMono-Bold-Italic-webfont.eot');
+	src: url('Bitstream-Vera-Sans-Mono/VeraMono-Bold-Italic-webfont.woff') format('woff'), url('Bitstream-Vera-Sans-Mono/VeraMono-Bold-Italic-webfont.ttf') format('truetype'), url('Bitstream-Vera-Sans-Mono/VeraMono-Bold-Italic-webfont.svg#webfont') format('svg');
+	font-weight: bold;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'BlazingItalic';
+	src: url('Blazing/BlazingItalic-webfont.eot');
+	src: url('Blazing/BlazingItalic-webfont.woff') format('woff'), url('Blazing/BlazingItalic-webfont.ttf') format('truetype'), url('Blazing/BlazingItalic-webfont.svg#webfont') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'BlazingItalic';
+	src: url('Blazing/BlazingItalic-webfont.eot');
+	src: url('Blazing/BlazingItalic-webfont.woff') format('woff'), url('Blazing/BlazingItalic-webfont.ttf') format('truetype'), url('Blazing/BlazingItalic-webfont.svg#webfont') format('svg');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'BlazingItalic';
+	src: url('Blazing/BlazingItalic-webfont.eot');
+	src: url('Blazing/BlazingItalic-webfont.woff') format('woff'), url('Blazing/BlazingItalic-webfont.ttf') format('truetype'), url('Blazing/BlazingItalic-webfont.svg#webfont') format('svg');
+	font-weight: normal;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'BlazingItalic';
+	src: url('Blazing/BlazingItalic-webfont.eot');
+	src: url('Blazing/BlazingItalic-webfont.woff') format('woff'), url('Blazing/BlazingItalic-webfont.ttf') format('truetype'), url('Blazing/BlazingItalic-webfont.svg#webfont') format('svg');
+	font-weight: bold;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'DejaVuSans';
+	src: url('DejaVu-Sans/DejaVuSans-webfont.eot');
+	src: url('DejaVu-Sans/DejaVuSans-webfont.woff') format('woff'), url('DejaVu-Sans/DejaVuSans-webfont.ttf') format('truetype'), url('DejaVu-Sans/DejaVuSans-webfont.svg#webfont') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'DejaVuSans';
+	src: url('DejaVu-Sans/DejaVuSans-webfont.eot');
+	src: url('DejaVu-Sans/DejaVuSans-webfont.woff') format('woff'), url('DejaVu-Sans/DejaVuSans-webfont.ttf') format('truetype'), url('DejaVu-Sans/DejaVuSans-webfont.svg#webfont') format('svg');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'DejaVuSans';
+	src: url('DejaVu-Sans/DejaVuSans-Oblique-webfont.eot');
+	src: url('DejaVu-Sans/DejaVuSans-Oblique-webfont.woff') format('woff'), url('DejaVu-Sans/DejaVuSans-Oblique-webfont.ttf') format('truetype'), url('DejaVu-Sans/DejaVuSans-Oblique-webfont.svg#webfont') format('svg');
+	font-weight: normal;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'DejaVuSans';
+	src: url('DejaVu-Sans/DejaVuSans-Oblique-webfont.eot');
+	src: url('DejaVu-Sans/DejaVuSans-Oblique-webfont.woff') format('woff'), url('DejaVu-Sans/DejaVuSans-Oblique-webfont.ttf') format('truetype'), url('DejaVu-Sans/DejaVuSans-Oblique-webfont.svg#webfont') format('svg');
+	font-weight: bold;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'DroidSansMono';
+	src: url('Droid-Sans-Mono/DroidSansMono-webfont.eot');
+	src: url('Droid-Sans-Mono/DroidSansMono-webfont.woff') format('woff'), url('Droid-Sans-Mono/DroidSansMono-webfont.ttf') format('truetype'), url('Droid-Sans-Mono/DroidSansMono-webfont.svg#webfont') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'DroidSansMono';
+	src: url('Droid-Sans-Mono/DroidSansMono-webfont.eot');
+	src: url('Droid-Sans-Mono/DroidSansMono-webfont.woff') format('woff'), url('Droid-Sans-Mono/DroidSansMono-webfont.ttf') format('truetype'), url('Droid-Sans-Mono/DroidSansMono-webfont.svg#webfont') format('svg');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'DroidSansMono';
+	src: url('Droid-Sans-Mono/DroidSansMono-webfont.eot');
+	src: url('Droid-Sans-Mono/DroidSansMono-webfont.woff') format('woff'), url('Droid-Sans-Mono/DroidSansMono-webfont.ttf') format('truetype'), url('Droid-Sans-Mono/DroidSansMono-webfont.svg#webfont') format('svg');
+	font-weight: normal;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'DroidSansMono';
+	src: url('Droid-Sans-Mono/DroidSansMono-webfont.eot');
+	src: url('Droid-Sans-Mono/DroidSansMono-webfont.woff') format('woff'), url('Droid-Sans-Mono/DroidSansMono-webfont.ttf') format('truetype'), url('Droid-Sans-Mono/DroidSansMono-webfont.svg#webfont') format('svg');
+	font-weight: bold;
+	font-style: italic;
+}
+
+
 @font-face {
 	font-family: 'DroidSerif';
 	src: url('Droid-Serif/DroidSerif-Regular-webfont.eot');
@@ -28,6 +188,70 @@
 	font-family: 'DroidSerif';
 	src: url('Droid-Serif/DroidSerif-BoldItalic-webfont.eot');
 	src: url('Droid-Serif/DroidSerif-BoldItalic-webfont.woff') format('woff'), url('Droid-Serif/DroidSerif-BoldItalic-webfont.ttf') format('truetype'), url('Droid-Serif/DroidSerif-BoldItalic-webfont.svg#webfont') format('svg');
+	font-weight: bold;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'HighlandGothicFLF';
+	src: url('HighlandGothicFLF/HighlandGothicFLF-webfont.eot');
+	src: url('HighlandGothicFLF/HighlandGothicFLF-webfont.woff') format('woff'), url('HighlandGothicFLF/HighlandGothicFLF-webfont.ttf') format('truetype'), url('HighlandGothicFLF/HighlandGothicFLF-webfont.svg#webfont') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'HighlandGothicFLF';
+	src: url('HighlandGothicFLF/HighlandGothicFLF-Bold-webfont.eot');
+	src: url('HighlandGothicFLF/HighlandGothicFLF-Bold-webfont.woff') format('woff'), url('HighlandGothicFLF/HighlandGothicFLF-Bold-webfont.ttf') format('truetype'), url('HighlandGothicFLF/HighlandGothicFLF-Bold-webfont.svg#webfont') format('svg');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'HighlandGothicFLF';
+	src: url('HighlandGothicFLF/HighlandGothicFLF-webfont.eot');
+	src: url('HighlandGothicFLF/HighlandGothicFLF-webfont.woff') format('woff'), url('HighlandGothicFLF/HighlandGothicFLF-webfont.ttf') format('truetype'), url('HighlandGothicFLF/HighlandGothicFLF-webfont.svg#webfont') format('svg');
+	font-weight: normal;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'HighlandGothicFLF';
+	src: url('HighlandGothicFLF/HighlandGothicFLF-Bold-webfont.eot');
+	src: url('HighlandGothicFLF/HighlandGothicFLF-Bold-webfont.woff') format('woff'), url('HighlandGothicFLF/HighlandGothicFLF-Bold-webfont.ttf') format('truetype'), url('HighlandGothicFLF/HighlandGothicFLF-Bold-webfont.svg#webfont') format('svg');
+	font-weight: bold;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'ZephyrScriptFLF';
+	src: url('ZephyrScriptFLF/ZephyrScriptFLF-webfont.eot');
+	src: url('ZephyrScriptFLF/ZephyrScriptFLF-webfont.woff') format('woff'), url('ZephyrScriptFLF/ZephyrScriptFLF-webfont.ttf') format('truetype'), url('ZephyrScriptFLF/ZephyrScriptFLF-webfont.svg#webfont') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'ZephyrScriptFLF';
+	src: url('ZephyrScriptFLF/ZephyrScriptFLF-webfont.eot');
+	src: url('ZephyrScriptFLF/ZephyrScriptFLF-webfont.woff') format('woff'), url('ZephyrScriptFLF/ZephyrScriptFLF-webfont.ttf') format('truetype'), url('ZephyrScriptFLF/ZephyrScriptFLF-webfont.svg#webfont') format('svg');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'ZephyrScriptFLF';
+	src: url('ZephyrScriptFLF/ZephyrScriptFLF-webfont.eot');
+	src: url('ZephyrScriptFLF/ZephyrScriptFLF-webfont.woff') format('woff'), url('ZephyrScriptFLF/ZephyrScriptFLF-webfont.ttf') format('truetype'), url('ZephyrScriptFLF/ZephyrScriptFLF-webfont.svg#webfont') format('svg');
+	font-weight: normal;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'ZephyrScriptFLF';
+	src: url('ZephyrScriptFLF/ZephyrScriptFLF-webfont.eot');
+	src: url('ZephyrScriptFLF/ZephyrScriptFLF-webfont.woff') format('woff'), url('ZephyrScriptFLF/ZephyrScriptFLF-webfont.ttf') format('truetype'), url('ZephyrScriptFLF/ZephyrScriptFLF-webfont.svg#webfont') format('svg');
 	font-weight: bold;
 	font-style: italic;
 }

@@ -1,0 +1,5 @@
+This font was found on the internet and did not come with a license. While we try to make sure that all the fonts on fontsquirrel.com are properly licensed for commercial use, there are many fonts that have either been abandoned by their authors or the authors distribute their fonts without an explicit license. 
+
+It is our opinion that if the unlicensed font is freely available for download from either the original source or from multiple free-font sites then we assume it to be safe to use the font commercially. This is no guarantee of such freedom, but there are so many unlicensed free fonts distributed by primary sources that the intentions must be read that the font is free to use how you like.
+
+We are not lawyers and don't pretend to be them on TV. Please report any errors/violations you know of. http://www.fontsquirrel.com/contact
