@@ -1591,9 +1591,16 @@
 							else {
 								$('#tool_bold').removeClass('push_button_pressed').addClass('tool_button');
 							}
-							$('#font_family').val(elem.getAttribute("font-family"));
-							$('#font_size').val(elem.getAttribute("font-size"));
-							$('#text').val(elem.textContent);
+							//$('#font_family').val(elem.getAttribute("font-family"));
+							//$('#font_size').val(elem.getAttribute("font-size"));
+							//$('#text').val(elem.textContent);
+							
+							Editor.fontCharacteristics($(elem).attr("font-family"));//show or hide bold and italic buttons based on font
+							//$('#font_family').val(elem.getAttribute("font-family"));
+							$('#font_family').val(svgCanvas.getFontFamily());
+							//$('#font_size').val(elem.getAttribute("font-size"));
+							$('#font_size').val(svgCanvas.getFontSize());							
+							
 							if (svgCanvas.addedNew) {
 								// Timeout needed for IE9
 								setTimeout(function() {
@@ -1712,7 +1719,11 @@
 			}
 			
 			var changeFontSize = function(ctl) {
+				svgCanvas.setFontFormatEvent("clickFontSize");
 				svgCanvas.setFontSize(ctl.value);
+				setTimeout( function() {
+					$('#text')[0].focus();
+				},10);				
 			}
 			
 			var changeStrokeWidth = function(ctl) {
@@ -1812,15 +1823,89 @@
 			});
 		
 			$('#font_family').change(function() {
+				svgCanvas.setFontFormatEvent("clickFontFamily");
 				svgCanvas.setFontFamily(this.value);
+				
+				// make sure to set focus back to our #text input
+				setTimeout( function() {
+					$('#text')[0].focus();
+				},1);				
 			});
 		
 			$('#seg_type').change(function() {
 				svgCanvas.setSegType($(this).val());
 			});
 		
-			$('#text').keyup(function(){
-				svgCanvas.setTextContent(this.value);
+			// standard javascript keyboard handling event sequence:  keydown, keypress, keyup
+			//A hack for Webkit due to it's arrows and backspace not firing on keypress
+			$('#text').keydown( function(evt) {
+				var keycode = evt.keyCode;
+
+				// set the shiftKey 
+				if( keycode == 16 ) {
+						if( !svgCanvas.textUIManager.isShiftKeyPressed() ) {
+								svgCanvas.textUIManager.setShiftKeyStatus( true );
+						}
+				}
+
+				// only process selection based on the arrow keys
+				if(keycode == 37 || keycode == 38 || keycode == 39 || keycode == 40 || keycode == 8){
+					if( (svgCanvas.textUIManager.getStartSelectionPos() == null) && svgCanvas.textUIManager.isShiftKeyPressed() && keycode != 8) {
+						// don't go into select mode if you happen to have the shift key held down when you are pressing
+						// the backspace
+						svgCanvas.textUIManager.setStartSelectionPos( svgCanvas.textManager.getCurPos() );
+						svgCanvas.textUIManager.getSelectionStartXY().is_cursor_beginning = svgCanvas.textUIManager.isDrawCursorBeginning();
+					}
+				}				
+								
+				if(navigator.userAgent.toLowerCase().indexOf('safari') != -1 || navigator.userAgent.toLowerCase().indexOf('chrome') != -1){
+					// need to process the arrows and delete key special for chrome/safari
+					if(keycode == 37 || keycode == 38 || keycode == 39 || keycode == 40 || keycode == 8){						
+						svgCanvas.setTextContent(this.value, evt);
+					}
+				}
+			});		
+			
+			
+			$('#text').keypress(function(evt){
+
+				var keycode = evt.keyCode;
+				
+				svgCanvas.setTextContent(this.value, evt);
+				
+				// reset the start selection after the set text because you may be replacing the selection with whatever character you've typed
+				if(keycode != 37 && keycode != 38 && keycode != 39 && keycode != 40 && keycode != 8  ) {
+						svgCanvas.textUIManager.setStartSelectionPos( null );
+						svgCanvas.textUIManager.hideSelectionBox();							
+						svgCanvas.textUIManager.resetSelectionStartXY();
+						svgCanvas.textUIManager.resetSelectionToXY();
+
+				}
+			});
+						
+			$('#text').keyup( function(evt) {
+					var keycode = evt.keyCode;
+
+			      if( keycode == 16 ) {
+			      	if( svgCanvas.textUIManager.isShiftKeyPressed() ) {
+							svgCanvas.textUIManager.setShiftKeyStatus( false );
+						}
+			      }
+			      
+					// set shiftkeystatus false if not left,right,up,down arrow
+					if(keycode == 37 || keycode == 38 || keycode == 39 || keycode == 40 || keycode == 8){
+						if( (svgCanvas.textUIManager.getStartSelectionPos() == null) && svgCanvas.textUIManager.isShiftKeyPressed() && keycode != 8 ) {
+							svgCanvas.textUIManager.setStartSelectionPos( svgCanvas.textManager.getCurPos() );
+							svgCanvas.textUIManager.getSelectionStartXY().is_cursor_beginning = textUIManager.isDrawCursorBeginning();
+						}
+						else if( (svgCanvas.textUIManager.getStartSelectionPos() != null) && (svgCanvas.textUIManager.isShiftKeyPressed() == false) ) {
+							svgCanvas.textUIManager.setStartSelectionPos( null );	
+							svgCanvas.textUIManager.hideSelectionBox();	
+							svgCanvas.textUIManager.resetSelectionStartXY();
+							svgCanvas.textUIManager.resetSelectionToXY();
+												
+						}
+					}			      
 			});
 		  
 			$('#image_url').change(function(){
@@ -2515,13 +2600,29 @@
 			
 			var clickBold = function(){
 				svgCanvas.setBold( !svgCanvas.getBold() );
-				updateContextPanel();
+				svgCanvas.setFontFormatEvent("clickBold");
+				
+				if (svgCanvas.getBold()) {
+				        $('#tool_bold').addClass('push_button_pressed').removeClass('tool_button');
+				}
+				else {
+				        $('#tool_bold').removeClass('push_button_pressed').addClass('tool_button');
+				}			
 				return false;
 			};
 			
 			var clickItalic = function(){
 				svgCanvas.setItalic( !svgCanvas.getItalic() );
-				updateContextPanel();
+	
+				//updateContextPanel();
+				svgCanvas.setFontFormatEvent("clickItalic");
+
+				if (svgCanvas.getItalic()) {
+					$('#tool_italic').addClass('push_button_pressed').removeClass('tool_button');
+				}
+				else {
+					$('#tool_italic').removeClass('push_button_pressed').addClass('tool_button');
+				}			
 				return false;
 			};
 		
@@ -4639,6 +4740,53 @@
 				if(svgCanvas) svgCanvas.addExtension.apply(this, args);
 			});
 		};
+		
+		Editor.fontCharacteristics = function(fontName)//show or hide bold and italic buttons based on font
+		{
+					var listItems = $("#fontdropdown").children();//gets the font list items
+					var curLI;//current list item
+					//find the font currently in use
+					for (var ii=0;ii<listItems.length;ii++)
+					{
+						listItem = listItems[ii];
+						if (listItem.textContent == fontName)
+						{
+							curLI = listItem;
+							break;
+						}
+					}
+					
+					var bold,
+						italic,
+						boldItalic;
+					//find the attributes of that font
+					bold = $(curLI).attr("lyb:b");
+					italic = $(curLI).attr("lyb:i");
+					bolditalic = $(curLI).attr("lyb:bi");
+					//based on the attributes hide or show buttons
+					if (boldItalic == "N" && bold == "N" && italic == "N")//no bold & italic font
+					{
+						$("#tool_bold").hide();
+						$("#tool_italic").hide();
+					}
+					else if (bold == "N")//no bold font
+					{	
+						$("#tool_bold").hide();
+					}
+					else if (italic == "N")//no italic font
+					{
+						$("#tool_italic").hide();
+					}
+					if (italic == "Y")
+					{
+						$("#tool_italic").show();
+					}
+					if (bold == "Y")
+					{
+						$("#tool_bold").show();
+					}
+		};		
+		
 
 		return Editor;
 	}(jQuery);
