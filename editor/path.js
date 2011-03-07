@@ -879,7 +879,17 @@ svgedit.path.Path.prototype.update = function() {
 	return this;
 };
 
-svgedit.path.getRotVals_ = function(x, y) {
+svgedit.path.getPath_ = function(elem) {
+	var p = pathData[elem.id];
+	if(!p) p = pathData[elem.id] = new svgedit.path.Path(elem);
+	return p;
+};
+
+svgedit.path.removePath_ = function(id) {
+	if(id in pathData) delete pathData[id];
+};
+
+var getRotVals = function(x, y) {
 	dx = x - oldcx;
 	dy = y - oldcy;
 	
@@ -903,16 +913,61 @@ svgedit.path.getRotVals_ = function(x, y) {
 		'y':(r * Math.sin(theta) + newcy)/1};
 };
 
+// If the path was rotated, we must now pay the piper:
+// Every path point must be rotated into the rotated coordinate system of 
+// its old center, then determine the new center, then rotate it back
+// This is because we want the path to remember its rotation
 
+// TODO: This is still using ye olde transform methods, can probably
+// be optimized or even taken care of by recalculateDimensions
+svgedit.path.recalcRotatedPath = function() {
+	var current_path = svgedit.path.path.elem;
+	var angle = svgedit.utilities.getRotationAngle(current_path, true);
+	if(!angle) return;
+//	selectedBBoxes[0] = svgedit.path.path.oldbbox;
+	var box = svgedit.utilities.getBBox(current_path),
+		oldbox = svgedit.path.path.oldbbox,//selectedBBoxes[0],
+		oldcx = oldbox.x + oldbox.width/2,
+		oldcy = oldbox.y + oldbox.height/2,
+		newcx = box.x + box.width/2,
+		newcy = box.y + box.height/2,
+	
+	// un-rotate the new center to the proper position
+		dx = newcx - oldcx,
+		dy = newcy - oldcy,
+		r = Math.sqrt(dx*dx + dy*dy),
+		theta = Math.atan2(dy,dx) + angle;
+		
+	newcx = r * Math.cos(theta) + oldcx;
+	newcy = r * Math.sin(theta) + oldcy;
+	
+	var list = current_path.pathSegList,
+		i = list.numberOfItems;
+	while (i) {
+		i -= 1;
+		var seg = list.getItem(i),
+			type = seg.pathSegType;
+		if(type == 1) continue;
+		
+		var rvals = getRotVals(seg.x,seg.y),
+			points = [rvals.x, rvals.y];
+		if(seg.x1 != null && seg.x2 != null) {
+			c_vals1 = getRotVals(seg.x1, seg.y1);
+			c_vals2 = getRotVals(seg.x2, seg.y2);
+			points.splice(points.length, 0, c_vals1.x , c_vals1.y, c_vals2.x, c_vals2.y);
+		}
+		svgedit.path.replacePathSeg(type, i, points);
+	} // loop for each point
 
-svgedit.path.getPath_ = function(elem) {
-	var p = pathData[elem.id];
-	if(!p) p = pathData[elem.id] = new svgedit.path.Path(elem);
-	return p;
-};
-
-svgedit.path.removePath_ = function(id) {
-	if(id in pathData) delete pathData[id];
+	box = svgedit.utilities.getBBox(current_path);						
+//	selectedBBoxes[0].x = box.x; selectedBBoxes[0].y = box.y;
+//	selectedBBoxes[0].width = box.width; selectedBBoxes[0].height = box.height;
+	
+	// now we must set the new transform to be rotated around the new center
+	var R_nc = svgroot.createSVGTransform(),
+		tlist = svgedit.transformlist.getTransformList(current_path);
+	R_nc.setRotate((angle * 180.0 / Math.PI), newcx, newcy);
+	tlist.replaceItem(R_nc,0);
 };
 
 // ====================================
