@@ -2696,6 +2696,12 @@
 				svgCanvas.alignSelectedElements(letter, $('#align_relative_to').val());
 			};
 			
+
+			var clickFormatJustifyText = function() {
+				var action = this.id.replace('tool_format_justify','').substring(1);
+				svgCanvas.formatJustifyText(action);
+			};			
+			
 			var zoomImage = function(multiplier) {
 				var res = svgCanvas.getResolution();
 				multiplier = multiplier?res.zoom * multiplier:1;
@@ -3967,6 +3973,7 @@
 					{sel:'#tool_ungroup', fn: clickGroup, evt: 'click'},
 					{sel:'#tool_unlink_use', fn: clickGroup, evt: 'click'},
 					{sel:'[id^=tool_align]', fn: clickAlign, evt: 'click'},
+					{sel:'[id^=tool_format_justify]', fn: clickFormatJustifyText, evt: 'click'},	
 					// these two lines are required to make Opera work properly with the flyout mechanism
 		// 			{sel:'#tools_rect_show', fn: clickRect, evt: 'click'},
 		// 			{sel:'#tools_ellipse_show', fn: clickEllipse, evt: 'click'},
