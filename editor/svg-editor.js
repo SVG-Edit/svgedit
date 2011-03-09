@@ -3480,7 +3480,15 @@
 					if(!selectedElement) return;
 					var type = this.type;
 					
-					if(selectedElement.tagName === 'g') {
+					switch ( selectedElement.tagName ) {
+					case 'use':
+					case 'image':
+					case 'foreignObject':
+						// These elements don't have fill or stroke, so don't change 
+						// the current value
+						return;
+					case 'g':
+					case 'a':
 						var gPaint = null;
 					
 						var childs = selectedElement.getElementsByTagName('*');
@@ -3502,8 +3510,8 @@
 						var paintColor = gPaint;
 						
 						var paintOpacity = 1;
-
-					} else {
+						break;
+					default:
 						var paintOpacity = parseFloat(selectedElement.getAttribute(type + "-opacity"));
 						if (isNaN(paintOpacity)) {
 							paintOpacity = 1.0;
