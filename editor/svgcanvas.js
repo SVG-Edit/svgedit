@@ -3130,16 +3130,23 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					if (selectedElements[1] == null) {
 						// set our current stroke/fill properties to the element's
 						var selected = selectedElements[0];
-						if (selected.tagName != "g" && selected.tagName != "image" && selected.tagName != "foreignObject") {
-							cur_properties.fill = selected.getAttribute("fill");
-							cur_properties.fill_opacity = selected.getAttribute("fill-opacity");
-							cur_properties.stroke = selected.getAttribute("stroke");
-							cur_properties.stroke_opacity = selected.getAttribute("stroke-opacity");
-							cur_properties.stroke_width = selected.getAttribute("stroke-width");
-							cur_properties.stroke_dasharray = selected.getAttribute("stroke-dasharray");
-							cur_properties.stroke_linejoin = selected.getAttribute("stroke-linejoin");
-							cur_properties.stroke_linecap = selected.getAttribute("stroke-linecap");
+						switch ( selected.tagName ) {
+							case "g":
+							case "use":
+							case "image":
+							case "foreignObject":
+								break;
+							default:
+								cur_properties.fill = selected.getAttribute("fill");
+								cur_properties.fill_opacity = selected.getAttribute("fill-opacity");
+								cur_properties.stroke = selected.getAttribute("stroke");
+								cur_properties.stroke_opacity = selected.getAttribute("stroke-opacity");
+								cur_properties.stroke_width = selected.getAttribute("stroke-width");
+								cur_properties.stroke_dasharray = selected.getAttribute("stroke-dasharray");
+								cur_properties.stroke_linejoin = selected.getAttribute("stroke-linejoin");
+								cur_properties.stroke_linecap = selected.getAttribute("stroke-linecap");
 						}
+
 						if (selected.tagName == "text") {
 							cur_text.font_size = selected.getAttribute("font-size");
 							cur_text.font_family = selected.getAttribute("font-family");
