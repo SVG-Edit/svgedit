@@ -7313,6 +7313,23 @@ this.setFontFamily = function(val) {
 	}
 };
 
+
+// Function: setFontColor
+// Set the new font color
+//
+// Parameters:
+// val - String with the new font color
+this.setFontColor = function(val) {
+	cur_text.fill = val;
+	changeSelectedAttribute("fill", val);
+};
+
+// Function: getFontColor
+// Returns the current font color
+this.getFontSize = function() {
+	return cur_text.fill;
+};
+
 // Function: getFontSize
 // Returns the current font size
 this.getFontSize = function() {
