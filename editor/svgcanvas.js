@@ -1065,11 +1065,19 @@ var TextManager;
 					var myChar;
 					for( var i=0; i< sibling.textContent.length; i++ ) {
 						myChar = new CharacterElement( sibling.textContent[i] );
-						var start = sibling.getStartPositionOfChar(i);
-						var end = sibling.getEndPositionOfChar(i);
-						myChar.x = start.x;
-						myChar.y = start.y;
-						myChar.width = end.x - start.x;
+						
+						try {
+							var start = sibling.getStartPositionOfChar(i);
+							var end = sibling.getEndPositionOfChar(i);
+							myChar.x = start.x;
+							myChar.y = start.y;			
+						}
+						catch(ex) {
+							myChar.x = 0;
+							myChar.y = 0;						
+						}
+						
+						myChar.width = textUIManager.generateCharacterWidth( charAttr, myChar.value );
 						
 						// only set the dy on the first
 						var dyval = sibling.getAttribute('dy');
@@ -2429,7 +2437,7 @@ var TextUIManager;
 			}
 			
 			var curtext = selectedElements[0];
-			if( curtext && !curtext.textContent.length) {
+			if( curtext && curtext.textContent.length == 1 && curtext.nodeName == "text" && curtext.textContent == " ") {
 				canvas.deleteSelectedElements();
 			}
 			
