@@ -3228,6 +3228,20 @@ var setFontFormatEvent = this.setFontFormatEvent = function( val ) {
 		fontFormatEvent = val;	
 }
 
+// set the cur_text.fill that is used as the text color for 
+// the tspans
+// allow this to be called from the actual events in the svg-editor.js as this
+// is the only place where we can determine that the click has been
+// user initiated vs. flowing through the svgcanvas.js flow off of the mouseDown/mouseUp 
+// flow
+var setTextColor = this.setTextColor = function( color ) {
+	cur_text.fill = color;
+}
+
+var getTextColor = this.getTextColor = function() {
+	return cur_text.fill;	
+}
+
 
 // Should this return an array by default, so extension results aren't overwritten?
 var runExtensions = this.runExtensions = function(action, vars, returnArray) {
@@ -10927,6 +10941,10 @@ var setGradient = this.setGradient = function(type) {
 		grad = duplicate_grad;
 	}
 	canvas.setColor(type, "url(#" + grad.id + ")");
+	
+	//this is the only place that knows it's a gradient getting set to the 
+	//current color.  also set the text color
+	canvas.setTextColor("url(#" + grad.id + ")");
 }
 
 // Function: findDuplicateGradient
@@ -12111,6 +12129,7 @@ this.convertToPath = function(elem, getBBox) {
 // elems - The DOM elements to apply the change to
 var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 	var handle = svgroot.suspendRedraw(1000);
+	var doTextReRender = false; //control rerendering outside of existing suspendRedraw	
 	if(current_mode == 'pathedit') {
 		// Editing node
 		pathActions.moveNode(attr, newValue);
@@ -12125,9 +12144,9 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		if (elem == null) continue;
 		
 		// Go into "select" mode for text changes
-		if(current_mode === "textedit" && attr !== "#text" && elem.textContent.length) {
-			textActions.toSelectMode(elem);
-		}
+		//if(current_mode === "textedit" && attr !== "#text" && elem.textContent.length) {
+		//	textActions.toSelectMode(elem);
+		//}
 		
 		// Set x,y vals on elements that don't have them
 		if((attr === 'x' || attr === 'y') && no_xy_elems.indexOf(elem.tagName) >= 0) {
@@ -12186,9 +12205,9 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 
 				
 				// Always set the text object parent element -- except for the fill
-				if( attr != 'fill' ) {
-					$(elem).attr(attr, newValue);
-				}				
+				//if( attr != 'fill' ) {
+				$(elem).attr(attr, newValue);
+				//}				
 
 				var tspanAttrWhiteList = [ 'x', 'fill' ];
 				// only set attributes in the tspan children if it is in the 
@@ -12208,7 +12227,19 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 					textActions.propagateTextChanges( elem, changes, attr );			
 				}
 			}			
+			else if ( current_mode == 'textedit' && textUIManager.getStartSelectionPos() != null && textUIManager.isTextSelected()  ) {
+				// currently have some text selected in the text area	and you are in textedit mode	
 
+				if( attr == 'fill' ) {
+					//setTextColor(newValue);
+					textUIManager.propagateSelectionChanges( {
+															'attribute': attr,
+															'value': newValue
+					});
+					//rerender
+					doTextReRender = true;
+				}		
+			}
 			else elem.setAttribute(attr, newValue);
 			if (i==0)
 				selectedBBoxes[i] = getBBox(elem);
@@ -12260,6 +12291,12 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		} // if oldValue != newValue
 	} // for each elem
 	svgroot.unsuspendRedraw(handle);	
+	
+	if( doTextReRender ) {
+		textManager.renderTextSVG( selectedElements[0], true );		
+		selectorManager.requestSelector( selectedElements[0]).resize();	
+		setFontFormatEvent("");				
+	}	
 };
 
 // Function: changeSelectedAttribute

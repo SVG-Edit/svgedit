@@ -1995,6 +1995,11 @@
 					if (color != 'none' && svgCanvas.getFillOpacity('fill') != 1) {
 						svgCanvas.setPaintOpacity('fill', 1.0);
 					}
+					
+					// MJN for text color
+					if (svgCanvas.getTextColor() != color ) {
+						svgCanvas.setTextColor( color );
+					}						
 				}
 				updateToolButtonState();
 			}).bind('contextmenu', function(e) {e.preventDefault()});
@@ -3353,6 +3358,15 @@
 						
 						paintBox[picker].setPaint(paint);
 						svgCanvas.setPaint(picker, paint);
+						
+						// MJN update text color on change?
+						// gradients update TextColor in a lower
+						// level
+						if( paint.type == "solidColor") {
+							if( svgCanvas.getTextColor() != '#'+paint.solidColor ) {
+								svgCanvas.setTextColor( '#'+paint.solidColor );
+							}
+						}						
 						
 						$('#color_picker').hide();
 					},
