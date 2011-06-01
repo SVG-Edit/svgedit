@@ -75,6 +75,11 @@ opera: build/$(PACKAGE)
 	cp -r build/$(PACKAGE)/* build/opera/editor
 	cd build/opera ; $(ZIP) ../$(PACKAGE).wgt -r * ; cd ../..
 
+chrome:
+	mkdir -p build/svgedit_app
+	cp -a chrome-app/* build/svgedit_app
+	cd build ; $(ZIP) -r $(PACKAGE)-crx.zip svgedit_app ; rm -rf svgedit_app; cd ..
+
 clean:
 	rm -rf config
 	rm -rf build/$(PACKAGE)
