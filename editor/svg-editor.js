@@ -2137,7 +2137,9 @@
 			// Made public for UI customization.
 			// TODO: Group UI functions into a public svgEditor.ui interface.
 			Editor.addDropDown = function(elem, callback, dropUp) {
+				if ($(elem).length == 0) return; // Quit if called on non-existant element
 				var button = $(elem).find('button');
+				
 				var list = $(elem).find('ul').attr('id', $(elem)[0].id + '-list');
 				
 				if(!dropUp) {
@@ -4227,8 +4229,11 @@
 				}
 				
 				$('#rulers').toggle(!!curConfig.showRulers);
-				$('#show_rulers')[0].checked = curConfig.showRulers;
 				
+				if (curConfig.showRulers) {
+					$('#show_rulers')[0].checked = true;	
+				}
+
 				if(curConfig.gridSnapping) {
 					$('#grid_snapping_on')[0].checked = true;
 				}
