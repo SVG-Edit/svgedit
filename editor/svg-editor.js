@@ -3279,8 +3279,13 @@
 			
 			(function() {
 				workarea.scroll(function() {
-					$('#ruler_x')[0].scrollLeft = workarea[0].scrollLeft;
-					$('#ruler_y')[0].scrollTop = workarea[0].scrollTop;
+					// TODO:  jQuery's scrollLeft/Top() wouldn't require a null check
+					if ($('#ruler_x').length != 0) {
+						$('#ruler_x')[0].scrollLeft = workarea[0].scrollLeft;
+					}
+					if ($('#ruler_y').length != 0) {
+						$('#ruler_y')[0].scrollTop = workarea[0].scrollTop;	
+					}
 				});
 
 			}());
