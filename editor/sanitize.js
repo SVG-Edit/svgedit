@@ -91,7 +91,7 @@ var svgWhiteList_ = {
 	"mn": [],
 	"mo": ["fence", "lspace", "maxsize", "minsize", "rspace", "stretchy"],
 	"mover": [],
-	"mpadded": ["lspace", "width"],
+	"mpadded": ["lspace", "width", "height", "depth", "voffset"],
 	"mphantom": [],
 	"mprescripts": [],
 	"mroot": [],
