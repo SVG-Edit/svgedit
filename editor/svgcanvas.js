@@ -8601,6 +8601,14 @@ this.updateCanvas = function(w, h) {
 		x: x,
 		y: y
 	});
+
+	var bg_img = getElem('background_image');
+	if (bg_img) {
+		assignAttributes(bg_img, {
+			'width': '100%',
+			'height': '100%'
+		});
+	}
 	
 	selectorManager.selectorParentGroup.setAttribute("transform","translate(" + x + "," + y + ")");
 	
