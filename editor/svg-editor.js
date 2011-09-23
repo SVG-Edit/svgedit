@@ -4001,7 +4001,7 @@
 					{sel:'#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel,#tool_prefs_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
 					{sel:'#tool_source_save', fn: saveSourceEditor, evt: 'click'},
 					{sel:'#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
-					{sel:'#tool_docprops', fn: showDocProperties, evt: 'mouseup', key: ['D', true]},
+					{sel:'#tool_docprops', fn: showDocProperties, evt: 'mouseup'},
 					{sel:'#tool_prefs_save', fn: savePreferences, evt: 'click'},
 					{sel:'#tool_prefs_option', fn: function() {showPreferences();return false}, evt: 'mouseup'},
 					{sel:'#tool_delete,#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
