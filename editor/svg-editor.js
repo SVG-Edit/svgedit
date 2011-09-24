@@ -915,11 +915,14 @@
 					
 					var timer;
 					
+					var pos = $(show_sel).position();
+					$(hold_sel).css({'left': pos.left+34, 'top': pos.top+77});
+					
 					// Clicking the "show" icon should set the current mode
 					shower.mousedown(function(evt) {
 						if(shower.hasClass('disabled')) return false;
-						var holder = $(show_sel.replace('_show',''));
-						var l = holder[0].style.left;
+						var holder = $(hold_sel);
+						var l = pos.left+34;
 						var w = holder.width()*-1;
 						var time = holder.data('shown_popop')?200:0;
 						timer = setTimeout(function() {
@@ -948,9 +951,6 @@
 					});
 					
 					// 	$('#tools_rect').mouseleave(function(){$('#tools_rect').fadeOut();});
-					
-					var pos = $(show_sel).position();
-					$(hold_sel).css({'left': pos.left+34, 'top': pos.top+77});
 				});
 				
 				setFlyoutTitles();
