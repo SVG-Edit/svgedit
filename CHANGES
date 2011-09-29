@@ -1,5 +1,30 @@
-2.4 - January 11, 2010
+2.5 - June 15, 2010
 -------------------
+* Open Local Files (Firefox 3.6+ only)
+* Import SVG into Drawing (Firefox 3.6+ only)
+* Ability to create extensions/plugins
+* Main menu and overal interface improvements
+* Create and select elements outside the canvas
+* Base support for the svg:use element
+* Add/Edit Sub-paths
+* Multiple path segment selection
+* Radial Gradient support
+* Connector lines
+* Arrows & Markers
+* Smoother freehand paths
+* Foreign markup support (ForeignObject?/MathML)
+* Configurable options
+* File-loading options
+* Eye-dropper tool (copy element style)
+* Stroke linejoin and linecap options
+* Export to PNG
+* Blur tool
+* Page-align single elements
+* Inline text editing
+* Line draw snapping with Shift key
+
+2.4 - January 11, 2010
+----------------------
 * Zoom
 * Layers
 * UI Localization
@@ -21,7 +46,7 @@
 * Title element
 
 2.3 - September 08, 2009
--------------------
+------------------------
 * Align Objects
 * Rotate Objects
 * Clone Objects
