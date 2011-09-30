@@ -2,6 +2,14 @@
 	background: #D0D0D0;
 }
 
+html, body, div{
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -o-user-select: none;
+        user-select: none;
+}
+
 #browser-not-supported {
         font-size: 0.8em;
         font-family: Verdana, Helvetica, Arial;
