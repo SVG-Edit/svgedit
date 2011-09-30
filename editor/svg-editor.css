@@ -8,6 +8,8 @@ html, body, div{
         -moz-user-select: none;
         -o-user-select: none;
         user-select: none;
+	/* this will work for QtWebKit in future */
+	-webkit-user-drag: none;
 }
 
 #browser-not-supported {
