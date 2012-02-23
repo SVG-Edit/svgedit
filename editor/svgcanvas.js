@@ -2516,9 +2516,16 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					tlist.appendItem(svgroot.createSVGTransform());
 					
 					if(svgedit.browser.supportsNonScalingStroke()) {
+						//Handle crash for newer Chrome + Windows: https://code.google.com/p/svg-edit/issues/detail?id=904
+						if(svgedit.browser.isChrome() && svgedit.browser.isWindows()) {
+							var _stroke = mouse_target.getAttributeNS(null, 'stroke');
+							mouse_target.removeAttributeNS(null, 'stroke');
+							//Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
+							setTimeout(function() { mouse_target.setAttributeNS(null, 'stroke', _stroke) }, 1);
+						}
 						mouse_target.style.vectorEffect = 'non-scaling-stroke';
 						var all = mouse_target.getElementsByTagName('*'), len = all.length;
-						for(var i = 0; i < all.length; i++) {
+						for(var i = 0; i < len; i++) {
 							all[i].style.vectorEffect = 'non-scaling-stroke';
 						}
 					}
