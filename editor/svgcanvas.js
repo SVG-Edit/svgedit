@@ -2517,16 +2517,24 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					
 					if(svgedit.browser.supportsNonScalingStroke()) {
 						//Handle crash for newer Chrome + Windows: https://code.google.com/p/svg-edit/issues/detail?id=904
-						if(svgedit.browser.isChrome() && svgedit.browser.isWindows()) {
-							var _stroke = mouse_target.getAttributeNS(null, 'stroke');
-							mouse_target.removeAttributeNS(null, 'stroke');
-							//Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
-							setTimeout(function() { mouse_target.setAttributeNS(null, 'stroke', _stroke) }, 1);
+						// TODO: Remove this workaround (all isChromeWindows blocks) once vendor fixes the issue
+						var isChromeWindows = svgedit.browser.isChrome() && svgedit.browser.isWindows();
+						if(isChromeWindows) {
+							var delayedStroke = function(ele) {
+								var _stroke = ele.getAttributeNS(null, 'stroke');
+								ele.removeAttributeNS(null, 'stroke');
+								//Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
+								setTimeout(function() { ele.setAttributeNS(null, 'stroke', _stroke) }, 1);
+							}
 						}
 						mouse_target.style.vectorEffect = 'non-scaling-stroke';
-						var all = mouse_target.getElementsByTagName('*'), len = all.length;
+						if(isChromeWindows) delayedStroke(mouse_target);
+
+						var all = mouse_target.getElementsByTagName('*'),
+						    len = all.length;
 						for(var i = 0; i < len; i++) {
 							all[i].style.vectorEffect = 'non-scaling-stroke';
+							if(isChromeWindows) delayedStroke(all[i]);
 						}
 					}
 				}
