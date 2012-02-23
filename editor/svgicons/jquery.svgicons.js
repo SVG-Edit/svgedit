@@ -171,8 +171,8 @@ $(function() {
 								useFallback();
 							});
 						} else {
-							if(err.responseXML) {
-								svgdoc = parser.parseFromString(err.responseXML, "text/xml");
+							if(err.responseText) {
+								svgdoc = parser.parseFromString(err.responseText, "text/xml");
 
 								if(!svgdoc.childNodes.length) {
 									$(useFallback);									

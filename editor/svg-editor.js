@@ -56,6 +56,7 @@
 				wireframe: false,
 				colorPickerCSS: null,
 				gridSnapping: false,
+				gridColor: "#000",
 				baseUnit: 'px',
 				snappingStep: 10,
 				showRulers: true
@@ -4133,7 +4134,7 @@
 								});
 								
 								// Put shortcut in title
-								if(opts.sel && !opts.hidekey) {
+								if(opts.sel && !opts.hidekey && btn.attr('title')) {
 									var new_title = btn.attr('title').split('[')[0] + ' (' + keyval + ')';
 									key_assocs[keyval] = opts.sel;
 									// Disregard for menu items
