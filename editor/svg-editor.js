@@ -179,7 +179,7 @@
 					svgCanvas.open = opts.open;
 				}
 				if(opts.save) {
-					show_save_warning = false;
+					Editor.show_save_warning = false;
 					svgCanvas.bind("saved", opts.save);
 				}
 				if(opts.pngsave) {
@@ -480,7 +480,7 @@
 			});
 
 			Editor.canvas = svgCanvas = new $.SvgCanvas(document.getElementById("svgcanvas"), curConfig);
-			
+			Editor.show_save_warning = false;
 			var palette = ["#000000", "#3f3f3f", "#7f7f7f", "#bfbfbf", "#ffffff",
 			           "#ff0000", "#ff7f00", "#ffff00", "#7fff00",
 			           "#00ff00", "#00ff7f", "#00ffff", "#007fff",
@@ -502,7 +502,6 @@
 				workarea = $("#workarea"),
 				canv_menu = $("#cmenu_canvas"),
 				layer_menu = $("#cmenu_layers"),
-				show_save_warning = false, 
 				exportWindow = null, 
 				tool_scale = 1,
 				zoomInIcon = 'crosshair',
@@ -600,7 +599,7 @@
 			var orig_title = $('title:first').text();
 			
 			var saveHandler = function(window,svg) {
-				show_save_warning = false;
+				Editor.show_save_warning = false;
 			
 				// by default, we add the XML prolog back, systems integrating SVG-edit (wikis, CMSs) 
 				// can just provide their own custom save handler and might not want the XML prolog
@@ -755,7 +754,7 @@
 					}
 				}
 				
-				show_save_warning = true;
+				Editor.show_save_warning = true;
 		
 				// we update the contextual panel with potentially new
 				// positional/sizing information (we DON'T want to update the
@@ -4358,11 +4357,11 @@
 			window.onbeforeunload = function() { 
 				// Suppress warning if page is empty 
 				if(undoMgr.getUndoStackSize() === 0) {
-					show_save_warning = false;
+					Editor.show_save_warning = false;
 				}
 
 				// show_save_warning is set to "false" when the page is saved.
-				if(!curConfig.no_save_warning && show_save_warning) {
+				if(!curConfig.no_save_warning && Editor.show_save_warning) {
 					// Browser already asks question about closing the page
 					return uiStrings.notification.unsavedChanges; 
 				}
