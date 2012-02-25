@@ -19,6 +19,7 @@ JS_FILES=\
 	path.js \
 	svgcanvas.js \
 	svg-editor.js \
+	contextmenu.js \
 	locale/locale.js
 
 JS_INPUT_FILES=$(addprefix editor/, $(JS_FILES))

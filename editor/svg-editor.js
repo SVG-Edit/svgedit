@@ -4302,7 +4302,11 @@
 						case 'move_back':
 							moveToBottomSelected();
 							break;
-
+  						default:
+ 							if(svgedit.contextmenu && svgedit.contextmenu.hasCustomHandler(action)){
+ 								svgedit.contextmenu.getCustomHandler(action).call();
+  							}
+  							break;
 					}
 					
 					if(svgCanvas.clipBoard.length) {
