@@ -5734,7 +5734,13 @@ this.setSvgString = function(xmlString) {
 		batchCmd.addSubCommand(new RemoveElementCommand(oldzoom, nextSibling, svgroot));
 	
 		// set new svg document
-		svgcontent = svgroot.appendChild(svgdoc.importNode(newDoc.documentElement, true));
+		var _tmpDoc = newDoc.documentElement;
+		//TODO: remove isChrome() blocks when importNode is fixed
+		//Issue: https://code.google.com/p/chromium/issues/detail?id=57871
+		if(svgedit.browser.isChrome()) {
+			_tmpDoc = $(newDoc.documentElement).clone(true)[0];
+		}
+		svgcontent = svgroot.appendChild(_tmpDoc);
 		
 		var content = $(svgcontent);
 		
