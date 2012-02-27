@@ -5254,6 +5254,13 @@ this.svgToString = function(elem, indent) {
 						out.push(toXml(str) + "");
 					}
 					break;
+				case 4: // cdata node
+					out.push("\n");
+					out.push(new Array(indent+1).join(" "));
+					out.push("<![CDATA[");
+					out.push(child.nodeValue);
+					out.push("]]>");
+					break;
 				case 8: // comment
 					out.push("\n");
 					out.push(new Array(indent+1).join(" "));
@@ -5734,14 +5741,15 @@ this.setSvgString = function(xmlString) {
 		batchCmd.addSubCommand(new RemoveElementCommand(oldzoom, nextSibling, svgroot));
 	
 		// set new svg document
-		var _tmpDoc = newDoc.documentElement;
-		//TODO: remove isChrome() blocks when importNode is fixed
-		//Issue: https://code.google.com/p/chromium/issues/detail?id=57871
-		if(svgedit.browser.isChrome()) {
-			_tmpDoc = $(newDoc.documentElement).clone(true)[0];
+		// If DOM3 adoptNode() available, use it. Otherwise fall back to DOM2 importNode()
+		if(svgdoc.adoptNode) {
+			svgcontent = svgdoc.adoptNode(newDoc.documentElement);
 		}
-		svgcontent = svgroot.appendChild(_tmpDoc);
+		else {
+			svgcontent = svgdoc.importNode(newDoc.documentElement, true);
+		}
 		
+		svgroot.appendChild(svgcontent);
 		var content = $(svgcontent);
 		
 		canvas.current_drawing_ = new svgedit.draw.Drawing(svgcontent, idprefix);
@@ -5928,7 +5936,14 @@ this.importSvgString = function(xmlString) {
 			this.prepareSvg(newDoc);
 	
 			// import new svg document into our document
-			var svg = svgdoc.importNode(newDoc.documentElement, true);
+			var svg;
+			// If DOM3 adoptNode() available, use it. Otherwise fall back to DOM2 importNode()
+			if(svgdoc.adoptNode) {
+				svg = svgdoc.adoptNode(newDoc.documentElement);
+			}
+			else {
+				svg = svgdoc.importNode(newDoc.documentElement, true);
+			}
 			
 			uniquifyElems(svg);
 			
