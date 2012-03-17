@@ -2590,6 +2590,7 @@
 					populateLayers();
 					updateContextPanel();
 					prepPaints();
+					svgCanvas.runExtensions('onNewDocument');
 				});
 			};
 			
