@@ -38,12 +38,12 @@ if(jQuery)( function() {
 				menu.addClass('contextMenu');
 				
 				// Simulate a true right click
-				$(this).mousedown( function(e) {
+				$(this).bind( "contextmenu mousedown", function(e) {
 					var evt = e;
 					$(this).mouseup( function(e) {
 						var srcElement = $(this);
 						srcElement.unbind('mouseup');
-						if( evt.button === 2 || o.allowLeft) {
+						if( evt.button === 2 || o.allowLeft || evt.type === "contextmenu" ) {
 							e.stopPropagation();
 							// Hide context menus that may be showing
 							$(".contextMenu").hide();

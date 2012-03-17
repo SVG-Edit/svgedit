@@ -6,7 +6,9 @@ CLOSURE=build/tools/closure-compiler.jar
 ZIP=zip
 
 # All files that will be compiled by the Closure compiler.
+
 JS_FILES=\
+	contextmenu/jquery.contextmenu.js \
 	browser.js \
 	svgtransformlist.js \
 	math.js \
@@ -54,6 +56,8 @@ $(COMPILED_JS):
 		--compilation_level SIMPLE_OPTIMIZATIONS \
 		$(CLOSURE_JS_ARGS) \
 		--js_output_file $(COMPILED_JS)
+
+compile: $(COMPILED_JS)
 
 release: build/$(PACKAGE)
 	cd build ; $(ZIP) $(PACKAGE).zip -r $(PACKAGE) ; cd ..
