@@ -902,7 +902,7 @@
 							$(this).mouseup(func);
 							
 							if(opts.key) {
-								$(document).bind('keydown', opts.key+'', func);
+								$(document).bind('keydown', opts.key[0], func);
 							}
 						});
 					
