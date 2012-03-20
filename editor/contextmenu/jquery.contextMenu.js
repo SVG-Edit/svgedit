@@ -36,14 +36,13 @@ if(jQuery)( function() {
 
 				// Add contextMenu class
 				menu.addClass('contextMenu');
-				
 				// Simulate a true right click
-				$(this).bind( "contextmenu mousedown", function(e) {
+				$(this).bind( "mousedown", function(e) {
 					var evt = e;
 					$(this).mouseup( function(e) {
 						var srcElement = $(this);
 						srcElement.unbind('mouseup');
-						if( evt.button === 2 || o.allowLeft || evt.type === "contextmenu" ) {
+						if( evt.button === 2 || o.allowLeft || (evt.ctrlKey && svgedit.browser.isMac()) ) {
 							e.stopPropagation();
 							// Hide context menus that may be showing
 							$(".contextMenu").hide();

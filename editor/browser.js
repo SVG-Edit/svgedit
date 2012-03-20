@@ -37,6 +37,7 @@ var isGecko_ = userAgent.indexOf('Gecko/') >= 0;
 var isIE_ = userAgent.indexOf('MSIE') >= 0;
 var isChrome_ = userAgent.indexOf('Chrome/') >= 0;
 var isWindows_ = userAgent.indexOf('Windows') >= 0;
+var isMac_ = userAgent.indexOf('Macintosh') >= 0;
 
 var supportsSelectors_ = (function() {
 	return !!svg.querySelector;
@@ -157,6 +158,7 @@ svgedit.browser.isGecko = function() { return isGecko_; }
 svgedit.browser.isIE = function() { return isIE_; }
 svgedit.browser.isChrome = function() { return isChrome_; }
 svgedit.browser.isWindows = function() { return isWindows_; }
+svgedit.browser.isMac = function() { return isMac_; }
 
 svgedit.browser.supportsSelectors = function() { return supportsSelectors_; }
 svgedit.browser.supportsXpath = function() { return supportsXpath_; }
