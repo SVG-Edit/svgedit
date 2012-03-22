@@ -48,7 +48,7 @@ if(window.opera) {
 	var proxied = jQuery.fn.attr, svgns = "http://www.w3.org/2000/svg";
 	jQuery.fn.attr = function(key, value) {
 		var len = this.length;
-		if(!len) return this;
+		if(!len) return proxied.apply(this, arguments);
 		for(var i=0; i<len; i++) {
 			var elem = this[i];
 			// set/get SVG attribute
