@@ -876,36 +876,50 @@
 							
 							// Remember the function that goes with this ID
 							flyout_funcs[opts.sel] = opts.fn;
-		
+
 							if(opts.isDefault) def = i;
-							
+
 							// Clicking the icon in flyout should set this set's icon
-							
-							var func = function() {
+							var func = function(event) {
+								var options = opts;
+								//find the currently selected tool if comes from keystroke
+								if (event.type === "keydown") {
+									var flyoutIsSelected = $(options.parent + "_show").hasClass('tool_button_current'); 
+									var currentOperation = $(options.parent + "_show").attr("data-curopt");
+									$.each(holders[opts.parent], function(i, tool){
+										if (tool.sel == currentOperation) {
+											if(!event.shiftKey || !flyoutIsSelected) {
+												options = tool;
+											}
+											else {
+												options = holders[opts.parent][i+1] || holders[opts.parent][0];
+											}
+										}
+									});
+								}
 								if($(this).hasClass('disabled')) return false;
 								if (toolButtonClick(show_sel)) {
-									opts.fn();
+									options.fn();
 								}
-								if(opts.icon) {
-									var icon = $.getSvgIcon(opts.icon, true);
+								if(options.icon) {
+									var icon = $.getSvgIcon(options.icon, true);
 								} else {
-									// 
-									var icon = $(opts.sel).children().eq(0).clone();
+									var icon = $(options.sel).children().eq(0).clone();
 								}
-								
+
 								icon[0].setAttribute('width',shower.width());
 								icon[0].setAttribute('height',shower.height());
 								shower.children(':not(.flyout_arrow_horiz)').remove();
-								shower.append(icon).attr('data-curopt', opts.sel); // This sets the current mode
+								shower.append(icon).attr('data-curopt', options.sel); // This sets the current mode
 							}
-							
+
 							$(this).mouseup(func);
-							
+
 							if(opts.key) {
-								$(document).bind('keydown', opts.key[0], func);
+								$(document).bind('keydown', opts.key[0] + " shift+" + opts.key[0], func);
 							}
 						});
-					
+
 					if(def) {
 						shower.attr('data-curopt', btn_opts[def].sel);
 					} else if(!shower.attr('data-curopt')) {
