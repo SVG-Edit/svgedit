@@ -5041,7 +5041,7 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 		}
 	};
 	
-	var defelems = $(svgcontent).find("linearGradient, radialGradient, filter, marker, svg, symbol");
+	var defelems = $(defs).find("linearGradient, radialGradient, filter, marker, svg, symbol");
 		defelem_ids = [],
 		i = defelems.length;
 	while (i--) {
