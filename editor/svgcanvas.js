@@ -2516,10 +2516,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					tlist.appendItem(svgroot.createSVGTransform());
 					
 					if(svgedit.browser.supportsNonScalingStroke()) {
-						//Handle crash for newer Chrome + Windows: https://code.google.com/p/svg-edit/issues/detail?id=904
-						// TODO: Remove this workaround (all isChromeWindows blocks) once vendor fixes the issue
-						var isChromeWindows = svgedit.browser.isChrome() && svgedit.browser.isWindows();
-						if(isChromeWindows) {
+						//Handle crash for newer Chrome: https://code.google.com/p/svg-edit/issues/detail?id=904
+						//Chromium issue: https://code.google.com/p/chromium/issues/detail?id=114625
+						// TODO: Remove this workaround (all isChrome blocks) once vendor fixes the issue
+						var isChrome = svgedit.browser.isChrome();
+						if(isChrome) {
 							var delayedStroke = function(ele) {
 								var _stroke = ele.getAttributeNS(null, 'stroke');
 								ele.removeAttributeNS(null, 'stroke');
@@ -2528,13 +2529,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 							}
 						}
 						mouse_target.style.vectorEffect = 'non-scaling-stroke';
-						if(isChromeWindows) delayedStroke(mouse_target);
+						if(isChrome) delayedStroke(mouse_target);
 
 						var all = mouse_target.getElementsByTagName('*'),
 						    len = all.length;
 						for(var i = 0; i < len; i++) {
 							all[i].style.vectorEffect = 'non-scaling-stroke';
-							if(isChromeWindows) delayedStroke(all[i]);
+							if(isChrome) delayedStroke(all[i]);
 						}
 					}
 				}
