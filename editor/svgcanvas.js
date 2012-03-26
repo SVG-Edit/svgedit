@@ -207,7 +207,7 @@ var current_group = null;
 // Object containing data for the currently selected styles
 var all_properties = {
 	shape: {
-		fill: "#" + curConfig.initFill.color,
+		fill: (curConfig.initFill.color == 'none' ? '' : '#') + curConfig.initFill.color,
 		fill_paint: null,
 		fill_opacity: curConfig.initFill.opacity,
 		stroke: "#" + curConfig.initStroke.color,
