@@ -345,10 +345,12 @@ svgedit.utilities.getPathBBox = function(path) {
 	var bounds = [[], []];
 	var start = seglist.getItem(0);
 	var P0 = [start.x, start.y];
-	
+
 	for(var i=0; i < tot; i++) {
 		var seg = seglist.getItem(i);
-		
+
+		if(typeof seg.x == 'undefined') continue;
+
 		// Add actual points to limits
 		bounds[0].push(P0[0]);
 		bounds[1].push(P0[1]);
