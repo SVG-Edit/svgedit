@@ -110,6 +110,17 @@
 		equal(svgedit.utilities.getUrlFromAttr('url("#foo")'), "#foo");
 	});
 
+	test("Test getPathBBox", function() {
+		if(svgedit.browser.supportsPathBBox()) return;
+		var doc = svgedit.utilities.text2xml('<svg></svg>');
+		var path = doc.createElementNS(svgns, 'path');
+		path.setAttributeNS(null, 'd', 'm0,0l5,0l0,5l-5,0l0,-5z');
+		var bb = svgedit.utilities.getPathBBox(path);
+		equals(typeof bb, 'object', 'BBox returned object');
+		ok(bb.x && !isNaN(bb.x));
+		ok(bb.y && !isNaN(bb.y));
+	});
+
   }); 
   </script>  
 </head>  
