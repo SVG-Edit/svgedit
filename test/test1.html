@@ -2,9 +2,9 @@
 <head>  
   <link rel="stylesheet" href="qunit/qunit.css" type="text/css"/>  
   <script src="../editor/jquery.js"></script>  
+  <script type="text/javascript" src="../editor/jquerybbq/jquery.bbq.min.js"></script>
   <script type="text/javascript" src="../editor/jquery-ui/jquery-ui-1.8.custom.min.js"></script>
   <script type="text/javascript" src="../editor/svgicons/jquery.svgicons.js"></script>
-  <script type="text/javascript" src="../editor/locale/locale.js"></script>
   <script type="text/javascript" src="../editor/browser.js"></script>
   <script type="text/javascript" src="../editor/svgtransformlist.js"></script>
   <script type="text/javascript" src="../editor/math.js"></script>
@@ -13,7 +13,11 @@
   <script type="text/javascript" src="../editor/sanitize.js"></script>
   <script type="text/javascript" src="../editor/history.js"></script>
   <script type="text/javascript" src="../editor/select.js"></script>
+  <script type="text/javascript" src="../editor/draw.js"></script>
+  <script type="text/javascript" src="../editor/path.js"></script>
   <script type="text/javascript" src="../editor/svgcanvas.js"></script>
+  <script type="text/javascript" src="../editor/svg-editor.js"></script>
+  <script type="text/javascript" src="../editor/locale/locale.js"></script>
   <script type="text/javascript" src="qunit/qunit.js"></script>  
   <script type="text/javascript">
   $(function() {
@@ -268,6 +272,12 @@
   <h2 id="qunit-userAgent"></h2>
   <ol id="qunit-tests">
   </ol>
-  <div id="svgcanvas" style="visibility:hidden"></div>
+  <div id="svg_editor">
+  	<div id="workarea">
+  		<div id="svgcanvas" style="visibility:hidden"></div>
+  	</div>
+  	<div id="tools_left"></div>
+  	<div class="tools_flyout"></div>
+  </div>
 </body>  
 </html> 
