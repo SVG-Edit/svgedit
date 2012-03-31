@@ -1,4 +1,4 @@
-﻿body {
+body {
 	background: #D0D0D0;
 }
 
@@ -222,19 +222,29 @@ html, body, div{
 	border-width: 1px;
 	border-left: none;
 }
-
-#svg_editor #layerpanel {
+ #svg_editor #sidepanels #toolpalettes{
 	display: inline-block;
 	position:absolute;
-	top: 1px;
-	bottom: 0px;
-	right: 0px;
-	width: 0px;
+	padding: 10px;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left:0;
+	overflow-y:auto;
+	overflow-x:hidden;
+	display:none;
+}
+
+#svg_editor #sidepanels .toolpalette{
+	padding-left:10px;
+	margin-right:10px;
+	margin-bottom:10px;
+	display:none;
 	overflow: auto;
-	margin: 0px;
 	-moz-user-select: none;
 	-webkit-user-select: none;
-
+	border-top:2px solid gray;
+	width:100%;
 }
 
 /*
