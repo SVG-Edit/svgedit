@@ -24,7 +24,7 @@
 	var svgroot = document.getElementById('svgroot');
 	var svgcontent, rect, circle;
 	
-	var NEAR_ZERO = 1e-7;
+	var NEAR_ZERO = 5e-6; // 0.000005, Firefox fails at higher levels of precision.
 	function almostEquals(a, b, msg) {
 		msg = msg || (a + ' did not equal ' + b);
 		ok(Math.abs(a - b) < NEAR_ZERO, msg);
