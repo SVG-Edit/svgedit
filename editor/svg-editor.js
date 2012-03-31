@@ -3744,7 +3744,7 @@
 			});
 			
 			var SIDEPANEL_MAXWIDTH = 300;
-			var SIDEPANEL_OPENWIDTH = 300;
+			var SIDEPANEL_OPENWIDTH = 150;
 			var sidedrag = -1, sidedragging = false, allowmove = false;
 				
 			var resizePanel = function(evt) {
@@ -3801,15 +3801,13 @@
 			// the optional close argument forces the side panel closed
 			var toggleSidePanel = function(close){
 				var w = parseInt($('#sidepanels').css('width'));
-				var alreadyOpen = w > 2;
-				var deltax = (alreadyOpen || close ? 2 : SIDEPANEL_OPENWIDTH) - w;
+				var deltax = (w > 2 || close ? 2 : SIDEPANEL_OPENWIDTH) - w;
 				var sidepanels = $('#sidepanels');
-				var palettes = $('.toolpalette');
+				var layerpanel = $('#layerpanel');
 				var ruler_x = $('#ruler_x');
 				workarea.css('right', parseInt(workarea.css('right')) + deltax);
 				sidepanels.css('width', parseInt(sidepanels.css('width')) + deltax);
-				palettes.css('display', alreadyOpen ? 'none':'inherit');
-				$('#toolpalettes').css('display', alreadyOpen ? 'none':'inherit');
+				layerpanel.css('width', parseInt(layerpanel.css('width')) + deltax);
 				ruler_x.css('right', parseInt(ruler_x.css('right')) + deltax);
 			};
 			
