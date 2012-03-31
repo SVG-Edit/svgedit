@@ -55,48 +55,6 @@
 
 <!-- Add script with custom handlers here -->
 <title>SVG-edit</title>
-	<style>
-		#samplepalette{
-			 overflow:hide; 
-		}
-		#samplepalette ul{
-			padding-left: 5px;
-		}
-		#samplepalette #palettecontents{
-			height:700px; 
-			width:250px;
-			overflow-y:auto;
-		}
-		#samplepalette li{
-			list-style: none;
-			padding-top: 10px;
-			padding-left:5px;
-			padding-bottom: 10px;
-			font-size: 14px;
-			border: 1px solid black;
-			border-top: 0px;
-			cursor:pointer;
-		}
-		#samplepalette li:hover {
-			background-color: #FFFFC2;
-			border-left:1px solid #FBD0AD;
-			border-top:1px solid #FBD0AD;
-			border-right:1px solid #D79861;
-			border-bottom:1px solid #D79861;
-		}
-		#samplepalette li:first-child {
-			border: 1px solid black;
-		}
-		#samplepalette li:first-child:hover {
-			background-color: #FFFFC2;
-			border-left:1px solid #FBD0AD;
-			border-top:1px solid #FBD0AD;
-			border-right:1px solid #D79861;
-			border-bottom:1px solid #D79861;
-		}
-		
-	</style>
-
 </head>
 <body>
 <div id="svg_editor">
@@ -123,8 +81,7 @@
 </div>
 
 <div id="sidepanels">
-	<div id="toolpalettes">
-	<div id="layerpanel" class="toolpalette">
+	<div id="layerpanel">
 		<h3 id="layersLabel">Layers</h3>
 		<fieldset id="layerbuttons">
 			<div id="layer_new" class="layer_button"  title="New Layer"></div>
@@ -146,41 +103,7 @@
 			<option selected="selected" value="layer1">Layer 1</option>
 		</select>
 	</div>
-	<div id="samplepalette" class="toolpalette">
-		<h3 id="samplepalettelabel">Sample Palette</h3>
-		<div id="palettecontents">
-			<ul>
-				<li>Alligator</li>
-				<li>Bear</li>
-				<li>Catfish</li>
-				<li>Donkey</li>
-				<li>Eagle</li>
-				<li>Firemouth</li>
-				<li>Gecko</li>
-				<li>Hippopotomus</li>
-				<li>Ibex</li>
-				<li>Jaguar</li>
-				<li>Komodo Dragon</li>
-				<li>Lobster</li>
-				<li>Mouse</li>
-				<li>Narwhal</li>
-				<li>Octopus</li>
-				<li>Possum</li>
-				<li>Quail</li>
-				<li>Rhinoceros</li>
-				<li>Snake</li>
-				<li>Turtle</li>
-				<li>Unicorn</li>
-				<li>Velociraptor</li>
-				<li>Warthog</li>
-				<li>Xeme</li>
-				<li>Yak</li>
-				<li>Zebra</li>
-			</ul>
-		</div>
-	</div>
-	</div>
-	<div id="sidepanel_handle" title="Drag left/right to resize side panel [X]">P a l e t t e s</div>
+	<div id="sidepanel_handle" title="Drag left/right to resize side panel [X]">L a y e r s</div>
 </div>
 
 <div id="main_button">
