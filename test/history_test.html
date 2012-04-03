@@ -439,7 +439,7 @@
 	});
 
 	test('Test ChangeElementCommand', function() {
-		expect(20);
+		expect(26);
 
 		setUp();
 
@@ -510,6 +510,21 @@
 		change.apply();
 		equals(justCalled, 'setHref');
 
+		var line = document.createElementNS(svgns,'line');
+		line.setAttributeNS(null, 'class', 'newClass');
+		change = new svgedit.history.ChangeElementCommand(line,{class:'oldClass'});
+		
+		ok(change.unapply);
+		ok(change.apply);
+		equals(typeof change.unapply, typeof function(){});
+		equals(typeof change.apply, typeof function(){});
+
+		change.unapply();
+		equals(line.getAttributeNS(null, 'class'), 'oldClass');
+
+		change.apply();
+		equals(line.getAttributeNS(null, 'class'), 'newClass');
+		
 		tearDown();
 	});
 
@@ -571,5 +586,6 @@
   <div id='div4' style='visibility:hidden'>
     <div id='div5'></div>
   </div>
+
 </body>  
 </html>
