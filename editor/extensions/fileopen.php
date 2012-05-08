@@ -27,5 +27,5 @@
 	}
 ?>
 <script>
-window.top.window.svgEditor.processFile("<?php echo $prefix . base64_encode($output); ?>", "<?php echo $type ?>");
-</script>  
+window.top.window.svgEditor.processFile("<?php echo $prefix . base64_encode($output); ?>", "<?php echo htmlentities($type); ?>");
+</script>
