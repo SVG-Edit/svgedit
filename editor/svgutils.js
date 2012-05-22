@@ -495,7 +495,7 @@ svgedit.utilities.getBBox = function(elem) {
 			ret = groupBBFix(selected, true);
 		}
 		
-		if(elname === 'use' || elname === 'foreignObject') {
+		if(elname === 'use') {
 			if(!ret) ret = selected.getBBox();
 			if(!svgedit.browser.isWebkit()) {
 				var bb = {};
