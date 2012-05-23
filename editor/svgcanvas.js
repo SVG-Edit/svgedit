@@ -5534,7 +5534,7 @@ var convertGradients = this.convertGradients = function(elem) {
 		var grad = this;
 		if($(grad).attr('gradientUnits') === 'userSpaceOnUse') {
 			// TODO: Support more than one element with this ref by duplicating parent grad
-			var elems = $(svgcontent).find('[fill=url(#' + grad.id + ')],[stroke=url(#' + grad.id + ')]');
+			var elems = $(svgcontent).find('[fill="url(#' + grad.id + ')"],[stroke="url(#' + grad.id + ')"]');
 			if(!elems.length) return;
 			
 			// get object's bounding box
