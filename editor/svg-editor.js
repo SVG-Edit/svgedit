@@ -1908,7 +1908,7 @@
 			$('.attr_changer').change(function() {
 				var attr = this.getAttribute("data-attr");
 				var val = this.value;
-				var valid = svgedit.units.isValidUnit(attr, val);
+				var valid = svgedit.units.isValidUnit(attr, val, selectedElement);
 				
 				if(!valid) {
 					$.alert(uiStrings.notification.invalidAttrValGiven);
@@ -1941,6 +1941,7 @@
 				else {
 					svgCanvas.changeSelectedAttribute(attr, val);
 				}
+				this.blur();
 			});
 			
 			// Prevent selection of elements when shift-clicking
