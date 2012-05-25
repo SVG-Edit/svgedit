@@ -17,10 +17,10 @@
     function setUp() {
 		svgedit.units.init({
 			getBaseUnit: function() { return "cm"; },
-			getElement: function() { return null; },
 			getHeight: function() { return 600; },
 			getWidth: function() { return 800; },
-			getRoundDigits: function() { return 4; }
+			getRoundDigits: function() { return 4; },
+			getElement:function(elementId){ return document.getElementById(elementId);}
 		});
 	}
 	
@@ -47,7 +47,7 @@
 	});
 
 	test('Test svgedit.units.isValidUnit()', function() {
-		expect(14);
+		expect(18);
 
 		setUp();
 		
@@ -67,6 +67,12 @@
 		ok(isValidUnit("-0.4em"));
 		ok(isValidUnit("-0.ex"));
 		ok(isValidUnit("40.123%"));
+
+
+        equals(isValidUnit("id","uniqueId",document.getElementById("uniqueId")), true);
+        equals(isValidUnit("id","newId",document.getElementById("uniqueId")), true);
+        equals(isValidUnit("id","uniqueId"), false);
+        equals(isValidUnit("id","uniqueId",document.getElementById("nonUniqueId")), false);
 	});
   });
   </script>
@@ -78,6 +84,12 @@
   <ol id='qunit-tests'>
   </ol>
   <div id='anchor' style='visibility:hidden'>
+  </div>
+    <div id="elementsContainer">
+        <div id='uniqueId' style='visibility:hidden'></div>
+        <div id='nonUniqueId' style='visibility:hidden'></div>
+    </div>
+
   </div>
 </body>  
 </html>
