@@ -17,6 +17,11 @@
 
 (function() { 
 	
+	document.addEventListener("touchstart", touchHandler, true);
+  document.addEventListener("touchmove", touchHandler, true);
+  document.addEventListener("touchend", touchHandler, true);
+  document.addEventListener("touchcancel", touchHandler, true);
+	
 	if(!window.svgEditor) window.svgEditor = function($) {
 		var svgCanvas;
 		var Editor = {};
@@ -4104,6 +4109,7 @@
 								var btn = $(opts.sel);
 								if (btn.length == 0) return true; // Skip if markup does not exist
 								if(opts.evt) {
+								  if (svgedit.browser.isTouch() && opts.evt === "click") opts.evt = "mousedown" 
 									btn[opts.evt](opts.fn);
 								}
 		
