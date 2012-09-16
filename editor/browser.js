@@ -1,7 +1,7 @@
 /**
  * Package: svgedit.browser
  *
- * Licensed under the Apache License, Version 2
+ * Licensed under the MIT License
  *
  * Copyright(c) 2010 Jeff Schiller
  * Copyright(c) 2010 Alexis Deveria

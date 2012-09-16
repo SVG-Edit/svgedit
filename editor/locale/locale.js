@@ -1,7 +1,7 @@
 /*
  * Localizing script for SVG-edit UI
  *
- * Licensed under the Apache License, Version 2
+ * Licensed under the MIT License
  *
  * Copyright(c) 2010 Narendra Sisodya
  * Copyright(c) 2010 Alexis Deveria

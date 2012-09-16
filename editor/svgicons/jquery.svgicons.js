@@ -6,7 +6,7 @@
  * Copyright (c) 2009 Alexis Deveria
  * http://a.deveria.com
  *
- * Apache 2 License
+ * MIT License
 
 How to use:
 
