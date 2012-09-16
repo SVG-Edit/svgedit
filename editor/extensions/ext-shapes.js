@@ -1,7 +1,7 @@
 /*
  * ext-shapes.js
  *
- * Licensed under the Apache License, Version 2
+ * Licensed under the MIT License
  *
  * Copyright(c) 2010 Christian Tzurcanu
  * Copyright(c) 2010 Alexis Deveria

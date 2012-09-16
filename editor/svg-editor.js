@@ -1,7 +1,7 @@
 /*
  * svg-editor.js
  *
- * Licensed under the Apache License, Version 2
+ * Licensed under the MIT License
  *
  * Copyright(c) 2010 Alexis Deveria
  * Copyright(c) 2010 Pavol Rusnak
