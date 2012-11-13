@@ -248,7 +248,9 @@ svgEditor.addExtension("imagelib", function() {
 				overflow: 'auto'
 			}).insertAfter('#lib_framewrap');
 			
-			submit = $('<button disabled>Import selected</button>').appendTo('#imgbrowse').click(function() {
+			submit = $('<button disabled>Import selected</button>')
+				.appendTo('#imgbrowse')
+				.on("click touchend", function() {
 				$.each(multi_arr, function(i) {
 					var type = this[0];
 					var data = this[1];
@@ -294,7 +296,9 @@ svgEditor.addExtension("imagelib", function() {
 				width: '100%'
 			});
 			
-			var cancel = $('<button>' + uiStrings.common.cancel + '</button>').appendTo(browser).click(function() {
+			var cancel = $('<button>' + uiStrings.common.cancel + '</button>')
+				.appendTo(browser)
+				.on("click touchend", function() {
 				$('#imgbrowse_holder').hide();
 			}).css({
 				position: 'absolute',
@@ -304,7 +308,9 @@ svgEditor.addExtension("imagelib", function() {
 			
 			var leftBlock = $('<span>').css({position:'absolute',top:5,left:10}).appendTo(browser);
 			
-			var back = $('<button hidden>' + uiStrings.imagelib.show_list + '</button>').appendTo(leftBlock).click(function() {
+			var back = $('<button hidden>' + uiStrings.imagelib.show_list + '</button>')
+				.appendTo(leftBlock)
+				.on("click touchend", function() {
 				frame.attr('src', 'about:blank').hide();
 				lib_opts.show();
 				header.text(all_libs);
@@ -336,7 +342,10 @@ svgEditor.addExtension("imagelib", function() {
 			back.prepend($.getSvgIcon('tool_imagelib', true));
 			
 			$.each(img_libs, function(i, opts) {
-				$('<li>').appendTo(lib_opts).text(opts.name).click(function() {
+				$('<li>')
+					.appendTo(lib_opts)
+					.text(opts.name)
+					.on("click touchend", function() {
 					frame.attr('src', opts.url).show();
 					header.text(opts.name);
 					lib_opts.hide();
