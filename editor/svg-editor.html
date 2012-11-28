@@ -110,8 +110,8 @@
 </div>
 
 <div id="main_button">
-	<div id="main_icon" class="buttonup" title="Main Menu">
-		<span></span>
+	<div id="main_icon" class="tool_button" title="Main Menu">
+		<span>SVG-Edit</span>
 		<div id="logo"></div>
 		<div class="dropdown"></div>
 	</div>
@@ -172,8 +172,9 @@
 
 
 <div id="tools_top" class="tools_panel">
-	
+
 	<div id="editor_panel">
+		<div class="tool_sep"></div>
 		<div class="push_button" id="tool_source" title="Edit Source [U]"></div>
 		<div class="tool_button" id="tool_wireframe" title="Wireframe Mode [F]"></div>
 	</div>
@@ -495,6 +496,7 @@
 
 	<div id="tools_bottom_2">
 		<div id="color_tools">
+			
 			<div class="color_tool" id="tool_fill">
 				<label class="icon_label" for="fill_color" title="Change fill color"></label>
 				<div class="color_block">
@@ -504,17 +506,17 @@
 			</div>
 		
 			<div class="color_tool" id="tool_stroke">
-				<div class="color_block">
-					<label class="icon_label" title="Change stroke color"></label>
-				</div>
+				<label class="icon_label" title="Change stroke color"></label>
 				<div class="color_block">
 					<div id="stroke_bg"></div>
 					<div id="stroke_color" class="color_block" title="Change stroke color"></div>
 				</div>
 				
-				<label>
+				<label class="stroke_label">
 					<input id="stroke_width" title="Change stroke width by 1, shift-click to change by 0.1" size="2" value="5" type="text" data-attr="Stroke Width"/>
 				</label>
+
+				<div id="toggle_stroke_tools" title="Show/hide more stroke tools"></div>
 				
 				<label class="stroke_tool">
 					<select id="stroke_style" title="Change stroke dash style">
@@ -527,41 +529,33 @@
 				</label>	
 
  				<div class="stroke_tool dropdown" id="stroke_linejoin">
- 					<div>
-						<div id="cur_linejoin" title="Linejoin: Miter"></div>
-						<button></button>
-					</div>
+					<div id="cur_linejoin" title="Linejoin: Miter"></div>
+					<button></button>
  				</div>
  				
  				<div class="stroke_tool dropdown" id="stroke_linecap">
- 					<div>
-						<div id="cur_linecap" title="Linecap: Butt"></div>
-						<button></button>
-					</div>
+					<div id="cur_linecap" title="Linecap: Butt"></div>
+					<button></button>
  				</div>
-			
-				<div id="toggle_stroke_tools" title="Show/hide more stroke tools">
-					&gt;&gt;
-				</div>
-				
+
 			</div>
-		</div>
-	
-		<div class="toolset" id="tool_opacity" title="Change selected item opacity">
-			<label>
-				<span id="group_opacityLabel" class="icon_label"></span>
-				<input id="group_opacity" size="3" value="100" type="text"/>
-			</label>
-			<div id="opacity_dropdown" class="dropdown">
-				<button></button>
-				<ul>
-					<li>0%</li>
-					<li>25%</li>
-					<li>50%</li>
-					<li>75%</li>
-					<li>100%</li>
-					<li class="special"><div id="opac_slider"></div></li>
-				</ul>
+
+			<div class="color_tool" id="tool_opacity" title="Change selected item opacity">
+				<label>
+					<span id="group_opacityLabel" class="icon_label"></span>
+					<input id="group_opacity" size="3" value="100" type="text"/>
+				</label>
+				<div id="opacity_dropdown" class="dropdown">
+					<button></button>
+					<ul>
+						<li>0%</li>
+						<li>25%</li>
+						<li>50%</li>
+						<li>75%</li>
+						<li>100%</li>
+						<li class="special"><div id="opac_slider"></div></li>
+					</ul>
+				</div>
 			</div>
 		</div>
 
@@ -570,7 +564,7 @@
 	<div id="tools_bottom_3">
 		<div id="palette_holder"><div id="palette" title="Click to change fill color, shift-click to change stroke color"></div></div>
 	</div>
-	<div id="copyright"><span id="copyrightLabel">Powered by</span> <a href="http://svg-edit.googlecode.com/" target="_blank">SVG-edit v2.6-alpha</a></div>
+	<!-- <div id="copyright"><span id="copyrightLabel">Powered by</span> <a href="http://svg-edit.googlecode.com/" target="_blank">SVG-edit v2.6-alpha</a></div> -->
 </div>
 
 <div id="option_lists" class="dropdown">
