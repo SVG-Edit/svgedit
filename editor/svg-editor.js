@@ -3359,10 +3359,10 @@
 				var paint = paintBox[picker].paint;
 				var title = (picker == 'stroke' ? 'Pick a Stroke Paint and Opacity' : 'Pick a Fill Paint and Opacity');
 				var was_none = false;
-				var pos = elem.position();
+				var pos = elem.offset();
 				$("#color_picker")
 					.draggable({cancel:'.jGraduate_tabs, .jGraduate_colPick, .jGraduate_gradPick, .jPicker', containment: 'window'})
-					.css(curConfig.colorPickerCSS || {'left': pos.left, 'bottom': 50 - pos.top})
+					.css(curConfig.colorPickerCSS || {'left': pos.left-140, 'bottom': 40})
 					.jGraduate(
 					{
 						paint: paint,
