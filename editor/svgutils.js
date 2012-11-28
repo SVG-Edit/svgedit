@@ -497,14 +497,17 @@ svgedit.utilities.getBBox = function(elem) {
 		
 		if(elname === 'use') {
 			if(!ret) ret = selected.getBBox();
-			if(!svgedit.browser.isWebkit()) {
+			// This is resolved in later versions of webkit, perhaps we should
+			// have a featured detection for correct 'use' behavior?
+			// ——————————
+			//if(!svgedit.browser.isWebkit()) {
 				var bb = {};
 				bb.width = ret.width;
 				bb.height = ret.height;
 				bb.x = ret.x + parseFloat(selected.getAttribute('x')||0);
 				bb.y = ret.y + parseFloat(selected.getAttribute('y')||0);
 				ret = bb;
-			}
+			//}
 		} else if(~visElems_arr.indexOf(elname)) {
 			try { ret = selected.getBBox();} 
 			catch(e) { 
