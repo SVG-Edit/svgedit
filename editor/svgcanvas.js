@@ -376,17 +376,19 @@ canvas.undoMgr = new svgedit.history.UndoManager({
 				if (values["stdDeviation"]) {
 					canvas.setBlurOffsets(cmd.elem.parentNode, values["stdDeviation"]);
 				}
-				
+				// This is resolved in later versions of webkit, perhaps we should
+				// have a featured detection for correct 'use' behavior?
+				// ——————————
 				// Remove & Re-add hack for Webkit (issue 775) 
-				if(cmd.elem.tagName === 'use' && svgedit.browser.isWebkit()) {
-					var elem = cmd.elem;
-					if(!elem.getAttribute('x') && !elem.getAttribute('y')) {
-						var parent = elem.parentNode;
-						var sib = elem.nextSibling;
-						parent.removeChild(elem);
-						parent.insertBefore(elem, sib);
-					}
-				}
+				//if(cmd.elem.tagName === 'use' && svgedit.browser.isWebkit()) {
+				//	var elem = cmd.elem;
+				//	if(!elem.getAttribute('x') && !elem.getAttribute('y')) {
+				//		var parent = elem.parentNode;
+				//		var sib = elem.nextSibling;
+				//		parent.removeChild(elem);
+				//		parent.insertBefore(elem, sib);
+				//	}
+				//}
 			}
 		}
 	}
