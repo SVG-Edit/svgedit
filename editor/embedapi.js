@@ -84,7 +84,7 @@ function embedded_svg_edit(frame){
 		"getStrokeOpacity", "setStrokeOpacity", "getTransformList", "getBBox", "getRotationAngle", "setRotationAngle", "each",
 		"bind", "setIdPrefix", "getBold", "setBold", "getItalic", "setItalic", "getFontFamily", "setFontFamily", "getFontSize",
 		"setFontSize", "getText", "setTextContent", "setImageURL", "setRectRadius", "setSegType", "quickClone",
-		"changeSelectedAttributeNoUndo", "changeSelectedAttribute", "deleteSelectedElements", "groupSelectedElements",
+		"changeSelectedAttributeNoUndo", "changeSelectedAttribute", "deleteSelectedElements", "groupSelectedElements", "zoomChanged",
 		"ungroupSelectedElement", "moveToTopSelectedElement", "moveToBottomSelectedElement", "moveSelectedElements",
 		"getStrokedBBox", "getVisibleElements", "cycleElement", "getUndoStackSize", "getRedoStackSize", "getNextUndoCommandText",
 		"getNextRedoCommandText", "undo", "redo", "cloneSelectedElements", "alignSelectedElements", "getZoom", "getVersion",
@@ -113,7 +113,7 @@ function embedded_svg_edit(frame){
       var data = e.data.substr(4);
       var cbid = data.substr(0, data.indexOf(";"));
       if(t.callbacks[cbid]){
-        if(data.substr(0,6) != "error:"){
+        if(data.substr(cbid.length + 1,6) != "error:"){
           t.callbacks[cbid](eval("("+data.substr(cbid.length+1)+")"))
         }else{
           t.callbacks[cbid](data, "error");

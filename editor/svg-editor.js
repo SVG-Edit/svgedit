@@ -782,7 +782,7 @@
 				});
 			};
 
-			var zoomChanged = function(window, bbox, autoCenter) {
+			var zoomChanged = svgCanvas.zoomChanged = function(window, bbox, autoCenter) {
 				var scrbar = 15,
 					res = svgCanvas.getResolution(),
 					w_area = workarea,
@@ -3447,7 +3447,7 @@
 
 				// set up gradients to be used for the buttons
 				var svgdocbox = new DOMParser().parseFromString(
-					'<svg xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%"\
+					'<svg xmlns="http://www.w3.org/2000/svg"><rect width="16.5" height="16.5"\
 					fill="#' + cur.color + '" opacity="' + cur.opacity + '"/>\
 					<defs><linearGradient id="gradbox_"/></defs></svg>', 'text/xml');
 				var docElem = svgdocbox.documentElement;
