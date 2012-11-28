@@ -25,6 +25,9 @@ var svgFactory_;
 var config_;
 var selectorManager_; // A Singleton
 
+var gripRadius;
+svgedit.browser.isTouch() ? gripRadius = 10 : gripRadius = 4;
+
 // Class: svgedit.select.Selector
 // Private class for DOM element selection boxes
 // 
@@ -253,10 +256,10 @@ svgedit.select.Selector.prototype.resize = function() {
 		mgr.rotateGripConnector.setAttribute('x1', nbax + (nbaw)/2);
 		mgr.rotateGripConnector.setAttribute('y1', nbay);
 		mgr.rotateGripConnector.setAttribute('x2', nbax + (nbaw)/2);
-		mgr.rotateGripConnector.setAttribute('y2', nbay - 20);
+		mgr.rotateGripConnector.setAttribute('y2', nbay - (gripRadius*5));
 
 		mgr.rotateGrip.setAttribute('cx', nbax + (nbaw)/2); 
-		mgr.rotateGrip.setAttribute('cy', nbay - 20);
+		mgr.rotateGrip.setAttribute('cy', nbay - (gripRadius*5));
 //	}
 
 	svgFactory_.svgRoot().unsuspendRedraw(sr_handle);
@@ -327,7 +330,7 @@ svgedit.select.SelectorManager.prototype.initGroup = function() {
 			'attr': {
 				'id': ('selectorGrip_resize_' + dir),
 				'fill': '#22C',
-				'r': 4,
+				'r': gripRadius,
 				'style': ('cursor:' + dir + '-resize'),
 				// This expands the mouse-able area of the grips making them
 				// easier to grab with the mouse.
@@ -361,7 +364,7 @@ svgedit.select.SelectorManager.prototype.initGroup = function() {
 			'attr': {
 				'id': 'selectorGrip_rotate',
 				'fill': 'lime',
-				'r': 4,
+				'r': gripRadius,
 				'stroke': '#22C',
 				'stroke-width': 2,
 				'style': 'cursor:url(' + config_.imgPath + 'rotate.png) 12 12, auto;'
