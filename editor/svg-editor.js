@@ -433,12 +433,13 @@
 					'#palette .palette_item:first, #fill_bg, #stroke_bg':'no_color'
 				},
 				resize: {
-					'#logo .svg_icon': 32,
+					'#logo .svg_icon': 28,
 					'.flyout_arrow_horiz .svg_icon': 5,
 					'.layer_button .svg_icon, #layerlist td.layervis .svg_icon': 14,
 					'.dropdown button .svg_icon': 7,
 					'#main_button .dropdown .svg_icon': 9,
-					'.palette_item:first .svg_icon, #fill_bg .svg_icon, #stroke_bg .svg_icon': 16,
+					'.palette_item:first .svg_icon' : 15,
+					'#fill_bg .svg_icon, #stroke_bg .svg_icon': 16,
 					'.toolbar_button button .svg_icon':16,
 					'.stroke_tool div div .svg_icon': 20,
 					'#tools_bottom label .svg_icon': 18
@@ -824,15 +825,6 @@
 			});
 
 			var contextChanged = function(win, context) {
-				$('#workarea,#sidepanels').css('top', context?100:75);
-				$('#rulers').toggleClass('moved', context);
-				if(cur_context && !context) {
-					// Back to normal
-					workarea[0].scrollTop -= 25;
-				} else if(!cur_context && context) {
-					workarea[0].scrollTop += 25;
-				}
-
 				var link_str = '';
 				if(context) {
 					var str = '';
@@ -935,7 +927,7 @@
 					var timer;
 
 					var pos = $(show_sel).position();
-					$(hold_sel).css({'left': pos.left+34, 'top': pos.top+77});
+					$(hold_sel).css({'left': pos.left+34, 'top': pos.top+40});
 
 					// Clicking the "show" icon should set the current mode
 					shower.mousedown(function(evt) {
@@ -1988,14 +1980,8 @@
 				updateToolButtonState();
 			}).bind('contextmenu', function(e) {e.preventDefault()});
 
-			$("#toggle_stroke_tools").toggle(function() {
-				$(".stroke_tool").css('display','table-cell');
-				$(this).text('<<');
-				resetScrollPos();
-			}, function() {
-				$(".stroke_tool").css('display','none');
-				$(this).text('>>');
-				resetScrollPos();
+			$("#toggle_stroke_tools").on("click", function() {
+				$("#tools_bottom").toggleClass("expanded");
 			});
 
 			// This is a common function used when a tool has been clicked (chosen)

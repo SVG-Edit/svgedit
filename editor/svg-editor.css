@@ -26,26 +26,26 @@ html, body, div{
 	-webkit-transform-origin: 0 0;
 }
 
-#svg_editor {
+ #svg_editor {
 	font-size: 8pt;
 	font-family: Verdana, Helvetica, Arial;
 	color: #000000;
 }
 
-#svg_editor a {
-	color: #0000FF;
+ a {
+	color: #19c;
 }
 
-#svg_editor hr {
+ hr {
 	border: none;
 	border-bottom: 1px solid #808080;
 }
 
-#svg_editor select {
+ select {
 	margin-top: 4px;
 }
 
-#svg_editor #svgroot {
+ #svgroot {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	position: absolute;
@@ -53,7 +53,7 @@ html, body, div{
 	left: 0;
 }
 
-#svg_editor #svgcanvas {
+ #svgcanvas {
 	line-height: normal;
 	display: inline-block;
 	background-color: #A0A0A0;
@@ -71,6 +71,10 @@ html, body, div{
 	background: -webkit-gradient(radial, center center, 3, center center, 1000, from(#bbb), to(#222));
 }
 
+
+/* Rulers
+——————————————————————————————————————*/
+
 #rulers > div {
 	position: absolute;
 	background: #DDD;
@@ -79,7 +83,7 @@ html, body, div{
 }
 
 #ruler_corner {
-	top: 76px;
+	top: 41px;
 	left: 41px;
 	width: 15px;
 	height: 15px;
@@ -87,31 +91,21 @@ html, body, div{
 
 #ruler_x {
 	height: 15px;
-	top: 76px;
+	top: 41px;
 	left: 56px;
 	right: 30px;
 	border-bottom: 1px solid;
 	border-left: 1px solid #777;
 }
 
-#rulers.moved #ruler_corner,
-#rulers.moved #ruler_x {
-	top: 101px;
-}
-
 #ruler_y {
 	width: 15px;
-	top: 91px;
+	top: 55px;
 	left: 41px;
-	bottom: 78px;
+	bottom: 56px;
 	border-right: 1px solid;
 	border-top: 1px solid #777;
 }
-
-#rulers.moved #ruler_y {
-	top: 116px;
-}
-
 
 #ruler_x canvas:first-child {
 	margin-left: -16px;
@@ -130,78 +124,48 @@ html, body, div{
 	overflow: hidden;
 }
 
-
-
-
-#svg_editor div#palette_holder {
-	overflow-x: scroll;
-	overflow-y: hidden;
-	height: 31px;
-	border: 1px solid #808080;
-	border-top: none;
-	margin-top: 2px;
-	margin-left: 4px;
-	position: relative;
+#palette_holder {
+	overflow: hidden;
+	margin-top: 5px;
+	padding: 5px;
+	position: absolute;
+	right: 15px;
+	height: 16px;
+	background: #f0f0f0;
+	border-radius: 3px;
 	z-index: 2;
 }
 
-#svg_editor #stroke_bg, 
-#svg_editor #fill_bg {
+ #stroke_bg, 
+ #fill_bg {
 	height: 16px;
 	width: 16px;
 	margin: 1px;
 }
-
-#svg_editor #fill_color, #svg_editor #stroke_color {
-	height: 16px;
-	width: 16px;
-	border: 1px solid #808080;
-	cursor: pointer;
-	margin-top: -18px;
-	margin-left: 1px;
-}
-
-#tool_stroke select {
-	margin-top: 0;
-}
-
-#svg_editor #color_tools .icon_label {
-	padding: 3px 19%;
-	width: 28px;
-	height: 100%;
-	cursor: pointer;
-	
-}
-
-#svg_editor #group_opacityLabel, 
-#svg_editor #zoomLabel {
+ 
+ #zoomLabel {
 	cursor: pointer;
 	margin-right: 5px;
 	padding-top: 4px
 }
 
-#svg_editor #linkLabel > svg {
+ #linkLabel > svg {
 	height: 20px;
 	padding-top: 4px;
 }
 
-#color_tools .icon_label > * {
-	position: relative;
-	top: 1px;
-}
-
-#svg_editor div#palette {
+#palette {
 	float: left;
-	width: 672px;
+	width: 632px;
 	height: 16px;
 }
 
-#svg_editor div#workarea {
+#workarea {
 	display: inline-table-cell;
 	position:absolute;
-	top: 75px;
+	top: 40px;
 	left: 40px;
-	bottom: 62px;
+	bottom: 40px;
 	right: 14px;
 	background-color: #A0A0A0;
 	border: 1px solid #808080;
@@ -209,11 +173,11 @@ html, body, div{
 	text-align: center;
 }
 
-#svg_editor #sidepanels {
+#sidepanels {
 	display: inline-block;
 	position:absolute;
-	top: 75px;
-	bottom: 60px;
+	top: 40px;
+	bottom: 40px;
 	right: 0px;
 	width: 2px;
 	padding: 10px;
@@ -223,7 +187,7 @@ html, body, div{
 	border-left: none;
 }
 
-#svg_editor #layerpanel {
+#layerpanel {
 	display: inline-block;
 	position:absolute;
 	top: 1px;
@@ -242,7 +206,7 @@ html, body, div{
 	border-color: #666;
 	border-width: 0px 0px 0px 1px;	
 */
-#svg_editor #sidepanel_handle {
+ #sidepanel_handle {
 	display: inline-block;
 	position: absolute;
 	background-color: #D0D0D0;
@@ -260,16 +224,16 @@ html, body, div{
 	-webkit-user-select: none;
 }
 
-#svg_editor #sidepanel_handle:hover {
+ #sidepanel_handle:hover {
 	font-weight: bold;
 }
 
-#svg_editor #sidepanel_handle * {
+ #sidepanel_handle * {
 	cursor: pointer;
 	-moz-user-select: none;
 	-webkit-user-select: none;
 }
-#svg_editor #layerbuttons {
+ #layerbuttons {
 	margin: 0px;
 	padding: 0px;
 	padding-left: 2px;
@@ -283,7 +247,7 @@ html, body, div{
 	overflow: hidden;
 }
 
-#svg_editor .layer_button {
+ .layer_button {
 	width: 14px;
 	height: 14px;
 	padding: 1px;
@@ -296,11 +260,11 @@ html, body, div{
 	margin-right: 3px;
 }
 
-#svg_editor .layer_button:last-child {
+ .layer_button:last-child {
 	margin-right: 0;
 }
 
-#svg_editor .layer_buttonpressed {
+ .layer_buttonpressed {
 	width: 14px;
 	height: 14px;
 	padding: 1px;
@@ -311,7 +275,7 @@ html, body, div{
 	cursor: pointer;
 }
 
-#svg_editor #layerlist {
+ #layerlist {
 	margin: 1px;
 	padding: 0px;
 	width: 127px;
@@ -320,133 +284,147 @@ html, body, div{
 	background-color: #FFFFFF;
 }
 
-#svg_editor #layerlist tr.layer {
+ #layerlist tr.layer {
 	background-color: #FFFFFF;
 	margin: 0px;
 	padding: 0px;
 }
-#svg_editor #layerlist tr.layersel {
+ #layerlist tr.layersel {
 	border: 1px solid #808080;
 	background-color: #CCCCCC;
 }
 
-#svg_editor #layerlist td.layervis {
+ #layerlist td.layervis {
 	width: 22px;
 	cursor:pointer;
 }
-#svg_editor #layerlist td.layerinvis {
+ #layerlist td.layerinvis {
 	background-image: none;
 	cursor:pointer;
 }
 
-#svg_editor #layerlist td.layervis * {
+ #layerlist td.layervis * {
 	display: block;
 }
 
-#svg_editor #layerlist td.layerinvis * {
+ #layerlist td.layerinvis * {
 	display: none;
 }
 
-#svg_editor #layerlist td.layername {
+ #layerlist td.layername {
 	cursor: pointer;
 }
 
-#svg_editor #layerlist tr.layersel td.layername {
+ #layerlist tr.layersel td.layername {
 	font-weight: bold;
 }
 
-#svg_editor #selLayerLabel {
+ #selLayerLabel {
 	white-space: nowrap;
 }
 
-#svg_editor #selLayerNames {
+ #selLayerNames {
 	display: block;
 }
 
-#svg_editor div.palette_item {
-	height: 16px;
-	width: 16px;
+ div.palette_item {
+	height: 15px;
+	width: 15px;
 	float: left;
 }
 
-#svg_editor #main_button {
+div.palette_item:first-child {
+	background: white;
+}
+
+/* Main button
+—————————————————————————————*/
+
+ #main_button {
 	position: absolute;
 	top: 4px;
-	left: 4px;
+	left: 5px;
 	z-index: 5;
 }
 
-
-#svg_editor #main_icon {
-	background: #E8E8E8;
+ #main_icon {
 	position: relative;
 	top: -2px;
 	left: -2px;
-	padding: 1px 0 2px 1px;
-	width: 44px;
-	height: 30px;
-	border-left: 1px solid #FFF;
-	border-top: 1px solid #FFF;
-	border-right: 1px solid #808080;
-	border-bottom: 1px solid #808080;
-	border-radius: 8px;
-	-moz-border-radius: 8px;
-	-webkit-border-radius: 8px;
+	width: 95px;
+	line-height: 26px;
 }
 
-#svg_editor .tool_button:hover, 
-#svg_editor .push_button:hover,
-#svg_editor .buttonup:hover,
-#svg_editor .buttondown,
-#svg_editor .tool_button_current,
-#svg_editor .push_button_pressed
-{
-	border-left: 1px #fcd9ba solid !important;
-	border-top: 1px #fcd9ba solid !important;
-	border-right: 1px #e0a874 solid !important;
-	border-bottom: 1px #e0a874 solid !important;
-	background-color: #FFC !important;
+#main_icon:hover {
+	background: #eee !important;
 }
 
-#svg_editor .tool_button_current,
-#svg_editor .push_button_pressed,
-#svg_editor .buttondown { 
-	background-color: #f4e284 !important;
-	border-top: 1px solid #630 !important;
-	border-left: 1px solid #630 !important;
+#main_icon.buttondown {
+	background: #eee !important;
+	-moz-box-shadow: none !important;
+	-webkit-box-shadow: none !important;
+	box-shadow: none !important;
+	border-radius: 3px 3px 0 0;
 }
 
-#svg_editor #main_icon span {
+#logo {
+	margin-top: -2px;
+}
+
+#logo img {
+	border: 0;
+	width: 28px;
+	height: 28px;
+}
+
+#main_icon > div {
+	float: left;
+}
+
+ #main_button .dropdown {
 	position: absolute;
-	width: 100%;
-	height: 100%;
+	right: 7px;
+	top: 4px;
+}
+
+ #main_icon span {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
 	display: block;
 	z-index: 2;
+	font-weight: bold;
+	padding-left: 34px;
+	line-height: 32px;
+	font-family: sans-serif;
 }
 
-#svg_editor #main_menu {
+ #main_menu {
 	z-index: 12;
-	background: #E8E8E8;
+	background: #eee;
 	position: relative;
 	width: 230px;
 	padding: 5px;
 	-moz-box-shadow: #555 1px 1px 4px;
 	-webkit-box-shadow: #555 1px 1px 4px;
+	box-shadow: #555 1px 1px 4px;
 	font-size: 1.1em;
 	display: none;
 	overflow: hidden;
-	border: 1px outset gray;
 	clear: both;
+	top: -9px;
 }
 
-#svg_editor #main_menu ul,
-#svg_editor #main_menu li {
+ #main_menu ul,
+ #main_menu li {
 	list-style: none;
 	margin: 0;
 	padding: 0;
 }
 
-#svg_editor #main_menu li {
+ #main_menu li {
 /*	height: 35px;*/
 	line-height: 22px;
 	padding-top: 7px;
@@ -456,54 +434,61 @@ html, body, div{
 	cursor: default;
 }
 
-#svg_editor #main_menu li:hover {
+ #main_menu li:hover {
 	background: #FFC;
 }
 
-#svg_editor #main_menu li > div {
+ #main_menu li > div {
 	float: left;
 	padding-right: 5px;
 }
 
-#svg_editor #main_menu p {
+ #main_menu p {
 	margin-top: 5px;
 }
 
-#svg_editor #logo img {
-	border: 0;
-	width: 32px;
-	height: 32px;
+/*—————————————————————————————*/
+
+ .tool_button:hover, 
+ .push_button:hover,
+ .buttonup:hover,
+ .buttondown,
+ .tool_button_current,
+ .push_button_pressed
+{
+	background-color: #ffc !important;
 }
 
-
-
-#main_icon > div {
-	float: left;
+ .tool_button_current,
+ .push_button_pressed,
+ .buttondown { 
+	background-color: #f4e284 !important;
+	-webkit-box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
+	-moz-box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
+	box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
 }
 
-#svg_editor #main_button .dropdown {
-	padding-top: 28%;
-	margin-left: -1px;
-}
-
-
-
-#svg_editor #tools_top {
+#tools_top {
 	position: absolute;
-	left: 50px;
+	left: 108px;
 	right: 2px;
 	top: 2px;
-	height: 72px;
+	height: 40px;
 	border-bottom: none;
 	overflow: auto;
 }
 
-#svg_editor #tools_left {
+#tools_top .tool_sep {
+	margin-top: 5px;
+}
+
+#tools_left {
 	position: absolute;
 	border-right: none;
 	width: 32px;
-	top: 75px;
-	left: 0;
+	top: 40px;
+	left: 1px;
+	margin-top: -2px;
 	padding-left: 2px;
 	background: #D0D0D0; /* Needed so flyout icons don't appear on the left */
 	z-index: 4;
@@ -534,47 +519,53 @@ html, body, div{
 	display: none;
 }
 
-#svg_editor #multiselected_panel .selected_tool {
+#editor_panel, #history_panel {
+	height: 34px;
+	float: left;
+}
+
+ #multiselected_panel .selected_tool {
 	vertical-align: 12px;
 }
 
+/*TODO: Adjust position of rulers are not visible*/
 #cur_context_panel {
 	position: absolute;
-	top: 77px;
-	left: 40px;
-	right: 0;
+	top: 57px;
+	left: 56px;
 	line-height: 22px;
 	overflow: auto;
-	border: 1px solid #777;
-	border-bottom: none;
-	border-right: none;
 	padding-left: 5px;
 	font-size: 12px;
+	background: rgba(0, 0, 0, 0.8);
+	color: #ccc;
+	padding: 0 10px;
+	border-radius: 0 0 3px 0;
 }
 
-#svg_editor #cur_context_panel a {
+ #cur_context_panel a {
 	float: none;
 	text-decoration: none;
 }
 
-#svg_editor #cur_context_panel a:hover {
+ #cur_context_panel a:hover {
 	text-decoration: underline;
 }
 
-#svg_editor #tools_top > div, #tools_top {
+ #tools_top > div, #tools_top {
 	line-height: 26px;
 }
 
-#svg_editor div.toolset,
-#svg_editor div.toolset > * {
+ div.toolset,
+ div.toolset > * {
 	float: left;
 }
 
-#svg_editor div.toolset {
+ div.toolset {
 	height: 34px;
 }
 
-#svg_editor div.toolset label span {
+ div.toolset label span {
 /*	outline: 1px solid red;*/
 	padding-top: 3px;
 	display: inline-block;
@@ -595,13 +586,17 @@ html, body, div{
 	height: 15px;
 }
 
-#svg_editor #tools_left .tool_button,
-#svg_editor #tools_left .tool_button_current {
+input[type=text] {
+		padding: 2px;
+}
+
+ #tools_left .tool_button,
+ #tools_left .tool_button_current {
 	position: relative;
 	z-index: 11;
 }
 
-#svg_editor .flyout_arrow_horiz {
+ .flyout_arrow_horiz {
 	position: absolute;
 	bottom: -1px;
 	right: 0;
@@ -622,7 +617,7 @@ span.zoom_tool {
 	position: relative;
 }
 
-#svg_editor .dropdown button {
+ .dropdown button {
 	width: 15px;
 	height: 21px;
 	margin: 6px 0 0 1px;
@@ -647,7 +642,7 @@ span.zoom_tool {
 	position: absolute;
 	margin: 0;
 	padding: 0;
-	left: -80px;
+	left: -85px;
 	top: 26px;
 	z-index: 4;
 	display: none;
@@ -655,7 +650,7 @@ span.zoom_tool {
 
 .dropup ul {
 	top: auto;
-	bottom: 26px;
+	bottom: 24px;
 }
 
 .dropdown li {
@@ -690,27 +685,26 @@ span.zoom_tool {
 }
 
 
-#svg_editor .tool_button, 
-#svg_editor .push_button,
-#svg_editor .tool_button_current,
-#svg_editor .push_button_pressed 
+ .tool_button, 
+ .push_button,
+ .tool_button_current,
+ .push_button_pressed 
 {
 	height: 24px;
 	width: 24px;
-	margin: 2px;
-	padding: 2px;
-	border-left: 1px solid #FFF;
-	border-top: 1px solid #FFF;
-	border-right: 1px solid #808080;
-	border-bottom: 1px solid #808080;
+	margin: 2px 2px 4px 2px;
+	padding: 3px;
+	-webkit-box-shadow: inset 1px 1px 2px white, 1px 1px 1px rgba(0,0,0,0.3);
+	moz-box-shadow: inset 1px 1px 2px white, 1px 1px 1px rgba(0,0,0,0.3);
+	box-shadow: inset 1px 1px 2px white, 1px 1px 1px rgba(0,0,0,0.3);
 	background-color: #E8E8E8;
 	cursor: pointer;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 
-#svg_editor #main_menu li#tool_open, #svg_editor #main_menu li#tool_import {
+ #main_menu li#tool_open,  #main_menu li#tool_import {
 	position: relative;
 	overflow: hidden;
 }
@@ -731,12 +725,12 @@ span.zoom_tool {
 	cursor: pointer; /* Sadly doesn't appear to have an effect */
 }
 
-#svg_editor .disabled {
+ .disabled {
 	opacity: 0.5;
 	cursor: default;
 }
 
-#svg_editor .tool_sep {
+ .tool_sep {
 	width: 1px;
 	background: #888;
 	border-left: 1px outset #EEE;
@@ -746,7 +740,7 @@ span.zoom_tool {
 
 }
 
-#svg_editor .icon_label {
+ .icon_label {
 	float: left;
 	padding-top: 3px;
 	padding-right: 3px;
@@ -756,7 +750,7 @@ span.zoom_tool {
 	height: 0;
 }
 
-#svg_editor .width_label {
+ .width_label {
 	padding-right: 5px;
 }
 
@@ -791,7 +785,7 @@ span.zoom_tool {
 	display: none;
 }
 
-#svg_editor #color_picker {
+ #color_picker {
 	position: absolute;
 	display: none;
 	background: #E8E8E8;
@@ -799,7 +793,7 @@ span.zoom_tool {
 	z-index: 5;
 }
 
-#svg_editor .tools_flyout {
+ .tools_flyout {
 	position: absolute;
 	display: none;
 	cursor: pointer;
@@ -807,14 +801,14 @@ span.zoom_tool {
 	z-index: 1;
 }
 
-#svg_editor .tools_flyout_v {
+ .tools_flyout_v {
 	position: absolute;
 	display: none;
 	cursor: pointer;
 	width: 30px;
 }
 
-#svg_editor .tools_flyout .tool_button {
+ .tools_flyout .tool_button {
 	float: left;
 	background-color: #E8E8E8;
 	border-left: 1px solid #FFFFFF;
@@ -825,23 +819,17 @@ span.zoom_tool {
 	width: 28px;
 }
 
-#svg_editor #tools_bottom {
+ #tools_bottom {
 	position: absolute;
 	left: 40px;
 	right: 0;
 	bottom: 0;
-	height: 64px;
+	height: 40px;
 	overflow: visible;
 }
 
-#svg_editor #tools_bottom_1 {
+ #tools_bottom_1 {
 	width: 115px;
-	float: left;
-}
-
-#svg_editor #tools_bottom_2 {
-	width: 165px;
-	position: relative;
 	float: left;
 }
 
@@ -849,90 +837,192 @@ span.zoom_tool {
 	width: 2.2em;
 }
 
-#svg_editor #color_tools {
-	display: table;
-	margin-top: 1px;
-	border-spacing: 0 3px;
-	clip: rect(0,0,10px,0);
+/* Color tools: fill, stroke, opacity
+–––––––––––––––––––––––––––––––––––––*/
+
+#tools_bottom_2 {
+	float: left;
+	width: 300px;
+	position: relative;
+	margin-top: 5px;
+	-webkit-transition: width 150ms ease;
 }
 
-.color_tool {
-	display: table-row;
+.expanded #tools_bottom_2 {
+	width: 450px;
+}
+
+#tools_bottom #tools_bottom_2 .dropdown button {
+	margin-top: 2px;
+}
+
+.dropdown li.tool_button {
+	width: 24px;
+}
+
+#tools_bottom_2 .icon_label {
+	display: block;
+	margin: 3px 5px;
+	padding: 0;
+}
+
+#tool_opacity { right: 0;}
+#tool_fill { left: 0; }
+#tool_stroke { left: 60px;}
+
+ #fill_color,  #stroke_color {
+	height: 16px;
+	width: 16px;
+	border: 1px solid #808080;
+	cursor: pointer;
 	overflow: hidden;
-	height: 26px;
-	padding: 0 4px;
 }
 
-.color_tool > * {
-	display: table-cell;
-	background: #f0f0f0;
-	padding: 0 5px 0 0;
-	vertical-align: middle;
-/*	height: 25px;*/
+#stroke_expand {
+	width: 0;
+	overflow: hidden;
 }
 
 #toggle_stroke_tools {
-	letter-spacing: -.2em;
-	padding-right: 8px;
+	position: absolute;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	width: 25px;
+	text-align: center;
+	border-radius: 0 3px 3px 0;
+	margin: 0;
+}
+
+#toggle_stroke_tools:before {
+	content: '>>';
+	letter-spacing: -3px;
+	font-weight: bold;
+	color: #666;
+}
+
+.expanded #tool_stroke.color_tool {
+	width: 280px;
+}
+
+.expanded #toggle_stroke_tools:before {
+	content: '<<';
 }
 
 #toggle_stroke_tools:hover {
-	cursor: pointer;
-	background: #FFC;
+	background: white;
 }
 
-.stroke_tool {
-	display: none;
-	white-space: nowrap;
+.color_tool {
+	position: absolute;
+	overflow: hidden;
+	background: #f0f0f0;
+	height: 26px;
+	line-height: 26px;
+	border-radius: 3px;
+	min-width: 52px;
 }
 
-#svg_editor .stroke_tool button {
-	margin-top: 3px;
-	background: #F0F0F0;
+#tool_stroke.color_tool {
+	width: 130px;
+	z-index: 2;
+	-webkit-transition: width 150ms ease;
+	-moz-transition: width 150ms ease;
+	-o-transition: width 150ms ease;
+	-ms-transition: width 150ms ease;
+	transition: width 150ms ease;
 }
 
-#svg_editor .stroke_tool div div {
-	-moz-user-select: none;
-	-webkit-user-select: none;
-	width: 20px;
-	height: 20px;
-	margin: 1px 0;
-	padding: 1px;
-	border: 1px solid #DDD;
+
+.color_block {
+	position: absolute;
+	top: 0;
+	left: 0;
 }
 
-#svg_editor .stroke_tool:hover div > * {
-	background-color: #FFC;
+.color_block svg {
+	display: block;
 }
 
-#svg_editor .stroke_tool.down div div,
-#svg_editor .stroke_tool.down button,
-#tools_top .dropdown.down > * {
-	border: 1px inset gray;
-	background: #F4E284;
+.color_tool > * {
+	float: left;
+	margin-right: 5px;
 }
 
-.stroke_tool > div {
-	width: 42px;
-}
-
-.stroke_tool > div > * {
+.color_tool .dropdown > * {
 	float: left;
 }
 
-
-#tools_top .dropdown .icon_label {
-	border: 1px solid transparent;
-/*	margin-top: 3px;*/
-	height: auto;
+.color_tool .stroke_label {
+	margin-left: 25px;
+	float: left;
 }
+
+.color_tool > .color_block {
+	top: 3px;
+	left: 29px;
+}
+
+.color_tool input {
+	margin: 0;
+}
+
+#tool_opacity {
+	overflow: visible;
+}
+
+@media screen and (max-width:1250px) {
+	.expanded #palette_holder {
+		left: 560px;
+		overflow-x: scroll;
+		padding: 0 5px;
+		margin-top: 2px;
+		height: 30px;
+	}
+	#tools_top {
+		height: 71px;
+	}
+	#workarea, #sidepanels {
+		top: 70px;
+	}
+	#rulers #ruler_corner,
+	#rulers #ruler_x, #tools_left {
+		top: 71px;
+	}
+
+	#rulers #ruler_y {
+		top: 86px;
+	}
+
+	#cur_context_panel {
+		top: 87px;
+	}
+
+	#selected_panel {
+		clear: right;
+	}
+
+}
+
+@media screen and (max-width:1100px) {
+	#tools_bottom:not(.expanded) #palette_holder {
+		left: 410px;
+		overflow-x: scroll;
+		padding: 0 5px;
+		margin-top: 2px;
+		height: 30px;
+	}
+}
+
+
+/*–––––––––––––––––––––––––––––––––––––*/
 
 #option_lists ul {
 	display: none;
 	position: absolute;
 	height: auto;
 	z-index: 3;
-	margin: 0;
+	margin: -10px;
 	list-style: none;
 	padding-left: 0;
 }
@@ -956,42 +1046,15 @@ span.zoom_tool {
 	float: left;
 }
 
-#svg_editor ul li.current {
+ ul li.current {
 	background-color: #F4E284;
 }
 
-#svg_editor #option_lists ul li {
+ #option_lists ul li {
 	margin: 0;
 	border-radius: 0;
 	-moz-border-radius: 0;
 	-webkit-border-radius: 0;
-}
-
-.color_tool > *:first-child {
-	-moz-border-radius-topleft: 4px;
-	-moz-border-radius-bottomleft: 4px;
-	-webkit-border-top-left-radius: 4px;
-	-webkit-border-bottom-left-radius: 4px;
-	padding-right: 0;
-}
-
-.color_tool > *:last-child {
-	-moz-border-radius-topright: 4px;
-	-moz-border-radius-bottomright: 4px;
-	-webkit-border-top-right-radius: 4px;
-	-webkit-border-bottom-right-radius: 4px;
-}
-
-#svg_editor #tool_opacity {
-	position: absolute;
-	top: 4px;
-	right: 2px;
-	background: #f0f0f0;
-	height: 26px;
-	border-radius: 4px;
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	padding: 0 3px;
 }
 
 #tools_bottom .dropdown button {
@@ -1002,7 +1065,7 @@ span.zoom_tool {
 	width: 140px;
 }
 
-#svg_editor #copyright {
+ #copyright {
 	text-align: right;
 	padding-right: .3em;
 }
@@ -1048,6 +1111,10 @@ span.zoom_tool {
 #bg_blocks {
 	overflow: auto;
 	margin-left: 30px;
+}
+
+#bg_blocks .color_block {
+	position: static;
 }
 
 #svg_docprops #svg_docprops_container,
@@ -1328,8 +1395,8 @@ span.zoom_tool {
 }
 
 /* Necessary to keep the flyouts sized properly */
-#svg_editor .tools_flyout .tool_button,
-#svg_editor .tools_flyout .tool_flyout {
+ .tools_flyout .tool_button,
+ .tools_flyout .tool_flyout {
 	padding: 2px;
 	width: 24px;
 	height: 24px;
