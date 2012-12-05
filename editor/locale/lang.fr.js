@@ -225,7 +225,7 @@ svgEditor.readLang({
 		"loadingImage":"Chargement de l'image, veuillez patienter...",
 		"saveFromBrowser": "Selectionner \"Enregistrer sous...\" dans votre navigateur pour sauvegarder l'image en tant que fichier %s.",
 		"noteTheseIssues": "Notez également les problèmes suivants : ",
-		"unsavedChanges": "There are unsaved changes.",
+		"unsavedChanges": "Il y a des changements non sauvegardés.",
 		"enterNewLinkURL": "Enter the new hyperlink URL",
 		"errorLoadingSVG": "Error: Unable to load SVG data",
 		"URLloadFail": "Unable to load from URL",
