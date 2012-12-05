@@ -1425,6 +1425,7 @@
 					default:
 						paintBox.fill.update(true);
 						paintBox.stroke.update(true);
+						//console.log(paintBox.fill);
 
 						$('#stroke_width').val(selectedElement.getAttribute("stroke-width") || 1);
 						$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
@@ -1957,7 +1958,7 @@
 				var paint = null;
 
 				// Webkit-based browsers returned 'initial' here for no stroke
-				if (color === 'transparent' || color === 'initial') {
+				if (color === 'none' || color === 'transparent' || color === 'initial') {
 					color = 'none';
 					paint = new $.jGraduate.Paint();
 				}
@@ -3373,7 +3374,6 @@
 					},
 					function(p) {
 						paint = new $.jGraduate.Paint(p);
-
 						paintBox[picker].setPaint(paint);
 						svgCanvas.setPaint(picker, paint);
 
@@ -3472,7 +3472,7 @@
 
 					switch ( ptype ) {
 						case 'solidColor':
-							fillAttr = "#" + paint[ptype];
+							fillAttr = (paint[ptype] != 'none') ? "#" + paint[ptype] : paint[ptype];
 							break;
 						case 'linearGradient':
 						case 'radialGradient':
