@@ -40,6 +40,7 @@
 			// changed in the UI and are stored in the browser, config can not
 
 			curConfig = {
+				canvasName: 'default',
 				canvas_expansion: 3,
 				dimensions: [640,480],
 				initFill: {
@@ -253,6 +254,12 @@
 						svgEditor.loadFromURL(qstr.substr(9));
 					} else if(urldata.url) {
 						svgEditor.loadFromURL(urldata.url);
+					}
+				} else {
+					var name = 'svgedit-' + Editor.curConfig.canvasName;
+					var cached = window.localStorage.getItem(name);
+					if (cached) {
+						Editor.loadFromString(cached);
 					}
 				}
 			})();
@@ -4364,6 +4371,13 @@
 			canv_menu.enableContextMenuItems('#delete,#cut,#copy');
 
 			window.onbeforeunload = function() {
+
+				if ('localStorage' in window) {
+					var name = 'svgedit-' + Editor.curConfig.canvasName;
+					window.localStorage.setItem(name, svgCanvas.getSvgString());
+					Editor.show_save_warning = false;
+				}
+
 				// Suppress warning if page is empty
 				if(undoMgr.getUndoStackSize() === 0) {
 					Editor.show_save_warning = false;
