@@ -820,6 +820,28 @@
 
 				zoomDone();
 			}
+         
+			//bad UA sniffing ...modernizr can't help https://github.com/Modernizr/Modernizr/wiki/Undetectables
+			var mouseWheelEvt=(/Firefox/i.test(navigator.userAgent))? "DOMMouseScroll" : "mousewheel" 
+			$('#workarea').bind(mouseWheelEvt, function(e){
+				  var evt = e.originalEvent;
+				  var delta;
+				  if (evt.wheelDelta) delta = Math.max(-1, Math.min(1, (evt.wheelDelta)));
+				  else if (evt.detail) delta = Math.max(-1, Math.min(1, (-evt.detail)));
+				  var zoom = Math.round((svgCanvas.getZoom() + delta * 0.05) * 100)/100; 
+				  var w_area = workarea;
+				  zoomChanged(window, {
+						width: 0,
+						height: 0,
+						// center pt of scroll position
+						// should be relative to mouse position
+						x: (w_area[0].scrollLeft + w_area.width()/2)/zoom,
+						y: (w_area[0].scrollTop + w_area.height()/2)/zoom,
+						zoom: zoom
+					}, true);
+					if (evt.preventDefault) evt.preventDefault();
+					evt.returnValue = false;
+			});
 
 			$('#cur_context_panel').delegate('a', 'click', function() {
 				var link = $(this);
