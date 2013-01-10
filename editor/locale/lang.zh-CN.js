@@ -4,28 +4,28 @@ svgEditor.readLang({
 	common: {
 		"ok": "保存",
 		"cancel": "取消",
-		"key_backspace": "backspace", 
-		"key_del": "delete", 
-		"key_down": "down", 
-		"key_up": "up", 
+		"key_backspace": "退格", 
+		"key_del": "删除", 
+		"key_down": "下", 
+		"key_up": "上", 
 		"more_opts": "More Options",
 		"url": "URL",
-		"width": "Width",
-		"height": "Height"
+		"width": "宽度",
+		"height": "高度"
 	},
 	misc: {
 		"powered_by": "Powered by"
 	}, 
 	ui: {
-		"toggle_stroke_tools": "Show/hide more stroke tools",
-		"palette_info": "点击更改填充颜色，按住Shift键单击更改颜色中风",
+		"toggle_stroke_tools": "显示/隐藏 更多边线工具",
+		"palette_info": "点击更改填充颜色，按住Shift键单击更改边线颜色",
 		"zoom_level": "更改缩放级别",
-		"panel_drag": "Drag left/right to resize side panel"
+		"panel_drag": "左右拖拽调整面板大小"
 	},
 	properties: {
 		"id": "Identify the element",
 		"fill_color": "更改填充颜色",
-		"stroke_color": "中风的颜色变化",
+		"stroke_color": "更改边线颜色",
 		"stroke_style": "更改行程冲刺风格",
 		"stroke_width": "笔划宽度的变化",
 		"pos_x": "Change X coordinate",
