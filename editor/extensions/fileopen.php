@@ -4,7 +4,7 @@
  * fileopen.php
  * To be used with ext-server_opensave.js for SVG-edit
  *
- * Licensed under the Apache License, Version 2
+ * Licensed under the MIT License
  *
  * Copyright(c) 2010 Alexis Deveria
  *
@@ -27,5 +27,5 @@
 	}
 ?>
 <script>
-window.top.window.svgEditor.processFile("<?php echo $prefix . base64_encode($output); ?>", "<?php echo $type ?>");
-</script>  
+window.top.window.svgEditor.processFile("<?php echo $prefix . base64_encode($output); ?>", "<?php echo htmlentities($type); ?>");
+</script>

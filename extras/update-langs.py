@@ -4,7 +4,7 @@
 This is a helper script for the svg-edit project, useful for managing
 all the language files
 
-Licensed under the Apache 2 License as is the rest of the project
+Licensed under the MIT License as is the rest of the project
 Requires Python 2.6
 
 Copyright (c) 2010 Jeff Schiller

@@ -1,7 +1,7 @@
 /*
  * ext-arrows.js
  *
- * Licensed under the Apache License, Version 2
+ * Licensed under the MIT License
  *
  * Copyright(c) 2010 Alexis Deveria
  *
@@ -15,8 +15,8 @@ svgEditor.addExtension("Arrows", function(S) {
 			randomize_ids = S.randomize_ids,
 			selElems;
 
-		svgCanvas.bind('setarrownonce', setArrowNonce);
-		svgCanvas.bind('unsetsetarrownonce', unsetArrowNonce);
+		svgCanvas.bind('setnonce', setArrowNonce);
+		svgCanvas.bind('unsetnonce', unsetArrowNonce);
 			
 		var lang_list = {
 			"en":[

@@ -6,7 +6,7 @@
  * Copyright (c) 2009 Alexis Deveria
  * http://a.deveria.com
  *
- * Apache 2 License
+ * MIT License
 
 How to use:
 
@@ -128,7 +128,7 @@ $(function() {
 
 
 (function($) {
-	var svg_icons = {};
+	var svg_icons = {}, fixIDs;
 
 	$.svgIcons = function(file, opts) {
 		var svgns = "http://www.w3.org/2000/svg",
@@ -144,18 +144,22 @@ $(function() {
 				var data_el = $('<object data="' + file + '" type=image/svg+xml>').appendTo('body').hide();
 				try {
 					svgdoc = data_el[0].contentDocument;
-					// TODO: IE still loads this, shouldn't even bother.
 					data_el.load(getIcons);
 					getIcons(0, true); // Opera will not run "load" event if file is already cached
 				} catch(err1) {
 					useFallback();
 				}
 			} else {
+				var parser = new DOMParser();
 				$.ajax({
 					url: file,
-					dataType: 'xml',
+					dataType: 'string',
 					success: function(data) {
-						svgdoc = data;
+						if(!data) {
+							$(useFallback);
+							return;
+						}
+						svgdoc = parser.parseFromString(data, "text/xml");
 						$(function() {
 							getIcons('ajax');
 						});
@@ -167,12 +171,18 @@ $(function() {
 								useFallback();
 							});
 						} else {
-							if(err.responseXML) {
-								svgdoc = err.responseXML;
+							if(err.responseText) {
+								svgdoc = parser.parseFromString(err.responseText, "text/xml");
+
+								if(!svgdoc.childNodes.length) {
+									$(useFallback);									
+								}
 								$(function() {
 									getIcons('ajax');
 								});							
-							} 
+							} else {
+								$(useFallback);
+							}
 						}
 					}
 				});
@@ -198,71 +208,59 @@ $(function() {
 				}
 				data_loaded = true;
 			}
-			// Clean source SVGs (mostly for Inkscape files)
-			// TODO: Find a way to do this without crashing Safari (when converting to IMG)
-			$(svgdoc).find('metadata').remove().end()
-				.find('*').each(function(i, el) {
-				if(el.nodeName.indexOf(':') != -1) {
-					$(el).remove();
-				}
-				var attrs = $.extend(false, el.attributes, {});
-				for(i in attrs) {
-					var attr = attrs[i];
-					var fullattr = attr.prefix?attr.prefix + ':' + attr.localName:'';
-					if(attr.prefix) {
-						el.removeAttribute(attr.localName); // for Opera
-						el.removeAttribute(fullattr); // for Webkit
-					} 
-					if(fullattr == 'xlink:href') {
-						el.setAttribute('xlink:href', attr.nodeValue);
-					}
-				}
-			});
-			elems = $(svgdoc.firstChild).children(); //.getElementsByTagName('foreignContent');
-			var testSrc = data_pre + 'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNzUiIGhlaWdodD0iMjc1Ij48L3N2Zz4%3D';
 			
-			testImg = $(new Image()).attr({
-				src: testSrc,
-				width: 0,
-				height: 0
-			}).appendTo('body')
-			.load(function () {
-				// Safari 4 crashes, Opera and Chrome don't
-				makeIcons(!isSafari);
-			}).error(function () {
-				makeIcons();
-			});
+			elems = $(svgdoc.firstChild).children(); //.getElementsByTagName('foreignContent');
+			
+			if(!opts.no_img) {
+				var testSrc = data_pre + 'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNzUiIGhlaWdodD0iMjc1Ij48L3N2Zz4%3D';
+				
+				testImg = $(new Image()).attr({
+					src: testSrc,
+					width: 0,
+					height: 0
+				}).appendTo('body')
+				.load(function () {
+					// Safari 4 crashes, Opera and Chrome don't
+					makeIcons(true);
+				}).error(function () {
+					makeIcons();
+				});
+			} else {
+				setTimeout(function() {
+					if(!icons_made) makeIcons();
+				},500);
+			}
+		}
+		
+		var setIcon = function(target, icon, id, setID) {
+			if(isOpera) icon.css('visibility','hidden');
+			if(opts.replace) {
+				if(setID) icon.attr('id',id);
+				var cl = target.attr('class');
+				if(cl) icon.attr('class','svg_icon '+cl);
+				target.replaceWith(icon);
+			} else {
+				
+				target.append(icon);
+			}
+			if(isOpera) {
+				setTimeout(function() {
+					icon.removeAttr('style');
+				},1);
+			}
+		}
+		
+		var addIcon = function(icon, id) {
+			if(opts.id_match === undefined || opts.id_match !== false) {
+				setIcon(holder, icon, id, true);
+			}
+			svg_icons[id] = icon;
 		}
 		
 		function makeIcons(toImage, fallback) {
 			if(icons_made) return;
 			if(opts.no_img) toImage = false;
 			var holder;
-			
-			var setIcon = function(target, icon, id, setID) {
-				if(isOpera) icon.css('visibility','hidden');
-				if(opts.replace) {
-					if(setID) icon.attr('id',id);
-					var cl = target.attr('class');
-					if(cl) icon.attr('class','svg_icon '+cl);
-					target.replaceWith(icon);
-				} else {
-					
-					target.append(icon);
-				}
-				if(isOpera) {
-					setTimeout(function() {
-						icon.attr('style','visibility:visible;');
-					},1);
-				}
-			}
-			
-			var addIcon = function(icon, id) {
-				if(opts.id_match === undefined || opts.id_match !== false) {
-					setIcon(holder, icon, id, true);
-				}
-				svg_icons[id] = icon;
-			}
 			
 			if(toImage) {
 				var temp_holder = $(document.createElement('div'));
@@ -284,13 +282,14 @@ $(function() {
 					addIcon(icon, id);
 				});
 			} else {
-				$.each(elems, function(i, elem) {
-					var id = elem.getAttribute('id');
-					if(id == 'svg_eof') return;
+				var len = elems.length;
+				for(var i = 0; i < len; i++) {
+					var elem = elems[i];
+					var id = elem.id;
+					if(id === 'svg_eof') break;
 					holder = $('#' + id);
-			
 					var svg = elem.getElementsByTagNameNS(svgns, 'svg')[0];
-					var svgroot = svgdoc.createElementNS(svgns, "svg");
+					var svgroot = document.createElementNS(svgns, "svg");
 					svgroot.setAttributeNS(svgns, 'viewBox', [0,0,icon_w,icon_h].join(' '));
 					
 					// Make flexible by converting width/height to viewBox
@@ -304,13 +303,12 @@ $(function() {
 						svg.setAttribute('viewBox', [0,0,w,h].join(' '));
 					}
 					
-					$(svgroot).attr({
-						"xmlns": svgns,
-						"width": icon_w,
-						"height": icon_h,
-						"xmlns:xlink": xlinkns,
-						"class": 'svg_icon'
-					});
+					// Not using jQuery to be a bit faster
+					svgroot.setAttribute('xmlns', svgns);
+					svgroot.setAttribute('width', icon_w);
+					svgroot.setAttribute('height', icon_h);
+					svgroot.setAttribute("xmlns:xlink", xlinkns);
+					svgroot.setAttribute("class", 'svg_icon');
 
 					// Without cloning, Firefox will make another GET request.
 					// With cloning, causes issue in Opera/Win/Non-EN
@@ -330,7 +328,8 @@ $(function() {
 						var icon = fixIDs($(svgroot), i);
 					}
 					addIcon(icon, id);
-				});
+				}
+
 			}
 			
 			if(opts.placement) {
@@ -346,40 +345,64 @@ $(function() {
 			if(!fallback) {
 				if(toImage) temp_holder.remove();
 				if(data_el) data_el.remove();
-				testImg.remove();
+				if(testImg) testImg.remove();
 			}
-
 			if(opts.resize) $.resizeSvgIcons(opts.resize);
-
 			icons_made = true;
-			
+
 			if(opts.callback) opts.callback(svg_icons);
-			
 		}
 		
-		function fixIDs(svg_el, svg_num, force) {
+		fixIDs = function(svg_el, svg_num, force) {
 			var defs = svg_el.find('defs');
 			if(!defs.length) return svg_el;
 			
-			defs.find('[id]').each(function(i) {
+			if(isOpera) {
+				var id_elems = defs.find('*').filter(function() {
+					return !!this.id;
+				});
+			} else {
+				var id_elems = defs.find('[id]');
+			}
+			
+			var all_elems = svg_el[0].getElementsByTagName('*'), len = all_elems.length;
+			
+			id_elems.each(function(i) {
 				var id = this.id;
 				var no_dupes = ($(svgdoc).find('#' + id).length <= 1);
 				if(isOpera) no_dupes = false; // Opera didn't clone svg_el, so not reliable
 				// if(!force && no_dupes) return;
 				var new_id = 'x' + id + svg_num + i;
-				$(this).attr('id', new_id);			
-	
-				svg_el.find('[fill="url(#' + id + ')"]').each(function() {
-					$(this).attr('fill', 'url(#' + new_id + ')');
-				}).end().find('[stroke="url(#' + id + ')"]').each(function() {
-					$(this).attr('stroke', 'url(#' + new_id + ')');
-				}).end().find('use').each(function() {
-					if(this.getAttribute('xlink:href') == '#' + id) {
-						this.setAttributeNS(xlinkns,'href','#' + new_id);
+				this.id = new_id;
+				
+				var old_val = 'url(#' + id + ')';
+				var new_val = 'url(#' + new_id + ')';
+				
+				// Selector method, possibly faster but fails in Opera / jQuery 1.4.3
+// 				svg_el.find('[fill="url(#' + id + ')"]').each(function() {
+// 					this.setAttribute('fill', 'url(#' + new_id + ')');
+// 				}).end().find('[stroke="url(#' + id + ')"]').each(function() {
+// 					this.setAttribute('stroke', 'url(#' + new_id + ')');
+// 				}).end().find('use').each(function() {
+// 					if(this.getAttribute('xlink:href') == '#' + id) {
+// 						this.setAttributeNS(xlinkns,'href','#' + new_id);
+// 					}
+// 				}).end().find('[filter="url(#' + id + ')"]').each(function() {
+// 					this.setAttribute('filter', 'url(#' + new_id + ')');
+// 				});
+
+				for(var i = 0; i < len; i++) {
+					var elem = all_elems[i];
+					if(elem.getAttribute('fill') === old_val) {
+						elem.setAttribute('fill', new_val);
 					}
-				}).end().find('[filter="url(#' + id + ')"]').each(function() {
-					$(this).attr('filter', 'url(#' + new_id + ')');
-				});
+					if(elem.getAttribute('stroke') === old_val) {
+						elem.setAttribute('stroke', new_val);
+					}
+					if(elem.getAttribute('filter') === old_val) {
+						elem.setAttribute('filter', new_val);
+					}
+				}
 			});
 			return svg_el;
 		}
@@ -431,7 +454,13 @@ $(function() {
 		}
 	}
 	
-	$.getSvgIcon = function(id) { return svg_icons[id]; }
+	$.getSvgIcon = function(id, uniqueClone) { 
+		var icon = svg_icons[id];
+		if(uniqueClone && icon) {
+			icon = fixIDs(icon, 0, true).clone(true);
+		}
+		return icon; 
+	}
 	
 	$.resizeSvgIcons = function(obj) {
 		// FF2 and older don't detect .svg_icon, so we change it detect svg elems instead

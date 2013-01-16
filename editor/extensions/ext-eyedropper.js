@@ -1,18 +1,25 @@
 /*
  * ext-eyedropper.js
  *
- * Licensed under the Apache License, Version 2
+ * Licensed under the MIT License
  *
  * Copyright(c) 2010 Jeff Schiller
  *
  */
 
+// Dependencies:
+// 1) jQuery
+// 2) history.js
+// 3) svg_editor.js
+// 4) svgcanvas.js
+
 svgEditor.addExtension("eyedropper", function(S) {
 		var svgcontent = S.svgcontent,
 			svgns = "http://www.w3.org/2000/svg",
 			svgdoc = S.svgroot.parentNode.ownerDocument,
-			ChangeElementCommand = svgCanvas.getPrivateMethods().ChangeElementCommand,
-			addToHistory = svgCanvas.getPrivateMethods().addCommandToHistory,
+			svgCanvas = svgEditor.canvas,
+			ChangeElementCommand = svgedit.history.ChangeElementCommand,
+			addToHistory = function(cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); },
 			currentStyle = {fillPaint: "red", fillOpacity: 1.0,
 							strokePaint: "black", strokeOpacity: 1.0, 
 							strokeWidth: 5, strokeDashArray: null,
@@ -29,7 +36,7 @@ svgEditor.addExtension("eyedropper", function(S) {
 			var elem = null;
 			var tool = $('#tool_eyedropper');
 			// enable-eye-dropper if one element is selected
-			if (opts.elems.length == 1 && opts.elems[0] && 
+			if (!opts.multiselected && opts.elems[0] &&
 				$.inArray(opts.elems[0].nodeName, ['svg', 'g', 'use']) == -1) 
 			{
 				elem = opts.elems[0];
@@ -59,6 +66,7 @@ svgEditor.addExtension("eyedropper", function(S) {
 				id: "tool_eyedropper",
 				type: "mode",
 				title: "Eye Dropper Tool",
+				key: "I",
 				events: {
 					"click": function() {
 						svgCanvas.setMode("eyedropper");

@@ -117,10 +117,12 @@ $.fn.SpinButton = function(cfg){
 			var x = e.pageX || e.x;
 			var y = e.pageY || e.y;
 			var el = e.target || e.srcElement;
-			var height = $(el).outerHeight()/2;
+			var scale = svgEditor.tool_scale || 1;
+			var height = $(el).height()/2;
+			
 			var direction = 
-				(x > coord(el,'offsetLeft') + el.offsetWidth - this.spinCfg._btn_width)
-				? ((y < coord(el,'offsetTop') + height) ? 1 : -1) : 0;
+				(x > coord(el,'offsetLeft') + el.offsetWidth*scale - this.spinCfg._btn_width)
+				? ((y < coord(el,'offsetTop') + height*scale) ? 1 : -1) : 0;
 			
 			if (direction !== this.spinCfg._direction) {
 				// Style up/down buttons:
