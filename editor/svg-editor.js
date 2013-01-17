@@ -804,8 +804,7 @@
 					return;
 				}
 
-// 				$('#zoom').val(Math.round(zoomlevel*100));
-				$('#zoom').val(zoomlevel*100);
+ 			  $('#zoom').val((zoomlevel*100).toFixed(1));
 
 				if(autoCenter) {
 					updateCanvas();
