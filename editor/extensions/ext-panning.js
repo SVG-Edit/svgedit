@@ -29,14 +29,14 @@ svgEditor.addExtension("ext-panning", function() {
 			}],
 			mouseDown: function() {
 				if(svgCanvas.getMode() == "ext-panning") {
-			                svgEditor.setPan(true);	
+			                svgEditor.setPanning(true);	
 					return {started: true};
 				}
 			},
 			
 			mouseUp: function(opts) {
 				if(svgCanvas.getMode() == "ext-panning") {
-			                svgEditor.setPan(false);	
+			                svgEditor.setPanning(false);	
 				}
 			}
 		};
