@@ -2055,6 +2055,10 @@
 						workarea.css('cursor', zoomInIcon);
 					}
 				})
+                                
+                                Editor.setPan = function(active) {
+                                        svgCanvas.spaceKey = keypan = active;
+                                }
 			}());
 
 
