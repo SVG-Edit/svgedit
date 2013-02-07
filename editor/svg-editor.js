@@ -2056,7 +2056,7 @@
 					}
 				})
                                 
-                                Editor.setPan = function(active) {
+                                Editor.setPanning = function(active) {
                                         svgCanvas.spaceKey = keypan = active;
                                 }
 			}());
