@@ -1,0 +1,97 @@
+2.5 - June 15, 2010
+-------------------
+* Open Local Files (Firefox 3.6+ only)
+* Import SVG into Drawing (Firefox 3.6+ only)
+* Ability to create extensions/plugins
+* Main menu and overal interface improvements
+* Create and select elements outside the canvas
+* Base support for the svg:use element
+* Add/Edit Sub-paths
+* Multiple path segment selection
+* Radial Gradient support
+* Connector lines
+* Arrows & Markers
+* Smoother freehand paths
+* Foreign markup support (ForeignObject?/MathML)
+* Configurable options
+* File-loading options
+* Eye-dropper tool (copy element style)
+* Stroke linejoin and linecap options
+* Export to PNG
+* Blur tool
+* Page-align single elements
+* Inline text editing
+* Line draw snapping with Shift key
+
+2.4 - January 11, 2010
+----------------------
+* Zoom
+* Layers
+* UI Localization
+* Wireframe Mode
+* Resizable UI (SVG icons)
+* Set background color and/or image (for tracing)
+* Convert Shapes to Paths
+* X, Y coordinates for all elements
+* Draggable Dialog boxes
+* Select Non-Adjacent Elements
+* Fixed-ratio resize
+* Automatic Tool Switching
+* Raster Images
+* Group elements
+* Add/Remove path nodes
+* Curved Paths
+* Floating point values for all attributes
+* Text fields for all attributes
+* Title element
+
+2.3 - September 08, 2009
+------------------------
+* Align Objects
+* Rotate Objects
+* Clone Objects
+* Select Next/Prev Object
+* Edit SVG Source
+* Gradient picking
+* Polygon Mode (Path Editing, Phase 1)
+
+2.2 - July 08, 2009
+-------------------
+* Multiselect Mode
+* Undo/Redo Actions
+* Resize Elements
+* Contextual tools for rect, circle, ellipse, line, text elements
+* Some updated button images
+* Stretched the UI to fit the browser window
+* Resizing of the SVG canvas
+* Upgraded to jPicker 1.0.8
+
+2.1 - June 17, 2009
+-------------------
+* tooltips added to all UI elements
+* fix flyout menus
+* ask before clearing the drawing (suggested by martin.vidner)
+* control group, fill and stroke opacity
+* fix flyouts when using color picker
+* change license from GPLv2 to Apache License v2.0
+* replaced Farbtastic with jPicker, because of the license issues
+* removed dependency on svgcanvas.svg, now created in JavaScript
+* added Select tool
+* using jQuery hosted by Google instead of local version
+* allow dragging of elements
+* save SVG file to separate tab
+* create and edit text elements
+* context panel tools
+* change rect radius, font-family, font-size
+* added keystroke shortcuts for all tools
+* move to top/bottom
+
+2.0 - June 03, 2009
+-------------------
+* rewritten SVG-edit, so now it uses OOP
+* draw ellipse, square
+* created HTML interface similar to Inkscape
+
+1.0 - February 06, 2009
+-------------------
+* SVG-Edit released
