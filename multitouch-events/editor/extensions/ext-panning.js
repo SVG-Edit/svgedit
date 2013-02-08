@@ -36,7 +36,11 @@ svgEditor.addExtension("ext-panning", function() {
 			
 			mouseUp: function(opts) {
 				if(svgCanvas.getMode() == "ext-panning") {
-			                svgEditor.setPanning(false);	
+					svgEditor.setPanning(false);
+					return {
+						keep: false,
+						element: null
+					}
 				}
 			}
 		};
