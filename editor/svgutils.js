@@ -495,7 +495,7 @@ svgedit.utilities.getBBox = function(elem) {
 			ret = groupBBFix(selected, true);
 		}
 		
-		if(elname === 'use' || ( elname="foreignObject" && svgedit.browser.isWebkit() ) ) {
+		if(elname === 'use' || ( elname === "foreignObject" && svgedit.browser.isWebkit() ) ) {
 			if(!ret) ret = selected.getBBox();
 			// This is resolved in later versions of webkit, perhaps we should
 			// have a featured detection for correct 'use' behavior?
