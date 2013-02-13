@@ -8,8 +8,9 @@
  */
 
 // Dependencies:
-// 1) browser.js
-// 2) svgutils.js
+// 1) jQuery
+// 2) browser.js
+// 3) svgutils.js
 
 var svgedit = svgedit || {};
 
@@ -199,9 +200,11 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 					p = props.length;
 				while(p--) {
 					var nv = props[p].split(":");
+					var attrname = $.trim(nv[0]);
+					var attrval = $.trim(nv[1]);
 					// now check that this attribute is supported
-					if (allowedAttrs.indexOf(nv[0]) >= 0) {
-						node.setAttribute(nv[0],nv[1]);
+					if (allowedAttrs.indexOf(attrname) >= 0) {
+						node.setAttribute(attrname, attrval);
 					}
 				}
 				node.removeAttribute('style');
