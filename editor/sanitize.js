@@ -206,11 +206,11 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 					p = props.length;
 				while(p--) {
 					var nv = props[p].split(":");
-					var attrname = $.trim(nv[0]);
-					var attrval = $.trim(nv[1]);
+					var styleAttrName = $.trim(nv[0]);
+					var styleAttrVal = $.trim(nv[1]);
 					// Now check that this attribute is supported
-					if (allowedAttrs.indexOf(attrname) >= 0) {
-						node.setAttribute(attrname, attrval);
+					if (allowedAttrs.indexOf(styleAttrName) >= 0) {
+						node.setAttribute(styleAttrName, styleAttrVal);
 					}
 				}
 				node.removeAttribute('style');
