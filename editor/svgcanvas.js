@@ -2347,8 +2347,53 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			miny: null,
 			maxx: null,
 			maxy: null
+		},
+		sumDistance= 0,
+		controllPoint2 = {x:0, y:0},
+		controllPoint1 = {x:0, y:0},
+		start= {x:0, y:0},
+		end= {x:0, y:0},
+		parameter,
+		nextParameter,
+		bSpline= {x:0, y:0},
+		nextPos= {x:0, y:0},
+		THRESHOLD_DIST=0.8,
+		STEP_COUNT=10;
+
+	var getBsplinePoint = function(t) {
+		var spline = {x:0, y:0},
+		    p0 = controllPoint2,
+		    p1 = controllPoint1,
+		    p2 = start,
+		    p3 = end,
+		    S = 1.0 / 6.0,
+		    t2 = t * t,
+		    t3 = t2 * t;
+
+		var m = Array
+			(
+				Array(-1, 3, -3, 1),
+				Array(3, -6, 3, 0),
+				Array(-3, 0, 3, 0),
+				Array(1, 4, 1, 0)
+			);
+
+		spline.x = S * (
+			(p0.x * m[0][0] + p1.x * m[0][1] + p2.x * m[0][2] + p3.x * m[0][3] ) * t3 +
+				(p0.x * m[1][0] + p1.x * m[1][1] + p2.x * m[1][2] + p3.x * m[1][3] ) * t2 +
+				(p0.x * m[2][0] + p1.x * m[2][1] + p2.x * m[2][2] + p3.x * m[2][3] ) * t +
+				(p0.x * m[3][0] + p1.x * m[3][1] + p2.x * m[3][2] + p3.x * m[3][3] )   );
+		spline.y = S * (
+			(p0.y * m[0][0] + p1.y * m[0][1] + p2.y * m[0][2] + p3.y * m[0][3] ) * t3 +
+				(p0.y * m[1][0] + p1.y * m[1][1] + p2.y * m[1][2] + p3.y * m[1][3] ) * t2 +
+				(p0.y * m[2][0] + p1.y * m[2][1] + p2.y * m[2][2] + p3.y * m[2][3] ) * t +
+				(p0.y * m[3][0] + p1.y * m[3][1] + p2.y * m[3][2] + p3.y * m[3][3] )   );
+
+		return {
+			x:spline.x,
+			y:spline.y
 		};
-	
+	}
 	// - when we are in a create mode, the element is added to the canvas
 	//   but the action is not recorded until mousing up
 	// - when we are in select mode, select the element, remember the position
@@ -2558,6 +2603,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			case "fhellipse":
 			case "fhrect":
 			case "fhpath":
+				start.x=real_x; start.y=real_y;
 				started = true;
 				d_attr = real_x + "," + real_y + " ";
 				var stroke_w = cur_shape.stroke_width == 0?1:cur_shape.stroke_width;
@@ -3030,8 +3076,27 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				freehand.maxy = Math.max(real_y, freehand.maxy);
 			// break; missing on purpose
 			case "fhpath":
-				d_attr += + real_x + "," + real_y + " ";
-				shape.setAttributeNS(null, "points", d_attr);
+//				d_attr += + real_x + "," + real_y + " ";
+//				shape.setAttributeNS(null, "points", d_attr);
+				end.x = real_x; end.y = real_y;
+				if(controllPoint2.x && controllPoint2.y){
+					for (var i = 0; i < STEP_COUNT - 1; i++) {
+						parameter = i / STEP_COUNT;
+						nextParameter = (i + 1) / STEP_COUNT;
+						bSpline = getBsplinePoint(nextParameter);
+						nextPos = bSpline;
+						bSpline = getBsplinePoint(parameter);
+						sumDistance += Math.sqrt((nextPos.x - bSpline.x) * (nextPos.x - bSpline.x) + (nextPos.y - bSpline.y) * (nextPos.y - bSpline.y));
+						if (sumDistance > THRESHOLD_DIST) {
+							d_attr += + bSpline.x + "," + bSpline.y + " ";
+							shape.setAttributeNS(null, "points", d_attr);
+							sumDistance -= THRESHOLD_DIST;
+						}
+					}
+				}
+				controllPoint2 = {x:controllPoint1.x,y:controllPoint1.y};
+				controllPoint1 = {x:start.x,y:start.y};
+				start = {x:end.x,y:end.y};
 				break;
 			// update path stretch line coordinates
 			case "path":
@@ -3246,6 +3311,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				// causes problems.
 				// Webkit ignores how we set the points attribute with commas and uses space
 				// to separate all coordinates, see https://bugs.webkit.org/show_bug.cgi?id=29870
+				sumDistance= 0;
+				controllPoint2 = {x:0, y:0};
+				controllPoint1 = {x:0, y:0};
+				start= {x:0, y:0};
+				end= {x:0, y:0};
 				var coords = element.getAttribute('points');
 				var commaIndex = coords.indexOf(',');
 				if (commaIndex >= 0) {
