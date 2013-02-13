@@ -38,7 +38,10 @@ nsMap_[se_ns] = 'se';
 nsMap_[htmlns] = 'xhtml';
 nsMap_[mathns] = 'mathml';
 
-// map prefixes to namespace URIs
+// temporarily expose these
+svgedit.sanitize.getNSMap = function() { return nsMap_; }
+
+// map prefixes to namespace URIs (reverse of nsMap_)
 var nsRevMap_ = {};
 $.each(nsMap_, function(key,value){
 	nsRevMap_[value] = key;
@@ -128,9 +131,6 @@ $.each(svgWhiteList_, function(elt,atts){
 	});
 	svgWhiteListNS_[elt] = attNS;
 });
-
-// temporarily expose these
-svgedit.sanitize.getNSMap = function() { return nsMap_; }
 
 // Function: svgedit.sanitize.sanitizeSvg
 // Sanitizes the input node and its children
