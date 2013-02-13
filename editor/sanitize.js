@@ -23,20 +23,20 @@ if (!svgedit.sanitize) {
 // Namespace constants
 var svgns = "http://www.w3.org/2000/svg",
 	xlinkns = "http://www.w3.org/1999/xlink",
-	xmlns = "http://www.w3.org/XML/1998/namespace",
+	xmlns   = "http://www.w3.org/XML/1998/namespace",
 	xmlnsns = "http://www.w3.org/2000/xmlns/", // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
-	se_ns = "http://svg-edit.googlecode.com",
-	htmlns = "http://www.w3.org/1999/xhtml",
-	mathns = "http://www.w3.org/1998/Math/MathML";
+	htmlns  = "http://www.w3.org/1999/xhtml",
+	mathns  = "http://www.w3.org/1998/Math/MathML",
+	se_ns   = "http://svg-edit.googlecode.com";
 
 // map namespace URIs to prefixes
 var nsMap_ = {};
 nsMap_[xlinkns] = 'xlink';
-nsMap_[xmlns] = 'xml';
+nsMap_[xmlns]   = 'xml';
 nsMap_[xmlnsns] = 'xmlns';
-nsMap_[se_ns] = 'se';
-nsMap_[htmlns] = 'xhtml';
-nsMap_[mathns] = 'mathml';
+nsMap_[htmlns]  = 'xhtml';
+nsMap_[mathns]  = 'mathml';
+nsMap_[se_ns]   = 'se';
 
 // temporarily expose these
 svgedit.sanitize.getNSMap = function() { return nsMap_; }
@@ -137,17 +137,23 @@ $.each(svgWhiteList_, function(elt,atts){
 // It only keeps what is allowed from our whitelist defined above
 //
 // Parameters:
-// node - The DOM element to be checked, will also check its children
+// node - The DOM element to be checked (we'll also check its children)
 svgedit.sanitize.sanitizeSvg = function(node) {
-	// we only care about element nodes
-	// automatically return for all comment, etc nodes
-	// for text, we do a whitespace trim
-	if (node.nodeType == 3) {
+  // Cleanup text nodes
+	if (node.nodeType == 3) { // 3 == TEXT_NODE
+    // Trim whitespace
 		node.nodeValue = node.nodeValue.replace(/^\s+|\s+$/g, "");
-		// Remove empty text nodes
-		if(!node.nodeValue.length) node.parentNode.removeChild(node);
+		// Remove if empty
+		if(node.nodeValue.length == 0) node.parentNode.removeChild(node);
 	}
-	if (node.nodeType != 1) return;
+  
+  // We only care about element nodes.
+	// Automatically return for all non-element nodes,
+  // such as comments, etc.
+  if (node.nodeType != 1) { // 1 == ELEMENT_NODE
+    return; 
+  }
+  
 	var doc = node.ownerDocument;
 	var parent = node.parentNode;
 	// can parent ever be null here?  I think the root node's parent is the document...
@@ -156,7 +162,7 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 	var allowedAttrs = svgWhiteList_[node.nodeName];
 	var allowedAttrsNS = svgWhiteListNS_[node.nodeName];
 
-	// if this element is allowed
+	// if this element is supported, sanitize it
 	if (allowedAttrs != undefined) {
 
 		var se_attrs = [];
@@ -175,8 +181,8 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 				!(attrNsURI == xmlnsns && nsMap_[attr.nodeValue]) ) 
 			{
 				// TODO(codedread): Programmatically add the se: attributes to the NS-aware whitelist.
-				// Bypassing the whitelist to allow se: prefixes. Is there
-				// a more appropriate way to do this?
+				// Bypassing the whitelist to allow se: prefixes.
+        // Is there a more appropriate way to do this?
 				if(attrName.indexOf('se:') == 0) {
 					se_attrs.push([attrName, attr.nodeValue]);
 				} 
@@ -194,7 +200,7 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 				}
 			}
 			
-			// for the style attribute, rewrite it in terms of XML presentational attributes
+			// For the style attribute, rewrite it in terms of XML presentational attributes
 			if (attrName == "style") {
 				var props = attr.nodeValue.split(";"),
 					p = props.length;
@@ -202,7 +208,7 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 					var nv = props[p].split(":");
 					var attrname = $.trim(nv[0]);
 					var attrval = $.trim(nv[1]);
-					// now check that this attribute is supported
+					// Now check that this attribute is supported
 					if (allowedAttrs.indexOf(attrname) >= 0) {
 						node.setAttribute(attrname, attrval);
 					}
@@ -253,7 +259,7 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 		i = node.childNodes.length;
 		while (i--) { svgedit.sanitize.sanitizeSvg(node.childNodes.item(i)); }
 	}
-	// else, remove this element
+	// else (element not supported), remove it
 	else {
 		// remove all children from this node and insert them before this node
 		// FIXME: in the case of animation elements this will hardly ever be correct
