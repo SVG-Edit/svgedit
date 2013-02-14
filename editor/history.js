@@ -72,7 +72,7 @@ svgedit.history.MoveElementCommand = function(elem, oldNextSibling, oldParent, t
 	this.newNextSibling = elem.nextSibling;
 	this.newParent = elem.parentNode;
 };
-svgedit.history.MoveElementCommand.type = function() { return 'svgedit.history.MoveElementCommand'; }
+svgedit.history.MoveElementCommand.type = function() { return 'svgedit.history.MoveElementCommand'; };
 svgedit.history.MoveElementCommand.prototype.type = svgedit.history.MoveElementCommand.type;
 
 // Function: svgedit.history.MoveElementCommand.getText
@@ -101,7 +101,7 @@ svgedit.history.MoveElementCommand.prototype.unapply = function(handler) {
 	if (handler) {
 		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_UNAPPLY, this);
 	}
-		
+
 	this.elem = this.oldParent.insertBefore(this.elem, this.oldNextSibling);
 
 	if (handler) {
@@ -129,7 +129,7 @@ svgedit.history.InsertElementCommand = function(elem, text) {
 	this.parent = elem.parentNode;
 	this.nextSibling = this.elem.nextSibling;
 };
-svgedit.history.InsertElementCommand.type = function() { return 'svgedit.history.InsertElementCommand'; }
+svgedit.history.InsertElementCommand.type = function() { return 'svgedit.history.InsertElementCommand'; };
 svgedit.history.InsertElementCommand.prototype.type = svgedit.history.InsertElementCommand.type;
 
 // Function: svgedit.history.InsertElementCommand.getText
@@ -139,12 +139,12 @@ svgedit.history.InsertElementCommand.prototype.getText = function() {
 
 // Function: svgedit.history.InsertElementCommand.apply
 // Re-Inserts the new element
-svgedit.history.InsertElementCommand.prototype.apply = function(handler) { 
+svgedit.history.InsertElementCommand.prototype.apply = function(handler) {
 	if (handler) {
 		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_APPLY, this);
 	}
 
-	this.elem = this.parent.insertBefore(this.elem, this.nextSibling); 
+	this.elem = this.parent.insertBefore(this.elem, this.nextSibling);
 
 	if (handler) {
 		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.AFTER_APPLY, this);
@@ -191,7 +191,7 @@ svgedit.history.RemoveElementCommand = function(elem, oldNextSibling, oldParent,
 	// special hack for webkit: remove this element's entry in the svgTransformLists map
 	svgedit.transformlist.removeElementFromListMap(elem);
 };
-svgedit.history.RemoveElementCommand.type = function() { return 'svgedit.history.RemoveElementCommand'; }
+svgedit.history.RemoveElementCommand.type = function() { return 'svgedit.history.RemoveElementCommand'; };
 svgedit.history.RemoveElementCommand.prototype.type = svgedit.history.RemoveElementCommand.type;
 
 // Function: svgedit.history.RemoveElementCommand.getText
@@ -201,7 +201,7 @@ svgedit.history.RemoveElementCommand.prototype.getText = function() {
 
 // Function: RemoveElementCommand.apply
 // Re-removes the new element
-svgedit.history.RemoveElementCommand.prototype.apply = function(handler) {	
+svgedit.history.RemoveElementCommand.prototype.apply = function(handler) {
 	if (handler) {
 		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_APPLY, this);
 	}
@@ -261,7 +261,7 @@ svgedit.history.ChangeElementCommand = function(elem, attrs, text) {
 		else this.newValues[attr] = elem.getAttribute(attr);
 	}
 };
-svgedit.history.ChangeElementCommand.type = function() { return 'svgedit.history.ChangeElementCommand'; }
+svgedit.history.ChangeElementCommand.type = function() { return 'svgedit.history.ChangeElementCommand'; };
 svgedit.history.ChangeElementCommand.prototype.type = svgedit.history.ChangeElementCommand.type;
 
 // Function: svgedit.history.ChangeElementCommand.getText
@@ -280,7 +280,7 @@ svgedit.history.ChangeElementCommand.prototype.apply = function(handler) {
 	for(var attr in this.newValues ) {
 		if (this.newValues[attr]) {
 			if (attr == "#text") this.elem.textContent = this.newValues[attr];
-			else if (attr == "#href") svgedit.utilities.setHref(this.elem, this.newValues[attr])
+			else if (attr == "#href") svgedit.utilities.setHref(this.elem, this.newValues[attr]);
 			else this.elem.setAttribute(attr, this.newValues[attr]);
 		}
 		else {
@@ -385,7 +385,7 @@ svgedit.history.BatchCommand = function(text) {
 	this.text = text || "Batch Command";
 	this.stack = [];
 };
-svgedit.history.BatchCommand.type = function() { return 'svgedit.history.BatchCommand'; }
+svgedit.history.BatchCommand.type = function() { return 'svgedit.history.BatchCommand'; };
 svgedit.history.BatchCommand.prototype.type = svgedit.history.BatchCommand.type;
 
 // Function: svgedit.history.BatchCommand.getText
@@ -566,9 +566,11 @@ svgedit.history.UndoManager.prototype.beginUndoableChange = function(attrName, e
 		elements[i] = elem;
 		oldValues[i] = elem.getAttribute(attrName);
 	}
-	this.undoableChangeStack[p] = {'attrName': attrName,
-							'oldValues': oldValues,
-							'elements': elements};
+	this.undoableChangeStack[p] = {
+		'attrName': attrName,
+		'oldValues': oldValues,
+		'elements': elements
+	};
 };
 
 // Function: svgedit.history.UndoManager.finishUndoableChange
@@ -581,14 +583,14 @@ svgedit.history.UndoManager.prototype.beginUndoableChange = function(attrName, e
 svgedit.history.UndoManager.prototype.finishUndoableChange = function() {
 	var p = this.undoChangeStackPointer--;
 	var changeset = this.undoableChangeStack[p];
-	var i = changeset['elements'].length;
-	var attrName = changeset['attrName'];
+	var i = changeset.elements.length;
+	var attrName = changeset.attrName;
 	var batchCmd = new svgedit.history.BatchCommand("Change " + attrName);
 	while (i--) {
-		var elem = changeset['elements'][i];
+		var elem = changeset.elements[i];
 		if (elem == null) continue;
 		var changes = {};
-		changes[attrName] = changeset['oldValues'][i];
+		changes[attrName] = changeset.oldValues[i];
 		if (changes[attrName] != elem.getAttribute(attrName)) {
 			batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(elem, changes, attrName));
 		}
@@ -596,6 +598,5 @@ svgedit.history.UndoManager.prototype.finishUndoableChange = function() {
 	this.undoableChangeStack[p] = null;
 	return batchCmd;
 };
-
 
 })();
