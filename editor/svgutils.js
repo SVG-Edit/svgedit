@@ -312,7 +312,7 @@ svgedit.utilities.setHref = function(elem, val) {
 // Returns:
 // The document's <defs> element, create it first if necessary
 svgedit.utilities.findDefs = function() {
-	var svgElement = editorContext_.getSVGContent().documentElement;
+	var svgElement = editorContext_.getSVGContent();
 	var defs = svgElement.getElementsByTagNameNS(SVGNS, "defs");
 	if (defs.length > 0) {
 		defs = defs[0];
