@@ -47,7 +47,7 @@ function transformToString(xform) {
 			break;
 	}
 	return text;
-};
+}
 
 
 /**
@@ -92,16 +92,15 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 	this._init = function() {
 		// Transform attribute parser
 		var str = this._elem.getAttribute("transform");
-		if(!str) return;
-		
+		if (!str) return;
+
 		// TODO: Add skew support in future
 		var re = /\s*((scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/;
-		var arr = [];
 		var m = true;
-		while(m) {
+		while (m) {
 			m = str.match(re);
 			str = str.replace(re,'');
-			if(m && m[1]) {
+			if (m && m[1]) {
 				var x = m[1];
 				var bits = x.split(/\s*\(/);
 				var name = bits[0];
@@ -112,21 +111,20 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 				var mtx = svgroot.createSVGMatrix();
 				$.each(val_arr, function(i, item) {
 					val_arr[i] = parseFloat(item);
-					if(name == 'matrix') {
+					if (name == 'matrix') {
 						mtx[letters[i]] = val_arr[i];
 					}
 				});
 				var xform = svgroot.createSVGTransform();
 				var fname = 'set' + name.charAt(0).toUpperCase() + name.slice(1);
-				var values = name=='matrix'?[mtx]:val_arr;
-				
+				var values = name == 'matrix' ? [mtx] : val_arr;
+
 				if (name == 'scale' && values.length == 1) {
 					values.push(values[0]);
 				} else if (name == 'translate' && values.length == 1) {
 					values.push(0);
 				} else if (name == 'rotate' && values.length == 1) {
-					values.push(0);
-					values.push(0);
+					values.push(0, 0);
 				}
 				xform[fname].apply(xform, values);
 				this._list.appendItem(xform);
@@ -141,7 +139,7 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 			for (var id in listMap_) {
 				var tl = listMap_[id];
 				for (var i = 0, len = tl._xforms.length; i < len; ++i) {
-					if(tl._xforms[i] == item) {
+					if (tl._xforms[i] == item) {
 						found = true;
 						tl.removeItem(i);
 						break;
@@ -153,26 +151,26 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 			}
 		}
 	};
-	
+
 	this.numberOfItems = 0;
-	this.clear = function() { 
+	this.clear = function() {
 		this.numberOfItems = 0;
 		this._xforms = [];
 	};
-	
+
 	this.initialize = function(newItem) {
 		this.numberOfItems = 1;
 		this._removeFromOtherLists(newItem);
 		this._xforms = [newItem];
 	};
-	
+
 	this.getItem = function(index) {
 		if (index < this.numberOfItems && index >= 0) {
 			return this._xforms[index];
 		}
 		throw {code: 1}; // DOMException with code=INDEX_SIZE_ERR
 	};
-	
+
 	this.insertItemBefore = function(newItem, index) {
 		var retValue = null;
 		if (index >= 0) {
@@ -198,7 +196,7 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 		}
 		return retValue;
 	};
-	
+
 	this.replaceItem = function(newItem, index) {
 		var retValue = null;
 		if (index < this.numberOfItems && index >= 0) {
@@ -209,7 +207,7 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 		}
 		return retValue;
 	};
-	
+
 	this.removeItem = function(index) {
 		if (index < this.numberOfItems && index >= 0) {
 			var retValue = this._xforms[index];
@@ -224,11 +222,10 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 			this._xforms = newxforms;
 			this._list._update();
 			return retValue;
-		} else {
-			throw {code: 1}; // DOMException with code=INDEX_SIZE_ERR
 		}
+		throw {code: 1}; // DOMException with code=INDEX_SIZE_ERR
 	};
-	
+
 	this.appendItem = function(newItem) {
 		this._removeFromOtherLists(newItem);
 		this._xforms.push(newItem);
@@ -261,31 +258,26 @@ svgedit.transformlist.removeElementFromListMap = function(elem) {
 // elem - DOM element to get a transformlist from
 svgedit.transformlist.getTransformList = function(elem) {
 	if (!svgedit.browser.supportsNativeTransformLists()) {
-		var id = elem.id;
-		if(!id) {
-			// Get unique ID for temporary element
-			id = 'temp';
-		}
+		var id = elem.id || 'temp';
 		var t = listMap_[id];
-		if (!t || id == 'temp') {
+		if (!t || id === 'temp') {
 			listMap_[id] = new svgedit.transformlist.SVGTransformList(elem);
 			listMap_[id]._init();
 			t = listMap_[id];
 		}
 		return t;
 	}
-	else if (elem.transform) {
+	if (elem.transform) {
 		return elem.transform.baseVal;
 	}
-	else if (elem.gradientTransform) {
+	if (elem.gradientTransform) {
 		return elem.gradientTransform.baseVal;
 	}
-	else if (elem.patternTransform) {
+	if (elem.patternTransform) {
 		return elem.patternTransform.baseVal;
 	}
 
 	return null;
 };
-
 
 })();
