@@ -16,6 +16,7 @@ JS_FILES=\
 	svgutils.js \
 	sanitize.js \
 	history.js \
+	coords.js \
 	select.js \
 	draw.js \
 	path.js \

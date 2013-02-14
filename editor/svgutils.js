@@ -308,20 +308,23 @@ svgedit.utilities.setHref = function(elem, val) {
 }
 
 // Function: findDefs
-// Parameters:
-// svgElement - The <svg> element.
 //
 // Returns:
 // The document's <defs> element, create it first if necessary
-svgedit.utilities.findDefs = function(svgElement) {
+svgedit.utilities.findDefs = function() {
 	var svgElement = editorContext_.getSVGContent().documentElement;
 	var defs = svgElement.getElementsByTagNameNS(SVGNS, "defs");
 	if (defs.length > 0) {
 		defs = defs[0];
 	}
 	else {
-		// first child is a comment, so call nextSibling
-		defs = svgElement.insertBefore( svgElement.ownerDocument.createElementNS(SVGNS, "defs" ), svgElement.firstChild.nextSibling);
+		defs = svgElement.ownerDocument.createElementNS(SVGNS, "defs");
+		if (svgElement.firstChild) {
+			// first child is a comment, so call nextSibling
+			svgElement.insertBefore(defs, svgElement.firstChild.nextSibling);
+		} else {
+			svgElement.appendChild(defs);
+		}
 	}
 	return defs;
 };
@@ -556,6 +559,15 @@ svgedit.utilities.getRotationAngle = function(elem, to_rad) {
 		}
 	}
 	return 0.0;
+};
+
+// Function getRefElem
+// Get the reference element associated with the given attribute value
+//
+// Parameters:
+// attrVal - The attribute value as a string
+svgedit.utilities.getRefElem = this.getRefElem = function(attrVal) {
+	return svgedit.utilities.getElem(svgedit.utilities.getUrlFromAttr(attrVal).substr(1));
 };
 
 // Function: getElem
