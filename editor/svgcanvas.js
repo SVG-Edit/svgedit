@@ -1401,7 +1401,7 @@ var updateClipPath = function(attr, tx, ty) {
 //
 // Returns: 
 // Undo command object with the resulting change
-var recalculateDimensions = function(selected) {
+var recalculateDimensions = this.recalculateDimensions = function(selected) {
 	if (selected == null) return null;
 	
 	var tlist = svgedit.transformlist.getTransformList(selected);
