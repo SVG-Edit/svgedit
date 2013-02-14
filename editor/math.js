@@ -63,7 +63,7 @@ svgedit.math.isIdentity = function(m) {
 // The matrix object resulting from the calculation
 svgedit.math.matrixMultiply = function() {
 	var args = arguments, i = args.length, m = args[i-1];
-	
+
 	while(i-- > 1) {
 		var m1 = args[i-1];
 		m = m1.multiply(m);
@@ -74,7 +74,7 @@ svgedit.math.matrixMultiply = function() {
 	if (Math.abs(m.d) < NEAR_ZERO) m.d = 0;
 	if (Math.abs(m.e) < NEAR_ZERO) m.e = 0;
 	if (Math.abs(m.f) < NEAR_ZERO) m.f = 0;
-	
+
 	return m;
 };
 
@@ -166,10 +166,10 @@ svgedit.math.transformListToTransform = function(tlist, min, max) {
 		// Or should tlist = null have been prevented before this?
 		return svg.createSVGTransformFromMatrix(svg.createSVGMatrix());
 	}
-	var min = min == undefined ? 0 : min;
-	var max = max == undefined ? (tlist.numberOfItems-1) : max;
-	min = parseInt(min);
-	max = parseInt(max);
+	min = min || 0;
+	max = max || (tlist.numberOfItems - 1);
+	min = parseInt(min, 10);
+	max = parseInt(max, 10);
 	if (min > max) { var temp = max; max = min; min = temp; }
 	var m = svg.createSVGMatrix();
 	for (var i = min; i <= max; ++i) {
@@ -219,7 +219,7 @@ svgedit.math.snapToAngle = function(x1,y1,x2,y2) {
 	var angle = Math.atan2(dy,dx);
 	var dist = Math.sqrt(dx * dx + dy * dy);
 	var snapangle= Math.round(angle/snap)*snap;
-	var x = x1 + dist*Math.cos(snapangle);	
+	var x = x1 + dist*Math.cos(snapangle);
 	var y = y1 + dist*Math.sin(snapangle);
 	//console.log(x1,y1,x2,y2,x,y,angle)
 	return {x:x, y:y, a:snapangle};
@@ -241,6 +241,5 @@ svgedit.math.rectsIntersect = function(r1, r2) {
 		r2.y < (r1.y+r1.height) &&
 		(r2.y+r2.height) > r1.y;
 };
-
 
 })();
