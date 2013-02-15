@@ -17,15 +17,15 @@
 
 (function() {
 
-	document.addEventListener("touchstart", touchHandler, true);
-	document.addEventListener("touchmove", touchHandler, true);
-	document.addEventListener("touchend", touchHandler, true);
-	document.addEventListener("touchcancel", touchHandler, true);
+	document.addEventListener('touchstart', touchHandler, true);
+	document.addEventListener('touchmove', touchHandler, true);
+	document.addEventListener('touchend', touchHandler, true);
+	document.addEventListener('touchcancel', touchHandler, true);
 
-	if(!window.svgEditor) window.svgEditor = function($) {
+	if (!window.svgEditor) window.svgEditor = function($) {
 		var svgCanvas,
 			Editor = {},
-			is_ready = false,
+			isReady = false,
 			defaultPrefs = {
 				lang: 'en',
 				iconsize: 'm',
@@ -37,7 +37,6 @@
 
 			// Note: Difference between Prefs and Config is that Prefs can be
 			// changed in the UI and are stored in the browser, config can not
-
 			curConfig = {
 				canvasName: 'default',
 				canvas_expansion: 3,
@@ -56,96 +55,109 @@
 				langPath: 'locale/',
 				extPath: 'extensions/',
 				jGraduatePath: 'jgraduate/images/',
-				extensions: ['ext-markers.js','ext-connector.js', 'ext-eyedropper.js', 'ext-shapes.js', 'ext-imagelib.js','ext-grid.js','ext-polygon.js','ext-star.js'],
+				extensions: [
+					'ext-markers.js',
+					'ext-connector.js',
+					'ext-eyedropper.js',
+					'ext-shapes.js',
+					'ext-imagelib.js',
+					'ext-grid.js',
+					'ext-polygon.js',
+					'ext-star.js'
+				],
 				initTool: 'select',
 				wireframe: false,
 				colorPickerCSS: null,
 				gridSnapping: false,
-				gridColor: "#000",
+				gridColor: '#000',
 				baseUnit: 'px',
 				snappingStep: 10,
 				showRulers: true
 			},
 			uiStrings = Editor.uiStrings = {
 				common: {
-					"ok":"OK",
-					"cancel":"Cancel",
-					"key_up":"Up",
-					"key_down":"Down",
-					"key_backspace":"Backspace",
-					"key_del":"Del"
-
+					ok: 'OK',
+					cancel: 'Cancel',
+					key_up: 'Up',
+					key_down: 'Down',
+					key_backspace: 'Backspace',
+					key_del: 'Del'
 				},
 				// This is needed if the locale is English, since the locale strings are not read in that instance.
 				layers: {
-					"layer":"Layer"
+					layer: 'Layer'
 				},
 				notification: {
-					"invalidAttrValGiven":"Invalid value given",
-					"noContentToFitTo":"No content to fit to",
-					"dupeLayerName":"There is already a layer named that!",
-					"enterUniqueLayerName":"Please enter a unique layer name",
-					"enterNewLayerName":"Please enter the new layer name",
-					"layerHasThatName":"Layer already has that name",
-					"QmoveElemsToLayer":"Move selected elements to layer \"%s\"?",
-					"QwantToClear":"Do you want to clear the drawing?\nThis will also erase your undo history!",
-					"QwantToOpen":"Do you want to open a new file?\nThis will also erase your undo history!",
-					"QerrorsRevertToSource":"There were parsing errors in your SVG source.\nRevert back to original SVG source?",
-					"QignoreSourceChanges":"Ignore changes made to SVG source?",
-					"featNotSupported":"Feature not supported",
-					"enterNewImgURL":"Enter the new image URL",
-					"defsFailOnSave": "NOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.",
-					"loadingImage":"Loading image, please wait...",
-					"saveFromBrowser": "Select \"Save As...\" in your browser to save this image as a %s file.",
-					"noteTheseIssues": "Also note the following issues: ",
-					"unsavedChanges": "There are unsaved changes.",
-					"enterNewLinkURL": "Enter the new hyperlink URL",
-					"errorLoadingSVG": "Error: Unable to load SVG data",
-					"URLloadFail": "Unable to load from URL",
-					"retrieving": 'Retrieving "%s" ...'
+					invalidAttrValGiven: 'Invalid value given',
+					noContentToFitTo: 'No content to fit to',
+					dupeLayerName: 'There is already a layer named that!',
+					enterUniqueLayerName: 'Please enter a unique layer name',
+					enterNewLayerName: 'Please enter the new layer name',
+					layerHasThatName: 'Layer already has that name',
+					QmoveElemsToLayer: 'Move selected elements to layer \'%s\'?',
+					QwantToClear: 'Do you want to clear the drawing?\nThis will also erase your undo history!',
+					QwantToOpen: 'Do you want to open a new file?\nThis will also erase your undo history!',
+					QerrorsRevertToSource: 'There were parsing errors in your SVG source.\nRevert back to original SVG source?',
+					QignoreSourceChanges: 'Ignore changes made to SVG source?',
+					featNotSupported: 'Feature not supported',
+					enterNewImgURL: 'Enter the new image URL',
+					defsFailOnSave: 'NOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.',
+					loadingImage: 'Loading image, please wait...',
+					saveFromBrowser: 'Select \'Save As...\' in your browser to save this image as a %s file.',
+					noteTheseIssues: 'Also note the following issues: ',
+					unsavedChanges: 'There are unsaved changes.',
+					enterNewLinkURL: 'Enter the new hyperlink URL',
+					errorLoadingSVG: 'Error: Unable to load SVG data',
+					URLloadFail: 'Unable to load from URL',
+					retrieving: 'Retrieving \'%s\' ...'
 				}
 			},
 			customHandlers = {};
 
 		Editor.curConfig = curConfig;
-
 		Editor.tool_scale = 1;
 
 		// Store and retrieve preferences
 		$.pref = function(key, val) {
-			if(val) curPrefs[key] = val;
+			if (val) curPrefs[key] = val;
 			key = 'svg-edit-'+key;
 			var host = location.hostname,
-				onweb = host && host.indexOf('.') >= 0,
+				onWeb = host && host.indexOf('.') >= 0,
 				store = (val != undefined),
 				storage = false;
 			// Some FF versions throw security errors here
 			try {
-				if(window.localStorage) { // && onweb removed so Webkit works locally
+				if (window.localStorage) { // && onWeb removed so Webkit works locally
 					storage = localStorage;
 				}
 			} catch(e) {}
 			try {
-				if(window.globalStorage && onweb) {
+				if (window.globalStorage && onWeb) {
 					storage = globalStorage[host];
 				}
 			} catch(e) {}
 
-			if(storage) {
-				if(store) storage.setItem(key, val);
-					else if (storage.getItem(key)) return storage.getItem(key) + ''; // Convert to string for FF (.value fails in Webkit)
-			} else if(window.widget) {
-				if(store) widget.setPreferenceForKey(val, key);
-					else return widget.preferenceForKey(key);
+			if (storage) {
+				if (store) {
+					storage.setItem(key, val);
+				} else if (storage.getItem(key)) {
+					return storage.getItem(key) + ''; // Convert to string for FF (.value fails in Webkit)
+				}
+			} else if (window.widget) {
+				if (store) {
+					widget.setPreferenceForKey(val, key);
+				} else {
+					return widget.preferenceForKey(key);
+				}
 			} else {
-				if(store) {
+				if (store) {
 					var d = new Date();
 					d.setTime(d.getTime() + 31536000000);
 					val = encodeURIComponent(val);
 					document.cookie = key+'='+val+'; expires='+d.toUTCString();
 				} else {
-					var result = document.cookie.match(new RegExp(key + "=([^;]+)"));
-					return result?decodeURIComponent(result[1]):'';
+					var result = document.cookie.match(new RegExp(key + '=([^;]+)'));
+					return result ? decodeURIComponent(result[1]) : '';
 				}
 			}
 		};
@@ -153,15 +165,14 @@
 		Editor.setConfig = function(opts) {
 			$.each(opts, function(key, val) {
 				// Only allow prefs defined in defaultPrefs
-				if(key in defaultPrefs) {
+				if (key in defaultPrefs) {
 					$.pref(key, val);
 				}
 			});
 			$.extend(true, curConfig, opts);
-			if(opts.extensions) {
+			if (opts.extensions) {
 				curConfig.extensions = opts.extensions;
 			}
-
 		};
 
 		// Extension mechanisms must call setCustomHandlers with two functions: opts.open and opts.save
@@ -175,17 +186,17 @@
 		// 	- save the file to location chosen by the user
 		Editor.setCustomHandlers = function(opts) {
 			Editor.ready(function() {
-				if(opts.open) {
+				if (opts.open) {
 					$('#tool_open > input[type="file"]').remove();
 					$('#tool_open').show();
 					svgCanvas.open = opts.open;
 				}
-				if(opts.save) {
+				if (opts.save) {
 					Editor.show_save_warning = false;
-					svgCanvas.bind("saved", opts.save);
+					svgCanvas.bind('saved', opts.save);
 				}
-				if(opts.pngsave) {
-					svgCanvas.bind("exported", opts.pngsave);
+				if (opts.pngsave) {
+					svgCanvas.bind('exported', opts.pngsave);
 				}
 				customHandlers = opts;
 			});
@@ -202,8 +213,8 @@
 				var w = window.opener;
 				if (w) {
 					try {
-						var svgEditorReadyEvent = w.document.createEvent("Event");
-						svgEditorReadyEvent.initEvent("svgEditorReady", true, true);
+						var svgEditorReadyEvent = w.document.createEvent('Event');
+						svgEditorReadyEvent.initEvent('svgEditorReady', true, true);
 						w.document.documentElement.dispatchEvent(svgEditorReadyEvent);
 					}
 					catch(e) {}
@@ -213,16 +224,16 @@
 			(function() {
 				// Load config/data from URL if given
 				var urldata = $.deparam.querystring(true);
-				if(!$.isEmptyObject(urldata)) {
-					if(urldata.dimensions) {
+				if (!$.isEmptyObject(urldata)) {
+					if (urldata.dimensions) {
 						urldata.dimensions = urldata.dimensions.split(',');
 					}
 
-					if(urldata.extensions) {
+					if (urldata.extensions) {
 						urldata.extensions = urldata.extensions.split(',');
 					}
 
-					if(urldata.bkgd_color) {
+					if (urldata.bkgd_color) {
 						urldata.bkgd_color = '#' + urldata.bkgd_color;
 					}
 
@@ -231,24 +242,24 @@
 					var src = urldata.source;
 					var qstr = $.param.querystring();
 
-					if(!src) { // urldata.source may have been null if it ended with '='
-						if(qstr.indexOf('source=data:') >= 0) {
+					if (!src) { // urldata.source may have been null if it ended with '='
+						if (qstr.indexOf('source=data:') >= 0) {
 							src = qstr.match(/source=(data:[^&]*)/)[1];
 						}
 					}
 
-					if(src) {
-						if(src.indexOf("data:") === 0) {
+					if (src) {
+						if (src.indexOf('data:') === 0) {
 							// plusses get replaced by spaces, so re-insert
-							src = src.replace(/ /g, "+");
+							src = src.replace(/ /g, '+');
 							Editor.loadFromDataURI(src);
 						} else {
 							Editor.loadFromString(src);
 						}
-					} else if(qstr.indexOf('paramurl=') !== -1) {
+					} else if (qstr.indexOf('paramurl=') !== -1) {
 						// Get paramater URL (use full length of remaining location.href)
 						svgEditor.loadFromURL(qstr.substr(9));
-					} else if(urldata.url) {
+					} else if (urldata.url) {
 						svgEditor.loadFromURL(urldata.url);
 					}
 				} else {
@@ -265,7 +276,7 @@
 					var extname = this;
 					$.getScript(curConfig.extPath + extname, function(d) {
 						// Fails locally in Chrome 5
-						if(!d) {
+						if (!d) {
 							var s = document.createElement('script');
 							s.src = curConfig.extPath + extname;
 							document.querySelector('head').appendChild(s);
@@ -279,13 +290,13 @@
 					good_langs.push(this.value);
 				});
 
-	// 			var lang = ('lang' in curPrefs) ? curPrefs.lang : null;
+				// var lang = ('lang' in curPrefs) ? curPrefs.lang : null;
 				Editor.putLocale(null, good_langs);
 			};
 
 			// Load extensions
 			// Bit of a hack to run extensions in local Opera/IE9
-			if(document.location.protocol === 'file:') {
+			if (document.location.protocol === 'file:') {
 				setTimeout(extFunc, 100);
 			} else {
 				extFunc();
@@ -295,145 +306,145 @@
 				id_match: false,
 				no_img: !svgedit.browser.isWebkit(), // Opera & Firefox 4 gives odd behavior w/images
 				fallback_path: curConfig.imgPath,
-				fallback:{
-					'new_image':'clear.png',
-					'save':'save.png',
-					'open':'open.png',
-					'source':'source.png',
-					'docprops':'document-properties.png',
-					'wireframe':'wireframe.png',
+				fallback: {
+					'new_image': 'clear.png',
+					'save': 'save.png',
+					'open': 'open.png',
+					'source': 'source.png',
+					'docprops': 'document-properties.png',
+					'wireframe': 'wireframe.png',
 
-					'undo':'undo.png',
-					'redo':'redo.png',
+					'undo': 'undo.png',
+					'redo': 'redo.png',
 
-					'select':'select.png',
-					'select_node':'select_node.png',
-					'pencil':'fhpath.png',
-					'pen':'line.png',
-					'square':'square.png',
-					'rect':'rect.png',
-					'fh_rect':'freehand-square.png',
-					'circle':'circle.png',
-					'ellipse':'ellipse.png',
-					'fh_ellipse':'freehand-circle.png',
-					'path':'path.png',
-					'text':'text.png',
-					'image':'image.png',
-					'zoom':'zoom.png',
+					'select': 'select.png',
+					'select_node': 'select_node.png',
+					'pencil': 'fhpath.png',
+					'pen': 'line.png',
+					'square': 'square.png',
+					'rect': 'rect.png',
+					'fh_rect': 'freehand-square.png',
+					'circle': 'circle.png',
+					'ellipse': 'ellipse.png',
+					'fh_ellipse': 'freehand-circle.png',
+					'path': 'path.png',
+					'text': 'text.png',
+					'image': 'image.png',
+					'zoom': 'zoom.png',
 
-					'clone':'clone.png',
-					'node_clone':'node_clone.png',
-					'delete':'delete.png',
-					'node_delete':'node_delete.png',
-					'group':'shape_group.png',
-					'ungroup':'shape_ungroup.png',
-					'move_top':'move_top.png',
-					'move_bottom':'move_bottom.png',
-					'to_path':'to_path.png',
-					'link_controls':'link_controls.png',
-					'reorient':'reorient.png',
+					'clone': 'clone.png',
+					'node_clone': 'node_clone.png',
+					'delete': 'delete.png',
+					'node_delete': 'node_delete.png',
+					'group': 'shape_group.png',
+					'ungroup': 'shape_ungroup.png',
+					'move_top': 'move_top.png',
+					'move_bottom': 'move_bottom.png',
+					'to_path': 'to_path.png',
+					'link_controls': 'link_controls.png',
+					'reorient': 'reorient.png',
 
-					'align_left':'align-left.png',
-					'align_center':'align-center',
-					'align_right':'align-right',
-					'align_top':'align-top',
-					'align_middle':'align-middle',
-					'align_bottom':'align-bottom',
+					'align_left': 'align-left.png',
+					'align_center': 'align-center.png',
+					'align_right': 'align-right.png',
+					'align_top': 'align-top.png',
+					'align_middle': 'align-middle.png',
+					'align_bottom': 'align-bottom.png',
 
-					'go_up':'go-up.png',
-					'go_down':'go-down.png',
+					'go_up': 'go-up.png',
+					'go_down': 'go-down.png',
 
-					'ok':'save.png',
-					'cancel':'cancel.png',
+					'ok': 'save.png',
+					'cancel': 'cancel.png',
 
-					'arrow_right':'flyouth.png',
-					'arrow_down':'dropdown.gif'
+					'arrow_right': 'flyouth.png',
+					'arrow_down': 'dropdown.gif'
 				},
 				placement: {
-					'#logo':'logo',
+					'#logo': 'logo',
 
-					'#tool_clear div,#layer_new':'new_image',
-					'#tool_save div':'save',
-					'#tool_export div':'export',
-					'#tool_open div div':'open',
-					'#tool_import div div':'import',
-					'#tool_source':'source',
-					'#tool_docprops > div':'docprops',
-					'#tool_wireframe':'wireframe',
+					'#tool_clear div,#layer_new': 'new_image',
+					'#tool_save div': 'save',
+					'#tool_export div': 'export',
+					'#tool_open div div': 'open',
+					'#tool_import div div': 'import',
+					'#tool_source': 'source',
+					'#tool_docprops > div': 'docprops',
+					'#tool_wireframe': 'wireframe',
 
-					'#tool_undo':'undo',
-					'#tool_redo':'redo',
+					'#tool_undo': 'undo',
+					'#tool_redo': 'redo',
 
-					'#tool_select':'select',
-					'#tool_fhpath':'pencil',
-					'#tool_line':'pen',
-					'#tool_rect,#tools_rect_show':'rect',
-					'#tool_square':'square',
-					'#tool_fhrect':'fh_rect',
-					'#tool_ellipse,#tools_ellipse_show':'ellipse',
-					'#tool_circle':'circle',
-					'#tool_fhellipse':'fh_ellipse',
-					'#tool_path':'path',
-					'#tool_text,#layer_rename':'text',
-					'#tool_image':'image',
-					'#tool_zoom':'zoom',
+					'#tool_select': 'select',
+					'#tool_fhpath': 'pencil',
+					'#tool_line': 'pen',
+					'#tool_rect,#tools_rect_show': 'rect',
+					'#tool_square': 'square',
+					'#tool_fhrect': 'fh_rect',
+					'#tool_ellipse,#tools_ellipse_show': 'ellipse',
+					'#tool_circle': 'circle',
+					'#tool_fhellipse': 'fh_ellipse',
+					'#tool_path': 'path',
+					'#tool_text,#layer_rename': 'text',
+					'#tool_image': 'image',
+					'#tool_zoom': 'zoom',
 
-					'#tool_clone,#tool_clone_multi':'clone',
-					'#tool_node_clone':'node_clone',
-					'#layer_delete,#tool_delete,#tool_delete_multi':'delete',
-					'#tool_node_delete':'node_delete',
-					'#tool_add_subpath':'add_subpath',
-					'#tool_openclose_path':'open_path',
-					'#tool_move_top':'move_top',
-					'#tool_move_bottom':'move_bottom',
-					'#tool_topath':'to_path',
-					'#tool_node_link':'link_controls',
-					'#tool_reorient':'reorient',
-					'#tool_group':'group',
-					'#tool_ungroup':'ungroup',
-					'#tool_unlink_use':'unlink_use',
+					'#tool_clone,#tool_clone_multi': 'clone',
+					'#tool_node_clone': 'node_clone',
+					'#layer_delete,#tool_delete,#tool_delete_multi': 'delete',
+					'#tool_node_delete': 'node_delete',
+					'#tool_add_subpath': 'add_subpath',
+					'#tool_openclose_path': 'open_path',
+					'#tool_move_top': 'move_top',
+					'#tool_move_bottom': 'move_bottom',
+					'#tool_topath': 'to_path',
+					'#tool_node_link': 'link_controls',
+					'#tool_reorient': 'reorient',
+					'#tool_group': 'group',
+					'#tool_ungroup': 'ungroup',
+					'#tool_unlink_use': 'unlink_use',
 
-					'#tool_alignleft, #tool_posleft':'align_left',
-					'#tool_aligncenter, #tool_poscenter':'align_center',
-					'#tool_alignright, #tool_posright':'align_right',
-					'#tool_aligntop, #tool_postop':'align_top',
-					'#tool_alignmiddle, #tool_posmiddle':'align_middle',
-					'#tool_alignbottom, #tool_posbottom':'align_bottom',
-					'#cur_position':'align',
+					'#tool_alignleft, #tool_posleft': 'align_left',
+					'#tool_aligncenter, #tool_poscenter': 'align_center',
+					'#tool_alignright, #tool_posright': 'align_right',
+					'#tool_aligntop, #tool_postop': 'align_top',
+					'#tool_alignmiddle, #tool_posmiddle': 'align_middle',
+					'#tool_alignbottom, #tool_posbottom': 'align_bottom',
+					'#cur_position': 'align',
 
-					'#linecap_butt,#cur_linecap':'linecap_butt',
-					'#linecap_round':'linecap_round',
-					'#linecap_square':'linecap_square',
+					'#linecap_butt,#cur_linecap': 'linecap_butt',
+					'#linecap_round': 'linecap_round',
+					'#linecap_square': 'linecap_square',
 
-					'#linejoin_miter,#cur_linejoin':'linejoin_miter',
-					'#linejoin_round':'linejoin_round',
-					'#linejoin_bevel':'linejoin_bevel',
+					'#linejoin_miter,#cur_linejoin': 'linejoin_miter',
+					'#linejoin_round': 'linejoin_round',
+					'#linejoin_bevel': 'linejoin_bevel',
 
-					'#url_notice':'warning',
+					'#url_notice': 'warning',
 
-					'#layer_up':'go_up',
-					'#layer_down':'go_down',
-					'#layer_moreopts':'context_menu',
-					'#layerlist td.layervis':'eye',
+					'#layer_up': 'go_up',
+					'#layer_down': 'go_down',
+					'#layer_moreopts': 'context_menu',
+					'#layerlist td.layervis': 'eye',
 
-					'#tool_source_save,#tool_docprops_save,#tool_prefs_save':'ok',
-					'#tool_source_cancel,#tool_docprops_cancel,#tool_prefs_cancel':'cancel',
+					'#tool_source_save,#tool_docprops_save,#tool_prefs_save': 'ok',
+					'#tool_source_cancel,#tool_docprops_cancel,#tool_prefs_cancel': 'cancel',
 
-					'#rwidthLabel, #iwidthLabel':'width',
-					'#rheightLabel, #iheightLabel':'height',
-					'#cornerRadiusLabel span':'c_radius',
-					'#angleLabel':'angle',
-					'#linkLabel,#tool_make_link,#tool_make_link_multi':'globe_link',
-					'#zoomLabel':'zoom',
+					'#rwidthLabel, #iwidthLabel': 'width',
+					'#rheightLabel, #iheightLabel': 'height',
+					'#cornerRadiusLabel span': 'c_radius',
+					'#angleLabel': 'angle',
+					'#linkLabel,#tool_make_link,#tool_make_link_multi': 'globe_link',
+					'#zoomLabel': 'zoom',
 					'#tool_fill label': 'fill',
 					'#tool_stroke .icon_label': 'stroke',
 					'#group_opacityLabel': 'opacity',
 					'#blurLabel': 'blur',
 					'#font_sizeLabel': 'fontsize',
 
-					'.flyout_arrow_horiz':'arrow_right',
-					'.dropdown button, #main_button .dropdown':'arrow_down',
-					'#palette .palette_item:first, #fill_bg, #stroke_bg':'no_color'
+					'.flyout_arrow_horiz': 'arrow_right',
+					'.dropdown button, #main_button .dropdown': 'arrow_down',
+					'#palette .palette_item:first, #fill_bg, #stroke_bg': 'no_color'
 				},
 				resize: {
 					'#logo .svg_icon': 28,
@@ -443,7 +454,7 @@
 					'#main_button .dropdown .svg_icon': 9,
 					'.palette_item:first .svg_icon' : 15,
 					'#fill_bg .svg_icon, #stroke_bg .svg_icon': 16,
-					'.toolbar_button button .svg_icon':16,
+					'.toolbar_button button .svg_icon': 16,
 					'.stroke_tool div div .svg_icon': 20,
 					'#tools_bottom label .svg_icon': 18
 				},
@@ -453,13 +464,13 @@
 					});
 
 					var tleft = $('#tools_left');
-					if (tleft.length != 0) {
+					if (tleft.length !== 0) {
 						var min_height = tleft.offset().top + tleft.outerHeight();
 					}
 // 					var size = $.pref('iconsize');
-// 					if(size && size != 'm') {
+// 					if (size && size != 'm') {
 // 						svgEditor.setIconSize(size);
-// 					} else if($(window).height() < min_height) {
+// 					} else if ($(window).height() < min_height) {
 // 						// Make smaller
 // 						svgEditor.setIconSize('s');
 // 					}
@@ -469,9 +480,9 @@
 						var shower = $('#' + this.id + '_show');
 						var sel = shower.attr('data-curopt');
 						// Check if there's an icon here
-						if(!shower.children('svg, img').length) {
+						if (!shower.children('svg, img').length) {
 							var clone = $(sel).children().clone();
-							if(clone.length) {
+							if (clone.length) {
 								clone[0].removeAttribute('style'); //Needed for Opera
 								shower.append(clone);
 							}
@@ -488,29 +499,30 @@
 				}
 			});
 
-			Editor.canvas = svgCanvas = new $.SvgCanvas(document.getElementById("svgcanvas"), curConfig);
+			Editor.canvas = svgCanvas = new $.SvgCanvas(document.getElementById('svgcanvas'), curConfig);
 			Editor.show_save_warning = false;
-			var palette = ["#000000", "#3f3f3f", "#7f7f7f", "#bfbfbf", "#ffffff",
-			           "#ff0000", "#ff7f00", "#ffff00", "#7fff00",
-			           "#00ff00", "#00ff7f", "#00ffff", "#007fff",
-			           "#0000ff", "#7f00ff", "#ff00ff", "#ff007f",
-			           "#7f0000", "#7f3f00", "#7f7f00", "#3f7f00",
-			           "#007f00", "#007f3f", "#007f7f", "#003f7f",
-			           "#00007f", "#3f007f", "#7f007f", "#7f003f",
-			           "#ffaaaa", "#ffd4aa", "#ffffaa", "#d4ffaa",
-			           "#aaffaa", "#aaffd4", "#aaffff", "#aad4ff",
-			           "#aaaaff", "#d4aaff", "#ffaaff", "#ffaad4"
-			           ],
-				isMac = (navigator.platform.indexOf("Mac") >= 0),
-				isWebkit = (navigator.userAgent.indexOf("AppleWebKit") >= 0),
-				modKey = (isMac ? "meta+" : "ctrl+"), // ⌘
+			var palette = [
+				'#000000', '#3f3f3f', '#7f7f7f', '#bfbfbf', '#ffffff',
+				'#ff0000', '#ff7f00', '#ffff00', '#7fff00',
+				'#00ff00', '#00ff7f', '#00ffff', '#007fff',
+				'#0000ff', '#7f00ff', '#ff00ff', '#ff007f',
+				'#7f0000', '#7f3f00', '#7f7f00', '#3f7f00',
+				'#007f00', '#007f3f', '#007f7f', '#003f7f',
+				'#00007f', '#3f007f', '#7f007f', '#7f003f',
+				'#ffaaaa', '#ffd4aa', '#ffffaa', '#d4ffaa',
+				'#aaffaa', '#aaffd4', '#aaffff', '#aad4ff',
+				'#aaaaff', '#d4aaff', '#ffaaff', '#ffaad4'
+				],
+				isMac = (navigator.platform.indexOf('Mac') >= 0),
+				isWebkit = (navigator.userAgent.indexOf('AppleWebKit') >= 0),
+				modKey = (isMac ? 'meta+' : 'ctrl+'), // ⌘
 				path = svgCanvas.pathActions,
 				undoMgr = svgCanvas.undoMgr,
 				Utils = svgedit.utilities,
-				default_img_url = curConfig.imgPath + "logo.png",
-				workarea = $("#workarea"),
-				canv_menu = $("#cmenu_canvas"),
-				layer_menu = $("#cmenu_layers"),
+				default_img_url = curConfig.imgPath + 'logo.png',
+				workarea = $('#workarea'),
+				canv_menu = $('#cmenu_canvas'),
+				layer_menu = $('#cmenu_layers'),
 				exportWindow = null,
 				tool_scale = 1,
 				zoomInIcon = 'crosshair',
@@ -525,29 +537,30 @@
 			// In the future we may want to add additional types of dialog boxes, since
 			// they should be easy to handle this way.
 			(function() {
-				$('#dialog_container').draggable({cancel:'#dialog_content, #dialog_buttons *', containment: 'window'});
-				var box = $('#dialog_box'), btn_holder = $('#dialog_buttons');
+				$('#dialog_container').draggable({cancel: '#dialog_content, #dialog_buttons *', containment: 'window'});
+				var box = $('#dialog_box'),
+					btn_holder = $('#dialog_buttons'),
 
-				var dbox = function(type, msg, callback, defText) {
+					dbox = function(type, msg, callback, defText) {
 					$('#dialog_content').html('<p>'+msg.replace(/\n/g,'</p><p>')+'</p>')
-						.toggleClass('prompt',(type=='prompt'));
+						.toggleClass('prompt', (type == 'prompt'));
 					btn_holder.empty();
 
 					var ok = $('<input type="button" value="' + uiStrings.common.ok + '">').appendTo(btn_holder);
 
-					if(type != 'alert') {
+					if (type != 'alert') {
 						$('<input type="button" value="' + uiStrings.common.cancel + '">')
 							.appendTo(btn_holder)
-							.click(function() { box.hide();callback(false);});
+							.click(function() { box.hide(); callback(false);});
 					}
 
-					if(type == 'prompt') {
+					if (type == 'prompt') {
 						var input = $('<input type="text">').prependTo(btn_holder);
 						input.val(defText || '');
 						input.bind('keydown', 'return', function() {ok.click();});
 					}
 
-					if(type == 'process') {
+					if (type == 'process') {
 						ok.hide();
 					}
 
@@ -555,11 +568,11 @@
 
 					ok.click(function() {
 						box.hide();
-						var resp = (type == 'prompt')?input.val():true;
-						if(callback) callback(resp);
+						var resp = (type == 'prompt') ? input.val() : true;
+						if (callback) callback(resp);
 					}).focus();
 
-					if(type == 'prompt') input.focus();
+					if (type == 'prompt') input.focus();
 				};
 
 				$.alert = function(msg, cb) { dbox('alert', msg, cb);};
@@ -570,25 +583,25 @@
 
 			var setSelectMode = function() {
 				var curr = $('.tool_button_current');
-				if(curr.length && curr[0].id !== 'tool_select') {
+				if (curr.length && curr[0].id !== 'tool_select') {
 					curr.removeClass('tool_button_current').addClass('tool_button');
 					$('#tool_select').addClass('tool_button_current').removeClass('tool_button');
 					$('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all} #svgcanvas svg{cursor:default}');
 				}
 				svgCanvas.setMode('select');
-				workarea.css('cursor','auto');
+				workarea.css('cursor', 'auto');
 			};
 
 			var togglePathEditMode = function(editmode, elems) {
 				$('#path_node_panel').toggle(editmode);
 				$('#tools_bottom_2,#tools_bottom_3').toggle(!editmode);
-				if(editmode) {
+				if (editmode) {
 					// Change select icon
 					$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 					$('#tool_select').addClass('tool_button_current').removeClass('tool_button');
 					setIcon('#tool_select', 'select_node');
 					multiselected = false;
-					if(elems.length) {
+					if (elems.length) {
 						selectedElement = elems[0];
 					}
 				} else {
@@ -607,7 +620,7 @@
 			var cur_context = '';
 			var orig_title = $('title:first').text();
 
-			var saveHandler = function(window,svg) {
+			var saveHandler = function(window, svg) {
 				Editor.show_save_warning = false;
 
 				// by default, we add the XML prolog back, systems integrating SVG-edit (wikis, CMSs)
@@ -615,29 +628,28 @@
 				svg = '<?xml version="1.0"?>\n' + svg;
 
 				// Opens the SVG in new window, with warning about Mozilla bug #308590 when applicable
-
 				var ua = navigator.userAgent;
 
 				// Chrome 5 (and 6?) don't allow saving, show source instead ( http://code.google.com/p/chromium/issues/detail?id=46735 )
 				// IE9 doesn't allow standalone Data URLs ( https://connect.microsoft.com/IE/feedback/details/542600/data-uri-images-fail-when-loaded-by-themselves )
-				if((~ua.indexOf('Chrome') && $.browser.version >= 533) || ~ua.indexOf('MSIE')) {
-					showSourceEditor(0,true);
+				if ((~ua.indexOf('Chrome') && $.browser.version >= 533) || ~ua.indexOf('MSIE')) {
+					showSourceEditor(0, true);
 					return;
 				}
-				var win = window.open("data:image/svg+xml;base64," + Utils.encode64(svg));
+				var win = window.open('data:image/svg+xml;base64,' + Utils.encode64(svg));
 
 				// Alert will only appear the first time saved OR the first time the bug is encountered
 				var done = $.pref('save_notice_done');
-				if(done !== "all") {
+				if (done !== 'all') {
 
 					var note = uiStrings.notification.saveFromBrowser.replace('%s', 'SVG');
 
 					// Check if FF and has <defs/>
-					if(ua.indexOf('Gecko/') !== -1) {
-						if(svg.indexOf('<defs') !== -1) {
-							note += "\n\n" + uiStrings.notification.defsFailOnSave;
+					if (ua.indexOf('Gecko/') !== -1) {
+						if (svg.indexOf('<defs') !== -1) {
+							note += '\n\n' + uiStrings.notification.defsFailOnSave;
 							$.pref('save_notice_done', 'all');
-							done = "all";
+							done = 'all';
 						} else {
 							$.pref('save_notice_done', 'part');
 						}
@@ -645,7 +657,7 @@
 						$.pref('save_notice_done', 'all');
 					}
 
-					if(done !== 'part') {
+					if (done !== 'part') {
 						win.alert(note);
 					}
 				}
@@ -654,7 +666,7 @@
 			var exportHandler = function(window, data) {
 				var issues = data.issues;
 
-				if(!$('#export_canvas').length) {
+				if (!$('#export_canvas').length) {
 					$('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
 				}
 				var c = $('#export_canvas')[0];
@@ -665,13 +677,13 @@
 					var datauri = c.toDataURL('image/png');
 					exportWindow.location.href = datauri;
 					var done = $.pref('export_notice_done');
-					if(done !== "all") {
+					if (done !== 'all') {
 						var note = uiStrings.notification.saveFromBrowser.replace('%s', 'PNG');
 
 						// Check if there's issues
-						if(issues.length) {
-							var pre = "\n \u2022 ";
-							note += ("\n\n" + uiStrings.notification.noteTheseIssues + pre + issues.join(pre));
+						if (issues.length) {
+							var pre = '\n \u2022 ';
+							note += ('\n\n' + uiStrings.notification.noteTheseIssues + pre + issues.join(pre));
 						}
 
 						// Note that this will also prevent the notice even though new issues may appear later.
@@ -683,12 +695,12 @@
 			};
 
 			// called when we've selected a different element
-			var selectedChanged = function(window,elems) {
+			var selectedChanged = function(window, elems) {
 				var mode = svgCanvas.getMode();
-				if(mode === "select") setSelectMode();
+				if (mode === 'select') setSelectMode();
 				var is_node = (mode == "pathedit");
 				// if elems[1] is present, then we have more than one element
-				selectedElement = (elems.length == 1 || elems[1] == null ? elems[0] : null);
+				selectedElement = (elems.length === 1 || elems[1] == null ? elems[0] : null);
 				multiselected = (elems.length >= 2 && elems[1] != null);
 				if (selectedElement != null) {
 					// unless we're already in always set the mode of the editor to select because
@@ -698,13 +710,12 @@
 					if (!is_node) {
 						updateToolbar();
 					}
-
 				} // if (elem != null)
 
 				// Deal with pathedit mode
 				togglePathEditMode(is_node, elems);
 				updateContextPanel();
-				svgCanvas.runExtensions("selectedChanged", {
+				svgCanvas.runExtensions('selectedChanged', {
 					elems: elems,
 					selectedElement: selectedElement,
 					multiselected: multiselected
@@ -717,13 +728,13 @@
 				var mode = svgCanvas.getMode();
 				var elem = elems[0];
 
-				if(!elem) return;
+				if (!elem) return;
 
 				multiselected = (elems.length >= 2 && elems[1] != null);
 				// Only updating fields for single elements for now
-				if(!multiselected) {
-					switch ( mode ) {
-						case "rotate":
+				if (!multiselected) {
+					switch (mode) {
+						case 'rotate':
 							var ang = svgCanvas.getRotationAngle(elem);
 							$('#angle').val(ang);
 							$('#tool_reorient').toggleClass('disabled', ang == 0);
@@ -735,15 +746,15 @@
 // 							break;
 					}
 				}
-				svgCanvas.runExtensions("elementTransition", {
+				svgCanvas.runExtensions('elementTransition', {
 					elems: elems
 				});
 			};
 
 			// called when any element has changed
-			var elementChanged = function(window,elems) {
+			var elementChanged = function(window, elems) {
 				var mode = svgCanvas.getMode();
-				if(mode === "select") {
+				if (mode === 'select') {
 					setSelectMode();
 				}
 
@@ -751,13 +762,13 @@
 					var elem = elems[i];
 
 					// if the element changed was the svg, then it could be a resolution change
-					if (elem && elem.tagName === "svg") {
+					if (elem && elem.tagName === 'svg') {
 						populateLayers();
 						updateCanvas();
 					}
 					// Update selectedElement if element is no longer part of the image.
 					// This occurs for the text elements in Firefox
-					else if(elem && selectedElement && selectedElement.parentNode == null) {
+					else if (elem && selectedElement && selectedElement.parentNode == null) {
 // 						|| elem && elem.tagName == "path" && !multiselected) { // This was added in r1430, but not sure why
 						selectedElement = elem;
 					}
@@ -775,12 +786,12 @@
 				updateContextPanel();
 
 				// In the event a gradient was flipped:
-				if(selectedElement && mode === "select") {
+				if (selectedElement && mode === 'select') {
 					paintBox.fill.update();
 					paintBox.stroke.update();
 				}
 
-				svgCanvas.runExtensions("elementChanged", {
+				svgCanvas.runExtensions('elementChanged', {
 					elems: elems
 				});
 			};
@@ -791,24 +802,24 @@
 					w_area = workarea,
 					canvas_pos = $('#svgcanvas').position();
 				var z_info = svgCanvas.setBBoxZoom(bbox, w_area.width()-scrbar, w_area.height()-scrbar);
-				if(!z_info) return;
+				if (!z_info) return;
 				var zoomlevel = z_info.zoom,
 					bb = z_info.bbox;
 
-				if(zoomlevel < .001) {
-					changeZoom({value: .1});
+				if (zoomlevel < 0.001) {
+					changeZoom({value: 0.1});
 					return;
 				}
 
 				$('#zoom').val((zoomlevel*100).toFixed(1));
 
-				if(autoCenter) {
+				if (autoCenter) {
 					updateCanvas();
 				} else {
 					updateCanvas(false, {x: bb.x * zoomlevel + (bb.width * zoomlevel)/2, y: bb.y * zoomlevel + (bb.height * zoomlevel)/2});
 				}
 
-				if(svgCanvas.getMode() == 'zoom' && bb.width) {
+				if (svgCanvas.getMode() == 'zoom' && bb.width) {
 					// Go to select if a zoom box was drawn
 					setSelectMode();
 				}
@@ -818,7 +829,7 @@
 
 			$('#cur_context_panel').delegate('a', 'click', function() {
 				var link = $(this);
-				if(link.attr('data-root')) {
+				if (link.attr('data-root')) {
 					svgCanvas.leaveContext();
 				} else {
 					svgCanvas.setContext(link.text());
@@ -829,14 +840,14 @@
 
 			var contextChanged = function(win, context) {
 				var link_str = '';
-				if(context) {
+				if (context) {
 					var str = '';
 					link_str = '<a href="#" data-root="y">' + svgCanvas.getCurrentDrawing().getCurrentLayerName() + '</a>';
 
 					$(context).parentsUntil('#svgcontent > g').andSelf().each(function() {
-						if(this.id) {
+						if (this.id) {
 							str += ' > ' + this.id;
-							if(this !== context) {
+							if (this !== context) {
 								link_str += ' > <a href="#">' + this.id + '</a>';
 							} else {
 								link_str += ' > ' + this.id;
@@ -849,7 +860,6 @@
 					cur_context = null;
 				}
 				$('#cur_context_panel').toggle(!!context).html(link_str);
-
 
 				updateTitle();
 			};
@@ -877,85 +887,83 @@
 							// Remember the function that goes with this ID
 							flyout_funcs[opts.sel] = opts.fn;
 
-							if(opts.isDefault) def = i;
+							if (opts.isDefault) def = i;
 
 							// Clicking the icon in flyout should set this set's icon
 							var func = function(event) {
 								var options = opts;
 								//find the currently selected tool if comes from keystroke
-								if (event.type === "keydown") {
-									var flyoutIsSelected = $(options.parent + "_show").hasClass('tool_button_current');
-									var currentOperation = $(options.parent + "_show").attr("data-curopt");
-									$.each(holders[opts.parent], function(i, tool){
+								if (event.type === 'keydown') {
+									var flyoutIsSelected = $(options.parent + '_show').hasClass('tool_button_current');
+									var currentOperation = $(options.parent + '_show').attr('data-curopt');
+									$.each(holders[opts.parent], function(i, tool) {
 										if (tool.sel == currentOperation) {
-											if(!event.shiftKey || !flyoutIsSelected) {
+											if (!event.shiftKey || !flyoutIsSelected) {
 												options = tool;
-											}
-											else {
+											} else {
 												options = holders[opts.parent][i+1] || holders[opts.parent][0];
 											}
 										}
 									});
 								}
-								if($(this).hasClass('disabled')) return false;
+								if ($(this).hasClass('disabled')) return false;
 								if (toolButtonClick(show_sel)) {
 									options.fn();
 								}
-								if(options.icon) {
+								if (options.icon) {
 									var icon = $.getSvgIcon(options.icon, true);
 								} else {
 									var icon = $(options.sel).children().eq(0).clone();
 								}
 
-								icon[0].setAttribute('width',shower.width());
-								icon[0].setAttribute('height',shower.height());
+								icon[0].setAttribute('width', shower.width());
+								icon[0].setAttribute('height', shower.height());
 								shower.children(':not(.flyout_arrow_horiz)').remove();
 								shower.append(icon).attr('data-curopt', options.sel); // This sets the current mode
 							};
 
 							$(this).mouseup(func);
 
-							if(opts.key) {
-								$(document).bind('keydown', opts.key[0] + " shift+" + opts.key[0], func);
+							if (opts.key) {
+								$(document).bind('keydown', opts.key[0] + ' shift+' + opts.key[0], func);
 							}
 						});
 
-					if(def) {
+					if (def) {
 						shower.attr('data-curopt', btn_opts[def].sel);
-					} else if(!shower.attr('data-curopt')) {
+					} else if (!shower.attr('data-curopt')) {
 						// Set first as default
 						shower.attr('data-curopt', btn_opts[0].sel);
 					}
 
 					var timer;
-
 					var pos = $(show_sel).position();
 					$(hold_sel).css({'left': pos.left+34, 'top': pos.top+40});
 
 					// Clicking the "show" icon should set the current mode
 					shower.mousedown(function(evt) {
-						if(shower.hasClass('disabled')) return false;
+						if (shower.hasClass('disabled')) return false;
 						var holder = $(hold_sel);
-						var l = pos.left+34;
-						var w = holder.width()*-1;
-						var time = holder.data('shown_popop')?200:0;
+						var l = pos.left + 34;
+						var w = holder.width() * -1;
+						var time = holder.data('shown_popop') ? 200 : 0;
 						timer = setTimeout(function() {
 							// Show corresponding menu
-							if(!shower.data('isLibrary')) {
+							if (!shower.data('isLibrary')) {
 								holder.css('left', w).show().animate({
 									left: l
-								},150);
+								}, 150);
 							} else {
 								holder.css('left', l).show();
 							}
-							holder.data('shown_popop',true);
+							holder.data('shown_popop', true);
 						},time);
 						evt.preventDefault();
 					}).mouseup(function(evt) {
 						clearTimeout(timer);
 						var opt = $(this).attr('data-curopt');
 						// Is library and popped up, so do nothing
-						if(shower.data('isLibrary') && $(show_sel.replace('_show','')).is(':visible')) {
+						if (shower.data('isLibrary') && $(show_sel.replace('_show','')).is(':visible')) {
 							toolButtonClick(show_sel, true);
 							return;
 						}
@@ -963,15 +971,13 @@
 							flyout_funcs[opt]();
 						}
 					});
-
 					// 	$('#tools_rect').mouseleave(function(){$('#tools_rect').fadeOut();});
 				});
-
 				setFlyoutTitles();
 			};
 
 			var makeFlyoutHolder = function(id, child) {
-				var div = $('<div>',{
+				var div = $('<div>', {
 					'class': 'tools_flyout',
 					id: id
 				}).appendTo('#svg_editor').append(child);
@@ -991,7 +997,7 @@
 			var setFlyoutTitles = function() {
 				$('.tools_flyout').each(function() {
 					var shower = $('#' + this.id + '_show');
-					if(shower.data('isLibrary')) return;
+					if (shower.data('isLibrary')) return;
 
 					var tooltips = [];
 					$(this).children().each(function() {
@@ -1004,17 +1010,16 @@
 			var resize_timer;
 
 			var extAdded = function(window, ext) {
-
 				var cb_called = false;
 				var resize_done = false;
 				var cb_ready = true; // Set to false to delay callback (e.g. wait for $.svgIcons)
 
 				function prepResize() {
-					if(resize_timer) {
+					if (resize_timer) {
 						clearTimeout(resize_timer);
 						resize_timer = null;
 					}
-					if(!resize_done) {
+					if (!resize_done) {
 						resize_timer = setTimeout(function() {
 							resize_done = true;
 							setIconSize(curPrefs.iconsize);
@@ -1022,9 +1027,8 @@
 					}
 				}
 
-
 				var runCallback = function() {
-					if(ext.callback && !cb_called && cb_ready) {
+					if (ext.callback && !cb_called && cb_ready) {
 						cb_called = true;
 						ext.callback();
 					}
@@ -1032,16 +1036,15 @@
 
 				var btn_selects = [];
 
-				if(ext.context_tools) {
+				if (ext.context_tools) {
 					$.each(ext.context_tools, function(i, tool) {
 						// Add select tool
-						var cont_id = tool.container_id?(' id="' + tool.container_id + '"'):"";
-
+						var cont_id = tool.container_id?(' id="' + tool.container_id + '"') : '';
 						var panel = $('#' + tool.panel);
 
 						// create the panel if it doesn't exist
-						if(!panel.length)
-							panel = $('<div>', {id: tool.panel}).appendTo("#tools_top");
+						if (!panel.length)
+							panel = $('<div>', {id: tool.panel}).appendTo('#tools_top');
 
 						// TODO: Allow support for other types, or adding to existing tool
 						switch (tool.type) {
@@ -1075,7 +1078,7 @@
 
 							var list = $('<ul id="' + tool.id + '_opts"></ul>').appendTo('#option_lists');
 
-							if(tool.colnum) {
+							if (tool.colnum) {
 								list.addClass('optcols' + tool.colnum);
 							}
 
@@ -1103,11 +1106,11 @@
 							// Add to given tool.panel
 							var inp = $(html).appendTo(panel).find('input');
 
-							if(tool.spindata) {
+							if (tool.spindata) {
 								inp.SpinButton(tool.spindata);
 							}
 
-							if(tool.events) {
+							if (tool.events) {
 								$.each(tool.events, function(evt, func) {
 									inp.bind(evt, func);
 								});
@@ -1120,7 +1123,7 @@
 					});
 				}
 
-				if(ext.buttons) {
+				if (ext.buttons) {
 					var fallback_obj = {},
 						placement_obj = {},
 						svgicons = ext.svgicons,
@@ -1137,12 +1140,12 @@
 							id = btn.id + '_' + (++num);
 						}
 
-						if(!svgicons) {
+						if (!svgicons) {
 							icon = $('<img src="' + btn.icon + '">');
 						} else {
 							fallback_obj[id] = btn.icon;
 							var svgicon = btn.svgicon?btn.svgicon:btn.id;
-							if(btn.type == 'app_menu') {
+							if (btn.type == 'app_menu') {
 								placement_obj['#' + id + ' > div'] = svgicon;
 							} else {
 								placement_obj['#' + id] = svgicon;
@@ -1156,14 +1159,14 @@
 						case 'mode_flyout':
 						case 'mode':
 							cls = 'tool_button';
-							parent = "#tools_left";
+							parent = '#tools_left';
 							break;
 						case 'context':
 							cls = 'tool_button';
-							parent = "#" + btn.panel;
+							parent = '#' + btn.panel;
 							// create the panel if it doesn't exist
-							if(!$(parent).length)
-								$('<div>', {id: btn.panel}).appendTo("#tools_top");
+							if (!$(parent).length)
+								$('<div>', {id: btn.panel}).appendTo('#tools_top');
 							break;
 						case 'app_menu':
 							cls = '';
@@ -1171,18 +1174,18 @@
 							break;
 						}
 
-						var button = $((btn.list || btn.type == 'app_menu')?'<li/>':'<div/>')
-							.attr("id", id)
-							.attr("title", btn.title)
+						var button = $((btn.list || btn.type == 'app_menu') ? '<li/>' : '<div/>')
+							.attr('id', id)
+							.attr('title', btn.title)
 							.addClass(cls);
-						if(!btn.includeWith && !btn.list) {
-							if("position" in btn) {
+						if (!btn.includeWith && !btn.list) {
+							if ('position' in btn) {
 								$(parent).children().eq(btn.position).before(button);
 							} else {
 								button.appendTo(parent);
 							}
 
-							if(btn.type =='mode_flyout') {
+							if (btn.type =='mode_flyout') {
 							// Add to flyout menu / make flyout menu
 	// 							var opts = btn.includeWith;
 	// 							// opts.button, default, position
@@ -1190,12 +1193,12 @@
 
 								var flyout_holder = ref_btn.parent();
 								// Create a flyout menu if there isn't one already
-								if(!ref_btn.parent().hasClass('tools_flyout')) {
+								if (!ref_btn.parent().hasClass('tools_flyout')) {
 									// Create flyout placeholder
 									var tls_id = ref_btn[0].id.replace('tool_','tools_');
 									var show_btn = ref_btn.clone()
 										.attr('id',tls_id + '_show')
-										.append($('<div>',{'class':'flyout_arrow_horiz'}));
+										.append($('<div>', {'class': 'flyout_arrow_horiz'}));
 
 									ref_btn.before(show_btn);
 
@@ -1204,7 +1207,6 @@
 									flyout_holder.data('isLibrary', true);
 									show_btn.data('isLibrary', true);
 								}
-
 	// 							var ref_data = Actions.getButtonData(opts.button);
 
 								placement_obj['#' + tls_id + '_show'] = btn.id;
@@ -1221,30 +1223,30 @@
 	//
 	// 							// {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
 	//
-	// 							var pos  = ("position" in opts)?opts.position:'last';
+	// 							var pos  = ('position' in opts)?opts.position:'last';
 	// 							var len = flyout_holder.children().length;
 	//
 	// 							// Add at given position or end
-	// 							if(!isNaN(pos) && pos >= 0 && pos < len) {
+	// 							if (!isNaN(pos) && pos >= 0 && pos < len) {
 	// 								flyout_holder.children().eq(pos).before(button);
 	// 							} else {
 	// 								flyout_holder.append(button);
 	// 								cur_h.reverse();
 	// 							}
-							} else if(btn.type == 'app_menu') {
+							} else if (btn.type == 'app_menu') {
 								button.append('<div>').append(btn.title);
 							}
 
-						} else if(btn.list) {
+						} else if (btn.list) {
 							// Add button to list
 							button.addClass('push_button');
 							$('#' + btn.list + '_opts').append(button);
- 							if(btn.isDefault) {
+ 							if (btn.isDefault) {
  								$('#cur_' + btn.list).append(button.children().clone());
  								var svgicon = btn.svgicon?btn.svgicon:btn.id;
 	 							placement_obj['#cur_' + btn.list] = svgicon;
  							}
-						} else if(btn.includeWith) {
+						} else if (btn.includeWith) {
 							// Add to flyout menu / make flyout menu
 							var opts = btn.includeWith;
 							// opts.button, default, position
@@ -1252,12 +1254,12 @@
 
 							var flyout_holder = ref_btn.parent();
 							// Create a flyout menu if there isn't one already
-							if(!ref_btn.parent().hasClass('tools_flyout')) {
+							if (!ref_btn.parent().hasClass('tools_flyout')) {
 								// Create flyout placeholder
-								var tls_id = ref_btn[0].id.replace('tool_','tools_');
+								var tls_id = ref_btn[0].id.replace('tool_', 'tools_');
 								var show_btn = ref_btn.clone()
 									.attr('id',tls_id + '_show')
-									.append($('<div>',{'class':'flyout_arrow_horiz'}));
+									.append($('<div>', {'class': 'flyout_arrow_horiz'}));
 
 								ref_btn.before(show_btn);
 
@@ -1267,7 +1269,7 @@
 
 							var ref_data = Actions.getButtonData(opts.button);
 
-							if(opts.isDefault) {
+							if (opts.isDefault) {
 								placement_obj['#' + tls_id + '_show'] = btn.id;
 							}
 							// TODO: Find way to set the current icon using the iconloader if this is not default
@@ -1283,11 +1285,11 @@
 
 							// {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
 
-							var pos  = ("position" in opts)?opts.position:'last';
+							var pos  = ('position' in opts) ? opts.position : 'last';
 							var len = flyout_holder.children().length;
 
 							// Add at given position or end
-							if(!isNaN(pos) && pos >= 0 && pos < len) {
+							if (!isNaN(pos) && pos >= 0 && pos < len) {
 								flyout_holder.children().eq(pos).before(button);
 							} else {
 								flyout_holder.append(button);
@@ -1295,27 +1297,27 @@
 							}
 						}
 
-						if(!svgicons) {
+						if (!svgicons) {
 							button.append(icon);
 						}
 
-						if(!btn.list) {
+						if (!btn.list) {
 							// Add given events to button
 							$.each(btn.events, function(name, func) {
-								if(name == "click") {
-									if(btn.type == 'mode') {
-										if(btn.includeWith) {
+								if (name == 'click') {
+									if (btn.type == 'mode') {
+										if (btn.includeWith) {
 											button.bind(name, func);
 										} else {
 											button.bind(name, function() {
-												if(toolButtonClick(button)) {
+												if (toolButtonClick(button)) {
 													func();
 												}
 											});
 										}
-										if(btn.key) {
+										if (btn.key) {
 											$(document).bind('keydown', btn.key, func);
-											if(btn.title) button.attr("title", btn.title + ' ['+btn.key+']');
+											if (btn.title) button.attr('title', btn.title + ' ['+btn.key+']');
 										}
 									} else {
 										button.bind(name, func);
@@ -1344,13 +1346,12 @@
 						placement: placement_obj,
 						callback: function(icons) {
 							// Non-ideal hack to make the icon match the current size
-							if(curPrefs.iconsize && curPrefs.iconsize != 'm') {
+							if (curPrefs.iconsize && curPrefs.iconsize != 'm') {
 								prepResize();
 							}
 							cb_ready = true; // Ready for callback
 							runCallback();
 						}
-
 					});
 				}
 
@@ -1360,24 +1361,22 @@
 			var getPaint = function(color, opac, type) {
 				// update the editor's fill paint
 				var opts = null;
-				if (color.indexOf("url(#") === 0) {
+				if (color.indexOf('url(#') === 0) {
 					var refElem = svgCanvas.getRefElem(color);
-					if(refElem) {
+					if (refElem) {
 						refElem = refElem.cloneNode(true);
 					} else {
-						refElem =  $("#" + type + "_color defs *")[0];
+						refElem =  $('#' + type + '_color defs *')[0];
 					}
 
 					opts = { alpha: opac };
 					opts[refElem.tagName] = refElem;
-				}
-				else if (color.indexOf("#") === 0) {
+				} else if (color.indexOf('#') === 0) {
 					opts = {
 						alpha: opac,
 						solidColor: color.substr(1)
 					};
-				}
-				else {
+				} else {
 					opts = {
 						alpha: opac,
 						solidColor: 'none'
@@ -1399,21 +1398,20 @@
 					case 'g':
 					case 'a':
 						// Look for common styles
-
 						var gWidth = null;
 
 						var childs = selectedElement.getElementsByTagName('*');
-						for(var i = 0, len = childs.length; i < len; i++) {
-							var swidth = childs[i].getAttribute("stroke-width");
+						for (var i = 0, len = childs.length; i < len; i++) {
+							var swidth = childs[i].getAttribute('stroke-width');
 
-							if(i === 0) {
+							if (i === 0) {
 								gWidth = swidth;
-							} else if(gWidth !== swidth) {
+							} else if (gWidth !== swidth) {
 								gWidth = null;
 							}
 						}
 
-						$('#stroke_width').val(gWidth === null ? "" : gWidth);
+						$('#stroke_width').val(gWidth === null ? '' : gWidth);
 
 						paintBox.fill.update(true);
 						paintBox.stroke.update(true);
@@ -1424,15 +1422,15 @@
 						paintBox.stroke.update(true);
 						//console.log(paintBox.fill);
 
-						$('#stroke_width').val(selectedElement.getAttribute("stroke-width") || 1);
-						$('#stroke_style').val(selectedElement.getAttribute("stroke-dasharray")||"none");
+						$('#stroke_width').val(selectedElement.getAttribute('stroke-width') || 1);
+						$('#stroke_style').val(selectedElement.getAttribute('stroke-dasharray') || 'none');
 
-						var attr = selectedElement.getAttribute("stroke-linejoin") || 'miter';
+						var attr = selectedElement.getAttribute('stroke-linejoin') || 'miter';
 
 						if ($('#linejoin_' + attr).length != 0)
 							setStrokeOpt($('#linejoin_' + attr)[0]);
 
-						attr = selectedElement.getAttribute("stroke-linecap") || 'butt';
+						attr = selectedElement.getAttribute('stroke-linecap') || 'butt';
 
 						if ($('#linecap_' + attr).length != 0)
 							setStrokeOpt($('#linecap_' + attr)[0]);
@@ -1441,8 +1439,8 @@
 				}
 
 				// All elements including image and group have opacity
-				if(selectedElement != null) {
-					var opac_perc = ((selectedElement.getAttribute("opacity")||1.0)*100);
+				if (selectedElement != null) {
+					var opac_perc = ((selectedElement.getAttribute('opacity')||1.0)*100);
 					$('#group_opacity').val(opac_perc);
 					$('#opac_slider').slider('option', 'value', opac_perc);
 					$('#elem_id').val(selectedElement.id);
@@ -1452,20 +1450,19 @@
 			};
 
 			var setImageURL = Editor.setImageURL = function(url) {
-				if(!url) url = default_img_url;
+				if (!url) url = default_img_url;
 
 				svgCanvas.setImageURL(url);
 				$('#image_url').val(url);
 
-				if(url.indexOf('data:') === 0) {
+				if (url.indexOf('data:') === 0) {
 					// data URI found
 					$('#image_url').hide();
 					$('#change_image_url').show();
 				} else {
 					// regular URL
-
 					svgCanvas.embedImage(url, function(datauri) {
-						if(!datauri) {
+						if (!datauri) {
 							// Couldn't embed, so show warning
 							$('#url_notice').show();
 						} else {
@@ -1487,7 +1484,7 @@
 			var updateContextPanel = function() {
 				var elem = selectedElement;
 				// If element has just been deleted, consider it null
-				if(elem != null && !elem.parentNode) elem = null;
+				if (elem != null && !elem.parentNode) elem = null;
 				var currentLayerName = svgCanvas.getCurrentDrawing().getCurrentLayerName();
 				var currentMode = svgCanvas.getMode();
 				var unit = curConfig.baseUnit !== 'px' ? curConfig.baseUnit : null;
@@ -1502,7 +1499,7 @@
 					// If this is a link with no transform and one child, pretend
 					// its child is selected
 // 					console.log('go', elem)
-// 					if(elname === 'a') { // && !$(elem).attr('transform')) {
+// 					if (elname === 'a') { // && !$(elem).attr('transform')) {
 // 						elem = elem.firstChild;
 // 					}
 
@@ -1513,29 +1510,29 @@
 					$('#blur').val(blurval);
 					$('#blur_slider').slider('option', 'value', blurval);
 
-					if(svgCanvas.addedNew) {
-						if(elname === 'image') {
+					if (svgCanvas.addedNew) {
+						if (elname === 'image') {
 							// Prompt for URL if not a data URL
-							if(svgCanvas.getHref(elem).indexOf('data:') !== 0) {
+							if (svgCanvas.getHref(elem).indexOf('data:') !== 0) {
 								promptImgURL();
 							}
-						} /*else if(elname == 'text') {
+						} /*else if (elname == 'text') {
 							// TODO: Do something here for new text
 						}*/
 					}
 
-					if(!is_node && currentMode != 'pathedit') {
+					if (!is_node && currentMode != 'pathedit') {
 						$('#selected_panel').show();
 						// Elements in this array already have coord fields
-						if(['line', 'circle', 'ellipse'].indexOf(elname) >= 0) {
+						if (['line', 'circle', 'ellipse'].indexOf(elname) >= 0) {
 							$('#xy_panel').hide();
 						} else {
 							var x,y;
 
 							// Get BBox vals for g, polyline and path
-							if(['g', 'polyline', 'path'].indexOf(elname) >= 0) {
+							if (['g', 'polyline', 'path'].indexOf(elname) >= 0) {
 								var bb = svgCanvas.getStrokedBBox([elem]);
-								if(bb) {
+								if (bb) {
 									x = bb.x;
 									y = bb.y;
 								}
@@ -1544,7 +1541,7 @@
 								y = elem.getAttribute('y');
 							}
 
-							if(unit) {
+							if (unit) {
 								x = svgedit.units.convertUnit(x);
 								y = svgedit.units.convertUnit(y);
 							}
@@ -1567,15 +1564,15 @@
 						// Show open/close button based on selected point
 						setIcon('#tool_openclose_path', path.closed_subpath ? 'open_path' : 'close_path');
 
-						if(point) {
+						if (point) {
 							var seg_type = $('#seg_type');
-							if(unit) {
+							if (unit) {
 								point.x = svgedit.units.convertUnit(point.x);
 								point.y = svgedit.units.convertUnit(point.y);
 							}
 							$('#path_node_x').val(point.x);
 							$('#path_node_y').val(point.y);
-							if(point.type) {
+							if (point.type) {
 								seg_type.val(point.type).removeAttr('disabled');
 							} else {
 								seg_type.val(4).attr('disabled','disabled');
@@ -1599,7 +1596,7 @@
 
 					var el_name = elem.tagName;
 
-// 					if($(elem).data('gsvg')) {
+// 					if ($(elem).data('gsvg')) {
 // 						$('#g_panel').show();
 // 					}
 
@@ -1609,8 +1606,8 @@
 						$('#g_panel').show();
 					}
 
-					if(elem.parentNode.tagName === 'a') {
-						if(!$(elem).siblings().length) {
+					if (elem.parentNode.tagName === 'a') {
+						if (!$(elem).siblings().length) {
 							$('#a_panel').show();
 							link_href = svgCanvas.getHref(elem.parentNode);
 						}
@@ -1619,18 +1616,18 @@
 					// Hide/show the make_link buttons
 					$('#tool_make_link, #tool_make_link').toggle(!link_href);
 
-					if(link_href) {
+					if (link_href) {
 						$('#link_url').val(link_href);
 					}
 
-					if(panels[el_name]) {
+					if (panels[el_name]) {
 						var cur_panel = panels[el_name];
 
 						$('#' + el_name + '_panel').show();
 
 						$.each(cur_panel, function(i, item) {
 							var attrVal = elem.getAttribute(item);
-							if(curConfig.baseUnit !== 'px' && elem[item]) {
+							if (curConfig.baseUnit !== 'px' && elem[item]) {
 								var bv = elem[item].baseVal.value;
 								attrVal = svgedit.units.convertUnit(bv);
 							}
@@ -1638,22 +1635,20 @@
 							$('#' + el_name + '_' + item).val(attrVal || 0);
 						});
 
-						if(el_name == 'text') {
-							$('#text_panel').css("display", "inline");
+						if (el_name == 'text') {
+							$('#text_panel').css('display', 'inline');
 							if (svgCanvas.getItalic()) {
 								$('#tool_italic').addClass('push_button_pressed').removeClass('tool_button');
-							}
-							else {
+							} else {
 								$('#tool_italic').removeClass('push_button_pressed').addClass('tool_button');
 							}
 							if (svgCanvas.getBold()) {
 								$('#tool_bold').addClass('push_button_pressed').removeClass('tool_button');
-							}
-							else {
+							} else {
 								$('#tool_bold').removeClass('push_button_pressed').addClass('tool_button');
 							}
-							$('#font_family').val(elem.getAttribute("font-family"));
-							$('#font_size').val(elem.getAttribute("font-size"));
+							$('#font_family').val(elem.getAttribute('font-family'));
+							$('#font_size').val(elem.getAttribute('font-size'));
 							$('#text').val(elem.textContent);
 							if (svgCanvas.addedNew) {
 								// Timeout needed for IE9
@@ -1662,25 +1657,25 @@
 								},100);
 							}
 						} // text
-						else if(el_name == 'image') {
+						else if (el_name == 'image') {
 							setImageURL(svgCanvas.getHref(elem));
 						} // image
-						else if(el_name === 'g' || el_name === 'use') {
+						else if (el_name === 'g' || el_name === 'use') {
 							$('#container_panel').show();
 							var title = svgCanvas.getTitle();
 							var label = $('#g_title')[0];
 							label.value = title;
 							setInputWidth(label);
 							var d = 'disabled';
-							if(el_name == 'use') {
+							if (el_name == 'use') {
 								label.setAttribute(d, d);
 							} else {
 								label.removeAttribute(d);
 							}
 						}
 					}
-					menu_items[(el_name === 'g' ? 'en':'dis') + 'ableContextMenuItems']('#ungroup');
-					menu_items[((el_name === 'g' || !multiselected) ? 'dis':'en') + 'ableContextMenuItems']('#group');
+					menu_items[(el_name === 'g' ? 'en' : 'dis') + 'ableContextMenuItems']('#ungroup');
+					menu_items[((el_name === 'g' || !multiselected) ? 'dis' : 'en') + 'ableContextMenuItems']('#group');
 				} // if (elem != null)
 				else if (multiselected) {
 					$('#multiselected_panel').show();
@@ -1694,14 +1689,12 @@
 				// update history buttons
 				if (undoMgr.getUndoStackSize() > 0) {
 					$('#tool_undo').removeClass('disabled');
-				}
-				else {
+				} else {
 					$('#tool_undo').addClass('disabled');
 				}
 				if (undoMgr.getRedoStackSize() > 0) {
 					$('#tool_redo').removeClass('disabled');
-				}
-				else {
+				} else {
 					$('#tool_redo').addClass('disabled');
 				}
 
@@ -1713,8 +1706,7 @@
 
 					// Enable regular menu options
 					canv_menu.enableContextMenuItems('#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back');
-				}
-				else {
+				} else {
 					$('#selLayerNames').attr('disabled', 'disabled');
 				}
 			};
@@ -1723,15 +1715,15 @@
 			$('#text').blur( function(){ textBeingEntered = false; } );
 
 			// bind the selected event to our function that handles updates to the UI
-			svgCanvas.bind("selected", selectedChanged);
-			svgCanvas.bind("transition", elementTransition);
-			svgCanvas.bind("changed", elementChanged);
-			svgCanvas.bind("saved", saveHandler);
-			svgCanvas.bind("exported", exportHandler);
-			svgCanvas.bind("zoomed", zoomChanged);
-			svgCanvas.bind("contextset", contextChanged);
-			svgCanvas.bind("extension_added", extAdded);
-			svgCanvas.textActions.setInputElem($("#text")[0]);
+			svgCanvas.bind('selected', selectedChanged);
+			svgCanvas.bind('transition', elementTransition);
+			svgCanvas.bind('changed', elementChanged);
+			svgCanvas.bind('saved', saveHandler);
+			svgCanvas.bind('exported', exportHandler);
+			svgCanvas.bind('zoomed', zoomChanged);
+			svgCanvas.bind('contextset', contextChanged);
+			svgCanvas.bind('extension_added', extAdded);
+			svgCanvas.textActions.setInputElem($('#text')[0]);
 
 			var str = '<div class="palette_item" data-rgb="none"></div>';
 			$.each(palette, function(i,item){
@@ -1757,14 +1749,14 @@
 				});
 			});
 
-			if($.pref('bkgd_color')) {
+			if ($.pref('bkgd_color')) {
 				setBackground($.pref('bkgd_color'), $.pref('bkgd_url'));
-			} else if($.pref('bkgd_url')) {
+			} else if ($.pref('bkgd_url')) {
 				// No color set, only URL
 				setBackground(defaultPrefs.bkgd_color, $.pref('bkgd_url'));
 			}
 
-			if($.pref('img_save')) {
+			if ($.pref('img_save')) {
 				curPrefs.img_save = $.pref('img_save');
 				$('#image_save_opts input').val([curPrefs.img_save]);
 			}
@@ -1779,7 +1771,7 @@
 
 			var changeStrokeWidth = function(ctl) {
 				var val = ctl.value;
-				if(val == 0 && selectedElement && ['line', 'polyline'].indexOf(selectedElement.nodeName) >= 0) {
+				if (val == 0 && selectedElement && ['line', 'polyline'].indexOf(selectedElement.nodeName) >= 0) {
 					val = ctl.value = 1;
 				}
 				svgCanvas.setStrokeWidth(val);
@@ -1791,7 +1783,7 @@
 			};
 			var changeZoom = function(ctl) {
 				var zoomlevel = ctl.value / 100;
-				if(zoomlevel < .001) {
+				if (zoomlevel < .001) {
 					ctl.value = .1;
 					return;
 				}
@@ -1809,23 +1801,23 @@
 			};
 
 			var changeOpacity = function(ctl, val) {
-				if(val == null) val = ctl.value;
+				if (val == null) val = ctl.value;
 				$('#group_opacity').val(val);
-				if(!ctl || !ctl.handle) {
+				if (!ctl || !ctl.handle) {
 					$('#opac_slider').slider('option', 'value', val);
 				}
 				svgCanvas.setOpacity(val/100);
 			};
 
 			var changeBlur = function(ctl, val, noUndo) {
-				if(val == null) val = ctl.value;
+				if (val == null) val = ctl.value;
 				$('#blur').val(val);
 				var complete = false;
-				if(!ctl || !ctl.handle) {
+				if (!ctl || !ctl.handle) {
 					$('#blur_slider').slider('option', 'value', val);
 					complete = true;
 				}
-				if(noUndo) {
+				if (noUndo) {
 					svgCanvas.setBlurNoUndo(val);
 				} else {
 					svgCanvas.setBlur(val, complete);
@@ -1834,7 +1826,7 @@
 
 			var operaRepaint = function() {
 				// Repaints canvas in Opera. Needed for stroke-dasharray change as well as fill change
-				if(!window.opera) return;
+				if (!window.opera) return;
 				$('<p/>').hide().appendTo('body').remove();
 			};
 
@@ -1857,14 +1849,14 @@
 				var destLayer = this.options[this.selectedIndex].value;
 				var confirm_str = uiStrings.notification.QmoveElemsToLayer.replace('%s',destLayer);
 				var moveToLayer = function(ok) {
-					if(!ok) return;
+					if (!ok) return;
 					promptMoveLayerOnce = true;
 					svgCanvas.moveSelectedToLayer(destLayer);
 					svgCanvas.clearSelection();
 					populateLayers();
 				};
 				if (destLayer) {
-					if(promptMoveLayerOnce) {
+					if (promptMoveLayerOnce) {
 						moveToLayer(true);
 					} else {
 						$.confirm(confirm_str, moveToLayer);
@@ -1889,7 +1881,7 @@
 			});
 
 			$('#link_url').change(function() {
-				if(this.value.length) {
+				if (this.value.length) {
 					svgCanvas.setLinkURL(this.value);
 				} else {
 					svgCanvas.removeHyperlink();
@@ -1901,25 +1893,25 @@
 			});
 
 			$('.attr_changer').change(function() {
-				var attr = this.getAttribute("data-attr");
+				var attr = this.getAttribute('data-attr');
 				var val = this.value;
 				var valid = svgedit.units.isValidUnit(attr, val, selectedElement);
 
-				if(!valid) {
+				if (!valid) {
 					$.alert(uiStrings.notification.invalidAttrValGiven);
 					this.value = selectedElement.getAttribute(attr);
 					return false;
 				}
 
-				if (attr !== "id") {
+				if (attr !== 'id') {
 					if (isNaN(val)) {
 						val = svgCanvas.convertToNum(attr, val);
-					} else if(curConfig.baseUnit !== 'px') {
+					} else if (curConfig.baseUnit !== 'px') {
 						// Convert unitless value to one with given unit
 
 						var unitData = svgedit.units.getTypeMap();
 
-						if(selectedElement[attr] || svgCanvas.getMode() === "pathedit" || attr === "x" || attr === "y") {
+						if (selectedElement[attr] || svgCanvas.getMode() === 'pathedit' || attr === 'x' || attr === 'y') {
 							val *= unitData[curConfig.baseUnit];
 						}
 					}
@@ -1927,13 +1919,12 @@
 
 				// if the user is changing the id, then de-select the element first
 				// change the ID, then re-select it with the new ID
-				if (attr === "id") {
+				if (attr === 'id') {
 					var elem = selectedElement;
 					svgCanvas.clearSelection();
 					elem.id = val;
 					svgCanvas.addToSelection([elem],true);
-				}
-				else {
+				} else {
 					svgCanvas.changeSelectedAttribute(attr, val);
 				}
 				this.blur();
@@ -1949,7 +1940,7 @@
 			$('.palette_item').mousedown(function(evt){
 				var right_click = evt.button === 2;
 				var isStroke = evt.shiftKey || right_click;
-				var picker = isStroke ? "stroke" : "fill";
+				var picker = isStroke ? 'stroke' : 'fill';
 				var color = $(this).attr('data-rgb');
 				var paint = null;
 
@@ -1957,8 +1948,7 @@
 				if (color === 'none' || color === 'transparent' || color === 'initial') {
 					color = 'none';
 					paint = new $.jGraduate.Paint();
-				}
-				else {
+				} else {
 					paint = new $.jGraduate.Paint({alpha: 100, solidColor: color.substr(1)});
 				}
 
@@ -1978,8 +1968,8 @@
 				updateToolButtonState();
 			}).bind('contextmenu', function(e) {e.preventDefault();});
 
-			$("#toggle_stroke_tools").on("click", function() {
-				$("#tools_bottom").toggleClass("expanded");
+			$('#toggle_stroke_tools').on('click', function() {
+				$('#tools_bottom').toggleClass('expanded');
 			});
 
 			// This is a common function used when a tool has been clicked (chosen)
@@ -1989,9 +1979,9 @@
 			// - adds the tool_button_current class to the button passed in
 			var toolButtonClick = function(button, noHiding) {
 				if ($(button).hasClass('disabled')) return false;
-				if($(button).parent().hasClass('tools_flyout')) return true;
+				if ($(button).parent().hasClass('tools_flyout')) return true;
 				var fadeFlyouts = fadeFlyouts || 'normal';
-				if(!noHiding) {
+				if (!noHiding) {
 					$('.tools_flyout').fadeOut(fadeFlyouts);
 				}
 				$('#styleoverrides').text('');
@@ -2006,7 +1996,7 @@
 					panning = false, keypan = false;
 
 				$('#svgcanvas').bind('mousemove mouseup', function(evt) {
-					if(panning === false) return;
+					if (panning === false) return;
 
 					w_area.scrollLeft -= (evt.clientX - last_x);
 					w_area.scrollTop -= (evt.clientY - last_y);
@@ -2014,10 +2004,10 @@
 					last_x = evt.clientX;
 					last_y = evt.clientY;
 
-					if(evt.type === 'mouseup') panning = false;
+					if (evt.type === 'mouseup') panning = false;
 					return false;
 				}).mousedown(function(evt) {
-					if(evt.button === 1 || keypan === true) {
+					if (evt.button === 1 || keypan === true) {
 						panning = true;
 						last_x = evt.clientX;
 						last_y = evt.clientY;
@@ -2036,11 +2026,11 @@
 					evt.preventDefault();
 					svgCanvas.spaceKey = keypan = false;
 				}).bind('keydown', 'shift', function(evt) {
-					if(svgCanvas.getMode() === 'zoom') {
+					if (svgCanvas.getMode() === 'zoom') {
 						workarea.css('cursor', zoomOutIcon);
 					}
 				}).bind('keyup', 'shift', function(evt) {
-					if(svgCanvas.getMode() === 'zoom') {
+					if (svgCanvas.getMode() === 'zoom') {
 						workarea.css('cursor', zoomInIcon);
 					}
 				});
@@ -2056,7 +2046,7 @@
 				var pre = bits[0];
 				var val = bits[1];
 
-				if(changeElem) {
+				if (changeElem) {
 					svgCanvas.setStrokeAttr('stroke-' + pre, val);
 				}
 				operaRepaint();
@@ -2078,26 +2068,26 @@
 				};
 
 				$(window).mouseup(function(evt) {
-					if(!on_button) {
+					if (!on_button) {
 						button.removeClass('buttondown');
 						// do not hide if it was the file input as that input needs to be visible
 						// for its change event to fire
-						if (evt.target.tagName != "INPUT") {
+						if (evt.target.tagName != 'INPUT') {
 							list.fadeOut(200);
-						} else if(!set_click) {
+						} else if (!set_click) {
 							set_click = true;
 							$(evt.target).click(function() {
-								list.css('margin-left','-9999px').show();
+								list.css('margin-left', '-9999px').show();
 							});
 						}
 					}
 					on_button = false;
 				}).mousedown(function(evt) {
-// 					$(".contextMenu").hide();
+// 					$('.contextMenu').hide();
 // 					console.log('cm', $(evt.target).closest('.contextMenu'));
 
 					var islib = $(evt.target).closest('div.tools_flyout, .contextMenu').length;
-					if(!islib) $('.tools_flyout:visible,.contextMenu').fadeOut(250);
+					if (!islib) $('.tools_flyout:visible,.contextMenu').fadeOut(250);
 				});
 
 				overlay.bind('mousedown',function() {
@@ -2105,10 +2095,10 @@
 						button.addClass('buttondown').removeClass('buttonup');
 						// Margin must be reset in case it was changed before;
 						list.css('margin-left',0).show();
-						if(!height) {
+						if (!height) {
 							height = list.height();
 						}
-						// Using custom animation as slideDown has annoying "bounce effect"
+						// Using custom animation as slideDown has annoying 'bounce effect'
 						list.css('height',0).animate({
 							'height': height
 						},200);
@@ -2131,7 +2121,7 @@
 					js_hover = ($(this).css('background-color') == 'rgba(0, 0, 0, 0)');
 
 					list_items.unbind('mouseover');
-					if(js_hover) {
+					if (js_hover) {
 						list_items.mouseover(function() {
 							this.style.backgroundColor = '#FFC';
 						}).mouseout(function() {
@@ -2149,20 +2139,20 @@
 
 				var list = $(elem).find('ul').attr('id', $(elem)[0].id + '-list');
 
-				if(!dropUp) {
+				if (!dropUp) {
 					// Move list to place where it can overflow container
 					$('#option_lists').append(list);
 				}
 
 				var on_button = false;
-				if(dropUp) {
+				if (dropUp) {
 					$(elem).addClass('dropup');
 				}
 
 				list.find('li').bind('mouseup', callback);
 
 				$(window).mouseup(function(evt) {
-					if(!on_button) {
+					if (!on_button) {
 						button.removeClass('down');
 						list.hide();
 					}
@@ -2173,7 +2163,7 @@
 					if (!button.hasClass('down')) {
 						button.addClass('down');
 
-						if(!dropUp) {
+						if (!dropUp) {
 							var pos = $(elem).position();
 							list.css({
 								top: pos.top + 24,
@@ -2200,11 +2190,11 @@
 				var list = $(list);
 				var on_button = false;
 				var dropUp = opts.dropUp;
-				if(dropUp) {
+				if (dropUp) {
 					$(elem).addClass('dropup');
 				}
 				list.find('li').bind('mouseup', function() {
-					if(opts.seticon) {
+					if (opts.seticon) {
 						setIcon('#cur_' + button[0].id , $(this).children());
 						$(this).addClass('current').siblings().removeClass('current');
 					}
@@ -2213,7 +2203,7 @@
 				});
 
 				$(window).mouseup(function(evt) {
-					if(!on_button) {
+					if (!on_button) {
 						button.removeClass('down');
 						list.hide();
 						list.css({top:0, left:0});
@@ -2224,7 +2214,7 @@
 				var height = list.height();
 				$(elem).bind('mousedown',function() {
 					var off = $(elem).offset();
-					if(dropUp) {
+					if (dropUp) {
 						off.top -= list.height();
 						off.left += 8;
 					} else {
@@ -2249,7 +2239,7 @@
 					on_button = false;
 				});
 
-				if(opts.multiclick) {
+				if (opts.multiclick) {
 					list.mousedown(function() {
 						on_button = true;
 					});
@@ -2262,13 +2252,13 @@
 			});
 
 			Editor.addDropDown('#opacity_dropdown', function() {
-				if($(this).find('div').length) return;
+				if ($(this).find('div').length) return;
 				var perc = parseInt($(this).text().split('%')[0]);
 				changeOpacity(false, perc);
 			}, true);
 
 			// For slider usage, see: http://jqueryui.com/demos/slider/
-			$("#opac_slider").slider({
+			$('#opac_slider').slider({
 				start: function() {
 					$('#opacity_dropdown li:not(.special)').hide();
 				},
@@ -2285,7 +2275,7 @@
 
 			var slideStart = false;
 
-			$("#blur_slider").slider({
+			$('#blur_slider').slider({
 				max: 10,
 				step: .1,
 				stop: function(evt, ui) {
@@ -2306,7 +2296,7 @@
 			Editor.addDropDown('#zoom_dropdown', function() {
 				var item = $(this);
 				var val = item.attr('data-val');
-				if(val) {
+				if (val) {
 					zoomChanged(window, val);
 				} else {
 					changeZoom({value:parseInt(item.text(), 10)});
@@ -2357,7 +2347,7 @@
 					ui_context = 'canvas';
 					workarea.unbind('mousedown', unfocus);
 					// Go back to selecting text if in textedit mode
-					if(svgCanvas.getMode() == 'textedit') {
+					if (svgCanvas.getMode() == 'textedit') {
 						$('#text').focus();
 					}
 				});
@@ -2510,15 +2500,15 @@
 
 			var makeHyperlink = function() {
 				if (selectedElement != null || multiselected) {
-					$.prompt(uiStrings.notification.enterNewLinkURL, "http://", function(url) {
-						if(url) svgCanvas.makeHyperlink(url);
+					$.prompt(uiStrings.notification.enterNewLinkURL, 'http://', function(url) {
+						if (url) svgCanvas.makeHyperlink(url);
 					});
 				}
 			};
 
 			var moveSelected = function(dx,dy) {
 				if (selectedElement != null || multiselected) {
-					if(curConfig.gridSnapping) {
+					if (curConfig.gridSnapping) {
 						// Use grid snap value regardless of zoom level
 						var multi = svgCanvas.getZoom() * curConfig.snappingStep;
 						dx *= multi;
@@ -2530,11 +2520,11 @@
 
 			var linkControlPoints = function() {
 				var linked = !$('#tool_node_link').hasClass('push_button_pressed');
-				if (linked)
+				if (linked) {
 					$('#tool_node_link').addClass('push_button_pressed').removeClass('tool_button');
-				else
+				} else {
 					$('#tool_node_link').removeClass('push_button_pressed').addClass('tool_button');
-
+				}
 				path.linkControlPoints(linked);
 			};
 
@@ -2551,16 +2541,13 @@
 			};
 
 			var addSubPath = function() {
-				var button = $('#tool_add_subpath');
-				var sp = !button.hasClass('push_button_pressed');
+				var sp = !$('#tool_add_subpath').hasClass('push_button_pressed');
 				if (sp) {
 					button.addClass('push_button_pressed').removeClass('tool_button');
 				} else {
 					button.removeClass('push_button_pressed').addClass('tool_button');
 				}
-
 				path.addSubPath(sp);
-
 			};
 
 			var opencloseSubPath = function() {
@@ -2577,7 +2564,7 @@
 
 			var rotateSelected = function(cw,step) {
 				if (selectedElement == null || multiselected) return;
-				if(!cw) step *= -1;
+				if (!cw) step *= -1;
 				var new_angle = $('#angle').val()*1 + step;
 				svgCanvas.setRotationAngle(new_angle);
 				updateContextPanel();
@@ -2586,7 +2573,7 @@
 			var clickClear = function(){
 				var dims = curConfig.dimensions;
 				$.confirm(uiStrings.notification.QwantToClear, function(ok) {
-					if(!ok) return;
+					if (!ok) return;
 					setSelectMode();
 					svgCanvas.clear();
 					svgCanvas.setResolution(dims[0], dims[1]);
@@ -2622,12 +2609,12 @@
 
 			var clickExport = function() {
 				// Open placeholder window (prevents popup)
-				if(!customHandlers.pngsave)  {
+				if (!customHandlers.pngsave)  {
 					var str = uiStrings.notification.loadingImage;
-					exportWindow = window.open("data:text/html;charset=utf-8,<title>" + str + "<\/title><h1>" + str + "<\/h1>");
+					exportWindow = window.open('data:text/html;charset=utf-8,<title>' + str + '<\/title><h1>' + str + '<\/h1>');
 				}
 
-				if(window.canvg) {
+				if (window.canvg) {
 					svgCanvas.rasterExport();
 				} else {
 					$.getScript('canvg/rgbcolor.js', function() {
@@ -2667,7 +2654,7 @@
 					svgCanvas.groupSelectedElements();
 				}
 				// ungroup
-				else if(selectedElement){
+				else if (selectedElement){
 					svgCanvas.ungroupSelectedElement();
 				}
 			};
@@ -2699,15 +2686,16 @@
 
 			var clickWireframe = function() {
 				var wf = !$('#tool_wireframe').hasClass('push_button_pressed');
-				if (wf)
+				if (wf) {
 					$('#tool_wireframe').addClass('push_button_pressed').removeClass('tool_button');
-				else
+				} else {
 					$('#tool_wireframe').removeClass('push_button_pressed').addClass('tool_button');
+				}
 				workarea.toggleClass('wireframe');
 
-				if(supportsNonSS) return;
+				if (supportsNonSS) return;
 				var wf_rules = $('#wireframe_rules');
-				if(!wf_rules.length) {
+				if (!wf_rules.length) {
 					wf_rules = $('<style id="wireframe_rules"><\/style>').appendTo('head');
 				} else {
 					wf_rules.empty();
@@ -2718,10 +2706,10 @@
 
 			var updateWireFrame = function() {
 				// Test support
-				if(supportsNonSS) return;
+				if (supportsNonSS) return;
 
-				var rule = "#workarea.wireframe #svgcontent * { stroke-width: " + 1/svgCanvas.getZoom() + "px; }";
-				$('#wireframe_rules').text(workarea.hasClass('wireframe') ? rule : "");
+				var rule = '#workarea.wireframe #svgcontent * { stroke-width: ' + 1/svgCanvas.getZoom() + 'px; }';
+				$('#wireframe_rules').text(workarea.hasClass('wireframe') ? rule : '');
 			};
 
 			var showSourceEditor = function(e, forSaving){
@@ -2738,7 +2726,7 @@
 				$('#svg_source_textarea').focus();
 			};
 
-			$('#svg_docprops_container, #svg_prefs_container').draggable({cancel:'button,fieldset', containment: 'window'});
+			$('#svg_docprops_container, #svg_prefs_container').draggable({cancel: 'button,fieldset', containment: 'window'});
 
 			var showDocProperties = function(){
 				if (docprops) return;
@@ -2749,7 +2737,7 @@
 
 				// update resolution option with actual resolution
 				var res = svgCanvas.getResolution();
-				if(curConfig.baseUnit !== "px") {
+				if (curConfig.baseUnit !== 'px') {
 					res.w = svgedit.units.convertUnit(res.w) + curConfig.baseUnit;
 					res.h = svgedit.units.convertUnit(res.h) + curConfig.baseUnit;
 				}
@@ -2772,15 +2760,15 @@
 				var cur_bg = 'cur_background';
 				var canvas_bg = $.pref('bkgd_color');
 				var url = $.pref('bkgd_url');
-		// 		if(url) url = url[1];
+		// 		if (url) url = url[1];
 				blocks.each(function() {
 					var blk = $(this);
 					var is_bg = blk.css('background-color') == canvas_bg;
 					blk.toggleClass(cur_bg, is_bg);
-					if(is_bg) $('#canvas_bg_url').removeClass(cur_bg);
+					if (is_bg) $('#canvas_bg_url').removeClass(cur_bg);
 				});
-				if(!canvas_bg) blocks.eq(0).addClass(cur_bg);
-				if(url) {
+				if (!canvas_bg) blocks.eq(0).addClass(cur_bg);
+				if (url) {
 					$('#canvas_bg_url').val(url);
 				}
 				$('grid_snapping_step').attr('value', curConfig.snappingStep);
@@ -2813,7 +2801,7 @@
 
 				if (!svgCanvas.setSvgString($('#svg_source_textarea').val())) {
 					$.confirm(uiStrings.notification.QerrorsRevertToSource, function(ok) {
-						if(!ok) return false;
+						if (!ok) return false;
 						saveChanges();
 					});
 				} else {
@@ -2824,10 +2812,10 @@
 
 			var updateTitle = function(title) {
 				title = title || svgCanvas.getDocumentTitle();
-				var new_title = orig_title + (title?': ' + title:'');
+				var new_title = orig_title + (title ? ': ' + title : '');
 
 				// Remove title update with current context info, isn't really necessary
-// 				if(cur_context) {
+// 				if (cur_context) {
 // 					new_title = new_title + cur_context;
 // 				}
 				$('title:first').text(new_title);
@@ -2843,7 +2831,7 @@
 				var width = $('#canvas_width'), w = width.val();
 				var height = $('#canvas_height'), h = height.val();
 
-				if(w != "fit" && !svgedit.units.isValidUnit('width', w)) {
+				if (w != 'fit' && !svgedit.units.isValidUnit('width', w)) {
 					$.alert(uiStrings.notification.invalidAttrValGiven);
 					width.parent().addClass('error');
 					return false;
@@ -2851,7 +2839,7 @@
 
 				width.parent().removeClass('error');
 
-				if(h != "fit" && !svgedit.units.isValidUnit('height', h)) {
+				if (h != 'fit' && !svgedit.units.isValidUnit('height', h)) {
 					$.alert(uiStrings.notification.invalidAttrValGiven);
 					height.parent().addClass('error');
 					return false;
@@ -2859,7 +2847,7 @@
 
 				height.parent().removeClass('error');
 
-				if(!svgCanvas.setResolution(w, h)) {
+				if (!svgCanvas.setResolution(w, h)) {
 					$.alert(uiStrings.notification.noContentToFitTo);
 					return false;
 				}
@@ -2878,7 +2866,7 @@
 
 				// set language
 				var lang = $('#lang_select').val();
-				if(lang != curPrefs.lang) {
+				if (lang != curPrefs.lang) {
 					Editor.putLocale(lang);
 				}
 
@@ -2891,7 +2879,7 @@
 				curConfig.showRulers = $('#show_rulers')[0].checked;
 
 				$('#rulers').toggle(curConfig.showRulers);
-				if(curConfig.showRulers) updateRulers();
+				if (curConfig.showRulers) updateRulers();
 				curConfig.baseUnit = $('#base_unit').val();
 
 				svgCanvas.setConfig(curConfig);
@@ -2901,7 +2889,7 @@
 			};
 
 			function setBackground(color, url) {
-// 				if(color == curPrefs.bkgd_color && url == curPrefs.bkgd_url) return;
+// 				if (color == curPrefs.bkgd_color && url == curPrefs.bkgd_url) return;
 				$.pref('bkgd_color', color);
 				$.pref('bkgd_url', url);
 
@@ -2911,7 +2899,7 @@
 
 			var setIcon = Editor.setIcon = function(elem, icon_id, forcedSize) {
 				var icon = (typeof icon_id === 'string') ? $.getSvgIcon(icon_id, true) : icon_id.clone();
-				if(!icon) {
+				if (!icon) {
 					console.log('NOTE: Icon image missing: ' + icon_id);
 					return;
 				}
@@ -2923,8 +2911,8 @@
 			(ua_prefix = function() {
 				var regex = /^(Moz|Webkit|Khtml|O|ms|Icab)(?=[A-Z])/;
 				var someScript = document.getElementsByTagName('script')[0];
-				for(var prop in someScript.style) {
-					if(regex.test(prop)) {
+				for (var prop in someScript.style) {
+					if (regex.test(prop)) {
 						// test is faster than match, so it's better to perform
 						// that on the lot and match only when necessary
 						return prop.match(regex)[0];
@@ -2932,8 +2920,8 @@
 				}
 
 				// Nothing found so far?
-				if('WebkitOpacity' in someScript.style) return 'Webkit';
-				if('KhtmlOpacity' in someScript.style) return 'Khtml';
+				if ('WebkitOpacity' in someScript.style) return 'Webkit';
+				if ('KhtmlOpacity' in someScript.style) return 'Khtml';
 
 				return '';
 			}());
@@ -2955,19 +2943,19 @@
 					var h = el.outerHeight() * (scale - 1);
 					var margins = {};
 
-					for(var i = 0; i < 4; i++) {
+					for (var i = 0; i < 4; i++) {
 						var s = sides[i];
 
 						var cur = el.data('orig_margin-' + s);
-						if(cur == null) {
+						if (cur == null) {
 							cur = parseInt(el.css('margin-' + s));
 							// Cache the original margin
 							el.data('orig_margin-' + s, cur);
 						}
 						var val = cur * scale;
-						if(s === 'right') {
+						if (s === 'right') {
 							val += w;
-						} else if(s === 'bottom') {
+						} else if (s === 'bottom') {
 							val += h;
 						}
 
@@ -2978,7 +2966,7 @@
 			};
 
 			var setIconSize = Editor.setIconSize = function(size, force) {
-				if(size == curPrefs.size && !force) return;
+				if (size == curPrefs.size && !force) return;
 // 				return;
 // 				var elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
 				console.log('size', size);
@@ -2991,7 +2979,7 @@
 
 				var scale = 1;
 
-				if(typeof size == 'number') {
+				if (typeof size == 'number') {
 					scale = size;
 				} else {
 					var icon_sizes = { s:.75, m:1, l:1.25, xl:1.5 };
@@ -3033,97 +3021,97 @@
 // 					'#logo > svg, #logo > img': size_num * 1.3,
 // 					'#tools_bottom .icon_label > *': (size_num === 16 ? 18 : size_num * .75)
 // 				});
-// 				if(size != 's') {
+// 				if (size != 's') {
 // 					$.resizeSvgIcons({'#layerbuttons svg, #layerbuttons img': size_num * .6});
 // 				}
 
 				// Note that all rules will be prefixed with '#svg_editor' when parsed
 				var cssResizeRules = {
-// 					".tool_button,\
+// 					'.tool_button,\
 // 					.push_button,\
 // 					.tool_button_current,\
 // 					.push_button_pressed,\
 // 					.disabled,\
 // 					.icon_label,\
-// 					.tools_flyout .tool_button": {
+// 					.tools_flyout .tool_button': {
 // 						'width': {s: '16px', l: '32px', xl: '48px'},
 // 						'height': {s: '16px', l: '32px', xl: '48px'},
 // 						'padding': {s: '1px', l: '2px', xl: '3px'}
 // 					},
-// 					".tool_sep": {
+// 					'.tool_sep': {
 // 						'height': {s: '16px', l: '32px', xl: '48px'},
 // 						'margin': {s: '2px 2px', l: '2px 5px', xl: '2px 8px'}
 // 					},
-// 					"#main_icon": {
+// 					'#main_icon': {
 // 						'width': {s: '31px', l: '53px', xl: '75px'},
 // 						'height': {s: '22px', l: '42px', xl: '64px'}
 // 					},
-					"#tools_top": {
+					'#tools_top': {
 						'left': 50,
 						'height': 72
 					},
-					"#tools_left": {
+					'#tools_left': {
 						'width': 31,
 						'top': 74
 					},
-					"div#workarea": {
+					'div#workarea': {
 						'left': 38,
 						'top': 74
 					}
-// 					"#tools_bottom": {
+// 					'#tools_bottom': {
 // 						'left': {s: '27px', l: '46px', xl: '65px'},
 // 						'height': {s: '58px', l: '98px', xl: '145px'}
 // 					},
-// 					"#color_tools": {
+// 					'#color_tools': {
 // 						'border-spacing': {s: '0 1px'},
 // 						'margin-top': {s: '-1px'}
 // 					},
-// 					"#color_tools .icon_label": {
+// 					'#color_tools .icon_label': {
 // 						'width': {l:'43px', xl: '60px'}
 // 					},
-// 					".color_tool": {
+// 					'.color_tool': {
 // 						'height': {s: '20px'}
 // 					},
-// 					"#tool_opacity": {
+// 					'#tool_opacity': {
 // 						'top': {s: '1px'},
 // 						'height': {s: 'auto', l:'auto', xl:'auto'}
 // 					},
-// 					"#tools_top input, #tools_bottom input": {
+// 					'#tools_top input, #tools_bottom input': {
 // 						'margin-top': {s: '2px', l: '4px', xl: '5px'},
 // 						'height': {s: 'auto', l: 'auto', xl: 'auto'},
 // 						'border': {s: '1px solid #555', l: 'auto', xl: 'auto'},
 // 						'font-size': {s: '.9em', l: '1.2em', xl: '1.4em'}
 // 					},
-// 					"#zoom_panel": {
+// 					'#zoom_panel': {
 // 						'margin-top': {s: '3px', l: '4px', xl: '5px'}
 // 					},
-// 					"#copyright, #tools_bottom .label": {
+// 					'#copyright, #tools_bottom .label': {
 // 						'font-size': {l: '1.5em', xl: '2em'},
 // 						'line-height': {s: '15px'}
 // 					},
-// 					"#tools_bottom_2": {
+// 					'#tools_bottom_2': {
 // 						'width': {l: '295px', xl: '355px'},
 // 						'top': {s: '4px'}
 // 					},
-// 					"#tools_top > div, #tools_top": {
+// 					'#tools_top > div, #tools_top': {
 // 						'line-height': {s: '17px', l: '34px', xl: '50px'}
 // 					},
-// 					".dropdown button": {
+// 					'.dropdown button': {
 // 						'height': {s: '18px', l: '34px', xl: '40px'},
 // 						'line-height': {s: '18px', l: '34px', xl: '40px'},
 // 						'margin-top': {s: '3px'}
 // 					},
-// 					"#tools_top label, #tools_bottom label": {
+// 					'#tools_top label, #tools_bottom label': {
 // 						'font-size': {s: '1em', l: '1.5em', xl: '2em'},
 // 						'height': {s: '25px', l: '42px', xl: '64px'}
 // 					},
-// 					"div.toolset": {
+// 					'div.toolset': {
 // 						'height': {s: '25px', l: '42px', xl: '64px'}
 // 					},
-// 					"#tool_bold, #tool_italic": {
+// 					'#tool_bold, #tool_italic': {
 // 						'font-size': {s: '1.5em', l: '3em', xl: '4.5em'}
 // 					},
-// 					"#sidepanels": {
+// 					'#sidepanels': {
 // 						'top': {s: '50px', l: '88px', xl: '125px'},
 // 						'bottom': {s: '51px', l: '68px', xl: '65px'}
 // 					},
@@ -3138,38 +3126,38 @@
 // 						'width': {l: '19px', xl: '28px'},
 // 						'height': {l: '19px', xl: '28px'}
 // 					},
-// 					"input.spin-button": {
-// 						'background-image': {l: "url('images/spinbtn_updn_big.png')", xl: "url('images/spinbtn_updn_big.png')"},
+// 					'input.spin-button': {
+// 						'background-image': {l: 'url('images/spinbtn_updn_big.png')', xl: 'url('images/spinbtn_updn_big.png')'},
 // 						'background-position': {l: '100% -5px', xl: '100% -2px'},
 // 						'padding-right': {l: '24px', xl: '24px' }
 // 					},
-// 					"input.spin-button.up": {
+// 					'input.spin-button.up': {
 // 						'background-position': {l: '100% -45px', xl: '100% -42px'}
 // 					},
-// 					"input.spin-button.down": {
+// 					'input.spin-button.down': {
 // 						'background-position': {l: '100% -85px', xl: '100% -82px'}
 // 					},
-// 					"#position_opts": {
+// 					'#position_opts': {
 // 						'width': {all: (size_num*4) +'px'}
 // 					}
 				};
 
 				var rule_elem = $('#tool_size_rules');
-				if(!rule_elem.length) {
+				if (!rule_elem.length) {
 					rule_elem = $('<style id="tool_size_rules"><\/style>').appendTo('head');
 				} else {
 					rule_elem.empty();
 				}
 
-				if(size != 'm') {
+				if (size != 'm') {
 					var style_str = '';
 					$.each(cssResizeRules, function(selector, rules) {
 						selector = '#svg_editor ' + selector.replace(/,/g,', #svg_editor');
 						style_str += selector + '{';
 						$.each(rules, function(prop, values) {
-							if(typeof values === 'number') {
+							if (typeof values === 'number') {
 								var val = (values * scale) + 'px';
-							} else if(values[size] || values.all) {
+							} else if (values[size] || values.all) {
 								var val = (values[size] || values.all);
 							}
 							style_str += (prop + ':' + val + ';');
@@ -3191,7 +3179,7 @@
 			var cancelOverlays = function() {
 				$('#dialog_box').hide();
 				if (!editingsource && !docprops && !preferences) {
-					if(cur_context) {
+					if (cur_context) {
 						svgCanvas.leaveContext();
 					}
 					return;
@@ -3200,7 +3188,7 @@
 				if (editingsource) {
 					if (orig_source !== $('#svg_source_textarea').val()) {
 						$.confirm(uiStrings.notification.QignoreSourceChanges, function(ok) {
-							if(ok) hideSourceEditor();
+							if (ok) hideSourceEditor();
 						});
 					} else {
 						hideSourceEditor();
@@ -3237,10 +3225,10 @@
 			var resetScrollPos = $.noop, curScrollPos;
 
 			// Fix for Issue 781: Drawing area jumps to top-left corner on window resize (IE9)
-			if(svgedit.browser.isIE()) {
+			if (svgedit.browser.isIE()) {
 				(function() {
 					resetScrollPos = function() {
-						if(workarea[0].scrollLeft === 0
+						if (workarea[0].scrollLeft === 0
 						&& workarea[0].scrollTop === 0) {
 							workarea[0].scrollLeft = curScrollPos.left;
 							workarea[0].scrollTop = curScrollPos.top;
@@ -3277,7 +3265,7 @@
 
 				$.each(win_wh, function(type, val) {
 					var curval = $(window)[type]();
-					workarea[0]['scroll' + (type==='width'?'Left':'Top')] -= (curval - val)/2;
+					workarea[0]['scroll' + (type === 'width' ? 'Left' : 'Top')] -= (curval - val)/2;
 					win_wh[type] = curval;
 				});
 			});
@@ -3303,21 +3291,21 @@
 
 			function promptImgURL() {
 				var curhref = svgCanvas.getHref(selectedElement);
-				curhref = curhref.indexOf("data:") === 0?"":curhref;
+				curhref = curhref.indexOf('data:') === 0 ? '' : curhref;
 				$.prompt(uiStrings.notification.enterNewImgURL, curhref, function(url) {
-					if(url) setImageURL(url);
+					if (url) setImageURL(url);
 				});
 			}
 
 			// added these event handlers for all the push buttons so they
 			// behave more like buttons being pressed-in and not images
 			(function() {
-				var toolnames = ['clear','open','save','source','delete','delete_multi','paste','clone','clone_multi','move_top','move_bottom'];
+				var toolnames = ['clear', 'open', 'save', 'source', 'delete', 'delete_multi', 'paste', 'clone', 'clone_multi', 'move_top', 'move_bottom'];
 				var all_tools = '';
 				var cur_class = 'tool_button_current';
 
 				$.each(toolnames, function(i,item) {
-					all_tools += '#tool_' + item + (i==toolnames.length-1?',':'');
+					all_tools += '#tool_' + item + (i == toolnames.length-1 ? ',' : '');
 				});
 
 				$(all_tools).mousedown(function() {
@@ -3326,9 +3314,9 @@
 					$(this).removeClass(cur_class);
 				});
 
-				$('#tool_undo, #tool_redo').mousedown(function(){
+				$('#tool_undo, #tool_redo').mousedown(function() {
 					if (!$(this).hasClass('disabled')) $(this).addClass(cur_class);
-				}).bind('mousedown mouseout',function(){
+				}).bind('mousedown mouseout',function() {
 					$(this).removeClass(cur_class);}
 				);
 			}());
@@ -3337,14 +3325,14 @@
 			// NOTE: This code is not used yet until I can figure out how to successfully bind ctrl/meta
 			// in Opera and Chrome
 			if (isMac && !window.opera) {
-				var shortcutButtons = ["tool_clear", "tool_save", "tool_source", "tool_undo", "tool_redo", "tool_clone"];
+				var shortcutButtons = ['tool_clear', 'tool_save', 'tool_source', 'tool_undo', 'tool_redo', 'tool_clone'];
 				var i = shortcutButtons.length;
 				while (i--) {
 					var button = document.getElementById(shortcutButtons[i]);
 					if (button != null) {
 						var title = button.title;
-						var index = title.indexOf("Ctrl+");
-						button.title = [title.substr(0, index), "Cmd+", title.substr(index + 5)].join('');
+						var index = title.indexOf('Ctrl+');
+						button.title = [title.substr(0, index), 'Cmd+', title.substr(index + 5)].join('');
 					}
 				}
 			}
@@ -3358,8 +3346,8 @@
 				var title = (picker == 'stroke' ? 'Pick a Stroke Paint and Opacity' : 'Pick a Fill Paint and Opacity');
 				var was_none = false;
 				var pos = elem.offset();
-				$("#color_picker")
-					.draggable({cancel:'.jGraduate_tabs, .jGraduate_colPick, .jGraduate_gradPick, .jPicker', containment: 'window'})
+				$('#color_picker')
+					.draggable({cancel: '.jGraduate_tabs, .jGraduate_colPick, .jGraduate_gradPick, .jPicker', containment: 'window'})
 					.css(curConfig.colorPickerCSS || {'left': pos.left-140, 'bottom': 40})
 					.jGraduate(
 					{
@@ -3393,8 +3381,7 @@
 						}
 						$(button).addClass('disabled');
 					}
-				}
-				else {
+				} else {
 					for (var index in buttonsNeedingStroke) {
 						var button = buttonsNeedingStroke[index];
 						$(button).removeClass('disabled');
@@ -3409,15 +3396,14 @@
 						}
 						$(button).addClass('disabled');
 					}
-				}
-				else {
+				} else {
 					for (var index in buttonsNeedingFillAndStroke) {
 						var button = buttonsNeedingFillAndStroke[index];
 						$(button).removeClass('disabled');
 					}
 				}
 
-				svgCanvas.runExtensions("toolButtonStateUpdate", {
+				svgCanvas.runExtensions('toolButtonStateUpdate', {
 					nofill: bNoFill,
 					nostroke: bNoStroke
 				});
@@ -3427,7 +3413,7 @@
 					var shower = $('#' + this.id + '_show');
 					var has_enabled = false;
 					$(this).children().each(function() {
-						if(!$(this).hasClass('disabled')) {
+						if (!$(this).hasClass('disabled')) {
 							has_enabled = true;
 						}
 					});
@@ -3462,33 +3448,33 @@
 				this.setPaint = function(paint, apply) {
 					this.paint = paint;
 
-					var fillAttr = "none";
+					var fillAttr = 'none';
 					var ptype = paint.type;
 					var opac = paint.alpha / 100;
 
 					switch ( ptype ) {
 						case 'solidColor':
-							fillAttr = (paint[ptype] != 'none') ? "#" + paint[ptype] : paint[ptype];
+							fillAttr = (paint[ptype] != 'none') ? '#' + paint[ptype] : paint[ptype];
 							break;
 						case 'linearGradient':
 						case 'radialGradient':
 							this.defs.removeChild(this.grad);
 							this.grad = this.defs.appendChild(paint[ptype]);
 							var id = this.grad.id = 'gradbox_' + this.type;
-							fillAttr = "url(#" + id + ')';
+							fillAttr = 'url(#' + id + ')';
 					}
 
 					this.rect.setAttribute('fill', fillAttr);
 					this.rect.setAttribute('opacity', opac);
 
-					if(apply) {
+					if (apply) {
 						svgCanvas.setColor(this.type, paintColor, true);
 						svgCanvas.setPaintOpacity(this.type, paintOpacity, true);
 					}
 				};
 
 				this.update = function(apply) {
-					if(!selectedElement) return;
+					if (!selectedElement) return;
 					var type = this.type;
 
 					switch ( selectedElement.tagName ) {
@@ -3503,17 +3489,17 @@
 						var gPaint = null;
 
 						var childs = selectedElement.getElementsByTagName('*');
-						for(var i = 0, len = childs.length; i < len; i++) {
+						for (var i = 0, len = childs.length; i < len; i++) {
 							var elem = childs[i];
 							var p = elem.getAttribute(type);
-							if(i === 0) {
+							if (i === 0) {
 								gPaint = p;
-							} else if(gPaint !== p) {
+							} else if (gPaint !== p) {
 								gPaint = null;
 								break;
 							}
 						}
-						if(gPaint === null) {
+						if (gPaint === null) {
 							// No common color, don't update anything
 							var paintColor = null;
 							return;
@@ -3522,16 +3508,16 @@
 						var paintOpacity = 1;
 						break;
 					default:
-						var paintOpacity = parseFloat(selectedElement.getAttribute(type + "-opacity"));
+						var paintOpacity = parseFloat(selectedElement.getAttribute(type + '-opacity'));
 						if (isNaN(paintOpacity)) {
 							paintOpacity = 1.0;
 						}
 
-						var defColor = type === "fill" ? "black" : "none";
+						var defColor = type === 'fill' ? 'black' : 'none';
 						var paintColor = selectedElement.getAttribute(type) || defColor;
 					}
 
-					if(apply) {
+					if (apply) {
 						svgCanvas.setColor(type, paintColor, true);
 						svgCanvas.setPaintOpacity(type, paintOpacity, true);
 					}
@@ -3569,7 +3555,7 @@
 			var svgdocbox = paintBox.fill.rect.ownerDocument;
 			// Use this to test support for blur element. Seems to work to test support in Webkit
 			var blur_test = svgdocbox.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
-			if(typeof blur_test.stdDeviationX === "undefined") {
+			if (typeof blur_test.stdDeviationX === 'undefined') {
 				$('#tool_blur').hide();
 			}
 			$(blur_test).remove();
@@ -3579,7 +3565,7 @@
 				var pre = '-' + ua_prefix.toLowerCase() + '-zoom-';
 				var zoom = pre + 'in';
 				workarea.css('cursor', zoom);
-				if(workarea.css('cursor') === zoom) {
+				if (workarea.css('cursor') === zoom) {
 					zoomInIcon = zoom;
 					zoomOutIcon = pre + 'out';
 				}
@@ -3589,7 +3575,7 @@
 			// Test for embedImage support (use timeout to not interfere with page load)
 			setTimeout(function() {
 				svgCanvas.embedImage('images/logo.png', function(datauri) {
-					if(!datauri) {
+					if (!datauri) {
 						// Disable option
 						$('#image_save_opts [value=embed]').attr('disabled','disabled');
 						$('#image_save_opts input').val(['ref']);
@@ -3645,7 +3631,7 @@
 			$('#layer_new').click(function() {
 				var i = svgCanvas.getCurrentDrawing().getNumLayers();
 				do {
-					var uniqName = uiStrings.layers.layer + " " + ++i;
+					var uniqName = uiStrings.layers.layer + ' ' + ++i;
 				} while(svgCanvas.getCurrentDrawing().hasLayer(uniqName));
 
 				$.prompt(uiStrings.notification.enterUniqueLayerName,uniqName, function(newName) {
@@ -3667,8 +3653,8 @@
 					// This matches what SvgCanvas does
 					// TODO: make this behavior less brittle (svg-editor should get which
 					// layer is selected from the canvas and then select that one in the UI)
-					$('#layerlist tr.layer').removeClass("layersel");
-					$('#layerlist tr.layer:first').addClass("layersel");
+					$('#layerlist tr.layer').removeClass('layersel');
+					$('#layerlist tr.layer:first').addClass('layersel');
 				}
 			}
 
@@ -3688,7 +3674,7 @@
 			}
 
 			function mergeLayer() {
-				if($('#layerlist tr.layersel').index() == svgCanvas.getCurrentDrawing().getNumLayers()-1) return;
+				if ($('#layerlist tr.layersel').index() == svgCanvas.getCurrentDrawing().getNumLayers()-1) return;
 				svgCanvas.mergeLayer();
 				updateContextPanel();
 				populateLayers();
@@ -3697,7 +3683,7 @@
 			function moveLayer(pos) {
 				var curIndex = $('#layerlist tr.layersel').index();
 				var total = svgCanvas.getCurrentDrawing().getNumLayers();
-				if(curIndex > 0 || curIndex < total-1) {
+				if (curIndex > 0 || curIndex < total-1) {
 					curIndex += pos;
 					svgCanvas.setCurrentLayerPosition(total-curIndex-1);
 					populateLayers();
@@ -3717,7 +3703,7 @@
 			$('#layer_rename').click(function() {
 				var curIndex = $('#layerlist tr.layersel').prevAll().length;
 				var oldName = $('#layerlist tr.layersel td.layername').text();
-				$.prompt(uiStrings.notification.enterNewLayerName,"", function(newName) {
+				$.prompt(uiStrings.notification.enterNewLayerName, '', function(newName) {
 					if (!newName) return;
 					if (oldName == newName || svgCanvas.getCurrentDrawing().hasLayer(newName)) {
 						$.alert(uiStrings.notification.layerHasThatName);
@@ -3744,8 +3730,7 @@
 				if (sidewidth+deltax > SIDEPANEL_MAXWIDTH) {
 					deltax = SIDEPANEL_MAXWIDTH - sidewidth;
 					sidewidth = SIDEPANEL_MAXWIDTH;
-				}
-				else if (sidewidth+deltax < 2) {
+				} else if (sidewidth+deltax < 2) {
 					deltax = 2 - sidewidth;
 					sidewidth = 2;
 				}
@@ -3809,8 +3794,7 @@
 							svgCanvas.getCurrentDrawing().setLayerOpacity(curNames[i], 0.5);
 						}
 					}
-				}
-				else {
+				} else {
 					for (var i = 0; i < curNames.length; ++i) {
 						svgCanvas.getCurrentDrawing().setLayerOpacity(curNames[i], 1.0);
 					}
@@ -3843,7 +3827,7 @@
 					layerlist.append(appendstr);
 					selLayerNames.append("<option value=\"" + name + "\">" + name + "</option>");
 				}
-				if(icon !== undefined) {
+				if (icon !== undefined) {
 					var copy = icon.clone();
 					$('td.layervis',layerlist).append(icon.clone());
 					$.resizeSvgIcons({'td.layervis .svg_icon':14});
@@ -3851,18 +3835,18 @@
 				// handle selection of layer
 				$('#layerlist td.layername')
 					.mouseup(function(evt){
-						$('#layerlist tr.layer').removeClass("layersel");
+						$('#layerlist tr.layer').removeClass('layersel');
 						var row = $(this.parentNode);
-						row.addClass("layersel");
+						row.addClass('layersel');
 						svgCanvas.setCurrentLayer(this.textContent);
 						evt.preventDefault();
 					})
 					.mouseover(function(evt){
-						$(this).css({"font-style": "italic", "color":"blue"});
+						$(this).css({'font-style': 'italic', 'color': 'blue'});
 						toggleHighlightLayer(this.textContent);
 					})
 					.mouseout(function(evt){
-						$(this).css({"font-style": "normal", "color":"black"});
+						$(this).css({'font-style': 'normal', 'color': 'black'});
 						toggleHighlightLayer();
 					});
 				$('#layerlist td.layervis').click(function(evt){
@@ -3881,7 +3865,7 @@
 				var num = 5 - $('#layerlist tr.layer').size();
 				while (num-- > 0) {
 					// FIXME: there must a better way to do this
-					layerlist.append("<tr><td style=\"color:white\">_</td><td/></tr>");
+					layerlist.append('<tr><td style="color:white">_</td><td/></tr>');
 				}
 			};
 			populateLayers();
@@ -3902,16 +3886,16 @@
 				var orig_val = elem.value-0;
 				var sug_val = orig_val + step;
 				var increasing = sug_val >= orig_val;
-				if(step === 0) return orig_val;
+				if (step === 0) return orig_val;
 
-				if(orig_val >= 24) {
-					if(increasing) {
+				if (orig_val >= 24) {
+					if (increasing) {
 						return Math.round(orig_val * 1.1);
 					} else {
 						return Math.round(orig_val / 1.1);
 					}
-				} else if(orig_val <= 1) {
-					if(increasing) {
+				} else if (orig_val <= 1) {
+					if (increasing) {
 						return orig_val * 2;
 					} else {
 						return orig_val / 2;
@@ -3923,14 +3907,14 @@
 
 			function stepZoom(elem, step) {
 				var orig_val = elem.value-0;
-				if(orig_val === 0) return 100;
+				if (orig_val === 0) return 100;
 				var sug_val = orig_val + step;
-				if(step === 0) return orig_val;
+				if (step === 0) return orig_val;
 
-				if(orig_val >= 100) {
+				if (orig_val >= 100) {
 					return sug_val;
 				} else {
-					if(sug_val >= orig_val) {
+					if (sug_val >= orig_val) {
 						return orig_val * 2;
 					} else {
 						return orig_val / 2;
@@ -3945,7 +3929,7 @@
 		// // 		$('#canvas_width').val(w);
 		// // 		$('#canvas_height').val(h);
 		// //
-		// // 		if(center) {
+		// // 		if (center) {
 		// // 			var w_area = workarea;
 		// // 			var scroll_y = h/2 - w_area.height()/2;
 		// // 			var scroll_x = w/2 - w_area.width()/2;
@@ -3956,78 +3940,78 @@
 
 			$('#resolution').change(function(){
 				var wh = $('#canvas_width,#canvas_height');
-				if(!this.selectedIndex) {
-					if($('#canvas_width').val() == 'fit') {
-						wh.removeAttr("disabled").val(100);
+				if (!this.selectedIndex) {
+					if ($('#canvas_width').val() == 'fit') {
+						wh.removeAttr('disabled').val(100);
 					}
-				} else if(this.value == 'content') {
-					wh.val('fit').attr("disabled","disabled");
+				} else if (this.value == 'content') {
+					wh.val('fit').attr('disabled', 'disabled');
 				} else {
 					var dims = this.value.split('x');
 					$('#canvas_width').val(dims[0]);
 					$('#canvas_height').val(dims[1]);
-					wh.removeAttr("disabled");
+					wh.removeAttr('disabled');
 				}
 			});
 
 			//Prevent browser from erroneously repopulating fields
-			$('input,select').attr("autocomplete","off");
+			$('input,select').attr('autocomplete', 'off');
 
 			// Associate all button actions as well as non-button keyboard shortcuts
 			var Actions = function() {
 				// sel:'selector', fn:function, evt:'event', key:[key, preventDefault, NoDisableInInput]
 				var tool_buttons = [
-					{sel:'#tool_select', fn: clickSelect, evt: 'click', key: ['V', true]},
-					{sel:'#tool_fhpath', fn: clickFHPath, evt: 'click', key: ['Q', true]},
-					{sel:'#tool_line', fn: clickLine, evt: 'click', key: ['L', true]},
-					{sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: ['R', true], parent: '#tools_rect', icon: 'rect'},
-					{sel:'#tool_square', fn: clickSquare, evt: 'mouseup', parent: '#tools_rect', icon: 'square'},
-					{sel:'#tool_fhrect', fn: clickFHRect, evt: 'mouseup', parent: '#tools_rect', icon: 'fh_rect'},
-					{sel:'#tool_ellipse', fn: clickEllipse, evt: 'mouseup', key: ['E', true], parent: '#tools_ellipse', icon: 'ellipse'},
-					{sel:'#tool_circle', fn: clickCircle, evt: 'mouseup', parent: '#tools_ellipse', icon: 'circle'},
-					{sel:'#tool_fhellipse', fn: clickFHEllipse, evt: 'mouseup', parent: '#tools_ellipse', icon: 'fh_ellipse'},
-					{sel:'#tool_path', fn: clickPath, evt: 'click', key: ['P', true]},
-					{sel:'#tool_text', fn: clickText, evt: 'click', key: ['T', true]},
-					{sel:'#tool_image', fn: clickImage, evt: 'mouseup'},
-					{sel:'#tool_zoom', fn: clickZoom, evt: 'mouseup', key: ['Z', true]},
-					{sel:'#tool_clear', fn: clickClear, evt: 'mouseup', key: ['N', true]},
-					{sel:'#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'mouseup', key: ['S', true]},
-					{sel:'#tool_export', fn: clickExport, evt: 'mouseup'},
-					{sel:'#tool_open', fn: clickOpen, evt: 'mouseup', key: ['O', true]},
-					{sel:'#tool_import', fn: clickImport, evt: 'mouseup'},
-					{sel:'#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
-					{sel:'#tool_wireframe', fn: clickWireframe, evt: 'click', key: ['F', true]},
-					{sel:'#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel,#tool_prefs_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
-					{sel:'#tool_source_save', fn: saveSourceEditor, evt: 'click'},
-					{sel:'#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
-					{sel:'#tool_docprops', fn: showDocProperties, evt: 'mouseup'},
-					{sel:'#tool_prefs_save', fn: savePreferences, evt: 'click'},
-					{sel:'#tool_prefs_option', fn: function() {showPreferences();return false;}, evt: 'mouseup'},
-					{sel:'#tool_delete,#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
-					{sel:'#tool_reorient', fn: reorientPath, evt: 'click'},
-					{sel:'#tool_node_link', fn: linkControlPoints, evt: 'click'},
-					{sel:'#tool_node_clone', fn: clonePathNode, evt: 'click'},
-					{sel:'#tool_node_delete', fn: deletePathNode, evt: 'click'},
-					{sel:'#tool_openclose_path', fn: opencloseSubPath, evt: 'click'},
-					{sel:'#tool_add_subpath', fn: addSubPath, evt: 'click'},
-					{sel:'#tool_move_top', fn: moveToTopSelected, evt: 'click', key: 'ctrl+shift+]'},
-					{sel:'#tool_move_bottom', fn: moveToBottomSelected, evt: 'click', key: 'ctrl+shift+['},
-					{sel:'#tool_topath', fn: convertToPath, evt: 'click'},
-					{sel:'#tool_make_link,#tool_make_link_multi', fn: makeHyperlink, evt: 'click'},
-					{sel:'#tool_undo', fn: clickUndo, evt: 'click', key: ['Z', true]},
-					{sel:'#tool_redo', fn: clickRedo, evt: 'click', key: ['Y', true]},
-					{sel:'#tool_clone,#tool_clone_multi', fn: clickClone, evt: 'click', key: ['D', true]},
-					{sel:'#tool_group', fn: clickGroup, evt: 'click', key: ['G', true]},
-					{sel:'#tool_ungroup', fn: clickGroup, evt: 'click'},
-					{sel:'#tool_unlink_use', fn: clickGroup, evt: 'click'},
-					{sel:'[id^=tool_align]', fn: clickAlign, evt: 'click'},
+					{sel: '#tool_select', fn: clickSelect, evt: 'click', key: ['V', true]},
+					{sel: '#tool_fhpath', fn: clickFHPath, evt: 'click', key: ['Q', true]},
+					{sel: '#tool_line', fn: clickLine, evt: 'click', key: ['L', true]},
+					{sel: '#tool_rect', fn: clickRect, evt: 'mouseup', key: ['R', true], parent: '#tools_rect', icon: 'rect'},
+					{sel: '#tool_square', fn: clickSquare, evt: 'mouseup', parent: '#tools_rect', icon: 'square'},
+					{sel: '#tool_fhrect', fn: clickFHRect, evt: 'mouseup', parent: '#tools_rect', icon: 'fh_rect'},
+					{sel: '#tool_ellipse', fn: clickEllipse, evt: 'mouseup', key: ['E', true], parent: '#tools_ellipse', icon: 'ellipse'},
+					{sel: '#tool_circle', fn: clickCircle, evt: 'mouseup', parent: '#tools_ellipse', icon: 'circle'},
+					{sel: '#tool_fhellipse', fn: clickFHEllipse, evt: 'mouseup', parent: '#tools_ellipse', icon: 'fh_ellipse'},
+					{sel: '#tool_path', fn: clickPath, evt: 'click', key: ['P', true]},
+					{sel: '#tool_text', fn: clickText, evt: 'click', key: ['T', true]},
+					{sel: '#tool_image', fn: clickImage, evt: 'mouseup'},
+					{sel: '#tool_zoom', fn: clickZoom, evt: 'mouseup', key: ['Z', true]},
+					{sel: '#tool_clear', fn: clickClear, evt: 'mouseup', key: ['N', true]},
+					{sel: '#tool_save', fn: function() { editingsource?saveSourceEditor():clickSave()}, evt: 'mouseup', key: ['S', true]},
+					{sel: '#tool_export', fn: clickExport, evt: 'mouseup'},
+					{sel: '#tool_open', fn: clickOpen, evt: 'mouseup', key: ['O', true]},
+					{sel: '#tool_import', fn: clickImport, evt: 'mouseup'},
+					{sel: '#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
+					{sel: '#tool_wireframe', fn: clickWireframe, evt: 'click', key: ['F', true]},
+					{sel: '#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel,#tool_prefs_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
+					{sel: '#tool_source_save', fn: saveSourceEditor, evt: 'click'},
+					{sel: '#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
+					{sel: '#tool_docprops', fn: showDocProperties, evt: 'mouseup'},
+					{sel: '#tool_prefs_save', fn: savePreferences, evt: 'click'},
+					{sel: '#tool_prefs_option', fn: function() {showPreferences();return false;}, evt: 'mouseup'},
+					{sel: '#tool_delete,#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
+					{sel: '#tool_reorient', fn: reorientPath, evt: 'click'},
+					{sel: '#tool_node_link', fn: linkControlPoints, evt: 'click'},
+					{sel: '#tool_node_clone', fn: clonePathNode, evt: 'click'},
+					{sel: '#tool_node_delete', fn: deletePathNode, evt: 'click'},
+					{sel: '#tool_openclose_path', fn: opencloseSubPath, evt: 'click'},
+					{sel: '#tool_add_subpath', fn: addSubPath, evt: 'click'},
+					{sel: '#tool_move_top', fn: moveToTopSelected, evt: 'click', key: 'ctrl+shift+]'},
+					{sel: '#tool_move_bottom', fn: moveToBottomSelected, evt: 'click', key: 'ctrl+shift+['},
+					{sel: '#tool_topath', fn: convertToPath, evt: 'click'},
+					{sel: '#tool_make_link,#tool_make_link_multi', fn: makeHyperlink, evt: 'click'},
+					{sel: '#tool_undo', fn: clickUndo, evt: 'click', key: ['Z', true]},
+					{sel: '#tool_redo', fn: clickRedo, evt: 'click', key: ['Y', true]},
+					{sel: '#tool_clone,#tool_clone_multi', fn: clickClone, evt: 'click', key: ['D', true]},
+					{sel: '#tool_group', fn: clickGroup, evt: 'click', key: ['G', true]},
+					{sel: '#tool_ungroup', fn: clickGroup, evt: 'click'},
+					{sel: '#tool_unlink_use', fn: clickGroup, evt: 'click'},
+					{sel: '[id^=tool_align]', fn: clickAlign, evt: 'click'},
 					// these two lines are required to make Opera work properly with the flyout mechanism
-		// 			{sel:'#tools_rect_show', fn: clickRect, evt: 'click'},
-		// 			{sel:'#tools_ellipse_show', fn: clickEllipse, evt: 'click'},
-					{sel:'#tool_bold', fn: clickBold, evt: 'mousedown'},
-					{sel:'#tool_italic', fn: clickItalic, evt: 'mousedown'},
-					{sel:'#sidepanel_handle', fn: toggleSidePanel, key: ['X']},
-					{sel:'#copy_save_done', fn: cancelOverlays, evt: 'click'},
+		// 			{sel: '#tools_rect_show', fn: clickRect, evt: 'click'},
+		// 			{sel: '#tools_ellipse_show', fn: clickEllipse, evt: 'click'},
+					{sel: '#tool_bold', fn: clickBold, evt: 'mousedown'},
+					{sel: '#tool_italic', fn: clickItalic, evt: 'mousedown'},
+					{sel: '#sidepanel_handle', fn: toggleSidePanel, key: ['X']},
+					{sel: '#copy_save_done', fn: cancelOverlays, evt: 'click'},
 
 					// Shortcuts not associated with buttons
 
@@ -4067,7 +4051,6 @@
 					{key: modKey+'x', fn: cutSelected},
 					{key: modKey+'c', fn: copySelected},
 					{key: modKey+'v', fn: pasteInCenter}
-
 				];
 
 				// Tooltips not directly associated with a single function
@@ -4082,39 +4065,38 @@
 
 						$.each(tool_buttons, function(i, opts)  {
 							// Bind function to button
-							if(opts.sel) {
+							if (opts.sel) {
 								var btn = $(opts.sel);
 								if (btn.length == 0) return true; // Skip if markup does not exist
 								if (opts.evt) {
-								  if (svgedit.browser.isTouch() && opts.evt === "click") opts.evt = "mousedown";
+								  if (svgedit.browser.isTouch() && opts.evt === 'click') opts.evt = 'mousedown';
 									btn[opts.evt](opts.fn);
 								}
 
 								// Add to parent flyout menu, if able to be displayed
-								if(opts.parent && $(opts.parent + '_show').length != 0) {
+								if (opts.parent && $(opts.parent + '_show').length != 0) {
 									var f_h = $(opts.parent);
-									if(!f_h.length) {
+									if (!f_h.length) {
 										f_h = makeFlyoutHolder(opts.parent.substr(1));
 									}
 
 									f_h.append(btn);
 
-									if(!$.isArray(flyouts[opts.parent])) {
+									if (!$.isArray(flyouts[opts.parent])) {
 										flyouts[opts.parent] = [];
 									}
 									flyouts[opts.parent].push(opts);
 								}
 							}
 
-
 							// Bind function to shortcut key
-							if(opts.key) {
+							if (opts.key) {
 								// Set shortcut based on options
 								var keyval, shortcut = '', disInInp = true, fn = opts.fn, pd = false;
-								if($.isArray(opts.key)) {
+								if ($.isArray(opts.key)) {
 									keyval = opts.key[0];
-									if(opts.key.length > 1) pd = opts.key[1];
-									if(opts.key.length > 2) disInInp = opts.key[2];
+									if (opts.key.length > 1) pd = opts.key[1];
+									if (opts.key.length > 2) disInInp = opts.key[2];
 								} else {
 									keyval = opts.key;
 								}
@@ -4123,7 +4105,7 @@
 								$.each(keyval.split('/'), function(i, key) {
 									$(document).bind('keydown', key, function(e) {
 										fn();
-										if(pd) {
+										if (pd) {
 											e.preventDefault();
 										}
 										// Prevent default on ALL keys?
@@ -4132,11 +4114,11 @@
 								});
 
 								// Put shortcut in title
-								if(opts.sel && !opts.hidekey && btn.attr('title')) {
+								if (opts.sel && !opts.hidekey && btn.attr('title')) {
 									var new_title = btn.attr('title').split('[')[0] + ' (' + keyval + ')';
 									key_assocs[keyval] = opts.sel;
 									// Disregard for menu items
-									if(!btn.parents('#main_menu').length) {
+									if (!btn.parents('#main_menu').length) {
 										btn.attr('title', new_title);
 									}
 								}
@@ -4146,21 +4128,20 @@
 						// Setup flyouts
 						setupFlyouts(flyouts);
 
-
 						// Misc additional actions
 
-						// Make "return" keypress trigger the change event
+						// Make 'return' keypress trigger the change event
 						$('.attr_changer, #image_url').bind('keydown', 'return',
 							function(evt) {$(this).change();evt.preventDefault();}
 						);
 
 						$(window).bind('keydown', 'tab', function(e) {
-							if(ui_context === 'canvas') {
+							if (ui_context === 'canvas') {
 								e.preventDefault();
 								selectNext();
 							}
 						}).bind('keydown', 'shift+tab', function(e) {
-							if(ui_context === 'canvas') {
+							if (ui_context === 'canvas') {
 								e.preventDefault();
 								selectPrev();
 							}
@@ -4173,7 +4154,7 @@
 							var menu = ($(sel).parents('#main_menu').length);
 
 							$(sel).each(function() {
-								if(menu) {
+								if (menu) {
 									var t = $(this).text().split(' [')[0];
 								} else {
 									var t = this.title.split(' [')[0];
@@ -4182,13 +4163,13 @@
 								// Shift+Up
 								$.each(keyval.split('/'), function(i, key) {
 									var mod_bits = key.split('+'), mod = '';
-									if(mod_bits.length > 1) {
+									if (mod_bits.length > 1) {
 										mod = mod_bits[0] + '+';
 										key = mod_bits[1];
 									}
 									key_str += (i?'/':'') + mod + (uiStrings['key_'+key] || key);
 								});
-								if(menu) {
+								if (menu) {
 									this.lastChild.textContent = t +' ['+key_str+']';
 								} else {
 									this.title = t +' ['+key_str+']';
@@ -4199,7 +4180,7 @@
 					getButtonData: function(sel) {
 						var b;
 						$.each(tool_buttons, function(i, btn) {
-							if(btn.sel === sel) b = btn;
+							if (btn.sel === sel) b = btn;
 						});
 						return b;
 					}
@@ -4212,23 +4193,23 @@
 			Editor.ready(function() {
 				var tool,
 					itool = curConfig.initTool,
-					container = $("#tools_left, #svg_editor .tools_flyout"),
-					pre_tool = container.find("#tool_" + itool),
-					reg_tool = container.find("#" + itool);
-				if(pre_tool.length) {
+					container = $('#tools_left, #svg_editor .tools_flyout'),
+					pre_tool = container.find('#tool_' + itool),
+					reg_tool = container.find('#' + itool);
+				if (pre_tool.length) {
 					tool = pre_tool;
-				} else if(reg_tool.length){
+				} else if (reg_tool.length){
 					tool = reg_tool;
 				} else {
-					tool = $("#tool_select");
+					tool = $('#tool_select');
 				}
 				tool.click().mouseup();
 
-				if(curConfig.wireframe) {
+				if (curConfig.wireframe) {
 					$('#tool_wireframe').click();
 				}
 
-				if(curConfig.showlayers) {
+				if (curConfig.showlayers) {
 					toggleSidePanel();
 				}
 
@@ -4238,15 +4219,15 @@
 					$('#show_rulers')[0].checked = true;
 				}
 
-				if(curConfig.gridSnapping) {
+				if (curConfig.gridSnapping) {
 					$('#grid_snapping_on')[0].checked = true;
 				}
 
-				if(curConfig.baseUnit) {
+				if (curConfig.baseUnit) {
 					$('#base_unit').val(curConfig.baseUnit);
 				}
 
-				if(curConfig.snappingStep) {
+				if (curConfig.snappingStep) {
 					$('#grid_snapping_step').val(curConfig.snappingStep);
 				}
 			});
@@ -4261,7 +4242,7 @@
 				// Set default zoom
 				.val(svgCanvas.getZoom() * 100);
 
-			$("#workarea").contextMenu({
+			$('#workarea').contextMenu({
 					menu: 'cmenu_canvas',
 					inSpeed: 0
 				},
@@ -4301,13 +4282,13 @@
 							moveToBottomSelected();
 							break;
 						default:
-							if(svgedit.contextmenu && svgedit.contextmenu.hasCustomHandler(action)){
+							if (svgedit.contextmenu && svgedit.contextmenu.hasCustomHandler(action)){
 								svgedit.contextmenu.getCustomHandler(action).call();
 							}
 							break;
 					}
 
-					if(svgCanvas.clipBoard.length) {
+					if (svgCanvas.clipBoard.length) {
 						canv_menu.enableContextMenuItems('#paste,#paste_in_place');
 					}
 			});
@@ -4331,14 +4312,14 @@
 				}
 			};
 
-			$("#layerlist").contextMenu({
+			$('#layerlist').contextMenu({
 					menu: 'cmenu_layers',
 					inSpeed: 0
 				},
 				lmenu_func
 			);
 
-			$("#layer_moreopts").contextMenu({
+			$('#layer_moreopts').contextMenu({
 					menu: 'cmenu_layers',
 					inSpeed: 0,
 					allowLeft: true
@@ -4362,12 +4343,12 @@
 				}
 
 				// Suppress warning if page is empty
-				if(undoMgr.getUndoStackSize() === 0) {
+				if (undoMgr.getUndoStackSize() === 0) {
 					Editor.show_save_warning = false;
 				}
 
-				// show_save_warning is set to "false" when the page is saved.
-				if(!curConfig.no_save_warning && Editor.show_save_warning) {
+				// show_save_warning is set to 'false' when the page is saved.
+				if (!curConfig.no_save_warning && Editor.show_save_warning) {
 					// Browser already asks question about closing the page
 					return uiStrings.notification.unsavedChanges;
 				}
@@ -4375,7 +4356,7 @@
 
 			Editor.openPrep = function(func) {
 				$('#main_menu').hide();
-				if(undoMgr.getUndoStackSize() === 0) {
+				if (undoMgr.getUndoStackSize() === 0) {
 					func(true);
 				} else {
 					$.confirm(uiStrings.notification.QwantToOpen, func);
@@ -4387,68 +4368,65 @@
 			// and provide a file input to click.  When that change event fires, it will
 			// get the text contents of the file and send it to the canvas
 			if (window.FileReader) {
-				var import_image = function(e) {
+				var importImage = function(e) {
 					e.stopPropagation();
 					e.preventDefault();
-					$("#workarea").removeAttr("style");
+					$('#workarea').removeAttr('style');
 					$('#main_menu').hide();
-					var file = null;
-					if (e.type == "drop") file = e.dataTransfer.files[0];
-					else file = this.files[0];
-					if (file) {
-						if(file.type.indexOf("image") != -1) {
-							//detected an image
-							//svg handling
-							if(file.type.indexOf("svg") != -1) {
-								var reader = new FileReader();
-								reader.onloadend = function(e) {
-									svgCanvas.importSvgString(e.target.result, true);
-									svgCanvas.ungroupSelectedElement();
-									svgCanvas.ungroupSelectedElement();
-									svgCanvas.groupSelectedElements();
-									svgCanvas.alignSelectedElements("m", "page");
-									svgCanvas.alignSelectedElements("c", "page");
+					var file = (e.type == 'drop') ? e.dataTransfer.files[0] : this.files[0];
+					if (!file) {
+						return;
+					}
+					if (file.type.indexOf('image') != -1) {
+						//detected an image
+						//svg handling
+						if (file.type.indexOf('svg') != -1) {
+							var reader = new FileReader();
+							reader.onloadend = function(e) {
+								svgCanvas.importSvgString(e.target.result, true);
+								svgCanvas.ungroupSelectedElement();
+								svgCanvas.ungroupSelectedElement();
+								svgCanvas.groupSelectedElements();
+								svgCanvas.alignSelectedElements('m', 'page');
+								svgCanvas.alignSelectedElements('c', 'page');
+							};
+							reader.readAsText(file);
+						} else {
+						//bitmap handling
+							var reader = new FileReader();
+							reader.onloadend = function(e) {
+								// let's insert the new image until we know its dimensions
+								insertNewImage = function(width, height) {
+									var newImage = svgCanvas.addSvgElementFromJson({
+										element: 'image',
+										attr: {
+											x: 0,
+											y: 0,
+											width: width,
+											height: height,
+											id: svgCanvas.getNextId(),
+											style: 'pointer-events:inherit'
+										}
+									});
+									svgCanvas.setHref(newImage, e.target.result);
+									svgCanvas.selectOnly([newImage]);
+									svgCanvas.alignSelectedElements('m', 'page');
+									svgCanvas.alignSelectedElements('c', 'page');
+									updateContextPanel();
 								};
-								reader.readAsText(file);
-							}
-
-							//bitmap handling
-							else {
-								var reader = new FileReader();
-								reader.onloadend = function(e) {
-									// let's insert the new image until we know its dimensions
-									insertNewImage = function(img_width, img_height){
-										var newImage = svgCanvas.addSvgElementFromJson({
-											"element": "image",
-											"attr": {
-												"x": 0,
-												"y": 0,
-												"width": img_width,
-												"height": img_height,
-												"id": svgCanvas.getNextId(),
-												"style": "pointer-events:inherit"
-											}
-										});
-										svgCanvas.setHref(newImage, e.target.result);
-										svgCanvas.selectOnly([newImage]);
-										svgCanvas.alignSelectedElements("m", "page");
-										svgCanvas.alignSelectedElements("c", "page");
-										updateContextPanel();
-									};
- 									// create dummy img so we know the default dimensions
-									var img_width = 100;
- 									var img_height = 100;
-									var img = new Image();
-									img.src = e.target.result;
-									img.style.opacity = 0;
-									img.onload = function() {
-										img_width = img.offsetWidth;
-										img_height = img.offsetHeight;
-										insertNewImage(img_width, img_height);
-									};
+									// create dummy img so we know the default dimensions
+								var imgWidth = 100;
+								var imgHeight = 100;
+								var img = new Image();
+								img.src = e.target.result;
+								img.style.opacity = 0;
+								img.onload = function() {
+									imgWidth = img.offsetWidth;
+									imgHeight = img.offsetHeight;
+									insertNewImage(imgWidth, imgHeight);
 								};
-								reader.readAsDataURL(file);
-							}
+							};
+							reader.readAsDataURL(file);
 						}
 					}
 				};
@@ -4473,14 +4451,14 @@
 				workarea[0].addEventListener('dragenter', onDragEnter, false);
 				workarea[0].addEventListener('dragover', onDragOver, false);
 				workarea[0].addEventListener('dragleave', onDragLeave, false);
-				workarea[0].addEventListener('drop', import_image, false);
+				workarea[0].addEventListener('drop', importImage, false);
 
 				var open = $('<input type="file">').change(function() {
 					var f = this;
 					Editor.openPrep(function(ok) {
-						if(!ok) return;
+						if (!ok) return;
 						svgCanvas.clear();
-						if(f.files.length==1) {
+						if (f.files.length==1) {
 							var reader = new FileReader();
 							reader.onloadend = function(e) {
 								loadSvgString(e.target.result);
@@ -4490,10 +4468,10 @@
 						}
 					});
 				});
-				$("#tool_open").show().prepend(open);
+				$('#tool_open').show().prepend(open);
 
-				var img_import = $('<input type="file">').change(import_image);
-				$("#tool_import").show().prepend(img_import);
+				var imgImport = $('<input type="file">').change(importImage);
+				$('#tool_import').show().prepend(imgImport);
 			}
 
 			var updateCanvas = Editor.updateCanvas = function(center, new_ctr) {
@@ -4502,7 +4480,7 @@
 				var w_orig = w, h_orig = h;
 				var zoom = svgCanvas.getZoom();
 				var w_area = workarea;
-				var cnvs = $("#svgcanvas");
+				var cnvs = $('#svgcanvas');
 
 				var old_ctr = {
 					x: w_area[0].scrollLeft + w_orig/2,
@@ -4513,7 +4491,7 @@
 				w = Math.max(w_orig, svgCanvas.contentW * zoom * multi);
 				h = Math.max(h_orig, svgCanvas.contentH * zoom * multi);
 
-				if(w == w_orig && h == h_orig) {
+				if (w == w_orig && h == h_orig) {
 					workarea.css('overflow','hidden');
 				} else {
 					workarea.css('overflow','scroll');
@@ -4531,7 +4509,7 @@
 				var scroll_x = w/2 - w_orig/2;
 				var scroll_y = h/2 - h_orig/2;
 
-				if(!new_ctr) {
+				if (!new_ctr) {
 
 					var old_dist_x = old_ctr.x - old_can_x;
 					var new_x = new_can_x + old_dist_x * ratio;
@@ -4543,15 +4521,14 @@
 						x: new_x,
 						y: new_y
 					};
-
 				} else {
 					new_ctr.x += offset.x,
 					new_ctr.y += offset.y;
 				}
 
-				if(center) {
+				if (center) {
 					// Go to top-left for larger documents
-					if(svgCanvas.contentW > w_area.width()) {
+					if (svgCanvas.contentW > w_area.width()) {
 						// Top-left
 						workarea[0].scrollLeft = offset.x - 10;
 						workarea[0].scrollTop = offset.y - 10;
@@ -4564,7 +4541,7 @@
 					w_area[0].scrollLeft = new_ctr.x - w_orig/2;
 					w_area[0].scrollTop = new_ctr.y - h_orig/2;
 				}
-				if(curConfig.showRulers) {
+				if (curConfig.showRulers) {
 					updateRulers(cnvs, zoom);
 					workarea.scroll();
 				}
@@ -4572,15 +4549,15 @@
 
 			// Make [1,2,5] array
 			var r_intervals = [];
-			for(var i = .1; i < 1E5; i *= 10) {
+			for (var i = .1; i < 1E5; i *= 10) {
 				r_intervals.push(1 * i);
 				r_intervals.push(2 * i);
 				r_intervals.push(5 * i);
 			}
 
 			function updateRulers(scanvas, zoom) {
-				if(!zoom) zoom = svgCanvas.getZoom();
-				if(!scanvas) scanvas = $("#svgcanvas");
+				if (!zoom) zoom = svgCanvas.getZoom();
+				if (!scanvas) scanvas = $('#svgcanvas');
 
 				var limit = 30000;
 
@@ -4589,10 +4566,10 @@
 				var units = svgedit.units.getTypeMap();
 				var unit = units[curConfig.baseUnit]; // 1 = 1px
 
-				for(var d = 0; d < 2; d++) {
+				for (var d = 0; d < 2; d++) {
 					var is_x = (d === 0);
 					var dim = is_x ? 'x' : 'y';
-					var lentype = is_x?'width':'height';
+					var lentype = is_x ? 'width' : 'height';
 					var content_d = c_elem.getAttribute(dim)-0;
 
 					var $hcanv_orig = $('#ruler_' + dim + ' canvas:first');
@@ -4612,20 +4589,20 @@
 					var canv_count = 1;
 					var ctx_num = 0;
 					var ctx_arr;
-					var ctx = hcanv.getContext("2d");
+					var ctx = hcanv.getContext('2d');
 
-					ctx.fillStyle = "rgb(200,0,0)";
-					ctx.fillRect(0,0,hcanv.width,hcanv.height);
+					ctx.fillStyle = 'rgb(200,0,0)';
+					ctx.fillRect(0, 0, hcanv.width, hcanv.height);
 
 					// Remove any existing canvasses
 					$hcanv.siblings().remove();
 
 					// Create multiple canvases when necessary (due to browser limits)
-					if(ruler_len >= limit) {
+					if (ruler_len >= limit) {
 						var num = parseInt(ruler_len / limit, 10) + 1;
 						ctx_arr = Array(num);
 						ctx_arr[0] = ctx;
-						for(var i = 1; i < num; i++) {
+						for (var i = 1; i < num; i++) {
 							hcanv[lentype] = limit;
 							var copy = hcanv.cloneNode(true);
 							hcanv.parentNode.appendChild(copy);
@@ -4645,17 +4622,17 @@
 					// Calculate the main number interval
 					var raw_m = 50 / u_multi;
 					var multi = 1;
-					for(var i = 0; i < r_intervals.length; i++) {
+					for (var i = 0; i < r_intervals.length; i++) {
 						var num = r_intervals[i];
 						multi = num;
-						if(raw_m <= num) {
+						if (raw_m <= num) {
 							break;
 						}
 					}
 
 					var big_int = multi * u_multi;
 
-					ctx.font = "9px sans-serif";
+					ctx.font = '9px sans-serif';
 
 					var ruler_d = ((content_d / u_multi) % multi) * u_multi;
 					var label_pos = ruler_d - big_int;
@@ -4664,7 +4641,7 @@
 						var real_d = ruler_d - content_d;
 
 						var cur_d = Math.round(ruler_d) + .5;
-						if(is_x) {
+						if (is_x) {
 							ctx.moveTo(cur_d, 15);
 							ctx.lineTo(cur_d, 0);
 						} else {
@@ -4674,7 +4651,7 @@
 
 						var num = (label_pos - content_d) / u_multi;
 						var label;
-						if(multi >= 1) {
+						if (multi >= 1) {
 							label = Math.round(num);
 						} else {
 							var decs = (multi+'').split('.')[1].length;
@@ -4686,26 +4663,26 @@
 // 						real_d2 = Math.abs(real_d2);
 
 						// Change 1000s to Ks
-						if(label !== 0 && label !== 1000 && label % 1000 === 0) {
+						if (label !== 0 && label !== 1000 && label % 1000 === 0) {
 							label = (label / 1000) + 'K';
 						}
 
-						if(is_x) {
+						if (is_x) {
 							ctx.fillText(label, ruler_d+2, 8);
 						} else {
 							var str = (label+'').split('');
-							for(var i = 0; i < str.length; i++) {
+							for (var i = 0; i < str.length; i++) {
 								ctx.fillText(str[i], 1, (ruler_d+9) + i*9);
 							}
 						}
 
 						var part = big_int / 10;
-						for(var i = 1; i < 10; i++) {
+						for (var i = 1; i < 10; i++) {
 							var sub_d = Math.round(ruler_d + part * i) + .5;
-							if(ctx_arr && sub_d > ruler_len) {
+							if (ctx_arr && sub_d > ruler_len) {
 								ctx_num++;
 								ctx.stroke();
-								if(ctx_num >= ctx_arr.length) {
+								if (ctx_num >= ctx_arr.length) {
 									i = 10;
 									ruler_d = total_len;
 									continue;
@@ -4716,7 +4693,7 @@
 							}
 
 							var line_num = (i % 2)?12:10;
-							if(is_x) {
+							if (is_x) {
 								ctx.moveTo(sub_d, 15);
 								ctx.lineTo(sub_d, line_num);
 							} else {
@@ -4727,7 +4704,7 @@
 					}
 
 					// console.log('ctx', ctx);
-					ctx.strokeStyle = "#000";
+					ctx.strokeStyle = '#000';
 					ctx.stroke();
 				}
 			}
@@ -4738,7 +4715,7 @@
 
 		//	var revnums = "svg-editor.js ($Rev$) ";
 		//	revnums += svgCanvas.getVersion();
-		//	$('#copyright')[0].setAttribute("title", revnums);
+		//	$('#copyright')[0].setAttribute('title', revnums);
 
 			// Callback handler for embedapi.js
 			try {
@@ -4746,9 +4723,9 @@
 					//simple partial JSON encoder implementation
 					if (window.JSON && JSON.stringify) return JSON.stringify(obj);
 					var enc = arguments.callee; //for purposes of recursion
-					if (typeof obj == "boolean" || typeof obj == "number"){
+					if (typeof obj == 'boolean' || typeof obj == 'number'){
 						return obj+''; //should work...
-					} else if (typeof obj == "string") {
+					} else if (typeof obj == 'string') {
 						//a large portion of this is stolen from Douglas Crockford's json2.js
 						return '"'+
 							obj.replace(
@@ -4758,24 +4735,24 @@
 							})
 							+'"'; //note that this isn't quite as purtyful as the usualness
 					} else if (obj.length) { //simple hackish test for arrayish-ness
-						for(var i = 0; i < obj.length; i++){
+						for (var i = 0; i < obj.length; i++){
 							obj[i] = enc(obj[i]); //encode every sub-thingy on top
 						}
-						return "["+obj.join(",")+"]";
+						return '['+obj.join(',')+']';
 					} else {
 						var pairs = []; //pairs will be stored here
-						for(var k in obj){ //loop through thingys
-							pairs.push(enc(k)+":"+enc(obj[k])); //key: value
+						for (var k in obj){ //loop through thingys
+							pairs.push(enc(k)+':'+enc(obj[k])); //key: value
 						}
-						return "{"+pairs.join(",")+"}"; //wrap in the braces
+						return '{'+pairs.join(',')+'}'; //wrap in the braces
 					}
 				};
-				window.addEventListener("message", function(e) {
-					var cbid = parseInt(e.data.substr(0, e.data.indexOf(";")), 10);
+				window.addEventListener('message', function(e) {
+					var cbid = parseInt(e.data.substr(0, e.data.indexOf(';')), 10);
 					try {
-						e.source.postMessage("SVGe"+cbid+";"+json_encode(eval(e.data)), "*");
+						e.source.postMessage('SVGe'+cbid+';'+json_encode(eval(e.data)), '*');
 					} catch(err) {
-						e.source.postMessage("SVGe"+cbid+";error:"+err.message, "*");
+						e.source.postMessage('SVGe'+cbid+';error:'+err.message, '*');
 					}
  				}, false);
 			} catch(err) {
@@ -4791,45 +4768,44 @@
 			Editor.setLang = function(lang, allStrings) {
 				$.pref('lang', lang);
 				$('#lang_select').val(lang);
-				if(allStrings) {
-
-					var notif = allStrings.notification;
-					// $.extend will only replace the given strings
-					var oldLayerName = $('#layerlist tr.layersel td.layername').text();
-					var rename_layer = (oldLayerName == uiStrings.common.layer + ' 1');
-
-					$.extend(uiStrings, allStrings);
-					svgCanvas.setUiStrings(allStrings);
-					Actions.setTitles();
-
-					if(rename_layer) {
-						svgCanvas.renameCurrentLayer(uiStrings.common.layer + ' 1');
-						populateLayers();
-					}
-
-					svgCanvas.runExtensions("langChanged", lang);
-
-					// Update flyout tooltips
-					setFlyoutTitles();
-
-					// Copy title for certain tool elements
-					var elems = {
-						'#stroke_color': '#tool_stroke .icon_label, #tool_stroke .color_block',
-						'#fill_color': '#tool_fill label, #tool_fill .color_block',
-						'#linejoin_miter': '#cur_linejoin',
-						'#linecap_butt': '#cur_linecap'
-					};
-
-					$.each(elems, function(source, dest) {
-						$(dest).attr('title', $(source)[0].title);
-					});
-
-					// Copy alignment titles
-					$('#multiselected_panel div[id^=tool_align]').each(function() {
-						$('#tool_pos' + this.id.substr(10))[0].title = this.title;
-					});
-
+				if (!allStrings) {
+					return;
 				}
+				var notif = allStrings.notification;
+				// $.extend will only replace the given strings
+				var oldLayerName = $('#layerlist tr.layersel td.layername').text();
+				var rename_layer = (oldLayerName == uiStrings.common.layer + ' 1');
+
+				$.extend(uiStrings, allStrings);
+				svgCanvas.setUiStrings(allStrings);
+				Actions.setTitles();
+
+				if (rename_layer) {
+					svgCanvas.renameCurrentLayer(uiStrings.common.layer + ' 1');
+					populateLayers();
+				}
+
+				svgCanvas.runExtensions('langChanged', lang);
+
+				// Update flyout tooltips
+				setFlyoutTitles();
+
+				// Copy title for certain tool elements
+				var elems = {
+					'#stroke_color': '#tool_stroke .icon_label, #tool_stroke .color_block',
+					'#fill_color': '#tool_fill label, #tool_fill .color_block',
+					'#linejoin_miter': '#cur_linejoin',
+					'#linecap_butt': '#cur_linecap'
+				};
+
+				$.each(elems, function(source, dest) {
+					$(dest).attr('title', $(source)[0].title);
+				});
+
+				// Copy alignment titles
+				$('#multiselected_panel div[id^=tool_align]').each(function() {
+					$('#tool_pos' + this.id.substr(10))[0].title = this.title;
+				});
 			};
 		};
 
@@ -4838,7 +4814,7 @@
 		function loadSvgString(str, callback) {
 			var success = svgCanvas.setSvgString(str) !== false;
 			callback = callback || $.noop;
-			if(success) {
+			if (success) {
 				callback(true);
 			} else {
 				$.alert(uiStrings.notification.errorLoadingSVG, function() {
@@ -4848,7 +4824,7 @@
 		}
 
 		Editor.ready = function(cb) {
-			if(!is_ready) {
+			if (!isReady) {
 				callbacks.push(cb);
 			} else {
 				cb();
@@ -4859,7 +4835,7 @@
 			$.each(callbacks, function() {
 				this();
 			});
-			is_ready = true;
+			isReady = true;
 		};
 
 		Editor.loadFromString = function(str) {
@@ -4876,7 +4852,7 @@
 		};
 
 		Editor.loadFromURL = function(url, opts) {
-			if(!opts) opts = {};
+			if (!opts) opts = {};
 
 			var cache = opts.cache;
 			var cb = opts.callback;
@@ -4890,10 +4866,10 @@
 						loadSvgString(str, cb);
 					},
 					error: function(xhr, stat, err) {
-						if(xhr.status != 404 && xhr.responseText) {
+						if (xhr.status != 404 && xhr.responseText) {
 							loadSvgString(xhr.responseText, cb);
 						} else {
-							$.alert(uiStrings.notification.URLloadFail + ": \n"+err+'', cb);
+							$.alert(uiStrings.notification.URLloadFail + ': \n'+err+'', cb);
 						}
 					}
 				});
@@ -4914,7 +4890,7 @@
 			// Note that we don't want this on Editor.ready since some extensions
 			// may want to run before then (like server_opensave).
 			$(function() {
-				if(svgCanvas) svgCanvas.addExtension.apply(this, args);
+				if (svgCanvas) svgCanvas.addExtension.apply(this, args);
 			});
 		};
 
