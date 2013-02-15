@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
-  <script src='../editor/jquery.js'></script>
-  <script type='text/javascript' src='../editor/math.js'></script>
-  <script type='text/javascript' src='qunit/qunit.js'></script>
-  <script type='text/javascript'>
-  $(function() {
-  	// log function
-  	QUnit.log = function(result, message) {
+<link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
+<script src='../editor/jquery.js'></script>
+<script type='text/javascript' src='../editor/math.js'></script>
+<script type='text/javascript' src='qunit/qunit.js'></script>
+<script type='text/javascript'>
+$(function() {
+	// log function
+	QUnit.log = function(result, message) {
 		if (window.console && window.console.log) {
 			window.console.log(result +' :: '+ message);
 		}
@@ -21,7 +21,7 @@
 
 	test('Test svgedit.math package', function() {
 		expect(7);
-		
+
 		ok(svgedit.math);
 		ok(svgedit.math.transformPoint);
 		ok(svgedit.math.isIdentity);
@@ -42,19 +42,19 @@
 		var pt = transformPoint(100, 200, m);
 		equals(pt.x, 100);
 		equals(pt.y, 200);
-		
+
 		m.e = 300; m.f = 400;
 		pt = transformPoint(100, 200, m);
 		equals(pt.x, 400);
 		equals(pt.y, 600);
-		
+
 		m.a = 0.5; m.b = 0.75;
 		m.c = 1.25; m.d = 2;
 		pt = transformPoint(100, 200, m);
 		equals(pt.x, 100 * m.a + 200 * m.c + m.e);
 		equals(pt.y, 100 * m.b + 200 * m.d + m.f);
 	});
-	
+
 	test('Test svgedit.math.isIdentity() function', function() {
 		expect(2);
 
@@ -95,20 +95,44 @@
 		I = mult(scale_up, scale_down, scale_down_more);
 		ok(isIdentity(I), 'Expected identity matrix when scaling up and down');
 
-		// test multiplication with its inverse 
+		// test multiplication with its inverse
 		I = mult(rot_there, rot_there.inverse());
 		ok(isIdentity(I), 'Expected identity matrix when multiplying a matrix by its inverse');
 		I = mult(rot_there.inverse(), rot_there);
 		ok(isIdentity(I), 'Expected identity matrix when multiplying a matrix by its inverse');
 	});
-  }); 
-  </script>  
-</head>  
-<body>  
-  <h1 id='qunit-header'>Unit Tests for math.js</h1>
-  <h2 id='qunit-banner'></h2>
-  <h2 id='qunit-userAgent'></h2>
-  <ol id='qunit-tests'>
-  </ol>
-</body>  
+
+	test('Test svgedit.math.transformBox() function', function() {
+		expect(12);
+		var transformBox = svgedit.math.transformBox;
+
+		var m = svg.createSVGMatrix();
+		m.a = 1; m.b = 0;
+		m.c = 0; m.d = 1;
+		m.e = 0; m.f = 0;
+
+		var r = transformBox(10, 10, 200, 300, m);
+		equals(r.tl.x, 10);
+		equals(r.tl.y, 10);
+		equals(r.tr.x, 210);
+		equals(r.tr.y, 10);
+		equals(r.bl.x, 10);
+		equals(r.bl.y, 310);
+		equals(r.br.x, 210);
+		equals(r.br.y, 310);
+		equals(r.aabox.x, 10);
+		equals(r.aabox.y, 10);
+		equals(r.aabox.width, 200);
+		equals(r.aabox.height, 300);
+	});
+});
+</script>
+</head>
+<body>
+	<h1 id='qunit-header'>Unit Tests for math.js</h1>
+	<h2 id='qunit-banner'></h2>
+	<h2 id='qunit-userAgent'></h2>
+	<ol id='qunit-tests'>
+	</ol>
+</body>
 </html>
