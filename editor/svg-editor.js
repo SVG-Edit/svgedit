@@ -528,7 +528,7 @@
 				zoomInIcon = 'crosshair',
 				zoomOutIcon = 'crosshair',
 				ui_context = 'toolbars',
-				orig_source = '',
+				origSource = '',
 				paintBox = {fill: null, stroke:null};
 
 			// This sets up alternative dialog boxes. They mostly work the same way as
@@ -618,7 +618,7 @@
 			var docprops = false;
 			var preferences = false;
 			var cur_context = '';
-			var orig_title = $('title:first').text();
+			var origTitle = $('title:first').text();
 
 			var saveHandler = function(window, svg) {
 				Editor.show_save_warning = false;
@@ -641,7 +641,6 @@
 				// Alert will only appear the first time saved OR the first time the bug is encountered
 				var done = $.pref('save_notice_done');
 				if (done !== 'all') {
-
 					var note = uiStrings.notification.saveFromBrowser.replace('%s', 'SVG');
 
 					// Check if FF and has <defs/>
@@ -2719,7 +2718,7 @@
 				$('#save_output_btns').toggle(!!forSaving);
 				$('#tool_source_back').toggle(!forSaving);
 
-				var str = orig_source = svgCanvas.getSvgString();
+				var str = origSource = svgCanvas.getSvgString();
 				$('#svg_source_textarea').val(str);
 				$('#svg_source_editor').fadeIn();
 				properlySourceSizeTextArea();
@@ -2812,20 +2811,20 @@
 
 			var updateTitle = function(title) {
 				title = title || svgCanvas.getDocumentTitle();
-				var new_title = orig_title + (title ? ': ' + title : '');
+				var newTitle = origTitle + (title ? ': ' + title : '');
 
 				// Remove title update with current context info, isn't really necessary
 // 				if (cur_context) {
 // 					new_title = new_title + cur_context;
 // 				}
-				$('title:first').text(new_title);
+				$('title:first').text(newTitle);
 			};
 
 			var saveDocProperties = function(){
 				// set title
-				var new_title = $('#canvas_title').val();
-				updateTitle(new_title);
-				svgCanvas.setDocumentTitle(new_title);
+				var newTitle = $('#canvas_title').val();
+				updateTitle(newTitle);
+				svgCanvas.setDocumentTitle(newTitle);
 
 				// update resolution
 				var width = $('#canvas_width'), w = width.val();
@@ -3150,27 +3149,27 @@
 				}
 
 				if (size != 'm') {
-					var style_str = '';
+					var styleStr = '';
 					$.each(cssResizeRules, function(selector, rules) {
 						selector = '#svg_editor ' + selector.replace(/,/g,', #svg_editor');
-						style_str += selector + '{';
+						styleStr += selector + '{';
 						$.each(rules, function(prop, values) {
 							if (typeof values === 'number') {
 								var val = (values * scale) + 'px';
 							} else if (values[size] || values.all) {
 								var val = (values[size] || values.all);
 							}
-							style_str += (prop + ':' + val + ';');
+							styleStr += (prop + ':' + val + ';');
 						});
-						style_str += '}';
+						styleStr += '}';
 					});
 					//this.style[ua_prefix + 'Transform'] = 'scale(' + scale + ')';
 					var prefix = '-' + ua_prefix.toLowerCase() + '-';
-					style_str += (sel_toscale + '{' + prefix + 'transform: scale(' + scale + ');}'
+					styleStr += (sel_toscale + '{' + prefix + 'transform: scale(' + scale + ');}'
 					+ ' #svg_editor div.toolset .toolset {' + prefix + 'transform: scale(1); margin: 1px !important;}' // Hack for markers
 					+ ' #svg_editor .ui-slider {' + prefix + 'transform: scale(' + (1/scale) + ');}' // Hack for sliders
 					);
-					rule_elem.text(style_str);
+					rule_elem.text(styleStr);
 				}
 
 				setFlyoutPositions();
@@ -3186,7 +3185,7 @@
 				}
 
 				if (editingsource) {
-					if (orig_source !== $('#svg_source_textarea').val()) {
+					if (origSource !== $('#svg_source_textarea').val()) {
 						$.confirm(uiStrings.notification.QignoreSourceChanges, function(ok) {
 							if (ok) hideSourceEditor();
 						});
@@ -4115,11 +4114,11 @@
 
 								// Put shortcut in title
 								if (opts.sel && !opts.hidekey && btn.attr('title')) {
-									var new_title = btn.attr('title').split('[')[0] + ' (' + keyval + ')';
+									var newTitle = btn.attr('title').split('[')[0] + ' (' + keyval + ')';
 									key_assocs[keyval] = opts.sel;
 									// Disregard for menu items
 									if (!btn.parents('#main_menu').length) {
-										btn.attr('title', new_title);
+										btn.attr('title', newTitle);
 									}
 								}
 							}
