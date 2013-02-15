@@ -58,15 +58,15 @@ svgedit.utilities.init = function(editorContext) {
 svgedit.utilities.toXml = function(str) {
 	return $('<p/>').text(str).html();
 };
-	
+
 // Function: svgedit.utilities.fromXml
-// Converts XML entities in a string to single characters. 
+// Converts XML entities in a string to single characters.
 // Example: '&amp;' becomes '&'
 //
 // Parameters:
 // str - The string to be converted
 //
-// Returns: 
+// Returns:
 // The converted string
 svgedit.utilities.fromXml = function(str) {
 	return $('<p/>').html(str).text();
@@ -168,7 +168,7 @@ svgedit.utilities.decode64 = function(input) {
 // 				else if (c > 127) {
 // 					if (c < 2048){
 // 						output += String.fromCharCode((c >> 6) | 192);
-// 					} 
+// 					}
 // 					else {
 // 						output += String.fromCharCode((c >> 12) | 224) + String.fromCharCode((c >> 6) & 63 | 128);
 // 					}
@@ -178,7 +178,7 @@ svgedit.utilities.decode64 = function(input) {
 // 			return output;
 // 		},
 
-// Function: svgedit.utilities.convertToXMLReferences 
+// Function: svgedit.utilities.convertToXMLReferences
 // Converts a string to use XML references
 svgedit.utilities.convertToXMLReferences = function(input) {
 	var output = '';
@@ -205,8 +205,8 @@ svgedit.utilities.text2xml = function(sXML) {
 	try{
 		var dXML = (window.DOMParser)?new DOMParser():new ActiveXObject('Microsoft.XMLDOM');
 		dXML.async = false;
-	} catch(e){ 
-		throw new Error('XML Parser could not be instantiated'); 
+	} catch(e){
+		throw new Error('XML Parser could not be instantiated');
 	};
 	try{
 		if(dXML.loadXML) out = (dXML.loadXML(sXML))?dXML:false;
@@ -267,7 +267,7 @@ svgedit.utilities.walkTreePost = function(elem, cbFn) {
 };
 
 // Function: svgedit.utilities.getUrlFromAttr
-// Extracts the URL from the url(...) syntax of some attributes.  
+// Extracts the URL from the url(...) syntax of some attributes.
 // Three variants:
 // 	* <circle fill="url(someFile.svg#foo)" />
 //  * <circle fill="url('someFile.svg#foo')" />
@@ -275,11 +275,11 @@ svgedit.utilities.walkTreePost = function(elem, cbFn) {
 //
 // Parameters:
 // attrVal - The attribute value as a string
-// 
+//
 // Returns:
 // String with just the URL, like someFile.svg#foo
 svgedit.utilities.getUrlFromAttr = function(attrVal) {
-	if (attrVal) {		
+	if (attrVal) {
 		// url("#somegrad")
 		if (attrVal.indexOf('url("') === 0) {
 			return attrVal.substring(5, attrVal.indexOf('"',6));
@@ -316,8 +316,7 @@ svgedit.utilities.findDefs = function() {
 	var defs = svgElement.getElementsByTagNameNS(SVGNS, 'defs');
 	if (defs.length > 0) {
 		defs = defs[0];
-	}
-	else {
+	} else {
 		defs = svgElement.ownerDocument.createElementNS(SVGNS, 'defs');
 		if (svgElement.firstChild) {
 			// first child is a comment, so call nextSibling
@@ -335,7 +334,7 @@ svgedit.utilities.findDefs = function() {
 // Get correct BBox for a path in Webkit
 // Converted from code found here:
 // http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html
-// 
+//
 // Parameters:
 // path - The path DOM element to get the BBox for
 //
@@ -344,7 +343,7 @@ svgedit.utilities.findDefs = function() {
 svgedit.utilities.getPathBBox = function(path) {
 	var seglist = path.pathSegList;
 	var tot = seglist.numberOfItems;
-	
+
 	var bounds = [[], []];
 	var start = seglist.getItem(0);
 	var P0 = [start.x, start.y];
@@ -357,7 +356,7 @@ svgedit.utilities.getPathBBox = function(path) {
 		// Add actual points to limits
 		bounds[0].push(P0[0]);
 		bounds[1].push(P0[1]);
-		
+
 		if(seg.x1) {
 			var P1 = [seg.x1, seg.y1],
 				P2 = [seg.x2, seg.y2],
@@ -366,7 +365,7 @@ svgedit.utilities.getPathBBox = function(path) {
 			for(var j=0; j < 2; j++) {
 
 				var calc = function(t) {
-					return Math.pow(1-t,3) * P0[j] 
+					return Math.pow(1-t,3) * P0[j]
 						+ 3 * Math.pow(1-t,2) * t * P1[j]
 						+ 3 * (1-t) * Math.pow(t, 2) * P2[j]
 						+ Math.pow(t,3) * P3[j];
@@ -375,7 +374,7 @@ svgedit.utilities.getPathBBox = function(path) {
 				var b = 6 * P0[j] - 12 * P1[j] + 6 * P2[j];
 				var a = -3 * P0[j] + 9 * P1[j] - 9 * P2[j] + 3 * P3[j];
 				var c = 3 * P1[j] - 3 * P0[j];
-				
+
 				if(a == 0) {
 					if(b == 0) {
 						continue;
@@ -386,7 +385,6 @@ svgedit.utilities.getPathBBox = function(path) {
 					}
 					continue;
 				}
-				
 				var b2ac = Math.pow(b,2) - 4 * c * a;
 				if(b2ac < 0) continue;
 				var t1 = (-b + Math.sqrt(b2ac))/(2 * a);
@@ -400,7 +398,7 @@ svgedit.utilities.getPathBBox = function(path) {
 			bounds[1].push(seg.y);
 		}
 	}
-	
+
 	var x = Math.min.apply(null, bounds[0]);
 	var w = Math.max.apply(null, bounds[0]) - x;
 	var y = Math.min.apply(null, bounds[1]);
@@ -419,15 +417,15 @@ svgedit.utilities.getPathBBox = function(path) {
 // Note that performance is currently terrible, so some way to improve would
 // be great.
 //
-// Parameters: 
+// Parameters:
 // selected - Container or <use> DOM element
 function groupBBFix(selected) {
 	if(svgedit.browser.supportsHVLineContainerBBox()) {
-		try { return selected.getBBox();} catch(e){} 
+		try { return selected.getBBox();} catch(e){}
 	}
 	var ref = $.data(selected, 'ref');
 	var matched = null;
-	
+
 	if(ref) {
 		var copy = $(ref).children().clone().attr('visibility', 'hidden');
 		$(svgroot_).append(copy);
@@ -435,7 +433,7 @@ function groupBBFix(selected) {
 	} else {
 		matched = $(selected).find('line, path');
 	}
-	
+
 	var issue = false;
 	if(matched.length) {
 		matched.each(function() {
@@ -470,7 +468,7 @@ svgedit.utilities.getBBox = function(elem) {
 	if (elem.nodeType != 1) return null;
 	var ret = null;
 	var elname = selected.nodeName;
-	
+
 	switch ( elname ) {
 	case 'text':
 		if(selected.textContent === '') {
@@ -497,7 +495,6 @@ svgedit.utilities.getBBox = function(elem) {
 		if(elname === 'use') {
 			ret = groupBBFix(selected, true);
 		}
-		
 		if(elname === 'use' || ( elname === 'foreignObject' && svgedit.browser.isWebkit() ) ) {
 			if(!ret) ret = selected.getBBox();
 			// This is resolved in later versions of webkit, perhaps we should
@@ -512,8 +509,8 @@ svgedit.utilities.getBBox = function(elem) {
 				ret = bb;
 			//}
 		} else if(~visElems_arr.indexOf(elname)) {
-			try { ret = selected.getBBox();} 
-			catch(e) { 
+			try { ret = selected.getBBox();}
+			catch(e) {
 				// Check if element is child of a foreignObject
 				var fo = $(selected).closest('foreignObject');
 				if(fo.length) {
@@ -528,7 +525,6 @@ svgedit.utilities.getBBox = function(elem) {
 			}
 		}
 	}
-	
 	if(ret) {
 		ret = svgedit.utilities.bboxToObj(ret);
 	}
@@ -566,7 +562,7 @@ svgedit.utilities.getRotationAngle = function(elem, to_rad) {
 //
 // Parameters:
 // attrVal - The attribute value as a string
-svgedit.utilities.getRefElem = this.getRefElem = function(attrVal) {
+svgedit.utilities.getRefElem = function(attrVal) {
 	return svgedit.utilities.getElem(svgedit.utilities.getUrlFromAttr(attrVal).substr(1));
 };
 
@@ -585,7 +581,7 @@ if (svgedit.browser.supportsSelectors()) {
 		// xpath lookup
 		return domdoc_.evaluate(
 			'svg:svg[@id="svgroot"]//svg:*[@id="'+id+'"]',
-			domcontainer_, 
+			domcontainer_,
 			function() { return 'http://www.w3.org/2000/svg'; },
 			9,
 			null).singleNodeValue;
@@ -612,9 +608,9 @@ svgedit.utilities.assignAttributes = function(node, attrs, suspendLength, unitCh
 	if (!svgedit.browser.isOpera()) svgroot_.suspendRedraw(suspendLength);
 
 	for (var i in attrs) {
-		var ns = (i.substr(0,4) === 'xml:' ? XMLNS : 
+		var ns = (i.substr(0,4) === 'xml:' ? XMLNS :
 			i.substr(0,6) === 'xlink:' ? XLINKNS : null);
-			
+
 		if(ns) {
 			node.setAttributeNS(ns, i, attrs[i]);
 		} else if(!unitCheck) {
@@ -622,9 +618,7 @@ svgedit.utilities.assignAttributes = function(node, attrs, suspendLength, unitCh
 		} else {
 			svgedit.units.setUnitAttr(node, i, attrs[i]);
 		}
-		
 	}
-	
 	if (!svgedit.browser.isOpera()) svgroot_.unsuspendRedraw(handle);
 };
 
@@ -648,16 +642,15 @@ svgedit.utilities.cleanupElement = function(element) {
 		'rx':0,
 		'ry':0
 	}
-	
+
 	for(var attr in defaults) {
 		var val = defaults[attr];
 		if(element.getAttribute(attr) == val) {
 			element.removeAttribute(attr);
 		}
 	}
-	
+
 	svgroot_.unsuspendRedraw(handle);
 };
-
 
 })();

@@ -356,7 +356,7 @@ svgedit.path.getSegSelector = function(seg, update) {
 //
 // Returns: 
 // Array of two "smoothed" point objects
-svgedit.path.smoothControlPoints = this.smoothControlPoints = function(ct1, ct2, pt) {
+svgedit.path.smoothControlPoints = function(ct1, ct2, pt) {
 	// each point must not be the origin
 	var x1 = ct1.x - pt.x,
 		y1 = ct1.y - pt.y,

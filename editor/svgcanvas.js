@@ -39,7 +39,7 @@ if (window.opera) {
 	
 	// See http://api.jquery.com/attr/ for basic documentation of .attr()
 	
-	// Additional functionality: 
+	// Additional functionality:
 	// - When getting attributes, a string that's a number is return as type number.
 	// - If an array is supplied as first parameter, multiple values are returned
 	// as an object with values for each given attributes
@@ -71,7 +71,6 @@ if (window.opera) {
 						obj[aname] = attr;
 					}
 					return obj;
-				
 				} else if (typeof key === "object") {
 					// Setting attributes form object
 					for (var v in key) {
@@ -91,7 +90,6 @@ if (window.opera) {
 		}
 		return this;
 	};
-	
 }());
 
 // Class: SvgCanvas
@@ -345,7 +343,6 @@ canvas.undoMgr = new svgedit.history.UndoManager({
 			var elems = cmd.elements();
 			canvas.pathActions.clear();
 			call("changed", elems);
-			
 			var cmdType = cmd.type();
 			var isApply = (eventType == EventTypes.AFTER_APPLY);
 			if (cmdType == MoveElementCommand.type()) {
@@ -363,7 +360,6 @@ canvas.undoMgr = new svgedit.history.UndoManager({
 				} else {
 					if (!isApply) restoreRefElems(cmd.elem);
 				}
-				
 				if (cmd.elem.tagName === 'use') {
 					setUseData(cmd.elem);
 				}
@@ -655,12 +651,12 @@ getStrokedBBox = this.getStrokedBBox = function(elems) {
 	if (!elems.length) return false;
 	// Make sure the expected BBox is returned if the element is a group
 	var getCheckedBBox = function(elem) {
-	
+
 		try {
 			// TODO: Fix issue with rotated groups. Currently they work
 			// fine in FF, but not in other browsers (same problem mentioned
 			// in Issue 339 comment #2).
-			
+
 			var bb = svgedit.utilities.getBBox(elem);
 			var angle = svgedit.utilities.getRotationAngle(elem);
 
@@ -668,9 +664,7 @@ getStrokedBBox = this.getStrokedBBox = function(elems) {
 				svgedit.math.hasMatrixTransform(svgedit.transformlist.getTransformList(elem))) {
 				// Accurate way to get BBox of rotated element in Firefox:
 				// Put element in group and get its BBox
-				
 				var good_bb = false;
-				
 				// Get the BBox from the raw path for these elements
 				var elemNames = ['ellipse', 'path', 'line', 'polyline', 'polygon'];
 				if (elemNames.indexOf(elem.tagName) >= 0) {
@@ -683,10 +677,10 @@ getStrokedBBox = this.getStrokedBBox = function(elems) {
 						bb = good_bb = canvas.convertToPath(elem, true);
 					}
 				}
-				
+
 				if (!good_bb) {
 					// Must use clone else FF freaks out
-					var clone = elem.cloneNode(true); 
+					var clone = elem.cloneNode(true);
 					var g = document.createElementNS(svgns, "g");
 					var parent = elem.parentNode;
 					parent.appendChild(g);
@@ -694,7 +688,7 @@ getStrokedBBox = this.getStrokedBBox = function(elems) {
 					bb = svgedit.utilities.bboxToObj(g.getBBox());
 					parent.removeChild(g);
 				}
-				
+
 				// Old method: Works by giving the rotated BBox,
 				// this is (unfortunately) what Opera and Safari do
 				// natively when getting the BBox of the parent group
@@ -729,10 +723,10 @@ getStrokedBBox = this.getStrokedBBox = function(elems) {
 // 						bb.height = rmaxy - rminy;
 			}
 			return bb;
-		} catch(e) { 
+		} catch(e) {
 			console.log(elem, e);
 			return null;
-		} 
+		}
 	};
 
 	var full_bb;
@@ -741,18 +735,18 @@ getStrokedBBox = this.getStrokedBBox = function(elems) {
 		if (!this.parentNode) return;
 		full_bb = getCheckedBBox(this);
 	});
-	
+
 	// This shouldn't ever happen...
 	if (full_bb == null) return null;
-	
+
 	// full_bb doesn't include the stoke, so this does no good!
 // 		if (elems.length == 1) return full_bb;
-	
+
 	var max_x = full_bb.x + full_bb.width;
 	var max_y = full_bb.y + full_bb.height;
 	var min_x = full_bb.x;
 	var min_y = full_bb.y;
-	
+
 	// FIXME: same re-creation problem with this function as getCheckedBBox() above
 	var getOffset = function(elem) {
 		var sw = elem.getAttribute("stroke-width");
@@ -913,7 +907,7 @@ var getId, getNextId, call;
 
 	getId = c.getId = function() { return getCurrentDrawing().getId(); };
 	getNextId = c.getNextId = function() { return getCurrentDrawing().getNextId(); };
-	
+
 	// Function: call
 	// Run the callback function associated with the given event
 	//
@@ -925,14 +919,14 @@ var getId, getNextId, call;
 			return events[event](this, arg);
 		}
 	};
-	
+
 	// Function: bind
 	// Attaches a callback function to an event
 	//
 	// Parameters:
 	// event - String indicating the name of the event
 	// f - The callback function to bind to the event
-	// 
+	//
 	// Return:
 	// The previous event
 	c.bind = function(event, f) {
@@ -940,7 +934,7 @@ var getId, getNextId, call;
 		events[event] = f;
 		return old;
 	};
-	
+
 }(canvas));
 
 // Function: canvas.prepareSvg
@@ -1093,7 +1087,7 @@ var remapElement = this.remapElement = function(selected, changes, m) {
 			assignAttributes(selected, changes, 1000, true);
 		}
 		box = svgedit.utilities.getBBox(selected);
-	
+
 	for (var i = 0; i < 2; i++) {
 		var type = i === 0 ? 'fill' : 'stroke';
 		var attrVal = selected.getAttribute(type);
@@ -1101,15 +1095,15 @@ var remapElement = this.remapElement = function(selected, changes, m) {
 			if (m.a < 0 || m.d < 0) {
 				var grad = svgedit.utilities.getRefElem(attrVal);
 				var newgrad = grad.cloneNode(true);
-	
+
 				if (m.a < 0) {
 					//flip x
 					var x1 = newgrad.getAttribute('x1');
 					var x2 = newgrad.getAttribute('x2');
 					newgrad.setAttribute('x1', -(x1 - 1));
 					newgrad.setAttribute('x2', -(x2 - 1));
-				} 
-				
+				}
+
 				if (m.d < 0) {
 					//flip y
 					var y1 = newgrad.getAttribute('y1');
@@ -1369,14 +1363,12 @@ var remapElement = this.remapElement = function(selected, changes, m) {
 // ty - The translation's y value
 var updateClipPath = function(attr, tx, ty) {
 	var path = getRefElem(attr).firstChild;
-	
 	var cp_xform = svgedit.transformlist.getTransformList(path);
-	
 	var newxlate = svgroot.createSVGTransform();
 	newxlate.setTranslate(tx, ty);
 
 	cp_xform.appendItem(newxlate);
-	
+
 	// Update clipPath's dimensions
 	recalculateDimensions(path);
 };
