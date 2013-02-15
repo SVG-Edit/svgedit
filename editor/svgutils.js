@@ -26,7 +26,7 @@ if (!svgedit.utilities) {
 var KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 var SVGNS = 'http://www.w3.org/2000/svg';
 var XLINKNS = 'http://www.w3.org/1999/xlink';
-var XMLNS = "http://www.w3.org/XML/1998/namespace";
+var XMLNS = 'http://www.w3.org/XML/1998/namespace';
 
 // Much faster than running getBBox() every time
 var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
@@ -48,7 +48,7 @@ svgedit.utilities.init = function(editorContext) {
 // Function: svgedit.utilities.toXml
 // Converts characters in a string to XML-friendly entities.
 //
-// Example: "&" becomes "&amp;"
+// Example: '&' becomes '&amp;'
 //
 // Parameters:
 // str - The string to be converted
@@ -61,7 +61,7 @@ svgedit.utilities.toXml = function(str) {
 	
 // Function: svgedit.utilities.fromXml
 // Converts XML entities in a string to single characters. 
-// Example: "&amp;" becomes "&"
+// Example: '&amp;' becomes '&'
 //
 // Parameters:
 // str - The string to be converted
@@ -120,13 +120,13 @@ svgedit.utilities.encode64 = function(input) {
 // Converts a string from base64
 svgedit.utilities.decode64 = function(input) {
 	if(window.atob) return window.atob(input);
-	var output = "";
-	var chr1, chr2, chr3 = "";
-	var enc1, enc2, enc3, enc4 = "";
+	var output = '';
+	var chr1, chr2, chr3 = '';
+	var enc1, enc2, enc3, enc4 = '';
 	var i = 0;
 
 	 // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
-	 input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+	 input = input.replace(/[^A-Za-z0-9\+\/\=]/g, '');
 
 	 do {
 		enc1 = KEYSTR.indexOf(input.charAt(i++));
@@ -147,8 +147,8 @@ svgedit.utilities.decode64 = function(input) {
 		   output = output + String.fromCharCode(chr3);
 		}
 
-		chr1 = chr2 = chr3 = "";
-		enc1 = enc2 = enc3 = enc4 = "";
+		chr1 = chr2 = chr3 = '';
+		enc1 = enc2 = enc3 = enc4 = '';
 
 	 } while (i < input.length);
 	 return unescape(output);
@@ -157,7 +157,7 @@ svgedit.utilities.decode64 = function(input) {
 // Currently not being used, so commented out for now
 // based on http://phpjs.org/functions/utf8_encode:577
 // codedread:does not seem to work with webkit-based browsers on OSX
-// 		"encodeUTF8": function(input) {
+// 		'encodeUTF8': function(input) {
 // 			//return unescape(encodeURIComponent(input)); //may or may not work
 // 			var output = '';
 // 			for (var n = 0; n < input.length; n++){
@@ -187,7 +187,7 @@ svgedit.utilities.convertToXMLReferences = function(input) {
 		if (c < 128) {
 			output += input[n];
 		} else if(c > 127) {
-			output += ("&#" + c + ";");
+			output += ('&#' + c + ';');
 		}
 	}
 	return output;
@@ -203,16 +203,16 @@ svgedit.utilities.text2xml = function(sXML) {
 
 	var out;
 	try{
-		var dXML = (window.DOMParser)?new DOMParser():new ActiveXObject("Microsoft.XMLDOM");
+		var dXML = (window.DOMParser)?new DOMParser():new ActiveXObject('Microsoft.XMLDOM');
 		dXML.async = false;
 	} catch(e){ 
-		throw new Error("XML Parser could not be instantiated"); 
+		throw new Error('XML Parser could not be instantiated'); 
 	};
 	try{
 		if(dXML.loadXML) out = (dXML.loadXML(sXML))?dXML:false;
-		else out = dXML.parseFromString(sXML, "text/xml");
+		else out = dXML.parseFromString(sXML, 'text/xml');
 	}
-	catch(e){ throw new Error("Error parsing XML string"); };
+	catch(e){ throw new Error('Error parsing XML string'); };
 	return out;
 };
 
@@ -298,13 +298,13 @@ svgedit.utilities.getUrlFromAttr = function(attrVal) {
 // Function: svgedit.utilities.getHref
 // Returns the given element's xlink:href value
 svgedit.utilities.getHref = function(elem) {
-	return elem.getAttributeNS(XLINKNS, "href");
+	return elem.getAttributeNS(XLINKNS, 'href');
 }
 
 // Function: svgedit.utilities.setHref
 // Sets the given element's xlink:href value
 svgedit.utilities.setHref = function(elem, val) {
-	elem.setAttributeNS(XLINKNS, "xlink:href", val);
+	elem.setAttributeNS(XLINKNS, 'xlink:href', val);
 }
 
 // Function: findDefs
@@ -313,12 +313,12 @@ svgedit.utilities.setHref = function(elem, val) {
 // The document's <defs> element, create it first if necessary
 svgedit.utilities.findDefs = function() {
 	var svgElement = editorContext_.getSVGContent();
-	var defs = svgElement.getElementsByTagNameNS(SVGNS, "defs");
+	var defs = svgElement.getElementsByTagNameNS(SVGNS, 'defs');
 	if (defs.length > 0) {
 		defs = defs[0];
 	}
 	else {
-		defs = svgElement.ownerDocument.createElementNS(SVGNS, "defs");
+		defs = svgElement.ownerDocument.createElementNS(SVGNS, 'defs');
 		if (svgElement.firstChild) {
 			// first child is a comment, so call nextSibling
 			svgElement.insertBefore(defs, svgElement.firstChild.nextSibling);
@@ -498,7 +498,7 @@ svgedit.utilities.getBBox = function(elem) {
 			ret = groupBBFix(selected, true);
 		}
 		
-		if(elname === 'use' || ( elname === "foreignObject" && svgedit.browser.isWebkit() ) ) {
+		if(elname === 'use' || ( elname === 'foreignObject' && svgedit.browser.isWebkit() ) ) {
 			if(!ret) ret = selected.getBBox();
 			// This is resolved in later versions of webkit, perhaps we should
 			// have a featured detection for correct 'use' behavior?
@@ -515,7 +515,7 @@ svgedit.utilities.getBBox = function(elem) {
 			try { ret = selected.getBBox();} 
 			catch(e) { 
 				// Check if element is child of a foreignObject
-				var fo = $(selected).closest("foreignObject");
+				var fo = $(selected).closest('foreignObject');
 				if(fo.length) {
 					try {
 						ret = fo[0].getBBox();
@@ -586,7 +586,7 @@ if (svgedit.browser.supportsSelectors()) {
 		return domdoc_.evaluate(
 			'svg:svg[@id="svgroot"]//svg:*[@id="'+id+'"]',
 			domcontainer_, 
-			function() { return "http://www.w3.org/2000/svg"; },
+			function() { return 'http://www.w3.org/2000/svg'; },
 			9,
 			null).singleNodeValue;
 	};
@@ -612,8 +612,8 @@ svgedit.utilities.assignAttributes = function(node, attrs, suspendLength, unitCh
 	if (!svgedit.browser.isOpera()) svgroot_.suspendRedraw(suspendLength);
 
 	for (var i in attrs) {
-		var ns = (i.substr(0,4) === "xml:" ? XMLNS : 
-			i.substr(0,6) === "xlink:" ? XLINKNS : null);
+		var ns = (i.substr(0,4) === 'xml:' ? XMLNS : 
+			i.substr(0,6) === 'xlink:' ? XLINKNS : null);
 			
 		if(ns) {
 			node.setAttributeNS(ns, i, attrs[i]);
