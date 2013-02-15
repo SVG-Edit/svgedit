@@ -64,7 +64,7 @@ svgedit.math.isIdentity = function(m) {
 svgedit.math.matrixMultiply = function() {
 	var args = arguments, i = args.length, m = args[i-1];
 
-	while(i-- > 1) {
+	while (i-- > 1) {
 		var m1 = args[i-1];
 		m = m1.multiply(m);
 	}
@@ -87,7 +87,7 @@ svgedit.math.matrixMultiply = function() {
 // Returns: 
 // Boolean on whether or not a matrix transform was found
 svgedit.math.hasMatrixTransform = function(tlist) {
-	if(!tlist) return false;
+	if (!tlist) return false;
 	var num = tlist.numberOfItems;
 	while (num--) {
 		var xform = tlist.getItem(num);
@@ -118,10 +118,10 @@ svgedit.math.hasMatrixTransform = function(tlist) {
 // * Float with the axis-aligned width coordinate
 // * Float with the axis-aligned height coordinate
 svgedit.math.transformBox = function(l, t, w, h, m) {
-	var topleft = {x:l,y:t},
-		topright = {x:(l+w),y:t},
-		botright = {x:(l+w),y:(t+h)},
-		botleft = {x:l,y:(t+h)};
+	var topleft = {x:l, y:t},
+		topright = {x:(l+w), y:t},
+		botright = {x:(l+w), y:(t+h)},
+		botleft = {x:l, y:(t+h)};
 	var transformPoint = svgedit.math.transformPoint;
 	topleft = transformPoint( topleft.x, topleft.y, m );
 	var minx = topleft.x,
@@ -162,7 +162,7 @@ svgedit.math.transformBox = function(l, t, w, h, m) {
 // Returns:
 // A single matrix transform object
 svgedit.math.transformListToTransform = function(tlist, min, max) {
-	if(tlist == null) {
+	if (tlist == null) {
 		// Or should tlist = null have been prevented before this?
 		return svg.createSVGTransformFromMatrix(svg.createSVGMatrix());
 	}
@@ -212,11 +212,11 @@ svgedit.math.getMatrix = function(elem) {
 // x - The angle-snapped x value
 // y - The angle-snapped y value
 // snapangle - The angle at which to snap
-svgedit.math.snapToAngle = function(x1,y1,x2,y2) {
+svgedit.math.snapToAngle = function(x1, y1, x2, y2) {
 	var snap = Math.PI/4; // 45 degrees
 	var dx = x2 - x1;
 	var dy = y2 - y1;
-	var angle = Math.atan2(dy,dx);
+	var angle = Math.atan2(dy, dx);
 	var dist = Math.sqrt(dx * dx + dy * dy);
 	var snapangle= Math.round(angle/snap)*snap;
 	var x = x1 + dist*Math.cos(snapangle);

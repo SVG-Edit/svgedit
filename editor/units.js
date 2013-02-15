@@ -20,7 +20,7 @@ if (!svgedit.units) {
 
 var wAttrs = ['x', 'x1', 'cx', 'rx', 'width'];
 var hAttrs = ['y', 'y1', 'cy', 'ry', 'height'];
-var unitAttrs = ['r','radius'].concat(wAttrs, hAttrs);
+var unitAttrs = ['r', 'radius'].concat(wAttrs, hAttrs);
 // unused
 var unitNumMap = {
 	'%':  2,
@@ -67,10 +67,10 @@ svgedit.units.init = function(elementContainer) {
 	// Get correct em/ex values by creating a temporary SVG.
 	var svg = document.createElementNS(svgns, 'svg');
 	document.body.appendChild(svg);
-	var rect = document.createElementNS(svgns,'rect');
-	rect.setAttribute('width',"1em");
-	rect.setAttribute('height',"1ex");
-	rect.setAttribute('x',"1in");
+	var rect = document.createElementNS(svgns, 'rect');
+	rect.setAttribute('width', '1em');
+	rect.setAttribute('height', '1ex');
+	rect.setAttribute('x', '1in');
 	svg.appendChild(rect);
 	var bb = rect.getBBox();
 	document.body.removeChild(svg);

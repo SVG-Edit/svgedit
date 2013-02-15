@@ -142,10 +142,9 @@ svgedit.draw.Drawing.prototype.getElem_ = function(id) {
 	if(this.svgElem_.querySelector) {
 		// querySelector lookup
 		return this.svgElem_.querySelector('#'+id);
-	} else {
-		// jQuery lookup: twice as slow as xpath in FF
-		return $(this.svgElem_).find('[id=' + id + ']')[0];
 	}
+	// jQuery lookup: twice as slow as xpath in FF
+	return $(this.svgElem_).find('[id=' + id + ']')[0];
 };
 
 svgedit.draw.Drawing.prototype.getSvgElem = function() {
@@ -174,7 +173,7 @@ svgedit.draw.Drawing.prototype.clearNonce = function() {
  */
 svgedit.draw.Drawing.prototype.getId = function() {
 	return this.nonce_ ?
-		this.idPrefix + this.nonce_ +'_' + this.obj_num :
+		this.idPrefix + this.nonce_ + '_' + this.obj_num :
  		this.idPrefix + this.obj_num;
 };
 
@@ -226,7 +225,7 @@ svgedit.draw.Drawing.prototype.getNextId = function() {
 // True if the id was valid to be released, false otherwise.
 svgedit.draw.Drawing.prototype.releaseId = function(id) {
 	// confirm if this is a valid id for this Document, else return false
-	var front = this.idPrefix + (this.nonce_ ? this.nonce_ +'_' : '');
+	var front = this.idPrefix + (this.nonce_ ? this.nonce_ + '_' : '');
 	if (typeof id != typeof '' || id.indexOf(front) != 0) {
 		return false;
 	}
@@ -358,7 +357,7 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 		if (child && child.nodeType == 1) {
 			if (child.tagName == "g") {
 				childgroups = true;
-				var name = $("title",child).text();
+				var name = $("title", child).text();
 				
 				// Hack for Opera 10.60
 				if(!name && svgedit.browser.isOpera() && child.querySelectorAll) {
@@ -368,7 +367,7 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 				// store layer and name in global variable
 				if (name) {
 					layernames.push(name);
-					this.all_layers.push( [name,child] );
+					this.all_layers.push( [name, child] );
 					a_layer = child;
 					svgedit.utilities.walkTree(child, function(e){e.setAttribute("style", "pointer-events:inherit");});
 					a_layer.setAttribute("style", "pointer-events:none");
@@ -403,9 +402,9 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 		this.svgElem_.appendChild(a_layer);
 		this.all_layers.push( [newname, a_layer] );
 	}
-	svgedit.utilities.walkTree(a_layer, function(e){e.setAttribute("style","pointer-events:inherit");});
+	svgedit.utilities.walkTree(a_layer, function(e){e.setAttribute("style", "pointer-events:inherit");});
 	this.current_layer = a_layer;
-	this.current_layer.setAttribute("style","pointer-events:all");
+	this.current_layer.setAttribute("style", "pointer-events:all");
 };
 
 // Function: svgedit.draw.Drawing.createLayer

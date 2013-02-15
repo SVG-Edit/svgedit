@@ -194,12 +194,12 @@ svgedit.select.Selector.prototype.resize = function() {
 	var angle = svgedit.utilities.getRotationAngle(selected);
 	if (angle) {
 		var rot = svgFactory_.svgRoot().createSVGTransform();
-		rot.setRotate(-angle,cx,cy);
+		rot.setRotate(-angle, cx, cy);
 		var rotm = rot.matrix;
-		nbox.tl = svgedit.math.transformPoint(nbox.tl.x,nbox.tl.y,rotm);
-		nbox.tr = svgedit.math.transformPoint(nbox.tr.x,nbox.tr.y,rotm);
-		nbox.bl = svgedit.math.transformPoint(nbox.bl.x,nbox.bl.y,rotm);
-		nbox.br = svgedit.math.transformPoint(nbox.br.x,nbox.br.y,rotm);
+		nbox.tl = svgedit.math.transformPoint(nbox.tl.x, nbox.tl.y, rotm);
+		nbox.tr = svgedit.math.transformPoint(nbox.tr.x, nbox.tr.y, rotm);
+		nbox.bl = svgedit.math.transformPoint(nbox.bl.x, nbox.bl.y, rotm);
+		nbox.br = svgedit.math.transformPoint(nbox.br.x, nbox.br.y, rotm);
 
 		// calculate the axis-aligned bbox
 		var tl = nbox.tl;
@@ -228,7 +228,7 @@ svgedit.select.Selector.prototype.resize = function() {
 				+ ' ' + nbax + ',' + (nbay+nbah) + 'z';
 	selectedBox.setAttribute('d', dstr);
 
-	var xform = angle ? 'rotate(' + [angle,cx,cy].join(',') + ')' : '';
+	var xform = angle ? 'rotate(' + [angle, cx, cy].join(',') + ')' : '';
 	this.selectorGroup.setAttribute('transform', xform);
 
 	// TODO(codedread): Is this if needed?

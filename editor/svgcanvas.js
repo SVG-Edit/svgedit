@@ -34,7 +34,6 @@ if (window.opera) {
 }
 
 (function() {
-
 	// This fixes $(...).attr() to work as expected with SVG elements.
 	// Does not currently use *AttributeNS() since we rarely need that.
 	
@@ -45,7 +44,8 @@ if (window.opera) {
 	// - If an array is supplied as first parameter, multiple values are returned
 	// as an object with values for each given attributes
 
-	var proxied = jQuery.fn.attr, svgns = "http://www.w3.org/2000/svg";
+	var proxied = jQuery.fn.attr,
+		svgns = "http://www.w3.org/2000/svg";
 	jQuery.fn.attr = function(key, value) {
 		var len = this.length;
 		if (!len) return proxied.apply(this, arguments);
@@ -58,7 +58,8 @@ if (window.opera) {
 					elem.setAttribute(key, value);
 				} else if ($.isArray(key)) {
 					// Getting attributes from array
-					var j = key.length, obj = {};
+					var j = key.length,
+						obj = {};
 
 					while (j--) {
 						var aname = key[j];
@@ -424,8 +425,7 @@ svgedit.utilities.snapToGrid = function(value){
 	if (unit !== "px") {
 		stepSize *= svgedit.units.getTypeMap()[unit];
 	}
-	value = Math.round(value/stepSize)*stepSize;
-	return value;
+	return Math.round(value/stepSize)*stepSize;
 };
 var snapToGrid = svgedit.utilities.snapToGrid;
 
@@ -544,8 +544,7 @@ canvas.clipBoard = [];
 
 // Should this return an array by default, so extension results aren't overwritten?
 var runExtensions = this.runExtensions = function(action, vars, returnArray) {
-	var result = false;
-	if (returnArray) result = [];
+	var result = returnArray ? [] : false;
 	$.each(extensions, function(name, opts) {
 		if (action in opts) {
 			if (returnArray) {
@@ -567,7 +566,6 @@ var runExtensions = this.runExtensions = function(action, vars, returnArray) {
 this.addExtension = function(name, ext_func) {
 	if (!(name in extensions)) {
 		// Provide private vars/funcs here. Is there a better way to do this?
-		
 		if ($.isFunction(ext_func)) {
 			var ext = ext_func($.extend(canvas.getPrivateMethods(), {
 				svgroot: svgroot,
@@ -664,17 +662,17 @@ getStrokedBBox = this.getStrokedBBox = function(elems) {
 			// in Issue 339 comment #2).
 			
 			var bb = svgedit.utilities.getBBox(elem);
-			
 			var angle = svgedit.utilities.getRotationAngle(elem);
+
 			if ((angle && angle % 90) ||
-			    svgedit.math.hasMatrixTransform(svgedit.transformlist.getTransformList(elem))) {
+				svgedit.math.hasMatrixTransform(svgedit.transformlist.getTransformList(elem))) {
 				// Accurate way to get BBox of rotated element in Firefox:
 				// Put element in group and get its BBox
 				
 				var good_bb = false;
 				
 				// Get the BBox from the raw path for these elements
-				var elemNames = ['ellipse','path','line','polyline','polygon'];
+				var elemNames = ['ellipse', 'path', 'line', 'polyline', 'polygon'];
 				if (elemNames.indexOf(elem.tagName) >= 0) {
 					bb = good_bb = canvas.convertToPath(elem, true);
 				} else if (elem.tagName == 'rect') {
@@ -1016,7 +1014,7 @@ this.setRotationAngle = function(val, preventUndo) {
 	}
 	// find R_nc and insert it
 	if (val != 0) {
-		var center = svgedit.math.transformPoint(cx,cy,svgedit.math.transformListToTransform(tlist).matrix);
+		var center = svgedit.math.transformPoint(cx, cy, svgedit.math.transformListToTransform(tlist).matrix);
 		var R_nc = svgroot.createSVGTransform();
 		R_nc.setRotate(val, center.x, center.y);
 		if (tlist.numberOfItems) {
@@ -1033,7 +1031,7 @@ this.setRotationAngle = function(val, preventUndo) {
 		// TODO: figure out how to make changes to transform list undo-able cross-browser?
 		var newTransform = elem.getAttribute("transform");
 		elem.setAttribute("transform", oldTransform);
-		changeSelectedAttribute("transform",newTransform,selectedElements);
+		changeSelectedAttribute("transform", newTransform, selectedElements);
 		call("changed", selectedElements);
 	}
 	var pointGripContainer = svgedit.utilities.getElem("pathpointgrip_container");
@@ -1074,7 +1072,7 @@ var pathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a',
 					
 // Debug tool to easily see the current matrix in the browser's console
 var logMatrix = function(m) {
-	console.log([m.a,m.b,m.c,m.d,m.e,m.f]);
+	console.log([m.a, m.b, m.c, m.d, m.e, m.f]);
 };
 
 // Function: remapElement
@@ -1084,9 +1082,9 @@ var logMatrix = function(m) {
 // selected - DOM element to be changed
 // changes - Object with changes to be remapped
 // m - Matrix object to use for remapping coordinates
-var remapElement = this.remapElement = function(selected,changes,m) {
+var remapElement = this.remapElement = function(selected, changes, m) {
 
-	var remap = function(x,y) { return svgedit.math.transformPoint(x,y,m); },
+	var remap = function(x, y) { return svgedit.math.transformPoint(x, y, m); },
 		scalew = function(w) { return m.a*w; },
 		scaleh = function(h) { return m.d*h; },
 		doSnapping = curConfig.gridSnapping && selected.parentNode.parentNode.localName === "svg",
@@ -1131,7 +1129,6 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 		}
 	}
 
-
 	var elName = selected.tagName;
 	if (elName === "g" || elName === "text" || elName == "tspan" || elName === "use") {
 		// if it was a translate, then just update x,y
@@ -1162,7 +1159,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			// we just absorb all matrices into the element and don't do any remapping
 			var chlist = svgedit.transformlist.getTransformList(selected);
 			var mt = svgroot.createSVGTransform();
-			mt.setMatrix(matrixMultiply(svgedit.math.transformListToTransform(chlist).matrix,m));
+			mt.setMatrix(matrixMultiply(svgedit.math.transformListToTransform(chlist).matrix, m));
 			chlist.clear();
 			chlist.appendItem(mt);
 		}
@@ -1170,8 +1167,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 	
 	// now we have a set of changes and an applied reduced transform list
 	// we apply the changes directly to the DOM
-	switch (elName)
-	{
+	switch (elName) {
 		case "foreignObject":
 		case "rect":
 		case "image":
@@ -1181,24 +1177,24 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 				// Convert to matrix
 				var chlist = svgedit.transformlist.getTransformList(selected);
 				var mt = svgroot.createSVGTransform();
-				mt.setMatrix(svgedit.math.matrixMultiply(svgedit.math.transformListToTransform(chlist).matrix,m));
+				mt.setMatrix(svgedit.math.matrixMultiply(svgedit.math.transformListToTransform(chlist).matrix, m));
 				chlist.clear();
 				chlist.appendItem(mt);
 			} else {
-				var pt1 = remap(changes.x,changes.y);
+				var pt1 = remap(changes.x, changes.y);
 				
 				changes.width = scalew(changes.width);
 				changes.height = scaleh(changes.height);
 				
-				changes.x = pt1.x + Math.min(0,changes.width);
-				changes.y = pt1.y + Math.min(0,changes.height);
+				changes.x = pt1.x + Math.min(0, changes.width);
+				changes.y = pt1.y + Math.min(0, changes.height);
 				changes.width = Math.abs(changes.width);
 				changes.height = Math.abs(changes.height);
 			}
 			finishUp();
 			break;
 		case "ellipse":
-			var c = remap(changes.cx,changes.cy);
+			var c = remap(changes.cx, changes.cy);
 			changes.cx = c.x;
 			changes.cy = c.y;
 			changes.rx = scalew(changes.rx);
@@ -1209,7 +1205,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			finishUp();
 			break;
 		case "circle":
-			var c = remap(changes.cx,changes.cy);
+			var c = remap(changes.cx, changes.cy);
 			changes.cx = c.x;
 			changes.cy = c.y;
 			// take the minimum of the new selected box's dimensions for the new circle radius
@@ -1221,8 +1217,8 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			finishUp();
 			break;
 		case "line":
-			var pt1 = remap(changes.x1,changes.y1),
-				pt2 = remap(changes.x2,changes.y2);
+			var pt1 = remap(changes.x1, changes.y1),
+				pt2 = remap(changes.x2, changes.y2);
 			changes.x1 = pt1.x;
 			changes.y1 = pt1.y;
 			changes.x2 = pt2.x;
@@ -1243,7 +1239,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			var len = changes.points.length;
 			for (var i = 0; i < len; ++i) {
 				var pt = changes.points[i];
-				pt = remap(pt.x,pt.y);
+				pt = remap(pt.x, pt.y);
 				changes.points[i].x = pt.x;
 				changes.points[i].y = pt.y;
 			}
@@ -1281,7 +1277,7 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 			
 			var len = changes.d.length,
 				firstseg = changes.d[0],
-				currentpt = remap(firstseg.x,firstseg.y);
+				currentpt = remap(firstseg.x, firstseg.y);
 			changes.d[0].x = currentpt.x;
 			changes.d[0].y = currentpt.y;
 			for (var i = 1; i < len; ++i) {
@@ -1292,9 +1288,9 @@ var remapElement = this.remapElement = function(selected,changes,m) {
 				if (type % 2 == 0) { // absolute
 					var thisx = (seg.x != undefined) ? seg.x : currentpt.x, // for V commands
 						thisy = (seg.y != undefined) ? seg.y : currentpt.y, // for H commands
-						pt = remap(thisx,thisy),
-						pt1 = remap(seg.x1,seg.y1),
-						pt2 = remap(seg.x2,seg.y2);
+						pt = remap(thisx, thisy),
+						pt1 = remap(seg.x1, seg.y1),
+						pt2 = remap(seg.x2, seg.y2);
 					seg.x = pt.x;
 					seg.y = pt.y;
 					seg.x1 = pt1.x;
@@ -1519,7 +1515,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 			changes["points"] = new Array(len);
 			for (var i = 0; i < len; ++i) {
 				var pt = list.getItem(i);
-				changes["points"][i] = {x:pt.x,y:pt.y};
+				changes["points"][i] = {x:pt.x, y:pt.y};
 			}
 			break;
 		case "path":
@@ -1754,13 +1750,13 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 						// some children might not have a transform (<metadata>, <defs>, etc)
 						if (childTlist) {
 							var newxlate = svgroot.createSVGTransform();
-							newxlate.setTranslate(tx,ty);
+							newxlate.setTranslate(tx, ty);
 							if (childTlist.numberOfItems) {
 								childTlist.insertItemBefore(newxlate, 0);
 							} else {
 								childTlist.appendItem(newxlate);
 							}
-							batchCmd.addSubCommand( recalculateDimensions(child) );
+							batchCmd.addSubCommand(recalculateDimensions(child));
 							// If any <use> have this group as a parent and are 
 							// referencing this child, then impose a reverse translate on it
 							// so that when it won't get double-translated
@@ -1772,7 +1768,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 								if (href == svgedit.utilities.getHref(useElem)) {
 									var usexlate = svgroot.createSVGTransform();
 									usexlate.setTranslate(-tx,-ty);
-									svgedit.transformlist.getTransformList(useElem).insertItemBefore(usexlate,0);
+									svgedit.transformlist.getTransformList(useElem).insertItemBefore(usexlate, 0);
 									batchCmd.addSubCommand( recalculateDimensions(useElem) );
 								}
 							}
@@ -1782,7 +1778,6 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 				}
 				
 				clipPaths_done = [];
-				
 				start_transform = old_start_transform;
 			}
 		}
@@ -1806,7 +1801,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 					var e2m = svgroot.createSVGTransform();
 					e2m.setMatrix(em);
 					childTlist.clear();
-					childTlist.appendItem(e2m,0);
+					childTlist.appendItem(e2m, 0);
 					
 					batchCmd.addSubCommand( recalculateDimensions(child) );
 					start_transform = old_start_transform;
@@ -1827,7 +1822,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		else {
 			if (gangle) {
 				var newRot = svgroot.createSVGTransform();
-				newRot.setRotate(gangle,newcenter.x,newcenter.y);
+				newRot.setRotate(gangle, newcenter.x, newcenter.y);
 				if (tlist.numberOfItems) {
 					tlist.insertItemBefore(newRot, 0);
 				} else {
@@ -1849,7 +1844,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 				};
 			
 				var newRot = svgroot.createSVGTransform();
-				newRot.setRotate(gangle,newcenter.x,newcenter.y);
+				newRot.setRotate(gangle, newcenter.x, newcenter.y);
 				if (tlist.numberOfItems) {
 					tlist.insertItemBefore(newRot, 0);
 				} else {
@@ -1884,7 +1879,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 						start_transform = child.getAttribute("transform");
 						var childTlist = svgedit.transformlist.getTransformList(child);
 						var newxlate = svgroot.createSVGTransform();
-						newxlate.setTranslate(tx,ty);
+						newxlate.setTranslate(tx, ty);
 						if (childTlist.numberOfItems) {
 							childTlist.insertItemBefore(newxlate, 0);
 						} else {
@@ -1968,7 +1963,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 					var gtlist = svgedit.transformlist.getTransformList(paint);
 					var gmatrix = svgedit.math.transformListToTransform(gtlist).matrix;
 					m = svgedit.math.matrixMultiply(m, gmatrix);
-					var m_str = "matrix(" + [m.a,m.b,m.c,m.d,m.e,m.f].join(",") + ")";
+					var m_str = "matrix(" + [m.a, m.b, m.c, m.d, m.e, m.f].join(",") + ")";
 					paint.setAttribute(type + 'Transform', m_str);
 				}
 			}
@@ -1986,7 +1981,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 			//  && selected.nodeName != "use"
 		{
 			operation = 3; // scale
-			m = svgedit.math.transformListToTransform(tlist,N-3,N-1).matrix;
+			m = svgedit.math.transformListToTransform(tlist, N-3, N-1).matrix;
 			tlist.removeItem(N-1);
 			tlist.removeItem(N-2);
 			tlist.removeItem(N-3);
@@ -2022,7 +2017,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 			m = svgedit.math.transformListToTransform(tlist).matrix;
 			switch (selected.tagName) {
 				case 'line':
-					changes = $(selected).attr(["x1","y1","x2","y2"]);
+					changes = $(selected).attr(["x1", "y1", "x2", "y2"]);
 				case 'polyline':
 				case 'polygon':
 					changes.points = selected.getAttribute("points");
@@ -2032,7 +2027,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 						changes.points = new Array(len);
 						for (var i = 0; i < len; ++i) {
 							var pt = list.getItem(i);
-							changes.points[i] = {x:pt.x,y:pt.y};
+							changes.points[i] = {x:pt.x, y:pt.y};
 						}
 					}
 				case 'path':
@@ -2050,7 +2045,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 			operation = 4; // rotation
 			if (angle) {
 				var newRot = svgroot.createSVGTransform();
-				newRot.setRotate(angle,newcenter.x,newcenter.y);
+				newRot.setRotate(angle, newcenter.x, newcenter.y);
 				
 				if (tlist.numberOfItems) {
 					tlist.insertItemBefore(newRot, 0);
@@ -2066,7 +2061,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		
 		// if it was a translate or resize, we need to remap the element and absorb the xform
 		if (operation == 1 || operation == 2 || operation == 3) {
-			remapElement(selected,changes,m);
+			remapElement(selected, changes, m);
 		} // if we are remapping
 		
 		// if it was a translate, put back the rotate at the new center
@@ -2102,7 +2097,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 			var m_inv = m.inverse();
 			var extrat = svgedit.math.matrixMultiply(m_inv, rnew_inv, rold, m);
 		
-			remapElement(selected,changes,extrat);
+			remapElement(selected, changes, extrat);
 			if (angle) {
 				if (tlist.numberOfItems) {
 					tlist.insertItemBefore(rnew, 0);
@@ -2205,7 +2200,7 @@ var addToSelection = this.addToSelection = function(elemsToAdd, showGrips) {
 	// make sure the elements are in the correct order
 	// See: http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
 
-	selectedElements.sort(function(a,b) {
+	selectedElements.sort(function(a, b) {
 		if (a && b && a.compareDocumentPosition) {
 			return 3 - (b.compareDocumentPosition(a) & 6);	
 		}
@@ -2251,8 +2246,7 @@ var removeFromSelection = this.removeFromSelection = function(elemsToRemove) {
 			if (elemsToRemove.indexOf(elem) == -1) {
 				newSelectedItems[j] = elem;
 				j++;
-			}
-			else { // remove the item and its selector
+			} else { // remove the item and its selector
 				selectorManager.releaseSelector(elem);
 			}
 		}
@@ -2404,7 +2398,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		var right_click = evt.button === 2;
 	
 		if (evt.altKey) { // duplicate when  dragging
-			svgCanvas.cloneSelectedElements(0,0);
+			svgCanvas.cloneSelectedElements(0, 0);
 		}
 	
 		root_sctm = svgcontent.getScreenCTM().inverse();
@@ -2559,7 +2553,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				
 				// append three dummy transforms to the tlist so that
 				// we can translate,scale,translate in mousemove
-				var pos = svgedit.utilities.getRotationAngle(mouse_target)?1:0;
+				var pos = svgedit.utilities.getRotationAngle(mouse_target) ? 1 : 0;
 				
 				if (svgedit.math.hasMatrixTransform(tlist)) {
 					tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
@@ -2600,10 +2594,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			case "fhellipse":
 			case "fhrect":
 			case "fhpath":
-				start.x=real_x; start.y=real_y;
+				start.x = real_x;
+				start.y = real_y;
 				started = true;
 				d_attr = real_x + "," + real_y + " ";
-				var stroke_w = cur_shape.stroke_width == 0?1:cur_shape.stroke_width;
+				var stroke_w = cur_shape.stroke_width == 0 ? 1 : cur_shape.stroke_width;
 				addSvgElementFromJson({
 					"element": "polyline",
 					"curStyles": true,
@@ -2792,8 +2787,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 
 		evt.preventDefault();
 		
-		switch (current_mode)
-		{
+		switch (current_mode) {
 			case "select":
 				// we temporarily use a translate on the element(s) being dragged
 				// this transform is removed upon mousing up and the element is 
@@ -2807,7 +2801,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						dy = snapToGrid(dy);
 					}
 
-					if (evt.shiftKey) { var xya = svgedit.math.snapToAngle(start_x,start_y,x,y); x=xya.x; y=xya.y; }
+					if (evt.shiftKey) { 
+						var xya = svgedit.math.snapToAngle(start_x, start_y, x, y);
+						x = xya.x;
+						y = xya.y; 
+					}
 
 					if (dx != 0 || dy != 0) {
 						var len = selectedElements.length;
@@ -2828,7 +2826,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 							// element, the dummy transform may have gotten lost.
 							// This results in unexpected behaviour
 							
-							xform.setTranslate(dx,dy);
+							xform.setTranslate(dx, dy);
 							if (tlist.numberOfItems) {
 								tlist.replaceItem(xform, 0);
 							} else {
@@ -2851,7 +2849,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					'y': Math.min(r_start_y, real_y),
 					'width': Math.abs(real_x - r_start_x),
 					'height': Math.abs(real_y - r_start_y)
-				},100);
+				}, 100);
 
 				// for each selected:
 				// - if newList contains selected, do nothing
@@ -2887,8 +2885,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				var tlist = svgedit.transformlist.getTransformList(selected),
 					hasMatrix = svgedit.math.hasMatrixTransform(tlist),
 					box = hasMatrix ? init_bbox : svgedit.utilities.getBBox(selected), 
-					left=box.x, top=box.y, width=box.width,
-					height=box.height, dx=(x-start_x), dy=(y-start_y);
+					left = box.x, top = box.y, width = box.width,
+					height = box.height, dx = (x-start_x), dy = (y-start_y);
 				
 				if (curConfig.gridSnapping){
 					dx = snapToGrid(dx);
@@ -2901,7 +2899,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				var angle = svgedit.utilities.getRotationAngle(selected);
 				if (angle) {
 					var r = Math.sqrt( dx*dx + dy*dy ),
-						theta = Math.atan2(dy,dx) - angle * Math.PI / 180.0;
+						theta = Math.atan2(dy, dx) - angle * Math.PI / 180.0;
 					dx = r * Math.cos(theta);
 					dy = r * Math.sin(theta);
 				}
@@ -2943,14 +2941,14 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					ty = snapToGrid(ty);
 				}
 
-				translateOrigin.setTranslate(-(left+tx),-(top+ty));
+				translateOrigin.setTranslate(-(left+tx), -(top+ty));
 				if (evt.shiftKey) {
 					if (sx == 1) sx = sy;
 					else sy = sx;
 				}
-				scale.setScale(sx,sy);
+				scale.setScale(sx, sy);
 				
-				translateBack.setTranslate(left+tx,top+ty);
+				translateBack.setTranslate(left+tx, top+ty);
 				if (hasMatrix) {
 					var diff = angle?1:0;
 					tlist.replaceItem(translateOrigin, 2+diff);
@@ -2976,13 +2974,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					'y': Math.min(r_start_y*current_zoom, real_y),
 					'width': Math.abs(real_x - r_start_x*current_zoom),
 					'height': Math.abs(real_y - r_start_y*current_zoom)
-				},100);			
+				}, 100);			
 				break;
 			case "text":
 				assignAttributes(shape,{
 					'x': x,
 					'y': y
-				},1000);
+				}, 1000);
 				break;
 			case "line":
 				// Opera has a problem with suspendRedraw() apparently
@@ -2997,7 +2995,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				var x2 = x;
 				var y2 = y;					
 
-				if (evt.shiftKey) { var xya = svgedit.math.snapToAngle(start_x,start_y,x2,y2); x2=xya.x; y2=xya.y; }
+				if (evt.shiftKey) {
+					var xya = svgedit.math.snapToAngle(start_x, start_y, x2, y2);
+					x2 = xya.x;
+					y2 = xya.y;
+				}
 				
 				shape.setAttributeNS(null, "x2", x2);
 				shape.setAttributeNS(null, "y2", y2);
@@ -3019,8 +3021,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					new_x = start_x < x ? start_x : start_x - w;
 					new_y = start_y < y ? start_y : start_y - h;
 				} else {
-					new_x = Math.min(start_x,x);
-					new_y = Math.min(start_y,y);
+					new_x = Math.min(start_x, x);
+					new_y = Math.min(start_y, y);
 				}
 	
 				if (curConfig.gridSnapping){
@@ -3090,9 +3092,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						}
 					}
 				}
-				controllPoint2 = {x:controllPoint1.x,y:controllPoint1.y};
-				controllPoint1 = {x:start.x,y:start.y};
-				start = {x:end.x,y:end.y};
+				controllPoint2 = {x:controllPoint1.x, y:controllPoint1.y};
+				controllPoint1 = {x:start.x, y:start.y};
+				start = {x:end.x, y:end.y};
 				break;
 			// update path stretch line coordinates
 			case "path":
@@ -3116,8 +3118,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						var x1 = start_x;
 						var y1 = start_y;
 					}
-					var xya = svgedit.math.snapToAngle(x1,y1,x,y);
-					x=xya.x; y=xya.y;
+					var xya = svgedit.math.snapToAngle(x1, y1, x, y);
+					x = xya.x;
+					y = xya.y;
 				}
 				
 				if (rubberBox && rubberBox.getAttribute('display') !== 'none') {
@@ -3153,10 +3156,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					cx = box.x + box.width/2, 
 					cy = box.y + box.height/2,
 					m = svgedit.math.getMatrix(selected),
-					center = svgedit.math.transformPoint(cx,cy,m);
+					center = svgedit.math.transformPoint(cx, cy, m);
 				cx = center.x;
 				cy = center.y;
-				var angle = ((Math.atan2(cy-y,cx-x)  * (180/Math.PI))-90) % 360;
+				var angle = ((Math.atan2(cy-y, cx-x)  * (180/Math.PI))-90) % 360;
 				if (curConfig.gridSnapping){
 					angle = snapToGrid(angle);
 				}
@@ -3881,8 +3884,8 @@ var textActions = canvas.textActions = function() {
 			current_mode = "select";
 			clearInterval(blinker);
 			blinker = null;
-			if (selblock) $(selblock).attr('display','none');
-			if (cursor) $(cursor).attr('visibility','hidden');
+			if (selblock) $(selblock).attr('display', 'none');
+			if (cursor) $(cursor).attr('visibility', 'hidden');
 			$(curtext).css('cursor', 'move');
 			
 			if (selectElem) {
@@ -4057,7 +4060,7 @@ var pathActions = canvas.pathActions = function() {
 			// - http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html
 			var curpos = points.getItem(0), prevCtlPt = null;
 			var d = [];
-			d.push(["M",curpos.x,",",curpos.y," C"].join(""));
+			d.push(["M", curpos.x, ",", curpos.y, " C"].join(""));
 			for (var i = 1; i <= (N-4); i += 3) {
 				var ct1 = points.getItem(i);
 				var ct2 = points.getItem(i+1);
@@ -4076,7 +4079,7 @@ var pathActions = canvas.pathActions = function() {
 					}
 				}
 				
-				d.push([ct1.x,ct1.y,ct2.x,ct2.y,end.x,end.y].join(','));
+				d.push([ct1.x, ct1.y, ct2.x, ct2.y, end.x, end.y].join(','));
 				
 				curpos = end;
 				prevCtlPt = ct2;
@@ -4085,7 +4088,7 @@ var pathActions = canvas.pathActions = function() {
 			d.push("L");
 			for (;i < N;++i) {
 				var pt = points.getItem(i);
-				d.push([pt.x,pt.y].join(","));
+				d.push([pt.x, pt.y].join(","));
 			}
 			d = d.join(" ");
 
@@ -4179,7 +4182,7 @@ var pathActions = canvas.pathActions = function() {
 					
 					var len = seglist.numberOfItems;
 					// if we clicked on an existing point, then we are done this path, commit it
-					// (i,i+1) are the x,y that were clicked on
+					// (i, i+1) are the x,y that were clicked on
 					if (clickOnPoint) {
 						// if clicked on any other point but the first OR
 						// the first point was clicked on and there are less than 3 points
@@ -4250,7 +4253,11 @@ var pathActions = canvas.pathActions = function() {
 						var last = drawn_path.pathSegList.getItem(num -1);
 						var lastx = last.x, lasty = last.y;
 
-						if (evt.shiftKey) { var xya = svgedit.math.snapToAngle(lastx,lasty,x,y); x=xya.x; y=xya.y; }
+						if (evt.shiftKey) {
+							var xya = svgedit.math.snapToAngle(lastx, lasty, x, y);
+							x = xya.x;
+							y = xya.y;
+						}
 						
 						// Use the segment defined by stretchy
 						var s_seg = stretchy.pathSegList.getItem(1);
@@ -4845,7 +4852,8 @@ var pathActions = canvas.pathActions = function() {
 			// TODO: Find right way to select point now
 			// path.selectPt(sel_pt);
 			if (window.opera) { // Opera repaints incorrectly
-				var cp = $(svgedit.path.path.elem); cp.attr('d',cp.attr('d'));
+				var cp = $(svgedit.path.path.elem); 
+				cp.attr('d', cp.attr('d'));
 			}
 			svgedit.path.path.endChanges("Delete path node(s)");
 		},
@@ -4983,7 +4991,7 @@ var pathActions = canvas.pathActions = function() {
 						}
 						if (type === 3) last_m = [curx, cury];
 						
-						addToD([[x,y]]);
+						addToD([[x, y]]);
 						break;
 					case 6: // absolute cubic (C)
 						x -= curx; x1 -= curx; x2 -= curx;
@@ -4998,7 +5006,7 @@ var pathActions = canvas.pathActions = function() {
 							curx = x;
 							cury = y;
 						}
-						addToD([[x1,y1],[x2,y2],[x,y]]);
+						addToD([[x1, y1], [x2, y2], [x, y]]);
 						break;
 					case 8: // absolute quad (Q)
 						x -= curx; x1 -= curx;
@@ -5013,7 +5021,7 @@ var pathActions = canvas.pathActions = function() {
 							curx = x;
 							cury = y;
 						}
-						addToD([[x1,y1],[x,y]]);
+						addToD([[x1, y1],[x, y]]);
 						break;
 					case 10: // absolute elliptical arc (A)
 						x -= curx;
@@ -5028,11 +5036,11 @@ var pathActions = canvas.pathActions = function() {
 							curx = x;
 							cury = y;
 						}
-						addToD([[seg.r1,seg.r2]], [
+						addToD([[seg.r1, seg.r2]], [
 								seg.angle,
 								(seg.largeArcFlag ? 1 : 0),
 								(seg.sweepFlag ? 1 : 0)
-							],[x,y]
+							], [x, y]
 						);
 						break;
 					case 16: // absolute smooth cubic (S)
@@ -5048,7 +5056,7 @@ var pathActions = canvas.pathActions = function() {
 							curx = x;
 							cury = y;
 						}
-						addToD([[x2,y2],[x,y]]);
+						addToD([[x2, y2],[x, y]]);
 						break;
 				} // switch on path segment type
 			} // for each segment
@@ -5230,7 +5238,7 @@ this.svgToString = function(elem, indent) {
 			});
 			
 			var i = attrs.length;
-			var attr_names = ['width','height','xmlns','x','y','viewBox','id','overflow'];
+			var attr_names = ['width', 'height', 'xmlns', 'x', 'y', 'viewBox', 'id', 'overflow'];
 			while (i--) {
 				attr = attrs.item(i);
 				var attrVal = toXml(attr.nodeValue);
@@ -5295,8 +5303,7 @@ this.svgToString = function(elem, indent) {
 			indent++;
 			var bOneLine = false;
 			
-			for (var i=0; i<childs.length; i++)
-			{
+			for (var i=0; i<childs.length; i++) {
 				var child = childs.item(i);
 				switch(child.nodeType) {
 				case 1: // element node
@@ -5359,14 +5366,14 @@ this.embedImage = function(val, callback) {
 		// retrieve the data: URL
 		try {
 			var urldata = ';svgedit_url=' + encodeURIComponent(val);
-			urldata = canvas.toDataURL().replace(';base64',urldata+';base64');
+			urldata = canvas.toDataURL().replace(';base64', urldata+';base64');
 			encodableImages[val] = urldata;
 		} catch(e) {
 			encodableImages[val] = false;
 		}
 		last_good_img_url = val;
 		if (callback) callback(encodableImages[val]);
-	}).attr('src',val);
+	}).attr('src', val);
 };
 
 // Function: setGoodImage
@@ -5492,7 +5499,7 @@ var uniquifyElems = this.uniquifyElems = function(g) {
 			
 			// now search for all attributes on this element that might refer
 			// to other elements
-			$.each(ref_attrs,function(i,attr) {
+			$.each(ref_attrs, function(i, attr) {
 				var attrnode = n.getAttributeNode(attr);
 				if (attrnode) {
 					// the incoming file has been sanitized, so we should be able to safely just strip off the leading #
@@ -5674,7 +5681,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		elem = $elem.data('symbol');
 		
 		ts = $elem.attr('transform');
-		var pos = $elem.attr(['x','y']);
+		var pos = $elem.attr(['x', 'y']);
 
 		var vb = elem.getAttribute('viewBox');
 		
@@ -5830,8 +5837,8 @@ this.setSvgString = function(xmlString) {
 				if (m) {
 					var url = decodeURIComponent(m[1]);
 					$(new Image()).load(function() {
-						image.setAttributeNS(xlinkns,'xlink:href',url);
-					}).attr('src',url);
+						image.setAttributeNS(xlinkns, 'xlink:href', url);
+					}).attr('src', url);
 				}
 			}
 			// Add to encodableImages if it loads
@@ -6012,7 +6019,7 @@ this.importSvgString = function(xmlString) {
 				innerh = svgedit.units.convertToNum('height', svg.getAttribute("height")),
 				innervb = svg.getAttribute("viewBox"),
 				// if no explicit viewbox, create one out of the width and height
-				vb = innervb ? innervb.split(" ") : [0,0,innerw,innerh];
+				vb = innervb ? innervb.split(" ") : [0, 0, innerw, innerh];
 			for (var j = 0; j < 4; ++j)
 				vb[j] = +(vb[j]);
 	
@@ -6723,7 +6730,7 @@ this.setBBoxZoom = function(val, editor_w, editor_h) {
 		if (!bb) return false;
 		var w_zoom = Math.round((editor_w / bb.width)*100 * spacer)/100;
 		var h_zoom = Math.round((editor_h / bb.height)*100 * spacer)/100;	
-		var zoomlevel = Math.min(w_zoom,h_zoom);
+		var zoomlevel = Math.min(w_zoom, h_zoom);
 		canvas.setZoom(zoomlevel);
 		return {'zoom': zoomlevel, 'bbox': bb};
 	};
@@ -6747,7 +6754,7 @@ this.setBBoxZoom = function(val, editor_w, editor_h) {
 		case 'canvas':
 			var res = getResolution();
 			spacer = .95;
-			bb = {width:res.w, height:res.h ,x:0, y:0};
+			bb = {width:res.w, height:res.h , x:0, y:0};
 			break;
 		case 'content':
 			bb = getStrokedBBox();
@@ -6881,7 +6888,7 @@ var findDuplicateGradient = function(grad) {
 	var defs = svgedit.utilities.findDefs();
 	var existing_grads = $(defs).find("linearGradient, radialGradient");
 	var i = existing_grads.length;
-	var rad_attrs = ['r','cx','cy','fx','fy'];
+	var rad_attrs = ['r', 'cx', 'cy', 'fx', 'fy'];
 	while (i--) {
 		var og = existing_grads[i];
 		if (grad.tagName == "linearGradient") {
@@ -7089,7 +7096,7 @@ this.setStrokeWidth = function(val) {
 // attr - String with the attribute name
 // val - String or number with the attribute value
 this.setStrokeAttr = function(attr, val) {
-	cur_shape[attr.replace('-','_')] = val;
+	cur_shape[attr.replace('-', '_')] = val;
 	var elems = [];
 	var i = selectedElements.length;
 	while (i--) {
@@ -7492,7 +7499,7 @@ this.setImageURL = function(val) {
 			batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
 			addCommandToHistory(batchCmd);
 			call("changed", [elem]);
-		}).attr('src',val);
+		}).attr('src', val);
 	} else {
 		addCommandToHistory(batchCmd);
 	}
@@ -7704,13 +7711,13 @@ this.convertToPath = function(elem, getBBox) {
 		} else {
 			joinSegs([
 				['M',[x, y+ry]],
-				['C',[x,y+ry/num, x+rx/num,y, x+rx,y]],
+				['C',[x, y+ry/num, x+rx/num, y, x+rx, y]],
 				['L',[x+w-rx, y]],
-				['C',[x+w-rx/num,y, x+w,y+ry/num, x+w,y+ry]],
+				['C',[x+w-rx/num, y, x+w, y+ry/num, x+w, y+ry]],
 				['L',[x+w, y+h-ry]],
-				['C',[x+w, y+h-ry/num, x+w-rx/num,y+h, x+w-rx,y+h]],
+				['C',[x+w, y+h-ry/num, x+w-rx/num, y+h, x+w-rx, y+h]],
 				['L',[x+rx, y+h]],
-				['C',[x+rx/num, y+h, x,y+h-ry/num, x,y+h-ry]],
+				['C',[x+rx/num, y+h, x, y+h-ry/num, x, y+h-ry]],
 				['L',[x, y+ry]],
 				['Z',[]]
 			]);
@@ -7722,7 +7729,7 @@ this.convertToPath = function(elem, getBBox) {
 	}
 	
 	if (d) {
-		path.setAttribute('d',d);
+		path.setAttribute('d', d);
 	}
 	
 	if (!getBBox) {
@@ -7840,7 +7847,7 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 			// Use the Firefox ffClone hack for text elements with gradients or
 			// where other text attributes are changed. 
 			if (svgedit.browser.isGecko() && elem.nodeName === 'text' && /rotate/.test(elem.getAttribute('transform'))) {
-				if ((newValue+'').indexOf('url') === 0 || ['font-size','font-family','x','y'].indexOf(attr) >= 0 && elem.textContent) {
+				if ((newValue+'').indexOf('url') === 0 || ['font-size', 'font-family', 'x', 'y'].indexOf(attr) >= 0 && elem.textContent) {
 					elem = ffClone(elem);
 				}
 			}
@@ -8213,7 +8220,7 @@ var pushGroupProperties = this.pushGroupProperties = function(g, undoable) {
 				// get child's old center of rotation
 				var cbox = svgedit.utilities.getBBox(elem);
 				var ceqm = svgedit.math.transformListToTransform(chtlist).matrix;
-				var coldc = svgedit.math.transformPoint(cbox.x+cbox.width/2, cbox.y+cbox.height/2,ceqm);
+				var coldc = svgedit.math.transformPoint(cbox.x+cbox.width/2, cbox.y+cbox.height/2, ceqm);
 				
 				// sum group and child's angles
 				var sangle = gangle + cangle;
@@ -8479,13 +8486,13 @@ this.moveSelectedElements = function(dx, dy, undoable) {
 //					selectedBBoxes[0].x += dx[0];
 //					selectedBBoxes[0].y += dy[0];
 //				}
-				xform.setTranslate(dx[i],dy[i]);
+				xform.setTranslate(dx[i], dy[i]);
 			} else {
 //				if (i==0) {
 //					selectedBBoxes[0].x += dx;
 //					selectedBBoxes[0].y += dy;
 //				}
-				xform.setTranslate(dx,dy);
+				xform.setTranslate(dx, dy);
 			}
 
 			if (tlist.numberOfItems) {
@@ -8513,7 +8520,7 @@ this.moveSelectedElements = function(dx, dy, undoable) {
 // Function: cloneSelectedElements
 // Create deep DOM copies (clones) of all selected elements and move them slightly 
 // from their originals
-this.cloneSelectedElements = function(x,y) {
+this.cloneSelectedElements = function(x, y) {
 	var batchCmd = new BatchCommand("Clone Elements");
 	// find all the elements selected (stop at first null)
 	var len = selectedElements.length;
@@ -8522,7 +8529,7 @@ this.cloneSelectedElements = function(x,y) {
 		if (elem == null) break;
 	}
 	// use slice to quickly get the subset of elements we need
-	var copiedElements = selectedElements.slice(0,i);
+	var copiedElements = selectedElements.slice(0, i);
 	this.clearSelection(true);
 	// note that we loop in the reverse way because of the way elements are added
 	// to the selectedElements array (top-first)
@@ -8536,7 +8543,7 @@ this.cloneSelectedElements = function(x,y) {
 	
 	if (!batchCmd.isEmpty()) {
 		addToSelection(copiedElements.reverse()); // Need to reverse for correct selection-adding
-		this.moveSelectedElements(x,y,false);
+		this.moveSelectedElements(x, y, false);
 		addCommandToHistory(batchCmd);
 	}
 };
@@ -8628,7 +8635,7 @@ this.alignSelectedElements = function(type, relative_to) {
 				break;
 		}
 	}
-	this.moveSelectedElements(dx,dy);
+	this.moveSelectedElements(dx, dy);
 };
 
 // Group: Additional editor tools
@@ -8683,7 +8690,7 @@ this.updateCanvas = function(w, h) {
 		});
 	}
 	
-	selectorManager.selectorParentGroup.setAttribute("transform","translate(" + x + "," + y + ")");
+	selectorManager.selectorParentGroup.setAttribute("transform", "translate(" + x + "," + y + ")");
 	
 	return {x:x, y:y, old_x:old_x, old_y:old_y, d_x:x - old_x, d_y:y - old_y};
 };
@@ -8698,7 +8705,7 @@ this.setBackground = function(color, url) {
 	var bg =  svgedit.utilities.getElem('canvasBackground');
 	var border = $(bg).find('rect')[0];
 	var bg_img = svgedit.utilities.getElem('background_image');
-	border.setAttribute('fill',color);
+	border.setAttribute('fill', color);
 	if (url) {
 		if (!bg_img) {
 			bg_img = svgdoc.createElementNS(svgns, "image");
