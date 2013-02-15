@@ -23,17 +23,17 @@ var svgroot = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 // Helper function.
 function transformToString(xform) {
 	var m = xform.matrix,
-		text = "";
+		text = '';
 	switch(xform.type) {
 		case 1: // MATRIX
-			text = "matrix(" + [m.a, m.b, m.c, m.d, m.e, m.f].join(",") + ")";
+			text = 'matrix(' + [m.a, m.b, m.c, m.d, m.e, m.f].join(',') + ')';
 			break;
 		case 2: // TRANSLATE
-			text = "translate(" + m.e + "," + m.f + ")";
+			text = 'translate(' + m.e + ',' + m.f + ')';
 			break;
 		case 3: // SCALE
-			if (m.a == m.d) text = "scale(" + m.a + ")";
-			else text = "scale(" + m.a + "," + m.d + ")";
+			if (m.a == m.d) text = 'scale(' + m.a + ')';
+			else text = 'scale(' + m.a + ',' + m.d + ')';
 			break;
 		case 4: // ROTATE
 			var cx = 0, cy = 0;
@@ -43,7 +43,7 @@ function transformToString(xform) {
 				cy = ( K * m.f + m.b*m.e ) / ( K*K + m.b*m.b );
 				cx = ( m.e - m.b * cy ) / K;
 			}
-			text = "rotate(" + xform.angle + " " + cx + "," + cy + ")";
+			text = 'rotate(' + xform.angle + ' ' + cx + ',' + cy + ')';
 			break;
 	}
 	return text;
@@ -80,18 +80,18 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 	this._xforms = [];
 	// TODO: how do we capture the undo-ability in the changed transform list?
 	this._update = function() {
-		var tstr = "";
+		var tstr = '';
 		var concatMatrix = svgroot.createSVGMatrix();
 		for (var i = 0; i < this.numberOfItems; ++i) {
 			var xform = this._list.getItem(i);
-			tstr += transformToString(xform) + " ";
+			tstr += transformToString(xform) + ' ';
 		}
-		this._elem.setAttribute("transform", tstr);
+		this._elem.setAttribute('transform', tstr);
 	};
 	this._list = this;
 	this._init = function() {
 		// Transform attribute parser
-		var str = this._elem.getAttribute("transform");
+		var str = this._elem.getAttribute('transform');
 		if (!str) return;
 
 		// TODO: Add skew support in future
@@ -105,7 +105,7 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 				var bits = x.split(/\s*\(/);
 				var name = bits[0];
 				var val_bits = bits[1].match(/\s*(.*?)\s*\)/);
-				val_bits[1] = val_bits[1].replace(/(\d)-/g, "$1 -");
+				val_bits[1] = val_bits[1].replace(/(\d)-/g, '$1 -');
 				var val_arr = val_bits[1].split(/[, ]+/);
 				var letters = 'abcdef'.split('');
 				var mtx = svgroot.createSVGMatrix();

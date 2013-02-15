@@ -45,7 +45,7 @@ var typeMap_ = {};
 /**
  * ElementContainer interface
  *
- * function getBaseUnit() - returns a string of the base unit type of the container ("em")
+ * function getBaseUnit() - returns a string of the base unit type of the container ('em')
  * function getElement() - returns an element in the container given an id
  * function getHeight() - returns the container's height
  * function getWidth() - returns the container's width
@@ -171,14 +171,14 @@ svgedit.units.setUnitAttr = function(elem, attr, val) {
 };
 
 var attrsToConvert = {
-	"line": ['x1', 'x2', 'y1', 'y2'],
-	"circle": ['cx', 'cy', 'r'],
-	"ellipse": ['cx', 'cy', 'rx', 'ry'],
-	"foreignObject": ['x', 'y', 'width', 'height'],
-	"rect": ['x', 'y', 'width', 'height'],
-	"image": ['x', 'y', 'width', 'height'],
-	"use": ['x', 'y', 'width', 'height'],
-	"text": ['x', 'y']
+	'line': ['x1', 'x2', 'y1', 'y2'],
+	'circle': ['cx', 'cy', 'r'],
+	'ellipse': ['cx', 'cy', 'rx', 'ry'],
+	'foreignObject': ['x', 'y', 'width', 'height'],
+	'rect': ['x', 'y', 'width', 'height'],
+	'image': ['x', 'y', 'width', 'height'],
+	'use': ['x', 'y', 'width', 'height'],
+	'text': ['x', 'y']
 };
 
 // Function: svgedit.units.convertAttrs
@@ -259,7 +259,7 @@ svgedit.units.isValidUnit = function(attr, val, selectedElement) {
 				if (re.test(val)) valid = true;
 			});
 		}
-	} else if (attr == "id") {
+	} else if (attr == 'id') {
 		// if we're trying to change the id, make sure it's not already present in the doc
 		// and the id value is valid.
 

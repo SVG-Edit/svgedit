@@ -21,11 +21,11 @@ if (!svgedit.path) {
 	svgedit.path = {};
 }
 
-var svgns = "http://www.w3.org/2000/svg";
+var svgns = 'http://www.w3.org/2000/svg';
 
 var uiStrings = {
-	"pathNodeTooltip": "Drag node to move it. Double-click node to change segment type",
-	"pathCtrlPtTooltip": "Drag control point to adjust curve properties"
+	'pathNodeTooltip': 'Drag node to move it. Double-click node to change segment type',
+	'pathCtrlPtTooltip': 'Drag control point to adjust curve properties'
 };
 
 var segData = {
@@ -140,16 +140,16 @@ svgedit.path.addPointGrip = function(index, x, y) {
 	// create the container of all the point grips
 	var pointGripContainer = svgedit.path.getGripContainer();
 
-	var pointGrip = svgedit.utilities.getElem("pathpointgrip_"+index);
+	var pointGrip = svgedit.utilities.getElem('pathpointgrip_'+index);
 	// create it
 	if (!pointGrip) {
-		pointGrip = document.createElementNS(svgns, "circle");
+		pointGrip = document.createElementNS(svgns, 'circle');
 		svgedit.utilities.assignAttributes(pointGrip, {
-			'id': "pathpointgrip_" + index,
-			'display': "none",
+			'id': 'pathpointgrip_' + index,
+			'display': 'none',
 			'r': 4,
-			'fill': "#0FF",
-			'stroke': "#00F",
+			'fill': '#0FF',
+			'stroke': '#00F',
 			'stroke-width': 2,
 			'cursor': 'move',
 			'style': 'pointer-events:all',
@@ -167,33 +167,33 @@ svgedit.path.addPointGrip = function(index, x, y) {
 		svgedit.utilities.assignAttributes(pointGrip, {
 			'cx': x,
 			'cy': y,
-			'display': "inline"
+			'display': 'inline'
 		});
 	}
 	return pointGrip;
 };
 
 svgedit.path.getGripContainer = function() {
-	var c = svgedit.utilities.getElem("pathpointgrip_container");
+	var c = svgedit.utilities.getElem('pathpointgrip_container');
 	if (!c) {
-		var parent = svgedit.utilities.getElem("selectorParentGroup");
-		c = parent.appendChild(document.createElementNS(svgns, "g"));
-		c.id = "pathpointgrip_container";
+		var parent = svgedit.utilities.getElem('selectorParentGroup');
+		c = parent.appendChild(document.createElementNS(svgns, 'g'));
+		c.id = 'pathpointgrip_container';
 	}
 	return c;
 };
 
 svgedit.path.addCtrlGrip = function(id) {
-	var pointGrip = svgedit.utilities.getElem("ctrlpointgrip_"+id);
+	var pointGrip = svgedit.utilities.getElem('ctrlpointgrip_'+id);
 	if (pointGrip) return pointGrip;
 
-	pointGrip = document.createElementNS(svgns, "circle");
+	pointGrip = document.createElementNS(svgns, 'circle');
 	svgedit.utilities.assignAttributes(pointGrip, {
-		'id': "ctrlpointgrip_" + id,
-		'display': "none",
+		'id': 'ctrlpointgrip_' + id,
+		'display': 'none',
 		'r': 4,
-		'fill': "#0FF",
-		'stroke': "#55F",
+		'fill': '#0FF',
+		'stroke': '#55F',
 		'stroke-width': 1,
 		'cursor': 'move',
 		'style': 'pointer-events:all',
@@ -204,15 +204,15 @@ svgedit.path.addCtrlGrip = function(id) {
 };
 
 svgedit.path.getCtrlLine = function(id) {
-	var ctrlLine = svgedit.utilities.getElem("ctrlLine_"+id);
+	var ctrlLine = svgedit.utilities.getElem('ctrlLine_'+id);
 	if (ctrlLine) return ctrlLine;
 
-	ctrlLine = document.createElementNS(svgns, "line");
+	ctrlLine = document.createElementNS(svgns, 'line');
 	svgedit.utilities.assignAttributes(ctrlLine, {
-		'id': "ctrlLine_"+id,
-		'stroke': "#555",
+		'id': 'ctrlLine_'+id,
+		'stroke': '#555',
 		'stroke-width': 1,
-		"style": "pointer-events:none"
+		'style': 'pointer-events:none'
 	});
 	svgedit.path.getGripContainer().appendChild(ctrlLine);
 	return ctrlLine;
@@ -227,7 +227,7 @@ svgedit.path.getPointGrip = function(seg, update) {
 		svgedit.utilities.assignAttributes(pointGrip, {
 			'cx': pt.x,
 			'cy': pt.y,
-			'display': "inline"
+			'display': 'inline'
 		});
 	}
 
@@ -237,7 +237,7 @@ svgedit.path.getPointGrip = function(seg, update) {
 svgedit.path.getControlPoints = function(seg) {
 	var item = seg.item;
 	var index = seg.index;
-	if (!("x1" in item) || !("x2" in item)) return null;
+	if (!('x1' in item) || !('x2' in item)) return null;
 	var cpt = {};
 	var pointGripContainer = svgedit.path.getGripContainer();
 
@@ -259,7 +259,7 @@ svgedit.path.getControlPoints = function(seg) {
 			'y1': pt.y,
 			'x2': gpt.x,
 			'y2': gpt.y,
-			'display': "inline"
+			'display': 'inline'
 		});
 
 		cpt['c' + i + '_line'] = ctrlLine;
@@ -270,7 +270,7 @@ svgedit.path.getControlPoints = function(seg) {
 		svgedit.utilities.assignAttributes(pointGrip, {
 			'cx': pt.x,
 			'cy': pt.y,
-			'display': "inline"
+			'display': 'inline'
 		});
 		cpt['c' + i] = pointGrip;
 	}
@@ -306,16 +306,16 @@ svgedit.path.replacePathSeg = function(type, index, pts, elem) {
 
 svgedit.path.getSegSelector = function(seg, update) {
 	var index = seg.index;
-	var segLine = svgedit.utilities.getElem("segline_" + index);
+	var segLine = svgedit.utilities.getElem('segline_' + index);
 	if (!segLine) {
 		var pointGripContainer = svgedit.path.getGripContainer();
 		// create segline
-		segLine = document.createElementNS(svgns, "path");
+		segLine = document.createElementNS(svgns, 'path');
 		svgedit.utilities.assignAttributes(segLine, {
-			'id': "segline_" + index,
+			'id': 'segline_' + index,
 			'display': 'none',
-			'fill': "none",
-			'stroke': "#0FF",
+			'fill': 'none',
+			'stroke': '#0FF',
 			'stroke-width': 2,
 			'style':'pointer-events:none',
 			'd': 'M0,0 0,0'
@@ -326,7 +326,7 @@ svgedit.path.getSegSelector = function(seg, update) {
 	if (update) {
 		var prev = seg.prev;
 		if (!prev) {
-			segLine.setAttribute("display", "none");
+			segLine.setAttribute('display', 'none');
 			return segLine;
 		}
 
@@ -410,7 +410,7 @@ svgedit.path.Segment = function(index, item) {
 
 svgedit.path.Segment.prototype.showCtrlPts = function(y) {
 	for (var i in this.ctrlpts) {
-		this.ctrlpts[i].setAttribute("display", y ? "inline" : "none");
+		this.ctrlpts[i].setAttribute('display', y ? 'inline' : 'none');
 	}
 };
 
@@ -421,8 +421,8 @@ svgedit.path.Segment.prototype.selectCtrls = function(y) {
 
 svgedit.path.Segment.prototype.show = function(y) {
 	if (this.ptgrip) {
-		this.ptgrip.setAttribute("display", y ? "inline" : "none");
-		this.segsel.setAttribute("display", y ? "inline" : "none");
+		this.ptgrip.setAttribute('display', y ? 'inline' : 'none');
+		this.segsel.setAttribute('display', y ? 'inline' : 'none');
 		// Show/hide all control points if available
 		this.showCtrlPts(y);
 	}
@@ -430,8 +430,8 @@ svgedit.path.Segment.prototype.show = function(y) {
 
 svgedit.path.Segment.prototype.select = function(y) {
 	if (this.ptgrip) {
-		this.ptgrip.setAttribute("stroke", y ? "#0FF" : "#00F");
-		this.segsel.setAttribute("display", y ? "inline" : "none");
+		this.ptgrip.setAttribute('stroke', y ? '#0FF' : '#00F');
+		this.segsel.setAttribute('display', y ? 'inline' : 'none');
 		if (this.ctrlpts) {
 			this.selectCtrls(y);
 		}
@@ -462,7 +462,7 @@ svgedit.path.Segment.prototype.update = function(full) {
 			}
 			svgedit.path.getControlPoints(this);
 		}
-		// this.segsel.setAttribute("display", y?"inline":"none");
+		// this.segsel.setAttribute('display', y?'inline':'none');
 	}
 };
 
@@ -485,12 +485,12 @@ svgedit.path.Segment.prototype.move = function(dx, dy) {
 	}
 
 	if (this.mate) {
-		// The last point of a closed subpath has a "mate",
-		// which is the "M" segment of the subpath
+		// The last point of a closed subpath has a 'mate',
+		// which is the 'M' segment of the subpath
 		var item = this.mate.item;
 		var pts = [item.x += dx, item.y += dy];
 		svgedit.path.replacePathSeg(this.mate.type, this.mate.index, pts);
-		// Has no grip, so does not need "updating"?
+		// Has no grip, so does not need 'updating'?
 	}
 
 	this.update(true);
@@ -546,8 +546,8 @@ svgedit.path.Segment.prototype.setType = function(new_type, pts) {
 };
 
 svgedit.path.Path = function(elem) {
-	if (!elem || elem.tagName !== "path") {
-		throw "svgedit.path.Path constructed without a <path> element";
+	if (!elem || elem.tagName !== 'path') {
+		throw 'svgedit.path.Path constructed without a <path> element';
 	}
 
 	this.elem = elem;
@@ -561,7 +561,7 @@ svgedit.path.Path = function(elem) {
 // Reset path data
 svgedit.path.Path.prototype.init = function() {
 	// Hide all grips, etc
-	$(svgedit.path.getGripContainer()).find("*").attr("display", "none");
+	$(svgedit.path.getGripContainer()).find('*').attr('display', 'none');
 	var segList = this.elem.pathSegList;
 	var len = segList.numberOfItems;
 	this.segs = [];
@@ -788,7 +788,7 @@ svgedit.path.Path.prototype.setSegType = function(new_type) {
 		if (!prev) continue;
 
 		if (!new_type) { // double-click, so just toggle
-			text = "Toggle Path Segment Type";
+			text = 'Toggle Path Segment Type';
 
 			// Toggle segment to curve/straight line
 			var old_type = cur.type;

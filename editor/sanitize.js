@@ -21,13 +21,13 @@ if (!svgedit.sanitize) {
 }
 
 // Namespace constants
-var svgns = "http://www.w3.org/2000/svg",
-	xlinkns = "http://www.w3.org/1999/xlink",
-	xmlns   = "http://www.w3.org/XML/1998/namespace",
-	xmlnsns = "http://www.w3.org/2000/xmlns/", // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
-	htmlns  = "http://www.w3.org/1999/xhtml",
-	mathns  = "http://www.w3.org/1998/Math/MathML",
-	se_ns   = "http://svg-edit.googlecode.com";
+var svgns = 'http://www.w3.org/2000/svg',
+	xlinkns = 'http://www.w3.org/1999/xlink',
+	xmlns   = 'http://www.w3.org/XML/1998/namespace',
+	xmlnsns = 'http://www.w3.org/2000/xmlns/', // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
+	htmlns  = 'http://www.w3.org/1999/xhtml',
+	mathns  = 'http://www.w3.org/1998/Math/MathML',
+	se_ns   = 'http://svg-edit.googlecode.com';
 
 // map namespace URIs to prefixes
 var nsMap_ = {};
@@ -142,7 +142,7 @@ svgedit.sanitize.sanitizeSvg = function(node) {
   // Cleanup text nodes
 	if (node.nodeType == 3) { // 3 == TEXT_NODE
     // Trim whitespace
-		node.nodeValue = node.nodeValue.replace(/^\s+|\s+$/g, "");
+		node.nodeValue = node.nodeValue.replace(/^\s+|\s+$/g, '');
 		// Remove if empty
 		if(node.nodeValue.length == 0) node.parentNode.removeChild(node);
 	}
@@ -192,20 +192,20 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 			// Add spaces before negative signs where necessary
 			if(svgedit.browser.isGecko()) {
 				switch ( attrName ) {
-				case "transform":
-				case "gradientTransform":
-				case "patternTransform":
-					var val = attr.nodeValue.replace(/(\d)-/g, "$1 -");
+				case 'transform':
+				case 'gradientTransform':
+				case 'patternTransform':
+					var val = attr.nodeValue.replace(/(\d)-/g, '$1 -');
 					node.setAttribute(attrName, val);
 				}
 			}
 			
 			// For the style attribute, rewrite it in terms of XML presentational attributes
-			if (attrName == "style") {
-				var props = attr.nodeValue.split(";"),
+			if (attrName == 'style') {
+				var props = attr.nodeValue.split(';'),
 					p = props.length;
 				while(p--) {
-					var nv = props[p].split(":");
+					var nv = props[p].split(':');
 					var styleAttrName = $.trim(nv[0]);
 					var styleAttrVal = $.trim(nv[1]);
 					// Now check that this attribute is supported
@@ -225,31 +225,31 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 		// (but not for links)
 		var href = svgedit.utilities.getHref(node);
 		if(href && 
-		   ["filter", "linearGradient", "pattern",
-		   "radialGradient", "textPath", "use"].indexOf(node.nodeName) >= 0)
+		   ['filter', 'linearGradient', 'pattern',
+		   'radialGradient', 'textPath', 'use'].indexOf(node.nodeName) >= 0)
 		{
 			// TODO: we simply check if the first character is a #, is this bullet-proof?
-			if (href[0] != "#") {
+			if (href[0] != '#') {
 				// remove the attribute (but keep the element)
-				svgedit.utilities.setHref(node, "");
-				node.removeAttributeNS(xlinkns, "href");
+				svgedit.utilities.setHref(node, '');
+				node.removeAttributeNS(xlinkns, 'href');
 			}
 		}
 		
 		// Safari crashes on a <use> without a xlink:href, so we just remove the node here
-		if (node.nodeName == "use" && !svgedit.utilities.getHref(node)) {
+		if (node.nodeName == 'use' && !svgedit.utilities.getHref(node)) {
 			parent.removeChild(node);
 			return;
 		}
 		// if the element has attributes pointing to a non-local reference, 
 		// need to remove the attribute
-		$.each(["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"], function(i, attr) {
+		$.each(['clip-path', 'fill', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'stroke'], function(i, attr) {
 			var val = node.getAttribute(attr);
 			if (val) {
 				val = svgedit.utilities.getUrlFromAttr(val);
 				// simply check for first character being a '#'
-				if (val && val[0] !== "#") {
-					node.setAttribute(attr, "");
+				if (val && val[0] !== '#') {
+					node.setAttribute(attr, '');
 					node.removeAttribute(attr);
 				}
 			}
