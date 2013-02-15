@@ -18,21 +18,20 @@
 (function() {
 
 	document.addEventListener("touchstart", touchHandler, true);
-  document.addEventListener("touchmove", touchHandler, true);
-  document.addEventListener("touchend", touchHandler, true);
-  document.addEventListener("touchcancel", touchHandler, true);
+	document.addEventListener("touchmove", touchHandler, true);
+	document.addEventListener("touchend", touchHandler, true);
+	document.addEventListener("touchcancel", touchHandler, true);
 
 	if(!window.svgEditor) window.svgEditor = function($) {
-		var svgCanvas;
-		var Editor = {};
-		var is_ready = false;
-
-		var defaultPrefs = {
-			lang:'en',
-			iconsize:'m',
-			bkgd_color:'#FFF',
-			bkgd_url:'',
-			img_save:'embed'
+		var svgCanvas,
+			Editor = {},
+			is_ready = false,
+			defaultPrefs = {
+				lang: 'en',
+				iconsize: 'm',
+				bkgd_color: '#FFF',
+				bkgd_url: '',
+				img_save: 'embed'
 			},
 			curPrefs = {},
 
@@ -105,11 +104,8 @@
 					"URLloadFail": "Unable to load from URL",
 					"retrieving": 'Retrieving "%s" ...'
 				}
-			};
-
-		var curPrefs = {}; //$.extend({}, defaultPrefs);
-
-		var customHandlers = {};
+			},
+			customHandlers = {};
 
 		Editor.curConfig = curConfig;
 
@@ -152,7 +148,7 @@
 					return result?decodeURIComponent(result[1]):'';
 				}
 			}
-		}
+		};
 
 		Editor.setConfig = function(opts) {
 			$.each(opts, function(key, val) {
@@ -166,7 +162,7 @@
 				curConfig.extensions = opts.extensions;
 			}
 
-		}
+		};
 
 		// Extension mechanisms must call setCustomHandlers with two functions: opts.open and opts.save
 		// opts.open's responsibilities are:
@@ -193,11 +189,11 @@
 				}
 				customHandlers = opts;
 			});
-		}
+		};
 
 		Editor.randomizeIds = function() {
-			svgCanvas.randomizeIds(arguments)
-		}
+			svgCanvas.randomizeIds(arguments);
+		};
 
 		Editor.init = function() {
 			// For external openers
@@ -205,11 +201,11 @@
 				// let the opener know SVG Edit is ready
 				var w = window.opener;
 				if (w) {
-			    		try {
+					try {
 						var svgEditorReadyEvent = w.document.createEvent("Event");
 						svgEditorReadyEvent.initEvent("svgEditorReady", true, true);
 						w.document.documentElement.dispatchEvent(svgEditorReadyEvent);
-			    		}
+					}
 					catch(e) {}
 				}
 			})();
@@ -285,7 +281,7 @@
 
 	// 			var lang = ('lang' in curPrefs) ? curPrefs.lang : null;
 				Editor.putLocale(null, good_langs);
-			}
+			};
 
 			// Load extensions
 			// Bit of a hack to run extensions in local Opera/IE9
@@ -297,7 +293,7 @@
 			$.svgIcons(curConfig.imgPath + 'svg_edit_icons.svg', {
 				w:24, h:24,
 				id_match: false,
- 				no_img: !svgedit.browser.isWebkit(), // Opera & Firefox 4 gives odd behavior w/images
+				no_img: !svgedit.browser.isWebkit(), // Opera & Firefox 4 gives odd behavior w/images
 				fallback_path: curConfig.imgPath,
 				fallback:{
 					'new_image':'clear.png',
@@ -542,7 +538,7 @@
 					if(type != 'alert') {
 						$('<input type="button" value="' + uiStrings.common.cancel + '">')
 							.appendTo(btn_holder)
-							.click(function() { box.hide();callback(false)});
+							.click(function() { box.hide();callback(false);});
 					}
 
 					if(type == 'prompt') {
@@ -564,7 +560,7 @@
 					}).focus();
 
 					if(type == 'prompt') input.focus();
-				}
+				};
 
 				$.alert = function(msg, cb) { dbox('alert', msg, cb);};
 				$.confirm = function(msg, cb) {	dbox('confirm', msg, cb);};
@@ -598,7 +594,7 @@
 				} else {
 					setIcon('#tool_select', 'select');
 				}
-			}
+			};
 
 			// used to make the flyouts stay on the screen longer the very first time
 			var flyoutspeed = 1250;
@@ -804,7 +800,7 @@
 					return;
 				}
 
- 			  $('#zoom').val((zoomlevel*100).toFixed(1));
+				$('#zoom').val((zoomlevel*100).toFixed(1));
 
 				if(autoCenter) {
 					updateCanvas();
@@ -818,8 +814,7 @@
 				}
 
 				zoomDone();
-			}
-     
+			};
 
 			$('#cur_context_panel').delegate('a', 'click', function() {
 				var link = $(this);
@@ -857,13 +852,13 @@
 
 
 				updateTitle();
-			}
+			};
 
 			// Makes sure the current selected paint is available to work with
 			var prepPaints = function() {
 				paintBox.fill.prep();
 				paintBox.stroke.prep();
-			}
+			};
 
 			var flyout_funcs = {};
 
@@ -916,7 +911,7 @@
 								icon[0].setAttribute('height',shower.height());
 								shower.children(':not(.flyout_arrow_horiz)').remove();
 								shower.append(icon).attr('data-curopt', options.sel); // This sets the current mode
-							}
+							};
 
 							$(this).mouseup(func);
 
@@ -973,7 +968,7 @@
 				});
 
 				setFlyoutTitles();
-			}
+			};
 
 			var makeFlyoutHolder = function(id, child) {
 				var div = $('<div>',{
@@ -982,7 +977,7 @@
 				}).appendTo('#svg_editor').append(child);
 
 				return div;
-			}
+			};
 
 			var setFlyoutPositions = function() {
 				$('.tools_flyout').each(function() {
@@ -991,7 +986,7 @@
 					var w = shower.outerWidth();
 					$(this).css({left: (pos.left + w)*tool_scale, top: pos.top});
 				});
-			}
+			};
 
 			var setFlyoutTitles = function() {
 				$('.tools_flyout').each(function() {
@@ -1004,7 +999,7 @@
 					});
 					shower[0].title = tooltips.join(' / ');
 				});
-			}
+			};
 
 			var resize_timer;
 
@@ -1033,7 +1028,7 @@
 						cb_called = true;
 						ext.callback();
 					}
-				}
+				};
 
 				var btn_selects = [];
 
@@ -1101,7 +1096,7 @@
 								+ '<span id="' + tool.id + '_label">'
 								+ tool.label + ':</span>'
 								+ '<input id="' + tool.id + '" title="' + tool.title
-								+ '" size="' + (tool.size || "4") + '" value="' + (tool.defval || "") + '" type="text"/></label>'
+								+ '" size="' + (tool.size || "4") + '" value="' + (tool.defval || "") + '" type="text"/></label>';
 
 							// Creates the tool, hides & adds it, returns the select element
 
@@ -1128,9 +1123,8 @@
 				if(ext.buttons) {
 					var fallback_obj = {},
 						placement_obj = {},
-						svgicons = ext.svgicons;
-					var holders = {};
-
+						svgicons = ext.svgicons,
+						holders = {};
 
 					// Add buttons given by extension
 					$.each(ext.buttons, function(i, btn) {
@@ -1198,7 +1192,7 @@
 								// Create a flyout menu if there isn't one already
 								if(!ref_btn.parent().hasClass('tools_flyout')) {
 									// Create flyout placeholder
-									var tls_id = ref_btn[0].id.replace('tool_','tools_')
+									var tls_id = ref_btn[0].id.replace('tool_','tools_');
 									var show_btn = ref_btn.clone()
 										.attr('id',tls_id + '_show')
 										.append($('<div>',{'class':'flyout_arrow_horiz'}));
@@ -1210,8 +1204,6 @@
 									flyout_holder.data('isLibrary', true);
 									show_btn.data('isLibrary', true);
 								}
-
-
 
 	// 							var ref_data = Actions.getButtonData(opts.button);
 
@@ -1262,7 +1254,7 @@
 							// Create a flyout menu if there isn't one already
 							if(!ref_btn.parent().hasClass('tools_flyout')) {
 								// Create flyout placeholder
-								var tls_id = ref_btn[0].id.replace('tool_','tools_')
+								var tls_id = ref_btn[0].id.replace('tool_','tools_');
 								var show_btn = ref_btn.clone()
 									.attr('id',tls_id + '_show')
 									.append($('<div>',{'class':'flyout_arrow_horiz'}));
@@ -1394,7 +1386,6 @@
 				return new $.jGraduate.Paint(opts);
 			};
 
-
 			// updates the toolbar (colors, opacity, etc) based on the selected element
 			// This function also updates the opacity and id elements that are in the context panel
 			var updateToolbar = function() {
@@ -1426,7 +1417,6 @@
 
 						paintBox.fill.update(true);
 						paintBox.stroke.update(true);
-
 
 						break;
 					default:
@@ -1486,12 +1476,12 @@
 					$('#image_url').show();
 					$('#change_image_url').hide();
 				}
-			}
+			};
 
 			var setInputWidth = function(elem) {
 				var w = Math.min(Math.max(12 + elem.value.length * 6, 50), 300);
 				$(elem).width(w);
-			}
+			};
 
 			// updates the context panel tools based on the selected element
 			var updateContextPanel = function() {
@@ -1703,16 +1693,16 @@
 
 				// update history buttons
 				if (undoMgr.getUndoStackSize() > 0) {
-					$('#tool_undo').removeClass( 'disabled');
+					$('#tool_undo').removeClass('disabled');
 				}
 				else {
-					$('#tool_undo').addClass( 'disabled');
+					$('#tool_undo').addClass('disabled');
 				}
 				if (undoMgr.getRedoStackSize() > 0) {
-					$('#tool_redo').removeClass( 'disabled');
+					$('#tool_redo').removeClass('disabled');
 				}
 				else {
-					$('#tool_redo').addClass( 'disabled');
+					$('#tool_redo').addClass('disabled');
 				}
 
 				svgCanvas.addedNew = false;
@@ -1743,7 +1733,7 @@
 			svgCanvas.bind("extension_added", extAdded);
 			svgCanvas.textActions.setInputElem($("#text")[0]);
 
-			var str = '<div class="palette_item" data-rgb="none"></div>'
+			var str = '<div class="palette_item" data-rgb="none"></div>';
 			$.each(palette, function(i,item){
 				str += '<div class="palette_item" style="background-color: ' + item + ';" data-rgb="' + item + '"></div>';
 			});
@@ -1781,11 +1771,11 @@
 
 			var changeRectRadius = function(ctl) {
 				svgCanvas.setRectRadius(ctl.value);
-			}
+			};
 
 			var changeFontSize = function(ctl) {
 				svgCanvas.setFontSize(ctl.value);
-			}
+			};
 
 			var changeStrokeWidth = function(ctl) {
 				var val = ctl.value;
@@ -1793,12 +1783,12 @@
 					val = ctl.value = 1;
 				}
 				svgCanvas.setStrokeWidth(val);
-			}
+			};
 
 			var changeRotationAngle = function(ctl) {
 				svgCanvas.setRotationAngle(ctl.value);
 				$('#tool_reorient').toggleClass('disabled', ctl.value == 0);
-			}
+			};
 			var changeZoom = function(ctl) {
 				var zoomlevel = ctl.value / 100;
 				if(zoomlevel < .001) {
@@ -1816,7 +1806,7 @@
 					y: (w_area[0].scrollTop + w_area.height()/2)/zoom,
 					zoom: zoomlevel
 				}, true);
-			}
+			};
 
 			var changeOpacity = function(ctl, val) {
 				if(val == null) val = ctl.value;
@@ -1825,7 +1815,7 @@
 					$('#opac_slider').slider('option', 'value', val);
 				}
 				svgCanvas.setOpacity(val/100);
-			}
+			};
 
 			var changeBlur = function(ctl, val, noUndo) {
 				if(val == null) val = ctl.value;
@@ -1840,13 +1830,13 @@
 				} else {
 					svgCanvas.setBlur(val, complete);
 				}
-			}
+			};
 
 			var operaRepaint = function() {
 				// Repaints canvas in Opera. Needed for stroke-dasharray change as well as fill change
 				if(!window.opera) return;
 				$('<p/>').hide().appendTo('body').remove();
-			}
+			};
 
 			$('#stroke_style').change(function(){
 				svgCanvas.setStrokeAttr('stroke-dasharray', $(this).val());
@@ -1857,7 +1847,6 @@
 				svgCanvas.setStrokeAttr('stroke-linejoin', $(this).val());
 				operaRepaint();
 			});
-
 
 			// Lose focus for select elements when changed (Allows keyboard shortcuts to work better)
 			$('select').change(function(){$(this).blur();});
@@ -1873,7 +1862,7 @@
 					svgCanvas.moveSelectedToLayer(destLayer);
 					svgCanvas.clearSelection();
 					populateLayers();
-				}
+				};
 				if (destLayer) {
 					if(promptMoveLayerOnce) {
 						moveToLayer(true);
@@ -1955,7 +1944,7 @@
 				var inp = $('<input type="hidden">');
 				$(this).append(inp);
 				inp.focus().remove();
-			})
+			});
 
 			$('.palette_item').mousedown(function(evt){
 				var right_click = evt.button === 2;
@@ -1987,7 +1976,7 @@
 					}
 				}
 				updateToolButtonState();
-			}).bind('contextmenu', function(e) {e.preventDefault()});
+			}).bind('contextmenu', function(e) {e.preventDefault();});
 
 			$("#toggle_stroke_tools").on("click", function() {
 				$("#tools_bottom").toggleClass("expanded");
@@ -2054,13 +2043,12 @@
 					if(svgCanvas.getMode() === 'zoom') {
 						workarea.css('cursor', zoomInIcon);
 					}
-				})
-                                
-                                Editor.setPanning = function(active) {
-                                        svgCanvas.spaceKey = keypan = active;
-                                }
-			}());
+				});
 
+				Editor.setPanning = function(active) {
+					svgCanvas.spaceKey = keypan = active;
+				};
+			}());
 
 			function setStrokeOpt(opt, changeElem) {
 				var id = opt.id;
@@ -2114,7 +2102,7 @@
 
 				overlay.bind('mousedown',function() {
 					if (!button.hasClass('buttondown')) {
-						button.addClass('buttondown').removeClass('buttonup')
+						button.addClass('buttondown').removeClass('buttonup');
 						// Margin must be reset in case it was changed before;
 						list.css('margin-left',0).show();
 						if(!height) {
@@ -2204,7 +2192,7 @@
 				}).mouseout(function() {
 					on_button = false;
 				});
-			}
+			};
 
 			// TODO: Combine this with addDropDown or find other way to optimize
 			var addAltDropDown = function(elem, list, callback, opts) {
@@ -2266,7 +2254,7 @@
 						on_button = true;
 					});
 				}
-			}
+			};
 
 			Editor.addDropDown('#font_family_dropdown', function() {
 				var fam = $(this).text();
@@ -2321,7 +2309,7 @@
 				if(val) {
 					zoomChanged(window, val);
 				} else {
-					changeZoom({value:parseInt(item.text())});
+					changeZoom({value:parseInt(item.text(), 10)});
 				}
 			}, true);
 
@@ -2357,10 +2345,9 @@
 			// Unfocus text input when workarea is mousedowned.
 			(function() {
 				var inp;
-
 				var unfocus = function() {
 					$(inp).blur();
-				}
+				};
 
 				$('#svg_editor').find('button, select, input:not(#text)').focus(function() {
 					inp = this;
@@ -2374,7 +2361,6 @@
 						$('#text').focus();
 					}
 				});
-
 			}());
 
 			var clickSelect = function() {
@@ -2490,7 +2476,7 @@
 				var x = (workarea[0].scrollLeft + workarea.width()/2)/zoom  - svgCanvas.contentW;
 				var y = (workarea[0].scrollTop + workarea.height()/2)/zoom  - svgCanvas.contentH;
 				svgCanvas.pasteElements('point', x, y);
-			}
+			};
 
 			var moveToTopSelected = function() {
 				if (selectedElement != null) {
@@ -2514,13 +2500,13 @@
 				if (selectedElement != null) {
 					svgCanvas.convertToPath();
 				}
-			}
+			};
 
 			var reorientPath = function() {
 				if (selectedElement != null) {
 					path.reorient();
 				}
-			}
+			};
 
 			var makeHyperlink = function() {
 				if (selectedElement != null || multiselected) {
@@ -2528,7 +2514,7 @@
 						if(url) svgCanvas.makeHyperlink(url);
 					});
 				}
-			}
+			};
 
 			var moveSelected = function(dx,dy) {
 				if (selectedElement != null || multiselected) {
@@ -2550,7 +2536,7 @@
 					$('#tool_node_link').removeClass('push_button_pressed').addClass('tool_button');
 
 				path.linkControlPoints(linked);
-			}
+			};
 
 			var clonePathNode = function() {
 				if (path.getNodePoint()) {
@@ -2579,7 +2565,7 @@
 
 			var opencloseSubPath = function() {
 				path.opencloseSubPath();
-			}
+			};
 
 			var selectNext = function() {
 				svgCanvas.cycleElement(1);
@@ -2630,7 +2616,7 @@
 				var saveOpts = {
 					'images': curPrefs.img_save,
 					'round_digits': 6
-				}
+				};
 				svgCanvas.save(saveOpts);
 			};
 
@@ -2650,7 +2636,7 @@
 						});
 					});
 				}
-			}
+			};
 
 			// by default, svgCanvas.open() is a no-op.
 			// it is up to an extension mechanism (opera widget, etc)
@@ -2709,7 +2695,7 @@
 		// 		updateBgImage();
 				updateWireFrame();
 				//updateCanvas(); // necessary?
-			}
+			};
 
 			var clickWireframe = function() {
 				var wf = !$('#tool_wireframe').hasClass('push_button_pressed');
@@ -2728,7 +2714,7 @@
 				}
 
 				updateWireFrame();
-			}
+			};
 
 			var updateWireFrame = function() {
 				// Test support
@@ -2736,7 +2722,7 @@
 
 				var rule = "#workarea.wireframe #svgcontent * { stroke-width: " + 1/svgCanvas.getZoom() + "px; }";
 				$('#wireframe_rules').text(workarea.hasClass('wireframe') ? rule : "");
-			}
+			};
 
 			var showSourceEditor = function(e, forSaving){
 				if (editingsource) return;
@@ -2799,9 +2785,9 @@
 				}
 				$('grid_snapping_step').attr('value', curConfig.snappingStep);
 				if (curConfig.gridSnapping == true) {
-				    $('#grid_snapping_on').attr('checked', 'checked');
+					$('#grid_snapping_on').attr('checked', 'checked');
 				} else {
-				    $('#grid_snapping_on').removeAttr('checked');
+					$('#grid_snapping_on').removeAttr('checked');
 				}
 
 				$('#svg_prefs').show();
@@ -2823,7 +2809,7 @@
 					populateLayers();
 					updateTitle();
 					prepPaints();
-				}
+				};
 
 				if (!svgCanvas.setSvgString($('#svg_source_textarea').val())) {
 					$.confirm(uiStrings.notification.QerrorsRevertToSource, function(ok) {
@@ -2845,7 +2831,7 @@
 // 					new_title = new_title + cur_context;
 // 				}
 				$('title:first').text(new_title);
-			}
+			};
 
 			var saveDocProperties = function(){
 				// set title
@@ -2912,7 +2898,7 @@
 
 				updateCanvas();
 				hidePreferences();
-			}
+			};
 
 			function setBackground(color, url) {
 // 				if(color == curPrefs.bkgd_color && url == curPrefs.bkgd_url) return;
@@ -2931,7 +2917,7 @@
 				}
 
 				$(elem).empty().append(icon);
-			}
+			};
 
 			var ua_prefix;
 			(ua_prefix = function() {
@@ -2989,7 +2975,7 @@
 // 						el.css('outline', '1px solid red');
 					}
 				});
-			}
+			};
 
 			var setIconSize = Editor.setIconSize = function(size, force) {
 				if(size == curPrefs.size && !force) return;
@@ -3200,7 +3186,7 @@
 				}
 
 				setFlyoutPositions();
-			}
+			};
 
 			var cancelOverlays = function() {
 				$('#dialog_box').hide();
@@ -3209,7 +3195,7 @@
 						svgCanvas.leaveContext();
 					}
 					return;
-				};
+				}
 
 				if (editingsource) {
 					if (orig_source !== $('#svg_source_textarea').val()) {
@@ -3219,8 +3205,7 @@
 					} else {
 						hideSourceEditor();
 					}
-				}
-				else if (docprops) {
+				} else if (docprops) {
 					hideDocProperties();
 				} else if (preferences) {
 					hidePreferences();
@@ -3260,7 +3245,7 @@
 							workarea[0].scrollLeft = curScrollPos.left;
 							workarea[0].scrollTop = curScrollPos.top;
 						}
-					}
+					};
 
 					curScrollPos = {
 						left: workarea[0].scrollLeft,
@@ -3500,7 +3485,7 @@
 						svgCanvas.setColor(this.type, paintColor, true);
 						svgCanvas.setPaintOpacity(this.type, paintOpacity, true);
 					}
-				}
+				};
 
 				this.update = function(apply) {
 					if(!selectedElement) return;
@@ -3534,7 +3519,6 @@
 							return;
 						}
 						var paintColor = gPaint;
-
 						var paintOpacity = 1;
 						break;
 					default:
@@ -3557,7 +3541,7 @@
 					var paint = getPaint(paintColor, paintOpacity, type);
 					// update the rect inside #fill_color/#stroke_color
 					this.setPaint(paint);
-				}
+				};
 
 				this.prep = function() {
 					var ptype = this.paint.type;
@@ -3568,7 +3552,7 @@
 							var paint = new $.jGraduate.Paint({copy: this.paint});
 							svgCanvas.setPaint(type, paint);
 					}
-				}
+				};
 			};
 
 			paintBox.fill = new PaintBox('#fill_color', 'fill');
@@ -3602,8 +3586,6 @@
 				workarea.css('cursor', 'auto');
 			}());
 
-
-
 			// Test for embedImage support (use timeout to not interfere with page load)
 			setTimeout(function() {
 				svgCanvas.embedImage('images/logo.png', function(datauri) {
@@ -3615,7 +3597,7 @@
 						$('#image_opt_embed').css('color','#666').attr('title',uiStrings.notification.featNotSupported);
 					}
 				});
-			},1000);
+			}, 1000);
 
 			$('#fill_color, #tool_fill .icon_label').click(function(){
 				colorPicker($('#fill_color'));
@@ -3758,7 +3740,7 @@
 				var deltax = sidedrag - evt.pageX;
 
 				var sidepanels = $('#sidepanels');
-				var sidewidth = parseInt(sidepanels.css('width'));
+				var sidewidth = parseInt(sidepanels.css('width'), 10);
 				if (sidewidth+deltax > SIDEPANEL_MAXWIDTH) {
 					deltax = SIDEPANEL_MAXWIDTH - sidewidth;
 					sidewidth = SIDEPANEL_MAXWIDTH;
@@ -3777,7 +3759,7 @@
 				layerpanel.css('width', parseInt(layerpanel.css('width'))+deltax);
 				var ruler_x = $('#ruler_x');
 				ruler_x.css('right', parseInt(ruler_x.css('right')) + deltax);
-			}
+			};
 
 			$('#sidepanel_handle')
 				.mousedown(function(evt) {
@@ -3804,7 +3786,7 @@
 			// if width is non-zero, then fully close it, otherwise fully open it
 			// the optional close argument forces the side panel closed
 			var toggleSidePanel = function(close){
-				var w = parseInt($('#sidepanels').css('width'));
+				var w = parseInt($('#sidepanels').css('width'), 10);
 				var deltax = (w > 2 || close ? 2 : SIDEPANEL_OPENWIDTH) - w;
 				var sidepanels = $('#sidepanels');
 				var layerpanel = $('#layerpanel');
@@ -3849,14 +3831,13 @@
 					// contenteditable=\"true\"
 					var appendstr = "<tr class=\"layer";
 					if (name == currentLayerName) {
-						appendstr += " layersel"
+						appendstr += " layersel";
 					}
 					appendstr += "\">";
 
 					if (svgCanvas.getCurrentDrawing().getLayerVisibility(name)) {
 						appendstr += "<td class=\"layervis\"/><td class=\"layername\" >" + name + "</td></tr>";
-					}
-					else {
+					} else {
 						appendstr += "<td class=\"layervis layerinvis\"/><td class=\"layername\" >" + name + "</td></tr>";
 					}
 					layerlist.append(appendstr);
@@ -3891,8 +3872,7 @@
 					svgCanvas.setLayerVisibility(name, vis);
 					if (vis) {
 						$(this).removeClass('layerinvis');
-					}
-					else {
+					} else {
 						$(this).addClass('layerinvis');
 					}
 				});
@@ -4022,7 +4002,7 @@
 					{sel:'#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
 					{sel:'#tool_docprops', fn: showDocProperties, evt: 'mouseup'},
 					{sel:'#tool_prefs_save', fn: savePreferences, evt: 'click'},
-					{sel:'#tool_prefs_option', fn: function() {showPreferences();return false}, evt: 'mouseup'},
+					{sel:'#tool_prefs_option', fn: function() {showPreferences();return false;}, evt: 'mouseup'},
 					{sel:'#tool_delete,#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
 					{sel:'#tool_reorient', fn: reorientPath, evt: 'click'},
 					{sel:'#tool_node_link', fn: linkControlPoints, evt: 'click'},
@@ -4060,7 +4040,7 @@
 					{key: [modKey+'up', true], fn: function(){zoomImage(2);}},
 					{key: [modKey+'down', true], fn: function(){zoomImage(.5);}},
 					{key: [modKey+']', true], fn: function(){moveUpDownSelected('Up');}},
-                                        {key: [modKey+'[', true], fn: function(){moveUpDownSelected('Down');}},
+					{key: [modKey+'[', true], fn: function(){moveUpDownSelected('Down');}},
 					{key: ['up', true], fn: function(){moveSelected(0,-1);}},
 					{key: ['down', true], fn: function(){moveSelected(0,1);}},
 					{key: ['left', true], fn: function(){moveSelected(-1,0);}},
@@ -4088,7 +4068,6 @@
 					{key: modKey+'c', fn: copySelected},
 					{key: modKey+'v', fn: pasteInCenter}
 
-
 				];
 
 				// Tooltips not directly associated with a single function
@@ -4106,8 +4085,8 @@
 							if(opts.sel) {
 								var btn = $(opts.sel);
 								if (btn.length == 0) return true; // Skip if markup does not exist
-								if(opts.evt) {
-								  if (svgedit.browser.isTouch() && opts.evt === "click") opts.evt = "mousedown"
+								if (opts.evt) {
+								  if (svgedit.browser.isTouch() && opts.evt === "click") opts.evt = "mousedown";
 									btn[opts.evt](opts.fn);
 								}
 
@@ -4321,11 +4300,11 @@
 						case 'move_back':
 							moveToBottomSelected();
 							break;
-  						default:
- 							if(svgedit.contextmenu && svgedit.contextmenu.hasCustomHandler(action)){
- 								svgedit.contextmenu.getCustomHandler(action).call();
-  							}
-  							break;
+						default:
+							if(svgedit.contextmenu && svgedit.contextmenu.hasCustomHandler(action)){
+								svgedit.contextmenu.getCustomHandler(action).call();
+							}
+							break;
 					}
 
 					if(svgCanvas.clipBoard.length) {
@@ -4350,7 +4329,7 @@
 						populateLayers();
 						break;
 				}
-			}
+			};
 
 			$("#layerlist").contextMenu({
 					menu: 'cmenu_layers',
@@ -4369,7 +4348,7 @@
 
 			$('.contextMenu li').mousedown(function(ev) {
 				ev.preventDefault();
-			})
+			});
 
 			$('#cmenu_canvas li').disableContextMenu();
 			canv_menu.enableContextMenuItems('#delete,#cut,#copy');
@@ -4401,7 +4380,7 @@
 				} else {
 					$.confirm(uiStrings.notification.QwantToOpen, func);
 				}
-			}
+			};
 
 			// use HTML5 File API: http://www.w3.org/TR/FileAPI/
 			// if browser has HTML5 File API support, then we will show the open menu item
@@ -4414,7 +4393,7 @@
 					$("#workarea").removeAttr("style");
 					$('#main_menu').hide();
 					var file = null;
-					if (e.type == "drop") file = e.dataTransfer.files[0]
+					if (e.type == "drop") file = e.dataTransfer.files[0];
 					else file = this.files[0];
 					if (file) {
 						if(file.type.indexOf("image") != -1) {
@@ -4424,11 +4403,11 @@
 								var reader = new FileReader();
 								reader.onloadend = function(e) {
 									svgCanvas.importSvgString(e.target.result, true);
-									svgCanvas.ungroupSelectedElement()
-									svgCanvas.ungroupSelectedElement()
-									svgCanvas.groupSelectedElements()
-									svgCanvas.alignSelectedElements("m", "page")
-									svgCanvas.alignSelectedElements("c", "page")
+									svgCanvas.ungroupSelectedElement();
+									svgCanvas.ungroupSelectedElement();
+									svgCanvas.groupSelectedElements();
+									svgCanvas.alignSelectedElements("m", "page");
+									svgCanvas.alignSelectedElements("c", "page");
 								};
 								reader.readAsText(file);
 							}
@@ -4451,11 +4430,11 @@
 											}
 										});
 										svgCanvas.setHref(newImage, e.target.result);
-										svgCanvas.selectOnly([newImage])
-										svgCanvas.alignSelectedElements("m", "page")
-										svgCanvas.alignSelectedElements("c", "page")
+										svgCanvas.selectOnly([newImage]);
+										svgCanvas.alignSelectedElements("m", "page");
+										svgCanvas.alignSelectedElements("c", "page");
 										updateContextPanel();
-									}
+									};
  									// create dummy img so we know the default dimensions
 									var img_width = 100;
  									var img_height = 100;
@@ -4463,16 +4442,16 @@
 									img.src = e.target.result;
 									img.style.opacity = 0;
 									img.onload = function() {
-										img_width = img.offsetWidth
-										img_height = img.offsetHeight
+										img_width = img.offsetWidth;
+										img_height = img.offsetHeight;
 										insertNewImage(img_width, img_height);
-									}
+									};
 								};
-								reader.readAsDataURL(file)
+								reader.readAsDataURL(file);
 							}
 						}
 					}
-				}
+				};
 
 				function onDragEnter(e) {
 					e.stopPropagation();
@@ -4589,7 +4568,7 @@
 					updateRulers(cnvs, zoom);
 					workarea.scroll();
 				}
-			}
+			};
 
 			// Make [1,2,5] array
 			var r_intervals = [];
@@ -4643,7 +4622,7 @@
 
 					// Create multiple canvases when necessary (due to browser limits)
 					if(ruler_len >= limit) {
-						var num = parseInt(ruler_len / limit) + 1;
+						var num = parseInt(ruler_len / limit, 10) + 1;
 						ctx_arr = Array(num);
 						ctx_arr[0] = ctx;
 						for(var i = 1; i < num; i++) {
@@ -4762,48 +4741,46 @@
 		//	$('#copyright')[0].setAttribute("title", revnums);
 
 			// Callback handler for embedapi.js
- 			try{
- 				var json_encode = function(obj){
- 			  //simple partial JSON encoder implementation
- 			  if(window.JSON && JSON.stringify) return JSON.stringify(obj);
- 			  var enc = arguments.callee; //for purposes of recursion
- 			  if(typeof obj == "boolean" || typeof obj == "number"){
- 				  return obj+'' //should work...
- 			  }else if(typeof obj == "string"){
- 				//a large portion of this is stolen from Douglas Crockford's json2.js
- 				return '"'+
- 					  obj.replace(
- 						/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g
- 					  , function (a) {
- 						return '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
- 					  })
- 					  +'"'; //note that this isn't quite as purtyful as the usualness
- 			  }else if(obj.length){ //simple hackish test for arrayish-ness
- 				for(var i = 0; i < obj.length; i++){
- 				  obj[i] = enc(obj[i]); //encode every sub-thingy on top
- 				}
- 				return "["+obj.join(",")+"]";
- 			  }else{
- 				var pairs = []; //pairs will be stored here
- 				for(var k in obj){ //loop through thingys
- 				  pairs.push(enc(k)+":"+enc(obj[k])); //key: value
- 				}
- 				return "{"+pairs.join(",")+"}" //wrap in the braces
- 			  }
- 			}
- 			  window.addEventListener("message", function(e){
- 				var cbid = parseInt(e.data.substr(0, e.data.indexOf(";")));
- 				try{
-					e.source.postMessage("SVGe"+cbid+";"+json_encode(eval(e.data)), "*");
- 			  }catch(err){
-					e.source.postMessage("SVGe"+cbid+";error:"+err.message, "*");
- 			  }
- 			}, false)
- 			}catch(err){
- 			  window.embed_error = err;
+			try {
+				var json_encode = function(obj){
+					//simple partial JSON encoder implementation
+					if (window.JSON && JSON.stringify) return JSON.stringify(obj);
+					var enc = arguments.callee; //for purposes of recursion
+					if (typeof obj == "boolean" || typeof obj == "number"){
+						return obj+''; //should work...
+					} else if (typeof obj == "string") {
+						//a large portion of this is stolen from Douglas Crockford's json2.js
+						return '"'+
+							obj.replace(
+								/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g
+								, function (a) {
+									return '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+							})
+							+'"'; //note that this isn't quite as purtyful as the usualness
+					} else if (obj.length) { //simple hackish test for arrayish-ness
+						for(var i = 0; i < obj.length; i++){
+							obj[i] = enc(obj[i]); //encode every sub-thingy on top
+						}
+						return "["+obj.join(",")+"]";
+					} else {
+						var pairs = []; //pairs will be stored here
+						for(var k in obj){ //loop through thingys
+							pairs.push(enc(k)+":"+enc(obj[k])); //key: value
+						}
+						return "{"+pairs.join(",")+"}"; //wrap in the braces
+					}
+				};
+				window.addEventListener("message", function(e) {
+					var cbid = parseInt(e.data.substr(0, e.data.indexOf(";")), 10);
+					try {
+						e.source.postMessage("SVGe"+cbid+";"+json_encode(eval(e.data)), "*");
+					} catch(err) {
+						e.source.postMessage("SVGe"+cbid+";error:"+err.message, "*");
+					}
+ 				}, false);
+			} catch(err) {
+				window.embed_error = err;
 			}
-
-
 
 			// For Compatibility with older extensions
 			$(function() {
@@ -4811,16 +4788,12 @@
 				svgCanvas.ready = svgEditor.ready;
 			});
 
-
 			Editor.setLang = function(lang, allStrings) {
 				$.pref('lang', lang);
 				$('#lang_select').val(lang);
 				if(allStrings) {
 
 					var notif = allStrings.notification;
-
-
-
 					// $.extend will only replace the given strings
 					var oldLayerName = $('#layerlist tr.layersel td.layername').text();
 					var rename_layer = (oldLayerName == uiStrings.common.layer + ' 1');
@@ -4845,7 +4818,7 @@
 						'#fill_color': '#tool_fill label, #tool_fill .color_block',
 						'#linejoin_miter': '#cur_linejoin',
 						'#linecap_butt': '#cur_linecap'
-					}
+					};
 
 					$.each(elems, function(source, dest) {
 						$(dest).attr('title', $(source)[0].title);
