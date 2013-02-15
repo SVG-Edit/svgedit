@@ -225,17 +225,16 @@ svgedit.units.convertToNum = function(attr, val) {
 
 		if (wAttrs.indexOf(attr) >= 0) {
 			return num * width;
-		} else if (hAttrs.indexOf(attr) >= 0) {
-			return num * height;
-		} else {
-			return num * Math.sqrt((width*width) + (height*height))/Math.sqrt(2);
 		}
-	} else {
-		var unit = val.substr(-2);
-		var num = val.substr(0, val.length-2);
-		// Note that this multiplication turns the string into a number
-		return num * typeMap_[unit];
+		if (hAttrs.indexOf(attr) >= 0) {
+			return num * height;
+		}
+		return num * Math.sqrt((width*width) + (height*height))/Math.sqrt(2);
 	}
+	var unit = val.substr(-2);
+	var num = val.substr(0, val.length-2);
+	// Note that this multiplication turns the string into a number
+	return num * typeMap_[unit];
 };
 
 // Function: svgedit.units.isValidUnit

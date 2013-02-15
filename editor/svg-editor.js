@@ -723,7 +723,7 @@
 
 			// Call when part of element is in process of changing, generally
 			// on mousemove actions like rotate, move, etc.
-			var elementTransition = function(window,elems) {
+			var elementTransition = function(window, elems) {
 				var mode = svgCanvas.getMode();
 				var elem = elems[0];
 
@@ -970,7 +970,7 @@
 							flyout_funcs[opt]();
 						}
 					});
-					// 	$('#tools_rect').mouseleave(function(){$('#tools_rect').fadeOut();});
+					// $('#tools_rect').mouseleave(function(){$('#tools_rect').fadeOut();});
 				});
 				setFlyoutTitles();
 			};
@@ -1728,7 +1728,7 @@
 
 			// Set up editor background functionality
 			// TODO add checkerboard as "pattern"
-			var color_blocks = ['#FFF','#888','#000']; // ,'url(data:image/gif;base64,R0lGODlhEAAQAIAAAP%2F%2F%2F9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG%2Bgq4jM3IFLJgpswNly%2FXkcBpIiVaInlLJr9FZWAQA7)'];
+			var color_blocks = ['#FFF', '#888', '#000']; // ,'url(data:image/gif;base64,R0lGODlhEAAQAIAAAP%2F%2F%2F9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG%2Bgq4jM3IFLJgpswNly%2FXkcBpIiVaInlLJr9FZWAQA7)'];
 			var str = '';
 			$.each(color_blocks, function() {
 				str += '<div class="color_block" style="background-color:' + this + ';"></div>';
@@ -1842,7 +1842,7 @@
 			var promptMoveLayerOnce = false;
 			$('#selLayerNames').change(function(){
 				var destLayer = this.options[this.selectedIndex].value;
-				var confirm_str = uiStrings.notification.QmoveElemsToLayer.replace('%s',destLayer);
+				var confirmStr = uiStrings.notification.QmoveElemsToLayer.replace('%s', destLayer);
 				var moveToLayer = function(ok) {
 					if (!ok) return;
 					promptMoveLayerOnce = true;
@@ -1854,7 +1854,7 @@
 					if (promptMoveLayerOnce) {
 						moveToLayer(true);
 					} else {
-						$.confirm(confirm_str, moveToLayer);
+						$.confirm(confirmStr, moveToLayer);
 					}
 				}
 			});
