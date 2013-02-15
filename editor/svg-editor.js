@@ -1388,8 +1388,7 @@
 			// This function also updates the opacity and id elements that are in the context panel
 			var updateToolbar = function() {
 				if (selectedElement != null) {
-
-					switch ( selectedElement.tagName ) {
+					switch (selectedElement.tagName) {
 					case 'use':
 					case 'image':
 					case 'foreignObject':
@@ -1398,7 +1397,6 @@
 					case 'a':
 						// Look for common styles
 						var gWidth = null;
-
 						var childs = selectedElement.getElementsByTagName('*');
 						for (var i = 0, len = childs.length; i < len; i++) {
 							var swidth = childs[i].getAttribute('stroke-width');
@@ -1433,7 +1431,6 @@
 						if ($('#linecap_' + attr).length != 0)
 							setStrokeOpt($('#linecap_' + attr)[0]);
 					}
-
 				}
 
 				// All elements including image and group have opacity
@@ -3612,7 +3609,7 @@
 					var uniqName = uiStrings.layers.layer + ' ' + ++i;
 				} while(svgCanvas.getCurrentDrawing().hasLayer(uniqName));
 
-				$.prompt(uiStrings.notification.enterUniqueLayerName,uniqName, function(newName) {
+				$.prompt(uiStrings.notification.enterUniqueLayerName, uniqName, function(newName) {
 					if (!newName) return;
 					if (svgCanvas.getCurrentDrawing().hasLayer(newName)) {
 						$.alert(uiStrings.notification.dupeLayerName);
@@ -4543,7 +4540,7 @@
 					var $hcanv_orig = $('#ruler_' + dim + ' canvas:first');
 
 					// Bit of a hack to fully clear the canvas in Safari & IE9
-					$hcanv = $hcanv_orig.clone();
+					var $hcanv = $hcanv_orig.clone();
 					$hcanv_orig.replaceWith($hcanv);
 
 					var hcanv = $hcanv[0];
