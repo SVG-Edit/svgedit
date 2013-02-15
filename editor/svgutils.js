@@ -282,14 +282,14 @@ svgedit.utilities.getUrlFromAttr = function(attrVal) {
 	if (attrVal) {		
 		// url("#somegrad")
 		if (attrVal.indexOf('url("') === 0) {
-			return attrVal.substring(5,attrVal.indexOf('"',6));
+			return attrVal.substring(5, attrVal.indexOf('"',6));
 		}
 		// url('#somegrad')
 		else if (attrVal.indexOf("url('") === 0) {
-			return attrVal.substring(5,attrVal.indexOf("'",6));
+			return attrVal.substring(5, attrVal.indexOf("'",6));
 		}
 		else if (attrVal.indexOf("url(") === 0) {
-			return attrVal.substring(4,attrVal.indexOf(')'));
+			return attrVal.substring(4, attrVal.indexOf(')'));
 		}
 	}
 	return null;
@@ -368,7 +368,7 @@ svgedit.utilities.getPathBBox = function(path) {
 				var calc = function(t) {
 					return Math.pow(1-t,3) * P0[j] 
 						+ 3 * Math.pow(1-t,2) * t * P1[j]
-						+ 3 * (1-t) * Math.pow(t,2) * P2[j]
+						+ 3 * (1-t) * Math.pow(t, 2) * P2[j]
 						+ Math.pow(t,3) * P3[j];
 				};
 

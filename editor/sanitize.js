@@ -43,7 +43,7 @@ svgedit.sanitize.getNSMap = function() { return nsMap_; }
 
 // map prefixes to namespace URIs (reverse of nsMap_)
 var nsRevMap_ = {};
-$.each(nsMap_, function(key,value){
+$.each(nsMap_, function(key, value){
 	nsRevMap_[value] = key;
 });
 
@@ -119,7 +119,7 @@ var svgWhiteList_ = {
 
 // Produce a Namespace-aware version of svgWhitelist
 var svgWhiteListNS_ = {};
-$.each(svgWhiteList_, function(elt,atts){
+$.each(svgWhiteList_, function(elt, atts){
 	var attNS = {};
 	$.each(atts, function(i, att){
 		if (att.indexOf(':') >= 0) {
@@ -243,7 +243,7 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 		}
 		// if the element has attributes pointing to a non-local reference, 
 		// need to remove the attribute
-		$.each(["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"],function(i,attr) {
+		$.each(["clip-path", "fill", "filter", "marker-end", "marker-mid", "marker-start", "mask", "stroke"], function(i, attr) {
 			var val = node.getAttribute(attr);
 			if (val) {
 				val = svgedit.utilities.getUrlFromAttr(val);

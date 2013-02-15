@@ -29,15 +29,15 @@ var uiStrings = {
 };
 
 var segData = {
-	2: ['x','y'],
-	4: ['x','y'],
-	6: ['x','y','x1','y1','x2','y2'],
-	8: ['x','y','x1','y1'],
-	10: ['x','y','r1','r2','angle','largeArcFlag','sweepFlag'],
+	2: ['x', 'y'],
+	4: ['x', 'y'],
+	6: ['x', 'y', 'x1', 'y1', 'x2', 'y2'],
+	8: ['x', 'y', 'x1', 'y1'],
+	10: ['x', 'y', 'r1', 'r2', 'angle', 'largeArcFlag', 'sweepFlag'],
 	12: ['x'],
 	14: ['y'],
-	16: ['x','y','x2','y2'],
-	18: ['x','y']
+	16: ['x', 'y', 'x2', 'y2'],
+	18: ['x', 'y']
 };
 
 var pathFuncs = [];
@@ -59,10 +59,10 @@ var editorContext_ = null;
 svgedit.path.init = function(editorContext) {
 	editorContext_ = editorContext;
 
-	pathFuncs = [0,'ClosePath'];
+	pathFuncs = [0, 'ClosePath'];
 	var pathFuncsStrs = ['Moveto', 'Lineto', 'CurvetoCubic', 'CurvetoQuadratic', 'Arc',
-		'LinetoHorizontal', 'LinetoVertical','CurvetoCubicSmooth','CurvetoQuadraticSmooth'];
-	$.each(pathFuncsStrs, function(i,s) {
+		'LinetoHorizontal', 'LinetoVertical', 'CurvetoCubicSmooth', 'CurvetoQuadraticSmooth'];
+	$.each(pathFuncsStrs, function(i, s) {
 		pathFuncs.push(s+'Abs');
 		pathFuncs.push(s+'Rel');
 	});
@@ -364,8 +364,8 @@ svgedit.path.smoothControlPoints = this.smoothControlPoints = function(ct1, ct2,
 		y2 = ct2.y - pt.y;
 
 	if ( (x1 != 0 || y1 != 0) && (x2 != 0 || y2 != 0) ) {
-		var anglea = Math.atan2(y1,x1),
-			angleb = Math.atan2(y2,x2),
+		var anglea = Math.atan2(y1, x1),
+			angleb = Math.atan2(y2, x2),
 			r1 = Math.sqrt(x1*x1+y1*y1),
 			r2 = Math.sqrt(x2*x2+y2*y2),
 			nct1 = editorContext_.getSVGRoot().createSVGPoint(),
@@ -530,8 +530,7 @@ svgedit.path.Segment.prototype.moveCtrl = function(num, dx, dy) {
 	item['x' + num] += dx;
 	item['y' + num] += dy;
 
-	var pts = [item.x,item.y,
-		item.x1,item.y1, item.x2,item.y2];
+	var pts = [item.x, item.y, item.x1, item.y1, item.x2, item.y2];
 
 	svgedit.path.replacePathSeg(this.type, this.index, pts);
 	this.update(true);
@@ -672,9 +671,9 @@ svgedit.path.Path.prototype.addSeg = function(index) {
 		var p01_y = (p0_y + p1_y)/2;
 		var p12_y = (p1_y + p2_y)/2;
 		var new_y = (p01_y + p12_y)/2;
-		newseg = this.elem.createSVGPathSegCurvetoCubicAbs(new_x,new_y, p0_x,p0_y, p01_x,p01_y);
-		var pts = [seg.item.x,seg.item.y,p12_x,p12_y,p2_x,p2_y];
-		svgedit.path.replacePathSeg(seg.type,index,pts);
+		newseg = this.elem.createSVGPathSegCurvetoCubicAbs(new_x, new_y, p0_x, p0_y, p01_x, p01_y);
+		var pts = [seg.item.x, seg.item.y, p12_x, p12_y, p2_x, p2_y];
+		svgedit.path.replacePathSeg(seg.type, index, pts);
 		break;
 	}
 
@@ -808,7 +807,7 @@ svgedit.path.Path.prototype.setSegType = function(new_type) {
 		case 6:
 			if (cur.olditem) {
 				var old = cur.olditem;
-				points = [cur_x,cur_y, old.x1,old.y1, old.x2,old.y2];
+				points = [cur_x, cur_y, old.x1, old.y1, old.x2, old.y2];
 			} else {
 				var diff_x = cur_x - prev_x;
 				var diff_y = cur_y - prev_y;
@@ -824,11 +823,11 @@ svgedit.path.Path.prototype.setSegType = function(new_type) {
 				var ct1_y = (prev_y + (diff_y/3));
 				var ct2_x = (cur_x - (diff_x/3));
 				var ct2_y = (cur_y - (diff_y/3));
-				points = [cur_x,cur_y, ct1_x,ct1_y, ct2_x,ct2_y];
+				points = [cur_x, cur_y, ct1_x, ct1_y, ct2_x, ct2_y];
 			}
 			break;
 		case 4:
-			points = [cur_x,cur_y];
+			points = [cur_x, cur_y];
 
 			// Store original prevve segment nums
 			cur.olditem = cur.item;
@@ -895,7 +894,7 @@ var getRotVals = function(x, y) {
 
 	// rotate the point around the old center
 	r = Math.sqrt(dx*dx + dy*dy);
-	theta = Math.atan2(dy,dx) + angle;
+	theta = Math.atan2(dy, dx) + angle;
 	dx = r * Math.cos(theta) + oldcx;
 	dy = r * Math.sin(theta) + oldcy;
 
@@ -907,7 +906,7 @@ var getRotVals = function(x, y) {
 	dy -= newcy;
 
 	r = Math.sqrt(dx*dx + dy*dy);
-	theta = Math.atan2(dy,dx) - angle;
+	theta = Math.atan2(dy, dx) - angle;
 
 	return {'x':(r * Math.cos(theta) + newcx)/1,
 		'y':(r * Math.sin(theta) + newcy)/1};
@@ -936,7 +935,7 @@ svgedit.path.recalcRotatedPath = function() {
 		dx = newcx - oldcx,
 		dy = newcy - oldcy,
 		r = Math.sqrt(dx*dx + dy*dy),
-		theta = Math.atan2(dy,dx) + angle;
+		theta = Math.atan2(dy, dx) + angle;
 
 	newcx = r * Math.cos(theta) + oldcx;
 	newcy = r * Math.sin(theta) + oldcy;
@@ -949,7 +948,7 @@ svgedit.path.recalcRotatedPath = function() {
 			type = seg.pathSegType;
 		if (type == 1) continue;
 
-		var rvals = getRotVals(seg.x,seg.y),
+		var rvals = getRotVals(seg.x, seg.y),
 			points = [rvals.x, rvals.y];
 		if (seg.x1 != null && seg.x2 != null) {
 			c_vals1 = getRotVals(seg.x1, seg.y1);

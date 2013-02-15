@@ -51,7 +51,7 @@ var supportsXpath_ = (function() {
 // segList functions (for FF1.5 and 2.0)
 var supportsPathReplaceItem_ = (function() {
 	var path = document.createElementNS(svgns, 'path');
-	path.setAttribute('d','M0,0 10,10');
+	path.setAttribute('d', 'M0,0 10,10');
 	var seglist = path.pathSegList;
 	var seg = path.createSVGPathSegLinetoAbs(5,5);
 	try {
@@ -62,8 +62,8 @@ var supportsPathReplaceItem_ = (function() {
 })();
 
 var supportsPathInsertItemBefore_ = (function() {
-	var path = document.createElementNS(svgns,'path');
-	path.setAttribute('d','M0,0 10,10');
+	var path = document.createElementNS(svgns, 'path');
+	path.setAttribute('d', 'M0,0 10,10');
 	var seglist = path.pathSegList;
 	var seg = path.createSVGPathSegLinetoAbs(5,5);
 	try {
@@ -81,7 +81,7 @@ var supportsGoodTextCharPos_ = (function() {
 	document.documentElement.appendChild(svgroot);
 	svgcontent.setAttribute('x', 5);
 	svgroot.appendChild(svgcontent);
-	var text = document.createElementNS(svgns,'text');
+	var text = document.createElementNS(svgns, 'text');
 	text.textContent = 'a';
 	svgcontent.appendChild(text);
 	var pos = text.getStartPositionOfChar(0).x;
@@ -93,7 +93,7 @@ var supportsPathBBox_ = (function() {
 	var svgcontent = document.createElementNS(svgns, 'svg');
 	document.documentElement.appendChild(svgcontent);
 	var path = document.createElementNS(svgns, 'path');
-	path.setAttribute('d','M0,0 C0,0 10,10 10,0');
+	path.setAttribute('d', 'M0,0 C0,0 10,10 10,0');
 	svgcontent.appendChild(path);
 	var bbox = path.getBBox();
 	document.documentElement.removeChild(svgcontent);
@@ -105,9 +105,9 @@ var supportsHVLineContainerBBox_ = (function() {
 	var svgcontent = document.createElementNS(svgns, 'svg');
 	document.documentElement.appendChild(svgcontent);
 	var path = document.createElementNS(svgns, 'path');
-	path.setAttribute('d','M0,0 10,0');
+	path.setAttribute('d', 'M0,0 10,0');
 	var path2 = document.createElementNS(svgns, 'path');
-	path2.setAttribute('d','M5,0 15,0');
+	path2.setAttribute('d', 'M5,0 15,0');
 	var g = document.createElementNS(svgns, 'g');
 	g.appendChild(path);
 	g.appendChild(path2);
@@ -126,7 +126,7 @@ var supportsEditableText_ = (function() {
 var supportsGoodDecimals_ = (function() {
 	// Correct decimals on clone attributes (Opera < 10.5/win/non-en)
 	var rect = document.createElementNS(svgns, 'rect');
-	rect.setAttribute('x',.1);
+	rect.setAttribute('x', 0.1);
 	var crect = rect.cloneNode(false);
 	var retValue = (crect.getAttribute('x').indexOf(',') == -1);
 	if(!retValue) {
@@ -138,7 +138,7 @@ var supportsGoodDecimals_ = (function() {
 
 var supportsNonScalingStroke_ = (function() {
 	var rect = document.createElementNS(svgns, 'rect');
-	rect.setAttribute('style','vector-effect:non-scaling-stroke');
+	rect.setAttribute('style', 'vector-effect:non-scaling-stroke');
 	return rect.style.vectorEffect === 'non-scaling-stroke';
 })();
 

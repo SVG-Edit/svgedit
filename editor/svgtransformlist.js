@@ -26,7 +26,7 @@ function transformToString(xform) {
 		text = "";
 	switch(xform.type) {
 		case 1: // MATRIX
-			text = "matrix(" + [m.a,m.b,m.c,m.d,m.e,m.f].join(",") + ")";
+			text = "matrix(" + [m.a, m.b, m.c, m.d, m.e, m.f].join(",") + ")";
 			break;
 		case 2: // TRANSLATE
 			text = "translate(" + m.e + "," + m.f + ")";
@@ -99,7 +99,7 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 		var m = true;
 		while (m) {
 			m = str.match(re);
-			str = str.replace(re,'');
+			str = str.replace(re, '');
 			if (m && m[1]) {
 				var x = m[1];
 				var bits = x.split(/\s*\(/);

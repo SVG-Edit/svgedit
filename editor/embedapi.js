@@ -21,7 +21,7 @@ embedded_svg_edit.prototype.call = function(code, callback){
 }
 
 embedded_svg_edit.prototype.getSvgString = function(callback){
-  this.call("svgCanvas.getSvgString()",callback)
+  this.call("svgCanvas.getSvgString()", callback)
 }
 
 embedded_svg_edit.prototype.setSvgString = function(svg){
@@ -98,7 +98,7 @@ function embedded_svg_edit(frame){
         for(var g = 0, args = []; g < arguments.length; g++){
           args.push(arguments[g]);
         }
-        var cbid = t.send(d,args, function(){})  //the callback (currently it's nothing, but will be set later
+        var cbid = t.send(d, args, function(){})  //the callback (currently it's nothing, but will be set later
         
         return function(newcallback){
           t.callbacks[cbid] = newcallback; //set callback
