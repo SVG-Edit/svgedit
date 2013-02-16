@@ -1038,7 +1038,7 @@
 				if (ext.context_tools) {
 					$.each(ext.context_tools, function(i, tool) {
 						// Add select tool
-						var cont_id = tool.container_id?(' id="' + tool.container_id + '"') : '';
+						var cont_id = tool.container_id ? (' id="' + tool.container_id + '"') : '';
 						var panel = $('#' + tool.panel);
 
 						// create the panel if it doesn't exist
@@ -4204,12 +4204,13 @@
 				}
 			});
 
-			$('#rect_rx').SpinButton({ min: 0, max: 1000, step: 1, callback: changeRectRadius });
-			$('#stroke_width').SpinButton({ min: 0, max: 99, step: 1, smallStep: 0.1, callback: changeStrokeWidth });
+			// init SpinButtons
+			$('#rect_rx').SpinButton({ min: 0, max: 1000, callback: changeRectRadius });
+			$('#stroke_width').SpinButton({ min: 0, max: 99, smallStep: 0.1, callback: changeStrokeWidth });
 			$('#angle').SpinButton({ min: -180, max: 180, step: 5, callback: changeRotationAngle });
-			$('#font_size').SpinButton({ step: 1, min: 0.001, stepfunc: stepFontSize, callback: changeFontSize });
-			$('#group_opacity').SpinButton({ step: 5, min: 0, max: 100, callback: changeOpacity });
-			$('#blur').SpinButton({ step: .1, min: 0, max: 10, callback: changeBlur });
+			$('#font_size').SpinButton({ min: 0.001, stepfunc: stepFontSize, callback: changeFontSize });
+			$('#group_opacity').SpinButton({ min: 0, max: 100, step: 5, callback: changeOpacity });
+			$('#blur').SpinButton({ min: 0, max: 10, step: .1, callback: changeBlur });
 			$('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom })
 				// Set default zoom
 				.val(svgCanvas.getZoom() * 100);
