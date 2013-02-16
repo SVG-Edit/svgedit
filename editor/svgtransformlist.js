@@ -10,15 +10,13 @@
 // Dependencies:
 // 1) browser.js
 
-var svgedit = svgedit || {};
-
 (function() {
 
 if (!svgedit.transformlist) {
 	svgedit.transformlist = {};
 }
 
-var svgroot = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+var svgroot = document.createElementNS(svgedit.NS.SVG, 'svg');
 
 // Helper function.
 function transformToString(xform) {

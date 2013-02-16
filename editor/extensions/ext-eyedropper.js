@@ -14,8 +14,8 @@
 // 4) svgcanvas.js
 
 svgEditor.addExtension("eyedropper", function(S) {
-		var svgcontent = S.svgcontent,
-			svgns = "http://www.w3.org/2000/svg",
+		var NS = svgedit.NS,
+			svgcontent = S.svgcontent,
 			svgdoc = S.svgroot.parentNode.ownerDocument,
 			svgCanvas = svgEditor.canvas,
 			ChangeElementCommand = svgedit.history.ChangeElementCommand,
@@ -27,7 +27,7 @@ svgEditor.addExtension("eyedropper", function(S) {
 							strokeLinecap: 'butt',
 							strokeLinejoin: 'miter',
 							};
-							
+
 		function getStyle(opts) {
 			// if we are in eyedropper mode, we don't want to disable the eye-dropper tool
 			var mode = svgCanvas.getMode();

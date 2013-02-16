@@ -10,8 +10,6 @@
 // Dependencies:
 // None.
 
-var svgedit = svgedit || {};
-
 (function() {
 
 if (!svgedit.math) {
@@ -22,7 +20,7 @@ if (!svgedit.math) {
 var NEAR_ZERO = 1e-14;
 
 // Throw away SVGSVGElement used for creating matrices/transforms.
-var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
 
 // Function: svgedit.math.transformPoint
 // A (hopefully) quicker function to transform a point by a matrix

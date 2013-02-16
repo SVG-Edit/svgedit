@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
-  <script src='../editor/jquery.js'></script>
-  <script type='text/javascript' src='../editor/history.js'></script>
-  <script type='text/javascript' src='qunit/qunit.js'></script>  
-  <script type='text/javascript'>
-  $(function() {
+<link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
+<script src='../editor/jquery.js'></script>
+<script src='../editor/history.js'></script>
+<script src='qunit/qunit.js'></script>
+<script>
+$(function() {
 	// TODO(codedread): Write tests for handling history events.
 
 	// Mocked out methods.
@@ -17,15 +17,15 @@
 	svgedit.utilities.setHref = function(elem, val) {};
 	svgedit.utilities.getRotationAngle = function(elem) { return 0; };
 
-  	// log function
-  	QUnit.log = function(result, message) {
+	// log function
+	QUnit.log = function(result, message) {
 		if (window.console && window.console.log) {
 			window.console.log(result +' :: '+ message);
 		}
 	};
 
-	var svgns = 'http://www.w3.org/2000/svg';
-	var svg = document.createElementNS(svgns, 'svg');
+	var NS = svgedit.NS;
+	var svg = document.createElementNS(NS.SVG, 'svg');
 	var undoMgr = null;
 	var divparent = document.getElementById('divparent');
 	var div1 = document.getElementById('div1');
@@ -54,7 +54,7 @@
 
 	test('Test svgedit.history package', function() {
 		expect(13);
-		
+
 		ok(svgedit.history);
 		ok(svgedit.history.MoveElementCommand);
 		ok(svgedit.history.InsertElementCommand);
@@ -69,11 +69,11 @@
 		equals(typeof svgedit.history.BatchCommand, typeof function(){});
 		equals(typeof svgedit.history.UndoManager, typeof function(){});
 	});
-	
+
 	test('Test UndoManager methods', function() {
 		expect(14);
 		setUp();
-		
+
 		ok(undoMgr);
 		ok(undoMgr.addCommandToHistory);
 		ok(undoMgr.getUndoStackSize);
@@ -89,13 +89,13 @@
 		equals(typeof undoMgr.resetUndoStack, typeof function(){});
 		equals(typeof undoMgr.getNextUndoCommandText, typeof function(){});
 		equals(typeof undoMgr.getNextRedoCommandText, typeof function(){});
-			
+
 		tearDown();
 	});
-	
+
 	test('Test UndoManager.addCommandToHistory() function', function() {
 		expect(3);
-		
+
 		setUp();
 
 		equals(undoMgr.getUndoStackSize(), 0);
@@ -106,10 +106,10 @@
 
 		tearDown();
 	});
-	
+
 	test('Test UndoManager.getUndoStackSize() and getRedoStackSize() functions', function() {
 		expect(18);
-		
+
 		setUp();
 
 		undoMgr.addCommandToHistory(new MockCommand());
@@ -118,7 +118,7 @@
 
 		equals(undoMgr.getUndoStackSize(), 3);
 		equals(undoMgr.getRedoStackSize(), 0);
-		
+
 		undoMgr.undo();
 		equals(undoMgr.getUndoStackSize(), 2);
 		equals(undoMgr.getRedoStackSize(), 1);
@@ -150,28 +150,28 @@
 		undoMgr.redo();
 		equals(undoMgr.getUndoStackSize(), 3);
 		equals(undoMgr.getRedoStackSize(), 0);
-		
+
 		tearDown();
 	});
-	
+
 	test('Test UndoManager.resetUndoStackSize() function', function() {
 		expect(4);
-		
+
 		setUp();
 
 		undoMgr.addCommandToHistory(new MockCommand());
 		undoMgr.addCommandToHistory(new MockCommand());
 		undoMgr.addCommandToHistory(new MockCommand());
 		undoMgr.undo();
-		
+
 		equals(undoMgr.getUndoStackSize(), 2);
 		equals(undoMgr.getRedoStackSize(), 1);
-		
+
 		undoMgr.resetUndoStack();
 
 		equals(undoMgr.getUndoStackSize(), 0);
 		equals(undoMgr.getRedoStackSize(), 0);
-		
+
 		tearDown();
 	});
 
@@ -277,7 +277,7 @@
 		undoMgr.undo();
 		undoMgr.undo();
 		equals(lastCalled, 'cmd2.unapply');
-		
+
 		undoMgr.undo();
 		equals(lastCalled, 'cmd1.unapply');
 		lastCalled = null;
@@ -287,7 +287,7 @@
 
 		undoMgr.redo();
 		equals(lastCalled, 'cmd1.apply');
-		
+
 		undoMgr.redo();
 		equals(lastCalled, 'cmd2.apply');
 
@@ -480,7 +480,7 @@
 		ok(!div1.textContent);
 
 		// TODO(codedread): Refactor this #href stuff in history.js and svgcanvas.js
-		var rect = document.createElementNS(svgns, 'rect');
+		var rect = document.createElementNS(NS.SVG, 'rect');
 		var justCalled = null;
 		var gethrefvalue = null;
 		var sethrefvalue = null;
@@ -510,10 +510,10 @@
 		change.apply();
 		equals(justCalled, 'setHref');
 
-		var line = document.createElementNS(svgns,'line');
+		var line = document.createElementNS(NS.SVG,'line');
 		line.setAttributeNS(null, 'class', 'newClass');
 		change = new svgedit.history.ChangeElementCommand(line,{class:'oldClass'});
-		
+
 		ok(change.unapply);
 		ok(change.apply);
 		equals(typeof change.unapply, typeof function(){});
@@ -524,7 +524,7 @@
 
 		change.apply();
 		equals(line.getAttributeNS(null, 'class'), 'newClass');
-		
+
 		tearDown();
 	});
 
@@ -568,24 +568,22 @@
 		tearDown();
 	});
 
-
-  });
-  </script>
-</head>  
-<body>  
-  <h1 id='qunit-header'>Unit Tests for history.js</h1>
-  <h2 id='qunit-banner'></h2>
-  <h2 id='qunit-userAgent'></h2>
-  <ol id='qunit-tests'>
-  </ol>
-  <div id='divparent' style='visibility:hidden'>
-    <div id='div1'></div>
-    <div id='div2'></div>
-    <div id='div3'></div>
-  </div>
-  <div id='div4' style='visibility:hidden'>
-    <div id='div5'></div>
-  </div>
-
-</body>  
+});
+</script>
+</head>
+<body>
+	<h1 id='qunit-header'>Unit Tests for history.js</h1>
+	<h2 id='qunit-banner'></h2>
+	<h2 id='qunit-userAgent'></h2>
+	<ol id='qunit-tests'>
+	</ol>
+	<div id='divparent' style='visibility:hidden'>
+	<div id='div1'></div>
+	<div id='div2'></div>
+	<div id='div3'></div>
+	</div>
+	<div id='div4' style='visibility:hidden'>
+	<div id='div5'></div>
+	</div>
+</body>
 </html>

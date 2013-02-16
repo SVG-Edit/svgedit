@@ -3529,7 +3529,7 @@
 			testEl.removeAttribute('style');
 			var svgdocbox = paintBox.fill.rect.ownerDocument;
 			// Use this to test support for blur element. Seems to work to test support in Webkit
-			var blurTest = svgdocbox.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
+			var blurTest = svgdocbox.createElementNS(svgedit.NS.SVG, 'feGaussianBlur');
 			if (typeof blurTest.stdDeviationX === 'undefined') {
 				$('#tool_blur').hide();
 			}

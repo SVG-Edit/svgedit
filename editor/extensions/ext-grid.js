@@ -14,8 +14,8 @@
 
 svgEditor.addExtension('view_grid', function() {
 
-	var svgdoc = document.getElementById('svgcanvas').ownerDocument,
-		svgns = 'http://www.w3.org/2000/svg',
+	var NS = svgedit.NS,
+		svgdoc = document.getElementById('svgcanvas').ownerDocument,
 		showGrid = false,
 		assignAttributes = svgCanvas.assignAttributes,
 		hcanvas = document.createElement('canvas'),
@@ -25,7 +25,7 @@ svgEditor.addExtension('view_grid', function() {
 
 	$(hcanvas).hide().appendTo('body');
 
-	var canvasGrid = svgdoc.createElementNS(svgns, 'svg');
+	var canvasGrid = svgdoc.createElementNS(NS.SVG, 'svg');
 	assignAttributes(canvasGrid, {
 		'id': 'canvasGrid',
 		'width': '100%',
@@ -38,7 +38,7 @@ svgEditor.addExtension('view_grid', function() {
 	canvBG.append(canvasGrid);
 
 	// grid-pattern
-	var gridPattern = svgdoc.createElementNS(svgns, 'pattern');
+	var gridPattern = svgdoc.createElementNS(NS.SVG, 'pattern');
 	assignAttributes(gridPattern, {
 		'id': 'gridpattern',
 		'patternUnits': 'userSpaceOnUse',
@@ -48,7 +48,7 @@ svgEditor.addExtension('view_grid', function() {
 		'height': 100
 	});
 
-	var gridimg = svgdoc.createElementNS(svgns, 'image');
+	var gridimg = svgdoc.createElementNS(NS.SVG, 'image');
 	assignAttributes(gridimg, {
 		'x': 0,
 		'y': 0,
@@ -59,7 +59,7 @@ svgEditor.addExtension('view_grid', function() {
 	$('#svgroot defs').append(gridPattern);
 
 	// grid-box
-	var gridBox = svgdoc.createElementNS(svgns, 'rect');
+	var gridBox = svgdoc.createElementNS(NS.SVG, 'rect');
 	assignAttributes(gridBox, {
 		'width': '100%',
 		'height': '100%',

@@ -8,6 +8,7 @@ ZIP=zip
 # All files that will be compiled by the Closure compiler.
 
 JS_FILES=\
+	svgedit.js \
 	contextmenu/jquery.contextmenu.js \
 	browser.js \
 	svgtransformlist.js \

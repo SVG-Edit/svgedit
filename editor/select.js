@@ -13,8 +13,6 @@
 // 3) math.js
 // 4) svgutils.js
 
-var svgedit = svgedit || {};
-
 (function() {
 
 if (!svgedit.select) {
