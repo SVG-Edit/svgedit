@@ -1678,16 +1678,8 @@
 				}
 
 				// update history buttons
-				if (undoMgr.getUndoStackSize() > 0) {
-					$('#tool_undo').removeClass('disabled');
-				} else {
-					$('#tool_undo').addClass('disabled');
-				}
-				if (undoMgr.getRedoStackSize() > 0) {
-					$('#tool_redo').removeClass('disabled');
-				} else {
-					$('#tool_redo').addClass('disabled');
-				}
+				$('#tool_undo').toggleClass('disabled', undoMgr.getUndoStackSize() === 0);
+				$('#tool_redo').toggleClass('disabled', undoMgr.getRedoStackSize() === 0);
 
 				svgCanvas.addedNew = false;
 
@@ -2083,22 +2075,20 @@
 
 				overlay.bind('mousedown',function() {
 					if (!button.hasClass('buttondown')) {
-						button.addClass('buttondown').removeClass('buttonup');
 						// Margin must be reset in case it was changed before;
-						list.css('margin-left',0).show();
+						list.css('margin-left', 0).show();
 						if (!height) {
 							height = list.height();
 						}
 						// Using custom animation as slideDown has annoying 'bounce effect'
 						list.css('height',0).animate({
 							'height': height
-						},200);
+						}, 200);
 						on_button = true;
-						return false;
 					} else {
-						button.removeClass('buttondown').addClass('buttonup');
 						list.fadeOut(200);
 					}
+					button.toggleClass('buttondown buttonup');
 				}).hover(function() {
 					on_button = true;
 				}).mouseout(function() {
@@ -2152,8 +2142,6 @@
 
 				button.bind('mousedown',function() {
 					if (!button.hasClass('down')) {
-						button.addClass('down');
-
 						if (!dropUp) {
 							var pos = $(elem).position();
 							list.css({
@@ -2162,12 +2150,11 @@
 							});
 						}
 						list.show();
-
 						on_button = true;
 					} else {
-						button.removeClass('down');
 						list.hide();
 					}
+					button.toggleClass('down');
 				}).hover(function() {
 					on_button = true;
 				}).mouseout(function() {
@@ -2510,12 +2497,7 @@
 			};
 
 			var linkControlPoints = function() {
-				var linked = !$('#tool_node_link').hasClass('push_button_pressed');
-				if (linked) {
-					$('#tool_node_link').addClass('push_button_pressed').removeClass('tool_button');
-				} else {
-					$('#tool_node_link').removeClass('push_button_pressed').addClass('tool_button');
-				}
+				$('#tool_node_link').toggleClass('push_button_pressed tool_button');
 				path.linkControlPoints(linked);
 			};
 
@@ -2532,12 +2514,7 @@
 			};
 
 			var addSubPath = function() {
-				var sp = !$('#tool_add_subpath').hasClass('push_button_pressed');
-				if (sp) {
-					button.addClass('push_button_pressed').removeClass('tool_button');
-				} else {
-					button.removeClass('push_button_pressed').addClass('tool_button');
-				}
+				button.toggleClass('push_button_pressed tool_button');
 				path.addSubPath(sp);
 			};
 
@@ -3823,11 +3800,7 @@
 					var name = $('#layerlist tr.layer:eq(' + row + ') td.layername').text();
 					var vis = $(this).hasClass('layerinvis');
 					svgCanvas.setLayerVisibility(name, vis);
-					if (vis) {
-						$(this).removeClass('layerinvis');
-					} else {
-						$(this).addClass('layerinvis');
-					}
+					$(this).toggleClass('layerinvis');
 				});
 
 				// if there were too few rows, let's add a few to make it not so lonely
