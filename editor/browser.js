@@ -17,22 +17,25 @@ var svgedit = svgedit || {};
 if (!svgedit.browser) {
 	svgedit.browser = {};
 }
-var supportsSvg_ = (function() {
-        return !!document.createElementNS && !!document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect;
-})();
-svgedit.browser.supportsSvg = function() { return supportsSvg_; }
-if(!svgedit.browser.supportsSvg()) {
-	window.location = "browser-not-supported.html";
-}
-else{
 
 var svgns = 'http://www.w3.org/2000/svg';
+
+var supportsSvg_ = (function() {
+	return !!document.createElementNS && !!document.createElementNS(svgns, 'svg').createSVGRect;
+})();
+
+svgedit.browser.supportsSvg = function() { return supportsSvg_; };
+if(!svgedit.browser.supportsSvg()) {
+	window.location = 'browser-not-supported.html';
+	return;
+}
+
 var userAgent = navigator.userAgent;
 var svg = document.createElementNS(svgns, 'svg');
 
 // Note: Browser sniffing should only be used if no other detection method is possible
 var isOpera_ = !!window.opera;
-var isWebkit_ = userAgent.indexOf("AppleWebKit") >= 0;
+var isWebkit_ = userAgent.indexOf('AppleWebKit') >= 0;
 var isGecko_ = userAgent.indexOf('Gecko/') >= 0;
 var isIE_ = userAgent.indexOf('MSIE') >= 0;
 var isChrome_ = userAgent.indexOf('Chrome/') >= 0;
@@ -75,7 +78,6 @@ var supportsPathInsertItemBefore_ = (function() {
 
 // text character positioning (for IE9)
 var supportsGoodTextCharPos_ = (function() {
-	var retValue = false;
 	var svgroot = document.createElementNS(svgns, 'svg');
 	var svgcontent = document.createElementNS(svgns, 'svg');
 	document.documentElement.appendChild(svgroot);
@@ -130,8 +132,8 @@ var supportsGoodDecimals_ = (function() {
 	var crect = rect.cloneNode(false);
 	var retValue = (crect.getAttribute('x').indexOf(',') == -1);
 	if(!retValue) {
-		$.alert("NOTE: This version of Opera is known to contain bugs in SVG-edit.\n\
-		Please upgrade to the <a href='http://opera.com'>latest version</a> in which the problems have been fixed.");
+		$.alert('NOTE: This version of Opera is known to contain bugs in SVG-edit.\n\
+		Please upgrade to the <a href="http://opera.com">latest version</a> in which the problems have been fixed.');
 	}
 	return retValue;
 })();
@@ -145,7 +147,6 @@ var supportsNonScalingStroke_ = (function() {
 var supportsNativeSVGTransformLists_ = (function() {
 	var rect = document.createElementNS(svgns, 'rect');
 	var rxform = rect.transform.baseVal;
-	
 	var t1 = svg.createSVGTransform();
 	rxform.appendItem(t1);
 	return rxform.getItem(0) == t1;
@@ -153,28 +154,26 @@ var supportsNativeSVGTransformLists_ = (function() {
 
 // Public API
 
-svgedit.browser.isOpera = function() { return isOpera_; }
-svgedit.browser.isWebkit = function() { return isWebkit_; }
-svgedit.browser.isGecko = function() { return isGecko_; }
-svgedit.browser.isIE = function() { return isIE_; }
-svgedit.browser.isChrome = function() { return isChrome_; }
-svgedit.browser.isWindows = function() { return isWindows_; }
-svgedit.browser.isMac = function() { return isMac_; }
-svgedit.browser.isTouch = function() { return isTouch_; }
+svgedit.browser.isOpera = function() { return isOpera_; };
+svgedit.browser.isWebkit = function() { return isWebkit_; };
+svgedit.browser.isGecko = function() { return isGecko_; };
+svgedit.browser.isIE = function() { return isIE_; };
+svgedit.browser.isChrome = function() { return isChrome_; };
+svgedit.browser.isWindows = function() { return isWindows_; };
+svgedit.browser.isMac = function() { return isMac_; };
+svgedit.browser.isTouch = function() { return isTouch_; };
 
-svgedit.browser.supportsSelectors = function() { return supportsSelectors_; }
-svgedit.browser.supportsXpath = function() { return supportsXpath_; }
+svgedit.browser.supportsSelectors = function() { return supportsSelectors_; };
+svgedit.browser.supportsXpath = function() { return supportsXpath_; };
 
-svgedit.browser.supportsPathReplaceItem = function() { return supportsPathReplaceItem_; }
-svgedit.browser.supportsPathInsertItemBefore = function() { return supportsPathInsertItemBefore_; }
-svgedit.browser.supportsPathBBox = function() { return supportsPathBBox_; }
-svgedit.browser.supportsHVLineContainerBBox = function() { return supportsHVLineContainerBBox_; }
-svgedit.browser.supportsGoodTextCharPos = function() { return supportsGoodTextCharPos_; }
-svgedit.browser.supportsEditableText = function() { return supportsEditableText_; }
-svgedit.browser.supportsGoodDecimals = function() { return supportsGoodDecimals_; }
-svgedit.browser.supportsNonScalingStroke = function() { return supportsNonScalingStroke_; }
-svgedit.browser.supportsNativeTransformLists = function() { return supportsNativeSVGTransformLists_; }
-
-}
+svgedit.browser.supportsPathReplaceItem = function() { return supportsPathReplaceItem_; };
+svgedit.browser.supportsPathInsertItemBefore = function() { return supportsPathInsertItemBefore_; };
+svgedit.browser.supportsPathBBox = function() { return supportsPathBBox_; };
+svgedit.browser.supportsHVLineContainerBBox = function() { return supportsHVLineContainerBBox_; };
+svgedit.browser.supportsGoodTextCharPos = function() { return supportsGoodTextCharPos_; };
+svgedit.browser.supportsEditableText = function() { return supportsEditableText_; };
+svgedit.browser.supportsGoodDecimals = function() { return supportsGoodDecimals_; };
+svgedit.browser.supportsNonScalingStroke = function() { return supportsNonScalingStroke_; };
+svgedit.browser.supportsNativeTransformLists = function() { return supportsNativeSVGTransformLists_; };
 
 })();
