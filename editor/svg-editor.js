@@ -2676,12 +2676,7 @@
 			};
 
 			var clickWireframe = function() {
-				var wf = !$('#tool_wireframe').hasClass('push_button_pressed');
-				if (wf) {
-					$('#tool_wireframe').addClass('push_button_pressed').removeClass('tool_button');
-				} else {
-					$('#tool_wireframe').removeClass('push_button_pressed').addClass('tool_button');
-				}
+				$('#tool_wireframe').toggleClass('push_button_pressed tool_button');
 				workarea.toggleClass('wireframe');
 
 				if (supportsNonSS) return;
