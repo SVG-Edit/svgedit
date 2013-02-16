@@ -627,15 +627,14 @@
 				// can just provide their own custom save handler and might not want the XML prolog
 				svg = '<?xml version="1.0"?>\n' + svg;
 
-				// Opens the SVG in new window, with warning about Mozilla bug #308590 when applicable
-				var ua = navigator.userAgent;
-
-				// Chrome 5 (and 6?) don't allow saving, show source instead ( http://code.google.com/p/chromium/issues/detail?id=46735 )
-				// IE9 doesn't allow standalone Data URLs ( https://connect.microsoft.com/IE/feedback/details/542600/data-uri-images-fail-when-loaded-by-themselves )
-				if ((~ua.indexOf('Chrome') && $.browser.version >= 533) || ~ua.indexOf('MSIE')) {
+				// IE9 doesn't allow standalone Data URLs
+				// https://connect.microsoft.com/IE/feedback/details/542600/data-uri-images-fail-when-loaded-by-themselves
+				if (svgedit.browser.isIE()) {
 					showSourceEditor(0, true);
 					return;
 				}
+
+				// Opens the SVG in new window
 				var win = window.open('data:image/svg+xml;base64,' + Utils.encode64(svg));
 
 				// Alert will only appear the first time saved OR the first time the bug is encountered
@@ -644,8 +643,9 @@
 					var note = uiStrings.notification.saveFromBrowser.replace('%s', 'SVG');
 
 					// Check if FF and has <defs/>
-					if (ua.indexOf('Gecko/') !== -1) {
+					if (svgedit.browser.isGecko()) {
 						if (svg.indexOf('<defs') !== -1) {
+							// warning about Mozilla bug #308590 when applicable (seems to be fixed now in Feb 2013)
 							note += '\n\n' + uiStrings.notification.defsFailOnSave;
 							$.pref('save_notice_done', 'all');
 							done = 'all';
@@ -655,7 +655,6 @@
 					} else {
 						$.pref('save_notice_done', 'all');
 					}
-
 					if (done !== 'part') {
 						win.alert(note);
 					}
