@@ -12,8 +12,6 @@
 // 2) browser.js
 // 3) svgtransformlist.js
 
-var svgedit = svgedit || {};
-
 (function() {
 
 if (!svgedit.utilities) {
@@ -24,9 +22,7 @@ if (!svgedit.utilities) {
 
 // String used to encode base64.
 var KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-var SVGNS = 'http://www.w3.org/2000/svg';
-var XLINKNS = 'http://www.w3.org/1999/xlink';
-var XMLNS = 'http://www.w3.org/XML/1998/namespace';
+var NS = svgedit.NS;
 
 // Much faster than running getBBox() every time
 var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
@@ -298,13 +294,13 @@ svgedit.utilities.getUrlFromAttr = function(attrVal) {
 // Function: svgedit.utilities.getHref
 // Returns the given element's xlink:href value
 svgedit.utilities.getHref = function(elem) {
-	return elem.getAttributeNS(XLINKNS, 'href');
+	return elem.getAttributeNS(NS.XLINK, 'href');
 }
 
 // Function: svgedit.utilities.setHref
 // Sets the given element's xlink:href value
 svgedit.utilities.setHref = function(elem, val) {
-	elem.setAttributeNS(XLINKNS, 'xlink:href', val);
+	elem.setAttributeNS(NS.XLINK, 'xlink:href', val);
 }
 
 // Function: findDefs
@@ -313,11 +309,11 @@ svgedit.utilities.setHref = function(elem, val) {
 // The document's <defs> element, create it first if necessary
 svgedit.utilities.findDefs = function() {
 	var svgElement = editorContext_.getSVGContent();
-	var defs = svgElement.getElementsByTagNameNS(SVGNS, 'defs');
+	var defs = svgElement.getElementsByTagNameNS(NS.SVG, 'defs');
 	if (defs.length > 0) {
 		defs = defs[0];
 	} else {
-		defs = svgElement.ownerDocument.createElementNS(SVGNS, 'defs');
+		defs = svgElement.ownerDocument.createElementNS(NS.SVG, 'defs');
 		if (svgElement.firstChild) {
 			// first child is a comment, so call nextSibling
 			svgElement.insertBefore(defs, svgElement.firstChild.nextSibling);
@@ -582,7 +578,7 @@ if (svgedit.browser.supportsSelectors()) {
 		return domdoc_.evaluate(
 			'svg:svg[@id="svgroot"]//svg:*[@id="'+id+'"]',
 			domcontainer_,
-			function() { return 'http://www.w3.org/2000/svg'; },
+			function() { return svgedit.NS.SVG; },
 			9,
 			null).singleNodeValue;
 	};
@@ -608,8 +604,8 @@ svgedit.utilities.assignAttributes = function(node, attrs, suspendLength, unitCh
 	if (!svgedit.browser.isOpera()) svgroot_.suspendRedraw(suspendLength);
 
 	for (var i in attrs) {
-		var ns = (i.substr(0,4) === 'xml:' ? XMLNS :
-			i.substr(0,6) === 'xlink:' ? XLINKNS : null);
+		var ns = (i.substr(0,4) === 'xml:' ? NS.XML :
+			i.substr(0,6) === 'xlink:' ? NS.XLINK : null);
 
 		if(ns) {
 			node.setAttributeNS(ns, i, attrs[i]);

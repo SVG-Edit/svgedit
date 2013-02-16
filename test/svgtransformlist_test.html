@@ -1,39 +1,38 @@
 <!DOCTYPE html>
-<html>  
-<head>  
-  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>  
-  <script src='../editor/jquery.js'></script>
-  <script>
-    // Mock for browser.js
-    window.svgedit = {};
-    svgedit.browser = {};
-    svgedit.browser.supportsNativeTransformLists = function() { return false;}
-  </script>
-  <script type='text/javascript' src='../editor/svgtransformlist.js'></script>
-  <script type='text/javascript' src='qunit/qunit.js'></script>  
-  <script type='text/javascript'>
-  $(function() {
-  	// log function
-  	QUnit.log = function(result, message) {
+<html>
+<head>
+<link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
+<script src='../editor/jquery.js'></script>
+<script src='../editor/svgedit.js'></script>
+<script>
+// Mock for browser.js
+svgedit.browser = {};
+svgedit.browser.supportsNativeTransformLists = function() { return false;}
+</script>
+<script src='../editor/svgtransformlist.js'></script>
+<script src='qunit/qunit.js'></script>
+<script>
+$(function() {
+	// log function
+	QUnit.log = function(result, message) {
 		if (window.console && window.console.log) {
 			window.console.log(result +' :: '+ message);
 		}
 	};
-	
-	var svgns = 'http://www.w3.org/2000/svg';
+	var NS = svgedit.NS;
 	var svgroot = document.getElementById('svgroot');
 	var svgcontent, rect, circle;
-	
+
 	var NEAR_ZERO = 5e-6; // 0.000005, Firefox fails at higher levels of precision.
 	function almostEquals(a, b, msg) {
 		msg = msg || (a + ' did not equal ' + b);
 		ok(Math.abs(a - b) < NEAR_ZERO, msg);
 	}
-	
+
 	function checkOutOfBoundsException(obj, fn, arg1) {
 		var caughtException = false;
 		try {
-			obj[fn](arg1); 
+			obj[fn](arg1);
 		}
 		catch(e) {
 			if (e.code == 1) {
@@ -44,13 +43,13 @@
 	}
 
 	function setUp() {
-		svgcontent = svgroot.appendChild(document.createElementNS(svgns, 'svg'));
-		rect = svgcontent.appendChild(document.createElementNS(svgns, 'rect'));
+		svgcontent = svgroot.appendChild(document.createElementNS(NS.SVG, 'svg'));
+		rect = svgcontent.appendChild(document.createElementNS(NS.SVG, 'rect'));
 		rect.id = 'r';
-		circle = svgcontent.appendChild(document.createElementNS(svgns, 'circle'));
+		circle = svgcontent.appendChild(document.createElementNS(NS.SVG, 'circle'));
 		circle.id = 'c';
 	}
-	
+
 	function tearDown() {
 		svgedit.transformlist.resetListMap();
 		while (svgroot.hasChildNodes()) {
@@ -62,7 +61,7 @@
 
 	test('Test svgedit.transformlist package', function() {
 		expect(2);
-		
+
 		ok(svgedit.transformlist);
 		ok(svgedit.transformlist.getTransformList);
 	});
@@ -70,37 +69,37 @@
 	test('Test svgedit.transformlist.getTransformList() function', function() {
 		expect(4);
 		setUp();
-		
+
 		var rxform = svgedit.transformlist.getTransformList(rect);
 		var cxform = svgedit.transformlist.getTransformList(circle);
-		
+
 		ok(rxform);
 		ok(cxform);
 		equals(typeof rxform, typeof {});
 		equals(typeof cxform, typeof {});
-		
+
 		tearDown();
 	});
 
 	test('Test SVGTransformList.numberOfItems property', function() {
 		expect(2);
 		setUp();
-		
+
 		var rxform = svgedit.transformlist.getTransformList(rect);
-		
+
 		equals(typeof rxform.numberOfItems, typeof 0);
 		equals(rxform.numberOfItems, 0);
-		
+
 		tearDown();
 	});
 
 	test('Test SVGTransformList.initialize()', function() {
 		expect(6);
 		setUp();
-		
+
 		var rxform = svgedit.transformlist.getTransformList(rect);
 		var cxform = svgedit.transformlist.getTransformList(circle);
-		
+
 		var t = svgcontent.createSVGTransform();
 		ok(t);
 		ok(rxform.initialize);
@@ -115,21 +114,21 @@
 		// This also fails in Firefox native.
 //		equals(rxform.numberOfItems, 0, 'Did not remove transform from list before initializing another transformlist');
 		equals(cxform.numberOfItems, 1);
-		
+
 		tearDown();
 	});
 
 	test('Test SVGTransformList.appendItem() and getItem()', function() {
 		expect(12);
 		setUp();
-		
+
 		var rxform = svgedit.transformlist.getTransformList(rect);
 		var cxform = svgedit.transformlist.getTransformList(circle);
-		
+
 		var t1 = svgcontent.createSVGTransform(),
 			t2 = svgcontent.createSVGTransform(),
 			t3 = svgcontent.createSVGTransform();
-		
+
 		ok(rxform.appendItem);
 		ok(rxform.getItem);
 		equals(typeof rxform.appendItem, typeof function(){});
@@ -138,7 +137,7 @@
 		rxform.appendItem(t1);
 		rxform.appendItem(t2);
 		rxform.appendItem(t3);
-		
+
 		equals(rxform.numberOfItems, 3);
 		var rxf = rxform.getItem(0);
 		equals(rxf, t1);
@@ -147,7 +146,6 @@
 
 		checkOutOfBoundsException(rxform, 'getItem', -1);
 		checkOutOfBoundsException(rxform, 'getItem', 3);
-		
 		cxform.appendItem(t1);
 		// These also fail in Firefox native.
 //		equals(rxform.numberOfItems, 2, 'Did not remove a transform from a list before appending it to a new transformlist');
@@ -156,52 +154,51 @@
 
 		equals(cxform.numberOfItems, 1);
 		equals(cxform.getItem(0), t1);
-		
 		tearDown();
 	});
 
 	test('Test SVGTransformList.removeItem()', function() {
 		expect(7);
 		setUp();
-		
+
 		var rxform = svgedit.transformlist.getTransformList(rect);
-		
+
 		var t1 = svgcontent.createSVGTransform(),
 			t2 = svgcontent.createSVGTransform();
 		ok(rxform.removeItem);
 		equals(typeof rxform.removeItem, typeof function(){});
 		rxform.appendItem(t1);
 		rxform.appendItem(t2);
-		
+
 		var removedTransform = rxform.removeItem(0);
 		equals(rxform.numberOfItems, 1);
 		equals(removedTransform, t1);
 		equals(rxform.getItem(0), t2);
-		
+
 		checkOutOfBoundsException(rxform, 'removeItem', -1);
 		checkOutOfBoundsException(rxform, 'removeItem', 1);
-		
+
 		tearDown();
 	});
 
 	test('Test SVGTransformList.replaceItem()', function() {
 		expect(8);
 		setUp();
-		
+
 		var rxform = svgedit.transformlist.getTransformList(rect);
 		var cxform = svgedit.transformlist.getTransformList(circle);
-		
+
 		ok(rxform.replaceItem);
 		equals(typeof rxform.replaceItem, typeof function(){});
 
 		var t1 = svgcontent.createSVGTransform(),
 			t2 = svgcontent.createSVGTransform(),
 			t3 = svgcontent.createSVGTransform();
-		
+
 		rxform.appendItem(t1);
 		rxform.appendItem(t2);
 		cxform.appendItem(t3);
-		
+
 		var newItem = rxform.replaceItem(t3, 0);
 		equals(rxform.numberOfItems, 2);
 		equals(newItem, t3);
@@ -209,7 +206,7 @@
 		equals(rxform.getItem(1), t2);
 		// Fails in Firefox native
 //		equals(cxform.numberOfItems, 0);
-		
+
 		// test replaceItem within a list
 		rxform.appendItem(t1);
 		rxform.replaceItem(t1, 0);
@@ -217,28 +214,28 @@
 //		equals(rxform.numberOfItems, 2);
 		equals(rxform.getItem(0), t1);
 		equals(rxform.getItem(1), t2);
-		
+
 		tearDown();
 	});
 
 	test('Test SVGTransformList.insertItemBefore()', function() {
 		expect(10);
 		setUp();
-		
+
 		var rxform = svgedit.transformlist.getTransformList(rect);
 		var cxform = svgedit.transformlist.getTransformList(circle);
-		
+
 		ok(rxform.insertItemBefore);
 		equals(typeof rxform.insertItemBefore, typeof function(){});
 
 		var t1 = svgcontent.createSVGTransform(),
 			t2 = svgcontent.createSVGTransform(),
 			t3 = svgcontent.createSVGTransform();
-		
+
 		rxform.appendItem(t1);
 		rxform.appendItem(t2);
 		cxform.appendItem(t3);
-		
+
 		var newItem = rxform.insertItemBefore(t3, 0);
 		equals(rxform.numberOfItems, 3);
 		equals(newItem, t3);
@@ -373,15 +370,15 @@
 
 		var t_ = svgcontent.createSVGMatrix();
 		t_.e = 100; t_.f = 200;
-		
+
 		var result = t_.multiply(r).multiply(t);
-		
+
 		almostEquals(m.e, result.e);
 		almostEquals(m.f, result.f);
 
 		tearDown();
 	});
-	
+
 	test('Test SVGTransformList.init() for matrix(1, 2, 3, 4, 5, 6)', function() {
 		expect(8);
 		setUp();
@@ -404,15 +401,15 @@
 		tearDown();
 	});
 
-  }); 
-  </script>  
-</head>  
-<body>  
-  <h1 id='qunit-header'>Unit Tests for svgtransformlist.js</h1>
-  <h2 id='qunit-banner'></h2>
-  <h2 id='qunit-userAgent'></h2>
-  <ol id='qunit-tests'>
-  </ol>
-  <div id='svgroot' style='visibility:hidden'></div>
-</body>  
+});
+</script>
+</head>
+<body>
+	<h1 id='qunit-header'>Unit Tests for svgtransformlist.js</h1>
+	<h2 id='qunit-banner'></h2>
+	<h2 id='qunit-userAgent'></h2>
+	<ol id='qunit-tests'>
+	</ol>
+	<div id='svgroot' style='visibility:hidden'></div>
+</body>
 </html>

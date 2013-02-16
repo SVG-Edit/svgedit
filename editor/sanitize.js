@@ -12,40 +12,14 @@
 // 2) browser.js
 // 3) svgutils.js
 
-var svgedit = svgedit || {};
-
 (function() {
 
 if (!svgedit.sanitize) {
 	svgedit.sanitize = {};
 }
 
-// Namespace constants
-var svgns = 'http://www.w3.org/2000/svg',
-	xlinkns = 'http://www.w3.org/1999/xlink',
-	xmlns   = 'http://www.w3.org/XML/1998/namespace',
-	xmlnsns = 'http://www.w3.org/2000/xmlns/', // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
-	htmlns  = 'http://www.w3.org/1999/xhtml',
-	mathns  = 'http://www.w3.org/1998/Math/MathML',
-	se_ns   = 'http://svg-edit.googlecode.com';
-
-// map namespace URIs to prefixes
-var nsMap_ = {};
-nsMap_[xlinkns] = 'xlink';
-nsMap_[xmlns]   = 'xml';
-nsMap_[xmlnsns] = 'xmlns';
-nsMap_[htmlns]  = 'xhtml';
-nsMap_[mathns]  = 'mathml';
-nsMap_[se_ns]   = 'se';
-
-// temporarily expose these
-svgedit.sanitize.getNSMap = function() { return nsMap_; }
-
-// map prefixes to namespace URIs (reverse of nsMap_)
-var nsRevMap_ = {};
-$.each(nsMap_, function(key, value){
-	nsRevMap_[value] = key;
-});
+var NS = svgedit.NS,
+	REVERSE_NS = svgedit.getReverseNS();
 
 // this defines which elements and attributes that we support
 var svgWhiteList_ = {
@@ -54,7 +28,7 @@ var svgWhiteList_ = {
 	"circle": ["class", "clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "r", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"clipPath": ["class", "clipPathUnits", "id"],
 	"defs": [],
-        "style" : ["type"],
+	"style" : ["type"],
 	"desc": [],
 	"ellipse": ["class", "clip-path", "clip-rule", "cx", "cy", "fill", "fill-opacity", "fill-rule", "filter", "id", "mask", "opacity", "requiredFeatures", "rx", "ry", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform"],
 	"feGaussianBlur": ["class", "color-interpolation-filters", "id", "requiredFeatures", "stdDeviation"],
@@ -82,7 +56,7 @@ var svgWhiteList_ = {
 	"title": [],
 	"tspan": ["class", "clip-path", "clip-rule", "dx", "dy", "fill", "fill-opacity", "fill-rule", "filter", "font-family", "font-size", "font-style", "font-weight", "id", "mask", "opacity", "requiredFeatures", "rotate", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "text-anchor", "textLength", "transform", "x", "xml:space", "y"],
 	"use": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "height", "id", "mask", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "transform", "width", "x", "xlink:href", "y"],
-	
+
 	// MathML Elements
 	"annotation": ["encoding"],
 	"annotation-xml": ["encoding"],
@@ -124,9 +98,9 @@ $.each(svgWhiteList_, function(elt, atts){
 	$.each(atts, function(i, att){
 		if (att.indexOf(':') >= 0) {
 			var v = att.split(':');
-			attNS[v[1]] = nsRevMap_[v[0]];
+			attNS[v[1]] = NS[(v[0]).toUpperCase()];
 		} else {
-			attNS[att] = att == 'xmlns' ? xmlnsns : null;
+			attNS[att] = att == 'xmlns' ? NS.XMLNS : null;
 		}
 	});
 	svgWhiteListNS_[elt] = attNS;
@@ -177,15 +151,15 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 			var attrNsURI = attr.namespaceURI;
 			// Check that an attribute with the correct localName in the correct namespace is on 
 			// our whitelist or is a namespace declaration for one of our allowed namespaces
-			if (!(allowedAttrsNS.hasOwnProperty(attrLocalName) && attrNsURI == allowedAttrsNS[attrLocalName] && attrNsURI != xmlnsns) &&
-				!(attrNsURI == xmlnsns && nsMap_[attr.nodeValue]) ) 
+			if (!(allowedAttrsNS.hasOwnProperty(attrLocalName) && attrNsURI == allowedAttrsNS[attrLocalName] && attrNsURI != NS.XMLNS) &&
+				!(attrNsURI == NS.XMLNS && REVERSE_NS[attr.nodeValue]) )
 			{
 				// TODO(codedread): Programmatically add the se: attributes to the NS-aware whitelist.
 				// Bypassing the whitelist to allow se: prefixes.
         // Is there a more appropriate way to do this?
 				if(attrName.indexOf('se:') == 0) {
 					se_attrs.push([attrName, attr.nodeValue]);
-				} 
+				}
 				node.removeAttributeNS(attrNsURI, attrLocalName);
 			}
 			
@@ -218,7 +192,7 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 		}
 		
 		$.each(se_attrs, function(i, attr) {
-			node.setAttributeNS(se_ns, attr[0], attr[1]);
+			node.setAttributeNS(NS.SE, attr[0], attr[1]);
 		});
 		
 		// for some elements that have a xlink:href, ensure the URI refers to a local element
@@ -232,7 +206,7 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 			if (href[0] != '#') {
 				// remove the attribute (but keep the element)
 				svgedit.utilities.setHref(node, '');
-				node.removeAttributeNS(xlinkns, 'href');
+				node.removeAttributeNS(NS.XLINK, 'href');
 			}
 		}
 		

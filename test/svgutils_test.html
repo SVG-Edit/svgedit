@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
-  <script src='../editor/jquery.js'></script>
-  <!-- svgutils.js depends on these two... mock out? -->
-  <script type='text/javascript' src='../editor/browser.js'></script>
-  <script type='text/javascript' src='../editor/svgtransformlist.js'></script>
-  <script type='text/javascript' src='../editor/svgutils.js'></script>
-  <script type='text/javascript' src='qunit/qunit.js'></script>  
-  <script type='text/javascript'>
-  $(function() {
-  	// log function
-  	QUnit.log = function(result, message) {
+<link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
+<script src='../editor/jquery.js'></script>
+<script src='../editor/svgedit.js'></script>
+<!-- svgutils.js depends on these two... mock out? -->
+<script src='../editor/browser.js'></script>
+<script src='../editor/svgtransformlist.js'></script>
+<script src='../editor/svgutils.js'></script>
+<script src='qunit/qunit.js'></script>
+<script>
+$(function() {
+	// log function
+ 	QUnit.log = function(result, message) {
 		if (window.console && window.console.log) {
 			window.console.log(result +' :: '+ message);
 		}
 	};
 
-	var svgns = 'http://www.w3.org/2000/svg';
-	var svg = document.createElementNS(svgns, 'svg');
+	var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
 
 	module('svgedit.utilities');
 
 	test('Test svgedit.utilities package', function() {
 		expect(3);
-		
+
 		ok(svgedit.utilities);
 		ok(svgedit.utilities.toXml);
 		equals(typeof svgedit.utilities.toXml, typeof function(){});
@@ -33,7 +33,7 @@
 	test('Test svgedit.utilities.toXml() function', function() {
 		expect(6);
 		var toXml = svgedit.utilities.toXml;
-		
+
 		equals(toXml('a'), 'a');
 		equals(toXml('ABC_'), 'ABC_');
 		equals(toXml('PB&J'), 'PB&amp;J');
@@ -76,7 +76,7 @@
 
 	test('Test svgedit.utilities.convertToXMLReferences() function', function() {
 		expect(1);
-		
+
 		var convert = svgedit.utilities.convertToXMLReferences;
 		equals(convert('ABC'), 'ABC');
 //		equals(convert('ÀBC'), '&#192;BC');
@@ -91,7 +91,7 @@
 		rect.y = 2;
 		rect.width = 3;
 		rect.height = 4;
-		
+
 		var obj = bboxToObj(rect);
 		equals(typeof obj, typeof {});
 		equals(obj.x, 1);
@@ -100,10 +100,9 @@
 		equals(obj.height, 4);
 	});
 
-	
 	test("Test getUrlFromAttr", function() {
 		expect(4);
-		
+
 		equal(svgedit.utilities.getUrlFromAttr("url(#foo)"), "#foo");
 		equal(svgedit.utilities.getUrlFromAttr("url(somefile.svg#foo)"), "somefile.svg#foo");
 		equal(svgedit.utilities.getUrlFromAttr("url('#foo')"), "#foo");
@@ -113,7 +112,7 @@
 	test("Test getPathBBox", function() {
 		if(svgedit.browser.supportsPathBBox()) return;
 		var doc = svgedit.utilities.text2xml('<svg></svg>');
-		var path = doc.createElementNS(svgns, 'path');
+		var path = doc.createElementNS(svgedit.NS.SVG, 'path');
 		path.setAttributeNS(null, 'd', 'm0,0l5,0l0,5l-5,0l0,-5z');
 		var bb = svgedit.utilities.getPathBBox(path);
 		equals(typeof bb, 'object', 'BBox returned object');
@@ -121,14 +120,14 @@
 		ok(bb.y && !isNaN(bb.y));
 	});
 
-  }); 
-  </script>  
-</head>  
-<body>  
-  <h1 id='qunit-header'>Unit Tests for svgutils.js</h1>
-  <h2 id='qunit-banner'></h2>
-  <h2 id='qunit-userAgent'></h2>
-  <ol id='qunit-tests'>
-  </ol>
-</body>  
+});
+</script>
+</head>
+<body>
+	<h1 id='qunit-header'>Unit Tests for svgutils.js</h1>
+	<h2 id='qunit-banner'></h2>
+	<h2 id='qunit-userAgent'></h2>
+	<ol id='qunit-tests'>
+	</ol>
+</body>
 </html>

@@ -10,18 +10,17 @@
 // Dependencies:
 // 1) jQuery (for $.alert())
 
-var svgedit = svgedit || {};
-
 (function() {
 
 if (!svgedit.browser) {
 	svgedit.browser = {};
 }
 
-var svgns = 'http://www.w3.org/2000/svg';
+// alias
+var NS = svgedit.NS;
 
 var supportsSvg_ = (function() {
-	return !!document.createElementNS && !!document.createElementNS(svgns, 'svg').createSVGRect;
+	return !!document.createElementNS && !!document.createElementNS(NS.SVG, 'svg').createSVGRect;
 })();
 
 svgedit.browser.supportsSvg = function() { return supportsSvg_; };
@@ -31,7 +30,7 @@ if(!svgedit.browser.supportsSvg()) {
 }
 
 var userAgent = navigator.userAgent;
-var svg = document.createElementNS(svgns, 'svg');
+var svg = document.createElementNS(NS.SVG, 'svg');
 
 // Note: Browser sniffing should only be used if no other detection method is possible
 var isOpera_ = !!window.opera;
@@ -53,7 +52,7 @@ var supportsXpath_ = (function() {
 
 // segList functions (for FF1.5 and 2.0)
 var supportsPathReplaceItem_ = (function() {
-	var path = document.createElementNS(svgns, 'path');
+	var path = document.createElementNS(NS.SVG, 'path');
 	path.setAttribute('d', 'M0,0 10,10');
 	var seglist = path.pathSegList;
 	var seg = path.createSVGPathSegLinetoAbs(5,5);
@@ -65,7 +64,7 @@ var supportsPathReplaceItem_ = (function() {
 })();
 
 var supportsPathInsertItemBefore_ = (function() {
-	var path = document.createElementNS(svgns, 'path');
+	var path = document.createElementNS(NS.SVG, 'path');
 	path.setAttribute('d', 'M0,0 10,10');
 	var seglist = path.pathSegList;
 	var seg = path.createSVGPathSegLinetoAbs(5,5);
@@ -78,12 +77,12 @@ var supportsPathInsertItemBefore_ = (function() {
 
 // text character positioning (for IE9)
 var supportsGoodTextCharPos_ = (function() {
-	var svgroot = document.createElementNS(svgns, 'svg');
-	var svgcontent = document.createElementNS(svgns, 'svg');
+	var svgroot = document.createElementNS(NS.SVG, 'svg');
+	var svgcontent = document.createElementNS(NS.SVG, 'svg');
 	document.documentElement.appendChild(svgroot);
 	svgcontent.setAttribute('x', 5);
 	svgroot.appendChild(svgcontent);
-	var text = document.createElementNS(svgns, 'text');
+	var text = document.createElementNS(NS.SVG, 'text');
 	text.textContent = 'a';
 	svgcontent.appendChild(text);
 	var pos = text.getStartPositionOfChar(0).x;
@@ -92,9 +91,9 @@ var supportsGoodTextCharPos_ = (function() {
 })();
 
 var supportsPathBBox_ = (function() {
-	var svgcontent = document.createElementNS(svgns, 'svg');
+	var svgcontent = document.createElementNS(NS.SVG, 'svg');
 	document.documentElement.appendChild(svgcontent);
-	var path = document.createElementNS(svgns, 'path');
+	var path = document.createElementNS(NS.SVG, 'path');
 	path.setAttribute('d', 'M0,0 C0,0 10,10 10,0');
 	svgcontent.appendChild(path);
 	var bbox = path.getBBox();
@@ -104,13 +103,13 @@ var supportsPathBBox_ = (function() {
 
 // Support for correct bbox sizing on groups with horizontal/vertical lines
 var supportsHVLineContainerBBox_ = (function() {
-	var svgcontent = document.createElementNS(svgns, 'svg');
+	var svgcontent = document.createElementNS(NS.SVG, 'svg');
 	document.documentElement.appendChild(svgcontent);
-	var path = document.createElementNS(svgns, 'path');
+	var path = document.createElementNS(NS.SVG, 'path');
 	path.setAttribute('d', 'M0,0 10,0');
-	var path2 = document.createElementNS(svgns, 'path');
+	var path2 = document.createElementNS(NS.SVG, 'path');
 	path2.setAttribute('d', 'M5,0 15,0');
-	var g = document.createElementNS(svgns, 'g');
+	var g = document.createElementNS(NS.SVG, 'g');
 	g.appendChild(path);
 	g.appendChild(path2);
 	svgcontent.appendChild(g);
@@ -127,7 +126,7 @@ var supportsEditableText_ = (function() {
 
 var supportsGoodDecimals_ = (function() {
 	// Correct decimals on clone attributes (Opera < 10.5/win/non-en)
-	var rect = document.createElementNS(svgns, 'rect');
+	var rect = document.createElementNS(NS.SVG, 'rect');
 	rect.setAttribute('x', 0.1);
 	var crect = rect.cloneNode(false);
 	var retValue = (crect.getAttribute('x').indexOf(',') == -1);
@@ -139,13 +138,13 @@ var supportsGoodDecimals_ = (function() {
 })();
 
 var supportsNonScalingStroke_ = (function() {
-	var rect = document.createElementNS(svgns, 'rect');
+	var rect = document.createElementNS(NS.SVG, 'rect');
 	rect.setAttribute('style', 'vector-effect:non-scaling-stroke');
 	return rect.style.vectorEffect === 'non-scaling-stroke';
 })();
 
 var supportsNativeSVGTransformLists_ = (function() {
-	var rect = document.createElementNS(svgns, 'rect');
+	var rect = document.createElementNS(NS.SVG, 'rect');
 	var rxform = rect.transform.baseVal;
 	var t1 = svg.createSVGTransform();
 	rxform.appendItem(t1);

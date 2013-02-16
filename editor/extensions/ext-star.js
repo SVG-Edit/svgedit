@@ -9,14 +9,9 @@
 
 svgEditor.addExtension('star', function(S){
 
-	var svgcontent = S.svgcontent,
+	var NS = svgedit.NS,
+		svgcontent = S.svgcontent,
 		selElems,
-		svgns = 'http://www.w3.org/2000/svg',
-		xlinkns = 'http://www.w3.org/1999/xlink',
-		xmlns = 'http://www.w3.org/XML/1998/namespace',
-		xmlnsns = 'http://www.w3.org/2000/xmlns/',
-		se_ns = 'http://svg-edit.googlecode.com',
-		htmlns = 'http://www.w3.org/1999/xhtml',
 		editingitex = false,
 		svgdoc = S.svgroot.parentNode.ownerDocument,
 		started,

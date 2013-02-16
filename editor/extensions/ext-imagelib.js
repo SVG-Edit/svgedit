@@ -10,7 +10,7 @@
 svgEditor.addExtension("imagelib", function() {
 
 	var uiStrings = svgEditor.uiStrings;
-	
+
 	$.extend(uiStrings, {
 		imagelib: {
 			select_lib: 'Select an image library',
@@ -25,20 +25,18 @@ svgEditor.addExtension("imagelib", function() {
 			name: 'Demo library (local)',
 			url: 'extensions/imagelib/index.html',
 			description: 'Demonstration library for SVG-edit on this server'
-		}, 
+		},
 		{
 			name: 'IAN Symbol Libraries',
 			url: 'http://ian.umces.edu/symbols/catalog/svgedit/album_chooser.php',
 			description: 'Free library of illustrations'
 		}
 	];
-	
-	var xlinkns = "http://www.w3.org/1999/xlink";
 
 	function closeBrowser() {
 		$('#imgbrowse_holder').hide();
 	}
-	
+
 	function importImage(url) {
 		var newImage = svgCanvas.addSvgElementFromJson({
 			"element": "image",

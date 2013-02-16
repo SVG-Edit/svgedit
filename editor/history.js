@@ -11,8 +11,6 @@
 // 2) svgtransformlist.js
 // 3) svgutils.js
 
-var svgedit = svgedit || {};
-
 (function() {
 
 if (!svgedit.history) {
@@ -20,8 +18,6 @@ if (!svgedit.history) {
 }
 
 // Group: Undo/Redo history management
-
-
 svgedit.history.HistoryEventTypes = {
 	BEFORE_APPLY: 'before_apply',
 	AFTER_APPLY: 'after_apply',

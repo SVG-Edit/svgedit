@@ -8,7 +8,11 @@
  */
 svgEditor.addExtension("polygon", function(S){
 
-    var svgcontent = S.svgcontent, addElem = S.addSvgElementFromJson, selElems, svgns = "http://www.w3.org/2000/svg", xlinkns = "http://www.w3.org/1999/xlink", xmlns = "http://www.w3.org/XML/1998/namespace", xmlnsns = "http://www.w3.org/2000/xmlns/", se_ns = "http://svg-edit.googlecode.com", htmlns = "http://www.w3.org/1999/xhtml", editingitex = false, svgdoc = S.svgroot.parentNode.ownerDocument, started, newFO, edg = 0, newFOG, newFOGParent, newDef, newImageName, newMaskID, undoCommand = "Not image", modeChangeG;
+    var NS = svgedit.NS,
+    svgcontent = S.svgcontent,
+    addElem = S.addSvgElementFromJson,
+    selElems,
+    editingitex = false, svgdoc = S.svgroot.parentNode.ownerDocument, started, newFO, edg = 0, newFOG, newFOGParent, newDef, newImageName, newMaskID, undoCommand = "Not image", modeChangeG;
     
     var ccZoom;
     var wEl, hEl;
@@ -175,7 +179,7 @@ svgEditor.addExtension("polygon", function(S){
                     points += x + ',' + y + ' ';
                 }
                 
-                //var poly = newFO.createElementNS(svgns, 'polygon');
+                //var poly = newFO.createElementNS(NS.SVG, 'polygon');
                 newFO.setAttributeNS(null, 'points', points);
                 newFO.setAttributeNS(null, 'fill', fill);
                 newFO.setAttributeNS(null, 'stroke', strokecolor);

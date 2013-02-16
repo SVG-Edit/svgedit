@@ -10,14 +10,13 @@
 // Dependencies:
 // 1) jQuery
 
-var svgedit = svgedit || {};
-
 (function() {
 
 if (!svgedit.units) {
 	svgedit.units = {};
 }
 
+var NS = svgedit.NS;
 var wAttrs = ['x', 'x1', 'cx', 'rx', 'width'];
 var hAttrs = ['y', 'y1', 'cy', 'ry', 'height'];
 var unitAttrs = ['r', 'radius'].concat(wAttrs, hAttrs);
@@ -62,12 +61,10 @@ var typeMap_ = {};
 svgedit.units.init = function(elementContainer) {
 	elementContainer_ = elementContainer;
 
-	var svgns = 'http://www.w3.org/2000/svg';
-
 	// Get correct em/ex values by creating a temporary SVG.
-	var svg = document.createElementNS(svgns, 'svg');
+	var svg = document.createElementNS(NS.SVG, 'svg');
 	document.body.appendChild(svg);
-	var rect = document.createElementNS(svgns, 'rect');
+	var rect = document.createElementNS(NS.SVG, 'rect');
 	rect.setAttribute('width', '1em');
 	rect.setAttribute('height', '1ex');
 	rect.setAttribute('x', '1in');

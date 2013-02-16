@@ -1,25 +1,26 @@
-<html>  
-<head>  
-  <link rel="stylesheet" href="qunit/qunit.css" type="text/css"/>  
-  <script src="../editor/jquery.js"></script>  
-  <script type="text/javascript" src="../editor/jquerybbq/jquery.bbq.min.js"></script>
-  <script type="text/javascript" src="../editor/jquery-ui/jquery-ui-1.8.custom.min.js"></script>
-  <script type="text/javascript" src="../editor/svgicons/jquery.svgicons.js"></script>
-  <script type="text/javascript" src="../editor/browser.js"></script>
-  <script type="text/javascript" src="../editor/svgtransformlist.js"></script>
-  <script type="text/javascript" src="../editor/math.js"></script>
-  <script type="text/javascript" src="../editor/units.js"></script>
-  <script type="text/javascript" src="../editor/svgutils.js"></script>
-  <script type="text/javascript" src="../editor/sanitize.js"></script>
-  <script type="text/javascript" src="../editor/history.js"></script>
-  <script type="text/javascript" src="../editor/select.js"></script>
-  <script type="text/javascript" src="../editor/draw.js"></script>
-  <script type="text/javascript" src="../editor/path.js"></script>
-  <script type="text/javascript" src="../editor/svgcanvas.js"></script>
-  <script type="text/javascript" src="../editor/svg-editor.js"></script>
-  <script type="text/javascript" src="../editor/locale/locale.js"></script>
-  <script type="text/javascript" src="qunit/qunit.js"></script>  
-  <script type="text/javascript">
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="qunit/qunit.css" type="text/css"/>
+  <script src="../editor/jquery.js"></script>
+  <script src="../editor/jquerybbq/jquery.bbq.min.js"></script>
+  <script src="../editor/jquery-ui/jquery-ui-1.8.custom.min.js"></script>
+  <script src="../editor/svgicons/jquery.svgicons.js"></script>
+  <script src="../editor/browser.js"></script>
+  <script src="../editor/svgtransformlist.js"></script>
+  <script src="../editor/math.js"></script>
+  <script src="../editor/units.js"></script>
+  <script src="../editor/svgutils.js"></script>
+  <script src="../editor/sanitize.js"></script>
+  <script src="../editor/history.js"></script>
+  <script src="../editor/select.js"></script>
+  <script src="../editor/draw.js"></script>
+  <script src="../editor/path.js"></script>
+  <script src="../editor/svgcanvas.js"></script>
+  <script src="../editor/svg-editor.js"></script>
+  <script src="../editor/locale/locale.js"></script>
+  <script src="qunit/qunit.js"></script>
+  <script>
   $(function() {
   	// log function
   	QUnit.log = function(result, message) {
@@ -27,7 +28,7 @@
 			window.console.log(result +' :: '+ message);
 		}
 	};
-	
+
 	// helper functions
 	var isIdentity = function(m) {
 		return (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && m.e == 0 && m.f == 0);
