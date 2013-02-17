@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
-<script src='../editor/jquery.js'></script>
-<script src='../editor/svgedit.js'></script>
-<script src='../editor/browser.js'></script>
-<script src='../editor/svgutils.js'></script>
-<script src='../editor/sanitize.js'></script>
-<script src='qunit/qunit.js'></script>
-<script>
-$(function() {
-  // log function
+  <title>Unit Tests for sanitize.js</title>
+  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
+  <script src='../editor/jquery.js'></script>
+  <script src='../editor/svgedit.js'></script>
+  <script src='../editor/browser.js'></script>
+  <script src='../editor/svgutils.js'></script>
+  <script src='../editor/sanitize.js'></script>
+  <script src='qunit/qunit.js'></script>
+  <script>
+  $(function() {
+    // log function
     QUnit.log = function(result, message) {
       if (window.console && window.console.log) {
         window.console.log(result +' :: '+ message);
@@ -39,9 +40,7 @@ $(function() {
   <h1 id='qunit-header'>Unit Tests for sanitize.js</h1>
   <h2 id='qunit-banner'></h2>
   <h2 id='qunit-userAgent'></h2>
-  <ol id='qunit-tests'>
-  </ol>
-  <div id='anchor' style='visibility:hidden'>
-  </div>
+  <ol id='qunit-tests'></ol>
+  <div id='anchor' style='visibility:hidden'></div>
 </body>
 </html>
