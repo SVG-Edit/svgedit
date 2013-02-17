@@ -1034,7 +1034,7 @@ this.setRotationAngle = function(val, preventUndo) {
 // adding the changes to a single batch command
 var recalculateAllSelectedDimensions = this.recalculateAllSelectedDimensions = function() {
 	var text = (current_resize_mode == "none" ? "position" : "size");
-	var batchCmd = new BatchCommand(text);
+	var batchCmd = new svgedit.history.BatchCommand(text);
 
 	var i = selectedElements.length;
 	while (i--) {
@@ -1813,7 +1813,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		selected.removeAttribute("transform");
 	}
 	
-	batchCmd.addSubCommand(new ChangeElementCommand(selected, initial));
+	batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(selected, initial));
 	
 	return batchCmd;
 };
@@ -3194,7 +3194,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				}
 				// we create the insert command that is stored on the stack
 				// undo means to call cmd.unapply(), redo means to call cmd.apply()
-				addCommandToHistory(new InsertElementCommand(element));
+				addCommandToHistory(new svgedit.history.InsertElementCommand(element));
 				
 				call("changed",[element]);
 			}, ani_dur * 1000);
@@ -3700,7 +3700,7 @@ var pathActions = canvas.pathActions = function() {
 	// TODO: Move into path.js
 	svgedit.path.Path.prototype.endChanges = function(text) {
 		if (svgedit.browser.isWebkit()) resetD(this.elem);
-		var cmd = new ChangeElementCommand(this.elem, {d: this.last_d}, text);
+		var cmd = new svgedit.history.ChangeElementCommand(this.elem, {d: this.last_d}, text);
 		addCommandToHistory(cmd);
 		call("changed", [this.elem]);
 	};
@@ -4259,12 +4259,12 @@ var pathActions = canvas.pathActions = function() {
 			var angle = svgedit.utilities.getRotationAngle(elem);
 			if (angle == 0) return;
 			
-			var batchCmd = new BatchCommand("Reorient path");
+			var batchCmd = new svgedit.history.BatchCommand("Reorient path");
 			var changes = {
 				d: elem.getAttribute('d'),
 				transform: elem.getAttribute('transform')
 			};
-			batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
+			batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(elem, changes));
 			clearSelection();
 			this.resetOrientation(elem);
 			
@@ -5360,7 +5360,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		elem = selectedElements[0];
 	}
 	var $elem = $(elem);
-	var batchCmd = new BatchCommand();
+	var batchCmd = new svgedit.history.BatchCommand();
 	var ts;
 	
 	if ($elem.data('gsvg')) {
@@ -5397,7 +5397,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		var prev = $elem.prev();
 		
 		// Remove <use> element
-		batchCmd.addSubCommand(new RemoveElementCommand($elem[0], $elem[0].nextSibling, $elem[0].parentNode));
+		batchCmd.addSubCommand(new svgedit.history.RemoveElementCommand($elem[0], $elem[0].nextSibling, $elem[0].parentNode));
 		$elem.remove();
 		
 		// See if other elements reference this symbol
@@ -5439,9 +5439,9 @@ var convertToGroup = this.convertToGroup = function(elem) {
 				// remove symbol/svg element
 				var nextSibling = elem.nextSibling;
 				parent.removeChild(elem);
-				batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
+				batchCmd.addSubCommand(new svgedit.history.RemoveElementCommand(elem, nextSibling, parent));
 			}
-			batchCmd.addSubCommand(new InsertElementCommand(g));
+			batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(g));
 		}
 		
 		setUseData(g);
@@ -5497,12 +5497,12 @@ this.setSvgString = function(xmlString) {
 
 		this.prepareSvg(newDoc);
 
-		var batchCmd = new BatchCommand("Change Source");
+		var batchCmd = new svgedit.history.BatchCommand("Change Source");
 
 		// remove old svg document
 		var nextSibling = svgcontent.nextSibling;
 		var oldzoom = svgroot.removeChild(svgcontent);
-		batchCmd.addSubCommand(new RemoveElementCommand(oldzoom, nextSibling, svgroot));
+		batchCmd.addSubCommand(new svgedit.history.RemoveElementCommand(oldzoom, nextSibling, svgroot));
 	
 		// set new svg document
 		// If DOM3 adoptNode() available, use it. Otherwise fall back to DOM2 importNode()
@@ -5638,10 +5638,10 @@ this.setSvgString = function(xmlString) {
 		this.contentW = attrs['width'];
 		this.contentH = attrs['height'];
 		
-		batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
+		batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(svgcontent));
 		// update root to the correct size
 		var changes = content.attr(["width", "height"]);
-		batchCmd.addSubCommand(new ChangeElementCommand(svgroot, changes));
+		batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(svgroot, changes));
 		
 		// reset zoom
 		current_zoom = 1;
@@ -5693,7 +5693,7 @@ this.importSvgString = function(xmlString) {
 			}
 		}
 		
-		var batchCmd = new BatchCommand("Import SVG");
+		var batchCmd = new svgedit.history.BatchCommand("Import SVG");
 	
 		if (useExisting) {
 			var symbol = import_ids[uid].symbol;
@@ -5765,7 +5765,7 @@ this.importSvgString = function(xmlString) {
 			};
 			
 			svgedit.utilities.findDefs().appendChild(symbol);
-			batchCmd.addSubCommand(new InsertElementCommand(symbol));
+			batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(symbol));
 		}
 		
 		var use_el = svgdoc.createElementNS(NS.SVG, "use");
@@ -5773,7 +5773,7 @@ this.importSvgString = function(xmlString) {
 		setHref(use_el, "#" + symbol.id);
 		
 		(current_group || getCurrentDrawing().getCurrentLayer()).appendChild(use_el);
-		batchCmd.addSubCommand(new InsertElementCommand(use_el));
+		batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(use_el));
 		clearSelection();
 		
 		use_el.setAttribute("transform", ts);
@@ -5815,9 +5815,9 @@ var identifyLayers = canvas.identifyLayers = function() {
 // Parameters:
 // name - The given name
 this.createLayer = function(name) {
-	var batchCmd = new BatchCommand("Create Layer");
+	var batchCmd = new svgedit.history.BatchCommand("Create Layer");
 	var new_layer = getCurrentDrawing().createLayer(name);
-	batchCmd.addSubCommand(new InsertElementCommand(new_layer));
+	batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(new_layer));
 	addCommandToHistory(batchCmd);
 	clearSelection();
 	call("changed", [new_layer]);
@@ -5831,7 +5831,7 @@ this.createLayer = function(name) {
 // Parameters:
 // name - The given name
 this.cloneLayer = function(name) {
-	var batchCmd = new BatchCommand("Duplicate Layer");
+	var batchCmd = new svgedit.history.BatchCommand("Duplicate Layer");
 	var new_layer = svgdoc.createElementNS(NS.SVG, "g");
 	var layer_title = svgdoc.createElementNS(NS.SVG, "title");
 	layer_title.textContent = name;
@@ -5848,7 +5848,7 @@ this.cloneLayer = function(name) {
 	clearSelection();
 	identifyLayers();
 
-	batchCmd.addSubCommand(new InsertElementCommand(new_layer));
+	batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(new_layer));
 	addCommandToHistory(batchCmd);
 	canvas.setCurrentLayer(name);
 	call("changed", [new_layer]);
@@ -5863,9 +5863,9 @@ this.deleteCurrentLayer = function() {
 	var parent = current_layer.parentNode;
 	current_layer = getCurrentDrawing().deleteCurrentLayer();
 	if (current_layer) {
-		var batchCmd = new BatchCommand("Delete Layer");
+		var batchCmd = new svgedit.history.BatchCommand("Delete Layer");
 		// store in our Undo History
-		batchCmd.addSubCommand(new RemoveElementCommand(current_layer, nextSibling, parent));
+		batchCmd.addSubCommand(new svgedit.history.RemoveElementCommand(current_layer, nextSibling, parent));
 		addCommandToHistory(batchCmd);
 		clearSelection();
 		call("changed", [parent]);
@@ -5908,7 +5908,7 @@ this.renameCurrentLayer = function(newname) {
 		// setCurrentLayer will return false if the name doesn't already exist
 		// this means we are free to rename our oldLayer
 		if (!canvas.setCurrentLayer(newname)) {
-			var batchCmd = new BatchCommand("Rename Layer");
+			var batchCmd = new svgedit.history.BatchCommand("Rename Layer");
 			// find the index of the layer
 			for (var i = 0; i < drawing.getNumLayers(); ++i) {
 				if (drawing.all_layers[i][1] == oldLayer) break;
@@ -5926,7 +5926,7 @@ this.renameCurrentLayer = function(newname) {
 					while (child.firstChild) { child.removeChild(child.firstChild); }
 					child.textContent = newname;
 
-					batchCmd.addSubCommand(new ChangeElementCommand(child, {"#text":oldname}));
+					batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(child, {"#text":oldname}));
 					addCommandToHistory(batchCmd);
 					call("changed", [oldLayer]);
 					return true;
@@ -5972,7 +5972,7 @@ this.setCurrentLayerPosition = function(newpos) {
 				refLayer = drawing.all_layers[newpos][1];
 			}
 			svgcontent.insertBefore(drawing.current_layer, refLayer);
-			addCommandToHistory(new MoveElementCommand(drawing.current_layer, oldNextSibling, svgcontent));
+			addCommandToHistory(new svgedit.history.MoveElementCommand(drawing.current_layer, oldNextSibling, svgcontent));
 			
 			identifyLayers();
 			canvas.setCurrentLayer(drawing.getLayerName(newpos));
@@ -6000,7 +6000,7 @@ this.setLayerVisibility = function(layername, bVisible) {
 	var layer = drawing.setLayerVisibility(layername, bVisible);
 	if (layer) {
 		var oldDisplay = prevVisibility ? 'inline' : 'none';
-		addCommandToHistory(new ChangeElementCommand(layer, {'display':oldDisplay}, 'Layer Visibility'));
+		addCommandToHistory(new svgedit.history.ChangeElementCommand(layer, {'display':oldDisplay}, 'Layer Visibility'));
 	} else {
 		return false;
 	}
@@ -6034,7 +6034,7 @@ this.moveSelectedToLayer = function(layername) {
 	}
 	if (!layer) return false;
 	
-	var batchCmd = new BatchCommand("Move Elements to Layer");
+	var batchCmd = new svgedit.history.BatchCommand("Move Elements to Layer");
 	
 	// loop for each selected element and move it
 	var selElems = selectedElements;
@@ -6046,7 +6046,7 @@ this.moveSelectedToLayer = function(layername) {
 		// TODO: this is pretty brittle!
 		var oldLayer = elem.parentNode;
 		layer.appendChild(elem);
-		batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldLayer));
+		batchCmd.addSubCommand(new svgedit.history.MoveElementCommand(elem, oldNextSibling, oldLayer));
 	}
 	
 	addCommandToHistory(batchCmd);
@@ -6055,26 +6055,26 @@ this.moveSelectedToLayer = function(layername) {
 };
 
 this.mergeLayer = function(skipHistory) {
-	var batchCmd = new BatchCommand("Merge Layer");
+	var batchCmd = new svgedit.history.BatchCommand("Merge Layer");
 	var drawing = getCurrentDrawing();
 	var prev = $(drawing.current_layer).prev()[0];
 	if (!prev) return;
 	var childs = drawing.current_layer.childNodes;
 	var len = childs.length;
 	var layerNextSibling = drawing.current_layer.nextSibling;
-	batchCmd.addSubCommand(new RemoveElementCommand(drawing.current_layer, layerNextSibling, svgcontent));
+	batchCmd.addSubCommand(new svgedit.history.RemoveElementCommand(drawing.current_layer, layerNextSibling, svgcontent));
 
 	while (drawing.current_layer.firstChild) {
 		var ch = drawing.current_layer.firstChild;
 		if (ch.localName == 'title') {
 			var chNextSibling = ch.nextSibling;
-			batchCmd.addSubCommand(new RemoveElementCommand(ch, chNextSibling, drawing.current_layer));
+			batchCmd.addSubCommand(new svgedit.history.RemoveElementCommand(ch, chNextSibling, drawing.current_layer));
 			drawing.current_layer.removeChild(ch);
 			continue;
 		}
 		var oldNextSibling = ch.nextSibling;
 		prev.appendChild(ch);
-		batchCmd.addSubCommand(new MoveElementCommand(ch, oldNextSibling, drawing.current_layer));
+		batchCmd.addSubCommand(new svgedit.history.MoveElementCommand(ch, oldNextSibling, drawing.current_layer));
 	}
 	
 	// Remove current layer
@@ -6094,7 +6094,7 @@ this.mergeLayer = function(skipHistory) {
 };
 
 this.mergeAllLayers = function() {
-	var batchCmd = new BatchCommand("Merge all Layers");
+	var batchCmd = new svgedit.history.BatchCommand("Merge all Layers");
 	var drawing = getCurrentDrawing();
 	drawing.current_layer = drawing.all_layers[drawing.getNumLayers()-1][1];
 	while ($(svgcontent).children('g').length > 1) {
@@ -6269,24 +6269,24 @@ this.setGroupTitle = function(val) {
 	
 	var ts = $(elem).children('title');
 	
-	var batchCmd = new BatchCommand("Set Label");
+	var batchCmd = new svgedit.history.BatchCommand("Set Label");
 	
 	if (!val.length) {
 		// Remove title element
 		var tsNextSibling = ts.nextSibling;
-		batchCmd.addSubCommand(new RemoveElementCommand(ts[0], tsNextSibling, elem));
+		batchCmd.addSubCommand(new svgedit.history.RemoveElementCommand(ts[0], tsNextSibling, elem));
 		ts.remove();
 	} else if (ts.length) {
 		// Change title contents
 		var title = ts[0];
-		batchCmd.addSubCommand(new ChangeElementCommand(title, {'#text': title.textContent}));
+		batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(title, {'#text': title.textContent}));
 		title.textContent = val;
 	} else {
 		// Add title element
 		title = svgdoc.createElementNS(NS.SVG, "title");
 		title.textContent = val;
 		$(elem).prepend(title);
-		batchCmd.addSubCommand(new InsertElementCommand(title));
+		batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(title));
 	}
 
 	addCommandToHistory(batchCmd);
@@ -6307,7 +6307,7 @@ this.getDocumentTitle = function() {
 this.setDocumentTitle = function(newtitle) {
 	var childs = svgcontent.childNodes, doc_title = false, old_title = '';
 	
-	var batchCmd = new BatchCommand("Change Image Title");
+	var batchCmd = new svgedit.history.BatchCommand("Change Image Title");
 	
 	for (var i=0; i<childs.length; i++) {
 		if (childs[i].nodeName == 'title') {
@@ -6327,7 +6327,7 @@ this.setDocumentTitle = function(newtitle) {
 		// No title given, so element is not necessary
 		doc_title.parentNode.removeChild(doc_title);
 	}
-	batchCmd.addSubCommand(new ChangeElementCommand(doc_title, {'#text': old_title}));
+	batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(doc_title, {'#text': old_title}));
 	addCommandToHistory(batchCmd);
 };
 
@@ -6364,7 +6364,7 @@ this.setResolution = function(x, y) {
 		var bbox = getStrokedBBox();
 		
 		if (bbox) {
-			batchCmd = new BatchCommand("Fit Canvas to Content");
+			batchCmd = new svgedit.history.BatchCommand("Fit Canvas to Content");
 			var visEls = getVisibleElements();
 			addToSelection(visEls);
 			var dx = [], dy = [];
@@ -6386,7 +6386,7 @@ this.setResolution = function(x, y) {
 	if (x != w || y != h) {
 		var handle = svgroot.suspendRedraw(1000);
 		if (!batchCmd) {
-			batchCmd = new BatchCommand("Change Image Dimensions");
+			batchCmd = new svgedit.history.BatchCommand("Change Image Dimensions");
 		}
 
 		x = svgedit.units.convertToNum('width', x);
@@ -6397,10 +6397,10 @@ this.setResolution = function(x, y) {
 		
 		this.contentW = x;
 		this.contentH = y;
-		batchCmd.addSubCommand(new ChangeElementCommand(svgcontent, {"width":w, "height":h}));
+		batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(svgcontent, {"width":w, "height":h}));
 
 		svgcontent.setAttribute("viewBox", [0, 0, x/current_zoom, y/current_zoom].join(' '));
-		batchCmd.addSubCommand(new ChangeElementCommand(svgcontent, {"viewBox": ["0 0", w, h].join(' ')}));
+		batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(svgcontent, {"viewBox": ["0 0", w, h].join(' ')}));
 	
 		addCommandToHistory(batchCmd);
 		svgroot.unsuspendRedraw(handle);
@@ -6970,7 +6970,7 @@ this.getBlur = function(elem) {
 		
 		val -= 0;
 		
-		var batchCmd = new BatchCommand();
+		var batchCmd = new svgedit.history.BatchCommand();
 		
 		// Blur found!
 		if (filter) {
@@ -6995,19 +6995,19 @@ this.getBlur = function(elem) {
 			filter.appendChild(newblur);
 			svgedit.utilities.findDefs().appendChild(filter);
 			
-			batchCmd.addSubCommand(new InsertElementCommand(filter));
+			batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(filter));
 		}
 
 		var changes = {filter: elem.getAttribute('filter')};
 		
 		if (val === 0) {
 			elem.removeAttribute("filter");
-			batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
+			batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(elem, changes));
 			return;
 		}
 
 		changeSelectedAttribute("filter", 'url(#' + elem_id + '_blur)');
-		batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
+		batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(elem, changes));
 		canvas.setBlurOffsets(filter, val);
 		
 		cur_command = batchCmd;
@@ -7178,10 +7178,10 @@ this.setImageURL = function(val) {
 		setsize = true;
 	} else if (!setsize) return;
 
-	var batchCmd = new BatchCommand("Change Image URL");
+	var batchCmd = new svgedit.history.BatchCommand("Change Image URL");
 
 	setHref(elem, val);
-	batchCmd.addSubCommand(new ChangeElementCommand(elem, {
+	batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(elem, {
 		"#href": cur_href
 	}));
 
@@ -7196,7 +7196,7 @@ this.setImageURL = function(val) {
 			
 			selectorManager.requestSelector(elem).resize();
 			
-			batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
+			batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(elem, changes));
 			addCommandToHistory(batchCmd);
 			call("changed", [elem]);
 		}).attr('src', val);
@@ -7227,10 +7227,10 @@ this.setLinkURL = function(val) {
 	
 	if (cur_href === val) return;
 	
-	var batchCmd = new BatchCommand("Change Link URL");
+	var batchCmd = new svgedit.history.BatchCommand("Change Link URL");
 
 	setHref(elem, val);
-	batchCmd.addSubCommand(new ChangeElementCommand(elem, {
+	batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(elem, {
 		"#href": cur_href
 	}));
 
@@ -7250,7 +7250,7 @@ this.setRectRadius = function(val) {
 		if (r != val) {
 			selected.setAttribute("rx", val);
 			selected.setAttribute("ry", val);
-			addCommandToHistory(new ChangeElementCommand(selected, {"rx":r, "ry":r}, "Radius"));
+			addCommandToHistory(new svgedit.history.ChangeElementCommand(selected, {"rx":r, "ry":r}, "Radius"));
 			call("changed", [selected]);
 		}
 	}
@@ -7304,7 +7304,7 @@ this.convertToPath = function(elem, getBBox) {
 	}
 	
 	if (!getBBox) {
-		var batchCmd = new BatchCommand("Convert element to Path");
+		var batchCmd = new svgedit.history.BatchCommand("Convert element to Path");
 	}
 	
 	var attrs = getBBox?{}:{
@@ -7444,8 +7444,8 @@ this.convertToPath = function(elem, getBBox) {
 		}
 		
 		var nextSibling = elem.nextSibling;
-		batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
-		batchCmd.addSubCommand(new InsertElementCommand(path));
+		batchCmd.addSubCommand(new svgedit.history.RemoveElementCommand(elem, nextSibling, parent));
+		batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(path));
 
 		clearSelection();
 		elem.parentNode.removeChild(elem);
@@ -7618,7 +7618,7 @@ var changeSelectedAttribute = this.changeSelectedAttribute = function(attr, val,
 // Removes all selected elements from the DOM and adds the change to the 
 // history stack
 this.deleteSelectedElements = function() {
-	var batchCmd = new BatchCommand("Delete Elements");
+	var batchCmd = new svgedit.history.BatchCommand("Delete Elements");
 	var len = selectedElements.length;
 	var selectedCopy = []; //selectedElements is being deleted
 	for (var i = 0; i < len; ++i) {
@@ -7657,7 +7657,7 @@ this.deleteSelectedElements = function() {
 
 // TODO: Combine similar code with deleteSelectedElements
 this.cutSelectedElements = function() {
-	var batchCmd = new BatchCommand("Cut Elements");
+	var batchCmd = new svgedit.history.BatchCommand("Cut Elements");
 	var len = selectedElements.length;
 	var selectedCopy = []; //selectedElements is being deleted
 	for (var i = 0; i < len; ++i) {
@@ -7698,7 +7698,7 @@ this.pasteElements = function(type, x, y) {
 	if (!len) return;
 	
 	var pasted = [];
-	var batchCmd = new BatchCommand('Paste elements');
+	var batchCmd = new svgedit.history.BatchCommand('Paste elements');
 	
 	// Move elements to lastClickPoint
 
@@ -7712,7 +7712,7 @@ this.pasteElements = function(type, x, y) {
 		
 		pasted.push(copy);
 		(current_group || getCurrentDrawing().getCurrentLayer()).appendChild(copy);
-		batchCmd.addSubCommand(new InsertElementCommand(copy));
+		batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(copy));
 	}
 	
 	selectOnly(pasted);
@@ -7771,7 +7771,7 @@ this.groupSelectedElements = function(type) {
 			break;
 	}
 	
-	var batchCmd = new BatchCommand(cmd_str);
+	var batchCmd = new svgedit.history.BatchCommand(cmd_str);
 	
 	// create and insert the group element
 	var g = addSvgElementFromJson({
@@ -7783,7 +7783,7 @@ this.groupSelectedElements = function(type) {
 	if (type === 'a') {
 		setHref(g, url);
 	}
-	batchCmd.addSubCommand(new InsertElementCommand(g));
+	batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(g));
 	
 	// now move all children into the group
 	var i = selectedElements.length;
@@ -7798,7 +7798,7 @@ this.groupSelectedElements = function(type) {
 		var oldNextSibling = elem.nextSibling;
 		var oldParent = elem.parentNode;
 		g.appendChild(elem);
-		batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));			
+		batchCmd.addSubCommand(new svgedit.history.MoveElementCommand(elem, oldNextSibling, oldParent));			
 	}
 	if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
 	
@@ -7819,7 +7819,7 @@ var pushGroupProperties = this.pushGroupProperties = function(g, undoable) {
 	var glist = svgedit.transformlist.getTransformList(g);
 	var m = svgedit.math.transformListToTransform(glist).matrix;
 	
-	var batchCmd = new BatchCommand("Push group properties");
+	var batchCmd = new svgedit.history.BatchCommand("Push group properties");
 
 	// TODO: get all fill/stroke properties from the group that we are about to destroy
 	// "fill", "fill-opacity", "fill-rule", "stroke", "stroke-dasharray", "stroke-dashoffset", 
@@ -7984,7 +7984,7 @@ var pushGroupProperties = this.pushGroupProperties = function(g, undoable) {
 		changes["transform"] = xform;
 		g.setAttribute("transform", "");
 		g.removeAttribute("transform");				
-		batchCmd.addSubCommand(new ChangeElementCommand(g, changes));
+		batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(g, changes));
 	}
 	
 	if (undoable && !batchCmd.isEmpty()) {
@@ -8018,7 +8018,7 @@ this.ungroupSelectedElement = function() {
 	// Look for parent "a"
 	if (g.tagName === "g" || g.tagName === "a") {
 		
-		var batchCmd = new BatchCommand("Ungroup Elements");
+		var batchCmd = new svgedit.history.BatchCommand("Ungroup Elements");
 		var cmd = pushGroupProperties(g, true);
 		if (cmd) batchCmd.addSubCommand(cmd);
 		
@@ -8036,13 +8036,13 @@ this.ungroupSelectedElement = function() {
 			// Remove child title elements
 			if (elem.tagName === 'title') {
 				var nextSibling = elem.nextSibling;
-				batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, oldParent));
+				batchCmd.addSubCommand(new svgedit.history.RemoveElementCommand(elem, nextSibling, oldParent));
 				oldParent.removeChild(elem);
 				continue;
 			}
 			
 			children[i++] = elem = parent.insertBefore(elem, anchor);
-			batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
+			batchCmd.addSubCommand(new svgedit.history.MoveElementCommand(elem, oldNextSibling, oldParent));
 		}
 
 		// remove the group from the selection			
@@ -8051,7 +8051,7 @@ this.ungroupSelectedElement = function() {
 		// delete the group element (but make undo-able)
 		var gNextSibling = g.nextSibling;
 		g = parent.removeChild(g);
-		batchCmd.addSubCommand(new RemoveElementCommand(g, gNextSibling, parent));
+		batchCmd.addSubCommand(new svgedit.history.RemoveElementCommand(g, gNextSibling, parent));
 
 		if (!batchCmd.isEmpty()) addCommandToHistory(batchCmd);
 		
@@ -8073,7 +8073,7 @@ this.moveToTopSelectedElement = function() {
 		// If the element actually moved position, add the command and fire the changed
 		// event handler.
 		if (oldNextSibling != t.nextSibling) {
-			addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, "top"));
+			addCommandToHistory(new svgedit.history.MoveElementCommand(t, oldNextSibling, oldParent, "top"));
 			call("changed", [t]);
 		}
 	}
@@ -8101,7 +8101,7 @@ this.moveToBottomSelectedElement = function() {
 		// If the element actually moved position, add the command and fire the changed
 		// event handler.
 		if (oldNextSibling != t.nextSibling) {
-			addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, "bottom"));
+			addCommandToHistory(new svgedit.history.MoveElementCommand(t, oldNextSibling, oldParent, "bottom"));
 			call("changed", [t]);
 		}
 	}
@@ -8142,7 +8142,7 @@ this.moveUpDownSelected = function(dir) {
 	// If the element actually moved position, add the command and fire the changed
 	// event handler.
 	if (oldNextSibling != t.nextSibling) {
-		addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, "Move " + dir));
+		addCommandToHistory(new svgedit.history.MoveElementCommand(t, oldNextSibling, oldParent, "Move " + dir));
 		call("changed", [t]);
 	}
 };
@@ -8165,7 +8165,7 @@ this.moveSelectedElements = function(dx, dy, undoable) {
 		dy /= current_zoom;
 	}
 	undoable = undoable || true;
-	var batchCmd = new BatchCommand("position");
+	var batchCmd = new svgedit.history.BatchCommand("position");
 	var i = selectedElements.length;
 	while (i--) {
 		var selected = selectedElements[i];
@@ -8221,7 +8221,7 @@ this.moveSelectedElements = function(dx, dy, undoable) {
 // Create deep DOM copies (clones) of all selected elements and move them slightly 
 // from their originals
 this.cloneSelectedElements = function(x, y) {
-	var batchCmd = new BatchCommand("Clone Elements");
+	var batchCmd = new svgedit.history.BatchCommand("Clone Elements");
 	// find all the elements selected (stop at first null)
 	var len = selectedElements.length;
 	for (var i = 0; i < len; ++i) {
@@ -8238,7 +8238,7 @@ this.cloneSelectedElements = function(x, y) {
 		// clone each element and replace it within copiedElements
 		var elem = copiedElements[i] = copyElem(copiedElements[i]);
 		(current_group || getCurrentDrawing().getCurrentLayer()).appendChild(elem);
-		batchCmd.addSubCommand(new InsertElementCommand(elem));
+		batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(elem));
 	}
 	
 	if (!batchCmd.isEmpty()) {
