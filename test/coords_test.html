@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
-<script src='../editor/jquery.js'></script>
-<script src='../editor/svgedit.js'></script>
-<script src='../editor/browser.js'></script>
-<script src='../editor/svgutils.js'></script>
-<script src='../editor/sanitize.js'></script>
-<script src='qunit/qunit.js'></script>
-<script>
-$(function() {
+  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
+  <script type='text/javascript' src='../editor/jquery.js'></script>
+  <script type='text/javascript' src='../editor/math.js'></script>
+  <script type='text/javascript' src='../editor/browser.js'></script>
+  <script type='text/javascript' src='../editor/svgutils.js'></script>
+  <script type='text/javascript' src='../editor/units.js'></script>
+  <script type='text/javascript' src='../editor/svgtransformlist.js'></script>
+  <script type='text/javascript' src='../editor/coords.js'></script>
+  <script type='text/javascript' src='qunit/qunit.js'></script>  
+  <script type='text/javascript'>
+  $(function() {
     // log function
     QUnit.log = function(result, message) {
       if (window.console && window.console.log) {
@@ -18,15 +20,59 @@ $(function() {
     };
 
     var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
+    var elemId = 1;
+
+    function setUp() {
+      // Mock out editor context.
+      svgedit.utilities.init({
+        getSVGRoot: function() { return svg },
+        getDOMDocument: function() { return null },
+        getDOMContainer: function() { return null }
+      });
+      svgedit.coords.init({
+        getGridSnapping: function() { return false; },
+        getDrawing: function() {
+          return {
+            getNextId: function() { return '' + elemId++; }
+          };
+        }
+      });
+    }
 
     // TODO: Since recalculateDimensions() and surrounding code is 
     // probably the largest, most complicated and strange piece of
     // code in SVG-edit, we need to write a whole lot of unit tests
     // for it here.
-});
-</script>
-</head>
-<body>
+    test('Test remapElement(translate) for rect', function() {
+      expect(4);
+
+      setUp();
+
+      var rect = document.createElementNS(svgns, 'rect');
+      var attrs = {
+        x: '200',
+        y: '150',
+        width: '125',
+        height: '75'
+      }
+
+      // Create a translate.
+      var m = svg.createSVGMatrix();
+      m.a = 1; m.b = 0;
+      m.c = 0; m.d = 1;
+      m.e = 100; m.f = -50;
+
+      svgedit.coords.remapElement(rect, attrs, m);
+
+      equals(rect.getAttribute('x'), '300');
+      equals(rect.getAttribute('y'), '100');
+      equals(rect.getAttribute('width'), '125');
+      equals(rect.getAttribute('height'), '75');
+    });
+  });
+  </script>
+</head>  
+<body>  
   <h1 id='qunit-header'>Unit Tests for svgedit.coords</h1>
   <h2 id='qunit-banner'></h2>
   <h2 id='qunit-userAgent'></h2>
