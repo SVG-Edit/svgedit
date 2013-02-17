@@ -11,6 +11,7 @@
 // 1) jQuery
 // 2) browser.js
 // 3) svgtransformlist.js
+// 4) units.js
 
 (function() {
 
@@ -647,6 +648,19 @@ svgedit.utilities.cleanupElement = function(element) {
 	}
 
 	svgroot_.unsuspendRedraw(handle);
+};
+
+// Function: snapToGrid
+// round value to for snapping
+// NOTE: This function did not move to svgutils.js since it depends on curConfig.
+svgedit.utilities.snapToGrid = function(value) {
+	var stepSize = editorContext_.getSnappingStep();
+	var unit = editorContext_.getBaseUnit();
+	if (unit !== "px") {
+		stepSize *= svgedit.units.getTypeMap()[unit];
+	}
+	value = Math.round(value/stepSize)*stepSize;
+	return value;
 };
 
 })();

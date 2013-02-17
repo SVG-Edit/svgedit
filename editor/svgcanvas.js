@@ -21,6 +21,7 @@
 // 9) select.js
 // 10) draw.js
 // 11) path.js
+// 12) coords.js
 
 if (!window.console) {
 	window.console = {};
@@ -303,7 +304,9 @@ svgedit.utilities.init({
 	getSVGRoot: function() { return svgroot; },
 	// TODO: replace this mostly with a way to get the current drawing.
 	getSelectedElements: function() { return selectedElements; },
-	getSVGContent: function() { return svgcontent; }
+	getSVGContent: function() { return svgcontent; },
+	getBaseUnit: function() { return curConfig.baseUnit; },
+	getStepSize: function() { return curConfig.stepSize; }
 });
 var findDefs = canvas.findDefs = svgedit.utilities.findDefs;
 var getUrlFromAttr = canvas.getUrlFromAttr = svgedit.utilities.getUrlFromAttr;
@@ -316,6 +319,13 @@ var getElem = canvas.getElem = svgedit.utilities.getElem;
 var getRefElem = canvas.getRefElem = svgedit.utilities.getRefElem;
 var assignAttributes = canvas.assignAttributes = svgedit.utilities.assignAttributes;
 var cleanupElement = this.cleanupElement = svgedit.utilities.cleanupElement;
+
+// import from coords.js
+svgedit.coords.init({
+	getDrawing: function() { return getCurrentDrawing(); },
+	getGridSnapping: function() { return curConfig.gridSnapping; }
+});
+var remapElement = this.remapElement = svgedit.coords.remapElement;
 
 // import from sanitize.js
 var nsMap = svgedit.getReverseNS();
@@ -406,19 +416,6 @@ svgedit.path.init({
 	getCurrentZoom: function() { return current_zoom; },
 	getSVGRoot: function() { return svgroot; }
 });
-
-// Function: snapToGrid
-// round value to for snapping
-// NOTE: This function did not move to svgutils.js since it depends on curConfig.
-svgedit.utilities.snapToGrid = function(value){
-	var stepSize = curConfig.snappingStep;
-	var unit = curConfig.baseUnit;
-	if (unit !== "px") {
-		stepSize *= svgedit.units.getTypeMap()[unit];
-	}
-	return Math.round(value/stepSize)*stepSize;
-};
-var snapToGrid = svgedit.utilities.snapToGrid;
 
 // Interface strings, usually for title elements
 var uiStrings = {
@@ -1064,290 +1061,6 @@ var logMatrix = function(m) {
 	console.log([m.a, m.b, m.c, m.d, m.e, m.f]);
 };
 
-// Function: remapElement
-// Applies coordinate changes to an element based on the given matrix
-//
-// Parameters:
-// selected - DOM element to be changed
-// changes - Object with changes to be remapped
-// m - Matrix object to use for remapping coordinates
-var remapElement = this.remapElement = function(selected, changes, m) {
-
-	var remap = function(x, y) { return svgedit.math.transformPoint(x, y, m); },
-		scalew = function(w) { return m.a*w; },
-		scaleh = function(h) { return m.d*h; },
-		doSnapping = curConfig.gridSnapping && selected.parentNode.parentNode.localName === "svg",
-		finishUp = function() {
-			if (doSnapping) for (var o in changes) changes[o] = snapToGrid(changes[o]);
-			assignAttributes(selected, changes, 1000, true);
-		}
-		box = svgedit.utilities.getBBox(selected);
-
-	for (var i = 0; i < 2; i++) {
-		var type = i === 0 ? 'fill' : 'stroke';
-		var attrVal = selected.getAttribute(type);
-		if (attrVal && attrVal.indexOf('url(') === 0) {
-			if (m.a < 0 || m.d < 0) {
-				var grad = svgedit.utilities.getRefElem(attrVal);
-				var newgrad = grad.cloneNode(true);
-
-				if (m.a < 0) {
-					//flip x
-					var x1 = newgrad.getAttribute('x1');
-					var x2 = newgrad.getAttribute('x2');
-					newgrad.setAttribute('x1', -(x1 - 1));
-					newgrad.setAttribute('x2', -(x2 - 1));
-				}
-
-				if (m.d < 0) {
-					//flip y
-					var y1 = newgrad.getAttribute('y1');
-					var y2 = newgrad.getAttribute('y2');
-					newgrad.setAttribute('y1', -(y1 - 1));
-					newgrad.setAttribute('y2', -(y2 - 1));
-				}
-				newgrad.id = getNextId();
-				svgedit.utilities.findDefs().appendChild(newgrad);
-				selected.setAttribute(type, 'url(#' + newgrad.id + ')');
-			}
-			
-			// Not really working :(
-// 			if (selected.tagName === 'path') {
-// 				reorientGrads(selected, m);
-// 			}
-		}
-	}
-
-	var elName = selected.tagName;
-	if (elName === "g" || elName === "text" || elName == "tspan" || elName === "use") {
-		// if it was a translate, then just update x,y
-		if (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && 
-			(m.e != 0 || m.f != 0) ) 
-		{
-			// [T][M] = [M][T']
-			// therefore [T'] = [M_inv][T][M]
-			var existing = svgedit.math.transformListToTransform(selected).matrix,
-				t_new = svgedit.math.matrixMultiply(existing.inverse(), m, existing);
-			changes.x = parseFloat(changes.x) + t_new.e;
-			changes.y = parseFloat(changes.y) + t_new.f;
-			// TODO(codedread): Special handing for tspans:
-			// <g transform="translate(-100,0)">
-			//   <text x="100" y="100">
-			//     <tspan x="200" y="100">...</tspan>
-			//   </text>
-			// </g>
-			//
-			// Note that if the <text> element's x/y coordinates are being
-			// adjusted, the tspan's x/y coordinates also need to be similarly
-			// transformed as the coordinate space is not nested:
-			// <text x="0" y="100">
-			//   <tspan x="100" y="100">...</tspan>
-			// </text>
-
-		} else {
-			// we just absorb all matrices into the element and don't do any remapping
-			var chlist = svgedit.transformlist.getTransformList(selected);
-			var mt = svgroot.createSVGTransform();
-			mt.setMatrix(matrixMultiply(svgedit.math.transformListToTransform(chlist).matrix, m));
-			chlist.clear();
-			chlist.appendItem(mt);
-		}
-	}
-	
-	// now we have a set of changes and an applied reduced transform list
-	// we apply the changes directly to the DOM
-	switch (elName) {
-		case "foreignObject":
-		case "rect":
-		case "image":
-			
-			// Allow images to be inverted (give them matrix when flipped)
-			if (elName === 'image' && (m.a < 0 || m.d < 0)) {
-				// Convert to matrix
-				var chlist = svgedit.transformlist.getTransformList(selected);
-				var mt = svgroot.createSVGTransform();
-				mt.setMatrix(svgedit.math.matrixMultiply(svgedit.math.transformListToTransform(chlist).matrix, m));
-				chlist.clear();
-				chlist.appendItem(mt);
-			} else {
-				var pt1 = remap(changes.x, changes.y);
-				
-				changes.width = scalew(changes.width);
-				changes.height = scaleh(changes.height);
-				
-				changes.x = pt1.x + Math.min(0, changes.width);
-				changes.y = pt1.y + Math.min(0, changes.height);
-				changes.width = Math.abs(changes.width);
-				changes.height = Math.abs(changes.height);
-			}
-			finishUp();
-			break;
-		case "ellipse":
-			var c = remap(changes.cx, changes.cy);
-			changes.cx = c.x;
-			changes.cy = c.y;
-			changes.rx = scalew(changes.rx);
-			changes.ry = scaleh(changes.ry);
-		
-			changes.rx = Math.abs(changes.rx);
-			changes.ry = Math.abs(changes.ry);
-			finishUp();
-			break;
-		case "circle":
-			var c = remap(changes.cx, changes.cy);
-			changes.cx = c.x;
-			changes.cy = c.y;
-			// take the minimum of the new selected box's dimensions for the new circle radius
-			var tbox = svgedit.math.transformBox(box.x, box.y, box.width, box.height, m);
-			var w = tbox.tr.x - tbox.tl.x, h = tbox.bl.y - tbox.tl.y;
-			changes.r = Math.min(w/2, h/2);
-
-			if (changes.r) changes.r = Math.abs(changes.r);
-			finishUp();
-			break;
-		case "line":
-			var pt1 = remap(changes.x1, changes.y1),
-				pt2 = remap(changes.x2, changes.y2);
-			changes.x1 = pt1.x;
-			changes.y1 = pt1.y;
-			changes.x2 = pt2.x;
-			changes.y2 = pt2.y;
-			
-		case "text":
-		case "use":
-			finishUp();
-			break;
-		case "g":
-			var gsvg = $(selected).data('gsvg');
-			if (gsvg) {
-				assignAttributes(gsvg, changes, 1000, true);
-			}
-			break;
-		case "polyline":
-		case "polygon":
-			var len = changes.points.length;
-			for (var i = 0; i < len; ++i) {
-				var pt = changes.points[i];
-				pt = remap(pt.x, pt.y);
-				changes.points[i].x = pt.x;
-				changes.points[i].y = pt.y;
-			}
-
-			var len = changes.points.length;
-			var pstr = "";
-			for (var i = 0; i < len; ++i) {
-				var pt = changes.points[i];
-				pstr += pt.x + "," + pt.y + " ";
-			}
-			selected.setAttribute("points", pstr);
-			break;
-		case "path":
-		
-			var segList = selected.pathSegList;
-			var len = segList.numberOfItems;
-			changes.d = new Array(len);
-			for (var i = 0; i < len; ++i) {
-				var seg = segList.getItem(i);
-				changes.d[i] = {
-					type: seg.pathSegType,
-					x: seg.x,
-					y: seg.y,
-					x1: seg.x1,
-					y1: seg.y1,
-					x2: seg.x2,
-					y2: seg.y2,
-					r1: seg.r1,
-					r2: seg.r2,
-					angle: seg.angle,
-					largeArcFlag: seg.largeArcFlag,
-					sweepFlag: seg.sweepFlag
-				};
-			}
-			
-			var len = changes.d.length,
-				firstseg = changes.d[0],
-				currentpt = remap(firstseg.x, firstseg.y);
-			changes.d[0].x = currentpt.x;
-			changes.d[0].y = currentpt.y;
-			for (var i = 1; i < len; ++i) {
-				var seg = changes.d[i];
-				var type = seg.type;
-				// if absolute or first segment, we want to remap x, y, x1, y1, x2, y2
-				// if relative, we want to scalew, scaleh
-				if (type % 2 == 0) { // absolute
-					var thisx = (seg.x != undefined) ? seg.x : currentpt.x, // for V commands
-						thisy = (seg.y != undefined) ? seg.y : currentpt.y, // for H commands
-						pt = remap(thisx, thisy),
-						pt1 = remap(seg.x1, seg.y1),
-						pt2 = remap(seg.x2, seg.y2);
-					seg.x = pt.x;
-					seg.y = pt.y;
-					seg.x1 = pt1.x;
-					seg.y1 = pt1.y;
-					seg.x2 = pt2.x;
-					seg.y2 = pt2.y;
-					seg.r1 = scalew(seg.r1),
-					seg.r2 = scaleh(seg.r2);
-				} else { // relative
-					seg.x = scalew(seg.x);
-					seg.y = scaleh(seg.y);
-					seg.x1 = scalew(seg.x1);
-					seg.y1 = scaleh(seg.y1);
-					seg.x2 = scalew(seg.x2);
-					seg.y2 = scaleh(seg.y2);
-					seg.r1 = scalew(seg.r1),
-					seg.r2 = scaleh(seg.r2);
-				}
-			} // for each segment
-		
-			var dstr = "";
-			var len = changes.d.length;
-			for (var i = 0; i < len; ++i) {
-				var seg = changes.d[i];
-				var type = seg.type;
-				dstr += pathMap[type];
-				switch(type) {
-					case 13: // relative horizontal line (h)
-					case 12: // absolute horizontal line (H)
-						dstr += seg.x + " ";
-						break;
-					case 15: // relative vertical line (v)
-					case 14: // absolute vertical line (V)
-						dstr += seg.y + " ";
-						break;
-					case 3: // relative move (m)
-					case 5: // relative line (l)
-					case 19: // relative smooth quad (t)
-					case 2: // absolute move (M)
-					case 4: // absolute line (L)
-					case 18: // absolute smooth quad (T)
-						dstr += seg.x + "," + seg.y + " ";
-						break;
-					case 7: // relative cubic (c)
-					case 6: // absolute cubic (C)
-						dstr += seg.x1 + "," + seg.y1 + " " + seg.x2 + "," + seg.y2 + " " +
-							 seg.x + "," + seg.y + " ";
-						break;
-					case 9: // relative quad (q) 
-					case 8: // absolute quad (Q)
-						dstr += seg.x1 + "," + seg.y1 + " " + seg.x + "," + seg.y + " ";
-						break;
-					case 11: // relative elliptical arc (a)
-					case 10: // absolute elliptical arc (A)
-						dstr += seg.r1 + "," + seg.r2 + " " + seg.angle + " " + (+seg.largeArcFlag) +
-							" " + (+seg.sweepFlag) + " " + seg.x + "," + seg.y + " ";
-						break;
-					case 17: // relative smooth cubic (s)
-					case 16: // absolute smooth cubic (S)
-						dstr += seg.x2 + "," + seg.y2 + " " + seg.x + "," + seg.y + " ";
-						break;
-				}
-			}
-
-			selected.setAttribute("d", dstr);
-			break;
-	}
-};
 
 // Function: updateClipPath
 // Updates a <clipPath>s values based on the given translation of an element
@@ -2048,7 +1761,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 		
 		// if it was a translate or resize, we need to remap the element and absorb the xform
 		if (operation == 1 || operation == 2 || operation == 3) {
-			remapElement(selected, changes, m);
+			svgedit.coords.remapElement(selected,changes,m);
 		} // if we are remapping
 		
 		// if it was a translate, put back the rotate at the new center
@@ -2084,7 +1797,7 @@ var recalculateDimensions = this.recalculateDimensions = function(selected) {
 			var m_inv = m.inverse();
 			var extrat = svgedit.math.matrixMultiply(m_inv, rnew_inv, rold, m);
 		
-			remapElement(selected, changes, extrat);
+			svgedit.coords.remapElement(selected,changes,extrat);
 			if (angle) {
 				if (tlist.numberOfItems) {
 					tlist.insertItemBefore(rnew, 0);
@@ -2429,10 +2142,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		var real_y = r_start_y = start_y = y;
 
 		if (curConfig.gridSnapping){
-			x = snapToGrid(x);
-			y = snapToGrid(y);
-			start_x = snapToGrid(start_x);
-			start_y = snapToGrid(start_y);
+			x = svgedit.utilities.snapToGrid(x);
+			y = svgedit.utilities.snapToGrid(y);
+			start_x = svgedit.utilities.snapToGrid(start_x);
+			start_y = svgedit.utilities.snapToGrid(start_y);
 		}
 
 		// if it is a selector grip, then it must be a single element selected, 
@@ -2502,7 +2215,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 // 					console.log('o',[evt.offsetX, evt.offsetY]);	
 // 					console.log('s',[start_x, start_y]);
 					
-					assignAttributes(rubberBox, {
+					svgedit.utilities.assignAttributes(rubberBox, {
 						'x': r_start_x,
 						'y': r_start_y,
 						'width': 0,
@@ -2516,7 +2229,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				if (rubberBox == null) {
 					rubberBox = selectorManager.getRubberBandBox();
 				}
-				assignAttributes(rubberBox, {
+				svgedit.utilities.assignAttributes(rubberBox, {
 						'x': real_x * current_zoom,
 						'y': real_x * current_zoom,
 						'width': 0,
@@ -2768,8 +2481,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		var real_y = y = mouse_y / current_zoom;
 
 		if (curConfig.gridSnapping){
-			x = snapToGrid(x);
-			y = snapToGrid(y);
+			x = svgedit.utilities.snapToGrid(x);
+			y = svgedit.utilities.snapToGrid(y);
 		}
 
 		evt.preventDefault();
@@ -2784,8 +2497,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					var dy = y - start_y;
 					
 					if (curConfig.gridSnapping){
-						dx = snapToGrid(dx);
-						dy = snapToGrid(dy);
+						dx = svgedit.utilities.snapToGrid(dx);
+						dy = svgedit.utilities.snapToGrid(dy);
 					}
 
 					if (evt.shiftKey) { 
@@ -2831,7 +2544,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			case "multiselect":
 				real_x *= current_zoom;
 				real_y *= current_zoom;
-				assignAttributes(rubberBox, {
+				svgedit.utilities.assignAttributes(rubberBox, {
 					'x': Math.min(r_start_x, real_x),
 					'y': Math.min(r_start_y, real_y),
 					'width': Math.abs(real_x - r_start_x),
@@ -2876,10 +2589,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					height = box.height, dx = (x-start_x), dy = (y-start_y);
 				
 				if (curConfig.gridSnapping){
-					dx = snapToGrid(dx);
-					dy = snapToGrid(dy);
-					height = snapToGrid(height);
-					width = snapToGrid(width);
+					dx = svgedit.utilities.snapToGrid(dx);
+					dy = svgedit.utilities.snapToGrid(dy);
+					height = svgedit.utilities.snapToGrid(height);
+					width = svgedit.utilities.snapToGrid(width);
 				}
 
 				// if rotated, adjust the dx,dy values
@@ -2922,10 +2635,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					translateBack = svgroot.createSVGTransform();
 
 				if (curConfig.gridSnapping){
-					left = snapToGrid(left);
-					tx = snapToGrid(tx);
-					top = snapToGrid(top);
-					ty = snapToGrid(ty);
+					left = svgedit.utilities.snapToGrid(left);
+					tx = svgedit.utilities.snapToGrid(tx);
+					top = svgedit.utilities.snapToGrid(top);
+					ty = svgedit.utilities.snapToGrid(ty);
 				}
 
 				translateOrigin.setTranslate(-(left+tx), -(top+ty));
@@ -2956,7 +2669,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			case "zoom":
 				real_x *= current_zoom;
 				real_y *= current_zoom;
-				assignAttributes(rubberBox, {
+				svgedit.utilities.assignAttributes(rubberBox, {
 					'x': Math.min(r_start_x*current_zoom, real_x),
 					'y': Math.min(r_start_y*current_zoom, real_y),
 					'width': Math.abs(real_x - r_start_x*current_zoom),
@@ -2964,7 +2677,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				}, 100);			
 				break;
 			case "text":
-				assignAttributes(shape,{
+				svgedit.utilities.assignAttributes(shape,{
 					'x': x,
 					'y': y
 				}, 1000);
@@ -2975,8 +2688,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				if (!window.opera) svgroot.suspendRedraw(1000);
 
 				if (curConfig.gridSnapping){
-					x = snapToGrid(x);
-					y = snapToGrid(y);
+					x = svgedit.utilities.snapToGrid(x);
+					y = svgedit.utilities.snapToGrid(y);
 				}
 
 				var x2 = x;
@@ -3013,13 +2726,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				}
 	
 				if (curConfig.gridSnapping){
-					w = snapToGrid(w);
-					h = snapToGrid(h);
-					new_x = snapToGrid(new_x);
-					new_y = snapToGrid(new_y);
+					w = svgedit.utilities.snapToGrid(w);
+					h = svgedit.utilities.snapToGrid(h);
+					new_x = svgedit.utilities.snapToGrid(new_x);
+					new_y = svgedit.utilities.snapToGrid(new_y);
 				}
 
-				assignAttributes(shape,{
+				svgedit.utilities.assignAttributes(shape,{
 					'width': w,
 					'height': h,
 					'x': new_x,
@@ -3032,7 +2745,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				var cx = c.cx, cy = c.cy,
 					rad = Math.sqrt( (x-cx)*(x-cx) + (y-cy)*(y-cy) );
 				if (curConfig.gridSnapping){
-					rad = snapToGrid(rad);
+					rad = svgedit.utilities.snapToGrid(rad);
 				}
 				shape.setAttributeNS(null, "r", rad);
 				break;
@@ -3043,10 +2756,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					handle = null;
 				if (!window.opera) svgroot.suspendRedraw(1000);
 				if (curConfig.gridSnapping){
-					x = snapToGrid(x);
-					cx = snapToGrid(cx);
-					y = snapToGrid(y);
-					cy = snapToGrid(cy);
+					x = svgedit.utilities.snapToGrid(x);
+					cx = svgedit.utilities.snapToGrid(cx);
+					y = svgedit.utilities.snapToGrid(y);
+					cy = svgedit.utilities.snapToGrid(cy);
 				}
 				shape.setAttributeNS(null, "rx", Math.abs(x - cx) );
 				var ry = Math.abs(evt.shiftKey?(x - cx):(y - cy));
@@ -3091,10 +2804,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				y *= current_zoom;
 				
 				if (curConfig.gridSnapping){
-					x = snapToGrid(x);
-					y = snapToGrid(y);
-					start_x = snapToGrid(start_x);
-					start_y = snapToGrid(start_y);
+					x = svgedit.utilities.snapToGrid(x);
+					y = svgedit.utilities.snapToGrid(y);
+					start_x = svgedit.utilities.snapToGrid(start_x);
+					start_y = svgedit.utilities.snapToGrid(start_y);
 				}
 				if (evt.shiftKey) {
 					var path = svgedit.path.path;
@@ -3113,7 +2826,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				if (rubberBox && rubberBox.getAttribute('display') !== 'none') {
 					real_x *= current_zoom;
 					real_y *= current_zoom;
-					assignAttributes(rubberBox, {
+					svgedit.utilities.assignAttributes(rubberBox, {
 						'x': Math.min(r_start_x*current_zoom, real_x),
 						'y': Math.min(r_start_y*current_zoom, real_y),
 						'width': Math.abs(real_x - r_start_x*current_zoom),
@@ -3127,7 +2840,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				x *= current_zoom;
 				y *= current_zoom;
 // 					if (rubberBox && rubberBox.getAttribute('display') != 'none') {
-// 						assignAttributes(rubberBox, {
+// 						svgedit.utilities.assignAttributes(rubberBox, {
 // 							'x': Math.min(start_x,x),
 // 							'y': Math.min(start_y,y),
 // 							'width': Math.abs(x-start_x),
@@ -3148,7 +2861,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				cy = center.y;
 				var angle = ((Math.atan2(cy-y, cx-x)  * (180/Math.PI))-90) % 360;
 				if (curConfig.gridSnapping){
-					angle = snapToGrid(angle);
+					angle = svgedit.utilities.snapToGrid(angle);
 				}
 				if (evt.shiftKey) { // restrict rotations to nice angles (WRS)
 					var snap = 45;
@@ -3610,7 +3323,7 @@ var textActions = canvas.textActions = function() {
 		cursor = svgedit.utilities.getElem("text_cursor");
 		if (!cursor) {
 			cursor = document.createElementNS(NS.SVG, "line");
-			assignAttributes(cursor, {
+			svgedit.utilities.assignAttributes(cursor, {
 				'id': "text_cursor",
 				'stroke': "#333",
 				'stroke-width': 1
@@ -3628,7 +3341,7 @@ var textActions = canvas.textActions = function() {
 		var start_pt = ptToScreen(charbb.x, textbb.y);
 		var end_pt = ptToScreen(charbb.x, (textbb.y + textbb.height));
 		
-		assignAttributes(cursor, {
+		svgedit.utilities.assignAttributes(cursor, {
 			x1: start_pt.x,
 			y1: start_pt.y,
 			x2: end_pt.x,
@@ -3654,7 +3367,7 @@ var textActions = canvas.textActions = function() {
 		if (!selblock) {
 
 			selblock = document.createElementNS(NS.SVG, "path");
-			assignAttributes(selblock, {
+			svgedit.utilities.assignAttributes(selblock, {
 				'id': "text_selectblock",
 				'fill': "green",
 				'opacity': 0.5,
@@ -3678,7 +3391,7 @@ var textActions = canvas.textActions = function() {
 					+ " " + br.x + "," + br.y
 					+ " " + bl.x + "," + bl.y + "z";
 		
-		assignAttributes(selblock, {
+		svgedit.utilities.assignAttributes(selblock, {
 			d: dstr,
 			'display': 'inline'
 		});
@@ -4106,15 +3819,15 @@ var pathActions = canvas.pathActions = function() {
 				newPoint = [x, y];	
 				
 				if (curConfig.gridSnapping){
-					x = snapToGrid(x);
-					y = snapToGrid(y);
-					mouse_x = snapToGrid(mouse_x);
-					mouse_y = snapToGrid(mouse_y);
+					x = svgedit.utilities.snapToGrid(x);
+					y = svgedit.utilities.snapToGrid(y);
+					mouse_x = svgedit.utilities.snapToGrid(mouse_x);
+					mouse_y = svgedit.utilities.snapToGrid(mouse_y);
 				}
 
 				if (!stretchy) {
 					stretchy = document.createElementNS(NS.SVG, "path");
-					assignAttributes(stretchy, {
+					svgedit.utilities.assignAttributes(stretchy, {
 						'id': "path_stretch_line",
 						'stroke': "#22C",
 						'stroke-width': "0.5",
@@ -4211,7 +3924,7 @@ var pathActions = canvas.pathActions = function() {
 						
 						if (subpath) {
 							if (svgedit.path.path.matrix) {
-								remapElement(newpath, {}, svgedit.path.path.matrix.inverse());
+								svgedit.coords.remapElement(newpath, {}, svgedit.path.path.matrix.inverse());
 							}
 						
 							var new_d = newpath.getAttribute("d");
@@ -4316,7 +4029,7 @@ var pathActions = canvas.pathActions = function() {
 				if (rubberBox == null) {
 					rubberBox = selectorManager.getRubberBandBox();
 				}
-				assignAttributes(rubberBox, {
+				svgedit.utilities.assignAttributes(rubberBox, {
 						'x': start_x * current_zoom,
 						'y': start_y * current_zoom,
 						'width': 0,
@@ -4360,7 +4073,7 @@ var pathActions = canvas.pathActions = function() {
 					pointGrip2.setAttribute('display', 'inline');
 					
 					var ctrlLine = svgedit.path.getCtrlLine(1);
-					assignAttributes(ctrlLine, {
+					svgedit.utilities.assignAttributes(ctrlLine, {
 						x1: mouse_x,
 						y1: mouse_y,
 						x2: alt_x * current_zoom,
@@ -7221,7 +6934,7 @@ this.getBlur = function(elem) {
 	canvas.setBlurOffsets = function(filter, stdDev) {
 		if (stdDev > 3) {
 			// TODO: Create algorithm here where size is based on expected blur
-			assignAttributes(filter, {
+			svgedit.utilities.assignAttributes(filter, {
 				x: '-50%',
 				y: '-50%',
 				width: '200%',
@@ -8654,7 +8367,7 @@ this.updateCanvas = function(w, h) {
 	var x = (w/2 - this.contentW*current_zoom/2);
 	var y = (h/2 - this.contentH*current_zoom/2);
 
-	assignAttributes(svgcontent, {
+	svgedit.utilities.assignAttributes(svgcontent, {
 		width: this.contentW*current_zoom,
 		height: this.contentH*current_zoom,
 		'x': x,
@@ -8662,7 +8375,7 @@ this.updateCanvas = function(w, h) {
 		"viewBox" : "0 0 " + this.contentW + " " + this.contentH
 	});
 	
-	assignAttributes(bg, {
+	svgedit.utilities.assignAttributes(bg, {
 		width: svgcontent.getAttribute('width'),
 		height: svgcontent.getAttribute('height'),
 		x: x,
@@ -8671,7 +8384,7 @@ this.updateCanvas = function(w, h) {
 
 	var bg_img = svgedit.utilities.getElem('background_image');
 	if (bg_img) {
-		assignAttributes(bg_img, {
+		svgedit.utilities.assignAttributes(bg_img, {
 			'width': '100%',
 			'height': '100%'
 		});
@@ -8696,7 +8409,7 @@ this.setBackground = function(color, url) {
 	if (url) {
 		if (!bg_img) {
 			bg_img = svgdoc.createElementNS(NS.SVG, "image");
-			assignAttributes(bg_img, {
+			svgedit.utilities.assignAttributes(bg_img, {
 				'id': 'background_image',
 				'width': '100%',
 				'height': '100%',
