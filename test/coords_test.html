@@ -21,7 +21,10 @@
       }
     };
 
-    var svgroot = document.getElementById('svgroot');
+    var root = document.getElementById('root');
+    var svgroot = document.createElementNS(svgedit.NS.SVG, 'svg');
+    svgroot.id = 'svgroot';
+    root.appendChild(svgroot);
     var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
     svgroot.appendChild(svg);
     var elemId = 1;
@@ -320,6 +323,33 @@
       tearDown();
     });
 
+    test('Test remapElement(translate) for text', function() {
+      expect(2);
+      setUp();
+
+      var text = document.createElementNS(svgedit.NS.SVG, 'text');
+      text.setAttribute('x', '50');
+      text.setAttribute('y', '100');
+      svg.appendChild(text);
+
+      var attrs = {
+        x: '50',
+        y: '100'
+      }
+
+      // Create a translate.
+      var m = svg.createSVGMatrix();
+      m.a = 1; m.b = 0;
+      m.c = 0; m.d = 1;
+      m.e = 100; m.f = -50;
+
+      svgedit.coords.remapElement(text, attrs, m);
+
+      equals(text.getAttribute('x'), '150');
+      equals(text.getAttribute('y'), '50');
+
+      tearDown();
+    });
   });
   </script>
 </head>  
@@ -328,6 +358,6 @@
   <h2 id='qunit-banner'></h2>
   <h2 id='qunit-userAgent'></h2>
   <ol id='qunit-tests'></ol>
-  <div id='svgroot' style='visibility:hidden'></div>
+  <div id='root' style='visibility:hidden'></div>
 </body>
 </html>
