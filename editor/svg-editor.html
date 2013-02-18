@@ -600,7 +600,7 @@
 </div> <!-- svg_editor -->
 
 <div id="svg_source_editor">
-	<div id="svg_source_overlay"></div>
+	<div class="overlay"></div>
 	<div id="svg_source_container">
 		<div id="tool_source_back" class="toolbar_button">
 			<button id="tool_source_save">Apply Changes</button>
@@ -618,7 +618,7 @@
 
 
 <div id="svg_docprops">
-	<div id="svg_docprops_overlay"></div>
+	<div class="overlay"></div>
 	<div id="svg_docprops_container">
 		<div id="tool_docprops_back" class="toolbar_button">
 			<button id="tool_docprops_save">OK</button>
@@ -631,15 +631,15 @@
 			<label>
 				<span id="svginfo_title">Title:</span>
 				<input type="text" id="canvas_title"/>
-			</label>			
-	
+			</label>
+
 			<fieldset id="change_resolution">
 				<legend id="svginfo_dim">Canvas Dimensions</legend>
 
 				<label><span id="svginfo_width">width:</span> <input type="text" id="canvas_width" size="6"/></label>
-					
+
 				<label><span id="svginfo_height">height:</span> <input type="text" id="canvas_height" size="6"/></label>
-				
+
 				<label>
 					<select id="resolution">
 						<option id="selectedPredefined" selected="selected">Select predefined:</option>
@@ -657,14 +657,14 @@
 				<legend id="includedImages">Included Images</legend>
 				<label><input type="radio" name="image_opt" value="embed" checked="checked"/> <span id="image_opt_embed">Embed data (local files)</span> </label>
 				<label><input type="radio" name="image_opt" value="ref"/> <span id="image_opt_ref">Use file reference</span> </label>
-			</fieldset>			
+			</fieldset>
 		</fieldset>
 
 	</div>
 </div>
 
 <div id="svg_prefs">
-	<div id="svg_prefs_overlay"></div>
+	<div class="overlay"></div>
 	<div id="svg_prefs_container">
 		<div id="tool_prefs_back" class="toolbar_button">
 			<button id="tool_prefs_save">OK</button>
@@ -712,7 +712,7 @@
 				<label><span id="svginfo_bg_url">URL:</span> <input type="text" id="canvas_bg_url"/></label>
 				<p id="svginfo_bg_note">Note: Background will not be saved with image.</p>
 			</fieldset>
-			
+
 			<fieldset id="change_grid">
 				<legend id="svginfo_grid_settings">Grid</legend>
 				<label><span id="svginfo_snap_onoff">Snapping on/off</span><input type="checkbox" value="snapping_on" id="grid_snapping_on"></label>
@@ -750,14 +750,14 @@
 				</label>
  -->
 			</fieldset>
-	
+
 		</fieldset>
 
 	</div>
 </div>
 
 <div id="dialog_box">
-	<div id="dialog_box_overlay"></div>
+	<div class="overlay"></div>
 	<div id="dialog_container">
 		<div id="dialog_content"></div>
 		<div id="dialog_buttons"></div>
