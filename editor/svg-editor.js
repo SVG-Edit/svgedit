@@ -513,9 +513,7 @@
 				'#aaffaa', '#aaffd4', '#aaffff', '#aad4ff',
 				'#aaaaff', '#d4aaff', '#ffaaff', '#ffaad4'
 				],
-				isMac = (navigator.platform.indexOf('Mac') >= 0),
-				isWebkit = (navigator.userAgent.indexOf('AppleWebKit') >= 0),
-				modKey = (isMac ? 'meta+' : 'ctrl+'), // ⌘
+				modKey = (svgedit.browser.isMac() ? 'meta+' : 'ctrl+'), // ⌘
 				path = svgCanvas.pathActions,
 				undoMgr = svgCanvas.undoMgr,
 				Utils = svgedit.utilities,
@@ -1339,7 +1337,7 @@
 					$.svgIcons(svgicons, {
 						w:24, h:24,
 						id_match: false,
-						no_img: (!isWebkit),
+						no_img: (!svgedit.browser.isWebkit()),
 						fallback: fallback_obj,
 						placement: placement_obj,
 						callback: function(icons) {
@@ -3271,7 +3269,7 @@
 			// switch modifier key in tooltips if mac
 			// NOTE: This code is not used yet until I can figure out how to successfully bind ctrl/meta
 			// in Opera and Chrome
-			if (isMac && !window.opera) {
+			if (svgedit.browser.isMac() && !window.opera) {
 				var shortcutButtons = ['tool_clear', 'tool_save', 'tool_source', 'tool_undo', 'tool_redo', 'tool_clone'];
 				var i = shortcutButtons.length;
 				while (i--) {
