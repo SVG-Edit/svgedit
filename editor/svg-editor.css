@@ -1074,12 +1074,12 @@ span.zoom_tool {
 	display: none;
 }
 
-#svg_source_editor #svg_source_overlay {
+.overlay {
 	position: absolute;
-	top: 0px;
-	right: 0px;
-	left: 0px;
-	bottom: 0px;
+	top: 0;
+	right: 0;
+	left: 0;
+	bottom: 0;
 	background-color: black;
 	opacity: 0.6;
 	z-index: 5;
@@ -1245,18 +1245,6 @@ span.zoom_tool {
 	margin-left: 0;
 }
 
-#svg_docprops #svg_docprops_overlay,
-#svg_prefs #svg_prefs_overlay {
-	position: absolute;
-	top: 0px;
-	right: 0px;
-	left: 0px;
-	bottom: 0px;
-	background-color: black;
-	opacity: 0.6;
-	z-index: 20000;
-}
-
 #tool_prefs_option {
 	float: right;
 }
@@ -1301,17 +1289,6 @@ span.zoom_tool {
 
 #dialog_box {
 	display: none;
-}
-
-#dialog_box_overlay {
-	background: black;
-	opacity: .5;
-	height:100%;
-	left:0;
-	position:absolute;
-	top:0;
-	width:100%;
-	z-index: 6;
 }
 
 #dialog_content {

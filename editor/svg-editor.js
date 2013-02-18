@@ -3914,7 +3914,7 @@
 					{sel: '#tool_import', fn: clickImport, evt: 'mouseup'},
 					{sel: '#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
 					{sel: '#tool_wireframe', fn: clickWireframe, evt: 'click', key: ['F', true]},
-					{sel: '#tool_source_cancel,#svg_source_overlay,#tool_docprops_cancel,#tool_prefs_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
+					{sel: '#tool_source_cancel,.overlay,#tool_docprops_cancel,#tool_prefs_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
 					{sel: '#tool_source_save', fn: saveSourceEditor, evt: 'click'},
 					{sel: '#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
 					{sel: '#tool_docprops', fn: showDocProperties, evt: 'mouseup'},
