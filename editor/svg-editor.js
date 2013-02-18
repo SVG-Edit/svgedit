@@ -2115,19 +2115,14 @@
 			Editor.addDropDown = function(elem, callback, dropUp) {
 				if ($(elem).length == 0) return; // Quit if called on non-existant element
 				var button = $(elem).find('button');
-
 				var list = $(elem).find('ul').attr('id', $(elem)[0].id + '-list');
-
-				if (!dropUp) {
-					// Move list to place where it can overflow container
-					$('#option_lists').append(list);
-				}
-
 				var on_button = false;
 				if (dropUp) {
 					$(elem).addClass('dropup');
+				} else {
+					// Move list to place where it can overflow container
+					$('#option_lists').append(list);
 				}
-
 				list.find('li').bind('mouseup', callback);
 
 				$(window).mouseup(function(evt) {
@@ -2188,27 +2183,25 @@
 				});
 
 				var height = list.height();
-				$(elem).bind('mousedown',function() {
-					var off = $(elem).offset();
+				button.bind('mousedown',function() {
+					var off = button.offset();
 					if (dropUp) {
 						off.top -= list.height();
 						off.left += 8;
 					} else {
-						off.top += $(elem).height();
+						off.top += button.height();
 					}
-					$(list).offset(off);
+					list.offset(off);
 
 					if (!button.hasClass('down')) {
-						button.addClass('down');
 						list.show();
 						on_button = true;
-						return false;
 					} else {
-						button.removeClass('down');
 						// CSS position must be reset for Webkit
 						list.hide();
 						list.css({top:0, left:0});
 					}
+					button.toggleClass('down');
 				}).hover(function() {
 					on_button = true;
 				}).mouseout(function() {
