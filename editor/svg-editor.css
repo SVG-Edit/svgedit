@@ -3,21 +3,20 @@
 }
 
 html, body, div{
-        -webkit-user-select: text;
-        -khtml-user-select: text;
-        -moz-user-select: text;
-        -o-user-select: text;
-        user-select: text;
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+	-moz-user-select: text;
+	-o-user-select: text;
+	user-select: text;
 	/* this will work for QtWebKit in future */
 	-webkit-user-drag: text;
 }
 
 #browser-not-supported {
-        font-size: 0.8em;
-        font-family: Verdana, Helvetica, Arial;
-        color: #000000;
+	font-size: 0.8em;
+	font-family: Verdana, Helvetica, Arial;
+	color: #000000;
 }
-
 
 #svg_editor * {
 	transform-origin: 0 0;
@@ -26,26 +25,26 @@ html, body, div{
 	-webkit-transform-origin: 0 0;
 }
 
- #svg_editor {
+#svg_editor {
 	font-size: 8pt;
 	font-family: Verdana, Helvetica, Arial;
 	color: #000000;
 }
 
- a {
+a {
 	color: #19c;
 }
 
- hr {
+hr {
 	border: none;
 	border-bottom: 1px solid #808080;
 }
 
- select {
+select {
 	margin-top: 4px;
 }
 
- #svgroot {
+#svgroot {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	position: absolute;
@@ -53,7 +52,7 @@ html, body, div{
 	left: 0;
 }
 
- #svgcanvas {
+#svgcanvas {
 	line-height: normal;
 	display: inline-block;
 	background-color: #A0A0A0;
@@ -63,14 +62,13 @@ html, body, div{
 	height: 480px;
 	-apple-dashboard-region:dashboard-region(control rectangle 0px 0px 0px 0px); /* for widget regions that shouldn't react to dragging */
 	position: relative;
-	/* 
+	/*
 	  A subtle gradient effect in the canvas.
 	  Just experimenting - not sure if this is worth it.
 	*/
 	background: -moz-radial-gradient(45deg,#bbb,#222);
 	background: -webkit-gradient(radial, center center, 3, center center, 1000, from(#bbb), to(#222));
 }
-
 
 /* Rulers
 ——————————————————————————————————————*/
@@ -119,7 +117,7 @@ html, body, div{
 	margin-top: -16px;
 }
 
-#ruler_x > div, 
+#ruler_x > div,
 #ruler_y > div {
 	overflow: hidden;
 }
@@ -136,20 +134,20 @@ html, body, div{
 	z-index: 2;
 }
 
- #stroke_bg, 
- #fill_bg {
+#stroke_bg,
+#fill_bg {
 	height: 16px;
 	width: 16px;
 	margin: 1px;
 }
- 
- #zoomLabel {
+
+#zoomLabel {
 	cursor: pointer;
 	margin-right: 5px;
 	padding-top: 4px
 }
 
- #linkLabel > svg {
+#linkLabel > svg {
 	height: 20px;
 	padding-top: 4px;
 }
@@ -178,7 +176,7 @@ html, body, div{
 	position:absolute;
 	top: 40px;
 	bottom: 40px;
-	right: 0px;
+	right: 0;
 	width: 2px;
 	padding: 10px;
 	border-color: #808080;
@@ -198,20 +196,19 @@ html, body, div{
 	margin: 0px;
 	-moz-user-select: none;
 	-webkit-user-select: none;
-
 }
 
 /*
 	border-style: solid;
 	border-color: #666;
-	border-width: 0px 0px 0px 1px;	
+	border-width: 0px 0px 0px 1px;
 */
- #sidepanel_handle {
+#sidepanel_handle {
 	display: inline-block;
 	position: absolute;
 	background-color: #D0D0D0;
 	font-weight: bold;
-	left: 0px;
+	left: 0;
 	top: 40%;
 	width: 1em;
 	padding: 5px 1px 5px 5px;
@@ -224,18 +221,18 @@ html, body, div{
 	-webkit-user-select: none;
 }
 
- #sidepanel_handle:hover {
+#sidepanel_handle:hover {
 	font-weight: bold;
 }
 
- #sidepanel_handle * {
+#sidepanel_handle * {
 	cursor: pointer;
 	-moz-user-select: none;
 	-webkit-user-select: none;
 }
- #layerbuttons {
-	margin: 0px;
-	padding: 0px;
+#layerbuttons {
+	margin: 0;
+	padding: 0;
 	padding-left: 2px;
 	padding-right: 2px;
 	width: 125px;
@@ -247,7 +244,7 @@ html, body, div{
 	overflow: hidden;
 }
 
- .layer_button {
+.layer_button {
 	width: 14px;
 	height: 14px;
 	padding: 1px;
@@ -260,11 +257,11 @@ html, body, div{
 	margin-right: 3px;
 }
 
- .layer_button:last-child {
+.layer_button:last-child {
 	margin-right: 0;
 }
 
- .layer_buttonpressed {
+.layer_buttonpressed {
 	width: 14px;
 	height: 14px;
 	padding: 1px;
@@ -275,59 +272,61 @@ html, body, div{
 	cursor: pointer;
 }
 
- #layerlist {
+#layerlist {
 	margin: 1px;
-	padding: 0px;
+	padding: 0;
 	width: 127px;
-	border-collapse: collapse;	
+	border-collapse: collapse;
 	border: 1px solid #808080;
 	background-color: #FFFFFF;
 }
 
- #layerlist tr.layer {
+#layerlist tr.layer {
 	background-color: #FFFFFF;
-	margin: 0px;
-	padding: 0px;
+	margin: 0;
+	padding: 0;
 }
- #layerlist tr.layersel {
+
+#layerlist tr.layersel {
 	border: 1px solid #808080;
 	background-color: #CCCCCC;
 }
 
- #layerlist td.layervis {
+#layerlist td.layervis {
 	width: 22px;
-	cursor:pointer;
-}
- #layerlist td.layerinvis {
-	background-image: none;
-	cursor:pointer;
-}
-
- #layerlist td.layervis * {
-	display: block;
-}
-
- #layerlist td.layerinvis * {
-	display: none;
-}
-
- #layerlist td.layername {
 	cursor: pointer;
 }
 
- #layerlist tr.layersel td.layername {
-	font-weight: bold;
+#layerlist td.layerinvis {
+	background-image: none;
+	cursor: pointer;
 }
 
- #selLayerLabel {
-	white-space: nowrap;
-}
-
- #selLayerNames {
+#layerlist td.layervis * {
 	display: block;
 }
 
- div.palette_item {
+#layerlist td.layerinvis * {
+	display: none;
+}
+
+#layerlist td.layername {
+	cursor: pointer;
+}
+
+#layerlist tr.layersel td.layername {
+	font-weight: bold;
+}
+
+#selLayerLabel {
+	white-space: nowrap;
+}
+
+#selLayerNames {
+	display: block;
+}
+
+div.palette_item {
 	height: 15px;
 	width: 15px;
 	float: left;
@@ -340,14 +339,14 @@ div.palette_item:first-child {
 /* Main button
 —————————————————————————————*/
 
- #main_button {
+#main_button {
 	position: absolute;
 	top: 4px;
 	left: 5px;
 	z-index: 5;
 }
 
- #main_icon {
+#main_icon {
 	position: relative;
 	top: -2px;
 	left: -2px;
@@ -381,13 +380,13 @@ div.palette_item:first-child {
 	float: left;
 }
 
- #main_button .dropdown {
+#main_button .dropdown {
 	position: absolute;
 	right: 7px;
 	top: 4px;
 }
 
- #main_icon span {
+#main_icon span {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -401,7 +400,7 @@ div.palette_item:first-child {
 	font-family: sans-serif;
 }
 
- #main_menu {
+#main_menu {
 	z-index: 12;
 	background: #eee;
 	position: relative;
@@ -417,14 +416,14 @@ div.palette_item:first-child {
 	top: -9px;
 }
 
- #main_menu ul,
- #main_menu li {
+#main_menu ul,
+#main_menu li {
 	list-style: none;
 	margin: 0;
 	padding: 0;
 }
 
- #main_menu li {
+#main_menu li {
 /*	height: 35px;*/
 	line-height: 22px;
 	padding-top: 7px;
@@ -434,34 +433,34 @@ div.palette_item:first-child {
 	cursor: default;
 }
 
- #main_menu li:hover {
+#main_menu li:hover {
 	background: #FFC;
 }
 
- #main_menu li > div {
+#main_menu li > div {
 	float: left;
 	padding-right: 5px;
 }
 
- #main_menu p {
+#main_menu p {
 	margin-top: 5px;
 }
 
 /*—————————————————————————————*/
 
- .tool_button:hover, 
- .push_button:hover,
- .buttonup:hover,
- .buttondown,
- .tool_button_current,
- .push_button_pressed
+.tool_button:hover,
+.push_button:hover,
+.buttonup:hover,
+.buttondown,
+.tool_button_current,
+.push_button_pressed
 {
 	background-color: #ffc !important;
 }
 
- .tool_button_current,
- .push_button_pressed,
- .buttondown { 
+.tool_button_current,
+.push_button_pressed,
+.buttondown {
 	background-color: #f4e284 !important;
 	-webkit-box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
 	-moz-box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
@@ -524,7 +523,7 @@ div.palette_item:first-child {
 	float: left;
 }
 
- #multiselected_panel .selected_tool {
+#multiselected_panel .selected_tool {
 	vertical-align: 12px;
 }
 
@@ -543,29 +542,29 @@ div.palette_item:first-child {
 	border-radius: 0 0 3px 0;
 }
 
- #cur_context_panel a {
+#cur_context_panel a {
 	float: none;
 	text-decoration: none;
 }
 
- #cur_context_panel a:hover {
+#cur_context_panel a:hover {
 	text-decoration: underline;
 }
 
- #tools_top > div, #tools_top {
+#tools_top > div, #tools_top {
 	line-height: 26px;
 }
 
- div.toolset,
- div.toolset > * {
+div.toolset,
+div.toolset > * {
 	float: left;
 }
 
- div.toolset {
+div.toolset {
 	height: 34px;
 }
 
- div.toolset label span {
+div.toolset label span {
 /*	outline: 1px solid red;*/
 	padding-top: 3px;
 	display: inline-block;
@@ -587,16 +586,16 @@ div.palette_item:first-child {
 }
 
 input[type=text] {
-		padding: 2px;
+	padding: 2px;
 }
 
- #tools_left .tool_button,
- #tools_left .tool_button_current {
+#tools_left .tool_button,
+#tools_left .tool_button_current {
 	position: relative;
 	z-index: 11;
 }
 
- .flyout_arrow_horiz {
+.flyout_arrow_horiz {
 	position: absolute;
 	bottom: -1px;
 	right: 0;
@@ -617,7 +616,7 @@ span.zoom_tool {
 	position: relative;
 }
 
- .dropdown button {
+.dropdown button {
 	width: 15px;
 	height: 21px;
 	margin: 6px 0 0 1px;
@@ -668,7 +667,7 @@ span.zoom_tool {
 }
 
 .dropdown li.special {
-	padding: 10px 4px; 
+	padding: 10px 4px;
 }
 
 .dropdown li.special:hover {
@@ -684,11 +683,10 @@ span.zoom_tool {
 	margin-right: 0;
 }
 
-
- .tool_button, 
- .push_button,
- .tool_button_current,
- .push_button_pressed 
+.tool_button,
+.push_button,
+.tool_button_current,
+.push_button_pressed
 {
 	height: 24px;
 	width: 24px;
@@ -713,7 +711,7 @@ span.zoom_tool {
 	overflow: hidden;
 }
 
-#tool_open input, 
+#tool_open input,
 #tool_import input,
 #tool_image input {
 	position: absolute;
@@ -725,22 +723,21 @@ span.zoom_tool {
 	cursor: pointer; /* Sadly doesn't appear to have an effect */
 }
 
- .disabled {
+.disabled {
 	opacity: 0.5;
 	cursor: default;
 }
 
- .tool_sep {
+.tool_sep {
 	width: 1px;
 	background: #888;
 	border-left: 1px outset #EEE;
 	margin: 2px 3px;
 	padding: 0;
 	height: 24px;
-
 }
 
- .icon_label {
+.icon_label {
 	float: left;
 	padding-top: 3px;
 	padding-right: 3px;
@@ -750,11 +747,11 @@ span.zoom_tool {
 	height: 0;
 }
 
- .width_label {
+.width_label {
 	padding-right: 5px;
 }
 
-#tool_bold, #tool_italic { 
+#tool_bold, #tool_italic {
 	font: bold 2.1em/1.1em serif;
 	text-align: center;
 	padding-left: 2px;
@@ -766,7 +763,7 @@ span.zoom_tool {
 	left: -9999px;
 }
 
-#tool_bold span, #tool_italic span { 
+#tool_bold span, #tool_italic span {
 	position: absolute;
 	width: 100%;
 	height: 100%;
@@ -785,7 +782,7 @@ span.zoom_tool {
 	display: none;
 }
 
- #color_picker {
+#color_picker {
 	position: absolute;
 	display: none;
 	background: #E8E8E8;
@@ -793,7 +790,7 @@ span.zoom_tool {
 	z-index: 5;
 }
 
- .tools_flyout {
+.tools_flyout {
 	position: absolute;
 	display: none;
 	cursor: pointer;
@@ -801,14 +798,14 @@ span.zoom_tool {
 	z-index: 1;
 }
 
- .tools_flyout_v {
+.tools_flyout_v {
 	position: absolute;
 	display: none;
 	cursor: pointer;
 	width: 30px;
 }
 
- .tools_flyout .tool_button {
+.tools_flyout .tool_button {
 	float: left;
 	background-color: #E8E8E8;
 	border-left: 1px solid #FFFFFF;
@@ -819,7 +816,7 @@ span.zoom_tool {
 	width: 28px;
 }
 
- #tools_bottom {
+#tools_bottom {
 	position: absolute;
 	left: 40px;
 	right: 0;
@@ -828,7 +825,7 @@ span.zoom_tool {
 	overflow: visible;
 }
 
- #tools_bottom_1 {
+#tools_bottom_1 {
 	width: 115px;
 	float: left;
 }
@@ -870,7 +867,7 @@ span.zoom_tool {
 #tool_fill { left: 0; }
 #tool_stroke { left: 60px;}
 
- #fill_color,  #stroke_color {
+#fill_color,  #stroke_color {
 	height: 16px;
 	width: 16px;
 	border: 1px solid #808080;
@@ -932,7 +929,6 @@ span.zoom_tool {
 	-ms-transition: width 150ms ease;
 	transition: width 150ms ease;
 }
-
 
 .color_block {
 	position: absolute;
@@ -1001,7 +997,6 @@ span.zoom_tool {
 	#selected_panel {
 		clear: right;
 	}
-
 }
 
 @media screen and (max-width:1100px) {
@@ -1013,7 +1008,6 @@ span.zoom_tool {
 		height: 30px;
 	}
 }
-
 
 /*–––––––––––––––––––––––––––––––––––––*/
 
@@ -1046,11 +1040,11 @@ span.zoom_tool {
 	float: left;
 }
 
- ul li.current {
+ul li.current {
 	background-color: #F4E284;
 }
 
- #option_lists ul li {
+#option_lists ul li {
 	margin: 0;
 	border-radius: 0;
 	-moz-border-radius: 0;
@@ -1140,17 +1134,17 @@ span.zoom_tool {
 	max-width: 14em;
 }
 
-#tool_docprops_back, 
+#tool_docprops_back,
 #tool_prefs_back {
 	margin-left: 1em;
 	overflow: auto;
 }
 
-#svg_docprops_container #svg_docprops_docprops, 
+#svg_docprops_container #svg_docprops_docprops,
 #svg_prefs #svg_docprops_prefs {
 	float: left;
 	width: 221px;
-	margin: 5px .7em; 
+	margin: 5px .7em;
 	overflow: hidden;
 }
 
@@ -1158,17 +1152,16 @@ span.zoom_tool {
 	float: right;
 }
 
-#svg_docprops legend, 
+#svg_docprops legend,
 #svg_prefs legend {
 	max-width: 195px;
 }
 
-#svg_docprops_docprops > legend, 
+#svg_docprops_docprops > legend,
 #svg_prefs_container > fieldset > legend {
 	font-weight: bold;
 	font-size: 1.1em;
 }
-
 
 #svg_docprops_container fieldset,
 #svg_prefs fieldset {
@@ -1250,18 +1243,16 @@ span.zoom_tool {
 }
 
 .toolbar_button button {
-    border:1px solid #dedede;
-    line-height:130%;
-    float: left;
+	border:1px solid #dedede;
+	line-height:130%;
+	float: left;
 	background: #E8E8E8 none;
-    padding:5px 10px 5px 7px; /* Firefox */
-    line-height:17px; /* Safari */
-	margin: 5px 20px 0 0;	
-	
+	padding:5px 10px 5px 7px; /* Firefox */
+	line-height:17px; /* Safari */
+	margin: 5px 20px 0 0;
 	border: 1px #808080 solid;
 	border-top-color: #FFF;
 	border-left-color: #FFF;
-
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -1280,11 +1271,11 @@ span.zoom_tool {
 }
 
 .toolbar_button button .svg_icon {
-    margin:0 3px -3px 0 !important;
-    padding:0;
-    border:none;
-    width:16px;
-    height:16px;
+	margin: 0 3px -3px 0 !important;
+	padding: 0;
+	border: none;
+	width: 16px;
+	height: 16px;
 }
 
 #dialog_box {
@@ -1319,8 +1310,8 @@ span.zoom_tool {
 	margin-left: -150px;
 	height: 150px;
 	margin-top: -80px;
-	position:fixed;
-	z-index:50001;
+	position: fixed;
+	z-index: 50001;
 	background: #CCC;
 	border: 1px outset #777;
 	font-family:Verdana,Helvetica,sans-serif;
@@ -1342,7 +1333,6 @@ span.zoom_tool {
 #dialog_buttons input[type=button] {
 	margin: 0 1em;
 }
-
 
 /* Slider
 ----------------------------------*/
@@ -1372,15 +1362,15 @@ span.zoom_tool {
 }
 
 /* Necessary to keep the flyouts sized properly */
- .tools_flyout .tool_button,
- .tools_flyout .tool_flyout {
+.tools_flyout .tool_button,
+.tools_flyout .tool_flyout {
 	padding: 2px;
 	width: 24px;
 	height: 24px;
 	margin: 0;
 	border-radius: 0px;
 	-moz-border-radius: 0px;
-	-webkit-border-radius: 0px;	
+	-webkit-border-radius: 0px;
 }
 
 /* Generic context menu styles */
@@ -1407,7 +1397,7 @@ span.zoom_tool {
 }
 
 .contextMenu .shortcut {
-	width: 115px;           
+	width: 115px;
 	text-align:right;
 	float:right;
 }
@@ -1448,7 +1438,6 @@ span.zoom_tool {
 
 /*
 	Adding Icons
-	
 	You can add icons to the context menu by adding
 	classes to the respective LI element(s)
 */
