@@ -2734,11 +2734,8 @@
 					$('#canvas_bg_url').val(url);
 				}
 				$('grid_snapping_step').attr('value', curConfig.snappingStep);
-				if (curConfig.gridSnapping == true) {
-					$('#grid_snapping_on').attr('checked', 'checked');
-				} else {
-					$('#grid_snapping_on').removeAttr('checked');
-				}
+
+				$('#grid_snapping_on').prop('checked', curConfig.gridSnapping);
 
 				$('#svg_prefs').show();
 			};
@@ -3574,6 +3571,7 @@
 				$(this).removeClass('push_button_pressed').addClass('push_button');
 			});
 
+			// ask for a layer name
 			$('#layer_new').click(function() {
 				var i = svgCanvas.getCurrentDrawing().getNumLayers();
 				do {
