@@ -137,7 +137,8 @@ var svgEditor = (function($, Editor) {
 			
 			svginfo_grid_settings: config.grid,
 			svginfo_snap_onoff: config.snapping_onoff,
-			svginfo_snap_step: config.snapping_stepsize
+			svginfo_snap_step: config.snapping_stepsize,
+			svginfo_grid_color: config.grid_color
 		}, true);
 		
 		// Shape categories

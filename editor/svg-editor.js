@@ -2705,9 +2705,9 @@
 				if (url) {
 					$('#canvas_bg_url').val(url);
 				}
-				$('grid_snapping_step').attr('value', curConfig.snappingStep);
-
 				$('#grid_snapping_on').prop('checked', curConfig.gridSnapping);
+				$('#grid_snapping_step').attr('value', curConfig.snappingStep);
+				$('#grid_color').attr('value', curConfig.gridColor);
 
 				$('#svg_prefs').show();
 			};
@@ -2807,6 +2807,7 @@
 				// set grid setting
 				curConfig.gridSnapping = $('#grid_snapping_on')[0].checked;
 				curConfig.snappingStep = $('#grid_snapping_step').val();
+				curConfig.gridColor = $('#grid_color').val();
 				curConfig.showRulers = $('#show_rulers')[0].checked;
 
 				$('#rulers').toggle(curConfig.showRulers);
@@ -4127,16 +4128,20 @@
 					$('#show_rulers')[0].checked = true;
 				}
 
-				if (curConfig.gridSnapping) {
-					$('#grid_snapping_on')[0].checked = true;
-				}
-
 				if (curConfig.baseUnit) {
 					$('#base_unit').val(curConfig.baseUnit);
 				}
 
+				if (curConfig.gridSnapping) {
+					$('#grid_snapping_on')[0].checked = true;
+				}
+
 				if (curConfig.snappingStep) {
 					$('#grid_snapping_step').val(curConfig.snappingStep);
+				}
+
+				if (curConfig.gridColor) {
+					$('#grid_color').val(curConfig.gridColor);
 				}
 			});
 

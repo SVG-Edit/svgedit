@@ -96,7 +96,7 @@ svgEditor.addExtension('view_grid', function() {
 		var part = big_int / 10;
 
 		ctx.globalAlpha = 0.2;
-		ctx.strokeStyle = '#000';
+		ctx.strokeStyle = svgEditor.curConfig.gridColor;
 		for (var i = 1; i < 10; i++) {
 			var sub_d = Math.round(part * i) + 0.5;
 			// var line_num = (i % 2)?12:10;
