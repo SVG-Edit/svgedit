@@ -1910,12 +1910,11 @@
 				inp.focus().remove();
 			});
 
-			$('.palette_item').mousedown(function(evt){
-				var right_click = evt.button === 2;
-				var isStroke = evt.shiftKey || right_click;
-				var picker = isStroke ? 'stroke' : 'fill';
-				var color = $(this).attr('data-rgb');
-				var paint = null;
+			$('.palette_item').mousedown(function(evt) {
+				// shift key or right click for stroke
+				var picker = evt.shiftKey || evt.button === 2 ? 'stroke' : 'fill';
+				var color = $(this).data('rgb');
+				var paint;
 
 				// Webkit-based browsers returned 'initial' here for no stroke
 				if (color === 'none' || color === 'transparent' || color === 'initial') {
@@ -1926,17 +1925,10 @@
 				}
 
 				paintBox[picker].setPaint(paint);
+				svgCanvas.setColor(picker, color);
 
-				if (isStroke) {
-					svgCanvas.setColor('stroke', color);
-					if (color != 'none' && svgCanvas.getStrokeOpacity() != 1) {
-						svgCanvas.setPaintOpacity('stroke', 1.0);
-					}
-				} else {
-					svgCanvas.setColor('fill', color);
-					if (color != 'none' && svgCanvas.getFillOpacity() != 1) {
-						svgCanvas.setPaintOpacity('fill', 1.0);
-					}
+				if (color !== 'none' && svgCanvas.getPaintOpacity(picker) !== 1) {
+					svgCanvas.setPaintOpacity(picker, 1.0);
 				}
 				updateToolButtonState();
 			}).bind('contextmenu', function(e) {e.preventDefault();});
