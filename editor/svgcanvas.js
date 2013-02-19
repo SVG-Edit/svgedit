@@ -6860,6 +6860,15 @@ this.setPaintOpacity = function(type, val, preventUndo) {
 		changeSelectedAttributeNoUndo(type + "-opacity", val);
 };
 
+// Function: getPaintOpacity
+// Gets the current fill/stroke opacity
+//
+// Parameters:
+// type - String with "fill" or "stroke"
+this.getPaintOpacity = function(type) {
+	return type === 'fill' ? this.getFillOpacity() : this.getStrokeOpacity();
+};
+
 // Function: getBlur
 // Gets the stdDeviation blur value of the given element
 //
@@ -6867,8 +6876,8 @@ this.setPaintOpacity = function(type, val, preventUndo) {
 // elem - The element to check the blur value for
 this.getBlur = function(elem) {
 	var val = 0;
-// 		var elem = selectedElements[0];
-	
+//	var elem = selectedElements[0];
+
 	if (elem) {
 		var filter_url = elem.getAttribute('filter');
 		if (filter_url) {
