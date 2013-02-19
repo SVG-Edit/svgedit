@@ -122,10 +122,10 @@ svgedit.utilities.decode64 = function(input) {
 	var enc1, enc2, enc3, enc4 = '';
 	var i = 0;
 
-	 // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
-	 input = input.replace(/[^A-Za-z0-9\+\/\=]/g, '');
+	// remove all characters that are not A-Z, a-z, 0-9, +, /, or =
+	input = input.replace(/[^A-Za-z0-9\+\/\=]/g, '');
 
-	 do {
+	do {
 		enc1 = KEYSTR.indexOf(input.charAt(i++));
 		enc2 = KEYSTR.indexOf(input.charAt(i++));
 		enc3 = KEYSTR.indexOf(input.charAt(i++));
@@ -138,17 +138,17 @@ svgedit.utilities.decode64 = function(input) {
 		output = output + String.fromCharCode(chr1);
 
 		if (enc3 != 64) {
-		   output = output + String.fromCharCode(chr2);
+			output = output + String.fromCharCode(chr2);
 		}
 		if (enc4 != 64) {
-		   output = output + String.fromCharCode(chr3);
+			output = output + String.fromCharCode(chr3);
 		}
 
 		chr1 = chr2 = chr3 = '';
 		enc1 = enc2 = enc3 = enc4 = '';
 
-	 } while (i < input.length);
-	 return unescape(output);
+	} while (i < input.length);
+	return unescape(output);
 };
 
 // Currently not being used, so commented out for now
@@ -204,12 +204,12 @@ svgedit.utilities.text2xml = function(sXML) {
 		dXML.async = false;
 	} catch(e){
 		throw new Error('XML Parser could not be instantiated');
-	};
+	}
 	try{
-		if(dXML.loadXML) out = (dXML.loadXML(sXML))?dXML:false;
+		if(dXML.loadXML) out = (dXML.loadXML(sXML)) ? dXML : false;
 		else out = dXML.parseFromString(sXML, 'text/xml');
 	}
-	catch(e){ throw new Error('Error parsing XML string'); };
+	catch(e){ throw new Error('Error parsing XML string'); }
 	return out;
 };
 
@@ -227,7 +227,7 @@ svgedit.utilities.bboxToObj = function(bbox) {
 		y: bbox.y,
 		width: bbox.width,
 		height: bbox.height
-	}
+	};
 };
 
 // Function: svgedit.utilities.walkTree
@@ -266,7 +266,7 @@ svgedit.utilities.walkTreePost = function(elem, cbFn) {
 // Function: svgedit.utilities.getUrlFromAttr
 // Extracts the URL from the url(...) syntax of some attributes.
 // Three variants:
-// 	* <circle fill="url(someFile.svg#foo)" />
+//  * <circle fill="url(someFile.svg#foo)" />
 //  * <circle fill="url('someFile.svg#foo')" />
 //  * <circle fill='url("someFile.svg#foo")' />
 //
@@ -296,13 +296,13 @@ svgedit.utilities.getUrlFromAttr = function(attrVal) {
 // Returns the given element's xlink:href value
 svgedit.utilities.getHref = function(elem) {
 	return elem.getAttributeNS(NS.XLINK, 'href');
-}
+};
 
 // Function: svgedit.utilities.setHref
 // Sets the given element's xlink:href value
 svgedit.utilities.setHref = function(elem, val) {
 	elem.setAttributeNS(NS.XLINK, 'xlink:href', val);
-}
+};
 
 // Function: findDefs
 //
@@ -422,6 +422,7 @@ function groupBBFix(selected) {
 	}
 	var ref = $.data(selected, 'ref');
 	var matched = null;
+	var ret;
 
 	if(ref) {
 		var copy = $(ref).children().clone().attr('visibility', 'hidden');
@@ -638,7 +639,7 @@ svgedit.utilities.cleanupElement = function(element) {
 		'stroke-width':1,
 		'rx':0,
 		'ry':0
-	}
+	};
 
 	for(var attr in defaults) {
 		var val = defaults[attr];
