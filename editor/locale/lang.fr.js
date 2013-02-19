@@ -181,7 +181,8 @@ svgEditor.readLang({
 		"base_unit": "Unité de mesure:",
 		"grid": "Grille",
 		"snapping_onoff": "Snapping on/off",
-		"snapping_stepsize": "Snapping Step-Size:"
+		"snapping_stepsize": "Snapping Step-Size:",
+		"grid_color": "Couleur de la grille"
 	},
 	shape_cats: {
 		"basic": "Basique",
