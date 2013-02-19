@@ -7125,7 +7125,7 @@ this.setFontColor = function(val) {
 
 // Function: getFontColor
 // Returns the current font color
-this.getFontSize = function() {
+this.getFontColor = function() {
 	return cur_text.fill;
 };
 
