@@ -2230,7 +2230,7 @@
 
 			$('#blur_slider').slider({
 				max: 10,
-				step: .1,
+				step: 0.1,
 				stop: function(evt, ui) {
 					slideStart = false;
 					changeBlur(ui);
@@ -2245,14 +2245,13 @@
 				}
 			});
 
-
 			Editor.addDropDown('#zoom_dropdown', function() {
 				var item = $(this);
-				var val = item.attr('data-val');
+				var val = item.data('val');
 				if (val) {
 					zoomChanged(window, val);
 				} else {
-					changeZoom({value:parseInt(item.text(), 10)});
+					changeZoom({value: parseInt(item.text(), 10)});
 				}
 			}, true);
 
