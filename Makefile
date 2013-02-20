@@ -9,6 +9,7 @@ ZIP=zip
 
 JS_FILES=\
 	svgedit.js \
+	jquery-svg.js \
 	contextmenu/jquery.contextmenu.js \
 	browser.js \
 	svgtransformlist.js \
