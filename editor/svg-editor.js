@@ -517,7 +517,7 @@
 				path = svgCanvas.pathActions,
 				undoMgr = svgCanvas.undoMgr,
 				Utils = svgedit.utilities,
-				default_img_url = curConfig.imgPath + 'logo.png',
+				defaultImageURL = curConfig.imgPath + 'logo.png',
 				workarea = $('#workarea'),
 				canv_menu = $('#cmenu_canvas'),
 				layer_menu = $('#cmenu_layers'),
@@ -1433,8 +1433,7 @@
 			};
 
 			var setImageURL = Editor.setImageURL = function(url) {
-				if (!url) url = default_img_url;
-
+				if (!url) url = defaultImageURL;
 				svgCanvas.setImageURL(url);
 				$('#image_url').val(url);
 
@@ -1444,14 +1443,10 @@
 					$('#change_image_url').show();
 				} else {
 					// regular URL
-					svgCanvas.embedImage(url, function(datauri) {
-						if (!datauri) {
-							// Couldn't embed, so show warning
-							$('#url_notice').show();
-						} else {
-							$('#url_notice').hide();
-						}
-						default_img_url = url;
+					svgCanvas.embedImage(url, function(dataURI) {
+						// Couldn't embed, so show warning
+						$('#url_notice').toggle(!dataURI);
+						defaultImageURL = url;
 					});
 					$('#image_url').show();
 					$('#change_image_url').hide();
@@ -2048,8 +2043,6 @@
 					on_button = false;
 				}).mousedown(function(evt) {
 // 					$('.contextMenu').hide();
-// 					console.log('cm', $(evt.target).closest('.contextMenu'));
-
 					var islib = $(evt.target).closest('div.tools_flyout, .contextMenu').length;
 					if (!islib) $('.tools_flyout:visible,.contextMenu').fadeOut(250);
 				});
@@ -2412,7 +2405,6 @@
 
 			var pasteInCenter = function() {
 				var zoom = svgCanvas.getZoom();
-
 				var x = (workarea[0].scrollLeft + workarea.width()/2)/zoom  - svgCanvas.contentW;
 				var y = (workarea[0].scrollTop + workarea.height()/2)/zoom  - svgCanvas.contentH;
 				svgCanvas.pasteElements('point', x, y);
@@ -2571,6 +2563,7 @@
 			var clickOpen = function(){
 				svgCanvas.open();
 			};
+
 			var clickImport = function(){
 			};
 
@@ -2862,7 +2855,6 @@
 				elems.each(function() {
 					// Handled in CSS
 					// this.style[uaPrefix + 'Transform'] = 'scale(' + scale + ')';
-
 					var el = $(this);
 					var w = el.outerWidth() * (scale - 1);
 					var h = el.outerHeight() * (scale - 1);
@@ -3141,7 +3133,6 @@
 			};
 
 			var win_wh = {width:$(window).width(), height:$(window).height()};
-
 			var resetScrollPos = $.noop, curScrollPos;
 
 			// Fix for Issue 781: Drawing area jumps to top-left corner on window resize (IE9)
