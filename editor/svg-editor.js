@@ -3617,37 +3617,36 @@
 			var SIDEPANEL_OPENWIDTH = 150;
 			var sidedrag = -1, sidedragging = false, allowmove = false;
 
-			var resizePanel = function(evt) {
+			var changeSidePanelWidth = function(delta) {
+				var rulerX = $('#ruler_x');
+				$('#sidepanels').width('+=' + delta);
+				$('#layerpanel').width('+=' + delta);
+				rulerX.css('right', parseInt(rulerX.css('right'), 10) + delta);
+				workarea.css('right', parseInt(workarea.css('right'), 10) + delta);
+			};
+
+			var resizeSidePanel = function(evt) {
 				if (!allowmove) return;
 				if (sidedrag == -1) return;
 				sidedragging = true;
-				var deltax = sidedrag - evt.pageX;
-
-				var sidepanels = $('#sidepanels');
-				var sidewidth = parseInt(sidepanels.css('width'), 10);
-				if (sidewidth+deltax > SIDEPANEL_MAXWIDTH) {
-					deltax = SIDEPANEL_MAXWIDTH - sidewidth;
-					sidewidth = SIDEPANEL_MAXWIDTH;
-				} else if (sidewidth+deltax < 2) {
-					deltax = 2 - sidewidth;
-					sidewidth = 2;
+				var deltaX = sidedrag - evt.pageX;
+				var sideWidth = $('#sidepanels').width();
+				if (sideWidth + deltaX > SIDEPANEL_MAXWIDTH) {
+					deltaX = SIDEPANEL_MAXWIDTH - sideWidth;
+					sideWidth = SIDEPANEL_MAXWIDTH;
+				} else if (sideWidth + deltaX < 2) {
+					deltaX = 2 - sideWidth;
+					sideWidth = 2;
 				}
-
-				if (deltax == 0) return;
-				sidedrag -= deltax;
-
-				var layerpanel = $('#layerpanel');
-				workarea.css('right', parseInt(workarea.css('right'))+deltax);
-				sidepanels.css('width', parseInt(sidepanels.css('width'))+deltax);
-				layerpanel.css('width', parseInt(layerpanel.css('width'))+deltax);
-				var ruler_x = $('#ruler_x');
-				ruler_x.css('right', parseInt(ruler_x.css('right')) + deltax);
+				if (deltaX == 0) return;
+				sidedrag -= deltaX;
+				changeSidePanelWidth(deltaX);
 			};
 
 			$('#sidepanel_handle')
 				.mousedown(function(evt) {
 					sidedrag = evt.pageX;
-					$(window).mousemove(resizePanel);
+					$(window).mousemove(resizeSidePanel);
 					allowmove = false;
 					// Silly hack for Chrome, which always runs mousemove right after mousedown
 					setTimeout(function() {
@@ -3663,21 +3662,15 @@
 			$(window).mouseup(function() {
 				sidedrag = -1;
 				sidedragging = false;
-				$('#svg_editor').unbind('mousemove', resizePanel);
+				$('#svg_editor').unbind('mousemove', resizeSidePanel);
 			});
 
 			// if width is non-zero, then fully close it, otherwise fully open it
 			// the optional close argument forces the side panel closed
 			var toggleSidePanel = function(close) {
-				var w = parseInt($('#sidepanels').css('width'), 10);
-				var deltax = (w > 2 || close ? 2 : SIDEPANEL_OPENWIDTH) - w;
-				var sidepanels = $('#sidepanels');
-				var layerpanel = $('#layerpanel');
-				var ruler_x = $('#ruler_x');
-				workarea.css('right', parseInt(workarea.css('right')) + deltax);
-				sidepanels.css('width', parseInt(sidepanels.css('width')) + deltax);
-				layerpanel.css('width', parseInt(layerpanel.css('width')) + deltax);
-				ruler_x.css('right', parseInt(ruler_x.css('right')) + deltax);
+				var w = $('#sidepanels').width();
+				var deltaX = (w > 2 || close ? 2 : SIDEPANEL_OPENWIDTH) - w;
+				changeSidePanelWidth(deltaX);
 			};
 
 			// this function highlights the layer passed in (by fading out the other layers)
