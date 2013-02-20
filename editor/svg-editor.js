@@ -4469,15 +4469,16 @@
 				if (!scanvas) scanvas = $('#svgcanvas');
 
 				var limit = 30000;
-				var c_elem = svgCanvas.getContentElem();
+				var contentElem = svgCanvas.getContentElem();
 				var units = svgedit.units.getTypeMap();
 				var unit = units[curConfig.baseUnit]; // 1 = 1px
 
+				// draw x ruler then y ruler
 				for (var d = 0; d < 2; d++) {
-					var is_x = (d === 0);
-					var dim = is_x ? 'x' : 'y';
-					var lentype = is_x ? 'width' : 'height';
-					var content_d = c_elem.getAttribute(dim)-0;
+					var isX = (d === 0);
+					var dim = isX ? 'x' : 'y';
+					var lentype = isX ? 'width' : 'height';
+					var contentDim = contentElem.getAttribute(dim) - 0;
 
 					var $hcanv_orig = $('#ruler_' + dim + ' canvas:first');
 
@@ -4491,7 +4492,6 @@
 					var ruler_len = scanvas[lentype]();
 					var total_len = ruler_len;
 					hcanv.parentNode.style[lentype] = total_len + 'px';
-					var canv_count = 1;
 					var ctx_num = 0;
 					var ctx_arr;
 					var ctx = hcanv.getContext('2d');
@@ -4539,14 +4539,15 @@
 
 					ctx.font = '9px sans-serif';
 
-					var ruler_d = ((content_d / u_multi) % multi) * u_multi;
+					var ruler_d = ((contentDim / u_multi) % multi) * u_multi;
 					var label_pos = ruler_d - big_int;
+					// draw big intervals
 					for (; ruler_d < total_len; ruler_d += big_int) {
 						label_pos += big_int;
-						var real_d = ruler_d - content_d;
+						var real_d = ruler_d - contentDim;
 
-						var cur_d = Math.round(ruler_d) + .5;
-						if (is_x) {
+						var cur_d = Math.round(ruler_d) + 0.5;
+						if (isX) {
 							ctx.moveTo(cur_d, 15);
 							ctx.lineTo(cur_d, 0);
 						} else {
@@ -4554,7 +4555,7 @@
 							ctx.lineTo(0, cur_d);
 						}
 
-						var num = (label_pos - content_d) / u_multi;
+						var num = (label_pos - contentDim) / u_multi;
 						var label;
 						if (multi >= 1) {
 							label = Math.round(num);
@@ -4563,18 +4564,15 @@
 							label = num.toFixed(decs)-0;
 						}
 
-						// Do anything special for negative numbers?
-// 						var is_neg = label < 0;
-// 						real_d2 = Math.abs(real_d2);
-
 						// Change 1000s to Ks
 						if (label !== 0 && label !== 1000 && label % 1000 === 0) {
 							label = (label / 1000) + 'K';
 						}
 
-						if (is_x) {
+						if (isX) {
 							ctx.fillText(label, ruler_d+2, 8);
 						} else {
+							// draw label vertically
 							var str = (label+'').split('');
 							for (var i = 0; i < str.length; i++) {
 								ctx.fillText(str[i], 1, (ruler_d+9) + i*9);
@@ -4582,8 +4580,9 @@
 						}
 
 						var part = big_int / 10;
+						// draw the small intervals
 						for (var i = 1; i < 10; i++) {
-							var sub_d = Math.round(ruler_d + part * i) + .5;
+							var sub_d = Math.round(ruler_d + part * i) + 0.5;
 							if (ctx_arr && sub_d > ruler_len) {
 								ctx_num++;
 								ctx.stroke();
@@ -4594,16 +4593,17 @@
 								}
 								ctx = ctx_arr[ctx_num];
 								ruler_d -= limit;
-								sub_d = Math.round(ruler_d + part * i) + .5;
+								sub_d = Math.round(ruler_d + part * i) + 0.5;
 							}
 
-							var line_num = (i % 2)?12:10;
-							if (is_x) {
+							// odd lines are slighly longer
+							var line_num = (i % 2) ? 12 : 10;
+							if (isX) {
 								ctx.moveTo(sub_d, 15);
 								ctx.lineTo(sub_d, line_num);
 							} else {
 								ctx.moveTo(15, sub_d);
-								ctx.lineTo(line_num ,sub_d);
+								ctx.lineTo(line_num, sub_d);
 							}
 						}
 					}
