@@ -6,14 +6,16 @@
  */
 
 // Dependencies:
-// 1) svgedit.js
-// 2) browser.js
-// 3) math.js
-// 4) history.js
-// 5) units.js
-// 6) svgtransformlist.js
-// 7) svgutils.js
-// 8) coords.js
+// 1) jquery
+// 2) jquery-svg.js
+// 3) svgedit.js
+// 4) browser.js
+// 5) math.js
+// 6) history.js
+// 7) units.js
+// 8) svgtransformlist.js
+// 9) svgutils.js
+// 10) coords.js
 
 var svgedit = svgedit || {};
 
@@ -50,7 +52,6 @@ svgedit.recalculate.updateClipPath = function(attr, tx, ty) {
 	// Update clipPath's dimensions
 	recalculateDimensions(path);
 };
-
 
 
 // Function: svgedit.recalculate.recalculateDimensions
@@ -95,7 +96,9 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 	
 	// if this element had no transforms, we are done
 	if (!tlist || tlist.numberOfItems == 0) {
-		selected.removeAttribute("transform");
+		// Chrome has a bug that requires clearing the attribute first.
+		selected.setAttribute('transform', '');
+		selected.removeAttribute('transform');
 		return null;
 	}
 	

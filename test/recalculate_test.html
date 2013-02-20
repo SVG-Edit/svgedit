@@ -3,6 +3,8 @@
 <head>
   <title>Unit Tests for recalculate.js</title>
   <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
+  <script type='text/javascript' src='../editor/jquery.js'></script>
+  <script type='text/javascript' src='../editor/jquery-svg.js'></script>
   <script type='text/javascript' src='../editor/svgedit.js'></script>
   <script type='text/javascript' src='../editor/browser.js'></script>
   <script type='text/javascript' src='../editor/math.js'></script>
@@ -22,6 +24,84 @@
       }
     };
 
+    var root = document.getElementById('root');
+    var svgroot = document.createElementNS(svgedit.NS.SVG, 'svg');
+    svgroot.id = 'svgroot';
+    root.appendChild(svgroot);
+    var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
+    svgroot.appendChild(svg);
+    var elemId = 1;
+    var elem;
+
+    function setUp() {
+      svgedit.utilities.init({
+        getSVGRoot: function() { return svg },
+        getDOMDocument: function() { return null },
+        getDOMContainer: function() { return null }
+      });
+      svgedit.coords.init({
+        getGridSnapping: function() { return false; },
+        getDrawing: function() {
+          return {
+            getNextId: function() { return '' + elemId++; }
+          };
+        }
+      });
+      svgedit.recalculate.init({
+        getSVGRoot: function() { return svg },
+        getStartTransform: function() { return ''},
+        setStartTransform: function() { }
+      });
+    }
+
+    function setUpRect() {
+      setUp();
+      elem = document.createElementNS(svgedit.NS.SVG, 'rect');
+      elem.setAttribute('x', '200');
+      elem.setAttribute('y', '150');
+      elem.setAttribute('width', '250');
+      elem.setAttribute('height', '120');
+      svg.appendChild(elem);
+    }
+
+    function tearDown() {
+      while(svg.hasChildNodes()) {
+        svg.removeChild(svg.firstChild);
+      }
+    }
+
+    test('Test recalculateDimensions() for identity matrix', function() {
+      expect(1);
+
+      setUpRect();
+      elem.setAttribute('transform', 'matrix(1,0,0,1,0,0)');
+      
+      svgedit.recalculate.recalculateDimensions(elem);
+
+      // Ensure that the identity matrix is swallowed and the element has no
+      // transform on it.
+      equal(false, elem.hasAttribute('transform'));
+
+      tearDown();
+    });
+
+    test('Test recalculateDimensions() for simple translate', function() {
+      expect(1);
+
+      setUpRect();
+      elem.setAttribute('transform', 'translate(100,50)');
+      
+      // TODO: Need the hack to jquery's attr() at the top of svgcanvas.js
+      // to make this work.
+      svgedit.recalculate.recalculateDimensions(elem);
+
+      // Ensure that the identity matrix is swallowed and the element has no
+      // transform on it.
+      equal(false, elem.hasAttribute('transform'));
+
+      tearDown();
+    });
+    
     // TODO: Since recalculateDimensions() and surrounding code is 
     // probably the largest, most complicated and strange piece of
     // code in SVG-edit, we need to write a whole lot of unit tests
