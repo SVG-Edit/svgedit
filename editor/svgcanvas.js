@@ -35,8 +35,6 @@ if (window.opera) {
 	window.console.dir = function(str) {};
 }
 
-(function() {
-
 // Class: SvgCanvas
 // The main SvgCanvas class that manages all SVG-related functions
 //
