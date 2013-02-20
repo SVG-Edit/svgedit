@@ -1299,23 +1299,19 @@
 						if (!btn.list) {
 							// Add given events to button
 							$.each(btn.events, function(name, func) {
-								if (name == 'click') {
-									if (btn.type == 'mode') {
-										if (btn.includeWith) {
-											button.bind(name, func);
-										} else {
-											button.bind(name, function() {
-												if (toolButtonClick(button)) {
-													func();
-												}
-											});
-										}
-										if (btn.key) {
-											$(document).bind('keydown', btn.key, func);
-											if (btn.title) button.attr('title', btn.title + ' ['+btn.key+']');
-										}
-									} else {
+								if (name == 'click' && btn.type == 'mode') {
+									if (btn.includeWith) {
 										button.bind(name, func);
+									} else {
+										button.bind(name, function() {
+											if (toolButtonClick(button)) {
+												func();
+											}
+										});
+									}
+									if (btn.key) {
+										$(document).bind('keydown', btn.key, func);
+										if (btn.title) button.attr('title', btn.title + ' ['+btn.key+']');
 									}
 								} else {
 									button.bind(name, func);
