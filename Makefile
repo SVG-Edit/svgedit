@@ -18,6 +18,7 @@ JS_FILES=\
 	sanitize.js \
 	history.js \
 	coords.js \
+	recalculate.js \
 	select.js \
 	draw.js \
 	path.js \
