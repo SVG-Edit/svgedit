@@ -307,7 +307,4 @@ case 'path':
 	}
 };
 
-// TODO: Move updateClipPath() into here.
-// TODO: Move recalculateDimensions() into here.
-
 })();
