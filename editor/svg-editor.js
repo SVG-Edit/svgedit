@@ -1637,12 +1637,7 @@
 							var label = $('#g_title')[0];
 							label.value = title;
 							setInputWidth(label);
-							var d = 'disabled';
-							if (el_name == 'use') {
-								label.setAttribute(d, d);
-							} else {
-								label.removeAttribute(d);
-							}
+							label.prop('disabled', el_name == 'use');
 						}
 					}
 					menu_items[(el_name === 'g' ? 'en' : 'dis') + 'ableContextMenuItems']('#ungroup');
