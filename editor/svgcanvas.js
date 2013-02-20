@@ -4246,7 +4246,6 @@ this.svgToString = function(elem, indent) {
 // callback - Optional function to run when image data is found, supplies the
 // result (data URL or false) as first parameter.
 this.embedImage = function(val, callback) {
-
 	// load in the image and once it's loaded, get the dimensions
 	$(new Image()).load(function() {
 		// create a canvas the same size as the raster image
@@ -4254,7 +4253,7 @@ this.embedImage = function(val, callback) {
 		canvas.width = this.width;
 		canvas.height = this.height;
 		// load the raster image into the canvas
-		canvas.getContext("2d").drawImage(this,0,0);
+		canvas.getContext("2d").drawImage(this, 0, 0);
 		// retrieve the data: URL
 		try {
 			var urldata = ';svgedit_url=' + encodeURIComponent(val);
