@@ -189,11 +189,11 @@ select {
 	display: inline-block;
 	position:absolute;
 	top: 1px;
-	bottom: 0px;
-	right: 0px;
-	width: 0px;
+	bottom: 0;
+	right: 0;
+	width: 0;
 	overflow: auto;
-	margin: 0px;
+	margin: 0;
 	-moz-user-select: none;
 	-webkit-user-select: none;
 }
@@ -312,6 +312,11 @@ select {
 
 #layerlist td.layername {
 	cursor: pointer;
+}
+
+#layerlist td.layername:hover {
+	color: blue;
+	font-style: italic;
 }
 
 #layerlist tr.layersel td.layername {
