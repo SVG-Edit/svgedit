@@ -117,9 +117,8 @@
       tearDown();
     });
 
-
     test('Test recalculateDimensions() on text w/tspan with simple translate', function() {
-      expect(3);
+      expect(5);
 
       setUpTextWithTspan();
       elem.setAttribute('transform', 'translate(100,50)');
@@ -132,9 +131,9 @@
       equal('300', elem.getAttribute('x'));
       equal('200', elem.getAttribute('y'));
 
-//      var tspan = elem.firstElementChild;
-//      equal('300', tspan.getAttribute('x'));
-//      equal('200', tspan.getAttribute('y'));
+      var tspan = elem.firstElementChild;
+      equal('300', tspan.getAttribute('x'));
+      equal('200', tspan.getAttribute('y'));
 
       tearDown();
     });
