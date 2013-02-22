@@ -42,15 +42,15 @@ svgedit.recalculate.init = function(editorContext) {
 // tx - The translation's x value
 // ty - The translation's y value
 svgedit.recalculate.updateClipPath = function(attr, tx, ty) {
-	var path = getRefElem(attr).firstChild;
-	var cp_xform = svgedit.transformlist.getTransformList(path);
-	var newxlate = context_.getSVGRoot().createSVGTransform();
-	newxlate.setTranslate(tx, ty);
+  var path = getRefElem(attr).firstChild;
+  var cp_xform = svgedit.transformlist.getTransformList(path);
+  var newxlate = context_.getSVGRoot().createSVGTransform();
+  newxlate.setTranslate(tx, ty);
 
-	cp_xform.appendItem(newxlate);
+  cp_xform.appendItem(newxlate);
 
-	// Update clipPath's dimensions
-	recalculateDimensions(path);
+  // Update clipPath's dimensions
+  svgedit.recalculate.recalculateDimensions(path);
 };
 
 
@@ -158,46 +158,47 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 	var gsvg = $(selected).data('gsvg');
 	
 	// we know we have some transforms, so set up return variable		
-	var batchCmd = new svgedit.history.BatchCommand("Transform");
+	var batchCmd = new svgedit.history.BatchCommand('Transform');
 	
 	// store initial values that will be affected by reducing the transform list
 	var changes = {}, initial = null, attrs = [];
 	switch (selected.tagName)
 	{
-		case "line":
-			attrs = ["x1", "y1", "x2", "y2"];
+		case 'line':
+			attrs = ['x1', 'y1', 'x2', 'y2'];
 			break;
-		case "circle":
-			attrs = ["cx", "cy", "r"];
+		case 'circle':
+			attrs = ['cx', 'cy', 'r'];
 			break;
-		case "ellipse":
-			attrs = ["cx", "cy", "rx", "ry"];
+		case 'ellipse':
+			attrs = ['cx', 'cy', 'rx', 'ry'];
 			break;
-		case "foreignObject":
-		case "rect":
-		case "image":
-			attrs = ["width", "height", "x", "y"];
+		case 'foreignObject':
+		case 'rect':
+		case 'image':
+			attrs = ['width', 'height', 'x', 'y'];
 			break;
-		case "use":
-		case "text":
-			attrs = ["x", "y"];
+		case 'use':
+		case 'text':
+		case 'tspan':
+			attrs = ['x', 'y'];
 			break;
-		case "polygon":
-		case "polyline":
+		case 'polygon':
+		case 'polyline':
 			initial = {};
-			initial["points"] = selected.getAttribute("points");
+			initial['points'] = selected.getAttribute('points');
 			var list = selected.points;
 			var len = list.numberOfItems;
-			changes["points"] = new Array(len);
+			changes['points'] = new Array(len);
 			for (var i = 0; i < len; ++i) {
 				var pt = list.getItem(i);
-				changes["points"][i] = {x:pt.x, y:pt.y};
+				changes['points'][i] = {x:pt.x, y:pt.y};
 			}
 			break;
-		case "path":
+		case 'path':
 			initial = {};
-			initial["d"] = selected.getAttribute("d");
-			changes["d"] = selected.getAttribute("d");
+			initial['d'] = selected.getAttribute('d');
+			changes['d'] = selected.getAttribute('d');
 			break;
 	} // switch on element type to get initial values
 	
@@ -223,10 +224,10 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 		});
 	}
 	// save the start transform value too
-	initial.transform = context_.getStartTransform() || "";
+	initial.transform = context_.getStartTransform() || '';
 	
 	// if it's a regular group, we have special processing to flatten transforms
-	if ((selected.tagName == "g" && !gsvg) || selected.tagName == "a") {
+	if ((selected.tagName == 'g' && !gsvg) || selected.tagName == 'a') {
 		var box = svgedit.utilities.getBBox(selected),
 			oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2},
 			newcenter = svgedit.math.transformPoint(box.x+box.width/2,
@@ -309,7 +310,7 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 					var angle = svgedit.utilities.getRotationAngle(child);
 					var oldStartTransform = context_.getStartTransform();
 					var childxforms = [];
-					context_.setStartTransform(child.getAttribute("transform"));
+					context_.setStartTransform(child.getAttribute('transform'));
 					if (angle || svgedit.math.hasMatrixTransform(childTlist)) {
 						var e2t = svgroot.createSVGTransform();
 						e2t.setMatrix(svgedit.math.matrixMultiply(tm, sm, tmn, m));
@@ -356,8 +357,8 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 					// TODO: If any <use> have this group as a parent and are 
 					// referencing this child, then we need to impose a reverse 
 					// scale on it so that when it won't get double-translated
-//						var uses = selected.getElementsByTagNameNS(NS.SVG, "use");
-//						var href = "#"+child.id;
+//						var uses = selected.getElementsByTagNameNS(NS.SVG, 'use');
+//						var href = '#' + child.id;
 //						var u = uses.length;
 //						while (u--) {
 //							var useElem = uses.item(u);
@@ -420,7 +421,7 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 						}
 
 						var oldStartTransform = context_.getStartTransform();
-						context_.setStartTransform(child.getAttribute("transform"));
+						context_.setStartTransform(child.getAttribute('transform'));
 						
 						var childTlist = svgedit.transformlist.getTransformList(child);
 						// some children might not have a transform (<metadata>, <defs>, etc)
@@ -436,8 +437,8 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 							// If any <use> have this group as a parent and are 
 							// referencing this child, then impose a reverse translate on it
 							// so that when it won't get double-translated
-							var uses = selected.getElementsByTagNameNS(NS.SVG, "use");
-							var href = "#"+child.id;
+							var uses = selected.getElementsByTagNameNS(NS.SVG, 'use');
+							var href = '#' + child.id;
 							var u = uses.length;
 							while (u--) {
 								var useElem = uses.item(u);
@@ -468,7 +469,7 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 				var child = children.item(c);
 				if (child.nodeType == 1) {
 					var oldStartTransform = context_.getStartTransform();
-					context_.setStartTransform(child.getAttribute("transform"));
+					context_.setStartTransform(child.getAttribute('transform'));
 					var childTlist = svgedit.transformlist.getTransformList(child);
 					
 					if (!childTlist) continue;
@@ -484,8 +485,8 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 					
 					// Convert stroke
 					// TODO: Find out if this should actually happen somewhere else
-					var sw = child.getAttribute("stroke-width");
-					if (child.getAttribute("stroke") !== "none" && !isNaN(sw)) {
+					var sw = child.getAttribute('stroke-width');
+					if (child.getAttribute('stroke') !== 'none' && !isNaN(sw)) {
 						var avg = (Math.abs(em.a) + Math.abs(em.d)) / 2;
 						child.setAttribute('stroke-width', sw * avg);
 					}
@@ -506,7 +507,7 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 				}
 			}
 			if (tlist.numberOfItems == 0) {
-				selected.removeAttribute("transform");
+				selected.removeAttribute('transform');
 			}
 			return null;			
 		}
@@ -552,7 +553,7 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 					var child = children.item(c);
 					if (child.nodeType == 1) {
 						var oldStartTransform = context_.getStartTransform();
-						context_.setStartTransform(child.getAttribute("transform"));
+						context_.setStartTransform(child.getAttribute('transform'));
 						var childTlist = svgedit.transformlist.getTransformList(child);
 						var newxlate = svgroot.createSVGTransform();
 						newxlate.setTranslate(tx, ty);
@@ -639,7 +640,7 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 					var gtlist = svgedit.transformlist.getTransformList(paint);
 					var gmatrix = svgedit.math.transformListToTransform(gtlist).matrix;
 					m = svgedit.math.matrixMultiply(m, gmatrix);
-					var m_str = "matrix(" + [m.a, m.b, m.c, m.d, m.e, m.f].join(",") + ")";
+					var m_str = 'matrix(' + [m.a, m.b, m.c, m.d, m.e, m.f].join(',') + ')';
 					paint.setAttribute(type + 'Transform', m_str);
 				}
 			}
@@ -654,7 +655,7 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 			
 			// Removed this so a <use> with a given [T][S][T] would convert to a matrix. 
 			// Is that bad?
-			//  && selected.nodeName != "use"
+			//  && selected.nodeName != 'use'
 		{
 			operation = 3; // scale
 			m = svgedit.math.transformListToTransform(tlist, N-3, N-1).matrix;
@@ -693,10 +694,10 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 			m = svgedit.math.transformListToTransform(tlist).matrix;
 			switch (selected.tagName) {
 				case 'line':
-					changes = $(selected).attr(["x1", "y1", "x2", "y2"]);
+					changes = $(selected).attr(['x1', 'y1', 'x2', 'y2']);
 				case 'polyline':
 				case 'polygon':
-					changes.points = selected.getAttribute("points");
+					changes.points = selected.getAttribute('points');
 					if (changes.points) {
 						var list = selected.points;
 						var len = list.numberOfItems;
@@ -707,7 +708,7 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 						}
 					}
 				case 'path':
-					changes.d = selected.getAttribute("d");
+					changes.d = selected.getAttribute('d');
 					operation = 1;
 					tlist.clear();
 					break;
@@ -730,14 +731,14 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 				}
 			}
 			if (tlist.numberOfItems == 0) {
-				selected.removeAttribute("transform");
+				selected.removeAttribute('transform');
 			}
 			return null;
 		}
 		
 		// if it was a translate or resize, we need to remap the element and absorb the xform
 		if (operation == 1 || operation == 2 || operation == 3) {
-			svgedit.coords.remapElement(selected,changes,m);
+			svgedit.coords.remapElement(selected, changes, m);
 		} // if we are remapping
 		
 		// if it was a translate, put back the rotate at the new center
@@ -773,7 +774,7 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 			var m_inv = m.inverse();
 			var extrat = svgedit.math.matrixMultiply(m_inv, rnew_inv, rold, m);
 		
-			svgedit.coords.remapElement(selected,changes,extrat);
+			svgedit.coords.remapElement(selected, changes, extrat);
 			if (angle) {
 				if (tlist.numberOfItems) {
 					tlist.insertItemBefore(rnew, 0);
@@ -786,7 +787,7 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 
 	// if the transform list has been emptied, remove it
 	if (tlist.numberOfItems == 0) {
-		selected.removeAttribute("transform");
+		selected.removeAttribute('transform');
 	}
 	
 	batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(selected, initial));
