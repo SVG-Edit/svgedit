@@ -754,6 +754,23 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
           tlist.appendItem(newRot);
         }
       }
+      // We have special processing for tspans:  Tspans are not transformable
+      // but they can have x,y coordinates (sigh).  Thus, if this was a translate,
+      // on a text element, also translate any tspan children.
+      if (selected.tagName == 'text') {
+        var children = selected.childNodes;
+        var c = children.length;
+        while (c--) {
+          var child = children.item(c);
+          if (child.tagName == 'tspan') {
+            var tspanChanges = {
+              x: $(child).attr('x') || 0,
+              y: $(child).attr('y') || 0
+            };
+            svgedit.coords.remapElement(child, tspanChanges, m);
+          }
+        }
+      }
     }
     // [Rold][M][T][S][-T] became [Rold][M]
     // we want it to be [Rnew][M][Tr] where Tr is the

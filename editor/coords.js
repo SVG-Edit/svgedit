@@ -93,19 +93,6 @@ svgedit.coords.remapElement = function(selected, changes, m) {
           t_new = svgedit.math.matrixMultiply(existing.inverse(), m, existing);
       changes.x = parseFloat(changes.x) + t_new.e;
       changes.y = parseFloat(changes.y) + t_new.f;
-      // TODO(codedread): Special handing for tspans:
-      // <g transform="translate(-100,0)">
-      //   <text x="100" y="100">
-      //     <tspan x="200" y="100">...</tspan>
-      //   </text>
-      // </g>
-      //
-      // Note that if the <text> element's x/y coordinates are being
-      // adjusted, the tspan's x/y coordinates also need to be similarly
-      // transformed as the coordinate space is not nested:
-      // <text x="0" y="100">
-      //   <tspan x="100" y="100">...</tspan>
-      // </text>
     } else {
       // we just absorb all matrices into the element and don't do any remapping
       var chlist = svgedit.transformlist.getTransformList(selected);
@@ -171,6 +158,7 @@ svgedit.coords.remapElement = function(selected, changes, m) {
       changes.y2 = pt2.y;
 	  // deliberately fall through here
     case 'text':
+    case 'tspan':
     case 'use':
       finishUp();
       break;
