@@ -64,13 +64,29 @@
       svg.appendChild(elem);
     }
 
+    function setUpTextWithTspan() {
+      setUp();
+      elem = document.createElementNS(svgedit.NS.SVG, 'text');
+      elem.setAttribute('x', '200');
+      elem.setAttribute('y', '150');
+
+      var tspan = document.createElementNS(svgedit.NS.SVG, 'tspan');
+      tspan.setAttribute('x', '200');
+      tspan.setAttribute('y', '150');
+
+      var theText = document.createTextNode('Foo bar');
+      tspan.appendChild(theText);
+      elem.appendChild(tspan);
+      svg.appendChild(elem);
+    }
+
     function tearDown() {
       while(svg.hasChildNodes()) {
         svg.removeChild(svg.firstChild);
       }
     }
 
-    test('Test recalculateDimensions() for identity matrix', function() {
+    test('Test recalculateDimensions() on rect with identity matrix', function() {
       expect(1);
 
       setUpRect();
@@ -85,23 +101,44 @@
       tearDown();
     });
 
-    test('Test recalculateDimensions() for simple translate', function() {
-      expect(1);
+    test('Test recalculateDimensions() on rect with simple translate', function() {
+      expect(5);
 
       setUpRect();
       elem.setAttribute('transform', 'translate(100,50)');
       
-      // TODO: Need the hack to jquery's attr() at the top of svgcanvas.js
-      // to make this work.
+      svgedit.recalculate.recalculateDimensions(elem);
+
+      equal(false, elem.hasAttribute('transform'));
+      equal('300', elem.getAttribute('x'));
+      equal('200', elem.getAttribute('y'));
+      equal('250', elem.getAttribute('width'));
+      equal('120', elem.getAttribute('height'));
+      tearDown();
+    });
+
+
+    test('Test recalculateDimensions() on text w/tspan with simple translate', function() {
+      expect(3);
+
+      setUpTextWithTspan();
+      elem.setAttribute('transform', 'translate(100,50)');
+      
       svgedit.recalculate.recalculateDimensions(elem);
 
       // Ensure that the identity matrix is swallowed and the element has no
       // transform on it.
       equal(false, elem.hasAttribute('transform'));
+      equal('300', elem.getAttribute('x'));
+      equal('200', elem.getAttribute('y'));
+
+//      var tspan = elem.firstElementChild;
+//      equal('300', tspan.getAttribute('x'));
+//      equal('200', tspan.getAttribute('y'));
 
       tearDown();
     });
-    
+
     // TODO: Since recalculateDimensions() and surrounding code is 
     // probably the largest, most complicated and strange piece of
     // code in SVG-edit, we need to write a whole lot of unit tests
