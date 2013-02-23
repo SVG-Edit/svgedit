@@ -727,7 +727,7 @@
 						case 'rotate':
 							var ang = svgCanvas.getRotationAngle(elem);
 							$('#angle').val(ang);
-							$('#tool_reorient').toggleClass('disabled', ang == 0);
+							$('#tool_reorient').toggleClass('disabled', ang === 0);
 							break;
 
 						// TODO: Update values that change on move/resize, etc
@@ -1521,8 +1521,8 @@
 						// Elements in this array cannot be converted to a path
 						var no_path = ['image', 'text', 'path', 'g', 'use'].indexOf(elname) == -1;
 						$('#tool_topath').toggle(no_path);
-						$('#tool_reorient').toggle(elname == 'path');
-						$('#tool_reorient').toggleClass('disabled', angle == 0);
+						$('#tool_reorient').toggle(elname === 'path');
+						$('#tool_reorient').toggleClass('disabled', angle === 0);
 					} else {
 						var point = path.getNodePoint();
 						$('#tool_add_subpath').removeClass('push_button_pressed').addClass('tool_button');
@@ -1732,7 +1732,7 @@
 
 			var changeRotationAngle = function(ctl) {
 				svgCanvas.setRotationAngle(ctl.value);
-				$('#tool_reorient').toggleClass('disabled', ctl.value == 0);
+				$('#tool_reorient').toggleClass('disabled', parseInt(ctl.value, 10) === 0);
 			};
 			var changeZoom = function(ctl) {
 				var zoomlevel = ctl.value / 100;
@@ -2480,11 +2480,11 @@
 				svgCanvas.cycleElement(0);
 			};
 
-			var rotateSelected = function(cw,step) {
+			var rotateSelected = function(cw, step) {
 				if (selectedElement == null || multiselected) return;
 				if (!cw) step *= -1;
-				var new_angle = $('#angle').val()*1 + step;
-				svgCanvas.setRotationAngle(new_angle);
+				var angle = parseFloat($('#angle').val()) + step;
+				svgCanvas.setRotationAngle(angle);
 				updateContextPanel();
 			};
 
