@@ -1679,7 +1679,7 @@
 			svgCanvas.textActions.setInputElem($('#text')[0]);
 
 			var str = '<div class="palette_item" data-rgb="none"></div>';
-			$.each(palette, function(i,item){
+			$.each(palette, function(i,item) {
 				str += '<div class="palette_item" style="background-color: ' + item + ';" data-rgb="' + item + '"></div>';
 			});
 			$('#palette').append(str);
@@ -2196,7 +2196,7 @@
 					$('#opacity_dropdown li').show();
 					$(window).mouseup();
 				},
-				slide: function(evt, ui){
+				slide: function(evt, ui) {
 					changeOpacity(ui);
 				}
 			});
@@ -2217,7 +2217,7 @@
 				start: function() {
 					slideStart = true;
 				},
-				slide: function(evt, ui){
+				slide: function(evt, ui) {
 					changeBlur(ui, null, slideStart);
 				}
 			});
@@ -2625,7 +2625,7 @@
 				$('#wireframe_rules').text(workarea.hasClass('wireframe') ? rule : '');
 			};
 
-			var showSourceEditor = function(e, forSaving){
+			var showSourceEditor = function(e, forSaving) {
 				if (editingsource) return;
 
 				editingsource = true;
@@ -3482,7 +3482,7 @@
 				$(window).mouseup();
 			});
 
-			$('#tool_move_top').mousedown(function(evt){
+			$('#tool_move_top').mousedown(function(evt) {
 				$('#tools_stacking').show();
 				evt.preventDefault();
 			});
@@ -3673,52 +3673,41 @@
 			};
 
 			var populateLayers = function() {
-				var layerlist = $('#layerlist tbody');
-				var selLayerNames = $('#selLayerNames');
-				layerlist.empty();
-				selLayerNames.empty();
-				var currentLayerName = svgCanvas.getCurrentDrawing().getCurrentLayerName();
+				var layerlist = $('#layerlist tbody').empty();
+				var selLayerNames = $('#selLayerNames').empty();
+				var drawing = svgCanvas.getCurrentDrawing();
+				var currentLayerName = drawing.getCurrentLayerName();
 				var layer = svgCanvas.getCurrentDrawing().getNumLayers();
 				var icon = $.getSvgIcon('eye');
 				// we get the layers in the reverse z-order (the layer rendered on top is listed first)
 				while (layer--) {
-					var name = svgCanvas.getCurrentDrawing().getLayerName(layer);
-					// contenteditable=\"true\"
-					var appendstr = "<tr class=\"layer";
-					if (name == currentLayerName) {
-						appendstr += " layersel";
-					}
-					appendstr += "\">";
-
-					if (svgCanvas.getCurrentDrawing().getLayerVisibility(name)) {
-						appendstr += "<td class=\"layervis\"/><td class=\"layername\" >" + name + "</td></tr>";
-					} else {
-						appendstr += "<td class=\"layervis layerinvis\"/><td class=\"layername\" >" + name + "</td></tr>";
-					}
-					layerlist.append(appendstr);
-					selLayerNames.append("<option value=\"" + name + "\">" + name + "</option>");
+					var name = drawing.getLayerName(layer);
+					var layerTr = $('<tr class="layer">').toggleClass('layersel', name === currentLayerName);
+					var layerVis = $('<td class="layervis">').toggleClass('layerinvis', !drawing.getLayerVisibility(name));
+					var layerName = $('<td class="layername">' + name + '</td>');
+					layerlist.append(layerTr.append(layerVis, layerName));
+					selLayerNames.append('<option value="' + name + '">' + name + '</option>');
 				}
 				if (icon !== undefined) {
 					var copy = icon.clone();
-					$('td.layervis',layerlist).append(icon.clone());
-					$.resizeSvgIcons({'td.layervis .svg_icon':14});
+					$('td.layervis', layerlist).append(icon.clone());
+					$.resizeSvgIcons({'td.layervis .svg_icon': 14});
 				}
 				// handle selection of layer
 				$('#layerlist td.layername')
-					.mouseup(function(evt){
+					.mouseup(function(evt) {
 						$('#layerlist tr.layer').removeClass('layersel');
-						var row = $(this.parentNode);
-						row.addClass('layersel');
+						$(this.parentNode).addClass('layersel');
 						svgCanvas.setCurrentLayer(this.textContent);
 						evt.preventDefault();
 					})
-					.mouseover(function(evt){
+					.mouseover(function() {
 						toggleHighlightLayer(this.textContent);
 					})
-					.mouseout(function(evt){
+					.mouseout(function() {
 						toggleHighlightLayer();
 					});
-				$('#layerlist td.layervis').click(function(evt){
+				$('#layerlist td.layervis').click(function() {
 					var row = $(this.parentNode).prevAll().length;
 					var name = $('#layerlist tr.layer:eq(' + row + ') td.layername').text();
 					var vis = $(this).hasClass('layerinvis');
@@ -4060,7 +4049,7 @@
 					reg_tool = container.find('#' + itool);
 				if (pre_tool.length) {
 					tool = pre_tool;
-				} else if (reg_tool.length){
+				} else if (reg_tool.length) {
 					tool = reg_tool;
 				} else {
 					tool = $('#tool_select');
@@ -4149,7 +4138,7 @@
 							moveToBottomSelected();
 							break;
 						default:
-							if (svgedit.contextmenu && svgedit.contextmenu.hasCustomHandler(action)){
+							if (svgedit.contextmenu && svgedit.contextmenu.hasCustomHandler(action)) {
 								svgedit.contextmenu.getCustomHandler(action).call();
 							}
 							break;
