@@ -4731,21 +4731,3 @@
 	$(svgEditor.init);
 
 })();
-
-// ?iconsize=s&bkgd_color=555
-
-// svgEditor.setConfig({
-// // 	imgPath: 'foo',
-// 	dimensions: [800, 600],
-// 	canvas_expansion: 5,
-// 	initStroke: {
-// 		color: '0000FF',
-// 		width: 3.5,
-// 		opacity: .5
-// 	},
-// 	initFill: {
-// 		color: '550000',
-// 		opacity: .75
-// 	},
-// 	extensions: ['ext-helloworld.js']
-// })
