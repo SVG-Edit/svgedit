@@ -89,6 +89,8 @@ chrome:
 	cp -a chrome-app/* build/svgedit_app
 	cd build ; $(ZIP) -r $(PACKAGE)-crx.zip svgedit_app ; rm -rf svgedit_app; cd ..
 
+jgraduate:
+	java -jar $(CLOSURE) --js editor/jgraduate/jquery.jgraduate.js --js_output_file editor/jgraduate/jquery.jgraduate.min.js
 clean:
 	rm -rf config
 	rm -rf build/$(PACKAGE)
