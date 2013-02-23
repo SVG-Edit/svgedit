@@ -1930,7 +1930,7 @@
 					$('.tools_flyout').fadeOut(fadeFlyouts);
 				}
 				$('#styleoverrides').text('');
-				workarea.css('cursor','auto');
+				workarea.css('cursor', 'auto');
 				$('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
 				$(button).addClass('tool_button_current').removeClass('tool_button');
 				return true;
@@ -2241,7 +2241,7 @@
 			}, {dropUp: true});
 
 			addAltDropDown('#tool_position', '#position_opts', function() {
-				var letter = this.id.replace('tool_pos','').charAt(0);
+				var letter = this.id.replace('tool_pos', '').charAt(0);
 				svgCanvas.alignSelectedElements(letter, 'page');
 			}, {multiclick: true});
 
@@ -2583,7 +2583,7 @@
 			};
 
 			var clickAlign = function() {
-				var letter = this.id.replace('tool_align','').charAt(0);
+				var letter = this.id.replace('tool_align', '').charAt(0);
 				svgCanvas.alignSelectedElements(letter, $('#align_relative_to').val());
 			};
 
@@ -2627,13 +2627,12 @@
 
 			var showSourceEditor = function(e, forSaving){
 				if (editingsource) return;
-				editingsource = true;
 
+				editingsource = true;
+				origSource = svgCanvas.getSvgString();
 				$('#save_output_btns').toggle(!!forSaving);
 				$('#tool_source_back').toggle(!forSaving);
-
-				var str = origSource = svgCanvas.getSvgString();
-				$('#svg_source_textarea').val(str);
+				$('#svg_source_textarea').val(origSource);
 				$('#svg_source_editor').fadeIn();
 				$('#svg_source_textarea').focus();
 			};
@@ -2792,7 +2791,7 @@
 			};
 
 			function setBackground(color, url) {
- 				// if (color == curPrefs.bkgd_color && url == curPrefs.bkgd_url) return;
+				// if (color == curPrefs.bkgd_color && url == curPrefs.bkgd_url) return;
 				$.pref('bkgd_color', color);
 				$.pref('bkgd_url', url);
 
@@ -2842,7 +2841,7 @@
 						var s = sides[i];
 						var cur = el.data('orig_margin-' + s);
 						if (cur == null) {
-							cur = parseInt(el.css('margin-' + s));
+							cur = parseInt(el.css('margin-' + s), 10);
 							// Cache the original margin
 							el.data('orig_margin-' + s, cur);
 						}
@@ -2861,7 +2860,7 @@
 
 			var setIconSize = Editor.setIconSize = function(size, force) {
 				if (size == curPrefs.size && !force) return;
-// 				return;
+
 // 				var elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
 				var sel_toscale = '#tools_top .toolset, #editor_panel > *, #history_panel > *,\
 				#main_button, #tools_left > *, #path_node_panel > *, #multiselected_panel > *,\
@@ -2887,7 +2886,7 @@
 // 					console.log('l', $(this).css('left'));
 // 				});
 
-// 				var scale = .75;//0.75;
+// 				var scale = .75;
 
 				var hidden_ps = elems.parents(':hidden');
 				hidden_ps.css('visibility', 'hidden').show();
@@ -3116,8 +3115,7 @@
 			if (svgedit.browser.isIE()) {
 				(function() {
 					resetScrollPos = function() {
-						if (workarea[0].scrollLeft === 0
-						&& workarea[0].scrollTop === 0) {
+						if (workarea[0].scrollLeft === 0 && workarea[0].scrollTop === 0) {
 							workarea[0].scrollLeft = curScrollPos.left;
 							workarea[0].scrollTop = curScrollPos.top;
 						}
@@ -3213,7 +3211,7 @@
 				var i = shortcutButtons.length;
 				while (i--) {
 					var button = document.getElementById(shortcutButtons[i]);
-					if (button != null) {
+					if (button) {
 						var title = button.title;
 						var index = title.indexOf('Ctrl+');
 						button.title = [title.substr(0, index), 'Cmd+', title.substr(index + 5)].join('');
@@ -3428,7 +3426,7 @@
 
 			// Use this SVG elem to test vectorEffect support
 			var testEl = paintBox.fill.rect.cloneNode(false);
-			testEl.setAttribute('style','vector-effect:non-scaling-stroke');
+			testEl.setAttribute('style', 'vector-effect:non-scaling-stroke');
 			var supportsNonSS = (testEl.style.vectorEffect === 'non-scaling-stroke');
 			testEl.removeAttribute('style');
 			var svgdocbox = paintBox.fill.rect.ownerDocument;
