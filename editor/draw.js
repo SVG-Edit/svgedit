@@ -19,8 +19,7 @@ if (!svgedit.draw) {
 // alias
 var NS = svgedit.NS;
 
-var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
-var visElems_arr = visElems.split(',');
+var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use'.split(',');
 
 var RandomizeModes = {
 	LET_DOCUMENT_DECIDE: 0,
@@ -49,19 +48,19 @@ svgedit.draw.Layer.prototype.getGroup = function() {
 
 
 // Called to ensure that drawings will or will not have randomized ids.
-// The current_drawing will have its nonce set if it doesn't already.
-// 
+// The currentDrawing will have its nonce set if it doesn't already.
+//
 // Params:
 // enableRandomization - flag indicating if documents should have randomized ids
-svgedit.draw.randomizeIds = function(enableRandomization, current_drawing) {
-	randomize_ids = enableRandomization == false ?
+svgedit.draw.randomizeIds = function(enableRandomization, currentDrawing) {
+	randomize_ids = enableRandomization === false ?
 		RandomizeModes.NEVER_RANDOMIZE :
 		RandomizeModes.ALWAYS_RANDOMIZE;
 
-	if (randomize_ids == RandomizeModes.ALWAYS_RANDOMIZE && !current_drawing.getNonce()) {
-		current_drawing.setNonce(Math.floor(Math.random() * 100001));
-	} else if (randomize_ids == RandomizeModes.NEVER_RANDOMIZE && current_drawing.getNonce()) {
-		current_drawing.clearNonce();
+	if (randomize_ids == RandomizeModes.ALWAYS_RANDOMIZE && !currentDrawing.getNonce()) {
+		currentDrawing.setNonce(Math.floor(Math.random() * 100001));
+	} else if (randomize_ids == RandomizeModes.NEVER_RANDOMIZE && currentDrawing.getNonce()) {
+		currentDrawing.clearNonce();
 	}
 };
 
@@ -374,7 +373,7 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 				}
 			}
 			// if child has is "visible" (i.e. not a <title> or <defs> element), then it is an orphan
-			else if(~visElems_arr.indexOf(child.nodeName)) {
+			else if(~visElems.indexOf(child.nodeName)) {
 				var bb = svgedit.utilities.getBBox(child);
 				orphans.push(child);
 			}
