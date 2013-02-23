@@ -2635,7 +2635,6 @@
 				var str = origSource = svgCanvas.getSvgString();
 				$('#svg_source_textarea').val(str);
 				$('#svg_source_editor').fadeIn();
-				properlySourceSizeTextArea();
 				$('#svg_source_textarea').focus();
 			};
 
@@ -2688,12 +2687,6 @@
 				$('#grid_color').attr('value', curConfig.gridColor);
 
 				$('#svg_prefs').show();
-			};
-
-			var properlySourceSizeTextArea = function() {
-				// TODO: remove magic numbers here and get values from CSS
-				var height = $('#svg_source_container').height() - 80;
-				$('#svg_source_textarea').css('height', height);
 			};
 
 			var saveSourceEditor = function() {
@@ -3154,10 +3147,6 @@
 			}
 
 			$(window).resize(function(evt) {
-				if (editingsource) {
-					properlySourceSizeTextArea();
-				}
-
 				$.each(win_wh, function(type, val) {
 					var curval = $(window)[type]();
 					workarea[0]['scroll' + (type === 'width' ? 'Left' : 'Top')] -= (curval - val)/2;
