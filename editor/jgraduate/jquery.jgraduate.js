@@ -228,7 +228,7 @@ jQuery.fn.jGraduate =
     	        		'<div class="jGraduate_Form_Section">' +
         	    			'<label>x:</label>' +
             				'<input type="text" id="' + id + '_jGraduate_x1" size="3" title="Enter starting x value between 0.0 and 1.0"/>' +
-            				'<label> y:</label>' +
+            				'<label>y:</label>' +
             				'<input type="text" id="' + id + '_jGraduate_y1" size="3" title="Enter starting y value between 0.0 and 1.0"/>' +
         	   			'</div>' +
         	   		'</div>' +
@@ -237,7 +237,7 @@ jQuery.fn.jGraduate =
     	        		'<div class="jGraduate_Form_Section">' +
 	    	        		'<label>x:</label>' +
 		    	        	'<input type="text" id="' + id + '_jGraduate_x2" size="3" title="Enter ending x value between 0.0 and 1.0"/>' +
-    		    	    	'<label> y:</label>' +
+    		    	    	'<label>y:</label>' +
         		    		'<input type="text" id="' + id + '_jGraduate_y2" size="3" title="Enter ending y value between 0.0 and 1.0"/>' +
     	    	    	'</div>' +
     	    	    '</div>' +
@@ -248,7 +248,7 @@ jQuery.fn.jGraduate =
 						'<div class="jGraduate_Form_Section">' +
 							'<label>x:</label>' +
 							'<input type="text" id="' + id + '_jGraduate_cx" size="3" title="Enter x value between 0.0 and 1.0"/>' +
-							'<label> y:</label>' +
+							'<label>y:</label>' +
 							'<input type="text" id="' + id + '_jGraduate_cy" size="3" title="Enter y value between 0.0 and 1.0"/>' +
 						'</div>' +
 					'</div>' +
@@ -258,7 +258,7 @@ jQuery.fn.jGraduate =
 							'<label>Match center: <input type="checkbox" checked="checked" id="' + id + '_jGraduate_match_ctr"/></label><br/>' +
 							'<label>x:</label>' +
 							'<input type="text" id="' + id + '_jGraduate_fx" size="3" title="Enter x value between 0.0 and 1.0"/>' +
-							'<label> y:</label>' +
+							'<label>y:</label>' +
 							'<input type="text" id="' + id + '_jGraduate_fy" size="3" title="Enter y value between 0.0 and 1.0"/>' +
 						'</div>' +
 					'</div>' +
