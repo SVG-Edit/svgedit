@@ -5876,73 +5876,36 @@ function reorientGrads(elem, m) {
 // Function: setPaint
 // Set a color/gradient to a fill/stroke
 //
-// Parameters: 
+// Parameters:
 // type - String with "fill" or "stroke"
 // paint - The jGraduate paint object to apply
 this.setPaint = function(type, paint) {
 	// make a copy
 	var p = new $.jGraduate.Paint(paint);
-	this.setPaintOpacity(type, p.alpha/100, true);
+	this.setPaintOpacity(type, p.alpha / 100, true);
 
 	// now set the current paint object
 	cur_properties[type + '_paint'] = p;
-	switch ( p.type ) {
-		case "solidColor":
-			this.setColor(type, p.solidColor != "none" ? "#"+p.solidColor : "none");
+	switch (p.type) {
+		case 'solidColor':
+			this.setColor(type, p.solidColor != 'none' ? '#' + p.solidColor : 'none');
 			break;
-		case "linearGradient":
-		case "radialGradient":
+		case 'linearGradient':
+		case 'radialGradient':
 			canvas[type + 'Grad'] = p[p.type];
 			setGradient(type);
 			break;
-		default:
-//			console.log("none!");
 	}
 };
 
+// alias
+this.setStrokePaint = function(paint) {
+	this.setPaint('stroke', paint);
+};
 
-// this.setStrokePaint = function(p) {
-// 	// make a copy
-// 	var p = new $.jGraduate.Paint(p);
-// 	this.setStrokeOpacity(p.alpha/100);
-// 
-// 	// now set the current paint object
-// 	cur_properties.stroke_paint = p;
-// 	switch ( p.type ) {
-// 		case "solidColor":
-// 			this.setColor('stroke', p.solidColor != "none" ? "#"+p.solidColor : "none");;
-// 			break;
-// 		case "linearGradient"
-// 		case "radialGradient"
-// 			canvas.strokeGrad = p[p.type];
-// 			setGradient(type); 
-// 		default:
-// //			console.log("none!");
-// 	}
-// };
-// 
-// this.setFillPaint = function(p, addGrad) {
-// 	// make a copy
-// 	var p = new $.jGraduate.Paint(p);
-// 	this.setFillOpacity(p.alpha/100, true);
-// 
-// 	// now set the current paint object
-// 	cur_properties.fill_paint = p;
-// 	if (p.type == "solidColor") {
-// 		this.setColor('fill', p.solidColor != "none" ? "#"+p.solidColor : "none");
-// 	}
-// 	else if (p.type == "linearGradient") {
-// 		canvas.fillGrad = p.linearGradient;
-// 		if (addGrad) setGradient(); 
-// 	}
-// 	else if (p.type == "radialGradient") {
-// 		canvas.fillGrad = p.radialGradient;
-// 		if (addGrad) setGradient(); 
-// 	}
-// 	else {
-// //			console.log("none!");
-// 	}
-// };
+this.setFillPaint = function(paint) {
+	this.setPaint('fill', paint);
+};
 
 // Function: getStrokeWidth
 // Returns the current stroke-width value
@@ -5962,7 +5925,7 @@ this.setStrokeWidth = function(val) {
 		return;
 	}
 	cur_properties.stroke_width = val;
-	
+
 	var elems = [];
 	var i = selectedElements.length;
 	while (i--) {
@@ -5970,10 +5933,10 @@ this.setStrokeWidth = function(val) {
 		if (elem) {
 			if (elem.tagName == "g")
 				svgedit.utilities.walkTree(elem, function(e){if (e.nodeName!="g") elems.push(e);});
-			else 
+			else
 				elems.push(elem);
 		}
-	}		
+	}
 	if (elems.length > 0) {
 		changeSelectedAttribute("stroke-width", val, elems);
 		call("changed", selectedElements);
@@ -5995,10 +5958,10 @@ this.setStrokeAttr = function(attr, val) {
 		if (elem) {
 			if (elem.tagName == "g")
 				svgedit.utilities.walkTree(elem, function(e){if (e.nodeName!="g") elems.push(e);});
-			else 
+			else
 				elems.push(elem);
 		}
-	}		
+	}
 	if (elems.length > 0) {
 		changeSelectedAttribute(attr, val, elems);
 		call("changed", selectedElements);
