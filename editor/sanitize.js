@@ -113,34 +113,36 @@ $.each(svgWhiteList_, function(elt, atts){
 // Parameters:
 // node - The DOM element to be checked (we'll also check its children)
 svgedit.sanitize.sanitizeSvg = function(node) {
-  // Cleanup text nodes
+	// Cleanup text nodes
 	if (node.nodeType == 3) { // 3 == TEXT_NODE
-    // Trim whitespace
+		// Trim whitespace
 		node.nodeValue = node.nodeValue.replace(/^\s+|\s+$/g, '');
 		// Remove if empty
-		if(node.nodeValue.length == 0) node.parentNode.removeChild(node);
+		if (node.nodeValue.length === 0) {
+			node.parentNode.removeChild(node);
+		}
 	}
-  
-  // We only care about element nodes.
-	// Automatically return for all non-element nodes,
-  // such as comments, etc.
-  if (node.nodeType != 1) { // 1 == ELEMENT_NODE
-    return; 
-  }
-  
+
+	// We only care about element nodes.
+	// Automatically return for all non-element nodes, such as comments, etc.
+	if (node.nodeType != 1) { // 1 == ELEMENT_NODE
+		return;
+	}
+
 	var doc = node.ownerDocument;
 	var parent = node.parentNode;
 	// can parent ever be null here?  I think the root node's parent is the document...
-	if (!doc || !parent) return;
-	
+	if (!doc || !parent) {
+		return;
+	}
+
 	var allowedAttrs = svgWhiteList_[node.nodeName];
 	var allowedAttrsNS = svgWhiteListNS_[node.nodeName];
 
 	// if this element is supported, sanitize it
-	if (allowedAttrs != undefined) {
+	if (typeof allowedAttrs !== 'undefined') {
 
-		var se_attrs = [];
-	
+		var seAttrs = [];
 		var i = node.attributes.length;
 		while (i--) {
 			// if the attribute is not in our whitelist, then remove it
@@ -156,16 +158,16 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 			{
 				// TODO(codedread): Programmatically add the se: attributes to the NS-aware whitelist.
 				// Bypassing the whitelist to allow se: prefixes.
-        // Is there a more appropriate way to do this?
-				if(attrName.indexOf('se:') == 0) {
-					se_attrs.push([attrName, attr.nodeValue]);
+				// Is there a more appropriate way to do this?
+				if (attrName.indexOf('se:') === 0) {
+					seAttrs.push([attrName, attr.nodeValue]);
 				}
 				node.removeAttributeNS(attrNsURI, attrLocalName);
 			}
-			
+
 			// Add spaces before negative signs where necessary
-			if(svgedit.browser.isGecko()) {
-				switch ( attrName ) {
+			if (svgedit.browser.isGecko()) {
+				switch (attrName) {
 				case 'transform':
 				case 'gradientTransform':
 				case 'patternTransform':
@@ -173,12 +175,12 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 					node.setAttribute(attrName, val);
 				}
 			}
-			
+
 			// For the style attribute, rewrite it in terms of XML presentational attributes
 			if (attrName == 'style') {
 				var props = attr.nodeValue.split(';'),
 					p = props.length;
-				while(p--) {
+				while (p--) {
 					var nv = props[p].split(':');
 					var styleAttrName = $.trim(nv[0]);
 					var styleAttrVal = $.trim(nv[1]);
@@ -190,17 +192,17 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 				node.removeAttribute('style');
 			}
 		}
-		
-		$.each(se_attrs, function(i, attr) {
+
+		$.each(seAttrs, function(i, attr) {
 			node.setAttributeNS(NS.SE, attr[0], attr[1]);
 		});
-		
+
 		// for some elements that have a xlink:href, ensure the URI refers to a local element
 		// (but not for links)
 		var href = svgedit.utilities.getHref(node);
-		if(href && 
-		   ['filter', 'linearGradient', 'pattern',
-		   'radialGradient', 'textPath', 'use'].indexOf(node.nodeName) >= 0)
+		if (href &&
+			['filter', 'linearGradient', 'pattern',
+			'radialGradient', 'textPath', 'use'].indexOf(node.nodeName) >= 0)
 		{
 			// TODO: we simply check if the first character is a #, is this bullet-proof?
 			if (href[0] != '#') {
@@ -209,13 +211,13 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 				node.removeAttributeNS(NS.XLINK, 'href');
 			}
 		}
-		
+
 		// Safari crashes on a <use> without a xlink:href, so we just remove the node here
 		if (node.nodeName == 'use' && !svgedit.utilities.getHref(node)) {
 			parent.removeChild(node);
 			return;
 		}
-		// if the element has attributes pointing to a non-local reference, 
+		// if the element has attributes pointing to a non-local reference,
 		// need to remove the attribute
 		$.each(['clip-path', 'fill', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'stroke'], function(i, attr) {
 			var val = node.getAttribute(attr);
@@ -228,7 +230,7 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 				}
 			}
 		});
-		
+
 		// recurse to children
 		i = node.childNodes.length;
 		while (i--) { svgedit.sanitize.sanitizeSvg(node.childNodes.item(i)); }
@@ -248,9 +250,7 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 		// call sanitizeSvg on each of those children
 		var i = children.length;
 		while (i--) { svgedit.sanitize.sanitizeSvg(children[i]); }
-
 	}
 };
 
 })();
-
