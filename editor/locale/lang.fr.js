@@ -4,11 +4,11 @@ svgEditor.readLang({
 	common: {
 		"ok": "OK",
 		"cancel": "Annuler",
-		"key_backspace": "Suppr.", 
-		"key_del": "Retour Arr.", 
+		"key_backspace": "Supprimer", 
+		"key_del": "Retour Arrière.", 
 		"key_down": "Bas", 
 		"key_up": "Haut", 
-		"more_opts": "More Options",
+		"more_opts": "Options supplémentaires",
 		"url": "URL",
 		"width": "Largeur",
 		"height": "Hauteur"
