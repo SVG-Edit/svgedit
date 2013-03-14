@@ -79,9 +79,9 @@ svgEditor.readLang({
 		"align_relative_to": "Aligner par rapport à ...",
 		"relativeTo": "Relativement à:",
 		"Page": "Page",
-		"largest_object": "Plus gros objet",
+		"largest_object": "Objet plus gros ",
 		"selected_objects": "Objets sélectionnés",
-		"smallest_object": "Plus petit objet",
+		"smallest_object": "Objet plus petit",
 		"new_doc": "Nouvelle image",
 		"open_doc": "Ouvrir une image",
 		"export_png": "Exporter au format PNG",
@@ -119,7 +119,7 @@ svgEditor.readLang({
 		"clone": "Cloner élement(s)",
 		"del": "Supprimer élement(s)",
 		"group": "Grouper les éléments",
-		"make_link": "Créer (hyper)lien",
+		"make_link": "Créer hyperlien",
 		"set_link_url": "Définir le lien URL (laisser vide pour supprimer)",
 		"to_path": "Convertir en tracé",
 		"reorient_path": "Réorienter le tracé",
@@ -140,9 +140,9 @@ svgEditor.readLang({
 		"paste_in_place": "Coller sur place",
 		"Retour Arr.": "Supprimer",
 		"move_front": "Placer au premier plan",
-		"move_up": "Placer plus près",
-		"move_down": "Placer au dernier plan",
-		"move_back": "Placer plus au fond"
+		"move_up": "Avancer d'un plan",
+		"move_down": "Placer en arrière plan",
+		"move_back": "Reculer d'un plan"
 	},
 	layers: {
 		"layer":"Calque",
