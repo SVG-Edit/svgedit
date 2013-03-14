@@ -14,11 +14,11 @@ svgEditor.readLang({
 		"height": "Hauteur"
 	},
 	misc: {
-		"powered_by": "Powered by"
+		"powered_by": "Propulsé par"
 	}, 
 	ui: {
 		"toggle_stroke_tools": "Montrer/Cacher plus d'outils de Contour",
-		"palette_info": "Cliquer pour changer la couleur de remplissage, Shift-Clic pour changer la couleur de contour",
+		"palette_info": "Cliquer pour changer la couleur de remplissage, Maj-Clic pour changer la couleur de contour",
 		"zoom_level": "Changer le niveau de zoom",
 		"panel_drag": "Tirer vers la gauche/droite pour redimentionner le panneau"
 	},
@@ -104,7 +104,7 @@ svgEditor.readLang({
 		"mode_ellipse": "Ellipse",
 		"mode_circle": "Cercle",
 		"mode_fhellipse": "Ellipse main levée",
-		"mode_path": "Outil Chemin",
+		"mode_path": "Dessiner un tracé",
 		"mode_shapelib": "Bibliothèque d'images",
 		"mode_text": "Outil Texte",
 		"mode_image": "Outil Image",
@@ -120,9 +120,9 @@ svgEditor.readLang({
 		"del": "Supprimer élement(s)",
 		"group": "Grouper les éléments",
 		"make_link": "Créer (hyper)lien",
-		"set_link_url": "Set link URL (leave empty to remove)",
-		"to_path": "Convertir en chemin",
-		"reorient_path": "Réorienter le chemin",
+		"set_link_url": "Définir le lien URL (laisser vide pour supprimer)",
+		"to_path": "Convertir en tracé",
+		"reorient_path": "Réorienter le tracé",
 		"ungroup": "Dégrouper les éléments",
 		"docprops": "Propriétés du document",
 		"imagelib": "Bibliothèque d'images",
@@ -131,7 +131,7 @@ svgEditor.readLang({
 		"node_clone": "Cloner le nœud",
 		"node_delete": "Supprimer le nœud",
 		"node_link": "Rendre les points de contrôle solidaires",
-		"add_subpath": "Ajouter un sous-chemin",
+		"add_subpath": "Ajouter un tracé secondaire",
 		"openclose_path": "Ouvrir/Fermer sous-chemin",
 		"source_save": "Appliquer Modifications",
 		"cut": "Couper",
@@ -180,7 +180,7 @@ svgEditor.readLang({
 		"show_rulers": "Afficher les règles",
 		"base_unit": "Unité de mesure:",
 		"grid": "Grille",
-		"snapping_onoff": "Snapping on/off",
+		"snapping_onoff": "Épingler oui/non",
 		"snapping_stepsize": "Snapping Step-Size:",
 		"grid_color": "Couleur de la grille"
 	},
@@ -188,7 +188,7 @@ svgEditor.readLang({
 		"basic": "Basique",
 		"object": "Objets",
 		"symbol": "Symboles",
-		"arrow": "Flêches",
+		"arrow": "Flèches",
 		"flowchart": "Diagramme de flux",
 		"animal": "Animaux",
 		"game": "Cartes & Echecs",
@@ -201,11 +201,11 @@ svgEditor.readLang({
 		"raphael_2": "raphaeljs.com ensemble 2"
 	},
 	imagelib: {
-		"select_lib": "Select an image library",
-		"show_list": "Show library list",
-		"import_single": "Import single",
-		"import_multi": "Import multiple",
-		"open": "Open as new document"
+		"select_lib": "Choisir une image dans la bibliothèque",
+		"show_list": "Liste de la bibliotèque d'images",
+		"import_single": "Importation simple",
+		"import_multi": "Importation multiple",
+		"open": "Ouvrir en tant que nouveau document"
 	},
 	notification: {
 		"invalidAttrValGiven":"Valeur fournie invalide",
@@ -216,7 +216,7 @@ svgEditor.readLang({
 		"layerHasThatName":"Le calque porte déjà ce nom",
 		"QmoveElemsToLayer":"Déplacer les éléments sélectionnés vers le calque '%s' ?",
 		"QwantToClear":"Voulez-vous effacer le dessin ?\nL'historique de vos actions sera également effacé !",
-		"QwantToOpen":"Do you want to open a new file?\nThis will also erase your undo history!",
+		"QwantToOpen":"Voulez-vous ouvrir un nouveau document?\nVous perderez l'historique de vos modifications!",
 		"QerrorsRevertToSource":"Il y a des erreurs d'analyse syntaxique dans votre code-source SVG.\nRevenir au code-source SVG avant modifications ?",
 		"QignoreSourceChanges":"Ignorer les modifications faites à la source SVG ?",
 		"featNotSupported":"Fonction non supportée",
