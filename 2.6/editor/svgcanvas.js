@@ -5772,18 +5772,20 @@ this.setSvgString = function(xmlString) {
 			var image = this;
 			preventClickDefault(image);
 			var val = getHref(this);
-			if(val.indexOf('data:') === 0) {
-				// Check if an SVG-edit data URI
-				var m = val.match(/svgedit_url=(.*?);/);
-				if(m) {
-					var url = decodeURIComponent(m[1]);
-					$(new Image()).load(function() {
-						image.setAttributeNS(xlinkns,'xlink:href',url);
-					}).attr('src',url);
+			if(val) {
+				if(val.indexOf('data:') === 0) {
+					// Check if an SVG-edit data URI
+					var m = val.match(/svgedit_url=(.*?);/);
+					if(m) {
+						var url = decodeURIComponent(m[1]);
+						$(new Image()).load(function() {
+							image.setAttributeNS(xlinkns,'xlink:href',url);
+						}).attr('src',url);
+					}
 				}
+				// Add to encodableImages if it loads
+				canvas.embedImage(val);
 			}
-			// Add to encodableImages if it loads
-			canvas.embedImage(val);
 		});
 	
 		// Wrap child SVGs in group elements
