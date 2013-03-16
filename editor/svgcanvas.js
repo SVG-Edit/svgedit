@@ -4729,7 +4729,7 @@ this.setSvgString = function(xmlString) {
 					if (m) {
 						var url = decodeURIComponent(m[1]);
 						$(new Image()).load(function () {
-							image.setAttributeNS(xlinkns, 'xlink:href', url);
+							image.setAttributeNS(NS.XLINK, 'xlink:href', url);
 						}).attr('src', url);
 					}
 				}
