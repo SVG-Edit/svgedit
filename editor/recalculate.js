@@ -65,6 +65,11 @@ svgedit.recalculate.updateClipPath = function(attr, tx, ty) {
 svgedit.recalculate.recalculateDimensions = function(selected) {
   if (selected == null) return null;
 
+  // Firefox Issue - 1081
+  if (selected.nodeName == "svg" && navigator.userAgent.indexOf("Firefox/20") >= 0) {
+	  return null;
+  }
+
   var svgroot = context_.getSVGRoot();
   var tlist = svgedit.transformlist.getTransformList(selected);
 
