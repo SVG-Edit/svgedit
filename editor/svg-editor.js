@@ -4679,6 +4679,10 @@
 					'url': url,
 					'dataType': 'text',
 					cache: !!cache,
+					beforeSend:function(){
+						$('#dialog_content').html('<p>Loading image, please wait</p>');
+             					$('#dialog_box').show();
+        				},
 					success: function(str) {
 						loadSvgString(str, cb);
 					},
@@ -4688,7 +4692,10 @@
 						} else {
 							$.alert(uiStrings.notification.URLloadFail + ': \n'+err+'', cb);
 						}
-					}
+					},
+    					complete:function(){
+             					$('#dialog_box').hide();
+        				}
 				});
 			});
 		};
