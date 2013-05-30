@@ -21,7 +21,7 @@ svgEditor.addExtension("server_opensave", {
 				var svg = "<?xml version=\"1.0\"?>\n" + data;
 				
 				var title = svgCanvas.getDocumentTitle();
-				var filename = title.replace(/[^a-z0-9\.\_\-]+/gi, '_');
+				var filename = $.trim(title).replace(/[^a-z0-9\.\_\-]+/gi, '_');
 				
 				var form = $('<form>').attr({
 					method: 'post',
