@@ -7389,6 +7389,10 @@ this.cloneSelectedElements = function(x, y) {
 	var batchCmd = new svgedit.history.BatchCommand("Clone Elements");
 	// find all the elements selected (stop at first null)
 	var len = selectedElements.length;
+	function sortfunction(a, b){
+		return ($(b).index() - $(a).index()); //causes an array to be sorted numerically and ascending
+	}
+	selectedElements.sort(sortfunction);
 	for (var i = 0; i < len; ++i) {
 		var elem = selectedElements[i];
 		if (elem == null) break;
