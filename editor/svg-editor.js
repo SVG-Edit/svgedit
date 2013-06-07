@@ -3673,6 +3673,7 @@
 			};
 
 			var populateLayers = function() {
+        svgCanvas.clearSelection();
 				var layerlist = $('#layerlist tbody').empty();
 				var selLayerNames = $('#selLayerNames').empty();
 				var drawing = svgCanvas.getCurrentDrawing();
