@@ -4120,6 +4120,13 @@ this.svgToString = function(elem, indent) {
 			// Check elements for namespaces, add if found
 			$(elem).find('*').andSelf().each(function() {
 				var el = this;
+        // for some elements have no attribute
+        var uri = this.namespaceURI;
+        if(uri && !nsuris[uri] && nsMap[uri] && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml' ) {
+          nsuris[uri] = true;
+          out.push(" xmlns:" + nsMap[uri] + '="' + uri +'"');
+        }
+        
 				$.each(this.attributes, function(i, attr) {
 					var uri = attr.namespaceURI;
 					if (uri && !nsuris[uri] && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml' ) {
