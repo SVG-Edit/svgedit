@@ -73,6 +73,7 @@ svgEditor.addExtension('shapes', function() {
 
 	var cur_lib = library.basic;
 	var mode_id = 'shapelib';
+  var startClientPos = {};
 
 	function loadIcons() {
 		$('#shape_buttons').empty().append(cur_lib.buttons);
@@ -243,6 +244,9 @@ svgEditor.addExtension('shapes', function() {
 			var x = start_x = opts.start_x;
 			var y = start_y = opts.start_y;
 			var cur_style = canv.getStyle();
+         
+      startClientPos.x = opts.event.clientX;
+      startClientPos.y = opts.event.clientY;
 
 			cur_shape = canv.addSvgElementFromJson({
 				'element': 'path',
@@ -335,16 +339,11 @@ svgEditor.addExtension('shapes', function() {
 		mouseUp: function(opts) {
 			var mode = canv.getMode();
 			if (mode !== mode_id) return;
-			if (opts.mouse_x == start_x && opts.mouse_y == start_y) {
-				return {
-					keep: false,
-					element: cur_shape,
-					started: false
-				};
-			}
+         
+      var keepObject = (opts.event.clientX != startClientPos.x && opts.event.clientY != startClientPos.y);
 
 			return {
-				keep: true,
+				keep: keepObject,
 				element: cur_shape,
 				started: false
 			};
