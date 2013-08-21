@@ -1293,17 +1293,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			svgCanvas.cloneSelectedElements(0, 0);
 		}
 	
-		root_sctm = svgcontent.getScreenCTM().inverse();
-
-		// Firefox issue 1046
-		if (current_zoom != 1 && root_sctm.a == 1) {
-			matrix_e = root_sctm.e / current_zoom - root_sctm.e;
-			matrix_f = root_sctm.f / current_zoom - root_sctm.f;
-			matrix_scale = 1/current_zoom;
-			root_sctm = svgcontent.getScreenCTM().inverse()
-			.translate(matrix_e, matrix_f)
-			.scale(matrix_scale);
-		}
+		root_sctm = $('#svgcontent g')[0].getScreenCTM().inverse();
 		
 		var pt = svgedit.math.transformPoint( evt.pageX, evt.pageY, root_sctm ),
 			mouse_x = pt.x * current_zoom,
@@ -2451,7 +2441,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		e.preventDefault();
 		var evt = e.originalEvent;
 
-		root_sctm = svgcontent.getScreenCTM().inverse();
+		root_sctm = $('#svgcontent g')[0].getScreenCTM().inverse();
 		var pt = svgedit.math.transformPoint( evt.pageX, evt.pageY, root_sctm );
 
 		var bbox = {
