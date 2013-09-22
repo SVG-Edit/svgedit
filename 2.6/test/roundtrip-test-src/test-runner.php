@@ -1,8 +1,13 @@
 <?php
-$dbhost = "localhost";
-$dbuser = "www";
-$dbpass = "";
-$dbschema = "svg-edit-test";
+/*
+ * Create your own settings.php file defining the following variables:
+ * - $dbhost   - host of mysql server
+ * - $dbuser   - mysql user to log in as
+ * - $dbpass   - mysql password
+ * - $dbschema - database name containing the tests and test result tables  
+ * - $baseURL  - URL to the hosted roundtrip-test-src directory on your server. Exclude trailing /.
+ */
+require_once 'settings.php';
 
 if(@$_GET["testfetch"] == "1")
 {
@@ -167,13 +172,13 @@ $rev = $_GET["rev"];
 <html>
 <head>
 <title>svg-edit round-trip tester</title>
-<script src="<?php echo ("http://home.mbaynton.com/svg-edit-test/svg-edit-test/svn/checkout.php/$rev/editor/embedapi.js"); ?>"></script>
+<script src="<?php echo ("$baseURL/svn/checkout.php/$rev/editor/embedapi.js"); ?>"></script>
 <script src="browser-detection.js"></script>
 </head>
 <body>
 	<table>
 		<tr>
-			<td style="vertical-align: top;"><iframe id="svg-edit-frame" src="<?php echo ("http://home.mbaynton.com/svg-edit-test/svg-edit-test/svn/checkout.php/$rev/editor/svg-editor.html"); ?>" width=1024 height=768></iframe></td>
+			<td style="vertical-align: top;"><iframe id="svg-edit-frame" src="<?php echo ("$baseURL/svn/checkout.php/$rev/editor/svg-editor.html"); ?>" width=1024 height=768></iframe></td>
 			<td style="vertical-align: top;"><ul id="test-results"></ul></td>			
 		</tr>
 	</table>

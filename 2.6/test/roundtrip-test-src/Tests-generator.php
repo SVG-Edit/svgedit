@@ -1,4 +1,5 @@
 <?php
+require_once 'settings.php';
 require_once('helper-functions.php');
 
 if(count(@$argv) > 1)
@@ -9,7 +10,7 @@ if(count(@$argv) > 1)
 }
 $tests_generated = 0;
 
-$db = new mysqli("localhost", "www", "", "svg-edit-test");
+$db = new mysqli($dbhost, $dbuser, $dbpass, $dbschema);
 if($db->connect_errno)
 {
 	applog("Couldn't connect to database: " . $db->connect_error);

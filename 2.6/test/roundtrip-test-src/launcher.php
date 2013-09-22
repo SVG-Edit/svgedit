@@ -1,8 +1,5 @@
 <?php
-$dbhost = "localhost";
-$dbuser = "www";
-$dbpass = "";
-$dbschema = "svg-edit-test";
+require_once 'settings.php';
 
 function get_revs()
 {

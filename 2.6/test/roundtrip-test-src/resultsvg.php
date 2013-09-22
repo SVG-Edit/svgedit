@@ -1,8 +1,5 @@
 <?php 
-$dbhost = "localhost";
-$dbuser = "www";
-$dbpass = "";
-$dbschema = "svg-edit-test";
+require_once 'settings.php';
 
 $db = new mysqli($dbhost, $dbuser, $dbpass, $dbschema);
 
