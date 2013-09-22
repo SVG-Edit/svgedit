@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+	<title>google-diff-match-patch test</title>
+	<style>
+    /* Generic pane rules */
+    body { margin: 0; }
+    .row, .col { overflow: hidden; position: absolute; }
+    .row { left: 0; right: 0; }
+    .col { top: 0; bottom: 0; }
+    .scroll-x { overflow-x: auto; }
+    .scroll-y { overflow-y: auto; }
+
+    .header.row { height: 20px; width: 100%; top: 0; }
+    .header.row div { width: 50%; background-color: #ccc; display: block;}
+    .body.row { top: 20px; bottom: 0px; }
+    
+	.diffPanel {
+	    background-color: #FFFFFF;
+	    width: 50%;
+	    height: 100%;
+	    overflow: scroll; 
+	}
+	
+	#outputDiv { white-space: nowrap; font-family: courier; font-size: 10pt; }
+	</style>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div class="header row">
+       <div style="float: left;">Original</div><div style="float: right;">Changed</div>
+    </div>  
+	<div id="outputDiv" class="body row scroll-y">Please wait, diff is being computed (was there ever a better job for a WebWorker?)</div>
+	
+	<script>
+		var diffWorker = new Worker("diff_match_patch_htmlsidebyside-worker.js");
+		var outputDiv = document.getElementById("outputDiv");
+		
+		diffWorker.onmessage = function(oEvent)
+		{
+			outputDiv.innerHTML = oEvent.data;
+			
+			// sync scrolling
+			$(outputDiv).find(".diffPanel").scroll(function(evt){
+				// find companion div
+				var companion = $(evt.target).parent().find(".diffPanel").filter(function(){return this !== evt.target});
+				companion.scrollLeft($(evt.target).scrollLeft());
+				companion.scrollTop($(evt.target).scrollTop());
+			})
+		}
+		
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", "test-pre.svg", false);
+		xhr.send();
+		var orig = xhr.responseText;
+
+		xhr.open("GET", "test-post.svg", false);
+		xhr.send();
+		var changed = xhr.responseText;
+
+		diffWorker.postMessage({orig: orig, changed: changed});
+	</script>
+  </body>
+</html>
