@@ -24,13 +24,22 @@ function get_revs()
 
 // get results stats
 $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbschema);
-$mysqli->query("SELECT browser, browserMajorVer, svnRev, SUM(rasterDiffMeanSquareError) AS sum, COUNT(rasterDiffMeanSquareError) AS count FROM TestResults 
+$sql = "SELECT browser, browserMajorVer, svnRev, SUM(rasterDiffMeanSquareError) AS sum, COUNT(rasterDiffMeanSquareError) AS count FROM TestResults 
 GROUP BY browser, browserMajorVer, svnRev
-ORDER BY CASE WHEN COUNT(rasterDiffMeanSquareError) = 300 THEN 1 ELSE 2 END, svnRev DESC, browser, browserMajorVer DESC", MYSQLI_ASYNC);
+ORDER BY CASE WHEN COUNT(rasterDiffMeanSquareError) = 300 THEN 1 ELSE 2 END, svnRev DESC, browser, browserMajorVer DESC";
+if(method_exists($mysqli, "reap_async_query"))
+{
+	$mysqli->query($sql, MYSQLI_ASYNC);
+} else {
+	$result = $mysqli->query($sql);
+}
 
 $revs = get_revs();
 
-$result = $mysqli->reap_async_query();
+if(method_exists($mysqli, "reap_async_query"))
+{
+	$result = $mysqli->reap_async_query();
+}
 ?>
 <html>
 <head>
