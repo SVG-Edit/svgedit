@@ -183,16 +183,18 @@ select {
 	border-style: solid;
 	border-width: 1px;
 	border-left: none;
+	overflow-x:hidden;
+	overflow-y:visible;
 }
 
 #layerpanel {
 	display: inline-block;
-	position:absolute;
-	top: 1px;
+	position:relative;
+	top: 0px;
 	bottom: 0;
-	right: 0;
+	left: 12px;
 	width: 0;
-	overflow: auto;
+	overflow: hidden;
 	margin: 0;
 	-moz-user-select: none;
 	-webkit-user-select: none;

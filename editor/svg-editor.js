@@ -3603,6 +3603,7 @@
 				$('#layerpanel').width('+=' + delta);
 				rulerX.css('right', parseInt(rulerX.css('right'), 10) + delta);
 				workarea.css('right', parseInt(workarea.css('right'), 10) + delta);
+				svgCanvas.runExtensions("workareaResized");
 			};
 
 			var resizeSidePanel = function(evt) {
