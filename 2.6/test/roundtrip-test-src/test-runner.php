@@ -21,8 +21,8 @@ if(@$_GET["testfetch"] == "1")
 
 	$qr = $db->query("
 		SELECT T.svgId, T.svg 
-		FROM `svg-edit-test`.Tests T
-		LEFT JOIN `svg-edit-test`.TestResults TR ON T.svgId = TR.svgId AND TR.svnRev = " . $db->real_escape_string($_GET["rev"]) . " AND TR.browser = '" . $db->real_escape_string($_GET["browser"]) . "' AND TR.browserMajorVer = " . $db->real_escape_string($_GET["browserMajorVer"]) .  "
+		FROM Tests T
+		LEFT JOIN TestResults TR ON T.svgId = TR.svgId AND TR.svnRev = " . $db->real_escape_string($_GET["rev"]) . " AND TR.browser = '" . $db->real_escape_string($_GET["browser"]) . "' AND TR.browserMajorVer = " . $db->real_escape_string($_GET["browserMajorVer"]) .  "
 		WHERE TR.svgId IS NULL
 		LIMIT 1 ");
 	
@@ -132,7 +132,7 @@ if(@$_GET["testfetch"] == "1")
 	
 	$null = NULL;
 	
-	$stmt = $db->prepare("INSERT INTO `svg-edit-test`.TestResults (svgId, browser, browserMajorVer, browserVer, svnRev, svg, svgIsValid, canonicalSvg, nodeCount, attrCount, attrsLostList, png, pngdiff, rasterDiffMeanSquareError)
+	$stmt = $db->prepare("INSERT INTO TestResults (svgId, browser, browserMajorVer, browserVer, svnRev, svg, svgIsValid, canonicalSvg, nodeCount, attrCount, attrsLostList, png, pngdiff, rasterDiffMeanSquareError)
 			VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 		");
 	
