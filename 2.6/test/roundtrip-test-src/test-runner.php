@@ -18,6 +18,7 @@ if(@$_GET["testfetch"] == "1")
 		echo ("Couldn't connect to database: " . $db->connect_error);
 		die();
 	}
+	//$db->set_charset("utf8");
 
 	$qr = $db->query("
 		SELECT T.svgId, T.svg 
@@ -50,7 +51,7 @@ if(@$_GET["testfetch"] == "1")
 	{
 		header("HTTP/1.1 500 Internal Server Error");
 		echo $comment;
-		error_log("svg-edit-test store: " . $comment);
+		applog("svg-edit-test store: " . $comment);
 		exit;
 	}	
 	
@@ -60,6 +61,7 @@ if(@$_GET["testfetch"] == "1")
 		echo ("Couldn't connect to database: " . $db->connect_error);
 		die();
 	}
+	$db->set_charset("utf8");
 	
 	function e($name)
 	{
@@ -109,25 +111,24 @@ if(@$_GET["testfetch"] == "1")
 	$attrsLost = array_diff($origAttrs, $attrsList);
 	sort($attrsLost);
 	
+	$img_diff = array(0=>"", 1=>1);
 	// png
-	$png = NULL;
-	try {
-		if(substr(ltrim($_POST["svg"]), 0, 3) != "<?xml")
-		{
-			$png = SvgToPng("<?xml version=\"1.0\" ?>" . $_POST["svg"]);
-		} else {
-			$png = SvgToPng($_POST["svg"]);
-		}
-		
+	$png = SvgToPng($_POST["svg"]);
+	if($png)
+	{	
 		// png diff
 		$IM_test = new IMagick();
 		$IM_test->readimageblob($png);
-		$img_diff = $IM_orig->compareImages($IM_test, Imagick::METRIC_MEANSQUAREERROR);
-	} catch(ImagickException $e)
-	{
-		applog("Rasterizing error on test " . $_POST["svgId"] . ": " . $e->getMessage());
-		$png = ""; // allow further testing to proceed in this error condition (don't send HTTP 500)
-		$img_diff = array(0=>"", 1=>1);
+		
+		try
+		{
+			$img_diff = $IM_orig->compareImages($IM_test, Imagick::METRIC_MEANSQUAREERROR);
+		} catch(ImagickException $e)
+		{
+			applog("Compare error on test " . $_POST["svgId"] . ": " . $e->getMessage());
+			$png = ""; // allow further testing to proceed in this error condition (don't send HTTP 500)
+			$img_diff = array(0 => file_get_contents(dirname(__FILE__) . '/comparefail.png'), 1=>1);
+		}
 	}
 	
 	$null = NULL;

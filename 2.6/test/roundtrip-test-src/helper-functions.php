@@ -136,10 +136,70 @@ function XmlCanonicalize($xml)
 // returns png bytestream
 function SvgToPng($svg)
 {
-	$im = new Imagick();	
+	static $rsvgConvert;
+	if(!$rsvgConvert)
+	{
+		require('settings.php');
+	}
+	
+	$process = proc_open(
+			$rsvgConvert,
+			array(
+					0 => array("pipe", "r"), // child's stdin
+					1 => array("pipe", "w"), // child's stdout
+					2 => array("pipe", "w") // child's stderr
+				),
+			$pipes,
+			'/tmp'
+			);
+	
+	if(is_resource($process))
+	{
+		fwrite($pipes[0], $svg);
+		fclose($pipes[0]);
+		
+		$png = stream_get_contents($pipes[1]);
+		fclose($pipes[1]);
+		
+		// log rsvg error chatter
+		//file_put_contents('/tmp/svg-errors.log', stream_get_contents($pipes[2]) . "\n", FILE_APPEND);
+		fclose($pipes[2]);
+		proc_close($process);
+		
+		if(substr($png, 0, 5) == "Error")
+		{
+			$png = "";
+		}
+		
+		return $png;
+	} else {
+		return "";
+	}
+	
+	/*
+	 * The inkscape way doesn't render as much as rsvg,
+	 * plus all the temp files kinda suck
+	$tmpPng = tempnam(sys_get_temp_dir(), "svgtest-");
+	$tmpSvg = tempnam(sys_get_temp_dir(), "svgtest-");
+	file_put_contents($tmpSvg, $svg);
+	`$inkscape --export-png="$tmpPng" "$tmpSvg"`;
+	
+	$png = file_get_contents($tmpPng);
+	
+	unlink($tmpPng);
+	unlink($tmpSvg);
+	
+	return $png;
+	*/
+	
+	/*
+	 * the Imagick way may doesn't seem as reliable and is definitely slower
+	$im = new Imagick();
+	$im->setFormat("svg");
 	$im->readimageblob($svg);
 	$im->setimageformat("png");
 	return $im->getimageblob();
+	*/
 }
 
 /*
@@ -182,6 +242,14 @@ function send_long_data_helper($stmt, $pos, $data)
 function applog($str)
 {
 	echo $str . "\n";
+	//file_put_contents('/tmp/svg-errors.log', $str . "\n", FILE_APPEND);
 }
 
-;
+// Regenerates a png using the GD image library.
+function gdPngToPng($png)
+{
+	$gd = imagecreatefromstring($png);
+	ob_start();
+	imagepng($gd);
+	return ob_get_flush();
+}

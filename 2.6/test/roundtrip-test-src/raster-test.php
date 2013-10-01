@@ -35,7 +35,7 @@ my_raster_test;
 //$svg = pack("CCC", 0xef, 0xbb, 0xbf) . $svg;
 
 
-//$svg = file_get_contents("big.svg");
+$svg = file_get_contents("svggrab.svg");
 
 require_once('helper-functions.php');
 
@@ -58,6 +58,8 @@ $stmt->execute();
 
 die();
 */
+
+
 if($png)
 {
 	header("Content-Type: image/png");
