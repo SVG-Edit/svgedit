@@ -1,22 +1,18 @@
 <?php
 require_once 'settings.php';
+require_once 'helper-functions.php';
 
-function get_revs()
+function get_revs($db)
 {
 	$revs = array();
 	
-	$doc = new DOMDocument();
-	@$doc->loadHTMLFile("http://code.google.com/p/svg-edit/source/list");
-	
-	$revRowSearcher = new DOMXPath($doc);
-	$revRows = $revRowSearcher->query("//td[@nowrap = 'nowrap']/a[substring(@href, 1, 9) = 'detail?r=']");
-	for($i = 0; $i < $revRows->length; $i++)
+	$result = $db->query("SELECT rev, date FROM SvnRevisions ORDER BY rev DESC LIMIT 30");
+	while($rev = $result->fetch_assoc())
 	{
-		$rev = array(
-				"r" => substr($revRows->item($i)->attributes->getNamedItem("href")->nodeValue, 9),
-				"date" => $revRows->item($i)->nodeValue
-			);
-		$revs[] = $rev;
+		$revs[] = array(
+					'r' => $rev['rev'],
+					'date' => time_elapsed_string($rev['date'])
+				);
 	}
 	
 	return $revs;
@@ -27,19 +23,10 @@ $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbschema);
 $sql = "SELECT browser, browserMajorVer, svnRev, SUM(rasterDiffMeanSquareError) AS sum, COUNT(rasterDiffMeanSquareError) AS count FROM TestResults 
 GROUP BY browser, browserMajorVer, svnRev
 ORDER BY CASE WHEN COUNT(rasterDiffMeanSquareError) = 300 THEN 1 ELSE 2 END, svnRev DESC, browser, browserMajorVer DESC";
-if(method_exists($mysqli, "reap_async_query"))
-{
-	$mysqli->query($sql, MYSQLI_ASYNC);
-} else {
-	$result = $mysqli->query($sql);
-}
 
-$revs = get_revs();
-
-if(method_exists($mysqli, "reap_async_query"))
-{
-	$result = $mysqli->reap_async_query();
-}
+$result = $mysqli->query($sql);
+checkForNewRevisions($mysqli);
+$revs = get_revs($mysqli);
 ?>
 <html>
 <head>

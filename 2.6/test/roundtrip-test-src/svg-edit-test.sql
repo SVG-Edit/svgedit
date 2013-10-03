@@ -15,6 +15,15 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+DROP TABLE IF EXISTS `SvnRevisions`;
+CREATE TABLE `SvnRevisions` (
+  `rev` int(11) NOT NULL,
+  `date` datetime NOT NULL,
+  PRIMARY KEY (`rev`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
+
+
 --
 -- Table structure for table `TestResults`
 --

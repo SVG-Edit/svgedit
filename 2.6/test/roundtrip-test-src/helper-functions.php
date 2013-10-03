@@ -253,3 +253,55 @@ function gdPngToPng($png)
 	imagepng($gd);
 	return ob_get_flush();
 }
+
+/* $db is a connected mysqli instance */
+function checkForNewRevisions($db)
+{
+	$lastKnownRev = 2500;
+	$result = $db->query("SELECT rev FROM SvnRevisions ORDER BY rev DESC LIMIT 1");
+	if($result = $result->fetch_assoc())
+	{
+		$lastKnownRev = $result['rev'];
+	}
+	
+	$newRevs = @svn_log('https://svg-edit.googlecode.com/svn/trunk', $lastKnownRev+1, SVN_REVISION_HEAD);
+	if($newRevs)
+	{
+		$insStmt = $db->prepare("INSERT INTO SvnRevisions(rev, date) VALUES(?, ?)");
+		foreach($newRevs AS $rev)
+		{
+			$insStmt->bind_param("is", $rev['rev'], $rev['date']);
+			$insStmt->execute();
+		}
+		$insStmt->close();
+	}
+}
+
+function time_elapsed_string($datetime, $full = false) {
+	$now = new DateTime;
+	$ago = new DateTime($datetime);
+	$diff = $now->diff($ago);
+
+	$diff->w = floor($diff->d / 7);
+	$diff->d -= $diff->w * 7;
+
+	$string = array(
+			'y' => 'year',
+			'm' => 'month',
+			'w' => 'week',
+			'd' => 'day',
+			'h' => 'hour',
+			'i' => 'minute',
+			's' => 'second',
+	);
+	foreach ($string as $k => &$v) {
+		if ($diff->$k) {
+			$v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+		} else {
+			unset($string[$k]);
+		}
+	}
+
+	if (!$full) $string = array_slice($string, 0, 1);
+	return $string ? implode(', ', $string) . ' ago' : 'just now';
+}

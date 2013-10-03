@@ -1,11 +1,12 @@
 <?php
 /*
  * Create your own settings.php file defining the following variables:
- * - $dbhost   - host of mysql server
- * - $dbuser   - mysql user to log in as
- * - $dbpass   - mysql password
- * - $dbschema - database name containing the tests and test result tables  
- * - $baseURL  - URL to the hosted roundtrip-test-src directory on your server. Exclude trailing /.
+ * - $rsvgConvert  - path to the rsvg_convert command on your system
+ * - $dbhost       - host of mysql server
+ * - $dbuser       - mysql user to log in as
+ * - $dbpass       - mysql password
+ * - $dbschema     - database name containing the tests and test result tables  
+ * - $baseURL      - URL to the hosted roundtrip-test-src directory on your server. Exclude trailing /.
  */
 require_once 'settings.php';
 
