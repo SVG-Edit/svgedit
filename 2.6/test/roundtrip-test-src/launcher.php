@@ -31,6 +31,16 @@ $revs = get_revs($mysqli);
 <html>
 <head>
 	<title>svg-edit round-trip test launcher</title>
+  <style>
+  table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    margin: 1em 0;
+  }
+  td, th {
+    padding: 0 0.5em;
+  }
+  </style>
 </head>
 <body>
 	<h2>Donate this browser to running tests:</h2>
@@ -49,7 +59,7 @@ $revs = get_revs($mysqli);
 	</form>
 	<h2>Results:</h2>
 	<p><strong>Raster Error Score summary</strong>
-	<table border="1">
+	<table>
 	<tr><th rowspan="2">Revision</th><th colspan="2">Browser</th><th rowspan="2">Error Score</th></tr>
 	<tr><th>Name</th><th>Version</th></tr>
 	<?php 
