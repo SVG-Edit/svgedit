@@ -31,42 +31,46 @@ $revs = get_revs($mysqli);
 <html>
 <head>
 	<title>svg-edit round-trip test launcher</title>
-  <style>
-  table {
-    border: 1px solid black;
-    border-collapse: collapse;
-    margin: 1em 0;
-  }
-  td, th {
-    padding: 0 0.5em;
-  }
-  </style>
+	<style>
+	table {
+		border: 1px solid black;
+		border-collapse: collapse;
+		margin: 1em 0;
+	}
+	td, th {
+		padding: 0 0.5em;
+	}
+	</style>
 </head>
 <body>
 	<h2>Donate this browser to running tests:</h2>
 	<form action="test-runner.php" method="GET">
-	  Revision to test: <select size="1" name="rev">
- <?php 
+		Revision to test: <select size="1" name="rev">
+<?php 
 	foreach($revs as $rev)
 	{
 		$r = $rev["r"];
 		$date = $rev["date"];
-		echo ("      <option value=\"$r\">$r - $date</option>\n");
+		echo ("\t\t\t<option value=\"$r\">$r - $date</option>\n");
 	}
- ?>
-	  </select>
-	  <input type="submit" value="Go!" />
+?>
+		</select>
+		<input type="submit" value="Go!" />
 	</form>
 	<h2>Results:</h2>
 	<p>
-    <strong>Raster Error Score summary</strong>
-	  <table>
-	    <tr><th rowspan="2">Revision</th><th colspan="2">Browser</th><th rowspan="2">Error Score</th></tr>
-	    <tr><th>Name</th><th>Version</th></tr>
- <?php 
+		<strong>Raster Error Score summary</strong>
+		<table>
+			<tr><th rowspan="2">Revision</th><th colspan="2">Browser</th><th rowspan="2">Error Score</th></tr>
+			<tr><th>Name</th><th>Version</th></tr>
+<?php 
 	while($resultArray = $result->fetch_assoc())
 	{
-		echo ("      <tr><td>" . $resultArray["svnRev"] . "</td><td>" . $resultArray["browser"] . "</td><td>" . $resultArray["browserMajorVer"] . "</td><td>");
+		echo ("\t\t\t<tr>" .
+		      "<td><a href='https://code.google.com/p/svg-edit/source/detail?r=" . $resultArray["svnRev"] . "'>" . $resultArray["svnRev"] . "</a></td>" .
+		      "<td>" . $resultArray["browser"] . "</td>" .
+		      "<td>" . $resultArray["browserMajorVer"] . "</td>" .
+		      "<td>");
 		if($resultArray["count"] == 300){
 			echo $resultArray["sum"];
 		} else {
@@ -75,14 +79,14 @@ $revs = get_revs($mysqli);
 		echo "</td></tr>\n";
 	}
 ?>
-	  </table>
+		</table>
 	</p>
 	<p>
-    <strong>Detail views</strong>
-	  <ul>
-	    <li><a target="_blank" href="rasterview.php">Raster image comparisons</a></li>
-	    <li><a target="_blank" href="diffview.php">Canonical XML side-by-side diffs</a></li>
-	  </ul>
+		<strong>Detail views</strong>
+		<ul>
+			<li><a target="_blank" href="rasterview.php">Raster image comparisons</a></li>
+			<li><a target="_blank" href="diffview.php">Canonical XML side-by-side diffs</a></li>
+		</ul>
 	</p>
 </body>
 </html>
