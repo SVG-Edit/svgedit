@@ -928,7 +928,6 @@
 
 					var timer;
 					var pos = $(show_sel).position();
-					$(hold_sel).css({'left': pos.left+34, 'top': pos.top+40});
 
 					// Clicking the "show" icon should set the current mode
 					shower.mousedown(function(evt) {
@@ -964,6 +963,7 @@
 					// $('#tools_rect').mouseleave(function(){$('#tools_rect').fadeOut();});
 				});
 				setFlyoutTitles();
+				setFlyoutPositions();
 			};
 
 			var makeFlyoutHolder = function(id, child) {
@@ -3150,6 +3150,7 @@
 					workarea[0]['scroll' + (type === 'width' ? 'Left' : 'Top')] -= (curval - val)/2;
 					win_wh[type] = curval;
 				});
+				setFlyoutPositions();
 			});
 
 			(function() {
