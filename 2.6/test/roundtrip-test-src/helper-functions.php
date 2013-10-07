@@ -278,8 +278,10 @@ function checkForNewRevisions($db)
 }
 
 function time_elapsed_string($datetime, $full = false) {
-	$now = new DateTime;
-	$ago = new DateTime($datetime);
+	$utc = new DateTimeZone("UTC");
+	$now = new DateTime("now", $utc);
+	$ago = new DateTime($datetime, $utc);
+	
 	$diff = $now->diff($ago);
 
 	$diff->w = floor($diff->d / 7);

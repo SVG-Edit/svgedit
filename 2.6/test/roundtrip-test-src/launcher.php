@@ -45,7 +45,7 @@ $revs = get_revs($mysqli);
 	</style>
 </head>
 <body>
-	<h2>Donate this browser to running tests:</h2>
+	<h2>Donate this browser to running roundtrip tests:</h2>
 	<form action="test-runner.php" method="GET">
 		Revision to test:
 		<select size="1" name="rev">
@@ -87,5 +87,22 @@ $revs = get_revs($mysqli);
 		<li><a target="_blank" href="rasterview.php">Raster image comparisons</a></li>
 		<li><a target="_blank" href="diffview.php">Canonical XML side-by-side diffs</a></li>
 	</ul>
+	
+	<hr />
+	
+	<h2>Manual regression test thingy</h2>
+	You can load some old svg-edit revision in your browser. This lets you (or your enemies) prove your change was the one that broke stuff.<br />
+	Revision to test:
+	<select id="manualTestRev">
+<?php 
+	foreach($revs as $rev)
+	{
+		$r = $rev["r"];
+		$date = $rev["date"];
+		echo ("\t\t<option value=\"$r\">$r - $date</option>\n");
+	}
+?>	
+	</select>
+	<button onclick="window.location = '<?php echo $baseURL ?>svn/checkout.php/' + document.getElementById('manualTestRev').value + '/editor/svg-editor.html'">Go!</button>
 </body>
 </html>
