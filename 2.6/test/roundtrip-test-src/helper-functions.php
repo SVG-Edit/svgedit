@@ -166,8 +166,8 @@ function SvgToPng($svg)
 		
 		if(substr($png, 0, 5) == "Error")
 		{
-			$png = "";
 			applog("PNG render failed: $png ** " . stream_get_contents($pipes[2]));
+			$png = "";			
 		}
 		
 		fclose($pipes[2]);
