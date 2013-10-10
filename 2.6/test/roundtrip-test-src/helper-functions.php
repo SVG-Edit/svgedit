@@ -163,13 +163,15 @@ function SvgToPng($svg)
 		
 		// log rsvg error chatter
 		//file_put_contents('/tmp/svg-errors.log', stream_get_contents($pipes[2]) . "\n", FILE_APPEND);
-		fclose($pipes[2]);
-		proc_close($process);
 		
 		if(substr($png, 0, 5) == "Error")
 		{
 			$png = "";
+			applog("PNG render failed: $png ** " . stream_get_contents($pipes[2]));
 		}
+		
+		fclose($pipes[2]);
+		proc_close($process);		
 		
 		return $png;
 	} else {
@@ -241,8 +243,7 @@ function send_long_data_helper($stmt, $pos, $data)
 
 function applog($str)
 {
-	echo $str . "\n";
-	//file_put_contents('/tmp/svg-errors.log', $str . "\n", FILE_APPEND);
+	error_log("svg-edit roundtrip tester: $str");
 }
 
 // Regenerates a png using the GD image library.
