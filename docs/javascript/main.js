@@ -192,8 +192,8 @@ function ReallyShowTip(tooltipID, linkID, docX, docY)
         }
 /*    else if (document.all)
         {
-        tooltip = eval("document.all['" + tooltipID + "']");
-        link = eval("document.all['" + linkID + "']");
+        tooltip = document.all[tooltipID]);
+        link = document.all[linkID]);
         }
 */
     if (tooltip)
@@ -250,7 +250,7 @@ function HideTip(tooltipID)
     if (document.getElementById)
         {  tooltip = document.getElementById(tooltipID); }
     else if (document.all)
-        {  tooltip = eval("document.all['" + tooltipID + "']");  }
+        {  tooltip = document.all[tooltipID];  }
 
     if (tooltip)
         {  tooltip.style.visibility = "hidden";  }
