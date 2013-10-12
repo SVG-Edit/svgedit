@@ -33,12 +33,55 @@ function init() {
 	browserMajorVer = browser.version();
 	browserVer = browser.full_version();
 	
-	svgEditEmbed = new embedded_svg_edit(svgEditFrame);
+	var openSaveFuncs = configureFor(app);
 	testIndex = 0;
-	runTest();
+	runTest(openSaveFuncs);
 }
 
-function runTest() {
+/*
+ * Abstracts out the actual load and save operations to callbacks, so that
+ * several flavors (currently svg-edit or direct browser innerHTML) can be
+ * dropped into the rest of the test framework.
+ */
+function configureFor(app)
+{
+	var openSaveFuncs = {};
+	switch(app)
+	{
+	case "svg-edit":
+		var svgEditEmbed = new embedded_svg_edit(svgEditFrame);
+		
+		openSaveFuncs.save = function svgEdit$save(onSavedCallback)
+		{
+			log('saving from editor...');			
+			svgEditEmbed.getSvgString()(onSavedCallback);
+		}
+		
+		openSaveFuncs.open = function svgEdit$open(svg, onOpenedCallback){
+			// Open the SVG in the editor...
+			log('opening in editor...');
+			svgEditEmbed.setSvgString(svg)(onOpenedCallback);
+		}
+		break;
+	default:
+		openSaveFuncs.save = function native$save(onSavedCallback)
+		{
+			log("Asking browser for svg representation...");
+			var svg = document.getElementById('svgContainer').innerHTML;
+			onSavedCallback(svg);
+		}
+		
+		openSaveFuncs.open = function native$open(svg, onOpenedCallback)
+		{
+			document.getElementById('svgContainer').innerHTML = svg;
+			onOpenedCallback();
+		}
+	}
+	
+	return openSaveFuncs;
+}
+
+function runTest(openSaveFuncs) {
 	var imageTitle,
 		url,
 		svgId,
@@ -56,10 +99,12 @@ function runTest() {
 					if(response.svgId == -1){
 						testsComplete();
 					} else {
-						log("Loaded test " + response.svgId + "...");
+						log("Downloaded test " + response.svgId + "...");
 						svgId = response.svgId;
 						origSource = response.svg;
-						openSvg();
+						openSaveFuncs.open(origSource, function(){
+							openSaveFuncs.save(saveSvg)
+						});
 					}
 				} else {
 					log("Failed to load test " + response.svgId + "...");
@@ -71,37 +116,26 @@ function runTest() {
 		xhr.send();
 	}
 
-	function openSvg() {
-		// Open the SVG in the editor...
-		log('opening in editor...');
-		svgEditEmbed.setSvgString(origSource)(function() {
-			saveSvg();
-		});
-	}
-
-	function saveSvg() {
+	function saveSvg(xml) {
 		// Save the XML output from the editor...
-		log('saving from editor...');
-		svgEditEmbed.getSvgString()(function(xml) {
-			savedSource = xml;
-			
-			var xhr = new XMLHttpRequest();
-			xhr.onreadystatechange = function()
-			{
-				if(xhr.readyState == 4){
-					if(xhr.status == 200){
-						getNextSvg();
-					} else {
-						log("Failed to save test.");
-					}
+		savedSource = xml;
+		
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function()
+		{
+			if(xhr.readyState == 4){
+				if(xhr.status == 200){
+					getNextSvg();
+				} else {
+					log("Failed to save test.");
 				}
 			}
-			xhr.open("POST", top.location.href + "&teststore=1");			
+		}
+		xhr.open("POST", top.location.href + "&teststore=1");
 
-			xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-			log('uploading saved source...');
-			xhr.send("svgId=" + svgId + "&browser=" + escape(browserName) + "&browserVer=" + escape(browserVer) + "&browserMajorVer=" + browserMajorVer + "&svg=" + escape(savedSource));
-		});
+		xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+		log('uploading saved source...');
+		xhr.send("svgId=" + svgId + "&browser=" + encodeURIComponent(browserName) + "&browserVer=" + encodeURIComponent(browserVer) + "&browserMajorVer=" + browserMajorVer + "&svg=" + encodeURIComponent(savedSource));
 	}
 
 	function renderSvg() {
@@ -284,8 +318,11 @@ function testsComplete() {
 
 testResults = document.getElementById('test-results');
 svgEditFrame = document.getElementById('svg-edit-frame');
-svgEditFrame.addEventListener('load', function() {
-	init();
-});
-
+if(svgEditFrame){
+	svgEditFrame.addEventListener('load', function() {
+		init();
+	});
+} else {
+	window.onload = init;
+}
 })();

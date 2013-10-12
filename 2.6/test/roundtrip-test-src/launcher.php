@@ -57,6 +57,7 @@ $revs = get_revs($mysqli);
 		echo ("\t\t\t<option value=\"$r\">$r - $date</option>\n");
 	}
 ?>
+		<option value="0">0 - Read/Write directly from browser's native innerHTML property</option>
 		</select>
 		<input type="submit" value="Go!" />
 	</form>

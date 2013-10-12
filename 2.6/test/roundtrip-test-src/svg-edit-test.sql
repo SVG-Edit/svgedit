@@ -46,7 +46,7 @@ CREATE TABLE `TestResults` (
   `attrsLostList` varchar(200) NOT NULL,
   `png` mediumblob,
   `pngdiff` mediumblob,
-  `rasterDiffMeanSquareError` decimal(6,6) NOT NULL,
+  `rasterDiffMeanSquareError` decimal(7,6) NOT NULL,
   PRIMARY KEY (`resultId`),
   UNIQUE KEY `Unique` (`svgId`,`browser`,`svnRev`,`browserMajorVer`),
   KEY `fk_TestResults_svgId_idx` (`svgId`),

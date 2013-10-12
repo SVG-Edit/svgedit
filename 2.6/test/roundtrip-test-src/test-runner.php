@@ -163,7 +163,7 @@ if(@$_GET["testfetch"] == "1")
 	}
 	
 	exit;
-} else if(@!$_GET["rev"])
+} else if(!isset($_GET["rev"]))
 {
 	header("Location: launcher.php");
 	exit();
@@ -174,14 +174,19 @@ $rev = $_GET["rev"];
 <html>
 <head>
 <title>svg-edit round-trip tester</title>
-<script src="<?php echo ("$baseURL/svn/checkout.php/$rev/editor/embedapi.js"); ?>"></script>
 <script src="browser-detection.js"></script>
+<script>var app = "<?php $app = ($rev > 0 ? "svg-edit" : "native"); echo $app; ?>"</script>
 </head>
 <body>
 	<table>
 		<tr>
-			<td style="vertical-align: top;"><iframe id="svg-edit-frame" src="<?php echo ("$baseURL/svn/checkout.php/$rev/editor/svg-editor.html"); ?>" width=1024 height=768></iframe></td>
-			<td style="vertical-align: top;"><ul id="test-results"></ul></td>			
+			<td style="vertical-align: top;" width="175"><ul id="test-results"></ul></td>		
+			<td style="vertical-align: top;" id="svgContainer">
+				<?php if($rev > 0){ ?>
+				<script src="<?php echo ("$baseURL/svn/checkout.php/$rev/editor/embedapi.js"); ?>"></script>				
+				<iframe id="svg-edit-frame" src="<?php echo ("$baseURL/svn/checkout.php/$rev/editor/svg-editor.html"); ?>" width=1024 height=768></iframe>
+				<?php } ?>
+			</td>		
 		</tr>
 	</table>
 	<script src="app.js"></script>		
