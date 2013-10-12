@@ -3675,7 +3675,7 @@
 			};
 
 			var populateLayers = function() {
-        svgCanvas.clearSelection();
+				svgCanvas.clearSelection();
 				var layerlist = $('#layerlist tbody').empty();
 				var selLayerNames = $('#selLayerNames').empty();
 				var drawing = svgCanvas.getCurrentDrawing();
@@ -4227,7 +4227,7 @@
 			// get the text contents of the file and send it to the canvas
 			if (window.FileReader) {
 				var importImage = function(e) {
-          $.process_cancel(uiStrings.notification.loadingImage);
+					$.process_cancel(uiStrings.notification.loadingImage);
 					e.stopPropagation();
 					e.preventDefault();
 					$('#workarea').removeAttr('style');
@@ -4318,7 +4318,7 @@
 						if (!ok) return;
 						svgCanvas.clear();
 						if (f.files.length==1) {
-              $.process_cancel(uiStrings.notification.loadingImage);
+							$.process_cancel(uiStrings.notification.loadingImage);
 							var reader = new FileReader();
 							reader.onloadend = function(e) {
 								loadSvgString(e.target.result);
@@ -4401,7 +4401,7 @@
 					updateRulers(cnvs, zoom);
 					workarea.scroll();
 				}
-        $('#dialog_box').hide();
+				$('#dialog_box').hide();
 			};
 
 			// Make [1,2,5] array
@@ -4686,8 +4686,8 @@
 					'dataType': 'text',
 					cache: !!cache,
 					beforeSend:function(){
-            $.process_cancel(uiStrings.notification.loadingImage);
-        	 },
+						$.process_cancel(uiStrings.notification.loadingImage);
+					},
 					success: function(str) {
 						loadSvgString(str, cb);
 					},
@@ -4698,9 +4698,9 @@
 							$.alert(uiStrings.notification.URLloadFail + ': \n'+err+'', cb);
 						}
 					},
-    			complete:function(){
-               $('#dialog_box').hide();
-        	 }
+					complete:function(){
+						$('#dialog_box').hide();
+					}
 				});
 			});
 		};
