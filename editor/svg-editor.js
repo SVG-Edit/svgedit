@@ -4571,11 +4571,16 @@
 			// Callback handler for embedapi.js
 			try {
 				window.addEventListener('message', function(e) {
-					var cbid = parseInt(e.data.substr(0, e.data.indexOf(';')), 10);
+					if (!e.data || typeof e.data !== 'object' || e.data.namespace !== 'svgCanvas') {
+						return;
+					}
+					var cbid = e.data.id,
+						name = e.data.name,
+						args = e.data.args;
 					try {
-						e.source.postMessage('SVGe'+cbid+';'+JSON.stringify(eval(e.data)), '*');
+						e.source.postMessage({namespace: 'svg-edit', id: cbid, result: svgCanvas[name](args)}, '*');
 					} catch(err) {
-						e.source.postMessage('SVGe'+cbid+';error:'+err.message, '*');
+						e.source.postMessage({namespace: 'svg-edit', id: cbid, error: err.message}, '*');
 					}
  				}, false);
 			} catch(err) {

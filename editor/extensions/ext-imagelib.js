@@ -64,7 +64,7 @@ svgEditor.addExtension("imagelib", function() {
 		// Receive postMessage data
 		var response = evt.data;
 		
-		if(!response) {
+		if(!response || typeof response !== "string") { // Todo: Should namespace postMessage API for this extension and filter out here
 			// Do nothing
 			return;
 		}
