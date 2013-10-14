@@ -1465,7 +1465,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						if (isWebkit) delayedStroke(mouse_target);
 
 						var all = mouse_target.getElementsByTagName('*'),
-						    len = all.length;
+							len = all.length;
 						for (var i = 0; i < len; i++) {
 							all[i].style.vectorEffect = 'non-scaling-stroke';
 							if (isWebkit) delayedStroke(all[i]);
@@ -4110,13 +4110,13 @@ this.svgToString = function(elem, indent) {
 			// Check elements for namespaces, add if found
 			$(elem).find('*').andSelf().each(function() {
 				var el = this;
-        // for some elements have no attribute
-        var uri = this.namespaceURI;
-        if(uri && !nsuris[uri] && nsMap[uri] && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml' ) {
-          nsuris[uri] = true;
-          out.push(" xmlns:" + nsMap[uri] + '="' + uri +'"');
-        }
-        
+				// for some elements have no attribute
+				var uri = this.namespaceURI;
+				if(uri && !nsuris[uri] && nsMap[uri] && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml' ) {
+				  nsuris[uri] = true;
+				  out.push(" xmlns:" + nsMap[uri] + '="' + uri +'"');
+				}
+		
 				$.each(this.attributes, function(i, attr) {
 					var uri = attr.namespaceURI;
 					if (uri && !nsuris[uri] && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml' ) {
@@ -4342,7 +4342,7 @@ this.getSvgString = function() {
 // 
 //  Parameters:
 //   an opional boolean, which, if true, adds a nonce to the prefix. Thus
-//     svgCanvas.randomizeIds()  <==> svgCanvas.randomizeIds(true)
+//	 svgCanvas.randomizeIds()  <==> svgCanvas.randomizeIds(true)
 //
 // if you're controlling SVG-Edit externally, and want randomized IDs, call
 // this BEFORE calling svgCanvas.setSvgString
@@ -4527,15 +4527,15 @@ var convertGradients = this.convertGradients = function(elem) {
 				// the gradient be updated as the element is moved, as 
 				// inkscape/illustrator do.
 			
-//         				var g_coords = $(grad).attr(['cx', 'cy', 'r']);
-//         				
+//		 				var g_coords = $(grad).attr(['cx', 'cy', 'r']);
+//		 				
 // 						$(grad).attr({
 // 							cx: (g_coords.cx - bb.x) / bb.width,
 // 							cy: (g_coords.cy - bb.y) / bb.height,
 // 							r: g_coords.r
 // 						});
 // 						
-// 	        			grad.removeAttribute('gradientUnits');
+// 						grad.removeAttribute('gradientUnits');
 			}
 		}
 	});

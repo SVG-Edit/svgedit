@@ -74,7 +74,7 @@ svgedit.utilities.fromXml = function(str) {
 // Base64 code from Tyler Akins -- http://rumkin.com
 
 // schiller: Removed string concatenation in favour of Array.join() optimization,
-//           also precalculate the size of the array needed.
+// 				also precalculate the size of the array needed.
 
 // Function: svgedit.utilities.encode64
 // Converts a string to base64
