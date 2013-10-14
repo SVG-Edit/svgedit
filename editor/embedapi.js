@@ -17,8 +17,19 @@ svgCanvas.setSvgString("string")(function(data, error){
 })
 
 Everything is done with the same API as the real svg-edit,
-and all documentation is unchanged. The only difference is
-when handling returns, the callback notation is used instead.
+and all documentation is unchanged.
+
+This file depends on the postMessage API which can only
+support JSON-serializable arguments and
+return values, so, for example, arguments whose value is
+"undefined", a function, a non-finite number, or a built-in
+object like Date(), RegExp(), etc. will most likely not behave
+as expected. In such a case one may need to host
+the SVG editor on the same domain and reference the
+JavaScript methods on the frame itself.
+
+The only other difference is
+when handling returns: the callback notation is used instead.
 
 var blah = new EmbeddedSVGEdit(window.frames['svgedit']);
 blah.clearSelection("woot","blah",1337,[1,2,3,4,5,"moo"],-42,{a: "tree",b:6, c: 9})(function(){console.log("GET DATA",arguments)})
