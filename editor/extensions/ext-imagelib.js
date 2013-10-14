@@ -68,6 +68,13 @@ svgEditor.addExtension("imagelib", function() {
 			// Do nothing
 			return;
 		}
+        try { // This block can be removed if embedAPI moves away from a string to an object (if IE9 support not needed)
+            var res = JSON.parse(response);
+            if (res.namespace) { // Part of embedAPI communications
+                return;
+            }
+        }
+        catch (e) {}
 		
 		var char1 = response.charAt(0);
 		

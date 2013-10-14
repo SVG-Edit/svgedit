@@ -82,17 +82,22 @@ function EmbeddedSVGEdit(frame){
   }
 
   // Older IE may need a polyfill for addEventListener, but so it would for SVG
-  window.addEventListener("message", function(e){
-    if (!e.data || typeof e.data !== "object" || e.data.namespace !== "svg-edit") {
+  window.addEventListener('message', function(e){
+    // We accept and post strings for the sake of IE9 support
+    if (typeof e.data !== 'string') {
+        return;
+    }
+    var data = e.data && JSON.parse(e.data);
+    if (!data || typeof data !== 'object' || data.namespace !== 'svg-edit') {
       return;
     }
-    var data = e.data.result || e.data.error,
-      cbid = e.data.id;
+    var result = data.result || data.error,
+      cbid = data.id;
     if(t.callbacks[cbid]){
-      if(e.data.result){
-       t.callbacks[cbid](data);
+      if(data.result){
+       t.callbacks[cbid](result);
       }else{
-        t.callbacks[cbid](data, "error");
+        t.callbacks[cbid](result, "error");
       }
     }
   }, false);
@@ -105,7 +110,8 @@ EmbeddedSVGEdit.prototype.send = function(name, args, callback){
   this.callbacks[cbid] = callback;
   setTimeout(function(){ // delay for the callback to be set in case its synchronous
     // Todo: Handle non-JSON arguments and return values (undefined, nonfinite numbers, functions, and built-in objects like Date, RegExp), etc.?
-    t.frame.contentWindow.postMessage({namespace: "svgCanvas", id: cbid, name: name, args: args}, '*');
+    // We accept and post strings for the sake of IE9 support
+    t.frame.contentWindow.postMessage(JSON.stringify({namespace: "svgCanvas", id: cbid, name: name, args: args}), '*');
   }, 0);
   return cbid;
 };
