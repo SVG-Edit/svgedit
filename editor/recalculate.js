@@ -67,7 +67,7 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 
   // Firefox Issue - 1081
   if (selected.nodeName == "svg" && navigator.userAgent.indexOf("Firefox/20") >= 0) {
-	  return null;
+    return null;
   }
 
   var svgroot = context_.getSVGRoot();

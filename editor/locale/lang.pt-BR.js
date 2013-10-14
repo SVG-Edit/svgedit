@@ -214,7 +214,7 @@ svgEditor.readLang({
 		"enterUniqueLayerName":"Insira um nome único",
 		"enterNewLayerName":"Insira um novo nome",
 		"layerHasThatName":"A camada já pussui este nome",
-    "QmoveElemsToLayer":"Mover elementos selecionados para a camada: \"%s\"?",
+		"QmoveElemsToLayer":"Mover elementos selecionados para a camada: \"%s\"?",
 		"QwantToClear":"Deseja criar um novo arquivo?\nO histórico também será apagado!",
 		"QwantToOpen":"Deseja abrir um novo arquivo?\nO histórico também será apagado!",
 		"QerrorsRevertToSource":"Foram encontrados erros ná análise do código SVG.\nReverter para o código SVG original?",
