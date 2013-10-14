@@ -40,7 +40,7 @@ window.addEventListener('message', function(e) {
     }
 }, false);
 
-window.postMessage([readMessage], window.location.origin);
+window.postMessage([readMessage], window.location.origin !== 'null' ? window.location.origin : '*'); // Avoid "null" string error for file: protocol (even though file protocol not currently supported by add-on)
 
 svgEditor.addExtension('WebAppFind', function() {
 
