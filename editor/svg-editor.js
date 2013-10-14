@@ -4585,7 +4585,7 @@
 						name = data.name,
 						args = data.args;
 					try {
-						e.source.postMessage(JSON.stringify({namespace: 'svg-edit', id: cbid, result: svgCanvas[name](args)}), '*');
+						e.source.postMessage(JSON.stringify({namespace: 'svg-edit', id: cbid, result: svgCanvas[name].apply(svgCanvas, args)}), '*');
 					} catch(err) {
 						e.source.postMessage(JSON.stringify({namespace: 'svg-edit', id: cbid, error: err.message}), '*');
 					}
