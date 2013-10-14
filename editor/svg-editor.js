@@ -259,7 +259,7 @@
 					}
 				} else {
 					var name = 'svgedit-' + Editor.curConfig.canvasName;
-					var cached = window.localStorage.getItem(name);
+					var cached = window.localStorage && window.localStorage.getItem(name);
 					if (cached) {
 						Editor.loadFromString(cached);
 					}
@@ -597,7 +597,9 @@
 						selectedElement = elems[0];
 					}
 				} else {
-					setIcon('#tool_select', 'select');
+					setTimeout(function () {
+						setIcon('#tool_select', 'select');
+					}, 1000);
 				}
 			};
 
@@ -4571,16 +4573,21 @@
 			// Callback handler for embedapi.js
 			try {
 				window.addEventListener('message', function(e) {
-					if (!e.data || typeof e.data !== 'object' || e.data.namespace !== 'svgCanvas') {
+                    // We accept and post strings for the sake of IE9 support
+                    if (typeof e.data !== 'string') {
+                        return;
+                    }
+                    var data = JSON.parse(e.data);
+					if (!data || typeof data !== 'object' || data.namespace !== 'svgCanvas') {
 						return;
 					}
-					var cbid = e.data.id,
-						name = e.data.name,
-						args = e.data.args;
+					var cbid = data.id,
+						name = data.name,
+						args = data.args;
 					try {
-						e.source.postMessage({namespace: 'svg-edit', id: cbid, result: svgCanvas[name](args)}, '*');
+						e.source.postMessage(JSON.stringify({namespace: 'svg-edit', id: cbid, result: svgCanvas[name](args)}), '*');
 					} catch(err) {
-						e.source.postMessage({namespace: 'svg-edit', id: cbid, error: err.message}, '*');
+						e.source.postMessage(JSON.stringify({namespace: 'svg-edit', id: cbid, error: err.message}), '*');
 					}
  				}, false);
 			} catch(err) {
