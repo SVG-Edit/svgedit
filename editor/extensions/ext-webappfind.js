@@ -3,7 +3,7 @@
 Depends on Firefox add-on and executables from https://github.com/brettz9/webappfind
 
 Todos:
-1. See WebAppFind Readme for other SVG-related todos
+1. See WebAppFind Readme for SVG-related todos
 */
 (function () {'use strict';
 
