@@ -4341,7 +4341,7 @@ this.getSvgString = function() {
 // generating IDs for future documents in SVG-Edit.
 // 
 //  Parameters:
-//   an opional boolean, which, if true, adds a nonce to the prefix. Thus
+//   an optional boolean, which, if true, adds a nonce to the prefix. Thus
 //	 svgCanvas.randomizeIds()  <==> svgCanvas.randomizeIds(true)
 //
 // if you're controlling SVG-Edit externally, and want randomized IDs, call
