@@ -11,7 +11,7 @@ svgEditor.addExtension("server_opensave", {
 	callback: function() {
 
 		var save_svg_action = 'extensions/filesave.php';
-		var save_png_action = 'extensions/filesave.php';
+		var save_img_action = 'extensions/filesave.php';
 	
 		// Create upload target (hidden iframe)
 		var target = $('<iframe name="output_frame" src="#"/>').hide().appendTo('body');
@@ -32,8 +32,10 @@ svgEditor.addExtension("server_opensave", {
 					.appendTo('body')
 					.submit().remove();
 			},
-			pngsave: function(win, data) {
-				var issues = data.issues;
+			exportImage: function(win, data) {
+				var issues = data.issues,
+                    mimeType = data.mimeType,
+                    quality = data.quality;
 				
 				if(!$('#export_canvas').length) {
 					$('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
@@ -43,7 +45,7 @@ svgEditor.addExtension("server_opensave", {
 				c.width = svgCanvas.contentW;
 				c.height = svgCanvas.contentH;
 				canvg(c, data.svg, {renderCallback: function() {
-					var datauri = c.toDataURL('image/png');
+					var datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType);
 					
 					var uiStrings = svgEditor.uiStrings;
 					var note = '';
@@ -63,9 +65,10 @@ svgEditor.addExtension("server_opensave", {
 					
 					var form = $('<form>').attr({
 						method: 'post',
-						action: save_png_action,
+						action: save_img_action,
 						target: 'output_frame'
-					})	.append('<input type="hidden" name="output_png" value="' + datauri + '">')
+					})	.append('<input type="hidden" name="output_img" value="' + datauri + '">')
+                        .append('<input type="hidden" name="mime" value="' + mimeType + '">')
 						.append('<input type="hidden" name="filename" value="' + filename + '">')
 						.appendTo('body')
 						.submit().remove();

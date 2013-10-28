@@ -125,7 +125,7 @@ var svgEditor = (function($, Editor) {
 
 			tool_clear: tools.new_doc,
 			tool_docprops: tools.docprops,
-			tool_export: tools.export_png,
+			tool_export: tools.export_img,
 			tool_import: tools.import_doc,
 			tool_imagelib: tools.imagelib,
 			tool_open: tools.open_doc,

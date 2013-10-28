@@ -84,7 +84,7 @@ svgEditor.readLang({
 		"smallest_object": "väikseim objekt",
 		"new_doc": "Uus pilt",
 		"open_doc": "Pildi avamine",
-		"export_png": "Export as PNG",
+		"export_img": "Export",
 		"save_doc": "Salvesta pilt",
 		"import_doc": "Import SVG",
 		"align_to_page": "Align Element to Page",

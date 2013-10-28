@@ -190,8 +190,8 @@
 					Editor.showSaveWarning = false;
 					svgCanvas.bind('saved', opts.save);
 				}
-				if (opts.pngsave) {
-					svgCanvas.bind('exported', opts.pngsave);
+				if (opts.exportImage || opts.pngsave) { // Deprecating pngsave
+					svgCanvas.bind('exported', opts.exportImage || opts.pngsave);
 				}
 				customHandlers = opts;
 			});
@@ -533,26 +533,43 @@
 				$('#dialog_container').draggable({cancel: '#dialog_content, #dialog_buttons *', containment: 'window'});
 				var box = $('#dialog_box'),
 					btn_holder = $('#dialog_buttons'),
-					dbox = function(type, msg, callback, defText) {
-						$('#dialog_content').html('<p>'+msg.replace(/\n/g, '</p><p>')+'</p>')
+					dialog_content = $('#dialog_content'),
+					dbox = function(type, msg, callback, defaultVal, opts, changeCb) {
+						var ok, ctrl;
+						dialog_content.html('<p>'+msg.replace(/\n/g, '</p><p>')+'</p>')
 							.toggleClass('prompt', (type == 'prompt'));
 						btn_holder.empty();
 
-						var ok = $('<input type="button" value="' + uiStrings.common.ok + '">').appendTo(btn_holder);
+						ok = $('<input type="button" value="' + uiStrings.common.ok + '">').appendTo(btn_holder);
 
-						if (type != 'alert') {
+						if (type !== 'alert') {
 							$('<input type="button" value="' + uiStrings.common.cancel + '">')
 								.appendTo(btn_holder)
 								.click(function() { box.hide(); callback(false);});
 						}
 
-						if (type == 'prompt') {
-							var input = $('<input type="text">').prependTo(btn_holder);
-							input.val(defText || '');
-							input.bind('keydown', 'return', function() {ok.click();});
+						if (type === 'prompt') {
+							ctrl = $('<input type="text">').prependTo(btn_holder);
+							ctrl.val(defaultVal || '');
+							ctrl.bind('keydown', 'return', function() {ok.click();});
+						}
+						else if (type === 'select') {
+							var div = $('<div style="text-align:center;">');
+							ctrl = $('<select>').appendTo(div);
+							$.each(opts || [], function (opt, val) {
+								ctrl.append($('<option>').html(val));
+							});
+							dialog_content.append(div);
+							if (defaultVal) {
+								ctrl.val(defaultVal);
+							}
+                            if (changeCb) {
+                                ctrl.bind('change', 'return', changeCb);
+                            }
+							ctrl.bind('keydown', 'return', function() {ok.click();});
 						}
 
-						if (type == 'process') {
+						if (type === 'process') {
 							ok.hide();
 						}
 
@@ -560,17 +577,18 @@
 
 						ok.click(function() {
 							box.hide();
-							var resp = (type == 'prompt') ? input.val() : true;
+							var resp = (type === 'prompt' || type === 'select') ? ctrl.val() : true;
 							if (callback) callback(resp);
 						}).focus();
 
-						if (type == 'prompt') input.focus();
+						if (type === 'prompt' || type === 'select') ctrl.focus();
 					};
 
 				$.alert = function(msg, cb) { dbox('alert', msg, cb);};
 				$.confirm = function(msg, cb) {	dbox('confirm', msg, cb);};
 				$.process_cancel = function(msg, cb) { dbox('process', msg, cb);};
 				$.prompt = function(msg, txt, cb) { dbox('prompt', msg, cb, txt);};
+				$.select = function(msg, opts, cb, changeCb, txt) { dbox('select', msg, cb, txt, opts, changeCb);};
 			}());
 
 			var setSelectMode = function() {
@@ -656,7 +674,9 @@
 			};
 
 			var exportHandler = function(window, data) {
-				var issues = data.issues;
+				var issues = data.issues,
+					type = data.type || 'PNG',
+                    dataURLType = (type === 'ICO' ? 'BMP' : type).toLowerCase();
 
 				if (!$('#export_canvas').length) {
 					$('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
@@ -666,11 +686,11 @@
 				c.width = svgCanvas.contentW;
 				c.height = svgCanvas.contentH;
 				canvg(c, data.svg, {renderCallback: function() {
-					var datauri = c.toDataURL('image/png');
+                    var datauri = data.quality ? c.toDataURL('image/' + dataURLType, data.quality) : c.toDataURL('image/' + dataURLType);
 					exportWindow.location.href = datauri;
 					var done = $.pref('export_notice_done');
 					if (done !== 'all') {
-						var note = uiStrings.notification.saveFromBrowser.replace('%s', 'PNG');
+						var note = uiStrings.notification.saveFromBrowser.replace('%s', type);
 
 						// Check if there's issues
 						if (issues.length) {
@@ -2528,21 +2548,39 @@
 			};
 
 			var clickExport = function() {
-				// Open placeholder window (prevents popup)
-				if (!customHandlers.pngsave) {
-					var str = uiStrings.notification.loadingImage;
-					exportWindow = window.open('data:text/html;charset=utf-8,<title>' + str + '<\/title><h1>' + str + '<\/h1>');
-				}
-
-				if (window.canvg) {
-					svgCanvas.rasterExport();
-				} else {
-					$.getScript('canvg/rgbcolor.js', function() {
-						$.getScript('canvg/canvg.js', function() {
-							svgCanvas.rasterExport();
+				$.select('Select an image type for export: ', [
+                    // See http://kangax.github.io/jstests/toDataUrl_mime_type_test/ for a useful list of MIME types and browser support
+                    // 'ICO', // Todo: Find a way to preserve transparency in SVG-Edit if not working presently and do full packaging for x-icon; then switch back to position after 'PNG'
+                    'PNG',
+                    'JPEG', 'BMP', 'WEBP'
+                ], function (imgType) { // todo: replace hard-coded msg with uiStrings.notification.
+					if (!imgType) {
+						return;
+					}
+					// Open placeholder window (prevents popup)
+					if (!customHandlers.exportImage && !customHandlers.pngsave) {
+						var str = uiStrings.notification.loadingImage;
+						exportWindow = window.open('data:text/html;charset=utf-8,<title>' + str + '<\/title><h1>' + str + '<\/h1>');
+					}
+                    var quality = parseInt($('#image-slider').val(), 10)/100;
+					if (window.canvg) {
+						svgCanvas.rasterExport(imgType, quality);
+					} else {
+						$.getScript('canvg/rgbcolor.js', function() {
+							$.getScript('canvg/canvg.js', function() {
+								svgCanvas.rasterExport(imgType, quality);
+							});
 						});
-					});
-				}
+					}
+				}, function () {
+                    var sel = $(this);
+                    if (sel.val() === 'JPEG' || sel.val() === 'WEBP') {
+                        $('<div><label>Quality: <input id="image-slider" type="range" min="1" max="100" value="92" /></label></div>').appendTo(sel.parent()); // Todo: i18n-ize label
+                    }
+                    else {
+                        $('#image-slider').parent().remove();
+                    }
+                });
 			};
 
 			// by default, svgCanvas.open() is a no-op.

@@ -84,7 +84,7 @@ svgEditor.readLang({
 		"smallest_object": "mažiausias objektą",
 		"new_doc": "New Image",
 		"open_doc": "Atidaryti atvaizdą",
-		"export_png": "Export as PNG",
+		"export_img": "Export",
 		"save_doc": "Išsaugoti nuotrauką",
 		"import_doc": "Import SVG",
 		"align_to_page": "Align Element to Page",

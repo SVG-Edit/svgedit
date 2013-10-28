@@ -84,7 +84,7 @@ svgEditor.readLang({
 		"smallest_object": "最小のオブジェクト",
 		"new_doc": "新規イメージ",
 		"open_doc": "イメージを開く",
-		"export_png": "Export as PNG",
+		"export_img": "Export",
 		"save_doc": "画像を保存",
 		"import_doc": "Import SVG",
 		"align_to_page": "Align Element to Page",

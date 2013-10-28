@@ -84,7 +84,7 @@ svgEditor.readLang({
 		"smallest_object": "küçük nesne",
 		"new_doc": "Yeni Resim",
 		"open_doc": "Aç Resim",
-		"export_png": "Export as PNG",
+		"export_img": "Export",
 		"save_doc": "Görüntüyü Kaydet",
 		"import_doc": "Import SVG",
 		"align_to_page": "Align Element to Page",

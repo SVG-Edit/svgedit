@@ -84,7 +84,7 @@ svgEditor.readLang({
 		"smallest_object": "Kleinste object",
 		"new_doc": "Nieuwe afbeelding",
 		"open_doc": "Open afbeelding",
-		"export_png": "Exporteer als PNG",
+		"export_img": "Export",
 		"save_doc": "Afbeelding opslaan",
 		"import_doc": "Importeer SVG",
 		"align_to_page": "Lijn element uit relatief ten opzichte van de pagina",

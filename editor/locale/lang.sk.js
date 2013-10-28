@@ -84,7 +84,7 @@ svgEditor.readLang({
 		"smallest_object": "najmenšiemu objektu",
 		"new_doc": "Nový obrázok",
 		"open_doc": "Otvoriť obrázok",
-		"export_png": "Exportovať ako PNG",
+		"export_img": "Export",
 		"save_doc": "Uložiť obrázok",
 		"import_doc": "Import SVG",
 		"align_to_page": "Zarovnať element na stránku",

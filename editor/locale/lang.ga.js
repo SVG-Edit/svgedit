@@ -84,7 +84,7 @@ svgEditor.readLang({
 		"smallest_object": "lú réad",
 		"new_doc": "Íomhá Nua",
 		"open_doc": "Íomhá Oscailte",
-		"export_png": "Export as PNG",
+		"export_img": "Export",
 		"save_doc": "Sábháil Íomhá",
 		"import_doc": "Import SVG",
 		"align_to_page": "Align Element to Page",

@@ -84,7 +84,7 @@ svgEditor.readLang({
 		"smallest_object": "lleiaf gwrthrych",
 		"new_doc": "Newydd Delwedd",
 		"open_doc": "Delwedd Agored",
-		"export_png": "Export as PNG",
+		"export_img": "Export",
 		"save_doc": "Cadw Delwedd",
 		"import_doc": "Import SVG",
 		"align_to_page": "Align Element to Page",
