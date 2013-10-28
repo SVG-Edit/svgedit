@@ -84,7 +84,7 @@ svgEditor.readLang({
 		"smallest_object": "أصغر كائن",
 		"new_doc": "صورة جديدة",
 		"open_doc": "فتح الصورة",
-		"export_png": "Export as PNG",
+		"export_img": "Export",
 		"save_doc": "حفظ صورة",
 		"import_doc": "Import SVG",
 		"align_to_page": "Align Element to Page",

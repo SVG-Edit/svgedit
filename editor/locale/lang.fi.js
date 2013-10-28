@@ -84,7 +84,7 @@ svgEditor.readLang({
 		"smallest_object": "pienin kohde",
 		"new_doc": "Uusi kuva",
 		"open_doc": "Avaa kuva",
-		"export_png": "Export as PNG",
+		"export_img": "Export",
 		"save_doc": "Save Image",
 		"import_doc": "Import SVG",
 		"align_to_page": "Align Element to Page",

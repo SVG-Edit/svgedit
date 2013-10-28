@@ -84,7 +84,7 @@ svgEditor.readLang({
 		"smallest_object": "pinakamaliit na bagay",
 		"new_doc": "Bagong Imahe",
 		"open_doc": "Buksan ang Image",
-		"export_png": "Export as PNG",
+		"export_img": "Export",
 		"save_doc": "I-save ang Image",
 		"import_doc": "Import SVG",
 		"align_to_page": "Align Element to Page",

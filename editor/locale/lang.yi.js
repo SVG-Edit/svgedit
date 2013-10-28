@@ -84,7 +84,7 @@ svgEditor.readLang({
 		"smallest_object": "סמאָלאַסט קעגן",
 		"new_doc": "ניו בילד",
 		"open_doc": "Open בילד",
-		"export_png": "Export as PNG",
+		"export_img": "Export",
 		"save_doc": "היט בילד",
 		"import_doc": "Import SVG",
 		"align_to_page": "Align Element to Page",

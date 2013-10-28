@@ -84,7 +84,7 @@ svgEditor.readLang({
 		"smallest_object": "작은 개체",
 		"new_doc": "새 이미지",
 		"open_doc": "오픈 이미지",
-		"export_png": "Export as PNG",
+		"export_img": "Export",
 		"save_doc": "이미지 저장",
 		"import_doc": "Import SVG",
 		"align_to_page": "Align Element to Page",

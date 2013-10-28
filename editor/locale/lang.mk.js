@@ -84,7 +84,7 @@ svgEditor.readLang({
 		"smallest_object": "најмалата објект",
 		"new_doc": "Нови слики",
 		"open_doc": "Отвори слика",
-		"export_png": "Export as PNG",
+		"export_img": "Export",
 		"save_doc": "Зачувај слика",
 		"import_doc": "Import SVG",
 		"align_to_page": "Align Element to Page",

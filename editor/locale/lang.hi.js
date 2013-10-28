@@ -84,7 +84,7 @@ svgEditor.readLang({
 		"smallest_object": "छोटी से छोटी वस्तु",
 		"new_doc": "नई छवि",
 		"open_doc": "छवि खोलें",
-		"export_png": "Export as PNG",
+		"export_img": "Export",
 		"save_doc": "सहेजें छवि",
 		"import_doc": "Import SVG",
 		"align_to_page": "Align Element to Page",
