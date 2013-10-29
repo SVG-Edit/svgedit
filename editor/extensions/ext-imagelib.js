@@ -131,7 +131,7 @@ svgEditor.addExtension("imagelib", function() {
 				if(response.indexOf('data:image/svg+xml') === 0) {
 					var pre = 'data:image/svg+xml;base64,';
 					var src = response.substring(pre.length);
-					response = svgCanvas.Utils.decode64(src);
+					response = svgedit.utilities.decode64(src);
 					svg_str = true;
 					break;
 				} else if(response.indexOf('data:image/') === 0) {
@@ -141,7 +141,7 @@ svgEditor.addExtension("imagelib", function() {
 				// Else fall through
 			default:
 				// TODO: See if there's a way to base64 encode the binary data stream
-// 				var str = 'data:;base64,' + svgCanvas.Utils.encode64(response, true);
+// 				var str = 'data:;base64,' + svgedit.utilities.encode64(response, true);
 			
 				// Assume it's raw image data
 // 				importImage(str);
