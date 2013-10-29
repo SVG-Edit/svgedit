@@ -17,9 +17,9 @@
 	$output = file_get_contents($file);
 	
 	$type = $_REQUEST['type'];
-    if (!in_array($type, array('load_svg', 'import_svg', 'import_img'))) {
-        exit;
-    }
+	if (!in_array($type, array('load_svg', 'import_svg', 'import_img'))) {
+		exit;
+	}
 	
 	$prefix = '';
 	
