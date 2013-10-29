@@ -10,37 +10,37 @@
 
 svgEditor.addExtension("server_opensave", {
 	callback: function() {
-        'use strict';
-        function getFileNameFromTitle () {
-            var title = svgCanvas.getDocumentTitle();
-            return $.trim(title).replace(/[^a-z0-9\.\_\-]+/gi, '_');
-        }
-        function clientDownloadSupport (filename, suffix, uri) {
-            var a,
-                support = $('<a>')[0].download === '';
-            if (support) {
-                a = $('<a>hidden</a>').attr({download: (filename || 'image') + suffix, href: uri}).css('display', 'none').appendTo('body');
-                a[0].click();
-                return true;
-            }
-        }
+		'use strict';
+		function getFileNameFromTitle () {
+			var title = svgCanvas.getDocumentTitle();
+			return $.trim(title).replace(/[^a-z0-9\.\_\-]+/gi, '_');
+		}
+		function clientDownloadSupport (filename, suffix, uri) {
+			var a,
+				support = $('<a>')[0].download === '';
+			if (support) {
+				a = $('<a>hidden</a>').attr({download: (filename || 'image') + suffix, href: uri}).css('display', 'none').appendTo('body');
+				a[0].click();
+				return true;
+			}
+		}
 		var open_svg_action, import_svg_action, import_img_action,
-            open_svg_form, import_svg_form, import_img_form,
-            save_svg_action = 'extensions/filesave.php',
-            save_img_action = 'extensions/filesave.php',
-            // Create upload target (hidden iframe)
-            cancelled = false;
+			open_svg_form, import_svg_form, import_img_form,
+			save_svg_action = 'extensions/filesave.php',
+			save_img_action = 'extensions/filesave.php',
+			// Create upload target (hidden iframe)
+			cancelled = false;
 	
-        $('<iframe name="output_frame" src="#"/>').hide().appendTo('body');
+		$('<iframe name="output_frame" src="#"/>').hide().appendTo('body');
 		svgEditor.setCustomHandlers({
 			save: function(win, data) {
 				var svg = "<?xml version=\"1.0\"?>\n" + data,
-                    filename = getFileNameFromTitle();
+					filename = getFileNameFromTitle();
 
-                //if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml,' + encodeURI(data))) { // Firefox limits size of file
-                if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml;base64,' + svgedit.utilities.encode64(data))) {
-                    return;
-                }
+				//if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml,' + encodeURI(data))) { // Firefox limits size of file
+				if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml;base64,' + svgedit.utilities.encode64(data))) {
+					return;
+				}
 				
 				$('<form>').attr({
 					method: 'post',
@@ -53,9 +53,9 @@ svgEditor.addExtension("server_opensave", {
 			},
 			exportImage: function(win, data) {
 				var c,
-                    issues = data.issues,
-                    mimeType = data.mimeType,
-                    quality = data.quality;
+					issues = data.issues,
+					mimeType = data.mimeType,
+					quality = data.quality;
 				
 				if(!$('#export_canvas').length) {
 					$('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
@@ -66,9 +66,9 @@ svgEditor.addExtension("server_opensave", {
 				c.height = svgCanvas.contentH;
 				canvg(c, data.svg, {renderCallback: function() {
 					var pre, filename, suffix,
-                        datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType),
-                        uiStrings = svgEditor.uiStrings,
-                        note = '';
+						datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType),
+						uiStrings = svgEditor.uiStrings,
+						note = '';
 					
 					// Check if there's issues
 					if(issues.length) {
@@ -81,18 +81,18 @@ svgEditor.addExtension("server_opensave", {
 					}
 					
 					filename = getFileNameFromTitle();
-                    suffix = '.' + data.type.toLowerCase();
-                    
-                    if (clientDownloadSupport(filename, suffix, datauri)) {
-                        return;
-                    }
+					suffix = '.' + data.type.toLowerCase();
+					
+					if (clientDownloadSupport(filename, suffix, datauri)) {
+						return;
+					}
 
 					$('<form>').attr({
 						method: 'post',
 						action: save_img_action,
 						target: 'output_frame'
 					})	.append('<input type="hidden" name="output_img" value="' + datauri + '">')
-                        .append('<input type="hidden" name="mime" value="' + mimeType + '">')
+						.append('<input type="hidden" name="mime" value="' + mimeType + '">')
 						.append('<input type="hidden" name="filename" value="' + filename + '">')
 						.appendTo('body')
 						.submit().remove();
@@ -112,7 +112,7 @@ svgEditor.addExtension("server_opensave", {
 		
 		// Set up function for PHP uploader to use
 		svgEditor.processFile = function(str64, type) {
-            var xmlstr;
+			var xmlstr;
 			if(cancelled) {
 				cancelled = false;
 				return;

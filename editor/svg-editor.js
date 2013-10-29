@@ -1654,7 +1654,7 @@
 							var label = $('#g_title')[0];
 							label.value = title;
 							setInputWidth(label);
-                            $('#g_title').prop('disabled', el_name == 'use');
+							$('#g_title').prop('disabled', el_name == 'use');
 						}
 					}
 					menu_items[(el_name === 'g' ? 'en' : 'dis') + 'ableContextMenuItems']('#ungroup');
