@@ -4612,7 +4612,7 @@
 			try {
 				window.addEventListener('message', function(e) {
 					// We accept and post strings for the sake of IE9 support
-					if (typeof e.data !== 'string') {
+					if (typeof e.data !== 'string' || e.data.charAt() === '|') {
 						return;
 					}
 					var data = JSON.parse(e.data);
