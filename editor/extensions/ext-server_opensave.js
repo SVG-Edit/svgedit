@@ -1,3 +1,4 @@
+/*globals svgEditor, svgCanvas, canvg, $*/
 /*
  * ext-server_opensave.js
  *
@@ -9,21 +10,39 @@
 
 svgEditor.addExtension("server_opensave", {
 	callback: function() {
-
-		var save_svg_action = 'extensions/filesave.php';
-		var save_img_action = 'extensions/filesave.php';
+        'use strict';
+        function getFileNameFromTitle () {
+            var title = svgCanvas.getDocumentTitle();
+            return $.trim(title).replace(/[^a-z0-9\.\_\-]+/gi, '_');
+        }
+        function clientDownloadSupport (filename, suffix, uri) {
+            var a,
+                support = $('<a>')[0].download === '';
+            if (support) {
+                a = $('<a>hidden</a>').attr({download: (filename || 'image') + suffix, href: uri}).css('display', 'none').appendTo('body');
+                a[0].click();
+                return true;
+            }
+        }
+		var open_svg_action, import_svg_action, import_img_action,
+            open_svg_form, import_svg_form, import_img_form,
+            save_svg_action = 'extensions/filesave.php',
+            save_img_action = 'extensions/filesave.php',
+            // Create upload target (hidden iframe)
+            cancelled = false;
 	
-		// Create upload target (hidden iframe)
-		var target = $('<iframe name="output_frame" src="#"/>').hide().appendTo('body');
-	
+        $('<iframe name="output_frame" src="#"/>').hide().appendTo('body');
 		svgEditor.setCustomHandlers({
 			save: function(win, data) {
-				var svg = "<?xml version=\"1.0\"?>\n" + data;
+				var svg = "<?xml version=\"1.0\"?>\n" + data,
+                    filename = getFileNameFromTitle();
+
+                //if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml,' + encodeURI(data))) { // Firefox limits size of file
+                if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml;base64,' + window.btoa(data))) {
+                    return;
+                }
 				
-				var title = svgCanvas.getDocumentTitle();
-				var filename = $.trim(title).replace(/[^a-z0-9\.\_\-]+/gi, '_');
-				
-				var form = $('<form>').attr({
+				$('<form>').attr({
 					method: 'post',
 					action: save_svg_action,
 					target: 'output_frame'
@@ -33,26 +52,27 @@ svgEditor.addExtension("server_opensave", {
 					.submit().remove();
 			},
 			exportImage: function(win, data) {
-				var issues = data.issues,
+				var c,
+                    issues = data.issues,
                     mimeType = data.mimeType,
                     quality = data.quality;
 				
 				if(!$('#export_canvas').length) {
 					$('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
 				}
-				var c = $('#export_canvas')[0];
+				c = $('#export_canvas')[0];
 				
 				c.width = svgCanvas.contentW;
 				c.height = svgCanvas.contentH;
 				canvg(c, data.svg, {renderCallback: function() {
-					var datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType);
-					
-					var uiStrings = svgEditor.uiStrings;
-					var note = '';
+					var pre, filename, suffix,
+                        datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType),
+                        uiStrings = svgEditor.uiStrings,
+                        note = '';
 					
 					// Check if there's issues
 					if(issues.length) {
-						var pre = "\n \u2022 ";
+						pre = "\n \u2022 ";
 						note += ("\n\n" + pre + issues.join(pre));
 					} 
 					
@@ -60,10 +80,14 @@ svgEditor.addExtension("server_opensave", {
 						alert(note);
 					}
 					
-					var title = svgCanvas.getDocumentTitle();
-					var filename = title.replace(/[^a-z0-9\.\_\-]+/gi, '_');
-					
-					var form = $('<form>').attr({
+					filename = getFileNameFromTitle();
+                    suffix = '.' + data.type.toLowerCase();
+                    
+                    if (clientDownloadSupport(filename, suffix, datauri)) {
+                        return;
+                    }
+
+					$('<form>').attr({
 						method: 'post',
 						action: save_img_action,
 						target: 'output_frame'
@@ -79,17 +103,16 @@ svgEditor.addExtension("server_opensave", {
 		});
 	
 		// Do nothing if client support is found
-		if(window.FileReader) return;
+		if(window.FileReader) {return;}
 		
-		var cancelled = false;
-	
 		// Change these to appropriate script file
-		var open_svg_action = 'extensions/fileopen.php?type=load_svg';
-		var import_svg_action = 'extensions/fileopen.php?type=import_svg';
-		var import_img_action = 'extensions/fileopen.php?type=import_img';
+		open_svg_action = 'extensions/fileopen.php?type=load_svg';
+		import_svg_action = 'extensions/fileopen.php?type=import_svg';
+		import_img_action = 'extensions/fileopen.php?type=import_img';
 		
 		// Set up function for PHP uploader to use
 		svgEditor.processFile = function(str64, type) {
+            var xmlstr;
 			if(cancelled) {
 				cancelled = false;
 				return;
@@ -97,11 +120,11 @@ svgEditor.addExtension("server_opensave", {
 		
 			$('#dialog_box').hide();
 		
-			if(type != 'import_img') {
-				var xmlstr = svgCanvas.Utils.decode64(str64);
+			if (type !== 'import_img') {
+				xmlstr = svgCanvas.Utils.decode64(str64);
 			}
 			
-			switch ( type ) {
+			switch (type) {
 				case 'load_svg':
 					svgCanvas.clear();
 					svgCanvas.setSvgString(xmlstr);
@@ -115,10 +138,10 @@ svgEditor.addExtension("server_opensave", {
 					svgCanvas.setGoodImage(str64);
 					break;
 			}
-		}
+		};
 	
 		// Create upload form
-		var open_svg_form = $('<form>');
+		open_svg_form = $('<form>');
 		open_svg_form.attr({
 			enctype: 'multipart/form-data',
 			method: 'post',
@@ -127,10 +150,10 @@ svgEditor.addExtension("server_opensave", {
 		});
 		
 		// Create import form
-		var import_svg_form = open_svg_form.clone().attr('action', import_svg_action);
-		
+		import_svg_form = open_svg_form.clone().attr('action', import_svg_action);
+
 		// Create image form
-		var import_img_form = open_svg_form.clone().attr('action', import_img_action);
+		import_img_form = open_svg_form.clone().attr('action', import_img_action);
 		
 		// It appears necessory to rebuild this input every time a file is 
 		// selected so the same file can be picked and the change event can fire.
