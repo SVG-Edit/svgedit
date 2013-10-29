@@ -38,7 +38,7 @@ svgEditor.addExtension("server_opensave", {
                     filename = getFileNameFromTitle();
 
                 //if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml,' + encodeURI(data))) { // Firefox limits size of file
-                if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml;base64,' + window.btoa(data))) {
+                if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml;base64,' + svgedit.utilities.encode64(data))) {
                     return;
                 }
 				
@@ -119,9 +119,9 @@ svgEditor.addExtension("server_opensave", {
 			}
 		
 			$('#dialog_box').hide();
-		
+
 			if (type !== 'import_img') {
-				xmlstr = svgCanvas.Utils.decode64(str64);
+				xmlstr = svgedit.utilities.decode64(str64);
 			}
 			
 			switch (type) {
