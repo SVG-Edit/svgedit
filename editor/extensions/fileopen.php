@@ -17,6 +17,9 @@
 	$output = file_get_contents($file);
 	
 	$type = $_REQUEST['type'];
+    if (!in_array($type, array('load_svg', 'import_svg', 'import_img'))) {
+        exit;
+    }
 	
 	$prefix = '';
 	
@@ -30,7 +33,7 @@
 <head>
 <meta charset="utf-8" />
 <script>
-window.top.window.svgEditor.processFile("<?php echo $prefix . base64_encode($output); ?>", "<?php echo htmlentities($type); ?>");
+window.top.window.svgEditor.processFile("<?php echo $prefix . base64_encode($output); ?>", "<?php echo $type; ?>");
 </script>
 </head><body></body>
 </html>
