@@ -563,9 +563,9 @@
 							if (defaultVal) {
 								ctrl.val(defaultVal);
 							}
-                            if (changeCb) {
-                                ctrl.bind('change', 'return', changeCb);
-                            }
+							if (changeCb) {
+								ctrl.bind('change', 'return', changeCb);
+							}
 							ctrl.bind('keydown', 'return', function() {ok.click();});
 						}
 
@@ -676,7 +676,7 @@
 			var exportHandler = function(window, data) {
 				var issues = data.issues,
 					type = data.type || 'PNG',
-                    dataURLType = (type === 'ICO' ? 'BMP' : type).toLowerCase();
+					dataURLType = (type === 'ICO' ? 'BMP' : type).toLowerCase();
 
 				if (!$('#export_canvas').length) {
 					$('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
@@ -686,7 +686,7 @@
 				c.width = svgCanvas.contentW;
 				c.height = svgCanvas.contentH;
 				canvg(c, data.svg, {renderCallback: function() {
-                    var datauri = data.quality ? c.toDataURL('image/' + dataURLType, data.quality) : c.toDataURL('image/' + dataURLType);
+					var datauri = data.quality ? c.toDataURL('image/' + dataURLType, data.quality) : c.toDataURL('image/' + dataURLType);
 					exportWindow.location.href = datauri;
 					var done = $.pref('export_notice_done');
 					if (done !== 'all') {
@@ -2549,11 +2549,11 @@
 
 			var clickExport = function() {
 				$.select('Select an image type for export: ', [
-                    // See http://kangax.github.io/jstests/toDataUrl_mime_type_test/ for a useful list of MIME types and browser support
-                    // 'ICO', // Todo: Find a way to preserve transparency in SVG-Edit if not working presently and do full packaging for x-icon; then switch back to position after 'PNG'
-                    'PNG',
-                    'JPEG', 'BMP', 'WEBP'
-                ], function (imgType) { // todo: replace hard-coded msg with uiStrings.notification.
+					// See http://kangax.github.io/jstests/toDataUrl_mime_type_test/ for a useful list of MIME types and browser support
+					// 'ICO', // Todo: Find a way to preserve transparency in SVG-Edit if not working presently and do full packaging for x-icon; then switch back to position after 'PNG'
+					'PNG',
+					'JPEG', 'BMP', 'WEBP'
+				], function (imgType) { // todo: replace hard-coded msg with uiStrings.notification.
 					if (!imgType) {
 						return;
 					}
@@ -2562,7 +2562,7 @@
 						var str = uiStrings.notification.loadingImage;
 						exportWindow = window.open('data:text/html;charset=utf-8,<title>' + str + '<\/title><h1>' + str + '<\/h1>');
 					}
-                    var quality = parseInt($('#image-slider').val(), 10)/100;
+					var quality = parseInt($('#image-slider').val(), 10)/100;
 					if (window.canvg) {
 						svgCanvas.rasterExport(imgType, quality);
 					} else {
@@ -2573,14 +2573,16 @@
 						});
 					}
 				}, function () {
-                    var sel = $(this);
-                    if (sel.val() === 'JPEG' || sel.val() === 'WEBP') {
-                        $('<div><label>Quality: <input id="image-slider" type="range" min="1" max="100" value="92" /></label></div>').appendTo(sel.parent()); // Todo: i18n-ize label
-                    }
-                    else {
-                        $('#image-slider').parent().remove();
-                    }
-                });
+					var sel = $(this);
+					if (sel.val() === 'JPEG' || sel.val() === 'WEBP') {
+						if (!$('#image-slider').length) {
+							$('<div><label>Quality: <input id="image-slider" type="range" min="1" max="100" value="92" /></label></div>').appendTo(sel.parent()); // Todo: i18n-ize label
+						}
+					}
+					else {
+						$('#image-slider').parent().remove();
+					}
+				});
 			};
 
 			// by default, svgCanvas.open() is a no-op.
