@@ -9,13 +9,7 @@
  *
  */
 
-$allowedMimeTypesBySuffix = array(
-    'svg' => 'image/svg+xml',
-    'png' => 'image/png',
-    'jpeg' => 'image/jpeg',
-    'bmp' => 'image/bmp',
-    'webp' => 'image/webp'
-);
+require('allowedMimeTypes.php');
 
 $mime = !isset($_POST['mime']) || !in_array($_POST['mime'], $allowedMimeTypesBySuffix) ? 'image/svg+xml' : $_POST['mime'];
  
