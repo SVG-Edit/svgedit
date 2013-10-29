@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <?php
 /*
  * fileopen.php
@@ -26,6 +26,11 @@
 		$prefix = 'data:' . $info['mime'] . ';base64,';
 	}
 ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8" />
 <script>
 window.top.window.svgEditor.processFile("<?php echo $prefix . base64_encode($output); ?>", "<?php echo htmlentities($type); ?>");
 </script>
+</head><body></body>
+</html>
