@@ -36,7 +36,7 @@ window.addEventListener('message', function(e) {
             alert('save complete for pathID ' + e.data[1] + '!');
             break;
         default:
-            throw 'Unexpected method';
+            throw 'Unexpected mode';
     }
 }, false);
 
