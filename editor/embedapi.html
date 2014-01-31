@@ -11,7 +11,7 @@
 		
         var svgCanvas = null;
 
-		function init_embed() {
+		function initEmbed() {
 			var doc, mainButton,
                 frame = document.getElementById('svgedit');
 			svgCanvas = new EmbeddedSVGEdit(frame);
@@ -43,7 +43,7 @@
         $('#save').click(saveSvg);
         
         // Export globals
-        window.init_embed = init_embed;
+        window.initEmbed = initEmbed;
     });
 	</script>
 </head>
@@ -51,6 +51,6 @@
 	<button id="load">Load example</button>
 	<button id="save">Save data</button>
 	<br/>
-	<iframe src="svg-editor.html" width="900px" height="600px" id="svgedit" onload="init_embed();"></iframe>
+	<iframe src="svg-editor.html" width="900px" height="600px" id="svgedit" onload="initEmbed();"></iframe>
 </body>
 </html>
