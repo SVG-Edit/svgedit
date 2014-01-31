@@ -235,12 +235,19 @@
 					}
 
 					if (urldata.extensions) {
+            if (urldata.extensions.indexOf(':')) { // For security reasons, disallow cross-domain extensions via URL
+              urldata.extensions = '';
+            }
 						urldata.extensions = urldata.extensions.split(',');
 					}
 
 					if (urldata.bkgd_color) {
 						urldata.bkgd_color = '#' + urldata.bkgd_color;
 					}
+          
+          if (urldata.extPath.indexOf(':') > -1) { // For security reasons, disallow cross-domain extension path via URL
+            delete urldata.extPath;
+          }
 
 					svgEditor.setConfig(urldata);
 
