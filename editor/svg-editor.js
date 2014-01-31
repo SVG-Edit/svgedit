@@ -942,10 +942,11 @@
 								if (toolButtonClick(show_sel)) {
 									options.fn();
 								}
+								var icon;
 								if (options.icon) {
-									var icon = $.getSvgIcon(options.icon, true);
+									icon = $.getSvgIcon(options.icon, true);
 								} else {
-									var icon = $(options.sel).children().eq(0).clone();
+									icon = $(options.sel).children().eq(0).clone();
 								}
 
 								icon[0].setAttribute('width', shower.width());
@@ -1169,7 +1170,7 @@
 
 					// Add buttons given by extension
 					$.each(ext.buttons, function(i, btn) {
-						var icon;
+						var icon, svgicon;
 						var id = btn.id;
 						var num = i;
 
@@ -1182,7 +1183,7 @@
 							icon = $('<img src="' + btn.icon + '">');
 						} else {
 							fallback_obj[id] = btn.icon;
-							var svgicon = btn.svgicon || btn.id;
+							svgicon = btn.svgicon || btn.id;
 							if (btn.type == 'app_menu') {
 								placement_obj['#' + id + ' > div'] = svgicon;
 							} else {
@@ -1212,7 +1213,7 @@
 							parent = '#main_menu ul';
 							break;
 						}
-
+						var flyout_holder, cur_h, show_btn;
 						var button = $((btn.list || btn.type == 'app_menu') ? '<li/>' : '<div/>')
 							.attr('id', id)
 							.attr('title', btn.title)
@@ -1230,12 +1231,12 @@
 	//							// opts.button, default, position
 								var ref_btn = $(button);
 
-								var flyout_holder = ref_btn.parent();
+								flyout_holder = ref_btn.parent();
 								// Create a flyout menu if there isn't one already
 								if (!ref_btn.parent().hasClass('tools_flyout')) {
 									// Create flyout placeholder
 									var tls_id = ref_btn[0].id.replace('tool_', 'tools_');
-									var show_btn = ref_btn.clone()
+									show_btn = ref_btn.clone()
 										.attr('id',tls_id + '_show')
 										.append($('<div>', {'class': 'flyout_arrow_horiz'}));
 
@@ -1252,7 +1253,7 @@
 								// TODO: Find way to set the current icon using the iconloader if this is not default
 
 								// Include data for extension button as well as ref button
-								var cur_h = holders['#'+flyout_holder[0].id] = [{
+								cur_h = holders['#'+flyout_holder[0].id] = [{
 									sel: '#'+id,
 									fn: btn.events.click,
 									icon: btn.id,
@@ -1282,7 +1283,7 @@
 							$('#' + btn.list + '_opts').append(button);
 							if (btn.isDefault) {
 								$('#cur_' + btn.list).append(button.children().clone());
-								var svgicon = btn.svgicon || btn.id;
+								svgicon = btn.svgicon || btn.id;
 								placement_obj['#cur_' + btn.list] = svgicon;
 							}
 						} else if (btn.includeWith) {
@@ -1291,12 +1292,12 @@
 							// opts.button, default, position
 							var ref_btn = $(opts.button);
 
-							var flyout_holder = ref_btn.parent();
+							flyout_holder = ref_btn.parent();
 							// Create a flyout menu if there isn't one already
 							if (!ref_btn.parent().hasClass('tools_flyout')) {
 								// Create flyout placeholder
 								var tls_id = ref_btn[0].id.replace('tool_', 'tools_');
-								var show_btn = ref_btn.clone()
+								show_btn = ref_btn.clone()
 									.attr('id',tls_id + '_show')
 									.append($('<div>', {'class': 'flyout_arrow_horiz'}));
 
@@ -1314,7 +1315,7 @@
 							// TODO: Find way to set the current icon using the iconloader if this is not default
 
 							// Include data for extension button as well as ref button
-							var cur_h = holders['#'+flyout_holder[0].id] = [{
+							cur_h = holders['#'+flyout_holder[0].id] = [{
 								sel: '#'+id,
 								fn: btn.events.click,
 								icon: btn.id,
@@ -1355,7 +1356,9 @@
 									}
 									if (btn.key) {
 										$(document).bind('keydown', btn.key, func);
-										if (btn.title) button.attr('title', btn.title + ' ['+btn.key+']');
+										if (btn.title) {
+											button.attr('title', btn.title + ' ['+btn.key+']');
+										}
 									}
 								} else {
 									button.bind(name, func);
@@ -1370,8 +1373,9 @@
 						addAltDropDown(this.elem, this.list, this.callback, {seticon: true});
 					});
 
-					if (svgicons)
+					if (svgicons) {
 						cb_ready = false; // Delay callback
+					}
 
 					$.svgIcons(svgicons, {
 						w:24, h:24,
@@ -1415,6 +1419,7 @@
 			// updates the toolbar (colors, opacity, etc) based on the selected element
 			// This function also updates the opacity and id elements that are in the context panel
 			var updateToolbar = function() {
+				var i;
 				if (selectedElement != null) {
 					switch (selectedElement.tagName) {
 					case 'use':
@@ -1426,7 +1431,7 @@
 						// Look for common styles
 						var gWidth = null;
 						var childs = selectedElement.getElementsByTagName('*');
-						for (var i = 0, len = childs.length; i < len; i++) {
+						for (i = 0, len = childs.length; i < len; i++) {
 							var swidth = childs[i].getAttribute('stroke-width');
 
 							if (i === 0) {
@@ -1451,13 +1456,15 @@
 
 						var attr = selectedElement.getAttribute('stroke-linejoin') || 'miter';
 
-						if ($('#linejoin_' + attr).length != 0)
+						if ($('#linejoin_' + attr).length != 0) {
 							setStrokeOpt($('#linejoin_' + attr)[0]);
+						}
 
 						attr = selectedElement.getAttribute('stroke-linecap') || 'butt';
 
-						if ($('#linecap_' + attr).length != 0)
+						if ($('#linecap_' + attr).length != 0) {
 							setStrokeOpt($('#linecap_' + attr)[0]);
+						}
 					}
 				}
 
@@ -1473,7 +1480,9 @@
 			};
 
 			var setImageURL = Editor.setImageURL = function(url) {
-				if (!url) url = defaultImageURL;
+				if (!url) {
+					url = defaultImageURL;
+				}
 				svgCanvas.setImageURL(url);
 				$('#image_url').val(url);
 
@@ -1502,15 +1511,16 @@
 			var updateContextPanel = function() {
 				var elem = selectedElement;
 				// If element has just been deleted, consider it null
-				if (elem != null && !elem.parentNode) elem = null;
+				if (elem != null && !elem.parentNode) {elem = null;}
 				var currentLayerName = svgCanvas.getCurrentDrawing().getCurrentLayerName();
 				var currentMode = svgCanvas.getMode();
 				var unit = curConfig.baseUnit !== 'px' ? curConfig.baseUnit : null;
 
 				var is_node = currentMode == 'pathedit'; //elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
 				var menu_items = $('#cmenu_canvas li');
-				$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,\
-					#ellipse_panel, #line_panel, #text_panel, #image_panel, #container_panel, #use_panel, #a_panel').hide();
+				$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,'+
+					'#ellipse_panel, #line_panel, #text_panel, #image_panel, #container_panel,'+
+					' #use_panel, #a_panel').hide();
 				if (elem != null) {
 					var elname = elem.nodeName;
 					// If this is a link with no transform and one child, pretend
@@ -1736,7 +1746,7 @@
 			// Set up editor background functionality
 			// TODO add checkerboard as "pattern"
 			var color_blocks = ['#FFF', '#888', '#000']; // ,'url(data:image/gif;base64,R0lGODlhEAAQAIAAAP%2F%2F%2F9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG%2Bgq4jM3IFLJgpswNly%2FXkcBpIiVaInlLJr9FZWAQA7)'];
-			var str = '';
+			str = '';
 			$.each(color_blocks, function() {
 				str += '<div class="color_block" style="background-color:' + this + ';"></div>';
 			});
@@ -1785,8 +1795,8 @@
 			};
 			var changeZoom = function(ctl) {
 				var zoomlevel = ctl.value / 100;
-				if (zoomlevel < .001) {
-					ctl.value = .1;
+				if (zoomlevel < 0.001) {
+					ctl.value = 0.1;
 					return;
 				}
 				var zoom = svgCanvas.getZoom();
@@ -1803,7 +1813,7 @@
 			};
 
 			var changeOpacity = function(ctl, val) {
-				if (val == null) val = ctl.value;
+				if (val == null) {val = ctl.value;}
 				$('#group_opacity').val(val);
 				if (!ctl || !ctl.handle) {
 					$('#opac_slider').slider('option', 'value', val);
@@ -1812,7 +1822,7 @@
 			};
 
 			var changeBlur = function(ctl, val, noUndo) {
-				if (val == null) val = ctl.value;
+				if (val == null) {val = ctl.value;}
 				$('#blur').val(val);
 				var complete = false;
 				if (!ctl || !ctl.handle) {
@@ -1853,7 +1863,7 @@
 				var destLayer = this.options[this.selectedIndex].value;
 				var confirmStr = uiStrings.notification.QmoveElemsToLayer.replace('%s', destLayer);
 				var moveToLayer = function(ok) {
-					if (!ok) return;
+					if (!ok) {return;}
 					promptMoveLayerOnce = true;
 					svgCanvas.moveSelectedToLayer(destLayer);
 					svgCanvas.clearSelection();

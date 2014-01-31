@@ -1,3 +1,5 @@
+/*globals svgedit*/
+/*jslint vars: true, eqeq: true */
 /**
  * Package: svedit.math
  *
@@ -10,7 +12,7 @@
 // Dependencies:
 // None.
 
-(function() {
+(function() {'use strict';
 
 if (!svgedit.math) {
 	svgedit.math = {};
@@ -66,12 +68,12 @@ svgedit.math.matrixMultiply = function() {
 		var m1 = args[i-1];
 		m = m1.multiply(m);
 	}
-	if (Math.abs(m.a) < NEAR_ZERO) m.a = 0;
-	if (Math.abs(m.b) < NEAR_ZERO) m.b = 0;
-	if (Math.abs(m.c) < NEAR_ZERO) m.c = 0;
-	if (Math.abs(m.d) < NEAR_ZERO) m.d = 0;
-	if (Math.abs(m.e) < NEAR_ZERO) m.e = 0;
-	if (Math.abs(m.f) < NEAR_ZERO) m.f = 0;
+	if (Math.abs(m.a) < NEAR_ZERO) {m.a = 0;}
+	if (Math.abs(m.b) < NEAR_ZERO) {m.b = 0;}
+	if (Math.abs(m.c) < NEAR_ZERO) {m.c = 0;}
+	if (Math.abs(m.d) < NEAR_ZERO) {m.d = 0;}
+	if (Math.abs(m.e) < NEAR_ZERO) {m.e = 0;}
+	if (Math.abs(m.f) < NEAR_ZERO) {m.f = 0;}
 
 	return m;
 };
@@ -85,11 +87,11 @@ svgedit.math.matrixMultiply = function() {
 // Returns:
 // Boolean on whether or not a matrix transform was found
 svgedit.math.hasMatrixTransform = function(tlist) {
-	if (!tlist) return false;
+	if (!tlist) {return false;}
 	var num = tlist.numberOfItems;
 	while (num--) {
 		var xform = tlist.getItem(num);
-		if (xform.type == 1 && !svgedit.math.isIdentity(xform.matrix)) return true;
+		if (xform.type == 1 && !svgedit.math.isIdentity(xform.matrix)) {return true;}
 	}
 	return false;
 };
@@ -166,7 +168,8 @@ svgedit.math.transformListToTransform = function(tlist, min, max) {
 	max = parseInt(max, 10);
 	if (min > max) { var temp = max; max = min; min = temp; }
 	var m = svg.createSVGMatrix();
-	for (var i = min; i <= max; ++i) {
+	var i;
+	for (i = min; i <= max; ++i) {
 		// if our indices are out of range, just use a harmless identity matrix
 		var mtom = (i >= 0 && i < tlist.numberOfItems ? 
 						tlist.getItem(i).matrix :
@@ -238,4 +241,4 @@ svgedit.math.rectsIntersect = function(r1, r2) {
 		(r2.y+r2.height) > r1.y;
 };
 
-})();
+}());

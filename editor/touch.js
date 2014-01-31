@@ -1,7 +1,8 @@
 // http://ross.posterous.com/2008/08/19/iphone-touch-events-in-javascript/
-function touchHandler(event) {
+function touchHandler(event) {'use strict';
 
-	var touches = event.changedTouches,
+	var simulatedEvent,
+		touches = event.changedTouches,
 		first = touches[0],
 		type = "";
 	switch (event.type) {
@@ -15,7 +16,7 @@ function touchHandler(event) {
 	//	screenX, screenY, clientX, clientY, ctrlKey, 
 	//	altKey, shiftKey, metaKey, button, relatedTarget);
 
-	var simulatedEvent = document.createEvent("MouseEvent");
+	simulatedEvent = document.createEvent("MouseEvent");
 	simulatedEvent.initMouseEvent(type, true, true, window, 1,
 								first.screenX, first.screenY,
 								first.clientX, first.clientY, false,

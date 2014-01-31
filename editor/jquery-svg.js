@@ -1,3 +1,5 @@
+/*globals $, jQuery */
+/*jslint vars: true */
 /**
  * jQuery module to work with SVG.
  *
@@ -8,7 +10,7 @@
 // Dependencies:
 // 1) jquery
 
-(function() {
+(function() {'use strict';
 
   // This fixes $(...).attr() to work as expected with SVG elements.
   // Does not currently use *AttributeNS() since we rarely need that.
@@ -24,9 +26,10 @@
     // TODO use NS.SVG instead
     svgns = "http://www.w3.org/2000/svg";
   jQuery.fn.attr = function(key, value) {
-    var len = this.length;
-    if (!len) return proxied.apply(this, arguments);
-    for (var i = 0; i < len; ++i) {
+    var i, attr;
+	var len = this.length;
+    if (!len) {return proxied.apply(this, arguments);}
+    for (i = 0; i < len; ++i) {
       var elem = this[i];
       // set/get SVG attribute
       if (elem.namespaceURI === svgns) {
@@ -39,7 +42,7 @@
 
           while (j--) {
             var aname = key[j];
-            var attr = elem.getAttribute(aname);
+            attr = elem.getAttribute(aname);
             // This returns a number when appropriate
             if (attr || attr === "0") {
               attr = isNaN(attr) ? attr : (attr - 0);
@@ -47,14 +50,16 @@
             obj[aname] = attr;
           }
           return obj;
-        } else if (typeof key === "object") {
+        }
+		if (typeof key === "object") {
           // Setting attributes form object
-          for (var v in key) {
+		  var v;
+          for (v in key) {
             elem.setAttribute(v, key[v]);
           }
         // Getting attribute
         } else {
-          var attr = elem.getAttribute(key);
+          attr = elem.getAttribute(key);
           if (attr || attr === "0") {
             attr = isNaN(attr) ? attr : (attr - 0);
           }

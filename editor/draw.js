@@ -1,3 +1,5 @@
+/*globals $, svgedit*/
+/*jslint vars: true, eqeq: true*/
 /**
  * Package: svgedit.draw
  *
@@ -11,7 +13,7 @@
 // 2) browser.js
 // 3) svgutils.js
 
-(function() {
+(function() {'use strict';
 
 if (!svgedit.draw) {
 	svgedit.draw = {};
@@ -169,7 +171,7 @@ svgedit.draw.Drawing.prototype.clearNonce = function() {
 svgedit.draw.Drawing.prototype.getId = function() {
 	return this.nonce_ ?
 		this.idPrefix + this.nonce_ + '_' + this.obj_num :
- 		this.idPrefix + this.obj_num;
+		this.idPrefix + this.obj_num;
 };
 
 /**
@@ -225,7 +227,7 @@ svgedit.draw.Drawing.prototype.releaseId = function(id) {
 		return false;
 	}
 	// extract the obj_num of this id
-	var num = parseInt(id.substr(front.length));
+	var num = parseInt(id.substr(front.length), 10);
 
 	// if we didn't get a positive number or we already released this number
 	// then return false.
@@ -251,8 +253,9 @@ svgedit.draw.Drawing.prototype.getNumLayers = function() {
 // Function: svgedit.draw.Drawing.hasLayer
 // Check if layer with given name already exists
 svgedit.draw.Drawing.prototype.hasLayer = function(name) {
-	for(var i = 0; i < this.getNumLayers(); i++) {
-		if(this.all_layers[i][0] == name) return true;
+	var i;
+	for (i = 0; i < this.getNumLayers(); i++) {
+		if(this.all_layers[i][0] == name) {return true;}
 	}
 	return false;
 };
@@ -287,7 +290,8 @@ svgedit.draw.Drawing.prototype.getCurrentLayer = function() {
 // Returns:
 // The name of the currently active layer.
 svgedit.draw.Drawing.prototype.getCurrentLayerName = function() {
-	for (var i = 0; i < this.getNumLayers(); ++i) {
+	var i;
+	for (i = 0; i < this.getNumLayers(); ++i) {
 		if (this.all_layers[i][1] == this.current_layer) {
 			return this.getLayerName(i);
 		}
@@ -305,7 +309,8 @@ svgedit.draw.Drawing.prototype.getCurrentLayerName = function() {
 // Returns:
 // true if the current layer was switched, otherwise false
 svgedit.draw.Drawing.prototype.setCurrentLayer = function(name) {
-	for (var i = 0; i < this.getNumLayers(); ++i) {
+	var i;
+	for (i = 0; i < this.getNumLayers(); ++i) {
 		if (name == this.getLayerName(i)) {
 			if (this.current_layer != this.all_layers[i][1]) {
 				this.current_layer.setAttribute("style", "pointer-events:none");
@@ -346,7 +351,8 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 	var orphans = [], layernames = [];
 	var a_layer = null;
 	var childgroups = false;
-	for (var i = 0; i < numchildren; ++i) {
+	var i;
+	for (i = 0; i < numchildren; ++i) {
 		var child = this.svgElem_.childNodes.item(i);
 		// for each g, find its layer name
 		if (child && child.nodeType == 1) {
@@ -383,7 +389,7 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 	// create a new layer and add all the orphans to it
 	var svgdoc = this.svgElem_.ownerDocument;
 	if (orphans.length > 0 || !childgroups) {
-		var i = 1;
+		i = 1;
 		// TODO(codedread): What about internationalization of "Layer"?
 		while (layernames.indexOf(("Layer " + i)) >= 0) { i++; }
 		var newname = "Layer " + i;
@@ -391,7 +397,8 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 		var layer_title = svgdoc.createElementNS(NS.SVG, "title");
 		layer_title.textContent = newname;
 		a_layer.appendChild(layer_title);
-		for (var j = 0; j < orphans.length; ++j) {
+		var j;
+		for (j = 0; j < orphans.length; ++j) {
 			a_layer.appendChild(orphans[j]);
 		}
 		this.svgElem_.appendChild(a_layer);
@@ -435,13 +442,14 @@ svgedit.draw.Drawing.prototype.createLayer = function(name) {
 svgedit.draw.Drawing.prototype.getLayerVisibility = function(layername) {
 	// find the layer
 	var layer = null;
-	for (var i = 0; i < this.getNumLayers(); ++i) {
+	var i;
+	for (i = 0; i < this.getNumLayers(); ++i) {
 		if (this.getLayerName(i) == layername) {
 			layer = this.all_layers[i][1];
 			break;
 		}
 	}
-	if (!layer) return false;
+	if (!layer) {return false;}
 	return (layer.getAttribute('display') != 'none');
 };
 
@@ -461,16 +469,17 @@ svgedit.draw.Drawing.prototype.setLayerVisibility = function(layername, bVisible
 	}
 	// find the layer
 	var layer = null;
-	for (var i = 0; i < this.getNumLayers(); ++i) {
+	var i;
+	for (i = 0; i < this.getNumLayers(); ++i) {
 		if (this.getLayerName(i) == layername) {
 			layer = this.all_layers[i][1];
 			break;
 		}
 	}
-	if (!layer) return null;
+	if (!layer) {return null;}
 	
 	var oldDisplay = layer.getAttribute("display");
-	if (!oldDisplay) oldDisplay = "inline";
+	if (!oldDisplay) {oldDisplay = "inline";}
 	layer.setAttribute("display", bVisible ? "inline" : "none");
 	return layer;
 };
@@ -486,7 +495,8 @@ svgedit.draw.Drawing.prototype.setLayerVisibility = function(layername, bVisible
 // The opacity value of the given layer.  This will be a value between 0.0 and 1.0, or null
 // if layername is not a valid layer
 svgedit.draw.Drawing.prototype.getLayerOpacity = function(layername) {
-	for (var i = 0; i < this.getNumLayers(); ++i) {
+	var i;
+	for (i = 0; i < this.getNumLayers(); ++i) {
 		if (this.getLayerName(i) == layername) {
 			var g = this.all_layers[i][1];
 			var opacity = g.getAttribute('opacity');
@@ -510,7 +520,8 @@ svgedit.draw.Drawing.prototype.setLayerOpacity = function(layername, opacity) {
 	if (typeof opacity != typeof 1.0 || opacity < 0.0 || opacity > 1.0) {
 		return;
 	}
-	for (var i = 0; i < this.getNumLayers(); ++i) {
+	var i;
+	for (i = 0; i < this.getNumLayers(); ++i) {
 		if (this.getLayerName(i) == layername) {
 			var g = this.all_layers[i][1];
 			g.setAttribute("opacity", opacity);
@@ -519,4 +530,4 @@ svgedit.draw.Drawing.prototype.setLayerOpacity = function(layername, opacity) {
 	}
 };
 
-})();
+}());
