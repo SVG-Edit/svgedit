@@ -243,7 +243,7 @@
 						urldata.bkgd_color = '#' + urldata.bkgd_color;
 					}
 			
-					if (urldata.extPath.indexOf(':') > -1) { // For security reasons, disallow cross-domain extension path via URL
+					if (urldata.extPath && urldata.extPath.indexOf(':') > -1) { // For security reasons, disallow cross-domain extension path via URL
 						delete urldata.extPath;
 					}
 
