@@ -1,5 +1,8 @@
 /*globals $, svgCanvas, svgEditor*/
 /*jslint regexp:true*/
+// TODO: Might add support for "exportImage" custom
+//   handler as in "ext-server_opensave.js" (and in savefile.php)
+
 svgEditor.addExtension("php_savefile", {
 	callback: function() {
 		'use strict';
