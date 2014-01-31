@@ -85,7 +85,7 @@ svgEditor.readLang({
 		"smallest_object": "najmniejszy obiekt",
 		"new_doc": "Nowy obraz",
 		"open_doc": "Otwórz obraz",
-		"export_png": "Eksportuj do PNG",
+		"export_img": "Eksportuj",
 		"save_doc": "Zapisz obraz",
 		"import_doc": "Importuj SVG",
 		"align_to_page": "Wyrównaj element do strony",
