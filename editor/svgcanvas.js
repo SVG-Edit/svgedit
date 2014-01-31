@@ -1,3 +1,5 @@
+/*globals $*/
+/*jslint vars: true, eqeq: true */
 /*
  * svgcanvas.js
  *
@@ -310,9 +312,9 @@ canvas.undoMgr = new svgedit.history.UndoManager({
 					canvas.identifyLayers();
 				}
 				if (cmdType == InsertElementCommand.type()) {
-					if (isApply) restoreRefElems(cmd.elem);
+					if (isApply) {restoreRefElems(cmd.elem);}
 				} else {
-					if (!isApply) restoreRefElems(cmd.elem);
+					if (!isApply) {restoreRefElems(cmd.elem);}
 				}
 				if (cmd.elem.tagName === 'use') {
 					setUseData(cmd.elem);
@@ -390,8 +392,9 @@ $(opac_ani).attr({
 
 var restoreRefElems = function(elem) {
 	// Look for missing reference elements, restore any found
-	var attrs = $(elem).attr(ref_attrs);
-	for (var o in attrs) {
+	var o, i,
+		attrs = $(elem).attr(ref_attrs);
+	for (o in attrs) {
 		var val = attrs[o];
 		if (val && val.indexOf('url(') === 0) {
 			var id = svgedit.utilities.getUrlFromAttr(val).substr(1);
@@ -406,7 +409,7 @@ var restoreRefElems = function(elem) {
 	var childs = elem.getElementsByTagName('*');
 	
 	if (childs.length) {
-		for (var i = 0, l = childs.length; i < l; i++) {
+		for (i = 0, l = childs.length; i < l; i++) {
 			restoreRefElems(childs[i]);
 		}
 	}
@@ -554,9 +557,10 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 		
 		if (!rect) {
 			var rubberBBox = rubberBox.getBBox();
-			var bb = {};
+			var o,
+				bb = {};
 			
-			for (var o in rubberBBox) {
+			for (o in rubberBBox) {
 				bb[o] = rubberBBox[o] / current_zoom;
 			}
 			rubberBBox = bb;
@@ -566,7 +570,7 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 		}
 		var i = curBBoxes.length;
 		while (i--) {
-			if (!rubberBBox.width || !rubberBBox.width) continue;
+			if (!rubberBBox.width || !rubberBBox.width) {continue;}
 			if (svgedit.math.rectsIntersect(rubberBBox, curBBoxes[i].bbox))  {
 				resultList.push(curBBoxes[i].elem);
 			}
@@ -588,8 +592,8 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 // Returns:
 // A single bounding box object
 getStrokedBBox = this.getStrokedBBox = function(elems) {
-	if (!elems) elems = getVisibleElements();
-	if (!elems.length) return false;
+	if (!elems) {elems = getVisibleElements();}
+	if (!elems.length) {return false;}
 	// Make sure the expected BBox is returned if the element is a group
 	var getCheckedBBox = function(elem) {
 
@@ -633,35 +637,35 @@ getStrokedBBox = this.getStrokedBBox = function(elems) {
 				// Old method: Works by giving the rotated BBox,
 				// this is (unfortunately) what Opera and Safari do
 				// natively when getting the BBox of the parent group
-// 						var angle = angle * Math.PI / 180.0;
-// 						var rminx = Number.MAX_VALUE, rminy = Number.MAX_VALUE, 
-// 							rmaxx = Number.MIN_VALUE, rmaxy = Number.MIN_VALUE;
-// 						var cx = round(bb.x + bb.width/2),
-// 							cy = round(bb.y + bb.height/2);
-// 						var pts = [ [bb.x - cx, bb.y - cy], 
-// 									[bb.x + bb.width - cx, bb.y - cy],
-// 									[bb.x + bb.width - cx, bb.y + bb.height - cy],
-// 									[bb.x - cx, bb.y + bb.height - cy] ];
-// 						var j = 4;
-// 						while (j--) {
-// 							var x = pts[j][0],
-// 								y = pts[j][1],
-// 								r = Math.sqrt( x*x + y*y );
-// 							var theta = Math.atan2(y,x) + angle;
-// 							x = round(r * Math.cos(theta) + cx);
-// 							y = round(r * Math.sin(theta) + cy);
-// 		
-// 							// now set the bbox for the shape after it's been rotated
-// 							if (x < rminx) rminx = x;
-// 							if (y < rminy) rminy = y;
-// 							if (x > rmaxx) rmaxx = x;
-// 							if (y > rmaxy) rmaxy = y;
-// 						}
-// 						
-// 						bb.x = rminx;
-// 						bb.y = rminy;
-// 						bb.width = rmaxx - rminx;
-// 						bb.height = rmaxy - rminy;
+//						var angle = angle * Math.PI / 180.0;
+//						var rminx = Number.MAX_VALUE, rminy = Number.MAX_VALUE, 
+//							rmaxx = Number.MIN_VALUE, rmaxy = Number.MIN_VALUE;
+//						var cx = round(bb.x + bb.width/2),
+//							cy = round(bb.y + bb.height/2);
+//						var pts = [ [bb.x - cx, bb.y - cy], 
+//									[bb.x + bb.width - cx, bb.y - cy],
+//									[bb.x + bb.width - cx, bb.y + bb.height - cy],
+//									[bb.x - cx, bb.y + bb.height - cy] ];
+//						var j = 4;
+//						while (j--) {
+//							var x = pts[j][0],
+//								y = pts[j][1],
+//								r = Math.sqrt( x*x + y*y );
+//							var theta = Math.atan2(y,x) + angle;
+//							x = round(r * Math.cos(theta) + cx);
+//							y = round(r * Math.sin(theta) + cy);
+//		
+//							// now set the bbox for the shape after it's been rotated
+//							if (x < rminx) rminx = x;
+//							if (y < rminy) rminy = y;
+//							if (x > rmaxx) rmaxx = x;
+//							if (y > rmaxy) rmaxy = y;
+//						}
+//						
+//						bb.x = rminx;
+//						bb.y = rminy;
+//						bb.width = rmaxx - rminx;
+//						bb.height = rmaxy - rminy;
 			}
 			return bb;
 		} catch(e) {
@@ -672,16 +676,16 @@ getStrokedBBox = this.getStrokedBBox = function(elems) {
 
 	var full_bb;
 	$.each(elems, function() {
-		if (full_bb) return;
-		if (!this.parentNode) return;
+		if (full_bb) {return;}
+		if (!this.parentNode) {return;}
 		full_bb = getCheckedBBox(this);
 	});
 
 	// This shouldn't ever happen...
-	if (full_bb == null) return null;
+	if (full_bb == null) {return null;}
 
 	// full_bb doesn't include the stoke, so this does no good!
-// 		if (elems.length == 1) return full_bb;
+//		if (elems.length == 1) return full_bb;
 
 	var max_x = full_bb.x + full_bb.width;
 	var max_y = full_bb.y + full_bb.height;
@@ -737,7 +741,9 @@ getStrokedBBox = this.getStrokedBBox = function(elems) {
 // Returns:
 // An array with all "visible" elements.
 var getVisibleElements = this.getVisibleElements = function(parent) {
-	if (!parent) parent = $(svgcontent).children(); // Prevent layers from being included
+	if (!parent) {
+		parent = $(svgcontent).children(); // Prevent layers from being included
+	}
 	
 	var contentElems = [];
 	$(parent).children().each(function(i, elem) {
@@ -763,8 +769,9 @@ var getVisibleElements = this.getVisibleElements = function(parent) {
 // * elem - The element
 // * bbox - The element's BBox as retrieved from getStrokedBBox
 var getVisibleElementsAndBBoxes = this.getVisibleElementsAndBBoxes = function(parent) {
-	if (!parent) parent = $(svgcontent).children(); // Prevent layers from being included
-	
+	if (!parent) {
+		parent = $(svgcontent).children(); // Prevent layers from being included
+	}
 	var contentElems = [];
 	$(parent).children().each(function(i, elem) {
 		try {
@@ -887,9 +894,10 @@ this.prepareSvg = function(newDoc) {
 	this.sanitizeSvg(newDoc.documentElement);
 
 	// convert paths into absolute commands
-	var paths = newDoc.getElementsByTagNameNS(NS.SVG, "path");
-	for (var i = 0, len = paths.length; i < len; ++i) {
-		var path = paths[i];
+	var i, path,
+		paths = newDoc.getElementsByTagNameNS(NS.SVG, "path");
+	for (i = 0, len = paths.length; i < len; ++i) {
+		path = paths[i];
 		path.setAttribute('d', pathActions.convertPath(path));
 		pathActions.fixEnd(path);
 	}
@@ -905,7 +913,7 @@ this.prepareSvg = function(newDoc) {
 // Parameters: 
 // elem - The (text) DOM element to clone
 var ffClone = function(elem) {
-	if (!svgedit.browser.isGecko()) return elem;
+	if (!svgedit.browser.isGecko()) {return elem;}
 	var clone = elem.cloneNode(true);
 	elem.parentNode.insertBefore(clone, elem);
 	elem.parentNode.removeChild(elem);
@@ -920,7 +928,7 @@ var ffClone = function(elem) {
 // $(canvas.getRootElem()).children().each(...)
 
 // this.each = function(cb) {
-// 	$(svgroot).children().each(cb);
+//	$(svgroot).children().each(cb);
 // };
 
 
@@ -970,9 +978,9 @@ this.setRotationAngle = function(val, preventUndo) {
 		call("changed", selectedElements);
 	}
 	var pointGripContainer = svgedit.utilities.getElem("pathpointgrip_container");
-// 		if (elem.nodeName == "path" && pointGripContainer) {
-// 			pathActions.setPointContainerTransform(elem.getAttribute("transform"));
-// 		}
+//		if (elem.nodeName == "path" && pointGripContainer) {
+//			pathActions.setPointContainerTransform(elem.getAttribute("transform"));
+//		}
 	var selector = selectorManager.requestSelector(selectedElements[0]);
 	selector.resize();
 	selector.updateGripCursors(val);
@@ -988,7 +996,7 @@ var recalculateAllSelectedDimensions = this.recalculateAllSelectedDimensions = f
 	var i = selectedElements.length;
 	while (i--) {
 		var elem = selectedElements[i];
-// 			if (svgedit.utilities.getRotationAngle(elem) && !svgedit.math.hasMatrixTransform(getTransformList(elem))) continue;
+//			if (svgedit.utilities.getRotationAngle(elem) && !svgedit.math.hasMatrixTransform(getTransformList(elem))) continue;
 		var cmd = svgedit.recalculate.recalculateDimensions(elem);
 		if (cmd) {
 			batchCmd.addSubCommand(cmd);
@@ -1021,16 +1029,17 @@ var root_sctm = null;
 // noCall - Optional boolean that when true does not call the "selected" handler
 var clearSelection = this.clearSelection = function(noCall) {
 	if (selectedElements[0] != null) {
-		var len = selectedElements.length;
-		for (var i = 0; i < len; ++i) {
-			var elem = selectedElements[i];
-			if (elem == null) break;
+		var i, elem,
+			len = selectedElements.length;
+		for (i = 0; i < len; ++i) {
+			elem = selectedElements[i];
+			if (elem == null) {break;}
 			selectorManager.releaseSelector(elem);
 			selectedElements[i] = null;
 		}
 //		selectedBBoxes[0] = null;
 	}
-	if (!noCall) call("selected", selectedElements);
+	if (!noCall) {call("selected", selectedElements);}
 };
 
 // TODO: do we need to worry about selectedBBoxes here?
@@ -1058,7 +1067,7 @@ var addToSelection = this.addToSelection = function(elemsToAdd, showGrips) {
 	var i = elemsToAdd.length;
 	while (i--) {
 		var elem = elemsToAdd[i];
-		if (!elem || !svgedit.utilities.getBBox(elem)) continue;
+		if (!elem || !svgedit.utilities.getBBox(elem)) {continue;}
 
 		if (elem.tagName === 'a' && elem.childNodes.length === 1) {
 			// Make "a" element's child be the selected element 
@@ -1205,16 +1214,16 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		mouse_target = mouse_target.parentNode;
 	}
 	
-// 	
-// 	// go up until we hit a child of a layer
-// 	while (mouse_target.parentNode.parentNode.tagName == 'g') {
-// 		mouse_target = mouse_target.parentNode;
-// 	}
+//	
+//	// go up until we hit a child of a layer
+//	while (mouse_target.parentNode.parentNode.tagName == 'g') {
+//		mouse_target = mouse_target.parentNode;
+//	}
 	// Webkit bubbles the mouse event all the way up to the div, so we
 	// set the mouse_target to the svgroot like the other browsers
-// 	if (mouse_target.nodeName.toLowerCase() == "div") {
-// 		mouse_target = svgroot;
-// 	}
+//	if (mouse_target.nodeName.toLowerCase() == "div") {
+//		mouse_target = svgroot;
+//	}
 	
 	return mouse_target;
 };
@@ -1307,9 +1316,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		}
 		
 		// This would seem to be unnecessary...
-// 		if (['select', 'resize'].indexOf(current_mode) == -1) {
-// 			setGradient();
-// 		}
+//		if (['select', 'resize'].indexOf(current_mode) == -1) {
+//			setGradient();
+//		}
 		
 		var x = mouse_x / current_zoom,
 			y = mouse_y / current_zoom,
@@ -1392,10 +1401,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					}
 					r_start_x *= current_zoom;
 					r_start_y *= current_zoom;
-// 					console.log('p',[evt.pageX, evt.pageY]);					
-// 					console.log('c',[evt.clientX, evt.clientY]);	
-// 					console.log('o',[evt.offsetX, evt.offsetY]);	
-// 					console.log('s',[start_x, start_y]);
+//					console.log('p',[evt.pageX, evt.pageY]);					
+//					console.log('c',[evt.clientX, evt.clientY]);	
+//					console.log('o',[evt.offsetX, evt.offsetY]);	
+//					console.log('s',[start_x, start_y]);
 					
 					svgedit.utilities.assignAttributes(rubberBox, {
 						'x': r_start_x,
@@ -1606,7 +1615,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						"opacity": cur_shape.opacity
 					}
 				});
-// 					newText.textContent = "text";
+//					newText.textContent = "text";
 				break;
 			case "path":
 				// Fall through
@@ -1696,8 +1705,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 							if (selected == null) break;
 //							if (i==0) {
 //								var box = svgedit.utilities.getBBox(selected);
-// 									selectedBBoxes[i].x = box.x + dx;
-// 									selectedBBoxes[i].y = box.y + dy;
+//									selectedBBoxes[i].x = box.x + dx;
+//									selectedBBoxes[i].y = box.y + dy;
 //							}
 
 							// update the dummy transform in our transform list
@@ -2021,14 +2030,14 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			case "textedit":
 				x *= current_zoom;
 				y *= current_zoom;
-// 					if (rubberBox && rubberBox.getAttribute('display') != 'none') {
-// 						svgedit.utilities.assignAttributes(rubberBox, {
-// 							'x': Math.min(start_x,x),
-// 							'y': Math.min(start_y,y),
-// 							'width': Math.abs(x-start_x),
-// 							'height': Math.abs(y-start_y)
-// 						},100);
-// 					}
+//					if (rubberBox && rubberBox.getAttribute('display') != 'none') {
+//						svgedit.utilities.assignAttributes(rubberBox, {
+//							'x': Math.min(start_x,x),
+//							'y': Math.min(start_y,y),
+//							'width': Math.abs(x-start_x),
+//							'height': Math.abs(y-start_y)
+//						},100);
+//					}
 				
 				textActions.mouseMove(mouse_x, mouse_y);
 				
@@ -2130,7 +2139,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						selectorManager.requestSelector(selected).showGrips(true);
 						
 						// This shouldn't be necessary as it was done on mouseDown...
-// 							call("selected", [selected]);
+//							call("selected", [selected]);
 					}
 					// always recalculate dimensions to strip off stray identity transforms
 					recalculateAllSelectedDimensions();
@@ -2718,10 +2727,10 @@ var textActions = canvas.textActions = function() {
 			setEndSelectionFromPoint(pt.x, pt.y, true);
 			
 			// TODO: Find a way to make this work: Use transformed BBox instead of evt.target 
-// 				if (last_x === mouse_x && last_y === mouse_y
-// 					&& !svgedit.math.rectsIntersect(transbb, {x: pt.x, y: pt.y, width:0, height:0})) {
-// 					textActions.toSelectMode(true);				
-// 				}
+//				if (last_x === mouse_x && last_y === mouse_y
+//					&& !svgedit.math.rectsIntersect(transbb, {x: pt.x, y: pt.y, width:0, height:0})) {
+//					textActions.toSelectMode(true);				
+//				}
 
 			if (
 				evt.target !== curtext
@@ -2746,10 +2755,10 @@ var textActions = canvas.textActions = function() {
 
 			$(curtext).css('cursor', 'text');
 			
-// 				if (svgedit.browser.supportsEditableText()) {
-// 					curtext.setAttribute('editable', 'simple');
-// 					return;
-// 				}
+//				if (svgedit.browser.supportsEditableText()) {
+//					curtext.setAttribute('editable', 'simple');
+//					return;
+//				}
 			
 			if (!arguments.length) {
 				setCursor();
@@ -2786,13 +2795,13 @@ var textActions = canvas.textActions = function() {
 			
 			curtext = false;
 			
-// 				if (svgedit.browser.supportsEditableText()) {
-// 					curtext.removeAttribute('editable');
-// 				}
+//				if (svgedit.browser.supportsEditableText()) {
+//					curtext.removeAttribute('editable');
+//				}
 		},
 		setInputElem: function(elem) {
 			textinput = elem;
-// 			$(textinput).blur(hideCursor);
+//			$(textinput).blur(hideCursor);
 		},
 		clear: function() {
 			if (current_mode == "textedit") {
@@ -2802,10 +2811,10 @@ var textActions = canvas.textActions = function() {
 		init: function(inputElem) {
 			if (!curtext) return;
 
-// 				if (svgedit.browser.supportsEditableText()) {
-// 					curtext.select();
-// 					return;
-// 				}
+//				if (svgedit.browser.supportsEditableText()) {
+//					curtext.select();
+//					return;
+//				}
 		
 			if (!curtext.parentNode) {
 				// Result of the ffClone, need to get correct element
@@ -3167,7 +3176,7 @@ var pathActions = canvas.pathActions = function() {
 						if (subpath) index += svgedit.path.path.segs.length;
 						svgedit.path.addPointGrip(index, x, y);
 					}
-// 					keep = true;
+//					keep = true;
 				}
 				
 				return;
@@ -3229,7 +3238,7 @@ var pathActions = canvas.pathActions = function() {
 
 				if (newPoint) {
 					// First point
-// 					if (!index) return;
+//					if (!index) return;
 
 					// Set control points
 					var pointGrip1 = svgedit.path.addCtrlGrip('1c1');
@@ -3487,14 +3496,14 @@ var pathActions = canvas.pathActions = function() {
 			// TODO: Find out why!
 			// Presumed fixed in Opera 10.5, so commented out for now
 			
-// 			try {
+//			try {
 				var len = segList.numberOfItems;
-// 			} catch(err) {
-// 				var fixed_d = pathActions.convertPath(path);
-// 				path.setAttribute('d', fixed_d);
-// 				segList = path.pathSegList;
-// 				var len = segList.numberOfItems;
-// 			}
+//			} catch(err) {
+//				var fixed_d = pathActions.convertPath(path);
+//				path.setAttribute('d', fixed_d);
+//				segList = path.pathSegList;
+//				var len = segList.numberOfItems;
+//			}
 			var last_x, last_y;
 
 			for (var i = 0; i < len; ++i) {
@@ -3635,7 +3644,7 @@ var pathActions = canvas.pathActions = function() {
 				} else if (i === index) {
 					// Remove it
 					list.removeItem(last_m);
-// 						index--;
+//						index--;
 				} else if (item.pathSegType === 1 && index < i) {
 					// Remove the closing seg of this subpath
 					z_seg = i-1;
@@ -3960,7 +3969,7 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 	var defs = svgcontent.getElementsByTagNameNS(NS.SVG, "defs");
 	if (!defs || !defs.length) return 0;
 	
-// 	if (!defs.firstChild) return;
+//	if (!defs.firstChild) return;
 	
 	var defelem_uses = [],
 		numRemoved = 0;
@@ -4088,15 +4097,15 @@ this.svgToString = function(elem, indent) {
 			var vb = "";
 			// TODO: Allow this by dividing all values by current baseVal
 			// Note that this also means we should properly deal with this on import
-// 			if (curConfig.baseUnit !== "px") {
-// 				var unit = curConfig.baseUnit;
-// 				var unit_m = svgedit.units.getTypeMap()[unit];
-// 				res.w = svgedit.units.shortFloat(res.w / unit_m)
-// 				res.h = svgedit.units.shortFloat(res.h / unit_m)
-// 				vb = ' viewBox="' + [0, 0, res.w, res.h].join(' ') + '"';
-// 				res.w += unit;
-// 				res.h += unit;
-// 			}
+//			if (curConfig.baseUnit !== "px") {
+//				var unit = curConfig.baseUnit;
+//				var unit_m = svgedit.units.getTypeMap()[unit];
+//				res.w = svgedit.units.shortFloat(res.w / unit_m)
+//				res.h = svgedit.units.shortFloat(res.h / unit_m)
+//				vb = ' viewBox="' + [0, 0, res.w, res.h].join(' ') + '"';
+//				res.w += unit;
+//				res.h += unit;
+//			}
 			
 			if (unit !== "px") {
 				res.w = svgedit.units.convertUnit(res.w, unit) + unit;
@@ -4529,15 +4538,15 @@ var convertGradients = this.convertGradients = function(elem) {
 				// the gradient be updated as the element is moved, as 
 				// inkscape/illustrator do.
 			
-//		 				var g_coords = $(grad).attr(['cx', 'cy', 'r']);
-//		 				
-// 						$(grad).attr({
-// 							cx: (g_coords.cx - bb.x) / bb.width,
-// 							cy: (g_coords.cy - bb.y) / bb.height,
-// 							r: g_coords.r
-// 						});
-// 						
-// 						grad.removeAttribute('gradientUnits');
+//						var g_coords = $(grad).attr(['cx', 'cy', 'r']);
+//						
+//						$(grad).attr({
+//							cx: (g_coords.cx - bb.x) / bb.width,
+//							cy: (g_coords.cy - bb.y) / bb.height,
+//							r: g_coords.r
+//						});
+//						
+//						grad.removeAttribute('gradientUnits');
 			}
 		}
 	});
@@ -4974,8 +4983,8 @@ this.importSvgString = function(xmlString) {
 		addToSelection([use_el]);
 		
 		// TODO: Find way to add this in a recalculateDimensions-parsable way
-// 				if (vb[0] != 0 || vb[1] != 0)
-// 					ts = "translate(" + (-vb[0]) + "," + (-vb[1]) + ") " + ts;
+//				if (vb[0] != 0 || vb[1] != 0)
+//					ts = "translate(" + (-vb[0]) + "," + (-vb[1]) + ") " + ts;
 		addCommandToHistory(batchCmd);
 		call("changed", [svgcontent]);
 
@@ -5396,8 +5405,8 @@ this.getSelectedElems = function() { return selectedElements; };
 // Function: getResolution
 // Returns the current dimensions and zoom level in an object
 var getResolution = this.getResolution = function() {
-// 		var vb = svgcontent.getAttribute("viewBox").split(' ');
-// 		return {'w':vb[2], 'h':vb[3], 'zoom': current_zoom};
+//		var vb = svgcontent.getAttribute("viewBox").split(' ');
+//		return {'w':vb[2], 'h':vb[3], 'zoom': current_zoom};
 	
 	var width = svgcontent.getAttribute("width")/current_zoom;
 	var height = svgcontent.getAttribute("height")/current_zoom;
@@ -6684,18 +6693,18 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 				// Hoped to solve the issue of moving text with text-anchor="start",
 				// but this doesn't actually fix it. Hopefully on the right track, though. -Fyrd
 				
-// 					var box=getBBox(elem), left=box.x, top=box.y, width=box.width,
-// 						height=box.height, dx = width - old_w, dy=0;
-// 					var angle = svgedit.utilities.getRotationAngle(elem, true);
-// 					if (angle) {
-// 						var r = Math.sqrt( dx*dx + dy*dy );
-// 						var theta = Math.atan2(dy,dx) - angle;
-// 						dx = r * Math.cos(theta);
-// 						dy = r * Math.sin(theta);
-// 						
-// 						elem.setAttribute('x', elem.getAttribute('x')-dx);
-// 						elem.setAttribute('y', elem.getAttribute('y')-dy);
-// 					}
+//					var box=getBBox(elem), left=box.x, top=box.y, width=box.width,
+//						height=box.height, dx = width - old_w, dy=0;
+//					var angle = svgedit.utilities.getRotationAngle(elem, true);
+//					if (angle) {
+//						var r = Math.sqrt( dx*dx + dy*dy );
+//						var theta = Math.atan2(dy,dx) - angle;
+//						dx = r * Math.cos(theta);
+//						dy = r * Math.sin(theta);
+//						
+//						elem.setAttribute('x', elem.getAttribute('x')-dx);
+//						elem.setAttribute('y', elem.getAttribute('y')-dy);
+//					}
 				
 			} else if (attr == "#href") {
 				setHref(elem, newValue);
@@ -7068,10 +7077,10 @@ var pushGroupProperties = this.pushGroupProperties = function(g, undoable) {
 			if (gangle && glist.numberOfItems == 1) {
 				// [Rg] [Rc] [Mc]
 				// we want [Tr] [Rc2] [Mc] where:
-				// 	- [Rc2] is at the child's current center but has the 
+				//	- [Rc2] is at the child's current center but has the 
 				//	  sum of the group and child's rotation angles
-				// 	- [Tr] is the equivalent translation that this child 
-				// 	  undergoes if the group wasn't there
+				//	- [Tr] is the equivalent translation that this child 
+				//	  undergoes if the group wasn't there
 				
 				// [Tr] = [Rg] [Rc] [Rc2_inv]
 				
