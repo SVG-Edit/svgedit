@@ -1801,7 +1801,9 @@
 
 			var operaRepaint = function() {
 				// Repaints canvas in Opera. Needed for stroke-dasharray change as well as fill change
-				if (!window.opera) return;
+				if (!window.opera) {
+                    return;
+                }
 				$('<p/>').hide().appendTo('body').remove();
 			};
 
@@ -4235,7 +4237,7 @@
 			$('#cmenu_canvas li').disableContextMenu();
 			canv_menu.enableContextMenuItems('#delete,#cut,#copy');
 
-			window.onbeforeunload = function() {
+			window.addEventListener('beforeunload', function() {
 				if ('localStorage' in window) {
 					var name = 'svgedit-' + Editor.curConfig.canvasName;
 					window.localStorage.setItem(name, svgCanvas.getSvgString());
@@ -4252,7 +4254,7 @@
 					// Browser already asks question about closing the page
 					return uiStrings.notification.unsavedChanges;
 				}
-			};
+			}, false);
 
 			Editor.openPrep = function(func) {
 				$('#main_menu').hide();
