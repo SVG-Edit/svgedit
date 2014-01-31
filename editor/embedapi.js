@@ -41,12 +41,12 @@ var cbid = 0;
 
 function getCallbackSetter (d) {
   return function(){
-    var t = this, // new callback
+    var t = this, // New callback
       args = [].slice.call(arguments),
-      cbid = t.send(d, args, function(){});  // the callback (currently it's nothing, but will be set later)
+      cbid = t.send(d, args, function(){});  // The callback (currently it's nothing, but will be set later)
 
     return function(newcallback){
-      t.callbacks[cbid] = newcallback; // set callback
+      t.callbacks[cbid] = newcallback; // Set callback
     };
   };
 }
@@ -55,20 +55,20 @@ function EmbeddedSVGEdit(frame){
   if (!(this instanceof EmbeddedSVGEdit)) { // Allow invocation without "new" keyword
     return new EmbeddedSVGEdit(frame);
   }
-  // initialize communication
+  // Initialize communication
   this.frame = frame;
-  this.callbacks = {}; // successor to stack
-  //List of functions extracted with this:
-  //Run in firebug on http://svg-edit.googlecode.com/svn/trunk/docs/files/svgcanvas-js.html
+  this.callbacks = {};
+  // List of functions extracted with this:
+  // Run in firebug on http://svg-edit.googlecode.com/svn/trunk/docs/files/svgcanvas-js.html
 
   //for(var i=0,q=[],f = document.querySelectorAll("div.CFunction h3.CTitle a");i<f.length;i++){q.push(f[i].name)};q
   //var functions = ["clearSelection", "addToSelection", "removeFromSelection", "open", "save", "getSvgString", "setSvgString",
   //"createLayer", "deleteCurrentLayer", "setCurrentLayer", "renameCurrentLayer", "setCurrentLayerPosition", "setLayerVisibility",
   //"moveSelectedToLayer", "clear"];
 
-  //Newer, well, it extracts things that aren't documented as well. All functions accessible through the normal thingy can now be accessed though the API
-  //var l=[];for(var i in svgCanvas){if(typeof svgCanvas[i] == "function"){l.push(i)}};
-  //run in svgedit itself
+  // Newer, well, it extracts things that aren't documented as well. All functions accessible through the normal thingy can now be accessed though the API
+  // var l = []; for (var i in svgCanvas){ if (typeof svgCanvas[i] == "function") { l.push(i);} };
+  // Run in svgedit itself
   var i,
     t = this,
     functions = ["updateElementFromJson", "embedImage", "fixOperaXML", "clearSelection", "addToSelection",
@@ -88,13 +88,14 @@ function EmbeddedSVGEdit(frame){
 		"setIconSize", "setLang", "setCustomHandlers"];
 
   // TODO: rewrite the following, it's pretty scary.
-  for(i = 0; i < functions.length; i++){
+  for (i = 0; i < functions.length; i++) {
     this[functions[i]] = getCallbackSetter(functions[i]);
   }
 
   // Older IE may need a polyfill for addEventListener, but so it would for SVG
-  window.addEventListener('message', function(e){
-    // We accept and post strings for the sake of IE9 support
+  window.addEventListener('message', function(e) {
+    // We accept and post strings as opposed to objets for the sake of IE9 support; this
+    //   will most likely be changed in the future
     if (typeof e.data !== 'string') {
         return;
     }
@@ -105,10 +106,10 @@ function EmbeddedSVGEdit(frame){
     }
     result = data.result || data.error;
     cbid = data.id;
-    if(t.callbacks[cbid]){
-      if(data.result){
+    if (t.callbacks[cbid]) {
+      if (data.result) {
        t.callbacks[cbid](result);
-      }else{
+      } else {
         t.callbacks[cbid](result, "error");
       }
     }
@@ -120,7 +121,7 @@ EmbeddedSVGEdit.prototype.send = function(name, args, callback){
   cbid++;
 
   this.callbacks[cbid] = callback;
-  setTimeout(function(){ // delay for the callback to be set in case its synchronous
+  setTimeout(function(){ // Delay for the callback to be set in case its synchronous
     // Todo: Handle non-JSON arguments and return values (undefined, nonfinite numbers, functions, and built-in objects like Date, RegExp), etc.?
     // We accept and post strings for the sake of IE9 support
     t.frame.contentWindow.postMessage(JSON.stringify({namespace: "svgCanvas", id: cbid, name: name, args: args}), '*');
