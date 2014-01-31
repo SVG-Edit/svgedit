@@ -1,5 +1,5 @@
-/*globals $*/
-/*jslint vars: true, eqeq: true */
+/*globals $, svgedit, svgCanvas*/
+/*jslint vars: true, eqeq: true, todo: true, bitwise: true, continue: true, forin: true */
 /*
  * svgcanvas.js
  *
@@ -26,6 +26,8 @@
 // 12) coords.js
 // 13) recalculate.js
 
+(function () {'use strict';
+
 if (!window.console) {
 	window.console = {};
 	window.console.log = function(str) {};
@@ -37,14 +39,15 @@ if (window.opera) {
 	window.console.dir = function(str) {};
 }
 
+}());
+
 // Class: SvgCanvas
 // The main SvgCanvas class that manages all SVG-related functions
 //
 // Parameters:
 // container - The container HTML element that should hold the SVG root element
 // config - An object that contains configuration data
-$.SvgCanvas = function(container, config)
-{
+$.SvgCanvas = function(container, config) {
 // Alias Namespace constants
 var NS = svgedit.NS;
 
@@ -423,7 +426,7 @@ var restoreRefElems = function(elem) {
 	//	svgedit.utilities.setHref(svgthumb, '#svgcontent');
 	//	svgroot.appendChild(svgthumb);
 
-})();
+}());
 
 // Object to contain image data for raster images that were found encodable
 var encodableImages = {},
@@ -504,17 +507,18 @@ var runExtensions = this.runExtensions = function(action, vars, returnArray) {
 // name - String with the ID of the extension
 // ext_func - Function supplied by the extension with its data
 this.addExtension = function(name, ext_func) {
+	var ext;
 	if (!(name in extensions)) {
 		// Provide private vars/funcs here. Is there a better way to do this?
 		if ($.isFunction(ext_func)) {
-			var ext = ext_func($.extend(canvas.getPrivateMethods(), {
+			ext = ext_func($.extend(canvas.getPrivateMethods(), {
 				svgroot: svgroot,
 				svgcontent: svgcontent,
 				nonce: getCurrentDrawing().getNonce(),
 				selectorManager: selectorManager
 			}));
 		} else {
-			var ext = ext_func;
+			ext = ext_func;
 		}
 		extensions[name] = ext;
 		call("extension_added", ext);
@@ -532,7 +536,7 @@ var round = this.round = function(val) {
 // intersect the multi-select rubber-band-box on the current_layer only.
 // 
 // Since the only browser that supports the SVG DOM getIntersectionList is Opera, 
-// we need to provide an implementation here.  We brute-force it for now.
+// we need to provide an implementation here. We brute-force it for now.
 // 
 // Reference:
 // Firefox does not implement getIntersectionList(), see https://bugzilla.mozilla.org/show_bug.cgi?id=501421
@@ -570,8 +574,8 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 		}
 		var i = curBBoxes.length;
 		while (i--) {
-			if (!rubberBBox.width || !rubberBBox.width) {continue;}
-			if (svgedit.math.rectsIntersect(rubberBBox, curBBoxes[i].bbox))  {
+			if (!rubberBBox.width) {continue;}
+			if (svgedit.math.rectsIntersect(rubberBBox, curBBoxes[i].bbox)) {
 				resultList.push(curBBoxes[i].elem);
 			}
 		}
@@ -1024,7 +1028,7 @@ var root_sctm = null;
 // Group: Selection
 
 // Function: clearSelection
-// Clears the selection.  The 'selected' handler is then called.
+// Clears the selection. The 'selected' handler is then called.
 // Parameters: 
 // noCall - Optional boolean that when true does not call the "selected" handler
 var clearSelection = this.clearSelection = function(noCall) {
@@ -1046,7 +1050,7 @@ var clearSelection = this.clearSelection = function(noCall) {
 
 
 // Function: addToSelection
-// Adds a list of elements to the selection.  The 'selected' handler is then called.
+// Adds a list of elements to the selection. The 'selected' handler is then called.
 //
 // Parameters:
 // elemsToAdd - an array of DOM elements to add to the selection
@@ -1111,7 +1115,9 @@ var addToSelection = this.addToSelection = function(elemsToAdd, showGrips) {
 	});
 	
 	// Make sure first elements are not null
-	while (selectedElements[0] == null) selectedElements.shift(0);
+	while (selectedElements[0] == null) {
+		selectedElements.shift(0);
+	}
 };
 
 // Function: selectOnly()
@@ -1137,10 +1143,11 @@ var removeFromSelection = this.removeFromSelection = function(elemsToRemove) {
 	if (elemsToRemove.length == 0) { return; }
 
 	// find every element and remove it from our array copy
-	var newSelectedItems = new Array(selectedElements.length);
+	var i,
 		j = 0,
+		newSelectedItems = new Array(selectedElements.length),
 		len = selectedElements.length;
-	for (var i = 0; i < len; ++i) {
+	for (i = 0; i < len; ++i) {
 		var elem = selectedElements[i];
 		if (elem) {
 			// keep the item
@@ -1181,7 +1188,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	var mouse_target = evt.target;
 	
 	// if it was a <use>, Opera and WebKit return the SVGElementInstance
-	if (mouse_target.correspondingUseElement) mouse_target = mouse_target.correspondingUseElement;
+	if (mouse_target.correspondingUseElement) {mouse_target = mouse_target.correspondingUseElement;}
 	
 	// for foreign content, go up until we find the foreignObject
 	// WebKit browsers set the mouse target to the svgcanvas div 
@@ -1190,7 +1197,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	{
 		while (mouse_target.nodeName != "foreignObject") {
 			mouse_target = mouse_target.parentNode;
-			if (!mouse_target) return svgroot;
+			if (!mouse_target) {return svgroot;}
 		}
 	}
 	
@@ -1264,24 +1271,25 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			t2 = t * t,
 			t3 = t2 * t;
 
-		var m = Array
-			(
-				Array(-1, 3, -3, 1),
-				Array(3, -6, 3, 0),
-				Array(-3, 0, 3, 0),
-				Array(1, 4, 1, 0)
-			);
+		var m = [
+				[-1, 3, -3, 1],
+				[3, -6, 3, 0],
+				[-3, 0, 3, 0],
+				[1, 4, 1, 0]
+			];
 
 		spline.x = S * (
 			(p0.x * m[0][0] + p1.x * m[0][1] + p2.x * m[0][2] + p3.x * m[0][3] ) * t3 +
 				(p0.x * m[1][0] + p1.x * m[1][1] + p2.x * m[1][2] + p3.x * m[1][3] ) * t2 +
 				(p0.x * m[2][0] + p1.x * m[2][1] + p2.x * m[2][2] + p3.x * m[2][3] ) * t +
-				(p0.x * m[3][0] + p1.x * m[3][1] + p2.x * m[3][2] + p3.x * m[3][3] )   );
+				(p0.x * m[3][0] + p1.x * m[3][1] + p2.x * m[3][2] + p3.x * m[3][3] )
+		);
 		spline.y = S * (
 			(p0.y * m[0][0] + p1.y * m[0][1] + p2.y * m[0][2] + p3.y * m[0][3] ) * t3 +
 				(p0.y * m[1][0] + p1.y * m[1][1] + p2.y * m[1][2] + p3.y * m[1][3] ) * t2 +
 				(p0.y * m[2][0] + p1.y * m[2][1] + p2.y * m[2][2] + p3.y * m[2][3] ) * t +
-				(p0.y * m[3][0] + p1.y * m[3][1] + p2.y * m[3][2] + p3.y * m[3][3] )   );
+				(p0.y * m[3][0] + p1.y * m[3][1] + p2.y * m[3][2] + p3.y * m[3][3] )
+		);
 
 		return {
 			x:spline.x,
@@ -1289,16 +1297,15 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		};
 	};
 	// - when we are in a create mode, the element is added to the canvas
-	//   but the action is not recorded until mousing up
+	// but the action is not recorded until mousing up
 	// - when we are in select mode, select the element, remember the position
-	//   and do nothing else
-	var mouseDown = function(evt)
-	{
-		if (canvas.spaceKey || evt.button === 1) return;
-		
+	// and do nothing else
+	var mouseDown = function(evt) {
+		if (canvas.spaceKey || evt.button === 1) {return;}
+
 		var right_click = evt.button === 2;
 	
-		if (evt.altKey) { // duplicate when  dragging
+		if (evt.altKey) { // duplicate when dragging
 			svgCanvas.cloneSelectedElements(0, 0);
 		}
 	
@@ -1329,8 +1336,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		}
 		
 		// real_x/y ignores grid-snap value
-		var real_x = r_start_x = start_x = x;
-		var real_y = r_start_y = start_y = y;
+		var real_x = x;
+		r_start_x = start_x = x;
+		var real_y = y;
+		r_start_y = start_y = y;
 
 		if (curConfig.gridSnapping){
 			x = svgedit.utilities.snapToGrid(x);
@@ -1358,12 +1367,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		}
 		
 		startTransform = mouse_target.getAttribute("transform");
-		var tlist = svgedit.transformlist.getTransformList(mouse_target);
+		var i,
+			tlist = svgedit.transformlist.getTransformList(mouse_target);
 		switch (current_mode) {
 			case "select":
 				started = true;
 				current_resize_mode = "none";
-				if (right_click) started = false;
+				if (right_click) {started = false;}
 				
 				if (mouse_target != svgroot) {
 					// if this element is not yet selected, clear selection and select it
@@ -1383,8 +1393,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					if (!right_click) {
 						// insert a dummy transform so if the element(s) are moved it will have
 						// a transform to use for its translate
-						for (var i = 0; i < selectedElements.length; ++i) {
-							if (selectedElements[i] == null) continue;
+						for (i = 0; i < selectedElements.length; ++i) {
+							if (selectedElements[i] == null) {continue;}
 							var slist = svgedit.transformlist.getTransformList(selectedElements[i]);
 							if (slist.numberOfItems) {
 								slist.insertItemBefore(svgroot.createSVGTransform(), 0);
@@ -1471,11 +1481,12 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 							};
 						}
 						mouse_target.style.vectorEffect = 'non-scaling-stroke';
-						if (isWebkit) delayedStroke(mouse_target);
+						if (isWebkit) {delayedStroke(mouse_target);}
 
-						var all = mouse_target.getElementsByTagName('*'),
+						var i,
+							all = mouse_target.getElementsByTagName('*'),
 							len = all.length;
-						for (var i = 0; i < len; i++) {
+						for (i = 0; i < len; i++) {
 							all[i].style.vectorEffect = 'non-scaling-stroke';
 							if (isWebkit) delayedStroke(all[i]);
 						}
@@ -1659,8 +1670,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	// any elements that are still being created, moved or resized on the canvas)
 	var mouseMove = function(evt)
 	{
-		if (!started) return;
-		if (evt.button === 1 || canvas.spaceKey) return;
+		if (!started) {return;}
+		if (evt.button === 1 || canvas.spaceKey) {return;}
 
 		var selected = selectedElements[0],
 			pt = svgedit.math.transformPoint( evt.pageX, evt.pageY, root_sctm ),
@@ -1668,9 +1679,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			mouse_y = pt.y * current_zoom,
 			shape = svgedit.utilities.getElem(getId());
 
-		var real_x = x = mouse_x / current_zoom;
-		var real_y = y = mouse_y / current_zoom;
-
+		var real_x = mouse_x / current_zoom;
+		x = real_x;
+		var real_y = mouse_y / current_zoom;
+		y = real_y;
+	
 		if (curConfig.gridSnapping){
 			x = svgedit.utilities.snapToGrid(x);
 			y = svgedit.utilities.snapToGrid(y);
@@ -1699,10 +1712,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					}
 
 					if (dx != 0 || dy != 0) {
-						var len = selectedElements.length;
-						for (var i = 0; i < len; ++i) {
+						var i,
+							len = selectedElements.length;
+						for (i = 0; i < len; ++i) {
 							var selected = selectedElements[i];
-							if (selected == null) break;
+							if (selected == null) {break;}
 //							if (i==0) {
 //								var box = svgedit.utilities.getBBox(selected);
 //									selectedBBoxes[i].x = box.x + dx;
@@ -1746,11 +1760,12 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				// - if newList contains selected, do nothing
 				// - if newList doesn't contain selected, remove it from selected
 				// - for any newList that was not in selectedElements, add it to selected
-				var elemsToRemove = [], elemsToAdd = [],
+				var i,
+					elemsToRemove = [], elemsToAdd = [],
 					newList = getIntersectionList(),
 					len = selectedElements.length;
 				
-				for (var i = 0; i < len; ++i) {
+				for (i = 0; i < len; ++i) {
 					var ind = newList.indexOf(selectedElements[i]);
 					if (ind == -1) {
 						elemsToRemove.push(selectedElements[i]);
@@ -1760,13 +1775,17 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				}
 				
 				len = newList.length;
-				for (i = 0; i < len; ++i) { if (newList[i]) elemsToAdd.push(newList[i]); }
+				for (i = 0; i < len; ++i) {
+					if (newList[i]) {elemsToAdd.push(newList[i]);}
+				}
 				
-				if (elemsToRemove.length > 0) 
+				if (elemsToRemove.length > 0) {
 					canvas.removeFromSelection(elemsToRemove);
+				}
 				
-				if (elemsToAdd.length > 0) 
+				if (elemsToAdd.length > 0) {
 					addToSelection(elemsToAdd);
+				}
 					
 				break;
 			case "resize":
@@ -1779,7 +1798,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					left = box.x, top = box.y, width = box.width,
 					height = box.height, dx = (x-start_x), dy = (y-start_y);
 				
-				if (curConfig.gridSnapping){
+				if (curConfig.gridSnapping) {
 					dx = svgedit.utilities.snapToGrid(dx);
 					dy = svgedit.utilities.snapToGrid(dy);
 					height = svgedit.utilities.snapToGrid(height);
@@ -2050,7 +2069,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					center = svgedit.math.transformPoint(cx, cy, m);
 				cx = center.x;
 				cy = center.y;
-				var angle = ((Math.atan2(cy-y, cx-x)  * (180/Math.PI))-90) % 360;
+				var angle = ((Math.atan2(cy-y, cx-x) * (180/Math.PI))-90) % 360;
 				if (curConfig.gridSnapping){
 					angle = svgedit.utilities.snapToGrid(angle);
 				}
@@ -2076,10 +2095,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	}; // mouseMove()
 	
 	// - in create mode, the element's opacity is set properly, we create an InsertElementCommand
-	//   and store it on the Undo stack
+	// and store it on the Undo stack
 	// - in move/resize mode, the element's attributes which were affected by the move/resize are
-	//   identified, a ChangeElementCommand is created and stored on the stack for those attrs
-	//   this is done in when we recalculate the selected dimensions()
+	// identified, a ChangeElementCommand is created and stored on the stack for those attrs
+	// this is done in when we recalculate the selected dimensions()
 	var mouseUp = function(evt) {
 		if (evt.button === 2) return;
 		var tempJustSelected = justSelected;
@@ -2939,7 +2958,7 @@ var pathActions = canvas.pathActions = function() {
 			// loop through every 3 points and convert to a cubic bezier curve segment
 			// 
 			// NOTE: this is cheating, it means that every 3 points has the potential to 
-			// be a corner instead of treating each point in an equal manner.  In general,
+			// be a corner instead of treating each point in an equal manner. In general,
 			// this technique does not look that good.
 			// 
 			// I am open to better ideas!
@@ -3711,7 +3730,7 @@ var pathActions = canvas.pathActions = function() {
 					} else if (item.pathSegType === 2) {
 						if (len > 0) {
 							var prev_type = segList.getItem(len-1).pathSegType;
-							// Path has M M  
+							// Path has M M
 							if (prev_type === 2) {
 								remItems(len-1, 1);
 								cleanup();
@@ -4122,8 +4141,8 @@ this.svgToString = function(elem, indent) {
 				// for some elements have no attribute
 				var uri = this.namespaceURI;
 				if(uri && !nsuris[uri] && nsMap[uri] && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml' ) {
-				  nsuris[uri] = true;
-				  out.push(" xmlns:" + nsMap[uri] + '="' + uri +'"');
+					nsuris[uri] = true;
+					out.push(" xmlns:" + nsMap[uri] + '="' + uri +'"');
 				}
 		
 				$.each(this.attributes, function(i, attr) {
@@ -4285,7 +4304,7 @@ this.open = function() {
 
 // Function: save
 // Serializes the current drawing into SVG XML text and returns it to the 'saved' handler.
-// This function also includes the XML prolog.  Clients of the SvgCanvas bind their save
+// This function also includes the XML prolog. Clients of the SvgCanvas bind their save
 // function to the 'saved' event.
 //
 // Returns: 
@@ -4306,9 +4325,9 @@ this.save = function(opts) {
 // Generates a Data URL based on the current image, then calls "exported" 
 // with an object including the string, image information, and any issues found
 this.rasterExport = function(imgType, quality) {
-    var mimeType = 'image/' + imgType.toLowerCase();
+	var mimeType = 'image/' + imgType.toLowerCase();
 
-    // remove the selected outline before serializing
+	// remove the selected outline before serializing
 	clearSelection();
 	
 	// Check for known CanVG issues 
@@ -4351,9 +4370,9 @@ this.getSvgString = function() {
 // This function determines whether to use a nonce in the prefix, when
 // generating IDs for future documents in SVG-Edit.
 // 
-//  Parameters:
-//   an optional boolean, which, if true, adds a nonce to the prefix. Thus
-//	 svgCanvas.randomizeIds()  <==> svgCanvas.randomizeIds(true)
+// Parameters:
+// an optional boolean, which, if true, adds a nonce to the prefix. Thus
+// svgCanvas.randomizeIds() <==> svgCanvas.randomizeIds(true)
 //
 // if you're controlling SVG-Edit externally, and want randomized IDs, call
 // this BEFORE calling svgCanvas.setSvgString
@@ -4373,7 +4392,7 @@ this.randomizeIds = function() {
 // g - The parent element of the tree to give unique IDs
 var uniquifyElems = this.uniquifyElems = function(g) {
 	var ids = {};
-	// TODO: Handle markers and connectors.  These are not yet re-identified properly
+	// TODO: Handle markers and connectors. These are not yet re-identified properly
 	// as their referring elements do not get remapped.
 	//
 	// <marker id='se_marker_end_svg_7'/>
@@ -4680,7 +4699,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 	}
 };
 
-//   
+//
 // Function: setSvgString
 // This function sets the current drawing as the input SVG XML.
 //
@@ -5010,7 +5029,7 @@ var identifyLayers = canvas.identifyLayers = function() {
 
 // Function: createLayer
 // Creates a new top-level layer in the drawing with the given name, sets the current layer 
-// to it, and then clears the selection  This function then calls the 'changed' handler.
+// to it, and then clears the selection. This function then calls the 'changed' handler.
 // This is an undoable action.
 //
 // Parameters:
@@ -5026,7 +5045,7 @@ this.createLayer = function(name) {
 
 // Function: cloneLayer
 // Creates a new top-level layer in the drawing with the given name, copies all the current layer's contents
-// to it, and then clears the selection  This function then calls the 'changed' handler.
+// to it, and then clears the selection. This function then calls the 'changed' handler.
 // This is an undoable action.
 //
 // Parameters:
@@ -5057,7 +5076,7 @@ this.cloneLayer = function(name) {
 
 // Function: deleteCurrentLayer
 // Deletes the current layer from the drawing and then clears the selection. This function 
-// then calls the 'changed' handler.  This is an undoable action.
+// then calls the 'changed' handler. This is an undoable action.
 this.deleteCurrentLayer = function() {
 	var current_layer = getCurrentDrawing().getCurrentLayer();
 	var nextSibling = current_layer.nextSibling;
@@ -5097,7 +5116,7 @@ this.setCurrentLayer = function(name) {
 // does nothing and returns false, otherwise it returns true. This is an undo-able action.
 // 
 // Parameters:
-// newname - the new name you want to give the current layer.  This name must be unique 
+// newname - the new name you want to give the current layer. This name must be unique 
 // among all layer names.
 //
 // Returns:
@@ -5145,7 +5164,7 @@ this.renameCurrentLayer = function(newname) {
 // undo-able action.
 //
 // Parameters:
-// newpos - The zero-based index of the new position of the layer.  This should be between
+// newpos - The zero-based index of the new position of the layer. This should be between
 // 0 and (number of layers - 1)
 // 
 // Returns:
@@ -5216,7 +5235,7 @@ this.setLayerVisibility = function(layername, bVisible) {
 
 // Function: moveSelectedToLayer
 // Moves the selected elements to layername. If the name is not a valid layer name, then false 
-// is returned.  Otherwise it returns true. This is an undo-able action.
+// is returned. Otherwise it returns true. This is an undo-able action.
 //
 // Parameters:
 // layername - the name of the layer you want to which you want to move the selected elements
@@ -5359,7 +5378,7 @@ var setContext = this.setContext = function(elem) {
 // Group: Document functions
 
 // Function: clear
-// Clears the current document.  This is not an undoable action.
+// Clears the current document. This is not an undoable action.
 this.clear = function() {
 	pathActions.clear();
 
@@ -6200,7 +6219,7 @@ this.getBlur = function(elem) {
 this.getBold = function() {
 	// should only have one element selected
 	var selected = selectedElements[0];
-	if (selected != null && selected.tagName  == "text" &&
+	if (selected != null && selected.tagName == "text" &&
 		selectedElements[1] == null) 
 	{
 		return (selected.getAttribute("font-weight") == "bold");
@@ -6215,7 +6234,7 @@ this.getBold = function() {
 // b - Boolean indicating bold (true) or normal (false)
 this.setBold = function(b) {
 	var selected = selectedElements[0];
-	if (selected != null && selected.tagName  == "text" &&
+	if (selected != null && selected.tagName == "text" &&
 		selectedElements[1] == null) 
 	{
 		changeSelectedAttribute("font-weight", b ? "bold" : "normal");
@@ -6232,7 +6251,7 @@ this.setBold = function(b) {
 // Boolean indicating whether or not element is italic
 this.getItalic = function() {
 	var selected = selectedElements[0];
-	if (selected != null && selected.tagName  == "text" &&
+	if (selected != null && selected.tagName == "text" &&
 		selectedElements[1] == null) 
 	{
 		return (selected.getAttribute("font-style") == "italic");
@@ -6247,7 +6266,7 @@ this.getItalic = function() {
 // b - Boolean indicating italic (true) or normal (false)
 this.setItalic = function(i) {
 	var selected = selectedElements[0];
-	if (selected != null && selected.tagName  == "text" &&
+	if (selected != null && selected.tagName == "text" &&
 		selectedElements[1] == null) 
 	{
 		changeSelectedAttribute("font-style", i ? "italic" : "normal");
@@ -6676,10 +6695,10 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 		}
 		
 		// only allow the transform/opacity/filter attribute to change on <g> elements, slightly hacky
-		// TODO: FIXME: This doesn't seem right.  Where's the body of this if statement?
+		// TODO: FIXME: This doesn't seem right. Where's the body of this if statement?
 		if (elem.tagName === "g" && good_g_attrs.indexOf(attr) >= 0);
 		var oldval = attr === "#text" ? elem.textContent : elem.getAttribute(attr);
-		if (oldval == null)  oldval = "";
+		if (oldval == null) {oldval = "";}
 		if (oldval !== String(newValue)) {
 			if (attr == "#text") {
 				var old_w = svgedit.utilities.getBBox(elem).width;
@@ -7078,9 +7097,9 @@ var pushGroupProperties = this.pushGroupProperties = function(g, undoable) {
 				// [Rg] [Rc] [Mc]
 				// we want [Tr] [Rc2] [Mc] where:
 				//	- [Rc2] is at the child's current center but has the 
-				//	  sum of the group and child's rotation angles
+				// sum of the group and child's rotation angles
 				//	- [Tr] is the equivalent translation that this child 
-				//	  undergoes if the group wasn't there
+				// undergoes if the group wasn't there
 				
 				// [Tr] = [Rg] [Rc] [Rc2_inv]
 				
@@ -7583,7 +7602,7 @@ this.updateCanvas = function(w, h) {
 // color - String with fill color to apply
 // url - URL or path to image to use
 this.setBackground = function(color, url) {
-	var bg =  svgedit.utilities.getElem('canvasBackground');
+	var bg = svgedit.utilities.getElem('canvasBackground');
 	var border = $(bg).find('rect')[0];
 	var bg_img = svgedit.utilities.getElem('background_image');
 	border.setAttribute('fill', color);
