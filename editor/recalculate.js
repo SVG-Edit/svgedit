@@ -1,3 +1,5 @@
+/*globals $*/
+/*jslint vars: true, eqeq: true, continue: true*/
 /**
  * Recalculate.
  *
@@ -63,7 +65,7 @@ svgedit.recalculate.updateClipPath = function(attr, tx, ty) {
 // Returns: 
 // Undo command object with the resulting change
 svgedit.recalculate.recalculateDimensions = function(selected) {
-  if (selected == null) return null;
+  if (selected == null) {return null;}
 
   // Firefox Issue - 1081
   if (selected.nodeName == "svg" && navigator.userAgent.indexOf("Firefox/20") >= 0) {
@@ -72,10 +74,10 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 
   var svgroot = context_.getSVGRoot();
   var tlist = svgedit.transformlist.getTransformList(selected);
-
+  var k;
   // remove any unnecessary transforms
   if (tlist && tlist.numberOfItems > 0) {
-    var k = tlist.numberOfItems;
+    k = tlist.numberOfItems;
     while (k--) {
       var xform = tlist.getItem(k);
       if (xform.type === 0) {
@@ -96,7 +98,7 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
     }
     // End here if all it has is a rotation
     if (tlist.numberOfItems === 1 &&
-        svgedit.utilities.getRotationAngle(selected)) return null;
+        svgedit.utilities.getRotationAngle(selected)) {return null;}
   }
 
   // if this element had no transforms, we are done
@@ -109,7 +111,7 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
 
   // TODO: Make this work for more than 2
   if (tlist) {
-    var k = tlist.numberOfItems;
+    k = tlist.numberOfItems;
     var mxs = [];
     while (k--) {
       var xform = tlist.getItem(k);
@@ -187,19 +189,20 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
     case 'polygon':
     case 'polyline':
       initial = {};
-      initial['points'] = selected.getAttribute('points');
+      initial.points = selected.getAttribute('points');
       var list = selected.points;
       var len = list.numberOfItems;
-      changes['points'] = new Array(len);
-      for (var i = 0; i < len; ++i) {
+      changes.points = new Array(len);
+	  var i;
+      for (i = 0; i < len; ++i) {
         var pt = list.getItem(i);
-        changes['points'][i] = {x:pt.x, y:pt.y};
+        changes.points[i] = {x:pt.x, y:pt.y};
       }
       break;
     case 'path':
       initial = {};
-      initial['d'] = selected.getAttribute('d');
-      changes['d'] = selected.getAttribute('d');
+      initial.d = selected.getAttribute('d');
+      changes.d = selected.getAttribute('d');
       break;
     } // switch on element type to get initial values
 
@@ -246,7 +249,8 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
         // FIXME: This blows up if the angle is exactly 0!
         var s = 2/a;
       }
-      for (var i = 0; i < tlist.numberOfItems; ++i) {
+	  var i;
+      for (i = 0; i < tlist.numberOfItems; ++i) {
         var xform = tlist.getItem(i);
         if (xform.type == 4) {
           // extract old center through mystical arts
@@ -288,7 +292,7 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
           var childTlist = svgedit.transformlist.getTransformList(child);
 
           // some children might not have a transform (<metadata>, <defs>, etc)
-          if (!childTlist) continue;
+          if (!childTlist) {continue;}
 
           var m = svgedit.math.transformListToTransform(childTlist).matrix;
 
@@ -473,7 +477,7 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
           context_.setStartTransform(child.getAttribute('transform'));
           var childTlist = svgedit.transformlist.getTransformList(child);
           
-          if (!childTlist) continue;
+          if (!childTlist) {continue;}
           
           var em = svgedit.math.matrixMultiply(m, svgedit.math.transformListToTransform(childTlist).matrix);
           var e2m = svgroot.createSVGTransform();

@@ -1,7 +1,8 @@
+/*globals $, svgedit*/
 /**
  *
  * Licensed under the MIT License
- * main object, loaded first so other modules have the garanty of its existence
+ * main object, loaded first so other modules have the guarantee of its existence
  */
 
 svgedit = {
@@ -18,7 +19,7 @@ svgedit = {
 };
 
 // return the svgedit.NS with key values switched and lowercase
-svgedit.getReverseNS = function() {
+svgedit.getReverseNS = function() {'use strict';
 	var reverseNS = {};
 	$.each(this.NS, function(name, URI) {
 		reverseNS[URI] = name.toLowerCase();
