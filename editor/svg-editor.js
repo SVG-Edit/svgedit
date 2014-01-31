@@ -1,3 +1,5 @@
+/*globals globalStorage, widget, svgEditor, svgedit */
+/*jslint vars: true, eqeq: true */
 /*
  * svg-editor.js
  *
@@ -17,7 +19,10 @@
 
 (function() {
 
-	if (!window.svgEditor) window.svgEditor = function($) {
+	if (window.svgEditor) {
+		return;
+	}
+	window.svgEditor = function($) {
 		var svgCanvas,
 			Editor = {},
 			isReady = false,
@@ -114,9 +119,12 @@
 
 		// Store and retrieve preferences
 		$.pref = function(key, val) {
-			if (val) curPrefs[key] = val;
-			key = 'svg-edit-'+key;
-			var host = location.hostname,
+			if (val) {
+				curPrefs[key] = val;
+			}
+			key = 'svg-edit-' + key;
+			var d, result,
+				host = location.hostname,
 				onWeb = host && host.indexOf('.') >= 0,
 				store = (val != undefined),
 				storage = false;
@@ -130,13 +138,13 @@
 				if (window.globalStorage && onWeb) {
 					storage = globalStorage[host];
 				}
-			} catch(e) {}
+			} catch(e2) {}
 
 			if (storage) {
 				if (store) {
 					storage.setItem(key, val);
 				} else if (storage.getItem(key)) {
-					return storage.getItem(key) + ''; // Convert to string for FF (.value fails in Webkit)
+					return String(storage.getItem(key)); // Convert to string for FF (.value fails in Webkit)
 				}
 			} else if (window.widget) {
 				if (store) {
@@ -146,12 +154,12 @@
 				}
 			} else {
 				if (store) {
-					var d = new Date();
+					d = new Date();
 					d.setTime(d.getTime() + 31536000000);
 					val = encodeURIComponent(val);
 					document.cookie = key+'='+val+'; expires='+d.toUTCString();
 				} else {
-					var result = document.cookie.match(new RegExp(key + '=([^;]+)'));
+					result = document.cookie.match(new RegExp(key + '=([^;]+)'));
 					return result ? decodeURIComponent(result[1]) : '';
 				}
 			}
@@ -172,13 +180,13 @@
 
 		// Extension mechanisms must call setCustomHandlers with two functions: opts.open and opts.save
 		// opts.open's responsibilities are:
-		// 	- invoke a file chooser dialog in 'open' mode
+		//	- invoke a file chooser dialog in 'open' mode
 		//	- let user pick a SVG file
 		//	- calls setCanvas.setSvgString() with the string contents of that file
 		// opts.save's responsibilities are:
 		//	- accept the string contents of the current document
 		//	- invoke a file chooser dialog in 'save' mode
-		// 	- save the file to location chosen by the user
+		//	- save the file to location chosen by the user
 		Editor.setCustomHandlers = function(opts) {
 			Editor.ready(function() {
 				if (opts.open) {
@@ -205,20 +213,22 @@
 			// For external openers
 			(function() {
 				// let the opener know SVG Edit is ready
-				var w = window.opener;
+				var svgEditorReadyEvent,
+					w = window.opener;
 				if (w) {
 					try {
-						var svgEditorReadyEvent = w.document.createEvent('Event');
+						svgEditorReadyEvent = w.document.createEvent('Event');
 						svgEditorReadyEvent.initEvent('svgEditorReady', true, true);
 						w.document.documentElement.dispatchEvent(svgEditorReadyEvent);
 					}
 					catch(e) {}
 				}
-			})();
+			}());
 
 			(function() {
 				// Load config/data from URL if given
-				var urldata = $.deparam.querystring(true);
+				var src, qstr,
+					urldata = $.deparam.querystring(true);
 				if (!$.isEmptyObject(urldata)) {
 					if (urldata.dimensions) {
 						urldata.dimensions = urldata.dimensions.split(',');
@@ -234,8 +244,8 @@
 
 					svgEditor.setConfig(urldata);
 
-					var src = urldata.source;
-					var qstr = $.param.querystring();
+					src = urldata.source;
+					qstr = $.param.querystring();
 
 					if (!src) { // urldata.source may have been null if it ended with '='
 						if (qstr.indexOf('source=data:') >= 0) {
@@ -264,7 +274,7 @@
 						Editor.loadFromString(cached);
 					}
 				}
-			})();
+			}());
 
 			var extFunc = function() {
 				$.each(curConfig.extensions, function() {
@@ -458,17 +468,18 @@
 						$(this).parent().prepend(this);
 					});
 
-					var tleft = $('#tools_left');
+					var min_height,
+						tleft = $('#tools_left');
 					if (tleft.length !== 0) {
-						var min_height = tleft.offset().top + tleft.outerHeight();
+						min_height = tleft.offset().top + tleft.outerHeight();
 					}
-// 					var size = $.pref('iconsize');
-// 					if (size && size != 'm') {
-// 						svgEditor.setIconSize(size);
-// 					} else if ($(window).height() < min_height) {
-// 						// Make smaller
-// 						svgEditor.setIconSize('s');
-// 					}
+//					var size = $.pref('iconsize');
+//					if (size && size != 'm') {
+//						svgEditor.setIconSize(size);
+//					} else if ($(window).height() < min_height) {
+//						// Make smaller
+//						svgEditor.setIconSize('s');
+//					}
 
 					// Look for any missing flyout icons from plugins
 					$('.tools_flyout').each(function() {
@@ -578,10 +589,14 @@
 						ok.click(function() {
 							box.hide();
 							var resp = (type === 'prompt' || type === 'select') ? ctrl.val() : true;
-							if (callback) callback(resp);
+							if (callback) {
+								callback(resp);
+							}
 						}).focus();
 
-						if (type === 'prompt' || type === 'select') ctrl.focus();
+						if (type === 'prompt' || type === 'select') {
+							ctrl.focus();
+						}
 					};
 
 				$.alert = function(msg, cb) { dbox('alert', msg, cb);};
@@ -709,7 +724,9 @@
 			// called when we've selected a different element
 			var selectedChanged = function(window, elems) {
 				var mode = svgCanvas.getMode();
-				if (mode === 'select') setSelectMode();
+				if (mode === 'select') {
+					setSelectMode();
+				}
 				var is_node = (mode == "pathedit");
 				// if elems[1] is present, then we have more than one element
 				selectedElement = (elems.length === 1 || elems[1] == null ? elems[0] : null);
@@ -740,7 +757,9 @@
 				var mode = svgCanvas.getMode();
 				var elem = elems[0];
 
-				if (!elem) return;
+				if (!elem) {
+					return;
+				}
 
 				multiselected = (elems.length >= 2 && elems[1] != null);
 				// Only updating fields for single elements for now
@@ -753,9 +772,9 @@
 							break;
 
 						// TODO: Update values that change on move/resize, etc
-// 						case "select":
-// 						case "resize":
-// 							break;
+//						case "select":
+//						case "resize":
+//							break;
 					}
 				}
 				svgCanvas.runExtensions('elementTransition', {
@@ -765,12 +784,13 @@
 
 			// called when any element has changed
 			var elementChanged = function(window, elems) {
-				var mode = svgCanvas.getMode();
+				var i,
+					mode = svgCanvas.getMode();
 				if (mode === 'select') {
 					setSelectMode();
 				}
 
-				for (var i = 0; i < elems.length; ++i) {
+				for (i = 0; i < elems.length; ++i) {
 					var elem = elems[i];
 
 					// if the element changed was the svg, then it could be a resolution change
@@ -781,7 +801,7 @@
 					// Update selectedElement if element is no longer part of the image.
 					// This occurs for the text elements in Firefox
 					else if (elem && selectedElement && selectedElement.parentNode == null) {
-// 						|| elem && elem.tagName == "path" && !multiselected) { // This was added in r1430, but not sure why
+//						|| elem && elem.tagName == "path" && !multiselected) { // This was added in r1430, but not sure why
 						selectedElement = elem;
 					}
 				}
@@ -814,7 +834,7 @@
 					w_area = workarea,
 					canvas_pos = $('#svgcanvas').position();
 				var z_info = svgCanvas.setBBoxZoom(bbox, w_area.width()-scrbar, w_area.height()-scrbar);
-				if (!z_info) return;
+				if (!z_info) {return;}
 				var zoomlevel = z_info.zoom,
 					bb = z_info.bbox;
 
@@ -899,7 +919,7 @@
 							// Remember the function that goes with this ID
 							flyout_funcs[opts.sel] = opts.fn;
 
-							if (opts.isDefault) def = i;
+							if (opts.isDefault) {def = i;}
 
 							// Clicking the icon in flyout should set this set's icon
 							var func = function(event) {
@@ -918,7 +938,7 @@
 										}
 									});
 								}
-								if ($(this).hasClass('disabled')) return false;
+								if ($(this).hasClass('disabled')) {return false;}
 								if (toolButtonClick(show_sel)) {
 									options.fn();
 								}
@@ -953,7 +973,9 @@
 
 					// Clicking the "show" icon should set the current mode
 					shower.mousedown(function(evt) {
-						if (shower.hasClass('disabled')) return false;
+						if (shower.hasClass('disabled')) {
+							return false;
+						}
 						var holder = $(hold_sel);
 						var l = pos.left + 34;
 						var w = holder.width() * -1;
@@ -1009,7 +1031,9 @@
 			var setFlyoutTitles = function() {
 				$('.tools_flyout').each(function() {
 					var shower = $('#' + this.id + '_show');
-					if (shower.data('isLibrary')) return;
+					if (shower.data('isLibrary')) {
+						return;
+					}
 
 					var tooltips = [];
 					$(this).children().each(function() {
@@ -1051,17 +1075,19 @@
 				if (ext.context_tools) {
 					$.each(ext.context_tools, function(i, tool) {
 						// Add select tool
+						var html;
 						var cont_id = tool.container_id ? (' id="' + tool.container_id + '"') : '';
 						var panel = $('#' + tool.panel);
 
 						// create the panel if it doesn't exist
-						if (!panel.length)
+						if (!panel.length) {
 							panel = $('<div>', {id: tool.panel}).appendTo('#tools_top');
+						}
 
 						// TODO: Allow support for other types, or adding to existing tool
 						switch (tool.type) {
 						case 'tool_button':
-							var html = '<div class="tool_button">' + tool.id + '</div>';
+							html = '<div class="tool_button">' + tool.id + '</div>';
 							var div = $(html).appendTo(panel);
 							if (tool.events) {
 								$.each(tool.events, function(evt, func) {
@@ -1070,7 +1096,7 @@
 							}
 							break;
 						case 'select':
-							var html = '<label' + cont_id + '>'
+							html = '<label' + cont_id + '>'
 								+ '<select id="' + tool.id + '">';
 							$.each(tool.options, function(val, text) {
 								var sel = (val == tool.defval) ? " selected":"";
@@ -1085,7 +1111,7 @@
 							});
 							break;
 						case 'button-select':
-							var html = '<div id="' + tool.id + '" class="dropdown toolset" title="' + tool.title + '">'
+							html = '<div id="' + tool.id + '" class="dropdown toolset" title="' + tool.title + '">'
 								+ '<div id="cur_' + tool.id + '" class="icon_label"></div><button></button></div>';
 
 							var list = $('<ul id="' + tool.id + '_opts"></ul>').appendTo('#option_lists');
@@ -1107,7 +1133,7 @@
 
 							break;
 						case 'input':
-							var html = '<label' + cont_id + '>'
+							html = '<label' + cont_id + '>'
 								+ '<span id="' + tool.id + '_label">'
 								+ tool.label + ':</span>'
 								+ '<input id="' + tool.id + '" title="' + tool.title
@@ -1156,7 +1182,7 @@
 							icon = $('<img src="' + btn.icon + '">');
 						} else {
 							fallback_obj[id] = btn.icon;
-							var svgicon = btn.svgicon?btn.svgicon:btn.id;
+							var svgicon = btn.svgicon || btn.id;
 							if (btn.type == 'app_menu') {
 								placement_obj['#' + id + ' > div'] = svgicon;
 							} else {
@@ -1177,8 +1203,9 @@
 							cls = 'tool_button';
 							parent = '#' + btn.panel;
 							// create the panel if it doesn't exist
-							if (!$(parent).length)
+							if (!$(parent).length) {
 								$('<div>', {id: btn.panel}).appendTo('#tools_top');
+							}
 							break;
 						case 'app_menu':
 							cls = '';
@@ -1199,8 +1226,8 @@
 
 							if (btn.type =='mode_flyout') {
 							// Add to flyout menu / make flyout menu
-	// 							var opts = btn.includeWith;
-	// 							// opts.button, default, position
+	//							var opts = btn.includeWith;
+	//							// opts.button, default, position
 								var ref_btn = $(button);
 
 								var flyout_holder = ref_btn.parent();
@@ -1219,7 +1246,7 @@
 									flyout_holder.data('isLibrary', true);
 									show_btn.data('isLibrary', true);
 								}
-	// 							var ref_data = Actions.getButtonData(opts.button);
+	//							var ref_data = Actions.getButtonData(opts.button);
 
 								placement_obj['#' + tls_id + '_show'] = btn.id;
 								// TODO: Find way to set the current icon using the iconloader if this is not default
@@ -1229,22 +1256,22 @@
 									sel: '#'+id,
 									fn: btn.events.click,
 									icon: btn.id,
-// 									key: btn.key,
+//									key: btn.key,
 									isDefault: true
 								}, ref_data];
 	//
-	// 							// {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
+	//							// {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
 	//
-	// 							var pos = ('position' in opts)?opts.position:'last';
-	// 							var len = flyout_holder.children().length;
+	//							var pos = ('position' in opts)?opts.position:'last';
+	//							var len = flyout_holder.children().length;
 	//
-	// 							// Add at given position or end
-	// 							if (!isNaN(pos) && pos >= 0 && pos < len) {
-	// 								flyout_holder.children().eq(pos).before(button);
-	// 							} else {
-	// 								flyout_holder.append(button);
-	// 								cur_h.reverse();
-	// 							}
+	//							// Add at given position or end
+	//							if (!isNaN(pos) && pos >= 0 && pos < len) {
+	//								flyout_holder.children().eq(pos).before(button);
+	//							} else {
+	//								flyout_holder.append(button);
+	//								cur_h.reverse();
+	//							}
 							} else if (btn.type == 'app_menu') {
 								button.append('<div>').append(btn.title);
 							}
@@ -1253,11 +1280,11 @@
 							// Add button to list
 							button.addClass('push_button');
 							$('#' + btn.list + '_opts').append(button);
- 							if (btn.isDefault) {
- 								$('#cur_' + btn.list).append(button.children().clone());
- 								var svgicon = btn.svgicon?btn.svgicon:btn.id;
-	 							placement_obj['#cur_' + btn.list] = svgicon;
- 							}
+							if (btn.isDefault) {
+								$('#cur_' + btn.list).append(button.children().clone());
+								var svgicon = btn.svgicon || btn.id;
+								placement_obj['#cur_' + btn.list] = svgicon;
+							}
 						} else if (btn.includeWith) {
 							// Add to flyout menu / make flyout menu
 							var opts = btn.includeWith;
@@ -1488,9 +1515,9 @@
 					var elname = elem.nodeName;
 					// If this is a link with no transform and one child, pretend
 					// its child is selected
-// 					if (elname === 'a') { // && !$(elem).attr('transform')) {
-// 						elem = elem.firstChild;
-// 					}
+//					if (elname === 'a') { // && !$(elem).attr('transform')) {
+//						elem = elem.firstChild;
+//					}
 
 					var angle = svgCanvas.getRotationAngle(elem);
 					$('#angle').val(angle);
@@ -1585,9 +1612,9 @@
 
 					var el_name = elem.tagName;
 
-// 					if ($(elem).data('gsvg')) {
-// 						$('#g_panel').show();
-// 					}
+//					if ($(elem).data('gsvg')) {
+//						$('#g_panel').show();
+//					}
 
 					var link_href = null;
 					if (el_name === 'a') {
@@ -1802,8 +1829,8 @@
 			var operaRepaint = function() {
 				// Repaints canvas in Opera. Needed for stroke-dasharray change as well as fill change
 				if (!window.opera) {
-                    return;
-                }
+					return;
+				}
 				$('<p/>').hide().appendTo('body').remove();
 			};
 
@@ -2052,7 +2079,7 @@
 					}
 					on_button = false;
 				}).mousedown(function(evt) {
-// 					$('.contextMenu').hide();
+//					$('.contextMenu').hide();
 					var islib = $(evt.target).closest('div.tools_flyout, .contextMenu').length;
 					if (!islib) $('.tools_flyout:visible,.contextMenu').fadeOut(250);
 				});
@@ -2714,7 +2741,7 @@
 				var cur_bg = 'cur_background';
 				var canvas_bg = $.pref('bkgd_color');
 				var url = $.pref('bkgd_url');
-		// 		if (url) url = url[1];
+		//		if (url) url = url[1];
 				blocks.each(function() {
 					var blk = $(this);
 					var is_bg = blk.css('background-color') == canvas_bg;
@@ -2760,9 +2787,9 @@
 				var newTitle = origTitle + (title ? ': ' + title : '');
 
 				// Remove title update with current context info, isn't really necessary
-// 				if (cur_context) {
-// 					new_title = new_title + cur_context;
-// 				}
+//				if (cur_context) {
+//					new_title = new_title + cur_context;
+//				}
 				$('title:first').text(newTitle);
 			};
 
@@ -2905,7 +2932,7 @@
 			var setIconSize = Editor.setIconSize = function(size, force) {
 				if (size == curPrefs.size && !force) return;
 
-// 				var elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
+//				var elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
 				var sel_toscale = '#tools_top .toolset, #editor_panel > *, #history_panel > *,\
 				#main_button, #tools_left > *, #path_node_panel > *, #multiselected_panel > *,\
 				#g_panel > *, #tool_font_size > *, .tools_flyout';
@@ -2924,60 +2951,60 @@
 
 				setFlyoutPositions();
 				// $('.tools_flyout').each(function() {
-// 					var pos = $(this).position();
-// 					console.log($(this), pos.left+(34 * scale));
-// 					$(this).css({'left': pos.left+(34 * scale), 'top': pos.top+(77 * scale)});
-// 					console.log('l', $(this).css('left'));
-// 				});
+//					var pos = $(this).position();
+//					console.log($(this), pos.left+(34 * scale));
+//					$(this).css({'left': pos.left+(34 * scale), 'top': pos.top+(77 * scale)});
+//					console.log('l', $(this).css('left'));
+//				});
 
-// 				var scale = .75;
+//				var scale = .75;
 
 				var hidden_ps = elems.parents(':hidden');
 				hidden_ps.css('visibility', 'hidden').show();
 				scaleElements(elems, scale);
 				hidden_ps.css('visibility', 'visible').hide();
-// 				return;
+//				return;
 
 				$.pref('iconsize', size);
 				$('#iconsize').val(size);
 
 				// Change icon size
-// 				$('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open')
-// 				.find('> svg, > img').each(function() {
-// 					this.setAttribute('width',size_num);
-// 					this.setAttribute('height',size_num);
-// 				});
+//				$('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open')
+//				.find('> svg, > img').each(function() {
+//					this.setAttribute('width',size_num);
+//					this.setAttribute('height',size_num);
+//				});
 //
-// 				$.resizeSvgIcons({
-// 					'.flyout_arrow_horiz > svg, .flyout_arrow_horiz > img': size_num / 5,
-// 					'#logo > svg, #logo > img': size_num * 1.3,
-// 					'#tools_bottom .icon_label > *': (size_num === 16 ? 18 : size_num * .75)
-// 				});
-// 				if (size != 's') {
-// 					$.resizeSvgIcons({'#layerbuttons svg, #layerbuttons img': size_num * .6});
-// 				}
+//				$.resizeSvgIcons({
+//					'.flyout_arrow_horiz > svg, .flyout_arrow_horiz > img': size_num / 5,
+//					'#logo > svg, #logo > img': size_num * 1.3,
+//					'#tools_bottom .icon_label > *': (size_num === 16 ? 18 : size_num * .75)
+//				});
+//				if (size != 's') {
+//					$.resizeSvgIcons({'#layerbuttons svg, #layerbuttons img': size_num * .6});
+//				}
 
 				// Note that all rules will be prefixed with '#svg_editor' when parsed
 				var cssResizeRules = {
-// 					'.tool_button,\
-// 					.push_button,\
-// 					.tool_button_current,\
-// 					.push_button_pressed,\
-// 					.disabled,\
-// 					.icon_label,\
-// 					.tools_flyout .tool_button': {
-// 						'width': {s: '16px', l: '32px', xl: '48px'},
-// 						'height': {s: '16px', l: '32px', xl: '48px'},
-// 						'padding': {s: '1px', l: '2px', xl: '3px'}
-// 					},
-// 					'.tool_sep': {
-// 						'height': {s: '16px', l: '32px', xl: '48px'},
-// 						'margin': {s: '2px 2px', l: '2px 5px', xl: '2px 8px'}
-// 					},
-// 					'#main_icon': {
-// 						'width': {s: '31px', l: '53px', xl: '75px'},
-// 						'height': {s: '22px', l: '42px', xl: '64px'}
-// 					},
+//					'.tool_button,\
+//					.push_button,\
+//					.tool_button_current,\
+//					.push_button_pressed,\
+//					.disabled,\
+//					.icon_label,\
+//					.tools_flyout .tool_button': {
+//						'width': {s: '16px', l: '32px', xl: '48px'},
+//						'height': {s: '16px', l: '32px', xl: '48px'},
+//						'padding': {s: '1px', l: '2px', xl: '3px'}
+//					},
+//					'.tool_sep': {
+//						'height': {s: '16px', l: '32px', xl: '48px'},
+//						'margin': {s: '2px 2px', l: '2px 5px', xl: '2px 8px'}
+//					},
+//					'#main_icon': {
+//						'width': {s: '31px', l: '53px', xl: '75px'},
+//						'height': {s: '22px', l: '42px', xl: '64px'}
+//					},
 					'#tools_top': {
 						'left': 50,
 						'height': 72
@@ -2990,88 +3017,88 @@
 						'left': 38,
 						'top': 74
 					}
-// 					'#tools_bottom': {
-// 						'left': {s: '27px', l: '46px', xl: '65px'},
-// 						'height': {s: '58px', l: '98px', xl: '145px'}
-// 					},
-// 					'#color_tools': {
-// 						'border-spacing': {s: '0 1px'},
-// 						'margin-top': {s: '-1px'}
-// 					},
-// 					'#color_tools .icon_label': {
-// 						'width': {l:'43px', xl: '60px'}
-// 					},
-// 					'.color_tool': {
-// 						'height': {s: '20px'}
-// 					},
-// 					'#tool_opacity': {
-// 						'top': {s: '1px'},
-// 						'height': {s: 'auto', l:'auto', xl:'auto'}
-// 					},
-// 					'#tools_top input, #tools_bottom input': {
-// 						'margin-top': {s: '2px', l: '4px', xl: '5px'},
-// 						'height': {s: 'auto', l: 'auto', xl: 'auto'},
-// 						'border': {s: '1px solid #555', l: 'auto', xl: 'auto'},
-// 						'font-size': {s: '.9em', l: '1.2em', xl: '1.4em'}
-// 					},
-// 					'#zoom_panel': {
-// 						'margin-top': {s: '3px', l: '4px', xl: '5px'}
-// 					},
-// 					'#copyright, #tools_bottom .label': {
-// 						'font-size': {l: '1.5em', xl: '2em'},
-// 						'line-height': {s: '15px'}
-// 					},
-// 					'#tools_bottom_2': {
-// 						'width': {l: '295px', xl: '355px'},
-// 						'top': {s: '4px'}
-// 					},
-// 					'#tools_top > div, #tools_top': {
-// 						'line-height': {s: '17px', l: '34px', xl: '50px'}
-// 					},
-// 					'.dropdown button': {
-// 						'height': {s: '18px', l: '34px', xl: '40px'},
-// 						'line-height': {s: '18px', l: '34px', xl: '40px'},
-// 						'margin-top': {s: '3px'}
-// 					},
-// 					'#tools_top label, #tools_bottom label': {
-// 						'font-size': {s: '1em', l: '1.5em', xl: '2em'},
-// 						'height': {s: '25px', l: '42px', xl: '64px'}
-// 					},
-// 					'div.toolset': {
-// 						'height': {s: '25px', l: '42px', xl: '64px'}
-// 					},
-// 					'#tool_bold, #tool_italic': {
-// 						'font-size': {s: '1.5em', l: '3em', xl: '4.5em'}
-// 					},
-// 					'#sidepanels': {
-// 						'top': {s: '50px', l: '88px', xl: '125px'},
-// 						'bottom': {s: '51px', l: '68px', xl: '65px'}
-// 					},
-// 					'#layerbuttons': {
-// 						'width': {l: '130px', xl: '175px'},
-// 						'height': {l: '24px', xl: '30px'}
-// 					},
-// 					'#layerlist': {
-// 						'width': {l: '128px', xl: '150px'}
-// 					},
-// 					'.layer_button': {
-// 						'width': {l: '19px', xl: '28px'},
-// 						'height': {l: '19px', xl: '28px'}
-// 					},
-// 					'input.spin-button': {
-// 						'background-image': {l: 'url('images/spinbtn_updn_big.png')', xl: 'url('images/spinbtn_updn_big.png')'},
-// 						'background-position': {l: '100% -5px', xl: '100% -2px'},
-// 						'padding-right': {l: '24px', xl: '24px' }
-// 					},
-// 					'input.spin-button.up': {
-// 						'background-position': {l: '100% -45px', xl: '100% -42px'}
-// 					},
-// 					'input.spin-button.down': {
-// 						'background-position': {l: '100% -85px', xl: '100% -82px'}
-// 					},
-// 					'#position_opts': {
-// 						'width': {all: (size_num*4) +'px'}
-// 					}
+//					'#tools_bottom': {
+//						'left': {s: '27px', l: '46px', xl: '65px'},
+//						'height': {s: '58px', l: '98px', xl: '145px'}
+//					},
+//					'#color_tools': {
+//						'border-spacing': {s: '0 1px'},
+//						'margin-top': {s: '-1px'}
+//					},
+//					'#color_tools .icon_label': {
+//						'width': {l:'43px', xl: '60px'}
+//					},
+//					'.color_tool': {
+//						'height': {s: '20px'}
+//					},
+//					'#tool_opacity': {
+//						'top': {s: '1px'},
+//						'height': {s: 'auto', l:'auto', xl:'auto'}
+//					},
+//					'#tools_top input, #tools_bottom input': {
+//						'margin-top': {s: '2px', l: '4px', xl: '5px'},
+//						'height': {s: 'auto', l: 'auto', xl: 'auto'},
+//						'border': {s: '1px solid #555', l: 'auto', xl: 'auto'},
+//						'font-size': {s: '.9em', l: '1.2em', xl: '1.4em'}
+//					},
+//					'#zoom_panel': {
+//						'margin-top': {s: '3px', l: '4px', xl: '5px'}
+//					},
+//					'#copyright, #tools_bottom .label': {
+//						'font-size': {l: '1.5em', xl: '2em'},
+//						'line-height': {s: '15px'}
+//					},
+//					'#tools_bottom_2': {
+//						'width': {l: '295px', xl: '355px'},
+//						'top': {s: '4px'}
+//					},
+//					'#tools_top > div, #tools_top': {
+//						'line-height': {s: '17px', l: '34px', xl: '50px'}
+//					},
+//					'.dropdown button': {
+//						'height': {s: '18px', l: '34px', xl: '40px'},
+//						'line-height': {s: '18px', l: '34px', xl: '40px'},
+//						'margin-top': {s: '3px'}
+//					},
+//					'#tools_top label, #tools_bottom label': {
+//						'font-size': {s: '1em', l: '1.5em', xl: '2em'},
+//						'height': {s: '25px', l: '42px', xl: '64px'}
+//					},
+//					'div.toolset': {
+//						'height': {s: '25px', l: '42px', xl: '64px'}
+//					},
+//					'#tool_bold, #tool_italic': {
+//						'font-size': {s: '1.5em', l: '3em', xl: '4.5em'}
+//					},
+//					'#sidepanels': {
+//						'top': {s: '50px', l: '88px', xl: '125px'},
+//						'bottom': {s: '51px', l: '68px', xl: '65px'}
+//					},
+//					'#layerbuttons': {
+//						'width': {l: '130px', xl: '175px'},
+//						'height': {l: '24px', xl: '30px'}
+//					},
+//					'#layerlist': {
+//						'width': {l: '128px', xl: '150px'}
+//					},
+//					'.layer_button': {
+//						'width': {l: '19px', xl: '28px'},
+//						'height': {l: '19px', xl: '28px'}
+//					},
+//					'input.spin-button': {
+//						'background-image': {l: 'url('images/spinbtn_updn_big.png')', xl: 'url('images/spinbtn_updn_big.png')'},
+//						'background-position': {l: '100% -5px', xl: '100% -2px'},
+//						'padding-right': {l: '24px', xl: '24px' }
+//					},
+//					'input.spin-button.up': {
+//						'background-position': {l: '100% -45px', xl: '100% -42px'}
+//					},
+//					'input.spin-button.down': {
+//						'background-position': {l: '100% -85px', xl: '100% -82px'}
+//					},
+//					'#position_opts': {
+//						'width': {all: (size_num*4) +'px'}
+//					}
 				};
 
 				var rule_elem = $('#tool_size_rules');
@@ -3268,7 +3295,7 @@
 			//	background-image to none.png (otherwise partially transparent gradients look weird)
 			var colorPicker = function(elem) {
 				var picker = elem.attr('id') == 'stroke_color' ? 'stroke' : 'fill';
-// 				var opacity = (picker == 'stroke' ? $('#stroke_opacity') : $('#fill_opacity'));
+//				var opacity = (picker == 'stroke' ? $('#stroke_opacity') : $('#fill_opacity'));
 				var paint = paintBox[picker].paint;
 				var title = (picker == 'stroke' ? 'Pick a Stroke Paint and Opacity' : 'Pick a Fill Paint and Opacity');
 				var was_none = false;
@@ -3771,10 +3798,10 @@
 			};
 			populateLayers();
 
-		// 	function changeResolution(x,y) {
-		// 		var zoom = svgCanvas.getResolution().zoom;
-		// 		setResolution(x * zoom, y * zoom);
-		// 	}
+		//	function changeResolution(x,y) {
+		//		var zoom = svgCanvas.getResolution().zoom;
+		//		setResolution(x * zoom, y * zoom);
+		//	}
 
 			var centerCanvas = function() {
 				// this centers the canvas vertically in the workarea (horizontal handled in CSS)
@@ -3818,21 +3845,21 @@
 				return orig_val / 2;
 			}
 
-		// 	function setResolution(w, h, center) {
-		// 		updateCanvas();
-		// // 		w-=0; h-=0;
-		// // 		$('#svgcanvas').css( { 'width': w, 'height': h } );
-		// // 		$('#canvas_width').val(w);
-		// // 		$('#canvas_height').val(h);
+		//	function setResolution(w, h, center) {
+		//		updateCanvas();
+		// //		w-=0; h-=0;
+		// //		$('#svgcanvas').css( { 'width': w, 'height': h } );
+		// //		$('#canvas_width').val(w);
+		// //		$('#canvas_height').val(h);
 		// //
-		// // 		if (center) {
-		// // 			var w_area = workarea;
-		// // 			var scroll_y = h/2 - w_area.height()/2;
-		// // 			var scroll_x = w/2 - w_area.width()/2;
-		// // 			w_area[0].scrollTop = scroll_y;
-		// // 			w_area[0].scrollLeft = scroll_x;
-		// // 		}
-		// 	}
+		// //		if (center) {
+		// //			var w_area = workarea;
+		// //			var scroll_y = h/2 - w_area.height()/2;
+		// //			var scroll_x = w/2 - w_area.width()/2;
+		// //			w_area[0].scrollTop = scroll_y;
+		// //			w_area[0].scrollLeft = scroll_x;
+		// //		}
+		//	}
 
 			$('#resolution').change(function() {
 				var wh = $('#canvas_width,#canvas_height');
@@ -3902,8 +3929,8 @@
 					{sel: '#tool_unlink_use', fn: clickGroup, evt: 'click'},
 					{sel: '[id^=tool_align]', fn: clickAlign, evt: 'click'},
 					// these two lines are required to make Opera work properly with the flyout mechanism
-		// 			{sel: '#tools_rect_show', fn: clickRect, evt: 'click'},
-		// 			{sel: '#tools_ellipse_show', fn: clickEllipse, evt: 'click'},
+		//			{sel: '#tools_rect_show', fn: clickRect, evt: 'click'},
+		//			{sel: '#tools_ellipse_show', fn: clickEllipse, evt: 'click'},
 					{sel: '#tool_bold', fn: clickBold, evt: 'mousedown'},
 					{sel: '#tool_italic', fn: clickItalic, evt: 'mousedown'},
 					{sel: '#sidepanel_handle', fn: toggleSidePanel, key: ['X']},
@@ -4604,9 +4631,9 @@
 				}
 			}
 
-// 			$(function() {
+//			$(function() {
 				updateCanvas(true);
-// 			});
+//			});
 
 		//	var revnums = "svg-editor.js ($Rev$) ";
 		//	revnums += svgCanvas.getVersion();
@@ -4631,7 +4658,7 @@
 					} catch(err) {
 						e.source.postMessage(JSON.stringify({namespace: 'svg-edit', id: cbid, error: err.message}), '*');
 					}
- 				}, false);
+				}, false);
 			} catch(err) {
 				window.embed_error = err;
 			}
@@ -4722,10 +4749,10 @@
 		};
 
 		Editor.disableUI = function(featList) {
-// 			$(function() {
-// 				$('#tool_wireframe, #tool_image, #main_button, #tool_source, #sidepanels').remove();
-// 				$('#tools_top').css('left', 5);
-// 			});
+//			$(function() {
+//				$('#tool_wireframe, #tool_image, #main_button, #tool_source, #sidepanels').remove();
+//				$('#tools_top').css('left', 5);
+//			});
 		};
 
 		Editor.loadFromURL = function(url, opts) {
