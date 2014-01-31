@@ -4,23 +4,23 @@ Embedded SVG-edit API
 General usage:
 - Have an iframe somewhere pointing to a version of svg-edit > r1000
 - Initialize the magic with:
-var svgCanvas = new EmbeddedSVGEdit(window.frames['svgedit']);
+var svgCanvas = new EmbeddedSVGEdit(window.frames.svgedit);
 - Pass functions in this format:
 svgCanvas.setSvgString("string")
 - Or if a callback is needed:
 svgCanvas.setSvgString("string")(function(data, error){
-  if(error){
-    //there was an error
-  }else{
-    //handle data
+  if (error){
+    // There was an error
+  } else{
+    // Handle data
   }
 })
 
 Everything is done with the same API as the real svg-edit,
 and all documentation is unchanged.
 
-This file depends on the postMessage API which can only
-support JSON-serializable arguments and
+However, this file depends on the postMessage API which
+can only support JSON-serializable arguments and
 return values, so, for example, arguments whose value is
 "undefined", a function, a non-finite number, or a built-in
 object like Date(), RegExp(), etc. will most likely not behave
@@ -31,7 +31,7 @@ JavaScript methods on the frame itself.
 The only other difference is
 when handling returns: the callback notation is used instead.
 
-var blah = new EmbeddedSVGEdit(window.frames['svgedit']);
+var blah = new EmbeddedSVGEdit(window.frames.svgedit);
 blah.clearSelection("woot","blah",1337,[1,2,3,4,5,"moo"],-42,{a: "tree",b:6, c: 9})(function(){console.log("GET DATA",arguments)})
 */
 
