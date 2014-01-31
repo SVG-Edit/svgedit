@@ -1229,12 +1229,12 @@
 							} else {
 								button.appendTo(parent);
 							}
-
+							var ref_btn;
 							if (btn.type =='mode_flyout') {
 							// Add to flyout menu / make flyout menu
 	//							var opts = btn.includeWith;
 	//							// opts.button, default, position
-								var ref_btn = $(button);
+								ref_btn = $(button);
 
 								flyout_holder = ref_btn.parent();
 								// Create a flyout menu if there isn't one already
@@ -1295,7 +1295,7 @@
 							// Add to flyout menu / make flyout menu
 							var opts = btn.includeWith;
 							// opts.button, default, position
-							var ref_btn = $(opts.button);
+							ref_btn = $(opts.button);
 
 							flyout_holder = ref_btn.parent();
 							// Create a flyout menu if there isn't one already
@@ -1989,9 +1989,9 @@
 			// - hides any flyouts
 			// - adds the tool_button_current class to the button passed in
 			var toolButtonClick = function(button, noHiding) {
-				if ($(button).hasClass('disabled')) return false;
-				if ($(button).parent().hasClass('tools_flyout')) return true;
-				var fadeFlyouts = fadeFlyouts || 'normal';
+				if ($(button).hasClass('disabled')) {return false;}
+				if ($(button).parent().hasClass('tools_flyout')) {return true;}
+				var fadeFlyouts = 'normal';
 				if (!noHiding) {
 					$('.tools_flyout').fadeOut(fadeFlyouts);
 				}
@@ -2007,7 +2007,7 @@
 					panning = false, keypan = false;
 
 				$('#svgcanvas').bind('mousemove mouseup', function(evt) {
-					if (panning === false) return;
+					if (panning === false) {return;}
 
 					w_area.scrollLeft -= (evt.clientX - last_x);
 					w_area.scrollTop -= (evt.clientY - last_y);
@@ -2015,7 +2015,7 @@
 					last_x = evt.clientX;
 					last_y = evt.clientY;
 
-					if (evt.type === 'mouseup') panning = false;
+					if (evt.type === 'mouseup') {panning = false;}
 					return false;
 				}).mousedown(function(evt) {
 					if (evt.button === 1 || keypan === true) {
