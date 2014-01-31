@@ -1,3 +1,5 @@
+/*globals $, svgedit*/
+/*jslint vars: true, eqeq: true*/
 /**
  * Package: svgedit.units
  *
@@ -10,7 +12,7 @@
 // Dependencies:
 // 1) jQuery
 
-(function() {
+(function() {'use strict';
 
 if (!svgedit.units) {
 	svgedit.units = {};
@@ -133,7 +135,7 @@ svgedit.units.convertUnit = function(val, unit) {
 // attr - String with the name of the attribute associated with the value
 // val - String with the attribute value to convert
 svgedit.units.setUnitAttr = function(elem, attr, val) {
-	if (!isNaN(val)) {
+//	if (!isNaN(val)) {
 		// New value is a number, so check currently used unit
 //		var old_val = elem.getAttribute(attr);
 
@@ -163,7 +165,7 @@ svgedit.units.setUnitAttr = function(elem, attr, val) {
 //
 //		val += unit;
 //		}
-	}
+//	}
 	elem.setAttribute(attr, val);
 };
 
@@ -187,18 +189,20 @@ svgedit.units.convertAttrs = function(element) {
 	var elName = element.tagName;
 	var unit = elementContainer_.getBaseUnit();
 	var attrs = attrsToConvert[elName];
-	if (!attrs) return;
+	if (!attrs) {return;}
 
 	var len = attrs.length;
-	for (var i = 0; i < len; i++) {
+	var i;
+	for (i = 0; i < len; i++) {
 		var attr = attrs[i];
 		var cur = element.getAttribute(attr);
 		if (cur) {
 			if (!isNaN(cur)) {
 				element.setAttribute(attr, (cur / typeMap_[unit]) + unit);
-			} else {
-				// Convert existing?
 			}
+			// else {
+				// Convert existing?
+			// }
 		}
 	}
 };
@@ -212,11 +216,11 @@ svgedit.units.convertAttrs = function(element) {
 // val - String with the attribute value to convert
 svgedit.units.convertToNum = function(attr, val) {
 	// Return a number if that's what it already is
-	if (!isNaN(val)) return val-0;
-
+	if (!isNaN(val)) {return val-0;}
+	var num;
 	if (val.substr(-1) === '%') {
 		// Deal with percentage, depends on attribute
-		var num = val.substr(0, val.length-1)/100;
+		num = val.substr(0, val.length-1)/100;
 		var width = elementContainer_.getWidth();
 		var height = elementContainer_.getHeight();
 
@@ -229,7 +233,7 @@ svgedit.units.convertToNum = function(attr, val) {
 		return num * Math.sqrt((width*width) + (height*height))/Math.sqrt(2);
 	}
 	var unit = val.substr(-2);
-	var num = val.substr(0, val.length-2);
+	num = val.substr(0, val.length-2);
 	// Note that this multiplication turns the string into a number
 	return num * typeMap_[unit];
 };
@@ -250,9 +254,9 @@ svgedit.units.isValidUnit = function(attr, val, selectedElement) {
 		// Not a number, check if it has a valid unit
 			val = val.toLowerCase();
 			$.each(typeMap_, function(unit) {
-				if (valid) return;
+				if (valid) {return;}
 				var re = new RegExp('^-?[\\d\\.]+' + unit + '$');
-				if (re.test(val)) valid = true;
+				if (re.test(val)) {valid = true;}
 			});
 		}
 	} else if (attr == 'id') {
@@ -269,11 +273,10 @@ svgedit.units.isValidUnit = function(attr, val, selectedElement) {
 			result = (elem == null || elem === selectedElement);
 		} catch(e) {}
 		return result;
-	} else {
-		valid = true;
 	}
+	valid = true;
 
 	return valid;
 };
 
-})();
+}());

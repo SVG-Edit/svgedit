@@ -1,3 +1,5 @@
+/*globals $, svgedit*/
+/*jslint vars: true, eqeq: true*/
 /**
  * SVGTransformList
  *
@@ -10,7 +12,7 @@
 // Dependencies:
 // 1) browser.js
 
-(function() {
+(function() {'use strict';
 
 if (!svgedit.transformlist) {
 	svgedit.transformlist = {};
@@ -30,8 +32,8 @@ function transformToString(xform) {
 			text = 'translate(' + m.e + ',' + m.f + ')';
 			break;
 		case 3: // SCALE
-			if (m.a == m.d) text = 'scale(' + m.a + ')';
-			else text = 'scale(' + m.a + ',' + m.d + ')';
+			if (m.a == m.d) {text = 'scale(' + m.a + ')';}
+			else {text = 'scale(' + m.a + ',' + m.d + ')';}
 			break;
 		case 4: // ROTATE
 			var cx = 0, cy = 0;
@@ -80,7 +82,8 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 	this._update = function() {
 		var tstr = '';
 		var concatMatrix = svgroot.createSVGMatrix();
-		for (var i = 0; i < this.numberOfItems; ++i) {
+		var i;
+		for (i = 0; i < this.numberOfItems; ++i) {
 			var xform = this._list.getItem(i);
 			tstr += transformToString(xform) + ' ';
 		}
@@ -90,7 +93,7 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 	this._init = function() {
 		// Transform attribute parser
 		var str = this._elem.getAttribute('transform');
-		if (!str) return;
+		if (!str) {return;}
 
 		// TODO: Add skew support in future
 		var re = /\s*((scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/;
@@ -134,9 +137,11 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 			// Check if this transform is already in a transformlist, and
 			// remove it if so.
 			var found = false;
-			for (var id in listMap_) {
+			var id;
+			for (id in listMap_) {
 				var tl = listMap_[id];
-				for (var i = 0, len = tl._xforms.length; i < len; ++i) {
+				var i, len;
+				for (i = 0, len = tl._xforms.length; i < len; ++i) {
 					if (tl._xforms[i] == item) {
 						found = true;
 						tl.removeItem(i);
@@ -176,11 +181,13 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 				this._removeFromOtherLists(newItem);
 				var newxforms = new Array(this.numberOfItems + 1);
 				// TODO: use array copying and slicing
-				for ( var i = 0; i < index; ++i) {
+				var i;
+				for (i = 0; i < index; ++i) {
 					newxforms[i] = this._xforms[i];
 				}
 				newxforms[i] = newItem;
-				for ( var j = i+1; i < this.numberOfItems; ++j, ++i) {
+				var j;
+				for (j = i+1; i < this.numberOfItems; ++j, ++i) {
 					newxforms[j] = this._xforms[i];
 				}
 				this.numberOfItems++;
@@ -210,10 +217,11 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 		if (index < this.numberOfItems && index >= 0) {
 			var retValue = this._xforms[index];
 			var newxforms = new Array(this.numberOfItems - 1);
-			for (var i = 0; i < index; ++i) {
+			var i, j;
+			for (i = 0; i < index; ++i) {
 				newxforms[i] = this._xforms[i];
 			}
-			for (var j = i; j < this.numberOfItems-1; ++j, ++i) {
+			for (j = i; j < this.numberOfItems-1; ++j, ++i) {
 				newxforms[j] = this._xforms[i+1];
 			}
 			this.numberOfItems--;
@@ -278,4 +286,4 @@ svgedit.transformlist.getTransformList = function(elem) {
 	return null;
 };
 
-})();
+}());

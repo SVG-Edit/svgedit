@@ -98,12 +98,13 @@ function EmbeddedSVGEdit(frame){
     if (typeof e.data !== 'string') {
         return;
     }
-    var data = e.data && JSON.parse(e.data);
+    var result, cbid,
+		data = e.data && JSON.parse(e.data);
     if (!data || typeof data !== 'object' || data.namespace !== 'svg-edit') {
       return;
     }
-    var result = data.result || data.error,
-      cbid = data.id;
+    result = data.result || data.error;
+    cbid = data.id;
     if(t.callbacks[cbid]){
       if(data.result){
        t.callbacks[cbid](result);
