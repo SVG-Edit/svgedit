@@ -8,7 +8,7 @@ svgEditor.addExtension("php_savefile", {
 		'use strict';
 		function getFileNameFromTitle () {
 			var title = svgCanvas.getDocumentTitle();
-			return $.trim(title); // .replace(/[^a-z0-9\.\_\-]+/gi, '_'); // We could do this more stringent client-side filtering, but we need to do on the server anyways
+			return $.trim(title);
 		}
 		var save_svg_action = 'extensions/savefile.php';
 		svgEditor.setCustomHandlers({

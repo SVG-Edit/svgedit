@@ -82,11 +82,11 @@ svgedit.utilities.fromXml = function(str) {
 // Converts a string to base64
 svgedit.utilities.encode64 = function(input) {
 	// base64 strings are 4/3 larger than the original string
-//	input = svgedit.utilities.encodeUTF8(input); // convert non-ASCII characters
-	input = svgedit.utilities.convertToXMLReferences(input);
-	if(window.btoa) {
-        return window.btoa(input); // Use native if available
-    }
+	input = svgedit.utilities.encodeUTF8(input); // convert non-ASCII characters
+	// input = svgedit.utilities.convertToXMLReferences(input);
+	if (window.btoa) {
+		return window.btoa(input); // Use native if available
+  }
 	var output = new Array( Math.floor( (input.length + 2) / 3 ) * 4 );
 	var chr1, chr2, chr3;
 	var enc1, enc2, enc3, enc4;
@@ -158,28 +158,62 @@ svgedit.utilities.decode64 = function(input) {
 };
 
 // Currently not being used, so commented out for now
-// based on http://phpjs.org/functions/utf8_encode:577
-// codedread:does not seem to work with webkit-based browsers on OSX
-//		'encodeUTF8': function(input) {
-//			//return unescape(encodeURIComponent(input)); //may or may not work
-//			var output = '';
-//			for (var n = 0; n < input.length; n++){
-//				var c = input.charCodeAt(n);
-//				if (c < 128) {
-//					output += input[n];
-//				}
-//				else if (c > 127) {
-//					if (c < 2048){
-//						output += String.fromCharCode((c >> 6) | 192);
-//					}
-//					else {
-//						output += String.fromCharCode((c >> 12) | 224) + String.fromCharCode((c >> 6) & 63 | 128);
-//					}
-//					output += String.fromCharCode((c & 63) | 128);
-//				}
-//			}
-//			return output;
-//		},
+// based on http://phpjs.org/functions/utf8_encode
+// codedread:does not seem to work with webkit-based browsers on OSX // Brettz9: please test again as function upgraded
+svgedit.utilities.encodeUTF8 = function (argString) {
+	//return unescape(encodeURIComponent(input)); //may or may not work
+	if (argString === null || typeof argString === 'undefined') {
+		return '';
+	}
+
+	var string = String(argString); // .replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+	var utftext = '',
+		n, start, end, stringl = 0;
+
+	start = end = 0;
+	stringl = string.length;
+	for (n = 0; n < stringl; n++) {
+		var c1 = string.charCodeAt(n);
+		var enc = null;
+
+		if (c1 < 128) {
+			end++;
+		} else if (c1 > 127 && c1 < 2048) {
+			enc = String.fromCharCode(
+				(c1 >> 6) | 192, (c1 & 63) | 128
+			);
+		} else if (c1 & 0xF800 != 0xD800) {
+			enc = String.fromCharCode(
+				(c1 >> 12) | 224, ((c1 >> 6) & 63) | 128, (c1 & 63) | 128
+			);
+		} else { // surrogate pairs
+			if (c1 & 0xFC00 != 0xD800) {
+				throw new RangeError('Unmatched trail surrogate at ' + n);
+			}
+			var c2 = string.charCodeAt(++n);
+			if (c2 & 0xFC00 != 0xDC00) {
+				throw new RangeError('Unmatched lead surrogate at ' + (n - 1));
+			}
+			c1 = ((c1 & 0x3FF) << 10) + (c2 & 0x3FF) + 0x10000;
+			enc = String.fromCharCode(
+				(c1 >> 18) | 240, ((c1 >> 12) & 63) | 128, ((c1 >> 6) & 63) | 128, (c1 & 63) | 128
+			);
+		}
+		if (enc !== null) {
+			if (end > start) {
+				utftext += string.slice(start, end);
+			}
+			utftext += enc;
+			start = end = n + 1;
+		}
+	}
+
+	if (end > start) {
+		utftext += string.slice(start, stringl);
+	}
+
+	return utftext;
+};
 
 // Function: svgedit.utilities.convertToXMLReferences
 // Converts a string to use XML references
