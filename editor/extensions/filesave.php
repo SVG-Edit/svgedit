@@ -52,7 +52,7 @@ header("Content-Disposition: attachment; filename*=UTF-8''" . encodeRFC5987Value
 	// preg_replace('@[\\\\/:*?"<>|]@', '', $file) // If we wanted to strip Windows-disallowed characters server-side (but not a security issue, so we can strip client-side instead)
 	$file
 ));
-header("Content-Type: " .  $mime . 'charset=utf-8');
+header("Content-Type: " .  $mime . ';charset=utf-8');
 header("Content-Transfer-Encoding: binary");
 
 echo $contents;
