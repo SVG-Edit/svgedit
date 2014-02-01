@@ -17,7 +17,7 @@ svgEditor.addExtension("server_opensave", {
 			return $.trim(title).replace(/[\/\\:*?"<>|]/g, '_');
 		}
 		function xhtmlEscape(str) {
-			return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); // < is actually disallowed above anyways
+			return str.replace(/&(?!amp;)/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); // < is actually disallowed above anyways
 		}
 		function clientDownloadSupport (filename, suffix, uri) {
 			var a,
