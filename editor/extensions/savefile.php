@@ -8,10 +8,9 @@
 		exit;
 	}
 	$svg = $_POST['output_svg'];
-	$filename = (isset($_POST['filename']) && !empty($_POST['filename']) ? preg_replace('@[\\\\/:*?"<>|]@', '_', urldecode($_POST['filename'])) : 'saved') . '.svg'; // These characters are indicated as prohibited by Windows
-	$output_svg = urldecode($svg);
-	$file = $filename;
-	$fh = fopen($file, 'w') or die("Can't open file");
-	fwrite($fh, $output_svg);
+	$filename = (isset($_POST['filename']) && !empty($_POST['filename']) ? preg_replace('@[\\\\/:*?"<>|]@u', '_', $_POST['filename']) : 'saved') . '.svg'; // These characters are indicated as prohibited by Windows
+
+	$fh = fopen($filename, 'w') or die("Can't open file");
+	fwrite($fh, $svg);
 	fclose($fh);
 ?>

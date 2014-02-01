@@ -13,7 +13,7 @@ svgEditor.addExtension("php_savefile", {
 		var save_svg_action = 'extensions/savefile.php';
 		svgEditor.setCustomHandlers({
 			save: function(win, data) {
-				var svg = "<?xml version=\"1.0\"?>\n" + data,
+				var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,
 					filename = getFileNameFromTitle();
 
 				$.post(save_svg_action, {output_svg: svg, filename: filename});
@@ -21,7 +21,3 @@ svgEditor.addExtension("php_savefile", {
 		});
 	}
 });
-
-this.saveHandler = function(svg) {'use strict';
-	$.post("svg-editor-save.php", {svg_data: svg});
-};
