@@ -38,11 +38,10 @@ svgEditor.addExtension("server_opensave", {
 		$('<iframe name="output_frame" src="#"/>').hide().appendTo('body');
 		svgEditor.setCustomHandlers({
 			save: function(win, data) {
-				var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data, // Firefox doesn't seem to know it is UTF-8 (if we skip the clientDownload code) despite the Content-Disposition header containing UTF-8, but adding the encoding works
+				var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data, // Firefox doesn't seem to know it is UTF-8 (no matter whether we use or skip the clientDownload code) despite the Content-Disposition header containing UTF-8, but adding the encoding works
 					filename = getFileNameFromTitle();
 
-				// if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml,' + encodeURI(data))) { // Firefox limits size of file
-				if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml;base64,' + svgedit.utilities.encode64(svg))) {
+				if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml;charset=UTF-8;base64,' + svgedit.utilities.encode64(svg))) {
 					return;
 				}
 
@@ -105,7 +104,7 @@ svgEditor.addExtension("server_opensave", {
 				
 			}
 		});
-	
+
 		// Do nothing if client support is found
 		if (window.FileReader) {return;}
 		
@@ -159,7 +158,7 @@ svgEditor.addExtension("server_opensave", {
 		// Create image form
 		import_img_form = open_svg_form.clone().attr('action', import_img_action);
 		
-		// It appears necessory to rebuild this input every time a file is 
+		// It appears necessary to rebuild this input every time a file is 
 		// selected so the same file can be picked and the change event can fire.
 		function rebuildInput(form) {
 			form.empty();

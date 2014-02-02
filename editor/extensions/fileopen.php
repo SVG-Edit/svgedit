@@ -25,7 +25,7 @@
 	$prefix = '';
 	
 	// Make Data URL prefix for import image
-	if($type == 'import_img') {
+	if ($type == 'import_img') {
 		$info = getimagesize($file);
 		if (!in_array($info['mime'], $allowedMimeTypesBySuffix)) {
 			exit;
@@ -37,7 +37,8 @@
 <head>
 <meta charset="utf-8" />
 <script>
-window.top.window.svgEditor.processFile("<?php 
+
+top.svgEditor.processFile("<?php 
 
 // This should be safe since SVG edit does its own filtering (e.g., if an SVG file contains scripts)
 echo $prefix . base64_encode($output);

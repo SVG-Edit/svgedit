@@ -20,7 +20,7 @@ function encodeRFC5987ValueChars ($str) {
 
 require('allowedMimeTypes.php');
 
-$mime = !isset($_POST['mime']) || !in_array($_POST['mime'], $allowedMimeTypesBySuffix) ? 'image/svg+xml' : $_POST['mime'];
+$mime = !isset($_POST['mime']) || !in_array($_POST['mime'], $allowedMimeTypesBySuffix) ? 'image/svg+xml;charset=UTF-8' : $_POST['mime'];
  
 if (!isset($_POST['output_svg']) && !isset($_POST['output_img'])) {
 	die('post fail');
@@ -52,7 +52,7 @@ header("Content-Disposition: attachment; filename*=UTF-8''" . encodeRFC5987Value
 	// preg_replace('@[\\\\/:*?"<>|]@', '', $file) // If we wanted to strip Windows-disallowed characters server-side (but not a security issue, so we can strip client-side instead)
 	$file
 ));
-header("Content-Type: " .  $mime . ';charset=utf-8');
+header("Content-Type: " .  $mime);
 header("Content-Transfer-Encoding: binary");
 
 echo $contents;
