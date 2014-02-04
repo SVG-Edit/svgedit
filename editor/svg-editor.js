@@ -267,7 +267,7 @@
 							Editor.loadFromString(src);
 						}
 					} else if (qstr.indexOf('paramurl=') !== -1) {
-						// Get paramater URL (use full length of remaining location.href)
+						// Get parameter URL (use full length of remaining location.href)
 						svgEditor.loadFromURL(qstr.substr(9));
 					} else if (urldata.url) {
 						svgEditor.loadFromURL(urldata.url);
@@ -4307,7 +4307,7 @@
 				}
 			};
 
-			// use HTML5 File API: http://www.w3.org/TR/FileAPI/
+			// Use HTML5 File API: http://www.w3.org/TR/FileAPI/
 			// if browser has HTML5 File API support, then we will show the open menu item
 			// and provide a file input to click. When that change event fires, it will
 			// get the text contents of the file and send it to the canvas
@@ -4323,8 +4323,8 @@
 						return;
 					}
 					if (file.type.indexOf('image') != -1) {
-						//detected an image
-						//svg handling
+						// Detected an image
+						// svg handling
 						if (file.type.indexOf('svg') != -1) {
 							var reader = new FileReader();
 							reader.onloadend = function(e) {
@@ -4771,7 +4771,7 @@
 		};
 
 		Editor.loadFromURL = function(url, opts) {
-			if (!opts) opts = {};
+			if (!opts) {opts = {};}
 
 			var cache = opts.cache;
 			var cb = opts.callback;
