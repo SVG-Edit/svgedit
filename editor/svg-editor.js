@@ -4563,7 +4563,7 @@
 			$('#cmenu_canvas li').disableContextMenu();
 			canv_menu.enableContextMenuItems('#delete,#cut,#copy');
 
-			window.addEventListener('beforeunload', function() {
+			window.addEventListener('beforeunload', function(e) {
 				if (window.localStorage) {
 					var name = 'svgedit-' + Editor.curConfig.canvasName;
 					window.localStorage.setItem(name, svgCanvas.getSvgString());
