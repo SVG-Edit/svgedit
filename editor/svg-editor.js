@@ -1502,6 +1502,7 @@
 				}
 			};
 
+			var supportsNonSS;
 			var updateWireFrame = function() {
 				// Test support
 				if (supportsNonSS) {return;}
@@ -3855,7 +3856,7 @@
 			// Use this SVG elem to test vectorEffect support
 			var testEl = paintBox.fill.rect.cloneNode(false);
 			testEl.setAttribute('style', 'vector-effect:non-scaling-stroke');
-			var supportsNonSS = (testEl.style.vectorEffect === 'non-scaling-stroke');
+			supportsNonSS = (testEl.style.vectorEffect === 'non-scaling-stroke');
 			testEl.removeAttribute('style');
 			var svgdocbox = paintBox.fill.rect.ownerDocument;
 			// Use this to test support for blur element. Seems to work to test support in Webkit
