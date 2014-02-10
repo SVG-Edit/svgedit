@@ -1,5 +1,5 @@
-/*globals globalStorage, widget, svgEditor, svgedit */
-/*jslint vars: true, eqeq: true */
+/*globals globalStorage, widget, svgEditor, svgedit, canvg */
+/*jslint vars: true, eqeq: true, todo: true */
 /*
  * svg-editor.js
  *
@@ -187,12 +187,12 @@
 		//	- accept the string contents of the current document
 		//	- invoke a file chooser dialog in 'save' mode
 		//	- save the file to location chosen by the user
-        // opts.exportImage's responsibilities (with regard to the object it is supplied in its 2nd argument) are:
-        //  - inform user of any issues supplied via the "issues" property
-        //  - convert the "svg" property SVG string into an image for export;
-        //      utilize the properties "type" (currently 'PNG', 'JPEG', 'BMP',
-        //      'WEBP'), "mimeType", and "quality" (for 'JPEG' and 'WEBP'
-        // types) to determine the proper output.
+		// opts.exportImage's responsibilities (with regard to the object it is supplied in its 2nd argument) are:
+		//  - inform user of any issues supplied via the "issues" property
+		//  - convert the "svg" property SVG string into an image for export;
+		//	  utilize the properties "type" (currently 'PNG', 'JPEG', 'BMP',
+		//	  'WEBP'), "mimeType", and "quality" (for 'JPEG' and 'WEBP'
+		// types) to determine the proper output.
 		Editor.setCustomHandlers = function(opts) {
 			Editor.ready(function() {
 				if (opts.open) {
@@ -250,11 +250,11 @@
 					}
 
 					// Disallowing extension paths via URL for
-                    // security reasons, even for same-domain
-                    // ones given potential to interact in undesirable
-                    // ways with other script resources
-                    if (urldata.extPath) {
-                        delete urldata.extPath;
+					// security reasons, even for same-domain
+					// ones given potential to interact in undesirable
+					// ways with other script resources
+					if (urldata.extPath) {
+						delete urldata.extPath;
 					}
 
 					svgEditor.setConfig(urldata);
@@ -290,6 +290,15 @@
 					}
 				}
 			}());
+
+			var setIcon = Editor.setIcon = function(elem, icon_id, forcedSize) {
+				var icon = (typeof icon_id === 'string') ? $.getSvgIcon(icon_id, true) : icon_id.clone();
+				if (!icon) {
+					console.log('NOTE: Icon image missing: ' + icon_id);
+					return;
+				}
+				$(elem).empty().append(icon);
+			};
 
 			var extFunc = function() {
 				$.each(curConfig.extensions, function() {
@@ -632,6 +641,102 @@
 				workarea.css('cursor', 'auto');
 			};
 
+			// used to make the flyouts stay on the screen longer the very first time
+			var flyoutspeed = 1250;
+			var textBeingEntered = false;
+			var selectedElement = null;
+			var multiselected = false;
+			var editingsource = false;
+			var docprops = false;
+			var preferences = false;
+			var cur_context = '';
+			var origTitle = $('title:first').text();
+
+			// this function highlights the layer passed in (by fading out the other layers)
+			// if no layer is passed in, this function restores the other layers
+			var toggleHighlightLayer = function(layerNameToHighlight) {
+				var i, curNames = new Array(svgCanvas.getCurrentDrawing().getNumLayers());
+				for (i = 0; i < curNames.length; i++) {
+					curNames[i] = svgCanvas.getCurrentDrawing().getLayerName(i);
+				}
+
+				if (layerNameToHighlight) {
+					for (i = 0; i < curNames.length; ++i) {
+						if (curNames[i] != layerNameToHighlight) {
+							svgCanvas.getCurrentDrawing().setLayerOpacity(curNames[i], 0.5);
+						}
+					}
+				} else {
+					for (i = 0; i < curNames.length; ++i) {
+						svgCanvas.getCurrentDrawing().setLayerOpacity(curNames[i], 1.0);
+					}
+				}
+			};
+
+			var populateLayers = function() {
+				svgCanvas.clearSelection();
+				var layerlist = $('#layerlist tbody').empty();
+				var selLayerNames = $('#selLayerNames').empty();
+				var drawing = svgCanvas.getCurrentDrawing();
+				var currentLayerName = drawing.getCurrentLayerName();
+				var layer = svgCanvas.getCurrentDrawing().getNumLayers();
+				var icon = $.getSvgIcon('eye');
+				// we get the layers in the reverse z-order (the layer rendered on top is listed first)
+				while (layer--) {
+					var name = drawing.getLayerName(layer);
+					var layerTr = $('<tr class="layer">').toggleClass('layersel', name === currentLayerName);
+					var layerVis = $('<td class="layervis">').toggleClass('layerinvis', !drawing.getLayerVisibility(name));
+					var layerName = $('<td class="layername">' + name + '</td>');
+					layerlist.append(layerTr.append(layerVis, layerName));
+					selLayerNames.append('<option value="' + name + '">' + name + '</option>');
+				}
+				if (icon !== undefined) {
+					var copy = icon.clone();
+					$('td.layervis', layerlist).append(icon.clone());
+					$.resizeSvgIcons({'td.layervis .svg_icon': 14});
+				}
+				// handle selection of layer
+				$('#layerlist td.layername')
+					.mouseup(function(evt) {
+						$('#layerlist tr.layer').removeClass('layersel');
+						$(this.parentNode).addClass('layersel');
+						svgCanvas.setCurrentLayer(this.textContent);
+						evt.preventDefault();
+					})
+					.mouseover(function() {
+						toggleHighlightLayer(this.textContent);
+					})
+					.mouseout(function() {
+						toggleHighlightLayer();
+					});
+				$('#layerlist td.layervis').click(function() {
+					var row = $(this.parentNode).prevAll().length;
+					var name = $('#layerlist tr.layer:eq(' + row + ') td.layername').text();
+					var vis = $(this).hasClass('layerinvis');
+					svgCanvas.setLayerVisibility(name, vis);
+					$(this).toggleClass('layerinvis');
+				});
+
+				// if there were too few rows, let's add a few to make it not so lonely
+				var num = 5 - $('#layerlist tr.layer').size();
+				while (num-- > 0) {
+					// FIXME: there must a better way to do this
+					layerlist.append('<tr><td style="color:white">_</td><td/></tr>');
+				}
+			};
+
+			var showSourceEditor = function(e, forSaving) {
+				if (editingsource) {return;}
+
+				editingsource = true;
+				origSource = svgCanvas.getSvgString();
+				$('#save_output_btns').toggle(!!forSaving);
+				$('#tool_source_back').toggle(!forSaving);
+				$('#svg_source_textarea').val(origSource);
+				$('#svg_source_editor').fadeIn();
+				$('#svg_source_textarea').focus();
+			};
+
 			var togglePathEditMode = function(editmode, elems) {
 				$('#path_node_panel').toggle(editmode);
 				$('#tools_bottom_2,#tools_bottom_3').toggle(!editmode);
@@ -650,17 +755,6 @@
 					}, 1000);
 				}
 			};
-
-			// used to make the flyouts stay on the screen longer the very first time
-			var flyoutspeed = 1250;
-			var textBeingEntered = false;
-			var selectedElement = null;
-			var multiselected = false;
-			var editingsource = false;
-			var docprops = false;
-			var preferences = false;
-			var cur_context = '';
-			var origTitle = $('title:first').text();
 
 			var saveHandler = function(window, svg) {
 				Editor.showSaveWarning = false;
@@ -1228,7 +1322,7 @@
 							parent = '#main_menu ul';
 							break;
 						}
-						var flyout_holder, cur_h, show_btn;
+						var flyout_holder, cur_h, show_btn, ref_data;
 						var button = $((btn.list || btn.type == 'app_menu') ? '<li/>' : '<div/>')
 							.attr('id', id)
 							.attr('title', btn.title)
@@ -1262,7 +1356,7 @@
 									flyout_holder.data('isLibrary', true);
 									show_btn.data('isLibrary', true);
 								}
-	//							var ref_data = Actions.getButtonData(opts.button);
+	//							ref_data = Actions.getButtonData(opts.button);
 
 								placement_obj['#' + tls_id + '_show'] = btn.id;
 								// TODO: Find way to set the current icon using the iconloader if this is not default
@@ -1292,7 +1386,8 @@
 								button.append('<div>').append(btn.title);
 							}
 
-						} else if (btn.list) {
+						}
+						else if (btn.list) {
 							// Add button to list
 							button.addClass('push_button');
 							$('#' + btn.list + '_opts').append(button);
@@ -1322,7 +1417,7 @@
 								flyout_holder = makeFlyoutHolder(tls_id, ref_btn);
 							}
 
-							var ref_data = Actions.getButtonData(opts.button);
+							ref_data = Actions.getButtonData(opts.button);
 
 							if (opts.isDefault) {
 								placement_obj['#' + tls_id + '_show'] = btn.id;
@@ -2075,7 +2170,7 @@
 				$(opt).addClass('current').siblings().removeClass('current');
 			}
 
-			(function() {
+			(function () {
 				var button = $('#main_icon');
 				var overlay = $('#main_icon span');
 				var list = $('#main_menu');
@@ -2106,7 +2201,7 @@
 				}).mousedown(function(evt) {
 //					$('.contextMenu').hide();
 					var islib = $(evt.target).closest('div.tools_flyout, .contextMenu').length;
-					if (!islib) $('.tools_flyout:visible,.contextMenu').fadeOut(250);
+					if (!islib) {$('.tools_flyout:visible,.contextMenu').fadeOut(250);}
 				});
 
 				overlay.bind('mousedown',function() {
@@ -2151,7 +2246,7 @@
 			// Made public for UI customization.
 			// TODO: Group UI functions into a public svgEditor.ui interface.
 			Editor.addDropDown = function(elem, callback, dropUp) {
-				if ($(elem).length == 0) return; // Quit if called on non-existant element
+				if ($(elem).length == 0) {return;} // Quit if called on non-existant element
 				var button = $(elem).find('button');
 				var list = $(elem).find('ul').attr('id', $(elem)[0].id + '-list');
 				var on_button = false;
@@ -2196,7 +2291,7 @@
 			// TODO: Combine this with addDropDown or find other way to optimize
 			var addAltDropDown = function(elem, list, callback, opts) {
 				var button = $(elem);
-				var list = $(list);
+				list = $(list);
 				var on_button = false;
 				var dropUp = opts.dropUp;
 				if (dropUp) {
@@ -2258,7 +2353,7 @@
 			});
 
 			Editor.addDropDown('#opacity_dropdown', function() {
-				if ($(this).find('div').length) return;
+				if ($(this).find('div').length) {return;}
 				var perc = parseInt($(this).text().split('%')[0]);
 				changeOpacity(false, perc);
 			}, true);
@@ -2505,7 +2600,7 @@
 			var makeHyperlink = function() {
 				if (selectedElement != null || multiselected) {
 					$.prompt(uiStrings.notification.enterNewLinkURL, 'http://', function(url) {
-						if (url) svgCanvas.makeHyperlink(url);
+						if (url) {svgCanvas.makeHyperlink(url);}
 					});
 				}
 			};
@@ -2557,8 +2652,8 @@
 			};
 
 			var rotateSelected = function(cw, step) {
-				if (selectedElement == null || multiselected) return;
-				if (!cw) step *= -1;
+				if (selectedElement == null || multiselected) {return;}
+				if (!cw) {step *= -1;}
 				var angle = parseFloat($('#angle').val()) + step;
 				svgCanvas.setRotationAngle(angle);
 				updateContextPanel();
@@ -2567,7 +2662,7 @@
 			var clickClear = function() {
 				var dims = curConfig.dimensions;
 				$.confirm(uiStrings.notification.QwantToClear, function(ok) {
-					if (!ok) return;
+					if (!ok) {return;}
 					setSelectMode();
 					svgCanvas.clear();
 					svgCanvas.setResolution(dims[0], dims[1]);
@@ -2702,7 +2797,7 @@
 				$('#tool_wireframe').toggleClass('push_button_pressed tool_button');
 				workarea.toggleClass('wireframe');
 
-				if (supportsNonSS) return;
+				if (supportsNonSS) {return;}
 				var wf_rules = $('#wireframe_rules');
 				if (!wf_rules.length) {
 					wf_rules = $('<style id="wireframe_rules"><\/style>').appendTo('head');
@@ -2715,22 +2810,10 @@
 
 			var updateWireFrame = function() {
 				// Test support
-				if (supportsNonSS) return;
+				if (supportsNonSS) {return;}
 
 				var rule = '#workarea.wireframe #svgcontent * { stroke-width: ' + 1/svgCanvas.getZoom() + 'px; }';
 				$('#wireframe_rules').text(workarea.hasClass('wireframe') ? rule : '');
-			};
-
-			var showSourceEditor = function(e, forSaving) {
-				if (editingsource) return;
-
-				editingsource = true;
-				origSource = svgCanvas.getSvgString();
-				$('#save_output_btns').toggle(!!forSaving);
-				$('#tool_source_back').toggle(!forSaving);
-				$('#svg_source_textarea').val(origSource);
-				$('#svg_source_editor').fadeIn();
-				$('#svg_source_textarea').focus();
 			};
 
 			$('#svg_docprops_container, #svg_prefs_container').draggable({cancel: 'button,fieldset', containment: 'window'});
@@ -2894,15 +2977,6 @@
 				// This should be done in svgcanvas.js for the borderRect fill
 				svgCanvas.setBackground(color, url);
 			}
-
-			var setIcon = Editor.setIcon = function(elem, icon_id, forcedSize) {
-				var icon = (typeof icon_id === 'string') ? $.getSvgIcon(icon_id, true) : icon_id.clone();
-				if (!icon) {
-					console.log('NOTE: Icon image missing: ' + icon_id);
-					return;
-				}
-				$(elem).empty().append(icon);
-			};
 
 			var uaPrefix = (function() {
 				var regex = /^(Moz|Webkit|Khtml|O|ms|Icab)(?=[A-Z])/;
@@ -3751,76 +3825,6 @@
 				changeSidePanelWidth(deltaX);
 			};
 
-			// this function highlights the layer passed in (by fading out the other layers)
-			// if no layer is passed in, this function restores the other layers
-			var toggleHighlightLayer = function(layerNameToHighlight) {
-				var curNames = new Array(svgCanvas.getCurrentDrawing().getNumLayers());
-				for (var i = 0; i < curNames.length; ++i) { curNames[i] = svgCanvas.getCurrentDrawing().getLayerName(i); }
-
-				if (layerNameToHighlight) {
-					for (var i = 0; i < curNames.length; ++i) {
-						if (curNames[i] != layerNameToHighlight) {
-							svgCanvas.getCurrentDrawing().setLayerOpacity(curNames[i], 0.5);
-						}
-					}
-				} else {
-					for (var i = 0; i < curNames.length; ++i) {
-						svgCanvas.getCurrentDrawing().setLayerOpacity(curNames[i], 1.0);
-					}
-				}
-			};
-
-			var populateLayers = function() {
-				svgCanvas.clearSelection();
-				var layerlist = $('#layerlist tbody').empty();
-				var selLayerNames = $('#selLayerNames').empty();
-				var drawing = svgCanvas.getCurrentDrawing();
-				var currentLayerName = drawing.getCurrentLayerName();
-				var layer = svgCanvas.getCurrentDrawing().getNumLayers();
-				var icon = $.getSvgIcon('eye');
-				// we get the layers in the reverse z-order (the layer rendered on top is listed first)
-				while (layer--) {
-					var name = drawing.getLayerName(layer);
-					var layerTr = $('<tr class="layer">').toggleClass('layersel', name === currentLayerName);
-					var layerVis = $('<td class="layervis">').toggleClass('layerinvis', !drawing.getLayerVisibility(name));
-					var layerName = $('<td class="layername">' + name + '</td>');
-					layerlist.append(layerTr.append(layerVis, layerName));
-					selLayerNames.append('<option value="' + name + '">' + name + '</option>');
-				}
-				if (icon !== undefined) {
-					var copy = icon.clone();
-					$('td.layervis', layerlist).append(icon.clone());
-					$.resizeSvgIcons({'td.layervis .svg_icon': 14});
-				}
-				// handle selection of layer
-				$('#layerlist td.layername')
-					.mouseup(function(evt) {
-						$('#layerlist tr.layer').removeClass('layersel');
-						$(this.parentNode).addClass('layersel');
-						svgCanvas.setCurrentLayer(this.textContent);
-						evt.preventDefault();
-					})
-					.mouseover(function() {
-						toggleHighlightLayer(this.textContent);
-					})
-					.mouseout(function() {
-						toggleHighlightLayer();
-					});
-				$('#layerlist td.layervis').click(function() {
-					var row = $(this.parentNode).prevAll().length;
-					var name = $('#layerlist tr.layer:eq(' + row + ') td.layername').text();
-					var vis = $(this).hasClass('layerinvis');
-					svgCanvas.setLayerVisibility(name, vis);
-					$(this).toggleClass('layerinvis');
-				});
-
-				// if there were too few rows, let's add a few to make it not so lonely
-				var num = 5 - $('#layerlist tr.layer').size();
-				while (num-- > 0) {
-					// FIXME: there must a better way to do this
-					layerlist.append('<tr><td style="color:white">_</td><td/></tr>');
-				}
-			};
 			populateLayers();
 
 		//	function changeResolution(x,y) {
