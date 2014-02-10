@@ -1279,7 +1279,7 @@
 
 					// Add buttons given by extension
 					$.each(ext.buttons, function(i, btn) {
-						var icon, svgicon;
+						var icon, svgicon, tls_id;
 						var id = btn.id;
 						var num = i;
 
@@ -1322,7 +1322,7 @@
 							parent = '#main_menu ul';
 							break;
 						}
-						var flyout_holder, cur_h, show_btn, ref_data;
+						var flyout_holder, cur_h, show_btn, ref_data, ref_btn;
 						var button = $((btn.list || btn.type == 'app_menu') ? '<li/>' : '<div/>')
 							.attr('id', id)
 							.attr('title', btn.title)
@@ -1333,7 +1333,7 @@
 							} else {
 								button.appendTo(parent);
 							}
-							var ref_btn;
+
 							if (btn.type =='mode_flyout') {
 							// Add to flyout menu / make flyout menu
 	//							var opts = btn.includeWith;
@@ -1344,7 +1344,7 @@
 								// Create a flyout menu if there isn't one already
 								if (!ref_btn.parent().hasClass('tools_flyout')) {
 									// Create flyout placeholder
-									var tls_id = ref_btn[0].id.replace('tool_', 'tools_');
+									tls_id = ref_btn[0].id.replace('tool_', 'tools_');
 									show_btn = ref_btn.clone()
 										.attr('id',tls_id + '_show')
 										.append($('<div>', {'class': 'flyout_arrow_horiz'}));
@@ -1396,7 +1396,8 @@
 								svgicon = btn.svgicon || btn.id;
 								placement_obj['#cur_' + btn.list] = svgicon;
 							}
-						} else if (btn.includeWith) {
+						}
+						else if (btn.includeWith) {
 							// Add to flyout menu / make flyout menu
 							var opts = btn.includeWith;
 							// opts.button, default, position
@@ -1406,7 +1407,7 @@
 							// Create a flyout menu if there isn't one already
 							if (!ref_btn.parent().hasClass('tools_flyout')) {
 								// Create flyout placeholder
-								var tls_id = ref_btn[0].id.replace('tool_', 'tools_');
+								tls_id = ref_btn[0].id.replace('tool_', 'tools_');
 								show_btn = ref_btn.clone()
 									.attr('id',tls_id + '_show')
 									.append($('<div>', {'class': 'flyout_arrow_horiz'}));
@@ -1529,7 +1530,7 @@
 			// updates the toolbar (colors, opacity, etc) based on the selected element
 			// This function also updates the opacity and id elements that are in the context panel
 			var updateToolbar = function() {
-				var i;
+				var i, len;
 				if (selectedElement != null) {
 					switch (selectedElement.tagName) {
 					case 'use':
@@ -1663,7 +1664,7 @@
 						if (['line', 'circle', 'ellipse'].indexOf(elname) >= 0) {
 							$('#xy_panel').hide();
 						} else {
-							var x,y;
+							var x, y;
 
 							// Get BBox vals for g, polyline and path
 							if (['g', 'polyline', 'path'].indexOf(elname) >= 0) {
@@ -2819,7 +2820,7 @@
 			$('#svg_docprops_container, #svg_prefs_container').draggable({cancel: 'button,fieldset', containment: 'window'});
 
 			var showDocProperties = function() {
-				if (docprops) return;
+				if (docprops) {return;}
 				docprops = true;
 
 				// This selects the correct radio button by using the array notation
@@ -2840,7 +2841,7 @@
 			};
 
 			var showPreferences = function() {
-				if (preferences) return;
+				if (preferences) {return;}
 				preferences = true;
 				$('#main_menu').hide();
 
@@ -2854,9 +2855,9 @@
 					var blk = $(this);
 					var is_bg = blk.css('background-color') == canvas_bg;
 					blk.toggleClass(cur_bg, is_bg);
-					if (is_bg) $('#canvas_bg_url').removeClass(cur_bg);
+					if (is_bg) {$('#canvas_bg_url').removeClass(cur_bg);}
 				});
-				if (!canvas_bg) blocks.eq(0).addClass(cur_bg);
+				if (!canvas_bg) {blocks.eq(0).addClass(cur_bg);}
 				if (url) {
 					$('#canvas_bg_url').val(url);
 				}
@@ -2868,7 +2869,7 @@
 			};
 
 			var saveSourceEditor = function() {
-				if (!editingsource) return;
+				if (!editingsource) {return;}
 
 				var saveChanges = function() {
 					svgCanvas.clearSelection();
@@ -2881,7 +2882,7 @@
 
 				if (!svgCanvas.setSvgString($('#svg_source_textarea').val())) {
 					$.confirm(uiStrings.notification.QerrorsRevertToSource, function(ok) {
-						if (!ok) return false;
+						if (!ok) {return false;}
 						saveChanges();
 					});
 				} else {
@@ -3522,10 +3523,10 @@
 				};
 
 				this.update = function(apply) {
-					if (!selectedElement) return;
+					if (!selectedElement) {return;}
+					var i, len;
 					var type = this.type;
-
-					switch ( selectedElement.tagName ) {
+					switch (selectedElement.tagName) {
 					case 'use':
 					case 'image':
 					case 'foreignObject':
@@ -3537,7 +3538,7 @@
 						var gPaint = null;
 
 						var childs = selectedElement.getElementsByTagName('*');
-						for (var i = 0, len = childs.length; i < len; i++) {
+						for (i = 0, len = childs.length; i < len; i++) {
 							var elem = childs[i];
 							var p = elem.getAttribute(type);
 							if (i === 0) {
