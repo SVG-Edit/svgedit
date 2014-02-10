@@ -4578,6 +4578,7 @@
 				// showSaveWarning is set to 'false' when the page is saved.
 				if (!curConfig.no_save_warning && Editor.showSaveWarning) {
 					// Browser already asks question about closing the page
+					e.returnValue = uiStrings.notification.unsavedChanges; // Firefox needs this when beforeunload set by addEventListener (even though message is not used)
 					return uiStrings.notification.unsavedChanges;
 				}
 			}, false);
