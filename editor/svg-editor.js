@@ -234,17 +234,21 @@
 						urldata.dimensions = urldata.dimensions.split(',');
 					}
 
-					if (urldata.extensions) {
-						// For security reasons, disallow cross-domain extensions via URL
-						urldata.extensions = (urldata.extensions.indexOf(':') > -1) ? '' : urldata.extensions.split(',');
-					}
-
 					if (urldata.bkgd_color) {
 						urldata.bkgd_color = '#' + urldata.bkgd_color;
 					}
 			
-					if (urldata.extPath && urldata.extPath.indexOf(':') > -1) { // For security reasons, disallow cross-domain extension path via URL
-						delete urldata.extPath;
+					if (urldata.extensions) {
+						// For security reasons, disallow cross-domain or cross-folder extensions via URL
+						urldata.extensions = urldata.extensions.match(/[:\/\\]/) ? '' : urldata.extensions.split(',');
+					}
+
+					// Disallowing extension paths via URL for
+                    // security reasons, even for same-domain
+                    // ones given potential to interact in undesirable
+                    // ways with other script resources
+                    if (urldata.extPath) {
+                        delete urldata.extPath;
 					}
 
 					svgEditor.setConfig(urldata);
