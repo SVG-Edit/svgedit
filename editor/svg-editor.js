@@ -63,7 +63,8 @@
 					'ext-imagelib.js',
 					'ext-grid.js',
 					'ext-polygon.js',
-					'ext-star.js'
+					'ext-star.js',
+					'ext-panning.js'
 				],
 				initTool: 'select',
 				wireframe: false,
