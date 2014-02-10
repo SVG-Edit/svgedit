@@ -178,7 +178,7 @@
 			}
 		};
 
-		// Extension mechanisms must call setCustomHandlers with two functions: opts.open and opts.save
+		// Extension mechanisms may call setCustomHandlers with three functions: opts.open, opts.save, and opts.exportImage
 		// opts.open's responsibilities are:
 		//	- invoke a file chooser dialog in 'open' mode
 		//	- let user pick a SVG file
@@ -187,6 +187,12 @@
 		//	- accept the string contents of the current document
 		//	- invoke a file chooser dialog in 'save' mode
 		//	- save the file to location chosen by the user
+        // opts.exportImage's responsibilities (with regard to the object it is supplied in its 2nd argument) are:
+        //  - inform user of any issues supplied via the "issues" property
+        //  - convert the "svg" property SVG string into an image for export;
+        //      utilize the properties "type" (currently 'PNG', 'JPEG', 'BMP',
+        //      'WEBP'), "mimeType", and "quality" (for 'JPEG' and 'WEBP'
+        // types) to determine the proper output.
 		Editor.setCustomHandlers = function(opts) {
 			Editor.ready(function() {
 				if (opts.open) {
