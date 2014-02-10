@@ -1483,12 +1483,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						mouse_target.style.vectorEffect = 'non-scaling-stroke';
 						if (isWebkit) {delayedStroke(mouse_target);}
 
-						var i,
-							all = mouse_target.getElementsByTagName('*'),
+						var all = mouse_target.getElementsByTagName('*'),
 							len = all.length;
 						for (i = 0; i < len; i++) {
 							all[i].style.vectorEffect = 'non-scaling-stroke';
-							if (isWebkit) delayedStroke(all[i]);
+							if (isWebkit) {delayedStroke(all[i]);}
 						}
 					}
 				}
@@ -1668,12 +1667,12 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	
 	// in this function we do not record any state changes yet (but we do update
 	// any elements that are still being created, moved or resized on the canvas)
-	var mouseMove = function(evt)
-	{
+	var mouseMove = function(evt) {
 		if (!started) {return;}
 		if (evt.button === 1 || canvas.spaceKey) {return;}
 
-		var selected = selectedElements[0],
+		var i, xya, c, cx, cy, dx, dy, len,
+			selected = selectedElements[0],
 			pt = svgedit.math.transformPoint( evt.pageX, evt.pageY, root_sctm ),
 			mouse_x = pt.x * current_zoom,
 			mouse_y = pt.y * current_zoom,
@@ -1697,8 +1696,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				// this transform is removed upon mousing up and the element is 
 				// relocated to the new location
 				if (selectedElements[0] !== null) {
-					var dx = x - start_x;
-					var dy = y - start_y;
+					dx = x - start_x;
+					dy = y - start_y;
 					
 					if (curConfig.gridSnapping){
 						dx = svgedit.utilities.snapToGrid(dx);
@@ -1706,14 +1705,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					}
 
 					if (evt.shiftKey) { 
-						var xya = svgedit.math.snapToAngle(start_x, start_y, x, y);
+						xya = svgedit.math.snapToAngle(start_x, start_y, x, y);
 						x = xya.x;
 						y = xya.y; 
 					}
 
 					if (dx != 0 || dy != 0) {
-						var i,
-							len = selectedElements.length;
+						len = selectedElements.length;
 						for (i = 0; i < len; ++i) {
 							var selected = selectedElements[i];
 							if (selected == null) {break;}
@@ -1760,10 +1758,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				// - if newList contains selected, do nothing
 				// - if newList doesn't contain selected, remove it from selected
 				// - for any newList that was not in selectedElements, add it to selected
-				var i,
-					elemsToRemove = [], elemsToAdd = [],
-					newList = getIntersectionList(),
-					len = selectedElements.length;
+				var elemsToRemove = [], elemsToAdd = [],
+					newList = getIntersectionList();
+				len = selectedElements.length;
 				
 				for (i = 0; i < len; ++i) {
 					var ind = newList.indexOf(selectedElements[i]);
@@ -1796,7 +1793,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					hasMatrix = svgedit.math.hasMatrixTransform(tlist),
 					box = hasMatrix ? init_bbox : svgedit.utilities.getBBox(selected), 
 					left = box.x, top = box.y, width = box.width,
-					height = box.height, dx = (x-start_x), dy = (y-start_y);
+					height = box.height;
+					dx = (x-start_x);
+					dy = (y-start_y);
 				
 				if (curConfig.gridSnapping) {
 					dx = svgedit.utilities.snapToGrid(dx);
@@ -1853,8 +1852,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 
 				translateOrigin.setTranslate(-(left+tx), -(top+ty));
 				if (evt.shiftKey) {
-					if (sx == 1) sx = sy;
-					else sy = sx;
+					if (sx == 1) {sx = sy;}
+					else {sy = sx;}
 				}
 				scale.setScale(sx, sy);
 				
@@ -1863,7 +1862,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					var diff = angle?1:0;
 					tlist.replaceItem(translateOrigin, 2+diff);
 					tlist.replaceItem(scale, 1+diff);
-					tlist.replaceItem(translateBack, 0+diff);
+					tlist.replaceItem(translateBack, Number(diff));
 				} else {
 					var N = tlist.numberOfItems;
 					tlist.replaceItem(translateBack, N-3);
@@ -1895,7 +1894,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			case "line":
 				// Opera has a problem with suspendRedraw() apparently
 				var handle = null;
-				if (!window.opera) svgroot.suspendRedraw(1000);
+				if (!window.opera) {svgroot.suspendRedraw(1000);}
 
 				if (curConfig.gridSnapping){
 					x = svgedit.utilities.snapToGrid(x);
@@ -1906,14 +1905,14 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				var y2 = y;					
 
 				if (evt.shiftKey) {
-					var xya = svgedit.math.snapToAngle(start_x, start_y, x2, y2);
+					xya = svgedit.math.snapToAngle(start_x, start_y, x2, y2);
 					x2 = xya.x;
 					y2 = xya.y;
 				}
 				
 				shape.setAttributeNS(null, "x2", x2);
 				shape.setAttributeNS(null, "y2", y2);
-				if (!window.opera) svgroot.unsuspendRedraw(handle);
+				if (!window.opera) {svgroot.unsuspendRedraw(handle);}
 				break;
 			case "foreignObject":
 				// fall through
@@ -1951,20 +1950,22 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				
 				break;
 			case "circle":
-				var c = $(shape).attr(["cx", "cy"]);
-				var cx = c.cx, cy = c.cy,
-					rad = Math.sqrt( (x-cx)*(x-cx) + (y-cy)*(y-cy) );
+				c = $(shape).attr(["cx", "cy"]);
+				cx = c.cx;
+				cy = c.cy;
+				var rad = Math.sqrt( (x-cx)*(x-cx) + (y-cy)*(y-cy) );
 				if (curConfig.gridSnapping){
 					rad = svgedit.utilities.snapToGrid(rad);
 				}
 				shape.setAttributeNS(null, "r", rad);
 				break;
 			case "ellipse":
-				var c = $(shape).attr(["cx", "cy"]);
-				var cx = c.cx, cy = c.cy;
+				c = $(shape).attr(["cx", "cy"]);
+				cx = c.cx;
+				cy = c.cy;
 				// Opera has a problem with suspendRedraw() apparently
 					handle = null;
-				if (!window.opera) svgroot.suspendRedraw(1000);
+				if (!window.opera) {svgroot.suspendRedraw(1000);}
 				if (curConfig.gridSnapping){
 					x = svgedit.utilities.snapToGrid(x);
 					cx = svgedit.utilities.snapToGrid(cx);
@@ -1974,7 +1975,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				shape.setAttributeNS(null, "rx", Math.abs(x - cx) );
 				var ry = Math.abs(evt.shiftKey?(x - cx):(y - cy));
 				shape.setAttributeNS(null, "ry", ry );
-				if (!window.opera) svgroot.unsuspendRedraw(handle);
+				if (!window.opera) {svgroot.unsuspendRedraw(handle);}
 				break;
 			case "fhellipse":
 			case "fhrect":
@@ -1987,8 +1988,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 //				d_attr += + real_x + "," + real_y + " ";
 //				shape.setAttributeNS(null, "points", d_attr);
 				end.x = real_x; end.y = real_y;
-				if (controllPoint2.x && controllPoint2.y){
-					for (var i = 0; i < STEP_COUNT - 1; i++) {
+				if (controllPoint2.x && controllPoint2.y) {
+					for (i = 0; i < STEP_COUNT - 1; i++) {
 						parameter = i / STEP_COUNT;
 						nextParameter = (i + 1) / STEP_COUNT;
 						bSpline = getBsplinePoint(nextParameter);
@@ -2021,14 +2022,15 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				}
 				if (evt.shiftKey) {
 					var path = svgedit.path.path;
+					var x1, y1;
 					if (path) {
-						var x1 = path.dragging?path.dragging[0]:start_x;
-						var y1 = path.dragging?path.dragging[1]:start_y;
+						x1 = path.dragging?path.dragging[0]:start_x;
+						y1 = path.dragging?path.dragging[1]:start_y;
 					} else {
-						var x1 = start_x;
-						var y1 = start_y;
+						x1 = start_x;
+						y1 = start_y;
 					}
-					var xya = svgedit.math.snapToAngle(x1, y1, x, y);
+					xya = svgedit.math.snapToAngle(x1, y1, x, y);
 					x = xya.x;
 					y = xya.y;
 				}
@@ -2062,10 +2064,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				
 				break;
 			case "rotate":
-				var box = svgedit.utilities.getBBox(selected),
-					cx = box.x + box.width/2, 
-					cy = box.y + box.height/2,
-					m = svgedit.math.getMatrix(selected),
+				var box = svgedit.utilities.getBBox(selected);
+				cx = box.x + box.width/2;
+				cy = box.y + box.height/2;
+				var m = svgedit.math.getMatrix(selected),
 					center = svgedit.math.transformPoint(cx, cy, m);
 				cx = center.x;
 				cy = center.y;
@@ -2100,10 +2102,10 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	// identified, a ChangeElementCommand is created and stored on the stack for those attrs
 	// this is done in when we recalculate the selected dimensions()
 	var mouseUp = function(evt) {
-		if (evt.button === 2) return;
+		if (evt.button === 2) {return;}
 		var tempJustSelected = justSelected;
 		justSelected = null;
-		if (!started) return;
+		if (!started) {return;}
 		var pt = svgedit.math.transformPoint( evt.pageX, evt.pageY, root_sctm ),
 			mouse_x = pt.x * current_zoom,
 			mouse_y = pt.y * current_zoom,
@@ -2118,8 +2120,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		// TODO: Make true when in multi-unit mode
 		var useUnit = false; // (curConfig.baseUnit !== 'px');
 		started = false;
-		switch (current_mode)
-		{
+		var attrs;
+		switch (current_mode) {
 			// intentionally fall-through to select here
 			case "resize":
 			case "multiselect":
@@ -2164,9 +2166,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					recalculateAllSelectedDimensions();
 					// if it was being dragged/resized
 					if (real_x != r_start_x || real_y != r_start_y) {
-						var len = selectedElements.length;
-						for	(var i = 0; i < len; ++i) {
-							if (selectedElements[i] == null) break;
+						var i, len = selectedElements.length;
+						for (i = 0; i < len; ++i) {
+							if (selectedElements[i] == null) {break;}
 							if (!selectedElements[i].firstChild) {
 								// Not needed for groups (incorrectly resizes elems), possibly not needed at all?
 								selectorManager.requestSelector(selectedElements[i]).resize();
@@ -2205,7 +2207,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				if (rubberBox != null) {
 					rubberBox.setAttribute("display", "none");
 				}
-				var factor = evt.shiftKey?.5:2;
+				var factor = evt.shiftKey ? 0.5 : 2;
 				call("zoomed", {
 					'x': Math.min(r_start_x, real_x),
 					'y': Math.min(r_start_y, real_y),
@@ -2236,14 +2238,14 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				}
 				break;
 			case "line":
-				var attrs = $(element).attr(["x1", "x2", "y1", "y2"]);
+				attrs = $(element).attr(["x1", "x2", "y1", "y2"]);
 				keep = (attrs.x1 != attrs.x2 || attrs.y1 != attrs.y2);
 				break;
 			case "foreignObject":
 			case "square":
 			case "rect":
 			case "image":
-				var attrs = $(element).attr(["width", "height"]);
+				attrs = $(element).attr(["width", "height"]);
 				// Image should be kept regardless of size (use inherit dimensions later)
 				keep = (attrs.width != 0 || attrs.height != 0) || current_mode === "image";
 				break;
@@ -2251,7 +2253,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				keep = (element.getAttribute('r') != 0);
 				break;
 			case "ellipse":
-				var attrs = $(element).attr(["rx", "ry"]);
+				attrs = $(element).attr(["rx", "ry"]);
 				keep = (attrs.rx != null || attrs.ry != null);
 				break;
 			case "fhellipse":
