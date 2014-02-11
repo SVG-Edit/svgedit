@@ -1368,7 +1368,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		}
 		
 		startTransform = mouse_target.getAttribute("transform");
-		var i,
+		var i, stroke_w,
 			tlist = svgedit.transformlist.getTransformList(mouse_target);
 		switch (current_mode) {
 			case "select":
@@ -1500,7 +1500,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				start.y = real_y;
 				started = true;
 				d_attr = real_x + "," + real_y + " ";
-				var stroke_w = cur_shape.stroke_width == 0 ? 1 : cur_shape.stroke_width;
+				stroke_w = cur_shape.stroke_width == 0 ? 1 : cur_shape.stroke_width;
 				addSvgElementFromJson({
 					"element": "polyline",
 					"curStyles": true,
@@ -1557,7 +1557,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				break;
 			case "line":
 				started = true;
-				var stroke_w = cur_shape.stroke_width == 0 ? 1 : cur_shape.stroke_width;
+				stroke_w = cur_shape.stroke_width == 0 ? 1 : cur_shape.stroke_width;
 				addSvgElementFromJson({
 					"element": "line",
 					"curStyles": true,
@@ -1672,7 +1672,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		if (!started) {return;}
 		if (evt.button === 1 || canvas.spaceKey) {return;}
 
-		var i, xya, c, cx, cy, dx, dy, len, angle,
+		var i, xya, c, cx, cy, dx, dy, len, angle, box,
 			selected = selectedElements[0],
 			pt = svgedit.math.transformPoint( evt.pageX, evt.pageY, root_sctm ),
 			mouse_x = pt.x * current_zoom,
@@ -1791,9 +1791,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				// while the mouse is down, when mouse goes up, we use this to recalculate
 				// the shape's coordinates
 				var tlist = svgedit.transformlist.getTransformList(selected),
-					hasMatrix = svgedit.math.hasMatrixTransform(tlist),
-					box = hasMatrix ? init_bbox : svgedit.utilities.getBBox(selected), 
-					left = box.x, top = box.y, width = box.width,
+					hasMatrix = svgedit.math.hasMatrixTransform(tlist);
+				box = hasMatrix ? init_bbox : svgedit.utilities.getBBox(selected);
+				var left = box.x, top = box.y, width = box.width,
 					height = box.height;
 					dx = (x-start_x);
 					dy = (y-start_y);
@@ -2065,7 +2065,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				
 				break;
 			case "rotate":
-				var box = svgedit.utilities.getBBox(selected);
+				box = svgedit.utilities.getBBox(selected);
 				cx = box.x + box.width/2;
 				cy = box.y + box.height/2;
 				var m = svgedit.math.getMatrix(selected),
@@ -2203,7 +2203,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 
 				}
 				return;
-				break;
 			case "zoom":
 				if (rubberBox != null) {
 					rubberBox.setAttribute("display", "none");
@@ -2853,7 +2852,7 @@ textActions = canvas.textActions = (function() {
 			
 			matrix = xform ? svgedit.math.getMatrix(curtext) : null;
 
-			chardata = Array(len);
+			chardata = new Array(len);
 			textinput.focus();
 			
 			$(curtext).unbind('dblclick', selectWord).dblclick(selectWord);
@@ -3024,6 +3023,7 @@ pathActions = canvas.pathActions = function() {
 
 	return {
 		mouseDown: function(evt, mouse_target, start_x, start_y) {
+			var id;
 			if (current_mode === "path") {
 				mouse_x = start_x;
 				mouse_y = start_y;
@@ -3053,7 +3053,7 @@ pathActions = canvas.pathActions = function() {
 				stretchy.setAttribute("display", "inline");
 				
 				var keep = null;
-				
+				var index;
 				// if pts array is empty, create path element with M at current point
 				if (!drawn_path) {
 					d_attr = "M" + x + "," + y + " ";
@@ -3068,7 +3068,7 @@ pathActions = canvas.pathActions = function() {
 					});
 					// set stretchy line to first point
 					stretchy.setAttribute('d', ['M', mouse_x, mouse_y, mouse_x, mouse_y].join(' '));
-					var index = subpath ? svgedit.path.path.segs.length : 0;
+					index = subpath ? svgedit.path.path.segs.length : 0;
 					svgedit.path.addPointGrip(index, mouse_x, mouse_y);
 				} else {
 					// determine if we clicked on an existing point
@@ -3088,13 +3088,14 @@ pathActions = canvas.pathActions = function() {
 					}
 					
 					// get path element that we are in the process of creating
-					var id = getId();
+					id = getId();
 				
 					// Remove previous path object if previously created
 					svgedit.path.removePath_(id);
 					
 					var newpath = svgedit.utilities.getElem(id);
-					
+					var newseg;
+					var s_seg;
 					var len = seglist.numberOfItems;
 					// if we clicked on an existing point, then we are done this path, commit it
 					// (i, i+1) are the x,y that were clicked on
@@ -3109,11 +3110,11 @@ pathActions = canvas.pathActions = function() {
 							var abs_y = seglist.getItem(0).y;
 							
 
-							var s_seg = stretchy.pathSegList.getItem(1);
+							s_seg = stretchy.pathSegList.getItem(1);
 							if (s_seg.pathSegType === 4) {
-								var newseg = drawn_path.createSVGPathSegLinetoAbs(abs_x, abs_y);
+								newseg = drawn_path.createSVGPathSegLinetoAbs(abs_x, abs_y);
 							} else {
-								var newseg = drawn_path.createSVGPathSegCurvetoCubicAbs(
+								newseg = drawn_path.createSVGPathSegCurvetoCubicAbs(
 									abs_x,
 									abs_y,
 									s_seg.x1 / current_zoom,
@@ -3132,7 +3133,7 @@ pathActions = canvas.pathActions = function() {
 						}
 						$(stretchy).remove();
 						
-						// this will signal to commit the path
+						// This will signal to commit the path
 						element = newpath;
 						drawn_path = null;
 						started = false;
@@ -3175,11 +3176,11 @@ pathActions = canvas.pathActions = function() {
 						}
 						
 						// Use the segment defined by stretchy
-						var s_seg = stretchy.pathSegList.getItem(1);
+						s_seg = stretchy.pathSegList.getItem(1);
 						if (s_seg.pathSegType === 4) {
-							var newseg = drawn_path.createSVGPathSegLinetoAbs(round(x), round(y));
+							newseg = drawn_path.createSVGPathSegLinetoAbs(round(x), round(y));
 						} else {
-							var newseg = drawn_path.createSVGPathSegCurvetoCubicAbs(
+							newseg = drawn_path.createSVGPathSegCurvetoCubicAbs(
 								round(x),
 								round(y),
 								s_seg.x1 / current_zoom,
@@ -3196,8 +3197,8 @@ pathActions = canvas.pathActions = function() {
 						
 						// set stretchy line to latest point
 						stretchy.setAttribute('d', ['M', x, y, x, y].join(' '));
-						var index = num;
-						if (subpath) index += svgedit.path.path.segs.length;
+						index = num;
+						if (subpath) {index += svgedit.path.path.segs.length;}
 						svgedit.path.addPointGrip(index, x, y);
 					}
 //					keep = true;
@@ -3207,14 +3208,15 @@ pathActions = canvas.pathActions = function() {
 			}
 			
 			// TODO: Make sure current_path isn't null at this point
-			if (!svgedit.path.path) return;
+			if (!svgedit.path.path) {return;}
 			
 			svgedit.path.path.storeD();
 			
-			var id = evt.target.id;
+			id = evt.target.id;
+			var cur_pt;
 			if (id.substr(0,14) == "pathpointgrip_") {
 				// Select this point
-				var cur_pt = svgedit.path.path.cur_pt = parseInt(id.substr(14));
+				cur_pt = svgedit.path.path.cur_pt = parseInt(id.substr(14));
 				svgedit.path.path.dragging = [start_x, start_y];
 				var seg = svgedit.path.path.segs[cur_pt];
 				
@@ -3234,8 +3236,8 @@ pathActions = canvas.pathActions = function() {
 				svgedit.path.path.dragging = [start_x, start_y];
 				
 				var parts = id.split('_')[1].split('c');
-				var cur_pt = parts[0]-0;
-				var ctrl_num = parts[1]-0;
+				cur_pt = Number(parts[0]);
+				var ctrl_num = Number(parts[1]);
 				svgedit.path.path.selectPt(cur_pt, ctrl_num);
 			}
 
@@ -3256,7 +3258,7 @@ pathActions = canvas.pathActions = function() {
 		mouseMove: function(mouse_x, mouse_y) {
 			hasMoved = true;
 			if (current_mode === "path") {
-				if (!drawn_path) return;
+				if (!drawn_path) {return;}
 				var seglist = drawn_path.pathSegList;
 				var index = seglist.numberOfItems - 1;
 
@@ -3299,8 +3301,6 @@ pathActions = canvas.pathActions = function() {
 					if (index === 0) {
 						firstCtrl = [mouse_x, mouse_y];
 					} else {
-						var last_x, last_y;
-						
 						var last = seglist.getItem(index - 1);
 						var last_x = last.x;
 						var last_y = last.y;
@@ -3354,7 +3354,7 @@ pathActions = canvas.pathActions = function() {
 				svgedit.path.path.selected_pts = [];
 				svgedit.path.path.eachSeg(function(i) {
 					var seg = this;
-					if (!seg.next && !seg.prev) return;
+					if (!seg.next && !seg.prev) {return;}
 						
 					var item = seg.item;
 					var rbb = rubberBox.getBBox();
@@ -3371,7 +3371,7 @@ pathActions = canvas.pathActions = function() {
 
 					this.select(sel);
 					//Note that addPtsToSelection is not being run
-					if (sel) svgedit.path.path.selected_pts.push(seg.index);
+					if (sel) {svgedit.path.path.selected_pts.push(seg.index);}
 				});
 
 			}
@@ -3470,9 +3470,9 @@ pathActions = canvas.pathActions = function() {
 		},
 		reorient: function() {
 			var elem = selectedElements[0];
-			if (!elem) return;
+			if (!elem) {return;}
 			var angle = svgedit.utilities.getRotationAngle(elem);
-			if (angle == 0) return;
+			if (angle == 0) {return;}
 			
 			var batchCmd = new svgedit.history.BatchCommand("Reorient path");
 			var changes = {
@@ -3506,10 +3506,10 @@ pathActions = canvas.pathActions = function() {
 			} else if (current_mode == "pathedit") {
 				this.toSelectMode();
 			}
-			if (svgedit.path.path) svgedit.path.path.init().show(false);
+			if (svgedit.path.path) {svgedit.path.path.init().show(false);}
 		},
 		resetOrientation: function(path) {
-			if (path == null || path.nodeName != 'path') return false;
+			if (path == null || path.nodeName != 'path') {return false;}
 			var tlist = svgedit.transformlist.getTransformList(path);
 			var m = svgedit.math.transformListToTransform(tlist).matrix;
 			tlist.clear();
@@ -3528,12 +3528,12 @@ pathActions = canvas.pathActions = function() {
 //				segList = path.pathSegList;
 //				var len = segList.numberOfItems;
 //			}
-			var last_x, last_y;
+			var i, last_x, last_y;
 
-			for (var i = 0; i < len; ++i) {
+			for (i = 0; i < len; ++i) {
 				var seg = segList.getItem(i);
 				var type = seg.pathSegType;
-				if (type == 1) continue;
+				if (type == 1) {continue;}
 				var pts = [];
 				$.each(['',1,2], function(j, n) {
 					var x = seg['x'+n], y = seg['y'+n];
