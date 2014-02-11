@@ -148,7 +148,7 @@ script src="locale/locale.min.js"></script-->
 		<div class="push_button" id="tool_clone_multi" title="Clone Elements [C]"></div>
 		<div class="push_button" id="tool_delete_multi" title="Delete Selected Elements [Delete/Backspace]"></div>
 		<div class="tool_sep"></div>
-		<div class="push_button" id="tool_group" title="Group Elements [G]"></div>
+		<div class="push_button" id="tool_group_elements" title="Group Elements [G]"></div>
 		<div class="push_button" id="tool_alignleft" title="Align Left"></div>
 		<div class="push_button" id="tool_aligncenter" title="Align Center"></div>
 		<div class="push_button" id="tool_alignright" title="Align Right"></div>

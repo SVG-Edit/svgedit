@@ -1,3 +1,4 @@
+/*globals svgEditor */
 svgEditor.readLang({
 	lang: "sk",
 	dir : "ltr",
@@ -118,7 +119,7 @@ svgEditor.readLang({
 		"toggle_grid": "Zobraz/Skry mriežku",
 		"clone": "Klonuj element(y)",
 		"del": "Zmaž element(y)",
-		"group": "Zoskupiť elementy",
+		"group_elements": "Zoskupiť elementy",
 		"make_link": "Naviaž odkaz (hyper)link",
 		"set_link_url": "Nastav odkaz URL (ak prázdny, odstráni sa)",
 		"to_path": "Previesť na krivku",
@@ -139,6 +140,7 @@ svgEditor.readLang({
 		"paste": "Vloženie",
 		"paste_in_place": "Vloženie na pôvodnom mieste",
 		"delete": "Zmazanie",
+		"group": "Group",
 		"move_front": "Vysuň navrch",
 		"move_up": "Vysuň vpred",
 		"move_down": "Zasuň na spodok",

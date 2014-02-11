@@ -1,3 +1,4 @@
+/*globals svgEditor */
 svgEditor.readLang({
 	lang: "ja",
 	dir : "ltr",
@@ -118,7 +119,7 @@ svgEditor.readLang({
 		"toggle_grid": "Show/Hide Grid",
 		"clone": "Clone Element(s)",
 		"del": "Delete Element(s)",
-		"group": "グループ化",
+		"group_elements": "グループ化",
 		"make_link": "Make (hyper)link",
 		"set_link_url": "Set link URL (leave empty to remove)",
 		"to_path": "パスに変換",
@@ -139,6 +140,7 @@ svgEditor.readLang({
 		"paste": "Paste",
 		"paste_in_place": "Paste in Place",
 		"delete": "Delete",
+		"group": "Group",
 		"move_front": "Bring to Front",
 		"move_up": "Bring Forward",
 		"move_down": "Send Backward",

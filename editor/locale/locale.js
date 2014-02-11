@@ -240,7 +240,7 @@ var svgEditor = (function($, Editor) {'use strict';
 			tool_fhpath: tools.mode_fhpath,
 			tool_fhrect: tools.mode_fhrect,
 			tool_font_size: properties.font_size,
-			tool_group: tools.group,
+			tool_group_elements: tools.group_elements,
 			tool_make_link: tools.make_link,
 			tool_link_url: tools.set_link_url,
 			tool_image: tools.mode_image,

@@ -1,3 +1,4 @@
+/*globals svgEditor */
 svgEditor.readLang({
 	lang: "ro",
 	dir : "ltr",
@@ -118,7 +119,7 @@ svgEditor.readLang({
 		"toggle_grid": "Arată/ascunde Caroiaj",
 		"clone": "Clonează Elementul/ele",
 		"del": "Şterge Elementul/ele",
-		"group": "Grupare Elemente",
+		"group_elements": "Grupare Elemente",
 		"make_link": "Crează (hyper)link",
 		"set_link_url": "Setează link URL (lăsaţi liber pentru eliminare)",
 		"to_path": "Converteşte in Traiectorie",
@@ -139,6 +140,7 @@ svgEditor.readLang({
 		"paste": "Reproducere",
 		"paste_in_place": "Reproducere pe loc",
 		"delete": "Ştergere",
+		"group": "Group",
 		"move_front": "Pune in faţa",
 		"move_up": "Pune in spate",
 		"move_down": "Trimite in faţa",
