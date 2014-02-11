@@ -29,7 +29,6 @@
   <path d="m181.32031,242.54688c0.5,20.5 26.75,45 46.75,48.5l-66.25,20l19.5,-68.5z" id="svg_3" fill="#27382f" stroke="none"/>
  </g>
  <g>
-  <title>Layer 2</title>
   <path d="m152.82031,317.04688l51,-152l157,-153c40,-12.00001 118,48 105,105l-157,152.99999l-156,47z" id="svg_1" fill="none" stroke="#800000" stroke-width="17"/>
  </g>
 </svg>
@@ -1012,7 +1011,6 @@
   </linearGradient>
  </defs>
  <g>
-  <title>Layer 1</title>
   <g opacity="0.8" id="svg_5">
    <circle id="svg_1" r="27.90625" cy="33" cx="33" stroke-width="0" stroke="#AAAAAA" fill="url(#svg_8)"/>
    <g id="svg_7">
