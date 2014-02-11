@@ -130,7 +130,12 @@
 		Editor.curConfig = curConfig;
 		Editor.tool_scale = 1;
 
-		// Store and retrieve preferences
+		/**
+		* Store and retrieve preferences
+		* @param {string} key
+		* @param {string} [val] The value. If the value supplied is null or undefined, no change to the preference will be made.
+		* @returns {string} If val is not present (or is null or undefined), the value of the previously stored preference will be returned.
+		*/
 		$.pref = function(key, val) {
 			if (val) {
 				curPrefs[key] = val;
