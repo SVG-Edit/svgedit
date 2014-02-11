@@ -383,7 +383,7 @@
 					'node_clone': 'node_clone.png',
 					'delete': 'delete.png',
 					'node_delete': 'node_delete.png',
-					'group': 'shape_group.png',
+					'group': 'shape_group_elements.png',
 					'ungroup': 'shape_ungroup.png',
 					'move_top': 'move_top.png',
 					'move_bottom': 'move_bottom.png',
@@ -4498,7 +4498,7 @@
 						case 'paste_in_place':
 							svgCanvas.pasteElements('in_place');
 							break;
-						case 'group':
+						case 'group_elements':
 							svgCanvas.groupSelectedElements();
 							break;
 						case 'ungroup':

@@ -49,7 +49,7 @@ rotate.png
 save.png
 select.png
 sep.png
-shape_group.png
+shape_group_elements.png
 shape_ungroup.png
 source.png
 square.png
