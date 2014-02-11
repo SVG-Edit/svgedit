@@ -558,9 +558,9 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 
 	if (resultList == null || typeof(resultList.item) != "function") {
 		resultList = [];
-		
+		var rubberBBox;
 		if (!rect) {
-			var rubberBBox = rubberBox.getBBox();
+			rubberBBox = rubberBox.getBBox();
 			var o,
 				bb = {};
 			
@@ -570,7 +570,7 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 			rubberBBox = bb;
 			
 		} else {
-			var rubberBBox = rect;
+			rubberBBox = rect;
 		}
 		var i = curBBoxes.length;
 		while (i--) {
@@ -1690,7 +1690,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		}
 
 		evt.preventDefault();
-		
+		var tlist;
 		switch (current_mode) {
 			case "select":
 				// we temporarily use a translate on the element(s) being dragged
@@ -1714,7 +1714,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					if (dx != 0 || dy != 0) {
 						len = selectedElements.length;
 						for (i = 0; i < len; ++i) {
-							var selected = selectedElements[i];
+							selected = selectedElements[i];
 							if (selected == null) {break;}
 //							if (i==0) {
 //								var box = svgedit.utilities.getBBox(selected);
@@ -1725,7 +1725,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 							// update the dummy transform in our transform list
 							// to be a translate
 							var xform = svgroot.createSVGTransform();
-							var tlist = svgedit.transformlist.getTransformList(selected);
+							tlist = svgedit.transformlist.getTransformList(selected);
 							// Note that if Webkit and there's no ID for this
 							// element, the dummy transform may have gotten lost.
 							// This results in unexpected behaviour
@@ -1790,8 +1790,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				// we track the resize bounding box and translate/scale the selected element
 				// while the mouse is down, when mouse goes up, we use this to recalculate
 				// the shape's coordinates
-				var tlist = svgedit.transformlist.getTransformList(selected),
-					hasMatrix = svgedit.math.hasMatrixTransform(tlist);
+				tlist = svgedit.transformlist.getTransformList(selected);
+				var hasMatrix = svgedit.math.hasMatrixTransform(tlist);
 				box = hasMatrix ? init_bbox : svgedit.utilities.getBBox(selected);
 				var left = box.x, top = box.y, width = box.width,
 					height = box.height;
@@ -3588,7 +3588,7 @@ pathActions = canvas.pathActions = function() {
 		opencloseSubPath: function() {
 			var sel_pts = svgedit.path.path.selected_pts;
 			// Only allow one selected node for now
-			if (sel_pts.length !== 1) return;
+			if (sel_pts.length !== 1) {return;}
 			
 			var elem = svgedit.path.path.elem;
 			var list = elem.pathSegList;
@@ -3605,12 +3605,13 @@ pathActions = canvas.pathActions = function() {
 				if (this.type === 2 && i <= index) {
 					start_item = this.item;
 				}
-				if (i <= index) return true;
+				if (i <= index) {return true;}
 				if (this.type === 2) {
 					// Found M first, so open
 					open_pt = i;
 					return false;
-				} else if (this.type === 1) {
+				}
+				if (this.type === 1) {
 					// Found Z first, so closed
 					open_pt = false;
 					return false;
@@ -3656,10 +3657,10 @@ pathActions = canvas.pathActions = function() {
 				return;
 			}
 			
-			var last_m, z_seg;
+			var i, last_m, z_seg;
 			
 			// Find this sub-path's closing point and remove
-			for (var i=0; i<list.numberOfItems; i++) {
+			for (i = 0; i<list.numberOfItems; i++) {
 				var item = list.getItem(i);
 
 				if (item.pathSegType === 2) {
@@ -3688,12 +3689,12 @@ pathActions = canvas.pathActions = function() {
 			// Make this point the new "M"
 			svgedit.path.replacePathSeg(2, last_m, [pt.x, pt.y]);
 			
-			var i = index;
+			i = index; // i is local here, so has no effect; what is the reason for this?
 			
 			svgedit.path.path.init().selectPt(0);
 		},
 		deletePathNode: function() {
-			if (!pathActions.canDeleteNodes) return;
+			if (!pathActions.canDeleteNodes) {return;}
 			svgedit.path.path.storeD();
 			
 			var sel_pts = svgedit.path.path.selected_pts;
@@ -3715,7 +3716,7 @@ pathActions = canvas.pathActions = function() {
 					}
 				};
 
-				if (len <= 1) return true;
+				if (len <= 1) {return true;}
 				
 				while (len--) {
 					var item = segList.getItem(len);
@@ -3778,7 +3779,7 @@ pathActions = canvas.pathActions = function() {
 		},
 		moveNode: function(attr, newValue) {
 			var sel_pts = svgedit.path.path.selected_pts;
-			if (!sel_pts.length) return;
+			if (!sel_pts.length) {return;}
 			
 			svgedit.path.path.storeD();
 			
@@ -3796,8 +3797,8 @@ pathActions = canvas.pathActions = function() {
 			// M0,0 L0,100 L100,100 z
 			var segList = elem.pathSegList;
 			var len = segList.numberOfItems;
-			var last_m;
-			for (var i = 0; i < len; ++i) {
+			var i, last_m;
+			for (i = 0; i < len; ++i) {
 				var item = segList.getItem(i);
 				if (item.pathSegType === 2) {
 					last_m = item;
@@ -3816,17 +3817,18 @@ pathActions = canvas.pathActions = function() {
 					
 				}
 			}
-			if (svgedit.browser.isWebkit()) resetD(elem);
+			if (svgedit.browser.isWebkit()) {resetD(elem);}
 		},
 		// Convert a path to one with only absolute or relative values
 		convertPath: function(path, toRel) {
+			var i;
 			var segList = path.pathSegList;
 			var len = segList.numberOfItems;
 			var curx = 0, cury = 0;
 			var d = "";
 			var last_m = null;
 			
-			for (var i = 0; i < len; ++i) {
+			for (i = 0; i < len; ++i) {
 				var seg = segList.getItem(i);
 				// if these properties are not in the segment, set them to zero
 				var x = seg.x || 0,
@@ -3841,8 +3843,8 @@ pathActions = canvas.pathActions = function() {
 				
 				var addToD = function(pnts, more, last) {
 					var str = '';
-					var more = more?' '+more.join(' '):'';
-					var last = last?' '+svgedit.units.shortFloat(last):'';
+					more = more ? ' ' + more.join(' ') : '';
+					last = last ? ' ' + svgedit.units.shortFloat(last) : '';
 					$.each(pnts, function(i, pnt) {
 						pnts[i] = svgedit.units.shortFloat(pnt);
 					});
