@@ -851,6 +851,7 @@ var copyElem = function(el) {
 
 // Set scope for these functions
 var getId, getNextId, call;
+var textActions, pathActions;
 
 (function(c) {
 
@@ -898,7 +899,7 @@ this.prepareSvg = function(newDoc) {
 	this.sanitizeSvg(newDoc.documentElement);
 
 	// convert paths into absolute commands
-	var i, path,
+	var i, path, len,
 		paths = newDoc.getElementsByTagNameNS(NS.SVG, "path");
 	for (i = 0, len = paths.length; i < len; ++i) {
 		path = paths[i];
@@ -1671,7 +1672,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		if (!started) {return;}
 		if (evt.button === 1 || canvas.spaceKey) {return;}
 
-		var i, xya, c, cx, cy, dx, dy, len,
+		var i, xya, c, cx, cy, dx, dy, len, angle,
 			selected = selectedElements[0],
 			pt = svgedit.math.transformPoint( evt.pageX, evt.pageY, root_sctm ),
 			mouse_x = pt.x * current_zoom,
@@ -1805,7 +1806,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				}
 
 				// if rotated, adjust the dx,dy values
-				var angle = svgedit.utilities.getRotationAngle(selected);
+				angle = svgedit.utilities.getRotationAngle(selected);
 				if (angle) {
 					var r = Math.sqrt( dx*dx + dy*dy ),
 						theta = Math.atan2(dy, dx) - angle * Math.PI / 180.0;
@@ -1859,7 +1860,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				
 				translateBack.setTranslate(left+tx, top+ty);
 				if (hasMatrix) {
-					var diff = angle?1:0;
+					var diff = angle ? 1 : 0;
 					tlist.replaceItem(translateOrigin, 2+diff);
 					tlist.replaceItem(scale, 1+diff);
 					tlist.replaceItem(translateBack, Number(diff));
@@ -2071,7 +2072,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					center = svgedit.math.transformPoint(cx, cy, m);
 				cx = center.x;
 				cy = center.y;
-				var angle = ((Math.atan2(cy-y, cx-x) * (180/Math.PI))-90) % 360;
+				angle = ((Math.atan2(cy-y, cx-x) * (180/Math.PI))-90) % 360;
 				if (curConfig.gridSnapping){
 					angle = svgedit.utilities.snapToGrid(angle);
 				}
@@ -2106,7 +2107,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		var tempJustSelected = justSelected;
 		justSelected = null;
 		if (!started) {return;}
-		var pt = svgedit.math.transformPoint( evt.pageX, evt.pageY, root_sctm ),
+		var pt = svgedit.math.transformPoint(evt.pageX, evt.pageY, root_sctm),
 			mouse_x = pt.x * current_zoom,
 			mouse_y = pt.y * current_zoom,
 			x = mouse_x / current_zoom,
@@ -2120,7 +2121,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		// TODO: Make true when in multi-unit mode
 		var useUnit = false; // (curConfig.baseUnit !== 'px');
 		started = false;
-		var attrs;
+		var attrs, t;
 		switch (current_mode) {
 			// intentionally fall-through to select here
 			case "resize":
@@ -2177,7 +2178,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					}
 					// no change in position/size, so maybe we should move to pathedit
 					else {
-						var t = evt.target;
+						t = evt.target;
 						if (selectedElements[0].nodeName === "path" && selectedElements[1] == null) {
 							pathActions.select(selectedElements[0]);
 						} // if it was a path
@@ -2353,7 +2354,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			element.parentNode.removeChild(element);
 			element = null;
 			
-			var t = evt.target;
+			t = evt.target;
 			
 			// if this element is in a group, go up until we reach the top-level group 
 			// just below the layer groups
@@ -2376,9 +2377,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		} else if (element != null) {
 			canvas.addedNew = true;
 			
-			if (useUnit) svgedit.units.convertAttrs(element);
+			if (useUnit) {svgedit.units.convertAttrs(element);}
 			
-			var ani_dur = .2, c_ani;
+			var ani_dur = 0.2, c_ani;
 			if (opac_ani.beginElement && element.getAttribute('opacity') != cur_shape.opacity) {
 				c_ani = $(opac_ani).clone().attr({
 					to: cur_shape.opacity,
@@ -2395,7 +2396,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			// Ideally this would be done on the endEvent of the animation,
 			// but that doesn't seem to be supported in Webkit
 			setTimeout(function() {
-				if (c_ani) c_ani.remove();
+				if (c_ani) {c_ani.remove();}
 				element.setAttribute("opacity", cur_shape.opacity);
 				element.setAttribute("style", "pointer-events:inherit");
 				cleanupElement(element);
@@ -2420,7 +2421,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		var parent = evt_target.parentNode;
 		
 		// Do nothing if already in current group
-		if (parent === current_group) return;
+		if (parent === current_group) {return;}
 		
 		var mouse_target = getMouseTarget(evt);
 		var tagName = mouse_target.tagName;
@@ -2482,7 +2483,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		};
 
 		var delta = (evt.wheelDelta) ? evt.wheelDelta : (evt.detail) ? -evt.detail : 0;
-		if (!delta) return;
+		if (!delta) {return;}
 
 		bbox.factor = Math.max(3/4, Math.min(4/3, (delta)));
 	
@@ -2502,7 +2503,7 @@ var preventClickDefault = function(img) {
 
 // Group: Text edit functions
 // Functions relating to editing text elements
-var textActions = canvas.textActions = function() {
+textActions = canvas.textActions = (function() {
 	var curtext;
 	var textinput;
 	var cursor;
@@ -2522,7 +2523,7 @@ var textActions = canvas.textActions = function() {
 			if (empty) {
 				index = 0;
 			} else {
-				if (textinput.selectionEnd !== textinput.selectionStart) return;
+				if (textinput.selectionEnd !== textinput.selectionStart) {return;}
 				index = textinput.selectionEnd;
 			}
 		}
@@ -2562,7 +2563,7 @@ var textActions = canvas.textActions = function() {
 			display: 'inline'
 		});
 		
-		if (selblock) selblock.setAttribute('d', '');
+		if (selblock) {selblock.setAttribute('d', '');}
 	}
 	
 	function setSelection(start, end, skipInput) {
@@ -2616,7 +2617,7 @@ var textActions = canvas.textActions = function() {
 		pt.y = mouse_y;
 
 		// No content, so return 0
-		if (chardata.length == 1) return 0;
+		if (chardata.length == 1) {return 0;}
 		// Determine if cursor should be on left or right of character
 		var charpos = curtext.getCharNumAtPosition(pt);
 		if (charpos < 0) {
@@ -2697,7 +2698,7 @@ var textActions = canvas.textActions = function() {
 	}
 
 	function selectWord(evt) {
-		if (!allow_dbl || !curtext) return;
+		if (!allow_dbl || !curtext) {return;}
 	
 		var ept = svgedit.math.transformPoint( evt.pageX, evt.pageY, root_sctm ),
 			mouse_x = ept.x * current_zoom,
@@ -2796,8 +2797,8 @@ var textActions = canvas.textActions = function() {
 			current_mode = "select";
 			clearInterval(blinker);
 			blinker = null;
-			if (selblock) $(selblock).attr('display', 'none');
-			if (cursor) $(cursor).attr('visibility', 'hidden');
+			if (selblock) {$(selblock).attr('display', 'none');}
+			if (cursor) {$(cursor).attr('visibility', 'hidden');}
 			$(curtext).css('cursor', 'move');
 			
 			if (selectElem) {
@@ -2830,8 +2831,8 @@ var textActions = canvas.textActions = function() {
 			}
 		},
 		init: function(inputElem) {
-			if (!curtext) return;
-
+			if (!curtext) {return;}
+			var i, end;
 //				if (svgedit.browser.supportsEditableText()) {
 //					curtext.select();
 //					return;
@@ -2858,12 +2859,12 @@ var textActions = canvas.textActions = function() {
 			$(curtext).unbind('dblclick', selectWord).dblclick(selectWord);
 			
 			if (!len) {
-				var end = {x: textbb.x + (textbb.width/2), width: 0};
+				end = {x: textbb.x + (textbb.width/2), width: 0};
 			}
 			
-			for (var i=0; i<len; i++) {
+			for (i=0; i<len; i++) {
 				var start = curtext.getStartPositionOfChar(i);
-				var end = curtext.getEndPositionOfChar(i);
+				end = curtext.getEndPositionOfChar(i);
 				
 				if (!svgedit.browser.supportsGoodTextCharPos()) {
 					var offset = canvas.contentW * current_zoom;
@@ -2894,12 +2895,12 @@ var textActions = canvas.textActions = function() {
 			setSelection(textinput.selectionStart, textinput.selectionEnd, true);
 		}
 	};
-}();
+}());
 
 // TODO: Migrate all of this code into path.js
 // Group: Path edit functions
 // Functions relating to editing path elements
-var pathActions = canvas.pathActions = function() {
+pathActions = canvas.pathActions = function() {
 	
 	var subpath = false;
 	var current_path;
@@ -2911,17 +2912,18 @@ var pathActions = canvas.pathActions = function() {
 
 	// TODO: Move into path.js
 	svgedit.path.Path.prototype.endChanges = function(text) {
-		if (svgedit.browser.isWebkit()) resetD(this.elem);
+		if (svgedit.browser.isWebkit()) {resetD(this.elem);}
 		var cmd = new svgedit.history.ChangeElementCommand(this.elem, {d: this.last_d}, text);
 		addCommandToHistory(cmd);
 		call("changed", [this.elem]);
 	};
 
 	svgedit.path.Path.prototype.addPtsToSelection = function(indexes) {
-		if (!$.isArray(indexes)) indexes = [indexes];
-		for (var i=0; i< indexes.length; i++) {
+		var i, seg;
+		if (!$.isArray(indexes)) {indexes = [indexes];}
+		for (i = 0; i< indexes.length; i++) {
 			var index = indexes[i];
-			var seg = this.segs[index];
+			seg = this.segs[index];
 			if (seg.ptgrip) {
 				if (this.selected_pts.indexOf(index) == -1 && index >= 0) {
 					this.selected_pts.push(index);
@@ -2929,12 +2931,12 @@ var pathActions = canvas.pathActions = function() {
 			}
 		}
 		this.selected_pts.sort();
-		var i = this.selected_pts.length,
-			grips = new Array(i);
+		i = this.selected_pts.length;
+		var grips = new Array(i);
 		// Loop through points to be selected and highlight each
 		while (i--) {
 			var pt = this.selected_pts[i];
-			var seg = this.segs[pt];
+			seg = this.segs[pt];
 			seg.select(true);
 			grips[i] = seg.ptgrip;
 		}
@@ -2946,15 +2948,15 @@ var pathActions = canvas.pathActions = function() {
 		call("selected", grips);
 	};
 
-	var current_path = null,
-		drawn_path = null,
+	current_path = null;
+	var drawn_path = null,
 		hasMoved = false;
 	
 	// This function converts a polyline (created by the fh_path tool) into
 	// a path element and coverts every three line segments into a single bezier
 	// curve in an attempt to smooth out the free-hand
 	var smoothPolylineIntoPath = function(element) {
-		var points = element.points;
+		var i, points = element.points;
 		var N = points.numberOfItems;
 		if (N >= 4) {
 			// loop through every 3 points and convert to a cubic bezier curve segment
@@ -2973,7 +2975,7 @@ var pathActions = canvas.pathActions = function() {
 			var curpos = points.getItem(0), prevCtlPt = null;
 			var d = [];
 			d.push(["M", curpos.x, ",", curpos.y, " C"].join(""));
-			for (var i = 1; i <= (N-4); i += 3) {
+			for (i = 1; i <= (N-4); i += 3) {
 				var ct1 = points.getItem(i);
 				var ct2 = points.getItem(i+1);
 				var end = points.getItem(i+2);
@@ -2998,9 +3000,10 @@ var pathActions = canvas.pathActions = function() {
 			}
 			// handle remaining line segments
 			d.push("L");
-			for (;i < N;++i) {
+			while (i < N) {
 				var pt = points.getItem(i);
 				d.push([pt.x, pt.y].join(","));
+				i++;
 			}
 			d = d.join(" ");
 
