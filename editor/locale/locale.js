@@ -1,3 +1,5 @@
+/*globals jQuery*/
+/*jslint vars: true, eqeq: true, forin: true*/
 /*
  * Localizing script for SVG-edit UI
  *
@@ -13,27 +15,27 @@
 // 2) svgcanvas.js
 // 3) svg-editor.js
 
-var svgEditor = (function($, Editor) {
+var svgEditor = (function($, Editor) {'use strict';
 
 	var lang_param;
 	
 	function setStrings(type, obj, ids) {
 		// Root element to look for element from
-		var parent = $('#svg_editor').parent();
-		for(var sel in obj) {
-			var val = obj[sel];
-			if(!val) console.log(sel);
+		var i, sel, val, $elem, elem, node, parent = $('#svg_editor').parent();
+		for (sel in obj) {
+			val = obj[sel];
+			if (!val) {console.log(sel);}
 			
-			if(ids) sel = '#' + sel;
-			var $elem = parent.find(sel);
-			if($elem.length) {
-				var elem = parent.find(sel)[0];
+			if (ids) {sel = '#' + sel;}
+			$elem = parent.find(sel);
+			if ($elem.length) {
+				elem = parent.find(sel)[0];
 				
 				switch ( type ) {
 					case 'content':
-						for(var i = 0; i < elem.childNodes.length; i++) {
-							var node = elem.childNodes[i];
-							if(node.nodeType === 3 && node.textContent.replace(/\s/g,'')) {
+						for (i = 0; i < elem.childNodes.length; i++) {
+							node = elem.childNodes[i];
+							if (node.nodeType === 3 && node.textContent.replace(/\s/g,'')) {
 								node.textContent = val;
 								break;
 							}
@@ -61,8 +63,8 @@ var svgEditor = (function($, Editor) {
 		});
 		
 		// Old locale file, do nothing for now.
-		if(!langData.tools) return;
-		
+		if (!langData.tools) {return;}
+
 		var tools = langData.tools,
 			misc = langData.misc,
 			properties = langData.properties,
@@ -142,8 +144,8 @@ var svgEditor = (function($, Editor) {
 		}, true);
 		
 		// Shape categories
-		var cats = {};
-		for (var o in langData.shape_cats) {
+		var o, cats = {};
+		for (o in langData.shape_cats) {
 			cats['#shape_cats [data-cat="' + o + '"]'] = langData.shape_cats[o];
 		}
 		
@@ -268,36 +270,39 @@ var svgEditor = (function($, Editor) {
 			tool_zoom: tools.mode_zoom,
 			url_notice: tools.no_embed
 
-			}
-		, true);
+		}, true);
 		
 		Editor.setLang(lang_param, langData);
-	}
+	};
 
-	Editor.putLocale = function(given_param, good_langs){
+	Editor.putLocale = function (given_param, good_langs) {
 	
-		if(given_param) {
+		if (given_param) {
 			lang_param = given_param;
-		} else {
+		}
+		else {
 			lang_param = $.pref('lang');
-			if(!lang_param) {
-				if (navigator.userLanguage) // Explorer
+			if (!lang_param) {
+				if (navigator.userLanguage) { // Explorer
 					lang_param = navigator.userLanguage;
-				else if (navigator.language) // FF, Opera, ...
+				}
+				else if (navigator.language) {// FF, Opera, ...
 					lang_param = navigator.language;
-				if (lang_param == "")
+				}
+				if (lang_param == '') {
 					return;
+				}
 			}
 			
 			console.log('Lang: ' + lang_param);
 			
 			// Set to English if language is not in list of good langs
-			if($.inArray(lang_param, good_langs) == -1 && lang_param !== 'test') {
+			if ($.inArray(lang_param, good_langs) === -1 && lang_param !== 'test') {
 				lang_param = "en";
 			}
 	
 			// don't bother on first run if language is English		
-			if(lang_param.indexOf("en") == 0) return;
+			if (lang_param.indexOf("en") === 0) {return;}
 
 		}
 		
@@ -307,7 +312,7 @@ var svgEditor = (function($, Editor) {
 		
 		$.getScript(url, function(d) {
 			// Fails locally in Chrome 5+
-			if(!d) {
+			if (!d) {
 				var s = document.createElement('script');
 				s.src = url;
 				document.querySelector('head').appendChild(s);
@@ -318,4 +323,3 @@ var svgEditor = (function($, Editor) {
 	
 	return Editor;
 }(jQuery, svgEditor));
-
