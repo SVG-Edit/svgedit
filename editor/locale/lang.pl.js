@@ -1,3 +1,4 @@
+/*globals svgEditor */
 svgEditor.readLang({
 	lang: "pl",
 	dir : "ltr",
@@ -119,7 +120,7 @@ svgEditor.readLang({
 		"toggle_grid": "Pokaż/ukryj siatkę",
 		"clone": "Klonuj element(y)",
 		"del": "Usuń warstwę",
-		"group": "Grupuj elementy",
+		"group_elements": "Grupuj elementy",
 		"make_link": "Utwórz łącze",
 		"set_link_url": "Ustal adres URL (pozostaw puste aby usunąć)",
 		"to_path": "Konwertuj do ścieżki",

@@ -1,3 +1,5 @@
+/*globals svgEditor */
+/*globals svgEditor */
 svgEditor.readLang({
 	lang: "lv",
 	dir : "ltr",
@@ -118,7 +120,7 @@ svgEditor.readLang({
 		"toggle_grid": "Show/Hide Grid",
 		"clone": "Clone Element(s)",
 		"del": "Delete Element(s)",
-		"group": "Grupa Elements",
+		"group_elements": "Grupa Elements",
 		"make_link": "Make (hyper)link",
 		"set_link_url": "Set link URL (leave empty to remove)",
 		"to_path": "Convert to Path",
@@ -216,9 +218,12 @@ svgEditor.readLang({
 		"enterNewLayerName":"Please enter the new layer name",
 		"layerHasThatName":"Layer already has that name",
 		"QmoveElemsToLayer":"Move selected elements to layer '%s'?",
-		"QwantToClear":"Do you want to clear the drawing?\nThis will also erase your undo history!",
-		"QwantToOpen":"Do you want to open a new file?\nThis will also erase your undo history!",
-		"QerrorsRevertToSource":"There were parsing errors in your SVG source.\nRevert back to original SVG source?",
+		"QwantToClear":"Do you want to clear the drawing?
+This will also erase your undo history!",
+		"QwantToOpen":"Do you want to open a new file?
+This will also erase your undo history!",
+		"QerrorsRevertToSource":"There were parsing errors in your SVG source.
+Revert back to original SVG source?",
 		"QignoreSourceChanges":"Ignore changes made to SVG source?",
 		"featNotSupported":"Feature not supported",
 		"enterNewImgURL":"Enter the new image URL",

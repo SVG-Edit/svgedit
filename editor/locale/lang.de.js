@@ -1,3 +1,4 @@
+/*globals svgEditor */
 svgEditor.readLang({
 	lang: "de",
 	dir : "ltr",
@@ -118,7 +119,7 @@ svgEditor.readLang({
 		"toggle_grid": "Zeige/Verstecke Gitternetz",
 		"clone": "Klone Element(e)",
 		"del": "Lösche Element(e)",
-		"group": "Gruppieren",
+		"group_elements": "Gruppieren Element(e)",
 		"make_link": "Make (hyper)link",
 		"set_link_url": "Set link URL (leave empty to remove)",
 		"to_path": "Gewähltes Objekt in einen Pfad konvertieren",
@@ -139,6 +140,7 @@ svgEditor.readLang({
 		"paste": "Einfügen",
 		"paste_in_place": "An Originalposition einfügen",
 		"Löschen": "Löschen",
+		"group": "Gruppieren",
 		"move_front": "Nach ganz oben anheben",
 		"move_up": "Anheben",
 		"move_down": "Absenken",

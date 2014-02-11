@@ -447,7 +447,7 @@
 					'#tool_topath': 'to_path',
 					'#tool_node_link': 'link_controls',
 					'#tool_reorient': 'reorient',
-					'#tool_group': 'group',
+					'#tool_group_elements': 'group_elements',
 					'#tool_ungroup': 'ungroup',
 					'#tool_unlink_use': 'unlink_use',
 
@@ -4227,7 +4227,7 @@
 					{sel: '#tool_undo', fn: clickUndo, evt: 'click', key: ['Z', true]},
 					{sel: '#tool_redo', fn: clickRedo, evt: 'click', key: ['Y', true]},
 					{sel: '#tool_clone,#tool_clone_multi', fn: clickClone, evt: 'click', key: ['D', true]},
-					{sel: '#tool_group', fn: clickGroup, evt: 'click', key: ['G', true]},
+					{sel: '#tool_group_elements', fn: clickGroup, evt: 'click', key: ['G', true]},
 					{sel: '#tool_ungroup', fn: clickGroup, evt: 'click'},
 					{sel: '#tool_unlink_use', fn: clickGroup, evt: 'click'},
 					{sel: '[id^=tool_align]', fn: clickAlign, evt: 'click'},
@@ -4575,7 +4575,6 @@
 					window.localStorage.setItem(name, svgCanvas.getSvgString());
 					Editor.showSaveWarning = false;
 				}
-
 				// Suppress warning if page is empty
 				if (undoMgr.getUndoStackSize() === 0) {
 					Editor.showSaveWarning = false;

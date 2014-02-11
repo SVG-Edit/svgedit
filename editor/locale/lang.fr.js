@@ -1,3 +1,4 @@
+/*globals svgEditor */
 svgEditor.readLang({
 	lang: "fr",
 	dir : "ltr",
@@ -118,7 +119,7 @@ svgEditor.readLang({
 		"toggle_grid": "Montrer/cacher la grille",
 		"clone": "Cloner élement(s)",
 		"del": "Supprimer élement(s)",
-		"group": "Grouper les éléments",
+		"group_elements": "Grouper les éléments",
 		"make_link": "Créer hyperlien",
 		"set_link_url": "Définir le lien URL (laisser vide pour supprimer)",
 		"to_path": "Convertir en tracé",
@@ -139,6 +140,7 @@ svgEditor.readLang({
 		"paste": "Coller",
 		"paste_in_place": "Coller sur place",
 		"Retour Arr.": "Supprimer",
+		"group": "Group",
 		"move_front": "Placer au premier plan",
 		"move_up": "Avancer d'un plan",
 		"move_down": "Placer en arrière plan",

@@ -1,3 +1,4 @@
+/*globals svgEditor */
 svgEditor.readLang({
 	lang: "pt-BR",
 	dir : "ltr",
@@ -118,7 +119,7 @@ svgEditor.readLang({
 		"toggle_grid": "Mostrar/Esconder grade",
 		"clone": "Clonar Elemento(s)",
 		"del": "Deletar Elemento(s)",
-		"group": "Agrupar Elementos",
+		"group_elements": "Agrupar Elementos",
 		"make_link": "Criar (hyper)link",
 		"set_link_url": "Alterar URL (em branco para remover)",
 		"to_path": "Converter para Contorno",

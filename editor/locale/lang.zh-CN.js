@@ -1,3 +1,4 @@
+/*globals svgEditor */
 svgEditor.readLang({
 	lang: "zh-CN",
 	dir : "ltr",
@@ -118,7 +119,7 @@ svgEditor.readLang({
 		"toggle_grid": "显示/隐藏 网格",
 		"clone": "克隆元素",
 		"del": "删除元素",
-		"group": "组合元素",
+		"group_elements": "组合元素",
 		"make_link": "创建超链接",
 		"set_link_url": "设置链接URL (设置为空以删除)",
 		"to_path": "转换为路径",
