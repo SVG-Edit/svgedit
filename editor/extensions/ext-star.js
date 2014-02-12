@@ -1,3 +1,5 @@
+/*globals svgEditor, svgedit, svgCanvas, $*/
+/*jslint vars: true, eqeq: true*/
 /*
  * ext-star.js
  *
@@ -7,31 +9,19 @@
  *
  */
 
-svgEditor.addExtension('star', function(S){
+svgEditor.addExtension('star', function(S){'use strict';
 
-	var NS = svgedit.NS,
-		svgcontent = S.svgcontent,
+	var // NS = svgedit.NS,
+		// svgcontent = S.svgcontent,
 		selElems,
-		editingitex = false,
-		svgdoc = S.svgroot.parentNode.ownerDocument,
+		// editingitex = false,
+		// svgdoc = S.svgroot.parentNode.ownerDocument,
 		started,
 		newFO,
-		edg = 0,
-		newFOG,
-		newFOGParent,
-		newDef,
-		newImageName,
-		newMaskID,
-		undoCommand = 'Not image',
-		modeChangeG,
-		ccZoom,
-		wEl,
-		hEl,
-		wOffset,
-		hOffset,
-		ccRgbEl,
-		brushW,
-		brushH,
+		// edg = 0,
+		// newFOG, newFOGParent, newDef, newImageName, newMaskID,
+		// undoCommand = 'Not image',
+		// modeChangeG, ccZoom, wEl, hEl, wOffset, hOffset, ccRgbEl, brushW, brushH,
 		shape;
 
 	function showPanel(on){
@@ -43,15 +33,18 @@ svgEditor.addExtension('star', function(S){
 		$('#star_panel').toggle(on);
 	}
 
+	/*
 	function toggleSourceButtons(on){
 		$('#star_save, #star_cancel').toggle(on);
 	}
+	*/
 
 	function setAttr(attr, val){
 		svgCanvas.changeSelectedAttribute(attr, val);
 		S.call('changed', selElems);
 	}
 
+	/*
 	function cot(n){
 		return 1 / Math.tan(n);
 	}
@@ -59,6 +52,7 @@ svgEditor.addExtension('star', function(S){
 	function sec(n){
 		return 1 / Math.cos(n);
 	}
+	*/
 
 	return {
 		name: 'star',
@@ -113,13 +107,13 @@ svgEditor.addExtension('star', function(S){
 		}],
 		callback: function(){
 			$('#star_panel').hide();
-			var endChanges = function(){};
+			// var endChanges = function(){};
 		},
 		mouseDown: function(opts){
 			var rgb = svgCanvas.getColor('fill');
-			var ccRgbEl = rgb.substring(1, rgb.length);
+			// var ccRgbEl = rgb.substring(1, rgb.length);
 			var sRgb = svgCanvas.getColor('stroke');
-			var ccSRgbEl = sRgb.substring(1, rgb.length);
+			// var ccSRgbEl = sRgb.substring(1, rgb.length);
 			var sWidth = svgCanvas.getStrokeWidth();
 
 			if (svgCanvas.getMode() == 'star') {
@@ -148,8 +142,9 @@ svgEditor.addExtension('star', function(S){
 			}
 		},
 		mouseMove: function(opts){
-			if (!started)
+			if (!started) {
 				return;
+			}
 			if (svgCanvas.getMode() == 'star') {
 				var x = opts.mouse_x;
 				var y = opts.mouse_y;
@@ -160,7 +155,8 @@ svgEditor.addExtension('star', function(S){
 				newFO.setAttributeNS(null, 'r2', inradius);
 
 				var polyPoints = '';
-				for (var s = 0; point >= s; s++) {
+				var s;
+				for (s = 0; point >= s; s++) {
 					var angle = 2.0 * Math.PI * (s / point);
 					if ('point' == orient) {
 						angle -= (Math.PI / 2);
@@ -218,7 +214,7 @@ svgEditor.addExtension('star', function(S){
 
 			while (i--) {
 				var elem = selElems[i];
-				if (elem && elem.getAttributeNS(null, 'shape') == 'star') {
+				if (elem && elem.getAttributeNS(null, 'shape') === 'star') {
 					if (opts.selectedElement && !opts.multiselected) {
 						// $('#starRadiusMulitplier').val(elem.getAttribute('r2'));
 						$('#starNumPoints').val(elem.getAttribute('point'));
@@ -234,7 +230,7 @@ svgEditor.addExtension('star', function(S){
 			}
 		},
 		elementChanged: function(opts){
-			var elem = opts.elems[0];
+			// var elem = opts.elems[0];
 		}
 	};
 });

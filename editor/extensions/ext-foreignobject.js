@@ -1,3 +1,5 @@
+/*globals svgEditor, svgedit, svgCanvas, $*/
+/*jslint vars: true, eqeq: true, todo: true*/
 /*
  * ext-foreignobject.js
  *
@@ -10,6 +12,7 @@
 
 svgEditor.addExtension("foreignObject", function(S) {
 	var NS = svgedit.NS,
+		Utils = svgedit.utilities,
 		svgcontent = S.svgcontent,
 		addElem = S.addSvgElementFromJson,
 		selElems,
@@ -18,7 +21,7 @@ svgEditor.addExtension("foreignObject", function(S) {
 		started,
 		newFO;
 
-	var properlySourceSizeTextArea = function(){
+	var properlySourceSizeTextArea = function () {
 		// TODO: remove magic numbers here and get values from CSS
 		var height = $('#svg_source_container').height() - 80;
 		$('#svg_source_textarea').css('height', height);
@@ -67,7 +70,7 @@ svgEditor.addExtension("foreignObject", function(S) {
 
 	function showForeignEditor() {
 		var elt = selElems[0];
-		if (!elt || editingforeign) return;
+		if (!elt || editingforeign) {return;}
 		editingforeign = true;
 		toggleSourceButtons(true);
 		elt.removeAttribute('fill');
@@ -93,7 +96,7 @@ svgEditor.addExtension("foreignObject", function(S) {
 			title: "Foreign Object Tool",
 			events: {
 				'click': function() {
-					svgCanvas.setMode('foreign')
+					svgCanvas.setMode('foreign');
 				}
 			}
 		},{
@@ -155,7 +158,7 @@ svgEditor.addExtension("foreignObject", function(S) {
 				editingforeign = false;
 				$('#svg_source_textarea').blur();
 				toggleSourceButtons(false);
-			}
+			};
 
 			// TODO: Needs to be done after orig icon loads
 			setTimeout(function() {
@@ -164,11 +167,11 @@ svgEditor.addExtension("foreignObject", function(S) {
 					.hide().attr('id', 'foreign_save').unbind()
 					.appendTo("#tool_source_back").click(function() {
 
-						if (!editingforeign) return;
+						if (!editingforeign) {return;}
 
 						if (!setForeignString($('#svg_source_textarea').val())) {
 							$.confirm("Errors found. Revert to original?", function(ok) {
-								if(!ok) return false;
+								if(!ok) {return false;}
 								endChanges();
 							});
 						} else {
@@ -218,20 +221,20 @@ svgEditor.addExtension("foreignObject", function(S) {
 				newFO.appendChild(m);
 				return {
 					started: true
-				}
+				};
 			}
 		},
 		mouseUp: function(opts) {
 			var e = opts.event;
 			if(svgCanvas.getMode() == "foreign" && started) {
 				var attrs = $(newFO).attr(["width", "height"]);
-				keep = (attrs.width != 0 || attrs.height != 0);
+				var keep = (attrs.width != 0 || attrs.height != 0);
 				svgCanvas.addToSelection([newFO], true);
 
 				return {
 					keep: keep,
 					element: newFO
-				}
+				};
 
 			}
 
@@ -244,7 +247,7 @@ svgEditor.addExtension("foreignObject", function(S) {
 
 			while(i--) {
 				var elem = selElems[i];
-				if(elem && elem.tagName == "foreignObject") {
+				if(elem && elem.tagName === 'foreignObject') {
 					if(opts.selectedElement && !opts.multiselected) {
 						$('#foreign_font_size').val(elem.getAttribute("font-size"));
 						$('#foreign_width').val(elem.getAttribute("width"));

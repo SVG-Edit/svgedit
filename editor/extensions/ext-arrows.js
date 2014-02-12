@@ -1,3 +1,5 @@
+/*globals svgEditor, svgCanvas, $*/
+/*jslint vars: true, eqeq: true*/
 /*
  * ext-arrows.js
  *
@@ -12,7 +14,7 @@ svgEditor.addExtension('Arrows', function(S) {
 		addElem = S.addSvgElementFromJson,
 		nonce = S.nonce,
 		randomize_ids = S.randomize_ids,
-		selElems,
+		selElems, pathdata,
 		lang_list = {
 			'en':[
 				{'id': 'arrow_none', 'textContent': 'No arrow' }
@@ -21,21 +23,8 @@ svgEditor.addExtension('Arrows', function(S) {
 				{'id': 'arrow_none', 'textContent': 'Sans flèche' }
 			]
 		},
+		arrowprefix,
 		prefix = 'se_arrow_';
-
-	svgCanvas.bind('setnonce', setArrowNonce);
-	svgCanvas.bind('unsetnonce', unsetArrowNonce);
-
-	if (randomize_ids) {
-		var arrowprefix = prefix + nonce + '_';
-	} else {
-		var arrowprefix = prefix;
-	}
-
-	var pathdata = {
-		fw: {d: 'm0,0l10,5l-10,5l5,-5l-5,-5z', refx: 8,  id: arrowprefix + 'fw'},
-		bk: {d: 'm10,0l-10,5l10,5l-5,-5l5,-5z', refx: 2, id: arrowprefix + 'bk'}
-	};
 
 	function setArrowNonce(window, n) {
 		randomize_ids = true;
@@ -51,9 +40,24 @@ svgEditor.addExtension('Arrows', function(S) {
 		pathdata.bk.id = arrowprefix + 'bk';
 	}
 
+
+	svgCanvas.bind('setnonce', setArrowNonce);
+	svgCanvas.bind('unsetnonce', unsetArrowNonce);
+
+	if (randomize_ids) {
+		arrowprefix = prefix + nonce + '_';
+	} else {
+		arrowprefix = prefix;
+	}
+
+	pathdata = {
+		fw: {d: 'm0,0l10,5l-10,5l5,-5l-5,-5z', refx: 8,  id: arrowprefix + 'fw'},
+		bk: {d: 'm10,0l-10,5l10,5l-5,-5l5,-5z', refx: 2, id: arrowprefix + 'bk'}
+	};
+
 	function getLinked(elem, attr) {
 		var str = elem.getAttribute(attr);
-		if(!str) return null;
+		if(!str) {return null;}
 		var m = str.match(/\(\#(.*)\)/);
 		if(!m || m.length !== 2) {
 			return null;
@@ -70,20 +74,20 @@ svgEditor.addExtension('Arrows', function(S) {
 			var mid = el.getAttribute('marker-mid');
 			var val;
 
-			if(end && start) {
+			if (end && start) {
 				val = 'both';
-			} else if(end) {
+			} else if (end) {
 				val = 'end';
-			} else if(start) {
+			} else if (start) {
 				val = 'start';
-			} else if(mid) {
+			} else if (mid) {
 				val = 'mid';
-				if(mid.indexOf('bk') != -1) {
+				if (mid.indexOf('bk') !== -1) {
 					val = 'mid_bk';
 				}
 			}
 
-			if(!start && !mid && !end) {
+			if (!start && !mid && !end) {
 				val = 'none';
 			}
 
@@ -105,11 +109,11 @@ svgEditor.addExtension('Arrows', function(S) {
 		var marker = S.getElem(id);
 		var data = pathdata[dir];
 
-		if(type == 'mid') {
+		if (type == 'mid') {
 			data.refx = 5;
 		}
 
-		if(!marker) {
+		if (!marker) {
 			marker = addElem({
 				'element': 'marker',
 				'attr': {
@@ -143,16 +147,16 @@ svgEditor.addExtension('Arrows', function(S) {
 		var type = this.value;
 		resetMarker();
 
-		if(type == 'none') {
+		if (type == 'none') {
 			return;
 		}
 
 		// Set marker on element
 		var dir = 'fw';
-		if(type == 'mid_bk') {
+		if (type == 'mid_bk') {
 			type = 'mid';
 			dir = 'bk';
-		} else if(type == 'both') {
+		} else if (type == 'both') {
 			addMarker('bk', type);
 			svgCanvas.changeSelectedAttribute('marker-start', 'url(#' + pathdata.bk.id + ')');
 			type = 'end';
@@ -173,12 +177,12 @@ svgEditor.addExtension('Arrows', function(S) {
 
 		$.each(mtypes, function(i, type) {
 			var marker = getLinked(elem, 'marker-'+type);
-			if(!marker) return;
+			if(!marker) {return;}
 
 			var cur_color = $(marker).children().attr('fill');
 			var cur_d = $(marker).children().attr('d');
 			var new_marker = null;
-			if(cur_color === color) return;
+			if(cur_color === color) {return;}
 
 			var all_markers = $(defs).find('marker');
 			// Different color, check if already made
@@ -208,10 +212,11 @@ svgEditor.addExtension('Arrows', function(S) {
 				var elem = this;
 				$.each(mtypes, function(j, mtype) {
 					if($(elem).attr('marker-' + mtype) === 'url(#' + marker.id + ')') {
-						return remove = false;
+						remove = false;
+						return remove;
 					}
 				});
-				if(!remove) return false;
+				if(!remove) {return false;}
 			});
 
 			// Not found, so can safely remove
@@ -259,7 +264,7 @@ svgEditor.addExtension('Arrows', function(S) {
 			var marker_elems = ['line', 'path', 'polyline', 'polygon'];
 			while(i--) {
 				var elem = selElems[i];
-				if(elem && $.inArray(elem.tagName, marker_elems) != -1) {
+				if(elem && $.inArray(elem.tagName, marker_elems) !== -1) {
 					if(opts.selectedElement && !opts.multiselected) {
 						showPanel(true);
 					} else {

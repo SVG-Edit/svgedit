@@ -1,3 +1,5 @@
+/*globals MathJax, svgEditor, svgCanvas, $*/
+/*jslint es5: true, todo: true, vars: true*/
 /*
  * ext-mathjax.js
  *
@@ -7,11 +9,11 @@
  *
  */
 
-svgEditor.addExtension("mathjax", function() {
+svgEditor.addExtension("mathjax", function() {'use strict';
   // Configuration of the MathJax extention.
 
   // This will be added to the head tag before MathJax is loaded.
-  var mathjaxConfiguration = '<script type="text/x-mathjax-config">\
+  var /*mathjaxConfiguration = '<script type="text/x-mathjax-config">\
         MathJax.Hub.Config({\
           extensions: ["tex2jax.js"],\
 			    jax: ["input/TeX","output/SVG"],\
@@ -23,7 +25,7 @@ svgEditor.addExtension("mathjax", function() {
             style: {color: "#CC0000", "font-style":"italic"}\
           },\
           elements: [],\
-    	    tex2jax: {\
+            tex2jax: {\
             ignoreClass: "tex2jax_ignore2", processClass: "tex2jax_process2",\
           },\
           TeX: {\
@@ -31,9 +33,9 @@ svgEditor.addExtension("mathjax", function() {
           },\
           "SVG": {\
           }\
-    	  });\
-      </script>',
-    mathjaxSrc = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
+      });\
+      </script>',*/
+    // mathjaxSrc = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
     mathjaxSrcSecure = 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG.js',
     math,
     locationX,
@@ -76,13 +78,13 @@ svgEditor.addExtension("mathjax", function() {
         var mathjaxMath = $('.MathJax_SVG');
         var svg = $(mathjaxMath.html());
         svg.find('use').each(function() {
-          var x, y, transform;
+          var x, y, id, transform;
 
           // TODO: find a less pragmatic and more elegant solution to this.
           if ($(this).attr('href')) {
-            var id = $(this).attr('href').slice(1); // Works in Chrome.
+            id = $(this).attr('href').slice(1); // Works in Chrome.
           } else {
-            var id = $(this).attr('xlink:href').slice(1); // Works in Firefox.
+            id = $(this).attr('xlink:href').slice(1); // Works in Firefox.
           }
 
           var glymph = $('#' + id).clone().removeAttr('id');

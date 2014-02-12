@@ -1,4 +1,5 @@
-/*globals svgEditor, svgCanvas, canvg, $*/
+/*globals svgEditor, svgedit, svgCanvas, canvg, $*/
+/*jslint eqeq: true*/
 /*
  * ext-server_opensave.js
  *
@@ -70,7 +71,7 @@ svgEditor.addExtension("server_opensave", {
 				canvg(c, data.svg, {renderCallback: function() {
 					var pre, filename, suffix,
 						datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType),
-						uiStrings = svgEditor.uiStrings,
+						// uiStrings = svgEditor.uiStrings,
 						note = '';
 					
 					// Check if there are issues

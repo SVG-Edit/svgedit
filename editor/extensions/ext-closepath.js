@@ -1,3 +1,5 @@
+/*globals svgEditor, $*/
+/*jslint vars: true, eqeq: true*/
 /*
  * ext-closepath.js
  *
@@ -9,7 +11,7 @@
 
 // This extension adds a simple button to the contextual panel for paths
 // The button toggles whether the path is open or closed
-svgEditor.addExtension('ClosePath', function() {
+svgEditor.addExtension('ClosePath', function() {'use strict';
 	var selElems,
 		updateButton = function(path) {
 			var seglist = path.pathSegList,
@@ -23,7 +25,7 @@ svgEditor.addExtension('ClosePath', function() {
 			$('#closepath_panel').toggle(on);
 			if (on) {
 				var path = selElems[0];
-				if (path) updateButton(path);
+				if (path) {updateButton(path);}
 			}
 		},
 		toggleClosed = function() {

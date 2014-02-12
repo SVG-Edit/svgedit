@@ -1,3 +1,5 @@
+/*globals svgEditor, svgCanvas*/
+/*jslint eqeq: true*/
 /*
  * ext-panning.js
  *
@@ -11,7 +13,7 @@
 	This is a very basic SVG-Edit extension to let tablet/mobile devices panning without problem
 */
 
-svgEditor.addExtension('ext-panning', function() {
+svgEditor.addExtension('ext-panning', function() {'use strict';
 	return {
 		name: 'Extension Panning',
 		svgicons: svgEditor.curConfig.extPath + 'ext-panning.xml',
@@ -26,13 +28,13 @@ svgEditor.addExtension('ext-panning', function() {
 			}
 		}],
 		mouseDown: function() {
-			if(svgCanvas.getMode() == 'ext-panning') {
+			if (svgCanvas.getMode() == 'ext-panning') {
 				svgEditor.setPanning(true);
 				return {started: true};
 			}
 		},
 		mouseUp: function() {
-			if(svgCanvas.getMode() == 'ext-panning') {
+			if (svgCanvas.getMode() == 'ext-panning') {
 				svgEditor.setPanning(false);
 				return {
 					keep: false,

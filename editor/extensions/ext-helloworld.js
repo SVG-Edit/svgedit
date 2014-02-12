@@ -1,3 +1,5 @@
+/*globals svgEditor, svgCanvas, $*/
+/*jslint vars: true, eqeq: true*/
 /*
  * ext-helloworld.js
  *
@@ -10,10 +12,10 @@
 /* 
 	This is a very basic SVG-Edit extension. It adds a "Hello World" button in
 	the left panel. Clicking on the button, and then the canvas will show the
- 	user the point on the canvas that was clicked on.
+	user the point on the canvas that was clicked on.
 */
  
-svgEditor.addExtension("Hello World", function() {
+svgEditor.addExtension("Hello World", function() {'use strict';
 
 		return {
 			name: "Hello World",
