@@ -41,7 +41,7 @@
       equals(toXml('PB&J'), 'PB&amp;J');
       equals(toXml('2 < 5'), '2 &lt; 5');
       equals(toXml('5 > 2'), '5 &gt; 2');
-      equals(toXml('\'<&>"'), '\'&lt;&amp;&gt;"');
+      equals(toXml('\'<&>"'), '&#x27;&lt;&amp;&gt;&quot;');
     });
 
     test('Test svgedit.utilities.fromXml() function', function() {

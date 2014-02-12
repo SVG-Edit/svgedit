@@ -55,7 +55,9 @@ svgedit.utilities.init = function(editorContext) {
 // Returns:
 // The converted string
 svgedit.utilities.toXml = function(str) {
-	return $('<p/>').text(str).html();
+	// &apos; is ok in XML, but not HTML
+	// &gt; does not normally need escaping, though it can if within a CDATA expression (and preceded by "]]")
+	return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/, '&#x27;');
 };
 
 // Function: svgedit.utilities.fromXml
