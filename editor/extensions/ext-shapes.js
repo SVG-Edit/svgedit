@@ -1,3 +1,5 @@
+/*globals svgEditor, $, DOMParser*/
+/*jslint es5: true, vars: true, eqeq: true*/
 /*
  * ext-shapes.js
  *
@@ -8,7 +10,7 @@
  *
  */
 
-svgEditor.addExtension('shapes', function() {
+svgEditor.addExtension('shapes', function() {'use strict';
 	var current_d, cur_shape_id;
 	var canv = svgEditor.canvas;
 	var cur_shape;
@@ -73,32 +75,10 @@ svgEditor.addExtension('shapes', function() {
 
 	var cur_lib = library.basic;
 	var mode_id = 'shapelib';
-  var startClientPos = {};
+	var startClientPos = {};
 
 	function loadIcons() {
 		$('#shape_buttons').empty().append(cur_lib.buttons);
-	}
-
-	function loadLibrary(cat_id) {
-
-		var lib = library[cat_id];
-
-		if (!lib) {
-			$('#shape_buttons').html('Loading...');
-			$.getJSON(svgEditor.curConfig.extPath + 'shapelib/' + cat_id + '.json', function(result) {
-				cur_lib = library[cat_id] = {
-					data: result.data,
-					size: result.size,
-					fill: result.fill
-				};
-				makeButtons(cat_id, result);
-				loadIcons();
-			});
-			return;
-		}
-		cur_lib = lib;
-		if (!lib.buttons.length) makeButtons(cat_id, lib);
-		loadIcons();
 	}
 
 	function makeButtons(cat, shapes) {
@@ -120,8 +100,8 @@ svgEditor.addExtension('shapes', function() {
 		var data = shapes.data;
 
 		cur_lib.buttons = [];
-
-		for (var id in data) {
+		var id;
+		for (id in data) {
 			var path_d = data[id];
 			var icon = svg_elem.clone();
 			icon.find('path').attr('d', path_d);
@@ -133,6 +113,28 @@ svgEditor.addExtension('shapes', function() {
 			// Store for later use
 			cur_lib.buttons.push(icon_btn[0]);
 		}
+	}
+
+	function loadLibrary(cat_id) {
+
+		var lib = library[cat_id];
+
+		if (!lib) {
+			$('#shape_buttons').html('Loading...');
+			$.getJSON(svgEditor.curConfig.extPath + 'shapelib/' + cat_id + '.json', function(result) {
+				cur_lib = library[cat_id] = {
+					data: result.data,
+					size: result.size,
+					fill: result.fill
+				};
+				makeButtons(cat_id, result);
+				loadIcons();
+			});
+			return;
+		}
+		cur_lib = lib;
+		if (!lib.buttons.length) {makeButtons(cat_id, lib);}
+		loadIcons();
 	}
 
 	return {
@@ -189,7 +191,7 @@ svgEditor.addExtension('shapes', function() {
 			$('#shape_buttons').mouseup(function(evt) {
 				var btn = $(evt.target).closest('div.tool_button');
 
-				if (!btn.length) return;
+				if (!btn.length) {return;}
 
 				var copy = btn.children().clone();
 				shower.children(':not(.flyout_arrow_horiz)').remove();
@@ -239,14 +241,16 @@ svgEditor.addExtension('shapes', function() {
 		},
 		mouseDown: function(opts) {
 			var mode = canv.getMode();
-			if (mode !== mode_id) return;
+			if (mode !== mode_id) {return;}
 
-			var x = start_x = opts.start_x;
-			var y = start_y = opts.start_y;
+			start_x = opts.start_x;
+			var x = start_x;
+			start_y = opts.start_y;
+			var y = start_y;
 			var cur_style = canv.getStyle();
          
-      startClientPos.x = opts.event.clientX;
-      startClientPos.y = opts.event.clientY;
+			startClientPos.x = opts.event.clientX;
+			startClientPos.y = opts.event.clientY;
 
 			cur_shape = canv.addSvgElementFromJson({
 				'element': 'path',
@@ -279,7 +283,7 @@ svgEditor.addExtension('shapes', function() {
 		},
 		mouseMove: function(opts) {
 			var mode = canv.getMode();
-			if (mode !== mode_id) return;
+			if (mode !== mode_id) {return;}
 
 			var zoom = canv.getZoom();
 			var evt = opts.event;
@@ -311,7 +315,7 @@ svgEditor.addExtension('shapes', function() {
 			if (x < start_x) {
 				tx = lastBBox.width;
 			}
-			if (y < start_y) ty = lastBBox.height;
+			if (y < start_y) {ty = lastBBox.height;}
 
 			// update the transform list with translate,scale,translate
 			var translateOrigin = svgroot.createSVGTransform(),
@@ -338,7 +342,7 @@ svgEditor.addExtension('shapes', function() {
 		},
 		mouseUp: function(opts) {
 			var mode = canv.getMode();
-			if (mode !== mode_id) return;
+			if (mode !== mode_id) {return;}
          
       var keepObject = (opts.event.clientX != startClientPos.x && opts.event.clientY != startClientPos.y);
 

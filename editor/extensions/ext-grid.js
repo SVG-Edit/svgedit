@@ -1,3 +1,5 @@
+/*globals svgEditor, svgedit, svgCanvas, $*/
+/*jslint vars: true*/
 /*
  * ext-grid.js
  *
@@ -12,7 +14,7 @@
 // 1) units.js
 // 2) everything else
 
-svgEditor.addExtension('view_grid', function() {
+svgEditor.addExtension('view_grid', function() { 'use strict';
 
 	var NS = svgedit.NS,
 		svgdoc = document.getElementById('svgcanvas').ownerDocument,
@@ -73,16 +75,17 @@ svgEditor.addExtension('view_grid', function() {
 	$('#canvasGrid').append(gridBox);
 
 	function updateGrid(zoom) {
+		var i;
 		// TODO: Try this with <line> elements, then compare performance difference
 		var unit = units[svgEditor.curConfig.baseUnit]; // 1 = 1px
 		var u_multi = unit * zoom;
 		// Calculate the main number interval
 		var raw_m = 100 / u_multi;
 		var multi = 1;
-		for(var i = 0; i < intervals.length; i++) {
+		for (i = 0; i < intervals.length; i++) {
 			var num = intervals[i];
 			multi = num;
-			if(raw_m <= num) {
+			if (raw_m <= num) {
 				break;
 			}
 		}
@@ -97,7 +100,7 @@ svgEditor.addExtension('view_grid', function() {
 
 		ctx.globalAlpha = 0.2;
 		ctx.strokeStyle = svgEditor.curConfig.gridColor;
-		for (var i = 1; i < 10; i++) {
+		for (i = 1; i < 10; i++) {
 			var sub_d = Math.round(part * i) + 0.5;
 			// var line_num = (i % 2)?12:10;
 			var line_num = 0;
@@ -129,7 +132,7 @@ svgEditor.addExtension('view_grid', function() {
 		svgicons: svgEditor.curConfig.extPath + 'grid-icon.xml',
 
 		zoomChanged: function(zoom) {
-			if(showGrid) updateGrid(zoom);
+			if (showGrid) {updateGrid(zoom);}
 		},
 
 		buttons: [{

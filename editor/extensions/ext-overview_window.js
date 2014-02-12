@@ -1,3 +1,5 @@
+/*globals svgEditor, svgedit, $ */
+/*jslint es5: true, vars: true*/
 /*
  * ext-overview_window.js
  *
@@ -7,8 +9,8 @@
  *
  */
 
-var overviewWindowGlobals={};
-svgEditor.addExtension("overview_window", function() {	
+var overviewWindowGlobals = {};
+svgEditor.addExtension("overview_window", function() {	'use strict';
 	//define and insert the base html element
 	var propsWindowHtml= "\
 		<div id=\"overview_window_content_pane\" style=\" width:100%; word-wrap:break-word;  display:inline-block; margin-top:20px;\">\
@@ -47,7 +49,7 @@ svgEditor.addExtension("overview_window", function() {
 	};
 	$("#workarea").scroll(function(){
 		if(!(overviewWindowGlobals.viewBoxDragging)){
-			updateViewBox()
+			updateViewBox();
 		}
 	});
 	$("#workarea").resize(updateViewBox);
@@ -111,8 +113,8 @@ svgEditor.addExtension("overview_window", function() {
 		var viewBoxWidth =parseFloat($("#overview_window_view_box").css("min-width" ));
 		var viewBoxHeight=parseFloat($("#overview_window_view_box").css("min-height"));
  
-		var viewBoxX=mouseX-.5*viewBoxWidth;
-		var viewBoxY=mouseY-.5*viewBoxHeight;
+		var viewBoxX=mouseX - 0.5 * viewBoxWidth;
+		var viewBoxY=mouseY- 0.5 * viewBoxHeight;
 		//deal with constraints
 		if(viewBoxX<0){
 			viewBoxX=0;
