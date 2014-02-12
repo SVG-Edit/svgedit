@@ -85,7 +85,7 @@ svgEditor.addExtension('shapes', function() {
 
 		if (!lib) {
 			$('#shape_buttons').html('Loading...');
-			$.getJSON('extensions/shapelib/' + cat_id + '.json', function(result) {
+			$.getJSON(svgEditor.curConfig.extPath + 'shapelib/' + cat_id + '.json', function(result) {
 				cur_lib = library[cat_id] = {
 					data: result.data,
 					size: result.size,
@@ -136,7 +136,7 @@ svgEditor.addExtension('shapes', function() {
 	}
 
 	return {
-		svgicons: 'extensions/ext-shapes.xml',
+		svgicons: svgEditor.curConfig.extPath + 'ext-shapes.xml',
 		buttons: [{
 			id: 'tool_shapelib',
 			type: 'mode_flyout', // _flyout

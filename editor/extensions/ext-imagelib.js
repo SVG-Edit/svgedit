@@ -25,7 +25,7 @@ svgEditor.addExtension("imagelib", function() {'use strict';
 
 	var img_libs = [{
 			name: 'Demo library (local)',
-			url: 'extensions/imagelib/index.html',
+			url: svgEditor.curConfig.extPath + 'imagelib/index.html',
 			description: 'Demonstration library for SVG-edit on this server'
 		},
 		{
@@ -366,7 +366,7 @@ svgEditor.addExtension("imagelib", function() {'use strict';
 	}
 	
 	return {
-		svgicons: "extensions/ext-imagelib.xml",
+		svgicons: svgEditor.curConfig.extPath + "ext-imagelib.xml",
 		buttons: [{
 			id: "tool_imagelib",
 			type: "app_menu", // _flyout

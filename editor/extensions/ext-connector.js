@@ -299,11 +299,11 @@ svgEditor.addExtension("Connector", function(S) {
 	
 	return {
 		name: "Connector",
-		svgicons: "images/conn.svg",
+		svgicons: svgEditor.curConfig.imgPath + "conn.svg",
 		buttons: [{
 			id: "mode_connect",
 			type: "mode",
-			icon: "images/cut.png",
+			icon: svgEditor.curConfig.imgPath + "cut.png",
 			title: "Connect two objects",
 			includeWith: {
 				button: '#tool_line',

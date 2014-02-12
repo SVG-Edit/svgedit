@@ -10,7 +10,7 @@ svgEditor.addExtension("php_savefile", {
 			var title = svgCanvas.getDocumentTitle();
 			return $.trim(title);
 		}
-		var save_svg_action = 'extensions/savefile.php';
+		var save_svg_action = svgEditor.curConfig.extPath + 'savefile.php';
 		svgEditor.setCustomHandlers({
 			save: function(win, data) {
 				var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,
