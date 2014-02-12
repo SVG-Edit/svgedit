@@ -60,7 +60,7 @@ svgEditor.addExtension("polygon", function(S){
     
     return {
         name: "polygon",
-        svgicons: "extensions/polygon-icons.svg",
+        svgicons: svgEditor.curConfig.extPath + "polygon-icons.svg",
         buttons: [{
             id: "tool_polygon",
             type: "mode",

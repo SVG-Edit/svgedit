@@ -126,7 +126,7 @@ svgEditor.addExtension('view_grid', function() {
 
 	return {
 		name: 'view_grid',
-		svgicons: 'extensions/grid-icon.xml',
+		svgicons: svgEditor.curConfig.extPath + 'grid-icon.xml',
 
 		zoomChanged: function(zoom) {
 			if(showGrid) updateGrid(zoom);

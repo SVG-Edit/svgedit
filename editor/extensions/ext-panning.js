@@ -14,7 +14,7 @@
 svgEditor.addExtension('ext-panning', function() {
 	return {
 		name: 'Extension Panning',
-		svgicons: 'extensions/ext-panning.xml',
+		svgicons: svgEditor.curConfig.extPath + 'ext-panning.xml',
 		buttons: [{
 			id: 'ext-panning',
 			type: 'mode',

@@ -46,7 +46,7 @@ svgEditor.addExtension('WebAppFind', function() {
 
     return {
         name: 'WebAppFind',
-        svgicons: 'extensions/webappfind-icon.svg',
+        svgicons: svgEditor.curConfig.extPath + 'webappfind-icon.svg',
         buttons: [{
             id: 'webappfind_save', // 
             type: 'app_menu',

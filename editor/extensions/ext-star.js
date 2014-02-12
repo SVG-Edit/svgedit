@@ -62,7 +62,7 @@ svgEditor.addExtension('star', function(S){
 
 	return {
 		name: 'star',
-		svgicons: 'extensions/star-icons.svg',
+		svgicons: svgEditor.curConfig.extPath + 'star-icons.svg',
 		buttons: [{
 			id: 'tool_star',
 			type: 'mode',

@@ -114,7 +114,7 @@ svgEditor.addExtension("mathjax", function() {
 
   return {
     name: "MatJax",
-    svgicons: "extensions/mathjax-icons.xml",
+    svgicons: svgEditor.curConfig.extPath + "mathjax-icons.xml",
     buttons: [{
         id: "tool_mathjax",
         type: "mode",

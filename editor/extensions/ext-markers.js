@@ -475,7 +475,7 @@ svgEditor.addExtension("Markers", function(S) {
 
 	return {
 		name: "Markers",
-		svgicons: "extensions/markers-icons.xml",
+		svgicons: svgEditor.curConfig.extPath + "markers-icons.xml",
 		buttons: buildButtonList(),
 		context_tools: [
 		   {
