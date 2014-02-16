@@ -25,7 +25,7 @@ svgEditor.addExtension("overview_window", function() {	'use strict';
 			<\/div>\
 		<\/div>";
 	$("#sidepanels").append(propsWindowHtml);
-	
+
 	//define dynamic animation of the view box.
 	var updateViewBox = function(){
 		var portHeight=parseFloat($("#workarea").css("height"));

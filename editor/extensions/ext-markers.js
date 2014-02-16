@@ -420,7 +420,7 @@ svgEditor.addExtension("Markers", function(S) {
 		}
 	}
 	
-	function getTitle(lang,id) {
+	function getTitle(lang, id) {
 		var i, list = lang_list[lang];
 		for (i in list) {
 			if (list.hasOwnProperty(i) && list[i].id == id) {
