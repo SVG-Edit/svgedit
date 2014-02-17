@@ -1,15 +1,15 @@
+/*jslint vars: true*/
 /**
  * A class to parse color values
  * @author Stoyan Stefanov <sstoo@gmail.com>
  * @link   http://www.phpied.com/rgb-color-parser-in-javascript/
  * @license Use it if you like it
  */
-function RGBColor(color_string)
-{
+function RGBColor(color_string) { 'use strict';
     this.ok = false;
 
     // strip any leading #
-    if (color_string.charAt(0) == '#') { // remove # if any
+    if (color_string.charAt(0) === '#') { // remove # if any
         color_string = color_string.substr(1,6);
     }
 
@@ -163,9 +163,12 @@ function RGBColor(color_string)
         yellow: 'ffff00',
         yellowgreen: '9acd32'
     };
-    for (var key in simple_colors) {
-        if (color_string == key) {
-            color_string = simple_colors[key];
+    var key;
+    for (key in simple_colors) {
+        if (simple_colors.hasOwnProperty(key)) {
+            if (color_string == key) {
+                color_string = simple_colors[key];
+            }
         }
     }
     // emd of simple type-in colors
@@ -177,9 +180,9 @@ function RGBColor(color_string)
             example: ['rgb(123, 234, 45)', 'rgb(255,234,245)'],
             process: function (bits){
                 return [
-                    parseInt(bits[1]),
-                    parseInt(bits[2]),
-                    parseInt(bits[3])
+                    parseInt(bits[1], 10),
+                    parseInt(bits[2], 10),
+                    parseInt(bits[3], 10)
                 ];
             }
         },
@@ -207,13 +210,14 @@ function RGBColor(color_string)
         }
     ];
 
+    var i;
     // search through the definitions to find a match
-    for (var i = 0; i < color_defs.length; i++) {
+    for (i = 0; i < color_defs.length; i++) {
         var re = color_defs[i].re;
         var processor = color_defs[i].process;
         var bits = re.exec(color_string);
         if (bits) {
-            channels = processor(bits);
+            var channels = processor(bits);
             this.r = channels[0];
             this.g = channels[1];
             this.b = channels[2];
@@ -230,36 +234,39 @@ function RGBColor(color_string)
     // some getters
     this.toRGB = function () {
         return 'rgb(' + this.r + ', ' + this.g + ', ' + this.b + ')';
-    }
+    };
     this.toHex = function () {
         var r = this.r.toString(16);
         var g = this.g.toString(16);
         var b = this.b.toString(16);
-        if (r.length == 1) r = '0' + r;
-        if (g.length == 1) g = '0' + g;
-        if (b.length == 1) b = '0' + b;
+        if (r.length === 1) {r = '0' + r;}
+        if (g.length === 1) {g = '0' + g;}
+        if (b.length === 1) {b = '0' + b;}
         return '#' + r + g + b;
-    }
+    };
 
     // help
     this.getHelpXML = function () {
-
-        var examples = new Array();
+        var i, j;
+        var examples = [];
         // add regexps
-        for (var i = 0; i < color_defs.length; i++) {
+        for (i = 0; i < color_defs.length; i++) {
             var example = color_defs[i].example;
-            for (var j = 0; j < example.length; j++) {
+            for (j = 0; j < example.length; j++) {
                 examples[examples.length] = example[j];
             }
         }
         // add type-in colors
-        for (var sc in simple_colors) {
-            examples[examples.length] = sc;
+        var sc;
+        for (sc in simple_colors) {
+            if (simple_colors.hasOwnProperty(sc)) {
+                examples[examples.length] = sc;
+            }
         }
 
         var xml = document.createElement('ul');
         xml.setAttribute('id', 'rgbcolor-examples');
-        for (var i = 0; i < examples.length; i++) {
+        for (i = 0; i < examples.length; i++) {
             try {
                 var list_item = document.createElement('li');
                 var list_color = new RGBColor(examples[i]);
@@ -282,6 +289,6 @@ function RGBColor(color_string)
         }
         return xml;
 
-    }
+    };
 
 }
