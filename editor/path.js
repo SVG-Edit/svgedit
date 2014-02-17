@@ -239,7 +239,7 @@ svgedit.path.getPointGrip = function(seg, update) {
 svgedit.path.getControlPoints = function(seg) {
 	var item = seg.item;
 	var index = seg.index;
-	if (!(item.x1) || !(item.x2)) {return null;}
+	if (!('x1' in item) || !('x2' in item)) {return null;}
 	var cpt = {};
 	var pointGripContainer = svgedit.path.getGripContainer();
 
@@ -898,7 +898,7 @@ svgedit.path.getPath_ = function(elem) {
 };
 
 svgedit.path.removePath_ = function(id) {
-	if (pathData[id]) {delete pathData[id];}
+	if (id in pathData) {delete pathData[id];}
 };
 var newcx, newcy, oldcx, oldcy, angle;
 var getRotVals = function(x, y) {
