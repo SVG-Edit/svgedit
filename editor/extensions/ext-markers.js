@@ -138,8 +138,8 @@ svgEditor.addExtension("Markers", function(S) {
 			var ci;
 
 			$.each(mtypes, function(i, pos) {
-				var m = getLinked(el,"marker-"+pos);
-				var txtbox = $('#'+pos+'_marker');
+				var m = getLinked(el, "marker-" + pos);
+				var txtbox = $('#' + pos + '_marker');
 				if (!m) {
 					val = '\\nomarker';
 					ci = val;
@@ -149,7 +149,7 @@ svgEditor.addExtension("Markers", function(S) {
 					val = '\\' + m.attributes.se_type.textContent;
 					ci = val;
 					if (val === '\\textmarker') {
-						val=m.lastChild.textContent;
+						val = m.lastChild.textContent;
 						//txtbox.show(); // show text box
 					} else {
 						txtbox.hide(); // hide text box
@@ -213,9 +213,9 @@ svgEditor.addExtension("Markers", function(S) {
 			var text = addElem(marker_types[se_type]);
 			// have to add text to get bounding box
 			text.textContent = val;
-			var tb=text.getBBox();
+			var tb = text.getBBox();
 			//alert( tb.x + " " + tb.y + " " + tb.width + " " + tb.height);
-			var pad=1;
+			var pad = 1;
 			var bb = tb;
 			bb.x = 0;
 			bb.y = 0;
@@ -225,23 +225,23 @@ svgEditor.addExtension("Markers", function(S) {
 			text.setAttribute('x', pad);
 			text.setAttribute('y', bb.height - pad - tb.height/4); // kludge?
 			text.setAttribute('fill',color);
-			refX = bb.width/2+pad;
-			refY = bb.height/2+pad;
+			refX = bb.width/2 + pad;
+			refY = bb.height/2 + pad;
 			viewBox = bb.x + " " + bb.y + " " + bb.width + " " + bb.height;
-			markerWidth =bb.width/10;
+			markerWidth = bb.width/10;
 			markerHeight = bb.height/10;
 
 			var box = addElem({
 				"element": "rect",
 				"attr": {
-				"x": bb.x,
-				"y": bb.y,
-				"width": bb.width,
-				"height": bb.height,
-				"fill": txt_box_bg,
-				"stroke": txt_box_border,
-				"stroke-width": txt_box_stroke_width
-			}
+					"x": bb.x,
+					"y": bb.y,
+					"width": bb.width,
+					"height": bb.height,
+					"fill": txt_box_bg,
+					"stroke": txt_box_border,
+					"stroke-width": txt_box_stroke_width
+				}
 			});
 			marker.setAttribute("orient",0);
 			marker.appendChild(box);
@@ -275,12 +275,12 @@ svgEditor.addExtension("Markers", function(S) {
 		var pline = addElem({
 			"element": "polyline",
 			"attr": {
-			"points": (x1+','+y1+ mid_pt +x2+','+y2),
-			"stroke": elem.getAttribute('stroke'),
-			"stroke-width": elem.getAttribute('stroke-width'),
-			"fill": "none",
-			"opacity": elem.getAttribute('opacity') || 1
-		}
+				"points": (x1+','+y1+ mid_pt +x2+','+y2),
+				"stroke": elem.getAttribute('stroke'),
+				"stroke-width": elem.getAttribute('stroke-width'),
+				"fill": "none",
+				"opacity": elem.getAttribute('opacity') || 1
+			}
 		});
 		$.each(mtypes, function(i, pos) { // get any existing marker definitions
 			var nam = 'marker-'+pos;
@@ -459,23 +459,23 @@ svgEditor.addExtension("Markers", function(S) {
 			panel: 'marker_panel'
 		});
 */
-		$.each(mtypes,function(k, pos) {
+		$.each(mtypes, function (k, pos) {
 			var listname = pos + "_marker_list";
 			var def = true;
-		$.each(marker_types,function(id, v) {
-			var title = getTitle('en',id);
-			buttons.push({
-					id:id_prefix + pos + "_" + id,
-					svgicon:id,
-					title:title,
-					type:'context',
-					events: { 'click': setArrowFromButton },
-					panel:'marker_panel',
+			$.each(marker_types, function (id, v) {
+				var title = getTitle('en', id);
+				buttons.push({
+					id: id_prefix + pos + '_' + id,
+					svgicon: id,
+					title: title,
+					type: 'context',
+					events: {'click': setArrowFromButton},
+					panel: 'marker_panel',
 					list: listname,
 					isDefault: def
+				});
+				def = false;
 			});
-			def = false;
-		});
 		});
 		return buttons;
 	}
@@ -496,7 +496,7 @@ svgEditor.addExtension("Markers", function(S) {
 		},{
 			type: "button-select",
 			panel: "marker_panel",
-			title: getTitle('en','start_marker_list'),
+			title: getTitle('en', 'start_marker_list'),
 			id: "start_marker_list",
 			colnum: 3,
 			events: { change: setArrowFromButton }
@@ -512,7 +512,7 @@ svgEditor.addExtension("Markers", function(S) {
 		},{
 			type: "button-select",
 			panel: "marker_panel",
-			title: getTitle('en','mid_marker_list'),
+			title: getTitle('en', 'mid_marker_list'),
 			id: "mid_marker_list",
 			colnum: 3,
 			events: { change: setArrowFromButton }
@@ -527,7 +527,7 @@ svgEditor.addExtension("Markers", function(S) {
 		},{
 			type: "button-select",
 			panel: "marker_panel",
-			title: getTitle('en','end_marker_list'),
+			title: getTitle('en', 'end_marker_list'),
 			id: "end_marker_list",
 			colnum: 3,
 			events: { change: setArrowFromButton }
@@ -551,7 +551,7 @@ svgEditor.addExtension("Markers", function(S) {
 		while(i--) {
 			var elem = selElems[i];
 			if(elem && $.inArray(elem.tagName, marker_elems) !== -1) {
-				if(opts.selectedElement && !opts.multiselected) {
+				if (opts.selectedElement && !opts.multiselected) {
 					showPanel(true);
 				} else {
 					showPanel(false);
