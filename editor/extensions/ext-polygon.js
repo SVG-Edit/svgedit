@@ -185,7 +185,6 @@ svgEditor.addExtension("polygon", function(S) {'use strict';
             ccRgbEl = rgb.substring(1, rgb.length);
             var sRgb = svgCanvas.getColor("stroke");
             // ccSRgbEl = sRgb.substring(1, rgb.length);
-            sRgb = svgCanvas.getColor("stroke");
             var sWidth = svgCanvas.getStrokeWidth();
             
             if (svgCanvas.getMode() == "polygon") {
