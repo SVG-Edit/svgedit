@@ -1,4 +1,6 @@
-﻿/* SpinButton control
+﻿/*globals $, svgEditor*/
+/*jslint vars: true, eqeq: true*/
+/* SpinButton control
  *
  * Adds bells and whistles to any ordinary textbox to
  * make it look and feel like a SpinButton Control.
@@ -63,7 +65,19 @@
 	});
  
  */
-$.fn.SpinButton = function(cfg){
+$.fn.SpinButton = function(cfg) { 'use strict';
+	function coord(el,prop) {
+		var c = el[prop], b = document.body;
+		
+		while ((el = el.offsetParent) && (el != b)) {
+			if (!$.browser.msie || (el.currentStyle.position !== 'relative')) {
+				c += el[prop];
+			}
+		}
+		
+		return c;
+	}
+
 	return this.each(function(){
 
 		this.repeating = false;
@@ -103,10 +117,10 @@ $.fn.SpinButton = function(cfg){
 				// weirdest javascript bug ever: 5.1 + 0.1 = 5.199999999
 				v = Number((Number(this.value) + Number(i)).toFixed(5));
 			}
-			if (this.spinCfg.min !== null) v = Math.max(v, this.spinCfg.min);
-			if (this.spinCfg.max !== null) v = Math.min(v, this.spinCfg.max);
+			if (this.spinCfg.min !== null) {v = Math.max(v, this.spinCfg.min);}
+			if (this.spinCfg.max !== null) {v = Math.min(v, this.spinCfg.max);}
 			this.value = v;
-			if ($.isFunction(this.spinCfg.callback)) this.spinCfg.callback(this);
+			if ($.isFunction(this.spinCfg.callback)) {this.spinCfg.callback(this);}
 		};
 		
 		$(this)
@@ -151,10 +165,10 @@ $.fn.SpinButton = function(cfg){
 		})
 		
 		.mousedown(function(e){
-			if ( e.button === 0 && this.spinCfg._direction != 0) {
+			if (e.button === 0 && this.spinCfg._direction != 0) {
 				// Respond to click on one of the buttons:
 				var self = this;
-				var stepSize = e.shiftKey ? self.spinCfg.smallStep : self.spinCfg.step
+				var stepSize = e.shiftKey ? self.spinCfg.smallStep : self.spinCfg.step;
 
 				var adjust = function() {
 					self.adjustValue(self.spinCfg._direction * stepSize);
@@ -178,8 +192,9 @@ $.fn.SpinButton = function(cfg){
 		})
 		
 		.dblclick(function(e) {
-			if ($.browser.msie)
+			if ($.browser.msie) {
 				this.adjustValue(this.spinCfg._direction * this.spinCfg.step);
+			}
 		})
 		
 		.keydown(function(e){
@@ -228,10 +243,12 @@ $.fn.SpinButton = function(cfg){
 		
 		.bind("mousewheel", function(e){
 			// Respond to mouse wheel in IE. (It returns up/dn motion in multiples of 120)
-			if (e.wheelDelta >= 120)
+			if (e.wheelDelta >= 120) {
 				this.adjustValue(this.spinCfg.step);
-			else if (e.wheelDelta <= -120)
+			}
+			else if (e.wheelDelta <= -120) {
 				this.adjustValue(-this.spinCfg.step);
+			}
 			
 			e.preventDefault();
 		})
@@ -243,24 +260,15 @@ $.fn.SpinButton = function(cfg){
 		if (this.addEventListener) {
 			// Respond to mouse wheel in Firefox
 			this.addEventListener('DOMMouseScroll', function(e) {
-				if (e.detail > 0)
+				if (e.detail > 0) {
 					this.adjustValue(-this.spinCfg.step);
-				else if (e.detail < 0)
+				}
+				else if (e.detail < 0) {
 					this.adjustValue(this.spinCfg.step);
+				}
 				
 				e.preventDefault();
 			}, false);
 		}
 	});
-	
-	function coord(el,prop) {
-		var c = el[prop], b = document.body;
-		
-		while ((el = el.offsetParent) && (el != b)) {
-			if (!$.browser.msie || (el.currentStyle.position != 'relative'))
-				c += el[prop];
-		}
-		
-		return c;
-	}
 };
