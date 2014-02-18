@@ -43,7 +43,7 @@ svgEditor.addExtension("mathjax", function() {'use strict';
     mathjaxLoaded = false,
     uiStrings = svgEditor.uiStrings;
 
-  // TODO: Implement language support.
+  // TODO: Implement language support. Move these uiStrings to the locale files and the code to the langReady callback.
   $.extend(uiStrings, {
     mathjax: {
       embed_svg: 'Save as mathematics',

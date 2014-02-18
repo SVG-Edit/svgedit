@@ -15,7 +15,7 @@
 // 2) svgcanvas.js
 // 3) svg-editor.js
 
-var svgEditor = (function($, Editor) {'use strict';
+var svgEditor = (function($, editor) {'use strict';
 
 	var lang_param;
 	
@@ -54,10 +54,10 @@ var svgEditor = (function($, Editor) {'use strict';
 		}
 	}
 
-	Editor.readLang = function(langData) {
-		var more = Editor.canvas.runExtensions("addlangData", lang_param, true);
+	editor.readLang = function(langData) {
+		var more = editor.canvas.runExtensions("addlangData", lang_param, true);
 		$.each(more, function(i, m) {
-			if(m.data) {
+			if (m.data) {
 				langData = $.merge(langData, m.data);
 			}
 		});
@@ -272,10 +272,10 @@ var svgEditor = (function($, Editor) {'use strict';
 
 		}, true);
 		
-		Editor.setLang(lang_param, langData);
+		editor.setLang(lang_param, langData);
 	};
 
-	Editor.putLocale = function (given_param, good_langs) {
+	editor.putLocale = function (given_param, good_langs) {
 	
 		if (given_param) {
 			lang_param = given_param;
@@ -286,10 +286,10 @@ var svgEditor = (function($, Editor) {'use strict';
 				if (navigator.userLanguage) { // Explorer
 					lang_param = navigator.userLanguage;
 				}
-				else if (navigator.language) {// FF, Opera, ...
+				else if (navigator.language) { // FF, Opera, ...
 					lang_param = navigator.language;
 				}
-				if (lang_param == '') {
+				if (lang_param == null) { // Todo: Would cause problems if uiStrings removed; remove this?
 					return;
 				}
 			}
@@ -302,11 +302,14 @@ var svgEditor = (function($, Editor) {'use strict';
 			}
 	
 			// don't bother on first run if language is English		
-			if (lang_param.indexOf("en") === 0) {return;}
+			// The following line prevents setLang from running
+			//    extensions which depend on updated uiStrings,
+			//    so commenting it out.
+			// if (lang_param.indexOf("en") === 0) {return;}
 
 		}
 		
-		var conf = Editor.curConfig;
+		var conf = editor.curConfig;
 		
 		var url = conf.langPath + "lang." + lang_param + ".js";
 		
@@ -321,5 +324,5 @@ var svgEditor = (function($, Editor) {'use strict';
 		
 	};
 	
-	return Editor;
+	return editor;
 }(jQuery, svgEditor));
