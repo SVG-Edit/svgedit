@@ -1,4 +1,4 @@
-/*globals globalStorage, widget, svgEditor, svgedit, canvg, DOMParser, FileReader, jQuery, $ */
+/*globals svgEditor:true, globalStorage, widget, svgedit, canvg, jQuery, $, DOMParser, FileReader */
 /*jslint vars: true, eqeq: true, todo: true, forin: true, continue: true, regexp: true */
 /*
  * svg-editor.js
@@ -9,6 +9,7 @@
  * Copyright(c) 2010 Pavol Rusnak
  * Copyright(c) 2010 Jeff Schiller
  * Copyright(c) 2010 Narendra Sisodiya
+ * Copyright(c) 2014 Brett Zamir
  *
  */
 
@@ -33,7 +34,7 @@ TO-DOS
 		//		curPrefs, curConfig, canvas, storage, uiStrings
 		//
 		// STATE MAINTENANCE PROPERTIES
-		editor.tool_scale = 1; // Dependent on icon size, so no need to make configurable?
+		editor.tool_scale = 1; // Dependent on icon size, so any use to making configurable instead? Used by JQuerySpinBtn.js
 		editor.langChanged = false;
 		editor.showSaveWarning = false;
 		editor.storagePromptClosed = false; // For use with ext-storage.js
@@ -465,7 +466,7 @@ TO-DOS
 						}
 					);
 
-					svgEditor.setConfig(urldata, {overwrite: false}); // Note: source, url, and paramurl (as with storagePrompt later) are not set on config but are used below
+					editor.setConfig(urldata, {overwrite: false}); // Note: source, url, and paramurl (as with storagePrompt later) are not set on config but are used below
 					
 					setupCurConfig();
 
@@ -489,22 +490,22 @@ TO-DOS
 						}
 						if (qstr.indexOf('paramurl=') !== -1) {
 							// Get parameter URL (use full length of remaining location.href)
-							svgEditor.loadFromURL(qstr.substr(9));
+							editor.loadFromURL(qstr.substr(9));
 							return;
 						}
 						if (urldata.url) {
-							svgEditor.loadFromURL(urldata.url);
+							editor.loadFromURL(urldata.url);
 							return;
 						}
 					}
 					if (!urldata.noStorageOnLoad || curConfig.forceStorage) {
-						svgEditor.loadContentAndPrefs();
+						editor.loadContentAndPrefs();
 					}
 					setupCurPrefs();
 				}
 				else {
 					setupCurConfig();
-					svgEditor.loadContentAndPrefs();
+					editor.loadContentAndPrefs();
 					setupCurPrefs();
 				}
 			}());
@@ -726,7 +727,7 @@ TO-DOS
 					}
 					
 					var size = $.pref('iconsize');
-					svgEditor.setIconSize(size || ($(window).height() < min_height ? 's': 'm'));
+					editor.setIconSize(size || ($(window).height() < min_height ? 's': 'm'));
 
 					// Look for any missing flyout icons from plugins
 					$('.tools_flyout').each(function() {
@@ -742,7 +743,7 @@ TO-DOS
 						}
 					});
 
-					svgEditor.runCallbacks();
+					editor.runCallbacks();
 
 					setTimeout(function() {
 						$('.flyout_arrow_horiz:empty').each(function() {
@@ -3156,7 +3157,7 @@ TO-DOS
 				});
 			}());
 			// Made public for UI customization.
-			// TODO: Group UI functions into a public svgEditor.ui interface.
+			// TODO: Group UI functions into a public editor.ui interface.
 			editor.addDropDown = function(elem, callback, dropUp) {
 				if ($(elem).length == 0) {return;} // Quit if called on non-existant element
 				var button = $(elem).find('button');
@@ -3855,7 +3856,7 @@ TO-DOS
 					};
 
 					$(window).resize(resetScrollPos);
-					svgEditor.ready(function() {
+					editor.ready(function() {
 						// TODO: Find better way to detect when to do this to minimize
 						// flickering effect
 						setTimeout(function() {
@@ -4976,7 +4977,7 @@ TO-DOS
 			// For Compatibility with older extensions
 			$(function() {
 				window.svgCanvas = svgCanvas;
-				svgCanvas.ready = svgEditor.ready;
+				svgCanvas.ready = editor.ready;
 			});
 
 			editor.setLang = function(lang, allStrings) {

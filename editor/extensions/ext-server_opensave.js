@@ -167,7 +167,7 @@ svgEditor.addExtension("server_opensave", {
 			
 			
 			function submit() {
-				// This submits the form, which returns the file data using svgEditor.uploadSVG
+				// This submits the form, which returns the file data using svgEditor.processFile()
 				form.submit();
 				
 				rebuildInput(form);
@@ -190,7 +190,7 @@ svgEditor.addExtension("server_opensave", {
 				});
 			} else {
 				inp.change(function() {
-					// This submits the form, which returns the file data using svgEditor.uploadSVG
+					// This submits the form, which returns the file data using svgEditor.processFile()
 					submit();
 				});
 			}
