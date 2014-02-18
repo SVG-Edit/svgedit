@@ -17,30 +17,75 @@
 // 2) browser.js
 // 3) svgcanvas.js
 
-(function() {'use strict';
+/*
+TO-DOS
+1. JSDoc
+*/
+
+(function() {
 
 	if (window.svgEditor) {
 		return;
 	}
 	window.svgEditor = (function($) {
-		var svgCanvas,
-			Editor = {},
+		var editor = {};
+		// EDITOR PROPERTIES: (defined below)
+		//		curPrefs, curConfig, canvas, storage, uiStrings
+		//
+		// STATE MAINTENANCE PROPERTIES
+		editor.tool_scale = 1; // Dependent on icon size, so no need to make configurable?
+		editor.langChanged = false;
+		editor.showSaveWarning = false;
+		editor.storagePromptClosed = false; // For use with ext-storage.js
+
+		var svgCanvas, urldata,
 			isReady = false,
+			callbacks = [],
+			customHandlers = {},
+			/**
+			* PREFS AND CONFIG
+			*/
+			// The iteration algorithm for defaultPrefs does not currently support array/objects
 			defaultPrefs = {
-				lang: 'en',
-				iconsize: 'm',
+				// EDITOR OPTIONS (DIALOG)
+				lang: '', // Default to "en" if locale.js detection does not detect another language
+				iconsize: '', // Will default to 's' if the window height is smaller than the minimum height and 'm' otherwise
 				bkgd_color: '#FFF',
 				bkgd_url: '',
-				img_save: 'embed'
+				// DOCUMENT PROPERTIES (DIALOG)
+				img_save: 'embed',
+				// ALERT NOTICES
+				// Only shows in UI as far as alert notices, but useful to remember, so keeping as pref
+				save_notice_done: false,
+				export_notice_done: false
 			},
 			curPrefs = {},
-
-			// Note: Difference between Prefs and Config is that Prefs can be
-			// changed in the UI and are stored in the browser, config can not
+			// Note: The difference between Prefs and Config is that Prefs
+			//   can be changed in the UI and are stored in the browser,
+			//   while config cannot
 			curConfig = {
+				// We do not put on defaultConfig to simplify object copying
+				//   procedures (we obtain instead from defaultExtensions)
+				extensions: []
+			},
+			defaultExtensions = [
+				'ext-overview_window.js',
+				'ext-markers.js',
+				'ext-connector.js',
+				'ext-eyedropper.js',
+				'ext-shapes.js',
+				'ext-imagelib.js',
+				'ext-grid.js',
+				'ext-polygon.js',
+				'ext-star.js',
+				'ext-panning.js',
+				'ext-storage.js'
+			],
+			defaultConfig = {
+				// Todo: svgcanvas.js also sets and checks: show_outside_canvas, selectNew; add here?
+				// Change the following to preferences and add pref controls to the UI (e.g., initTool, wireframe, showlayers)?
 				canvasName: 'default',
 				canvas_expansion: 3,
-				dimensions: [640,480],
 				initFill: {
 					color: 'FF0000', // solid red
 					opacity: 1
@@ -51,31 +96,45 @@
 					opacity: 1
 				},
 				initOpacity: 1,
+				colorPickerCSS: null,
+				initTool: 'select',
+				wireframe: false,
+				showlayers: false,
+				no_save_warning: false,
+				// PATH CONFIGURATION
+				// The following path configuration items are disallowed in the URL (as should any future path configurations)
 				imgPath: 'images/',
 				langPath: 'locale/',
 				extPath: 'extensions/',
 				jGraduatePath: 'jgraduate/images/',
-				extensions: [
-					'ext-markers.js',
-					'ext-connector.js',
-					'ext-eyedropper.js',
-					'ext-shapes.js',
-					'ext-imagelib.js',
-					'ext-grid.js',
-					'ext-polygon.js',
-					'ext-star.js',
-					'ext-panning.js'
-				],
-				initTool: 'select',
-				wireframe: false,
-				colorPickerCSS: null,
+				// DOCUMENT PROPERTIES
+				// Change the following to a preference (already in the Document Properties dialog)?
+				dimensions: [640, 480],
+				// EDITOR OPTIONS
+				// Change the following to preferences (already in the Editor Options dialog)?
 				gridSnapping: false,
 				gridColor: '#000',
 				baseUnit: 'px',
 				snappingStep: 10,
-				showRulers: true
+				showRulers: true,
+				// URL BEHAVIOR CONFIGURATION
+				preventAllURLConfig: false,
+				preventURLContentLoading: false,
+				// EXTENSION CONFIGURATION (see also preventAllURLConfig)
+				lockExtensions: false, // Disallowed in URL setting
+				noDefaultExtensions: false, // noDefaultExtensions can only be meaningfully used in config.js or in the URL
+				// EXTENSION-RELATED (GRID)
+				showGrid: false, // Set by ext-grid.js
+				// EXTENSION-RELATED (STORAGE)
+				noStorageOnLoad: false, // Some interaction with ext-storage.js; prevent even the loading of previously saved local storage
+				forceStorage: false, // Some interaction with ext-storage.js; strongly discouraged from modification as it bypasses user privacy by preventing them from choosing whether to keep local storage or not
+				emptyStorageOnDecline: false // Used by ext-storage.js; empty any prior storage if the user declines to store
 			},
-			uiStrings = Editor.uiStrings = {
+			/**
+			* LOCALE
+			* @todo Can we remove now that we are always loading even English? (unless locale is set to null)
+			*/
+			uiStrings = editor.uiStrings = {
 				common: {
 					ok: 'OK',
 					cancel: 'Cancel',
@@ -112,10 +171,9 @@
 					URLloadFail: 'Unable to load from URL',
 					retrieving: 'Retrieving \'%s\' ...'
 				}
-			},
-			customHandlers = {};
+			};
 
-		function loadSvgString(str, callback) {
+		function loadSvgString (str, callback) {
 			var success = svgCanvas.setSvgString(str) !== false;
 			callback = callback || $.noop;
 			if (success) {
@@ -127,99 +185,213 @@
 			}
 		}
 
-		Editor.curConfig = curConfig;
-		Editor.tool_scale = 1;
-
+		/**
+		* EXPORTS
+		*/
+		
 		/**
 		* Store and retrieve preferences
 		* @param {string} key The preference name to be retrieved or set
-		* @param {string} [val] The value. If the value supplied is null or undefined, no change to the preference will be made.
-		* @returns {string} If val is not present (or is null or undefined), the value of the previously stored preference will be returned.
+		* @param {string} [val] The value. If the value supplied is missing or falsey, no change to the preference will be made.
+		* @returns {string} If val is missing or falsey, the value of the previously stored preference will be returned.
+		* @todo Can we change setting on the jQuery namespace (onto editor) to avoid conflicts?
+		* @todo Review whether any remaining existing direct references to
+		*	getting curPrefs can be changed to use $.pref() getting to ensure
+		*	defaultPrefs fallback (also for sake of allowInitialUserOverride); specifically, bkgd_color could be changed so that
+		*	the pref dialog has a button to auto-calculate background, but otherwise uses $.pref() to be able to get default prefs
+		*	or overridable settings
 		*/
-		$.pref = function(key, val) {
+		$.pref = function (key, val) {
 			if (val) {
 				curPrefs[key] = val;
+				editor.curPrefs = curPrefs; // Update exported value
+				return;
 			}
-			key = 'svg-edit-' + key;
-			var d, result,
-				host = location.hostname,
-				onWeb = host && host.indexOf('.') >= 0,
-				store = (val != undefined),
-				storage = false;
+			return (key in curPrefs) ? curPrefs[key] : defaultPrefs[key];
+		};
+		
+		/**
+		* EDITOR PUBLIC METHODS
+		* @todo Sort these methods per invocation order, ideally with init at the end
+		* @todo Prevent execution until init executes if dependent on it?
+		*/
+
+		/**
+		* Where permitted, sets canvas and/or defaultPrefs based on previous
+		*	storage. This will override URL settings (for security reasons) but
+		*	not config.js configuration (unless initial user overriding is explicitly
+		*	permitted there via allowInitialUserOverride).
+		* @todo Split allowInitialUserOverride into allowOverrideByURL and
+		*	allowOverrideByUserStorage so config.js can disallow some
+		*	individual items for URL setting but allow for user storage AND/OR
+		*	change URL setting so that it always uses a different namespace,
+		*	so it won't affect pre-existing user storage (but then if users saves
+		*	that, it will then be subject to tampering
+		*/
+		editor.loadContentAndPrefs = function () {
+			if (!curConfig.forceStorage && (curConfig.noStorageOnLoad || !document.cookie.match(/(?:^|;\s*)store=(?:prefsAndContent|prefsOnly)/))) {
+				return;
+			}
+
+			// LOAD CONTENT
+			if ('localStorage' in window && // Cookies do not have enough available memory to hold large documents
+				(curConfig.forceStorage || (!curConfig.noStorageOnLoad && document.cookie.match(/(?:^|;\s*)store=prefsAndContent/)))
+			) {
+				var name = 'svgedit-' + curConfig.canvasName;
+				var cached = window.localStorage.getItem(name);
+				if (cached) {
+					editor.loadFromString(cached);
+				}
+			}
+			
+			// LOAD PREFS
+			var key, storage = false;
+			// var host = location.hostname,
+			//	onWeb = host && host.indexOf('.') >= 0;
+
 			// Some FF versions throw security errors here
 			try {
 				if (window.localStorage) { // && onWeb removed so Webkit works locally
 					storage = localStorage;
 				}
-			} catch(e) {}
-			try {
-				if (window.globalStorage && onWeb) {
-					storage = globalStorage[host];
-				}
-			} catch(e2) {}
+			} catch(err) {}
+			editor.storage = storage;
 
-			if (storage) {
-				if (store) {
-					storage.setItem(key, val);
-				} else if (storage.getItem(key)) {
-					return String(storage.getItem(key)); // Convert to string for FF (.value fails in Webkit)
-				}
-			} else if (window.widget) {
-				if (store) {
-					widget.setPreferenceForKey(val, key);
-				} else {
-					return widget.preferenceForKey(key);
-				}
-			} else {
-				if (store) {
-					d = new Date();
-					d.setTime(d.getTime() + 31536000000);
-					val = encodeURIComponent(val);
-					document.cookie = key+'='+val+'; expires='+d.toUTCString();
-				} else {
-					result = document.cookie.match(new RegExp(key + '=([^;]+)'));
-					return result ? decodeURIComponent(result[1]) : '';
+			for (key in defaultPrefs) {
+				if (defaultPrefs.hasOwnProperty(key)) { // It's our own config, so we don't need to iterate up the prototype chain
+					var storeKey = 'svg-edit-' + key;
+					if (storage) {
+						var val = storage.getItem(storeKey);
+						if (val) {
+							defaultPrefs[key] = String(val); // Convert to string for FF (.value fails in Webkit)
+						}
+					}
+					else if (window.widget) {
+						defaultPrefs[key] = widget.preferenceForKey(storeKey);
+					}
+					else {
+						var result = document.cookie.match(new RegExp('(?:^|;\\s*)' + storeKey + '=([^;]+)'));
+						defaultPrefs[key] = result ? decodeURIComponent(result[1]) : '';
+					}
 				}
 			}
 		};
 
-		Editor.setConfig = function(opts) {
+		/**
+		* Allows setting of preferences or configuration (including extensions).
+		* @param {object} opts The preferences or configuration (including extensions)
+		* @param {object} [cfgCfg] Describes configuration which applies to the particular batch of supplied options
+		* @param {boolean} [cfgCfg.allowInitialUserOverride=false] Set to true if you wish
+		*	to allow initial overriding of settings by the user via the URL
+		*	(if permitted) or previously stored preferences (if permitted);
+		*	note that it will be too late if you make such calls in extension
+		*	code because the URL or preference storage settings will
+		*   have already taken place.
+		* @param {boolean} [cfgCfg.overwrite=true] Set to false if you wish to
+		*	prevent the overwriting of prior-set preferences or configuration
+		*	(URL settings will always follow this requirement for security
+		*	reasons, so config.js settings cannot be overridden unless it
+		*	explicitly permits via "allowInitialUserOverride" but extension config
+		*	can be overridden as they will run after URL settings). Should
+		*   not be needed in config.js.
+		*/
+		editor.setConfig = function (opts, cfgCfg) {
+			cfgCfg = cfgCfg || {};
+			function extendOrAdd (cfgObj, key, val) {
+				if (cfgObj[key] && typeof cfgObj[key] === 'object') {
+					$.extend(true, cfgObj[key], val);
+				}
+				else {
+					cfgObj[key] = val;
+				}
+				return;
+			}
 			$.each(opts, function(key, val) {
-				// Only allow prefs defined in defaultPrefs
-				if (defaultPrefs[key]) {
-					$.pref(key, val);
+				if (opts.hasOwnProperty(key)) {
+					// Only allow prefs defined in defaultPrefs
+					if (defaultPrefs.hasOwnProperty(key)) {
+						if (cfgCfg.overwrite === false && (
+							curConfig.preventAllURLConfig ||
+							curPrefs.hasOwnProperty(key)
+						)) {
+							return;
+						}
+						if (cfgCfg.allowInitialUserOverride === true) {
+							defaultPrefs[key] = val;
+						}
+						else {
+							$.pref(key, val);
+						}
+					}
+					else if (key === 'extensions') {
+						if (cfgCfg.overwrite === false &&
+							(curConfig.preventAllURLConfig || curConfig.lockExtensions)
+						) {
+							return;
+						}
+						curConfig.extensions = curConfig.extensions.concat(val); // We will handle any dupes later
+					}
+					// Only allow other curConfig if defined in defaultConfig
+					else if (defaultConfig.hasOwnProperty(key)) {
+						if (cfgCfg.overwrite === false && (
+							curConfig.preventAllURLConfig ||
+							curConfig.hasOwnProperty(key)
+						)) {
+							return;
+						}
+						// Potentially overwriting of previously set config
+						if (curConfig.hasOwnProperty(key)) {
+							if (cfgCfg.overwrite === false) {
+								return;
+							}
+							extendOrAdd(curConfig, key, val);
+						}
+						else {
+							if (cfgCfg.allowInitialUserOverride === true) {
+								extendOrAdd(defaultConfig, key, val);
+							}
+							else {
+								if (defaultConfig[key] && typeof defaultConfig[key] === 'object') {
+									curConfig[key] = {};
+									$.extend(true, curConfig[key], val); // Merge properties recursively, e.g., on initFill, initStroke objects
+								}
+								else {
+									curConfig[key] = val;
+								}
+							}
+						}
+					}
 				}
 			});
-			$.extend(true, curConfig, opts);
-			if (opts.extensions) {
-				curConfig.extensions = opts.extensions;
-			}
+			editor.curConfig = curConfig; // Update exported value
 		};
 
-		// Extension mechanisms may call setCustomHandlers with three functions: opts.open, opts.save, and opts.exportImage
-		// opts.open's responsibilities are:
-		//	- invoke a file chooser dialog in 'open' mode
-		//	- let user pick a SVG file
-		//	- calls setCanvas.setSvgString() with the string contents of that file
-		// opts.save's responsibilities are:
-		//	- accept the string contents of the current document
-		//	- invoke a file chooser dialog in 'save' mode
-		//	- save the file to location chosen by the user
-		// opts.exportImage's responsibilities (with regard to the object it is supplied in its 2nd argument) are:
-		//  - inform user of any issues supplied via the "issues" property
-		//  - convert the "svg" property SVG string into an image for export;
-		//	  utilize the properties "type" (currently 'PNG', 'JPEG', 'BMP',
-		//	  'WEBP'), "mimeType", and "quality" (for 'JPEG' and 'WEBP'
-		// types) to determine the proper output.
-		Editor.setCustomHandlers = function(opts) {
-			Editor.ready(function() {
+		/**
+		* @param {object} opts Extension mechanisms may call setCustomHandlers with three functions: opts.open, opts.save, and opts.exportImage
+		* opts.open's responsibilities are:
+		*	- invoke a file chooser dialog in 'open' mode
+		*	- let user pick a SVG file
+		*	- calls setCanvas.setSvgString() with the string contents of that file
+		*  opts.save's responsibilities are:
+		*	- accept the string contents of the current document
+		*	- invoke a file chooser dialog in 'save' mode
+		*	- save the file to location chosen by the user
+		*  opts.exportImage's responsibilities (with regard to the object it is supplied in its 2nd argument) are:
+		*	- inform user of any issues supplied via the "issues" property
+		*	- convert the "svg" property SVG string into an image for export;
+		*		utilize the properties "type" (currently 'PNG', 'JPEG', 'BMP',
+		*		'WEBP'), "mimeType", and "quality" (for 'JPEG' and 'WEBP'
+		*		types) to determine the proper output.
+		*/
+		editor.setCustomHandlers = function (opts) {
+			editor.ready(function() {
 				if (opts.open) {
 					$('#tool_open > input[type="file"]').remove();
 					$('#tool_open').show();
 					svgCanvas.open = opts.open;
 				}
 				if (opts.save) {
-					Editor.showSaveWarning = false;
+					editor.showSaveWarning = false;
 					svgCanvas.bind('saved', opts.save);
 				}
 				if (opts.exportImage || opts.pngsave) { // Deprecating pngsave
@@ -229,30 +401,40 @@
 			});
 		};
 
-		Editor.randomizeIds = function() {
+		editor.randomizeIds = function () {
 			svgCanvas.randomizeIds(arguments);
 		};
 
-		Editor.init = function() {
-			// For external openers
-			(function() {
-				// let the opener know SVG Edit is ready
-				var svgEditorReadyEvent,
-					w = window.opener;
-				if (w) {
-					try {
-						svgEditorReadyEvent = w.document.createEvent('Event');
-						svgEditorReadyEvent.initEvent('svgEditorReady', true, true);
-						w.document.documentElement.dispatchEvent(svgEditorReadyEvent);
-					}
-					catch(e) {}
-				}
-			}());
+		editor.init = function () {
+			// Todo: Avoid var-defined functions and group functions together, etc. where possible
+			var good_langs = [];
+			$('#lang_select option').each(function() {
+				good_langs.push(this.value);
+			});
 
+			function setupCurPrefs () {
+				curPrefs = $.extend(true, {}, defaultPrefs, curPrefs); // Now safe to merge with priority for curPrefs in the event any are already set
+				// Export updated prefs
+				editor.curPrefs = curPrefs;
+			}
+			function setupCurConfig () {
+				curConfig = $.extend(true, {}, defaultConfig, curConfig); // Now safe to merge with priority for curConfig in the event any are already set
+				
+				// Now deal with extensions
+				if (!curConfig.noDefaultExtensions) {
+					curConfig.extensions = curConfig.extensions.concat(defaultExtensions);
+				}
+				// ...and remove any dupes
+				curConfig.extensions = $.grep(curConfig.extensions, function (n, i) {
+					return i === curConfig.extensions.indexOf(n);
+				});
+				// Export updated config
+				editor.curConfig = curConfig;
+			}
 			(function() {
 				// Load config/data from URL if given
-				var src, qstr,
-					urldata = $.deparam.querystring(true);
+				var src, qstr;
+				urldata = $.deparam.querystring(true);
 				if (!$.isEmptyObject(urldata)) {
 					if (urldata.dimensions) {
 						urldata.dimensions = urldata.dimensions.split(',');
@@ -271,45 +453,78 @@
 					// security reasons, even for same-domain
 					// ones given potential to interact in undesirable
 					// ways with other script resources
-					if (urldata.extPath) {
-						delete urldata.extPath;
-					}
+					$.each(
+						[
+							'extPath', 'imgPath',
+							'langPath', 'jGraduatePath'
+						],
+						function (pathConfig) {
+							if (urldata[pathConfig]) {
+								delete urldata[pathConfig];
+							}
+						}
+					);
 
-					svgEditor.setConfig(urldata);
+					svgEditor.setConfig(urldata, {overwrite: false}); // Note: source, url, and paramurl (as with storagePrompt later) are not set on config but are used below
+					
+					setupCurConfig();
 
-					src = urldata.source;
-					qstr = $.param.querystring();
-
-					if (!src) { // urldata.source may have been null if it ended with '='
-						if (qstr.indexOf('source=data:') >= 0) {
-							src = qstr.match(/source=(data:[^&]*)/)[1];
+					if (!curConfig.preventURLContentLoading) {
+						src = urldata.source;
+						qstr = $.param.querystring();
+						if (!src) { // urldata.source may have been null if it ended with '='
+							if (qstr.indexOf('source=data:') >= 0) {
+								src = qstr.match(/source=(data:[^&]*)/)[1];
+							}
+						}
+						if (src) {
+							if (src.indexOf('data:') === 0) {
+								// plusses get replaced by spaces, so re-insert
+								src = src.replace(/ /g, '+');
+								editor.loadFromDataURI(src);
+							} else {
+								editor.loadFromString(src);
+							}
+							return;
+						}
+						if (qstr.indexOf('paramurl=') !== -1) {
+							// Get parameter URL (use full length of remaining location.href)
+							svgEditor.loadFromURL(qstr.substr(9));
+							return;
+						}
+						if (urldata.url) {
+							svgEditor.loadFromURL(urldata.url);
+							return;
 						}
 					}
-
-					if (src) {
-						if (src.indexOf('data:') === 0) {
-							// plusses get replaced by spaces, so re-insert
-							src = src.replace(/ /g, '+');
-							Editor.loadFromDataURI(src);
-						} else {
-							Editor.loadFromString(src);
-						}
-					} else if (qstr.indexOf('paramurl=') !== -1) {
-						// Get parameter URL (use full length of remaining location.href)
-						svgEditor.loadFromURL(qstr.substr(9));
-					} else if (urldata.url) {
-						svgEditor.loadFromURL(urldata.url);
+					if (!urldata.noStorageOnLoad || curConfig.forceStorage) {
+						svgEditor.loadContentAndPrefs();
 					}
-				} else {
-					var name = 'svgedit-' + Editor.curConfig.canvasName;
-					var cached = window.localStorage && window.localStorage.getItem(name);
-					if (cached) {
-						Editor.loadFromString(cached);
-					}
+					setupCurPrefs();
+				}
+				else {
+					setupCurConfig();
+					svgEditor.loadContentAndPrefs();
+					setupCurPrefs();
 				}
 			}());
 
-			var setIcon = Editor.setIcon = function(elem, icon_id, forcedSize) {
+			// For external openers
+			(function() {
+				// let the opener know SVG Edit is ready (now that config is set up)
+				var svgEditorReadyEvent,
+					w = window.opener;
+				if (w) {
+					try {
+						svgEditorReadyEvent = w.document.createEvent('Event');
+						svgEditorReadyEvent.initEvent('svgEditorReady', true, true);
+						w.document.documentElement.dispatchEvent(svgEditorReadyEvent);
+					}
+					catch(e) {}
+				}
+			}());
+			
+			var setIcon = editor.setIcon = function(elem, icon_id, forcedSize) {
 				var icon = (typeof icon_id === 'string') ? $.getSvgIcon(icon_id, true) : icon_id.clone();
 				if (!icon) {
 					console.log('NOTE: Icon image missing: ' + icon_id);
@@ -331,14 +546,8 @@
 					});
 				});
 
-				var good_langs = [];
-
-				$('#lang_select option').each(function() {
-					good_langs.push(this.value);
-				});
-
 				// var lang = ('lang' in curPrefs) ? curPrefs.lang : null;
-				Editor.putLocale(null, good_langs);
+				editor.putLocale(null, good_langs);
 			};
 
 			// Load extensions
@@ -515,13 +724,9 @@
 					if (tleft.length !== 0) {
 						min_height = tleft.offset().top + tleft.outerHeight();
 					}
-//					var size = $.pref('iconsize');
-//					if (size && size != 'm') {
-//						svgEditor.setIconSize(size);
-//					} else if ($(window).height() < min_height) {
-//						// Make smaller
-//						svgEditor.setIconSize('s');
-//					}
+					
+					var size = $.pref('iconsize');
+					svgEditor.setIconSize(size || ($(window).height() < min_height ? 's': 'm'));
 
 					// Look for any missing flyout icons from plugins
 					$('.tools_flyout').each(function() {
@@ -547,19 +752,19 @@
 				}
 			});
 
-			Editor.canvas = svgCanvas = new $.SvgCanvas(document.getElementById('svgcanvas'), curConfig);
-			Editor.showSaveWarning = false;
-			var palette = [
-				'#000000', '#3f3f3f', '#7f7f7f', '#bfbfbf', '#ffffff',
-				'#ff0000', '#ff7f00', '#ffff00', '#7fff00',
-				'#00ff00', '#00ff7f', '#00ffff', '#007fff',
-				'#0000ff', '#7f00ff', '#ff00ff', '#ff007f',
-				'#7f0000', '#7f3f00', '#7f7f00', '#3f7f00',
-				'#007f00', '#007f3f', '#007f7f', '#003f7f',
-				'#00007f', '#3f007f', '#7f007f', '#7f003f',
-				'#ffaaaa', '#ffd4aa', '#ffffaa', '#d4ffaa',
-				'#aaffaa', '#aaffd4', '#aaffff', '#aad4ff',
-				'#aaaaff', '#d4aaff', '#ffaaff', '#ffaad4'
+			editor.canvas = svgCanvas = new $.SvgCanvas(document.getElementById('svgcanvas'), curConfig);
+			var supportsNonSS, resize_timer, changeZoom, Actions, curScrollPos,
+				palette = [ // Todo: Make into configuration item?
+					'#000000', '#3f3f3f', '#7f7f7f', '#bfbfbf', '#ffffff',
+					'#ff0000', '#ff7f00', '#ffff00', '#7fff00',
+					'#00ff00', '#00ff7f', '#00ffff', '#007fff',
+					'#0000ff', '#7f00ff', '#ff00ff', '#ff007f',
+					'#7f0000', '#7f3f00', '#7f7f00', '#3f7f00',
+					'#007f00', '#007f3f', '#007f7f', '#003f7f',
+					'#00007f', '#3f007f', '#7f007f', '#7f003f',
+					'#ffaaaa', '#ffd4aa', '#ffffaa', '#d4ffaa',
+					'#aaffaa', '#aaffd4', '#aaffff', '#aad4ff',
+					'#aaaaff', '#d4aaff', '#ffaaff', '#ffaad4'
 				],
 				modKey = (svgedit.browser.isMac() ? 'meta+' : 'ctrl+'), // ⌘
 				path = svgCanvas.pathActions,
@@ -568,15 +773,14 @@
 				defaultImageURL = curConfig.imgPath + 'logo.png',
 				workarea = $('#workarea'),
 				canv_menu = $('#cmenu_canvas'),
-				layer_menu = $('#cmenu_layers'),
+				// layer_menu = $('#cmenu_layers'), // Unused
 				exportWindow = null,
-				tool_scale = 1,
 				zoomInIcon = 'crosshair',
 				zoomOutIcon = 'crosshair',
 				ui_context = 'toolbars',
 				origSource = '',
 				paintBox = {fill: null, stroke:null};
-
+			
 			// This sets up alternative dialog boxes. They mostly work the same way as
 			// their UI counterparts, expect instead of returning the result, a callback
 			// needs to be included that returns the result as its first parameter.
@@ -587,8 +791,8 @@
 				var box = $('#dialog_box'),
 					btn_holder = $('#dialog_buttons'),
 					dialog_content = $('#dialog_content'),
-					dbox = function(type, msg, callback, defaultVal, opts, changeCb) {
-						var ok, ctrl;
+					dbox = function(type, msg, callback, defaultVal, opts, changeCb, checkbox) {
+						var ok, ctrl, chkbx;
 						dialog_content.html('<p>'+msg.replace(/\n/g, '</p><p>')+'</p>')
 							.toggleClass('prompt', (type == 'prompt'));
 						btn_holder.empty();
@@ -609,8 +813,23 @@
 						else if (type === 'select') {
 							var div = $('<div style="text-align:center;">');
 							ctrl = $('<select>').appendTo(div);
+							if (checkbox) {
+								var label = $('<label>').text(checkbox.label);
+								chkbx = $('<input type="checkbox">').appendTo(label);
+								chkbx.val(checkbox.value);
+								if (checkbox.tooltip) {
+									label.attr('title', checkbox.tooltip);
+								}
+								chkbx.prop('checked', !!checkbox.checked);
+								div.append($('<div>').append(label));
+							}
 							$.each(opts || [], function (opt, val) {
-								ctrl.append($('<option>').html(val));
+								if (typeof val === 'object') {
+									ctrl.append($('<option>').val(val.value).html(val.text));
+								}
+								else {
+									ctrl.append($('<option>').html(val));
+								}
 							});
 							dialog_content.append(div);
 							if (defaultVal) {
@@ -632,7 +851,12 @@
 							box.hide();
 							var resp = (type === 'prompt' || type === 'select') ? ctrl.val() : true;
 							if (callback) {
-								callback(resp);
+								if (chkbx) {
+									callback(resp, chkbx.prop('checked'));
+								}
+								else {
+									callback(resp);
+								}
 							}
 						}).focus();
 
@@ -645,7 +869,7 @@
 				$.confirm = function(msg, cb) {	dbox('confirm', msg, cb);};
 				$.process_cancel = function(msg, cb) { dbox('process', msg, cb);};
 				$.prompt = function(msg, txt, cb) { dbox('prompt', msg, cb, txt);};
-				$.select = function(msg, opts, cb, changeCb, txt) { dbox('select', msg, cb, txt, opts, changeCb);};
+				$.select = function(msg, opts, cb, changeCb, txt, checkbox) { dbox('select', msg, cb, txt, opts, changeCb, checkbox);};
 			}());
 
 			var setSelectMode = function() {
@@ -660,7 +884,7 @@
 			};
 
 			// used to make the flyouts stay on the screen longer the very first time
-			var flyoutspeed = 1250;
+			// var flyoutspeed = 1250; // Currently unused
 			var textBeingEntered = false;
 			var selectedElement = null;
 			var multiselected = false;
@@ -681,19 +905,19 @@
 			// This function highlights the layer passed in (by fading out the other layers)
 			// if no layer is passed in, this function restores the other layers
 			var toggleHighlightLayer = function(layerNameToHighlight) {
-				var i, curNames = new Array(svgCanvas.getCurrentDrawing().getNumLayers());
-				for (i = 0; i < curNames.length; i++) {
+				var i, curNames = [], numLayers = svgCanvas.getCurrentDrawing().getNumLayers();
+				for (i = 0; i < numLayers; i++) {
 					curNames[i] = svgCanvas.getCurrentDrawing().getLayerName(i);
 				}
 
 				if (layerNameToHighlight) {
-					for (i = 0; i < curNames.length; ++i) {
+					for (i = 0; i < numLayers; ++i) {
 						if (curNames[i] != layerNameToHighlight) {
 							svgCanvas.getCurrentDrawing().setLayerOpacity(curNames[i], 0.5);
 						}
 					}
 				} else {
-					for (i = 0; i < curNames.length; ++i) {
+					for (i = 0; i < numLayers; ++i) {
 						svgCanvas.getCurrentDrawing().setLayerOpacity(curNames[i], 1.0);
 					}
 				}
@@ -718,7 +942,7 @@
 				}
 				if (icon !== undefined) {
 					var copy = icon.clone();
-					$('td.layervis', layerlist).append(icon.clone());
+					$('td.layervis', layerlist).append(copy);
 					$.resizeSvgIcons({'td.layervis .svg_icon': 14});
 				}
 				// handle selection of layer
@@ -782,8 +1006,8 @@
 				}
 			};
 
-			var saveHandler = function(window, svg) {
-				Editor.showSaveWarning = false;
+			var saveHandler = function(wind, svg) {
+				editor.showSaveWarning = false;
 
 				// by default, we add the XML prolog back, systems integrating SVG-edit (wikis, CMSs)
 				// can just provide their own custom save handler and might not want the XML prolog
@@ -797,7 +1021,7 @@
 				}
 
 				// Opens the SVG in new window
-				var win = window.open('data:image/svg+xml;base64,' + Utils.encode64(svg));
+				var win = wind.open('data:image/svg+xml;base64,' + Utils.encode64(svg));
 
 				// Alert will only appear the first time saved OR the first time the bug is encountered
 				var done = $.pref('save_notice_done');
@@ -823,7 +1047,7 @@
 				}
 			};
 
-			var exportHandler = function(window, data) {
+			var exportHandler = function(win, data) {
 				var issues = data.issues,
 					type = data.type || 'PNG',
 					dataURLType = (type === 'ICO' ? 'BMP' : type).toLowerCase();
@@ -874,7 +1098,7 @@
 					svgCanvas.setStrokeAttr('stroke-' + pre, val);
 				}
 				operaRepaint();
-				setIcon('#cur_' + pre , id, 20);
+				setIcon('#cur_' + pre, id, 20);
 				$(opt).addClass('current').siblings().removeClass('current');
 			}
 
@@ -883,7 +1107,7 @@
 			// - removes the tool_button_current class from whatever tool currently has it
 			// - hides any flyouts
 			// - adds the tool_button_current class to the button passed in
-			var toolButtonClick = function(button, noHiding) {
+			var toolButtonClick = editor.toolButtonClick = function(button, noHiding) {
 				if ($(button).hasClass('disabled')) {return false;}
 				if ($(button).parent().hasClass('tools_flyout')) {return true;}
 				var fadeFlyouts = 'normal';
@@ -897,14 +1121,14 @@
 				return true;
 			};
 
-			var clickSelect = function() {
+			var clickSelect = editor.clickSelect = function() {
 				if (toolButtonClick('#tool_select')) {
 					svgCanvas.setMode('select');
 					$('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all}, #svgcanvas svg{cursor:default}');
 				}
 			};
 
-			var setImageURL = Editor.setImageURL = function(url) {
+			var setImageURL = editor.setImageURL = function(url) {
 				if (!url) {
 					url = defaultImageURL;
 				}
@@ -927,8 +1151,8 @@
 				}
 			};
 
-			function setBackground(color, url) {
-				// if (color == curPrefs.bkgd_color && url == curPrefs.bkgd_url) return;
+			function setBackground (color, url) {
+				// if (color == $.pref('bkgd_color') && url == $.pref('bkgd_url')) {return;}
 				$.pref('bkgd_color', color);
 				$.pref('bkgd_url', url);
 
@@ -979,22 +1203,22 @@
 					var total_len = ruler_len;
 					hcanv.parentNode.style[lentype] = total_len + 'px';
 					var ctx_num = 0;
-					var ctx_arr;
 					var ctx = hcanv.getContext('2d');
+					var ctx_arr, num, ctx_arr_num;
 
 					ctx.fillStyle = 'rgb(200,0,0)';
 					ctx.fillRect(0, 0, hcanv.width, hcanv.height);
 
 					// Remove any existing canvasses
 					$hcanv.siblings().remove();
-					var num;
+					
 					// Create multiple canvases when necessary (due to browser limits)
 					if (ruler_len >= limit) {
-						num = parseInt(ruler_len / limit, 10) + 1;
-						ctx_arr = new Array(num);
+						ctx_arr_num = parseInt(ruler_len / limit, 10) + 1;
+						ctx_arr = [];
 						ctx_arr[0] = ctx;
 						var copy;
-						for (i = 1; i < num; i++) {
+						for (i = 1; i < ctx_arr_num; i++) {
 							hcanv[lentype] = limit;
 							copy = hcanv.cloneNode(true);
 							hcanv.parentNode.appendChild(copy);
@@ -1031,7 +1255,7 @@
 					// draw big intervals
 					while (ruler_d < total_len) {
 						label_pos += big_int;
-						var real_d = ruler_d - contentDim;
+						// var real_d = ruler_d - contentDim; // Currently unused
 
 						var cur_d = Math.round(ruler_d) + 0.5;
 						if (isX) {
@@ -1075,7 +1299,7 @@
 							if (ctx_arr && sub_d > ruler_len) {
 								ctx_num++;
 								ctx.stroke();
-								if (ctx_num >= ctx_arr.length) {
+								if (ctx_num >= ctx_arr_num) {
 									i = 10;
 									ruler_d = total_len;
 									continue;
@@ -1102,7 +1326,7 @@
 				}
 			}
 
-			var updateCanvas = Editor.updateCanvas = function(center, new_ctr) {
+			var updateCanvas = editor.updateCanvas = function(center, new_ctr) {
 				var w = workarea.width(), h = workarea.height();
 				var w_orig = w, h_orig = h;
 				var zoom = svgCanvas.getZoom();
@@ -1169,7 +1393,9 @@
 					updateRulers(cnvs, zoom);
 					workarea.scroll();
 				}
-				$('#dialog_box').hide();
+				if (urldata.storagePrompt !== true && !editor.storagePromptClosed) {
+					$('#dialog_box').hide();
+				}
 			};
 
 			var updateToolButtonState = function() {
@@ -1507,7 +1733,6 @@
 				}
 			};
 
-			var supportsNonSS;
 			var updateWireFrame = function() {
 				// Test support
 				if (supportsNonSS) {return;}
@@ -1528,7 +1753,7 @@
 			};
 
 			// called when we've selected a different element
-			var selectedChanged = function(window, elems) {
+			var selectedChanged = function(win, elems) {
 				var mode = svgCanvas.getMode();
 				if (mode === 'select') {
 					setSelectMode();
@@ -1559,7 +1784,7 @@
 
 			// Call when part of element is in process of changing, generally
 			// on mousemove actions like rotate, move, etc.
-			var elementTransition = function(window, elems) {
+			var elementTransition = function(win, elems) {
 				var mode = svgCanvas.getMode();
 				var elem = elems[0];
 
@@ -1589,7 +1814,7 @@
 			};
 
 			// called when any element has changed
-			var elementChanged = function(window, elems) {
+			var elementChanged = function(win, elems) {
 				var i,
 					mode = svgCanvas.getMode();
 				if (mode === 'select') {
@@ -1612,7 +1837,7 @@
 					}
 				}
 
-				Editor.showSaveWarning = true;
+				editor.showSaveWarning = true;
 
 				// we update the contextual panel with potentially new
 				// positional/sizing information (we DON'T want to update the
@@ -1639,12 +1864,11 @@
 				// updateCanvas(); // necessary?
 			};
 
-			var changeZoom;
-			var zoomChanged = svgCanvas.zoomChanged = function(window, bbox, autoCenter) {
+			var zoomChanged = svgCanvas.zoomChanged = function(win, bbox, autoCenter) {
 				var scrbar = 15,
-					res = svgCanvas.getResolution(),
-					w_area = workarea,
-					canvas_pos = $('#svgcanvas').position();
+					// res = svgCanvas.getResolution(), // Currently unused
+					w_area = workarea;
+				// var canvas_pos = $('#svgcanvas').position(); // Currently unused
 				var z_info = svgCanvas.setBBoxZoom(bbox, w_area.width()-scrbar, w_area.height()-scrbar);
 				if (!z_info) {return;}
 				var zoomlevel = z_info.zoom,
@@ -1755,7 +1979,7 @@
 					var shower = $('#' + this.id + '_show');
 					var pos = shower.offset();
 					var w = shower.outerWidth();
-					$(this).css({left: (pos.left + w)*tool_scale, top: pos.top});
+					$(this).css({left: (pos.left + w) * editor.tool_scale, top: pos.top});
 				});
 			};
 
@@ -1875,10 +2099,26 @@
 				return div;
 			};
 
-			var resize_timer;
+			var uaPrefix = (function() {
+				var prop;
+				var regex = /^(Moz|Webkit|Khtml|O|ms|Icab)(?=[A-Z])/;
+				var someScript = document.getElementsByTagName('script')[0];
+				for (prop in someScript.style) {
+					if (regex.test(prop)) {
+						// test is faster than match, so it's better to perform
+						// that on the lot and match only when necessary
+						return prop.match(regex)[0];
+					}
+				}
+				// Nothing found so far?
+				if ('WebkitOpacity' in someScript.style) {return 'Webkit';}
+				if ('KhtmlOpacity' in someScript.style) {return 'Khtml';}
+
+				return '';
+			}());
 
 			var scaleElements = function(elems, scale) {
-				var prefix = '-' + uaPrefix.toLowerCase() + '-';
+				// var prefix = '-' + uaPrefix.toLowerCase() + '-'; // Currently unused
 				var sides = ['top', 'left', 'bottom', 'right'];
 
 				elems.each(function() {
@@ -1888,7 +2128,7 @@
 					var el = $(this);
 					var w = el.outerWidth() * (scale - 1);
 					var h = el.outerHeight() * (scale - 1);
-					var margins = {};
+					// var margins = {}; // Currently unused
 
 					for (i = 0; i < 4; i++) {
 						var s = sides[i];
@@ -1911,8 +2151,7 @@
 				});
 			};
 
-			var setIconSize = Editor.setIconSize = function(size, force) {
-				if (size == curPrefs.size && !force) {return;}
+			var setIconSize = editor.setIconSize = function (size) {
 
 //				var elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
 				var sel_toscale = '#tools_top .toolset, #editor_panel > *, #history_panel > *,'+
@@ -1922,14 +2161,14 @@
 				var elems = $(sel_toscale);
 				var scale = 1;
 
-				if (typeof size == 'number') {
+				if (typeof size === 'number') {
 					scale = size;
 				} else {
 					var icon_sizes = {s: 0.75, m:1, l: 1.25, xl: 1.5};
 					scale = icon_sizes[size];
 				}
 
-				Editor.tool_scale = tool_scale = scale;
+				editor.tool_scale = scale;
 
 				setFlyoutPositions();
 				// $('.tools_flyout').each(function() {
@@ -2090,7 +2329,7 @@
 					rule_elem.empty();
 				}
 
-				if (size != 'm') {
+				if (size !== 'm') {
 					var styleStr = '';
 					$.each(cssResizeRules, function(selector, rules) {
 						selector = '#svg_editor ' + selector.replace(/,/g,', #svg_editor');
@@ -2145,7 +2384,7 @@
 					on_button = false;
 				});
 
-				var height = list.height();
+				// var height = list.height(); // Currently unused
 				button.bind('mousedown',function() {
 					var off = button.offset();
 					if (dropUp) {
@@ -2178,10 +2417,24 @@
 				}
 			};
 
-			var extAdded = function(window, ext) {
+			var extsPreLang = [];
+			var extAdded = function(win, ext) {
+				if (!ext) {
+					return;
+				}
 				var cb_called = false;
 				var resize_done = false;
 				var cb_ready = true; // Set to false to delay callback (e.g. wait for $.svgIcons)
+				
+				if (ext.langReady) {
+					if (editor.langChanged) { // We check for this since the "lang" pref could have been set by storage
+						var lang = $.pref('lang');
+						ext.langReady({lang:lang, uiStrings:uiStrings});
+					}
+					else {
+						extsPreLang.push(ext);
+					}
+				}
 
 				function prepResize() {
 					if (resize_timer) {
@@ -2191,7 +2444,7 @@
 					if (!resize_done) {
 						resize_timer = setTimeout(function() {
 							resize_done = true;
-							setIconSize(curPrefs.iconsize);
+							setIconSize($.pref('iconsize'));
 						}, 50);
 					}
 				}
@@ -2351,8 +2604,13 @@
 							.attr('title', btn.title)
 							.addClass(cls);
 						if (!btn.includeWith && !btn.list) {
-							if (btn.position) {
-								$(parent).children().eq(btn.position).before(button);
+							if ('position' in btn) {
+								if ($(parent).children().eq(btn.position).length) {
+									$(parent).children().eq(btn.position).before(button);
+								}
+								else {
+									$(parent).children().last().before(button);
+								}
 							} else {
 								button.appendTo(parent);
 							}
@@ -2369,7 +2627,7 @@
 									// Create flyout placeholder
 									tls_id = ref_btn[0].id.replace('tool_', 'tools_');
 									show_btn = ref_btn.clone()
-										.attr('id',tls_id + '_show')
+										.attr('id', tls_id + '_show')
 										.append($('<div>', {'class': 'flyout_arrow_horiz'}));
 
 									ref_btn.before(show_btn);
@@ -2459,7 +2717,7 @@
 
 							// {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
 
-							var pos = opts.position || 'last';
+							var pos  = ('position' in opts) ? opts.position : 'last';
 							var len = flyout_holder.children().length;
 
 							// Add at given position or end
@@ -2512,14 +2770,15 @@
 					}
 
 					$.svgIcons(svgicons, {
-						w:24, h:24,
+						w: 24, h: 24,
 						id_match: false,
 						no_img: (!svgedit.browser.isWebkit()),
 						fallback: fallback_obj,
 						placement: placement_obj,
-						callback: function(icons) {
+						callback: function (icons) {
 							// Non-ideal hack to make the icon match the current size
-							if (curPrefs.iconsize && curPrefs.iconsize != 'm') {
+							//if (curPrefs.iconsize && curPrefs.iconsize !== 'm') {
+							if ($.pref('iconsize') !== 'm') {
 								prepResize();
 							}
 							cb_ready = true; // Ready for callback
@@ -2565,7 +2824,7 @@
 			svgCanvas.textActions.setInputElem($('#text')[0]);
 
 			var str = '<div class="palette_item" data-rgb="none"></div>';
-			$.each(palette, function(i,item) {
+			$.each(palette, function(i, item) {
 				str += '<div class="palette_item" style="background-color: ' + item + ';" data-rgb="' + item + '"></div>';
 			});
 			$('#palette').append(str);
@@ -2588,17 +2847,9 @@
 				});
 			});
 
-			if ($.pref('bkgd_color')) {
-				setBackground($.pref('bkgd_color'), $.pref('bkgd_url'));
-			} else if ($.pref('bkgd_url')) {
-				// No color set, only URL
-				setBackground(defaultPrefs.bkgd_color, $.pref('bkgd_url'));
-			}
+			setBackground($.pref('bkgd_color'), $.pref('bkgd_url'));
 
-			if ($.pref('img_save')) {
-				curPrefs.img_save = $.pref('img_save');
-				$('#image_save_opts input').val([curPrefs.img_save]);
-			}
+			$('#image_save_opts input').val([$.pref('img_save')]);
 
 			var changeRectRadius = function(ctl) {
 				svgCanvas.setRectRadius(ctl.value);
@@ -2823,7 +3074,7 @@
 					}
 				});
 
-				Editor.setPanning = function(active) {
+				editor.setPanning = function(active) {
 					svgCanvas.spaceKey = keypan = active;
 				};
 			}());
@@ -2837,9 +3088,12 @@
 				var js_hover = true;
 				var set_click = false;
 
+				/*
+				// Currently unused
 				var hideMenu = function() {
 					list.fadeOut(200);
 				};
+				*/
 
 				$(window).mouseup(function(evt) {
 					if (!on_button) {
@@ -2903,7 +3157,7 @@
 			}());
 			// Made public for UI customization.
 			// TODO: Group UI functions into a public svgEditor.ui interface.
-			Editor.addDropDown = function(elem, callback, dropUp) {
+			editor.addDropDown = function(elem, callback, dropUp) {
 				if ($(elem).length == 0) {return;} // Quit if called on non-existant element
 				var button = $(elem).find('button');
 				var list = $(elem).find('ul').attr('id', $(elem)[0].id + '-list');
@@ -2946,13 +3200,13 @@
 				});
 			};
 
-			Editor.addDropDown('#font_family_dropdown', function() {
+			editor.addDropDown('#font_family_dropdown', function() {
 				$('#font_family').val($(this).text()).change();
 			});
 
-			Editor.addDropDown('#opacity_dropdown', function() {
+			editor.addDropDown('#opacity_dropdown', function() {
 				if ($(this).find('div').length) {return;}
-				var perc = parseInt($(this).text().split('%')[0]);
+				var perc = parseInt($(this).text().split('%')[0], 10);
 				changeOpacity(false, perc);
 			}, true);
 
@@ -2970,7 +3224,7 @@
 				}
 			});
 
-			Editor.addDropDown('#blur_dropdown', $.noop);
+			editor.addDropDown('#blur_dropdown', $.noop);
 
 			var slideStart = false;
 
@@ -2991,7 +3245,7 @@
 				}
 			});
 
-			Editor.addDropDown('#zoom_dropdown', function() {
+			editor.addDropDown('#zoom_dropdown', function() {
 				var item = $(this);
 				var val = item.data('val');
 				if (val) {
@@ -3220,6 +3474,7 @@
 
 			var linkControlPoints = function() {
 				$('#tool_node_link').toggleClass('push_button_pressed tool_button');
+				var linked = $('#tool_node_link').hasClass('push_button_pressed');
 				path.linkControlPoints(linked);
 			};
 
@@ -3236,6 +3491,8 @@
 			};
 
 			var addSubPath = function() {
+				var button = $('#tool_add_subpath');
+				var sp = !button.hasClass('push_button_pressed');
 				button.toggleClass('push_button_pressed tool_button');
 				path.addSubPath(sp);
 			};
@@ -3291,7 +3548,7 @@
 			var clickSave = function() {
 				// In the future, more options can be provided here
 				var saveOpts = {
-					'images': curPrefs.img_save,
+					'images': $.pref('img_save'),
 					'round_digits': 6
 				};
 				svgCanvas.save(saveOpts);
@@ -3401,7 +3658,7 @@
 				docprops = true;
 
 				// This selects the correct radio button by using the array notation
-				$('#image_save_opts input').val([curPrefs.img_save]);
+				$('#image_save_opts input').val([$.pref('img_save')]);
 
 				// update resolution option with actual resolution
 				var res = svgCanvas.getResolution();
@@ -3425,9 +3682,8 @@
 				// Update background color with current one
 				var blocks = $('#bg_blocks div');
 				var cur_bg = 'cur_background';
-				var canvas_bg = $.pref('bkgd_color');
+				var canvas_bg = curPrefs.bkgd_color;
 				var url = $.pref('bkgd_url');
-		//		if (url) url = url[1];
 				blocks.each(function() {
 					var blk = $(this);
 					var is_bg = blk.css('background-color') == canvas_bg;
@@ -3478,7 +3734,7 @@
 				$('#svg_docprops').hide();
 				$('#canvas_width,#canvas_height').removeAttr('disabled');
 				$('#resolution')[0].selectedIndex = 0;
-				$('#image_save_opts input').val([curPrefs.img_save]);
+				$('#image_save_opts input').val([$.pref('img_save')]);
 				docprops = false;
 			};
 
@@ -3518,22 +3774,21 @@
 					return false;
 				}
 
-				// set image save option
-				curPrefs.img_save = $('#image_save_opts :checked').val();
-				$.pref('img_save',curPrefs.img_save);
+				// Set image save option
+				$.pref('img_save', $('#image_save_opts :checked').val());
 				updateCanvas();
 				hideDocProperties();
 			};
 
-			var savePreferences = function() {
-				// set background
+			var savePreferences = editor.savePreferences = function() {
+				// Set background
 				var color = $('#bg_blocks div.cur_background').css('background-color') || '#FFF';
 				setBackground(color, $('#canvas_bg_url').val());
 
 				// set language
 				var lang = $('#lang_select').val();
-				if (lang != curPrefs.lang) {
-					Editor.putLocale(lang);
+				if (lang !== $.pref('lang')) {
+					editor.putLocale(lang, good_langs);
 				}
 
 				// set icon size
@@ -3554,24 +3809,6 @@
 				updateCanvas();
 				hidePreferences();
 			};
-
-			var uaPrefix = (function() {
-				var prop;
-				var regex = /^(Moz|Webkit|Khtml|O|ms|Icab)(?=[A-Z])/;
-				var someScript = document.getElementsByTagName('script')[0];
-				for (prop in someScript.style) {
-					if (regex.test(prop)) {
-						// test is faster than match, so it's better to perform
-						// that on the lot and match only when necessary
-						return prop.match(regex)[0];
-					}
-				}
-				// Nothing found so far?
-				if (someScript.style.WebkitOpacity) {return 'Webkit';}
-				if (someScript.style.KhtmlOpacity) {return 'Khtml';}
-
-				return '';
-			}());
 
 			var resetScrollPos = $.noop;
 
@@ -3601,7 +3838,6 @@
 			};
 
 			var win_wh = {width:$(window).width(), height:$(window).height()};
-			var curScrollPos;
 
 			// Fix for Issue 781: Drawing area jumps to top-left corner on window resize (IE9)
 			if (svgedit.browser.isIE()) {
@@ -3711,7 +3947,7 @@
 //				var opacity = (picker == 'stroke' ? $('#stroke_opacity') : $('#fill_opacity'));
 				var paint = paintBox[picker].paint;
 				var title = (picker == 'stroke' ? 'Pick a Stroke Paint and Opacity' : 'Pick a Fill Paint and Opacity');
-				var was_none = false;
+				// var was_none = false; // Currently unused
 				var pos = elem.offset();
 				$('#color_picker')
 					.draggable({cancel: '.jGraduate_tabs, .jGraduate_colPick, .jGraduate_gradPick, .jPicker', containment: 'window'})
@@ -3890,7 +4126,7 @@
 						// Disable option
 						$('#image_save_opts [value=embed]').attr('disabled', 'disabled');
 						$('#image_save_opts input').val(['ref']);
-						curPrefs.img_save = 'ref';
+						$.pref('img_save', 'ref');
 						$('#image_opt_embed').css('color', '#666').attr('title', uiStrings.notification.featNotSupported);
 					}
 				});
@@ -4016,7 +4252,7 @@
 			});
 
 			$('#layer_rename').click(function() {
-				var curIndex = $('#layerlist tr.layersel').prevAll().length;
+				// var curIndex = $('#layerlist tr.layersel').prevAll().length; // Currently unused
 				var oldName = $('#layerlist tr.layersel td.layername').text();
 				$.prompt(uiStrings.notification.enterNewLayerName, '', function(newName) {
 					if (!newName) {return;}
@@ -4177,7 +4413,7 @@
 			$('input,select').attr('autocomplete', 'off');
 
 			// Associate all button actions as well as non-button keyboard shortcuts
-			var Actions = (function() {
+			Actions = (function() {
 				// sel:'selector', fn:function, evt:'event', key:[key, preventDefault, NoDisableInInput]
 				var tool_buttons = [
 					{sel: '#tool_select', fn: clickSelect, evt: 'click', key: ['V', true]},
@@ -4321,7 +4557,7 @@
 							// Bind function to shortcut key
 							if (opts.key) {
 								// Set shortcut based on options
-								var keyval, shortcut = '', disInInp = true, fn = opts.fn, pd = false;
+								var keyval, disInInp = true, fn = opts.fn, pd = false;
 								if ($.isArray(opts.key)) {
 									keyval = opts.key[0];
 									if (opts.key.length > 1) {pd = opts.key[1];}
@@ -4420,7 +4656,7 @@
 			Actions.setAll();
 
 			// Select given tool
-			Editor.ready(function() {
+			editor.ready(function() {
 				var tool,
 					itool = curConfig.initTool,
 					container = $('#tools_left, #svg_editor .tools_flyout'),
@@ -4570,25 +4806,20 @@
 			canv_menu.enableContextMenuItems('#delete,#cut,#copy');
 
 			window.addEventListener('beforeunload', function(e) {
-				if (window.localStorage) {
-					var name = 'svgedit-' + Editor.curConfig.canvasName;
-					window.localStorage.setItem(name, svgCanvas.getSvgString());
-					Editor.showSaveWarning = false;
-				}
 				// Suppress warning if page is empty
 				if (undoMgr.getUndoStackSize() === 0) {
-					Editor.showSaveWarning = false;
+					editor.showSaveWarning = false;
 				}
 
 				// showSaveWarning is set to 'false' when the page is saved.
-				if (!curConfig.no_save_warning && Editor.showSaveWarning) {
+				if (!curConfig.no_save_warning && editor.showSaveWarning) {
 					// Browser already asks question about closing the page
 					e.returnValue = uiStrings.notification.unsavedChanges; // Firefox needs this when beforeunload set by addEventListener (even though message is not used)
 					return uiStrings.notification.unsavedChanges;
 				}
 			}, false);
 
-			Editor.openPrep = function(func) {
+			editor.openPrep = function(func) {
 				$('#main_menu').hide();
 				if (undoMgr.getUndoStackSize() === 0) {
 					func(true);
@@ -4690,7 +4921,7 @@
 
 				var open = $('<input type="file">').change(function() {
 					var f = this;
-					Editor.openPrep(function(ok) {
+					editor.openPrep(function(ok) {
 						if (!ok) {return;}
 						svgCanvas.clear();
 						if (f.files.length==1) {
@@ -4748,13 +4979,14 @@
 				svgCanvas.ready = svgEditor.ready;
 			});
 
-			Editor.setLang = function(lang, allStrings) {
+			editor.setLang = function(lang, allStrings) {
+				editor.langChanged = true;
 				$.pref('lang', lang);
 				$('#lang_select').val(lang);
 				if (!allStrings) {
 					return;
 				}
-				var notif = allStrings.notification;
+				// var notif = allStrings.notification; // Currently unused
 				// $.extend will only replace the given strings
 				var oldLayerName = $('#layerlist tr.layersel td.layername').text();
 				var rename_layer = (oldLayerName == uiStrings.common.layer + ' 1');
@@ -4768,6 +5000,16 @@
 					populateLayers();
 				}
 
+				// In case extensions loaded before the locale, now we execute a callback on them
+				if (extsPreLang.length) {
+					while (extsPreLang.length) {
+						var ext = extsPreLang.shift();
+						ext.langReady({lang: lang, uiStrings: uiStrings});
+					}
+				}
+				else {
+					svgCanvas.runExtensions('langReady', {lang: lang, uiStrings: uiStrings});
+				}
 				svgCanvas.runExtensions('langChanged', lang);
 
 				// Update flyout tooltips
@@ -4792,9 +5034,7 @@
 			};
 		};
 
-		var callbacks = [];
-
-		Editor.ready = function(cb) {
+		editor.ready = function (cb) {
 			if (!isReady) {
 				callbacks.push(cb);
 			} else {
@@ -4802,33 +5042,33 @@
 			}
 		};
 
-		Editor.runCallbacks = function() {
+		editor.runCallbacks = function () {
 			$.each(callbacks, function() {
 				this();
 			});
 			isReady = true;
 		};
 
-		Editor.loadFromString = function(str) {
-			Editor.ready(function() {
+		editor.loadFromString = function (str) {
+			editor.ready(function() {
 				loadSvgString(str);
 			});
 		};
 
-		Editor.disableUI = function(featList) {
+		editor.disableUI = function (featList) {
 //			$(function() {
 //				$('#tool_wireframe, #tool_image, #main_button, #tool_source, #sidepanels').remove();
 //				$('#tools_top').css('left', 5);
 //			});
 		};
 
-		Editor.loadFromURL = function(url, opts) {
+		editor.loadFromURL = function (url, opts) {
 			if (!opts) {opts = {};}
 
 			var cache = opts.cache;
 			var cb = opts.callback;
 
-			Editor.ready(function() {
+			editor.ready(function() {
 				$.ajax({
 					'url': url,
 					'dataType': 'text',
@@ -4853,25 +5093,25 @@
 			});
 		};
 
-		Editor.loadFromDataURI = function(str) {
-			Editor.ready(function() {
+		editor.loadFromDataURI = function(str) {
+			editor.ready(function() {
 				var pre = 'data:image/svg+xml;base64,';
 				var src = str.substring(pre.length);
 				loadSvgString(svgedit.utilities.decode64(src));
 			});
 		};
 
-		Editor.addExtension = function() {
+		editor.addExtension = function () {
 			var args = arguments;
 
-			// Note that we don't want this on Editor.ready since some extensions
+			// Note that we don't want this on editor.ready since some extensions
 			// may want to run before then (like server_opensave).
 			$(function() {
 				if (svgCanvas) {svgCanvas.addExtension.apply(this, args);}
 			});
 		};
 
-		return Editor;
+		return editor;
 	}(jQuery));
 
 	// Run init once DOM is loaded

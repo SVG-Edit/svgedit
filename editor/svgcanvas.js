@@ -489,7 +489,7 @@ canvas.clipBoard = [];
 var runExtensions = this.runExtensions = function(action, vars, returnArray) {
 	var result = returnArray ? [] : false;
 	$.each(extensions, function(name, opts) {
-		if (action in opts) {
+		if (opts && action in opts) {
 			if (returnArray) {
 				result.push(opts[action](vars));
 			} else {
