@@ -716,4 +716,9 @@ svgedit.utilities.snapToGrid = function(value) {
 	return value;
 };
 
+svgedit.utilities.preg_quote = function (str, delimiter) {
+  // From: http://phpjs.org/functions
+  return String(str).replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]', 'g'), '\\$&');
+};
+
 }());
