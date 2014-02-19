@@ -1,15 +1,16 @@
 ﻿CACHE MANIFEST
 svg-editor.html
 images/logo.png
-jgraduate/css/jPicker-1.0.9.css
-jgraduate/css/jGraduate-0.2.0.css
+jgraduate/css/jPicker.css
+jgraduate/css/jgraduate.css
 svg-editor.css
 spinbtn/JQuerySpinBtn.css
 jquery.js
+config.js
 js-hotkeys/jquery.hotkeys.min.js
-jquery-ui/jquery-ui-1.7.2.custom.min.js
-jgraduate/jpicker-1.0.9.min.js
-jgraduate/jquery.jgraduate.js
+jquery-ui/jquery-ui-1.8.17.custom.min.js
+jgraduate/jpicker.min.js
+jgraduate/jquery.jgraduate.min.js
 spinbtn/JQuerySpinBtn.js
 svgcanvas.js
 svg-editor.js
