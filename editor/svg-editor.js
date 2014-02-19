@@ -237,34 +237,23 @@ TO-DOS
 			}
 
 			// LOAD CONTENT
-			if ('localStorage' in window && // Cookies do not have enough available memory to hold large documents
+			if (editor.storage && // Cookies do not have enough available memory to hold large documents
 				(curConfig.forceStorage || (!curConfig.noStorageOnLoad && document.cookie.match(/(?:^|;\s*)store=prefsAndContent/)))
 			) {
 				var name = 'svgedit-' + curConfig.canvasName;
-				var cached = window.localStorage.getItem(name);
+				var cached = editor.storage.getItem(name);
 				if (cached) {
 					editor.loadFromString(cached);
 				}
 			}
 			
 			// LOAD PREFS
-			var key, storage = false;
-			// var host = location.hostname,
-			//	onWeb = host && host.indexOf('.') >= 0;
-
-			// Some FF versions throw security errors here
-			try {
-				if (window.localStorage) { // && onWeb removed so Webkit works locally
-					storage = localStorage;
-				}
-			} catch(err) {}
-			editor.storage = storage;
-
+			var key;
 			for (key in defaultPrefs) {
 				if (defaultPrefs.hasOwnProperty(key)) { // It's our own config, so we don't need to iterate up the prototype chain
 					var storeKey = 'svg-edit-' + key;
-					if (storage) {
-						var val = storage.getItem(storeKey);
+					if (editor.storage) {
+						var val = editor.storage.getItem(storeKey);
 						if (val) {
 							defaultPrefs[key] = String(val); // Convert to string for FF (.value fails in Webkit)
 						}
@@ -409,6 +398,15 @@ TO-DOS
 		};
 
 		editor.init = function () {
+			// var host = location.hostname,
+			//	onWeb = host && host.indexOf('.') >= 0;
+			// Some FF versions throw security errors here when directly accessing
+			try {
+				if ('localStorage' in window) { // && onWeb removed so Webkit works locally
+					editor.storage = localStorage;
+				}
+			} catch(err) {}
+
 			// Todo: Avoid var-defined functions and group functions together, etc. where possible
 			var good_langs = [];
 			$('#lang_select option').each(function() {
