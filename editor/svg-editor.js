@@ -213,6 +213,7 @@ TO-DOS
 		
 		/**
 		* EDITOR PUBLIC METHODS
+		* locale.js also adds "putLang" and "readLang" as editor methods
 		* @todo Sort these methods per invocation order, ideally with init at the end
 		* @todo Prevent execution until init executes if dependent on it?
 		*/
