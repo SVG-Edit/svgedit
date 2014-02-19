@@ -43,7 +43,8 @@ svgEditor.addExtension('storage', function() {
 		// or adding of new storage takes place regardless of settings, set
 		// the "noStorageOnLoad" config setting to true in config.js.
 		noStorageOnLoad = svgEditor.curConfig.noStorageOnLoad,
-		forceStorage = svgEditor.curConfig.forceStorage;
+		forceStorage = svgEditor.curConfig.forceStorage,
+		storage = svgEditor.storage;
 
 	function replaceStoragePrompt (val) {
 		val = val ? 'storagePrompt=' + val : '';
@@ -57,13 +58,13 @@ svgEditor.addExtension('storage', function() {
 		}
 	}
 	function setSVGContentStorage (val) {
-		if ('localStorage' in window) {
+		if (storage) {
 			var name = 'svgedit-' + svgEditor.curConfig.canvasName;
 			if (!val) {
-				window.localStorage.removeItem(name);
+				storage.removeItem(name);
 			}
 			else {
-				window.localStorage.setItem(name, val);
+				storage.setItem(name, val);
 			}
 		}
 	}
@@ -78,12 +79,12 @@ svgEditor.addExtension('storage', function() {
 	
 	function emptyStorage() {
 		setSVGContentStorage('');
-		var name, hasStorage = 'localStorage' in window;
+		var name;
 		for (name in svgEditor.curPrefs) {
 			if (svgEditor.curPrefs.hasOwnProperty(name)) {
 				name = 'svg-edit-' + name;
-				if (hasStorage) {
-					window.localStorage.removeItem(name);
+				if (storage) {
+					storage.removeItem(name);
 				}
 				expireCookie(name);
 			}
@@ -115,10 +116,10 @@ svgEditor.addExtension('storage', function() {
 			// svgEditor.showSaveWarning = false;
 
 			var curPrefs = svgEditor.curPrefs;
+
 			for (key in curPrefs) {
 				if (curPrefs.hasOwnProperty(key)) { // It's our own config, so we don't need to iterate up the prototype chain
-					var storage = svgEditor.storage,
-						val = curPrefs[key],
+					var val = curPrefs[key],
 						store = (val != undefined);
 					key = 'svg-edit-' + key;
 					if (!store) {
@@ -195,7 +196,7 @@ svgEditor.addExtension('storage', function() {
 			)) {
 
 				var options = [];
-				if ('localStorage' in window) {
+				if (storage) {
 					options.unshift(
 						{value: 'prefsAndContent', text: uiStrings.confirmSetStorage.storagePrefsAndContent},
 						{value: 'prefsOnly', text: uiStrings.confirmSetStorage.storagePrefsOnly},
