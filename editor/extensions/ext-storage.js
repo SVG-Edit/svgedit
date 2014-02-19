@@ -67,22 +67,30 @@ svgEditor.addExtension('storage', function() {
 			}
 		}
 	}
-	function removeStoragePrefCookie () {
-		document.cookie = 'store=; expires=Thu, 01 Jan 1970 00:00:00 GMT';	
+	
+	function expireCookie (cookie) {
+		document.cookie = encodeURIComponent(cookie) + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 	}
-	function emptyLocalStorage() {
+	
+	function removeStoragePrefCookie () {
+		expireCookie('store');
+	}
+	
+	function emptyStorage() {
 		setSVGContentStorage('');
-		var name;
-		if ('localStorage' in window) {
-			for (name in svgEditor.curPrefs) {
-				if (svgEditor.curPrefs.hasOwnProperty(name)) {
+		var name, hasStorage = 'localStorage' in window;
+		for (name in svgEditor.curPrefs) {
+			if (svgEditor.curPrefs.hasOwnProperty(name)) {
+				name = 'svg-edit-' + name;
+				if (hasStorage) {
 					window.localStorage.removeItem(name);
 				}
+				expireCookie(name);
 			}
 		}
 	}
 	
-//	emptyLocalStorage();
+//	emptyStorage();
 
 	/**
 	* Listen for unloading: If and only if opted in by the user, set the content
@@ -124,7 +132,7 @@ svgEditor.addExtension('storage', function() {
 					}
 					else {
 						val = encodeURIComponent(val);
-						document.cookie = key + '=' + val + '; expires=Fri, 31 Dec 9999 23:59:59 GMT';
+						document.cookie = encodeURIComponent(key) + '=' + val + '; expires=Fri, 31 Dec 9999 23:59:59 GMT';
 					}
 				}
 			}
@@ -223,7 +231,7 @@ svgEditor.addExtension('storage', function() {
 							// doesn't even want to remember their not wanting
 							// storage, so we don't set the cookie or continue on with
 							//  setting storage on beforeunload
-							document.cookie = 'store=' + pref + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'; // 'prefsAndContent' | 'prefsOnly'
+							document.cookie = 'store=' + encodeURIComponent(pref) + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'; // 'prefsAndContent' | 'prefsOnly'
 							// If the URL was configured to always insist on a prompt, if
 							//    the user does indicate a wish to store their info, we
 							//    don't want ask them again upon page refresh so move
@@ -235,8 +243,10 @@ svgEditor.addExtension('storage', function() {
 						}
 						else { // The user does not wish storage (or cancelled, which we treat equivalently)
 							removeStoragePrefCookie();
-							if (emptyStorageOnDecline) {
-								emptyLocalStorage();
+							if (pref && // If the user explicitly expresses wish for no storage
+								emptyStorageOnDecline
+							) {
+								emptyStorage();
 							}
 							if (pref && checked) {
 								// Open a URL which won't set storage and won't prompt user about storage

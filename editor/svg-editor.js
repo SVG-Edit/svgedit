@@ -40,6 +40,7 @@ TO-DOS
 		editor.storagePromptClosed = false; // For use with ext-storage.js
 
 		var svgCanvas, urldata,
+			Utils = svgedit.utilities,
 			isReady = false,
 			callbacks = [],
 			customHandlers = {},
@@ -272,7 +273,7 @@ TO-DOS
 						defaultPrefs[key] = widget.preferenceForKey(storeKey);
 					}
 					else {
-						var result = document.cookie.match(new RegExp('(?:^|;\\s*)' + storeKey + '=([^;]+)'));
+						var result = document.cookie.match(new RegExp('(?:^|;\\s*)' + Utils.preg_quote(encodeURIComponent(storeKey)) + '=([^;]+)'));
 						defaultPrefs[key] = result ? decodeURIComponent(result[1]) : '';
 					}
 				}
@@ -771,7 +772,6 @@ TO-DOS
 				modKey = (svgedit.browser.isMac() ? 'meta+' : 'ctrl+'), // ⌘
 				path = svgCanvas.pathActions,
 				undoMgr = svgCanvas.undoMgr,
-				Utils = svgedit.utilities,
 				defaultImageURL = curConfig.imgPath + 'logo.png',
 				workarea = $('#workarea'),
 				canv_menu = $('#cmenu_canvas'),
@@ -5099,7 +5099,7 @@ TO-DOS
 			editor.ready(function() {
 				var pre = 'data:image/svg+xml;base64,';
 				var src = str.substring(pre.length);
-				loadSvgString(svgedit.utilities.decode64(src));
+				loadSvgString(Utils.decode64(src));
 			});
 		};
 
