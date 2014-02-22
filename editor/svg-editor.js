@@ -68,7 +68,22 @@ TO-DOS
 			curConfig = {
 				// We do not put on defaultConfig to simplify object copying
 				//   procedures (we obtain instead from defaultExtensions)
-				extensions: []
+				extensions: [],
+				/**
+				* Can use window.location.origin to indicate the current
+				* origin. Can contain a '*' to allow all domains or 'null' (as
+				* a string) to support all file:// URLs. Cannot be set by
+				* URL for security reasons (not safe, at least for
+				* privacy or data integrity of SVG content).
+				* Might have been fairly safe to allow
+				*   `new URL(window.location.href).origin` by default but
+				*   avoiding it ensures some more security that even third
+				*   party apps on the same domain also cannot communicate
+				*   with this app by default.
+				* For use with ext-xdomain-messaging.js
+				* @todo We might instead make as a user-facing preference.
+				*/
+				allowedOrigins: []
 			},
 			defaultExtensions = [
 				'ext-overview_window.js',
@@ -315,13 +330,17 @@ TO-DOS
 							$.pref(key, val);
 						}
 					}
-					else if (key === 'extensions') {
+					else if (['extensions', 'allowedOrigins'].indexOf(key) > -1) {
 						if (cfgCfg.overwrite === false &&
-							(curConfig.preventAllURLConfig || curConfig.lockExtensions)
+							(
+								curConfig.preventAllURLConfig ||
+								key === 'allowedOrigins' ||
+								(key === 'extensions' && curConfig.lockExtensions)
+							)
 						) {
 							return;
 						}
-						curConfig.extensions = curConfig.extensions.concat(val); // We will handle any dupes later
+						curConfig[key] = curConfig[key].concat(val); // We will handle any dupes later
 					}
 					// Only allow other curConfig if defined in defaultConfig
 					else if (defaultConfig.hasOwnProperty(key)) {
@@ -421,13 +440,15 @@ TO-DOS
 			function setupCurConfig () {
 				curConfig = $.extend(true, {}, defaultConfig, curConfig); // Now safe to merge with priority for curConfig in the event any are already set
 				
-				// Now deal with extensions
+				// Now deal with extensions and other array config
 				if (!curConfig.noDefaultExtensions) {
 					curConfig.extensions = curConfig.extensions.concat(defaultExtensions);
 				}
 				// ...and remove any dupes
-				curConfig.extensions = $.grep(curConfig.extensions, function (n, i) {
-					return i === curConfig.extensions.indexOf(n);
+				$.each(['extensions', 'allowedOrigins'], function (i, cfg) {
+					curConfig[cfg] = $.grep(curConfig[cfg], function (n, i) {
+						return i === curConfig[cfg].indexOf(n);
+					});
 				});
 				// Export updated config
 				editor.curConfig = curConfig;
@@ -4948,33 +4969,9 @@ TO-DOS
 				updateCanvas(true);
 //			});
 
-		//	var revnums = "svg-editor.js ($Rev$) ";
-		//	revnums += svgCanvas.getVersion();
-		//	$('#copyright')[0].setAttribute('title', revnums);
-
-			// Callback handler for embedapi.js
-			try {
-				window.addEventListener('message', function(e) {
-					// We accept and post strings for the sake of IE9 support
-					if (typeof e.data !== 'string' || e.data.charAt() === '|') {
-						return;
-					}
-					var data = JSON.parse(e.data);
-					if (!data || typeof data !== 'object' || data.namespace !== 'svgCanvas') {
-						return;
-					}
-					var cbid = data.id,
-						name = data.name,
-						args = data.args;
-					try {
-						e.source.postMessage(JSON.stringify({namespace: 'svg-edit', id: cbid, result: svgCanvas[name].apply(svgCanvas, args)}), '*');
-					} catch(err) {
-						e.source.postMessage(JSON.stringify({namespace: 'svg-edit', id: cbid, error: err.message}), '*');
-					}
-				}, false);
-			} catch(err) {
-				window.embed_error = err;
-			}
+			//	var revnums = "svg-editor.js ($Rev$) ";
+			//	revnums += svgCanvas.getVersion();
+			//	$('#copyright')[0].setAttribute('title', revnums);
 
 			// For Compatibility with older extensions
 			$(function() {
