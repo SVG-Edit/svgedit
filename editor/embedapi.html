@@ -42,6 +42,12 @@
         // Add event handlers
         $('#load').click(loadSvg);
         $('#save').click(saveSvg);
+		$('body').append(
+			$('<iframe src="svg-editor.html?extensions=ext-xdomain-messaging.js' +
+				window.location.href.replace(/\?(.*)$/, '&$1') + // Append arguments to this file onto the iframe
+				'" width="900px" height="600px" id="svgedit" onload="initEmbed();"></iframe>'
+			)
+		);
 	});
     </script>
 </head>
@@ -49,6 +55,5 @@
     <button id="load">Load example</button>
     <button id="save">Save data</button>
     <br/>
-	<iframe src="svg-editor.html?extensions=ext-xdomain-messaging.js&storagePrompt=false" width="900px" height="600px" id="svgedit" onload="initEmbed();"></iframe>
 </body>
 </html>
