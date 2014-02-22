@@ -48,13 +48,14 @@ svgEditor.addExtension('storage', function() {
 
 	function replaceStoragePrompt (val) {
 		val = val ? 'storagePrompt=' + val : '';
-		if (window.location.href.indexOf('storagePrompt=') > -1) {
-			window.location.href = window.location.href.replace(/([&?])storagePrompt=[^&]*(&?)/, function (n0, n1, amp) {
+		var loc = top.location; // Allow this to work with the embedded editor as well
+		if (loc.href.indexOf('storagePrompt=') > -1) {
+			loc.href = loc.href.replace(/([&?])storagePrompt=[^&]*(&?)/, function (n0, n1, amp) {
 				return (val ? n1 : '') + val + (!val && amp ? n1 : (amp || ''));
 			});
 		}
 		else {
-			window.location.href += (window.location.href.indexOf('?') > -1 ? '&' : '?') + val;
+			loc.href += (loc.href.indexOf('?') > -1 ? '&' : '?') + val;
 		}
 	}
 	function setSVGContentStorage (val) {
