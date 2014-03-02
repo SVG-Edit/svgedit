@@ -92,7 +92,7 @@ function getMessageListener (t) {
 }
 
 /**
-* @param {HTMLFrame} frame
+* @param {HTMLIFrameElement} frame
 * @param {array} [allowedOrigins=[]] Array of origins from which incoming
 *     messages will be allowed when same origin is not used; defaults to none.
 *     If supplied, it should probably be the same as svgEditor's allowedOrigins
