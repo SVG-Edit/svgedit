@@ -69,13 +69,15 @@ function addCallback (t, data) {
 }
 
 function messageListener (e) {
-  // We accept and post strings as opposed to objets for the sake of IE9 support; this
+  // We accept and post strings as opposed to objects for the sake of IE9 support; this
   //   will most likely be changed in the future
   if (typeof e.data !== 'string') {
     return;
   }
   var data = e.data && JSON.parse(e.data);
-  if (!data || typeof data !== 'object' || data.namespace !== 'svg-edit') {
+  if (!data || typeof data !== 'object' || data.namespace !== 'svg-edit' ||
+      e.source !== this.frame.contentWindow // Important security check
+  ) {
     return;
   }
   addCallback(this, data);
