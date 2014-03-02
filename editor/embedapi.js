@@ -101,7 +101,6 @@ function EmbeddedSVGEdit (frame, allowedOrigins) {
   if (!(this instanceof EmbeddedSVGEdit)) { // Allow invocation without 'new' keyword
     return new EmbeddedSVGEdit(frame);
   }
-  // 
   this.allowedOrigins = allowedOrigins || [];
   // Initialize communication
   this.frame = frame;
