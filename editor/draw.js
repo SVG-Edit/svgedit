@@ -1,5 +1,5 @@
 /*globals $, svgedit*/
-/*jslint vars: true, eqeq: true*/
+/*jslint vars: true, eqeq: true, todo: true*/
 /**
  * Package: svgedit.draw
  *
@@ -32,28 +32,35 @@ var randomize_ids = RandomizeModes.LET_DOCUMENT_DECIDE;
 
 /**
  * This class encapsulates the concept of a layer in the drawing
- * @param name {String} Layer name
- * @param child {SVGGElement} Layer SVG group.
+ * @param {String} name - Layer name
+ * @param {SVGGElement} child - Layer SVG group.
  */
 svgedit.draw.Layer = function(name, group) {
 	this.name_ = name;
 	this.group_ = group;
 };
 
+/**
+ * @returns {string} The layer name
+ */
 svgedit.draw.Layer.prototype.getName = function() {
 	return this.name_;
 };
 
+/**
+ * @returns {SVGGElement} The layer SVG group
+ */
 svgedit.draw.Layer.prototype.getGroup = function() {
 	return this.group_;
 };
 
 
-// Called to ensure that drawings will or will not have randomized ids.
-// The currentDrawing will have its nonce set if it doesn't already.
-//
-// Params:
-// enableRandomization - flag indicating if documents should have randomized ids
+/**
+ * Called to ensure that drawings will or will not have randomized ids.
+ * The currentDrawing will have its nonce set if it doesn't already.
+ * @param {boolean} enableRandomization - flag indicating if documents should have randomized ids
+ * @param {svgedit.draw.Drawing} currentDrawing
+ */
 svgedit.draw.randomizeIds = function(enableRandomization, currentDrawing) {
 	randomize_ids = enableRandomization === false ?
 		RandomizeModes.NEVER_RANDOMIZE :
@@ -68,12 +75,10 @@ svgedit.draw.randomizeIds = function(enableRandomization, currentDrawing) {
 
 /**
  * This class encapsulates the concept of a SVG-edit drawing
- *
- * @param svgElem {SVGSVGElement} The SVG DOM Element that this JS object
+ * @param {SVGSVGElement} svgElem - The SVG DOM Element that this JS object
  *     encapsulates.  If the svgElem has a se:nonce attribute on it, then
  *     IDs will use the nonce as they are generated.
- * @param opt_idPrefix {String} The ID prefix to use.  Defaults to "svg_"
- *     if not specified.
+ * @param {String=svg_} [opt_idPrefix] - The ID prefix to use.
  */
 svgedit.draw.Drawing = function(svgElem, opt_idPrefix) {
 	if (!svgElem || !svgElem.tagName || !svgElem.namespaceURI ||
@@ -124,7 +129,7 @@ svgedit.draw.Drawing = function(svgElem, opt_idPrefix) {
 	 * The nonce to use to uniquely identify elements across drawings.
 	 * @type {!String}
 	 */
-	this.nonce_ = "";
+	this.nonce_ = '';
 	var n = this.svgElem_.getAttributeNS(NS.SE, 'nonce');
 	// If already set in the DOM, use the nonce throughout the document
 	// else, if randomizeIds(true) has been called, create and set the nonce.
@@ -135,40 +140,56 @@ svgedit.draw.Drawing = function(svgElem, opt_idPrefix) {
 	}
 };
 
-svgedit.draw.Drawing.prototype.getElem_ = function(id) {
-	if(this.svgElem_.querySelector) {
+/**
+ * @param {string} id Element ID to retrieve
+ * @returns {Element} SVG element within the root SVGSVGElement
+*/
+svgedit.draw.Drawing.prototype.getElem_ = function (id) {
+	if (this.svgElem_.querySelector) {
 		// querySelector lookup
-		return this.svgElem_.querySelector('#'+id);
+		return this.svgElem_.querySelector('#' + id);
 	}
 	// jQuery lookup: twice as slow as xpath in FF
 	return $(this.svgElem_).find('[id=' + id + ']')[0];
 };
 
-svgedit.draw.Drawing.prototype.getSvgElem = function() {
+/**
+ * @returns {SVGSVGElement}
+ */
+svgedit.draw.Drawing.prototype.getSvgElem = function () {
 	return this.svgElem_;
 };
 
+/**
+ * @returns {!string|number} The previously set nonce
+ */
 svgedit.draw.Drawing.prototype.getNonce = function() {
 	return this.nonce_;
 };
 
+/**
+ * @param {!string|number} n The nonce to set
+ */
 svgedit.draw.Drawing.prototype.setNonce = function(n) {
 	this.svgElem_.setAttributeNS(NS.XMLNS, 'xmlns:se', NS.SE);
 	this.svgElem_.setAttributeNS(NS.SE, 'se:nonce', n);
 	this.nonce_ = n;
 };
 
-svgedit.draw.Drawing.prototype.clearNonce = function() {
+/**
+ * Clears any previously set nonce
+ */
+svgedit.draw.Drawing.prototype.clearNonce = function () {
 	// We deliberately leave any se:nonce attributes alone,
 	// we just don't use it to randomize ids.
-	this.nonce_ = "";
+	this.nonce_ = '';
 };
 
 /**
  * Returns the latest object id as a string.
  * @return {String} The latest object Id.
  */
-svgedit.draw.Drawing.prototype.getId = function() {
+svgedit.draw.Drawing.prototype.getId = function () {
 	return this.nonce_ ?
 		this.idPrefix + this.nonce_ + '_' + this.obj_num :
 		this.idPrefix + this.obj_num;
@@ -178,7 +199,7 @@ svgedit.draw.Drawing.prototype.getId = function() {
  * Returns the next object Id as a string.
  * @return {String} The next object Id to use.
  */
-svgedit.draw.Drawing.prototype.getNextId = function() {
+svgedit.draw.Drawing.prototype.getNextId = function () {
 	var oldObjNum = this.obj_num;
 	var restoreOldObjNum = false;
 
@@ -210,20 +231,17 @@ svgedit.draw.Drawing.prototype.getNextId = function() {
 	return id;
 };
 
-// Function: svgedit.draw.Drawing.releaseId
-// Releases the object Id, letting it be used as the next id in getNextId().
-// This method DOES NOT remove any elements from the DOM, it is expected
-// that client code will do this.
-//
-// Parameters:
-// id - The id to release.
-//
-// Returns:
-// True if the id was valid to be released, false otherwise.
-svgedit.draw.Drawing.prototype.releaseId = function(id) {
+/**
+ * Releases the object Id, letting it be used as the next id in getNextId().
+ * This method DOES NOT remove any elements from the DOM, it is expected
+ * that client code will do this.
+ * @param {string} id - The id to release.
+ * @returns {boolean} True if the id was valid to be released, false otherwise.
+*/
+svgedit.draw.Drawing.prototype.releaseId = function (id) {
 	// confirm if this is a valid id for this Document, else return false
 	var front = this.idPrefix + (this.nonce_ ? this.nonce_ + '_' : '');
-	if (typeof id != typeof '' || id.indexOf(front) != 0) {
+	if (typeof id !== 'string' || id.indexOf(front) !== 0) {
 		return false;
 	}
 	// extract the obj_num of this id
@@ -231,7 +249,7 @@ svgedit.draw.Drawing.prototype.releaseId = function(id) {
 
 	// if we didn't get a positive number or we already released this number
 	// then return false.
-	if (typeof num != typeof 1 || num <= 0 || this.releasedNums.indexOf(num) != -1) {
+	if (typeof num !== 'number' || num <= 0 || this.releasedNums.indexOf(num) != -1) {
 		return false;
 	}
 	
@@ -241,18 +259,19 @@ svgedit.draw.Drawing.prototype.releaseId = function(id) {
 	return true;
 };
 
-// Function: svgedit.draw.Drawing.getNumLayers
-// Returns the number of layers in the current drawing.
-// 
-// Returns:
-// The number of layers in the current drawing.
+/**
+ * Returns the number of layers in the current drawing.
+ * @returns {integer} The number of layers in the current drawing.
+*/
 svgedit.draw.Drawing.prototype.getNumLayers = function() {
 	return this.all_layers.length;
 };
 
-// Function: svgedit.draw.Drawing.hasLayer
-// Check if layer with given name already exists
-svgedit.draw.Drawing.prototype.hasLayer = function(name) {
+/**
+ * Check if layer with given name already exists
+ * @param {string} name - The layer name to check
+*/
+svgedit.draw.Drawing.prototype.hasLayer = function (name) {
 	var i;
 	for (i = 0; i < this.getNumLayers(); i++) {
 		if(this.all_layers[i][0] == name) {return true;}
@@ -261,42 +280,38 @@ svgedit.draw.Drawing.prototype.hasLayer = function(name) {
 };
 
 
-// Function: svgedit.draw.Drawing.getLayerName
-// Returns the name of the ith layer. If the index is out of range, an empty string is returned.
-//
-// Parameters:
-// i - the zero-based index of the layer you are querying.
-// 
-// Returns:
-// The name of the ith layer
-svgedit.draw.Drawing.prototype.getLayerName = function(i) {
+/**
+ * Returns the name of the ith layer. If the index is out of range, an empty string is returned.
+ * @param {integer} i - The zero-based index of the layer you are querying.
+ * @returns {string} The name of the ith layer (or the empty string if none found)
+*/
+svgedit.draw.Drawing.prototype.getLayerName = function (i) {
 	if (i >= 0 && i < this.getNumLayers()) {
 		return this.all_layers[i][0];
 	}
-	return "";
+	return '';
 };
 
-// Function: svgedit.draw.Drawing.getCurrentLayer
-// Returns:
-// The SVGGElement representing the current layer.
+/**
+ * @returns {SVGGElement} The SVGGElement representing the current layer.
+ */
 svgedit.draw.Drawing.prototype.getCurrentLayer = function() {
 	return this.current_layer;
 };
 
-// Function: getCurrentLayerName
-// Returns the name of the currently selected layer. If an error occurs, an empty string 
-// is returned.
-//
-// Returns:
-// The name of the currently active layer.
-svgedit.draw.Drawing.prototype.getCurrentLayerName = function() {
+/**
+ * Returns the name of the currently selected layer. If an error occurs, an empty string 
+ * is returned.
+ * @returns The name of the currently active layer (or the empty string if none found).
+*/
+svgedit.draw.Drawing.prototype.getCurrentLayerName = function () {
 	var i;
 	for (i = 0; i < this.getNumLayers(); ++i) {
 		if (this.all_layers[i][1] == this.current_layer) {
 			return this.getLayerName(i);
 		}
 	}
-	return "";
+	return '';
 };
 
 // Function: setCurrentLayer
@@ -464,7 +479,7 @@ svgedit.draw.Drawing.prototype.getLayerVisibility = function(layername) {
 // Returns:
 // The SVGGElement representing the layer if the layername was valid, otherwise null.
 svgedit.draw.Drawing.prototype.setLayerVisibility = function(layername, bVisible) {
-	if (typeof bVisible != typeof true) {
+	if (typeof bVisible !== 'boolean') {
 		return null;
 	}
 	// find the layer
@@ -485,15 +500,12 @@ svgedit.draw.Drawing.prototype.setLayerVisibility = function(layername, bVisible
 };
 
 
-// Function: svgedit.draw.Drawing.getLayerOpacity
-// Returns the opacity of the given layer.  If the input name is not a layer, null is returned.
-//
-// Parameters: 
-// layername - name of the layer on which to get the opacity
-//
-// Returns:
-// The opacity value of the given layer.  This will be a value between 0.0 and 1.0, or null
-// if layername is not a valid layer
+/**
+ * Returns the opacity of the given layer.  If the input name is not a layer, null is returned.
+ * @param {string} layername - name of the layer on which to get the opacity
+ * @returns {?number} The opacity value of the given layer.  This will be a value between 0.0 and 1.0, or null
+ * if layername is not a valid layer
+*/
 svgedit.draw.Drawing.prototype.getLayerOpacity = function(layername) {
 	var i;
 	for (i = 0; i < this.getNumLayers(); ++i) {
@@ -517,7 +529,7 @@ svgedit.draw.Drawing.prototype.getLayerOpacity = function(layername) {
 // layername - name of the layer on which to set the opacity
 // opacity - a float value in the range 0.0-1.0
 svgedit.draw.Drawing.prototype.setLayerOpacity = function(layername, opacity) {
-	if (typeof opacity != typeof 1.0 || opacity < 0.0 || opacity > 1.0) {
+	if (typeof opacity !== 'number' || opacity < 0.0 || opacity > 1.0) {
 		return;
 	}
 	var i;
