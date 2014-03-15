@@ -159,62 +159,64 @@ svgedit.utilities.decode64 = function(input) {
 	return unescape(output);
 };
 
-// Currently not being used, so commented out for now
 // based on http://phpjs.org/functions/utf8_encode
 // codedread:does not seem to work with webkit-based browsers on OSX // Brettz9: please test again as function upgraded
 svgedit.utilities.encodeUTF8 = function (argString) {
 	//return unescape(encodeURIComponent(input)); //may or may not work
-	if (argString === null || typeof argString === 'undefined') {
-		return '';
-	}
+  if (argString === null || typeof argString === 'undefined') {
+    return '';
+  }
 
-	var string = String(argString); // .replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-	var utftext = '',
-		n, start, end, stringl = 0;
+  // .replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  var string = String(argString);
+  var utftext = '',
+    start, end, stringl = 0;
 
-	start = end = 0;
-	stringl = string.length;
-	for (n = 0; n < stringl; n++) {
-		var c1 = string.charCodeAt(n);
-		var enc = null;
+  start = end = 0;
+  stringl = string.length;
+  var n;
+  for (n = 0; n < stringl; n++) {
+    var c1 = string.charCodeAt(n);
+    var enc = null;
 
-		if (c1 < 128) {
-			end++;
-		} else if (c1 > 127 && c1 < 2048) {
-			enc = String.fromCharCode(
-				(c1 >> 6) | 192, (c1 & 63) | 128
-			);
-		} else if (c1 & 0xF800 != 0xD800) {
-			enc = String.fromCharCode(
-				(c1 >> 12) | 224, ((c1 >> 6) & 63) | 128, (c1 & 63) | 128
-			);
-		} else { // surrogate pairs
-			if (c1 & 0xFC00 != 0xD800) {
-				throw new RangeError('Unmatched trail surrogate at ' + n);
-			}
-			var c2 = string.charCodeAt(++n);
-			if (c2 & 0xFC00 != 0xDC00) {
-				throw new RangeError('Unmatched lead surrogate at ' + (n - 1));
-			}
-			c1 = ((c1 & 0x3FF) << 10) + (c2 & 0x3FF) + 0x10000;
-			enc = String.fromCharCode(
-				(c1 >> 18) | 240, ((c1 >> 12) & 63) | 128, ((c1 >> 6) & 63) | 128, (c1 & 63) | 128
-			);
-		}
-		if (enc !== null) {
-			if (end > start) {
-				utftext += string.slice(start, end);
-			}
-			utftext += enc;
-			start = end = n + 1;
-		}
-	}
+    if (c1 < 128) {
+      end++;
+    } else if (c1 > 127 && c1 < 2048) {
+      enc = String.fromCharCode(
+        (c1 >> 6) | 192, (c1 & 63) | 128
+      );
+    } else if ((c1 & 0xF800) != 0xD800) {
+      enc = String.fromCharCode(
+        (c1 >> 12) | 224, ((c1 >> 6) & 63) | 128, (c1 & 63) | 128
+      );
+    } else {
+      // surrogate pairs
+      if ((c1 & 0xFC00) != 0xD800) {
+        throw new RangeError('Unmatched trail surrogate at ' + n);
+      }
+      var c2 = string.charCodeAt(++n);
+      if ((c2 & 0xFC00) != 0xDC00) {
+        throw new RangeError('Unmatched lead surrogate at ' + (n - 1));
+      }
+      c1 = ((c1 & 0x3FF) << 10) + (c2 & 0x3FF) + 0x10000;
+      enc = String.fromCharCode(
+        (c1 >> 18) | 240, ((c1 >> 12) & 63) | 128, ((c1 >> 6) & 63) | 128, (c1 & 63) | 128
+      );
+    }
+    if (enc !== null) {
+      if (end > start) {
+        utftext += string.slice(start, end);
+      }
+      utftext += enc;
+      start = end = n + 1;
+    }
+  }
 
-	if (end > start) {
-		utftext += string.slice(start, stringl);
-	}
+  if (end > start) {
+    utftext += string.slice(start, stringl);
+  }
 
-	return utftext;
+  return utftext;
 };
 
 // Function: svgedit.utilities.convertToXMLReferences
@@ -396,7 +398,7 @@ svgedit.utilities.getPathBBox = function(path) {
 	for (i = 0; i < tot; i++) {
 		var seg = seglist.getItem(i);
 
-		if(typeof seg.x == 'undefined') {continue;}
+		if(typeof seg.x === 'undefined') {continue;}
 
 		// Add actual points to limits
 		bounds[0].push(P0[0]);
