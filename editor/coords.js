@@ -26,20 +26,28 @@ if (!svgedit.coords) {
 // this is how we map paths to our preferred relative segment types
 var pathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a', 
     'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
-                    
+
+/**
+ * @typedef editorContext
+ * @type {?object}
+ * @property {function} getGridSnapping
+ * @property {function} getDrawing
+*/
 var editorContext_ = null;
 
+/**
+* @param {editorContext} editorContext
+*/
 svgedit.coords.init = function(editorContext) {
   editorContext_ = editorContext;
 };
 
-// Function: remapElement
-// Applies coordinate changes to an element based on the given matrix
-//
-// Parameters:
-// selected - DOM element to be changed
-// changes - Object with changes to be remapped
-// m - Matrix object to use for remapping coordinates
+/**
+ * Applies coordinate changes to an element based on the given matrix
+ * @param {Element} selected - DOM element to be changed
+ * @param {object} changes - Object with changes to be remapped
+ * @param {SVGMatrix} m - Matrix object to use for remapping coordinates
+*/
 svgedit.coords.remapElement = function(selected, changes, m) {
   var i, type,
     remap = function(x, y) { return svgedit.math.transformPoint(x, y, m); },
@@ -200,7 +208,7 @@ svgedit.coords.remapElement = function(selected, changes, m) {
       var seg;
       var segList = selected.pathSegList;
       len = segList.numberOfItems;
-      changes.d = new Array(len);
+      changes.d = [];
       for (i = 0; i < len; ++i) {
           seg = segList.getItem(i);
           changes.d[i] = {
