@@ -314,15 +314,13 @@ svgedit.draw.Drawing.prototype.getCurrentLayerName = function () {
 	return '';
 };
 
-// Function: setCurrentLayer
-// Sets the current layer. If the name is not a valid layer name, then this function returns
-// false. Otherwise it returns true. This is not an undo-able action.
-//
-// Parameters:
-// name - the name of the layer you want to switch to.
-//
-// Returns:
-// true if the current layer was switched, otherwise false
+/**
+ * Sets the current layer. If the name is not a valid layer name, then this
+ * function returns false. Otherwise it returns true. This is not an
+ * undo-able action.
+ * @param {string} name - The name of the layer you want to switch to.
+ * @returns {boolean} true if the current layer was switched, otherwise false
+ */
 svgedit.draw.Drawing.prototype.setCurrentLayer = function(name) {
 	var i;
 	for (i = 0; i < this.getNumLayers(); ++i) {
@@ -339,11 +337,11 @@ svgedit.draw.Drawing.prototype.setCurrentLayer = function(name) {
 };
 
 
-// Function: svgedit.draw.Drawing.deleteCurrentLayer
-// Deletes the current layer from the drawing and then clears the selection. This function 
-// then calls the 'changed' handler.  This is an undoable action.
-// Returns:
-// The SVGGElement of the layer removed or null.
+/**
+ * Deletes the current layer from the drawing and then clears the selection.
+ * This function then calls the 'changed' handler.  This is an undoable action.
+ * @returns {SVGGElement} The SVGGElement of the layer removed or null.
+ */
 svgedit.draw.Drawing.prototype.deleteCurrentLayer = function() {
 	if (this.current_layer && this.getNumLayers() > 1) {
 		// actually delete from the DOM and return it
@@ -356,9 +354,10 @@ svgedit.draw.Drawing.prototype.deleteCurrentLayer = function() {
 	return null;
 };
 
-// Function: svgedit.draw.Drawing.identifyLayers
-// Updates layer system and sets the current layer to the
-// top-most layer (last <g> child of this drawing).
+/**
+ * Updates layer system and sets the current layer to the
+ * top-most layer (last <g> child of this drawing).
+*/
 svgedit.draw.Drawing.prototype.identifyLayers = function() {
 	this.all_layers = [];
 	var numchildren = this.svgElem_.childNodes.length;
@@ -424,16 +423,13 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 	this.current_layer.setAttribute("style", "pointer-events:all");
 };
 
-// Function: svgedit.draw.Drawing.createLayer
-// Creates a new top-level layer in the drawing with the given name and 
-// sets the current layer to it.
-//
-// Parameters:
-// name - The given name
-//
-// Returns:
-// The SVGGElement of the new layer, which is also the current layer
-// of this drawing.
+/**
+ * Creates a new top-level layer in the drawing with the given name and 
+ * sets the current layer to it.
+ * @param {string} name - The given name
+ * @returns {SVGGElement} The SVGGElement of the new layer, which is
+ * also the current layer of this drawing.
+*/
 svgedit.draw.Drawing.prototype.createLayer = function(name) {
 	var svgdoc = this.svgElem_.ownerDocument;
 	var new_layer = svgdoc.createElementNS(NS.SVG, "g");
@@ -445,15 +441,12 @@ svgedit.draw.Drawing.prototype.createLayer = function(name) {
 	return new_layer;
 };
 
-// Function: svgedit.draw.Drawing.getLayerVisibility
-// Returns whether the layer is visible.  If the layer name is not valid, then this function
-// returns false.
-//
-// Parameters:
-// layername - the name of the layer which you want to query.
-//
-// Returns:
-// The visibility state of the layer, or false if the layer name was invalid.
+/**
+ * Returns whether the layer is visible.  If the layer name is not valid,
+ * then this function returns false.
+ * @param {string} layername - The name of the layer which you want to query.
+ * @returns {boolean} The visibility state of the layer, or false if the layer name was invalid.
+*/
 svgedit.draw.Drawing.prototype.getLayerVisibility = function(layername) {
 	// find the layer
 	var layer = null;
@@ -465,19 +458,18 @@ svgedit.draw.Drawing.prototype.getLayerVisibility = function(layername) {
 		}
 	}
 	if (!layer) {return false;}
-	return (layer.getAttribute('display') != 'none');
+	return (layer.getAttribute('display') !== 'none');
 };
 
-// Function: svgedit.draw.Drawing.setLayerVisibility
-// Sets the visibility of the layer. If the layer name is not valid, this function return 
-// false, otherwise it returns true. This is an undo-able action.
-//
-// Parameters:
-// layername - the name of the layer to change the visibility
-// bVisible - true/false, whether the layer should be visible
-//
-// Returns:
-// The SVGGElement representing the layer if the layername was valid, otherwise null.
+/**
+ * Sets the visibility of the layer. If the layer name is not valid, this
+ * function returns false, otherwise it returns true. This is an
+ * undo-able action.
+ * @param {string} layername - The name of the layer to change the visibility
+ * @param {boolean} bVisible - Whether the layer should be visible
+ * @returns {?SVGGElement} The SVGGElement representing the layer if the
+ *   layername was valid, otherwise null.
+*/
 svgedit.draw.Drawing.prototype.setLayerVisibility = function(layername, bVisible) {
 	if (typeof bVisible !== 'boolean') {
 		return null;
@@ -521,13 +513,13 @@ svgedit.draw.Drawing.prototype.getLayerOpacity = function(layername) {
 	return null;
 };
 
-// Function: svgedit.draw.Drawing.setLayerOpacity
-// Sets the opacity of the given layer.  If the input name is not a layer, nothing happens.
-// If opacity is not a value between 0.0 and 1.0, then nothing happens.
-//
-// Parameters:
-// layername - name of the layer on which to set the opacity
-// opacity - a float value in the range 0.0-1.0
+/**
+ * Sets the opacity of the given layer.  If the input name is not a layer,
+ * nothing happens. If opacity is not a value between 0.0 and 1.0, then
+ * nothing happens.
+ * @param {string} layername - Name of the layer on which to set the opacity
+ * @param {number} opacity - A float value in the range 0.0-1.0
+*/
 svgedit.draw.Drawing.prototype.setLayerOpacity = function(layername, opacity) {
 	if (typeof opacity !== 'number' || opacity < 0.0 || opacity > 1.0) {
 		return;
