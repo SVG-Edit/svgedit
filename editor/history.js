@@ -30,10 +30,9 @@ svgedit.history.HistoryEventTypes = {
 var removedElements = {};
 
 /**
- * Interface: svgedit.history.HistoryCommand
  * An interface that all command objects must implement.
- *
- * interface svgedit.history.HistoryCommand {
+ * @typedef svgedit.history.HistoryCommand
+ * @type {object}
  *   void apply(svgedit.history.HistoryEventHandler);
  *   void unapply(svgedit.history.HistoryEventHandler);
  *   Element[] elements();
@@ -53,15 +52,15 @@ var removedElements = {};
  * command is an object fulfilling the HistoryCommand interface.
  */
 
-// Class: svgedit.history.MoveElementCommand
-// implements svgedit.history.HistoryCommand
-// History command for an element that had its DOM position changed
-//
-// Parameters:
-// elem - The DOM element that was moved
-// oldNextSibling - The element's next sibling before it was moved
-// oldParent - The element's parent before it was moved
-// text - An optional string visible to user related to this change
+/**
+ * @class svgedit.history.MoveElementCommand
+ * @implements svgedit.history.HistoryCommand
+ * History command for an element that had its DOM position changed
+ * @param {Element} elem - The DOM element that was moved
+ * @param {Element} oldNextSibling - The element's next sibling before it was moved
+ * @param {Element} oldParent - The element's parent before it was moved
+ * @param {string} [text] - An optional string visible to user related to this change
+*/
 svgedit.history.MoveElementCommand = function(elem, oldNextSibling, oldParent, text) {
 	this.elem = elem;
 	this.text = text ? ("Move " + elem.tagName + " to " + text) : ("Move " + elem.tagName);
@@ -73,13 +72,14 @@ svgedit.history.MoveElementCommand = function(elem, oldNextSibling, oldParent, t
 svgedit.history.MoveElementCommand.type = function() { return 'svgedit.history.MoveElementCommand'; };
 svgedit.history.MoveElementCommand.prototype.type = svgedit.history.MoveElementCommand.type;
 
-// Function: svgedit.history.MoveElementCommand.getText
 svgedit.history.MoveElementCommand.prototype.getText = function() {
 	return this.text;
 };
 
-// Function: svgedit.history.MoveElementCommand.apply
-// Re-positions the element
+/**
+ * Re-positions the element
+ * @param {handleHistoryEvent: function}
+*/
 svgedit.history.MoveElementCommand.prototype.apply = function(handler) {
 	// TODO(codedread): Refactor this common event code into a base HistoryCommand class.
 	if (handler) {
@@ -93,8 +93,10 @@ svgedit.history.MoveElementCommand.prototype.apply = function(handler) {
 	}
 };
 
-// Function: svgedit.history.MoveElementCommand.unapply
-// Positions the element back to its original location
+/**
+ * Positions the element back to its original location
+ * @param {handleHistoryEvent: function}
+*/
 svgedit.history.MoveElementCommand.prototype.unapply = function(handler) {
 	if (handler) {
 		handler.handleHistoryEvent(svgedit.history.HistoryEventTypes.BEFORE_UNAPPLY, this);
