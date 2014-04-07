@@ -13,9 +13,9 @@
   <script>
   $(function() {
     // log function
-    QUnit.log = function(result, message) {
+    QUnit.log = function(details) {
       if (window.console && window.console.log) {
-        window.console.log(result +' :: '+ message);
+        window.console.log(details.result +' :: '+ details.message);
       }
     };
     var NS = svgedit.NS;
@@ -457,7 +457,7 @@
       drawing.setLayerOpacity(LAYER3, -1.4);
 
       ok(drawing.getLayerOpacity(LAYER1) == 0.4);
-      QUnit.log('layer2 opacity', drawing.getLayerOpacity(LAYER2));
+      QUnit.log({result: 'layer2 opacity', message: drawing.getLayerOpacity(LAYER2)});
       ok(drawing.getLayerOpacity(LAYER2) == 1.0);
       ok(drawing.getLayerOpacity(LAYER3) == 1.0);
 
