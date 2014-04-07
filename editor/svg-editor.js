@@ -405,8 +405,8 @@ TODOS
 					editor.showSaveWarning = false;
 					svgCanvas.bind('saved', opts.save);
 				}
-				if (opts.exportImage || opts.pngsave) { // Deprecating pngsave
-					svgCanvas.bind('exported', opts.exportImage || opts.pngsave);
+				if (opts.exportImage) {
+					svgCanvas.bind('exported', opts.exportImage);
 				}
 				customHandlers = opts;
 			});
@@ -3589,7 +3589,7 @@ TODOS
 						return;
 					}
 					// Open placeholder window (prevents popup)
-					if (!customHandlers.exportImage && !customHandlers.pngsave) {
+					if (!customHandlers.exportImage) {
 						var str = uiStrings.notification.loadingImage;
 						exportWindow = window.open('data:text/html;charset=utf-8,<title>' + str + '<\/title><h1>' + str + '<\/h1>');
 					}
