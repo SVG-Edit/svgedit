@@ -1,5 +1,5 @@
 NAME=svg-edit
-VERSION=2.6
+VERSION=2.7
 PACKAGE=$(NAME)-$(VERSION)
 MAKEDOCS=naturaldocs/NaturalDocs
 CLOSURE=build/tools/closure-compiler.jar
@@ -25,8 +25,8 @@ JS_FILES=\
 	path.js \
 	svgcanvas.js \
 	svg-editor.js \
-	contextmenu.js \
-	locale/locale.js
+	locale/locale.js \
+	contextmenu.js
 
 JS_INPUT_FILES=$(addprefix editor/, $(JS_FILES))
 JS_BUILD_FILES=$(addprefix build/$(PACKAGE)/, $(JS_FILES))
