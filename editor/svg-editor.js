@@ -19,7 +19,7 @@
 // 3) svgcanvas.js
 
 /*
-TO-DOS
+TODOS
 1. JSDoc
 */
 
