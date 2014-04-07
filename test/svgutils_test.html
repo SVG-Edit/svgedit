@@ -14,9 +14,9 @@
   <script>
   $(function() {
     // log function
-     QUnit.log = function(result, message) {
+     QUnit.log = function(details) {
       if (window.console && window.console.log) {
-        window.console.log(result +' :: '+ message);
+        window.console.log(details.result +' :: '+ details.message);
       }
     };
 

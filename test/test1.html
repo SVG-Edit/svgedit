@@ -7,6 +7,7 @@
   <script src="../editor/jquery.js"></script>
   <script src="../editor/jquerybbq/jquery.bbq.min.js"></script>
   <script src="../editor/jquery-ui/jquery-ui-1.8.custom.min.js"></script>
+  <script src="../editor/svgedit.js"></script>
   <script src="../editor/svgicons/jquery.svgicons.js"></script>
   <script src="../editor/browser.js"></script>
   <script src="../editor/svgtransformlist.js"></script>
@@ -15,6 +16,8 @@
   <script src="../editor/svgutils.js"></script>
   <script src="../editor/sanitize.js"></script>
   <script src="../editor/history.js"></script>
+  <script src='../editor/coords.js'></script>
+  <script src="../editor/recalculate.js"></script>
   <script src="../editor/select.js"></script>
   <script src="../editor/draw.js"></script>
   <script src="../editor/path.js"></script>
@@ -25,9 +28,9 @@
   <script>
   $(function() {
     // log function
-    QUnit.log = function(result, message) {
+    QUnit.log = function(details) {
     if (window.console && window.console.log) {
-      window.console.log(result +' :: '+ message);
+      window.console.log(details.result +' :: '+ details.message);
     }
   };
 
@@ -111,9 +114,9 @@
     
     // TODO: see why this isn't working in SVG-edit
     d = convert(p2, true);
-    QUnit.log(d);
+    QUnit.log({result: d});
     d = convert(p2, false);
-    QUnit.log(d);
+    QUnit.log({result: d});
   });
   
   module("Import Module");
