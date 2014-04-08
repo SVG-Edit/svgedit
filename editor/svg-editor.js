@@ -1109,7 +1109,9 @@ TODOS
 				}
 				var c = $('#export_canvas')[0];
                 if (type === 'PDF') {
-                    var doc = new jsPDF();
+                    var res = svgCanvas.getResolution();
+                    var orientation = res.w > res.h ? 'landscape' : 'portrait';
+                    var doc = new jsPDF(orientation, 'pt', [res.w, res.h]); // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
                     svgElementToPdf(data.svg, doc, {});
                     doc.save(svgCanvas.getDocumentTitle() + '.pdf');
                     return;
