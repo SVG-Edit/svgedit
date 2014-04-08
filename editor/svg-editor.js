@@ -501,8 +501,6 @@ TODOS
 						}
 						if (src) {
 							if (src.indexOf('data:') === 0) {
-								// plusses get replaced by spaces, so re-insert
-								src = src.replace(/ /g, '+');
 								editor.loadFromDataURI(src);
 							} else {
 								editor.loadFromString(src);
@@ -2348,7 +2346,7 @@ TODOS
 
 				var rule_elem = $('#tool_size_rules');
 				if (!rule_elem.length) {
-					rule_elem = $('<style id="tool_size_rules"><\/style>').appendTo('head');
+					rule_elem = $('<style id="tool_size_rules"></style>').appendTo('head');
 				} else {
 					rule_elem.empty();
 				}
@@ -3591,7 +3589,9 @@ TODOS
 					// Open placeholder window (prevents popup)
 					if (!customHandlers.exportImage) {
 						var str = uiStrings.notification.loadingImage;
-						exportWindow = window.open('data:text/html;charset=utf-8,<title>' + str + '<\/title><h1>' + str + '<\/h1>');
+						exportWindow = window.open(
+                            'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>')
+                        );
 					}
 					var quality = parseInt($('#image-slider').val(), 10)/100;
 					if (window.canvg) {
@@ -3667,7 +3667,7 @@ TODOS
 				if (supportsNonSS) {return;}
 				var wf_rules = $('#wireframe_rules');
 				if (!wf_rules.length) {
-					wf_rules = $('<style id="wireframe_rules"><\/style>').appendTo('head');
+					wf_rules = $('<style id="wireframe_rules"></style>').appendTo('head');
 				} else {
 					wf_rules.empty();
 				}
@@ -5095,9 +5095,19 @@ TODOS
 
 		editor.loadFromDataURI = function(str) {
 			editor.ready(function() {
-				var pre = 'data:image/svg+xml;base64,';
-				var src = str.substring(pre.length);
-				loadSvgString(Utils.decode64(src));
+                var base64 = false;
+				var pre = str.match(/^data:image\/svg\+xml;base64,/);
+                if (pre) {
+                    base64 = true;
+                }
+                else {
+                    pre = str.match(/^data:image\/svg\+xml(?:;(?:utf8)?)?,/);
+                }
+                if (pre) {
+                    pre = pre[0];
+                }
+				var src = str.slice(pre.length);
+				loadSvgString(base64 ? Utils.decode64(src) : decodeURIComponent(src));
 			});
 		};
 

@@ -83,7 +83,7 @@ svgEditor.addExtension("Connector", function(S) {
 	function showPanel(on) {
 		var conn_rules = $('#connector_rules');
 		if(!conn_rules.length) {
-			conn_rules = $('<style id="connector_rules"><\/style>').appendTo('head');
+			conn_rules = $('<style id="connector_rules"></style>').appendTo('head');
 		} 
 		conn_rules.text(!on?"":"#tool_clone, #tool_topath, #tool_angle, #xy_panel { display: none !important; }");
 		$('#connector_panel').toggle(on);
