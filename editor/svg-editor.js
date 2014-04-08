@@ -1111,7 +1111,7 @@ TODOS
                 if (type === 'PDF') {
                     var res = svgCanvas.getResolution();
                     var orientation = res.w > res.h ? 'landscape' : 'portrait';
-                    var units = curConfig.baseUnit;
+                    var units = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
                     var doc = new jsPDF(orientation, units, [res.w, res.h]); // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
                     var docTitle = svgCanvas.getDocumentTitle();
                     doc.setProperties({
