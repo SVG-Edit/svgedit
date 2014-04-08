@@ -1112,8 +1112,16 @@ TODOS
                     var res = svgCanvas.getResolution();
                     var orientation = res.w > res.h ? 'landscape' : 'portrait';
                     var doc = new jsPDF(orientation, 'pt', [res.w, res.h]); // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
+                    var docTitle = svgCanvas.getDocumentTitle();
+                    doc.setProperties({
+                        title: docTitle/*,
+                        subject: '',
+                        author: '',
+                        keywords: '',
+                        creator: ''*/
+                    });
                     svgElementToPdf(data.svg, doc, {});
-                    doc.save(svgCanvas.getDocumentTitle() + '.pdf');
+                    doc.save(docTitle + '.pdf');
                     return;
                 }
 				c.width = svgCanvas.contentW;
