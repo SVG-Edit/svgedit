@@ -88,7 +88,7 @@ svgEditor.addExtension('shapes', function() {'use strict';
 		var vb = [-off, -off, size + off*2, size + off*2].join(' ');
 		var stroke = fill ? 0: (size/30);
 		var shape_icon = new DOMParser().parseFromString(
-			'<svg xmlns="http://www.w3.org/2000/svg"><svg viewBox="' + vb + '"><path fill="'+(fill?'#333':'none')+'" stroke="#000" stroke-width="' + stroke + '" /><\/svg><\/svg>',
+			'<svg xmlns="http://www.w3.org/2000/svg"><svg viewBox="' + vb + '"><path fill="'+(fill?'#333':'none')+'" stroke="#000" stroke-width="' + stroke + '" /></svg></svg>',
 			'text/xml');
 
 		var width = 24;
