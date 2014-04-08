@@ -1,4 +1,4 @@
-/*globals svgEditor:true, globalStorage, widget, svgedit, canvg, jQuery, $, DOMParser, FileReader */
+/*globals saveAs:true, svgEditor:true, globalStorage, widget, svgedit, canvg, jsPDF, svgElementToPdf, jQuery, $, DOMParser, FileReader, URL */
 /*jslint vars: true, eqeq: true, todo: true, forin: true, continue: true, regexp: true */
 /*
  * svg-editor.js
@@ -391,7 +391,7 @@ TODOS
 		*	- inform user of any issues supplied via the "issues" property
 		*	- convert the "svg" property SVG string into an image for export;
 		*		utilize the properties "type" (currently 'PNG', 'JPEG', 'BMP',
-		*		'WEBP'), "mimeType", and "quality" (for 'JPEG' and 'WEBP'
+		*		'WEBP', 'PDF'), "mimeType", and "quality" (for 'JPEG' and 'WEBP'
 		*		types) to determine the proper output.
 		*/
 		editor.setCustomHandlers = function (opts) {
@@ -1069,7 +1069,37 @@ TODOS
 				}
 			};
 
-			var exportHandler = function(win, data) {
+            // Export global for use by jsPDF
+            saveAs = function (blob, options) {
+                var blobUrl = URL.createObjectURL(blob);
+                try {
+                    // This creates a bookmarkable data URL, 
+                    // but it doesn't currently work in
+                    // Firefox, and although it works in Chrome,
+                    // Chrome doesn't make the full "data:" URL
+                    // visible unless you right-click to "Inspect
+                    // element" and then right-click on the element
+                    // to "Copy link address".
+                    var xhr = new XMLHttpRequest();
+                    xhr.responseType = 'blob';
+                    xhr.onload = function() {
+                       var recoveredBlob = xhr.response;
+                       var reader = new FileReader();
+                       reader.onload = function() {
+                            var blobAsDataUrl = reader.result;
+                            exportWindow.location.href = blobAsDataUrl;
+                       };
+                       reader.readAsDataURL(recoveredBlob);
+                    };
+                    xhr.open('GET', blobUrl);
+                    xhr.send();
+                }
+                catch (e) {
+                    exportWindow.location.href = blobUrl;
+                }
+            };
+
+            var exportHandler = function(win, data) {
 				var issues = data.issues,
 					type = data.type || 'PNG',
 					dataURLType = (type === 'ICO' ? 'BMP' : type).toLowerCase();
@@ -1078,7 +1108,12 @@ TODOS
 					$('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
 				}
 				var c = $('#export_canvas')[0];
-
+                if (type === 'PDF') {
+                    var doc = new jsPDF();
+                    svgElementToPdf(data.svg, doc, {});
+                    doc.save(svgCanvas.getDocumentTitle() + '.pdf');
+                    return;
+                }
 				c.width = svgCanvas.contentW;
 				c.height = svgCanvas.contentH;
 				canvg(c, data.svg, {renderCallback: function() {
@@ -3581,7 +3616,7 @@ TODOS
 					// See http://kangax.github.io/jstests/toDataUrl_mime_type_test/ for a useful list of MIME types and browser support
 					// 'ICO', // Todo: Find a way to preserve transparency in SVG-Edit if not working presently and do full packaging for x-icon; then switch back to position after 'PNG'
 					'PNG',
-					'JPEG', 'BMP', 'WEBP'
+					'JPEG', 'BMP', 'WEBP', 'PDF'
 				], function (imgType) { // todo: replace hard-coded msg with uiStrings.notification.
 					if (!imgType) {
 						return;
