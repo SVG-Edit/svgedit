@@ -1069,37 +1069,37 @@ TODOS
 				}
 			};
 
-            // Export global for use by jsPDF
-            saveAs = function (blob, options) {
-                var blobUrl = URL.createObjectURL(blob);
-                try {
-                    // This creates a bookmarkable data URL, 
-                    // but it doesn't currently work in
-                    // Firefox, and although it works in Chrome,
-                    // Chrome doesn't make the full "data:" URL
-                    // visible unless you right-click to "Inspect
-                    // element" and then right-click on the element
-                    // to "Copy link address".
-                    var xhr = new XMLHttpRequest();
-                    xhr.responseType = 'blob';
-                    xhr.onload = function() {
-                       var recoveredBlob = xhr.response;
-                       var reader = new FileReader();
-                       reader.onload = function() {
-                            var blobAsDataUrl = reader.result;
-                            exportWindow.location.href = blobAsDataUrl;
-                       };
-                       reader.readAsDataURL(recoveredBlob);
-                    };
-                    xhr.open('GET', blobUrl);
-                    xhr.send();
-                }
-                catch (e) {
-                    exportWindow.location.href = blobUrl;
-                }
-            };
+			// Export global for use by jsPDF
+			saveAs = function (blob, options) {
+				var blobUrl = URL.createObjectURL(blob);
+				try {
+					// This creates a bookmarkable data URL,
+					// but it doesn't currently work in
+					// Firefox, and although it works in Chrome,
+					// Chrome doesn't make the full "data:" URL
+					// visible unless you right-click to "Inspect
+					// element" and then right-click on the element
+					// to "Copy link address".
+					var xhr = new XMLHttpRequest();
+					xhr.responseType = 'blob';
+					xhr.onload = function() {
+						var recoveredBlob = xhr.response;
+						var reader = new FileReader();
+						reader.onload = function() {
+							var blobAsDataUrl = reader.result;
+							exportWindow.location.href = blobAsDataUrl;
+						};
+						reader.readAsDataURL(recoveredBlob);
+					};
+					xhr.open('GET', blobUrl);
+					xhr.send();
+				}
+				catch (e) {
+					exportWindow.location.href = blobUrl;
+				}
+			};
 
-            var exportHandler = function(win, data) {
+			var exportHandler = function(win, data) {
 				var issues = data.issues,
 					type = data.type || 'PNG',
 					dataURLType = (type === 'ICO' ? 'BMP' : type).toLowerCase();
@@ -1108,23 +1108,23 @@ TODOS
 					$('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
 				}
 				var c = $('#export_canvas')[0];
-                if (type === 'PDF') {
-                    var res = svgCanvas.getResolution();
-                    var orientation = res.w > res.h ? 'landscape' : 'portrait';
-                    var units = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
-                    var doc = new jsPDF(orientation, units, [res.w, res.h]); // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
-                    var docTitle = svgCanvas.getDocumentTitle();
-                    doc.setProperties({
-                        title: docTitle/*,
-                        subject: '',
-                        author: '',
-                        keywords: '',
-                        creator: ''*/
-                    });
-                    svgElementToPdf(data.svg, doc, {});
-                    doc.save(docTitle + '.pdf');
-                    return;
-                }
+				if (type === 'PDF') {
+					var res = svgCanvas.getResolution();
+					var orientation = res.w > res.h ? 'landscape' : 'portrait';
+					var units = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
+					var doc = new jsPDF(orientation, units, [res.w, res.h]); // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
+					var docTitle = svgCanvas.getDocumentTitle();
+					doc.setProperties({
+						title: docTitle/*,
+						subject: '',
+						author: '',
+						keywords: '',
+						creator: ''*/
+					});
+					svgElementToPdf(data.svg, doc, {});
+					doc.save(docTitle + '.pdf');
+					return;
+				}
 				c.width = svgCanvas.contentW;
 				c.height = svgCanvas.contentH;
 				canvg(c, data.svg, {renderCallback: function() {
@@ -2785,7 +2785,7 @@ TODOS
 
 							// {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
 
-							var pos  = ('position' in opts) ? opts.position : 'last';
+							var pos = ('position' in opts) ? opts.position : 'last';
 							var len = flyout_holder.children().length;
 
 							// Add at given position or end
@@ -3636,8 +3636,8 @@ TODOS
 					if (!customHandlers.exportImage) {
 						var str = uiStrings.notification.loadingImage;
 						exportWindow = window.open(
-                            'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>')
-                        );
+							'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>')
+						);
 					}
 					var quality = parseInt($('#image-slider').val(), 10)/100;
 					if (window.canvg) {
@@ -5141,17 +5141,17 @@ TODOS
 
 		editor.loadFromDataURI = function(str) {
 			editor.ready(function() {
-                var base64 = false;
+				var base64 = false;
 				var pre = str.match(/^data:image\/svg\+xml;base64,/);
-                if (pre) {
-                    base64 = true;
-                }
-                else {
-                    pre = str.match(/^data:image\/svg\+xml(?:;(?:utf8)?)?,/);
-                }
-                if (pre) {
-                    pre = pre[0];
-                }
+				if (pre) {
+					base64 = true;
+				}
+				else {
+					pre = str.match(/^data:image\/svg\+xml(?:;(?:utf8)?)?,/);
+				}
+				if (pre) {
+					pre = pre[0];
+				}
 				var src = str.slice(pre.length);
 				loadSvgString(base64 ? Utils.decode64(src) : decodeURIComponent(src));
 			});
