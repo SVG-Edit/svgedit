@@ -4332,7 +4332,7 @@ this.save = function(opts) {
 // Function: rasterExport
 // Generates a Data URL based on the current image, then calls "exported" 
 // with an object including the string, image information, and any issues found
-this.rasterExport = function(imgType, quality) {
+this.rasterExport = function(imgType, quality, exportWindowName) {
 	var mimeType = 'image/' + imgType.toLowerCase();
 
 	// remove the selected outline before serializing
@@ -4361,7 +4361,7 @@ this.rasterExport = function(imgType, quality) {
 	});
 
 	var str = this.svgCanvasToString();
-	call('exported', {svg: str, issues: issues, type: imgType, mimeType: mimeType, quality: quality});
+	call('exported', {svg: str, issues: issues, type: imgType, mimeType: mimeType, quality: quality, exportWindowName: exportWindowName});
 };
 
 // Function: getSvgString
