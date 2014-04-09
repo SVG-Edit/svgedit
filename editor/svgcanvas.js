@@ -810,7 +810,7 @@ var copyElem = function(el) {
 	var new_el = document.createElementNS(el.namespaceURI, el.nodeName);
 	$.each(el.attributes, function(i, attr) {
 		if (attr.localName != '-moz-math-font-style') {
-			new_el.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.nodeValue);
+			new_el.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.value);
 		}
 	});
 	// set the copied element's new id
@@ -4166,7 +4166,7 @@ this.svgToString = function(elem, indent) {
 			var attr_names = ['width', 'height', 'xmlns', 'x', 'y', 'viewBox', 'id', 'overflow'];
 			while (i--) {
 				attr = attrs.item(i);
-				var attrVal = toXml(attr.nodeValue);
+				var attrVal = toXml(attr.value);
 				
 				// Namespaces have already been dealt with, so skip
 				if (attr.nodeName.indexOf('xmlns:') === 0) {continue;}
@@ -4188,7 +4188,7 @@ this.svgToString = function(elem, indent) {
 			var moz_attrs = ['-moz-math-font-style', '_moz-math-font-style'];
 			for (i = attrs.length - 1; i >= 0; i--) {
 				attr = attrs.item(i);
-				var attrVal = toXml(attr.nodeValue);
+				var attrVal = toXml(attr.value);
 				//remove bogus attributes added by Gecko
 				if (moz_attrs.indexOf(attr.localName) >= 0) {continue;}
 				if (attrVal != '') {
@@ -4987,7 +4987,7 @@ this.importSvgString = function(xmlString) {
 			var i;
 			for (i = 0; i < attrs.length; i++) {
 				var attr = attrs[i];
-				symbol.setAttribute(attr.nodeName, attr.nodeValue);
+				symbol.setAttribute(attr.nodeName, attr.value);
 			}
 			symbol.id = getNextId();
 			
