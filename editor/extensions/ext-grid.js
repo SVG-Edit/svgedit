@@ -18,7 +18,7 @@ svgEditor.addExtension('view_grid', function() { 'use strict';
 
 	var NS = svgedit.NS,
 		svgdoc = document.getElementById('svgcanvas').ownerDocument,
-		showGrid = false,
+		showGrid = svgEditor.curConfig.showGrid || false,
 		assignAttributes = svgCanvas.assignAttributes,
 		hcanvas = document.createElement('canvas'),
 		canvBG = $('#canvasBackground'),
