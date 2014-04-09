@@ -28,7 +28,7 @@ svgEditor.setConfig({
 	// preventURLContentLoading: true,
 	/**
 	To override the ability for URLs to set other configuration (including
-	    extensions), uncomment the following:
+	    extension config), uncomment the following:
 	*/
 	// preventAllURLConfig: true,
 	/**
