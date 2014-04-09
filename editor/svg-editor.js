@@ -487,7 +487,7 @@ TODOS
 						}
 					);
 
-					editor.setConfig(urldata, {overwrite: false}); // Note: source, url, and paramurl (as with storagePrompt later) are not set on config but are used below
+					editor.setConfig(urldata, {overwrite: false}); // Note: source and url (as with storagePrompt later) are not set on config but are used below
 					
 					setupCurConfig();
 
@@ -505,11 +505,6 @@ TODOS
 							} else {
 								editor.loadFromString(src);
 							}
-							return;
-						}
-						if (qstr.indexOf('paramurl=') !== -1) {
-							// Get parameter URL (use full length of remaining location.href)
-							editor.loadFromURL(qstr.substr(9));
 							return;
 						}
 						if (urldata.url) {
