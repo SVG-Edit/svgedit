@@ -55,7 +55,7 @@ var svgEditor = (function($, editor) {'use strict';
 	}
 
 	editor.readLang = function(langData) {
-		var more = editor.canvas.runExtensions("addlangData", lang_param, true);
+		var more = editor.canvas.runExtensions('addlangData', lang_param, true);
 		$.each(more, function(i, m) {
 			if (m.data) {
 				langData = $.merge(langData, m.data);

@@ -2591,7 +2591,7 @@ TODOS
 								+ '<span id="' + tool.id + '_label">'
 								+ tool.label + ':</span>'
 								+ '<input id="' + tool.id + '" title="' + tool.title
-								+ '" size="' + (tool.size || "4") + '" value="' + (tool.defval || "") + '" type="text"/></label>';
+								+ '" size="' + (tool.size || '4') + '" value="' + (tool.defval || '') + '" type="text"/></label>';
 
 							// Creates the tool, hides & adds it, returns the select element
 
@@ -2775,12 +2775,12 @@ TODOS
 							// TODO: Find way to set the current icon using the iconloader if this is not default
 
 							// Include data for extension button as well as ref button
-							cur_h = holders['#'+flyout_holder[0].id] = [{
-								sel: '#'+id,
+							cur_h = holders['#' + flyout_holder[0].id] = [{
+								sel: '#' + id,
 								fn: btn.events.click,
 								icon: btn.id,
 								key: btn.key,
-								isDefault: btn.includeWith?btn.includeWith.isDefault:0
+								isDefault: btn.includeWith ? btn.includeWith.isDefault : 0
 							}, ref_data];
 
 							// {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
@@ -4346,7 +4346,7 @@ TODOS
 				$('#layerpanel').width('+=' + delta);
 				rulerX.css('right', parseInt(rulerX.css('right'), 10) + delta);
 				workarea.css('right', parseInt(workarea.css('right'), 10) + delta);
-				svgCanvas.runExtensions("workareaResized");
+				svgCanvas.runExtensions('workareaResized');
 			};
 
 			var resizeSidePanel = function(evt) {

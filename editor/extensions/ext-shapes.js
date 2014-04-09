@@ -248,7 +248,7 @@ svgEditor.addExtension('shapes', function() {'use strict';
 			start_y = opts.start_y;
 			var y = start_y;
 			var cur_style = canv.getStyle();
-         
+		 
 			startClientPos.x = opts.event.clientX;
 			startClientPos.y = opts.event.clientY;
 
@@ -343,8 +343,8 @@ svgEditor.addExtension('shapes', function() {'use strict';
 		mouseUp: function(opts) {
 			var mode = canv.getMode();
 			if (mode !== mode_id) {return;}
-         
-      var keepObject = (opts.event.clientX != startClientPos.x && opts.event.clientY != startClientPos.y);
+
+			var keepObject = (opts.event.clientX != startClientPos.x && opts.event.clientY != startClientPos.y);
 
 			return {
 				keep: keepObject,
