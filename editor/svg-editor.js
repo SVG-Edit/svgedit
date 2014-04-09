@@ -113,7 +113,7 @@ TODOS
 					opacity: 1
 				},
 				initOpacity: 1,
-				colorPickerCSS: null,
+				colorPickerCSS: null, // Defaults to 'left' with a position equal to that of the fill_color or stroke_color element minus 140, and a 'bottom' equal to 40
 				initTool: 'select',
 				wireframe: false,
 				showlayers: false,
@@ -4021,7 +4021,7 @@ TODOS
 				var pos = elem.offset();
 				$('#color_picker')
 					.draggable({cancel: '.jGraduate_tabs, .jGraduate_colPick, .jGraduate_gradPick, .jPicker', containment: 'window'})
-					.css(curConfig.colorPickerCSS || {'left': pos.left-140, 'bottom': 40})
+					.css(curConfig.colorPickerCSS || {'left': pos.left - 140, 'bottom': 40})
 					.jGraduate(
 					{
 						paint: paint,
