@@ -127,6 +127,13 @@ svgEditor.addExtension('view_grid', function() { 'use strict';
 		svgCanvas.setHref(gridimg, datauri);
 	}
 
+	function gridUpdate () {
+		if (showGrid) {
+			updateGrid(svgCanvas.getZoom());
+		}
+		$('#canvasGrid').toggle(showGrid);
+		$('#view_grid').toggleClass('push_button_pressed tool_button');
+	}
 	return {
 		name: 'view_grid',
 		svgicons: svgEditor.curConfig.extPath + 'grid-icon.xml',
@@ -134,7 +141,11 @@ svgEditor.addExtension('view_grid', function() { 'use strict';
 		zoomChanged: function(zoom) {
 			if (showGrid) {updateGrid(zoom);}
 		},
-
+		callback: function () {
+			if (showGrid) {
+				gridUpdate();
+			}		
+		},
 		buttons: [{
 			id: 'view_grid',
 			type: 'context',
@@ -143,11 +154,7 @@ svgEditor.addExtension('view_grid', function() { 'use strict';
 			events: {
 				click: function() {
 					svgEditor.curConfig.showGrid = showGrid = !showGrid;
-					if (showGrid) {
-						updateGrid(svgCanvas.getZoom());
-					}
-					$('#canvasGrid').toggle(showGrid);
-					$('#view_grid').toggleClass('push_button_pressed tool_button');
+					gridUpdate();
 				}
 			}
 		}]

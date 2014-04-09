@@ -2553,10 +2553,10 @@ TODOS
 							html = '<label' + cont_id + '>'
 								+ '<select id="' + tool.id + '">';
 							$.each(tool.options, function(val, text) {
-								var sel = (val == tool.defval) ? " selected":"";
+								var sel = (val == tool.defval) ? ' selected' : '';
 								html += '<option value="'+val+'"' + sel + '>' + text + '</option>';
 							});
-							html += "</select></label>";
+							html += '</select></label>';
 							// Creates the tool, hides & adds it, returns the select element
 							var sel = $(html).appendTo(panel).find('select');
 
