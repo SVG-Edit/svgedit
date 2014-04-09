@@ -201,6 +201,20 @@ TODOS
 				});
 			}
 		}
+		
+		function checkCanvg (callCanvg) {
+			return function (win, data) {
+				if (window.canvg) {
+					callCanvg(win, data);
+				} else { // Might not be set up yet 
+					$.getScript('canvg/rgbcolor.js', function() {
+						$.getScript('canvg/canvg.js', function() {
+							callCanvg(win, data);
+						});
+					});
+				}
+			};
+		}
 
 		/**
 		* EXPORTS
@@ -406,7 +420,7 @@ TODOS
 					svgCanvas.bind('saved', opts.save);
 				}
 				if (opts.exportImage) {
-					svgCanvas.bind('exported', opts.exportImage);
+					svgCanvas.bind('exported', checkCanvg(opts.exportImage));
 				}
 				customHandlers = opts;
 			});
@@ -1099,6 +1113,7 @@ TODOS
 					type = data.type || 'PNG',
 					dataURLType = (type === 'ICO' ? 'BMP' : type).toLowerCase();
 
+				exportWindow = window.open('', data.exportWindowName); // A hack to get the window via JSON-able name without opening a new one
 				if (!$('#export_canvas').length) {
 					$('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
 				}
@@ -1122,6 +1137,7 @@ TODOS
 				}
 				c.width = svgCanvas.contentW;
 				c.height = svgCanvas.contentH;
+				
 				canvg(c, data.svg, {renderCallback: function() {
 					var datauri = data.quality ? c.toDataURL('image/' + dataURLType, data.quality) : c.toDataURL('image/' + dataURLType);
 					exportWindow.location.href = datauri;
@@ -2880,7 +2896,7 @@ TODOS
 			svgCanvas.bind('transition', elementTransition);
 			svgCanvas.bind('changed', elementChanged);
 			svgCanvas.bind('saved', saveHandler);
-			svgCanvas.bind('exported', exportHandler);
+			svgCanvas.bind('exported', checkCanvg(exportHandler));
 			svgCanvas.bind('zoomed', zoomChanged);
 			svgCanvas.bind('contextset', contextChanged);
 			svgCanvas.bind('extension_added', extAdded);
@@ -3631,19 +3647,12 @@ TODOS
 					if (!customHandlers.exportImage) {
 						var str = uiStrings.notification.loadingImage;
 						exportWindow = window.open(
-							'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>')
+							'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
+							'svg-edit-exportWindow'
 						);
 					}
 					var quality = parseInt($('#image-slider').val(), 10)/100;
-					if (window.canvg) {
-						svgCanvas.rasterExport(imgType, quality);
-					} else {
-						$.getScript('canvg/rgbcolor.js', function() {
-							$.getScript('canvg/canvg.js', function() {
-								svgCanvas.rasterExport(imgType, quality);
-							});
-						});
-					}
+					svgCanvas.rasterExport(imgType, quality, (exportWindow && exportWindow.name));
 				}, function () {
 					var sel = $(this);
 					if (sel.val() === 'JPEG' || sel.val() === 'WEBP') {

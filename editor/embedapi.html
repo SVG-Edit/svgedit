@@ -38,10 +38,20 @@
         function saveSvg() {
             svgCanvas.getSvgString()(handleSvgData);
         }
+		
+		function exportSvg() {
+			var str = document.getElementById('svgedit').contentWindow.svgEditor.uiStrings.notification.loadingImage;
+			var exportWindow = window.open(
+				'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
+				'svg-edit-exportWindow'
+			);
+			svgCanvas.rasterExport('JPEG', null, exportWindow.name);
+		}
         
         // Add event handlers
         $('#load').click(loadSvg);
         $('#save').click(saveSvg);
+		$('#export').click(exportSvg);
 		$('body').append(
 			$('<iframe src="svg-editor.html?extensions=ext-xdomain-messaging.js' +
 				window.location.href.replace(/\?(.*)$/, '&$1') + // Append arguments to this file onto the iframe
@@ -54,6 +64,7 @@
 <body>
     <button id="load">Load example</button>
     <button id="save">Save data</button>
+	<button id="export">Export data</button>
     <br/>
 </body>
 </html>
