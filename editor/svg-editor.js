@@ -206,7 +206,7 @@ TODOS
 			return function (win, data) {
 				if (window.canvg) {
 					callCanvg(win, data);
-				} else { // Might not be set up yet 
+				} else { // Might not be set up yet
 					$.getScript('canvg/rgbcolor.js', function() {
 						$.getScript('canvg/canvg.js', function() {
 							callCanvg(win, data);

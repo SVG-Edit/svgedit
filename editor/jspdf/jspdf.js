@@ -990,18 +990,18 @@ PubSub implementation
                 // @TODO: Add different output options
             };
 
-        switch (unit) {
-            case 'pt':    k = 1;              break;
-            case 'mm': k = 72 / 25.4;  break;
-            case 'cm':  k = 72 / 2.54;  break;
-            case 'in':    k = 72;            break;
-            case 'px':   k = 96 / 72;     break;
-            case 'pc':   k = 12;            break;
-            case 'em':  k = 12;            break;
-            case 'ex':   k = 6;              break;
-            default:
-                throw ('Invalid unit: ' + unit);
-        }
+		switch (unit) {
+			case 'pt':  k = 1;          break;
+			case 'mm':  k = 72 / 25.4;  break;
+			case 'cm':  k = 72 / 2.54;  break;
+			case 'in':  k = 72;         break;
+			case 'px':  k = 96 / 72;    break;
+			case 'pc':  k = 12;         break;
+			case 'em':  k = 12;         break;
+			case 'ex':  k = 6;          break;
+			default:
+				throw ('Invalid unit: ' + unit);
+		}
 
         // Dimensions are stored as user units and converted to points on output
         if (pageFormats.hasOwnProperty(format_as_string)) {

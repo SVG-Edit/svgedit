@@ -7,7 +7,7 @@
     <script src="embedapi.js"></script>
     <script>
     /*globals $, EmbeddedSVGEdit*/
-	var initEmbed;
+    var initEmbed;
     $(function () {'use strict';
         
         var svgCanvas = null;
@@ -38,33 +38,33 @@
         function saveSvg() {
             svgCanvas.getSvgString()(handleSvgData);
         }
-		
-		function exportSvg() {
-			var str = document.getElementById('svgedit').contentWindow.svgEditor.uiStrings.notification.loadingImage;
-			var exportWindow = window.open(
-				'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
-				'svg-edit-exportWindow'
-			);
-			svgCanvas.rasterExport('PNG', null, exportWindow.name);
-		}
+        
+        function exportSvg() {
+            var str = document.getElementById('svgedit').contentWindow.svgEditor.uiStrings.notification.loadingImage;
+            var exportWindow = window.open(
+                'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
+                'svg-edit-exportWindow'
+            );
+            svgCanvas.rasterExport('PNG', null, exportWindow.name);
+        }
         
         // Add event handlers
         $('#load').click(loadSvg);
         $('#save').click(saveSvg);
-		$('#export').click(exportSvg);
-		$('body').append(
-			$('<iframe src="svg-editor.html?extensions=ext-xdomain-messaging.js' +
-				window.location.href.replace(/\?(.*)$/, '&$1') + // Append arguments to this file onto the iframe
-				'" width="900px" height="600px" id="svgedit" onload="initEmbed();"></iframe>'
-			)
-		);
-	});
+        $('#export').click(exportSvg);
+        $('body').append(
+            $('<iframe src="svg-editor.html?extensions=ext-xdomain-messaging.js' +
+                window.location.href.replace(/\?(.*)$/, '&$1') + // Append arguments to this file onto the iframe
+                '" width="900px" height="600px" id="svgedit" onload="initEmbed();"></iframe>'
+            )
+        );
+    });
     </script>
 </head>
 <body>
     <button id="load">Load example</button>
     <button id="save">Save data</button>
-	<button id="export">Export data</button>
+    <button id="export">Export data</button>
     <br/>
 </body>
 </html>

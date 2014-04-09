@@ -10,9 +10,9 @@ svgCanvas.setSvgString('string')
 - Or if a callback is needed:
 svgCanvas.setSvgString('string')(function(data, error){
   if (error){
-    // There was an error
+	// There was an error
   } else{
-    // Handle data
+	// Handle data
   }
 })
 
@@ -41,13 +41,13 @@ var cbid = 0;
 
 function getCallbackSetter (d) {
   return function () {
-    var t = this, // New callback
-      args = [].slice.call(arguments),
-      cbid = t.send(d, args, function(){});  // The callback (currently it's nothing, but will be set later)
+	var t = this, // New callback
+	  args = [].slice.call(arguments),
+	  cbid = t.send(d, args, function(){});  // The callback (currently it's nothing, but will be set later)
 
-    return function(newcallback){
-      t.callbacks[cbid] = newcallback; // Set callback
-    };
+	return function(newcallback){
+	  t.callbacks[cbid] = newcallback; // Set callback
+	};
   };
 }
 
@@ -60,11 +60,11 @@ function addCallback (t, data) {
   var result = data.result || data.error,
 	cbid = data.id;
   if (t.callbacks[cbid]) {
-    if (data.result) {
-      t.callbacks[cbid](result);
-    } else {
-      t.callbacks[cbid](result, 'error');
-    }
+	if (data.result) {
+	  t.callbacks[cbid](result);
+	} else {
+	  t.callbacks[cbid](result, 'error');
+	}
   }
 }
 
@@ -72,15 +72,15 @@ function messageListener (e) {
   // We accept and post strings as opposed to objects for the sake of IE9 support; this
   //   will most likely be changed in the future
   if (typeof e.data !== 'string') {
-    return;
+	return;
   }
   var allowedOrigins = this.allowedOrigins,
-    data = e.data && JSON.parse(e.data);
+	data = e.data && JSON.parse(e.data);
   if (!data || typeof data !== 'object' || data.namespace !== 'svg-edit' ||
-      e.source !== this.frame.contentWindow ||
-      (allowedOrigins.indexOf('*') === -1 && allowedOrigins.indexOf(e.origin) === -1)
+	  e.source !== this.frame.contentWindow ||
+	  (allowedOrigins.indexOf('*') === -1 && allowedOrigins.indexOf(e.origin) === -1)
   ) {
-    return;
+	return;
   }
   addCallback(this, data);
 }
@@ -94,12 +94,12 @@ function getMessageListener (t) {
 /**
 * @param {HTMLIFrameElement} frame
 * @param {array} [allowedOrigins=[]] Array of origins from which incoming
-*     messages will be allowed when same origin is not used; defaults to none.
-*     If supplied, it should probably be the same as svgEditor's allowedOrigins
+*	 messages will be allowed when same origin is not used; defaults to none.
+*	 If supplied, it should probably be the same as svgEditor's allowedOrigins
 */
 function EmbeddedSVGEdit (frame, allowedOrigins) {
   if (!(this instanceof EmbeddedSVGEdit)) { // Allow invocation without 'new' keyword
-    return new EmbeddedSVGEdit(frame);
+	return new EmbeddedSVGEdit(frame);
   }
   this.allowedOrigins = allowedOrigins || [];
   // Initialize communication
@@ -125,7 +125,7 @@ function EmbeddedSVGEdit (frame, allowedOrigins) {
 
   // TODO: rewrite the following, it's pretty scary.
   for (i = 0; i < functions.length; i++) {
-    this[functions[i]] = getCallbackSetter(functions[i]);
+	this[functions[i]] = getCallbackSetter(functions[i]);
   }
  
   // Older IE may need a polyfill for addEventListener, but so it would for SVG
