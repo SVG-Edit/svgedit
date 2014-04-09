@@ -7636,7 +7636,7 @@ this.updateCanvas = function(w, h) {
 	}
 	
 	selectorManager.selectorParentGroup.setAttribute('transform', 'translate(' + x + ',' + y + ')');
-	 runExtensions('canvasUpdated',{new_x:x, new_y:y, old_x:old_x, old_y:old_y, d_x:x - old_x, d_y:y - old_y});
+	runExtensions('canvasUpdated', {new_x:x, new_y:y, old_x:old_x, old_y:old_y, d_x:x - old_x, d_y:y - old_y});
 	return {x:x, y:y, old_x:old_x, old_y:old_y, d_x:x - old_x, d_y:y - old_y};
 };
 

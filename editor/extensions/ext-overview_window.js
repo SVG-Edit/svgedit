@@ -134,9 +134,9 @@ svgEditor.addExtension("overview_window", function() {	'use strict';
 		updateViewPortFromViewBox();
 	});
 	
-	return{
+	return {
 		name: "overview window",
-		canvasUpdated:updateViewDimensions,
-		workareaResized:updateViewBox
+		canvasUpdated: updateViewDimensions,
+		workareaResized: updateViewBox
 	};
 });

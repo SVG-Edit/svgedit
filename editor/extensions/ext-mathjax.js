@@ -115,14 +115,14 @@ svgEditor.addExtension("mathjax", function() {'use strict';
   }
 
   return {
-    name: "MatJax",
+    name: "MathJax",
     svgicons: svgEditor.curConfig.extPath + "mathjax-icons.xml",
     buttons: [{
         id: "tool_mathjax",
         type: "mode",
         title: "Add Mathematics",
         events: {
-          'click': function() {
+          click: function() {
             // Only load Mathjax when needed, we don't want to strain Svg-Edit any more. 
             // From this point on it is very probable that it will be needed, so load it.
             if (mathjaxLoaded === false) {

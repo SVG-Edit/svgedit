@@ -138,7 +138,6 @@ svgEditor.addExtension("polygon", function(S) {'use strict';
             events: {
                 change: function(){
                     setAttr('sides', this.value);
-					
                 }
             }
         }],
