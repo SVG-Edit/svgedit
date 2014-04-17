@@ -57,8 +57,8 @@ function getCallbackSetter (d) {
 * of same domain control
 */
 function addCallback (t, data) {
-  var result = data.result || data.error;
-  cbid = data.id;
+  var result = data.result || data.error,
+	cbid = data.id;
   if (t.callbacks[cbid]) {
     if (data.result) {
       t.callbacks[cbid](result);
@@ -114,25 +114,14 @@ function EmbeddedSVGEdit (frame, allowedOrigins) {
   // 'moveSelectedToLayer', 'clear'];
 
   // Newer, well, it extracts things that aren't documented as well. All functions accessible through the normal thingy can now be accessed though the API
+  // var svgCanvas = frame.contentWindow.svgCanvas;
   // var l = []; for (var i in svgCanvas){ if (typeof svgCanvas[i] == 'function') { l.push(i);} };
+  // alert("['" + l.join("', '") + "']");
   // Run in svgedit itself
   var i,
-    functions = ['updateElementFromJson', 'embedImage', 'fixOperaXML', 'clearSelection',
-      'addToSelection',
-      'removeFromSelection', 'addNodeToSelection', 'open', 'save', 'getSvgString', 'setSvgString', 'createLayer',
-      'deleteCurrentLayer', 'getCurrentDrawing', 'setCurrentLayer', 'renameCurrentLayer', 'setCurrentLayerPosition',
-      'setLayerVisibility', 'moveSelectedToLayer', 'clear', 'clearPath', 'getNodePoint', 'clonePathNode', 'deletePathNode',
-      'getResolution', 'getImageTitle', 'setImageTitle', 'setResolution', 'setBBoxZoom', 'setZoom', 'getMode', 'setMode',
-      'getStrokeColor', 'setStrokeColor', 'getFillColor', 'setFillColor', 'setStrokePaint', 'setFillPaint', 'getStrokeWidth',
-      'setStrokeWidth', 'getStrokeStyle', 'setStrokeStyle', 'getOpacity', 'setOpacity', 'getFillOpacity', 'setFillOpacity',
-      'getStrokeOpacity', 'setStrokeOpacity', 'getTransformList', 'getBBox', 'getRotationAngle', 'setRotationAngle', 'each',
-      'bind', 'setIdPrefix', 'getBold', 'setBold', 'getItalic', 'setItalic', 'getFontFamily', 'setFontFamily', 'getFontSize',
-      'setFontSize', 'getText', 'setTextContent', 'setImageURL', 'setRectRadius', 'setSegType', 'quickClone',
-      'changeSelectedAttributeNoUndo', 'changeSelectedAttribute', 'deleteSelectedElements', 'groupSelectedElements', 'zoomChanged',
-      'ungroupSelectedElement', 'moveToTopSelectedElement', 'moveToBottomSelectedElement', 'moveSelectedElements',
-      'getStrokedBBox', 'getVisibleElements', 'cycleElement', 'getUndoStackSize', 'getRedoStackSize', 'getNextUndoCommandText',
-      'getNextRedoCommandText', 'undo', 'redo', 'cloneSelectedElements', 'alignSelectedElements', 'getZoom', 'getVersion',
-      'setIconSize', 'setLang', 'setCustomHandlers'];
+	functions = [
+		'clearSvgContentElement', 'setIdPrefix', 'getCurrentDrawing', 'addSvgElementFromJson', 'getTransformList', 'matrixMultiply', 'hasMatrixTransform', 'transformListToTransform', 'convertToNum', 'findDefs', 'getUrlFromAttr', 'getHref', 'setHref', 'getBBox', 'getRotationAngle', 'getElem', 'getRefElem', 'assignAttributes', 'cleanupElement', 'remapElement', 'recalculateDimensions', 'sanitizeSvg', 'runExtensions', 'addExtension', 'round', 'getIntersectionList', 'getStrokedBBox', 'getVisibleElements', 'getVisibleElementsAndBBoxes', 'groupSvgElem', 'getId', 'getNextId', 'call', 'bind', 'prepareSvg', 'setRotationAngle', 'recalculateAllSelectedDimensions', 'clearSelection', 'addToSelection', 'selectOnly', 'removeFromSelection', 'selectAllInCurrentLayer', 'getMouseTarget', 'removeUnusedDefElems', 'svgCanvasToString', 'svgToString', 'embedImage', 'setGoodImage', 'open', 'save', 'rasterExport', 'getSvgString', 'randomizeIds', 'uniquifyElems', 'setUseData', 'convertGradients', 'convertToGroup', 'setSvgString', 'importSvgString', 'identifyLayers', 'createLayer', 'cloneLayer', 'deleteCurrentLayer', 'setCurrentLayer', 'renameCurrentLayer', 'setCurrentLayerPosition', 'setLayerVisibility', 'moveSelectedToLayer', 'mergeLayer', 'mergeAllLayers', 'leaveContext', 'setContext', 'clear', 'linkControlPoints', 'getContentElem', 'getRootElem', 'getSelectedElems', 'getResolution', 'getZoom', 'getVersion', 'setUiStrings', 'setConfig', 'getTitle', 'setGroupTitle', 'getDocumentTitle', 'setDocumentTitle', 'getEditorNS', 'setResolution', 'getOffset', 'setBBoxZoom', 'setZoom', 'getMode', 'setMode', 'getColor', 'setColor', 'setGradient', 'setPaint', 'setStrokePaint', 'setFillPaint', 'getStrokeWidth', 'setStrokeWidth', 'setStrokeAttr', 'getStyle', 'getOpacity', 'setOpacity', 'getFillOpacity', 'getStrokeOpacity', 'setPaintOpacity', 'getPaintOpacity', 'getBlur', 'setBlurNoUndo', 'setBlurOffsets', 'setBlur', 'getBold', 'setBold', 'getItalic', 'setItalic', 'getFontFamily', 'setFontFamily', 'setFontColor', 'getFontColor', 'getFontSize', 'setFontSize', 'getText', 'setTextContent', 'setImageURL', 'setLinkURL', 'setRectRadius', 'makeHyperlink', 'removeHyperlink', 'setSegType', 'convertToPath', 'changeSelectedAttribute', 'deleteSelectedElements', 'cutSelectedElements', 'copySelectedElements', 'pasteElements', 'groupSelectedElements', 'pushGroupProperties', 'ungroupSelectedElement', 'moveToTopSelectedElement', 'moveToBottomSelectedElement', 'moveUpDownSelected', 'moveSelectedElements', 'cloneSelectedElements', 'alignSelectedElements', 'updateCanvas', 'setBackground', 'cycleElement', 'getPrivateMethods', 'zoomChanged', 'ready'
+	];
 
   // TODO: rewrite the following, it's pretty scary.
   for (i = 0; i < functions.length; i++) {
@@ -148,36 +137,39 @@ EmbeddedSVGEdit.prototype.send = function (name, args, callback){
   cbid++;
 
   this.callbacks[cbid] = callback;
-  setTimeout(function () { // Delay for the callback to be set in case its synchronous
-    /*
-    * Todo: Handle non-JSON arguments and return values (undefined,
-    *   nonfinite numbers, functions, and built-in objects like Date,
-    *   RegExp), etc.? Allow promises instead of callbacks? Review
-    *   SVG-Edit functions for whether JSON-able parameters can be
-    *   made compatile with all API functionality
-    */
-    // We accept and post strings for the sake of IE9 support
-    if (window.location.origin === t.frame.contentWindow.location.origin) {
-      // Although we do not really need this API if we are working same
-      //  domain, it could allow us to write in a way that would work
-      //  cross-domain as well, assuming we stick to the argument limitations
-      //  of the current JSON-based communication API (e.g., not passing
-      //  callbacks). We might be able to address these shortcomings; see
-      //  the todo elsewhere in this file.
-      var message = {id: cbid},
-        svgCanvas = t.frame.contentWindow.svgCanvas;
-      try {
-        message.result = svgCanvas[name].apply(svgCanvas, args);
-      }
-      catch (err) {
-        message.error = err.message;
-      }
-      addCallback(t, message);
-    }
-    else { // Requires the ext-xdomain-messaging.js extension
-      t.frame.contentWindow.postMessage(JSON.stringify({namespace: 'svgCanvas', id: cbid, name: name, args: args}), '*');
-    }
-  }, 0);
+  setTimeout((function (cbid) {
+	return function () { // Delay for the callback to be set in case its synchronous
+		/*
+		* Todo: Handle non-JSON arguments and return values (undefined,
+		*   nonfinite numbers, functions, and built-in objects like Date,
+		*   RegExp), etc.? Allow promises instead of callbacks? Review
+		*   SVG-Edit functions for whether JSON-able parameters can be
+		*   made compatile with all API functionality
+		*/
+		// We accept and post strings for the sake of IE9 support
+		if (window.location.origin === t.frame.contentWindow.location.origin) {
+		  // Although we do not really need this API if we are working same
+		  //  domain, it could allow us to write in a way that would work
+		  //  cross-domain as well, assuming we stick to the argument limitations
+		  //  of the current JSON-based communication API (e.g., not passing
+		  //  callbacks). We might be able to address these shortcomings; see
+		  //  the todo elsewhere in this file.
+		  var message = {id: cbid},
+			svgCanvas = t.frame.contentWindow.svgCanvas;
+		  try {
+			message.result = svgCanvas[name].apply(svgCanvas, args);
+		  }
+		  catch (err) {
+			message.error = err.message;
+		  }
+		  addCallback(t, message);
+		}
+		else { // Requires the ext-xdomain-messaging.js extension
+		  t.frame.contentWindow.postMessage(JSON.stringify({namespace: 'svgCanvas', id: cbid, name: name, args: args}), '*');
+		}
+	  };
+  }(cbid)), 0);
+
   return cbid;
 };
 
