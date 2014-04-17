@@ -2306,7 +2306,7 @@ TODOS
 //						'height': {s: '22px', l: '42px', xl: '64px'}
 //					},
 					'#tools_top': {
-						'left': 50,
+						'left': 50 + $('#main_button').width(),
 						'height': 72
 					},
 					'#tools_left': {
