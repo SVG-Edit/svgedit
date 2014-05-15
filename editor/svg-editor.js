@@ -42,8 +42,8 @@ var saveAs;
 		var svgCanvas, urldata,
 			Utils = svgedit.utilities,
 			isReady = false,
+			customExportImage = false,
 			callbacks = [],
-			customHandlers = {},
 			/**
 			* PREFS AND CONFIG
 			*/
@@ -420,9 +420,9 @@ var saveAs;
 					svgCanvas.bind('saved', opts.save);
 				}
 				if (opts.exportImage) {
-					svgCanvas.bind('exported', checkCanvg(opts.exportImage));
+                    customExportImage = opts.exportImage;
+					svgCanvas.bind('exported', checkCanvg(customExportImage));
 				}
-				customHandlers = opts;
 			});
 		};
 
@@ -3649,7 +3649,7 @@ var saveAs;
 						return;
 					}
 					// Open placeholder window (prevents popup)
-					if (!customHandlers.exportImage) {
+					if (!customExportImage) {
 						var str = uiStrings.notification.loadingImage;
 						exportWindow = window.open(
 							'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
