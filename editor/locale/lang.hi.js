@@ -87,7 +87,7 @@ svgEditor.readLang({
 		"open_doc": "छवि खोलें",
 		"export_img": "Export",
 		"save_doc": "सहेजें छवि",
-		"import_doc": "Import SVG",
+		"import_doc": "Import Image",
 		"align_to_page": "Align Element to Page",
 		"align_bottom": "तलमेंपंक्तिबद्धकरें",
 		"align_center": "मध्य में समंजित करें",

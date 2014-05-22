@@ -87,7 +87,7 @@ svgEditor.readLang({
 		"open_doc": "فتح الصورة",
 		"export_img": "Export",
 		"save_doc": "حفظ صورة",
-		"import_doc": "Import SVG",
+		"import_doc": "Import Image",
 		"align_to_page": "Align Element to Page",
 		"align_bottom": "محاذاة القاع",
 		"align_center": "مركز محاذاة",

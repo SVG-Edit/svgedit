@@ -87,7 +87,7 @@ svgEditor.readLang({
 		"open_doc": "Avaa kuva",
 		"export_img": "Export",
 		"save_doc": "Save Image",
-		"import_doc": "Import SVG",
+		"import_doc": "Import Image",
 		"align_to_page": "Align Element to Page",
 		"align_bottom": "Align Bottom",
 		"align_center": "Keskitä",

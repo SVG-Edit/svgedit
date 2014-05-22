@@ -87,7 +87,7 @@ svgEditor.readLang({
 		"open_doc": "ภาพเปิด",
 		"export_img": "Export",
 		"save_doc": "บันทึกรูปภาพ",
-		"import_doc": "Import SVG",
+		"import_doc": "Import Image",
 		"align_to_page": "Align Element to Page",
 		"align_bottom": "ด้านล่างชิด",
 		"align_center": "จัดแนวกึ่งกลาง",

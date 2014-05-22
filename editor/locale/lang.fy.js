@@ -87,7 +87,7 @@ svgEditor.readLang({
 		"open_doc": "Ôfbielding iepenje",
 		"export_img": "Export",
 		"save_doc": "Ôfbielding bewarje",
-		"import_doc": "Import SVG",
+		"import_doc": "Import Image",
 		"align_to_page": "Align Element to Page",
 		"align_bottom": "Ûnder útlijne",
 		"align_center": "Midden útlijne",

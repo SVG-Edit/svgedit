@@ -87,7 +87,7 @@ svgEditor.readLang({
 		"open_doc": "Отвори слике",
 		"export_img": "Export",
 		"save_doc": "Сачувај слика",
-		"import_doc": "Import SVG",
+		"import_doc": "Import Image",
 		"align_to_page": "Align Element to Page",
 		"align_bottom": "Поравнај доле",
 		"align_center": "Поравнај по центру",

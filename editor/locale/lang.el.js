@@ -87,7 +87,7 @@ svgEditor.readLang({
 		"open_doc": "Άνοιγμα εικόνας",
 		"export_img": "Export",
 		"save_doc": "Αποθήκευση εικόνας",
-		"import_doc": "Import SVG",
+		"import_doc": "Import Image",
 		"align_to_page": "Align Element to Page",
 		"align_bottom": "Στοίχισηκάτω",
 		"align_center": "Στοίχισηστοκέντρο",

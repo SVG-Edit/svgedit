@@ -87,7 +87,7 @@ svgEditor.readLang({
 		"open_doc": "Image Hapur",
 		"export_img": "Export",
 		"save_doc": "Image Ruaj",
-		"import_doc": "Import SVG",
+		"import_doc": "Import Image",
 		"align_to_page": "Align Element to Page",
 		"align_bottom": "Align Bottom",
 		"align_center": "Align Center",
