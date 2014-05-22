@@ -68,41 +68,41 @@ svgEditor.addExtension("server_opensave", {
 				
 				c.width = svgCanvas.contentW;
 				c.height = svgCanvas.contentH;
-				canvg(c, data.svg, {renderCallback: function() {
-					var pre, filename, suffix,
-						datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType),
-						// uiStrings = svgEditor.uiStrings,
-						note = '';
-					
-					// Check if there are issues
-					if (issues.length) {
-						pre = "\n \u2022 ";
-						note += ("\n\n" + pre + issues.join(pre));
-					} 
-					
-					if(note.length) {
-						alert(note);
-					}
-					
-					filename = getFileNameFromTitle();
-					suffix = '.' + data.type.toLowerCase();
-					
-					if (clientDownloadSupport(filename, suffix, datauri)) {
-						return;
-					}
+				svgEditor.buildCanvgCallback(function () {
+					canvg(c, data.svg, {renderCallback: function() {
+						var pre, filename, suffix,
+							datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType),
+							// uiStrings = svgEditor.uiStrings,
+							note = '';
+						
+						// Check if there are issues
+						if (issues.length) {
+							pre = "\n \u2022 ";
+							note += ("\n\n" + pre + issues.join(pre));
+						} 
+						
+						if(note.length) {
+							alert(note);
+						}
+						
+						filename = getFileNameFromTitle();
+						suffix = '.' + data.type.toLowerCase();
+						
+						if (clientDownloadSupport(filename, suffix, datauri)) {
+							return;
+						}
 
-					$('<form>').attr({
-						method: 'post',
-						action: save_img_action,
-						target: 'output_frame'
-					}).append('<input type="hidden" name="output_img" value="' + datauri + '">')
-						.append('<input type="hidden" name="mime" value="' + mimeType + '">')
-						.append('<input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">')
-						.appendTo('body')
-						.submit().remove();
-				}});
-	
-				
+						$('<form>').attr({
+							method: 'post',
+							action: save_img_action,
+							target: 'output_frame'
+						}).append('<input type="hidden" name="output_img" value="' + datauri + '">')
+							.append('<input type="hidden" name="mime" value="' + mimeType + '">')
+							.append('<input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">')
+							.appendTo('body')
+							.submit().remove();
+					}});
+				})();
 			}
 		});
 
