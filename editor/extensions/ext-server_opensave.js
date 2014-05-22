@@ -56,6 +56,7 @@ svgEditor.addExtension("server_opensave", {
 					.appendTo('body')
 					.submit().remove();
 			},
+			// Todo: Add exportPDF!
 			exportImage: function(win, data) {
 				var c,
 					issues = data.issues,
