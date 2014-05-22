@@ -226,14 +226,6 @@ var saveAs;
 			};
 		}
 		
-		function checkCanvg (callCanvg) {
-			return executeAfterLoads('canvg', ['canvg/rgbcolor.js', 'canvg/canvg.js'], callCanvg);
-		}
-		
-		function executeJSPDF (callJSPDF) {
-			return executeAfterLoads('jsPDF', ['jspdf/underscore-min.js', 'jspdf/jspdf.js', 'jspdf/jspdf.plugin.svgToPdf.js'], callJSPDF)();
-		}
-
 		/**
 		* EXPORTS
 		*/
@@ -265,6 +257,14 @@ var saveAs;
 		* @todo Sort these methods per invocation order, ideally with init at the end
 		* @todo Prevent execution until init executes if dependent on it?
 		*/
+
+		var buildCanvgCallback = editor.buildCanvgCallback = function (callCanvg) {
+			return executeAfterLoads('canvg', ['canvg/rgbcolor.js', 'canvg/canvg.js'], callCanvg);
+		};
+		
+		var executeJSPDFCallback = editor.executeJSPDFCallback = function (callJSPDF) {
+			return executeAfterLoads('jsPDF', ['jspdf/underscore-min.js', 'jspdf/jspdf.js', 'jspdf/jspdf.plugin.svgToPdf.js'], callJSPDF)();
+		};
 
 		/**
 		* Where permitted, sets canvas and/or defaultPrefs based on previous
@@ -439,7 +439,7 @@ var saveAs;
 				}
 				if (opts.exportImage) {
 					customExportImage = opts.exportImage;
-					svgCanvas.bind('exported', checkCanvg(customExportImage));
+					svgCanvas.bind('exported', buildCanvgCallback(customExportImage));
 				}
 			});
 		};
@@ -1146,8 +1146,13 @@ var saveAs;
 					var orientation = res.w > res.h ? 'landscape' : 'portrait';
 					var units = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
 					
-					executeJSPDF(function () {
-						var doc = new jsPDF(orientation, units, [res.w, res.h]); // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
+					executeJSPDFCallback(function () {
+						var doc = jsPDF(
+							orientation: orientation,
+							unit: units,
+							format: [res.w, res.h]
+							// compressPdf: true
+						); // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
 						var docTitle = svgCanvas.getDocumentTitle();
 						doc.setProperties({
 							title: docTitle/*,
@@ -2922,7 +2927,7 @@ var saveAs;
 			svgCanvas.bind('transition', elementTransition);
 			svgCanvas.bind('changed', elementChanged);
 			svgCanvas.bind('saved', saveHandler);
-			svgCanvas.bind('exported', checkCanvg(exportHandler));
+			svgCanvas.bind('exported', buildCanvgCallback(exportHandler));
 			svgCanvas.bind('zoomed', zoomChanged);
 			svgCanvas.bind('contextset', contextChanged);
 			svgCanvas.bind('extension_added', extAdded);
