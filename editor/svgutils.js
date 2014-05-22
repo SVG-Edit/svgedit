@@ -15,7 +15,7 @@
 // 3) svgtransformlist.js
 // 4) units.js
 
-(function() {'use strict';
+(function(undef) {'use strict';
 
 if (!svgedit.utilities) {
 	svgedit.utilities = {};
@@ -88,8 +88,9 @@ svgedit.utilities.encode64 = function(input) {
 	// input = svgedit.utilities.convertToXMLReferences(input);
 	if (window.btoa) {
 		return window.btoa(input); // Use native if available
-  }
-	var output = new Array( Math.floor( (input.length + 2) / 3 ) * 4 );
+    }
+    var output = [];
+	output.length = Math.floor( (input.length + 2) / 3 ) * 4;
 	var chr1, chr2, chr3;
 	var enc1, enc2, enc3, enc4;
 	var i = 0, p = 0;
@@ -163,7 +164,7 @@ svgedit.utilities.decode64 = function(input) {
 // codedread:does not seem to work with webkit-based browsers on OSX // Brettz9: please test again as function upgraded
 svgedit.utilities.encodeUTF8 = function (argString) {
 	//return unescape(encodeURIComponent(input)); //may or may not work
-  if (argString === null || typeof argString === 'undefined') {
+  if (argString === null || argString === undef) {
     return '';
   }
 
@@ -398,13 +399,13 @@ svgedit.utilities.getPathBBox = function(path) {
 	for (i = 0; i < tot; i++) {
 		var seg = seglist.getItem(i);
 
-		if(typeof seg.x === 'undefined') {continue;}
+		if(seg.x === undef) {continue;}
 
 		// Add actual points to limits
 		bounds[0].push(P0[0]);
 		bounds[1].push(P0[1]);
 
-		if(seg.x1) {
+		if (seg.x1) {
 			var P1 = [seg.x1, seg.y1],
 				P2 = [seg.x2, seg.y2],
 				P3 = [seg.x, seg.y];
@@ -721,6 +722,44 @@ svgedit.utilities.snapToGrid = function(value) {
 svgedit.utilities.preg_quote = function (str, delimiter) {
   // From: http://phpjs.org/functions
   return String(str).replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]', 'g'), '\\$&');
+};
+
+/**
+* @param {string} globalCheck A global which can be used to determine if the script is already loaded
+* @param {array} scripts An array of scripts to preload (in order)
+* @param {function} cb The callback to execute upon load.
+*/
+svgedit.utilities.executeAfterLoads = function (globalCheck, scripts, cb) {
+	return function () {
+		var args = arguments;
+		function endCallback () {
+			cb.apply(null, args);
+		}
+		if (window[globalCheck]) {
+			endCallback();
+		}
+		else {
+			scripts.reduceRight(function (oldFunc, script) {
+				return function () {
+					$.getScript(script, oldFunc);
+				};
+			}, endCallback)();
+		}
+	};
+};
+
+svgedit.utilities.buildCanvgCallback = function (callCanvg) {
+	return svgedit.utilities.executeAfterLoads('canvg', ['canvg/rgbcolor.js', 'canvg/canvg.js'], callCanvg);
+};
+
+svgedit.utilities.buildJSPDFCallback = function (callJSPDF) {
+	return svgedit.utilities.executeAfterLoads('RGBColor', ['canvg/rgbcolor.js'], function () {
+		var arr = [];
+		if (!RGBColor || RGBColor.ok === undef) { // It's not our RGBColor, so we'll need to load it
+			arr.push('canvg/rgbcolor.js');
+		}
+		svgedit.utilities.executeAfterLoads('jsPDF', arr.concat('jspdf/underscore-min.js', 'jspdf/jspdf.min.js', 'jspdf/jspdf.plugin.svgToPdf.js'), callJSPDF)();
+	});
 };
 
 }());

@@ -4329,12 +4329,7 @@ this.save = function(opts) {
 	call('saved', str);
 };
 
-// Function: rasterExport
-// Generates a Data URL based on the current image, then calls "exported" 
-// with an object including the string, image information, and any issues found
-this.rasterExport = function(imgType, quality, exportWindowName) {
-	var mimeType = 'image/' + imgType.toLowerCase();
-
+function getIssues () {
 	// remove the selected outline before serializing
 	clearSelection();
 	
@@ -4359,9 +4354,52 @@ this.rasterExport = function(imgType, quality, exportWindowName) {
 			issues.push(descr);
 		}
 	});
+	return issues;
+}
 
+// Function: rasterExport
+// Generates a Data URL based on the current image, then calls "exported" 
+// with an object including the string, image information, and any issues found
+this.rasterExport = function(imgType, quality, exportWindowName) {
+	var mimeType = 'image/' + imgType.toLowerCase();
+	var issues = getIssues();
 	var str = this.svgCanvasToString();
 	call('exported', {svg: str, issues: issues, type: imgType, mimeType: mimeType, quality: quality, exportWindowName: exportWindowName});
+};
+
+this.exportPDF = function (exportWindowName, outputType) {
+	var that = this;
+	svgedit.utilities.buildJSPDFCallback(function () {
+		var res = getResolution();
+		var orientation = res.w > res.h ? 'landscape' : 'portrait';
+		var units = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
+		var doc = jsPDF({
+			orientation: orientation,
+			unit: units,
+			format: [res.w, res.h]
+			// , compressPdf: true
+		}); // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
+		var docTitle = getDocumentTitle();
+		doc.setProperties({
+			title: docTitle/*,
+			subject: '',
+			author: '',
+			keywords: '',
+			creator: ''*/
+		});
+		var issues = getIssues();
+		var str = that.svgCanvasToString();
+		svgElementToPdf(str, doc, {});
+
+		// doc.output('save'); // Works to open in a new
+		//  window; todo: configure this and other export
+		//  options to optionally work in this manner as
+		//  opposed to opening a new tab
+		var obj = {svg: str, issues: issues, exportWindowName: exportWindowName};
+		var method = outputType || 'dataurlstring';
+		obj[method] = doc.output(method);
+		call('exportedPDF', obj);
+	})();
 };
 
 // Function: getSvgString
@@ -5531,7 +5569,7 @@ this.setGroupTitle = function(val) {
 
 // Function: getDocumentTitle
 // Returns the current document title or an empty string if not found
-this.getDocumentTitle = function() {
+var getDocumentTitle = this.getDocumentTitle = function() {
 	return canvas.getTitle(svgcontent);
 };
 
