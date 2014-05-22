@@ -71,6 +71,7 @@ svgEditor.setConfig({
 	// initOpacity: 1,
 	// colorPickerCSS: null,
 	// initTool: 'select',
+	// exportWindowType: 'new', // 'same'
 	// wireframe: false,
 	// showlayers: false,
 	// no_save_warning: false,
