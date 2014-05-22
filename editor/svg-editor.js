@@ -202,18 +202,36 @@ var saveAs;
 			}
 		}
 		
-		function checkCanvg (callCanvg) {
-			return function (win, data) {
-				if (window.canvg) {
-					callCanvg(win, data);
-				} else { // Might not be set up yet
-					$.getScript('canvg/rgbcolor.js', function() {
-						$.getScript('canvg/canvg.js', function() {
-							callCanvg(win, data);
-						});
-					});
+		/**
+		* @param {string} globalCheck A global which can be used to determine if the script is already loaded
+		* @param {array} scripts An array of scripts to preload (in order)
+		* @param {function} cb The callback to execute upon load.
+		*/
+		function executeAfterLoads (globalCheck, scripts, cb) {
+			return function () {
+				var args = arguments;
+				function endCallback () {
+					cb.apply(null, args);
+				}
+				if (window[globalCheck]) {
+					endCallback();
+				}
+				else {
+					scripts.reduceRight(function (oldFunc, script) {
+						return function () {
+							$.getScript(script, oldFunc);
+						};
+					}, endCallback)();
 				}
 			};
+		}
+		
+		function checkCanvg (callCanvg) {
+			return executeAfterLoads('canvg', ['canvg/rgbcolor.js', 'canvg/canvg.js'], callCanvg);
+		}
+		
+		function executeJSPDF (callJSPDF) {
+			return executeAfterLoads('jsPDF', ['jspdf/underscore-min.js', 'jspdf/jspdf.js', 'jspdf/jspdf.plugin.svgToPdf.js'], callJSPDF)();
 		}
 
 		/**
@@ -1127,17 +1145,20 @@ var saveAs;
 					var res = svgCanvas.getResolution();
 					var orientation = res.w > res.h ? 'landscape' : 'portrait';
 					var units = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
-					var doc = new jsPDF(orientation, units, [res.w, res.h]); // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
-					var docTitle = svgCanvas.getDocumentTitle();
-					doc.setProperties({
-						title: docTitle/*,
-						subject: '',
-						author: '',
-						keywords: '',
-						creator: ''*/
+					
+					executeJSPDF(function () {
+						var doc = new jsPDF(orientation, units, [res.w, res.h]); // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
+						var docTitle = svgCanvas.getDocumentTitle();
+						doc.setProperties({
+							title: docTitle/*,
+							subject: '',
+							author: '',
+							keywords: '',
+							creator: ''*/
+						});
+						svgElementToPdf(data.svg, doc, {});
+						doc.save(docTitle + '.pdf');
 					});
-					svgElementToPdf(data.svg, doc, {});
-					doc.save(docTitle + '.pdf');
 					return;
 				}
 				c.width = svgCanvas.contentW;
