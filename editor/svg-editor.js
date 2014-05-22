@@ -34,6 +34,7 @@ TODOS
 		//
 		// STATE MAINTENANCE PROPERTIES
 		editor.tool_scale = 1; // Dependent on icon size, so any use to making configurable instead? Used by JQuerySpinBtn.js
+		editor.exportWindowCt = 0;
 		editor.langChanged = false;
 		editor.showSaveWarning = false;
 		editor.storagePromptClosed = false; // For use with ext-storage.js
@@ -114,6 +115,7 @@ TODOS
 				initOpacity: 1,
 				colorPickerCSS: null, // Defaults to 'left' with a position equal to that of the fill_color or stroke_color element minus 140, and a 'bottom' equal to 40
 				initTool: 'select',
+				exportWindowType: 'new', // 'same' (todo: also support 'download')
 				wireframe: false,
 				showlayers: false,
 				no_save_warning: false,
@@ -3650,13 +3652,17 @@ TODOS
 					// Open placeholder window (prevents popup)
 					if (!customExportImage) {
 						var str = uiStrings.notification.loadingImage;
+						if (curConfig.exportWindowType === 'new') {
+							editor.exportWindowCt++;
+						}
+						var exportWindowName = curConfig.canvasName + editor.exportWindowCt;
 						exportWindow = window.open(
 							'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
-							'svg-edit-exportWindow'
+							exportWindowName
 						);
 					}
 					var quality = parseInt($('#image-slider').val(), 10)/100;
-					svgCanvas.rasterExport(imgType, quality, (exportWindow && exportWindow.name));
+					svgCanvas.rasterExport(imgType, quality, exportWindowName);
 				}, function () {
 					var sel = $(this);
 					if (sel.val() === 'JPEG' || sel.val() === 'WEBP') {
