@@ -32,7 +32,7 @@ svgEditor.addExtension("server_opensave", {
 				var c = $('#export_canvas')[0];
 				c.width = svgCanvas.contentW;
 				c.height = svgCanvas.contentH;
-				$.getScript('canvg/canvg.js', function() {
+				svgEditor.buildCanvgCallback(function () {
 					canvg(c, svg, {renderCallback: function() {
 						var datauri = c.toDataURL('image/png');
 						// var uiStrings = svgEditor.uiStrings;
@@ -48,7 +48,7 @@ svgEditor.addExtension("server_opensave", {
 						.appendTo('body')
 						.submit().remove();
 					}});
-				});
+				})();
 				alert("Saved! Return to Item View!");
 				top.window.location = '/'+name;
 			}
