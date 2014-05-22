@@ -1,4 +1,4 @@
-/*globals svgEditor:true, globalStorage, widget, svgedit, canvg, jsPDF, svgElementToPdf, jQuery, $, DOMParser, FileReader */
+/*globals svgEditor:true, globalStorage, widget, svgedit, canvg, svgElementToPdf, jQuery, $, DOMParser, FileReader */
 /*jslint vars: true, eqeq: true, todo: true, forin: true, continue: true, regexp: true */
 /*
  * svg-editor.js

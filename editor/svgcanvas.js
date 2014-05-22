@@ -1,4 +1,4 @@
-/*globals $, svgedit, svgCanvas*/
+/*globals $, svgedit, svgCanvas, jsPDF*/
 /*jslint vars: true, eqeq: true, todo: true, bitwise: true, continue: true, forin: true */
 /*
  * svgcanvas.js
