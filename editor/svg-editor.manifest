@@ -120,3 +120,34 @@ locale/lang.yi.js
 locale/lang.zh-CN.js
 locale/lang.zh-TW.js
 locale/lang.zh.js
+
+# Dynamic loads
+canvg/canvg.js
+canvg/rgbcolor.js
+jspdf/underscore-min.js
+jspdf/jspdf.js
+jspdf/jspdf.plugin.svgToPdf.js
+
+# Extensions (todo: add other dependency files)
+extensions/ext-arrows.js
+extensions/ext-closepath.js
+extensions/ext-connector.js
+extensions/ext-eyedropper.js
+extensions/ext-foreignobject.js
+extensions/ext-grid.js
+extensions/ext-helloworld.js
+extensions/ext-imagelib.js
+extensions/ext-markers.js
+extensions/ext-mathjax.js
+extensions/ext-overview_window.js
+extensions/ext-panning.js
+extensions/ext-php_savefile.js
+extensions/ext-polygon.js
+extensions/ext-server_moinsave.js
+extensions/ext-server_opensave.js
+extensions/ext-shapes.js
+extensions/ext-star.js
+extensions/ext-storage.js
+extensions/ext-webappfind.js
+extensions/ext-xdomain-messaging.js
+
