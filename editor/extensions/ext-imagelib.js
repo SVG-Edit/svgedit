@@ -63,7 +63,6 @@ svgEditor.addExtension("imagelib", function() {'use strict';
 
 	var mode = 's';
 	var multi_arr = [];
-	var cur_meta;
 	var tranfer_stopped = false;
 	var pending = {};
 	var preview, submit;
