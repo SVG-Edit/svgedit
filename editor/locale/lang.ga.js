@@ -87,7 +87,7 @@ svgEditor.readLang({
 		"open_doc": "Íomhá Oscailte",
 		"export_img": "Export",
 		"save_doc": "Sábháil Íomhá",
-		"import_doc": "Import SVG",
+		"import_doc": "Import Image",
 		"align_to_page": "Align Element to Page",
 		"align_bottom": "Cineál Bun",
 		"align_center": "Ailínigh sa Lár",

@@ -4962,7 +4962,7 @@ this.importSvgString = function(xmlString) {
 			}
 		}
 		
-		var batchCmd = new svgedit.history.BatchCommand('Import SVG');
+		var batchCmd = new svgedit.history.BatchCommand('Import Image');
 		var symbol;
 		if (useExisting) {
 			symbol = import_ids[uid].symbol;

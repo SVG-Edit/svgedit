@@ -87,7 +87,7 @@ svgEditor.readLang({
 		"open_doc": "Buksan ang Image",
 		"export_img": "Export",
 		"save_doc": "I-save ang Image",
-		"import_doc": "Import SVG",
+		"import_doc": "Import Image",
 		"align_to_page": "Align Element to Page",
 		"align_bottom": "Pantayin sa Ibaba",
 		"align_center": "Pantayin sa Gitna",

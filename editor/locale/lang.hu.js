@@ -87,7 +87,7 @@ svgEditor.readLang({
 		"open_doc": "Kép megnyitása",
 		"export_img": "Export",
 		"save_doc": "Kép mentése más",
-		"import_doc": "Import SVG",
+		"import_doc": "Import Image",
 		"align_to_page": "Align Element to Page",
 		"align_bottom": "Alulra igazítás",
 		"align_center": "Középre igazítás",

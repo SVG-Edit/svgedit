@@ -87,7 +87,7 @@ svgEditor.readLang({
 		"open_doc": "Открыть изображение",
 		"export_img": "Export",
 		"save_doc": "Сохранить изображение",
-		"import_doc": "Import SVG",
+		"import_doc": "Import Image",
 		"align_to_page": "Align Element to Page",
 		"align_bottom": "Выровнять по нижнему краю",
 		"align_center": "Центрировать по вертикальной оси",

@@ -87,7 +87,7 @@ svgEditor.readLang({
 		"open_doc": "Pildi avamine",
 		"export_img": "Export",
 		"save_doc": "Salvesta pilt",
-		"import_doc": "Import SVG",
+		"import_doc": "Import Image",
 		"align_to_page": "Align Element to Page",
 		"align_bottom": "Viia Bottom",
 		"align_center": "Keskele joondamine",

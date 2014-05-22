@@ -87,7 +87,7 @@ svgEditor.readLang({
 		"open_doc": "Open בילד",
 		"export_img": "Export",
 		"save_doc": "היט בילד",
-		"import_doc": "Import SVG",
+		"import_doc": "Import Image",
 		"align_to_page": "Align Element to Page",
 		"align_bottom": "יינרייען באָטטאָם",
 		"align_center": "יינרייען צענטער",

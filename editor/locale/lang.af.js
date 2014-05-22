@@ -87,7 +87,7 @@ svgEditor.readLang({
 		"open_doc": "Open Beeld",
 		"export_img": "Export",
 		"save_doc": "Slaan Beeld",
-		"import_doc": "Import SVG",
+		"import_doc": "Import Image",
 		"align_to_page": "Align Element to Page",
 		"align_bottom": "Align Bottom",
 		"align_center": "Rig Middel",

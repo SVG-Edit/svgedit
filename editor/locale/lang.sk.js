@@ -87,7 +87,7 @@ svgEditor.readLang({
 		"open_doc": "Otvoriť obrázok",
 		"export_img": "Export",
 		"save_doc": "Uložiť obrázok",
-		"import_doc": "Import SVG",
+		"import_doc": "Import Image",
 		"align_to_page": "Zarovnať element na stránku",
 		"align_bottom": "Zarovnať dole",
 		"align_center": "Zarovnať na stred",

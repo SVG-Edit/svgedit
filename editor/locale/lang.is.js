@@ -87,7 +87,7 @@ svgEditor.readLang({
 		"open_doc": "Opna mynd",
 		"export_img": "Export",
 		"save_doc": "Spara Image",
-		"import_doc": "Import SVG",
+		"import_doc": "Import Image",
 		"align_to_page": "Align Element to Page",
 		"align_bottom": "Jafna Bottom",
 		"align_center": "Jafna Center",

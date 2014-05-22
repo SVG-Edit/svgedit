@@ -87,7 +87,7 @@ svgEditor.readLang({
 		"open_doc": "Delwedd Agored",
 		"export_img": "Export",
 		"save_doc": "Cadw Delwedd",
-		"import_doc": "Import SVG",
+		"import_doc": "Import Image",
 		"align_to_page": "Align Element to Page",
 		"align_bottom": "Alinio Gwaelod",
 		"align_center": "Alinio Center",
