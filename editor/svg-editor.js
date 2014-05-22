@@ -420,7 +420,7 @@ var saveAs;
 					svgCanvas.bind('saved', opts.save);
 				}
 				if (opts.exportImage) {
-                    customExportImage = opts.exportImage;
+					customExportImage = opts.exportImage;
 					svgCanvas.bind('exported', checkCanvg(customExportImage));
 				}
 			});
