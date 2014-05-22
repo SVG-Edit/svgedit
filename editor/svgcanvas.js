@@ -7236,9 +7236,9 @@ var pushGroupProperties = this.pushGroupProperties = function(g, undoable) {
 // significant recalculations to apply group's transforms, etc to its children
 this.ungroupSelectedElement = function() {
 	var g = selectedElements[0];
-    if (!g) {
-        return;
-    }
+	if (!g) {
+		return;
+	}
 	if ($(g).data('gsvg') || $(g).data('symbol')) {
 		// Is svg, so actually convert to group
 		convertToGroup(g);
