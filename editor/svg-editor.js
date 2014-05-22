@@ -43,6 +43,7 @@ TODOS
 			Utils = svgedit.utilities,
 			isReady = false,
 			customExportImage = false,
+			customExportPDF = false,
 			callbacks = [],
 			/**
 			* PREFS AND CONFIG
@@ -204,30 +205,6 @@ TODOS
 		}
 		
 		/**
-		* @param {string} globalCheck A global which can be used to determine if the script is already loaded
-		* @param {array} scripts An array of scripts to preload (in order)
-		* @param {function} cb The callback to execute upon load.
-		*/
-		function executeAfterLoads (globalCheck, scripts, cb) {
-			return function () {
-				var args = arguments;
-				function endCallback () {
-					cb.apply(null, args);
-				}
-				if (window[globalCheck]) {
-					endCallback();
-				}
-				else {
-					scripts.reduceRight(function (oldFunc, script) {
-						return function () {
-							$.getScript(script, oldFunc);
-						};
-					}, endCallback)();
-				}
-			};
-		}
-		
-		/**
 		* EXPORTS
 		*/
 		
@@ -258,14 +235,6 @@ TODOS
 		* @todo Sort these methods per invocation order, ideally with init at the end
 		* @todo Prevent execution until init executes if dependent on it?
 		*/
-
-		var buildCanvgCallback = editor.buildCanvgCallback = function (callCanvg) {
-			return executeAfterLoads('canvg', ['canvg/rgbcolor.js', 'canvg/canvg.js'], callCanvg);
-		};
-		
-		var executeJSPDFCallback = editor.executeJSPDFCallback = function (callJSPDF) {
-			return executeAfterLoads('jsPDF', ['jspdf/underscore-min.js', 'jspdf/jspdf.min.js', 'jspdf/jspdf.plugin.svgToPdf.js'], callJSPDF)();
-		};
 
 		/**
 		* Where permitted, sets canvas and/or defaultPrefs based on previous
@@ -440,7 +409,11 @@ TODOS
 				}
 				if (opts.exportImage) {
 					customExportImage = opts.exportImage;
-					svgCanvas.bind('exported', buildCanvgCallback(customExportImage));
+					svgCanvas.bind('exported', Utils.buildCanvgCallback(customExportImage));
+				}
+				if (opts.exportPDF) {
+					customExportPDF = opts.exportPDF;
+					svgCanvas.bind('exportedPDF', Utils.buildJSPDFCallback(customExportPDF));					
 				}
 			});
 		};
@@ -1100,8 +1073,7 @@ TODOS
 			var exportHandler = function(win, data) {
 				var issues = data.issues,
 					type = data.type || 'PNG',
-					exportWindowName = data.exportWindowName,
-					dataURLType = (type === 'ICO' ? 'BMP' : type).toLowerCase();
+					exportWindowName = data.exportWindowName;
 
 				if (exportWindowName) {
 					exportWindow = window.open('', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
@@ -1110,41 +1082,11 @@ TODOS
 					$('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
 				}
 				var c = $('#export_canvas')[0];
-				if (type === 'PDF') {
-					var res = svgCanvas.getResolution();
-					var orientation = res.w > res.h ? 'landscape' : 'portrait';
-					var units = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
-
-					executeJSPDFCallback(function () {
-						var doc = jsPDF({
-							orientation: orientation,
-							unit: units,
-							format: [res.w, res.h]
-							// , compressPdf: true
-						}); // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
-						var docTitle = svgCanvas.getDocumentTitle();
-						doc.setProperties({
-							title: docTitle/*,
-							subject: '',
-							author: '',
-							keywords: '',
-							creator: ''*/
-						});
-						svgElementToPdf(data.svg, doc, {});
-
-						// doc.output('save'); // Works to open in a new
-						//  window; todo: configure this and other export
-						//  options to optionally work in this manner as
-						//  opposed to opening a new tab
-						// return;
-						exportWindow.location.href = doc.output('dataurlstring');
-					});
-					return;
-				}
 				c.width = svgCanvas.contentW;
 				c.height = svgCanvas.contentH;
 				
 				canvg(c, data.svg, {renderCallback: function() {
+					var dataURLType = (type === 'ICO' ? 'BMP' : type).toLowerCase();
 					var datauri = data.quality ? c.toDataURL('image/' + dataURLType, data.quality) : c.toDataURL('image/' + dataURLType);
 					exportWindow.location.href = datauri;
 					var done = $.pref('export_notice_done');
@@ -2902,7 +2844,14 @@ TODOS
 			svgCanvas.bind('transition', elementTransition);
 			svgCanvas.bind('changed', elementChanged);
 			svgCanvas.bind('saved', saveHandler);
-			svgCanvas.bind('exported', buildCanvgCallback(exportHandler));
+			svgCanvas.bind('exported', Utils.buildCanvgCallback(exportHandler));
+			svgCanvas.bind('exportedPDF', function (win, data) {
+				var exportWindowName = data.exportWindowName;
+				if (exportWindowName) {
+					exportWindow = window.open('', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
+				}
+				exportWindow.location.href = data.dataurlstring;
+			});
 			svgCanvas.bind('zoomed', zoomChanged);
 			svgCanvas.bind('contextset', contextChanged);
 			svgCanvas.bind('extension_added', extAdded);
@@ -3650,19 +3599,31 @@ TODOS
 						return;
 					}
 					// Open placeholder window (prevents popup)
-					if (!customExportImage) {
+					var exportWindowName;
+					function openExportWindow () {
 						var str = uiStrings.notification.loadingImage;
 						if (curConfig.exportWindowType === 'new') {
 							editor.exportWindowCt++;
 						}
-						var exportWindowName = curConfig.canvasName + editor.exportWindowCt;
+						exportWindowName = curConfig.canvasName + editor.exportWindowCt;
 						exportWindow = window.open(
 							'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
 							exportWindowName
 						);
 					}
-					var quality = parseInt($('#image-slider').val(), 10)/100;
-					svgCanvas.rasterExport(imgType, quality, exportWindowName);
+					if (imgType === 'PDF') {
+						if (!customExportPDF) {
+							openExportWindow();
+						}
+						svgCanvas.exportPDF(exportWindowName);
+					}
+					else {
+						if (!customExportImage) {
+							openExportWindow();
+						}
+						var quality = parseInt($('#image-slider').val(), 10)/100;
+						svgCanvas.rasterExport(imgType, quality, exportWindowName);
+					}
 				}, function () {
 					var sel = $(this);
 					if (sel.val() === 'JPEG' || sel.val() === 'WEBP') {
@@ -4943,6 +4904,10 @@ TODOS
 					if (!file) {
 						return;
 					}
+					/* if (file.type === 'application/pdf') { // Todo: Handle PDF imports
+						
+					}
+					else */
 					if (file.type.indexOf('image') != -1) {
 						// Detected an image
 						// svg handling
@@ -4981,7 +4946,7 @@ TODOS
 									svgCanvas.alignSelectedElements('c', 'page');
 									updateContextPanel();
 								};
-									// create dummy img so we know the default dimensions
+								// create dummy img so we know the default dimensions
 								var imgWidth = 100;
 								var imgHeight = 100;
 								var img = new Image();

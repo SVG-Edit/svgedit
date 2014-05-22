@@ -14,7 +14,7 @@
 
 svgEditor.addExtension("server_opensave", {
 	callback: function() {'use strict';
-
+		var Utils = svgedit.utilities;
 		var save_svg_action = '/+modify';
 		
 		// Create upload target (hidden iframe)
@@ -25,18 +25,18 @@ svgEditor.addExtension("server_opensave", {
 				var svg = "<?xml version=\"1.0\"?>\n" + data;
 				var qstr = $.param.querystring();
 				var name = qstr.substr(9).split('/+get/')[1];
-				var svg_data = svgedit.utilities.encode64(svg);
+				var svg_data = Utils.encode64(svg);
 				if(!$('#export_canvas').length) {
 					$('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
 				}
 				var c = $('#export_canvas')[0];
 				c.width = svgCanvas.contentW;
 				c.height = svgCanvas.contentH;
-				svgEditor.buildCanvgCallback(function () {
+				Utils.buildCanvgCallback(function () {
 					canvg(c, svg, {renderCallback: function() {
 						var datauri = c.toDataURL('image/png');
 						// var uiStrings = svgEditor.uiStrings;
-						var png_data = svgedit.utilities.encode64(datauri);
+						var png_data = Utils.encode64(datauri);
 						var form = $('<form>').attr({
 						method: 'post',
 						action: save_svg_action + '/' + name,
