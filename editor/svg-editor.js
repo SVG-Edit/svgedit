@@ -1147,12 +1147,12 @@ var saveAs;
 					var units = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
 					
 					executeJSPDFCallback(function () {
-						var doc = jsPDF(
+						var doc = jsPDF({
 							orientation: orientation,
 							unit: units,
 							format: [res.w, res.h]
-							// compressPdf: true
-						); // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
+							// , compressPdf: true
+						}); // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
 						var docTitle = svgCanvas.getDocumentTitle();
 						doc.setProperties({
 							title: docTitle/*,
