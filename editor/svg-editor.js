@@ -1,4 +1,4 @@
-/*globals saveAs:true, svgEditor:true, globalStorage, widget, svgedit, canvg, jsPDF, svgElementToPdf, jQuery, $, DOMParser, FileReader, URL */
+/*globals svgEditor:true, globalStorage, widget, svgedit, canvg, jsPDF, svgElementToPdf, jQuery, $, DOMParser, FileReader */
 /*jslint vars: true, eqeq: true, todo: true, forin: true, continue: true, regexp: true */
 /*
  * svg-editor.js
@@ -22,7 +22,6 @@
 TODOS
 1. JSDoc
 */
-var saveAs;
 (function() {
 
 	if (window.svgEditor) {
@@ -263,7 +262,7 @@ var saveAs;
 		};
 		
 		var executeJSPDFCallback = editor.executeJSPDFCallback = function (callJSPDF) {
-			return executeAfterLoads('jsPDF', ['jspdf/underscore-min.js', 'jspdf/jspdf.js', 'jspdf/jspdf.plugin.svgToPdf.js'], callJSPDF)();
+			return executeAfterLoads('jsPDF', ['jspdf/underscore-min.js', 'jspdf/jspdf.min.js', 'jspdf/jspdf.plugin.svgToPdf.js'], callJSPDF)();
 		};
 
 		/**
@@ -1096,38 +1095,6 @@ var saveAs;
 				}
 			};
 
-			// Export global for use by jsPDF
-			if (!saveAs) {
-				saveAs = function (blob, options) {
-					var blobUrl = URL.createObjectURL(blob);
-					try {
-						// This creates a bookmarkable data URL,
-						// but it doesn't currently work in
-						// Firefox, and although it works in Chrome,
-						// Chrome doesn't make the full "data:" URL
-						// visible unless you right-click to "Inspect
-						// element" and then right-click on the element
-						// to "Copy link address".
-						var xhr = new XMLHttpRequest();
-						xhr.responseType = 'blob';
-						xhr.onload = function() {
-							var recoveredBlob = xhr.response;
-							var reader = new FileReader();
-							reader.onload = function() {
-								var blobAsDataUrl = reader.result;
-								exportWindow.location.href = blobAsDataUrl;
-							};
-							reader.readAsDataURL(recoveredBlob);
-						};
-						xhr.open('GET', blobUrl);
-						xhr.send();
-					}
-					catch (e) {
-						exportWindow.location.href = blobUrl;
-					}
-				};
-			}
-
 			var exportHandler = function(win, data) {
 				var issues = data.issues,
 					type = data.type || 'PNG',
@@ -1145,7 +1112,7 @@ var saveAs;
 					var res = svgCanvas.getResolution();
 					var orientation = res.w > res.h ? 'landscape' : 'portrait';
 					var units = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
-					
+
 					executeJSPDFCallback(function () {
 						var doc = jsPDF({
 							orientation: orientation,
@@ -1162,7 +1129,13 @@ var saveAs;
 							creator: ''*/
 						});
 						svgElementToPdf(data.svg, doc, {});
-						doc.save(docTitle + '.pdf');
+
+						// doc.output('save'); // Works to open in a new
+						//  window; todo: configure this and other export
+						//  options to optionally work in this manner as
+						//  opposed to opening a new tab
+						// return;
+						exportWindow.location.href = doc.output('dataurlstring');
 					});
 					return;
 				}
