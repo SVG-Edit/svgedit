@@ -825,7 +825,7 @@ TODOS
 						if (type !== 'alert') {
 							$('<input type="button" value="' + uiStrings.common.cancel + '">')
 								.appendTo(btn_holder)
-								.click(function() { box.hide(); callback(false);});
+								.click(function() { box.hide(); if (callback) {callback(false);}});
 						}
 
 						if (type === 'prompt') {
@@ -863,8 +863,7 @@ TODOS
 							}
 							ctrl.bind('keydown', 'return', function() {ok.click();});
 						}
-
-						if (type === 'process') {
+						else if (type === 'process') {
 							ok.hide();
 						}
 
@@ -4902,6 +4901,7 @@ TODOS
 					$('#main_menu').hide();
 					var file = (e.type == 'drop') ? e.dataTransfer.files[0] : this.files[0];
 					if (!file) {
+						$('#dialog_box').hide();
 						return;
 					}
 					/* if (file.type === 'application/pdf') { // Todo: Handle PDF imports
@@ -4921,9 +4921,11 @@ TODOS
 								svgCanvas.groupSelectedElements();
 								svgCanvas.alignSelectedElements('m', 'page');
 								svgCanvas.alignSelectedElements('c', 'page');
+								$('#dialog_box').hide();
 							};
 							reader.readAsText(file);
-						} else {
+						}
+						else {
 						//bitmap handling
 							reader = new FileReader();
 							reader.onloadend = function(e) {
@@ -4945,6 +4947,7 @@ TODOS
 									svgCanvas.alignSelectedElements('m', 'page');
 									svgCanvas.alignSelectedElements('c', 'page');
 									updateContextPanel();
+									$('#dialog_box').hide();
 								};
 								// create dummy img so we know the default dimensions
 								var imgWidth = 100;
