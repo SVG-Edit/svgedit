@@ -7,6 +7,7 @@ svg-editor.css
 spinbtn/JQuerySpinBtn.css
 jquery.js
 config.js
+custom.css
 js-hotkeys/jquery.hotkeys.min.js
 jquery-ui/jquery-ui-1.8.17.custom.min.js
 jgraduate/jpicker.min.js
