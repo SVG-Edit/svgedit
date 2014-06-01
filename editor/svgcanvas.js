@@ -291,6 +291,7 @@ var InsertElementCommand = svgedit.history.InsertElementCommand;
 var RemoveElementCommand = svgedit.history.RemoveElementCommand;
 var ChangeElementCommand = svgedit.history.ChangeElementCommand;
 var BatchCommand = svgedit.history.BatchCommand;
+var call;
 // Implement the svgedit.history.HistoryEventHandler interface.
 canvas.undoMgr = new svgedit.history.UndoManager({
 	handleHistoryEvent: function(eventType, cmd) {
@@ -395,7 +396,7 @@ $(opac_ani).attr({
 
 var restoreRefElems = function(elem) {
 	// Look for missing reference elements, restore any found
-	var o, i,
+	var o, i, l,
 		attrs = $(elem).attr(ref_attrs);
 	for (o in attrs) {
 		var val = attrs[o];
@@ -850,7 +851,7 @@ var copyElem = function(el) {
 };
 
 // Set scope for these functions
-var getId, getNextId, call;
+var getId, getNextId;
 var textActions, pathActions;
 
 (function(c) {
@@ -1146,8 +1147,9 @@ var removeFromSelection = this.removeFromSelection = function(elemsToRemove) {
 	// find every element and remove it from our array copy
 	var i,
 		j = 0,
-		newSelectedItems = new Array(selectedElements.length),
+		newSelectedItems = [],
 		len = selectedElements.length;
+	newSelectedItems.length = len;
 	for (i = 0; i < len; ++i) {
 		var elem = selectedElements[i];
 		if (elem) {
@@ -2852,7 +2854,8 @@ textActions = canvas.textActions = (function() {
 			
 			matrix = xform ? svgedit.math.getMatrix(curtext) : null;
 
-			chardata = new Array(len);
+			chardata = [];
+			chardata.length = len;
 			textinput.focus();
 			
 			$(curtext).unbind('dblclick', selectWord).dblclick(selectWord);
@@ -2931,7 +2934,8 @@ pathActions = canvas.pathActions = function() {
 		}
 		this.selected_pts.sort();
 		i = this.selected_pts.length;
-		var grips = new Array(i);
+		var grips = [];
+		grips.length = i;
 		// Loop through points to be selected and highlight each
 		while (i--) {
 			var pt = this.selected_pts[i];
@@ -4364,7 +4368,23 @@ this.rasterExport = function(imgType, quality, exportWindowName) {
 	var mimeType = 'image/' + imgType.toLowerCase();
 	var issues = getIssues();
 	var str = this.svgCanvasToString();
-	call('exported', {svg: str, issues: issues, type: imgType, mimeType: mimeType, quality: quality, exportWindowName: exportWindowName});
+	
+	svgedit.utilities.buildCanvgCallback(function () {
+		var type = imgType || 'PNG';
+		if (!$('#export_canvas').length) {
+			$('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
+		}
+		var c = $('#export_canvas')[0];
+		c.width = svgCanvas.contentW;
+		c.height = svgCanvas.contentH;
+		
+		canvg(c, str, {renderCallback: function() {
+			var dataURLType = (type === 'ICO' ? 'BMP' : type).toLowerCase();
+			var datauri = quality ? c.toDataURL('image/' + dataURLType, quality) : c.toDataURL('image/' + dataURLType);
+			
+			call('exported', {datauri: datauri, svg: str, issues: issues, type: imgType, mimeType: mimeType, quality: quality, exportWindowName: exportWindowName});
+		}});
+	})();
 };
 
 this.exportPDF = function (exportWindowName, outputType) {
@@ -4389,7 +4409,7 @@ this.exportPDF = function (exportWindowName, outputType) {
 		});
 		var issues = getIssues();
 		var str = that.svgCanvasToString();
-		svgElementToPdf(str, doc, {});
+		doc.addSVG(str, 0, 0);
 
 		// doc.output('save'); // Works to open in a new
 		//  window; todo: configure this and other export

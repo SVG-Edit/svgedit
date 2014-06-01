@@ -1,4 +1,4 @@
-/*globals svgEditor:true, globalStorage, widget, svgedit, canvg, svgElementToPdf, jQuery, $, DOMParser, FileReader */
+/*globals svgEditor:true, globalStorage, widget, svgedit, canvg, jQuery, $, DOMParser, FileReader */
 /*jslint vars: true, eqeq: true, todo: true, forin: true, continue: true, regexp: true */
 /*
  * svg-editor.js
@@ -409,11 +409,11 @@ TODOS
 				}
 				if (opts.exportImage) {
 					customExportImage = opts.exportImage;
-					svgCanvas.bind('exported', Utils.buildCanvgCallback(customExportImage));
+					svgCanvas.bind('exported', customExportImage); // canvg and our RGBColor will be available to the method
 				}
 				if (opts.exportPDF) {
 					customExportPDF = opts.exportPDF;
-					svgCanvas.bind('exportedPDF', Utils.buildJSPDFCallback(customExportPDF));					
+					svgCanvas.bind('exportedPDF', customExportPDF); // jsPDF and our RGBColor will be available to the method
 				}
 			});
 		};
@@ -1071,39 +1071,28 @@ TODOS
 
 			var exportHandler = function(win, data) {
 				var issues = data.issues,
-					type = data.type || 'PNG',
 					exportWindowName = data.exportWindowName;
 
 				if (exportWindowName) {
 					exportWindow = window.open('', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
 				}
-				if (!$('#export_canvas').length) {
-					$('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
-				}
-				var c = $('#export_canvas')[0];
-				c.width = svgCanvas.contentW;
-				c.height = svgCanvas.contentH;
 				
-				canvg(c, data.svg, {renderCallback: function() {
-					var dataURLType = (type === 'ICO' ? 'BMP' : type).toLowerCase();
-					var datauri = data.quality ? c.toDataURL('image/' + dataURLType, data.quality) : c.toDataURL('image/' + dataURLType);
-					exportWindow.location.href = datauri;
-					var done = $.pref('export_notice_done');
-					if (done !== 'all') {
-						var note = uiStrings.notification.saveFromBrowser.replace('%s', type);
+				exportWindow.location.href = data.datauri;
+				var done = $.pref('export_notice_done');
+				if (done !== 'all') {
+					var note = uiStrings.notification.saveFromBrowser.replace('%s', data.type);
 
-						// Check if there's issues
-						if (issues.length) {
-							var pre = '\n \u2022 ';
-							note += ('\n\n' + uiStrings.notification.noteTheseIssues + pre + issues.join(pre));
-						}
-
-						// Note that this will also prevent the notice even though new issues may appear later.
-						// May want to find a way to deal with that without annoying the user
-						$.pref('export_notice_done', 'all');
-						exportWindow.alert(note);
+					// Check if there's issues
+					if (issues.length) {
+						var pre = '\n \u2022 ';
+						note += ('\n\n' + uiStrings.notification.noteTheseIssues + pre + issues.join(pre));
 					}
-				}});
+
+					// Note that this will also prevent the notice even though new issues may appear later.
+					// May want to find a way to deal with that without annoying the user
+					$.pref('export_notice_done', 'all');
+					exportWindow.alert(note);
+				}
 			};
 
 			var operaRepaint = function() {
@@ -2843,7 +2832,7 @@ TODOS
 			svgCanvas.bind('transition', elementTransition);
 			svgCanvas.bind('changed', elementChanged);
 			svgCanvas.bind('saved', saveHandler);
-			svgCanvas.bind('exported', Utils.buildCanvgCallback(exportHandler));
+			svgCanvas.bind('exported', exportHandler);
 			svgCanvas.bind('exportedPDF', function (win, data) {
 				var exportWindowName = data.exportWindowName;
 				if (exportWindowName) {

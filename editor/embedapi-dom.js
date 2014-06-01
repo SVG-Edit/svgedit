@@ -2,6 +2,8 @@
 /*jslint vars: true */
 var initEmbed;
 
+// Todo: Get rid of frame.contentWindow dependencies so can be more easily adjusted to work cross-domain
+
 $(function () {'use strict';
     
     var svgCanvas = null;
@@ -35,6 +37,7 @@ $(function () {'use strict';
     
     function exportPNG() {
         var str = frame.contentWindow.svgEditor.uiStrings.notification.loadingImage;
+
         var exportWindow = window.open(
             'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
             'svg-edit-exportWindow'
