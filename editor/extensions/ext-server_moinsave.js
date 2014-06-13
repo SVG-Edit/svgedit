@@ -36,7 +36,7 @@ svgEditor.addExtension("server_opensave", {
 					canvg(c, svg, {renderCallback: function() {
 						var datauri = c.toDataURL('image/png');
 						// var uiStrings = svgEditor.uiStrings;
-						var png_data = Utils.encode64(datauri);
+						var png_data = Utils.encode64(datauri); // Brett: This encoding seems unnecessary
 						var form = $('<form>').attr({
 						method: 'post',
 						action: save_svg_action + '/' + name,
