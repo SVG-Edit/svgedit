@@ -105,12 +105,12 @@ $(function() {
 		fallback_path: 'icons/',  // All fallback files can be found here
 		fallback: {
 			'#open_icon': 'open.png',  // The "open.png" will be appended to the
-									   // HTML element with ID "open_icon"
+										// HTML element with ID "open_icon"
 			'#close_icon': 'close.png',
 			'#save_icon': 'save.png'
 		},
 		placement: {'.open_icon','open'}, // The "open" icon will be added
-										  // to all elements with class "open_icon"
+										// to all elements with class "open_icon"
 		resize: function() {
 			'#save_icon .svg_icon': 64  // The "save" icon will be resized to 64 x 64px
 		},
@@ -248,22 +248,22 @@ $(function() {
 					icon.removeAttr('style');
 				},1);
 			}
-		}
+		};
 		
 		var addIcon = function(icon, id) {
 			if(opts.id_match === undefined || opts.id_match !== false) {
 				setIcon(holder, icon, id, true);
 			}
 			svg_icons[id] = icon;
-		}
+		};
 		
 		function makeIcons(toImage, fallback) {
 			if(icons_made) return;
 			if(opts.no_img) toImage = false;
-			var holder;
+			var holder, temp_holder;
 			
 			if(toImage) {
-				var temp_holder = $(document.createElement('div'));
+				temp_holder = $(document.createElement('div'));
 				temp_holder.hide().appendTo('body');
 			} 
 			if(fallback) {
@@ -315,17 +315,17 @@ $(function() {
 					if(!isOpera) svg = svg.cloneNode(true);
 					
 					svgroot.appendChild(svg);
-			
+					var icon;
 					if(toImage) {
 						// Without cloning, Safari will crash
 						// With cloning, causes issue in Opera/Win/Non-EN
 						var svgcontent = isOpera?svgroot:svgroot.cloneNode(true);
 						temp_holder.empty().append(svgroot);
-						var str = data_pre + encode64(temp_holder.html());
-						var icon = $(new Image())
+						var str = data_pre + encode64(unescape(encodeURIComponent(new XMLSerializer().serializeToString(svgroot))));
+						icon = $(new Image())
 							.attr({'class':'svg_icon', src:str});
 					} else {
-						var icon = fixIDs($(svgroot), i);
+						icon = fixIDs($(svgroot), i);
 					}
 					addIcon(icon, id);
 				}
@@ -339,7 +339,7 @@ $(function() {
 						var copy = svg_icons[id].clone();
 						if(i > 0 && !toImage) copy = fixIDs(copy, i, true);
 						setIcon($(this), copy, id);
-					})
+					});
 				});
 			}
 			if(!fallback) {
@@ -356,13 +356,13 @@ $(function() {
 		fixIDs = function(svg_el, svg_num, force) {
 			var defs = svg_el.find('defs');
 			if(!defs.length) return svg_el;
-			
+			var id_elems;
 			if(isOpera) {
-				var id_elems = defs.find('*').filter(function() {
+				id_elems = defs.find('*').filter(function() {
 					return !!this.id;
 				});
 			} else {
-				var id_elems = defs.find('[id]');
+				id_elems = defs.find('[id]');
 			}
 			
 			var all_elems = svg_el[0].getElementsByTagName('*'), len = all_elems.length;
@@ -379,19 +379,19 @@ $(function() {
 				var new_val = 'url(#' + new_id + ')';
 				
 				// Selector method, possibly faster but fails in Opera / jQuery 1.4.3
-// 				svg_el.find('[fill="url(#' + id + ')"]').each(function() {
-// 					this.setAttribute('fill', 'url(#' + new_id + ')');
-// 				}).end().find('[stroke="url(#' + id + ')"]').each(function() {
-// 					this.setAttribute('stroke', 'url(#' + new_id + ')');
-// 				}).end().find('use').each(function() {
-// 					if(this.getAttribute('xlink:href') == '#' + id) {
-// 						this.setAttributeNS(xlinkns,'href','#' + new_id);
-// 					}
-// 				}).end().find('[filter="url(#' + id + ')"]').each(function() {
-// 					this.setAttribute('filter', 'url(#' + new_id + ')');
-// 				});
+//				svg_el.find('[fill="url(#' + id + ')"]').each(function() {
+//					this.setAttribute('fill', 'url(#' + new_id + ')');
+//				}).end().find('[stroke="url(#' + id + ')"]').each(function() {
+//					this.setAttribute('stroke', 'url(#' + new_id + ')');
+//				}).end().find('use').each(function() {
+//					if(this.getAttribute('xlink:href') == '#' + id) {
+//						this.setAttributeNS(xlinkns,'href','#' + new_id);
+//					}
+//				}).end().find('[filter="url(#' + id + ')"]').each(function() {
+//					this.setAttribute('filter', 'url(#' + new_id + ')');
+//				});
 
-				for(var i = 0; i < len; i++) {
+				for(i = 0; i < len; i++) {
 					var elem = all_elems[i];
 					if(elem.getAttribute('fill') === old_val) {
 						elem.setAttribute('fill', new_val);
@@ -405,7 +405,7 @@ $(function() {
 				}
 			});
 			return svg_el;
-		}
+		};
 		
 		function useFallback() {
 			if(file.indexOf('.svgz') != -1) {
@@ -452,7 +452,7 @@ $(function() {
 		
 			return output.join('');
 		}
-	}
+	};
 	
 	$.getSvgIcon = function(id, uniqueClone) { 
 		var icon = svg_icons[id];
@@ -460,7 +460,7 @@ $(function() {
 			icon = fixIDs(icon, 0, true).clone(true);
 		}
 		return icon; 
-	}
+	};
 	
 	$.resizeSvgIcons = function(obj) {
 		// FF2 and older don't detect .svg_icon, so we change it detect svg elems instead
@@ -481,6 +481,6 @@ $(function() {
 				}
 			});
 		});
-	}
+	};
 	
 })(jQuery);
