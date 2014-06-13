@@ -12,10 +12,16 @@
 	// Very minimal PHP file, all we do is Base64 encode the uploaded file and
 	// return it to the editor
 	
-	$type = $_REQUEST['type'];
-	if (!in_array($type, array('load_svg', 'import_svg', 'import_img'))) {
+	if (!isset($_REQUEST['type'])) {
+		echo "No type given";
 		exit;
 	}
+	$type = $_REQUEST['type'];
+	if (!in_array($type, array('load_svg', 'import_svg', 'import_img'))) {
+		echo "Not a recognized type";
+		exit;
+	}
+
 	require('allowedMimeTypes.php');
 	
 	$file = $_FILES['svg_file']['tmp_name'];
@@ -23,11 +29,12 @@
 	$output = file_get_contents($file);
 	
 	$prefix = '';
-	
+
 	// Make Data URL prefix for import image
 	if ($type == 'import_img') {
 		$info = getimagesize($file);
 		if (!in_array($info['mime'], $allowedMimeTypesBySuffix)) {
+			echo "Disallowed MIME for supplied file";
 			exit;
 		}
 		$prefix = 'data:' . $info['mime'] . ';base64,';
