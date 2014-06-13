@@ -5,7 +5,8 @@ $allowedMimeTypesBySuffix = array(
     'png' => 'image/png',
     'jpeg' => 'image/jpeg',
     'bmp' => 'image/bmp',
-    'webp' => 'image/webp'
+    'webp' => 'image/webp',
+	'pdf' => 'application/pdf'
 );
 
 ?>

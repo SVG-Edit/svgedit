@@ -1,5 +1,5 @@
 /*globals svgEditor, svgedit, svgCanvas, canvg, $*/
-/*jslint eqeq: true*/
+/*jslint eqeq: true, browser:true*/
 /*
  * ext-server_opensave.js
  *
@@ -56,7 +56,22 @@ svgEditor.addExtension("server_opensave", {
 					.appendTo('body')
 					.submit().remove();
 			},
-			// Todo: Add exportPDF!
+			exportPDF: function (win, data) {
+				var filename = getFileNameFromTitle(),
+					datauri = data.dataurlstring;
+				if (clientDownloadSupport(filename, '.pdf', datauri)) {
+					return;
+				}
+				$('<form>').attr({
+					method: 'post',
+					action: save_img_action,
+					target: 'output_frame'
+				}).append('<input type="hidden" name="output_img" value="' + datauri + '">')
+					.append('<input type="hidden" name="mime" value="application/pdf">')
+					.append('<input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">')
+					.appendTo('body')
+					.submit().remove();
+			},
 			// Todo: Integrate this extension with a new built-in exportWindowType, "download"
 			exportImage: function(win, data) {
 				var c,
