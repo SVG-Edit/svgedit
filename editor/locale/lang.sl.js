@@ -5,10 +5,10 @@ svgEditor.readLang({
 	common: {
 		"ok": "V redu",
 		"cancel": "Prekliči",
-		"key_backspace": "backspace", 
-		"key_del": "delete", 
-		"key_down": "dol", 
-		"key_up": "gor", 
+		"key_backspace": "backspace",
+		"key_del": "delete",
+		"key_down": "dol",
+		"key_up": "gor",
 		"more_opts": "Več možnosti",
 		"url": "URL",
 		"width": "širina",
@@ -16,7 +16,7 @@ svgEditor.readLang({
 	},
 	misc: {
 		"powered_by": "Izdelano z"
-	}, 
+	},
 	ui: {
 		"toggle_stroke_tools": "Pokaži/skrij več orodij za oris",
 		"palette_info": "Kliknite, če želite spremeniti barvo polnila, kliknite+Shift, če želite spremeniti barvo orisa",
@@ -68,7 +68,7 @@ svgEditor.readLang({
 		"bold": "Krepko",
 		"italic": "Poševno"
 	},
-	tools: { 
+	tools: {
 		"main_menu": "Glavni meni",
 		"bkgnd_color_opac": "Spremeni barvo / prosojnost",
 		"connector_no_arrow": "Brez puščice",
