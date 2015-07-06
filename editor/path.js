@@ -309,7 +309,6 @@ svgedit.path.replacePathSeg = function(type, index, pts, elem) {
 	}
 };
 
-
 svgedit.path.getSegSelector = function(seg, update) {
 	var index = seg.index;
 	var segLine = svgedit.utilities.getElem('segline_' + index);
@@ -511,8 +510,6 @@ svgedit.path.Segment.prototype.move = function(dx, dy) {
 	this.update(true);
 	if (this.next) {this.next.update(true);}
 };
-
-
 
 svgedit.path.Segment.prototype.setLinked = function(num) {
 	var seg, anum, pt;
