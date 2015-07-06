@@ -550,7 +550,6 @@ svgedit.path.Segment.prototype.moveCtrl = function(num, dx, dy) {
 
         var pts = [cloneItem.x,cloneItem.y,
                 cloneItem.x1,cloneItem.y1, cloneItem.x2,cloneItem.y2];
-
         // end fix
 
 
@@ -584,8 +583,8 @@ svgedit.path.Path = function(elem) {
 svgedit.path.Path.prototype.init = function() {
 	// Hide all grips, etc
 
-//fixed, needed to work on all found elements, not just first
-$(svgedit.path.getGripContainer()).find('*').each( function() { $(this).attr('display', 'none') });
+	//fixed, needed to work on all found elements, not just first
+	$(svgedit.path.getGripContainer()).find('*').each( function() { $(this).attr('display', 'none') });
 
 	var segList = this.elem.pathSegList;
 	var len = segList.numberOfItems;
