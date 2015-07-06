@@ -15,8 +15,7 @@
 // 3) math.js
 // 4) svgutils.js
 
-(function() {
-	//'use strict';
+(function() {'use strict';
 
 if (!svgedit.path) {
 	svgedit.path = {};
@@ -511,7 +510,6 @@ svgedit.path.Segment.prototype.move = function(dx, dy) {
 
 
 
-//HERE
 svgedit.path.Segment.prototype.setLinked = function(num) {
 	var seg, anum, pt;
 	if (num == 2) {
@@ -586,7 +584,7 @@ svgedit.path.Path = function(elem) {
 svgedit.path.Path.prototype.init = function() {
 	// Hide all grips, etc
 
-//FIX ianb leaves last grip
+//fixed, needed to work on all found elements, not just first
 $(svgedit.path.getGripContainer()).find('*').each( function() { $(this).attr('display', 'none') });
 
 	var segList = this.elem.pathSegList;
