@@ -139,6 +139,7 @@ svgedit.path.getPointFromGrip = function(pt, path) {
 svgedit.path.addPointGrip = function(index, x, y) {
 	// create the container of all the point grips
 	var pointGripContainer = svgedit.path.getGripContainer();
+
 	var pointGrip = svgedit.utilities.getElem('pathpointgrip_'+index);
 	// create it
 	if (!pointGrip) {
@@ -207,6 +208,7 @@ svgedit.path.addCtrlGrip = function(id) {
 svgedit.path.getCtrlLine = function(id) {
 	var ctrlLine = svgedit.utilities.getElem('ctrlLine_'+id);
 	if (ctrlLine) {return ctrlLine;}
+
 	ctrlLine = document.createElementNS(NS.SVG, 'line');
 	svgedit.utilities.assignAttributes(ctrlLine, {
 		'id': 'ctrlLine_'+id,
@@ -249,6 +251,7 @@ svgedit.path.getControlPoints = function(seg) {
 	var i;
 	for (i = 1; i < 3; i++) {
 		var id = index + 'c' + i;
+
 		var ctrlLine = cpt['c' + i + '_line'] = svgedit.path.getCtrlLine(id);
 
 		var pt = svgedit.path.getGripPt(seg, {x:item['x' + i], y:item['y' + i]});
@@ -344,6 +347,7 @@ svgedit.path.getSegSelector = function(seg, update) {
 			pts[i] = pt.x;
 			pts[i+1] = pt.y;
 		}
+
 		svgedit.path.replacePathSeg(seg.type, 1, pts, segLine);
 	}
 	return segLine;
@@ -715,7 +719,6 @@ svgedit.path.Path.prototype.deleteSeg = function(index) {
 	var pt;
 	if (seg.mate) {
 		// Make the next point be the "M" point
-
 		pt = [next.item.x, next.item.y];
 		svgedit.path.replacePathSeg(2, next.index, pt);
 
