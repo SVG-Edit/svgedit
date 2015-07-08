@@ -4767,6 +4767,7 @@ TODOS
 						case 'paste_in_place':
 							svgCanvas.pasteElements('in_place');
 							break;
+						case 'group':
 						case 'group_elements':
 							svgCanvas.groupSelectedElements();
 							break;
