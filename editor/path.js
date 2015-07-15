@@ -481,11 +481,11 @@ svgedit.path.Segment.prototype.move = function(dx, dy) {
 	// fix for path tool dom breakage, amending item does bad things now, so we take a copy and use that. Can probably improve to just take a shallow copy of object
 	var cloneItem = $.extend({}, item);
 
-        if(this.ctrlpts) {
-                var cur_pts = [cloneItem.x += dx, cloneItem.y += dy,
+        if (this.ctrlpts) {
+                cur_pts = [cloneItem.x += dx, cloneItem.y += dy,
                         cloneItem.x1, cloneItem.y1, cloneItem.x2 += dx, cloneItem.y2 += dy];
         } else {
-                var cur_pts = [cloneItem.x += dx, cloneItem.y += dy];
+                cur_pts = [cloneItem.x += dx, cloneItem.y += dy];
         }
 	//fix
 
