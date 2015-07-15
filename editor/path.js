@@ -283,6 +283,7 @@ svgedit.path.getControlPoints = function(seg) {
 // This replaces the segment at the given index. Type is given as number.
 svgedit.path.replacePathSeg = function(type, index, pts, elem) {
 	var path = elem || svgedit.path.path.elem;
+
 	var func = 'createSVGPathSeg' + pathFuncs[type];
 	var seg = path[func].apply(path, pts);
 
@@ -477,12 +478,17 @@ svgedit.path.Segment.prototype.update = function(full) {
 svgedit.path.Segment.prototype.move = function(dx, dy) {
 	var cur_pts, item = this.item;
 
-	if (this.ctrlpts) {
-		cur_pts = [item.x += dx, item.y += dy, 
-			item.x1, item.y1, item.x2 += dx, item.y2 += dy];
-	} else {
-		cur_pts = [item.x += dx, item.y += dy];
-	}
+	// fix for path tool dom breakage, amending item does bad things now, so we take a copy and use that. Can probably improve to just take a shallow copy of object
+	var cloneItem = $.extend({}, item);
+
+        if (this.ctrlpts) {
+                cur_pts = [cloneItem.x += dx, cloneItem.y += dy,
+                        cloneItem.x1, cloneItem.y1, cloneItem.x2 += dx, cloneItem.y2 += dy];
+        } else {
+                cur_pts = [cloneItem.x += dx, cloneItem.y += dy];
+        }
+	//fix
+
 	svgedit.path.replacePathSeg(this.type, this.index, cur_pts);
 
 	if (this.next && this.next.ctrlpts) {
@@ -520,13 +526,16 @@ svgedit.path.Segment.prototype.setLinked = function(num) {
 	}
 
 	var item = seg.item;
+	// fix for path tool dom breakage, amending item does bad things now, so we take a copy and use that. Can probably improve to just take a shallow copy of object
+	var cloneItem = $.extend({}, item);
+        cloneItem['x' + anum ] = pt.x + (pt.x - this.item['x' + num]);
+        cloneItem['y' + anum ] = pt.y + (pt.y - this.item['y' + num]);
 
-	item['x' + anum] = pt.x + (pt.x - this.item['x' + num]);
-	item['y' + anum] = pt.y + (pt.y - this.item['y' + num]);
+        var pts = [cloneItem.x, cloneItem.y,
+              cloneItem.x1, cloneItem.y1,
+              cloneItem.x2, cloneItem.y2];
+        //end fix
 
-	var pts = [item.x, item.y,
-		item.x1, item.y1,
-		item.x2, item.y2];
 
 	svgedit.path.replacePathSeg(seg.type, seg.index, pts);
 	seg.update(true);
@@ -535,10 +544,15 @@ svgedit.path.Segment.prototype.setLinked = function(num) {
 svgedit.path.Segment.prototype.moveCtrl = function(num, dx, dy) {
 	var item = this.item;
 
-	item['x' + num] += dx;
-	item['y' + num] += dy;
+        // fix for path tool dom breakage, amending item does bad things now, so we take a copy and use that. Can probably improve to just take a shallow copy of object
+	var cloneItem = $.extend({}, item);
+        cloneItem['x' + num] += dx;
+        cloneItem['y' + num] += dy;
 
-	var pts = [item.x, item.y, item.x1, item.y1, item.x2, item.y2];
+        var pts = [cloneItem.x,cloneItem.y,
+                cloneItem.x1,cloneItem.y1, cloneItem.x2,cloneItem.y2];
+        // end fix
+
 
 	svgedit.path.replacePathSeg(this.type, this.index, pts);
 	this.update(true);
@@ -569,7 +583,10 @@ svgedit.path.Path = function(elem) {
 // Reset path data
 svgedit.path.Path.prototype.init = function() {
 	// Hide all grips, etc
-	$(svgedit.path.getGripContainer()).find('*').attr('display', 'none');
+
+	//fixed, needed to work on all found elements, not just first
+	$(svgedit.path.getGripContainer()).find('*').each( function() { $(this).attr('display', 'none') });
+
 	var segList = this.elem.pathSegList;
 	var len = segList.numberOfItems;
 	this.segs = [];
