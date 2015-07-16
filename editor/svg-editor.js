@@ -4745,7 +4745,7 @@ TODOS
 			$('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom })
 				// Set default zoom
 				.val(svgCanvas.getZoom() * 100);
-///EDITED
+
 			$('#workarea').contextMenu({
 					menu: 'cmenu_canvas',
 					inSpeed: 0
