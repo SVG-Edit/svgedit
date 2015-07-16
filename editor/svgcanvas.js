@@ -5083,7 +5083,8 @@ this.importSvgString = function(xmlString) {
 		return false;
 	}
 
-	return true;
+	// we want to return the element so we can automatically select it
+	return use_el;
 };
 
 // TODO(codedread): Move all layer/context functions in draw.js

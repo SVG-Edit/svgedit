@@ -4745,7 +4745,7 @@ TODOS
 			$('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom })
 				// Set default zoom
 				.val(svgCanvas.getZoom() * 100);
-
+///EDITED
 			$('#workarea').contextMenu({
 					menu: 'cmenu_canvas',
 					inSpeed: 0
@@ -4904,12 +4904,14 @@ TODOS
 						if (file.type.indexOf('svg') != -1) {
 							reader = new FileReader();
 							reader.onloadend = function(e) {
-								svgCanvas.importSvgString(e.target.result, true);
+								var newElement = svgCanvas.importSvgString(e.target.result, true);
 								svgCanvas.ungroupSelectedElement();
 								svgCanvas.ungroupSelectedElement();
 								svgCanvas.groupSelectedElements();
 								svgCanvas.alignSelectedElements('m', 'page');
 								svgCanvas.alignSelectedElements('c', 'page');
+								// highlight imported element, otherwise we get strange empty selectbox
+								svgCanvas.selectOnly([newElement]);
 								$('#dialog_box').hide();
 							};
 							reader.readAsText(file);
