@@ -2992,7 +2992,7 @@ TODOS
 					return false;
 				}
 
-				if (attr !== 'id' && attr!=='class') {
+				if (attr !== 'id' && attr !== 'class') {
 					if (isNaN(val)) {
 						val = svgCanvas.convertToNum(attr, val);
 					} else if (curConfig.baseUnit !== 'px') {
