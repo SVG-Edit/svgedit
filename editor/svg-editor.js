@@ -1527,6 +1527,7 @@ TODOS
 					$('#group_opacity').val(opac_perc);
 					$('#opac_slider').slider('option', 'value', opac_perc);
 					$('#elem_id').val(selectedElement.id);
+					$('#elem_class').val(selectedElement.getAttribute("class"));
 				}
 
 				updateToolButtonState();
@@ -2991,7 +2992,7 @@ TODOS
 					return false;
 				}
 
-				if (attr !== 'id') {
+				if (attr !== 'id' && attr !== 'class') {
 					if (isNaN(val)) {
 						val = svgCanvas.convertToNum(attr, val);
 					} else if (curConfig.baseUnit !== 'px') {
