@@ -1,8 +1,13 @@
 SVG-edit, a web based SVG editor
+===
 
-http://code.google.com/p/svg-edit/
+Source code lives on GitHub:
+https://github.com/SVG-Edit/svgedit
 
-see AUTHORS file for authors
+Issue tracking and previewing remains on Google Code:
+https://code.google.com/p/svg-edit/
+
+See AUTHORS file for authors.
 
 -----
 
