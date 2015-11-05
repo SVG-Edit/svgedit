@@ -11,13 +11,14 @@
 // 1) jquery
 // 2) jquery-svg.js
 // 3) svgedit.js
-// 4) browser.js
-// 5) math.js
-// 6) history.js
-// 7) units.js
-// 8) svgtransformlist.js
-// 9) svgutils.js
-// 10) coords.js
+// 4) pathseg.js
+// 5) browser.js
+// 6) math.js
+// 7) history.js
+// 8) units.js
+// 9) svgtransformlist.js
+// 10) svgutils.js
+// 11) coords.js
 
 var svgedit = svgedit || {};
 
