@@ -1,4 +1,5 @@
 // SVGPathSeg API polyfill
+// https://github.com/progers/pathseg
 //
 // This is a drop-in replacement for the SVGPathSeg and SVGPathSegList APIs that were removed from
 // SVG2 (https://lists.w3.org/Archives/Public/www-svg/2015Jun/0044.html), including the latest spec
@@ -350,7 +351,7 @@
 
             // Use a MutationObserver to catch changes to the path's "d" attribute.
             this._mutationObserverConfig = { "attributes": true, "attributeFilter": ["d"] };
-            this._pathElementMutationObserver = new MutationObserver(this._updateListFromPathMutations);
+            this._pathElementMutationObserver = new MutationObserver(this._updateListFromPathMutations.bind(this));
             this._pathElementMutationObserver.observe(this._pathElement, this._mutationObserverConfig);
         }
 
