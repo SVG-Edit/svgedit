@@ -11,9 +11,10 @@
 
 // Dependencies:
 // 1) jQuery
-// 2) browser.js
-// 3) math.js
-// 4) svgutils.js
+// 2) pathseg.js
+// 3) browser.js
+// 4) math.js
+// 5) svgutils.js
 
 (function() {'use strict';
 

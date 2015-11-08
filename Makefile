@@ -11,6 +11,7 @@ JS_FILES=\
 	svgedit.js \
 	jquery-svg.js \
 	contextmenu/jquery.contextmenu.js \
+	pathseg.js \
 	browser.js \
 	svgtransformlist.js \
 	math.js \

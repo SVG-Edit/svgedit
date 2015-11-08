@@ -11,9 +11,10 @@
 
 // Dependencies:
 // 1) jQuery
-// 2) browser.js
-// 3) svgtransformlist.js
-// 4) units.js
+// 2) pathseg.js
+// 3) browser.js
+// 4) svgtransformlist.js
+// 5) units.js
 
 (function(undef) {'use strict';
 

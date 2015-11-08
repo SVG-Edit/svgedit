@@ -13,18 +13,19 @@
 
 // Dependencies:
 // 1) jQuery
-// 2) browser.js
-// 3) svgtransformlist.js
-// 4) math.js
-// 5) units.js
-// 6) svgutils.js
-// 7) sanitize.js
-// 8) history.js
-// 9) select.js
-// 10) draw.js
-// 11) path.js
-// 12) coords.js
-// 13) recalculate.js
+// 2) pathseg.js
+// 3) browser.js
+// 4) svgtransformlist.js
+// 5) math.js
+// 6) units.js
+// 7) svgutils.js
+// 8) sanitize.js
+// 9) history.js
+// 10) select.js
+// 11) draw.js
+// 12) path.js
+// 13) coords.js
+// 14) recalculate.js
 
 (function () {
 

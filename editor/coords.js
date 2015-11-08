@@ -10,10 +10,11 @@
 // Dependencies:
 // 1) jquery.js
 // 2) math.js
-// 3) browser.js
-// 4) svgutils.js
-// 5) units.js
-// 6) svgtransformlist.js
+// 3) pathseg.js
+// 4) browser.js
+// 5) svgutils.js
+// 6) units.js
+// 7) svgtransformlist.js
 
 var svgedit = svgedit || {};
 
