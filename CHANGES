@@ -1,3 +1,16 @@
+2.8 (Ellipse) - November 24th, 2015
+-----------------------------------------------------------
+For a complete list of changes run:
+    git log 4bb15e0..253b4bf
+
+* Added PathSeg polyfill to workaround pathseg removal in browsers.
+* Fixed pathtool bug where paths were erroneously deleted.
+* Fixed bug where context menu did not work for groups.
+* Updated Slovenian locale.
+* Fixed unicode encoding issue for icons.
+* Added custom.css stylesheet for customization without changing the main editor.
+* Improved PDF export.
+
 2.7.1 (applied to 2.7 branch) - April 17, 2014
 -----------------------------------------------------------
 * Fix important ID situation with embedded API
