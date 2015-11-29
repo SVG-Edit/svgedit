@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+	<g id="tool_shapelib">
+	  <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+		  <path fill="#c0c0c0" stroke-linejoin="round" stroke-width="14" stroke="#202020" fill-rule="nonzero" d="m70,194.72501l0,0c0,-10.30901 35.8172,-18.666 80,-18.666c44.18298,0 80,8.35699 80,18.666l0,74.66699c0,10.30899 -35.81702,18.66699 -80,18.66699c-44.1828,0 -80,-8.358 -80,-18.66699l0,-74.66699z"/>
+		  <path fill="#c0c0c0" stroke-linejoin="round" stroke-width="14" stroke="#202020" fill-rule="nonzero" d="m70,114.608l0,0c0,-10.309 35.8172,-18.6668 80,-18.6668c44.18298,0 80,8.3578 80,18.6668l0,74.66699c0,10.30901 -35.81702,18.666 -80,18.666c-44.1828,0 -80,-8.35699 -80,-18.666l0,-74.66699z"/>
+		  <path fill="#c0c0c0" stroke-linejoin="round" stroke-width="14" stroke="#202020" fill-rule="nonzero" d="m70,33.6667l0,0c0,-10.3094 35.8172,-18.6667 80,-18.6667c44.18298,0 80,8.3573 80,18.6667l0,74.6663c0,10.31 -35.81702,18.667 -80,18.667c-44.1828,0 -80,-8.357 -80,-18.667l0,-74.6663z"/>
+		  <path id="svg_1" fill="#c0c0c0" stroke-linejoin="round" stroke-width="14" stroke="#202020" fill-rule="nonzero" d="m230,32.33334c0,10.30931 -35.81726,18.66666 -80,18.66666c-44.1828,0 -80,-8.35735 -80,-18.66666"/>
+  	</svg>
+	</g>
+</svg>

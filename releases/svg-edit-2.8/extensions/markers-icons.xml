@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+    <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+    <g id="nomarker">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-width="10" stroke="#ff7f00" fill="#ff7f00" d="m-50,0l100,0"/>
+        </svg>
+    </g>
+    <g id="leftarrow">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-width="10" stroke="#ff7f00" fill="#ff7f00" d="m-50,0l100,40l-30,-40l30,-40z"/>
+        </svg>
+    </g>
+    <g id="rightarrow">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-width="10" stroke="#ff7f00" fill="#ff7f00" d="m50,0l-100,40l30,-40l-30,-40z"/>
+        </svg>
+    </g>
+    <g id="leftarrow_o">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-width="10" stroke="#ff7f00" fill="none" d="m-50,0l100,40l-30,-40l30,-40z"/>
+        </svg>
+    </g>
+    <g id="rightarrow_o">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-width="10" stroke="#ff7f00" fill="none" d="m50,0l-100,40l30,-40l-30,-40z"/>
+        </svg>
+    </g>
+    <g id="forwardslash">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-width="10" stroke="#ff7f00" fill="none" d="m-20,50l40,-100"/>
+        </svg>
+    </g>
+    <g id="reverseslash">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-width="10" stroke="#ff7f00" fill="none" d="m-20,-50l40,100"/>
+        </svg>
+    </g>
+    <g id="verticalslash">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-width="10" stroke="#ff7f00" fill="none" d="m0,-50l0,100"/>
+        </svg>
+    </g>
+    <g id="mcircle">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+            <circle stroke-width="10" stroke="#ff7f00" fill="#ff7f00" cy="0" cx="0" r="30"/>
+        </svg>
+    </g>
+    <g id="mcircle_o">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+            <circle stroke-width="10" stroke="#ff7f00" fill="none" cy="0" cx="0" r="30"/>
+        </svg>
+    </g>
+    <g id="xmark">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-width="10" stroke="#ff7f00" fill="#ff7f00" d="m-30,30l60,-60m0,60l-60,-60"/>
+        </svg>
+    </g>
+    <g id="box">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-width="10" stroke="#ff7f00" fill="#ff7f00" d="m-30,-30l0,60l60,0l0,-60z"/>
+        </svg>
+    </g>
+    <g id="star">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-width="10" stroke="#ff7f00" fill="#ff7f00" d="m-40,-20l80,0l-70,60l30,-80l30,80z"/>
+        </svg>
+    </g>
+    <g id="box_o">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-width="10" stroke="#ff7f00" fill="none" d="m-30,-30l0,60l60,0l0,-60z"/>
+        </svg>
+    </g>
+    <g id="star_o">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-width="10" stroke="#ff7f00" fill="none" d="m-40,-20l80,0l-70,60l30,-80l30,80z"/>
+        </svg>
+    </g>
+     <g id="triangle_o">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-width="10" stroke="#ff7f00" fill="none" d="M-30,30 L0,-30 L30,30 Z"/>
+        </svg>
+    </g>
+     <g id="triangle">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-width="10" stroke="#ff7f00" fill="#ff7f00" d="M-30,30 L0,-30 L30,30 Z"/>
+        </svg>
+    </g>
+   <g id="textmarker">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+			<text xml:space="preserve" text-anchor="middle" font-family="serif" font-size="120"  y="40" x="0" stroke-width="0" stroke="#ff7f00" fill="#ff7f00">T</text>	
+        </svg>
+    </g>
+	<g id="mkr_markers_off">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+		   <line y2="0" x2="50" y1="0" x1="-50" stroke-width="5" stroke="#ff7f00" fill="none"/>
+       </svg>
+    </g>
+	<g id="mkr_markers_dimension">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+ 		   <line y2="0" x2="40" y1="0" x1="20" stroke-width="5" stroke="#ff7f00" fill="none"/>
+		   <line y2="0" x2="-40" y1="0" x1="-20" stroke-width="5" stroke="#ff7f00" fill="none"/>
+		   <text text-anchor="middle" font-family="serif" font-size="80"  y="20" x="0" stroke-width="0" stroke="#ff7f00" fill="#ff7f00">T</text>
+           <path stroke-width="5" stroke="#ff7f00" fill="#ff7f00" d="M-50,0 L-30,-15 L-30,15 Z"/>
+           <path stroke-width="5" stroke="#ff7f00" fill="#ff7f00" d="M50,0 L30,-15 L30,15 Z"/>
+ 		</svg>
+    </g>
+   	<g id="mkr_markers_label">
+        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
+  		   <line y2="0" x2="40" y1="0" x1="-20" stroke-width="5" stroke="#ff7f00" fill="none"/>
+		   <text text-anchor="middle" font-family="serif" font-size="80"  y="20" x="-40" stroke-width="0" stroke="#ff7f00" fill="#ff7f00">T</text>
+           <path stroke-width="5" stroke="#ff7f00" fill="#ff7f00" d="M50,0 L30,-15 L30,15 Z"/>
+        </svg>
+    </g>
+	<g id="svg_eof"/>
+</svg>
