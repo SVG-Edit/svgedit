@@ -139,7 +139,7 @@ svgEditor.readLang({
 		"copy": "Kopieren",
 		"paste": "Einfügen",
 		"paste_in_place": "An Originalposition einfügen",
-		"Löschen": "Löschen",
+		"delete": "Löschen",
 		"group": "Gruppieren",
 		"move_front": "Nach ganz oben anheben",
 		"move_up": "Anheben",
