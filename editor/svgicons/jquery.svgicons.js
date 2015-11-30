@@ -290,7 +290,9 @@ $(function() {
 					holder = $('#' + id);
 					var svg = elem.getElementsByTagNameNS(svgns, 'svg')[0];
 					var svgroot = document.createElementNS(svgns, "svg");
-					svgroot.setAttributeNS(svgns, 'viewBox', [0,0,icon_w,icon_h].join(' '));
+					// Per http://www.w3.org/TR/xml-names11/#defaulting, the namespace for
+					// attributes should have no value.
+					svgroot.setAttributeNS(null, 'viewBox', [0,0,icon_w,icon_h].join(' '));
 					
 					// Make flexible by converting width/height to viewBox
 					var w = svg.getAttribute('width');
@@ -317,9 +319,6 @@ $(function() {
 					svgroot.appendChild(svg);
 					var icon;
 					if(toImage) {
-						// Without cloning, Safari will crash
-						// With cloning, causes issue in Opera/Win/Non-EN
-						var svgcontent = isOpera?svgroot:svgroot.cloneNode(true);
 						temp_holder.empty().append(svgroot);
 						var str = data_pre + encode64(unescape(encodeURIComponent(new XMLSerializer().serializeToString(svgroot))));
 						icon = $(new Image())
