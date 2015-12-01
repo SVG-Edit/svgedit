@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Yn addas at ddewis",
 		"align_relative_to": "Alinio perthynas i ...",
 		"relativeTo": "cymharol i:",
-		"tudalen": "tudalen",
+		"page": "tudalen",
 		"largest_object": "gwrthrych mwyaf",
 		"selected_objects": "gwrthrychau etholedig",
 		"smallest_object": "lleiaf gwrthrych",
