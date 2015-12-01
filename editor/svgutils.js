@@ -476,14 +476,14 @@ svgedit.utilities.getBBox = function(elem) {
 			ret = selected.getBBox();
 			selected.textContent = '';
 		} else {
-			try { ret = selected.getBBox();} catch(e){}
+			if (selected.getBBox) { ret = selected.getBBox(); }
 		}
 		break;
 	case 'path':
 		if(!svgedit.browser.supportsPathBBox()) {
 			ret = svgedit.utilities.getPathBBox(selected);
 		} else {
-			try { ret = selected.getBBox();} catch(e2){}
+			if (selected.getBBox) { ret = selected.getBBox(); }
 		}
 		break;
 	case 'g':
@@ -509,18 +509,14 @@ svgedit.utilities.getBBox = function(elem) {
 				ret = bb;
 			//}
 		} else if(~visElems_arr.indexOf(elname)) {
-			try { ret = selected.getBBox();}
-			catch(e3) {
+			if (selected) { ret = selected.getBBox(); }
+			else {
 				// Check if element is child of a foreignObject
 				var fo = $(selected).closest('foreignObject');
-				if(fo.length) {
-					try {
+				if (fo.length) {
+					if (fo[0].getBBox) {
 						ret = fo[0].getBBox();
-					} catch(e4) {
-						ret = null;
 					}
-				} else {
-					ret = null;
 				}
 			}
 		}
