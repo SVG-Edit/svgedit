@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "選択対象に合わせる",
 		"align_relative_to": "揃える",
 		"relativeTo": "相対:",
-		"ページ": "ページ",
+		"page": "ページ",
 		"largest_object": "最大のオブジェクト",
 		"selected_objects": "選択オブジェクト",
 		"smallest_object": "最小のオブジェクト",
