@@ -93,6 +93,7 @@ svgedit.select.Selector.prototype.reset = function(e) {
 	this.selectorGroup.setAttribute('display', 'inline');
 };
 
+
 // Function: svgedit.select.Selector.updateGripCursors
 // Updates cursors for corner grips on rotation so arrows point the right way
 //
@@ -123,7 +124,6 @@ svgedit.select.Selector.prototype.updateGripCursors = function(angle) {
 // Parameters:
 // show - boolean indicating whether grips should be shown or not
 svgedit.select.Selector.prototype.showGrips = function(show) {
-	// TODO: use suspendRedraw() here
 	var bShow = show ? 'inline' : 'none';
 	selectorManager_.selectorGripsGroup.setAttribute('display', bShow);
 	var elem = this.selectedElement;
@@ -222,7 +222,6 @@ svgedit.select.Selector.prototype.resize = function() {
 		nbaw = (maxx-minx);
 		nbah = (maxy-miny);
 	}
-	var sr_handle = svgFactory_.svgRoot().suspendRedraw(100);
 
 	var dstr = 'M' + nbax + ',' + nbay
 				+ ' L' + (nbax+nbaw) + ',' + nbay
@@ -261,8 +260,6 @@ svgedit.select.Selector.prototype.resize = function() {
 		mgr.rotateGrip.setAttribute('cx', nbax + (nbaw)/2);
 		mgr.rotateGrip.setAttribute('cy', nbay - (gripRadius*5));
 //	}
-
-	svgFactory_.svgRoot().unsuspendRedraw(sr_handle);
 };
 
 
@@ -450,12 +447,12 @@ svgedit.select.SelectorManager.prototype.releaseSelector = function(elem) {
 	var i,
 		N = this.selectors.length,
 		sel = this.selectorMap[elem.id];
+	if (!sel.locked) {
+		// TODO(codedread): Ensure this exists in this module.
+		console.log('WARNING! selector was released but was already unlocked');
+	}
 	for (i = 0; i < N; ++i) {
 		if (this.selectors[i] && this.selectors[i] == sel) {
-			if (sel.locked == false) {
-				// TODO(codedread): Ensure this exists in this module.
-				console.log('WARNING! selector was released but was already unlocked');
-			}
 			delete this.selectorMap[elem.id];
 			sel.locked = false;
 			sel.selectedElement = null;

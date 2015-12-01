@@ -1896,10 +1896,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				}, 1000);
 				break;
 			case 'line':
-				// Opera has a problem with suspendRedraw() apparently
-				var handle = null;
-				if (!window.opera) {svgroot.suspendRedraw(1000);}
-
 				if (curConfig.gridSnapping) {
 					x = svgedit.utilities.snapToGrid(x);
 					y = svgedit.utilities.snapToGrid(y);
@@ -1916,7 +1912,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				
 				shape.setAttributeNS(null, 'x2', x2);
 				shape.setAttributeNS(null, 'y2', y2);
-				if (!window.opera) {svgroot.unsuspendRedraw(handle);}
 				break;
 			case 'foreignObject':
 				// fall through
@@ -1967,9 +1962,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				c = $(shape).attr(['cx', 'cy']);
 				cx = c.cx;
 				cy = c.cy;
-				// Opera has a problem with suspendRedraw() apparently
-					handle = null;
-				if (!window.opera) {svgroot.suspendRedraw(1000);}
 				if (curConfig.gridSnapping) {
 					x = svgedit.utilities.snapToGrid(x);
 					cx = svgedit.utilities.snapToGrid(cx);
@@ -1979,7 +1971,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				shape.setAttributeNS(null, 'rx', Math.abs(x - cx) );
 				var ry = Math.abs(evt.shiftKey?(x - cx):(y - cy));
 				shape.setAttributeNS(null, 'ry', ry );
-				if (!window.opera) {svgroot.unsuspendRedraw(handle);}
 				break;
 			case 'fhellipse':
 			case 'fhrect':
@@ -5681,7 +5672,6 @@ this.setResolution = function(x, y) {
 		}
 	}
 	if (x != w || y != h) {
-		var handle = svgroot.suspendRedraw(1000);
 		if (!batchCmd) {
 			batchCmd = new svgedit.history.BatchCommand('Change Image Dimensions');
 		}
@@ -5700,7 +5690,6 @@ this.setResolution = function(x, y) {
 		batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(svgcontent, {'viewBox': ['0 0', w, h].join(' ')}));
 	
 		addCommandToHistory(batchCmd);
-		svgroot.unsuspendRedraw(handle);
 		call('changed', [svgcontent]);
 	}
 	return true;
@@ -6770,7 +6759,6 @@ this.convertToPath = function(elem, getBBox) {
 // newValue - String or number with the new attribute value
 // elems - The DOM elements to apply the change to
 var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
-	var handle = svgroot.suspendRedraw(1000);
 	if (current_mode == 'pathedit') {
 		// Editing node
 		pathActions.moveNode(attr, newValue);
@@ -6883,7 +6871,6 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 			}
 		} // if oldValue != newValue
 	} // for each elem
-	svgroot.unsuspendRedraw(handle);	
 };
 
 // Function: changeSelectedAttribute
