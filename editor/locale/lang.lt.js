@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Talpinti atrankos",
 		"align_relative_to": "Derinti palyginti ...",
 		"relativeTo": "palyginti:",
-		"puslapis": "puslapis",
+		"page": "puslapis",
 		"largest_object": "didžiausias objektas",
 		"selected_objects": "išrinktas objektai",
 		"smallest_object": "mažiausias objektą",
