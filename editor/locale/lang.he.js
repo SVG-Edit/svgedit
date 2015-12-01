@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "התאם הבחירה",
 		"align_relative_to": "יישור ביחס ...",
 		"relativeTo": "יחסית:",
-		"דף": "דף",
+		"page": "דף",
 		"largest_object": "האובייקט הגדול",
 		"selected_objects": "elected objects",
 		"smallest_object": "הקטן אובייקט",
