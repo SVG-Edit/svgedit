@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Fit за подбор",
 		"align_relative_to": "Привеждане в сравнение с ...",
 		"relativeTo": "в сравнение с:",
-		"страница": "страница",
+		"page": "страница",
 		"largest_object": "най-големият обект",
 		"selected_objects": "избраните обекти",
 		"smallest_object": "най-малката обект",
