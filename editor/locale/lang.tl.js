@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Pagkasyahin sa pagpili",
 		"align_relative_to": "Pantayin sa kamag-anak sa ...",
 		"relativeTo": "kamag-anak sa:",
-		"pahina": "pahina",
+		"page": "pahina",
 		"largest_object": "pinakamalaking bagay",
 		"selected_objects": "inihalal na mga bagay",
 		"smallest_object": "pinakamaliit na bagay",
