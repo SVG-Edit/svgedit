@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Под размер выделенного",
 		"align_relative_to": "Выровнять по отношению к ...",
 		"relativeTo": "По отношению к ",
-		"страница": "страница",
+		"page": "страница",
 		"largest_object": "Наибольший объект",
 		"selected_objects": "Выделенные объекты",
 		"smallest_object": "Самый маленький объект",
