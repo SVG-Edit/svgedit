@@ -80,7 +80,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Fit atlases",
 		"align_relative_to": "Līdzināt, salīdzinot ar ...",
 		"relativeTo": "salīdzinājumā ar:",
-		"lapa": "lapa",
+		"page": "lapa",
 		"largest_object": "lielākais objekts",
 		"selected_objects": "ievēlēts objekti",
 		"smallest_object": "mazākais objekts",
