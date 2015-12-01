@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Igazítás a kiválasztási",
 		"align_relative_to": "Képest Igazítás ...",
 		"relativeTo": "relatív hogy:",
-		"Page": "Page",
+		"page": "Page",
 		"largest_object": "legnagyobb objektum",
 		"selected_objects": "választott tárgyak",
 		"smallest_object": "legkisebb objektum",
