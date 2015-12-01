@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "An die Auswahl anpassen",
 		"align_relative_to": "Relativ zu einem anderem Objekt ausrichten ...",
 		"relativeTo": "im Vergleich zu:",
-		"Seite": "Seite",
+		"page": "Seite",
 		"largest_object": "größtes Objekt",
 		"selected_objects": "gewählte Objekte",
 		"smallest_object": "kleinstes Objekt",
