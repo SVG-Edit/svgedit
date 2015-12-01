@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Fit-għażla",
 		"align_relative_to": "Jallinjaw relattiv għall - ...",
 		"relativeTo": "relattiv għall -:",
-		"paġna": "paġna",
+		"page": "paġna",
 		"largest_object": "akbar oġġett",
 		"selected_objects": "oġġetti elett",
 		"smallest_object": "iżgħar oġġett",
