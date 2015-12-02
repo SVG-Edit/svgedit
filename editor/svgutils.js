@@ -476,14 +476,14 @@ svgedit.utilities.getBBox = function(elem) {
 			ret = selected.getBBox();
 			selected.textContent = '';
 		} else {
-			try { ret = selected.getBBox();} catch(e){}
+			if (selected.getBBox) { ret = selected.getBBox(); }
 		}
 		break;
 	case 'path':
 		if(!svgedit.browser.supportsPathBBox()) {
 			ret = svgedit.utilities.getPathBBox(selected);
 		} else {
-			try { ret = selected.getBBox();} catch(e2){}
+			if (selected.getBBox) { ret = selected.getBBox(); }
 		}
 		break;
 	case 'g':
@@ -509,18 +509,14 @@ svgedit.utilities.getBBox = function(elem) {
 				ret = bb;
 			//}
 		} else if(~visElems_arr.indexOf(elname)) {
-			try { ret = selected.getBBox();}
-			catch(e3) {
+			if (selected) { ret = selected.getBBox(); }
+			else {
 				// Check if element is child of a foreignObject
 				var fo = $(selected).closest('foreignObject');
-				if(fo.length) {
-					try {
+				if (fo.length) {
+					if (fo[0].getBBox) {
 						ret = fo[0].getBBox();
-					} catch(e4) {
-						ret = null;
 					}
-				} else {
-					ret = null;
 				}
 			}
 		}
@@ -603,11 +599,6 @@ if (svgedit.browser.supportsSelectors()) {
 // suspendLength - Optional integer of milliseconds to suspend redraw
 // unitCheck - Boolean to indicate the need to use svgedit.units.setUnitAttr
 svgedit.utilities.assignAttributes = function(node, attrs, suspendLength, unitCheck) {
-	if(!suspendLength) {suspendLength = 0;}
-	// Opera has a problem with suspendRedraw() apparently
-	var handle = null;
-	if (!svgedit.browser.isOpera()) {svgroot_.suspendRedraw(suspendLength);}
-
 	var i;
 	for (i in attrs) {
 		var ns = (i.substr(0,4) === 'xml:' ? NS.XML :
@@ -621,7 +612,6 @@ svgedit.utilities.assignAttributes = function(node, attrs, suspendLength, unitCh
 			svgedit.units.setUnitAttr(node, i, attrs[i]);
 		}
 	}
-	if (!svgedit.browser.isOpera()) {svgroot_.unsuspendRedraw(handle);}
 };
 
 // Function: cleanupElement
@@ -630,7 +620,6 @@ svgedit.utilities.assignAttributes = function(node, attrs, suspendLength, unitCh
 // Parameters:
 // element - DOM element to clean up
 svgedit.utilities.cleanupElement = function(element) {
-	var handle = svgroot_.suspendRedraw(60);
 	var defaults = {
 		'fill-opacity':1,
 		'stop-opacity':1,
@@ -652,8 +641,6 @@ svgedit.utilities.cleanupElement = function(element) {
 			element.removeAttribute(attr);
 		}
 	}
-
-	svgroot_.unsuspendRedraw(handle);
 };
 
 // Function: snapToGrid

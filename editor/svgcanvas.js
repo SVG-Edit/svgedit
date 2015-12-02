@@ -175,7 +175,7 @@ var cur_shape = all_properties.shape;
 
 // Array with all the currently selected elements
 // default size of 1 until it needs to grow bigger
-var selectedElements = new Array(1);
+var selectedElements = [];
 
 // Function: addSvgElementFromJson
 // Create a new SVG element based on the given object keys/values and add it to the current layer
@@ -472,7 +472,7 @@ var encodableImages = {},
 	// DOM element for selection rectangle drawn by the user
 	rubberBox = null,
 	
-	// Array of current BBoxes (still needed?)
+	// Array of current BBoxes, used in getIntersectionList().
 	curBBoxes = [],
 	
 	// Object to contain all included extensions
@@ -537,42 +537,37 @@ var round = this.round = function(val) {
 // This method sends back an array or a NodeList full of elements that
 // intersect the multi-select rubber-band-box on the current_layer only.
 // 
-// Since the only browser that supports the SVG DOM getIntersectionList is Opera, 
-// we need to provide an implementation here. We brute-force it for now.
+// We brute-force getIntersectionList for browsers that do not support it (Firefox).
 // 
 // Reference:
 // Firefox does not implement getIntersectionList(), see https://bugzilla.mozilla.org/show_bug.cgi?id=501421
-// Webkit does not implement getIntersectionList(), see https://bugs.webkit.org/show_bug.cgi?id=11274
 var getIntersectionList = this.getIntersectionList = function(rect) {
 	if (rubberBox == null) { return null; }
 
 	var parent = current_group || getCurrentDrawing().getCurrentLayer();
-	
-	if (!curBBoxes.length) {
-		// Cache all bboxes
-		curBBoxes = getVisibleElementsAndBBoxes(parent);
+
+	var rubberBBox;
+	if (!rect) {
+		rubberBBox = rubberBox.getBBox();
+	} else {
+		rubberBBox = svgcontent.createSVGRect(rect.x, rect.y, rect.width, rect.height);
 	}
 	
 	var resultList = null;
-	try {
-		resultList = parent.getIntersectionList(rect, null);
-	} catch(e) { }
+	if (typeof(svgroot.getIntersectionList) == 'function') {
+		// Offset the bbox of the rubber box by the offset of the svgcontent element.
+		rubberBBox.x += parseInt(svgcontent.getAttribute('x'), 10);
+		rubberBBox.y += parseInt(svgcontent.getAttribute('y'), 10);
+
+		resultList = svgroot.getIntersectionList(rubberBBox, parent);
+	}
 
 	if (resultList == null || typeof(resultList.item) != 'function') {
 		resultList = [];
-		var rubberBBox;
-		if (!rect) {
-			rubberBBox = rubberBox.getBBox();
-			var o,
-				bb = {};
-			
-			for (o in rubberBBox) {
-				bb[o] = rubberBBox[o] / current_zoom;
-			}
-			rubberBBox = bb;
-			
-		} else {
-			rubberBBox = rect;
+
+		if (!curBBoxes.length) {
+			// Cache all bboxes
+			curBBoxes = getVisibleElementsAndBBoxes(parent);
 		}
 		var i = curBBoxes.length;
 		while (i--) {
@@ -582,6 +577,7 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 			}
 		}
 	}
+
 	// addToSelection expects an array, but it's ok to pass a NodeList 
 	// because using square-bracket notation is allowed: 
 	// http://www.w3.org/TR/DOM-Level-2-Core/ecma-script-binding.html
@@ -602,47 +598,48 @@ getStrokedBBox = this.getStrokedBBox = function(elems) {
 	if (!elems.length) {return false;}
 	// Make sure the expected BBox is returned if the element is a group
 	var getCheckedBBox = function(elem) {
+		// TODO: Fix issue with rotated groups. Currently they work
+		// fine in FF, but not in other browsers (same problem mentioned
+		// in Issue 339 comment #2).
 
-		try {
-			// TODO: Fix issue with rotated groups. Currently they work
-			// fine in FF, but not in other browsers (same problem mentioned
-			// in Issue 339 comment #2).
+		var bb = svgedit.utilities.getBBox(elem);
+		if (!bb) {
+			return null;
+		}
+		var angle = svgedit.utilities.getRotationAngle(elem);
 
-			var bb = svgedit.utilities.getBBox(elem);
-			var angle = svgedit.utilities.getRotationAngle(elem);
-
-			if ((angle && angle % 90) ||
-				svgedit.math.hasMatrixTransform(svgedit.transformlist.getTransformList(elem))) {
-				// Accurate way to get BBox of rotated element in Firefox:
-				// Put element in group and get its BBox
-				var good_bb = false;
-				// Get the BBox from the raw path for these elements
-				var elemNames = ['ellipse', 'path', 'line', 'polyline', 'polygon'];
-				if (elemNames.indexOf(elem.tagName) >= 0) {
+		if ((angle && angle % 90) ||
+			svgedit.math.hasMatrixTransform(svgedit.transformlist.getTransformList(elem))) {
+			// Accurate way to get BBox of rotated element in Firefox:
+			// Put element in group and get its BBox
+			var good_bb = false;
+			// Get the BBox from the raw path for these elements
+			var elemNames = ['ellipse', 'path', 'line', 'polyline', 'polygon'];
+			if (elemNames.indexOf(elem.tagName) >= 0) {
+				bb = good_bb = canvas.convertToPath(elem, true);
+			} else if (elem.tagName == 'rect') {
+				// Look for radius
+				var rx = elem.getAttribute('rx');
+				var ry = elem.getAttribute('ry');
+				if (rx || ry) {
 					bb = good_bb = canvas.convertToPath(elem, true);
-				} else if (elem.tagName == 'rect') {
-					// Look for radius
-					var rx = elem.getAttribute('rx');
-					var ry = elem.getAttribute('ry');
-					if (rx || ry) {
-						bb = good_bb = canvas.convertToPath(elem, true);
-					}
 				}
+			}
 
-				if (!good_bb) {
-					// Must use clone else FF freaks out
-					var clone = elem.cloneNode(true);
-					var g = document.createElementNS(NS.SVG, 'g');
-					var parent = elem.parentNode;
-					parent.appendChild(g);
-					g.appendChild(clone);
-					bb = svgedit.utilities.bboxToObj(g.getBBox());
-					parent.removeChild(g);
-				}
+			if (!good_bb) {
+				// Must use clone else FF freaks out
+				var clone = elem.cloneNode(true);
+				var g = document.createElementNS(NS.SVG, 'g');
+				var parent = elem.parentNode;
+				parent.appendChild(g);
+				g.appendChild(clone);
+				bb = svgedit.utilities.bboxToObj(g.getBBox());
+				parent.removeChild(g);
+			}
 
-				// Old method: Works by giving the rotated BBox,
-				// this is (unfortunately) what Opera and Safari do
-				// natively when getting the BBox of the parent group
+			// Old method: Works by giving the rotated BBox,
+			// this is (unfortunately) what Opera and Safari do
+			// natively when getting the BBox of the parent group
 //						var angle = angle * Math.PI / 180.0;
 //						var rminx = Number.MAX_VALUE, rminy = Number.MAX_VALUE, 
 //							rmaxx = Number.MIN_VALUE, rmaxy = Number.MIN_VALUE;
@@ -672,12 +669,8 @@ getStrokedBBox = this.getStrokedBBox = function(elems) {
 //						bb.y = rminy;
 //						bb.width = rmaxx - rminx;
 //						bb.height = rmaxy - rminy;
-			}
-			return bb;
-		} catch(e) {
-			console.log(elem, e);
-			return null;
 		}
+		return bb;
 	};
 
 	var full_bb;
@@ -753,11 +746,9 @@ var getVisibleElements = this.getVisibleElements = function(parent) {
 	
 	var contentElems = [];
 	$(parent).children().each(function(i, elem) {
-		try {
-			if (elem.getBBox()) {
-				contentElems.push(elem);
-			}
-		} catch(e) {}
+		if (elem.getBBox) {
+			contentElems.push(elem);
+		}
 	});
 	return contentElems.reverse();
 };
@@ -780,11 +771,9 @@ var getVisibleElementsAndBBoxes = this.getVisibleElementsAndBBoxes = function(pa
 	}
 	var contentElems = [];
 	$(parent).children().each(function(i, elem) {
-		try {
-			if (elem.getBBox()) {
-				contentElems.push({'elem':elem, 'bbox':getStrokedBBox([elem])});
-			}
-		} catch(e) {}
+		if (elem.getBBox) {
+			contentElems.push({'elem':elem, 'bbox':getStrokedBBox([elem])});
+		}
 	});
 	return contentElems.reverse();
 };
@@ -1762,22 +1751,22 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				// - if newList contains selected, do nothing
 				// - if newList doesn't contain selected, remove it from selected
 				// - for any newList that was not in selectedElements, add it to selected
-				var elemsToRemove = [], elemsToAdd = [],
+				var elemsToRemove = selectedElements.slice(), elemsToAdd = [],
 					newList = getIntersectionList();
-				len = selectedElements.length;
-				
-				for (i = 0; i < len; ++i) {
-					var ind = newList.indexOf(selectedElements[i]);
-					if (ind == -1) {
-						elemsToRemove.push(selectedElements[i]);
-					} else {
-						newList[ind] = null;
-					}
-				}
-				
+
+				// For every element in the intersection, add if not present in selectedElements.
 				len = newList.length;
 				for (i = 0; i < len; ++i) {
-					if (newList[i]) {elemsToAdd.push(newList[i]);}
+					var intElem = newList[i];
+					// Found an element that was not selected before, so we should add it.
+					if (selectedElements.indexOf(intElem) == -1) {
+						elemsToAdd.push(intElem);
+					}
+					// Found an element that was already selected, so we shouldn't remove it.
+					var foundInd = elemsToRemove.indexOf(intElem);
+					if (foundInd != -1) {
+						elemsToRemove.splice(foundInd, 1)
+					}
 				}
 				
 				if (elemsToRemove.length > 0) {
@@ -1785,7 +1774,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				}
 				
 				if (elemsToAdd.length > 0) {
-					addToSelection(elemsToAdd);
+					canvas.addToSelection(elemsToAdd);
 				}
 					
 				break;
@@ -1896,10 +1885,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				}, 1000);
 				break;
 			case 'line':
-				// Opera has a problem with suspendRedraw() apparently
-				var handle = null;
-				if (!window.opera) {svgroot.suspendRedraw(1000);}
-
 				if (curConfig.gridSnapping) {
 					x = svgedit.utilities.snapToGrid(x);
 					y = svgedit.utilities.snapToGrid(y);
@@ -1916,7 +1901,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				
 				shape.setAttributeNS(null, 'x2', x2);
 				shape.setAttributeNS(null, 'y2', y2);
-				if (!window.opera) {svgroot.unsuspendRedraw(handle);}
 				break;
 			case 'foreignObject':
 				// fall through
@@ -1967,9 +1951,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				c = $(shape).attr(['cx', 'cy']);
 				cx = c.cx;
 				cy = c.cy;
-				// Opera has a problem with suspendRedraw() apparently
-					handle = null;
-				if (!window.opera) {svgroot.suspendRedraw(1000);}
 				if (curConfig.gridSnapping) {
 					x = svgedit.utilities.snapToGrid(x);
 					cx = svgedit.utilities.snapToGrid(cx);
@@ -1979,7 +1960,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				shape.setAttributeNS(null, 'rx', Math.abs(x - cx) );
 				var ry = Math.abs(evt.shiftKey?(x - cx):(y - cy));
 				shape.setAttributeNS(null, 'ry', ry );
-				if (!window.opera) {svgroot.unsuspendRedraw(handle);}
 				break;
 			case 'fhellipse':
 			case 'fhrect':
@@ -5681,7 +5661,6 @@ this.setResolution = function(x, y) {
 		}
 	}
 	if (x != w || y != h) {
-		var handle = svgroot.suspendRedraw(1000);
 		if (!batchCmd) {
 			batchCmd = new svgedit.history.BatchCommand('Change Image Dimensions');
 		}
@@ -5700,7 +5679,6 @@ this.setResolution = function(x, y) {
 		batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(svgcontent, {'viewBox': ['0 0', w, h].join(' ')}));
 	
 		addCommandToHistory(batchCmd);
-		svgroot.unsuspendRedraw(handle);
 		call('changed', [svgcontent]);
 	}
 	return true;
@@ -6770,7 +6748,6 @@ this.convertToPath = function(elem, getBBox) {
 // newValue - String or number with the new attribute value
 // elems - The DOM elements to apply the change to
 var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
-	var handle = svgroot.suspendRedraw(1000);
 	if (current_mode == 'pathedit') {
 		// Editing node
 		pathActions.moveNode(attr, newValue);
@@ -6883,7 +6860,6 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 			}
 		} // if oldValue != newValue
 	} // for each elem
-	svgroot.unsuspendRedraw(handle);	
 };
 
 // Function: changeSelectedAttribute
