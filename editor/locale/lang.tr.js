@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Fit seçimine",
 		"align_relative_to": "Align göre ...",
 		"relativeTo": "göreli:",
-		"sayfa": "sayfa",
+		"page": "sayfa",
 		"largest_object": "en büyük nesne",
 		"selected_objects": "seçilen nesneleri",
 		"smallest_object": "küçük nesne",

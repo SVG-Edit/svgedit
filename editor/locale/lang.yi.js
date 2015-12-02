@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "פּאַסיק צו אָפּקלייב",
 		"align_relative_to": "יינרייען קאָרעוו צו ...",
 		"relativeTo": "קאָרעוו צו:",
-		"בלאַט": "בלאַט",
+		"page": "בלאַט",
 		"largest_object": "לאַרדזשאַסט קעגן",
 		"selected_objects": "עלעקטעד אַבדזשעקץ",
 		"smallest_object": "סמאָלאַסט קעגן",

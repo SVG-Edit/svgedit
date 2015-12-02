@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Fit valiku",
 		"align_relative_to": "Viia võrreldes ...",
 		"relativeTo": "võrreldes:",
-		"lehekülg": "lehekülg",
+		"page": "lehekülg",
 		"largest_object": "suurim objekt",
 		"selected_objects": "valitud objektide",
 		"smallest_object": "väikseim objekt",

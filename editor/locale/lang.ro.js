@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Potrivire la selecţie",
 		"align_relative_to": "Aliniere în raport cu ...",
 		"relativeTo": "în raport cu:",
-		"de start": "de start",
+		"page": "pagină",
 		"largest_object": "cel mai mare obiect",
 		"selected_objects": "obiectele alese",
 		"smallest_object": "cel mai mic obiect",

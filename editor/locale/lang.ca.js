@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Ajustar a la selecció",
 		"align_relative_to": "Alinear pel que fa a ...",
 		"relativeTo": "en relació amb:",
-		"Pàgina": "Pàgina",
+		"page": "Pàgina",
 		"largest_object": "objecte més gran",
 		"selected_objects": "objectes escollits",
 		"smallest_object": "objecte més petit",

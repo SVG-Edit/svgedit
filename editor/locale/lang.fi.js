@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Sovita valinta",
 		"align_relative_to": "Kohdista suhteessa ...",
 		"relativeTo": "suhteessa:",
-		"sivulta": "sivulta",
+		"page": "sivulta",
 		"largest_object": "Suurin kohde",
 		"selected_objects": "valittujen objektien",
 		"smallest_object": "pienin kohde",

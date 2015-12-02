@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Fit til val",
 		"align_relative_to": "Jafna miðað við ...",
 		"relativeTo": "hlutfallslegt til:",
-		"síðu": "síðu",
+		"page": "síðu",
 		"largest_object": "stærsti hlutinn",
 		"selected_objects": "kjörinn hlutir",
 		"smallest_object": "lítill hluti",

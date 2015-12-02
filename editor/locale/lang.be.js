@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Выбар памеру",
 		"align_relative_to": "Выраўнаваць па дачыненні да ...",
 		"relativeTo": "па параўнанні з:",
-		"старонка": "старонка",
+		"page": "старонка",
 		"largest_object": "найбуйнейшы аб&#39;ект",
 		"selected_objects": "выбранымі аб&#39;ектамі",
 		"smallest_object": "маленькі аб&#39;ект",

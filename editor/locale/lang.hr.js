@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Prilagodi odabir",
 		"align_relative_to": "Poravnaj u odnosu na ...",
 		"relativeTo": "u odnosu na:",
-		"stranica": "stranica",
+		"page": "stranica",
 		"largest_object": "najveći objekt",
 		"selected_objects": "izabrani objekti",
 		"smallest_object": "najmanji objekt",

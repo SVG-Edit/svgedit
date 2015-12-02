@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Passing tot seleksie",
 		"align_relative_to": "Align in verhouding tot ...",
 		"relativeTo": "relatief tot:",
-		"bladsy": "bladsy",
+		"page": "bladsy",
 		"largest_object": "grootste voorwerp",
 		"selected_objects": "verkose voorwerpe",
 		"smallest_object": "kleinste voorwerp",

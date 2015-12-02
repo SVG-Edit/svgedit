@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Waliopo uteuzi",
 		"align_relative_to": "Align jamaa na ...",
 		"relativeTo": "relativa att:",
-		"umebadilisha": "umebadilisha",
+		"page": "Page",
 		"largest_object": "ukubwa object",
 		"selected_objects": "waliochaguliwa vitu",
 		"smallest_object": "minsta object",

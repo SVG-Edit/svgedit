@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Anpassa till val",
 		"align_relative_to": "Justera förhållande till ...",
 		"relativeTo": "jämfört:",
-		"sida": "sida",
+		"page": "sida",
 		"largest_object": "största objekt",
 		"selected_objects": "valda objekt",
 		"smallest_object": "minsta objektet",

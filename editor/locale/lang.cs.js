@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Přizpůsobit výběru",
 		"align_relative_to": "Zarovnat relativně",
 		"relativeTo": "relatativně k:",
-		"stránce": "stránce",
+		"page": "stránce",
 		"largest_object": "největšímu objektu",
 		"selected_objects": "zvoleným objektům",
 		"smallest_object": "nejmenšímu objektu",

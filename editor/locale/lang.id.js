@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Fit seleksi",
 		"align_relative_to": "Rata relatif ...",
 		"relativeTo": "relatif:",
-		"Halaman": "Halaman",
+		"page": "Halaman",
 		"largest_object": "objek terbesar",
 		"selected_objects": "objek terpilih",
 		"smallest_object": "objek terkecil",

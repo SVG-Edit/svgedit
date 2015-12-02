@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Laghdaigh a roghnú",
 		"align_relative_to": "Ailínigh i gcomparáid leis ...",
 		"relativeTo": "i gcomparáid leis:",
-		"leathanach": "leathanach",
+		"page": "leathanach",
 		"largest_object": "réad is mó",
 		"selected_objects": "réada tofa",
 		"smallest_object": "lú réad",

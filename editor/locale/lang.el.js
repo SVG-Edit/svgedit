@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Fit to επιλογή",
 		"align_relative_to": "Στοίχιση σε σχέση με ...",
 		"relativeTo": "σε σχέση με:",
-		"σελίδα": "σελίδα",
+		"page": "σελίδα",
 		"largest_object": "μεγαλύτερο αντικείμενο",
 		"selected_objects": "εκλέγεται αντικείμενα",
 		"smallest_object": "μικρότερο αντικείμενο",

@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "يصلح لاختيار",
 		"align_relative_to": "محاذاة النسبي ل ...",
 		"relativeTo": "بالنسبة إلى:",
-		"الصفحة": "الصفحة",
+		"page": "الصفحة",
 		"largest_object": "أكبر كائن",
 		"selected_objects": "انتخب الأجسام",
 		"smallest_object": "أصغر كائن",

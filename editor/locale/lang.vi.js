@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Phù hợp để lựa chọn",
 		"align_relative_to": "Căn liên quan đến ...",
 		"relativeTo": "liên quan đến:",
-		"Sửa": "Sửa",
+		"page": "Page",
 		"largest_object": "lớn nhất đối tượng",
 		"selected_objects": "bầu các đối tượng",
 		"smallest_object": "nhỏ đối tượng",

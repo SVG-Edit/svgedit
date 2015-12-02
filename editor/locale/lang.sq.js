@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Fit to Selection",
 		"align_relative_to": "Vendose në lidhje me ...",
 		"relativeTo": "lidhje me:",
-		"faqe": "faqe",
+		"page": "faqe",
 		"largest_object": "madh objekt",
 		"selected_objects": "objektet e zgjedhur",
 		"smallest_object": "objektit më të vogël",

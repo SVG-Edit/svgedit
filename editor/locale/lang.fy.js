@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "Op seleksje passe",
 		"align_relative_to": "Útlijne relatyf oan...",
 		"relativeTo": "Relatief tsjinoer:",
-		"Side": "Side",
+		"page": "Side",
 		"largest_object": "Grutste ûnderdiel",
 		"selected_objects": "Selektearre ûnderdielen",
 		"smallest_object": "Lytste ûnderdiel",

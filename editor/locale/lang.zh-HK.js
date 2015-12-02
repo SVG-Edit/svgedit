@@ -79,7 +79,7 @@ svgEditor.readLang({
 		"fit_to_sel": "适合选择",
 		"align_relative_to": "相对对齐 ...",
 		"relativeTo": "相对于:",
-		"网页": "网页",
+		"page": "网页",
 		"largest_object": "最大对象",
 		"selected_objects": "选对象",
 		"smallest_object": "最小的对象",
