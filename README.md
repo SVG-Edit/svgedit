@@ -2,7 +2,7 @@
 ===
 SVG-edit is a fast, web-based, javascript-driven SVG drawing editor that works in any modern browser.
 
-### [Try SVG-edit here](http://svg-edit.github.io/svgedit/releases/svg-edit-2.8/svg-editor.html)
+### [Try SVG-edit here](https://svg-edit.github.io/svgedit/releases/svg-edit-2.8/svg-editor.html)
 
 (Also available as a [download](https://github.com/SVG-Edit/svgedit/releases/download/svg-edit-2.8/svg-edit-2.8.zip) in [releases](https://github.com/SVG-Edit/svgedit/releases)).
 
