@@ -1,34 +1,63 @@
-2.8.1 (Ellipse) - December 2nd, 2015
------------------------------------------------------------
+# 2.8.1 (Ellipse) - December 2nd, 2015
+
 For a complete list of changes run:
-    git log 81afaa9..5986f1e
 
-* Fixed bug where all icons were broken in Safari (https://github.com/SVG-Edit/svgedit/issues/29)
-* Use getIntersectionList when available (https://github.com/SVG-Edit/svgedit/issues/36)
-* Switched to https for all urls (https://github.com/SVG-Edit/svgedit/issues/31)
-* Updated translations for "page" and "delete" in 57 locales.
-* Minor administrative updates (docs/, README.md, author emails)
+```console
+git log 81afaa9..5986f1e
+```
 
-2.8 (Ellipse) - November 24th, 2015
------------------------------------------------------------
+* Enhancement: Use getIntersectionList when available (<https://github.com/SVG-Edit/svgedit/issues/36>)
+* Enhancement: Switched to https for all urls (<https://github.com/SVG-Edit/svgedit/issues/31>)
+* Enhancement: Minor administrative updates (docs/, README.md, author emails)
+* Fix: Bug where all icons were broken in Safari (<https://github.com/SVG-Edit/svgedit/issues/29>)
+* Fix: Updated translations for "page" and "delete" in 57 locales.
+
+# 2.8 (Ellipse) - November 24th, 2015
+
 For a complete list of changes run:
-    git log 4bb15e0..253b4bf
 
-* Added PathSeg polyfill to workaround pathseg removal in browsers.
-* Fixed pathtool bug where paths were erroneously deleted.
-* Fixed bug where context menu did not work for groups.
-* Updated Slovenian locale.
-* Fixed unicode encoding issue for icons.
-* Added custom.css stylesheet for customization without changing the main editor.
-* Improved PDF export.
+```console
+git log 4bb15e0..253b4bf
+```
 
-2.7.1 (applied to 2.7 branch) - April 17, 2014
------------------------------------------------------------
+* Enhancement (Experimental): Client-side PDF export (issue #1156) (to data: URI) and server-side PDF export (where not supported in browser and using ext-server_opensave.js); uses jsPDF library
+* Enhancement: For image exports, provided "datauri" property to "exported" event.
+* Enhancement: Allow config "exportWindowType" of value "new" or "same" to indicate whether to reuse the same export window upon subsequent exports
+* Enhancement: Added openclipart support to imagelib extension
+* Enhancement: allow showGrid to be set before load
+* Enhancement: Support loading of (properly URL encoded) non-base64 "data:image/svg+xml;utf8,"-style data URIs
+* Enhancement: More clear naming of labels: "Open Image"->"Open SVG" and "Import SVG"->"Import Image" ( issue #1206 )
+* Enhancement: Included reference to (repository-ignored) custom.css file which once created by the user, as with config.js, allows customization without modifying the repo (its main editor file)
+* Enhancement: Updated Slovenian locale.
+* Demo enhancement: Support and demonstrate export in embedded editor
+* Upgrade: canvg version
+* Upgrade: Added PathSeg polyfill to workaround pathseg removal in browsers.
+* Fix: pathtool bug where paths were erroneously deleted.
+* Fix: Context menu did not work for groups.
+* Fix: Avoid error in ungrouping function when no elements selected (was impacting MathJax "Ok" button).
+* Fix: issue [#1205](https://code.google.com/p/svg-edit/issues/detail?id=1205) with Snap to Grid preventing editing
+* Fix: bug in exportImage if svgEditor.setCustomHandlers calls made
+* Fix: Ensure "loading..." message closes upon completion or error
+* Fix: Ensure all dependencies are first available before canvg (and jsPDF) usage
+* Fix: Allow for empty images
+* Fix: Minor improvement in display when icon size is set to small
+* Fix: Based64-encoding issues with Unicode text (e.g., in data URIs or icons)
+* Fix: 2.7 regression in filesave.php for SVG saving (used by ext-server_opensave.js when client doesn't support the download attribute)
+* Potentially breaking API changes (subject to further alteration before release):
+    * Remove 2.7-deprecated "pngsave" (in favor of "exportImage")
+    * Data URIs must be properly URL encoded (use encodeURIComponent() on the "data:..." prefix and double encodeURIComponent() the remaining content)
+    * Remove "paramurl" parameter (use "url" or "source" with a data: URI instead)
+    * svgCanvas.rasterExport now takes an optional window name as the third argument, with the supplied name also being provided as a "exportWindowName" property on the object passed to the exportImage method optionally supplied to svgEditor.setCustomHandlers.
+    * Change 2.7 allowance of "PDF" as a type in the canvas "rasterExport" method and the "exported" event to instead be moved to the canvas "exportPDF" method and "exportedPDF" event respectively.
+
+
+# 2.7.1 (applied to 2.7 branch) - April 17, 2014
+
 * Fix important ID situation with embedded API
-* Update functions available to embedded editor 
+* Update functions available to embedded editor
 
-2.7 (Deltoid curve) - April 7th, 2014
------------------------------------------------
+# 2.7 (Deltoid curve) - April 7th, 2014
+
 * Export to PNG, JPEG, BMP, WEBP (including quality control for JPEG/WEBP) for default editor and for the server_opensave extension
 * Added Star, Polygon, and Panning Extensions r2318 r2319 r2333
 * Added non-default extension, ext-xdomain-messaging.js, moving cross-domain messaging code (as used by the embedded editor) out of core and requiring, when the extension IS included, that configuration (an array "allowedOrigins") be set in order to allow access by any domain (even same domain).
@@ -54,10 +83,10 @@ For a complete list of changes run:
 ** Deprecated "pngsave" option called by setCustomHandlers() in favor of "exportImage" (to accommodate export of other image types). Second argument will now supply, in addition to "issues" and "svg", the properties "type" (currently 'PNG', 'JPEG', 'BMP', 'WEBP'), "mimeType", and "quality" (for 'JPEG' and 'WEBP' types).
 ** Default extensions will now always load (along with those supplied in the URL unless the latter is prohibited by configuration), so if you do not wish your old code to load all of the default extensions, you will need to add &noDefaultExtensions=true to the URL (or add equivalent configuration in config.js). ext-overview_window.js can now be excluded though it is still a default.
 ** Preferences and configuration options must be within the list supplied within svg-editor.js (should include those of all documented extensions).
-** Embedded messaging will no longer work by default for privacy/data integrity reasons. One must include the "ext-xdomain-messaging.js" extension and supply an array configuration item, "allowedOrigins" with potential values including: "*" (to allow all domains--strongly discouraged!), "null" as a string to allow file:// access, window.location.origin (to allow same domain access), or specific trusted origins. The embedded editor works without the extension if the main editor is on the same domain, but if cross-domain control is needed, the "allowedOrigins" array must be supplied by a call to svgEditor.setConfig({allowedOrigins: [origin1, origin2, etc.]}) in the new config.js file.
+** Embedded messaging will no longer work by default for privacy/data integrity reasons. One must include the "ext-xdomain-messaging.js" extension and supply an array configuration item, "allowedOrigins" with potential values including: "\*" (to allow all domains--strongly discouraged!), "null" as a string to allow file:// access, window.location.origin (to allow same domain access), or specific trusted origins. The embedded editor works without the extension if the main editor is on the same domain, but if cross-domain control is needed, the "allowedOrigins" array must be supplied by a call to svgEditor.setConfig({allowedOrigins: [origin1, origin2, etc.]}) in the new config.js file.
 
-2.6 (Cycloid) - January 15th, 2013
-----------------------------------------------
+# 2.6 (Cycloid) - January 15th, 2013
+
 * Support for Internet Explorer 9
 * Context menu
 * Cut/Copy/Paste/Paste in Place options
@@ -71,8 +100,8 @@ For a complete list of changes run:
 * Cut/Copy/Paste
 * full list: http://code.google.com/p/svg-edit/issues/list?can=1&q=label%3ANeededFor-2.6
 
-2.5 - June 15, 2010
--------------------
+# 2.5 - June 15, 2010
+
 * Open Local Files (Firefox 3.6+ only)
 * Import SVG into Drawing (Firefox 3.6+ only)
 * Ability to create extensions/plugins
@@ -96,8 +125,8 @@ For a complete list of changes run:
 * Inline text editing
 * Line draw snapping with Shift key
 
-2.4 - January 11, 2010
-----------------------
+# 2.4 - January 11, 2010
+
 * Zoom
 * Layers
 * UI Localization
@@ -118,8 +147,8 @@ For a complete list of changes run:
 * Text fields for all attributes
 * Title element
 
-2.3 - September 08, 2009
-------------------------
+# 2.3 - September 08, 2009
+
 * Align Objects
 * Rotate Objects
 * Clone Objects
@@ -128,8 +157,8 @@ For a complete list of changes run:
 * Gradient picking
 * Polygon Mode (Path Editing, Phase 1)
 
-2.2 - July 08, 2009
--------------------
+# 2.2 - July 08, 2009
+
 * Multiselect Mode
 * Undo/Redo Actions
 * Resize Elements
@@ -139,8 +168,8 @@ For a complete list of changes run:
 * Resizing of the SVG canvas
 * Upgraded to jPicker 1.0.8
 
-2.1 - June 17, 2009
--------------------
+# 2.1 - June 17, 2009
+
 * tooltips added to all UI elements
 * fix flyout menus
 * ask before clearing the drawing (suggested by martin.vidner)
@@ -159,12 +188,12 @@ For a complete list of changes run:
 * added keystroke shortcuts for all tools
 * move to top/bottom
 
-2.0 - June 03, 2009
--------------------
+# 2.0 - June 03, 2009
+
 * rewritten SVG-edit, so now it uses OOP
 * draw ellipse, square
 * created HTML interface similar to Inkscape
 
-1.0 - February 06, 2009
--------------------
+# 1.0 - February 06, 2009
+
 * SVG-Edit released
