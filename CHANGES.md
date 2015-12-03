@@ -6,8 +6,8 @@ For a complete list of changes run:
 git log 81afaa9..5986f1e
 ```
 
-* Enhancement: Use getIntersectionList when available (<https://github.com/SVG-Edit/svgedit/issues/36>)
-* Enhancement: Switched to https for all urls (<https://github.com/SVG-Edit/svgedit/issues/31>)
+* Enhancement: Use `getIntersectionList` when available (<https://github.com/SVG-Edit/svgedit/issues/36>)
+* Enhancement: Switched to https for all URLs (<https://github.com/SVG-Edit/svgedit/issues/31>)
 * Enhancement: Minor administrative updates (docs/, README.md, author emails)
 * Fix: Bug where all icons were broken in Safari (<https://github.com/SVG-Edit/svgedit/issues/29>)
 * Fix: Updated translations for "page" and "delete" in 57 locales.
@@ -20,13 +20,13 @@ For a complete list of changes run:
 git log 4bb15e0..253b4bf
 ```
 
-* Enhancement (Experimental): Client-side PDF export (issue #1156) (to data: URI) and server-side PDF export (where not supported in browser and using ext-server_opensave.js); uses jsPDF library
+* Enhancement (Experimental): Client-side PDF export (issue [#1156](https://code.google.com/p/svg-edit/issues/detail?id=1156)) (to data: URI) and server-side PDF export (where not supported in browser and using ext-server_opensave.js); uses [jsPDF](https://github.com/MrRio/jsPDF) library
 * Enhancement: For image exports, provided "datauri" property to "exported" event.
 * Enhancement: Allow config "exportWindowType" of value "new" or "same" to indicate whether to reuse the same export window upon subsequent exports
 * Enhancement: Added openclipart support to imagelib extension
 * Enhancement: allow showGrid to be set before load
 * Enhancement: Support loading of (properly URL encoded) non-base64 "data:image/svg+xml;utf8,"-style data URIs
-* Enhancement: More clear naming of labels: "Open Image"->"Open SVG" and "Import SVG"->"Import Image" ( issue #1206 )
+* Enhancement: More clear naming of labels: "Open Image"->"Open SVG" and "Import SVG"->"Import Image" ( issue [#1206](https://code.google.com/p/svg-edit/issues/detail?id=1206))
 * Enhancement: Included reference to (repository-ignored) custom.css file which once created by the user, as with config.js, allows customization without modifying the repo (its main editor file)
 * Enhancement: Updated Slovenian locale.
 * Demo enhancement: Support and demonstrate export in embedded editor
@@ -47,7 +47,7 @@ git log 4bb15e0..253b4bf
     * Remove 2.7-deprecated "pngsave" (in favor of "exportImage")
     * Data URIs must be properly URL encoded (use encodeURIComponent() on the "data:..." prefix and double encodeURIComponent() the remaining content)
     * Remove "paramurl" parameter (use "url" or "source" with a data: URI instead)
-    * svgCanvas.rasterExport now takes an optional window name as the third argument, with the supplied name also being provided as a "exportWindowName" property on the object passed to the exportImage method optionally supplied to svgEditor.setCustomHandlers.
+    * svgCanvas.rasterExport now takes an optional window name as the third argument, with the supplied name also being provided as a "exportWindowName" property on the object passed to the [exportImage](https://code.google.com/p/svg-edit/wiki/ExtensionDocs#svgEditor_public_methods) method optionally supplied to svgEditor.setCustomHandlers.
     * Change 2.7 allowance of "PDF" as a type in the canvas "rasterExport" method and the "exported" event to instead be moved to the canvas "exportPDF" method and "exportedPDF" event respectively.
 
 
