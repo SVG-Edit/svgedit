@@ -1,5 +1,5 @@
 NAME=svg-edit
-VERSION=2.8
+VERSION=2.8.1
 PACKAGE=$(NAME)-$(VERSION)
 MAKEDOCS=naturaldocs/NaturalDocs
 CLOSURE=build/tools/closure-compiler.jar
