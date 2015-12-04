@@ -14,7 +14,7 @@ svgEditor.addExtension("overview_window", function() {	'use strict';
 	// Temporarily disabled in Chrome, see https://github.com/SVG-Edit/svgedit/issues/26 and
 	// https://code.google.com/p/chromium/issues/detail?id=565120.
 	if (svgedit.browser.isChrome()) {
-      return;
+		return;
 	}
 
 	// Define and insert the base html element.
