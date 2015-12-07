@@ -11,10 +11,14 @@
 
 var overviewWindowGlobals = {};
 svgEditor.addExtension("overview_window", function() {	'use strict';
-	// Temporarily disabled in Chrome, see https://github.com/SVG-Edit/svgedit/issues/26 and
+	// Disabled in Chrome 48-, see https://github.com/SVG-Edit/svgedit/issues/26 and
 	// https://code.google.com/p/chromium/issues/detail?id=565120.
 	if (svgedit.browser.isChrome()) {
-		return;
+		var verIndex = navigator.userAgent.indexOf("Chrome/") + 7;
+		var chromeVersion = parseInt(navigator.userAgent.substring(verIndex), 10);
+		if (chromeVersion < 49) {
+			return;
+		}
 	}
 
 	// Define and insert the base html element.
