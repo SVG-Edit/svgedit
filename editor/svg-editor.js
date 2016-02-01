@@ -4906,12 +4906,14 @@ TODOS
 						if (file.type.indexOf('svg') != -1) {
 							reader = new FileReader();
 							reader.onloadend = function(e) {
-								svgCanvas.importSvgString(e.target.result, true);
+								var newElement = svgCanvas.importSvgString(e.target.result, true);
 								svgCanvas.ungroupSelectedElement();
 								svgCanvas.ungroupSelectedElement();
 								svgCanvas.groupSelectedElements();
 								svgCanvas.alignSelectedElements('m', 'page');
 								svgCanvas.alignSelectedElements('c', 'page');
+								// highlight imported element, otherwise we get strange empty selectbox
+								svgCanvas.selectOnly([newElement]);
 								$('#dialog_box').hide();
 							};
 							reader.readAsText(file);

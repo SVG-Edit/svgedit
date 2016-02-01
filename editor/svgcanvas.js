@@ -4946,7 +4946,7 @@ this.setSvgString = function(xmlString) {
 // xmlString - The SVG as XML text.
 //
 // Returns:
-// This function returns false if the import was unsuccessful, true otherwise.
+// This function returns null if the import was unsuccessful, or the element otherwise.
 // TODO: 
 // * properly handle if namespace is introduced by imported content (must add to svgcontent
 // and update all prefixes in the imported node)
@@ -5067,10 +5067,11 @@ this.importSvgString = function(xmlString) {
 
 	} catch(e) {
 		console.log(e);
-		return false;
+		return null;
 	}
 
-	return true;
+	// we want to return the element so we can automatically select it
+	return use_el;
 };
 
 // TODO(codedread): Move all layer/context functions in draw.js
