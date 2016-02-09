@@ -620,6 +620,7 @@ svgedit.utilities.assignAttributes = function(node, attrs, suspendLength, unitCh
 // Parameters:
 // element - DOM element to clean up
 svgedit.utilities.cleanupElement = function(element) {
+	var nodeName = element.nodeName ? element.nodeName : '';
 	var defaults = {
 		'fill-opacity':1,
 		'stop-opacity':1,
@@ -630,8 +631,8 @@ svgedit.utilities.cleanupElement = function(element) {
 		'stroke-linecap':'butt',
 		'stroke-opacity':1,
 		'stroke-width':1,
-		'rx':0,
-		'ry':0
+		'rx': (nodeName == 'ellipse' ? null : 0),  // rx=0 and ry=0 is valid value which are different than null/empty
+		'ry': (nodeName == 'ellipse' ? null : 0)
 	};
 
 	var attr;
