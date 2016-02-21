@@ -549,7 +549,7 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 	var rubberBBox;
 	if (!rect) {
 		rubberBBox = rubberBox.getBBox();
-		var o, bb = {};
+		var o, bb = svgcontent.createSVGRect();
 
 		for (o in rubberBBox) {
 			bb[o] = rubberBBox[o] / current_zoom;
