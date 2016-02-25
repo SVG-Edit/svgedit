@@ -630,8 +630,8 @@ svgedit.utilities.cleanupElement = function(element) {
 		'stroke-linecap':'butt',
 		'stroke-opacity':1,
 		'stroke-width':1,
-		'rx': 0,
-		'ry': 0
+		'rx':0,
+		'ry':0
 	};
 
 	var nodeName = element.nodeName ? element.nodeName : '';
