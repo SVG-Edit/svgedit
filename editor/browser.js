@@ -59,7 +59,7 @@ var supportsPathReplaceItem_ = (function() {
 	var seglist = path.pathSegList;
 	var seg = path.createSVGPathSegLinetoAbs(5,5);
 	try {
-		seglist.replaceItem(seg, 0);
+		seglist.replaceItem(seg, 1);
 		return true;
 	} catch(err) {}
 	return false;
@@ -71,7 +71,7 @@ var supportsPathInsertItemBefore_ = (function() {
 	var seglist = path.pathSegList;
 	var seg = path.createSVGPathSegLinetoAbs(5,5);
 	try {
-		seglist.insertItemBefore(seg, 0);
+		seglist.insertItemBefore(seg, 1);
 		return true;
 	} catch(err) {}
 	return false;

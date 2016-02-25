@@ -549,7 +549,7 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 	var rubberBBox;
 	if (!rect) {
 		rubberBBox = rubberBox.getBBox();
-		var o, bb = {};
+		var o, bb = svgcontent.createSVGRect();
 
 		for (o in rubberBBox) {
 			bb[o] = rubberBBox[o] / current_zoom;
@@ -560,12 +560,14 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 	}
 	
 	var resultList = null;
-	if (typeof(svgroot.getIntersectionList) == 'function') {
-		// Offset the bbox of the rubber box by the offset of the svgcontent element.
-		rubberBBox.x += parseInt(svgcontent.getAttribute('x'), 10);
-		rubberBBox.y += parseInt(svgcontent.getAttribute('y'), 10);
+	if (!svgedit.browser.isIE) {
+		if (typeof(svgroot.getIntersectionList) == 'function') {
+			// Offset the bbox of the rubber box by the offset of the svgcontent element.
+			rubberBBox.x += parseInt(svgcontent.getAttribute('x'), 10);
+			rubberBBox.y += parseInt(svgcontent.getAttribute('y'), 10);
 
-		resultList = svgroot.getIntersectionList(rubberBBox, parent);
+			resultList = svgroot.getIntersectionList(rubberBBox, parent);
+		}
 	}
 
 	if (resultList == null || typeof(resultList.item) != 'function') {
