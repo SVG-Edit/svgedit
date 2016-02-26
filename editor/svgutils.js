@@ -634,8 +634,7 @@ svgedit.utilities.cleanupElement = function(element) {
 		'ry':0
 	};
 
-	var nodeName = element.nodeName ? element.nodeName : '';
-	if (nodeName == 'ellipse') {
+	if (element.nodeName === 'ellipse') {
 		// Ellipse elements requires rx and ry attributes
 		delete defaults.rx;
 		delete defaults.ry;
