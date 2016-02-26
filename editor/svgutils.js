@@ -634,6 +634,12 @@ svgedit.utilities.cleanupElement = function(element) {
 		'ry':0
 	};
 
+	if (element.nodeName === 'ellipse') {
+		// Ellipse elements requires rx and ry attributes
+		delete defaults.rx;
+		delete defaults.ry;
+	}
+
 	var attr;
 	for (attr in defaults) {
 		var val = defaults[attr];
