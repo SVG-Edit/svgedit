@@ -1563,7 +1563,7 @@ TODOS
 					$('#blur_slider').slider('option', 'value', blurval);
 
 					if (svgCanvas.addedNew) {
-						if (elname === 'image') {
+						if (elname === 'image' && svgCanvas.getMode() === 'image') {
 							// Prompt for URL if not a data URL
 							if (svgCanvas.getHref(elem).indexOf('data:') !== 0) {
 								promptImgURL();
@@ -1708,7 +1708,8 @@ TODOS
 								}, 100);
 							}
 						} // text
-						else if (el_name == 'image') {
+						else if (el_name == 'image' && svgCanvas.getMode() == 'image') {
+							debugger;
 							setImageURL(svgCanvas.getHref(elem));
 						} // image
 						else if (el_name === 'g' || el_name === 'use') {
