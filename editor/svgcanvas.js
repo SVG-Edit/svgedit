@@ -5505,6 +5505,11 @@ var getResolution = this.getResolution = function() {
 // Returns the current zoom level
 this.getZoom = function(){return current_zoom;};
 
+// Function: getSnapToGrid
+// Returns the current snap to grid setting
+this.getSnapToGrid = function(){return curConfig.gridSnapping;};
+
+
 // Function: getVersion
 // Returns a string which describes the revision number of SvgCanvas.
 this.getVersion = function() {
