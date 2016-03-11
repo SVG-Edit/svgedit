@@ -1709,7 +1709,6 @@ TODOS
 							}
 						} // text
 						else if (el_name == 'image' && svgCanvas.getMode() == 'image') {
-							debugger;
 							setImageURL(svgCanvas.getHref(elem));
 						} // image
 						else if (el_name === 'g' || el_name === 'use') {
