@@ -1688,6 +1688,7 @@ TODOS
 
 						if (el_name == 'text') {
 							$('#text_panel').css('display', 'inline');
+							$('#tool_font_size').css('display', 'inline');
 							if (svgCanvas.getItalic()) {
 								$('#tool_italic').addClass('push_button_pressed').removeClass('tool_button');
 							} else {
