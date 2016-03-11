@@ -1688,6 +1688,7 @@ TODOS
 
 						if (el_name == 'text') {
 							$('#text_panel').css('display', 'inline');
+							$('#tool_font_size').css('display', 'inline');
 							if (svgCanvas.getItalic()) {
 								$('#tool_italic').addClass('push_button_pressed').removeClass('tool_button');
 							} else {
@@ -2172,7 +2173,7 @@ TODOS
 //				var elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
 				var sel_toscale = '#tools_top .toolset, #editor_panel > *, #history_panel > *,'+
 '				#main_button, #tools_left > *, #path_node_panel > *, #multiselected_panel > *,'+
-'				#g_panel > *, .tools_flyout';
+'				#g_panel > *, #tool_font_size > *, .tools_flyout';
 
 				var elems = $(sel_toscale);
 				var scale = 1;
