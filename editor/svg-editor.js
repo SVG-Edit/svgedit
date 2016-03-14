@@ -2961,7 +2961,7 @@ TODOS
 				svgCanvas.setSegType($(this).val());
 			});
 
-			$('#text').bind("change keyup input", function() {
+			$('#text').bind("keyup input", function() {
 				svgCanvas.setTextContent(this.value);
 			});
 
