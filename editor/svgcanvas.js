@@ -6995,6 +6995,8 @@ this.pasteElements = function(type, x, y) {
 		pasted.push(copy);
 		(current_group || getCurrentDrawing().getCurrentLayer()).appendChild(copy);
 		batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(copy));
+
+		restoreRefElems(copy);
 	}
 	
 	selectOnly(pasted);
