@@ -113,6 +113,11 @@ TODOS
 					color: '000000', // solid black
 					opacity: 1
 				},
+				text: {
+					stroke_width: 0,
+					font_size: 24,
+					font_family: 'serif'
+				},
 				initOpacity: 1,
 				colorPickerCSS: null, // Defaults to 'left' with a position equal to that of the fill_color or stroke_color element minus 140, and a 'bottom' equal to 40
 				initTool: 'select',

@@ -165,9 +165,9 @@ var all_properties = {
 all_properties.text = $.extend(true, {}, all_properties.shape);
 $.extend(all_properties.text, {
 	fill: '#000000',
-	stroke_width: 0,
-	font_size: 24,
-	font_family: 'serif'
+	stroke_width: curConfig.text.stroke_width,
+	font_size: curConfig.text.font_size,
+	font_family: curConfig.text.font_family
 });
 
 // Current shape style properties
