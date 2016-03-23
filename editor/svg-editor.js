@@ -144,6 +144,10 @@ TODOS
 				// URL BEHAVIOR CONFIGURATION
 				preventAllURLConfig: false,
 				preventURLContentLoading: false,
+				// IGNORED NAMESPACES
+				ignoredNS: {
+					//EXAMPLE: 'https://example.com/svg-example-extension'
+				},
 				// EXTENSION CONFIGURATION (see also preventAllURLConfig)
 				lockExtensions: false, // Disallowed in URL setting
 				noDefaultExtensions: false, // noDefaultExtensions can only be meaningfully used in config.js or in the URL

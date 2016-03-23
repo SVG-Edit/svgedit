@@ -64,6 +64,9 @@ if (config) {
 	$.extend(curConfig, config);
 }
 
+// Add any custom namespaces to ignore
+$.extend(svgedit.ignoredNS, curConfig.ignoredNS);
+
 // Array with width/height of canvas
 var dimensions = curConfig.dimensions;
 

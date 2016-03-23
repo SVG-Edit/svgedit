@@ -145,7 +145,6 @@ svgedit.sanitize.sanitizeSvg = function(node) {
   // if this element is supported, sanitize it
   if (typeof allowedAttrs !== 'undefined') {
 
-    var seAttrs = [];
     i = node.attributes.length;
     while (i--) {
       // if the attribute is not in our whitelist, then remove it
@@ -154,17 +153,16 @@ svgedit.sanitize.sanitizeSvg = function(node) {
       var attrName = attr.nodeName;
       var attrLocalName = attr.localName;
       var attrNsURI = attr.namespaceURI;
+
+      // Ignore attributes from custom namespaces
+      var splitNS = attrName.match(/([^:]+):/);
+      if(splitNS && splitNS[1].toUpperCase() in svgedit.ignoredNS) continue;
+
       // Check that an attribute with the correct localName in the correct namespace is on 
       // our whitelist or is a namespace declaration for one of our allowed namespaces
       if (!(allowedAttrsNS.hasOwnProperty(attrLocalName) && attrNsURI == allowedAttrsNS[attrLocalName] && attrNsURI != NS.XMLNS) &&
         !(attrNsURI == NS.XMLNS && REVERSE_NS[attr.value]) )
       {
-        // TODO(codedread): Programmatically add the se: attributes to the NS-aware whitelist.
-        // Bypassing the whitelist to allow se: prefixes.
-        // Is there a more appropriate way to do this?
-        if (attrName.indexOf('se:') === 0) {
-          seAttrs.push([attrName, attr.value]);
-        }
         node.removeAttributeNS(attrNsURI, attrLocalName);
       }
 
@@ -196,10 +194,6 @@ svgedit.sanitize.sanitizeSvg = function(node) {
         node.removeAttribute('style');
       }
     }
-
-    $.each(seAttrs, function(i, attr) {
-      node.setAttributeNS(NS.SE, attr[0], attr[1]);
-    });
 
     // for some elements that have a xlink:href, ensure the URI refers to a local element
     // (but not for links)
