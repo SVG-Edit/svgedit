@@ -13,8 +13,8 @@ The main SvgCanvas class that manages all SVG-related functions
 
 Function | Description
 ---------|------------
-[`Utils.toXml`](#Utils.toXml) | Converts characters in a string to XML-friendly entities.       
-`Utils.fromXml` | Converts XML entities in a string to single characters.
+[`Utils.toXml`](#utilstoxml) | Converts characters in a string to XML-friendly entities.       
+[`Utils.fromXml`](#utilsfromxml) | Converts XML entities in a string to single characters.
 `Utils.encode64` | Converts a string to base64
 `Utils.decode64` | Converts a string from base64
 `Utils.convertToXMLReferences` | Converts a string to use XML references
@@ -257,7 +257,7 @@ Function | Description
 `setBackground` | Set the background of the editor (NOT the actual document)
 `cycleElement` | Select the next/previous element within the current layer
 
-#Utils.toXml
+#`Utils.toXml`
 
 Converts characters in a string to XML-friendly entities. Example: `&` becomes `&amp;`
 
