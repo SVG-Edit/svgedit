@@ -37,7 +37,7 @@ Function | Description
 `ChangeElementCommand` | History command to make a change to an element.
 `ChangeElementCommand.apply` | Performs the stored change action
 `ChangeElementCommand.unapply` | Reverses the stored change action
-`ChangeElementCommand.elements |Returns array with element associated with this command
+`ChangeElementCommand.elements` |Returns array with element associated with this command
 `InsertElementCommand	` | History command for an element that was added to the DOM
 `InsertElementCommand.apply` | Re-Inserts the new element
 `InsertElementCommand.unapply` | Removes the element
@@ -67,7 +67,7 @@ Function | Description
 `beginUndoableChange` | This function tells the canvas to remember the old values of the attrName attribute for each element sent in.
 `finishUndoableChange` | This function returns a BatchCommand object which summarizes the change since `beginUndoableChange` was called.
 
-###`Selector` - Private class for DOM element selection boxes
+###Selector - Private class for DOM element selection boxes
 
 Function | Description
 ---------|------------
@@ -126,124 +126,138 @@ Function | Description
 
 ###Selection
 	
-clearSelection	Clears the selection.
-addToSelection	Adds a list of elements to the selection.
-removeFromSelection	Removes elements from the selection.
-selectAllInCurrentLayer	Clears the selection, then adds all elements in the current layer to the selection.
-smoothControlPoints	Takes three points and creates a smoother line based on them
-getMouseTarget	Gets the desired element from a mouse event
-preventClickDefault	Prevents default browser click behaviour on the given element
+Function | Description
+---------|------------
+`clearSelection` | Clears the selection.
+`addToSelection` | Adds a list of elements to the selection.
+`removeFromSelection` | Removes elements from the selection.
+`selectAllInCurrentLayer` | Clears the selection, then adds all elements in the current layer to the selection.
+`smoothControlPoints` | Takes three points and creates a smoother line based on them
+`getMouseTarget` | Gets the desired element from a mouse event
+`preventClickDefault` | Prevents default browser click behaviour on the given element
 
-###Text edit functions	Functions relating to editing text elements
+###Text edit functions - Functions relating to editing text elements
 
-###Path edit functions	Functions relating to editing path elements
+###Path edit functions - Functions relating to editing path elements
 
 ###Serialization	
 
-removeUnusedDefElems	Looks at DOM elements inside the <defs> to see if they are referred to, removes them from the DOM if they are not.
-svgCanvasToString	Main function to set up the SVG content for output
-svgToString	Sub function ran on each SVG element to convert it to a string as desired
-embedImage	Converts a given image file to a data URL when possible, then runs a given callback
-save	Serializes the current drawing into SVG XML text and returns it to the ‘saved’ handler.
-rasterExport	Generates a PNG Data URL based on the current image, then calls “exported” with an object including the string and any issues found
-getSvgString	Returns the current drawing as raw SVG XML text.
-setSvgString	This function sets the current drawing as the input SVG XML.
-importSvgString	This function imports the input SVG XML into the current layer in the drawing
+Function | Description
+---------|------------
+`removeUnusedDefElems	` | Looks at DOM elements inside the <defs> to see if they are referred to, removes them from the DOM if they are not.
+`svgCanvasToString` | Main function to set up the SVG content for output
+`svgToString` | Sub function ran on each SVG element to convert it to a string as desired
+`embedImage` | Converts a given image file to a data URL when possible, then runs a given callback
+`save` | Serializes the current drawing into SVG XML text and returns it to the ‘saved’ handler.
+`rasterExport` | Generates a PNG Data URL based on the current image, then calls “exported” with an object including the string and any issues found
+`getSvgString` | Returns the current drawing as raw SVG XML text.
+`setSvgString` | This function sets the current drawing as the input SVG XML.
+`importSvgString` | This function imports the input SVG XML into the current layer in the drawing
 
 ###Layers	
 
-identifyLayers	Updates layer system
-createLayer	Creates a new top-level layer in the drawing with the given name, sets the current layer to it, and then clears the selection This function then calls the ‘changed’ handler.
-deleteCurrentLayer	Deletes the current layer from the drawing and then clears the selection.
-getNumLayers	Returns the number of layers in the current drawing.
-getLayer	Returns the name of the ith layer.
-getCurrentLayer	Returns the name of the currently selected layer.
-setCurrentLayer	Sets the current layer.
-renameCurrentLayer	Renames the current layer.
-setCurrentLayerPosition	Changes the position of the current layer to the new value.
-getLayerVisibility	Returns whether the layer is visible.
-setLayerVisibility	Sets the visibility of the layer.
-moveSelectedToLayer	Moves the selected elements to layername.
-getLayerOpacity	Returns the opacity of the given layer.
-setLayerOpacity	Sets the opacity of the given layer.
+Function | Description
+---------|------------
+`identifyLayers` | Updates layer system
+`createLayer` | Creates a new top-level layer in the drawing with the given name, sets the current layer to it, and then clears the selection This function then calls the ‘changed’ handler.
+`deleteCurrentLayer` | Deletes the current layer from the drawing and then clears the selection.
+`getNumLayers` | Returns the number of layers in the current drawing.
+`getLayer` | Returns the name of the ith layer.
+`getCurrentLayer` | Returns the name of the currently selected layer.
+`setCurrentLayer` | Sets the current layer.
+`renameCurrentLayer` | Renames the current layer.
+`setCurrentLayerPosition` | Changes the position of the current layer to the new value.
+`getLayerVisibility` | Returns whether the layer is visible.
+`setLayerVisibility` | Sets the visibility of the layer.
+`moveSelectedToLayer` | Moves the selected elements to layername.
+`getLayerOpacity` | Returns the opacity of the given layer.
+`setLayerOpacity` | Sets the opacity of the given layer.
 
 ###Document functions	
 
-clear	Clears the current document.
-linkControlPoints	Alias function
-getContentElem	Returns the content DOM element
-getRootElem	Returns the root DOM element
-getSelectedElems	Returns the array with selected DOM elements
-getResolution	Returns the current dimensions and zoom level in an object
-getZoom	Returns the current zoom level
-getVersion	Returns a string which describes the revision number of SvgCanvas.
-setUiStrings	Update interface strings with given values
-setConfig	Update configuration options with given values
-getDocumentTitle	Returns the current document title or an empty string if not found
-setDocumentTitle	Adds/updates a title element for the document with the given name.
-getEditorNS	Returns the editor’s namespace URL, optionally adds it to root element
-setResolution	Changes the document’s dimensions to the given size
-getOffset	Returns an object with x, y values indicating the svgcontent element’s position in the editor’s canvas.
-setBBoxZoom	Sets the zoom level on the canvas-side based on the given value
-setZoom	Sets the zoom to the given level
-getMode	Returns the current editor mode string
-setMode	Sets the editor’s mode to the given string
+Function | Description
+---------|------------
+`clear` | Clears the current document.
+`linkControlPoints` | Alias function
+`getContentElem` | Returns the content DOM element
+`getRootElem` | Returns the root DOM element
+`getSelectedElems` | Returns the array with selected DOM elements
+`getResolution` | Returns the current dimensions and zoom level in an object
+`getZoom` | Returns the current zoom level
+`getVersion` | Returns a string which describes the revision number of SvgCanvas.
+`setUiStrings` | Update interface strings with given values
+`setConfig` | Update configuration options with given values
+`getDocumentTitle` | Returns the current document title or an empty string if not found
+`setDocumentTitle` | Adds/updates a title element for the document with the given name.
+`getEditorNS` | Returns the editor’s namespace URL, optionally adds it to root element
+`setResolution` | Changes the document’s dimensions to the given size
+`getOffset` | Returns an object with x, y values indicating the svgcontent element’s position in the editor’s canvas.
+`setBBoxZoom` | Sets the zoom level on the canvas-side based on the given value
+`setZoom` | Sets the zoom to the given level
+`getMode` | Returns the current editor mode string
+`setMode` | Sets the editor’s mode to the given string
 
 ###Element Styling	
 
-getColor	Returns the current fill/stroke option
-setColor	Change the current stroke/fill color/gradient value
-findDefs	Return the document’s <defs> element, create it first if necessary
-setGradient	Apply the current gradient to selected element’s fill or stroke
-findDuplicateGradient	Check if exact gradient already exists
-setPaint	Set a color/gradient to a fill/stroke
-getStrokeWidth	Returns the current stroke-width value
-setStrokeWidth	Sets the stroke width for the current selected elements When attempting to set a line’s width to 0, this changes it to 1 instead
-setStrokeAttr	Set the given stroke-related attribute the given value for selected elements
-getOpacity	Returns the current opacity
-setOpacity	Sets the given opacity to the current selected elements
-getOpacity	Returns the current fill opacity
-getStrokeOpacity	Returns the current stroke opacity
-setPaintOpacity	Sets the current fill/stroke opacity
-getBlur	Gets the stdDeviation blur value of the given element
-setBlurNoUndo	Sets the stdDeviation blur value on the selected element without being undoable
-setBlurOffsets	Sets the x, y, with, height values of the filter element in order to make the blur not be clipped.
-setBlur	Adds/updates the blur filter to the selected element
-getBold	Check whether selected element is bold or not
-setBold	Make the selected element bold or normal
-getItalic	Check whether selected element is italic or not
-setItalic	Make the selected element italic or normal
-getFontFamily	Returns the current font family
-setFontFamily	Set the new font family
-getFontSize	Returns the current font size
-setFontSize	Applies the given font size to the selected element
-getText	Returns the current text (textContent) of the selected element
-setTextContent	Updates the text element with the given string
-setImageURL	Sets the new image URL for the selected image element.
-setRectRadius	Sets the rx & ry values to the selected rect element to change its corner radius
+Function | Description
+---------|------------
+`getColor` | Returns the current fill/stroke option
+`setColor` | Change the current stroke/fill color/gradient value
+`findDefs` | Return the document’s <defs> element, create it first if necessary
+`setGradient` | Apply the current gradient to selected element’s fill or stroke
+`findDuplicateGradient` | Check if exact gradient already exists
+`setPaint` | Set a color/gradient to a fill/stroke
+`getStrokeWidth` | Returns the current stroke-width value
+`setStrokeWidth` | Sets the stroke width for the current selected elements When attempting to set a line’s width to 0, this changes it to 1 instead
+`setStrokeAttr` | Set the given stroke-related attribute the given value for selected elements
+`getOpacity` | Returns the current opacity
+`setOpacity` | Sets the given opacity to the current selected elements
+`getOpacity` | Returns the current fill opacity
+`getStrokeOpacity` | Returns the current stroke opacity
+`setPaintOpacity` | Sets the current fill/stroke opacity
+`getBlur` | Gets the stdDeviation blur value of the given element
+`setBlurNoUndo	Sets` | the stdDeviation blur value on the selected element without being undoable
+`setBlurOffsets` | Sets the x, y, with, height values of the filter element in order to make the blur not be clipped.
+`setBlur` | Adds/updates the blur filter to the selected element
+`getBold` | Check whether selected element is bold or not
+`setBold` | Make the selected element bold or normal
+`getItalic` | Check whether selected element is italic or not
+`setItalic` | Make the selected element italic or normal
+`getFontFamily` | Returns the current font family
+`setFontFamily` | Set the new font family
+`getFontSize` | Returns the current font size
+`setFontSize` | Applies the given font size to the selected element
+`getText` | Returns the current text (textContent) of the selected element
+`setTextContent` | Updates the text element with the given string
+`setImageURL` | Sets the new image URL for the selected image element.
+`setRectRadius` | Sets the rx & ry values to the selected rect element to change its corner radius
 
 ###Element manipulation	
 
-setSegType	Sets the new segment type to the selected segment(s).
-convertToPath	Convert selected element to a path, or get the BBox of an element-as-path
-changeSelectedAttributeNoUndo	This function makes the changes to the elements.
-changeSelectedAttribute	Change the given/selected element and add the original value to the history stack If you want to change all selectedElements, ignore the elems argument.
-deleteSelectedElements	Removes all selected elements from the DOM and adds the change to the history stack
-groupSelectedElements	Wraps all the selected elements in a group (g) element
-ungroupSelectedElement	Unwraps all the elements in a selected group (g) element.
-moveToTopSelectedElement	Repositions the selected element to the bottom in the DOM to appear on top of other elements
-moveToBottomSelectedElement	Repositions the selected element to the top in the DOM to appear under other elements
-moveSelectedElements	Moves selected elements on the X/Y axis
-cloneSelectedElements	Create deep DOM copies (clones) of all selected elements and move them slightly from their originals
-alignSelectedElements	Aligns selected elements
+Function | Description
+---------|------------
+`setSegType` | Sets the new segment type to the selected segment(s).
+`convertToPath	Convert` | selected element to a path, or get the BBox of an element-as-path
+`changeSelectedAttributeNoUndo` | This function makes the changes to the elements.
+`changeSelectedAttribute` | Change the given/selected element and add the original value to the history stack If you want to change all selectedElements, ignore the elems argument.
+`deleteSelectedElements` | Removes all selected elements from the DOM and adds the change to the history stack
+`groupSelectedElements` | Wraps all the selected elements in a group (g) element
+`ungroupSelectedElement` | Unwraps all the elements in a selected group (g) element.
+`moveToTopSelectedElement` | Repositions the selected element to the bottom in the DOM to appear on top of other elements
+`moveToBottomSelectedElement` | Repositions the selected element to the top in the DOM to appear under other elements
+`moveSelectedElements` | Moves selected elements on the X/Y axis
+`cloneSelectedElements` | Create deep DOM copies (clones) of all selected elements and move them slightly from their originals
+`alignSelectedElements` | Aligns selected elements
 
 ###Additional editor tools	
 
-updateCanvas	Updates the editor canvas width/height/position after a zoom has occurred
-setBackground	Set the background of the editor (NOT the actual document)
-cycleElement	Select the next/previous element within the current layer
+Function | Description
+---------|------------
+`updateCanvas` | Updates the editor canvas width/height/position after a zoom has occurred
+`setBackground` | Set the background of the editor (NOT the actual document)
+`cycleElement` | Select the next/previous element within the current layer
 
-#`Utils.toXml`
+#Utils.toXml
 
 Converts characters in a string to XML-friendly entities. Example: `&` becomes `&amp;`
 
