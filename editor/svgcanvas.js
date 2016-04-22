@@ -6576,17 +6576,15 @@ this.setSegType = function(new_type) {
 this.convertToPath = function(elem, getBBox) {
 	if (elem == null) {
 		var elems = selectedElements;
-		$.each(selectedElements, function(i, elem) {
+		$.each(elems, function(i, elem) {
 			if (elem) {canvas.convertToPath(elem);}
 		});
 		return;
 	}
-	
-	if (!getBBox) {
-		var batchCmd = new svgedit.history.BatchCommand('Convert element to Path');
-	}
-	
-	var attrs = getBBox?{}:{
+	if( getBBox) {
+		return svgedit.utilities.getBBoxOfElementAsPath( elem, addSvgElementFromJson, pathActions)
+	} else {
+		var attrs = {
 		'fill': cur_shape.fill,
 		'fill-opacity': cur_shape.fill_opacity,
 		'stroke': cur_shape.stroke,
@@ -6598,157 +6596,7 @@ this.convertToPath = function(elem, getBBox) {
 		'opacity': cur_shape.opacity,
 		'visibility':'hidden'
 	};
-	
-	// any attribute on the element not covered by the above
-	// TODO: make this list global so that we can properly maintain it
-	// TODO: what about @transform, @clip-rule, @fill-rule, etc?
-	$.each(['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'], function() {
-		if (elem.getAttribute(this)) {
-			attrs[this] = elem.getAttribute(this);
-		}
-	});
-	
-	var path = addSvgElementFromJson({
-		'element': 'path',
-		'attr': attrs
-	});
-	
-	var eltrans = elem.getAttribute('transform');
-	if (eltrans) {
-		path.setAttribute('transform', eltrans);
-	}
-	
-	var id = elem.id;
-	var parent = elem.parentNode;
-	if (elem.nextSibling) {
-		parent.insertBefore(path, elem);
-	} else {
-		parent.appendChild(path);
-	}
-	
-	var d = '';
-	
-	var joinSegs = function(segs) {
-		$.each(segs, function(j, seg) {
-			var i;
-			var l = seg[0], pts = seg[1];
-			d += l;
-			for (i = 0; i < pts.length; i+=2) {
-				d += (pts[i] +','+pts[i+1]) + ' ';
-			}
-		});
-	};
-
-	// Possibly the cubed root of 6, but 1.81 works best
-	var num = 1.81;
-	var a, rx;
-	switch (elem.tagName) {
-	case 'ellipse':
-	case 'circle':
-		a = $(elem).attr(['rx', 'ry', 'cx', 'cy']);
-		var cx = a.cx, cy = a.cy;
-		rx = a.rx;
-		ry = a.ry;
-		if (elem.tagName == 'circle') {
-			rx = ry = $(elem).attr('r');
-		}
-	
-		joinSegs([
-			['M',[(cx-rx),(cy)]],
-			['C',[(cx-rx),(cy-ry/num), (cx-rx/num),(cy-ry), (cx),(cy-ry)]],
-			['C',[(cx+rx/num),(cy-ry), (cx+rx),(cy-ry/num), (cx+rx),(cy)]],
-			['C',[(cx+rx),(cy+ry/num), (cx+rx/num),(cy+ry), (cx),(cy+ry)]],
-			['C',[(cx-rx/num),(cy+ry), (cx-rx),(cy+ry/num), (cx-rx),(cy)]],
-			['Z',[]]
-		]);
-		break;
-	case 'path':
-		d = elem.getAttribute('d');
-		break;
-	case 'line':
-		a = $(elem).attr(['x1', 'y1', 'x2', 'y2']);
-		d = 'M'+a.x1+','+a.y1+'L'+a.x2+','+a.y2;
-		break;
-	case 'polyline':
-	case 'polygon':
-		d = 'M' + elem.getAttribute('points');
-		break;
-	case 'rect':
-		var r = $(elem).attr(['rx', 'ry']);
-		rx = r.rx;
-		ry = r.ry;
-		var b = elem.getBBox();
-		var x = b.x, y = b.y, w = b.width, h = b.height;
-		num = 4 - num; // Why? Because!
-		
-		if (!rx && !ry) {
-			// Regular rect
-			joinSegs([
-				['M',[x, y]],
-				['L',[x+w, y]],
-				['L',[x+w, y+h]],
-				['L',[x, y+h]],
-				['L',[x, y]],
-				['Z',[]]
-			]);
-		} else {
-			joinSegs([
-				['M',[x, y+ry]],
-				['C',[x, y+ry/num, x+rx/num, y, x+rx, y]],
-				['L',[x+w-rx, y]],
-				['C',[x+w-rx/num, y, x+w, y+ry/num, x+w, y+ry]],
-				['L',[x+w, y+h-ry]],
-				['C',[x+w, y+h-ry/num, x+w-rx/num, y+h, x+w-rx, y+h]],
-				['L',[x+rx, y+h]],
-				['C',[x+rx/num, y+h, x, y+h-ry/num, x, y+h-ry]],
-				['L',[x, y+ry]],
-				['Z',[]]
-			]);
-		}
-		break;
-	default:
-		path.parentNode.removeChild(path);
-		break;
-	}
-	
-	if (d) {
-		path.setAttribute('d', d);
-	}
-	
-	if (!getBBox) {
-		// Replace the current element with the converted one
-		
-		// Reorient if it has a matrix
-		if (eltrans) {
-			var tlist = svgedit.transformlist.getTransformList(path);
-			if (svgedit.math.hasMatrixTransform(tlist)) {
-				pathActions.resetOrientation(path);
-			}
-		}
-		
-		var nextSibling = elem.nextSibling;
-		batchCmd.addSubCommand(new svgedit.history.RemoveElementCommand(elem, nextSibling, parent));
-		batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(path));
-
-		clearSelection();
-		elem.parentNode.removeChild(elem);
-		path.setAttribute('id', id);
-		path.removeAttribute('visibility');
-		addToSelection([path], true);
-		
-		addCommandToHistory(batchCmd);
-		
-	} else {
-		// Get the correct BBox of the new path, then discard it
-		pathActions.resetOrientation(path);
-		var bb = false;
-		try {
-			bb = path.getBBox();
-		} catch(e) {
-			// Firefox fails
-		}
-		path.parentNode.removeChild(path);
-		return bb;
+		return svgedit.utilities.convertToPath( elem, attrs, addSvgElementFromJson, pathActions, clearSelection, addToSelection, svgedit.history, addCommandToHistory)
 	}
 };
 

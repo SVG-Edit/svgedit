@@ -529,6 +529,245 @@ svgedit.utilities.getBBox = function(elem) {
 	return ret;
 };
 
+svgedit.utilities.getPathDFromSegments = function( pathSegments) {
+	var d = '';
+
+	$.each(pathSegments, function(j, seg) {
+		var i;
+		var l = seg[0], pts = seg[1];
+		d += l;
+		for (i = 0; i < pts.length; i+=2) {
+			d += (pts[i] +','+pts[i+1]) + ' ';
+		}
+	});
+
+	return d
+}
+
+svgedit.utilities.getPathDFromElement = function( elem) {
+
+	// Possibly the cubed root of 6, but 1.81 works best
+	var num = 1.81;
+	var d, a, rx, ry;
+	switch (elem.tagName) {
+		case 'ellipse':
+		case 'circle':
+			a = $(elem).attr(['rx', 'ry', 'cx', 'cy']);
+			var cx = a.cx, cy = a.cy;
+			rx = a.rx;
+			ry = a.ry;
+			if (elem.tagName == 'circle') {
+				rx = ry = $(elem).attr('r');
+			}
+
+			d = svgedit.utilities.getPathDFromSegments([
+				['M',[(cx-rx),(cy)]],
+				['C',[(cx-rx),(cy-ry/num), (cx-rx/num),(cy-ry), (cx),(cy-ry)]],
+				['C',[(cx+rx/num),(cy-ry), (cx+rx),(cy-ry/num), (cx+rx),(cy)]],
+				['C',[(cx+rx),(cy+ry/num), (cx+rx/num),(cy+ry), (cx),(cy+ry)]],
+				['C',[(cx-rx/num),(cy+ry), (cx-rx),(cy+ry/num), (cx-rx),(cy)]],
+				['Z',[]]
+			]);
+			break;
+		case 'path':
+			d = elem.getAttribute('d');
+			break;
+		case 'line':
+			a = $(elem).attr(['x1', 'y1', 'x2', 'y2']);
+			d = 'M'+a.x1+','+a.y1+'L'+a.x2+','+a.y2;
+			break;
+		case 'polyline':
+			d = 'M' + elem.getAttribute('points');
+			break;
+		case 'polygon':
+			d = 'M' + elem.getAttribute('points') + ' Z';
+			break;
+		case 'rect':
+			var r = $(elem).attr(['rx', 'ry']);
+			rx = r.rx;
+			ry = r.ry;
+			var b = elem.getBBox();
+			var x = b.x, y = b.y, w = b.width, h = b.height;
+			num = 4 - num; // Why? Because!
+
+			if (!rx && !ry) {
+				// Regular rect
+				d = svgedit.utilities.getPathDFromSegments([
+					['M',[x, y]],
+					['L',[x+w, y]],
+					['L',[x+w, y+h]],
+					['L',[x, y+h]],
+					['L',[x, y]],
+					['Z',[]]
+				]);
+			} else {
+				d = svgedit.utilities.getPathDFromSegments([
+					['M',[x, y+ry]],
+					['C',[x, y+ry/num, x+rx/num, y, x+rx, y]],
+					['L',[x+w-rx, y]],
+					['C',[x+w-rx/num, y, x+w, y+ry/num, x+w, y+ry]],
+					['L',[x+w, y+h-ry]],
+					['C',[x+w, y+h-ry/num, x+w-rx/num, y+h, x+w-rx, y+h]],
+					['L',[x+rx, y+h]],
+					['C',[x+rx/num, y+h, x, y+h-ry/num, x, y+h-ry]],
+					['L',[x, y+ry]],
+					['Z',[]]
+				]);
+			}
+			break;
+		default:
+			break;
+	}
+
+	return d;
+
+};
+
+svgedit.utilities.addAttributesForConvertToPath = function( elem, attrs) {
+	// TODO: make this list global so that we can properly maintain it
+	// TODO: what about @transform, @clip-rule, @fill-rule, etc?
+	$.each(['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'], function() {
+		if (elem.getAttribute(this)) {
+			attrs[this] = elem.getAttribute(this);
+		}
+	});
+};
+
+// Function: getBBoxOfElementAsPath
+// Get the BBox of an element-as-path
+//
+// Parameters:
+// elem - The DOM element to be probed
+// addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJso
+// pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
+//
+// Returns:
+// The resulting path's bounding box object.
+svgedit.utilities.getBBoxOfElementAsPath = function(elem, addSvgElementFromJson, pathActions) {
+
+	var attrs = {}
+
+	// any attribute on the element not covered by the above
+	svgedit.utilities.addAttributesForConvertToPath( elem, attrs)
+
+	var path = addSvgElementFromJson({
+		'element': 'path',
+		'attr': attrs
+	});
+
+	var eltrans = elem.getAttribute('transform');
+	if (eltrans) {
+		path.setAttribute('transform', eltrans);
+	}
+
+	var id = elem.id;
+	var parent = elem.parentNode;
+	if (elem.nextSibling) {
+		parent.insertBefore(path, elem);
+	} else {
+		parent.appendChild(path);
+	}
+
+	var d = svgedit.utilities.getPathDFromElement( elem);
+	if( d)
+		path.setAttribute('d', d);
+	else
+		path.parentNode.removeChild(path);
+
+	// Get the correct BBox of the new path, then discard it
+	pathActions.resetOrientation(path);
+	var bb = false;
+	try {
+		bb = path.getBBox();
+	} catch(e) {
+		// Firefox fails
+	}
+	path.parentNode.removeChild(path);
+	return bb;
+}
+
+// Function: getBBoxOfElementAsPath
+// Convert selected element to a path.
+//
+// Parameters:
+// elem - The DOM element to be converted
+// attrs - Apply attributes to new path. see canvas.convertToPath
+// addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJso
+// pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
+// clearSelection - see canvas.clearSelection
+// addToSelection - see canvas.addToSelection
+// history - see svgedit.history
+// addCommandToHistory - see canvas.addCommandToHistory
+//
+// Returns:
+// The resulting path's bounding box object.
+svgedit.utilities.convertToPath = function(elem, attrs, addSvgElementFromJson, pathActions, clearSelection, addToSelection, history, addCommandToHistory) {
+
+	var batchCmd = new history.BatchCommand('Convert element to Path');
+
+	// any attribute on the element not covered by the above
+	// TODO: make this list global so that we can properly maintain it
+	// TODO: what about @transform, @clip-rule, @fill-rule, etc?
+	$.each(['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'], function() {
+		if (elem.getAttribute(this)) {
+			attrs[this] = elem.getAttribute(this);
+		}
+	});
+
+	var path = addSvgElementFromJson({
+		'element': 'path',
+		'attr': attrs
+	});
+
+	var eltrans = elem.getAttribute('transform');
+	if (eltrans) {
+		path.setAttribute('transform', eltrans);
+	}
+
+	var id = elem.id;
+	var parent = elem.parentNode;
+	if (elem.nextSibling) {
+		parent.insertBefore(path, elem);
+	} else {
+		parent.appendChild(path);
+	}
+
+	var d = svgedit.utilities.getPathDFromElement( elem);
+	if( d) {
+		path.setAttribute('d', d);
+
+		// Replace the current element with the converted one
+
+		// Reorient if it has a matrix
+		if (eltrans) {
+			var tlist = svgedit.transformlist.getTransformList(path);
+			if (svgedit.math.hasMatrixTransform(tlist)) {
+				pathActions.resetOrientation(path);
+			}
+		}
+
+		var nextSibling = elem.nextSibling;
+		batchCmd.addSubCommand(new history.RemoveElementCommand(elem, nextSibling, parent));
+		batchCmd.addSubCommand(new history.InsertElementCommand(path));
+
+		clearSelection();
+		elem.parentNode.removeChild(elem);
+		path.setAttribute('id', id);
+		path.removeAttribute('visibility');
+		addToSelection([path], true);
+
+		addCommandToHistory(batchCmd);
+
+		return path;
+	} else {
+		// the elem.tagName was not recognized, so no "d" attribute. Remove it, so we've haven't changed anything.
+		path.parentNode.removeChild(path);
+		return null;
+	}
+
+};
+
+
 // Function: svgedit.utilities.getRotationAngle
 // Get the rotation angle of the given/selected DOM element
 //
