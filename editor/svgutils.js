@@ -700,7 +700,7 @@ svgedit.utilities.getBBoxOfElementAsPath = function(elem, addSvgElementFromJson,
 // addCommandToHistory - see canvas.addCommandToHistory
 //
 // Returns:
-// The resulting path's bounding box object.
+// The converted path element or null if the DOM element was not recognized.
 svgedit.utilities.convertToPath = function(elem, attrs, addSvgElementFromJson, pathActions, clearSelection, addToSelection, history, addCommandToHistory) {
 
 	var batchCmd = new history.BatchCommand('Convert element to Path');
