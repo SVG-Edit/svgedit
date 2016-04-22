@@ -686,7 +686,7 @@ svgedit.utilities.getBBoxOfElementAsPath = function(elem, addSvgElementFromJson,
 	return bb;
 }
 
-// Function: getBBoxOfElementAsPath
+// Function: convertToPath
 // Convert selected element to a path.
 //
 // Parameters:
