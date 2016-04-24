@@ -940,7 +940,9 @@ var addToSelection = this.addToSelection = function(elemsToAdd, showGrips) {
 	var i = elemsToAdd.length;
 	while (i--) {
 		var elem = elemsToAdd[i];
-		if (!elem || !svgedit.utilities.getBBox(elem)) {continue;}
+		if (!elem) {continue;}
+		var bbox = svgedit.utilities.getBBox(elem);
+		if (!bbox) {continue;}
 
 		if (elem.tagName === 'a' && elem.childNodes.length === 1) {
 			// Make "a" element's child be the selected element 
@@ -955,7 +957,7 @@ var addToSelection = this.addToSelection = function(elemsToAdd, showGrips) {
 			// only the first selectedBBoxes element is ever used in the codebase these days
 //			if (j == 0) selectedBBoxes[0] = svgedit.utilities.getBBox(elem);
 			j++;
-			var sel = selectorManager.requestSelector(elem);
+			var sel = selectorManager.requestSelector(elem, bbox);
 	
 			if (selectedElements.length > 1) {
 				sel.showGrips(false);
