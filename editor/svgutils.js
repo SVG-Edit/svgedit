@@ -529,22 +529,39 @@ svgedit.utilities.getBBox = function(elem) {
 	return ret;
 };
 
-svgedit.utilities.getPathDFromSegments = function( pathSegments) {
+// Function: getPathDFromSegments
+// Create a path 'd' attribute from path segments.
+// Each segment is an array of the form: [singleChar, [x,y, x,y, ...]]
+//
+// Parameters:
+// pathSegments - An array of path segments to be converted
+//
+// Returns:
+// The converted path d attribute.
+svgedit.utilities.getPathDFromSegments = function(pathSegments) {
 	var d = '';
 
 	$.each(pathSegments, function(j, seg) {
 		var i;
-		var l = seg[0], pts = seg[1];
-		d += l;
+		var pts = seg[1];
+		d += seg[0];
 		for (i = 0; i < pts.length; i+=2) {
 			d += (pts[i] +','+pts[i+1]) + ' ';
 		}
 	});
 
-	return d
-}
+	return d;
+};
 
-svgedit.utilities.getPathDFromElement = function( elem) {
+// Function: getPathDFromElement
+// Make a path 'd' attribute from a simple SVG element shape.
+//
+// Parameters:
+// elem - The element to be converted
+//
+// Returns:
+// The path d attribute or undefined if the element type is unknown.
+svgedit.utilities.getPathDFromElement = function(elem) {
 
 	// Possibly the cubed root of 6, but 1.81 works best
 	var num = 1.81;
@@ -623,14 +640,25 @@ svgedit.utilities.getPathDFromElement = function( elem) {
 
 };
 
-svgedit.utilities.addAttributesForConvertToPath = function( elem, attrs) {
+// Function: getExtraAttributesForConvertToPath
+// Get a set of attributes from an element that is useful for convertToPath.
+//
+// Parameters:
+// elem - The element to be probed
+//
+// Returns:
+// An object with attributes.
+svgedit.utilities.getExtraAttributesForConvertToPath = function(elem) {
+	var attrs = {} ;
 	// TODO: make this list global so that we can properly maintain it
 	// TODO: what about @transform, @clip-rule, @fill-rule, etc?
 	$.each(['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'], function() {
-		if (elem.getAttribute(this)) {
-			attrs[this] = elem.getAttribute(this);
+		var a = elem.getAttribute(this);
+		if (a) {
+			attrs[this] = a;
 		}
 	});
+	return attrs;
 };
 
 // Function: getBBoxOfElementAsPath
@@ -638,21 +666,16 @@ svgedit.utilities.addAttributesForConvertToPath = function( elem, attrs) {
 //
 // Parameters:
 // elem - The DOM element to be probed
-// addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJso
+// addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJson
 // pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
 //
 // Returns:
 // The resulting path's bounding box object.
 svgedit.utilities.getBBoxOfElementAsPath = function(elem, addSvgElementFromJson, pathActions) {
 
-	var attrs = {}
-
-	// any attribute on the element not covered by the above
-	svgedit.utilities.addAttributesForConvertToPath( elem, attrs)
-
 	var path = addSvgElementFromJson({
 		'element': 'path',
-		'attr': attrs
+		'attr': svgedit.utilities.getExtraAttributesForConvertToPath(elem)
 	});
 
 	var eltrans = elem.getAttribute('transform');
@@ -660,7 +683,6 @@ svgedit.utilities.getBBoxOfElementAsPath = function(elem, addSvgElementFromJson,
 		path.setAttribute('transform', eltrans);
 	}
 
-	var id = elem.id;
 	var parent = elem.parentNode;
 	if (elem.nextSibling) {
 		parent.insertBefore(path, elem);
@@ -668,8 +690,8 @@ svgedit.utilities.getBBoxOfElementAsPath = function(elem, addSvgElementFromJson,
 		parent.appendChild(path);
 	}
 
-	var d = svgedit.utilities.getPathDFromElement( elem);
-	if( d)
+	var d = svgedit.utilities.getPathDFromElement(elem);
+	if (d)
 		path.setAttribute('d', d);
 	else
 		path.parentNode.removeChild(path);
@@ -684,7 +706,7 @@ svgedit.utilities.getBBoxOfElementAsPath = function(elem, addSvgElementFromJson,
 	}
 	path.parentNode.removeChild(path);
 	return bb;
-}
+};
 
 // Function: convertToPath
 // Convert selected element to a path.
@@ -692,7 +714,7 @@ svgedit.utilities.getBBoxOfElementAsPath = function(elem, addSvgElementFromJson,
 // Parameters:
 // elem - The DOM element to be converted
 // attrs - Apply attributes to new path. see canvas.convertToPath
-// addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJso
+// addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJson
 // pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
 // clearSelection - see canvas.clearSelection
 // addToSelection - see canvas.addToSelection
@@ -705,14 +727,8 @@ svgedit.utilities.convertToPath = function(elem, attrs, addSvgElementFromJson, p
 
 	var batchCmd = new history.BatchCommand('Convert element to Path');
 
-	// any attribute on the element not covered by the above
-	// TODO: make this list global so that we can properly maintain it
-	// TODO: what about @transform, @clip-rule, @fill-rule, etc?
-	$.each(['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'], function() {
-		if (elem.getAttribute(this)) {
-			attrs[this] = elem.getAttribute(this);
-		}
-	});
+	// Any attribute on the element not covered by the passed-in attributes
+	attrs = $.extend({}, attrs, svgedit.utilities.getExtraAttributesForConvertToPath(elem));
 
 	var path = addSvgElementFromJson({
 		'element': 'path',
@@ -732,8 +748,8 @@ svgedit.utilities.convertToPath = function(elem, attrs, addSvgElementFromJson, p
 		parent.appendChild(path);
 	}
 
-	var d = svgedit.utilities.getPathDFromElement( elem);
-	if( d) {
+	var d = svgedit.utilities.getPathDFromElement(elem);
+	if (d) {
 		path.setAttribute('d', d);
 
 		// Replace the current element with the converted one
@@ -788,7 +804,7 @@ svgedit.utilities.getBBoxWithTransform = function(elem, addSvgElementFromJson, p
 		return null;
 	}
 
-	var tlist = svgedit.transformlist.getTransformList(elem)
+	var tlist = svgedit.transformlist.getTransformList(elem);
 	var angle = svgedit.utilities.getRotationAngleFromTransformList(tlist);
 
 	if (angle || svgedit.math.hasMatrixTransform(tlist)) {
@@ -810,7 +826,7 @@ svgedit.utilities.getBBoxWithTransform = function(elem, addSvgElementFromJson, p
 
 		if (!good_bb) {
 
-			var matrix = svgedit.math.transformListToTransform( tlist).matrix;
+			var matrix = svgedit.math.transformListToTransform(tlist).matrix;
 			bb = svgedit.math.transformBox(bb.x, bb.y, bb.width, bb.height, matrix).aabox;
 
 			// Old technique that was exceedingly slow with large documents.
@@ -870,7 +886,7 @@ svgedit.utilities.getStrokedBBox = function(elems, addSvgElementFromJson, pathAc
 	var min_y = full_bb.y;
 
 	// If only one elem, don't call the potentially slow getBBoxWithTransform method again.
-	if( elems.length === 1) {
+	if (elems.length === 1) {
 		var offset = getStrokeOffsetForBBox(elems[0]);
 		min_x -= offset;
 		min_y -= offset;
@@ -910,7 +926,7 @@ svgedit.utilities.getStrokedBBox = function(elems, addSvgElementFromJson, pathAc
 // Returns:
 // Float with the angle in degrees or radians
 svgedit.utilities.getRotationAngleFromTransformList = function(tlist, to_rad) {
-	if(!tlist) {return 0;} // <svg> elements have no tlist
+	if (!tlist) {return 0;} // <svg> elements have no tlist
 	var N = tlist.numberOfItems;
 	var i;
 	for (i = 0; i < N; ++i) {

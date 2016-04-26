@@ -603,7 +603,7 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 // A single bounding box object
 var getStrokedBBox = this.getStrokedBBox = function(elems) {
 	if (!elems) {elems = getVisibleElements();}
-	return svgedit.utilities.getStrokedBBox( elems, addSvgElementFromJson, pathActions)
+	return svgedit.utilities.getStrokedBBox(elems, addSvgElementFromJson, pathActions)
 };
 
 // Function: getVisibleElements
@@ -6452,22 +6452,24 @@ this.convertToPath = function(elem, getBBox) {
 		});
 		return;
 	}
-	if( getBBox) {
-		return svgedit.utilities.getBBoxOfElementAsPath( elem, addSvgElementFromJson, pathActions)
+	if (getBBox) {
+		return svgedit.utilities.getBBoxOfElementAsPath(elem, addSvgElementFromJson, pathActions)
 	} else {
+		// TODO: Why is this applying attributes from cur_shape, then inside utilities.convertToPath it's pulling addition attributes from elem?
+		// TODO: If convertToPath is called with one elem, cur_shape and elem are probably the same; but calling with multiple is a bug or cool feature.
 		var attrs = {
-		'fill': cur_shape.fill,
-		'fill-opacity': cur_shape.fill_opacity,
-		'stroke': cur_shape.stroke,
-		'stroke-width': cur_shape.stroke_width,
-		'stroke-dasharray': cur_shape.stroke_dasharray,
-		'stroke-linejoin': cur_shape.stroke_linejoin,
-		'stroke-linecap': cur_shape.stroke_linecap,
-		'stroke-opacity': cur_shape.stroke_opacity,
-		'opacity': cur_shape.opacity,
-		'visibility':'hidden'
-	};
-		return svgedit.utilities.convertToPath( elem, attrs, addSvgElementFromJson, pathActions, clearSelection, addToSelection, svgedit.history, addCommandToHistory)
+			'fill': cur_shape.fill,
+			'fill-opacity': cur_shape.fill_opacity,
+			'stroke': cur_shape.stroke,
+			'stroke-width': cur_shape.stroke_width,
+			'stroke-dasharray': cur_shape.stroke_dasharray,
+			'stroke-linejoin': cur_shape.stroke_linejoin,
+			'stroke-linecap': cur_shape.stroke_linecap,
+			'stroke-opacity': cur_shape.stroke_opacity,
+			'opacity': cur_shape.opacity,
+			'visibility':'hidden'
+		};
+		return svgedit.utilities.convertToPath(elem, attrs, addSvgElementFromJson, pathActions, clearSelection, addToSelection, svgedit.history, addCommandToHistory);
 	}
 };
 

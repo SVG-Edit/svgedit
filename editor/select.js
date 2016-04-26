@@ -165,8 +165,9 @@ svgedit.select.Selector.prototype.resize = function(bbox) {
 	m.e *= current_zoom;
 	m.f *= current_zoom;
 
-	if (!bbox)
+	if (!bbox) {
 		bbox = svgedit.utilities.getBBox(selected);
+	}
 	// TODO: svgedit.utilities.getBBox (previous line) already knows to call getStrokedBBox when tagName === 'g'. Remove this?
 	// TODO: svgedit.utilities.getBBox doesn't exclude 'gsvg' and calls getStrokedBBox for any 'g'. Should getBBox be updated?
 	if (tagName === 'g' && !$.data(selected, 'gsvg')) {
