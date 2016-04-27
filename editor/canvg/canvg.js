@@ -1437,7 +1437,8 @@
 							var cp = pp.getAsCurrentPoint();
 
 							// Conversion from endpoint to center parameterization
-							// http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
+							// https://www.w3.org/TR/SVG11/implnote.html#ArcConversionEndpointToCenter
+							
 							// x1', y1'
 							var currp = new svg.Point(
 								Math.cos(xAxisRotation) * (curr.x - cp.x) / 2.0 + Math.sin(xAxisRotation) * (curr.y - cp.y) / 2.0,
