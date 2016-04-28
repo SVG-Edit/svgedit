@@ -529,6 +529,447 @@ svgedit.utilities.getBBox = function(elem) {
 	return ret;
 };
 
+// Function: getPathDFromSegments
+// Create a path 'd' attribute from path segments.
+// Each segment is an array of the form: [singleChar, [x,y, x,y, ...]]
+//
+// Parameters:
+// pathSegments - An array of path segments to be converted
+//
+// Returns:
+// The converted path d attribute.
+svgedit.utilities.getPathDFromSegments = function(pathSegments) {
+	var d = '';
+
+	$.each(pathSegments, function(j, seg) {
+		var i;
+		var pts = seg[1];
+		d += seg[0];
+		for (i = 0; i < pts.length; i+=2) {
+			d += (pts[i] +','+pts[i+1]) + ' ';
+		}
+	});
+
+	return d;
+};
+
+// Function: getPathDFromElement
+// Make a path 'd' attribute from a simple SVG element shape.
+//
+// Parameters:
+// elem - The element to be converted
+//
+// Returns:
+// The path d attribute or undefined if the element type is unknown.
+svgedit.utilities.getPathDFromElement = function(elem) {
+
+	// Possibly the cubed root of 6, but 1.81 works best
+	var num = 1.81;
+	var d, a, rx, ry;
+	switch (elem.tagName) {
+		case 'ellipse':
+		case 'circle':
+			a = $(elem).attr(['rx', 'ry', 'cx', 'cy']);
+			var cx = a.cx, cy = a.cy;
+			rx = a.rx;
+			ry = a.ry;
+			if (elem.tagName == 'circle') {
+				rx = ry = $(elem).attr('r');
+			}
+
+			d = svgedit.utilities.getPathDFromSegments([
+				['M',[(cx-rx),(cy)]],
+				['C',[(cx-rx),(cy-ry/num), (cx-rx/num),(cy-ry), (cx),(cy-ry)]],
+				['C',[(cx+rx/num),(cy-ry), (cx+rx),(cy-ry/num), (cx+rx),(cy)]],
+				['C',[(cx+rx),(cy+ry/num), (cx+rx/num),(cy+ry), (cx),(cy+ry)]],
+				['C',[(cx-rx/num),(cy+ry), (cx-rx),(cy+ry/num), (cx-rx),(cy)]],
+				['Z',[]]
+			]);
+			break;
+		case 'path':
+			d = elem.getAttribute('d');
+			break;
+		case 'line':
+			a = $(elem).attr(['x1', 'y1', 'x2', 'y2']);
+			d = 'M'+a.x1+','+a.y1+'L'+a.x2+','+a.y2;
+			break;
+		case 'polyline':
+			d = 'M' + elem.getAttribute('points');
+			break;
+		case 'polygon':
+			d = 'M' + elem.getAttribute('points') + ' Z';
+			break;
+		case 'rect':
+			var r = $(elem).attr(['rx', 'ry']);
+			rx = r.rx;
+			ry = r.ry;
+			var b = elem.getBBox();
+			var x = b.x, y = b.y, w = b.width, h = b.height;
+			num = 4 - num; // Why? Because!
+
+			if (!rx && !ry) {
+				// Regular rect
+				d = svgedit.utilities.getPathDFromSegments([
+					['M',[x, y]],
+					['L',[x+w, y]],
+					['L',[x+w, y+h]],
+					['L',[x, y+h]],
+					['L',[x, y]],
+					['Z',[]]
+				]);
+			} else {
+				d = svgedit.utilities.getPathDFromSegments([
+					['M',[x, y+ry]],
+					['C',[x, y+ry/num, x+rx/num, y, x+rx, y]],
+					['L',[x+w-rx, y]],
+					['C',[x+w-rx/num, y, x+w, y+ry/num, x+w, y+ry]],
+					['L',[x+w, y+h-ry]],
+					['C',[x+w, y+h-ry/num, x+w-rx/num, y+h, x+w-rx, y+h]],
+					['L',[x+rx, y+h]],
+					['C',[x+rx/num, y+h, x, y+h-ry/num, x, y+h-ry]],
+					['L',[x, y+ry]],
+					['Z',[]]
+				]);
+			}
+			break;
+		default:
+			break;
+	}
+
+	return d;
+
+};
+
+// Function: getExtraAttributesForConvertToPath
+// Get a set of attributes from an element that is useful for convertToPath.
+//
+// Parameters:
+// elem - The element to be probed
+//
+// Returns:
+// An object with attributes.
+svgedit.utilities.getExtraAttributesForConvertToPath = function(elem) {
+	var attrs = {} ;
+	// TODO: make this list global so that we can properly maintain it
+	// TODO: what about @transform, @clip-rule, @fill-rule, etc?
+	$.each(['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'], function() {
+		var a = elem.getAttribute(this);
+		if (a) {
+			attrs[this] = a;
+		}
+	});
+	return attrs;
+};
+
+// Function: getBBoxOfElementAsPath
+// Get the BBox of an element-as-path
+//
+// Parameters:
+// elem - The DOM element to be probed
+// addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJson
+// pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
+//
+// Returns:
+// The resulting path's bounding box object.
+svgedit.utilities.getBBoxOfElementAsPath = function(elem, addSvgElementFromJson, pathActions) {
+
+	var path = addSvgElementFromJson({
+		'element': 'path',
+		'attr': svgedit.utilities.getExtraAttributesForConvertToPath(elem)
+	});
+
+	var eltrans = elem.getAttribute('transform');
+	if (eltrans) {
+		path.setAttribute('transform', eltrans);
+	}
+
+	var parent = elem.parentNode;
+	if (elem.nextSibling) {
+		parent.insertBefore(path, elem);
+	} else {
+		parent.appendChild(path);
+	}
+
+	var d = svgedit.utilities.getPathDFromElement(elem);
+	if (d)
+		path.setAttribute('d', d);
+	else
+		path.parentNode.removeChild(path);
+
+	// Get the correct BBox of the new path, then discard it
+	pathActions.resetOrientation(path);
+	var bb = false;
+	try {
+		bb = path.getBBox();
+	} catch(e) {
+		// Firefox fails
+	}
+	path.parentNode.removeChild(path);
+	return bb;
+};
+
+// Function: convertToPath
+// Convert selected element to a path.
+//
+// Parameters:
+// elem - The DOM element to be converted
+// attrs - Apply attributes to new path. see canvas.convertToPath
+// addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJson
+// pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
+// clearSelection - see canvas.clearSelection
+// addToSelection - see canvas.addToSelection
+// history - see svgedit.history
+// addCommandToHistory - see canvas.addCommandToHistory
+//
+// Returns:
+// The converted path element or null if the DOM element was not recognized.
+svgedit.utilities.convertToPath = function(elem, attrs, addSvgElementFromJson, pathActions, clearSelection, addToSelection, history, addCommandToHistory) {
+
+	var batchCmd = new history.BatchCommand('Convert element to Path');
+
+	// Any attribute on the element not covered by the passed-in attributes
+	attrs = $.extend({}, attrs, svgedit.utilities.getExtraAttributesForConvertToPath(elem));
+
+	var path = addSvgElementFromJson({
+		'element': 'path',
+		'attr': attrs
+	});
+
+	var eltrans = elem.getAttribute('transform');
+	if (eltrans) {
+		path.setAttribute('transform', eltrans);
+	}
+
+	var id = elem.id;
+	var parent = elem.parentNode;
+	if (elem.nextSibling) {
+		parent.insertBefore(path, elem);
+	} else {
+		parent.appendChild(path);
+	}
+
+	var d = svgedit.utilities.getPathDFromElement(elem);
+	if (d) {
+		path.setAttribute('d', d);
+
+		// Replace the current element with the converted one
+
+		// Reorient if it has a matrix
+		if (eltrans) {
+			var tlist = svgedit.transformlist.getTransformList(path);
+			if (svgedit.math.hasMatrixTransform(tlist)) {
+				pathActions.resetOrientation(path);
+			}
+		}
+
+		var nextSibling = elem.nextSibling;
+		batchCmd.addSubCommand(new history.RemoveElementCommand(elem, nextSibling, parent));
+		batchCmd.addSubCommand(new history.InsertElementCommand(path));
+
+		clearSelection();
+		elem.parentNode.removeChild(elem);
+		path.setAttribute('id', id);
+		path.removeAttribute('visibility');
+		addToSelection([path], true);
+
+		addCommandToHistory(batchCmd);
+
+		return path;
+	} else {
+		// the elem.tagName was not recognized, so no "d" attribute. Remove it, so we've haven't changed anything.
+		path.parentNode.removeChild(path);
+		return null;
+	}
+
+};
+
+// Function: bBoxCanBeOptimizedOverNativeGetBBox
+// Can the bbox be optimized over the native getBBox? The optimized bbox is the same as the native getBBox when
+// the rotation angle is a multiple of 90 degrees and there are no complex transforms.
+// Getting an optimized bbox can be dramatically slower, so we want to make sure it's worth it.
+//
+// The best example for this is a circle rotate 45 degrees. The circle doesn't get wider or taller when rotated
+// about it's center.
+//
+// The standard, unoptimized technique gets the native bbox of the circle, rotates the box 45 degrees, uses
+// that width and height, and applies any transforms to get the final bbox. This means the calculated bbox
+// is much wider than the original circle. If the angle had been 0, 90, 180, etc. both techniques render the
+// same bbox.
+//
+// The optimization is not needed if the rotation is a multiple 90 degrees. The default technique is to call
+// getBBox then apply the angle and any transforms.
+//
+// Parameters:
+// angle - The rotation angle in degrees
+// hasMatrixTransform - True if there is a matrix transform
+//
+// Returns:
+// True if the bbox can be optimized.
+function bBoxCanBeOptimizedOverNativeGetBBox(angle, hasMatrixTransform) {
+	var angleModulo90 = angle % 90;
+	var closeTo90 = angleModulo90 < -89.99 || angleModulo90 > 89.99;
+	var closeTo0 = angleModulo90 > -0.001 && angleModulo90 < 0.001;
+	return hasMatrixTransform || ! (closeTo0 || closeTo90);
+}
+
+// Function: getBBoxWithTransform
+// Get bounding box that includes any transforms.
+//
+// Parameters:
+// elem - The DOM element to be converted
+// addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJson
+// pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
+//
+// Returns:
+// A single bounding box object
+svgedit.utilities.getBBoxWithTransform = function(elem, addSvgElementFromJson, pathActions) {
+	// TODO: Fix issue with rotated groups. Currently they work
+	// fine in FF, but not in other browsers (same problem mentioned
+	// in Issue 339 comment #2).
+
+	var bb = svgedit.utilities.getBBox(elem);
+
+	if (!bb) {
+		return null;
+	}
+
+	var tlist = svgedit.transformlist.getTransformList(elem);
+	var angle = svgedit.utilities.getRotationAngleFromTransformList(tlist);
+	var hasMatrixTransform = svgedit.math.hasMatrixTransform(tlist);
+
+	if (angle || hasMatrixTransform) {
+
+		var good_bb = false;
+		if (bBoxCanBeOptimizedOverNativeGetBBox(angle, hasMatrixTransform)) {
+			// Get the BBox from the raw path for these elements
+			// TODO: why ellipse and not circle
+			var elemNames = ['ellipse', 'path', 'line', 'polyline', 'polygon'];
+			if (elemNames.indexOf(elem.tagName) >= 0) {
+				bb = good_bb = svgedit.utilities.getBBoxOfElementAsPath(elem, addSvgElementFromJson, pathActions);
+			} else if (elem.tagName == 'rect') {
+				// Look for radius
+				var rx = elem.getAttribute('rx');
+				var ry = elem.getAttribute('ry');
+				if (rx || ry) {
+					bb = good_bb = svgedit.utilities.getBBoxOfElementAsPath(elem, addSvgElementFromJson, pathActions);
+				}
+			}
+		}
+
+		if (!good_bb) {
+
+			var matrix = svgedit.math.transformListToTransform(tlist).matrix;
+			bb = svgedit.math.transformBox(bb.x, bb.y, bb.width, bb.height, matrix).aabox;
+
+			// Old technique that was exceedingly slow with large documents.
+			//
+			// Accurate way to get BBox of rotated element in Firefox:
+			// Put element in group and get its BBox
+			//
+			// Must use clone else FF freaks out
+			//var clone = elem.cloneNode(true);
+			//var g = document.createElementNS(NS.SVG, 'g');
+			//var parent = elem.parentNode;
+			//parent.appendChild(g);
+			//g.appendChild(clone);
+			//var bb2 = svgedit.utilities.bboxToObj(g.getBBox());
+			//parent.removeChild(g);
+		}
+
+	}
+	return bb;
+};
+
+// TODO: This is problematic with large stroke-width and, for example, a single horizontal line. The calculated BBox extends way beyond left and right sides.
+function getStrokeOffsetForBBox(elem) {
+	var sw = elem.getAttribute('stroke-width');
+	return (!isNaN(sw) && elem.getAttribute('stroke') != 'none') ? sw/2 : 0;
+};
+
+// Function: getStrokedBBox
+// Get the bounding box for one or more stroked and/or transformed elements
+//
+// Parameters:
+// elems - Array with DOM elements to check
+// addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJson
+// pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
+//
+// Returns:
+// A single bounding box object
+svgedit.utilities.getStrokedBBox = function(elems, addSvgElementFromJson, pathActions) {
+	if (!elems || !elems.length) {return false;}
+
+	var full_bb;
+	$.each(elems, function() {
+		if (full_bb) {return;}
+		if (!this.parentNode) {return;}
+		full_bb = svgedit.utilities.getBBoxWithTransform(this, addSvgElementFromJson, pathActions);
+	});
+
+	// This shouldn't ever happen...
+	if (full_bb === undefined) {return null;}
+
+	// full_bb doesn't include the stoke, so this does no good!
+	// if (elems.length == 1) return full_bb;
+
+	var max_x = full_bb.x + full_bb.width;
+	var max_y = full_bb.y + full_bb.height;
+	var min_x = full_bb.x;
+	var min_y = full_bb.y;
+
+	// If only one elem, don't call the potentially slow getBBoxWithTransform method again.
+	if (elems.length === 1) {
+		var offset = getStrokeOffsetForBBox(elems[0]);
+		min_x -= offset;
+		min_y -= offset;
+		max_x += offset;
+		max_y += offset;
+	} else {
+		$.each(elems, function(i, elem) {
+			var cur_bb = svgedit.utilities.getBBoxWithTransform(elem, addSvgElementFromJson, pathActions);
+			if (cur_bb) {
+				var offset = getStrokeOffsetForBBox(elem);
+				min_x = Math.min(min_x, cur_bb.x - offset);
+				min_y = Math.min(min_y, cur_bb.y - offset);
+				// TODO: The old code had this test for max, but not min. I suspect this test should be for both min and max
+				if (elem.nodeType == 1) {
+					max_x = Math.max(max_x, cur_bb.x + cur_bb.width + offset);
+					max_y = Math.max(max_y, cur_bb.y + cur_bb.height + offset);
+				}
+			}
+		});
+	}
+
+	full_bb.x = min_x;
+	full_bb.y = min_y;
+	full_bb.width = max_x - min_x;
+	full_bb.height = max_y - min_y;
+	return full_bb;
+};
+
+
+// Function: svgedit.utilities.getRotationAngleFromTransformList
+// Get the rotation angle of the given transform list.
+//
+// Parameters:
+// tlist - List of transforms
+// to_rad - Boolean that when true returns the value in radians rather than degrees
+//
+// Returns:
+// Float with the angle in degrees or radians
+svgedit.utilities.getRotationAngleFromTransformList = function(tlist, to_rad) {
+	if (!tlist) {return 0;} // <svg> elements have no tlist
+	var N = tlist.numberOfItems;
+	var i;
+	for (i = 0; i < N; ++i) {
+		var xform = tlist.getItem(i);
+		if (xform.type == 4) {
+			return to_rad ? xform.angle * Math.PI / 180.0 : xform.angle;
+		}
+	}
+	return 0.0;
+};
+
 // Function: svgedit.utilities.getRotationAngle
 // Get the rotation angle of the given/selected DOM element
 //
@@ -542,16 +983,7 @@ svgedit.utilities.getRotationAngle = function(elem, to_rad) {
 	var selected = elem || editorContext_.getSelectedElements()[0];
 	// find the rotation transform (if any) and set it
 	var tlist = svgedit.transformlist.getTransformList(selected);
-	if(!tlist) {return 0;} // <svg> elements have no tlist
-	var N = tlist.numberOfItems;
-	var i;
-	for (i = 0; i < N; ++i) {
-		var xform = tlist.getItem(i);
-		if (xform.type == 4) {
-			return to_rad ? xform.angle * Math.PI / 180.0 : xform.angle;
-		}
-	}
-	return 0.0;
+	return svgedit.utilities.getRotationAngleFromTransformList(tlist, to_rad)
 };
 
 // Function getRefElem
