@@ -783,6 +783,35 @@ svgedit.utilities.convertToPath = function(elem, attrs, addSvgElementFromJson, p
 
 };
 
+// Function: bBoxCanBeOptimizedOverNativeGetBBox
+// Can the bbox be optimized over the native getBBox? The optimized bbox is the same as the native getBBox when
+// the rotation angle is a multiple of 90 degrees and there are no complex transforms.
+// Getting an optimized bbox can be dramatically slower, so we want to make sure it's worth it.
+//
+// The best example for this is a circle rotate 45 degrees. The circle doesn't get wider or taller when rotated
+// about it's center.
+//
+// The standard, unoptimized technique gets the native bbox of the circle, rotates the box 45 degrees, uses
+// that width and height, and applies any transforms to get the final bbox. This means the calculated bbox
+// is much wider than the original circle. If the angle had been 0, 90, 180, etc. both techniques render the
+// same bbox.
+//
+// The optimization is not needed if the rotation is a multiple 90 degrees. The default technique is to call
+// getBBox then apply the angle and any transforms.
+//
+// Parameters:
+// angle - The rotation angle in degrees
+// hasMatrixTransform - True if there is a matrix transform
+//
+// Returns:
+// True if the bbox can be optimized.
+function bBoxCanBeOptimizedOverNativeGetBBox(angle, hasMatrixTransform) {
+	var angleModulo90 = angle % 90;
+	var closeTo90 = angleModulo90 < -89.99 || angleModulo90 > 89.99;
+	var closeTo0 = angleModulo90 > -0.001 && angleModulo90 < 0.001;
+	return hasMatrixTransform || ! (closeTo0 || closeTo90);
+}
+
 // Function: getBBoxWithTransform
 // Get bounding box that includes any transforms.
 //
@@ -806,21 +835,24 @@ svgedit.utilities.getBBoxWithTransform = function(elem, addSvgElementFromJson, p
 
 	var tlist = svgedit.transformlist.getTransformList(elem);
 	var angle = svgedit.utilities.getRotationAngleFromTransformList(tlist);
+	var hasMatrixTransform = svgedit.math.hasMatrixTransform(tlist);
 
-	if (angle || svgedit.math.hasMatrixTransform(tlist)) {
+	if (angle || hasMatrixTransform) {
 
 		var good_bb = false;
-		// Get the BBox from the raw path for these elements
-		// TODO: why ellipse and not circle
-		var elemNames = ['ellipse', 'path', 'line', 'polyline', 'polygon'];
-		if (elemNames.indexOf(elem.tagName) >= 0) {
-			bb = good_bb = svgedit.utilities.getBBoxOfElementAsPath(elem, addSvgElementFromJson, pathActions);
-		} else if (elem.tagName == 'rect') {
-			// Look for radius
-			var rx = elem.getAttribute('rx');
-			var ry = elem.getAttribute('ry');
-			if (rx || ry) {
+		if (bBoxCanBeOptimizedOverNativeGetBBox(angle, hasMatrixTransform)) {
+			// Get the BBox from the raw path for these elements
+			// TODO: why ellipse and not circle
+			var elemNames = ['ellipse', 'path', 'line', 'polyline', 'polygon'];
+			if (elemNames.indexOf(elem.tagName) >= 0) {
 				bb = good_bb = svgedit.utilities.getBBoxOfElementAsPath(elem, addSvgElementFromJson, pathActions);
+			} else if (elem.tagName == 'rect') {
+				// Look for radius
+				var rx = elem.getAttribute('rx');
+				var ry = elem.getAttribute('ry');
+				if (rx || ry) {
+					bb = good_bb = svgedit.utilities.getBBoxOfElementAsPath(elem, addSvgElementFromJson, pathActions);
+				}
 			}
 		}
 

@@ -32,9 +32,11 @@
       }
       return elem;
     }
+    var mockAddSvgElementFromJsonCallCount = 0;
     function mockAddSvgElementFromJson( json) {
       var elem = mockCreateSVGElement( json)
       svgroot.appendChild( elem)
+      mockAddSvgElementFromJsonCallCount++;
       return elem
     }
     var mockPathActions = {
@@ -82,7 +84,8 @@
       setup: function() {
         // We're reusing ID's so we need to do this for transforms.
         svgedit.transformlist.resetListMap();
-        svgedit.path.init(null)
+        svgedit.path.init(null);
+        mockAddSvgElementFromJsonCallCount = 0;
       },
       teardown: function() {
       }
@@ -109,6 +112,7 @@
       svgroot.appendChild( elem)
       bbox = getBBoxWithTransform(elem, mockAddSvgElementFromJson, mockPathActions)
       deepEqual(bbox, {"x": 0, "y": 1, "width": 2, "height": 2 });
+      equal( mockAddSvgElementFromJsonCallCount, 0);
       svgroot.removeChild( elem);
 
       elem = mockCreateSVGElement({
@@ -118,6 +122,7 @@
       svgroot.appendChild( elem);
       bbox = getBBoxWithTransform( elem, mockAddSvgElementFromJson, mockPathActions)
       deepEqual( bbox, { "x": 0, "y": 1, "width": 5, "height": 10});
+      equal( mockAddSvgElementFromJsonCallCount, 0);
       svgroot.removeChild( elem);
 
       elem = mockCreateSVGElement({
@@ -127,6 +132,7 @@
       svgroot.appendChild( elem);
       bbox = getBBoxWithTransform( elem, mockAddSvgElementFromJson, mockPathActions)
       deepEqual( bbox, { "x": 0, "y": 1, "width": 5, "height": 5});
+      equal( mockAddSvgElementFromJsonCallCount, 0);
       svgroot.removeChild( elem);
 
       elem = mockCreateSVGElement({
@@ -141,6 +147,7 @@
       svgroot.appendChild( g);
       bbox = getBBoxWithTransform( elem, mockAddSvgElementFromJson, mockPathActions)
       deepEqual( bbox, { "x": 0, "y": 1, "width": 5, "height": 10});
+      equal( mockAddSvgElementFromJsonCallCount, 0);
       svgroot.removeChild( g);
 
     });
@@ -172,6 +179,7 @@
       close( bbox.y, 15, EPSILON);
       close( bbox.width, 20, EPSILON);
       close( bbox.height, 10, EPSILON);
+      equal( mockAddSvgElementFromJsonCallCount, 1);
       svgroot.removeChild( elem);
 
       var rect = {x: 10, y: 10, width: 10, height: 20};
@@ -182,12 +190,14 @@
         'attr': { 'id': 'rect2', 'x': rect.x, 'y': rect.y, 'width': rect.width, 'height': rect.height, 'transform': 'rotate(' + angle + ' ' + origin.x + ',' + origin.y + ')'}
       });
       svgroot.appendChild( elem);
+      mockAddSvgElementFromJsonCallCount = 0;
       bbox = getBBoxWithTransform( elem, mockAddSvgElementFromJson, mockPathActions);
       var r2 = rotateRect( rect, angle, origin);
       close( bbox.x, r2.x, EPSILON, 'rect2 x is ' + r2.x);
       close( bbox.y, r2.y, EPSILON, 'rect2 y is ' + r2.y);
       close( bbox.width, r2.width, EPSILON, 'rect2 width is' + r2.width);
       close( bbox.height, r2.height, EPSILON, 'rect2 height is ' + r2.height);
+      equal( mockAddSvgElementFromJsonCallCount, 0);
       svgroot.removeChild( elem);
 
 
@@ -202,11 +212,13 @@
       });
       g.appendChild( elem);
       svgroot.appendChild( g);
+      mockAddSvgElementFromJsonCallCount = 0;
       bbox = getBBoxWithTransform( g, mockAddSvgElementFromJson, mockPathActions);
       close( bbox.x, r2.x, EPSILON, 'rect2 x is ' + r2.x);
       close( bbox.y, r2.y, EPSILON, 'rect2 y is ' + r2.y);
       close( bbox.width, r2.width, EPSILON, 'rect2 width is' + r2.width);
       close( bbox.height, r2.height, EPSILON, 'rect2 height is ' + r2.height);
+      equal( mockAddSvgElementFromJsonCallCount, 0);
       svgroot.removeChild( g);
 
 
@@ -215,12 +227,14 @@
         'attr': { 'id': 'ellipse1', 'cx': '100', 'cy': '100', 'rx': '50', 'ry': '50', 'transform': 'rotate(45 100,100)'}
       });
       svgroot.appendChild( elem);
+      mockAddSvgElementFromJsonCallCount = 0;
       bbox = getBBoxWithTransform( elem, mockAddSvgElementFromJson, mockPathActions);
       // TODO: the BBox algorithm is using the bezier control points to calculate the bounding box. Should be 50, 50, 100, 100.
-      close( bbox.x, 45.111, EPSILON);
-      close( bbox.y, 45.111, EPSILON);
-      close( bbox.width, 109.777, EPSILON);
-      close( bbox.height, 109.777, EPSILON);
+      ok( bbox.x > 45 && bbox.x <= 50);
+      ok( bbox.y > 45 && bbox.y <= 50);
+      ok( bbox.width >= 100 && bbox.width < 110);
+      ok( bbox.height >= 100 && bbox.height < 110);
+      equal( mockAddSvgElementFromJsonCallCount, 1);
       svgroot.removeChild( elem);
 
     });
@@ -311,10 +325,10 @@
       svgroot.appendChild( elem);
       bbox = getBBoxWithTransform( elem, mockAddSvgElementFromJson, mockPathActions)
       // TODO: the BBox algorithm is using the bezier control points to calculate the bounding box. Should be 50, 50, 100, 100.
-      close( bbox.x, 45.111 + tx, EPSILON);
-      close( bbox.y, 45.111 + ty, EPSILON);
-      close( bbox.width, 109.777, EPSILON);
-      close( bbox.height, 109.777, EPSILON);
+      ok( bbox.x > 45 + tx && bbox.x <= 50 + tx);
+      ok( bbox.y > 45 + ty && bbox.y <= 50 + ty);
+      ok( bbox.width >= 100 && bbox.width < 110);
+      ok( bbox.height >= 100 && bbox.height < 110);
       svgroot.removeChild( elem);
 
     });
