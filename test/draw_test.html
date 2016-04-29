@@ -19,12 +19,16 @@
       }
     };
     var NS = svgedit.NS;
+    var LAYER_CLASS = svgedit.LAYER_CLASS;
     var NONCE = 'foo';
     var LAYER1 = 'Layer 1';
     var LAYER2 = 'Layer 2';
     var LAYER3 = 'Layer 3';
 
     var svg = document.createElementNS(NS.SVG, 'svg');
+    var sandbox = document.getElementById('sandbox');
+    // Firefox throws exception in getBBox() when svg is not attached to DOM.
+    sandbox.appendChild(svg);
 
     // Set up <svg> with nonce.
     var svg_n = document.createElementNS(NS.SVG, 'svg');
@@ -244,7 +248,7 @@
     });
 
     test('Test identifyLayers() with empty document', function() {
-      expect(9);
+      expect(10);
 
       var drawing = new svgedit.draw.Drawing(svg);
       // By default, an empty document gets an empty group created.
@@ -260,6 +264,7 @@
       ok(empty_layer);
       equals(empty_layer, drawing.getSvgElem().firstChild);
       equals(empty_layer.tagName, 'g');
+      equals(empty_layer.getAttribute('class'), LAYER_CLASS);
       ok(empty_layer.hasChildNodes());
       equals(empty_layer.childNodes.length, 1);
       var firstChild = empty_layer.childNodes.item(0);
@@ -269,7 +274,7 @@
     });
 
     test('Test identifyLayers() with some layers', function() {
-      expect(5);
+      expect(8);
 
       var drawing = new svgedit.draw.Drawing(svg);
       setupSvgWith3Layers(svg);
@@ -283,11 +288,15 @@
       equals(drawing.all_layers[1][1], svg.childNodes.item(1));
       equals(drawing.all_layers[2][1], svg.childNodes.item(2));
 
+      equals(drawing.all_layers[0][1].getAttribute('class'), LAYER_CLASS);
+      equals(drawing.all_layers[1][1].getAttribute('class'), LAYER_CLASS);
+      equals(drawing.all_layers[2][1].getAttribute('class'), LAYER_CLASS);
+
       cleanupSvg(svg);
     });
 
     test('Test identifyLayers() with some layers and orphans', function() {
-      expect(10);
+      expect(14);
 
       setupSvgWith3Layers(svg);
 
@@ -306,6 +315,11 @@
       equals(drawing.all_layers[1][1], svg.childNodes.item(1));
       equals(drawing.all_layers[2][1], svg.childNodes.item(2));
       equals(drawing.all_layers[3][1], svg.childNodes.item(3));
+
+      equals(drawing.all_layers[0][1].getAttribute('class'), LAYER_CLASS);
+      equals(drawing.all_layers[1][1].getAttribute('class'), LAYER_CLASS);
+      equals(drawing.all_layers[2][1].getAttribute('class'), LAYER_CLASS);
+      equals(drawing.all_layers[3][1].getAttribute('class'), LAYER_CLASS);
 
       var layer4 = drawing.all_layers[3][1];
       equals(layer4.tagName, 'g');
@@ -367,7 +381,7 @@
     });
 
     test('Test createLayer()', function() {
-      expect(6);
+      expect(7);
 
       var drawing = new svgedit.draw.Drawing(svg);
       setupSvgWith3Layers(svg);
@@ -380,6 +394,7 @@
       var layer_g = drawing.createLayer(NEW_LAYER_NAME);
       equals(4, drawing.getNumLayers());
       equals(layer_g, drawing.getCurrentLayer());
+      equals(layer_g.getAttribute('class'), LAYER_CLASS);
       equals(NEW_LAYER_NAME, drawing.getCurrentLayerName());
       equals(NEW_LAYER_NAME, drawing.getLayerName(3));
 
@@ -530,6 +545,6 @@
   <h2 id='qunit-banner'></h2>
   <h2 id='qunit-userAgent'></h2>
   <ol id='qunit-tests'></ol>
-  <div id='anchor' style='visibility:hidden'></div>
+  <div id='sandbox' style='visibility:hidden'></div>
 </body>
 </html>

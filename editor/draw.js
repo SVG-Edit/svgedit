@@ -20,6 +20,8 @@ if (!svgedit.draw) {
 }
 // alias
 var NS = svgedit.NS;
+var LAYER_CLASS = svgedit.LAYER_CLASS;
+var LAYER_CLASS_REGEX = svgedit.LAYER_CLASS_REGEX;
 
 var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use'.split(',');
 
@@ -29,6 +31,21 @@ var RandomizeModes = {
 	NEVER_RANDOMIZE: 2
 };
 var randomize_ids = RandomizeModes.LET_DOCUMENT_DECIDE;
+
+/**
+ * Add class 'layer' to the element
+ *
+ * Parameters:
+ * @param {SVGGElement} elem - The SVG element to update
+ */
+function addLayerClass(elem) {
+	var classes = elem.getAttribute('class')
+	if (classes === null || classes === undefined || classes.length === 0) {
+		elem.setAttribute('class', LAYER_CLASS);
+	} else if (! LAYER_CLASS_REGEX.test(classes)) {
+		elem.setAttribute('class', classes + ' ' + LAYER_CLASS);
+	}
+}
 
 /**
  * This class encapsulates the concept of a layer in the drawing
@@ -386,6 +403,7 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 					a_layer = child;
 					svgedit.utilities.walkTree(child, function(e){e.setAttribute("style", "pointer-events:inherit");});
 					a_layer.setAttribute("style", "pointer-events:none");
+					addLayerClass(a_layer)
 				}
 				// if group did not have a name, it is an orphan
 				else {
@@ -407,21 +425,35 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 		// TODO(codedread): What about internationalization of "Layer"?
 		while (layernames.indexOf(("Layer " + i)) >= 0) { i++; }
 		var newname = "Layer " + i;
-		a_layer = svgdoc.createElementNS(NS.SVG, "g");
-		var layer_title = svgdoc.createElementNS(NS.SVG, "title");
-		layer_title.textContent = newname;
-		a_layer.appendChild(layer_title);
+		a_layer = this._doCreateLayer(newname);
 		var j;
 		for (j = 0; j < orphans.length; ++j) {
 			a_layer.appendChild(orphans[j]);
 		}
-		this.svgElem_.appendChild(a_layer);
-		this.all_layers.push( [newname, a_layer] );
+		this.all_layers.push([newname, a_layer] );
 	}
 	svgedit.utilities.walkTree(a_layer, function(e){e.setAttribute("style", "pointer-events:inherit");});
 	this.current_layer = a_layer;
 	this.current_layer.setAttribute("style", "pointer-events:all");
 };
+
+	/**
+	 * Private function that actually creates a new top-level layer in the drawing
+	 * with the given name and sets the current layer to it.
+	 * @param {string} name - The given name
+	 * @returns {SVGGElement} The SVGGElement of the new layer, which is
+	 * also the current layer of this drawing.
+	 */
+	svgedit.draw.Drawing.prototype._doCreateLayer = function(name) {
+		var svgdoc = this.svgElem_.ownerDocument;
+		var new_layer = svgdoc.createElementNS(NS.SVG, "g");
+		addLayerClass(new_layer);
+		var layer_title = svgdoc.createElementNS(NS.SVG, "title");
+		layer_title.textContent = name;
+		new_layer.appendChild(layer_title);
+		this.svgElem_.appendChild(new_layer);
+		return new_layer;
+	};
 
 /**
  * Creates a new top-level layer in the drawing with the given name and 
@@ -431,12 +463,7 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
  * also the current layer of this drawing.
 */
 svgedit.draw.Drawing.prototype.createLayer = function(name) {
-	var svgdoc = this.svgElem_.ownerDocument;
-	var new_layer = svgdoc.createElementNS(NS.SVG, "g");
-	var layer_title = svgdoc.createElementNS(NS.SVG, "title");
-	layer_title.textContent = name;
-	new_layer.appendChild(layer_title);
-	this.svgElem_.appendChild(new_layer);
+	var new_layer = this._doCreateLayer(name);
 	this.identifyLayers();
 	return new_layer;
 };
