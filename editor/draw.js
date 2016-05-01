@@ -232,7 +232,8 @@ svgedit.draw.Drawing = function(svgElem, opt_idPrefix) {
 	this.releasedNums = [];
 
 	/**
-	 * The z-ordered array of tuples containing layer names and <g> elements.
+	 * The z-ordered array of Layer objects. Each layer has a name
+	 * and group element.
 	 * The first layer is the one at the bottom of the rendering.
 	 * @type {Layer[]}
 	 */
