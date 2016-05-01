@@ -113,10 +113,10 @@ Layer.prototype.deactivate = function() {
  * Set this layer visible or hidden based on 'visible' parameter.
  * @param {boolean} visible - If true, make visible; otherwise, hide it.
  */
-Layer.prototype.setVisible = function( visible) {
+Layer.prototype.setVisible = function(visible) {
 	var expected = visible === undefined || visible ? "inline" : "none";
 	var oldDisplay = this.group_.getAttribute("display");
-	if( oldDisplay !== expected) {
+	if (oldDisplay !== expected) {
 		this.group_.setAttribute("display", expected);
 	}
 };
@@ -135,7 +135,7 @@ Layer.prototype.isVisible = function() {
  */
 Layer.prototype.getOpacity = function() {
 	var opacity = this.group_.getAttribute('opacity');
-	if( opacity === null || opacity === undefined) {
+	if (opacity === null || opacity === undefined) {
 		return 1;
 	}
 	return parseFloat(opacity);
@@ -146,7 +146,7 @@ Layer.prototype.getOpacity = function() {
  * nothing happens.
  * @param {number} opacity - A float value in the range 0.0-1.0
  */
-Layer.prototype.setOpacity = function( opacity) {
+Layer.prototype.setOpacity = function(opacity) {
 	if (typeof opacity === 'number' && opacity >= 0.0 && opacity <= 1.0) {
 		this.group_.setAttribute('opacity', opacity);
 	}
@@ -156,7 +156,7 @@ Layer.prototype.setOpacity = function( opacity) {
  * Append children to this layer.
  * @param {SVGGElement} children - The children to append to this layer.
  */
-Layer.prototype.appendChildren = function( children) {
+Layer.prototype.appendChildren = function(children) {
 	for (var i = 0; i < children.length; ++i) {
 		this.group_.appendChild(children[i]);
 	}
@@ -470,7 +470,7 @@ function findLayerNameInGroup(group) {
 	var name = $("title", group).text();
 
 	// Hack for Opera 10.60
-	if(!name && svgedit.browser.isOpera() && group.querySelectorAll) {
+	if (!name && svgedit.browser.isOpera() && group.querySelectorAll) {
 		name = $(group.querySelectorAll('title')).text();
 	}
 	return name;
@@ -481,7 +481,7 @@ function findLayerNameInGroup(group) {
  * @param {string[]} existingLayerNames - Existing layer names.
  * @returns {string} - The new name.
  */
-function getNewLayerName( existingLayerNames) {
+function getNewLayerName(existingLayerNames) {
 	var i = 1;
 	// TODO(codedread): What about internationalization of "Layer"?
 	while (existingLayerNames.indexOf(("Layer " + i)) >= 0) { i++; }
@@ -509,14 +509,14 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 				var name = findLayerNameInGroup(child);
 				if (name) {
 					layernames.push(name);
-					layer = new Layer( name, child);
+					layer = new Layer(name, child);
 					this.all_layers.push(layer);
 					this.layer_map[ name] = layer;
 				} else {
 					// if group did not have a name, it is an orphan
 					orphans.push(child);
 				}
-			} else if(~visElems.indexOf(child.nodeName)) {
+			} else if (~visElems.indexOf(child.nodeName)) {
 				// Child is "visible" (i.e. not a <title> or <defs> element), so it is an orphan
 				orphans.push(child);
 			}
@@ -525,7 +525,7 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 	
 	// If orphans or no layers found, create a new layer and add all the orphans to it
 	if (orphans.length > 0 || !childgroups) {
-		layer = new Layer( getNewLayerName(layernames), null, this.svgElem_);
+		layer = new Layer(getNewLayerName(layernames), null, this.svgElem_);
 		layer.appendChildren(orphans);
 		this.all_layers.push(layer);
 		this.layer_map[ name] = layer;
@@ -543,14 +543,14 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
  * also the current layer of this drawing.
 */
 svgedit.draw.Drawing.prototype.createLayer = function(name) {
-	if( this.current_layer) {
+	if (this.current_layer) {
 		this.current_layer.deactivate();
 	}
 	// Check for duplicate name.
-	if( name === undefined || name === null || name === '' || this.layer_map[name]) {
+	if (name === undefined || name === null || name === '' || this.layer_map[name]) {
 		name = getNewLayerName(Object.keys(this.layer_map));
 	}
-	var layer = new Layer( name, null, this.svgElem_);
+	var layer = new Layer(name, null, this.svgElem_);
 	this.all_layers.push(layer);
 	this.layer_map[ name] = layer;
 	this.current_layer = layer;
