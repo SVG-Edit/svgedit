@@ -39,7 +39,7 @@ var randomize_ids = RandomizeModes.LET_DOCUMENT_DECIDE;
  * @param {SVGGElement} elem - The SVG element to update
  */
 function addLayerClass(elem) {
-	var classes = elem.getAttribute('class')
+	var classes = elem.getAttribute('class');
 	if (classes === null || classes === undefined || classes.length === 0) {
 		elem.setAttribute('class', LAYER_CLASS);
 	} else if (! LAYER_CLASS_REGEX.test(classes)) {
@@ -47,32 +47,136 @@ function addLayerClass(elem) {
 	}
 }
 
-/**
- * This class encapsulates the concept of a layer in the drawing
- * @param {String} name - Layer name
- * @param {SVGGElement} child - Layer SVG group.
+function createLayer(name, svgElem) {
+	if (!svgElem) {
+		return undefined;
+	}
+	var svgdoc = svgElem.ownerDocument;
+	var new_layer = svgdoc.createElementNS(NS.SVG, "g");
+	var layer_title = svgdoc.createElementNS(NS.SVG, "title");
+	layer_title.textContent = name;
+	new_layer.appendChild(layer_title);
+	svgElem.appendChild(new_layer);
+	return new_layer;
+}
+
+
+	/**
+ * This class encapsulates the concept of a layer in the drawing. It can be constructed with
+ * an existing group element or, with three parameters, will create a new layer group element.
+ * @param {string} name - Layer name
+ * @param {SVGGElement} group - SVG group element that constitutes the layer or null if a group should be created and added to the DOM..
+ * @param {SVGGElement} svgElem - The SVG DOM element. If defined, use this to add
+ * 		a new layer to the document.
  */
-svgedit.draw.Layer = function(name, group) {
+var Layer = svgedit.draw.Layer = function(name, group, svgElem) {
 	this.name_ = name;
-	this.group_ = group;
+	this.group_ = group || createLayer(name, svgElem);
+
+	addLayerClass(this.group_);
+	svgedit.utilities.walkTree(this.group_, function(e){e.setAttribute("style", "pointer-events:inherit");});
+
+	this.group_.setAttribute("style", svgElem ? "pointer-events:all" : "pointer-events:none");
 };
 
 /**
+ * Get the layer's name.
  * @returns {string} The layer name
  */
-svgedit.draw.Layer.prototype.getName = function() {
+Layer.prototype.getName = function() {
 	return this.name_;
 };
 
 /**
+ * Get the group element for this layer.
  * @returns {SVGGElement} The layer SVG group
  */
-svgedit.draw.Layer.prototype.getGroup = function() {
+Layer.prototype.getGroup = function() {
 	return this.group_;
 };
 
+/**
+ * Active this layer so it takes pointer events.
+ */
+Layer.prototype.activate = function() {
+	this.group_.setAttribute("style", "pointer-events:all");
+};
 
 /**
+ * Deactive this layer so it does NOT take pointer events.
+ */
+Layer.prototype.deactivate = function() {
+	this.group_.setAttribute("style", "pointer-events:none");
+};
+
+/**
+ * Set this layer visible or hidden based on 'visible' parameter.
+ * @param {boolean} visible - If true, make visible; otherwise, hide it.
+ */
+Layer.prototype.setVisible = function( visible) {
+	var expected = visible === undefined || visible ? "inline" : "none";
+	var oldDisplay = this.group_.getAttribute("display");
+	if( oldDisplay !== expected) {
+		this.group_.setAttribute("display", expected);
+	}
+};
+
+/**
+ * Is this layer visible?
+ * @returns {boolean} True if visible.
+ */
+Layer.prototype.isVisible = function() {
+	return this.group_.getAttribute('display') !== 'none';
+};
+
+/**
+ * Get layer opacity.
+ * @returns {number} Opacity value.
+ */
+Layer.prototype.getOpacity = function() {
+	var opacity = this.group_.getAttribute('opacity');
+	if( opacity === null || opacity === undefined) {
+		return 1;
+	}
+	return parseFloat(opacity);
+};
+
+/**
+ * Sets the opacity of this layer. If opacity is not a value between 0.0 and 1.0,
+ * nothing happens.
+ * @param {number} opacity - A float value in the range 0.0-1.0
+ */
+Layer.prototype.setOpacity = function( opacity) {
+	if (typeof opacity === 'number' && opacity >= 0.0 && opacity <= 1.0) {
+		this.group_.setAttribute('opacity', opacity);
+	}
+};
+
+/**
+ * Append children to this layer.
+ * @param {SVGGElement} children - The children to append to this layer.
+ */
+Layer.prototype.appendChildren = function( children) {
+	for (var i = 0; i < children.length; ++i) {
+		this.group_.appendChild(children[i]);
+	}
+};
+
+/**
+ * Remove this layer's group from the DOM. No more functions on group can be called after this.
+ * @param {SVGGElement} children - The children to append to this layer.
+ * @returns {SVGGElement} The layer SVG group that was just removed.
+ */
+Layer.prototype.removeGroup = function() {
+	var parent = this.group_.parentNode;
+	var group = parent.removeChild(this.group_);
+	this.group_ = undefined;
+	return group;
+};
+
+
+
+	/**
  * Called to ensure that drawings will or will not have randomized ids.
  * The currentDrawing will have its nonce set if it doesn't already.
  * @param {boolean} enableRandomization - flag indicating if documents should have randomized ids
@@ -130,15 +234,19 @@ svgedit.draw.Drawing = function(svgElem, opt_idPrefix) {
 	/**
 	 * The z-ordered array of tuples containing layer names and <g> elements.
 	 * The first layer is the one at the bottom of the rendering.
-	 * TODO: Turn this into an Array.<Layer>
-	 * @type {Array.<Array.<String, SVGGElement>>}
+	 * @type {Layer[]}
 	 */
 	this.all_layers = [];
 
 	/**
+	 * Map of all_layers by name.
+	 * @type {Object.<string,Layer>}
+	 */
+	this.layer_map = {};
+
+	/**
 	 * The current layer being used.
-	 * TODO: Make this a {Layer}.
-	 * @type {SVGGElement}
+	 * @type {Layer}
 	 */
 	this.current_layer = null;
 
@@ -289,11 +397,7 @@ svgedit.draw.Drawing.prototype.getNumLayers = function() {
  * @param {string} name - The layer name to check
 */
 svgedit.draw.Drawing.prototype.hasLayer = function (name) {
-	var i;
-	for (i = 0; i < this.getNumLayers(); i++) {
-		if(this.all_layers[i][0] == name) {return true;}
-	}
-	return false;
+	return this.layer_map[name] !== undefined;
 };
 
 
@@ -303,32 +407,23 @@ svgedit.draw.Drawing.prototype.hasLayer = function (name) {
  * @returns {string} The name of the ith layer (or the empty string if none found)
 */
 svgedit.draw.Drawing.prototype.getLayerName = function (i) {
-	if (i >= 0 && i < this.getNumLayers()) {
-		return this.all_layers[i][0];
-	}
-	return '';
+	return i >= 0 && i < this.getNumLayers() ? this.all_layers[i].getName() : '';
 };
 
 /**
  * @returns {SVGGElement} The SVGGElement representing the current layer.
  */
 svgedit.draw.Drawing.prototype.getCurrentLayer = function() {
-	return this.current_layer;
+	return this.current_layer.getGroup();
 };
 
 /**
  * Returns the name of the currently selected layer. If an error occurs, an empty string 
  * is returned.
- * @returns The name of the currently active layer (or the empty string if none found).
+ * @returns {string} The name of the currently active layer (or the empty string if none found).
 */
 svgedit.draw.Drawing.prototype.getCurrentLayerName = function () {
-	var i;
-	for (i = 0; i < this.getNumLayers(); ++i) {
-		if (this.all_layers[i][1] == this.current_layer) {
-			return this.getLayerName(i);
-		}
-	}
-	return '';
+	return this.current_layer ? this.current_layer.getName() : '';
 };
 
 /**
@@ -339,16 +434,14 @@ svgedit.draw.Drawing.prototype.getCurrentLayerName = function () {
  * @returns {boolean} true if the current layer was switched, otherwise false
  */
 svgedit.draw.Drawing.prototype.setCurrentLayer = function(name) {
-	var i;
-	for (i = 0; i < this.getNumLayers(); ++i) {
-		if (name == this.getLayerName(i)) {
-			if (this.current_layer != this.all_layers[i][1]) {
-				this.current_layer.setAttribute("style", "pointer-events:none");
-				this.current_layer = this.all_layers[i][1];
-				this.current_layer.setAttribute("style", "pointer-events:all");
-			}
-			return true;
+	var layer = this.layer_map[name];
+	if (layer) {
+		if (this.current_layer) {
+			this.current_layer.deactivate();
 		}
+		this.current_layer = layer;
+		this.current_layer.activate();
+		return true;
 	}
 	return false;
 };
@@ -361,10 +454,7 @@ svgedit.draw.Drawing.prototype.setCurrentLayer = function(name) {
  */
 svgedit.draw.Drawing.prototype.deleteCurrentLayer = function() {
 	if (this.current_layer && this.getNumLayers() > 1) {
-		// actually delete from the DOM and return it
-		var parent = this.current_layer.parentNode;
-		var nextSibling = this.current_layer.nextSibling;
-		var oldLayerGroup = parent.removeChild(this.current_layer);
+		var oldLayerGroup = this.current_layer.removeGroup();
 		this.identifyLayers();
 		return oldLayerGroup;
 	}
@@ -372,100 +462,99 @@ svgedit.draw.Drawing.prototype.deleteCurrentLayer = function() {
 };
 
 /**
+ * Find the layer name in a group element.
+ * @param group The group element to search in.
+ * @returns {string} The layer name or empty string.
+ */
+function findLayerNameInGroup(group) {
+	var name = $("title", group).text();
+
+	// Hack for Opera 10.60
+	if(!name && svgedit.browser.isOpera() && group.querySelectorAll) {
+		name = $(group.querySelectorAll('title')).text();
+	}
+	return name;
+}
+
+/**
+ * Given a set of names, return a new unique name.
+ * @param {string[]} existingLayerNames - Existing layer names.
+ * @returns {string} - The new name.
+ */
+function getNewLayerName( existingLayerNames) {
+	var i = 1;
+	// TODO(codedread): What about internationalization of "Layer"?
+	while (existingLayerNames.indexOf(("Layer " + i)) >= 0) { i++; }
+	return "Layer " + i;
+}
+
+/**
  * Updates layer system and sets the current layer to the
  * top-most layer (last <g> child of this drawing).
 */
 svgedit.draw.Drawing.prototype.identifyLayers = function() {
 	this.all_layers = [];
+	this.layer_map = {};
 	var numchildren = this.svgElem_.childNodes.length;
 	// loop through all children of SVG element
 	var orphans = [], layernames = [];
-	var a_layer = null;
+	var layer = null;
 	var childgroups = false;
-	var i;
-	for (i = 0; i < numchildren; ++i) {
+	for (var i = 0; i < numchildren; ++i) {
 		var child = this.svgElem_.childNodes.item(i);
 		// for each g, find its layer name
 		if (child && child.nodeType == 1) {
 			if (child.tagName == "g") {
 				childgroups = true;
-				var name = $("title", child).text();
-
-				// Hack for Opera 10.60
-				if(!name && svgedit.browser.isOpera() && child.querySelectorAll) {
-					name = $(child.querySelectorAll('title')).text();
-				}
-
-				// store layer and name in global variable
+				var name = findLayerNameInGroup(child);
 				if (name) {
 					layernames.push(name);
-					this.all_layers.push( [name, child] );
-					a_layer = child;
-					svgedit.utilities.walkTree(child, function(e){e.setAttribute("style", "pointer-events:inherit");});
-					a_layer.setAttribute("style", "pointer-events:none");
-					addLayerClass(a_layer)
-				}
-				// if group did not have a name, it is an orphan
-				else {
+					layer = new Layer( name, child);
+					this.all_layers.push(layer);
+					this.layer_map[ name] = layer;
+				} else {
+					// if group did not have a name, it is an orphan
 					orphans.push(child);
 				}
-			}
-			// if child has is "visible" (i.e. not a <title> or <defs> element), then it is an orphan
-			else if(~visElems.indexOf(child.nodeName)) {
-				var bb = svgedit.utilities.getBBox(child);
+			} else if(~visElems.indexOf(child.nodeName)) {
+				// Child is "visible" (i.e. not a <title> or <defs> element), so it is an orphan
 				orphans.push(child);
 			}
 		}
 	}
 	
-	// create a new layer and add all the orphans to it
-	var svgdoc = this.svgElem_.ownerDocument;
+	// If orphans or no layers found, create a new layer and add all the orphans to it
 	if (orphans.length > 0 || !childgroups) {
-		i = 1;
-		// TODO(codedread): What about internationalization of "Layer"?
-		while (layernames.indexOf(("Layer " + i)) >= 0) { i++; }
-		var newname = "Layer " + i;
-		a_layer = this._doCreateLayer(newname);
-		var j;
-		for (j = 0; j < orphans.length; ++j) {
-			a_layer.appendChild(orphans[j]);
-		}
-		this.all_layers.push([newname, a_layer] );
+		layer = new Layer( getNewLayerName(layernames), null, this.svgElem_);
+		layer.appendChildren(orphans);
+		this.all_layers.push(layer);
+		this.layer_map[ name] = layer;
+	} else {
+		layer.activate();
 	}
-	svgedit.utilities.walkTree(a_layer, function(e){e.setAttribute("style", "pointer-events:inherit");});
-	this.current_layer = a_layer;
-	this.current_layer.setAttribute("style", "pointer-events:all");
+	this.current_layer = layer;
 };
-
-	/**
-	 * Private function that actually creates a new top-level layer in the drawing
-	 * with the given name and sets the current layer to it.
-	 * @param {string} name - The given name
-	 * @returns {SVGGElement} The SVGGElement of the new layer, which is
-	 * also the current layer of this drawing.
-	 */
-	svgedit.draw.Drawing.prototype._doCreateLayer = function(name) {
-		var svgdoc = this.svgElem_.ownerDocument;
-		var new_layer = svgdoc.createElementNS(NS.SVG, "g");
-		addLayerClass(new_layer);
-		var layer_title = svgdoc.createElementNS(NS.SVG, "title");
-		layer_title.textContent = name;
-		new_layer.appendChild(layer_title);
-		this.svgElem_.appendChild(new_layer);
-		return new_layer;
-	};
 
 /**
  * Creates a new top-level layer in the drawing with the given name and 
  * sets the current layer to it.
- * @param {string} name - The given name
+ * @param {string} name - The given name. If the layer name exists, a new name will be generated.
  * @returns {SVGGElement} The SVGGElement of the new layer, which is
  * also the current layer of this drawing.
 */
 svgedit.draw.Drawing.prototype.createLayer = function(name) {
-	var new_layer = this._doCreateLayer(name);
-	this.identifyLayers();
-	return new_layer;
+	if( this.current_layer) {
+		this.current_layer.deactivate();
+	}
+	// Check for duplicate name.
+	if( name === undefined || name === null || name === '' || this.layer_map[name]) {
+		name = getNewLayerName(Object.keys(this.layer_map));
+	}
+	var layer = new Layer( name, null, this.svgElem_);
+	this.all_layers.push(layer);
+	this.layer_map[ name] = layer;
+	this.current_layer = layer;
+	return layer.getGroup();
 };
 
 /**
@@ -475,17 +564,8 @@ svgedit.draw.Drawing.prototype.createLayer = function(name) {
  * @returns {boolean} The visibility state of the layer, or false if the layer name was invalid.
 */
 svgedit.draw.Drawing.prototype.getLayerVisibility = function(layername) {
-	// find the layer
-	var layer = null;
-	var i;
-	for (i = 0; i < this.getNumLayers(); ++i) {
-		if (this.getLayerName(i) == layername) {
-			layer = this.all_layers[i][1];
-			break;
-		}
-	}
-	if (!layer) {return false;}
-	return (layer.getAttribute('display') !== 'none');
+	var layer = this.layer_map[layername];
+	return layer ? layer.isVisible() : false;
 };
 
 /**
@@ -501,21 +581,10 @@ svgedit.draw.Drawing.prototype.setLayerVisibility = function(layername, bVisible
 	if (typeof bVisible !== 'boolean') {
 		return null;
 	}
-	// find the layer
-	var layer = null;
-	var i;
-	for (i = 0; i < this.getNumLayers(); ++i) {
-		if (this.getLayerName(i) == layername) {
-			layer = this.all_layers[i][1];
-			break;
-		}
-	}
+	var layer = this.layer_map[layername];
 	if (!layer) {return null;}
-	
-	var oldDisplay = layer.getAttribute("display");
-	if (!oldDisplay) {oldDisplay = "inline";}
-	layer.setAttribute("display", bVisible ? "inline" : "none");
-	return layer;
+	layer.setVisible(bVisible);
+	return layer.getGroup();
 };
 
 
@@ -526,18 +595,9 @@ svgedit.draw.Drawing.prototype.setLayerVisibility = function(layername, bVisible
  * if layername is not a valid layer
 */
 svgedit.draw.Drawing.prototype.getLayerOpacity = function(layername) {
-	var i;
-	for (i = 0; i < this.getNumLayers(); ++i) {
-		if (this.getLayerName(i) == layername) {
-			var g = this.all_layers[i][1];
-			var opacity = g.getAttribute('opacity');
-			if (!opacity) {
-				opacity = '1.0';
-			}
-			return parseFloat(opacity);
-		}
-	}
-	return null;
+	var layer = this.layer_map[layername];
+	if (!layer) {return null;}
+	return layer.getOpacity();
 };
 
 /**
@@ -551,13 +611,9 @@ svgedit.draw.Drawing.prototype.setLayerOpacity = function(layername, opacity) {
 	if (typeof opacity !== 'number' || opacity < 0.0 || opacity > 1.0) {
 		return;
 	}
-	var i;
-	for (i = 0; i < this.getNumLayers(); ++i) {
-		if (this.getLayerName(i) == layername) {
-			var g = this.all_layers[i][1];
-			g.setAttribute("opacity", opacity);
-			break;
-		}
+	var layer = this.layer_map[layername];
+	if (layer) {
+		layer.setOpacity(opacity);
 	}
 };
 
