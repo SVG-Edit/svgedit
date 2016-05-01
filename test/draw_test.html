@@ -248,9 +248,10 @@
     });
 
     test('Test identifyLayers() with empty document', function() {
-      expect(10);
+      expect(11);
 
       var drawing = new svgedit.draw.Drawing(svg);
+      equals(drawing.getCurrentLayer(), null);
       // By default, an empty document gets an empty group created.
       drawing.identifyLayers();
 

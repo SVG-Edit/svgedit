@@ -414,7 +414,7 @@ svgedit.draw.Drawing.prototype.getLayerName = function (i) {
  * @returns {SVGGElement} The SVGGElement representing the current layer.
  */
 svgedit.draw.Drawing.prototype.getCurrentLayer = function() {
-	return this.current_layer.getGroup();
+	return this.current_layer ? this.current_layer.getGroup() : null;
 };
 
 /**
