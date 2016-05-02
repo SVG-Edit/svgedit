@@ -15,8 +15,10 @@ svgedit = {
 		XLINK: 'http://www.w3.org/1999/xlink',
 		XML: 'http://www.w3.org/XML/1998/namespace',
 		XMLNS: 'http://www.w3.org/2000/xmlns/' // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
-	}
+	},
+	LAYER_CLASS: 'layer'
 };
+svgedit.LAYER_CLASS_REGEX = new RegExp('(\\s|^)' + svgedit.LAYER_CLASS + '(\\s|$)');
 
 // return the svgedit.NS with key values switched and lowercase
 svgedit.getReverseNS = function() {'use strict';

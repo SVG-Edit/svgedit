@@ -19,12 +19,16 @@
       }
     };
     var NS = svgedit.NS;
+    var LAYER_CLASS = svgedit.LAYER_CLASS;
     var NONCE = 'foo';
     var LAYER1 = 'Layer 1';
     var LAYER2 = 'Layer 2';
     var LAYER3 = 'Layer 3';
 
     var svg = document.createElementNS(NS.SVG, 'svg');
+    var sandbox = document.getElementById('sandbox');
+    // Firefox throws exception in getBBox() when svg is not attached to DOM.
+    sandbox.appendChild(svg);
 
     // Set up <svg> with nonce.
     var svg_n = document.createElementNS(NS.SVG, 'svg');
@@ -244,9 +248,10 @@
     });
 
     test('Test identifyLayers() with empty document', function() {
-      expect(9);
+      expect(11);
 
       var drawing = new svgedit.draw.Drawing(svg);
+      equals(drawing.getCurrentLayer(), null);
       // By default, an empty document gets an empty group created.
       drawing.identifyLayers();
 
@@ -254,22 +259,24 @@
       ok(drawing.getSvgElem().hasChildNodes());
       equals(drawing.getSvgElem().childNodes.length, 1);
 
-      // Check that all_layers is correctly set up.
+      // Check that all_layers are correctly set up.
       equals(drawing.getNumLayers(), 1);
-      var empty_layer = drawing.all_layers[0][1];
+      var empty_layer = drawing.all_layers[0];
       ok(empty_layer);
-      equals(empty_layer, drawing.getSvgElem().firstChild);
-      equals(empty_layer.tagName, 'g');
-      ok(empty_layer.hasChildNodes());
-      equals(empty_layer.childNodes.length, 1);
-      var firstChild = empty_layer.childNodes.item(0);
+      var layerGroup = empty_layer.getGroup();
+      equals(layerGroup, drawing.getSvgElem().firstChild);
+      equals(layerGroup.tagName, 'g');
+      equals(layerGroup.getAttribute('class'), LAYER_CLASS);
+      ok(layerGroup.hasChildNodes());
+      equals(layerGroup.childNodes.length, 1);
+      var firstChild = layerGroup.childNodes.item(0);
       equals(firstChild.tagName, 'title');
 
       cleanupSvg(svg);
     });
 
     test('Test identifyLayers() with some layers', function() {
-      expect(5);
+      expect(8);
 
       var drawing = new svgedit.draw.Drawing(svg);
       setupSvgWith3Layers(svg);
@@ -279,15 +286,19 @@
       drawing.identifyLayers();
 
       equals(drawing.getNumLayers(), 3);
-      equals(drawing.all_layers[0][1], svg.childNodes.item(0));
-      equals(drawing.all_layers[1][1], svg.childNodes.item(1));
-      equals(drawing.all_layers[2][1], svg.childNodes.item(2));
+      equals(drawing.all_layers[0].getGroup(), svg.childNodes.item(0));
+      equals(drawing.all_layers[1].getGroup(), svg.childNodes.item(1));
+      equals(drawing.all_layers[2].getGroup(), svg.childNodes.item(2));
+
+      equals(drawing.all_layers[0].getGroup().getAttribute('class'), LAYER_CLASS);
+      equals(drawing.all_layers[1].getGroup().getAttribute('class'), LAYER_CLASS);
+      equals(drawing.all_layers[2].getGroup().getAttribute('class'), LAYER_CLASS);
 
       cleanupSvg(svg);
     });
 
     test('Test identifyLayers() with some layers and orphans', function() {
-      expect(10);
+      expect(14);
 
       setupSvgWith3Layers(svg);
 
@@ -302,12 +313,17 @@
       drawing.identifyLayers();
 
       equals(drawing.getNumLayers(), 4);
-      equals(drawing.all_layers[0][1], svg.childNodes.item(0));
-      equals(drawing.all_layers[1][1], svg.childNodes.item(1));
-      equals(drawing.all_layers[2][1], svg.childNodes.item(2));
-      equals(drawing.all_layers[3][1], svg.childNodes.item(3));
+      equals(drawing.all_layers[0].getGroup(), svg.childNodes.item(0));
+      equals(drawing.all_layers[1].getGroup(), svg.childNodes.item(1));
+      equals(drawing.all_layers[2].getGroup(), svg.childNodes.item(2));
+      equals(drawing.all_layers[3].getGroup(), svg.childNodes.item(3));
 
-      var layer4 = drawing.all_layers[3][1];
+      equals(drawing.all_layers[0].getGroup().getAttribute('class'), LAYER_CLASS);
+      equals(drawing.all_layers[1].getGroup().getAttribute('class'), LAYER_CLASS);
+      equals(drawing.all_layers[2].getGroup().getAttribute('class'), LAYER_CLASS);
+      equals(drawing.all_layers[3].getGroup().getAttribute('class'), LAYER_CLASS);
+
+      var layer4 = drawing.all_layers[3].getGroup();
       equals(layer4.tagName, 'g');
       equals(layer4.childNodes.length, 3);
       equals(layer4.childNodes.item(1), orphan1);
@@ -342,7 +358,9 @@
       ok(drawing.getCurrentLayer);
       equals(typeof drawing.getCurrentLayer, typeof function(){});
       ok(drawing.getCurrentLayer());
-      equals(drawing.getCurrentLayer(), drawing.all_layers[2][1]);
+      equals(drawing.getCurrentLayer(), drawing.all_layers[2].getGroup());
+
+      cleanupSvg(svg);
     });
 
     test('Test setCurrentLayer() and getCurrentLayerName()', function() {
@@ -357,17 +375,17 @@
 
       drawing.setCurrentLayer(LAYER2);
       equals(drawing.getCurrentLayerName(LAYER2), LAYER2);
-      equals(drawing.getCurrentLayer(), drawing.all_layers[1][1]);
+      equals(drawing.getCurrentLayer(), drawing.all_layers[1].getGroup());
 
       drawing.setCurrentLayer(LAYER3);
       equals(drawing.getCurrentLayerName(LAYER3), LAYER3);
-      equals(drawing.getCurrentLayer(), drawing.all_layers[2][1]);
+      equals(drawing.getCurrentLayer(), drawing.all_layers[2].getGroup());
 
       cleanupSvg(svg);
     });
 
     test('Test createLayer()', function() {
-      expect(6);
+      expect(7);
 
       var drawing = new svgedit.draw.Drawing(svg);
       setupSvgWith3Layers(svg);
@@ -378,8 +396,9 @@
 
       var NEW_LAYER_NAME = 'Layer A';
       var layer_g = drawing.createLayer(NEW_LAYER_NAME);
-      equals(4, drawing.getNumLayers());
+      equals(drawing.getNumLayers(), 4);
       equals(layer_g, drawing.getCurrentLayer());
+      equals(layer_g.getAttribute('class'), LAYER_CLASS);
       equals(NEW_LAYER_NAME, drawing.getCurrentLayerName());
       equals(NEW_LAYER_NAME, drawing.getLayerName(3));
 
@@ -477,14 +496,14 @@
       drawing.setCurrentLayer(LAYER2);
 
       var curLayer = drawing.getCurrentLayer();
-      equals(curLayer, drawing.all_layers[1][1]);
+      equals(curLayer, drawing.all_layers[1].getGroup());
       var deletedLayer = drawing.deleteCurrentLayer();
 
       equals(curLayer, deletedLayer);
       equals(2, drawing.getNumLayers());
-      equals(LAYER1, drawing.all_layers[0][0]);
-      equals(LAYER3, drawing.all_layers[1][0]);
-      equals(drawing.getCurrentLayer(), drawing.all_layers[1][1]);
+      equals(LAYER1, drawing.all_layers[0].getName());
+      equals(LAYER3, drawing.all_layers[1].getName());
+      equals(drawing.getCurrentLayer(), drawing.all_layers[1].getGroup());
     });
 
     test('Test svgedit.draw.randomizeIds()', function() {
@@ -530,6 +549,6 @@
   <h2 id='qunit-banner'></h2>
   <h2 id='qunit-userAgent'></h2>
   <ol id='qunit-tests'></ol>
-  <div id='anchor' style='visibility:hidden'></div>
+  <div id='sandbox' style='visibility:hidden'></div>
 </body>
 </html>
