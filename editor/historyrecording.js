@@ -5,8 +5,6 @@
  *
  * Licensed under the MIT License
  *
- * Copyright(c) 2010 Alexis Deveria
- * Copyright(c) 2010 Jeff Schiller
  * Copyright(c) 2016 Flint O'Brien
  */
 
@@ -24,9 +22,11 @@ var history = svgedit.history;
 /**
  * History recording service.
  *
- * A <strong>single</strong> service object that can be passed around to provide history
- * recording. There is a simple start/end interface for batch commands.
- * Easy to mock for unit tests. Built on top of history classes in history.js.
+ * A self-contained service interface for recording history. Once injected, no other dependencies
+ * or globals are required (example: UndoManager, command types, etc.). Easy to mock for unit tests.
+ * Built on top of history classes in history.js.
+ *
+ * There is a simple start/end interface for batch commands.
  *
  * HistoryRecordingService.NO_HISTORY is a singleton that can be passed in to functions
  * that record history. This helps when the caller requires that no history be recorded.
@@ -58,9 +58,9 @@ var history = svgedit.history;
  * 		See singleton: HistoryRecordingService.NO_HISTORY
  */
 var HistoryRecordingService = history.HistoryRecordingService = function(undoManager) {
-	this.undoManager = undoManager;
-	this.currentBatchCommand = null;
-	this.batchCommandStack = [];
+	this.undoManager_ = undoManager;
+	this.currentBatchCommand_ = null;
+	this.batchCommandStack_ = [];
 };
 
 /**
@@ -77,9 +77,9 @@ HistoryRecordingService.NO_HISTORY = new HistoryRecordingService();
  * @returns {svgedit.history.HistoryRecordingService}
  */
 HistoryRecordingService.prototype.startBatchCommand = function(text) {
-	if (!this.undoManager) {return this;}
-	this.currentBatchCommand = new history.BatchCommand(text);
-	this.batchCommandStack.push(this.currentBatchCommand);
+	if (!this.undoManager_) {return this;}
+	this.currentBatchCommand_ = new history.BatchCommand(text);
+	this.batchCommandStack_.push(this.currentBatchCommand_);
 	return this;
 };
 
@@ -88,13 +88,13 @@ HistoryRecordingService.prototype.startBatchCommand = function(text) {
  * @returns {svgedit.history.HistoryRecordingService}
  */
 HistoryRecordingService.prototype.endBatchCommand = function() {
-	if (!this.undoManager) {return this;}
-	if (this.currentBatchCommand) {
-		var batchCommand = this.currentBatchCommand;
-		this.batchCommandStack.pop();
-		var length = this.batchCommandStack.length;
-		this.currentBatchCommand = length ? this.batchCommandStack[length-1] : null;
-		this._addCommand(batchCommand);
+	if (!this.undoManager_) {return this;}
+	if (this.currentBatchCommand_) {
+		var batchCommand = this.currentBatchCommand_;
+		this.batchCommandStack_.pop();
+		var length = this.batchCommandStack_.length;
+		this.currentBatchCommand_ = length ? this.batchCommandStack_[length-1] : null;
+		this.addCommand_(batchCommand);
 	}
 	return this;
 };
@@ -108,8 +108,8 @@ HistoryRecordingService.prototype.endBatchCommand = function() {
  * @returns {svgedit.history.HistoryRecordingService}
  */
 HistoryRecordingService.prototype.moveElement = function(elem, oldNextSibling, oldParent, text) {
-	if (!this.undoManager) {return this;}
-	this._addCommand(new history.MoveElementCommand(elem, oldNextSibling, oldParent, text));
+	if (!this.undoManager_) {return this;}
+	this.addCommand_(new history.MoveElementCommand(elem, oldNextSibling, oldParent, text));
 	return this;
 };
 
@@ -120,8 +120,8 @@ HistoryRecordingService.prototype.moveElement = function(elem, oldNextSibling, o
  * @returns {svgedit.history.HistoryRecordingService}
  */
 HistoryRecordingService.prototype.insertElement = function(elem, text) {
-	if (!this.undoManager) {return this;}
-	this._addCommand(new history.InsertElementCommand(elem, text));
+	if (!this.undoManager_) {return this;}
+	this.addCommand_(new history.InsertElementCommand(elem, text));
 	return this;
 };
 
@@ -135,8 +135,8 @@ HistoryRecordingService.prototype.insertElement = function(elem, text) {
  * @returns {svgedit.history.HistoryRecordingService}
  */
 HistoryRecordingService.prototype.removeElement = function(elem, oldNextSibling, oldParent, text) {
-	if (!this.undoManager) {return this;}
-	this._addCommand(new history.RemoveElementCommand(elem, oldNextSibling, oldParent, text));
+	if (!this.undoManager_) {return this;}
+	this.addCommand_(new history.RemoveElementCommand(elem, oldNextSibling, oldParent, text));
 	return this;
 };
 
@@ -149,8 +149,8 @@ HistoryRecordingService.prototype.removeElement = function(elem, oldNextSibling,
  * @returns {svgedit.history.HistoryRecordingService}
  */
 HistoryRecordingService.prototype.changeElement = function(elem, attrs, text) {
-	if (!this.undoManager) {return this;}
-	this._addCommand(new history.ChangeElementCommand(elem, attrs, text));
+	if (!this.undoManager_) {return this;}
+	this.addCommand_(new history.ChangeElementCommand(elem, attrs, text));
 	return this;
 };
 
@@ -160,12 +160,12 @@ HistoryRecordingService.prototype.changeElement = function(elem, attrs, text) {
  * @returns {svgedit.history.HistoryRecordingService}
  * @private
  */
-HistoryRecordingService.prototype._addCommand = function(cmd) {
-	if (!this.undoManager) {return this;}
-	if (this.currentBatchCommand) {
-		this.currentBatchCommand.addSubCommand(cmd);
+HistoryRecordingService.prototype.addCommand_ = function(cmd) {
+	if (!this.undoManager_) {return this;}
+	if (this.currentBatchCommand_) {
+		this.currentBatchCommand_.addSubCommand(cmd);
 	} else {
-		this.undoManager.addCommandToHistory(cmd);
+		this.undoManager_.addCommandToHistory(cmd);
 	}
 };
 
