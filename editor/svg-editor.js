@@ -534,21 +534,6 @@ TODOS
 					setupCurPrefs();
 				}
 			}());
-
-			// For external openers
-			(function() {
-				// let the opener know SVG Edit is ready (now that config is set up)
-				var svgEditorReadyEvent,
-					w = window.opener;
-				if (w) {
-					try {
-						svgEditorReadyEvent = w.document.createEvent('Event');
-						svgEditorReadyEvent.initEvent('svgEditorReady', true, true);
-						w.document.documentElement.dispatchEvent(svgEditorReadyEvent);
-					}
-					catch(e) {}
-				}
-			}());
 			
 			var setIcon = editor.setIcon = function(elem, icon_id, forcedSize) {
 				var icon = (typeof icon_id === 'string') ? $.getSvgIcon(icon_id, true) : icon_id.clone();
@@ -808,6 +793,21 @@ TODOS
 				ui_context = 'toolbars',
 				origSource = '',
 				paintBox = {fill: null, stroke:null};
+
+			// For external openers
+			(function() {
+				// let the opener know SVG Edit is ready (now that config is set up)
+				var svgEditorReadyEvent,
+					w = window.opener;
+				if (w) {
+					try {
+						svgEditorReadyEvent = w.document.createEvent('Event');
+						svgEditorReadyEvent.initEvent('svgEditorReady', true, true);
+						w.document.documentElement.dispatchEvent(svgEditorReadyEvent);
+					}
+					catch(e) {}
+				}
+			}());
 			
 			// This sets up alternative dialog boxes. They mostly work the same way as
 			// their UI counterparts, expect instead of returning the result, a callback
