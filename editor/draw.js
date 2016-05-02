@@ -20,8 +20,6 @@ if (!svgedit.draw) {
 }
 // alias
 var NS = svgedit.NS;
-var LAYER_CLASS = svgedit.LAYER_CLASS;
-var LAYER_CLASS_REGEX = svgedit.LAYER_CLASS_REGEX;
 
 var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use'.split(',');
 
@@ -32,147 +30,6 @@ var RandomizeModes = {
 };
 var randomize_ids = RandomizeModes.LET_DOCUMENT_DECIDE;
 
-/**
- * Add class 'layer' to the element
- *
- * Parameters:
- * @param {SVGGElement} elem - The SVG element to update
- */
-function addLayerClass(elem) {
-	var classes = elem.getAttribute('class');
-	if (classes === null || classes === undefined || classes.length === 0) {
-		elem.setAttribute('class', LAYER_CLASS);
-	} else if (! LAYER_CLASS_REGEX.test(classes)) {
-		elem.setAttribute('class', classes + ' ' + LAYER_CLASS);
-	}
-}
-
-function createLayer(name, svgElem) {
-	if (!svgElem) {
-		return undefined;
-	}
-	var svgdoc = svgElem.ownerDocument;
-	var new_layer = svgdoc.createElementNS(NS.SVG, "g");
-	var layer_title = svgdoc.createElementNS(NS.SVG, "title");
-	layer_title.textContent = name;
-	new_layer.appendChild(layer_title);
-	svgElem.appendChild(new_layer);
-	return new_layer;
-}
-
-
-	/**
- * This class encapsulates the concept of a layer in the drawing. It can be constructed with
- * an existing group element or, with three parameters, will create a new layer group element.
- * @param {string} name - Layer name
- * @param {SVGGElement} group - SVG group element that constitutes the layer or null if a group should be created and added to the DOM..
- * @param {SVGGElement} svgElem - The SVG DOM element. If defined, use this to add
- * 		a new layer to the document.
- */
-var Layer = svgedit.draw.Layer = function(name, group, svgElem) {
-	this.name_ = name;
-	this.group_ = group || createLayer(name, svgElem);
-
-	addLayerClass(this.group_);
-	svgedit.utilities.walkTree(this.group_, function(e){e.setAttribute("style", "pointer-events:inherit");});
-
-	this.group_.setAttribute("style", svgElem ? "pointer-events:all" : "pointer-events:none");
-};
-
-/**
- * Get the layer's name.
- * @returns {string} The layer name
- */
-Layer.prototype.getName = function() {
-	return this.name_;
-};
-
-/**
- * Get the group element for this layer.
- * @returns {SVGGElement} The layer SVG group
- */
-Layer.prototype.getGroup = function() {
-	return this.group_;
-};
-
-/**
- * Active this layer so it takes pointer events.
- */
-Layer.prototype.activate = function() {
-	this.group_.setAttribute("style", "pointer-events:all");
-};
-
-/**
- * Deactive this layer so it does NOT take pointer events.
- */
-Layer.prototype.deactivate = function() {
-	this.group_.setAttribute("style", "pointer-events:none");
-};
-
-/**
- * Set this layer visible or hidden based on 'visible' parameter.
- * @param {boolean} visible - If true, make visible; otherwise, hide it.
- */
-Layer.prototype.setVisible = function(visible) {
-	var expected = visible === undefined || visible ? "inline" : "none";
-	var oldDisplay = this.group_.getAttribute("display");
-	if (oldDisplay !== expected) {
-		this.group_.setAttribute("display", expected);
-	}
-};
-
-/**
- * Is this layer visible?
- * @returns {boolean} True if visible.
- */
-Layer.prototype.isVisible = function() {
-	return this.group_.getAttribute('display') !== 'none';
-};
-
-/**
- * Get layer opacity.
- * @returns {number} Opacity value.
- */
-Layer.prototype.getOpacity = function() {
-	var opacity = this.group_.getAttribute('opacity');
-	if (opacity === null || opacity === undefined) {
-		return 1;
-	}
-	return parseFloat(opacity);
-};
-
-/**
- * Sets the opacity of this layer. If opacity is not a value between 0.0 and 1.0,
- * nothing happens.
- * @param {number} opacity - A float value in the range 0.0-1.0
- */
-Layer.prototype.setOpacity = function(opacity) {
-	if (typeof opacity === 'number' && opacity >= 0.0 && opacity <= 1.0) {
-		this.group_.setAttribute('opacity', opacity);
-	}
-};
-
-/**
- * Append children to this layer.
- * @param {SVGGElement} children - The children to append to this layer.
- */
-Layer.prototype.appendChildren = function(children) {
-	for (var i = 0; i < children.length; ++i) {
-		this.group_.appendChild(children[i]);
-	}
-};
-
-/**
- * Remove this layer's group from the DOM. No more functions on group can be called after this.
- * @param {SVGGElement} children - The children to append to this layer.
- * @returns {SVGGElement} The layer SVG group that was just removed.
- */
-Layer.prototype.removeGroup = function() {
-	var parent = this.group_.parentNode;
-	var group = parent.removeChild(this.group_);
-	this.group_ = undefined;
-	return group;
-};
 
 
 
@@ -235,13 +92,17 @@ svgedit.draw.Drawing = function(svgElem, opt_idPrefix) {
 	 * The z-ordered array of Layer objects. Each layer has a name
 	 * and group element.
 	 * The first layer is the one at the bottom of the rendering.
-	 * @type {Layer[]}
+	 * @type {Array.<Layer>}
 	 */
 	this.all_layers = [];
 
 	/**
 	 * Map of all_layers by name.
-	 * @type {Object.<string,Layer>}
+	 *
+	 * Note: Layers are ordered, but referenced externally by name; so, we need both container
+	 * types depending on which function is called (i.e. all_layers and layer_map).
+	 *
+	 * @type {Object.<string, Layer>}
 	 */
 	this.layer_map = {};
 
@@ -419,12 +280,122 @@ svgedit.draw.Drawing.prototype.getCurrentLayer = function() {
 };
 
 /**
+ * Get a layer by name.
+ * @returns {SVGGElement} The SVGGElement representing the named layer or null.
+ */
+svgedit.draw.Drawing.prototype.getLayerByName = function(name) {
+	var layer = this.layer_map[name];
+	return layer ? layer.getGroup() : null;
+};
+
+/**
  * Returns the name of the currently selected layer. If an error occurs, an empty string 
  * is returned.
  * @returns {string} The name of the currently active layer (or the empty string if none found).
 */
 svgedit.draw.Drawing.prototype.getCurrentLayerName = function () {
 	return this.current_layer ? this.current_layer.getName() : '';
+};
+
+/**
+ * Set the current layer's name.
+ * @param {string} name - The new name.
+ * @returns {Object} If the name was changed, returns {title:SVGGElement, previousName:string}; otherwise null.
+ */
+svgedit.draw.Drawing.prototype.setCurrentLayerName = function (name) {
+	return this.current_layer ? this.current_layer.setName(name) : null;
+};
+
+/**
+ * Set the current layer's position.
+ * @param {number} newpos - The zero-based index of the new position of the layer. Range should be 0 to layers-1
+ * @returns {Object} If the name was changed, returns {title:SVGGElement, previousName:string}; otherwise null.
+ */
+svgedit.draw.Drawing.prototype.setCurrentLayerPosition = function (newpos) {
+	var layer_count = this.getNumLayers();
+	if (!this.current_layer || newpos < 0 || newpos >= layer_count) {
+		return null;
+	}
+
+	var oldpos;
+	for (oldpos = 0; oldpos < layer_count; ++oldpos) {
+		if (this.all_layers[oldpos] == this.current_layer) {break;}
+	}
+	// some unknown error condition (current_layer not in all_layers)
+	if (oldpos == layer_count) { return null; }
+
+	if (oldpos != newpos) {
+		// if our new position is below us, we need to insert before the node after newpos
+		var refGroup = null;
+		var current_group = this.current_layer.getGroup();
+		var oldNextSibling = current_group.nextSibling;
+		if (newpos > oldpos ) {
+			if (newpos < layer_count-1) {
+				refGroup = this.all_layers[newpos+1].getGroup();
+			}
+		}
+		// if our new position is above us, we need to insert before the node at newpos
+		else {
+			refGroup = this.all_layers[newpos].getGroup();
+		}
+		this.svgElem_.insertBefore(current_group, refGroup);
+
+		this.identifyLayers();
+		this.setCurrentLayer(this.getLayerName(newpos));
+
+		return {
+			currentGroup: current_group,
+			oldNextSibling: oldNextSibling
+		};
+	}
+	return null;
+};
+
+svgedit.draw.Drawing.prototype.mergeLayer = function (hrService) {
+	var current_group = this.current_layer.getGroup();
+	var prevGroup = $(current_group).prev()[0];
+	if (!prevGroup) {return null;}
+
+	hrService.startBatchCommand('Merge Layer');
+
+	var layerNextSibling = current_group.nextSibling;
+	hrService.removeElement(current_group, layerNextSibling, this.svgElem_);
+
+	while (current_group.firstChild) {
+		var child = current_group.firstChild;
+		if (child.localName == 'title') {
+			hrService.removeElement(child, child.nextSibling, current_group);
+			current_group.removeChild(child);
+			continue;
+		}
+		var oldNextSibling = child.nextSibling;
+		prevGroup.appendChild(child);
+		hrService.moveElement(child, oldNextSibling, current_group);
+	}
+
+	// Remove current layer's group
+	this.current_layer.removeGroup();
+	// Remove the current layer and set the previous layer as the new current layer
+	var index = this.all_layers.indexOf(this.current_layer);
+	if (index > 0) {
+		var name = this.current_layer.getName();
+		this.current_layer = this.all_layers[index-1]
+		this.all_layers.splice(index, 1);
+		delete this.layer_map[name];
+	}
+
+	hrService.endBatchCommand();
+};
+
+svgedit.draw.Drawing.prototype.mergeAllLayers = function (hrService) {
+	// Set the current layer to the last layer.
+	this.current_layer = this.all_layers[this.all_layers.length-1];
+
+	hrService.startBatchCommand('Merge all Layers');
+	while (this.all_layers.length > 1) {
+		this.mergeLayer(hrService);
+	}
+	hrService.endBatchCommand();
 };
 
 /**
@@ -479,7 +450,7 @@ function findLayerNameInGroup(group) {
 
 /**
  * Given a set of names, return a new unique name.
- * @param {string[]} existingLayerNames - Existing layer names.
+ * @param {Array.<string>} existingLayerNames - Existing layer names.
  * @returns {string} - The new name.
  */
 function getNewLayerName(existingLayerNames) {
@@ -510,9 +481,9 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 				var name = findLayerNameInGroup(child);
 				if (name) {
 					layernames.push(name);
-					layer = new Layer(name, child);
+					layer = new svgedit.draw.Layer(name, child);
 					this.all_layers.push(layer);
-					this.layer_map[ name] = layer;
+					this.layer_map[name] = layer;
 				} else {
 					// if group did not have a name, it is an orphan
 					orphans.push(child);
@@ -526,10 +497,10 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 	
 	// If orphans or no layers found, create a new layer and add all the orphans to it
 	if (orphans.length > 0 || !childgroups) {
-		layer = new Layer(getNewLayerName(layernames), null, this.svgElem_);
+		layer = new svgedit.draw.Layer(getNewLayerName(layernames), null, this.svgElem_);
 		layer.appendChildren(orphans);
 		this.all_layers.push(layer);
-		this.layer_map[ name] = layer;
+		this.layer_map[name] = layer;
 	} else {
 		layer.activate();
 	}
@@ -551,9 +522,9 @@ svgedit.draw.Drawing.prototype.createLayer = function(name) {
 	if (name === undefined || name === null || name === '' || this.layer_map[name]) {
 		name = getNewLayerName(Object.keys(this.layer_map));
 	}
-	var layer = new Layer(name, null, this.svgElem_);
+	var layer = new svgedit.draw.Layer(name, null, this.svgElem_);
 	this.all_layers.push(layer);
-	this.layer_map[ name] = layer;
+	this.layer_map[name] = layer;
 	this.current_layer = layer;
 	return layer.getGroup();
 };

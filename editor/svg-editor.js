@@ -1841,7 +1841,7 @@ TODOS
 			 * @returns {boolean} True if the element is a layer
 			 */
 			function isLayer(elem) {
-				return elem && elem.tagName === 'g' && svgedit.LAYER_CLASS_REGEX.test(elem.getAttribute('class'))
+				return elem && elem.tagName === 'g' && svgedit.draw.Layer.CLASS_REGEX.test(elem.getAttribute('class'))
 			}
 
 			// called when any element has changed
