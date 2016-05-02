@@ -2979,7 +2979,7 @@ TODOS
 				svgCanvas.setSegType($(this).val());
 			});
 
-			$('#text').keyup(function() {
+			$('#text').bind("keyup input", function() {
 				svgCanvas.setTextContent(this.value);
 			});
 
