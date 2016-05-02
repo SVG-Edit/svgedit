@@ -19,10 +19,12 @@ JS_FILES=\
 	svgutils.js \
 	sanitize.js \
 	history.js \
+	historyrecording.js \
 	coords.js \
 	recalculate.js \
 	select.js \
 	draw.js \
+	layer.js \
 	path.js \
 	svgcanvas.js \
 	svg-editor.js \
