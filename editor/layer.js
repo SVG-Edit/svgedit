@@ -155,7 +155,13 @@ Layer.prototype.getTitleElement = function() {
   return null;
 };
 
-Layer.prototype.setName = function(name) {
+/**
+ * Set the name of this layer.
+ * @param {string} name - The new name.
+ * @param {svgedit.history.HistoryRecordingService} hrService - History recording service
+ * @returns {string|null} The new name if changed; otherwise, null.
+ */
+Layer.prototype.setName = function(name, hrService) {
   var previousName = this.name_;
   name = svgedit.utilities.toXml(name);
   // now change the underlying title element contents
@@ -164,7 +170,10 @@ Layer.prototype.setName = function(name) {
     while (title.firstChild) { title.removeChild(title.firstChild); }
     title.textContent = name;
     this.name_ = name;
-    return {title: title, previousName: previousName};
+    if( hrService) {
+      hrService.changeElement(title, {'#text':previousName});
+    }
+    return this.name_;
   }
   return null;
 };

@@ -5058,11 +5058,9 @@ this.renameCurrentLayer = function(newname) {
 	var drawing = getCurrentDrawing();
 	var layer = drawing.getCurrentLayer();
 	if (layer) {
-		var result = drawing.setCurrentLayerName( newname);
+		hrService = new svgedit.history.HistoryRecordingService(this.undoMgr);
+		var result = drawing.setCurrentLayerName(newname, hrService);
 		if (result) {
-			var batchCmd = new svgedit.history.BatchCommand('Rename Layer');
-			batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(result.title, {'#text':result.previousName}));
-			addCommandToHistory(batchCmd);
 			call('changed', [layer]);
 			return true;
 		}

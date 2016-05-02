@@ -300,10 +300,20 @@ svgedit.draw.Drawing.prototype.getCurrentLayerName = function () {
 /**
  * Set the current layer's name.
  * @param {string} name - The new name.
- * @returns {Object} If the name was changed, returns {title:SVGGElement, previousName:string}; otherwise null.
+ * @param {svgedit.history.HistoryRecordingService} hrService - History recording service
+ * @returns {string|null} The new name if changed; otherwise, null.
  */
-svgedit.draw.Drawing.prototype.setCurrentLayerName = function (name) {
-	return this.current_layer ? this.current_layer.setName(name) : null;
+svgedit.draw.Drawing.prototype.setCurrentLayerName = function (name, hrService) {
+	var finalName = null;
+	if( this.current_layer) {
+		var oldName = this.current_layer.getName();
+		finalName = this.current_layer.setName(name, hrService);
+		if( finalName) {
+			delete this.layer_map[oldName];
+			this.layer_map[finalName] = this.current_layer;
+		}
+	}
+	return finalName;
 };
 
 /**

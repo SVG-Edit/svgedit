@@ -376,12 +376,45 @@
       equals(typeof drawing.setCurrentLayer, typeof function(){});
 
       drawing.setCurrentLayer(LAYER2);
-      equals(drawing.getCurrentLayerName(LAYER2), LAYER2);
+      equals(drawing.getCurrentLayerName(), LAYER2);
       equals(drawing.getCurrentLayer(), drawing.all_layers[1].getGroup());
 
       drawing.setCurrentLayer(LAYER3);
-      equals(drawing.getCurrentLayerName(LAYER3), LAYER3);
+      equals(drawing.getCurrentLayerName(), LAYER3);
       equals(drawing.getCurrentLayer(), drawing.all_layers[2].getGroup());
+
+      cleanupSvg(svg);
+    });
+
+    test('Test setCurrentLayerName()', function() {
+
+      var mockHrService = {
+        changeElement: function(elem, attrs){
+          mockHrService.elem = elem;
+          mockHrService.attrs = attrs;
+        }
+      }
+
+      var drawing = new svgedit.draw.Drawing(svg);
+      setupSvgWith3Layers(svg);
+      drawing.identifyLayers();
+
+      ok(drawing.setCurrentLayerName);
+      equals(typeof drawing.setCurrentLayerName, typeof function(){});
+
+      var oldName = drawing.getCurrentLayerName();
+      var newName = 'New Name'
+      ok( drawing.layer_map[oldName]);
+      equals( drawing.layer_map[newName], undefined); // newName shouldn't exist.
+      var result = drawing.setCurrentLayerName(newName, mockHrService);
+      equals(result, newName);
+      equals(drawing.getCurrentLayerName(), newName);
+      // Was the map updated?
+      equals( drawing.layer_map[oldName], undefined);
+      equals( drawing.layer_map[newName], drawing.current_layer);
+      // Was mockHrService called?
+      equals( oldName, mockHrService.attrs['#text']);
+      equals( newName, mockHrService.elem.textContent);
 
       cleanupSvg(svg);
     });
