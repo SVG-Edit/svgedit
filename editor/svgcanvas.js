@@ -5055,39 +5055,17 @@ this.setCurrentLayer = function(name) {
 // Returns:
 // true if the rename succeeded, false otherwise.
 this.renameCurrentLayer = function(newname) {
-	var i;
 	var drawing = getCurrentDrawing();
-	if (drawing.current_layer) {
-		var oldLayer = drawing.current_layer;
-		// setCurrentLayer will return false if the name doesn't already exist
-		// this means we are free to rename our oldLayer
-		if (!canvas.setCurrentLayer(newname)) {
+	var layer = drawing.getCurrentLayer();
+	if (layer) {
+		var result = drawing.setCurrentLayerName( newname);
+		if (result) {
 			var batchCmd = new svgedit.history.BatchCommand('Rename Layer');
-			// find the index of the layer
-			for (i = 0; i < drawing.getNumLayers(); ++i) {
-				if (drawing.all_layers[i][1] == oldLayer) {break;}
-			}
-			var oldname = drawing.getLayerName(i);
-			drawing.all_layers[i][0] = svgedit.utilities.toXml(newname);
-		
-			// now change the underlying title element contents
-			var len = oldLayer.childNodes.length;
-			for (i = 0; i < len; ++i) {
-				var child = oldLayer.childNodes.item(i);
-				// found the <title> element, now append all the
-				if (child && child.tagName == 'title') {
-					// wipe out old name 
-					while (child.firstChild) { child.removeChild(child.firstChild); }
-					child.textContent = newname;
-
-					batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(child, {'#text':oldname}));
-					addCommandToHistory(batchCmd);
-					call('changed', [oldLayer]);
-					return true;
-				}
-			}
+			batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(result.title, {'#text':result.previousName}));
+			addCommandToHistory(batchCmd);
+			call('changed', [layer]);
+			return true;
 		}
-		drawing.current_layer = oldLayer;
 	}
 	return false;
 };
@@ -5105,36 +5083,11 @@ this.renameCurrentLayer = function(newname) {
 // true if the current layer position was changed, false otherwise.
 this.setCurrentLayerPosition = function(newpos) {
 	var oldpos, drawing = getCurrentDrawing();
-	if (drawing.current_layer && newpos >= 0 && newpos < drawing.getNumLayers()) {
-		for (oldpos = 0; oldpos < drawing.getNumLayers(); ++oldpos) {
-			if (drawing.all_layers[oldpos][1] == drawing.current_layer) {break;}
-		}
-		// some unknown error condition (current_layer not in all_layers)
-		if (oldpos == drawing.getNumLayers()) { return false; }
-		
-		if (oldpos != newpos) {
-			// if our new position is below us, we need to insert before the node after newpos
-			var refLayer = null;
-			var oldNextSibling = drawing.current_layer.nextSibling;
-			if (newpos > oldpos ) {
-				if (newpos < drawing.getNumLayers()-1) {
-					refLayer = drawing.all_layers[newpos+1][1];
-				}
-			}
-			// if our new position is above us, we need to insert before the node at newpos
-			else {
-				refLayer = drawing.all_layers[newpos][1];
-			}
-			svgcontent.insertBefore(drawing.current_layer, refLayer);
-			addCommandToHistory(new svgedit.history.MoveElementCommand(drawing.current_layer, oldNextSibling, svgcontent));
-			
-			identifyLayers();
-			canvas.setCurrentLayer(drawing.getLayerName(newpos));
-			
-			return true;
-		}
+	var result = drawing.setCurrentLayerPosition(newpos);
+	if (result) {
+		addCommandToHistory(new svgedit.history.MoveElementCommand(result.currentGroup, result.oldNextSibling, svgcontent));
+		return true;
 	}
-	
 	return false;
 };
 
@@ -5179,14 +5132,8 @@ this.setLayerVisibility = function(layername, bVisible) {
 this.moveSelectedToLayer = function(layername) {
 	// find the layer
 	var i;
-	var layer = null;
 	var drawing = getCurrentDrawing();
-	for (i = 0; i < drawing.getNumLayers(); ++i) {
-		if (drawing.getLayerName(i) == layername) {
-			layer = drawing.all_layers[i][1];
-			break;
-		}
-	}
+	var layer = drawing.getLayerByName(layername);
 	if (!layer) {return false;}
 	
 	var batchCmd = new svgedit.history.BatchCommand('Move Elements to Layer');
@@ -5209,57 +5156,25 @@ this.moveSelectedToLayer = function(layername) {
 	return true;
 };
 
-this.mergeLayer = function(skipHistory) {
-	var batchCmd = new svgedit.history.BatchCommand('Merge Layer');
-	var drawing = getCurrentDrawing();
-	var prev = $(drawing.current_layer).prev()[0];
-	if (!prev) {return;}
-	var childs = drawing.current_layer.childNodes;
-	var len = childs.length;
-	var layerNextSibling = drawing.current_layer.nextSibling;
-	batchCmd.addSubCommand(new svgedit.history.RemoveElementCommand(drawing.current_layer, layerNextSibling, svgcontent));
 
-	while (drawing.current_layer.firstChild) {
-		var ch = drawing.current_layer.firstChild;
-		if (ch.localName == 'title') {
-			var chNextSibling = ch.nextSibling;
-			batchCmd.addSubCommand(new svgedit.history.RemoveElementCommand(ch, chNextSibling, drawing.current_layer));
-			drawing.current_layer.removeChild(ch);
-			continue;
-		}
-		var oldNextSibling = ch.nextSibling;
-		prev.appendChild(ch);
-		batchCmd.addSubCommand(new svgedit.history.MoveElementCommand(ch, oldNextSibling, drawing.current_layer));
+this.mergeLayer = function(hrService) {
+	if (!hrService) {
+		hrService = new svgedit.history.HistoryRecordingService(this.undoMgr);
 	}
-	
-	// Remove current layer
-	svgcontent.removeChild(drawing.current_layer);
-	
-	if (!skipHistory) {
-		clearSelection();
-		identifyLayers();
-
-		call('changed', [svgcontent]);
-		
-		addCommandToHistory(batchCmd);
-	}
-	
-	drawing.current_layer = prev;
-	return batchCmd;
+	getCurrentDrawing().mergeLayer(hrService);
+	clearSelection();
+	leaveContext();
+	call('changed', [svgcontent]);
 };
 
-this.mergeAllLayers = function() {
-	var batchCmd = new svgedit.history.BatchCommand('Merge all Layers');
-	var drawing = getCurrentDrawing();
-	drawing.current_layer = drawing.all_layers[drawing.getNumLayers()-1][1];
-	while ($(svgcontent).children('g').length > 1) {
-		batchCmd.addSubCommand(canvas.mergeLayer(true));
+this.mergeAllLayers = function(hrService) {
+	if (!hrService) {
+		hrService = new svgedit.history.HistoryRecordingService(this.undoMgr);
 	}
-	
+	getCurrentDrawing().mergeAllLayers(hrService);
 	clearSelection();
-	identifyLayers();
+	leaveContext();
 	call('changed', [svgcontent]);
-	addCommandToHistory(batchCmd);
 };
 
 // Function: leaveContext
