@@ -1,4 +1,4 @@
-/*globals svgedit*/
+/*globals $ svgedit*/
 /*jslint vars: true, eqeq: true */
 /**
  * Package: svgedit.history
@@ -25,23 +25,36 @@ var NS = svgedit.NS;
 /**
  * This class encapsulates the concept of a layer in the drawing. It can be constructed with
  * an existing group element or, with three parameters, will create a new layer group element.
+ *
+ * Usage:
+ * new Layer( 'name', group)          // Use the existing group for this layer.
+ * new Layer( 'name', group, svgElem) // Create a new group and add it to the DOM after group.
+ * new Layer( 'name', null, svgElem)  // Create a new group and add it to the DOM as the last layer.
+ *
  * @param {string} name - Layer name
- * @param {SVGGElement} group - SVG group element that constitutes the layer or null if a group should be created and added to the DOM..
- * @param {SVGGElement} svgElem - The SVG DOM element. If defined, use this to add
+ * @param {SVGGElement|null} group - An existing SVG group element or null.
+ * 		If group and no svgElem, use group for this layer.
+ * 		If group and svgElem, create a new group element and insert it in the DOM after group.
+ * 		If no group and svgElem, create a new group element and insert it in the DOM as the last layer.
+ * @param {SVGGElement=} svgElem - The SVG DOM element. If defined, use this to add
  * 		a new layer to the document.
  */
 var Layer = svgedit.draw.Layer = function(name, group, svgElem) {
   this.name_ = name;
-  this.group_ = group;
+  this.group_ = svgElem ? null : group;
 
-  if (!group) {
+  if (svgElem) {
     // Create a group element with title and add it to the DOM.
     var svgdoc = svgElem.ownerDocument;
     this.group_ = svgdoc.createElementNS(NS.SVG, "g");
     var layer_title = svgdoc.createElementNS(NS.SVG, "title");
     layer_title.textContent = name;
     this.group_.appendChild(layer_title);
-    svgElem.appendChild(this.group_);
+    if( group) {
+      $(group).after(this.group_);
+    } else {
+      svgElem.appendChild(this.group_);
+    }
   }
 
   addLayerClass(this.group_);

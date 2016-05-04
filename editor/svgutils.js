@@ -1137,4 +1137,250 @@ svgedit.utilities.buildJSPDFCallback = function (callJSPDF) {
 	});
 };
 
+
+/**
+ * Prevents default browser click behaviour on the given element
+ * @param img - The DOM element to prevent the click on
+ */
+svgedit.utilities.preventClickDefault = function(img) {
+	$(img).click(function(e){e.preventDefault();});
+};
+
+/**
+ * Create a clone of an element, updating its ID and its children's IDs when needed
+ * @param {Element} el - DOM element to clone
+ * @param {function()} getNextId - function the get the next unique ID.
+ * @returns {Element}
+ */
+svgedit.utilities.copyElem = function(el, getNextId) {
+	// manually create a copy of the element
+	var new_el = document.createElementNS(el.namespaceURI, el.nodeName);
+	$.each(el.attributes, function(i, attr) {
+		if (attr.localName != '-moz-math-font-style') {
+			new_el.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.value);
+		}
+	});
+	// set the copied element's new id
+	new_el.removeAttribute('id');
+	new_el.id = getNextId();
+
+	// Opera's "d" value needs to be reset for Opera/Win/non-EN
+	// Also needed for webkit (else does not keep curved segments on clone)
+	if (svgedit.browser.isWebkit() && el.nodeName == 'path') {
+		var fixed_d = svgedit.utilities.convertPath(el);
+		new_el.setAttribute('d', fixed_d);
+	}
+
+	// now create copies of all children
+	$.each(el.childNodes, function(i, child) {
+		switch(child.nodeType) {
+			case 1: // element node
+				new_el.appendChild(svgedit.utilities.copyElem(child, getNextId));
+				break;
+			case 3: // text node
+				new_el.textContent = child.nodeValue;
+				break;
+			default:
+				break;
+		}
+	});
+
+	if ($(el).data('gsvg')) {
+		$(new_el).data('gsvg', new_el.firstChild);
+	} else if ($(el).data('symbol')) {
+		var ref = $(el).data('symbol');
+		$(new_el).data('ref', ref).data('symbol', ref);
+	} else if (new_el.tagName == 'image') {
+		preventClickDefault(new_el);
+	}
+	return new_el;
+};
+
+
+/**
+ * TODO: refactor callers in convertPath to use getPathDFromSegments instead of this function.
+ * Legacy code refactored from svgcanvas.pathActions.convertPath
+ * @param letter - path segment command
+ * @param {Array.<Array.<number>>} points - x,y points.
+ * @param {Array.<Array.<number>>=} morePoints - x,y points
+ * @param {Array.<number>=}lastPoint - x,y point
+ * @returns {string}
+ */
+function pathDSegment(letter, points, morePoints, lastPoint) {
+	$.each(points, function(i, pnt) {
+		points[i] = svgedit.units.shortFloat(pnt);
+	});
+	var segment = letter + points.join(' ');
+	if( morePoints) {
+		segment += ' ' + morePoints.join(' ');
+	}
+	if( lastPoint) {
+		segment += ' ' + svgedit.units.shortFloat(lastPoint);
+	}
+	return segment;
+}
+
+// this is how we map paths to our preferred relative segment types
+var pathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a',
+	'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
+
+
+/**
+ * TODO: move to pathActions.js when migrating rest of pathActions out of svgcanvas.js
+ * Convert a path to one with only absolute or relative values
+ * @param {Object} path - the path to convert
+ * @param {boolean} toRel - true of convert to relative
+ * @returns {string}
+ */
+svgedit.utilities.convertPath = function(path, toRel) {
+	var i;
+	var segList = path.pathSegList;
+	var len = segList.numberOfItems;
+	var curx = 0, cury = 0;
+	var d = '';
+	var last_m = null;
+
+	for (i = 0; i < len; ++i) {
+		var seg = segList.getItem(i);
+		// if these properties are not in the segment, set them to zero
+		var x = seg.x || 0,
+				y = seg.y || 0,
+				x1 = seg.x1 || 0,
+				y1 = seg.y1 || 0,
+				x2 = seg.x2 || 0,
+				y2 = seg.y2 || 0;
+
+		var type = seg.pathSegType;
+		var letter = pathMap[type]['to'+(toRel?'Lower':'Upper')+'Case']();
+
+		switch (type) {
+			case 1: // z,Z closepath (Z/z)
+				d += 'z';
+				break;
+			case 12: // absolute horizontal line (H)
+				x -= curx;
+			case 13: // relative horizontal line (h)
+				if (toRel) {
+					curx += x;
+					letter = 'l';
+				} else {
+					x += curx;
+					curx = x;
+					letter = 'L';
+				}
+				// Convert to "line" for easier editing
+				d += pathDSegment(letter,[[x, cury]]);
+				break;
+			case 14: // absolute vertical line (V)
+				y -= cury;
+			case 15: // relative vertical line (v)
+				if (toRel) {
+					cury += y;
+					letter = 'l';
+				} else {
+					y += cury;
+					cury = y;
+					letter = 'L';
+				}
+				// Convert to "line" for easier editing
+				d += pathDSegment(letter,[[curx, y]]);
+				break;
+			case 2: // absolute move (M)
+			case 4: // absolute line (L)
+			case 18: // absolute smooth quad (T)
+				x -= curx;
+				y -= cury;
+			case 5: // relative line (l)
+			case 3: // relative move (m)
+				// If the last segment was a "z", this must be relative to
+				if (last_m && segList.getItem(i-1).pathSegType === 1 && !toRel) {
+					curx = last_m[0];
+					cury = last_m[1];
+				}
+
+			case 19: // relative smooth quad (t)
+				if (toRel) {
+					curx += x;
+					cury += y;
+				} else {
+					x += curx;
+					y += cury;
+					curx = x;
+					cury = y;
+				}
+				if (type === 3) {last_m = [curx, cury];}
+
+				d += pathDSegment(letter,[[x, y]]);
+				break;
+			case 6: // absolute cubic (C)
+				x -= curx; x1 -= curx; x2 -= curx;
+				y -= cury; y1 -= cury; y2 -= cury;
+			case 7: // relative cubic (c)
+				if (toRel) {
+					curx += x;
+					cury += y;
+				} else {
+					x += curx; x1 += curx; x2 += curx;
+					y += cury; y1 += cury; y2 += cury;
+					curx = x;
+					cury = y;
+				}
+				d += pathDSegment(letter,[[x1, y1], [x2, y2], [x, y]]);
+				break;
+			case 8: // absolute quad (Q)
+				x -= curx; x1 -= curx;
+				y -= cury; y1 -= cury;
+			case 9: // relative quad (q)
+				if (toRel) {
+					curx += x;
+					cury += y;
+				} else {
+					x += curx; x1 += curx;
+					y += cury; y1 += cury;
+					curx = x;
+					cury = y;
+				}
+				d += pathDSegment(letter,[[x1, y1],[x, y]]);
+				break;
+			case 10: // absolute elliptical arc (A)
+				x -= curx;
+				y -= cury;
+			case 11: // relative elliptical arc (a)
+				if (toRel) {
+					curx += x;
+					cury += y;
+				} else {
+					x += curx;
+					y += cury;
+					curx = x;
+					cury = y;
+				}
+				d += pathDSegment(letter,[[seg.r1, seg.r2]], [
+						seg.angle,
+						(seg.largeArcFlag ? 1 : 0),
+						(seg.sweepFlag ? 1 : 0)
+					], [x, y]
+				);
+				break;
+			case 16: // absolute smooth cubic (S)
+				x -= curx; x2 -= curx;
+				y -= cury; y2 -= cury;
+			case 17: // relative smooth cubic (s)
+				if (toRel) {
+					curx += x;
+					cury += y;
+				} else {
+					x += curx; x2 += curx;
+					y += cury; y2 += cury;
+					curx = x;
+					cury = y;
+				}
+				d += pathDSegment(letter,[[x2, y2],[x, y]]);
+				break;
+		} // switch on path segment type
+	} // for each segment
+	return d;
+};
+
+
 }());

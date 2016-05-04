@@ -305,10 +305,10 @@ svgedit.draw.Drawing.prototype.getCurrentLayerName = function () {
  */
 svgedit.draw.Drawing.prototype.setCurrentLayerName = function (name, hrService) {
 	var finalName = null;
-	if( this.current_layer) {
+	if (this.current_layer) {
 		var oldName = this.current_layer.getName();
 		finalName = this.current_layer.setName(name, hrService);
-		if( finalName) {
+		if (finalName) {
 			delete this.layer_map[oldName];
 			this.layer_map[finalName] = this.current_layer;
 		}
@@ -364,7 +364,7 @@ svgedit.draw.Drawing.prototype.setCurrentLayerPosition = function (newpos) {
 svgedit.draw.Drawing.prototype.mergeLayer = function (hrService) {
 	var current_group = this.current_layer.getGroup();
 	var prevGroup = $(current_group).prev()[0];
-	if (!prevGroup) {return null;}
+	if (!prevGroup) {return;}
 
 	hrService.startBatchCommand('Merge Layer');
 
@@ -518,13 +518,14 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 };
 
 /**
- * Creates a new top-level layer in the drawing with the given name and 
- * sets the current layer to it.
+ * Creates a new top-level layer in the drawing with the given name and
+ * makes it the current layer.
  * @param {string} name - The given name. If the layer name exists, a new name will be generated.
+ * @param {svgedit.history.HistoryRecordingService} hrService - History recording service
  * @returns {SVGGElement} The SVGGElement of the new layer, which is
- * also the current layer of this drawing.
+ * 		also the current layer of this drawing.
 */
-svgedit.draw.Drawing.prototype.createLayer = function(name) {
+svgedit.draw.Drawing.prototype.createLayer = function(name, hrService) {
 	if (this.current_layer) {
 		this.current_layer.deactivate();
 	}
@@ -532,11 +533,67 @@ svgedit.draw.Drawing.prototype.createLayer = function(name) {
 	if (name === undefined || name === null || name === '' || this.layer_map[name]) {
 		name = getNewLayerName(Object.keys(this.layer_map));
 	}
+
+	// Crate new layer and add to DOM as last layer
 	var layer = new svgedit.draw.Layer(name, null, this.svgElem_);
+	// Like to assume hrService exists, but this is backwards compatible with old version of createLayer.
+	if (hrService) {
+		hrService.startBatchCommand('Create Layer');
+		hrService.insertElement(layer.getGroup());
+		hrService.endBatchCommand();
+	}
+
 	this.all_layers.push(layer);
 	this.layer_map[name] = layer;
 	this.current_layer = layer;
 	return layer.getGroup();
+};
+
+/**
+ * Creates a copy of the current layer with the given name and makes it the current layer.
+ * @param {string} name - The given name. If the layer name exists, a new name will be generated.
+ * @param {svgedit.history.HistoryRecordingService} hrService - History recording service
+ * @returns {SVGGElement} The SVGGElement of the new layer, which is
+ * 		also the current layer of this drawing.
+*/
+svgedit.draw.Drawing.prototype.cloneLayer = function(name, hrService) {
+	if (!this.current_layer) {return null;}
+	this.current_layer.deactivate();
+	// Check for duplicate name.
+	if (name === undefined || name === null || name === '' || this.layer_map[name]) {
+		name = getNewLayerName(Object.keys(this.layer_map));
+	}
+
+	// Create new group and add to DOM just after current_layer
+	var currentGroup = this.current_layer.getGroup();
+	var layer = new svgedit.draw.Layer(name, currentGroup, this.svgElem_);
+	var group  = layer.getGroup();
+
+	// Clone children
+	var children = currentGroup.childNodes;
+	var index;
+	for (index = 0; index < children.length; index++) {
+		var ch = children[index];
+		if (ch.localName == 'title') {continue;}
+		group.appendChild(this.copyElem(ch));
+	}
+
+	if (hrService) {
+		hrService.startBatchCommand('Duplicate Layer');
+		hrService.insertElement(group);
+		hrService.endBatchCommand();
+	}
+
+	// Update layer containers and current_layer.
+	index = this.all_layers.indexOf(this.current_layer);
+	if (index >= 0) {
+		this.all_layers.splice(index + 1, 0, layer);
+	} else {
+		this.all_layers.push(layer);
+	}
+	this.layer_map[name] = layer;
+	this.current_layer = layer;
+	return group;
 };
 
 /**
@@ -598,5 +655,17 @@ svgedit.draw.Drawing.prototype.setLayerOpacity = function(layername, opacity) {
 		layer.setOpacity(opacity);
 	}
 };
+
+/**
+ * Create a clone of an element, updating its ID and its children's IDs when needed
+ * @param {Element} el - DOM element to clone
+ * @returns {Element}
+ */
+svgedit.draw.Drawing.prototype.copyElem = function(el) {
+	var self = this;
+	var getNextIdClosure = function() { return self.getNextId();}
+	return svgedit.utilities.copyElem(el, getNextIdClosure)
+}
+
 
 }());
