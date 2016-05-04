@@ -355,6 +355,15 @@ var addCommandToHistory = function(cmd) {
 	canvas.undoMgr.addCommandToHistory(cmd);
 };
 
+/**
+ * Get a HistoryRecordingService.
+ * @param {svgedit.history.HistoryRecordingService=} hrService - if exists, return it instead of creating a new service.
+ * @returns {svgedit.history.HistoryRecordingService}
+ */
+function historyRecordingService(hrService) {
+	return hrService ? hrService : new svgedit.history.HistoryRecordingService(canvas.undoMgr);
+}
+
 // import from select.js
 svgedit.select.init(curConfig, {
 	createSVGElement: function(jsonMap) { return canvas.addSvgElementFromJson(jsonMap); },
@@ -666,56 +675,6 @@ var groupSvgElem = this.groupSvgElem = function(elem) {
 	$(g).append(elem).data('gsvg', elem)[0].id = getNextId();
 };
 
-// Function: copyElem
-// Create a clone of an element, updating its ID and its children's IDs when needed
-//
-// Parameters:
-// el - DOM element to clone
-//
-// Returns: The cloned element
-var copyElem = function(el) {
-	// manually create a copy of the element
-	var new_el = document.createElementNS(el.namespaceURI, el.nodeName);
-	$.each(el.attributes, function(i, attr) {
-		if (attr.localName != '-moz-math-font-style') {
-			new_el.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.value);
-		}
-	});
-	// set the copied element's new id
-	new_el.removeAttribute('id');
-	new_el.id = getNextId();
-	
-	// Opera's "d" value needs to be reset for Opera/Win/non-EN
-	// Also needed for webkit (else does not keep curved segments on clone)
-	if (svgedit.browser.isWebkit() && el.nodeName == 'path') {
-		var fixed_d = pathActions.convertPath(el);
-		new_el.setAttribute('d', fixed_d);
-	}
-
-	// now create copies of all children
-	$.each(el.childNodes, function(i, child) {
-		switch(child.nodeType) {
-			case 1: // element node
-				new_el.appendChild(copyElem(child));
-				break;
-			case 3: // text node
-				new_el.textContent = child.nodeValue;
-				break;
-			default:
-				break;
-		}
-	});
-	
-	if ($(el).data('gsvg')) {
-		$(new_el).data('gsvg', new_el.firstChild);
-	} else if ($(el).data('symbol')) {
-		var ref = $(el).data('symbol');
-		$(new_el).data('ref', ref).data('symbol', ref);
-	} else if (new_el.tagName == 'image') {
-		preventClickDefault(new_el);
-	}
-	return new_el;
-};
 
 // Set scope for these functions
 var getId, getNextId;
@@ -882,10 +841,7 @@ var recalculateAllSelectedDimensions = this.recalculateAllSelectedDimensions = f
 	}
 };
 
-// this is how we map paths to our preferred relative segment types
-var pathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a', 
-					'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
-					
+
 // Debug tool to easily see the current matrix in the browser's console
 var logMatrix = function(m) {
 	console.log([m.a, m.b, m.c, m.d, m.e, m.f]);
@@ -1404,7 +1360,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					}
 				});
 				setHref(newImage, last_good_img_url);
-				preventClickDefault(newImage);
+				svgedit.utilities.preventClickDefault(newImage);
 				break;
 			case 'square':
 				// FIXME: once we create the rect, we lose information that this was a square
@@ -2353,14 +2309,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	
 }());
 
-// Function: preventClickDefault
-// Prevents default browser click behaviour on the given element
-//
-// Parameters:
-// img - The DOM element to prevent the cilck on
-var preventClickDefault = function(img) {
-	$(img).click(function(e){e.preventDefault();});
-};
 
 // Group: Text edit functions
 // Functions relating to editing text elements
@@ -3684,165 +3632,7 @@ pathActions = canvas.pathActions = function() {
 			if (svgedit.browser.isWebkit()) {resetD(elem);}
 		},
 		// Convert a path to one with only absolute or relative values
-		convertPath: function(path, toRel) {
-			var i;
-			var segList = path.pathSegList;
-			var len = segList.numberOfItems;
-			var curx = 0, cury = 0;
-			var d = '';
-			var last_m = null;
-			
-			for (i = 0; i < len; ++i) {
-				var seg = segList.getItem(i);
-				// if these properties are not in the segment, set them to zero
-				var x = seg.x || 0,
-					y = seg.y || 0,
-					x1 = seg.x1 || 0,
-					y1 = seg.y1 || 0,
-					x2 = seg.x2 || 0,
-					y2 = seg.y2 || 0;
-	
-				var type = seg.pathSegType;
-				var letter = pathMap[type]['to'+(toRel?'Lower':'Upper')+'Case']();
-				
-				var addToD = function(pnts, more, last) {
-					var str = '';
-					more = more ? ' ' + more.join(' ') : '';
-					last = last ? ' ' + svgedit.units.shortFloat(last) : '';
-					$.each(pnts, function(i, pnt) {
-						pnts[i] = svgedit.units.shortFloat(pnt);
-					});
-					d += letter + pnts.join(' ') + more + last;
-				};
-				
-				switch (type) {
-					case 1: // z,Z closepath (Z/z)
-						d += 'z';
-						break;
-					case 12: // absolute horizontal line (H)
-						x -= curx;
-					case 13: // relative horizontal line (h)
-						if (toRel) {
-							curx += x;
-							letter = 'l';
-						} else {
-							x += curx;
-							curx = x;
-							letter = 'L';
-						}
-						// Convert to "line" for easier editing
-						addToD([[x, cury]]);
-						break;
-					case 14: // absolute vertical line (V)
-						y -= cury;
-					case 15: // relative vertical line (v)
-						if (toRel) {
-							cury += y;
-							letter = 'l';
-						} else {
-							y += cury;
-							cury = y;
-							letter = 'L';
-						}
-						// Convert to "line" for easier editing
-						addToD([[curx, y]]);
-						break;
-					case 2: // absolute move (M)
-					case 4: // absolute line (L)
-					case 18: // absolute smooth quad (T)
-						x -= curx;
-						y -= cury;
-					case 5: // relative line (l)
-					case 3: // relative move (m)
-						// If the last segment was a "z", this must be relative to 
-						if (last_m && segList.getItem(i-1).pathSegType === 1 && !toRel) {
-							curx = last_m[0];
-							cury = last_m[1];
-						}
-					
-					case 19: // relative smooth quad (t)
-						if (toRel) {
-							curx += x;
-							cury += y;
-						} else {
-							x += curx;
-							y += cury;
-							curx = x;
-							cury = y;
-						}
-						if (type === 3) {last_m = [curx, cury];}
-						
-						addToD([[x, y]]);
-						break;
-					case 6: // absolute cubic (C)
-						x -= curx; x1 -= curx; x2 -= curx;
-						y -= cury; y1 -= cury; y2 -= cury;
-					case 7: // relative cubic (c)
-						if (toRel) {
-							curx += x;
-							cury += y;
-						} else {
-							x += curx; x1 += curx; x2 += curx;
-							y += cury; y1 += cury; y2 += cury;
-							curx = x;
-							cury = y;
-						}
-						addToD([[x1, y1], [x2, y2], [x, y]]);
-						break;
-					case 8: // absolute quad (Q)
-						x -= curx; x1 -= curx;
-						y -= cury; y1 -= cury;
-					case 9: // relative quad (q) 
-						if (toRel) {
-							curx += x;
-							cury += y;
-						} else {
-							x += curx; x1 += curx;
-							y += cury; y1 += cury;
-							curx = x;
-							cury = y;
-						}
-						addToD([[x1, y1],[x, y]]);
-						break;
-					case 10: // absolute elliptical arc (A)
-						x -= curx;
-						y -= cury;
-					case 11: // relative elliptical arc (a)
-						if (toRel) {
-							curx += x;
-							cury += y;
-						} else {
-							x += curx;
-							y += cury;
-							curx = x;
-							cury = y;
-						}
-						addToD([[seg.r1, seg.r2]], [
-								seg.angle,
-								(seg.largeArcFlag ? 1 : 0),
-								(seg.sweepFlag ? 1 : 0)
-							], [x, y]
-						);
-						break;
-					case 16: // absolute smooth cubic (S)
-						x -= curx; x2 -= curx;
-						y -= cury; y2 -= cury;
-					case 17: // relative smooth cubic (s)
-						if (toRel) {
-							curx += x;
-							cury += y;
-						} else {
-							x += curx; x2 += curx;
-							y += cury; y2 += cury;
-							curx = x;
-							cury = y;
-						}
-						addToD([[x2, y2],[x, y]]);
-						break;
-				} // switch on path segment type
-			} // for each segment
-			return d;
-		}
+		convertPath: svgedit.utilities.convertPath
 	};
 }();
 // end pathActions
@@ -4676,7 +4466,7 @@ this.setSvgString = function(xmlString) {
 		// change image href vals if possible
 		content.find('image').each(function() {
 			var image = this;
-			preventClickDefault(image);
+			svgedit.utilities.preventClickDefault(image);
 			var val = getHref(this);
 			if (val) {
 				if (val.indexOf('data:') === 0) {
@@ -4966,44 +4756,25 @@ var identifyLayers = canvas.identifyLayers = function() {
 //
 // Parameters:
 // name - The given name
-this.createLayer = function(name) {
-	var batchCmd = new svgedit.history.BatchCommand('Create Layer');
-	var new_layer = getCurrentDrawing().createLayer(name);
-	batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(new_layer));
-	addCommandToHistory(batchCmd);
+this.createLayer = function(name, hrService) {
+	var new_layer = getCurrentDrawing().createLayer(name, historyRecordingService(hrService));
 	clearSelection();
 	call('changed', [new_layer]);
 };
 
-// Function: cloneLayer
-// Creates a new top-level layer in the drawing with the given name, copies all the current layer's contents
-// to it, and then clears the selection. This function then calls the 'changed' handler.
-// This is an undoable action.
-//
-// Parameters:
-// name - The given name
-this.cloneLayer = function(name) {
-	var batchCmd = new svgedit.history.BatchCommand('Duplicate Layer');
-	var new_layer = svgdoc.createElementNS(NS.SVG, 'g');
-	var layer_title = svgdoc.createElementNS(NS.SVG, 'title');
-	layer_title.textContent = name;
-	new_layer.appendChild(layer_title);
-	var current_layer = getCurrentDrawing().getCurrentLayer();
-	$(current_layer).after(new_layer);
-	var childs = current_layer.childNodes;
-	var i;
-	for (i = 0; i < childs.length; i++) {
-		var ch = childs[i];
-		if (ch.localName == 'title') {continue;}
-		new_layer.appendChild(copyElem(ch));
-	}
-	
-	clearSelection();
-	identifyLayers();
+/**
+ * Creates a new top-level layer in the drawing with the given name, copies all the current layer's contents
+ * to it, and then clears the selection. This function then calls the 'changed' handler.
+ * This is an undoable action.
+ * @param {string} name - The given name. If the layer name exists, a new name will be generated.
+ * @param {svgedit.history.HistoryRecordingService} hrService - History recording service
+ */
+this.cloneLayer = function(name, hrService) {
+	// Clone the current layer and make the cloned layer the new current layer
+	var new_layer = getCurrentDrawing().cloneLayer(name, historyRecordingService(hrService));
 
-	batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(new_layer));
-	addCommandToHistory(batchCmd);
-	canvas.setCurrentLayer(name);
+	clearSelection();
+	leaveContext();
 	call('changed', [new_layer]);
 };
 
@@ -5058,11 +4829,8 @@ this.renameCurrentLayer = function(newname) {
 	var drawing = getCurrentDrawing();
 	var layer = drawing.getCurrentLayer();
 	if (layer) {
-		var result = drawing.setCurrentLayerName( newname);
+		var result = drawing.setCurrentLayerName(newname, historyRecordingService());
 		if (result) {
-			var batchCmd = new svgedit.history.BatchCommand('Rename Layer');
-			batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(result.title, {'#text':result.previousName}));
-			addCommandToHistory(batchCmd);
 			call('changed', [layer]);
 			return true;
 		}
@@ -5158,20 +4926,14 @@ this.moveSelectedToLayer = function(layername) {
 
 
 this.mergeLayer = function(hrService) {
-	if (!hrService) {
-		hrService = new svgedit.history.HistoryRecordingService(this.undoMgr);
-	}
-	getCurrentDrawing().mergeLayer(hrService);
+	getCurrentDrawing().mergeLayer(historyRecordingService(hrService));
 	clearSelection();
 	leaveContext();
 	call('changed', [svgcontent]);
 };
 
 this.mergeAllLayers = function(hrService) {
-	if (!hrService) {
-		hrService = new svgedit.history.HistoryRecordingService(this.undoMgr);
-	}
-	getCurrentDrawing().mergeAllLayers(hrService);
+	getCurrentDrawing().mergeAllLayers(historyRecordingService(hrService));
 	clearSelection();
 	leaveContext();
 	call('changed', [svgcontent]);
@@ -6622,19 +6384,19 @@ this.pasteElements = function(type, x, y) {
 	
 	var pasted = [];
 	var batchCmd = new svgedit.history.BatchCommand('Paste elements');
-	
-	// Move elements to lastClickPoint
+	var drawing = getCurrentDrawing();
 
+	// Move elements to lastClickPoint
 	while (len--) {
 		var elem = cb[len];
 		if (!elem) {continue;}
-		var copy = copyElem(elem);
+		var copy = drawing.copyElem(elem);
 
 		// See if elem with elem ID is in the DOM already
 		if (!svgedit.utilities.getElem(elem.id)) {copy.id = elem.id;}
 		
 		pasted.push(copy);
-		(current_group || getCurrentDrawing().getCurrentLayer()).appendChild(copy);
+		(current_group || drawing.getCurrentLayer()).appendChild(copy);
 		batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(copy));
 
 		restoreRefElems(copy);
@@ -6758,6 +6520,7 @@ var pushGroupProperties = this.pushGroupProperties = function(g, undoable) {
 	
 	var gattrs = $(g).attr(['filter', 'opacity']);
 	var gfilter, gblur, changes;
+	var drawing = getCurrentDrawing();
 	
 	for (i = 0; i < len; i++) {
 		var elem = children[i];
@@ -6788,7 +6551,7 @@ var pushGroupProperties = this.pushGroupProperties = function(g, undoable) {
 					gfilter = svgedit.utilities.getRefElem(gattrs.filter);
 				} else {
 					// Clone the group's filter
-					gfilter = copyElem(gfilter);
+					gfilter = drawing.copyElem(gfilter);
 					svgedit.utilities.findDefs().appendChild(gfilter);
 				}
 			} else {
@@ -7167,11 +6930,12 @@ this.cloneSelectedElements = function(x, y) {
 	this.clearSelection(true);
 	// note that we loop in the reverse way because of the way elements are added
 	// to the selectedElements array (top-first)
+	var drawing = getCurrentDrawing();
 	i = copiedElements.length;
 	while (i--) {
 		// clone each element and replace it within copiedElements
-		elem = copiedElements[i] = copyElem(copiedElements[i]);
-		(current_group || getCurrentDrawing().getCurrentLayer()).appendChild(elem);
+		elem = copiedElements[i] = drawing.copyElem(copiedElements[i]);
+		(current_group || drawing.getCurrentLayer()).appendChild(elem);
 		batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(elem));
 	}
 	
@@ -7410,7 +7174,7 @@ this.getPrivateMethods = function() {
 		BatchCommand: BatchCommand,
 		call: call,
 		ChangeElementCommand: ChangeElementCommand,
-		copyElem: copyElem,
+		copyElem: function(elem) {return getCurrentDrawing().copyElem(elem)},
 		ffClone: ffClone,
 		findDefs: findDefs,
 		findDuplicateGradient: findDuplicateGradient,
@@ -7428,7 +7192,7 @@ this.getPrivateMethods = function() {
 		logMatrix: logMatrix,
 		matrixMultiply: matrixMultiply,
 		MoveElementCommand: MoveElementCommand,
-		preventClickDefault: preventClickDefault,
+		preventClickDefault: svgedit.utilities.preventClickDefault,
 		recalculateAllSelectedDimensions: recalculateAllSelectedDimensions,
 		recalculateDimensions: recalculateDimensions,
 		remapElement: remapElement,
