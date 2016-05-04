@@ -17,7 +17,7 @@
 	'use strict';
 
 if (!svgedit.draw) {
-  svgedit.draw = {};
+	svgedit.draw = {};
 }
 var NS = svgedit.NS;
 
@@ -27,9 +27,9 @@ var NS = svgedit.NS;
  * an existing group element or, with three parameters, will create a new layer group element.
  *
  * Usage:
- * new Layer( 'name', group)          // Use the existing group for this layer.
- * new Layer( 'name', group, svgElem) // Create a new group and add it to the DOM after group.
- * new Layer( 'name', null, svgElem)  // Create a new group and add it to the DOM as the last layer.
+ * new Layer'name', group)          // Use the existing group for this layer.
+ * new Layer('name', group, svgElem) // Create a new group and add it to the DOM after group.
+ * new Layer('name', null, svgElem)  // Create a new group and add it to the DOM as the last layer.
  *
  * @param {string} name - Layer name
  * @param {SVGGElement|null} group - An existing SVG group element or null.
@@ -40,27 +40,27 @@ var NS = svgedit.NS;
  * 		a new layer to the document.
  */
 var Layer = svgedit.draw.Layer = function(name, group, svgElem) {
-  this.name_ = name;
-  this.group_ = svgElem ? null : group;
+	this.name_ = name;
+	this.group_ = svgElem ? null : group;
 
-  if (svgElem) {
-    // Create a group element with title and add it to the DOM.
-    var svgdoc = svgElem.ownerDocument;
-    this.group_ = svgdoc.createElementNS(NS.SVG, "g");
-    var layer_title = svgdoc.createElementNS(NS.SVG, "title");
-    layer_title.textContent = name;
-    this.group_.appendChild(layer_title);
-    if( group) {
-      $(group).after(this.group_);
-    } else {
-      svgElem.appendChild(this.group_);
-    }
-  }
+	if (svgElem) {
+		// Create a group element with title and add it to the DOM.
+		var svgdoc = svgElem.ownerDocument;
+		this.group_ = svgdoc.createElementNS(NS.SVG, "g");
+		var layer_title = svgdoc.createElementNS(NS.SVG, "title");
+		layer_title.textContent = name;
+		this.group_.appendChild(layer_title);
+		if (group) {
+			$(group).after(this.group_);
+		} else {
+			svgElem.appendChild(this.group_);
+		}
+	}
 
-  addLayerClass(this.group_);
-  svgedit.utilities.walkTree(this.group_, function(e){e.setAttribute("style", "pointer-events:inherit");});
+	addLayerClass(this.group_);
+	svgedit.utilities.walkTree(this.group_, function(e){e.setAttribute("style", "pointer-events:inherit");});
 
-  this.group_.setAttribute("style", svgElem ? "pointer-events:all" : "pointer-events:none");
+	this.group_.setAttribute("style", svgElem ? "pointer-events:all" : "pointer-events:none");
 };
 
 /**
@@ -79,7 +79,7 @@ Layer.CLASS_REGEX = new RegExp('(\\s|^)' + Layer.CLASS_NAME + '(\\s|$)');
  * @returns {string} The layer name
  */
 Layer.prototype.getName = function() {
-  return this.name_;
+	return this.name_;
 };
 
 /**
@@ -87,21 +87,21 @@ Layer.prototype.getName = function() {
  * @returns {SVGGElement} The layer SVG group
  */
 Layer.prototype.getGroup = function() {
-  return this.group_;
+	return this.group_;
 };
 
 /**
  * Active this layer so it takes pointer events.
  */
 Layer.prototype.activate = function() {
-  this.group_.setAttribute("style", "pointer-events:all");
+	this.group_.setAttribute("style", "pointer-events:all");
 };
 
 /**
  * Deactive this layer so it does NOT take pointer events.
  */
 Layer.prototype.deactivate = function() {
-  this.group_.setAttribute("style", "pointer-events:none");
+	this.group_.setAttribute("style", "pointer-events:none");
 };
 
 /**
@@ -109,11 +109,11 @@ Layer.prototype.deactivate = function() {
  * @param {boolean} visible - If true, make visible; otherwise, hide it.
  */
 Layer.prototype.setVisible = function(visible) {
-  var expected = visible === undefined || visible ? "inline" : "none";
-  var oldDisplay = this.group_.getAttribute("display");
-  if (oldDisplay !== expected) {
-    this.group_.setAttribute("display", expected);
-  }
+	var expected = visible === undefined || visible ? "inline" : "none";
+	var oldDisplay = this.group_.getAttribute("display");
+	if (oldDisplay !== expected) {
+		this.group_.setAttribute("display", expected);
+	}
 };
 
 /**
@@ -121,7 +121,7 @@ Layer.prototype.setVisible = function(visible) {
  * @returns {boolean} True if visible.
  */
 Layer.prototype.isVisible = function() {
-  return this.group_.getAttribute('display') !== 'none';
+	return this.group_.getAttribute('display') !== 'none';
 };
 
 /**
@@ -129,11 +129,11 @@ Layer.prototype.isVisible = function() {
  * @returns {number} Opacity value.
  */
 Layer.prototype.getOpacity = function() {
-  var opacity = this.group_.getAttribute('opacity');
-  if (opacity === null || opacity === undefined) {
-    return 1;
-  }
-  return parseFloat(opacity);
+	var opacity = this.group_.getAttribute('opacity');
+	if (opacity === null || opacity === undefined) {
+		return 1;
+	}
+	return parseFloat(opacity);
 };
 
 /**
@@ -142,9 +142,9 @@ Layer.prototype.getOpacity = function() {
  * @param {number} opacity - A float value in the range 0.0-1.0
  */
 Layer.prototype.setOpacity = function(opacity) {
-  if (typeof opacity === 'number' && opacity >= 0.0 && opacity <= 1.0) {
-    this.group_.setAttribute('opacity', opacity);
-  }
+	if (typeof opacity === 'number' && opacity >= 0.0 && opacity <= 1.0) {
+		this.group_.setAttribute('opacity', opacity);
+	}
 };
 
 /**
@@ -152,20 +152,20 @@ Layer.prototype.setOpacity = function(opacity) {
  * @param {SVGGElement} children - The children to append to this layer.
  */
 Layer.prototype.appendChildren = function(children) {
-  for (var i = 0; i < children.length; ++i) {
-    this.group_.appendChild(children[i]);
-  }
+	for (var i = 0; i < children.length; ++i) {
+		this.group_.appendChild(children[i]);
+	}
 };
 
 Layer.prototype.getTitleElement = function() {
-  var len = this.group_.childNodes.length;
-  for (var i = 0; i < len; ++i) {
-    var child = this.group_.childNodes.item(i);
-    if (child && child.tagName === 'title') {
-      return child;
-    }
-  }
-  return null;
+	var len = this.group_.childNodes.length;
+	for (var i = 0; i < len; ++i) {
+		var child = this.group_.childNodes.item(i);
+		if (child && child.tagName === 'title') {
+			return child;
+		}
+	}
+	return null;
 };
 
 /**
@@ -175,20 +175,20 @@ Layer.prototype.getTitleElement = function() {
  * @returns {string|null} The new name if changed; otherwise, null.
  */
 Layer.prototype.setName = function(name, hrService) {
-  var previousName = this.name_;
-  name = svgedit.utilities.toXml(name);
-  // now change the underlying title element contents
-  var title = this.getTitleElement();
-  if (title) {
-    while (title.firstChild) { title.removeChild(title.firstChild); }
-    title.textContent = name;
-    this.name_ = name;
-    if( hrService) {
-      hrService.changeElement(title, {'#text':previousName});
-    }
-    return this.name_;
-  }
-  return null;
+	var previousName = this.name_;
+	name = svgedit.utilities.toXml(name);
+	// now change the underlying title element contents
+	var title = this.getTitleElement();
+	if (title) {
+		while (title.firstChild) { title.removeChild(title.firstChild); }
+		title.textContent = name;
+		this.name_ = name;
+		if (hrService) {
+			hrService.changeElement(title, {'#text':previousName});
+		}
+		return this.name_;
+	}
+	return null;
 };
 
 /**
@@ -197,10 +197,10 @@ Layer.prototype.setName = function(name, hrService) {
  * @returns {SVGGElement} The layer SVG group that was just removed.
  */
 Layer.prototype.removeGroup = function() {
-  var parent = this.group_.parentNode;
-  var group = parent.removeChild(this.group_);
-  this.group_ = undefined;
-  return group;
+	var parent = this.group_.parentNode;
+	var group = parent.removeChild(this.group_);
+	this.group_ = undefined;
+	return group;
 };
 
 
@@ -211,12 +211,12 @@ Layer.prototype.removeGroup = function() {
  * @param {SVGGElement} elem - The SVG element to update
  */
 function addLayerClass(elem) {
-  var classes = elem.getAttribute('class');
-  if (classes === null || classes === undefined || classes.length === 0) {
-    elem.setAttribute('class', Layer.CLASS_NAME);
-  } else if (! Layer.CLASS_REGEX.test(classes)) {
-    elem.setAttribute('class', classes + ' ' + Layer.CLASS_NAME);
-  }
+	var classes = elem.getAttribute('class');
+	if (classes === null || classes === undefined || classes.length === 0) {
+		elem.setAttribute('class', Layer.CLASS_NAME);
+	} else if (! Layer.CLASS_REGEX.test(classes)) {
+		elem.setAttribute('class', classes + ' ' + Layer.CLASS_NAME);
+	}
 }
 
 }());

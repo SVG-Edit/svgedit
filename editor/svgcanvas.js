@@ -360,7 +360,7 @@ var addCommandToHistory = function(cmd) {
  * @param {svgedit.history.HistoryRecordingService=} hrService - if exists, return it instead of creating a new service.
  * @returns {svgedit.history.HistoryRecordingService}
  */
-function historyRecordingService( hrService) {
+function historyRecordingService(hrService) {
 	return hrService ? hrService : new svgedit.history.HistoryRecordingService(canvas.undoMgr);
 }
 
@@ -7174,7 +7174,7 @@ this.getPrivateMethods = function() {
 		BatchCommand: BatchCommand,
 		call: call,
 		ChangeElementCommand: ChangeElementCommand,
-		copyElem: function( elem) {return getCurrentDrawing().copyElem(elem)},
+		copyElem: function(elem) {return getCurrentDrawing().copyElem(elem)},
 		ffClone: ffClone,
 		findDefs: findDefs,
 		findDuplicateGradient: findDuplicateGradient,

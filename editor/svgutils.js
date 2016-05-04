@@ -1211,10 +1211,10 @@ function pathDSegment(letter, points, morePoints, lastPoint) {
 		points[i] = svgedit.units.shortFloat(pnt);
 	});
 	var segment = letter + points.join(' ');
-	if( morePoints) {
+	if (morePoints) {
 		segment += ' ' + morePoints.join(' ');
 	}
-	if( lastPoint) {
+	if (lastPoint) {
 		segment += ' ' + svgedit.units.shortFloat(lastPoint);
 	}
 	return segment;

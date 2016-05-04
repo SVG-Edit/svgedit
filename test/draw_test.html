@@ -465,18 +465,18 @@
 
       var oldName = drawing.getCurrentLayerName();
       var newName = 'New Name'
-      ok( drawing.layer_map[oldName]);
-      equals( drawing.layer_map[newName], undefined); // newName shouldn't exist.
+      ok(drawing.layer_map[oldName]);
+      equals(drawing.layer_map[newName], undefined); // newName shouldn't exist.
       var result = drawing.setCurrentLayerName(newName, mockHrService);
       equals(result, newName);
       equals(drawing.getCurrentLayerName(), newName);
       // Was the map updated?
-      equals( drawing.layer_map[oldName], undefined);
-      equals( drawing.layer_map[newName], drawing.current_layer);
+      equals(drawing.layer_map[oldName], undefined);
+      equals(drawing.layer_map[newName], drawing.current_layer);
       // Was mockHrService called?
-      ok( mockHrService.changeElement.calledOnce);
-      equals( oldName, mockHrService.changeElement.getCall(0).args[1]['#text']);
-      equals( newName, mockHrService.changeElement.getCall(0).args[0].textContent);
+      ok(mockHrService.changeElement.calledOnce);
+      equals(oldName, mockHrService.changeElement.getCall(0).args[1]['#text']);
+      equals(newName, mockHrService.changeElement.getCall(0).args[0].textContent);
 
       cleanupSvg(svg);
     });
@@ -506,8 +506,8 @@
       equals(NEW_LAYER_NAME, drawing.getLayerName(3));
 
       equals(layer_g, mockHrService.insertElement.getCall(0).args[0]);
-      ok( mockHrService.startBatchCommand.calledOnce);
-      ok( mockHrService.endBatchCommand.calledOnce);
+      ok(mockHrService.startBatchCommand.calledOnce);
+      ok(mockHrService.endBatchCommand.calledOnce);
 
       cleanupSvg(svg);
     });
@@ -540,8 +540,8 @@
 
 
       // check history record
-      ok( mockHrService.startBatchCommand.calledOnce);
-      ok( mockHrService.endBatchCommand.calledOnce);
+      ok(mockHrService.startBatchCommand.calledOnce);
+      ok(mockHrService.endBatchCommand.calledOnce);
       equals(mockHrService.startBatchCommand.getCall(0).args[0], 'Merge Layer');
       equals(mockHrService.moveElement.callCount, elementCount - 1); // -1 because the title was not moved.
       equals(mockHrService.removeElement.callCount, 2); // remove group and title.
@@ -611,8 +611,8 @@
       equals(layers[0].childElementCount, elementCount * 3 - 2); // -2 because two titles were deleted.
 
       // check history record
-      equals( mockHrService.startBatchCommand.callCount, 3); // mergeAllLayers + 2 * mergeLayer
-      equals( mockHrService.endBatchCommand.callCount, 3);
+      equals(mockHrService.startBatchCommand.callCount, 3); // mergeAllLayers + 2 * mergeLayer
+      equals(mockHrService.endBatchCommand.callCount, 3);
       equals(mockHrService.startBatchCommand.getCall(0).args[0], 'Merge all Layers');
       equals(mockHrService.startBatchCommand.getCall(1).args[0], 'Merge Layer');
       equals(mockHrService.startBatchCommand.getCall(2).args[0], 'Merge Layer');
@@ -649,8 +649,8 @@
       equals(clone.childElementCount, elementCount);
 
       // check history record
-      ok( mockHrService.startBatchCommand.calledOnce); // mergeAllLayers + 2 * mergeLayer
-      ok( mockHrService.endBatchCommand.calledOnce);
+      ok(mockHrService.startBatchCommand.calledOnce); // mergeAllLayers + 2 * mergeLayer
+      ok(mockHrService.endBatchCommand.calledOnce);
       equals(mockHrService.startBatchCommand.getCall(0).args[0], 'Duplicate Layer');
       equals(mockHrService.insertElement.callCount, 1);
       equals(mockHrService.insertElement.getCall(0).args[0], clone);
