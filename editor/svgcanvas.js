@@ -3698,6 +3698,9 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 // Returns: 
 // String containing the SVG image for output
 this.svgCanvasToString = function() {
+	// Get the latest NS after any extensions have called sanitize.addWhiteListException().
+	nsMap = svgedit.getReverseNS();
+
 	// keep calling it until there are none to remove
 	while (removeUnusedDefElems() > 0) {}
 	
