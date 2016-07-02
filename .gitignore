@@ -1,3 +1,4 @@
 # See editor/config-sample.js for an example
 editor/config.js
 editor/custom.css
+build/
