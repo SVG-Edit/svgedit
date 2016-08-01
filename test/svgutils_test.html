@@ -10,6 +10,7 @@
   <script src='../editor/pathseg.js'></script>
   <script src='../editor/browser.js'></script>
   <script src='../editor/svgtransformlist.js'></script>
+  <script src='../editor/jquery-svg.js'></script>  <!--  has $.attr() that takes an array . Used by svgedit.utilities.getPathDFromElement -->
   <script src='../editor/svgutils.js'></script>
   <script src='qunit/qunit.js'></script>
   <script>
@@ -21,9 +22,64 @@
       }
     };
 
-    var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
+    function  mockCreateSVGElement(jsonMap) {
+      var elem = document.createElementNS(svgedit.NS.SVG, jsonMap['element']);
+      for (var attr in jsonMap['attr']) {
+        elem.setAttribute(attr, jsonMap['attr'][attr]);
+      }
+      return elem;
+    }
+    function mockAddSvgElementFromJson( json) {
+      var elem = mockCreateSVGElement( json)
+      svgroot.appendChild( elem)
+      return elem
+    }
+    var mockPathActions = { resetOrientation: function () {}}
+    var mockHistorySubCommands = []
+    var mockHistory = {
+      BatchCommand: function() {
+        return {
+          addSubCommand: function( cmd) { mockHistorySubCommands.push(cmd)}
+        }
+      },
+      RemoveElementCommand: function(elem, nextSibling, parent) {
+        this.elem = elem;
+        this.nextSibling = nextSibling;
+        this.parent = parent
+      },
+      InsertElementCommand: function(path){
+        this.path = path
+      }
+    }
+    var mockCount = {
+      clearSelection: 0,
+      addToSelection: 0,
+      addCommandToHistory: 0
+    }
+    function mockClearSelection() { mockCount.clearSelection ++}
+    function mockAddToSelection() { mockCount.addToSelection ++}
+    function mockAddCommandToHistory() {mockCount.addCommandToHistory ++}
 
-    module('svgedit.utilities');
+    var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
+    var sandbox = document.getElementById('sandbox');
+    var svgroot = mockCreateSVGElement({
+      'element': 'svg',
+      'attr': {'id': 'svgroot'}
+    });
+    sandbox.appendChild(svgroot);
+
+    
+    module('svgedit.utilities', {
+      setup: function() {
+        mockHistorySubCommands = [];
+        mockCount.clearSelection = 0;
+        mockCount.addToSelection = 0;
+        mockCount.addCommandToHistory = 0;
+      },
+      teardown: function() {
+      }
+    });
+
 
     test('Test svgedit.utilities package', function() {
       expect(3);
@@ -82,7 +138,7 @@
 
       var convert = svgedit.utilities.convertToXMLReferences;
       equals(convert('ABC'), 'ABC');
-  //    equals(convert('ÀBC'), '&#192;BC');
+  //    equals(convert('ï¿½BC'), '&#192;BC');
     });
 
     test('Test svgedit.utilities.bboxToObj() function', function() {
@@ -123,6 +179,181 @@
       ok(bb.y && !isNaN(bb.y));
     });
 
+    test("Test getPathDFromSegments", function() {
+      var d;
+      var getPathDFromSegments = svgedit.utilities.getPathDFromSegments;
+
+      var doc = svgedit.utilities.text2xml('<svg></svg>');
+      var path = doc.createElementNS(svgedit.NS.SVG, 'path');
+      path.setAttributeNS(null, 'd', 'm0,0l5,0l0,5l-5,0l0,-5z');
+      d = getPathDFromSegments( [
+              ['M', [1, 2]],
+              ['Z', []],
+      ]);
+      equal( d, 'M1,2 Z');
+
+      d = getPathDFromSegments( [
+              ['M', [1, 2]],
+              ['M', [3, 4]],
+              ['Z', []],
+      ]);
+      equal( d, 'M1,2 M3,4 Z');
+
+      d = getPathDFromSegments( [
+              ['M', [1, 2]],
+              ['C', [3, 4, 5, 6]],
+              ['Z', []],
+      ]);
+      equal( d, 'M1,2 C3,4 5,6 Z');
+
+    });
+
+    test("Test getPathDFromElement", function() {
+      var getPathDFromElement = svgedit.utilities.getPathDFromElement;
+
+      var elem = mockCreateSVGElement({
+        'element': 'path',
+        'attr': { 'id': 'path', 'd': 'M0,1 Z'}
+      });
+      svgroot.appendChild( elem)
+      equal( getPathDFromElement( elem), 'M0,1 Z');
+      svgroot.removeChild( elem)
+
+      elem = mockCreateSVGElement({
+        'element': 'rect',
+        'attr': { 'id': 'rect', 'x': '0', 'y': '1', 'width': '5', 'height': '10'}
+      });
+      svgroot.appendChild( elem)
+      equal( getPathDFromElement( elem), 'M0,1 L5,1 L5,11 L0,11 L0,1 Z');
+      svgroot.removeChild( elem)
+
+      elem = mockCreateSVGElement({
+        'element': 'rect',
+        'attr': { 'id': 'roundrect', 'x': '0', 'y': '1', 'rx': '2', 'ry': '3', 'width': '10', 'height': '11'}
+      });
+      svgroot.appendChild( elem)
+      var closeEnough = new RegExp( 'M0,4 C0,2.3[0-9]* 0.9[0-9]*,1 2,1 L8,1 C9.0[0-9]*,1 10,2.3[0-9]* 10,4 L10,9 C10,10.6[0-9]* 9.08675799086758,12 8,12 L2,12 C0.9[0-9]*,12 0,10.6[0-9]* 0,9 L0,4 Z')
+      equal(closeEnough.test(getPathDFromElement( elem)), true);
+      svgroot.removeChild( elem)
+
+      elem = mockCreateSVGElement({
+        'element': 'line',
+        'attr': { 'id': 'line', 'x1': '0', 'y1': '1', 'x2': '5', 'y2': '6'}
+      });
+      svgroot.appendChild( elem)
+      equal( getPathDFromElement( elem), 'M0,1L5,6');
+      svgroot.removeChild( elem)
+
+      elem = mockCreateSVGElement({
+        'element': 'circle',
+        'attr': { 'id': 'circle', 'cx': '10', 'cy': '11', 'rx': '5', 'ry': '10'}
+      });
+      svgroot.appendChild( elem)
+      equal( getPathDFromElement( elem), 'M10,11 C10,11 10,11 10,11 C10,11 10,11 10,11 C10,11 10,11 10,11 C10,11 10,11 10,11 Z');
+      svgroot.removeChild( elem)
+
+      elem = mockCreateSVGElement({
+        'element': 'polyline',
+        'attr': { 'id': 'polyline', 'points': '0,1 5,1 5,11 0,11'}
+      });
+      svgroot.appendChild( elem)
+      equal( getPathDFromElement( elem), 'M0,1 5,1 5,11 0,11');
+      svgroot.removeChild( elem)
+
+      equal( getPathDFromElement( {tagName: 'something unknown'}), undefined);
+    });
+
+    test("Test getBBoxOfElementAsPath", function() {
+      function getBBoxOfElementAsPath( elem, addSvgElementFromJson, pathActions) {
+        var bbox = svgedit.utilities.getBBoxOfElementAsPath(elem, addSvgElementFromJson, pathActions);
+        return svgedit.utilities.bboxToObj( bbox) // need this for QUnit equal() to work.
+      }
+
+      var bbox;
+      var elem = mockCreateSVGElement({
+        'element': 'path',
+        'attr': { 'id': 'path', 'd': 'M0,1 Z'}
+      });
+      svgroot.appendChild( elem)
+      bbox = getBBoxOfElementAsPath(elem, mockAddSvgElementFromJson, mockPathActions)
+      deepEqual(bbox, {"x": 0, "y": 1, "width": 0, "height": 0 });
+      svgroot.removeChild( elem);
+
+      elem = mockCreateSVGElement({
+        'element': 'rect',
+        'attr': { 'id': 'rect', 'x': '0', 'y': '1', 'width': '5', 'height': '10'}
+      });
+      svgroot.appendChild( elem);
+      bbox = getBBoxOfElementAsPath( elem, mockAddSvgElementFromJson, mockPathActions)
+      deepEqual( bbox, { "x": 0, "y": 1, "width": 5, "height": 10});
+      svgroot.removeChild( elem);
+
+      elem = mockCreateSVGElement({
+        'element': 'line',
+        'attr': { 'id': 'line', 'x1': '0', 'y1': '1', 'x2': '5', 'y2': '6'}
+      });
+      svgroot.appendChild( elem);
+      bbox = getBBoxOfElementAsPath( elem, mockAddSvgElementFromJson, mockPathActions)
+      deepEqual( bbox, { "x": 0, "y": 1, "width": 5, "height": 5});
+      svgroot.removeChild( elem);
+
+      // TODO: test element with transform. Need resetOrientation above to be working or mock it.
+
+    });
+
+    test("Test convertToPath rect", function() {
+      var convertToPath = svgedit.utilities.convertToPath;
+      var attrs = {
+        'fill': 'red',
+        'stroke': 'white',
+        'stroke-width': '1',
+        'visibility':'hidden'
+      };
+
+      var elem = mockCreateSVGElement({
+        'element': 'rect',
+        'attr': { 'id': 'rect', 'x': '0', 'y': '1', 'width': '5', 'height': '10'}
+      });
+      svgroot.appendChild( elem)
+      var path = convertToPath( elem, attrs, mockAddSvgElementFromJson, mockPathActions, mockClearSelection, mockAddToSelection, mockHistory, mockAddCommandToHistory);
+      equal( path.getAttribute('d'), 'M0,1 L5,1 L5,11 L0,11 L0,1 Z');
+      equal( path.getAttribute('visibilituy'), null);
+      equal( path.id, 'rect');
+      equal( path.parentNode, svgroot);
+      equal( elem.parentNode, null);
+      equal( mockHistorySubCommands.length, 2);
+      equal( mockCount.clearSelection, 1);
+      equal( mockCount.addToSelection, 1);
+      equal( mockCount.addCommandToHistory, 1);
+      svgroot.removeChild( path);
+    });
+
+
+    test("Test convertToPath unknown element", function() {
+      var convertToPath = svgedit.utilities.convertToPath;
+      var attrs = {
+        'fill': 'red',
+        'stroke': 'white',
+        'stroke-width': '1',
+        'visibility':'hidden'
+      };
+
+      var elem = {
+        tagName: 'something unknown',
+        id: 'something-unknown',
+        getAttribute: function( attr) { return '';},
+        parentNode: svgroot
+      };
+      var path = convertToPath( elem, attrs, mockAddSvgElementFromJson, mockPathActions, mockClearSelection, mockAddToSelection, mockHistory, mockAddCommandToHistory);
+      equal( path, null);
+      equal( elem.parentNode, svgroot);
+      equal( mockHistorySubCommands.length, 0);
+      equal( mockCount.clearSelection, 0);
+      equal( mockCount.addToSelection, 0);
+      equal( mockCount.addCommandToHistory, 0);
+    });
+
+
   });
   </script>
 </head>
@@ -131,5 +362,6 @@
   <h2 id='qunit-banner'></h2>
   <h2 id='qunit-userAgent'></h2>
   <ol id='qunit-tests'></ol>
+  <div id='sandbox'></div>
 </body>
 </html>

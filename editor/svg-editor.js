@@ -802,7 +802,7 @@ TODOS
 			(function() {
 				// let the opener know SVG Edit is ready (now that config is set up)
 				var svgEditorReadyEvent,
-					w = window.opener || window.parent;
+					w = window.opener;
 				if (w) {
 					try {
 						svgEditorReadyEvent = w.document.createEvent('Event');
@@ -1839,6 +1839,15 @@ TODOS
 				});
 			};
 
+			/**
+			 * Test whether an element is a layer or not.
+			 * @param {SVGGElement} elem - The SVGGElement to test.
+			 * @returns {boolean} True if the element is a layer
+			 */
+			function isLayer(elem) {
+				return elem && elem.tagName === 'g' && svgedit.draw.Layer.CLASS_REGEX.test(elem.getAttribute('class'))
+			}
+
 			// called when any element has changed
 			var elementChanged = function(win, elems) {
 				var i,
@@ -1850,10 +1859,13 @@ TODOS
 				for (i = 0; i < elems.length; ++i) {
 					var elem = elems[i];
 
-					// if the element changed was the svg, then it could be a resolution change
-					if (elem && elem.tagName === 'svg') {
+					var isSvgElem = (elem && elem.tagName === 'svg');
+					if (isSvgElem || isLayer(elem)) {
 						populateLayers();
-						updateCanvas();
+						// if the element changed was the svg, then it could be a resolution change
+						if (isSvgElem) {
+							updateCanvas();
+						}
 					}
 					// Update selectedElement if element is no longer part of the image.
 					// This occurs for the text elements in Firefox
@@ -2971,7 +2983,7 @@ TODOS
 				svgCanvas.setSegType($(this).val());
 			});
 
-			$('#text').keyup(function() {
+			$('#text').bind("keyup input", function() {
 				svgCanvas.setTextContent(this.value);
 			});
 
