@@ -23,7 +23,7 @@
     };
 
     function  mockCreateSVGElement(jsonMap) {
-      var elem = document.createElementNS(svgedit.NS.SVG, jsonMap['element']);
+      var elem = document.createElementNS(svgedit.NS.svg, jsonMap['element']);
       for (var attr in jsonMap['attr']) {
         elem.setAttribute(attr, jsonMap['attr'][attr]);
       }
@@ -60,7 +60,7 @@
     function mockAddToSelection() { mockCount.addToSelection ++}
     function mockAddCommandToHistory() {mockCount.addCommandToHistory ++}
 
-    var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
+    var svg = document.createElementNS(svgedit.NS.svg, 'svg');
     var sandbox = document.getElementById('sandbox');
     var svgroot = mockCreateSVGElement({
       'element': 'svg',
@@ -171,7 +171,7 @@
     test("Test getPathBBox", function() {
       if(svgedit.browser.supportsPathBBox()) return;
       var doc = svgedit.utilities.text2xml('<svg></svg>');
-      var path = doc.createElementNS(svgedit.NS.SVG, 'path');
+      var path = doc.createElementNS(svgedit.NS.svg, 'path');
       path.setAttributeNS(null, 'd', 'm0,0l5,0l0,5l-5,0l0,-5z');
       var bb = svgedit.utilities.getPathBBox(path);
       equals(typeof bb, 'object', 'BBox returned object');
@@ -184,7 +184,7 @@
       var getPathDFromSegments = svgedit.utilities.getPathDFromSegments;
 
       var doc = svgedit.utilities.text2xml('<svg></svg>');
-      var path = doc.createElementNS(svgedit.NS.SVG, 'path');
+      var path = doc.createElementNS(svgedit.NS.svg, 'path');
       path.setAttributeNS(null, 'd', 'm0,0l5,0l0,5l-5,0l0,-5z');
       d = getPathDFromSegments( [
               ['M', [1, 2]],

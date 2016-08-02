@@ -20,12 +20,12 @@
       }
     };
 
-    var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
+    var svg = document.createElementNS(svgedit.NS.svg, 'svg');
 
     test('Test sanitizeSvg() strips ws from style attr', function() {
       expect(2);
 
-      var rect = document.createElementNS(svgedit.NS.SVG, 'rect');
+      var rect = document.createElementNS(svgedit.NS.svg, 'rect');
       rect.setAttribute('style', 'stroke: blue ;    stroke-width :    40;');
       // sanitizeSvg() requires the node to have a parent and a document.
       svg.appendChild(rect);

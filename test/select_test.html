@@ -32,7 +32,7 @@
     };
     var mockFactory = {
       createSVGElement: function(jsonMap) {
-        var elem = document.createElementNS(svgedit.NS.SVG, jsonMap['element']);
+        var elem = document.createElementNS(svgedit.NS.svg, jsonMap['element']);
         for (var attr in jsonMap['attr']) {
           elem.setAttribute(attr, jsonMap['attr'][attr]);
         }

@@ -31,7 +31,7 @@
 
 
     function  mockCreateSVGElement(jsonMap) {
-      var elem = document.createElementNS(svgedit.NS.SVG, jsonMap['element']);
+      var elem = document.createElementNS(svgedit.NS.svg, jsonMap['element']);
       for (var attr in jsonMap['attr']) {
         elem.setAttribute(attr, jsonMap['attr'][attr]);
       }
@@ -44,7 +44,7 @@
     }
 
 
-    var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
+    var svg = document.createElementNS(svgedit.NS.svg, 'svg');
     var groupWithMatrixTransform = document.getElementById('svg_group_with_matrix_transform');
     var textWithMatrixTransform = document.getElementById('svg_text_with_matrix_transform');
 
