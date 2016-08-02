@@ -23,7 +23,7 @@
   // as an object with values for each given attributes
 
   var proxied = jQuery.fn.attr,
-    // TODO use NS.SVG instead
+    // TODO use NS.svg instead
     svgns = "http://www.w3.org/2000/svg";
   jQuery.fn.attr = function(key, value) {
     var i, attr;

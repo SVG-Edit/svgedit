@@ -54,7 +54,7 @@ svgEditor.addExtension("foreignObject", function(S) {
 		var elt = selElems[0];
 		try {
 			// convert string into XML document
-			var newDoc = Utils.text2xml('<svg xmlns="' + NS.SVG + '" xmlns:xlink="' + NS.XLINK + '">' + xmlString + '</svg>');
+			var newDoc = Utils.text2xml('<svg xmlns="' + NS.svg + '" xmlns:xlink="' + NS.xlink + '">' + xmlString + '</svg>');
 			// run it through our sanitizer to remove anything we do not support
 			S.sanitizeSvg(newDoc.documentElement);
 			elt.parentNode.replaceChild(svgdoc.importNode(newDoc.documentElement.firstChild, true), elt);
@@ -205,15 +205,15 @@ svgEditor.addExtension("foreignObject", function(S) {
 						"style": "pointer-events:inherit"
 					}
 				});
-				var m = svgdoc.createElementNS(NS.MATH, 'math');
-				m.setAttributeNS(NS.XMLNS, 'xmlns', NS.MATH);
+				var m = svgdoc.createElementNS(NS.math, 'math');
+				m.setAttributeNS(NS.xmlns, 'xmlns', NS.math);
 				m.setAttribute('display', 'inline');
-				var mi = svgdoc.createElementNS(NS.MATH, 'mi');
+				var mi = svgdoc.createElementNS(NS.math, 'mi');
 				mi.setAttribute('mathvariant', 'normal');
 				mi.textContent = "\u03A6";
-				var mo = svgdoc.createElementNS(NS.MATH, 'mo');
+				var mo = svgdoc.createElementNS(NS.math, 'mo');
 				mo.textContent = "\u222A";
-				var mi2 = svgdoc.createElementNS(NS.MATH, 'mi');
+				var mi2 = svgdoc.createElementNS(NS.math, 'mi');
 				mi2.textContent = "\u2133";
 				m.appendChild(mi);
 				m.appendChild(mo);

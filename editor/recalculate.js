@@ -363,7 +363,7 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
           // TODO: If any <use> have this group as a parent and are 
           // referencing this child, then we need to impose a reverse 
           // scale on it so that when it won't get double-translated
-//            var uses = selected.getElementsByTagNameNS(NS.SVG, 'use');
+//            var uses = selected.getElementsByTagNameNS(NS.svg, 'use');
 //            var href = '#' + child.id;
 //            var u = uses.length;
 //            while (u--) {
@@ -443,7 +443,7 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
               // If any <use> have this group as a parent and are 
               // referencing this child, then impose a reverse translate on it
               // so that when it won't get double-translated
-              var uses = selected.getElementsByTagNameNS(NS.SVG, 'use');
+              var uses = selected.getElementsByTagNameNS(NS.svg, 'use');
               var href = '#' + child.id;
               var u = uses.length;
               while (u--) {
