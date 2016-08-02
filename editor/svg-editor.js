@@ -502,6 +502,9 @@ TODOS
 						}
 					);
 
+					// Disallow ignoring namespaces via URL - cf. issue 94
+					if('ignoredNS' in urldata) delete urldata.ignoredNS;
+
 					editor.setConfig(urldata, {overwrite: false}); // Note: source and url (as with storagePrompt later) are not set on config but are used below
 					
 					setupCurConfig();
