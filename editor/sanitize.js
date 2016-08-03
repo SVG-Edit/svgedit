@@ -154,9 +154,10 @@ svgedit.sanitize.sanitizeSvg = function(node) {
       var attrLocalName = attr.localName;
       var attrNsURI = attr.namespaceURI;
 
-      // Ignore attributes from custom namespaces
-      var splitNS = attrName.match(/([^:]+):/);
+      // Ignore attributes from custom namespaces and their definitions
+      var splitNS = attrName.match(/([^:]+):(.*$)/);
       if(splitNS && splitNS[1] in svgedit.ignoredNS) continue;
+      if(splitNS && splitNS[1] == 'xmlns' && splitNS[2] in svgedit.ignoredNS) continue;
 
       // Check that an attribute with the correct localName in the correct namespace is on 
       // our whitelist or is a namespace declaration for one of our allowed namespaces
