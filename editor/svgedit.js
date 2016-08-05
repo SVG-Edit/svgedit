@@ -8,23 +8,23 @@
 svgedit = {
 	// common namepaces constants in alpha order
 	NS: {
-		html: 'http://www.w3.org/1999/xhtml',
-		math: 'http://www.w3.org/1998/Math/MathML',
-		svg: 'http://www.w3.org/2000/svg',
-		xlink: 'http://www.w3.org/1999/xlink',
-		xml: 'http://www.w3.org/XML/1998/namespace',
-		xmlns: 'http://www.w3.org/2000/xmlns/' // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
+		HTML: 'http://www.w3.org/1999/xhtml',
+		MATH: 'http://www.w3.org/1998/Math/MathML',
+		SVG: 'http://www.w3.org/2000/svg',
+		XLINK: 'http://www.w3.org/1999/xlink',
+		XML: 'http://www.w3.org/XML/1998/namespace',
+		XMLNS: 'http://www.w3.org/2000/xmlns/' // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
 	},
 	ignoredNS: {
-		se: 'https://github.com/SVG-Edit/svgedit'
+		SE: 'https://github.com/SVG-Edit/svgedit'
 	}
 };
 
-// return the svgedit.NS with key values switched
+// return the svgedit.NS with key values switched and lowercase
 svgedit.getReverseNS = function() {'use strict';
 	var reverseNS = {};
 	$.each($.extend({}, this.NS, this.ignoredNS), function(name, URI) {
-		reverseNS[URI] = name;
+		reverseNS[URI] = name.toLowerCase();
 	});
 	return reverseNS;
 };
