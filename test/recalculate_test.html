@@ -27,10 +27,10 @@
     };
 
     var root = document.getElementById('root');
-    var svgroot = document.createElementNS(svgedit.NS.svg, 'svg');
+    var svgroot = document.createElementNS(svgedit.NS.SVG, 'svg');
     svgroot.id = 'svgroot';
     root.appendChild(svgroot);
-    var svg = document.createElementNS(svgedit.NS.svg, 'svg');
+    var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
     svgroot.appendChild(svg);
     var elemId = 1;
     var elem;
@@ -58,7 +58,7 @@
 
     function setUpRect() {
       setUp();
-      elem = document.createElementNS(svgedit.NS.svg, 'rect');
+      elem = document.createElementNS(svgedit.NS.SVG, 'rect');
       elem.setAttribute('x', '200');
       elem.setAttribute('y', '150');
       elem.setAttribute('width', '250');
@@ -68,11 +68,11 @@
 
     function setUpTextWithTspan() {
       setUp();
-      elem = document.createElementNS(svgedit.NS.svg, 'text');
+      elem = document.createElementNS(svgedit.NS.SVG, 'text');
       elem.setAttribute('x', '200');
       elem.setAttribute('y', '150');
 
-      var tspan = document.createElementNS(svgedit.NS.svg, 'tspan');
+      var tspan = document.createElementNS(svgedit.NS.SVG, 'tspan');
       tspan.setAttribute('x', '200');
       tspan.setAttribute('y', '150');
 

@@ -26,7 +26,7 @@
     };
 
     function  mockCreateSVGElement(jsonMap) {
-      var elem = document.createElementNS(svgedit.NS.svg, jsonMap['element']);
+      var elem = document.createElementNS(svgedit.NS.SVG, jsonMap['element']);
       for (var attr in jsonMap['attr']) {
         elem.setAttribute(attr, jsonMap['attr'][attr]);
       }
@@ -71,7 +71,7 @@
     }
 
     var EPSILON = 0.001
-    var svg = document.createElementNS(svgedit.NS.svg, 'svg');
+    var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
     var sandbox = document.getElementById('sandbox');
     var svgroot = mockCreateSVGElement({
       'element': 'svg',

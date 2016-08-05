@@ -25,10 +25,10 @@
     };
 
     var root = document.getElementById('root');
-    var svgroot = document.createElementNS(svgedit.NS.svg, 'svg');
+    var svgroot = document.createElementNS(svgedit.NS.SVG, 'svg');
     svgroot.id = 'svgroot';
     root.appendChild(svgroot);
-    var svg = document.createElementNS(svgedit.NS.svg, 'svg');
+    var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
     svgroot.appendChild(svg);
     var elemId = 1;
 
@@ -60,7 +60,7 @@
 
       setUp();
 
-      var rect = document.createElementNS(svgedit.NS.svg, 'rect');
+      var rect = document.createElementNS(svgedit.NS.SVG, 'rect');
       rect.setAttribute('x', '200');
       rect.setAttribute('y', '150');
       rect.setAttribute('width', '250');
@@ -94,7 +94,7 @@
       expect(4);
       setUp();
 
-      var rect = document.createElementNS(svgedit.NS.svg, 'rect');
+      var rect = document.createElementNS(svgedit.NS.SVG, 'rect');
       rect.setAttribute('width', '250');
       rect.setAttribute('height', '120');
       svg.appendChild(rect);
@@ -126,7 +126,7 @@
       expect(3);
       setUp();
 
-      var circle = document.createElementNS(svgedit.NS.svg, 'circle');
+      var circle = document.createElementNS(svgedit.NS.SVG, 'circle');
       circle.setAttribute('cx', '200');
       circle.setAttribute('cy', '150');
       circle.setAttribute('r', '125');
@@ -157,7 +157,7 @@
       expect(3);
       setUp();
 
-      var circle = document.createElementNS(svgedit.NS.svg, 'circle');
+      var circle = document.createElementNS(svgedit.NS.SVG, 'circle');
       circle.setAttribute('cx', '200');
       circle.setAttribute('cy', '150');
       circle.setAttribute('r', '250');
@@ -189,7 +189,7 @@
       expect(4);
       setUp();
 
-      var ellipse = document.createElementNS(svgedit.NS.svg, 'ellipse');
+      var ellipse = document.createElementNS(svgedit.NS.SVG, 'ellipse');
       ellipse.setAttribute('cx', '200');
       ellipse.setAttribute('cy', '150');
       ellipse.setAttribute('rx', '125');
@@ -223,7 +223,7 @@
       expect(4);
       setUp();
 
-      var ellipse = document.createElementNS(svgedit.NS.svg, 'ellipse');
+      var ellipse = document.createElementNS(svgedit.NS.SVG, 'ellipse');
       ellipse.setAttribute('cx', '200');
       ellipse.setAttribute('cy', '150');
       ellipse.setAttribute('rx', '250');
@@ -257,7 +257,7 @@
       expect(4);
       setUp();
 
-      var line = document.createElementNS(svgedit.NS.svg, 'line');
+      var line = document.createElementNS(svgedit.NS.SVG, 'line');
       line.setAttribute('x1', '50');
       line.setAttribute('y1', '100');
       line.setAttribute('x2', '120');
@@ -291,7 +291,7 @@
       expect(4);
       setUp();
 
-      var line = document.createElementNS(svgedit.NS.svg, 'line');
+      var line = document.createElementNS(svgedit.NS.SVG, 'line');
       line.setAttribute('x1', '50');
       line.setAttribute('y1', '100');
       line.setAttribute('x2', '120');
@@ -325,7 +325,7 @@
       expect(2);
       setUp();
 
-      var text = document.createElementNS(svgedit.NS.svg, 'text');
+      var text = document.createElementNS(svgedit.NS.SVG, 'text');
       text.setAttribute('x', '50');
       text.setAttribute('y', '100');
       svg.appendChild(text);

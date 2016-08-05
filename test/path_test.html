@@ -23,7 +23,7 @@
     test('Test svgedit.path.replacePathSeg', function() {
       expect(6);
 
-      var path = document.createElementNS(svgedit.NS.svg, 'path');
+      var path = document.createElementNS(svgedit.NS.SVG, 'path');
       path.setAttribute('d', 'M0,0 L10,11 L20,21Z');
       svgedit.path.init();
       svgedit.path.Path(path);
@@ -42,7 +42,7 @@
     test('Test svgedit.path.Segment.setType simple', function() {
       expect(9);
 
-      var path = document.createElementNS(svgedit.NS.svg, 'path');
+      var path = document.createElementNS(svgedit.NS.SVG, 'path');
       path.setAttribute('d', 'M0,0 L10,11 L20,21Z');
       svgedit.path.init();
       svgedit.path.Path(path);
@@ -67,11 +67,11 @@
       expect(14);
 
       // Setup the dom for a mock control group.
-      var svg = document.createElementNS(svgedit.NS.svg, 'svg');
-      var path = document.createElementNS(svgedit.NS.svg, 'path');
+      var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
+      var path = document.createElementNS(svgedit.NS.SVG, 'path');
       path.setAttribute('d', 'M0,0 C11,12 13,14 15,16 Z');
       svg.appendChild(path);
-      var selectorParentGroup = document.createElementNS(svgedit.NS.svg, 'g');
+      var selectorParentGroup = document.createElementNS(svgedit.NS.SVG, 'g');
       selectorParentGroup.setAttribute('id', 'selectorParentGroup');
       svg.appendChild(selectorParentGroup);
       var mockContext = {
@@ -106,7 +106,7 @@
     test('Test svgedit.path.Segment.move', function() {
       expect(6);
 
-      var path = document.createElementNS(svgedit.NS.svg, 'path');
+      var path = document.createElementNS(svgedit.NS.SVG, 'path');
       path.setAttribute('d', 'M0,0 L10,11 L20,21Z');
       svgedit.path.init();
       svgedit.path.Path(path);
@@ -125,7 +125,7 @@
     test('Test svgedit.path.Segment.moveCtrl', function() {
       expect(14);
 
-      var path = document.createElementNS(svgedit.NS.svg, 'path');
+      var path = document.createElementNS(svgedit.NS.SVG, 'path');
       path.setAttribute('d', 'M0,0 C11,12 13,14 15,16 Z');
       svgedit.path.init();
       svgedit.path.Path(path);

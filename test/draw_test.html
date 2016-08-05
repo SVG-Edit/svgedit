@@ -39,15 +39,15 @@
       'fill':'#ff0000'
     };
 
-    var svg = document.createElementNS(NS.svg, 'svg');
+    var svg = document.createElementNS(NS.SVG, 'svg');
     var sandbox = document.getElementById('sandbox');
     // Firefox throws exception in getBBox() when svg is not attached to DOM.
     sandbox.appendChild(svg);
 
     // Set up <svg> with nonce.
-    var svg_n = document.createElementNS(NS.svg, 'svg');
-    svg_n.setAttributeNS(NS.xmlns, 'xmlns:se', NS.se);
-    svg_n.setAttributeNS(NS.se, 'se:nonce', NONCE);
+    var svg_n = document.createElementNS(NS.SVG, 'svg');
+    svg_n.setAttributeNS(NS.XMLNS, 'xmlns:se', NS.SE);
+    svg_n.setAttributeNS(NS.SE, 'se:nonce', NONCE);
 
     svgedit.units.init({
       // used by svgedit.units.shortFloat - call path: cloneLayer -> copyElem -> convertPath -> pathDSegment -> shortFloat
@@ -55,7 +55,7 @@
     });
 
     function createSVGElement(jsonMap) {
-      var elem = document.createElementNS(svgedit.NS.svg, jsonMap['element']);
+      var elem = document.createElementNS(svgedit.NS.SVG, jsonMap['element']);
       for (var attr in jsonMap['attr']) {
         elem.setAttribute(attr, jsonMap['attr'][attr]);
       }
@@ -63,20 +63,20 @@
     }
 
     var setupSvgWith3Layers = function(svgElem) {
-      var layer1 = document.createElementNS(NS.svg, 'g');
-      var layer1_title = document.createElementNS(NS.svg, 'title');
+      var layer1 = document.createElementNS(NS.SVG, 'g');
+      var layer1_title = document.createElementNS(NS.SVG, 'title');
       layer1_title.appendChild(document.createTextNode(LAYER1));
       layer1.appendChild(layer1_title);
       svgElem.appendChild(layer1);
 
-      var layer2 = document.createElementNS(NS.svg, 'g');
-      var layer2_title = document.createElementNS(NS.svg, 'title');
+      var layer2 = document.createElementNS(NS.SVG, 'g');
+      var layer2_title = document.createElementNS(NS.SVG, 'title');
       layer2_title.appendChild(document.createTextNode(LAYER2));
       layer2.appendChild(layer2_title);
       svgElem.appendChild(layer2);
 
-      var layer3 = document.createElementNS(NS.svg, 'g');
-      var layer3_title = document.createElementNS(NS.svg, 'title');
+      var layer3 = document.createElementNS(NS.SVG, 'g');
+      var layer3_title = document.createElementNS(NS.SVG, 'title');
       layer3_title.appendChild(document.createTextNode(LAYER3));
       layer3.appendChild(layer3_title);
       svgElem.appendChild(layer3);
@@ -162,21 +162,21 @@
 
       doc = new svgedit.draw.Drawing(svg_n);
       equals(doc.getNonce(), NONCE);
-      equals(doc.getSvgElem().getAttributeNS(NS.se, 'nonce'), NONCE);
+      equals(doc.getSvgElem().getAttributeNS(NS.SE, 'nonce'), NONCE);
 
       doc.clearNonce();
       ok(!doc.getNonce());
-      ok(!doc.getSvgElem().getAttributeNS(NS.se, 'se:nonce'));
+      ok(!doc.getSvgElem().getAttributeNS(NS.SE, 'se:nonce'));
 
       doc.setNonce(NONCE);
       equals(doc.getNonce(), NONCE);
-      equals(doc.getSvgElem().getAttributeNS(NS.se, 'nonce'), NONCE);
+      equals(doc.getSvgElem().getAttributeNS(NS.SE, 'nonce'), NONCE);
     });
 
     test('Test getId() and getNextId() without nonce', function() {
       expect(7);
 
-      var elem2 = document.createElementNS(NS.svg, 'circle');
+      var elem2 = document.createElementNS(NS.SVG, 'circle');
       elem2.id = 'svg_2';
       svg.appendChild(elem2);
 
@@ -221,7 +221,7 @@
 
       var prefix = "svg_" + NONCE;
 
-      var elem2 = document.createElementNS(NS.svg, 'circle');
+      var elem2 = document.createElementNS(NS.SVG, 'circle');
       elem2.id = prefix+'_2';
       svg_n.appendChild(elem2);
 
@@ -368,8 +368,8 @@
 
       setupSvgWith3Layers(svg);
 
-      var orphan1 = document.createElementNS(NS.svg, 'rect');
-      var orphan2 = document.createElementNS(NS.svg, 'rect');
+      var orphan1 = document.createElementNS(NS.SVG, 'rect');
+      var orphan2 = document.createElementNS(NS.SVG, 'rect');
       svg.appendChild(orphan1);
       svg.appendChild(orphan2);
 
@@ -800,7 +800,7 @@
       // but that their se:nonce attribute is left alone.
       svgedit.draw.randomizeIds(false, drawing);
       ok(!drawing.getNonce());
-      ok(!!drawing.getSvgElem().getAttributeNS(NS.se, 'nonce'));
+      ok(!!drawing.getSvgElem().getAttributeNS(NS.SE, 'nonce'));
 
       drawing = new svgedit.draw.Drawing(svg.cloneNode(true));
       ok(!drawing.getNonce());

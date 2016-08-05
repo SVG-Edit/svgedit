@@ -28,7 +28,7 @@
     };
 
     var NS = svgedit.NS;
-    var svg = document.createElementNS(NS.svg, 'svg');
+    var svg = document.createElementNS(NS.SVG, 'svg');
     var undoMgr = null;
     var divparent = document.getElementById('divparent');
     var div1 = document.getElementById('div1');
@@ -483,7 +483,7 @@
       ok(!div1.textContent);
 
       // TODO(codedread): Refactor this #href stuff in history.js and svgcanvas.js
-      var rect = document.createElementNS(NS.svg, 'rect');
+      var rect = document.createElementNS(NS.SVG, 'rect');
       var justCalled = null;
       var gethrefvalue = null;
       var sethrefvalue = null;
@@ -513,7 +513,7 @@
       change.apply();
       equals(justCalled, 'setHref');
 
-      var line = document.createElementNS(NS.svg,'line');
+      var line = document.createElementNS(NS.SVG,'line');
       line.setAttributeNS(null, 'class', 'newClass');
       change = new svgedit.history.ChangeElementCommand(line,{class:'oldClass'});
 
