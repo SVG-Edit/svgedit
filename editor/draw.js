@@ -60,7 +60,7 @@ svgedit.draw.randomizeIds = function(enableRandomization, currentDrawing) {
  */
 svgedit.draw.Drawing = function(svgElem, opt_idPrefix) {
 	if (!svgElem || !svgElem.tagName || !svgElem.namespaceURI ||
-		svgElem.tagName != 'svg' || svgElem.namespaceURI != NS.svg) {
+		svgElem.tagName != 'svg' || svgElem.namespaceURI != NS.SVG) {
 		throw "Error: svgedit.draw.Drawing instance initialized without a <svg> element";
 	}
 
@@ -117,7 +117,7 @@ svgedit.draw.Drawing = function(svgElem, opt_idPrefix) {
 	 * @type {!String}
 	 */
 	this.nonce_ = '';
-	var n = this.svgElem_.getAttributeNS(NS.se, 'nonce');
+	var n = this.svgElem_.getAttributeNS(NS.SE, 'nonce');
 	// If already set in the DOM, use the nonce throughout the document
 	// else, if randomizeIds(true) has been called, create and set the nonce.
 	if (!!n && randomize_ids != RandomizeModes.NEVER_RANDOMIZE) {
@@ -158,8 +158,8 @@ svgedit.draw.Drawing.prototype.getNonce = function() {
  * @param {!string|number} n The nonce to set
  */
 svgedit.draw.Drawing.prototype.setNonce = function(n) {
-	this.svgElem_.setAttributeNS(NS.xmlns, 'xmlns:se', NS.se);
-	this.svgElem_.setAttributeNS(NS.se, 'se:nonce', n);
+	this.svgElem_.setAttributeNS(NS.XMLNS, 'xmlns:se', NS.SE);
+	this.svgElem_.setAttributeNS(NS.SE, 'se:nonce', n);
 	this.nonce_ = n;
 };
 

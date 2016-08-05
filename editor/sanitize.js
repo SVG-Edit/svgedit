@@ -101,9 +101,9 @@ $.each(svgWhiteList_, function(elt, atts){
   $.each(atts, function(i, att){
     if (att.indexOf(':') >= 0) {
       var v = att.split(':');
-      attNS[v[1]] = NS[v[0]];
+      attNS[v[1]] = NS[(v[0]).toUpperCase()];
     } else {
-      attNS[att] = att == 'xmlns' ? NS.xmlns : null;
+      attNS[att] = att == 'xmlns' ? NS.XMLNS : null;
     }
   });
   svgWhiteListNS_[elt] = attNS;
@@ -161,8 +161,8 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 
       // Check that an attribute with the correct localName in the correct namespace is on 
       // our whitelist or is a namespace declaration for one of our allowed namespaces
-      if (!(allowedAttrsNS.hasOwnProperty(attrLocalName) && attrNsURI == allowedAttrsNS[attrLocalName] && attrNsURI != NS.xmlns) &&
-        !(attrNsURI == NS.xmlns && REVERSE_NS[attr.value]) )
+      if (!(allowedAttrsNS.hasOwnProperty(attrLocalName) && attrNsURI == allowedAttrsNS[attrLocalName] && attrNsURI != NS.XMLNS) &&
+        !(attrNsURI == NS.XMLNS && REVERSE_NS[attr.value]) )
       {
         node.removeAttributeNS(attrNsURI, attrLocalName);
       }
@@ -206,7 +206,7 @@ svgedit.sanitize.sanitizeSvg = function(node) {
       if (href[0] != '#') {
         // remove the attribute (but keep the element)
         svgedit.utilities.setHref(node, '');
-        node.removeAttributeNS(NS.xlink, 'href');
+        node.removeAttributeNS(NS.XLINK, 'href');
       }
     }
 

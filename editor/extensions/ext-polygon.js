@@ -236,7 +236,7 @@ svgEditor.addExtension("polygon", function(S) {'use strict';
                     points += x + ',' + y + ' ';
                 }
                 
-                //var poly = newFO.createElementNS(NS.svg, 'polygon');
+                //var poly = newFO.createElementNS(NS.SVG, 'polygon');
                 newFO.setAttributeNS(null, 'points', points);
                 newFO.setAttributeNS(null, 'fill', fill);
                 newFO.setAttributeNS(null, 'stroke', strokecolor);

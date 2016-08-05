@@ -143,7 +143,7 @@ svgedit.path.addPointGrip = function(index, x, y) {
 	var pointGrip = svgedit.utilities.getElem('pathpointgrip_'+index);
 	// create it
 	if (!pointGrip) {
-		pointGrip = document.createElementNS(NS.svg, 'circle');
+		pointGrip = document.createElementNS(NS.SVG, 'circle');
 		svgedit.utilities.assignAttributes(pointGrip, {
 			'id': 'pathpointgrip_' + index,
 			'display': 'none',
@@ -179,7 +179,7 @@ svgedit.path.getGripContainer = function() {
 	var c = svgedit.utilities.getElem('pathpointgrip_container');
 	if (!c) {
 		var parent = svgedit.utilities.getElem('selectorParentGroup');
-		c = parent.appendChild(document.createElementNS(NS.svg, 'g'));
+		c = parent.appendChild(document.createElementNS(NS.SVG, 'g'));
 		c.id = 'pathpointgrip_container';
 	}
 	return c;
@@ -189,7 +189,7 @@ svgedit.path.addCtrlGrip = function(id) {
 	var pointGrip = svgedit.utilities.getElem('ctrlpointgrip_'+id);
 	if (pointGrip) {return pointGrip;}
 
-	pointGrip = document.createElementNS(NS.svg, 'circle');
+	pointGrip = document.createElementNS(NS.SVG, 'circle');
 	svgedit.utilities.assignAttributes(pointGrip, {
 		'id': 'ctrlpointgrip_' + id,
 		'display': 'none',
@@ -209,7 +209,7 @@ svgedit.path.getCtrlLine = function(id) {
 	var ctrlLine = svgedit.utilities.getElem('ctrlLine_'+id);
 	if (ctrlLine) {return ctrlLine;}
 
-	ctrlLine = document.createElementNS(NS.svg, 'line');
+	ctrlLine = document.createElementNS(NS.SVG, 'line');
 	svgedit.utilities.assignAttributes(ctrlLine, {
 		'id': 'ctrlLine_'+id,
 		'stroke': '#555',
@@ -315,7 +315,7 @@ svgedit.path.getSegSelector = function(seg, update) {
 	if (!segLine) {
 		var pointGripContainer = svgedit.path.getGripContainer();
 		// create segline
-		segLine = document.createElementNS(NS.svg, 'path');
+		segLine = document.createElementNS(NS.SVG, 'path');
 		svgedit.utilities.assignAttributes(segLine, {
 			'id': 'segline_' + index,
 			'display': 'none',

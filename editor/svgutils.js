@@ -295,13 +295,13 @@ svgedit.utilities.getUrlFromAttr = function(attrVal) {
 // Function: svgedit.utilities.getHref
 // Returns the given element's xlink:href value
 svgedit.utilities.getHref = function(elem) {
-	return elem.getAttributeNS(NS.xlink, 'href');
+	return elem.getAttributeNS(NS.XLINK, 'href');
 };
 
 // Function: svgedit.utilities.setHref
 // Sets the given element's xlink:href value
 svgedit.utilities.setHref = function(elem, val) {
-	elem.setAttributeNS(NS.xlink, 'xlink:href', val);
+	elem.setAttributeNS(NS.XLINK, 'xlink:href', val);
 };
 
 // Function: findDefs
@@ -310,11 +310,11 @@ svgedit.utilities.setHref = function(elem, val) {
 // The document's <defs> element, create it first if necessary
 svgedit.utilities.findDefs = function() {
 	var svgElement = editorContext_.getSVGContent();
-	var defs = svgElement.getElementsByTagNameNS(NS.svg, 'defs');
+	var defs = svgElement.getElementsByTagNameNS(NS.SVG, 'defs');
 	if (defs.length > 0) {
 		defs = defs[0];
 	} else {
-		defs = svgElement.ownerDocument.createElementNS(NS.svg, 'defs');
+		defs = svgElement.ownerDocument.createElementNS(NS.SVG, 'defs');
 		if (svgElement.firstChild) {
 			// first child is a comment, so call nextSibling
 			svgElement.insertBefore(defs, svgElement.firstChild.nextSibling);
@@ -868,7 +868,7 @@ svgedit.utilities.getBBoxWithTransform = function(elem, addSvgElementFromJson, p
 			//
 			// Must use clone else FF freaks out
 			//var clone = elem.cloneNode(true);
-			//var g = document.createElementNS(NS.svg, 'g');
+			//var g = document.createElementNS(NS.SVG, 'g');
 			//var parent = elem.parentNode;
 			//parent.appendChild(g);
 			//g.appendChild(clone);
@@ -1011,7 +1011,7 @@ if (svgedit.browser.supportsSelectors()) {
 		return domdoc_.evaluate(
 			'svg:svg[@id="svgroot"]//svg:*[@id="'+id+'"]',
 			domcontainer_,
-			function() { return svgedit.NS.svg; },
+			function() { return svgedit.NS.SVG; },
 			9,
 			null).singleNodeValue;
 	};
@@ -1033,8 +1033,8 @@ if (svgedit.browser.supportsSelectors()) {
 svgedit.utilities.assignAttributes = function(node, attrs, suspendLength, unitCheck) {
 	var i;
 	for (i in attrs) {
-		var ns = (i.substr(0,4) === 'xml:' ? NS.xml :
-			i.substr(0,6) === 'xlink:' ? NS.xlink : null);
+		var ns = (i.substr(0,4) === 'xml:' ? NS.XML :
+			i.substr(0,6) === 'xlink:' ? NS.XLINK : null);
 
 		if(ns) {
 			node.setAttributeNS(ns, i, attrs[i]);

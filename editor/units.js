@@ -64,9 +64,9 @@ svgedit.units.init = function(elementContainer) {
 	elementContainer_ = elementContainer;
 
 	// Get correct em/ex values by creating a temporary SVG.
-	var svg = document.createElementNS(NS.svg, 'svg');
+	var svg = document.createElementNS(NS.SVG, 'svg');
 	document.body.appendChild(svg);
-	var rect = document.createElementNS(NS.svg, 'rect');
+	var rect = document.createElementNS(NS.SVG, 'rect');
 	rect.setAttribute('width', '1em');
 	rect.setAttribute('height', '1ex');
 	rect.setAttribute('x', '1in');

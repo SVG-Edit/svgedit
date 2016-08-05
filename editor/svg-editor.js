@@ -146,7 +146,7 @@ TODOS
 				preventURLContentLoading: false,
 				// IGNORED NAMESPACES
 				ignoredNS: {
-					//example: 'https://example.com/svg-example-extension'
+					//EXAMPLE: 'https://example.com/svg-example-extension'
 				},
 				// EXTENSION CONFIGURATION (see also preventAllURLConfig)
 				lockExtensions: false, // Disallowed in URL setting
@@ -4160,7 +4160,7 @@ TODOS
 			testEl.removeAttribute('style');
 			var svgdocbox = paintBox.fill.rect.ownerDocument;
 			// Use this to test support for blur element. Seems to work to test support in Webkit
-			var blurTest = svgdocbox.createElementNS(svgedit.NS.svg, 'feGaussianBlur');
+			var blurTest = svgdocbox.createElementNS(svgedit.NS.SVG, 'feGaussianBlur');
 			if (blurTest.stdDeviationX === undefined) {
 				$('#tool_blur').hide();
 			}

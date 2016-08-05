@@ -78,7 +78,7 @@ var svgdoc = container.ownerDocument;
 
 // This is a container for the document being edited, not the document itself.
 var svgroot = svgdoc.importNode(svgedit.utilities.text2xml(
-		'<svg id="svgroot" xmlns="' + NS.svg + '" xlinkns="' + NS.xlink + '" ' +
+		'<svg id="svgroot" xmlns="' + NS.SVG + '" xlinkns="' + NS.XLINK + '" ' +
 			'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
 			'<defs>' +
 				'<filter id="canvashadow" filterUnits="objectBoundingBox">' +
@@ -94,7 +94,7 @@ var svgroot = svgdoc.importNode(svgedit.utilities.text2xml(
 container.appendChild(svgroot);
 
 // The actual element that represents the final output SVG element
-var svgcontent = svgdoc.createElementNS(NS.svg, 'svg');
+var svgcontent = svgdoc.createElementNS(NS.SVG, 'svg');
 
 // This function resets the svgcontent element while keeping it in the DOM.
 var clearSvgContentElement = canvas.clearSvgContentElement = function() {
@@ -108,9 +108,9 @@ var clearSvgContentElement = canvas.clearSvgContentElement = function() {
 		x: dimensions[0],
 		y: dimensions[1],
 		overflow: curConfig.show_outside_canvas ? 'visible' : 'hidden',
-		xmlns: NS.svg,
-		'xmlns:se': NS.se,
-		'xmlns:xlink': NS.xlink
+		xmlns: NS.SVG,
+		'xmlns:se': NS.SE,
+		'xmlns:xlink': NS.XLINK
 	}).appendTo(svgroot);
 
 	// TODO: make this string optional and set by the client
@@ -200,7 +200,7 @@ var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
 		shape = null;
 	}
 	if (!shape) {
-		shape = svgdoc.createElementNS(NS.svg, data.element);
+		shape = svgdoc.createElementNS(NS.SVG, data.element);
 		if (current_layer) {
 			(current_group || current_layer).appendChild(shape);
 		}
@@ -399,7 +399,7 @@ var ref_attrs = ['clip-path', 'fill', 'filter', 'marker-end', 'marker-mid', 'mar
 var elData = $.data;
 
 // Animation element to change the opacity of any newly created element
-var opac_ani = document.createElementNS(NS.svg, 'animate');
+var opac_ani = document.createElementNS(NS.SVG, 'animate');
 $(opac_ani).attr({
 	attributeName: 'opacity',
 	begin: 'indefinite',
@@ -434,7 +434,7 @@ var restoreRefElems = function(elem) {
 
 (function() {
 	// TODO For Issue 208: this is a start on a thumbnail
-	//	var svgthumb = svgdoc.createElementNS(NS.svg, 'use');
+	//	var svgthumb = svgdoc.createElementNS(NS.SVG, 'use');
 	//	svgthumb.setAttribute('width', '100');
 	//	svgthumb.setAttribute('height', '100');
 	//	svgedit.utilities.setHref(svgthumb, '#svgcontent');
@@ -673,7 +673,7 @@ var getVisibleElementsAndBBoxes = this.getVisibleElementsAndBBoxes = function(pa
 // Parameters:
 // elem - SVG element to wrap
 var groupSvgElem = this.groupSvgElem = function(elem) {
-	var g = document.createElementNS(NS.svg, 'g');
+	var g = document.createElementNS(NS.SVG, 'g');
 	elem.parentNode.replaceChild(g, elem);
 	$(g).append(elem).data('gsvg', elem)[0].id = getNextId();
 };
@@ -730,7 +730,7 @@ this.prepareSvg = function(newDoc) {
 
 	// convert paths into absolute commands
 	var i, path, len,
-		paths = newDoc.getElementsByTagNameNS(NS.svg, 'path');
+		paths = newDoc.getElementsByTagNameNS(NS.SVG, 'path');
 	for (i = 0, len = paths.length; i < len; ++i) {
 		path = paths[i];
 		path.setAttribute('d', pathActions.convertPath(path));
@@ -1023,7 +1023,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	
 	// for foreign content, go up until we find the foreignObject
 	// WebKit browsers set the mouse target to the svgcanvas div 
-	if ([NS.math, NS.html].indexOf(mouse_target.namespaceURI) >= 0 &&
+	if ([NS.MATH, NS.HTML].indexOf(mouse_target.namespaceURI) >= 0 && 
 		mouse_target.id != 'svgcanvas') 
 	{
 		while (mouse_target.nodeName != 'foreignObject') {
@@ -2347,7 +2347,7 @@ textActions = canvas.textActions = (function() {
 		}
 		cursor = svgedit.utilities.getElem('text_cursor');
 		if (!cursor) {
-			cursor = document.createElementNS(NS.svg, 'line');
+			cursor = document.createElementNS(NS.SVG, 'line');
 			svgedit.utilities.assignAttributes(cursor, {
 				id: 'text_cursor',
 				stroke: '#333',
@@ -2391,7 +2391,7 @@ textActions = canvas.textActions = (function() {
 		selblock = svgedit.utilities.getElem('text_selectblock');
 		if (!selblock) {
 
-			selblock = document.createElementNS(NS.svg, 'path');
+			selblock = document.createElementNS(NS.SVG, 'path');
 			svgedit.utilities.assignAttributes(selblock, {
 				id: 'text_selectblock',
 				fill: 'green',
@@ -2856,7 +2856,7 @@ pathActions = canvas.pathActions = function() {
 				}
 
 				if (!stretchy) {
-					stretchy = document.createElementNS(NS.svg, 'path');
+					stretchy = document.createElementNS(NS.SVG, 'path');
 					svgedit.utilities.assignAttributes(stretchy, {
 						id: 'path_stretch_line',
 						stroke: '#22C',
@@ -3649,7 +3649,7 @@ pathActions = canvas.pathActions = function() {
 // Returns:
 // The amount of elements that were removed
 var removeUnusedDefElems = this.removeUnusedDefElems = function() {
-	var defs = svgcontent.getElementsByTagNameNS(NS.svg, 'defs');
+	var defs = svgcontent.getElementsByTagNameNS(NS.SVG, 'defs');
 	if (!defs || !defs.length) {return 0;}
 	
 //	if (!defs.firstChild) {return;}
@@ -3659,7 +3659,7 @@ var removeUnusedDefElems = this.removeUnusedDefElems = function() {
 	var attrs = ['fill', 'stroke', 'filter', 'marker-start', 'marker-mid', 'marker-end'];
 	var alen = attrs.length;
 	
-	var all_els = svgcontent.getElementsByTagNameNS(NS.svg, '*');
+	var all_els = svgcontent.getElementsByTagNameNS(NS.SVG, '*');
 	var all_len = all_els.length;
 	
 	var i, j;
@@ -3796,7 +3796,7 @@ this.svgToString = function(elem, indent) {
 				res.h = svgedit.units.convertUnit(res.h, unit) + unit;
 			}
 			
-			out.push(' width="' + res.w + '" height="' + res.h + '"' + vb + ' xmlns="'+NS.svg+'"');
+			out.push(' width="' + res.w + '" height="' + res.h + '"' + vb + ' xmlns="'+NS.SVG+'"');
 			
 			var nsuris = {};
 			
@@ -3872,7 +3872,7 @@ this.svgToString = function(elem, indent) {
 					
 					// map various namespaces to our fixed namespace prefixes
 					// (the default xmlns attribute itself does not get a prefix)
-					if (!attr.namespaceURI || attr.namespaceURI == NS.svg || nsMap[attr.namespaceURI]) {
+					if (!attr.namespaceURI || attr.namespaceURI == NS.SVG || nsMap[attr.namespaceURI]) {
 						out.push(attr.nodeName); out.push('="');
 						out.push(attrVal); out.push('"');
 					}
@@ -4342,7 +4342,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 		// See if other elements reference this symbol
 		var has_more = $(svgcontent).find('use:data(symbol)').length;
 			
-		var g = svgdoc.createElementNS(NS.svg, 'g');
+		var g = svgdoc.createElementNS(NS.SVG, 'g');
 		var childs = elem.childNodes;
 		
 		var i;
@@ -4478,7 +4478,7 @@ this.setSvgString = function(xmlString) {
 					if (m) {
 						var url = decodeURIComponent(m[1]);
 						$(new Image()).load(function () {
-							image.setAttributeNS(NS.xlink, 'xlink:href', url);
+							image.setAttributeNS(NS.XLINK, 'xlink:href', url);
 						}).attr('src', url);
 					}
 				}
@@ -4680,7 +4680,7 @@ this.importSvgString = function(xmlString) {
 			// Hack to make recalculateDimensions understand how to scale
 			ts = 'translate(0) ' + ts + ' translate(0)';
 			
-			symbol = svgdoc.createElementNS(NS.svg, 'symbol');
+			symbol = svgdoc.createElementNS(NS.SVG, 'symbol');
 			var defs = svgedit.utilities.findDefs();
 			
 			if (svgedit.browser.isGecko()) {
@@ -4712,7 +4712,7 @@ this.importSvgString = function(xmlString) {
 			batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(symbol));
 		}
 		
-		var use_el = svgdoc.createElementNS(NS.svg, 'use');
+		var use_el = svgdoc.createElementNS(NS.SVG, 'use');
 		use_el.id = getNextId();
 		setHref(use_el, '#' + symbol.id);
 		
@@ -5124,7 +5124,7 @@ this.setGroupTitle = function(val) {
 		title.textContent = val;
 	} else {
 		// Add title element
-		title = svgdoc.createElementNS(NS.svg, 'title');
+		title = svgdoc.createElementNS(NS.SVG, 'title');
 		title.textContent = val;
 		$(elem).prepend(title);
 		batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(title));
@@ -5159,7 +5159,7 @@ this.setDocumentTitle = function(newtitle) {
 		}
 	}
 	if (!doc_title) {
-		doc_title = svgdoc.createElementNS(NS.svg, 'title');
+		doc_title = svgdoc.createElementNS(NS.SVG, 'title');
 		svgcontent.insertBefore(doc_title, svgcontent.firstChild);
 	} 
 	
@@ -5180,9 +5180,9 @@ this.setDocumentTitle = function(newtitle) {
 // add - Boolean to indicate whether or not to add the namespace value
 this.getEditorNS = function(add) {
 	if (add) {
-		svgcontent.setAttribute('xmlns:se', NS.se);
+		svgcontent.setAttribute('xmlns:se', NS.SE);
 	}
-	return NS.se;
+	return NS.SE;
 };
 
 // Function: setResolution
@@ -5453,8 +5453,8 @@ var findDuplicateGradient = function(grad) {
 		}
 		
 		// else could be a duplicate, iterate through stops
-		var stops = grad.getElementsByTagNameNS(NS.svg, 'stop');
-		var ostops = og.getElementsByTagNameNS(NS.svg, 'stop');
+		var stops = grad.getElementsByTagNameNS(NS.SVG, 'stop');
+		var ostops = og.getElementsByTagNameNS(NS.SVG, 'stop');
 
 		if (stops.length != ostops.length) {
 			continue;
@@ -7110,7 +7110,7 @@ this.setBackground = function(color, url) {
 	border.setAttribute('fill', color);
 	if (url) {
 		if (!bg_img) {
-			bg_img = svgdoc.createElementNS(NS.svg, 'image');
+			bg_img = svgdoc.createElementNS(NS.SVG, 'image');
 			svgedit.utilities.assignAttributes(bg_img, {
 				'id': 'background_image',
 				'width': '100%',

@@ -46,8 +46,8 @@ var Layer = svgedit.draw.Layer = function(name, group, svgElem) {
 	if (svgElem) {
 		// Create a group element with title and add it to the DOM.
 		var svgdoc = svgElem.ownerDocument;
-		this.group_ = svgdoc.createElementNS(NS.svg, "g");
-		var layer_title = svgdoc.createElementNS(NS.svg, "title");
+		this.group_ = svgdoc.createElementNS(NS.SVG, "g");
+		var layer_title = svgdoc.createElementNS(NS.SVG, "title");
 		layer_title.textContent = name;
 		this.group_.appendChild(layer_title);
 		if (group) {

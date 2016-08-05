@@ -18,7 +18,7 @@ if (!svgedit.transformlist) {
 	svgedit.transformlist = {};
 }
 
-var svgroot = document.createElementNS(svgedit.NS.svg, 'svg');
+var svgroot = document.createElementNS(svgedit.NS.SVG, 'svg');
 
 // Helper function.
 function transformToString(xform) {
