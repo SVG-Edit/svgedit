@@ -189,6 +189,8 @@ var selectedElements = [];
 //
 // Returns: The new element
 var addSvgElementFromJson = this.addSvgElementFromJson = function addSvgElementFromJson(data) {
+	if(typeof(data) == 'string') return svgdoc.createTextNode(data);
+
 	var shape = svgedit.utilities.getElem(data.attr.id);
 	// if shape is a path but we need to create a rect/ellipse, then remove the path
 	var current_layer = getCurrentDrawing().getCurrentLayer();
