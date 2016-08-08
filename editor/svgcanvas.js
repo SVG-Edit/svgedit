@@ -3812,7 +3812,11 @@ this.svgToString = function(elem, indent) {
 		
 				$.each(this.attributes, function(i, attr) {
 					var uri = attr.namespaceURI;
-					if (uri && !nsuris[uri] && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml' ) {
+
+					// Allow any alias of ignored namespaces
+					if(attr.prefix == 'xmlns' && attr.value in svgedit.ignoredNS) {
+						out.push(' xmlns:' + attr.localName + '="' + attr.value +'"');
+					} else if (uri && !nsuris[uri] && uri in nsMap && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml' ) {
 						nsuris[uri] = true;
 						out.push(' xmlns:' + nsMap[uri] + '="' + uri +'"');
 					}
@@ -3831,7 +3835,7 @@ this.svgToString = function(elem, indent) {
 				// only serialize attributes we don't use internally
 				if (attrVal != '' && attr_names.indexOf(attr.localName) == -1) {
 
-					if (!attr.namespaceURI || nsMap[attr.namespaceURI]) {
+					if (!attr.namespaceURI || nsMap[attr.namespaceURI] || attr.namespaceURI in svgedit.ignoredNS) {
 						out.push(' '); 
 						out.push(attr.nodeName); out.push('="');
 						out.push(attrVal); out.push('"');
@@ -3872,7 +3876,7 @@ this.svgToString = function(elem, indent) {
 					
 					// map various namespaces to our fixed namespace prefixes
 					// (the default xmlns attribute itself does not get a prefix)
-					if (!attr.namespaceURI || attr.namespaceURI == NS.SVG || nsMap[attr.namespaceURI]) {
+					if (!attr.namespaceURI || nsMap[attr.namespaceURI] || attr.namespaceURI in svgedit.ignoredNS) {
 						out.push(attr.nodeName); out.push('="');
 						out.push(attrVal); out.push('"');
 					}

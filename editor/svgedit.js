@@ -10,20 +10,21 @@ svgedit = {
 	NS: {
 		HTML: 'http://www.w3.org/1999/xhtml',
 		MATH: 'http://www.w3.org/1998/Math/MathML',
+		SE: 'https://github.com/SVG-Edit/svgedit',
 		SVG: 'http://www.w3.org/2000/svg',
 		XLINK: 'http://www.w3.org/1999/xlink',
 		XML: 'http://www.w3.org/XML/1998/namespace',
 		XMLNS: 'http://www.w3.org/2000/xmlns/' // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
 	},
 	ignoredNS: {
-		SE: 'https://github.com/SVG-Edit/svgedit'
-	}
+		// No namespaces ignored by default
+	},
 };
 
 // return the svgedit.NS with key values switched and lowercase
 svgedit.getReverseNS = function() {'use strict';
 	var reverseNS = {};
-	$.each($.extend({}, this.NS, this.ignoredNS), function(name, URI) {
+	$.each(this.NS, function(name, URI) {
 		reverseNS[URI] = name.toLowerCase();
 	});
 	return reverseNS;

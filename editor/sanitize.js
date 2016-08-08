@@ -141,6 +141,7 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 
   var allowedAttrs = svgWhiteList_[node.nodeName];
   var allowedAttrsNS = svgWhiteListNS_[node.nodeName];
+  if(!('ignoredNSUsedAlias' in svgedit)) svgedit.ignoredNSUsedAlias = {};
   var i;
   // if this element is supported, sanitize it
   if (typeof allowedAttrs !== 'undefined') {
@@ -154,10 +155,18 @@ svgedit.sanitize.sanitizeSvg = function(node) {
       var attrLocalName = attr.localName;
       var attrNsURI = attr.namespaceURI;
 
-      // Ignore attributes from custom namespaces and their definitions
+      // Namespaces
       var splitNS = attrName.match(/([^:]+):(.*$)/);
-      if(splitNS && splitNS[1] in svgedit.ignoredNS) continue;
-      if(splitNS && splitNS[1] == 'xmlns' && splitNS[2] in svgedit.ignoredNS) continue;
+      if(splitNS) {
+          // Detect initialization of namespaces and only allow the ones on the ignoredNS list
+          if(splitNS[1] == 'xmlns' && attr.value in svgedit.ignoredNS) {
+              svgedit.ignoredNSUsedAlias[splitNS[2]] = attr.value;
+              continue;
+          }
+
+          // Ignore attributes from the allowed namespaces
+          if(splitNS[1] in svgedit.ignoredNSUsedAlias) continue;
+      }
 
       // Check that an attribute with the correct localName in the correct namespace is on 
       // our whitelist or is a namespace declaration for one of our allowed namespaces

@@ -146,7 +146,9 @@ TODOS
 				preventURLContentLoading: false,
 				// IGNORED NAMESPACES
 				ignoredNS: {
-					//EXAMPLE: 'https://example.com/svg-example-extension'
+					// Example:
+					// 'https://example.com/svg-example-extension': 1,
+					// 'https://example.com/svg-other-extension': 1
 				},
 				// EXTENSION CONFIGURATION (see also preventAllURLConfig)
 				lockExtensions: false, // Disallowed in URL setting
