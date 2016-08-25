@@ -120,17 +120,17 @@ svgEditor.addExtension('shapes', function() {'use strict';
 		var lib = library[cat_id];
 
 		if (!lib) {
-			$('#shape_buttons').html('Loading...');
-			$.getJSON(svgEditor.curConfig.extPath + 'shapelib/' + cat_id + '.json', function(result) {
-				cur_lib = library[cat_id] = {
-					data: result.data,
-					size: result.size,
-					fill: result.fill
-				};
-				makeButtons(cat_id, result);
-				loadIcons();
-			});
-			return;
+		    $('#shape_buttons').html('Loading...');
+		    $.getJSON(svgEditor.curConfig.extPath + 'shapelib/' + cat_id + '.json',function (result) {
+		        cur_lib = library[cat_id] = {
+		            data: result.data
+		            , size: result.size
+		            , fill: result.fill
+		        };
+		        makeButtons(cat_id, result);
+		        loadIcons();
+		    });
+		    return;
 		}
 		cur_lib = lib;
 		if (!lib.buttons.length) {makeButtons(cat_id, lib);}
@@ -141,6 +141,7 @@ svgEditor.addExtension('shapes', function() {'use strict';
 		svgicons: svgEditor.curConfig.extPath + 'ext-shapes.xml',
 		buttons: [{
 			id: 'tool_shapelib',
+		    icon: svgEditor.curConfig.extPath + 'ext-shapes.png',
 			type: 'mode_flyout', // _flyout
 			position: 6,
 			title: 'Shape library',
