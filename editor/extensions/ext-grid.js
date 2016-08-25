@@ -148,6 +148,7 @@ svgEditor.addExtension('view_grid', function() { 'use strict';
 		},
 		buttons: [{
 			id: 'view_grid',
+		    icon: svgEditor.curConfig.extPath + 'grid-icon.png',
 			type: 'context',
 			panel: 'editor_panel',
 			title: 'Show/Hide Grid',
