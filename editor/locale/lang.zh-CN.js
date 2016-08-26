@@ -3,7 +3,7 @@ svgEditor.readLang({
 	lang: "zh-CN",
 	dir : "ltr",
 	common: {
-		"ok": "保存",
+		"ok": "确定",
 		"cancel": "取消",
 		"key_backspace": "退格", 
 		"key_del": "删除", 
@@ -15,7 +15,7 @@ svgEditor.readLang({
 		"height": "高度"
 	},
 	misc: {
-		"powered_by": "版权所有"
+		"powered_by": "Powered by"
 	}, 
 	ui: {
 		"toggle_stroke_tools": "显示/隐藏更式边线工具",
