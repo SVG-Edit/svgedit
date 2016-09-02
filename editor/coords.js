@@ -311,6 +311,15 @@ svgedit.coords.remapElement = function(selected, changes, m) {
 
       selected.setAttribute('d', dstr);
       break;
+    default:
+        // If we don't have any way to specifically handle it, just keep a normal matrix transform
+        // E.g. ignored namespace elements, which we might not now everything about
+        chlist = svgedit.transformlist.getTransformList(selected);
+        mt = svgroot.createSVGTransform();
+        mt.setMatrix(svgedit.math.matrixMultiply(svgedit.math.transformListToTransform(chlist).matrix, m));
+        chlist.clear();
+        chlist.appendItem(mt);
+      break;
     }
 };
 

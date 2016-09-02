@@ -492,7 +492,7 @@ svgedit.utilities.getBBox = function(elem) {
 		break;
 	default:
 
-		if(elname === 'use') {
+		if(elname === 'use' || elem.prefix in svgedit.ignoredNSUsedAlias) {
 			ret = groupBBFix(selected, true);
 		}
 		if(elname === 'use' || ( elname === 'foreignObject' && svgedit.browser.isWebkit() ) ) {
