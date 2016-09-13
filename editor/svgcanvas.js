@@ -1074,6 +1074,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		r_start_x = null,
 		r_start_y = null,
 		init_bbox = {},
+		init_scale = {x:1, y:1},
 		freehand = {
 			minx: null,
 			miny: null,
@@ -1277,6 +1278,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				// Getting the BBox from the selection box, since we know we
 				// want to orient around it
 				init_bbox = svgedit.utilities.getBBox($('#selectedBox0')[0]);
+				var init_matrix = mouse_target.transform.baseVal.consolidate()
+					.matrix;
+				init_scale = {
+					x: init_matrix.a,
+					y: init_matrix.d,
+				};
+
 				var bb = {};
 				$.each(init_bbox, function(key, val) {
 					bb[key] = val/current_zoom;
@@ -1623,6 +1631,12 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				tlist = svgedit.transformlist.getTransformList(selected);
 				var hasMatrix = svgedit.math.hasMatrixTransform(tlist);
 				box = hasMatrix ? init_bbox : svgedit.utilities.getBBox(selected);
+
+				if(selected.prefix in svgedit.ignoredNSUsedAlias) {
+					box.width = init_bbox.width;
+					box.height = init_bbox.height;
+				}
+
 				var left = box.x, top = box.y, width = box.width,
 					height = box.height;
 					dx = (x-start_x);
@@ -1660,13 +1674,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				// if we are dragging on the north side, then adjust the scale factor and ty
 				if (current_resize_mode.indexOf('n') >= 0) {
 					sy = height ? (height-dy)/height : 1;
-					ty = height;
+					ty = height/init_scale.y;
 				}
 				
 				// if we dragging on the east side, then adjust the scale factor and tx
 				if (current_resize_mode.indexOf('w') >= 0) {
 					sx = width ? (width-dx)/width : 1;
-					tx = width;
+					tx = width/init_scale.x;
 				}
 				
 				// update the transform list with translate,scale,translate
@@ -1702,6 +1716,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				}
 
 				selectorManager.requestSelector(selected).resize();
+
+				fixed_bbox = svgedit.utilities.getBBox($('#selectedBox0')[0]);
+				var bb = {};
+				$.each(fixed_bbox, function(key, val) {
+					bb[key] = val/current_zoom;
+				});
+				fixed_bbox = bb;
 				
 				call('transition', selectedElements);
 				
