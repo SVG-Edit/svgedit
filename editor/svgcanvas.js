@@ -565,7 +565,11 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 		}    
                 rubberBBox = bb;
 	} else {
-		rubberBBox = svgcontent.createSVGRect(rect.x, rect.y, rect.width, rect.height);
+		rubberBBox = svgcontent.createSVGRect();
+		rubberBBox.x = rect.x;
+		rubberBBox.y = rect.y;
+		rubberBBox.width = rect.width;
+		rubberBBox.height = rect.height;
 	}
 	
 	var resultList = null;
