@@ -816,68 +816,20 @@ function bBoxCanBeOptimizedOverNativeGetBBox(angle, hasMatrixTransform) {
 // Get bounding box that includes any transforms.
 //
 // Parameters:
-// elem - The DOM element to be converted
-// addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJson
-// pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
+// elem - The DOM element to get the bounding box of
 //
 // Returns:
 // A single bounding box object
-svgedit.utilities.getBBoxWithTransform = function(elem, addSvgElementFromJson, pathActions) {
-	// TODO: Fix issue with rotated groups. Currently they work
-	// fine in FF, but not in other browsers (same problem mentioned
-	// in Issue 339 comment #2).
+svgedit.utilities.getBBoxWithTransform = function(elem) {
+    var bgRect = $('#canvasBackground')[0].getBoundingClientRect();
+    var elRect = elem.getBoundingClientRect();
 
-	var bb = svgedit.utilities.getBBox(elem);
-
-	if (!bb) {
-		return null;
-	}
-
-	var tlist = svgedit.transformlist.getTransformList(elem);
-	var angle = svgedit.utilities.getRotationAngleFromTransformList(tlist);
-	var hasMatrixTransform = svgedit.math.hasMatrixTransform(tlist);
-
-	if (angle || hasMatrixTransform) {
-
-		var good_bb = false;
-		if (bBoxCanBeOptimizedOverNativeGetBBox(angle, hasMatrixTransform)) {
-			// Get the BBox from the raw path for these elements
-			// TODO: why ellipse and not circle
-			var elemNames = ['ellipse', 'path', 'line', 'polyline', 'polygon'];
-			if (elemNames.indexOf(elem.tagName) >= 0) {
-				bb = good_bb = svgedit.utilities.getBBoxOfElementAsPath(elem, addSvgElementFromJson, pathActions);
-			} else if (elem.tagName == 'rect') {
-				// Look for radius
-				var rx = elem.getAttribute('rx');
-				var ry = elem.getAttribute('ry');
-				if (rx || ry) {
-					bb = good_bb = svgedit.utilities.getBBoxOfElementAsPath(elem, addSvgElementFromJson, pathActions);
-				}
-			}
-		}
-
-		if (!good_bb) {
-
-			var matrix = svgedit.math.transformListToTransform(tlist).matrix;
-			bb = svgedit.math.transformBox(bb.x, bb.y, bb.width, bb.height, matrix).aabox;
-
-			// Old technique that was exceedingly slow with large documents.
-			//
-			// Accurate way to get BBox of rotated element in Firefox:
-			// Put element in group and get its BBox
-			//
-			// Must use clone else FF freaks out
-			//var clone = elem.cloneNode(true);
-			//var g = document.createElementNS(NS.SVG, 'g');
-			//var parent = elem.parentNode;
-			//parent.appendChild(g);
-			//g.appendChild(clone);
-			//var bb2 = svgedit.utilities.bboxToObj(g.getBBox());
-			//parent.removeChild(g);
-		}
-
-	}
-	return bb;
+    return {
+        x: elRect.left - bgRect.left,
+        y: elRect.top - bgRect.top,
+        width: elRect.width,
+        height: elRect.height,
+    };
 };
 
 // TODO: This is problematic with large stroke-width and, for example, a single horizontal line. The calculated BBox extends way beyond left and right sides.

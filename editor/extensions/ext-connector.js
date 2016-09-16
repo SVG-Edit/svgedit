@@ -336,6 +336,9 @@ svgEditor.addExtension("Connector", function(S) {
 				if (started) {return;}
 
 				var mouse_target = e.target;
+                if(mouse_target.parentElement.prefix in
+                        svgedit.ignoredNSUsedAlias)
+                    mouse_target = mouse_target.parentElement;
 				
 				var parents = $(mouse_target).parents();
 				
@@ -347,7 +350,7 @@ svgEditor.addExtension("Connector", function(S) {
 					start_elem = fo.length ? fo[0] : mouse_target;
 					
 					// Get center of source element
-					var bb = svgCanvas.getStrokedBBox([start_elem]);
+					var bb = svgedit.utilities.getBBoxWithTransform(start_elem);
 					var x = bb.x + bb.width/2;
 					var y = bb.y + bb.height/2;
 					
@@ -427,6 +430,9 @@ svgEditor.addExtension("Connector", function(S) {
 			if(svgCanvas.getMode() == "connector") {
 				var fo = $(mouse_target).closest("foreignObject");
 				if (fo.length) {mouse_target = fo[0];}
+                if(mouse_target.parentElement.prefix in
+                        svgedit.ignoredNSUsedAlias)
+                    mouse_target = mouse_target.parentElement;
 				
 				var parents = $(mouse_target).parents();
 
