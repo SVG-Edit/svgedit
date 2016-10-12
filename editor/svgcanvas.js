@@ -1976,7 +1976,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			case 'select':
 				if (selectedElements[0] != null) {
 					// if we only have one selected element
-					if (selectedElements[1] == null) {
+					if (selectedElements[1] == null && !(selectedElements[0].prefix in svgedit.ignoredNSUsedAlias)) {
 						// set our current stroke/fill properties to the element's
 						var selected = selectedElements[0];
 						switch ( selected.tagName ) {

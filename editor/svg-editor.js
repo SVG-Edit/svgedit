@@ -1487,7 +1487,7 @@ TODOS
 			// This function also updates the opacity and id elements that are in the context panel
 			var updateToolbar = function() {
 				var i, len;
-				if (selectedElement != null) {
+				if (selectedElement != null && !(selectedElement.prefix in svgedit.ignoredNSUsedAlias)) {
 					switch (selectedElement.tagName) {
 					case 'use':
 					case 'image':
