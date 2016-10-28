@@ -1074,7 +1074,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		r_start_x = null,
 		r_start_y = null,
 		init_bbox = {},
-		init_scale = {x:1, y:1},
 		freehand = {
 			minx: null,
 			miny: null,
@@ -1278,12 +1277,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				// Getting the BBox from the selection box, since we know we
 				// want to orient around it
 				init_bbox = svgedit.utilities.getBBox($('#selectedBox0')[0]);
-				var init_matrix = mouse_target.transform.baseVal.consolidate()
-					.matrix;
-				init_scale = {
-					x: init_matrix.a,
-					y: init_matrix.d,
-				};
+				mouse_target.transform.baseVal.consolidate();
 
 				var bb = {};
 				$.each(init_bbox, function(key, val) {
@@ -1674,13 +1668,13 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				// if we are dragging on the north side, then adjust the scale factor and ty
 				if (current_resize_mode.indexOf('n') >= 0) {
 					sy = height ? (height-dy)/height : 1;
-					ty = height/init_scale.y;
+					ty = height;
 				}
 				
 				// if we dragging on the east side, then adjust the scale factor and tx
 				if (current_resize_mode.indexOf('w') >= 0) {
 					sx = width ? (width-dx)/width : 1;
-					tx = width/init_scale.x;
+					tx = width;
 				}
 				
 				// update the transform list with translate,scale,translate
