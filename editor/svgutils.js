@@ -823,12 +823,13 @@ function bBoxCanBeOptimizedOverNativeGetBBox(angle, hasMatrixTransform) {
 svgedit.utilities.getBBoxWithTransform = function(elem) {
     var bgRect = $('#canvasBackground')[0].getBoundingClientRect();
     var elRect = elem.getBoundingClientRect();
+    var zoom = svgCanvas.getZoom();
 
     return {
-        x: elRect.left - bgRect.left,
-        y: elRect.top - bgRect.top,
-        width: elRect.width,
-        height: elRect.height,
+        x: (elRect.left - bgRect.left) / zoom,
+        y: (elRect.top - bgRect.top) / zoom,
+        width: elRect.width / zoom,
+        height: elRect.height / zoom,
     };
 };
 
