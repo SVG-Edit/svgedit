@@ -2019,11 +2019,12 @@ TODOS
 
 			var setupFlyouts = function(holders) {
 				$.each(holders, function(hold_sel, btn_opts) {
-					var buttons = $(hold_sel).children();
+					var buttons = $(hold_sel).children()
+						.not('.tool_button_evt_handled');
 					var show_sel = hold_sel + '_show';
 					var shower = $(show_sel);
 					var def = false;
-					buttons.addClass('tool_button')
+					buttons.addClass('tool_button tool_button_evt_handled')
 						.unbind('click mousedown mouseup') // may not be necessary
 						.each(function(i) {
 							// Get this buttons options
