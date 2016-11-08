@@ -2684,7 +2684,7 @@ TODOS
 									icon: btn.id,
 //									key: btn.key,
 									isDefault: true
-								}, ref_data];
+								}];
 	//
 	//							// {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
 	//
