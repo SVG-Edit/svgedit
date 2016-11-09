@@ -2041,20 +2041,6 @@ TODOS
 							// Clicking the icon in flyout should set this set's icon
 							var func = function(event) {
 								var options = opts;
-								//find the currently selected tool if comes from keystroke
-								if (event.type === 'keydown') {
-									var flyoutIsSelected = $(options.parent + '_show').hasClass('tool_button_current');
-									var currentOperation = $(options.parent + '_show').attr('data-curopt');
-									$.each(holders[opts.parent], function(i, tool) {
-										if (tool.sel == currentOperation) {
-											if (!event.shiftKey || !flyoutIsSelected) {
-												options = tool;
-											} else {
-												options = holders[opts.parent][i+1] || holders[opts.parent][0];
-											}
-										}
-									});
-								}
 								if ($(this).hasClass('disabled')) {return false;}
 								if (toolButtonClick(show_sel)) {
 									options.fn();
