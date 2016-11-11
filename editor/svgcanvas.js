@@ -1304,8 +1304,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 							var delayedStroke = function(ele) {
 								var _stroke = ele.getAttributeNS(null, 'stroke');
 								ele.removeAttributeNS(null, 'stroke');
-								//Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
-								if(_stroke !== null) setTimeout(function() { ele.setAttributeNS(null, 'stroke', _stroke); }, 0);
+								// Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
+								if (_stroke !== null) setTimeout(function() { ele.setAttributeNS(null, 'stroke', _stroke); }, 0);
 							};
 						}
 						mouse_target.style.vectorEffect = 'non-scaling-stroke';
