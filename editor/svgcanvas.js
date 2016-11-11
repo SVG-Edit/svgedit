@@ -4513,16 +4513,6 @@ this.setSvgString = function(xmlString) {
 		
 		convertGradients(content[0]);
 		
-		// recalculate dimensions on the top-level children so that unnecessary transforms
-		// are removed
-		svgedit.utilities.walkTreePost(svgcontent, function(n) {
-			try {
-				svgedit.recalculate.recalculateDimensions(n);
-			} catch(e) {
-				console.log(e);
-			}
-		});
-		
 		var attrs = {
 			id: 'svgcontent',
 			overflow: curConfig.show_outside_canvas ? 'visible' : 'hidden'
