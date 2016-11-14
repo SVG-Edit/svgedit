@@ -189,7 +189,7 @@ var selectedElements = [];
 // * children - Optional array with data objects to be added recursively as children
 //
 // Returns: The new element
-var addSvgElementFromJson = this.addSvgElementFromJson = function addSvgElementFromJson(data) {
+var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
 	if(typeof(data) == 'string') return svgdoc.createTextNode(data);
 
 	var shape = svgedit.utilities.getElem(data.attr.id);
