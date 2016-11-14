@@ -223,9 +223,11 @@ var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
 	svgedit.utilities.cleanupElement(shape);
 
 	// Children
-	if(data.children) data.children.forEach(function(child){
-		shape.appendChild(addSvgElementFromJson(child));
-	});
+	if(data.children) {
+		data.children.forEach(function(child) {
+			shape.appendChild(addSvgElementFromJson(child));
+		});
+	}
 
 	return shape;
 };
