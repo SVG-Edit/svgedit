@@ -186,6 +186,7 @@ var selectedElements = [];
 // * element - tag name of the SVG element to create
 // * attr - Object with attributes key-values to assign to the new element
 // * curStyles - Boolean indicating that current style attributes should be applied first
+// * children - Optional array with data objects to be added recursively as children
 //
 // Returns: The new element
 var addSvgElementFromJson = this.addSvgElementFromJson = function addSvgElementFromJson(data) {
