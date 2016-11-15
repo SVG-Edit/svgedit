@@ -2032,6 +2032,7 @@ TODOS
 							for(var j in btn_opts) {
 								if(btn_opts[j].sel == '#'+this.getAttribute('id')) {
 									i = j;
+									break;
 								}
 							}
 							var opts = btn_opts[i];
