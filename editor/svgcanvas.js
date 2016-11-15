@@ -186,9 +186,12 @@ var selectedElements = [];
 // * element - tag name of the SVG element to create
 // * attr - Object with attributes key-values to assign to the new element
 // * curStyles - Boolean indicating that current style attributes should be applied first
+// * children - Optional array with data objects to be added recursively as children
 //
 // Returns: The new element
 var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
+	if (typeof(data) == 'string') return svgdoc.createTextNode(data);
+
 	var shape = svgedit.utilities.getElem(data.attr.id);
 	// if shape is a path but we need to create a rect/ellipse, then remove the path
 	var current_layer = getCurrentDrawing().getCurrentLayer();
@@ -218,6 +221,14 @@ var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
 	}
 	svgedit.utilities.assignAttributes(shape, data.attr, 100);
 	svgedit.utilities.cleanupElement(shape);
+
+	// Children
+	if (data.children) {
+		data.children.forEach(function(child) {
+			shape.appendChild(addSvgElementFromJson(child));
+		});
+	}
+
 	return shape;
 };
 
