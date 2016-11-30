@@ -125,6 +125,11 @@ svgedit.draw.Drawing = function(svgElem, opt_idPrefix) {
 	} else if (randomize_ids == RandomizeModes.ALWAYS_RANDOMIZE) {
 		this.setNonce(Math.floor(Math.random() * 100001));
 	}
+
+	/**
+	 * Reset the list of ignored namespaces used in the drawing
+	 */
+	svgedit.ignoredNSUsedAlias = {};
 };
 
 /**

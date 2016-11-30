@@ -141,7 +141,6 @@ svgedit.sanitize.sanitizeSvg = function(node) {
 
   var allowedAttrs = svgWhiteList_[node.nodeName];
   var allowedAttrsNS = svgWhiteListNS_[node.nodeName];
-  if(!('ignoredNSUsedAlias' in svgedit)) svgedit.ignoredNSUsedAlias = {};
   var i;
   // if this element is supported, sanitize it
   if (typeof allowedAttrs !== 'undefined') {
