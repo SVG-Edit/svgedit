@@ -231,8 +231,12 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
   // save the start transform value too
   initial.transform = context_.getStartTransform() || '';
 
+  var external;
   // if it's a regular group, we have special processing to flatten transforms
-  if ((selected.tagName == 'g' && !gsvg) || selected.tagName == 'a') {
+  if ((selected.tagName == 'g' && !gsvg && !(
+    (external = selected.attributes['se:external']) &&
+    external.namespaceURI == svgedit.NS.SE && external.value == '1'
+  )) || selected.tagName == 'a') {
     var box = svgedit.utilities.getBBox(selected),
       oldcenter = {x: box.x+box.width/2, y: box.y+box.height/2},
       newcenter = svgedit.math.transformPoint(box.x+box.width/2,

@@ -492,7 +492,7 @@ svgedit.utilities.getBBox = function(elem) {
 		break;
 	default:
 
-		if(elname === 'use' || elem.prefix in svgedit.ignoredNSUsedAlias) {
+		if(elname === 'use') {
 			ret = groupBBFix(selected, true);
 		}
 		if(elname === 'use' || ( elname === 'foreignObject' && svgedit.browser.isWebkit() ) ) {
@@ -986,8 +986,12 @@ if (svgedit.browser.supportsSelectors()) {
 svgedit.utilities.assignAttributes = function(node, attrs, suspendLength, unitCheck) {
 	var i;
 	for (i in attrs) {
-		var ns = (i.substr(0,4) === 'xml:' ? NS.XML :
-			i.substr(0,6) === 'xlink:' ? NS.XLINK : null);
+		var parts = i.split(':');
+		var ns = null;
+		if(parts.length == 2) {
+			ns = NS[parts[0].toUpperCase()] ||
+				svgedit.ignoredNSUsedAlias[parts[0]] || null;
+		}
 
 		if(ns) {
 			node.setAttributeNS(ns, i, attrs[i]);

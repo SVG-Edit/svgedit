@@ -336,10 +336,6 @@ svgEditor.addExtension("Connector", function(S) {
 				if (started) {return;}
 
 				var mouse_target = e.target;
-                if(mouse_target.parentElement.prefix in
-                        svgedit.ignoredNSUsedAlias)
-                    mouse_target = mouse_target.parentElement;
-				
 				var parents = $(mouse_target).parents();
 				
 				if($.inArray(svgcontent, parents) !== -1) {
@@ -430,9 +426,6 @@ svgEditor.addExtension("Connector", function(S) {
 			if(svgCanvas.getMode() == "connector") {
 				var fo = $(mouse_target).closest("foreignObject");
 				if (fo.length) {mouse_target = fo[0];}
-                if(mouse_target.parentElement.prefix in
-                        svgedit.ignoredNSUsedAlias)
-                    mouse_target = mouse_target.parentElement;
 				
 				var parents = $(mouse_target).parents();
 

@@ -1626,11 +1626,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				var hasMatrix = svgedit.math.hasMatrixTransform(tlist);
 				box = hasMatrix ? init_bbox : svgedit.utilities.getBBox(selected);
 
-				if(selected.prefix in svgedit.ignoredNSUsedAlias) {
-					box.width = init_bbox.width;
-					box.height = init_bbox.height;
-				}
-
 				var left = box.x, top = box.y, width = box.width,
 					height = box.height;
 					dx = (x-start_x);
@@ -1973,29 +1968,27 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					if (selectedElements[1] == null) {
 						var selected = selectedElements[0];
 
-						if (!(selectedElements[0].prefix in svgedit.ignoredNSUsedAlias)) {
-							// set our current stroke/fill properties to the element's
-							switch ( selected.tagName ) {
-								case 'g':
-								case 'use':
-								case 'image':
-								case 'foreignObject':
-									break;
-								default:
-									cur_properties.fill = selected.getAttribute('fill');
-									cur_properties.fill_opacity = selected.getAttribute('fill-opacity');
-									cur_properties.stroke = selected.getAttribute('stroke');
-									cur_properties.stroke_opacity = selected.getAttribute('stroke-opacity');
-									cur_properties.stroke_width = selected.getAttribute('stroke-width');
-									cur_properties.stroke_dasharray = selected.getAttribute('stroke-dasharray');
-									cur_properties.stroke_linejoin = selected.getAttribute('stroke-linejoin');
-									cur_properties.stroke_linecap = selected.getAttribute('stroke-linecap');
-							}
+						// set our current stroke/fill properties to the element's
+						switch ( selected.tagName ) {
+							case 'g':
+							case 'use':
+							case 'image':
+							case 'foreignObject':
+								break;
+							default:
+								cur_properties.fill = selected.getAttribute('fill');
+								cur_properties.fill_opacity = selected.getAttribute('fill-opacity');
+								cur_properties.stroke = selected.getAttribute('stroke');
+								cur_properties.stroke_opacity = selected.getAttribute('stroke-opacity');
+								cur_properties.stroke_width = selected.getAttribute('stroke-width');
+								cur_properties.stroke_dasharray = selected.getAttribute('stroke-dasharray');
+								cur_properties.stroke_linejoin = selected.getAttribute('stroke-linejoin');
+								cur_properties.stroke_linecap = selected.getAttribute('stroke-linecap');
+						}
 
-							if (selected.tagName == 'text') {
-								cur_text.font_size = selected.getAttribute('font-size');
-								cur_text.font_family = selected.getAttribute('font-family');
-							}
+						if (selected.tagName == 'text') {
+							cur_text.font_size = selected.getAttribute('font-size');
+							cur_text.font_family = selected.getAttribute('font-family');
 						}
 
 						selectorManager.requestSelector(selected).showGrips(true);

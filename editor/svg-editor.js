@@ -1487,7 +1487,7 @@ TODOS
 			// This function also updates the opacity and id elements that are in the context panel
 			var updateToolbar = function() {
 				var i, len;
-				if (selectedElement != null && !(selectedElement.prefix in svgedit.ignoredNSUsedAlias)) {
+				if (selectedElement != null) {
 					switch (selectedElement.tagName) {
 					case 'use':
 					case 'image':
@@ -1735,8 +1735,14 @@ TODOS
 							$('#g_title').prop('disabled', el_name == 'use');
 						}
 					}
-					menu_items[(el_name === 'g' ? 'en' : 'dis') + 'ableContextMenuItems']('#ungroup');
-					menu_items[((el_name === 'g' || !multiselected) ? 'dis' : 'en') + 'ableContextMenuItems']('#group');
+					var external;
+					var ungroup = el_name == 'g' && !(
+						(external = elem.attributes['se:external']) &&
+						external.namespaceURI == svgedit.NS.SE && external.value == '1'
+					);
+					$('#tool_ungroup').toggle(ungroup);
+					menu_items[(ungroup ? 'en' : 'dis') + 'ableContextMenuItems']('#ungroup');
+					menu_items.disableContextMenuItems('#group');
 				} // if (elem != null)
 				else if (multiselected) {
 					$('#multiselected_panel').show();
@@ -3684,7 +3690,11 @@ TODOS
 				}
 				// ungroup
 				else if (selectedElement) {
-					svgCanvas.ungroupSelectedElement();
+					var external;
+					if(!(
+						(external = selectedElement.attributes['se:external']) &&
+						external.namespaceURI == svgedit.NS.SE && external.value == '1'
+					)) svgCanvas.ungroupSelectedElement();
 				}
 			};
 

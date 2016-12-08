@@ -101,6 +101,12 @@ svgedit.coords.remapElement = function(selected, changes, m) {
   }
 
   var elName = selected.tagName;
+  var external;
+  if(elName == 'g' &&
+    (external = selected.attributes['se:external']) &&
+    external.namespaceURI == svgedit.NS.SE && external.value == '1'
+  ) elName = 'se:external';
+
   var chlist, mt;
   if (elName === 'g' || elName === 'text' || elName == 'tspan' || elName === 'use') {
     // if it was a translate, then just update x,y

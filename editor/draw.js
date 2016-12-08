@@ -130,6 +130,11 @@ svgedit.draw.Drawing = function(svgElem, opt_idPrefix) {
 	 * Reset the list of ignored namespaces used in the drawing
 	 */
 	svgedit.ignoredNSUsedAlias = {};
+	var attrs = this.svgElem_.attributes;
+	for(var i=0; i<attrs.length; i++) {
+		if(attrs[i].prefix == 'xmlns' && attrs[i].value in svgedit.ignoredNS)
+			svgedit.ignoredNSUsedAlias[attrs[i].localName] = attrs[i].value;
+	}
 };
 
 /**

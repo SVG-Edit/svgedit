@@ -37,7 +37,7 @@ var svgWhiteList_ = {
   "feGaussianBlur": ["class", "color-interpolation-filters", "id", "requiredFeatures", "stdDeviation"],
   "filter": ["class", "color-interpolation-filters", "filterRes", "filterUnits", "height", "id", "primitiveUnits", "requiredFeatures", "width", "x", "xlink:href", "y"],
   "foreignObject": ["class", "font-size", "height", "id", "opacity", "requiredFeatures", "style", "transform", "width", "x", "y"],
-  "g": ["class", "clip-path", "clip-rule", "id", "display", "fill", "fill-opacity", "fill-rule", "filter", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "font-family", "font-size", "font-style", "font-weight", "text-anchor"],
+  "g": ["class", "clip-path", "clip-rule", "id", "display", "fill", "fill-opacity", "fill-rule", "filter", "mask", "opacity", "requiredFeatures", "se:external", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "font-family", "font-size", "font-style", "font-weight", "text-anchor"],
   "image": ["class", "clip-path", "clip-rule", "filter", "height", "id", "mask", "opacity", "requiredFeatures", "style", "systemLanguage", "transform", "width", "x", "xlink:href", "xlink:title", "y"],
   "line": ["class", "clip-path", "clip-rule", "fill", "fill-opacity", "fill-rule", "filter", "id", "marker-end", "marker-mid", "marker-start", "mask", "opacity", "requiredFeatures", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "style", "systemLanguage", "transform", "x1", "x2", "y1", "y2"],
   "linearGradient": ["class", "id", "gradientTransform", "gradientUnits", "requiredFeatures", "spreadMethod", "systemLanguage", "x1", "x2", "xlink:href", "y1", "y2"],
@@ -155,17 +155,9 @@ svgedit.sanitize.sanitizeSvg = function(node) {
       var attrNsURI = attr.namespaceURI;
 
       // Namespaces
-      var splitNS = attrName.match(/([^:]+):(.*$)/);
-      if(splitNS) {
-          // Detect initialization of namespaces and only allow the ones on the ignoredNS list
-          if(splitNS[1] == 'xmlns' && attr.value in svgedit.ignoredNS) {
-              svgedit.ignoredNSUsedAlias[splitNS[2]] = attr.value;
-              continue;
-          }
-
-          // Ignore attributes from the allowed namespaces
-          if(splitNS[1] in svgedit.ignoredNSUsedAlias) continue;
-      }
+      if(attr.namespaceURI === NS.XMLNS && attr.value in svgedit.ignoredNS)
+          continue;
+      if(attr.namespaceURI in svgedit.ignoredNS) continue;
 
       // Check that an attribute with the correct localName in the correct namespace is on 
       // our whitelist or is a namespace declaration for one of our allowed namespaces
