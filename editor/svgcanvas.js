@@ -2307,12 +2307,12 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		root_sctm = $('#svgcontent g')[0].getScreenCTM().inverse();
 		var pt = svgedit.math.transformPoint( evt.pageX, evt.pageY, root_sctm );
 
-		var vBox = $('#svgcontent').prop('viewBox').baseVal;
-		var relativeMousePositionWithinContentBeforeZoom = {
-			x: pt.x / vBox.width,
-			y: pt.y / vBox.height,
-		};
-		
+        var vBox = $('#svgcontent').prop('viewBox').baseVal;
+        var relativeMousePositionWithinContentBeforeZoom = {
+            x: pt.x / vBox.width,
+            y: pt.y / vBox.height,
+        };
+
 		var bbox = {
 			'x': pt.x,
 			'y': pt.y,
@@ -2328,24 +2328,25 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		var current_zoom = svgCanvas.getZoom();
 
 		call('zoomed', bbox);
-		
-		var root_sctm2 = $('#svgcontent g')[0].getScreenCTM().inverse();
-		var pt2 = svgedit.math.transformPoint( evt.pageX, evt.pageY, root_sctm2 );
-		var new_zoom = svgCanvas.getZoom();
-		var relativeMousePositionWithinContentAfterZoom = {
-			x: pt2.x / vBox.width,
-			y: pt2.y / vBox.height,
-		};
-		var diffOfRelativeMousePositionsWithinContent = {
-			x: (relativeMousePositionWithinContentAfterZoom.x - relativeMousePositionWithinContentBeforeZoom.x),
-			y: (relativeMousePositionWithinContentAfterZoom.y - relativeMousePositionWithinContentBeforeZoom.y),
-		};
-		diffOfMousePositionsWithinContent = {
-			x: diffOfRelativeMousePositionsWithinContent.x * vBox.width,
-			y: diffOfRelativeMousePositionsWithinContent.y * vBox.height,
-		};
-		$('#workarea')[0].scrollLeft-=diffOfMousePositionsWithinContent.x * new_zoom;
-		$('#workarea')[0].scrollTop-=diffOfMousePositionsWithinContent.y * new_zoom;
+
+        var root_sctm2 = $('#svgcontent g')[0].getScreenCTM().inverse();
+        var pt2 = svgedit.math.transformPoint(evt.pageX, evt.pageY, root_sctm2);
+        var new_zoom = svgCanvas.getZoom();
+        var relativeMousePositionWithinContentAfterZoom = {
+            x: pt2.x / vBox.width,
+            y: pt2.y / vBox.height,
+        };
+        var diffOfRelativeMousePositionsWithinContent = {
+            x: (relativeMousePositionWithinContentAfterZoom.x - relativeMousePositionWithinContentBeforeZoom.x),
+            y: (relativeMousePositionWithinContentAfterZoom.y - relativeMousePositionWithinContentBeforeZoom.y),
+        };
+        var diffOfMousePositionsWithinContent = {
+            x: diffOfRelativeMousePositionsWithinContent.x * vBox.width,
+            y: diffOfRelativeMousePositionsWithinContent.y * vBox.height,
+        };
+        var workarea = $('#workarea')[0];
+        workarea.scrollLeft -= diffOfMousePositionsWithinContent.x * new_zoom;
+        workarea.scrollTop -= diffOfMousePositionsWithinContent.y * new_zoom;
 	});
 	
 }());
