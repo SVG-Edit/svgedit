@@ -2307,6 +2307,12 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		root_sctm = $('#svgcontent g')[0].getScreenCTM().inverse();
 		var pt = svgedit.math.transformPoint( evt.pageX, evt.pageY, root_sctm );
 
+        var vBox = $('#svgcontent').prop('viewBox').baseVal;
+        var relativeMousePositionWithinContentBeforeZoom = {
+            x: pt.x / vBox.width,
+            y: pt.y / vBox.height,
+        };
+
 		var bbox = {
 			'x': pt.x,
 			'y': pt.y,
@@ -2318,8 +2324,29 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		if (!delta) {return;}
 
 		bbox.factor = Math.max(3/4, Math.min(4/3, (delta)));
-	
+
+		var current_zoom = svgCanvas.getZoom();
+
 		call('zoomed', bbox);
+
+        var root_sctm2 = $('#svgcontent g')[0].getScreenCTM().inverse();
+        var pt2 = svgedit.math.transformPoint(evt.pageX, evt.pageY, root_sctm2);
+        var new_zoom = svgCanvas.getZoom();
+        var relativeMousePositionWithinContentAfterZoom = {
+            x: pt2.x / vBox.width,
+            y: pt2.y / vBox.height,
+        };
+        var diffOfRelativeMousePositionsWithinContent = {
+            x: (relativeMousePositionWithinContentAfterZoom.x - relativeMousePositionWithinContentBeforeZoom.x),
+            y: (relativeMousePositionWithinContentAfterZoom.y - relativeMousePositionWithinContentBeforeZoom.y),
+        };
+        var diffOfMousePositionsWithinContent = {
+            x: diffOfRelativeMousePositionsWithinContent.x * vBox.width,
+            y: diffOfRelativeMousePositionsWithinContent.y * vBox.height,
+        };
+        var workarea = $('#workarea')[0];
+        workarea.scrollLeft -= diffOfMousePositionsWithinContent.x * new_zoom;
+        workarea.scrollTop -= diffOfMousePositionsWithinContent.y * new_zoom;
 	});
 	
 }());
@@ -3374,10 +3401,21 @@ pathActions = canvas.pathActions = function() {
 			
 			reorientGrads(path, m);
 		},
+        last_known_zoom: 1,
 		zoomChange: function() {
 			if (current_mode == 'pathedit') {
 				svgedit.path.path.update();
 			}
+            if (current_mode == 'path') {
+				var that = this;
+                $('#pathpointgrip_container').find('> circle').each(function () {
+                    $(this).attr({
+                        cx: this.cx.baseVal.value / that.last_known_zoom * current_zoom,
+                        cy: this.cy.baseVal.value / that.last_known_zoom * current_zoom,
+                    });
+                });
+            }
+            this.last_known_zoom = current_zoom;
 		},
 		getNodePoint: function() {
 			var sel_pt = svgedit.path.path.selected_pts.length ? svgedit.path.path.selected_pts[0] : 1;

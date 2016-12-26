@@ -3,3 +3,4 @@ editor/config.js
 editor/custom.css
 build/
 editor/svgedit.compiled.js
+/.idea/
