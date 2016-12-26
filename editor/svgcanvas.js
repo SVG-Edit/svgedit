@@ -3401,10 +3401,21 @@ pathActions = canvas.pathActions = function() {
 			
 			reorientGrads(path, m);
 		},
+        last_known_zoom: 1,
 		zoomChange: function() {
 			if (current_mode == 'pathedit') {
 				svgedit.path.path.update();
 			}
+            if (current_mode == 'path') {
+				var that = this;
+                $('#pathpointgrip_container').find('> circle').each(function () {
+                    $(this).attr({
+                        cx: this.cx.baseVal.value / that.last_known_zoom * current_zoom,
+                        cy: this.cy.baseVal.value / that.last_known_zoom * current_zoom,
+                    });
+                });
+            }
+            this.last_known_zoom = current_zoom;
 		},
 		getNodePoint: function() {
 			var sel_pt = svgedit.path.path.selected_pts.length ? svgedit.path.path.selected_pts[0] : 1;
