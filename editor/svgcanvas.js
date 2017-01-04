@@ -2257,6 +2257,9 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 		
 		var mouse_target = getMouseTarget(evt);
 		var tagName = mouse_target.tagName;
+
+		// Skip if it's an externally managed group
+		if(mouse_target.getAttributeNS(svgedit.NS.SE, 'external')==1) return;
 		
 		if (tagName === 'text' && current_mode !== 'textedit') {
 			var pt = svgedit.math.transformPoint( evt.pageX, evt.pageY, root_sctm );
