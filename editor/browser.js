@@ -150,7 +150,15 @@ var supportsNativeSVGTransformLists_ = (function() {
 	var rxform = rect.transform.baseVal;
 	var t1 = svg.createSVGTransform();
 	rxform.appendItem(t1);
-	return rxform.getItem(0) == t1;
+	var r1 = rxform.getItem(0);
+	return r1 instanceof SVGTransform && t1 instanceof SVGTransform &&
+		r1.type == t1.type && r1.angle == t1.angle &&
+		r1.matrix.a == t1.matrix.a &&
+		r1.matrix.b == t1.matrix.b &&
+		r1.matrix.c == t1.matrix.c &&
+		r1.matrix.d == t1.matrix.d &&
+		r1.matrix.e == t1.matrix.e &&
+		r1.matrix.f == t1.matrix.f;
 }());
 
 // Public API
