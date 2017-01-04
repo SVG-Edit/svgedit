@@ -2035,7 +2035,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					}
 
 				}
-				return;
+				break;
 			case 'zoom':
 				if (rubberBox != null) {
 					rubberBox.setAttribute('display', 'none');
@@ -2048,7 +2048,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					'height': Math.abs(real_y - r_start_y),
 					'factor': factor
 				});
-				return;
+				break;
 			case 'fhpath':
 				// Check that the path contains at least 2 points; a degenerate one-point path
 				// causes problems.
