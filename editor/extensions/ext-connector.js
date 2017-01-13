@@ -342,7 +342,7 @@ svgEditor.addExtension("Connector", function(S) {
 					// Connectable element
 					
 					// If child of foreignObject, use parent
-					var fo = $(mouse_target).closest("foreignObject");
+					var fo = $(mouse_target).closest("foreignObject,g[se:external]");
 					start_elem = fo.length ? fo[0] : mouse_target;
 					
 					// Get center of source element
@@ -424,7 +424,7 @@ svgEditor.addExtension("Connector", function(S) {
 				mouse_target = e.target;
 			
 			if(svgCanvas.getMode() == "connector") {
-				var fo = $(mouse_target).closest("foreignObject");
+				var fo = $(mouse_target).closest("foreignObject,g[se:external]");
 				if (fo.length) {mouse_target = fo[0];}
 				
 				var parents = $(mouse_target).parents();
