@@ -2773,6 +2773,13 @@ TODOS
 							// Add given events to button
 							$.each(btn.events, function(name, func) {
 								if (name == 'click' && btn.type == 'mode') {
+									/*
+									* For touch devices, convert the click event to mousedown
+									* Works the same as the the binding of "regular" buttons (line 4597), but here for extensions
+									*/
+									if (svgedit.browser.isTouch() && name == 'click') {
+										name = 'mousedown';
+									}
 									if (btn.includeWith) {
 										button.bind(name, func);
 									} else {
