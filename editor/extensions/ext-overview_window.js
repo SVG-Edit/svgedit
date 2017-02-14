@@ -11,17 +11,7 @@
 
 var overviewWindowGlobals = {};
 svgEditor.addExtension("overview_window", function() {	'use strict';
-	// Disabled in Chrome 48-, see https://github.com/SVG-Edit/svgedit/issues/26 and
-	// https://code.google.com/p/chromium/issues/detail?id=565120.
-	if (svgedit.browser.isChrome()) {
-		var verIndex = navigator.userAgent.indexOf("Chrome/") + 7;
-		var chromeVersion = parseInt(navigator.userAgent.substring(verIndex), 10);
-		if (chromeVersion < 49) {
-			return;
-		}
-	}
-
-	// Define and insert the base html element.
+	//define and insert the base html element
 	var propsWindowHtml= "\
 		<div id=\"overview_window_content_pane\" style=\" width:100%; word-wrap:break-word;  display:inline-block; margin-top:20px;\">\
 			<div id=\"overview_window_content\" style=\"position:relative; left:12px; top:0px;\">\
@@ -36,7 +26,7 @@ svgEditor.addExtension("overview_window", function() {	'use strict';
 		</div>";
 	$("#sidepanels").append(propsWindowHtml);
 
-	// Define dynamic animation of the view box.
+	//define dynamic animation of the view box.
 	var updateViewBox = function(){
 		var portHeight=parseFloat($("#workarea").css("height"));
 		var portWidth=parseFloat($("#workarea").css("width"));
@@ -65,7 +55,7 @@ svgEditor.addExtension("overview_window", function() {	'use strict';
 	$("#workarea").resize(updateViewBox);
 	updateViewBox();
 	
-	// Compensate for changes in zoom and canvas size.
+	//comphensate for changes in zoom and canvas size
 	var updateViewDimensions= function(){
 		var viewWidth=$("#svgroot").attr("width");
 		var viewHeight=$("#svgroot").attr("height");
@@ -74,9 +64,9 @@ svgEditor.addExtension("overview_window", function() {	'use strict';
 		
 		if(svgedit.browser.isIE())
 		{
-			// This has only been tested with Firefox 10 and IE 9 (without chrome frame).
-			// I am not sure if if is Firefox or IE that is being non compliant here.
-			// Either way the one that is noncompliant may become more compliant later.
+			//This has only been tested with Firefox 10 and IE 9 (without chrome frame).
+			//I am not sure if if is Firefox or IE that is being non compliant here.
+			//Either way the one that is noncompliant may become more compliant later.
 			//TAG:HACK  
 			//TAG:VERSION_DEPENDENT
 			//TAG:BROWSER_SNIFFING
@@ -92,7 +82,7 @@ svgEditor.addExtension("overview_window", function() {	'use strict';
 	};
 	updateViewDimensions();
 	
-	// Set up the overview window as a controller for the view port.
+	//set up the overview window as a controller for the view port.
 	overviewWindowGlobals.viewBoxDragging=false;
 	var updateViewPortFromViewBox = function(){
 	
@@ -115,7 +105,7 @@ svgEditor.addExtension("overview_window", function() {	'use strict';
 		,stop :function(){overviewWindowGlobals.viewBoxDragging=false;}
 	});  
 	$("#overviewMiniView").click(function(evt){
-		// Firefox doesn't support evt.offsetX and evt.offsetY.
+		//Firefox doesn't support evt.offsetX and evt.offsetY
 		var mouseX=(evt.offsetX || evt.originalEvent.layerX);
 		var mouseY=(evt.offsetY || evt.originalEvent.layerY);
 		var overviewWidth =$("#overviewMiniView").attr("width" );
