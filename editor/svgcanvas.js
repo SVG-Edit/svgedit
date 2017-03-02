@@ -2028,9 +2028,11 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						var elem = selectedElements[0];
 						if (elem) {
 							elem.removeAttribute('style');
-							svgedit.utilities.walkTree(elem, function(elem) {
-								elem.removeAttribute('style');
-							});
+							if(elem.getAttributeNS(svgedit.NS.SE, 'external') != 1) {
+								svgedit.utilities.walkTree(elem, function(elem) {
+									elem.removeAttribute('style');
+								});
+							}
 						}
 					}
 
