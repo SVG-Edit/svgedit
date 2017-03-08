@@ -239,9 +239,13 @@ svgedit.utilities.bboxToObj = function(bbox) {
 svgedit.utilities.walkTree = function(elem, cbFn){
 	if (elem && elem.nodeType == 1) {
 		cbFn(elem);
-		var i = elem.childNodes.length;
-		while (i--) {
-			svgedit.utilities.walkTree(elem.childNodes.item(i), cbFn);
+
+		// Recurse to children if it's not externally managed
+		if(elem.getAttributeNS(svgedit.NS.SE, 'external') != 1) {
+			var i = elem.childNodes.length;
+			while (i--) {
+				svgedit.utilities.walkTree(elem.childNodes.item(i), cbFn);
+			}
 		}
 	}
 };

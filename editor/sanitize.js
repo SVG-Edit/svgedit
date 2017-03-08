@@ -116,6 +116,11 @@ $.each(svgWhiteList_, function(elt, atts){
 // Parameters:
 // node - The DOM element to be checked (we'll also check its children)
 svgedit.sanitize.sanitizeSvg = function(node) {
+  // Skip externally managed nodes
+  if(node.nodeType == 1 && node.getAttributeNS(svgedit.NS.SE, 'external') == '1') {
+    return;
+  }
+
   // Cleanup text nodes
   if (node.nodeType == 3) { // 3 == TEXT_NODE
     // Trim whitespace
