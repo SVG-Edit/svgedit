@@ -1832,8 +1832,18 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 						sumDistance += Math.sqrt((nextPos.x - bSpline.x) * (nextPos.x - bSpline.x) + (nextPos.y - bSpline.y) * (nextPos.y - bSpline.y));
 						if (sumDistance > THRESHOLD_DIST) {
 							d_attr += + bSpline.x + ',' + bSpline.y + ' ';
-							shape.setAttributeNS(null, 'points', d_attr);
 							sumDistance -= THRESHOLD_DIST;
+							
+							// Instead of setting the points attribute, use the below method
+							//shape.setAttributeNS(null, 'points', d_attr);
+							
+							// This may be faster than completely re-writing the points attribute.
+							// Should be tested for speed comparison.
+							var point = svgcontent.createSVGPoint();
+							point.x = bSpline.x;
+							point.y = bSpline.y;
+							shape.points.appendItem(point);
+						
 						}
 					}
 				}
