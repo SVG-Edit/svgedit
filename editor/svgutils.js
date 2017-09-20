@@ -825,7 +825,7 @@ function bBoxCanBeOptimizedOverNativeGetBBox(angle, hasMatrixTransform) {
 // Returns:
 // A single bounding box object
 svgedit.utilities.getBBoxWithTransform = function(elem) {
-    var bgRect = $('#canvasBackground')[0].getBoundingClientRect();
+    var bgRect = $('#canvasBackground>rect')[0].getBoundingClientRect();
     var elRect = elem.getBoundingClientRect();
     var zoom = svgCanvas.getZoom();
 
