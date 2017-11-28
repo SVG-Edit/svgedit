@@ -1049,8 +1049,13 @@ TODOS
 					return;
 				}
 
-				// Opens the SVG in new window
-				var win = wind.open('data:image/svg+xml;base64,' + Utils.encode64(svg));
+				// Since saving SVGs by opening a new window was removed in Chrome use artificial link-click
+				// https://stackoverflow.com/questions/45603201/window-is-not-allowed-to-navigate-top-frame-navigations-to-data-urls
+				var a  = document.createElement('a');
+				a.href = 'data:image/svg+xml;base64,' + Utils.encode64(svg);
+				a.download = 'icon.svg';
+		
+				a.click();
 
 				// Alert will only appear the first time saved OR the first time the bug is encountered
 				var done = $.pref('save_notice_done');
