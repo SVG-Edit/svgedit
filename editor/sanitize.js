@@ -162,7 +162,7 @@ svgedit.sanitize.sanitizeSvg = function(node) {
         // TODO(codedread): Programmatically add the se: attributes to the NS-aware whitelist.
         // Bypassing the whitelist to allow se: prefixes.
         // Is there a more appropriate way to do this?
-        if (attrName.indexOf('se:') === 0) {
+        if (attrName.indexOf('se:') === 0 || attrName.indexOf('data-') === 0) {
           seAttrs.push([attrName, attr.value]);
         }
         node.removeAttributeNS(attrNsURI, attrLocalName);
