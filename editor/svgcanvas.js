@@ -189,9 +189,12 @@ var selectedElements = [];
 // * element - tag name of the SVG element to create
 // * attr - Object with attributes key-values to assign to the new element
 // * curStyles - Boolean indicating that current style attributes should be applied first
+// * children - Optional array with data objects to be added recursively as children
 //
 // Returns: The new element
 var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
+	if (typeof(data) == 'string') return svgdoc.createTextNode(data);
+
 	var shape = svgedit.utilities.getElem(data.attr.id);
 	// if shape is a path but we need to create a rect/ellipse, then remove the path
 	var current_layer = getCurrentDrawing().getCurrentLayer();
@@ -221,6 +224,14 @@ var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
 	}
 	svgedit.utilities.assignAttributes(shape, data.attr, 100);
 	svgedit.utilities.cleanupElement(shape);
+
+	// Children
+	if (data.children) {
+		data.children.forEach(function(child) {
+			shape.appendChild(addSvgElementFromJson(child));
+		});
+	}
+
 	return shape;
 };
 
@@ -568,7 +579,11 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 		}    
                 rubberBBox = bb;
 	} else {
-		rubberBBox = svgcontent.createSVGRect(rect.x, rect.y, rect.width, rect.height);
+		rubberBBox = svgcontent.createSVGRect();
+		rubberBBox.x = rect.x;
+		rubberBBox.y = rect.y;
+		rubberBBox.width = rect.width;
+		rubberBBox.height = rect.height;
 	}
 	
 	var resultList = null;
@@ -1309,8 +1324,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 							var delayedStroke = function(ele) {
 								var _stroke = ele.getAttributeNS(null, 'stroke');
 								ele.removeAttributeNS(null, 'stroke');
-								//Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
-								setTimeout(function() { ele.setAttributeNS(null, 'stroke', _stroke); }, 0);
+								// Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
+								if (_stroke !== null) setTimeout(function() { ele.setAttributeNS(null, 'stroke', _stroke); }, 0);
 							};
 						}
 						mouse_target.style.vectorEffect = 'non-scaling-stroke';
@@ -4534,16 +4549,6 @@ this.setSvgString = function(xmlString) {
 		setUseData(content);
 		
 		convertGradients(content[0]);
-		
-		// recalculate dimensions on the top-level children so that unnecessary transforms
-		// are removed
-		svgedit.utilities.walkTreePost(svgcontent, function(n) {
-			try {
-				svgedit.recalculate.recalculateDimensions(n);
-			} catch(e) {
-				console.log(e);
-			}
-		});
 		
 		var attrs = {
 			id: 'svgcontent',
