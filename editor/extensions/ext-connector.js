@@ -160,6 +160,7 @@ svgEditor.addExtension("Connector", function(S) {
 
 		// Loop through connectors to see if one is connected to the element
 		connectors.each(function() {
+			var connector = this;
 			var add_this;
 			function add () {
 				if ($.inArray(this, elems) !== -1) {
@@ -167,12 +168,24 @@ svgEditor.addExtension("Connector", function(S) {
 					add_this = true;
 				}
 			}
-			var start = elData(this, "c_start");
-			var end = elData(this, "c_end");
-			
-			var parts = [getElem(start), getElem(end)];
+
+			// Grab the ends
+			var parts = [];
+			['start', 'end'].forEach(function (pos, i) {
+				var part = elData(this, 'c_'+pos);
+				if(part == null) {
+					part = document.getElementById(
+						connector.attributes['se:connector'].value.split(' ')[i]
+					);
+					elData(connector, 'c_'+pos, part.id);
+					elData(connector, pos+'_bb', svgCanvas.getStrokedBBox([part]));
+				}
+				parts.push(part);
+			});
+
 			for (i = 0; i < 2; i++) {
 				var c_elem = parts[i];
+
 				add_this = false;
 				// The connected element might be part of a selected group
 				$(c_elem).parents().each(add);
@@ -261,7 +274,6 @@ svgEditor.addExtension("Connector", function(S) {
 		var mse = svgCanvas.moveSelectedElements;
 		
 		svgCanvas.moveSelectedElements = function() {
-			svgCanvas.removeFromSelection($(conn_sel).toArray());
 			var cmd = mse.apply(this, arguments);
 			updateConnectors();
 			return cmd;
@@ -579,6 +591,18 @@ svgEditor.addExtension("Connector", function(S) {
 			} else {
 				updateConnectors();
 			}
+		},
+		IDsUpdated: function(input) {
+			var remove = [];
+			input.elems.forEach(function(elem){
+				if('se:connector' in elem.attr) {
+					elem.attr['se:connector'] = elem.attr['se:connector'].split(' ')
+						.map(function(oldID){ return input.changes[oldID] }).join(' ');
+					if(!/. ./.test(elem.attr['se:connector']))
+						remove.push(elem.attr.id);
+				}
+			});
+			return {remove: remove};
 		},
 		toolButtonStateUpdate: function(opts) {
 			if (opts.nostroke) {

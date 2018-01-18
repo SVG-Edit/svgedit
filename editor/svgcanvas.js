@@ -177,6 +177,30 @@ var cur_shape = all_properties.shape;
 // default size of 1 until it needs to grow bigger
 var selectedElements = [];
 
+var getJsonFromSvgElement = this.getJsonFromSvgElement = function(data) {
+    // Text node
+    if(data.nodeType == 3) return data.nodeValue;
+
+    var retval = {
+        element: data.tagName,
+        //namespace: nsMap[data.namespaceURI],
+        attr: {},
+        children: [],
+    };
+
+    // Itrate attributes
+    for(var i=0; i < data.attributes.length; i++) {
+        retval.attr[data.attributes[i].name] = data.attributes[i].value;
+    };
+
+    // Iterate children
+    for(var i=0; i < data.childNodes.length; i++) {
+        retval.children.push(getJsonFromSvgElement(data.childNodes[i]));
+    }
+
+    return retval;
+}
+
 // Function: addSvgElementFromJson
 // Create a new SVG element based on the given object keys/values and add it to the current layer
 // The element will be ran through cleanupElement before being returned 
@@ -503,9 +527,6 @@ var encodableImages = {},
 	
 	// Map of deleted reference elements
 	removedElements = {};
-
-// Clipboard for cut, copy&pasted elements
-canvas.clipBoard = [];
 
 // Should this return an array by default, so extension results aren't overwritten?
 var runExtensions = this.runExtensions = function(action, vars, returnArray) {
@@ -872,17 +893,13 @@ var root_sctm = null;
 // Parameters: 
 // noCall - Optional boolean that when true does not call the "selected" handler
 var clearSelection = this.clearSelection = function(noCall) {
-	if (selectedElements[0] != null) {
-		var i, elem,
-			len = selectedElements.length;
-		for (i = 0; i < len; ++i) {
-			elem = selectedElements[i];
-			if (elem == null) {break;}
-			selectorManager.releaseSelector(elem);
-			selectedElements[i] = null;
-		}
-//		selectedBBoxes[0] = null;
-	}
+	selectedElements.map(function(elem){
+		if(elem == null) return;
+
+		selectorManager.releaseSelector(elem);
+	});
+	selectedElements = [];
+
 	if (!noCall) {call('selected', selectedElements);}
 };
 
@@ -6310,6 +6327,7 @@ this.deleteSelectedElements = function() {
 	var batchCmd = new svgedit.history.BatchCommand('Delete Elements');
 	var len = selectedElements.length;
 	var selectedCopy = []; //selectedElements is being deleted
+
 	for (i = 0; i < len; ++i) {
 		var selected = selectedElements[i];
 		if (selected == null) {break;}
@@ -6332,9 +6350,10 @@ this.deleteSelectedElements = function() {
 		var nextSibling = t.nextSibling;
 		var elem = parent.removeChild(t);
 		selectedCopy.push(selected); //for the copy
-		selectedElements[i] = null;
 		batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
 	}
+	selectedElements = [];
+
 	if (!batchCmd.isEmpty()) {addCommandToHistory(batchCmd);}
 	call('changed', selectedCopy);
 	clearSelection();
@@ -6343,65 +6362,60 @@ this.deleteSelectedElements = function() {
 // Function: cutSelectedElements
 // Removes all selected elements from the DOM and adds the change to the 
 // history stack. Remembers removed elements on the clipboard
-
-// TODO: Combine similar code with deleteSelectedElements
 this.cutSelectedElements = function() {
-	var i;
-	var batchCmd = new svgedit.history.BatchCommand('Cut Elements');
-	var len = selectedElements.length;
-	var selectedCopy = []; //selectedElements is being deleted
-	for (i = 0; i < len; ++i) {
-		var selected = selectedElements[i];
-		if (selected == null) {break;}
-
-		var parent = selected.parentNode;
-		var t = selected;
-
-		// this will unselect the element and remove the selectedOutline
-		selectorManager.releaseSelector(t);
-
-		// Remove the path if present.
-		svgedit.path.removePath_(t.id);
-
-		var nextSibling = t.nextSibling;
-		var elem = parent.removeChild(t);
-		selectedCopy.push(selected); //for the copy
-		selectedElements[i] = null;
-		batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
-	}
-	if (!batchCmd.isEmpty()) {addCommandToHistory(batchCmd);}
-	call('changed', selectedCopy);
-	clearSelection();
-	
-	canvas.clipBoard = selectedCopy;
+	svgCanvas.copySelectedElements();
+	svgCanvas.deleteSelectedElements();
 };
 
 // Function: copySelectedElements
 // Remembers the current selected elements on the clipboard
 this.copySelectedElements = function() {
-	canvas.clipBoard = $.merge([], selectedElements);
+	localStorage.setItem('svgedit_clipboard', JSON.stringify(
+		selectedElements.map(function(x){ return getJsonFromSvgElement(x) })
+	));
+
+	$('#cmenu_canvas').enableContextMenuItems('#paste,#paste_in_place');
 };
 
 this.pasteElements = function(type, x, y) {
-	var cb = canvas.clipBoard;
+	var cb = JSON.parse(localStorage.getItem('svgedit_clipboard'));
 	var len = cb.length;
 	if (!len) {return;}
 	
 	var pasted = [];
 	var batchCmd = new svgedit.history.BatchCommand('Paste elements');
 	var drawing = getCurrentDrawing();
+	var changedIDs = {};
+
+	// Recursively replace IDs and record the changes
+	function checkIDs(elem) {
+		if(elem.attr && elem.attr.id) {
+			changedIDs[elem.attr.id] = getNextId();
+			elem.attr.id = changedIDs[elem.attr.id];
+		}
+		if(elem.children) elem.children.forEach(checkIDs);
+	}
+	cb.forEach(checkIDs);
+
+	// Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
+	runExtensions('IDsUpdated', {elems: cb, changes: changedIDs}, true).forEach(function(extChanges){
+		if(!extChanges || !('remove' in extChanges)) return;
+
+		extChanges.remove.forEach(function(removeID){
+			cb = cb.filter(function(cbItem){
+				return cbItem.attr.id != removeID;
+
+			});
+		});
+	});
 
 	// Move elements to lastClickPoint
 	while (len--) {
 		var elem = cb[len];
 		if (!elem) {continue;}
-		var copy = drawing.copyElem(elem);
 
-		// See if elem with elem ID is in the DOM already
-		if (!svgedit.utilities.getElem(elem.id)) {copy.id = elem.id;}
-		
+		var copy = addSvgElementFromJson(elem);
 		pasted.push(copy);
-		(current_group || drawing.getCurrentLayer()).appendChild(copy);
 		batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(copy));
 
 		restoreRefElems(copy);
@@ -6433,7 +6447,7 @@ this.pasteElements = function(type, x, y) {
 		});
 		
 		var cmd = canvas.moveSelectedElements(dx, dy, false);
-		batchCmd.addSubCommand(cmd);
+		if(cmd) batchCmd.addSubCommand(cmd);
 	}
 
 	addCommandToHistory(batchCmd);
