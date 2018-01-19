@@ -160,7 +160,6 @@ svgEditor.addExtension("Connector", function(S) {
 
 		// Loop through connectors to see if one is connected to the element
 		connectors.each(function() {
-			var connector = this;
 			var add_this;
 			function add () {
 				if ($.inArray(this, elems) !== -1) {
@@ -175,13 +174,13 @@ svgEditor.addExtension("Connector", function(S) {
 				var part = elData(this, 'c_'+pos);
 				if(part == null) {
 					part = document.getElementById(
-						connector.attributes['se:connector'].value.split(' ')[i]
+						this.attributes['se:connector'].value.split(' ')[i]
 					);
-					elData(connector, 'c_'+pos, part.id);
-					elData(connector, pos+'_bb', svgCanvas.getStrokedBBox([part]));
+					elData(this, 'c_'+pos, part.id);
+					elData(this, pos+'_bb', svgCanvas.getStrokedBBox([part]));
 				}
 				parts.push(part);
-			});
+			}.bind(this));
 
 			for (i = 0; i < 2; i++) {
 				var c_elem = parts[i];
