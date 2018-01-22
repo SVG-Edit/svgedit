@@ -598,6 +598,9 @@ svgEditor.addExtension("Connector", function(S) {
 				if('se:connector' in elem.attr) {
 					elem.attr['se:connector'] = elem.attr['se:connector'].split(' ')
 						.map(function(oldID){ return input.changes[oldID] }).join(' ');
+
+					// Check validity - the field would be something like 'svg_21 svg_22', but
+					// if one end is missing, it would be 'svg_21' and therefore fail this test
 					if(!/. ./.test(elem.attr['se:connector']))
 						remove.push(elem.attr.id);
 				}
