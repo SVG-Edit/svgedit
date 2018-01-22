@@ -72,10 +72,6 @@ svgedit.recalculate.recalculateDimensions = function(selected) {
   if (selected.nodeName == "svg" && navigator.userAgent.indexOf("Firefox/20") >= 0) {
     return null;
   }
-  var external;
-  if((external = selected.attributes['se:external']) &&
-    external.namespaceURI == svgedit.NS.SE && external.value == '1'
-  ) return null;
 
   var svgroot = context_.getSVGRoot();
   var tlist = svgedit.transformlist.getTransformList(selected);
