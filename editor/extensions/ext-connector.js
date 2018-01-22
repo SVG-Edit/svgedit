@@ -171,7 +171,8 @@ svgEditor.addExtension("Connector", function(S) {
 			// Grab the ends
 			var parts = [];
 			['start', 'end'].forEach(function (pos, i) {
-				var part = elData(this, 'c_'+pos);
+				var key = 'c_' + pos;
+				var part = elData(this, key);
 				if(part == null) {
 					part = document.getElementById(
 						this.attributes['se:connector'].value.split(' ')[i]
