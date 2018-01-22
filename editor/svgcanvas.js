@@ -4442,7 +4442,7 @@ var convertToGroup = this.convertToGroup = function(elem) {
 //
 // Returns:
 // This function returns false if the set was unsuccessful, true otherwise.
-this.setSvgString = function(xmlString) {
+this.setSvgString = function(xmlString, preventUndo) {
 	try {
 		// convert string into XML document
 		var newDoc = svgedit.utilities.text2xml(xmlString);
@@ -4596,7 +4596,7 @@ this.setSvgString = function(xmlString) {
 		svgedit.path.clearData();
 		svgroot.appendChild(selectorManager.selectorParentGroup);
 		
-		addCommandToHistory(batchCmd);
+		if(!preventUndo) addCommandToHistory(batchCmd);
 		call('changed', [svgcontent]);
 	} catch(e) {
 		console.log(e);
