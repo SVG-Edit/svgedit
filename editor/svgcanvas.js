@@ -188,7 +188,7 @@ var getJsonFromSvgElement = this.getJsonFromSvgElement = function(data) {
         children: [],
     };
 
-    // Itrate attributes
+    // Iterate attributes
     for(var i=0; i < data.attributes.length; i++) {
         retval.attr[data.attributes[i].name] = data.attributes[i].value;
     };
