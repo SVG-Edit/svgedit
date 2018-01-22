@@ -178,7 +178,7 @@ svgEditor.addExtension("Connector", function(S) {
 					);
 					elData(this, 'c_'+pos, part.id);
 					elData(this, pos+'_bb', svgCanvas.getStrokedBBox([part]));
-				}
+				} else part = document.getElementById(part);
 				parts.push(part);
 			}.bind(this));
 
