@@ -240,17 +240,19 @@ var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
 // whole, regardless of what its children might be.
 //
 // Parameters:
-// elem - The element we want to manage
+// orgElem - The element we want to manage
 //
 // Returns: The element we should manage
-var manageableElement = this.manageableElement = function(elem) {
+var manageableElement = this.manageableElement = function(orgElem) {
+    var elem = orgElem;
+
     while (elem !== null && elem !== svgroot) {
         if (elem.matches('foreignObject') || elem.getAttributeNS(svgedit.NS.SE, 'external'))
             return elem;
         else elem = elem.parentElement;
     }
 
-    return elem;
+    return orgElem;
 }
 
 
