@@ -235,6 +235,25 @@ var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
 	return shape;
 };
 
+// Function: manageableElement
+// Find the element to manage from a given node. We want to manage elements like [se:external] as a
+// whole, regardless of what its children might be.
+//
+// Parameters:
+// elem - The element we want to manage
+//
+// Returns: The element we should manage
+var manageableElement = this.manageableElement = function(elem) {
+    while (elem !== null && elem !== svgroot) {
+        if (elem.matches('foreignObject') || elem.getAttributeNS(svgedit.NS.SE, 'external'))
+            return elem;
+        else elem = elem.parentElement;
+    }
+
+    return elem;
+}
+
+
 // import svgtransformlist.js
 var getTransformList = canvas.getTransformList = svgedit.transformlist.getTransformList;
 

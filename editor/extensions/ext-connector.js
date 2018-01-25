@@ -340,10 +340,7 @@ svgEditor.addExtension("Connector", function(S) {
 				
 				if($.inArray(svgcontent, parents) !== -1) {
 					// Connectable element
-					
-					// If child of foreignObject, use parent
-					var fo = $(mouse_target).closest("foreignObject,g[se:external]");
-					start_elem = fo.length ? fo[0] : mouse_target;
+					start_elem = svgCanvas.manageableElement(mouse_target);
 					
 					// Get center of source element
 					var bb = svgedit.utilities.getBBoxWithTransform(start_elem);
@@ -424,8 +421,7 @@ svgEditor.addExtension("Connector", function(S) {
 				mouse_target = e.target;
 			
 			if(svgCanvas.getMode() == "connector") {
-				var fo = $(mouse_target).closest("foreignObject,g[se:external]");
-				if (fo.length) {mouse_target = fo[0];}
+				mouse_target = svgCanvas.manageableElement(mouse_target);
 				
 				var parents = $(mouse_target).parents();
 
