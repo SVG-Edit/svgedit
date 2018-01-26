@@ -462,10 +462,11 @@ svgEditor.addExtension("Connector", function(S) {
 				});
 				if(dupe.length) {
 					$(cur_line).remove();
+					started = false;
 					return {
 						keep: false,
 						element: null,
-						started: false
+						started: started
 					};
 				}
 				
