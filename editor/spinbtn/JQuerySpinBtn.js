@@ -1,4 +1,4 @@
-﻿/*globals $, svgEditor*/
+/*globals $, svgEditor*/
 /*jslint vars: true, eqeq: true*/
 /* SpinButton control
  *

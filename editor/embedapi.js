@@ -1,4 +1,4 @@
-﻿/*
+/*
 Embedded SVG-edit API
 
 General usage:
