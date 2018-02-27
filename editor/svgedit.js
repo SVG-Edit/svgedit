@@ -17,7 +17,7 @@ svgedit = {
 		XMLNS: 'http://www.w3.org/2000/xmlns/' // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
 	},
 	ignoredNS: {
-		// No namespaces ignored by default
+		'https://github.com/SVG-Edit/svgedit': 1,
 	},
 };
 

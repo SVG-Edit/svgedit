@@ -169,12 +169,6 @@ svgedit.sanitize.sanitizeSvg = function(node) {
       if (!(allowedAttrsNS.hasOwnProperty(attrLocalName) && attrNsURI == allowedAttrsNS[attrLocalName] && attrNsURI != NS.XMLNS) &&
         !(attrNsURI == NS.XMLNS && REVERSE_NS[attr.value]) )
       {
-        // TODO(codedread): Programmatically add the se: attributes to the NS-aware whitelist.
-        // Bypassing the whitelist to allow se: prefixes.
-        // Is there a more appropriate way to do this?
-        if (attrName.indexOf('se:') === 0 || attrName.indexOf('data-') === 0) {
-          seAttrs.push([attrName, attr.value]);
-        }
         node.removeAttributeNS(attrNsURI, attrLocalName);
       }
 
