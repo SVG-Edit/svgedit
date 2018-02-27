@@ -3834,7 +3834,7 @@ this.svgToString = function(elem, indent) {
 				var el = this;
 				// for some elements have no attribute
 				var uri = this.namespaceURI;
-				if(uri && !nsuris[uri] && nsMap[uri] && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml' ) {
+				if (uri && !nsuris[uri] && nsMap[uri] && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml' ) {
 					nsuris[uri] = true;
 					out.push(' xmlns:' + nsMap[uri] + '="' + uri +'"');
 				}
@@ -4456,10 +4456,13 @@ var convertToGroup = this.convertToGroup = function(elem) {
 //
 // Parameters:
 // xmlString - The SVG as XML text.
+// preventUndo - Boolean (defaults to false) indicating if we want to do the
+// changes without adding them to the undo stack - e.g. for initializing a
+// drawing on page load.
 //
 // Returns:
 // This function returns false if the set was unsuccessful, true otherwise.
-this.setSvgString = function(xmlString) {
+this.setSvgString = function(xmlString, preventUndo) {
 	try {
 		// convert string into XML document
 		var newDoc = svgedit.utilities.text2xml(xmlString);
@@ -4613,7 +4616,7 @@ this.setSvgString = function(xmlString) {
 		svgedit.path.clearData();
 		svgroot.appendChild(selectorManager.selectorParentGroup);
 		
-		addCommandToHistory(batchCmd);
+		if (!preventUndo) addCommandToHistory(batchCmd);
 		call('changed', [svgcontent]);
 	} catch(e) {
 		console.log(e);
