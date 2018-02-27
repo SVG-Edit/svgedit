@@ -4439,6 +4439,9 @@ var convertToGroup = this.convertToGroup = function(elem) {
 //
 // Parameters:
 // xmlString - The SVG as XML text.
+// preventUndo - Boolean (defaults to false) indicating if we want to do the
+// changes without adding them to the undo stack - e.g. for initializing a
+// drawing on page load.
 //
 // Returns:
 // This function returns false if the set was unsuccessful, true otherwise.
