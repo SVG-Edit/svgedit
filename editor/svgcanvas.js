@@ -3865,7 +3865,8 @@ this.svgToString = function(elem, indent) {
 					var uri = attr.namespaceURI;
 
 					// Allow any alias of ignored namespaces
-					if(attr.prefix == 'xmlns' && attr.value in svgedit.ignoredNS) {
+					if(attr.prefix == 'xmlns' && attr.value in svgedit.ignoredNS && !nsuris[attr.value]) {
+						nsuris[attr.value] = true;
 						out.push(' xmlns:' + attr.localName + '="' + attr.value +'"');
 					} else if (uri && !nsuris[uri] && uri in nsMap && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml' ) {
 						nsuris[uri] = true;
