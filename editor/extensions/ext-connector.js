@@ -61,7 +61,7 @@ svgEditor.addExtension("Connector", function(S) {
 		if(slope < bb.height/bb.width) {
 			ratio = (bb.width/2) / Math.abs(len_x);
 		} else {
-			ratio = (bb.height/2) / Math.abs(len_y);
+			ratio = len_y == 0 ? 0 : (bb.height/2) / Math.abs(len_y);
 		}
 		
 		
@@ -474,10 +474,11 @@ svgEditor.addExtension("Connector", function(S) {
 				});
 				if(dupe.length) {
 					$(cur_line).remove();
+					started = false;
 					return {
 						keep: false,
 						element: null,
-						started: false
+						started: started
 					};
 				}
 				
