@@ -170,6 +170,45 @@ svgedit.utilities.encodeUTF8 = function (argString) {
   return unescape(encodeURIComponent(argString));
 };
 
+/**
+ * convert dataURL to object URL
+ * @param {string} dataurl
+ * @return {string} object URL or empty string
+ */
+svgedit.utilities.dataURLToObjectURL = function (dataurl) {
+	if (typeof Uint8Array == 'undefined' || typeof Blob == 'undefined' || typeof URL == 'undefined' || !URL.createObjectURL) {
+		return '';
+	}
+    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    var blob = new Blob([u8arr], {type:mime});
+	return URL.createObjectURL(blob);
+};
+/**
+ * get object URL for a blob object
+ * @param {Blob} blob A Blob object or File object
+ * @return {string} object URL or empty string
+ */
+svgedit.utilities.createObjectURL = function (blob) {
+	if (!blob || typeof URL == 'undefined' || !URL.createObjectURL) {
+		return '';
+	}
+	return URL.createObjectURL(blob);
+};
+/**
+ * @property {string} blankPageObjectURL
+ */
+svgedit.utilities.blankPageObjectURL = function () {
+	if (typeof Blob == 'undefined') {
+		return '';
+	}
+	var blob = new Blob(['<html><head><title>SVG-edit</title></head><body>&nbsp;</body></html>'], {type:'text/html'});
+	return svgedit.utilities.createObjectURL(blob);
+}();
+
 // Function: svgedit.utilities.convertToXMLReferences
 // Converts a string to use XML references
 svgedit.utilities.convertToXMLReferences = function(input) {

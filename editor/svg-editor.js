@@ -193,7 +193,8 @@ TODOS
 					enterNewLinkURL: 'Enter the new hyperlink URL',
 					errorLoadingSVG: 'Error: Unable to load SVG data',
 					URLloadFail: 'Unable to load from URL',
-					retrieving: 'Retrieving \'%s\' ...'
+					retrieving: 'Retrieving \'%s\' ...',
+					popupWindowBlocked: 'Popup window may be blocked by browser'
 				}
 			};
 
@@ -1086,10 +1087,15 @@ TODOS
 					exportWindowName = data.exportWindowName;
 
 				if (exportWindowName) {
-					exportWindow = window.open('', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
+					exportWindow = window.open(svgedit.utilities.blankPageObjectURL || '', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
 				}
 				
-				exportWindow.location.href = data.datauri;
+				if (!exportWindow || exportWindow.closed) {
+					$.alert(uiStrings.notification.popupWindowBlocked);
+					return;
+				}
+
+				exportWindow.location.href = data.bloburl || data.datauri;
 				var done = $.pref('export_notice_done');
 				if (done !== 'all') {
 					var note = uiStrings.notification.saveFromBrowser.replace('%s', data.type);
@@ -3602,6 +3608,7 @@ TODOS
 				svgCanvas.save(saveOpts);
 			};
 
+			var loadingURL;
 			var clickExport = function() {
 				$.select('Select an image type for export: ', [
 					// See http://kangax.github.io/jstests/toDataUrl_mime_type_test/ for a useful list of MIME types and browser support
@@ -3620,10 +3627,20 @@ TODOS
 							editor.exportWindowCt++;
 						}
 						exportWindowName = curConfig.canvasName + editor.exportWindowCt;
-						exportWindow = window.open(
-							'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
-							exportWindowName
-						);
+						var popHTML, popURL;
+						if (loadingURL) {
+							popURL = loadingURL;
+						} else {
+							popHTML = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + str + '</title></head><body><h1>' + str + '</h1></body><html>';
+							if (typeof URL && URL.createObjectURL) {
+								var blob = new Blob([popHTML], {type:'text/html'});
+								popURL = URL.createObjectURL(blob);
+							} else {
+								popURL = 'data:text/html;base64;charset=utf-8,' + svgedit.utilities.encode64(popHTML);
+							}
+							loadingURL = popURL;
+						}
+						exportWindow = window.open(popURL, exportWindowName);
 					}
 					if (imgType === 'PDF') {
 						if (!customExportPDF) {

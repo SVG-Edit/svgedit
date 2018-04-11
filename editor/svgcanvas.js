@@ -4063,8 +4063,15 @@ this.rasterExport = function(imgType, quality, exportWindowName) {
 		canvg(c, str, {renderCallback: function() {
 			var dataURLType = (type === 'ICO' ? 'BMP' : type).toLowerCase();
 			var datauri = quality ? c.toDataURL('image/' + dataURLType, quality) : c.toDataURL('image/' + dataURLType);
-			
-			call('exported', {datauri: datauri, svg: str, issues: issues, type: imgType, mimeType: mimeType, quality: quality, exportWindowName: exportWindowName});
+			if (c.toBlob) {
+				c.toBlob(function (blob) {
+					var bloburl = svgedit.utilities.createObjectURL(blob);
+					call('exported', {datauri: datauri, bloburl: bloburl, svg: str, issues: issues, type: imgType, mimeType: mimeType, quality: quality, exportWindowName: exportWindowName});
+				}, mimeType, quality);
+				return;
+			}
+			var bloburl = svgedit.utilities.dataURLToObjectURL(datauri);
+			call('exported', {datauri: datauri, bloburl: bloburl, svg: str, issues: issues, type: imgType, mimeType: mimeType, quality: quality, exportWindowName: exportWindowName});
 		}});
 	})();
 };
