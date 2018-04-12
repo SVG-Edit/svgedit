@@ -181,12 +181,13 @@ svgedit.utilities.dataURLToObjectURL = function (dataurl) {
 	}
     var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
         bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-    while(n--){
+    while (n--) {
         u8arr[n] = bstr.charCodeAt(n);
     }
     var blob = new Blob([u8arr], {type:mime});
 	return URL.createObjectURL(blob);
 };
+
 /**
  * get object URL for a blob object
  * @param {Blob} blob A Blob object or File object
@@ -198,6 +199,7 @@ svgedit.utilities.createObjectURL = function (blob) {
 	}
 	return URL.createObjectURL(blob);
 };
+
 /**
  * @property {string} blankPageObjectURL
  */
