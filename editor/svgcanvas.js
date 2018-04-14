@@ -2317,26 +2317,81 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	
 	 //TODO(rafaelcastrocouto): User preference for shift key and zoom factor
 	$(container).bind('mousewheel DOMMouseScroll', function(e){
-		//if (!e.shiftKey) {return;}
 		e.preventDefault();
 		var evt = e.originalEvent;
 
 		root_sctm = $('#svgcontent g')[0].getScreenCTM().inverse();
-		var pt = svgedit.math.transformPoint( evt.pageX, evt.pageY, root_sctm );
 
-		var bbox = {
-			'x': pt.x,
-			'y': pt.y,
-			'width': 0,
-			'height': 0
-		};
+		var workarea = $('#workarea');
+		var scrbar = 15;
+		var rulerwidth = curConfig.showRulers ? 16 : 0;
+
+		//mouse relative to content area in content pixels
+		var pt = svgedit.math.transformPoint(evt.pageX, evt.pageY, root_sctm);
+
+		//full work area width in screen pixels
+		var editor_full_w = workarea.width();
+		var editor_full_h = workarea.height();
+
+		//work area width minus scroll and ruler in screen pixels
+		var editor_w = editor_full_w - scrbar - rulerwidth;
+		var editor_h = editor_full_h - scrbar - rulerwidth;
+
+		//work area width in content pixels
+		var workarea_view_w = editor_w * root_sctm.a;
+		var workarea_view_h = editor_h * root_sctm.d;
+
+		//content offset from canvas in screen pixels
+		var w_offset = workarea.offset();
+		var w_offset_left = w_offset['left'] + rulerwidth;
+		var w_offset_top = w_offset['top'] + rulerwidth;
 
 		var delta = (evt.wheelDelta) ? evt.wheelDelta : (evt.detail) ? -evt.detail : 0;
 		if (!delta) {return;}
+		var factor = Math.max(3/4, Math.min(4/3, (delta)));
 
-		bbox.factor = Math.max(3/4, Math.min(4/3, (delta)));
-	
-		call('zoomed', bbox);
+		var w_zoom, h_zoom;
+		if (factor > 1) {
+			w_zoom = Math.ceil(editor_w / workarea_view_w * factor * 100) / 100;
+			h_zoom = Math.ceil(editor_h / workarea_view_h * factor * 100) / 100;
+		} else {
+			w_zoom = Math.floor(editor_w / workarea_view_w * factor * 100) / 100;
+			h_zoom = Math.floor(editor_h / workarea_view_h * factor * 100) / 100;
+		}
+		var zoomlevel = Math.min(w_zoom, h_zoom);
+		zoomlevel = Math.min(10, Math.max(.01, zoomlevel));
+		if (zoomlevel === current_zoom) {
+			return;
+		}
+		factor = zoomlevel / current_zoom;
+
+		//top left of workarea in content pixels before zoom
+		var top_left_old = svgedit.math.transformPoint(w_offset_left, w_offset_top, root_sctm);
+
+		//top left of workarea in content pixels after zoom
+		var top_left_new = {
+			x: pt.x - (pt.x - top_left_old.x) / factor,
+			y: pt.y - (pt.y - top_left_old.y) / factor
+		};
+
+		//top left of workarea in canvas pixels relative to content after zoom
+		var top_left_new_canvas = {
+			x: top_left_new.x * zoomlevel,
+			y: top_left_new.y * zoomlevel
+		};
+
+		//new center in canvas pixels
+		var center_new = {
+			x: top_left_new_canvas.x - rulerwidth + editor_full_w/2,
+			y: top_left_new_canvas.y - rulerwidth + editor_full_h/2
+		};
+
+		canvas.setZoom(zoomlevel);
+		$('#zoom').val((zoomlevel*100).toFixed(1));
+
+		window.svgEditor.updateCanvas(false, center_new);
+
+		window.svgEditor.zoomDone();
 	});
 	
 }());
