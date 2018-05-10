@@ -21,11 +21,12 @@
 // 7) svgutils.js
 // 8) sanitize.js
 // 9) history.js
-// 10) select.js
-// 11) draw.js
-// 12) path.js
-// 13) coords.js
-// 14) recalculate.js
+// 10) historyrecording.js
+// 11) select.js
+// 12) draw.js
+// 13) path.js
+// 14) coords.js
+// 15) recalculate.js
 
 (function () {
 
