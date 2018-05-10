@@ -2032,14 +2032,22 @@ TODOS
 
 			var setupFlyouts = function(holders) {
 				$.each(holders, function(hold_sel, btn_opts) {
-					var buttons = $(hold_sel).children();
+					var buttons = $(hold_sel).children()
+						.not('.tool_button_evt_handled');
 					var show_sel = hold_sel + '_show';
 					var shower = $(show_sel);
 					var def = false;
-					buttons.addClass('tool_button')
+					buttons.addClass('tool_button tool_button_evt_handled')
 						.unbind('click mousedown mouseup') // may not be necessary
-						.each(function(i) {
+						.each(function() {
 							// Get this buttons options
+							var i;
+							for(var j in btn_opts) {
+								if(btn_opts[j].sel == '#'+this.getAttribute('id')) {
+									i = j;
+									break;
+								}
+							}
 							var opts = btn_opts[i];
 
 							// Remember the function that goes with this ID
@@ -2050,20 +2058,6 @@ TODOS
 							// Clicking the icon in flyout should set this set's icon
 							var func = function(event) {
 								var options = opts;
-								//find the currently selected tool if comes from keystroke
-								if (event.type === 'keydown') {
-									var flyoutIsSelected = $(options.parent + '_show').hasClass('tool_button_current');
-									var currentOperation = $(options.parent + '_show').attr('data-curopt');
-									$.each(holders[opts.parent], function(i, tool) {
-										if (tool.sel == currentOperation) {
-											if (!event.shiftKey || !flyoutIsSelected) {
-												options = tool;
-											} else {
-												options = holders[opts.parent][i+1] || holders[opts.parent][0];
-											}
-										}
-									});
-								}
 								if ($(this).hasClass('disabled')) {return false;}
 								if (toolButtonClick(show_sel)) {
 									options.fn();
@@ -2696,7 +2690,7 @@ TODOS
 									icon: btn.id,
 //									key: btn.key,
 									isDefault: true
-								}, ref_data];
+								}];
 	//
 	//							// {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
 	//
