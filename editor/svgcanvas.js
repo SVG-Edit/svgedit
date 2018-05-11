@@ -95,7 +95,7 @@ var svgcontent = svgdoc.createElementNS(NS.SVG, 'svg');
 
 // This function resets the svgcontent element while keeping it in the DOM.
 var clearSvgContentElement = canvas.clearSvgContentElement = function() {
-	while (svgcontent.firstChild) { svgcontent.removeChild(svgcontent.firstChild); }
+	$(svgcontent).empty();
 
 	// TODO: Clear out all other attributes first?
 	$(svgcontent).attr({
@@ -3056,7 +3056,7 @@ pathActions = canvas.pathActions = function() {
 			var cur_pt;
 			if (id.substr(0,14) == 'pathpointgrip_') {
 				// Select this point
-				cur_pt = svgedit.path.path.cur_pt = parseInt(id.substr(14));
+				cur_pt = svgedit.path.path.cur_pt = parseInt(id.substr(14), 10);
 				svgedit.path.path.dragging = [start_x, start_y];
 				var seg = svgedit.path.path.segs[cur_pt];
 				
