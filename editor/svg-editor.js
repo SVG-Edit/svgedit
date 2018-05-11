@@ -294,8 +294,8 @@ TODOS
 
 		/**
 		* Allows setting of preferences or configuration (including extensions).
-		* @param {object} opts The preferences or configuration (including extensions)
-		* @param {object} [cfgCfg] Describes configuration which applies to the particular batch of supplied options
+		* @param {Object} opts The preferences or configuration (including extensions)
+		* @param {Object} [cfgCfg] Describes configuration which applies to the particular batch of supplied options
 		* @param {boolean} [cfgCfg.allowInitialUserOverride=false] Set to true if you wish
 		*	to allow initial overriding of settings by the user via the URL
 		*	(if permitted) or previously stored preferences (if permitted);
@@ -386,7 +386,7 @@ TODOS
 		};
 
 		/**
-		* @param {object} opts Extension mechanisms may call setCustomHandlers with three functions: opts.open, opts.save, and opts.exportImage
+		* @param {Object} opts Extension mechanisms may call setCustomHandlers with three functions: opts.open, opts.save, and opts.exportImage
 		* opts.open's responsibilities are:
 		*	- invoke a file chooser dialog in 'open' mode
 		*	- let user pick a SVG file
@@ -1854,7 +1854,7 @@ TODOS
 			 * @returns {boolean} True if the element is a layer
 			 */
 			function isLayer(elem) {
-				return elem && elem.tagName === 'g' && svgedit.draw.Layer.CLASS_REGEX.test(elem.getAttribute('class'))
+				return elem && elem.tagName === 'g' && svgedit.draw.Layer.CLASS_REGEX.test(elem.getAttribute('class'));
 			}
 
 			// called when any element has changed
@@ -2394,9 +2394,9 @@ TODOS
 					});
 					//this.style[uaPrefix + 'Transform'] = 'scale(' + scale + ')';
 					var prefix = '-' + uaPrefix.toLowerCase() + '-';
-					styleStr += (sel_toscale + '{' + prefix + 'transform: scale(' + scale + ');}'
-					+ ' #svg_editor div.toolset .toolset {' + prefix + 'transform: scale(1); margin: 1px !important;}' // Hack for markers
-					+ ' #svg_editor .ui-slider {' + prefix + 'transform: scale(' + (1/scale) + ');}' // Hack for sliders
+					styleStr += (sel_toscale + '{' + prefix + 'transform: scale(' + scale + ');}' +
+						' #svg_editor div.toolset .toolset {' + prefix + 'transform: scale(1); margin: 1px !important;}' + // Hack for markers
+						' #svg_editor .ui-slider {' + prefix + 'transform: scale(' + (1/scale) + ');}' // Hack for sliders
 					);
 					rule_elem.text(styleStr);
 				}
@@ -2529,8 +2529,8 @@ TODOS
 							}
 							break;
 						case 'select':
-							html = '<label' + cont_id + '>'
-								+ '<select id="' + tool.id + '">';
+							html = '<label' + cont_id + '>' +
+								'<select id="' + tool.id + '">';
 							$.each(tool.options, function(val, text) {
 								var sel = (val == tool.defval) ? ' selected' : '';
 								html += '<option value="'+val+'"' + sel + '>' + text + '</option>';
@@ -2544,8 +2544,8 @@ TODOS
 							});
 							break;
 						case 'button-select':
-							html = '<div id="' + tool.id + '" class="dropdown toolset" title="' + tool.title + '">'
-								+ '<div id="cur_' + tool.id + '" class="icon_label"></div><button></button></div>';
+							html = '<div id="' + tool.id + '" class="dropdown toolset" title="' + tool.title + '">' +
+								'<div id="cur_' + tool.id + '" class="icon_label"></div><button></button></div>';
 
 							var list = $('<ul id="' + tool.id + '_opts"></ul>').appendTo('#option_lists');
 
@@ -2566,11 +2566,11 @@ TODOS
 
 							break;
 						case 'input':
-							html = '<label' + cont_id + '>'
-								+ '<span id="' + tool.id + '_label">'
-								+ tool.label + ':</span>'
-								+ '<input id="' + tool.id + '" title="' + tool.title
-								+ '" size="' + (tool.size || '4') + '" value="' + (tool.defval || '') + '" type="text"/></label>';
+							html = '<label' + cont_id + '>' +
+								'<span id="' + tool.id + '_label">' +
+								tool.label + ':</span>' +
+								'<input id="' + tool.id + '" title="' + tool.title +
+								'" size="' + (tool.size || '4') + '" value="' + (tool.defval || '') + '" type="text"/></label>';
 
 							// Creates the tool, hides & adds it, returns the select element
 

@@ -401,14 +401,13 @@ svgedit.utilities.getPathBBox = function(path) {
 				P2 = [seg.x2, seg.y2],
 				P3 = [seg.x, seg.y];
 
-			var j;
-			for (j = 0; j < 2; j++) {
+			for (var j = 0; j < 2; j++) {
 
 				var calc = function(t) {
-					return Math.pow(1-t,3) * P0[j]
-						+ 3 * Math.pow(1-t,2) * t * P1[j]
-						+ 3 * (1-t) * Math.pow(t, 2) * P2[j]
-						+ Math.pow(t,3) * P3[j];
+					return Math.pow(1-t,3) * P0[j] +
+						3 * Math.pow(1-t,2) * t * P1[j] +
+						3 * (1-t) * Math.pow(t, 2) * P2[j] +
+						Math.pow(t,3) * P3[j];
 				};
 
 				var b = 6 * P0[j] - 12 * P1[j] + 6 * P2[j];
@@ -925,7 +924,7 @@ svgedit.utilities.getBBoxWithTransform = function(elem, addSvgElementFromJson, p
 function getStrokeOffsetForBBox(elem) {
 	var sw = elem.getAttribute('stroke-width');
 	return (!isNaN(sw) && elem.getAttribute('stroke') != 'none') ? sw/2 : 0;
-};
+}
 
 // Function: getStrokedBBox
 // Get the bounding box for one or more stroked and/or transformed elements
@@ -1024,7 +1023,7 @@ svgedit.utilities.getRotationAngle = function(elem, to_rad) {
 	var selected = elem || editorContext_.getSelectedElements()[0];
 	// find the rotation transform (if any) and set it
 	var tlist = svgedit.transformlist.getTransformList(selected);
-	return svgedit.utilities.getRotationAngleFromTransformList(tlist, to_rad)
+	return svgedit.utilities.getRotationAngleFromTransformList(tlist, to_rad);
 };
 
 // Function getRefElem

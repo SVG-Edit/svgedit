@@ -191,7 +191,7 @@ var getJsonFromSvgElement = this.getJsonFromSvgElement = function(data) {
     // Iterate attributes
     for(var i=0; i < data.attributes.length; i++) {
         retval.attr[data.attributes[i].name] = data.attributes[i].value;
-    };
+    }
 
     // Iterate children
     for(var i=0; i < data.childNodes.length; i++) {
@@ -199,7 +199,7 @@ var getJsonFromSvgElement = this.getJsonFromSvgElement = function(data) {
     }
 
     return retval;
-}
+};
 
 // Function: addSvgElementFromJson
 // Create a new SVG element based on the given object keys/values and add it to the current layer
@@ -648,7 +648,7 @@ var getIntersectionList = this.getIntersectionList = function(rect) {
 // A single bounding box object
 var getStrokedBBox = this.getStrokedBBox = function(elems) {
 	if (!elems) {elems = getVisibleElements();}
-	return svgedit.utilities.getStrokedBBox(elems, addSvgElementFromJson, pathActions)
+	return svgedit.utilities.getStrokedBBox(elems, addSvgElementFromJson, pathActions);
 };
 
 // Function: getVisibleElements
@@ -845,7 +845,7 @@ this.setRotationAngle = function(val, preventUndo) {
 		changeSelectedAttribute('transform', newTransform, selectedElements);
 		call('changed', selectedElements);
 	}
-	var pointGripContainer = svgedit.utilities.getElem('pathpointgrip_container');
+//		var pointGripContainer = svgedit.utilities.getElem('pathpointgrip_container');
 //		if (elem.nodeName == 'path' && pointGripContainer) {
 //			pathActions.setPointContainerTransform(elem.getAttribute('transform'));
 //		}
@@ -1053,8 +1053,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	// for foreign content, go up until we find the foreignObject
 	// WebKit browsers set the mouse target to the svgcanvas div 
 	if ([NS.MATH, NS.HTML].indexOf(mouse_target.namespaceURI) >= 0 && 
-		mouse_target.id != 'svgcanvas') 
-	{
+		mouse_target.id != 'svgcanvas') {
 		while (mouse_target.nodeName != 'foreignObject') {
 			mouse_target = mouse_target.parentNode;
 			if (!mouse_target) {return svgroot;}
@@ -1073,7 +1072,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 	// If it's a selection grip, return the grip parent
 	if ($target.closest('#selectorParentGroup').length) {
 		// While we could instead have just returned mouse_target, 
-		// this makes it easier to indentify as being a selector grip
+		// this makes it easier to identify as being a selector grip
 		return selectorManager.selectorParentGroup;
 	}
 
@@ -1632,7 +1631,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					// Found an element that was already selected, so we shouldn't remove it.
 					var foundInd = elemsToRemove.indexOf(intElem);
 					if (foundInd != -1) {
-						elemsToRemove.splice(foundInd, 1)
+						elemsToRemove.splice(foundInd, 1);
 					}
 				}
 				
@@ -1682,8 +1681,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 					dx = 0;
 				}				
 				
-				var ts = null,
-					tx = 0, ty = 0,
+				var tx = 0, ty = 0,
 					sy = height ? (height+dy)/height : 1, 
 					sx = width ? (width+dx)/width : 1;
 				// if we are dragging on the north side, then adjust the scale factor and ty
@@ -2440,10 +2438,10 @@ textActions = canvas.textActions = (function() {
 			bl = ptToScreen(startbb.x, textbb.y + textbb.height),
 			br = ptToScreen(startbb.x + (endbb.x - startbb.x), textbb.y + textbb.height);
 		
-		var dstr = 'M' + tl.x + ',' + tl.y
-					+ ' L' + tr.x + ',' + tr.y
-					+ ' ' + br.x + ',' + br.y
-					+ ' ' + bl.x + ',' + bl.y + 'z';
+		var dstr = 'M' + tl.x + ',' + tl.y +
+					' L' + tr.x + ',' + tr.y +
+					' ' + br.x + ',' + br.y +
+					' ' + bl.x + ',' + bl.y + 'z';
 		
 		svgedit.utilities.assignAttributes(selblock, {
 			d: dstr,
@@ -2595,12 +2593,11 @@ textActions = canvas.textActions = (function() {
 //					textActions.toSelectMode(true);				
 //				}
 
-			if (
-				evt.target !== curtext
-				&&	mouse_x < last_x + 2
-				&& mouse_x > last_x - 2
-				&&	mouse_y < last_y + 2
-				&& mouse_y > last_y - 2) {
+			if (evt.target !== curtext &&
+				mouse_x < last_x + 2 &&
+				mouse_x > last_x - 2 &&
+				mouse_y < last_y + 2 &&
+				mouse_y > last_y - 2) {
 
 				textActions.toSelectMode(true);
 			}
@@ -2612,7 +2609,6 @@ textActions = canvas.textActions = (function() {
 			current_mode = 'textedit';
 			selectorManager.requestSelector(curtext).showGrips(false);
 			// Make selector group accept clicks
-			var sel = selectorManager.requestSelector(curtext).selectorRect;
 			
 			textActions.init();
 
@@ -2622,7 +2618,7 @@ textActions = canvas.textActions = (function() {
 //					curtext.setAttribute('editable', 'simple');
 //					return;
 //				}
-			
+
 			if (!arguments.length) {
 				setCursor();
 			} else {
@@ -3123,7 +3119,6 @@ pathActions = canvas.pathActions = function() {
 					var pt_y = newPoint[1];
 					
 					// set curve
-					var seg = seglist.getItem(index);
 					var cur_x = mouse_x / current_zoom;
 					var cur_y = mouse_y / current_zoom;
 					var alt_x = (pt_x + (pt_x - cur_x));
@@ -3200,7 +3195,6 @@ pathActions = canvas.pathActions = function() {
 					var seg = this;
 					if (!seg.next && !seg.prev) {return;}
 						
-					var item = seg.item;
 					var rbb = rubberBox.getBBox();
 					
 					var pt = svgedit.path.getGripPt(seg);
@@ -3372,9 +3366,8 @@ pathActions = canvas.pathActions = function() {
 //				segList = path.pathSegList;
 //				var len = segList.numberOfItems;
 //			}
-			var i, last_x, last_y;
 
-			for (i = 0; i < len; ++i) {
+			for (var i = 0; i < len; ++i) {
 				var seg = segList.getItem(i);
 				var type = seg.pathSegType;
 				if (type == 1) {continue;}
@@ -3413,7 +3406,6 @@ pathActions = canvas.pathActions = function() {
 			svgedit.path.path.storeD();
 			
 			var sel_pts = svgedit.path.path.selected_pts;
-			var segs = svgedit.path.path.segs;
 			
 			var i = sel_pts.length;
 			var nums = [];
@@ -3433,11 +3425,9 @@ pathActions = canvas.pathActions = function() {
 			var sel_pts = svgedit.path.path.selected_pts;
 			// Only allow one selected node for now
 			if (sel_pts.length !== 1) {return;}
-			
+
 			var elem = svgedit.path.path.elem;
 			var list = elem.pathSegList;
-
-			var len = list.numberOfItems;
 
 			var index = sel_pts[0];
 			
@@ -3831,7 +3821,6 @@ this.svgToString = function(elem, indent) {
 			
 			// Check elements for namespaces, add if found
 			$(elem).find('*').andSelf().each(function() {
-				var el = this;
 				// for some elements have no attribute
 				var uri = this.namespaceURI;
 				if (uri && !nsuris[uri] && nsMap[uri] && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml' ) {
@@ -3889,12 +3878,12 @@ this.svgToString = function(elem, indent) {
 					}
 					
 					// Embed images when saving 
-					if (save_options.apply
-						&& elem.nodeName === 'image' 
-						&& attr.localName === 'href'
-						&& save_options.images
-						&& save_options.images === 'embed') 
-					{
+					if (save_options.apply &&
+						elem.nodeName === 'image' &&
+						attr.localName === 'href' &&
+						save_options.images &&
+						save_options.images === 'embed') {
+
 						var img = encodableImages[attrVal];
 						if (img) {attrVal = img;}
 					}
@@ -4882,7 +4871,7 @@ this.renameCurrentLayer = function(newname) {
 // Returns:
 // true if the current layer position was changed, false otherwise.
 this.setCurrentLayerPosition = function(newpos) {
-	var oldpos, drawing = getCurrentDrawing();
+	var drawing = getCurrentDrawing();
 	var result = drawing.setCurrentLayerPosition(newpos);
 	if (result) {
 		addCommandToHistory(new svgedit.history.MoveElementCommand(result.currentGroup, result.oldNextSibling, svgcontent));
@@ -5436,7 +5425,6 @@ var setGradient = this.setGradient = function(type) {
 	var defs = svgedit.utilities.findDefs();
 	// no duplicate found, so import gradient into defs
 	if (!duplicate_grad) {
-		var orig_grad = grad;
 		grad = defs.appendChild( svgdoc.importNode(grad, true) );
 		// get next id and set it on the grad
 		grad.id = getNextId();
@@ -5639,11 +5627,6 @@ this.setStrokeWidth = function(val) {
 this.setStrokeAttr = function(attr, val) {
 	cur_shape[attr.replace('-', '_')] = val;
 	var elems = [];
-	function addNonG (e) {
-		if (e.nodeName != 'g') {
-			elems.push(e);
-		}
-	}
 	var i = selectedElements.length;
 	while (i--) {
 		var elem = selectedElements[i];
@@ -6162,7 +6145,7 @@ this.convertToPath = function(elem, getBBox) {
 		return;
 	}
 	if (getBBox) {
-		return svgedit.utilities.getBBoxOfElementAsPath(elem, addSvgElementFromJson, pathActions)
+		return svgedit.utilities.getBBoxOfElementAsPath(elem, addSvgElementFromJson, pathActions);
 	} else {
 		// TODO: Why is this applying attributes from cur_shape, then inside utilities.convertToPath it's pulling addition attributes from elem?
 		// TODO: If convertToPath is called with one elem, cur_shape and elem are probably the same; but calling with multiple is a bug or cool feature.
@@ -6319,7 +6302,6 @@ var changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
 var changeSelectedAttribute = this.changeSelectedAttribute = function(attr, val, elems) {
 	elems = elems || selectedElements;
 	canvas.undoMgr.beginUndoableChange(attr, elems);
-	var i = elems.length;
 
 	changeSelectedAttributeNoUndo(attr, val, elems);
 
@@ -6381,7 +6363,7 @@ this.cutSelectedElements = function() {
 // Remembers the current selected elements on the clipboard
 this.copySelectedElements = function() {
 	localStorage.setItem('svgedit_clipboard', JSON.stringify(
-		selectedElements.map(function(x){ return getJsonFromSvgElement(x) })
+		selectedElements.map(function(x){ return getJsonFromSvgElement(x);})
 	));
 
 	$('#cmenu_canvas').enableContextMenuItems('#paste,#paste_in_place');
@@ -6394,7 +6376,6 @@ this.pasteElements = function(type, x, y) {
 	
 	var pasted = [];
 	var batchCmd = new svgedit.history.BatchCommand('Paste elements');
-	var drawing = getCurrentDrawing();
 	var changedIDs = {};
 
 	// Recursively replace IDs and record the changes
@@ -6557,7 +6538,6 @@ var pushGroupProperties = this.pushGroupProperties = function(g, undoable) {
 		if (elem.nodeType !== 1) {continue;}
 		
 		if (gattrs.opacity !== null && gattrs.opacity !== 1) {
-			var c_opac = elem.getAttribute('opacity') || 1;
 			var new_opac = Math.round((elem.getAttribute('opacity') || 1) * gattrs.opacity * 100)/100;
 			changeSelectedAttribute('opacity', new_opac, [elem]);
 		}
@@ -6984,7 +6964,7 @@ this.cloneSelectedElements = function(x, y) {
 // "selected", "largest", "smallest", "page"
 this.alignSelectedElements = function(type, relative_to) {
 	var i, elem;
-	var bboxes = [], angles = [];
+	var bboxes = [];
 	var minx = Number.MAX_VALUE, maxx = Number.MIN_VALUE, miny = Number.MAX_VALUE, maxy = Number.MIN_VALUE;
 	var curwidth = Number.MIN_VALUE, curheight = Number.MIN_VALUE;
 	var len = selectedElements.length;
@@ -7203,7 +7183,7 @@ this.getPrivateMethods = function() {
 		BatchCommand: BatchCommand,
 		call: call,
 		ChangeElementCommand: ChangeElementCommand,
-		copyElem: function(elem) {return getCurrentDrawing().copyElem(elem)},
+		copyElem: function(elem) {return getCurrentDrawing().copyElem(elem);},
 		ffClone: ffClone,
 		findDefs: findDefs,
 		findDuplicateGradient: findDuplicateGradient,

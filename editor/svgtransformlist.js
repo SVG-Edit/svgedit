@@ -81,7 +81,6 @@ svgedit.transformlist.SVGTransformList = function(elem) {
 	// TODO: how do we capture the undo-ability in the changed transform list?
 	this._update = function() {
 		var tstr = '';
-		var concatMatrix = svgroot.createSVGMatrix();
 		var i;
 		for (i = 0; i < this.numberOfItems; ++i) {
 			var xform = this._list.getItem(i);

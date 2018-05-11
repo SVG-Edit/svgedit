@@ -40,12 +40,12 @@ function stateUpdated() {
         if(a = document.getElementById(k)){
           var attrs = get_attrs(a);
           if(JSON.stringify(attrs) != JSON.stringify(ob.attr)){
-            shapetime[k] = ob.time
-            svgCanvas.updateElementFromJson(ob)
+            shapetime[k] = ob.time;
+            svgCanvas.updateElementFromJson(ob);
           }
         }else{
-          shapetime[k] = ob.time
-          svgCanvas.updateElementFromJson(ob)
+          shapetime[k] = ob.time;
+          svgCanvas.updateElementFromJson(ob);
         }
 
       }
@@ -73,67 +73,67 @@ function get_attrs(a){
         attrs[attr] = a.item(i).nodeValue;
       }
     }
-    return attrs
+    return attrs;
 }
 
 function main() {
   $(document).ready(function(){
     if (wave && wave.isInWaveContainer()) {
-      wave.setStateCallback(function(){setTimeout(stateUpdated,10)});
+      wave.setStateCallback(function(){setTimeout(stateUpdated,10);});
     }
     
     var oldchanged = svgCanvas.bind("changed", function(canvas, elem){
       if(oldchanged)oldchanged.apply(this, [canvas,elem]);
       
-      var delta = {}
+      var delta = {};
       $.each(elem, function(){
         
         var attrs = {};
         var a = this.attributes;
         if(a){
-          var attrs = get_attrs(a)
+          var attrs = get_attrs(a);
           var ob = {element: this.nodeName, attr: attrs};
           
-          ob.time = shapetime[this.id] = (new Date).getTime()
+          ob.time = shapetime[this.id] = (new Date).getTime();
           delta[this.id] = JSON.stringify(ob);
         }
-      })
+      });
       
-      wave.getState().submitDelta(delta)
+      wave.getState().submitDelta(delta);
       //sendDelta(canvas, elem)
       
     });
     //*
-    
+
     var oldselected = svgCanvas.bind("selected", function(canvas, elem){
       
       if(oldselected)oldselected.apply(this, [canvas,elem]);
+
       
-      
-      var delta = {}
+      var delta = {};
       var deletions = 0;
       $.each(elem, function(){
         if(!this.parentNode && this != window){
           delta[this.id] = null;
-          deletions ++
+          deletions++;
         }
       });
       if(deletions > 0){
-        wave.getState().submitDelta(delta)
+        wave.getState().submitDelta(delta);
       }
     });
     ///
     svgCanvas.bind("cleared", function(){
       //alert("cleared")
-        var state = {}, keys = wave.getState().getKeys()
+        var state = {}, keys = wave.getState().getKeys();
         for(var i = 0; i < keys.length; i++){
           state[keys[i]] = null;
         }
-        wave.getState().submitDelta(state)
+        wave.getState().submitDelta(state);
     });
     //*/
     svgCanvas.bind("getid", getId);
-  })
+  });
 }
 
 

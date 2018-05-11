@@ -230,10 +230,10 @@ svgedit.select.Selector.prototype.resize = function(bbox) {
 		nbah = (maxy-miny);
 	}
 
-	var dstr = 'M' + nbax + ',' + nbay
-				+ ' L' + (nbax+nbaw) + ',' + nbay
-				+ ' ' + (nbax+nbaw) + ',' + (nbay+nbah)
-				+ ' ' + nbax + ',' + (nbay+nbah) + 'z';
+	var dstr = 'M' + nbax + ',' + nbay +
+				' L' + (nbax+nbaw) + ',' + nbay +
+				' ' + (nbax+nbaw) + ',' + (nbay+nbah) +
+				' ' + nbax + ',' + (nbay+nbah) + 'z';
 	selectedBox.setAttribute('d', dstr);
 
 	var xform = angle ? 'rotate(' + [angle, cx, cy].join(',') + ')' : '';
