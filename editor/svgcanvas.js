@@ -2197,7 +2197,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 				started = r.started || started;
 			}
 		});
-		
+
 		if (!keep && element != null) {
 			getCurrentDrawing().releaseId(getId());
 			element.parentNode.removeChild(element);
@@ -2208,13 +2208,15 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
 			// if this element is in a group, go up until we reach the top-level group 
 			// just below the layer groups
 			// TODO: once we implement links, we also would have to check for <a> elements
-			while (t.parentNode.parentNode.tagName == 'g') {
+			while (t && t.parentNode && t.parentNode.parentNode &&
+				   t.parentNode.parentNode.tagName == 'g') {
 				t = t.parentNode;
 			}
 			// if we are not in the middle of creating a path, and we've clicked on some shape, 
 			// then go to Select mode.
 			// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
 			if ( (current_mode != 'path' || !drawn_path) &&
+				t && t.parentNode &&
 				t.parentNode.id != 'selectorParentGroup' &&
 				t.id != 'svgcanvas' && t.id != 'svgroot') 
 			{
