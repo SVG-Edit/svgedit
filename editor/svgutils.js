@@ -1157,7 +1157,7 @@ svgedit.utilities.executeAfterLoads = function (globalCheck, scripts, cb) {
 		else {
 			scripts.reduceRight(function (oldFunc, script) {
 				return function () {
-					$.getScript(script, oldFunc);
+					$.getScript(script).fail(oldFunc);
 				};
 			}, endCallback)();
 		}

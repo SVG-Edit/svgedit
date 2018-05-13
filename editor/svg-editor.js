@@ -551,9 +551,9 @@ TODOS
 					if (!extname.match(/^ext-.*\.js/)) { // Ensure URL cannot specify some other unintended file in the extPath
 						return;
 					}
-					$.getScript(curConfig.extPath + extname, function(d) {
+					$.getScript(curConfig.extPath + extname).fail( function(d) {
 						// Fails locally in Chrome 5
-						if (!d) {
+						if (d.statusText=="error") {
 							var s = document.createElement('script');
 							s.src = curConfig.extPath + extname;
 							document.querySelector('head').appendChild(s);

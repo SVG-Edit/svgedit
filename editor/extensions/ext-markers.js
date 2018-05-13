@@ -50,7 +50,7 @@ svgEditor.addExtension("Markers", function(S) {
 	var marker_types = {
 		nomarker: {},  
 		leftarrow:  
-			{element:'path', attr:{d:'M0,50 L100,90 L70,50 L100,10 Z'}},
+			{element:'path', attr:{d:'M0,50 L100,90 L70,50 L100,10 Z'},icon:svgEditor.curConfig.extPath + 'markers-icons-leftarrow.png'},
 		rightarrow:
 			{element:'path', attr:{d:'M100,50 L0,90 L30,50 L0,10 Z'}},
 		textmarker:
@@ -467,6 +467,7 @@ svgEditor.addExtension("Markers", function(S) {
 				buttons.push({
 					id: id_prefix + pos + '_' + id,
 					svgicon: id,
+                    icon:marker_types[id].icon,
 					title: title,
 					type: 'context',
 					events: {'click': setArrowFromButton},

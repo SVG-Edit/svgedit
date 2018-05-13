@@ -116,6 +116,7 @@ svgEditor.addExtension("polygon", function(S) {'use strict';
         svgicons: svgEditor.curConfig.extPath + "polygon-icons.svg",
         buttons: [{
             id: "tool_polygon",
+            icon: svgEditor.curConfig.extPath + "polygon-icons.png",
             type: "mode",
             title: "Polygon Tool",
             position: 11,

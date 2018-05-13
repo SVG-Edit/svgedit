@@ -3,9 +3,9 @@ svgEditor.readLang({
 	lang: "zh-TW",
 	dir : "ltr",
 	common: {
-		"ok": "保存",
+		"ok": "确定",
 		"cancel": "取消",
-		"key_backspace": "空白", 
+		"key_backspace": "backspace", 
 		"key_del": "刪除", 
 		"key_down": "下", 
 		"key_up": "上", 
