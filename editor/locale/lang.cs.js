@@ -1,14 +1,15 @@
-/*globals svgEditor */
+/* eslint-disable quotes */
+/* globals svgEditor */
 svgEditor.readLang({
 	lang: "cs",
-	dir : "ltr",
+	dir: "ltr",
 	common: {
 		"ok": "Uložit",
 		"cancel": "Storno",
-		"key_backspace": "backspace", 
-		"key_del": "delete", 
-		"key_down": "šipka dolů", 
-		"key_up": "šipka nahoru", 
+		"key_backspace": "backspace",
+		"key_del": "delete",
+		"key_down": "šipka dolů",
+		"key_up": "šipka nahoru",
 		"more_opts": "More Options",
 		"url": "URL",
 		"width": "Width",
@@ -16,7 +17,7 @@ svgEditor.readLang({
 	},
 	misc: {
 		"powered_by": "Běží na"
-	}, 
+	},
 	ui: {
 		"toggle_stroke_tools": "Zobrazit/schovat více možností",
 		"palette_info": "Kliknutím změníte barvu výplně, kliknutím současně s klávesou shift změníte barvu čáry",
@@ -68,7 +69,7 @@ svgEditor.readLang({
 		"bold": "Tučně",
 		"italic": "Kurzíva"
 	},
-	tools: { 
+	tools: {
 		"main_menu": "Hlavní menu",
 		"bkgnd_color_opac": "Změnit barvu a průhlednost pozadí",
 		"connector_no_arrow": "Bez šipky",
@@ -147,7 +148,7 @@ svgEditor.readLang({
 		"move_back": "Send to Back"
 	},
 	layers: {
-		"layer":"Vrstva",
+		"layer": "Vrstva",
 		"layers": "Layers",
 		"del": "Odstranit vrstvu",
 		"move_down": "Přesunout vrstvu níž",
@@ -210,21 +211,21 @@ svgEditor.readLang({
 		"open": "Open as new document"
 	},
 	notification: {
-		"invalidAttrValGiven":"Nevhodná hodnota",
-		"noContentToFitTo":"Vyberte oblast pro přizpůsobení",
-		"dupeLayerName":"Taková vrstva už bohužel existuje",
-		"enterUniqueLayerName":"Zadejte prosím jedinečné jméno pro vrstvu",
-		"enterNewLayerName":"Zadejte prosím jméno pro novou vrstvu",
-		"layerHasThatName":"Vrstva už se tak jmenuje",
-		"QmoveElemsToLayer":"Opravdu chcete přesunout vybrané objekty do vrstvy '%s'?",
-		"QwantToClear":"Opravdu chcete smazat současný dokument?\nHistorie změn bude také smazána.",
-		"QwantToOpen":"Do you want to open a new file?\nThis will also erase your undo history!",
-		"QerrorsRevertToSource":"Chyba v parsování zdrojového kódu SVG.\nChcete se vrátit k původnímu?",
-		"QignoreSourceChanges":"Opravdu chcete stornovat změny provedené v SVG kódu?",
-		"featNotSupported":"Tato vlastnost ještě není k dispozici",
-		"enterNewImgURL":"Vložte adresu URL, na které se nachází vkládaný obrázek",
+		"invalidAttrValGiven": "Nevhodná hodnota",
+		"noContentToFitTo": "Vyberte oblast pro přizpůsobení",
+		"dupeLayerName": "Taková vrstva už bohužel existuje",
+		"enterUniqueLayerName": "Zadejte prosím jedinečné jméno pro vrstvu",
+		"enterNewLayerName": "Zadejte prosím jméno pro novou vrstvu",
+		"layerHasThatName": "Vrstva už se tak jmenuje",
+		"QmoveElemsToLayer": "Opravdu chcete přesunout vybrané objekty do vrstvy '%s'?",
+		"QwantToClear": "Opravdu chcete smazat současný dokument?\nHistorie změn bude také smazána.",
+		"QwantToOpen": "Do you want to open a new file?\nThis will also erase your undo history!",
+		"QerrorsRevertToSource": "Chyba v parsování zdrojového kódu SVG.\nChcete se vrátit k původnímu?",
+		"QignoreSourceChanges": "Opravdu chcete stornovat změny provedené v SVG kódu?",
+		"featNotSupported": "Tato vlastnost ještě není k dispozici",
+		"enterNewImgURL": "Vložte adresu URL, na které se nachází vkládaný obrázek",
 		"defsFailOnSave": "POZOR: Kvůli nedokonalosti Vašeho prohlížeče se mohou některé části dokumentu špatně vykreslovat (mohou chybět barevné přechody nebo některé objekty). Po uložení dokumentu by se ale vše mělo zobrazovat správně.",
-		"loadingImage":"Nahrávám obrázek ...",
+		"loadingImage": "Nahrávám obrázek ...",
 		"saveFromBrowser": "Použijte nabídku \"Uložit stránku jako ...\" ve Vašem prohlížeči pro uložení dokumentu do souboru %s.",
 		"noteTheseIssues": "Mohou se vyskytnout následující problémy: ",
 		"unsavedChanges": "There are unsaved changes.",
@@ -234,10 +235,10 @@ svgEditor.readLang({
 		"retrieving": "Retrieving \"%s\"..."
 	},
 	confirmSetStorage: {
-		message: "By default and where supported, SVG-Edit can store your editor "+
-		"preferences and SVG content locally on your machine so you do not "+
-		"need to add these back each time you load SVG-Edit. If, for privacy "+
-		"reasons, you do not wish to store this information on your machine, "+
+		message: "By default and where supported, SVG-Edit can store your editor " +
+		"preferences and SVG content locally on your machine so you do not " +
+		"need to add these back each time you load SVG-Edit. If, for privacy " +
+		"reasons, you do not wish to store this information on your machine, " +
 		"you can change away from the default option below.",
 		storagePrefsAndContent: "Store preferences and SVG content locally",
 		storagePrefsOnly: "Only store preferences locally",

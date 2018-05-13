@@ -1,14 +1,15 @@
-/*globals svgEditor */
+/* eslint-disable quotes */
+/* globals svgEditor */
 svgEditor.readLang({
 	lang: "yi",
-	dir : "ltr",
+	dir: "ltr",
 	common: {
 		"ok": "היט",
 		"cancel": "באָטל מאַכן",
-		"key_backspace": "backspace", 
-		"key_del": "delete", 
-		"key_down": "down", 
-		"key_up": "up", 
+		"key_backspace": "backspace",
+		"key_del": "delete",
+		"key_down": "down",
+		"key_up": "up",
 		"more_opts": "More Options",
 		"url": "URL",
 		"width": "Width",
@@ -16,7 +17,7 @@ svgEditor.readLang({
 	},
 	misc: {
 		"powered_by": "Powered by"
-	}, 
+	},
 	ui: {
 		"toggle_stroke_tools": "Show/hide more stroke tools",
 		"palette_info": "גיט צו ענדערן אָנעסן קאָליר, יבעררוק-גיט צו טוישן מאַך קאָליר",
@@ -68,7 +69,7 @@ svgEditor.readLang({
 		"bold": "דרייסט טעקסט",
 		"italic": "יטאַליק טעקסט"
 	},
-	tools: { 
+	tools: {
 		"main_menu": "Main Menu",
 		"bkgnd_color_opac": "ענדערן הינטערגרונט פאַרב / אָופּאַסאַטי",
 		"connector_no_arrow": "No arrow",
@@ -147,7 +148,7 @@ svgEditor.readLang({
 		"move_back": "Send to Back"
 	},
 	layers: {
-		"layer":"Layer",
+		"layer": "Layer",
 		"layers": "Layers",
 		"del": "ויסמעקן לייַער",
 		"move_down": "קער לייַער דאָוון",
@@ -210,21 +211,21 @@ svgEditor.readLang({
 		"open": "Open as new document"
 	},
 	notification: {
-		"invalidAttrValGiven":"Invalid value given",
-		"noContentToFitTo":"No content to fit to",
-		"dupeLayerName":"There is already a layer named that!",
-		"enterUniqueLayerName":"Please enter a unique layer name",
-		"enterNewLayerName":"Please enter the new layer name",
-		"layerHasThatName":"Layer already has that name",
-		"QmoveElemsToLayer":"Move selected elements to layer '%s'?",
-		"QwantToClear":"Do you want to clear the drawing?\nThis will also erase your undo history!",
-		"QwantToOpen":"Do you want to open a new file?\nThis will also erase your undo history!",
-		"QerrorsRevertToSource":"There were parsing errors in your SVG source.\nRevert back to original SVG source?",
-		"QignoreSourceChanges":"Ignore changes made to SVG source?",
-		"featNotSupported":"Feature not supported",
-		"enterNewImgURL":"Enter the new image URL",
+		"invalidAttrValGiven": "Invalid value given",
+		"noContentToFitTo": "No content to fit to",
+		"dupeLayerName": "There is already a layer named that!",
+		"enterUniqueLayerName": "Please enter a unique layer name",
+		"enterNewLayerName": "Please enter the new layer name",
+		"layerHasThatName": "Layer already has that name",
+		"QmoveElemsToLayer": "Move selected elements to layer '%s'?",
+		"QwantToClear": "Do you want to clear the drawing?\nThis will also erase your undo history!",
+		"QwantToOpen": "Do you want to open a new file?\nThis will also erase your undo history!",
+		"QerrorsRevertToSource": "There were parsing errors in your SVG source.\nRevert back to original SVG source?",
+		"QignoreSourceChanges": "Ignore changes made to SVG source?",
+		"featNotSupported": "Feature not supported",
+		"enterNewImgURL": "Enter the new image URL",
 		"defsFailOnSave": "NOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.",
-		"loadingImage":"Loading image, please wait...",
+		"loadingImage": "Loading image, please wait...",
 		"saveFromBrowser": "Select \"Save As...\" in your browser to save this image as a %s file.",
 		"noteTheseIssues": "Also note the following issues: ",
 		"unsavedChanges": "There are unsaved changes.",
@@ -234,10 +235,10 @@ svgEditor.readLang({
 		"retrieving": "Retrieving \"%s\"..."
 	},
 	confirmSetStorage: {
-		message: "By default and where supported, SVG-Edit can store your editor "+
-		"preferences and SVG content locally on your machine so you do not "+
-		"need to add these back each time you load SVG-Edit. If, for privacy "+
-		"reasons, you do not wish to store this information on your machine, "+
+		message: "By default and where supported, SVG-Edit can store your editor " +
+		"preferences and SVG content locally on your machine so you do not " +
+		"need to add these back each time you load SVG-Edit. If, for privacy " +
+		"reasons, you do not wish to store this information on your machine, " +
 		"you can change away from the default option below.",
 		storagePrefsAndContent: "Store preferences and SVG content locally",
 		storagePrefsOnly: "Only store preferences locally",

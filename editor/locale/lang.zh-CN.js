@@ -1,14 +1,15 @@
-/*globals svgEditor */
+/* eslint-disable quotes */
+/* globals svgEditor */
 svgEditor.readLang({
 	lang: "zh-CN",
-	dir : "ltr",
+	dir: "ltr",
 	common: {
 		"ok": "保存",
 		"cancel": "取消",
-		"key_backspace": "退格", 
-		"key_del": "删除", 
-		"key_down": "下", 
-		"key_up": "上", 
+		"key_backspace": "退格",
+		"key_del": "删除",
+		"key_down": "下",
+		"key_up": "上",
 		"more_opts": "更多选项",
 		"url": "URL",
 		"width": "宽度",
@@ -16,7 +17,7 @@ svgEditor.readLang({
 	},
 	misc: {
 		"powered_by": "版权所有"
-	}, 
+	},
 	ui: {
 		"toggle_stroke_tools": "显示/隐藏更式边线工具",
 		"palette_info": "点击更改填充颜色，按住Shift键单击更改线条颜色",
@@ -68,7 +69,7 @@ svgEditor.readLang({
 		"bold": "粗体",
 		"italic": "斜体"
 	},
-	tools: { 
+	tools: {
 		"main_menu": "主菜单",
 		"bkgnd_color_opac": "更改背景颜色/不透明",
 		"connector_no_arrow": "无箭头",
@@ -147,7 +148,7 @@ svgEditor.readLang({
 		"move_back": "移至底部"
 	},
 	layers: {
-		"layer":"图层",
+		"layer": "图层",
 		"layers": "图层",
 		"del": "删除图层",
 		"move_down": "向下移动图层",
@@ -210,21 +211,21 @@ svgEditor.readLang({
 		"open": "打开一个新文档"
 	},
 	notification: {
-		"invalidAttrValGiven":"无效的参数",
-		"noContentToFitTo":"无可适应的内容",
-		"dupeLayerName":"已存在同名的图层!",
-		"enterUniqueLayerName":"请输入一个唯一的图层名称",
-		"enterNewLayerName":"请输入新的图层名称",
-		"layerHasThatName":"图层已经采用了该名称",
-		"QmoveElemsToLayer":"您确定移动所选元素到图层'%s'吗?",
-		"QwantToClear":"您希望清除当前绘制的所有图形吗?\n该操作将无法撤消!",
-		"QwantToOpen":"您希望打开一个新文档吗?\n该操作将无法撤消!",
-		"QerrorsRevertToSource":"SVG文件解析错误.\n是否还原到最初的SVG文件?",
-		"QignoreSourceChanges":"忽略对SVG文件所作的更改么?",
-		"featNotSupported":"不支持该功能",
-		"enterNewImgURL":"请输入新图像的URLL",
+		"invalidAttrValGiven": "无效的参数",
+		"noContentToFitTo": "无可适应的内容",
+		"dupeLayerName": "已存在同名的图层!",
+		"enterUniqueLayerName": "请输入一个唯一的图层名称",
+		"enterNewLayerName": "请输入新的图层名称",
+		"layerHasThatName": "图层已经采用了该名称",
+		"QmoveElemsToLayer": "您确定移动所选元素到图层'%s'吗?",
+		"QwantToClear": "您希望清除当前绘制的所有图形吗?\n该操作将无法撤消!",
+		"QwantToOpen": "您希望打开一个新文档吗?\n该操作将无法撤消!",
+		"QerrorsRevertToSource": "SVG文件解析错误.\n是否还原到最初的SVG文件?",
+		"QignoreSourceChanges": "忽略对SVG文件所作的更改么?",
+		"featNotSupported": "不支持该功能",
+		"enterNewImgURL": "请输入新图像的URLL",
 		"defsFailOnSave": "注意: 由于您所使用的浏览器存在缺陷, 该图像无法正确显示 (不支持渐变或相关元素). 修复该缺陷后可正确显示.",
-		"loadingImage":"正在加载图像, 请稍候...",
+		"loadingImage": "正在加载图像, 请稍候...",
 		"saveFromBrowser": "选择浏览器中的 \"另存为...\" 将该图像保存为 %s 文件.",
 		"noteTheseIssues": "同时注意以下几点: ",
 		"unsavedChanges": "存在未保存的修改.",
@@ -234,10 +235,10 @@ svgEditor.readLang({
 		"retrieving": "检索 \"%s\"..."
 	},
 	confirmSetStorage: {
-		message: "By default and where supported, SVG-Edit can store your editor "+
-		"preferences and SVG content locally on your machine so you do not "+
-		"need to add these back each time you load SVG-Edit. If, for privacy "+
-		"reasons, you do not wish to store this information on your machine, "+
+		message: "By default and where supported, SVG-Edit can store your editor " +
+		"preferences and SVG content locally on your machine so you do not " +
+		"need to add these back each time you load SVG-Edit. If, for privacy " +
+		"reasons, you do not wish to store this information on your machine, " +
 		"you can change away from the default option below.",
 		storagePrefsAndContent: "Store preferences and SVG content locally",
 		storagePrefsOnly: "Only store preferences locally",

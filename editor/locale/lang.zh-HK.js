@@ -1,14 +1,15 @@
-/*globals svgEditor */
+/* eslint-disable quotes */
+/* globals svgEditor */
 svgEditor.readLang({
 	lang: "zh-HK",
-	dir : "ltr",
+	dir: "ltr",
 	common: {
 		"ok": "保存",
 		"cancel": "取消",
-		"key_backspace": "backspace", 
-		"key_del": "delete", 
-		"key_down": "down", 
-		"key_up": "up", 
+		"key_backspace": "backspace",
+		"key_del": "delete",
+		"key_down": "down",
+		"key_up": "up",
 		"more_opts": "More Options",
 		"url": "URL",
 		"width": "Width",
@@ -16,7 +17,7 @@ svgEditor.readLang({
 	},
 	misc: {
 		"powered_by": "Powered by"
-	}, 
+	},
 	ui: {
 		"toggle_stroke_tools": "Show/hide more stroke tools",
 		"palette_info": "点击更改填充颜色，按住Shift键单击更改颜色中风",
@@ -68,7 +69,7 @@ svgEditor.readLang({
 		"bold": "粗体",
 		"italic": "斜体文本"
 	},
-	tools: { 
+	tools: {
 		"main_menu": "Main Menu",
 		"bkgnd_color_opac": "更改背景颜色/不透明",
 		"connector_no_arrow": "No arrow",
@@ -147,7 +148,7 @@ svgEditor.readLang({
 		"move_back": "Send to Back"
 	},
 	layers: {
-		"layer":"Layer",
+		"layer": "Layer",
 		"layers": "Layers",
 		"del": "删除层",
 		"move_down": "层向下移动",
@@ -210,21 +211,21 @@ svgEditor.readLang({
 		"open": "Open as new document"
 	},
 	notification: {
-		"invalidAttrValGiven":"Invalid value given",
-		"noContentToFitTo":"No content to fit to",
-		"dupeLayerName":"There is already a layer named that!",
-		"enterUniqueLayerName":"Please enter a unique layer name",
-		"enterNewLayerName":"Please enter the new layer name",
-		"layerHasThatName":"Layer already has that name",
-		"QmoveElemsToLayer":"Move selected elements to layer '%s'?",
-		"QwantToClear":"Do you want to clear the drawing?\nThis will also erase your undo history!",
-		"QwantToOpen":"Do you want to open a new file?\nThis will also erase your undo history!",
-		"QerrorsRevertToSource":"There were parsing errors in your SVG source.\nRevert back to original SVG source?",
-		"QignoreSourceChanges":"Ignore changes made to SVG source?",
-		"featNotSupported":"Feature not supported",
-		"enterNewImgURL":"Enter the new image URL",
+		"invalidAttrValGiven": "Invalid value given",
+		"noContentToFitTo": "No content to fit to",
+		"dupeLayerName": "There is already a layer named that!",
+		"enterUniqueLayerName": "Please enter a unique layer name",
+		"enterNewLayerName": "Please enter the new layer name",
+		"layerHasThatName": "Layer already has that name",
+		"QmoveElemsToLayer": "Move selected elements to layer '%s'?",
+		"QwantToClear": "Do you want to clear the drawing?\nThis will also erase your undo history!",
+		"QwantToOpen": "Do you want to open a new file?\nThis will also erase your undo history!",
+		"QerrorsRevertToSource": "There were parsing errors in your SVG source.\nRevert back to original SVG source?",
+		"QignoreSourceChanges": "Ignore changes made to SVG source?",
+		"featNotSupported": "Feature not supported",
+		"enterNewImgURL": "Enter the new image URL",
 		"defsFailOnSave": "NOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.",
-		"loadingImage":"Loading image, please wait...",
+		"loadingImage": "Loading image, please wait...",
 		"saveFromBrowser": "Select \"Save As...\" in your browser to save this image as a %s file.",
 		"noteTheseIssues": "Also note the following issues: ",
 		"unsavedChanges": "There are unsaved changes.",
@@ -234,10 +235,10 @@ svgEditor.readLang({
 		"retrieving": "Retrieving \"%s\"..."
 	},
 	confirmSetStorage: {
-		message: "By default and where supported, SVG-Edit can store your editor "+
-		"preferences and SVG content locally on your machine so you do not "+
-		"need to add these back each time you load SVG-Edit. If, for privacy "+
-		"reasons, you do not wish to store this information on your machine, "+
+		message: "By default and where supported, SVG-Edit can store your editor " +
+		"preferences and SVG content locally on your machine so you do not " +
+		"need to add these back each time you load SVG-Edit. If, for privacy " +
+		"reasons, you do not wish to store this information on your machine, " +
 		"you can change away from the default option below.",
 		storagePrefsAndContent: "Store preferences and SVG content locally",
 		storagePrefsOnly: "Only store preferences locally",

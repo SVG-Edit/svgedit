@@ -1,14 +1,15 @@
-/*globals svgEditor */
+/* eslint-disable quotes */
+/* globals svgEditor */
 svgEditor.readLang({
 	lang: "nl",
-	dir : "ltr",
+	dir: "ltr",
 	common: {
 		"ok": "Ok",
 		"cancel": "Annuleren",
-		"key_backspace": "backspace", 
-		"key_del": "delete", 
-		"key_down": "omlaag", 
-		"key_up": "omhoog", 
+		"key_backspace": "backspace",
+		"key_del": "delete",
+		"key_down": "omlaag",
+		"key_up": "omhoog",
 		"more_opts": "More Options",
 		"url": "URL",
 		"width": "Width",
@@ -16,7 +17,7 @@ svgEditor.readLang({
 	},
 	misc: {
 		"powered_by": "Mogelijk gemaakt door"
-	}, 
+	},
 	ui: {
 		"toggle_stroke_tools": "Toon/verberg meer lijn gereedschap",
 		"palette_info": "Klik om de vul kleur te veranderen, shift-klik om de lijn kleur te veranderen",
@@ -68,7 +69,7 @@ svgEditor.readLang({
 		"bold": "Vet",
 		"italic": "Cursief"
 	},
-	tools: { 
+	tools: {
 		"main_menu": "Hoofdmenu",
 		"bkgnd_color_opac": "Verander achtergrond kleur/doorzichtigheid",
 		"connector_no_arrow": "Geen pijl",
@@ -147,7 +148,7 @@ svgEditor.readLang({
 		"move_back": "Send to Back"
 	},
 	layers: {
-		"layer":"Laag",
+		"layer": "Laag",
 		"layers": "Layers",
 		"del": "Delete laag",
 		"move_down": "Beweeg laag omlaag",
@@ -210,21 +211,21 @@ svgEditor.readLang({
 		"open": "Open as new document"
 	},
 	notification: {
-		"invalidAttrValGiven":"Verkeerde waarde gegeven",
-		"noContentToFitTo":"Geen inhoud om omheen te passen",
-		"dupeLayerName":"Er is al een laag met die naam!",
-		"enterUniqueLayerName":"Geef een unieke laag naam",
-		"enterNewLayerName":"Geef een nieuwe laag naam",
-		"layerHasThatName":"Laag heeft al die naam",
-		"QmoveElemsToLayer":"Verplaats geselecteerde elementen naar laag '%s'?",
-		"QwantToClear":"Wil je de afbeelding leeg maken?\nDit zal ook de ongedaan maak geschiedenis wissen!",
-		"QwantToOpen":"Do you want to open a new file?\nThis will also erase your undo history!",
-		"QerrorsRevertToSource":"Er waren analyse fouten in je SVG bron.\nTeruggaan naar de originele SVG bron?",
-		"QignoreSourceChanges":"Veranderingen in de SVG bron negeren?",
-		"featNotSupported":"Functie wordt niet ondersteund",
-		"enterNewImgURL":"Geef de nieuwe afbeelding URL",
+		"invalidAttrValGiven": "Verkeerde waarde gegeven",
+		"noContentToFitTo": "Geen inhoud om omheen te passen",
+		"dupeLayerName": "Er is al een laag met die naam!",
+		"enterUniqueLayerName": "Geef een unieke laag naam",
+		"enterNewLayerName": "Geef een nieuwe laag naam",
+		"layerHasThatName": "Laag heeft al die naam",
+		"QmoveElemsToLayer": "Verplaats geselecteerde elementen naar laag '%s'?",
+		"QwantToClear": "Wil je de afbeelding leeg maken?\nDit zal ook de ongedaan maak geschiedenis wissen!",
+		"QwantToOpen": "Do you want to open a new file?\nThis will also erase your undo history!",
+		"QerrorsRevertToSource": "Er waren analyse fouten in je SVG bron.\nTeruggaan naar de originele SVG bron?",
+		"QignoreSourceChanges": "Veranderingen in de SVG bron negeren?",
+		"featNotSupported": "Functie wordt niet ondersteund",
+		"enterNewImgURL": "Geef de nieuwe afbeelding URL",
 		"defsFailOnSave": "Let op: Vanwege een fout in je browser, kan dit plaatje verkeerd verschijnen (missende hoeken en/of elementen). Het zal goed verschijnen zodra het plaatje echt wordt opgeslagen.",
-		"loadingImage":"Laden van het plaatje, even geduld aub...",
+		"loadingImage": "Laden van het plaatje, even geduld aub...",
 		"saveFromBrowser": "Kies \"Save As...\" in je browser om dit plaatje op te slaan als een %s bestand.",
 		"noteTheseIssues": "Let op de volgende problemen: ",
 		"unsavedChanges": "There are unsaved changes.",
@@ -234,10 +235,10 @@ svgEditor.readLang({
 		"retrieving": "Retrieving \"%s\"..."
 	},
 	confirmSetStorage: {
-		message: "By default and where supported, SVG-Edit can store your editor "+
-		"preferences and SVG content locally on your machine so you do not "+
-		"need to add these back each time you load SVG-Edit. If, for privacy "+
-		"reasons, you do not wish to store this information on your machine, "+
+		message: "By default and where supported, SVG-Edit can store your editor " +
+		"preferences and SVG content locally on your machine so you do not " +
+		"need to add these back each time you load SVG-Edit. If, for privacy " +
+		"reasons, you do not wish to store this information on your machine, " +
 		"you can change away from the default option below.",
 		storagePrefsAndContent: "Store preferences and SVG content locally",
 		storagePrefsOnly: "Only store preferences locally",

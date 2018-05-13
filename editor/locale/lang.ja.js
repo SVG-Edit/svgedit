@@ -1,14 +1,15 @@
-/*globals svgEditor */
+/* eslint-disable quotes */
+/* globals svgEditor */
 svgEditor.readLang({
 	lang: "ja",
-	dir : "ltr",
+	dir: "ltr",
 	common: {
 		"ok": "OK",
 		"cancel": "キャンセル",
-		"key_backspace": "backspace", 
-		"key_del": "削除", 
-		"key_down": "down", 
-		"key_up": "up", 
+		"key_backspace": "backspace",
+		"key_del": "削除",
+		"key_down": "down",
+		"key_up": "up",
 		"more_opts": "More Options",
 		"url": "URL",
 		"width": "Width",
@@ -16,7 +17,7 @@ svgEditor.readLang({
 	},
 	misc: {
 		"powered_by": "Powered by"
-	}, 
+	},
 	ui: {
 		"toggle_stroke_tools": "Show/hide more stroke tools",
 		"palette_info": "クリックで塗りの色を選択、Shift+クリックで線の色を選択",
@@ -68,7 +69,7 @@ svgEditor.readLang({
 		"bold": "太字",
 		"italic": "イタリック体"
 	},
-	tools: { 
+	tools: {
 		"main_menu": "Main Menu",
 		"bkgnd_color_opac": "背景色/不透明度の変更",
 		"connector_no_arrow": "No arrow",
@@ -147,7 +148,7 @@ svgEditor.readLang({
 		"move_back": "Send to Back"
 	},
 	layers: {
-		"layer":"レイヤ",
+		"layer": "レイヤ",
 		"layers": "Layers",
 		"del": "レイヤの削除",
 		"move_down": "レイヤを下へ移動",
@@ -210,21 +211,21 @@ svgEditor.readLang({
 		"open": "Open as new document"
 	},
 	notification: {
-		"invalidAttrValGiven":"無効な値が指定されています。",
-		"noContentToFitTo":"合わせる対象のコンテンツがありません。",
-		"dupeLayerName":"同名のレイヤーが既に存在します。",
-		"enterUniqueLayerName":"新規レイヤの一意な名前を入力してください。",
-		"enterNewLayerName":"レイヤの新しい名前を入力してください。",
-		"layerHasThatName":"既に同名が付いています。",
-		"QmoveElemsToLayer":"選択した要素をレイヤー '%s' に移動しますか？",
-		"QwantToClear":"キャンバスをクリアしますか？\nアンドゥ履歴も消去されます。",
-		"QwantToOpen":"新しいファイルを開きますか?\nアンドゥ履歴も消去されます。",
-		"QerrorsRevertToSource":"ソースにエラーがあります。\n元のソースに戻しますか？",
-		"QignoreSourceChanges":"ソースの変更を無視しますか？",
-		"featNotSupported":"機能はサポートされていません。",
-		"enterNewImgURL":"画像のURLを入力してください。",
+		"invalidAttrValGiven": "無効な値が指定されています。",
+		"noContentToFitTo": "合わせる対象のコンテンツがありません。",
+		"dupeLayerName": "同名のレイヤーが既に存在します。",
+		"enterUniqueLayerName": "新規レイヤの一意な名前を入力してください。",
+		"enterNewLayerName": "レイヤの新しい名前を入力してください。",
+		"layerHasThatName": "既に同名が付いています。",
+		"QmoveElemsToLayer": "選択した要素をレイヤー '%s' に移動しますか？",
+		"QwantToClear": "キャンバスをクリアしますか？\nアンドゥ履歴も消去されます。",
+		"QwantToOpen": "新しいファイルを開きますか?\nアンドゥ履歴も消去されます。",
+		"QerrorsRevertToSource": "ソースにエラーがあります。\n元のソースに戻しますか？",
+		"QignoreSourceChanges": "ソースの変更を無視しますか？",
+		"featNotSupported": "機能はサポートされていません。",
+		"enterNewImgURL": "画像のURLを入力してください。",
 		"defsFailOnSave": "NOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.",
-		"loadingImage":"Loading image, please wait...",
+		"loadingImage": "Loading image, please wait...",
 		"saveFromBrowser": "Select \"Save As...\" in your browser to save this image as a %s file.",
 		"noteTheseIssues": "Also note the following issues: ",
 		"unsavedChanges": "There are unsaved changes.",
@@ -234,10 +235,10 @@ svgEditor.readLang({
 		"retrieving": "Retrieving \"%s\"..."
 	},
 	confirmSetStorage: {
-		message: "By default and where supported, SVG-Edit can store your editor "+
-		"preferences and SVG content locally on your machine so you do not "+
-		"need to add these back each time you load SVG-Edit. If, for privacy "+
-		"reasons, you do not wish to store this information on your machine, "+
+		message: "By default and where supported, SVG-Edit can store your editor " +
+		"preferences and SVG content locally on your machine so you do not " +
+		"need to add these back each time you load SVG-Edit. If, for privacy " +
+		"reasons, you do not wish to store this information on your machine, " +
 		"you can change away from the default option below.",
 		storagePrefsAndContent: "Store preferences and SVG content locally",
 		storagePrefsOnly: "Only store preferences locally",

@@ -1,14 +1,15 @@
-/*globals svgEditor */
+/* eslint-disable quotes */
+/* globals svgEditor */
 svgEditor.readLang({
 	lang: "hi",
-	dir : "ltr",
+	dir: "ltr",
 	common: {
 		"ok": "बचाना",
 		"cancel": "रद्द करें",
-		"key_backspace": "बैकस्पेस", 
-		"key_del": "हटायें", 
-		"key_down": "नीचे", 
-		"key_up": "ऊपर", 
+		"key_backspace": "बैकस्पेस",
+		"key_del": "हटायें",
+		"key_down": "नीचे",
+		"key_up": "ऊपर",
 		"more_opts": "More Options",
 		"url": "URL",
 		"width": "Width",
@@ -16,7 +17,7 @@ svgEditor.readLang({
 	},
 	misc: {
 		"powered_by": "Powered by"
-	}, 
+	},
 	ui: {
 		"toggle_stroke_tools": "Show/hide more stroke tools",
 		"palette_info": "रंग बदलने पर क्लिक करें, बदलाव भरने के क्लिक करने के लिए स्ट्रोक का रंग बदलने के लिए",
@@ -68,7 +69,7 @@ svgEditor.readLang({
 		"bold": "मोटा पाठ",
 		"italic": "इटैलिक पाठ"
 	},
-	tools: { 
+	tools: {
 		"main_menu": "Main Menu",
 		"bkgnd_color_opac": "पृष्ठभूमि का रंग बदल / अस्पष्टता",
 		"connector_no_arrow": "No arrow",
@@ -147,7 +148,7 @@ svgEditor.readLang({
 		"move_back": "Send to Back"
 	},
 	layers: {
-		"layer":"परत",
+		"layer": "परत",
 		"layers": "Layers",
 		"del": "परत हटाएँ",
 		"move_down": "परत नीचे ले जाएँ",
@@ -210,21 +211,21 @@ svgEditor.readLang({
 		"open": "Open as new document"
 	},
 	notification: {
-		"invalidAttrValGiven":"अमान्य मूल्य",
-		"noContentToFitTo":"कोई सामग्री फिट करने के लिए उपलब्ध नहीं",
-		"dupeLayerName":"इस नाम कि परत पहले से मौजूद है !",
-		"enterUniqueLayerName":"कृपया परत का एक अद्वितीय नाम डालें",
-		"enterNewLayerName":"कृपया परत का एक नया नाम डालें",
-		"layerHasThatName":"परत का पहले से ही यही नाम है",
-		"QmoveElemsToLayer":"चयनित अंश को परत '%s' पर ले जाएँ ?",
-		"QwantToClear":"क्या आप छवि साफ़ करना चाहते हैं?\nयह आपके उन्डू  इतिहास को भी मिटा देगा!",
-		"QwantToOpen":"Do you want to open a new file?\nThis will also erase your undo history!",
-		"QerrorsRevertToSource":"आपके एस.वी.जी. स्रोत में त्रुटियों थी.\nक्या आप मूल एस.वी.जी स्रोत पर वापिस जाना चाहते हैं?",
-		"QignoreSourceChanges":"एसवीजी स्रोत से लाये बदलावों को ध्यान न दें?",
-		"featNotSupported":"सुविधा असमर्थित है",
-		"enterNewImgURL":"नई छवि URL दर्ज करें",
+		"invalidAttrValGiven": "अमान्य मूल्य",
+		"noContentToFitTo": "कोई सामग्री फिट करने के लिए उपलब्ध नहीं",
+		"dupeLayerName": "इस नाम कि परत पहले से मौजूद है !",
+		"enterUniqueLayerName": "कृपया परत का एक अद्वितीय नाम डालें",
+		"enterNewLayerName": "कृपया परत का एक नया नाम डालें",
+		"layerHasThatName": "परत का पहले से ही यही नाम है",
+		"QmoveElemsToLayer": "चयनित अंश को परत '%s' पर ले जाएँ ?",
+		"QwantToClear": "क्या आप छवि साफ़ करना चाहते हैं?\nयह आपके उन्डू  इतिहास को भी मिटा देगा!",
+		"QwantToOpen": "Do you want to open a new file?\nThis will also erase your undo history!",
+		"QerrorsRevertToSource": "आपके एस.वी.जी. स्रोत में त्रुटियों थी.\nक्या आप मूल एस.वी.जी स्रोत पर वापिस जाना चाहते हैं?",
+		"QignoreSourceChanges": "एसवीजी स्रोत से लाये बदलावों को ध्यान न दें?",
+		"featNotSupported": "सुविधा असमर्थित है",
+		"enterNewImgURL": "नई छवि URL दर्ज करें",
 		"defsFailOnSave": "NOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.",
-		"loadingImage":"Loading image, please wait...",
+		"loadingImage": "Loading image, please wait...",
 		"saveFromBrowser": "Select \"Save As...\" in your browser to save this image as a %s file.",
 		"noteTheseIssues": "Also note the following issues: ",
 		"unsavedChanges": "There are unsaved changes.",
@@ -234,10 +235,10 @@ svgEditor.readLang({
 		"retrieving": "Retrieving \"%s\"..."
 	},
 	confirmSetStorage: {
-		message: "By default and where supported, SVG-Edit can store your editor "+
-		"preferences and SVG content locally on your machine so you do not "+
-		"need to add these back each time you load SVG-Edit. If, for privacy "+
-		"reasons, you do not wish to store this information on your machine, "+
+		message: "By default and where supported, SVG-Edit can store your editor " +
+		"preferences and SVG content locally on your machine so you do not " +
+		"need to add these back each time you load SVG-Edit. If, for privacy " +
+		"reasons, you do not wish to store this information on your machine, " +
 		"you can change away from the default option below.",
 		storagePrefsAndContent: "Store preferences and SVG content locally",
 		storagePrefsOnly: "Only store preferences locally",
