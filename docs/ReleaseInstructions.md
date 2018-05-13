@@ -1,11 +1,11 @@
-Creating a new svg-edit release
-============
+# Creating a new svg-edit release
 
 ## Update the main project
 
   1. Update the VERSION variable in Makefile.
-  2. Update the CHANGES file with a summary of all changes.
-  3. Commit these changes with `git commit -m "Updating Makefile and CHANGES for release X.Y"`.
+  2. Update `version` in `package.json`
+  3. Update the CHANGES file with a summary of all changes.
+  4. Commit these changes with `git commit -m "Updating Makefile and CHANGES for release X.Y"`.
 
 The above steps can be done on a fork and committed via a pull request.
 
@@ -33,6 +33,10 @@ The above steps can be done on a fork and committed via a pull request.
 
 You will need to be a member of the SVGEdit GitHub group to do this step.
 
+## Publish to npm
+
+1. `npm publish`
+
 ## Update the project docs
 
-  Update `README.md` with references and links to the shiny new release.
+Update `README.md` with references and links to the shiny new release.

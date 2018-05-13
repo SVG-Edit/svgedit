@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <title>Unit Tests for svgutils.js</title>
-  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
-  <script src='../editor/jquery.js'></script>
-  <script src='../editor/svgedit.js'></script>
+  <link rel="stylesheet" href="qunit/qunit.css"/>
+  <script src="../editor/jquery.js"></script>
+  <script src="../editor/svgedit.js"></script>
   <!-- svgutils.js depends on these three... mock out? -->
-  <script src='../editor/pathseg.js'></script>
-  <script src='../editor/browser.js'></script>
-  <script src='../editor/svgtransformlist.js'></script>
-  <script src='../editor/jquery-svg.js'></script>  <!--  has $.attr() that takes an array . Used by svgedit.utilities.getPathDFromElement -->
-  <script src='../editor/svgutils.js'></script>
-  <script src='qunit/qunit.js'></script>
+  <script src="../editor/pathseg.js"></script>
+  <script src="../editor/browser.js"></script>
+  <script src="../editor/svgtransformlist.js"></script>
+  <script src="../editor/jquery-svg.js"></script>  <!--  has $.attr() that takes an array . Used by svgedit.utilities.getPathDFromElement -->
+  <script src="../editor/svgutils.js"></script>
+  <script src="qunit/qunit.js"></script>
   <script>
   $(function() {
     // log function
@@ -68,7 +68,7 @@
     });
     sandbox.appendChild(svgroot);
 
-    
+
     module('svgedit.utilities', {
       setup: function() {
         mockHistorySubCommands = [];
@@ -358,10 +358,10 @@
   </script>
 </head>
 <body>
-  <h1 id='qunit-header'>Unit Tests for svgutils.js</h1>
-  <h2 id='qunit-banner'></h2>
-  <h2 id='qunit-userAgent'></h2>
-  <ol id='qunit-tests'></ol>
-  <div id='sandbox'></div>
+  <h1 id="qunit-header">Unit Tests for svgutils.js</h1>
+  <h2 id="qunit-banner"></h2>
+  <h2 id="qunit-userAgent"></h2>
+  <ol id="qunit-tests"></ol>
+  <div id="sandbox"></div>
 </body>
 </html>

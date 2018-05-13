@@ -1,3 +1,9 @@
+# 3.0.0-alpha.1
+
+(Only released on npm)
+
+* Provide `package.json` for npm to reserve name (reflecting current state of `master`)
+
 # 2.8.1 (Ellipse) - December 2nd, 2015
 
 For a complete list of changes run:
@@ -79,11 +85,11 @@ git log 4bb15e0..253b4bf
 * Security improvements and other fixes
 * Embedded editor can now work same domain without JSON parsing and the consequent potential loss of arguments or return values.
 * Potentially breaking API changes:
-** Disallowed "extPath", "imgPath", "langPath", and "jGraduatePath" setting via URL and prevent cross-domain/cross-folder extensions being set by URL (security enhancement)
-** Deprecated "pngsave" option called by setCustomHandlers() in favor of "exportImage" (to accommodate export of other image types). Second argument will now supply, in addition to "issues" and "svg", the properties "type" (currently 'PNG', 'JPEG', 'BMP', 'WEBP'), "mimeType", and "quality" (for 'JPEG' and 'WEBP' types).
-** Default extensions will now always load (along with those supplied in the URL unless the latter is prohibited by configuration), so if you do not wish your old code to load all of the default extensions, you will need to add &noDefaultExtensions=true to the URL (or add equivalent configuration in config.js). ext-overview_window.js can now be excluded though it is still a default.
-** Preferences and configuration options must be within the list supplied within svg-editor.js (should include those of all documented extensions).
-** Embedded messaging will no longer work by default for privacy/data integrity reasons. One must include the "ext-xdomain-messaging.js" extension and supply an array configuration item, "allowedOrigins" with potential values including: "\*" (to allow all domains--strongly discouraged!), "null" as a string to allow file:// access, window.location.origin (to allow same domain access), or specific trusted origins. The embedded editor works without the extension if the main editor is on the same domain, but if cross-domain control is needed, the "allowedOrigins" array must be supplied by a call to svgEditor.setConfig({allowedOrigins: [origin1, origin2, etc.]}) in the new config.js file.
+    * Disallowed "extPath", "imgPath", "langPath", and "jGraduatePath" setting via URL and prevent cross-domain/cross-folder extensions being set by URL (security enhancement)
+    * Deprecated "pngsave" option called by setCustomHandlers() in favor of "exportImage" (to accommodate export of other image types). Second argument will now supply, in addition to "issues" and "svg", the properties "type" (currently 'PNG', 'JPEG', 'BMP', 'WEBP'), "mimeType", and "quality" (for 'JPEG' and 'WEBP' types).
+    * Default extensions will now always load (along with those supplied in the URL unless the latter is prohibited by configuration), so if you do not wish your old code to load all of the default extensions, you will need to add &noDefaultExtensions=true to the URL (or add equivalent configuration in config.js). ext-overview_window.js can now be excluded though it is still a default.
+    * Preferences and configuration options must be within the list supplied within svg-editor.js (should include those of all documented extensions).
+    * Embedded messaging will no longer work by default for privacy/data integrity reasons. One must include the "ext-xdomain-messaging.js" extension and supply an array configuration item, "allowedOrigins" with potential values including: "\*" (to allow all domains--strongly discouraged!), "null" as a string to allow file:// access, window.location.origin (to allow same domain access), or specific trusted origins. The embedded editor works without the extension if the main editor is on the same domain, but if cross-domain control is needed, the "allowedOrigins" array must be supplied by a call to svgEditor.setConfig({allowedOrigins: [origin1, origin2, etc.]}) in the new config.js file.
 
 # 2.6 (Cycloid) - January 15th, 2013
 

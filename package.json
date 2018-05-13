@@ -1,0 +1,39 @@
+{
+  "name": "svgedit",
+  "version": "3.0.0-alpha.1",
+  "description": "Powerful SVG-Editor for your browser ",
+  "main": "editor/svg-editor.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "test": "test"
+  },
+  "engines": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SVG-Edit/svgedit.git"
+  },
+  "keywords": [
+    "svg-editor",
+    "javascript",
+    "svg-edit",
+    "svg"
+  ],
+  "author": "Narendra Sisodiya",
+  "contributors": [
+    "Pavol Rusnak",
+    "Jeff Schiller",
+    "Vidar Hokstad",
+    "Alexis Deveria",
+    "Brett Zamir"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SVG-Edit/svgedit/issues"
+  },
+  "homepage": "https://github.com/SVG-Edit/svgedit#readme",
+  "dependencies": {}
+}

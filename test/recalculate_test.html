@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <title>Unit Tests for recalculate.js</title>
-  <link rel='stylesheet' href='qunit/qunit.css' type='text/css'/>
-  <script src='../editor/jquery.js'></script>
-  <script src='../editor/jquery-svg.js'></script>
-  <script src='../editor/svgedit.js'></script>
-  <script src='../editor/pathseg.js'></script>
-  <script src='../editor/browser.js'></script>
-  <script src='../editor/math.js'></script>
-  <script src='../editor/history.js'></script>
-  <script src='../editor/units.js'></script>
-  <script src='../editor/svgtransformlist.js'></script>
-  <script src='../editor/svgutils.js'></script>
-  <script src='../editor/coords.js'></script>
-  <script src='../editor/recalculate.js'></script>
-  <script src='qunit/qunit.js'></script>
+  <link rel="stylesheet" href="qunit/qunit.css"/>
+  <script src="../editor/jquery.js"></script>
+  <script src="../editor/jquery-svg.js"></script>
+  <script src="../editor/svgedit.js"></script>
+  <script src="../editor/pathseg.js"></script>
+  <script src="../editor/browser.js"></script>
+  <script src="../editor/math.js"></script>
+  <script src="../editor/history.js"></script>
+  <script src="../editor/units.js"></script>
+  <script src="../editor/svgtransformlist.js"></script>
+  <script src="../editor/svgutils.js"></script>
+  <script src="../editor/coords.js"></script>
+  <script src="../editor/recalculate.js"></script>
+  <script src="qunit/qunit.js"></script>
   <script>
   $(function() {
     // log function
@@ -93,7 +93,7 @@
 
       setUpRect();
       elem.setAttribute('transform', 'matrix(1,0,0,1,0,0)');
-      
+
       svgedit.recalculate.recalculateDimensions(elem);
 
       // Ensure that the identity matrix is swallowed and the element has no
@@ -108,7 +108,7 @@
 
       setUpRect();
       elem.setAttribute('transform', 'translate(100,50)');
-      
+
       svgedit.recalculate.recalculateDimensions(elem);
 
       equal(false, elem.hasAttribute('transform'));
@@ -124,7 +124,7 @@
 
       setUpTextWithTspan();
       elem.setAttribute('transform', 'translate(100,50)');
-      
+
       svgedit.recalculate.recalculateDimensions(elem);
 
       // Ensure that the identity matrix is swallowed and the element has no
@@ -140,19 +140,19 @@
       tearDown();
     });
 
-    // TODO: Since recalculateDimensions() and surrounding code is 
+    // TODO: Since recalculateDimensions() and surrounding code is
     // probably the largest, most complicated and strange piece of
     // code in SVG-edit, we need to write a whole lot of unit tests
     // for it here.
 
   });
   </script>
-</head>  
+</head>
 <body>
-  <h1 id='qunit-header'>Unit Tests for svgedit.recalculate</h1>
-  <h2 id='qunit-banner'></h2>
-  <h2 id='qunit-userAgent'></h2>
-  <ol id='qunit-tests'></ol>
-  <div id='root' style='visibility:hidden'></div>
+  <h1 id="qunit-header">Unit Tests for svgedit.recalculate</h1>
+  <h2 id="qunit-banner"></h2>
+  <h2 id="qunit-userAgent"></h2>
+  <ol id="qunit-tests"></ol>
+  <div id="root" style="visibility:hidden"></div>
 </body>
 </html>
