@@ -241,7 +241,6 @@ svgedit.path.getControlPoints = function(seg) {
 	var index = seg.index;
 	if (!('x1' in item) || !('x2' in item)) {return null;}
 	var cpt = {};
-	var pointGripContainer = svgedit.path.getGripContainer();
 
 	// Note that this is intentionally not seg.prev.item
 	var prev = svgedit.path.path.segs[index-1].item;
@@ -572,7 +571,7 @@ svgedit.path.Path.prototype.init = function() {
 	// Hide all grips, etc
 
 	//fixed, needed to work on all found elements, not just first
-	$(svgedit.path.getGripContainer()).find('*').each( function() { $(this).attr('display', 'none') });
+	$(svgedit.path.getGripContainer()).find('*').each( function() { $(this).attr('display', 'none'); });
 
 	var segList = this.elem.pathSegList;
 	var len = segList.numberOfItems;
@@ -712,7 +711,6 @@ svgedit.path.Path.prototype.deleteSeg = function(index) {
 		list.removeItem(seg.mate.index);
 	} else if (!seg.prev) {
 		// First node of open path, make next point the M
-		var item = seg.item;
 		pt = [next.item.x, next.item.y];
 		svgedit.path.replacePathSeg(2, seg.next.index, pt);
 		list.removeItem(index);

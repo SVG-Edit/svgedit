@@ -47,9 +47,9 @@ var svgedit = svgedit || {};
 			$("#cmenu_canvas").append("<li class='separator'>");
 		}
 		var shortcut = menuItem.shortcut || "";
-		$("#cmenu_canvas").append("<li class='disabled'><a href='#" + menuItem.id + "'>"
-									+ menuItem.label + "<span class='shortcut'>"
-									+ shortcut + "</span></a></li>");
+		$("#cmenu_canvas").append("<li class='disabled'><a href='#" + menuItem.id + "'>" +
+									menuItem.label + "<span class='shortcut'>" +
+									shortcut + "</span></a></li>");
 	};
 	// Defer injection to wait out initial menu processing. This probably goes away once all context
 	// menu behavior is brought here.

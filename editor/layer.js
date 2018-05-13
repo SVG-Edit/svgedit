@@ -180,7 +180,7 @@ Layer.prototype.setName = function(name, hrService) {
 	// now change the underlying title element contents
 	var title = this.getTitleElement();
 	if (title) {
-		while (title.firstChild) { title.removeChild(title.firstChild); }
+		$(title).empty();
 		title.textContent = name;
 		this.name_ = name;
 		if (hrService) {

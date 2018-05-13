@@ -389,7 +389,7 @@ svgedit.draw.Drawing.prototype.mergeLayer = function (hrService) {
 	var index = this.all_layers.indexOf(this.current_layer);
 	if (index > 0) {
 		var name = this.current_layer.getName();
-		this.current_layer = this.all_layers[index-1]
+		this.current_layer = this.all_layers[index-1];
 		this.all_layers.splice(index, 1);
 		delete this.layer_map[name];
 	}
@@ -663,9 +663,9 @@ svgedit.draw.Drawing.prototype.setLayerOpacity = function(layername, opacity) {
  */
 svgedit.draw.Drawing.prototype.copyElem = function(el) {
 	var self = this;
-	var getNextIdClosure = function() { return self.getNextId();}
-	return svgedit.utilities.copyElem(el, getNextIdClosure)
-}
+	var getNextIdClosure = function() { return self.getNextId();};
+	return svgedit.utilities.copyElem(el, getNextIdClosure);
+};
 
 
 }());

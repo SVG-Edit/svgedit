@@ -144,7 +144,7 @@ HistoryRecordingService.prototype.removeElement = function(elem, oldNextSibling,
 /**
  * Add a ChangeElementCommand to the history or current batch command
  * @param {Element} elem - The DOM element that was changed
- * @param {object} attrs - An object with the attributes to be changed and the values they had *before* the change
+ * @param {Object} attrs - An object with the attributes to be changed and the values they had *before* the change
  * @param {string} [text] - An optional string visible to user related to this change
  * @returns {svgedit.history.HistoryRecordingService}
  */

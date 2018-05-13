@@ -27,12 +27,10 @@ svgedit.history.HistoryEventTypes = {
 	AFTER_UNAPPLY: 'after_unapply'
 };
 
-var removedElements = {};
-
 /**
  * An interface that all command objects must implement.
  * @typedef svgedit.history.HistoryCommand
- * @type {object}
+ * @type {Object}
  *   void apply(svgedit.history.HistoryEventHandler);
  *   void unapply(svgedit.history.HistoryEventHandler);
  *   Element[] elements();
