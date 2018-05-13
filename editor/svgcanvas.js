@@ -224,7 +224,8 @@ var addSvgElementFromJson = this.addSvgElementFromJson = function(data) {
 		shape = null;
 	}
 	if (!shape) {
-		shape = svgdoc.createElementNS(NS.SVG, data.element);
+		var ns = data.namespace ? data.namespace : NS.SVG;
+		shape = svgdoc.createElementNS(ns, data.element);
 		if (current_layer) {
 			(current_group || current_layer).appendChild(shape);
 		}
