@@ -11,14 +11,14 @@
 
 <menupopup id="menu_ToolsPopup">
        <menuitem insertafter="devToolsSeparator" label="SVG Editor"
-       oncommand="start_svg_edit();" />
+       oncommand="startSvgEdit();" />
 </menupopup>
 
  <!-- Firefox -->
   <statusbar id="status-bar">
-    <statusbarpanel id="svg-edit-statusbar-button" 
+    <statusbarpanel id="svg-edit-statusbar-button"
 		    class="statusbarpanel-menu-iconic"
-		    onclick="return start_svg_edit()"
+		    onclick="return startSvgEdit()"
 		    tooltip="SvgEdit">
     </statusbarpanel>
  </statusbar>

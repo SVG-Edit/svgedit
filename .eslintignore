@@ -1,3 +1,13 @@
 node_modules
+
 editor/jspdf/jspdf.min.js
 editor/jspdf/underscore-min.js
+jgraduate/jpicker.min.js
+jgraduate/jquery.jgraduate.js
+jquery-ui
+jquerybbq
+js-hotkeys
+spinbtn/JQuerySpinBtn.min.js
+test/qunit
+test/sinon
+wave/json2.js
