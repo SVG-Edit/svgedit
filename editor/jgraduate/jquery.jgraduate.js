@@ -182,11 +182,11 @@ jQuery.fn.jGraduate =
 			$.extend(true, $this, { // public properties, methods, and callbacks
 				// make a copy of the incoming paint
 				paint: new $.jGraduate.Paint({copy: $settings.paint}),
-				okCallback: $.isFunction($arguments[1]) && $arguments[1] || null,
-				cancelCallback: $.isFunction($arguments[2]) && $arguments[2] || null
+				okCallback: $.isFunction(($arguments[1]) && $arguments[1]) || null,
+				cancelCallback: $.isFunction(($arguments[2]) && $arguments[2]) || null
 			});
 
-			var pos = $this.position(),
+			var // pos = $this.position(),
 				color = null;
 			var $win = $(window);
 
@@ -308,7 +308,7 @@ jQuery.fn.jGraduate =
 
 			var curType, curGradient, previewRect;
 
-			var attr_input = {};
+			var attrInput = {};
 
 			var SLIDERW = 145;
 			$('.jGraduate_SliderBar').width(SLIDERW);
@@ -374,7 +374,7 @@ jQuery.fn.jGraduate =
 						var inverted = '';
 
 						for (var i = 0; i < 6; i += 2) {
-							var ch = color.substr(i, 2);
+							// var ch = color.substr(i, 2);
 							var inv = (255 - parseInt(color.substr(i, 2), 16)).toString(16);
 							if (inv.length < 2) inv = 0 + inv;
 							inverted += inv;
@@ -446,7 +446,7 @@ jQuery.fn.jGraduate =
 
 			focusCoord[0].id = id + '_jGraduate_focusCoord';
 
-			var coords = $(idref + ' .grad_coord');
+			// var coords = $(idref + ' .grad_coord');
 
 			// $(container).hover(function () {
 			// 	coords.animate({
@@ -474,7 +474,7 @@ jQuery.fn.jGraduate =
 					}
 				}
 
-				attr_input[attr] = $('#' + id + '_jGraduate_' + attr)
+				attrInput[attr] = $('#' + id + '_jGraduate_' + attr)
 					.val(attrval)
 					.change(function () {
 						// TODO: Support values < 0 and > 1 (zoomable preview?)
@@ -485,7 +485,7 @@ jQuery.fn.jGraduate =
 						}
 
 						if (!(attr[0] === 'f' && !showFocus)) {
-							if (isRadial && curType === 'radialGradient' || !isRadial && curType === 'linearGradient') {
+							if ((isRadial && curType === 'radialGradient') || (!isRadial && curType === 'linearGradient')) {
 								curGradient.setAttribute(attr, this.value);
 							}
 						}
@@ -502,27 +502,27 @@ jQuery.fn.jGraduate =
 					}).change();
 			});
 
-			function mkStop (n, color, opac, sel, stop_elem) {
-				var stop = stop_elem || mkElem('stop', {'stop-color': color, 'stop-opacity': opac, offset: n}, curGradient);
-				if (stop_elem) {
-					color = stop_elem.getAttribute('stop-color');
-					opac = stop_elem.getAttribute('stop-opacity');
-					n = stop_elem.getAttribute('offset');
+			function mkStop (n, color, opac, sel, stopElem) {
+				var stop = stopElem || mkElem('stop', {'stop-color': color, 'stop-opacity': opac, offset: n}, curGradient);
+				if (stopElem) {
+					color = stopElem.getAttribute('stop-color');
+					opac = stopElem.getAttribute('stop-opacity');
+					n = stopElem.getAttribute('offset');
 				} else {
 					curGradient.appendChild(stop);
 				}
 				if (opac === null) opac = 1;
 
-				var picker_d = 'M-6.2,0.9c3.6-4,6.7-4.3,6.7-12.4c-0.2,7.9,3.1,8.8,6.5,12.4c3.5,3.8,2.9,9.6,0,12.3c-3.1,2.8-10.4,2.7-13.2,0C-9.6,9.9-9.4,4.4-6.2,0.9z';
+				var pickerD = 'M-6.2,0.9c3.6-4,6.7-4.3,6.7-12.4c-0.2,7.9,3.1,8.8,6.5,12.4c3.5,3.8,2.9,9.6,0,12.3c-3.1,2.8-10.4,2.7-13.2,0C-9.6,9.9-9.4,4.4-6.2,0.9z';
 
 				var pathbg = mkElem('path', {
-					d: picker_d,
+					d: pickerD,
 					fill: 'url(#jGraduate_trans)',
 					transform: 'translate(' + (10 + n * MAX) + ', 26)'
 				}, stopGroup);
 
 				var path = mkElem('path', {
-					d: picker_d,
+					d: pickerD,
 					fill: color,
 					'fill-opacity': opac,
 					transform: 'translate(' + (10 + n * MAX) + ', 26)',
@@ -532,9 +532,9 @@ jQuery.fn.jGraduate =
 
 				$(path).mousedown(function (e) {
 					selectStop(this);
-					drag = cur_stop;
+					drag = curStop;
 					$win.mousemove(dragColor).mouseup(remDrags);
-					stop_offset = stopMakerDiv.offset();
+					stopOffset = stopMakerDiv.offset();
 					e.preventDefault();
 					return false;
 				}).data('stop', stop).data('bg', pathbg).dblclick(function () {
@@ -565,7 +565,7 @@ jQuery.fn.jGraduate =
 				});
 
 				$(curGradient).find('stop').each(function () {
-					var cur_s = $(this);
+					var curS = $(this);
 					if (+this.getAttribute('offset') > n) {
 						if (!color) {
 							var newcolor = this.getAttribute('stop-color');
@@ -575,7 +575,7 @@ jQuery.fn.jGraduate =
 							stop.setAttribute('stop-opacity', newopac === null ? 1 : newopac);
 							path.setAttribute('fill-opacity', newopac === null ? 1 : newopac);
 						}
-						cur_s.before(stop);
+						curS.before(stop);
 						return false;
 					}
 				});
@@ -585,17 +585,17 @@ jQuery.fn.jGraduate =
 
 			function remStop () {
 				delStop.setAttribute('display', 'none');
-				var path = $(cur_stop);
+				var path = $(curStop);
 				var stop = path.data('stop');
 				var bg = path.data('bg');
-				$([cur_stop, stop, bg]).remove();
+				$([curStop, stop, bg]).remove();
 			}
 
 			var stops, stopGroup;
 
 			var stopMakerDiv = $('#' + id + '_jGraduate_StopSlider');
 
-			var cur_stop, stopGroup, stopMakerSVG, drag;
+			var curStop, stopGroup, stopMakerSVG, drag;
 
 			var delStop = mkElem('path', {
 				d: 'm9.75,-6l-19.5,19.5m0,-19.5l19.5,19.5',
@@ -606,16 +606,16 @@ jQuery.fn.jGraduate =
 			}, stopMakerSVG);
 
 			function selectStop (item) {
-				if (cur_stop) cur_stop.setAttribute('stroke', '#000');
+				if (curStop) curStop.setAttribute('stroke', '#000');
 				item.setAttribute('stroke', 'blue');
-				cur_stop = item;
-				cur_stop.parentNode.appendChild(cur_stop);
+				curStop = item;
+				curStop.parentNode.appendChild(curStop);
 				// 	stops = $('stop');
-				// 	opac_select.val(cur_stop.attr('fill-opacity') || 1);
+				// 	opac_select.val(curStop.attr('fill-opacity') || 1);
 				// 	root.append(delStop);
 			}
 
-			var stop_offset;
+			var stopOffset;
 
 			function remDrags () {
 				$win.unbind('mousemove', dragColor);
@@ -625,42 +625,42 @@ jQuery.fn.jGraduate =
 				drag = null;
 			}
 
-			var scale_x = 1, scale_y = 1, angle = 0;
-			var c_x = cx;
-			var c_y = cy;
+			var scaleX = 1, scaleY = 1, angle = 0;
+			var cX = cx;
+			var cY = cy;
 
 			function xform () {
-				var rot = angle ? 'rotate(' + angle + ',' + c_x + ',' + c_y + ') ' : '';
-				if (scale_x === 1 && scale_y === 1) {
+				var rot = angle ? 'rotate(' + angle + ',' + cX + ',' + cY + ') ' : '';
+				if (scaleX === 1 && scaleY === 1) {
 					curGradient.removeAttribute('gradientTransform');
 					// $('#ang').addClass('dis');
 				} else {
-					var x = -c_x * (scale_x - 1);
-					var y = -c_y * (scale_y - 1);
-					curGradient.setAttribute('gradientTransform', rot + 'translate(' + x + ',' + y + ') scale(' + scale_x + ',' + scale_y + ')');
+					var x = -cX * (scaleX - 1);
+					var y = -cY * (scaleY - 1);
+					curGradient.setAttribute('gradientTransform', rot + 'translate(' + x + ',' + y + ') scale(' + scaleX + ',' + scaleY + ')');
 					// $('#ang').removeClass('dis');
 				}
 			}
 
 			function dragColor (evt) {
-				var x = evt.pageX - stop_offset.left;
-				var y = evt.pageY - stop_offset.top;
+				var x = evt.pageX - stopOffset.left;
+				var y = evt.pageY - stopOffset.top;
 				x = x < 10 ? 10 : x > MAX + 10 ? MAX + 10 : x;
 
-				var xf_str = 'translate(' + x + ', 26)';
+				var xfStr = 'translate(' + x + ', 26)';
 				if (y < -60 || y > 130) {
 					delStop.setAttribute('display', 'block');
-					delStop.setAttribute('transform', xf_str);
+					delStop.setAttribute('transform', xfStr);
 				} else {
 					delStop.setAttribute('display', 'none');
 				}
 
-				drag.setAttribute('transform', xf_str);
-				$.data(drag, 'bg').setAttribute('transform', xf_str);
+				drag.setAttribute('transform', xfStr);
+				$.data(drag, 'bg').setAttribute('transform', xfStr);
 				var stop = $.data(drag, 'stop');
-				var s_x = (x - 10) / MAX;
+				var sX = (x - 10) / MAX;
 
-				stop.setAttribute('offset', s_x);
+				stop.setAttribute('offset', sX);
 				var last = 0;
 
 				$(curGradient).find('stop').each(function (i) {
@@ -679,27 +679,27 @@ jQuery.fn.jGraduate =
 				height: 45
 			}, stopMakerDiv[0]);
 
-			var trans_pattern = mkElem('pattern', {
+			var transPattern = mkElem('pattern', {
 				width: 16,
 				height: 16,
 				patternUnits: 'userSpaceOnUse',
 				id: 'jGraduate_trans'
 			}, stopMakerSVG);
 
-			var trans_img = mkElem('image', {
+			var transImg = mkElem('image', {
 				width: 16,
 				height: 16
-			}, trans_pattern);
+			}, transPattern);
 
-			var bg_image = $settings.images.clientPath + 'map-opacity.png';
+			var bgImage = $settings.images.clientPath + 'map-opacity.png';
 
-			trans_img.setAttributeNS(ns.xlink, 'xlink:href', bg_image);
+			transImg.setAttributeNS(ns.xlink, 'xlink:href', bgImage);
 
 			$(stopMakerSVG).click(function (evt) {
-				stop_offset = stopMakerDiv.offset();
+				stopOffset = stopMakerDiv.offset();
 				var target = evt.target;
 				if (target.tagName === 'path') return;
-				var x = evt.pageX - stop_offset.left - 8;
+				var x = evt.pageX - stopOffset.left - 8;
 				x = x < 10 ? 10 : x > MAX + 10 ? MAX + 10 : x;
 				mkStop(x / MAX, 0, 0, true);
 				evt.stopPropagation();
@@ -746,29 +746,29 @@ jQuery.fn.jGraduate =
 
 				switch (type) {
 				case 'start':
-					attr_input.x1.val(fracx);
-					attr_input.y1.val(fracy);
+					attrInput.x1.val(fracx);
+					attrInput.y1.val(fracy);
 					grad.setAttribute('x1', fracx);
 					grad.setAttribute('y1', fracy);
 					break;
 				case 'end':
-					attr_input.x2.val(fracx);
-					attr_input.y2.val(fracy);
+					attrInput.x2.val(fracx);
+					attrInput.y2.val(fracy);
 					grad.setAttribute('x2', fracx);
 					grad.setAttribute('y2', fracy);
 					break;
 				case 'center':
-					attr_input.cx.val(fracx);
-					attr_input.cy.val(fracy);
+					attrInput.cx.val(fracx);
+					attrInput.cy.val(fracy);
 					grad.setAttribute('cx', fracx);
 					grad.setAttribute('cy', fracy);
-					c_x = fracx;
-					c_y = fracy;
+					cX = fracx;
+					cY = fracy;
 					xform();
 					break;
 				case 'focus':
-					attr_input.fx.val(fracx);
-					attr_input.fy.val(fracy);
+					attrInput.fx.val(fracx);
+					attrInput.fy.val(fracy);
 					grad.setAttribute('fx', fracx);
 					grad.setAttribute('fy', fracy);
 					xform();
@@ -788,6 +788,7 @@ jQuery.fn.jGraduate =
 			stops = curGradient.getElementsByTagNameNS(ns.svg, 'stop');
 
 			// if there are not at least two stops, then
+			var numstops = stops.length;
 			if (numstops < 2) {
 				while (numstops < 2) {
 					curGradient.appendChild(document.createElementNS(ns.svg, 'stop'));
@@ -796,7 +797,6 @@ jQuery.fn.jGraduate =
 				stops = curGradient.getElementsByTagNameNS(ns.svg, 'stop');
 			}
 
-			var numstops = stops.length;
 			for (var i = 0; i < numstops; i++) {
 				mkStop(0, 0, 0, 0, stops[i]);
 			}
@@ -834,8 +834,8 @@ jQuery.fn.jGraduate =
 					focusCoord.show();
 				} else {
 					focusCoord.hide();
-					attr_input.fx.val('');
-					attr_input.fy.val('');
+					attrInput.fx.val('');
+					attrInput.fy.val('');
 				}
 			}
 
@@ -846,8 +846,8 @@ jQuery.fn.jGraduate =
 			$('#' + id + '_jGraduate_match_ctr').change(function () {
 				showFocus = !this.checked;
 				focusCoord.toggle(showFocus);
-				attr_input.fx.val('');
-				attr_input.fy.val('');
+				attrInput.fx.val('');
+				attrInput.fy.val('');
 				var grad = curGradient;
 				if (!showFocus) {
 					lastfx = grad.getAttribute('fx');
@@ -859,8 +859,8 @@ jQuery.fn.jGraduate =
 					var fy = lastfy || 0.5;
 					grad.setAttribute('fx', fx);
 					grad.setAttribute('fy', fy);
-					attr_input.fx.val(fx);
-					attr_input.fy.val(fy);
+					attrInput.fx.val(fx);
+					attrInput.fy.val(fy);
 				}
 			});
 
@@ -898,19 +898,19 @@ jQuery.fn.jGraduate =
 					previewRect.setAttribute('fill-opacity', x);
 					break;
 				case 'ellip':
-					scale_x = 1;
-					scale_y = 1;
+					scaleX = 1;
+					scaleY = 1;
 					if (x < 0.5) {
 						x /= 0.5; // 0.001
-						scale_x = x <= 0 ? 0.01 : x;
+						scaleX = x <= 0 ? 0.01 : x;
 					} else if (x > 0.5) {
 						x /= 0.5; // 2
 						x = 2 - x;
-						scale_y = x <= 0 ? 0.01 : x;
+						scaleY = x <= 0 ? 0.01 : x;
 					}
 					xform();
 					x -= 1;
-					if (scale_y === x + 1) {
+					if (scaleY === x + 1) {
 						x = Math.abs(x);
 					}
 					break;
@@ -926,7 +926,7 @@ jQuery.fn.jGraduate =
 				slider.input.val(x);
 			};
 
-			var ellip_val = 0, angle_val = 0;
+			var ellipVal = 0, angleVal = 0;
 
 			if (curType === 'radialGradient') {
 				var tlist = curGradient.gradientTransform.baseVal;
@@ -936,9 +936,9 @@ jQuery.fn.jGraduate =
 					if (t.type === 2 && s.type === 3) {
 						var m = s.matrix;
 						if (m.a !== 1) {
-							ellip_val = Math.round(-(1 - m.a) * 100);
+							ellipVal = Math.round(-(1 - m.a) * 100);
 						} else if (m.d !== 1) {
-							ellip_val = Math.round((1 - m.d) * 100);
+							ellipVal = Math.round((1 - m.d) * 100);
 						}
 					}
 				} else if (tlist.numberOfItems === 3) {
@@ -951,12 +951,12 @@ jQuery.fn.jGraduate =
 						t.type === 2 &&
 						s.type === 3
 					) {
-						angle_val = Math.round(r.angle);
+						angleVal = Math.round(r.angle);
 						var m = s.matrix;
 						if (m.a !== 1) {
-							ellip_val = Math.round(-(1 - m.a) * 100);
-						} else if(m.d !== 1) {
-							ellip_val = Math.round((1 - m.d) * 100);
+							ellipVal = Math.round(-(1 - m.a) * 100);
+						} else if (m.d !== 1) {
+							ellipVal = Math.round((1 - m.d) * 100);
 						}
 					}
 				}
@@ -976,12 +976,12 @@ jQuery.fn.jGraduate =
 				ellip: {
 					handle: '#' + id + '_jGraduate_EllipArrows',
 					input: '#' + id + '_jGraduate_EllipInput',
-					val: ellip_val
+					val: ellipVal
 				},
 				angle: {
 					handle: '#' + id + '_jGraduate_AngleArrows',
 					input: '#' + id + '_jGraduate_AngleInput',
-					val: angle_val
+					val: angleVal
 				}
 			};
 
@@ -1017,16 +1017,16 @@ jQuery.fn.jGraduate =
 						break;
 
 					case 'ellip':
-						scale_x = scale_y = 1;
+						scaleX = scaleY = 1;
 						if (val === 0) {
 							xpos = SLIDERW * 0.5;
 							break;
 						}
 						if (val > 99.5) val = 99.5;
 						if (val > 0) {
-							scale_y = 1 - (val / 100);
+							scaleY = 1 - (val / 100);
 						} else {
-							scale_x = -(val / 100) - 1;
+							scaleX = -(val / 100) - 1;
 						}
 
 						xpos = SLIDERW * ((val + 100) / 2) / 100;
@@ -1097,7 +1097,7 @@ jQuery.fn.jGraduate =
 				$(this).addClass('jGraduate_tab_current');
 				$(idref + ' > div').hide();
 				var type = $(this).attr('data-type');
-				var container = $(idref + ' .jGraduate_gradPick').show();
+				// var container = $(idref + ' .jGraduate_gradPick').show();
 				if (type === 'rg' || type === 'lg') {
 					// Show/hide appropriate fields
 					$('.jGraduate_' + type + '_field').show();
@@ -1114,13 +1114,13 @@ jQuery.fn.jGraduate =
 					var newGrad = $('#' + id + '_' + type + '_jgraduate_grad')[0];
 
 					if (curGradient !== newGrad) {
-						var cur_stops = $(curGradient).find('stop');
-						$(newGrad).empty().append(cur_stops);
+						var curStops = $(curGradient).find('stop');
+						$(newGrad).empty().append(curStops);
 						curGradient = newGrad;
 						var sm = spreadMethodOpt.val();
 						curGradient.setAttribute('spreadMethod', sm);
 					}
-					showFocus = type === 'rg' && curGradient.getAttribute('fx') != null && !(cx == fx && cy == fy);
+					showFocus = type === 'rg' && curGradient.getAttribute('fx') != null && !(cx === fx && cy === fy);
 					$('#' + id + '_jGraduate_focusCoord').toggle(showFocus);
 					if (showFocus) {
 						$('#' + id + '_jGraduate_match_ctr')[0].checked = false;

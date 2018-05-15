@@ -1,4 +1,4 @@
-/* eslint-disable no-var */
+/* eslint-disable no-var, no-redeclare */
 /* globals jQuery */
 /*
  * jPicker 1.1.6
@@ -132,15 +132,15 @@ var Slider = // encapsulate slider functionality for the ColorMap and ColorBar -
 					if (name == null) name = 'xy';
 					switch (name.toLowerCase()) {
 					case 'x':
-						newX = value && (value.x && value.x | 0 || value | 0) || 0;
+						newX = (value && ((value.x && value.x | 0) || value | 0)) || 0;
 						break;
 					case 'y':
-						newY = value && (value.y && value.y | 0 || value | 0) || 0;
+						newY = (value && ((value.y && value.y | 0) || value | 0)) || 0;
 						break;
 					case 'xy':
 					default:
-						newX = value && value.x && value.x | 0 || 0;
-						newY = value && value.y && value.y | 0 || 0;
+						newX = (value && value.x && value.x | 0) || 0;
+						newY = (value && value.y && value.y | 0) || 0;
 						break;
 					}
 					if (newX != null) {
@@ -177,7 +177,7 @@ var Slider = // encapsulate slider functionality for the ColorMap and ColorBar -
 						default: return { minX: minX, maxX: maxX, rangeX: rangeX, minY: minY, maxY: maxY, rangeY: rangeY };
 						}
 					}
-					var changed = false,
+					var // changed = false,
 						newMinX,
 						newMaxX,
 						newMinY,
@@ -185,31 +185,31 @@ var Slider = // encapsulate slider functionality for the ColorMap and ColorBar -
 					if (name == null) name = 'all';
 					switch (name.toLowerCase()) {
 					case 'minx':
-						newMinX = value && (value.minX && value.minX | 0 || value | 0) || 0;
+						newMinX = (value && ((value.minX && value.minX | 0) || value | 0)) || 0;
 						break;
 					case 'maxx':
-						newMaxX = value && (value.maxX && value.maxX | 0 || value | 0) || 0;
+						newMaxX = (value && ((value.maxX && value.maxX | 0) || value | 0)) || 0;
 						break;
 					case 'rangex':
-						newMinX = value && value.minX && value.minX | 0 || 0;
-						newMaxX = value && value.maxX && value.maxX | 0 || 0;
+						newMinX = (value && value.minX && value.minX | 0) || 0;
+						newMaxX = (value && value.maxX && value.maxX | 0) || 0;
 						break;
 					case 'miny':
-						newMinY = value && (value.minY && value.minY | 0 || value | 0) || 0;
+						newMinY = (value && ((value.minY && value.minY | 0) || value | 0)) || 0;
 						break;
 					case 'maxy':
-						newMaxY = value && (value.maxY && value.maxY | 0 || value | 0) || 0;
+						newMaxY = (value && ((value.maxY && value.maxY | 0) || value | 0)) || 0;
 						break;
 					case 'rangey':
-						newMinY = value && value.minY && value.minY | 0 || 0;
-						newMaxY = value && value.maxY && value.maxY | 0 || 0;
+						newMinY = (value && value.minY && value.minY | 0) || 0;
+						newMaxY = (value && value.maxY && value.maxY | 0) || 0;
 						break;
 					case 'all':
 					default:
-						newMinX = value && value.minX && value.minX | 0 || 0;
-						newMaxX = value && value.maxX && value.maxX | 0 || 0;
-						newMinY = value && value.minY && value.minY | 0 || 0;
-						newMaxY = value && value.maxY && value.maxY | 0 || 0;
+						newMinX = (value && value.minX && value.minX | 0) || 0;
+						newMaxX = (value && value.maxX && value.maxX | 0) || 0;
+						newMinY = (value && value.minY && value.minY | 0) || 0;
+						newMaxY = (value && value.maxY && value.maxY | 0) || 0;
 						break;
 					}
 					if (newMinX != null && minX !== newMinX) {
@@ -237,7 +237,7 @@ var Slider = // encapsulate slider functionality for the ColorMap and ColorBar -
 				function (callback) {
 					if (!$.isFunction(callback)) return;
 					var i;
-					while ((i = $.inArray(callback, changeEvents)) != -1) changeEvents.splice(i, 1);
+					while ((i = $.inArray(callback, changeEvents)) > -1) changeEvents.splice(i, 1);
 				},
 			destroy =
 				function () {
@@ -258,10 +258,10 @@ var Slider = // encapsulate slider functionality for the ColorMap and ColorBar -
 			});
 		// initialize this control
 		arrow.src = options.arrow && options.arrow.image;
-		arrow.w = options.arrow && options.arrow.width || arrow.width();
-		arrow.h = options.arrow && options.arrow.height || arrow.height();
-		bar.w = options.map && options.map.width || bar.width();
-		bar.h = options.map && options.map.height || bar.height();
+		arrow.w = (options.arrow && options.arrow.width) || arrow.width();
+		arrow.h = (options.arrow && options.arrow.height) || arrow.height();
+		bar.w = (options.map && options.map.width) || bar.width();
+		bar.h = (options.map && options.map.height) || bar.height();
 		// bind mousedown event
 		bar.bind('mousedown', mouseDown);
 		bind.call($this, draw);
@@ -281,7 +281,7 @@ var Slider = // encapsulate slider functionality for the ColorMap and ColorBar -
 			ahex = inputs.length > 7 ? inputs.eq(8) : null,
 			keyDown = // input box key down - use arrows to alter color
 				function (e) {
-					if (e.target.value === '' && e.target !== hex.get(0) && (bindedHex != null && e.target !== bindedHex.get(0) || bindedHex == null)) return;
+					if (e.target.value === '' && e.target !== hex.get(0) && ((bindedHex != null && e.target !== bindedHex.get(0)) || bindedHex == null)) return;
 					if (!validateKey(e)) return e;
 					switch (e.target) {
 					case red.get(0):
@@ -372,7 +372,9 @@ var Slider = // encapsulate slider functionality for the ColorMap and ColorBar -
 				},
 			keyUp = // input box key up - validate value and set color
 				function (e) {
-					if (e.target.value === '' && e.target !== hex.get(0) && (bindedHex != null && e.target !== bindedHex.get(0) || bindedHex == null)) return;
+					if (e.target.value === '' && e.target !== hex.get(0) &&
+						((bindedHex != null && e.target !== bindedHex.get(0)) ||
+						bindedHex == null)) return;
 					if (!validateKey(e)) return e;
 					switch (e.target) {
 					case red.get(0):
@@ -456,7 +458,7 @@ var Slider = // encapsulate slider functionality for the ColorMap and ColorBar -
 				},
 			setValueInRange = // constrain value within range
 				function (value, min, max) {
-					if (value == '' || isNaN(value)) return min;
+					if (value === '' || isNaN(value)) return min;
 					if (value > max) return max;
 					if (value < min) return min;
 					return value;
@@ -471,7 +473,7 @@ var Slider = // encapsulate slider functionality for the ColorMap and ColorBar -
 					if (context !== hue.get(0)) hue.val(all != null ? all.h : '');
 					if (context !== saturation.get(0)) saturation.val(all != null ? all.s : '');
 					if (context !== value.get(0)) value.val(all != null ? all.v : '');
-					if (context !== hex.get(0) && (bindedHex && context !== bindedHex.get(0) || !bindedHex)) hex.val(all != null ? all.hex : '');
+					if (context !== hex.get(0) && ((bindedHex && context !== bindedHex.get(0)) || !bindedHex)) hex.val(all != null ? all.hex : '');
 					if (bindedHex && context !== bindedHex.get(0) && context !== hex.get(0)) bindedHex.val(all != null ? all.hex : '');
 					if (ahex && context !== ahex.get(0)) ahex.val(all != null ? all.ahex.substring(6) : '');
 				},
@@ -502,8 +504,9 @@ var Slider = // encapsulate slider functionality for the ColorMap and ColorBar -
 $.jPicker =
 {
 	List: [], // array holding references to each active instance of the control
-	Color: // color object - we will be able to assign by any color space type or retrieve any color space info
-			// we want this public so we can optionally assign new color objects to initial values using inputs other than a string hex value (also supported)
+	// color object - we will be able to assign by any color space type or retrieve any color space info
+	// we want this public so we can optionally assign new color objects to initial values using inputs other than a string hex value (also supported)
+	Color:
 		function (init) {
 			var $this = this,
 				r,
@@ -535,36 +538,36 @@ $.jPicker =
 								for (var i = 0; i < name.length; i++) {
 									switch (name.charAt(i)) {
 									case 'r':
-										if (name.length == 1) ret = r;
+										if (name.length === 1) ret = r;
 										else ret.r = r;
 										break;
 									case 'g':
-										if (name.length == 1) ret = g;
+										if (name.length === 1) ret = g;
 										else ret.g = g;
 										break;
 									case 'b':
-										if (name.length == 1) ret = b;
+										if (name.length === 1) ret = b;
 										else ret.b = b;
 										break;
 									case 'a':
-										if (name.length == 1) ret = a;
+										if (name.length === 1) ret = a;
 										else ret.a = a;
 										break;
 									case 'h':
-										if (name.length == 1) ret = h;
+										if (name.length === 1) ret = h;
 										else ret.h = h;
 										break;
 									case 's':
-										if (name.length == 1) ret = s;
+										if (name.length === 1) ret = s;
 										else ret.s = s;
 										break;
 									case 'v':
-										if (name.length == 1) ret = v;
+										if (name.length === 1) ret = v;
 										else ret.v = v;
 										break;
 									}
 								}
-								return ret == {} ? val.call($this, 'all') : ret;
+								return !name.length ? val.call($this, 'all') : ret;
 							}
 						}
 						if (context != null && context === $this) return;
@@ -605,13 +608,11 @@ $.jPicker =
 						switch (name.toLowerCase()) {
 						case 'ahex':
 						case 'hex':
-							var ret = ColorMethods.hexToRgba(value && (value.ahex || value.hex) || value || 'none');
-
-							val.call($this, 'rgba', { r: ret.r, g: ret.g, b: ret.b, a: name == 'ahex' ? ret.a : a != null ? a : 255 }, context);
+							var ret = ColorMethods.hexToRgba((value && (value.ahex || value.hex)) || value || 'none');
+							val.call($this, 'rgba', { r: ret.r, g: ret.g, b: ret.b, a: name === 'ahex' ? ret.a : a != null ? a : 255 }, context);
 							break;
 						default:
-							if (value && (value.ahex != null || value.hex != null))
-							{
+							if (value && (value.ahex != null || value.hex != null)) {
 								val.call($this, 'ahex', value.ahex || value.hex || '00000000', context);
 								return;
 							}
@@ -628,7 +629,7 @@ $.jPicker =
 								case 'r':
 									if (hsv) continue;
 									rgb = true;
-									newV.r = value && value.r && value.r | 0 || value && value | 0 || 0;
+									newV.r = (value && value.r && value.r | 0) || (value && value | 0) || 0;
 									if (newV.r < 0) newV.r = 0;
 									else if (newV.r > 255) newV.r = 255;
 									if (r !== newV.r) {
@@ -639,7 +640,7 @@ $.jPicker =
 								case 'g':
 									if (hsv) continue;
 									rgb = true;
-									newV.g = value && value.g && value.g | 0 || value && value | 0 || 0;
+									newV.g = (value && value.g && value.g | 0) || (value && value | 0) || 0;
 									if (newV.g < 0) newV.g = 0;
 									else if (newV.g > 255) newV.g = 255;
 									if (g !== newV.g) {
@@ -650,11 +651,10 @@ $.jPicker =
 								case 'b':
 									if (hsv) continue;
 									rgb = true;
-									newV.b = value && value.b && value.b | 0 || value && value | 0 || 0;
+									newV.b = (value && value.b && value.b | 0) || (value && value | 0) || 0;
 									if (newV.b < 0) newV.b = 0;
 									else if (newV.b > 255) newV.b = 255;
-									if (b != newV.b)
-									{
+									if (b !== newV.b) {
 										b = newV.b;
 										changed = true;
 									}
@@ -663,8 +663,7 @@ $.jPicker =
 									newV.a = value && value.a != null ? value.a | 0 : value != null ? value | 0 : 255;
 									if (newV.a < 0) newV.a = 0;
 									else if (newV.a > 255) newV.a = 255;
-									if (a != newV.a)
-									{
+									if (a !== newV.a) {
 										a = newV.a;
 										changed = true;
 									}
@@ -672,11 +671,10 @@ $.jPicker =
 								case 'h':
 									if (rgb) continue;
 									hsv = true;
-									newV.h = value && value.h && value.h | 0 || value && value | 0 || 0;
+									newV.h = (value && value.h && value.h | 0) || (value && value | 0) || 0;
 									if (newV.h < 0) newV.h = 0;
 									else if (newV.h > 360) newV.h = 360;
-									if (h != newV.h)
-									{
+									if (h !== newV.h) {
 										h = newV.h;
 										changed = true;
 									}
@@ -687,8 +685,7 @@ $.jPicker =
 									newV.s = value && value.s != null ? value.s | 0 : value != null ? value | 0 : 100;
 									if (newV.s < 0) newV.s = 0;
 									else if (newV.s > 100) newV.s = 100;
-									if (s != newV.s)
-									{
+									if (s !== newV.s) {
 										s = newV.s;
 										changed = true;
 									}
@@ -699,8 +696,7 @@ $.jPicker =
 									newV.v = value && value.v != null ? value.v | 0 : value != null ? value | 0 : 100;
 									if (newV.v < 0) newV.v = 0;
 									else if (newV.v > 100) newV.v = 100;
-									if (v != newV.v)
-									{
+									if (v !== newV.v) {
 										v = newV.v;
 										changed = true;
 									}
@@ -739,12 +735,12 @@ $.jPicker =
 					function (callback) {
 						if (!$.isFunction(callback)) return;
 						var i;
-						while ((i = $.inArray(callback, changeEvents)) != -1) changeEvents.splice(i, 1);
+						while ((i = $.inArray(callback, changeEvents)) > -1) changeEvents.splice(i, 1);
 					},
 				destroy =
 					function () {
 						changeEvents = null;
-					}
+					};
 			$.extend(true, $this, // public properties and methods
 				{
 					val: val,
@@ -762,28 +758,22 @@ $.jPicker =
 	ColorMethods: // color conversion methods	- make public to give use to external scripts
 		{
 			hexToRgba:
-				function(hex)
-				{
+				function (hex) {
 					if (hex === '' || hex === 'none') return { r: null, g: null, b: null, a: null };
 					hex = this.validateHex(hex);
 					var r = '00', g = '00', b = '00', a = '255';
-					if (hex.length == 6) hex += 'ff';
-					if (hex.length > 6)
-					{
+					if (hex.length === 6) hex += 'ff';
+					if (hex.length > 6) {
 						r = hex.substring(0, 2);
 						g = hex.substring(2, 4);
 						b = hex.substring(4, 6);
 						a = hex.substring(6, hex.length);
-					}
-					else
-					{
-						if (hex.length > 4)
-						{
+					} else {
+						if (hex.length > 4) {
 							r = hex.substring(4, hex.length);
 							hex = hex.substring(0, 4);
 						}
-						if (hex.length > 2)
-						{
+						if (hex.length > 2) {
 							g = hex.substring(2, hex.length);
 							hex = hex.substring(0, 2);
 						}
@@ -792,9 +782,8 @@ $.jPicker =
 					return { r: this.hexToInt(r), g: this.hexToInt(g), b: this.hexToInt(b), a: this.hexToInt(a) };
 				},
 			validateHex:
-				function(hex)
-				{
-					//if (typeof hex === "object") return "";
+				function (hex) {
+					// if (typeof hex === "object") return "";
 					hex = hex.toLowerCase().replace(/[^a-f0-9]/g, '');
 					if (hex.length > 8) hex = hex.substring(0, 8);
 					return hex;
@@ -831,8 +820,8 @@ $.jPicker =
 					if (!hsv.s) hsv.h = 0;
 					else {
 						delta = max - min;
-						if (r == max) hsv.h = (g - b) / delta;
-						else if (g == max) hsv.h = 2 + (b - r) / delta;
+						if (r === max) hsv.h = (g - b) / delta;
+						else if (g === max) hsv.h = 2 + (b - r) / delta;
 						else hsv.h = 4 + (r - g) / delta;
 						hsv.h = parseInt(hsv.h * 60);
 						if (hsv.h < 0) hsv.h += 360;
@@ -848,7 +837,7 @@ $.jPicker =
 						if (v === 0) rgb.r = rgb.g = rgb.b = 0;
 						else rgb.r = rgb.g = rgb.b = (v * 255 / 100) | 0;
 					} else {
-						if (h == 360) h = 0;
+						if (h === 360) h = 0;
 						h /= 60;
 						s = s / 100;
 						v = v / 100;
@@ -899,13 +888,12 @@ $.jPicker =
 };
 var Color = $.jPicker.Color, List = $.jPicker.List, ColorMethods = $.jPicker.ColorMethods; // local copies for YUI compressor
 $.fn.jPicker =
-function(options)
-{
+function (options) {
 	var $arguments = arguments;
 	return this.each(
 		function () {
 			var $this = this, settings = $.extend(true, {}, $.fn.jPicker.defaults, options); // local copies for YUI compressor
-			if ($($this).get(0).nodeName.toLowerCase() == 'input') { // Add color picker icon if binding to an input element and bind the events to the input
+			if ($($this).get(0).nodeName.toLowerCase() === 'input') { // Add color picker icon if binding to an input element and bind the events to the input
 				$.extend(true, settings,
 					{
 						window:
@@ -960,7 +948,7 @@ function(options)
 				setColorMode = // set color mode and update visuals for the new color mode
 					function (colorMode) {
 						var active = color.active, // local copies for YUI compressor
-							clientPath = images.clientPath,
+							// clientPath = images.clientPath,
 							hex = active.val('hex'),
 							rgbMap,
 							rgbBar;
@@ -968,8 +956,7 @@ function(options)
 						switch (colorMode) {
 						case 'h':
 							setTimeout(
-								function()
-								{
+								function () {
 									setBG.call($this, colorMapDiv, 'transparent');
 									setImgLoc.call($this, colorMapL1, 0);
 									setAlpha.call($this, colorMapL1, 100);
@@ -995,8 +982,7 @@ function(options)
 							break;
 						case 's':
 							setTimeout(
-								function()
-								{
+								function () {
 									setBG.call($this, colorMapDiv, 'transparent');
 									setImgLoc.call($this, colorMapL1, -260);
 									setImgLoc.call($this, colorMapL2, -520);
@@ -1013,8 +999,7 @@ function(options)
 							break;
 						case 'v':
 							setTimeout(
-								function()
-								{
+								function () {
 									setBG.call($this, colorMapDiv, '000000');
 									setImgLoc.call($this, colorMapL1, -780);
 									setImgLoc.call($this, colorMapL2, 260);
@@ -1060,8 +1045,7 @@ function(options)
 							break;
 						case 'a':
 							setTimeout(
-								function()
-								{
+								function () {
 									setBG.call($this, colorMapDiv, 'transparent');
 									setImgLoc.call($this, colorMapL1, -260);
 									setImgLoc.call($this, colorMapL2, -520);
@@ -1078,7 +1062,7 @@ function(options)
 							colorBar.val('y', 255 - active.val('a'), colorBar);
 							break;
 						default:
-							throw ('Invalid Mode');
+							throw new Error('Invalid Mode');
 						}
 						switch (colorMode) {
 						case 'h':
@@ -1087,8 +1071,7 @@ function(options)
 						case 'v':
 						case 'a':
 							setTimeout(
-								function()
-								{
+								function () {
 									setAlpha.call($this, colorMapL1, 100);
 									setAlpha.call($this, colorBarL1, 100);
 									setImgLoc.call($this, colorBarL3, 260);
@@ -1101,8 +1084,7 @@ function(options)
 						case 'g':
 						case 'b':
 							setTimeout(
-								function()
-								{
+								function () {
 									setBG.call($this, colorMapDiv, 'transparent');
 									setBG.call($this, colorBarDiv, 'transparent');
 									setAlpha.call($this, colorBarL1, 100);
@@ -1123,7 +1105,7 @@ function(options)
 					},
 				activeColorChanged = // Update color when user changes text values
 					function (ui, context) {
-						if (context == null || (context != colorBar && context != colorMap)) positionMapAndBarArrows.call($this, ui, context);
+						if (context == null || (context !== colorBar && context !== colorMap)) positionMapAndBarArrows.call($this, ui, context);
 						setTimeout(
 							function () {
 								updatePreview.call($this, ui);
@@ -1134,7 +1116,7 @@ function(options)
 				mapValueChanged = // user has dragged the ColorMap pointer
 					function (ui, context) {
 						var active = color.active;
-						if (context != colorMap && active.val() == null) return;
+						if (context !== colorMap && active.val() == null) return;
 						var xy = ui.val('all');
 						switch (settings.color.mode) {
 						case 'h':
@@ -1159,38 +1141,36 @@ function(options)
 						}
 					},
 				colorBarValueChanged = // user has dragged the ColorBar slider
-					function(ui, context)
-					{
+					function (ui, context) {
 						var active = color.active;
-						if (context != colorBar && active.val() == null) return;
-						switch (settings.color.mode)
-						{
-							case 'h':
-								active.val('h', { h: 360 - ui.val('y') }, context);
-								break;
-							case 's':
-								active.val('s', { s: 100 - ui.val('y') }, context);
-								break;
-							case 'v':
-								active.val('v', { v: 100 - ui.val('y') }, context);
-								break;
-							case 'r':
-								active.val('r', { r: 255 - ui.val('y') }, context);
-								break;
-							case 'g':
-								active.val('g', { g: 255 - ui.val('y') }, context);
-								break;
-							case 'b':
-								active.val('b', { b: 255 - ui.val('y') }, context);
-								break;
-							case 'a':
-								active.val('a', 255 - ui.val('y'), context);
-								break;
+						if (context !== colorBar && active.val() == null) return;
+						switch (settings.color.mode) {
+						case 'h':
+							active.val('h', { h: 360 - ui.val('y') }, context);
+							break;
+						case 's':
+							active.val('s', { s: 100 - ui.val('y') }, context);
+							break;
+						case 'v':
+							active.val('v', { v: 100 - ui.val('y') }, context);
+							break;
+						case 'r':
+							active.val('r', { r: 255 - ui.val('y') }, context);
+							break;
+						case 'g':
+							active.val('g', { g: 255 - ui.val('y') }, context);
+							break;
+						case 'b':
+							active.val('b', { b: 255 - ui.val('y') }, context);
+							break;
+						case 'a':
+							active.val('a', 255 - ui.val('y'), context);
+							break;
 						}
 					},
 				positionMapAndBarArrows = // position map and bar arrows to match current color
-					function(ui, context) {
-						if (context != colorMap) {
+					function (ui, context) {
+						if (context !== colorMap) {
 							switch (settings.color.mode) {
 							case 'h':
 								var sv = ui.val('sv');
@@ -1199,27 +1179,27 @@ function(options)
 							case 's':
 							case 'a':
 								var hv = ui.val('hv');
-								colorMap.val('xy', { x: hv && hv.h || 0, y: 100 - (hv != null ? hv.v : 100) }, context);
+								colorMap.val('xy', { x: (hv && hv.h) || 0, y: 100 - (hv != null ? hv.v : 100) }, context);
 								break;
 							case 'v':
 								var hs = ui.val('hs');
-								colorMap.val('xy', { x: hs && hs.h || 0, y: 100 - (hs != null ? hs.s : 100) }, context);
+								colorMap.val('xy', { x: (hs && hs.h) || 0, y: 100 - (hs != null ? hs.s : 100) }, context);
 								break;
 							case 'r':
 								var bg = ui.val('bg');
-								colorMap.val('xy', { x: bg && bg.b || 0, y: 255 - (bg && bg.g || 0) }, context);
+								colorMap.val('xy', { x: (bg && bg.b) || 0, y: 255 - ((bg && bg.g) || 0) }, context);
 								break;
 							case 'g':
 								var br = ui.val('br');
-								colorMap.val('xy', { x: br && br.b || 0, y: 255 - (br && br.r || 0) }, context);
+								colorMap.val('xy', { x: (br && br.b) || 0, y: 255 - ((br && br.r) || 0) }, context);
 								break;
 							case 'b':
 								var rg = ui.val('rg');
-								colorMap.val('xy', { x: rg && rg.r || 0, y: 255 - (rg && rg.g || 0) }, context);
+								colorMap.val('xy', { x: (rg && rg.r) || 0, y: 255 - ((rg && rg.g) || 0) }, context);
 								break;
 							}
 						}
-						if (context != colorBar) {
+						if (context !== colorBar) {
 							switch (settings.color.mode) {
 							case 'h':
 								colorBar.val('y', 360 - (ui.val('h') || 0), context);
@@ -1252,8 +1232,8 @@ function(options)
 					function (ui) {
 						try {
 							var all = ui.val('all');
-							activePreview.css({ backgroundColor: all && '#' + all.hex || 'transparent' });
-							setAlpha.call($this, activePreview, all && Math.precision((all.a * 100) / 255, 4) || 0);
+							activePreview.css({ backgroundColor: (all && '#' + all.hex) || 'transparent' });
+							setAlpha.call($this, activePreview, (all && Math.precision((all.a * 100) / 255, 4)) || 0);
 						} catch (e) { }
 					},
 				updateMapVisuals =
@@ -1293,41 +1273,36 @@ function(options)
 							break;
 						case 's':
 							var hva = ui.val('hva'),
-									saturatedColor = new Color({ h: hva && hva.h || 0, s: 100, v: hva != null ? hva.v : 100 });
+								saturatedColor = new Color({ h: (hva && hva.h) || 0, s: 100, v: hva != null ? hva.v : 100 });
 							setBG.call($this, colorBarDiv, saturatedColor.val('hex'));
 							setAlpha.call($this, colorBarL2, 100 - (hva != null ? hva.v : 100));
-							setAlpha.call($this, colorBarL5, Math.precision(((255 - (hva && hva.a || 0)) * 100) / 255, 4));
+							setAlpha.call($this, colorBarL5, Math.precision(((255 - ((hva && hva.a) || 0)) * 100) / 255, 4));
 							break;
 						case 'v':
 							var hsa = ui.val('hsa'),
-									valueColor = new Color({ h: hsa && hsa.h || 0, s: hsa != null ? hsa.s : 100, v: 100 });
+								valueColor = new Color({ h: (hsa && hsa.h) || 0, s: hsa != null ? hsa.s : 100, v: 100 });
 							setBG.call($this, colorBarDiv, valueColor.val('hex'));
-							setAlpha.call($this, colorBarL5, Math.precision(((255 - (hsa && hsa.a || 0)) * 100) / 255, 4));
+							setAlpha.call($this, colorBarL5, Math.precision(((255 - ((hsa && hsa.a) || 0)) * 100) / 255, 4));
 							break;
 						case 'r':
 						case 'g':
 						case 'b':
 							var hValue = 0, vValue = 0, rgba = ui.val('rgba');
-							if (settings.color.mode == 'r')
-							{
-								hValue = rgba && rgba.b || 0;
-								vValue = rgba && rgba.g || 0;
-							}
-							else if (settings.color.mode == 'g')
-							{
-								hValue = rgba && rgba.b || 0;
-								vValue = rgba && rgba.r || 0;
-							}
-							else if (settings.color.mode == 'b')
-							{
-								hValue = rgba && rgba.r || 0;
-								vValue = rgba && rgba.g || 0;
+							if (settings.color.mode === 'r') {
+								hValue = (rgba && rgba.b) || 0;
+								vValue = (rgba && rgba.g) || 0;
+							} else if (settings.color.mode === 'g') {
+								hValue = (rgba && rgba.b) || 0;
+								vValue = (rgba && rgba.r) || 0;
+							} else if (settings.color.mode === 'b') {
+								hValue = (rgba && rgba.r) || 0;
+								vValue = (rgba && rgba.g) || 0;
 							}
 							var middle = vValue > hValue ? hValue : vValue;
 							setAlpha.call($this, colorBarL2, hValue > vValue ? Math.precision(((hValue - vValue) / (255 - vValue)) * 100, 4) : 0);
 							setAlpha.call($this, colorBarL3, vValue > hValue ? Math.precision(((vValue - hValue) / (255 - hValue)) * 100, 4) : 0);
 							setAlpha.call($this, colorBarL4, Math.precision((middle / 255) * 100, 4));
-							setAlpha.call($this, colorBarL5, Math.precision(((255 - (rgba && rgba.a || 0)) * 100) / 255, 4));
+							setAlpha.call($this, colorBarL5, Math.precision(((255 - ((rgba && rgba.a) || 0)) * 100) / 255, 4));
 							break;
 						case 'a':
 							var a = ui.val('a');
@@ -1339,15 +1314,14 @@ function(options)
 					},
 				setBG =
 					function (el, c) {
-						el.css({ backgroundColor: c && c.length == 6 && '#' + c || 'transparent' });
+						el.css({backgroundColor: (c && c.length === 6 && '#' + c) || 'transparent'});
 					},
 				setImg =
 					function (img, src) {
 						if (isLessThanIE7 && (src.indexOf('AlphaBar.png') > -1 || src.indexOf('Bars.png') > -1 || src.indexOf('Maps.png') > -1)) {
 							img.attr('pngSrc', src);
 							img.css({ backgroundImage: 'none', filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\')' });
-						}
-						else img.css({ backgroundImage: 'url(\'' + src + '\')' });
+						} else img.css({ backgroundImage: 'url(\'' + src + '\')' });
 					},
 				setImgLoc =
 					function (img, y) {
@@ -1359,86 +1333,75 @@ function(options)
 						if (alpha > 0 && alpha < 100) {
 							if (isLessThanIE7) {
 								var src = obj.attr('pngSrc');
-								if (src != null && (src.indexOf('AlphaBar.png') > -1 || src.indexOf('Bars.png') > -1 || src.indexOf('Maps.png') > -1))
+								if (src != null && (src.indexOf('AlphaBar.png') > -1 || src.indexOf('Bars.png') > -1 || src.indexOf('Maps.png') > -1)) {
 									obj.css({ filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\') progid:DXImageTransform.Microsoft.Alpha(opacity=' + alpha + ')' });
-								else obj.css({ opacity: Math.precision(alpha / 100, 4) });
+								} else obj.css({ opacity: Math.precision(alpha / 100, 4) });
 							} else obj.css({ opacity: Math.precision(alpha / 100, 4) });
-						}
-						else if (alpha == 0 || alpha == 100) {
+						} else if (alpha === 0 || alpha === 100) {
 							if (isLessThanIE7) {
 								var src = obj.attr('pngSrc');
-								if (src != null && (src.indexOf('AlphaBar.png') != -1 || src.indexOf('Bars.png') != -1 || src.indexOf('Maps.png') != -1))
+								if (src != null && (src.indexOf('AlphaBar.png') > -1 || src.indexOf('Bars.png') > -1 || src.indexOf('Maps.png') > -1)) {
 									obj.css({ filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\')' });
-								else obj.css({ opacity: '' });
+								} else obj.css({ opacity: '' });
 							} else obj.css({ opacity: '' });
 						}
 					},
 				revertColor = // revert color to original color when opened
-					function()
-					{
+					function () {
 						color.active.val('ahex', color.current.val('ahex'));
 					},
 				commitColor = // commit the color changes
-					function()
-					{
+					function () {
 						color.current.val('ahex', color.active.val('ahex'));
 					},
 				radioClicked =
-					function(e)
-					{
-						$(this).parents('tbody:first').find('input:radio[value!="'+e.target.value+'"]').removeAttr('checked');
+					function (e) {
+						$(this).parents('tbody:first').find('input:radio[value!="' + e.target.value + '"]').removeAttr('checked');
 						setColorMode.call($this, e.target.value);
 					},
 				currentClicked =
-					function()
-					{
+					function () {
 						revertColor.call($this);
 					},
 				cancelClicked =
-					function()
-					{
+					function () {
 						revertColor.call($this);
 						settings.window.expandable && hide.call($this);
 						$.isFunction(cancelCallback) && cancelCallback.call($this, color.active, cancelButton);
 					},
 				okClicked =
-					function()
-					{
+					function () {
 						commitColor.call($this);
 						settings.window.expandable && hide.call($this);
 						$.isFunction(commitCallback) && commitCallback.call($this, color.active, okButton);
 					},
 				iconImageClicked =
-					function()
-					{
+					function () {
 						show.call($this);
 					},
 				currentColorChanged =
-					function(ui, context)
-					{
+					function (ui, context) {
 						var hex = ui.val('hex');
-						currentPreview.css({ backgroundColor: hex && '#' + hex || 'transparent' });
+						currentPreview.css({ backgroundColor: (hex && '#' + hex) || 'transparent' });
 						setAlpha.call($this, currentPreview, Math.precision(((ui.val('a') || 0) * 100) / 255, 4));
 					},
 				expandableColorChanged =
-					function(ui, context)
-					{
+					function (ui, context) {
 						var hex = ui.val('hex');
 						var va = ui.val('va');
-						iconColor.css({ backgroundColor: hex && '#' + hex || 'transparent' });
-						setAlpha.call($this, iconAlpha, Math.precision(((255 - (va && va.a || 0)) * 100) / 255, 4));
-						if (settings.window.bindToInput&&settings.window.updateInputColor)
-							settings.window.input.css(
-								{
-									backgroundColor: hex && '#' + hex || 'transparent',
-									color: va == null || va.v > 75 ? '#000000' : '#ffffff'
-								});
+						iconColor.css({ backgroundColor: (hex && '#' + hex) || 'transparent' });
+						setAlpha.call($this, iconAlpha, Math.precision(((255 - ((va && va.a) || 0)) * 100) / 255, 4));
+						if (settings.window.bindToInput && settings.window.updateInputColor) {
+							settings.window.input.css({
+								backgroundColor: (hex && '#' + hex) || 'transparent',
+								color: va == null || va.v > 75 ? '#000000' : '#ffffff'
+							});
+						}
 					},
 				moveBarMouseDown =
-					function(e)
-					{
-						var element = settings.window.element, // local copies for YUI compressor
-							page = settings.window.page;
+					function (e) {
+						// var element = settings.window.element, // local copies for YUI compressor
+						//     page = settings.window.page;
 						elementStartX = parseInt(container.css('left'));
 						elementStartY = parseInt(container.css('top'));
 						pageStartX = e.pageX;
@@ -1448,61 +1411,54 @@ function(options)
 						e.preventDefault(); // prevent attempted dragging of the column
 					},
 				documentMouseMove =
-					function(e)
-					{
+					function (e) {
 						container.css({ left: elementStartX - (pageStartX - e.pageX) + 'px', top: elementStartY - (pageStartY - e.pageY) + 'px' });
-						if (settings.window.expandable && !$.support.boxModel) container.prev().css({ left: container.css("left"), top: container.css("top") });
+						if (settings.window.expandable && !$.support.boxModel) container.prev().css({ left: container.css('left'), top: container.css('top') });
 						e.stopPropagation();
 						e.preventDefault();
 						return false;
 					},
 				documentMouseUp =
-					function(e)
-					{
+					function (e) {
 						$(document).unbind('mousemove', documentMouseMove).unbind('mouseup', documentMouseUp);
 						e.stopPropagation();
 						e.preventDefault();
 						return false;
 					},
 				quickPickClicked =
-					function(e)
-					{
+					function (e) {
 						e.preventDefault();
 						e.stopPropagation();
 						color.active.val('ahex', $(this).attr('title') || null, e.target);
 						return false;
 					},
-				commitCallback = $.isFunction($arguments[1]) && $arguments[1] || null,
-				liveCallback = $.isFunction($arguments[2]) && $arguments[2] || null,
-				cancelCallback = $.isFunction($arguments[3]) && $arguments[3] || null,
+				commitCallback = ($.isFunction($arguments[1]) && $arguments[1]) || null,
+				liveCallback = ($.isFunction($arguments[2]) && $arguments[2]) || null,
+				cancelCallback = ($.isFunction($arguments[3]) && $arguments[3]) || null,
 				show =
-					function()
-					{
+					function () {
 						color.current.val('ahex', color.active.val('ahex'));
-						var attachIFrame = function()
-							{
-								if (!settings.window.expandable || $.support.boxModel) return;
-								var table = container.find('table:first');
-								container.before('<iframe/>');
-								container.prev().css({ width: table.width(), height: container.height(), opacity: 0, position: 'absolute', left: container.css("left"), top: container.css("top") });
-							};
-						if (settings.window.expandable)
-						{
-							$(document.body).children('div.jPicker.Container').css({zIndex:10});
-							container.css({zIndex:20});
+						var attachIFrame = function () {
+							if (!settings.window.expandable || $.support.boxModel) return;
+							var table = container.find('table:first');
+							container.before('<iframe/>');
+							container.prev().css({width: table.width(), height: container.height(), opacity: 0, position: 'absolute', left: container.css('left'), top: container.css('top')});
+						};
+						if (settings.window.expandable) {
+							$(document.body).children('div.jPicker.Container').css({zIndex: 10});
+							container.css({zIndex: 20});
 						}
-						switch (settings.window.effects.type)
-						{
-							case 'fade':
-								container.fadeIn(settings.window.effects.speed.show, attachIFrame);
-								break;
-							case 'slide':
-								container.slideDown(settings.window.effects.speed.show, attachIFrame);
-								break;
-							case 'show':
-							default:
-								container.show(settings.window.effects.speed.show, attachIFrame);
-								break;
+						switch (settings.window.effects.type) {
+						case 'fade':
+							container.fadeIn(settings.window.effects.speed.show, attachIFrame);
+							break;
+						case 'slide':
+							container.slideDown(settings.window.effects.speed.show, attachIFrame);
+							break;
+						case 'show':
+						default:
+							container.show(settings.window.effects.speed.show, attachIFrame);
+							break;
 						}
 					},
 				hide =
@@ -1526,7 +1482,7 @@ function(options)
 						}
 					},
 				initialize =
-					function() {
+					function () {
 						var win = settings.window,
 							popup = win.expandable ? $($this).next().find('.Container:first') : null;
 						container = win.expandable ? $('<div/>') : $($this);
@@ -1538,33 +1494,38 @@ function(options)
 						var all = color.active.val('all');
 						if (win.alphaPrecision < 0) win.alphaPrecision = 0;
 						else if (win.alphaPrecision > 2) win.alphaPrecision = 2;
-						var controlHtml='<table class="jPicker" cellpadding="0" cellspacing="0"><tbody>' + (win.expandable ? '<tr><td class="Move" colspan="5">&nbsp;</td></tr>' : '') + '<tr><td rowspan="9"><h2 class="Title">' + (win.title || localization.text.title) + '</h2><div class="Map"><span class="Map1">&nbsp;</span><span class="Map2">&nbsp;</span><span class="Map3">&nbsp;</span><img src="' + images.clientPath + images.colorMap.arrow.file + '" class="Arrow"/></div></td><td rowspan="9"><div class="Bar"><span class="Map1">&nbsp;</span><span class="Map2">&nbsp;</span><span class="Map3">&nbsp;</span><span class="Map4">&nbsp;</span><span class="Map5">&nbsp;</span><span class="Map6">&nbsp;</span><img src="' + images.clientPath + images.colorBar.arrow.file + '" class="Arrow"/></div></td><td colspan="2" class="Preview">' + localization.text.newColor + '<div><span class="Active" title="' + localization.tooltips.colors.newColor + '">&nbsp;</span><span class="Current" title="' + localization.tooltips.colors.currentColor + '">&nbsp;</span></div>' + localization.text.currentColor + '</td><td rowspan="9" class="Button"><input type="button" class="Ok" value="' + localization.text.ok + '" title="' + localization.tooltips.buttons.ok + '"/><input type="button" class="Cancel" value="' + localization.text.cancel + '" title="' + localization.tooltips.buttons.cancel + '"/><hr/><div class="Grid">&nbsp;</div></td></tr><tr class="Hue"><td class="Radio"><label title="' + localization.tooltips.hue.radio + '"><input type="radio" value="h"' + (settings.color.mode == 'h' ? ' checked="checked"' : '') + '/>H:</label></td><td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.h : '') + '" title="' + localization.tooltips.hue.textbox + '"/>&nbsp;&deg;</td></tr><tr class="Saturation"><td class="Radio"><label title="' + localization.tooltips.saturation.radio + '"><input type="radio" value="s"' + (settings.color.mode == 's' ? ' checked="checked"' : '') + '/>S:</label></td><td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.s : '') + '" title="' + localization.tooltips.saturation.textbox + '"/>&nbsp;%</td></tr><tr class="Value"><td class="Radio"><label title="' + localization.tooltips.value.radio + '"><input type="radio" value="v"' + (settings.color.mode == 'v' ? ' checked="checked"' : '') + '/>V:</label><br/><br/></td><td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.v : '') + '" title="' + localization.tooltips.value.textbox + '"/>&nbsp;%<br/><br/></td></tr><tr class="Red"><td class="Radio"><label title="' + localization.tooltips.red.radio + '"><input type="radio" value="r"' + (settings.color.mode == 'r' ? ' checked="checked"' : '') + '/>R:</label></td><td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.r : '') + '" title="' + localization.tooltips.red.textbox + '"/></td></tr><tr class="Green"><td class="Radio"><label title="' + localization.tooltips.green.radio + '"><input type="radio" value="g"' + (settings.color.mode == 'g' ? ' checked="checked"' : '') + '/>G:</label></td><td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.g : '') + '" title="' + localization.tooltips.green.textbox + '"/></td></tr><tr class="Blue"><td class="Radio"><label title="' + localization.tooltips.blue.radio + '"><input type="radio" value="b"' + (settings.color.mode == 'b' ? ' checked="checked"' : '') + '/>B:</label></td><td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.b : '') + '" title="' + localization.tooltips.blue.textbox + '"/></td></tr><tr class="Alpha"><td class="Radio">' + (win.alphaSupport ? '<label title="' + localization.tooltips.alpha.radio + '"><input type="radio" value="a"' + (settings.color.mode == 'a' ? ' checked="checked"' : '') + '/>A:</label>' : '&nbsp;') + '</td><td class="Text">' + (win.alphaSupport ? '<input type="text" maxlength="' + (3 + win.alphaPrecision) + '" value="' + (all != null ? Math.precision((all.a * 100) / 255, win.alphaPrecision) : '') + '" title="' + localization.tooltips.alpha.textbox + '"/>&nbsp;%' : '&nbsp;') + '</td></tr><tr class="Hex"><td colspan="2" class="Text"><label title="' + localization.tooltips.hex.textbox + '">#:<input type="text" maxlength="6" class="Hex" value="' + (all != null ? all.hex : '') + '"/></label>' + (win.alphaSupport ? '<input type="text" maxlength="2" class="AHex" value="' + (all != null ? all.ahex.substring(6) : '') + '" title="' + localization.tooltips.hex.alpha + '"/></td>' : '&nbsp;') + '</tr></tbody></table>';
-						if (win.expandable)
-						{
+						var controlHtml = '<table class="jPicker" cellpadding="0" cellspacing="0"><tbody>' + (win.expandable ? '<tr><td class="Move" colspan="5">&nbsp;</td></tr>' : '') + '<tr><td rowspan="9"><h2 class="Title">' + (win.title || localization.text.title) + '</h2><div class="Map"><span class="Map1">&nbsp;</span><span class="Map2">&nbsp;</span><span class="Map3">&nbsp;</span><img src="' + images.clientPath + images.colorMap.arrow.file + '" class="Arrow"/></div></td><td rowspan="9"><div class="Bar"><span class="Map1">&nbsp;</span><span class="Map2">&nbsp;</span><span class="Map3">&nbsp;</span><span class="Map4">&nbsp;</span><span class="Map5">&nbsp;</span><span class="Map6">&nbsp;</span><img src="' + images.clientPath + images.colorBar.arrow.file + '" class="Arrow"/></div></td><td colspan="2" class="Preview">' + localization.text.newColor + '<div><span class="Active" title="' + localization.tooltips.colors.newColor + '">&nbsp;</span><span class="Current" title="' + localization.tooltips.colors.currentColor + '">&nbsp;</span></div>' + localization.text.currentColor + '</td><td rowspan="9" class="Button"><input type="button" class="Ok" value="' + localization.text.ok + '" title="' + localization.tooltips.buttons.ok + '"/><input type="button" class="Cancel" value="' + localization.text.cancel + '" title="' + localization.tooltips.buttons.cancel + '"/><hr/><div class="Grid">&nbsp;</div></td></tr><tr class="Hue"><td class="Radio"><label title="' + localization.tooltips.hue.radio + '"><input type="radio" value="h"' + (settings.color.mode === 'h' ? ' checked="checked"' : '') + '/>H:</label></td><td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.h : '') + '" title="' + localization.tooltips.hue.textbox + '"/>&nbsp;&deg;</td></tr><tr class="Saturation"><td class="Radio"><label title="' + localization.tooltips.saturation.radio + '"><input type="radio" value="s"' + (settings.color.mode === 's' ? ' checked="checked"' : '') + '/>S:</label></td><td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.s : '') + '" title="' + localization.tooltips.saturation.textbox + '"/>&nbsp;%</td></tr><tr class="Value"><td class="Radio"><label title="' + localization.tooltips.value.radio + '"><input type="radio" value="v"' + (settings.color.mode === 'v' ? ' checked="checked"' : '') + '/>V:</label><br/><br/></td><td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.v : '') + '" title="' + localization.tooltips.value.textbox + '"/>&nbsp;%<br/><br/></td></tr><tr class="Red"><td class="Radio"><label title="' + localization.tooltips.red.radio + '"><input type="radio" value="r"' + (settings.color.mode === 'r' ? ' checked="checked"' : '') + '/>R:</label></td><td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.r : '') + '" title="' + localization.tooltips.red.textbox + '"/></td></tr><tr class="Green"><td class="Radio"><label title="' + localization.tooltips.green.radio + '"><input type="radio" value="g"' + (settings.color.mode === 'g' ? ' checked="checked"' : '') + '/>G:</label></td><td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.g : '') + '" title="' + localization.tooltips.green.textbox + '"/></td></tr><tr class="Blue"><td class="Radio"><label title="' + localization.tooltips.blue.radio + '"><input type="radio" value="b"' + (settings.color.mode === 'b' ? ' checked="checked"' : '') + '/>B:</label></td><td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.b : '') + '" title="' + localization.tooltips.blue.textbox + '"/></td></tr><tr class="Alpha"><td class="Radio">' + (win.alphaSupport ? '<label title="' + localization.tooltips.alpha.radio + '"><input type="radio" value="a"' + (settings.color.mode === 'a' ? ' checked="checked"' : '') + '/>A:</label>' : '&nbsp;') + '</td><td class="Text">' + (win.alphaSupport ? '<input type="text" maxlength="' + (3 + win.alphaPrecision) + '" value="' + (all != null ? Math.precision((all.a * 100) / 255, win.alphaPrecision) : '') + '" title="' + localization.tooltips.alpha.textbox + '"/>&nbsp;%' : '&nbsp;') + '</td></tr><tr class="Hex"><td colspan="2" class="Text"><label title="' + localization.tooltips.hex.textbox + '">#:<input type="text" maxlength="6" class="Hex" value="' + (all != null ? all.hex : '') + '"/></label>' + (win.alphaSupport ? '<input type="text" maxlength="2" class="AHex" value="' + (all != null ? all.ahex.substring(6) : '') + '" title="' + localization.tooltips.hex.alpha + '"/></td>' : '&nbsp;') + '</tr></tbody></table>';
+						if (win.expandable) {
 							container.html(controlHtml);
-							if($(document.body).children('div.jPicker.Container').length==0)$(document.body).prepend(container);
+							if ($(document.body).children('div.jPicker.Container').length === 0)$(document.body).prepend(container);
 							else $(document.body).children('div.jPicker.Container:last').after(container);
 							container.mousedown(
-								function()
-								{
-									$(document.body).children('div.jPicker.Container').css({zIndex:10});
-									container.css({zIndex:20});
+								function () {
+									$(document.body).children('div.jPicker.Container').css({zIndex: 10});
+									container.css({zIndex: 20});
 								});
 							container.css( // positions must be set and display set to absolute before source code injection or IE will size the container to fit the window
 								{
 									left:
-										win.position.x == 'left' ? (popup.offset().left - 530 - (win.position.y == 'center' ? 25 : 0)) + 'px' :
-										win.position.x == 'center' ? (popup.offset().left - 260) + 'px' :
-										win.position.x == 'right' ? (popup.offset().left - 10 + (win.position.y == 'center' ? 25 : 0)) + 'px' :
-										win.position.x == 'screenCenter' ? (($(document).width() >> 1) - 260) + 'px' : (popup.offset().left + parseInt(win.position.x)) + 'px',
+										win.position.x === 'left'
+											? (popup.offset().left - 530 - (win.position.y === 'center' ? 25 : 0)) + 'px'
+											: win.position.x === 'center'
+												? (popup.offset().left - 260) + 'px'
+												: win.position.x === 'right'
+													? (popup.offset().left - 10 + (win.position.y === 'center' ? 25 : 0)) + 'px'
+													: win.position.x === 'screenCenter'
+														? (($(document).width() >> 1) - 260) + 'px'
+														: (popup.offset().left + parseInt(win.position.x)) + 'px',
 									position: 'absolute',
-									top: win.position.y == 'top' ? (popup.offset().top - 312) + 'px' :
-											 win.position.y == 'center' ? (popup.offset().top - 156) + 'px' :
-											 win.position.y == 'bottom' ? (popup.offset().top + 25) + 'px' : (popup.offset().top + parseInt(win.position.y)) + 'px'
+									top: win.position.y === 'top'
+										? (popup.offset().top - 312) + 'px'
+										: win.position.y === 'center'
+											? (popup.offset().top - 156) + 'px'
+											: win.position.y === 'bottom'
+												? (popup.offset().top + 25) + 'px'
+												: (popup.offset().top + parseInt(win.position.y)) + 'px'
 								});
-						}
-						else
-						{
+						} else {
 							container = $($this);
 							container.html(controlHtml);
 						}
@@ -1573,7 +1534,7 @@ function(options)
 						colorMapDiv = tbody.find('div.Map:first');
 						colorBarDiv = tbody.find('div.Bar:first');
 						var MapMaps = colorMapDiv.find('span'),
-								BarMaps = colorBarDiv.find('span');
+							BarMaps = colorBarDiv.find('span');
 						colorMapL1 = MapMaps.filter('.Map1:first');
 						colorMapL2 = MapMaps.filter('.Map2:first');
 						colorMapL3 = MapMaps.filter('.Map3:first');
@@ -1616,17 +1577,16 @@ function(options)
 						colorBar.bind(colorBarValueChanged);
 						colorPicker = new ColorValuePicker(tbody, color.active, win.expandable && win.bindToInput ? win.input : null, win.alphaPrecision);
 						var hex = all != null ? all.hex : null,
-								preview = tbody.find('.Preview'),
-								button = tbody.find('.Button');
-						activePreview = preview.find('.Active:first').css({ backgroundColor: hex && '#' + hex || 'transparent' });
-						currentPreview = preview.find('.Current:first').css({ backgroundColor: hex && '#' + hex || 'transparent' }).bind('click', currentClicked);
+							preview = tbody.find('.Preview'),
+							button = tbody.find('.Button');
+						activePreview = preview.find('.Active:first').css({ backgroundColor: (hex && '#' + hex) || 'transparent' });
+						currentPreview = preview.find('.Current:first').css({ backgroundColor: (hex && '#' + hex) || 'transparent' }).bind('click', currentClicked);
 						setAlpha.call($this, currentPreview, Math.precision(color.current.val('a') * 100) / 255, 4);
 						okButton = button.find('.Ok:first').bind('click', okClicked);
 						cancelButton = button.find('.Cancel:first').bind('click', cancelClicked);
 						grid = button.find('.Grid:first');
 						setTimeout(
-							function()
-							{
+							function () {
 								setImg.call($this, colorMapL1, images.clientPath + 'Maps.png');
 								setImg.call($this, colorMapL2, images.clientPath + 'Maps.png');
 								setImg.call($this, colorMapL3, images.clientPath + 'map-opacity.png');
@@ -1640,19 +1600,17 @@ function(options)
 							}, 0);
 						tbody.find('td.Radio input').bind('click', radioClicked);
 						// initialize quick list
-						if (color.quickList && color.quickList.length > 0)
-						{
+						if (color.quickList && color.quickList.length > 0) {
 							var html = '';
-							for (i = 0; i < color.quickList.length; i++)
-							{
+							for (var i = 0; i < color.quickList.length; i++) {
 								/* if default colors are hex strings, change them to color objects */
-								if ((typeof (color.quickList[i])).toString().toLowerCase() == 'string') color.quickList[i] = new Color({ hex: color.quickList[i] });
+								if ((typeof (color.quickList[i])).toString().toLowerCase() === 'string') color.quickList[i] = new Color({ hex: color.quickList[i] });
 								var alpha = color.quickList[i].val('a');
 								var ahex = color.quickList[i].val('ahex');
 								if (!win.alphaSupport && ahex) ahex = ahex.substring(0, 6) + 'ff';
 								var quickHex = color.quickList[i].val('hex');
-								if(!ahex) ahex = "00000000";
-								html+='<span class="QuickColor"' + (ahex && ' title="#' + ahex + '"' || 'none') + ' style="background-color:' + (quickHex && '#' + quickHex || '') + ';' + (quickHex ? '' : 'background-image:url(' + images.clientPath + 'NoColor.png)') + (win.alphaSupport && alpha && alpha < 255 ? ';opacity:' + Math.precision(alpha / 255, 4) + ';filter:Alpha(opacity=' + Math.precision(alpha / 2.55, 4) + ')' : '') + '">&nbsp;</span>';
+								if (!ahex) ahex = '00000000';
+								html += '<span class="QuickColor"' + ((ahex && ' title="#' + ahex + '"') || 'none') + ' style="background-color:' + ((quickHex && '#' + quickHex) || '') + ';' + (quickHex ? '' : 'background-image:url(' + images.clientPath + 'NoColor.png)') + (win.alphaSupport && alpha && alpha < 255 ? ';opacity:' + Math.precision(alpha / 255, 4) + ';filter:Alpha(opacity=' + Math.precision(alpha / 2.55, 4) + ')' : '') + '">&nbsp;</span>';
 							}
 							setImg.call($this, grid, images.clientPath + 'bar-opacity.png');
 							grid.html(html);
@@ -1663,37 +1621,32 @@ function(options)
 						$.isFunction(liveCallback) && color.active.bind(liveCallback);
 						color.current.bind(currentColorChanged);
 						// bind to input
-						if (win.expandable)
-						{
+						if (win.expandable) {
 							$this.icon = popup.parents('.Icon:first');
-							iconColor = $this.icon.find('.Color:first').css({ backgroundColor: hex && '#' + hex || 'transparent' });
+							iconColor = $this.icon.find('.Color:first').css({ backgroundColor: (hex && '#' + hex) || 'transparent' });
 							iconAlpha = $this.icon.find('.Alpha:first');
 							setImg.call($this, iconAlpha, images.clientPath + 'bar-opacity.png');
 							setAlpha.call($this, iconAlpha, Math.precision(((255 - (all != null ? all.a : 0)) * 100) / 255, 4));
-							iconImage = $this.icon.find('.Image:first').css(
-								{
-									backgroundImage: 'url(\'' + images.clientPath + images.picker.file + '\')'
-								}).bind('click', iconImageClicked);
-							if (win.bindToInput&&win.updateInputColor)
-								win.input.css(
-									{
-										backgroundColor: hex && '#' + hex || 'transparent',
-										color: all == null || all.v > 75 ? '#000000' : '#ffffff'
-									});
+							iconImage = $this.icon.find('.Image:first').css({
+								backgroundImage: 'url(\'' + images.clientPath + images.picker.file + '\')'
+							}).bind('click', iconImageClicked);
+							if (win.bindToInput && win.updateInputColor) {
+								win.input.css({
+									backgroundColor: (hex && '#' + hex) || 'transparent',
+									color: all == null || all.v > 75 ? '#000000' : '#ffffff'
+								});
+							}
 							moveBar = tbody.find('.Move:first').bind('mousedown', moveBarMouseDown);
 							color.active.bind(expandableColorChanged);
-						}
-						else show.call($this);
+						} else show.call($this);
 					},
 				destroy =
-					function()
-					{
+					function () {
 						container.find('td.Radio input').unbind('click', radioClicked);
 						currentPreview.unbind('click', currentClicked);
 						cancelButton.unbind('click', cancelClicked);
 						okButton.unbind('click', okClicked);
-						if (settings.window.expandable)
-						{
+						if (settings.window.expandable) {
 							iconImage.unbind('click', iconImageClicked);
 							moveBar.unbind('mousedown', moveBarMouseDown);
 							$this.icon = null;
@@ -1725,7 +1678,7 @@ function(options)
 						cancelCallback = null;
 						liveCallback = null;
 						container.html('');
-						for (i = 0; i < List.length; i++) if (List[i] == $this) List.splice(i, 1);
+						for (var i = 0; i < List.length; i++) if (List[i] === $this) List.splice(i, 1);
 					},
 				images = settings.images, // local copies for YUI compressor
 				localization = settings.localization,
