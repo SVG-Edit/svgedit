@@ -1,4 +1,4 @@
-/* eslint-disable no-var, eqeqeq */
+/* eslint-disable no-var */
 /* globals svgedit */
 /**
  * Package: svedit.math
@@ -88,7 +88,7 @@ svgedit.math.hasMatrixTransform = function (tlist) {
 	var num = tlist.numberOfItems;
 	while (num--) {
 		var xform = tlist.getItem(num);
-		if (xform.type == 1 && !svgedit.math.isIdentity(xform.matrix)) { return true; }
+		if (xform.type === 1 && !svgedit.math.isIdentity(xform.matrix)) { return true; }
 	}
 	return false;
 };

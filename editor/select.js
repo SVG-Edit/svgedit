@@ -1,4 +1,4 @@
-/* eslint-disable no-var, eqeqeq */
+/* eslint-disable no-var */
 /* globals $, svgedit */
 /**
  * Package: svedit.select
@@ -458,7 +458,7 @@ svgedit.select.SelectorManager.prototype.releaseSelector = function (elem) {
 		console.log('WARNING! selector was released but was already unlocked');
 	}
 	for (i = 0; i < N; ++i) {
-		if (this.selectors[i] && this.selectors[i] == sel) {
+		if (this.selectors[i] && this.selectors[i] === sel) {
 			delete this.selectorMap[elem.id];
 			sel.locked = false;
 			sel.selectedElement = null;

@@ -1,5 +1,6 @@
 node_modules
 
+# Vendor/minified files
 editor/jquery.js
 editor/jspdf/jspdf.min.js
 editor/jspdf/underscore-min.js

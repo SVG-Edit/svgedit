@@ -1,4 +1,4 @@
-/* eslint-disable no-var, eqeqeq */
+/* eslint-disable no-var */
 /* globals $, svgEditor */
 /**
  * Package: svgedit.contextmenu
@@ -17,7 +17,7 @@ if (!svgedit.contextmenu) {
 }
 self.contextMenuExtensions = {};
 var menuItemIsValid = function (menuItem) {
-	return menuItem && menuItem.id && menuItem.label && menuItem.action && typeof menuItem.action == 'function';
+	return menuItem && menuItem.id && menuItem.label && menuItem.action && typeof menuItem.action === 'function';
 };
 var addContextMenuItem = function (menuItem) {
 	// menuItem: {id, label, shortcut, action}

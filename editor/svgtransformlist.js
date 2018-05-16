@@ -1,4 +1,4 @@
-/* eslint-disable no-var, eqeqeq */
+/* eslint-disable no-var */
 /* globals $, svgedit */
 /**
  * SVGTransformList
@@ -33,7 +33,7 @@ function transformToString (xform) {
 		text = 'translate(' + m.e + ',' + m.f + ')';
 		break;
 	case 3: // SCALE
-		if (m.a == m.d) {
+		if (m.a === m.d) {
 			text = 'scale(' + m.a + ')';
 		} else {
 			text = 'scale(' + m.a + ',' + m.d + ')';
@@ -42,7 +42,7 @@ function transformToString (xform) {
 	case 4: // ROTATE
 		var cx = 0, cy = 0;
 		// this prevents divide by zero
-		if (xform.angle != 0) {
+		if (xform.angle !== 0) {
 			var K = 1 - m.a;
 			cy = (K * m.f + m.b * m.e) / (K * K + m.b * m.b);
 			cx = (m.e - m.b * cy) / K;
@@ -114,19 +114,19 @@ svgedit.transformlist.SVGTransformList = function (elem) {
 				var mtx = svgroot.createSVGMatrix();
 				$.each(valArr, function (i, item) {
 					valArr[i] = parseFloat(item);
-					if (name == 'matrix') {
+					if (name === 'matrix') {
 						mtx[letters[i]] = valArr[i];
 					}
 				});
 				var xform = svgroot.createSVGTransform();
 				var fname = 'set' + name.charAt(0).toUpperCase() + name.slice(1);
-				var values = name == 'matrix' ? [mtx] : valArr;
+				var values = name === 'matrix' ? [mtx] : valArr;
 
-				if (name == 'scale' && values.length == 1) {
+				if (name === 'scale' && values.length === 1) {
 					values.push(values[0]);
-				} else if (name == 'translate' && values.length == 1) {
+				} else if (name === 'translate' && values.length === 1) {
 					values.push(0);
-				} else if (name == 'rotate' && values.length == 1) {
+				} else if (name === 'rotate' && values.length === 1) {
 					values.push(0, 0);
 				}
 				xform[fname].apply(xform, values);
@@ -144,7 +144,7 @@ svgedit.transformlist.SVGTransformList = function (elem) {
 				var tl = listMap_[id];
 				var i, len;
 				for (i = 0, len = tl._xforms.length; i < len; ++i) {
-					if (tl._xforms[i] == item) {
+					if (tl._xforms[i] === item) {
 						found = true;
 						tl.removeItem(i);
 						break;

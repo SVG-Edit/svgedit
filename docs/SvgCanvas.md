@@ -736,7 +736,7 @@ Rounds a given value to a float with number of digits defined in save_options
 
 #### Returns
 
-If a string/number was given, returns a Float. If an array, return a string with comma-seperated floats
+If a string/number was given, returns a Float. If an array, return a string with comma-separated floats
 
 ## `getStrokedBBox`
 

@@ -1,4 +1,4 @@
-/* eslint-disable no-var, eqeqeq */
+/* eslint-disable no-var */
 /* globals $, svgedit, unescape, DOMParser, ActiveXObject, getStrokedBBox, RGBColor */
 /**
  * Package: svgedit.utilities
@@ -148,10 +148,10 @@ svgedit.utilities.decode64 = function (input) {
 
 		output = output + String.fromCharCode(chr1);
 
-		if (enc3 != 64) {
+		if (enc3 !== 64) {
 			output = output + String.fromCharCode(chr2);
 		}
-		if (enc4 != 64) {
+		if (enc4 !== 64) {
 			output = output + String.fromCharCode(chr3);
 		}
 
@@ -176,7 +176,7 @@ svgedit.utilities.encodeUTF8 = function (argString) {
  * @return {string} object URL or empty string
  */
 svgedit.utilities.dataURLToObjectURL = function (dataurl) {
-	if (typeof Uint8Array == 'undefined' || typeof Blob == 'undefined' || typeof URL == 'undefined' || !URL.createObjectURL) {
+	if (typeof Uint8Array === 'undefined' || typeof Blob === 'undefined' || typeof URL === 'undefined' || !URL.createObjectURL) {
 		return '';
 	}
 	var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
@@ -194,7 +194,7 @@ svgedit.utilities.dataURLToObjectURL = function (dataurl) {
  * @return {string} object URL or empty string
  */
 svgedit.utilities.createObjectURL = function (blob) {
-	if (!blob || typeof URL == 'undefined' || !URL.createObjectURL) {
+	if (!blob || typeof URL === 'undefined' || !URL.createObjectURL) {
 		return '';
 	}
 	return URL.createObjectURL(blob);
@@ -204,7 +204,7 @@ svgedit.utilities.createObjectURL = function (blob) {
  * @property {string} blankPageObjectURL
  */
 svgedit.utilities.blankPageObjectURL = (function () {
-	if (typeof Blob == 'undefined') {
+	if (typeof Blob === 'undefined') {
 		return '';
 	}
 	var blob = new Blob(['<html><head><title>SVG-edit</title></head><body>&nbsp;</body></html>'], {type: 'text/html'});
@@ -293,7 +293,7 @@ svgedit.utilities.walkTree = function (elem, cbFn) {
 // elem - DOM element to traverse
 // cbFn - Callback function to run on each element
 svgedit.utilities.walkTreePost = function (elem, cbFn) {
-	if (elem && elem.nodeType == 1) {
+	if (elem && elem.nodeType === 1) {
 		var i = elem.childNodes.length;
 		while (i--) {
 			svgedit.utilities.walkTree(elem.childNodes.item(i), cbFn);
@@ -412,8 +412,8 @@ svgedit.utilities.getPathBBox = function (path) {
 				var a = -3 * P0[j] + 9 * P1[j] - 9 * P2[j] + 3 * P3[j];
 				var c = 3 * P1[j] - 3 * P0[j];
 
-				if (a == 0) {
-					if (b == 0) {
+				if (a === 0) {
+					if (b === 0) {
 						continue;
 					}
 					var t = -c / b;
@@ -611,7 +611,7 @@ svgedit.utilities.getPathDFromElement = function (elem) {
 		var cx = a.cx, cy = a.cy;
 		rx = a.rx;
 		ry = a.ry;
-		if (elem.tagName == 'circle') {
+		if (elem.tagName === 'circle') {
 			rx = ry = $(elem).attr('r');
 		}
 
@@ -877,7 +877,7 @@ svgedit.utilities.getBBoxWithTransform = function (elem, addSvgElementFromJson, 
 			var elemNames = ['ellipse', 'path', 'line', 'polyline', 'polygon'];
 			if (elemNames.indexOf(elem.tagName) >= 0) {
 				bb = goodBb = svgedit.utilities.getBBoxOfElementAsPath(elem, addSvgElementFromJson, pathActions);
-			} else if (elem.tagName == 'rect') {
+			} else if (elem.tagName === 'rect') {
 				// Look for radius
 				var rx = elem.getAttribute('rx');
 				var ry = elem.getAttribute('ry');
@@ -912,7 +912,7 @@ svgedit.utilities.getBBoxWithTransform = function (elem, addSvgElementFromJson, 
 // TODO: This is problematic with large stroke-width and, for example, a single horizontal line. The calculated BBox extends way beyond left and right sides.
 function getStrokeOffsetForBBox (elem) {
 	var sw = elem.getAttribute('stroke-width');
-	return (!isNaN(sw) && elem.getAttribute('stroke') != 'none') ? sw / 2 : 0;
+	return (!isNaN(sw) && elem.getAttribute('stroke') !== 'none') ? sw / 2 : 0;
 };
 
 // Function: getStrokedBBox
@@ -961,7 +961,7 @@ svgedit.utilities.getStrokedBBox = function (elems, addSvgElementFromJson, pathA
 				minX = Math.min(minX, curBb.x - offset);
 				minY = Math.min(minY, curBb.y - offset);
 				// TODO: The old code had this test for max, but not min. I suspect this test should be for both min and max
-				if (elem.nodeType == 1) {
+				if (elem.nodeType === 1) {
 					maxX = Math.max(maxX, curBb.x + curBb.width + offset);
 					maxY = Math.max(maxY, curBb.y + curBb.height + offset);
 				}
@@ -991,7 +991,7 @@ svgedit.utilities.getRotationAngleFromTransformList = function (tlist, toRad) {
 	var i;
 	for (i = 0; i < N; ++i) {
 		var xform = tlist.getItem(i);
-		if (xform.type == 4) {
+		if (xform.type === 4) {
 			return toRad ? xform.angle * Math.PI / 180.0 : xform.angle;
 		}
 	}
@@ -1104,7 +1104,7 @@ svgedit.utilities.cleanupElement = function (element) {
 	var attr;
 	for (attr in defaults) {
 		var val = defaults[attr];
-		if (element.getAttribute(attr) == val) {
+		if (element.getAttribute(attr) === String(val)) {
 			element.removeAttribute(attr);
 		}
 	}
@@ -1183,7 +1183,7 @@ svgedit.utilities.copyElem = function (el, getNextId) {
 	// manually create a copy of the element
 	var newEl = document.createElementNS(el.namespaceURI, el.nodeName);
 	$.each(el.attributes, function (i, attr) {
-		if (attr.localName != '-moz-math-font-style') {
+		if (attr.localName !== '-moz-math-font-style') {
 			newEl.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.value);
 		}
 	});
@@ -1193,7 +1193,7 @@ svgedit.utilities.copyElem = function (el, getNextId) {
 
 	// Opera's "d" value needs to be reset for Opera/Win/non-EN
 	// Also needed for webkit (else does not keep curved segments on clone)
-	if (svgedit.browser.isWebkit() && el.nodeName == 'path') {
+	if (svgedit.browser.isWebkit() && el.nodeName === 'path') {
 		var fixedD = svgedit.utilities.convertPath(el);
 		newEl.setAttribute('d', fixedD);
 	}
@@ -1217,7 +1217,7 @@ svgedit.utilities.copyElem = function (el, getNextId) {
 	} else if ($(el).data('symbol')) {
 		var ref = $(el).data('symbol');
 		$(newEl).data('ref', ref).data('symbol', ref);
-	} else if (newEl.tagName == 'image') {
+	} else if (newEl.tagName === 'image') {
 		svgedit.utilities.preventClickDefault(newEl);
 	}
 

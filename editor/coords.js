@@ -1,4 +1,4 @@
-/* eslint-disable no-var, eqeqeq */
+/* eslint-disable no-var */
 /* globals $, svgroot */
 /**
  * Coords.
@@ -103,9 +103,9 @@ svgedit.coords.remapElement = function (selected, changes, m) {
 
 	var elName = selected.tagName;
 	var chlist, mt;
-	if (elName === 'g' || elName === 'text' || elName == 'tspan' || elName === 'use') {
+	if (elName === 'g' || elName === 'text' || elName === 'tspan' || elName === 'use') {
 		// if it was a translate, then just update x,y
-		if (m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && (m.e != 0 || m.f != 0)) {
+		if (m.a === 1 && m.b === 0 && m.c === 0 && m.d === 1 && (m.e !== 0 || m.f !== 0)) {
 			// [T][M] = [M][T']
 			// therefore [T'] = [M_inv][T][M]
 			var existing = svgedit.math.transformListToTransform(selected).matrix,
@@ -239,9 +239,9 @@ svgedit.coords.remapElement = function (selected, changes, m) {
 			type = seg.type;
 			// if absolute or first segment, we want to remap x, y, x1, y1, x2, y2
 			// if relative, we want to scalew, scaleh
-			if (type % 2 == 0) { // absolute
-				var thisx = (seg.x != undefined) ? seg.x : currentpt.x, // for V commands
-					thisy = (seg.y != undefined) ? seg.y : currentpt.y; // for H commands
+			if (type % 2 === 0) { // absolute
+				var thisx = (seg.x !== undefined) ? seg.x : currentpt.x, // for V commands
+					thisy = (seg.y !== undefined) ? seg.y : currentpt.y; // for H commands
 				pt = remap(thisx, thisy);
 				pt1 = remap(seg.x1, seg.y1);
 				pt2 = remap(seg.x2, seg.y2);

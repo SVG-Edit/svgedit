@@ -106,7 +106,7 @@ svgedit.units.getTypeMap = function () {
 //
 // Returns:
 // If a string/number was given, returns a Float. If an array, return a string
-// with comma-seperated floats
+// with comma-separated floats
 svgedit.units.shortFloat = function (val) {
 	var digits = elementContainer_.getRoundDigits();
 	if (!isNaN(val)) {

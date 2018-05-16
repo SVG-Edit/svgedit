@@ -1,4 +1,4 @@
-/* eslint-disable no-var, eqeqeq, no-redeclare */
+/* eslint-disable no-var, no-redeclare */
 // SVGPathSeg API polyfill
 // https://github.com/progers/pathseg
 //
@@ -651,11 +651,11 @@ if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.pro
 
 		Source.prototype._nextCommandHelper = function (lookahead, previousCommand) {
 			// Check for remaining coordinates in the current command.
-			if ((lookahead === '+' || lookahead === '-' || lookahead === '.' || (lookahead >= '0' && lookahead <= '9')) && previousCommand != window.SVGPathSeg.PATHSEG_CLOSEPATH) {
-				if (previousCommand == window.SVGPathSeg.PATHSEG_MOVETO_ABS) {
+			if ((lookahead === '+' || lookahead === '-' || lookahead === '.' || (lookahead >= '0' && lookahead <= '9')) && previousCommand !== window.SVGPathSeg.PATHSEG_CLOSEPATH) {
+				if (previousCommand === window.SVGPathSeg.PATHSEG_MOVETO_ABS) {
 					return window.SVGPathSeg.PATHSEG_LINETO_ABS;
 				}
-				if (previousCommand == window.SVGPathSeg.PATHSEG_MOVETO_REL) {
+				if (previousCommand === window.SVGPathSeg.PATHSEG_MOVETO_REL) {
 					return window.SVGPathSeg.PATHSEG_LINETO_REL;
 				}
 				return previousCommand;
@@ -670,7 +670,7 @@ if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.pro
 			}
 			var command = this.peekSegmentType();
 			// Path must start with moveTo.
-			return command == window.SVGPathSeg.PATHSEG_MOVETO_ABS || command == window.SVGPathSeg.PATHSEG_MOVETO_REL;
+			return command === window.SVGPathSeg.PATHSEG_MOVETO_ABS || command === window.SVGPathSeg.PATHSEG_MOVETO_REL;
 		};
 
 		// Parse a number from an SVG path. This very closely follows genericParseNumber(...) from Source/core/svg/SVGParserUtilities.cpp.
@@ -695,7 +695,7 @@ if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.pro
 				sign = -1;
 			}
 
-			if (this._currentIndex == this._endIndex || ((this._string.charAt(this._currentIndex) < '0' || this._string.charAt(this._currentIndex) > '9') && this._string.charAt(this._currentIndex) !== '.')) {
+			if (this._currentIndex === this._endIndex || ((this._string.charAt(this._currentIndex) < '0' || this._string.charAt(this._currentIndex) > '9') && this._string.charAt(this._currentIndex) !== '.')) {
 				// The first character of a number must be one of [0-9+-.].
 				return undefined;
 			}
@@ -706,7 +706,7 @@ if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.pro
 				this._currentIndex++; // Advance to first non-digit.
 			}
 
-			if (this._currentIndex != startIntPartIndex) {
+			if (this._currentIndex !== startIntPartIndex) {
 				var scanIntPartIndex = this._currentIndex - 1;
 				var multiplier = 1;
 				while (scanIntPartIndex >= startIntPartIndex) {
@@ -731,7 +731,7 @@ if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.pro
 			}
 
 			// Read the exponent part.
-			if (this._currentIndex != startIndex && this._currentIndex + 1 < this._endIndex && (this._string.charAt(this._currentIndex) === 'e' || this._string.charAt(this._currentIndex) === 'E') && (this._string.charAt(this._currentIndex + 1) !== 'x' && this._string.charAt(this._currentIndex + 1) !== 'm')) {
+			if (this._currentIndex !== startIndex && this._currentIndex + 1 < this._endIndex && (this._string.charAt(this._currentIndex) === 'e' || this._string.charAt(this._currentIndex) === 'E') && (this._string.charAt(this._currentIndex + 1) !== 'x' && this._string.charAt(this._currentIndex + 1) !== 'm')) {
 				this._currentIndex++;
 
 				// Read the sign of the exponent.
@@ -761,7 +761,7 @@ if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.pro
 				number *= Math.pow(10, expsign * exponent);
 			}
 
-			if (startIndex == this._currentIndex) {
+			if (startIndex === this._currentIndex) {
 				return undefined;
 			}
 
@@ -791,13 +791,13 @@ if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.pro
 		Source.prototype.parseSegment = function () {
 			var lookahead = this._string[this._currentIndex];
 			var command = this._pathSegTypeFromChar(lookahead);
-			if (command == window.SVGPathSeg.PATHSEG_UNKNOWN) {
+			if (command === window.SVGPathSeg.PATHSEG_UNKNOWN) {
 				// Possibly an implicit command. Not allowed if this is the first command.
-				if (this._previousCommand == window.SVGPathSeg.PATHSEG_UNKNOWN) {
+				if (this._previousCommand === window.SVGPathSeg.PATHSEG_UNKNOWN) {
 					return null;
 				}
 				command = this._nextCommandHelper(lookahead, this._previousCommand);
-				if (command == window.SVGPathSeg.PATHSEG_UNKNOWN) {
+				if (command === window.SVGPathSeg.PATHSEG_UNKNOWN) {
 					return null;
 				}
 			} else {

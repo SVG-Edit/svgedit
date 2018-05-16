@@ -1,4 +1,4 @@
-/* eslint-disable no-var, eqeqeq */
+/* eslint-disable no-var */
 /* globals $, svgedit */
 /**
  * Package: svgedit.draw
@@ -42,9 +42,9 @@ svgedit.draw.randomizeIds = function (enableRandomization, currentDrawing) {
 		? RandomizeModes.NEVER_RANDOMIZE
 		: RandomizeModes.ALWAYS_RANDOMIZE;
 
-	if (randomizeIds == RandomizeModes.ALWAYS_RANDOMIZE && !currentDrawing.getNonce()) {
+	if (randomizeIds === RandomizeModes.ALWAYS_RANDOMIZE && !currentDrawing.getNonce()) {
 		currentDrawing.setNonce(Math.floor(Math.random() * 100001));
-	} else if (randomizeIds == RandomizeModes.NEVER_RANDOMIZE && currentDrawing.getNonce()) {
+	} else if (randomizeIds === RandomizeModes.NEVER_RANDOMIZE && currentDrawing.getNonce()) {
 		currentDrawing.clearNonce();
 	}
 };
@@ -58,7 +58,7 @@ svgedit.draw.randomizeIds = function (enableRandomization, currentDrawing) {
  */
 svgedit.draw.Drawing = function (svgElem, optIdPrefix) {
 	if (!svgElem || !svgElem.tagName || !svgElem.namespaceURI ||
-		svgElem.tagName != 'svg' || svgElem.namespaceURI != NS.SVG) {
+		svgElem.tagName !== 'svg' || svgElem.namespaceURI !== NS.SVG) {
 		throw new Error('Error: svgedit.draw.Drawing instance initialized without a <svg> element');
 	}
 
@@ -118,9 +118,9 @@ svgedit.draw.Drawing = function (svgElem, optIdPrefix) {
 	var n = this.svgElem_.getAttributeNS(NS.SE, 'nonce');
 	// If already set in the DOM, use the nonce throughout the document
 	// else, if randomizeIds(true) has been called, create and set the nonce.
-	if (!!n && randomizeIds != RandomizeModes.NEVER_RANDOMIZE) {
+	if (!!n && randomizeIds !== RandomizeModes.NEVER_RANDOMIZE) {
 		this.nonce_ = n;
-	} else if (randomizeIds == RandomizeModes.ALWAYS_RANDOMIZE) {
+	} else if (randomizeIds === RandomizeModes.ALWAYS_RANDOMIZE) {
 		this.setNonce(Math.floor(Math.random() * 100001));
 	}
 };
@@ -234,7 +234,7 @@ svgedit.draw.Drawing.prototype.releaseId = function (id) {
 
 	// if we didn't get a positive number or we already released this number
 	// then return false.
-	if (typeof num !== 'number' || num <= 0 || this.releasedNums.indexOf(num) != -1) {
+	if (typeof num !== 'number' || num <= 0 || this.releasedNums.indexOf(num) !== -1) {
 		return false;
 	}
 
@@ -326,12 +326,12 @@ svgedit.draw.Drawing.prototype.setCurrentLayerPosition = function (newpos) {
 
 	var oldpos;
 	for (oldpos = 0; oldpos < layerCount; ++oldpos) {
-		if (this.all_layers[oldpos] == this.current_layer) { break; }
+		if (this.all_layers[oldpos] === this.current_layer) { break; }
 	}
 	// some unknown error condition (current_layer not in all_layers)
-	if (oldpos == layerCount) { return null; }
+	if (oldpos === layerCount) { return null; }
 
-	if (oldpos != newpos) {
+	if (oldpos !== newpos) {
 		// if our new position is below us, we need to insert before the node after newpos
 		var refGroup = null;
 		var currentGroup = this.current_layer.getGroup();
@@ -369,7 +369,7 @@ svgedit.draw.Drawing.prototype.mergeLayer = function (hrService) {
 
 	while (currentGroup.firstChild) {
 		var child = currentGroup.firstChild;
-		if (child.localName == 'title') {
+		if (child.localName === 'title') {
 			hrService.removeElement(child, child.nextSibling, currentGroup);
 			currentGroup.removeChild(child);
 			continue;
@@ -480,7 +480,7 @@ svgedit.draw.Drawing.prototype.identifyLayers = function () {
 	for (var i = 0; i < numchildren; ++i) {
 		var child = this.svgElem_.childNodes.item(i);
 		// for each g, find its layer name
-		if (child && child.nodeType == 1) {
+		if (child && child.nodeType === 1) {
 			if (child.tagName === 'g') {
 				childgroups = true;
 				var name = findLayerNameInGroup(child);
@@ -569,7 +569,7 @@ svgedit.draw.Drawing.prototype.cloneLayer = function (name, hrService) {
 	var index;
 	for (index = 0; index < children.length; index++) {
 		var ch = children[index];
-		if (ch.localName == 'title') { continue; }
+		if (ch.localName === 'title') { continue; }
 		group.appendChild(this.copyElem(ch));
 	}
 

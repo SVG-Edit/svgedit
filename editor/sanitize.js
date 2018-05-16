@@ -1,4 +1,4 @@
-/* eslint-disable no-var, eqeqeq */
+/* eslint-disable no-var */
 /* globals $, svgedit */
 /**
  * Package: svgedit.sanitize
@@ -104,7 +104,7 @@ $.each(svgWhiteList_, function (elt, atts) {
 			var v = att.split(':');
 			attNS[v[1]] = NS[(v[0]).toUpperCase()];
 		} else {
-			attNS[att] = att == 'xmlns' ? NS.XMLNS : null;
+			attNS[att] = att === 'xmlns' ? NS.XMLNS : null;
 		}
 	});
 	svgWhiteListNS_[elt] = attNS;
@@ -118,7 +118,7 @@ $.each(svgWhiteList_, function (elt, atts) {
 // node - The DOM element to be checked (we'll also check its children)
 svgedit.sanitize.sanitizeSvg = function (node) {
 	// Cleanup text nodes
-	if (node.nodeType == 3) { // 3 == TEXT_NODE
+	if (node.nodeType === 3) { // 3 == TEXT_NODE
 		// Trim whitespace
 		node.nodeValue = node.nodeValue.replace(/^\s+|\s+$/g, '');
 		// Remove if empty
@@ -129,7 +129,7 @@ svgedit.sanitize.sanitizeSvg = function (node) {
 
 	// We only care about element nodes.
 	// Automatically return for all non-element nodes, such as comments, etc.
-	if (node.nodeType != 1) { // 1 == ELEMENT_NODE
+	if (node.nodeType !== 1) { // 1 == ELEMENT_NODE
 		return;
 	}
 
@@ -156,8 +156,8 @@ svgedit.sanitize.sanitizeSvg = function (node) {
 			var attrNsURI = attr.namespaceURI;
 			// Check that an attribute with the correct localName in the correct namespace is on
 			// our whitelist or is a namespace declaration for one of our allowed namespaces
-			if (!(allowedAttrsNS.hasOwnProperty(attrLocalName) && attrNsURI == allowedAttrsNS[attrLocalName] && attrNsURI != NS.XMLNS) &&
-				!(attrNsURI == NS.XMLNS && REVERSE_NS[attr.value])) {
+			if (!(allowedAttrsNS.hasOwnProperty(attrLocalName) && attrNsURI === allowedAttrsNS[attrLocalName] && attrNsURI !== NS.XMLNS) &&
+				!(attrNsURI === NS.XMLNS && REVERSE_NS[attr.value])) {
 				// TODO(codedread): Programmatically add the se: attributes to the NS-aware whitelist.
 				// Bypassing the whitelist to allow se: prefixes.
 				// Is there a more appropriate way to do this?
@@ -180,7 +180,7 @@ svgedit.sanitize.sanitizeSvg = function (node) {
 			}
 
 			// For the style attribute, rewrite it in terms of XML presentational attributes
-			if (attrName == 'style') {
+			if (attrName === 'style') {
 				var props = attr.value.split(';'),
 					p = props.length;
 				while (p--) {
@@ -207,7 +207,7 @@ svgedit.sanitize.sanitizeSvg = function (node) {
 			['filter', 'linearGradient', 'pattern',
 				'radialGradient', 'textPath', 'use'].indexOf(node.nodeName) >= 0) {
 			// TODO: we simply check if the first character is a #, is this bullet-proof?
-			if (href[0] != '#') {
+			if (href[0] !== '#') {
 				// remove the attribute (but keep the element)
 				svgedit.utilities.setHref(node, '');
 				node.removeAttributeNS(NS.XLINK, 'href');
@@ -215,7 +215,7 @@ svgedit.sanitize.sanitizeSvg = function (node) {
 		}
 
 		// Safari crashes on a <use> without a xlink:href, so we just remove the node here
-		if (node.nodeName == 'use' && !svgedit.utilities.getHref(node)) {
+		if (node.nodeName === 'use' && !svgedit.utilities.getHref(node)) {
 			parent.removeChild(node);
 			return;
 		}

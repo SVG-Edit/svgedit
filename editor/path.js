@@ -1,4 +1,4 @@
-/* eslint-disable no-var, eqeqeq */
+/* eslint-disable no-var */
 /* globals $, svgedit, svgroot */
 /**
  * Package: svgedit.path
@@ -85,7 +85,7 @@ svgedit.path.insertItemBefore = function (elem, newseg, index) {
 	}
 	list.clear();
 	for (i = 0; i < len; i++) {
-		if (i == index) { // index + 1
+		if (i === index) { // index + 1
 			list.appendItem(newseg);
 		}
 		list.appendItem(arr[i]);
@@ -301,7 +301,7 @@ svgedit.path.replacePathSeg = function (type, index, pts, elem) {
 		}
 		segList.clear();
 		for (i = 0; i < len; i++) {
-			if (i == index) {
+			if (i === index) {
 				segList.appendItem(seg);
 			} else {
 				segList.appendItem(arr[i]);
@@ -370,7 +370,7 @@ svgedit.path.smoothControlPoints = function (ct1, ct2, pt) {
 		x2 = ct2.x - pt.x,
 		y2 = ct2.y - pt.y;
 
-	if ((x1 != 0 || y1 != 0) && (x2 != 0 || y2 != 0)) {
+	if ((x1 !== 0 || y1 !== 0) && (x2 !== 0 || y2 !== 0)) {
 		var anglea = Math.atan2(y1, x1),
 			angleb = Math.atan2(y2, x2),
 			r1 = Math.sqrt(x1 * x1 + y1 * y1),
@@ -509,7 +509,7 @@ svgedit.path.Segment.prototype.move = function (dx, dy) {
 
 svgedit.path.Segment.prototype.setLinked = function (num) {
 	var seg, anum, pt;
-	if (num == 2) {
+	if (num === 2) {
 		anum = 1;
 		seg = this.next;
 		if (!seg) { return; }
@@ -744,7 +744,7 @@ svgedit.path.Path.prototype.subpathIsClosed = function (index) {
 
 svgedit.path.Path.prototype.removePtFromSelection = function (index) {
 	var pos = this.selected_pts.indexOf(index);
-	if (pos == -1) {
+	if (pos === -1) {
 		return;
 	}
 	this.segs[index].select(false);
@@ -810,7 +810,7 @@ svgedit.path.Path.prototype.setSegType = function (newType) {
 			// Toggle segment to curve/straight line
 			var oldType = cur.type;
 
-			newType = (oldType == 6) ? 4 : 6;
+			newType = (oldType === 6) ? 4 : 6;
 		}
 
 		newType = Number(newType);
@@ -965,7 +965,7 @@ svgedit.path.recalcRotatedPath = function () {
 		i -= 1;
 		var seg = list.getItem(i),
 			type = seg.pathSegType;
-		if (type == 1) { continue; }
+		if (type === 1) { continue; }
 
 		var rvals = getRotVals(seg.x, seg.y),
 			points = [rvals.x, rvals.y];
