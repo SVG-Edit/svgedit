@@ -1,4 +1,4 @@
-/* eslint-disable no-var */
+/* eslint-disable no-var, standard/no-callback-literal */
 /* globals svgEditor:true, widget, svgedit, jQuery, $, DOMParser, FileReader */
 /*
  * svg-editor.js
@@ -22,8 +22,7 @@
 TODOS
 1. JSDoc
 */
-(function() {
-
+(function () {
 if (window.svgEditor) {
 	return;
 }
@@ -204,7 +203,7 @@ window.svgEditor = (function ($) {
 		if (success) {
 			callback(true);
 		} else {
-			$.alert(uiStrings.notification.errorLoadingSVG, function() {
+			$.alert(uiStrings.notification.errorLoadingSVG, function () {
 				callback(false);
 			});
 		}
@@ -280,11 +279,9 @@ window.svgEditor = (function ($) {
 					if (val) {
 						defaultPrefs[key] = String(val); // Convert to string for FF (.value fails in Webkit)
 					}
-				}
-				else if (window.widget) {
+				} else if (window.widget) {
 					defaultPrefs[key] = widget.preferenceForKey(storeKey);
-				}
-				else {
+				} else {
 					var result = document.cookie.match(new RegExp('(?:^|;\\s*)' + Utils.preg_quote(encodeURIComponent(storeKey)) + '=([^;]+)'));
 					defaultPrefs[key] = result ? decodeURIComponent(result[1]) : '';
 				}
@@ -315,13 +312,11 @@ window.svgEditor = (function ($) {
 		function extendOrAdd (cfgObj, key, val) {
 			if (cfgObj[key] && typeof cfgObj[key] === 'object') {
 				$.extend(true, cfgObj[key], val);
-			}
-			else {
+			} else {
 				cfgObj[key] = val;
 			}
-			return;
 		}
-		$.each(opts, function(key, val) {
+		$.each(opts, function (key, val) {
 			if (opts.hasOwnProperty(key)) {
 				// Only allow prefs defined in defaultPrefs
 				if (defaultPrefs.hasOwnProperty(key)) {
@@ -333,12 +328,10 @@ window.svgEditor = (function ($) {
 					}
 					if (cfgCfg.allowInitialUserOverride === true) {
 						defaultPrefs[key] = val;
-					}
-					else {
+					} else {
 						$.pref(key, val);
 					}
-				}
-				else if (['extensions', 'allowedOrigins'].indexOf(key) > -1) {
+				} else if (['extensions', 'allowedOrigins'].indexOf(key) > -1) {
 					if (cfgCfg.overwrite === false &&
 						(
 							curConfig.preventAllURLConfig ||
@@ -349,9 +342,8 @@ window.svgEditor = (function ($) {
 						return;
 					}
 					curConfig[key] = curConfig[key].concat(val); // We will handle any dupes later
-				}
 				// Only allow other curConfig if defined in defaultConfig
-				else if (defaultConfig.hasOwnProperty(key)) {
+				} else if (defaultConfig.hasOwnProperty(key)) {
 					if (cfgCfg.overwrite === false && (
 						curConfig.preventAllURLConfig ||
 						curConfig.hasOwnProperty(key)
@@ -364,17 +356,14 @@ window.svgEditor = (function ($) {
 							return;
 						}
 						extendOrAdd(curConfig, key, val);
-					}
-					else {
+					} else {
 						if (cfgCfg.allowInitialUserOverride === true) {
 							extendOrAdd(defaultConfig, key, val);
-						}
-						else {
+						} else {
 							if (defaultConfig[key] && typeof defaultConfig[key] === 'object') {
 								curConfig[key] = {};
 								$.extend(true, curConfig[key], val); // Merge properties recursively, e.g., on initFill, initStroke objects
-							}
-							else {
+							} else {
 								curConfig[key] = val;
 							}
 						}
@@ -403,7 +392,7 @@ window.svgEditor = (function ($) {
 	*		types) to determine the proper output.
 	*/
 	editor.setCustomHandlers = function (opts) {
-		editor.ready(function() {
+		editor.ready(function () {
 			if (opts.open) {
 				$('#tool_open > input[type="file"]').remove();
 				$('#tool_open').show();
@@ -436,12 +425,12 @@ window.svgEditor = (function ($) {
 			if ('localStorage' in window) { // && onWeb removed so Webkit works locally
 				editor.storage = localStorage;
 			}
-		} catch(err) {}
+		} catch (err) {}
 
 		// Todo: Avoid var-defined functions and group functions together, etc. where possible
-		var good_langs = [];
-		$('#lang_select option').each(function() {
-			good_langs.push(this.value);
+		var goodLangs = [];
+		$('#lang_select option').each(function () {
+			goodLangs.push(this.value);
 		});
 
 		function setupCurPrefs () {
@@ -465,7 +454,7 @@ window.svgEditor = (function ($) {
 			// Export updated config
 			editor.curConfig = curConfig;
 		}
-		(function() {
+		(function () {
 			// Load config/data from URL if given
 			var src, qstr;
 			urldata = $.deparam.querystring(true);
@@ -480,7 +469,7 @@ window.svgEditor = (function ($) {
 
 				if (urldata.extensions) {
 					// For security reasons, disallow cross-domain or cross-folder extensions via URL
-					urldata.extensions = urldata.extensions.match(/[:\/\\]/) ? '' : urldata.extensions.split(',');
+					urldata.extensions = urldata.extensions.match(/[:/\\]/) ? '' : urldata.extensions.split(',');
 				}
 
 				// Disallowing extension paths via URL for
@@ -528,43 +517,42 @@ window.svgEditor = (function ($) {
 					editor.loadContentAndPrefs();
 				}
 				setupCurPrefs();
-			}
-			else {
+			} else {
 				setupCurConfig();
 				editor.loadContentAndPrefs();
 				setupCurPrefs();
 			}
 		}());
 
-		var setIcon = editor.setIcon = function(elem, icon_id, forcedSize) {
-			var icon = (typeof icon_id === 'string') ? $.getSvgIcon(icon_id, true) : icon_id.clone();
+		var setIcon = editor.setIcon = function (elem, iconId, forcedSize) {
+			var icon = (typeof iconId === 'string') ? $.getSvgIcon(iconId, true) : iconId.clone();
 			if (!icon) {
-				console.log('NOTE: Icon image missing: ' + icon_id);
+				console.log('NOTE: Icon image missing: ' + iconId);
 				return;
 			}
 			$(elem).empty().append(icon);
 		};
 
-		var extFunc = function() {
-			$.each(curConfig.extensions, function() {
+		var extFunc = function () {
+			$.each(curConfig.extensions, function () {
 				var extname = this;
 				if (!extname.match(/^ext-.*\.js/)) { // Ensure URL cannot specify some other unintended file in the extPath
 					return;
 				}
-				$.getScript(curConfig.extPath + extname, function(d) {
+				$.getScript(curConfig.extPath + extname, function (d) {
 					// Fails locally in Chrome 5
 					if (!d) {
 						var s = document.createElement('script');
 						s.src = curConfig.extPath + extname;
 						document.querySelector('head').appendChild(s);
 					}
-				}).fail(function(jqxhr, settings, exception){
+				}).fail(function (jqxhr, settings, exception) {
 					console.log(exception);
 				});
 			});
 
 			// var lang = ('lang' in curPrefs) ? curPrefs.lang : null;
-			editor.putLocale(null, good_langs);
+			editor.putLocale(null, goodLangs);
 		};
 
 		// Load extensions
@@ -575,7 +563,7 @@ window.svgEditor = (function ($) {
 			extFunc();
 		}
 		$.svgIcons(curConfig.imgPath + 'svg_edit_icons.svg', {
-			w:24, h:24,
+			w: 24, h: 24,
 			id_match: false,
 			no_img: !svgedit.browser.isWebkit(), // Opera & Firefox 4 gives odd behavior w/images
 			fallback_path: curConfig.imgPath,
@@ -725,35 +713,35 @@ window.svgEditor = (function ($) {
 				'.layer_button .svg_icon, #layerlist td.layervis .svg_icon': 14,
 				'.dropdown button .svg_icon': 7,
 				'#main_button .dropdown .svg_icon': 9,
-				'.palette_item:first .svg_icon' : 15,
+				'.palette_item:first .svg_icon': 15,
 				'#fill_bg .svg_icon, #stroke_bg .svg_icon': 16,
 				'.toolbar_button button .svg_icon': 16,
 				'.stroke_tool div div .svg_icon': 20,
 				'#tools_bottom label .svg_icon': 18
 			},
-			callback: function(icons) {
-				$('.toolbar_button button > svg, .toolbar_button button > img').each(function() {
+			callback: function (icons) {
+				$('.toolbar_button button > svg, .toolbar_button button > img').each(function () {
 					$(this).parent().prepend(this);
 				});
 
-				var min_height,
+				var minHeight,
 					tleft = $('#tools_left');
 				if (tleft.length !== 0) {
-					min_height = tleft.offset().top + tleft.outerHeight();
+					minHeight = tleft.offset().top + tleft.outerHeight();
 				}
 
 				var size = $.pref('iconsize');
-				editor.setIconSize(size || ($(window).height() < min_height ? 's': 'm'));
+				editor.setIconSize(size || ($(window).height() < minHeight ? 's' : 'm'));
 
 				// Look for any missing flyout icons from plugins
-				$('.tools_flyout').each(function() {
+				$('.tools_flyout').each(function () {
 					var shower = $('#' + this.id + '_show');
 					var sel = shower.attr('data-curopt');
 					// Check if there's an icon here
 					if (!shower.children('svg, img').length) {
 						var clone = $(sel).children().clone();
 						if (clone.length) {
-							clone[0].removeAttribute('style'); //Needed for Opera
+							clone[0].removeAttribute('style'); // Needed for Opera
 							shower.append(clone);
 						}
 					}
@@ -761,8 +749,8 @@ window.svgEditor = (function ($) {
 
 				editor.runCallbacks();
 
-				setTimeout(function() {
-					$('.flyout_arrow_horiz:empty').each(function() {
+				setTimeout(function () {
+					$('.flyout_arrow_horiz:empty').each(function () {
 						$(this).append($.getSvgIcon('arrow_right').width(5).height(5));
 					});
 				}, 1);
@@ -770,7 +758,7 @@ window.svgEditor = (function ($) {
 		});
 
 		editor.canvas = svgCanvas = new $.SvgCanvas(document.getElementById('svgcanvas'), curConfig);
-		var supportsNonSS, resize_timer, changeZoom, Actions, curScrollPos,
+		var supportsNonSS, resizeTimer, changeZoom, Actions, curScrollPos,
 			palette = [ // Todo: Make into configuration item?
 				'#000000', '#3f3f3f', '#7f7f7f', '#bfbfbf', '#ffffff',
 				'#ff0000', '#ff7f00', '#ffff00', '#7fff00',
@@ -788,17 +776,17 @@ window.svgEditor = (function ($) {
 			undoMgr = svgCanvas.undoMgr,
 			defaultImageURL = curConfig.imgPath + 'logo.png',
 			workarea = $('#workarea'),
-			canv_menu = $('#cmenu_canvas'),
-			// layer_menu = $('#cmenu_layers'), // Unused
+			canvMenu = $('#cmenu_canvas'),
+			// layerMenu = $('#cmenu_layers'), // Unused
 			exportWindow = null,
 			zoomInIcon = 'crosshair',
 			zoomOutIcon = 'crosshair',
-			ui_context = 'toolbars',
+			uiContext = 'toolbars',
 			origSource = '',
-			paintBox = {fill: null, stroke:null};
+			paintBox = {fill: null, stroke: null};
 
 		// For external openers
-		(function() {
+		(function () {
 			// let the opener know SVG Edit is ready (now that config is set up)
 			var svgEditorReadyEvent,
 				w = window.opener || window.parent;
@@ -807,8 +795,7 @@ window.svgEditor = (function ($) {
 					svgEditorReadyEvent = w.document.createEvent('Event');
 					svgEditorReadyEvent.initEvent('svgEditorReady', true, true);
 					w.document.documentElement.dispatchEvent(svgEditorReadyEvent);
-				}
-				catch(e) {}
+				} catch (e) {}
 			}
 		}());
 
@@ -820,28 +807,27 @@ window.svgEditor = (function ($) {
 		(function () {
 			$('#dialog_container').draggable({cancel: '#dialog_content, #dialog_buttons *', containment: 'window'});
 			var box = $('#dialog_box'),
-				btn_holder = $('#dialog_buttons'),
-				dialog_content = $('#dialog_content'),
+				btnHolder = $('#dialog_buttons'),
+				dialogContent = $('#dialog_content'),
 				dbox = function (type, msg, callback, defaultVal, opts, changeCb, checkbox) {
 					var ok, ctrl, chkbx;
-					dialog_content.html('<p>' + msg.replace(/\n/g, '</p><p>')+'</p>')
-						.toggleClass('prompt', (type == 'prompt'));
-					btn_holder.empty();
+					dialogContent.html('<p>' + msg.replace(/\n/g, '</p><p>') + '</p>')
+						.toggleClass('prompt', (type === 'prompt'));
+					btnHolder.empty();
 
-					ok = $('<input type="button" value="' + uiStrings.common.ok + '">').appendTo(btn_holder);
+					ok = $('<input type="button" value="' + uiStrings.common.ok + '">').appendTo(btnHolder);
 
 					if (type !== 'alert') {
 						$('<input type="button" value="' + uiStrings.common.cancel + '">')
-							.appendTo(btn_holder)
-							.click(function() { box.hide(); if (callback) {callback(false);}});
+							.appendTo(btnHolder)
+							.click(function () { box.hide(); if (callback) { callback(false); } });
 					}
 
 					if (type === 'prompt') {
-						ctrl = $('<input type="text">').prependTo(btn_holder);
+						ctrl = $('<input type="text">').prependTo(btnHolder);
 						ctrl.val(defaultVal || '');
-						ctrl.bind('keydown', 'return', function() {ok.click();});
-					}
-					else if (type === 'select') {
+						ctrl.bind('keydown', 'return', function () { ok.click(); });
+					} else if (type === 'select') {
 						var div = $('<div style="text-align:center;">');
 						ctrl = $('<select>').appendTo(div);
 						if (checkbox) {
@@ -857,34 +843,31 @@ window.svgEditor = (function ($) {
 						$.each(opts || [], function (opt, val) {
 							if (typeof val === 'object') {
 								ctrl.append($('<option>').val(val.value).html(val.text));
-							}
-							else {
+							} else {
 								ctrl.append($('<option>').html(val));
 							}
 						});
-						dialog_content.append(div);
+						dialogContent.append(div);
 						if (defaultVal) {
 							ctrl.val(defaultVal);
 						}
 						if (changeCb) {
 							ctrl.bind('change', 'return', changeCb);
 						}
-						ctrl.bind('keydown', 'return', function() {ok.click();});
-					}
-					else if (type === 'process') {
+						ctrl.bind('keydown', 'return', function () { ok.click(); });
+					} else if (type === 'process') {
 						ok.hide();
 					}
 
 					box.show();
 
-					ok.click(function() {
+					ok.click(function () {
 						box.hide();
 						var resp = (type === 'prompt' || type === 'select') ? ctrl.val() : true;
 						if (callback) {
 							if (chkbx) {
 								callback(resp, chkbx.prop('checked'));
-							}
-							else {
+							} else {
 								callback(resp);
 							}
 						}
@@ -895,14 +878,14 @@ window.svgEditor = (function ($) {
 					}
 				};
 
-			$.alert = function(msg, cb) { dbox('alert', msg, cb);};
-			$.confirm = function(msg, cb) {	dbox('confirm', msg, cb);};
-			$.process_cancel = function(msg, cb) { dbox('process', msg, cb);};
-			$.prompt = function(msg, txt, cb) { dbox('prompt', msg, cb, txt);};
-			$.select = function(msg, opts, cb, changeCb, txt, checkbox) { dbox('select', msg, cb, txt, opts, changeCb, checkbox);};
+			$.alert = function (msg, cb) { dbox('alert', msg, cb); };
+			$.confirm = function (msg, cb) { dbox('confirm', msg, cb); };
+			$.process_cancel = function (msg, cb) { dbox('process', msg, cb); };
+			$.prompt = function (msg, txt, cb) { dbox('prompt', msg, cb, txt); };
+			$.select = function (msg, opts, cb, changeCb, txt, checkbox) { dbox('select', msg, cb, txt, opts, changeCb, checkbox); };
 		}());
 
-		var setSelectMode = function() {
+		var setSelectMode = function () {
 			var curr = $('.tool_button_current');
 			if (curr.length && curr[0].id !== 'tool_select') {
 				curr.removeClass('tool_button_current').addClass('tool_button');
@@ -915,26 +898,26 @@ window.svgEditor = (function ($) {
 
 		// used to make the flyouts stay on the screen longer the very first time
 		// var flyoutspeed = 1250; // Currently unused
-		var textBeingEntered = false;
+		// var textBeingEntered = false; // Currently unused
 		var selectedElement = null;
 		var multiselected = false;
 		var editingsource = false;
 		var docprops = false;
 		var preferences = false;
-		var cur_context = '';
+		var curContext = '';
 		var origTitle = $('title:first').text();
 		// Make [1,2,5] array
-		var r_intervals = [];
+		var rIntervals = [];
 		var i;
 		for (i = 0.1; i < 1E5; i *= 10) {
-			r_intervals.push(i);
-			r_intervals.push(2 * i);
-			r_intervals.push(5 * i);
+			rIntervals.push(i);
+			rIntervals.push(2 * i);
+			rIntervals.push(5 * i);
 		}
 
 		// This function highlights the layer passed in (by fading out the other layers)
 		// if no layer is passed in, this function restores the other layers
-		var toggleHighlightLayer = function(layerNameToHighlight) {
+		var toggleHighlightLayer = function (layerNameToHighlight) {
 			var i, curNames = [], numLayers = svgCanvas.getCurrentDrawing().getNumLayers();
 			for (i = 0; i < numLayers; i++) {
 				curNames[i] = svgCanvas.getCurrentDrawing().getLayerName(i);
@@ -942,7 +925,7 @@ window.svgEditor = (function ($) {
 
 			if (layerNameToHighlight) {
 				for (i = 0; i < numLayers; ++i) {
-					if (curNames[i] != layerNameToHighlight) {
+					if (curNames[i] !== layerNameToHighlight) {
 						svgCanvas.getCurrentDrawing().setLayerOpacity(curNames[i], 0.5);
 					}
 				}
@@ -953,7 +936,7 @@ window.svgEditor = (function ($) {
 			}
 		};
 
-		var populateLayers = function() {
+		var populateLayers = function () {
 			svgCanvas.clearSelection();
 			var layerlist = $('#layerlist tbody').empty();
 			var selLayerNames = $('#selLayerNames').empty();
@@ -977,19 +960,19 @@ window.svgEditor = (function ($) {
 			}
 			// handle selection of layer
 			$('#layerlist td.layername')
-				.mouseup(function(evt) {
+				.mouseup(function (evt) {
 					$('#layerlist tr.layer').removeClass('layersel');
 					$(this.parentNode).addClass('layersel');
 					svgCanvas.setCurrentLayer(this.textContent);
 					evt.preventDefault();
 				})
-				.mouseover(function() {
+				.mouseover(function () {
 					toggleHighlightLayer(this.textContent);
 				})
-				.mouseout(function() {
+				.mouseout(function () {
 					toggleHighlightLayer();
 				});
-			$('#layerlist td.layervis').click(function() {
+			$('#layerlist td.layervis').click(function () {
 				var row = $(this.parentNode).prevAll().length;
 				var name = $('#layerlist tr.layer:eq(' + row + ') td.layername').text();
 				var vis = $(this).hasClass('layerinvis');
@@ -1005,8 +988,8 @@ window.svgEditor = (function ($) {
 			}
 		};
 
-		var showSourceEditor = function(e, forSaving) {
-			if (editingsource) {return;}
+		var showSourceEditor = function (e, forSaving) {
+			if (editingsource) { return; }
 
 			editingsource = true;
 			origSource = svgCanvas.getSvgString();
@@ -1017,7 +1000,7 @@ window.svgEditor = (function ($) {
 			$('#svg_source_textarea').focus();
 		};
 
-		var togglePathEditMode = function(editmode, elems) {
+		var togglePathEditMode = function (editmode, elems) {
 			$('#path_node_panel').toggle(editmode);
 			$('#tools_bottom_2,#tools_bottom_3').toggle(!editmode);
 			if (editmode) {
@@ -1036,7 +1019,7 @@ window.svgEditor = (function ($) {
 			}
 		};
 
-		var saveHandler = function(wind, svg) {
+		var saveHandler = function (wind, svg) {
 			editor.showSaveWarning = false;
 
 			// by default, we add the XML prolog back, systems integrating SVG-edit (wikis, CMSs)
@@ -1052,13 +1035,14 @@ window.svgEditor = (function ($) {
 
 			// Since saving SVGs by opening a new window was removed in Chrome use artificial link-click
 			// https://stackoverflow.com/questions/45603201/window-is-not-allowed-to-navigate-top-frame-navigations-to-data-urls
-			var a  = document.createElement('a');
+			var a = document.createElement('a');
 			a.href = 'data:image/svg+xml;base64,' + Utils.encode64(svg);
 			a.download = 'icon.svg';
 
 			a.click();
 
-			// Alert will only appear the first time saved OR the first time the bug is encountered
+			// Alert will only appear the first time saved OR the
+			//   first time the bug is encountered
 			var done = $.pref('save_notice_done');
 			if (done !== 'all') {
 				var note = uiStrings.notification.saveFromBrowser.replace('%s', 'SVG');
@@ -1077,12 +1061,12 @@ window.svgEditor = (function ($) {
 					$.pref('save_notice_done', 'all');
 				}
 				if (done !== 'part') {
-					win.alert(note);
+					alert(note);
 				}
 			}
 		};
 
-		var exportHandler = function(win, data) {
+		var exportHandler = function (win, data) {
 			var issues = data.issues,
 				exportWindowName = data.exportWindowName;
 
@@ -1113,7 +1097,7 @@ window.svgEditor = (function ($) {
 			}
 		};
 
-		var operaRepaint = function() {
+		var operaRepaint = function () {
 			// Repaints canvas in Opera. Needed for stroke-dasharray change as well as fill change
 			if (!window.opera) {
 				return;
@@ -1121,7 +1105,7 @@ window.svgEditor = (function ($) {
 			$('<p/>').hide().appendTo('body').remove();
 		};
 
-		function setStrokeOpt(opt, changeElem) {
+		function setStrokeOpt (opt, changeElem) {
 			var id = opt.id;
 			var bits = id.split('_');
 			var pre = bits[0];
@@ -1140,9 +1124,9 @@ window.svgEditor = (function ($) {
 		// - removes the tool_button_current class from whatever tool currently has it
 		// - hides any flyouts
 		// - adds the tool_button_current class to the button passed in
-		var toolButtonClick = editor.toolButtonClick = function(button, noHiding) {
-			if ($(button).hasClass('disabled')) {return false;}
-			if ($(button).parent().hasClass('tools_flyout')) {return true;}
+		var toolButtonClick = editor.toolButtonClick = function (button, noHiding) {
+			if ($(button).hasClass('disabled')) { return false; }
+			if ($(button).parent().hasClass('tools_flyout')) { return true; }
 			var fadeFlyouts = 'normal';
 			if (!noHiding) {
 				$('.tools_flyout').fadeOut(fadeFlyouts);
@@ -1154,14 +1138,14 @@ window.svgEditor = (function ($) {
 			return true;
 		};
 
-		var clickSelect = editor.clickSelect = function() {
+		var clickSelect = editor.clickSelect = function () {
 			if (toolButtonClick('#tool_select')) {
 				svgCanvas.setMode('select');
 				$('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all}, #svgcanvas svg{cursor:default}');
 			}
 		};
 
-		var setImageURL = editor.setImageURL = function(url) {
+		var setImageURL = editor.setImageURL = function (url) {
 			if (!url) {
 				url = defaultImageURL;
 			}
@@ -1174,7 +1158,7 @@ window.svgEditor = (function ($) {
 				$('#change_image_url').show();
 			} else {
 				// regular URL
-				svgCanvas.embedImage(url, function(dataURI) {
+				svgCanvas.embedImage(url, function (dataURI) {
 					// Couldn't embed, so show warning
 					$('#url_notice').toggle(!dataURI);
 					defaultImageURL = url;
@@ -1185,7 +1169,7 @@ window.svgEditor = (function ($) {
 		};
 
 		function setBackground (color, url) {
-			// if (color == $.pref('bkgd_color') && url == $.pref('bkgd_url')) {return;}
+			// if (color == $.pref('bkgd_color') && url == $.pref('bkgd_url')) { return; }
 			$.pref('bkgd_color', color);
 			$.pref('bkgd_url', url);
 
@@ -1193,22 +1177,22 @@ window.svgEditor = (function ($) {
 			svgCanvas.setBackground(color, url);
 		}
 
-		function promptImgURL() {
+		function promptImgURL () {
 			var curhref = svgCanvas.getHref(selectedElement);
 			curhref = curhref.indexOf('data:') === 0 ? '' : curhref;
-			$.prompt(uiStrings.notification.enterNewImgURL, curhref, function(url) {
-				if (url) {setImageURL(url);}
+			$.prompt(uiStrings.notification.enterNewImgURL, curhref, function (url) {
+				if (url) { setImageURL(url); }
 			});
 		}
 
-		var setInputWidth = function(elem) {
+		var setInputWidth = function (elem) {
 			var w = Math.min(Math.max(12 + elem.value.length * 6, 50), 300);
 			$(elem).width(w);
 		};
 
-		function updateRulers(scanvas, zoom) {
-			if (!zoom) {zoom = svgCanvas.getZoom();}
-			if (!scanvas) {scanvas = $('#svgcanvas');}
+		function updateRulers (scanvas, zoom) {
+			if (!zoom) { zoom = svgCanvas.getZoom(); }
+			if (!scanvas) { scanvas = $('#svgcanvas'); }
 
 			var d, i;
 			var limit = 30000;
@@ -1223,21 +1207,21 @@ window.svgEditor = (function ($) {
 				var lentype = isX ? 'width' : 'height';
 				var contentDim = Number(contentElem.getAttribute(dim));
 
-				var $hcanv_orig = $('#ruler_' + dim + ' canvas:first');
+				var $hcanvOrig = $('#ruler_' + dim + ' canvas:first');
 
 				// Bit of a hack to fully clear the canvas in Safari & IE9
-				var $hcanv = $hcanv_orig.clone();
-				$hcanv_orig.replaceWith($hcanv);
+				var $hcanv = $hcanvOrig.clone();
+				$hcanvOrig.replaceWith($hcanv);
 
 				var hcanv = $hcanv[0];
 
 				// Set the canvas size to the width of the container
-				var ruler_len = scanvas[lentype]();
-				var total_len = ruler_len;
-				hcanv.parentNode.style[lentype] = total_len + 'px';
-				var ctx_num = 0;
+				var rulerLen = scanvas[lentype]();
+				var totalLen = rulerLen;
+				hcanv.parentNode.style[lentype] = totalLen + 'px';
+				var ctxNum = 0;
 				var ctx = hcanv.getContext('2d');
-				var ctx_arr, num, ctx_arr_num;
+				var ctxArr, num, ctxArrNum;
 
 				ctx.fillStyle = 'rgb(200,0,0)';
 				ctx.fillRect(0, 0, hcanv.width, hcanv.height);
@@ -1246,66 +1230,64 @@ window.svgEditor = (function ($) {
 				$hcanv.siblings().remove();
 
 				// Create multiple canvases when necessary (due to browser limits)
-				if (ruler_len >= limit) {
-					ctx_arr_num = parseInt(ruler_len / limit, 10) + 1;
-					ctx_arr = [];
-					ctx_arr[0] = ctx;
+				if (rulerLen >= limit) {
+					ctxArrNum = parseInt(rulerLen / limit, 10) + 1;
+					ctxArr = [];
+					ctxArr[0] = ctx;
 					var copy;
-					for (i = 1; i < ctx_arr_num; i++) {
+					for (i = 1; i < ctxArrNum; i++) {
 						hcanv[lentype] = limit;
 						copy = hcanv.cloneNode(true);
 						hcanv.parentNode.appendChild(copy);
-						ctx_arr[i] = copy.getContext('2d');
+						ctxArr[i] = copy.getContext('2d');
 					}
 
-					copy[lentype] = ruler_len % limit;
+					copy[lentype] = rulerLen % limit;
 
 					// set copy width to last
-					ruler_len = limit;
+					rulerLen = limit;
 				}
 
-				hcanv[lentype] = ruler_len;
+				hcanv[lentype] = rulerLen;
 
-				var u_multi = unit * zoom;
+				var uMulti = unit * zoom;
 
 				// Calculate the main number interval
-				var raw_m = 50 / u_multi;
+				var rawM = 50 / uMulti;
 				var multi = 1;
-				for (i = 0; i < r_intervals.length; i++) {
-					num = r_intervals[i];
+				for (i = 0; i < rIntervals.length; i++) {
+					num = rIntervals[i];
 					multi = num;
-					if (raw_m <= num) {
+					if (rawM <= num) {
 						break;
 					}
 				}
 
-				var big_int = multi * u_multi;
+				var bigInt = multi * uMulti;
 
 				ctx.font = '9px sans-serif';
 
-				var ruler_d = ((contentDim / u_multi) % multi) * u_multi;
-				var label_pos = ruler_d - big_int;
+				var rulerD = ((contentDim / uMulti) % multi) * uMulti;
+				var labelPos = rulerD - bigInt;
 				// draw big intervals
-				while (ruler_d < total_len) {
-					label_pos += big_int;
-					// var real_d = ruler_d - contentDim; // Currently unused
+				while (rulerD < totalLen) {
+					labelPos += bigInt;
+					// var real_d = rulerD - contentDim; // Currently unused
 
-					var cur_d = Math.round(ruler_d) + 0.5;
+					var curD = Math.round(rulerD) + 0.5;
 					if (isX) {
-						ctx.moveTo(cur_d, 15);
-						ctx.lineTo(cur_d, 0);
-					}
-					else {
-						ctx.moveTo(15, cur_d);
-						ctx.lineTo(0, cur_d);
+						ctx.moveTo(curD, 15);
+						ctx.lineTo(curD, 0);
+					} else {
+						ctx.moveTo(15, curD);
+						ctx.lineTo(0, curD);
 					}
 
-					num = (label_pos - contentDim) / u_multi;
+					num = (labelPos - contentDim) / uMulti;
 					var label;
 					if (multi >= 1) {
 						label = Math.round(num);
-					}
-					else {
+					} else {
 						var decs = String(multi).split('.')[1].length;
 						label = num.toFixed(decs);
 					}
@@ -1316,111 +1298,111 @@ window.svgEditor = (function ($) {
 					}
 
 					if (isX) {
-						ctx.fillText(label, ruler_d+2, 8);
+						ctx.fillText(label, rulerD + 2, 8);
 					} else {
 						// draw label vertically
 						var str = String(label).split('');
 						for (i = 0; i < str.length; i++) {
-							ctx.fillText(str[i], 1, (ruler_d+9) + i*9);
+							ctx.fillText(str[i], 1, (rulerD + 9) + i * 9);
 						}
 					}
 
-					var part = big_int / 10;
+					var part = bigInt / 10;
 					// draw the small intervals
 					for (i = 1; i < 10; i++) {
-						var sub_d = Math.round(ruler_d + part * i) + 0.5;
-						if (ctx_arr && sub_d > ruler_len) {
-							ctx_num++;
+						var subD = Math.round(rulerD + part * i) + 0.5;
+						if (ctxArr && subD > rulerLen) {
+							ctxNum++;
 							ctx.stroke();
-							if (ctx_num >= ctx_arr_num) {
+							if (ctxNum >= ctxArrNum) {
 								i = 10;
-								ruler_d = total_len;
+								rulerD = totalLen;
 								continue;
 							}
-							ctx = ctx_arr[ctx_num];
-							ruler_d -= limit;
-							sub_d = Math.round(ruler_d + part * i) + 0.5;
+							ctx = ctxArr[ctxNum];
+							rulerD -= limit;
+							subD = Math.round(rulerD + part * i) + 0.5;
 						}
 
 						// odd lines are slighly longer
-						var line_num = (i % 2) ? 12 : 10;
+						var lineNum = (i % 2) ? 12 : 10;
 						if (isX) {
-							ctx.moveTo(sub_d, 15);
-							ctx.lineTo(sub_d, line_num);
+							ctx.moveTo(subD, 15);
+							ctx.lineTo(subD, lineNum);
 						} else {
-							ctx.moveTo(15, sub_d);
-							ctx.lineTo(line_num, sub_d);
+							ctx.moveTo(15, subD);
+							ctx.lineTo(lineNum, subD);
 						}
 					}
-					ruler_d += big_int;
+					rulerD += bigInt;
 				}
 				ctx.strokeStyle = '#000';
 				ctx.stroke();
 			}
 		}
 
-		var updateCanvas = editor.updateCanvas = function(center, new_ctr) {
+		var updateCanvas = editor.updateCanvas = function (center, newCtr) {
 			var w = workarea.width(), h = workarea.height();
-			var w_orig = w, h_orig = h;
+			var wOrig = w, hOrig = h;
 			var zoom = svgCanvas.getZoom();
-			var w_area = workarea;
+			var wArea = workarea;
 			var cnvs = $('#svgcanvas');
-			var old_ctr = {
-				x: w_area[0].scrollLeft + w_orig/2,
-				y: w_area[0].scrollTop + h_orig/2
+			var oldCtr = {
+				x: wArea[0].scrollLeft + wOrig / 2,
+				y: wArea[0].scrollTop + hOrig / 2
 			};
 			var multi = curConfig.canvas_expansion;
-			w = Math.max(w_orig, svgCanvas.contentW * zoom * multi);
-			h = Math.max(h_orig, svgCanvas.contentH * zoom * multi);
+			w = Math.max(wOrig, svgCanvas.contentW * zoom * multi);
+			h = Math.max(hOrig, svgCanvas.contentH * zoom * multi);
 
-			if (w == w_orig && h == h_orig) {
+			if (w === wOrig && h === hOrig) {
 				workarea.css('overflow', 'hidden');
 			} else {
 				workarea.css('overflow', 'scroll');
 			}
 
-			var old_can_y = cnvs.height()/2;
-			var old_can_x = cnvs.width()/2;
+			var oldCanY = cnvs.height() / 2;
+			var oldCanX = cnvs.width() / 2;
 			cnvs.width(w).height(h);
-			var new_can_y = h/2;
-			var new_can_x = w/2;
+			var newCanY = h / 2;
+			var newCanX = w / 2;
 			var offset = svgCanvas.updateCanvas(w, h);
 
-			var ratio = new_can_x / old_can_x;
+			var ratio = newCanX / oldCanX;
 
-			var scroll_x = w/2 - w_orig/2;
-			var scroll_y = h/2 - h_orig/2;
+			var scrollX = w / 2 - wOrig / 2;
+			var scrollY = h / 2 - hOrig / 2;
 
-			if (!new_ctr) {
-				var old_dist_x = old_ctr.x - old_can_x;
-				var new_x = new_can_x + old_dist_x * ratio;
+			if (!newCtr) {
+				var oldDistX = oldCtr.x - oldCanX;
+				var newX = newCanX + oldDistX * ratio;
 
-				var old_dist_y = old_ctr.y - old_can_y;
-				var new_y = new_can_y + old_dist_y * ratio;
+				var oldDistY = oldCtr.y - oldCanY;
+				var newY = newCanY + oldDistY * ratio;
 
-				new_ctr = {
-					x: new_x,
-					y: new_y
+				newCtr = {
+					x: newX,
+					y: newY
 				};
 			} else {
-				new_ctr.x += offset.x;
-				new_ctr.y += offset.y;
+				newCtr.x += offset.x;
+				newCtr.y += offset.y;
 			}
 
 			if (center) {
 				// Go to top-left for larger documents
-				if (svgCanvas.contentW > w_area.width()) {
+				if (svgCanvas.contentW > wArea.width()) {
 					// Top-left
 					workarea[0].scrollLeft = offset.x - 10;
 					workarea[0].scrollTop = offset.y - 10;
 				} else {
 					// Center
-					w_area[0].scrollLeft = scroll_x;
-					w_area[0].scrollTop = scroll_y;
+					wArea[0].scrollLeft = scrollX;
+					wArea[0].scrollTop = scrollY;
 				}
 			} else {
-				w_area[0].scrollLeft = new_ctr.x - w_orig/2;
-				w_area[0].scrollTop = new_ctr.y - h_orig/2;
+				wArea[0].scrollLeft = newCtr.x - wOrig / 2;
+				wArea[0].scrollTop = newCtr.y - hOrig / 2;
 			}
 			if (curConfig.showRulers) {
 				updateRulers(cnvs, zoom);
@@ -1431,12 +1413,12 @@ window.svgEditor = (function ($) {
 			}
 		};
 
-		var updateToolButtonState = function() {
+		var updateToolButtonState = function () {
 			var index, button;
-			var bNoFill = (svgCanvas.getColor('fill') == 'none');
-			var bNoStroke = (svgCanvas.getColor('stroke') == 'none');
-			var buttonsNeedingStroke = [ '#tool_fhpath', '#tool_line' ];
-			var buttonsNeedingFillAndStroke = [ '#tools_rect .tool_button', '#tools_ellipse .tool_button', '#tool_text', '#tool_path'];
+			var bNoFill = (svgCanvas.getColor('fill') === 'none');
+			var bNoStroke = (svgCanvas.getColor('stroke') === 'none');
+			var buttonsNeedingStroke = ['#tool_fhpath', '#tool_line'];
+			var buttonsNeedingFillAndStroke = ['#tools_rect .tool_button', '#tools_ellipse .tool_button', '#tool_text', '#tool_path'];
 			if (bNoStroke) {
 				for (index in buttonsNeedingStroke) {
 					button = buttonsNeedingStroke[index];
@@ -1473,15 +1455,15 @@ window.svgEditor = (function ($) {
 			});
 
 			// Disable flyouts if all inside are disabled
-			$('.tools_flyout').each(function() {
+			$('.tools_flyout').each(function () {
 				var shower = $('#' + this.id + '_show');
-				var has_enabled = false;
-				$(this).children().each(function() {
+				var hasEnabled = false;
+				$(this).children().each(function () {
 					if (!$(this).hasClass('disabled')) {
-						has_enabled = true;
+						hasEnabled = true;
 					}
 				});
-				shower.toggleClass('disabled', !has_enabled);
+				shower.toggleClass('disabled', !hasEnabled);
 			});
 
 			operaRepaint();
@@ -1489,7 +1471,7 @@ window.svgEditor = (function ($) {
 
 		// Updates the toolbar (colors, opacity, etc) based on the selected element
 		// This function also updates the opacity and id elements that are in the context panel
-		var updateToolbar = function() {
+		var updateToolbar = function () {
 			var i, len;
 			if (selectedElement != null) {
 				switch (selectedElement.tagName) {
@@ -1527,13 +1509,13 @@ window.svgEditor = (function ($) {
 
 					var attr = selectedElement.getAttribute('stroke-linejoin') || 'miter';
 
-					if ($('#linejoin_' + attr).length != 0) {
+					if ($('#linejoin_' + attr).length !== 0) {
 						setStrokeOpt($('#linejoin_' + attr)[0]);
 					}
 
 					attr = selectedElement.getAttribute('stroke-linecap') || 'butt';
 
-					if ($('#linecap_' + attr).length != 0) {
+					if ($('#linecap_' + attr).length !== 0) {
 						setStrokeOpt($('#linecap_' + attr)[0]);
 					}
 				}
@@ -1541,37 +1523,37 @@ window.svgEditor = (function ($) {
 
 			// All elements including image and group have opacity
 			if (selectedElement != null) {
-				var opac_perc = ((selectedElement.getAttribute('opacity')||1.0)*100);
-				$('#group_opacity').val(opac_perc);
-				$('#opac_slider').slider('option', 'value', opac_perc);
+				var opacPerc = (selectedElement.getAttribute('opacity') || 1.0) * 100;
+				$('#group_opacity').val(opacPerc);
+				$('#opac_slider').slider('option', 'value', opacPerc);
 				$('#elem_id').val(selectedElement.id);
-				$('#elem_class').val(selectedElement.getAttribute("class"));
+				$('#elem_class').val(selectedElement.getAttribute('class'));
 			}
 
 			updateToolButtonState();
 		};
 
 		// updates the context panel tools based on the selected element
-		var updateContextPanel = function() {
+		var updateContextPanel = function () {
 			var elem = selectedElement;
 			// If element has just been deleted, consider it null
-			if (elem != null && !elem.parentNode) {elem = null;}
+			if (elem != null && !elem.parentNode) { elem = null; }
 			var currentLayerName = svgCanvas.getCurrentDrawing().getCurrentLayerName();
 			var currentMode = svgCanvas.getMode();
 			var unit = curConfig.baseUnit !== 'px' ? curConfig.baseUnit : null;
 
-			var is_node = currentMode == 'pathedit'; //elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
-			var menu_items = $('#cmenu_canvas li');
-			$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,'+
-				'#ellipse_panel, #line_panel, #text_panel, #image_panel, #container_panel,'+
+			var isNode = currentMode === 'pathedit'; // elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
+			var menuItems = $('#cmenu_canvas li');
+			$('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,' +
+				'#ellipse_panel, #line_panel, #text_panel, #image_panel, #container_panel,' +
 				' #use_panel, #a_panel').hide();
 			if (elem != null) {
 				var elname = elem.nodeName;
 				// If this is a link with no transform and one child, pretend
 				// its child is selected
-//					if (elname === 'a') { // && !$(elem).attr('transform')) {
-//						elem = elem.firstChild;
-//					}
+				// if (elname === 'a') { // && !$(elem).attr('transform')) {
+				// 	elem = elem.firstChild;
+				// }
 
 				var angle = svgCanvas.getRotationAngle(elem);
 				$('#angle').val(angle);
@@ -1586,12 +1568,13 @@ window.svgEditor = (function ($) {
 						if (svgCanvas.getHref(elem).indexOf('data:') !== 0) {
 							promptImgURL();
 						}
-					} /*else if (elname == 'text') {
+					}
+					/* else if (elname == 'text') {
 						// TODO: Do something here for new text
-					}*/
+					} */
 				}
 
-				if (!is_node && currentMode != 'pathedit') {
+				if (!isNode && currentMode !== 'pathedit') {
 					$('#selected_panel').show();
 					// Elements in this array already have coord fields
 					if (['line', 'circle', 'ellipse'].indexOf(elname) >= 0) {
@@ -1622,8 +1605,8 @@ window.svgEditor = (function ($) {
 					}
 
 					// Elements in this array cannot be converted to a path
-					var no_path = ['image', 'text', 'path', 'g', 'use'].indexOf(elname) == -1;
-					$('#tool_topath').toggle(no_path);
+					var noPath = ['image', 'text', 'path', 'g', 'use'].indexOf(elname) === -1;
+					$('#tool_topath').toggle(noPath);
 					$('#tool_reorient').toggle(elname === 'path');
 					$('#tool_reorient').toggleClass('disabled', angle === 0);
 				} else {
@@ -1635,7 +1618,7 @@ window.svgEditor = (function ($) {
 					setIcon('#tool_openclose_path', path.closed_subpath ? 'open_path' : 'close_path');
 
 					if (point) {
-						var seg_type = $('#seg_type');
+						var segType = $('#seg_type');
 						if (unit) {
 							point.x = svgedit.units.convertUnit(point.x);
 							point.y = svgedit.units.convertUnit(point.y);
@@ -1643,9 +1626,9 @@ window.svgEditor = (function ($) {
 						$('#path_node_x').val(point.x);
 						$('#path_node_y').val(point.y);
 						if (point.type) {
-							seg_type.val(point.type).removeAttr('disabled');
+							segType.val(point.type).removeAttr('disabled');
 						} else {
-							seg_type.val(4).attr('disabled', 'disabled');
+							segType.val(4).attr('disabled', 'disabled');
 						}
 					}
 					return;
@@ -1664,47 +1647,47 @@ window.svgEditor = (function ($) {
 					use: []
 				};
 
-				var el_name = elem.tagName;
+				var tagName = elem.tagName;
 
-//					if ($(elem).data('gsvg')) {
-//						$('#g_panel').show();
-//					}
+				// if ($(elem).data('gsvg')) {
+				// 	$('#g_panel').show();
+				// }
 
-				var link_href = null;
-				if (el_name === 'a') {
-					link_href = svgCanvas.getHref(elem);
+				var linkHref = null;
+				if (tagName === 'a') {
+					linkHref = svgCanvas.getHref(elem);
 					$('#g_panel').show();
 				}
 
 				if (elem.parentNode.tagName === 'a') {
 					if (!$(elem).siblings().length) {
 						$('#a_panel').show();
-						link_href = svgCanvas.getHref(elem.parentNode);
+						linkHref = svgCanvas.getHref(elem.parentNode);
 					}
 				}
 
 				// Hide/show the make_link buttons
-				$('#tool_make_link, #tool_make_link').toggle(!link_href);
+				$('#tool_make_link, #tool_make_link').toggle(!linkHref);
 
-				if (link_href) {
-					$('#link_url').val(link_href);
+				if (linkHref) {
+					$('#link_url').val(linkHref);
 				}
 
-				if (panels[el_name]) {
-					var cur_panel = panels[el_name];
+				if (panels[tagName]) {
+					var curPanel = panels[tagName];
 
-					$('#' + el_name + '_panel').show();
+					$('#' + tagName + '_panel').show();
 
-					$.each(cur_panel, function(i, item) {
+					$.each(curPanel, function (i, item) {
 						var attrVal = elem.getAttribute(item);
 						if (curConfig.baseUnit !== 'px' && elem[item]) {
 							var bv = elem[item].baseVal.value;
 							attrVal = svgedit.units.convertUnit(bv);
 						}
-						$('#' + el_name + '_' + item).val(attrVal || 0);
+						$('#' + tagName + '_' + item).val(attrVal || 0);
 					});
 
-					if (el_name == 'text') {
+					if (tagName === 'text') {
 						$('#text_panel').css('display', 'inline');
 						$('#tool_font_size').css('display', 'inline');
 						if (svgCanvas.getItalic()) {
@@ -1722,33 +1705,33 @@ window.svgEditor = (function ($) {
 						$('#text').val(elem.textContent);
 						if (svgCanvas.addedNew) {
 							// Timeout needed for IE9
-							setTimeout(function() {
+							setTimeout(function () {
 								$('#text').focus().select();
 							}, 100);
 						}
-					} // text
-					else if (el_name == 'image' && svgCanvas.getMode() == 'image') {
+					// text
+					} else if (tagName === 'image' && svgCanvas.getMode() === 'image') {
 						setImageURL(svgCanvas.getHref(elem));
-					} // image
-					else if (el_name === 'g' || el_name === 'use') {
+					// image
+					} else if (tagName === 'g' || tagName === 'use') {
 						$('#container_panel').show();
 						var title = svgCanvas.getTitle();
 						var label = $('#g_title')[0];
 						label.value = title;
 						setInputWidth(label);
-						$('#g_title').prop('disabled', el_name == 'use');
+						$('#g_title').prop('disabled', tagName === 'use');
 					}
 				}
-				menu_items[(el_name === 'g' ? 'en' : 'dis') + 'ableContextMenuItems']('#ungroup');
-				menu_items[((el_name === 'g' || !multiselected) ? 'dis' : 'en') + 'ableContextMenuItems']('#group');
-			} // if (elem != null)
-			else if (multiselected) {
+				menuItems[(tagName === 'g' ? 'en' : 'dis') + 'ableContextMenuItems']('#ungroup');
+				menuItems[((tagName === 'g' || !multiselected) ? 'dis' : 'en') + 'ableContextMenuItems']('#group');
+			// if (elem != null)
+			} else if (multiselected) {
 				$('#multiselected_panel').show();
-				menu_items
+				menuItems
 					.enableContextMenuItems('#group')
 					.disableContextMenuItems('#ungroup');
 			} else {
-				menu_items.disableContextMenuItems('#delete,#cut,#copy,#group,#ungroup,#move_front,#move_up,#move_down,#move_back');
+				menuItems.disableContextMenuItems('#delete,#cut,#copy,#group,#ungroup,#move_front,#move_up,#move_down,#move_back');
 			}
 
 			// update history buttons
@@ -1757,43 +1740,43 @@ window.svgEditor = (function ($) {
 
 			svgCanvas.addedNew = false;
 
-			if ( (elem && !is_node)	|| multiselected) {
+			if ((elem && !isNode) || multiselected) {
 				// update the selected elements' layer
 				$('#selLayerNames').removeAttr('disabled').val(currentLayerName);
 
 				// Enable regular menu options
-				canv_menu.enableContextMenuItems('#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back');
+				canvMenu.enableContextMenuItems('#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back');
 			} else {
 				$('#selLayerNames').attr('disabled', 'disabled');
 			}
 		};
 
-		var updateWireFrame = function() {
+		var updateWireFrame = function () {
 			// Test support
-			if (supportsNonSS) {return;}
+			if (supportsNonSS) { return; }
 
-			var rule = '#workarea.wireframe #svgcontent * { stroke-width: ' + 1/svgCanvas.getZoom() + 'px; }';
+			var rule = '#workarea.wireframe #svgcontent * { stroke-width: ' + 1 / svgCanvas.getZoom() + 'px; }';
 			$('#wireframe_rules').text(workarea.hasClass('wireframe') ? rule : '');
 		};
 
-		var updateTitle = function(title) {
+		var updateTitle = function (title) {
 			title = title || svgCanvas.getDocumentTitle();
 			var newTitle = origTitle + (title ? ': ' + title : '');
 
 			// Remove title update with current context info, isn't really necessary
-//				if (cur_context) {
-//					new_title = new_title + cur_context;
-//				}
+			// if (curContext) {
+			// 	new_title = new_title + curContext;
+			// }
 			$('title:first').text(newTitle);
 		};
 
 		// called when we've selected a different element
-		var selectedChanged = function(win, elems) {
+		var selectedChanged = function (win, elems) {
 			var mode = svgCanvas.getMode();
 			if (mode === 'select') {
 				setSelectMode();
 			}
-			var is_node = (mode == "pathedit");
+			var isNode = mode === 'pathedit';
 			// if elems[1] is present, then we have more than one element
 			selectedElement = (elems.length === 1 || elems[1] == null ? elems[0] : null);
 			multiselected = (elems.length >= 2 && elems[1] != null);
@@ -1802,13 +1785,13 @@ window.svgEditor = (function ($) {
 				// upon creation of a text element the editor is switched into
 				// select mode and this event fires - we need our UI to be in sync
 
-				if (!is_node) {
+				if (!isNode) {
 					updateToolbar();
 				}
 			} // if (elem != null)
 
 			// Deal with pathedit mode
-			togglePathEditMode(is_node, elems);
+			togglePathEditMode(isNode, elems);
 			updateContextPanel();
 			svgCanvas.runExtensions('selectedChanged', {
 				elems: elems,
@@ -1819,7 +1802,7 @@ window.svgEditor = (function ($) {
 
 		// Call when part of element is in process of changing, generally
 		// on mousemove actions like rotate, move, etc.
-		var elementTransition = function(win, elems) {
+		var elementTransition = function (win, elems) {
 			var mode = svgCanvas.getMode();
 			var elem = elems[0];
 
@@ -1831,16 +1814,16 @@ window.svgEditor = (function ($) {
 			// Only updating fields for single elements for now
 			if (!multiselected) {
 				switch (mode) {
-					case 'rotate':
-						var ang = svgCanvas.getRotationAngle(elem);
-						$('#angle').val(ang);
-						$('#tool_reorient').toggleClass('disabled', ang === 0);
-						break;
+				case 'rotate':
+					var ang = svgCanvas.getRotationAngle(elem);
+					$('#angle').val(ang);
+					$('#tool_reorient').toggleClass('disabled', ang === 0);
+					break;
 
-					// TODO: Update values that change on move/resize, etc
-//						case "select":
-//						case "resize":
-//							break;
+				// TODO: Update values that change on move/resize, etc
+				// case "select":
+				// case "resize":
+				// 	break;
 				}
 			}
 			svgCanvas.runExtensions('elementTransition', {
@@ -1853,12 +1836,12 @@ window.svgEditor = (function ($) {
 		 * @param {SVGGElement} elem - The SVGGElement to test.
 		 * @returns {boolean} True if the element is a layer
 		 */
-		function isLayer(elem) {
-			return elem && elem.tagName === 'g' && svgedit.draw.Layer.CLASS_REGEX.test(elem.getAttribute('class'))
+		function isLayer (elem) {
+			return elem && elem.tagName === 'g' && svgedit.draw.Layer.CLASS_REGEX.test(elem.getAttribute('class'));
 		}
 
 		// called when any element has changed
-		var elementChanged = function(win, elems) {
+		var elementChanged = function (win, elems) {
 			var i,
 				mode = svgCanvas.getMode();
 			if (mode === 'select') {
@@ -1875,11 +1858,10 @@ window.svgEditor = (function ($) {
 					if (isSvgElem) {
 						updateCanvas();
 					}
-				}
 				// Update selectedElement if element is no longer part of the image.
 				// This occurs for the text elements in Firefox
-				else if (elem && selectedElement && selectedElement.parentNode == null) {
-//						|| elem && elem.tagName == "path" && !multiselected) { // This was added in r1430, but not sure why
+				} else if (elem && selectedElement && selectedElement.parentNode == null) {
+					// || elem && elem.tagName == "path" && !multiselected) { // This was added in r1430, but not sure why
 					selectedElement = elem;
 				}
 			}
@@ -1906,35 +1888,35 @@ window.svgEditor = (function ($) {
 			});
 		};
 
-		var zoomDone = function() {
+		var zoomDone = function () {
 			updateWireFrame();
 			// updateCanvas(); // necessary?
 		};
 
-		var zoomChanged = svgCanvas.zoomChanged = function(win, bbox, autoCenter) {
+		var zoomChanged = svgCanvas.zoomChanged = function (win, bbox, autoCenter) {
 			var scrbar = 15,
 				// res = svgCanvas.getResolution(), // Currently unused
-				w_area = workarea;
+				wArea = workarea;
 			// var canvas_pos = $('#svgcanvas').position(); // Currently unused
-			var z_info = svgCanvas.setBBoxZoom(bbox, w_area.width()-scrbar, w_area.height()-scrbar);
-			if (!z_info) {return;}
-			var zoomlevel = z_info.zoom,
-				bb = z_info.bbox;
+			var zInfo = svgCanvas.setBBoxZoom(bbox, wArea.width() - scrbar, wArea.height() - scrbar);
+			if (!zInfo) { return; }
+			var zoomlevel = zInfo.zoom,
+				bb = zInfo.bbox;
 
 			if (zoomlevel < 0.001) {
 				changeZoom({value: 0.1});
 				return;
 			}
 
-			$('#zoom').val((zoomlevel*100).toFixed(1));
+			$('#zoom').val((zoomlevel * 100).toFixed(1));
 
 			if (autoCenter) {
 				updateCanvas();
 			} else {
-				updateCanvas(false, {x: bb.x * zoomlevel + (bb.width * zoomlevel)/2, y: bb.y * zoomlevel + (bb.height * zoomlevel)/2});
+				updateCanvas(false, {x: bb.x * zoomlevel + (bb.width * zoomlevel) / 2, y: bb.y * zoomlevel + (bb.height * zoomlevel) / 2});
 			}
 
-			if (svgCanvas.getMode() == 'zoom' && bb.width) {
+			if (svgCanvas.getMode() === 'zoom' && bb.width) {
 				// Go to select if a zoom box was drawn
 				setSelectMode();
 			}
@@ -1942,26 +1924,26 @@ window.svgEditor = (function ($) {
 			zoomDone();
 		};
 
-		changeZoom = function(ctl) {
+		changeZoom = function (ctl) {
 			var zoomlevel = ctl.value / 100;
 			if (zoomlevel < 0.001) {
 				ctl.value = 0.1;
 				return;
 			}
 			var zoom = svgCanvas.getZoom();
-			var w_area = workarea;
+			var wArea = workarea;
 
 			zoomChanged(window, {
 				width: 0,
 				height: 0,
 				// center pt of scroll position
-				x: (w_area[0].scrollLeft + w_area.width()/2)/zoom,
-				y: (w_area[0].scrollTop + w_area.height()/2)/zoom,
+				x: (wArea[0].scrollLeft + wArea.width() / 2) / zoom,
+				y: (wArea[0].scrollTop + wArea.height() / 2) / zoom,
 				zoom: zoomlevel
 			}, true);
 		};
 
-		$('#cur_context_panel').delegate('a', 'click', function() {
+		$('#cur_context_panel').delegate('a', 'click', function () {
 			var link = $(this);
 			if (link.attr('data-root')) {
 				svgCanvas.leaveContext();
@@ -1972,57 +1954,57 @@ window.svgEditor = (function ($) {
 			return false;
 		});
 
-		var contextChanged = function(win, context) {
-			var link_str = '';
+		var contextChanged = function (win, context) {
+			var linkStr = '';
 			if (context) {
 				var str = '';
-				link_str = '<a href="#" data-root="y">' + svgCanvas.getCurrentDrawing().getCurrentLayerName() + '</a>';
+				linkStr = '<a href="#" data-root="y">' + svgCanvas.getCurrentDrawing().getCurrentLayerName() + '</a>';
 
-				$(context).parentsUntil('#svgcontent > g').andSelf().each(function() {
+				$(context).parentsUntil('#svgcontent > g').andSelf().each(function () {
 					if (this.id) {
 						str += ' > ' + this.id;
 						if (this !== context) {
-							link_str += ' > <a href="#">' + this.id + '</a>';
+							linkStr += ' > <a href="#">' + this.id + '</a>';
 						} else {
-							link_str += ' > ' + this.id;
+							linkStr += ' > ' + this.id;
 						}
 					}
 				});
 
-				cur_context = str;
+				curContext = str;
 			} else {
-				cur_context = null;
+				curContext = null;
 			}
-			$('#cur_context_panel').toggle(!!context).html(link_str);
+			$('#cur_context_panel').toggle(!!context).html(linkStr);
 
 			updateTitle();
 		};
 
 		// Makes sure the current selected paint is available to work with
-		var prepPaints = function() {
+		var prepPaints = function () {
 			paintBox.fill.prep();
 			paintBox.stroke.prep();
 		};
 
-		var flyout_funcs = {};
+		var flyoutFuncs = {};
 
-		var setFlyoutTitles = function() {
-			$('.tools_flyout').each(function() {
+		var setFlyoutTitles = function () {
+			$('.tools_flyout').each(function () {
 				var shower = $('#' + this.id + '_show');
 				if (shower.data('isLibrary')) {
 					return;
 				}
 
 				var tooltips = [];
-				$(this).children().each(function() {
+				$(this).children().each(function () {
 					tooltips.push(this.title);
 				});
 				shower[0].title = tooltips.join(' / ');
 			});
 		};
 
-		var setFlyoutPositions = function() {
-			$('.tools_flyout').each(function() {
+		var setFlyoutPositions = function () {
+			$('.tools_flyout').each(function () {
 				var shower = $('#' + this.id + '_show');
 				var pos = shower.offset();
 				var w = shower.outerWidth();
@@ -2030,42 +2012,42 @@ window.svgEditor = (function ($) {
 			});
 		};
 
-		var setupFlyouts = function(holders) {
-			$.each(holders, function(hold_sel, btn_opts) {
-				var buttons = $(hold_sel).children();
-				var show_sel = hold_sel + '_show';
-				var shower = $(show_sel);
+		var setupFlyouts = function (holders) {
+			$.each(holders, function (holdSel, btnOpts) {
+				var buttons = $(holdSel).children();
+				var showSel = holdSel + '_show';
+				var shower = $(showSel);
 				var def = false;
 				buttons.addClass('tool_button')
 					.unbind('click mousedown mouseup') // may not be necessary
-					.each(function(i) {
+					.each(function (i) {
 						// Get this buttons options
-						var opts = btn_opts[i];
+						var opts = btnOpts[i];
 
 						// Remember the function that goes with this ID
-						flyout_funcs[opts.sel] = opts.fn;
+						flyoutFuncs[opts.sel] = opts.fn;
 
-						if (opts.isDefault) {def = i;}
+						if (opts.isDefault) { def = i; }
 
 						// Clicking the icon in flyout should set this set's icon
-						var func = function(event) {
+						var func = function (event) {
 							var options = opts;
-							//find the currently selected tool if comes from keystroke
+							// Find the currently selected tool if comes from keystroke
 							if (event.type === 'keydown') {
 								var flyoutIsSelected = $(options.parent + '_show').hasClass('tool_button_current');
 								var currentOperation = $(options.parent + '_show').attr('data-curopt');
-								$.each(holders[opts.parent], function(i, tool) {
-									if (tool.sel == currentOperation) {
+								$.each(holders[opts.parent], function (i, tool) {
+									if (tool.sel === currentOperation) {
 										if (!event.shiftKey || !flyoutIsSelected) {
 											options = tool;
 										} else {
-											options = holders[opts.parent][i+1] || holders[opts.parent][0];
+											options = holders[opts.parent][i + 1] || holders[opts.parent][0];
 										}
 									}
 								});
 							}
-							if ($(this).hasClass('disabled')) {return false;}
-							if (toolButtonClick(show_sel)) {
+							if ($(this).hasClass('disabled')) { return false; }
+							if (toolButtonClick(showSel)) {
 								options.fn();
 							}
 							var icon;
@@ -2089,25 +2071,25 @@ window.svgEditor = (function ($) {
 					});
 
 				if (def) {
-					shower.attr('data-curopt', btn_opts[def].sel);
+					shower.attr('data-curopt', btnOpts[def].sel);
 				} else if (!shower.attr('data-curopt')) {
 					// Set first as default
-					shower.attr('data-curopt', btn_opts[0].sel);
+					shower.attr('data-curopt', btnOpts[0].sel);
 				}
 
 				var timer;
-				var pos = $(show_sel).position();
+				var pos = $(showSel).position();
 
 				// Clicking the "show" icon should set the current mode
-				shower.mousedown(function(evt) {
+				shower.mousedown(function (evt) {
 					if (shower.hasClass('disabled')) {
 						return false;
 					}
-					var holder = $(hold_sel);
+					var holder = $(holdSel);
 					var l = pos.left + 34;
 					var w = holder.width() * -1;
 					var time = holder.data('shown_popop') ? 200 : 0;
-					timer = setTimeout(function() {
+					timer = setTimeout(function () {
 						// Show corresponding menu
 						if (!shower.data('isLibrary')) {
 							holder.css('left', w).show().animate({
@@ -2117,27 +2099,27 @@ window.svgEditor = (function ($) {
 							holder.css('left', l).show();
 						}
 						holder.data('shown_popop', true);
-					},time);
+					}, time);
 					evt.preventDefault();
-				}).mouseup(function(evt) {
+				}).mouseup(function (evt) {
 					clearTimeout(timer);
 					var opt = $(this).attr('data-curopt');
 					// Is library and popped up, so do nothing
-					if (shower.data('isLibrary') && $(show_sel.replace('_show', '')).is(':visible')) {
-						toolButtonClick(show_sel, true);
+					if (shower.data('isLibrary') && $(showSel.replace('_show', '')).is(':visible')) {
+						toolButtonClick(showSel, true);
 						return;
 					}
-					if (toolButtonClick(show_sel) && flyout_funcs[opt]) {
-						flyout_funcs[opt]();
+					if (toolButtonClick(showSel) && flyoutFuncs[opt]) {
+						flyoutFuncs[opt]();
 					}
 				});
-				// $('#tools_rect').mouseleave(function(){$('#tools_rect').fadeOut();});
+				// $('#tools_rect').mouseleave(function () { $('#tools_rect').fadeOut(); });
 			});
 			setFlyoutTitles();
 			setFlyoutPositions();
 		};
 
-		var makeFlyoutHolder = function(id, child) {
+		var makeFlyoutHolder = function (id, child) {
 			var div = $('<div>', {
 				'class': 'tools_flyout',
 				id: id
@@ -2146,7 +2128,7 @@ window.svgEditor = (function ($) {
 			return div;
 		};
 
-		var uaPrefix = (function() {
+		var uaPrefix = (function () {
 			var prop;
 			var regex = /^(Moz|Webkit|Khtml|O|ms|Icab)(?=[A-Z])/;
 			var someScript = document.getElementsByTagName('script')[0];
@@ -2158,17 +2140,17 @@ window.svgEditor = (function ($) {
 				}
 			}
 			// Nothing found so far?
-			if ('WebkitOpacity' in someScript.style) {return 'Webkit';}
-			if ('KhtmlOpacity' in someScript.style) {return 'Khtml';}
+			if ('WebkitOpacity' in someScript.style) { return 'Webkit'; }
+			if ('KhtmlOpacity' in someScript.style) { return 'Khtml'; }
 
 			return '';
 		}());
 
-		var scaleElements = function(elems, scale) {
+		var scaleElements = function (elems, scale) {
 			// var prefix = '-' + uaPrefix.toLowerCase() + '-'; // Currently unused
 			var sides = ['top', 'left', 'bottom', 'right'];
 
-			elems.each(function() {
+			elems.each(function () {
 				// Handled in CSS
 				// this.style[uaPrefix + 'Transform'] = 'scale(' + scale + ')';
 				var i;
@@ -2199,46 +2181,45 @@ window.svgEditor = (function ($) {
 		};
 
 		var setIconSize = editor.setIconSize = function (size) {
-
-//				var elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
-			var sel_toscale = '#tools_top .toolset, #editor_panel > *, #history_panel > *,'+
-'				#main_button, #tools_left > *, #path_node_panel > *, #multiselected_panel > *,'+
+			// var elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
+			var selToscale = '#tools_top .toolset, #editor_panel > *, #history_panel > *,' +
+'				#main_button, #tools_left > *, #path_node_panel > *, #multiselected_panel > *,' +
 '				#g_panel > *, #tool_font_size > *, .tools_flyout';
 
-			var elems = $(sel_toscale);
+			var elems = $(selToscale);
 			var scale = 1;
 
 			if (typeof size === 'number') {
 				scale = size;
 			} else {
-				var icon_sizes = {s: 0.75, m:1, l: 1.25, xl: 1.5};
-				scale = icon_sizes[size];
+				var iconSizes = {s: 0.75, m: 1, l: 1.25, xl: 1.5};
+				scale = iconSizes[size];
 			}
 
 			editor.tool_scale = scale;
 
 			setFlyoutPositions();
-			// $('.tools_flyout').each(function() {
-//					var pos = $(this).position();
-//					console.log($(this), pos.left+(34 * scale));
-//					$(this).css({'left': pos.left+(34 * scale), 'top': pos.top+(77 * scale)});
-//					console.log('l', $(this).css('left'));
-//				});
+			// $('.tools_flyout').each(function () {
+			// 	var pos = $(this).position();
+			// 	console.log($(this), pos.left+(34 * scale));
+			// 	$(this).css({'left': pos.left+(34 * scale), 'top': pos.top+(77 * scale)});
+			// 	console.log('l', $(this).css('left'));
+			// });
+			//
+			// var scale = .75;
 
-//				var scale = .75;
-
-			var hidden_ps = elems.parents(':hidden');
-			hidden_ps.css('visibility', 'hidden').show();
+			var hiddenPs = elems.parents(':hidden');
+			hiddenPs.css('visibility', 'hidden').show();
 			scaleElements(elems, scale);
-			hidden_ps.css('visibility', 'visible').hide();
-//				return;
+			hiddenPs.css('visibility', 'visible').hide();
+			// return;
 
 			$.pref('iconsize', size);
 			$('#iconsize').val(size);
 
 			// Change icon size
 			// $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open')
-			// .find('> svg, > img').each(function() {
+			// .find('> svg, > img').each(function () {
 			// 	this.setAttribute('width',size_num);
 			// 	this.setAttribute('height',size_num);
 			// });
@@ -2369,19 +2350,19 @@ window.svgEditor = (function ($) {
 				// }
 			};
 
-			var rule_elem = $('#tool_size_rules');
-			if (!rule_elem.length) {
-				rule_elem = $('<style id="tool_size_rules"></style>').appendTo('head');
+			var ruleElem = $('#tool_size_rules');
+			if (!ruleElem.length) {
+				ruleElem = $('<style id="tool_size_rules"></style>').appendTo('head');
 			} else {
-				rule_elem.empty();
+				ruleElem.empty();
 			}
 
 			if (size !== 'm') {
 				var styleStr = '';
-				$.each(cssResizeRules, function(selector, rules) {
-					selector = '#svg_editor ' + selector.replace(/,/g,', #svg_editor');
+				$.each(cssResizeRules, function (selector, rules) {
+					selector = '#svg_editor ' + selector.replace(/,/g, ', #svg_editor');
 					styleStr += selector + '{';
-					$.each(rules, function(prop, values) {
+					$.each(rules, function (prop, values) {
 						var val;
 						if (typeof values === 'number') {
 							val = (values * scale) + 'px';
@@ -2392,47 +2373,46 @@ window.svgEditor = (function ($) {
 					});
 					styleStr += '}';
 				});
-				//this.style[uaPrefix + 'Transform'] = 'scale(' + scale + ')';
+				// this.style[uaPrefix + 'Transform'] = 'scale(' + scale + ')';
 				var prefix = '-' + uaPrefix.toLowerCase() + '-';
-				styleStr += (sel_toscale + '{' + prefix + 'transform: scale(' + scale + ');}'
-				+ ' #svg_editor div.toolset .toolset {' + prefix + 'transform: scale(1); margin: 1px !important;}' // Hack for markers
-				+ ' #svg_editor .ui-slider {' + prefix + 'transform: scale(' + (1/scale) + ');}' // Hack for sliders
+				styleStr += (selToscale + '{' + prefix + 'transform: scale(' + scale + ');}' +
+					' #svg_editor div.toolset .toolset {' + prefix + 'transform: scale(1); margin: 1px !important;}' + // Hack for markers
+					' #svg_editor .ui-slider {' + prefix + 'transform: scale(' + (1 / scale) + ');}' // Hack for sliders
 				);
-				rule_elem.text(styleStr);
+				ruleElem.text(styleStr);
 			}
 
 			setFlyoutPositions();
 		};
 
 		// TODO: Combine this with addDropDown or find other way to optimize
-		var addAltDropDown = function(elem, list, callback, opts) {
+		var addAltDropDown = function (elem, list, callback, opts) {
 			var button = $(elem);
 			list = $(list);
-			var on_button = false;
+			var onButton = false;
 			var dropUp = opts.dropUp;
 			if (dropUp) {
 				$(elem).addClass('dropup');
 			}
-			list.find('li').bind('mouseup', function() {
+			list.find('li').bind('mouseup', function () {
 				if (opts.seticon) {
-					setIcon('#cur_' + button[0].id , $(this).children());
+					setIcon('#cur_' + button[0].id, $(this).children());
 					$(this).addClass('current').siblings().removeClass('current');
 				}
 				callback.apply(this, arguments);
-
 			});
 
-			$(window).mouseup(function(evt) {
-				if (!on_button) {
+			$(window).mouseup(function (evt) {
+				if (!onButton) {
 					button.removeClass('down');
 					list.hide();
-					list.css({top:0, left:0});
+					list.css({top: 0, left: 0});
 				}
-				on_button = false;
+				onButton = false;
 			});
 
 			// var height = list.height(); // Currently unused
-			button.bind('mousedown',function() {
+			button.bind('mousedown', function () {
 				var off = button.offset();
 				if (dropUp) {
 					off.top -= list.height();
@@ -2444,72 +2424,71 @@ window.svgEditor = (function ($) {
 
 				if (!button.hasClass('down')) {
 					list.show();
-					on_button = true;
+					onButton = true;
 				} else {
 					// CSS position must be reset for Webkit
 					list.hide();
-					list.css({top:0, left:0});
+					list.css({top: 0, left: 0});
 				}
 				button.toggleClass('down');
-			}).hover(function() {
-				on_button = true;
-			}).mouseout(function() {
-				on_button = false;
+			}).hover(function () {
+				onButton = true;
+			}).mouseout(function () {
+				onButton = false;
 			});
 
 			if (opts.multiclick) {
-				list.mousedown(function() {
-					on_button = true;
+				list.mousedown(function () {
+					onButton = true;
 				});
 			}
 		};
 
 		var extsPreLang = [];
-		var extAdded = function(win, ext) {
+		var extAdded = function (win, ext) {
 			if (!ext) {
 				return;
 			}
-			var cb_called = false;
-			var resize_done = false;
-			var cb_ready = true; // Set to false to delay callback (e.g. wait for $.svgIcons)
+			var cbCalled = false;
+			var resizeDone = false;
+			var cbReady = true; // Set to false to delay callback (e.g. wait for $.svgIcons)
 
 			if (ext.langReady) {
 				if (editor.langChanged) { // We check for this since the "lang" pref could have been set by storage
 					var lang = $.pref('lang');
-					ext.langReady({lang:lang, uiStrings:uiStrings});
-				}
-				else {
+					ext.langReady({lang: lang, uiStrings: uiStrings});
+				} else {
 					extsPreLang.push(ext);
 				}
 			}
 
-			function prepResize() {
-				if (resize_timer) {
-					clearTimeout(resize_timer);
-					resize_timer = null;
+			function prepResize () {
+				if (resizeTimer) {
+					clearTimeout(resizeTimer);
+					resizeTimer = null;
 				}
-				if (!resize_done) {
-					resize_timer = setTimeout(function() {
-						resize_done = true;
+				if (!resizeDone) {
+					resizeTimer = setTimeout(function () {
+						resizeDone = true;
 						setIconSize($.pref('iconsize'));
 					}, 50);
 				}
 			}
 
-			var runCallback = function() {
-				if (ext.callback && !cb_called && cb_ready) {
-					cb_called = true;
+			var runCallback = function () {
+				if (ext.callback && !cbCalled && cbReady) {
+					cbCalled = true;
 					ext.callback();
 				}
 			};
 
-			var btn_selects = [];
+			var btnSelects = [];
 
 			if (ext.context_tools) {
-				$.each(ext.context_tools, function(i, tool) {
+				$.each(ext.context_tools, function (i, tool) {
 					// Add select tool
 					var html;
-					var cont_id = tool.container_id ? (' id="' + tool.container_id + '"') : '';
+					var contId = tool.container_id ? (' id="' + tool.container_id + '"') : '';
 					var panel = $('#' + tool.panel);
 
 					// create the panel if it doesn't exist
@@ -2523,29 +2502,29 @@ window.svgEditor = (function ($) {
 						html = '<div class="tool_button">' + tool.id + '</div>';
 						var div = $(html).appendTo(panel);
 						if (tool.events) {
-							$.each(tool.events, function(evt, func) {
+							$.each(tool.events, function (evt, func) {
 								$(div).bind(evt, func);
 							});
 						}
 						break;
 					case 'select':
-						html = '<label' + cont_id + '>'
-							+ '<select id="' + tool.id + '">';
-						$.each(tool.options, function(val, text) {
-							var sel = (val == tool.defval) ? ' selected' : '';
-							html += '<option value="'+val+'"' + sel + '>' + text + '</option>';
+						html = '<label' + contId + '>' +
+							'<select id="' + tool.id + '">';
+						$.each(tool.options, function (val, text) {
+							var sel = (val === tool.defval) ? ' selected' : '';
+							html += '<option value="' + val + '"' + sel + '>' + text + '</option>';
 						});
 						html += '</select></label>';
 						// Creates the tool, hides & adds it, returns the select element
 						var sel = $(html).appendTo(panel).find('select');
 
-						$.each(tool.events, function(evt, func) {
+						$.each(tool.events, function (evt, func) {
 							$(sel).bind(evt, func);
 						});
 						break;
 					case 'button-select':
-						html = '<div id="' + tool.id + '" class="dropdown toolset" title="' + tool.title + '">'
-							+ '<div id="cur_' + tool.id + '" class="icon_label"></div><button></button></div>';
+						html = '<div id="' + tool.id + '" class="dropdown toolset" title="' + tool.title + '">' +
+							'<div id="cur_' + tool.id + '" class="icon_label"></div><button></button></div>';
 
 						var list = $('<ul id="' + tool.id + '_opts"></ul>').appendTo('#option_lists');
 
@@ -2554,9 +2533,9 @@ window.svgEditor = (function ($) {
 						}
 
 						// Creates the tool, hides & adds it, returns the select element
-						var dropdown = $(html).appendTo(panel).children();
+						/* var dropdown = */ $(html).appendTo(panel).children();
 
-						btn_selects.push({
+						btnSelects.push({
 							elem: ('#' + tool.id),
 							list: ('#' + tool.id + '_opts'),
 							title: tool.title,
@@ -2566,11 +2545,11 @@ window.svgEditor = (function ($) {
 
 						break;
 					case 'input':
-						html = '<label' + cont_id + '>'
-							+ '<span id="' + tool.id + '_label">'
-							+ tool.label + ':</span>'
-							+ '<input id="' + tool.id + '" title="' + tool.title
-							+ '" size="' + (tool.size || '4') + '" value="' + (tool.defval || '') + '" type="text"/></label>';
+						html = '<label' + contId + '>' +
+							'<span id="' + tool.id + '_label">' +
+							tool.label + ':</span>' +
+							'<input id="' + tool.id + '" title="' + tool.title +
+							'" size="' + (tool.size || '4') + '" value="' + (tool.defval || '') + '" type="text"/></label>';
 
 						// Creates the tool, hides & adds it, returns the select element
 
@@ -2582,7 +2561,7 @@ window.svgEditor = (function ($) {
 						}
 
 						if (tool.events) {
-							$.each(tool.events, function(evt, func) {
+							$.each(tool.events, function (evt, func) {
 								inp.bind(evt, func);
 							});
 						}
@@ -2595,38 +2574,38 @@ window.svgEditor = (function ($) {
 			}
 
 			if (ext.buttons) {
-				var fallback_obj = {},
-					placement_obj = {},
+				var fallbackObj = {},
+					placementObj = {},
 					svgicons = ext.svgicons,
 					holders = {};
 
 				// Add buttons given by extension
-				$.each(ext.buttons, function(i, btn) {
-					var icon, svgicon, tls_id;
+				$.each(ext.buttons, function (i, btn) {
+					var icon, svgicon, tlsId;
 					var id = btn.id;
 					var num = i;
 
 					// Give button a unique ID
-					while($('#'+id).length) {
+					while ($('#' + id).length) {
 						id = btn.id + '_' + (++num);
 					}
 
 					if (!svgicons) {
 						icon = $('<img src="' + btn.icon + '">');
 					} else {
-						fallback_obj[id] = btn.icon;
+						fallbackObj[id] = btn.icon;
 						svgicon = btn.svgicon || btn.id;
-						if (btn.type == 'app_menu') {
-							placement_obj['#' + id + ' > div'] = svgicon;
+						if (btn.type === 'app_menu') {
+							placementObj['#' + id + ' > div'] = svgicon;
 						} else {
-							placement_obj['#' + id] = svgicon;
+							placementObj['#' + id] = svgicon;
 						}
 					}
 
 					var cls, parent;
 
 					// Set button up according to its type
-					switch ( btn.type ) {
+					switch (btn.type) {
 					case 'mode_flyout':
 					case 'mode':
 						cls = 'tool_button';
@@ -2645,8 +2624,8 @@ window.svgEditor = (function ($) {
 						parent = '#main_menu ul';
 						break;
 					}
-					var flyout_holder, cur_h, show_btn, ref_data, ref_btn;
-					var button = $((btn.list || btn.type == 'app_menu') ? '<li/>' : '<div/>')
+					var flyoutHolder, curH, showBtn, refData, refBtn;
+					var button = $((btn.list || btn.type === 'app_menu') ? '<li/>' : '<div/>')
 						.attr('id', id)
 						.attr('title', btn.title)
 						.addClass(cls);
@@ -2654,125 +2633,121 @@ window.svgEditor = (function ($) {
 						if ('position' in btn) {
 							if ($(parent).children().eq(btn.position).length) {
 								$(parent).children().eq(btn.position).before(button);
-							}
-							else {
+							} else {
 								$(parent).children().last().before(button);
 							}
 						} else {
 							button.appendTo(parent);
 						}
 
-						if (btn.type =='mode_flyout') {
+						if (btn.type === 'mode_flyout') {
 						// Add to flyout menu / make flyout menu
-//							var opts = btn.includeWith;
-//							// opts.button, default, position
-							ref_btn = $(button);
+							// var opts = btn.includeWith;
+							// // opts.button, default, position
+							refBtn = $(button);
 
-							flyout_holder = ref_btn.parent();
+							flyoutHolder = refBtn.parent();
 							// Create a flyout menu if there isn't one already
-							if (!ref_btn.parent().hasClass('tools_flyout')) {
+							if (!refBtn.parent().hasClass('tools_flyout')) {
 								// Create flyout placeholder
-								tls_id = ref_btn[0].id.replace('tool_', 'tools_');
-								show_btn = ref_btn.clone()
-									.attr('id', tls_id + '_show')
+								tlsId = refBtn[0].id.replace('tool_', 'tools_');
+								showBtn = refBtn.clone()
+									.attr('id', tlsId + '_show')
 									.append($('<div>', {'class': 'flyout_arrow_horiz'}));
 
-								ref_btn.before(show_btn);
+								refBtn.before(showBtn);
 
 								// Create a flyout div
-								flyout_holder = makeFlyoutHolder(tls_id, ref_btn);
-								flyout_holder.data('isLibrary', true);
-								show_btn.data('isLibrary', true);
+								flyoutHolder = makeFlyoutHolder(tlsId, refBtn);
+								flyoutHolder.data('isLibrary', true);
+								showBtn.data('isLibrary', true);
 							}
-//							ref_data = Actions.getButtonData(opts.button);
+							// refData = Actions.getButtonData(opts.button);
 
-							placement_obj['#' + tls_id + '_show'] = btn.id;
+							placementObj['#' + tlsId + '_show'] = btn.id;
 							// TODO: Find way to set the current icon using the iconloader if this is not default
 
 							// Include data for extension button as well as ref button
-							cur_h = holders['#'+flyout_holder[0].id] = [{
-								sel: '#'+id,
+							curH = holders['#' + flyoutHolder[0].id] = [{
+								sel: '#' + id,
 								fn: btn.events.click,
 								icon: btn.id,
-//									key: btn.key,
+								// key: btn.key,
 								isDefault: true
-							}, ref_data];
-//
-//							// {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
-//
-//							var pos = ('position' in opts)?opts.position:'last';
-//							var len = flyout_holder.children().length;
-//
-//							// Add at given position or end
-//							if (!isNaN(pos) && pos >= 0 && pos < len) {
-//								flyout_holder.children().eq(pos).before(button);
-//							} else {
-//								flyout_holder.append(button);
-//								cur_h.reverse();
-//							}
-						} else if (btn.type == 'app_menu') {
+							}, refData];
+							//
+							// // {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
+							//
+							// var pos = ('position' in opts)?opts.position:'last';
+							// var len = flyoutHolder.children().length;
+							//
+							// // Add at given position or end
+							// if (!isNaN(pos) && pos >= 0 && pos < len) {
+							// 	flyoutHolder.children().eq(pos).before(button);
+							// } else {
+							// 	flyoutHolder.append(button);
+							// 	curH.reverse();
+							// }
+						} else if (btn.type === 'app_menu') {
 							button.append('<div>').append(btn.title);
 						}
-
-					}
-					else if (btn.list) {
+					} else if (btn.list) {
 						// Add button to list
 						button.addClass('push_button');
 						$('#' + btn.list + '_opts').append(button);
 						if (btn.isDefault) {
 							$('#cur_' + btn.list).append(button.children().clone());
 							svgicon = btn.svgicon || btn.id;
-							placement_obj['#cur_' + btn.list] = svgicon;
+							placementObj['#cur_' + btn.list] = svgicon;
 						}
-					}
-					else if (btn.includeWith) {
+					} else if (btn.includeWith) {
 						// Add to flyout menu / make flyout menu
 						var opts = btn.includeWith;
 						// opts.button, default, position
-						ref_btn = $(opts.button);
+						refBtn = $(opts.button);
 
-						flyout_holder = ref_btn.parent();
+						flyoutHolder = refBtn.parent();
 						// Create a flyout menu if there isn't one already
-						if (!ref_btn.parent().hasClass('tools_flyout')) {
+						if (!refBtn.parent().hasClass('tools_flyout')) {
 							// Create flyout placeholder
-							tls_id = ref_btn[0].id.replace('tool_', 'tools_');
-							show_btn = ref_btn.clone()
-								.attr('id',tls_id + '_show')
+							tlsId = refBtn[0].id.replace('tool_', 'tools_');
+							showBtn = refBtn.clone()
+								.attr('id', tlsId + '_show')
 								.append($('<div>', {'class': 'flyout_arrow_horiz'}));
 
-							ref_btn.before(show_btn);
+							refBtn.before(showBtn);
 
 							// Create a flyout div
-							flyout_holder = makeFlyoutHolder(tls_id, ref_btn);
+							flyoutHolder = makeFlyoutHolder(tlsId, refBtn);
 						}
 
-						ref_data = Actions.getButtonData(opts.button);
+						refData = Actions.getButtonData(opts.button);
 
 						if (opts.isDefault) {
-							placement_obj['#' + tls_id + '_show'] = btn.id;
+							placementObj['#' + tlsId + '_show'] = btn.id;
 						}
 						// TODO: Find way to set the current icon using the iconloader if this is not default
 
 						// Include data for extension button as well as ref button
-						cur_h = holders['#' + flyout_holder[0].id] = [{
+						curH = holders['#' + flyoutHolder[0].id] = [{
 							sel: '#' + id,
 							fn: btn.events.click,
 							icon: btn.id,
 							key: btn.key,
 							isDefault: btn.includeWith ? btn.includeWith.isDefault : 0
-						}, ref_data];
+						}, refData];
 
 						// {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
 
 						var pos = ('position' in opts) ? opts.position : 'last';
-						var len = flyout_holder.children().length;
+						var len = flyoutHolder.children().length;
 
 						// Add at given position or end
 						if (!isNaN(pos) && pos >= 0 && pos < len) {
-							flyout_holder.children().eq(pos).before(button);
+							flyoutHolder.children().eq(pos).before(button);
 						} else {
-							flyout_holder.append(button);
-							cur_h.reverse();
+							flyoutHolder.append(button);
+							curH.reverse();
 						}
 					}
 
@@ -2782,12 +2757,12 @@ window.svgEditor = (function ($) {
 
 					if (!btn.list) {
 						// Add given events to button
-						$.each(btn.events, function(name, func) {
-							if (name == 'click' && btn.type == 'mode') {
+						$.each(btn.events, function (name, func) {
+							if (name === 'click' && btn.type === 'mode') {
 								if (btn.includeWith) {
 									button.bind(name, func);
 								} else {
-									button.bind(name, function() {
+									button.bind(name, function () {
 										if (toolButtonClick(button)) {
 											func();
 										}
@@ -2796,7 +2771,7 @@ window.svgEditor = (function ($) {
 								if (btn.key) {
 									$(document).bind('keydown', btn.key, func);
 									if (btn.title) {
-										button.attr('title', btn.title + ' ['+btn.key+']');
+										button.attr('title', btn.title + ' [' + btn.key + ']');
 									}
 								}
 							} else {
@@ -2808,27 +2783,27 @@ window.svgEditor = (function ($) {
 					setupFlyouts(holders);
 				});
 
-				$.each(btn_selects, function() {
+				$.each(btnSelects, function () {
 					addAltDropDown(this.elem, this.list, this.callback, {seticon: true});
 				});
 
 				if (svgicons) {
-					cb_ready = false; // Delay callback
+					cbReady = false; // Delay callback
 				}
 
 				$.svgIcons(svgicons, {
 					w: 24, h: 24,
 					id_match: false,
 					no_img: (!svgedit.browser.isWebkit()),
-					fallback: fallback_obj,
-					placement: placement_obj,
+					fallback: fallbackObj,
+					placement: placementObj,
 					callback: function (icons) {
 						// Non-ideal hack to make the icon match the current size
-						//if (curPrefs.iconsize && curPrefs.iconsize !== 'm') {
+						// if (curPrefs.iconsize && curPrefs.iconsize !== 'm') {
 						if ($.pref('iconsize') !== 'm') {
 							prepResize();
 						}
-						cb_ready = true; // Ready for callback
+						cbReady = true; // Ready for callback
 						runCallback();
 					}
 				});
@@ -2837,7 +2812,7 @@ window.svgEditor = (function ($) {
 			runCallback();
 		};
 
-		var getPaint = function(color, opac, type) {
+		var getPaint = function (color, opac, type) {
 			// update the editor's fill paint
 			var opts = { alpha: opac };
 			if (color.indexOf('url(#') === 0) {
@@ -2856,8 +2831,8 @@ window.svgEditor = (function ($) {
 			return new $.jGraduate.Paint(opts);
 		};
 
-		$('#text').focus( function(){ textBeingEntered = true; } );
-		$('#text').blur( function(){ textBeingEntered = false; } );
+		// $('#text').focus(function () { textBeingEntered = true; });
+		// $('#text').blur(function () { textBeingEntered = false; });
 
 		// bind the selected event to our function that handles updates to the UI
 		svgCanvas.bind('selected', selectedChanged);
@@ -2878,26 +2853,26 @@ window.svgEditor = (function ($) {
 		svgCanvas.textActions.setInputElem($('#text')[0]);
 
 		var str = '<div class="palette_item" data-rgb="none"></div>';
-		$.each(palette, function(i, item) {
+		$.each(palette, function (i, item) {
 			str += '<div class="palette_item" style="background-color: ' + item + ';" data-rgb="' + item + '"></div>';
 		});
 		$('#palette').append(str);
 
 		// Set up editor background functionality
 		// TODO add checkerboard as "pattern"
-		var color_blocks = ['#FFF', '#888', '#000']; // ,'url(data:image/gif;base64,R0lGODlhEAAQAIAAAP%2F%2F%2F9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG%2Bgq4jM3IFLJgpswNly%2FXkcBpIiVaInlLJr9FZWAQA7)'];
+		var colorBlocks = ['#FFF', '#888', '#000']; // ,'url(data:image/gif;base64,R0lGODlhEAAQAIAAAP%2F%2F%2F9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG%2Bgq4jM3IFLJgpswNly%2FXkcBpIiVaInlLJr9FZWAQA7)'];
 		str = '';
-		$.each(color_blocks, function() {
+		$.each(colorBlocks, function () {
 			str += '<div class="color_block" style="background-color:' + this + ';"></div>';
 		});
 		$('#bg_blocks').append(str);
 		var blocks = $('#bg_blocks div');
-		var cur_bg = 'cur_background';
-		blocks.each(function() {
+		var curBg = 'cur_background';
+		blocks.each(function () {
 			var blk = $(this);
-			blk.click(function() {
-				blocks.removeClass(cur_bg);
-				$(this).addClass(cur_bg);
+			blk.click(function () {
+				blocks.removeClass(curBg);
+				$(this).addClass(curBg);
 			});
 		});
 
@@ -2905,38 +2880,38 @@ window.svgEditor = (function ($) {
 
 		$('#image_save_opts input').val([$.pref('img_save')]);
 
-		var changeRectRadius = function(ctl) {
+		var changeRectRadius = function (ctl) {
 			svgCanvas.setRectRadius(ctl.value);
 		};
 
-		var changeFontSize = function(ctl) {
+		var changeFontSize = function (ctl) {
 			svgCanvas.setFontSize(ctl.value);
 		};
 
-		var changeStrokeWidth = function(ctl) {
+		var changeStrokeWidth = function (ctl) {
 			var val = ctl.value;
-			if (val == 0 && selectedElement && ['line', 'polyline'].indexOf(selectedElement.nodeName) >= 0) {
+			if (val === 0 && selectedElement && ['line', 'polyline'].indexOf(selectedElement.nodeName) >= 0) {
 				val = ctl.value = 1;
 			}
 			svgCanvas.setStrokeWidth(val);
 		};
 
-		var changeRotationAngle = function(ctl) {
+		var changeRotationAngle = function (ctl) {
 			svgCanvas.setRotationAngle(ctl.value);
 			$('#tool_reorient').toggleClass('disabled', parseInt(ctl.value, 10) === 0);
 		};
 
-		var changeOpacity = function(ctl, val) {
-			if (val == null) {val = ctl.value;}
+		var changeOpacity = function (ctl, val) {
+			if (val == null) { val = ctl.value; }
 			$('#group_opacity').val(val);
 			if (!ctl || !ctl.handle) {
 				$('#opac_slider').slider('option', 'value', val);
 			}
-			svgCanvas.setOpacity(val/100);
+			svgCanvas.setOpacity(val / 100);
 		};
 
-		var changeBlur = function(ctl, val, noUndo) {
-			if (val == null) {val = ctl.value;}
+		var changeBlur = function (ctl, val, noUndo) {
+			if (val == null) { val = ctl.value; }
 			$('#blur').val(val);
 			var complete = false;
 			if (!ctl || !ctl.handle) {
@@ -2950,26 +2925,26 @@ window.svgEditor = (function ($) {
 			}
 		};
 
-		$('#stroke_style').change(function() {
+		$('#stroke_style').change(function () {
 			svgCanvas.setStrokeAttr('stroke-dasharray', $(this).val());
 			operaRepaint();
 		});
 
-		$('#stroke_linejoin').change(function() {
+		$('#stroke_linejoin').change(function () {
 			svgCanvas.setStrokeAttr('stroke-linejoin', $(this).val());
 			operaRepaint();
 		});
 
 		// Lose focus for select elements when changed (Allows keyboard shortcuts to work better)
-		$('select').change(function(){$(this).blur();});
+		$('select').change(function () { $(this).blur(); });
 
 		// fired when user wants to move elements to another layer
 		var promptMoveLayerOnce = false;
-		$('#selLayerNames').change(function() {
+		$('#selLayerNames').change(function () {
 			var destLayer = this.options[this.selectedIndex].value;
 			var confirmStr = uiStrings.notification.QmoveElemsToLayer.replace('%s', destLayer);
-			var moveToLayer = function(ok) {
-				if (!ok) {return;}
+			var moveToLayer = function (ok) {
+				if (!ok) { return; }
 				promptMoveLayerOnce = true;
 				svgCanvas.moveSelectedToLayer(destLayer);
 				svgCanvas.clearSelection();
@@ -2984,23 +2959,23 @@ window.svgEditor = (function ($) {
 			}
 		});
 
-		$('#font_family').change(function() {
+		$('#font_family').change(function () {
 			svgCanvas.setFontFamily(this.value);
 		});
 
-		$('#seg_type').change(function() {
+		$('#seg_type').change(function () {
 			svgCanvas.setSegType($(this).val());
 		});
 
-		$('#text').bind("keyup input", function() {
+		$('#text').bind('keyup input', function () {
 			svgCanvas.setTextContent(this.value);
 		});
 
-		$('#image_url').change(function() {
+		$('#image_url').change(function () {
 			setImageURL(this.value);
 		});
 
-		$('#link_url').change(function() {
+		$('#link_url').change(function () {
 			if (this.value.length) {
 				svgCanvas.setLinkURL(this.value);
 			} else {
@@ -3008,11 +2983,11 @@ window.svgEditor = (function ($) {
 			}
 		});
 
-		$('#g_title').change(function() {
+		$('#g_title').change(function () {
 			svgCanvas.setGroupTitle(this.value);
 		});
 
-		$('.attr_changer').change(function() {
+		$('.attr_changer').change(function () {
 			var attr = this.getAttribute('data-attr');
 			var val = this.value;
 			var valid = svgedit.units.isValidUnit(attr, val, selectedElement);
@@ -3043,7 +3018,7 @@ window.svgEditor = (function ($) {
 				var elem = selectedElement;
 				svgCanvas.clearSelection();
 				elem.id = val;
-				svgCanvas.addToSelection([elem],true);
+				svgCanvas.addToSelection([elem], true);
 			} else {
 				svgCanvas.changeSelectedAttribute(attr, val);
 			}
@@ -3051,13 +3026,13 @@ window.svgEditor = (function ($) {
 		});
 
 		// Prevent selection of elements when shift-clicking
-		$('#palette').mouseover(function() {
+		$('#palette').mouseover(function () {
 			var inp = $('<input type="hidden">');
 			$(this).append(inp);
 			inp.focus().remove();
 		});
 
-		$('.palette_item').mousedown(function(evt) {
+		$('.palette_item').mousedown(function (evt) {
 			// shift key or right click for stroke
 			var picker = evt.shiftKey || evt.button === 2 ? 'stroke' : 'fill';
 			var color = $(this).data('rgb');
@@ -3078,57 +3053,57 @@ window.svgEditor = (function ($) {
 				svgCanvas.setPaintOpacity(picker, 1.0);
 			}
 			updateToolButtonState();
-		}).bind('contextmenu', function(e) {e.preventDefault();});
+		}).bind('contextmenu', function (e) { e.preventDefault(); });
 
-		$('#toggle_stroke_tools').on('click', function() {
+		$('#toggle_stroke_tools').on('click', function () {
 			$('#tools_bottom').toggleClass('expanded');
 		});
 
-		(function() {
-			var last_x = null, last_y = null, w_area = workarea[0],
+		(function () {
+			var lastX = null, lastY = null, wArea = workarea[0],
 				panning = false, keypan = false;
 
-			$('#svgcanvas').bind('mousemove mouseup', function(evt) {
-				if (panning === false) {return;}
+			$('#svgcanvas').bind('mousemove mouseup', function (evt) {
+				if (panning === false) { return; }
 
-				w_area.scrollLeft -= (evt.clientX - last_x);
-				w_area.scrollTop -= (evt.clientY - last_y);
+				wArea.scrollLeft -= (evt.clientX - lastX);
+				wArea.scrollTop -= (evt.clientY - lastY);
 
-				last_x = evt.clientX;
-				last_y = evt.clientY;
+				lastX = evt.clientX;
+				lastY = evt.clientY;
 
-				if (evt.type === 'mouseup') {panning = false;}
+				if (evt.type === 'mouseup') { panning = false; }
 				return false;
-			}).mousedown(function(evt) {
+			}).mousedown(function (evt) {
 				if (evt.button === 1 || keypan === true) {
 					panning = true;
-					last_x = evt.clientX;
-					last_y = evt.clientY;
+					lastX = evt.clientX;
+					lastY = evt.clientY;
 					return false;
 				}
 			});
 
-			$(window).mouseup(function() {
+			$(window).mouseup(function () {
 				panning = false;
 			});
 
-			$(document).bind('keydown', 'space', function(evt) {
+			$(document).bind('keydown', 'space', function (evt) {
 				svgCanvas.spaceKey = keypan = true;
 				evt.preventDefault();
-			}).bind('keyup', 'space', function(evt) {
+			}).bind('keyup', 'space', function (evt) {
 				evt.preventDefault();
 				svgCanvas.spaceKey = keypan = false;
-			}).bind('keydown', 'shift', function(evt) {
+			}).bind('keydown', 'shift', function (evt) {
 				if (svgCanvas.getMode() === 'zoom') {
 					workarea.css('cursor', zoomOutIcon);
 				}
-			}).bind('keyup', 'shift', function(evt) {
+			}).bind('keyup', 'shift', function (evt) {
 				if (svgCanvas.getMode() === 'zoom') {
 					workarea.css('cursor', zoomInIcon);
 				}
 			});
 
-			editor.setPanning = function(active) {
+			editor.setPanning = function (active) {
 				svgCanvas.spaceKey = keypan = active;
 			};
 		}());
@@ -3137,40 +3112,42 @@ window.svgEditor = (function ($) {
 			var button = $('#main_icon');
 			var overlay = $('#main_icon span');
 			var list = $('#main_menu');
-			var on_button = false;
+			var onButton = false;
 			var height = 0;
-			var js_hover = true;
-			var set_click = false;
+			var jsHover = true;
+			var setClick = false;
 
 			/*
 			// Currently unused
-			var hideMenu = function() {
+			var hideMenu = function () {
 				list.fadeOut(200);
 			};
 			*/
 
-			$(window).mouseup(function(evt) {
-				if (!on_button) {
+			$(window).mouseup(function (evt) {
+				if (!onButton) {
 					button.removeClass('buttondown');
 					// do not hide if it was the file input as that input needs to be visible
 					// for its change event to fire
-					if (evt.target.tagName != 'INPUT') {
+					if (evt.target.tagName !== 'INPUT') {
 						list.fadeOut(200);
-					} else if (!set_click) {
-						set_click = true;
-						$(evt.target).click(function() {
+					} else if (!setClick) {
+						setClick = true;
+						$(evt.target).click(function () {
 							list.css('margin-left', '-9999px').show();
 						});
 					}
 				}
-				on_button = false;
-			}).mousedown(function(evt) {
-//					$('.contextMenu').hide();
+				onButton = false;
+			}).mousedown(function (evt) {
+				// $('.contextMenu').hide();
 				var islib = $(evt.target).closest('div.tools_flyout, .contextMenu').length;
-				if (!islib) {$('.tools_flyout:visible,.contextMenu').fadeOut(250);}
+				if (!islib) {
+					$('.tools_flyout:visible,.contextMenu').fadeOut(250);
+				}
 			});
 
-			overlay.bind('mousedown',function() {
+			overlay.bind('mousedown', function () {
 				if (!button.hasClass('buttondown')) {
 					// Margin must be reset in case it was changed before;
 					list.css('margin-left', 0).show();
@@ -3178,31 +3155,31 @@ window.svgEditor = (function ($) {
 						height = list.height();
 					}
 					// Using custom animation as slideDown has annoying 'bounce effect'
-					list.css('height',0).animate({
+					list.css('height', 0).animate({
 						'height': height
 					}, 200);
-					on_button = true;
+					onButton = true;
 				} else {
 					list.fadeOut(200);
 				}
 				button.toggleClass('buttondown buttonup');
-			}).hover(function() {
-				on_button = true;
-			}).mouseout(function() {
-				on_button = false;
+			}).hover(function () {
+				onButton = true;
+			}).mouseout(function () {
+				onButton = false;
 			});
 
-			var list_items = $('#main_menu li');
+			var listItems = $('#main_menu li');
 
 			// Check if JS method of hovering needs to be used (Webkit bug)
-			list_items.mouseover(function() {
-				js_hover = ($(this).css('background-color') == 'rgba(0, 0, 0, 0)');
+			listItems.mouseover(function () {
+				jsHover = ($(this).css('background-color') === 'rgba(0, 0, 0, 0)');
 
-				list_items.unbind('mouseover');
-				if (js_hover) {
-					list_items.mouseover(function() {
+				listItems.unbind('mouseover');
+				if (jsHover) {
+					listItems.mouseover(function () {
 						this.style.backgroundColor = '#FFC';
-					}).mouseout(function() {
+					}).mouseout(function () {
 						this.style.backgroundColor = 'transparent';
 						return true;
 					});
@@ -3211,11 +3188,11 @@ window.svgEditor = (function ($) {
 		}());
 		// Made public for UI customization.
 		// TODO: Group UI functions into a public editor.ui interface.
-		editor.addDropDown = function(elem, callback, dropUp) {
-			if ($(elem).length == 0) {return;} // Quit if called on non-existant element
+		editor.addDropDown = function (elem, callback, dropUp) {
+			if ($(elem).length === 0) { return; } // Quit if called on non-existant element
 			var button = $(elem).find('button');
 			var list = $(elem).find('ul').attr('id', $(elem)[0].id + '-list');
-			var on_button = false;
+			var onButton = false;
 			if (dropUp) {
 				$(elem).addClass('dropup');
 			} else {
@@ -3224,15 +3201,15 @@ window.svgEditor = (function ($) {
 			}
 			list.find('li').bind('mouseup', callback);
 
-			$(window).mouseup(function(evt) {
-				if (!on_button) {
+			$(window).mouseup(function (evt) {
+				if (!onButton) {
 					button.removeClass('down');
 					list.hide();
 				}
-				on_button = false;
+				onButton = false;
 			});
 
-			button.bind('mousedown',function() {
+			button.bind('mousedown', function () {
 				if (!button.hasClass('down')) {
 					if (!dropUp) {
 						var pos = $(elem).position();
@@ -3242,38 +3219,38 @@ window.svgEditor = (function ($) {
 						});
 					}
 					list.show();
-					on_button = true;
+					onButton = true;
 				} else {
 					list.hide();
 				}
 				button.toggleClass('down');
-			}).hover(function() {
-				on_button = true;
-			}).mouseout(function() {
-				on_button = false;
+			}).hover(function () {
+				onButton = true;
+			}).mouseout(function () {
+				onButton = false;
 			});
 		};
 
-		editor.addDropDown('#font_family_dropdown', function() {
+		editor.addDropDown('#font_family_dropdown', function () {
 			$('#font_family').val($(this).text()).change();
 		});
 
-		editor.addDropDown('#opacity_dropdown', function() {
-			if ($(this).find('div').length) {return;}
+		editor.addDropDown('#opacity_dropdown', function () {
+			if ($(this).find('div').length) { return; }
 			var perc = parseInt($(this).text().split('%')[0], 10);
 			changeOpacity(false, perc);
 		}, true);
 
 		// For slider usage, see: http://jqueryui.com/demos/slider/
 		$('#opac_slider').slider({
-			start: function() {
+			start: function () {
 				$('#opacity_dropdown li:not(.special)').hide();
 			},
-			stop: function() {
+			stop: function () {
 				$('#opacity_dropdown li').show();
 				$(window).mouseup();
 			},
-			slide: function(evt, ui) {
+			slide: function (evt, ui) {
 				changeOpacity(ui);
 			}
 		});
@@ -3285,21 +3262,21 @@ window.svgEditor = (function ($) {
 		$('#blur_slider').slider({
 			max: 10,
 			step: 0.1,
-			stop: function(evt, ui) {
+			stop: function (evt, ui) {
 				slideStart = false;
 				changeBlur(ui);
 				$('#blur_dropdown li').show();
 				$(window).mouseup();
 			},
-			start: function() {
+			start: function () {
 				slideStart = true;
 			},
-			slide: function(evt, ui) {
+			slide: function (evt, ui) {
 				changeBlur(ui, null, slideStart);
 			}
 		});
 
-		editor.addDropDown('#zoom_dropdown', function() {
+		editor.addDropDown('#zoom_dropdown', function () {
 			var item = $(this);
 			var val = item.data('val');
 			if (val) {
@@ -3309,15 +3286,15 @@ window.svgEditor = (function ($) {
 			}
 		}, true);
 
-		addAltDropDown('#stroke_linecap', '#linecap_opts', function() {
+		addAltDropDown('#stroke_linecap', '#linecap_opts', function () {
 			setStrokeOpt(this, true);
 		}, {dropUp: true});
 
-		addAltDropDown('#stroke_linejoin', '#linejoin_opts', function() {
+		addAltDropDown('#stroke_linejoin', '#linejoin_opts', function () {
 			setStrokeOpt(this, true);
 		}, {dropUp: true});
 
-		addAltDropDown('#tool_position', '#position_opts', function() {
+		addAltDropDown('#tool_position', '#position_opts', function () {
 			var letter = this.id.replace('tool_pos', '').charAt(0);
 			svgCanvas.alignSelectedElements(letter, 'page');
 		}, {multiclick: true});
@@ -3339,88 +3316,88 @@ window.svgEditor = (function ($) {
 		*/
 
 		// Unfocus text input when workarea is mousedowned.
-		(function() {
+		(function () {
 			var inp;
-			var unfocus = function() {
+			var unfocus = function () {
 				$(inp).blur();
 			};
 
-			$('#svg_editor').find('button, select, input:not(#text)').focus(function() {
+			$('#svg_editor').find('button, select, input:not(#text)').focus(function () {
 				inp = this;
-				ui_context = 'toolbars';
+				uiContext = 'toolbars';
 				workarea.mousedown(unfocus);
-			}).blur(function() {
-				ui_context = 'canvas';
+			}).blur(function () {
+				uiContext = 'canvas';
 				workarea.unbind('mousedown', unfocus);
 				// Go back to selecting text if in textedit mode
-				if (svgCanvas.getMode() == 'textedit') {
+				if (svgCanvas.getMode() === 'textedit') {
 					$('#text').focus();
 				}
 			});
 		}());
 
-		var clickFHPath = function() {
+		var clickFHPath = function () {
 			if (toolButtonClick('#tool_fhpath')) {
 				svgCanvas.setMode('fhpath');
 			}
 		};
 
-		var clickLine = function() {
+		var clickLine = function () {
 			if (toolButtonClick('#tool_line')) {
 				svgCanvas.setMode('line');
 			}
 		};
 
-		var clickSquare = function() {
+		var clickSquare = function () {
 			if (toolButtonClick('#tool_square')) {
 				svgCanvas.setMode('square');
 			}
 		};
 
-		var clickRect = function() {
+		var clickRect = function () {
 			if (toolButtonClick('#tool_rect')) {
 				svgCanvas.setMode('rect');
 			}
 		};
 
-		var clickFHRect = function() {
+		var clickFHRect = function () {
 			if (toolButtonClick('#tool_fhrect')) {
 				svgCanvas.setMode('fhrect');
 			}
 		};
 
-		var clickCircle = function() {
+		var clickCircle = function () {
 			if (toolButtonClick('#tool_circle')) {
 				svgCanvas.setMode('circle');
 			}
 		};
 
-		var clickEllipse = function() {
+		var clickEllipse = function () {
 			if (toolButtonClick('#tool_ellipse')) {
 				svgCanvas.setMode('ellipse');
 			}
 		};
 
-		var clickFHEllipse = function() {
+		var clickFHEllipse = function () {
 			if (toolButtonClick('#tool_fhellipse')) {
 				svgCanvas.setMode('fhellipse');
 			}
 		};
 
-		var clickImage = function() {
+		var clickImage = function () {
 			if (toolButtonClick('#tool_image')) {
 				svgCanvas.setMode('image');
 			}
 		};
 
-		var clickZoom = function() {
+		var clickZoom = function () {
 			if (toolButtonClick('#tool_zoom')) {
 				svgCanvas.setMode('zoom');
 				workarea.css('cursor', zoomInIcon);
 			}
 		};
 
-		var zoomImage = function(multiplier) {
+		var zoomImage = function (multiplier) {
 			var res = svgCanvas.getResolution();
 			multiplier = multiplier ? res.zoom * multiplier : 1;
 			// setResolution(res.w * multiplier, res.h * multiplier, true);
@@ -3430,20 +3407,20 @@ window.svgEditor = (function ($) {
 			updateCanvas(true);
 		};
 
-		var dblclickZoom = function() {
+		var dblclickZoom = function () {
 			if (toolButtonClick('#tool_zoom')) {
 				zoomImage();
 				setSelectMode();
 			}
 		};
 
-		var clickText = function() {
+		var clickText = function () {
 			if (toolButtonClick('#tool_text')) {
 				svgCanvas.setMode('text');
 			}
 		};
 
-		var clickPath = function() {
+		var clickPath = function () {
 			if (toolButtonClick('#tool_path')) {
 				svgCanvas.setMode('path');
 			}
@@ -3451,70 +3428,70 @@ window.svgEditor = (function ($) {
 
 		// Delete is a contextual tool that only appears in the ribbon if
 		// an element has been selected
-		var deleteSelected = function() {
+		var deleteSelected = function () {
 			if (selectedElement != null || multiselected) {
 				svgCanvas.deleteSelectedElements();
 			}
 		};
 
-		var cutSelected = function() {
+		var cutSelected = function () {
 			if (selectedElement != null || multiselected) {
 				svgCanvas.cutSelectedElements();
 			}
 		};
 
-		var copySelected = function() {
+		var copySelected = function () {
 			if (selectedElement != null || multiselected) {
 				svgCanvas.copySelectedElements();
 			}
 		};
 
-		var pasteInCenter = function() {
+		var pasteInCenter = function () {
 			var zoom = svgCanvas.getZoom();
-			var x = (workarea[0].scrollLeft + workarea.width()/2)/zoom - svgCanvas.contentW;
-			var y = (workarea[0].scrollTop + workarea.height()/2)/zoom - svgCanvas.contentH;
+			var x = (workarea[0].scrollLeft + workarea.width() / 2) / zoom - svgCanvas.contentW;
+			var y = (workarea[0].scrollTop + workarea.height() / 2) / zoom - svgCanvas.contentH;
 			svgCanvas.pasteElements('point', x, y);
 		};
 
-		var moveToTopSelected = function() {
+		var moveToTopSelected = function () {
 			if (selectedElement != null) {
 				svgCanvas.moveToTopSelectedElement();
 			}
 		};
 
-		var moveToBottomSelected = function() {
+		var moveToBottomSelected = function () {
 			if (selectedElement != null) {
 				svgCanvas.moveToBottomSelectedElement();
 			}
 		};
 
-		var moveUpDownSelected = function(dir) {
+		var moveUpDownSelected = function (dir) {
 			if (selectedElement != null) {
 				svgCanvas.moveUpDownSelected(dir);
 			}
 		};
 
-		var convertToPath = function() {
+		var convertToPath = function () {
 			if (selectedElement != null) {
 				svgCanvas.convertToPath();
 			}
 		};
 
-		var reorientPath = function() {
+		var reorientPath = function () {
 			if (selectedElement != null) {
 				path.reorient();
 			}
 		};
 
-		var makeHyperlink = function() {
+		var makeHyperlink = function () {
 			if (selectedElement != null || multiselected) {
-				$.prompt(uiStrings.notification.enterNewLinkURL, 'http://', function(url) {
-					if (url) {svgCanvas.makeHyperlink(url);}
+				$.prompt(uiStrings.notification.enterNewLinkURL, 'http://', function (url) {
+					if (url) { svgCanvas.makeHyperlink(url); }
 				});
 			}
 		};
 
-		var moveSelected = function(dx,dy) {
+		var moveSelected = function (dx, dy) {
 			if (selectedElement != null || multiselected) {
 				if (curConfig.gridSnapping) {
 					// Use grid snap value regardless of zoom level
@@ -3522,59 +3499,59 @@ window.svgEditor = (function ($) {
 					dx *= multi;
 					dy *= multi;
 				}
-				svgCanvas.moveSelectedElements(dx,dy);
+				svgCanvas.moveSelectedElements(dx, dy);
 			}
 		};
 
-		var linkControlPoints = function() {
+		var linkControlPoints = function () {
 			$('#tool_node_link').toggleClass('push_button_pressed tool_button');
 			var linked = $('#tool_node_link').hasClass('push_button_pressed');
 			path.linkControlPoints(linked);
 		};
 
-		var clonePathNode = function() {
+		var clonePathNode = function () {
 			if (path.getNodePoint()) {
 				path.clonePathNode();
 			}
 		};
 
-		var deletePathNode = function() {
+		var deletePathNode = function () {
 			if (path.getNodePoint()) {
 				path.deletePathNode();
 			}
 		};
 
-		var addSubPath = function() {
+		var addSubPath = function () {
 			var button = $('#tool_add_subpath');
 			var sp = !button.hasClass('push_button_pressed');
 			button.toggleClass('push_button_pressed tool_button');
 			path.addSubPath(sp);
 		};
 
-		var opencloseSubPath = function() {
+		var opencloseSubPath = function () {
 			path.opencloseSubPath();
 		};
 
-		var selectNext = function() {
+		var selectNext = function () {
 			svgCanvas.cycleElement(1);
 		};
 
-		var selectPrev = function() {
+		var selectPrev = function () {
 			svgCanvas.cycleElement(0);
 		};
 
-		var rotateSelected = function(cw, step) {
-			if (selectedElement == null || multiselected) {return;}
-			if (!cw) {step *= -1;}
+		var rotateSelected = function (cw, step) {
+			if (selectedElement == null || multiselected) { return; }
+			if (!cw) { step *= -1; }
 			var angle = parseFloat($('#angle').val()) + step;
 			svgCanvas.setRotationAngle(angle);
 			updateContextPanel();
 		};
 
-		var clickClear = function() {
+		var clickClear = function () {
 			var dims = curConfig.dimensions;
-			$.confirm(uiStrings.notification.QwantToClear, function(ok) {
-				if (!ok) {return;}
+			$.confirm(uiStrings.notification.QwantToClear, function (ok) {
+				if (!ok) { return; }
 				setSelectMode();
 				svgCanvas.clear();
 				svgCanvas.setResolution(dims[0], dims[1]);
@@ -3587,19 +3564,19 @@ window.svgEditor = (function ($) {
 			});
 		};
 
-		var clickBold = function() {
-			svgCanvas.setBold( !svgCanvas.getBold() );
+		var clickBold = function () {
+			svgCanvas.setBold(!svgCanvas.getBold());
 			updateContextPanel();
 			return false;
 		};
 
-		var clickItalic = function() {
-			svgCanvas.setItalic( !svgCanvas.getItalic() );
+		var clickItalic = function () {
+			svgCanvas.setItalic(!svgCanvas.getItalic());
 			updateContextPanel();
 			return false;
 		};
 
-		var clickSave = function() {
+		var clickSave = function () {
 			// In the future, more options can be provided here
 			var saveOpts = {
 				'images': $.pref('img_save'),
@@ -3609,7 +3586,7 @@ window.svgEditor = (function ($) {
 		};
 
 		var loadingURL;
-		var clickExport = function() {
+		var clickExport = function () {
 			$.select('Select an image type for export: ', [
 				// See http://kangax.github.io/jstests/toDataUrl_mime_type_test/ for a useful list of MIME types and browser support
 				// 'ICO', // Todo: Find a way to preserve transparency in SVG-Edit if not working presently and do full packaging for x-icon; then switch back to position after 'PNG'
@@ -3633,7 +3610,7 @@ window.svgEditor = (function ($) {
 					} else {
 						popHTML = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + str + '</title></head><body><h1>' + str + '</h1></body><html>';
 						if (typeof URL && URL.createObjectURL) {
-							var blob = new Blob([popHTML], {type:'text/html'});
+							var blob = new Blob([popHTML], {type: 'text/html'});
 							popURL = URL.createObjectURL(blob);
 						} else {
 							popURL = 'data:text/html;base64;charset=utf-8,' + svgedit.utilities.encode64(popHTML);
@@ -3647,12 +3624,11 @@ window.svgEditor = (function ($) {
 						openExportWindow();
 					}
 					svgCanvas.exportPDF(exportWindowName);
-				}
-				else {
+				} else {
 					if (!customExportImage) {
 						openExportWindow();
 					}
-					var quality = parseInt($('#image-slider').val(), 10)/100;
+					var quality = parseInt($('#image-slider').val(), 10) / 100;
 					svgCanvas.rasterExport(imgType, quality, exportWindowName);
 				}
 			}, function () {
@@ -3661,8 +3637,7 @@ window.svgEditor = (function ($) {
 					if (!$('#image-slider').length) {
 						$('<div><label>Quality: <input id="image-slider" type="range" min="1" max="100" value="92" /></label></div>').appendTo(sel.parent()); // Todo: i18n-ize label
 					}
-				}
-				else {
+				} else {
 					$('#image-slider').parent().remove();
 				}
 			});
@@ -3671,57 +3646,56 @@ window.svgEditor = (function ($) {
 		// by default, svgCanvas.open() is a no-op.
 		// it is up to an extension mechanism (opera widget, etc)
 		// to call setCustomHandlers() which will make it do something
-		var clickOpen = function() {
+		var clickOpen = function () {
 			svgCanvas.open();
 		};
 
-		var clickImport = function() {
+		var clickImport = function () {
 		};
 
-		var clickUndo = function() {
+		var clickUndo = function () {
 			if (undoMgr.getUndoStackSize() > 0) {
 				undoMgr.undo();
 				populateLayers();
 			}
 		};
 
-		var clickRedo = function() {
+		var clickRedo = function () {
 			if (undoMgr.getRedoStackSize() > 0) {
 				undoMgr.redo();
 				populateLayers();
 			}
 		};
 
-		var clickGroup = function() {
+		var clickGroup = function () {
 			// group
 			if (multiselected) {
 				svgCanvas.groupSelectedElements();
-			}
 			// ungroup
-			else if (selectedElement) {
+			} else if (selectedElement) {
 				svgCanvas.ungroupSelectedElement();
 			}
 		};
 
-		var clickClone = function() {
+		var clickClone = function () {
 			svgCanvas.cloneSelectedElements(20, 20);
 		};
 
-		var clickAlign = function() {
+		var clickAlign = function () {
 			var letter = this.id.replace('tool_align', '').charAt(0);
 			svgCanvas.alignSelectedElements(letter, $('#align_relative_to').val());
 		};
 
-		var clickWireframe = function() {
+		var clickWireframe = function () {
 			$('#tool_wireframe').toggleClass('push_button_pressed tool_button');
 			workarea.toggleClass('wireframe');
 
-			if (supportsNonSS) {return;}
-			var wf_rules = $('#wireframe_rules');
-			if (!wf_rules.length) {
-				wf_rules = $('<style id="wireframe_rules"></style>').appendTo('head');
+			if (supportsNonSS) { return; }
+			var wfRules = $('#wireframe_rules');
+			if (!wfRules.length) {
+				wfRules = $('<style id="wireframe_rules"></style>').appendTo('head');
 			} else {
-				wf_rules.empty();
+				wfRules.empty();
 			}
 
 			updateWireFrame();
@@ -3729,8 +3703,8 @@ window.svgEditor = (function ($) {
 
 		$('#svg_docprops_container, #svg_prefs_container').draggable({cancel: 'button,fieldset', containment: 'window'});
 
-		var showDocProperties = function() {
-			if (docprops) {return;}
+		var showDocProperties = function () {
+			if (docprops) { return; }
 			docprops = true;
 
 			// This selects the correct radio button by using the array notation
@@ -3750,23 +3724,23 @@ window.svgEditor = (function ($) {
 			$('#svg_docprops').show();
 		};
 
-		var showPreferences = function() {
-			if (preferences) {return;}
+		var showPreferences = function () {
+			if (preferences) { return; }
 			preferences = true;
 			$('#main_menu').hide();
 
 			// Update background color with current one
 			var blocks = $('#bg_blocks div');
-			var cur_bg = 'cur_background';
-			var canvas_bg = curPrefs.bkgd_color;
+			var curBg = 'cur_background';
+			var canvasBg = curPrefs.bkgd_color;
 			var url = $.pref('bkgd_url');
-			blocks.each(function() {
+			blocks.each(function () {
 				var blk = $(this);
-				var is_bg = blk.css('background-color') == canvas_bg;
-				blk.toggleClass(cur_bg, is_bg);
-				if (is_bg) {$('#canvas_bg_url').removeClass(cur_bg);}
+				var isBg = blk.css('background-color') === canvasBg;
+				blk.toggleClass(curBg, isBg);
+				if (isBg) { $('#canvas_bg_url').removeClass(curBg); }
 			});
-			if (!canvas_bg) {blocks.eq(0).addClass(cur_bg);}
+			if (!canvasBg) { blocks.eq(0).addClass(curBg); }
 			if (url) {
 				$('#canvas_bg_url').val(url);
 			}
@@ -3777,16 +3751,16 @@ window.svgEditor = (function ($) {
 			$('#svg_prefs').show();
 		};
 
-		var hideSourceEditor = function() {
+		var hideSourceEditor = function () {
 			$('#svg_source_editor').hide();
 			editingsource = false;
 			$('#svg_source_textarea').blur();
 		};
 
-		var saveSourceEditor = function() {
-			if (!editingsource) {return;}
+		var saveSourceEditor = function () {
+			if (!editingsource) { return; }
 
-			var saveChanges = function() {
+			var saveChanges = function () {
 				svgCanvas.clearSelection();
 				hideSourceEditor();
 				zoomImage();
@@ -3796,8 +3770,8 @@ window.svgEditor = (function ($) {
 			};
 
 			if (!svgCanvas.setSvgString($('#svg_source_textarea').val())) {
-				$.confirm(uiStrings.notification.QerrorsRevertToSource, function(ok) {
-					if (!ok) {return false;}
+				$.confirm(uiStrings.notification.QerrorsRevertToSource, function (ok) {
+					if (!ok) { return false; }
 					saveChanges();
 				});
 			} else {
@@ -3806,7 +3780,7 @@ window.svgEditor = (function ($) {
 			setSelectMode();
 		};
 
-		var hideDocProperties = function() {
+		var hideDocProperties = function () {
 			$('#svg_docprops').hide();
 			$('#canvas_width,#canvas_height').removeAttr('disabled');
 			$('#resolution')[0].selectedIndex = 0;
@@ -3814,12 +3788,12 @@ window.svgEditor = (function ($) {
 			docprops = false;
 		};
 
-		var hidePreferences = function() {
+		var hidePreferences = function () {
 			$('#svg_prefs').hide();
 			preferences = false;
 		};
 
-		var saveDocProperties = function() {
+		var saveDocProperties = function () {
 			// set title
 			var newTitle = $('#canvas_title').val();
 			updateTitle(newTitle);
@@ -3829,7 +3803,7 @@ window.svgEditor = (function ($) {
 			var width = $('#canvas_width'), w = width.val();
 			var height = $('#canvas_height'), h = height.val();
 
-			if (w != 'fit' && !svgedit.units.isValidUnit('width', w)) {
+			if (w !== 'fit' && !svgedit.units.isValidUnit('width', w)) {
 				$.alert(uiStrings.notification.invalidAttrValGiven);
 				width.parent().addClass('error');
 				return false;
@@ -3837,7 +3811,7 @@ window.svgEditor = (function ($) {
 
 			width.parent().removeClass('error');
 
-			if (h != 'fit' && !svgedit.units.isValidUnit('height', h)) {
+			if (h !== 'fit' && !svgedit.units.isValidUnit('height', h)) {
 				$.alert(uiStrings.notification.invalidAttrValGiven);
 				height.parent().addClass('error');
 				return false;
@@ -3856,7 +3830,7 @@ window.svgEditor = (function ($) {
 			hideDocProperties();
 		};
 
-		var savePreferences = editor.savePreferences = function() {
+		var savePreferences = editor.savePreferences = function () {
 			// Set background
 			var color = $('#bg_blocks div.cur_background').css('background-color') || '#FFF';
 			setBackground(color, $('#canvas_bg_url').val());
@@ -3864,7 +3838,7 @@ window.svgEditor = (function ($) {
 			// set language
 			var lang = $('#lang_select').val();
 			if (lang !== $.pref('lang')) {
-				editor.putLocale(lang, good_langs);
+				editor.putLocale(lang, goodLangs);
 			}
 
 			// set icon size
@@ -3877,7 +3851,7 @@ window.svgEditor = (function ($) {
 			curConfig.showRulers = $('#show_rulers')[0].checked;
 
 			$('#rulers').toggle(curConfig.showRulers);
-			if (curConfig.showRulers) {updateRulers();}
+			if (curConfig.showRulers) { updateRulers(); }
 			curConfig.baseUnit = $('#base_unit').val();
 
 			svgCanvas.setConfig(curConfig);
@@ -3888,10 +3862,10 @@ window.svgEditor = (function ($) {
 
 		var resetScrollPos = $.noop;
 
-		var cancelOverlays = function() {
+		var cancelOverlays = function () {
 			$('#dialog_box').hide();
 			if (!editingsource && !docprops && !preferences) {
-				if (cur_context) {
+				if (curContext) {
 					svgCanvas.leaveContext();
 				}
 				return;
@@ -3899,8 +3873,8 @@ window.svgEditor = (function ($) {
 
 			if (editingsource) {
 				if (origSource !== $('#svg_source_textarea').val()) {
-					$.confirm(uiStrings.notification.QignoreSourceChanges, function(ok) {
-						if (ok) {hideSourceEditor();}
+					$.confirm(uiStrings.notification.QignoreSourceChanges, function (ok) {
+						if (ok) { hideSourceEditor(); }
 					});
 				} else {
 					hideSourceEditor();
@@ -3913,12 +3887,12 @@ window.svgEditor = (function ($) {
 			resetScrollPos();
 		};
 
-		var win_wh = {width:$(window).width(), height:$(window).height()};
+		var winWh = {width: $(window).width(), height: $(window).height()};
 
 		// Fix for Issue 781: Drawing area jumps to top-left corner on window resize (IE9)
 		if (svgedit.browser.isIE()) {
-			(function() {
-				resetScrollPos = function() {
+			(function () {
+				resetScrollPos = function () {
 					if (workarea[0].scrollLeft === 0 && workarea[0].scrollTop === 0) {
 						workarea[0].scrollLeft = curScrollPos.left;
 						workarea[0].scrollTop = curScrollPos.top;
@@ -3931,15 +3905,15 @@ window.svgEditor = (function ($) {
 				};
 
 				$(window).resize(resetScrollPos);
-				editor.ready(function() {
+				editor.ready(function () {
 					// TODO: Find better way to detect when to do this to minimize
 					// flickering effect
-					setTimeout(function() {
+					setTimeout(function () {
 						resetScrollPos();
 					}, 500);
 				});
 
-				workarea.scroll(function() {
+				workarea.scroll(function () {
 					curScrollPos = {
 						left: workarea[0].scrollLeft,
 						top: workarea[0].scrollTop
@@ -3948,29 +3922,28 @@ window.svgEditor = (function ($) {
 			}());
 		}
 
-		$(window).resize(function(evt) {
-			$.each(win_wh, function(type, val) {
+		$(window).resize(function (evt) {
+			$.each(winWh, function (type, val) {
 				var curval = $(window)[type]();
-				workarea[0]['scroll' + (type === 'width' ? 'Left' : 'Top')] -= (curval - val)/2;
-				win_wh[type] = curval;
+				workarea[0]['scroll' + (type === 'width' ? 'Left' : 'Top')] -= (curval - val) / 2;
+				winWh[type] = curval;
 			});
 			setFlyoutPositions();
 		});
 
-		(function() {
-			workarea.scroll(function() {
+		(function () {
+			workarea.scroll(function () {
 				// TODO: jQuery's scrollLeft/Top() wouldn't require a null check
-				if ($('#ruler_x').length != 0) {
+				if ($('#ruler_x').length !== 0) {
 					$('#ruler_x')[0].scrollLeft = workarea[0].scrollLeft;
 				}
-				if ($('#ruler_y').length != 0) {
+				if ($('#ruler_y').length !== 0) {
 					$('#ruler_y')[0].scrollTop = workarea[0].scrollTop;
 				}
 			});
-
 		}());
 
-		$('#url_notice').click(function() {
+		$('#url_notice').click(function () {
 			$.alert(this.title);
 		});
 
@@ -3978,26 +3951,26 @@ window.svgEditor = (function ($) {
 
 		// added these event handlers for all the push buttons so they
 		// behave more like buttons being pressed-in and not images
-		(function() {
+		(function () {
 			var toolnames = ['clear', 'open', 'save', 'source', 'delete', 'delete_multi', 'paste', 'clone', 'clone_multi', 'move_top', 'move_bottom'];
-			var all_tools = '';
-			var cur_class = 'tool_button_current';
+			var allTools = '';
+			var curClass = 'tool_button_current';
 
-			$.each(toolnames, function(i, item) {
-				all_tools += (i ? ',' : '') + '#tool_' + item;
+			$.each(toolnames, function (i, item) {
+				allTools += (i ? ',' : '') + '#tool_' + item;
 			});
 
-			$(all_tools).mousedown(function() {
-				$(this).addClass(cur_class);
-			}).bind('mousedown mouseout', function() {
-				$(this).removeClass(cur_class);
+			$(allTools).mousedown(function () {
+				$(this).addClass(curClass);
+			}).bind('mousedown mouseout', function () {
+				$(this).removeClass(curClass);
 			});
 
-			$('#tool_undo, #tool_redo').mousedown(function() {
-				if (!$(this).hasClass('disabled')) {$(this).addClass(cur_class);}
-			}).bind('mousedown mouseout',function() {
-				$(this).removeClass(cur_class);}
-			);
+			$('#tool_undo, #tool_redo').mousedown(function () {
+				if (!$(this).hasClass('disabled')) { $(this).addClass(curClass); }
+			}).bind('mousedown mouseout', function () {
+				$(this).removeClass(curClass);
+			});
 		}());
 
 		// switch modifier key in tooltips if mac
@@ -4018,46 +3991,47 @@ window.svgEditor = (function ($) {
 
 		// TODO: go back to the color boxes having white background-color and then setting
 		//	background-image to none.png (otherwise partially transparent gradients look weird)
-		var colorPicker = function(elem) {
-			var picker = elem.attr('id') == 'stroke_color' ? 'stroke' : 'fill';
-//				var opacity = (picker == 'stroke' ? $('#stroke_opacity') : $('#fill_opacity'));
+		var colorPicker = function (elem) {
+			var picker = elem.attr('id') === 'stroke_color' ? 'stroke' : 'fill';
+			// var opacity = (picker == 'stroke' ? $('#stroke_opacity') : $('#fill_opacity'));
 			var paint = paintBox[picker].paint;
-			var title = (picker == 'stroke' ? 'Pick a Stroke Paint and Opacity' : 'Pick a Fill Paint and Opacity');
+			var title = (picker === 'stroke' ? 'Pick a Stroke Paint and Opacity' : 'Pick a Fill Paint and Opacity');
 			// var was_none = false; // Currently unused
 			var pos = elem.offset();
 			$('#color_picker')
 				.draggable({cancel: '.jGraduate_tabs, .jGraduate_colPick, .jGraduate_gradPick, .jPicker', containment: 'window'})
 				.css(curConfig.colorPickerCSS || {'left': pos.left - 140, 'bottom': 40})
 				.jGraduate(
-				{
-					paint: paint,
-					window: { pickerTitle: title },
-					images: { clientPath: curConfig.jGraduatePath },
-					newstop: 'inverse'
-				},
-				function(p) {
-					paint = new $.jGraduate.Paint(p);
-					paintBox[picker].setPaint(paint);
-					svgCanvas.setPaint(picker, paint);
-					$('#color_picker').hide();
-				},
-				function() {
-					$('#color_picker').hide();
-				});
+					{
+						paint: paint,
+						window: { pickerTitle: title },
+						images: { clientPath: curConfig.jGraduatePath },
+						newstop: 'inverse'
+					},
+					function (p) {
+						paint = new $.jGraduate.Paint(p);
+						paintBox[picker].setPaint(paint);
+						svgCanvas.setPaint(picker, paint);
+						$('#color_picker').hide();
+					},
+					function () {
+						$('#color_picker').hide();
+					}
+				);
 		};
 
-		var PaintBox = function(container, type) {
+		var PaintBox = function (container, type) {
 			var paintColor, paintOpacity,
 				cur = curConfig[type === 'fill' ? 'initFill' : 'initStroke'];
 			// set up gradients to be used for the buttons
 			var svgdocbox = new DOMParser().parseFromString(
-				'<svg xmlns="http://www.w3.org/2000/svg"><rect width="16.5" height="16.5"'+
-'					fill="#' + cur.color + '" opacity="' + cur.opacity + '"/>'+
+				'<svg xmlns="http://www.w3.org/2000/svg"><rect width="16.5" height="16.5"' +
+'					fill="#' + cur.color + '" opacity="' + cur.opacity + '"/>' +
 '					<defs><linearGradient id="gradbox_"/></defs></svg>', 'text/xml');
 			var docElem = svgdocbox.documentElement;
 
 			docElem = $(container)[0].appendChild(document.importNode(docElem, true));
-			docElem.setAttribute('width',16.5);
+			docElem.setAttribute('width', 16.5);
 
 			this.rect = docElem.firstChild;
 			this.defs = docElem.getElementsByTagName('defs')[0];
@@ -4065,24 +4039,24 @@ window.svgEditor = (function ($) {
 			this.paint = new $.jGraduate.Paint({solidColor: cur.color});
 			this.type = type;
 
-			this.setPaint = function(paint, apply) {
+			this.setPaint = function (paint, apply) {
 				this.paint = paint;
 
 				var fillAttr = 'none';
 				var ptype = paint.type;
 				var opac = paint.alpha / 100;
 
-				switch ( ptype ) {
-					case 'solidColor':
-						fillAttr = (paint[ptype] != 'none') ? '#' + paint[ptype] : paint[ptype];
-						break;
-					case 'linearGradient':
-					case 'radialGradient':
-						this.defs.removeChild(this.grad);
-						this.grad = this.defs.appendChild(paint[ptype]);
-						var id = this.grad.id = 'gradbox_' + this.type;
-						fillAttr = 'url(#' + id + ')';
-						break;
+				switch (ptype) {
+				case 'solidColor':
+					fillAttr = (paint[ptype] !== 'none') ? '#' + paint[ptype] : paint[ptype];
+					break;
+				case 'linearGradient':
+				case 'radialGradient':
+					this.defs.removeChild(this.grad);
+					this.grad = this.defs.appendChild(paint[ptype]);
+					var id = this.grad.id = 'gradbox_' + this.type;
+					fillAttr = 'url(#' + id + ')';
+					break;
 				}
 
 				this.rect.setAttribute('fill', fillAttr);
@@ -4094,8 +4068,8 @@ window.svgEditor = (function ($) {
 				}
 			};
 
-			this.update = function(apply) {
-				if (!selectedElement) {return;}
+			this.update = function (apply) {
+				if (!selectedElement) { return; }
 				var i, len;
 				var type = this.type;
 				switch (selectedElement.tagName) {
@@ -4151,15 +4125,15 @@ window.svgEditor = (function ($) {
 				this.setPaint(paint);
 			};
 
-			this.prep = function() {
+			this.prep = function () {
 				var ptype = this.paint.type;
 
-				switch ( ptype ) {
-					case 'linearGradient':
-					case 'radialGradient':
-						var paint = new $.jGraduate.Paint({copy: this.paint});
-						svgCanvas.setPaint(type, paint);
-						break;
+				switch (ptype) {
+				case 'linearGradient':
+				case 'radialGradient':
+					var paint = new $.jGraduate.Paint({copy: this.paint});
+					svgCanvas.setPaint(type, paint);
+					break;
 				}
 			};
 		};
@@ -4184,7 +4158,7 @@ window.svgEditor = (function ($) {
 		$(blurTest).remove();
 
 		// Test for zoom icon support
-		(function() {
+		(function () {
 			var pre = '-' + uaPrefix.toLowerCase() + '-zoom-';
 			var zoom = pre + 'in';
 			workarea.css('cursor', zoom);
@@ -4196,8 +4170,8 @@ window.svgEditor = (function ($) {
 		}());
 
 		// Test for embedImage support (use timeout to not interfere with page load)
-		setTimeout(function() {
-			svgCanvas.embedImage('images/logo.png', function(datauri) {
+		setTimeout(function () {
+			svgCanvas.embedImage('images/logo.png', function (datauri) {
 				if (!datauri) {
 					// Disable option
 					$('#image_save_opts [value=embed]').attr('disabled', 'disabled');
@@ -4208,59 +4182,59 @@ window.svgEditor = (function ($) {
 			});
 		}, 1000);
 
-		$('#fill_color, #tool_fill .icon_label').click(function() {
+		$('#fill_color, #tool_fill .icon_label').click(function () {
 			colorPicker($('#fill_color'));
 			updateToolButtonState();
 		});
 
-		$('#stroke_color, #tool_stroke .icon_label').click(function() {
+		$('#stroke_color, #tool_stroke .icon_label').click(function () {
 			colorPicker($('#stroke_color'));
 			updateToolButtonState();
 		});
 
-		$('#group_opacityLabel').click(function() {
+		$('#group_opacityLabel').click(function () {
 			$('#opacity_dropdown button').mousedown();
 			$(window).mouseup();
 		});
 
-		$('#zoomLabel').click(function() {
+		$('#zoomLabel').click(function () {
 			$('#zoom_dropdown button').mousedown();
 			$(window).mouseup();
 		});
 
-		$('#tool_move_top').mousedown(function(evt) {
+		$('#tool_move_top').mousedown(function (evt) {
 			$('#tools_stacking').show();
 			evt.preventDefault();
 		});
 
-		$('.layer_button').mousedown(function() {
+		$('.layer_button').mousedown(function () {
 			$(this).addClass('layer_buttonpressed');
-		}).mouseout(function() {
+		}).mouseout(function () {
 			$(this).removeClass('layer_buttonpressed');
-		}).mouseup(function() {
+		}).mouseup(function () {
 			$(this).removeClass('layer_buttonpressed');
 		});
 
-		$('.push_button').mousedown(function() {
+		$('.push_button').mousedown(function () {
 			if (!$(this).hasClass('disabled')) {
 				$(this).addClass('push_button_pressed').removeClass('push_button');
 			}
-		}).mouseout(function() {
+		}).mouseout(function () {
 			$(this).removeClass('push_button_pressed').addClass('push_button');
-		}).mouseup(function() {
+		}).mouseup(function () {
 			$(this).removeClass('push_button_pressed').addClass('push_button');
 		});
 
 		// ask for a layer name
-		$('#layer_new').click(function() {
+		$('#layer_new').click(function () {
 			var uniqName,
 				i = svgCanvas.getCurrentDrawing().getNumLayers();
 			do {
 				uniqName = uiStrings.layers.layer + ' ' + (++i);
-			} while(svgCanvas.getCurrentDrawing().hasLayer(uniqName));
+			} while (svgCanvas.getCurrentDrawing().hasLayer(uniqName));
 
-			$.prompt(uiStrings.notification.enterUniqueLayerName, uniqName, function(newName) {
-				if (!newName) {return;}
+			$.prompt(uiStrings.notification.enterUniqueLayerName, uniqName, function (newName) {
+				if (!newName) { return; }
 				if (svgCanvas.getCurrentDrawing().hasLayer(newName)) {
 					$.alert(uiStrings.notification.dupeLayerName);
 					return;
@@ -4271,7 +4245,7 @@ window.svgEditor = (function ($) {
 			});
 		});
 
-		function deleteLayer() {
+		function deleteLayer () {
 			if (svgCanvas.deleteCurrentLayer()) {
 				updateContextPanel();
 				populateLayers();
@@ -4283,11 +4257,11 @@ window.svgEditor = (function ($) {
 			}
 		}
 
-		function cloneLayer() {
+		function cloneLayer () {
 			var name = svgCanvas.getCurrentDrawing().getCurrentLayerName() + ' copy';
 
-			$.prompt(uiStrings.notification.enterUniqueLayerName, name, function(newName) {
-				if (!newName) {return;}
+			$.prompt(uiStrings.notification.enterUniqueLayerName, name, function (newName) {
+				if (!newName) { return; }
 				if (svgCanvas.getCurrentDrawing().hasLayer(newName)) {
 					$.alert(uiStrings.notification.dupeLayerName);
 					return;
@@ -4298,8 +4272,8 @@ window.svgEditor = (function ($) {
 			});
 		}
 
-		function mergeLayer() {
-			if ($('#layerlist tr.layersel').index() == svgCanvas.getCurrentDrawing().getNumLayers()-1) {
+		function mergeLayer () {
+			if ($('#layerlist tr.layersel').index() === svgCanvas.getCurrentDrawing().getNumLayers() - 1) {
 				return;
 			}
 			svgCanvas.mergeLayer();
@@ -4307,32 +4281,32 @@ window.svgEditor = (function ($) {
 			populateLayers();
 		}
 
-		function moveLayer(pos) {
+		function moveLayer (pos) {
 			var curIndex = $('#layerlist tr.layersel').index();
 			var total = svgCanvas.getCurrentDrawing().getNumLayers();
-			if (curIndex > 0 || curIndex < total-1) {
+			if (curIndex > 0 || curIndex < total - 1) {
 				curIndex += pos;
-				svgCanvas.setCurrentLayerPosition(total-curIndex-1);
+				svgCanvas.setCurrentLayerPosition(total - curIndex - 1);
 				populateLayers();
 			}
 		}
 
 		$('#layer_delete').click(deleteLayer);
 
-		$('#layer_up').click(function() {
+		$('#layer_up').click(function () {
 			moveLayer(-1);
 		});
 
-		$('#layer_down').click(function() {
+		$('#layer_down').click(function () {
 			moveLayer(1);
 		});
 
-		$('#layer_rename').click(function() {
+		$('#layer_rename').click(function () {
 			// var curIndex = $('#layerlist tr.layersel').prevAll().length; // Currently unused
 			var oldName = $('#layerlist tr.layersel td.layername').text();
-			$.prompt(uiStrings.notification.enterNewLayerName, '', function(newName) {
-				if (!newName) {return;}
-				if (oldName == newName || svgCanvas.getCurrentDrawing().hasLayer(newName)) {
+			$.prompt(uiStrings.notification.enterNewLayerName, '', function (newName) {
+				if (!newName) { return; }
+				if (oldName === newName || svgCanvas.getCurrentDrawing().hasLayer(newName)) {
 					$.alert(uiStrings.notification.layerHasThatName);
 					return;
 				}
@@ -4346,7 +4320,7 @@ window.svgEditor = (function ($) {
 		var SIDEPANEL_OPENWIDTH = 150;
 		var sidedrag = -1, sidedragging = false, allowmove = false;
 
-		var changeSidePanelWidth = function(delta) {
+		var changeSidePanelWidth = function (delta) {
 			var rulerX = $('#ruler_x');
 			$('#sidepanels').width('+=' + delta);
 			$('#layerpanel').width('+=' + delta);
@@ -4355,9 +4329,9 @@ window.svgEditor = (function ($) {
 			svgCanvas.runExtensions('workareaResized');
 		};
 
-		var resizeSidePanel = function(evt) {
-			if (!allowmove) {return;}
-			if (sidedrag == -1) {return;}
+		var resizeSidePanel = function (evt) {
+			if (!allowmove) { return; }
+			if (sidedrag === -1) { return; }
 			sidedragging = true;
 			var deltaX = sidedrag - evt.pageX;
 			var sideWidth = $('#sidepanels').width();
@@ -4368,36 +4342,36 @@ window.svgEditor = (function ($) {
 				deltaX = 2 - sideWidth;
 				sideWidth = 2;
 			}
-			if (deltaX == 0) {return;}
+			if (deltaX === 0) { return; }
 			sidedrag -= deltaX;
 			changeSidePanelWidth(deltaX);
 		};
 
 		// if width is non-zero, then fully close it, otherwise fully open it
 		// the optional close argument forces the side panel closed
-		var toggleSidePanel = function(close) {
+		var toggleSidePanel = function (close) {
 			var w = $('#sidepanels').width();
 			var deltaX = (w > 2 || close ? 2 : SIDEPANEL_OPENWIDTH) - w;
 			changeSidePanelWidth(deltaX);
 		};
 
 		$('#sidepanel_handle')
-			.mousedown(function(evt) {
+			.mousedown(function (evt) {
 				sidedrag = evt.pageX;
 				$(window).mousemove(resizeSidePanel);
 				allowmove = false;
 				// Silly hack for Chrome, which always runs mousemove right after mousedown
-				setTimeout(function() {
+				setTimeout(function () {
 					allowmove = true;
 				}, 20);
 			})
-			.mouseup(function(evt) {
-				if (!sidedragging) {toggleSidePanel();}
+			.mouseup(function (evt) {
+				if (!sidedragging) { toggleSidePanel(); }
 				sidedrag = -1;
 				sidedragging = false;
 			});
 
-		$(window).mouseup(function() {
+		$(window).mouseup(function () {
 			sidedrag = -1;
 			sidedragging = false;
 			$('#svg_editor').unbind('mousemove', resizeSidePanel);
@@ -4405,77 +4379,77 @@ window.svgEditor = (function ($) {
 
 		populateLayers();
 
-	//	function changeResolution(x,y) {
-	//		var zoom = svgCanvas.getResolution().zoom;
-	//		setResolution(x * zoom, y * zoom);
-	//	}
+		// function changeResolution (x,y) {
+		// 	var zoom = svgCanvas.getResolution().zoom;
+		// 	setResolution(x * zoom, y * zoom);
+		// }
 
-		var centerCanvas = function() {
+		var centerCanvas = function () {
 			// this centers the canvas vertically in the workarea (horizontal handled in CSS)
 			workarea.css('line-height', workarea.height() + 'px');
 		};
 
 		$(window).bind('load resize', centerCanvas);
 
-		function stepFontSize(elem, step) {
-			var orig_val = Number(elem.value);
-			var sug_val = orig_val + step;
-			var increasing = sug_val >= orig_val;
-			if (step === 0) {return orig_val;}
+		function stepFontSize (elem, step) {
+			var origVal = Number(elem.value);
+			var sugVal = origVal + step;
+			var increasing = sugVal >= origVal;
+			if (step === 0) { return origVal; }
 
-			if (orig_val >= 24) {
+			if (origVal >= 24) {
 				if (increasing) {
-					return Math.round(orig_val * 1.1);
+					return Math.round(origVal * 1.1);
 				}
-				return Math.round(orig_val / 1.1);
+				return Math.round(origVal / 1.1);
 			}
-			if (orig_val <= 1) {
+			if (origVal <= 1) {
 				if (increasing) {
-					return orig_val * 2;
+					return origVal * 2;
 				}
-				return orig_val / 2;
+				return origVal / 2;
 			}
-			return sug_val;
+			return sugVal;
 		}
 
-		function stepZoom(elem, step) {
-			var orig_val = Number(elem.value);
-			if (orig_val === 0) {return 100;}
-			var sug_val = orig_val + step;
-			if (step === 0) {return orig_val;}
+		function stepZoom (elem, step) {
+			var origVal = Number(elem.value);
+			if (origVal === 0) { return 100; }
+			var sugVal = origVal + step;
+			if (step === 0) { return origVal; }
 
-			if (orig_val >= 100) {
-				return sug_val;
+			if (origVal >= 100) {
+				return sugVal;
 			}
-			if (sug_val >= orig_val) {
-				return orig_val * 2;
+			if (sugVal >= origVal) {
+				return origVal * 2;
 			}
-			return orig_val / 2;
+			return origVal / 2;
 		}
 
-	//	function setResolution(w, h, center) {
-	//		updateCanvas();
-	// //		w-=0; h-=0;
-	// //		$('#svgcanvas').css( { 'width': w, 'height': h } );
-	// //		$('#canvas_width').val(w);
-	// //		$('#canvas_height').val(h);
-	// //
-	// //		if (center) {
-	// //			var w_area = workarea;
-	// //			var scroll_y = h/2 - w_area.height()/2;
-	// //			var scroll_x = w/2 - w_area.width()/2;
-	// //			w_area[0].scrollTop = scroll_y;
-	// //			w_area[0].scrollLeft = scroll_x;
-	// //		}
-	//	}
+		// function setResolution (w, h, center) {
+		// 	updateCanvas();
+		// 	// w -= 0; h -= 0;
+		// 	// $('#svgcanvas').css({'width': w, 'height': h});
+		// 	// $('#canvas_width').val(w);
+		// 	// $('#canvas_height').val(h);
+		// 	//
+		// 	// if (center) {
+		// 	// 	var wArea = workarea;
+		// 	// 	var scrollY = h/2 - wArea.height()/2;
+		// 	// 	var scrollX = w/2 - wArea.width()/2;
+		// 	// 	wArea[0].scrollTop = scrollY;
+		// 	// 	wArea[0].scrollLeft = scrollX;
+		// 	// }
+		// }
 
-		$('#resolution').change(function() {
+		$('#resolution').change(function () {
 			var wh = $('#canvas_width,#canvas_height');
 			if (!this.selectedIndex) {
-				if ($('#canvas_width').val() == 'fit') {
+				if ($('#canvas_width').val() === 'fit') {
 					wh.removeAttr('disabled').val(100);
 				}
-			} else if (this.value == 'content') {
+			} else if (this.value === 'content') {
 				wh.val('fit').attr('disabled', 'disabled');
 			} else {
 				var dims = this.value.split('x');
@@ -4485,13 +4459,13 @@ window.svgEditor = (function ($) {
 			}
 		});
 
-		//Prevent browser from erroneously repopulating fields
+		// Prevent browser from erroneously repopulating fields
 		$('input,select').attr('autocomplete', 'off');
 
 		// Associate all button actions as well as non-button keyboard shortcuts
-		Actions = (function() {
+		Actions = (function () {
 			// sel:'selector', fn:function, evt:'event', key:[key, preventDefault, NoDisableInInput]
-			var tool_buttons = [
+			var toolButtons = [
 				{sel: '#tool_select', fn: clickSelect, evt: 'click', key: ['V', true]},
 				{sel: '#tool_fhpath', fn: clickFHPath, evt: 'click', key: ['Q', true]},
 				{sel: '#tool_line', fn: clickLine, evt: 'click', key: ['L', true]},
@@ -4506,11 +4480,10 @@ window.svgEditor = (function ($) {
 				{sel: '#tool_image', fn: clickImage, evt: 'mouseup'},
 				{sel: '#tool_zoom', fn: clickZoom, evt: 'mouseup', key: ['Z', true]},
 				{sel: '#tool_clear', fn: clickClear, evt: 'mouseup', key: ['N', true]},
-				{sel: '#tool_save', fn: function() {
+				{sel: '#tool_save', fn: function () {
 					if (editingsource) {
 						saveSourceEditor();
-					}
-					else {
+					} else {
 						clickSave();
 					}
 				}, evt: 'mouseup', key: ['S', true]},
@@ -4524,7 +4497,7 @@ window.svgEditor = (function ($) {
 				{sel: '#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
 				{sel: '#tool_docprops', fn: showDocProperties, evt: 'mouseup'},
 				{sel: '#tool_prefs_save', fn: savePreferences, evt: 'click'},
-				{sel: '#tool_prefs_option', fn: function() {showPreferences(); return false;}, evt: 'mouseup'},
+				{sel: '#tool_prefs_option', fn: function () { showPreferences(); return false; }, evt: 'mouseup'},
 				{sel: '#tool_delete,#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
 				{sel: '#tool_reorient', fn: reorientPath, evt: 'click'},
 				{sel: '#tool_node_link', fn: linkControlPoints, evt: 'click'},
@@ -4544,8 +4517,8 @@ window.svgEditor = (function ($) {
 				{sel: '#tool_unlink_use', fn: clickGroup, evt: 'click'},
 				{sel: '[id^=tool_align]', fn: clickAlign, evt: 'click'},
 				// these two lines are required to make Opera work properly with the flyout mechanism
-	//			{sel: '#tools_rect_show', fn: clickRect, evt: 'click'},
-	//			{sel: '#tools_ellipse_show', fn: clickEllipse, evt: 'click'},
+				// {sel: '#tools_rect_show', fn: clickRect, evt: 'click'},
+				// {sel: '#tools_ellipse_show', fn: clickEllipse, evt: 'click'},
 				{sel: '#tool_bold', fn: clickBold, evt: 'mousedown'},
 				{sel: '#tool_italic', fn: clickItalic, evt: 'mousedown'},
 				{sel: '#sidepanel_handle', fn: toggleSidePanel, key: ['X']},
@@ -4553,60 +4526,60 @@ window.svgEditor = (function ($) {
 
 				// Shortcuts not associated with buttons
 
-				{key: 'ctrl+left', fn: function(){rotateSelected(0,1);}},
-				{key: 'ctrl+right', fn: function(){rotateSelected(1,1);}},
-				{key: 'ctrl+shift+left', fn: function(){rotateSelected(0,5);}},
-				{key: 'ctrl+shift+right', fn: function(){rotateSelected(1,5);}},
+				{key: 'ctrl+left', fn: function () { rotateSelected(0, 1); }},
+				{key: 'ctrl+right', fn: function () { rotateSelected(1, 1); }},
+				{key: 'ctrl+shift+left', fn: function () { rotateSelected(0, 5); }},
+				{key: 'ctrl+shift+right', fn: function () { rotateSelected(1, 5); }},
 				{key: 'shift+O', fn: selectPrev},
 				{key: 'shift+P', fn: selectNext},
-				{key: [modKey+'up', true], fn: function(){zoomImage(2);}},
-				{key: [modKey+'down', true], fn: function(){zoomImage(0.5);}},
-				{key: [modKey+']', true], fn: function(){moveUpDownSelected('Up');}},
-				{key: [modKey+'[', true], fn: function(){moveUpDownSelected('Down');}},
-				{key: ['up', true], fn: function(){moveSelected(0,-1);}},
-				{key: ['down', true], fn: function(){moveSelected(0,1);}},
-				{key: ['left', true], fn: function(){moveSelected(-1,0);}},
-				{key: ['right', true], fn: function(){moveSelected(1,0);}},
-				{key: 'shift+up', fn: function(){moveSelected(0,-10);}},
-				{key: 'shift+down', fn: function(){moveSelected(0,10);}},
-				{key: 'shift+left', fn: function(){moveSelected(-10,0);}},
-				{key: 'shift+right', fn: function(){moveSelected(10,0);}},
-				{key: ['alt+up', true], fn: function(){svgCanvas.cloneSelectedElements(0,-1);}},
-				{key: ['alt+down', true], fn: function(){svgCanvas.cloneSelectedElements(0,1);}},
-				{key: ['alt+left', true], fn: function(){svgCanvas.cloneSelectedElements(-1,0);}},
-				{key: ['alt+right', true], fn: function(){svgCanvas.cloneSelectedElements(1,0);}},
-				{key: ['alt+shift+up', true], fn: function(){svgCanvas.cloneSelectedElements(0,-10);}},
-				{key: ['alt+shift+down', true], fn: function(){svgCanvas.cloneSelectedElements(0,10);}},
-				{key: ['alt+shift+left', true], fn: function(){svgCanvas.cloneSelectedElements(-10,0);}},
-				{key: ['alt+shift+right', true], fn: function(){svgCanvas.cloneSelectedElements(10,0);}},
-				{key: 'A', fn: function(){svgCanvas.selectAllInCurrentLayer();}},
+				{key: [modKey + 'up', true], fn: function () { zoomImage(2); }},
+				{key: [modKey + 'down', true], fn: function () { zoomImage(0.5); }},
+				{key: [modKey + ']', true], fn: function () { moveUpDownSelected('Up'); }},
+				{key: [modKey + '[', true], fn: function () { moveUpDownSelected('Down'); }},
+				{key: ['up', true], fn: function () { moveSelected(0, -1); }},
+				{key: ['down', true], fn: function () { moveSelected(0, 1); }},
+				{key: ['left', true], fn: function () { moveSelected(-1, 0); }},
+				{key: ['right', true], fn: function () { moveSelected(1, 0); }},
+				{key: 'shift+up', fn: function () { moveSelected(0, -10); }},
+				{key: 'shift+down', fn: function () { moveSelected(0, 10); }},
+				{key: 'shift+left', fn: function () { moveSelected(-10, 0); }},
+				{key: 'shift+right', fn: function () { moveSelected(10, 0); }},
+				{key: ['alt+up', true], fn: function () { svgCanvas.cloneSelectedElements(0, -1); }},
+				{key: ['alt+down', true], fn: function () { svgCanvas.cloneSelectedElements(0, 1); }},
+				{key: ['alt+left', true], fn: function () { svgCanvas.cloneSelectedElements(-1, 0); }},
+				{key: ['alt+right', true], fn: function () { svgCanvas.cloneSelectedElements(1, 0); }},
+				{key: ['alt+shift+up', true], fn: function () { svgCanvas.cloneSelectedElements(0, -10); }},
+				{key: ['alt+shift+down', true], fn: function () { svgCanvas.cloneSelectedElements(0, 10); }},
+				{key: ['alt+shift+left', true], fn: function () { svgCanvas.cloneSelectedElements(-10, 0); }},
+				{key: ['alt+shift+right', true], fn: function () { svgCanvas.cloneSelectedElements(10, 0); }},
+				{key: 'A', fn: function () { svgCanvas.selectAllInCurrentLayer(); }},
 
 				// Standard shortcuts
-				{key: modKey+'z', fn: clickUndo},
+				{key: modKey + 'z', fn: clickUndo},
 				{key: modKey + 'shift+z', fn: clickRedo},
 				{key: modKey + 'y', fn: clickRedo},
 
-				{key: modKey+'x', fn: cutSelected},
-				{key: modKey+'c', fn: copySelected},
-				{key: modKey+'v', fn: pasteInCenter}
+				{key: modKey + 'x', fn: cutSelected},
+				{key: modKey + 'c', fn: copySelected},
+				{key: modKey + 'v', fn: pasteInCenter}
 			];
 
 			// Tooltips not directly associated with a single function
-			var key_assocs = {
+			var keyAssocs = {
 				'4/Shift+4': '#tools_rect_show',
 				'5/Shift+5': '#tools_ellipse_show'
 			};
 
 			return {
-				setAll: function() {
+				setAll: function () {
 					var flyouts = {};
 
-					$.each(tool_buttons, function(i, opts) {
+					$.each(toolButtons, function (i, opts) {
 						// Bind function to button
 						var btn;
 						if (opts.sel) {
 							btn = $(opts.sel);
-							if (btn.length == 0) {return true;} // Skip if markup does not exist
+							if (btn.length === 0) { return true; } // Skip if markup does not exist
 							if (opts.evt) {
 								if (svgedit.browser.isTouch() && opts.evt === 'click') {
 									opts.evt = 'mousedown';
@@ -4615,13 +4588,13 @@ window.svgEditor = (function ($) {
 							}
 
 							// Add to parent flyout menu, if able to be displayed
-							if (opts.parent && $(opts.parent + '_show').length != 0) {
-								var f_h = $(opts.parent);
-								if (!f_h.length) {
-									f_h = makeFlyoutHolder(opts.parent.substr(1));
+							if (opts.parent && $(opts.parent + '_show').length !== 0) {
+								var fH = $(opts.parent);
+								if (!fH.length) {
+									fH = makeFlyoutHolder(opts.parent.substr(1));
 								}
 
-								f_h.append(btn);
+								fH.append(btn);
 
 								if (!$.isArray(flyouts[opts.parent])) {
 									flyouts[opts.parent] = [];
@@ -4633,18 +4606,21 @@ window.svgEditor = (function ($) {
 						// Bind function to shortcut key
 						if (opts.key) {
 							// Set shortcut based on options
-							var keyval, disInInp = true, fn = opts.fn, pd = false;
+							var keyval,
+								// disInInp = true,
+								fn = opts.fn,
+								pd = false;
 							if ($.isArray(opts.key)) {
 								keyval = opts.key[0];
-								if (opts.key.length > 1) {pd = opts.key[1];}
-								if (opts.key.length > 2) {disInInp = opts.key[2];}
+								if (opts.key.length > 1) { pd = opts.key[1]; }
+								// if (opts.key.length > 2) { disInInp = opts.key[2]; }
 							} else {
 								keyval = opts.key;
 							}
 							keyval += '';
 
-							$.each(keyval.split('/'), function(i, key) {
-								$(document).bind('keydown', key, function(e) {
+							$.each(keyval.split('/'), function (i, key) {
+								$(document).bind('keydown', key, function (e) {
 									fn();
 									if (pd) {
 										e.preventDefault();
@@ -4657,7 +4633,7 @@ window.svgEditor = (function ($) {
 							// Put shortcut in title
 							if (opts.sel && !opts.hidekey && btn.attr('title')) {
 								var newTitle = btn.attr('title').split('[')[0] + ' (' + keyval + ')';
-								key_assocs[keyval] = opts.sel;
+								keyAssocs[keyval] = opts.sel;
 								// Disregard for menu items
 								if (!btn.parents('#main_menu').length) {
 									btn.attr('title', newTitle);
@@ -4673,16 +4649,19 @@ window.svgEditor = (function ($) {
 
 					// Make 'return' keypress trigger the change event
 					$('.attr_changer, #image_url').bind('keydown', 'return',
-						function(evt) {$(this).change();evt.preventDefault();}
+						function (evt) {
+							$(this).change();
+							evt.preventDefault();
+						}
 					);
 
-					$(window).bind('keydown', 'tab', function(e) {
-						if (ui_context === 'canvas') {
+					$(window).bind('keydown', 'tab', function (e) {
+						if (uiContext === 'canvas') {
 							e.preventDefault();
 							selectNext();
 						}
-					}).bind('keydown', 'shift+tab', function(e) {
-						if (ui_context === 'canvas') {
+					}).bind('keydown', 'shift+tab', function (e) {
+						if (uiContext === 'canvas') {
 							e.preventDefault();
 							selectPrev();
 						}
@@ -4690,39 +4669,39 @@ window.svgEditor = (function ($) {
 
 					$('#tool_zoom').dblclick(dblclickZoom);
 				},
-				setTitles: function() {
-					$.each(key_assocs, function(keyval, sel) {
+				setTitles: function () {
+					$.each(keyAssocs, function (keyval, sel) {
 						var menu = ($(sel).parents('#main_menu').length);
 
-						$(sel).each(function() {
+						$(sel).each(function () {
 							var t;
 							if (menu) {
 								t = $(this).text().split(' [')[0];
 							} else {
 								t = this.title.split(' [')[0];
 							}
-							var key_str = '';
+							var keyStr = '';
 							// Shift+Up
-							$.each(keyval.split('/'), function(i, key) {
-								var mod_bits = key.split('+'), mod = '';
-								if (mod_bits.length > 1) {
-									mod = mod_bits[0] + '+';
-									key = mod_bits[1];
+							$.each(keyval.split('/'), function (i, key) {
+								var modBits = key.split('+'), mod = '';
+								if (modBits.length > 1) {
+									mod = modBits[0] + '+';
+									key = modBits[1];
 								}
-								key_str += (i?'/':'') + mod + (uiStrings['key_'+key] || key);
+								keyStr += (i ? '/' : '') + mod + (uiStrings['key_' + key] || key);
 							});
 							if (menu) {
-								this.lastChild.textContent = t +' ['+key_str+']';
+								this.lastChild.textContent = t + ' [' + keyStr + ']';
 							} else {
-								this.title = t +' ['+key_str+']';
+								this.title = t + ' [' + keyStr + ']';
 							}
 						});
 					});
 				},
-				getButtonData: function(sel) {
+				getButtonData: function (sel) {
 					var b;
-					$.each(tool_buttons, function(i, btn) {
-						if (btn.sel === sel) {b = btn;}
+					$.each(toolButtons, function (i, btn) {
+						if (btn.sel === sel) { b = btn; }
 					});
 					return b;
 				}
@@ -4732,16 +4711,16 @@ window.svgEditor = (function ($) {
 		Actions.setAll();
 
 		// Select given tool
-		editor.ready(function() {
+		editor.ready(function () {
 			var tool,
 				itool = curConfig.initTool,
 				container = $('#tools_left, #svg_editor .tools_flyout'),
-				pre_tool = container.find('#tool_' + itool),
-				reg_tool = container.find('#' + itool);
-			if (pre_tool.length) {
-				tool = pre_tool;
-			} else if (reg_tool.length) {
-				tool = reg_tool;
+				preTool = container.find('#tool_' + itool),
+				regTool = container.find('#' + itool);
+			if (preTool.length) {
+				tool = preTool;
+			} else if (regTool.length) {
+				tool = regTool;
 			} else {
 				tool = $('#tool_select');
 			}
@@ -4779,116 +4758,121 @@ window.svgEditor = (function ($) {
 		});
 
 		// init SpinButtons
-		$('#rect_rx').SpinButton({ min: 0, max: 1000, callback: changeRectRadius });
-		$('#stroke_width').SpinButton({ min: 0, max: 99, smallStep: 0.1, callback: changeStrokeWidth });
-		$('#angle').SpinButton({ min: -180, max: 180, step: 5, callback: changeRotationAngle });
-		$('#font_size').SpinButton({ min: 0.001, stepfunc: stepFontSize, callback: changeFontSize });
-		$('#group_opacity').SpinButton({ min: 0, max: 100, step: 5, callback: changeOpacity });
-		$('#blur').SpinButton({ min: 0, max: 10, step: 0.1, callback: changeBlur });
-		$('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom })
+		$('#rect_rx').SpinButton({min: 0, max: 1000, callback: changeRectRadius});
+		$('#stroke_width').SpinButton({min: 0, max: 99, smallStep: 0.1, callback: changeStrokeWidth});
+		$('#angle').SpinButton({min: -180, max: 180, step: 5, callback: changeRotationAngle});
+		$('#font_size').SpinButton({min: 0.001, stepfunc: stepFontSize, callback: changeFontSize});
+		$('#group_opacity').SpinButton({min: 0, max: 100, step: 5, callback: changeOpacity});
+		$('#blur').SpinButton({min: 0, max: 10, step: 0.1, callback: changeBlur});
+		$('#zoom').SpinButton({min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom})
 			// Set default zoom
 			.val(svgCanvas.getZoom() * 100);
 
-		$('#workarea').contextMenu({
+		$('#workarea').contextMenu(
+			{
 				menu: 'cmenu_canvas',
 				inSpeed: 0
 			},
-			function(action, el, pos) {
+			function (action, el, pos) {
 				switch (action) {
-					case 'delete':
-						deleteSelected();
-						break;
-					case 'cut':
-						cutSelected();
-						break;
-					case 'copy':
-						copySelected();
-						break;
-					case 'paste':
-						svgCanvas.pasteElements();
-						break;
-					case 'paste_in_place':
-						svgCanvas.pasteElements('in_place');
-						break;
-					case 'group':
-					case 'group_elements':
-						svgCanvas.groupSelectedElements();
-						break;
-					case 'ungroup':
-						svgCanvas.ungroupSelectedElement();
-						break;
-					case 'move_front':
-						moveToTopSelected();
-						break;
-					case 'move_up':
-						moveUpDownSelected('Up');
-						break;
-					case 'move_down':
-						moveUpDownSelected('Down');
-						break;
-					case 'move_back':
-						moveToBottomSelected();
-						break;
-					default:
-						if (svgedit.contextmenu && svgedit.contextmenu.hasCustomHandler(action)) {
-							svgedit.contextmenu.getCustomHandler(action).call();
-						}
-						break;
+				case 'delete':
+					deleteSelected();
+					break;
+				case 'cut':
+					cutSelected();
+					break;
+				case 'copy':
+					copySelected();
+					break;
+				case 'paste':
+					svgCanvas.pasteElements();
+					break;
+				case 'paste_in_place':
+					svgCanvas.pasteElements('in_place');
+					break;
+				case 'group':
+				case 'group_elements':
+					svgCanvas.groupSelectedElements();
+					break;
+				case 'ungroup':
+					svgCanvas.ungroupSelectedElement();
+					break;
+				case 'move_front':
+					moveToTopSelected();
+					break;
+				case 'move_up':
+					moveUpDownSelected('Up');
+					break;
+				case 'move_down':
+					moveUpDownSelected('Down');
+					break;
+				case 'move_back':
+					moveToBottomSelected();
+					break;
+				default:
+					if (svgedit.contextmenu && svgedit.contextmenu.hasCustomHandler(action)) {
+						svgedit.contextmenu.getCustomHandler(action).call();
+					}
+					break;
 				}
 			}
 		);
 
-		var lmenu_func = function(action, el, pos) {
-			switch ( action ) {
-				case 'dupe':
-					cloneLayer();
-					break;
-				case 'delete':
-					deleteLayer();
-					break;
-				case 'merge_down':
-					mergeLayer();
-					break;
-				case 'merge_all':
-					svgCanvas.mergeAllLayers();
-					updateContextPanel();
-					populateLayers();
-					break;
+		var lmenuFunc = function (action, el, pos) {
+			switch (action) {
+			case 'dupe':
+				cloneLayer();
+				break;
+			case 'delete':
+				deleteLayer();
+				break;
+			case 'merge_down':
+				mergeLayer();
+				break;
+			case 'merge_all':
+				svgCanvas.mergeAllLayers();
+				updateContextPanel();
+				populateLayers();
+				break;
 			}
 		};
 
-		$('#layerlist').contextMenu({
+		$('#layerlist').contextMenu(
+			{
 				menu: 'cmenu_layers',
 				inSpeed: 0
 			},
-			lmenu_func
+			lmenuFunc
 		);
 
-		$('#layer_moreopts').contextMenu({
+		$('#layer_moreopts').contextMenu(
+			{
 				menu: 'cmenu_layers',
 				inSpeed: 0,
 				allowLeft: true
 			},
-			lmenu_func
+			lmenuFunc
 		);
 
-		$('.contextMenu li').mousedown(function(ev) {
+		$('.contextMenu li').mousedown(function (ev) {
 			ev.preventDefault();
 		});
 
 		$('#cmenu_canvas li').disableContextMenu();
-		canv_menu.enableContextMenuItems('#delete,#cut,#copy');
+		canvMenu.enableContextMenuItems('#delete,#cut,#copy');
 
-		canv_menu[(localStorage.getItem('svgedit_clipboard') ? 'en' : 'dis') + 'ableContextMenuItems']
-			('#paste,#paste_in_place');
-		window.addEventListener('storage', function(e) {
-			if(e.key != 'svgedit_clipboard') return;
+		canvMenu[(localStorage.getItem('svgedit_clipboard') ? 'en' : 'dis') + 'ableContextMenuItems'](
+			'#paste,#paste_in_place'
+		);
+		window.addEventListener('storage', function (e) {
+			if (e.key !== 'svgedit_clipboard') return;
 
-			canv_menu[(localStorage.getItem('svgedit_clipboard') ? 'en' : 'dis') + 'ableContextMenuItems']
-				('#paste,#paste_in_place');
+			canvMenu[(localStorage.getItem('svgedit_clipboard') ? 'en' : 'dis') + 'ableContextMenuItems'](
+				'#paste,#paste_in_place'
+			);
 		});
 
-		window.addEventListener('beforeunload', function(e) {
+		window.addEventListener('beforeunload', function (e) {
 			// Suppress warning if page is empty
 			if (undoMgr.getUndoStackSize() === 0) {
 				editor.showSaveWarning = false;
@@ -4902,7 +4886,7 @@ window.svgEditor = (function ($) {
 			}
 		}, false);
 
-		editor.openPrep = function(func) {
+		editor.openPrep = function (func) {
 			$('#main_menu').hide();
 			if (undoMgr.getUndoStackSize() === 0) {
 				func(true);
@@ -4911,18 +4895,18 @@ window.svgEditor = (function ($) {
 			}
 		};
 
-		function onDragEnter(e) {
+		function onDragEnter (e) {
 			e.stopPropagation();
 			e.preventDefault();
 			// and indicator should be displayed here, such as "drop files here"
 		}
 
-		function onDragOver(e) {
+		function onDragOver (e) {
 			e.stopPropagation();
 			e.preventDefault();
 		}
 
-		function onDragLeave(e) {
+		function onDragLeave (e) {
 			e.stopPropagation();
 			e.preventDefault();
 			// hypothetical indicator should be removed here
@@ -4932,13 +4916,13 @@ window.svgEditor = (function ($) {
 		// and provide a file input to click. When that change event fires, it will
 		// get the text contents of the file and send it to the canvas
 		if (window.FileReader) {
-			var importImage = function(e) {
+			var importImage = function (e) {
 				$.process_cancel(uiStrings.notification.loadingImage);
 				e.stopPropagation();
 				e.preventDefault();
 				$('#workarea').removeAttr('style');
 				$('#main_menu').hide();
-				var file = (e.type == 'drop') ? e.dataTransfer.files[0] : this.files[0];
+				var file = (e.type === 'drop') ? e.dataTransfer.files[0] : this.files[0];
 				if (!file) {
 					$('#dialog_box').hide();
 					return;
@@ -4947,13 +4931,13 @@ window.svgEditor = (function ($) {
 
 				}
 				else */
-				if (file.type.indexOf('image') != -1) {
+				if (file.type.indexOf('image') > -1) {
 					// Detected an image
 					// svg handling
 					var reader;
-					if (file.type.indexOf('svg') != -1) {
+					if (file.type.indexOf('svg') > -1) {
 						reader = new FileReader();
-						reader.onloadend = function(e) {
+						reader.onloadend = function (e) {
 							var newElement = svgCanvas.importSvgString(e.target.result, true);
 							svgCanvas.ungroupSelectedElement();
 							svgCanvas.ungroupSelectedElement();
@@ -4965,13 +4949,12 @@ window.svgEditor = (function ($) {
 							$('#dialog_box').hide();
 						};
 						reader.readAsText(file);
-					}
-					else {
-					//bitmap handling
+					} else {
+						// bitmap handling
 						reader = new FileReader();
-						reader.onloadend = function(e) {
+						reader.onloadend = function (e) {
 							// let's insert the new image until we know its dimensions
-							var insertNewImage = function(width, height) {
+							var insertNewImage = function (width, height) {
 								var newImage = svgCanvas.addSvgElementFromJson({
 									element: 'image',
 									attr: {
@@ -4996,7 +4979,7 @@ window.svgEditor = (function ($) {
 							var img = new Image();
 							img.src = e.target.result;
 							img.style.opacity = 0;
-							img.onload = function() {
+							img.onload = function () {
 								imgWidth = img.offsetWidth;
 								imgHeight = img.offsetHeight;
 								insertNewImage(imgWidth, imgHeight);
@@ -5012,15 +4995,15 @@ window.svgEditor = (function ($) {
 			workarea[0].addEventListener('dragleave', onDragLeave, false);
 			workarea[0].addEventListener('drop', importImage, false);
 
-			var open = $('<input type="file">').change(function() {
+			var open = $('<input type="file">').change(function () {
 				var f = this;
-				editor.openPrep(function(ok) {
-					if (!ok) {return;}
+				editor.openPrep(function (ok) {
+					if (!ok) { return; }
 					svgCanvas.clear();
 					if (f.files.length === 1) {
 						$.process_cancel(uiStrings.notification.loadingImage);
 						var reader = new FileReader();
-						reader.onloadend = function(e) {
+						reader.onloadend = function (e) {
 							loadSvgString(e.target.result);
 							updateCanvas();
 						};
@@ -5034,21 +5017,21 @@ window.svgEditor = (function ($) {
 			$('#tool_import').show().prepend(imgImport);
 		}
 
-//			$(function() {
-			updateCanvas(true);
-//			});
+		// $(function () {
+		updateCanvas(true);
+		// });
 
 		//	var revnums = "svg-editor.js ($Rev$) ";
 		//	revnums += svgCanvas.getVersion();
 		//	$('#copyright')[0].setAttribute('title', revnums);
 
 		// For Compatibility with older extensions
-		$(function() {
+		$(function () {
 			window.svgCanvas = svgCanvas;
 			svgCanvas.ready = editor.ready;
 		});
 
-		editor.setLang = function(lang, allStrings) {
+		editor.setLang = function (lang, allStrings) {
 			editor.langChanged = true;
 			$.pref('lang', lang);
 			$('#lang_select').val(lang);
@@ -5058,13 +5041,13 @@ window.svgEditor = (function ($) {
 			// var notif = allStrings.notification; // Currently unused
 			// $.extend will only replace the given strings
 			var oldLayerName = $('#layerlist tr.layersel td.layername').text();
-			var rename_layer = (oldLayerName == uiStrings.common.layer + ' 1');
+			var renameLayer = (oldLayerName === uiStrings.common.layer + ' 1');
 
 			$.extend(uiStrings, allStrings);
 			svgCanvas.setUiStrings(allStrings);
 			Actions.setTitles();
 
-			if (rename_layer) {
+			if (renameLayer) {
 				svgCanvas.renameCurrentLayer(uiStrings.common.layer + ' 1');
 				populateLayers();
 			}
@@ -5075,8 +5058,7 @@ window.svgEditor = (function ($) {
 					var ext = extsPreLang.shift();
 					ext.langReady({lang: lang, uiStrings: uiStrings});
 				}
-			}
-			else {
+			} else {
 				svgCanvas.runExtensions('langReady', {lang: lang, uiStrings: uiStrings});
 			}
 			svgCanvas.runExtensions('langChanged', lang);
@@ -5092,12 +5074,12 @@ window.svgEditor = (function ($) {
 				'#linecap_butt': '#cur_linecap'
 			};
 
-			$.each(elems, function(source, dest) {
+			$.each(elems, function (source, dest) {
 				$(dest).attr('title', $(source)[0].title);
 			});
 
 			// Copy alignment titles
-			$('#multiselected_panel div[id^=tool_align]').each(function() {
+			$('#multiselected_panel div[id^=tool_align]').each(function () {
 				$('#tool_pos' + this.id.substr(10))[0].title = this.title;
 			});
 		};
@@ -5112,64 +5094,63 @@ window.svgEditor = (function ($) {
 	};
 
 	editor.runCallbacks = function () {
-		$.each(callbacks, function() {
+		$.each(callbacks, function () {
 			this();
 		});
 		isReady = true;
 	};
 
 	editor.loadFromString = function (str) {
-		editor.ready(function() {
+		editor.ready(function () {
 			loadSvgString(str);
 		});
 	};
 
 	editor.disableUI = function (featList) {
-//			$(function() {
-//				$('#tool_wireframe, #tool_image, #main_button, #tool_source, #sidepanels').remove();
-//				$('#tools_top').css('left', 5);
-//			});
+		// $(function () {
+		// 	$('#tool_wireframe, #tool_image, #main_button, #tool_source, #sidepanels').remove();
+		// 	$('#tools_top').css('left', 5);
+		// });
 	};
 
 	editor.loadFromURL = function (url, opts) {
-		if (!opts) {opts = {};}
+		if (!opts) { opts = {}; }
 
 		var cache = opts.cache;
 		var cb = opts.callback;
 
-		editor.ready(function() {
+		editor.ready(function () {
 			$.ajax({
 				'url': url,
 				'dataType': 'text',
 				cache: !!cache,
-				beforeSend:function(){
+				beforeSend: function () {
 					$.process_cancel(uiStrings.notification.loadingImage);
 				},
-				success: function(str) {
+				success: function (str) {
 					loadSvgString(str, cb);
 				},
-				error: function(xhr, stat, err) {
-					if (xhr.status != 404 && xhr.responseText) {
+				error: function (xhr, stat, err) {
+					if (xhr.status !== 404 && xhr.responseText) {
 						loadSvgString(xhr.responseText, cb);
 					} else {
 						$.alert(uiStrings.notification.URLloadFail + ': \n' + err, cb);
 					}
 				},
-				complete:function(){
+				complete: function () {
 					$('#dialog_box').hide();
 				}
 			});
 		});
 	};
 
-	editor.loadFromDataURI = function(str) {
-		editor.ready(function() {
+	editor.loadFromDataURI = function (str) {
+		editor.ready(function () {
 			var base64 = false;
 			var pre = str.match(/^data:image\/svg\+xml;base64,/);
 			if (pre) {
 				base64 = true;
-			}
-			else {
+			} else {
 				pre = str.match(/^data:image\/svg\+xml(?:;(?:utf8)?)?,/);
 			}
 			if (pre) {
@@ -5185,8 +5166,8 @@ window.svgEditor = (function ($) {
 
 		// Note that we don't want this on editor.ready since some extensions
 		// may want to run before then (like server_opensave).
-		$(function() {
-			if (svgCanvas) {svgCanvas.addExtension.apply(this, args);}
+		$(function () {
+			if (svgCanvas) { svgCanvas.addExtension.apply(this, args); }
 		});
 	};
 
@@ -5195,5 +5176,4 @@ window.svgEditor = (function ($) {
 
 // Run init once DOM is loaded
 $(svgEditor.init);
-
 }());
