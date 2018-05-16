@@ -1,5 +1,5 @@
-/*globals svgEditor, $*/
-/*jslint vars: true, eqeq: true*/
+/* eslint-disable no-var */
+/* globals svgEditor, $ */
 /*
  * ext-closepath.js
  *
@@ -11,30 +11,31 @@
 
 // This extension adds a simple button to the contextual panel for paths
 // The button toggles whether the path is open or closed
-svgEditor.addExtension('ClosePath', function() {'use strict';
+svgEditor.addExtension('ClosePath', function () {
+	'use strict';
 	var selElems,
-		updateButton = function(path) {
+		updateButton = function (path) {
 			var seglist = path.pathSegList,
-				closed = seglist.getItem(seglist.numberOfItems - 1).pathSegType == 1,
+				closed = seglist.getItem(seglist.numberOfItems - 1).pathSegType === 1,
 				showbutton = closed ? '#tool_openpath' : '#tool_closepath',
 				hidebutton = closed ? '#tool_closepath' : '#tool_openpath';
-				$(hidebutton).hide();
-				$(showbutton).show();
+			$(hidebutton).hide();
+			$(showbutton).show();
 		},
-		showPanel = function(on) {
+		showPanel = function (on) {
 			$('#closepath_panel').toggle(on);
 			if (on) {
 				var path = selElems[0];
-				if (path) {updateButton(path);}
+				if (path) { updateButton(path); }
 			}
 		},
-		toggleClosed = function() {
+		toggleClosed = function () {
 			var path = selElems[0];
 			if (path) {
 				var seglist = path.pathSegList,
 					last = seglist.numberOfItems - 1;
 				// is closed
-				if (seglist.getItem(last).pathSegType == 1) {
+				if (seglist.getItem(last).pathSegType === 1) {
 					seglist.removeItem(last);
 				} else {
 					seglist.appendItem(path.createSVGPathSegClosePath());
@@ -52,7 +53,7 @@ svgEditor.addExtension('ClosePath', function() {'use strict';
 			panel: 'closepath_panel',
 			title: 'Open path',
 			events: {
-				click: function() {
+				click: function () {
 					toggleClosed();
 				}
 			}
@@ -63,20 +64,20 @@ svgEditor.addExtension('ClosePath', function() {'use strict';
 			panel: 'closepath_panel',
 			title: 'Close path',
 			events: {
-				click: function() {
+				click: function () {
 					toggleClosed();
 				}
 			}
 		}],
-		callback: function() {
+		callback: function () {
 			$('#closepath_panel').hide();
 		},
-		selectedChanged: function(opts) {
+		selectedChanged: function (opts) {
 			selElems = opts.elems;
 			var i = selElems.length;
 			while (i--) {
 				var elem = selElems[i];
-				if (elem && elem.tagName == 'path') {
+				if (elem && elem.tagName === 'path') {
 					if (opts.selectedElement && !opts.multiselected) {
 						showPanel(true);
 					} else {

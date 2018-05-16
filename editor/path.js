@@ -1,5 +1,5 @@
-/*globals $, svgedit, svgroot*/
-/*jslint vars: true, eqeq: true, continue: true*/
+/* eslint-disable no-var, eqeqeq */
+/* globals $, svgedit, svgroot */
 /**
  * Package: svgedit.path
  *
@@ -15,7 +15,8 @@
 // 3) math.js
 // 4) svgutils.js
 
-(function() {'use strict';
+(function () {
+'use strict';
 
 if (!svgedit.path) {
 	svgedit.path = {};
@@ -41,33 +42,33 @@ var segData = {
 
 var pathFuncs = [];
 
-var link_control_pts = true;
+var linkControlPts = true;
 
 // Stores references to paths via IDs.
 // TODO: Make this cross-document happy.
 var pathData = {};
 
-svgedit.path.setLinkControlPoints = function(lcp) {
-	link_control_pts = lcp;
+svgedit.path.setLinkControlPoints = function (lcp) {
+	linkControlPts = lcp;
 };
 
 svgedit.path.path = null;
 
 var editorContext_ = null;
 
-svgedit.path.init = function(editorContext) {
+svgedit.path.init = function (editorContext) {
 	editorContext_ = editorContext;
 
 	pathFuncs = [0, 'ClosePath'];
 	var pathFuncsStrs = ['Moveto', 'Lineto', 'CurvetoCubic', 'CurvetoQuadratic', 'Arc',
 		'LinetoHorizontal', 'LinetoVertical', 'CurvetoCubicSmooth', 'CurvetoQuadraticSmooth'];
-	$.each(pathFuncsStrs, function(i, s) {
-		pathFuncs.push(s+'Abs');
-		pathFuncs.push(s+'Rel');
+	$.each(pathFuncsStrs, function (i, s) {
+		pathFuncs.push(s + 'Abs');
+		pathFuncs.push(s + 'Rel');
 	});
 };
 
-svgedit.path.insertItemBefore = function(elem, newseg, index) {
+svgedit.path.insertItemBefore = function (elem, newseg, index) {
 	// Support insertItemBefore on paths for FF2
 	var list = elem.pathSegList;
 
@@ -78,13 +79,13 @@ svgedit.path.insertItemBefore = function(elem, newseg, index) {
 	var len = list.numberOfItems;
 	var arr = [];
 	var i;
-	for (i=0; i < len; i++) {
-		var cur_seg = list.getItem(i);
-		arr.push(cur_seg);
+	for (i = 0; i < len; i++) {
+		var curSeg = list.getItem(i);
+		arr.push(curSeg);
 	}
 	list.clear();
-	for (i=0; i < len; i++) {
-		if (i == index) { //index+1
+	for (i = 0; i < len; i++) {
+		if (i == index) { // index + 1
 			list.appendItem(newseg);
 		}
 		list.appendItem(arr[i]);
@@ -92,20 +93,20 @@ svgedit.path.insertItemBefore = function(elem, newseg, index) {
 };
 
 // TODO: See if this should just live in replacePathSeg
-svgedit.path.ptObjToArr = function(type, seg_item) {
+svgedit.path.ptObjToArr = function (type, segItem) {
 	var arr = segData[type], len = arr.length;
 	var i, out = [];
 	for (i = 0; i < len; i++) {
-		out[i] = seg_item[arr[i]];
+		out[i] = segItem[arr[i]];
 	}
 	return out;
 };
 
-svgedit.path.getGripPt = function(seg, alt_pt) {
+svgedit.path.getGripPt = function (seg, altPt) {
 	var out = {
-		x: alt_pt? alt_pt.x : seg.item.x,
-		y: alt_pt? alt_pt.y : seg.item.y
-	}, path = seg.path;
+			x: altPt ? altPt.x : seg.item.x,
+			y: altPt ? altPt.y : seg.item.y
+		}, path = seg.path;
 
 	if (path.matrix) {
 		var pt = svgedit.math.transformPoint(out.x, out.y, path.matrix);
@@ -118,7 +119,7 @@ svgedit.path.getGripPt = function(seg, alt_pt) {
 	return out;
 };
 
-svgedit.path.getPointFromGrip = function(pt, path) {
+svgedit.path.getPointFromGrip = function (pt, path) {
 	var out = {
 		x: pt.x,
 		y: pt.y
@@ -136,11 +137,11 @@ svgedit.path.getPointFromGrip = function(pt, path) {
 	return out;
 };
 
-svgedit.path.addPointGrip = function(index, x, y) {
+svgedit.path.addPointGrip = function (index, x, y) {
 	// create the container of all the point grips
 	var pointGripContainer = svgedit.path.getGripContainer();
 
-	var pointGrip = svgedit.utilities.getElem('pathpointgrip_'+index);
+	var pointGrip = svgedit.utilities.getElem('pathpointgrip_' + index);
 	// create it
 	if (!pointGrip) {
 		pointGrip = document.createElementNS(NS.SVG, 'circle');
@@ -157,8 +158,8 @@ svgedit.path.addPointGrip = function(index, x, y) {
 		});
 		pointGrip = pointGripContainer.appendChild(pointGrip);
 
-		var grip = $('#pathpointgrip_'+index);
-		grip.dblclick(function() {
+		var grip = $('#pathpointgrip_' + index);
+		grip.dblclick(function () {
 			if (svgedit.path.path) {
 				svgedit.path.path.setSegType();
 			}
@@ -175,7 +176,7 @@ svgedit.path.addPointGrip = function(index, x, y) {
 	return pointGrip;
 };
 
-svgedit.path.getGripContainer = function() {
+svgedit.path.getGripContainer = function () {
 	var c = svgedit.utilities.getElem('pathpointgrip_container');
 	if (!c) {
 		var parent = svgedit.utilities.getElem('selectorParentGroup');
@@ -185,9 +186,9 @@ svgedit.path.getGripContainer = function() {
 	return c;
 };
 
-svgedit.path.addCtrlGrip = function(id) {
-	var pointGrip = svgedit.utilities.getElem('ctrlpointgrip_'+id);
-	if (pointGrip) {return pointGrip;}
+svgedit.path.addCtrlGrip = function (id) {
+	var pointGrip = svgedit.utilities.getElem('ctrlpointgrip_' + id);
+	if (pointGrip) { return pointGrip; }
 
 	pointGrip = document.createElementNS(NS.SVG, 'circle');
 	svgedit.utilities.assignAttributes(pointGrip, {
@@ -205,13 +206,13 @@ svgedit.path.addCtrlGrip = function(id) {
 	return pointGrip;
 };
 
-svgedit.path.getCtrlLine = function(id) {
-	var ctrlLine = svgedit.utilities.getElem('ctrlLine_'+id);
-	if (ctrlLine) {return ctrlLine;}
+svgedit.path.getCtrlLine = function (id) {
+	var ctrlLine = svgedit.utilities.getElem('ctrlLine_' + id);
+	if (ctrlLine) { return ctrlLine; }
 
 	ctrlLine = document.createElementNS(NS.SVG, 'line');
 	svgedit.utilities.assignAttributes(ctrlLine, {
-		'id': 'ctrlLine_'+id,
+		'id': 'ctrlLine_' + id,
 		'stroke': '#555',
 		'stroke-width': 1,
 		'style': 'pointer-events:none'
@@ -220,7 +221,7 @@ svgedit.path.getCtrlLine = function(id) {
 	return ctrlLine;
 };
 
-svgedit.path.getPointGrip = function(seg, update) {
+svgedit.path.getPointGrip = function (seg, update) {
 	var index = seg.index;
 	var pointGrip = svgedit.path.addPointGrip(index);
 
@@ -236,17 +237,17 @@ svgedit.path.getPointGrip = function(seg, update) {
 	return pointGrip;
 };
 
-svgedit.path.getControlPoints = function(seg) {
+svgedit.path.getControlPoints = function (seg) {
 	var item = seg.item;
 	var index = seg.index;
-	if (!('x1' in item) || !('x2' in item)) {return null;}
+	if (!('x1' in item) || !('x2' in item)) { return null; }
 	var cpt = {};
-	var pointGripContainer = svgedit.path.getGripContainer();
+	/* var pointGripContainer = */ svgedit.path.getGripContainer();
 
 	// Note that this is intentionally not seg.prev.item
-	var prev = svgedit.path.path.segs[index-1].item;
+	var prev = svgedit.path.path.segs[index - 1].item;
 
-	var seg_items = [prev, item];
+	var segItems = [prev, item];
 
 	var i;
 	for (i = 1; i < 3; i++) {
@@ -254,8 +255,8 @@ svgedit.path.getControlPoints = function(seg) {
 
 		var ctrlLine = cpt['c' + i + '_line'] = svgedit.path.getCtrlLine(id);
 
-		var pt = svgedit.path.getGripPt(seg, {x:item['x' + i], y:item['y' + i]});
-		var gpt = svgedit.path.getGripPt(seg, {x:seg_items[i-1].x, y:seg_items[i-1].y});
+		var pt = svgedit.path.getGripPt(seg, {x: item['x' + i], y: item['y' + i]});
+		var gpt = svgedit.path.getGripPt(seg, {x: segItems[i - 1].x, y: segItems[i - 1].y});
 
 		svgedit.utilities.assignAttributes(ctrlLine, {
 			'x1': pt.x,
@@ -281,7 +282,7 @@ svgedit.path.getControlPoints = function(seg) {
 };
 
 // This replaces the segment at the given index. Type is given as number.
-svgedit.path.replacePathSeg = function(type, index, pts, elem) {
+svgedit.path.replacePathSeg = function (type, index, pts, elem) {
 	var path = elem || svgedit.path.path.elem;
 
 	var func = 'createSVGPathSeg' + pathFuncs[type];
@@ -295,8 +296,8 @@ svgedit.path.replacePathSeg = function(type, index, pts, elem) {
 		var arr = [];
 		var i;
 		for (i = 0; i < len; i++) {
-			var cur_seg = segList.getItem(i);
-			arr.push(cur_seg);
+			var curSeg = segList.getItem(i);
+			arr.push(curSeg);
 		}
 		segList.clear();
 		for (i = 0; i < len; i++) {
@@ -309,7 +310,7 @@ svgedit.path.replacePathSeg = function(type, index, pts, elem) {
 	}
 };
 
-svgedit.path.getSegSelector = function(seg, update) {
+svgedit.path.getSegSelector = function (seg, update) {
 	var index = seg.index;
 	var segLine = svgedit.utilities.getElem('segline_' + index);
 	if (!segLine) {
@@ -322,7 +323,7 @@ svgedit.path.getSegSelector = function(seg, update) {
 			'fill': 'none',
 			'stroke': '#0FF',
 			'stroke-width': 2,
-			'style':'pointer-events:none',
+			'style': 'pointer-events:none',
 			'd': 'M0,0 0,0'
 		});
 		pointGripContainer.appendChild(segLine);
@@ -342,9 +343,9 @@ svgedit.path.getSegSelector = function(seg, update) {
 		var pts = svgedit.path.ptObjToArr(seg.type, seg.item, true);
 		var i;
 		for (i = 0; i < pts.length; i += 2) {
-			pt = svgedit.path.getGripPt(seg, {x:pts[i], y:pts[i+1]});
+			pt = svgedit.path.getGripPt(seg, {x: pts[i], y: pts[i + 1]});
 			pts[i] = pt.x;
-			pts[i+1] = pt.y;
+			pts[i + 1] = pt.y;
 		}
 
 		svgedit.path.replacePathSeg(seg.type, 1, pts, segLine);
@@ -354,56 +355,55 @@ svgedit.path.getSegSelector = function(seg, update) {
 
 // Function: smoothControlPoints
 // Takes three points and creates a smoother line based on them
-// 
-// Parameters: 
+//
+// Parameters:
 // ct1 - Object with x and y values (first control point)
 // ct2 - Object with x and y values (second control point)
 // pt - Object with x and y values (third point)
 //
-// Returns: 
+// Returns:
 // Array of two "smoothed" point objects
-svgedit.path.smoothControlPoints = function(ct1, ct2, pt) {
+svgedit.path.smoothControlPoints = function (ct1, ct2, pt) {
 	// each point must not be the origin
 	var x1 = ct1.x - pt.x,
 		y1 = ct1.y - pt.y,
 		x2 = ct2.x - pt.x,
 		y2 = ct2.y - pt.y;
 
-	if ( (x1 != 0 || y1 != 0) && (x2 != 0 || y2 != 0) ) {
+	if ((x1 != 0 || y1 != 0) && (x2 != 0 || y2 != 0)) {
 		var anglea = Math.atan2(y1, x1),
 			angleb = Math.atan2(y2, x2),
-			r1 = Math.sqrt(x1*x1+y1*y1),
-			r2 = Math.sqrt(x2*x2+y2*y2),
+			r1 = Math.sqrt(x1 * x1 + y1 * y1),
+			r2 = Math.sqrt(x2 * x2 + y2 * y2),
 			nct1 = editorContext_.getSVGRoot().createSVGPoint(),
 			nct2 = editorContext_.getSVGRoot().createSVGPoint();
-		if (anglea < 0) { anglea += 2*Math.PI; }
-		if (angleb < 0) { angleb += 2*Math.PI; }
+		if (anglea < 0) { anglea += 2 * Math.PI; }
+		if (angleb < 0) { angleb += 2 * Math.PI; }
 
 		var angleBetween = Math.abs(anglea - angleb),
-			angleDiff = Math.abs(Math.PI - angleBetween)/2;
+			angleDiff = Math.abs(Math.PI - angleBetween) / 2;
 
-		var new_anglea, new_angleb;
+		var newAnglea, newAngleb;
 		if (anglea - angleb > 0) {
-			new_anglea = angleBetween < Math.PI ? (anglea + angleDiff) : (anglea - angleDiff);
-			new_angleb = angleBetween < Math.PI ? (angleb - angleDiff) : (angleb + angleDiff);
-		}
-		else {
-			new_anglea = angleBetween < Math.PI ? (anglea - angleDiff) : (anglea + angleDiff);
-			new_angleb = angleBetween < Math.PI ? (angleb + angleDiff) : (angleb - angleDiff);
+			newAnglea = angleBetween < Math.PI ? (anglea + angleDiff) : (anglea - angleDiff);
+			newAngleb = angleBetween < Math.PI ? (angleb - angleDiff) : (angleb + angleDiff);
+		} else {
+			newAnglea = angleBetween < Math.PI ? (anglea - angleDiff) : (anglea + angleDiff);
+			newAngleb = angleBetween < Math.PI ? (angleb + angleDiff) : (angleb - angleDiff);
 		}
 
 		// rotate the points
-		nct1.x = r1 * Math.cos(new_anglea) + pt.x;
-		nct1.y = r1 * Math.sin(new_anglea) + pt.y;
-		nct2.x = r2 * Math.cos(new_angleb) + pt.x;
-		nct2.y = r2 * Math.sin(new_angleb) + pt.y;
+		nct1.x = r1 * Math.cos(newAnglea) + pt.x;
+		nct1.y = r1 * Math.sin(newAnglea) + pt.y;
+		nct2.x = r2 * Math.cos(newAngleb) + pt.x;
+		nct2.y = r2 * Math.sin(newAngleb) + pt.y;
 
 		return [nct1, nct2];
 	}
 	return undefined;
 };
 
-svgedit.path.Segment = function(index, item) {
+svgedit.path.Segment = function (index, item) {
 	this.selected = false;
 	this.index = index;
 	this.item = item;
@@ -414,7 +414,7 @@ svgedit.path.Segment = function(index, item) {
 	this.segsel = null;
 };
 
-svgedit.path.Segment.prototype.showCtrlPts = function(y) {
+svgedit.path.Segment.prototype.showCtrlPts = function (y) {
 	var i;
 	for (i in this.ctrlpts) {
 		if (this.ctrlpts.hasOwnProperty(i)) {
@@ -423,12 +423,12 @@ svgedit.path.Segment.prototype.showCtrlPts = function(y) {
 	}
 };
 
-svgedit.path.Segment.prototype.selectCtrls = function(y) {
-	$('#ctrlpointgrip_' + this.index + 'c1, #ctrlpointgrip_' + this.index + 'c2').
-		attr('fill', y ? '#0FF' : '#EEE');
+svgedit.path.Segment.prototype.selectCtrls = function (y) {
+	$('#ctrlpointgrip_' + this.index + 'c1, #ctrlpointgrip_' + this.index + 'c2')
+		.attr('fill', y ? '#0FF' : '#EEE');
 };
 
-svgedit.path.Segment.prototype.show = function(y) {
+svgedit.path.Segment.prototype.show = function (y) {
 	if (this.ptgrip) {
 		this.ptgrip.setAttribute('display', y ? 'inline' : 'none');
 		this.segsel.setAttribute('display', y ? 'inline' : 'none');
@@ -437,7 +437,7 @@ svgedit.path.Segment.prototype.show = function(y) {
 	}
 };
 
-svgedit.path.Segment.prototype.select = function(y) {
+svgedit.path.Segment.prototype.select = function (y) {
 	if (this.ptgrip) {
 		this.ptgrip.setAttribute('stroke', y ? '#0FF' : '#00F');
 		this.segsel.setAttribute('display', y ? 'inline' : 'none');
@@ -448,13 +448,13 @@ svgedit.path.Segment.prototype.select = function(y) {
 	}
 };
 
-svgedit.path.Segment.prototype.addGrip = function() {
+svgedit.path.Segment.prototype.addGrip = function () {
 	this.ptgrip = svgedit.path.getPointGrip(this, true);
 	this.ctrlpts = svgedit.path.getControlPoints(this, true);
 	this.segsel = svgedit.path.getSegSelector(this, true);
 };
 
-svgedit.path.Segment.prototype.update = function(full) {
+svgedit.path.Segment.prototype.update = function (full) {
 	if (this.ptgrip) {
 		var pt = svgedit.path.getGripPt(this);
 		svgedit.utilities.assignAttributes(this.ptgrip, {
@@ -475,23 +475,23 @@ svgedit.path.Segment.prototype.update = function(full) {
 	}
 };
 
-svgedit.path.Segment.prototype.move = function(dx, dy) {
-	var cur_pts, item = this.item;
+svgedit.path.Segment.prototype.move = function (dx, dy) {
+	var curPts, item = this.item;
 
 	if (this.ctrlpts) {
-		cur_pts = [item.x += dx, item.y += dy,
+		curPts = [item.x += dx, item.y += dy,
 			item.x1, item.y1, item.x2 += dx, item.y2 += dy];
 	} else {
-		cur_pts = [item.x += dx, item.y += dy];
+		curPts = [item.x += dx, item.y += dy];
 	}
 
-	svgedit.path.replacePathSeg(this.type, this.index, cur_pts);
+	svgedit.path.replacePathSeg(this.type, this.index, curPts);
 
 	if (this.next && this.next.ctrlpts) {
 		var next = this.next.item;
-		var next_pts = [next.x, next.y, 
+		var nextPts = [next.x, next.y,
 			next.x1 += dx, next.y1 += dy, next.x2, next.y2];
-		svgedit.path.replacePathSeg(this.next.type, this.next.index, next_pts);
+		svgedit.path.replacePathSeg(this.next.type, this.next.index, nextPts);
 	}
 
 	if (this.mate) {
@@ -504,26 +504,26 @@ svgedit.path.Segment.prototype.move = function(dx, dy) {
 	}
 
 	this.update(true);
-	if (this.next) {this.next.update(true);}
+	if (this.next) { this.next.update(true); }
 };
 
-svgedit.path.Segment.prototype.setLinked = function(num) {
+svgedit.path.Segment.prototype.setLinked = function (num) {
 	var seg, anum, pt;
 	if (num == 2) {
 		anum = 1;
 		seg = this.next;
-		if (!seg) {return;}
+		if (!seg) { return; }
 		pt = this.item;
 	} else {
 		anum = 2;
 		seg = this.prev;
-		if (!seg) {return;}
+		if (!seg) { return; }
 		pt = seg.item;
 	}
 
 	var item = seg.item;
-	item['x' + anum ] = pt.x + (pt.x - this.item['x' + num]);
-	item['y' + anum ] = pt.y + (pt.y - this.item['y' + num]);
+	item['x' + anum] = pt.x + (pt.x - this.item['x' + num]);
+	item['y' + anum] = pt.y + (pt.y - this.item['y' + num]);
 
 	var pts = [item.x, item.y,
 		item.x1, item.y1,
@@ -533,30 +533,30 @@ svgedit.path.Segment.prototype.setLinked = function(num) {
 	seg.update(true);
 };
 
-svgedit.path.Segment.prototype.moveCtrl = function(num, dx, dy) {
+svgedit.path.Segment.prototype.moveCtrl = function (num, dx, dy) {
 	var item = this.item;
 	item['x' + num] += dx;
 	item['y' + num] += dy;
 
-	var pts = [item.x,item.y,
-		item.x1,item.y1, item.x2,item.y2];
+	var pts = [item.x, item.y,
+		item.x1, item.y1, item.x2, item.y2];
 
 	svgedit.path.replacePathSeg(this.type, this.index, pts);
 	this.update(true);
 };
 
-svgedit.path.Segment.prototype.setType = function(new_type, pts) {
-	svgedit.path.replacePathSeg(new_type, this.index, pts);
-	this.type = new_type;
+svgedit.path.Segment.prototype.setType = function (newType, pts) {
+	svgedit.path.replacePathSeg(newType, this.index, pts);
+	this.type = newType;
 	this.item = svgedit.path.path.elem.pathSegList.getItem(this.index);
-	this.showCtrlPts(new_type === 6);
+	this.showCtrlPts(newType === 6);
 	this.ctrlpts = svgedit.path.getControlPoints(this);
 	this.update(true);
 };
 
-svgedit.path.Path = function(elem) {
+svgedit.path.Path = function (elem) {
 	if (!elem || elem.tagName !== 'path') {
-		throw 'svgedit.path.Path constructed without a <path> element';
+		throw new Error('svgedit.path.Path constructed without a <path> element');
 	}
 
 	this.elem = elem;
@@ -568,11 +568,13 @@ svgedit.path.Path = function(elem) {
 };
 
 // Reset path data
-svgedit.path.Path.prototype.init = function() {
+svgedit.path.Path.prototype.init = function () {
 	// Hide all grips, etc
 
-	//fixed, needed to work on all found elements, not just first
-	$(svgedit.path.getGripContainer()).find('*').each( function() { $(this).attr('display', 'none') });
+	// fixed, needed to work on all found elements, not just first
+	$(svgedit.path.getGripContainer()).find('*').each(function () {
+		$(this).attr('display', 'none');
+	});
 
 	var segList = this.elem.pathSegList;
 	var len = segList.numberOfItems;
@@ -590,58 +592,58 @@ svgedit.path.Path.prototype.init = function() {
 	}
 
 	var segs = this.segs;
-	var start_i = null;
+	var startI = null;
 
 	for (i = 0; i < len; i++) {
 		var seg = segs[i];
-		var next_seg = (i+1) >= len ? null : segs[i+1];
-		var prev_seg = (i-1) < 0 ? null : segs[i-1];
-		var start_seg;
+		var nextSeg = (i + 1) >= len ? null : segs[i + 1];
+		var prevSeg = (i - 1) < 0 ? null : segs[i - 1];
+		var startSeg;
 		if (seg.type === 2) {
-			if (prev_seg && prev_seg.type !== 1) {
+			if (prevSeg && prevSeg.type !== 1) {
 				// New sub-path, last one is open,
 				// so add a grip to last sub-path's first point
-				start_seg = segs[start_i];
-				start_seg.next = segs[start_i+1];
-				start_seg.next.prev = start_seg;
-				start_seg.addGrip();
+				startSeg = segs[startI];
+				startSeg.next = segs[startI + 1];
+				startSeg.next.prev = startSeg;
+				startSeg.addGrip();
 			}
 			// Remember that this is a starter seg
-			start_i = i;
-		} else if (next_seg && next_seg.type === 1) {
+			startI = i;
+		} else if (nextSeg && nextSeg.type === 1) {
 			// This is the last real segment of a closed sub-path
 			// Next is first seg after "M"
-			seg.next = segs[start_i+1];
+			seg.next = segs[startI + 1];
 
 			// First seg after "M"'s prev is this
 			seg.next.prev = seg;
-			seg.mate = segs[start_i];
+			seg.mate = segs[startI];
 			seg.addGrip();
 			if (this.first_seg == null) {
 				this.first_seg = seg;
 			}
-		} else if (!next_seg) {
+		} else if (!nextSeg) {
 			if (seg.type !== 1) {
 				// Last seg, doesn't close so add a grip
 				// to last sub-path's first point
-				start_seg = segs[start_i];
-				start_seg.next = segs[start_i+1];
-				start_seg.next.prev = start_seg;
-				start_seg.addGrip();
+				startSeg = segs[startI];
+				startSeg.next = segs[startI + 1];
+				startSeg.next.prev = startSeg;
+				startSeg.addGrip();
 				seg.addGrip();
 
 				if (!this.first_seg) {
 					// Open path, so set first as real first and add grip
-					this.first_seg = segs[start_i];
+					this.first_seg = segs[startI];
 				}
 			}
-		} else if (seg.type !== 1){
+		} else if (seg.type !== 1) {
 			// Regular segment, so add grip and its "next"
 			seg.addGrip();
 
 			// Don't set its "next" if it's an "M"
-			if (next_seg && next_seg.type !== 2) {
-				seg.next = next_seg;
+			if (nextSeg && nextSeg.type !== 2) {
+				seg.next = nextSeg;
 				seg.next.prev = seg;
 			}
 		}
@@ -649,44 +651,44 @@ svgedit.path.Path.prototype.init = function() {
 	return this;
 };
 
-svgedit.path.Path.prototype.eachSeg = function(fn) {
+svgedit.path.Path.prototype.eachSeg = function (fn) {
 	var i;
 	var len = this.segs.length;
 	for (i = 0; i < len; i++) {
 		var ret = fn.call(this.segs[i], i);
-		if (ret === false) {break;}
+		if (ret === false) { break; }
 	}
 };
 
-svgedit.path.Path.prototype.addSeg = function(index) {
+svgedit.path.Path.prototype.addSeg = function (index) {
 	// Adds a new segment
 	var seg = this.segs[index];
-	if (!seg.prev) {return;}
+	if (!seg.prev) { return; }
 
 	var prev = seg.prev;
-	var newseg, new_x, new_y;
-	switch(seg.item.pathSegType) {
+	var newseg, newX, newY;
+	switch (seg.item.pathSegType) {
 	case 4:
-		new_x = (seg.item.x + prev.item.x) / 2;
-		new_y = (seg.item.y + prev.item.y) / 2;
-		newseg = this.elem.createSVGPathSegLinetoAbs(new_x, new_y);
+		newX = (seg.item.x + prev.item.x) / 2;
+		newY = (seg.item.y + prev.item.y) / 2;
+		newseg = this.elem.createSVGPathSegLinetoAbs(newX, newY);
 		break;
-	case 6: //make it a curved segment to preserve the shape (WRS)
+	case 6: // make it a curved segment to preserve the shape (WRS)
 		// http://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm#Geometric_interpretation
-		var p0_x = (prev.item.x + seg.item.x1)/2;
-		var p1_x = (seg.item.x1 + seg.item.x2)/2;
-		var p2_x = (seg.item.x2 + seg.item.x)/2;
-		var p01_x = (p0_x + p1_x)/2;
-		var p12_x = (p1_x + p2_x)/2;
-		new_x = (p01_x + p12_x)/2;
-		var p0_y = (prev.item.y + seg.item.y1)/2;
-		var p1_y = (seg.item.y1 + seg.item.y2)/2;
-		var p2_y = (seg.item.y2 + seg.item.y)/2;
-		var p01_y = (p0_y + p1_y)/2;
-		var p12_y = (p1_y + p2_y)/2;
-		new_y = (p01_y + p12_y)/2;
-		newseg = this.elem.createSVGPathSegCurvetoCubicAbs(new_x, new_y, p0_x, p0_y, p01_x, p01_y);
-		var pts = [seg.item.x, seg.item.y, p12_x, p12_y, p2_x, p2_y];
+		var p0x = (prev.item.x + seg.item.x1) / 2;
+		var p1x = (seg.item.x1 + seg.item.x2) / 2;
+		var p2x = (seg.item.x2 + seg.item.x) / 2;
+		var p01x = (p0x + p1x) / 2;
+		var p12x = (p1x + p2x) / 2;
+		newX = (p01x + p12x) / 2;
+		var p0y = (prev.item.y + seg.item.y1) / 2;
+		var p1y = (seg.item.y1 + seg.item.y2) / 2;
+		var p2y = (seg.item.y2 + seg.item.y) / 2;
+		var p01y = (p0y + p1y) / 2;
+		var p12y = (p1y + p2y) / 2;
+		newY = (p01y + p12y) / 2;
+		newseg = this.elem.createSVGPathSegCurvetoCubicAbs(newX, newY, p0x, p0y, p01x, p01y);
+		var pts = [seg.item.x, seg.item.y, p12x, p12y, p2x, p2y];
 		svgedit.path.replacePathSeg(seg.type, index, pts);
 		break;
 	}
@@ -694,7 +696,7 @@ svgedit.path.Path.prototype.addSeg = function(index) {
 	svgedit.path.insertItemBefore(this.elem, newseg, index);
 };
 
-svgedit.path.Path.prototype.deleteSeg = function(index) {
+svgedit.path.Path.prototype.deleteSeg = function (index) {
 	var seg = this.segs[index];
 	var list = this.elem.pathSegList;
 
@@ -712,7 +714,7 @@ svgedit.path.Path.prototype.deleteSeg = function(index) {
 		list.removeItem(seg.mate.index);
 	} else if (!seg.prev) {
 		// First node of open path, make next point the M
-		var item = seg.item;
+		// var item = seg.item;
 		pt = [next.item.x, next.item.y];
 		svgedit.path.replacePathSeg(2, seg.next.index, pt);
 		list.removeItem(index);
@@ -721,11 +723,11 @@ svgedit.path.Path.prototype.deleteSeg = function(index) {
 	}
 };
 
-svgedit.path.Path.prototype.subpathIsClosed = function(index) {
+svgedit.path.Path.prototype.subpathIsClosed = function (index) {
 	var closed = false;
 	// Check if subpath is already open
-	svgedit.path.path.eachSeg(function(i) {
-		if (i <= index) {return true;}
+	svgedit.path.path.eachSeg(function (i) {
+		if (i <= index) { return true; }
 		if (this.type === 2) {
 			// Found M first, so open
 			return false;
@@ -740,7 +742,7 @@ svgedit.path.Path.prototype.subpathIsClosed = function(index) {
 	return closed;
 };
 
-svgedit.path.Path.prototype.removePtFromSelection = function(index) {
+svgedit.path.Path.prototype.removePtFromSelection = function (index) {
 	var pos = this.selected_pts.indexOf(index);
 	if (pos == -1) {
 		return;
@@ -749,21 +751,21 @@ svgedit.path.Path.prototype.removePtFromSelection = function(index) {
 	this.selected_pts.splice(pos, 1);
 };
 
-svgedit.path.Path.prototype.clearSelection = function() {
-	this.eachSeg(function() {
+svgedit.path.Path.prototype.clearSelection = function () {
+	this.eachSeg(function () {
 		// 'this' is the segment here
 		this.select(false);
 	});
 	this.selected_pts = [];
 };
 
-svgedit.path.Path.prototype.storeD = function() {
+svgedit.path.Path.prototype.storeD = function () {
 	this.last_d = this.elem.getAttribute('d');
 };
 
-svgedit.path.Path.prototype.show = function(y) {
+svgedit.path.Path.prototype.show = function (y) {
 	// Shows this path's segment grips
-	this.eachSeg(function() {
+	this.eachSeg(function () {
 		// 'this' is the segment here
 		this.show(y);
 	});
@@ -774,90 +776,90 @@ svgedit.path.Path.prototype.show = function(y) {
 };
 
 // Move selected points
-svgedit.path.Path.prototype.movePts = function(d_x, d_y) {
+svgedit.path.Path.prototype.movePts = function (dx, dy) {
 	var i = this.selected_pts.length;
-	while(i--) {
+	while (i--) {
 		var seg = this.segs[this.selected_pts[i]];
-		seg.move(d_x, d_y);
+		seg.move(dx, dy);
 	}
 };
 
-svgedit.path.Path.prototype.moveCtrl = function(d_x, d_y) {
+svgedit.path.Path.prototype.moveCtrl = function (dx, dy) {
 	var seg = this.segs[this.selected_pts[0]];
-	seg.moveCtrl(this.dragctrl, d_x, d_y);
-	if (link_control_pts) {
+	seg.moveCtrl(this.dragctrl, dx, dy);
+	if (linkControlPts) {
 		seg.setLinked(this.dragctrl);
 	}
 };
 
-svgedit.path.Path.prototype.setSegType = function(new_type) {
+svgedit.path.Path.prototype.setSegType = function (newType) {
 	this.storeD();
 	var i = this.selected_pts.length;
 	var text;
-	while(i--) {
-		var sel_pt = this.selected_pts[i];
+	while (i--) {
+		var selPt = this.selected_pts[i];
 
 		// Selected seg
-		var cur = this.segs[sel_pt];
+		var cur = this.segs[selPt];
 		var prev = cur.prev;
-		if (!prev) {continue;}
+		if (!prev) { continue; }
 
-		if (!new_type) { // double-click, so just toggle
+		if (!newType) { // double-click, so just toggle
 			text = 'Toggle Path Segment Type';
 
 			// Toggle segment to curve/straight line
-			var old_type = cur.type;
+			var oldType = cur.type;
 
-			new_type = (old_type == 6) ? 4 : 6;
+			newType = (oldType == 6) ? 4 : 6;
 		}
 
-		new_type = Number(new_type);
+		newType = Number(newType);
 
-		var cur_x = cur.item.x;
-		var cur_y = cur.item.y;
-		var prev_x = prev.item.x;
-		var prev_y = prev.item.y;
+		var curX = cur.item.x;
+		var curY = cur.item.y;
+		var prevX = prev.item.x;
+		var prevY = prev.item.y;
 		var points;
-		switch ( new_type ) {
+		switch (newType) {
 		case 6:
 			if (cur.olditem) {
 				var old = cur.olditem;
-				points = [cur_x, cur_y, old.x1, old.y1, old.x2, old.y2];
+				points = [curX, curY, old.x1, old.y1, old.x2, old.y2];
 			} else {
-				var diff_x = cur_x - prev_x;
-				var diff_y = cur_y - prev_y;
+				var diffX = curX - prevX;
+				var diffY = curY - prevY;
 				// get control points from straight line segment
 				/*
-				var ct1_x = (prev_x + (diff_y/2));
-				var ct1_y = (prev_y - (diff_x/2));
-				var ct2_x = (cur_x + (diff_y/2));
-				var ct2_y = (cur_y - (diff_x/2));
+				var ct1x = (prevX + (diffY/2));
+				var ct1y = (prevY - (diffX/2));
+				var ct2x = (curX + (diffY/2));
+				var ct2y = (curY - (diffX/2));
 				*/
-				//create control points on the line to preserve the shape (WRS)
-				var ct1_x = (prev_x + (diff_x/3));
-				var ct1_y = (prev_y + (diff_y/3));
-				var ct2_x = (cur_x - (diff_x/3));
-				var ct2_y = (cur_y - (diff_y/3));
-				points = [cur_x, cur_y, ct1_x, ct1_y, ct2_x, ct2_y];
+				// create control points on the line to preserve the shape (WRS)
+				var ct1x = (prevX + (diffX / 3));
+				var ct1y = (prevY + (diffY / 3));
+				var ct2x = (curX - (diffX / 3));
+				var ct2y = (curY - (diffY / 3));
+				points = [curX, curY, ct1x, ct1y, ct2x, ct2y];
 			}
 			break;
 		case 4:
-			points = [cur_x, cur_y];
+			points = [curX, curY];
 
 			// Store original prevve segment nums
 			cur.olditem = cur.item;
 			break;
 		}
 
-		cur.setType(new_type, points);
+		cur.setType(newType, points);
 	}
 	svgedit.path.path.endChanges(text);
 };
 
-svgedit.path.Path.prototype.selectPt = function(pt, ctrl_num) {
+svgedit.path.Path.prototype.selectPt = function (pt, ctrlNum) {
 	this.clearSelection();
 	if (pt == null) {
-		this.eachSeg(function(i) {
+		this.eachSeg(function (i) {
 			// 'this' is the segment here.
 			if (this.prev) {
 				pt = i;
@@ -865,17 +867,17 @@ svgedit.path.Path.prototype.selectPt = function(pt, ctrl_num) {
 		});
 	}
 	this.addPtsToSelection(pt);
-	if (ctrl_num) {
-		this.dragctrl = ctrl_num;
+	if (ctrlNum) {
+		this.dragctrl = ctrlNum;
 
-		if (link_control_pts) {
-			this.segs[pt].setLinked(ctrl_num);
+		if (linkControlPts) {
+			this.segs[pt].setLinked(ctrlNum);
 		}
 	}
 };
 
 // Update position of all points
-svgedit.path.Path.prototype.update = function() {
+svgedit.path.Path.prototype.update = function () {
 	var elem = this.elem;
 	if (svgedit.utilities.getRotationAngle(elem)) {
 		this.matrix = svgedit.math.getMatrix(elem);
@@ -885,7 +887,7 @@ svgedit.path.Path.prototype.update = function() {
 		this.imatrix = null;
 	}
 
-	this.eachSeg(function(i) {
+	this.eachSeg(function (i) {
 		this.item = elem.pathSegList.getItem(i);
 		this.update();
 	});
@@ -893,7 +895,7 @@ svgedit.path.Path.prototype.update = function() {
 	return this;
 };
 
-svgedit.path.getPath_ = function(elem) {
+svgedit.path.getPath_ = function (elem) {
 	var p = pathData[elem.id];
 	if (!p) {
 		p = pathData[elem.id] = new svgedit.path.Path(elem);
@@ -901,16 +903,16 @@ svgedit.path.getPath_ = function(elem) {
 	return p;
 };
 
-svgedit.path.removePath_ = function(id) {
-	if (id in pathData) {delete pathData[id];}
+svgedit.path.removePath_ = function (id) {
+	if (id in pathData) { delete pathData[id]; }
 };
 var newcx, newcy, oldcx, oldcy, angle;
-var getRotVals = function(x, y) {
+var getRotVals = function (x, y) {
 	var dx = x - oldcx;
 	var dy = y - oldcy;
 
 	// rotate the point around the old center
-	var r = Math.sqrt(dx*dx + dy*dy);
+	var r = Math.sqrt(dx * dx + dy * dy);
 	var theta = Math.atan2(dy, dx) + angle;
 	dx = r * Math.cos(theta) + oldcx;
 	dy = r * Math.sin(theta) + oldcy;
@@ -922,7 +924,7 @@ var getRotVals = function(x, y) {
 	dx -= newcx;
 	dy -= newcy;
 
-	r = Math.sqrt(dx*dx + dy*dy);
+	r = Math.sqrt(dx * dx + dy * dy);
 	theta = Math.atan2(dy, dx) - angle;
 
 	return {'x': r * Math.cos(theta) + newcx,
@@ -930,67 +932,66 @@ var getRotVals = function(x, y) {
 };
 
 // If the path was rotated, we must now pay the piper:
-// Every path point must be rotated into the rotated coordinate system of 
+// Every path point must be rotated into the rotated coordinate system of
 // its old center, then determine the new center, then rotate it back
 // This is because we want the path to remember its rotation
 
 // TODO: This is still using ye olde transform methods, can probably
 // be optimized or even taken care of by recalculateDimensions
-svgedit.path.recalcRotatedPath = function() {
-	var current_path = svgedit.path.path.elem;
-	angle = svgedit.utilities.getRotationAngle(current_path, true);
-	if (!angle) {return;}
-//	selectedBBoxes[0] = svgedit.path.path.oldbbox;
-	var box = svgedit.utilities.getBBox(current_path),
-		oldbox = svgedit.path.path.oldbbox; //selectedBBoxes[0],
-	oldcx = oldbox.x + oldbox.width/2;
-	oldcy = oldbox.y + oldbox.height/2;
-	newcx = box.x + box.width/2;
-	newcy = box.y + box.height/2;
+svgedit.path.recalcRotatedPath = function () {
+	var currentPath = svgedit.path.path.elem;
+	angle = svgedit.utilities.getRotationAngle(currentPath, true);
+	if (!angle) { return; }
+	// selectedBBoxes[0] = svgedit.path.path.oldbbox;
+	var box = svgedit.utilities.getBBox(currentPath),
+		oldbox = svgedit.path.path.oldbbox; // selectedBBoxes[0],
+	oldcx = oldbox.x + oldbox.width / 2;
+	oldcy = oldbox.y + oldbox.height / 2;
+	newcx = box.x + box.width / 2;
+	newcy = box.y + box.height / 2;
 
 	// un-rotate the new center to the proper position
 	var dx = newcx - oldcx,
 		dy = newcy - oldcy,
-		r = Math.sqrt(dx*dx + dy*dy),
+		r = Math.sqrt(dx * dx + dy * dy),
 		theta = Math.atan2(dy, dx) + angle;
 
 	newcx = r * Math.cos(theta) + oldcx;
 	newcy = r * Math.sin(theta) + oldcy;
 
-	var list = current_path.pathSegList,
+	var list = currentPath.pathSegList,
 		i = list.numberOfItems;
 	while (i) {
 		i -= 1;
 		var seg = list.getItem(i),
 			type = seg.pathSegType;
-		if (type == 1) {continue;}
+		if (type == 1) { continue; }
 
 		var rvals = getRotVals(seg.x, seg.y),
 			points = [rvals.x, rvals.y];
 		if (seg.x1 != null && seg.x2 != null) {
-			var c_vals1 = getRotVals(seg.x1, seg.y1);
-			var c_vals2 = getRotVals(seg.x2, seg.y2);
-			points.splice(points.length, 0, c_vals1.x , c_vals1.y, c_vals2.x, c_vals2.y);
+			var cVals1 = getRotVals(seg.x1, seg.y1);
+			var cVals2 = getRotVals(seg.x2, seg.y2);
+			points.splice(points.length, 0, cVals1.x, cVals1.y, cVals2.x, cVals2.y);
 		}
 		svgedit.path.replacePathSeg(type, i, points);
 	} // loop for each point
 
-	box = svgedit.utilities.getBBox(current_path);
-//	selectedBBoxes[0].x = box.x; selectedBBoxes[0].y = box.y;
-//	selectedBBoxes[0].width = box.width; selectedBBoxes[0].height = box.height;
+	box = svgedit.utilities.getBBox(currentPath);
+	// selectedBBoxes[0].x = box.x; selectedBBoxes[0].y = box.y;
+	// selectedBBoxes[0].width = box.width; selectedBBoxes[0].height = box.height;
 
 	// now we must set the new transform to be rotated around the new center
-	var R_nc = svgroot.createSVGTransform(),
-		tlist = svgedit.transformlist.getTransformList(current_path);
-	R_nc.setRotate((angle * 180.0 / Math.PI), newcx, newcy);
-	tlist.replaceItem(R_nc,0);
+	var Rnc = svgroot.createSVGTransform(),
+		tlist = svgedit.transformlist.getTransformList(currentPath);
+	Rnc.setRotate((angle * 180.0 / Math.PI), newcx, newcy);
+	tlist.replaceItem(Rnc, 0);
 };
 
 // ====================================
 // Public API starts here
 
-svgedit.path.clearData =  function() {
+svgedit.path.clearData = function () {
 	pathData = {};
 };
-
 }());

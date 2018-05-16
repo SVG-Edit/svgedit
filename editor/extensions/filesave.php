@@ -44,17 +44,17 @@ if ($suffix == '.svg') {
 	$contents = base64_decode(substr($contents, $pos));
 }
 
-header("Cache-Control: public");
-header("Content-Description: File Transfer");
+header('Cache-Control: public');
+header('Content-Description: File Transfer');
 
 // See http://tools.ietf.org/html/rfc6266#section-4.1
 header("Content-Disposition: attachment; filename*=UTF-8''" . encodeRFC5987ValueChars(
 	// preg_replace('@[\\\\/:*?"<>|]@', '', $file) // If we wanted to strip Windows-disallowed characters server-side (but not a security issue, so we can strip client-side instead)
 	$file
 ));
-header("Content-Type: " .  $mime);
-header("Content-Transfer-Encoding: binary");
+header('Content-Type: ' .  $mime);
+header('Content-Transfer-Encoding: binary');
 
 echo $contents;
- 
+
 ?>

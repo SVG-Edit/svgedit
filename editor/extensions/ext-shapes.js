@@ -1,5 +1,5 @@
-/*globals svgEditor, $, DOMParser*/
-/*jslint es5: true, vars: true, eqeq: true*/
+/* eslint-disable no-var */
+/* globals svgEditor, $, DOMParser */
 /*
  * ext-shapes.js
  *
@@ -10,11 +10,12 @@
  *
  */
 
-svgEditor.addExtension('shapes', function() {'use strict';
-	var current_d, cur_shape_id;
+svgEditor.addExtension('shapes', function () {
+	'use strict';
+	var currentD, curShapeId;
 	var canv = svgEditor.canvas;
-	var cur_shape;
-	var start_x, start_y;
+	var curShape;
+	var startX, startY;
 	var svgroot = canv.getRootElem();
 	var lastBBox = {};
 
@@ -73,67 +74,66 @@ svgEditor.addExtension('shapes', function() {'use strict';
 		}
 	};
 
-	var cur_lib = library.basic;
-	var mode_id = 'shapelib';
+	var curLib = library.basic;
+	var modeId = 'shapelib';
 	var startClientPos = {};
 
-	function loadIcons() {
-		$('#shape_buttons').empty().append(cur_lib.buttons);
+	function loadIcons () {
+		$('#shape_buttons').empty().append(curLib.buttons);
 	}
 
-	function makeButtons(cat, shapes) {
-		var size = cur_lib.size || 300;
-		var fill = cur_lib.fill || false;
+	function makeButtons (cat, shapes) {
+		var size = curLib.size || 300;
+		var fill = curLib.fill || false;
 		var off = size * 0.05;
-		var vb = [-off, -off, size + off*2, size + off*2].join(' ');
-		var stroke = fill ? 0: (size/30);
-		var shape_icon = new DOMParser().parseFromString(
-			'<svg xmlns="http://www.w3.org/2000/svg"><svg viewBox="' + vb + '"><path fill="'+(fill?'#333':'none')+'" stroke="#000" stroke-width="' + stroke + '" /></svg></svg>',
+		var vb = [-off, -off, size + off * 2, size + off * 2].join(' ');
+		var stroke = fill ? 0 : (size / 30);
+		var shapeIcon = new DOMParser().parseFromString(
+			'<svg xmlns="http://www.w3.org/2000/svg"><svg viewBox="' + vb + '"><path fill="' + (fill ? '#333' : 'none') + '" stroke="#000" stroke-width="' + stroke + '" /></svg></svg>',
 			'text/xml');
 
 		var width = 24;
 		var height = 24;
-		shape_icon.documentElement.setAttribute('width', width);
-		shape_icon.documentElement.setAttribute('height', height);
-		var svg_elem = $(document.importNode(shape_icon.documentElement,true));
+		shapeIcon.documentElement.setAttribute('width', width);
+		shapeIcon.documentElement.setAttribute('height', height);
+		var svgElem = $(document.importNode(shapeIcon.documentElement, true));
 
 		var data = shapes.data;
 
-		cur_lib.buttons = [];
+		curLib.buttons = [];
 		var id;
 		for (id in data) {
-			var path_d = data[id];
-			var icon = svg_elem.clone();
-			icon.find('path').attr('d', path_d);
+			var pathD = data[id];
+			var icon = svgElem.clone();
+			icon.find('path').attr('d', pathD);
 
-			var icon_btn = icon.wrap('<div class="tool_button">').parent().attr({
-				id: mode_id + '_' + id,
+			var iconBtn = icon.wrap('<div class="tool_button">').parent().attr({
+				id: modeId + '_' + id,
 				title: id
 			});
 			// Store for later use
-			cur_lib.buttons.push(icon_btn[0]);
+			curLib.buttons.push(iconBtn[0]);
 		}
 	}
 
-	function loadLibrary(cat_id) {
-
-		var lib = library[cat_id];
+	function loadLibrary (catId) {
+		var lib = library[catId];
 
 		if (!lib) {
 			$('#shape_buttons').html('Loading...');
-			$.getJSON(svgEditor.curConfig.extPath + 'shapelib/' + cat_id + '.json', function(result) {
-				cur_lib = library[cat_id] = {
+			$.getJSON(svgEditor.curConfig.extPath + 'shapelib/' + catId + '.json', function (result) {
+				curLib = library[catId] = {
 					data: result.data,
 					size: result.size,
 					fill: result.fill
 				};
-				makeButtons(cat_id, result);
+				makeButtons(catId, result);
 				loadIcons();
 			});
 			return;
 		}
-		cur_lib = lib;
-		if (!lib.buttons.length) {makeButtons(cat_id, lib);}
+		curLib = lib;
+		if (!lib.buttons.length) { makeButtons(catId, lib); }
 		loadIcons();
 	}
 
@@ -145,53 +145,52 @@ svgEditor.addExtension('shapes', function() {'use strict';
 			position: 6,
 			title: 'Shape library',
 			events: {
-				click: function() {
-					canv.setMode(mode_id);
+				click: function () {
+					canv.setMode(modeId);
 				}
 			}
 		}],
-		callback: function() {
-			$('<style>').text('\
-			#shape_buttons {\
-				overflow: auto;\
-				width: 180px;\
-				max-height: 300px;\
-				display: table-cell;\
-				vertical-align: middle;\
-			}\
-			\
-			#shape_cats {\
-				min-width: 110px;\
-				display: table-cell;\
-				vertical-align: middle;\
-				height: 300px;\
-			}\
-			#shape_cats > div {\
-				line-height: 1em;\
-				padding: .5em;\
-				border:1px solid #B0B0B0;\
-				background: #E8E8E8;\
-				margin-bottom: -1px;\
-			}\
-			#shape_cats div:hover {\
-				background: #FFFFCC;\
-			}\
-			#shape_cats div.current {\
-				font-weight: bold;\
-			}').appendTo('head');
+		callback: function () {
+			$('<style>').text(
+				'#shape_buttons {' +
+				'overflow: auto;' +
+				'width: 180px;' +
+				'max-height: 300px;' +
+				'display: table-cell;' +
+				'vertical-align: middle;' +
+			'}' +
+			'#shape_cats {' +
+				'min-width: 110px;' +
+				'display: table-cell;' +
+				'vertical-align: middle;' +
+				'height: 300px;' +
+			'}' +
+			'#shape_cats > div {' +
+				'line-height: 1em;' +
+				'padding: .5em;' +
+				'border:1px solid #B0B0B0;' +
+				'background: #E8E8E8;' +
+				'margin-bottom: -1px;' +
+			'}' +
+			'#shape_cats div:hover {' +
+				'background: #FFFFCC;' +
+			'}' +
+			'#shape_cats div.current {' +
+				'font-weight: bold;' +
+			'}').appendTo('head');
 
-			var btn_div = $('<div id="shape_buttons">');
-			$('#tools_shapelib > *').wrapAll(btn_div);
+			var btnDiv = $('<div id="shape_buttons">');
+			$('#tools_shapelib > *').wrapAll(btnDiv);
 
 			var shower = $('#tools_shapelib_show');
 
 			loadLibrary('basic');
 
 			// Do mouseup on parent element rather than each button
-			$('#shape_buttons').mouseup(function(evt) {
+			$('#shape_buttons').mouseup(function (evt) {
 				var btn = $(evt.target).closest('div.tool_button');
 
-				if (!btn.length) {return;}
+				if (!btn.length) { return; }
 
 				var copy = btn.children().clone();
 				shower.children(':not(.flyout_arrow_horiz)').remove();
@@ -199,22 +198,22 @@ svgEditor.addExtension('shapes', function() {'use strict';
 					.append(copy)
 					.attr('data-curopt', '#' + btn[0].id) // This sets the current mode
 					.mouseup();
-				canv.setMode(mode_id);
+				canv.setMode(modeId);
 
-				cur_shape_id = btn[0].id.substr((mode_id+'_').length);
-				current_d = cur_lib.data[cur_shape_id];
+				curShapeId = btn[0].id.substr((modeId + '_').length);
+				currentD = curLib.data[curShapeId];
 
 				$('.tools_flyout').fadeOut();
 			});
 
-			var shape_cats = $('<div id="shape_cats">');
-			var cat_str = '';
+			var shapeCats = $('<div id="shape_cats">');
+			var catStr = '';
 
-			$.each(categories, function(id, label) {
-				cat_str += '<div data-cat=' + id + '>' + label + '</div>';
+			$.each(categories, function (id, label) {
+				catStr += '<div data-cat=' + id + '>' + label + '</div>';
 			});
 
-			shape_cats.html(cat_str).children().bind('mouseup', function() {
+			shapeCats.html(catStr).children().bind('mouseup', function () {
 				var catlink = $(this);
 				catlink.siblings().removeClass('current');
 				catlink.addClass('current');
@@ -224,134 +223,133 @@ svgEditor.addExtension('shapes', function() {'use strict';
 				return false;
 			});
 
-			shape_cats.children().eq(0).addClass('current');
+			shapeCats.children().eq(0).addClass('current');
 
-			$('#tools_shapelib').append(shape_cats);
+			$('#tools_shapelib').append(shapeCats);
 
-			shower.mouseup(function() {
-				canv.setMode(current_d ? mode_id : 'select');
+			shower.mouseup(function () {
+				canv.setMode(currentD ? modeId : 'select');
 			});
 			$('#tool_shapelib').remove();
 
 			var h = $('#tools_shapelib').height();
 			$('#tools_shapelib').css({
-				'margin-top': -(h/2 - 15),
+				'margin-top': -(h / 2 - 15),
 				'margin-left': 3
 			});
 		},
-		mouseDown: function(opts) {
+		mouseDown: function (opts) {
 			var mode = canv.getMode();
-			if (mode !== mode_id) {return;}
+			if (mode !== modeId) { return; }
 
-			start_x = opts.start_x;
-			var x = start_x;
-			start_y = opts.start_y;
-			var y = start_y;
-			var cur_style = canv.getStyle();
-		 
+			startX = opts.start_x;
+			var x = startX;
+			startY = opts.start_y;
+			var y = startY;
+			var curStyle = canv.getStyle();
+
 			startClientPos.x = opts.event.clientX;
 			startClientPos.y = opts.event.clientY;
 
-			cur_shape = canv.addSvgElementFromJson({
+			curShape = canv.addSvgElementFromJson({
 				'element': 'path',
 				'curStyles': true,
 				'attr': {
-					'd': current_d,
+					'd': currentD,
 					'id': canv.getNextId(),
-					'opacity': cur_style.opacity / 2,
+					'opacity': curStyle.opacity / 2,
 					'style': 'pointer-events:none'
 				}
 			});
 
 			// Make sure shape uses absolute values
-			if (/[a-z]/.test(current_d)) {
-				current_d = cur_lib.data[cur_shape_id] = canv.pathActions.convertPath(cur_shape);
-				cur_shape.setAttribute('d', current_d);
-				canv.pathActions.fixEnd(cur_shape);
+			if (/[a-z]/.test(currentD)) {
+				currentD = curLib.data[curShapeId] = canv.pathActions.convertPath(curShape);
+				curShape.setAttribute('d', currentD);
+				canv.pathActions.fixEnd(curShape);
 			}
-			cur_shape.setAttribute('transform', 'translate(' + x + ',' + y + ') scale(0.005) translate(' + -x + ',' + -y + ')');
+			curShape.setAttribute('transform', 'translate(' + x + ',' + y + ') scale(0.005) translate(' + -x + ',' + -y + ')');
 
-			canv.recalculateDimensions(cur_shape);
+			canv.recalculateDimensions(curShape);
 
-			var tlist = canv.getTransformList(cur_shape);
+			/* var tlist = */ canv.getTransformList(curShape);
 
-			lastBBox = cur_shape.getBBox();
+			lastBBox = curShape.getBBox();
 
 			return {
 				started: true
 			};
 		},
-		mouseMove: function(opts) {
+		mouseMove: function (opts) {
 			var mode = canv.getMode();
-			if (mode !== mode_id) {return;}
+			if (mode !== modeId) { return; }
 
 			var zoom = canv.getZoom();
 			var evt = opts.event;
 
-			var x = opts.mouse_x/zoom;
-			var y = opts.mouse_y/zoom;
+			var x = opts.mouse_x / zoom;
+			var y = opts.mouse_y / zoom;
 
-			var tlist = canv.getTransformList(cur_shape),
-				box = cur_shape.getBBox(),
+			var tlist = canv.getTransformList(curShape),
+				box = curShape.getBBox(),
 				left = box.x, top = box.y, width = box.width,
 				height = box.height;
-			var dx = (x-start_x), dy = (y-start_y);
+			var dx = (x - startX), dy = (y - startY);
 
 			var newbox = {
-				'x': Math.min(start_x,x),
-				'y': Math.min(start_y,y),
-				'width': Math.abs(x-start_x),
-				'height': Math.abs(y-start_y)
+				'x': Math.min(startX, x),
+				'y': Math.min(startY, y),
+				'width': Math.abs(x - startX),
+				'height': Math.abs(y - startY)
 			};
 
 			var tx = 0, ty = 0,
-				sy = height ? (height+dy)/height : 1,
-				sx = width ? (width+dx)/width : 1;
+				sy = height ? (height + dy) / height : 1,
+				sx = width ? (width + dx) / width : 1;
 
 			sx = (newbox.width / lastBBox.width) || 1;
 			sy = (newbox.height / lastBBox.height) || 1;
 
 			// Not perfect, but mostly works...
-			if (x < start_x) {
+			if (x < startX) {
 				tx = lastBBox.width;
 			}
-			if (y < start_y) {ty = lastBBox.height;}
+			if (y < startY) { ty = lastBBox.height; }
 
 			// update the transform list with translate,scale,translate
 			var translateOrigin = svgroot.createSVGTransform(),
 				scale = svgroot.createSVGTransform(),
 				translateBack = svgroot.createSVGTransform();
 
-			translateOrigin.setTranslate(-(left+tx), -(top+ty));
+			translateOrigin.setTranslate(-(left + tx), -(top + ty));
 			if (!evt.shiftKey) {
 				var max = Math.min(Math.abs(sx), Math.abs(sy));
 
 				sx = max * (sx < 0 ? -1 : 1);
 				sy = max * (sy < 0 ? -1 : 1);
 			}
-			scale.setScale(sx,sy);
+			scale.setScale(sx, sy);
 
-			translateBack.setTranslate(left+tx, top+ty);
+			translateBack.setTranslate(left + tx, top + ty);
 			tlist.appendItem(translateBack);
 			tlist.appendItem(scale);
 			tlist.appendItem(translateOrigin);
 
-			canv.recalculateDimensions(cur_shape);
+			canv.recalculateDimensions(curShape);
 
-			lastBBox = cur_shape.getBBox();
+			lastBBox = curShape.getBBox();
 		},
-		mouseUp: function(opts) {
+		mouseUp: function (opts) {
 			var mode = canv.getMode();
-			if (mode !== mode_id) {return;}
+			if (mode !== modeId) { return; }
 
-			var keepObject = (opts.event.clientX != startClientPos.x && opts.event.clientY != startClientPos.y);
+			var keepObject = (opts.event.clientX !== startClientPos.x && opts.event.clientY !== startClientPos.y);
 
 			return {
 				keep: keepObject,
-				element: cur_shape,
+				element: curShape,
 				started: false
 			};
 		}
 	};
 });
-
