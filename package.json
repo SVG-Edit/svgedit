@@ -11,6 +11,7 @@
   "engines": {},
   "scripts": {
     "eslint": "eslint .",
+    "start": "echo \"Open file to http://localhost:8000/test/all_tests.html\" && static -p 8000",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -36,7 +37,9 @@
     "url": "https://github.com/SVG-Edit/svgedit/issues"
   },
   "homepage": "https://github.com/SVG-Edit/svgedit#readme",
-  "dependencies": {},
+  "dependencies": {
+    "static-cli": "0.0.13"
+  },
   "devDependencies": {
     "eslint": "4.19.1",
     "eslint-config-standard": "11.0.0",

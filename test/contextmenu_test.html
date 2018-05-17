@@ -3,11 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <title>Unit Tests for contextmenu.js</title>
+  <link rel="icon" type="image/png" href="../editor/images/logo.png"/>
   <link rel="stylesheet" href="qunit/qunit.css"/>
   <script src="../editor/jquery.js"></script>
   <script>
   // Mock for browser.js
-  window.svgEditor = {ready: function(){}};
+  window.svgEditor = {
+      ready: function () {}
+  };
   </script>
   <script src="../editor/contextmenu.js"></script>
   <script src="qunit/qunit.js"></script>

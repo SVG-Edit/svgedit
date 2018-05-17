@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <title>Unit Tests for svgtransformlist.js</title>
+  <link rel="icon" type="image/png" href="../editor/images/logo.png"/>
   <link rel="stylesheet" href="qunit/qunit.css"/>
   <script src="../editor/jquery.js"></script>
   <script src="../editor/svgedit.js"></script>
   <script>
   // Mock for browser.js
   svgedit.browser = {};
-  svgedit.browser.supportsNativeTransformLists = function() { return false;}
+  svgedit.browser.supportsNativeTransformLists = function () { return false; }
   </script>
   <script src="../editor/svgtransformlist.js"></script>
   <script src="qunit/qunit.js"></script>

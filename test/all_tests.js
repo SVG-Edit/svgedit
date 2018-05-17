@@ -1,8 +1,12 @@
 /* eslint-disable no-var */
-window.setTimeout(function () {
-	var iframes = document.getElementsByTagName('iframe');
-	for (var i = 0, len = iframes.length; i < len; ++i) {
-		var f = iframes[i];
-		f.style.height = (f.contentDocument.body.scrollHeight + 20) + 'px';
-	}
-}, 5000);
+var iframes = document.getElementsByTagName('iframe');
+for (var i = 0, len = iframes.length; i < len; ++i) {
+	var f = iframes[i];
+	(function (f) {
+		f.addEventListener('load', function () {
+			f.contentWindow.QUnit.done = function () {
+				f.style.height = (f.contentDocument.body.scrollHeight + 20) + 'px';
+			};
+		});
+	})(f);
+}
