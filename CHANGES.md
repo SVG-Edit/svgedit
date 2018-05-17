@@ -1,3 +1,41 @@
+# ?
+
+* Fix: Broken "lv" locale (and inconsistent tabs/spaces pt-PR)
+* Fix: Inadvertent global assignments (uncovered by ESLint):
+    * `addBezierCurve` in `canvg.js` had undeclared `i`
+    * Fix: Undeclared variable in opera widget
+    * jgraduate->jpicker: Fix missing `var` for some `i` loops
+    * Fix: Globals (`x`, `y`) in `mouseMove`
+    * Fix: Global (`element`, `d_attr` (now renamed to `dAttr`)) in `mouseDown`
+    * Testing (math_test): Fix undeclared variables
+    * Screencast `showNotes`
+- Fix: Bad scope closure references
+    * An apparent bug in `jquery.svgicons.js` whereby a variable
+        `holder` was declared in too nested of a scope
+    * Fix: Avoid `drawnPath` not defined error (currently adds as a global, but
+        should be switching to modules anyways)
+* Fix (jgraduate->jpicker): Fix Color val check when `name.length` is empty
+    (equal to "all")
+* Fix (jquery.jgraduate.js): Ensure `numstops` is present before check
+* Fix (history.js) Relocation of rotational transform had undeclared variable (`elem`)
+* Fix (Editor): Restore save alert
+* Fix (Firefox svgutils.js): tspan (and textPath apparently) have no `getBBox`
+    in Firefox, so recover (fixes FF issue with recalculate test 3:
+    "recalculateDimensions() on text w/tspan with simple translate")
+* Fix (Chrome recalculate.js): Chrome has a
+    [bug](https://bugs.chromium.org/p/chromium/issues/detail?id=843901)
+    in not performing `removeAttribute` after `removeItem`; deal with it
+    (though only if there is a single identity matrix) (fixes Chrome issue
+    with recalculate test 1:
+    "recalculateDimensions() on rect with identity matrix")
+* Enhancement: Throw Error objects instead of strings (including in jgraduate->jpicker)
+* Refactoring: Switch to ESLint in source
+* Refactoring: Move scripts to own files
+* Testing: Move JavaScript out of HTML to own files
+* Testing: Add `node-static` to get tests working
+* Testing: Fix timing of `all_tests.html` for ensuring expanding iframe size to fit content
+* Testing: Add favicon to test files (also may avoid extra log in console)
+
 # 3.0.0-alpha.1
 
 (Only released on npm)
