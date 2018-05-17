@@ -11,6 +11,7 @@
   "engines": {},
   "scripts": {
     "eslint": "eslint .",
+    "uglify": "uglifyjs --compress -o ./editor/spinbtn/JQuerySpinBtn.min.js -- ./editor/spinbtn/JQuerySpinBtn.js",
     "start": "echo \"Open file to http://localhost:8000/test/all_tests.html\" && static -p 8000",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -46,6 +47,7 @@
     "eslint-plugin-import": "2.11.0",
     "eslint-plugin-node": "6.0.1",
     "eslint-plugin-promise": "3.7.0",
-    "eslint-plugin-standard": "3.1.0"
+    "eslint-plugin-standard": "3.1.0",
+    "uglify-es": "^3.3.9"
   }
 }
