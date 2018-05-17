@@ -17,7 +17,7 @@ msgstr ""
 def printstr(flag, i, s):
     out.append('\n')
     if flag == '-x-svg-edit-both':
-        out.append("# Enter the title first, then the contents, seperated by a pipe char (|)\n")
+        out.append("# Enter the title first, then the contents, separated by a pipe char (|)\n")
     out.append("#, " + flag + '\n')
     out.append("msgid \"" + i + "\"" + '\n')
     out.append("msgstr \"" + s.replace('\n', '\\n') + "\"" + '\n')

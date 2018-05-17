@@ -9,10 +9,10 @@
 
 <base href="http://svg-edit.googlecode.com/svn-history/r1142/branches/2.4/editor/svg-editor.html">
 
-<link rel="stylesheet" href="jgraduate/css/jPicker-1.0.9.css" type="text/css"/>
-<link rel="stylesheet" href="jgraduate/css/jGraduate-0.2.0.css" type="text/css"/>
-<link rel="stylesheet" href="svg-editor.css" type="text/css"/>
-<link rel="stylesheet" href="spinbtn/JQuerySpinBtn.css" type="text/css"/>
+<link rel="stylesheet" href="jgraduate/css/jPicker-1.0.9.css"/>
+<link rel="stylesheet" href="jgraduate/css/jGraduate-0.2.0.css"/>
+<link rel="stylesheet" href="svg-editor.css"/>
+<link rel="stylesheet" href="spinbtn/JQuerySpinBtn.css"/>
 <!-- Development version of script tags: -->
 <script src="jquery.js"></script>
 <script src="js-hotkeys/jquery.hotkeys.min.js"></script>
@@ -48,7 +48,7 @@ script src="locale/locale.min.js"></script-->
 <div id="svg_editor">
 
 <div id="workarea">
-<style id="styleoverrides" type="text/css" media="screen" scoped="scoped"></style>
+<style id="styleoverrides" media="screen" scoped="scoped"></style>
 <div id="svgcanvas"></div>
 </div>
 
@@ -62,7 +62,7 @@ script src="locale/locale.min.js"></script-->
 			<div id="layer_up" class="layer_button"  title="Move Layer Up"></div>
 			<div id="layer_down" class="layer_button"  title="Move Layer Down"></div>
 		</fieldset>
-		
+
 		<table id="layerlist">
 			<tr class="layer">
 				<td class="layervis"></td>
@@ -83,7 +83,7 @@ script src="locale/locale.min.js"></script-->
 </div>
 
 <div id="tools_top" class="tools_panel">
-	
+
 	<!-- File-like buttons: New, Save, Source -->
 	<div id="file_panel">
 		<div class="push_button" id="tool_clear" title="New Image [N]"></div>
@@ -100,7 +100,7 @@ script src="locale/locale.min.js"></script-->
 		<div class="push_button tool_button_disabled" id="tool_undo" title="Undo [Z]"></div>
 		<div class="push_button tool_button_disabled" id="tool_redo" title="Redo [Y]"></div>
 	</div>
-	
+
 	<!-- Buttons when a single element is selected -->
 	<div id="selected_panel">
 		<div class="toolset">
@@ -181,7 +181,7 @@ script src="locale/locale.min.js"></script-->
 		<div class="toolset">
 			<label id="cornerRadiusLabel" class="rect_tool">Corner Radius:</label>
 			<input id="rect_rx" size="3" value="0" class="rect_tool" type="text" title="Change Rectangle Corner Radius" data-attr="Corner Radius"/>
-		</div>	
+		</div>
 	</div>
 
 	<div id="image_panel">
@@ -245,7 +245,7 @@ script src="locale/locale.min.js"></script-->
 	<div id="text_panel">
 		<div class="tool_button" id="tool_bold" title="Bold Text [B]"><span></span>B</div>
 		<div class="tool_button" id="tool_italic" title="Italic Text [I]"><span></span>i</div>
-		
+
 		<div class="toolset">
 			<input id="font_family" class="text_tool" type="text" title="Change Font Family" size="12"/>
 			<div id="font_family_dropdown" class="dropdown">
@@ -266,7 +266,7 @@ script src="locale/locale.min.js"></script-->
 		</div>
 		<input id="text" class="text_tool" type="text" title="Change text contents" size="35"/>
 	</div>
-	
+
 	<div id="path_node_panel">
 		<div class="tool_sep"></div>
 		<div class="tool_button" id="tool_node_link" title="Link Control Points"></div>
@@ -282,7 +282,7 @@ script src="locale/locale.min.js"></script-->
 		<div class="tool_button" id="tool_node_clone" title="Clone Node"></div>
 		<div class="tool_button" id="tool_node_delete" title="Delete Node"></div>
 	</div>
-	
+
 </div> <!-- tools_top -->
 
 <div id="tools_left" class="tools_panel">
@@ -400,15 +400,15 @@ script src="locale/locale.min.js"></script-->
 			<label>
 				<span id="svginfo_title">Title:</span>
 				<input type="text" id="canvas_title" size="24">
-			</label>			
-	
+			</label>
+
 			<fieldset id="change_resolution">
 				<legend id="svginfo_dim">Canvas Dimensions</legend>
 
 				<label><span id="svginfo_width">Width:</span> <input type="text" id="canvas_width" size="6"></label>
-					
+
 				<label><span id="svginfo_height">Height:</span> <input type="text" id="canvas_height" size="6"></label>
-				
+
 				<label>
 					<select id="resolution">
 						<option id="selectedPredefined" selected="selected">Select predefined:</option>
@@ -426,7 +426,7 @@ script src="locale/locale.min.js"></script-->
 				<legend id="includedImages">Included Images</legend>
 				<label><input type="radio" name="image_opt" value="embed" checked="checked"/> <span id="image_opt_embed">Embed data (local files)</span> </label>
 				<label><input type="radio" name="image_opt" value="ref"/> <span id="image_opt_ref">Use file reference</span> </label>
-			</fieldset>			
+			</fieldset>
 
 
 		</fieldset>
@@ -463,7 +463,7 @@ script src="locale/locale.min.js"></script-->
 				<label><span id="svginfo_bg_url">URL:</span> <input type="text" id="canvas_bg_url" size="21"></label>
 				<p id="svginfo_bg_note">Note: Background will not be saved with image.</p>
 			</fieldset>
-			
+
 		</fieldset>
 
 	</div>

@@ -1,4 +1,5 @@
-/*globals svgEditor */
+/* eslint-disable quotes */
+/* globals svgEditor */
 svgEditor.readLang({
 	lang: "fr",
 	dir: "ltr",
@@ -16,7 +17,7 @@ svgEditor.readLang({
 	},
 	misc: {
 		"powered_by": "Propulsé par"
-	}, 
+	},
 	ui: {
 		"toggle_stroke_tools": "Montrer/cacher plus d'outils de contour",
 		"palette_info": "Cliquer pour changer la couleur de remplissage, Maj+clic pour changer la couleur de contour",
@@ -68,7 +69,7 @@ svgEditor.readLang({
 		"bold": "Texte en gras",
 		"italic": "Texte en italique"
 	},
-	tools: { 
+	tools: {
 		"main_menu": "Menu principal",
 		"bkgnd_color_opac": "Changer la couleur d'arrière-plan/l'opacité",
 		"connector_no_arrow": "Sans flèches",
@@ -147,7 +148,7 @@ svgEditor.readLang({
 		"move_back": "Placer au fond"
 	},
 	layers: {
-		"layer":"Calque",
+		"layer": "Calque",
 		"layers": "Calques",
 		"del": "Supprimer le calque",
 		"move_down": "Descendre le calque",

@@ -1,14 +1,15 @@
-/*globals svgEditor */
+/* eslint-disable quotes */
+/* globals svgEditor */
 svgEditor.readLang({
 	lang: "fy",
-	dir : "ltr",
+	dir: "ltr",
 	common: {
 		"ok": "Ok",
 		"cancel": "Ôfbrekke",
-		"key_backspace": "backspace", 
-		"key_del": "delete", 
-		"key_down": "omleech", 
-		"key_up": "omheech", 
+		"key_backspace": "backspace",
+		"key_del": "delete",
+		"key_down": "omleech",
+		"key_up": "omheech",
 		"more_opts": "More Options",
 		"url": "URL",
 		"width": "Width",
@@ -16,7 +17,7 @@ svgEditor.readLang({
 	},
 	misc: {
 		"powered_by": "Powered by"
-	}, 
+	},
 	ui: {
 		"toggle_stroke_tools": "Show/hide more stroke tools",
 		"palette_info": "Klik om de folkleur te feroarjen, shift-klik om de linekleur te feroarjen.",
@@ -68,7 +69,7 @@ svgEditor.readLang({
 		"bold": "Fet",
 		"italic": "Skean"
 	},
-	tools: { 
+	tools: {
 		"main_menu": "Main Menu",
 		"bkgnd_color_opac": "Eftergrûnkleur/trochsichtigens oanpasse",
 		"connector_no_arrow": "No arrow",
@@ -147,7 +148,7 @@ svgEditor.readLang({
 		"move_back": "Send to Back"
 	},
 	layers: {
-		"layer":"Laach",
+		"layer": "Laach",
 		"layers": "Layers",
 		"del": "Laach fuortsmite",
 		"move_down": "Laach omleech bringe",
@@ -210,21 +211,21 @@ svgEditor.readLang({
 		"open": "Open as new document"
 	},
 	notification: {
-		"invalidAttrValGiven":"Ferkearde waarde jûn",
-		"noContentToFitTo":"Gjin ynhâld om te passen",
-		"dupeLayerName":"Der is al in laach mei dy namme!",
-		"enterUniqueLayerName":"Type in unyke laachnamme",
-		"enterNewLayerName":"Type in nije laachnamme",
-		"layerHasThatName":"Laach hat dy namme al",
-		"QmoveElemsToLayer":"Selektearre ûnderdielen ferplaatse nei '%s'?",
-		"QwantToClear":"Ôfbielding leechmeitsje? Dit sil ek de skiednis fuortsmite!",
-		"QwantToOpen":"Do you want to open a new file?\nThis will also erase your undo history!",
-		"QerrorsRevertToSource":"Der wiene flaters yn de SVG-boarne.\nWeromgean nei foarige SVG-boarne?",
-		"QignoreSourceChanges":"Feroarings yn SVG-boarne negeare?",
-		"featNotSupported":"Funksje wurdt net ûndersteund",
-		"enterNewImgURL":"Jou de nije URL",
+		"invalidAttrValGiven": "Ferkearde waarde jûn",
+		"noContentToFitTo": "Gjin ynhâld om te passen",
+		"dupeLayerName": "Der is al in laach mei dy namme!",
+		"enterUniqueLayerName": "Type in unyke laachnamme",
+		"enterNewLayerName": "Type in nije laachnamme",
+		"layerHasThatName": "Laach hat dy namme al",
+		"QmoveElemsToLayer": "Selektearre ûnderdielen ferplaatse nei '%s'?",
+		"QwantToClear": "Ôfbielding leechmeitsje? Dit sil ek de skiednis fuortsmite!",
+		"QwantToOpen": "Do you want to open a new file?\nThis will also erase your undo history!",
+		"QerrorsRevertToSource": "Der wiene flaters yn de SVG-boarne.\nWeromgean nei foarige SVG-boarne?",
+		"QignoreSourceChanges": "Feroarings yn SVG-boarne negeare?",
+		"featNotSupported": "Funksje wurdt net ûndersteund",
+		"enterNewImgURL": "Jou de nije URL",
 		"defsFailOnSave": "NOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.",
-		"loadingImage":"Loading image, please wait...",
+		"loadingImage": "Loading image, please wait...",
 		"saveFromBrowser": "Select \"Save As...\" in your browser to save this image as a %s file.",
 		"noteTheseIssues": "Also note the following issues: ",
 		"unsavedChanges": "There are unsaved changes.",
@@ -234,10 +235,10 @@ svgEditor.readLang({
 		"retrieving": "Retrieving \"%s\"..."
 	},
 	confirmSetStorage: {
-		message: "By default and where supported, SVG-Edit can store your editor "+
-		"preferences and SVG content locally on your machine so you do not "+
-		"need to add these back each time you load SVG-Edit. If, for privacy "+
-		"reasons, you do not wish to store this information on your machine, "+
+		message: "By default and where supported, SVG-Edit can store your editor " +
+		"preferences and SVG content locally on your machine so you do not " +
+		"need to add these back each time you load SVG-Edit. If, for privacy " +
+		"reasons, you do not wish to store this information on your machine, " +
 		"you can change away from the default option below.",
 		storagePrefsAndContent: "Store preferences and SVG content locally",
 		storagePrefsOnly: "Only store preferences locally",

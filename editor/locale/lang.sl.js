@@ -1,7 +1,8 @@
-/*globals svgEditor */
+/* eslint-disable quotes */
+/* globals svgEditor */
 svgEditor.readLang({
 	lang: "sl",
-	dir : "ltr",
+	dir: "ltr",
 	common: {
 		"ok": "V redu",
 		"cancel": "Prekliči",
@@ -147,7 +148,7 @@ svgEditor.readLang({
 		"move_back": "Postavi v ozadje"
 	},
 	layers: {
-		"layer":"Sloj",
+		"layer": "Sloj",
 		"layers": "Sloji",
 		"del": "Izbriši sloj",
 		"move_down": "Premakni navzdol",
@@ -209,21 +210,21 @@ svgEditor.readLang({
 		"open": "Odpri kot nov dokument"
 	},
 	notification: {
-		"invalidAttrValGiven":"Napačna vrednost!",
-		"noContentToFitTo":"Ni vsebine za prilagajanje",
-		"dupeLayerName":"Sloj s tem imenom že obstajal!",
-		"enterUniqueLayerName":"Vnesite edinstveno ime sloja",
-		"enterNewLayerName":"Vnesite ime novega sloja",
-		"layerHasThatName":"Sloje že ima to ime",
-		"QmoveElemsToLayer":"Premaknem izbrane elemente v sloj '%s'?",
-		"QwantToClear":"Ali želite počistiti risbo?\nTo bo izbrisalo tudi zgodovino korakov (ni mogoče razveljaviti)!",
-		"QwantToOpen":"Ali želite odpreti novo datoteko?\nTo bo izbrisalo tudi zgodovino korakov (ni mogoče razveljaviti)!",
-		"QerrorsRevertToSource":"There were parsing errors in your SVG source.\nRevert back to original SVG source?",
-		"QignoreSourceChanges":"Ignoriram spremembe, narejene v SVG kodi?",
-		"featNotSupported":"Ni podprto",
-		"enterNewImgURL":"Vnesite nov URL slike",
+		"invalidAttrValGiven": "Napačna vrednost!",
+		"noContentToFitTo": "Ni vsebine za prilagajanje",
+		"dupeLayerName": "Sloj s tem imenom že obstajal!",
+		"enterUniqueLayerName": "Vnesite edinstveno ime sloja",
+		"enterNewLayerName": "Vnesite ime novega sloja",
+		"layerHasThatName": "Sloje že ima to ime",
+		"QmoveElemsToLayer": "Premaknem izbrane elemente v sloj '%s'?",
+		"QwantToClear": "Ali želite počistiti risbo?\nTo bo izbrisalo tudi zgodovino korakov (ni mogoče razveljaviti)!",
+		"QwantToOpen": "Ali želite odpreti novo datoteko?\nTo bo izbrisalo tudi zgodovino korakov (ni mogoče razveljaviti)!",
+		"QerrorsRevertToSource": "There were parsing errors in your SVG source.\nRevert back to original SVG source?",
+		"QignoreSourceChanges": "Ignoriram spremembe, narejene v SVG kodi?",
+		"featNotSupported": "Ni podprto",
+		"enterNewImgURL": "Vnesite nov URL slike",
 		"defsFailOnSave": "OPOMBA: Zaradi napake vašega brskalnika obstaja možnost, da ta slika ni prikazan pravilno (manjkajo določeni elementi ali gradient). Vseeno bo prikaz pravilen, ko bo slika enkrat shranjena.",
-		"loadingImage":"Nalagam sliko, prosimo, počakajte ...",
+		"loadingImage": "Nalagam sliko, prosimo, počakajte ...",
 		"saveFromBrowser": "Izberite \"Shrani kot ...\" v brskalniku, če želite shraniti kot %s.",
 		"noteTheseIssues": "Also note the following issues: ",
 		"unsavedChanges": "Obstajajo neshranjene spremembe.",
@@ -233,10 +234,10 @@ svgEditor.readLang({
 		"retrieving": "Pridobivanje \"%s\"..."
 	},
 	confirmSetStorage: {
-		message: "By default and where supported, SVG-Edit can store your editor "+
-		"preferences and SVG content locally on your machine so you do not "+
-		"need to add these back each time you load SVG-Edit. If, for privacy "+
-		"reasons, you do not wish to store this information on your machine, "+
+		message: "By default and where supported, SVG-Edit can store your editor " +
+		"preferences and SVG content locally on your machine so you do not " +
+		"need to add these back each time you load SVG-Edit. If, for privacy " +
+		"reasons, you do not wish to store this information on your machine, " +
 		"you can change away from the default option below.",
 		storagePrefsAndContent: "Store preferences and SVG content locally",
 		storagePrefsOnly: "Only store preferences locally",

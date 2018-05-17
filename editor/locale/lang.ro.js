@@ -1,14 +1,15 @@
-/*globals svgEditor */
+/* eslint-disable quotes */
+/* globals svgEditor */
 svgEditor.readLang({
 	lang: "ro",
-	dir : "ltr",
+	dir: "ltr",
 	common: {
 		"ok": "Ok",
 		"cancel": "Anulaţi",
-		"key_backspace": "backspace", 
-		"key_del": "ştergere", 
-		"key_down": "jos", 
-		"key_up": "sus", 
+		"key_backspace": "backspace",
+		"key_del": "ştergere",
+		"key_down": "jos",
+		"key_up": "sus",
 		"more_opts": "Mai multe opţiuni",
 		"url": "URL",
 		"width": "Lăţime",
@@ -16,7 +17,7 @@ svgEditor.readLang({
 	},
 	misc: {
 		"powered_by": "Powered by"
-	}, 
+	},
 	ui: {
 		"toggle_stroke_tools": "Arătaţi/ascundeţi mai multe unelte de contur",
 		"palette_info": "Faceţi clic pentru a schimba culoarea de umplere, Shift-clic pentru a schimba culoarea de contur",
@@ -68,7 +69,7 @@ svgEditor.readLang({
 		"bold": "Text Îngroşat",
 		"italic": "Text Înclinat"
 	},
-	tools: { 
+	tools: {
 		"main_menu": "Menu Principal",
 		"bkgnd_color_opac": "Schimbare culoare de fundal / opacitate",
 		"connector_no_arrow": "Fără săgeată",
@@ -147,7 +148,7 @@ svgEditor.readLang({
 		"move_back": "Trimite in spate"
 	},
 	layers: {
-		"layer":"Strat",
+		"layer": "Strat",
 		"layers": "Straturi",
 		"del": "Ştergeţi Strat",
 		"move_down": "Mutare Strat în Jos",
@@ -209,21 +210,21 @@ svgEditor.readLang({
 		"open": "Deschideţi ca si document nou"
 	},
 	notification: {
-		"invalidAttrValGiven":"Valoarea data nu este validă",
-		"noContentToFitTo":"Fara conţinut de referinţă",
-		"dupeLayerName":"Deja exista un strat numit asa!",
-		"enterUniqueLayerName":"Rog introduceţi un nume unic",
-		"enterNewLayerName":"Rog introduceţi un nume pentru strat",
-		"layerHasThatName":"Statul deja are acest nume",
-		"QmoveElemsToLayer":"Mutaţi elementele selectate pe stratul '%s'?",
-		"QwantToClear":"Doriti să ştergeţi desenul?\nAceasta va sterge si posibilitatea de anulare!",
-		"QwantToOpen":"Doriti sa deschideţi un nou fişier?\nAceasta va şterge istoricul!",
-		"QerrorsRevertToSource":"Sunt erori de parsing in sursa SVG.\nRevenire la sursa SVG orginală?",
-		"QignoreSourceChanges":"Ignoraţi schimbarile la sursa SVG?",
-		"featNotSupported":"Funcţie neimplementată",
-		"enterNewImgURL":"Introduceţi noul URL pentru Imagine",
+		"invalidAttrValGiven": "Valoarea data nu este validă",
+		"noContentToFitTo": "Fara conţinut de referinţă",
+		"dupeLayerName": "Deja exista un strat numit asa!",
+		"enterUniqueLayerName": "Rog introduceţi un nume unic",
+		"enterNewLayerName": "Rog introduceţi un nume pentru strat",
+		"layerHasThatName": "Statul deja are acest nume",
+		"QmoveElemsToLayer": "Mutaţi elementele selectate pe stratul '%s'?",
+		"QwantToClear": "Doriti să ştergeţi desenul?\nAceasta va sterge si posibilitatea de anulare!",
+		"QwantToOpen": "Doriti sa deschideţi un nou fişier?\nAceasta va şterge istoricul!",
+		"QerrorsRevertToSource": "Sunt erori de parsing in sursa SVG.\nRevenire la sursa SVG orginală?",
+		"QignoreSourceChanges": "Ignoraţi schimbarile la sursa SVG?",
+		"featNotSupported": "Funcţie neimplementată",
+		"enterNewImgURL": "Introduceţi noul URL pentru Imagine",
 		"defsFailOnSave": "NOTE: Din cauza unei erori in browserul dv., aceasta imagine poate apare gresit (fara gradiente sau elemente). Însă va apare corect dupa salvare.",
-		"loadingImage":"Imaginea se incarcă, va rugam asteptaţi...",
+		"loadingImage": "Imaginea se incarcă, va rugam asteptaţi...",
 		"saveFromBrowser": "Selectează \"Salvează ca si...\" in browserul dv. pt. a salva aceasta imagine ca si fisier %s.",
 		"noteTheseIssues": "De asemenea remarcati urmatoarele probleme: ",
 		"unsavedChanges": "Sunt schimbări nesalvate.",
@@ -233,10 +234,10 @@ svgEditor.readLang({
 		"retrieving": "În preluare \"%s\"..."
 	},
 	confirmSetStorage: {
-		message: "By default and where supported, SVG-Edit can store your editor "+
-		"preferences and SVG content locally on your machine so you do not "+
-		"need to add these back each time you load SVG-Edit. If, for privacy "+
-		"reasons, you do not wish to store this information on your machine, "+
+		message: "By default and where supported, SVG-Edit can store your editor " +
+		"preferences and SVG content locally on your machine so you do not " +
+		"need to add these back each time you load SVG-Edit. If, for privacy " +
+		"reasons, you do not wish to store this information on your machine, " +
 		"you can change away from the default option below.",
 		storagePrefsAndContent: "Store preferences and SVG content locally",
 		storagePrefsOnly: "Only store preferences locally",

@@ -1,3 +1,5 @@
+# To-do: Change to a sample service-worker
+
 ﻿CACHE MANIFEST
 svg-editor.html
 images/logo.png
@@ -151,4 +153,3 @@ extensions/ext-star.js
 extensions/ext-storage.js
 extensions/ext-webappfind.js
 extensions/ext-xdomain-messaging.js
-

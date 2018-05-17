@@ -1,12 +1,14 @@
+/* eslint-disable no-var */
+/* globals svgEditor, svgCanvas */
 /**
 * Should not be needed for same domain control (just call via child frame),
 *  but an API common for cross-domain and same domain use can be found
 *  in embedapi.js with a demo at embedapi.html
 */
-/*globals svgEditor, svgCanvas*/
-svgEditor.addExtension('xdomain-messaging', function() {'use strict';
+svgEditor.addExtension('xdomain-messaging', function () {
+	'use strict';
 	try {
-		window.addEventListener('message', function(e) {
+		window.addEventListener('message', function (e) {
 			// We accept and post strings for the sake of IE9 support
 			if (typeof e.data !== 'string' || e.data.charAt() === '|') {
 				return;
@@ -35,8 +37,7 @@ svgEditor.addExtension('xdomain-messaging', function() {'use strict';
 			}
 			e.source.postMessage(JSON.stringify(message), '*');
 		}, false);
-	}
-	catch (err) {
+	} catch (err) {
 		console.log('Error with xdomain message listener: ' + err);
 	}
 });

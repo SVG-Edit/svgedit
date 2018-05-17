@@ -3,7 +3,7 @@
 //   CREATE A NEW FILE config.js AND ADD CONTENTS
 //   SUCH AS SHOWN BELOW INTO THAT FILE.
 
-/*globals svgEditor*/
+/* globals svgEditor */
 /*
 The config.js file is intended for the setting of configuration or
   preferences which must run early on; if this is not needed, it is
@@ -56,17 +56,17 @@ svgEditor.setConfig({
 });
 
 // OTHER CONFIG
-svgEditor.setConfig({	
+svgEditor.setConfig({
 	// canvasName: 'default',
 	// canvas_expansion: 3,
 	// initFill: {
-		// color: 'FF0000', // solid red
-		// opacity: 1
+	// 	color: 'FF0000', // solid red
+	// 	opacity: 1
 	// },
 	// initStroke: {
-		// width: 5,
-		// color: '000000', // solid black
-		// opacity: 1
+	// 	width: 5,
+	// 	color: '000000', // solid black
+	// 	opacity: 1
 	// },
 	// initOpacity: 1,
 	// colorPickerCSS: null,

@@ -1,5 +1,5 @@
-/*globals $ svgedit*/
-/*jslint vars: true, eqeq: true */
+/* eslint-disable no-var */
+/* globals $ svgedit */
 /**
  * Package: svgedit.history
  *
@@ -13,14 +13,13 @@
 // 1) svgedit.js
 // 2) draw.js
 
-(function() {
-	'use strict';
+(function () {
+'use strict';
 
 if (!svgedit.draw) {
 	svgedit.draw = {};
 }
 var NS = svgedit.NS;
-
 
 /**
  * This class encapsulates the concept of a layer in the drawing. It can be constructed with
@@ -39,17 +38,17 @@ var NS = svgedit.NS;
  * @param {SVGGElement=} svgElem - The SVG DOM element. If defined, use this to add
  * 		a new layer to the document.
  */
-var Layer = svgedit.draw.Layer = function(name, group, svgElem) {
+var Layer = svgedit.draw.Layer = function (name, group, svgElem) {
 	this.name_ = name;
 	this.group_ = svgElem ? null : group;
 
 	if (svgElem) {
 		// Create a group element with title and add it to the DOM.
 		var svgdoc = svgElem.ownerDocument;
-		this.group_ = svgdoc.createElementNS(NS.SVG, "g");
-		var layer_title = svgdoc.createElementNS(NS.SVG, "title");
-		layer_title.textContent = name;
-		this.group_.appendChild(layer_title);
+		this.group_ = svgdoc.createElementNS(NS.SVG, 'g');
+		var layerTitle = svgdoc.createElementNS(NS.SVG, 'title');
+		layerTitle.textContent = name;
+		this.group_.appendChild(layerTitle);
 		if (group) {
 			$(group).after(this.group_);
 		} else {
@@ -58,9 +57,11 @@ var Layer = svgedit.draw.Layer = function(name, group, svgElem) {
 	}
 
 	addLayerClass(this.group_);
-	svgedit.utilities.walkTree(this.group_, function(e){e.setAttribute("style", "pointer-events:inherit");});
+	svgedit.utilities.walkTree(this.group_, function (e) {
+		e.setAttribute('style', 'pointer-events:inherit');
+	});
 
-	this.group_.setAttribute("style", svgElem ? "pointer-events:all" : "pointer-events:none");
+	this.group_.setAttribute('style', svgElem ? 'pointer-events:all' : 'pointer-events:none');
 };
 
 /**
@@ -73,12 +74,11 @@ Layer.CLASS_NAME = 'layer';
  */
 Layer.CLASS_REGEX = new RegExp('(\\s|^)' + Layer.CLASS_NAME + '(\\s|$)');
 
-
 /**
  * Get the layer's name.
  * @returns {string} The layer name
  */
-Layer.prototype.getName = function() {
+Layer.prototype.getName = function () {
 	return this.name_;
 };
 
@@ -86,33 +86,33 @@ Layer.prototype.getName = function() {
  * Get the group element for this layer.
  * @returns {SVGGElement} The layer SVG group
  */
-Layer.prototype.getGroup = function() {
+Layer.prototype.getGroup = function () {
 	return this.group_;
 };
 
 /**
  * Active this layer so it takes pointer events.
  */
-Layer.prototype.activate = function() {
-	this.group_.setAttribute("style", "pointer-events:all");
+Layer.prototype.activate = function () {
+	this.group_.setAttribute('style', 'pointer-events:all');
 };
 
 /**
  * Deactive this layer so it does NOT take pointer events.
  */
-Layer.prototype.deactivate = function() {
-	this.group_.setAttribute("style", "pointer-events:none");
+Layer.prototype.deactivate = function () {
+	this.group_.setAttribute('style', 'pointer-events:none');
 };
 
 /**
  * Set this layer visible or hidden based on 'visible' parameter.
  * @param {boolean} visible - If true, make visible; otherwise, hide it.
  */
-Layer.prototype.setVisible = function(visible) {
-	var expected = visible === undefined || visible ? "inline" : "none";
-	var oldDisplay = this.group_.getAttribute("display");
+Layer.prototype.setVisible = function (visible) {
+	var expected = visible === undefined || visible ? 'inline' : 'none';
+	var oldDisplay = this.group_.getAttribute('display');
 	if (oldDisplay !== expected) {
-		this.group_.setAttribute("display", expected);
+		this.group_.setAttribute('display', expected);
 	}
 };
 
@@ -120,7 +120,7 @@ Layer.prototype.setVisible = function(visible) {
  * Is this layer visible?
  * @returns {boolean} True if visible.
  */
-Layer.prototype.isVisible = function() {
+Layer.prototype.isVisible = function () {
 	return this.group_.getAttribute('display') !== 'none';
 };
 
@@ -128,7 +128,7 @@ Layer.prototype.isVisible = function() {
  * Get layer opacity.
  * @returns {number} Opacity value.
  */
-Layer.prototype.getOpacity = function() {
+Layer.prototype.getOpacity = function () {
 	var opacity = this.group_.getAttribute('opacity');
 	if (opacity === null || opacity === undefined) {
 		return 1;
@@ -141,7 +141,7 @@ Layer.prototype.getOpacity = function() {
  * nothing happens.
  * @param {number} opacity - A float value in the range 0.0-1.0
  */
-Layer.prototype.setOpacity = function(opacity) {
+Layer.prototype.setOpacity = function (opacity) {
 	if (typeof opacity === 'number' && opacity >= 0.0 && opacity <= 1.0) {
 		this.group_.setAttribute('opacity', opacity);
 	}
@@ -151,13 +151,13 @@ Layer.prototype.setOpacity = function(opacity) {
  * Append children to this layer.
  * @param {SVGGElement} children - The children to append to this layer.
  */
-Layer.prototype.appendChildren = function(children) {
+Layer.prototype.appendChildren = function (children) {
 	for (var i = 0; i < children.length; ++i) {
 		this.group_.appendChild(children[i]);
 	}
 };
 
-Layer.prototype.getTitleElement = function() {
+Layer.prototype.getTitleElement = function () {
 	var len = this.group_.childNodes.length;
 	for (var i = 0; i < len; ++i) {
 		var child = this.group_.childNodes.item(i);
@@ -174,7 +174,7 @@ Layer.prototype.getTitleElement = function() {
  * @param {svgedit.history.HistoryRecordingService} hrService - History recording service
  * @returns {string|null} The new name if changed; otherwise, null.
  */
-Layer.prototype.setName = function(name, hrService) {
+Layer.prototype.setName = function (name, hrService) {
 	var previousName = this.name_;
 	name = svgedit.utilities.toXml(name);
 	// now change the underlying title element contents
@@ -184,7 +184,7 @@ Layer.prototype.setName = function(name, hrService) {
 		title.textContent = name;
 		this.name_ = name;
 		if (hrService) {
-			hrService.changeElement(title, {'#text':previousName});
+			hrService.changeElement(title, {'#text': previousName});
 		}
 		return this.name_;
 	}
@@ -196,13 +196,12 @@ Layer.prototype.setName = function(name, hrService) {
  * @param {SVGGElement} children - The children to append to this layer.
  * @returns {SVGGElement} The layer SVG group that was just removed.
  */
-Layer.prototype.removeGroup = function() {
+Layer.prototype.removeGroup = function () {
 	var parent = this.group_.parentNode;
 	var group = parent.removeChild(this.group_);
 	this.group_ = undefined;
 	return group;
 };
-
 
 /**
  * Add class Layer.CLASS_NAME to the element (usually class='layer').
@@ -210,13 +209,12 @@ Layer.prototype.removeGroup = function() {
  * Parameters:
  * @param {SVGGElement} elem - The SVG element to update
  */
-function addLayerClass(elem) {
+function addLayerClass (elem) {
 	var classes = elem.getAttribute('class');
 	if (classes === null || classes === undefined || classes.length === 0) {
 		elem.setAttribute('class', Layer.CLASS_NAME);
-	} else if (! Layer.CLASS_REGEX.test(classes)) {
+	} else if (!Layer.CLASS_REGEX.test(classes)) {
 		elem.setAttribute('class', classes + ' ' + Layer.CLASS_NAME);
 	}
 }
-
 }());

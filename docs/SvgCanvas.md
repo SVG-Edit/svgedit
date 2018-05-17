@@ -9,7 +9,7 @@ The main SvgCanvas class that manages all SVG-related functions
 
 ## Summary
 
-### SvgCanvas - The main SvgCanvas class that manages all SVG-related functions 
+### SvgCanvas - The main SvgCanvas class that manages all SVG-related functions
 
 Function | Description
 ---------|------------
@@ -85,7 +85,7 @@ Function | Description
 [`SelectorManager.releaseSelector`](#selectormanagerreleaseselector) | Removes the selector of the given element (hides selection box)
 [`SelectorManager.getRubberBandBox`](#selectormanagergetrubberbandbox`) | Returns the rubberBandBox DOM element.
 
-### Helper functions	
+### Helper functions
 
 Function | Description
 ---------|------------
@@ -110,7 +110,7 @@ Function | Description
 [`ffClone`](#ffclone) | Hack for Firefox bugs where text element features aren't updated.
 [`getPathBBox`](#getpathbbox) | Get correct BBox for a path in Webkit Converted from code found [here](http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html)
 
-### Element Transforms	
+### Element Transforms
 
 Function | Description
 ---------|------------
@@ -129,7 +129,7 @@ Function | Description
 [`transformBox`](#transformbox) | Transforms a rectangle based on the given matrix
 
 ### Selection
-	
+
 Function | Description
 ---------|------------
 [`clearSelection`](#clearselection) | Clears the selection.
@@ -144,7 +144,7 @@ Function | Description
 
 ### Path edit functions - Functions relating to editing path elements
 
-### Serialization	
+### Serialization
 
 Function | Description
 ---------|------------
@@ -158,7 +158,7 @@ Function | Description
 [`setSvgString`](#setsvgstring) | This function sets the current drawing as the input SVG XML.
 [`importSvgString`](#importsvgstring) | This function imports the input SVG XML into the current layer in the drawing
 
-### Layers	
+### Layers
 
 Function | Description
 ---------|------------
@@ -177,7 +177,7 @@ Function | Description
 [`getLayerOpacity`](#getlayeropacity) | Returns the opacity of the given layer.
 [`setLayerOpacity`](#setlayeropacity) | Sets the opacity of the given layer.
 
-### Document functions	
+### Document functions
 
 Function | Description
 ---------|------------
@@ -201,7 +201,7 @@ Function | Description
 [`getMode`](#getmode) | Returns the current editor mode string
 [`setMode`](#setmode) | Sets the editor’s mode to the given string
 
-### Element Styling	
+### Element Styling
 
 Function | Description
 ---------|------------
@@ -236,7 +236,7 @@ Function | Description
 [`setImageURL`](#setimageurl) | Sets the new image URL for the selected image element.
 [`setRectRadius`](#setrectradius) | Sets the rx & ry values to the selected rect element to change its corner radius
 
-### Element manipulation	
+### Element manipulation
 
 Function | Description
 ---------|------------
@@ -253,7 +253,7 @@ Function | Description
 [`cloneSelectedElements`](#cloneselectedelements) | Create deep DOM copies (clones) of all selected elements and move them slightly from their originals
 [`alignSelectedElements`](#alignselectedelements) | Aligns selected elements
 
-### Additional editor tools	
+### Additional editor tools
 
 Function | Description
 ---------|------------
@@ -283,7 +283,7 @@ Converts XML entities in a string to single characters. Example: `&amp;` becomes
 
 #### Returns
 
-The converted string 
+The converted string
 
 ## `Utils.encode64`
 Converts a string to base64
@@ -312,7 +312,7 @@ Boolean that’s true if rectangles intersect
 ## `snapToAngle`
 
 	"snapToAngle": function( x1, y1, x2, y2 )
-	
+
 Returns a 45 degree angle coordinate associated with the two given coordinates
 
 #### Parameters
@@ -736,7 +736,7 @@ Rounds a given value to a float with number of digits defined in save_options
 
 #### Returns
 
-If a string/number was given, returns a Float. If an array, return a string with comma-seperated floats
+If a string/number was given, returns a Float. If an array, return a string with comma-separated floats
 
 ## `getStrokedBBox`
 
@@ -871,7 +871,7 @@ Get the given/selected element’s bounding box object, convert it to be more us
 
 	var ffClone = function( elem )
 
-Hack for Firefox bugs where text element features aren’t updated. This function clones the element and re-selects it 
+Hack for Firefox bugs where text element features aren’t updated. This function clones the element and re-selects it
 
 > TODO: Test for this bug on load and add it to “support” object instead of browser sniffing
 
@@ -1256,7 +1256,7 @@ This function imports the input SVG XML into the current layer in the drawing
 
 This function returns false if the import was unsuccessful, true otherwise.  
 
->TODO: 
+>TODO:
 
 * properly handle if namespace is introduced by imported content (must add to svgcontent and update all prefixes in the imported node)
 * properly handle recalculating dimensions, recalculateDimensions() doesn’t handle arbitrary transform lists, but makes some assumptions about how the transform list was obtained

@@ -2,70 +2,70 @@
 <html>
 <!-- removed for now, causes problems in Firefox: manifest="svg-editor.manifest" -->
 <head>
-<meta charset="utf-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=Edge, chrome=1"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<link rel="icon" type="image/png" href="images/logo.png"/>
-<link rel="stylesheet" href="jgraduate/css/jPicker.css" type="text/css"/>
-<link rel="stylesheet" href="jgraduate/css/jgraduate.css" type="text/css"/>
-<link rel="stylesheet" href="svg-editor.css" type="text/css"/>
-<link rel="stylesheet" href="spinbtn/JQuerySpinBtn.css" type="text/css"/>
-<link rel="stylesheet" href="custom.css" type="text/css"/>
-<!--{if jquery_release}>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<!{else}-->
-  <script src="jquery.js"></script>
-<!--{endif}-->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge, chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link rel="icon" type="image/png" href="images/logo.png"/>
+    <link rel="stylesheet" href="jgraduate/css/jPicker.css"/>
+    <link rel="stylesheet" href="jgraduate/css/jgraduate.css"/>
+    <link rel="stylesheet" href="svg-editor.css"/>
+    <link rel="stylesheet" href="spinbtn/JQuerySpinBtn.css"/>
+    <link rel="stylesheet" href="custom.css"/>
+    <!--{if jquery_release}>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <!{else}-->
+        <script src="jquery.js"></script>
+    <!--{endif}-->
 
-<script src="js-hotkeys/jquery.hotkeys.min.js"></script>
-<script src="jquerybbq/jquery.bbq.min.js"></script>
-<script src="svgicons/jquery.svgicons.js"></script>
-<script src="jgraduate/jquery.jgraduate.min.js"></script>
-<script src="spinbtn/JQuerySpinBtn.min.js"></script>
-<script src="touch.js"></script>
+    <script src="js-hotkeys/jquery.hotkeys.min.js"></script>
+    <script src="jquerybbq/jquery.bbq.min.js"></script>
+    <script src="svgicons/jquery.svgicons.js"></script>
+    <script src="jgraduate/jquery.jgraduate.min.js"></script>
+    <script src="spinbtn/JQuerySpinBtn.min.js"></script>
+    <script src="touch.js"></script>
 
-<!--{if svg_edit_release}>
-  <script src="svgedit.compiled.js"></script>
-<!{else}-->
-  <script src="svgedit.js"></script>
-  <script src="jquery-svg.js"></script>
-  <script src="contextmenu/jquery.contextMenu.js"></script>
-  <script src="pathseg.js"></script>
-  <script src="browser.js"></script>
-  <script src="svgtransformlist.js"></script>
-  <script src="math.js"></script>
-  <script src="units.js"></script>
-  <script src="svgutils.js"></script>
-  <script src="sanitize.js"></script>
-  <script src="history.js"></script>
-  <script src="historyrecording.js"></script>
-  <script src="coords.js"></script>
-  <script src="recalculate.js"></script>
-  <script src="select.js"></script>
-  <script src="draw.js"></script>
-  <script src="layer.js"></script>
-  <script src="path.js"></script>
-  <script src="svgcanvas.js"></script>
-  <script src="svg-editor.js"></script>
-  <script src="locale/locale.js"></script>
-  <script src="contextmenu.js"></script>
-<!--{endif}-->
+    <!--{if svg_edit_release}>
+        <script src="svgedit.compiled.js"></script>
+    <!{else}-->
+        <script src="svgedit.js"></script>
+        <script src="jquery-svg.js"></script>
+        <script src="contextmenu/jquery.contextMenu.js"></script>
+        <script src="pathseg.js"></script>
+        <script src="browser.js"></script>
+        <script src="svgtransformlist.js"></script>
+        <script src="math.js"></script>
+        <script src="units.js"></script>
+        <script src="svgutils.js"></script>
+        <script src="sanitize.js"></script>
+        <script src="history.js"></script>
+        <script src="historyrecording.js"></script>
+        <script src="coords.js"></script>
+        <script src="recalculate.js"></script>
+        <script src="select.js"></script>
+        <script src="draw.js"></script>
+        <script src="layer.js"></script>
+        <script src="path.js"></script>
+        <script src="svgcanvas.js"></script>
+        <script src="svg-editor.js"></script>
+        <script src="locale/locale.js"></script>
+        <script src="contextmenu.js"></script>
+    <!--{endif}-->
 
-<!-- always minified scripts -->
-<script src="jquery-ui/jquery-ui-1.8.17.custom.min.js"></script>
-<script src="jgraduate/jpicker.js"></script>
+    <!-- always minified scripts -->
+    <script src="jquery-ui/jquery-ui-1.8.17.custom.min.js"></script>
+    <script src="jgraduate/jpicker.min.js"></script>
 
-<!-- If you do not wish to add extensions by URL, you can load them
-by creating the following file and adding by calls to svgEditor.setConfig -->
-<script src="config.js"></script>
+    <!-- If you do not wish to add extensions by URL, you can load them
+    by creating the following file and adding by calls to svgEditor.setConfig -->
+    <script src="config.js"></script>
 
-<!-- feeds -->
-<link rel="alternate" type="application/atom+xml" title="SVG-edit General Discussion" href="http://groups.google.com/group/svg-edit/feed/atom_v1_0_msgs.xml" />
-<link rel="alternate" type="application/atom+xml" title="SVG-edit Updates (Issues/Fixes/Commits)" href="http://code.google.com/feeds/p/svg-edit/updates/basic" />
+    <!-- feeds -->
+    <link rel="alternate" type="application/atom+xml" title="SVG-edit General Discussion" href="http://groups.google.com/group/svg-edit/feed/atom_v1_0_msgs.xml" />
+    <link rel="alternate" type="application/atom+xml" title="SVG-edit Updates (Issues/Fixes/Commits)" href="http://code.google.com/feeds/p/svg-edit/updates/basic" />
 
-<!-- Add script with custom handlers here -->
-<title>SVG-edit</title>
+    <!-- Add script with custom handlers here -->
+    <title>SVG-edit</title>
 </head>
 <body>
 <div id="svg_editor">
@@ -85,7 +85,7 @@ by creating the following file and adding by calls to svgEditor.setConfig -->
 </div>
 
 <div id="workarea">
-<style id="styleoverrides" type="text/css" media="screen" scoped="scoped"></style>
+<style id="styleoverrides" media="screen" scoped="scoped"></style>
 <div id="svgcanvas" style="position:relative">
 
 </div>

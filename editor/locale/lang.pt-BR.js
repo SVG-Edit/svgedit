@@ -1,14 +1,15 @@
-/*globals svgEditor */
+/* eslint-disable quotes */
+/* globals svgEditor */
 svgEditor.readLang({
 	lang: "pt-BR",
-	dir : "ltr",
+	dir: "ltr",
 	common: {
 		"ok": "OK",
 		"cancel": "Cancelar",
-		"key_backspace": "Tecla backspace", 
-		"key_del": "Tecla delete", 
-		"key_down": "Seta para baixo", 
-		"key_up": "Seta para cima", 
+		"key_backspace": "Tecla backspace",
+		"key_del": "Tecla delete",
+		"key_down": "Seta para baixo",
+		"key_up": "Seta para cima",
 		"more_opts": "Mais opções",
 		"url": "URL",
 		"width": "Largura",
@@ -16,15 +17,15 @@ svgEditor.readLang({
 	},
 	misc: {
 		"powered_by": "Tecnologia"
-	}, 
+	},
 	ui: {
 		"toggle_stroke_tools": "Mais opções de traço",
-  	"palette_info": "Click para mudar a cor de preenchimento, shift-click para mudar a cor do traço",
+		"palette_info": "Click para mudar a cor de preenchimento, shift-click para mudar a cor do traço",
 		"zoom_level": "Mudar zoom",
-  	"panel_drag": "Arraste para redimensionar o painel"
+		"panel_drag": "Arraste para redimensionar o painel"
 	},
 	properties: {
-	 	"id": "Identifica o elemento",
+		"id": "Identifica o elemento",
 		"fill_color": "Mudar a cor de preenchimento",
 		"stroke_color": "Mudar a cor do traço",
 		"stroke_style": "Mudar o estilo do traço",
@@ -68,8 +69,8 @@ svgEditor.readLang({
 		"bold": "Negrito",
 		"italic": "Italico"
 	},
-	tools: { 
-	 	"main_menu": "Menu Principal",
+	tools: {
+		"main_menu": "Menu Principal",
 		"bkgnd_color_opac": "Mudar cor/opacidade do fundo",
 		"connector_no_arrow": "Sem flecha",
 		"fitToContent": "Ajustar ao conteúdo",
@@ -147,7 +148,7 @@ svgEditor.readLang({
 		"move_back": "Enviar para Trás"
 	},
 	layers: {
-	 	"layer":"Camada",
+		"layer": "Camada",
 		"layers": "Camadas",
 		"del": "Deletar Camada",
 		"move_down": "Enviar Camada para Trás",
@@ -161,7 +162,7 @@ svgEditor.readLang({
 		"move_selected": "Mover elementos selecionados para outra camada"
 	},
 	config: {
-	 	"image_props": "Propriedades",
+		"image_props": "Propriedades",
 		"doc_title": "Título",
 		"doc_dims": "Dimensões",
 		"included_images": "Imagens",
@@ -209,21 +210,21 @@ svgEditor.readLang({
 		"open": "Abrir como novo"
 	},
 	notification: {
-		"invalidAttrValGiven":"Valor inválido",
-		"noContentToFitTo":"Não há conteúdo",
-		"dupeLayerName":"Nome duplicado",
-		"enterUniqueLayerName":"Insira um nome único",
-		"enterNewLayerName":"Insira um novo nome",
-		"layerHasThatName":"A camada já pussui este nome",
-		"QmoveElemsToLayer":"Mover elementos selecionados para a camada: \"%s\"?",
-		"QwantToClear":"Deseja criar um novo arquivo?\nO histórico também será apagado!",
-		"QwantToOpen":"Deseja abrir um novo arquivo?\nO histórico também será apagado!",
-		"QerrorsRevertToSource":"Foram encontrados erros ná análise do código SVG.\nReverter para o código SVG original?",
-		"QignoreSourceChanges":"Ignorar as mudanças no código SVG?",
-		"featNotSupported":"Recurso não suportado",
-		"enterNewImgURL":"Insira nova URL da imagem",
+		"invalidAttrValGiven": "Valor inválido",
+		"noContentToFitTo": "Não há conteúdo",
+		"dupeLayerName": "Nome duplicado",
+		"enterUniqueLayerName": "Insira um nome único",
+		"enterNewLayerName": "Insira um novo nome",
+		"layerHasThatName": "A camada já pussui este nome",
+		"QmoveElemsToLayer": "Mover elementos selecionados para a camada: \"%s\"?",
+		"QwantToClear": "Deseja criar um novo arquivo?\nO histórico também será apagado!",
+		"QwantToOpen": "Deseja abrir um novo arquivo?\nO histórico também será apagado!",
+		"QerrorsRevertToSource": "Foram encontrados erros ná análise do código SVG.\nReverter para o código SVG original?",
+		"QignoreSourceChanges": "Ignorar as mudanças no código SVG?",
+		"featNotSupported": "Recurso não suportado",
+		"enterNewImgURL": "Insira nova URL da imagem",
 		"defsFailOnSave": "Atenção: Devido a um bug em seu navegador, esta imagem pode apresentar erros, porém será salva corretamente.",
-		"loadingImage":"Carregando imagem, por favor aguarde...",
+		"loadingImage": "Carregando imagem, por favor aguarde...",
 		"saveFromBrowser": "Selecione \"Salvar como...\" no seu navegador para salvar esta imagem como um arquivo %s.",
 		"noteTheseIssues": "Atenção para as seguintes questões: ",
 		"unsavedChanges": "Existem alterações não salvas.",
@@ -233,10 +234,10 @@ svgEditor.readLang({
 		"retrieving": "Recuperando \"%s\"..."
 	},
 	confirmSetStorage: {
-		message: "By default and where supported, SVG-Edit can store your editor "+
-		"preferences and SVG content locally on your machine so you do not "+
-		"need to add these back each time you load SVG-Edit. If, for privacy "+
-		"reasons, you do not wish to store this information on your machine, "+
+		message: "By default and where supported, SVG-Edit can store your editor " +
+		"preferences and SVG content locally on your machine so you do not " +
+		"need to add these back each time you load SVG-Edit. If, for privacy " +
+		"reasons, you do not wish to store this information on your machine, " +
 		"you can change away from the default option below.",
 		storagePrefsAndContent: "Store preferences and SVG content locally",
 		storagePrefsOnly: "Only store preferences locally",

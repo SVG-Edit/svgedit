@@ -1,14 +1,15 @@
-/*globals svgEditor */
+/* eslint-disable quotes */
+/* globals svgEditor */
 svgEditor.readLang({
 	lang: "de",
-	dir : "ltr",
+	dir: "ltr",
 	common: {
 		"ok": "OK",
 		"cancel": "Abbrechen",
-		"key_backspace": "Rücktaste", 
-		"key_del": "Löschen", 
-		"key_down": "nach unten", 
-		"key_up": "nach oben", 
+		"key_backspace": "Rücktaste",
+		"key_del": "Löschen",
+		"key_down": "nach unten",
+		"key_up": "nach oben",
 		"more_opts": "Mehr Optionen",
 		"url": "URL",
 		"width": "Breite",
@@ -16,7 +17,7 @@ svgEditor.readLang({
 	},
 	misc: {
 		"powered_by": "powered by"
-	}, 
+	},
 	ui: {
 		"toggle_stroke_tools": "Zeige/Verberge weitere Linien-Werkzeuge",
 		"palette_info": "Klick zum Ändern der Füllfarbe, Shift-Klick zum Ändern der Linienfarbe",
@@ -68,7 +69,7 @@ svgEditor.readLang({
 		"bold": "Fetter Text",
 		"italic": "Kursiver Text"
 	},
-	tools: { 
+	tools: {
 		"main_menu": "Hauptmenü",
 		"bkgnd_color_opac": "Hintergrundfarbe ändern / Opazität",
 		"connector_no_arrow": "Kein Pfeil",
@@ -210,21 +211,21 @@ svgEditor.readLang({
 		"open": "Als neues Dokument öffnen"
 	},
 	notification: {
-		"invalidAttrValGiven":"Fehlerhafter Wert",
-		"noContentToFitTo":"Kein Inhalt anzupassen",
-		"dupeLayerName":"Eine Ebene hat bereits diesen Namen",
-		"enterUniqueLayerName":"Verwenden Sie einen eindeutigen Namen für die Ebene",
-		"enterNewLayerName":"Geben Sie bitte einen neuen Namen für die Ebene ein",
-		"layerHasThatName":"Eine Ebene hat bereits diesen Namen",
-		"QmoveElemsToLayer":"Verschiebe ausgewählte Objekte in die Ebene '%s'?",
-		"QwantToClear":"Möchten Sie die Zeichnung löschen?\nDadurch wird auch die Rückgängig-Funktion zurückgesetzt!",
-		"QwantToOpen":"Möchten Sie eine neue Datei öffnen?\nDadurch wird auch die Rückgängig-Funktion zurückgesetzt!",
-		"QerrorsRevertToSource":"Es gibt Parser-Fehler in der SVG-Quelle.\nDie Original-SVG wiederherstellen?",
-		"QignoreSourceChanges":"Sollen die Änderungen an der SVG-Quelle ignoriert werden?",
-		"featNotSupported":"Diese Eigenschaft wird nicht unterstützt",
-		"enterNewImgURL":"Geben Sie die URL für das neue Bild an",
+		"invalidAttrValGiven": "Fehlerhafter Wert",
+		"noContentToFitTo": "Kein Inhalt anzupassen",
+		"dupeLayerName": "Eine Ebene hat bereits diesen Namen",
+		"enterUniqueLayerName": "Verwenden Sie einen eindeutigen Namen für die Ebene",
+		"enterNewLayerName": "Geben Sie bitte einen neuen Namen für die Ebene ein",
+		"layerHasThatName": "Eine Ebene hat bereits diesen Namen",
+		"QmoveElemsToLayer": "Verschiebe ausgewählte Objekte in die Ebene '%s'?",
+		"QwantToClear": "Möchten Sie die Zeichnung löschen?\nDadurch wird auch die Rückgängig-Funktion zurückgesetzt!",
+		"QwantToOpen": "Möchten Sie eine neue Datei öffnen?\nDadurch wird auch die Rückgängig-Funktion zurückgesetzt!",
+		"QerrorsRevertToSource": "Es gibt Parser-Fehler in der SVG-Quelle.\nDie Original-SVG wiederherstellen?",
+		"QignoreSourceChanges": "Sollen die Änderungen an der SVG-Quelle ignoriert werden?",
+		"featNotSupported": "Diese Eigenschaft wird nicht unterstützt",
+		"enterNewImgURL": "Geben Sie die URL für das neue Bild an",
 		"defsFailOnSave": "Hinweis: Aufgrund eines Fehlers in Ihrem Browser kann dieses Bild falsch angezeigt werden (fehlende Gradienten oder Elemente). Es wird jedoch richtig angezeigt, sobald es gespeichert wird.",
-		"loadingImage":"Bild wird geladen, bitte warten ...",
+		"loadingImage": "Bild wird geladen, bitte warten ...",
 		"saveFromBrowser": "Wählen Sie \"Speichern unter ...\" in Ihrem Browser, um das Bild als Datei %s zu speichern.",
 		"noteTheseIssues": "Beachten Sie außerdem die folgenden Probleme: ",
 		"unsavedChanges": "Es sind nicht-gespeicherte Änderungen vorhanden.",
@@ -234,10 +235,10 @@ svgEditor.readLang({
 		"retrieving": "Empfange \"%s\"..."
 	},
 	confirmSetStorage: {
-		message: "Standardmäßig kann SVG-Edit Ihre Editor-Einstellungen "+
-		"und die SVG-Inhalte lokal auf Ihrem Gerät abspeichern. So brauchen Sie "+
-		"nicht jedes Mal die SVG neu laden. Falls Sie aus Datenschutzgründen "+
-		"dies nicht wollen, "+
+		message: "Standardmäßig kann SVG-Edit Ihre Editor-Einstellungen " +
+		"und die SVG-Inhalte lokal auf Ihrem Gerät abspeichern. So brauchen Sie " +
+		"nicht jedes Mal die SVG neu laden. Falls Sie aus Datenschutzgründen " +
+		"dies nicht wollen, " +
 		"können Sie die Standardeinstellung im Folgenden ändern.",
 		storagePrefsAndContent: "Editor-Einstellungen und SVG-Inhalt lokal speichern",
 		storagePrefsOnly: "Nur Editor-Einstellungen lokal speichern",

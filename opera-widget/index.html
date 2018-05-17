@@ -3,17 +3,15 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>SVG Edit</title>
-		<link rel="stylesheet" type="text/css" href="style.css">
+		<link rel="stylesheet" href="style.css">
 		<script>
-			/** this method adds the script that overrides the default open/save handlers */
-			function addHandlers()
-			{
-				var cdoc = document.getElementById("container").contentDocument;
-				if(cdoc)
-				{
-					var scriptelm = cdoc.createElement("script");
-					scriptelm.src = "../handlers.js";
-					cdoc.getElementsByTagName("head")[0].appendChild(scriptelm);
+			// This method adds the script that overrides the default open/save handlers
+			function addHandlers () {
+				var cdoc = document.getElementById('container').contentDocument;
+				if (cdoc) {
+					var scriptelm = cdoc.createElement('script');
+					scriptelm.src = '../handlers.js';
+					cdoc.getElementsByTagName('head')[0].appendChild(scriptelm);
 				}
 			}
 		</script>

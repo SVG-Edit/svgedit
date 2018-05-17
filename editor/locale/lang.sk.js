@@ -1,14 +1,15 @@
-/*globals svgEditor */
+/* eslint-disable quotes */
+/* globals svgEditor */
 svgEditor.readLang({
 	lang: "sk",
-	dir : "ltr",
+	dir: "ltr",
 	common: {
 		"ok": "Uložiť",
 		"cancel": "Zrušiť",
-		"key_backspace": "Backspace", 
-		"key_del": "Delete", 
-		"key_down": "šípka dole", 
-		"key_up": "šípka hore", 
+		"key_backspace": "Backspace",
+		"key_del": "Delete",
+		"key_down": "šípka dole",
+		"key_up": "šípka hore",
 		"more_opts": "Viac možností",
 		"url": "URL",
 		"width": "Šírka",
@@ -16,7 +17,7 @@ svgEditor.readLang({
 	},
 	misc: {
 		"powered_by": "Beží na"
-	}, 
+	},
 	ui: {
 		"toggle_stroke_tools": "Skryť/ukázať viac nástrojov pre krivku",
 		"palette_info": "Kliknutím zmeníte farbu výplne, so Shiftom zmeníte farbu obrysu",
@@ -68,7 +69,7 @@ svgEditor.readLang({
 		"bold": "Tučné",
 		"italic": "Kurzíva"
 	},
-	tools: { 
+	tools: {
 		"main_menu": "Hlavné menu",
 		"bkgnd_color_opac": "Zmeniť farbu a priehľadnosť pozadia",
 		"connector_no_arrow": "Spojnica bez šípok",
@@ -210,21 +211,21 @@ svgEditor.readLang({
 		"open": "Otvoriť ako nový dokument"
 	},
 	notification: {
-		"invalidAttrValGiven":"Neplatná hodnota",
-		"noContentToFitTo":"Vyberte oblasť na prispôsobenie",
-		"dupeLayerName":"Vrstva s daným názvom už existuje!",
-		"enterUniqueLayerName":"Zadajte jedinečný názov vrstvy",
-		"enterNewLayerName":"Zadajte názov vrstvy",
-		"layerHasThatName":"Vrstva už má zadaný tento názov",
-		"QmoveElemsToLayer":"Presunúť elementy do vrstvy '%s'?",
-		"QwantToClear":"Naozaj chcete vymazať kresbu?\n(História bude taktiež vymazaná!)!",
-		"QwantToOpen":"Chcete otvoriť nový súbor?\nTo však tiež vymaže Vašu UNDO knižnicu!",
-		"QerrorsRevertToSource":"Chyba pri načítaní SVG dokumentu.\nVrátiť povodný SVG dokument?",
-		"QignoreSourceChanges":"Ignorovať zmeny v SVG dokumente?",
-		"featNotSupported":"Vlastnosť nie je podporovaná",
-		"enterNewImgURL":"Zadajte nové URL obrázka",
+		"invalidAttrValGiven": "Neplatná hodnota",
+		"noContentToFitTo": "Vyberte oblasť na prispôsobenie",
+		"dupeLayerName": "Vrstva s daným názvom už existuje!",
+		"enterUniqueLayerName": "Zadajte jedinečný názov vrstvy",
+		"enterNewLayerName": "Zadajte názov vrstvy",
+		"layerHasThatName": "Vrstva už má zadaný tento názov",
+		"QmoveElemsToLayer": "Presunúť elementy do vrstvy '%s'?",
+		"QwantToClear": "Naozaj chcete vymazať kresbu?\n(História bude taktiež vymazaná!)!",
+		"QwantToOpen": "Chcete otvoriť nový súbor?\nTo však tiež vymaže Vašu UNDO knižnicu!",
+		"QerrorsRevertToSource": "Chyba pri načítaní SVG dokumentu.\nVrátiť povodný SVG dokument?",
+		"QignoreSourceChanges": "Ignorovať zmeny v SVG dokumente?",
+		"featNotSupported": "Vlastnosť nie je podporovaná",
+		"enterNewImgURL": "Zadajte nové URL obrázka",
 		"defsFailOnSave": "POZNÁMKA: Kvôli chybe v prehliadači sa tento obrázok môže zobraziť nesprávne (napr. chýbajúce prechody či elementy). Po uložení sa zobrazí správne.",
-		"loadingImage":"Nahrávam obrázok, prosím čakajte ...",
+		"loadingImage": "Nahrávam obrázok, prosím čakajte ...",
 		"saveFromBrowser": "Vyberte \"Uložiť ako ...\" vo vašom prehliadači na uloženie tohoto obrázka do súboru %s.",
 		"noteTheseIssues": "Môžu sa vyskytnúť nasledujúce problémy: ",
 		"unsavedChanges": "Sú tu neuložené zmeny.",
@@ -234,10 +235,10 @@ svgEditor.readLang({
 		"retrieving": "Načítavanie \"%s\"..."
 	},
 	confirmSetStorage: {
-		message: "By default and where supported, SVG-Edit can store your editor "+
-		"preferences and SVG content locally on your machine so you do not "+
-		"need to add these back each time you load SVG-Edit. If, for privacy "+
-		"reasons, you do not wish to store this information on your machine, "+
+		message: "By default and where supported, SVG-Edit can store your editor " +
+		"preferences and SVG content locally on your machine so you do not " +
+		"need to add these back each time you load SVG-Edit. If, for privacy " +
+		"reasons, you do not wish to store this information on your machine, " +
 		"you can change away from the default option below.",
 		storagePrefsAndContent: "Store preferences and SVG content locally",
 		storagePrefsOnly: "Only store preferences locally",

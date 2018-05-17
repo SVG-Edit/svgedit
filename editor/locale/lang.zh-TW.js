@@ -1,14 +1,15 @@
-/*globals svgEditor */
+/* eslint-disable quotes */
+/* globals svgEditor */
 svgEditor.readLang({
 	lang: "zh-TW",
-	dir : "ltr",
+	dir: "ltr",
 	common: {
 		"ok": "保存",
 		"cancel": "取消",
-		"key_backspace": "空白", 
-		"key_del": "刪除", 
-		"key_down": "下", 
-		"key_up": "上", 
+		"key_backspace": "空白",
+		"key_del": "刪除",
+		"key_down": "下",
+		"key_up": "上",
 		"more_opts": "More Options",
 		"url": "URL",
 		"width": "Width",
@@ -16,7 +17,7 @@ svgEditor.readLang({
 	},
 	misc: {
 		"powered_by": "Powered by"
-	}, 
+	},
 	ui: {
 		"toggle_stroke_tools": "Show/hide more stroke tools",
 		"palette_info": "點擊更改填充顏色，按住Shift鍵單擊更改線條顏色",
@@ -68,7 +69,7 @@ svgEditor.readLang({
 		"bold": "粗體",
 		"italic": "斜體"
 	},
-	tools: { 
+	tools: {
 		"main_menu": "Main Menu",
 		"bkgnd_color_opac": "更改背景顏色/不透明",
 		"connector_no_arrow": "No arrow",
@@ -147,7 +148,7 @@ svgEditor.readLang({
 		"move_back": "Send to Back"
 	},
 	layers: {
-		"layer":"圖層",
+		"layer": "圖層",
 		"layers": "Layers",
 		"del": "刪除圖層",
 		"move_down": "向下移動圖層",
@@ -210,21 +211,21 @@ svgEditor.readLang({
 		"open": "Open as new document"
 	},
 	notification: {
-		"invalidAttrValGiven":"數值給定錯誤",
-		"noContentToFitTo":"找不到符合的內容",
-		"dupeLayerName":"喔不！已經有另一個同樣名稱的圖層了！",
-		"enterUniqueLayerName":"請輸入一個名稱不重複的",
-		"enterNewLayerName":"請輸入新圖層的名稱",
-		"layerHasThatName":"圖層本來就是這個名稱（抱怨）",
-		"QmoveElemsToLayer":"要搬移所選取的物件到'%s'層嗎?",
-		"QwantToClear":"要清空圖像嗎？\n這會順便清空你的回復紀錄！",
-		"QwantToOpen":"Do you want to open a new file?\nThis will also erase your undo history!",
-		"QerrorsRevertToSource":"SVG原始碼解析錯誤\n要回復到原本的SVG原始碼嗎？",
-		"QignoreSourceChanges":"要忽略對SVG原始碼的更動嗎？",
-		"featNotSupported":"未提供此功能",
-		"enterNewImgURL":"輸入新的圖片網址",
+		"invalidAttrValGiven": "數值給定錯誤",
+		"noContentToFitTo": "找不到符合的內容",
+		"dupeLayerName": "喔不！已經有另一個同樣名稱的圖層了！",
+		"enterUniqueLayerName": "請輸入一個名稱不重複的",
+		"enterNewLayerName": "請輸入新圖層的名稱",
+		"layerHasThatName": "圖層本來就是這個名稱（抱怨）",
+		"QmoveElemsToLayer": "要搬移所選取的物件到'%s'層嗎?",
+		"QwantToClear": "要清空圖像嗎？\n這會順便清空你的回復紀錄！",
+		"QwantToOpen": "Do you want to open a new file?\nThis will also erase your undo history!",
+		"QerrorsRevertToSource": "SVG原始碼解析錯誤\n要回復到原本的SVG原始碼嗎？",
+		"QignoreSourceChanges": "要忽略對SVG原始碼的更動嗎？",
+		"featNotSupported": "未提供此功能",
+		"enterNewImgURL": "輸入新的圖片網址",
 		"defsFailOnSave": "NOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.",
-		"loadingImage":"Loading image, please wait...",
+		"loadingImage": "Loading image, please wait...",
 		"saveFromBrowser": "Select \"Save As...\" in your browser to save this image as a %s file.",
 		"noteTheseIssues": "Also note the following issues: ",
 		"unsavedChanges": "There are unsaved changes.",
@@ -234,10 +235,10 @@ svgEditor.readLang({
 		"retrieving": "Retrieving \"%s\"..."
 	},
 	confirmSetStorage: {
-		message: "By default and where supported, SVG-Edit can store your editor "+
-		"preferences and SVG content locally on your machine so you do not "+
-		"need to add these back each time you load SVG-Edit. If, for privacy "+
-		"reasons, you do not wish to store this information on your machine, "+
+		message: "By default and where supported, SVG-Edit can store your editor " +
+		"preferences and SVG content locally on your machine so you do not " +
+		"need to add these back each time you load SVG-Edit. If, for privacy " +
+		"reasons, you do not wish to store this information on your machine, " +
 		"you can change away from the default option below.",
 		storagePrefsAndContent: "Store preferences and SVG content locally",
 		storagePrefsOnly: "Only store preferences locally",

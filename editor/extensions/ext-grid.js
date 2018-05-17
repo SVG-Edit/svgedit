@@ -1,5 +1,5 @@
-/*globals svgEditor, svgedit, svgCanvas, $*/
-/*jslint vars: true*/
+/* eslint-disable no-var */
+/* globals svgEditor, svgedit, svgCanvas, $ */
 /*
  * ext-grid.js
  *
@@ -14,7 +14,8 @@
 // 1) units.js
 // 2) everything else
 
-svgEditor.addExtension('view_grid', function() { 'use strict';
+svgEditor.addExtension('view_grid', function () {
+	'use strict';
 
 	var NS = svgedit.NS,
 		svgdoc = document.getElementById('svgcanvas').ownerDocument,
@@ -44,8 +45,8 @@ svgEditor.addExtension('view_grid', function() { 'use strict';
 	assignAttributes(gridPattern, {
 		'id': 'gridpattern',
 		'patternUnits': 'userSpaceOnUse',
-		'x': 0, //-(value.strokeWidth / 2), // position for strokewidth
-		'y': 0, //-(value.strokeWidth / 2), // position for strokewidth
+		'x': 0, // -(value.strokeWidth / 2), // position for strokewidth
+		'y': 0, // -(value.strokeWidth / 2), // position for strokewidth
 		'width': 100,
 		'height': 100
 	});
@@ -74,56 +75,56 @@ svgEditor.addExtension('view_grid', function() { 'use strict';
 	});
 	$('#canvasGrid').append(gridBox);
 
-	function updateGrid(zoom) {
+	function updateGrid (zoom) {
 		var i;
 		// TODO: Try this with <line> elements, then compare performance difference
 		var unit = units[svgEditor.curConfig.baseUnit]; // 1 = 1px
-		var u_multi = unit * zoom;
+		var uMulti = unit * zoom;
 		// Calculate the main number interval
-		var raw_m = 100 / u_multi;
+		var rawM = 100 / uMulti;
 		var multi = 1;
 		for (i = 0; i < intervals.length; i++) {
 			var num = intervals[i];
 			multi = num;
-			if (raw_m <= num) {
+			if (rawM <= num) {
 				break;
 			}
 		}
-		var big_int = multi * u_multi;
+		var bigInt = multi * uMulti;
 
 		// Set the canvas size to the width of the container
-		hcanvas.width = big_int;
-		hcanvas.height = big_int;
+		hcanvas.width = bigInt;
+		hcanvas.height = bigInt;
 		var ctx = hcanvas.getContext('2d');
-		var cur_d = 0.5;
-		var part = big_int / 10;
+		var curD = 0.5;
+		var part = bigInt / 10;
 
 		ctx.globalAlpha = 0.2;
 		ctx.strokeStyle = svgEditor.curConfig.gridColor;
 		for (i = 1; i < 10; i++) {
-			var sub_d = Math.round(part * i) + 0.5;
-			// var line_num = (i % 2)?12:10;
-			var line_num = 0;
-			ctx.moveTo(sub_d, big_int);
-			ctx.lineTo(sub_d, line_num);
-			ctx.moveTo(big_int, sub_d);
-			ctx.lineTo(line_num ,sub_d);
+			var subD = Math.round(part * i) + 0.5;
+			// var lineNum = (i % 2)?12:10;
+			var lineNum = 0;
+			ctx.moveTo(subD, bigInt);
+			ctx.lineTo(subD, lineNum);
+			ctx.moveTo(bigInt, subD);
+			ctx.lineTo(lineNum, subD);
 		}
 		ctx.stroke();
 		ctx.beginPath();
 		ctx.globalAlpha = 0.5;
-		ctx.moveTo(cur_d, big_int);
-		ctx.lineTo(cur_d, 0);
+		ctx.moveTo(curD, bigInt);
+		ctx.lineTo(curD, 0);
 
-		ctx.moveTo(big_int, cur_d);
-		ctx.lineTo(0, cur_d);
+		ctx.moveTo(bigInt, curD);
+		ctx.lineTo(0, curD);
 		ctx.stroke();
 
 		var datauri = hcanvas.toDataURL('image/png');
-		gridimg.setAttribute('width', big_int);
-		gridimg.setAttribute('height', big_int);
-		gridimg.parentNode.setAttribute('width', big_int);
-		gridimg.parentNode.setAttribute('height', big_int);
+		gridimg.setAttribute('width', bigInt);
+		gridimg.setAttribute('height', bigInt);
+		gridimg.parentNode.setAttribute('width', bigInt);
+		gridimg.parentNode.setAttribute('height', bigInt);
 		svgCanvas.setHref(gridimg, datauri);
 	}
 
@@ -138,8 +139,8 @@ svgEditor.addExtension('view_grid', function() { 'use strict';
 		name: 'view_grid',
 		svgicons: svgEditor.curConfig.extPath + 'grid-icon.xml',
 
-		zoomChanged: function(zoom) {
-			if (showGrid) {updateGrid(zoom);}
+		zoomChanged: function (zoom) {
+			if (showGrid) { updateGrid(zoom); }
 		},
 		callback: function () {
 			if (showGrid) {
@@ -152,7 +153,7 @@ svgEditor.addExtension('view_grid', function() { 'use strict';
 			panel: 'editor_panel',
 			title: 'Show/Hide Grid',
 			events: {
-				click: function() {
+				click: function () {
 					svgEditor.curConfig.showGrid = showGrid = !showGrid;
 					gridUpdate();
 				}

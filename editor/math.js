@@ -1,5 +1,5 @@
-/*globals svgedit*/
-/*jslint vars: true, eqeq: true */
+/* eslint-disable no-var */
+/* globals svgedit */
 /**
  * Package: svedit.math
  *
@@ -11,7 +11,7 @@
 
 // Dependencies:
 // None.
- 
+
 /**
 * @typedef AngleCoord45
 * @type {object}
@@ -20,7 +20,8 @@
 * @property {number} a - The angle at which to snap
 */
 
-(function() {'use strict';
+(function () {
+'use strict';
 
 if (!svgedit.math) {
 	svgedit.math = {};
@@ -41,12 +42,11 @@ var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
  * @returns {object} An x, y object representing the transformed point
 */
 svgedit.math.transformPoint = function (x, y, m) {
-	return { x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f};
+	return {x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f};
 };
 
-
 /**
- * Helper function to check if the matrix performs no actual transform 
+ * Helper function to check if the matrix performs no actual transform
  * (i.e. exists for identity purposes)
  * @param {SVGMatrix} m - The matrix object to check
  * @returns {boolean} Indicates whether or not the matrix is 1,0,0,1,0,0
@@ -55,7 +55,6 @@ svgedit.math.isIdentity = function (m) {
 	return (m.a === 1 && m.b === 0 && m.c === 0 && m.d === 1 && m.e === 0 && m.f === 0);
 };
 
-
 /**
  * This function tries to return a SVGMatrix that is the multiplication m1*m2.
  * We also round to zero when it's near zero
@@ -63,18 +62,18 @@ svgedit.math.isIdentity = function (m) {
  * @returns {SVGMatrix} The matrix object resulting from the calculation
 */
 svgedit.math.matrixMultiply = function (matr) {
-	var args = arguments, i = args.length, m = args[i-1];
+	var args = arguments, i = args.length, m = args[i - 1];
 
 	while (i-- > 1) {
-		var m1 = args[i-1];
+		var m1 = args[i - 1];
 		m = m1.multiply(m);
 	}
-	if (Math.abs(m.a) < NEAR_ZERO) {m.a = 0;}
-	if (Math.abs(m.b) < NEAR_ZERO) {m.b = 0;}
-	if (Math.abs(m.c) < NEAR_ZERO) {m.c = 0;}
-	if (Math.abs(m.d) < NEAR_ZERO) {m.d = 0;}
-	if (Math.abs(m.e) < NEAR_ZERO) {m.e = 0;}
-	if (Math.abs(m.f) < NEAR_ZERO) {m.f = 0;}
+	if (Math.abs(m.a) < NEAR_ZERO) { m.a = 0; }
+	if (Math.abs(m.b) < NEAR_ZERO) { m.b = 0; }
+	if (Math.abs(m.c) < NEAR_ZERO) { m.c = 0; }
+	if (Math.abs(m.d) < NEAR_ZERO) { m.d = 0; }
+	if (Math.abs(m.e) < NEAR_ZERO) { m.e = 0; }
+	if (Math.abs(m.f) < NEAR_ZERO) { m.f = 0; }
 
 	return m;
 };
@@ -85,11 +84,11 @@ svgedit.math.matrixMultiply = function (matr) {
  * @returns {boolean} Whether or not a matrix transform was found
 */
 svgedit.math.hasMatrixTransform = function (tlist) {
-	if (!tlist) {return false;}
+	if (!tlist) { return false; }
 	var num = tlist.numberOfItems;
 	while (num--) {
 		var xform = tlist.getItem(num);
-		if (xform.type == 1 && !svgedit.math.isIdentity(xform.matrix)) {return true;}
+		if (xform.type === 1 && !svgedit.math.isIdentity(xform.matrix)) { return true; }
 	}
 	return false;
 };
@@ -164,14 +163,13 @@ svgedit.math.transformListToTransform = function (tlist, min, max) {
 	var i;
 	for (i = min; i <= max; ++i) {
 		// if our indices are out of range, just use a harmless identity matrix
-		var mtom = (i >= 0 && i < tlist.numberOfItems ? 
-						tlist.getItem(i).matrix :
-						svg.createSVGMatrix());
+		var mtom = (i >= 0 && i < tlist.numberOfItems
+			? tlist.getItem(i).matrix
+			: svg.createSVGMatrix());
 		m = svgedit.math.matrixMultiply(m, mtom);
 	}
 	return svg.createSVGTransformFromMatrix(m);
 };
-
 
 /**
  * Get the matrix object for a given element
@@ -182,7 +180,6 @@ svgedit.math.getMatrix = function (elem) {
 	var tlist = svgedit.transformlist.getTransformList(elem);
 	return svgedit.math.transformListToTransform(tlist).matrix;
 };
-
 
 /**
  * Returns a 45 degree angle coordinate associated with the two given
@@ -208,7 +205,6 @@ svgedit.math.snapToAngle = function (x1, y1, x2, y2) {
 	};
 };
 
-
 /**
  * Check if two rectangles (BBoxes objects) intersect each other
  * @param {SVGRect} r1 - The first BBox-like object
@@ -221,5 +217,4 @@ svgedit.math.rectsIntersect = function (r1, r2) {
 		r2.y < (r1.y + r1.height) &&
 		(r2.y + r2.height) > r1.y;
 };
-
 }());

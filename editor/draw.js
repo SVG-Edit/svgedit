@@ -1,5 +1,5 @@
-/*globals $, svgedit*/
-/*jslint vars: true, eqeq: true, todo: true*/
+/* eslint-disable no-var */
+/* globals $, svgedit */
 /**
  * Package: svgedit.draw
  *
@@ -13,7 +13,8 @@
 // 2) browser.js
 // 3) svgutils.js
 
-(function() {'use strict';
+(function () {
+'use strict';
 
 if (!svgedit.draw) {
 	svgedit.draw = {};
@@ -28,25 +29,22 @@ var RandomizeModes = {
 	ALWAYS_RANDOMIZE: 1,
 	NEVER_RANDOMIZE: 2
 };
-var randomize_ids = RandomizeModes.LET_DOCUMENT_DECIDE;
+var randomizeIds = RandomizeModes.LET_DOCUMENT_DECIDE;
 
-
-
-
-	/**
+/**
  * Called to ensure that drawings will or will not have randomized ids.
  * The currentDrawing will have its nonce set if it doesn't already.
  * @param {boolean} enableRandomization - flag indicating if documents should have randomized ids
  * @param {svgedit.draw.Drawing} currentDrawing
  */
-svgedit.draw.randomizeIds = function(enableRandomization, currentDrawing) {
-	randomize_ids = enableRandomization === false ?
-		RandomizeModes.NEVER_RANDOMIZE :
-		RandomizeModes.ALWAYS_RANDOMIZE;
+svgedit.draw.randomizeIds = function (enableRandomization, currentDrawing) {
+	randomizeIds = enableRandomization === false
+		? RandomizeModes.NEVER_RANDOMIZE
+		: RandomizeModes.ALWAYS_RANDOMIZE;
 
-	if (randomize_ids == RandomizeModes.ALWAYS_RANDOMIZE && !currentDrawing.getNonce()) {
+	if (randomizeIds === RandomizeModes.ALWAYS_RANDOMIZE && !currentDrawing.getNonce()) {
 		currentDrawing.setNonce(Math.floor(Math.random() * 100001));
-	} else if (randomize_ids == RandomizeModes.NEVER_RANDOMIZE && currentDrawing.getNonce()) {
+	} else if (randomizeIds === RandomizeModes.NEVER_RANDOMIZE && currentDrawing.getNonce()) {
 		currentDrawing.clearNonce();
 	}
 };
@@ -56,12 +54,12 @@ svgedit.draw.randomizeIds = function(enableRandomization, currentDrawing) {
  * @param {SVGSVGElement} svgElem - The SVG DOM Element that this JS object
  *     encapsulates.  If the svgElem has a se:nonce attribute on it, then
  *     IDs will use the nonce as they are generated.
- * @param {String=svg_} [opt_idPrefix] - The ID prefix to use.
+ * @param {String=svg_} [optIdPrefix] - The ID prefix to use.
  */
-svgedit.draw.Drawing = function(svgElem, opt_idPrefix) {
+svgedit.draw.Drawing = function (svgElem, optIdPrefix) {
 	if (!svgElem || !svgElem.tagName || !svgElem.namespaceURI ||
-		svgElem.tagName != 'svg' || svgElem.namespaceURI != NS.SVG) {
-		throw "Error: svgedit.draw.Drawing instance initialized without a <svg> element";
+		svgElem.tagName !== 'svg' || svgElem.namespaceURI !== NS.SVG) {
+		throw new Error('Error: svgedit.draw.Drawing instance initialized without a <svg> element');
 	}
 
 	/**
@@ -69,19 +67,19 @@ svgedit.draw.Drawing = function(svgElem, opt_idPrefix) {
 	 * @type {SVGSVGElement}
 	 */
 	this.svgElem_ = svgElem;
-	
+
 	/**
 	 * The latest object number used in this drawing.
 	 * @type {number}
 	 */
 	this.obj_num = 0;
-	
+
 	/**
 	 * The prefix to prepend to each element id in the drawing.
 	 * @type {String}
 	 */
-	this.idPrefix = opt_idPrefix || "svg_";
-	
+	this.idPrefix = optIdPrefix || 'svg_';
+
 	/**
 	 * An array of released element ids to immediately reuse.
 	 * @type {Array.<number>}
@@ -120,9 +118,9 @@ svgedit.draw.Drawing = function(svgElem, opt_idPrefix) {
 	var n = this.svgElem_.getAttributeNS(NS.SE, 'nonce');
 	// If already set in the DOM, use the nonce throughout the document
 	// else, if randomizeIds(true) has been called, create and set the nonce.
-	if (!!n && randomize_ids != RandomizeModes.NEVER_RANDOMIZE) {
+	if (!!n && randomizeIds !== RandomizeModes.NEVER_RANDOMIZE) {
 		this.nonce_ = n;
-	} else if (randomize_ids == RandomizeModes.ALWAYS_RANDOMIZE) {
+	} else if (randomizeIds === RandomizeModes.ALWAYS_RANDOMIZE) {
 		this.setNonce(Math.floor(Math.random() * 100001));
 	}
 };
@@ -150,14 +148,14 @@ svgedit.draw.Drawing.prototype.getSvgElem = function () {
 /**
  * @returns {!string|number} The previously set nonce
  */
-svgedit.draw.Drawing.prototype.getNonce = function() {
+svgedit.draw.Drawing.prototype.getNonce = function () {
 	return this.nonce_;
 };
 
 /**
  * @param {!string|number} n The nonce to set
  */
-svgedit.draw.Drawing.prototype.setNonce = function(n) {
+svgedit.draw.Drawing.prototype.setNonce = function (n) {
 	this.svgElem_.setAttributeNS(NS.XMLNS, 'xmlns:se', NS.SE);
 	this.svgElem_.setAttributeNS(NS.SE, 'se:nonce', n);
 	this.nonce_ = n;
@@ -177,9 +175,9 @@ svgedit.draw.Drawing.prototype.clearNonce = function () {
  * @return {String} The latest object Id.
  */
 svgedit.draw.Drawing.prototype.getId = function () {
-	return this.nonce_ ?
-		this.idPrefix + this.nonce_ + '_' + this.obj_num :
-		this.idPrefix + this.obj_num;
+	return this.nonce_
+		? this.idPrefix + this.nonce_ + '_' + this.obj_num
+		: this.idPrefix + this.obj_num;
 };
 
 /**
@@ -190,7 +188,7 @@ svgedit.draw.Drawing.prototype.getNextId = function () {
 	var oldObjNum = this.obj_num;
 	var restoreOldObjNum = false;
 
-	// If there are any released numbers in the release stack, 
+	// If there are any released numbers in the release stack,
 	// use the last one instead of the next obj_num.
 	// We need to temporarily use obj_num as that is what getId() depends on.
 	if (this.releasedNums.length > 0) {
@@ -236,10 +234,10 @@ svgedit.draw.Drawing.prototype.releaseId = function (id) {
 
 	// if we didn't get a positive number or we already released this number
 	// then return false.
-	if (typeof num !== 'number' || num <= 0 || this.releasedNums.indexOf(num) != -1) {
+	if (typeof num !== 'number' || num <= 0 || this.releasedNums.indexOf(num) !== -1) {
 		return false;
 	}
-	
+
 	// push the released number into the released queue
 	this.releasedNums.push(num);
 
@@ -250,7 +248,7 @@ svgedit.draw.Drawing.prototype.releaseId = function (id) {
  * Returns the number of layers in the current drawing.
  * @returns {integer} The number of layers in the current drawing.
 */
-svgedit.draw.Drawing.prototype.getNumLayers = function() {
+svgedit.draw.Drawing.prototype.getNumLayers = function () {
 	return this.all_layers.length;
 };
 
@@ -261,7 +259,6 @@ svgedit.draw.Drawing.prototype.getNumLayers = function() {
 svgedit.draw.Drawing.prototype.hasLayer = function (name) {
 	return this.layer_map[name] !== undefined;
 };
-
 
 /**
  * Returns the name of the ith layer. If the index is out of range, an empty string is returned.
@@ -275,7 +272,7 @@ svgedit.draw.Drawing.prototype.getLayerName = function (i) {
 /**
  * @returns {SVGGElement} The SVGGElement representing the current layer.
  */
-svgedit.draw.Drawing.prototype.getCurrentLayer = function() {
+svgedit.draw.Drawing.prototype.getCurrentLayer = function () {
 	return this.current_layer ? this.current_layer.getGroup() : null;
 };
 
@@ -283,13 +280,13 @@ svgedit.draw.Drawing.prototype.getCurrentLayer = function() {
  * Get a layer by name.
  * @returns {SVGGElement} The SVGGElement representing the named layer or null.
  */
-svgedit.draw.Drawing.prototype.getLayerByName = function(name) {
+svgedit.draw.Drawing.prototype.getLayerByName = function (name) {
 	var layer = this.layer_map[name];
 	return layer ? layer.getGroup() : null;
 };
 
 /**
- * Returns the name of the currently selected layer. If an error occurs, an empty string 
+ * Returns the name of the currently selected layer. If an error occurs, an empty string
  * is returned.
  * @returns {string} The name of the currently active layer (or the empty string if none found).
 */
@@ -322,39 +319,38 @@ svgedit.draw.Drawing.prototype.setCurrentLayerName = function (name, hrService) 
  * @returns {Object} If the name was changed, returns {title:SVGGElement, previousName:string}; otherwise null.
  */
 svgedit.draw.Drawing.prototype.setCurrentLayerPosition = function (newpos) {
-	var layer_count = this.getNumLayers();
-	if (!this.current_layer || newpos < 0 || newpos >= layer_count) {
+	var layerCount = this.getNumLayers();
+	if (!this.current_layer || newpos < 0 || newpos >= layerCount) {
 		return null;
 	}
 
 	var oldpos;
-	for (oldpos = 0; oldpos < layer_count; ++oldpos) {
-		if (this.all_layers[oldpos] == this.current_layer) {break;}
+	for (oldpos = 0; oldpos < layerCount; ++oldpos) {
+		if (this.all_layers[oldpos] === this.current_layer) { break; }
 	}
 	// some unknown error condition (current_layer not in all_layers)
-	if (oldpos == layer_count) { return null; }
+	if (oldpos === layerCount) { return null; }
 
-	if (oldpos != newpos) {
+	if (oldpos !== newpos) {
 		// if our new position is below us, we need to insert before the node after newpos
 		var refGroup = null;
-		var current_group = this.current_layer.getGroup();
-		var oldNextSibling = current_group.nextSibling;
-		if (newpos > oldpos ) {
-			if (newpos < layer_count-1) {
-				refGroup = this.all_layers[newpos+1].getGroup();
+		var currentGroup = this.current_layer.getGroup();
+		var oldNextSibling = currentGroup.nextSibling;
+		if (newpos > oldpos) {
+			if (newpos < layerCount - 1) {
+				refGroup = this.all_layers[newpos + 1].getGroup();
 			}
-		}
 		// if our new position is above us, we need to insert before the node at newpos
-		else {
+		} else {
 			refGroup = this.all_layers[newpos].getGroup();
 		}
-		this.svgElem_.insertBefore(current_group, refGroup);
+		this.svgElem_.insertBefore(currentGroup, refGroup);
 
 		this.identifyLayers();
 		this.setCurrentLayer(this.getLayerName(newpos));
 
 		return {
-			currentGroup: current_group,
+			currentGroup: currentGroup,
 			oldNextSibling: oldNextSibling
 		};
 	}
@@ -362,25 +358,25 @@ svgedit.draw.Drawing.prototype.setCurrentLayerPosition = function (newpos) {
 };
 
 svgedit.draw.Drawing.prototype.mergeLayer = function (hrService) {
-	var current_group = this.current_layer.getGroup();
-	var prevGroup = $(current_group).prev()[0];
-	if (!prevGroup) {return;}
+	var currentGroup = this.current_layer.getGroup();
+	var prevGroup = $(currentGroup).prev()[0];
+	if (!prevGroup) { return; }
 
 	hrService.startBatchCommand('Merge Layer');
 
-	var layerNextSibling = current_group.nextSibling;
-	hrService.removeElement(current_group, layerNextSibling, this.svgElem_);
+	var layerNextSibling = currentGroup.nextSibling;
+	hrService.removeElement(currentGroup, layerNextSibling, this.svgElem_);
 
-	while (current_group.firstChild) {
-		var child = current_group.firstChild;
-		if (child.localName == 'title') {
-			hrService.removeElement(child, child.nextSibling, current_group);
-			current_group.removeChild(child);
+	while (currentGroup.firstChild) {
+		var child = currentGroup.firstChild;
+		if (child.localName === 'title') {
+			hrService.removeElement(child, child.nextSibling, currentGroup);
+			currentGroup.removeChild(child);
 			continue;
 		}
 		var oldNextSibling = child.nextSibling;
 		prevGroup.appendChild(child);
-		hrService.moveElement(child, oldNextSibling, current_group);
+		hrService.moveElement(child, oldNextSibling, currentGroup);
 	}
 
 	// Remove current layer's group
@@ -389,7 +385,7 @@ svgedit.draw.Drawing.prototype.mergeLayer = function (hrService) {
 	var index = this.all_layers.indexOf(this.current_layer);
 	if (index > 0) {
 		var name = this.current_layer.getName();
-		this.current_layer = this.all_layers[index-1]
+		this.current_layer = this.all_layers[index - 1];
 		this.all_layers.splice(index, 1);
 		delete this.layer_map[name];
 	}
@@ -399,7 +395,7 @@ svgedit.draw.Drawing.prototype.mergeLayer = function (hrService) {
 
 svgedit.draw.Drawing.prototype.mergeAllLayers = function (hrService) {
 	// Set the current layer to the last layer.
-	this.current_layer = this.all_layers[this.all_layers.length-1];
+	this.current_layer = this.all_layers[this.all_layers.length - 1];
 
 	hrService.startBatchCommand('Merge all Layers');
 	while (this.all_layers.length > 1) {
@@ -415,7 +411,7 @@ svgedit.draw.Drawing.prototype.mergeAllLayers = function (hrService) {
  * @param {string} name - The name of the layer you want to switch to.
  * @returns {boolean} true if the current layer was switched, otherwise false
  */
-svgedit.draw.Drawing.prototype.setCurrentLayer = function(name) {
+svgedit.draw.Drawing.prototype.setCurrentLayer = function (name) {
 	var layer = this.layer_map[name];
 	if (layer) {
 		if (this.current_layer) {
@@ -428,13 +424,12 @@ svgedit.draw.Drawing.prototype.setCurrentLayer = function(name) {
 	return false;
 };
 
-
 /**
  * Deletes the current layer from the drawing and then clears the selection.
  * This function then calls the 'changed' handler.  This is an undoable action.
  * @returns {SVGGElement} The SVGGElement of the layer removed or null.
  */
-svgedit.draw.Drawing.prototype.deleteCurrentLayer = function() {
+svgedit.draw.Drawing.prototype.deleteCurrentLayer = function () {
 	if (this.current_layer && this.getNumLayers() > 1) {
 		var oldLayerGroup = this.current_layer.removeGroup();
 		this.identifyLayers();
@@ -448,8 +443,8 @@ svgedit.draw.Drawing.prototype.deleteCurrentLayer = function() {
  * @param group The group element to search in.
  * @returns {string} The layer name or empty string.
  */
-function findLayerNameInGroup(group) {
-	var name = $("title", group).text();
+function findLayerNameInGroup (group) {
+	var name = $('title', group).text();
 
 	// Hack for Opera 10.60
 	if (!name && svgedit.browser.isOpera() && group.querySelectorAll) {
@@ -463,18 +458,18 @@ function findLayerNameInGroup(group) {
  * @param {Array.<string>} existingLayerNames - Existing layer names.
  * @returns {string} - The new name.
  */
-function getNewLayerName(existingLayerNames) {
+function getNewLayerName (existingLayerNames) {
 	var i = 1;
 	// TODO(codedread): What about internationalization of "Layer"?
-	while (existingLayerNames.indexOf(("Layer " + i)) >= 0) { i++; }
-	return "Layer " + i;
+	while (existingLayerNames.indexOf(('Layer ' + i)) >= 0) { i++; }
+	return 'Layer ' + i;
 }
 
 /**
  * Updates layer system and sets the current layer to the
  * top-most layer (last <g> child of this drawing).
 */
-svgedit.draw.Drawing.prototype.identifyLayers = function() {
+svgedit.draw.Drawing.prototype.identifyLayers = function () {
 	this.all_layers = [];
 	this.layer_map = {};
 	var numchildren = this.svgElem_.childNodes.length;
@@ -485,8 +480,8 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 	for (var i = 0; i < numchildren; ++i) {
 		var child = this.svgElem_.childNodes.item(i);
 		// for each g, find its layer name
-		if (child && child.nodeType == 1) {
-			if (child.tagName == "g") {
+		if (child && child.nodeType === 1) {
+			if (child.tagName === 'g') {
 				childgroups = true;
 				var name = findLayerNameInGroup(child);
 				if (name) {
@@ -504,7 +499,7 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
 			}
 		}
 	}
-	
+
 	// If orphans or no layers found, create a new layer and add all the orphans to it
 	if (orphans.length > 0 || !childgroups) {
 		layer = new svgedit.draw.Layer(getNewLayerName(layernames), null, this.svgElem_);
@@ -525,7 +520,7 @@ svgedit.draw.Drawing.prototype.identifyLayers = function() {
  * @returns {SVGGElement} The SVGGElement of the new layer, which is
  * 		also the current layer of this drawing.
 */
-svgedit.draw.Drawing.prototype.createLayer = function(name, hrService) {
+svgedit.draw.Drawing.prototype.createLayer = function (name, hrService) {
 	if (this.current_layer) {
 		this.current_layer.deactivate();
 	}
@@ -556,8 +551,8 @@ svgedit.draw.Drawing.prototype.createLayer = function(name, hrService) {
  * @returns {SVGGElement} The SVGGElement of the new layer, which is
  * 		also the current layer of this drawing.
 */
-svgedit.draw.Drawing.prototype.cloneLayer = function(name, hrService) {
-	if (!this.current_layer) {return null;}
+svgedit.draw.Drawing.prototype.cloneLayer = function (name, hrService) {
+	if (!this.current_layer) { return null; }
 	this.current_layer.deactivate();
 	// Check for duplicate name.
 	if (name === undefined || name === null || name === '' || this.layer_map[name]) {
@@ -567,14 +562,14 @@ svgedit.draw.Drawing.prototype.cloneLayer = function(name, hrService) {
 	// Create new group and add to DOM just after current_layer
 	var currentGroup = this.current_layer.getGroup();
 	var layer = new svgedit.draw.Layer(name, currentGroup, this.svgElem_);
-	var group  = layer.getGroup();
+	var group = layer.getGroup();
 
 	// Clone children
 	var children = currentGroup.childNodes;
 	var index;
 	for (index = 0; index < children.length; index++) {
 		var ch = children[index];
-		if (ch.localName == 'title') {continue;}
+		if (ch.localName === 'title') { continue; }
 		group.appendChild(this.copyElem(ch));
 	}
 
@@ -602,7 +597,7 @@ svgedit.draw.Drawing.prototype.cloneLayer = function(name, hrService) {
  * @param {string} layername - The name of the layer which you want to query.
  * @returns {boolean} The visibility state of the layer, or false if the layer name was invalid.
 */
-svgedit.draw.Drawing.prototype.getLayerVisibility = function(layername) {
+svgedit.draw.Drawing.prototype.getLayerVisibility = function (layername) {
 	var layer = this.layer_map[layername];
 	return layer ? layer.isVisible() : false;
 };
@@ -616,16 +611,15 @@ svgedit.draw.Drawing.prototype.getLayerVisibility = function(layername) {
  * @returns {?SVGGElement} The SVGGElement representing the layer if the
  *   layername was valid, otherwise null.
 */
-svgedit.draw.Drawing.prototype.setLayerVisibility = function(layername, bVisible) {
+svgedit.draw.Drawing.prototype.setLayerVisibility = function (layername, bVisible) {
 	if (typeof bVisible !== 'boolean') {
 		return null;
 	}
 	var layer = this.layer_map[layername];
-	if (!layer) {return null;}
+	if (!layer) { return null; }
 	layer.setVisible(bVisible);
 	return layer.getGroup();
 };
-
 
 /**
  * Returns the opacity of the given layer.  If the input name is not a layer, null is returned.
@@ -633,9 +627,9 @@ svgedit.draw.Drawing.prototype.setLayerVisibility = function(layername, bVisible
  * @returns {?number} The opacity value of the given layer.  This will be a value between 0.0 and 1.0, or null
  * if layername is not a valid layer
 */
-svgedit.draw.Drawing.prototype.getLayerOpacity = function(layername) {
+svgedit.draw.Drawing.prototype.getLayerOpacity = function (layername) {
 	var layer = this.layer_map[layername];
-	if (!layer) {return null;}
+	if (!layer) { return null; }
 	return layer.getOpacity();
 };
 
@@ -646,7 +640,7 @@ svgedit.draw.Drawing.prototype.getLayerOpacity = function(layername) {
  * @param {string} layername - Name of the layer on which to set the opacity
  * @param {number} opacity - A float value in the range 0.0-1.0
 */
-svgedit.draw.Drawing.prototype.setLayerOpacity = function(layername, opacity) {
+svgedit.draw.Drawing.prototype.setLayerOpacity = function (layername, opacity) {
 	if (typeof opacity !== 'number' || opacity < 0.0 || opacity > 1.0) {
 		return;
 	}
@@ -661,11 +655,9 @@ svgedit.draw.Drawing.prototype.setLayerOpacity = function(layername, opacity) {
  * @param {Element} el - DOM element to clone
  * @returns {Element}
  */
-svgedit.draw.Drawing.prototype.copyElem = function(el) {
+svgedit.draw.Drawing.prototype.copyElem = function (el) {
 	var self = this;
-	var getNextIdClosure = function() { return self.getNextId();}
-	return svgedit.utilities.copyElem(el, getNextIdClosure)
-}
-
-
+	var getNextIdClosure = function () { return self.getNextId(); };
+	return svgedit.utilities.copyElem(el, getNextIdClosure);
+};
 }());
