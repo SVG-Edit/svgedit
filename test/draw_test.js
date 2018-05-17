@@ -253,7 +253,7 @@ $(function () {
 		var doc = new svgedit.draw.Drawing(svg);
 
 		var firstId = doc.getNextId();
-		// var secondId = doc.getNextId();
+		/* var secondId = */ doc.getNextId();
 
 		var result = doc.releaseId(firstId);
 		ok(result);
