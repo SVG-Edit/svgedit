@@ -182,8 +182,8 @@ jQuery.fn.jGraduate =
 			$.extend(true, $this, { // public properties, methods, and callbacks
 				// make a copy of the incoming paint
 				paint: new $.jGraduate.Paint({copy: $settings.paint}),
-				okCallback: $.isFunction(($arguments[1]) && $arguments[1]) || null,
-				cancelCallback: $.isFunction(($arguments[2]) && $arguments[2]) || null
+				okCallback: ($.isFunction($arguments[1]) && $arguments[1]) || null,
+				cancelCallback: ($.isFunction($arguments[2]) && $arguments[2]) || null
 			});
 
 			var // pos = $this.position(),
@@ -787,8 +787,8 @@ jQuery.fn.jGraduate =
 
 			stops = curGradient.getElementsByTagNameNS(ns.svg, 'stop');
 
-			// if there are not at least two stops, then
 			var numstops = stops.length;
+			// if there are not at least two stops, then
 			if (numstops < 2) {
 				while (numstops < 2) {
 					curGradient.appendChild(document.createElementNS(ns.svg, 'stop'));
@@ -813,7 +813,7 @@ jQuery.fn.jGraduate =
 			$('#' + id + ' div.grad_coord').mousedown(function (evt) {
 				evt.preventDefault();
 				draggingCoord = $(this);
-				// var s_pos = draggingCoord.offset();
+				// var sPos = draggingCoord.offset();
 				offset = draggingCoord.parent().offset();
 				$win.mousemove(onCoordDrag).mouseup(onCoordUp);
 			});
@@ -1097,7 +1097,7 @@ jQuery.fn.jGraduate =
 				$(this).addClass('jGraduate_tab_current');
 				$(idref + ' > div').hide();
 				var type = $(this).attr('data-type');
-				// var container = $(idref + ' .jGraduate_gradPick').show();
+				/* var container = */ $(idref + ' .jGraduate_gradPick').show();
 				if (type === 'rg' || type === 'lg') {
 					// Show/hide appropriate fields
 					$('.jGraduate_' + type + '_field').show();

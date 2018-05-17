@@ -28,9 +28,12 @@
     (though only if there is a single identity matrix) (fixes Chrome issue
     with recalculate test 1:
     "recalculateDimensions() on rect with identity matrix")
+* Build: Update minified version of spinbtn/jgraduate/jpicker per linted/improved files
 * Enhancement: Throw Error objects instead of strings (including in jgraduate->jpicker)
+* Enhancement: Use minified version of jpicker in svg-editor
 * Refactoring: Switch to ESLint in source
 * Refactoring: Move scripts to own files
+* npm: Add ESLint, uglify, start scripts
 * Testing: Move JavaScript out of HTML to own files
 * Testing: Add `node-static` to get tests working
 * Testing: Fix timing of `all_tests.html` for ensuring expanding iframe size to fit content

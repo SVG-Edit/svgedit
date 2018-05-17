@@ -11,7 +11,7 @@
   "engines": {},
   "scripts": {
     "eslint": "eslint .",
-    "uglify": "uglifyjs --compress -o ./editor/spinbtn/JQuerySpinBtn.min.js -- ./editor/spinbtn/JQuerySpinBtn.js",
+    "uglify": "uglifyjs --compress -o ./editor/spinbtn/JQuerySpinBtn.min.js -- ./editor/spinbtn/JQuerySpinBtn.js && uglifyjs --compress -o ./editor/jgraduate/jpicker.min.js -- ./editor/jgraduate/jpicker.js && uglifyjs --compress -o ./editor/jgraduate/jquery.jgraduate.min.js -- ./editor/jgraduate/jquery.jgraduate.js",
     "start": "echo \"Open file to http://localhost:8000/test/all_tests.html\" && static -p 8000",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
