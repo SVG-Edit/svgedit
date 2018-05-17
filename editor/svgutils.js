@@ -548,7 +548,20 @@ svgedit.utilities.getBBox = function (elem) {
 			}
 		} else if (~visElemsArr.indexOf(elname)) {
 			if (selected) {
-				ret = selected.getBBox();
+				try {
+					ret = selected.getBBox();
+				} catch (err) {
+					// tspan (and textPath apparently) have no `getBBox` in Firefox: https://bugzilla.mozilla.org/show_bug.cgi?id=937268
+					// Re: Chrome returning bbox for containing text element, see: https://bugs.chromium.org/p/chromium/issues/detail?id=349835
+					var extent = selected.getExtentOfChar(0); // pos+dimensions of the first glyph
+					var width = selected.getComputedTextLength(); // width of the tspan
+					ret = {
+						x: extent.x,
+						y: extent.y,
+						width: width,
+						height: extent.height
+					};
+				}
 			} else {
 				// Check if element is child of a foreignObject
 				var fo = $(selected).closest('foreignObject');

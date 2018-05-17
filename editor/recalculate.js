@@ -76,6 +76,7 @@ svgedit.recalculate.recalculateDimensions = function (selected) {
 	// remove any unnecessary transforms
 	if (tlist && tlist.numberOfItems > 0) {
 		k = tlist.numberOfItems;
+		var noi = k;
 		while (k--) {
 			var xform = tlist.getItem(k);
 			if (xform.type === 0) {
@@ -83,6 +84,14 @@ svgedit.recalculate.recalculateDimensions = function (selected) {
 			// remove identity matrices
 			} else if (xform.type === 1) {
 				if (svgedit.math.isIdentity(xform.matrix)) {
+					if (noi === 1) {
+						// Overcome Chrome bug (though only when noi is 1) with
+						//    `removeItem` preventing `removeAttribute` from
+						//    subsequently working
+						// See https://bugs.chromium.org/p/chromium/issues/detail?id=843901
+						selected.removeAttribute('transform');
+						return null;
+					}
 					tlist.removeItem(k);
 				}
 			// remove zero-degree rotations
@@ -99,9 +108,11 @@ svgedit.recalculate.recalculateDimensions = function (selected) {
 
 	// if this element had no transforms, we are done
 	if (!tlist || tlist.numberOfItems === 0) {
-		// Chrome has a bug that requires clearing the attribute first.
+		// Chrome apparently had a bug that requires clearing the attribute first.
 		selected.setAttribute('transform', '');
+		// However, this still next line currently doesn't work at all in Chrome
 		selected.removeAttribute('transform');
+		// selected.transform.baseVal.clear(); // Didn't help for Chrome bug
 		return null;
 	}
 
