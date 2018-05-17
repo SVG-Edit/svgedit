@@ -47,7 +47,7 @@ svgedit.coords.init = function (editorContext) {
 /**
  * Applies coordinate changes to an element based on the given matrix
  * @param {Element} selected - DOM element to be changed
- * @param {object} changes - Object with changes to be remapped
+ * @param {Object} changes - Object with changes to be remapped
  * @param {SVGMatrix} m - Matrix object to use for remapping coordinates
 */
 svgedit.coords.remapElement = function (selected, changes, m) {

@@ -926,7 +926,7 @@ svgedit.utilities.getBBoxWithTransform = function (elem, addSvgElementFromJson, 
 function getStrokeOffsetForBBox (elem) {
 	var sw = elem.getAttribute('stroke-width');
 	return (!isNaN(sw) && elem.getAttribute('stroke') !== 'none') ? sw / 2 : 0;
-};
+}
 
 // Function: getStrokedBBox
 // Get the bounding box for one or more stroked and/or transformed elements

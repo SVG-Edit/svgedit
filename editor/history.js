@@ -33,7 +33,7 @@ svgedit.history.HistoryEventTypes = {
 /**
  * An interface that all command objects must implement.
  * @typedef svgedit.history.HistoryCommand
- * @type {object}
+ * @type {Object}
  *   void apply(svgedit.history.HistoryEventHandler);
  *   void unapply(svgedit.history.HistoryEventHandler);
  *   Element[] elements();

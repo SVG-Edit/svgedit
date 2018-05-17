@@ -291,8 +291,8 @@ window.svgEditor = (function ($) {
 
 	/**
 	* Allows setting of preferences or configuration (including extensions).
-	* @param {object} opts The preferences or configuration (including extensions)
-	* @param {object} [cfgCfg] Describes configuration which applies to the particular batch of supplied options
+	* @param {Object} opts The preferences or configuration (including extensions)
+	* @param {Object} [cfgCfg] Describes configuration which applies to the particular batch of supplied options
 	* @param {boolean} [cfgCfg.allowInitialUserOverride=false] Set to true if you wish
 	*	to allow initial overriding of settings by the user via the URL
 	*	(if permitted) or previously stored preferences (if permitted);
@@ -375,7 +375,7 @@ window.svgEditor = (function ($) {
 	};
 
 	/**
-	* @param {object} opts Extension mechanisms may call setCustomHandlers with three functions: opts.open, opts.save, and opts.exportImage
+	* @param {Object} opts Extension mechanisms may call setCustomHandlers with three functions: opts.open, opts.save, and opts.exportImage
 	* opts.open's responsibilities are:
 	*	- invoke a file chooser dialog in 'open' mode
 	*	- let user pick a SVG file

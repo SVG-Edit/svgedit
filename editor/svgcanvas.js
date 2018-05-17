@@ -99,7 +99,7 @@ var svgcontent = svgdoc.createElementNS(NS.SVG, 'svg');
 
 // This function resets the svgcontent element while keeping it in the DOM.
 var clearSvgContentElement = canvas.clearSvgContentElement = function () {
-	while (svgcontent.firstChild) { svgcontent.removeChild(svgcontent.firstChild); }
+	$(svgcontent).empty();
 
 	// TODO: Clear out all other attributes first?
 	$(svgcontent).attr({
@@ -193,13 +193,13 @@ var getJsonFromSvgElement = this.getJsonFromSvgElement = function (data) {
 	};
 
 	// Iterate attributes
-	for (var i = 0; i < data.attributes.length; i++) {
-		retval.attr[data.attributes[i].name] = data.attributes[i].value;
-	};
+	for (var i = 0, attr; (attr = data.attributes[i]); i++) {
+		retval.attr[attr.name] = attr.value;
+	}
 
 	// Iterate children
-	for (var i = 0; i < data.childNodes.length; i++) {
-		retval.children.push(getJsonFromSvgElement(data.childNodes[i]));
+	for (var i = 0, node; (node = data.childNodes[i]); i++) {
+		retval.children[i] = getJsonFromSvgElement(node);
 	}
 
 	return retval;
@@ -3056,7 +3056,7 @@ return {
 		var curPt;
 		if (id.substr(0, 14) === 'pathpointgrip_') {
 			// Select this point
-			curPt = svgedit.path.path.cur_pt = parseInt(id.substr(14));
+			curPt = svgedit.path.path.cur_pt = parseInt(id.substr(14), 10);
 			svgedit.path.path.dragging = [startX, startY];
 			var seg = svgedit.path.path.segs[curPt];
 

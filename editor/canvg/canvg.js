@@ -745,8 +745,7 @@ function build (opts) {
 
 		if (node != null && node.nodeType === 1) { // ELEMENT_NODE
 			// add children
-			for (var i = 0; i < node.childNodes.length; i++) {
-				var childNode = node.childNodes[i];
+			for (var i = 0, childNode; (childNode = node.childNodes[i]); i++) {
 				if (childNode.nodeType === 1) this.addChild(childNode, true); // ELEMENT_NODE
 				if (this.captureTextNodes && (childNode.nodeType === 3 || childNode.nodeType === 4)) {
 					var text = childNode.nodeValue || childNode.text || '';
@@ -2227,8 +2226,8 @@ function build (opts) {
 		this.base(node);
 
 		this.hasText = true;
-		for (var i = 0; i < node.childNodes.length; i++) {
-			if (node.childNodes[i].nodeType !== 3) this.hasText = false;
+		for (var i = 0, childNode; (childNode = node.childNodes[i]); i++) {
+			if (childNode.nodeType !== 3) this.hasText = false;
 		}
 
 		// this might contain text
@@ -2359,8 +2358,8 @@ function build (opts) {
 
 		// text, or spaces then CDATA
 		var css = '';
-		for (var i = 0; i < node.childNodes.length; i++) {
-			css += node.childNodes[i].nodeValue;
+		for (var i = 0, childNode; (childNode = node.childNodes[i]); i++) {
+			css += childNode.nodeValue;
 		}
 		css = css.replace(/(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(^[\s]*\/\/.*)/gm, ''); // remove comments
 		css = svg.compressSpaces(css); // replace whitespace
