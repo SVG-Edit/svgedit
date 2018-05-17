@@ -12,12 +12,6 @@ html, body, div{
 	-webkit-user-drag: text;
 }
 
-#browser-not-supported {
-	font-size: 0.8em;
-	font-family: Verdana, Helvetica, Arial;
-	color: #000000;
-}
-
 #svg_editor * {
 	transform-origin: 0 0;
 	-moz-transform-origin: 0 0;
