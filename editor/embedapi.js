@@ -45,7 +45,7 @@ function getCallbackSetter (d) {
   return function () {
     var t = this, // New callback
       args = [].slice.call(arguments),
-      cbid = t.send(d, args, function () {});  // The callback (currently it's nothing, but will be set later)
+      cbid = t.send(d, args, function () {}); // The callback (currently it's nothing, but will be set later)
 
     return function (newcallback) {
       t.callbacks[cbid] = newcallback; // Set callback

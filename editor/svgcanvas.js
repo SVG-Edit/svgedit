@@ -4146,7 +4146,7 @@ var uniquifyElems = this.uniquifyElems = function (g) {
   //
   // Problem #1: if svg_1 gets renamed, we do not update the polyline's se:connector attribute
   // Problem #2: if the polyline svg_7 gets renamed, we do not update the marker id nor the polyline's marker-end attribute
-  var refElems = ['filter', 'linearGradient', 'pattern',  'radialGradient', 'symbol', 'textPath', 'use'];
+  var refElems = ['filter', 'linearGradient', 'pattern', 'radialGradient', 'symbol', 'textPath', 'use'];
 
   svgedit.utilities.walkTree(g, function (n) {
     // if it's an element node
