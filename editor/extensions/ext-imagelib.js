@@ -159,11 +159,11 @@ svgEditor.addExtension('imagelib', function () {
         pending[id].entry.remove();
       }
       // $.alert('Unexpected data was returned: ' + response, function() {
-      // 	if (mode !== 'm') {
-      // 		closeBrowser();
-      // 	} else {
-      // 		pending[id].entry.remove();
-      // 	}
+      //   if (mode !== 'm') {
+      //     closeBrowser();
+      //   } else {
+      //     pending[id].entry.remove();
+      //   }
       // });
       return;
     }

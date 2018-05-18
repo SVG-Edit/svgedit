@@ -239,7 +239,7 @@ svgedit.select.Selector.prototype.resize = function (bbox) {
   this.selectorGroup.setAttribute('transform', xform);
 
   // TODO(codedread): Is this if needed?
-  //	if (selected === selectedElements[0]) {
+  //  if (selected === selectedElements[0]) {
   this.gripCoords = {
     'nw': [nbax, nbay],
     'ne': [nbax + nbaw, nbay],

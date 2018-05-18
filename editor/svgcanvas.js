@@ -380,13 +380,13 @@ canvas.undoMgr = new svgedit.history.UndoManager({
         // ——————————
         // Remove & Re-add hack for Webkit (issue 775)
         // if (cmd.elem.tagName === 'use' && svgedit.browser.isWebkit()) {
-        //	var elem = cmd.elem;
-        //	if (!elem.getAttribute('x') && !elem.getAttribute('y')) {
-        //		var parent = elem.parentNode;
-        //		var sib = elem.nextSibling;
-        //		parent.removeChild(elem);
-        //		parent.insertBefore(elem, sib);
-        //	}
+        //  var elem = cmd.elem;
+        //  if (!elem.getAttribute('x') && !elem.getAttribute('y')) {
+        //    var parent = elem.parentNode;
+        //    var sib = elem.nextSibling;
+        //    parent.removeChild(elem);
+        //    parent.insertBefore(elem, sib);
+        //  }
         // }
       }
     }
@@ -472,11 +472,11 @@ var restoreRefElems = function (elem) {
 
 // (function () {
 // TODO For Issue 208: this is a start on a thumbnail
-//	var svgthumb = svgdoc.createElementNS(NS.SVG, 'use');
-//	svgthumb.setAttribute('width', '100');
-//	svgthumb.setAttribute('height', '100');
-//	svgedit.utilities.setHref(svgthumb, '#svgcontent');
-//	svgroot.appendChild(svgthumb);
+//  var svgthumb = svgdoc.createElementNS(NS.SVG, 'use');
+//  svgthumb.setAttribute('width', '100');
+//  svgthumb.setAttribute('height', '100');
+//  svgedit.utilities.setHref(svgthumb, '#svgcontent');
+//  svgroot.appendChild(svgthumb);
 // }());
 
 // Object to contain image data for raster images that were found encodable
@@ -797,7 +797,7 @@ var ffClone = function (elem) {
 // $(canvas.getRootElem()).children().each(...)
 
 // this.each = function (cb) {
-//	$(svgroot).children().each(cb);
+//  $(svgroot).children().each(cb);
 // };
 
 // Function: setRotationAngle
@@ -847,7 +847,7 @@ this.setRotationAngle = function (val, preventUndo) {
   }
   // var pointGripContainer = svgedit.utilities.getElem('pathpointgrip_container');
   // if (elem.nodeName === 'path' && pointGripContainer) {
-  // 	pathActions.setPointContainerTransform(elem.getAttribute('transform'));
+  //   pathActions.setPointContainerTransform(elem.getAttribute('transform'));
   // }
   var selector = selectorManager.requestSelector(selectedElements[0]);
   selector.resize();
@@ -1080,12 +1080,12 @@ var getMouseTarget = this.getMouseTarget = function (evt) {
   //
   // // go up until we hit a child of a layer
   // while (mouseTarget.parentNode.parentNode.tagName == 'g') {
-  // 	mouseTarget = mouseTarget.parentNode;
+  //   mouseTarget = mouseTarget.parentNode;
   // }
   // Webkit bubbles the mouse event all the way up to the div, so we
   // set the mouseTarget to the svgroot like the other browsers
   // if (mouseTarget.nodeName.toLowerCase() == 'div') {
-  // 	mouseTarget = svgroot;
+  //   mouseTarget = svgroot;
   // }
 
   return mouseTarget;
@@ -1182,7 +1182,7 @@ var mouseDown = function (evt) {
 
   // This would seem to be unnecessary...
   // if (['select', 'resize'].indexOf(currentMode) === -1) {
-  // 	setGradient();
+  //   setGradient();
   // }
 
   var x = mouseX / currentZoom,
@@ -1574,9 +1574,9 @@ var mouseMove = function (evt) {
           selected = selectedElements[i];
           if (selected == null) { break; }
           // if (i === 0) {
-          // 	var box = svgedit.utilities.getBBox(selected);
-          // 		selectedBBoxes[i].x = box.x + dx;
-          // 		selectedBBoxes[i].y = box.y + dy;
+          //   var box = svgedit.utilities.getBBox(selected);
+          //     selectedBBoxes[i].x = box.x + dx;
+          //     selectedBBoxes[i].y = box.y + dy;
           // }
 
           // update the dummy transform in our transform list
@@ -1902,12 +1902,12 @@ var mouseMove = function (evt) {
     x *= currentZoom;
     y *= currentZoom;
     // if (rubberBox && rubberBox.getAttribute('display') !== 'none') {
-    // 	svgedit.utilities.assignAttributes(rubberBox, {
-    // 		'x': Math.min(startX, x),
-    // 		'y': Math.min(startY, y),
-    // 		'width': Math.abs(x - startX),
-    // 		'height': Math.abs(y - startY)
-    // 	}, 100);
+    //   svgedit.utilities.assignAttributes(rubberBox, {
+    //     'x': Math.min(startX, x),
+    //     'y': Math.min(startY, y),
+    //     'width': Math.abs(x - startX),
+    //     'height': Math.abs(y - startY)
+    //   }, 100);
     // }
 
     textActions.mouseMove(mouseX, mouseY);
@@ -2589,8 +2589,8 @@ return {
 
     // TODO: Find a way to make this work: Use transformed BBox instead of evt.target
     // if (lastX === mouseX && lastY === mouseY
-    // 	&& !svgedit.math.rectsIntersect(transbb, {x: pt.x, y: pt.y, width: 0, height: 0})) {
-    // 	textActions.toSelectMode(true);
+    //   && !svgedit.math.rectsIntersect(transbb, {x: pt.x, y: pt.y, width: 0, height: 0})) {
+    //   textActions.toSelectMode(true);
     // }
 
     if (
@@ -2617,8 +2617,8 @@ return {
     $(curtext).css('cursor', 'text');
 
     // if (svgedit.browser.supportsEditableText()) {
-    // 	curtext.setAttribute('editable', 'simple');
-    // 	return;
+    //   curtext.setAttribute('editable', 'simple');
+    //   return;
     // }
 
     if (!arguments.length) {
@@ -2657,7 +2657,7 @@ return {
     curtext = false;
 
     // if (svgedit.browser.supportsEditableText()) {
-    // 	curtext.removeAttribute('editable');
+    //   curtext.removeAttribute('editable');
     // }
   },
   setInputElem: function (elem) {
@@ -2673,8 +2673,8 @@ return {
     if (!curtext) { return; }
     var i, end;
     // if (svgedit.browser.supportsEditableText()) {
-    // 	curtext.select();
-    // 	return;
+    //   curtext.select();
+    //   return;
     // }
 
     if (!curtext.parentNode) {
@@ -3362,10 +3362,10 @@ return {
     // try {
     var len = segList.numberOfItems;
     // } catch(err) {
-    // 	var fixed_d = pathActions.convertPath(path);
-    // 	path.setAttribute('d', fixed_d);
-    // 	segList = path.pathSegList;
-    // 	var len = segList.numberOfItems;
+    //   var fixed_d = pathActions.convertPath(path);
+    //   path.setAttribute('d', fixed_d);
+    //   segList = path.pathSegList;
+    //   var len = segList.numberOfItems;
     // }
     var i; // , lastX, lastY;
     for (i = 0; i < len; ++i) {
@@ -3803,13 +3803,13 @@ this.svgToString = function (elem, indent) {
       // TODO: Allow this by dividing all values by current baseVal
       // Note that this also means we should properly deal with this on import
       // if (curConfig.baseUnit !== 'px') {
-      // 	var unit = curConfig.baseUnit;
-      // 	var unitM = svgedit.units.getTypeMap()[unit];
-      // 	res.w = svgedit.units.shortFloat(res.w / unitM);
-      // 	res.h = svgedit.units.shortFloat(res.h / unitM);
-      // 	vb = ' viewBox="' + [0, 0, res.w, res.h].join(' ') + '"';
-      // 	res.w += unit;
-      // 	res.h += unit;
+      //   var unit = curConfig.baseUnit;
+      //   var unitM = svgedit.units.getTypeMap()[unit];
+      //   res.w = svgedit.units.shortFloat(res.w / unitM);
+      //   res.h = svgedit.units.shortFloat(res.h / unitM);
+      //   vb = ' viewBox="' + [0, 0, res.w, res.h].join(' ') + '"';
+      //   res.w += unit;
+      //   res.h += unit;
       // }
 
       if (unit !== 'px') {
@@ -4146,7 +4146,7 @@ var uniquifyElems = this.uniquifyElems = function (g) {
   //
   // Problem #1: if svg_1 gets renamed, we do not update the polyline's se:connector attribute
   // Problem #2: if the polyline svg_7 gets renamed, we do not update the marker id nor the polyline's marker-end attribute
-  var refElems = ['filter', 'linearGradient', 'pattern',	'radialGradient', 'symbol', 'textPath', 'use'];
+  var refElems = ['filter', 'linearGradient', 'pattern',  'radialGradient', 'symbol', 'textPath', 'use'];
 
   svgedit.utilities.walkTree(g, function (n) {
     // if it's an element node
@@ -4296,24 +4296,24 @@ var convertGradients = this.convertGradients = function (elem) {
         grad.removeAttribute('gradientUnits');
       }
       // else {
-      // 	Note: radialGradient elements cannot be easily converted
-      // 	because userSpaceOnUse will keep circular gradients, while
-      // 	objectBoundingBox will x/y scale the gradient according to
-      // 	its bbox.
+      //   Note: radialGradient elements cannot be easily converted
+      //   because userSpaceOnUse will keep circular gradients, while
+      //   objectBoundingBox will x/y scale the gradient according to
+      //   its bbox.
       //
-      // 	For now we'll do nothing, though we should probably have
-      // 	the gradient be updated as the element is moved, as
-      // 	inkscape/illustrator do.
+      //   For now we'll do nothing, though we should probably have
+      //   the gradient be updated as the element is moved, as
+      //   inkscape/illustrator do.
       //
-      // 	var gCoords = $(grad).attr(['cx', 'cy', 'r']);
+      //   var gCoords = $(grad).attr(['cx', 'cy', 'r']);
       //
-      // 	$(grad).attr({
-      // 		cx: (gCoords.cx - bb.x) / bb.width,
-      // 		cy: (gCoords.cy - bb.y) / bb.height,
-      // 		r: gCoords.r
-      // 	});
+      //   $(grad).attr({
+      //     cx: (gCoords.cx - bb.x) / bb.width,
+      //     cy: (gCoords.cy - bb.y) / bb.height,
+      //     r: gCoords.r
+      //   });
       //
-      // 	grad.removeAttribute('gradientUnits');
+      //   grad.removeAttribute('gradientUnits');
       // }
     }
   });
@@ -4744,7 +4744,7 @@ this.importSvgString = function (xmlString) {
 
     // TODO: Find way to add this in a recalculateDimensions-parsable way
     // if (vb[0] != 0 || vb[1] != 0) {
-    // 	ts = 'translate(' + (-vb[0]) + ',' + (-vb[1]) + ') ' + ts;
+    //   ts = 'translate(' + (-vb[0]) + ',' + (-vb[1]) + ') ' + ts;
     // }
     addCommandToHistory(batchCmd);
     call('changed', [svgcontent]);
@@ -5055,8 +5055,8 @@ this.getSelectedElems = function () { return selectedElements; };
 // Function: getResolution
 // Returns the current dimensions and zoom level in an object
 var getResolution = this.getResolution = function () {
-//		var vb = svgcontent.getAttribute('viewBox').split(' ');
-//		return {'w':vb[2], 'h':vb[3], 'zoom': currentZoom};
+//    var vb = svgcontent.getAttribute('viewBox').split(' ');
+//    return {'w':vb[2], 'h':vb[3], 'zoom': currentZoom};
 
   var width = svgcontent.getAttribute('width') / currentZoom;
   var height = svgcontent.getAttribute('height') / currentZoom;
@@ -6093,7 +6093,7 @@ this.makeHyperlink = function (url) {
   canvas.groupSelectedElements('a', url);
 
   // TODO: If element is a single "g", convert to "a"
-  //	if (selectedElements.length > 1 && selectedElements[1]) {
+  //  if (selectedElements.length > 1 && selectedElements[1]) {
 };
 
 // Function: removeHyperlink
@@ -6201,16 +6201,16 @@ var changeSelectedAttributeNoUndo = function (attr, newValue, elems) {
         // Hoped to solve the issue of moving text with text-anchor="start",
         // but this doesn't actually fix it. Hopefully on the right track, though. -Fyrd
         // var box = getBBox(elem), left = box.x, top = box.y, width = box.width,
-        // 	height = box.height, dx = width - oldW, dy = 0;
+        //   height = box.height, dx = width - oldW, dy = 0;
         // var angle = svgedit.utilities.getRotationAngle(elem, true);
         // if (angle) {
-        // 	var r = Math.sqrt(dx * dx + dy * dy);
-        // 	var theta = Math.atan2(dy, dx) - angle;
-        // 	dx = r * Math.cos(theta);
-        // 	dy = r * Math.sin(theta);
+        //   var r = Math.sqrt(dx * dx + dy * dy);
+        //   var theta = Math.atan2(dy, dx) - angle;
+        //   dx = r * Math.cos(theta);
+        //   dy = r * Math.sin(theta);
         //
-        // 	elem.setAttribute('x', elem.getAttribute('x') - dx);
-        // 	elem.setAttribute('y', elem.getAttribute('y') - dy);
+        //   elem.setAttribute('x', elem.getAttribute('x') - dx);
+        //   elem.setAttribute('y', elem.getAttribute('y') - dy);
         // }
       } else if (attr === '#href') {
         setHref(elem, newValue);
@@ -6225,7 +6225,7 @@ var changeSelectedAttributeNoUndo = function (attr, newValue, elems) {
       }
 
       // if (i === 0) {
-      // 	selectedBBoxes[0] = svgedit.utilities.getBBox(elem);
+      //   selectedBBoxes[0] = svgedit.utilities.getBBox(elem);
       // }
 
       // Use the Firefox ffClone hack for text elements with gradients or
@@ -6581,9 +6581,9 @@ var pushGroupProperties = this.pushGroupProperties = function (g, undoable) {
       if (gangle && glist.numberOfItems === 1) {
         // [Rg] [Rc] [Mc]
         // we want [Tr] [Rc2] [Mc] where:
-        //	- [Rc2] is at the child's current center but has the
+        //  - [Rc2] is at the child's current center but has the
         // sum of the group and child's rotation angles
-        //	- [Tr] is the equivalent translation that this child
+        //  - [Tr] is the equivalent translation that this child
         // undergoes if the group wasn't there
 
         // [Tr] = [Rg] [Rc] [Rc2_inv]
@@ -6851,7 +6851,7 @@ this.moveSelectedElements = function (dx, dy, undoable) {
     var selected = selectedElements[i];
     if (selected != null) {
       // if (i === 0) {
-      // 	selectedBBoxes[0] = svgedit.utilities.getBBox(selected);
+      //   selectedBBoxes[0] = svgedit.utilities.getBBox(selected);
       // }
       // var b = {};
       // for (var j in selectedBBoxes[i]) b[j] = selectedBBoxes[i][j];
@@ -6863,14 +6863,14 @@ this.moveSelectedElements = function (dx, dy, undoable) {
       // dx and dy could be arrays
       if (dx.constructor === Array) {
         // if (i === 0) {
-        // 	selectedBBoxes[0].x += dx[0];
-        // 	selectedBBoxes[0].y += dy[0];
+        //   selectedBBoxes[0].x += dx[0];
+        //   selectedBBoxes[0].y += dy[0];
         // }
         xform.setTranslate(dx[i], dy[i]);
       } else {
         // if (i === 0) {
-        // 	selectedBBoxes[0].x += dx;
-        // 	selectedBBoxes[0].y += dy;
+        //   selectedBBoxes[0].x += dx;
+        //   selectedBBoxes[0].y += dy;
         // }
         xform.setTranslate(dx, dy);
       }

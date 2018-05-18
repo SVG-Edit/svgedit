@@ -65,17 +65,17 @@ var listMap_ = {};
 // implementing as much of SVGTransformList that we need to get the job done.
 //
 //  interface SVGEditTransformList {
-//		attribute unsigned long numberOfItems;
-//		void   clear (  )
-//		SVGTransform initialize ( in SVGTransform newItem )
-//		SVGTransform getItem ( in unsigned long index ) (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
-//		SVGTransform insertItemBefore ( in SVGTransform newItem, in unsigned long index ) (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
-//		SVGTransform replaceItem ( in SVGTransform newItem, in unsigned long index ) (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
-//		SVGTransform removeItem ( in unsigned long index ) (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
-//		SVGTransform appendItem ( in SVGTransform newItem )
-//		NOT IMPLEMENTED: SVGTransform createSVGTransformFromMatrix ( in SVGMatrix matrix );
-//		NOT IMPLEMENTED: SVGTransform consolidate (  );
-//	}
+//    attribute unsigned long numberOfItems;
+//    void   clear (  )
+//    SVGTransform initialize ( in SVGTransform newItem )
+//    SVGTransform getItem ( in unsigned long index ) (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+//    SVGTransform insertItemBefore ( in SVGTransform newItem, in unsigned long index ) (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+//    SVGTransform replaceItem ( in SVGTransform newItem, in unsigned long index ) (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+//    SVGTransform removeItem ( in unsigned long index ) (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+//    SVGTransform appendItem ( in SVGTransform newItem )
+//    NOT IMPLEMENTED: SVGTransform createSVGTransformFromMatrix ( in SVGMatrix matrix );
+//    NOT IMPLEMENTED: SVGTransform consolidate (  );
+//  }
 // **************************************************************************************
 svgedit.transformlist.SVGTransformList = function (elem) {
   this._elem = elem || null;

@@ -9,42 +9,42 @@
  * Copyright(c) 2010 Alexis Deveria
  *
  */
-	// Very minimal PHP file, all we do is Base64 encode the uploaded file and
-	// return it to the editor
+  // Very minimal PHP file, all we do is Base64 encode the uploaded file and
+  // return it to the editor
 
-	if (!isset($_REQUEST['type'])) {
-		echo 'No type given';
-		exit;
-	}
-	$type = $_REQUEST['type'];
-	if (!in_array($type, array('load_svg', 'import_svg', 'import_img'))) {
-		echo 'Not a recognized type';
-		exit;
-	}
+  if (!isset($_REQUEST['type'])) {
+    echo 'No type given';
+    exit;
+  }
+  $type = $_REQUEST['type'];
+  if (!in_array($type, array('load_svg', 'import_svg', 'import_img'))) {
+    echo 'Not a recognized type';
+    exit;
+  }
 
-	require('allowedMimeTypes.php');
+  require('allowedMimeTypes.php');
 
-	$file = $_FILES['svg_file']['tmp_name'];
+  $file = $_FILES['svg_file']['tmp_name'];
 
-	$output = file_get_contents($file);
+  $output = file_get_contents($file);
 
-	$prefix = '';
+  $prefix = '';
 
-	// Make Data URL prefix for import image
-	if ($type == 'import_img') {
-		$info = getimagesize($file);
-		if (!in_array($info['mime'], $allowedMimeTypesBySuffix)) {
-			echo 'Disallowed MIME for supplied file';
-			exit;
-		}
-		$prefix = 'data:' . $info['mime'] . ';base64,';
-	}
+  // Make Data URL prefix for import image
+  if ($type == 'import_img') {
+    $info = getimagesize($file);
+    if (!in_array($info['mime'], $allowedMimeTypesBySuffix)) {
+      echo 'Disallowed MIME for supplied file';
+      exit;
+    }
+    $prefix = 'data:' . $info['mime'] . ';base64,';
+  }
 ?>
 <html>
-	<head>
-	<meta charset="utf-8" />
-	<title>-</title>
-	<script>
+  <head>
+  <meta charset="utf-8" />
+  <title>-</title>
+  <script>
 
 top.svgEditor.processFile("<?php
 
@@ -52,7 +52,7 @@ top.svgEditor.processFile("<?php
 echo $prefix . base64_encode($output);
 
 ?>", "<?php echo $type; ?>");
-	</script>
+  </script>
 </head>
 <body></body>
 </html>

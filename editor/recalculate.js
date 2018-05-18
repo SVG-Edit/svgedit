@@ -304,18 +304,18 @@ svgedit.recalculate.recalculateDimensions = function (selected) {
 
           // Convert a matrix to a scale if applicable
           // if (svgedit.math.hasMatrixTransform(childTlist) && childTlist.numberOfItems == 1) {
-          // 	if (m.b==0 && m.c==0 && m.e==0 && m.f==0) {
-          // 		childTlist.removeItem(0);
-          // 		var translateOrigin = svgroot.createSVGTransform(),
-          // 			scale = svgroot.createSVGTransform(),
-          // 			translateBack = svgroot.createSVGTransform();
-          // 		translateOrigin.setTranslate(0, 0);
-          // 		scale.setScale(m.a, m.d);
-          // 		translateBack.setTranslate(0, 0);
-          // 		childTlist.appendItem(translateBack);
-          // 		childTlist.appendItem(scale);
-          // 		childTlist.appendItem(translateOrigin);
-          // 	}
+          //   if (m.b==0 && m.c==0 && m.e==0 && m.f==0) {
+          //     childTlist.removeItem(0);
+          //     var translateOrigin = svgroot.createSVGTransform(),
+          //       scale = svgroot.createSVGTransform(),
+          //       translateBack = svgroot.createSVGTransform();
+          //     translateOrigin.setTranslate(0, 0);
+          //     scale.setScale(m.a, m.d);
+          //     translateBack.setTranslate(0, 0);
+          //     childTlist.appendItem(translateBack);
+          //     childTlist.appendItem(scale);
+          //     childTlist.appendItem(translateOrigin);
+          //   }
           // }
 
           var angle = svgedit.utilities.getRotationAngle(child);
@@ -371,13 +371,13 @@ svgedit.recalculate.recalculateDimensions = function (selected) {
           // var href = '#' + child.id;
           // var u = uses.length;
           // while (u--) {
-          // 	var useElem = uses.item(u);
-          // 	if (href == svgedit.utilities.getHref(useElem)) {
-          // 		var usexlate = svgroot.createSVGTransform();
-          // 		usexlate.setTranslate(-tx,-ty);
-          // 		svgedit.transformlist.getTransformList(useElem).insertItemBefore(usexlate,0);
-          // 		batchCmd.addSubCommand( svgedit.recalculate.recalculateDimensions(useElem) );
-          // 	}
+          //   var useElem = uses.item(u);
+          //   if (href == svgedit.utilities.getHref(useElem)) {
+          //     var usexlate = svgroot.createSVGTransform();
+          //     usexlate.setTranslate(-tx,-ty);
+          //     svgedit.transformlist.getTransformList(useElem).insertItemBefore(usexlate,0);
+          //     batchCmd.addSubCommand( svgedit.recalculate.recalculateDimensions(useElem) );
+          //   }
           // }
           context_.setStartTransform(oldStartTransform);
         } // element
@@ -654,7 +654,7 @@ svgedit.recalculate.recalculateDimensions = function (selected) {
       tlist.getItem(N - 3).type === 2 && tlist.getItem(N - 1).type === 2) {
       // Removed this so a <use> with a given [T][S][T] would convert to a matrix.
       // Is that bad?
-      //	&& selected.nodeName != 'use'
+      //  && selected.nodeName != 'use'
       operation = 3; // scale
       m = svgedit.math.transformListToTransform(tlist, N - 3, N - 1).matrix;
       tlist.removeItem(N - 1);
@@ -755,8 +755,8 @@ svgedit.recalculate.recalculateDimensions = function (selected) {
           tlist.appendItem(newRot);
         }
       }
-      // We have special processing for tspans:	Tspans are not transformable
-      // but they can have x,y coordinates (sigh).	Thus, if this was a translate,
+      // We have special processing for tspans:  Tspans are not transformable
+      // but they can have x,y coordinates (sigh).  Thus, if this was a translate,
       // on a text element, also translate any tspan children.
       if (selected.tagName === 'text') {
         var children = selected.childNodes;

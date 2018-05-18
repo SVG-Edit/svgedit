@@ -24,12 +24,12 @@ $(function () {
       canvas_expansion: 3,
       dimensions: [640, 480],
       initFill: {
-        color: 'FF0000',	// solid red
+        color: 'FF0000', // solid red
         opacity: 1
       },
       initStroke: {
         width: 5,
-        color: '000000',	// solid black
+        color: '000000', // solid black
         opacity: 1
       },
       initOpacity: 1,

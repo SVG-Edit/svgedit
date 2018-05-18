@@ -518,7 +518,7 @@ svgedit.draw.Drawing.prototype.identifyLayers = function () {
  * @param {string} name - The given name. If the layer name exists, a new name will be generated.
  * @param {svgedit.history.HistoryRecordingService} hrService - History recording service
  * @returns {SVGGElement} The SVGGElement of the new layer, which is
- * 		also the current layer of this drawing.
+ *     also the current layer of this drawing.
 */
 svgedit.draw.Drawing.prototype.createLayer = function (name, hrService) {
   if (this.current_layer) {
@@ -549,7 +549,7 @@ svgedit.draw.Drawing.prototype.createLayer = function (name, hrService) {
  * @param {string} name - The given name. If the layer name exists, a new name will be generated.
  * @param {svgedit.history.HistoryRecordingService} hrService - History recording service
  * @returns {SVGGElement} The SVGGElement of the new layer, which is
- * 		also the current layer of this drawing.
+ *     also the current layer of this drawing.
 */
 svgedit.draw.Drawing.prototype.cloneLayer = function (name, hrService) {
   if (!this.current_layer) { return null; }

@@ -425,7 +425,7 @@ div.palette_item:first-child {
 }
 
 #main_menu li {
-/*	height: 35px;*/
+/*  height: 35px;*/
   line-height: 22px;
   padding-top: 7px;
   padding-left: 7px;
@@ -566,7 +566,7 @@ div.toolset {
 }
 
 div.toolset label span {
-/*	outline: 1px solid red;*/
+/*  outline: 1px solid red;*/
   padding-top: 3px;
   display: inline-block;
 }
@@ -1120,7 +1120,7 @@ ul li.current {
   background-color: #B0B0B0;
   border: 1px outset #777;
   opacity: 1.0;
-/*	width: 450px;*/
+/*  width: 450px;*/
   font-family: Verdana, Helvetica, sans-serif;
   font-size: .8em;
   z-index: 20001;

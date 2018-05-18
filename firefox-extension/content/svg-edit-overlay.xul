@@ -17,9 +17,9 @@
  <!-- Firefox -->
   <statusbar id="status-bar">
     <statusbarpanel id="svg-edit-statusbar-button"
-		    class="statusbarpanel-menu-iconic"
-		    onclick="return startSvgEdit()"
-		    tooltip="SvgEdit">
+        class="statusbarpanel-menu-iconic"
+        onclick="return startSvgEdit()"
+        tooltip="SvgEdit">
     </statusbarpanel>
  </statusbar>
 </overlay>

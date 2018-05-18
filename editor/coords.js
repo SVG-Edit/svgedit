@@ -96,7 +96,7 @@ svgedit.coords.remapElement = function (selected, changes, m) {
 
       // Not really working :(
       // if (selected.tagName === 'path') {
-      // 	reorientGrads(selected, m);
+      //   reorientGrads(selected, m);
       // }
     }
   }

@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg">
-	<g id="tool_imagelib">
+  <g id="tool_imagelib">
 <svg width="201" height="211" xmlns="http://www.w3.org/2000/svg">
  <g>
   <path fill="#efe8b8" stroke="#d6c47c" stroke-linecap="round" d="m2.75,49.51761l56.56,-46.26761c12.73,8.25 25.71001,7 46.44,0.75l-56.03999,47.23944l-22.72002,25.01056l-24.23999,-26.73239z" id="svg_2" stroke-width="7"/>
@@ -10,5 +10,5 @@
   <path fill="#336393" stroke="#3f3f3f" d="m96.75,200.29445c14.33301,7 30.66699,7 46,0l0,-149.04445c-14.66699,8 -32.33301,8 -47,0l1,149.04445zm45.75,-149.29445l56.25,-46.75l0,148.04445l-56,48m-47.25,-151.29445l57.25,-46.5" stroke-width="7" stroke-linecap="round" id="svg_11"/>
  </g>
 </svg>
-	</g>
+  </g>
 </svg>

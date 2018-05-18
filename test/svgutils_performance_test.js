@@ -136,7 +136,7 @@ $(function () {
     total = lastTime - start;
     ave = total / count;
     ok(ave < 20, 'svgedit.utilities.getStrokedBBox average execution time is less than 20 ms');
-    console.log('Pass1 svgCanvas.getStrokedBBox total ms ' + total + ', ave ms ' + ave.toFixed(1) + ',	 min/max ' + min + ' ' + max);
+    console.log('Pass1 svgCanvas.getStrokedBBox total ms ' + total + ', ave ms ' + ave.toFixed(1) + ',\t min/max ' + min + ' ' + max);
 
     // The second pass is two to ten times faster.
     setTimeout(function () {
@@ -156,7 +156,7 @@ $(function () {
       total = lastTime - start;
       ave = total / count;
       ok(ave < 2, 'svgedit.utilities.getStrokedBBox average execution time is less than 1 ms');
-      console.log('Pass2 svgCanvas.getStrokedBBox total ms ' + total + ', ave ms ' + ave.toFixed(1) + ',	 min/max ' + min + ' ' + max);
+      console.log('Pass2 svgCanvas.getStrokedBBox total ms ' + total + ', ave ms ' + ave.toFixed(1) + ',\t min/max ' + min + ' ' + max);
 
       QUnit.start();
     });

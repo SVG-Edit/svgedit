@@ -137,33 +137,33 @@ svgedit.units.convertUnit = function (val, unit) {
 // attr - String with the name of the attribute associated with the value
 // val - String with the attribute value to convert
 svgedit.units.setUnitAttr = function (elem, attr, val) {
-  //	if (!isNaN(val)) {
+  //  if (!isNaN(val)) {
   // New value is a number, so check currently used unit
   // var old_val = elem.getAttribute(attr);
 
   // Enable this for alternate mode
   // if (old_val !== null && (isNaN(old_val) || elementContainer_.getBaseUnit() !== 'px')) {
-  // 	// Old value was a number, so get unit, then convert
-  // 	var unit;
-  // 	if (old_val.substr(-1) === '%') {
-  // 		var res = getResolution();
-  // 		unit = '%';
-  // 		val *= 100;
-  // 		if (wAttrs.indexOf(attr) >= 0) {
-  // 			val = val / res.w;
-  // 		} else if (hAttrs.indexOf(attr) >= 0) {
-  // 			val = val / res.h;
-  // 		} else {
-  // 			return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
-  // 		}
-  // 	} else {
-  // 		if (elementContainer_.getBaseUnit() !== 'px') {
-  // 			unit = elementContainer_.getBaseUnit();
-  // 		} else {
-  // 			unit = old_val.substr(-2);
-  // 		}
-  // 		val = val / typeMap_[unit];
-  // 	}
+  //   // Old value was a number, so get unit, then convert
+  //   var unit;
+  //   if (old_val.substr(-1) === '%') {
+  //     var res = getResolution();
+  //     unit = '%';
+  //     val *= 100;
+  //     if (wAttrs.indexOf(attr) >= 0) {
+  //       val = val / res.w;
+  //     } else if (hAttrs.indexOf(attr) >= 0) {
+  //       val = val / res.h;
+  //     } else {
+  //       return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
+  //     }
+  //   } else {
+  //     if (elementContainer_.getBaseUnit() !== 'px') {
+  //       unit = elementContainer_.getBaseUnit();
+  //     } else {
+  //       unit = old_val.substr(-2);
+  //     }
+  //     val = val / typeMap_[unit];
+  //   }
   //
   // val += unit;
   // }

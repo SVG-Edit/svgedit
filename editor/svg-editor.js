@@ -29,7 +29,7 @@ if (window.svgEditor) {
 window.svgEditor = (function ($) {
   var editor = {};
   // EDITOR PROPERTIES: (defined below)
-  //		curPrefs, curConfig, canvas, storage, uiStrings
+  //    curPrefs, curConfig, canvas, storage, uiStrings
   //
   // STATE MAINTENANCE PROPERTIES
   editor.tool_scale = 1; // Dependent on icon size, so any use to making configurable instead? Used by JQuerySpinBtn.js
@@ -220,10 +220,10 @@ window.svgEditor = (function ($) {
   * @returns {string} If val is missing or falsey, the value of the previously stored preference will be returned.
   * @todo Can we change setting on the jQuery namespace (onto editor) to avoid conflicts?
   * @todo Review whether any remaining existing direct references to
-  *	getting curPrefs can be changed to use $.pref() getting to ensure
-  *	defaultPrefs fallback (also for sake of allowInitialUserOverride); specifically, bkgd_color could be changed so that
-  *	the pref dialog has a button to auto-calculate background, but otherwise uses $.pref() to be able to get default prefs
-  *	or overridable settings
+  *  getting curPrefs can be changed to use $.pref() getting to ensure
+  *  defaultPrefs fallback (also for sake of allowInitialUserOverride); specifically, bkgd_color could be changed so that
+  *  the pref dialog has a button to auto-calculate background, but otherwise uses $.pref() to be able to get default prefs
+  *  or overridable settings
   */
   $.pref = function (key, val) {
     if (val) {
@@ -243,15 +243,15 @@ window.svgEditor = (function ($) {
 
   /**
   * Where permitted, sets canvas and/or defaultPrefs based on previous
-  *	storage. This will override URL settings (for security reasons) but
-  *	not config.js configuration (unless initial user overriding is explicitly
-  *	permitted there via allowInitialUserOverride).
+  *  storage. This will override URL settings (for security reasons) but
+  *  not config.js configuration (unless initial user overriding is explicitly
+  *  permitted there via allowInitialUserOverride).
   * @todo Split allowInitialUserOverride into allowOverrideByURL and
-  *	allowOverrideByUserStorage so config.js can disallow some
-  *	individual items for URL setting but allow for user storage AND/OR
-  *	change URL setting so that it always uses a different namespace,
-  *	so it won't affect pre-existing user storage (but then if users saves
-  *	that, it will then be subject to tampering
+  *  allowOverrideByUserStorage so config.js can disallow some
+  *  individual items for URL setting but allow for user storage AND/OR
+  *  change URL setting so that it always uses a different namespace,
+  *  so it won't affect pre-existing user storage (but then if users saves
+  *  that, it will then be subject to tampering
   */
   editor.loadContentAndPrefs = function () {
     if (!curConfig.forceStorage && (curConfig.noStorageOnLoad || !document.cookie.match(/(?:^|;\s*)store=(?:prefsAndContent|prefsOnly)/))) {
@@ -294,17 +294,17 @@ window.svgEditor = (function ($) {
   * @param {Object} opts The preferences or configuration (including extensions)
   * @param {Object} [cfgCfg] Describes configuration which applies to the particular batch of supplied options
   * @param {boolean} [cfgCfg.allowInitialUserOverride=false] Set to true if you wish
-  *	to allow initial overriding of settings by the user via the URL
-  *	(if permitted) or previously stored preferences (if permitted);
-  *	note that it will be too late if you make such calls in extension
-  *	code because the URL or preference storage settings will
+  *  to allow initial overriding of settings by the user via the URL
+  *  (if permitted) or previously stored preferences (if permitted);
+  *  note that it will be too late if you make such calls in extension
+  *  code because the URL or preference storage settings will
   *   have already taken place.
   * @param {boolean} [cfgCfg.overwrite=true] Set to false if you wish to
-  *	prevent the overwriting of prior-set preferences or configuration
-  *	(URL settings will always follow this requirement for security
-  *	reasons, so config.js settings cannot be overridden unless it
-  *	explicitly permits via "allowInitialUserOverride" but extension config
-  *	can be overridden as they will run after URL settings). Should
+  *  prevent the overwriting of prior-set preferences or configuration
+  *  (URL settings will always follow this requirement for security
+  *  reasons, so config.js settings cannot be overridden unless it
+  *  explicitly permits via "allowInitialUserOverride" but extension config
+  *  can be overridden as they will run after URL settings). Should
   *   not be needed in config.js.
   */
   editor.setConfig = function (opts, cfgCfg) {
@@ -377,19 +377,19 @@ window.svgEditor = (function ($) {
   /**
   * @param {Object} opts Extension mechanisms may call setCustomHandlers with three functions: opts.open, opts.save, and opts.exportImage
   * opts.open's responsibilities are:
-  *	- invoke a file chooser dialog in 'open' mode
-  *	- let user pick a SVG file
-  *	- calls svgCanvas.setSvgString() with the string contents of that file
+  *  - invoke a file chooser dialog in 'open' mode
+  *  - let user pick a SVG file
+  *  - calls svgCanvas.setSvgString() with the string contents of that file
   *  opts.save's responsibilities are:
-  *	- accept the string contents of the current document
-  *	- invoke a file chooser dialog in 'save' mode
-  *	- save the file to location chosen by the user
+  *  - accept the string contents of the current document
+  *  - invoke a file chooser dialog in 'save' mode
+  *  - save the file to location chosen by the user
   *  opts.exportImage's responsibilities (with regard to the object it is supplied in its 2nd argument) are:
-  *	- inform user of any issues supplied via the "issues" property
-  *	- convert the "svg" property SVG string into an image for export;
-  *		utilize the properties "type" (currently 'PNG', 'JPEG', 'BMP',
-  *		'WEBP', 'PDF'), "mimeType", and "quality" (for 'JPEG' and 'WEBP'
-  *		types) to determine the proper output.
+  *  - inform user of any issues supplied via the "issues" property
+  *  - convert the "svg" property SVG string into an image for export;
+  *    utilize the properties "type" (currently 'PNG', 'JPEG', 'BMP',
+  *    'WEBP', 'PDF'), "mimeType", and "quality" (for 'JPEG' and 'WEBP'
+  *    types) to determine the proper output.
   */
   editor.setCustomHandlers = function (opts) {
     editor.ready(function () {
@@ -419,7 +419,7 @@ window.svgEditor = (function ($) {
 
   editor.init = function () {
     // var host = location.hostname,
-    //	onWeb = host && host.indexOf('.') >= 0;
+    //  onWeb = host && host.indexOf('.') >= 0;
     // Some FF versions throw security errors here when directly accessing
     try {
       if ('localStorage' in window) { // && onWeb removed so Webkit works locally
@@ -1552,7 +1552,7 @@ window.svgEditor = (function ($) {
         // If this is a link with no transform and one child, pretend
         // its child is selected
         // if (elname === 'a') { // && !$(elem).attr('transform')) {
-        // 	elem = elem.firstChild;
+        //   elem = elem.firstChild;
         // }
 
         var angle = svgCanvas.getRotationAngle(elem);
@@ -1650,7 +1650,7 @@ window.svgEditor = (function ($) {
         var tagName = elem.tagName;
 
         // if ($(elem).data('gsvg')) {
-        // 	$('#g_panel').show();
+        //   $('#g_panel').show();
         // }
 
         var linkHref = null;
@@ -1765,7 +1765,7 @@ window.svgEditor = (function ($) {
 
       // Remove title update with current context info, isn't really necessary
       // if (curContext) {
-      // 	new_title = new_title + curContext;
+      //   new_title = new_title + curContext;
       // }
       $('title:first').text(newTitle);
     };
@@ -1823,7 +1823,7 @@ window.svgEditor = (function ($) {
         // TODO: Update values that change on move/resize, etc
         // case "select":
         // case "resize":
-        // 	break;
+        //   break;
         }
       }
       svgCanvas.runExtensions('elementTransition', {
@@ -2183,8 +2183,8 @@ window.svgEditor = (function ($) {
     var setIconSize = editor.setIconSize = function (size) {
       // var elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
       var selToscale = '#tools_top .toolset, #editor_panel > *, #history_panel > *,' +
-'				#main_button, #tools_left > *, #path_node_panel > *, #multiselected_panel > *,' +
-'				#g_panel > *, #tool_font_size > *, .tools_flyout';
+'        #main_button, #tools_left > *, #path_node_panel > *, #multiselected_panel > *,' +
+'        #g_panel > *, #tool_font_size > *, .tools_flyout';
 
       var elems = $(selToscale);
       var scale = 1;
@@ -2200,10 +2200,10 @@ window.svgEditor = (function ($) {
 
       setFlyoutPositions();
       // $('.tools_flyout').each(function () {
-      // 	var pos = $(this).position();
-      // 	console.log($(this), pos.left+(34 * scale));
-      // 	$(this).css({'left': pos.left+(34 * scale), 'top': pos.top+(77 * scale)});
-      // 	console.log('l', $(this).css('left'));
+      //   var pos = $(this).position();
+      //   console.log($(this), pos.left+(34 * scale));
+      //   $(this).css({'left': pos.left+(34 * scale), 'top': pos.top+(77 * scale)});
+      //   console.log('l', $(this).css('left'));
       // });
       //
       // var scale = .75;
@@ -2220,17 +2220,17 @@ window.svgEditor = (function ($) {
       // Change icon size
       // $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open')
       // .find('> svg, > img').each(function () {
-      // 	this.setAttribute('width',size_num);
-      // 	this.setAttribute('height',size_num);
+      //   this.setAttribute('width',size_num);
+      //   this.setAttribute('height',size_num);
       // });
       //
       // $.resizeSvgIcons({
-      // 	'.flyout_arrow_horiz > svg, .flyout_arrow_horiz > img': size_num / 5,
-      // 	'#logo > svg, #logo > img': size_num * 1.3,
-      // 	'#tools_bottom .icon_label > *': (size_num === 16 ? 18 : size_num * .75)
+      //   '.flyout_arrow_horiz > svg, .flyout_arrow_horiz > img': size_num / 5,
+      //   '#logo > svg, #logo > img': size_num * 1.3,
+      //   '#tools_bottom .icon_label > *': (size_num === 16 ? 18 : size_num * .75)
       // });
       // if (size != 's') {
-      // 	$.resizeSvgIcons({'#layerbuttons svg, #layerbuttons img': size_num * .6});
+      //   $.resizeSvgIcons({'#layerbuttons svg, #layerbuttons img': size_num * .6});
       // }
 
       // Note that all rules will be prefixed with '#svg_editor' when parsed
@@ -2242,17 +2242,17 @@ window.svgEditor = (function ($) {
         // .disabled,\
         // .icon_label,\
         // .tools_flyout .tool_button': {
-        // 	'width': {s: '16px', l: '32px', xl: '48px'},
-        // 	'height': {s: '16px', l: '32px', xl: '48px'},
-        // 	'padding': {s: '1px', l: '2px', xl: '3px'}
+        //   'width': {s: '16px', l: '32px', xl: '48px'},
+        //   'height': {s: '16px', l: '32px', xl: '48px'},
+        //   'padding': {s: '1px', l: '2px', xl: '3px'}
         // },
         // '.tool_sep': {
-        // 	'height': {s: '16px', l: '32px', xl: '48px'},
-        // 	'margin': {s: '2px 2px', l: '2px 5px', xl: '2px 8px'}
+        //   'height': {s: '16px', l: '32px', xl: '48px'},
+        //   'margin': {s: '2px 2px', l: '2px 5px', xl: '2px 8px'}
         // },
         // '#main_icon': {
-        // 	'width': {s: '31px', l: '53px', xl: '75px'},
-        // 	'height': {s: '22px', l: '42px', xl: '64px'}
+        //   'width': {s: '31px', l: '53px', xl: '75px'},
+        //   'height': {s: '22px', l: '42px', xl: '64px'}
         // },
         '#tools_top': {
           'left': 50 + $('#main_button').width(),
@@ -2267,86 +2267,86 @@ window.svgEditor = (function ($) {
           'top': 74
         }
         // '#tools_bottom': {
-        // 	'left': {s: '27px', l: '46px', xl: '65px'},
-        // 	'height': {s: '58px', l: '98px', xl: '145px'}
+        //   'left': {s: '27px', l: '46px', xl: '65px'},
+        //   'height': {s: '58px', l: '98px', xl: '145px'}
         // },
         // '#color_tools': {
-        // 	'border-spacing': {s: '0 1px'},
-        // 	'margin-top': {s: '-1px'}
+        //   'border-spacing': {s: '0 1px'},
+        //   'margin-top': {s: '-1px'}
         // },
         // '#color_tools .icon_label': {
-        // 	'width': {l:'43px', xl: '60px'}
+        //   'width': {l:'43px', xl: '60px'}
         // },
         // '.color_tool': {
-        // 	'height': {s: '20px'}
+        //   'height': {s: '20px'}
         // },
         // '#tool_opacity': {
-        // 	'top': {s: '1px'},
-        // 	'height': {s: 'auto', l:'auto', xl:'auto'}
+        //   'top': {s: '1px'},
+        //   'height': {s: 'auto', l:'auto', xl:'auto'}
         // },
         // '#tools_top input, #tools_bottom input': {
-        // 	'margin-top': {s: '2px', l: '4px', xl: '5px'},
-        // 	'height': {s: 'auto', l: 'auto', xl: 'auto'},
-        // 	'border': {s: '1px solid #555', l: 'auto', xl: 'auto'},
-        // 	'font-size': {s: '.9em', l: '1.2em', xl: '1.4em'}
+        //   'margin-top': {s: '2px', l: '4px', xl: '5px'},
+        //   'height': {s: 'auto', l: 'auto', xl: 'auto'},
+        //   'border': {s: '1px solid #555', l: 'auto', xl: 'auto'},
+        //   'font-size': {s: '.9em', l: '1.2em', xl: '1.4em'}
         // },
         // '#zoom_panel': {
-        // 	'margin-top': {s: '3px', l: '4px', xl: '5px'}
+        //   'margin-top': {s: '3px', l: '4px', xl: '5px'}
         // },
         // '#copyright, #tools_bottom .label': {
-        // 	'font-size': {l: '1.5em', xl: '2em'},
-        // 	'line-height': {s: '15px'}
+        //   'font-size': {l: '1.5em', xl: '2em'},
+        //   'line-height': {s: '15px'}
         // },
         // '#tools_bottom_2': {
-        // 	'width': {l: '295px', xl: '355px'},
-        // 	'top': {s: '4px'}
+        //   'width': {l: '295px', xl: '355px'},
+        //   'top': {s: '4px'}
         // },
         // '#tools_top > div, #tools_top': {
-        // 	'line-height': {s: '17px', l: '34px', xl: '50px'}
+        //   'line-height': {s: '17px', l: '34px', xl: '50px'}
         // },
         // '.dropdown button': {
-        // 	'height': {s: '18px', l: '34px', xl: '40px'},
-        // 	'line-height': {s: '18px', l: '34px', xl: '40px'},
-        // 	'margin-top': {s: '3px'}
+        //   'height': {s: '18px', l: '34px', xl: '40px'},
+        //   'line-height': {s: '18px', l: '34px', xl: '40px'},
+        //   'margin-top': {s: '3px'}
         // },
         // '#tools_top label, #tools_bottom label': {
-        // 	'font-size': {s: '1em', l: '1.5em', xl: '2em'},
-        // 	'height': {s: '25px', l: '42px', xl: '64px'}
+        //   'font-size': {s: '1em', l: '1.5em', xl: '2em'},
+        //   'height': {s: '25px', l: '42px', xl: '64px'}
         // },
         // 'div.toolset': {
-        // 	'height': {s: '25px', l: '42px', xl: '64px'}
+        //   'height': {s: '25px', l: '42px', xl: '64px'}
         // },
         // '#tool_bold, #tool_italic': {
-        // 	'font-size': {s: '1.5em', l: '3em', xl: '4.5em'}
+        //   'font-size': {s: '1.5em', l: '3em', xl: '4.5em'}
         // },
         // '#sidepanels': {
-        // 	'top': {s: '50px', l: '88px', xl: '125px'},
-        // 	'bottom': {s: '51px', l: '68px', xl: '65px'}
+        //   'top': {s: '50px', l: '88px', xl: '125px'},
+        //   'bottom': {s: '51px', l: '68px', xl: '65px'}
         // },
         // '#layerbuttons': {
-        // 	'width': {l: '130px', xl: '175px'},
-        // 	'height': {l: '24px', xl: '30px'}
+        //   'width': {l: '130px', xl: '175px'},
+        //   'height': {l: '24px', xl: '30px'}
         // },
         // '#layerlist': {
-        // 	'width': {l: '128px', xl: '150px'}
+        //   'width': {l: '128px', xl: '150px'}
         // },
         // '.layer_button': {
-        // 	'width': {l: '19px', xl: '28px'},
-        // 	'height': {l: '19px', xl: '28px'}
+        //   'width': {l: '19px', xl: '28px'},
+        //   'height': {l: '19px', xl: '28px'}
         // },
         // 'input.spin-button': {
-        // 	'background-image': {l: 'url('images/spinbtn_updn_big.png')', xl: 'url('images/spinbtn_updn_big.png')'},
-        // 	'background-position': {l: '100% -5px', xl: '100% -2px'},
-        // 	'padding-right': {l: '24px', xl: '24px' }
+        //   'background-image': {l: 'url('images/spinbtn_updn_big.png')', xl: 'url('images/spinbtn_updn_big.png')'},
+        //   'background-position': {l: '100% -5px', xl: '100% -2px'},
+        //   'padding-right': {l: '24px', xl: '24px' }
         // },
         // 'input.spin-button.up': {
-        // 	'background-position': {l: '100% -45px', xl: '100% -42px'}
+        //   'background-position': {l: '100% -45px', xl: '100% -42px'}
         // },
         // 'input.spin-button.down': {
-        // 	'background-position': {l: '100% -85px', xl: '100% -82px'}
+        //   'background-position': {l: '100% -85px', xl: '100% -82px'}
         // },
         // '#position_opts': {
-        // 	'width': {all: (size_num*4) +'px'}
+        //   'width': {all: (size_num*4) +'px'}
         // }
       };
 
@@ -2683,10 +2683,10 @@ window.svgEditor = (function ($) {
               //
               // // Add at given position or end
               // if (!isNaN(pos) && pos >= 0 && pos < len) {
-              // 	flyoutHolder.children().eq(pos).before(button);
+              //   flyoutHolder.children().eq(pos).before(button);
               // } else {
-              // 	flyoutHolder.append(button);
-              // 	curH.reverse();
+              //   flyoutHolder.append(button);
+              //   curH.reverse();
               // }
             } else if (btn.type === 'app_menu') {
               button.append('<div>').append(btn.title);
@@ -3990,7 +3990,7 @@ window.svgEditor = (function ($) {
     }
 
     // TODO: go back to the color boxes having white background-color and then setting
-    //	background-image to none.png (otherwise partially transparent gradients look weird)
+    //  background-image to none.png (otherwise partially transparent gradients look weird)
     var colorPicker = function (elem) {
       var picker = elem.attr('id') === 'stroke_color' ? 'stroke' : 'fill';
       // var opacity = (picker == 'stroke' ? $('#stroke_opacity') : $('#fill_opacity'));
@@ -4026,8 +4026,8 @@ window.svgEditor = (function ($) {
       // set up gradients to be used for the buttons
       var svgdocbox = new DOMParser().parseFromString(
         '<svg xmlns="http://www.w3.org/2000/svg"><rect width="16.5" height="16.5"' +
-'					fill="#' + cur.color + '" opacity="' + cur.opacity + '"/>' +
-'					<defs><linearGradient id="gradbox_"/></defs></svg>', 'text/xml');
+'          fill="#' + cur.color + '" opacity="' + cur.opacity + '"/>' +
+'          <defs><linearGradient id="gradbox_"/></defs></svg>', 'text/xml');
       var docElem = svgdocbox.documentElement;
 
       docElem = $(container)[0].appendChild(document.importNode(docElem, true));
@@ -4380,8 +4380,8 @@ window.svgEditor = (function ($) {
     populateLayers();
 
     // function changeResolution (x,y) {
-    // 	var zoom = svgCanvas.getResolution().zoom;
-    // 	setResolution(x * zoom, y * zoom);
+    //   var zoom = svgCanvas.getResolution().zoom;
+    //   setResolution(x * zoom, y * zoom);
     // }
 
     var centerCanvas = function () {
@@ -4428,19 +4428,19 @@ window.svgEditor = (function ($) {
     }
 
     // function setResolution (w, h, center) {
-    // 	updateCanvas();
-    // 	// w -= 0; h -= 0;
-    // 	// $('#svgcanvas').css({'width': w, 'height': h});
-    // 	// $('#canvas_width').val(w);
-    // 	// $('#canvas_height').val(h);
-    // 	//
-    // 	// if (center) {
-    // 	// 	var wArea = workarea;
-    // 	// 	var scrollY = h/2 - wArea.height()/2;
-    // 	// 	var scrollX = w/2 - wArea.width()/2;
-    // 	// 	wArea[0].scrollTop = scrollY;
-    // 	// 	wArea[0].scrollLeft = scrollX;
-    // 	// }
+    //   updateCanvas();
+    //   // w -= 0; h -= 0;
+    //   // $('#svgcanvas').css({'width': w, 'height': h});
+    //   // $('#canvas_width').val(w);
+    //   // $('#canvas_height').val(h);
+    //   //
+    //   // if (center) {
+    //   //   var wArea = workarea;
+    //   //   var scrollY = h/2 - wArea.height()/2;
+    //   //   var scrollX = w/2 - wArea.width()/2;
+    //   //   wArea[0].scrollTop = scrollY;
+    //   //   wArea[0].scrollLeft = scrollX;
+    //   // }
     // }
 
     $('#resolution').change(function () {
@@ -5021,9 +5021,9 @@ window.svgEditor = (function ($) {
     updateCanvas(true);
     // });
 
-    //	var revnums = "svg-editor.js ($Rev$) ";
-    //	revnums += svgCanvas.getVersion();
-    //	$('#copyright')[0].setAttribute('title', revnums);
+    //  var revnums = "svg-editor.js ($Rev$) ";
+    //  revnums += svgCanvas.getVersion();
+    //  $('#copyright')[0].setAttribute('title', revnums);
 
     // For Compatibility with older extensions
     $(function () {
@@ -5108,8 +5108,8 @@ window.svgEditor = (function ($) {
 
   editor.disableUI = function (featList) {
     // $(function () {
-    // 	$('#tool_wireframe, #tool_image, #main_button, #tool_source, #sidepanels').remove();
-    // 	$('#tools_top').css('left', 5);
+    //   $('#tool_wireframe, #tool_image, #main_button, #tool_source, #sidepanels').remove();
+    //   $('#tools_top').css('left', 5);
     // });
   };
 

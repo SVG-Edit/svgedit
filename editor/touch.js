@@ -15,8 +15,8 @@ function touchHandler (event) {
   }
 
   // initMouseEvent(type, canBubble, cancelable, view, clickCount,
-  //	screenX, screenY, clientX, clientY, ctrlKey,
-  //	altKey, shiftKey, metaKey, button, relatedTarget);
+  //  screenX, screenY, clientX, clientY, ctrlKey,
+  //  altKey, shiftKey, metaKey, button, relatedTarget);
 
   simulatedEvent = document.createEvent('MouseEvent');
   simulatedEvent.initMouseEvent(type, true, true, window, 1,

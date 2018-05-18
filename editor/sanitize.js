@@ -135,7 +135,7 @@ svgedit.sanitize.sanitizeSvg = function (node) {
 
   var doc = node.ownerDocument;
   var parent = node.parentNode;
-  // can parent ever be null here?	I think the root node's parent is the document...
+  // can parent ever be null here?  I think the root node's parent is the document...
   if (!doc || !parent) {
     return;
   }

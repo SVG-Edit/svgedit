@@ -45,7 +45,7 @@ function getCallbackSetter (d) {
   return function () {
     var t = this, // New callback
       args = [].slice.call(arguments),
-      cbid = t.send(d, args, function () {});	// The callback (currently it's nothing, but will be set later)
+      cbid = t.send(d, args, function () {});  // The callback (currently it's nothing, but will be set later)
 
     return function (newcallback) {
       t.callbacks[cbid] = newcallback; // Set callback
@@ -72,7 +72,7 @@ function addCallback (t, data) {
 
 function messageListener (e) {
   // We accept and post strings as opposed to objects for the sake of IE9 support; this
-  //	 will most likely be changed in the future
+  //   will most likely be changed in the future
   if (typeof e.data !== 'string') {
     return;
   }
@@ -96,8 +96,8 @@ function getMessageListener (t) {
 /**
 * @param {HTMLIFrameElement} frame
 * @param {array} [allowedOrigins=[]] Array of origins from which incoming
-*	 messages will be allowed when same origin is not used; defaults to none.
-*	 If supplied, it should probably be the same as svgEditor's allowedOrigins
+*   messages will be allowed when same origin is not used; defaults to none.
+*   If supplied, it should probably be the same as svgEditor's allowedOrigins
 */
 function EmbeddedSVGEdit (frame, allowedOrigins) {
   if (!(this instanceof EmbeddedSVGEdit)) { // Allow invocation without 'new' keyword
@@ -143,19 +143,19 @@ EmbeddedSVGEdit.prototype.send = function (name, args, callback) {
     return function () { // Delay for the callback to be set in case its synchronous
       /*
       * Todo: Handle non-JSON arguments and return values (undefined,
-      *	 nonfinite numbers, functions, and built-in objects like Date,
-      *	 RegExp), etc.? Allow promises instead of callbacks? Review
-      *	 SVG-Edit functions for whether JSON-able parameters can be
-      *	 made compatile with all API functionality
+      *   nonfinite numbers, functions, and built-in objects like Date,
+      *   RegExp), etc.? Allow promises instead of callbacks? Review
+      *   SVG-Edit functions for whether JSON-able parameters can be
+      *   made compatile with all API functionality
       */
       // We accept and post strings for the sake of IE9 support
       if (window.location.origin === t.frame.contentWindow.location.origin) {
         // Although we do not really need this API if we are working same
-        //	domain, it could allow us to write in a way that would work
-        //	cross-domain as well, assuming we stick to the argument limitations
-        //	of the current JSON-based communication API (e.g., not passing
-        //	callbacks). We might be able to address these shortcomings; see
-        //	the todo elsewhere in this file.
+        //  domain, it could allow us to write in a way that would work
+        //  cross-domain as well, assuming we stick to the argument limitations
+        //  of the current JSON-based communication API (e.g., not passing
+        //  callbacks). We might be able to address these shortcomings; see
+        //  the todo elsewhere in this file.
         var message = {id: cbid},
           svgCanvas = t.frame.contentWindow.svgCanvas;
         try {

@@ -302,8 +302,8 @@ svgEditor.addExtension('Connector', function (S) {
 
   // $(svgroot).parent().mousemove(function (e) {
   // // if (started
-  // // 	|| svgCanvas.getMode() !== 'connector'
-  // //	|| e.target.parentNode.parentNode !== svgcontent) return;
+  // //   || svgCanvas.getMode() !== 'connector'
+  // //  || e.target.parentNode.parentNode !== svgcontent) return;
   //
   // console.log('y')
   // // if (e.target.parentNode.parentNode === svgcontent) {
@@ -389,7 +389,7 @@ svgEditor.addExtension('Connector', function (S) {
       var x = opts.mouse_x / zoom;
       var y = opts.mouse_y / zoom;
 
-      var	diffX = x - startX,
+      var diffX = x - startX,
         diffY = y - startY;
 
       var mode = svgCanvas.getMode();

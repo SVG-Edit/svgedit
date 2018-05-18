@@ -54,8 +54,8 @@ var history = svgedit.history;
  * ```
  *
  * @param {svgedit.history.UndoManager} undoManager - The undo manager.
- * 		A value of null is valid for cases where no history recording is required.
- * 		See singleton: HistoryRecordingService.NO_HISTORY
+ *     A value of null is valid for cases where no history recording is required.
+ *     See singleton: HistoryRecordingService.NO_HISTORY
  */
 var HistoryRecordingService = history.HistoryRecordingService = function (undoManager) {
   this.undoManager_ = undoManager;
@@ -65,7 +65,7 @@ var HistoryRecordingService = history.HistoryRecordingService = function (undoMa
 
 /**
  * @type {svgedit.history.HistoryRecordingService} NO_HISTORY - Singleton that can be passed
- *		in to functions that record history, but the caller requires that no history be recorded.
+ *    in to functions that record history, but the caller requires that no history be recorded.
  */
 HistoryRecordingService.NO_HISTORY = new HistoryRecordingService();
 
