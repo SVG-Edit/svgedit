@@ -28,6 +28,8 @@
     (though only if there is a single identity matrix) (fixes Chrome issue
     with recalculate test 1:
     "recalculateDimensions() on rect with identity matrix")
+* Fix (HTML): Update assorted links
+* Enhancement (Editor): Use `https` (instead of `http`) for link default
 * Build: Update minified version of spinbtn/jgraduate/jpicker per linted/improved files
 * Enhancement: Throw Error objects instead of strings (including in jgraduate->jpicker)
 * Enhancement: Use minified version of jpicker in svg-editor

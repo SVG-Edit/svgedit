@@ -12,4 +12,3 @@ editor/js-hotkeys
 editor/spinbtn/JQuerySpinBtn.min.js
 test/qunit
 test/sinon
-wave/json2.js
