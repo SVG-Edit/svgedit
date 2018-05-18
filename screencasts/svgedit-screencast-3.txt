@@ -17,15 +17,15 @@ From a usability perspective, we've created a Document Properties dialog, availa
 
 In terms of image properties:
 
-	* Give the image a title
-	* Change the canvas size, or pick one of several options
-	(* You can choose to have all local raster images referenced via URL or embedded inline as a data: URL.  This will make your SVG image larger, but self-contained and thus, more portable.)
+  * Give the image a title
+  * Change the canvas size, or pick one of several options
+  (* You can choose to have all local raster images referenced via URL or embedded inline as a data: URL.  This will make your SVG image larger, but self-contained and thus, more portable.)
 
 In terms of editor properties:
 
-	* SVG-edit's entire user interface (tooltips, labels) is fully localizable, and SVG-edit has now been translated into 8 languages.  If you would like to contribute translation for a language, please contact us on the mailing list.
-	* Another nice feature is the ability to set the icon size of the editor, which can help with adapting SVG-edit to different environments (mobile devices, smaller netbooks, widescreen displays).
-	(* One final editor preference that can be changed is the canvas' colour.  For most situations, a white canvas might be fine for creating your graphic, but if you are trying to draw an image with a lot of white in it, you might find this option useful.)
+  * SVG-edit's entire user interface (tooltips, labels) is fully localizable, and SVG-edit has now been translated into 8 languages.  If you would like to contribute translation for a language, please contact us on the mailing list.
+  * Another nice feature is the ability to set the icon size of the editor, which can help with adapting SVG-edit to different environments (mobile devices, smaller netbooks, widescreen displays).
+  (* One final editor preference that can be changed is the canvas' colour.  For most situations, a white canvas might be fine for creating your graphic, but if you are trying to draw an image with a lot of white in it, you might find this option useful.)
 
 So that's it for this video.  In the next video I'll talk about grouping, layers and a few other features of SVG-edit 2.4.
 
@@ -43,8 +43,8 @@ So first is grouping.  In SVG-edit 2.3 one could draw graphical primitives such 
 The next thing I'll talk about is Layers.  The Layers panel lies tucked to the side but can be clicked or dragged open at any time.  Layers work very much like they do in other drawing programs: you can create new layers, rename them, change the order and delete them.  Elements not on the current layer are not selectable, so it's an excellent way to separate elements in your drawing so that you can work on them without interfering with other parts of the drawing.  If you want to move elements between layers, select them, then select the layer you want to move them to.
 
 There are a couple of other minor features that round out SVG-edit 2.4:
-	* It is now possible to embed raster images (via URL) into the canvas using the Image tool on the left
-	* It is also possible to keep the ratio of any element fixed when resizing by holding down the shift key.
-	* Finally, if the canvas is starting to become obscured, you can turn on 'wireframe mode' which shows the outline of all shapes in your drawing, but none of the fill or stroke properties.
+  * It is now possible to embed raster images (via URL) into the canvas using the Image tool on the left
+  * It is also possible to keep the ratio of any element fixed when resizing by holding down the shift key.
+  * Finally, if the canvas is starting to become obscured, you can turn on 'wireframe mode' which shows the outline of all shapes in your drawing, but none of the fill or stroke properties.
 
 There are several minor features that I didn't have time to talk about, but feel free to browse to the project page and try out the demo.  Thanks for your time.

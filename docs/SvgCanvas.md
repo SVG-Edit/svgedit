@@ -55,7 +55,7 @@ Function | Description
 [`BatchCommand.unapply`](#batchcommandunapply) | Runs "unapply" on all subcommands
 [`BatchCommand.elements`](#batchcommandelements) | Iterate through all our subcommands and returns all the elements we are changing
 [`BatchCommand.addSubCommand`](#batchcommandaddsubcommand) | Adds a given command to the history stack
-[`BatchCommand.isEmpty`](#batchcommandisempty	) | Returns a boolean indicating whether or not the batch command is empty
+[`BatchCommand.isEmpty`](#batchcommandisempty) | Returns a boolean indicating whether or not the batch command is empty
 [`resetUndoStack`](#resetundostack) | Resets the undo stack, effectively clearing the undo/redo history
 [`undoMgr.getUndoStackSize`](#undomgrgetundostacksize) | Integer with the current size of the undo history stack
 [`undoMgr.getRedoStackSize`](#undomgrgetredostacksize) | Integer with the current size of the redo history stack
@@ -296,7 +296,7 @@ Converts a string to use XML references
 
 ## `rectsIntersect`
 
-	"rectsIntersect": function( r1,r2 )
+    "rectsIntersect": function (r1, r2)
 
 Check if two rectangles (BBoxes objects) intersect each other
 
@@ -311,7 +311,7 @@ Boolean that’s true if rectangles intersect
 
 ## `snapToAngle`
 
-	"snapToAngle": function( x1, y1, x2, y2 )
+  "snapToAngle": function (x1, y1, x2, y2)
 
 Returns a 45 degree angle coordinate associated with the two given coordinates
 
@@ -328,7 +328,7 @@ Object with the following values: x - The angle-snapped x value y - The angle-sn
 
 ## `text2xml`
 
-	"text2xml": function(sXML)
+  "text2xml": function (sXML)
 
 Cross-browser compatible method of converting a string to an XML tree found this function [here](https://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f)
 
@@ -336,7 +336,7 @@ Cross-browser compatible method of converting a string to an XML tree found this
 
 ## `convertToNum`
 
-	convertToNum = function( attr, val )
+    convertToNum = function (attr, val)
 
 Converts given values to numbers.  Attributes must be supplied in case a percentage is given
 
@@ -347,7 +347,7 @@ Converts given values to numbers.  Attributes must be supplied in case a percent
 
 ## `setUnitAttr`
 
-	setUnitAttr = function( elem, attr, val )
+    setUnitAttr = function (elem, attr, val)
 
 Sets an element’s attribute based on the unit in its current value.
 
@@ -359,7 +359,7 @@ Sets an element’s attribute based on the unit in its current value.
 
 ## `isValidUnit`
 
-	canvas.isValidUnit = function( attr,val )
+    canvas.isValidUnit = function (attr, val)
 
 Check if an attribute’s value is in a valid format
 
@@ -372,7 +372,7 @@ Check if an attribute’s value is in a valid format
 
 ## `ChangeElementCommand`
 
-	var ChangeElementCommand = this.undoCmd.changeElement = function( elem, attrs, text )
+    var ChangeElementCommand = this.undoCmd.changeElement = function (elem, attrs, text)
 
 History command to make a change to an element.  Usually an attribute change, but can also be textcontent.
 
@@ -396,13 +396,13 @@ Returns array with element associated with this command
 
 ## `InsertElementCommand`
 
-	var InsertElementCommand = this.undoCmd.insertElement = function( elem, text )
+    var InsertElementCommand = this.undoCmd.insertElement = function (elem, text)
 
 History command for an element that was added to the DOM
 
 #### Parameters
 
-* `elem	` The newly added DOM element
+* `elem` The newly added DOM element
 * `text` An optional string visible to user related to this change
 
 ## `InsertElementCommand.apply`
@@ -419,12 +419,12 @@ Returns array with element associated with this command
 
 ## `RemoveElementCommand`
 
-	var RemoveElementCommand = this.undoCmd.removeElement = function( elem, parent, text )
+    var RemoveElementCommand = this.undoCmd.removeElement = function (elem, parent, text)
 
 History command for an element removed from the DOM
 
 #### Parameters
-* `elem	` The removed DOM element
+* `elem` The removed DOM element
 * `parent` The DOM element’s parent
 * `text` An optional string visible to user related to this change
 
@@ -442,13 +442,13 @@ Returns array with element associated with this command
 
 ## `MoveElementCommand`
 
-	var MoveElementCommand = this.undoCmd.moveElement = function( elem, oldNextSibling, oldParent, text )
+    var MoveElementCommand = this.undoCmd.moveElement = function (elem, oldNextSibling, oldParent, text)
 
 History command for an element that had its DOM position changed
 
 #### Parameters
 
-* `elem	` The DOM element that was moved
+* `elem` The DOM element that was moved
 * `oldNextSibling` The element’s next sibling before it was moved
 * `oldParent` The element’s parent before it was moved
 * `text` An optional string visible to user related to this change
@@ -467,7 +467,7 @@ Returns array with element associated with this command
 
 ## `BatchCommand`
 
-	var BatchCommand = this.undoCmd.batch = function( text )
+    var BatchCommand = this.undoCmd.batch = function (text)
 
 History command that can contain/execute multiple other commands
 
@@ -501,7 +501,7 @@ Returns a boolean indicating whether or not the batch command is empty
 
 ## `resetUndoStack`
 
-	resetUndoStack = function()
+    resetUndoStack = function ()
 
 Resets the undo stack, effectively clearing the undo/redo history
 
@@ -538,7 +538,7 @@ Performs a redo step
 
 ## `addCommandToHistory`
 
-	addCommandToHistory = c.undoCmd.add = function( cmd )
+    addCommandToHistory = c.undoCmd.add = function (cmd)
 
 Adds a command object to the undo history stack
 
@@ -548,7 +548,7 @@ Adds a command object to the undo history stack
 
 ## `beginUndoableChange`
 
-	c.beginUndoableChange = function( attrName, elems )
+    c.beginUndoableChange = function (attrName, elems)
 
 This function tells the canvas to remember the old values of the attrName attribute for each element sent in.  The elements and values are stored on a stack, so the next call to `finishUndoableChange()` will pop the elements and old values off the stack, gets the current values from the DOM and uses all of these to construct the undo-able command.
 
@@ -559,7 +559,7 @@ This function tells the canvas to remember the old values of the attrName attrib
 
 ## `finishUndoableChange`
 
-	c.finishUndoableChange = function()
+    c.finishUndoableChange = function ()
 
 This function returns a BatchCommand object which summarizes the change since beginUndoableChange was called. The command can then be added to the command history
 
@@ -653,7 +653,7 @@ Returns the rubberBandBox DOM element.  This is the rectangle drawn by the user 
 
 ## `walkTree`
 
-	function walkTree( elem, cbFn )
+    function walkTree(elem, cbFn)
 
 Walks the tree and executes the callback on each element in a top-down fashion
 
@@ -664,18 +664,18 @@ Walks the tree and executes the callback on each element in a top-down fashion
 
 ## `walkTreePost`
 
-	function walkTreePost( elem, cbFn )
+    function walkTreePost(elem, cbFn)
 
 Walks the tree and executes the callback on each element in a depth-first fashion
 
 #### Parameters
 
-* `elem	` DOM element to traverse
+* `elem` DOM element to traverse
 * `cbFn` Callback function to run on each element
 
 ## `assignAttributes`
 
-	var assignAttributes = this.assignAttributes = function( node, attrs, suspendLength, unitCheck )
+    var assignAttributes = this.assignAttributes = function (node, attrs, suspendLength, unitCheck)
 
 Assigns multiple attributes to an element.
 
@@ -688,7 +688,7 @@ Assigns multiple attributes to an element.
 
 ## `cleanupElement`
 
-	var cleanupElement = this.cleanupElement = function( element )
+    var cleanupElement = this.cleanupElement = function (element)
 
 Remove unneeded (default) attributes, makes resulting SVG smaller
 
@@ -698,16 +698,16 @@ Remove unneeded (default) attributes, makes resulting SVG smaller
 
 ## `addSvgElementFromJson`
 
-	var addSvgElementFromJson = this.addSvgElementFromJson = function( data )
+    var addSvgElementFromJson = this.addSvgElementFromJson = function (data)
 
 Create a new SVG element based on the given object keys/values and add it to the current layer The element will be ran through `cleanupElement` before being returned
 
 #### Parameters
 
 * `data` Object with the following keys/values:
-	* `element` - DOM element to create
-	* `attr` - Object with attributes/values to assign to the new element
-	* `curStyles` - Boolean indicating that current style attributes should be applied first
+  * `element` - DOM element to create
+  * `attr` - Object with attributes/values to assign to the new element
+  * `curStyles` - Boolean indicating that current style attributes should be applied first
 
 #### Returns
 
@@ -715,7 +715,7 @@ The new element
 
 ## `addExtension`
 
-	this.addExtension = function( name, ext_func )
+    this.addExtension = function (name, ext_func)
 
 Add an extension to the editor
 
@@ -726,7 +726,7 @@ Add an extension to the editor
 
 ## `shortFloat`
 
-	var shortFloat = function( val )
+    var shortFloat = function (val)
 
 Rounds a given value to a float with number of digits defined in save_options
 
@@ -740,7 +740,7 @@ If a string/number was given, returns a Float. If an array, return a string with
 
 ## `getStrokedBBox`
 
-	var getStrokedBBox = this.getStrokedBBox = function( elems )
+    var getStrokedBBox = this.getStrokedBBox = function (elems)
 
 Get the bounding box for one or more stroked and/or transformed elements
 
@@ -754,7 +754,7 @@ A single bounding box object
 
 ## `getVisibleElements`
 
-	var getVisibleElements = this.getVisibleElements = function( parent, includeBBox )
+    var getVisibleElements = this.getVisibleElements = function (parent, includeBBox)
 
 Get all elements that have a BBox (excludes `<defs>`, `<title>`, etc).  Note that 0-opacity, off-screen etc elements are still considered “visible” for this function
 
@@ -772,7 +772,7 @@ An array with all “visible” elements, or if includeBBox is true, an array wi
 
 ## `copyElem`
 
-	var copyElem = function( el )
+    var copyElem = function (el)
 
 Create a clone of an element, updating its ID and its children’s IDs when needed
 
@@ -785,7 +785,7 @@ The cloned element
 
 ## `getElem`
 
-	function getElem( id )
+    function getElem(id)
 
 Get a DOM element by ID within the SVG root element.
 
@@ -795,19 +795,19 @@ Get a DOM element by ID within the SVG root element.
 
 ## `getId`
 
-	getId = c.getId = function()
+    getId = c.getId = function ()
 
 Returns the last created DOM element ID string
 
 ## `getNextId`
 
-	getNextId = c.getNextId = function()
+    getNextId = c.getNextId = function ()
 
 Creates and returns a unique ID string for a DOM element
 
 ## `bind`
 
-	c.bind = function( event, f )
+    c.bind = function (event, f)
 
 Attaches a callback function to an event
 
@@ -822,7 +822,7 @@ The previous event
 
 ## `setIdPrefix`
 
-	c.setIdPrefix = function( p )
+    c.setIdPrefix = function (p)
 
 Changes the ID prefix to the given value
 
@@ -831,7 +831,7 @@ Changes the ID prefix to the given value
 
 ## `sanitizeSvg`
 
-	var sanitizeSvg = this.sanitizeSvg = function( node )
+    var sanitizeSvg = this.sanitizeSvg = function (node)
 
 Sanitizes the input node and its children It only keeps what is allowed from our whitelist defined above
 
@@ -841,7 +841,7 @@ Sanitizes the input node and its children It only keeps what is allowed from our
 
 ## `getUrlFromAttr`
 
-	var getUrlFromAttr = this.getUrlFromAttr = function( attrVal )
+    var getUrlFromAttr = this.getUrlFromAttr = function (attrVal)
 
 Extracts the URL from the `url(...)` syntax of some attributes.  Three variants:
 
@@ -859,7 +859,7 @@ String with just the URL, like `someFile.svg#foo`
 
 ## `getBBox`
 
-	var getBBox = this.getBBox = function( elem )
+    var getBBox = this.getBBox = function (elem)
 
 Get the given/selected element’s bounding box object, convert it to be more usable when necessary
 
@@ -869,7 +869,7 @@ Get the given/selected element’s bounding box object, convert it to be more us
 
 ## `ffClone`
 
-	var ffClone = function( elem )
+    var ffClone = function (elem)
 
 Hack for Firefox bugs where text element features aren’t updated. This function clones the element and re-selects it
 
@@ -881,7 +881,7 @@ Hack for Firefox bugs where text element features aren’t updated. This functio
 
 ## `getPathBBox`
 
-	var getPathBBox = function( path )
+    var getPathBBox = function (path)
 
 Get correct BBox for a path in Webkit Converted from code found [here](http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html)
 
@@ -896,7 +896,7 @@ A BBox-like object
 
 ## `getRotationAngle`
 
-	var getRotationAngle = this.getRotationAngle = function( elem, to_rad )
+    var getRotationAngle = this.getRotationAngle = function (elem, to_rad)
 
 Get the rotation angle of the given/selected DOM element
 
@@ -911,7 +911,7 @@ Float with the angle in degrees or radians
 
 ## `setRotationAngle`
 
-	this.setRotationAngle = function( val, preventUndo )
+    this.setRotationAngle = function (val, preventUndo)
 
 Removes any old rotations if present, prepends a new rotation at the transformed center
 
@@ -922,7 +922,7 @@ Removes any old rotations if present, prepends a new rotation at the transformed
 
 ## `getTransformList`
 
-	var getTransformList = this.getTransformList = function( elem )
+    var getTransformList = this.getTransformList = function (elem)
 
 Returns an object that behaves like a SVGTransformList for the given DOM element
 
@@ -932,13 +932,13 @@ Returns an object that behaves like a SVGTransformList for the given DOM element
 
 ## `recalculateAllSelectedDimensions`
 
-	var recalculateAllSelectedDimensions = this.recalculateAllSelectedDimensions = function()
+    var recalculateAllSelectedDimensions = this.recalculateAllSelectedDimensions = function ()
 
 Runs recalculateDimensions on the selected elements, adding the changes to a single batch command
 
 ## `remapElement`
 
-	var remapElement = this.remapElement = function( selected, changes, m )
+    var remapElement = this.remapElement = function (selected, changes, m)
 
 Applies coordinate changes to an element based on the given matrix
 
@@ -950,7 +950,7 @@ Applies coordinate changes to an element based on the given matrix
 
 ## `recalculateDimensions`
 
-	var recalculateDimensions = this.recalculateDimensions = function( selected )
+    var recalculateDimensions = this.recalculateDimensions = function (selected)
 
 Decides the course of action based on the element’s transform list
 
@@ -964,7 +964,7 @@ Undo command object with the resulting change
 
 ## `transformPoint`
 
-	var transformPoint = function( x, y, m )
+    var transformPoint = function (x, y, m)
 
 A (hopefully) quicker function to transform a point by a matrix (this function avoids any DOM calls and just does the math)
 
@@ -975,7 +975,7 @@ A (hopefully) quicker function to transform a point by a matrix (this function a
 
 ## `isIdentity`
 
-	var isIdentity = function( m )
+    var isIdentity = function (m)
 
 Helper function to check if the matrix performs no actual transform (i.e. exists for identity purposes)
 
@@ -989,7 +989,7 @@ Boolean indicating whether or not the matrix is `1,0,0,1,0,0`
 
 ## `matrixMultiply`
 
-	var matrixMultiply = this.matrixMultiply = function()
+    var matrixMultiply = this.matrixMultiply = function ()
 
 This function tries to return a SVGMatrix that is the multiplication `m1*m2`. We also round to zero when it’s near zero
 
@@ -1003,7 +1003,7 @@ The matrix object resulting from the calculation
 
 ## `transformListToTransform`
 
-	var transformListToTransform = this.transformListToTransform = function( tlist, min, max )
+    var transformListToTransform = this.transformListToTransform = function (tlist, min, max)
 This returns a single matrix Transform for a given Transform List (this is the equivalent of `SVGTransformList.consolidate()` but unlike that method, this one does not modify the actual `SVGTransformList`) This function is very liberal with its `min`, `max` arguments
 
 #### Parameters
@@ -1018,7 +1018,7 @@ A single matrix transform object
 
 ## `hasMatrixTransform`
 
-	var hasMatrixTransform = this.hasMatrixTransform = function( tlist )
+    var hasMatrixTransform = this.hasMatrixTransform = function (tlist)
 
 See if the given transformlist includes a non-indentity matrix transform
 
@@ -1032,7 +1032,7 @@ Boolean on whether or not a matrix transform was found
 
 ## `getMatrix`
 
-	var getMatrix = function( elem )
+    var getMatrix = function (elem)
 
 Get the matrix object for a given element
 
@@ -1046,7 +1046,7 @@ The matrix object associated with the element’s transformlist
 
 ## `transformBox`
 
-	var transformBox = this.transformBox = function( l, t, w, h, m )
+    var transformBox = this.transformBox = function (l, t, w, h, m)
 
 Transforms a rectangle based on the given matrix
 
@@ -1076,13 +1076,13 @@ An object with the following values:
 
 ## `clearSelection`
 
-	var clearSelection = this.clearSelection = function( noCall )
+    var clearSelection = this.clearSelection = function (noCall)
 
 Clears the selection. The `selected` handler is then called.  Parameters: `noCall` - Optional boolean that when true does not call the “selected” handler
 
 ## `addToSelection`
 
-	var addToSelection = this.addToSelection = function( elemsToAdd, showGrips )
+    var addToSelection = this.addToSelection = function (elemsToAdd, showGrips)
 
 Adds a list of elements to the selection.  The ‘selected’ handler is then called.
 
@@ -1093,7 +1093,7 @@ Adds a list of elements to the selection.  The ‘selected’ handler is then ca
 
 ## `removeFromSelection`
 
-	var removeFromSelection = this.removeFromSelection = function( elemsToRemove )
+    var removeFromSelection = this.removeFromSelection = function (elemsToRemove)
 
 Removes elements from the selection.
 
@@ -1103,13 +1103,13 @@ Removes elements from the selection.
 
 ## `selectAllInCurrentLayer`
 
-	this.selectAllInCurrentLayer = function()
+    this.selectAllInCurrentLayer = function ()
 
 Clears the selection, then adds all elements in the current layer to the selection. This function then fires the selected event.
 
 ## `smoothControlPoints`
 
-	var smoothControlPoints = this.smoothControlPoints = function( ct1, ct2, pt )
+    var smoothControlPoints = this.smoothControlPoints = function (ct1, ct2, pt)
 
 Takes three points and creates a smoother line based on them
 
@@ -1125,7 +1125,7 @@ Array of two “smoothed” point objects
 
 ## `getMouseTarget`
 
-	var getMouseTarget = this.getMouseTarget = function( evt )
+    var getMouseTarget = this.getMouseTarget = function (evt)
 
 Gets the desired element from a mouse event
 
@@ -1139,7 +1139,7 @@ DOM element we want
 
 ## `preventClickDefault`
 
-	var preventClickDefault = function( img )
+    var preventClickDefault = function (img)
 
 Prevents default browser click behaviour on the given element
 
@@ -1159,7 +1159,7 @@ Functions relating to editing path elements
 
 ## `removeUnusedDefElems`
 
-	var removeUnusedDefElems = this.removeUnusedDefElems = function()
+    var removeUnusedDefElems = this.removeUnusedDefElems = function ()
 
 Looks at DOM elements inside the <defs> to see if they are referred to, removes them from the DOM if they are not.
 
@@ -1169,7 +1169,7 @@ The amount of elements that were removed
 
 ## `svgCanvasToString`
 
-	var svgCanvasToString = this.svgCanvasToString = function()
+    var svgCanvasToString = this.svgCanvasToString = function ()
 
 Main function to set up the SVG content for output
 
@@ -1179,7 +1179,7 @@ String containing the SVG image for output
 
 ## `svgToString`
 
-	var svgToString = this.svgToString = function( elem, indent )
+    var svgToString = this.svgToString = function (elem, indent)
 
 Sub function ran on each SVG element to convert it to a string as desired
 
@@ -1194,7 +1194,7 @@ String with the given element as an SVG tag
 
 ## `embedImage`
 
-	this.embedImage = function( val, callback )
+    this.embedImage = function (val, callback)
 
 Converts a given image file to a data URL when possible, then runs a given callback
 
@@ -1205,7 +1205,7 @@ Converts a given image file to a data URL when possible, then runs a given callb
 
 ## `save`
 
-	this.save = function( opts )
+    this.save = function (opts)
 
 Serializes the current drawing into SVG XML text and returns it to the ‘saved’ handler.  This function also includes the XML prolog.  Clients of the SvgCanvas bind their save function to the ‘saved’ event.
 
@@ -1214,13 +1214,13 @@ Nothing
 
 ## `rasterExport`
 
-	this.rasterExport = function()
+    this.rasterExport = function ()
 
 Generates a PNG Data URL based on the current image, then calls “exported” with an object including the string and any issues found
 
 ## `getSvgString`
 
-	this.getSvgString = function()
+    this.getSvgString = function ()
 
 Returns the current drawing as raw SVG XML text.
 
@@ -1230,7 +1230,7 @@ The current drawing as raw SVG XML text.
 
 ## `setSvgString`
 
-	this.setSvgString = function( xmlString )
+    this.setSvgString = function (xmlString)
 
 This function sets the current drawing as the input SVG XML.
 
@@ -1244,7 +1244,7 @@ This function returns false if the set was unsuccessful, true otherwise.
 
 ## `importSvgString`
 
-	this.importSvgString = function( xmlString )
+    this.importSvgString = function (xmlString)
 
 This function imports the input SVG XML into the current layer in the drawing
 
@@ -1267,13 +1267,13 @@ This function returns false if the import was unsuccessful, true otherwise.
 
 ## `identifyLayers`
 
-	var identifyLayers = function()
+    var identifyLayers = function ()
 
 Updates layer system
 
 ## `createLayer`
 
-	this.createLayer = function( name )
+    this.createLayer = function (name)
 
 Creates a new top-level layer in the drawing with the given name, sets the current layer to it, and then clears the selection This function then calls the ‘changed’ handler.  This is an undoable action.
 
@@ -1283,13 +1283,13 @@ Creates a new top-level layer in the drawing with the given name, sets the curre
 
 ## `deleteCurrentLayer`
 
-	this.deleteCurrentLayer = function()
+    this.deleteCurrentLayer = function ()
 
 Deletes the current layer from the drawing and then clears the selection. This function then calls the ‘changed’ handler. This is an undoable action.
 
 ## `getNumLayers`
 
-	this.getNumLayers = function()
+    this.getNumLayers = function ()
 
 Returns the number of layers in the current drawing.
 
@@ -1299,7 +1299,7 @@ The number of layers in the current drawing.
 
 ## `getLayer`
 
-	this.getLayer = function( i )
+    this.getLayer = function (i)
 
 Returns the name of the ith layer.  If the index is out of range, an empty string is returned.
 
@@ -1312,7 +1312,7 @@ The name of the ith layer
 
 ## `getCurrentLayer`
 
-	this.getCurrentLayer = function()
+    this.getCurrentLayer = function ()
 
 Returns the name of the currently selected layer.  If an error occurs, an empty string is returned.
 
@@ -1322,7 +1322,7 @@ The name of the currently active layer.
 
 ## `setCurrentLayer`
 
-	this.setCurrentLayer = function( name )
+    this.setCurrentLayer = function (name)
 
 Sets the current layer.  If the name is not a valid layer name, then this function returns false.  Otherwise it returns true.  This is not an undo-able action.
 
@@ -1336,7 +1336,7 @@ Sets the current layer.  If the name is not a valid layer name, then this functi
 
 ## `renameCurrentLayer`
 
-	this.renameCurrentLayer = function( newname )
+    this.renameCurrentLayer = function (newname)
 
 Renames the current layer. If the layer name is not valid (i.e. unique), then this function does nothing and returns `false`, otherwise it returns `true`. This is an undo-able action.
 
@@ -1350,7 +1350,7 @@ Renames the current layer. If the layer name is not valid (i.e. unique), then th
 
 ## `setCurrentLayerPosition`
 
-	this.setCurrentLayerPosition = function( newpos )
+    this.setCurrentLayerPosition = function (newpos)
 
 Changes the position of the current layer to the new value.  If the new index is not valid, this function does nothing and returns false, otherwise it returns true.  This is an undo-able action.
 
@@ -1365,7 +1365,7 @@ Changes the position of the current layer to the new value.  If the new index is
 
 ## `getLayerVisibility`
 
-	this.getLayerVisibility = function(	 layername )
+    this.getLayerVisibility = function (layername)
 
 Returns whether the layer is visible.  If the layer name is not valid, then this function returns false.
 
@@ -1379,7 +1379,7 @@ The visibility state of the layer, or false if the layer name was invalid.
 
 ## `setLayerVisibility`
 
-	this.setLayerVisibility = function( layername, bVisible )
+    this.setLayerVisibility = function (layername, bVisible)
 
 Sets the visibility of the layer.  If the layer name is not valid, this function return false, otherwise it returns true.  This is an undo-able action.
 
@@ -1394,7 +1394,7 @@ Sets the visibility of the layer.  If the layer name is not valid, this function
 
 ## `moveSelectedToLayer`
 
-	this.moveSelectedToLayer = function( layername )
+    this.moveSelectedToLayer = function (layername)
 
 Moves the selected elements to layername.  If the name is not a valid layer name, then false is returned.  Otherwise it returns true.  This is an undo-able action.
 
@@ -1408,7 +1408,7 @@ Moves the selected elements to layername.  If the name is not a valid layer name
 
 ## `getLayerOpacity`
 
-	this.getLayerOpacity = function( layername )
+    this.getLayerOpacity = function (layername)
 
 Returns the opacity of the given layer.  If the input name is not a layer, null is returned.
 
@@ -1422,7 +1422,7 @@ The opacity value of the given layer.  This will be a value between `0.0` and `1
 
 ## `setLayerOpacity`
 
-	this.setLayerOpacity = function( layername, opacity )
+    this.setLayerOpacity = function (layername, opacity)
 
 Sets the opacity of the given layer.  If the input name is not a layer, nothing happens.  This is not an undo-able action.
 
@@ -1437,7 +1437,7 @@ Sets the opacity of the given layer.  If the input name is not a layer, nothing 
 
 ## `clear`
 
-	this.clear = function()
+    this.clear = function ()
 
 Clears the current document.  This is not an undoable action.
 
@@ -1447,43 +1447,43 @@ Alias function
 
 ## `getContentElem`
 
-	this.getContentElem = function()
+    this.getContentElem = function ()
 
 Returns the content DOM element
 
 ## `getRootElem`
 
-	this.getRootElem = function()
+    this.getRootElem = function ()
 
 Returns the root DOM element
 
 ## `getSelectedElems`
 
-	this.getSelectedElems = function()
+    this.getSelectedElems = function ()
 
 Returns the array with selected DOM elements
 
 ## `getResolution`
 
-	var getResolution = this.getResolution = function()
+    var getResolution = this.getResolution = function ()
 
 Returns the current dimensions and zoom level in an object
 
 ## `getZoom`
 
-	this.getZoom = function()
+    this.getZoom = function ()
 
 Returns the current zoom level
 
 ## `getVersion`
 
-	this.getVersion = function()
+    this.getVersion = function ()
 
 Returns a string which describes the revision number of SvgCanvas.
 
 ## `setUiStrings`
 
-	this.setUiStrings = function(strs)
+    this.setUiStrings = function (strs)
 
 Update interface strings with given values
 
@@ -1493,7 +1493,7 @@ Update interface strings with given values
 
 ## `setConfig`
 
-	this.setConfig = function( opts )
+    this.setConfig = function (opts)
 
 Update configuration options with given values
 
@@ -1503,13 +1503,13 @@ Update configuration options with given values
 
 ## `getDocumentTitle`
 
-	this.getDocumentTitle = function()
+    this.getDocumentTitle = function ()
 
 Returns the current document title or an empty string if not found
 
 ## `setDocumentTitle`
 
-	this.setDocumentTitle = function( newtitle )
+    this.setDocumentTitle = function (newtitle)
 
 Adds/updates a title element for the document with the given name.  This is an undoable action
 
@@ -1519,7 +1519,7 @@ Adds/updates a title element for the document with the given name.  This is an u
 
 ## `getEditorNS`
 
-	this.getEditorNS = function( add )
+    this.getEditorNS = function (add)
 
 Returns the editor’s namespace URL, optionally adds it to root element
 
@@ -1529,7 +1529,7 @@ Returns the editor’s namespace URL, optionally adds it to root element
 
 ## `setResolution`
 
-	this.setResolution = function( x, y )
+    this.setResolution = function (x, y)
 
 Changes the document’s dimensions to the given size
 
@@ -1544,13 +1544,13 @@ Boolean to indicate if resolution change was succesful.  It will fail on “fit 
 
 ## `getOffset`
 
-	this.getOffset = function()
+    this.getOffset = function ()
 
 Returns an object with `x`, `y` values indicating the svgcontent element’s position in the editor’s canvas.
 
 ## `setBBoxZoom`
 
-	this.setBBoxZoom = function( val, editor_w, editor_h )
+    this.setBBoxZoom = function (val, editor_w, editor_h)
 
 Sets the zoom level on the canvas-side based on the given value
 
@@ -1562,7 +1562,7 @@ Sets the zoom level on the canvas-side based on the given value
 
 ## `setZoom`
 
-	this.setZoom = function( zoomlevel )
+    this.setZoom = function (zoomlevel)
 
 Sets the zoom to the given level
 
@@ -1572,13 +1572,13 @@ Sets the zoom to the given level
 
 ## `getMode`
 
-	this.getMode = function()
+    this.getMode = function ()
 
 Returns the current editor mode string
 
 ## `setMode`
 
-	this.setMode = function( name )
+    this.setMode = function (name)
 
 Sets the editor’s mode to the given string
 
@@ -1590,13 +1590,13 @@ Sets the editor’s mode to the given string
 
 ## `getColor`
 
-	this.getColor = function( type )
+    this.getColor = function (type)
 
 Returns the current fill/stroke option
 
 ## `setColor`
 
-	this.setColor = function( type, val, preventUndo )
+    this.setColor = function (type, val, preventUndo)
 
 Change the current stroke/fill color/gradient value
 
@@ -1608,20 +1608,20 @@ Change the current stroke/fill color/gradient value
 
 ## `findDefs`
 
-	var findDefs = function()
+    var findDefs = function ()
 
 Return the document’s `<defs>` element, create it first if necessary
 
 ## `setGradient`
 
-	var setGradient = this.setGradient = function( type )
+    var setGradient = this.setGradient = function (type)
 
 Apply the current gradient to selected element’s fill or stroke
 Parameters `type` - String indicating “fill” or “stroke” to apply to an element
 
 ## `findDuplicateGradient`
 
-	var findDuplicateGradient = function( grad )
+    var findDuplicateGradient = function (grad)
 
 Check if exact gradient already exists
 
@@ -1635,7 +1635,7 @@ The existing gradient if found, null if not
 
 ## `setPaint`
 
-	this.setPaint = function( type, paint )
+    this.setPaint = function (type, paint)
 
 Set a color/gradient to a fill/stroke
 
@@ -1646,13 +1646,13 @@ Set a color/gradient to a fill/stroke
 
 ## `getStrokeWidth`
 
-	this.getStrokeWidth = function()
+    this.getStrokeWidth = function ()
 
 Returns the current stroke-width value
 
 ## `setStrokeWidth`
 
-	this.setStrokeWidth = function( val )
+    this.setStrokeWidth = function (val)
 
 Sets the stroke width for the current selected elements When attempting to set a line’s width to 0, this changes it to 1 instead
 
@@ -1662,7 +1662,7 @@ Sets the stroke width for the current selected elements When attempting to set a
 
 ## `setStrokeAttr`
 
-	this.setStrokeAttr = function( attr, val )
+    this.setStrokeAttr = function (attr, val)
 
 Set the given stroke-related attribute the given value for selected elements
 
@@ -1673,13 +1673,13 @@ Set the given stroke-related attribute the given value for selected elements
 
 ## `getOpacity`
 
-	this.getOpacity = function()
+    this.getOpacity = function ()
 
 Returns the current opacity
 
 ## `setOpacity`
 
-	this.setOpacity = function( val )
+    this.setOpacity = function (val)
 
 Sets the given opacity to the current selected elements
 
@@ -1689,13 +1689,13 @@ Returns the current fill opacity
 
 ## `getStrokeOpacity`
 
-	this.getStrokeOpacity = function()
+    this.getStrokeOpacity = function ()
 
 Returns the current stroke opacity
 
 ## `setPaintOpacity`
 
-	this.setPaintOpacity = function( type, val, preventUndo )
+    this.setPaintOpacity = function (type, val, preventUndo)
 
 Sets the current fill/stroke opacity
 
@@ -1707,7 +1707,7 @@ Sets the current fill/stroke opacity
 
 ## `getBlur`
 
-	this.getBlur = function( elem )
+    this.getBlur = function (elem)
 
 Gets the stdDeviation blur value of the given element
 
@@ -1717,7 +1717,7 @@ Gets the stdDeviation blur value of the given element
 
 ## `setBlurNoUndo`
 
-	canvas.setBlurNoUndo = function( val )
+    canvas.setBlurNoUndo = function (val)
 
 Sets the stdDeviation blur value on the selected element without being undoable
 
@@ -1727,7 +1727,7 @@ Sets the stdDeviation blur value on the selected element without being undoable
 
 ## `setBlurOffsets`
 
-	canvas.setBlurOffsets = function( filter, stdDev )
+    canvas.setBlurOffsets = function (filter, stdDev)
 
 Sets the `x`, `y`, with, height values of the filter element in order to make the blur not be clipped.  Removes them if not neeeded
 
@@ -1738,7 +1738,7 @@ Sets the `x`, `y`, with, height values of the filter element in order to make th
 
 ## `setBlur`
 
-	canvas.setBlur = function( val, complete )
+    canvas.setBlur = function (val, complete)
 
 Adds/updates the blur filter to the selected element
 
@@ -1749,7 +1749,7 @@ Adds/updates the blur filter to the selected element
 
 ## `getBold`
 
-	this.getBold = function()
+    this.getBold = function ()
 
 Check whether selected element is bold or not
 
@@ -1759,7 +1759,7 @@ Boolean indicating whether or not element is bold
 
 ## `setBold`
 
-	this.setBold = function( b )
+    this.setBold = function (b)
 
 Make the selected element bold or normal
 
@@ -1769,7 +1769,7 @@ Make the selected element bold or normal
 
 ## `getItalic`
 
-	this.getItalic = function()
+    this.getItalic = function ()
 
 Check whether selected element is italic or not
 
@@ -1779,7 +1779,7 @@ Boolean indicating whether or not element is italic
 
 ## `setItalic`
 
-	this.setItalic = function( i )
+    this.setItalic = function (i)
 
 Make the selected element italic or normal
 
@@ -1788,13 +1788,13 @@ Make the selected element italic or normal
 
 ## `getFontFamily`
 
-	this.getFontFamily = function()
+    this.getFontFamily = function ()
 
 Returns the current font family
 
 ## `setFontFamily`
 
-	this.setFontFamily = function( val )
+    this.setFontFamily = function (val)
 
 Set the new font family
 
@@ -1804,13 +1804,13 @@ Set the new font family
 
 ## `getFontSize`
 
-	this.getFontSize = function()
+    this.getFontSize = function ()
 
 Returns the current font size
 
 ## `setFontSize`
 
-	this.setFontSize = function( val )
+    this.setFontSize = function (val)
 
 Applies the given font size to the selected element
 
@@ -1820,13 +1820,13 @@ Applies the given font size to the selected element
 
 ## `getText`
 
-	this.getText = function()
+    this.getText = function ()
 
 Returns the current text `textContent` of the selected element
 
 ## `setTextContent`
 
-	this.setTextContent = function( val )
+    this.setTextContent = function (val)
 
 Updates the text element with the given string
 
@@ -1836,7 +1836,7 @@ Updates the text element with the given string
 
 ## `setImageURL`
 
-	this.setImageURL = function( val )
+    this.setImageURL = function (val)
 
 Sets the new image URL for the selected image element.  Updates its size if a new URL is given
 
@@ -1846,7 +1846,7 @@ Sets the new image URL for the selected image element.  Updates its size if a ne
 
 ## `setRectRadius`
 
-	this.setRectRadius = function( val )
+    this.setRectRadius = function (val)
 
 Sets the `rx` & `ry` values to the selected rect element to change its corner radius
 
@@ -1858,7 +1858,7 @@ Sets the `rx` & `ry` values to the selected rect element to change its corner ra
 
 ## `setSegType`
 
-	this.setSegType = function( new_type )
+    this.setSegType = function (new_type)
 
 Sets the new segment type to the selected segment(s).
 
@@ -1868,7 +1868,7 @@ Sets the new segment type to the selected segment(s).
 
 ## `convertToPath`
 
-	this.convertToPath = function( elem, getBBox )
+    this.convertToPath = function (elem, getBBox)
 
 Convert selected element to a path, or get the BBox of an element-as-path
 
@@ -1883,7 +1883,7 @@ If the getBBox flag is true, the resulting path’s bounding box object.  Otherw
 
 ## `changeSelectedAttributeNoUndo`
 
-	var changeSelectedAttributeNoUndo = function( attr, newValue, elems )
+    var changeSelectedAttributeNoUndo = function (attr, newValue, elems)
 
 This function makes the changes to the elements.  It does not add the change to the history stack.
 
@@ -1895,7 +1895,7 @@ This function makes the changes to the elements.  It does not add the change to 
 
 ## `changeSelectedAttribute`
 
-	var changeSelectedAttribute = this.changeSelectedAttribute = function( attr, val, elems )
+    var changeSelectedAttribute = this.changeSelectedAttribute = function (attr, val, elems)
 
 Change the given/selected element and add the original value to the history stack If you want to change all selectedElements, ignore the elems argument.  If you want to change only a subset of selectedElements, then send the subset to this function in the elems argument.
 
@@ -1907,37 +1907,37 @@ Change the given/selected element and add the original value to the history stac
 
 ## `deleteSelectedElements`
 
-	this.deleteSelectedElements = function()
+    this.deleteSelectedElements = function ()
 
 Removes all selected elements from the DOM and adds the change to the history stack
 
 ## `groupSelectedElements`
 
-	this.groupSelectedElements = function()
+    this.groupSelectedElements = function ()
 
 Wraps all the selected elements in a group (g) element
 
 ## `ungroupSelectedElement`
 
-	this.ungroupSelectedElement = function()
+    this.ungroupSelectedElement = function ()
 
 Unwraps all the elements in a selected group (g) element.  This requires significant recalculations to apply group’s transforms, etc to its children
 
 ## `moveToTopSelectedElement`
 
-	this.moveToTopSelectedElement = function()
+    this.moveToTopSelectedElement = function ()
 
 Repositions the selected element to the bottom in the DOM to appear on top of other elements
 
 ## `moveToBottomSelectedElement`
 
-	this.moveToBottomSelectedElement = function()
+    this.moveToBottomSelectedElement = function ()
 
 Repositions the selected element to the top in the DOM to appear under other elements
 
 ## `moveSelectedElements`
 
-	this.moveSelectedElements = function( dx, dy, undoable )
+    this.moveSelectedElements = function (dx, dy, undoable)
 
 Moves selected elements on the X/Y axis
 
@@ -1953,13 +1953,13 @@ Batch command for the move
 
 ## `cloneSelectedElements`
 
-	this.cloneSelectedElements = function()
+    this.cloneSelectedElements = function ()
 
 Create deep DOM copies (clones) of all selected elements and move them slightly from their originals
 
 ## `alignSelectedElements`
 
-	this.alignSelectedElements = function( type, relative_to )
+    this.alignSelectedElements = function (type, relative_to)
 
 Aligns selected elements
 
@@ -1972,7 +1972,7 @@ Aligns selected elements
 
 ## `updateCanvas`
 
-	this.updateCanvas = function( w, h )
+    this.updateCanvas = function (w, h)
 
 Updates the editor canvas width/height/position after a zoom has occurred
 
@@ -1994,7 +1994,7 @@ Object with the following values:
 
 ## `setBackground`
 
-	this.setBackground = function( color, url )
+    this.setBackground = function (color, url)
 
 Set the background of the editor (NOT the actual document)
 
@@ -2005,7 +2005,7 @@ Set the background of the editor (NOT the actual document)
 
 ## `cycleElement`
 
-	this.cycleElement = function( next )
+    this.cycleElement = function (next)
 
 Select the next/previous element within the current layer
 
