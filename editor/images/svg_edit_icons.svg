@@ -1,5 +1,5 @@
 ﻿<svg xmlns="http://www.w3.org/2000/svg">
-<!-- All images created with SVG-edit - http://svg-edit.googlecode.com/ -->
+<!-- All images created with SVG-edit - https://github.com/SVG-Edit/svgedit -->
 
 <g id="logo">
 <svg viewBox="0 0 478 472" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
@@ -721,7 +721,7 @@
 
 <g id="blur">
 <svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">
- <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <!-- Created with SVG-edit - https://github.com/SVG-Edit/svgedit -->
  <defs>
   <filter id="svg_4_blur" x="-50%" y="-50%" width="200%" height="200%">
    <feGaussianBlur stdDeviation="25"/>
@@ -814,7 +814,7 @@
 
 <g id="linecap_butt">
 <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:se="http://svg-edit.googlecode.com" xmlns:xlink="http://www.w3.org/1999/xlink">
- <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <!-- Created with SVG-edit - https://github.com/SVG-Edit/svgedit -->
  <defs>
   <linearGradient id="svg_8" x1="0.8" y1="1" x2="0.2" y2="1">
    <stop offset="0" stop-color="#000000" stop-opacity="1"/>
@@ -831,7 +831,7 @@
 
 <g id="linecap_square">
 <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:se="http://svg-edit.googlecode.com" xmlns:xlink="http://www.w3.org/1999/xlink">
- <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <!-- Created with SVG-edit - https://github.com/SVG-Edit/svgedit -->
  <defs>
   <linearGradient id="svg_8" x1="0.8" y1="1" x2="0.2" y2="1">
    <stop offset="0" stop-color="#000000" stop-opacity="1"/>
@@ -848,7 +848,7 @@
 
 <g id="linecap_round">
 <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:se="http://svg-edit.googlecode.com">
- <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <!-- Created with SVG-edit - https://github.com/SVG-Edit/svgedit -->
  <defs>
   <linearGradient y2="1" x2="0.2" y1="1" x1="0.8" id="svg_8">
    <stop stop-opacity="1" stop-color="#000000" offset="0"/>
@@ -865,7 +865,7 @@
 
 <g id="linejoin_miter">
 <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:se="http://svg-edit.googlecode.com">
- <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <!-- Created with SVG-edit - https://github.com/SVG-Edit/svgedit -->
  <defs>
   <linearGradient y2="1" x2="0.2" y1="1" x1="0.8" id="svg_8">
    <stop stop-opacity="1" stop-color="#000000" offset="0"/>
@@ -882,7 +882,7 @@
 
 <g id="linejoin_bevel">
 <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:se="http://svg-edit.googlecode.com">
- <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <!-- Created with SVG-edit - https://github.com/SVG-Edit/svgedit -->
  <defs>
   <linearGradient y2="1" x2="0.2" y1="1" x1="0.8" id="svg_8">
    <stop stop-opacity="1" stop-color="#000000" offset="0"/>
@@ -899,7 +899,7 @@
 
 <g id="linejoin_round">
 <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:se="http://svg-edit.googlecode.com">
- <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <!-- Created with SVG-edit - https://github.com/SVG-Edit/svgedit -->
  <defs>
   <linearGradient y2="1" x2="0.2" y1="1" x1="0.8" id="svg_8">
    <stop stop-opacity="1" stop-color="#000000" offset="0"/>

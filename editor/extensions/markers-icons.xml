@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg">
-    <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+    <!-- Created with SVG-edit - https://github.com/SVG-Edit/svgedit -->
     <g id="nomarker">
         <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
             <path stroke-width="10" stroke="#ff7f00" fill="#ff7f00" d="m-50,0l100,0"/>
@@ -87,7 +87,7 @@
     </g>
    <g id="textmarker">
         <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
-			<text xml:space="preserve" text-anchor="middle" font-family="serif" font-size="120"  y="40" x="0" stroke-width="0" stroke="#ff7f00" fill="#ff7f00">T</text>	
+			<text xml:space="preserve" text-anchor="middle" font-family="serif" font-size="120"  y="40" x="0" stroke-width="0" stroke="#ff7f00" fill="#ff7f00">T</text>
         </svg>
     </g>
 	<g id="mkr_markers_off">
