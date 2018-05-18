@@ -22,7 +22,7 @@ var langParam;
 
 function setStrings (type, obj, ids) {
 	// Root element to look for element from
-	var i, sel, val, $elem, elem, node, parent = $('#svg_editor').parent();
+	var sel, val, $elem, elem, parent = $('#svg_editor').parent();
 	for (sel in obj) {
 		val = obj[sel];
 		if (!val) { console.log(sel); }
@@ -34,9 +34,8 @@ function setStrings (type, obj, ids) {
 
 			switch (type) {
 			case 'content':
-				for (i = 0; i < elem.childNodes.length; i++) {
-					node = elem.childNodes[i];
-					if (node.nodeType === 3 && node.textContent.replace(/\s/g, '')) {
+				for (var i = 0, node; (node = elem.childNodes[i]); i++) {
+					if (node.nodeType === 3 && node.textContent.trim() === '') {
 						node.textContent = val;
 						break;
 					}

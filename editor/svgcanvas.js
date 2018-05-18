@@ -99,7 +99,7 @@ var svgcontent = svgdoc.createElementNS(NS.SVG, 'svg');
 
 // This function resets the svgcontent element while keeping it in the DOM.
 var clearSvgContentElement = canvas.clearSvgContentElement = function () {
-	while (svgcontent.firstChild) { svgcontent.removeChild(svgcontent.firstChild); }
+	$(svgcontent).empty();
 
 	// TODO: Clear out all other attributes first?
 	$(svgcontent).attr({
@@ -193,13 +193,13 @@ var getJsonFromSvgElement = this.getJsonFromSvgElement = function (data) {
 	};
 
 	// Iterate attributes
-	for (var i = 0; i < data.attributes.length; i++) {
-		retval.attr[data.attributes[i].name] = data.attributes[i].value;
-	};
+	for (var i = 0, attr; (attr = data.attributes[i]); i++) {
+		retval.attr[attr.name] = attr.value;
+	}
 
 	// Iterate children
-	for (var i = 0; i < data.childNodes.length; i++) {
-		retval.children.push(getJsonFromSvgElement(data.childNodes[i]));
+	for (var i = 0, node; (node = data.childNodes[i]); i++) {
+		retval.children[i] = getJsonFromSvgElement(node);
 	}
 
 	return retval;
@@ -2205,13 +2205,14 @@ var mouseUp = function (evt) {
 		// if this element is in a group, go up until we reach the top-level group
 		// just below the layer groups
 		// TODO: once we implement links, we also would have to check for <a> elements
-		while (t.parentNode.parentNode.tagName === 'g') {
+		while (t && t.parentNode && t.parentNode.parentNode && t.parentNode.parentNode.tagName === 'g') {
 			t = t.parentNode;
 		}
 		// if we are not in the middle of creating a path, and we've clicked on some shape,
 		// then go to Select mode.
 		// WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
 		if ((currentMode !== 'path' || !drawnPath) &&
+			t && t.parentNode &&
 			t.parentNode.id !== 'selectorParentGroup' &&
 			t.id !== 'svgcanvas' && t.id !== 'svgroot'
 		) {
@@ -3056,7 +3057,7 @@ return {
 		var curPt;
 		if (id.substr(0, 14) === 'pathpointgrip_') {
 			// Select this point
-			curPt = svgedit.path.path.cur_pt = parseInt(id.substr(14));
+			curPt = svgedit.path.path.cur_pt = parseInt(id.substr(14), 10);
 			svgedit.path.path.dragging = [startX, startY];
 			var seg = svgedit.path.path.segs[curPt];
 

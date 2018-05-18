@@ -14,7 +14,7 @@
 
 /**
 * @typedef AngleCoord45
-* @type {object}
+* @type {Object}
 * @property {number} x - The angle-snapped x value
 * @property {number} y - The angle-snapped y value
 * @property {number} a - The angle at which to snap
@@ -39,7 +39,7 @@ var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
  * @param {number} x - Float representing the x coordinate
  * @param {number} y - Float representing the y coordinate
  * @param {SVGMatrix} m - Matrix object to transform the point with
- * @returns {object} An x, y object representing the transformed point
+ * @returns {Object} An x, y object representing the transformed point
 */
 svgedit.math.transformPoint = function (x, y, m) {
 	return {x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f};
@@ -80,7 +80,7 @@ svgedit.math.matrixMultiply = function (matr) {
 
 /**
  * See if the given transformlist includes a non-indentity matrix transform
- * @param {object} [tlist] - The transformlist to check
+ * @param {Object} [tlist] - The transformlist to check
  * @returns {boolean} Whether or not a matrix transform was found
 */
 svgedit.math.hasMatrixTransform = function (tlist) {
@@ -100,7 +100,7 @@ svgedit.math.hasMatrixTransform = function (tlist) {
  * @param {number} w - Float with the box width
  * @param {number} h - Float with the box height
  * @param {SVGMatrix} m - Matrix object to transform the box by
- * @returns {object} An object with the following values:
+ * @returns {Object} An object with the following values:
  * tl - The top left coordinate (x,y object)
  * tr - The top right coordinate (x,y object)
  * bl - The bottom left coordinate (x,y object)
@@ -143,11 +143,11 @@ svgedit.math.transformBox = function (l, t, w, h, m) {
  * (this is the equivalent of SVGTransformList.consolidate() but unlike
  * that method, this one does not modify the actual SVGTransformList)
  * This function is very liberal with its min, max arguments
- * @param {object} tlist - The transformlist object
+ * @param {Object} tlist - The transformlist object
  * @param {integer} [min=0] - Optional integer indicating start transform position
  * @param {integer} [max] - Optional integer indicating end transform position;
  *   defaults to one less than the tlist's numberOfItems
- * @returns {object} A single matrix transform object
+ * @returns {Object} A single matrix transform object
 */
 svgedit.math.transformListToTransform = function (tlist, min, max) {
 	if (tlist == null) {
