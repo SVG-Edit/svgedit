@@ -20,7 +20,7 @@
 'use strict';
 
 if (!svgedit.utilities) {
-	svgedit.utilities = {};
+  svgedit.utilities = {};
 }
 
 // Constants
@@ -40,10 +40,10 @@ var domcontainer_ = null;
 var svgroot_ = null;
 
 svgedit.utilities.init = function (editorContext) {
-	editorContext_ = editorContext;
-	domdoc_ = editorContext.getDOMDocument();
-	domcontainer_ = editorContext.getDOMContainer();
-	svgroot_ = editorContext.getSVGRoot();
+  editorContext_ = editorContext;
+  domdoc_ = editorContext.getDOMDocument();
+  domcontainer_ = editorContext.getDOMContainer();
+  svgroot_ = editorContext.getSVGRoot();
 };
 
 // Function: svgedit.utilities.toXml
@@ -57,9 +57,9 @@ svgedit.utilities.init = function (editorContext) {
 // Returns:
 // The converted string
 svgedit.utilities.toXml = function (str) {
-	// &apos; is ok in XML, but not HTML
-	// &gt; does not normally need escaping, though it can if within a CDATA expression (and preceded by "]]")
-	return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/, '&#x27;');
+  // &apos; is ok in XML, but not HTML
+  // &gt; does not normally need escaping, though it can if within a CDATA expression (and preceded by "]]")
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/, '&#x27;');
 };
 
 // Function: svgedit.utilities.fromXml
@@ -72,7 +72,7 @@ svgedit.utilities.toXml = function (str) {
 // Returns:
 // The converted string
 svgedit.utilities.fromXml = function (str) {
-	return $('<p/>').html(str).text();
+  return $('<p/>').html(str).text();
 };
 
 // This code was written by Tyler Akins and has been placed in the
@@ -85,89 +85,89 @@ svgedit.utilities.fromXml = function (str) {
 // Function: svgedit.utilities.encode64
 // Converts a string to base64
 svgedit.utilities.encode64 = function (input) {
-	// base64 strings are 4/3 larger than the original string
-	input = svgedit.utilities.encodeUTF8(input); // convert non-ASCII characters
-	// input = svgedit.utilities.convertToXMLReferences(input);
-	if (window.btoa) {
-		return window.btoa(input); // Use native if available
-	}
-	var output = [];
-	output.length = Math.floor((input.length + 2) / 3) * 4;
-	var chr1, chr2, chr3;
-	var enc1, enc2, enc3, enc4;
-	var i = 0, p = 0;
+  // base64 strings are 4/3 larger than the original string
+  input = svgedit.utilities.encodeUTF8(input); // convert non-ASCII characters
+  // input = svgedit.utilities.convertToXMLReferences(input);
+  if (window.btoa) {
+    return window.btoa(input); // Use native if available
+  }
+  var output = [];
+  output.length = Math.floor((input.length + 2) / 3) * 4;
+  var chr1, chr2, chr3;
+  var enc1, enc2, enc3, enc4;
+  var i = 0, p = 0;
 
-	do {
-		chr1 = input.charCodeAt(i++);
-		chr2 = input.charCodeAt(i++);
-		chr3 = input.charCodeAt(i++);
+  do {
+    chr1 = input.charCodeAt(i++);
+    chr2 = input.charCodeAt(i++);
+    chr3 = input.charCodeAt(i++);
 
-		enc1 = chr1 >> 2;
-		enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-		enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-		enc4 = chr3 & 63;
+    enc1 = chr1 >> 2;
+    enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+    enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+    enc4 = chr3 & 63;
 
-		if (isNaN(chr2)) {
-			enc3 = enc4 = 64;
-		} else if (isNaN(chr3)) {
-			enc4 = 64;
-		}
+    if (isNaN(chr2)) {
+      enc3 = enc4 = 64;
+    } else if (isNaN(chr3)) {
+      enc4 = 64;
+    }
 
-		output[p++] = KEYSTR.charAt(enc1);
-		output[p++] = KEYSTR.charAt(enc2);
-		output[p++] = KEYSTR.charAt(enc3);
-		output[p++] = KEYSTR.charAt(enc4);
-	} while (i < input.length);
+    output[p++] = KEYSTR.charAt(enc1);
+    output[p++] = KEYSTR.charAt(enc2);
+    output[p++] = KEYSTR.charAt(enc3);
+    output[p++] = KEYSTR.charAt(enc4);
+  } while (i < input.length);
 
-	return output.join('');
+  return output.join('');
 };
 
 // Function: svgedit.utilities.decode64
 // Converts a string from base64
 svgedit.utilities.decode64 = function (input) {
-	if (window.atob) {
-		return svgedit.utilities.decodeUTF8(window.atob(input));
-	}
-	var output = '';
-	var chr1, chr2, chr3 = '';
-	var enc1, enc2, enc3, enc4 = '';
-	var i = 0;
+  if (window.atob) {
+    return svgedit.utilities.decodeUTF8(window.atob(input));
+  }
+  var output = '';
+  var chr1, chr2, chr3 = '';
+  var enc1, enc2, enc3, enc4 = '';
+  var i = 0;
 
-	// remove all characters that are not A-Z, a-z, 0-9, +, /, or =
-	input = input.replace(/[^A-Za-z0-9+/=]/g, '');
+  // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
+  input = input.replace(/[^A-Za-z0-9+/=]/g, '');
 
-	do {
-		enc1 = KEYSTR.indexOf(input.charAt(i++));
-		enc2 = KEYSTR.indexOf(input.charAt(i++));
-		enc3 = KEYSTR.indexOf(input.charAt(i++));
-		enc4 = KEYSTR.indexOf(input.charAt(i++));
+  do {
+    enc1 = KEYSTR.indexOf(input.charAt(i++));
+    enc2 = KEYSTR.indexOf(input.charAt(i++));
+    enc3 = KEYSTR.indexOf(input.charAt(i++));
+    enc4 = KEYSTR.indexOf(input.charAt(i++));
 
-		chr1 = (enc1 << 2) | (enc2 >> 4);
-		chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-		chr3 = ((enc3 & 3) << 6) | enc4;
+    chr1 = (enc1 << 2) | (enc2 >> 4);
+    chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+    chr3 = ((enc3 & 3) << 6) | enc4;
 
-		output = output + String.fromCharCode(chr1);
+    output = output + String.fromCharCode(chr1);
 
-		if (enc3 !== 64) {
-			output = output + String.fromCharCode(chr2);
-		}
-		if (enc4 !== 64) {
-			output = output + String.fromCharCode(chr3);
-		}
+    if (enc3 !== 64) {
+      output = output + String.fromCharCode(chr2);
+    }
+    if (enc4 !== 64) {
+      output = output + String.fromCharCode(chr3);
+    }
 
-		chr1 = chr2 = chr3 = '';
-		enc1 = enc2 = enc3 = enc4 = '';
-	} while (i < input.length);
-	return svgedit.utilities.decodeUTF8(output);
+    chr1 = chr2 = chr3 = '';
+    enc1 = enc2 = enc3 = enc4 = '';
+  } while (i < input.length);
+  return svgedit.utilities.decodeUTF8(output);
 };
 
 svgedit.utilities.decodeUTF8 = function (argString) {
-	return decodeURIComponent(escape(argString));
+  return decodeURIComponent(escape(argString));
 };
 
 // codedread:does not seem to work with webkit-based browsers on OSX // Brettz9: please test again as function upgraded
 svgedit.utilities.encodeUTF8 = function (argString) {
-	return unescape(encodeURIComponent(argString));
+  return unescape(encodeURIComponent(argString));
 };
 
 /**
@@ -176,16 +176,16 @@ svgedit.utilities.encodeUTF8 = function (argString) {
  * @return {string} object URL or empty string
  */
 svgedit.utilities.dataURLToObjectURL = function (dataurl) {
-	if (typeof Uint8Array === 'undefined' || typeof Blob === 'undefined' || typeof URL === 'undefined' || !URL.createObjectURL) {
-		return '';
-	}
-	var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-		bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-	while (n--) {
-		u8arr[n] = bstr.charCodeAt(n);
-	}
-	var blob = new Blob([u8arr], {type: mime});
-	return URL.createObjectURL(blob);
+  if (typeof Uint8Array === 'undefined' || typeof Blob === 'undefined' || typeof URL === 'undefined' || !URL.createObjectURL) {
+    return '';
+  }
+  var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+    bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  var blob = new Blob([u8arr], {type: mime});
+  return URL.createObjectURL(blob);
 };
 
 /**
@@ -194,62 +194,62 @@ svgedit.utilities.dataURLToObjectURL = function (dataurl) {
  * @return {string} object URL or empty string
  */
 svgedit.utilities.createObjectURL = function (blob) {
-	if (!blob || typeof URL === 'undefined' || !URL.createObjectURL) {
-		return '';
-	}
-	return URL.createObjectURL(blob);
+  if (!blob || typeof URL === 'undefined' || !URL.createObjectURL) {
+    return '';
+  }
+  return URL.createObjectURL(blob);
 };
 
 /**
  * @property {string} blankPageObjectURL
  */
 svgedit.utilities.blankPageObjectURL = (function () {
-	if (typeof Blob === 'undefined') {
-		return '';
-	}
-	var blob = new Blob(['<html><head><title>SVG-edit</title></head><body>&nbsp;</body></html>'], {type: 'text/html'});
-	return svgedit.utilities.createObjectURL(blob);
+  if (typeof Blob === 'undefined') {
+    return '';
+  }
+  var blob = new Blob(['<html><head><title>SVG-edit</title></head><body>&nbsp;</body></html>'], {type: 'text/html'});
+  return svgedit.utilities.createObjectURL(blob);
 })();
 
 // Function: svgedit.utilities.convertToXMLReferences
 // Converts a string to use XML references
 svgedit.utilities.convertToXMLReferences = function (input) {
-	var n,
-		output = '';
-	for (n = 0; n < input.length; n++) {
-		var c = input.charCodeAt(n);
-		if (c < 128) {
-			output += input[n];
-		} else if (c > 127) {
-			output += ('&#' + c + ';');
-		}
-	}
-	return output;
+  var n,
+    output = '';
+  for (n = 0; n < input.length; n++) {
+    var c = input.charCodeAt(n);
+    if (c < 128) {
+      output += input[n];
+    } else if (c > 127) {
+      output += ('&#' + c + ';');
+    }
+  }
+  return output;
 };
 
 // Function: svgedit.utilities.text2xml
 // Cross-browser compatible method of converting a string to an XML tree
 // found this function here: http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f
 svgedit.utilities.text2xml = function (sXML) {
-	if (sXML.indexOf('<svg:svg') >= 0) {
-		sXML = sXML.replace(/<(\/?)svg:/g, '<$1').replace('xmlns:svg', 'xmlns');
-	}
+  if (sXML.indexOf('<svg:svg') >= 0) {
+    sXML = sXML.replace(/<(\/?)svg:/g, '<$1').replace('xmlns:svg', 'xmlns');
+  }
 
-	var out, dXML;
-	try {
-		dXML = (window.DOMParser) ? new DOMParser() : new ActiveXObject('Microsoft.XMLDOM');
-		dXML.async = false;
-	} catch (e) {
-		throw new Error('XML Parser could not be instantiated');
-	}
-	try {
-		if (dXML.loadXML) {
-			out = (dXML.loadXML(sXML)) ? dXML : false;
-		} else {
-			out = dXML.parseFromString(sXML, 'text/xml');
-		}
-	} catch (e2) { throw new Error('Error parsing XML string'); }
-	return out;
+  var out, dXML;
+  try {
+    dXML = (window.DOMParser) ? new DOMParser() : new ActiveXObject('Microsoft.XMLDOM');
+    dXML.async = false;
+  } catch (e) {
+    throw new Error('XML Parser could not be instantiated');
+  }
+  try {
+    if (dXML.loadXML) {
+      out = (dXML.loadXML(sXML)) ? dXML : false;
+    } else {
+      out = dXML.parseFromString(sXML, 'text/xml');
+    }
+  } catch (e2) { throw new Error('Error parsing XML string'); }
+  return out;
 };
 
 // Function: svgedit.utilities.bboxToObj
@@ -261,12 +261,12 @@ svgedit.utilities.text2xml = function (sXML) {
 // Returns:
 // An object with properties names x, y, width, height.
 svgedit.utilities.bboxToObj = function (bbox) {
-	return {
-		x: bbox.x,
-		y: bbox.y,
-		width: bbox.width,
-		height: bbox.height
-	};
+  return {
+    x: bbox.x,
+    y: bbox.y,
+    width: bbox.width,
+    height: bbox.height
+  };
 };
 
 // Function: svgedit.utilities.walkTree
@@ -276,13 +276,13 @@ svgedit.utilities.bboxToObj = function (bbox) {
 // elem - DOM element to traverse
 // cbFn - Callback function to run on each element
 svgedit.utilities.walkTree = function (elem, cbFn) {
-	if (elem && elem.nodeType === 1) {
-		cbFn(elem);
-		var i = elem.childNodes.length;
-		while (i--) {
-			svgedit.utilities.walkTree(elem.childNodes.item(i), cbFn);
-		}
-	}
+  if (elem && elem.nodeType === 1) {
+    cbFn(elem);
+    var i = elem.childNodes.length;
+    while (i--) {
+      svgedit.utilities.walkTree(elem.childNodes.item(i), cbFn);
+    }
+  }
 };
 
 // Function: svgedit.utilities.walkTreePost
@@ -293,13 +293,13 @@ svgedit.utilities.walkTree = function (elem, cbFn) {
 // elem - DOM element to traverse
 // cbFn - Callback function to run on each element
 svgedit.utilities.walkTreePost = function (elem, cbFn) {
-	if (elem && elem.nodeType === 1) {
-		var i = elem.childNodes.length;
-		while (i--) {
-			svgedit.utilities.walkTree(elem.childNodes.item(i), cbFn);
-		}
-		cbFn(elem);
-	}
+  if (elem && elem.nodeType === 1) {
+    var i = elem.childNodes.length;
+    while (i--) {
+      svgedit.utilities.walkTree(elem.childNodes.item(i), cbFn);
+    }
+    cbFn(elem);
+  }
 };
 
 // Function: svgedit.utilities.getUrlFromAttr
@@ -315,32 +315,32 @@ svgedit.utilities.walkTreePost = function (elem, cbFn) {
 // Returns:
 // String with just the URL, like someFile.svg#foo
 svgedit.utilities.getUrlFromAttr = function (attrVal) {
-	if (attrVal) {
-		// url("#somegrad")
-		if (attrVal.indexOf('url("') === 0) {
-			return attrVal.substring(5, attrVal.indexOf('"', 6));
-		}
-		// url('#somegrad')
-		if (attrVal.indexOf("url('") === 0) {
-			return attrVal.substring(5, attrVal.indexOf("'", 6));
-		}
-		if (attrVal.indexOf('url(') === 0) {
-			return attrVal.substring(4, attrVal.indexOf(')'));
-		}
-	}
-	return null;
+  if (attrVal) {
+    // url("#somegrad")
+    if (attrVal.indexOf('url("') === 0) {
+      return attrVal.substring(5, attrVal.indexOf('"', 6));
+    }
+    // url('#somegrad')
+    if (attrVal.indexOf("url('") === 0) {
+      return attrVal.substring(5, attrVal.indexOf("'", 6));
+    }
+    if (attrVal.indexOf('url(') === 0) {
+      return attrVal.substring(4, attrVal.indexOf(')'));
+    }
+  }
+  return null;
 };
 
 // Function: svgedit.utilities.getHref
 // Returns the given element's xlink:href value
 svgedit.utilities.getHref = function (elem) {
-	return elem.getAttributeNS(NS.XLINK, 'href');
+  return elem.getAttributeNS(NS.XLINK, 'href');
 };
 
 // Function: svgedit.utilities.setHref
 // Sets the given element's xlink:href value
 svgedit.utilities.setHref = function (elem, val) {
-	elem.setAttributeNS(NS.XLINK, 'xlink:href', val);
+  elem.setAttributeNS(NS.XLINK, 'xlink:href', val);
 };
 
 // Function: findDefs
@@ -348,20 +348,20 @@ svgedit.utilities.setHref = function (elem, val) {
 // Returns:
 // The document's <defs> element, create it first if necessary
 svgedit.utilities.findDefs = function () {
-	var svgElement = editorContext_.getSVGContent();
-	var defs = svgElement.getElementsByTagNameNS(NS.SVG, 'defs');
-	if (defs.length > 0) {
-		defs = defs[0];
-	} else {
-		defs = svgElement.ownerDocument.createElementNS(NS.SVG, 'defs');
-		if (svgElement.firstChild) {
-			// first child is a comment, so call nextSibling
-			svgElement.insertBefore(defs, svgElement.firstChild.nextSibling);
-		} else {
-			svgElement.appendChild(defs);
-		}
-	}
-	return defs;
+  var svgElement = editorContext_.getSVGContent();
+  var defs = svgElement.getElementsByTagNameNS(NS.SVG, 'defs');
+  if (defs.length > 0) {
+    defs = defs[0];
+  } else {
+    defs = svgElement.ownerDocument.createElementNS(NS.SVG, 'defs');
+    if (svgElement.firstChild) {
+      // first child is a comment, so call nextSibling
+      svgElement.insertBefore(defs, svgElement.firstChild.nextSibling);
+    } else {
+      svgElement.appendChild(defs);
+    }
+  }
+  return defs;
 };
 
 // TODO(codedread): Consider moving the next to functions to bbox.js
@@ -377,75 +377,75 @@ svgedit.utilities.findDefs = function () {
 // Returns:
 // A BBox-like object
 svgedit.utilities.getPathBBox = function (path) {
-	var seglist = path.pathSegList;
-	var tot = seglist.numberOfItems;
+  var seglist = path.pathSegList;
+  var tot = seglist.numberOfItems;
 
-	var bounds = [[], []];
-	var start = seglist.getItem(0);
-	var P0 = [start.x, start.y];
+  var bounds = [[], []];
+  var start = seglist.getItem(0);
+  var P0 = [start.x, start.y];
 
-	var i;
-	for (i = 0; i < tot; i++) {
-		var seg = seglist.getItem(i);
+  var i;
+  for (i = 0; i < tot; i++) {
+    var seg = seglist.getItem(i);
 
-		if (seg.x === undef) { continue; }
+    if (seg.x === undef) { continue; }
 
-		// Add actual points to limits
-		bounds[0].push(P0[0]);
-		bounds[1].push(P0[1]);
+    // Add actual points to limits
+    bounds[0].push(P0[0]);
+    bounds[1].push(P0[1]);
 
-		if (seg.x1) {
-			var P1 = [seg.x1, seg.y1],
-				P2 = [seg.x2, seg.y2],
-				P3 = [seg.x, seg.y];
+    if (seg.x1) {
+      var P1 = [seg.x1, seg.y1],
+        P2 = [seg.x2, seg.y2],
+        P3 = [seg.x, seg.y];
 
-			var j;
-			for (j = 0; j < 2; j++) {
-				var calc = function (t) {
-					return Math.pow(1 - t, 3) * P0[j] +
-						3 * Math.pow(1 - t, 2) * t * P1[j] +
-						3 * (1 - t) * Math.pow(t, 2) * P2[j] +
-						Math.pow(t, 3) * P3[j];
-				};
+      var j;
+      for (j = 0; j < 2; j++) {
+        var calc = function (t) {
+          return Math.pow(1 - t, 3) * P0[j] +
+            3 * Math.pow(1 - t, 2) * t * P1[j] +
+            3 * (1 - t) * Math.pow(t, 2) * P2[j] +
+            Math.pow(t, 3) * P3[j];
+        };
 
-				var b = 6 * P0[j] - 12 * P1[j] + 6 * P2[j];
-				var a = -3 * P0[j] + 9 * P1[j] - 9 * P2[j] + 3 * P3[j];
-				var c = 3 * P1[j] - 3 * P0[j];
+        var b = 6 * P0[j] - 12 * P1[j] + 6 * P2[j];
+        var a = -3 * P0[j] + 9 * P1[j] - 9 * P2[j] + 3 * P3[j];
+        var c = 3 * P1[j] - 3 * P0[j];
 
-				if (a === 0) {
-					if (b === 0) {
-						continue;
-					}
-					var t = -c / b;
-					if (t > 0 && t < 1) {
-						bounds[j].push(calc(t));
-					}
-					continue;
-				}
-				var b2ac = Math.pow(b, 2) - 4 * c * a;
-				if (b2ac < 0) { continue; }
-				var t1 = (-b + Math.sqrt(b2ac)) / (2 * a);
-				if (t1 > 0 && t1 < 1) { bounds[j].push(calc(t1)); }
-				var t2 = (-b - Math.sqrt(b2ac)) / (2 * a);
-				if (t2 > 0 && t2 < 1) { bounds[j].push(calc(t2)); }
-			}
-			P0 = P3;
-		} else {
-			bounds[0].push(seg.x);
-			bounds[1].push(seg.y);
-		}
-	}
+        if (a === 0) {
+          if (b === 0) {
+            continue;
+          }
+          var t = -c / b;
+          if (t > 0 && t < 1) {
+            bounds[j].push(calc(t));
+          }
+          continue;
+        }
+        var b2ac = Math.pow(b, 2) - 4 * c * a;
+        if (b2ac < 0) { continue; }
+        var t1 = (-b + Math.sqrt(b2ac)) / (2 * a);
+        if (t1 > 0 && t1 < 1) { bounds[j].push(calc(t1)); }
+        var t2 = (-b - Math.sqrt(b2ac)) / (2 * a);
+        if (t2 > 0 && t2 < 1) { bounds[j].push(calc(t2)); }
+      }
+      P0 = P3;
+    } else {
+      bounds[0].push(seg.x);
+      bounds[1].push(seg.y);
+    }
+  }
 
-	var x = Math.min.apply(null, bounds[0]);
-	var w = Math.max.apply(null, bounds[0]) - x;
-	var y = Math.min.apply(null, bounds[1]);
-	var h = Math.max.apply(null, bounds[1]) - y;
-	return {
-		'x': x,
-		'y': y,
-		'width': w,
-		'height': h
-	};
+  var x = Math.min.apply(null, bounds[0]);
+  var w = Math.max.apply(null, bounds[0]) - x;
+  var y = Math.min.apply(null, bounds[1]);
+  var h = Math.max.apply(null, bounds[1]) - y;
+  return {
+    'x': x,
+    'y': y,
+    'width': w,
+    'height': h
+  };
 };
 
 // Function: groupBBFix
@@ -457,42 +457,42 @@ svgedit.utilities.getPathBBox = function (path) {
 // Parameters:
 // selected - Container or <use> DOM element
 function groupBBFix (selected) {
-	if (svgedit.browser.supportsHVLineContainerBBox()) {
-		try { return selected.getBBox(); } catch (e) {}
-	}
-	var ref = $.data(selected, 'ref');
-	var matched = null;
-	var ret, copy;
+  if (svgedit.browser.supportsHVLineContainerBBox()) {
+    try { return selected.getBBox(); } catch (e) {}
+  }
+  var ref = $.data(selected, 'ref');
+  var matched = null;
+  var ret, copy;
 
-	if (ref) {
-		copy = $(ref).children().clone().attr('visibility', 'hidden');
-		$(svgroot_).append(copy);
-		matched = copy.filter('line, path');
-	} else {
-		matched = $(selected).find('line, path');
-	}
+  if (ref) {
+    copy = $(ref).children().clone().attr('visibility', 'hidden');
+    $(svgroot_).append(copy);
+    matched = copy.filter('line, path');
+  } else {
+    matched = $(selected).find('line, path');
+  }
 
-	var issue = false;
-	if (matched.length) {
-		matched.each(function () {
-			var bb = this.getBBox();
-			if (!bb.width || !bb.height) {
-				issue = true;
-			}
-		});
-		if (issue) {
-			var elems = ref ? copy : $(selected).children();
-			ret = getStrokedBBox(elems); // getStrokedBBox defined in svgcanvas
-		} else {
-			ret = selected.getBBox();
-		}
-	} else {
-		ret = selected.getBBox();
-	}
-	if (ref) {
-		copy.remove();
-	}
-	return ret;
+  var issue = false;
+  if (matched.length) {
+    matched.each(function () {
+      var bb = this.getBBox();
+      if (!bb.width || !bb.height) {
+        issue = true;
+      }
+    });
+    if (issue) {
+      var elems = ref ? copy : $(selected).children();
+      ret = getStrokedBBox(elems); // getStrokedBBox defined in svgcanvas
+    } else {
+      ret = selected.getBBox();
+    }
+  } else {
+    ret = selected.getBBox();
+  }
+  if (ref) {
+    copy.remove();
+  }
+  return ret;
 }
 
 // Function: svgedit.utilities.getBBox
@@ -502,83 +502,83 @@ function groupBBFix (selected) {
 // Parameters:
 // elem - Optional DOM element to get the BBox for
 svgedit.utilities.getBBox = function (elem) {
-	var selected = elem || editorContext_.geSelectedElements()[0];
-	if (elem.nodeType !== 1) { return null; }
-	var ret = null;
-	var elname = selected.nodeName;
+  var selected = elem || editorContext_.geSelectedElements()[0];
+  if (elem.nodeType !== 1) { return null; }
+  var ret = null;
+  var elname = selected.nodeName;
 
-	switch (elname) {
-	case 'text':
-		if (selected.textContent === '') {
-			selected.textContent = 'a'; // Some character needed for the selector to use.
-			ret = selected.getBBox();
-			selected.textContent = '';
-		} else {
-			if (selected.getBBox) { ret = selected.getBBox(); }
-		}
-		break;
-	case 'path':
-		if (!svgedit.browser.supportsPathBBox()) {
-			ret = svgedit.utilities.getPathBBox(selected);
-		} else {
-			if (selected.getBBox) { ret = selected.getBBox(); }
-		}
-		break;
-	case 'g':
-	case 'a':
-		ret = groupBBFix(selected);
-		break;
-	default:
+  switch (elname) {
+  case 'text':
+    if (selected.textContent === '') {
+      selected.textContent = 'a'; // Some character needed for the selector to use.
+      ret = selected.getBBox();
+      selected.textContent = '';
+    } else {
+      if (selected.getBBox) { ret = selected.getBBox(); }
+    }
+    break;
+  case 'path':
+    if (!svgedit.browser.supportsPathBBox()) {
+      ret = svgedit.utilities.getPathBBox(selected);
+    } else {
+      if (selected.getBBox) { ret = selected.getBBox(); }
+    }
+    break;
+  case 'g':
+  case 'a':
+    ret = groupBBFix(selected);
+    break;
+  default:
 
-		if (elname === 'use') {
-			ret = groupBBFix(selected, true);
-		}
-		if (elname === 'use' || (elname === 'foreignObject' && svgedit.browser.isWebkit())) {
-			if (!ret) { ret = selected.getBBox(); }
-			// This is resolved in later versions of webkit, perhaps we should
-			// have a featured detection for correct 'use' behavior?
-			// ——————————
-			if (!svgedit.browser.isWebkit()) {
-				var bb = {};
-				bb.width = ret.width;
-				bb.height = ret.height;
-				bb.x = ret.x + parseFloat(selected.getAttribute('x') || 0);
-				bb.y = ret.y + parseFloat(selected.getAttribute('y') || 0);
-				ret = bb;
-			}
-		} else if (~visElemsArr.indexOf(elname)) {
-			if (selected) {
-				try {
-					ret = selected.getBBox();
-				} catch (err) {
-					// tspan (and textPath apparently) have no `getBBox` in Firefox: https://bugzilla.mozilla.org/show_bug.cgi?id=937268
-					// Re: Chrome returning bbox for containing text element, see: https://bugs.chromium.org/p/chromium/issues/detail?id=349835
-					var extent = selected.getExtentOfChar(0); // pos+dimensions of the first glyph
-					var width = selected.getComputedTextLength(); // width of the tspan
-					ret = {
-						x: extent.x,
-						y: extent.y,
-						width: width,
-						height: extent.height
-					};
-				}
-			} else {
-				// Check if element is child of a foreignObject
-				var fo = $(selected).closest('foreignObject');
-				if (fo.length) {
-					if (fo[0].getBBox) {
-						ret = fo[0].getBBox();
-					}
-				}
-			}
-		}
-	}
-	if (ret) {
-		ret = svgedit.utilities.bboxToObj(ret);
-	}
+    if (elname === 'use') {
+      ret = groupBBFix(selected, true);
+    }
+    if (elname === 'use' || (elname === 'foreignObject' && svgedit.browser.isWebkit())) {
+      if (!ret) { ret = selected.getBBox(); }
+      // This is resolved in later versions of webkit, perhaps we should
+      // have a featured detection for correct 'use' behavior?
+      // ——————————
+      if (!svgedit.browser.isWebkit()) {
+        var bb = {};
+        bb.width = ret.width;
+        bb.height = ret.height;
+        bb.x = ret.x + parseFloat(selected.getAttribute('x') || 0);
+        bb.y = ret.y + parseFloat(selected.getAttribute('y') || 0);
+        ret = bb;
+      }
+    } else if (~visElemsArr.indexOf(elname)) {
+      if (selected) {
+        try {
+          ret = selected.getBBox();
+        } catch (err) {
+          // tspan (and textPath apparently) have no `getBBox` in Firefox: https://bugzilla.mozilla.org/show_bug.cgi?id=937268
+          // Re: Chrome returning bbox for containing text element, see: https://bugs.chromium.org/p/chromium/issues/detail?id=349835
+          var extent = selected.getExtentOfChar(0); // pos+dimensions of the first glyph
+          var width = selected.getComputedTextLength(); // width of the tspan
+          ret = {
+            x: extent.x,
+            y: extent.y,
+            width: width,
+            height: extent.height
+          };
+        }
+      } else {
+        // Check if element is child of a foreignObject
+        var fo = $(selected).closest('foreignObject');
+        if (fo.length) {
+          if (fo[0].getBBox) {
+            ret = fo[0].getBBox();
+          }
+        }
+      }
+    }
+  }
+  if (ret) {
+    ret = svgedit.utilities.bboxToObj(ret);
+  }
 
-	// get the bounding box from the DOM (which is in that element's coordinate system)
-	return ret;
+  // get the bounding box from the DOM (which is in that element's coordinate system)
+  return ret;
 };
 
 // Function: getPathDFromSegments
@@ -591,18 +591,18 @@ svgedit.utilities.getBBox = function (elem) {
 // Returns:
 // The converted path d attribute.
 svgedit.utilities.getPathDFromSegments = function (pathSegments) {
-	var d = '';
+  var d = '';
 
-	$.each(pathSegments, function (j, seg) {
-		var i;
-		var pts = seg[1];
-		d += seg[0];
-		for (i = 0; i < pts.length; i += 2) {
-			d += (pts[i] + ',' + pts[i + 1]) + ' ';
-		}
-	});
+  $.each(pathSegments, function (j, seg) {
+    var i;
+    var pts = seg[1];
+    d += seg[0];
+    for (i = 0; i < pts.length; i += 2) {
+      d += (pts[i] + ',' + pts[i + 1]) + ' ';
+    }
+  });
 
-	return d;
+  return d;
 };
 
 // Function: getPathDFromElement
@@ -614,80 +614,80 @@ svgedit.utilities.getPathDFromSegments = function (pathSegments) {
 // Returns:
 // The path d attribute or undefined if the element type is unknown.
 svgedit.utilities.getPathDFromElement = function (elem) {
-	// Possibly the cubed root of 6, but 1.81 works best
-	var num = 1.81;
-	var d, a, rx, ry;
-	switch (elem.tagName) {
-	case 'ellipse':
-	case 'circle':
-		a = $(elem).attr(['rx', 'ry', 'cx', 'cy']);
-		var cx = a.cx, cy = a.cy;
-		rx = a.rx;
-		ry = a.ry;
-		if (elem.tagName === 'circle') {
-			rx = ry = $(elem).attr('r');
-		}
+  // Possibly the cubed root of 6, but 1.81 works best
+  var num = 1.81;
+  var d, a, rx, ry;
+  switch (elem.tagName) {
+  case 'ellipse':
+  case 'circle':
+    a = $(elem).attr(['rx', 'ry', 'cx', 'cy']);
+    var cx = a.cx, cy = a.cy;
+    rx = a.rx;
+    ry = a.ry;
+    if (elem.tagName === 'circle') {
+      rx = ry = $(elem).attr('r');
+    }
 
-		d = svgedit.utilities.getPathDFromSegments([
-			['M', [(cx - rx), (cy)]],
-			['C', [(cx - rx), (cy - ry / num), (cx - rx / num), (cy - ry), (cx), (cy - ry)]],
-			['C', [(cx + rx / num), (cy - ry), (cx + rx), (cy - ry / num), (cx + rx), (cy)]],
-			['C', [(cx + rx), (cy + ry / num), (cx + rx / num), (cy + ry), (cx), (cy + ry)]],
-			['C', [(cx - rx / num), (cy + ry), (cx - rx), (cy + ry / num), (cx - rx), (cy)]],
-			['Z', []]
-		]);
-		break;
-	case 'path':
-		d = elem.getAttribute('d');
-		break;
-	case 'line':
-		a = $(elem).attr(['x1', 'y1', 'x2', 'y2']);
-		d = 'M' + a.x1 + ',' + a.y1 + 'L' + a.x2 + ',' + a.y2;
-		break;
-	case 'polyline':
-		d = 'M' + elem.getAttribute('points');
-		break;
-	case 'polygon':
-		d = 'M' + elem.getAttribute('points') + ' Z';
-		break;
-	case 'rect':
-		var r = $(elem).attr(['rx', 'ry']);
-		rx = r.rx;
-		ry = r.ry;
-		var b = elem.getBBox();
-		var x = b.x, y = b.y, w = b.width, h = b.height;
-		num = 4 - num; // Why? Because!
+    d = svgedit.utilities.getPathDFromSegments([
+      ['M', [(cx - rx), (cy)]],
+      ['C', [(cx - rx), (cy - ry / num), (cx - rx / num), (cy - ry), (cx), (cy - ry)]],
+      ['C', [(cx + rx / num), (cy - ry), (cx + rx), (cy - ry / num), (cx + rx), (cy)]],
+      ['C', [(cx + rx), (cy + ry / num), (cx + rx / num), (cy + ry), (cx), (cy + ry)]],
+      ['C', [(cx - rx / num), (cy + ry), (cx - rx), (cy + ry / num), (cx - rx), (cy)]],
+      ['Z', []]
+    ]);
+    break;
+  case 'path':
+    d = elem.getAttribute('d');
+    break;
+  case 'line':
+    a = $(elem).attr(['x1', 'y1', 'x2', 'y2']);
+    d = 'M' + a.x1 + ',' + a.y1 + 'L' + a.x2 + ',' + a.y2;
+    break;
+  case 'polyline':
+    d = 'M' + elem.getAttribute('points');
+    break;
+  case 'polygon':
+    d = 'M' + elem.getAttribute('points') + ' Z';
+    break;
+  case 'rect':
+    var r = $(elem).attr(['rx', 'ry']);
+    rx = r.rx;
+    ry = r.ry;
+    var b = elem.getBBox();
+    var x = b.x, y = b.y, w = b.width, h = b.height;
+    num = 4 - num; // Why? Because!
 
-		if (!rx && !ry) {
-			// Regular rect
-			d = svgedit.utilities.getPathDFromSegments([
-				['M', [x, y]],
-				['L', [x + w, y]],
-				['L', [x + w, y + h]],
-				['L', [x, y + h]],
-				['L', [x, y]],
-				['Z', []]
-			]);
-		} else {
-			d = svgedit.utilities.getPathDFromSegments([
-				['M', [x, y + ry]],
-				['C', [x, y + ry / num, x + rx / num, y, x + rx, y]],
-				['L', [x + w - rx, y]],
-				['C', [x + w - rx / num, y, x + w, y + ry / num, x + w, y + ry]],
-				['L', [x + w, y + h - ry]],
-				['C', [x + w, y + h - ry / num, x + w - rx / num, y + h, x + w - rx, y + h]],
-				['L', [x + rx, y + h]],
-				['C', [x + rx / num, y + h, x, y + h - ry / num, x, y + h - ry]],
-				['L', [x, y + ry]],
-				['Z', []]
-			]);
-		}
-		break;
-	default:
-		break;
-	}
+    if (!rx && !ry) {
+      // Regular rect
+      d = svgedit.utilities.getPathDFromSegments([
+        ['M', [x, y]],
+        ['L', [x + w, y]],
+        ['L', [x + w, y + h]],
+        ['L', [x, y + h]],
+        ['L', [x, y]],
+        ['Z', []]
+      ]);
+    } else {
+      d = svgedit.utilities.getPathDFromSegments([
+        ['M', [x, y + ry]],
+        ['C', [x, y + ry / num, x + rx / num, y, x + rx, y]],
+        ['L', [x + w - rx, y]],
+        ['C', [x + w - rx / num, y, x + w, y + ry / num, x + w, y + ry]],
+        ['L', [x + w, y + h - ry]],
+        ['C', [x + w, y + h - ry / num, x + w - rx / num, y + h, x + w - rx, y + h]],
+        ['L', [x + rx, y + h]],
+        ['C', [x + rx / num, y + h, x, y + h - ry / num, x, y + h - ry]],
+        ['L', [x, y + ry]],
+        ['Z', []]
+      ]);
+    }
+    break;
+  default:
+    break;
+  }
 
-	return d;
+  return d;
 };
 
 // Function: getExtraAttributesForConvertToPath
@@ -699,16 +699,16 @@ svgedit.utilities.getPathDFromElement = function (elem) {
 // Returns:
 // An object with attributes.
 svgedit.utilities.getExtraAttributesForConvertToPath = function (elem) {
-	var attrs = {};
-	// TODO: make this list global so that we can properly maintain it
-	// TODO: what about @transform, @clip-rule, @fill-rule, etc?
-	$.each(['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'], function () {
-		var a = elem.getAttribute(this);
-		if (a) {
-			attrs[this] = a;
-		}
-	});
-	return attrs;
+  var attrs = {};
+  // TODO: make this list global so that we can properly maintain it
+  // TODO: what about @transform, @clip-rule, @fill-rule, etc?
+  $.each(['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'], function () {
+    var a = elem.getAttribute(this);
+    if (a) {
+      attrs[this] = a;
+    }
+  });
+  return attrs;
 };
 
 // Function: getBBoxOfElementAsPath
@@ -722,37 +722,37 @@ svgedit.utilities.getExtraAttributesForConvertToPath = function (elem) {
 // Returns:
 // The resulting path's bounding box object.
 svgedit.utilities.getBBoxOfElementAsPath = function (elem, addSvgElementFromJson, pathActions) {
-	var path = addSvgElementFromJson({
-		'element': 'path',
-		'attr': svgedit.utilities.getExtraAttributesForConvertToPath(elem)
-	});
+  var path = addSvgElementFromJson({
+    'element': 'path',
+    'attr': svgedit.utilities.getExtraAttributesForConvertToPath(elem)
+  });
 
-	var eltrans = elem.getAttribute('transform');
-	if (eltrans) {
-		path.setAttribute('transform', eltrans);
-	}
+  var eltrans = elem.getAttribute('transform');
+  if (eltrans) {
+    path.setAttribute('transform', eltrans);
+  }
 
-	var parent = elem.parentNode;
-	if (elem.nextSibling) {
-		parent.insertBefore(path, elem);
-	} else {
-		parent.appendChild(path);
-	}
+  var parent = elem.parentNode;
+  if (elem.nextSibling) {
+    parent.insertBefore(path, elem);
+  } else {
+    parent.appendChild(path);
+  }
 
-	var d = svgedit.utilities.getPathDFromElement(elem);
-	if (d) path.setAttribute('d', d);
-	else path.parentNode.removeChild(path);
+  var d = svgedit.utilities.getPathDFromElement(elem);
+  if (d) path.setAttribute('d', d);
+  else path.parentNode.removeChild(path);
 
-	// Get the correct BBox of the new path, then discard it
-	pathActions.resetOrientation(path);
-	var bb = false;
-	try {
-		bb = path.getBBox();
-	} catch (e) {
-		// Firefox fails
-	}
-	path.parentNode.removeChild(path);
-	return bb;
+  // Get the correct BBox of the new path, then discard it
+  pathActions.resetOrientation(path);
+  var bb = false;
+  try {
+    bb = path.getBBox();
+  } catch (e) {
+    // Firefox fails
+  }
+  path.parentNode.removeChild(path);
+  return bb;
 };
 
 // Function: convertToPath
@@ -771,61 +771,61 @@ svgedit.utilities.getBBoxOfElementAsPath = function (elem, addSvgElementFromJson
 // Returns:
 // The converted path element or null if the DOM element was not recognized.
 svgedit.utilities.convertToPath = function (elem, attrs, addSvgElementFromJson, pathActions, clearSelection, addToSelection, history, addCommandToHistory) {
-	var batchCmd = new history.BatchCommand('Convert element to Path');
+  var batchCmd = new history.BatchCommand('Convert element to Path');
 
-	// Any attribute on the element not covered by the passed-in attributes
-	attrs = $.extend({}, attrs, svgedit.utilities.getExtraAttributesForConvertToPath(elem));
+  // Any attribute on the element not covered by the passed-in attributes
+  attrs = $.extend({}, attrs, svgedit.utilities.getExtraAttributesForConvertToPath(elem));
 
-	var path = addSvgElementFromJson({
-		'element': 'path',
-		'attr': attrs
-	});
+  var path = addSvgElementFromJson({
+    'element': 'path',
+    'attr': attrs
+  });
 
-	var eltrans = elem.getAttribute('transform');
-	if (eltrans) {
-		path.setAttribute('transform', eltrans);
-	}
+  var eltrans = elem.getAttribute('transform');
+  if (eltrans) {
+    path.setAttribute('transform', eltrans);
+  }
 
-	var id = elem.id;
-	var parent = elem.parentNode;
-	if (elem.nextSibling) {
-		parent.insertBefore(path, elem);
-	} else {
-		parent.appendChild(path);
-	}
+  var id = elem.id;
+  var parent = elem.parentNode;
+  if (elem.nextSibling) {
+    parent.insertBefore(path, elem);
+  } else {
+    parent.appendChild(path);
+  }
 
-	var d = svgedit.utilities.getPathDFromElement(elem);
-	if (d) {
-		path.setAttribute('d', d);
+  var d = svgedit.utilities.getPathDFromElement(elem);
+  if (d) {
+    path.setAttribute('d', d);
 
-		// Replace the current element with the converted one
+    // Replace the current element with the converted one
 
-		// Reorient if it has a matrix
-		if (eltrans) {
-			var tlist = svgedit.transformlist.getTransformList(path);
-			if (svgedit.math.hasMatrixTransform(tlist)) {
-				pathActions.resetOrientation(path);
-			}
-		}
+    // Reorient if it has a matrix
+    if (eltrans) {
+      var tlist = svgedit.transformlist.getTransformList(path);
+      if (svgedit.math.hasMatrixTransform(tlist)) {
+        pathActions.resetOrientation(path);
+      }
+    }
 
-		var nextSibling = elem.nextSibling;
-		batchCmd.addSubCommand(new history.RemoveElementCommand(elem, nextSibling, parent));
-		batchCmd.addSubCommand(new history.InsertElementCommand(path));
+    var nextSibling = elem.nextSibling;
+    batchCmd.addSubCommand(new history.RemoveElementCommand(elem, nextSibling, parent));
+    batchCmd.addSubCommand(new history.InsertElementCommand(path));
 
-		clearSelection();
-		elem.parentNode.removeChild(elem);
-		path.setAttribute('id', id);
-		path.removeAttribute('visibility');
-		addToSelection([path], true);
+    clearSelection();
+    elem.parentNode.removeChild(elem);
+    path.setAttribute('id', id);
+    path.removeAttribute('visibility');
+    addToSelection([path], true);
 
-		addCommandToHistory(batchCmd);
+    addCommandToHistory(batchCmd);
 
-		return path;
-	} else {
-		// the elem.tagName was not recognized, so no "d" attribute. Remove it, so we've haven't changed anything.
-		path.parentNode.removeChild(path);
-		return null;
-	}
+    return path;
+  } else {
+    // the elem.tagName was not recognized, so no "d" attribute. Remove it, so we've haven't changed anything.
+    path.parentNode.removeChild(path);
+    return null;
+  }
 };
 
 // Function: bBoxCanBeOptimizedOverNativeGetBBox
@@ -851,10 +851,10 @@ svgedit.utilities.convertToPath = function (elem, attrs, addSvgElementFromJson, 
 // Returns:
 // True if the bbox can be optimized.
 function bBoxCanBeOptimizedOverNativeGetBBox (angle, hasMatrixTransform) {
-	var angleModulo90 = angle % 90;
-	var closeTo90 = angleModulo90 < -89.99 || angleModulo90 > 89.99;
-	var closeTo0 = angleModulo90 > -0.001 && angleModulo90 < 0.001;
-	return hasMatrixTransform || !(closeTo0 || closeTo90);
+  var angleModulo90 = angle % 90;
+  var closeTo90 = angleModulo90 < -89.99 || angleModulo90 > 89.99;
+  var closeTo0 = angleModulo90 > -0.001 && angleModulo90 < 0.001;
+  return hasMatrixTransform || !(closeTo0 || closeTo90);
 }
 
 // Function: getBBoxWithTransform
@@ -868,64 +868,64 @@ function bBoxCanBeOptimizedOverNativeGetBBox (angle, hasMatrixTransform) {
 // Returns:
 // A single bounding box object
 svgedit.utilities.getBBoxWithTransform = function (elem, addSvgElementFromJson, pathActions) {
-	// TODO: Fix issue with rotated groups. Currently they work
-	// fine in FF, but not in other browsers (same problem mentioned
-	// in Issue 339 comment #2).
+  // TODO: Fix issue with rotated groups. Currently they work
+  // fine in FF, but not in other browsers (same problem mentioned
+  // in Issue 339 comment #2).
 
-	var bb = svgedit.utilities.getBBox(elem);
+  var bb = svgedit.utilities.getBBox(elem);
 
-	if (!bb) {
-		return null;
-	}
+  if (!bb) {
+    return null;
+  }
 
-	var tlist = svgedit.transformlist.getTransformList(elem);
-	var angle = svgedit.utilities.getRotationAngleFromTransformList(tlist);
-	var hasMatrixTransform = svgedit.math.hasMatrixTransform(tlist);
+  var tlist = svgedit.transformlist.getTransformList(elem);
+  var angle = svgedit.utilities.getRotationAngleFromTransformList(tlist);
+  var hasMatrixTransform = svgedit.math.hasMatrixTransform(tlist);
 
-	if (angle || hasMatrixTransform) {
-		var goodBb = false;
-		if (bBoxCanBeOptimizedOverNativeGetBBox(angle, hasMatrixTransform)) {
-			// Get the BBox from the raw path for these elements
-			// TODO: why ellipse and not circle
-			var elemNames = ['ellipse', 'path', 'line', 'polyline', 'polygon'];
-			if (elemNames.indexOf(elem.tagName) >= 0) {
-				bb = goodBb = svgedit.utilities.getBBoxOfElementAsPath(elem, addSvgElementFromJson, pathActions);
-			} else if (elem.tagName === 'rect') {
-				// Look for radius
-				var rx = elem.getAttribute('rx');
-				var ry = elem.getAttribute('ry');
-				if (rx || ry) {
-					bb = goodBb = svgedit.utilities.getBBoxOfElementAsPath(elem, addSvgElementFromJson, pathActions);
-				}
-			}
-		}
+  if (angle || hasMatrixTransform) {
+    var goodBb = false;
+    if (bBoxCanBeOptimizedOverNativeGetBBox(angle, hasMatrixTransform)) {
+      // Get the BBox from the raw path for these elements
+      // TODO: why ellipse and not circle
+      var elemNames = ['ellipse', 'path', 'line', 'polyline', 'polygon'];
+      if (elemNames.indexOf(elem.tagName) >= 0) {
+        bb = goodBb = svgedit.utilities.getBBoxOfElementAsPath(elem, addSvgElementFromJson, pathActions);
+      } else if (elem.tagName === 'rect') {
+        // Look for radius
+        var rx = elem.getAttribute('rx');
+        var ry = elem.getAttribute('ry');
+        if (rx || ry) {
+          bb = goodBb = svgedit.utilities.getBBoxOfElementAsPath(elem, addSvgElementFromJson, pathActions);
+        }
+      }
+    }
 
-		if (!goodBb) {
-			var matrix = svgedit.math.transformListToTransform(tlist).matrix;
-			bb = svgedit.math.transformBox(bb.x, bb.y, bb.width, bb.height, matrix).aabox;
+    if (!goodBb) {
+      var matrix = svgedit.math.transformListToTransform(tlist).matrix;
+      bb = svgedit.math.transformBox(bb.x, bb.y, bb.width, bb.height, matrix).aabox;
 
-			// Old technique that was exceedingly slow with large documents.
-			//
-			// Accurate way to get BBox of rotated element in Firefox:
-			// Put element in group and get its BBox
-			//
-			// Must use clone else FF freaks out
-			// var clone = elem.cloneNode(true);
-			// var g = document.createElementNS(NS.SVG, 'g');
-			// var parent = elem.parentNode;
-			// parent.appendChild(g);
-			// g.appendChild(clone);
-			// var bb2 = svgedit.utilities.bboxToObj(g.getBBox());
-			// parent.removeChild(g);
-		}
-	}
-	return bb;
+      // Old technique that was exceedingly slow with large documents.
+      //
+      // Accurate way to get BBox of rotated element in Firefox:
+      // Put element in group and get its BBox
+      //
+      // Must use clone else FF freaks out
+      // var clone = elem.cloneNode(true);
+      // var g = document.createElementNS(NS.SVG, 'g');
+      // var parent = elem.parentNode;
+      // parent.appendChild(g);
+      // g.appendChild(clone);
+      // var bb2 = svgedit.utilities.bboxToObj(g.getBBox());
+      // parent.removeChild(g);
+    }
+  }
+  return bb;
 };
 
 // TODO: This is problematic with large stroke-width and, for example, a single horizontal line. The calculated BBox extends way beyond left and right sides.
 function getStrokeOffsetForBBox (elem) {
-	var sw = elem.getAttribute('stroke-width');
-	return (!isNaN(sw) && elem.getAttribute('stroke') !== 'none') ? sw / 2 : 0;
+  var sw = elem.getAttribute('stroke-width');
+  return (!isNaN(sw) && elem.getAttribute('stroke') !== 'none') ? sw / 2 : 0;
 }
 
 // Function: getStrokedBBox
@@ -939,54 +939,54 @@ function getStrokeOffsetForBBox (elem) {
 // Returns:
 // A single bounding box object
 svgedit.utilities.getStrokedBBox = function (elems, addSvgElementFromJson, pathActions) {
-	if (!elems || !elems.length) { return false; }
+  if (!elems || !elems.length) { return false; }
 
-	var fullBb;
-	$.each(elems, function () {
-		if (fullBb) { return; }
-		if (!this.parentNode) { return; }
-		fullBb = svgedit.utilities.getBBoxWithTransform(this, addSvgElementFromJson, pathActions);
-	});
+  var fullBb;
+  $.each(elems, function () {
+    if (fullBb) { return; }
+    if (!this.parentNode) { return; }
+    fullBb = svgedit.utilities.getBBoxWithTransform(this, addSvgElementFromJson, pathActions);
+  });
 
-	// This shouldn't ever happen...
-	if (fullBb === undefined) { return null; }
+  // This shouldn't ever happen...
+  if (fullBb === undefined) { return null; }
 
-	// fullBb doesn't include the stoke, so this does no good!
-	// if (elems.length == 1) return fullBb;
+  // fullBb doesn't include the stoke, so this does no good!
+  // if (elems.length == 1) return fullBb;
 
-	var maxX = fullBb.x + fullBb.width;
-	var maxY = fullBb.y + fullBb.height;
-	var minX = fullBb.x;
-	var minY = fullBb.y;
+  var maxX = fullBb.x + fullBb.width;
+  var maxY = fullBb.y + fullBb.height;
+  var minX = fullBb.x;
+  var minY = fullBb.y;
 
-	// If only one elem, don't call the potentially slow getBBoxWithTransform method again.
-	if (elems.length === 1) {
-		var offset = getStrokeOffsetForBBox(elems[0]);
-		minX -= offset;
-		minY -= offset;
-		maxX += offset;
-		maxY += offset;
-	} else {
-		$.each(elems, function (i, elem) {
-			var curBb = svgedit.utilities.getBBoxWithTransform(elem, addSvgElementFromJson, pathActions);
-			if (curBb) {
-				var offset = getStrokeOffsetForBBox(elem);
-				minX = Math.min(minX, curBb.x - offset);
-				minY = Math.min(minY, curBb.y - offset);
-				// TODO: The old code had this test for max, but not min. I suspect this test should be for both min and max
-				if (elem.nodeType === 1) {
-					maxX = Math.max(maxX, curBb.x + curBb.width + offset);
-					maxY = Math.max(maxY, curBb.y + curBb.height + offset);
-				}
-			}
-		});
-	}
+  // If only one elem, don't call the potentially slow getBBoxWithTransform method again.
+  if (elems.length === 1) {
+    var offset = getStrokeOffsetForBBox(elems[0]);
+    minX -= offset;
+    minY -= offset;
+    maxX += offset;
+    maxY += offset;
+  } else {
+    $.each(elems, function (i, elem) {
+      var curBb = svgedit.utilities.getBBoxWithTransform(elem, addSvgElementFromJson, pathActions);
+      if (curBb) {
+        var offset = getStrokeOffsetForBBox(elem);
+        minX = Math.min(minX, curBb.x - offset);
+        minY = Math.min(minY, curBb.y - offset);
+        // TODO: The old code had this test for max, but not min. I suspect this test should be for both min and max
+        if (elem.nodeType === 1) {
+          maxX = Math.max(maxX, curBb.x + curBb.width + offset);
+          maxY = Math.max(maxY, curBb.y + curBb.height + offset);
+        }
+      }
+    });
+  }
 
-	fullBb.x = minX;
-	fullBb.y = minY;
-	fullBb.width = maxX - minX;
-	fullBb.height = maxY - minY;
-	return fullBb;
+  fullBb.x = minX;
+  fullBb.y = minY;
+  fullBb.width = maxX - minX;
+  fullBb.height = maxY - minY;
+  return fullBb;
 };
 
 // Function: svgedit.utilities.getRotationAngleFromTransformList
@@ -999,16 +999,16 @@ svgedit.utilities.getStrokedBBox = function (elems, addSvgElementFromJson, pathA
 // Returns:
 // Float with the angle in degrees or radians
 svgedit.utilities.getRotationAngleFromTransformList = function (tlist, toRad) {
-	if (!tlist) { return 0; } // <svg> elements have no tlist
-	var N = tlist.numberOfItems;
-	var i;
-	for (i = 0; i < N; ++i) {
-		var xform = tlist.getItem(i);
-		if (xform.type === 4) {
-			return toRad ? xform.angle * Math.PI / 180.0 : xform.angle;
-		}
-	}
-	return 0.0;
+  if (!tlist) { return 0; } // <svg> elements have no tlist
+  var N = tlist.numberOfItems;
+  var i;
+  for (i = 0; i < N; ++i) {
+    var xform = tlist.getItem(i);
+    if (xform.type === 4) {
+      return toRad ? xform.angle * Math.PI / 180.0 : xform.angle;
+    }
+  }
+  return 0.0;
 };
 
 // Function: svgedit.utilities.getRotationAngle
@@ -1021,10 +1021,10 @@ svgedit.utilities.getRotationAngleFromTransformList = function (tlist, toRad) {
 // Returns:
 // Float with the angle in degrees or radians
 svgedit.utilities.getRotationAngle = function (elem, toRad) {
-	var selected = elem || editorContext_.getSelectedElements()[0];
-	// find the rotation transform (if any) and set it
-	var tlist = svgedit.transformlist.getTransformList(selected);
-	return svgedit.utilities.getRotationAngleFromTransformList(tlist, toRad);
+  var selected = elem || editorContext_.getSelectedElements()[0];
+  // find the rotation transform (if any) and set it
+  var tlist = svgedit.transformlist.getTransformList(selected);
+  return svgedit.utilities.getRotationAngleFromTransformList(tlist, toRad);
 };
 
 // Function getRefElem
@@ -1033,7 +1033,7 @@ svgedit.utilities.getRotationAngle = function (elem, toRad) {
 // Parameters:
 // attrVal - The attribute value as a string
 svgedit.utilities.getRefElem = function (attrVal) {
-	return svgedit.utilities.getElem(svgedit.utilities.getUrlFromAttr(attrVal).substr(1));
+  return svgedit.utilities.getElem(svgedit.utilities.getUrlFromAttr(attrVal).substr(1));
 };
 
 // Function: getElem
@@ -1042,25 +1042,25 @@ svgedit.utilities.getRefElem = function (attrVal) {
 // Parameters:
 // id - String with the element's new ID
 if (svgedit.browser.supportsSelectors()) {
-	svgedit.utilities.getElem = function (id) {
-		// querySelector lookup
-		return svgroot_.querySelector('#' + id);
-	};
+  svgedit.utilities.getElem = function (id) {
+    // querySelector lookup
+    return svgroot_.querySelector('#' + id);
+  };
 } else if (svgedit.browser.supportsXpath()) {
-	svgedit.utilities.getElem = function (id) {
-		// xpath lookup
-		return domdoc_.evaluate(
-			'svg:svg[@id="svgroot"]//svg:*[@id="' + id + '"]',
-			domcontainer_,
-			function () { return svgedit.NS.SVG; },
-			9,
-			null).singleNodeValue;
-	};
+  svgedit.utilities.getElem = function (id) {
+    // xpath lookup
+    return domdoc_.evaluate(
+      'svg:svg[@id="svgroot"]//svg:*[@id="' + id + '"]',
+      domcontainer_,
+      function () { return svgedit.NS.SVG; },
+      9,
+      null).singleNodeValue;
+  };
 } else {
-	svgedit.utilities.getElem = function (id) {
-		// jQuery lookup: twice as slow as xpath in FF
-		return $(svgroot_).find('[id=' + id + ']')[0];
-	};
+  svgedit.utilities.getElem = function (id) {
+    // jQuery lookup: twice as slow as xpath in FF
+    return $(svgroot_).find('[id=' + id + ']')[0];
+  };
 }
 
 // Function: assignAttributes
@@ -1072,20 +1072,20 @@ if (svgedit.browser.supportsSelectors()) {
 // suspendLength - Optional integer of milliseconds to suspend redraw
 // unitCheck - Boolean to indicate the need to use svgedit.units.setUnitAttr
 svgedit.utilities.assignAttributes = function (node, attrs, suspendLength, unitCheck) {
-	var i;
-	for (i in attrs) {
-		var ns = (i.substr(0, 4) === 'xml:'
-			? NS.XML
-			: i.substr(0, 6) === 'xlink:' ? NS.XLINK : null);
+  var i;
+  for (i in attrs) {
+    var ns = (i.substr(0, 4) === 'xml:'
+      ? NS.XML
+      : i.substr(0, 6) === 'xlink:' ? NS.XLINK : null);
 
-		if (ns) {
-			node.setAttributeNS(ns, i, attrs[i]);
-		} else if (!unitCheck) {
-			node.setAttribute(i, attrs[i]);
-		} else {
-			svgedit.units.setUnitAttr(node, i, attrs[i]);
-		}
-	}
+    if (ns) {
+      node.setAttributeNS(ns, i, attrs[i]);
+    } else if (!unitCheck) {
+      node.setAttribute(i, attrs[i]);
+    } else {
+      svgedit.units.setUnitAttr(node, i, attrs[i]);
+    }
+  }
 };
 
 // Function: cleanupElement
@@ -1094,51 +1094,51 @@ svgedit.utilities.assignAttributes = function (node, attrs, suspendLength, unitC
 // Parameters:
 // element - DOM element to clean up
 svgedit.utilities.cleanupElement = function (element) {
-	var defaults = {
-		'fill-opacity': 1,
-		'stop-opacity': 1,
-		'opacity': 1,
-		'stroke': 'none',
-		'stroke-dasharray': 'none',
-		'stroke-linejoin': 'miter',
-		'stroke-linecap': 'butt',
-		'stroke-opacity': 1,
-		'stroke-width': 1,
-		'rx': 0,
-		'ry': 0
-	};
+  var defaults = {
+    'fill-opacity': 1,
+    'stop-opacity': 1,
+    'opacity': 1,
+    'stroke': 'none',
+    'stroke-dasharray': 'none',
+    'stroke-linejoin': 'miter',
+    'stroke-linecap': 'butt',
+    'stroke-opacity': 1,
+    'stroke-width': 1,
+    'rx': 0,
+    'ry': 0
+  };
 
-	if (element.nodeName === 'ellipse') {
-		// Ellipse elements requires rx and ry attributes
-		delete defaults.rx;
-		delete defaults.ry;
-	}
+  if (element.nodeName === 'ellipse') {
+    // Ellipse elements requires rx and ry attributes
+    delete defaults.rx;
+    delete defaults.ry;
+  }
 
-	var attr;
-	for (attr in defaults) {
-		var val = defaults[attr];
-		if (element.getAttribute(attr) === String(val)) {
-			element.removeAttribute(attr);
-		}
-	}
+  var attr;
+  for (attr in defaults) {
+    var val = defaults[attr];
+    if (element.getAttribute(attr) === String(val)) {
+      element.removeAttribute(attr);
+    }
+  }
 };
 
 // Function: snapToGrid
 // round value to for snapping
 // NOTE: This function did not move to svgutils.js since it depends on curConfig.
 svgedit.utilities.snapToGrid = function (value) {
-	var stepSize = editorContext_.getSnappingStep();
-	var unit = editorContext_.getBaseUnit();
-	if (unit !== 'px') {
-		stepSize *= svgedit.units.getTypeMap()[unit];
-	}
-	value = Math.round(value / stepSize) * stepSize;
-	return value;
+  var stepSize = editorContext_.getSnappingStep();
+  var unit = editorContext_.getBaseUnit();
+  if (unit !== 'px') {
+    stepSize *= svgedit.units.getTypeMap()[unit];
+  }
+  value = Math.round(value / stepSize) * stepSize;
+  return value;
 };
 
 svgedit.utilities.preg_quote = function (str, delimiter) {
-	// From: http://phpjs.org/functions
-	return String(str).replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]', 'g'), '\\$&');
+  // From: http://phpjs.org/functions
+  return String(str).replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]', 'g'), '\\$&');
 };
 
 /**
@@ -1147,35 +1147,35 @@ svgedit.utilities.preg_quote = function (str, delimiter) {
 * @param {function} cb The callback to execute upon load.
 */
 svgedit.utilities.executeAfterLoads = function (globalCheck, scripts, cb) {
-	return function () {
-		var args = arguments;
-		function endCallback () {
-			cb.apply(null, args);
-		}
-		if (window[globalCheck]) {
-			endCallback();
-		} else {
-			scripts.reduceRight(function (oldFunc, script) {
-				return function () {
-					$.getScript(script, oldFunc);
-				};
-			}, endCallback)();
-		}
-	};
+  return function () {
+    var args = arguments;
+    function endCallback () {
+      cb.apply(null, args);
+    }
+    if (window[globalCheck]) {
+      endCallback();
+    } else {
+      scripts.reduceRight(function (oldFunc, script) {
+        return function () {
+          $.getScript(script, oldFunc);
+        };
+      }, endCallback)();
+    }
+  };
 };
 
 svgedit.utilities.buildCanvgCallback = function (callCanvg) {
-	return svgedit.utilities.executeAfterLoads('canvg', ['canvg/rgbcolor.js', 'canvg/canvg.js'], callCanvg);
+  return svgedit.utilities.executeAfterLoads('canvg', ['canvg/rgbcolor.js', 'canvg/canvg.js'], callCanvg);
 };
 
 svgedit.utilities.buildJSPDFCallback = function (callJSPDF) {
-	return svgedit.utilities.executeAfterLoads('RGBColor', ['canvg/rgbcolor.js'], function () {
-		var arr = [];
-		if (!RGBColor || RGBColor.ok === undef) { // It's not our RGBColor, so we'll need to load it
-			arr.push('canvg/rgbcolor.js');
-		}
-		svgedit.utilities.executeAfterLoads('jsPDF', arr.concat('jspdf/underscore-min.js', 'jspdf/jspdf.min.js', 'jspdf/jspdf.plugin.svgToPdf.js'), callJSPDF)();
-	});
+  return svgedit.utilities.executeAfterLoads('RGBColor', ['canvg/rgbcolor.js'], function () {
+    var arr = [];
+    if (!RGBColor || RGBColor.ok === undef) { // It's not our RGBColor, so we'll need to load it
+      arr.push('canvg/rgbcolor.js');
+    }
+    svgedit.utilities.executeAfterLoads('jsPDF', arr.concat('jspdf/underscore-min.js', 'jspdf/jspdf.min.js', 'jspdf/jspdf.plugin.svgToPdf.js'), callJSPDF)();
+  });
 };
 
 /**
@@ -1183,7 +1183,7 @@ svgedit.utilities.buildJSPDFCallback = function (callJSPDF) {
  * @param img - The DOM element to prevent the click on
  */
 svgedit.utilities.preventClickDefault = function (img) {
-	$(img).click(function (e) { e.preventDefault(); });
+  $(img).click(function (e) { e.preventDefault(); });
 };
 
 /**
@@ -1193,48 +1193,48 @@ svgedit.utilities.preventClickDefault = function (img) {
  * @returns {Element}
  */
 svgedit.utilities.copyElem = function (el, getNextId) {
-	// manually create a copy of the element
-	var newEl = document.createElementNS(el.namespaceURI, el.nodeName);
-	$.each(el.attributes, function (i, attr) {
-		if (attr.localName !== '-moz-math-font-style') {
-			newEl.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.value);
-		}
-	});
-	// set the copied element's new id
-	newEl.removeAttribute('id');
-	newEl.id = getNextId();
+  // manually create a copy of the element
+  var newEl = document.createElementNS(el.namespaceURI, el.nodeName);
+  $.each(el.attributes, function (i, attr) {
+    if (attr.localName !== '-moz-math-font-style') {
+      newEl.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.value);
+    }
+  });
+  // set the copied element's new id
+  newEl.removeAttribute('id');
+  newEl.id = getNextId();
 
-	// Opera's "d" value needs to be reset for Opera/Win/non-EN
-	// Also needed for webkit (else does not keep curved segments on clone)
-	if (svgedit.browser.isWebkit() && el.nodeName === 'path') {
-		var fixedD = svgedit.utilities.convertPath(el);
-		newEl.setAttribute('d', fixedD);
-	}
+  // Opera's "d" value needs to be reset for Opera/Win/non-EN
+  // Also needed for webkit (else does not keep curved segments on clone)
+  if (svgedit.browser.isWebkit() && el.nodeName === 'path') {
+    var fixedD = svgedit.utilities.convertPath(el);
+    newEl.setAttribute('d', fixedD);
+  }
 
-	// now create copies of all children
-	$.each(el.childNodes, function (i, child) {
-		switch (child.nodeType) {
-		case 1: // element node
-			newEl.appendChild(svgedit.utilities.copyElem(child, getNextId));
-			break;
-		case 3: // text node
-			newEl.textContent = child.nodeValue;
-			break;
-		default:
-			break;
-		}
-	});
+  // now create copies of all children
+  $.each(el.childNodes, function (i, child) {
+    switch (child.nodeType) {
+    case 1: // element node
+      newEl.appendChild(svgedit.utilities.copyElem(child, getNextId));
+      break;
+    case 3: // text node
+      newEl.textContent = child.nodeValue;
+      break;
+    default:
+      break;
+    }
+  });
 
-	if ($(el).data('gsvg')) {
-		$(newEl).data('gsvg', newEl.firstChild);
-	} else if ($(el).data('symbol')) {
-		var ref = $(el).data('symbol');
-		$(newEl).data('ref', ref).data('symbol', ref);
-	} else if (newEl.tagName === 'image') {
-		svgedit.utilities.preventClickDefault(newEl);
-	}
+  if ($(el).data('gsvg')) {
+    $(newEl).data('gsvg', newEl.firstChild);
+  } else if ($(el).data('symbol')) {
+    var ref = $(el).data('symbol');
+    $(newEl).data('ref', ref).data('symbol', ref);
+  } else if (newEl.tagName === 'image') {
+    svgedit.utilities.preventClickDefault(newEl);
+  }
 
-	return newEl;
+  return newEl;
 };
 
 /**
@@ -1247,22 +1247,22 @@ svgedit.utilities.copyElem = function (el, getNextId) {
  * @returns {string}
  */
 function pathDSegment (letter, points, morePoints, lastPoint) {
-	$.each(points, function (i, pnt) {
-		points[i] = svgedit.units.shortFloat(pnt);
-	});
-	var segment = letter + points.join(' ');
-	if (morePoints) {
-		segment += ' ' + morePoints.join(' ');
-	}
-	if (lastPoint) {
-		segment += ' ' + svgedit.units.shortFloat(lastPoint);
-	}
-	return segment;
+  $.each(points, function (i, pnt) {
+    points[i] = svgedit.units.shortFloat(pnt);
+  });
+  var segment = letter + points.join(' ');
+  if (morePoints) {
+    segment += ' ' + morePoints.join(' ');
+  }
+  if (lastPoint) {
+    segment += ' ' + svgedit.units.shortFloat(lastPoint);
+  }
+  return segment;
 }
 
 // this is how we map paths to our preferred relative segment types
 var pathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a',
-	'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
+  'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
 
 /**
  * TODO: move to pathActions.js when migrating rest of pathActions out of svgcanvas.js
@@ -1272,156 +1272,156 @@ var pathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a',
  * @returns {string}
  */
 svgedit.utilities.convertPath = function (path, toRel) {
-	var i;
-	var segList = path.pathSegList;
-	var len = segList.numberOfItems;
-	var curx = 0, cury = 0;
-	var d = '';
-	var lastM = null;
+  var i;
+  var segList = path.pathSegList;
+  var len = segList.numberOfItems;
+  var curx = 0, cury = 0;
+  var d = '';
+  var lastM = null;
 
-	for (i = 0; i < len; ++i) {
-		var seg = segList.getItem(i);
-		// if these properties are not in the segment, set them to zero
-		var x = seg.x || 0,
-			y = seg.y || 0,
-			x1 = seg.x1 || 0,
-			y1 = seg.y1 || 0,
-			x2 = seg.x2 || 0,
-			y2 = seg.y2 || 0;
+  for (i = 0; i < len; ++i) {
+    var seg = segList.getItem(i);
+    // if these properties are not in the segment, set them to zero
+    var x = seg.x || 0,
+      y = seg.y || 0,
+      x1 = seg.x1 || 0,
+      y1 = seg.y1 || 0,
+      x2 = seg.x2 || 0,
+      y2 = seg.y2 || 0;
 
-		var type = seg.pathSegType;
-		var letter = pathMap[type]['to' + (toRel ? 'Lower' : 'Upper') + 'Case']();
+    var type = seg.pathSegType;
+    var letter = pathMap[type]['to' + (toRel ? 'Lower' : 'Upper') + 'Case']();
 
-		switch (type) {
-		case 1: // z,Z closepath (Z/z)
-			d += 'z';
-			if (lastM && !toRel) {
-				curx = lastM[0];
-				cury = lastM[1];
-			}
-			break;
-		case 12: // absolute horizontal line (H)
-			x -= curx;
-			// Fallthrough
-		case 13: // relative horizontal line (h)
-			if (toRel) {
-				curx += x;
-				letter = 'l';
-			} else {
-				x += curx;
-				curx = x;
-				letter = 'L';
-			}
-			// Convert to "line" for easier editing
-			d += pathDSegment(letter, [[x, cury]]);
-			break;
-		case 14: // absolute vertical line (V)
-			y -= cury;
-			// Fallthrough
-		case 15: // relative vertical line (v)
-			if (toRel) {
-				cury += y;
-				letter = 'l';
-			} else {
-				y += cury;
-				cury = y;
-				letter = 'L';
-			}
-			// Convert to "line" for easier editing
-			d += pathDSegment(letter, [[curx, y]]);
-			break;
-		case 2: // absolute move (M)
-		case 4: // absolute line (L)
-		case 18: // absolute smooth quad (T)
-			x -= curx;
-			y -= cury;
-			// Fallthrough
-		case 5: // relative line (l)
-		case 3: // relative move (m)
-		case 19: // relative smooth quad (t)
-			if (toRel) {
-				curx += x;
-				cury += y;
-			} else {
-				x += curx;
-				y += cury;
-				curx = x;
-				cury = y;
-			}
-			if (type === 2 || type === 3) { lastM = [curx, cury]; }
+    switch (type) {
+    case 1: // z,Z closepath (Z/z)
+      d += 'z';
+      if (lastM && !toRel) {
+        curx = lastM[0];
+        cury = lastM[1];
+      }
+      break;
+    case 12: // absolute horizontal line (H)
+      x -= curx;
+      // Fallthrough
+    case 13: // relative horizontal line (h)
+      if (toRel) {
+        curx += x;
+        letter = 'l';
+      } else {
+        x += curx;
+        curx = x;
+        letter = 'L';
+      }
+      // Convert to "line" for easier editing
+      d += pathDSegment(letter, [[x, cury]]);
+      break;
+    case 14: // absolute vertical line (V)
+      y -= cury;
+      // Fallthrough
+    case 15: // relative vertical line (v)
+      if (toRel) {
+        cury += y;
+        letter = 'l';
+      } else {
+        y += cury;
+        cury = y;
+        letter = 'L';
+      }
+      // Convert to "line" for easier editing
+      d += pathDSegment(letter, [[curx, y]]);
+      break;
+    case 2: // absolute move (M)
+    case 4: // absolute line (L)
+    case 18: // absolute smooth quad (T)
+      x -= curx;
+      y -= cury;
+      // Fallthrough
+    case 5: // relative line (l)
+    case 3: // relative move (m)
+    case 19: // relative smooth quad (t)
+      if (toRel) {
+        curx += x;
+        cury += y;
+      } else {
+        x += curx;
+        y += cury;
+        curx = x;
+        cury = y;
+      }
+      if (type === 2 || type === 3) { lastM = [curx, cury]; }
 
-			d += pathDSegment(letter, [[x, y]]);
-			break;
-		case 6: // absolute cubic (C)
-			x -= curx; x1 -= curx; x2 -= curx;
-			y -= cury; y1 -= cury; y2 -= cury;
-			// Fallthrough
-		case 7: // relative cubic (c)
-			if (toRel) {
-				curx += x;
-				cury += y;
-			} else {
-				x += curx; x1 += curx; x2 += curx;
-				y += cury; y1 += cury; y2 += cury;
-				curx = x;
-				cury = y;
-			}
-			d += pathDSegment(letter, [[x1, y1], [x2, y2], [x, y]]);
-			break;
-		case 8: // absolute quad (Q)
-			x -= curx; x1 -= curx;
-			y -= cury; y1 -= cury;
-			// Fallthrough
-		case 9: // relative quad (q)
-			if (toRel) {
-				curx += x;
-				cury += y;
-			} else {
-				x += curx; x1 += curx;
-				y += cury; y1 += cury;
-				curx = x;
-				cury = y;
-			}
-			d += pathDSegment(letter, [[x1, y1], [x, y]]);
-			break;
-		case 10: // absolute elliptical arc (A)
-			x -= curx;
-			y -= cury;
-			// Fallthrough
-		case 11: // relative elliptical arc (a)
-			if (toRel) {
-				curx += x;
-				cury += y;
-			} else {
-				x += curx;
-				y += cury;
-				curx = x;
-				cury = y;
-			}
-			d += pathDSegment(letter, [[seg.r1, seg.r2]], [
-				seg.angle,
-				(seg.largeArcFlag ? 1 : 0),
-				(seg.sweepFlag ? 1 : 0)
-			], [x, y]);
-			break;
-		case 16: // absolute smooth cubic (S)
-			x -= curx; x2 -= curx;
-			y -= cury; y2 -= cury;
-			// Fallthrough
-		case 17: // relative smooth cubic (s)
-			if (toRel) {
-				curx += x;
-				cury += y;
-			} else {
-				x += curx; x2 += curx;
-				y += cury; y2 += cury;
-				curx = x;
-				cury = y;
-			}
-			d += pathDSegment(letter, [[x2, y2], [x, y]]);
-			break;
-		} // switch on path segment type
-	} // for each segment
-	return d;
+      d += pathDSegment(letter, [[x, y]]);
+      break;
+    case 6: // absolute cubic (C)
+      x -= curx; x1 -= curx; x2 -= curx;
+      y -= cury; y1 -= cury; y2 -= cury;
+      // Fallthrough
+    case 7: // relative cubic (c)
+      if (toRel) {
+        curx += x;
+        cury += y;
+      } else {
+        x += curx; x1 += curx; x2 += curx;
+        y += cury; y1 += cury; y2 += cury;
+        curx = x;
+        cury = y;
+      }
+      d += pathDSegment(letter, [[x1, y1], [x2, y2], [x, y]]);
+      break;
+    case 8: // absolute quad (Q)
+      x -= curx; x1 -= curx;
+      y -= cury; y1 -= cury;
+      // Fallthrough
+    case 9: // relative quad (q)
+      if (toRel) {
+        curx += x;
+        cury += y;
+      } else {
+        x += curx; x1 += curx;
+        y += cury; y1 += cury;
+        curx = x;
+        cury = y;
+      }
+      d += pathDSegment(letter, [[x1, y1], [x, y]]);
+      break;
+    case 10: // absolute elliptical arc (A)
+      x -= curx;
+      y -= cury;
+      // Fallthrough
+    case 11: // relative elliptical arc (a)
+      if (toRel) {
+        curx += x;
+        cury += y;
+      } else {
+        x += curx;
+        y += cury;
+        curx = x;
+        cury = y;
+      }
+      d += pathDSegment(letter, [[seg.r1, seg.r2]], [
+        seg.angle,
+        (seg.largeArcFlag ? 1 : 0),
+        (seg.sweepFlag ? 1 : 0)
+      ], [x, y]);
+      break;
+    case 16: // absolute smooth cubic (S)
+      x -= curx; x2 -= curx;
+      y -= cury; y2 -= cury;
+      // Fallthrough
+    case 17: // relative smooth cubic (s)
+      if (toRel) {
+        curx += x;
+        cury += y;
+      } else {
+        x += curx; x2 += curx;
+        y += cury; y2 += cury;
+        curx = x;
+        cury = y;
+      }
+      d += pathDSegment(letter, [[x2, y2], [x, y]]);
+      break;
+    } // switch on path segment type
+  } // for each segment
+  return d;
 };
 }());

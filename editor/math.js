@@ -24,7 +24,7 @@
 'use strict';
 
 if (!svgedit.math) {
-	svgedit.math = {};
+  svgedit.math = {};
 }
 
 // Constants
@@ -42,7 +42,7 @@ var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
  * @returns {Object} An x, y object representing the transformed point
 */
 svgedit.math.transformPoint = function (x, y, m) {
-	return {x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f};
+  return {x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f};
 };
 
 /**
@@ -52,7 +52,7 @@ svgedit.math.transformPoint = function (x, y, m) {
  * @returns {boolean} Indicates whether or not the matrix is 1,0,0,1,0,0
 */
 svgedit.math.isIdentity = function (m) {
-	return (m.a === 1 && m.b === 0 && m.c === 0 && m.d === 1 && m.e === 0 && m.f === 0);
+  return (m.a === 1 && m.b === 0 && m.c === 0 && m.d === 1 && m.e === 0 && m.f === 0);
 };
 
 /**
@@ -62,20 +62,20 @@ svgedit.math.isIdentity = function (m) {
  * @returns {SVGMatrix} The matrix object resulting from the calculation
 */
 svgedit.math.matrixMultiply = function (matr) {
-	var args = arguments, i = args.length, m = args[i - 1];
+  var args = arguments, i = args.length, m = args[i - 1];
 
-	while (i-- > 1) {
-		var m1 = args[i - 1];
-		m = m1.multiply(m);
-	}
-	if (Math.abs(m.a) < NEAR_ZERO) { m.a = 0; }
-	if (Math.abs(m.b) < NEAR_ZERO) { m.b = 0; }
-	if (Math.abs(m.c) < NEAR_ZERO) { m.c = 0; }
-	if (Math.abs(m.d) < NEAR_ZERO) { m.d = 0; }
-	if (Math.abs(m.e) < NEAR_ZERO) { m.e = 0; }
-	if (Math.abs(m.f) < NEAR_ZERO) { m.f = 0; }
+  while (i-- > 1) {
+    var m1 = args[i - 1];
+    m = m1.multiply(m);
+  }
+  if (Math.abs(m.a) < NEAR_ZERO) { m.a = 0; }
+  if (Math.abs(m.b) < NEAR_ZERO) { m.b = 0; }
+  if (Math.abs(m.c) < NEAR_ZERO) { m.c = 0; }
+  if (Math.abs(m.d) < NEAR_ZERO) { m.d = 0; }
+  if (Math.abs(m.e) < NEAR_ZERO) { m.e = 0; }
+  if (Math.abs(m.f) < NEAR_ZERO) { m.f = 0; }
 
-	return m;
+  return m;
 };
 
 /**
@@ -84,13 +84,13 @@ svgedit.math.matrixMultiply = function (matr) {
  * @returns {boolean} Whether or not a matrix transform was found
 */
 svgedit.math.hasMatrixTransform = function (tlist) {
-	if (!tlist) { return false; }
-	var num = tlist.numberOfItems;
-	while (num--) {
-		var xform = tlist.getItem(num);
-		if (xform.type === 1 && !svgedit.math.isIdentity(xform.matrix)) { return true; }
-	}
-	return false;
+  if (!tlist) { return false; }
+  var num = tlist.numberOfItems;
+  while (num--) {
+    var xform = tlist.getItem(num);
+    if (xform.type === 1 && !svgedit.math.isIdentity(xform.matrix)) { return true; }
+  }
+  return false;
 };
 
 /**
@@ -112,30 +112,30 @@ svgedit.math.hasMatrixTransform = function (tlist) {
  * height - Float with the axis-aligned height coordinate
 */
 svgedit.math.transformBox = function (l, t, w, h, m) {
-	var transformPoint = svgedit.math.transformPoint,
+  var transformPoint = svgedit.math.transformPoint,
 
-		tl = transformPoint(l, t, m),
-		tr = transformPoint((l + w), t, m),
-		bl = transformPoint(l, (t + h), m),
-		br = transformPoint((l + w), (t + h), m),
+    tl = transformPoint(l, t, m),
+    tr = transformPoint((l + w), t, m),
+    bl = transformPoint(l, (t + h), m),
+    br = transformPoint((l + w), (t + h), m),
 
-		minx = Math.min(tl.x, tr.x, bl.x, br.x),
-		maxx = Math.max(tl.x, tr.x, bl.x, br.x),
-		miny = Math.min(tl.y, tr.y, bl.y, br.y),
-		maxy = Math.max(tl.y, tr.y, bl.y, br.y);
+    minx = Math.min(tl.x, tr.x, bl.x, br.x),
+    maxx = Math.max(tl.x, tr.x, bl.x, br.x),
+    miny = Math.min(tl.y, tr.y, bl.y, br.y),
+    maxy = Math.max(tl.y, tr.y, bl.y, br.y);
 
-	return {
-		tl: tl,
-		tr: tr,
-		bl: bl,
-		br: br,
-		aabox: {
-			x: minx,
-			y: miny,
-			width: (maxx - minx),
-			height: (maxy - miny)
-		}
-	};
+  return {
+    tl: tl,
+    tr: tr,
+    bl: bl,
+    br: br,
+    aabox: {
+      x: minx,
+      y: miny,
+      width: (maxx - minx),
+      height: (maxy - miny)
+    }
+  };
 };
 
 /**
@@ -150,25 +150,25 @@ svgedit.math.transformBox = function (l, t, w, h, m) {
  * @returns {Object} A single matrix transform object
 */
 svgedit.math.transformListToTransform = function (tlist, min, max) {
-	if (tlist == null) {
-		// Or should tlist = null have been prevented before this?
-		return svg.createSVGTransformFromMatrix(svg.createSVGMatrix());
-	}
-	min = min || 0;
-	max = max || (tlist.numberOfItems - 1);
-	min = parseInt(min, 10);
-	max = parseInt(max, 10);
-	if (min > max) { var temp = max; max = min; min = temp; }
-	var m = svg.createSVGMatrix();
-	var i;
-	for (i = min; i <= max; ++i) {
-		// if our indices are out of range, just use a harmless identity matrix
-		var mtom = (i >= 0 && i < tlist.numberOfItems
-			? tlist.getItem(i).matrix
-			: svg.createSVGMatrix());
-		m = svgedit.math.matrixMultiply(m, mtom);
-	}
-	return svg.createSVGTransformFromMatrix(m);
+  if (tlist == null) {
+    // Or should tlist = null have been prevented before this?
+    return svg.createSVGTransformFromMatrix(svg.createSVGMatrix());
+  }
+  min = min || 0;
+  max = max || (tlist.numberOfItems - 1);
+  min = parseInt(min, 10);
+  max = parseInt(max, 10);
+  if (min > max) { var temp = max; max = min; min = temp; }
+  var m = svg.createSVGMatrix();
+  var i;
+  for (i = min; i <= max; ++i) {
+    // if our indices are out of range, just use a harmless identity matrix
+    var mtom = (i >= 0 && i < tlist.numberOfItems
+      ? tlist.getItem(i).matrix
+      : svg.createSVGMatrix());
+    m = svgedit.math.matrixMultiply(m, mtom);
+  }
+  return svg.createSVGTransformFromMatrix(m);
 };
 
 /**
@@ -177,8 +177,8 @@ svgedit.math.transformListToTransform = function (tlist, min, max) {
  * @returns {SVGMatrix} The matrix object associated with the element's transformlist
 */
 svgedit.math.getMatrix = function (elem) {
-	var tlist = svgedit.transformlist.getTransformList(elem);
-	return svgedit.math.transformListToTransform(tlist).matrix;
+  var tlist = svgedit.transformlist.getTransformList(elem);
+  return svgedit.math.transformListToTransform(tlist).matrix;
 };
 
 /**
@@ -191,18 +191,18 @@ svgedit.math.getMatrix = function (elem) {
  * @returns {AngleCoord45}
 */
 svgedit.math.snapToAngle = function (x1, y1, x2, y2) {
-	var snap = Math.PI / 4; // 45 degrees
-	var dx = x2 - x1;
-	var dy = y2 - y1;
-	var angle = Math.atan2(dy, dx);
-	var dist = Math.sqrt(dx * dx + dy * dy);
-	var snapangle = Math.round(angle / snap) * snap;
+  var snap = Math.PI / 4; // 45 degrees
+  var dx = x2 - x1;
+  var dy = y2 - y1;
+  var angle = Math.atan2(dy, dx);
+  var dist = Math.sqrt(dx * dx + dy * dy);
+  var snapangle = Math.round(angle / snap) * snap;
 
-	return {
-		x: x1 + dist * Math.cos(snapangle),
-		y: y1 + dist * Math.sin(snapangle),
-		a: snapangle
-	};
+  return {
+    x: x1 + dist * Math.cos(snapangle),
+    y: y1 + dist * Math.sin(snapangle),
+    a: snapangle
+  };
 };
 
 /**
@@ -212,9 +212,9 @@ svgedit.math.snapToAngle = function (x1, y1, x2, y2) {
  * @returns {boolean} True if rectangles intersect
  */
 svgedit.math.rectsIntersect = function (r1, r2) {
-	return r2.x < (r1.x + r1.width) &&
-		(r2.x + r2.width) > r1.x &&
-		r2.y < (r1.y + r1.height) &&
-		(r2.y + r2.height) > r1.y;
+  return r2.x < (r1.x + r1.width) &&
+    (r2.x + r2.width) > r1.x &&
+    r2.y < (r1.y + r1.height) &&
+    (r2.y + r2.height) > r1.y;
 };
 }());

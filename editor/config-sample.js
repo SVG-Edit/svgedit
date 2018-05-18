@@ -21,86 +21,86 @@ See svg-editor.js for documentation on using setConfig().
 
 // URL OVERRIDE CONFIG
 svgEditor.setConfig({
-	/**
-	To override the ability for URLs to set URL-based SVG content,
-	    uncomment the following:
-	*/
-	// preventURLContentLoading: true,
-	/**
-	To override the ability for URLs to set other configuration (including
-	    extension config), uncomment the following:
-	*/
-	// preventAllURLConfig: true,
-	/**
-	To override the ability for URLs to set their own extensions,
-	  uncomment the following (note that if setConfig() is used in
-	  extension code, it will still be additive to extensions,
-	  however):
-	*/
-	// lockExtensions: true,
+  /**
+  To override the ability for URLs to set URL-based SVG content,
+      uncomment the following:
+  */
+  // preventURLContentLoading: true,
+  /**
+  To override the ability for URLs to set other configuration (including
+      extension config), uncomment the following:
+  */
+  // preventAllURLConfig: true,
+  /**
+  To override the ability for URLs to set their own extensions,
+    uncomment the following (note that if setConfig() is used in
+    extension code, it will still be additive to extensions,
+    however):
+  */
+  // lockExtensions: true,
 });
 
 svgEditor.setConfig({
-	/*
-	Provide default values here which differ from that of the editor but
-		which the URL can override
-	*/
+  /*
+  Provide default values here which differ from that of the editor but
+    which the URL can override
+  */
 }, {allowInitialUserOverride: true});
 
 // EXTENSION CONFIG
 svgEditor.setConfig({
-	extensions: [
-		// 'ext-overview_window.js', 'ext-markers.js', 'ext-connector.js', 'ext-eyedropper.js', 'ext-shapes.js', 'ext-imagelib.js', 'ext-grid.js', 'ext-polygon.js', 'ext-star.js', 'ext-panning.js', 'ext-storage.js'
-	]
-	// , noDefaultExtensions: false, // noDefaultExtensions can only be meaningfully used in config.js or in the URL
+  extensions: [
+    // 'ext-overview_window.js', 'ext-markers.js', 'ext-connector.js', 'ext-eyedropper.js', 'ext-shapes.js', 'ext-imagelib.js', 'ext-grid.js', 'ext-polygon.js', 'ext-star.js', 'ext-panning.js', 'ext-storage.js'
+  ]
+  // , noDefaultExtensions: false, // noDefaultExtensions can only be meaningfully used in config.js or in the URL
 });
 
 // OTHER CONFIG
 svgEditor.setConfig({
-	// canvasName: 'default',
-	// canvas_expansion: 3,
-	// initFill: {
-	// 	color: 'FF0000', // solid red
-	// 	opacity: 1
-	// },
-	// initStroke: {
-	// 	width: 5,
-	// 	color: '000000', // solid black
-	// 	opacity: 1
-	// },
-	// initOpacity: 1,
-	// colorPickerCSS: null,
-	// initTool: 'select',
-	// exportWindowType: 'new', // 'same'
-	// wireframe: false,
-	// showlayers: false,
-	// no_save_warning: false,
-	// PATH CONFIGURATION
-	// imgPath: 'images/',
-	// langPath: 'locale/',
-	// extPath: 'extensions/',
-	// jGraduatePath: 'jgraduate/images/',
-	/*
-	Uncomment the following to allow at least same domain (embedded) access,
-	including file:// access.
-	Setting as `['*']` would allow any domain to access but would be unsafe to
-	data privacy and integrity.
-	*/
-	// allowedOrigins: [window.location.origin || 'null'], // May be 'null' (as a string) when used as a file:// URL
-	// DOCUMENT PROPERTIES
-	// dimensions: [640, 480],
-	// EDITOR OPTIONS
-	// gridSnapping: false,
-	// gridColor: '#000',
-	// baseUnit: 'px',
-	// snappingStep: 10,
-	// showRulers: true,
-	// EXTENSION-RELATED (GRID)
-	// showGrid: false, // Set by ext-grid.js
-	// EXTENSION-RELATED (STORAGE)
-	// noStorageOnLoad: false, // Some interaction with ext-storage.js; prevent even the loading of previously saved local storage
-	// forceStorage: false, // Some interaction with ext-storage.js; strongly discouraged from modification as it bypasses user privacy by preventing them from choosing whether to keep local storage or not
-	// emptyStorageOnDecline: true, // Used by ext-storage.js; empty any prior storage if the user declines to store
+  // canvasName: 'default',
+  // canvas_expansion: 3,
+  // initFill: {
+  // 	color: 'FF0000', // solid red
+  // 	opacity: 1
+  // },
+  // initStroke: {
+  // 	width: 5,
+  // 	color: '000000', // solid black
+  // 	opacity: 1
+  // },
+  // initOpacity: 1,
+  // colorPickerCSS: null,
+  // initTool: 'select',
+  // exportWindowType: 'new', // 'same'
+  // wireframe: false,
+  // showlayers: false,
+  // no_save_warning: false,
+  // PATH CONFIGURATION
+  // imgPath: 'images/',
+  // langPath: 'locale/',
+  // extPath: 'extensions/',
+  // jGraduatePath: 'jgraduate/images/',
+  /*
+  Uncomment the following to allow at least same domain (embedded) access,
+  including file:// access.
+  Setting as `['*']` would allow any domain to access but would be unsafe to
+  data privacy and integrity.
+  */
+  // allowedOrigins: [window.location.origin || 'null'], // May be 'null' (as a string) when used as a file:// URL
+  // DOCUMENT PROPERTIES
+  // dimensions: [640, 480],
+  // EDITOR OPTIONS
+  // gridSnapping: false,
+  // gridColor: '#000',
+  // baseUnit: 'px',
+  // snappingStep: 10,
+  // showRulers: true,
+  // EXTENSION-RELATED (GRID)
+  // showGrid: false, // Set by ext-grid.js
+  // EXTENSION-RELATED (STORAGE)
+  // noStorageOnLoad: false, // Some interaction with ext-storage.js; prevent even the loading of previously saved local storage
+  // forceStorage: false, // Some interaction with ext-storage.js; strongly discouraged from modification as it bypasses user privacy by preventing them from choosing whether to keep local storage or not
+  // emptyStorageOnDecline: true, // Used by ext-storage.js; empty any prior storage if the user declines to store
 });
 
 // PREF CHANGES
@@ -118,29 +118,29 @@ As with configuration, one may use allowInitialUserOverride, but
   are hard-coded here regardless of URL or prior user storage setting.
 */
 svgEditor.setConfig(
-	{
-		// lang: '', // Set dynamically within locale.js if not previously set
-		// iconsize: '', // Will default to 's' if the window height is smaller than the minimum height and 'm' otherwise
-		/**
-		* When showing the preferences dialog, svg-editor.js currently relies
-		* on curPrefs instead of $.pref, so allowing an override for bkgd_color
-		* means that this value won't have priority over block auto-detection as
-		* far as determining which color shows initially in the preferences
-		* dialog (though it can be changed and saved).
-		*/
-		// bkgd_color: '#FFF',
-		// bkgd_url: '',
-		// img_save: 'embed',
-		// Only shows in UI as far as alert notices
-		// save_notice_done: false,
-		// export_notice_done: false
-	}
+  {
+    // lang: '', // Set dynamically within locale.js if not previously set
+    // iconsize: '', // Will default to 's' if the window height is smaller than the minimum height and 'm' otherwise
+    /**
+    * When showing the preferences dialog, svg-editor.js currently relies
+    * on curPrefs instead of $.pref, so allowing an override for bkgd_color
+    * means that this value won't have priority over block auto-detection as
+    * far as determining which color shows initially in the preferences
+    * dialog (though it can be changed and saved).
+    */
+    // bkgd_color: '#FFF',
+    // bkgd_url: '',
+    // img_save: 'embed',
+    // Only shows in UI as far as alert notices
+    // save_notice_done: false,
+    // export_notice_done: false
+  }
 );
 svgEditor.setConfig(
-	{
-		// Indicate pref settings here if you wish to allow user storage or URL settings
-		//   to be able to override your default preferences (unless other config options
-		//   have already explicitly prevented one or the other)
-	},
-	{allowInitialUserOverride: true}
+  {
+    // Indicate pref settings here if you wish to allow user storage or URL settings
+    //   to be able to override your default preferences (unless other config options
+    //   have already explicitly prevented one or the other)
+  },
+  {allowInitialUserOverride: true}
 );

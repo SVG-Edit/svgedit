@@ -10,11 +10,11 @@ var svgCanvas = new EmbeddedSVGEdit(window.frames.svgedit);
 svgCanvas.setSvgString('string')
 - Or if a callback is needed:
 svgCanvas.setSvgString('string')(function(data, error){
-	if (error){
-	// There was an error
-	} else{
-	// Handle data
-	}
+  if (error){
+  // There was an error
+  } else{
+  // Handle data
+  }
 })
 
 Everything is done with the same API as the real svg-edit,
@@ -42,15 +42,15 @@ blah.clearSelection('woot', 'blah', 1337, [1, 2, 3, 4, 5, 'moo'], -42, {a: 'tree
 var cbid = 0;
 
 function getCallbackSetter (d) {
-	return function () {
-		var t = this, // New callback
-			args = [].slice.call(arguments),
-			cbid = t.send(d, args, function () {});	// The callback (currently it's nothing, but will be set later)
+  return function () {
+    var t = this, // New callback
+      args = [].slice.call(arguments),
+      cbid = t.send(d, args, function () {});	// The callback (currently it's nothing, but will be set later)
 
-		return function (newcallback) {
-			t.callbacks[cbid] = newcallback; // Set callback
-		};
-	};
+    return function (newcallback) {
+      t.callbacks[cbid] = newcallback; // Set callback
+    };
+  };
 }
 
 /*
@@ -59,38 +59,38 @@ function getCallbackSetter (d) {
 * of same domain control
 */
 function addCallback (t, data) {
-	var result = data.result || data.error,
-		cbid = data.id;
-	if (t.callbacks[cbid]) {
-		if (data.result) {
-			t.callbacks[cbid](result);
-		} else {
-			t.callbacks[cbid](result, 'error');
-		}
-	}
+  var result = data.result || data.error,
+    cbid = data.id;
+  if (t.callbacks[cbid]) {
+    if (data.result) {
+      t.callbacks[cbid](result);
+    } else {
+      t.callbacks[cbid](result, 'error');
+    }
+  }
 }
 
 function messageListener (e) {
-	// We accept and post strings as opposed to objects for the sake of IE9 support; this
-	//	 will most likely be changed in the future
-	if (typeof e.data !== 'string') {
-		return;
-	}
-	var allowedOrigins = this.allowedOrigins,
-		data = e.data && JSON.parse(e.data);
-	if (!data || typeof data !== 'object' || data.namespace !== 'svg-edit' ||
-		e.source !== this.frame.contentWindow ||
-		(allowedOrigins.indexOf('*') === -1 && allowedOrigins.indexOf(e.origin) === -1)
-	) {
-		return;
-	}
-	addCallback(this, data);
+  // We accept and post strings as opposed to objects for the sake of IE9 support; this
+  //	 will most likely be changed in the future
+  if (typeof e.data !== 'string') {
+    return;
+  }
+  var allowedOrigins = this.allowedOrigins,
+    data = e.data && JSON.parse(e.data);
+  if (!data || typeof data !== 'object' || data.namespace !== 'svg-edit' ||
+    e.source !== this.frame.contentWindow ||
+    (allowedOrigins.indexOf('*') === -1 && allowedOrigins.indexOf(e.origin) === -1)
+  ) {
+    return;
+  }
+  addCallback(this, data);
 }
 
 function getMessageListener (t) {
-	return function (e) {
-		messageListener.call(t, e);
-	};
+  return function (e) {
+    messageListener.call(t, e);
+  };
 }
 
 /**
@@ -100,77 +100,77 @@ function getMessageListener (t) {
 *	 If supplied, it should probably be the same as svgEditor's allowedOrigins
 */
 function EmbeddedSVGEdit (frame, allowedOrigins) {
-	if (!(this instanceof EmbeddedSVGEdit)) { // Allow invocation without 'new' keyword
-		return new EmbeddedSVGEdit(frame);
-	}
-	this.allowedOrigins = allowedOrigins || [];
-	// Initialize communication
-	this.frame = frame;
-	this.callbacks = {};
-	// List of functions extracted with this:
-	// Run in firebug on http://svg-edit.googlecode.com/svn/trunk/docs/files/svgcanvas-js.html
+  if (!(this instanceof EmbeddedSVGEdit)) { // Allow invocation without 'new' keyword
+    return new EmbeddedSVGEdit(frame);
+  }
+  this.allowedOrigins = allowedOrigins || [];
+  // Initialize communication
+  this.frame = frame;
+  this.callbacks = {};
+  // List of functions extracted with this:
+  // Run in firebug on http://svg-edit.googlecode.com/svn/trunk/docs/files/svgcanvas-js.html
 
-	// for (var i=0,q=[],f = document.querySelectorAll('div.CFunction h3.CTitle a'); i < f.length; i++) { q.push(f[i].name); }; q
-	// var functions = ['clearSelection', 'addToSelection', 'removeFromSelection', 'open', 'save', 'getSvgString', 'setSvgString',
-	// 'createLayer', 'deleteCurrentLayer', 'setCurrentLayer', 'renameCurrentLayer', 'setCurrentLayerPosition', 'setLayerVisibility',
-	// 'moveSelectedToLayer', 'clear'];
+  // for (var i=0,q=[],f = document.querySelectorAll('div.CFunction h3.CTitle a'); i < f.length; i++) { q.push(f[i].name); }; q
+  // var functions = ['clearSelection', 'addToSelection', 'removeFromSelection', 'open', 'save', 'getSvgString', 'setSvgString',
+  // 'createLayer', 'deleteCurrentLayer', 'setCurrentLayer', 'renameCurrentLayer', 'setCurrentLayerPosition', 'setLayerVisibility',
+  // 'moveSelectedToLayer', 'clear'];
 
-	// Newer, well, it extracts things that aren't documented as well. All functions accessible through the normal thingy can now be accessed though the API
-	// var svgCanvas = frame.contentWindow.svgCanvas;
-	// var l = []; for (var i in svgCanvas){ if (typeof svgCanvas[i] == 'function') { l.push(i);} };
-	// alert("['" + l.join("', '") + "']");
-	// Run in svgedit itself
-	var i,
-		functions = [
-			'clearSvgContentElement', 'setIdPrefix', 'getCurrentDrawing', 'addSvgElementFromJson', 'getTransformList', 'matrixMultiply', 'hasMatrixTransform', 'transformListToTransform', 'convertToNum', 'findDefs', 'getUrlFromAttr', 'getHref', 'setHref', 'getBBox', 'getRotationAngle', 'getElem', 'getRefElem', 'assignAttributes', 'cleanupElement', 'remapElement', 'recalculateDimensions', 'sanitizeSvg', 'runExtensions', 'addExtension', 'round', 'getIntersectionList', 'getStrokedBBox', 'getVisibleElements', 'getVisibleElementsAndBBoxes', 'groupSvgElem', 'getId', 'getNextId', 'call', 'bind', 'prepareSvg', 'setRotationAngle', 'recalculateAllSelectedDimensions', 'clearSelection', 'addToSelection', 'selectOnly', 'removeFromSelection', 'selectAllInCurrentLayer', 'getMouseTarget', 'removeUnusedDefElems', 'svgCanvasToString', 'svgToString', 'embedImage', 'setGoodImage', 'open', 'save', 'rasterExport', 'exportPDF', 'getSvgString', 'randomizeIds', 'uniquifyElems', 'setUseData', 'convertGradients', 'convertToGroup', 'setSvgString', 'importSvgString', 'identifyLayers', 'createLayer', 'cloneLayer', 'deleteCurrentLayer', 'setCurrentLayer', 'renameCurrentLayer', 'setCurrentLayerPosition', 'setLayerVisibility', 'moveSelectedToLayer', 'mergeLayer', 'mergeAllLayers', 'leaveContext', 'setContext', 'clear', 'linkControlPoints', 'getContentElem', 'getRootElem', 'getSelectedElems', 'getResolution', 'getZoom', 'getVersion', 'setUiStrings', 'setConfig', 'getTitle', 'setGroupTitle', 'getDocumentTitle', 'setDocumentTitle', 'getEditorNS', 'setResolution', 'getOffset', 'setBBoxZoom', 'setZoom', 'getMode', 'setMode', 'getColor', 'setColor', 'setGradient', 'setPaint', 'setStrokePaint', 'setFillPaint', 'getStrokeWidth', 'setStrokeWidth', 'setStrokeAttr', 'getStyle', 'getOpacity', 'setOpacity', 'getFillOpacity', 'getStrokeOpacity', 'setPaintOpacity', 'getPaintOpacity', 'getBlur', 'setBlurNoUndo', 'setBlurOffsets', 'setBlur', 'getBold', 'setBold', 'getItalic', 'setItalic', 'getFontFamily', 'setFontFamily', 'setFontColor', 'getFontColor', 'getFontSize', 'setFontSize', 'getText', 'setTextContent', 'setImageURL', 'setLinkURL', 'setRectRadius', 'makeHyperlink', 'removeHyperlink', 'setSegType', 'convertToPath', 'changeSelectedAttribute', 'deleteSelectedElements', 'cutSelectedElements', 'copySelectedElements', 'pasteElements', 'groupSelectedElements', 'pushGroupProperties', 'ungroupSelectedElement', 'moveToTopSelectedElement', 'moveToBottomSelectedElement', 'moveUpDownSelected', 'moveSelectedElements', 'cloneSelectedElements', 'alignSelectedElements', 'updateCanvas', 'setBackground', 'cycleElement', 'getPrivateMethods', 'zoomChanged', 'ready'
-		];
+  // Newer, well, it extracts things that aren't documented as well. All functions accessible through the normal thingy can now be accessed though the API
+  // var svgCanvas = frame.contentWindow.svgCanvas;
+  // var l = []; for (var i in svgCanvas){ if (typeof svgCanvas[i] == 'function') { l.push(i);} };
+  // alert("['" + l.join("', '") + "']");
+  // Run in svgedit itself
+  var i,
+    functions = [
+      'clearSvgContentElement', 'setIdPrefix', 'getCurrentDrawing', 'addSvgElementFromJson', 'getTransformList', 'matrixMultiply', 'hasMatrixTransform', 'transformListToTransform', 'convertToNum', 'findDefs', 'getUrlFromAttr', 'getHref', 'setHref', 'getBBox', 'getRotationAngle', 'getElem', 'getRefElem', 'assignAttributes', 'cleanupElement', 'remapElement', 'recalculateDimensions', 'sanitizeSvg', 'runExtensions', 'addExtension', 'round', 'getIntersectionList', 'getStrokedBBox', 'getVisibleElements', 'getVisibleElementsAndBBoxes', 'groupSvgElem', 'getId', 'getNextId', 'call', 'bind', 'prepareSvg', 'setRotationAngle', 'recalculateAllSelectedDimensions', 'clearSelection', 'addToSelection', 'selectOnly', 'removeFromSelection', 'selectAllInCurrentLayer', 'getMouseTarget', 'removeUnusedDefElems', 'svgCanvasToString', 'svgToString', 'embedImage', 'setGoodImage', 'open', 'save', 'rasterExport', 'exportPDF', 'getSvgString', 'randomizeIds', 'uniquifyElems', 'setUseData', 'convertGradients', 'convertToGroup', 'setSvgString', 'importSvgString', 'identifyLayers', 'createLayer', 'cloneLayer', 'deleteCurrentLayer', 'setCurrentLayer', 'renameCurrentLayer', 'setCurrentLayerPosition', 'setLayerVisibility', 'moveSelectedToLayer', 'mergeLayer', 'mergeAllLayers', 'leaveContext', 'setContext', 'clear', 'linkControlPoints', 'getContentElem', 'getRootElem', 'getSelectedElems', 'getResolution', 'getZoom', 'getVersion', 'setUiStrings', 'setConfig', 'getTitle', 'setGroupTitle', 'getDocumentTitle', 'setDocumentTitle', 'getEditorNS', 'setResolution', 'getOffset', 'setBBoxZoom', 'setZoom', 'getMode', 'setMode', 'getColor', 'setColor', 'setGradient', 'setPaint', 'setStrokePaint', 'setFillPaint', 'getStrokeWidth', 'setStrokeWidth', 'setStrokeAttr', 'getStyle', 'getOpacity', 'setOpacity', 'getFillOpacity', 'getStrokeOpacity', 'setPaintOpacity', 'getPaintOpacity', 'getBlur', 'setBlurNoUndo', 'setBlurOffsets', 'setBlur', 'getBold', 'setBold', 'getItalic', 'setItalic', 'getFontFamily', 'setFontFamily', 'setFontColor', 'getFontColor', 'getFontSize', 'setFontSize', 'getText', 'setTextContent', 'setImageURL', 'setLinkURL', 'setRectRadius', 'makeHyperlink', 'removeHyperlink', 'setSegType', 'convertToPath', 'changeSelectedAttribute', 'deleteSelectedElements', 'cutSelectedElements', 'copySelectedElements', 'pasteElements', 'groupSelectedElements', 'pushGroupProperties', 'ungroupSelectedElement', 'moveToTopSelectedElement', 'moveToBottomSelectedElement', 'moveUpDownSelected', 'moveSelectedElements', 'cloneSelectedElements', 'alignSelectedElements', 'updateCanvas', 'setBackground', 'cycleElement', 'getPrivateMethods', 'zoomChanged', 'ready'
+    ];
 
-	// TODO: rewrite the following, it's pretty scary.
-	for (i = 0; i < functions.length; i++) {
-		this[functions[i]] = getCallbackSetter(functions[i]);
-	}
+  // TODO: rewrite the following, it's pretty scary.
+  for (i = 0; i < functions.length; i++) {
+    this[functions[i]] = getCallbackSetter(functions[i]);
+  }
 
-	// Older IE may need a polyfill for addEventListener, but so it would for SVG
-	window.addEventListener('message', getMessageListener(this), false);
+  // Older IE may need a polyfill for addEventListener, but so it would for SVG
+  window.addEventListener('message', getMessageListener(this), false);
 }
 
 EmbeddedSVGEdit.prototype.send = function (name, args, callback) {
-	var t = this;
-	cbid++;
+  var t = this;
+  cbid++;
 
-	this.callbacks[cbid] = callback;
-	setTimeout((function (cbid) {
-		return function () { // Delay for the callback to be set in case its synchronous
-			/*
-			* Todo: Handle non-JSON arguments and return values (undefined,
-			*	 nonfinite numbers, functions, and built-in objects like Date,
-			*	 RegExp), etc.? Allow promises instead of callbacks? Review
-			*	 SVG-Edit functions for whether JSON-able parameters can be
-			*	 made compatile with all API functionality
-			*/
-			// We accept and post strings for the sake of IE9 support
-			if (window.location.origin === t.frame.contentWindow.location.origin) {
-				// Although we do not really need this API if we are working same
-				//	domain, it could allow us to write in a way that would work
-				//	cross-domain as well, assuming we stick to the argument limitations
-				//	of the current JSON-based communication API (e.g., not passing
-				//	callbacks). We might be able to address these shortcomings; see
-				//	the todo elsewhere in this file.
-				var message = {id: cbid},
-					svgCanvas = t.frame.contentWindow.svgCanvas;
-				try {
-					message.result = svgCanvas[name].apply(svgCanvas, args);
-				} catch (err) {
-					message.error = err.message;
-				}
-				addCallback(t, message);
-			} else { // Requires the ext-xdomain-messaging.js extension
-				t.frame.contentWindow.postMessage(JSON.stringify({namespace: 'svgCanvas', id: cbid, name: name, args: args}), '*');
-			}
-		};
-	}(cbid)), 0);
+  this.callbacks[cbid] = callback;
+  setTimeout((function (cbid) {
+    return function () { // Delay for the callback to be set in case its synchronous
+      /*
+      * Todo: Handle non-JSON arguments and return values (undefined,
+      *	 nonfinite numbers, functions, and built-in objects like Date,
+      *	 RegExp), etc.? Allow promises instead of callbacks? Review
+      *	 SVG-Edit functions for whether JSON-able parameters can be
+      *	 made compatile with all API functionality
+      */
+      // We accept and post strings for the sake of IE9 support
+      if (window.location.origin === t.frame.contentWindow.location.origin) {
+        // Although we do not really need this API if we are working same
+        //	domain, it could allow us to write in a way that would work
+        //	cross-domain as well, assuming we stick to the argument limitations
+        //	of the current JSON-based communication API (e.g., not passing
+        //	callbacks). We might be able to address these shortcomings; see
+        //	the todo elsewhere in this file.
+        var message = {id: cbid},
+          svgCanvas = t.frame.contentWindow.svgCanvas;
+        try {
+          message.result = svgCanvas[name].apply(svgCanvas, args);
+        } catch (err) {
+          message.error = err.message;
+        }
+        addCallback(t, message);
+      } else { // Requires the ext-xdomain-messaging.js extension
+        t.frame.contentWindow.postMessage(JSON.stringify({namespace: 'svgCanvas', id: cbid, name: name, args: args}), '*');
+      }
+    };
+  }(cbid)), 0);
 
-	return cbid;
+  return cbid;
 };
 
 window.embedded_svg_edit = EmbeddedSVGEdit; // Export old, deprecated API

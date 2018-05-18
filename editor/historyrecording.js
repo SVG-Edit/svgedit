@@ -15,7 +15,7 @@
 'use strict';
 
 if (!svgedit.history) {
-	svgedit.history = {};
+  svgedit.history = {};
 }
 var history = svgedit.history;
 
@@ -58,9 +58,9 @@ var history = svgedit.history;
  * 		See singleton: HistoryRecordingService.NO_HISTORY
  */
 var HistoryRecordingService = history.HistoryRecordingService = function (undoManager) {
-	this.undoManager_ = undoManager;
-	this.currentBatchCommand_ = null;
-	this.batchCommandStack_ = [];
+  this.undoManager_ = undoManager;
+  this.currentBatchCommand_ = null;
+  this.batchCommandStack_ = [];
 };
 
 /**
@@ -77,10 +77,10 @@ HistoryRecordingService.NO_HISTORY = new HistoryRecordingService();
  * @returns {svgedit.history.HistoryRecordingService}
  */
 HistoryRecordingService.prototype.startBatchCommand = function (text) {
-	if (!this.undoManager_) { return this; }
-	this.currentBatchCommand_ = new history.BatchCommand(text);
-	this.batchCommandStack_.push(this.currentBatchCommand_);
-	return this;
+  if (!this.undoManager_) { return this; }
+  this.currentBatchCommand_ = new history.BatchCommand(text);
+  this.batchCommandStack_.push(this.currentBatchCommand_);
+  return this;
 };
 
 /**
@@ -88,15 +88,15 @@ HistoryRecordingService.prototype.startBatchCommand = function (text) {
  * @returns {svgedit.history.HistoryRecordingService}
  */
 HistoryRecordingService.prototype.endBatchCommand = function () {
-	if (!this.undoManager_) { return this; }
-	if (this.currentBatchCommand_) {
-		var batchCommand = this.currentBatchCommand_;
-		this.batchCommandStack_.pop();
-		var length = this.batchCommandStack_.length;
-		this.currentBatchCommand_ = length ? this.batchCommandStack_[length - 1] : null;
-		this.addCommand_(batchCommand);
-	}
-	return this;
+  if (!this.undoManager_) { return this; }
+  if (this.currentBatchCommand_) {
+    var batchCommand = this.currentBatchCommand_;
+    this.batchCommandStack_.pop();
+    var length = this.batchCommandStack_.length;
+    this.currentBatchCommand_ = length ? this.batchCommandStack_[length - 1] : null;
+    this.addCommand_(batchCommand);
+  }
+  return this;
 };
 
 /**
@@ -108,9 +108,9 @@ HistoryRecordingService.prototype.endBatchCommand = function () {
  * @returns {svgedit.history.HistoryRecordingService}
  */
 HistoryRecordingService.prototype.moveElement = function (elem, oldNextSibling, oldParent, text) {
-	if (!this.undoManager_) { return this; }
-	this.addCommand_(new history.MoveElementCommand(elem, oldNextSibling, oldParent, text));
-	return this;
+  if (!this.undoManager_) { return this; }
+  this.addCommand_(new history.MoveElementCommand(elem, oldNextSibling, oldParent, text));
+  return this;
 };
 
 /**
@@ -120,9 +120,9 @@ HistoryRecordingService.prototype.moveElement = function (elem, oldNextSibling, 
  * @returns {svgedit.history.HistoryRecordingService}
  */
 HistoryRecordingService.prototype.insertElement = function (elem, text) {
-	if (!this.undoManager_) { return this; }
-	this.addCommand_(new history.InsertElementCommand(elem, text));
-	return this;
+  if (!this.undoManager_) { return this; }
+  this.addCommand_(new history.InsertElementCommand(elem, text));
+  return this;
 };
 
 /**
@@ -134,9 +134,9 @@ HistoryRecordingService.prototype.insertElement = function (elem, text) {
  * @returns {svgedit.history.HistoryRecordingService}
  */
 HistoryRecordingService.prototype.removeElement = function (elem, oldNextSibling, oldParent, text) {
-	if (!this.undoManager_) { return this; }
-	this.addCommand_(new history.RemoveElementCommand(elem, oldNextSibling, oldParent, text));
-	return this;
+  if (!this.undoManager_) { return this; }
+  this.addCommand_(new history.RemoveElementCommand(elem, oldNextSibling, oldParent, text));
+  return this;
 };
 
 /**
@@ -147,9 +147,9 @@ HistoryRecordingService.prototype.removeElement = function (elem, oldNextSibling
  * @returns {svgedit.history.HistoryRecordingService}
  */
 HistoryRecordingService.prototype.changeElement = function (elem, attrs, text) {
-	if (!this.undoManager_) { return this; }
-	this.addCommand_(new history.ChangeElementCommand(elem, attrs, text));
-	return this;
+  if (!this.undoManager_) { return this; }
+  this.addCommand_(new history.ChangeElementCommand(elem, attrs, text));
+  return this;
 };
 
 /**
@@ -159,11 +159,11 @@ HistoryRecordingService.prototype.changeElement = function (elem, attrs, text) {
  * @private
  */
 HistoryRecordingService.prototype.addCommand_ = function (cmd) {
-	if (!this.undoManager_) { return this; }
-	if (this.currentBatchCommand_) {
-		this.currentBatchCommand_.addSubCommand(cmd);
-	} else {
-		this.undoManager_.addCommandToHistory(cmd);
-	}
+  if (!this.undoManager_) { return this; }
+  if (this.currentBatchCommand_) {
+    this.currentBatchCommand_.addSubCommand(cmd);
+  } else {
+    this.undoManager_.addCommandToHistory(cmd);
+  }
 };
 }());
