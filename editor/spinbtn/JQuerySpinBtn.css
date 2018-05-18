@@ -1,7 +1,7 @@
 /*
 	Styles to make ordinary <INPUT type="text"/> look like a spinbutton/spinbox control.
 	Use with JQuerySpinBtn.js to provide the spin functionality by reacting to mouse etc.
-	(Requires a reference to the JQuery library found at http://jquery.com/src/latest/)
+	(Requires a reference to the JQuery library found at http://code.jquery.com/)
 	(Hats-off to John Resig for creating the excellent JQuery library. It is fab.)
 
 	This control is achieved with no extra html markup whatsoever and uses unobtrusive javascript.

@@ -6,7 +6,7 @@
  * Gabe Lerner (gabelerner@gmail.com)
  * http://code.google.com/p/canvg/
  *
- * Requires: rgbcolor.js - http://www.phpied.com/rgb-color-parser-in-javascript/
+ * Requires: rgbcolor.js - https://www.phpied.com/rgb-color-parser-in-javascript/
  */
 var canvg;
 (function () {
@@ -608,7 +608,7 @@ function build (opts) {
 
 	// aspect ratio
 	svg.AspectRatio = function (ctx, aspectRatio, width, desiredWidth, height, desiredHeight, minX, minY, refX, refY) {
-		// aspect ratio - http://www.w3.org/TR/SVG/coords.html#PreserveAspectRatioAttribute
+		// aspect ratio - https://www.w3.org/TR/SVG/coords.html#PreserveAspectRatioAttribute
 		aspectRatio = svg.compressSpaces(aspectRatio);
 		aspectRatio = aspectRatio.replace(/^defer\s/, ''); // ignore defer
 		var align = aspectRatio.split(' ')[0] || 'xMidYMid';
@@ -1213,7 +1213,7 @@ function build (opts) {
 		this.base(node);
 
 		var d = this.attribute('d').value;
-		// TODO: convert to real lexer based on http://www.w3.org/TR/SVG11/paths.html#PathDataBNF
+		// TODO: convert to real lexer based on https://www.w3.org/TR/SVG11/paths.html#PathDataBNF
 		d = d.replace(/,/gm, ' '); // get rid of all commas
 		d = d.replace(/([MmZzLlHhVvCcSsQqTtAa])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2'); // separate commands from commands
 		d = d.replace(/([MmZzLlHhVvCcSsQqTtAa])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2'); // separate commands from commands
@@ -2432,7 +2432,7 @@ function build (opts) {
 			if (element != null) {
 				var tempSvg = element;
 				if (element.type === 'symbol') {
-					// render me using a temporary svg element in symbol cases (http://www.w3.org/TR/SVG/struct.html#UseElement)
+					// render me using a temporary svg element in symbol cases (https://www.w3.org/TR/SVG/struct.html#UseElement)
 					tempSvg = new svg.Element.svg();
 					tempSvg.type = 'svg';
 					tempSvg.attributes['viewBox'] = new svg.Property('viewBox', element.attribute('viewBox').value);
@@ -2610,7 +2610,7 @@ function build (opts) {
 		this.base(node);
 
 		var matrix = svg.ToNumberArray(this.attribute('values').value);
-		switch (this.attribute('type').valueOrDefault('matrix')) { // http://www.w3.org/TR/SVG/filters.html#feColorMatrixElement
+		switch (this.attribute('type').valueOrDefault('matrix')) { // https://www.w3.org/TR/SVG/filters.html#feColorMatrixElement
 		case 'saturate':
 			var s = matrix[0];
 			matrix = [

@@ -9,7 +9,7 @@
 (function () {
 'use strict';
 if (!('SVGPathSeg' in window)) {
-  // Spec: http://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGPathSeg
+  // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGPathSeg
   window.SVGPathSeg = function (type, typeAsLetter, owningPathSegList) {
     this.pathSegType = type;
     this.pathSegTypeAsLetter = typeAsLetter;
@@ -315,7 +315,7 @@ if (!('SVGPathSeg' in window)) {
   Object.defineProperty(window.SVGPathSegCurvetoQuadraticSmoothRel.prototype, 'y', { get: function () { return this._y; }, set: function (y) { this._y = y; this._segmentChanged(); }, enumerable: true });
 
   // Add createSVGPathSeg* functions to window.SVGPathElement.
-  // Spec: http://www.w3.org/TR/SVG11/single-page.html#paths-Interfacewindow.SVGPathElement.
+  // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-Interfacewindow.SVGPathElement.
   window.SVGPathElement.prototype.createSVGPathSegClosePath = function () { return new window.SVGPathSegClosePath(undefined); };
   window.SVGPathElement.prototype.createSVGPathSegMovetoAbs = function (x, y) { return new window.SVGPathSegMovetoAbs(undefined, x, y); };
   window.SVGPathElement.prototype.createSVGPathSegMovetoRel = function (x, y) { return new window.SVGPathSegMovetoRel(undefined, x, y); };
@@ -372,7 +372,7 @@ if (!('SVGPathSeg' in window)) {
 // SVGPathSegList API (e.g., appendItem). In this case we need to re-implement the entire API
 // so the polyfill data (i.e., _list) is used throughout.
 if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.prototype)) {
-  // Spec: http://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGPathSegList
+  // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGPathSegList
   window.SVGPathSegList = function (pathElement) {
     this._pathElement = pathElement;
     this._list = this._parsePath(this._pathElement.getAttribute('d'));
@@ -394,7 +394,7 @@ if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.pro
   });
 
   // Add the pathSegList accessors to window.SVGPathElement.
-  // Spec: http://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGAnimatedPathData
+  // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGAnimatedPathData
   Object.defineProperty(window.SVGPathElement.prototype, 'pathSegList', {
     get: function () {
       if (!this._pathSegList) {
@@ -674,7 +674,7 @@ if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.pro
     };
 
     // Parse a number from an SVG path. This very closely follows genericParseNumber(...) from Source/core/svg/SVGParserUtilities.cpp.
-    // Spec: http://www.w3.org/TR/SVG11/single-page.html#paths-PathDataBNF
+    // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-PathDataBNF
     Source.prototype._parseNumber = function () {
       var exponent = 0;
       var integer = 0;

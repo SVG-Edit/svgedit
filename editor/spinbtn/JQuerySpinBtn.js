@@ -23,7 +23,7 @@
  *
  * Modifications by Jeff Schiller, June 2009:
  * - provide callback function for when the value changes based on the following
- *   http://www.mail-archive.com/jquery-en@googlegroups.com/msg36070.html
+ *   https://www.mail-archive.com/jquery-en@googlegroups.com/msg36070.html
  * Modifications by Jeff Schiller, July 2009:
  * - improve styling for widget in Opera
  * - consistent key-repeat handling cross-browser

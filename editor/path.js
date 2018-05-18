@@ -674,7 +674,7 @@ svgedit.path.Path.prototype.addSeg = function (index) {
     newseg = this.elem.createSVGPathSegLinetoAbs(newX, newY);
     break;
   case 6: // make it a curved segment to preserve the shape (WRS)
-    // http://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm#Geometric_interpretation
+    // https://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm#Geometric_interpretation
     var p0x = (prev.item.x + seg.item.x1) / 2;
     var p1x = (seg.item.x1 + seg.item.x2) / 2;
     var p2x = (seg.item.x2 + seg.item.x) / 2;

@@ -135,7 +135,7 @@ var supportsGoodDecimals_ = (function () {
   var retValue = (crect.getAttribute('x').indexOf(',') === -1);
   if (!retValue) {
     $.alert('NOTE: This version of Opera is known to contain bugs in SVG-edit.\n' +
-    'Please upgrade to the <a href="http://opera.com">latest version</a> in which the problems have been fixed.');
+    'Please upgrade to the <a href="https://www.opera.com/download">latest version</a> in which the problems have been fixed.');
   }
   return retValue;
 }());

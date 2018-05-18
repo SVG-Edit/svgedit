@@ -638,7 +638,7 @@ var getIntersectionList = this.getIntersectionList = function (rect) {
 
   // addToSelection expects an array, but it's ok to pass a NodeList
   // because using square-bracket notation is allowed:
-  // http://www.w3.org/TR/DOM-Level-2-Core/ecma-script-binding.html
+  // https://www.w3.org/TR/DOM-Level-2-Core/ecma-script-binding.html
   return resultList;
 };
 
@@ -958,7 +958,7 @@ var addToSelection = this.addToSelection = function (elemsToAdd, showGrips) {
   }
 
   // make sure the elements are in the correct order
-  // See: http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
+  // See: https://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
 
   selectedElements.sort(function (a, b) {
     if (a && b && a.compareDocumentPosition) {
@@ -2809,9 +2809,9 @@ var smoothPolylineIntoPath = function (element) {
     //
     // Reading:
     // - http://www.efg2.com/Lab/Graphics/Jean-YvesQueinecBezierCurves.htm
-    // - http://www.codeproject.com/KB/graphics/BezierSpline.aspx?msg=2956963
-    // - http://www.ian-ko.com/ET_GeoWizards/UserGuide/smooth.htm
-    // - http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html
+    // - https://www.codeproject.com/KB/graphics/BezierSpline.aspx?msg=2956963
+    // - https://www.ian-ko.com/ET_GeoWizards/UserGuide/smooth.htm
+    // - https://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html
     var curpos = points.getItem(0), prevCtlPt = null;
     var d = [];
     d.push(['M', curpos.x, ',', curpos.y, ' C'].join(''));
@@ -4001,7 +4001,7 @@ this.save = function (opts) {
   if (opts) { $.extend(saveOptions, opts); }
   saveOptions.apply = true;
 
-  // no need for doctype, see http://jwatt.org/svg/authoring/#doctype-declaration
+  // no need for doctype, see https://jwatt.org/svg/authoring/#doctype-declaration
   var str = this.svgCanvasToString();
   call('saved', str);
 };
@@ -6108,7 +6108,7 @@ this.removeHyperlink = function () {
 //
 // Parameters:
 // new_type - Integer with the new segment type
-// See http://www.w3.org/TR/SVG/paths.html#InterfaceSVGPathSeg for list
+// See https://www.w3.org/TR/SVG/paths.html#InterfaceSVGPathSeg for list
 this.setSegType = function (newType) {
   pathActions.setSegType(newType);
 };

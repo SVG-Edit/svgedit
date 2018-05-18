@@ -20,7 +20,7 @@ Function | Description
 [`Utils.convertToXMLReferences`](#utilsconverttoxmlreferences) | Converts a string to use XML references
 [`rectsIntersect`](#rectsintersect) | Check if two rectangles (BBoxes objects) intersect each other
 [`snapToAngle`](#snaptoangle) | Returns a 45 degree angle coordinate associated with the two given coordinates
-[`text2xml`](#text2xml) | Cross-browser compatible method of converting a string to an XML tree found this function [here](http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f)
+[`text2xml`](#text2xml) | Cross-browser compatible method of converting a string to an XML tree found this function [here](https://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f)
 
 ### Unit conversion functions
 
@@ -330,7 +330,7 @@ Object with the following values: x - The angle-snapped x value y - The angle-sn
 
 	"text2xml": function(sXML)
 
-Cross-browser compatible method of converting a string to an XML tree found this function [here](http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f)
+Cross-browser compatible method of converting a string to an XML tree found this function [here](https://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f)
 
 # Unit conversion functions
 
@@ -1864,7 +1864,7 @@ Sets the new segment type to the selected segment(s).
 
 #### Parameters
 
-* `new_type` Integer with the new segment type See http://www.w3.org/TR/SVG/paths.html#InterfaceSVGPathSeg for list
+* `new_type` Integer with the new segment type See https://www.w3.org/TR/SVG/paths.html#InterfaceSVGPathSeg for list
 
 ## `convertToPath`
 

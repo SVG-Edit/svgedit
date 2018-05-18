@@ -291,7 +291,7 @@ $.svgIcons = function (file, opts) {
 				holder = $('#' + id);
 				var svg = elem.getElementsByTagNameNS(svgns, 'svg')[0];
 				var svgroot = document.createElementNS(svgns, 'svg');
-				// Per http://www.w3.org/TR/xml-names11/#defaulting, the namespace for
+				// Per https://www.w3.org/TR/xml-names11/#defaulting, the namespace for
 				// attributes should have no value.
 				svgroot.setAttributeNS(null, 'viewBox', [0, 0, iconW, iconH].join(' '));
 

@@ -18,7 +18,7 @@ Gabe Lerner's excellent [canvg](https://github.com/gabelerner/canvg) library has
 
 ## jQuery UI
 
-We use [jQuery-UI](http://jqueryui.com) for making the dialog boxes (color picker, document properties) draggable, as well as for the opacity slider.
+We use [jQuery-UI](https://jqueryui.com) for making the dialog boxes (color picker, document properties) draggable, as well as for the opacity slider.
 
 ## js-hotkeys
 

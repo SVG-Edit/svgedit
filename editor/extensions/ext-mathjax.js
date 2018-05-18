@@ -139,7 +139,7 @@ svgEditor.addExtension('mathjax', function () {
                     '<legend id="mathjax_legend">Mathematics Editor</legend>' +
                     '<label>' +
                       '<span id="mathjax_explication">Please type your mathematics in ' +
-                      '<a href="http://en.wikipedia.org/wiki/Help:Displaying_a_formula" target="_blank">TeX</a> code.</span></label>' +
+                      '<a href="https://en.wikipedia.org/wiki/Help:Displaying_a_formula" target="_blank">TeX</a> code.</span></label>' +
                     '<textarea id="mathjax_code_textarea" spellcheck="false"></textarea>' +
                   '</fieldset>' +
                 '</div>' +

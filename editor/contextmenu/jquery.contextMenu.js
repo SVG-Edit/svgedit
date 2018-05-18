@@ -5,10 +5,10 @@
 // Version 1.01
 //
 // Cory S.N. LaViska
-// A Beautiful Site (http://abeautifulsite.net/)
+// A Beautiful Site (https://abeautifulsite.net/)
 // Modified by Alexis Deveria
 //
-// More info: http://abeautifulsite.net/2008/09/jquery-context-menu-plugin/
+// More info: https://abeautifulsite.net/2008/09/jquery-context-menu-plugin/
 //
 // Terms of Use
 //

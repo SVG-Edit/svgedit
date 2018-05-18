@@ -267,7 +267,7 @@ svgedit.units.isValidUnit = function (attr, val, selectedElement) {
 
     var result = false;
     // because getElem() can throw an exception in the case of an invalid id
-    // (according to http://www.w3.org/TR/xml-id/ IDs must be a NCName)
+    // (according to https://www.w3.org/TR/xml-id/ IDs must be a NCName)
     // we wrap it in an exception and only return true if the ID was valid and
     // not already present
     try {

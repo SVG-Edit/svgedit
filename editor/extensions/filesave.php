@@ -10,7 +10,7 @@
  */
 
 function encodeRFC5987ValueChars ($str) {
-	// See http://tools.ietf.org/html/rfc5987#section-3.2.1
+	// See https://tools.ietf.org/html/rfc5987#section-3.2.1
 	// For better readability within headers, add back the characters escaped by rawurlencode but still allowable
 	// Although RFC3986 reserves "!" (%21), RFC5987 does not
 	return preg_replace_callback('@%(2[1346B]|5E|60|7C)@', function ($matches) {
@@ -47,7 +47,7 @@ if ($suffix == '.svg') {
 header('Cache-Control: public');
 header('Content-Description: File Transfer');
 
-// See http://tools.ietf.org/html/rfc6266#section-4.1
+// See https://tools.ietf.org/html/rfc6266#section-4.1
 header("Content-Disposition: attachment; filename*=UTF-8''" . encodeRFC5987ValueChars(
 	// preg_replace('@[\\\\/:*?"<>|]@', '', $file) // If we wanted to strip Windows-disallowed characters server-side (but not a security issue, so we can strip client-side instead)
 	$file

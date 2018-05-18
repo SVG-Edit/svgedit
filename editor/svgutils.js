@@ -229,7 +229,7 @@ svgedit.utilities.convertToXMLReferences = function (input) {
 
 // Function: svgedit.utilities.text2xml
 // Cross-browser compatible method of converting a string to an XML tree
-// found this function here: http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f
+// found this function here: https://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f
 svgedit.utilities.text2xml = function (sXML) {
   if (sXML.indexOf('<svg:svg') >= 0) {
     sXML = sXML.replace(/<(\/?)svg:/g, '<$1').replace('xmlns:svg', 'xmlns');

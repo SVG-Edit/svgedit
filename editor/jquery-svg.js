@@ -16,7 +16,7 @@
 // This fixes $(...).attr() to work as expected with SVG elements.
 // Does not currently use *AttributeNS() since we rarely need that.
 
-// See http://api.jquery.com/attr/ for basic documentation of .attr()
+// See https://api.jquery.com/attr/ for basic documentation of .attr()
 
 // Additional functionality:
 // - When getting attributes, a string that's a number is return as type number.

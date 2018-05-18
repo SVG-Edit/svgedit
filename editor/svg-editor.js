@@ -3241,7 +3241,7 @@ window.svgEditor = (function ($) {
       changeOpacity(false, perc);
     }, true);
 
-    // For slider usage, see: http://jqueryui.com/demos/slider/
+    // For slider usage, see: https://jqueryui.com/demos/slider/
     $('#opac_slider').slider({
       start: function () {
         $('#opacity_dropdown li:not(.special)').hide();
@@ -3485,7 +3485,7 @@ window.svgEditor = (function ($) {
 
     var makeHyperlink = function () {
       if (selectedElement != null || multiselected) {
-        $.prompt(uiStrings.notification.enterNewLinkURL, 'http://', function (url) {
+        $.prompt(uiStrings.notification.enterNewLinkURL, 'https://', function (url) {
           if (url) { svgCanvas.makeHyperlink(url); }
         });
       }
@@ -3588,7 +3588,7 @@ window.svgEditor = (function ($) {
     var loadingURL;
     var clickExport = function () {
       $.select('Select an image type for export: ', [
-        // See http://kangax.github.io/jstests/toDataUrl_mime_type_test/ for a useful list of MIME types and browser support
+        // See https://kangax.github.io/jstests/toDataUrl_mime_type_test/ for a useful list of MIME types and browser support
         // 'ICO', // Todo: Find a way to preserve transparency in SVG-Edit if not working presently and do full packaging for x-icon; then switch back to position after 'PNG'
         'PNG',
         'JPEG', 'BMP', 'WEBP', 'PDF'
@@ -4911,7 +4911,7 @@ window.svgEditor = (function ($) {
       e.preventDefault();
       // hypothetical indicator should be removed here
     }
-    // Use HTML5 File API: http://www.w3.org/TR/FileAPI/
+    // Use HTML5 File API: https://www.w3.org/TR/FileAPI/
     // if browser has HTML5 File API support, then we will show the open menu item
     // and provide a file input to click. When that change event fires, it will
     // get the text contents of the file and send it to the canvas
