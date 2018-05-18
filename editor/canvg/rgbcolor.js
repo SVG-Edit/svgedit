@@ -1,12 +1,10 @@
-/* eslint-disable no-var */
 /**
  * A class to parse color values
  * @author Stoyan Stefanov <sstoo@gmail.com>
  * @link   https://www.phpied.com/rgb-color-parser-in-javascript/
- * @license Use it if you like it
+ * @license MIT
  */
-function RGBColor (colorString) { // eslint-disable-line no-unused-vars
-  'use strict';
+export default function RGBColor (colorString) {
   this.ok = false;
 
   // strip any leading #
@@ -19,7 +17,7 @@ function RGBColor (colorString) { // eslint-disable-line no-unused-vars
 
   // before getting into regexps, try simple matches
   // and overwrite the input
-  var simpleColors = {
+  const simpleColors = {
     aliceblue: 'f0f8ff',
     antiquewhite: 'faebd7',
     aqua: '00ffff',
@@ -164,8 +162,7 @@ function RGBColor (colorString) { // eslint-disable-line no-unused-vars
     yellow: 'ffff00',
     yellowgreen: '9acd32'
   };
-  var key;
-  for (key in simpleColors) {
+  for (const key in simpleColors) {
     if (simpleColors.hasOwnProperty(key)) {
       if (colorString === key) {
         colorString = simpleColors[key];
@@ -175,11 +172,11 @@ function RGBColor (colorString) { // eslint-disable-line no-unused-vars
   // emd of simple type-in colors
 
   // array of color definition objects
-  var colorDefs = [
+  const colorDefs = [
     {
       re: /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,
       example: ['rgb(123, 234, 45)', 'rgb(255,234,245)'],
-      process: function (bits) {
+      process (bits) {
         return [
           parseInt(bits[1], 10),
           parseInt(bits[2], 10),
@@ -190,7 +187,7 @@ function RGBColor (colorString) { // eslint-disable-line no-unused-vars
     {
       re: /^(\w{2})(\w{2})(\w{2})$/,
       example: ['#00ff00', '336699'],
-      process: function (bits) {
+      process (bits) {
         return [
           parseInt(bits[1], 16),
           parseInt(bits[2], 16),
@@ -201,7 +198,7 @@ function RGBColor (colorString) { // eslint-disable-line no-unused-vars
     {
       re: /^(\w{1})(\w{1})(\w{1})$/,
       example: ['#fb0', 'f0f'],
-      process: function (bits) {
+      process (bits) {
         return [
           parseInt(bits[1] + bits[1], 16),
           parseInt(bits[2] + bits[2], 16),
@@ -211,14 +208,13 @@ function RGBColor (colorString) { // eslint-disable-line no-unused-vars
     }
   ];
 
-  var i;
   // search through the definitions to find a match
-  for (i = 0; i < colorDefs.length; i++) {
-    var re = colorDefs[i].re;
-    var processor = colorDefs[i].process;
-    var bits = re.exec(colorString);
+  for (let i = 0; i < colorDefs.length; i++) {
+    const {re} = colorDefs[i];
+    const processor = colorDefs[i].process;
+    const bits = re.exec(colorString);
     if (bits) {
-      var channels = processor(bits);
+      const channels = processor(bits);
       this.r = channels[0];
       this.g = channels[1];
       this.b = channels[2];
@@ -236,9 +232,9 @@ function RGBColor (colorString) { // eslint-disable-line no-unused-vars
     return 'rgb(' + this.r + ', ' + this.g + ', ' + this.b + ')';
   };
   this.toHex = function () {
-    var r = this.r.toString(16);
-    var g = this.g.toString(16);
-    var b = this.b.toString(16);
+    let r = this.r.toString(16);
+    let g = this.g.toString(16);
+    let b = this.b.toString(16);
     if (r.length === 1) { r = '0' + r; }
     if (g.length === 1) { g = '0' + g; }
     if (b.length === 1) { b = '0' + b; }
@@ -247,30 +243,28 @@ function RGBColor (colorString) { // eslint-disable-line no-unused-vars
 
   // help
   this.getHelpXML = function () {
-    var i, j;
-    var examples = [];
+    const examples = [];
     // add regexps
-    for (i = 0; i < colorDefs.length; i++) {
-      var example = colorDefs[i].example;
-      for (j = 0; j < example.length; j++) {
+    for (let i = 0; i < colorDefs.length; i++) {
+      const {example} = colorDefs[i];
+      for (let j = 0; j < example.length; j++) {
         examples[examples.length] = example[j];
       }
     }
     // add type-in colors
-    var sc;
-    for (sc in simpleColors) {
+    for (const sc in simpleColors) {
       if (simpleColors.hasOwnProperty(sc)) {
         examples[examples.length] = sc;
       }
     }
 
-    var xml = document.createElement('ul');
+    const xml = document.createElement('ul');
     xml.setAttribute('id', 'rgbcolor-examples');
-    for (i = 0; i < examples.length; i++) {
+    for (let i = 0; i < examples.length; i++) {
       try {
-        var listItem = document.createElement('li');
-        var listColor = new RGBColor(examples[i]);
-        var exampleDiv = document.createElement('div');
+        const listItem = document.createElement('li');
+        const listColor = new RGBColor(examples[i]);
+        const exampleDiv = document.createElement('div');
         exampleDiv.style.cssText =
             'margin: 3px; ' +
             'border: 1px solid black; ' +
@@ -278,7 +272,7 @@ function RGBColor (colorString) { // eslint-disable-line no-unused-vars
             'color:' + listColor.toHex()
         ;
         exampleDiv.appendChild(document.createTextNode('test'));
-        var listItemValue = document.createTextNode(
+        const listItemValue = document.createTextNode(
           ' ' + examples[i] + ' -> ' + listColor.toRGB() + ' -> ' + listColor.toHex()
         );
         listItem.appendChild(exampleDiv);

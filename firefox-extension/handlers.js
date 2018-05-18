@@ -1,11 +1,10 @@
-/* eslint-disable no-var */
-/* global $, Components, svgCanvas, netscape */
+/* global svgCanvas, jQuery, Components, netscape */
 // Note: This JavaScript file must be included as the last script on the main HTML editor page to override the open/save handlers
-$(function () {
+jQuery(function () {
   if (!window.Components) return;
 
   function mozFilePicker (readflag) {
-    var fp = window.Components.classes['@mozilla.org/filepicker;1']
+    const fp = window.Components.classes['@mozilla.org/filepicker;1']
       .createInstance(Components.interfaces.nsIFilePicker);
     if (readflag) fp.init(window, 'Pick a SVG file', fp.modeOpen);
     else fp.init(window, 'Pick a SVG file', fp.modeSave);
@@ -15,26 +14,26 @@ $(function () {
   }
 
   svgCanvas.setCustomHandlers({
-    open: function () {
+    open () {
       try {
         netscape.security.PrivilegeManager.enablePrivilege('UniversalXPConnect');
-        var file = mozFilePicker(true);
+        const file = mozFilePicker(true);
         if (!file) {
           return null;
         }
 
-        var inputStream = Components.classes['@mozilla.org/network/file-input-stream;1'].createInstance(Components.interfaces.nsIFileInputStream);
+        const inputStream = Components.classes['@mozilla.org/network/file-input-stream;1'].createInstance(Components.interfaces.nsIFileInputStream);
         inputStream.init(file, 0x01, parseInt('00004', 8), null);
-        var sInputStream = Components.classes['@mozilla.org/scriptableinputstream;1'].createInstance(Components.interfaces.nsIScriptableInputStream);
+        const sInputStream = Components.classes['@mozilla.org/scriptableinputstream;1'].createInstance(Components.interfaces.nsIScriptableInputStream);
         sInputStream.init(inputStream);
         svgCanvas.setSvgString(sInputStream.read(sInputStream.available()));
       } catch (e) {
         console.log('Exception while attempting to load' + e);
       }
     },
-    save: function (svg, str) {
+    save (svg, str) {
       try {
-        var file = mozFilePicker(false);
+        const file = mozFilePicker(false);
         if (!file) {
           return;
         }
@@ -43,7 +42,7 @@ $(function () {
           file.create(0, parseInt('0664', 8));
         }
 
-        var out = Components.classes['@mozilla.org/network/file-output-stream;1'].createInstance(Components.interfaces.nsIFileOutputStream);
+        const out = Components.classes['@mozilla.org/network/file-output-stream;1'].createInstance(Components.interfaces.nsIFileOutputStream);
         out.init(file, 0x20 | 0x02, parseInt('00004', 8), null);
         out.write(str, str.length);
         out.flush();

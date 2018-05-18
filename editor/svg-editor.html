@@ -12,11 +12,14 @@
     <link rel="stylesheet" href="svg-editor.css"/>
     <link rel="stylesheet" href="spinbtn/JQuerySpinBtn.css"/>
     <link rel="stylesheet" href="custom.css"/>
+    <style id="styleoverrides" media="screen"></style>
     <!--{if jquery_release}>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <!{else}-->
-        <script src="jquery.js"></script>
+        <script src="jquery.min.js"></script>
     <!--{endif}-->
+
+    <script type="module" src="redirect-on-lacking-support.js"></script>
 
     <script src="js-hotkeys/jquery.hotkeys.min.js"></script>
     <script src="jquerybbq/jquery.bbq.min.js"></script>
@@ -28,15 +31,11 @@
     <!--{if svg_edit_release}>
         <script src="svgedit.compiled.js"></script>
     <!{else}-->
-        <script src="svgedit.js"></script>
         <script src="jquery-svg.js"></script>
         <script src="contextmenu/jquery.contextMenu.js"></script>
         <script src="pathseg.js"></script>
-        <script src="browser.js"></script>
         <script src="svgtransformlist.js"></script>
         <script src="math.js"></script>
-        <script src="units.js"></script>
-        <script src="svgutils.js"></script>
         <script src="sanitize.js"></script>
         <script src="history.js"></script>
         <script src="historyrecording.js"></script>
@@ -47,7 +46,7 @@
         <script src="layer.js"></script>
         <script src="path.js"></script>
         <script src="svgcanvas.js"></script>
-        <script src="svg-editor.js"></script>
+        <script type="module" src="svg-editor.js"></script>
         <script src="locale/locale.js"></script>
         <script src="contextmenu.js"></script>
     <!--{endif}-->
@@ -88,7 +87,6 @@
 </div>
 
 <div id="workarea">
-<style id="styleoverrides" media="screen" scoped="scoped"></style>
 <div id="svgcanvas" style="position:relative">
 
 </div>

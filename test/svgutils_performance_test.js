@@ -1,164 +1,164 @@
 /* eslint-env qunit */
-/* globals $, svgedit */
-/* eslint-disable no-var */
-$(function () {
-  // log function
-  QUnit.log = function (details) {
-    if (window.console && window.console.log) {
-      window.console.log(details.result + ' :: ' + details.message);
-    }
-  };
+/* globals svgedit */
 
-  var currentLayer = document.getElementById('layer1');
+// import './pathseg.js';
 
-  function mockCreateSVGElement (jsonMap) {
-    var elem = document.createElementNS(svgedit.NS.SVG, jsonMap['element']);
-    for (var attr in jsonMap['attr']) {
-      elem.setAttribute(attr, jsonMap['attr'][attr]);
-    }
-    return elem;
+// log function
+QUnit.log = function (details) {
+  if (window.console && window.console.log) {
+    window.console.log(details.result + ' :: ' + details.message);
   }
-  function mockAddSvgElementFromJson (json) {
-    var elem = mockCreateSVGElement(json);
-    currentLayer.appendChild(elem);
-    return elem;
+};
+
+const currentLayer = document.getElementById('layer1');
+
+function mockCreateSVGElement (jsonMap) {
+  const elem = document.createElementNS(svgedit.NS.SVG, jsonMap['element']);
+  for (const attr in jsonMap['attr']) {
+    elem.setAttribute(attr, jsonMap['attr'][attr]);
   }
+  return elem;
+}
+function mockAddSvgElementFromJson (json) {
+  const elem = mockCreateSVGElement(json);
+  currentLayer.appendChild(elem);
+  return elem;
+}
 
-  // var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
-  var groupWithMatrixTransform = document.getElementById('svg_group_with_matrix_transform');
-  var textWithMatrixTransform = document.getElementById('svg_text_with_matrix_transform');
+// const svg = document.createElementNS(svgedit.NS.SVG, 'svg');
+const groupWithMatrixTransform = document.getElementById('svg_group_with_matrix_transform');
+const textWithMatrixTransform = document.getElementById('svg_text_with_matrix_transform');
 
-  function fillDocumentByCloningElement (elem, count) {
-    var elemId = elem.getAttribute('id') + '-';
-    for (var index = 0; index < count; index++) {
-      var clone = elem.cloneNode(true); // t: deep clone
-      // Make sure you set a unique ID like a real document.
-      clone.setAttribute('id', elemId + index);
-      var parent = elem.parentNode;
-      parent.appendChild(clone);
-    }
+function fillDocumentByCloningElement (elem, count) {
+  const elemId = elem.getAttribute('id') + '-';
+  for (let index = 0; index < count; index++) {
+    const clone = elem.cloneNode(true); // t: deep clone
+    // Make sure you set a unique ID like a real document.
+    clone.setAttribute('id', elemId + index);
+    const parent = elem.parentNode;
+    parent.appendChild(clone);
   }
+}
 
-  module('svgedit.utilities_performance', {
-    setup: function () {
-    },
-    teardown: function () {
+module('svgedit.utilities_performance', {
+  setup () {
+  },
+  teardown () {
+  }
+});
+
+const mockPathActions = {
+  resetOrientation (path) {
+    if (path == null || path.nodeName !== 'path') { return false; }
+    const tlist = svgedit.transformlist.getTransformList(path);
+    const m = svgedit.math.transformListToTransform(tlist).matrix;
+    tlist.clear();
+    path.removeAttribute('transform');
+    const segList = path.pathSegList;
+
+    const len = segList.numberOfItems;
+    // let lastX, lastY;
+
+    for (let i = 0; i < len; ++i) {
+      const seg = segList.getItem(i);
+      const type = seg.pathSegType;
+      if (type === 1) { continue; }
+      const pts = [];
+      ['', 1, 2].forEach(function (n, j) {
+        const x = seg['x' + n], y = seg['y' + n];
+        if (x !== undefined && y !== undefined) {
+          const pt = svgedit.math.transformPoint(x, y, m);
+          pts.splice(pts.length, 0, pt.x, pt.y);
+        }
+      });
+      // svgedit.path.replacePathSeg(type, i, pts, path);
     }
-  });
 
-  var mockPathActions = {
-    resetOrientation: function (path) {
-      if (path == null || path.nodeName !== 'path') { return false; }
-      var tlist = svgedit.transformlist.getTransformList(path);
-      var m = svgedit.math.transformListToTransform(tlist).matrix;
-      tlist.clear();
-      path.removeAttribute('transform');
-      var segList = path.pathSegList;
+    // svgedit.utilities.reorientGrads(path, m);
+  }
+};
 
-      var len = segList.numberOfItems;
-      var i; // , lastX, lastY;
+// //////////////////////////////////////////////////////////
+// Performance times with various browsers on Macbook 2011 8MB RAM OS X El Capitan 10.11.4
+//
+// To see 'Before Optimization' performance, making the following two edits.
+// 1. svgedit.utilities.getStrokedBBox - change if( elems.length === 1) to if( false && elems.length === 1)
+// 2. svgedit.utilities.getBBoxWithTransform - uncomment 'Old technique that was very slow'
 
-      for (i = 0; i < len; ++i) {
-        var seg = segList.getItem(i);
-        var type = seg.pathSegType;
-        if (type === 1) { continue; }
-        var pts = [];
-        $.each(['', 1, 2], function (j, n) {
-          var x = seg['x' + n], y = seg['y' + n];
-          if (x !== undefined && y !== undefined) {
-            var pt = svgedit.math.transformPoint(x, y, m);
-            pts.splice(pts.length, 0, pt.x, pt.y);
-          }
-        });
-        // svgedit.path.replacePathSeg(type, i, pts, path);
-      }
+// Chrome
+// Before Optimization
+//	 Pass1 svgCanvas.getStrokedBBox total ms 4,218, ave ms 41.0,	 min/max 37 51
+//	 Pass2 svgCanvas.getStrokedBBox total ms 4,458, ave ms 43.3,	 min/max 32 63
+// Optimized Code
+//	 Pass1 svgCanvas.getStrokedBBox total ms 1,112, ave ms 10.8,	 min/max 9 20
+//	 Pass2 svgCanvas.getStrokedBBox total ms		34, ave ms	0.3,	 min/max 0 20
 
-      // svgedit.utilities.reorientGrads(path, m);
-    }
-  };
+// Firefox
+// Before Optimization
+//	 Pass1 svgCanvas.getStrokedBBox total ms 3,794, ave ms 36.8,	 min/max 33 48
+//	 Pass2 svgCanvas.getStrokedBBox total ms 4,049, ave ms 39.3,	 min/max 28 53
+// Optimized Code
+//	 Pass1 svgCanvas.getStrokedBBox total ms	 104, ave ms 1.0,	 min/max 0 23
+//	 Pass2 svgCanvas.getStrokedBBox total ms		71, ave ms 0.7,	 min/max 0 23
 
-  // //////////////////////////////////////////////////////////
-  // Performance times with various browsers on Macbook 2011 8MB RAM OS X El Capitan 10.11.4
-  //
-  // To see 'Before Optimization' performance, making the following two edits.
-  // 1. svgedit.utilities.getStrokedBBox - change if( elems.length === 1) to if( false && elems.length === 1)
-  // 2. svgedit.utilities.getBBoxWithTransform - uncomment 'Old technique that was very slow'
+// Safari
+// Before Optimization
+//	 Pass1 svgCanvas.getStrokedBBox total ms 4,840, ave ms 47.0,	 min/max 45 62
+//	 Pass2 svgCanvas.getStrokedBBox total ms 4,849, ave ms 47.1,	 min/max 34 62
+// Optimized Code
+//	 Pass1 svgCanvas.getStrokedBBox total ms		42, ave ms 0.4,	 min/max 0 23
+//	 Pass2 svgCanvas.getStrokedBBox total ms		17, ave ms 0.2,	 min/max 0 23
 
-  // Chrome
-  // Before Optimization
-  //	 Pass1 svgCanvas.getStrokedBBox total ms 4,218, ave ms 41.0,	 min/max 37 51
-  //	 Pass2 svgCanvas.getStrokedBBox total ms 4,458, ave ms 43.3,	 min/max 32 63
-  // Optimized Code
-  //	 Pass1 svgCanvas.getStrokedBBox total ms 1,112, ave ms 10.8,	 min/max 9 20
-  //	 Pass2 svgCanvas.getStrokedBBox total ms		34, ave ms	0.3,	 min/max 0 20
+asyncTest('Test svgCanvas.getStrokedBBox() performance with matrix transforms', function () {
+  expect(2);
+  const {getStrokedBBox} = svgedit.utilities;
+  const {children} = currentLayer;
 
-  // Firefox
-  // Before Optimization
-  //	 Pass1 svgCanvas.getStrokedBBox total ms 3,794, ave ms 36.8,	 min/max 33 48
-  //	 Pass2 svgCanvas.getStrokedBBox total ms 4,049, ave ms 39.3,	 min/max 28 53
-  // Optimized Code
-  //	 Pass1 svgCanvas.getStrokedBBox total ms	 104, ave ms 1.0,	 min/max 0 23
-  //	 Pass2 svgCanvas.getStrokedBBox total ms		71, ave ms 0.7,	 min/max 0 23
+  let lastTime, now,
+    min = Number.MAX_VALUE,
+    max = 0,
+    total = 0;
 
-  // Safari
-  // Before Optimization
-  //	 Pass1 svgCanvas.getStrokedBBox total ms 4,840, ave ms 47.0,	 min/max 45 62
-  //	 Pass2 svgCanvas.getStrokedBBox total ms 4,849, ave ms 47.1,	 min/max 34 62
-  // Optimized Code
-  //	 Pass1 svgCanvas.getStrokedBBox total ms		42, ave ms 0.4,	 min/max 0 23
-  //	 Pass2 svgCanvas.getStrokedBBox total ms		17, ave ms 0.2,	 min/max 0 23
+  fillDocumentByCloningElement(groupWithMatrixTransform, 50);
+  fillDocumentByCloningElement(textWithMatrixTransform, 50);
 
-  asyncTest('Test svgCanvas.getStrokedBBox() performance with matrix transforms', function () {
-    expect(2);
-    var getStrokedBBox = svgedit.utilities.getStrokedBBox;
-    var children = currentLayer.children;
+  // The first pass through all elements is slower.
+  const count = children.length;
+  const start = lastTime = now = Date.now();
+  // Skip the first child which is the title.
+  for (let index = 1; index < count; index++) {
+    const child = children[index];
+    /* const obj = */ getStrokedBBox([child], mockAddSvgElementFromJson, mockPathActions);
+    now = Date.now(); const delta = now - lastTime; lastTime = now;
+    total += delta;
+    min = Math.min(min, delta);
+    max = Math.max(max, delta);
+  }
+  total = lastTime - start;
+  const ave = total / count;
+  ok(ave < 20, 'svgedit.utilities.getStrokedBBox average execution time is less than 20 ms');
+  console.log('Pass1 svgCanvas.getStrokedBBox total ms ' + total + ', ave ms ' + ave.toFixed(1) + ',\t min/max ' + min + ' ' + max);
 
-    var index, count, child, start, delta, lastTime, now, ave,
-      min = Number.MAX_VALUE,
-      max = 0,
-      total = 0;
+  // The second pass is two to ten times faster.
+  setTimeout(function () {
+    const count = children.length;
 
-    fillDocumentByCloningElement(groupWithMatrixTransform, 50);
-    fillDocumentByCloningElement(textWithMatrixTransform, 50);
-
-    // The first pass through all elements is slower.
-    count = children.length;
-    start = lastTime = now = Date.now();
+    const start = lastTime = now = Date.now();
     // Skip the first child which is the title.
-    for (index = 1; index < count; index++) {
-      child = children[index];
-      /* var obj = */ getStrokedBBox([child], mockAddSvgElementFromJson, mockPathActions);
-      now = Date.now(); delta = now - lastTime; lastTime = now;
+    for (let index = 1; index < count; index++) {
+      const child = children[index];
+      /* const obj = */ getStrokedBBox([child], mockAddSvgElementFromJson, mockPathActions);
+      now = Date.now(); const delta = now - lastTime; lastTime = now;
       total += delta;
       min = Math.min(min, delta);
       max = Math.max(max, delta);
     }
+
     total = lastTime - start;
-    ave = total / count;
-    ok(ave < 20, 'svgedit.utilities.getStrokedBBox average execution time is less than 20 ms');
-    console.log('Pass1 svgCanvas.getStrokedBBox total ms ' + total + ', ave ms ' + ave.toFixed(1) + ',\t min/max ' + min + ' ' + max);
+    const ave = total / count;
+    ok(ave < 2, 'svgedit.utilities.getStrokedBBox average execution time is less than 1 ms');
+    console.log('Pass2 svgCanvas.getStrokedBBox total ms ' + total + ', ave ms ' + ave.toFixed(1) + ',\t min/max ' + min + ' ' + max);
 
-    // The second pass is two to ten times faster.
-    setTimeout(function () {
-      count = children.length;
-
-      start = lastTime = now = Date.now();
-      // Skip the first child which is the title.
-      for (index = 1; index < count; index++) {
-        child = children[index];
-        /* var obj = */ getStrokedBBox([child], mockAddSvgElementFromJson, mockPathActions);
-        now = Date.now(); delta = now - lastTime; lastTime = now;
-        total += delta;
-        min = Math.min(min, delta);
-        max = Math.max(max, delta);
-      }
-
-      total = lastTime - start;
-      ave = total / count;
-      ok(ave < 2, 'svgedit.utilities.getStrokedBBox average execution time is less than 1 ms');
-      console.log('Pass2 svgCanvas.getStrokedBBox total ms ' + total + ', ave ms ' + ave.toFixed(1) + ',\t min/max ' + min + ' ' + max);
-
-      QUnit.start();
-    });
+    QUnit.start();
   });
 });

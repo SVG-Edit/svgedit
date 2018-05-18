@@ -101,6 +101,6 @@ notClose.percent = function notClosePercent(actual, expected, minPercentDifferen
 
 
 //QUnit.extend(QUnit.assert, {
-//  close: close,
-//  notClose: notClose
+//  close,
+//  notClose
 //});

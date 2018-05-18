@@ -1,5 +1,4 @@
-/* eslint-disable no-var */
-/* globals svgEditor, svgCanvas, $ */
+/* globals jQuery, svgEditor, svgCanvas */
 /*
  * ext-arrows.js
  *
@@ -10,11 +9,10 @@
  */
 
 svgEditor.addExtension('Arrows', function (S) {
-  var // svgcontent = S.svgcontent,
+  const $ = jQuery;
+  const // {svgcontent} = S,
     addElem = S.addSvgElementFromJson,
-    nonce = S.nonce,
-    randomizeIds = S.randomize_ids,
-    selElems, pathdata,
+    {nonce} = S,
     langList = {
       'en': [
         {'id': 'arrow_none', 'textContent': 'No arrow'}
@@ -23,8 +21,9 @@ svgEditor.addExtension('Arrows', function (S) {
         {'id': 'arrow_none', 'textContent': 'Sans flèche'}
       ]
     },
-    arrowprefix,
     prefix = 'se_arrow_';
+
+  let selElems, arrowprefix, randomizeIds = S.randomize_ids;
 
   function setArrowNonce (window, n) {
     randomizeIds = true;
@@ -49,15 +48,15 @@ svgEditor.addExtension('Arrows', function (S) {
     arrowprefix = prefix;
   }
 
-  pathdata = {
+  const pathdata = {
     fw: {d: 'm0,0l10,5l-10,5l5,-5l-5,-5z', refx: 8, id: arrowprefix + 'fw'},
     bk: {d: 'm10,0l-10,5l10,5l-5,-5l5,-5z', refx: 2, id: arrowprefix + 'bk'}
   };
 
   function getLinked (elem, attr) {
-    var str = elem.getAttribute(attr);
+    const str = elem.getAttribute(attr);
     if (!str) { return null; }
-    var m = str.match(/\(#(.*)\)/);
+    const m = str.match(/\(#(.*)\)/);
     if (!m || m.length !== 2) {
       return null;
     }
@@ -67,12 +66,11 @@ svgEditor.addExtension('Arrows', function (S) {
   function showPanel (on) {
     $('#arrow_panel').toggle(on);
     if (on) {
-      var el = selElems[0];
-      var end = el.getAttribute('marker-end');
-      var start = el.getAttribute('marker-start');
-      var mid = el.getAttribute('marker-mid');
-      var val;
-
+      const el = selElems[0];
+      const end = el.getAttribute('marker-end');
+      const start = el.getAttribute('marker-start');
+      const mid = el.getAttribute('marker-mid');
+      let val;
       if (end && start) {
         val = 'both';
       } else if (end) {
@@ -81,7 +79,7 @@ svgEditor.addExtension('Arrows', function (S) {
         val = 'start';
       } else if (mid) {
         val = 'mid';
-        if (mid.indexOf('bk') !== -1) {
+        if (mid.includes('bk')) {
           val = 'mid_bk';
         }
       }
@@ -95,7 +93,7 @@ svgEditor.addExtension('Arrows', function (S) {
   }
 
   function resetMarker () {
-    var el = selElems[0];
+    const el = selElems[0];
     el.removeAttribute('marker-start');
     el.removeAttribute('marker-mid');
     el.removeAttribute('marker-end');
@@ -105,32 +103,32 @@ svgEditor.addExtension('Arrows', function (S) {
     // TODO: Make marker (or use?) per arrow type, since refX can be different
     id = id || arrowprefix + dir;
 
-    var marker = S.getElem(id);
-    var data = pathdata[dir];
+    const data = pathdata[dir];
 
     if (type === 'mid') {
       data.refx = 5;
     }
 
+    let marker = S.getElem(id);
     if (!marker) {
       marker = addElem({
-        'element': 'marker',
-        'attr': {
-          'viewBox': '0 0 10 10',
-          'id': id,
-          'refY': 5,
-          'markerUnits': 'strokeWidth',
-          'markerWidth': 5,
-          'markerHeight': 5,
-          'orient': 'auto',
-          'style': 'pointer-events:none' // Currently needed for Opera
+        element: 'marker',
+        attr: {
+          viewBox: '0 0 10 10',
+          id,
+          refY: 5,
+          markerUnits: 'strokeWidth',
+          markerWidth: 5,
+          markerHeight: 5,
+          orient: 'auto',
+          style: 'pointer-events:none' // Currently needed for Opera
         }
       });
-      var arrow = addElem({
-        'element': 'path',
-        'attr': {
-          'd': data.d,
-          'fill': '#000000'
+      const arrow = addElem({
+        element: 'path',
+        attr: {
+          d: data.d,
+          fill: '#000000'
         }
       });
       marker.appendChild(arrow);
@@ -143,15 +141,15 @@ svgEditor.addExtension('Arrows', function (S) {
   }
 
   function setArrow () {
-    var type = this.value;
     resetMarker();
 
+    let type = this.value;
     if (type === 'none') {
       return;
     }
 
     // Set marker on element
-    var dir = 'fw';
+    let dir = 'fw';
     if (type === 'mid_bk') {
       type = 'mid';
       dir = 'bk';
@@ -170,23 +168,23 @@ svgEditor.addExtension('Arrows', function (S) {
   }
 
   function colorChanged (elem) {
-    var color = elem.getAttribute('stroke');
-    var mtypes = ['start', 'mid', 'end'];
-    var defs = S.findDefs();
+    const color = elem.getAttribute('stroke');
+    const mtypes = ['start', 'mid', 'end'];
+    const defs = S.findDefs();
 
     $.each(mtypes, function (i, type) {
-      var marker = getLinked(elem, 'marker-' + type);
+      const marker = getLinked(elem, 'marker-' + type);
       if (!marker) { return; }
 
-      var curColor = $(marker).children().attr('fill');
-      var curD = $(marker).children().attr('d');
-      var newMarker = null;
+      const curColor = $(marker).children().attr('fill');
+      const curD = $(marker).children().attr('d');
       if (curColor === color) { return; }
 
-      var allMarkers = $(defs).find('marker');
+      const allMarkers = $(defs).find('marker');
+      let newMarker = null;
       // Different color, check if already made
       allMarkers.each(function () {
-        var attrs = $(this).children().attr(['fill', 'd']);
+        const attrs = $(this).children().attr(['fill', 'd']);
         if (attrs.fill === color && attrs.d === curD) {
           // Found another marker with this color and this path
           newMarker = this;
@@ -195,8 +193,8 @@ svgEditor.addExtension('Arrows', function (S) {
 
       if (!newMarker) {
         // Create a new marker with this color
-        var lastId = marker.id;
-        var dir = lastId.indexOf('_fw') !== -1 ? 'fw' : 'bk';
+        const lastId = marker.id;
+        const dir = lastId.includes('_fw') ? 'fw' : 'bk';
 
         newMarker = addMarker(dir, type, arrowprefix + dir + allMarkers.length);
 
@@ -206,9 +204,9 @@ svgEditor.addExtension('Arrows', function (S) {
       $(elem).attr('marker-' + type, 'url(#' + newMarker.id + ')');
 
       // Check if last marker can be removed
-      var remove = true;
+      let remove = true;
       $(S.svgcontent).find('line, polyline, path, polygon').each(function () {
-        var elem = this;
+        const elem = this;
         $.each(mtypes, function (j, mtype) {
           if ($(elem).attr('marker-' + mtype) === 'url(#' + marker.id + ')') {
             remove = false;
@@ -245,25 +243,25 @@ svgEditor.addExtension('Arrows', function (S) {
         change: setArrow
       }
     }],
-    callback: function () {
+    callback () {
       $('#arrow_panel').hide();
       // Set ID so it can be translated in locale file
       $('#arrow_list option')[0].id = 'connector_no_arrow';
     },
-    addLangData: function (lang) {
+    addLangData (lang) {
       return {
         data: langList[lang]
       };
     },
-    selectedChanged: function (opts) {
+    selectedChanged (opts) {
       // Use this to update the current selected elements
       selElems = opts.elems;
 
-      var i = selElems.length;
-      var markerElems = ['line', 'path', 'polyline', 'polygon'];
+      const markerElems = ['line', 'path', 'polyline', 'polygon'];
+      let i = selElems.length;
       while (i--) {
-        var elem = selElems[i];
-        if (elem && $.inArray(elem.tagName, markerElems) !== -1) {
+        const elem = selElems[i];
+        if (elem && markerElems.includes(elem.tagName)) {
           if (opts.selectedElement && !opts.multiselected) {
             showPanel(true);
           } else {
@@ -274,16 +272,16 @@ svgEditor.addExtension('Arrows', function (S) {
         }
       }
     },
-    elementChanged: function (opts) {
-      var elem = opts.elems[0];
+    elementChanged (opts) {
+      const elem = opts.elems[0];
       if (elem && (
         elem.getAttribute('marker-start') ||
         elem.getAttribute('marker-mid') ||
         elem.getAttribute('marker-end')
       )) {
-        // var start = elem.getAttribute('marker-start');
-        // var mid = elem.getAttribute('marker-mid');
-        // var end = elem.getAttribute('marker-end');
+        // const start = elem.getAttribute('marker-start');
+        // const mid = elem.getAttribute('marker-mid');
+        // const end = elem.getAttribute('marker-end');
         // Has marker, so see if it should match color
         colorChanged(elem);
       }

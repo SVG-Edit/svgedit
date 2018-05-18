@@ -1,4 +1,3 @@
-/* eslint-disable no-var */
 /* globals jQuery */
 /*
  * Localizing script for SVG-edit UI
@@ -11,30 +10,27 @@
  */
 
 // Dependencies
-// 1) jQuery
 // 2) svgcanvas.js
 // 3) svg-editor.js
 
-var svgEditor = (function ($, editor) {
-'use strict';
+const $ = jQuery;
 
-var langParam;
-
+let langParam;
 function setStrings (type, obj, ids) {
   // Root element to look for element from
-  var sel, val, $elem, elem, parent = $('#svg_editor').parent();
-  for (sel in obj) {
-    val = obj[sel];
+  const parent = $('#svg_editor').parent();
+  for (let sel in obj) {
+    const val = obj[sel];
     if (!val) { console.log(sel); }
 
     if (ids) { sel = '#' + sel; }
-    $elem = parent.find(sel);
+    const $elem = parent.find(sel);
     if ($elem.length) {
-      elem = parent.find(sel)[0];
+      const elem = parent.find(sel)[0];
 
       switch (type) {
       case 'content':
-        for (var i = 0, node; (node = elem.childNodes[i]); i++) {
+        for (let i = 0, node; (node = elem.childNodes[i]); i++) {
           if (node.nodeType === 3 && node.textContent.trim()) {
             node.textContent = val;
             break;
@@ -52,8 +48,13 @@ function setStrings (type, obj, ids) {
   }
 }
 
-editor.readLang = function (langData) {
-  var more = editor.canvas.runExtensions('addlangData', langParam, true);
+let editor_;
+export const init = (editor) => {
+  editor_ = editor;
+};
+
+export const readLang = function (langData) {
+  const more = editor_.addLangData(langParam);
   $.each(more, function (i, m) {
     if (m.data) {
       langData = $.merge(langData, m.data);
@@ -63,13 +64,11 @@ editor.readLang = function (langData) {
   // Old locale file, do nothing for now.
   if (!langData.tools) { return; }
 
-  var tools = langData.tools,
-    // misc = langData.misc,
-    properties = langData.properties,
-    config = langData.config,
-    layers = langData.layers,
-    common = langData.common,
-    ui = langData.ui;
+  const {
+    tools,
+    // misc,
+    properties, config, layers, common, ui
+  } = langData;
 
   setStrings('content', {
     // copyrightLabel: misc.powered_by, // Currently commented out in svg-editor.html
@@ -142,8 +141,8 @@ editor.readLang = function (langData) {
   }, true);
 
   // Shape categories
-  var o, cats = {};
-  for (o in langData.shape_cats) {
+  const cats = {};
+  for (const o in langData.shape_cats) {
     cats['#shape_cats [data-cat="' + o + '"]'] = langData.shape_cats[o];
   }
 
@@ -153,7 +152,7 @@ editor.readLang = function (langData) {
   }, 2000);
 
   // Context menus
-  var opts = {};
+  const opts = {};
   $.each(['cut', 'copy', 'paste', 'paste_in_place', 'delete', 'group', 'ungroup', 'move_front', 'move_up', 'move_down', 'move_back'], function () {
     opts['#cmenu_canvas a[href="#' + this + '"]'] = tools[this];
   });
@@ -270,10 +269,10 @@ editor.readLang = function (langData) {
 
   }, true);
 
-  editor.setLang(langParam, langData);
+  editor_.setLang(langParam, langData);
 };
 
-editor.putLocale = function (givenParam, goodLangs) {
+export const putLocale = function (givenParam, goodLangs) {
   if (givenParam) {
     langParam = givenParam;
   } else {
@@ -284,15 +283,12 @@ editor.putLocale = function (givenParam, goodLangs) {
       } else if (navigator.language) { // FF, Opera, ...
         langParam = navigator.language;
       }
-      if (langParam == null) { // Todo: Would cause problems if uiStrings removed; remove this?
-        return;
-      }
     }
 
     console.log('Lang: ' + langParam);
 
     // Set to English if language is not in list of good langs
-    if ($.inArray(langParam, goodLangs) === -1 && langParam !== 'test') {
+    if (!goodLangs.includes(langParam) && langParam !== 'test') {
       langParam = 'en';
     }
 
@@ -300,22 +296,20 @@ editor.putLocale = function (givenParam, goodLangs) {
     // The following line prevents setLang from running
     //    extensions which depend on updated uiStrings,
     //    so commenting it out.
-    // if (langParam.startsWith('en')0) {return;}
+    // if (langParam.startsWith('en')) {return;}
   }
 
-  var conf = editor.curConfig;
+  const conf = editor_.curConfig;
 
-  var url = conf.langPath + 'lang.' + langParam + '.js';
+  const url = conf.langPath + 'lang.' + langParam + '.js';
 
+  // Todo: insert script with `s.type = 'module';` once modules widely supported
   $.getScript(url, function (d) {
     // Fails locally in Chrome 5+
     if (!d) {
-      var s = document.createElement('script');
+      const s = document.createElement('script');
       s.src = url;
       document.querySelector('head').appendChild(s);
     }
   });
 };
-
-return editor;
-}(jQuery, svgEditor)); // eslint-disable-line no-use-before-define

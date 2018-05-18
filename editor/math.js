@@ -1,5 +1,3 @@
-/* eslint-disable no-var */
-/* globals svgedit */
 /**
  * Package: svedit.math
  *
@@ -20,18 +18,14 @@
 * @property {number} a - The angle at which to snap
 */
 
-(function () {
-'use strict';
-
-if (!svgedit.math) {
-  svgedit.math = {};
-}
+import {NS} from './svgedit.js';
+import {getTransformList} from './svgtransformlist.js';
 
 // Constants
-var NEAR_ZERO = 1e-14;
+const NEAR_ZERO = 1e-14;
 
 // Throw away SVGSVGElement used for creating matrices/transforms.
-var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
+const svg = document.createElementNS(NS.SVG, 'svg');
 
 /**
  * A (hopefully) quicker function to transform a point by a matrix
@@ -41,7 +35,7 @@ var svg = document.createElementNS(svgedit.NS.SVG, 'svg');
  * @param {SVGMatrix} m - Matrix object to transform the point with
  * @returns {Object} An x, y object representing the transformed point
 */
-svgedit.math.transformPoint = function (x, y, m) {
+export const transformPoint = function (x, y, m) {
   return {x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f};
 };
 
@@ -51,23 +45,22 @@ svgedit.math.transformPoint = function (x, y, m) {
  * @param {SVGMatrix} m - The matrix object to check
  * @returns {boolean} Indicates whether or not the matrix is 1,0,0,1,0,0
 */
-svgedit.math.isIdentity = function (m) {
+export const isIdentity = function (m) {
   return (m.a === 1 && m.b === 0 && m.c === 0 && m.d === 1 && m.e === 0 && m.f === 0);
 };
 
 /**
  * This function tries to return a SVGMatrix that is the multiplication m1*m2.
  * We also round to zero when it's near zero
- * @param {...SVGMatrix} matr - Two or more matrix objects to multiply
+ * @param {SVGMatrix} matr - First matrix object to multiply
+ * @param {...SVGMatrix} args - Second or more matrix object to multiply
  * @returns {SVGMatrix} The matrix object resulting from the calculation
 */
-svgedit.math.matrixMultiply = function (matr) {
-  var args = arguments, i = args.length, m = args[i - 1];
+export const matrixMultiply = function (matr, ...args) {
+  const m = args.reduceRight((prev, m1) => {
+    return m1.multiply(prev);
+  });
 
-  while (i-- > 1) {
-    var m1 = args[i - 1];
-    m = m1.multiply(m);
-  }
   if (Math.abs(m.a) < NEAR_ZERO) { m.a = 0; }
   if (Math.abs(m.b) < NEAR_ZERO) { m.b = 0; }
   if (Math.abs(m.c) < NEAR_ZERO) { m.c = 0; }
@@ -83,12 +76,12 @@ svgedit.math.matrixMultiply = function (matr) {
  * @param {Object} [tlist] - The transformlist to check
  * @returns {boolean} Whether or not a matrix transform was found
 */
-svgedit.math.hasMatrixTransform = function (tlist) {
+export const hasMatrixTransform = function (tlist) {
   if (!tlist) { return false; }
-  var num = tlist.numberOfItems;
+  let num = tlist.numberOfItems;
   while (num--) {
-    var xform = tlist.getItem(num);
-    if (xform.type === 1 && !svgedit.math.isIdentity(xform.matrix)) { return true; }
+    const xform = tlist.getItem(num);
+    if (xform.type === 1 && !isIdentity(xform.matrix)) { return true; }
   }
   return false;
 };
@@ -111,10 +104,8 @@ svgedit.math.hasMatrixTransform = function (tlist) {
  * width - Float with the axis-aligned width coordinate
  * height - Float with the axis-aligned height coordinate
 */
-svgedit.math.transformBox = function (l, t, w, h, m) {
-  var transformPoint = svgedit.math.transformPoint,
-
-    tl = transformPoint(l, t, m),
+export const transformBox = function (l, t, w, h, m) {
+  const tl = transformPoint(l, t, m),
     tr = transformPoint((l + w), t, m),
     bl = transformPoint(l, (t + h), m),
     br = transformPoint((l + w), (t + h), m),
@@ -125,10 +116,10 @@ svgedit.math.transformBox = function (l, t, w, h, m) {
     maxy = Math.max(tl.y, tr.y, bl.y, br.y);
 
   return {
-    tl: tl,
-    tr: tr,
-    bl: bl,
-    br: br,
+    tl,
+    tr,
+    bl,
+    br,
     aabox: {
       x: minx,
       y: miny,
@@ -149,7 +140,7 @@ svgedit.math.transformBox = function (l, t, w, h, m) {
  *   defaults to one less than the tlist's numberOfItems
  * @returns {Object} A single matrix transform object
 */
-svgedit.math.transformListToTransform = function (tlist, min, max) {
+export const transformListToTransform = function (tlist, min, max) {
   if (tlist == null) {
     // Or should tlist = null have been prevented before this?
     return svg.createSVGTransformFromMatrix(svg.createSVGMatrix());
@@ -158,15 +149,14 @@ svgedit.math.transformListToTransform = function (tlist, min, max) {
   max = max || (tlist.numberOfItems - 1);
   min = parseInt(min, 10);
   max = parseInt(max, 10);
-  if (min > max) { var temp = max; max = min; min = temp; }
-  var m = svg.createSVGMatrix();
-  var i;
-  for (i = min; i <= max; ++i) {
+  if (min > max) { const temp = max; max = min; min = temp; }
+  let m = svg.createSVGMatrix();
+  for (let i = min; i <= max; ++i) {
     // if our indices are out of range, just use a harmless identity matrix
-    var mtom = (i >= 0 && i < tlist.numberOfItems
+    const mtom = (i >= 0 && i < tlist.numberOfItems
       ? tlist.getItem(i).matrix
       : svg.createSVGMatrix());
-    m = svgedit.math.matrixMultiply(m, mtom);
+    m = matrixMultiply(m, mtom);
   }
   return svg.createSVGTransformFromMatrix(m);
 };
@@ -176,9 +166,9 @@ svgedit.math.transformListToTransform = function (tlist, min, max) {
  * @param {Element} elem - The DOM element to check
  * @returns {SVGMatrix} The matrix object associated with the element's transformlist
 */
-svgedit.math.getMatrix = function (elem) {
-  var tlist = svgedit.transformlist.getTransformList(elem);
-  return svgedit.math.transformListToTransform(tlist).matrix;
+export const getMatrix = function (elem) {
+  const tlist = getTransformList(elem);
+  return transformListToTransform(tlist).matrix;
 };
 
 /**
@@ -190,13 +180,13 @@ svgedit.math.getMatrix = function (elem) {
  * @param {number} y2 - Second coordinate's y value
  * @returns {AngleCoord45}
 */
-svgedit.math.snapToAngle = function (x1, y1, x2, y2) {
-  var snap = Math.PI / 4; // 45 degrees
-  var dx = x2 - x1;
-  var dy = y2 - y1;
-  var angle = Math.atan2(dy, dx);
-  var dist = Math.sqrt(dx * dx + dy * dy);
-  var snapangle = Math.round(angle / snap) * snap;
+export const snapToAngle = function (x1, y1, x2, y2) {
+  const snap = Math.PI / 4; // 45 degrees
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const angle = Math.atan2(dy, dx);
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const snapangle = Math.round(angle / snap) * snap;
 
   return {
     x: x1 + dist * Math.cos(snapangle),
@@ -211,10 +201,9 @@ svgedit.math.snapToAngle = function (x1, y1, x2, y2) {
  * @param {SVGRect} r2 - The second BBox-like object
  * @returns {boolean} True if rectangles intersect
  */
-svgedit.math.rectsIntersect = function (r1, r2) {
+export const rectsIntersect = function (r1, r2) {
   return r2.x < (r1.x + r1.width) &&
     (r2.x + r2.width) > r1.x &&
     r2.y < (r1.y + r1.height) &&
     (r2.y + r2.height) > r1.y;
 };
-}());

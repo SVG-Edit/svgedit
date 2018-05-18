@@ -1,5 +1,4 @@
-/* eslint-disable no-var */
-/* globals svgEditor, svgedit, $ */
+/* globals jQuery, svgEditor, svgedit */
 /*
  * ext-eyedropper.js
  *
@@ -16,12 +15,11 @@
 // 4) svgcanvas.js
 
 svgEditor.addExtension('eyedropper', function (S) {
-  'use strict';
-  var // NS = svgedit.NS,
-    // svgcontent = S.svgcontent,
+  const $ = jQuery;
+  const // {svgcontent} = S,
     // svgdoc = S.svgroot.parentNode.ownerDocument,
     svgCanvas = svgEditor.canvas,
-    ChangeElementCommand = svgedit.history.ChangeElementCommand,
+    {ChangeElementCommand} = svgedit.history,
     addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); },
     currentStyle = {
       fillPaint: 'red', fillOpacity: 1.0,
@@ -34,14 +32,14 @@ svgEditor.addExtension('eyedropper', function (S) {
 
   function getStyle (opts) {
     // if we are in eyedropper mode, we don't want to disable the eye-dropper tool
-    var mode = svgCanvas.getMode();
+    const mode = svgCanvas.getMode();
     if (mode === 'eyedropper') { return; }
 
-    var elem = null;
-    var tool = $('#tool_eyedropper');
+    const tool = $('#tool_eyedropper');
     // enable-eye-dropper if one element is selected
+    let elem = null;
     if (!opts.multiselected && opts.elems[0] &&
-      $.inArray(opts.elems[0].nodeName, ['svg', 'g', 'use']) === -1
+      !['svg', 'g', 'use'].includes(opts.elems[0].nodeName)
     ) {
       elem = opts.elems[0];
       tool.removeClass('disabled');
@@ -70,7 +68,7 @@ svgEditor.addExtension('eyedropper', function (S) {
       title: 'Eye Dropper Tool',
       key: 'I',
       events: {
-        click: function () {
+        click () {
           svgCanvas.setMode('eyedropper');
         }
       }
@@ -80,15 +78,15 @@ svgEditor.addExtension('eyedropper', function (S) {
     selectedChanged: getStyle,
     elementChanged: getStyle,
 
-    mouseDown: function (opts) {
-      var mode = svgCanvas.getMode();
+    mouseDown (opts) {
+      const mode = svgCanvas.getMode();
       if (mode === 'eyedropper') {
-        var e = opts.event;
-        var target = e.target;
-        if ($.inArray(target.nodeName, ['svg', 'g', 'use']) === -1) {
-          var changes = {};
+        const e = opts.event;
+        const {target} = e;
+        if (!['svg', 'g', 'use'].includes(target.nodeName)) {
+          const changes = {};
 
-          var change = function (elem, attrname, newvalue) {
+          const change = function (elem, attrname, newvalue) {
             changes[attrname] = elem.getAttribute(attrname);
             elem.setAttribute(attrname, newvalue);
           };

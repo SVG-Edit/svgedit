@@ -1,5 +1,4 @@
-/* eslint-disable no-var */
-/* globals svgEditor, svgCanvas, $ */
+/* globals jQuery, svgEditor, svgCanvas */
 /*
  * ext-helloworld.js
  *
@@ -16,8 +15,7 @@
 */
 
 svgEditor.addExtension('Hello World', function () {
-  'use strict';
-
+  const $ = jQuery;
   return {
     name: 'Hello World',
     // For more notes on how to make an icon file, see the source of
@@ -38,7 +36,7 @@ svgEditor.addExtension('Hello World', function () {
 
       // Events
       events: {
-        'click': function () {
+        click () {
           // The action taken when the button is clicked on.
           // For "mode" buttons, any other button will
           // automatically be de-pressed.
@@ -48,7 +46,7 @@ svgEditor.addExtension('Hello World', function () {
     }],
     // This is triggered when the main mouse button is pressed down
     // on the editor canvas (not the tool panels)
-    mouseDown: function () {
+    mouseDown () {
       // Check the mode on mousedown
       if (svgCanvas.getMode() === 'hello_world') {
         // The returned object must include "started" with
@@ -59,16 +57,16 @@ svgEditor.addExtension('Hello World', function () {
 
     // This is triggered from anywhere, but "started" must have been set
     // to true (see above). Note that "opts" is an object with event info
-    mouseUp: function (opts) {
+    mouseUp (opts) {
       // Check the mode on mouseup
       if (svgCanvas.getMode() === 'hello_world') {
-        var zoom = svgCanvas.getZoom();
+        const zoom = svgCanvas.getZoom();
 
         // Get the actual coordinate by dividing by the zoom value
-        var x = opts.mouse_x / zoom;
-        var y = opts.mouse_y / zoom;
+        const x = opts.mouse_x / zoom;
+        const y = opts.mouse_y / zoom;
 
-        var text = 'Hello World!\n\nYou clicked here: ' +
+        const text = 'Hello World!\n\nYou clicked here: ' +
           x + ', ' + y;
 
         // Show the text using the custom alert function

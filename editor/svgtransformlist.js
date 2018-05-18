@@ -1,5 +1,3 @@
-/* eslint-disable no-var */
-/* globals $, svgedit */
 /**
  * SVGTransformList
  *
@@ -9,22 +7,15 @@
  * Copyright(c) 2010 Jeff Schiller
  */
 
-// Dependencies:
-// 1) browser.js
+import {NS} from './svgedit.js';
+import {supportsNativeTransformLists} from './browser.js';
 
-(function () {
-'use strict';
-
-if (!svgedit.transformlist) {
-  svgedit.transformlist = {};
-}
-
-var svgroot = document.createElementNS(svgedit.NS.SVG, 'svg');
+const svgroot = document.createElementNS(NS.SVG, 'svg');
 
 // Helper function.
 function transformToString (xform) {
-  var m = xform.matrix,
-    text = '';
+  const m = xform.matrix;
+  let text = '';
   switch (xform.type) {
   case 1: // MATRIX
     text = 'matrix(' + [m.a, m.b, m.c, m.d, m.e, m.f].join(',') + ')';
@@ -39,16 +30,18 @@ function transformToString (xform) {
       text = 'scale(' + m.a + ',' + m.d + ')';
     }
     break;
-  case 4: // ROTATE
-    var cx = 0, cy = 0;
+  case 4: { // ROTATE
+    let cx = 0;
+    let cy = 0;
     // this prevents divide by zero
     if (xform.angle !== 0) {
-      var K = 1 - m.a;
+      const K = 1 - m.a;
       cy = (K * m.f + m.b * m.e) / (K * K + m.b * m.b);
       cx = (m.e - m.b * cy) / K;
     }
     text = 'rotate(' + xform.angle + ' ' + cx + ',' + cy + ')';
     break;
+  }
   }
   return text;
 }
@@ -56,7 +49,7 @@ function transformToString (xform) {
 /**
  * Map of SVGTransformList objects.
  */
-var listMap_ = {};
+let listMap_ = {};
 
 // **************************************************************************************
 // SVGTransformList implementation for Webkit
@@ -77,16 +70,15 @@ var listMap_ = {};
 //    NOT IMPLEMENTED: SVGTransform consolidate (  );
 //  }
 // **************************************************************************************
-svgedit.transformlist.SVGTransformList = function (elem) {
+export const SVGTransformList = function (elem) {
   this._elem = elem || null;
   this._xforms = [];
   // TODO: how do we capture the undo-ability in the changed transform list?
   this._update = function () {
-    var tstr = '';
-    /* var concatMatrix = */ svgroot.createSVGMatrix();
-    var i;
-    for (i = 0; i < this.numberOfItems; ++i) {
-      var xform = this._list.getItem(i);
+    let tstr = '';
+    /* const concatMatrix = */ svgroot.createSVGMatrix();
+    for (let i = 0; i < this.numberOfItems; ++i) {
+      const xform = this._list.getItem(i);
       tstr += transformToString(xform) + ' ';
     }
     this._elem.setAttribute('transform', tstr);
@@ -94,33 +86,33 @@ svgedit.transformlist.SVGTransformList = function (elem) {
   this._list = this;
   this._init = function () {
     // Transform attribute parser
-    var str = this._elem.getAttribute('transform');
+    let str = this._elem.getAttribute('transform');
     if (!str) { return; }
 
     // TODO: Add skew support in future
-    var re = /\s*((scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/;
-    var m = true;
+    const re = /\s*((scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/;
+    let m = true;
     while (m) {
       m = str.match(re);
       str = str.replace(re, '');
       if (m && m[1]) {
-        var x = m[1];
-        var bits = x.split(/\s*\(/);
-        var name = bits[0];
-        var valBits = bits[1].match(/\s*(.*?)\s*\)/);
+        const x = m[1];
+        const bits = x.split(/\s*\(/);
+        const name = bits[0];
+        const valBits = bits[1].match(/\s*(.*?)\s*\)/);
         valBits[1] = valBits[1].replace(/(\d)-/g, '$1 -');
-        var valArr = valBits[1].split(/[, ]+/);
-        var letters = 'abcdef'.split('');
-        var mtx = svgroot.createSVGMatrix();
-        $.each(valArr, function (i, item) {
+        const valArr = valBits[1].split(/[, ]+/);
+        const letters = 'abcdef'.split('');
+        const mtx = svgroot.createSVGMatrix();
+        Object.values(valArr).forEach(function (item, i) {
           valArr[i] = parseFloat(item);
           if (name === 'matrix') {
             mtx[letters[i]] = valArr[i];
           }
         });
-        var xform = svgroot.createSVGTransform();
-        var fname = 'set' + name.charAt(0).toUpperCase() + name.slice(1);
-        var values = name === 'matrix' ? [mtx] : valArr;
+        const xform = svgroot.createSVGTransform();
+        const fname = 'set' + name.charAt(0).toUpperCase() + name.slice(1);
+        const values = name === 'matrix' ? [mtx] : valArr;
 
         if (name === 'scale' && values.length === 1) {
           values.push(values[0]);
@@ -138,12 +130,10 @@ svgedit.transformlist.SVGTransformList = function (elem) {
     if (item) {
       // Check if this transform is already in a transformlist, and
       // remove it if so.
-      var found = false;
-      var id;
-      for (id in listMap_) {
-        var tl = listMap_[id];
-        var i, len;
-        for (i = 0, len = tl._xforms.length; i < len; ++i) {
+      let found = false;
+      for (const id in listMap_) {
+        const tl = listMap_[id];
+        for (let i = 0, len = tl._xforms.length; i < len; ++i) {
           if (tl._xforms[i] === item) {
             found = true;
             tl.removeItem(i);
@@ -173,25 +163,24 @@ svgedit.transformlist.SVGTransformList = function (elem) {
     if (index < this.numberOfItems && index >= 0) {
       return this._xforms[index];
     }
-    var err = new Error('DOMException with code=INDEX_SIZE_ERR');
+    const err = new Error('DOMException with code=INDEX_SIZE_ERR');
     err.code = 1;
     throw err;
   };
 
   this.insertItemBefore = function (newItem, index) {
-    var retValue = null;
+    let retValue = null;
     if (index >= 0) {
       if (index < this.numberOfItems) {
         this._removeFromOtherLists(newItem);
-        var newxforms = new Array(this.numberOfItems + 1);
+        const newxforms = new Array(this.numberOfItems + 1);
         // TODO: use array copying and slicing
-        var i;
+        let i;
         for (i = 0; i < index; ++i) {
           newxforms[i] = this._xforms[i];
         }
         newxforms[i] = newItem;
-        var j;
-        for (j = i + 1; i < this.numberOfItems; ++j, ++i) {
+        for (let j = i + 1; i < this.numberOfItems; ++j, ++i) {
           newxforms[j] = this._xforms[i];
         }
         this.numberOfItems++;
@@ -206,7 +195,7 @@ svgedit.transformlist.SVGTransformList = function (elem) {
   };
 
   this.replaceItem = function (newItem, index) {
-    var retValue = null;
+    let retValue = null;
     if (index < this.numberOfItems && index >= 0) {
       this._removeFromOtherLists(newItem);
       this._xforms[index] = newItem;
@@ -218,13 +207,13 @@ svgedit.transformlist.SVGTransformList = function (elem) {
 
   this.removeItem = function (index) {
     if (index < this.numberOfItems && index >= 0) {
-      var retValue = this._xforms[index];
-      var newxforms = new Array(this.numberOfItems - 1);
-      var i, j;
+      const retValue = this._xforms[index];
+      const newxforms = new Array(this.numberOfItems - 1);
+      let i;
       for (i = 0; i < index; ++i) {
         newxforms[i] = this._xforms[i];
       }
-      for (j = i; j < this.numberOfItems - 1; ++j, ++i) {
+      for (let j = i; j < this.numberOfItems - 1; ++j, ++i) {
         newxforms[j] = this._xforms[i + 1];
       }
       this.numberOfItems--;
@@ -232,7 +221,7 @@ svgedit.transformlist.SVGTransformList = function (elem) {
       this._list._update();
       return retValue;
     }
-    var err = new Error('DOMException with code=INDEX_SIZE_ERR');
+    const err = new Error('DOMException with code=INDEX_SIZE_ERR');
     err.code = 1;
     throw err;
   };
@@ -246,7 +235,7 @@ svgedit.transformlist.SVGTransformList = function (elem) {
   };
 };
 
-svgedit.transformlist.resetListMap = function () {
+export const resetListMap = function () {
   listMap_ = {};
 };
 
@@ -255,7 +244,7 @@ svgedit.transformlist.resetListMap = function () {
  * Parameters:
  * elem - a DOM Element
  */
-svgedit.transformlist.removeElementFromListMap = function (elem) {
+export const removeElementFromListMap = function (elem) {
   if (elem.id && listMap_[elem.id]) {
     delete listMap_[elem.id];
   }
@@ -266,12 +255,12 @@ svgedit.transformlist.removeElementFromListMap = function (elem) {
 //
 // Parameters:
 // elem - DOM element to get a transformlist from
-svgedit.transformlist.getTransformList = function (elem) {
-  if (!svgedit.browser.supportsNativeTransformLists()) {
-    var id = elem.id || 'temp';
-    var t = listMap_[id];
+export const getTransformList = function (elem) {
+  if (!supportsNativeTransformLists()) {
+    const id = elem.id || 'temp';
+    let t = listMap_[id];
     if (!t || id === 'temp') {
-      listMap_[id] = new svgedit.transformlist.SVGTransformList(elem);
+      listMap_[id] = new SVGTransformList(elem);
       listMap_[id]._init();
       t = listMap_[id];
     }
@@ -289,4 +278,3 @@ svgedit.transformlist.getTransformList = function (elem) {
 
   return null;
 };
-}());

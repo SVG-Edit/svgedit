@@ -1,5 +1,4 @@
-/* eslint-disable no-var */
-/* globals MathJax, svgEditor, svgCanvas, $ */
+/* globals jQuery, MathJax, svgEditor, svgCanvas */
 /*
  * ext-mathjax.js
  *
@@ -10,11 +9,12 @@
  */
 
 svgEditor.addExtension('mathjax', function () {
-  'use strict';
+  const $ = jQuery;
+
   // Configuration of the MathJax extention.
 
   // This will be added to the head tag before MathJax is loaded.
-  var /* mathjaxConfiguration = '<script type="text/x-mathjax-config">\
+  const /* mathjaxConfiguration = '<script type="text/x-mathjax-config">\
         MathJax.Hub.Config({\
           extensions: ["tex2jax.js"],\
           jax: ["input/TeX","output/SVG"],\
@@ -37,12 +37,15 @@ svgEditor.addExtension('mathjax', function () {
       });\
       </script>', */
     // mathjaxSrc = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
-    mathjaxSrcSecure = 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG.js',
+    // Had been on https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG.js
+    // Obtained Text-AMS-MML_SVG.js from https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/config/TeX-AMS-MML_SVG.js
+    mathjaxSrcSecure = 'mathjax/MathJax.js?config=TeX-AMS-MML_SVG.js',
+    {uiStrings} = svgEditor;
+  let
     math,
     locationX,
     locationY,
-    mathjaxLoaded = false,
-    uiStrings = svgEditor.uiStrings;
+    mathjaxLoaded = false;
 
   // TODO: Implement language support. Move these uiStrings to the locale files and the code to the langReady callback.
   $.extend(uiStrings, {
@@ -56,7 +59,7 @@ svgEditor.addExtension('mathjax', function () {
   });
 
   function saveMath () {
-    var code = $('#mathjax_code_textarea').val();
+    const code = $('#mathjax_code_textarea').val();
     // displaystyle to force MathJax NOT to use the inline style. Because it is
     // less fancy!
     MathJax.Hub.queue.Push(['Text', math, '\\displaystyle{' + code + '}']);
@@ -75,22 +78,17 @@ svgEditor.addExtension('mathjax', function () {
      */
     MathJax.Hub.queue.Push(
       function () {
-        var mathjaxMath = $('.MathJax_SVG');
-        var svg = $(mathjaxMath.html());
+        const mathjaxMath = $('.MathJax_SVG');
+        const svg = $(mathjaxMath.html());
         svg.find('use').each(function () {
-          var x, y, id, transform;
-
           // TODO: find a less pragmatic and more elegant solution to this.
-          if ($(this).attr('href')) {
-            id = $(this).attr('href').slice(1); // Works in Chrome.
-          } else {
-            id = $(this).attr('xlink:href').slice(1); // Works in Firefox.
-          }
-
-          var glymph = $('#' + id).clone().removeAttr('id');
-          x = $(this).attr('x');
-          y = $(this).attr('y');
-          transform = $(this).attr('transform');
+          const id = $(this).attr('href')
+            ? $(this).attr('href').slice(1) // Works in Chrome.
+            : $(this).attr('xlink:href').slice(1); // Works in Firefox.
+          const glymph = $('#' + id).clone().removeAttr('id');
+          const x = $(this).attr('x');
+          const y = $(this).attr('y');
+          const transform = $(this).attr('transform');
           if (transform && (x || y)) {
             glymph.attr('transform', transform + ' translate(' + x + ',' + y + ')');
           } else if (transform) {
@@ -120,7 +118,7 @@ svgEditor.addExtension('mathjax', function () {
       type: 'mode',
       title: 'Add Mathematics',
       events: {
-        click: function () {
+        click () {
           // Only load Mathjax when needed, we don't want to strain Svg-Edit any more.
           // From this point on it is very probable that it will be needed, so load it.
           if (mathjaxLoaded === false) {
@@ -166,6 +164,8 @@ svgEditor.addExtension('mathjax', function () {
             $('body').addClass('tex2jax_ignore');
 
             // Now get (and run) the MathJax Library.
+            // Todo: insert script with `s.type = 'module';` once modules widely supported
+            //   and if this ends up providing an ES6 module export
             $.getScript(mathjaxSrcSecure)
               .done(function (script, textStatus) {
                 // When MathJax is loaded get the div where the math will be rendered.
@@ -188,15 +188,15 @@ svgEditor.addExtension('mathjax', function () {
       }
     }],
 
-    mouseDown: function () {
+    mouseDown () {
       if (svgCanvas.getMode() === 'mathjax') {
         return {started: true};
       }
     },
-    mouseUp: function (opts) {
+    mouseUp (opts) {
       if (svgCanvas.getMode() === 'mathjax') {
         // Get the coordinates from your mouse.
-        var zoom = svgCanvas.getZoom();
+        const zoom = svgCanvas.getZoom();
         // Get the actual coordinate by dividing by the zoom value
         locationX = opts.mouse_x / zoom;
         locationY = opts.mouse_y / zoom;
@@ -205,7 +205,7 @@ svgEditor.addExtension('mathjax', function () {
         return {started: false}; // Otherwise the last selected object dissapears.
       }
     },
-    callback: function () {
+    callback () {
       $('<style>').text(
         '#mathjax fieldset{' +
           'padding: 5px;' +

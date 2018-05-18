@@ -7,7 +7,7 @@ jgraduate/css/jPicker.css
 jgraduate/css/jgraduate.css
 svg-editor.css
 spinbtn/JQuerySpinBtn.css
-jquery.js
+jquery.min.js
 config.js
 custom.css
 js-hotkeys/jquery.hotkeys.min.js

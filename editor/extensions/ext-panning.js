@@ -13,7 +13,6 @@
 */
 
 svgEditor.addExtension('ext-panning', function () {
-  'use strict';
   return {
     name: 'Extension Panning',
     svgicons: svgEditor.curConfig.extPath + 'ext-panning.xml',
@@ -22,18 +21,18 @@ svgEditor.addExtension('ext-panning', function () {
       type: 'mode',
       title: 'Panning',
       events: {
-        click: function () {
+        click () {
           svgCanvas.setMode('ext-panning');
         }
       }
     }],
-    mouseDown: function () {
+    mouseDown () {
       if (svgCanvas.getMode() === 'ext-panning') {
         svgEditor.setPanning(true);
         return {started: true};
       }
     },
-    mouseUp: function () {
+    mouseUp () {
       if (svgCanvas.getMode() === 'ext-panning') {
         svgEditor.setPanning(false);
         return {

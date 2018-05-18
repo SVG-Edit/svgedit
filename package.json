@@ -10,6 +10,7 @@
   },
   "engines": {},
   "scripts": {
+    "compress-images": "imageoptim 'chrome-app/*.png' && imageoptim 'editor/extensions/*.png' && imageoptim 'editor/spinbtn/*.png' && imageoptim 'editor/jgraduate/images/*.{png,gif}' && imageoptim 'editor/images/*.png'",
     "eslint": "eslint .",
     "uglify": "uglifyjs --compress -o ./editor/spinbtn/JQuerySpinBtn.min.js -- ./editor/spinbtn/JQuerySpinBtn.js && uglifyjs --compress -o ./editor/jgraduate/jpicker.min.js -- ./editor/jgraduate/jpicker.js && uglifyjs --compress -o ./editor/jgraduate/jquery.jgraduate.min.js -- ./editor/jgraduate/jquery.jgraduate.js",
     "start": "echo \"Open file to http://localhost:8000/test/all_tests.html\" && static -p 8000",
@@ -48,6 +49,7 @@
     "eslint-plugin-node": "6.0.1",
     "eslint-plugin-promise": "3.7.0",
     "eslint-plugin-standard": "3.1.0",
+    "imageoptim-cli": "^2.0.2",
     "uglify-es": "^3.3.9"
   }
 }

@@ -1,21 +1,21 @@
-/* eslint-disable no-var */
-/* globals $, EmbeddedSVGEdit */
-var initEmbed; // eslint-disable-line no-unused-vars
+/* globals jQuery */
+import EmbeddedSVGEdit from './embedapi.js';
+const $ = jQuery;
 
-// Todo: Get rid of frame.contentWindow dependencies so can be more easily adjusted to work cross-domain
+// Todo: Add iframe load listener
+var initEmbed;
+
+// Todo: Get rid of frame.contentWindow dependencies so can be more
+//        easily adjusted to work cross-domain
 
 $(function () {
-  'use strict';
-
-  var svgCanvas = null;
-  var frame;
+  let svgCanvas = null;
 
   initEmbed = function () {
-    var doc, mainButton;
     svgCanvas = new EmbeddedSVGEdit(frame);
     // Hide main button, as we will be controlling new, load, save, etc. from the host document
-    doc = frame.contentDocument || frame.contentWindow.document;
-    mainButton = doc.getElementById('main_button');
+    const doc = frame.contentDocument || frame.contentWindow.document;
+    const mainButton = doc.getElementById('main_button');
     mainButton.style.display = 'none';
   };
 
@@ -28,7 +28,7 @@ $(function () {
   }
 
   function loadSvg () {
-    var svgexample = '<svg width="640" height="480" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><g><title>Layer 1</title><rect stroke-width="5" stroke="#000000" fill="#FF0000" id="svg_1" height="35" width="51" y="35" x="32"/><ellipse ry="15" rx="24" stroke-width="5" stroke="#000000" fill="#0000ff" id="svg_2" cy="60" cx="66"/></g></svg>';
+    const svgexample = '<svg width="640" height="480" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><g><title>Layer 1</title><rect stroke-width="5" stroke="#000000" fill="#FF0000" id="svg_1" height="35" width="51" y="35" x="32"/><ellipse ry="15" rx="24" stroke-width="5" stroke="#000000" fill="#0000ff" id="svg_2" cy="60" cx="66"/></g></svg>';
     svgCanvas.setSvgString(svgexample);
   }
 
@@ -37,9 +37,9 @@ $(function () {
   }
 
   function exportPNG () {
-    var str = frame.contentWindow.svgEditor.uiStrings.notification.loadingImage;
+    const str = frame.contentWindow.svgEditor.uiStrings.notification.loadingImage;
 
-    var exportWindow = window.open(
+    const exportWindow = window.open(
       'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
       'svg-edit-exportWindow'
     );
@@ -47,7 +47,7 @@ $(function () {
   }
 
   function exportPDF () {
-    var str = frame.contentWindow.svgEditor.uiStrings.notification.loadingImage;
+    const str = frame.contentWindow.svgEditor.uiStrings.notification.loadingImage;
 
     /**
     // If you want to handle the PDF blob yourself, do as follows
@@ -58,7 +58,7 @@ $(function () {
     return;
     */
 
-    var exportWindow = window.open(
+    const exportWindow = window.open(
       'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
       'svg-edit-exportWindow'
     );
@@ -76,5 +76,5 @@ $(function () {
       '" width="900px" height="600px" id="svgedit" onload="initEmbed();"></iframe>'
     )
   );
-  frame = document.getElementById('svgedit');
+  const frame = document.getElementById('svgedit');
 });

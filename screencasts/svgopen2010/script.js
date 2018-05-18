@@ -1,101 +1,46 @@
-/* eslint-disable no-var */
-(function () {
-var doc = document;
-var disableBuilds = true;
+(() => {
+const doc = document;
+const disableBuilds = true;
 
-var ctr = 0;
-var spaces = /\s+/, a1 = [''];
+let ctr = 0;
 
-var toArray = function (list) {
-  return Array.prototype.slice.call(list || [], 0);
-};
-
-var byId = function (id) {
+const byId = function (id) {
   if (typeof id === 'string') { return doc.getElementById(id); }
   return id;
 };
 
-var query = function (query, root) {
+const query = function (query, root) {
   if (!query) { return []; }
-  if (typeof query !== 'string') { return toArray(query); }
+  if (typeof query !== 'string') { return [...query]; }
   if (typeof root === 'string') {
     root = byId(root);
     if (!root) { return []; }
   }
 
   root = root || document;
-  var rootIsDoc = (root.nodeType === 9);
-  var doc = rootIsDoc ? root : (root.ownerDocument || document);
+  const rootIsDoc = (root.nodeType === 9);
+  const doc = rootIsDoc ? root : (root.ownerDocument || document);
 
   // rewrite the query to be ID rooted
-  if (!rootIsDoc || ('>~+'.indexOf(query.charAt(0)) >= 0)) {
+  if (!rootIsDoc || ('>~+'.includes(query[0]))) {
     root.id = root.id || ('qUnique' + (ctr++));
     query = '#' + root.id + ' ' + query;
   }
   // don't choke on something like ".yada.yada >"
-  if ('>~+'.indexOf(query.slice(-1)) >= 0) { query += ' *'; }
+  if ('>~+'.includes(query.slice(-1))) { query += ' *'; }
 
-  return toArray(doc.querySelectorAll(query));
+  return [...doc.querySelectorAll(query)];
 };
 
-var strToArray = function (s) {
-  if (typeof s === 'string' || s instanceof String) {
-    if (s.indexOf(' ') < 0) {
-      a1[0] = s;
-      return a1;
-    }
-    return s.split(spaces);
-  }
-  return s;
-};
+const ua = navigator.userAgent;
+const isFF = parseFloat(ua.split('Firefox/')[1]) || undefined;
+const isWK = parseFloat(ua.split('WebKit/')[1]) || undefined;
+const isOpera = parseFloat(ua.split('Opera/')[1]) || undefined;
 
-var addClass = function (node, classStr) {
-  classStr = strToArray(classStr);
-  var cls = ' ' + node.className + ' ';
-  for (var i = 0, len = classStr.length, c; i < len; ++i) {
-    c = classStr[i];
-    if (c && cls.indexOf(' ' + c + ' ') < 0) {
-      cls += c + ' ';
-    }
-  }
-  node.className = cls.trim();
-};
-
-var removeClass = function (node, classStr) {
-  var cls;
-  if (classStr !== undefined) {
-    classStr = strToArray(classStr);
-    cls = ' ' + node.className + ' ';
-    for (var i = 0, len = classStr.length; i < len; ++i) {
-      cls = cls.replace(' ' + classStr[i] + ' ', ' ');
-    }
-    cls = cls.trim();
-  } else {
-    cls = '';
-  }
-  if (node.className !== cls) {
-    node.className = cls;
-  }
-};
-
-var toggleClass = function (node, classStr) {
-  var cls = ' ' + node.className + ' ';
-  if (cls.indexOf(' ' + classStr.trim() + ' ') >= 0) {
-    removeClass(node, classStr);
-  } else {
-    addClass(node, classStr);
-  }
-};
-
-var ua = navigator.userAgent;
-var isFF = parseFloat(ua.split('Firefox/')[1]) || undefined;
-var isWK = parseFloat(ua.split('WebKit/')[1]) || undefined;
-var isOpera = parseFloat(ua.split('Opera/')[1]) || undefined;
-
-var canTransition = (function () {
-  var ver = parseFloat(ua.split('Version/')[1]) || undefined;
+const canTransition = (function () {
+  const ver = parseFloat(ua.split('Version/')[1]) || undefined;
   // test to determine if this browser can handle CSS transitions.
-  var cachedCanTransition =
+  const cachedCanTransition =
     (isWK || (isFF && isFF > 3.6) || (isOpera && ver >= 10.5));
   return function () { return cachedCanTransition; };
 })();
@@ -103,13 +48,13 @@ var canTransition = (function () {
 //
 // Slide class
 //
-var Slide = function (node, idx) {
+const Slide = function (node, idx) {
   this._node = node;
   if (idx >= 0) {
     this._count = idx + 1;
   }
   if (this._node) {
-    addClass(this._node, 'slide distant-slide');
+    this._node.classList.add('slide', 'distant-slide');
   }
   this._makeCounter();
   this._makeBuildList();
@@ -124,7 +69,7 @@ Slide.prototype = {
   _states: [ 'distant-slide', 'far-past',
     'past', 'current', 'future',
     'far-future', 'distant-slide' ],
-  setState: function (state) {
+  setState (state) {
     if (typeof state !== 'string') {
       state = this._states[state];
     }
@@ -132,40 +77,40 @@ Slide.prototype = {
       this._visited = true;
       this._makeBuildList();
     }
-    removeClass(this._node, this._states);
-    addClass(this._node, state);
+    this._node.classList.remove(...this._states);
+    this._node.classList.add(state);
     this._currentState = state;
 
     // delay first auto run. Really wish this were in CSS.
     /*
     this._runAutos();
     */
-    var _t = this;
+    const _t = this;
     setTimeout(function () { _t._runAutos(); }, 400);
   },
-  _makeCounter: function () {
+  _makeCounter () {
     if (!this._count || !this._node) { return; }
-    var c = doc.createElement('span');
+    const c = doc.createElement('span');
     c.innerHTML = this._count;
     c.className = 'counter';
     this._node.appendChild(c);
   },
-  _makeBuildList: function () {
+  _makeBuildList () {
     this._buildList = [];
     if (disableBuilds) { return; }
     if (this._node) {
       this._buildList = query('[data-build] > *', this._node);
     }
     this._buildList.forEach(function (el) {
-      addClass(el, 'to-build');
+      el.classList.add('to-build');
     });
   },
-  _runAutos: function () {
+  _runAutos () {
     if (this._currentState !== 'current') {
       return;
     }
     // find the next auto, slice it out of the list, and run it
-    var idx = -1;
+    let idx = -1;
     this._buildList.some(function (n, i) {
       if (n.hasAttribute('data-auto')) {
         idx = i;
@@ -174,29 +119,29 @@ Slide.prototype = {
       return false;
     });
     if (idx >= 0) {
-      var elem = this._buildList.splice(idx, 1)[0];
-      var transitionEnd = isWK ? 'webkitTransitionEnd' : (isFF ? 'mozTransitionEnd' : 'oTransitionEnd');
-      var _t = this;
+      const elem = this._buildList.splice(idx, 1)[0];
+      const transitionEnd = isWK ? 'webkitTransitionEnd' : (isFF ? 'mozTransitionEnd' : 'oTransitionEnd');
+      const _t = this;
       if (canTransition()) {
-        var l = function (evt) {
+        const l = function (evt) {
           elem.parentNode.removeEventListener(transitionEnd, l, false);
           _t._runAutos();
         };
         elem.parentNode.addEventListener(transitionEnd, l, false);
-        removeClass(elem, 'to-build');
+        elem.classList.remove('to-build');
       } else {
         setTimeout(function () {
-          removeClass(elem, 'to-build');
+          elem.classList.remove('to-build');
           _t._runAutos();
         }, 400);
       }
     }
   },
-  buildNext: function () {
+  buildNext () {
     if (!this._buildList.length) {
       return false;
     }
-    removeClass(this._buildList.shift(), 'to-build');
+    this._buildList.shift().classList.remove('to-build');
     return true;
   }
 };
@@ -204,17 +149,17 @@ Slide.prototype = {
 //
 // SlideShow class
 //
-var SlideShow = function (slides) {
+const SlideShow = function (slides) {
   this._slides = (slides || []).map(function (el, idx) {
     return new Slide(el, idx);
   });
 
-  var h = window.location.hash;
+  const h = window.location.hash;
   try {
     this.current = parseInt(h.split('#slide')[1], 10);
   } catch (e) { /* squeltch */ }
   this.current = isNaN(this.current) ? 1 : this.current;
-  var _t = this;
+  const _t = this;
   doc.addEventListener('keydown',
     function (e) { _t.handleKeys(e); }, false);
   doc.addEventListener('mousewheel',
@@ -232,7 +177,7 @@ var SlideShow = function (slides) {
 
 SlideShow.prototype = {
   _slides: [],
-  _update: function (dontPush) {
+  _update (dontPush) {
     document.querySelector('#presentation-counter').innerText = this.current;
     if (history.pushState) {
       if (!dontPush) {
@@ -241,7 +186,7 @@ SlideShow.prototype = {
     } else {
       window.location.hash = 'slide' + this.current;
     }
-    for (var x = this.current - 1; x < this.current + 7; x++) {
+    for (let x = this.current - 1; x < this.current + 7; x++) {
       if (this._slides[x - 4]) {
         this._slides[x - 4].setState(Math.max(0, x - this.current));
       }
@@ -249,17 +194,17 @@ SlideShow.prototype = {
   },
 
   current: 0,
-  next: function () {
+  next () {
     if (!this._slides[this.current - 1].buildNext()) {
       this.current = Math.min(this.current + 1, this._slides.length);
       this._update();
     }
   },
-  prev: function () {
+  prev () {
     this.current = Math.max(this.current - 1, 1);
     this._update();
   },
-  go: function (num) {
+  go (num) {
     if (history.pushState && this.current !== num) {
       history.replaceState(this.current, 'Slide ' + this.current, '#slide' + this.current);
     }
@@ -268,17 +213,17 @@ SlideShow.prototype = {
   },
 
   _notesOn: false,
-  showNotes: function () {
-    var notesOn = this._notesOn = !this._notesOn;
+  showNotes () {
+    const notesOn = this._notesOn = !this._notesOn;
     query('.notes').forEach(function (el) {
       el.style.display = (notesOn) ? 'block' : 'none';
     });
   },
-  switch3D: function () {
-    toggleClass(document.body, 'three-d');
+  switch3D () {
+    document.body.classList.toggle('three-d');
   },
-  handleWheel: function (e) {
-    var delta = 0;
+  handleWheel (e) {
+    let delta = 0;
     if (e.wheelDelta) {
       delta = e.wheelDelta / 120;
       if (isOpera) {
@@ -296,7 +241,7 @@ SlideShow.prototype = {
       this.next();
     }
   },
-  handleKeys: function (e) {
+  handleKeys (e) {
     if (/^(input|textarea)$/i.test(e.target.nodeName)) return;
 
     switch (e.keyCode) {
@@ -312,12 +257,12 @@ SlideShow.prototype = {
     }
   },
   _touchStartX: 0,
-  handleTouchStart: function (e) {
+  handleTouchStart (e) {
     this._touchStartX = e.touches[0].pageX;
   },
-  handleTouchEnd: function (e) {
-    var delta = this._touchStartX - e.changedTouches[0].pageX;
-    var SWIPE_SIZE = 150;
+  handleTouchEnd (e) {
+    const delta = this._touchStartX - e.changedTouches[0].pageX;
+    const SWIPE_SIZE = 150;
     if (delta > SWIPE_SIZE) {
       this.next();
     } else if (delta < -SWIPE_SIZE) {
@@ -327,48 +272,48 @@ SlideShow.prototype = {
 };
 
 // Initialize
-var slideshow = new SlideShow(query('.slide')); // eslint-disable-line no-unused-vars
+const slideshow = new SlideShow(query('.slide')); // eslint-disable-line no-unused-vars
 
 document.querySelector('#toggle-counter').addEventListener('click', toggleCounter, false);
 document.querySelector('#toggle-size').addEventListener('click', toggleSize, false);
 document.querySelector('#toggle-transitions').addEventListener('click', toggleTransitions, false);
 document.querySelector('#toggle-gradients').addEventListener('click', toggleGradients, false);
 
-var counters = document.querySelectorAll('.counter');
-var slides = document.querySelectorAll('.slide');
+const counters = document.querySelectorAll('.counter');
+const slides = document.querySelectorAll('.slide');
 
 function toggleCounter () {
-  toArray(counters).forEach(function (el) {
+  [...counters].forEach(function (el) {
     el.style.display = (el.offsetHeight) ? 'none' : 'block';
   });
 }
 
 function toggleSize () {
-  toArray(slides).forEach(function (el) {
+  [...slides].forEach(function (el) {
     if (!/reduced/.test(el.className)) {
-      addClass(el, 'reduced');
+      el.classList.add('reduced');
     } else {
-      removeClass(el, 'reduced');
+      el.classList.remove('reduced');
     }
   });
 }
 
 function toggleTransitions () {
-  toArray(slides).forEach(function (el) {
+  [...slides].forEach(function (el) {
     if (!/no-transitions/.test(el.className)) {
-      addClass(el, 'no-transitions');
+      el.classList.add('no-transitions');
     } else {
-      removeClass(el, 'no-transitions');
+      el.classList.remove('no-transitions');
     }
   });
 }
 
 function toggleGradients () {
-  toArray(slides).forEach(function (el) {
+  [...slides].forEach(function (el) {
     if (!/no-gradients/.test(el.className)) {
-      addClass(el, 'no-gradients');
+      el.classList.add('no-gradients');
     } else {
-      removeClass(el, 'no-gradients');
+      el.classList.remove('no-gradients');
     }
   });
 }

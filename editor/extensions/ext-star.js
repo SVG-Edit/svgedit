@@ -1,5 +1,4 @@
-/* eslint-disable no-var */
-/* globals svgEditor, svgCanvas, $ */
+/* globals jQuery, svgEditor, svgCanvas */
 /*
  * ext-star.js
  *
@@ -10,10 +9,8 @@
  */
 
 svgEditor.addExtension('star', function (S) {
-  'use strict';
-
-  var // NS = svgedit.NS,
-    // svgcontent = S.svgcontent,
+  const $ = jQuery;
+  let // {svgcontent} = S,
     selElems,
     // editingitex = false,
     // svgdoc = S.svgroot.parentNode.ownerDocument,
@@ -25,7 +22,7 @@ svgEditor.addExtension('star', function (S) {
     // modeChangeG, ccZoom, wEl, hEl, wOffset, hOffset, ccRgbEl, brushW, brushH;
 
   function showPanel (on) {
-    var fcRules = $('#fc_rules');
+    let fcRules = $('#fc_rules');
     if (!fcRules.length) {
       fcRules = $('<style id="fc_rules"></style>').appendTo('head');
     }
@@ -63,7 +60,7 @@ svgEditor.addExtension('star', function (S) {
       title: 'Star Tool',
       position: 12,
       events: {
-        click: function () {
+        click () {
           showPanel(true);
           svgCanvas.setMode('star');
         }
@@ -79,7 +76,7 @@ svgEditor.addExtension('star', function (S) {
       size: 3,
       defval: 5,
       events: {
-        change: function () {
+        change () {
           setAttr('point', this.value);
         }
       }
@@ -100,21 +97,21 @@ svgEditor.addExtension('star', function (S) {
       size: 3,
       defval: 0,
       events: {
-        change: function () {
+        change () {
           setAttr('radialshift', this.value);
         }
       }
     }],
-    callback: function () {
+    callback () {
       $('#star_panel').hide();
-      // var endChanges = function(){};
+      // const endChanges = function(){};
     },
-    mouseDown: function (opts) {
-      var rgb = svgCanvas.getColor('fill');
-      // var ccRgbEl = rgb.substring(1, rgb.length);
-      var sRgb = svgCanvas.getColor('stroke');
-      // var ccSRgbEl = sRgb.substring(1, rgb.length);
-      var sWidth = svgCanvas.getStrokeWidth();
+    mouseDown (opts) {
+      const rgb = svgCanvas.getColor('fill');
+      // const ccRgbEl = rgb.substring(1, rgb.length);
+      const sRgb = svgCanvas.getColor('stroke');
+      // const ccSRgbEl = sRgb.substring(1, rgb.length);
+      const sWidth = svgCanvas.getStrokeWidth();
 
       if (svgCanvas.getMode() === 'star') {
         started = true;
@@ -141,23 +138,24 @@ svgEditor.addExtension('star', function (S) {
         };
       }
     },
-    mouseMove: function (opts) {
+    mouseMove (opts) {
       if (!started) {
         return;
       }
       if (svgCanvas.getMode() === 'star') {
-        var x = opts.mouse_x;
-        var y = opts.mouse_y;
-        var c = $(newFO).attr(['cx', 'cy', 'point', 'orient', 'fill', 'strokecolor', 'strokeWidth', 'radialshift']);
+        const c = $(newFO).attr(['cx', 'cy', 'point', 'orient', 'fill', 'strokecolor', 'strokeWidth', 'radialshift']);
 
-        var cx = c.cx, cy = c.cy, fill = c.fill, strokecolor = c.strokecolor, strokewidth = c.strokeWidth, radialShift = c.radialshift, point = c.point, orient = c.orient, circumradius = (Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy))) / 1.5, inradius = circumradius / document.getElementById('starRadiusMulitplier').value;
+        let x = opts.mouse_x;
+        let y = opts.mouse_y;
+        const {cx, cy, fill, strokecolor, strokeWidth, radialShift, point, orient} = c,
+          circumradius = (Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy))) / 1.5,
+          inradius = circumradius / document.getElementById('starRadiusMulitplier').value;
         newFO.setAttributeNS(null, 'r', circumradius);
         newFO.setAttributeNS(null, 'r2', inradius);
 
-        var polyPoints = '';
-        var s;
-        for (s = 0; point >= s; s++) {
-          var angle = 2.0 * Math.PI * (s / point);
+        let polyPoints = '';
+        for (let s = 0; point >= s; s++) {
+          let angle = 2.0 * Math.PI * (s / point);
           if (orient === 'point') {
             angle -= (Math.PI / 2);
           } else if (orient === 'edge') {
@@ -187,17 +185,17 @@ svgEditor.addExtension('star', function (S) {
         newFO.setAttributeNS(null, 'points', polyPoints);
         newFO.setAttributeNS(null, 'fill', fill);
         newFO.setAttributeNS(null, 'stroke', strokecolor);
-        newFO.setAttributeNS(null, 'stroke-width', strokewidth);
-        /* var shape = */ newFO.getAttributeNS(null, 'shape');
+        newFO.setAttributeNS(null, 'stroke-width', strokeWidth);
+        /* const shape = */ newFO.getAttributeNS(null, 'shape');
 
         return {
           started: true
         };
       }
     },
-    mouseUp: function () {
+    mouseUp () {
       if (svgCanvas.getMode() === 'star') {
-        var attrs = $(newFO).attr(['r']);
+        const attrs = $(newFO).attr(['r']);
         // svgCanvas.addToSelection([newFO], true);
         return {
           keep: (attrs.r !== '0'),
@@ -205,14 +203,13 @@ svgEditor.addExtension('star', function (S) {
         };
       }
     },
-    selectedChanged: function (opts) {
+    selectedChanged (opts) {
       // Use this to update the current selected elements
       selElems = opts.elems;
 
-      var i = selElems.length;
-
+      let i = selElems.length;
       while (i--) {
-        var elem = selElems[i];
+        const elem = selElems[i];
         if (elem && elem.getAttributeNS(null, 'shape') === 'star') {
           if (opts.selectedElement && !opts.multiselected) {
             // $('#starRadiusMulitplier').val(elem.getAttribute('r2'));
@@ -227,8 +224,8 @@ svgEditor.addExtension('star', function (S) {
         }
       }
     },
-    elementChanged: function (opts) {
-      // var elem = opts.elems[0];
+    elementChanged (opts) {
+      // const elem = opts.elems[0];
     }
   };
 });

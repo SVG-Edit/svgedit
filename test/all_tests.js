@@ -1,12 +1,8 @@
-/* eslint-disable no-var */
-var iframes = document.getElementsByTagName('iframe');
-for (var i = 0, len = iframes.length; i < len; ++i) {
-  var f = iframes[i];
-  (function (f) {
-    f.addEventListener('load', function () {
-      f.contentWindow.QUnit.done = function () {
-        f.style.height = (f.contentDocument.body.scrollHeight + 20) + 'px';
-      };
-    });
-  })(f);
-}
+const iframes = document.querySelectorAll('iframe');
+[...iframes].forEach((f) => {
+  f.addEventListener('load', () => {
+    f.contentWindow.QUnit.done = () => {
+      f.style.height = (f.contentDocument.body.scrollHeight + 20) + 'px';
+    };
+  });
+});

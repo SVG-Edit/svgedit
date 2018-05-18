@@ -3,12 +3,12 @@ svgEditor.readLang({
   lang: 'lang',
   dir: 'dir',
   common: {
-    ok: 'ok',
-    cancel: 'cancel',
-    key_backspace: 'key_backspace',
-    key_del: 'key_del',
-    key_down: 'key_down',
-    key_up: 'key_up',
+    ok: 'OK',
+    cancel: 'Cancel',
+    key_backspace: 'Backspace',
+    key_del: 'Del',
+    key_down: 'Down',
+    key_up: 'Up',
     more_opts: "Plus d'options",
     url: 'url',
     width: 'width',
@@ -21,7 +21,10 @@ svgEditor.readLang({
     toggle_stroke_tools: "Montrer/cacher plus d'outils de contour",
     palette_info: 'palette_info',
     zoom_level: 'zoom_level',
-    panel_drag: 'panel_drag'
+    panel_drag: 'panel_drag',
+    quality: 'Quality:',
+    pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
+    pathCtrlPtTooltip: 'Drag control point to adjust curve properties'
   },
   properties: {
     id: "Identifier l'élément",
@@ -147,7 +150,7 @@ svgEditor.readLang({
     move_back: 'move_back'
   },
   layers: {
-    layer: 'layer',
+    layer: 'Layer',
     layers: 'layers',
     del: 'del',
     move_down: 'move_down',
@@ -210,41 +213,31 @@ svgEditor.readLang({
     open: 'open'
   },
   notification: {
-    invalidAttrValGiven: 'invalidAttrValGiven',
+    invalidAttrValGiven: 'Invalid value given',
     noContentToFitTo: "Il n'y a pas de contenu auquel ajuster",
-    dupeLayerName: 'dupeLayerName',
-    enterUniqueLayerName: 'enterUniqueLayerName',
-    enterNewLayerName: 'enterNewLayerName',
-    layerHasThatName: 'layerHasThatName',
-    QmoveElemsToLayer: 'QmoveElemsToLayer',
+    dupeLayerName: 'There is already a layer named that!',
+    enterUniqueLayerName: 'Please enter a unique layer name',
+    enterNewLayerName: 'Please enter the new layer name',
+    layerHasThatName: 'Layer already has that name',
+    QmoveElemsToLayer: 'Move selected elements to layer \'%s\'?',
     QwantToClear: "Voulez-vous effacer le dessin ?\nL'historique de vos actions sera également effacé !",
     QwantToOpen: "Voulez-vous ouvrir un nouveau document ?\nVous perdrez l'historique de vos modifications !",
-    QerrorsRevertToSource: 'QerrorsRevertToSource',
-    QignoreSourceChanges: 'QignoreSourceChanges',
-    featNotSupported: 'featNotSupported',
+    QerrorsRevertToSource: 'There were parsing errors in your SVG source.\nRevert back to original SVG source?',
+    QignoreSourceChanges: 'Ignore changes made to SVG source?',
+    featNotSupported: 'Feature not supported',
     enterNewImgURL: "Entrer la nouvelle URL de l'image",
     defsFailOnSave: "NOTE : En raison d'un bogue dans votre navigateur, il se peut que cette image ne soit pas correctement affichée (dégradés ou éléments manquants). Le souci sera néanmoins réglé à la sauvegarde.",
     loadingImage: "Chargement de l'image, veuillez patienter…",
     saveFromBrowser: "Sélectionner « Enregistrer sous… » dans votre navigateur pour sauvegarder l'image en tant que fichier %s.",
-    noteTheseIssues: 'noteTheseIssues',
-    unsavedChanges: 'unsavedChanges',
+    noteTheseIssues: 'Also note the following issues: ',
+    unsavedChanges: 'There are unsaved changes.',
     enterNewLinkURL: "Entrez la nouvelle URL de l'hyperlien",
-    errorLoadingSVG: 'errorLoadingSVG',
+    errorLoadingSVG: 'Error: Unable to load SVG data',
     URLloadFail: "Impossible de charger l'URL",
-    retrieving: 'retrieving'
-  },
-  confirmSetStorage: {
-    message: "Par défaut et si supporté, SVG-Edit peut stocker les préférences de l'éditeur " +
-    "et le contenu SVG localement sur votre machine de sorte que vous n'ayez pas besoin de les " +
-    'rajouter chaque fois que vous chargez SVG-Edit. Si, pour des raisons de confidentialité, ' +
-    'vous ne souhaitez pas stocker ces données sur votre machine, vous pouvez changer ce ' +
-    'comportement ci-dessous.',
-    storagePrefsAndContent: 'storagePrefsAndContent',
-    storagePrefsOnly: 'storagePrefsOnly',
-    storagePrefs: 'storagePrefs',
-    storageNoPrefsOrContent: 'storageNoPrefsOrContent',
-    storageNoPrefs: 'storageNoPrefs',
-    rememberLabel: 'rememberLabel',
-    rememberTooltip: "Si vous choisissez de désactiver le stockage en mémorisant le choix, l'URL va changer afin que la question ne vous soit plus reposée."
+    retrieving: 'Retrieving \'%s\' ...',
+    exportNoBlur: 'Blurred elements will appear as un-blurred',
+    exportNoforeignObject: 'foreignObject elements will not appear',
+    exportNoDashArray: 'Strokes will appear filled',
+    exportNoText: 'Text may not appear as expected'
   }
 });

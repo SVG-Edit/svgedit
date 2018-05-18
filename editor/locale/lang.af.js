@@ -3,12 +3,12 @@ svgEditor.readLang({
   lang: 'af',
   dir: 'ltr',
   common: {
-    ok: 'ok',
-    cancel: 'cancel',
-    key_backspace: 'key_backspace',
-    key_del: 'key_del',
-    key_down: 'key_down',
-    key_up: 'key_up',
+    ok: 'OK',
+    cancel: 'Cancel',
+    key_backspace: 'Backspace',
+    key_del: 'Del',
+    key_down: 'Down',
+    key_up: 'Up',
     more_opts: 'more_opts',
     url: 'url',
     width: 'width',
@@ -21,7 +21,10 @@ svgEditor.readLang({
     toggle_stroke_tools: 'toggle_stroke_tools',
     palette_info: 'palette_info',
     zoom_level: 'zoom_level',
-    panel_drag: 'panel_drag'
+    panel_drag: 'panel_drag',
+    quality: 'Quality:',
+    pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
+    pathCtrlPtTooltip: 'Drag control point to adjust curve properties'
   },
   properties: {
     id: 'id',
@@ -147,7 +150,7 @@ svgEditor.readLang({
     move_back: 'move_back'
   },
   layers: {
-    layer: 'layer',
+    layer: 'Layer',
     layers: 'layers',
     del: 'del',
     move_down: 'move_down',
@@ -210,41 +213,31 @@ svgEditor.readLang({
     open: 'open'
   },
   notification: {
-    invalidAttrValGiven: 'invalidAttrValGiven',
-    noContentToFitTo: 'noContentToFitTo',
-    dupeLayerName: 'dupeLayerName',
-    enterUniqueLayerName: 'enterUniqueLayerName',
-    enterNewLayerName: 'enterNewLayerName',
-    layerHasThatName: 'layerHasThatName',
+    invalidAttrValGiven: 'Invalid value given',
+    noContentToFitTo: 'No content to fit to',
+    dupeLayerName: 'There is already a layer named that!',
+    enterUniqueLayerName: 'Please enter a unique layer name',
+    enterNewLayerName: 'Please enter the new layer name',
+    layerHasThatName: 'Layer already has that name',
     QmoveElemsToLayer: "Move selected elements to layer '%s'?",
-    QwantToClear: 'QwantToClear',
-    QwantToOpen: 'QwantToOpen',
-    QerrorsRevertToSource: 'QerrorsRevertToSource',
-    QignoreSourceChanges: 'QignoreSourceChanges',
-    featNotSupported: 'featNotSupported',
-    enterNewImgURL: 'enterNewImgURL',
-    defsFailOnSave: 'defsFailOnSave',
-    loadingImage: 'loadingImage',
-    saveFromBrowser: 'saveFromBrowser',
-    noteTheseIssues: 'noteTheseIssues',
-    unsavedChanges: 'unsavedChanges',
-    enterNewLinkURL: 'enterNewLinkURL',
-    errorLoadingSVG: 'errorLoadingSVG',
-    URLloadFail: 'URLloadFail',
-    retrieving: 'retrieving'
-  },
-  confirmSetStorage: {
-    message: 'By default and where supported, SVG-Edit can store your editor ' +
-    'preferences and SVG content locally on your machine so you do not ' +
-    'need to add these back each time you load SVG-Edit. If, for privacy ' +
-    'reasons, you do not wish to store this information on your machine, ' +
-    'you can change away from the default option below.',
-    storagePrefsAndContent: 'storagePrefsAndContent',
-    storagePrefsOnly: 'storagePrefsOnly',
-    storagePrefs: 'storagePrefs',
-    storageNoPrefsOrContent: 'storageNoPrefsOrContent',
-    storageNoPrefs: 'storageNoPrefs',
-    rememberLabel: 'rememberLabel',
-    rememberTooltip: 'rememberTooltip'
+    QwantToClear: 'Do you want to clear the drawing?\nThis will also erase your undo history!',
+    QwantToOpen: 'Do you want to open a new file?\nThis will also erase your undo history!',
+    QerrorsRevertToSource: 'There were parsing errors in your SVG source.\nRevert back to original SVG source?',
+    QignoreSourceChanges: 'Ignore changes made to SVG source?',
+    featNotSupported: 'Feature not supported',
+    enterNewImgURL: 'Enter the new image URL',
+    defsFailOnSave: 'NOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.',
+    loadingImage: 'Loading image, please wait...',
+    saveFromBrowser: 'Select \'Save As...\' in your browser to save this image as a %s file.',
+    noteTheseIssues: 'Also note the following issues: ',
+    unsavedChanges: 'There are unsaved changes.',
+    enterNewLinkURL: 'Enter the new hyperlink URL',
+    errorLoadingSVG: 'Error: Unable to load SVG data',
+    URLloadFail: 'Unable to load from URL',
+    retrieving: 'Retrieving \'%s\' ...',
+    exportNoBlur: 'Blurred elements will appear as un-blurred',
+    exportNoforeignObject: 'foreignObject elements will not appear',
+    exportNoDashArray: 'Strokes will appear filled',
+    exportNoText: 'Text may not appear as expected'
   }
 });

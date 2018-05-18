@@ -1,5 +1,4 @@
-/* eslint-disable no-var */
-/* globals svgEditor, $ */
+/* globals jQuery, svgEditor */
 /*
  * ext-closepath.js
  *
@@ -8,41 +7,42 @@
  * Copyright(c) 2010 Jeff Schiller
  *
  */
+// import './pathseg.js';
 
 // This extension adds a simple button to the contextual panel for paths
 // The button toggles whether the path is open or closed
 svgEditor.addExtension('ClosePath', function () {
-  'use strict';
-  var selElems,
-    updateButton = function (path) {
-      var seglist = path.pathSegList,
-        closed = seglist.getItem(seglist.numberOfItems - 1).pathSegType === 1,
-        showbutton = closed ? '#tool_openpath' : '#tool_closepath',
-        hidebutton = closed ? '#tool_closepath' : '#tool_openpath';
-      $(hidebutton).hide();
-      $(showbutton).show();
-    },
-    showPanel = function (on) {
-      $('#closepath_panel').toggle(on);
-      if (on) {
-        var path = selElems[0];
-        if (path) { updateButton(path); }
+  const $ = jQuery;
+  let selElems;
+  const updateButton = function (path) {
+    const seglist = path.pathSegList,
+      closed = seglist.getItem(seglist.numberOfItems - 1).pathSegType === 1,
+      showbutton = closed ? '#tool_openpath' : '#tool_closepath',
+      hidebutton = closed ? '#tool_closepath' : '#tool_openpath';
+    $(hidebutton).hide();
+    $(showbutton).show();
+  };
+  const showPanel = function (on) {
+    $('#closepath_panel').toggle(on);
+    if (on) {
+      const path = selElems[0];
+      if (path) { updateButton(path); }
+    }
+  };
+  const toggleClosed = function () {
+    const path = selElems[0];
+    if (path) {
+      const seglist = path.pathSegList,
+        last = seglist.numberOfItems - 1;
+      // is closed
+      if (seglist.getItem(last).pathSegType === 1) {
+        seglist.removeItem(last);
+      } else {
+        seglist.appendItem(path.createSVGPathSegClosePath());
       }
-    },
-    toggleClosed = function () {
-      var path = selElems[0];
-      if (path) {
-        var seglist = path.pathSegList,
-          last = seglist.numberOfItems - 1;
-        // is closed
-        if (seglist.getItem(last).pathSegType === 1) {
-          seglist.removeItem(last);
-        } else {
-          seglist.appendItem(path.createSVGPathSegClosePath());
-        }
-        updateButton(path);
-      }
-    };
+      updateButton(path);
+    }
+  };
 
   return {
     name: 'ClosePath',
@@ -53,7 +53,7 @@ svgEditor.addExtension('ClosePath', function () {
       panel: 'closepath_panel',
       title: 'Open path',
       events: {
-        click: function () {
+        click () {
           toggleClosed();
         }
       }
@@ -64,19 +64,19 @@ svgEditor.addExtension('ClosePath', function () {
       panel: 'closepath_panel',
       title: 'Close path',
       events: {
-        click: function () {
+        click () {
           toggleClosed();
         }
       }
     }],
-    callback: function () {
+    callback () {
       $('#closepath_panel').hide();
     },
-    selectedChanged: function (opts) {
+    selectedChanged (opts) {
       selElems = opts.elems;
-      var i = selElems.length;
+      let i = selElems.length;
       while (i--) {
-        var elem = selElems[i];
+        const elem = selElems[i];
         if (elem && elem.tagName === 'path') {
           if (opts.selectedElement && !opts.multiselected) {
             showPanel(true);

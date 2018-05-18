@@ -1,50 +1,47 @@
-/* eslint-disable no-var */
-/* globals $ */
+/* globals jQuery */
+const $ = jQuery;
 $('a').click(function () {
-  'use strict';
-  var metaStr;
-  var href = this.href;
-  var target = window.parent;
+  const {href} = this;
+  const target = window.parent;
+  const post = (message) => {
+    // Todo: Make origin customizable as set by opening window
+    // Todo: If dropping IE9, avoid stringifying
+    target.postMessage(JSON.stringify({
+      namespace: 'imagelib',
+      ...message
+    }), '*');
+  };
   // Convert Non-SVG images to data URL first
   // (this could also have been done server-side by the library)
-  if (this.href.indexOf('.svg') === -1) {
-    metaStr = JSON.stringify({
-      name: $(this).text(),
-      id: href
-    });
-    target.postMessage(metaStr, '*');
-
-    var img = new Image();
+  // Send metadata (also indicates file is about to be sent)
+  post({
+    name: $(this).text(),
+    id: href
+  });
+  if (!this.href.includes('.svg')) {
+    const img = new Image();
     img.onload = function () {
-      var canvas = document.createElement('canvas');
+      const canvas = document.createElement('canvas');
       canvas.width = this.width;
       canvas.height = this.height;
       // load the raster image into the canvas
       canvas.getContext('2d').drawImage(this, 0, 0);
       // retrieve the data: URL
-      var dataurl;
+      let data;
       try {
-        dataurl = canvas.toDataURL();
+        data = canvas.toDataURL();
       } catch (err) {
         // This fails in Firefox with file:// URLs :(
         alert('Data URL conversion failed: ' + err);
-        dataurl = '';
+        data = '';
       }
-      target.postMessage('|' + href + '|' + dataurl, '*');
+      post({href, data});
     };
     img.src = href;
   } else {
-    // Send metadata (also indicates file is about to be sent)
-    metaStr = JSON.stringify({
-      name: $(this).text(),
-      id: href
-    });
-    target.postMessage(metaStr, '*');
     // Do ajax request for image's href value
     $.get(href, function (data) {
-      data = '|' + href + '|' + data;
-      // This is where the magic happens!
-      target.postMessage(data, '*');
+      post({href, data});
     }, 'html'); // 'html' is necessary to keep returned data as a string
   }
   return false;

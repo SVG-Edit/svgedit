@@ -1,14 +1,21 @@
 node_modules
 
 # Vendor/minified files
-editor/jquery.js
-editor/jspdf/jspdf.min.js
-editor/jspdf/underscore-min.js
+editor/jquery.min.js
+editor/jquery-ui
+
 editor/jgraduate/jpicker.min.js
 editor/jgraduate/jquery.jgraduate.min.js
-editor/jquery-ui
+
 editor/jquerybbq
 editor/js-hotkeys
 editor/spinbtn/JQuerySpinBtn.min.js
+
+editor/jspdf/jspdf.min.js
+editor/jspdf/underscore-min.js
+
+editor/extensions/imagelib/jquery.min.js
+editor/extensions/mathjax
+
 test/qunit
 test/sinon

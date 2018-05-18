@@ -1,5 +1,3 @@
-/* eslint-disable no-var */
-/* globals $, svgedit */
 /**
  * Package: svgedit.sanitize
  *
@@ -10,23 +8,18 @@
  */
 
 // Dependencies:
-// 1) jQuery
-// 2) pathseg.js
-// 3) browser.js
-// 4) svgutils.js
+// 1) pathseg.js
+// 2) browser.js
+// 3) svgutils.js
 
-(function () {
-'use strict';
+import {getReverseNS, NS} from './svgedit.js';
+import {isGecko} from './browser.js';
+import {getHref, setHref, getUrlFromAttr} from './svgutils.js';
 
-if (!svgedit.sanitize) {
-  svgedit.sanitize = {};
-}
-
-var NS = svgedit.NS,
-  REVERSE_NS = svgedit.getReverseNS();
+const REVERSE_NS = getReverseNS();
 
 // this defines which elements and attributes that we support
-var svgWhiteList_ = {
+const svgWhiteList_ = {
   // SVG Elements
   'a': ['class', 'clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'id', 'mask', 'opacity', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'transform', 'xlink:href', 'xlink:title'],
   'circle': ['class', 'clip-path', 'clip-rule', 'cx', 'cy', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'id', 'mask', 'opacity', 'r', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'transform'],
@@ -96,12 +89,12 @@ var svgWhiteList_ = {
 };
 
 // Produce a Namespace-aware version of svgWhitelist
-var svgWhiteListNS_ = {};
-$.each(svgWhiteList_, function (elt, atts) {
-  var attNS = {};
-  $.each(atts, function (i, att) {
-    if (att.indexOf(':') >= 0) {
-      var v = att.split(':');
+const svgWhiteListNS_ = {};
+Object.entries(svgWhiteList_).forEach(function ([elt, atts]) {
+  const attNS = {};
+  Object.entries(atts).forEach(function ([i, att]) {
+    if (att.includes(':')) {
+      const v = att.split(':');
       attNS[v[1]] = NS[(v[0]).toUpperCase()];
     } else {
       attNS[att] = att === 'xmlns' ? NS.XMLNS : null;
@@ -111,18 +104,18 @@ $.each(svgWhiteList_, function (elt, atts) {
 });
 
 // Function: svgedit.sanitize.sanitizeSvg
-// Sanitizes the input node and its children
-// It only keeps what is allowed from our whitelist defined above
-//
-// Parameters:
-// node - The DOM element to be checked (we'll also check its children)
-svgedit.sanitize.sanitizeSvg = function (node) {
+/**
+* Sanitizes the input node and its children
+* It only keeps what is allowed from our whitelist defined above
+* @param node - The DOM element to be checked (we'll also check its children)
+*/
+export default function sanitizeSvg (node) {
   // Cleanup text nodes
-  if (node.nodeType === 3) { // 3 == TEXT_NODE
+  if (node.nodeType === 3) { // 3 === TEXT_NODE
     // Trim whitespace
     node.nodeValue = node.nodeValue.replace(/^\s+|\s+$/g, '');
     // Remove if empty
-    if (node.nodeValue.length === 0) {
+    if (!node.nodeValue.length) {
       node.parentNode.removeChild(node);
     }
   }
@@ -133,27 +126,26 @@ svgedit.sanitize.sanitizeSvg = function (node) {
     return;
   }
 
-  var doc = node.ownerDocument;
-  var parent = node.parentNode;
+  const doc = node.ownerDocument;
+  const parent = node.parentNode;
   // can parent ever be null here?  I think the root node's parent is the document...
   if (!doc || !parent) {
     return;
   }
 
-  var allowedAttrs = svgWhiteList_[node.nodeName];
-  var allowedAttrsNS = svgWhiteListNS_[node.nodeName];
-  var i;
+  const allowedAttrs = svgWhiteList_[node.nodeName];
+  const allowedAttrsNS = svgWhiteListNS_[node.nodeName];
   // if this element is supported, sanitize it
   if (typeof allowedAttrs !== 'undefined') {
-    var seAttrs = [];
-    i = node.attributes.length;
+    const seAttrs = [];
+    let i = node.attributes.length;
     while (i--) {
       // if the attribute is not in our whitelist, then remove it
       // could use jQuery's inArray(), but I don't know if that's any better
-      var attr = node.attributes.item(i);
-      var attrName = attr.nodeName;
-      var attrLocalName = attr.localName;
-      var attrNsURI = attr.namespaceURI;
+      const attr = node.attributes.item(i);
+      const attrName = attr.nodeName;
+      const attrLocalName = attr.localName;
+      const attrNsURI = attr.namespaceURI;
       // Check that an attribute with the correct localName in the correct namespace is on
       // our whitelist or is a namespace declaration for one of our allowed namespaces
       if (!(allowedAttrsNS.hasOwnProperty(attrLocalName) && attrNsURI === allowedAttrsNS[attrLocalName] && attrNsURI !== NS.XMLNS) &&
@@ -161,19 +153,19 @@ svgedit.sanitize.sanitizeSvg = function (node) {
         // TODO(codedread): Programmatically add the se: attributes to the NS-aware whitelist.
         // Bypassing the whitelist to allow se: prefixes.
         // Is there a more appropriate way to do this?
-        if (attrName.indexOf('se:') === 0 || attrName.indexOf('data-') === 0) {
+        if (attrName.startsWith('se:') || attrName.startsWith('data-')) {
           seAttrs.push([attrName, attr.value]);
         }
         node.removeAttributeNS(attrNsURI, attrLocalName);
       }
 
       // Add spaces before negative signs where necessary
-      if (svgedit.browser.isGecko()) {
+      if (isGecko()) {
         switch (attrName) {
         case 'transform':
         case 'gradientTransform':
         case 'patternTransform':
-          var val = attr.value.replace(/(\d)-/g, '$1 -');
+          const val = attr.value.replace(/(\d)-/g, '$1 -');
           node.setAttribute(attrName, val);
           break;
         }
@@ -181,14 +173,14 @@ svgedit.sanitize.sanitizeSvg = function (node) {
 
       // For the style attribute, rewrite it in terms of XML presentational attributes
       if (attrName === 'style') {
-        var props = attr.value.split(';'),
-          p = props.length;
+        const props = attr.value.split(';');
+        let p = props.length;
         while (p--) {
-          var nv = props[p].split(':');
-          var styleAttrName = $.trim(nv[0]);
-          var styleAttrVal = $.trim(nv[1]);
+          const nv = props[p].split(':');
+          const styleAttrName = nv[0].trim();
+          const styleAttrVal = nv[1].trim();
           // Now check that this attribute is supported
-          if (allowedAttrs.indexOf(styleAttrName) >= 0) {
+          if (allowedAttrs.includes(styleAttrName)) {
             node.setAttribute(styleAttrName, styleAttrVal);
           }
         }
@@ -196,35 +188,35 @@ svgedit.sanitize.sanitizeSvg = function (node) {
       }
     }
 
-    $.each(seAttrs, function (i, attr) {
+    Object.values(seAttrs).forEach(function (attr) {
       node.setAttributeNS(NS.SE, attr[0], attr[1]);
     });
 
     // for some elements that have a xlink:href, ensure the URI refers to a local element
     // (but not for links)
-    var href = svgedit.utilities.getHref(node);
+    const href = getHref(node);
     if (href &&
       ['filter', 'linearGradient', 'pattern',
-        'radialGradient', 'textPath', 'use'].indexOf(node.nodeName) >= 0) {
+        'radialGradient', 'textPath', 'use'].includes(node.nodeName)) {
       // TODO: we simply check if the first character is a #, is this bullet-proof?
       if (href[0] !== '#') {
         // remove the attribute (but keep the element)
-        svgedit.utilities.setHref(node, '');
+        setHref(node, '');
         node.removeAttributeNS(NS.XLINK, 'href');
       }
     }
 
     // Safari crashes on a <use> without a xlink:href, so we just remove the node here
-    if (node.nodeName === 'use' && !svgedit.utilities.getHref(node)) {
+    if (node.nodeName === 'use' && !getHref(node)) {
       parent.removeChild(node);
       return;
     }
     // if the element has attributes pointing to a non-local reference,
     // need to remove the attribute
-    $.each(['clip-path', 'fill', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'stroke'], function (i, attr) {
-      var val = node.getAttribute(attr);
+    Object.values(['clip-path', 'fill', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'stroke'], function (attr) {
+      let val = node.getAttribute(attr);
       if (val) {
-        val = svgedit.utilities.getUrlFromAttr(val);
+        val = getUrlFromAttr(val);
         // simply check for first character being a '#'
         if (val && val[0] !== '#') {
           node.setAttribute(attr, '');
@@ -235,12 +227,12 @@ svgedit.sanitize.sanitizeSvg = function (node) {
 
     // recurse to children
     i = node.childNodes.length;
-    while (i--) { svgedit.sanitize.sanitizeSvg(node.childNodes.item(i)); }
+    while (i--) { sanitizeSvg(node.childNodes.item(i)); }
   // else (element not supported), remove it
   } else {
     // remove all children from this node and insert them before this node
     // FIXME: in the case of animation elements this will hardly ever be correct
-    var children = [];
+    const children = [];
     while (node.hasChildNodes()) {
       children.push(parent.insertBefore(node.firstChild, node));
     }
@@ -249,8 +241,7 @@ svgedit.sanitize.sanitizeSvg = function (node) {
     parent.removeChild(node);
 
     // call sanitizeSvg on each of those children
-    i = children.length;
-    while (i--) { svgedit.sanitize.sanitizeSvg(children[i]); }
+    let i = children.length;
+    while (i--) { sanitizeSvg(children[i]); }
   }
 };
-}());

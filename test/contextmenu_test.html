@@ -5,16 +5,16 @@
   <title>Unit Tests for contextmenu.js</title>
   <link rel="icon" type="image/png" href="../editor/images/logo.png"/>
   <link rel="stylesheet" href="qunit/qunit.css"/>
-  <script src="../editor/jquery.js"></script>
+  <script src="../editor/jquery.min.js"></script>
   <script>
   // Mock for browser.js
   window.svgEditor = {
-      ready: function () {}
+      ready () {}
   };
   </script>
   <script src="../editor/contextmenu.js"></script>
   <script src="qunit/qunit.js"></script>
-  <script src="contextmenu_test.js"></script>
+  <script defer="defer" src="contextmenu_test.js"></script>
 </head>
 <body>
   <h1 id="qunit-header">Unit Tests for contextmenu.js</h1>

@@ -1,5 +1,4 @@
-/* eslint-disable no-var */
-/* globals $, svgEditor, svgedit, svgCanvas, DOMParser */
+/* globals jQuery, svgEditor, svgedit, svgCanvas */
 /*
  * ext-imagelib.js
  *
@@ -10,9 +9,8 @@
  */
 
 svgEditor.addExtension('imagelib', function () {
-  'use strict';
-
-  var uiStrings = svgEditor.uiStrings;
+  const $ = jQuery;
+  const {uiStrings} = svgEditor;
 
   $.extend(uiStrings, {
     imagelib: {
@@ -24,7 +22,7 @@ svgEditor.addExtension('imagelib', function () {
     }
   });
 
-  var imgLibs = [
+  const imgLibs = [
     {
       name: 'Demo library (local)',
       url: svgEditor.curConfig.extPath + 'imagelib/index.html',
@@ -47,7 +45,7 @@ svgEditor.addExtension('imagelib', function () {
   }
 
   function importImage (url) {
-    var newImage = svgCanvas.addSvgElementFromJson({
+    const newImage = svgCanvas.addSvgElementFromJson({
       'element': 'image',
       'attr': {
         'x': 0,
@@ -63,58 +61,64 @@ svgEditor.addExtension('imagelib', function () {
     svgCanvas.setImageURL(url);
   }
 
-  var mode = 's';
-  var multiArr = [];
-  var transferStopped = false;
-  var pending = {};
-  var preview, submit;
+  const pending = {};
+
+  let mode = 's';
+  let multiArr = [];
+  let transferStopped = false;
+  let preview, submit;
 
   window.addEventListener('message', function (evt) {
-    // Receive postMessage data
-    var response = evt.data;
+    // Receive `postMessage` data
+    let response = evt.data;
 
-    if (!response || typeof response !== 'string') { // Todo: Should namespace postMessage API for this extension and filter out here
+    if (!response || typeof response !== 'string') {
       // Do nothing
       return;
     }
-    try { // This block can be removed if embedAPI moves away from a string to an object (if IE9 support not needed)
-      var res = JSON.parse(response);
-      if (res.namespace) { // Part of embedAPI communications
+    try {
+      // Todo: This block can be removed (and the above check changed to
+      //   insist on an object) if embedAPI moves away from a string to
+      //   an object (if IE9 support not needed)
+      response = JSON.parse(response);
+      if (response.namespace !== 'imagelib') {
         return;
       }
-    } catch (e) {}
+    } catch (e) {
+      return;
+    }
 
-    var char1 = response.charAt(0);
-    var id;
-    var svgStr;
-    var imgStr;
+    const hasName = 'name' in response;
+    const hasHref = 'href' in response;
 
-    if (char1 !== '{' && transferStopped) {
+    if (!hasName && transferStopped) {
       transferStopped = false;
       return;
     }
 
-    if (char1 === '|') {
-      var secondpos = response.indexOf('|', 1);
-      id = response.substr(1, secondpos - 1);
-      response = response.substr(secondpos + 1);
-      char1 = response.charAt(0);
+    let id;
+    if (hasHref) {
+      id = response.href;
+      response = response.data;
     }
 
     // Hide possible transfer dialog box
     $('#dialog_box').hide();
-    var entry, curMeta;
-    switch (char1) {
-    case '{':
+    let entry, curMeta, svgStr, imgStr;
+    const type = hasName
+      ? 'meta'
+      : response.charAt(0);
+    switch (type) {
+    case 'meta': {
       // Metadata
       transferStopped = false;
-      curMeta = JSON.parse(response);
+      curMeta = response;
 
       pending[curMeta.id] = curMeta;
 
-      var name = (curMeta.name || 'file');
+      const name = (curMeta.name || 'file');
 
-      var message = uiStrings.notification.retrieving.replace('%s', name);
+      const message = uiStrings.notification.retrieving.replace('%s', name);
 
       if (mode !== 'm') {
         $.process_cancel(message, function () {
@@ -130,24 +134,26 @@ svgEditor.addExtension('imagelib', function () {
       }
 
       return;
+    }
     case '<':
       svgStr = true;
       break;
-    case 'd':
-      if (response.indexOf('data:image/svg+xml') === 0) {
-        var pre = 'data:image/svg+xml;base64,';
-        var src = response.substring(pre.length);
+    case 'd': {
+      if (response.startsWith('data:image/svg+xml')) {
+        const pre = 'data:image/svg+xml;base64,';
+        const src = response.substring(pre.length);
         response = svgedit.utilities.decode64(src);
         svgStr = true;
         break;
-      } else if (response.indexOf('data:image/') === 0) {
+      } else if (response.startsWith('data:image/')) {
         imgStr = true;
         break;
       }
-      // Else fall through
+    }
+    // Else fall through
     default:
       // TODO: See if there's a way to base64 encode the binary data stream
-      // var str = 'data:;base64,' + svgedit.utilities.encode64(response, true);
+      // const str = 'data:;base64,' + svgedit.utilities.encode64(response, true);
 
       // Assume it's raw image data
       // importImage(str);
@@ -181,14 +187,14 @@ svgEditor.addExtension('imagelib', function () {
     case 'm':
       // Import multiple
       multiArr.push([(svgStr ? 'svg' : 'img'), response]);
-      var title;
       curMeta = pending[id];
+      let title;
       if (svgStr) {
         if (curMeta && curMeta.name) {
           title = curMeta.name;
         } else {
           // Try to find a title
-          var xml = new DOMParser().parseFromString(response, 'text/xml').documentElement;
+          const xml = new DOMParser().parseFromString(response, 'text/xml').documentElement;
           title = $(xml).children('title').first().text() || '(SVG #' + response.length + ')';
         }
         if (curMeta) {
@@ -260,8 +266,8 @@ svgEditor.addExtension('imagelib', function () {
         .appendTo('#imgbrowse')
         .on('click touchend', function () {
           $.each(multiArr, function (i) {
-            var type = this[0];
-            var data = this[1];
+            const type = this[0];
+            const data = this[1];
             if (type === 'svg') {
               svgCanvas.importSvgString(data);
             } else {
@@ -284,25 +290,25 @@ svgEditor.addExtension('imagelib', function () {
   }
 
   function showBrowser () {
-    var browser = $('#imgbrowse');
+    let browser = $('#imgbrowse');
     if (!browser.length) {
       $('<div id=imgbrowse_holder><div id=imgbrowse class=toolbar_button>' +
       '</div></div>').insertAfter('#svg_docprops');
       browser = $('#imgbrowse');
 
-      var allLibs = uiStrings.imagelib.select_lib;
+      const allLibs = uiStrings.imagelib.select_lib;
 
-      var libOpts = $('<ul id=imglib_opts>').appendTo(browser);
-      var frame = $('<iframe/>').prependTo(browser).hide().wrap('<div id=lib_framewrap>');
+      const libOpts = $('<ul id=imglib_opts>').appendTo(browser);
+      const frame = $('<iframe/>').prependTo(browser).hide().wrap('<div id=lib_framewrap>');
 
-      var header = $('<h1>').prependTo(browser).text(allLibs).css({
+      const header = $('<h1>').prependTo(browser).text(allLibs).css({
         position: 'absolute',
         top: 0,
         left: 0,
         width: '100%'
       });
 
-      var cancel = $('<button>' + uiStrings.common.cancel + '</button>')
+      const cancel = $('<button>' + uiStrings.common.cancel + '</button>')
         .appendTo(browser)
         .on('click touchend', function () {
           $('#imgbrowse_holder').hide();
@@ -312,9 +318,9 @@ svgEditor.addExtension('imagelib', function () {
           right: -10
         });
 
-      var leftBlock = $('<span>').css({position: 'absolute', top: 5, left: 10}).appendTo(browser);
+      const leftBlock = $('<span>').css({position: 'absolute', top: 5, left: 10}).appendTo(browser);
 
-      var back = $('<button hidden>' + uiStrings.imagelib.show_list + '</button>')
+      const back = $('<button hidden>' + uiStrings.imagelib.show_list + '</button>')
         .appendTo(leftBlock)
         .on('click touchend', function () {
           frame.attr('src', 'about:blank').hide();
@@ -325,7 +331,7 @@ svgEditor.addExtension('imagelib', function () {
           'margin-right': 5
         }).hide();
 
-      /* var type = */ $('<select><option value=s>' +
+      /* const type = */ $('<select><option value=s>' +
         uiStrings.imagelib.import_single + '</option><option value=m>' +
         uiStrings.imagelib.import_multi + '</option><option value=o>' +
         uiStrings.imagelib.open + '</option></select>').appendTo(leftBlock).change(function () {
@@ -372,10 +378,10 @@ svgEditor.addExtension('imagelib', function () {
       position: 4,
       title: 'Image library',
       events: {
-        'mouseup': showBrowser
+        mouseup: showBrowser
       }
     }],
-    callback: function () {
+    callback () {
       $('<style>').text(
         '#imgbrowse_holder {' +
           'position: absolute;' +

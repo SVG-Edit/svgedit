@@ -1,5 +1,4 @@
-/* eslint-disable no-var */
-/* globals svgEditor, svgCanvas, $ */
+/* globals jQuery, svgEditor, svgCanvas */
 /*
  * ext-markers.js
  *
@@ -33,21 +32,19 @@
  */
 
 svgEditor.addExtension('Markers', function (S) {
-  var // svgcontent = S.svgcontent,
-    addElem = S.addSvgElementFromJson,
-    selElems;
-
-  var mtypes = ['start', 'mid', 'end'];
-
-  var markerPrefix = 'se_marker_';
-  var idPrefix = 'mkr_';
+  const $ = jQuery;
+  const // {svgcontent} = S,
+    addElem = S.addSvgElementFromJson;
+  const mtypes = ['start', 'mid', 'end'];
+  const markerPrefix = 'se_marker_';
+  const idPrefix = 'mkr_';
 
   // note - to add additional marker types add them below with a unique id
   // and add the associated icon(s) to marker-icons.svg
   // the geometry is normallized to a 100x100 box with the origin at lower left
   // Safari did not like negative values for low left of viewBox
   // remember that the coordinate system has +y downward
-  var markerTypes = {
+  const markerTypes = {
     nomarker: {},
     leftarrow:
       {element: 'path', attr: {d: 'M0,50 L100,90 L70,50 L100,10 Z'}},
@@ -74,7 +71,7 @@ svgEditor.addExtension('Markers', function (S) {
       {element: 'circle', attr: {r: 30, cx: 50, cy: 50}}
   };
 
-  var langList = {
+  const langList = {
     'en': [
       {id: 'start_marker_list', title: 'Select start marker type'},
       {id: 'mid_marker_list', title: 'Select mid marker type'},
@@ -109,9 +106,9 @@ svgEditor.addExtension('Markers', function (S) {
   // attr - marker-start, marker-mid, or marker-end
   // returns the marker element that is linked to the graphic element
   function getLinked (elem, attr) {
-    var str = elem.getAttribute(attr);
+    const str = elem.getAttribute(attr);
     if (!str) { return null; }
-    var m = str.match(/\(#(.*)\)/);
+    const m = str.match(/\(#(.*)\)/);
     if (!m || m.length !== 2) {
       return null;
     }
@@ -120,24 +117,24 @@ svgEditor.addExtension('Markers', function (S) {
 
   function setIcon (pos, id) {
     if (id.substr(0, 1) !== '\\') { id = '\\textmarker'; }
-    var ci = '#' + idPrefix + pos + '_' + id.substr(1);
+    const ci = '#' + idPrefix + pos + '_' + id.substr(1);
     svgEditor.setIcon('#cur_' + pos + '_marker_list', $(ci).children());
     $(ci).addClass('current').siblings().removeClass('current');
   }
 
+  let selElems;
   // toggles context tool panel off/on
   // sets the controls with the selected element's settings
   function showPanel (on) {
     $('#marker_panel').toggle(on);
 
     if (on) {
-      var el = selElems[0];
-      var val;
-      var ci;
+      const el = selElems[0];
 
+      let val, ci;
       $.each(mtypes, function (i, pos) {
-        var m = getLinked(el, 'marker-' + pos);
-        var txtbox = $('#' + pos + '_marker');
+        const m = getLinked(el, 'marker-' + pos);
+        const txtbox = $('#' + pos + '_marker');
         if (!m) {
           val = '\\nomarker';
           ci = val;
@@ -160,28 +157,27 @@ svgEditor.addExtension('Markers', function (S) {
   }
 
   function addMarker (id, val) {
-    var txtBoxBg = '#ffffff';
-    var txtBoxBorder = 'none';
-    var txtBoxStrokeWidth = 0;
+    const txtBoxBg = '#ffffff';
+    const txtBoxBorder = 'none';
+    const txtBoxStrokeWidth = 0;
 
-    var marker = S.getElem(id);
-
+    let marker = S.getElem(id);
     if (marker) { return; }
 
     if (val === '' || val === '\\nomarker') { return; }
 
-    var el = selElems[0];
-    var color = el.getAttribute('stroke');
+    const el = selElems[0];
+    const color = el.getAttribute('stroke');
     // NOTE: Safari didn't like a negative value in viewBox
     // so we use a standardized 0 0 100 100
     // with 50 50 being mapped to the marker position
-    var refX = 50;
-    var refY = 50;
-    var viewBox = '0 0 100 100';
-    var markerWidth = 5;
-    var markerHeight = 5;
-    var strokeWidth = 10;
-    var seType;
+    const strokeWidth = 10;
+    let refX = 50;
+    let refY = 50;
+    let viewBox = '0 0 100 100';
+    let markerWidth = 5;
+    let markerHeight = 5;
+    let seType;
     if (val.substr(0, 1) === '\\') {
       seType = val.substr(1);
     } else { seType = 'textmarker'; }
@@ -190,32 +186,34 @@ svgEditor.addExtension('Markers', function (S) {
 
     // create a generic marker
     marker = addElem({
-      'element': 'marker',
-      'attr': {
-        'id': id,
-        'markerUnits': 'strokeWidth',
-        'orient': 'auto',
-        'style': 'pointer-events:none',
-        'se_type': seType
+      element: 'marker',
+      attr: {
+        id,
+        markerUnits: 'strokeWidth',
+        orient: 'auto',
+        style: 'pointer-events:none',
+        se_type: seType
       }
     });
 
     if (seType !== 'textmarker') {
-      var mel = addElem(markerTypes[seType]);
-      var fillcolor = color;
-      if (seType.substr(-2) === '_o') { fillcolor = 'none'; }
+      const mel = addElem(markerTypes[seType]);
+      const fillcolor = (seType.substr(-2) === '_o')
+        ? 'none'
+        : color;
+
       mel.setAttribute('fill', fillcolor);
       mel.setAttribute('stroke', color);
       mel.setAttribute('stroke-width', strokeWidth);
       marker.appendChild(mel);
     } else {
-      var text = addElem(markerTypes[seType]);
+      const text = addElem(markerTypes[seType]);
       // have to add text to get bounding box
       text.textContent = val;
-      var tb = text.getBBox();
+      const tb = text.getBBox();
       // alert(tb.x + ' ' + tb.y + ' ' + tb.width + ' ' + tb.height);
-      var pad = 1;
-      var bb = tb;
+      const pad = 1;
+      const bb = tb;
       bb.x = 0;
       bb.y = 0;
       bb.width += pad * 2;
@@ -230,7 +228,7 @@ svgEditor.addExtension('Markers', function (S) {
       markerWidth = bb.width / 10;
       markerHeight = bb.height / 10;
 
-      var box = addElem({
+      const box = addElem({
         'element': 'rect',
         'attr': {
           'x': bb.x,
@@ -264,14 +262,14 @@ svgEditor.addExtension('Markers', function (S) {
 
     // Convert to polyline to accept mid-arrow
 
-    var x1 = Number(elem.getAttribute('x1'));
-    var x2 = Number(elem.getAttribute('x2'));
-    var y1 = Number(elem.getAttribute('y1'));
-    var y2 = Number(elem.getAttribute('y2'));
-    var id = elem.id;
+    const x1 = Number(elem.getAttribute('x1'));
+    const x2 = Number(elem.getAttribute('x2'));
+    const y1 = Number(elem.getAttribute('y1'));
+    const y2 = Number(elem.getAttribute('y2'));
+    const {id} = elem;
 
-    var midPt = (' ' + ((x1 + x2) / 2) + ',' + ((y1 + y2) / 2) + ' ');
-    var pline = addElem({
+    const midPt = (' ' + ((x1 + x2) / 2) + ',' + ((y1 + y2) / 2) + ' ');
+    const pline = addElem({
       'element': 'polyline',
       'attr': {
         'points': (x1 + ',' + y1 + midPt + x2 + ',' + y2),
@@ -282,12 +280,12 @@ svgEditor.addExtension('Markers', function (S) {
       }
     });
     $.each(mtypes, function (i, pos) { // get any existing marker definitions
-      var nam = 'marker-' + pos;
-      var m = elem.getAttribute(nam);
+      const nam = 'marker-' + pos;
+      const m = elem.getAttribute(nam);
       if (m) { pline.setAttribute(nam, elem.getAttribute(nam)); }
     });
 
-    var batchCmd = new S.BatchCommand();
+    const batchCmd = new S.BatchCommand();
     batchCmd.addSubCommand(new S.RemoveElementCommand(elem, elem.parentNode));
     batchCmd.addSubCommand(new S.InsertElementCommand(pline));
 
@@ -300,14 +298,14 @@ svgEditor.addExtension('Markers', function (S) {
   }
 
   function setMarker () {
-    var poslist = {'start_marker': 'start', 'mid_marker': 'mid', 'end_marker': 'end'};
-    var pos = poslist[this.id];
-    var markerName = 'marker-' + pos;
-    var val = this.value;
-    var el = selElems[0];
-    var marker = getLinked(el, markerName);
+    const poslist = {'start_marker': 'start', 'mid_marker': 'mid', 'end_marker': 'end'};
+    const pos = poslist[this.id];
+    const markerName = 'marker-' + pos;
+    let el = selElems[0];
+    const marker = getLinked(el, markerName);
     if (marker) { $(marker).remove(); }
     el.removeAttribute(markerName);
+    let val = this.value;
     if (val === '') { val = '\\nomarker'; }
     if (val === '\\nomarker') {
       setIcon(pos, val);
@@ -315,7 +313,7 @@ svgEditor.addExtension('Markers', function (S) {
       return;
     }
     // Set marker on element
-    var id = markerPrefix + pos + '_' + el.id;
+    const id = markerPrefix + pos + '_' + el.id;
     addMarker(id, val);
     svgCanvas.changeSelectedAttribute(markerName, 'url(#' + id + ')');
     if (el.tagName === 'line' && pos === 'mid') { el = convertline(el); }
@@ -326,16 +324,16 @@ svgEditor.addExtension('Markers', function (S) {
   // called when the main system modifies an object
   // this routine changes the associated markers to be the same color
   function colorChanged (elem) {
-    var color = elem.getAttribute('stroke');
+    const color = elem.getAttribute('stroke');
 
     $.each(mtypes, function (i, pos) {
-      var marker = getLinked(elem, 'marker-' + pos);
+      const marker = getLinked(elem, 'marker-' + pos);
       if (!marker) { return; }
       if (!marker.attributes.se_type) { return; } // not created by this extension
-      var ch = marker.lastElementChild;
+      const ch = marker.lastElementChild;
       if (!ch) { return; }
-      var curfill = ch.getAttribute('fill');
-      var curstroke = ch.getAttribute('stroke');
+      const curfill = ch.getAttribute('fill');
+      const curstroke = ch.getAttribute('stroke');
       if (curfill && curfill !== 'none') { ch.setAttribute('fill', color); }
       if (curstroke && curstroke !== 'none') { ch.setAttribute('stroke', color); }
     });
@@ -345,16 +343,16 @@ svgEditor.addExtension('Markers', function (S) {
   // primary purpose is create new markers for cloned objects
   function updateReferences (el) {
     $.each(mtypes, function (i, pos) {
-      var id = markerPrefix + pos + '_' + el.id;
-      var markerName = 'marker-' + pos;
-      var marker = getLinked(el, markerName);
+      const id = markerPrefix + pos + '_' + el.id;
+      const markerName = 'marker-' + pos;
+      const marker = getLinked(el, markerName);
       if (!marker || !marker.attributes.se_type) { return; } // not created by this extension
-      var url = el.getAttribute(markerName);
+      const url = el.getAttribute(markerName);
       if (url) {
-        var len = el.id.length;
-        var linkid = url.substr(-len - 1, len);
+        const len = el.id.length;
+        const linkid = url.substr(-len - 1, len);
         if (el.id !== linkid) {
-          var val = $('#' + pos + '_marker').attr('value');
+          const val = $('#' + pos + '_marker').attr('value');
           addMarker(id, val);
           svgCanvas.changeSelectedAttribute(markerName, 'url(#' + id + ')');
           if (el.tagName === 'line' && pos === 'mid') { el = convertline(el); }
@@ -368,13 +366,13 @@ svgEditor.addExtension('Markers', function (S) {
   function triggerTextEntry (pos, val) {
     $('#' + pos + '_marker').val(val);
     $('#' + pos + '_marker').change();
-    // var txtbox = $('#'+pos+'_marker');
+    // const txtbox = $('#'+pos+'_marker');
     // if (val.substr(0,1)=='\\') {txtbox.hide();}
     // else {txtbox.show();}
   }
 
   function showTextPrompt (pos) {
-    var def = $('#' + pos + '_marker').val();
+    let def = $('#' + pos + '_marker').val();
     if (def.substr(0, 1) === '\\') { def = ''; }
     $.prompt('Enter text for ' + pos + ' marker', def, function (txt) {
       if (txt) { triggerTextEntry(pos, txt); }
@@ -383,8 +381,8 @@ svgEditor.addExtension('Markers', function (S) {
 
   /*
   function setMarkerSet(obj) {
-    var parts = this.id.split('_');
-    var set = parts[2];
+    const parts = this.id.split('_');
+    const set = parts[2];
     switch (set) {
     case 'off':
       triggerTextEntry('start','\\nomarker');
@@ -406,9 +404,9 @@ svgEditor.addExtension('Markers', function (S) {
   */
   // callback function for a toolbar button click
   function setArrowFromButton (obj) {
-    var parts = this.id.split('_');
-    var pos = parts[1];
-    var val = parts[2];
+    const parts = this.id.split('_');
+    const pos = parts[1];
+    let val = parts[2];
     if (parts[3]) { val += '_' + parts[3]; }
 
     if (val !== 'textmarker') {
@@ -418,9 +416,9 @@ svgEditor.addExtension('Markers', function (S) {
     }
   }
 
-  function getTitle (lang, id) {
-    var i, list = langList[lang];
-    for (i in list) {
+  function getTitle (lang = 'en', id) {
+    const list = langList[lang];
+    for (const i in list) {
       if (list.hasOwnProperty(i) && list[i].id === id) {
         return list[i].title;
       }
@@ -429,10 +427,9 @@ svgEditor.addExtension('Markers', function (S) {
   }
 
   // build the toolbar button array from the marker definitions
-  // TODO: need to incorporate language specific titles
-  function buildButtonList () {
-    var buttons = [];
-    // var i = 0;
+  function buildButtonList (lang) {
+    const buttons = [];
+    // const i = 0;
     /*
     buttons.push({
       id: idPrefix + 'markers_off',
@@ -457,14 +454,14 @@ svgEditor.addExtension('Markers', function (S) {
     });
 */
     $.each(mtypes, function (k, pos) {
-      var listname = pos + '_marker_list';
-      var def = true;
+      const listname = pos + '_marker_list';
+      let def = true;
       $.each(markerTypes, function (id, v) {
-        var title = getTitle('en', String(id));
+        const title = getTitle(lang, String(id));
         buttons.push({
           id: idPrefix + pos + '_' + id,
           svgicon: id,
-          title: title,
+          title,
           type: 'context',
           events: {'click': setArrowFromButton},
           panel: 'marker_panel',
@@ -477,76 +474,28 @@ svgEditor.addExtension('Markers', function (S) {
     return buttons;
   }
 
-  return {
+  let currentLang;
+  const ret = {
     name: 'Markers',
     svgicons: svgEditor.curConfig.extPath + 'markers-icons.xml',
-    buttons: buildButtonList(),
-    context_tools: [
-      {
-        type: 'input',
-        panel: 'marker_panel',
-        title: 'Start marker',
-        id: 'start_marker',
-        label: 's',
-        size: 3,
-        events: { change: setMarker }
-      }, {
-        type: 'button-select',
-        panel: 'marker_panel',
-        title: getTitle('en', 'start_marker_list'),
-        id: 'start_marker_list',
-        colnum: 3,
-        events: { change: setArrowFromButton }
-      }, {
-        type: 'input',
-        panel: 'marker_panel',
-        title: 'Middle marker',
-        id: 'mid_marker',
-        label: 'm',
-        defval: '',
-        size: 3,
-        events: { change: setMarker }
-      }, {
-        type: 'button-select',
-        panel: 'marker_panel',
-        title: getTitle('en', 'mid_marker_list'),
-        id: 'mid_marker_list',
-        colnum: 3,
-        events: { change: setArrowFromButton }
-      }, {
-        type: 'input',
-        panel: 'marker_panel',
-        title: 'End marker',
-        id: 'end_marker',
-        label: 'e',
-        size: 3,
-        events: { change: setMarker }
-      }, {
-        type: 'button-select',
-        panel: 'marker_panel',
-        title: getTitle('en', 'end_marker_list'),
-        id: 'end_marker_list',
-        colnum: 3,
-        events: { change: setArrowFromButton }
-      }
-    ],
-    callback: function () {
+    callback () {
       $('#marker_panel').addClass('toolset').hide();
     },
-    addLangData: function (lang) {
+    addLangData (lang) {
+      currentLang = lang;
       return { data: langList[lang] };
     },
-    selectedChanged: function (opts) {
+    selectedChanged (opts) {
       // Use this to update the current selected elements
       // console.log('selectChanged',opts);
       selElems = opts.elems;
 
-      var i = selElems.length;
-      var markerElems = ['line', 'path', 'polyline', 'polygon'];
+      const markerElems = ['line', 'path', 'polyline', 'polygon'];
 
+      let i = selElems.length;
       while (i--) {
-        var elem = selElems[i];
-        if (elem && $.inArray(elem.tagName, markerElems) !== -1) {
+        const elem = selElems[i];
+        if (elem && markerElems.includes(elem.tagName)) {
           if (opts.selectedElement && !opts.multiselected) {
             showPanel(true);
           } else {
@@ -558,9 +507,9 @@ svgEditor.addExtension('Markers', function (S) {
       }
     },
 
-    elementChanged: function (opts) {
+    elementChanged (opts) {
       // console.log('elementChanged',opts);
-      var elem = opts.elems[0];
+      const elem = opts.elems[0];
       if (elem && (
         elem.getAttribute('marker-start') ||
         elem.getAttribute('marker-mid') ||
@@ -572,4 +521,66 @@ svgEditor.addExtension('Markers', function (S) {
       // changing_flag = false; // Not apparently in use
     }
   };
+  // Todo: Check if the lang will be available in time
+  Object.defineProperties(ret, {
+    buttons: {
+      get () {
+        return buildButtonList(currentLang);
+      }
+    },
+    context_tools: {
+      get () {
+        return [
+          {
+            type: 'input',
+            panel: 'marker_panel',
+            title: 'Start marker',
+            id: 'start_marker',
+            label: 's',
+            size: 3,
+            events: { change: setMarker }
+          }, {
+            type: 'button-select',
+            panel: 'marker_panel',
+            title: getTitle(currentLang, 'start_marker_list'),
+            id: 'start_marker_list',
+            colnum: 3,
+            events: { change: setArrowFromButton }
+          }, {
+            type: 'input',
+            panel: 'marker_panel',
+            title: 'Middle marker',
+            id: 'mid_marker',
+            label: 'm',
+            defval: '',
+            size: 3,
+            events: { change: setMarker }
+          }, {
+            type: 'button-select',
+            panel: 'marker_panel',
+            title: getTitle(currentLang, 'mid_marker_list'),
+            id: 'mid_marker_list',
+            colnum: 3,
+            events: { change: setArrowFromButton }
+          }, {
+            type: 'input',
+            panel: 'marker_panel',
+            title: 'End marker',
+            id: 'end_marker',
+            label: 'e',
+            size: 3,
+            events: { change: setMarker }
+          }, {
+            type: 'button-select',
+            panel: 'marker_panel',
+            title: getTitle(currentLang, 'end_marker_list'),
+            id: 'end_marker_list',
+            colnum: 3,
+            events: { change: setArrowFromButton }
+          }
+        ];
+      }
+    }
+  });
+  return ret;
 });

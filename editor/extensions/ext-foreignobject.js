@@ -1,5 +1,4 @@
-/* eslint-disable no-var */
-/* globals svgEditor, svgedit, svgCanvas, $ */
+/* globals jQuery, svgEditor, svgedit, svgCanvas */
 /*
  * ext-foreignobject.js
  *
@@ -10,25 +9,23 @@
  *
  */
 
-svgEditor.addExtension('foreignObject', function (S) {
-  var NS = svgedit.NS,
-    Utils = svgedit.utilities,
-    // svgcontent = S.svgcontent,
-    // addElem = S.addSvgElementFromJson,
-    selElems,
-    editingforeign = false,
-    svgdoc = S.svgroot.parentNode.ownerDocument,
-    started,
-    newFO;
+import {NS} from './svgedit.js';
 
-  var properlySourceSizeTextArea = function () {
+svgEditor.addExtension('foreignObject', function (S) {
+  const $ = jQuery;
+  const Utils = svgedit.utilities,
+    // {svgcontent} = S,
+    // addElem = S.addSvgElementFromJson,
+    svgdoc = S.svgroot.parentNode.ownerDocument;
+
+  const properlySourceSizeTextArea = function () {
     // TODO: remove magic numbers here and get values from CSS
-    var height = $('#svg_source_container').height() - 80;
+    const height = $('#svg_source_container').height() - 80;
     $('#svg_source_textarea').css('height', height);
   };
 
   function showPanel (on) {
-    var fcRules = $('#fc_rules');
+    let fcRules = $('#fc_rules');
     if (!fcRules.length) {
       fcRules = $('<style id="fc_rules"></style>').appendTo('head');
     }
@@ -41,6 +38,11 @@ svgEditor.addExtension('foreignObject', function (S) {
     $('#foreign_save, #foreign_cancel').toggle(on);
   }
 
+  let selElems,
+    started,
+    newFO,
+    editingforeign = false;
+
   // Function: setForeignString(xmlString, elt)
   // This function sets the content of element elt to the input XML.
   //
@@ -51,10 +53,10 @@ svgEditor.addExtension('foreignObject', function (S) {
   // Returns:
   // This function returns false if the set was unsuccessful, true otherwise.
   function setForeignString (xmlString) {
-    var elt = selElems[0];
+    const elt = selElems[0];
     try {
       // convert string into XML document
-      var newDoc = Utils.text2xml('<svg xmlns="' + NS.SVG + '" xmlns:xlink="' + NS.XLINK + '">' + xmlString + '</svg>');
+      const newDoc = Utils.text2xml('<svg xmlns="' + NS.SVG + '" xmlns:xlink="' + NS.XLINK + '">' + xmlString + '</svg>');
       // run it through our sanitizer to remove anything we do not support
       S.sanitizeSvg(newDoc.documentElement);
       elt.parentNode.replaceChild(svgdoc.importNode(newDoc.documentElement.firstChild, true), elt);
@@ -69,13 +71,13 @@ svgEditor.addExtension('foreignObject', function (S) {
   }
 
   function showForeignEditor () {
-    var elt = selElems[0];
+    const elt = selElems[0];
     if (!elt || editingforeign) { return; }
     editingforeign = true;
     toggleSourceButtons(true);
     elt.removeAttribute('fill');
 
-    var str = S.svgToString(elt, 0);
+    const str = S.svgToString(elt, 0);
     $('#svg_source_textarea').val(str);
     $('#svg_source_editor').fadeIn();
     properlySourceSizeTextArea();
@@ -95,7 +97,7 @@ svgEditor.addExtension('foreignObject', function (S) {
       type: 'mode',
       title: 'Foreign Object Tool',
       events: {
-        'click': function () {
+        click () {
           svgCanvas.setMode('foreign');
         }
       }
@@ -105,7 +107,7 @@ svgEditor.addExtension('foreignObject', function (S) {
       panel: 'foreignObject_panel',
       title: 'Edit ForeignObject Content',
       events: {
-        'click': function () {
+        click () {
           showForeignEditor();
         }
       }
@@ -119,7 +121,7 @@ svgEditor.addExtension('foreignObject', function (S) {
       label: 'w',
       size: 3,
       events: {
-        change: function () {
+        change () {
           setAttr('width', this.value);
         }
       }
@@ -130,7 +132,7 @@ svgEditor.addExtension('foreignObject', function (S) {
       id: 'foreign_height',
       label: 'h',
       events: {
-        change: function () {
+        change () {
           setAttr('height', this.value);
         }
       }
@@ -143,17 +145,17 @@ svgEditor.addExtension('foreignObject', function (S) {
       size: 2,
       defval: 16,
       events: {
-        change: function () {
+        change () {
           setAttr('font-size', this.value);
         }
       }
     }
 
     ],
-    callback: function () {
+    callback () {
       $('#foreignObject_panel').hide();
 
-      var endChanges = function () {
+      const endChanges = function () {
         $('#svg_source_editor').hide();
         editingforeign = false;
         $('#svg_source_textarea').blur();
@@ -163,7 +165,7 @@ svgEditor.addExtension('foreignObject', function (S) {
       // TODO: Needs to be done after orig icon loads
       setTimeout(function () {
         // Create source save/cancel buttons
-        /* var save = */ $('#tool_source_save').clone()
+        /* const save = */ $('#tool_source_save').clone()
           .hide().attr('id', 'foreign_save').unbind()
           .appendTo('#tool_source_back').click(function () {
             if (!editingforeign) { return; }
@@ -179,15 +181,15 @@ svgEditor.addExtension('foreignObject', function (S) {
             // setSelectMode();
           });
 
-        /* var cancel = */ $('#tool_source_cancel').clone()
+        /* const cancel = */ $('#tool_source_cancel').clone()
           .hide().attr('id', 'foreign_cancel').unbind()
           .appendTo('#tool_source_back').click(function () {
             endChanges();
           });
       }, 3000);
     },
-    mouseDown: function (opts) {
-      // var e = opts.event;
+    mouseDown (opts) {
+      // const e = opts.event;
 
       if (svgCanvas.getMode() === 'foreign') {
         started = true;
@@ -203,15 +205,15 @@ svgEditor.addExtension('foreignObject', function (S) {
             'style': 'pointer-events:inherit'
           }
         });
-        var m = svgdoc.createElementNS(NS.MATH, 'math');
+        const m = svgdoc.createElementNS(NS.MATH, 'math');
         m.setAttributeNS(NS.XMLNS, 'xmlns', NS.MATH);
         m.setAttribute('display', 'inline');
-        var mi = svgdoc.createElementNS(NS.MATH, 'mi');
+        const mi = svgdoc.createElementNS(NS.MATH, 'mi');
         mi.setAttribute('mathvariant', 'normal');
         mi.textContent = '\u03A6';
-        var mo = svgdoc.createElementNS(NS.MATH, 'mo');
+        const mo = svgdoc.createElementNS(NS.MATH, 'mo');
         mo.textContent = '\u222A';
-        var mi2 = svgdoc.createElementNS(NS.MATH, 'mi');
+        const mi2 = svgdoc.createElementNS(NS.MATH, 'mi');
         mi2.textContent = '\u2133';
         m.appendChild(mi);
         m.appendChild(mo);
@@ -222,27 +224,26 @@ svgEditor.addExtension('foreignObject', function (S) {
         };
       }
     },
-    mouseUp: function (opts) {
-      // var e = opts.event;
+    mouseUp (opts) {
+      // const e = opts.event;
       if (svgCanvas.getMode() === 'foreign' && started) {
-        var attrs = $(newFO).attr(['width', 'height']);
-        var keep = (attrs.width !== '0' || attrs.height !== '0');
+        const attrs = $(newFO).attr(['width', 'height']);
+        const keep = (attrs.width !== '0' || attrs.height !== '0');
         svgCanvas.addToSelection([newFO], true);
 
         return {
-          keep: keep,
+          keep,
           element: newFO
         };
       }
     },
-    selectedChanged: function (opts) {
+    selectedChanged (opts) {
       // Use this to update the current selected elements
       selElems = opts.elems;
 
-      var i = selElems.length;
-
+      let i = selElems.length;
       while (i--) {
-        var elem = selElems[i];
+        const elem = selElems[i];
         if (elem && elem.tagName === 'foreignObject') {
           if (opts.selectedElement && !opts.multiselected) {
             $('#foreign_font_size').val(elem.getAttribute('font-size'));
@@ -257,8 +258,8 @@ svgEditor.addExtension('foreignObject', function (S) {
         }
       }
     },
-    elementChanged: function (opts) {
-      // var elem = opts.elems[0];
+    elementChanged (opts) {
+      // const elem = opts.elems[0];
     }
   };
 });

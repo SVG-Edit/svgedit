@@ -1,62 +1,60 @@
-/* eslint-disable no-var */
 /* eslint-env qunit */
-/* globals svgedit, $, equals */
-$(function () {
-  // log function
-  QUnit.log = function (details) {
-    if (window.console && window.console.log) {
-      window.console.log(details.result + ' :: ' + details.message);
-    }
-  };
+/* globals svgedit, equals */
 
-  function tearDown () {
-    svgedit.contextmenu.resetCustomMenus();
+// log function
+QUnit.log = function (details) {
+  if (window.console && window.console.log) {
+    window.console.log(details.result + ' :: ' + details.message);
   }
+};
 
-  module('svgedit.contextmenu');
+function tearDown () {
+  svgedit.contextmenu.resetCustomMenus();
+}
 
-  test('Test svgedit.contextmenu package', function () {
-    expect(4);
+module('svgedit.contextmenu');
 
-    ok(svgedit.contextmenu, 'contextmenu registered correctly');
-    ok(svgedit.contextmenu.add, 'contextmenu.add registered correctly');
-    ok(svgedit.contextmenu.hasCustomHandler, 'contextmenu hasCustomHandler registered correctly');
-    ok(svgedit.contextmenu.getCustomHandler, 'contextmenu getCustomHandler registered correctly');
-  });
+test('Test svgedit.contextmenu package', function () {
+  expect(4);
 
-  test('Test svgedit.contextmenu does not add invalid menu item', function () {
-    expect(3);
+  ok(svgedit.contextmenu, 'contextmenu registered correctly');
+  ok(svgedit.addContextMenuItem, 'addContextMenuItem registered correctly');
+  ok(svgedit.contextmenu.hasCustomMenuItemHandler, 'contextmenu hasCustomHandler registered correctly');
+  ok(svgedit.contextmenu.getCustomMenuItemHandler, 'contextmenu getCustomHandler registered correctly');
+});
 
-    svgedit.contextmenu.add({id: 'justanid'});
-    ok(!svgedit.contextmenu.hasCustomHandler('justanid'), 'menu item with just an id is invalid');
+test('Test svgedit.contextmenu does not add invalid menu item', function () {
+  expect(3);
 
-    svgedit.contextmenu.add({id: 'idandlabel', label: 'anicelabel'});
-    ok(!svgedit.contextmenu.hasCustomHandler('idandlabel'), 'menu item with just an id and label is invalid');
+  svgedit.addContextMenuItem({id: 'justanid'});
+  ok(!svgedit.contextmenu.hasCustomMenuItemHandler('justanid'), 'menu item with just an id is invalid');
 
-    svgedit.contextmenu.add({id: 'idandlabel', label: 'anicelabel', action: 'notafunction'});
-    ok(!svgedit.contextmenu.hasCustomHandler('idandlabel'), 'menu item with action that is not a function is invalid');
-  });
+  svgedit.addContextMenuItem({id: 'idandlabel', label: 'anicelabel'});
+  ok(!svgedit.contextmenu.hasCustomMenuItemHandler('idandlabel'), 'menu item with just an id and label is invalid');
 
-  test('Test svgedit.contextmenu adds valid menu item', function () {
-    expect(2);
+  svgedit.addContextMenuItem({id: 'idandlabel', label: 'anicelabel', action: 'notafunction'});
+  ok(!svgedit.contextmenu.hasCustomMenuItemHandler('idandlabel'), 'menu item with action that is not a function is invalid');
+});
 
-    var validItem = {id: 'valid', label: 'anicelabel', action: function () { alert('testing'); }};
-    svgedit.contextmenu.add(validItem);
+test('Test svgedit.contextmenu adds valid menu item', function () {
+  expect(2);
 
-    ok(svgedit.contextmenu.hasCustomHandler('valid'), 'Valid menu item is added.');
-    equals(svgedit.contextmenu.getCustomHandler('valid'), validItem.action, 'Valid menu action is added.');
-    tearDown();
-  });
+  const validItem = {id: 'valid', label: 'anicelabel', action () { alert('testing'); }};
+  svgedit.addContextMenuItem(validItem);
 
-  test('Test svgedit.contextmenu rejects valid duplicate menu item id', function () {
-    expect(1);
+  ok(svgedit.contextmenu.hasCustomMenuItemHandler('valid'), 'Valid menu item is added.');
+  equals(svgedit.contextmenu.getCustomMenuItemHandler('valid'), validItem.action, 'Valid menu action is added.');
+  tearDown();
+});
 
-    var validItem1 = {id: 'valid', label: 'anicelabel', action: function () { alert('testing'); }};
-    var validItem2 = {id: 'valid', label: 'anicelabel', action: function () { alert('testingtwice'); }};
-    svgedit.contextmenu.add(validItem1);
-    svgedit.contextmenu.add(validItem2);
+test('Test svgedit.contextmenu rejects valid duplicate menu item id', function () {
+  expect(1);
 
-    equals(svgedit.contextmenu.getCustomHandler('valid'), validItem1.action, 'duplicate menu item is rejected.');
-    tearDown();
-  });
+  const validItem1 = {id: 'valid', label: 'anicelabel', action () { alert('testing'); }};
+  const validItem2 = {id: 'valid', label: 'anicelabel', action () { alert('testingtwice'); }};
+  svgedit.addContextMenuItem(validItem1);
+  svgedit.addContextMenuItem(validItem2);
+
+  equals(svgedit.contextmenu.getCustomMenuItemHandler('valid'), validItem1.action, 'duplicate menu item is rejected.');
+  tearDown();
 });

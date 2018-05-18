@@ -206,16 +206,16 @@
             <h2>Plugin Architecture</h2>
            </header>
            <pre>
-svgEditor.addExtension("Hello World", function () {
+svgEditor.addExtension('Hello World', function () {
 
         return {
                 svgicons: 'extensions/helloworld-icon.xml',
                 buttons: [{...}],
-                mouseDown: function() {
+                mouseDown () {
                         ...
                 },
 
-                mouseUp: function(opts) {
+                mouseUp (opts) {
                         ...
                 }
         };
@@ -284,13 +284,5 @@ svgEditor.addExtension("Hello World", function () {
     </div> <!-- presentation -->
 
     <script src="script.js"></script>
-
-    <!--[if lt IE 9]>
-    <script
-      src="https://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">
-    </script>
-        <script>CFInstall.check({mode: 'overlay'});</script>
-    <![endif]-->
-
   </body>
 </html>

@@ -1,5 +1,4 @@
-/* eslint-disable no-var */
-/* globals svgEditor, svgedit, svgCanvas, canvg, $ */
+/* globals jQuery, svgEditor, svgedit, svgCanvas, canvg */
 /*
  * ext-server_opensave.js
  *
@@ -10,37 +9,36 @@
  */
 
 svgEditor.addExtension('server_opensave', {
-  callback: function () {
-    'use strict';
+  callback () {
+    const $ = jQuery;
     function getFileNameFromTitle () {
-      var title = svgCanvas.getDocumentTitle();
+      const title = svgCanvas.getDocumentTitle();
       // We convert (to underscore) only those disallowed Win7 file name characters
-      return $.trim(title).replace(/[/\\:*?"<>|]/g, '_');
+      return title.trim().replace(/[/\\:*?"<>|]/g, '_');
     }
     function xhtmlEscape (str) {
       return str.replace(/&(?!amp;)/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); // < is actually disallowed above anyways
     }
     function clientDownloadSupport (filename, suffix, uri) {
-      var a,
-        support = $('<a>')[0].download === '';
+      const support = $('<a>')[0].download === '';
+      let a;
       if (support) {
         a = $('<a>hidden</a>').attr({download: (filename || 'image') + suffix, href: uri}).css('display', 'none').appendTo('body');
         a[0].click();
         return true;
       }
     }
-    var openSvgAction, importSvgAction, importImgAction,
-      openSvgForm, importSvgForm, importImgForm,
+    const
       saveSvgAction = svgEditor.curConfig.extPath + 'filesave.php',
       saveImgAction = svgEditor.curConfig.extPath + 'filesave.php',
       // Create upload target (hidden iframe)
-      cancelled = false,
       Utils = svgedit.utilities;
+    let cancelled = false;
 
     $('<iframe name="output_frame" src="#"/>').hide().appendTo('body');
     svgEditor.setCustomHandlers({
-      save: function (win, data) {
-        var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data, // Firefox doesn't seem to know it is UTF-8 (no matter whether we use or skip the clientDownload code) despite the Content-Disposition header containing UTF-8, but adding the encoding works
+      save (win, data) {
+        const svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data, // Firefox doesn't seem to know it is UTF-8 (no matter whether we use or skip the clientDownload code) despite the Content-Disposition header containing UTF-8, but adding the encoding works
           filename = getFileNameFromTitle();
 
         if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml;charset=UTF-8;base64,' + Utils.encode64(svg))) {
@@ -56,8 +54,8 @@ svgEditor.addExtension('server_opensave', {
           .appendTo('body')
           .submit().remove();
       },
-      exportPDF: function (win, data) {
-        var filename = getFileNameFromTitle(),
+      exportPDF (win, data) {
+        const filename = getFileNameFromTitle(),
           datauri = data.dataurlstring;
         if (clientDownloadSupport(filename, '.pdf', datauri)) {
           return;
@@ -73,27 +71,23 @@ svgEditor.addExtension('server_opensave', {
           .submit().remove();
       },
       // Todo: Integrate this extension with a new built-in exportWindowType, "download"
-      exportImage: function (win, data) {
-        var c,
-          issues = data.issues,
-          mimeType = data.mimeType,
-          quality = data.quality;
+      exportImage (win, data) {
+        const {issues, mimeType, quality} = data;
 
         if (!$('#export_canvas').length) {
           $('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
         }
-        c = $('#export_canvas')[0];
+        const c = $('#export_canvas')[0];
 
         c.width = svgCanvas.contentW;
         c.height = svgCanvas.contentH;
         Utils.buildCanvgCallback(function () {
-          canvg(c, data.svg, {renderCallback: function () {
-            var pre, filename, suffix,
-              datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType),
-              // uiStrings = svgEditor.uiStrings,
-              note = '';
+          canvg(c, data.svg, {renderCallback () {
+            const datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType);
+            // {uiStrings} = svgEditor;
 
             // Check if there are issues
+            let pre, note = '';
             if (issues.length) {
               pre = '\n \u2022 ';
               note += ('\n\n' + pre + issues.join(pre));
@@ -103,8 +97,8 @@ svgEditor.addExtension('server_opensave', {
               alert(note);
             }
 
-            filename = getFileNameFromTitle();
-            suffix = '.' + data.type.toLowerCase();
+            const filename = getFileNameFromTitle();
+            const suffix = '.' + data.type.toLowerCase();
 
             if (clientDownloadSupport(filename, suffix, datauri)) {
               return;
@@ -128,13 +122,13 @@ svgEditor.addExtension('server_opensave', {
     if (window.FileReader) { return; }
 
     // Change these to appropriate script file
-    openSvgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=load_svg';
-    importSvgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=import_svg';
-    importImgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=import_img';
+    const openSvgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=load_svg';
+    const importSvgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=import_svg';
+    const importImgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=import_img';
 
     // Set up function for PHP uploader to use
     svgEditor.processFile = function (str64, type) {
-      var xmlstr;
+      let xmlstr;
       if (cancelled) {
         cancelled = false;
         return;
@@ -163,7 +157,7 @@ svgEditor.addExtension('server_opensave', {
     };
 
     // Create upload form
-    openSvgForm = $('<form>');
+    const openSvgForm = $('<form>');
     openSvgForm.attr({
       enctype: 'multipart/form-data',
       method: 'post',
@@ -172,16 +166,16 @@ svgEditor.addExtension('server_opensave', {
     });
 
     // Create import form
-    importSvgForm = openSvgForm.clone().attr('action', importSvgAction);
+    const importSvgForm = openSvgForm.clone().attr('action', importSvgAction);
 
     // Create image form
-    importImgForm = openSvgForm.clone().attr('action', importImgAction);
+    const importImgForm = openSvgForm.clone().attr('action', importImgAction);
 
     // It appears necessary to rebuild this input every time a file is
     // selected so the same file can be picked and the change event can fire.
     function rebuildInput (form) {
       form.empty();
-      var inp = $('<input type="file" name="svg_file">').appendTo(form);
+      const inp = $('<input type="file" name="svg_file">').appendTo(form);
 
       function submit () {
         // This submits the form, which returns the file data using svgEditor.processFile()

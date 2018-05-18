@@ -1,5 +1,4 @@
-/* eslint-disable no-var */
-/* globals svgEditor, $, DOMParser */
+/* globals jQuery, svgEditor */
 /*
  * ext-shapes.js
  *
@@ -11,16 +10,13 @@
  */
 
 svgEditor.addExtension('shapes', function () {
-  'use strict';
-  var currentD, curShapeId;
-  var canv = svgEditor.canvas;
-  var curShape;
-  var startX, startY;
-  var svgroot = canv.getRootElem();
-  var lastBBox = {};
+  const $ = jQuery;
+  const canv = svgEditor.canvas;
+  const svgroot = canv.getRootElem();
+  let lastBBox = {};
 
   // This populates the category list
-  var categories = {
+  const categories = {
     basic: 'Basic',
     object: 'Objects',
     symbol: 'Symbols',
@@ -37,7 +33,7 @@ svgEditor.addExtension('shapes', function () {
     raphael_2: 'raphaeljs.com set 2'
   };
 
-  var library = {
+  const library = {
     basic: {
       data: {
         'heart': 'm150,73c61,-175 300,0 0,225c-300,-225 -61,-400 0,-225z',
@@ -74,40 +70,41 @@ svgEditor.addExtension('shapes', function () {
     }
   };
 
-  var curLib = library.basic;
-  var modeId = 'shapelib';
-  var startClientPos = {};
+  const modeId = 'shapelib';
+  const startClientPos = {};
+
+  let currentD, curShapeId, curShape, startX, startY;
+  let curLib = library.basic;
 
   function loadIcons () {
     $('#shape_buttons').empty().append(curLib.buttons);
   }
 
   function makeButtons (cat, shapes) {
-    var size = curLib.size || 300;
-    var fill = curLib.fill || false;
-    var off = size * 0.05;
-    var vb = [-off, -off, size + off * 2, size + off * 2].join(' ');
-    var stroke = fill ? 0 : (size / 30);
-    var shapeIcon = new DOMParser().parseFromString(
+    const size = curLib.size || 300;
+    const fill = curLib.fill || false;
+    const off = size * 0.05;
+    const vb = [-off, -off, size + off * 2, size + off * 2].join(' ');
+    const stroke = fill ? 0 : (size / 30);
+    const shapeIcon = new DOMParser().parseFromString(
       '<svg xmlns="http://www.w3.org/2000/svg"><svg viewBox="' + vb + '"><path fill="' + (fill ? '#333' : 'none') + '" stroke="#000" stroke-width="' + stroke + '" /></svg></svg>',
       'text/xml');
 
-    var width = 24;
-    var height = 24;
+    const width = 24;
+    const height = 24;
     shapeIcon.documentElement.setAttribute('width', width);
     shapeIcon.documentElement.setAttribute('height', height);
-    var svgElem = $(document.importNode(shapeIcon.documentElement, true));
+    const svgElem = $(document.importNode(shapeIcon.documentElement, true));
 
-    var data = shapes.data;
+    const {data} = shapes;
 
     curLib.buttons = [];
-    var id;
-    for (id in data) {
-      var pathD = data[id];
-      var icon = svgElem.clone();
+    for (const id in data) {
+      const pathD = data[id];
+      const icon = svgElem.clone();
       icon.find('path').attr('d', pathD);
 
-      var iconBtn = icon.wrap('<div class="tool_button">').parent().attr({
+      const iconBtn = icon.wrap('<div class="tool_button">').parent().attr({
         id: modeId + '_' + id,
         title: id
       });
@@ -117,7 +114,7 @@ svgEditor.addExtension('shapes', function () {
   }
 
   function loadLibrary (catId) {
-    var lib = library[catId];
+    const lib = library[catId];
 
     if (!lib) {
       $('#shape_buttons').html('Loading...');
@@ -145,12 +142,12 @@ svgEditor.addExtension('shapes', function () {
       position: 6,
       title: 'Shape library',
       events: {
-        click: function () {
+        click () {
           canv.setMode(modeId);
         }
       }
     }],
-    callback: function () {
+    callback () {
       $('<style>').text(
         '#shape_buttons {' +
         'overflow: auto;' +
@@ -179,20 +176,20 @@ svgEditor.addExtension('shapes', function () {
         'font-weight: bold;' +
       '}').appendTo('head');
 
-      var btnDiv = $('<div id="shape_buttons">');
+      const btnDiv = $('<div id="shape_buttons">');
       $('#tools_shapelib > *').wrapAll(btnDiv);
 
-      var shower = $('#tools_shapelib_show');
+      const shower = $('#tools_shapelib_show');
 
       loadLibrary('basic');
 
       // Do mouseup on parent element rather than each button
       $('#shape_buttons').mouseup(function (evt) {
-        var btn = $(evt.target).closest('div.tool_button');
+        const btn = $(evt.target).closest('div.tool_button');
 
         if (!btn.length) { return; }
 
-        var copy = btn.children().clone();
+        const copy = btn.children().clone();
         shower.children(':not(.flyout_arrow_horiz)').remove();
         shower
           .append(copy)
@@ -206,15 +203,15 @@ svgEditor.addExtension('shapes', function () {
         $('.tools_flyout').fadeOut();
       });
 
-      var shapeCats = $('<div id="shape_cats">');
-      var catStr = '';
+      const shapeCats = $('<div id="shape_cats">');
 
+      let catStr = '';
       $.each(categories, function (id, label) {
         catStr += '<div data-cat=' + id + '>' + label + '</div>';
       });
 
       shapeCats.html(catStr).children().bind('mouseup', function () {
-        var catlink = $(this);
+        const catlink = $(this);
         catlink.siblings().removeClass('current');
         catlink.addClass('current');
 
@@ -232,21 +229,21 @@ svgEditor.addExtension('shapes', function () {
       });
       $('#tool_shapelib').remove();
 
-      var h = $('#tools_shapelib').height();
+      const h = $('#tools_shapelib').height();
       $('#tools_shapelib').css({
         'margin-top': -(h / 2 - 15),
         'margin-left': 3
       });
     },
-    mouseDown: function (opts) {
-      var mode = canv.getMode();
+    mouseDown (opts) {
+      const mode = canv.getMode();
       if (mode !== modeId) { return; }
 
       startX = opts.start_x;
-      var x = startX;
+      const x = startX;
       startY = opts.start_y;
-      var y = startY;
-      var curStyle = canv.getStyle();
+      const y = startY;
+      const curStyle = canv.getStyle();
 
       startClientPos.x = opts.event.clientX;
       startClientPos.y = opts.event.clientY;
@@ -272,7 +269,7 @@ svgEditor.addExtension('shapes', function () {
 
       canv.recalculateDimensions(curShape);
 
-      /* var tlist = */ canv.getTransformList(curShape);
+      /* const tlist = */ canv.getTransformList(curShape);
 
       lastBBox = curShape.getBBox();
 
@@ -280,50 +277,56 @@ svgEditor.addExtension('shapes', function () {
         started: true
       };
     },
-    mouseMove: function (opts) {
-      var mode = canv.getMode();
+    mouseMove (opts) {
+      const mode = canv.getMode();
       if (mode !== modeId) { return; }
 
-      var zoom = canv.getZoom();
-      var evt = opts.event;
+      const zoom = canv.getZoom();
+      const evt = opts.event;
 
-      var x = opts.mouse_x / zoom;
-      var y = opts.mouse_y / zoom;
+      const x = opts.mouse_x / zoom;
+      const y = opts.mouse_y / zoom;
 
-      var tlist = canv.getTransformList(curShape),
+      const tlist = canv.getTransformList(curShape),
         box = curShape.getBBox(),
-        left = box.x, top = box.y, width = box.width,
-        height = box.height;
-      var dx = (x - startX), dy = (y - startY);
+        left = box.x, top = box.y;
+        // {width, height} = box,
+      // const dx = (x - startX), dy = (y - startY);
 
-      var newbox = {
+      const newbox = {
         'x': Math.min(startX, x),
         'y': Math.min(startY, y),
         'width': Math.abs(x - startX),
         'height': Math.abs(y - startY)
       };
 
-      var tx = 0, ty = 0,
-        sy = height ? (height + dy) / height : 1,
+      /*
+      // This is currently serving no purpose, so commenting out
+      let sy = height ? (height + dy) / height : 1,
         sx = width ? (width + dx) / width : 1;
+      */
 
-      sx = (newbox.width / lastBBox.width) || 1;
-      sy = (newbox.height / lastBBox.height) || 1;
+      let sx = (newbox.width / lastBBox.width) || 1;
+      let sy = (newbox.height / lastBBox.height) || 1;
 
       // Not perfect, but mostly works...
+      let tx = 0;
       if (x < startX) {
         tx = lastBBox.width;
       }
-      if (y < startY) { ty = lastBBox.height; }
+      let ty = 0;
+      if (y < startY) {
+        ty = lastBBox.height;
+      }
 
       // update the transform list with translate,scale,translate
-      var translateOrigin = svgroot.createSVGTransform(),
+      const translateOrigin = svgroot.createSVGTransform(),
         scale = svgroot.createSVGTransform(),
         translateBack = svgroot.createSVGTransform();
 
       translateOrigin.setTranslate(-(left + tx), -(top + ty));
       if (!evt.shiftKey) {
-        var max = Math.min(Math.abs(sx), Math.abs(sy));
+        const max = Math.min(Math.abs(sx), Math.abs(sy));
 
         sx = max * (sx < 0 ? -1 : 1);
         sy = max * (sy < 0 ? -1 : 1);
@@ -339,11 +342,11 @@ svgEditor.addExtension('shapes', function () {
 
       lastBBox = curShape.getBBox();
     },
-    mouseUp: function (opts) {
-      var mode = canv.getMode();
+    mouseUp (opts) {
+      const mode = canv.getMode();
       if (mode !== modeId) { return; }
 
-      var keepObject = (opts.event.clientX !== startClientPos.x && opts.event.clientY !== startClientPos.y);
+      const keepObject = (opts.event.clientX !== startClientPos.x && opts.event.clientY !== startClientPos.y);
 
       return {
         keep: keepObject,

@@ -1,4 +1,3 @@
-/* eslint-disable no-var */
 /* globals svgEditor */
 /*
 Depends on Firefox add-on and executables from https://github.com/brettz9/webappfind
@@ -7,21 +6,20 @@ Todos:
 1. See WebAppFind Readme for SVG-related todos
 */
 (function () {
-'use strict';
-
-var pathID,
-  saveMessage = 'webapp-save',
+const saveMessage = 'webapp-save',
   readMessage = 'webapp-read',
   excludedMessages = [readMessage, saveMessage];
+let pathID;
 
+// Todo: Update to new API once released
 window.addEventListener('message', function (e) {
   if (e.origin !== window.location.origin || // PRIVACY AND SECURITY! (for viewing and saving, respectively)
-    (!Array.isArray(e.data) || excludedMessages.indexOf(e.data[0]) > -1) // Validate format and avoid our post below
+    (!Array.isArray(e.data) || excludedMessages.includes(e.data[0])) // Validate format and avoid our post below
   ) {
     return;
   }
-  var svgString,
-    messageType = e.data[0];
+  const messageType = e.data[0];
+  let svgString;
   switch (messageType) {
   case 'webapp-view':
     // Populate the contents
@@ -54,7 +52,7 @@ svgEditor.addExtension('WebAppFind', function () {
       title: 'Save Image back to Disk',
       position: 4, // Before 0-based index position 4 (after the regular "Save Image (S)")
       events: {
-        click: function () {
+        click () {
           if (!pathID) { // Not ready yet as haven't received first payload
             return;
           }

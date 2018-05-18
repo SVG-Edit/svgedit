@@ -1,6 +1,4 @@
-/* eslint-disable no-var, no-redeclare */
-/* globals $, jQuery */
-/*
+/**
  * jGraduate 0.4
  *
  * jQuery Plugin for a gradient picker
@@ -12,7 +10,7 @@
  *
  * Apache 2 License
 
-jGraduate( options, okCallback, cancelCallback )
+jGraduate(options, okCallback, cancelCallback)
 
 where options is an object literal:
   {
@@ -50,19 +48,22 @@ $.jGraduate.Paint({hex: "#rrggbb", linearGradient: o}) -> throws an exception?
 
  *
 */
-(function () {
-var ns = { svg: 'http://www.w3.org/2000/svg', xlink: 'http://www.w3.org/1999/xlink' };
+const ns = {
+  svg: 'http://www.w3.org/2000/svg',
+  xlink: 'http://www.w3.org/1999/xlink'
+};
+
 if (!window.console) {
-  window.console = new function () {
-    this.log = function (str) {};
-    this.dir = function (str) {};
-  }();
+  window.console = {
+    log (str) {},
+    dir (str) {}
+  };
 }
 
-$.jGraduate = {
-  Paint:
-    function (opt) {
-      var options = opt || {};
+export default function ($) {
+  $.jGraduate = {
+    Paint: function (opt) {
+      const options = opt || {};
       this.alpha = isNaN(options.alpha) ? 100 : options.alpha;
       // copy paint object
       if (options.copy) {
@@ -109,48 +110,48 @@ $.jGraduate = {
         this.radialGradient = null;
       }
     }
-};
+  };
 
-jQuery.fn.jGraduateDefaults = {
-  paint: new $.jGraduate.Paint(),
-  window: {
-    pickerTitle: 'Drag markers to pick a paint'
-  },
-  images: {
-    clientPath: 'images/'
-  },
-  newstop: 'inverse' // same, inverse, black, white
-};
+  $.fn.jGraduateDefaults = {
+    paint: new $.jGraduate.Paint(),
+    window: {
+      pickerTitle: 'Drag markers to pick a paint'
+    },
+    images: {
+      clientPath: 'images/'
+    },
+    newstop: 'inverse' // same, inverse, black, white
+  };
 
-var isGecko = navigator.userAgent.indexOf('Gecko/') >= 0;
+  const isGecko = navigator.userAgent.includes('Gecko/');
 
-function setAttrs (elem, attrs) {
-  if (isGecko) {
-    for (var aname in attrs) elem.setAttribute(aname, attrs[aname]);
-  } else {
-    for (var aname in attrs) {
-      var val = attrs[aname], prop = elem[aname];
-      if (prop && prop.constructor === 'SVGLength') {
-        prop.baseVal.value = val;
-      } else {
-        elem.setAttribute(aname, val);
+  function setAttrs (elem, attrs) {
+    if (isGecko) {
+      for (const aname in attrs) elem.setAttribute(aname, attrs[aname]);
+    } else {
+      for (const aname in attrs) {
+        const val = attrs[aname], prop = elem[aname];
+        if (prop && prop.constructor === 'SVGLength') {
+          prop.baseVal.value = val;
+        } else {
+          elem.setAttribute(aname, val);
+        }
       }
     }
   }
-}
 
-function mkElem (name, attrs, newparent) {
-  var elem = document.createElementNS(ns.svg, name);
-  setAttrs(elem, attrs);
-  if (newparent) newparent.appendChild(elem);
-  return elem;
-}
+  function mkElem (name, attrs, newparent) {
+    const elem = document.createElementNS(ns.svg, name);
+    setAttrs(elem, attrs);
+    if (newparent) newparent.appendChild(elem);
+    return elem;
+  }
 
-jQuery.fn.jGraduate =
-  function (options) {
-    var $arguments = arguments;
+  $.fn.jGraduate = function (options) {
+    const $arguments = arguments;
     return this.each(function () {
-      var $this = $(this), $settings = $.extend(true, {}, jQuery.fn.jGraduateDefaults, options),
+      const $this = $(this),
+        $settings = $.extend(true, {}, $.fn.jGraduateDefaults, options),
         id = $this.attr('id'),
         idref = '#' + $this.attr('id') + ' ';
 
@@ -159,7 +160,7 @@ jQuery.fn.jGraduate =
         return;
       }
 
-      var okClicked = function () {
+      const okClicked = function () {
         switch ($this.paint.type) {
         case 'radialGradient':
           $this.paint.linearGradient = null;
@@ -171,42 +172,43 @@ jQuery.fn.jGraduate =
           $this.paint.radialGradient = $this.paint.linearGradient = null;
           break;
         }
-        $.isFunction($this.okCallback) && $this.okCallback($this.paint);
+        typeof $this.okCallback === 'function' && $this.okCallback($this.paint);
         $this.hide();
       };
-      var cancelClicked = function () {
-        $.isFunction($this.cancelCallback) && $this.cancelCallback();
+      const cancelClicked = function () {
+        typeof $this.cancelCallback === 'function' && $this.cancelCallback();
         $this.hide();
       };
 
       $.extend(true, $this, { // public properties, methods, and callbacks
         // make a copy of the incoming paint
         paint: new $.jGraduate.Paint({copy: $settings.paint}),
-        okCallback: ($.isFunction($arguments[1]) && $arguments[1]) || null,
-        cancelCallback: ($.isFunction($arguments[2]) && $arguments[2]) || null
+        okCallback: (typeof $arguments[1] === 'function' && $arguments[1]) || null,
+        cancelCallback: (typeof $arguments[2] === 'function' && $arguments[2]) || null
       });
 
-      var // pos = $this.position(),
+      let // pos = $this.position(),
         color = null;
-      var $win = $(window);
+      const $win = $(window);
 
       if ($this.paint.type === 'none') {
         $this.paint = $.jGraduate.Paint({solidColor: 'ffffff'});
       }
 
       $this.addClass('jGraduate_Picker');
-      $this.html('<ul class="jGraduate_tabs">' +
-              '<li class="jGraduate_tab_color jGraduate_tab_current" data-type="col">Solid Color</li>' +
-              '<li class="jGraduate_tab_lingrad" data-type="lg">Linear Gradient</li>' +
-              '<li class="jGraduate_tab_radgrad" data-type="rg">Radial Gradient</li>' +
-            '</ul>' +
-            '<div class="jGraduate_colPick"></div>' +
-            '<div class="jGraduate_gradPick"></div>' +
-            '<div class="jGraduate_LightBox"></div>' +
-            '<div id="' + id + '_jGraduate_stopPicker" class="jGraduate_stopPicker"></div>'
+      $this.html(
+        '<ul class="jGraduate_tabs">' +
+          '<li class="jGraduate_tab_color jGraduate_tab_current" data-type="col">Solid Color</li>' +
+          '<li class="jGraduate_tab_lingrad" data-type="lg">Linear Gradient</li>' +
+          '<li class="jGraduate_tab_radgrad" data-type="rg">Radial Gradient</li>' +
+        '</ul>' +
+        '<div class="jGraduate_colPick"></div>' +
+        '<div class="jGraduate_gradPick"></div>' +
+        '<div class="jGraduate_LightBox"></div>' +
+        '<div id="' + id + '_jGraduate_stopPicker" class="jGraduate_stopPicker"></div>'
       );
-      var colPicker = $(idref + '> .jGraduate_colPick');
-      var gradPicker = $(idref + '> .jGraduate_gradPick');
+      const colPicker = $(idref + '> .jGraduate_colPick');
+      const gradPicker = $(idref + '> .jGraduate_gradPick');
 
       gradPicker.html(
         '<div id="' + id + '_jGraduate_Swatch" class="jGraduate_Swatch">' +
@@ -302,35 +304,40 @@ jQuery.fn.jGraduate =
 
       // --------------
       // Set up all the SVG elements (the gradient, stops and rectangle)
-      var MAX = 256, MARGINX = 0, MARGINY = 0,
+      const MAX = 256,
+        MARGINX = 0,
+        MARGINY = 0,
         // STOP_RADIUS = 15 / 2,
-        SIZEX = MAX - 2 * MARGINX, SIZEY = MAX - 2 * MARGINY;
+        SIZEX = MAX - 2 * MARGINX,
+        SIZEY = MAX - 2 * MARGINY;
 
-      var curType, curGradient, previewRect;
+      const attrInput = {};
 
-      var attrInput = {};
-
-      var SLIDERW = 145;
+      const SLIDERW = 145;
       $('.jGraduate_SliderBar').width(SLIDERW);
 
-      var container = $('#' + id + '_jGraduate_GradContainer')[0];
+      const container = $('#' + id + '_jGraduate_GradContainer')[0];
 
-      var svg = mkElem('svg', {
+      const svg = mkElem('svg', {
         id: id + '_jgraduate_svg',
         width: MAX,
         height: MAX,
         xmlns: ns.svg
       }, container);
 
+      // This wasn't working as designed
+      // let curType;
+      // curType = curType || $this.paint.type;
+
       // if we are sent a gradient, import it
+      let curType = $this.paint.type;
 
-      curType = curType || $this.paint.type;
+      let grad = $this.paint[curType];
+      let curGradient = grad;
 
-      var grad = curGradient = $this.paint[curType];
+      const gradalpha = $this.paint.alpha;
 
-      var gradalpha = $this.paint.alpha;
-
-      var isSolid = curType === 'solidColor';
+      const isSolid = curType === 'solidColor';
 
       // Make any missing gradients
       switch (curType) {
@@ -344,7 +351,7 @@ jQuery.fn.jGraduate =
         mkElem('radialGradient', {
           id: id + '_rg_jgraduate_grad'
         }, svg);
-        if (curType === 'linearGradient') break;
+        if (curType === 'linearGradient') { break; }
         // fall through
       case 'radialGradient':
         if (!isSolid) {
@@ -358,10 +365,10 @@ jQuery.fn.jGraduate =
 
       if (isSolid) {
         grad = curGradient = $('#' + id + '_lg_jgraduate_grad')[0];
-        var color = $this.paint[curType];
+        color = $this.paint[curType];
         mkStop(0, '#' + color, 1);
 
-        var type = typeof $settings.newstop;
+        const type = typeof $settings.newstop;
 
         if (type === 'string') {
           switch ($settings.newstop) {
@@ -371,11 +378,10 @@ jQuery.fn.jGraduate =
 
           case 'inverse':
             // Invert current color for second stop
-            var inverted = '';
-
-            for (var i = 0; i < 6; i += 2) {
-              // var ch = color.substr(i, 2);
-              var inv = (255 - parseInt(color.substr(i, 2), 16)).toString(16);
+            let inverted = '';
+            for (let i = 0; i < 6; i += 2) {
+              // const ch = color.substr(i, 2);
+              let inv = (255 - parseInt(color.substr(i, 2), 16)).toString(16);
               if (inv.length < 2) inv = 0 + inv;
               inverted += inv;
             }
@@ -391,22 +397,22 @@ jQuery.fn.jGraduate =
             break;
           }
         } else if (type === 'object') {
-          var opac = ('opac' in $settings.newstop) ? $settings.newstop.opac : 1;
+          const opac = ('opac' in $settings.newstop) ? $settings.newstop.opac : 1;
           mkStop(1, ($settings.newstop.color || '#' + color), opac);
         }
       }
 
-      var x1 = parseFloat(grad.getAttribute('x1') || 0.0),
+      const x1 = parseFloat(grad.getAttribute('x1') || 0.0),
         y1 = parseFloat(grad.getAttribute('y1') || 0.0),
         x2 = parseFloat(grad.getAttribute('x2') || 1.0),
         y2 = parseFloat(grad.getAttribute('y2') || 0.0);
 
-      var cx = parseFloat(grad.getAttribute('cx') || 0.5),
+      const cx = parseFloat(grad.getAttribute('cx') || 0.5),
         cy = parseFloat(grad.getAttribute('cy') || 0.5),
         fx = parseFloat(grad.getAttribute('fx') || cx),
         fy = parseFloat(grad.getAttribute('fy') || cy);
 
-      var previewRect = mkElem('rect', {
+      const previewRect = mkElem('rect', {
         id: id + '_jgraduate_rect',
         x: MARGINX,
         y: MARGINY,
@@ -417,7 +423,7 @@ jQuery.fn.jGraduate =
       }, svg);
 
       // stop visuals created here
-      var beginCoord = $('<div/>').attr({
+      const beginCoord = $('<div/>').attr({
         'class': 'grad_coord jGraduate_lg_field',
         title: 'Begin Stop'
       }).text(1).css({
@@ -425,12 +431,12 @@ jQuery.fn.jGraduate =
         left: x1 * MAX
       }).data('coord', 'start').appendTo(container);
 
-      var endCoord = beginCoord.clone().text(2).css({
+      const endCoord = beginCoord.clone().text(2).css({
         top: y2 * MAX,
         left: x2 * MAX
       }).attr('title', 'End stop').data('coord', 'end').appendTo(container);
 
-      var centerCoord = $('<div/>').attr({
+      const centerCoord = $('<div/>').attr({
         'class': 'grad_coord jGraduate_rg_field',
         title: 'Center stop'
       }).text('C').css({
@@ -438,7 +444,7 @@ jQuery.fn.jGraduate =
         left: cx * MAX
       }).data('coord', 'center').appendTo(container);
 
-      var focusCoord = centerCoord.clone().text('F').css({
+      const focusCoord = centerCoord.clone().text('F').css({
         top: fy * MAX,
         left: fx * MAX,
         display: 'none'
@@ -446,7 +452,7 @@ jQuery.fn.jGraduate =
 
       focusCoord[0].id = id + '_jGraduate_focusCoord';
 
-      // var coords = $(idref + ' .grad_coord');
+      // const coords = $(idref + ' .grad_coord');
 
       // $(container).hover(function () {
       //   coords.animate({
@@ -459,10 +465,9 @@ jQuery.fn.jGraduate =
       // });
 
       $.each(['x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'fx', 'fy'], function (i, attr) {
-        var attrval = curGradient.getAttribute(attr);
+        const isRadial = isNaN(attr[1]);
 
-        var isRadial = isNaN(attr[1]);
-
+        let attrval = curGradient.getAttribute(attr);
         if (!attrval) {
           // Set defaults
           if (isRadial) {
@@ -490,20 +495,18 @@ jQuery.fn.jGraduate =
               }
             }
 
-            if (isRadial) {
-              var $elem = attr[0] === 'c' ? centerCoord : focusCoord;
-            } else {
-              var $elem = attr[1] === '1' ? beginCoord : endCoord;
-            }
+            const $elem = isRadial
+              ? attr[0] === 'c' ? centerCoord : focusCoord
+              : attr[1] === '1' ? beginCoord : endCoord;
 
-            var cssName = attr.indexOf('x') >= 0 ? 'left' : 'top';
+            const cssName = attr.includes('x') ? 'left' : 'top';
 
             $elem.css(cssName, this.value * MAX);
           }).change();
       });
 
       function mkStop (n, color, opac, sel, stopElem) {
-        var stop = stopElem || mkElem('stop', {'stop-color': color, 'stop-opacity': opac, offset: n}, curGradient);
+        const stop = stopElem || mkElem('stop', {'stop-color': color, 'stop-opacity': opac, offset: n}, curGradient);
         if (stopElem) {
           color = stopElem.getAttribute('stop-color');
           opac = stopElem.getAttribute('stop-opacity');
@@ -513,15 +516,15 @@ jQuery.fn.jGraduate =
         }
         if (opac === null) opac = 1;
 
-        var pickerD = 'M-6.2,0.9c3.6-4,6.7-4.3,6.7-12.4c-0.2,7.9,3.1,8.8,6.5,12.4c3.5,3.8,2.9,9.6,0,12.3c-3.1,2.8-10.4,2.7-13.2,0C-9.6,9.9-9.4,4.4-6.2,0.9z';
+        const pickerD = 'M-6.2,0.9c3.6-4,6.7-4.3,6.7-12.4c-0.2,7.9,3.1,8.8,6.5,12.4c3.5,3.8,2.9,9.6,0,12.3c-3.1,2.8-10.4,2.7-13.2,0C-9.6,9.9-9.4,4.4-6.2,0.9z';
 
-        var pathbg = mkElem('path', {
+        const pathbg = mkElem('path', {
           d: pickerD,
           fill: 'url(#jGraduate_trans)',
           transform: 'translate(' + (10 + n * MAX) + ', 26)'
         }, stopGroup);
 
-        var path = mkElem('path', {
+        const path = mkElem('path', {
           d: pickerD,
           fill: color,
           'fill-opacity': opac,
@@ -539,10 +542,10 @@ jQuery.fn.jGraduate =
           return false;
         }).data('stop', stop).data('bg', pathbg).dblclick(function () {
           $('div.jGraduate_LightBox').show();
-          var colorhandle = this;
-          var stopOpacity = +stop.getAttribute('stop-opacity') || 1;
-          var stopColor = stop.getAttribute('stop-color') || 1;
-          var thisAlpha = (parseFloat(stopOpacity) * 255).toString(16);
+          const colorhandle = this;
+          let stopOpacity = +stop.getAttribute('stop-opacity') || 1;
+          let stopColor = stop.getAttribute('stop-color') || 1;
+          let thisAlpha = (parseFloat(stopOpacity) * 255).toString(16);
           while (thisAlpha.length < 2) { thisAlpha = '0' + thisAlpha; }
           color = stopColor.substr(1) + thisAlpha;
           $('#' + id + '_jGraduate_stopPicker').css({'left': 100, 'bottom': 15}).jPicker({
@@ -565,11 +568,11 @@ jQuery.fn.jGraduate =
         });
 
         $(curGradient).find('stop').each(function () {
-          var curS = $(this);
+          const curS = $(this);
           if (+this.getAttribute('offset') > n) {
             if (!color) {
-              var newcolor = this.getAttribute('stop-color');
-              var newopac = this.getAttribute('stop-opacity');
+              const newcolor = this.getAttribute('stop-color');
+              const newopac = this.getAttribute('stop-opacity');
               stop.setAttribute('stop-color', newcolor);
               path.setAttribute('fill', newcolor);
               stop.setAttribute('stop-opacity', newopac === null ? 1 : newopac);
@@ -585,25 +588,23 @@ jQuery.fn.jGraduate =
 
       function remStop () {
         delStop.setAttribute('display', 'none');
-        var path = $(curStop);
-        var stop = path.data('stop');
-        var bg = path.data('bg');
+        const path = $(curStop);
+        const stop = path.data('stop');
+        const bg = path.data('bg');
         $([curStop, stop, bg]).remove();
       }
 
-      var stops, stopGroup;
+      const stopMakerDiv = $('#' + id + '_jGraduate_StopSlider');
 
-      var stopMakerDiv = $('#' + id + '_jGraduate_StopSlider');
+      let stops, curStop, drag;
 
-      var curStop, stopGroup, stopMakerSVG, drag;
-
-      var delStop = mkElem('path', {
+      const delStop = mkElem('path', {
         d: 'm9.75,-6l-19.5,19.5m0,-19.5l19.5,19.5',
         fill: 'none',
         stroke: '#D00',
         'stroke-width': 5,
         display: 'none'
-      }, stopMakerSVG);
+      }, undefined); // stopMakerSVG);
 
       function selectStop (item) {
         if (curStop) curStop.setAttribute('stroke', '#000');
@@ -615,7 +616,7 @@ jQuery.fn.jGraduate =
         //   root.append(delStop);
       }
 
-      var stopOffset;
+      let stopOffset;
 
       function remDrags () {
         $win.unbind('mousemove', dragColor);
@@ -625,29 +626,33 @@ jQuery.fn.jGraduate =
         drag = null;
       }
 
-      var scaleX = 1, scaleY = 1, angle = 0;
-      var cX = cx;
-      var cY = cy;
+      let scaleX = 1, scaleY = 1, angle = 0;
 
+      let cX = cx;
+      let cY = cy;
       function xform () {
-        var rot = angle ? 'rotate(' + angle + ',' + cX + ',' + cY + ') ' : '';
+        const rot = angle ? 'rotate(' + angle + ',' + cX + ',' + cY + ') ' : '';
         if (scaleX === 1 && scaleY === 1) {
           curGradient.removeAttribute('gradientTransform');
           // $('#ang').addClass('dis');
         } else {
-          var x = -cX * (scaleX - 1);
-          var y = -cY * (scaleY - 1);
+          const x = -cX * (scaleX - 1);
+          const y = -cY * (scaleY - 1);
           curGradient.setAttribute('gradientTransform', rot + 'translate(' + x + ',' + y + ') scale(' + scaleX + ',' + scaleY + ')');
           // $('#ang').removeClass('dis');
         }
       }
 
       function dragColor (evt) {
-        var x = evt.pageX - stopOffset.left;
-        var y = evt.pageY - stopOffset.top;
-        x = x < 10 ? 10 : x > MAX + 10 ? MAX + 10 : x;
+        let x = evt.pageX - stopOffset.left;
+        const y = evt.pageY - stopOffset.top;
+        x = x < 10
+          ? 10
+          : x > MAX + 10
+            ? MAX + 10
+            : x;
 
-        var xfStr = 'translate(' + x + ', 26)';
+        const xfStr = 'translate(' + x + ', 26)';
         if (y < -60 || y > 130) {
           delStop.setAttribute('display', 'block');
           delStop.setAttribute('transform', xfStr);
@@ -657,15 +662,15 @@ jQuery.fn.jGraduate =
 
         drag.setAttribute('transform', xfStr);
         $.data(drag, 'bg').setAttribute('transform', xfStr);
-        var stop = $.data(drag, 'stop');
-        var sX = (x - 10) / MAX;
+        const stop = $.data(drag, 'stop');
+        const sX = (x - 10) / MAX;
 
         stop.setAttribute('offset', sX);
-        var last = 0;
 
+        let last = 0;
         $(curGradient).find('stop').each(function (i) {
-          var cur = this.getAttribute('offset');
-          var t = $(this);
+          const cur = this.getAttribute('offset');
+          const t = $(this);
           if (cur < last) {
             t.prev().before(t);
             stops = $(curGradient).find('stop');
@@ -674,32 +679,32 @@ jQuery.fn.jGraduate =
         });
       }
 
-      stopMakerSVG = mkElem('svg', {
+      const stopMakerSVG = mkElem('svg', {
         width: '100%',
         height: 45
       }, stopMakerDiv[0]);
 
-      var transPattern = mkElem('pattern', {
+      const transPattern = mkElem('pattern', {
         width: 16,
         height: 16,
         patternUnits: 'userSpaceOnUse',
         id: 'jGraduate_trans'
       }, stopMakerSVG);
 
-      var transImg = mkElem('image', {
+      const transImg = mkElem('image', {
         width: 16,
         height: 16
       }, transPattern);
 
-      var bgImage = $settings.images.clientPath + 'map-opacity.png';
+      const bgImage = $settings.images.clientPath + 'map-opacity.png';
 
       transImg.setAttributeNS(ns.xlink, 'xlink:href', bgImage);
 
       $(stopMakerSVG).click(function (evt) {
         stopOffset = stopMakerDiv.offset();
-        var target = evt.target;
+        const {target} = evt;
         if (target.tagName === 'path') return;
-        var x = evt.pageX - stopOffset.left - 8;
+        let x = evt.pageX - stopOffset.left - 8;
         x = x < 10 ? 10 : x > MAX + 10 ? MAX + 10 : x;
         mkStop(x / MAX, 0, 0, true);
         evt.stopPropagation();
@@ -709,7 +714,7 @@ jQuery.fn.jGraduate =
         stopMakerSVG.appendChild(delStop);
       });
 
-      stopGroup = mkElem('g', {}, stopMakerSVG);
+      const stopGroup = mkElem('g', {}, stopMakerSVG);
 
       mkElem('line', {
         x1: 10,
@@ -720,16 +725,16 @@ jQuery.fn.jGraduate =
         stroke: '#000'
       }, stopMakerSVG);
 
-      var spreadMethodOpt = gradPicker.find('.jGraduate_spreadMethod').change(function () {
+      const spreadMethodOpt = gradPicker.find('.jGraduate_spreadMethod').change(function () {
         curGradient.setAttribute('spreadMethod', $(this).val());
       });
 
       // handle dragging the stop around the swatch
-      var draggingCoord = null;
+      let draggingCoord = null;
 
-      var onCoordDrag = function (evt) {
-        var x = evt.pageX - offset.left;
-        var y = evt.pageY - offset.top;
+      const onCoordDrag = function (evt) {
+        let x = evt.pageX - offset.left;
+        let y = evt.pageY - offset.top;
 
         // clamp stop to the swatch
         x = x < 0 ? 0 : x > MAX ? MAX : x;
@@ -738,11 +743,11 @@ jQuery.fn.jGraduate =
         draggingCoord.css('left', x).css('top', y);
 
         // calculate stop offset
-        var fracx = x / SIZEX;
-        var fracy = y / SIZEY;
+        const fracx = x / SIZEX;
+        const fracy = y / SIZEY;
 
-        var type = draggingCoord.data('coord');
-        var grad = curGradient;
+        const type = draggingCoord.data('coord');
+        const grad = curGradient;
 
         switch (type) {
         case 'start':
@@ -777,7 +782,7 @@ jQuery.fn.jGraduate =
         evt.preventDefault();
       };
 
-      var onCoordUp = function () {
+      const onCoordUp = function () {
         draggingCoord = null;
         $win.unbind('mousemove', onCoordDrag).unbind('mouseup', onCoordUp);
       };
@@ -787,7 +792,7 @@ jQuery.fn.jGraduate =
 
       stops = curGradient.getElementsByTagNameNS(ns.svg, 'stop');
 
-      var numstops = stops.length;
+      let numstops = stops.length;
       // if there are not at least two stops, then
       if (numstops < 2) {
         while (numstops < 2) {
@@ -797,23 +802,23 @@ jQuery.fn.jGraduate =
         stops = curGradient.getElementsByTagNameNS(ns.svg, 'stop');
       }
 
-      for (var i = 0; i < numstops; i++) {
+      for (let i = 0; i < numstops; i++) {
         mkStop(0, 0, 0, 0, stops[i]);
       }
 
       spreadMethodOpt.val(curGradient.getAttribute('spreadMethod') || 'pad');
 
-      var offset;
+      let offset;
 
       // No match, so show focus point
-      var showFocus = false;
+      let showFocus = false;
 
       previewRect.setAttribute('fill-opacity', gradalpha / 100);
 
       $('#' + id + ' div.grad_coord').mousedown(function (evt) {
         evt.preventDefault();
         draggingCoord = $(this);
-        // var sPos = draggingCoord.offset();
+        // const sPos = draggingCoord.offset();
         offset = draggingCoord.parent().offset();
         $win.mousemove(onCoordDrag).mouseup(onCoordUp);
       });
@@ -841,22 +846,22 @@ jQuery.fn.jGraduate =
 
       $('#' + id + '_jGraduate_match_ctr')[0].checked = !showFocus;
 
-      var lastfx, lastfy;
+      let lastfx, lastfy;
 
       $('#' + id + '_jGraduate_match_ctr').change(function () {
         showFocus = !this.checked;
         focusCoord.toggle(showFocus);
         attrInput.fx.val('');
         attrInput.fy.val('');
-        var grad = curGradient;
+        const grad = curGradient;
         if (!showFocus) {
           lastfx = grad.getAttribute('fx');
           lastfy = grad.getAttribute('fy');
           grad.removeAttribute('fx');
           grad.removeAttribute('fy');
         } else {
-          var fx = lastfx || 0.5;
-          var fy = lastfy || 0.5;
+          const fx = lastfx || 0.5;
+          const fy = lastfy || 0.5;
           grad.setAttribute('fx', fx);
           grad.setAttribute('fy', fy);
           attrInput.fx.val(fx);
@@ -864,8 +869,8 @@ jQuery.fn.jGraduate =
         }
       });
 
-      var stops = curGradient.getElementsByTagNameNS(ns.svg, 'stop');
-      var numstops = stops.length;
+      stops = curGradient.getElementsByTagNameNS(ns.svg, 'stop');
+      numstops = stops.length;
       // if there are not at least two stops, then
       if (numstops < 2) {
         while (numstops < 2) {
@@ -875,15 +880,15 @@ jQuery.fn.jGraduate =
         stops = curGradient.getElementsByTagNameNS(ns.svg, 'stop');
       }
 
-      var slider;
+      let slider;
 
-      var setSlider = function (e) {
-        var offset = slider.offset;
-        var div = slider.parent;
-        var x = (e.pageX - offset.left - parseInt(div.css('border-left-width')));
+      const setSlider = function (e) {
+        const {offset} = slider;
+        const div = slider.parent;
+        let x = (e.pageX - offset.left - parseInt(div.css('border-left-width')));
         if (x > SLIDERW) x = SLIDERW;
         if (x <= 0) x = 0;
-        var posx = x - 5;
+        const posx = x - 5;
         x /= SLIDERW;
 
         switch (slider.type) {
@@ -926,15 +931,15 @@ jQuery.fn.jGraduate =
         slider.input.val(x);
       };
 
-      var ellipVal = 0, angleVal = 0;
+      let ellipVal = 0, angleVal = 0;
 
       if (curType === 'radialGradient') {
-        var tlist = curGradient.gradientTransform.baseVal;
+        const tlist = curGradient.gradientTransform.baseVal;
         if (tlist.numberOfItems === 2) {
-          var t = tlist.getItem(0);
-          var s = tlist.getItem(1);
+          const t = tlist.getItem(0);
+          const s = tlist.getItem(1);
           if (t.type === 2 && s.type === 3) {
-            var m = s.matrix;
+            const m = s.matrix;
             if (m.a !== 1) {
               ellipVal = Math.round(-(1 - m.a) * 100);
             } else if (m.d !== 1) {
@@ -943,16 +948,16 @@ jQuery.fn.jGraduate =
           }
         } else if (tlist.numberOfItems === 3) {
           // Assume [R][T][S]
-          var r = tlist.getItem(0);
-          var t = tlist.getItem(1);
-          var s = tlist.getItem(2);
+          const r = tlist.getItem(0);
+          const t = tlist.getItem(1);
+          const s = tlist.getItem(2);
 
           if (r.type === 4 &&
             t.type === 2 &&
             s.type === 3
           ) {
             angleVal = Math.round(r.angle);
-            var m = s.matrix;
+            const m = s.matrix;
             if (m.a !== 1) {
               ellipVal = Math.round(-(1 - m.a) * 100);
             } else if (m.d !== 1) {
@@ -962,7 +967,7 @@ jQuery.fn.jGraduate =
         }
       }
 
-      var sliders = {
+      const sliders = {
         radius: {
           handle: '#' + id + '_jGraduate_RadiusArrows',
           input: '#' + id + '_jGraduate_RadiusInput',
@@ -986,14 +991,14 @@ jQuery.fn.jGraduate =
       };
 
       $.each(sliders, function (type, data) {
-        var handle = $(data.handle);
+        const handle = $(data.handle);
         handle.mousedown(function (evt) {
-          var parent = handle.parent();
+          const parent = handle.parent();
           slider = {
-            type: type,
+            type,
             elem: handle,
             input: $(data.input),
-            parent: parent,
+            parent,
             offset: parent.offset()
           };
           $win.mousemove(dragSlider).mouseup(stopSlider);
@@ -1001,9 +1006,9 @@ jQuery.fn.jGraduate =
         });
 
         $(data.input).val(data.val).change(function () {
-          var val = +this.value;
-          var xpos = 0;
-          var isRad = curType === 'radialGradient';
+          const isRad = curType === 'radialGradient';
+          let val = +this.value;
+          let xpos = 0;
           switch (type) {
           case 'radius':
             if (isRad) curGradient.setAttribute('r', val / 100);
@@ -1049,18 +1054,18 @@ jQuery.fn.jGraduate =
         }).change();
       });
 
-      var dragSlider = function (evt) {
+      const dragSlider = function (evt) {
         setSlider(evt);
         evt.preventDefault();
       };
 
-      var stopSlider = function (evt) {
+      const stopSlider = function (evt) {
         $win.unbind('mousemove', dragSlider).unbind('mouseup', stopSlider);
         slider = null;
       };
 
       // --------------
-      var thisAlpha = ($this.paint.alpha * 255 / 100).toString(16);
+      let thisAlpha = ($this.paint.alpha * 255 / 100).toString(16);
       while (thisAlpha.length < 2) { thisAlpha = '0' + thisAlpha; }
       thisAlpha = thisAlpha.split('.')[0];
       color = $this.paint.solidColor === 'none' ? '' : $this.paint.solidColor + thisAlpha;
@@ -1091,13 +1096,13 @@ jQuery.fn.jGraduate =
         function () { cancelClicked(); }
       );
 
-      var tabs = $(idref + ' .jGraduate_tabs li');
+      const tabs = $(idref + ' .jGraduate_tabs li');
       tabs.click(function () {
         tabs.removeClass('jGraduate_tab_current');
         $(this).addClass('jGraduate_tab_current');
         $(idref + ' > div').hide();
-        var type = $(this).attr('data-type');
-        /* var container = */ $(idref + ' .jGraduate_gradPick').show();
+        const type = $(this).attr('data-type');
+        /* const container = */ $(idref + ' .jGraduate_gradPick').show();
         if (type === 'rg' || type === 'lg') {
           // Show/hide appropriate fields
           $('.jGraduate_' + type + '_field').show();
@@ -1111,13 +1116,13 @@ jQuery.fn.jGraduate =
 
           $('#' + id + '_jGraduate_OpacInput').val($this.paint.alpha).change();
 
-          var newGrad = $('#' + id + '_' + type + '_jgraduate_grad')[0];
+          const newGrad = $('#' + id + '_' + type + '_jgraduate_grad')[0];
 
           if (curGradient !== newGrad) {
-            var curStops = $(curGradient).find('stop');
+            const curStops = $(curGradient).find('stop');
             $(newGrad).empty().append(curStops);
             curGradient = newGrad;
-            var sm = spreadMethodOpt.val();
+            const sm = spreadMethodOpt.val();
             curGradient.setAttribute('spreadMethod', sm);
           }
           showFocus = type === 'rg' && curGradient.getAttribute('fx') != null && !(cx === fx && cy === fy);
@@ -1132,7 +1137,7 @@ jQuery.fn.jGraduate =
       });
       $(idref + ' > div').hide();
       tabs.removeClass('jGraduate_tab_current');
-      var tab;
+      let tab;
       switch ($this.paint.type) {
       case 'linearGradient':
         tab = $(idref + ' .jGraduate_tab_lingrad');
@@ -1152,4 +1157,5 @@ jQuery.fn.jGraduate =
       }, 10);
     });
   };
-})();
+  return $;
+}

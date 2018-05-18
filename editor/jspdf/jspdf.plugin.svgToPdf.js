@@ -1,5 +1,3 @@
-/* globals RGBColor, DOMParser, jsPDF */
-/* eslint-disable no-var */
 /*
  * svgToPdf.js
  *
@@ -21,10 +19,10 @@
  *
  */
 
-(function (jsPDFAPI, undef) {
-'use strict';
+import RGBColor from '../canvg/rgbcolor.js';
 
-var pdfSvgAttr = {
+const jsPDFAPI = jsPDF.API;
+const pdfSvgAttr = {
   // allowed attributes. all others are removed from the preview.
   g: ['stroke', 'fill', 'stroke-width'],
   line: ['x1', 'y1', 'x2', 'y2', 'stroke', 'stroke-width'],
@@ -34,19 +32,19 @@ var pdfSvgAttr = {
   text: ['x', 'y', 'font-size', 'font-family', 'text-anchor', 'font-weight', 'font-style', 'fill']
 };
 
-var attributeIsNotEmpty = function (node, attr) {
-  var attVal = attr ? node.getAttribute(attr) : node;
+const attributeIsNotEmpty = function (node, attr) {
+  const attVal = attr ? node.getAttribute(attr) : node;
   return attVal !== '' && attVal !== null;
 };
 
-var nodeIs = function (node, possible) {
-  return possible.indexOf(node.tagName.toLowerCase()) > -1;
+const nodeIs = function (node, possible) {
+  return possible.includes(node.tagName.toLowerCase());
 };
 
-var removeAttributes = function (node, attributes) {
-  var toRemove = [];
+const removeAttributes = function (node, attributes) {
+  const toRemove = [];
   [].forEach.call(node.attributes, function (a) {
-    if (attributeIsNotEmpty(a) && attributes.indexOf(a.name.toLowerCase()) === -1) {
+    if (attributeIsNotEmpty(a) && !attributes.includes(a.name.toLowerCase())) {
       toRemove.push(a.name);
     }
   });
@@ -56,19 +54,19 @@ var removeAttributes = function (node, attributes) {
   });
 };
 
-var svgElementToPdf = function (element, pdf, options) {
+const svgElementToPdf = function (element, pdf, options) {
   // pdf is a jsPDF object
   // console.log("options =", options);
-  var remove = (options.removeInvalid === undef ? false : options.removeInvalid);
-  var k = (options.scale === undef ? 1.0 : options.scale);
-  var colorMode = null;
+  const remove = (options.removeInvalid === undefined ? false : options.removeInvalid);
+  const k = (options.scale === undefined ? 1.0 : options.scale);
+  let colorMode = null;
   [].forEach.call(element.children, function (node) {
     // console.log("passing: ", node);
-    var hasFillColor = false;
-    // var hasStrokeColor = false;
-    var fillRGB;
+    // let hasStrokeColor = false;
+    let hasFillColor = false;
+    let fillRGB;
     if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle', 'text'])) {
-      var fillColor = node.getAttribute('fill');
+      const fillColor = node.getAttribute('fill');
       if (attributeIsNotEmpty(fillColor)) {
         fillRGB = new RGBColor(fillColor);
         if (fillRGB.ok) {
@@ -86,9 +84,9 @@ var svgElementToPdf = function (element, pdf, options) {
       if (attributeIsNotEmpty(node, 'stroke-width')) {
         pdf.setLineWidth(k * parseInt(node.getAttribute('stroke-width'), 10));
       }
-      var strokeColor = node.getAttribute('stroke');
+      const strokeColor = node.getAttribute('stroke');
       if (attributeIsNotEmpty(strokeColor)) {
-        var strokeRGB = new RGBColor(strokeColor);
+        const strokeRGB = new RGBColor(strokeColor);
         if (strokeRGB.ok) {
           // hasStrokeColor = true;
           pdf.setDrawColor(strokeRGB.r, strokeRGB.g, strokeRGB.b);
@@ -160,7 +158,7 @@ var svgElementToPdf = function (element, pdf, options) {
       if (hasFillColor) {
         pdf.setTextColor(fillRGB.r, fillRGB.g, fillRGB.b);
       }
-      var fontType = '';
+      let fontType = '';
       if (node.hasAttribute('font-weight')) {
         if (node.getAttribute('font-weight') === 'bold') {
           fontType = 'bold';
@@ -176,13 +174,13 @@ var svgElementToPdf = function (element, pdf, options) {
         }
       }
       pdf.setFontType(fontType);
-      var pdfFontSize = 16;
-      if (node.hasAttribute('font-size')) {
-        pdfFontSize = parseInt(node.getAttribute('font-size'), 10);
-      }
-      var box = node.getBBox();
+      const pdfFontSize = node.hasAttribute('font-size')
+        ? parseInt(node.getAttribute('font-size'), 10)
+        : 16;
+
+      const box = node.getBBox();
       // FIXME: use more accurate positioning!!
-      var x, y, xOffset = 0;
+      let x, y, xOffset = 0;
       if (node.hasAttribute('text-anchor')) {
         switch (node.getAttribute('text-anchor')) {
         case 'end': xOffset = box.width; break;
@@ -213,7 +211,7 @@ var svgElementToPdf = function (element, pdf, options) {
 };
 
 jsPDFAPI.addSVG = function (element, x, y, options) {
-  options = (options === undef ? {} : options);
+  options = (options === undefined ? {} : options);
   options.x_offset = x;
   options.y_offset = y;
 
@@ -223,4 +221,3 @@ jsPDFAPI.addSVG = function (element, x, y, options) {
   svgElementToPdf(element, this, options);
   return this;
 };
-}(jsPDF.API));

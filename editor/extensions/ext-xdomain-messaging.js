@@ -1,4 +1,3 @@
-/* eslint-disable no-var */
 /* globals svgEditor, svgCanvas */
 /**
 * Should not be needed for same domain control (just call via child frame),
@@ -6,27 +5,25 @@
 *  in embedapi.js with a demo at embedapi.html
 */
 svgEditor.addExtension('xdomain-messaging', function () {
-  'use strict';
   try {
     window.addEventListener('message', function (e) {
       // We accept and post strings for the sake of IE9 support
       if (typeof e.data !== 'string' || e.data.charAt() === '|') {
         return;
       }
-      var cbid, name, args, message, allowedOrigins, data = JSON.parse(e.data);
+      const data = JSON.parse(e.data);
       if (!data || typeof data !== 'object' || data.namespace !== 'svgCanvas') {
         return;
       }
       // The default is not to allow any origins, including even the same domain or if run on a file:// URL
       //  See config-sample.js for an example of how to configure
-      allowedOrigins = svgEditor.curConfig.allowedOrigins;
-      if (allowedOrigins.indexOf('*') === -1 && allowedOrigins.indexOf(e.origin) === -1) {
+      const {allowedOrigins} = svgEditor.curConfig;
+      if (!allowedOrigins.includes('*') && !allowedOrigins.includes(e.origin)) {
         return;
       }
-      cbid = data.id;
-      name = data.name;
-      args = data.args;
-      message = {
+      const cbid = data.id;
+      const {name, args} = data;
+      const message = {
         namespace: 'svg-edit',
         id: cbid
       };

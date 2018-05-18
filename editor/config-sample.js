@@ -3,7 +3,6 @@
 //   CREATE A NEW FILE config.js AND ADD CONTENTS
 //   SUCH AS SHOWN BELOW INTO THAT FILE.
 
-/* globals svgEditor */
 /*
 The config.js file is intended for the setting of configuration or
   preferences which must run early on; if this is not needed, it is
@@ -18,6 +17,8 @@ See defaultConfig and defaultExtensions in svg-editor.js for a list
 
 See svg-editor.js for documentation on using setConfig().
 */
+
+import svgEditor from './svg-editor.js';
 
 // URL OVERRIDE CONFIG
 svgEditor.setConfig({
@@ -117,25 +118,23 @@ As with configuration, one may use allowInitialUserOverride, but
   Failing to use allowInitialUserOverride will ensure preferences
   are hard-coded here regardless of URL or prior user storage setting.
 */
-svgEditor.setConfig(
-  {
-    // lang: '', // Set dynamically within locale.js if not previously set
-    // iconsize: '', // Will default to 's' if the window height is smaller than the minimum height and 'm' otherwise
-    /**
-    * When showing the preferences dialog, svg-editor.js currently relies
-    * on curPrefs instead of $.pref, so allowing an override for bkgd_color
-    * means that this value won't have priority over block auto-detection as
-    * far as determining which color shows initially in the preferences
-    * dialog (though it can be changed and saved).
-    */
-    // bkgd_color: '#FFF',
-    // bkgd_url: '',
-    // img_save: 'embed',
-    // Only shows in UI as far as alert notices
-    // save_notice_done: false,
-    // export_notice_done: false
-  }
-);
+svgEditor.setConfig({
+  // lang: '', // Set dynamically within locale.js if not previously set
+  // iconsize: '', // Will default to 's' if the window height is smaller than the minimum height and 'm' otherwise
+  /**
+  * When showing the preferences dialog, svg-editor.js currently relies
+  * on curPrefs instead of $.pref, so allowing an override for bkgd_color
+  * means that this value won't have priority over block auto-detection as
+  * far as determining which color shows initially in the preferences
+  * dialog (though it can be changed and saved).
+  */
+  // bkgd_color: '#FFF',
+  // bkgd_url: '',
+  // img_save: 'embed',
+  // Only shows in UI as far as alert notices
+  // save_notice_done: false,
+  // export_notice_done: false
+});
 svgEditor.setConfig(
   {
     // Indicate pref settings here if you wish to allow user storage or URL settings

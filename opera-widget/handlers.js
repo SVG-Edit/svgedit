@@ -1,10 +1,9 @@
-/* eslint-disable no-var */
-/* globals $, svgCanvas */
+/* globals jQuery, svgCanvas */
 // Note: This JavaScript file must be included as the last script on the main HTML editor page to override the open/save handlers
-$(function () {
+jQuery(function () {
   if (window.opera && window.opera.io && window.opera.io.filesystem) {
     svgCanvas.setCustomHandlers({
-      open: function () {
+      open () {
         try {
           window.opera.io.filesystem.browseForFile(
             new Date().getTime(), /* mountpoint name */
@@ -12,8 +11,8 @@ $(function () {
             function (file) {
               try {
                 if (file) {
-                  var fstream = file.open(file, 'r');
-                  var output = '';
+                  const fstream = file.open(file, 'r');
+                  let output = '';
                   while (!fstream.eof) {
                     output += fstream.readLine();
                   }
@@ -32,7 +31,7 @@ $(function () {
           console.log('Open file failed.');
         }
       },
-      save: function (window, svg) {
+      save (window, svg) {
         try {
           window.opera.io.filesystem.browseForSave(
             new Date().getTime(), /* mountpoint name */
@@ -40,7 +39,7 @@ $(function () {
             function (file) {
               try {
                 if (file) {
-                  var fstream = file.open(file, 'w');
+                  const fstream = file.open(file, 'w');
                   fstream.write(svg, 'UTF-8');
                   fstream.close();
                 }

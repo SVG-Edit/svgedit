@@ -1,5 +1,4 @@
-/* eslint-disable no-var */
-/* globals svgEditor, svgCanvas, $, widget */
+/* globals jQuery, svgEditor, svgCanvas */
 /*
  * ext-storage.js
  *
@@ -17,7 +16,11 @@
 *  separate extension to make the setting behavior optional, and adapted
 *  to inform the user of its setting of local data.
 */
+/*
+Dependencies:
 
+1. jQuery BBQ (for deparam)
+*/
 /*
 TODOS
 1. Revisit on whether to use $.pref over directly setting curConfig in all
@@ -26,13 +29,17 @@ TODOS
 2. We might provide control of storage settings through the UI besides the
     initial (or URL-forced) dialog.
 */
+import confirmSetStorage from './ext-locale/storage.js';
+
 svgEditor.addExtension('storage', function () {
+  const $ = jQuery;
   // We could empty any already-set data for users when they decline storage,
   //  but it would be a risk for users who wanted to store but accidentally
   // said "no"; instead, we'll let those who already set it, delete it themselves;
   // to change, set the "emptyStorageOnDecline" config setting to true
   // in config.js.
-  var emptyStorageOnDecline = svgEditor.curConfig.emptyStorageOnDecline,
+  const {
+    emptyStorageOnDecline,
     // When the code in svg-editor.js prevents local storage on load per
     //  user request, we also prevent storing on unload here so as to
     //  avoid third-party sites making XSRF requests or providing links
@@ -42,24 +49,25 @@ svgEditor.addExtension('storage', function () {
     // user's prior work. To change this behavior so that no use of storage
     // or adding of new storage takes place regardless of settings, set
     // the "noStorageOnLoad" config setting to true in config.js.
-    noStorageOnLoad = svgEditor.curConfig.noStorageOnLoad,
-    forceStorage = svgEditor.curConfig.forceStorage,
-    storage = svgEditor.storage;
+    noStorageOnLoad,
+    forceStorage
+  } = svgEditor.curConfig;
+  const {storage} = svgEditor;
 
   function replaceStoragePrompt (val) {
     val = val ? 'storagePrompt=' + val : '';
-    var loc = top.location; // Allow this to work with the embedded editor as well
-    if (loc.href.indexOf('storagePrompt=') > -1) {
+    const loc = top.location; // Allow this to work with the embedded editor as well
+    if (loc.href.includes('storagePrompt=')) {
       loc.href = loc.href.replace(/([&?])storagePrompt=[^&]*(&?)/, function (n0, n1, amp) {
         return (val ? n1 : '') + val + (!val && amp ? n1 : (amp || ''));
       });
     } else {
-      loc.href += (loc.href.indexOf('?') > -1 ? '&' : '?') + val;
+      loc.href += (loc.href.includes('?') ? '&' : '?') + val;
     }
   }
   function setSVGContentStorage (val) {
     if (storage) {
-      var name = 'svgedit-' + svgEditor.curConfig.canvasName;
+      const name = 'svgedit-' + svgEditor.curConfig.canvasName;
       if (!val) {
         storage.removeItem(name);
       } else {
@@ -78,8 +86,7 @@ svgEditor.addExtension('storage', function () {
 
   function emptyStorage () {
     setSVGContentStorage('');
-    var name;
-    for (name in svgEditor.curPrefs) {
+    for (let name in svgEditor.curPrefs) {
       if (svgEditor.curPrefs.hasOwnProperty(name)) {
         name = 'svg-edit-' + name;
         if (storage) {
@@ -106,7 +113,6 @@ svgEditor.addExtension('storage', function () {
       if (!document.cookie.match(/(?:^|;\s*)store=(?:prefsAndContent|prefsOnly)/)) {
         return;
       }
-      var key;
       if (document.cookie.match(/(?:^|;\s*)store=prefsAndContent/)) {
         setSVGContentStorage(svgCanvas.getSvgString());
       }
@@ -114,12 +120,12 @@ svgEditor.addExtension('storage', function () {
       svgEditor.setConfig({no_save_warning: true}); // No need for explicit saving at all once storage is on
       // svgEditor.showSaveWarning = false;
 
-      var curPrefs = svgEditor.curPrefs;
+      const {curPrefs} = svgEditor;
 
-      for (key in curPrefs) {
+      for (let key in curPrefs) {
         if (curPrefs.hasOwnProperty(key)) { // It's our own config, so we don't need to iterate up the prototype chain
-          var val = curPrefs[key],
-            store = (val !== undefined);
+          let val = curPrefs[key];
+          const store = (val !== undefined);
           key = 'svg-edit-' + key;
           if (!store) {
             continue;
@@ -127,7 +133,7 @@ svgEditor.addExtension('storage', function () {
           if (storage) {
             storage.setItem(key, val);
           } else if (window.widget) {
-            widget.setPreferenceForKey(val, key);
+            window.widget.setPreferenceForKey(val, key);
           } else {
             val = encodeURIComponent(val);
             document.cookie = encodeURIComponent(key) + '=' + val + '; expires=Fri, 31 Dec 9999 23:59:59 GMT';
@@ -137,32 +143,18 @@ svgEditor.addExtension('storage', function () {
     }, false);
   }
 
-  /*
-  // We could add locales here instead (and also thereby avoid the need
-  // to keep our content within "langReady"), but this would be less
-  // convenient for translators.
-  $.extend(uiStrings, {confirmSetStorage: {
-    message: "By default and where supported, SVG-Edit can store your editor "+
-    "preferences and SVG content locally on your machine so you do not "+
-    "need to add these back each time you load SVG-Edit. If, for privacy "+
-    "reasons, you do not wish to store this information on your machine, "+
-    "you can change away from the default option below.",
-    storagePrefsAndContent: "Store preferences and SVG content locally",
-    storagePrefsOnly: "Only store preferences locally",
-    storagePrefs: "Store preferences locally",
-    storageNoPrefsOrContent: "Do not store my preferences or SVG content locally",
-    storageNoPrefs: "Do not store my preferences locally",
-    rememberLabel: "Remember this choice?",
-    rememberTooltip: "If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again."
-  }});
-  */
-  var loaded = false;
+  let loaded = false;
   return {
     name: 'storage',
-    langReady: function (data) {
-      var // lang = data.lang,
-        uiStrings = data.uiStrings, // No need to store as dialog should only run once
-        storagePrompt = $.deparam.querystring(true).storagePrompt;
+    langReady (data) {
+      // const {uiStrings: {confirmSetStorage}} = data, // No need to store as dialog should only run once
+      const {lang} = data;
+      const {storagePrompt} = $.deparam.querystring(true);
+      const {
+        message, storagePrefsAndContent, storagePrefsOnly,
+        storagePrefs, storageNoPrefsOrContent, storageNoPrefs,
+        rememberLabel, rememberTooltip
+      } = confirmSetStorage[lang];
 
       // No need to run this one-time dialog again just because the user
       //   changes the language
@@ -191,22 +183,22 @@ svgEditor.addExtension('storage', function () {
         )
         // ...then show the storage prompt.
       )) {
-        var options = [];
+        const options = [];
         if (storage) {
           options.unshift(
-            {value: 'prefsAndContent', text: uiStrings.confirmSetStorage.storagePrefsAndContent},
-            {value: 'prefsOnly', text: uiStrings.confirmSetStorage.storagePrefsOnly},
-            {value: 'noPrefsOrContent', text: uiStrings.confirmSetStorage.storageNoPrefsOrContent}
+            {value: 'prefsAndContent', text: storagePrefsAndContent},
+            {value: 'prefsOnly', text: storagePrefsOnly},
+            {value: 'noPrefsOrContent', text: storageNoPrefsOrContent}
           );
         } else {
           options.unshift(
-            {value: 'prefsOnly', text: uiStrings.confirmSetStorage.storagePrefs},
-            {value: 'noPrefsOrContent', text: uiStrings.confirmSetStorage.storageNoPrefs}
+            {value: 'prefsOnly', text: storagePrefs},
+            {value: 'noPrefsOrContent', text: storageNoPrefs}
           );
         }
 
         // Hack to temporarily provide a wide and high enough dialog
-        var oldContainerWidth = $('#dialog_container')[0].style.width,
+        const oldContainerWidth = $('#dialog_container')[0].style.width,
           oldContainerMarginLeft = $('#dialog_container')[0].style.marginLeft,
           oldContentHeight = $('#dialog_content')[0].style.height,
           oldContainerHeight = $('#dialog_container')[0].style.height;
@@ -216,8 +208,9 @@ svgEditor.addExtension('storage', function () {
         $('#dialog_container')[0].style.marginLeft = '-400px';
 
         // Open select-with-checkbox dialog
+        // From svg-editor.js
         $.select(
-          uiStrings.confirmSetStorage.message,
+          message,
           options,
           function (pref, checked) {
             if (pref && pref !== 'noPrefsOrContent') {
@@ -272,9 +265,9 @@ svgEditor.addExtension('storage', function () {
           null,
           null,
           {
-            label: uiStrings.confirmSetStorage.rememberLabel,
+            label: rememberLabel,
             checked: false,
-            tooltip: uiStrings.confirmSetStorage.rememberTooltip
+            tooltip: rememberTooltip
           }
         );
       } else if (!noStorageOnLoad || forceStorage) {
