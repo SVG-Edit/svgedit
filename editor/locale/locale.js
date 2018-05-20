@@ -300,7 +300,7 @@ editor.putLocale = function (givenParam, goodLangs) {
     // The following line prevents setLang from running
     //    extensions which depend on updated uiStrings,
     //    so commenting it out.
-    // if (langParam.indexOf("en") === 0) {return;}
+    // if (langParam.startsWith('en')0) {return;}
   }
 
   var conf = editor.curConfig;
