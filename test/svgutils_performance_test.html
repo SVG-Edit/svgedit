@@ -7,7 +7,7 @@
   <title>Performance Unit Tests for svgutils.js</title>
 
   <link rel="icon" type="image/png" href="../editor/images/logo.png"/>
-  <link rel="stylesheet" href="qunit/qunit.css"/>
+  <link rel="stylesheet" href="../node_modules/qunit/qunit/qunit.css"/>
   <style id="styleoverrides" media="screen">
   #svgcanvas svg * {
     cursor: move;
@@ -18,17 +18,8 @@
   }
   </style>
   <script src="../editor/jquery.min.js"></script>
-  <script src="../editor/svgedit.js"></script>
-  <!-- svgutils.js depends on these three... mock out? -->
-  <script src="../editor/pathseg.js"></script>
-  <script src="../editor/browser.js"></script>
-  <script src="../editor/svgtransformlist.js"></script>
-  <script src="../editor/math.js"></script>
-  <script src="../editor/jquery-svg.js"></script>  <!--  has $.attr() that takes an array . Used jby svgedit.utilities.getPathDFromElement -->
-  <script src="../editor/units.js"></script>
-  <script src="../editor/svgutils.js"></script>
-  <script src="qunit/qunit.js"></script>
-  <script defer="defer" src="svgutils_performance_test.js"></script>
+  <script src="../node_modules/qunit/qunit/qunit.js"></script>
+  <script type="module" src="svgutils_performance_test.js"></script>
 </head>
 <body>
   <h1 id="qunit-header">Performance Unit Tests for svgutils.js</h1>

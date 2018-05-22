@@ -1,4 +1,4 @@
-/* globals jQuery, svgEditor, svgCanvas */
+/* globals jQuery */
 /*
  * ext-arrows.js
  *
@@ -7,18 +7,19 @@
  * Copyright(c) 2010 Alexis Deveria
  *
  */
-
+import svgEditor from '../svg-editor.js';
 svgEditor.addExtension('Arrows', function (S) {
+  const svgCanvas = svgEditor.canvas;
   const $ = jQuery;
   const // {svgcontent} = S,
     addElem = S.addSvgElementFromJson,
     {nonce} = S,
     langList = {
-      'en': [
-        {'id': 'arrow_none', 'textContent': 'No arrow'}
+      en: [
+        {id: 'arrow_none', textContent: 'No arrow'}
       ],
-      'fr': [
-        {'id': 'arrow_none', 'textContent': 'Sans flèche'}
+      fr: [
+        {id: 'arrow_none', textContent: 'Sans flèche'}
       ]
     },
     prefix = 'se_arrow_';

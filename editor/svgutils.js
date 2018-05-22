@@ -10,9 +10,12 @@
 
 import './pathseg.js';
 import RGBColor from './canvg/rgbcolor.js';
+import jqPluginSVG from './jquery-svg.js'; // Needed for SVG attribute setting and array form with `attr`
+import {importScript, importModule} from './external/dynamic-import-polyfill/importModule.js';
 import {NS} from './svgedit.js';
 import {getTransformList} from './svgtransformlist.js';
-import {shortFloat, setUnitAttr, getTypeMap} from './units.js';
+import {setUnitAttr, getTypeMap} from './units.js';
+import {convertPath} from './path.js';
 import {
   hasMatrixTransform, transformListToTransform, transformBox
 } from './math.js';
@@ -22,7 +25,7 @@ import {
 } from './browser.js';
 
 // Constants
-const $ = jQuery;
+const $ = jqPluginSVG(jQuery);
 
 // String used to encode base64.
 const KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
@@ -317,12 +320,12 @@ export const getUrlFromAttr = function (attrVal) {
 };
 
 // Returns the given element's xlink:href value
-export const getHref = function (elem) {
+export let getHref = function (elem) {
   return elem.getAttributeNS(NS.XLINK, 'href');
 };
 
 // Sets the given element's xlink:href value
-export const setHref = function (elem, val) {
+export let setHref = function (elem, val) {
   elem.setAttributeNS(NS.XLINK, 'xlink:href', val);
 };
 
@@ -585,7 +588,7 @@ export const getPathDFromSegments = function (pathSegments) {
 // elem - The element to be converted
 //
 // Returns:
-// The path d attribute or undefined if the element type is unknown.
+// The path d attribute or `undefined` if the element type is unknown.
 export const getPathDFromElement = function (elem) {
   // Possibly the cubed root of 6, but 1.81 works best
   let num = 1.81;
@@ -692,8 +695,8 @@ export const getExtraAttributesForConvertToPath = function (elem) {
 // The resulting path's bounding box object.
 export const getBBoxOfElementAsPath = function (elem, addSvgElementFromJson, pathActions) {
   const path = addSvgElementFromJson({
-    'element': 'path',
-    'attr': getExtraAttributesForConvertToPath(elem)
+    element: 'path',
+    attr: getExtraAttributesForConvertToPath(elem)
   });
 
   const eltrans = elem.getAttribute('transform');
@@ -824,15 +827,13 @@ function bBoxCanBeOptimizedOverNativeGetBBox (angle, hasMatrixTransform) {
   return hasMatrixTransform || !(closeTo0 || closeTo90);
 }
 
-// Get bounding box that includes any transforms.
-//
-// Parameters:
-// elem - The DOM element to be converted
-// addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJson
-// pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
-//
-// Returns:
-// A single bounding box object
+/**
+* Get bounding box that includes any transforms.
+* @param elem - The DOM element to be converted
+* @param  addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJson
+* @param  pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
+* @returns A single bounding box object
+*/
 export const getBBoxWithTransform = function (elem, addSvgElementFromJson, pathActions) {
   // TODO: Fix issue with rotated groups. Currently they work
   // fine in FF, but not in other browsers (same problem mentioned
@@ -894,15 +895,13 @@ function getStrokeOffsetForBBox (elem) {
   return (!isNaN(sw) && elem.getAttribute('stroke') !== 'none') ? sw / 2 : 0;
 }
 
-// Get the bounding box for one or more stroked and/or transformed elements
-//
-// Parameters:
-// elems - Array with DOM elements to check
-// addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJson
-// pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
-//
-// Returns:
-// A single bounding box object
+/**
+* Get the bounding box for one or more stroked and/or transformed elements
+* @param elems - Array with DOM elements to check
+* @param addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJson
+* @param pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
+* @returns A single bounding box object
+*/
 export const getStrokedBBox = function (elems, addSvgElementFromJson, pathActions) {
   if (!elems || !elems.length) { return false; }
 
@@ -954,6 +953,41 @@ export const getStrokedBBox = function (elems, addSvgElementFromJson, pathAction
   return fullBb;
 };
 
+/**
+* Get all elements that have a BBox (excludes <defs>, <title>, etc).
+* Note that 0-opacity, off-screen etc elements are still considered "visible"
+* for this function
+* @param parent - The parent DOM element to search within
+* @returns {Array} All "visible" elements.
+*/
+export const getVisibleElements = function (parent) {
+  if (!parent) {
+    parent = $(editorContext_.getSVGContent()).children(); // Prevent layers from being included
+  }
+
+  const contentElems = [];
+  $(parent).children().each(function (i, elem) {
+    if (elem.getBBox) {
+      contentElems.push(elem);
+    }
+  });
+  return contentElems.reverse();
+};
+
+/**
+* Get the bounding box for one or more stroked and/or transformed elements
+* @param elems - Array with DOM elements to check
+* @returns A single bounding box object
+*/
+export const getStrokedBBoxDefaultVisible = function (elems) {
+  if (!elems) { elems = getVisibleElements(); }
+  return getStrokedBBox(
+    elems,
+    editorContext_.addSvgElementFromJson,
+    editorContext_.pathActions
+  );
+};
+
 // Get the rotation angle of the given transform list.
 //
 // Parameters:
@@ -982,7 +1016,7 @@ export const getRotationAngleFromTransformList = function (tlist, toRad) {
 //
 // Returns:
 // Float with the angle in degrees or radians
-export const getRotationAngle = function (elem, toRad) {
+export let getRotationAngle = function (elem, toRad) {
   const selected = elem || editorContext_.getSelectedElements()[0];
   // find the rotation transform (if any) and set it
   const tlist = getTransformList(selected);
@@ -1052,15 +1086,15 @@ export const cleanupElement = function (element) {
   const defaults = {
     'fill-opacity': 1,
     'stop-opacity': 1,
-    'opacity': 1,
-    'stroke': 'none',
+    opacity: 1,
+    stroke: 'none',
     'stroke-dasharray': 'none',
     'stroke-linejoin': 'miter',
     'stroke-linecap': 'butt',
     'stroke-opacity': 1,
     'stroke-width': 1,
-    'rx': 0,
-    'ry': 0
+    rx: 0,
+    ry: 0
   };
 
   if (element.nodeName === 'ellipse') {
@@ -1078,7 +1112,6 @@ export const cleanupElement = function (element) {
 };
 
 // round value to for snapping
-// NOTE: This function did not move to svgutils.js since it depends on curConfig.
 export const snapToGrid = function (value) {
   const unit = editorContext_.getBaseUnit();
   let stepSize = editorContext_.getSnappingStep();
@@ -1094,28 +1127,41 @@ export const regexEscape = function (str, delimiter) {
   return String(str).replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]', 'g'), '\\$&');
 };
 
+const loadedScripts = {};
 /**
-* @param {string} globalCheck A global which can be used to determine if the script is already loaded
+* @param {string} name A global which can be used to determine if the script is already loaded
 * @param {array} scripts An array of scripts to preload (in order)
 * @param {function} cb The callback to execute upon load.
+* @param {object} options Object with `globals` boolean property (if it is not a module)
 */
-export const executeAfterLoads = function (globalCheck, scripts, cb) {
+export const executeAfterLoads = function (name, scripts, cb, options = {globals: false}) {
   return function () {
     const args = arguments;
     function endCallback () {
       cb.apply(null, args);
     }
-    if (window[globalCheck]) {
+    const modularVersion = !('svgEditor' in window) ||
+      !window.svgEditor ||
+      window.svgEditor.modules !== false;
+    if (loadedScripts[name] === true) {
       endCallback();
+    } else if (Array.isArray(loadedScripts[name])) { // Still loading
+      loadedScripts[name].push(endCallback);
     } else {
-      scripts.reduceRight(function (oldFunc, script) {
-        return function () {
-          // Todo: insert script with `s.type = 'module';` once modules
-          //   widely supported (or can hopefully refactor these function
-          //   and/or use `import()`)
-          $.getScript(script, oldFunc);
-        };
-      }, endCallback)();
+      loadedScripts[name] = [];
+      const importer = modularVersion && !options.globals
+        ? importModule
+        : importScript;
+      scripts.reduce(function (oldProm, script) {
+        // Todo: Once `import()` and modules widely supported, switch to it
+        return oldProm.then(() => importer(script));
+      }, Promise.resolve()).then(function () {
+        loadedScripts[name] = true;
+        endCallback();
+        loadedScripts[name].forEach((cb) => {
+          cb();
+        });
+      })();
     }
   };
 };
@@ -1125,12 +1171,17 @@ export const buildCanvgCallback = function (callCanvg) {
 };
 
 export const buildJSPDFCallback = function (callJSPDF) {
-  return executeAfterLoads('RGBColor', ['canvg/rgbcolor.js'], function () {
+  return executeAfterLoads('RGBColor', ['canvg/rgbcolor.js'], () => {
     const arr = [];
     if (!RGBColor || RGBColor.ok === undefined) { // It's not our RGBColor, so we'll need to load it
       arr.push('canvg/rgbcolor.js');
     }
-    executeAfterLoads('jsPDF', arr.concat('jspdf/underscore-min.js', 'jspdf/jspdf.min.js', 'jspdf/jspdf.plugin.svgToPdf.js'), callJSPDF)();
+    executeAfterLoads('jsPDF', [
+      ...arr,
+      'jspdf/underscore-min.js',
+      'jspdf/jspdf.min.js',
+      'jspdf/jspdf.plugin.svgToPdf.js'
+    ], callJSPDF, {globals: true})();
   });
 };
 
@@ -1193,189 +1244,11 @@ export const copyElem = function (el, getNextId) {
   return newEl;
 };
 
-/**
- * TODO: refactor callers in convertPath to use getPathDFromSegments instead of this function.
- * Legacy code refactored from svgcanvas.pathActions.convertPath
- * @param letter - path segment command
- * @param {Array.<Array.<number>>} points - x,y points.
- * @param {Array.<Array.<number>>=} morePoints - x,y points
- * @param {Array.<number>=}lastPoint - x,y point
- * @returns {string}
- */
-function pathDSegment (letter, points, morePoints, lastPoint) {
-  $.each(points, function (i, pnt) {
-    points[i] = shortFloat(pnt);
-  });
-  let segment = letter + points.join(' ');
-  if (morePoints) {
-    segment += ' ' + morePoints.join(' ');
-  }
-  if (lastPoint) {
-    segment += ' ' + shortFloat(lastPoint);
-  }
-  return segment;
-}
-
-// this is how we map paths to our preferred relative segment types
-const pathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a',
-  'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
-
-/**
- * TODO: move to pathActions.js when migrating rest of pathActions out of svgcanvas.js
- * Convert a path to one with only absolute or relative values
- * @param {Object} path - the path to convert
- * @param {boolean} toRel - true of convert to relative
- * @returns {string}
- */
-export const convertPath = function (path, toRel) {
-  const segList = path.pathSegList;
-  const len = segList.numberOfItems;
-  let curx = 0, cury = 0;
-  let d = '';
-  let lastM = null;
-
-  for (let i = 0; i < len; ++i) {
-    const seg = segList.getItem(i);
-    // if these properties are not in the segment, set them to zero
-    let x = seg.x || 0,
-      y = seg.y || 0,
-      x1 = seg.x1 || 0,
-      y1 = seg.y1 || 0,
-      x2 = seg.x2 || 0,
-      y2 = seg.y2 || 0;
-
-    const type = seg.pathSegType;
-    let letter = pathMap[type]['to' + (toRel ? 'Lower' : 'Upper') + 'Case']();
-
-    switch (type) {
-    case 1: // z,Z closepath (Z/z)
-      d += 'z';
-      if (lastM && !toRel) {
-        curx = lastM[0];
-        cury = lastM[1];
-      }
-      break;
-    case 12: // absolute horizontal line (H)
-      x -= curx;
-      // Fallthrough
-    case 13: // relative horizontal line (h)
-      if (toRel) {
-        curx += x;
-        letter = 'l';
-      } else {
-        x += curx;
-        curx = x;
-        letter = 'L';
-      }
-      // Convert to "line" for easier editing
-      d += pathDSegment(letter, [[x, cury]]);
-      break;
-    case 14: // absolute vertical line (V)
-      y -= cury;
-      // Fallthrough
-    case 15: // relative vertical line (v)
-      if (toRel) {
-        cury += y;
-        letter = 'l';
-      } else {
-        y += cury;
-        cury = y;
-        letter = 'L';
-      }
-      // Convert to "line" for easier editing
-      d += pathDSegment(letter, [[curx, y]]);
-      break;
-    case 2: // absolute move (M)
-    case 4: // absolute line (L)
-    case 18: // absolute smooth quad (T)
-      x -= curx;
-      y -= cury;
-      // Fallthrough
-    case 5: // relative line (l)
-    case 3: // relative move (m)
-    case 19: // relative smooth quad (t)
-      if (toRel) {
-        curx += x;
-        cury += y;
-      } else {
-        x += curx;
-        y += cury;
-        curx = x;
-        cury = y;
-      }
-      if (type === 2 || type === 3) { lastM = [curx, cury]; }
-
-      d += pathDSegment(letter, [[x, y]]);
-      break;
-    case 6: // absolute cubic (C)
-      x -= curx; x1 -= curx; x2 -= curx;
-      y -= cury; y1 -= cury; y2 -= cury;
-      // Fallthrough
-    case 7: // relative cubic (c)
-      if (toRel) {
-        curx += x;
-        cury += y;
-      } else {
-        x += curx; x1 += curx; x2 += curx;
-        y += cury; y1 += cury; y2 += cury;
-        curx = x;
-        cury = y;
-      }
-      d += pathDSegment(letter, [[x1, y1], [x2, y2], [x, y]]);
-      break;
-    case 8: // absolute quad (Q)
-      x -= curx; x1 -= curx;
-      y -= cury; y1 -= cury;
-      // Fallthrough
-    case 9: // relative quad (q)
-      if (toRel) {
-        curx += x;
-        cury += y;
-      } else {
-        x += curx; x1 += curx;
-        y += cury; y1 += cury;
-        curx = x;
-        cury = y;
-      }
-      d += pathDSegment(letter, [[x1, y1], [x, y]]);
-      break;
-    case 10: // absolute elliptical arc (A)
-      x -= curx;
-      y -= cury;
-      // Fallthrough
-    case 11: // relative elliptical arc (a)
-      if (toRel) {
-        curx += x;
-        cury += y;
-      } else {
-        x += curx;
-        y += cury;
-        curx = x;
-        cury = y;
-      }
-      d += pathDSegment(letter, [[seg.r1, seg.r2]], [
-        seg.angle,
-        (seg.largeArcFlag ? 1 : 0),
-        (seg.sweepFlag ? 1 : 0)
-      ], [x, y]);
-      break;
-    case 16: // absolute smooth cubic (S)
-      x -= curx; x2 -= curx;
-      y -= cury; y2 -= cury;
-      // Fallthrough
-    case 17: // relative smooth cubic (s)
-      if (toRel) {
-        curx += x;
-        cury += y;
-      } else {
-        x += curx; x2 += curx;
-        y += cury; y2 += cury;
-        curx = x;
-        cury = y;
-      }
-      d += pathDSegment(letter, [[x2, y2], [x, y]]);
-      break;
-    } // switch on path segment type
-  } // for each segment
-  return d;
+// Unit testing
+export const mock = ({
+  getHref: getHrefUser, setHref: setHrefUser, getRotationAngle: getRotationAngleUser
+}) => {
+  getHref = getHrefUser;
+  setHref = setHrefUser;
+  getRotationAngle = getRotationAngleUser;
 };

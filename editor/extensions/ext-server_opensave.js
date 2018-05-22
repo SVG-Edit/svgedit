@@ -1,4 +1,4 @@
-/* globals jQuery, svgEditor, svgedit, svgCanvas, canvg */
+/* globals jQuery */
 /*
  * ext-server_opensave.js
  *
@@ -7,10 +7,12 @@
  * Copyright(c) 2010 Alexis Deveria
  *
  */
+import svgEditor from '../svg-editor.js';
 
 svgEditor.addExtension('server_opensave', {
-  callback () {
+  callback ({canvg, decode64, encode64, buildCanvgCallback}) {
     const $ = jQuery;
+    const svgCanvas = svgEditor.canvas;
     function getFileNameFromTitle () {
       const title = svgCanvas.getDocumentTitle();
       // We convert (to underscore) only those disallowed Win7 file name characters
@@ -23,16 +25,19 @@ svgEditor.addExtension('server_opensave', {
       const support = $('<a>')[0].download === '';
       let a;
       if (support) {
-        a = $('<a>hidden</a>').attr({download: (filename || 'image') + suffix, href: uri}).css('display', 'none').appendTo('body');
+        a = $('<a>hidden</a>').attr({
+          download: (filename || 'image') + suffix,
+          href: uri
+        }).css('display', 'none').appendTo('body');
         a[0].click();
         return true;
       }
     }
     const
       saveSvgAction = svgEditor.curConfig.extPath + 'filesave.php',
-      saveImgAction = svgEditor.curConfig.extPath + 'filesave.php',
+      saveImgAction = svgEditor.curConfig.extPath + 'filesave.php';
       // Create upload target (hidden iframe)
-      Utils = svgedit.utilities;
+
     let cancelled = false;
 
     $('<iframe name="output_frame" src="#"/>').hide().appendTo('body');
@@ -41,7 +46,7 @@ svgEditor.addExtension('server_opensave', {
         const svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data, // Firefox doesn't seem to know it is UTF-8 (no matter whether we use or skip the clientDownload code) despite the Content-Disposition header containing UTF-8, but adding the encoding works
           filename = getFileNameFromTitle();
 
-        if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml;charset=UTF-8;base64,' + Utils.encode64(svg))) {
+        if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml;charset=UTF-8;base64,' + encode64(svg))) {
           return;
         }
 
@@ -81,7 +86,7 @@ svgEditor.addExtension('server_opensave', {
 
         c.width = svgCanvas.contentW;
         c.height = svgCanvas.contentH;
-        Utils.buildCanvgCallback(function () {
+        buildCanvgCallback(function () {
           canvg(c, data.svg, {renderCallback () {
             const datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType);
             // {uiStrings} = svgEditor;
@@ -137,7 +142,7 @@ svgEditor.addExtension('server_opensave', {
       $('#dialog_box').hide();
 
       if (type !== 'import_img') {
-        xmlstr = Utils.decode64(str64);
+        xmlstr = decode64(str64);
       }
 
       switch (type) {

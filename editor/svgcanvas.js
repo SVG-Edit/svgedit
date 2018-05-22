@@ -1,5 +1,5 @@
 /* eslint-disable indent */
-/* globals jQuery */
+/* globals jQuery, jsPDF */
 /*
  * svgcanvas.js
  *
@@ -11,25 +11,27 @@
  *
  */
 
-// Dependencies:
-// 1) jQuery
+/* Dependencies:
+1. Also expects jQuery UI for `svgCanvasToString` and
+`convertToGroup` use of `:data()` selector
+*/
 
 import './pathseg.js';
-import HistoryRecordingService from './historyrecording.js';
-import sanitizeSvg from './sanitize.js';
 import canvg from './canvg/canvg.js';
+import jqPluginSVG from './jquery-svg.js'; // Needed for SVG attribute setting and array form with `attr`
 
 import * as draw from './draw.js';
 import * as pathModule from './path.js';
+import {sanitizeSvg} from './sanitize.js';
 import {getReverseNS, NS} from './svgedit.js';
 import {
   text2xml, assignAttributes, cleanupElement, getElem, getUrlFromAttr,
   findDefs, getHref, setHref, getRefElem, getRotationAngle, getPathBBox,
   preventClickDefault, snapToGrid, walkTree, walkTreePost,
-  getBBoxOfElementAsPath, convertToPath, toXml, encode64,
+  getBBoxOfElementAsPath, convertToPath, toXml, encode64, decode64,
   buildJSPDFCallback, dataURLToObjectURL, createObjectURL,
-  buildCanvgCallback, convertPath,
-  init as utilsInit, getBBox as utilsGetBBox, getStrokedBBox as utilsGetStrokedBBox
+  buildCanvgCallback, getVisibleElements, executeAfterLoads,
+  init as utilsInit, getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible
 } from './svgutils.js';
 import * as history from './history.js';
 import {
@@ -37,10 +39,11 @@ import {
   getMatrix, snapToAngle, isIdentity, rectsIntersect, transformBox
 } from './math.js';
 import {
-  convertToNum, convertAttrs, convertUnit, shortFloat, init as unitsInit
-} from './units.js'; // , getTypeMap
+  convertToNum, convertAttrs, convertUnit, shortFloat, getTypeMap,
+  init as unitsInit
+} from './units.js';
 import {
-  isGecko, isIE, isWebkit, supportsNonScalingStroke, supportsGoodTextCharPos
+  isGecko, isChrome, isIE, isWebkit, supportsNonScalingStroke, supportsGoodTextCharPos
 } from './browser.js'; // , supportsEditableText
 import {
   getTransformList, resetListMap,
@@ -59,7 +62,7 @@ import {
   init as selectInit
 } from './select.js';
 
-const $ = jQuery;
+const $ = jqPluginSVG(jQuery);
 const {
   MoveElementCommand, InsertElementCommand, RemoveElementCommand,
   ChangeElementCommand, BatchCommand, UndoManager, HistoryEventTypes
@@ -83,7 +86,8 @@ if (window.opera) {
 // container - The container HTML element that should hold the SVG root element
 // config - An object that contains configuration data
 
-export default function (container, config) {
+export default class {
+  constructor (container, config) {
 // Alias Namespace constants
 
 // Default configuration options
@@ -203,9 +207,9 @@ const allProperties = {
 allProperties.text = $.extend(true, {}, allProperties.shape);
 $.extend(allProperties.text, {
   fill: '#000000',
-  stroke_width: curConfig.text.stroke_width,
-  font_size: curConfig.text.font_size,
-  font_family: curConfig.text.font_family
+  stroke_width: curConfig.text && curConfig.text.stroke_width,
+  font_size: curConfig.text && curConfig.text.font_size,
+  font_family: curConfig.text && curConfig.text.font_family
 });
 
 // Current shape style properties
@@ -239,18 +243,18 @@ const getJsonFromSvgElement = this.getJsonFromSvgElement = function (data) {
   return retval;
 };
 
-// Function: addSvgElementFromJson
-// Create a new SVG element based on the given object keys/values and add it to the current layer
-// The element will be ran through cleanupElement before being returned
-//
-// Parameters:
-// data - Object with the following keys/values:
-// * element - tag name of the SVG element to create
-// * attr - Object with attributes key-values to assign to the new element
-// * curStyles - Boolean indicating that current style attributes should be applied first
-// * children - Optional array with data objects to be added recursively as children
-//
-// Returns: The new element
+/**
+* Create a new SVG element based on the given object keys/values and add it to the current layer
+* The element will be ran through cleanupElement before being returned
+*
+* @param data - Object with the following keys/values:
+* @param data.element - tag name of the SVG element to create
+* @paramdata.attr - Object with attributes key-values to assign to the new element
+* @param data.curStyles - Boolean indicating that current style attributes should be applied first
+* @param data.children - Optional array with data objects to be added recursively as children
+*
+* @returns The new element
+*/
 const addSvgElementFromJson = this.addSvgElementFromJson = function (data) {
   if (typeof data === 'string') return svgdoc.createTextNode(data);
 
@@ -269,16 +273,16 @@ const addSvgElementFromJson = this.addSvgElementFromJson = function (data) {
   }
   if (data.curStyles) {
     assignAttributes(shape, {
-      'fill': curShape.fill,
-      'stroke': curShape.stroke,
+      fill: curShape.fill,
+      stroke: curShape.stroke,
       'stroke-width': curShape.stroke_width,
       'stroke-dasharray': curShape.stroke_dasharray,
       'stroke-linejoin': curShape.stroke_linejoin,
       'stroke-linecap': curShape.stroke_linecap,
       'stroke-opacity': curShape.stroke_opacity,
       'fill-opacity': curShape.fill_opacity,
-      'opacity': curShape.opacity / 2,
-      'style': 'pointer-events:inherit'
+      opacity: curShape.opacity / 2,
+      style: 'pointer-events:inherit'
     }, 100);
   }
   assignAttributes(shape, data.attr, 100);
@@ -312,13 +316,24 @@ unitsInit({
 
 canvas.convertToNum = convertToNum;
 
+const getSVGContent = () => { return svgcontent; };
+
+// Returns the array with selected DOM elements
+const getSelectedElements = this.getSelectedElems = function () {
+  return selectedElements;
+};
+
+const pathActions = pathModule.pathActions;
+
 utilsInit({
+  pathActions, // Ok since not modifying
+  getSVGContent,
+  addSvgElementFromJson,
+  getSelectedElements,
   getDOMDocument () { return svgdoc; },
   getDOMContainer () { return container; },
   getSVGRoot () { return svgroot; },
   // TODO: replace this mostly with a way to get the current drawing.
-  getSelectedElements () { return selectedElements; },
-  getSVGContent () { return svgcontent; },
   getBaseUnit () { return curConfig.baseUnit; },
   getSnappingStep () { return curConfig.snappingStep; }
 });
@@ -334,10 +349,11 @@ canvas.getRefElem = getRefElem;
 canvas.assignAttributes = assignAttributes;
 this.cleanupElement = cleanupElement;
 
+const getGridSnapping = () => { return curConfig.gridSnapping; };
 coordsInit({
   getDrawing () { return getCurrentDrawing(); },
   getSVGRoot () { return svgroot; },
-  getGridSnapping () { return curConfig.gridSnapping; }
+  getGridSnapping
 });
 this.remapElement = remapElement;
 
@@ -352,9 +368,8 @@ this.recalculateDimensions = recalculateDimensions;
 const nsMap = getReverseNS();
 canvas.sanitizeSvg = sanitizeSvg;
 
-let call;
 // Implement the svgedit.history.HistoryEventHandler interface.
-canvas.undoMgr = new UndoManager({
+const undoMgr = canvas.undoMgr = new UndoManager({
   handleHistoryEvent (eventType, cmd) {
     const EventTypes = HistoryEventTypes;
     // TODO: handle setBlurOffsets.
@@ -369,12 +384,12 @@ canvas.undoMgr = new UndoManager({
       if (cmdType === MoveElementCommand.type()) {
         const parent = isApply ? cmd.newParent : cmd.oldParent;
         if (parent === svgcontent) {
-          canvas.identifyLayers();
+          draw.identifyLayers();
         }
       } else if (cmdType === InsertElementCommand.type() ||
           cmdType === RemoveElementCommand.type()) {
         if (cmd.parent === svgcontent) {
-          canvas.identifyLayers();
+          draw.identifyLayers();
         }
         if (cmdType === InsertElementCommand.type()) {
           if (isApply) { restoreRefElems(cmd.elem); }
@@ -389,7 +404,7 @@ canvas.undoMgr = new UndoManager({
         if (cmd.elem.tagName === 'title' &&
           cmd.elem.parentNode.parentNode === svgcontent
         ) {
-          canvas.identifyLayers();
+          draw.identifyLayers();
         }
         const values = isApply ? cmd.newValues : cmd.oldValues;
         // If stdDeviation was changed, update the blur.
@@ -417,32 +432,219 @@ const addCommandToHistory = function (cmd) {
   canvas.undoMgr.addCommandToHistory(cmd);
 };
 
-/**
- * Get a HistoryRecordingService.
- * @param {svgedit.history.HistoryRecordingService=} hrService - if exists, return it instead of creating a new service.
- * @returns {svgedit.history.HistoryRecordingService}
- */
-function historyRecordingService (hrService) {
-  return hrService || new HistoryRecordingService(canvas.undoMgr);
-}
+// Returns the current zoom level
+const getCurrentZoom = this.getZoom = function () { return currentZoom; };
+
+// This method rounds the incoming value to the nearest value based on the currentZoom
+const round = this.round = function (val) {
+  return parseInt(val * currentZoom, 10) / currentZoom;
+};
 
 // import from select.js
 selectInit(curConfig, {
   createSVGElement (jsonMap) { return canvas.addSvgElementFromJson(jsonMap); },
   svgRoot () { return svgroot; },
   svgContent () { return svgcontent; },
-  currentZoom () { return currentZoom; },
-  // TODO(codedread): Remove when getStrokedBBox() has been put into svgutils.js.
-  getStrokedBBox (elems) { return canvas.getStrokedBBox([elems]); }
+  getCurrentZoom
 });
 // this object manages selectors for us
 const selectorManager = this.selectorManager = getSelectorManager();
 
+const getNextId = canvas.getNextId = function () { return getCurrentDrawing().getNextId(); };
+const getId = canvas.getId = function () { return getCurrentDrawing().getId(); };
+
+// Run the callback function associated with the given event
+//
+// Parameters:
+// event - String with the event name
+// arg - Argument to pass through to the callback function
+const call = function (event, arg) {
+  if (events[event]) {
+    return events[event](window, arg);
+  }
+};
+
+/**
+* Clears the selection. The 'selected' handler is then called.
+* @param {Boolean} [noCall] - When true does not call the "selected" handler
+*/
+const clearSelection = function (noCall) {
+  selectedElements.map(function (elem) {
+    if (elem == null) return;
+
+    selectorManager.releaseSelector(elem);
+  });
+  selectedElements = [];
+
+  if (!noCall) { call('selected', selectedElements); }
+};
+
+// Adds a list of elements to the selection. The 'selected' handler is then called.
+//
+// Parameters:
+// elemsToAdd - an array of DOM elements to add to the selection
+// showGrips - a boolean flag indicating whether the resize grips should be shown
+const addToSelection = function (elemsToAdd, showGrips) {
+  if (!elemsToAdd.length) { return; }
+  // find the first null in our selectedElements array
+
+  let j = 0;
+  while (j < selectedElements.length) {
+    if (selectedElements[j] == null) {
+      break;
+    }
+    ++j;
+  }
+
+  // now add each element consecutively
+  let i = elemsToAdd.length;
+  while (i--) {
+    let elem = elemsToAdd[i];
+    if (!elem) { continue; }
+    const bbox = utilsGetBBox(elem);
+    if (!bbox) { continue; }
+
+    if (elem.tagName === 'a' && elem.childNodes.length === 1) {
+      // Make "a" element's child be the selected element
+      elem = elem.firstChild;
+    }
+
+    // if it's not already there, add it
+    if (!selectedElements.includes(elem)) {
+      selectedElements[j] = elem;
+
+      // only the first selectedBBoxes element is ever used in the codebase these days
+      // if (j === 0) selectedBBoxes[0] = utilsGetBBox(elem);
+      j++;
+      const sel = selectorManager.requestSelector(elem, bbox);
+
+      if (selectedElements.length > 1) {
+        sel.showGrips(false);
+      }
+    }
+  }
+  call('selected', selectedElements);
+
+  if (showGrips || selectedElements.length === 1) {
+    selectorManager.requestSelector(selectedElements[0]).showGrips(true);
+  } else {
+    selectorManager.requestSelector(selectedElements[0]).showGrips(false);
+  }
+
+  // make sure the elements are in the correct order
+  // See: https://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
+
+  selectedElements.sort(function (a, b) {
+    if (a && b && a.compareDocumentPosition) {
+      return 3 - (b.compareDocumentPosition(a) & 6);
+    }
+    if (a == null) {
+      return 1;
+    }
+  });
+
+  // Make sure first elements are not null
+  while (selectedElements[0] == null) {
+    selectedElements.shift(0);
+  }
+};
+
+const getOpacity = function () {
+  return curShape.opacity;
+};
+
+// Gets the desired element from a mouse event
+//
+// Parameters:
+// evt - Event object from the mouse event
+//
+// Returns:
+// DOM element we want
+const getMouseTarget = this.getMouseTarget = function (evt) {
+  if (evt == null) {
+    return null;
+  }
+  let mouseTarget = evt.target;
+
+  // if it was a <use>, Opera and WebKit return the SVGElementInstance
+  if (mouseTarget.correspondingUseElement) { mouseTarget = mouseTarget.correspondingUseElement; }
+
+  // for foreign content, go up until we find the foreignObject
+  // WebKit browsers set the mouse target to the svgcanvas div
+  if ([NS.MATH, NS.HTML].includes(mouseTarget.namespaceURI) &&
+    mouseTarget.id !== 'svgcanvas'
+  ) {
+    while (mouseTarget.nodeName !== 'foreignObject') {
+      mouseTarget = mouseTarget.parentNode;
+      if (!mouseTarget) { return svgroot; }
+    }
+  }
+
+  // Get the desired mouseTarget with jQuery selector-fu
+  // If it's root-like, select the root
+  const currentLayer = getCurrentDrawing().getCurrentLayer();
+  if ([svgroot, container, svgcontent, currentLayer].includes(mouseTarget)) {
+    return svgroot;
+  }
+
+  const $target = $(mouseTarget);
+
+  // If it's a selection grip, return the grip parent
+  if ($target.closest('#selectorParentGroup').length) {
+    // While we could instead have just returned mouseTarget,
+    // this makes it easier to indentify as being a selector grip
+    return selectorManager.selectorParentGroup;
+  }
+
+  while (mouseTarget.parentNode !== (currentGroup || currentLayer)) {
+    mouseTarget = mouseTarget.parentNode;
+  }
+
+  //
+  // // go up until we hit a child of a layer
+  // while (mouseTarget.parentNode.parentNode.tagName == 'g') {
+  //   mouseTarget = mouseTarget.parentNode;
+  // }
+  // Webkit bubbles the mouse event all the way up to the div, so we
+  // set the mouseTarget to the svgroot like the other browsers
+  // if (mouseTarget.nodeName.toLowerCase() == 'div') {
+  //   mouseTarget = svgroot;
+  // }
+
+  return mouseTarget;
+};
+
+canvas.pathActions = pathActions;
 function resetD (p) {
   p.setAttribute('d', pathActions.convertPath(p));
 }
 pathModule.init({
+  selectorManager, // Ok since not changing
+  canvas, // Ok since not changing
+  call,
   resetD,
+  round,
+  clearSelection,
+  addToSelection,
+  addCommandToHistory,
+  remapElement,
+  addSvgElementFromJson,
+  getGridSnapping,
+  getOpacity,
+  getSelectedElements,
+  getContainer () {
+    return container;
+  },
+  setStarted (s) {
+    started = s;
+  },
+  getRubberBox () {
+    return rubberBox;
+  },
+  setRubberBox (rb) {
+    rubberBox = rb;
+    return rubberBox;
+  },
   addPtsToSelection ({closedSubpath, grips}) {
     // TODO: Correct this:
     pathActions.canDeleteNodes = true;
@@ -453,7 +655,24 @@ pathModule.init({
     addCommandToHistory(cmd);
     call('changed', [elem]);
   },
-  getCurrentZoom () { return currentZoom; },
+  getCurrentZoom,
+  getId,
+  getNextId,
+  getMouseTarget,
+  getCurrentMode () {
+    return currentMode;
+  },
+  setCurrentmode (cm) {
+    currentMode = cm;
+    return currentMode;
+  },
+  getDrawnPath () {
+    return drawnPath;
+  },
+  setDrawnPath (dp) {
+    drawnPath = dp;
+    return drawnPath;
+  },
   getSVGRoot () { return svgroot; }
 });
 
@@ -529,9 +748,6 @@ let
   // String with image URL of last loadable image
   lastGoodImgUrl = curConfig.imgPath + 'logo.png',
 
-  // Array with current disabled elements (for in-group editing)
-  disabledElems = [],
-
   // Boolean indicating whether or not a draw action has been started
   started = false,
 
@@ -587,26 +803,25 @@ this.addExtension = function (name, extFunc) {
   let ext;
   if (!(name in extensions)) {
     // Provide private vars/funcs here. Is there a better way to do this?
+    const argObj = $.extend(canvas.getPrivateMethods(), {
+      svgroot,
+      svgcontent,
+      nonce: getCurrentDrawing().getNonce(),
+      selectorManager
+    });
     if (typeof extFunc === 'function') {
-      ext = extFunc($.extend(canvas.getPrivateMethods(), {
-        svgroot,
-        svgcontent,
-        nonce: getCurrentDrawing().getNonce(),
-        selectorManager
-      }));
+      ext = extFunc(argObj);
     } else {
       ext = extFunc;
+      if (ext.callback) {
+        ext.callback = ext.callback.bind(ext, argObj);
+      }
     }
     extensions[name] = ext;
     call('extension_added', ext);
   } else {
     console.log('Cannot add extension "' + name + '", an extension by that name already exists.');
   }
-};
-
-// This method rounds the incoming value to the nearest value based on the currentZoom
-const round = this.round = function (val) {
-  return parseInt(val * currentZoom, 10) / currentZoom;
 };
 
 // This method sends back an array or a NodeList full of elements that
@@ -671,43 +886,9 @@ const getIntersectionList = this.getIntersectionList = function (rect) {
   return resultList;
 };
 
-// TODO(codedread): Migrate this into svgutils.js
-// Function: getStrokedBBox
-// Get the bounding box for one or more stroked and/or transformed elements
-//
-// Parameters:
-// elems - Array with DOM elements to check
-//
-// Returns:
-// A single bounding box object
-const getStrokedBBox = this.getStrokedBBox = function (elems) {
-  if (!elems) { elems = getVisibleElements(); }
-  return utilsGetStrokedBBox(elems, addSvgElementFromJson, pathActions);
-};
+this.getStrokedBBox = getStrokedBBoxDefaultVisible;
 
-// Function: getVisibleElements
-// Get all elements that have a BBox (excludes <defs>, <title>, etc).
-// Note that 0-opacity, off-screen etc elements are still considered "visible"
-// for this function
-//
-// Parameters:
-// parent - The parent DOM element to search within
-//
-// Returns:
-// An array with all "visible" elements.
-const getVisibleElements = this.getVisibleElements = function (parent) {
-  if (!parent) {
-    parent = $(svgcontent).children(); // Prevent layers from being included
-  }
-
-  const contentElems = [];
-  $(parent).children().each(function (i, elem) {
-    if (elem.getBBox) {
-      contentElems.push(elem);
-    }
-  });
-  return contentElems.reverse();
-};
+this.getVisibleElements = getVisibleElements;
 
 // Function: getVisibleElementsAndBBoxes
 // Get all elements that have a BBox (excludes <defs>, <title>, etc).
@@ -720,7 +901,7 @@ const getVisibleElements = this.getVisibleElements = function (parent) {
 // Returns:
 // An array with objects that include:
 // * elem - The element
-// * bbox - The element's BBox as retrieved from getStrokedBBox
+// * bbox - The element's BBox as retrieved from getStrokedBBoxDefaultVisible
 const getVisibleElementsAndBBoxes = this.getVisibleElementsAndBBoxes = function (parent) {
   if (!parent) {
     parent = $(svgcontent).children(); // Prevent layers from being included
@@ -728,7 +909,7 @@ const getVisibleElementsAndBBoxes = this.getVisibleElementsAndBBoxes = function 
   const contentElems = [];
   $(parent).children().each(function (i, elem) {
     if (elem.getBBox) {
-      contentElems.push({elem, bbox: getStrokedBBox([elem])});
+      contentElems.push({elem, bbox: getStrokedBBoxDefaultVisible([elem])});
     }
   });
   return contentElems.reverse();
@@ -746,26 +927,11 @@ const groupSvgElem = this.groupSvgElem = function (elem) {
 };
 
 // Set scope for these functions
-let getId, getNextId;
 
-(function (c) {
 // Object to contain editor event names and callback functions
 const events = {};
 
-getId = c.getId = function () { return getCurrentDrawing().getId(); };
-getNextId = c.getNextId = function () { return getCurrentDrawing().getNextId(); };
-
-// Function: call
-// Run the callback function associated with the given event
-//
-// Parameters:
-// event - String with the event name
-// arg - Argument to pass through to the callback function
-call = c.call = function (event, arg) {
-  if (events[event]) {
-    return events[event](this, arg);
-  }
-};
+canvas.call = call;
 
 // Function: bind
 // Attaches a callback function to an event
@@ -776,12 +942,11 @@ call = c.call = function (event, arg) {
 //
 // Return:
 // The previous event
-c.bind = function (event, f) {
+canvas.bind = function (event, f) {
   const old = events[event];
   events[event] = f;
   return old;
 };
-}(canvas));
 
 // Function: canvas.prepareSvg
 // Runs the SVG Document through the sanitizer and then updates its paths.
@@ -914,93 +1079,11 @@ let rootSctm = null;
 
 // Group: Selection
 
-// Function: clearSelection
-// Clears the selection. The 'selected' handler is then called.
-// Parameters:
-// noCall - Optional boolean that when true does not call the "selected" handler
-const clearSelection = this.clearSelection = function (noCall) {
-  selectedElements.map(function (elem) {
-    if (elem == null) return;
-
-    selectorManager.releaseSelector(elem);
-  });
-  selectedElements = [];
-
-  if (!noCall) { call('selected', selectedElements); }
-};
+this.clearSelection = clearSelection;
 
 // TODO: do we need to worry about selectedBBoxes here?
 
-// Function: addToSelection
-// Adds a list of elements to the selection. The 'selected' handler is then called.
-//
-// Parameters:
-// elemsToAdd - an array of DOM elements to add to the selection
-// showGrips - a boolean flag indicating whether the resize grips should be shown
-const addToSelection = this.addToSelection = function (elemsToAdd, showGrips) {
-  if (!elemsToAdd.length) { return; }
-  // find the first null in our selectedElements array
-
-  let j = 0;
-  while (j < selectedElements.length) {
-    if (selectedElements[j] == null) {
-      break;
-    }
-    ++j;
-  }
-
-  // now add each element consecutively
-  let i = elemsToAdd.length;
-  while (i--) {
-    let elem = elemsToAdd[i];
-    if (!elem) { continue; }
-    const bbox = utilsGetBBox(elem);
-    if (!bbox) { continue; }
-
-    if (elem.tagName === 'a' && elem.childNodes.length === 1) {
-      // Make "a" element's child be the selected element
-      elem = elem.firstChild;
-    }
-
-    // if it's not already there, add it
-    if (!selectedElements.includes(elem)) {
-      selectedElements[j] = elem;
-
-      // only the first selectedBBoxes element is ever used in the codebase these days
-      // if (j === 0) selectedBBoxes[0] = utilsGetBBox(elem);
-      j++;
-      const sel = selectorManager.requestSelector(elem, bbox);
-
-      if (selectedElements.length > 1) {
-        sel.showGrips(false);
-      }
-    }
-  }
-  call('selected', selectedElements);
-
-  if (showGrips || selectedElements.length === 1) {
-    selectorManager.requestSelector(selectedElements[0]).showGrips(true);
-  } else {
-    selectorManager.requestSelector(selectedElements[0]).showGrips(false);
-  }
-
-  // make sure the elements are in the correct order
-  // See: https://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
-
-  selectedElements.sort(function (a, b) {
-    if (a && b && a.compareDocumentPosition) {
-      return 3 - (b.compareDocumentPosition(a) & 6);
-    }
-    if (a == null) {
-      return 1;
-    }
-  });
-
-  // Make sure first elements are not null
-  while (selectedElements[0] == null) {
-    selectedElements.shift(0);
-  }
-};
+this.addToSelection = addToSelection;
 
 // Function: selectOnly()
 // Selects only the given elements, shortcut for clearSelection(); addToSelection()
@@ -1053,68 +1136,6 @@ this.selectAllInCurrentLayer = function () {
     currentMode = 'select';
     selectOnly($(currentGroup || currentLayer).children());
   }
-};
-
-// Function: getMouseTarget
-// Gets the desired element from a mouse event
-//
-// Parameters:
-// evt - Event object from the mouse event
-//
-// Returns:
-// DOM element we want
-const getMouseTarget = this.getMouseTarget = function (evt) {
-  if (evt == null) {
-    return null;
-  }
-  let mouseTarget = evt.target;
-
-  // if it was a <use>, Opera and WebKit return the SVGElementInstance
-  if (mouseTarget.correspondingUseElement) { mouseTarget = mouseTarget.correspondingUseElement; }
-
-  // for foreign content, go up until we find the foreignObject
-  // WebKit browsers set the mouse target to the svgcanvas div
-  if ([NS.MATH, NS.HTML].includes(mouseTarget.namespaceURI) &&
-    mouseTarget.id !== 'svgcanvas'
-  ) {
-    while (mouseTarget.nodeName !== 'foreignObject') {
-      mouseTarget = mouseTarget.parentNode;
-      if (!mouseTarget) { return svgroot; }
-    }
-  }
-
-  // Get the desired mouseTarget with jQuery selector-fu
-  // If it's root-like, select the root
-  const currentLayer = getCurrentDrawing().getCurrentLayer();
-  if ([svgroot, container, svgcontent, currentLayer].includes(mouseTarget)) {
-    return svgroot;
-  }
-
-  const $target = $(mouseTarget);
-
-  // If it's a selection grip, return the grip parent
-  if ($target.closest('#selectorParentGroup').length) {
-    // While we could instead have just returned mouseTarget,
-    // this makes it easier to indentify as being a selector grip
-    return selectorManager.selectorParentGroup;
-  }
-
-  while (mouseTarget.parentNode !== (currentGroup || currentLayer)) {
-    mouseTarget = mouseTarget.parentNode;
-  }
-
-  //
-  // // go up until we hit a child of a layer
-  // while (mouseTarget.parentNode.parentNode.tagName == 'g') {
-  //   mouseTarget = mouseTarget.parentNode;
-  // }
-  // Webkit bubbles the mouse event all the way up to the div, so we
-  // set the mouseTarget to the svgroot like the other browsers
-  // if (mouseTarget.nodeName.toLowerCase() == 'div') {
-  //   mouseTarget = svgroot;
-  // }
-
-  return mouseTarget;
 };
 
 let drawnPath = null;
@@ -1300,11 +1321,11 @@ const mouseDown = function (evt) {
       // console.log('s',[startX, startY]);
 
       assignAttributes(rubberBox, {
-        'x': rStartX,
-        'y': rStartY,
-        'width': 0,
-        'height': 0,
-        'display': 'inline'
+        x: rStartX,
+        y: rStartY,
+        width: 0,
+        height: 0,
+        display: 'inline'
       }, 100);
     }
     break;
@@ -1314,11 +1335,11 @@ const mouseDown = function (evt) {
       rubberBox = selectorManager.getRubberBandBox();
     }
     assignAttributes(rubberBox, {
-      'x': realX * currentZoom,
-      'y': realX * currentZoom,
-      'width': 0,
-      'height': 0,
-      'display': 'inline'
+      x: realX * currentZoom,
+      y: realX * currentZoom,
+      width: 0,
+      height: 0,
+      display: 'inline'
     }, 100);
     break;
   case 'resize':
@@ -1633,10 +1654,10 @@ const mouseMove = function (evt) {
     realX *= currentZoom;
     realY *= currentZoom;
     assignAttributes(rubberBox, {
-      'x': Math.min(rStartX, realX),
-      'y': Math.min(rStartY, realY),
-      'width': Math.abs(realX - rStartX),
-      'height': Math.abs(realY - rStartY)
+      x: Math.min(rStartX, realX),
+      y: Math.min(rStartY, realY),
+      width: Math.abs(realX - rStartX),
+      height: Math.abs(realY - rStartY)
     }, 100);
 
     // for each selected:
@@ -1766,10 +1787,10 @@ const mouseMove = function (evt) {
     realX *= currentZoom;
     realY *= currentZoom;
     assignAttributes(rubberBox, {
-      'x': Math.min(rStartX * currentZoom, realX),
-      'y': Math.min(rStartY * currentZoom, realY),
-      'width': Math.abs(realX - rStartX * currentZoom),
-      'height': Math.abs(realY - rStartY * currentZoom)
+      x: Math.min(rStartX * currentZoom, realX),
+      y: Math.min(rStartY * currentZoom, realY),
+      width: Math.abs(realX - rStartX * currentZoom),
+      height: Math.abs(realY - rStartY * currentZoom)
     }, 100);
     break;
   } case 'text': {
@@ -1825,10 +1846,10 @@ const mouseMove = function (evt) {
     }
 
     assignAttributes(shape, {
-      'width': w,
-      'height': h,
-      'x': newX,
-      'y': newY
+      width: w,
+      height: h,
+      x: newX,
+      y: newY
     }, 1000);
 
     break;
@@ -1918,10 +1939,10 @@ const mouseMove = function (evt) {
       realX *= currentZoom;
       realY *= currentZoom;
       assignAttributes(rubberBox, {
-        'x': Math.min(rStartX * currentZoom, realX),
-        'y': Math.min(rStartY * currentZoom, realY),
-        'width': Math.abs(realX - rStartX * currentZoom),
-        'height': Math.abs(realY - rStartY * currentZoom)
+        x: Math.min(rStartX * currentZoom, realX),
+        y: Math.min(rStartY * currentZoom, realY),
+        width: Math.abs(realX - rStartX * currentZoom),
+        height: Math.abs(realY - rStartY * currentZoom)
       }, 100);
     }
     pathActions.mouseMove(x, y);
@@ -1932,10 +1953,10 @@ const mouseMove = function (evt) {
     y *= currentZoom;
     // if (rubberBox && rubberBox.getAttribute('display') !== 'none') {
     //   assignAttributes(rubberBox, {
-    //     'x': Math.min(startX, x),
-    //     'y': Math.min(startY, y),
-    //     'width': Math.abs(x - startX),
-    //     'height': Math.abs(y - startY)
+    //     x: Math.min(startX, x),
+    //     y: Math.min(startY, y),
+    //     width: Math.abs(x - startX),
+    //     height: Math.abs(y - startY)
     //   }, 100);
     // }
 
@@ -2321,7 +2342,7 @@ const dblClick = function (evt) {
   }
   // Reset context
   if (currentGroup) {
-    leaveContext();
+    draw.leaveContext();
   }
 
   if ((parent.tagName !== 'g' && parent.tagName !== 'a') ||
@@ -2331,7 +2352,7 @@ const dblClick = function (evt) {
     // Escape from in-group edit
     return;
   }
-  setContext(mouseTarget);
+  draw.setContext(mouseTarget);
 };
 
 // prevent links from being followed in the canvas
@@ -2347,26 +2368,83 @@ $(container).mousedown(mouseDown).mousemove(mouseMove).click(handleLinkInCanvas)
 
 // TODO(rafaelcastrocouto): User preference for shift key and zoom factor
 $(container).bind('mousewheel DOMMouseScroll', function (e) {
-  // if (!e.shiftKey) { return; }
+  if (!e.shiftKey) { return; }
+
   e.preventDefault();
   const evt = e.originalEvent;
 
   rootSctm = $('#svgcontent g')[0].getScreenCTM().inverse();
-  const pt = transformPoint(evt.pageX, evt.pageY, rootSctm);
 
-  const bbox = {
-    'x': pt.x,
-    'y': pt.y,
-    'width': 0,
-    'height': 0
-  };
+  const workarea = $('#workarea');
+	const scrbar = 15;
+	const rulerwidth = curConfig.showRulers ? 16 : 0;
+
+	// mouse relative to content area in content pixels
+	const pt = transformPoint(evt.pageX, evt.pageY, rootSctm);
+
+	// full work area width in screen pixels
+	const editorFullW = workarea.width();
+	const editorFullH = workarea.height();
+
+	// work area width minus scroll and ruler in screen pixels
+	const editorW = editorFullW - scrbar - rulerwidth;
+	const editorH = editorFullH - scrbar - rulerwidth;
+
+	// work area width in content pixels
+	const workareaViewW = editorW * rootSctm.a;
+	const workareaViewH = editorH * rootSctm.d;
+
+	// content offset from canvas in screen pixels
+	const wOffset = workarea.offset();
+	const wOffsetLeft = wOffset['left'] + rulerwidth;
+	const wOffsetTop = wOffset['top'] + rulerwidth;
 
   const delta = (evt.wheelDelta) ? evt.wheelDelta : (evt.detail) ? -evt.detail : 0;
   if (!delta) { return; }
 
-  bbox.factor = Math.max(3 / 4, Math.min(4 / 3, (delta)));
+  let factor = Math.max(3 / 4, Math.min(4 / 3, (delta)));
 
-  call('zoomed', bbox);
+  let wZoom, hZoom;
+	if (factor > 1) {
+		wZoom = Math.ceil(editorW / workareaViewW * factor * 100) / 100;
+		hZoom = Math.ceil(editorH / workareaViewH * factor * 100) / 100;
+	} else {
+		wZoom = Math.floor(editorW / workareaViewW * factor * 100) / 100;
+		hZoom = Math.floor(editorH / workareaViewH * factor * 100) / 100;
+	}
+	let zoomlevel = Math.min(wZoom, hZoom);
+	zoomlevel = Math.min(10, Math.max(0.01, zoomlevel));
+	if (zoomlevel === currentZoom) {
+		return;
+	}
+	factor = zoomlevel / currentZoom;
+
+	// top left of workarea in content pixels before zoom
+	const topLeftOld = transformPoint(wOffsetLeft, wOffsetTop, rootSctm);
+
+	// top left of workarea in content pixels after zoom
+	const topLeftNew = {
+		x: pt.x - (pt.x - topLeftOld.x) / factor,
+		y: pt.y - (pt.y - topLeftOld.y) / factor
+	};
+
+	// top left of workarea in canvas pixels relative to content after zoom
+	const topLeftNewCanvas = {
+		x: topLeftNew.x * zoomlevel,
+		y: topLeftNew.y * zoomlevel
+	};
+
+	// new center in canvas pixels
+	const newCtr = {
+		x: topLeftNewCanvas.x - rulerwidth + editorFullW / 2,
+		y: topLeftNewCanvas.y - rulerwidth + editorFullH / 2
+	};
+
+	canvas.setZoom(zoomlevel);
+	$('#zoom').val((zoomlevel * 100).toFixed(1));
+
+	call('updateCanvas', {center: false, newCtr});
+	call('zoomDone');
 });
 }());
 
@@ -2473,7 +2551,7 @@ function setSelection (start, end, skipInput) {
 
   assignAttributes(selblock, {
     d: dstr,
-    'display': 'inline'
+    display: 'inline'
   });
 }
 
@@ -2767,886 +2845,6 @@ return {
 };
 }());
 
-// TODO: Migrate all of this code into path.js
-// Group: Path edit functions
-// Functions relating to editing path elements
-const pathActions = canvas.pathActions = (function () {
-let subpath = false;
-let newPoint, firstCtrl;
-
-let currentPath = null;
-let hasMoved = false;
-drawnPath = null;
-
-// This function converts a polyline (created by the fh_path tool) into
-// a path element and coverts every three line segments into a single bezier
-// curve in an attempt to smooth out the free-hand
-const smoothPolylineIntoPath = function (element) {
-  let i;
-  const {points} = element;
-  const N = points.numberOfItems;
-  if (N >= 4) {
-    // loop through every 3 points and convert to a cubic bezier curve segment
-    //
-    // NOTE: this is cheating, it means that every 3 points has the potential to
-    // be a corner instead of treating each point in an equal manner. In general,
-    // this technique does not look that good.
-    //
-    // I am open to better ideas!
-    //
-    // Reading:
-    // - http://www.efg2.com/Lab/Graphics/Jean-YvesQueinecBezierCurves.htm
-    // - https://www.codeproject.com/KB/graphics/BezierSpline.aspx?msg=2956963
-    // - https://www.ian-ko.com/ET_GeoWizards/UserGuide/smooth.htm
-    // - https://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html
-    let curpos = points.getItem(0), prevCtlPt = null;
-    let d = [];
-    d.push(['M', curpos.x, ',', curpos.y, ' C'].join(''));
-    for (i = 1; i <= (N - 4); i += 3) {
-      let ct1 = points.getItem(i);
-      const ct2 = points.getItem(i + 1);
-      const end = points.getItem(i + 2);
-
-      // if the previous segment had a control point, we want to smooth out
-      // the control points on both sides
-      if (prevCtlPt) {
-        const newpts = pathModule.smoothControlPoints(prevCtlPt, ct1, curpos);
-        if (newpts && newpts.length === 2) {
-          const prevArr = d[d.length - 1].split(',');
-          prevArr[2] = newpts[0].x;
-          prevArr[3] = newpts[0].y;
-          d[d.length - 1] = prevArr.join(',');
-          ct1 = newpts[1];
-        }
-      }
-
-      d.push([ct1.x, ct1.y, ct2.x, ct2.y, end.x, end.y].join(','));
-
-      curpos = end;
-      prevCtlPt = ct2;
-    }
-    // handle remaining line segments
-    d.push('L');
-    while (i < N) {
-      const pt = points.getItem(i);
-      d.push([pt.x, pt.y].join(','));
-      i++;
-    }
-    d = d.join(' ');
-
-    // create new path element
-    element = addSvgElementFromJson({
-      element: 'path',
-      curStyles: true,
-      attr: {
-        id: getId(),
-        d,
-        fill: 'none'
-      }
-    });
-    // No need to call "changed", as this is already done under mouseUp
-  }
-  return element;
-};
-
-return {
-  mouseDown (evt, mouseTarget, startX, startY) {
-    let id;
-    if (currentMode === 'path') {
-      let mouseX = startX; // Was this meant to work with the other `mouseX`? (was defined globally so adding `let` to at least avoid a global)
-      let mouseY = startY; // Was this meant to work with the other `mouseY`? (was defined globally so adding `let` to at least avoid a global)
-
-      let x = mouseX / currentZoom,
-        y = mouseY / currentZoom,
-        stretchy = getElem('path_stretch_line');
-      newPoint = [x, y];
-
-      if (curConfig.gridSnapping) {
-        x = snapToGrid(x);
-        y = snapToGrid(y);
-        mouseX = snapToGrid(mouseX);
-        mouseY = snapToGrid(mouseY);
-      }
-
-      if (!stretchy) {
-        stretchy = document.createElementNS(NS.SVG, 'path');
-        assignAttributes(stretchy, {
-          id: 'path_stretch_line',
-          stroke: '#22C',
-          'stroke-width': '0.5',
-          fill: 'none'
-        });
-        stretchy = getElem('selectorParentGroup').appendChild(stretchy);
-      }
-      stretchy.setAttribute('display', 'inline');
-
-      let keep = null;
-      let index;
-      // if pts array is empty, create path element with M at current point
-      if (!drawnPath) {
-        const dAttr = 'M' + x + ',' + y + ' '; // Was this meant to work with the other `dAttr`? (was defined globally so adding `var` to at least avoid a global)
-        drawnPath = addSvgElementFromJson({
-          element: 'path',
-          curStyles: true,
-          attr: {
-            d: dAttr,
-            id: getNextId(),
-            opacity: curShape.opacity / 2
-          }
-        });
-        // set stretchy line to first point
-        stretchy.setAttribute('d', ['M', mouseX, mouseY, mouseX, mouseY].join(' '));
-        index = subpath ? pathModule.path.segs.length : 0;
-        pathModule.addPointGrip(index, mouseX, mouseY);
-      } else {
-        // determine if we clicked on an existing point
-        const seglist = drawnPath.pathSegList;
-        let i = seglist.numberOfItems;
-        const FUZZ = 6 / currentZoom;
-        let clickOnPoint = false;
-        while (i) {
-          i--;
-          const item = seglist.getItem(i);
-          const px = item.x, py = item.y;
-          // found a matching point
-          if (x >= (px - FUZZ) && x <= (px + FUZZ) &&
-            y >= (py - FUZZ) && y <= (py + FUZZ)
-          ) {
-            clickOnPoint = true;
-            break;
-          }
-        }
-
-        // get path element that we are in the process of creating
-        id = getId();
-
-        // Remove previous path object if previously created
-        pathModule.removePath_(id);
-
-        const newpath = getElem(id);
-        let newseg;
-        let sSeg;
-        const len = seglist.numberOfItems;
-        // if we clicked on an existing point, then we are done this path, commit it
-        // (i, i+1) are the x,y that were clicked on
-        if (clickOnPoint) {
-          // if clicked on any other point but the first OR
-          // the first point was clicked on and there are less than 3 points
-          // then leave the path open
-          // otherwise, close the path
-          if (i <= 1 && len >= 2) {
-            // Create end segment
-            const absX = seglist.getItem(0).x;
-            const absY = seglist.getItem(0).y;
-
-            sSeg = stretchy.pathSegList.getItem(1);
-            if (sSeg.pathSegType === 4) {
-              newseg = drawnPath.createSVGPathSegLinetoAbs(absX, absY);
-            } else {
-              newseg = drawnPath.createSVGPathSegCurvetoCubicAbs(
-                absX,
-                absY,
-                sSeg.x1 / currentZoom,
-                sSeg.y1 / currentZoom,
-                absX,
-                absY
-              );
-            }
-
-            const endseg = drawnPath.createSVGPathSegClosePath();
-            seglist.appendItem(newseg);
-            seglist.appendItem(endseg);
-          } else if (len < 3) {
-            keep = false;
-            return keep;
-          }
-          $(stretchy).remove();
-
-          // This will signal to commit the path
-          // const element = newpath; // Other event handlers define own `element`, so this was probably not meant to interact with them or one which shares state (as there were none); I therefore adding a missing `var` to avoid a global
-          drawnPath = null;
-          started = false;
-
-          if (subpath) {
-            if (pathModule.path.matrix) {
-              remapElement(newpath, {}, pathModule.path.matrix.inverse());
-            }
-
-            const newD = newpath.getAttribute('d');
-            const origD = $(pathModule.path.elem).attr('d');
-            $(pathModule.path.elem).attr('d', origD + newD);
-            $(newpath).remove();
-            if (pathModule.path.matrix) {
-              pathModule.recalcRotatedPath();
-            }
-            pathModule.path.init();
-            pathActions.toEditMode(pathModule.path.elem);
-            pathModule.path.selectPt();
-            return false;
-          }
-        // else, create a new point, update path element
-        } else {
-          // Checks if current target or parents are #svgcontent
-          if (!$.contains(container, getMouseTarget(evt))) {
-            // Clicked outside canvas, so don't make point
-            console.log('Clicked outside canvas');
-            return false;
-          }
-
-          const num = drawnPath.pathSegList.numberOfItems;
-          const last = drawnPath.pathSegList.getItem(num - 1);
-          const lastx = last.x, lasty = last.y;
-
-          if (evt.shiftKey) {
-            const xya = snapToAngle(lastx, lasty, x, y);
-            ({x, y} = xya);
-          }
-
-          // Use the segment defined by stretchy
-          sSeg = stretchy.pathSegList.getItem(1);
-          if (sSeg.pathSegType === 4) {
-            newseg = drawnPath.createSVGPathSegLinetoAbs(round(x), round(y));
-          } else {
-            newseg = drawnPath.createSVGPathSegCurvetoCubicAbs(
-              round(x),
-              round(y),
-              sSeg.x1 / currentZoom,
-              sSeg.y1 / currentZoom,
-              sSeg.x2 / currentZoom,
-              sSeg.y2 / currentZoom
-            );
-          }
-
-          drawnPath.pathSegList.appendItem(newseg);
-
-          x *= currentZoom;
-          y *= currentZoom;
-
-          // set stretchy line to latest point
-          stretchy.setAttribute('d', ['M', x, y, x, y].join(' '));
-          index = num;
-          if (subpath) { index += pathModule.path.segs.length; }
-          pathModule.addPointGrip(index, x, y);
-        }
-        // keep = true;
-      }
-
-      return;
-    }
-
-    // TODO: Make sure currentPath isn't null at this point
-    if (!pathModule.path) { return; }
-
-    pathModule.path.storeD();
-
-    ({id} = evt.target);
-    let curPt;
-    if (id.substr(0, 14) === 'pathpointgrip_') {
-      // Select this point
-      curPt = pathModule.path.cur_pt = parseInt(id.substr(14), 10);
-      pathModule.path.dragging = [startX, startY];
-      const seg = pathModule.path.segs[curPt];
-
-      // only clear selection if shift is not pressed (otherwise, add
-      // node to selection)
-      if (!evt.shiftKey) {
-        if (pathModule.path.selected_pts.length <= 1 || !seg.selected) {
-          pathModule.path.clearSelection();
-        }
-        pathModule.path.addPtsToSelection(curPt);
-      } else if (seg.selected) {
-        pathModule.path.removePtFromSelection(curPt);
-      } else {
-        pathModule.path.addPtsToSelection(curPt);
-      }
-    } else if (id.startsWith('ctrlpointgrip_')) {
-      pathModule.path.dragging = [startX, startY];
-
-      const parts = id.split('_')[1].split('c');
-      curPt = Number(parts[0]);
-      const ctrlNum = Number(parts[1]);
-      pathModule.path.selectPt(curPt, ctrlNum);
-    }
-
-    // Start selection box
-    if (!pathModule.path.dragging) {
-      if (rubberBox == null) {
-        rubberBox = selectorManager.getRubberBandBox();
-      }
-      assignAttributes(rubberBox, {
-        'x': startX * currentZoom,
-        'y': startY * currentZoom,
-        'width': 0,
-        'height': 0,
-        'display': 'inline'
-      }, 100);
-    }
-  },
-  mouseMove (mouseX, mouseY) {
-    hasMoved = true;
-    if (currentMode === 'path') {
-      if (!drawnPath) { return; }
-      const seglist = drawnPath.pathSegList;
-      const index = seglist.numberOfItems - 1;
-
-      if (newPoint) {
-        // First point
-        // if (!index) { return; }
-
-        // Set control points
-        const pointGrip1 = pathModule.addCtrlGrip('1c1');
-        const pointGrip2 = pathModule.addCtrlGrip('0c2');
-
-        // dragging pointGrip1
-        pointGrip1.setAttribute('cx', mouseX);
-        pointGrip1.setAttribute('cy', mouseY);
-        pointGrip1.setAttribute('display', 'inline');
-
-        const ptX = newPoint[0];
-        const ptY = newPoint[1];
-
-        // set curve
-        // const seg = seglist.getItem(index);
-        const curX = mouseX / currentZoom;
-        const curY = mouseY / currentZoom;
-        const altX = (ptX + (ptX - curX));
-        const altY = (ptY + (ptY - curY));
-
-        pointGrip2.setAttribute('cx', altX * currentZoom);
-        pointGrip2.setAttribute('cy', altY * currentZoom);
-        pointGrip2.setAttribute('display', 'inline');
-
-        const ctrlLine = pathModule.getCtrlLine(1);
-        assignAttributes(ctrlLine, {
-          x1: mouseX,
-          y1: mouseY,
-          x2: altX * currentZoom,
-          y2: altY * currentZoom,
-          display: 'inline'
-        });
-
-        if (index === 0) {
-          firstCtrl = [mouseX, mouseY];
-        } else {
-          const last = seglist.getItem(index - 1);
-          let lastX = last.x;
-          let lastY = last.y;
-
-          if (last.pathSegType === 6) {
-            lastX += (lastX - last.x2);
-            lastY += (lastY - last.y2);
-          } else if (firstCtrl) {
-            lastX = firstCtrl[0] / currentZoom;
-            lastY = firstCtrl[1] / currentZoom;
-          }
-          pathModule.replacePathSeg(6, index, [ptX, ptY, lastX, lastY, altX, altY], drawnPath);
-        }
-      } else {
-        const stretchy = getElem('path_stretch_line');
-        if (stretchy) {
-          const prev = seglist.getItem(index);
-          if (prev.pathSegType === 6) {
-            const prevX = prev.x + (prev.x - prev.x2);
-            const prevY = prev.y + (prev.y - prev.y2);
-            pathModule.replacePathSeg(6, 1, [mouseX, mouseY, prevX * currentZoom, prevY * currentZoom, mouseX, mouseY], stretchy);
-          } else if (firstCtrl) {
-            pathModule.replacePathSeg(6, 1, [mouseX, mouseY, firstCtrl[0], firstCtrl[1], mouseX, mouseY], stretchy);
-          } else {
-            pathModule.replacePathSeg(4, 1, [mouseX, mouseY], stretchy);
-          }
-        }
-      }
-      return;
-    }
-    // if we are dragging a point, let's move it
-    if (pathModule.path.dragging) {
-      const pt = pathModule.getPointFromGrip({
-        x: pathModule.path.dragging[0],
-        y: pathModule.path.dragging[1]
-      }, pathModule.path);
-      const mpt = pathModule.getPointFromGrip({
-        x: mouseX,
-        y: mouseY
-      }, pathModule.path);
-      const diffX = mpt.x - pt.x;
-      const diffY = mpt.y - pt.y;
-      pathModule.path.dragging = [mouseX, mouseY];
-
-      if (pathModule.path.dragctrl) {
-        pathModule.path.moveCtrl(diffX, diffY);
-      } else {
-        pathModule.path.movePts(diffX, diffY);
-      }
-    } else {
-      pathModule.path.selected_pts = [];
-      pathModule.path.eachSeg(function (i) {
-        const seg = this;
-        if (!seg.next && !seg.prev) { return; }
-
-        // const {item} = seg;
-        const rbb = rubberBox.getBBox();
-
-        const pt = pathModule.getGripPt(seg);
-        const ptBb = {
-          x: pt.x,
-          y: pt.y,
-          width: 0,
-          height: 0
-        };
-
-        const sel = rectsIntersect(rbb, ptBb);
-
-        this.select(sel);
-        // Note that addPtsToSelection is not being run
-        if (sel) { pathModule.path.selected_pts.push(seg.index); }
-      });
-    }
-  },
-  mouseUp (evt, element, mouseX, mouseY) {
-    // Create mode
-    if (currentMode === 'path') {
-      newPoint = null;
-      if (!drawnPath) {
-        element = getElem(getId());
-        started = false;
-        firstCtrl = null;
-      }
-
-      return {
-        keep: true,
-        element
-      };
-    }
-
-    // Edit mode
-
-    if (pathModule.path.dragging) {
-      const lastPt = pathModule.path.cur_pt;
-
-      pathModule.path.dragging = false;
-      pathModule.path.dragctrl = false;
-      pathModule.path.update();
-
-      if (hasMoved) {
-        pathModule.path.endChanges('Move path point(s)');
-      }
-
-      if (!evt.shiftKey && !hasMoved) {
-        pathModule.path.selectPt(lastPt);
-      }
-    } else if (rubberBox && rubberBox.getAttribute('display') !== 'none') {
-      // Done with multi-node-select
-      rubberBox.setAttribute('display', 'none');
-
-      if (rubberBox.getAttribute('width') <= 2 && rubberBox.getAttribute('height') <= 2) {
-        pathActions.toSelectMode(evt.target);
-      }
-
-    // else, move back to select mode
-    } else {
-      pathActions.toSelectMode(evt.target);
-    }
-    hasMoved = false;
-  },
-  toEditMode (element) {
-    pathModule.path = pathModule.getPath_(element);
-    currentMode = 'pathedit';
-    clearSelection();
-    pathModule.path.show(true).update();
-    pathModule.path.oldbbox = utilsGetBBox(pathModule.path.elem);
-    subpath = false;
-  },
-  toSelectMode (elem) {
-    const selPath = (elem === pathModule.path.elem);
-    currentMode = 'select';
-    pathModule.path.show(false);
-    currentPath = false;
-    clearSelection();
-
-    if (pathModule.path.matrix) {
-      // Rotated, so may need to re-calculate the center
-      pathModule.recalcRotatedPath();
-    }
-
-    if (selPath) {
-      call('selected', [elem]);
-      addToSelection([elem], true);
-    }
-  },
-  addSubPath (on) {
-    if (on) {
-      // Internally we go into "path" mode, but in the UI it will
-      // still appear as if in "pathedit" mode.
-      currentMode = 'path';
-      subpath = true;
-    } else {
-      pathActions.clear(true);
-      pathActions.toEditMode(pathModule.path.elem);
-    }
-  },
-  select (target) {
-    if (currentPath === target) {
-      pathActions.toEditMode(target);
-      currentMode = 'pathedit';
-    // going into pathedit mode
-    } else {
-      currentPath = target;
-    }
-  },
-  reorient () {
-    const elem = selectedElements[0];
-    if (!elem) { return; }
-    const angle = getRotationAngle(elem);
-    if (angle === 0) { return; }
-
-    const batchCmd = new BatchCommand('Reorient path');
-    const changes = {
-      d: elem.getAttribute('d'),
-      transform: elem.getAttribute('transform')
-    };
-    batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
-    clearSelection();
-    this.resetOrientation(elem);
-
-    addCommandToHistory(batchCmd);
-
-    // Set matrix to null
-    pathModule.getPath_(elem).show(false).matrix = null;
-
-    this.clear();
-
-    addToSelection([elem], true);
-    call('changed', selectedElements);
-  },
-
-  clear (remove) {
-    currentPath = null;
-    if (drawnPath) {
-      const elem = getElem(getId());
-      $(getElem('path_stretch_line')).remove();
-      $(elem).remove();
-      $(getElem('pathpointgrip_container')).find('*').attr('display', 'none');
-      drawnPath = firstCtrl = null;
-      started = false;
-    } else if (currentMode === 'pathedit') {
-      this.toSelectMode();
-    }
-    if (pathModule.path) { pathModule.path.init().show(false); }
-  },
-  resetOrientation (path) {
-    if (path == null || path.nodeName !== 'path') { return false; }
-    const tlist = getTransformList(path);
-    const m = transformListToTransform(tlist).matrix;
-    tlist.clear();
-    path.removeAttribute('transform');
-    const segList = path.pathSegList;
-
-    // Opera/win/non-EN throws an error here.
-    // TODO: Find out why!
-    // Presumed fixed in Opera 10.5, so commented out for now
-
-    // try {
-    const len = segList.numberOfItems;
-    // } catch(err) {
-    //   const fixed_d = pathActions.convertPath(path);
-    //   path.setAttribute('d', fixed_d);
-    //   segList = path.pathSegList;
-    //   const len = segList.numberOfItems;
-    // }
-    // let lastX, lastY;
-    for (let i = 0; i < len; ++i) {
-      const seg = segList.getItem(i);
-      const type = seg.pathSegType;
-      if (type === 1) { continue; }
-      const pts = [];
-      $.each(['', 1, 2], function (j, n) {
-        const x = seg['x' + n], y = seg['y' + n];
-        if (x !== undefined && y !== undefined) {
-          const pt = transformPoint(x, y, m);
-          pts.splice(pts.length, 0, pt.x, pt.y);
-        }
-      });
-      pathModule.replacePathSeg(type, i, pts, path);
-    }
-
-    reorientGrads(path, m);
-  },
-  zoomChange () {
-    if (currentMode === 'pathedit') {
-      pathModule.path.update();
-    }
-  },
-  getNodePoint () {
-    const selPt = pathModule.path.selected_pts.length ? pathModule.path.selected_pts[0] : 1;
-
-    const seg = pathModule.path.segs[selPt];
-    return {
-      x: seg.item.x,
-      y: seg.item.y,
-      type: seg.type
-    };
-  },
-  linkControlPoints (linkPoints) {
-    pathModule.setLinkControlPoints(linkPoints);
-  },
-  clonePathNode () {
-    pathModule.path.storeD();
-
-    const selPts = pathModule.path.selected_pts;
-    // const {segs} = pathModule.path;
-
-    let i = selPts.length;
-    const nums = [];
-
-    while (i--) {
-      const pt = selPts[i];
-      pathModule.path.addSeg(pt);
-
-      nums.push(pt + i);
-      nums.push(pt + i + 1);
-    }
-    pathModule.path.init().addPtsToSelection(nums);
-
-    pathModule.path.endChanges('Clone path node(s)');
-  },
-  opencloseSubPath () {
-    const selPts = pathModule.path.selected_pts;
-    // Only allow one selected node for now
-    if (selPts.length !== 1) { return; }
-
-    const {elem} = pathModule.path;
-    const list = elem.pathSegList;
-
-    // const len = list.numberOfItems;
-
-    const index = selPts[0];
-
-    let openPt = null;
-    let startItem = null;
-
-    // Check if subpath is already open
-    pathModule.path.eachSeg(function (i) {
-      if (this.type === 2 && i <= index) {
-        startItem = this.item;
-      }
-      if (i <= index) { return true; }
-      if (this.type === 2) {
-        // Found M first, so open
-        openPt = i;
-        return false;
-      }
-      if (this.type === 1) {
-        // Found Z first, so closed
-        openPt = false;
-        return false;
-      }
-    });
-
-    if (openPt == null) {
-      // Single path, so close last seg
-      openPt = pathModule.path.segs.length - 1;
-    }
-
-    if (openPt !== false) {
-      // Close this path
-
-      // Create a line going to the previous "M"
-      const newseg = elem.createSVGPathSegLinetoAbs(startItem.x, startItem.y);
-
-      const closer = elem.createSVGPathSegClosePath();
-      if (openPt === pathModule.path.segs.length - 1) {
-        list.appendItem(newseg);
-        list.appendItem(closer);
-      } else {
-        pathModule.insertItemBefore(elem, closer, openPt);
-        pathModule.insertItemBefore(elem, newseg, openPt);
-      }
-
-      pathModule.path.init().selectPt(openPt + 1);
-      return;
-    }
-
-    // M 1,1 L 2,2 L 3,3 L 1,1 z // open at 2,2
-    // M 2,2 L 3,3 L 1,1
-
-    // M 1,1 L 2,2 L 1,1 z M 4,4 L 5,5 L6,6 L 5,5 z
-    // M 1,1 L 2,2 L 1,1 z [M 4,4] L 5,5 L(M)6,6 L 5,5 z
-
-    const seg = pathModule.path.segs[index];
-
-    if (seg.mate) {
-      list.removeItem(index); // Removes last "L"
-      list.removeItem(index); // Removes the "Z"
-      pathModule.path.init().selectPt(index - 1);
-      return;
-    }
-
-    let lastM, zSeg;
-
-    // Find this sub-path's closing point and remove
-    for (let i = 0; i < list.numberOfItems; i++) {
-      const item = list.getItem(i);
-
-      if (item.pathSegType === 2) {
-        // Find the preceding M
-        lastM = i;
-      } else if (i === index) {
-        // Remove it
-        list.removeItem(lastM);
-        // index--;
-      } else if (item.pathSegType === 1 && index < i) {
-        // Remove the closing seg of this subpath
-        zSeg = i - 1;
-        list.removeItem(i);
-        break;
-      }
-    }
-
-    let num = (index - lastM) - 1;
-
-    while (num--) {
-      pathModule.insertItemBefore(elem, list.getItem(lastM), zSeg);
-    }
-
-    const pt = list.getItem(lastM);
-
-    // Make this point the new "M"
-    pathModule.replacePathSeg(2, lastM, [pt.x, pt.y]);
-
-    // i = index; // i is local here, so has no effect; what was the intent for this?
-
-    pathModule.path.init().selectPt(0);
-  },
-  deletePathNode () {
-    if (!pathActions.canDeleteNodes) { return; }
-    pathModule.path.storeD();
-
-    const selPts = pathModule.path.selected_pts;
-
-    let i = selPts.length;
-    while (i--) {
-      const pt = selPts[i];
-      pathModule.path.deleteSeg(pt);
-    }
-
-    // Cleanup
-    const cleanup = function () {
-      const segList = pathModule.path.elem.pathSegList;
-      let len = segList.numberOfItems;
-
-      const remItems = function (pos, count) {
-        while (count--) {
-          segList.removeItem(pos);
-        }
-      };
-
-      if (len <= 1) { return true; }
-
-      while (len--) {
-        const item = segList.getItem(len);
-        if (item.pathSegType === 1) {
-          const prev = segList.getItem(len - 1);
-          const nprev = segList.getItem(len - 2);
-          if (prev.pathSegType === 2) {
-            remItems(len - 1, 2);
-            cleanup();
-            break;
-          } else if (nprev.pathSegType === 2) {
-            remItems(len - 2, 3);
-            cleanup();
-            break;
-          }
-        } else if (item.pathSegType === 2) {
-          if (len > 0) {
-            const prevType = segList.getItem(len - 1).pathSegType;
-            // Path has M M
-            if (prevType === 2) {
-              remItems(len - 1, 1);
-              cleanup();
-              break;
-            // Entire path ends with Z M
-            } else if (prevType === 1 && segList.numberOfItems - 1 === len) {
-              remItems(len, 1);
-              cleanup();
-              break;
-            }
-          }
-        }
-      }
-      return false;
-    };
-
-    cleanup();
-
-    // Completely delete a path with 1 or 0 segments
-    if (pathModule.path.elem.pathSegList.numberOfItems <= 1) {
-      pathActions.toSelectMode(pathModule.path.elem);
-      canvas.deleteSelectedElements();
-      return;
-    }
-
-    pathModule.path.init();
-    pathModule.path.clearSelection();
-
-    // TODO: Find right way to select point now
-    // path.selectPt(selPt);
-    if (window.opera) { // Opera repaints incorrectly
-      const cp = $(pathModule.path.elem);
-      cp.attr('d', cp.attr('d'));
-    }
-    pathModule.path.endChanges('Delete path node(s)');
-  },
-  smoothPolylineIntoPath,
-  setSegType (v) {
-    pathModule.path.setSegType(v);
-  },
-  moveNode (attr, newValue) {
-    const selPts = pathModule.path.selected_pts;
-    if (!selPts.length) { return; }
-
-    pathModule.path.storeD();
-
-    // Get first selected point
-    const seg = pathModule.path.segs[selPts[0]];
-    const diff = {x: 0, y: 0};
-    diff[attr] = newValue - seg.item[attr];
-
-    seg.move(diff.x, diff.y);
-    pathModule.path.endChanges('Move path point');
-  },
-  fixEnd (elem) {
-    // Adds an extra segment if the last seg before a Z doesn't end
-    // at its M point
-    // M0,0 L0,100 L100,100 z
-    const segList = elem.pathSegList;
-    const len = segList.numberOfItems;
-    let lastM;
-    for (let i = 0; i < len; ++i) {
-      const item = segList.getItem(i);
-      if (item.pathSegType === 2) {
-        lastM = item;
-      }
-
-      if (item.pathSegType === 1) {
-        const prev = segList.getItem(i - 1);
-        if (prev.x !== lastM.x || prev.y !== lastM.y) {
-          // Add an L segment here
-          const newseg = elem.createSVGPathSegLinetoAbs(lastM.x, lastM.y);
-          pathModule.insertItemBefore(elem, newseg, i);
-          // Can this be done better?
-          pathActions.fixEnd(elem);
-          break;
-        }
-      }
-    }
-    if (isWebkit()) { resetD(elem); }
-  },
-  // Convert a path to one with only absolute or relative values
-  convertPath
-};
-})();
-// end pathActions
-
 // Group: Serialization
 
 // Function: removeUnusedDefElems
@@ -3722,7 +2920,7 @@ this.svgCanvasToString = function () {
 
   // Move out of in-group editing mode
   if (currentGroup) {
-    leaveContext();
+    draw.leaveContext();
     selectOnly([currentGroup]);
   }
 
@@ -4001,8 +3199,8 @@ function getIssues ({codesOnly = false} = {}) {
 
   // Selector and notice
   const issueList = {
-    'feGaussianBlur': uiStrings.exportNoBlur,
-    'foreignObject': uiStrings.exportNoforeignObject,
+    feGaussianBlur: uiStrings.exportNoBlur,
+    foreignObject: uiStrings.exportNoforeignObject,
     '[stroke-dasharray]': uiStrings.exportNoDashArray
   };
   const content = $(svgcontent);
@@ -4559,7 +3757,7 @@ this.setSvgString = function (xmlString, preventUndo) {
     }
 
     // identify layers
-    identifyLayers();
+    draw.identifyLayers();
 
     // Give ID for any visible layer children missing one
     content.children().find(visElems).each(function () {
@@ -4568,7 +3766,7 @@ this.setSvgString = function (xmlString, preventUndo) {
 
     // Percentage width/height, so let's base it on visible elements
     if (percs) {
-      const bb = getStrokedBBox();
+      const bb = getStrokedBBoxDefaultVisible();
       attrs.width = bb.width + bb.x;
       attrs.height = bb.height + bb.y;
     }
@@ -4740,253 +3938,36 @@ this.importSvgString = function (xmlString) {
   return useEl;
 };
 
-// TODO(codedread): Move all layer/context functions in draw.js
-// Layer API Functions
-
-// Group: Layers
-
-// Function: identifyLayers
-// Updates layer system
-const identifyLayers = canvas.identifyLayers = function () {
-  leaveContext();
-  getCurrentDrawing().identifyLayers();
-};
-
-// Function: createLayer
-// Creates a new top-level layer in the drawing with the given name, sets the current layer
-// to it, and then clears the selection. This function then calls the 'changed' handler.
-// This is an undoable action.
-//
-// Parameters:
-// name - The given name
-this.createLayer = function (name, hrService) {
-  const newLayer = getCurrentDrawing().createLayer(name, historyRecordingService(hrService));
-  clearSelection();
-  call('changed', [newLayer]);
-};
-
-/**
- * Creates a new top-level layer in the drawing with the given name, copies all the current layer's contents
- * to it, and then clears the selection. This function then calls the 'changed' handler.
- * This is an undoable action.
- * @param {string} name - The given name. If the layer name exists, a new name will be generated.
- * @param {svgedit.history.HistoryRecordingService} hrService - History recording service
- */
-this.cloneLayer = function (name, hrService) {
-  // Clone the current layer and make the cloned layer the new current layer
-  const newLayer = getCurrentDrawing().cloneLayer(name, historyRecordingService(hrService));
-
-  clearSelection();
-  leaveContext();
-  call('changed', [newLayer]);
-};
-
-// Function: deleteCurrentLayer
-// Deletes the current layer from the drawing and then clears the selection. This function
-// then calls the 'changed' handler. This is an undoable action.
-this.deleteCurrentLayer = function () {
-  let currentLayer = getCurrentDrawing().getCurrentLayer();
-  const {nextSibling} = currentLayer;
-  const parent = currentLayer.parentNode;
-  currentLayer = getCurrentDrawing().deleteCurrentLayer();
-  if (currentLayer) {
-    const batchCmd = new BatchCommand('Delete Layer');
-    // store in our Undo History
-    batchCmd.addSubCommand(new RemoveElementCommand(currentLayer, nextSibling, parent));
-    addCommandToHistory(batchCmd);
-    clearSelection();
-    call('changed', [parent]);
-    return true;
+// Could deprecate, but besides external uses, their usage makes clear that
+//  canvas is a dependency for all of these
+[
+  'identifyLayers', 'createLayer', 'cloneLayer', 'deleteCurrentLayer',
+  'setCurrentLayer', 'renameCurrentLayer', 'setCurrentLayerPosition',
+  'setLayerVisibility', 'moveSelectedToLayer', 'mergeLayer', 'mergeAllLayers',
+  'leaveContext', 'setContext'
+].forEach((prop) => {
+  canvas[prop] = draw[prop];
+});
+draw.init({
+  pathActions,
+  getCurrentGroup () {
+    return currentGroup;
+  },
+  setCurrentGroup (cg) {
+    currentGroup = cg;
+  },
+  getSelectedElements,
+  getSVGContent,
+  undoMgr,
+  elData,
+  getCurrentDrawing,
+  clearSelection,
+  call,
+  addCommandToHistory,
+  changeSvgcontent () {
+    call('changed', [svgcontent]);
   }
-  return false;
-};
-
-// Function: setCurrentLayer
-// Sets the current layer. If the name is not a valid layer name, then this function returns
-// false. Otherwise it returns true. This is not an undo-able action.
-//
-// Parameters:
-// name - the name of the layer you want to switch to.
-//
-// Returns:
-// true if the current layer was switched, otherwise false
-this.setCurrentLayer = function (name) {
-  const result = getCurrentDrawing().setCurrentLayer(toXml(name));
-  if (result) {
-    clearSelection();
-  }
-  return result;
-};
-
-// Function: renameCurrentLayer
-// Renames the current layer. If the layer name is not valid (i.e. unique), then this function
-// does nothing and returns false, otherwise it returns true. This is an undo-able action.
-//
-// Parameters:
-// newname - the new name you want to give the current layer. This name must be unique
-// among all layer names.
-//
-// Returns:
-// true if the rename succeeded, false otherwise.
-this.renameCurrentLayer = function (newname) {
-  const drawing = getCurrentDrawing();
-  const layer = drawing.getCurrentLayer();
-  if (layer) {
-    const result = drawing.setCurrentLayerName(newname, historyRecordingService());
-    if (result) {
-      call('changed', [layer]);
-      return true;
-    }
-  }
-  return false;
-};
-
-// Function: setCurrentLayerPosition
-// Changes the position of the current layer to the new value. If the new index is not valid,
-// this function does nothing and returns false, otherwise it returns true. This is an
-// undo-able action.
-//
-// Parameters:
-// newpos - The zero-based index of the new position of the layer. This should be between
-// 0 and (number of layers - 1)
-//
-// Returns:
-// true if the current layer position was changed, false otherwise.
-this.setCurrentLayerPosition = function (newpos) {
-  const drawing = getCurrentDrawing();
-  const result = drawing.setCurrentLayerPosition(newpos);
-  if (result) {
-    addCommandToHistory(new MoveElementCommand(result.currentGroup, result.oldNextSibling, svgcontent));
-    return true;
-  }
-  return false;
-};
-
-// Function: setLayerVisibility
-// Sets the visibility of the layer. If the layer name is not valid, this function return
-// false, otherwise it returns true. This is an undo-able action.
-//
-// Parameters:
-// layername - the name of the layer to change the visibility
-// bVisible - true/false, whether the layer should be visible
-//
-// Returns:
-// true if the layer's visibility was set, false otherwise
-this.setLayerVisibility = function (layername, bVisible) {
-  const drawing = getCurrentDrawing();
-  const prevVisibility = drawing.getLayerVisibility(layername);
-  const layer = drawing.setLayerVisibility(layername, bVisible);
-  if (layer) {
-    const oldDisplay = prevVisibility ? 'inline' : 'none';
-    addCommandToHistory(new ChangeElementCommand(layer, {'display': oldDisplay}, 'Layer Visibility'));
-  } else {
-    return false;
-  }
-
-  if (layer === drawing.getCurrentLayer()) {
-    clearSelection();
-    pathActions.clear();
-  }
-  // call('changed', [selected]);
-  return true;
-};
-
-// Function: moveSelectedToLayer
-// Moves the selected elements to layername. If the name is not a valid layer name, then false
-// is returned. Otherwise it returns true. This is an undo-able action.
-//
-// Parameters:
-// layername - the name of the layer you want to which you want to move the selected elements
-//
-// Returns:
-// true if the selected elements were moved to the layer, false otherwise.
-this.moveSelectedToLayer = function (layername) {
-  // find the layer
-  const drawing = getCurrentDrawing();
-  const layer = drawing.getLayerByName(layername);
-  if (!layer) { return false; }
-
-  const batchCmd = new BatchCommand('Move Elements to Layer');
-
-  // loop for each selected element and move it
-  const selElems = selectedElements;
-  let i = selElems.length;
-  while (i--) {
-    const elem = selElems[i];
-    if (!elem) { continue; }
-    const oldNextSibling = elem.nextSibling;
-    // TODO: this is pretty brittle!
-    const oldLayer = elem.parentNode;
-    layer.appendChild(elem);
-    batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldLayer));
-  }
-
-  addCommandToHistory(batchCmd);
-
-  return true;
-};
-
-this.mergeLayer = function (hrService) {
-  getCurrentDrawing().mergeLayer(historyRecordingService(hrService));
-  clearSelection();
-  leaveContext();
-  call('changed', [svgcontent]);
-};
-
-this.mergeAllLayers = function (hrService) {
-  getCurrentDrawing().mergeAllLayers(historyRecordingService(hrService));
-  clearSelection();
-  leaveContext();
-  call('changed', [svgcontent]);
-};
-
-// Function: leaveContext
-// Return from a group context to the regular kind, make any previously
-// disabled elements enabled again
-const leaveContext = this.leaveContext = function () {
-  const len = disabledElems.length;
-  if (len) {
-    for (let i = 0; i < len; i++) {
-      const elem = disabledElems[i];
-      const orig = elData(elem, 'orig_opac');
-      if (orig !== 1) {
-        elem.setAttribute('opacity', orig);
-      } else {
-        elem.removeAttribute('opacity');
-      }
-      elem.setAttribute('style', 'pointer-events: inherit');
-    }
-    disabledElems = [];
-    clearSelection(true);
-    call('contextset', null);
-  }
-  currentGroup = null;
-};
-
-// Function: setContext
-// Set the current context (for in-group editing)
-const setContext = this.setContext = function (elem) {
-  leaveContext();
-  if (typeof elem === 'string') {
-    elem = getElem(elem);
-  }
-
-  // Edit inside this group
-  currentGroup = elem;
-
-  // Disable other elements
-  $(elem).parentsUntil('#svgcontent').andSelf().siblings().each(function () {
-    const opac = this.getAttribute('opacity') || 1;
-    // Store the original's opacity
-    elData(this, 'orig_opac', opac);
-    this.setAttribute('opacity', opac * 0.33);
-    this.setAttribute('style', 'pointer-events: none');
-    disabledElems.push(this);
-  });
-
-  clearSelection();
-  call('contextset', currentGroup);
-};
+});
 
 // Group: Document functions
 
@@ -5030,15 +4011,11 @@ this.getContentElem = function () { return svgcontent; };
 // Returns the root DOM element
 this.getRootElem = function () { return svgroot; };
 
-// Function: getSelectedElems
-// Returns the array with selected DOM elements
-this.getSelectedElems = function () { return selectedElements; };
-
 // Function: getResolution
 // Returns the current dimensions and zoom level in an object
 const getResolution = this.getResolution = function () {
 //    const vb = svgcontent.getAttribute('viewBox').split(' ');
-//    return {'w':vb[2], 'h':vb[3], 'zoom': currentZoom};
+//    return {w:vb[2], h:vb[3], zoom: currentZoom};
 
   const w = svgcontent.getAttribute('width') / currentZoom;
   const h = svgcontent.getAttribute('height') / currentZoom;
@@ -5049,10 +4026,6 @@ const getResolution = this.getResolution = function () {
     zoom: currentZoom
   };
 };
-
-// Function: getZoom
-// Returns the current zoom level
-this.getZoom = function () { return currentZoom; };
 
 // Function: getSnapToGrid
 // Returns the current snap to grid setting
@@ -5200,7 +4173,7 @@ this.setResolution = function (x, y) {
 
   if (x === 'fit') {
     // Get bounding box
-    const bbox = getStrokedBBox();
+    const bbox = getStrokedBBoxDefaultVisible();
 
     if (bbox) {
       batchCmd = new BatchCommand('Fit Canvas to Content');
@@ -5235,10 +4208,10 @@ this.setResolution = function (x, y) {
 
     this.contentW = x;
     this.contentH = y;
-    batchCmd.addSubCommand(new ChangeElementCommand(svgcontent, {'width': w, 'height': h}));
+    batchCmd.addSubCommand(new ChangeElementCommand(svgcontent, {width: w, height: h}));
 
     svgcontent.setAttribute('viewBox', [0, 0, x / currentZoom, y / currentZoom].join(' '));
-    batchCmd.addSubCommand(new ChangeElementCommand(svgcontent, {'viewBox': ['0 0', w, h].join(' ')}));
+    batchCmd.addSubCommand(new ChangeElementCommand(svgcontent, {viewBox: ['0 0', w, h].join(' ')}));
 
     addCommandToHistory(batchCmd);
     call('changed', [svgcontent]);
@@ -5277,7 +4250,7 @@ this.setBBoxZoom = function (val, editorW, editorH) {
     if (bb.width === 0 || bb.height === 0) {
       const newzoom = bb.zoom ? bb.zoom : currentZoom * bb.factor;
       canvas.setZoom(newzoom);
-      return {'zoom': currentZoom, 'bbox': bb};
+      return {zoom: currentZoom, bbox: bb};
     }
     return calcZoom(bb);
   }
@@ -5286,7 +4259,7 @@ this.setBBoxZoom = function (val, editorW, editorH) {
   case 'selection':
     if (!selectedElements[0]) { return; }
     const selectedElems = $.map(selectedElements, function (n) { if (n) { return n; } });
-    bb = getStrokedBBox(selectedElems);
+    bb = getStrokedBBoxDefaultVisible(selectedElems);
     break;
   case 'canvas':
     const res = getResolution();
@@ -5294,10 +4267,10 @@ this.setBBoxZoom = function (val, editorW, editorH) {
     bb = {width: res.w, height: res.h, x: 0, y: 0};
     break;
   case 'content':
-    bb = getStrokedBBox();
+    bb = getStrokedBBoxDefaultVisible();
     break;
   case 'layer':
-    bb = getStrokedBBox(getVisibleElements(getCurrentDrawing().getCurrentLayer()));
+    bb = getStrokedBBoxDefaultVisible(getVisibleElements(getCurrentDrawing().getCurrentLayer()));
     break;
   default:
     return;
@@ -5477,48 +4450,6 @@ const findDuplicateGradient = function (grad) {
   return null;
 };
 
-function reorientGrads (elem, m) {
-  const bb = utilsGetBBox(elem);
-  for (let i = 0; i < 2; i++) {
-    const type = i === 0 ? 'fill' : 'stroke';
-    const attrVal = elem.getAttribute(type);
-    if (attrVal && attrVal.startsWith('url(')) {
-      const grad = getRefElem(attrVal);
-      if (grad.tagName === 'linearGradient') {
-        let x1 = grad.getAttribute('x1') || 0;
-        let y1 = grad.getAttribute('y1') || 0;
-        let x2 = grad.getAttribute('x2') || 1;
-        let y2 = grad.getAttribute('y2') || 0;
-
-        // Convert to USOU points
-        x1 = (bb.width * x1) + bb.x;
-        y1 = (bb.height * y1) + bb.y;
-        x2 = (bb.width * x2) + bb.x;
-        y2 = (bb.height * y2) + bb.y;
-
-        // Transform those points
-        const pt1 = transformPoint(x1, y1, m);
-        const pt2 = transformPoint(x2, y2, m);
-
-        // Convert back to BB points
-        const gCoords = {};
-
-        gCoords.x1 = (pt1.x - bb.x) / bb.width;
-        gCoords.y1 = (pt1.y - bb.y) / bb.height;
-        gCoords.x2 = (pt2.x - bb.x) / bb.width;
-        gCoords.y2 = (pt2.y - bb.y) / bb.height;
-
-        const newgrad = grad.cloneNode(true);
-        $(newgrad).attr(gCoords);
-
-        newgrad.id = getNextId();
-        findDefs().appendChild(newgrad);
-        elem.setAttribute(type, 'url(#' + newgrad.id + ')');
-      }
-    }
-  }
-}
-
 // Function: setPaint
 // Set a color/gradient to a fill/stroke
 //
@@ -5628,11 +4559,8 @@ this.getStyle = function () {
   return curShape;
 };
 
-// Function: getOpacity
 // Returns the current opacity
-this.getOpacity = function () {
-  return curShape.opacity;
-};
+this.getOpacity = getOpacity;
 
 // Function: setOpacity
 // Sets the given opacity to the current selected elements
@@ -5797,16 +4725,16 @@ canvas.setBlur = function (val, complete) {
     }
   } else {
     // Not found, so create
-    const newblur = addSvgElementFromJson({ 'element': 'feGaussianBlur',
-      'attr': {
-        'in': 'SourceGraphic',
-        'stdDeviation': val
+    const newblur = addSvgElementFromJson({ element: 'feGaussianBlur',
+      attr: {
+        in: 'SourceGraphic',
+        stdDeviation: val
       }
     });
 
-    filter = addSvgElementFromJson({ 'element': 'filter',
-      'attr': {
-        'id': elemId + '_blur'
+    filter = addSvgElementFromJson({ element: 'filter',
+      attr: {
+        id: elemId + '_blur'
       }
     });
 
@@ -6062,7 +4990,7 @@ this.setRectRadius = function (val) {
     if (r !== String(val)) {
       selected.setAttribute('rx', val);
       selected.setAttribute('ry', val);
-      addCommandToHistory(new ChangeElementCommand(selected, {'rx': r, 'ry': r}, 'Radius'));
+      addCommandToHistory(new ChangeElementCommand(selected, {rx: r, ry: r}, 'Radius'));
       call('changed', [selected]);
     }
   }
@@ -6119,16 +5047,16 @@ this.convertToPath = function (elem, getBBox) {
     // TODO: Why is this applying attributes from curShape, then inside utilities.convertToPath it's pulling addition attributes from elem?
     // TODO: If convertToPath is called with one elem, curShape and elem are probably the same; but calling with multiple is a bug or cool feature.
     const attrs = {
-      'fill': curShape.fill,
+      fill: curShape.fill,
       'fill-opacity': curShape.fill_opacity,
-      'stroke': curShape.stroke,
+      stroke: curShape.stroke,
       'stroke-width': curShape.stroke_width,
       'stroke-dasharray': curShape.stroke_dasharray,
       'stroke-linejoin': curShape.stroke_linejoin,
       'stroke-linecap': curShape.stroke_linecap,
       'stroke-opacity': curShape.stroke_opacity,
-      'opacity': curShape.opacity,
-      'visibility': 'hidden'
+      opacity: curShape.opacity,
+      visibility: 'hidden'
     };
     return convertToPath(elem, attrs, addSvgElementFromJson, pathActions, clearSelection, addToSelection, history, addCommandToHistory);
   }
@@ -6158,7 +5086,7 @@ const changeSelectedAttributeNoUndo = function (attr, newValue, elems) {
 
     // Set x,y vals on elements that don't have them
     if ((attr === 'x' || attr === 'y') && noXYElems.includes(elem.tagName)) {
-      const bbox = getStrokedBBox([elem]);
+      const bbox = getStrokedBBoxDefaultVisible([elem]);
       const diffX = attr === 'x' ? newValue - bbox.x : 0;
       const diffY = attr === 'y' ? newValue - bbox.y : 0;
       canvas.moveSelectedElements(diffX * currentZoom, diffY * currentZoom, true);
@@ -6393,7 +5321,7 @@ this.pasteElements = function (type, x, y) {
       ctrY = y;
     }
 
-    const bbox = getStrokedBBox(pasted);
+    const bbox = getStrokedBBoxDefaultVisible(pasted);
     const cx = ctrX - (bbox.x + bbox.width / 2),
       cy = ctrY - (bbox.y + bbox.height / 2),
       dx = [],
@@ -6441,9 +5369,9 @@ this.groupSelectedElements = function (type, urlArg) {
 
   // create and insert the group element
   const g = addSvgElementFromJson({
-    'element': type,
-    'attr': {
-      'id': getNextId()
+    element: type,
+    attr: {
+      id: getNextId()
     }
   });
   if (type === 'a') {
@@ -6782,7 +5710,7 @@ this.moveUpDownSelected = function (dir) {
   curBBoxes = [];
   let closest, foundCur;
   // jQuery sorts this list
-  const list = $(getIntersectionList(getStrokedBBox([selected]))).toArray();
+  const list = $(getIntersectionList(getStrokedBBoxDefaultVisible([selected]))).toArray();
   if (dir === 'Down') { list.reverse(); }
 
   $.each(list, function () {
@@ -6934,7 +5862,7 @@ this.alignSelectedElements = function (type, relativeTo) {
   for (let i = 0; i < len; ++i) {
     if (selectedElements[i] == null) { break; }
     const elem = selectedElements[i];
-    bboxes[i] = getStrokedBBox([elem]);
+    bboxes[i] = getStrokedBBoxDefaultVisible([elem]);
 
     // now bbox is axis-aligned and handles rotation
     switch (relativeTo) {
@@ -7061,8 +5989,8 @@ this.updateCanvas = function (w, h) {
   const bgImg = getElem('background_image');
   if (bgImg) {
     assignAttributes(bgImg, {
-      'width': '100%',
-      'height': '100%'
+      width: '100%',
+      height: '100%'
     });
   }
 
@@ -7086,11 +6014,11 @@ this.setBackground = function (color, url) {
     if (!bgImg) {
       bgImg = svgdoc.createElementNS(NS.SVG, 'image');
       assignAttributes(bgImg, {
-        'id': 'background_image',
-        'width': '100%',
-        'height': '100%',
-        'preserveAspectRatio': 'xMinYMin',
-        'style': 'pointer-events:none'
+        id: 'background_image',
+        width: '100%',
+        height: '100%',
+        preserveAspectRatio: 'xMinYMin',
+        style: 'pointer-events:none'
       });
     }
     setHref(bgImg, url);
@@ -7136,7 +6064,9 @@ this.cycleElement = function (next) {
 this.clear();
 
 // DEPRECATED: getPrivateMethods
-// Since all methods are/should be public somehow, this function should be removed
+// Since all methods are/should be public somehow, this function should be removed;
+//  we might require `import` in place of this in the future once ES6 Modules
+//  widespread
 
 // Being able to access private methods publicly seems wrong somehow,
 // but currently appears to be the best way to allow testing and provide
@@ -7148,9 +6078,14 @@ this.getPrivateMethods = function () {
     addSvgElementFromJson,
     assignAttributes,
     BatchCommand,
+    buildCanvgCallback,
     call,
+    canvg,
     ChangeElementCommand,
     copyElem (elem) { return getCurrentDrawing().copyElem(elem); },
+    decode64,
+    encode64,
+    executeAfterLoads,
     ffClone,
     findDefs,
     findDuplicateGradient,
@@ -7160,14 +6095,18 @@ this.getPrivateMethods = function () {
     getMouseTarget,
     getNextId,
     getPathBBox,
+    getTypeMap,
     getUrlFromAttr,
     hasMatrixTransform,
-    identifyLayers,
+    identifyLayers: draw.identifyLayers,
     InsertElementCommand,
+    isChrome,
     isIdentity,
+    isIE,
     logMatrix,
     matrixMultiply,
     MoveElementCommand,
+    NS,
     preventClickDefault,
     recalculateAllSelectedDimensions,
     recalculateDimensions,
@@ -7178,6 +6117,7 @@ this.getPrivateMethods = function () {
     runExtensions,
     sanitizeSvg,
     SVGEditTransformList,
+    text2xml,
     toString,
     transformBox,
     transformListToTransform,
@@ -7186,4 +6126,5 @@ this.getPrivateMethods = function () {
   };
   return obj;
 };
-};
+  } // End constructor
+} // End class

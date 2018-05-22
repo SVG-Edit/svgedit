@@ -1,24 +1,28 @@
 /* eslint-env qunit */
-/* globals svgedit, equals */
+
+import {NS} from '../editor/svgedit.js';
+import * as transformlist from '../editor/svgtransformlist.js';
+import * as utilities from '../editor/svgutils.js';
+import * as history from '../editor/history.js';
 
 // TODO(codedread): Write tests for handling history events.
 
 // Mocked out methods.
-svgedit.transformlist = {};
-svgedit.transformlist.removeElementFromListMap = function (elem) {};
-svgedit.utilities = {};
-svgedit.utilities.getHref = function (elem) { return '#foo'; };
-svgedit.utilities.setHref = function (elem, val) {};
-svgedit.utilities.getRotationAngle = function (elem) { return 0; };
+transformlist.changeRemoveElementFromListMap(function (elem) {});
+
+utilities.mock({
+  getHref (elem) { return '#foo'; },
+  setHref (elem, val) {},
+  getRotationAngle (elem) { return 0; }
+});
 
 // log function
-QUnit.log = function (details) {
+QUnit.log(function (details) {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }
-};
+});
 
-const {NS} = svgedit;
 // const svg = document.createElementNS(NS.SVG, 'svg');
 let undoMgr = null;
 const divparent = document.getElementById('divparent');
@@ -28,14 +32,14 @@ const div3 = document.getElementById('div3');
 const div4 = document.getElementById('div4');
 const div5 = document.getElementById('div5');
 
-module('svgedit.history');
+QUnit.module('svgedit.history');
 
 class MockCommand {
   constructor (optText) { this.text_ = optText; }
-  apply () {};
-  unapply () {};
-  getText () { return this.text_; };
-  elements () { return []; };
+  apply () {}
+  unapply () {}
+  getText () { return this.text_; }
+  elements () { return []; }
 }
 
 /*
@@ -45,69 +49,69 @@ class MockHistoryEventHandler {
 */
 
 function setUp () {
-  undoMgr = new svgedit.history.UndoManager();
+  undoMgr = new history.UndoManager();
 }
 function tearDown () {
   undoMgr = null;
 }
 
-test('Test svgedit.history package', function () {
-  expect(13);
+QUnit.test('Test svgedit.history package', function (assert) {
+  assert.expect(13);
 
-  ok(svgedit.history);
-  ok(svgedit.history.MoveElementCommand);
-  ok(svgedit.history.InsertElementCommand);
-  ok(svgedit.history.ChangeElementCommand);
-  ok(svgedit.history.RemoveElementCommand);
-  ok(svgedit.history.BatchCommand);
-  ok(svgedit.history.UndoManager);
-  equals(typeof svgedit.history.MoveElementCommand, typeof function () {});
-  equals(typeof svgedit.history.InsertElementCommand, typeof function () {});
-  equals(typeof svgedit.history.ChangeElementCommand, typeof function () {});
-  equals(typeof svgedit.history.RemoveElementCommand, typeof function () {});
-  equals(typeof svgedit.history.BatchCommand, typeof function () {});
-  equals(typeof svgedit.history.UndoManager, typeof function () {});
+  assert.ok(history);
+  assert.ok(history.MoveElementCommand);
+  assert.ok(history.InsertElementCommand);
+  assert.ok(history.ChangeElementCommand);
+  assert.ok(history.RemoveElementCommand);
+  assert.ok(history.BatchCommand);
+  assert.ok(history.UndoManager);
+  assert.equal(typeof history.MoveElementCommand, typeof function () {});
+  assert.equal(typeof history.InsertElementCommand, typeof function () {});
+  assert.equal(typeof history.ChangeElementCommand, typeof function () {});
+  assert.equal(typeof history.RemoveElementCommand, typeof function () {});
+  assert.equal(typeof history.BatchCommand, typeof function () {});
+  assert.equal(typeof history.UndoManager, typeof function () {});
 });
 
-test('Test UndoManager methods', function () {
-  expect(14);
+QUnit.test('Test UndoManager methods', function (assert) {
+  assert.expect(14);
   setUp();
 
-  ok(undoMgr);
-  ok(undoMgr.addCommandToHistory);
-  ok(undoMgr.getUndoStackSize);
-  ok(undoMgr.getRedoStackSize);
-  ok(undoMgr.resetUndoStack);
-  ok(undoMgr.getNextUndoCommandText);
-  ok(undoMgr.getNextRedoCommandText);
+  assert.ok(undoMgr);
+  assert.ok(undoMgr.addCommandToHistory);
+  assert.ok(undoMgr.getUndoStackSize);
+  assert.ok(undoMgr.getRedoStackSize);
+  assert.ok(undoMgr.resetUndoStack);
+  assert.ok(undoMgr.getNextUndoCommandText);
+  assert.ok(undoMgr.getNextRedoCommandText);
 
-  equals(typeof undoMgr, typeof {});
-  equals(typeof undoMgr.addCommandToHistory, typeof function () {});
-  equals(typeof undoMgr.getUndoStackSize, typeof function () {});
-  equals(typeof undoMgr.getRedoStackSize, typeof function () {});
-  equals(typeof undoMgr.resetUndoStack, typeof function () {});
-  equals(typeof undoMgr.getNextUndoCommandText, typeof function () {});
-  equals(typeof undoMgr.getNextRedoCommandText, typeof function () {});
+  assert.equal(typeof undoMgr, typeof {});
+  assert.equal(typeof undoMgr.addCommandToHistory, typeof function () {});
+  assert.equal(typeof undoMgr.getUndoStackSize, typeof function () {});
+  assert.equal(typeof undoMgr.getRedoStackSize, typeof function () {});
+  assert.equal(typeof undoMgr.resetUndoStack, typeof function () {});
+  assert.equal(typeof undoMgr.getNextUndoCommandText, typeof function () {});
+  assert.equal(typeof undoMgr.getNextRedoCommandText, typeof function () {});
 
   tearDown();
 });
 
-test('Test UndoManager.addCommandToHistory() function', function () {
-  expect(3);
+QUnit.test('Test UndoManager.addCommandToHistory() function', function (assert) {
+  assert.expect(3);
 
   setUp();
 
-  equals(undoMgr.getUndoStackSize(), 0);
+  assert.equal(undoMgr.getUndoStackSize(), 0);
   undoMgr.addCommandToHistory(new MockCommand());
-  equals(undoMgr.getUndoStackSize(), 1);
+  assert.equal(undoMgr.getUndoStackSize(), 1);
   undoMgr.addCommandToHistory(new MockCommand());
-  equals(undoMgr.getUndoStackSize(), 2);
+  assert.equal(undoMgr.getUndoStackSize(), 2);
 
   tearDown();
 });
 
-test('Test UndoManager.getUndoStackSize() and getRedoStackSize() functions', function () {
-  expect(18);
+QUnit.test('Test UndoManager.getUndoStackSize() and getRedoStackSize() functions', function (assert) {
+  assert.expect(18);
 
   setUp();
 
@@ -115,46 +119,46 @@ test('Test UndoManager.getUndoStackSize() and getRedoStackSize() functions', fun
   undoMgr.addCommandToHistory(new MockCommand());
   undoMgr.addCommandToHistory(new MockCommand());
 
-  equals(undoMgr.getUndoStackSize(), 3);
-  equals(undoMgr.getRedoStackSize(), 0);
+  assert.equal(undoMgr.getUndoStackSize(), 3);
+  assert.equal(undoMgr.getRedoStackSize(), 0);
 
   undoMgr.undo();
-  equals(undoMgr.getUndoStackSize(), 2);
-  equals(undoMgr.getRedoStackSize(), 1);
+  assert.equal(undoMgr.getUndoStackSize(), 2);
+  assert.equal(undoMgr.getRedoStackSize(), 1);
 
   undoMgr.undo();
-  equals(undoMgr.getUndoStackSize(), 1);
-  equals(undoMgr.getRedoStackSize(), 2);
+  assert.equal(undoMgr.getUndoStackSize(), 1);
+  assert.equal(undoMgr.getRedoStackSize(), 2);
 
   undoMgr.undo();
-  equals(undoMgr.getUndoStackSize(), 0);
-  equals(undoMgr.getRedoStackSize(), 3);
+  assert.equal(undoMgr.getUndoStackSize(), 0);
+  assert.equal(undoMgr.getRedoStackSize(), 3);
 
   undoMgr.undo();
-  equals(undoMgr.getUndoStackSize(), 0);
-  equals(undoMgr.getRedoStackSize(), 3);
+  assert.equal(undoMgr.getUndoStackSize(), 0);
+  assert.equal(undoMgr.getRedoStackSize(), 3);
 
   undoMgr.redo();
-  equals(undoMgr.getUndoStackSize(), 1);
-  equals(undoMgr.getRedoStackSize(), 2);
+  assert.equal(undoMgr.getUndoStackSize(), 1);
+  assert.equal(undoMgr.getRedoStackSize(), 2);
 
   undoMgr.redo();
-  equals(undoMgr.getUndoStackSize(), 2);
-  equals(undoMgr.getRedoStackSize(), 1);
+  assert.equal(undoMgr.getUndoStackSize(), 2);
+  assert.equal(undoMgr.getRedoStackSize(), 1);
 
   undoMgr.redo();
-  equals(undoMgr.getUndoStackSize(), 3);
-  equals(undoMgr.getRedoStackSize(), 0);
+  assert.equal(undoMgr.getUndoStackSize(), 3);
+  assert.equal(undoMgr.getRedoStackSize(), 0);
 
   undoMgr.redo();
-  equals(undoMgr.getUndoStackSize(), 3);
-  equals(undoMgr.getRedoStackSize(), 0);
+  assert.equal(undoMgr.getUndoStackSize(), 3);
+  assert.equal(undoMgr.getRedoStackSize(), 0);
 
   tearDown();
 });
 
-test('Test UndoManager.resetUndoStackSize() function', function () {
-  expect(4);
+QUnit.test('Test UndoManager.resetUndoStackSize() function', function (assert) {
+  assert.expect(4);
 
   setUp();
 
@@ -163,90 +167,90 @@ test('Test UndoManager.resetUndoStackSize() function', function () {
   undoMgr.addCommandToHistory(new MockCommand());
   undoMgr.undo();
 
-  equals(undoMgr.getUndoStackSize(), 2);
-  equals(undoMgr.getRedoStackSize(), 1);
+  assert.equal(undoMgr.getUndoStackSize(), 2);
+  assert.equal(undoMgr.getRedoStackSize(), 1);
 
   undoMgr.resetUndoStack();
 
-  equals(undoMgr.getUndoStackSize(), 0);
-  equals(undoMgr.getRedoStackSize(), 0);
+  assert.equal(undoMgr.getUndoStackSize(), 0);
+  assert.equal(undoMgr.getRedoStackSize(), 0);
 
   tearDown();
 });
 
-test('Test UndoManager.getNextUndoCommandText() function', function () {
-  expect(9);
+QUnit.test('Test UndoManager.getNextUndoCommandText() function', function (assert) {
+  assert.expect(9);
 
   setUp();
 
-  equals(undoMgr.getNextUndoCommandText(), '');
+  assert.equal(undoMgr.getNextUndoCommandText(), '');
 
   undoMgr.addCommandToHistory(new MockCommand('First'));
   undoMgr.addCommandToHistory(new MockCommand('Second'));
   undoMgr.addCommandToHistory(new MockCommand('Third'));
 
-  equals(undoMgr.getNextUndoCommandText(), 'Third');
+  assert.equal(undoMgr.getNextUndoCommandText(), 'Third');
 
   undoMgr.undo();
-  equals(undoMgr.getNextUndoCommandText(), 'Second');
+  assert.equal(undoMgr.getNextUndoCommandText(), 'Second');
 
   undoMgr.undo();
-  equals(undoMgr.getNextUndoCommandText(), 'First');
+  assert.equal(undoMgr.getNextUndoCommandText(), 'First');
 
   undoMgr.undo();
-  equals(undoMgr.getNextUndoCommandText(), '');
+  assert.equal(undoMgr.getNextUndoCommandText(), '');
 
   undoMgr.redo();
-  equals(undoMgr.getNextUndoCommandText(), 'First');
+  assert.equal(undoMgr.getNextUndoCommandText(), 'First');
 
   undoMgr.redo();
-  equals(undoMgr.getNextUndoCommandText(), 'Second');
+  assert.equal(undoMgr.getNextUndoCommandText(), 'Second');
 
   undoMgr.redo();
-  equals(undoMgr.getNextUndoCommandText(), 'Third');
+  assert.equal(undoMgr.getNextUndoCommandText(), 'Third');
 
   undoMgr.redo();
-  equals(undoMgr.getNextUndoCommandText(), 'Third');
+  assert.equal(undoMgr.getNextUndoCommandText(), 'Third');
 
   tearDown();
 });
 
-test('Test UndoManager.getNextRedoCommandText() function', function () {
-  expect(8);
+QUnit.test('Test UndoManager.getNextRedoCommandText() function', function (assert) {
+  assert.expect(8);
 
   setUp();
 
-  equals(undoMgr.getNextRedoCommandText(), '');
+  assert.equal(undoMgr.getNextRedoCommandText(), '');
 
   undoMgr.addCommandToHistory(new MockCommand('First'));
   undoMgr.addCommandToHistory(new MockCommand('Second'));
   undoMgr.addCommandToHistory(new MockCommand('Third'));
 
-  equals(undoMgr.getNextRedoCommandText(), '');
+  assert.equal(undoMgr.getNextRedoCommandText(), '');
 
   undoMgr.undo();
-  equals(undoMgr.getNextRedoCommandText(), 'Third');
+  assert.equal(undoMgr.getNextRedoCommandText(), 'Third');
 
   undoMgr.undo();
-  equals(undoMgr.getNextRedoCommandText(), 'Second');
+  assert.equal(undoMgr.getNextRedoCommandText(), 'Second');
 
   undoMgr.undo();
-  equals(undoMgr.getNextRedoCommandText(), 'First');
+  assert.equal(undoMgr.getNextRedoCommandText(), 'First');
 
   undoMgr.redo();
-  equals(undoMgr.getNextRedoCommandText(), 'Second');
+  assert.equal(undoMgr.getNextRedoCommandText(), 'Second');
 
   undoMgr.redo();
-  equals(undoMgr.getNextRedoCommandText(), 'Third');
+  assert.equal(undoMgr.getNextRedoCommandText(), 'Third');
 
   undoMgr.redo();
-  equals(undoMgr.getNextRedoCommandText(), '');
+  assert.equal(undoMgr.getNextRedoCommandText(), '');
 
   tearDown();
 });
 
-test('Test UndoManager.undo() and redo() functions', function () {
-  expect(10);
+QUnit.test('Test UndoManager.undo() and redo() functions', function (assert) {
+  assert.expect(10);
 
   setUp();
 
@@ -265,302 +269,305 @@ test('Test UndoManager.undo() and redo() functions', function () {
   undoMgr.addCommandToHistory(cmd2);
   undoMgr.addCommandToHistory(cmd3);
 
-  ok(!lastCalled);
+  assert.ok(!lastCalled);
 
   undoMgr.undo();
-  equals(lastCalled, 'cmd3.unapply');
+  assert.equal(lastCalled, 'cmd3.unapply');
 
   undoMgr.redo();
-  equals(lastCalled, 'cmd3.apply');
+  assert.equal(lastCalled, 'cmd3.apply');
 
   undoMgr.undo();
   undoMgr.undo();
-  equals(lastCalled, 'cmd2.unapply');
+  assert.equal(lastCalled, 'cmd2.unapply');
 
   undoMgr.undo();
-  equals(lastCalled, 'cmd1.unapply');
+  assert.equal(lastCalled, 'cmd1.unapply');
   lastCalled = null;
 
   undoMgr.undo();
-  ok(!lastCalled);
+  assert.ok(!lastCalled);
 
   undoMgr.redo();
-  equals(lastCalled, 'cmd1.apply');
+  assert.equal(lastCalled, 'cmd1.apply');
 
   undoMgr.redo();
-  equals(lastCalled, 'cmd2.apply');
+  assert.equal(lastCalled, 'cmd2.apply');
 
   undoMgr.redo();
-  equals(lastCalled, 'cmd3.apply');
+  assert.equal(lastCalled, 'cmd3.apply');
   lastCalled = null;
 
   undoMgr.redo();
-  ok(!lastCalled);
+  assert.ok(!lastCalled);
 
   tearDown();
 });
 
-test('Test MoveElementCommand', function () {
-  expect(26);
+QUnit.test('Test MoveElementCommand', function (assert) {
+  assert.expect(26);
 
   setUp();
 
-  let move = new svgedit.history.MoveElementCommand(div3, div1, divparent);
-  ok(move.unapply);
-  ok(move.apply);
-  equals(typeof move.unapply, typeof function () {});
-  equals(typeof move.apply, typeof function () {});
+  let move = new history.MoveElementCommand(div3, div1, divparent);
+  assert.ok(move.unapply);
+  assert.ok(move.apply);
+  assert.equal(typeof move.unapply, typeof function () {});
+  assert.equal(typeof move.apply, typeof function () {});
 
   move.unapply();
-  equals(divparent.firstElementChild, div3);
-  equals(divparent.firstElementChild.nextElementSibling, div1);
-  equals(divparent.lastElementChild, div2);
+  assert.equal(divparent.firstElementChild, div3);
+  assert.equal(divparent.firstElementChild.nextElementSibling, div1);
+  assert.equal(divparent.lastElementChild, div2);
 
   move.apply();
-  equals(divparent.firstElementChild, div1);
-  equals(divparent.firstElementChild.nextElementSibling, div2);
-  equals(divparent.lastElementChild, div3);
+  assert.equal(divparent.firstElementChild, div1);
+  assert.equal(divparent.firstElementChild.nextElementSibling, div2);
+  assert.equal(divparent.lastElementChild, div3);
 
-  move = new svgedit.history.MoveElementCommand(div1, null, divparent);
+  move = new history.MoveElementCommand(div1, null, divparent);
 
   move.unapply();
-  equals(divparent.firstElementChild, div2);
-  equals(divparent.firstElementChild.nextElementSibling, div3);
-  equals(divparent.lastElementChild, div1);
+  assert.equal(divparent.firstElementChild, div2);
+  assert.equal(divparent.firstElementChild.nextElementSibling, div3);
+  assert.equal(divparent.lastElementChild, div1);
 
   move.apply();
-  equals(divparent.firstElementChild, div1);
-  equals(divparent.firstElementChild.nextElementSibling, div2);
-  equals(divparent.lastElementChild, div3);
+  assert.equal(divparent.firstElementChild, div1);
+  assert.equal(divparent.firstElementChild.nextElementSibling, div2);
+  assert.equal(divparent.lastElementChild, div3);
 
-  move = new svgedit.history.MoveElementCommand(div2, div5, div4);
+  move = new history.MoveElementCommand(div2, div5, div4);
 
   move.unapply();
-  equals(divparent.firstElementChild, div1);
-  equals(divparent.firstElementChild.nextElementSibling, div3);
-  equals(divparent.lastElementChild, div3);
-  equals(div4.firstElementChild, div2);
-  equals(div4.firstElementChild.nextElementSibling, div5);
+  assert.equal(divparent.firstElementChild, div1);
+  assert.equal(divparent.firstElementChild.nextElementSibling, div3);
+  assert.equal(divparent.lastElementChild, div3);
+  assert.equal(div4.firstElementChild, div2);
+  assert.equal(div4.firstElementChild.nextElementSibling, div5);
 
   move.apply();
-  equals(divparent.firstElementChild, div1);
-  equals(divparent.firstElementChild.nextElementSibling, div2);
-  equals(divparent.lastElementChild, div3);
-  equals(div4.firstElementChild, div5);
-  equals(div4.lastElementChild, div5);
+  assert.equal(divparent.firstElementChild, div1);
+  assert.equal(divparent.firstElementChild.nextElementSibling, div2);
+  assert.equal(divparent.lastElementChild, div3);
+  assert.equal(div4.firstElementChild, div5);
+  assert.equal(div4.lastElementChild, div5);
 
   tearDown();
 });
 
-test('Test InsertElementCommand', function () {
-  expect(20);
+QUnit.test('Test InsertElementCommand', function (assert) {
+  assert.expect(20);
 
   setUp();
 
-  let insert = new svgedit.history.InsertElementCommand(div3);
-  ok(insert.unapply);
-  ok(insert.apply);
-  equals(typeof insert.unapply, typeof function () {});
-  equals(typeof insert.apply, typeof function () {});
+  let insert = new history.InsertElementCommand(div3);
+  assert.ok(insert.unapply);
+  assert.ok(insert.apply);
+  assert.equal(typeof insert.unapply, typeof function () {});
+  assert.equal(typeof insert.apply, typeof function () {});
 
   insert.unapply();
-  equals(divparent.childElementCount, 2);
-  equals(divparent.firstElementChild, div1);
-  equals(div1.nextElementSibling, div2);
-  equals(divparent.lastElementChild, div2);
+  assert.equal(divparent.childElementCount, 2);
+  assert.equal(divparent.firstElementChild, div1);
+  assert.equal(div1.nextElementSibling, div2);
+  assert.equal(divparent.lastElementChild, div2);
 
   insert.apply();
-  equals(divparent.childElementCount, 3);
-  equals(divparent.firstElementChild, div1);
-  equals(div1.nextElementSibling, div2);
-  equals(div2.nextElementSibling, div3);
+  assert.equal(divparent.childElementCount, 3);
+  assert.equal(divparent.firstElementChild, div1);
+  assert.equal(div1.nextElementSibling, div2);
+  assert.equal(div2.nextElementSibling, div3);
 
-  insert = new svgedit.history.InsertElementCommand(div2);
+  insert = new history.InsertElementCommand(div2);
 
   insert.unapply();
-  equals(divparent.childElementCount, 2);
-  equals(divparent.firstElementChild, div1);
-  equals(div1.nextElementSibling, div3);
-  equals(divparent.lastElementChild, div3);
+  assert.equal(divparent.childElementCount, 2);
+  assert.equal(divparent.firstElementChild, div1);
+  assert.equal(div1.nextElementSibling, div3);
+  assert.equal(divparent.lastElementChild, div3);
 
   insert.apply();
-  equals(divparent.childElementCount, 3);
-  equals(divparent.firstElementChild, div1);
-  equals(div1.nextElementSibling, div2);
-  equals(div2.nextElementSibling, div3);
+  assert.equal(divparent.childElementCount, 3);
+  assert.equal(divparent.firstElementChild, div1);
+  assert.equal(div1.nextElementSibling, div2);
+  assert.equal(div2.nextElementSibling, div3);
 
   tearDown();
 });
 
-test('Test RemoveElementCommand', function () {
-  expect(22);
+QUnit.test('Test RemoveElementCommand', function (assert) {
+  assert.expect(22);
 
   setUp();
 
   const div6 = document.createElement('div');
   div6.id = 'div6';
 
-  let remove = new svgedit.history.RemoveElementCommand(div6, null, divparent);
-  ok(remove.unapply);
-  ok(remove.apply);
-  equals(typeof remove.unapply, typeof function () {});
-  equals(typeof remove.apply, typeof function () {});
+  let remove = new history.RemoveElementCommand(div6, null, divparent);
+  assert.ok(remove.unapply);
+  assert.ok(remove.apply);
+  assert.equal(typeof remove.unapply, typeof function () {});
+  assert.equal(typeof remove.apply, typeof function () {});
 
   remove.unapply();
-  equals(divparent.childElementCount, 4);
-  equals(divparent.firstElementChild, div1);
-  equals(div1.nextElementSibling, div2);
-  equals(div2.nextElementSibling, div3);
-  equals(div3.nextElementSibling, div6);
+  assert.equal(divparent.childElementCount, 4);
+  assert.equal(divparent.firstElementChild, div1);
+  assert.equal(div1.nextElementSibling, div2);
+  assert.equal(div2.nextElementSibling, div3);
+  assert.equal(div3.nextElementSibling, div6);
 
   remove.apply();
-  equals(divparent.childElementCount, 3);
-  equals(divparent.firstElementChild, div1);
-  equals(div1.nextElementSibling, div2);
-  equals(div2.nextElementSibling, div3);
+  assert.equal(divparent.childElementCount, 3);
+  assert.equal(divparent.firstElementChild, div1);
+  assert.equal(div1.nextElementSibling, div2);
+  assert.equal(div2.nextElementSibling, div3);
 
-  remove = new svgedit.history.RemoveElementCommand(div6, div2, divparent);
+  remove = new history.RemoveElementCommand(div6, div2, divparent);
 
   remove.unapply();
-  equals(divparent.childElementCount, 4);
-  equals(divparent.firstElementChild, div1);
-  equals(div1.nextElementSibling, div6);
-  equals(div6.nextElementSibling, div2);
-  equals(div2.nextElementSibling, div3);
+  assert.equal(divparent.childElementCount, 4);
+  assert.equal(divparent.firstElementChild, div1);
+  assert.equal(div1.nextElementSibling, div6);
+  assert.equal(div6.nextElementSibling, div2);
+  assert.equal(div2.nextElementSibling, div3);
 
   remove.apply();
-  equals(divparent.childElementCount, 3);
-  equals(divparent.firstElementChild, div1);
-  equals(div1.nextElementSibling, div2);
-  equals(div2.nextElementSibling, div3);
+  assert.equal(divparent.childElementCount, 3);
+  assert.equal(divparent.firstElementChild, div1);
+  assert.equal(div1.nextElementSibling, div2);
+  assert.equal(div2.nextElementSibling, div3);
 
   tearDown();
 });
 
-test('Test ChangeElementCommand', function () {
-  expect(26);
+QUnit.test('Test ChangeElementCommand', function (assert) {
+  assert.expect(26);
 
   setUp();
 
   div1.setAttribute('title', 'new title');
-  let change = new svgedit.history.ChangeElementCommand(div1,
-    {'title': 'old title', 'class': 'foo'});
-  ok(change.unapply);
-  ok(change.apply);
-  equals(typeof change.unapply, typeof function () {});
-  equals(typeof change.apply, typeof function () {});
+  let change = new history.ChangeElementCommand(div1,
+    {title: 'old title', class: 'foo'});
+  assert.ok(change.unapply);
+  assert.ok(change.apply);
+  assert.equal(typeof change.unapply, typeof function () {});
+  assert.equal(typeof change.apply, typeof function () {});
 
   change.unapply();
-  equals(div1.getAttribute('title'), 'old title');
-  equals(div1.getAttribute('class'), 'foo');
+  assert.equal(div1.getAttribute('title'), 'old title');
+  assert.equal(div1.getAttribute('class'), 'foo');
 
   change.apply();
-  equals(div1.getAttribute('title'), 'new title');
-  ok(!div1.getAttribute('class'));
+  assert.equal(div1.getAttribute('title'), 'new title');
+  assert.ok(!div1.getAttribute('class'));
 
   div1.textContent = 'inner text';
-  change = new svgedit.history.ChangeElementCommand(div1,
+  change = new history.ChangeElementCommand(div1,
     {'#text': null});
 
   change.unapply();
-  ok(!div1.textContent);
+  assert.ok(!div1.textContent);
 
   change.apply();
-  equals(div1.textContent, 'inner text');
+  assert.equal(div1.textContent, 'inner text');
 
   div1.textContent = '';
-  change = new svgedit.history.ChangeElementCommand(div1,
+  change = new history.ChangeElementCommand(div1,
     {'#text': 'old text'});
 
   change.unapply();
-  equals(div1.textContent, 'old text');
+  assert.equal(div1.textContent, 'old text');
 
   change.apply();
-  ok(!div1.textContent);
+  assert.ok(!div1.textContent);
 
   // TODO(codedread): Refactor this #href stuff in history.js and svgcanvas.js
   const rect = document.createElementNS(NS.SVG, 'rect');
   let justCalled = null;
   let gethrefvalue = null;
   let sethrefvalue = null;
-  svgedit.utilities.getHref = function (elem) {
-    equals(elem, rect);
-    justCalled = 'getHref';
-    return gethrefvalue;
-  };
-  svgedit.utilities.setHref = function (elem, val) {
-    equals(elem, rect);
-    equals(val, sethrefvalue);
-    justCalled = 'setHref';
-  };
+  utilities.mock({
+    getHref (elem) {
+      assert.equal(elem, rect);
+      justCalled = 'getHref';
+      return gethrefvalue;
+    },
+    setHref (elem, val) {
+      assert.equal(elem, rect);
+      assert.equal(val, sethrefvalue);
+      justCalled = 'setHref';
+    },
+    getRotationAngle (elem) { return 0; }
+  });
 
   gethrefvalue = '#newhref';
-  change = new svgedit.history.ChangeElementCommand(rect,
+  change = new history.ChangeElementCommand(rect,
     {'#href': '#oldhref'});
-  equals(justCalled, 'getHref');
+  assert.equal(justCalled, 'getHref');
 
   justCalled = null;
   sethrefvalue = '#oldhref';
   change.unapply();
-  equals(justCalled, 'setHref');
+  assert.equal(justCalled, 'setHref');
 
   justCalled = null;
   sethrefvalue = '#newhref';
   change.apply();
-  equals(justCalled, 'setHref');
+  assert.equal(justCalled, 'setHref');
 
   const line = document.createElementNS(NS.SVG, 'line');
   line.setAttributeNS(null, 'class', 'newClass');
-  change = new svgedit.history.ChangeElementCommand(line, {class: 'oldClass'});
+  change = new history.ChangeElementCommand(line, {class: 'oldClass'});
 
-  ok(change.unapply);
-  ok(change.apply);
-  equals(typeof change.unapply, typeof function () {});
-  equals(typeof change.apply, typeof function () {});
+  assert.ok(change.unapply);
+  assert.ok(change.apply);
+  assert.equal(typeof change.unapply, typeof function () {});
+  assert.equal(typeof change.apply, typeof function () {});
 
   change.unapply();
-  equals(line.getAttributeNS(null, 'class'), 'oldClass');
+  assert.equal(line.getAttributeNS(null, 'class'), 'oldClass');
 
   change.apply();
-  equals(line.getAttributeNS(null, 'class'), 'newClass');
+  assert.equal(line.getAttributeNS(null, 'class'), 'newClass');
 
   tearDown();
 });
 
-test('Test BatchCommand', function () {
-  expect(13);
+QUnit.test('Test BatchCommand', function (assert) {
+  assert.expect(13);
 
   setUp();
 
   let concatResult = '';
   MockCommand.prototype.apply = function () { concatResult += this.text_; };
 
-  const batch = new svgedit.history.BatchCommand();
-  ok(batch.unapply);
-  ok(batch.apply);
-  ok(batch.addSubCommand);
-  ok(batch.isEmpty);
-  equals(typeof batch.unapply, typeof function () {});
-  equals(typeof batch.apply, typeof function () {});
-  equals(typeof batch.addSubCommand, typeof function () {});
-  equals(typeof batch.isEmpty, typeof function () {});
+  const batch = new history.BatchCommand();
+  assert.ok(batch.unapply);
+  assert.ok(batch.apply);
+  assert.ok(batch.addSubCommand);
+  assert.ok(batch.isEmpty);
+  assert.equal(typeof batch.unapply, typeof function () {});
+  assert.equal(typeof batch.apply, typeof function () {});
+  assert.equal(typeof batch.addSubCommand, typeof function () {});
+  assert.equal(typeof batch.isEmpty, typeof function () {});
 
-  ok(batch.isEmpty());
+  assert.ok(batch.isEmpty());
 
   batch.addSubCommand(new MockCommand('a'));
-  ok(!batch.isEmpty());
+  assert.ok(!batch.isEmpty());
   batch.addSubCommand(new MockCommand('b'));
   batch.addSubCommand(new MockCommand('c'));
 
-  ok(!concatResult);
+  assert.ok(!concatResult);
   batch.apply();
-  equals(concatResult, 'abc');
+  assert.equal(concatResult, 'abc');
 
   MockCommand.prototype.apply = function () {};
   MockCommand.prototype.unapply = function () { concatResult += this.text_; };
   concatResult = '';
   batch.unapply();
-  equals(concatResult, 'cba');
+  assert.equal(concatResult, 'cba');
 
   MockCommand.prototype.unapply = function () {};
 

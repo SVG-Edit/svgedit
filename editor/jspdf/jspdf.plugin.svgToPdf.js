@@ -1,3 +1,4 @@
+/* globals jsPDF */
 /*
  * svgToPdf.js
  *

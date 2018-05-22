@@ -1,4 +1,4 @@
-/* globals jQuery, svgEditor */
+/* globals jQuery */
 /*
  * ext-closepath.js
  *
@@ -7,7 +7,8 @@
  * Copyright(c) 2010 Jeff Schiller
  *
  */
-// import './pathseg.js';
+import '../pathseg.js';
+import svgEditor from '../svg-editor.js';
 
 // This extension adds a simple button to the contextual panel for paths
 // The button toggles whether the path is open or closed
@@ -46,7 +47,7 @@ svgEditor.addExtension('ClosePath', function () {
 
   return {
     name: 'ClosePath',
-    svgicons: svgEditor.curConfig.extPath + 'closepath_icons.svg',
+    svgicons: svgEditor.curConfig.extIconsPath + 'closepath_icons.svg',
     buttons: [{
       id: 'tool_openpath',
       type: 'context',

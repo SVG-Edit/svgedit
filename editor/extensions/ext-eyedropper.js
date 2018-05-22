@@ -1,4 +1,4 @@
-/* globals jQuery, svgEditor, svgedit */
+/* globals jQuery */
 /*
  * ext-eyedropper.js
  *
@@ -8,18 +8,13 @@
  *
  */
 
-// Dependencies:
-// 1) jQuery
-// 2) history.js
-// 3) svg_editor.js
-// 4) svgcanvas.js
+import svgEditor from '../svg-editor.js';
 
 svgEditor.addExtension('eyedropper', function (S) {
   const $ = jQuery;
-  const // {svgcontent} = S,
+  const {ChangeElementCommand} = S, // , svgcontent,
     // svgdoc = S.svgroot.parentNode.ownerDocument,
     svgCanvas = svgEditor.canvas,
-    {ChangeElementCommand} = svgedit.history,
     addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); },
     currentStyle = {
       fillPaint: 'red', fillOpacity: 1.0,
@@ -61,7 +56,7 @@ svgEditor.addExtension('eyedropper', function (S) {
 
   return {
     name: 'eyedropper',
-    svgicons: svgEditor.curConfig.extPath + 'eyedropper-icon.xml',
+    svgicons: svgEditor.curConfig.extIconsPath + 'eyedropper-icon.xml',
     buttons: [{
       id: 'tool_eyedropper',
       type: 'mode',

@@ -1,4 +1,4 @@
-/* globals jQuery, svgEditor, svgCanvas */
+/* globals jQuery */
 /*
  * ext-connector.js
  *
@@ -8,8 +8,10 @@
  *
  */
 
+import svgEditor from '../svg-editor.js';
 svgEditor.addExtension('Connector', function (S) {
   const $ = jQuery;
+  const svgCanvas = svgEditor.canvas;
   const {svgroot, getNextId, getElem, curConfig} = S,
     addElem = S.addSvgElementFromJson,
     selManager = S.selectorManager,
@@ -29,11 +31,11 @@ svgEditor.addExtension('Connector', function (S) {
     selElems = [];
 
   const langList = {
-    'en': [
-      {'id': 'mode_connect', 'title': 'Connect two objects'}
+    en: [
+      {id: 'mode_connect', title: 'Connect two objects'}
     ],
-    'fr': [
-      {'id': 'mode_connect', 'title': 'Connecter deux objets'}
+    fr: [
+      {id: 'mode_connect', title: 'Connecter deux objets'}
     ]
   };
 
@@ -360,15 +362,15 @@ svgEditor.addExtension('Connector', function (S) {
 
           started = true;
           curLine = addElem({
-            'element': 'polyline',
-            'attr': {
-              'id': getNextId(),
-              'points': (x + ',' + y + ' ' + x + ',' + y + ' ' + startX + ',' + startY),
-              'stroke': '#' + curConfig.initStroke.color,
+            element: 'polyline',
+            attr: {
+              id: getNextId(),
+              points: (x + ',' + y + ' ' + x + ',' + y + ' ' + startX + ',' + startY),
+              stroke: '#' + curConfig.initStroke.color,
               'stroke-width': (!startElem.stroke_width || startElem.stroke_width === 0) ? curConfig.initStroke.width : startElem.stroke_width,
-              'fill': 'none',
-              'opacity': curConfig.initStroke.opacity,
-              'style': 'pointer-events:none'
+              fill: 'none',
+              opacity: curConfig.initStroke.opacity,
+              style: 'pointer-events:none'
             }
           });
           elData(curLine, 'start_bb', bb);
@@ -555,14 +557,14 @@ svgEditor.addExtension('Connector', function (S) {
 
           const midPt = (' ' + ((x1 + x2) / 2) + ',' + ((y1 + y2) / 2) + ' ');
           const pline = addElem({
-            'element': 'polyline',
-            'attr': {
-              'points': (x1 + ',' + y1 + midPt + x2 + ',' + y2),
-              'stroke': elem.getAttribute('stroke'),
+            element: 'polyline',
+            attr: {
+              points: (x1 + ',' + y1 + midPt + x2 + ',' + y2),
+              stroke: elem.getAttribute('stroke'),
               'stroke-width': elem.getAttribute('stroke-width'),
               'marker-mid': mid,
-              'fill': 'none',
-              'opacity': elem.getAttribute('opacity') || 1
+              fill: 'none',
+              opacity: elem.getAttribute('opacity') || 1
             }
           });
           $(elem).after(pline).remove();

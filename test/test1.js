@@ -1,14 +1,14 @@
 /* eslint-env qunit */
-/* globals jQuery */
 
-// import './pathseg.js';
+import '../editor/pathseg.js';
+import SvgCanvas from '../editor/svgcanvas.js';
 
 // log function
-QUnit.log = function (details) {
+QUnit.log(function (details) {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }
-};
+});
 
 // helper functions
 /*
@@ -20,7 +20,7 @@ const matrixString = function (m) {
 };
 */
 
-const svgCanvas = new jQuery.SvgCanvas(
+const svgCanvas = new SvgCanvas(
   document.getElementById('svgcanvas'), {
     canvas_expansion: 3,
     dimensions: [640, 480],
@@ -34,7 +34,7 @@ const svgCanvas = new jQuery.SvgCanvas(
       opacity: 1
     },
     initOpacity: 1,
-    imgPath: 'images/',
+    imgPath: '../editor/images/',
     langPath: 'locale/',
     extPath: 'extensions/',
     extensions: ['ext-arrows.js', 'ext-connector.js', 'ext-eyedropper.js'],
@@ -48,17 +48,17 @@ const
   svgns = 'http://www.w3.org/2000/svg',
   xlinkns = 'http://www.w3.org/1999/xlink';
 
-module('Basic Module');
+QUnit.module('Basic Module');
 
-test('Test existence of SvgCanvas object', function () {
-  expect(1);
-  equal(typeof {}, typeof svgCanvas);
+QUnit.test('Test existence of SvgCanvas object', function (assert) {
+  assert.expect(1);
+  assert.equal(typeof {}, typeof svgCanvas);
 });
 
-module('Path Module');
+QUnit.module('Path Module');
 
-test('Test path conversion from absolute to relative', function () {
-  expect(6);
+QUnit.test('Test path conversion from absolute to relative', function (assert) {
+  assert.expect(6);
   const convert = svgCanvas.pathActions.convertPath;
 
   // TODO: Test these paths:
@@ -78,33 +78,33 @@ test('Test path conversion from absolute to relative', function () {
     dAbs = p1.getAttribute('d'),
     seglist = p1.pathSegList;
 
-  equal(p1.nodeName, 'path', "Expected 'path', got");
+  assert.equal(p1.nodeName, 'path', "Expected 'path', got");
 
-  equal(seglist.numberOfItems, 4, 'Number of segments before conversion');
+  assert.equal(seglist.numberOfItems, 4, 'Number of segments before conversion');
 
   // verify segments before conversion
   let curseg = seglist.getItem(0);
-  equal(curseg.pathSegTypeAsLetter.toUpperCase(), 'M', 'Before conversion, segment #1 type');
+  assert.equal(curseg.pathSegTypeAsLetter.toUpperCase(), 'M', 'Before conversion, segment #1 type');
   curseg = seglist.getItem(1);
-  equal(curseg.pathSegTypeAsLetter.toUpperCase(), 'L', 'Before conversion, segment #2 type');
+  assert.equal(curseg.pathSegTypeAsLetter.toUpperCase(), 'L', 'Before conversion, segment #2 type');
   curseg = seglist.getItem(3);
-  equal(curseg.pathSegTypeAsLetter.toUpperCase(), 'Z', 'Before conversion, segment #3 type' + dAbs);
+  assert.equal(curseg.pathSegTypeAsLetter.toUpperCase(), 'Z', 'Before conversion, segment #3 type' + dAbs);
 
   // convert and verify segments
   let d = convert(p1, true);
-  equal(d, 'm100,100l100,0l-100,0z', 'Converted path to relative string');
+  assert.equal(d, 'm100,100l100,0l-100,0z', 'Converted path to relative string');
 
   // TODO: see why this isn't working in SVG-edit
   d = convert(p2, true);
-  QUnit.log({result: d});
+  console.log('Convert true', d);
   d = convert(p2, false);
-  QUnit.log({result: d});
+  console.log('Convert false', d);
 });
 
-module('Import Module');
+QUnit.module('Import Module');
 
-test('Test import use', function () {
-  expect(3);
+QUnit.test('Test import use', function (assert) {
+  assert.expect(3);
 
   svgCanvas.setSvgString(
     "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='400' x='300'>" +
@@ -119,15 +119,15 @@ test('Test import use', function () {
     fu = document.getElementById('foreign-use'),
     nfu = document.getElementById('no-use');
 
-  equal((u && u.nodeName === 'use'), true, 'Did not import <use> element');
-  equal(fu, null, 'Removed <use> element that had a foreign href');
-  equal(nfu, null, 'Removed <use> element that had no href');
+  assert.equal((u && u.nodeName === 'use'), true, 'Did not import <use> element');
+  assert.equal(fu, null, 'Removed <use> element that had a foreign href');
+  assert.equal(nfu, null, 'Removed <use> element that had no href');
 });
 
 // This test shows that an element with an invalid attribute is still parsed in properly
 // and only the attribute is not imported
-test('Test invalid attribute', function () {
-  expect(2);
+QUnit.test('Test invalid attribute', function (assert) {
+  assert.expect(2);
 
   svgCanvas.setSvgString(
     '<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg">' +
@@ -137,13 +137,13 @@ test('Test invalid attribute', function () {
 
   const t = document.getElementById('the-text');
 
-  equal(true, (t && t.nodeName === 'text'), 'Did not import <text> element');
-  equal(null, t.getAttribute('d'), 'Imported a <text> with a d attribute');
+  assert.equal((t && t.nodeName === 'text'), true, 'Did not import <text> element');
+  assert.equal(t.getAttribute('d'), null, 'Imported a <text> with a d attribute');
 });
 
 // This test makes sure import/export properly handles namespaced attributes
-test('Test importing/exporting namespaced attributes', function () {
-  expect(5);
+QUnit.test('Test importing/exporting namespaced attributes', function (assert) {
+  assert.expect(5);
   /* const setStr = */ svgCanvas.setSvgString(
     '<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:se="http://svg-edit.googlecode.com" xmlns:foo="http://example.com">' +
       '<image xlink:href="../editor/images/logo.png"/>' +
@@ -152,7 +152,7 @@ test('Test importing/exporting namespaced attributes', function () {
   );
   const attrVal = document.getElementById('se_test_elem').getAttributeNS('http://svg-edit.googlecode.com', 'foo');
 
-  equal(attrVal === 'bar', true, 'Preserved namespaced attribute on import');
+  assert.equal(attrVal === 'bar', true, 'Preserved namespaced attribute on import');
   //
   // console.log('getSvgString' in svgCanvas)
 
@@ -164,14 +164,14 @@ test('Test importing/exporting namespaced attributes', function () {
   const hasFoo = output.includes('xmlns:foo=');
   const hasAttr = output.includes('se:foo="bar"');
 
-  equal(hasAttr, true, 'Preserved namespaced attribute on export');
-  equal(hasXlink, true, 'Included xlink: xmlns');
-  equal(hasSe, true, 'Included se: xmlns');
-  equal(hasFoo, false, 'Did not include foo: xmlns');
+  assert.equal(hasAttr, true, 'Preserved namespaced attribute on export');
+  assert.equal(hasXlink, true, 'Included xlink: xmlns');
+  assert.equal(hasSe, true, 'Included se: xmlns');
+  assert.equal(hasFoo, false, 'Did not include foo: xmlns');
 });
 
-test('Test import math elements inside a foreignObject', function () {
-  expect(4);
+QUnit.test('Test import math elements inside a foreignObject', function (assert) {
+  assert.expect(4);
   /* const set = */ svgCanvas.setSvgString(
     '<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:se="http://svg-edit.googlecode.com" xmlns:xlink="http://www.w3.org/1999/xlink">' +
       '<foreignObject id="fo" width="24" height="26" font-size="24"><math id="m" display="inline" xmlns="http://www.w3.org/1998/Math/MathML">' +
@@ -188,14 +188,14 @@ test('Test import math elements inside a foreignObject', function () {
   // see Bug https://bugs.webkit.org/show_bug.cgi?id=35042
   const math = fo.firstChild;
 
-  equal(!!math, true, 'Math element exists');
-  equal(math.nodeName, 'math', 'Math element has the proper nodeName');
-  equal(math.getAttribute('id'), 'm', 'Math element has an id');
-  equal(math.namespaceURI, 'http://www.w3.org/1998/Math/MathML', 'Preserved MathML namespace');
+  assert.equal(!!math, true, 'Math element exists');
+  assert.equal(math.nodeName, 'math', 'Math element has the proper nodeName');
+  assert.equal(math.getAttribute('id'), 'm', 'Math element has an id');
+  assert.equal(math.namespaceURI, 'http://www.w3.org/1998/Math/MathML', 'Preserved MathML namespace');
 });
 
-test('Test importing SVG into existing drawing', function () {
-  expect(3);
+QUnit.test('Test importing SVG into existing drawing', function (assert) {
+  assert.expect(3);
 
   /* const doc = */ svgCanvas.setSvgString(
     '<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg">' +
@@ -217,13 +217,13 @@ test('Test importing SVG into existing drawing', function () {
     circles = svgcontent.getElementsByTagNameNS(svgns, 'circle'),
     rects = svgcontent.getElementsByTagNameNS(svgns, 'rect'),
     ellipses = svgcontent.getElementsByTagNameNS(svgns, 'ellipse');
-  equal(circles.length, 2, 'Found two circles upon importing');
-  equal(rects.length, 1, 'Found one rectangle upon importing');
-  equal(ellipses.length, 1, 'Found one ellipse upon importing');
+  assert.equal(circles.length, 2, 'Found two circles upon importing');
+  assert.equal(rects.length, 1, 'Found one rectangle upon importing');
+  assert.equal(ellipses.length, 1, 'Found one ellipse upon importing');
 });
 
-test('Test importing SVG remaps IDs', function () {
-  expect(6);
+QUnit.test('Test importing SVG remaps IDs', function (assert) {
+  assert.expect(6);
 
   /* const doc = */ svgCanvas.setSvgString(
     '<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg">' +
@@ -255,13 +255,13 @@ test('Test importing SVG remaps IDs', function () {
     defs = svgcontent.getElementsByTagNameNS(svgns, 'defs'),
     // grads = svgcontent.getElementsByTagNameNS(svgns, 'linearGradient'),
     uses = svgcontent.getElementsByTagNameNS(svgns, 'use');
-  notEqual(circles.item(0).id, 'svg_1', 'Circle not re-identified');
-  notEqual(rects.item(0).id, 'svg_3', 'Rectangle not re-identified');
+  assert.notEqual(circles.item(0).id, 'svg_1', 'Circle not re-identified');
+  assert.notEqual(rects.item(0).id, 'svg_3', 'Rectangle not re-identified');
   // TODO: determine why this test fails in WebKit browsers
-  // equal(grads.length, 1, 'Linear gradient imported');
+  // assert.equal(grads.length, 1, 'Linear gradient imported');
   const grad = defs.item(0).firstChild;
-  notEqual(grad.id, 'svg_2', 'Linear gradient not re-identified');
-  notEqual(circles.item(0).getAttribute('fill'), 'url(#svg_2)', 'Circle fill value not remapped');
-  notEqual(rects.item(0).getAttribute('stroke'), 'url(#svg_2)', 'Rectangle stroke value not remapped');
-  notEqual(uses.item(0).getAttributeNS(xlinkns, 'href'), '#svg_3');
+  assert.notEqual(grad.id, 'svg_2', 'Linear gradient not re-identified');
+  assert.notEqual(circles.item(0).getAttribute('fill'), 'url(#svg_2)', 'Circle fill value not remapped');
+  assert.notEqual(rects.item(0).getAttribute('stroke'), 'url(#svg_2)', 'Rectangle stroke value not remapped');
+  assert.notEqual(uses.item(0).getAttributeNS(xlinkns, 'href'), '#svg_3');
 });

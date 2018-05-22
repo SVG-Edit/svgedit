@@ -20,6 +20,13 @@ Math.precision = function (value, precision) {
 };
 
 export default function ($) {
+  if (!$.loadingStylesheets) {
+    $.loadingStylesheets = [];
+  }
+  const stylesheet = 'jgraduate/css/jPicker.css';
+  if (!$.loadingStylesheets.includes(stylesheet)) {
+    $.loadingStylesheets.push(stylesheet);
+  }
   /**
   * Encapsulate slider functionality for the ColorMap and ColorBar -
   * could be useful to use a jQuery UI draggable for this with certain extensions
@@ -503,250 +510,252 @@ export default function ($) {
     List: [], // array holding references to each active instance of the control
     // color object - we will be able to assign by any color space type or retrieve any color space info
     // we want this public so we can optionally assign new color objects to initial values using inputs other than a string hex value (also supported)
-    Color (init) {
-      const $this = this;
-      function fireChangeEvents (context) {
-        for (let i = 0; i < changeEvents.length; i++) changeEvents[i].call($this, $this, context);
-      }
-      function val (name, value, context) {
-        // Kind of ugly
-        const set = Boolean(value);
-        if (set && value.ahex === '') value.ahex = '00000000';
-        if (!set) {
-          if (name === undefined || name == null || name === '') name = 'all';
-          if (r == null) return null;
+    Color: class {
+      constructor (init) {
+        const $this = this;
+        function fireChangeEvents (context) {
+          for (let i = 0; i < changeEvents.length; i++) changeEvents[i].call($this, $this, context);
+        }
+        function val (name, value, context) {
+          // Kind of ugly
+          const set = Boolean(value);
+          if (set && value.ahex === '') value.ahex = '00000000';
+          if (!set) {
+            if (name === undefined || name == null || name === '') name = 'all';
+            if (r == null) return null;
+            switch (name.toLowerCase()) {
+            case 'ahex': return ColorMethods.rgbaToHex({ r, g, b, a });
+            case 'hex': return val('ahex').substring(0, 6);
+            case 'all': return { r, g, b, a, h, s, v, hex: val.call($this, 'hex'), ahex: val.call($this, 'ahex') };
+            default:
+              let ret = {};
+              for (let i = 0; i < name.length; i++) {
+                switch (name.charAt(i)) {
+                case 'r':
+                  if (name.length === 1) ret = r;
+                  else ret.r = r;
+                  break;
+                case 'g':
+                  if (name.length === 1) ret = g;
+                  else ret.g = g;
+                  break;
+                case 'b':
+                  if (name.length === 1) ret = b;
+                  else ret.b = b;
+                  break;
+                case 'a':
+                  if (name.length === 1) ret = a;
+                  else ret.a = a;
+                  break;
+                case 'h':
+                  if (name.length === 1) ret = h;
+                  else ret.h = h;
+                  break;
+                case 's':
+                  if (name.length === 1) ret = s;
+                  else ret.s = s;
+                  break;
+                case 'v':
+                  if (name.length === 1) ret = v;
+                  else ret.v = v;
+                  break;
+                }
+              }
+              return !name.length ? val.call($this, 'all') : ret;
+            }
+          }
+          if (context != null && context === $this) return;
+          if (name == null) name = '';
+
+          let changed = false;
+          if (value == null) {
+            if (r != null) {
+              r = null;
+              changed = true;
+            }
+            if (g != null) {
+              g = null;
+              changed = true;
+            }
+            if (b != null) {
+              b = null;
+              changed = true;
+            }
+            if (a != null) {
+              a = null;
+              changed = true;
+            }
+            if (h != null) {
+              h = null;
+              changed = true;
+            }
+            if (s != null) {
+              s = null;
+              changed = true;
+            }
+            if (v != null) {
+              v = null;
+              changed = true;
+            }
+            changed && fireChangeEvents.call($this, context || $this);
+            return;
+          }
           switch (name.toLowerCase()) {
-          case 'ahex': return ColorMethods.rgbaToHex({ r, g, b, a });
-          case 'hex': return val('ahex').substring(0, 6);
-          case 'all': return { r, g, b, a, h, s, v, hex: val.call($this, 'hex'), ahex: val.call($this, 'ahex') };
+          case 'ahex':
+          case 'hex':
+            const ret = ColorMethods.hexToRgba((value && (value.ahex || value.hex)) || value || 'none');
+            val.call($this, 'rgba', { r: ret.r, g: ret.g, b: ret.b, a: name === 'ahex' ? ret.a : a != null ? a : 255 }, context);
+            break;
           default:
-            let ret = {};
+            if (value && (value.ahex != null || value.hex != null)) {
+              val.call($this, 'ahex', value.ahex || value.hex || '00000000', context);
+              return;
+            }
+            const newV = {};
+            let rgb = false, hsv = false;
+            if (value.r !== undefined && !name.includes('r')) name += 'r';
+            if (value.g !== undefined && !name.includes('g')) name += 'g';
+            if (value.b !== undefined && !name.includes('b')) name += 'b';
+            if (value.a !== undefined && !name.includes('a')) name += 'a';
+            if (value.h !== undefined && !name.includes('h')) name += 'h';
+            if (value.s !== undefined && !name.includes('s')) name += 's';
+            if (value.v !== undefined && !name.includes('v')) name += 'v';
             for (let i = 0; i < name.length; i++) {
               switch (name.charAt(i)) {
               case 'r':
-                if (name.length === 1) ret = r;
-                else ret.r = r;
+                if (hsv) continue;
+                rgb = true;
+                newV.r = (value && value.r && value.r | 0) || (value && value | 0) || 0;
+                if (newV.r < 0) newV.r = 0;
+                else if (newV.r > 255) newV.r = 255;
+                if (r !== newV.r) {
+                  ({r} = newV);
+                  changed = true;
+                }
                 break;
               case 'g':
-                if (name.length === 1) ret = g;
-                else ret.g = g;
+                if (hsv) continue;
+                rgb = true;
+                newV.g = (value && value.g && value.g | 0) || (value && value | 0) || 0;
+                if (newV.g < 0) newV.g = 0;
+                else if (newV.g > 255) newV.g = 255;
+                if (g !== newV.g) {
+                  ({g} = newV);
+                  changed = true;
+                }
                 break;
               case 'b':
-                if (name.length === 1) ret = b;
-                else ret.b = b;
+                if (hsv) continue;
+                rgb = true;
+                newV.b = (value && value.b && value.b | 0) || (value && value | 0) || 0;
+                if (newV.b < 0) newV.b = 0;
+                else if (newV.b > 255) newV.b = 255;
+                if (b !== newV.b) {
+                  ({b} = newV);
+                  changed = true;
+                }
                 break;
               case 'a':
-                if (name.length === 1) ret = a;
-                else ret.a = a;
+                newV.a = value && value.a != null ? value.a | 0 : value != null ? value | 0 : 255;
+                if (newV.a < 0) newV.a = 0;
+                else if (newV.a > 255) newV.a = 255;
+                if (a !== newV.a) {
+                  ({a} = newV);
+                  changed = true;
+                }
                 break;
               case 'h':
-                if (name.length === 1) ret = h;
-                else ret.h = h;
+                if (rgb) continue;
+                hsv = true;
+                newV.h = (value && value.h && value.h | 0) || (value && value | 0) || 0;
+                if (newV.h < 0) newV.h = 0;
+                else if (newV.h > 360) newV.h = 360;
+                if (h !== newV.h) {
+                  ({h} = newV);
+                  changed = true;
+                }
                 break;
               case 's':
-                if (name.length === 1) ret = s;
-                else ret.s = s;
+                if (rgb) continue;
+                hsv = true;
+                newV.s = value && value.s != null ? value.s | 0 : value != null ? value | 0 : 100;
+                if (newV.s < 0) newV.s = 0;
+                else if (newV.s > 100) newV.s = 100;
+                if (s !== newV.s) {
+                  ({s} = newV);
+                  changed = true;
+                }
                 break;
               case 'v':
-                if (name.length === 1) ret = v;
-                else ret.v = v;
+                if (rgb) continue;
+                hsv = true;
+                newV.v = value && value.v != null ? value.v | 0 : value != null ? value | 0 : 100;
+                if (newV.v < 0) newV.v = 0;
+                else if (newV.v > 100) newV.v = 100;
+                if (v !== newV.v) {
+                  ({v} = newV);
+                  changed = true;
+                }
                 break;
               }
             }
-            return !name.length ? val.call($this, 'all') : ret;
-          }
-        }
-        if (context != null && context === $this) return;
-        if (name == null) name = '';
-
-        let changed = false;
-        if (value == null) {
-          if (r != null) {
-            r = null;
-            changed = true;
-          }
-          if (g != null) {
-            g = null;
-            changed = true;
-          }
-          if (b != null) {
-            b = null;
-            changed = true;
-          }
-          if (a != null) {
-            a = null;
-            changed = true;
-          }
-          if (h != null) {
-            h = null;
-            changed = true;
-          }
-          if (s != null) {
-            s = null;
-            changed = true;
-          }
-          if (v != null) {
-            v = null;
-            changed = true;
-          }
-          changed && fireChangeEvents.call($this, context || $this);
-          return;
-        }
-        switch (name.toLowerCase()) {
-        case 'ahex':
-        case 'hex':
-          const ret = ColorMethods.hexToRgba((value && (value.ahex || value.hex)) || value || 'none');
-          val.call($this, 'rgba', { r: ret.r, g: ret.g, b: ret.b, a: name === 'ahex' ? ret.a : a != null ? a : 255 }, context);
-          break;
-        default:
-          if (value && (value.ahex != null || value.hex != null)) {
-            val.call($this, 'ahex', value.ahex || value.hex || '00000000', context);
-            return;
-          }
-          const newV = {};
-          let rgb = false, hsv = false;
-          if (value.r !== undefined && !name.includes('r')) name += 'r';
-          if (value.g !== undefined && !name.includes('g')) name += 'g';
-          if (value.b !== undefined && !name.includes('b')) name += 'b';
-          if (value.a !== undefined && !name.includes('a')) name += 'a';
-          if (value.h !== undefined && !name.includes('h')) name += 'h';
-          if (value.s !== undefined && !name.includes('s')) name += 's';
-          if (value.v !== undefined && !name.includes('v')) name += 'v';
-          for (let i = 0; i < name.length; i++) {
-            switch (name.charAt(i)) {
-            case 'r':
-              if (hsv) continue;
-              rgb = true;
-              newV.r = (value && value.r && value.r | 0) || (value && value | 0) || 0;
-              if (newV.r < 0) newV.r = 0;
-              else if (newV.r > 255) newV.r = 255;
-              if (r !== newV.r) {
-                ({r} = newV);
-                changed = true;
+            if (changed) {
+              if (rgb) {
+                r = r || 0;
+                g = g || 0;
+                b = b || 0;
+                const ret = ColorMethods.rgbToHsv({ r, g, b });
+                ({h, s, v} = ret);
+              } else if (hsv) {
+                h = h || 0;
+                s = s != null ? s : 100;
+                v = v != null ? v : 100;
+                const ret = ColorMethods.hsvToRgb({ h, s, v });
+                ({r, g, b} = ret);
               }
-              break;
-            case 'g':
-              if (hsv) continue;
-              rgb = true;
-              newV.g = (value && value.g && value.g | 0) || (value && value | 0) || 0;
-              if (newV.g < 0) newV.g = 0;
-              else if (newV.g > 255) newV.g = 255;
-              if (g !== newV.g) {
-                ({g} = newV);
-                changed = true;
-              }
-              break;
-            case 'b':
-              if (hsv) continue;
-              rgb = true;
-              newV.b = (value && value.b && value.b | 0) || (value && value | 0) || 0;
-              if (newV.b < 0) newV.b = 0;
-              else if (newV.b > 255) newV.b = 255;
-              if (b !== newV.b) {
-                ({b} = newV);
-                changed = true;
-              }
-              break;
-            case 'a':
-              newV.a = value && value.a != null ? value.a | 0 : value != null ? value | 0 : 255;
-              if (newV.a < 0) newV.a = 0;
-              else if (newV.a > 255) newV.a = 255;
-              if (a !== newV.a) {
-                ({a} = newV);
-                changed = true;
-              }
-              break;
-            case 'h':
-              if (rgb) continue;
-              hsv = true;
-              newV.h = (value && value.h && value.h | 0) || (value && value | 0) || 0;
-              if (newV.h < 0) newV.h = 0;
-              else if (newV.h > 360) newV.h = 360;
-              if (h !== newV.h) {
-                ({h} = newV);
-                changed = true;
-              }
-              break;
-            case 's':
-              if (rgb) continue;
-              hsv = true;
-              newV.s = value && value.s != null ? value.s | 0 : value != null ? value | 0 : 100;
-              if (newV.s < 0) newV.s = 0;
-              else if (newV.s > 100) newV.s = 100;
-              if (s !== newV.s) {
-                ({s} = newV);
-                changed = true;
-              }
-              break;
-            case 'v':
-              if (rgb) continue;
-              hsv = true;
-              newV.v = value && value.v != null ? value.v | 0 : value != null ? value | 0 : 100;
-              if (newV.v < 0) newV.v = 0;
-              else if (newV.v > 100) newV.v = 100;
-              if (v !== newV.v) {
-                ({v} = newV);
-                changed = true;
-              }
-              break;
+              a = a != null ? a : 255;
+              fireChangeEvents.call($this, context || $this);
             }
+            break;
           }
-          if (changed) {
-            if (rgb) {
-              r = r || 0;
-              g = g || 0;
-              b = b || 0;
-              const ret = ColorMethods.rgbToHsv({ r, g, b });
-              ({h, s, v} = ret);
-            } else if (hsv) {
-              h = h || 0;
-              s = s != null ? s : 100;
-              v = v != null ? v : 100;
-              const ret = ColorMethods.hsvToRgb({ h, s, v });
-              ({r, g, b} = ret);
-            }
-            a = a != null ? a : 255;
-            fireChangeEvents.call($this, context || $this);
+        }
+        function bind (callback) {
+          if (typeof callback === 'function') changeEvents.push(callback);
+        }
+        function unbind (callback) {
+          if (typeof callback !== 'function') return;
+          let i;
+          while ((i = changeEvents.includes(callback))) {
+            changeEvents.splice(i, 1);
           }
-          break;
         }
-      }
-      function bind (callback) {
-        if (typeof callback === 'function') changeEvents.push(callback);
-      }
-      function unbind (callback) {
-        if (typeof callback !== 'function') return;
-        let i;
-        while ((i = changeEvents.includes(callback))) {
-          changeEvents.splice(i, 1);
+        function destroy () {
+          changeEvents = null;
         }
-      }
-      function destroy () {
-        changeEvents = null;
-      }
-      let r, g, b, a, h, s, v, changeEvents = [];
+        let r, g, b, a, h, s, v, changeEvents = [];
 
-      $.extend(true, $this, {
-        // public properties and methods
-        val,
-        bind,
-        unbind,
-        destroy
-      });
-      if (init) {
-        if (init.ahex != null) {
-          val('ahex', init);
-        } else if (init.hex != null) {
-          val(
-            (init.a != null ? 'a' : '') + 'hex',
-            init.a != null
-              ? {ahex: init.hex + ColorMethods.intToHex(init.a)}
-              : init
-          );
-        } else if (init.r != null && init.g != null && init.b != null) {
-          val('rgb' + (init.a != null ? 'a' : ''), init);
-        } else if (init.h != null && init.s != null && init.v != null) {
-          val('hsv' + (init.a != null ? 'a' : ''), init);
+        $.extend(true, $this, {
+          // public properties and methods
+          val,
+          bind,
+          unbind,
+          destroy
+        });
+        if (init) {
+          if (init.ahex != null) {
+            val('ahex', init);
+          } else if (init.hex != null) {
+            val(
+              (init.a != null ? 'a' : '') + 'hex',
+              init.a != null
+                ? {ahex: init.hex + ColorMethods.intToHex(init.a)}
+                : init
+            );
+          } else if (init.r != null && init.g != null && init.b != null) {
+            val('rgb' + (init.a != null ? 'a' : ''), init);
+          } else if (init.h != null && init.s != null && init.v != null) {
+            val('hsv' + (init.a != null ? 'a' : ''), init);
+          }
         }
       }
     },

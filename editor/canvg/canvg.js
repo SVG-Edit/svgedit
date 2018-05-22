@@ -65,7 +65,7 @@ export default function canvg (target, s, opts) {
     // load from url
     svg.load(ctx, s);
   }
-};
+}
 
 function build (opts) {
   const svg = {opts};
@@ -76,7 +76,7 @@ function build (opts) {
   svg.log = function (msg) {};
   if (svg.opts.log === true && typeof console !== 'undefined') {
     svg.log = function (msg) { console.log(msg); };
-  };
+  }
 
   // globals
   svg.init = function (ctx) {
@@ -150,17 +150,17 @@ function build (opts) {
   // text extensions
   // get the text baseline
   const textBaselineMapping = {
-    'baseline': 'alphabetic',
+    baseline: 'alphabetic',
     'before-edge': 'top',
     'text-before-edge': 'top',
-    'middle': 'middle',
-    'central': 'middle',
+    middle: 'middle',
+    central: 'middle',
     'after-edge': 'bottom',
     'text-after-edge': 'bottom',
-    'ideographic': 'ideographic',
-    'alphabetic': 'alphabetic',
-    'hanging': 'hanging',
-    'mathematical': 'alphabetic'
+    ideographic: 'ideographic',
+    alphabetic: 'alphabetic',
+    hanging: 'hanging',
+    mathematical: 'alphabetic'
   };
 
   svg.Property = class Property {

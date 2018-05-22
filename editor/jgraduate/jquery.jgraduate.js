@@ -61,6 +61,13 @@ if (!window.console) {
 }
 
 export default function ($) {
+  if (!$.loadingStylesheets) {
+    $.loadingStylesheets = [];
+  }
+  const stylesheet = 'jgraduate/css/jgraduate.css';
+  if (!$.loadingStylesheets.includes(stylesheet)) {
+    $.loadingStylesheets.push(stylesheet);
+  }
   $.jGraduate = {
     Paint: function (opt) {
       const options = opt || {};
@@ -363,6 +370,7 @@ export default function ($) {
         }, svg);
       }
 
+      let stopGroup; // eslint-disable-line prefer-const
       if (isSolid) {
         grad = curGradient = $('#' + id + '_lg_jgraduate_grad')[0];
         color = $this.paint[curType];
@@ -424,7 +432,7 @@ export default function ($) {
 
       // stop visuals created here
       const beginCoord = $('<div/>').attr({
-        'class': 'grad_coord jGraduate_lg_field',
+        class: 'grad_coord jGraduate_lg_field',
         title: 'Begin Stop'
       }).text(1).css({
         top: y1 * MAX,
@@ -437,7 +445,7 @@ export default function ($) {
       }).attr('title', 'End stop').data('coord', 'end').appendTo(container);
 
       const centerCoord = $('<div/>').attr({
-        'class': 'grad_coord jGraduate_rg_field',
+        class: 'grad_coord jGraduate_rg_field',
         title: 'Center stop'
       }).text('C').css({
         top: cy * MAX,
@@ -464,6 +472,7 @@ export default function ($) {
       //   }, 500);
       // });
 
+      let showFocus;
       $.each(['x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'fx', 'fy'], function (i, attr) {
         const isRadial = isNaN(attr[1]);
 
@@ -548,7 +557,7 @@ export default function ($) {
           let thisAlpha = (parseFloat(stopOpacity) * 255).toString(16);
           while (thisAlpha.length < 2) { thisAlpha = '0' + thisAlpha; }
           color = stopColor.substr(1) + thisAlpha;
-          $('#' + id + '_jGraduate_stopPicker').css({'left': 100, 'bottom': 15}).jPicker({
+          $('#' + id + '_jGraduate_stopPicker').css({left: 100, bottom: 15}).jPicker({
             window: { title: 'Pick the start color and opacity for the gradient' },
             images: { clientPath: $settings.images.clientPath },
             color: { active: color, alphaSupport: true }
@@ -714,7 +723,7 @@ export default function ($) {
         stopMakerSVG.appendChild(delStop);
       });
 
-      const stopGroup = mkElem('g', {}, stopMakerSVG);
+      stopGroup = mkElem('g', {}, stopMakerSVG);
 
       mkElem('line', {
         x1: 10,
@@ -811,7 +820,7 @@ export default function ($) {
       let offset;
 
       // No match, so show focus point
-      let showFocus = false;
+      showFocus = false;
 
       previewRect.setAttribute('fill-opacity', gradalpha / 100);
 

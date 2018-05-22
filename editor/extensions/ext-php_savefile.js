@@ -1,10 +1,11 @@
-/* globals jQuery, svgCanvas, svgEditor */
+/* globals jQuery */
 // TODO: Might add support for "exportImage" custom
 //   handler as in "ext-server_opensave.js" (and in savefile.php)
-
+import svgEditor from '../svg-editor.js';
 svgEditor.addExtension('php_savefile', {
   callback () {
     const $ = jQuery;
+    const svgCanvas = svgEditor.canvas;
     function getFileNameFromTitle () {
       const title = svgCanvas.getDocumentTitle();
       return title.trim();

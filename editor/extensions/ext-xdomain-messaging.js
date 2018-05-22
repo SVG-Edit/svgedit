@@ -1,10 +1,11 @@
-/* globals svgEditor, svgCanvas */
+import svgEditor from '../svg-editor.js';
 /**
 * Should not be needed for same domain control (just call via child frame),
 *  but an API common for cross-domain and same domain use can be found
 *  in embedapi.js with a demo at embedapi.html
 */
 svgEditor.addExtension('xdomain-messaging', function () {
+  const svgCanvas = svgEditor.canvas;
   try {
     window.addEventListener('message', function (e) {
       // We accept and post strings for the sake of IE9 support

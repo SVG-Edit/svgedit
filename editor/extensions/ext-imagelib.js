@@ -1,4 +1,4 @@
-/* globals jQuery, svgEditor, svgedit, svgCanvas */
+/* globals jQuery */
 /*
  * ext-imagelib.js
  *
@@ -7,10 +7,11 @@
  * Copyright(c) 2010 Alexis Deveria
  *
  */
+import svgEditor from '../svg-editor.js';
 
-svgEditor.addExtension('imagelib', function () {
+svgEditor.addExtension('imagelib', function ({decode64}) {
   const $ = jQuery;
-  const {uiStrings} = svgEditor;
+  const {uiStrings, canvas: svgCanvas} = svgEditor;
 
   $.extend(uiStrings, {
     imagelib: {
@@ -22,10 +23,15 @@ svgEditor.addExtension('imagelib', function () {
     }
   });
 
+  const modularVersion = !('svgEditor' in window) ||
+    !window.svgEditor ||
+    window.svgEditor.modules !== false;
+
   const imgLibs = [
     {
       name: 'Demo library (local)',
-      url: svgEditor.curConfig.extPath + 'imagelib/index.html',
+      url: svgEditor.curConfig.extPath +
+        'imagelib/index' + (modularVersion ? '-es' : '') + '.html',
       description: 'Demonstration library for SVG-edit on this server'
     },
     {
@@ -46,14 +52,14 @@ svgEditor.addExtension('imagelib', function () {
 
   function importImage (url) {
     const newImage = svgCanvas.addSvgElementFromJson({
-      'element': 'image',
-      'attr': {
-        'x': 0,
-        'y': 0,
-        'width': 0,
-        'height': 0,
-        'id': svgCanvas.getNextId(),
-        'style': 'pointer-events:inherit'
+      element: 'image',
+      attr: {
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+        id: svgCanvas.getNextId(),
+        style: 'pointer-events:inherit'
       }
     });
     svgCanvas.clearSelection();
@@ -142,7 +148,7 @@ svgEditor.addExtension('imagelib', function () {
       if (response.startsWith('data:image/svg+xml')) {
         const pre = 'data:image/svg+xml;base64,';
         const src = response.substring(pre.length);
-        response = svgedit.utilities.decode64(src);
+        response = decode64(src);
         svgStr = true;
         break;
       } else if (response.startsWith('data:image/')) {
@@ -354,16 +360,16 @@ svgEditor.addExtension('imagelib', function () {
       cancel.prepend($.getSvgIcon('cancel', true));
       back.prepend($.getSvgIcon('tool_imagelib', true));
 
-      $.each(imgLibs, function (i, opts) {
+      $.each(imgLibs, function (i, {name, url, description}) {
         $('<li>')
           .appendTo(libOpts)
-          .text(opts.name)
+          .text(name)
           .on('click touchend', function () {
-            frame.attr('src', opts.url).show();
-            header.text(opts.name);
+            frame.attr('src', url).show();
+            header.text(name);
             libOpts.hide();
             back.show();
-          }).append('<span>' + opts.description + '</span>');
+          }).append(`<span>${description}</span>`);
       });
     } else {
       $('#imgbrowse_holder').show();
@@ -371,7 +377,7 @@ svgEditor.addExtension('imagelib', function () {
   }
 
   return {
-    svgicons: svgEditor.curConfig.extPath + 'ext-imagelib.xml',
+    svgicons: svgEditor.curConfig.extIconsPath + 'ext-imagelib.xml',
     buttons: [{
       id: 'tool_imagelib',
       type: 'app_menu', // _flyout

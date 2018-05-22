@@ -1,4 +1,4 @@
-/* globals svgEditor, svgCanvas */
+import svgEditor from '../svg-editor.js';
 /*
  * ext-panning.js
  *
@@ -13,9 +13,10 @@
 */
 
 svgEditor.addExtension('ext-panning', function () {
+  const svgCanvas = svgEditor.canvas;
   return {
     name: 'Extension Panning',
-    svgicons: svgEditor.curConfig.extPath + 'ext-panning.xml',
+    svgicons: svgEditor.curConfig.extIconsPath + 'ext-panning.xml',
     buttons: [{
       id: 'ext-panning',
       type: 'mode',

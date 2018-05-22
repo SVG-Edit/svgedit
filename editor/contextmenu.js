@@ -16,7 +16,7 @@ let contextMenuExtensions = {};
 const menuItemIsValid = function (menuItem) {
   return menuItem && menuItem.id && menuItem.label && menuItem.action && typeof menuItem.action === 'function';
 };
-export const addContextMenuItem = function (menuItem) {
+export const add = function (menuItem) {
   // menuItem: {id, label, shortcut, action}
   if (!menuItemIsValid(menuItem)) {
     console.error('Menu items must be defined and have at least properties: id, label, action, where action must be a function');
@@ -31,10 +31,10 @@ export const addContextMenuItem = function (menuItem) {
   contextMenuExtensions[menuItem.id] = menuItem;
   // TODO: Need to consider how to handle custom enable/disable behavior
 };
-export const hasCustomMenuItemHandler = function (handlerKey) {
+export const hasCustomHandler = function (handlerKey) {
   return Boolean(contextMenuExtensions[handlerKey]);
 };
-export const getCustomMenuItemHandler = function (handlerKey) {
+export const getCustomHandler = function (handlerKey) {
   return contextMenuExtensions[handlerKey].action;
 };
 const injectExtendedContextMenuItemIntoDom = function (menuItem) {

@@ -124,6 +124,7 @@ rect.setAttribute('x', 0.1);
 const crect = rect.cloneNode(false);
 const retValue = (!crect.getAttribute('x').includes(','));
 if (!retValue) {
+  // Todo: i18nize or remove
   $.alert('NOTE: This version of Opera is known to contain bugs in SVG-edit.\n' +
 	'Please upgrade to the <a href="http://opera.com">latest version</a> in which the problems have been fixed.');
 }
@@ -136,7 +137,7 @@ rect.setAttribute('style', 'vector-effect:non-scaling-stroke');
 return rect.style.vectorEffect === 'non-scaling-stroke';
 }());
 
-const supportsNativeSVGTransformLists_ = (function () {
+let supportsNativeSVGTransformLists_ = (function () {
 const rect = document.createElementNS(NS.SVG, 'rect');
 const rxform = rect.transform.baseVal;
 const t1 = svg.createSVGTransform();
@@ -176,3 +177,8 @@ export const supportsEditableText = () => supportsEditableText_;
 export const supportsGoodDecimals = () => supportsGoodDecimals_;
 export const supportsNonScalingStroke = () => supportsNonScalingStroke_;
 export const supportsNativeTransformLists = () => supportsNativeSVGTransformLists_;
+
+// Using for unit testing
+export const disableSupportsNativeTransformLists = () => {
+  supportsNativeSVGTransformLists_ = false;
+};

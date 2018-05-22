@@ -7,10 +7,18 @@
  * Copyright(c) 2011 Jeff Schiller
  */
 
+import Layer from './layer.js';
+import HistoryRecordingService from './historyrecording.js';
+
 import {NS} from './svgedit.js';
 import {isOpera} from './browser.js';
-import {copyElem as utilCopyElem} from './svgutils.js';
-import Layer from './layer.js';
+import {
+  toXml, getElem,
+  copyElem as utilCopyElem
+} from './svgutils.js';
+import {
+  BatchCommand, RemoveElementCommand, MoveElementCommand, ChangeElementCommand
+} from './history.js';
 
 const $ = jQuery;
 
@@ -22,6 +30,17 @@ const RandomizeModes = {
   NEVER_RANDOMIZE: 2
 };
 let randIds = RandomizeModes.LET_DOCUMENT_DECIDE;
+// Array with current disabled elements (for in-group editing)
+let disabledElems = [];
+
+/**
+ * Get a HistoryRecordingService.
+ * @param {svgedit.history.HistoryRecordingService=} hrService - if exists, return it instead of creating a new service.
+ * @returns {svgedit.history.HistoryRecordingService}
+ */
+function historyRecordingService (hrService) {
+  return hrService || new HistoryRecordingService(canvas_.undoMgr);
+}
 
 /**
  * Find the layer name in a group element.
@@ -652,3 +671,247 @@ export const randomizeIds = function (enableRandomization, currentDrawing) {
     currentDrawing.clearNonce();
   }
 };
+
+// Layer API Functions
+
+// Group: Layers
+
+let canvas_;
+export const init = function (canvas) {
+  canvas_ = canvas;
+};
+
+// Updates layer system
+export const identifyLayers = function () {
+  leaveContext();
+  canvas_.getCurrentDrawing().identifyLayers();
+};
+
+/**
+* Creates a new top-level layer in the drawing with the given name, sets the current layer
+* to it, and then clears the selection. This function then calls the 'changed' handler.
+* This is an undoable action.
+* @param name - The given name
+* @param hrService
+*/
+export const createLayer = function (name, hrService) {
+  const newLayer = canvas_.getCurrentDrawing().createLayer(
+    name,
+    historyRecordingService(hrService)
+  );
+  canvas_.clearSelection();
+  canvas_.call('changed', [newLayer]);
+};
+
+/**
+ * Creates a new top-level layer in the drawing with the given name, copies all the current layer's contents
+ * to it, and then clears the selection. This function then calls the 'changed' handler.
+ * This is an undoable action.
+ * @param {string} name - The given name. If the layer name exists, a new name will be generated.
+ * @param {svgedit.history.HistoryRecordingService} hrService - History recording service
+ */
+export const cloneLayer = function (name, hrService) {
+  // Clone the current layer and make the cloned layer the new current layer
+  const newLayer = canvas_.getCurrentDrawing().cloneLayer(name, historyRecordingService(hrService));
+
+  canvas_.clearSelection();
+  leaveContext();
+  canvas_.call('changed', [newLayer]);
+};
+
+/**
+* Deletes the current layer from the drawing and then clears the selection. This function
+* then calls the 'changed' handler. This is an undoable action.
+*/
+export const deleteCurrentLayer = function () {
+  let currentLayer = canvas_.getCurrentDrawing().getCurrentLayer();
+  const {nextSibling} = currentLayer;
+  const parent = currentLayer.parentNode;
+  currentLayer = canvas_.getCurrentDrawing().deleteCurrentLayer();
+  if (currentLayer) {
+    const batchCmd = new BatchCommand('Delete Layer');
+    // store in our Undo History
+    batchCmd.addSubCommand(new RemoveElementCommand(currentLayer, nextSibling, parent));
+    canvas_.addCommandToHistory(batchCmd);
+    canvas_.clearSelection();
+    canvas_.call('changed', [parent]);
+    return true;
+  }
+  return false;
+};
+
+/**
+* Sets the current layer. If the name is not a valid layer name, then this function returns
+* false. Otherwise it returns true. This is not an undo-able action.
+* @param name - The name of the layer you want to switch to.
+*
+* @returns true if the current layer was switched, otherwise false
+*/
+export const setCurrentLayer = function (name) {
+  const result = canvas_.getCurrentDrawing().setCurrentLayer(toXml(name));
+  if (result) {
+    canvas_.clearSelection();
+  }
+  return result;
+};
+
+/**
+* Renames the current layer. If the layer name is not valid (i.e. unique), then this function
+* does nothing and returns false, otherwise it returns true. This is an undo-able action.
+*
+* @param newname - the new name you want to give the current layer. This name must be unique
+* among all layer names.
+* @returns {Boolean} Whether the rename succeeded
+*/
+export const renameCurrentLayer = function (newname) {
+  const drawing = canvas_.getCurrentDrawing();
+  const layer = drawing.getCurrentLayer();
+  if (layer) {
+    const result = drawing.setCurrentLayerName(newname, historyRecordingService());
+    if (result) {
+      canvas_.call('changed', [layer]);
+      return true;
+    }
+  }
+  return false;
+};
+
+/**
+* Changes the position of the current layer to the new value. If the new index is not valid,
+* this function does nothing and returns false, otherwise it returns true. This is an
+* undo-able action.
+* @param newpos - The zero-based index of the new position of the layer. This should be between
+* 0 and (number of layers - 1)
+*
+* @returns {Boolean} true if the current layer position was changed, false otherwise.
+*/
+export const setCurrentLayerPosition = function (newpos) {
+  const drawing = canvas_.getCurrentDrawing();
+  const result = drawing.setCurrentLayerPosition(newpos);
+  if (result) {
+    canvas_.addCommandToHistory(new MoveElementCommand(result.currentGroup, result.oldNextSibling, canvas_.getSVGContent()));
+    return true;
+  }
+  return false;
+};
+
+/**
+* Sets the visibility of the layer. If the layer name is not valid, this function return
+* false, otherwise it returns true. This is an undo-able action.
+* @param layername - The name of the layer to change the visibility
+* @param {Boolean} bVisible - Whether the layer should be visible
+* @returns {Boolean} true if the layer's visibility was set, false otherwise
+*/
+export const setLayerVisibility = function (layername, bVisible) {
+  const drawing = canvas_.getCurrentDrawing();
+  const prevVisibility = drawing.getLayerVisibility(layername);
+  const layer = drawing.setLayerVisibility(layername, bVisible);
+  if (layer) {
+    const oldDisplay = prevVisibility ? 'inline' : 'none';
+    canvas_.addCommandToHistory(new ChangeElementCommand(layer, {display: oldDisplay}, 'Layer Visibility'));
+  } else {
+    return false;
+  }
+
+  if (layer === drawing.getCurrentLayer()) {
+    canvas_.clearSelection();
+    canvas_.pathActions.clear();
+  }
+  // call('changed', [selected]);
+  return true;
+};
+
+/**
+* Moves the selected elements to layername. If the name is not a valid layer name, then false
+* is returned. Otherwise it returns true. This is an undo-able action.
+*
+* @param layername - The name of the layer you want to which you want to move the selected elements
+* @returns {Boolean} Whether the selected elements were moved to the layer.
+*/
+export const moveSelectedToLayer = function (layername) {
+  // find the layer
+  const drawing = canvas_.getCurrentDrawing();
+  const layer = drawing.getLayerByName(layername);
+  if (!layer) { return false; }
+
+  const batchCmd = new BatchCommand('Move Elements to Layer');
+
+  // loop for each selected element and move it
+  const selElems = canvas_.getSelectedElements();
+  let i = selElems.length;
+  while (i--) {
+    const elem = selElems[i];
+    if (!elem) { continue; }
+    const oldNextSibling = elem.nextSibling;
+    // TODO: this is pretty brittle!
+    const oldLayer = elem.parentNode;
+    layer.appendChild(elem);
+    batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldLayer));
+  }
+
+  canvas_.addCommandToHistory(batchCmd);
+
+  return true;
+};
+
+export const mergeLayer = function (hrService) {
+  canvas_.getCurrentDrawing().mergeLayer(historyRecordingService(hrService));
+  canvas_.clearSelection();
+  leaveContext();
+  canvas_.changeSvgcontent();
+};
+
+export const mergeAllLayers = function (hrService) {
+  canvas_.getCurrentDrawing().mergeAllLayers(historyRecordingService(hrService));
+  canvas_.clearSelection();
+  leaveContext();
+  canvas_.changeSvgcontent();
+};
+
+// Return from a group context to the regular kind, make any previously
+// disabled elements enabled again
+export const leaveContext = function () {
+  const len = disabledElems.length;
+  if (len) {
+    for (let i = 0; i < len; i++) {
+      const elem = disabledElems[i];
+      const orig = canvas_.elData(elem, 'orig_opac');
+      if (orig !== 1) {
+        elem.setAttribute('opacity', orig);
+      } else {
+        elem.removeAttribute('opacity');
+      }
+      elem.setAttribute('style', 'pointer-events: inherit');
+    }
+    disabledElems = [];
+    canvas_.clearSelection(true);
+    canvas_.call('contextset', null);
+  }
+  canvas_.setCurrentGroup(null);
+};
+
+// Set the current context (for in-group editing)
+export const setContext = function (elem) {
+  leaveContext();
+  if (typeof elem === 'string') {
+    elem = getElem(elem);
+  }
+
+  // Edit inside this group
+  canvas_.setCurrentGroup(elem);
+
+  // Disable other elements
+  $(elem).parentsUntil('#svgcontent').andSelf().siblings().each(function () {
+    const opac = this.getAttribute('opacity') || 1;
+    // Store the original's opacity
+    canvas_.elData(this, 'orig_opac', opac);
+    this.setAttribute('opacity', opac * 0.33);
+    this.setAttribute('style', 'pointer-events: none');
+    disabledElems.push(this);
+  });
+
+  canvas_.clearSelection();
+  canvas_.call('contextset', canvas_.getCurrentGroup());
+};
+
+export {Layer};

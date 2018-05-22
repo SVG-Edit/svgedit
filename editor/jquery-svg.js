@@ -5,18 +5,15 @@
  *
  */
 
-// Dependencies:
-// 1) jquery
-
 // This fixes $(...).attr() to work as expected with SVG elements.
 // Does not currently use *AttributeNS() since we rarely need that.
 
 // See https://api.jquery.com/attr/ for basic documentation of .attr()
 
 // Additional functionality:
-// - When getting attributes, a string that's a number is return as type number.
-// - If an array is supplied as first parameter, multiple values are returned
-// as an object with values for each given attributes
+// - When getting attributes, a string that's a number is returned as type number.
+// - If an array is supplied as the first parameter, multiple values are returned
+//    as an object with values for each given attribute
 
 export default function ($) {
   const proxied = $.fn.attr,
@@ -48,7 +45,7 @@ export default function ($) {
           return obj;
         }
         if (typeof key === 'object') {
-          // Setting attributes form object
+          // Setting attributes from object
           for (const v in key) {
             elem.setAttribute(v, key[v]);
           }

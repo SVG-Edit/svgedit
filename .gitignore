@@ -1,7 +1,11 @@
 node_modules
 
-# See editor/config-sample.js for an example
-editor/config.js
-editor/custom.css
 build/
-editor/svgedit.compiled.js
+
+# For examples, see
+# svgedit-config-sample-es.js
+# svgedit-config-sample-iife.js
+svgedit-config-es.js
+svgedit-config-iife.js
+
+svgedit-custom.css

@@ -7,10 +7,9 @@
  */
 
 // Dependencies:
-// 2) jquery-svg.js
-// 3) svgedit.js
-// 4) pathseg.js
+// 1) jquery-svg.js
 
+import jqPluginSVG from './jquery-svg.js'; // Needed for SVG attribute setting and array form with `attr`
 import {NS} from './svgedit.js';
 import {convertToNum} from './units.js';
 import {isWebkit} from './browser.js';
@@ -23,7 +22,7 @@ import {
   hasMatrixTransform
 } from './math.js';
 
-const $ = jQuery;
+const $ = jqPluginSVG(jQuery);
 
 let context_;
 

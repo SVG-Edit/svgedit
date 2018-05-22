@@ -1,4 +1,4 @@
-/* globals jQuery, svgEditor, svgCanvas */
+/* globals jQuery */
 /*
  * ext-markers.js
  *
@@ -30,9 +30,10 @@
  *    add support for dimension extension lines
  *
  */
-
+import svgEditor from '../svg-editor.js';
 svgEditor.addExtension('Markers', function (S) {
   const $ = jQuery;
+  const svgCanvas = svgEditor.canvas;
   const // {svgcontent} = S,
     addElem = S.addSvgElementFromJson;
   const mtypes = ['start', 'mid', 'end'];
@@ -51,7 +52,7 @@ svgEditor.addExtension('Markers', function (S) {
     rightarrow:
       {element: 'path', attr: {d: 'M100,50 L0,90 L30,50 L0,10 Z'}},
     textmarker:
-      {element: 'text', attr: {x: 0, y: 0, 'stroke-width': 0, 'stroke': 'none', 'font-size': 75, 'font-family': 'serif', 'text-anchor': 'left',
+      {element: 'text', attr: {x: 0, y: 0, 'stroke-width': 0, stroke: 'none', 'font-size': 75, 'font-family': 'serif', 'text-anchor': 'left',
         'xml:space': 'preserve'}},
     forwardslash:
       {element: 'path', attr: {d: 'M30,100 L70,0'}},
@@ -72,7 +73,7 @@ svgEditor.addExtension('Markers', function (S) {
   };
 
   const langList = {
-    'en': [
+    en: [
       {id: 'start_marker_list', title: 'Select start marker type'},
       {id: 'mid_marker_list', title: 'Select mid marker type'},
       {id: 'end_marker_list', title: 'Select end marker type'},
@@ -229,14 +230,14 @@ svgEditor.addExtension('Markers', function (S) {
       markerHeight = bb.height / 10;
 
       const box = addElem({
-        'element': 'rect',
-        'attr': {
-          'x': bb.x,
-          'y': bb.y,
-          'width': bb.width,
-          'height': bb.height,
-          'fill': txtBoxBg,
-          'stroke': txtBoxBorder,
+        element: 'rect',
+        attr: {
+          x: bb.x,
+          y: bb.y,
+          width: bb.width,
+          height: bb.height,
+          fill: txtBoxBg,
+          stroke: txtBoxBorder,
           'stroke-width': txtBoxStrokeWidth
         }
       });
@@ -270,13 +271,13 @@ svgEditor.addExtension('Markers', function (S) {
 
     const midPt = (' ' + ((x1 + x2) / 2) + ',' + ((y1 + y2) / 2) + ' ');
     const pline = addElem({
-      'element': 'polyline',
-      'attr': {
-        'points': (x1 + ',' + y1 + midPt + x2 + ',' + y2),
-        'stroke': elem.getAttribute('stroke'),
+      element: 'polyline',
+      attr: {
+        points: (x1 + ',' + y1 + midPt + x2 + ',' + y2),
+        stroke: elem.getAttribute('stroke'),
         'stroke-width': elem.getAttribute('stroke-width'),
-        'fill': 'none',
-        'opacity': elem.getAttribute('opacity') || 1
+        fill: 'none',
+        opacity: elem.getAttribute('opacity') || 1
       }
     });
     $.each(mtypes, function (i, pos) { // get any existing marker definitions
@@ -298,7 +299,7 @@ svgEditor.addExtension('Markers', function (S) {
   }
 
   function setMarker () {
-    const poslist = {'start_marker': 'start', 'mid_marker': 'mid', 'end_marker': 'end'};
+    const poslist = {start_marker: 'start', mid_marker: 'mid', end_marker: 'end'};
     const pos = poslist[this.id];
     const markerName = 'marker-' + pos;
     let el = selElems[0];
@@ -435,21 +436,21 @@ svgEditor.addExtension('Markers', function (S) {
       id: idPrefix + 'markers_off',
       title: 'Turn off all markers',
       type: 'context',
-      events: { 'click': setMarkerSet },
+      events: { click: setMarkerSet },
       panel: 'marker_panel'
     });
     buttons.push({
       id: idPrefix + 'markers_dimension',
       title: 'Dimension',
       type: 'context',
-      events: { 'click': setMarkerSet },
+      events: { click: setMarkerSet },
       panel: 'marker_panel'
     });
     buttons.push({
       id: idPrefix + 'markers_label',
       title: 'Label',
       type: 'context',
-      events: { 'click': setMarkerSet },
+      events: { click: setMarkerSet },
       panel: 'marker_panel'
     });
 */
@@ -463,7 +464,7 @@ svgEditor.addExtension('Markers', function (S) {
           svgicon: id,
           title,
           type: 'context',
-          events: {'click': setArrowFromButton},
+          events: {click: setArrowFromButton},
           panel: 'marker_panel',
           list: listname,
           isDefault: def
@@ -477,7 +478,7 @@ svgEditor.addExtension('Markers', function (S) {
   let currentLang;
   const ret = {
     name: 'Markers',
-    svgicons: svgEditor.curConfig.extPath + 'markers-icons.xml',
+    svgicons: svgEditor.curConfig.extIconsPath + 'markers-icons.xml',
     callback () {
       $('#marker_panel').addClass('toolset').hide();
     },

@@ -1,4 +1,4 @@
-/* globals jQuery, svgEditor, svgCanvas */
+/* globals jQuery */
 /*
  * ext-grid.js
  *
@@ -9,20 +9,16 @@
  *
  */
 
-// Dependencies:
-// 1) units.js
-// 2) everything else
+import svgEditor from '../svg-editor.js';
 
-import {NS} from './svgedit.js';
-import {getTypeMap} from './units.js';
-
-svgEditor.addExtension('view_grid', function () {
+svgEditor.addExtension('view_grid', function ({NS, getTypeMap}) {
   const $ = jQuery;
+  const svgCanvas = svgEditor.canvas;
   const svgdoc = document.getElementById('svgcanvas').ownerDocument,
     {assignAttributes} = svgCanvas,
     hcanvas = document.createElement('canvas'),
     canvBG = $('#canvasBackground'),
-    units = getTypeMap(),
+    units = getTypeMap(), // Assumes prior `init()` call on `units.js` module
     intervals = [0.01, 0.1, 1, 10, 100, 1000];
   let showGrid = svgEditor.curConfig.showGrid || false;
 
@@ -136,7 +132,7 @@ svgEditor.addExtension('view_grid', function () {
   }
   return {
     name: 'view_grid',
-    svgicons: svgEditor.curConfig.extPath + 'grid-icon.xml',
+    svgicons: svgEditor.curConfig.extIconsPath + 'grid-icon.xml',
 
     zoomChanged (zoom) {
       if (showGrid) { updateGrid(zoom); }

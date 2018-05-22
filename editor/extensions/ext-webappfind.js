@@ -1,4 +1,4 @@
-/* globals svgEditor */
+import svgEditor from '../svg-editor.js';
 /*
 Depends on Firefox add-on and executables from https://github.com/brettz9/webappfind
 
@@ -45,7 +45,7 @@ window.postMessage([readMessage], window.location.origin !== 'null' ? window.loc
 svgEditor.addExtension('WebAppFind', function () {
   return {
     name: 'WebAppFind',
-    svgicons: svgEditor.curConfig.extPath + 'webappfind-icon.svg',
+    svgicons: svgEditor.curConfig.extIconsPath + 'webappfind-icon.svg',
     buttons: [{
       id: 'webappfind_save', //
       type: 'app_menu',

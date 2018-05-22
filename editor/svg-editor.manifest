@@ -8,12 +8,12 @@ jgraduate/css/jgraduate.css
 svg-editor.css
 spinbtn/JQuerySpinBtn.css
 jquery.min.js
-config.js
+svgedit-config-iife.js
 custom.css
 js-hotkeys/jquery.hotkeys.min.js
 jquery-ui/jquery-ui-1.8.17.custom.min.js
-jgraduate/jpicker.min.js
-jgraduate/jquery.jgraduate.min.js
+jgraduate/jpicker.js
+jgraduate/jquery.jgraduate.js
 spinbtn/JQuerySpinBtn.js
 svgcanvas.js
 svg-editor.js
@@ -127,7 +127,7 @@ locale/lang.zh.js
 canvg/canvg.js
 canvg/rgbcolor.js
 jspdf/underscore-min.js
-jspdf/jspdf.js
+jspdf/jspdf.min.js
 jspdf/jspdf.plugin.svgToPdf.js
 
 # Extensions (todo: add other dependency files)

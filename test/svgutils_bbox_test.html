@@ -4,20 +4,10 @@
   <meta charset="utf-8" />
   <title>Unit Tests for svgutils.js BBox functions</title>
   <link rel="icon" type="image/png" href="../editor/images/logo.png"/>
-  <link rel="stylesheet" href="qunit/qunit.css"/>
+  <link rel="stylesheet" href="../node_modules/qunit/qunit/qunit.css"/>
   <script src="../editor/jquery.min.js"></script>
-  <script src="../editor/svgedit.js"></script>
-  <!-- svgutils.js depends on these three... mock out? -->
-  <script src="../editor/pathseg.js"></script>
-  <script src="../editor/browser.js"></script>
-  <script src="../editor/math.js"></script>
-  <script src="../editor/svgtransformlist.js"></script>
-  <script src="../editor/jquery-svg.js"></script>  <!--  has $.attr() that takes an array . Used by svgedit.utilities.getPathDFromElement -->
-  <script src="../editor/path.js"></script>
-  <script src="../editor/svgutils.js"></script>
-  <script src="qunit/qunit.js"></script>
-  <script src="qunit/qunit-assert-close.js"></script>
-  <script defer="defer" src="svgutils_bbox_test.js"></script>
+  <script src="../node_modules/qunit/qunit/qunit.js"></script>
+  <script type="module" src="svgutils_bbox_test.js"></script>
 </head>
 <body>
   <h1 id="qunit-header">Unit Tests for svgutils.js BBox functions</h1>

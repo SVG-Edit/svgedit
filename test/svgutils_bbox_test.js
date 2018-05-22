@@ -1,17 +1,23 @@
 /* eslint-env qunit */
-/* globals svgedit */
+import '../editor/pathseg.js';
+import {NS} from '../editor/svgedit.js';
+import * as utilities from '../editor/svgutils.js';
+import * as transformlist from '../editor/svgtransformlist.js';
+import * as math from '../editor/math.js';
+import * as path from '../editor/path.js';
+import closePlugin from './qunit/qunit-assert-close.js';
 
-// import './pathseg.js';
+closePlugin(QUnit);
 
 // log function
-QUnit.log = function (details) {
+QUnit.log(function (details) {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }
-};
+});
 
 function mockCreateSVGElement (jsonMap) {
-  const elem = document.createElementNS(svgedit.NS.SVG, jsonMap['element']);
+  const elem = document.createElementNS(NS.SVG, jsonMap['element']);
   for (const attr in jsonMap['attr']) {
     elem.setAttribute(attr, jsonMap['attr'][attr]);
   }
@@ -25,13 +31,13 @@ function mockAddSvgElementFromJson (json) {
   return elem;
 }
 const mockPathActions = {
-  resetOrientation (path) {
-    if (path == null || path.nodeName !== 'path') { return false; }
-    const tlist = svgedit.transformlist.getTransformList(path);
-    const m = svgedit.math.transformListToTransform(tlist).matrix;
+  resetOrientation (pth) {
+    if (pth == null || pth.nodeName !== 'path') { return false; }
+    const tlist = transformlist.getTransformList(pth);
+    const m = math.transformListToTransform(tlist).matrix;
     tlist.clear();
-    path.removeAttribute('transform');
-    const segList = path.pathSegList;
+    pth.removeAttribute('transform');
+    const segList = pth.pathSegList;
 
     const len = segList.numberOfItems;
     // let lastX, lastY;
@@ -44,177 +50,177 @@ const mockPathActions = {
       ['', 1, 2].forEach(function (n, j) {
         const x = seg['x' + n], y = seg['y' + n];
         if (x !== undefined && y !== undefined) {
-          const pt = svgedit.math.transformPoint(x, y, m);
+          const pt = math.transformPoint(x, y, m);
           pts.splice(pts.length, 0, pt.x, pt.y);
         }
       });
-      svgedit.path.replacePathSeg(type, i, pts, path);
+      path.replacePathSeg(type, i, pts, pth);
     }
-    // svgedit.utilities.reorientGrads(path, m);
+    // path.reorientGrads(pth, m);
   }
 };
 
 const EPSILON = 0.001;
-// const svg = document.createElementNS(svgedit.NS.SVG, 'svg');
+// const svg = document.createElementNS(NS.SVG, 'svg');
 const sandbox = document.getElementById('sandbox');
 const svgroot = mockCreateSVGElement({
-  'element': 'svg',
-  'attr': {'id': 'svgroot'}
+  element: 'svg',
+  attr: {id: 'svgroot'}
 });
 sandbox.appendChild(svgroot);
 
-module('svgedit.utilities_bbox', {
-  setup () {
+QUnit.module('svgedit.utilities_bbox', {
+  beforeEach () {
     // We're reusing ID's so we need to do this for transforms.
-    svgedit.transformlist.resetListMap();
-    svgedit.path.init(null);
+    transformlist.resetListMap();
+    path.init(null);
     mockAddSvgElementFromJsonCallCount = 0;
   },
-  teardown () {
+  afterEach () {
   }
 });
 
-test('Test svgedit.utilities package', function () {
-  ok(svgedit.utilities);
-  ok(svgedit.utilities.getBBoxWithTransform);
-  ok(svgedit.utilities.getStrokedBBox);
-  ok(svgedit.utilities.getRotationAngleFromTransformList);
-  ok(svgedit.utilities.getRotationAngle);
+QUnit.test('Test svgedit.utilities package', function (assert) {
+  assert.ok(utilities);
+  assert.ok(utilities.getBBoxWithTransform);
+  assert.ok(utilities.getStrokedBBox);
+  assert.ok(utilities.getRotationAngleFromTransformList);
+  assert.ok(utilities.getRotationAngle);
 });
 
-test('Test getBBoxWithTransform and no transform', function () {
-  const {getBBoxWithTransform} = svgedit.utilities;
+QUnit.test('Test getBBoxWithTransform and no transform', function (assert) {
+  const {getBBoxWithTransform} = utilities;
 
   let elem = mockCreateSVGElement({
-    'element': 'path',
-    'attr': {'id': 'path', 'd': 'M0,1 L2,3'}
+    element: 'path',
+    attr: {id: 'path', d: 'M0,1 L2,3'}
   });
   svgroot.appendChild(elem);
   let bbox = getBBoxWithTransform(elem, mockAddSvgElementFromJson, mockPathActions);
-  deepEqual(bbox, {x: 0, y: 1, width: 2, height: 2});
-  equal(mockAddSvgElementFromJsonCallCount, 0);
+  assert.deepEqual(bbox, {x: 0, y: 1, width: 2, height: 2});
+  assert.equal(mockAddSvgElementFromJsonCallCount, 0);
   svgroot.removeChild(elem);
 
   elem = mockCreateSVGElement({
-    'element': 'rect',
-    'attr': {'id': 'rect', 'x': '0', 'y': '1', 'width': '5', 'height': '10'}
+    element: 'rect',
+    attr: {id: 'rect', x: '0', y: '1', width: '5', height: '10'}
   });
   svgroot.appendChild(elem);
   bbox = getBBoxWithTransform(elem, mockAddSvgElementFromJson, mockPathActions);
-  deepEqual(bbox, {x: 0, y: 1, width: 5, height: 10});
-  equal(mockAddSvgElementFromJsonCallCount, 0);
+  assert.deepEqual(bbox, {x: 0, y: 1, width: 5, height: 10});
+  assert.equal(mockAddSvgElementFromJsonCallCount, 0);
   svgroot.removeChild(elem);
 
   elem = mockCreateSVGElement({
-    'element': 'line',
-    'attr': {'id': 'line', 'x1': '0', 'y1': '1', 'x2': '5', 'y2': '6'}
+    element: 'line',
+    attr: {id: 'line', x1: '0', y1: '1', x2: '5', y2: '6'}
   });
   svgroot.appendChild(elem);
   bbox = getBBoxWithTransform(elem, mockAddSvgElementFromJson, mockPathActions);
-  deepEqual(bbox, {x: 0, y: 1, width: 5, 'height': 5});
-  equal(mockAddSvgElementFromJsonCallCount, 0);
+  assert.deepEqual(bbox, {x: 0, y: 1, width: 5, height: 5});
+  assert.equal(mockAddSvgElementFromJsonCallCount, 0);
   svgroot.removeChild(elem);
 
   elem = mockCreateSVGElement({
-    'element': 'rect',
-    'attr': {'id': 'rect', 'x': '0', 'y': '1', 'width': '5', 'height': '10'}
+    element: 'rect',
+    attr: {id: 'rect', x: '0', y: '1', width: '5', height: '10'}
   });
   const g = mockCreateSVGElement({
-    'element': 'g',
-    'attr': {}
+    element: 'g',
+    attr: {}
   });
   g.appendChild(elem);
   svgroot.appendChild(g);
   bbox = getBBoxWithTransform(elem, mockAddSvgElementFromJson, mockPathActions);
-  deepEqual(bbox, {x: 0, y: 1, width: 5, height: 10});
-  equal(mockAddSvgElementFromJsonCallCount, 0);
+  assert.deepEqual(bbox, {x: 0, y: 1, width: 5, height: 10});
+  assert.equal(mockAddSvgElementFromJsonCallCount, 0);
   svgroot.removeChild(g);
 });
 
-test('Test getBBoxWithTransform and a rotation transform', function () {
-  const {getBBoxWithTransform} = svgedit.utilities;
+QUnit.test('Test getBBoxWithTransform and a rotation transform', function (assert) {
+  const {getBBoxWithTransform} = utilities;
 
   let elem = mockCreateSVGElement({
-    'element': 'path',
-    'attr': {'id': 'path', 'd': 'M10,10 L20,20', 'transform': 'rotate(45 10,10)'}
+    element: 'path',
+    attr: {id: 'path', d: 'M10,10 L20,20', transform: 'rotate(45 10,10)'}
   });
   svgroot.appendChild(elem);
   let bbox = getBBoxWithTransform(elem, mockAddSvgElementFromJson, mockPathActions);
-  close(bbox.x, 10, EPSILON);
-  close(bbox.y, 10, EPSILON);
-  close(bbox.width, 0, EPSILON);
-  close(bbox.height, Math.sqrt(100 + 100), EPSILON);
+  assert.close(bbox.x, 10, EPSILON);
+  assert.close(bbox.y, 10, EPSILON);
+  assert.close(bbox.width, 0, EPSILON);
+  assert.close(bbox.height, Math.sqrt(100 + 100), EPSILON);
   svgroot.removeChild(elem);
 
   elem = mockCreateSVGElement({
-    'element': 'rect',
-    'attr': {'id': 'rect', 'x': '10', 'y': '10', 'width': '10', 'height': '20', 'transform': 'rotate(90 15,20)'}
+    element: 'rect',
+    attr: {id: 'rect', x: '10', y: '10', width: '10', height: '20', transform: 'rotate(90 15,20)'}
   });
   svgroot.appendChild(elem);
   bbox = getBBoxWithTransform(elem, mockAddSvgElementFromJson, mockPathActions);
-  close(bbox.x, 5, EPSILON);
-  close(bbox.y, 15, EPSILON);
-  close(bbox.width, 20, EPSILON);
-  close(bbox.height, 10, EPSILON);
-  equal(mockAddSvgElementFromJsonCallCount, 1);
+  assert.close(bbox.x, 5, EPSILON);
+  assert.close(bbox.y, 15, EPSILON);
+  assert.close(bbox.width, 20, EPSILON);
+  assert.close(bbox.height, 10, EPSILON);
+  assert.equal(mockAddSvgElementFromJsonCallCount, 1);
   svgroot.removeChild(elem);
 
   const rect = {x: 10, y: 10, width: 10, height: 20};
   const angle = 45;
   const origin = {x: 15, y: 20};
   elem = mockCreateSVGElement({
-    'element': 'rect',
-    'attr': {'id': 'rect2', 'x': rect.x, 'y': rect.y, 'width': rect.width, 'height': rect.height, 'transform': 'rotate(' + angle + ' ' + origin.x + ',' + origin.y + ')'}
+    element: 'rect',
+    attr: {id: 'rect2', x: rect.x, y: rect.y, width: rect.width, height: rect.height, transform: 'rotate(' + angle + ' ' + origin.x + ',' + origin.y + ')'}
   });
   svgroot.appendChild(elem);
   mockAddSvgElementFromJsonCallCount = 0;
   bbox = getBBoxWithTransform(elem, mockAddSvgElementFromJson, mockPathActions);
   const r2 = rotateRect(rect, angle, origin);
-  close(bbox.x, r2.x, EPSILON, 'rect2 x is ' + r2.x);
-  close(bbox.y, r2.y, EPSILON, 'rect2 y is ' + r2.y);
-  close(bbox.width, r2.width, EPSILON, 'rect2 width is' + r2.width);
-  close(bbox.height, r2.height, EPSILON, 'rect2 height is ' + r2.height);
-  equal(mockAddSvgElementFromJsonCallCount, 0);
+  assert.close(bbox.x, r2.x, EPSILON, 'rect2 x is ' + r2.x);
+  assert.close(bbox.y, r2.y, EPSILON, 'rect2 y is ' + r2.y);
+  assert.close(bbox.width, r2.width, EPSILON, 'rect2 width is' + r2.width);
+  assert.close(bbox.height, r2.height, EPSILON, 'rect2 height is ' + r2.height);
+  assert.equal(mockAddSvgElementFromJsonCallCount, 0);
   svgroot.removeChild(elem);
 
   // Same as previous but wrapped with g and the transform is with the g.
   elem = mockCreateSVGElement({
-    'element': 'rect',
-    'attr': {'id': 'rect3', 'x': rect.x, 'y': rect.y, 'width': rect.width, 'height': rect.height}
+    element: 'rect',
+    attr: {id: 'rect3', x: rect.x, y: rect.y, width: rect.width, height: rect.height}
   });
   const g = mockCreateSVGElement({
-    'element': 'g',
-    'attr': {'transform': 'rotate(' + angle + ' ' + origin.x + ',' + origin.y + ')'}
+    element: 'g',
+    attr: {transform: 'rotate(' + angle + ' ' + origin.x + ',' + origin.y + ')'}
   });
   g.appendChild(elem);
   svgroot.appendChild(g);
   mockAddSvgElementFromJsonCallCount = 0;
   bbox = getBBoxWithTransform(g, mockAddSvgElementFromJson, mockPathActions);
-  close(bbox.x, r2.x, EPSILON, 'rect2 x is ' + r2.x);
-  close(bbox.y, r2.y, EPSILON, 'rect2 y is ' + r2.y);
-  close(bbox.width, r2.width, EPSILON, 'rect2 width is' + r2.width);
-  close(bbox.height, r2.height, EPSILON, 'rect2 height is ' + r2.height);
-  equal(mockAddSvgElementFromJsonCallCount, 0);
+  assert.close(bbox.x, r2.x, EPSILON, 'rect2 x is ' + r2.x);
+  assert.close(bbox.y, r2.y, EPSILON, 'rect2 y is ' + r2.y);
+  assert.close(bbox.width, r2.width, EPSILON, 'rect2 width is' + r2.width);
+  assert.close(bbox.height, r2.height, EPSILON, 'rect2 height is ' + r2.height);
+  assert.equal(mockAddSvgElementFromJsonCallCount, 0);
   svgroot.removeChild(g);
 
   elem = mockCreateSVGElement({
-    'element': 'ellipse',
-    'attr': {'id': 'ellipse1', 'cx': '100', 'cy': '100', 'rx': '50', 'ry': '50', 'transform': 'rotate(45 100,100)'}
+    element: 'ellipse',
+    attr: {id: 'ellipse1', cx: '100', cy: '100', rx: '50', ry: '50', transform: 'rotate(45 100,100)'}
   });
   svgroot.appendChild(elem);
   mockAddSvgElementFromJsonCallCount = 0;
   bbox = getBBoxWithTransform(elem, mockAddSvgElementFromJson, mockPathActions);
   // TODO: the BBox algorithm is using the bezier control points to calculate the bounding box. Should be 50, 50, 100, 100.
-  ok(bbox.x > 45 && bbox.x <= 50);
-  ok(bbox.y > 45 && bbox.y <= 50);
-  ok(bbox.width >= 100 && bbox.width < 110);
-  ok(bbox.height >= 100 && bbox.height < 110);
-  equal(mockAddSvgElementFromJsonCallCount, 1);
+  assert.ok(bbox.x > 45 && bbox.x <= 50);
+  assert.ok(bbox.y > 45 && bbox.y <= 50);
+  assert.ok(bbox.width >= 100 && bbox.width < 110);
+  assert.ok(bbox.height >= 100 && bbox.height < 110);
+  assert.equal(mockAddSvgElementFromJsonCallCount, 1);
   svgroot.removeChild(elem);
 });
 
-test('Test getBBoxWithTransform with rotation and matrix transforms', function () {
-  const {getBBoxWithTransform} = svgedit.utilities;
+QUnit.test('Test getBBoxWithTransform with rotation and matrix transforms', function (assert) {
+  const {getBBoxWithTransform} = utilities;
 
   let tx = 10; // tx right
   let ty = 10; // tx down
@@ -222,30 +228,30 @@ test('Test getBBoxWithTransform with rotation and matrix transforms', function (
   let tyInRotatedSpace = 0;
   let matrix = 'matrix(1,0,0,1,' + txInRotatedSpace + ',' + tyInRotatedSpace + ')';
   let elem = mockCreateSVGElement({
-    'element': 'path',
-    'attr': {'id': 'path', 'd': 'M10,10 L20,20', 'transform': 'rotate(45 10,10) ' + matrix}
+    element: 'path',
+    attr: {id: 'path', d: 'M10,10 L20,20', transform: 'rotate(45 10,10) ' + matrix}
   });
   svgroot.appendChild(elem);
   let bbox = getBBoxWithTransform(elem, mockAddSvgElementFromJson, mockPathActions);
-  close(bbox.x, 10 + tx, EPSILON);
-  close(bbox.y, 10 + ty, EPSILON);
-  close(bbox.width, 0, EPSILON);
-  close(bbox.height, Math.sqrt(100 + 100), EPSILON);
+  assert.close(bbox.x, 10 + tx, EPSILON);
+  assert.close(bbox.y, 10 + ty, EPSILON);
+  assert.close(bbox.width, 0, EPSILON);
+  assert.close(bbox.height, Math.sqrt(100 + 100), EPSILON);
   svgroot.removeChild(elem);
 
   txInRotatedSpace = tx; // translate in rotated 90 space.
   tyInRotatedSpace = -ty;
   matrix = 'matrix(1,0,0,1,' + txInRotatedSpace + ',' + tyInRotatedSpace + ')';
   elem = mockCreateSVGElement({
-    'element': 'rect',
-    'attr': {'id': 'rect', 'x': '10', 'y': '10', 'width': '10', 'height': '20', 'transform': 'rotate(90 15,20) ' + matrix}
+    element: 'rect',
+    attr: {id: 'rect', x: '10', y: '10', width: '10', height: '20', transform: 'rotate(90 15,20) ' + matrix}
   });
   svgroot.appendChild(elem);
   bbox = getBBoxWithTransform(elem, mockAddSvgElementFromJson, mockPathActions);
-  close(bbox.x, 5 + tx, EPSILON);
-  close(bbox.y, 15 + ty, EPSILON);
-  close(bbox.width, 20, EPSILON);
-  close(bbox.height, 10, EPSILON);
+  assert.close(bbox.x, 5 + tx, EPSILON);
+  assert.close(bbox.y, 15 + ty, EPSILON);
+  assert.close(bbox.width, 20, EPSILON);
+  assert.close(bbox.height, 10, EPSILON);
   svgroot.removeChild(elem);
 
   const rect = {x: 10, y: 10, width: 10, height: 20};
@@ -257,183 +263,183 @@ test('Test getBBoxWithTransform with rotation and matrix transforms', function (
   tyInRotatedSpace = 0;
   matrix = 'matrix(1,0,0,1,' + txInRotatedSpace + ',' + tyInRotatedSpace + ')';
   elem = mockCreateSVGElement({
-    'element': 'rect',
-    'attr': {'id': 'rect2', 'x': rect.x, 'y': rect.y, 'width': rect.width, 'height': rect.height, 'transform': 'rotate(' + angle + ' ' + origin.x + ',' + origin.y + ') ' + matrix}
+    element: 'rect',
+    attr: {id: 'rect2', x: rect.x, y: rect.y, width: rect.width, height: rect.height, transform: 'rotate(' + angle + ' ' + origin.x + ',' + origin.y + ') ' + matrix}
   });
   svgroot.appendChild(elem);
   bbox = getBBoxWithTransform(elem, mockAddSvgElementFromJson, mockPathActions);
   const r2 = rotateRect(rect, angle, origin);
-  close(bbox.x, r2.x + tx, EPSILON, 'rect2 x is ' + r2.x);
-  close(bbox.y, r2.y + ty, EPSILON, 'rect2 y is ' + r2.y);
-  close(bbox.width, r2.width, EPSILON, 'rect2 width is' + r2.width);
-  close(bbox.height, r2.height, EPSILON, 'rect2 height is ' + r2.height);
+  assert.close(bbox.x, r2.x + tx, EPSILON, 'rect2 x is ' + r2.x);
+  assert.close(bbox.y, r2.y + ty, EPSILON, 'rect2 y is ' + r2.y);
+  assert.close(bbox.width, r2.width, EPSILON, 'rect2 width is' + r2.width);
+  assert.close(bbox.height, r2.height, EPSILON, 'rect2 height is ' + r2.height);
   svgroot.removeChild(elem);
 
   // Same as previous but wrapped with g and the transform is with the g.
   elem = mockCreateSVGElement({
-    'element': 'rect',
-    'attr': {'id': 'rect3', 'x': rect.x, 'y': rect.y, 'width': rect.width, 'height': rect.height}
+    element: 'rect',
+    attr: {id: 'rect3', x: rect.x, y: rect.y, width: rect.width, height: rect.height}
   });
   const g = mockCreateSVGElement({
-    'element': 'g',
-    'attr': {'transform': 'rotate(' + angle + ' ' + origin.x + ',' + origin.y + ') ' + matrix}
+    element: 'g',
+    attr: {transform: 'rotate(' + angle + ' ' + origin.x + ',' + origin.y + ') ' + matrix}
   });
   g.appendChild(elem);
   svgroot.appendChild(g);
   bbox = getBBoxWithTransform(g, mockAddSvgElementFromJson, mockPathActions);
-  close(bbox.x, r2.x + tx, EPSILON, 'rect2 x is ' + r2.x);
-  close(bbox.y, r2.y + ty, EPSILON, 'rect2 y is ' + r2.y);
-  close(bbox.width, r2.width, EPSILON, 'rect2 width is' + r2.width);
-  close(bbox.height, r2.height, EPSILON, 'rect2 height is ' + r2.height);
+  assert.close(bbox.x, r2.x + tx, EPSILON, 'rect2 x is ' + r2.x);
+  assert.close(bbox.y, r2.y + ty, EPSILON, 'rect2 y is ' + r2.y);
+  assert.close(bbox.width, r2.width, EPSILON, 'rect2 width is' + r2.width);
+  assert.close(bbox.height, r2.height, EPSILON, 'rect2 height is ' + r2.height);
   svgroot.removeChild(g);
 
   elem = mockCreateSVGElement({
-    'element': 'ellipse',
-    'attr': {'id': 'ellipse1', 'cx': '100', 'cy': '100', 'rx': '50', 'ry': '50', 'transform': 'rotate(45 100,100) ' + matrix}
+    element: 'ellipse',
+    attr: {id: 'ellipse1', cx: '100', cy: '100', rx: '50', ry: '50', transform: 'rotate(45 100,100) ' + matrix}
   });
   svgroot.appendChild(elem);
   bbox = getBBoxWithTransform(elem, mockAddSvgElementFromJson, mockPathActions);
   // TODO: the BBox algorithm is using the bezier control points to calculate the bounding box. Should be 50, 50, 100, 100.
-  ok(bbox.x > 45 + tx && bbox.x <= 50 + tx);
-  ok(bbox.y > 45 + ty && bbox.y <= 50 + ty);
-  ok(bbox.width >= 100 && bbox.width < 110);
-  ok(bbox.height >= 100 && bbox.height < 110);
+  assert.ok(bbox.x > 45 + tx && bbox.x <= 50 + tx);
+  assert.ok(bbox.y > 45 + ty && bbox.y <= 50 + ty);
+  assert.ok(bbox.width >= 100 && bbox.width < 110);
+  assert.ok(bbox.height >= 100 && bbox.height < 110);
   svgroot.removeChild(elem);
 });
 
-test('Test getStrokedBBox with stroke-width 10', function () {
-  const {getStrokedBBox} = svgedit.utilities;
+QUnit.test('Test getStrokedBBox with stroke-width 10', function (assert) {
+  const {getStrokedBBox} = utilities;
 
   const strokeWidth = 10;
   let elem = mockCreateSVGElement({
-    'element': 'path',
-    'attr': {'id': 'path', 'd': 'M0,1 L2,3', 'stroke-width': strokeWidth}
+    element: 'path',
+    attr: {id: 'path', d: 'M0,1 L2,3', 'stroke-width': strokeWidth}
   });
   svgroot.appendChild(elem);
   let bbox = getStrokedBBox([elem], mockAddSvgElementFromJson, mockPathActions);
-  deepEqual(bbox, {x: 0 - strokeWidth / 2, y: 1 - strokeWidth / 2, width: 2 + strokeWidth, height: 2 + strokeWidth});
+  assert.deepEqual(bbox, {x: 0 - strokeWidth / 2, y: 1 - strokeWidth / 2, width: 2 + strokeWidth, height: 2 + strokeWidth});
   svgroot.removeChild(elem);
 
   elem = mockCreateSVGElement({
-    'element': 'rect',
-    'attr': {'id': 'rect', 'x': '0', 'y': '1', 'width': '5', 'height': '10', 'stroke-width': strokeWidth}
+    element: 'rect',
+    attr: {id: 'rect', x: '0', y: '1', width: '5', height: '10', 'stroke-width': strokeWidth}
   });
   svgroot.appendChild(elem);
   bbox = getStrokedBBox([elem], mockAddSvgElementFromJson, mockPathActions);
-  deepEqual(bbox, {x: 0 - strokeWidth / 2, y: 1 - strokeWidth / 2, width: 5 + strokeWidth, height: 10 + strokeWidth});
+  assert.deepEqual(bbox, {x: 0 - strokeWidth / 2, y: 1 - strokeWidth / 2, width: 5 + strokeWidth, height: 10 + strokeWidth});
   svgroot.removeChild(elem);
 
   elem = mockCreateSVGElement({
-    'element': 'line',
-    'attr': {'id': 'line', 'x1': '0', 'y1': '1', 'x2': '5', 'y2': '6', 'stroke-width': strokeWidth}
+    element: 'line',
+    attr: {id: 'line', x1: '0', y1: '1', x2: '5', y2: '6', 'stroke-width': strokeWidth}
   });
   svgroot.appendChild(elem);
   bbox = getStrokedBBox([elem], mockAddSvgElementFromJson, mockPathActions);
-  deepEqual(bbox, {x: 0 - strokeWidth / 2, y: 1 - strokeWidth / 2, width: 5 + strokeWidth, height: 5 + strokeWidth});
+  assert.deepEqual(bbox, {x: 0 - strokeWidth / 2, y: 1 - strokeWidth / 2, width: 5 + strokeWidth, height: 5 + strokeWidth});
   svgroot.removeChild(elem);
 
   elem = mockCreateSVGElement({
-    'element': 'rect',
-    'attr': {'id': 'rect', 'x': '0', 'y': '1', 'width': '5', 'height': '10', 'stroke-width': strokeWidth}
+    element: 'rect',
+    attr: {id: 'rect', x: '0', y: '1', width: '5', height: '10', 'stroke-width': strokeWidth}
   });
   const g = mockCreateSVGElement({
-    'element': 'g',
-    'attr': {}
+    element: 'g',
+    attr: {}
   });
   g.appendChild(elem);
   svgroot.appendChild(g);
   bbox = getStrokedBBox([elem], mockAddSvgElementFromJson, mockPathActions);
-  deepEqual(bbox, {x: 0 - strokeWidth / 2, y: 1 - strokeWidth / 2, width: 5 + strokeWidth, height: 10 + strokeWidth});
+  assert.deepEqual(bbox, {x: 0 - strokeWidth / 2, y: 1 - strokeWidth / 2, width: 5 + strokeWidth, height: 10 + strokeWidth});
   svgroot.removeChild(g);
 });
 
-test("Test getStrokedBBox with stroke-width 'none'", function () {
-  const {getStrokedBBox} = svgedit.utilities;
+QUnit.test("Test getStrokedBBox with stroke-width 'none'", function (assert) {
+  const {getStrokedBBox} = utilities;
 
   let elem = mockCreateSVGElement({
-    'element': 'path',
-    'attr': {'id': 'path', 'd': 'M0,1 L2,3', 'stroke-width': 'none'}
+    element: 'path',
+    attr: {id: 'path', d: 'M0,1 L2,3', 'stroke-width': 'none'}
   });
   svgroot.appendChild(elem);
   let bbox = getStrokedBBox([elem], mockAddSvgElementFromJson, mockPathActions);
-  deepEqual(bbox, {x: 0, y: 1, width: 2, height: 2});
+  assert.deepEqual(bbox, {x: 0, y: 1, width: 2, height: 2});
   svgroot.removeChild(elem);
 
   elem = mockCreateSVGElement({
-    'element': 'rect',
-    'attr': {'id': 'rect', 'x': '0', 'y': '1', 'width': '5', 'height': '10', 'stroke-width': 'none'}
+    element: 'rect',
+    attr: {id: 'rect', x: '0', y: '1', width: '5', height: '10', 'stroke-width': 'none'}
   });
   svgroot.appendChild(elem);
   bbox = getStrokedBBox([elem], mockAddSvgElementFromJson, mockPathActions);
-  deepEqual(bbox, {x: 0, y: 1, width: 5, height: 10});
+  assert.deepEqual(bbox, {x: 0, y: 1, width: 5, height: 10});
   svgroot.removeChild(elem);
 
   elem = mockCreateSVGElement({
-    'element': 'line',
-    'attr': {'id': 'line', 'x1': '0', 'y1': '1', 'x2': '5', 'y2': '6', 'stroke-width': 'none'}
+    element: 'line',
+    attr: {id: 'line', x1: '0', y1: '1', x2: '5', y2: '6', 'stroke-width': 'none'}
   });
   svgroot.appendChild(elem);
   bbox = getStrokedBBox([elem], mockAddSvgElementFromJson, mockPathActions);
-  deepEqual(bbox, {x: 0, y: 1, width: 5, height: 5});
+  assert.deepEqual(bbox, {x: 0, y: 1, width: 5, height: 5});
   svgroot.removeChild(elem);
 
   elem = mockCreateSVGElement({
-    'element': 'rect',
-    'attr': {'id': 'rect', 'x': '0', 'y': '1', 'width': '5', 'height': '10', 'stroke-width': 'none'}
+    element: 'rect',
+    attr: {id: 'rect', x: '0', y: '1', width: '5', height: '10', 'stroke-width': 'none'}
   });
   const g = mockCreateSVGElement({
-    'element': 'g',
-    'attr': {}
+    element: 'g',
+    attr: {}
   });
   g.appendChild(elem);
   svgroot.appendChild(g);
   bbox = getStrokedBBox([elem], mockAddSvgElementFromJson, mockPathActions);
-  deepEqual(bbox, {x: 0, y: 1, width: 5, height: 10});
+  assert.deepEqual(bbox, {x: 0, y: 1, width: 5, height: 10});
   svgroot.removeChild(g);
 });
 
-test('Test getStrokedBBox with no stroke-width attribute', function () {
-  const {getStrokedBBox} = svgedit.utilities;
+QUnit.test('Test getStrokedBBox with no stroke-width attribute', function (assert) {
+  const {getStrokedBBox} = utilities;
 
   let elem = mockCreateSVGElement({
-    'element': 'path',
-    'attr': {'id': 'path', 'd': 'M0,1 L2,3'}
+    element: 'path',
+    attr: {id: 'path', d: 'M0,1 L2,3'}
   });
   svgroot.appendChild(elem);
   let bbox = getStrokedBBox([elem], mockAddSvgElementFromJson, mockPathActions);
-  deepEqual(bbox, {x: 0, y: 1, width: 2, height: 2});
+  assert.deepEqual(bbox, {x: 0, y: 1, width: 2, height: 2});
   svgroot.removeChild(elem);
 
   elem = mockCreateSVGElement({
-    'element': 'rect',
-    'attr': {'id': 'rect', 'x': '0', 'y': '1', 'width': '5', 'height': '10'}
+    element: 'rect',
+    attr: {id: 'rect', x: '0', y: '1', width: '5', height: '10'}
   });
   svgroot.appendChild(elem);
   bbox = getStrokedBBox([elem], mockAddSvgElementFromJson, mockPathActions);
-  deepEqual(bbox, {x: 0, y: 1, width: 5, height: 10});
+  assert.deepEqual(bbox, {x: 0, y: 1, width: 5, height: 10});
   svgroot.removeChild(elem);
 
   elem = mockCreateSVGElement({
-    'element': 'line',
-    'attr': {'id': 'line', 'x1': '0', 'y1': '1', 'x2': '5', 'y2': '6'}
+    element: 'line',
+    attr: {id: 'line', x1: '0', y1: '1', x2: '5', y2: '6'}
   });
   svgroot.appendChild(elem);
   bbox = getStrokedBBox([elem], mockAddSvgElementFromJson, mockPathActions);
-  deepEqual(bbox, {x: 0, y: 1, width: 5, height: 5});
+  assert.deepEqual(bbox, {x: 0, y: 1, width: 5, height: 5});
   svgroot.removeChild(elem);
 
   elem = mockCreateSVGElement({
-    'element': 'rect',
-    'attr': {'id': 'rect', 'x': '0', 'y': '1', 'width': '5', 'height': '10'}
+    element: 'rect',
+    attr: {id: 'rect', x: '0', y: '1', width: '5', height: '10'}
   });
   const g = mockCreateSVGElement({
-    'element': 'g',
-    'attr': {}
+    element: 'g',
+    attr: {}
   });
   g.appendChild(elem);
   svgroot.appendChild(g);
   bbox = getStrokedBBox([elem], mockAddSvgElementFromJson, mockPathActions);
-  deepEqual(bbox, {x: 0, y: 1, width: 5, height: 10});
+  assert.deepEqual(bbox, {x: 0, y: 1, width: 5, height: 10});
   svgroot.removeChild(g);
 });
 

@@ -1,4 +1,4 @@
-/* globals jQuery, MathJax, svgEditor, svgCanvas */
+/* globals jQuery, MathJax */
 /*
  * ext-mathjax.js
  *
@@ -7,9 +7,10 @@
  * Copyright(c) 2013 Jo Segaert
  *
  */
-
+import svgEditor from '../svg-editor.js';
 svgEditor.addExtension('mathjax', function () {
   const $ = jQuery;
+  const svgCanvas = svgEditor.canvas;
 
   // Configuration of the MathJax extention.
 
@@ -112,7 +113,7 @@ svgEditor.addExtension('mathjax', function () {
 
   return {
     name: 'MathJax',
-    svgicons: svgEditor.curConfig.extPath + 'mathjax-icons.xml',
+    svgicons: svgEditor.curConfig.extIconsPath + 'mathjax-icons.xml',
     buttons: [{
       id: 'tool_mathjax',
       type: 'mode',
@@ -164,8 +165,20 @@ svgEditor.addExtension('mathjax', function () {
             $('body').addClass('tex2jax_ignore');
 
             // Now get (and run) the MathJax Library.
-            // Todo: insert script with `s.type = 'module';` once modules widely supported
-            //   and if this ends up providing an ES6 module export
+            // Todo: insert script with modules once widely supported
+            //   and if MathJax (and its `TeX-AMS-MML_SVG.js` dependency) ends up
+            //   providing an ES6 module export: https://github.com/mathjax/MathJax/issues/1998
+            /*
+            const s = document.createElement('script');
+            const modularVersion = !('svgEditor' in window) ||
+              !window.svgEditor ||
+              window.svgEditor.modules !== false;
+            if (modularVersion) {
+              s.type = 'module'; // Make this the default when widely supported
+            }
+            s.src = curConfig.extPath + mathjaxSrcSecure;
+            // See `executeAfterLoads` in `svgutils.js`
+            */
             $.getScript(mathjaxSrcSecure)
               .done(function (script, textStatus) {
                 // When MathJax is loaded get the div where the math will be rendered.

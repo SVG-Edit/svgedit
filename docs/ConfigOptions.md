@@ -4,7 +4,7 @@ As of version 2.5, SVG-edit has several configuration settings that can be overr
 
 ## How to set the options
 
-Options can be set using `svgEditor.setConfig(options)`, where `options` is an object literal of keys and values. This must be run before the actual page or DOM is loaded, otherwise it will have no effect. Note that one may create a `config.js` file within the "editor" directory and add such configuration directives to it without needing to modify the repository editor code (and note version 2.8 adds support for a custom.css file for the same purpose).
+Options can be set using `svgEditor.setConfig(options)`, where `options` is an object literal of keys and values. This must be run before the actual page or DOM is loaded, otherwise it will have no effect. Note that one may create a `svgedit-config-iife.js` file within the project root directory and add such configuration directives to it without needing to modify the repository editor code (and note version 2.8 adds support for a custom.css file for the same purpose).
 
 ## Example:
 
@@ -32,7 +32,7 @@ One may optionally pass another object to `.setConfig()` as the second argument 
 
 If an `overwrite` boolean is set to false on this additional object, it will, as occurs with all URL type configurations, prevent the current configuration from overwriting any explicitly set previous configurations. The default is true except for URLs which always are false.
 
-If an `allowInitialUserOverride` boolean is set to true, it will allow subsequent configuration overwriting via URL (e.g., if you do want the user to have the option to override certain or your (`config.js`) `.setConfig()` directives via URL while still wishing to provide them with your own default value, you should add this property).
+If an `allowInitialUserOverride` boolean is set to true, it will allow subsequent configuration overwriting via URL (e.g., if you do want the user to have the option to override certain or your (`svgedit-config-iife.js`) `.setConfig()` directives via URL while still wishing to provide them with your own default value, you should add this property).
 
 ## Configurable options
 
@@ -74,22 +74,23 @@ Note that those items marked as preferences are configuration items which can al
 | `canvasName` | Used to namespace storage provided via `ext-storage.js`; you can use this if you wish to have multiple independent instances of SVG Edit on the same domain | default | No |
 | `initOpacity` | Initial opacity (multiplied by 100) | 1 | No |
 | `colorPickerCSS` | Object of CSS properties mapped to values (for jQuery) to apply to the color picker. A `null` value (the default) will cause the CSS to default to `left` with a position equal to that of the fill_color or stroke_color element minus 140, and a `bottom` equal to 40 | `null` (see description) | No |
-| `preventAllURLConfig` | Set to `true` (in `config.js`; extension loading is too late!) to override the ability for URLs to set non-content configuration (including extension config) | `false` | No |
-| `preventURLContentLoading` | Set to `true` (in `config.js`; extension loading is too late!) to override the ability for URLs to set URL-based SVG content | `false` | No |
-| `lockExtensions` | Set to `true` (in config.js; extension loading is too late!) to override the ability for URLs to set their own extensions; disallowed in URL setting. There is no need for this when `preventAllURLConfig` is used. | `false` | No |
-| `noDefaultExtensions` | If set to `true`, prohibits automatic inclusion of default extensions (though "extensions" can still be used to add back any desired default extensions along with any other extensions); can only be meaningfully used in `config.js` or in the URL | `false` | No |
+| `preventAllURLConfig` | Set to `true` (in `svgedit-config-iife.js`; extension loading is too late!) to override the ability for URLs to set non-content configuration (including extension config) | `false` | No |
+| `preventURLContentLoading` | Set to `true` (in `svgedit-config-iife.js`; extension loading is too late!) to override the ability for URLs to set URL-based SVG content | `false` | No |
+| `lockExtensions` | Set to `true` (in `svgedit-config-iife.js`; extension loading is too late!) to override the ability for URLs to set their own extensions; disallowed in URL setting. There is no need for this when `preventAllURLConfig` is used. | `false` | No |
+| `noDefaultExtensions` | If set to `true`, prohibits automatic inclusion of default extensions (though "extensions" can still be used to add back any desired default extensions along with any other extensions); can only be meaningfully used in `svgedit-config-iife.js` or in the URL | `false` | No |
 | `showGrid` | Set by `ext-grid.js`; determines whether or not to show the grid by default | `false` | No |
 | `noStorageOnLoad` | Some interaction with `ext-storage.js`; prevents even the loading of previously saved local storage | `false` | No |
 | `forceStorage` | Some interaction with `ext-storage.js`; strongly discouraged from modification as it bypasses user privacy by preventing them from choosing whether to keep local storage or not | `false` | No |
 | `emptyStorageOnDecline` | Used by `ext-storage.js`; empty any prior storage if the user declines to store | `false` | No |
 | `paramurl` | This is available via URL only. Deprecated and removed in trunk. Allowed an un-encoded URL within the query string (use "url" or "source" with a data: URI instead) | (None) | No |
 | `selectNew` | Set by svgcanvas.js; used by mouseUp; it true, will replace the selection with the current element and show grips | `true` | No |
+| `stylesheets` | An array of required stylesheets to load in parallel; include the value `'@default'` within this array to ensure all default stylesheets are loaded | `['@default']` | No |
 
 ## Preload a file
 
 It is also possible to start the editor with preloaded SVG file, using the following methods.
 
-However, one should bear in mind that if one wishes to immediately set a particular string, especially if in config.js (and prevent the user from saving their own text), one should first set the config option "noStorageOnLoad" to false or otherwise any previous local storage may overwrite your own string.
+However, one should bear in mind that if one wishes to immediately set a particular string, especially if in `svgedit-config-iife.js` (and prevent the user from saving their own text), one should first set the config option "noStorageOnLoad" to false or otherwise any previous local storage may overwrite your own string.
 
 ```js
 // Serialized string:

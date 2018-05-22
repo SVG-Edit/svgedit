@@ -1,4 +1,4 @@
-/* globals jQuery, svgEditor, svgCanvas */
+/* globals jQuery */
 /*
  * ext-polygon.js
  *
@@ -7,8 +7,10 @@
  * All rights reserved
  *
  */
+import svgEditor from '../svg-editor.js';
 svgEditor.addExtension('polygon', function (S) {
   const $ = jQuery;
+  const svgCanvas = svgEditor.canvas;
   const // {svgcontent} = S,
     // addElem = S.addSvgElementFromJson,
     editingitex = false;
@@ -88,7 +90,7 @@ svgEditor.addExtension('polygon', function (S) {
       semantics.appendChild(annotation);
       math.appendChild(semantics);
       // make an AJAX request to the server, to get the MathML
-      $.post(ajaxEndpoint, {tex, 'display': 'inline'}, function(data){
+      $.post(ajaxEndpoint, {tex, display: 'inline'}, function(data){
         const children = data.documentElement.childNodes;
         while (children.length > 0) {
            mrow.appendChild(svgdoc.adoptNode(children[0], true));
@@ -109,7 +111,7 @@ svgEditor.addExtension('polygon', function (S) {
   */
   return {
     name: 'polygon',
-    svgicons: svgEditor.curConfig.extPath + 'polygon-icons.svg',
+    svgicons: svgEditor.curConfig.extIconsPath + 'polygon-icons.svg',
     buttons: [{
       id: 'tool_polygon',
       type: 'mode',
@@ -183,18 +185,18 @@ svgEditor.addExtension('polygon', function (S) {
         started = true;
 
         newFO = S.addSvgElementFromJson({
-          'element': 'polygon',
-          'attr': {
-            'cx': opts.start_x,
-            'cy': opts.start_y,
-            'id': S.getNextId(),
-            'shape': 'regularPoly',
-            'sides': document.getElementById('polySides').value,
-            'orient': 'x',
-            'edge': 0,
-            'fill': rgb,
-            'strokecolor': sRgb,
-            'strokeWidth': sWidth
+          element: 'polygon',
+          attr: {
+            cx: opts.start_x,
+            cy: opts.start_y,
+            id: S.getNextId(),
+            shape: 'regularPoly',
+            sides: document.getElementById('polySides').value,
+            orient: 'x',
+            edge: 0,
+            fill: rgb,
+            strokecolor: sRgb,
+            strokeWidth: sWidth
           }
         });
 

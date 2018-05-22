@@ -1,29 +1,31 @@
 /* eslint-env qunit */
-/* globals svgedit, equals */
+import {NS} from '../editor/svgedit.js';
+import * as utilities from '../editor/svgutils.js';
+import * as coords from '../editor/coords.js';
 
 // log function
-QUnit.log = function (details) {
+QUnit.log(function (details) {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }
-};
+});
 
 const root = document.getElementById('root');
-const svgroot = document.createElementNS(svgedit.NS.SVG, 'svg');
+const svgroot = document.createElementNS(NS.SVG, 'svg');
 svgroot.id = 'svgroot';
 root.appendChild(svgroot);
-const svg = document.createElementNS(svgedit.NS.SVG, 'svg');
+const svg = document.createElementNS(NS.SVG, 'svg');
 svgroot.appendChild(svg);
 
 let elemId = 1;
 function setUp () {
   // Mock out editor context.
-  svgedit.utilities.init({
+  utilities.init({
     getSVGRoot () { return svg; },
     getDOMDocument () { return null; },
     getDOMContainer () { return null; }
   });
-  svgedit.coords.init({
+  coords.init({
     getGridSnapping () { return false; },
     getDrawing () {
       return {
@@ -39,12 +41,12 @@ function tearDown () {
   }
 }
 
-test('Test remapElement(translate) for rect', function () {
-  expect(4);
+QUnit.test('Test remapElement(translate) for rect', function (assert) {
+  assert.expect(4);
 
   setUp();
 
-  const rect = document.createElementNS(svgedit.NS.SVG, 'rect');
+  const rect = document.createElementNS(NS.SVG, 'rect');
   rect.setAttribute('x', '200');
   rect.setAttribute('y', '150');
   rect.setAttribute('width', '250');
@@ -64,21 +66,21 @@ test('Test remapElement(translate) for rect', function () {
   m.c = 0; m.d = 1;
   m.e = 100; m.f = -50;
 
-  svgedit.coords.remapElement(rect, attrs, m);
+  coords.remapElement(rect, attrs, m);
 
-  equals(rect.getAttribute('x'), '300');
-  equals(rect.getAttribute('y'), '100');
-  equals(rect.getAttribute('width'), '125');
-  equals(rect.getAttribute('height'), '75');
+  assert.equal(rect.getAttribute('x'), '300');
+  assert.equal(rect.getAttribute('y'), '100');
+  assert.equal(rect.getAttribute('width'), '125');
+  assert.equal(rect.getAttribute('height'), '75');
 
   tearDown();
 });
 
-test('Test remapElement(scale) for rect', function () {
-  expect(4);
+QUnit.test('Test remapElement(scale) for rect', function (assert) {
+  assert.expect(4);
   setUp();
 
-  const rect = document.createElementNS(svgedit.NS.SVG, 'rect');
+  const rect = document.createElementNS(NS.SVG, 'rect');
   rect.setAttribute('width', '250');
   rect.setAttribute('height', '120');
   svg.appendChild(rect);
@@ -96,21 +98,21 @@ test('Test remapElement(scale) for rect', function () {
   m.c = 0; m.d = 0.5;
   m.e = 0; m.f = 0;
 
-  svgedit.coords.remapElement(rect, attrs, m);
+  coords.remapElement(rect, attrs, m);
 
-  equals(rect.getAttribute('x'), '0');
-  equals(rect.getAttribute('y'), '0');
-  equals(rect.getAttribute('width'), '500');
-  equals(rect.getAttribute('height'), '60');
+  assert.equal(rect.getAttribute('x'), '0');
+  assert.equal(rect.getAttribute('y'), '0');
+  assert.equal(rect.getAttribute('width'), '500');
+  assert.equal(rect.getAttribute('height'), '60');
 
   tearDown();
 });
 
-test('Test remapElement(translate) for circle', function () {
-  expect(3);
+QUnit.test('Test remapElement(translate) for circle', function (assert) {
+  assert.expect(3);
   setUp();
 
-  const circle = document.createElementNS(svgedit.NS.SVG, 'circle');
+  const circle = document.createElementNS(NS.SVG, 'circle');
   circle.setAttribute('cx', '200');
   circle.setAttribute('cy', '150');
   circle.setAttribute('r', '125');
@@ -128,20 +130,20 @@ test('Test remapElement(translate) for circle', function () {
   m.c = 0; m.d = 1;
   m.e = 100; m.f = -50;
 
-  svgedit.coords.remapElement(circle, attrs, m);
+  coords.remapElement(circle, attrs, m);
 
-  equals(circle.getAttribute('cx'), '300');
-  equals(circle.getAttribute('cy'), '100');
-  equals(circle.getAttribute('r'), '125');
+  assert.equal(circle.getAttribute('cx'), '300');
+  assert.equal(circle.getAttribute('cy'), '100');
+  assert.equal(circle.getAttribute('r'), '125');
 
   tearDown();
 });
 
-test('Test remapElement(scale) for circle', function () {
-  expect(3);
+QUnit.test('Test remapElement(scale) for circle', function (assert) {
+  assert.expect(3);
   setUp();
 
-  const circle = document.createElementNS(svgedit.NS.SVG, 'circle');
+  const circle = document.createElementNS(NS.SVG, 'circle');
   circle.setAttribute('cx', '200');
   circle.setAttribute('cy', '150');
   circle.setAttribute('r', '250');
@@ -159,21 +161,21 @@ test('Test remapElement(scale) for circle', function () {
   m.c = 0; m.d = 0.5;
   m.e = 0; m.f = 0;
 
-  svgedit.coords.remapElement(circle, attrs, m);
+  coords.remapElement(circle, attrs, m);
 
-  equals(circle.getAttribute('cx'), '400');
-  equals(circle.getAttribute('cy'), '75');
+  assert.equal(circle.getAttribute('cx'), '400');
+  assert.equal(circle.getAttribute('cy'), '75');
   // Radius is the minimum that fits in the new bounding box.
-  equals(circle.getAttribute('r'), '125');
+  assert.equal(circle.getAttribute('r'), '125');
 
   tearDown();
 });
 
-test('Test remapElement(translate) for ellipse', function () {
-  expect(4);
+QUnit.test('Test remapElement(translate) for ellipse', function (assert) {
+  assert.expect(4);
   setUp();
 
-  const ellipse = document.createElementNS(svgedit.NS.SVG, 'ellipse');
+  const ellipse = document.createElementNS(NS.SVG, 'ellipse');
   ellipse.setAttribute('cx', '200');
   ellipse.setAttribute('cy', '150');
   ellipse.setAttribute('rx', '125');
@@ -193,21 +195,21 @@ test('Test remapElement(translate) for ellipse', function () {
   m.c = 0; m.d = 1;
   m.e = 100; m.f = -50;
 
-  svgedit.coords.remapElement(ellipse, attrs, m);
+  coords.remapElement(ellipse, attrs, m);
 
-  equals(ellipse.getAttribute('cx'), '300');
-  equals(ellipse.getAttribute('cy'), '100');
-  equals(ellipse.getAttribute('rx'), '125');
-  equals(ellipse.getAttribute('ry'), '75');
+  assert.equal(ellipse.getAttribute('cx'), '300');
+  assert.equal(ellipse.getAttribute('cy'), '100');
+  assert.equal(ellipse.getAttribute('rx'), '125');
+  assert.equal(ellipse.getAttribute('ry'), '75');
 
   tearDown();
 });
 
-test('Test remapElement(scale) for ellipse', function () {
-  expect(4);
+QUnit.test('Test remapElement(scale) for ellipse', function (assert) {
+  assert.expect(4);
   setUp();
 
-  const ellipse = document.createElementNS(svgedit.NS.SVG, 'ellipse');
+  const ellipse = document.createElementNS(NS.SVG, 'ellipse');
   ellipse.setAttribute('cx', '200');
   ellipse.setAttribute('cy', '150');
   ellipse.setAttribute('rx', '250');
@@ -227,21 +229,21 @@ test('Test remapElement(scale) for ellipse', function () {
   m.c = 0; m.d = 0.5;
   m.e = 0; m.f = 0;
 
-  svgedit.coords.remapElement(ellipse, attrs, m);
+  coords.remapElement(ellipse, attrs, m);
 
-  equals(ellipse.getAttribute('cx'), '400');
-  equals(ellipse.getAttribute('cy'), '75');
-  equals(ellipse.getAttribute('rx'), '500');
-  equals(ellipse.getAttribute('ry'), '60');
+  assert.equal(ellipse.getAttribute('cx'), '400');
+  assert.equal(ellipse.getAttribute('cy'), '75');
+  assert.equal(ellipse.getAttribute('rx'), '500');
+  assert.equal(ellipse.getAttribute('ry'), '60');
 
   tearDown();
 });
 
-test('Test remapElement(translate) for line', function () {
-  expect(4);
+QUnit.test('Test remapElement(translate) for line', function (assert) {
+  assert.expect(4);
   setUp();
 
-  const line = document.createElementNS(svgedit.NS.SVG, 'line');
+  const line = document.createElementNS(NS.SVG, 'line');
   line.setAttribute('x1', '50');
   line.setAttribute('y1', '100');
   line.setAttribute('x2', '120');
@@ -261,21 +263,21 @@ test('Test remapElement(translate) for line', function () {
   m.c = 0; m.d = 1;
   m.e = 100; m.f = -50;
 
-  svgedit.coords.remapElement(line, attrs, m);
+  coords.remapElement(line, attrs, m);
 
-  equals(line.getAttribute('x1'), '150');
-  equals(line.getAttribute('y1'), '50');
-  equals(line.getAttribute('x2'), '220');
-  equals(line.getAttribute('y2'), '150');
+  assert.equal(line.getAttribute('x1'), '150');
+  assert.equal(line.getAttribute('y1'), '50');
+  assert.equal(line.getAttribute('x2'), '220');
+  assert.equal(line.getAttribute('y2'), '150');
 
   tearDown();
 });
 
-test('Test remapElement(scale) for line', function () {
-  expect(4);
+QUnit.test('Test remapElement(scale) for line', function (assert) {
+  assert.expect(4);
   setUp();
 
-  const line = document.createElementNS(svgedit.NS.SVG, 'line');
+  const line = document.createElementNS(NS.SVG, 'line');
   line.setAttribute('x1', '50');
   line.setAttribute('y1', '100');
   line.setAttribute('x2', '120');
@@ -295,21 +297,21 @@ test('Test remapElement(scale) for line', function () {
   m.c = 0; m.d = 0.5;
   m.e = 0; m.f = 0;
 
-  svgedit.coords.remapElement(line, attrs, m);
+  coords.remapElement(line, attrs, m);
 
-  equals(line.getAttribute('x1'), '100');
-  equals(line.getAttribute('y1'), '50');
-  equals(line.getAttribute('x2'), '240');
-  equals(line.getAttribute('y2'), '100');
+  assert.equal(line.getAttribute('x1'), '100');
+  assert.equal(line.getAttribute('y1'), '50');
+  assert.equal(line.getAttribute('x2'), '240');
+  assert.equal(line.getAttribute('y2'), '100');
 
   tearDown();
 });
 
-test('Test remapElement(translate) for text', function () {
-  expect(2);
+QUnit.test('Test remapElement(translate) for text', function (assert) {
+  assert.expect(2);
   setUp();
 
-  const text = document.createElementNS(svgedit.NS.SVG, 'text');
+  const text = document.createElementNS(NS.SVG, 'text');
   text.setAttribute('x', '50');
   text.setAttribute('y', '100');
   svg.appendChild(text);
@@ -325,10 +327,10 @@ test('Test remapElement(translate) for text', function () {
   m.c = 0; m.d = 1;
   m.e = 100; m.f = -50;
 
-  svgedit.coords.remapElement(text, attrs, m);
+  coords.remapElement(text, attrs, m);
 
-  equals(text.getAttribute('x'), '150');
-  equals(text.getAttribute('y'), '50');
+  assert.equal(text.getAttribute('x'), '150');
+  assert.equal(text.getAttribute('y'), '50');
 
   tearDown();
 });

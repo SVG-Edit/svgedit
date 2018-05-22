@@ -1,14 +1,15 @@
 /* eslint-env qunit */
-/* globals svgedit, equals */
+import {NS} from '../editor/svgedit.js';
+import * as select from '../editor/select.js';
 
 // log function
-QUnit.log = function (details) {
+QUnit.log(function (details) {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }
-};
+});
 
-module('svgedit.select');
+QUnit.module('svgedit.select');
 
 const sandbox = document.getElementById('sandbox');
 let svgroot;
@@ -18,7 +19,7 @@ const mockConfig = {
 };
 const mockFactory = {
   createSVGElement (jsonMap) {
-    const elem = document.createElementNS(svgedit.NS.SVG, jsonMap['element']);
+    const elem = document.createElementNS(NS.SVG, jsonMap['element']);
     for (const attr in jsonMap.attr) {
       elem.setAttribute(attr, jsonMap.attr[attr]);
     }
@@ -57,7 +58,7 @@ function setUp () {
 /*
 function setUpWithInit () {
   setUp();
-  svgedit.select.init(mockConfig, mockFactory);
+  select.init(mockConfig, mockFactory);
 }
 */
 
@@ -67,64 +68,64 @@ function tearDown () {
   }
 }
 
-test('Test svgedit.select package', function () {
-  expect(10);
+QUnit.test('Test svgedit.select package', function (assert) {
+  assert.expect(10);
 
-  ok(svgedit.select);
-  ok(svgedit.select.Selector);
-  ok(svgedit.select.SelectorManager);
-  ok(svgedit.select.init);
-  ok(svgedit.select.getSelectorManager);
-  equals(typeof svgedit.select, typeof {});
-  equals(typeof svgedit.select.Selector, typeof function () {});
-  equals(typeof svgedit.select.SelectorManager, typeof function () {});
-  equals(typeof svgedit.select.init, typeof function () {});
-  equals(typeof svgedit.select.getSelectorManager, typeof function () {});
+  assert.ok(select);
+  assert.ok(select.Selector);
+  assert.ok(select.SelectorManager);
+  assert.ok(select.init);
+  assert.ok(select.getSelectorManager);
+  assert.equal(typeof select, typeof {});
+  assert.equal(typeof select.Selector, typeof function () {});
+  assert.equal(typeof select.SelectorManager, typeof function () {});
+  assert.equal(typeof select.init, typeof function () {});
+  assert.equal(typeof select.getSelectorManager, typeof function () {});
 });
 
-test('Test Selector DOM structure', function () {
-  expect(24);
+QUnit.test('Test Selector DOM structure', function (assert) {
+  assert.expect(24);
 
   setUp();
 
-  ok(svgroot);
-  ok(svgroot.hasChildNodes());
+  assert.ok(svgroot);
+  assert.ok(svgroot.hasChildNodes());
 
   // Verify non-existence of Selector DOM nodes
-  equals(svgroot.childNodes.length, 1);
-  equals(svgroot.childNodes.item(0), svgcontent);
-  ok(!svgroot.querySelector('#selectorParentGroup'));
+  assert.equal(svgroot.childNodes.length, 1);
+  assert.equal(svgroot.childNodes.item(0), svgcontent);
+  assert.ok(!svgroot.querySelector('#selectorParentGroup'));
 
-  svgedit.select.init(mockConfig, mockFactory);
+  select.init(mockConfig, mockFactory);
 
-  equals(svgroot.childNodes.length, 3);
+  assert.equal(svgroot.childNodes.length, 3);
 
   // Verify existence of canvas background.
   const cb = svgroot.childNodes.item(0);
-  ok(cb);
-  equals(cb.id, 'canvasBackground');
+  assert.ok(cb);
+  assert.equal(cb.id, 'canvasBackground');
 
-  ok(svgroot.childNodes.item(1));
-  equals(svgroot.childNodes.item(1), svgcontent);
+  assert.ok(svgroot.childNodes.item(1));
+  assert.equal(svgroot.childNodes.item(1), svgcontent);
 
   // Verify existence of selectorParentGroup.
   const spg = svgroot.childNodes.item(2);
-  ok(spg);
-  equals(svgroot.querySelector('#selectorParentGroup'), spg);
-  equals(spg.id, 'selectorParentGroup');
-  equals(spg.tagName, 'g');
+  assert.ok(spg);
+  assert.equal(svgroot.querySelector('#selectorParentGroup'), spg);
+  assert.equal(spg.id, 'selectorParentGroup');
+  assert.equal(spg.tagName, 'g');
 
   // Verify existence of all grip elements.
-  ok(spg.querySelector('#selectorGrip_resize_nw'));
-  ok(spg.querySelector('#selectorGrip_resize_n'));
-  ok(spg.querySelector('#selectorGrip_resize_ne'));
-  ok(spg.querySelector('#selectorGrip_resize_e'));
-  ok(spg.querySelector('#selectorGrip_resize_se'));
-  ok(spg.querySelector('#selectorGrip_resize_s'));
-  ok(spg.querySelector('#selectorGrip_resize_sw'));
-  ok(spg.querySelector('#selectorGrip_resize_w'));
-  ok(spg.querySelector('#selectorGrip_rotateconnector'));
-  ok(spg.querySelector('#selectorGrip_rotate'));
+  assert.ok(spg.querySelector('#selectorGrip_resize_nw'));
+  assert.ok(spg.querySelector('#selectorGrip_resize_n'));
+  assert.ok(spg.querySelector('#selectorGrip_resize_ne'));
+  assert.ok(spg.querySelector('#selectorGrip_resize_e'));
+  assert.ok(spg.querySelector('#selectorGrip_resize_se'));
+  assert.ok(spg.querySelector('#selectorGrip_resize_s'));
+  assert.ok(spg.querySelector('#selectorGrip_resize_sw'));
+  assert.ok(spg.querySelector('#selectorGrip_resize_w'));
+  assert.ok(spg.querySelector('#selectorGrip_rotateconnector'));
+  assert.ok(spg.querySelector('#selectorGrip_rotate'));
 
   tearDown();
 });

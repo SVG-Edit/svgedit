@@ -9,7 +9,7 @@
  */
 
 import {isTouch, isWebkit} from './browser.js'; // , isOpera
-import {getRotationAngle, getBBox} from './svgutils.js';
+import {getRotationAngle, getBBox, getStrokedBBox} from './svgutils.js';
 import {transformListToTransform, transformBox, transformPoint} from './math.js';
 import {getTransformList} from './svgtransformlist.js';
 
@@ -61,14 +61,14 @@ export class Selector {
 
     // this holds a reference to the grip coordinates for this selector
     this.gripCoords = {
-      'nw': null,
-      'n': null,
-      'ne': null,
-      'e': null,
-      'se': null,
-      's': null,
-      'sw': null,
-      'w': null
+      nw: null,
+      n: null,
+      ne: null,
+      e: null,
+      se: null,
+      s: null,
+      sw: null,
+      w: null
     };
 
     this.reset(this.selectedElement, bbox);
@@ -135,7 +135,7 @@ export class Selector {
       selectedGrips = mgr.selectorGrips,
       selected = this.selectedElement,
       sw = selected.getAttribute('stroke-width'),
-      currentZoom = svgFactory_.currentZoom();
+      currentZoom = svgFactory_.getCurrentZoom();
     let offset = 1 / currentZoom;
     if (selected.getAttribute('stroke') !== 'none' && !isNaN(sw)) {
       offset += (sw / 2);
@@ -163,7 +163,7 @@ export class Selector {
     if (tagName === 'g' && !$.data(selected, 'gsvg')) {
       // The bbox for a group does not include stroke vals, so we
       // get the bbox based on its children.
-      const strokedBbox = svgFactory_.getStrokedBBox(selected.childNodes);
+      const strokedBbox = getStrokedBBox([selected.childNodes]);
       if (strokedBbox) {
         bbox = strokedBbox;
       }
@@ -232,14 +232,14 @@ export class Selector {
     // TODO(codedread): Is this needed?
     //  if (selected === selectedElements[0]) {
     this.gripCoords = {
-      'nw': [nbax, nbay],
-      'ne': [nbax + nbaw, nbay],
-      'sw': [nbax, nbay + nbah],
-      'se': [nbax + nbaw, nbay + nbah],
-      'n': [nbax + (nbaw) / 2, nbay],
-      'w': [nbax, nbay + (nbah) / 2],
-      'e': [nbax + nbaw, nbay + (nbah) / 2],
-      's': [nbax + (nbaw) / 2, nbay + nbah]
+      nw: [nbax, nbay],
+      ne: [nbax + nbaw, nbay],
+      sw: [nbax, nbay + nbah],
+      se: [nbax + nbaw, nbay + nbah],
+      n: [nbax + (nbaw) / 2, nbay],
+      w: [nbax, nbay + (nbah) / 2],
+      e: [nbax + nbaw, nbay + (nbah) / 2],
+      s: [nbax + (nbaw) / 2, nbay + nbah]
     };
     for (const dir in this.gripCoords) {
       const coords = this.gripCoords[dir];
@@ -278,14 +278,14 @@ export class SelectorManager {
 
     // this holds a reference to the grip elements
     this.selectorGrips = {
-      'nw': null,
-      'n': null,
-      'ne': null,
-      'e': null,
-      'se': null,
-      's': null,
-      'sw': null,
-      'w': null
+      nw: null,
+      n: null,
+      ne: null,
+      e: null,
+      se: null,
+      s: null,
+      sw: null,
+      w: null
     };
 
     this.selectorGripsGroup = null;
@@ -311,7 +311,7 @@ export class SelectorManager {
     });
     this.selectorGripsGroup = svgFactory_.createSVGElement({
       element: 'g',
-      attr: {'display': 'none'}
+      attr: {display: 'none'}
     });
     this.selectorParentGroup.appendChild(this.selectorGripsGroup);
     svgFactory_.svgRoot().appendChild(this.selectorParentGroup);
@@ -501,7 +501,6 @@ export class SelectorManager {
  *   SVGSVGElement svgContent();
  *
  *   Number currentZoom();
- *   Object getStrokedBBox(Element[]); // TODO(codedread): Remove when getStrokedBBox() has been put into svgutils.js
  * }
  */
 

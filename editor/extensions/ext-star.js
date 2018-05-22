@@ -1,4 +1,4 @@
-/* globals jQuery, svgEditor, svgCanvas */
+/* globals jQuery */
 /*
  * ext-star.js
  *
@@ -7,9 +7,11 @@
  * All rights reserved
  *
  */
-
+import svgEditor from '../svg-editor.js';
 svgEditor.addExtension('star', function (S) {
   const $ = jQuery;
+  const svgCanvas = svgEditor.canvas;
+
   let // {svgcontent} = S,
     selElems,
     // editingitex = false,
@@ -53,7 +55,7 @@ svgEditor.addExtension('star', function (S) {
 
   return {
     name: 'star',
-    svgicons: svgEditor.curConfig.extPath + 'star-icons.svg',
+    svgicons: svgEditor.curConfig.extIconsPath + 'star-icons.svg',
     buttons: [{
       id: 'tool_star',
       type: 'mode',
@@ -117,20 +119,20 @@ svgEditor.addExtension('star', function (S) {
         started = true;
 
         newFO = S.addSvgElementFromJson({
-          'element': 'polygon',
-          'attr': {
-            'cx': opts.start_x,
-            'cy': opts.start_y,
-            'id': S.getNextId(),
-            'shape': 'star',
-            'point': document.getElementById('starNumPoints').value,
-            'r': 0,
-            'radialshift': document.getElementById('radialShift').value,
-            'r2': 0,
-            'orient': 'point',
-            'fill': rgb,
-            'strokecolor': sRgb,
-            'strokeWidth': sWidth
+          element: 'polygon',
+          attr: {
+            cx: opts.start_x,
+            cy: opts.start_y,
+            id: S.getNextId(),
+            shape: 'star',
+            point: document.getElementById('starNumPoints').value,
+            r: 0,
+            radialshift: document.getElementById('radialShift').value,
+            r2: 0,
+            orient: 'point',
+            fill: rgb,
+            strokecolor: sRgb,
+            strokeWidth: sWidth
           }
         });
         return {

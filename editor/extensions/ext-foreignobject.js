@@ -1,4 +1,4 @@
-/* globals jQuery, svgEditor, svgedit, svgCanvas */
+/* globals jQuery */
 /*
  * ext-foreignobject.js
  *
@@ -9,11 +9,13 @@
  *
  */
 
-import {NS} from './svgedit.js';
+import svgEditor from '../svg-editor.js';
 
 svgEditor.addExtension('foreignObject', function (S) {
+  const {text2xml, NS} = S;
   const $ = jQuery;
-  const Utils = svgedit.utilities,
+  const svgCanvas = svgEditor.canvas;
+  const
     // {svgcontent} = S,
     // addElem = S.addSvgElementFromJson,
     svgdoc = S.svgroot.parentNode.ownerDocument;
@@ -56,7 +58,7 @@ svgEditor.addExtension('foreignObject', function (S) {
     const elt = selElems[0];
     try {
       // convert string into XML document
-      const newDoc = Utils.text2xml('<svg xmlns="' + NS.SVG + '" xmlns:xlink="' + NS.XLINK + '">' + xmlString + '</svg>');
+      const newDoc = text2xml('<svg xmlns="' + NS.SVG + '" xmlns:xlink="' + NS.XLINK + '">' + xmlString + '</svg>');
       // run it through our sanitizer to remove anything we do not support
       S.sanitizeSvg(newDoc.documentElement);
       elt.parentNode.replaceChild(svgdoc.importNode(newDoc.documentElement.firstChild, true), elt);
@@ -91,7 +93,7 @@ svgEditor.addExtension('foreignObject', function (S) {
 
   return {
     name: 'foreignObject',
-    svgicons: svgEditor.curConfig.extPath + 'foreignobject-icons.xml',
+    svgicons: svgEditor.curConfig.extIconsPath + 'foreignobject-icons.xml',
     buttons: [{
       id: 'tool_foreign',
       type: 'mode',
@@ -194,15 +196,15 @@ svgEditor.addExtension('foreignObject', function (S) {
       if (svgCanvas.getMode() === 'foreign') {
         started = true;
         newFO = S.addSvgElementFromJson({
-          'element': 'foreignObject',
-          'attr': {
-            'x': opts.start_x,
-            'y': opts.start_y,
-            'id': S.getNextId(),
+          element: 'foreignObject',
+          attr: {
+            x: opts.start_x,
+            y: opts.start_y,
+            id: S.getNextId(),
             'font-size': 16, // cur_text.font_size,
-            'width': '48',
-            'height': '20',
-            'style': 'pointer-events:inherit'
+            width: '48',
+            height: '20',
+            style: 'pointer-events:inherit'
           }
         });
         const m = svgdoc.createElementNS(NS.MATH, 'math');

@@ -9,10 +9,6 @@
  *
  */
 
-// Dependencies
-// 2) svgcanvas.js
-// 3) svg-editor.js
-
 const $ = jQuery;
 
 let langParam;
@@ -272,7 +268,7 @@ export const readLang = function (langData) {
   editor_.setLang(langParam, langData);
 };
 
-export const putLocale = function (givenParam, goodLangs) {
+export const putLocale = function (givenParam, goodLangs, conf) {
   if (givenParam) {
     langParam = givenParam;
   } else {
@@ -299,17 +295,19 @@ export const putLocale = function (givenParam, goodLangs) {
     // if (langParam.startsWith('en')) {return;}
   }
 
-  const conf = editor_.curConfig;
-
+  // $.getScript(url, function (d) {
+  // Fails locally in Chrome 5+
+  // if (!d) {
+  const s = document.createElement('script');
+  const modularVersion = !('svgEditor' in window) ||
+    !window.svgEditor ||
+    window.svgEditor.modules !== false;
   const url = conf.langPath + 'lang.' + langParam + '.js';
-
-  // Todo: insert script with `s.type = 'module';` once modules widely supported
-  $.getScript(url, function (d) {
-    // Fails locally in Chrome 5+
-    if (!d) {
-      const s = document.createElement('script');
-      s.src = url;
-      document.querySelector('head').appendChild(s);
-    }
-  });
+  if (modularVersion) {
+    s.type = 'module'; // Make this the default when widely supported
+  }
+  s.src = url;
+  document.querySelector('head').appendChild(s);
+  // }
+  // });
 };

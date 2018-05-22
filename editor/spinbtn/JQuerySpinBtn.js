@@ -63,6 +63,13 @@
   });
  */
 export default function ($) {
+  if (!$.loadingStylesheets) {
+    $.loadingStylesheets = [];
+  }
+  const stylesheet = 'spinbtn/JQuerySpinBtn.css';
+  if (!$.loadingStylesheets.includes(stylesheet)) {
+    $.loadingStylesheets.push(stylesheet);
+  }
   $.fn.SpinButton = function (cfg) {
     cfg = cfg || {};
     function coord (el, prop) {

@@ -1,28 +1,32 @@
 /* eslint-env qunit */
-/* globals svgedit */
+
+import {NS} from '../editor/svgedit.js';
+import * as utilities from '../editor/svgutils.js';
+import * as coords from '../editor/coords.js';
+import * as recalculate from '../editor/recalculate.js';
 
 // log function
-QUnit.log = function (details) {
+QUnit.log(function (details) {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }
-};
+});
 
 const root = document.getElementById('root');
-const svgroot = document.createElementNS(svgedit.NS.SVG, 'svg');
+const svgroot = document.createElementNS(NS.SVG, 'svg');
 svgroot.id = 'svgroot';
 root.appendChild(svgroot);
-const svg = document.createElementNS(svgedit.NS.SVG, 'svg');
+const svg = document.createElementNS(NS.SVG, 'svg');
 svgroot.appendChild(svg);
 
 let elemId = 1;
 function setUp () {
-  svgedit.utilities.init({
+  utilities.init({
     getSVGRoot () { return svg; },
     getDOMDocument () { return null; },
     getDOMContainer () { return null; }
   });
-  svgedit.coords.init({
+  coords.init({
     getGridSnapping () { return false; },
     getDrawing () {
       return {
@@ -30,7 +34,7 @@ function setUp () {
       };
     }
   });
-  svgedit.recalculate.init({
+  recalculate.init({
     getSVGRoot () { return svg; },
     getStartTransform () { return ''; },
     setStartTransform () {}
@@ -41,7 +45,7 @@ let elem;
 
 function setUpRect () {
   setUp();
-  elem = document.createElementNS(svgedit.NS.SVG, 'rect');
+  elem = document.createElementNS(NS.SVG, 'rect');
   elem.setAttribute('x', '200');
   elem.setAttribute('y', '150');
   elem.setAttribute('width', '250');
@@ -51,11 +55,11 @@ function setUpRect () {
 
 function setUpTextWithTspan () {
   setUp();
-  elem = document.createElementNS(svgedit.NS.SVG, 'text');
+  elem = document.createElementNS(NS.SVG, 'text');
   elem.setAttribute('x', '200');
   elem.setAttribute('y', '150');
 
-  const tspan = document.createElementNS(svgedit.NS.SVG, 'tspan');
+  const tspan = document.createElementNS(NS.SVG, 'tspan');
   tspan.setAttribute('x', '200');
   tspan.setAttribute('y', '150');
 
@@ -71,54 +75,54 @@ function tearDown () {
   }
 }
 
-test('Test recalculateDimensions() on rect with identity matrix', function () {
-  expect(1);
+QUnit.test('Test recalculateDimensions() on rect with identity matrix', function (assert) {
+  assert.expect(1);
 
   setUpRect();
   elem.setAttribute('transform', 'matrix(1,0,0,1,0,0)');
 
-  svgedit.recalculate.recalculateDimensions(elem);
+  recalculate.recalculateDimensions(elem);
 
   // Ensure that the identity matrix is swallowed and the element has no
   // transform on it.
-  equal(false, elem.hasAttribute('transform'));
+  assert.equal(elem.hasAttribute('transform'), false);
 
   tearDown();
 });
 
-test('Test recalculateDimensions() on rect with simple translate', function () {
-  expect(5);
+QUnit.test('Test recalculateDimensions() on rect with simple translate', function (assert) {
+  assert.expect(5);
 
   setUpRect();
   elem.setAttribute('transform', 'translate(100,50)');
 
-  svgedit.recalculate.recalculateDimensions(elem);
+  recalculate.recalculateDimensions(elem);
 
-  equal(false, elem.hasAttribute('transform'));
-  equal('300', elem.getAttribute('x'));
-  equal('200', elem.getAttribute('y'));
-  equal('250', elem.getAttribute('width'));
-  equal('120', elem.getAttribute('height'));
+  assert.equal(elem.hasAttribute('transform'), false);
+  assert.equal(elem.getAttribute('x'), '300');
+  assert.equal(elem.getAttribute('y'), '200');
+  assert.equal(elem.getAttribute('width'), '250');
+  assert.equal(elem.getAttribute('height'), '120');
   tearDown();
 });
 
-test('Test recalculateDimensions() on text w/tspan with simple translate', function () {
-  expect(5);
+QUnit.test('Test recalculateDimensions() on text w/tspan with simple translate', function (assert) {
+  assert.expect(5);
 
   setUpTextWithTspan();
   elem.setAttribute('transform', 'translate(100,50)');
 
-  svgedit.recalculate.recalculateDimensions(elem);
+  recalculate.recalculateDimensions(elem);
 
   // Ensure that the identity matrix is swallowed and the element has no
   // transform on it.
-  equal(false, elem.hasAttribute('transform'));
-  equal('300', elem.getAttribute('x'));
-  equal('200', elem.getAttribute('y'));
+  assert.equal(elem.hasAttribute('transform'), false);
+  assert.equal(elem.getAttribute('x'), '300');
+  assert.equal(elem.getAttribute('y'), '200');
 
   const tspan = elem.firstElementChild;
-  equal('300', tspan.getAttribute('x'));
-  equal('200', tspan.getAttribute('y'));
+  assert.equal(tspan.getAttribute('x'), '300');
+  assert.equal(tspan.getAttribute('y'), '200');
 
   tearDown();
 });

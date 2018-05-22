@@ -16,14 +16,14 @@ const unitAttrs = ['r', 'radius', ...wAttrs, ...hAttrs];
 /*
 const unitNumMap = {
   '%': 2,
-  'em': 3,
-  'ex': 4,
-  'px': 5,
-  'cm': 6,
-  'mm': 7,
-  'in': 8,
-  'pt': 9,
-  'pc': 10
+  em: 3,
+  ex: 4,
+  px: 5,
+  cm: 6,
+  mm: 7,
+  in: 8,
+  pt: 9,
+  pc: 10
 };
 */
 // Container of elements.
@@ -65,14 +65,14 @@ export const init = function (elementContainer) {
 
   const inch = bb.x;
   typeMap_ = {
-    'em': bb.width,
-    'ex': bb.height,
-    'in': inch,
-    'cm': inch / 2.54,
-    'mm': inch / 25.4,
-    'pt': inch / 72,
-    'pc': inch / 6,
-    'px': 1,
+    em: bb.width,
+    ex: bb.height,
+    in: inch,
+    cm: inch / 2.54,
+    mm: inch / 25.4,
+    pt: inch / 72,
+    pc: inch / 6,
+    px: 1,
     '%': 0
   };
 };
@@ -162,14 +162,14 @@ export const setUnitAttr = function (elem, attr, val) {
 };
 
 const attrsToConvert = {
-  'line': ['x1', 'x2', 'y1', 'y2'],
-  'circle': ['cx', 'cy', 'r'],
-  'ellipse': ['cx', 'cy', 'rx', 'ry'],
-  'foreignObject': ['x', 'y', 'width', 'height'],
-  'rect': ['x', 'y', 'width', 'height'],
-  'image': ['x', 'y', 'width', 'height'],
-  'use': ['x', 'y', 'width', 'height'],
-  'text': ['x', 'y']
+  line: ['x1', 'x2', 'y1', 'y2'],
+  circle: ['cx', 'cy', 'r'],
+  ellipse: ['cx', 'cy', 'rx', 'ry'],
+  foreignObject: ['x', 'y', 'width', 'height'],
+  rect: ['x', 'y', 'width', 'height'],
+  image: ['x', 'y', 'width', 'height'],
+  use: ['x', 'y', 'width', 'height'],
+  text: ['x', 'y']
 };
 
 /**

@@ -14,7 +14,7 @@
 // This plugin is dual-licensed under the GNU General Public License
 //   and the MIT License and is copyright A Beautiful Site, LLC.
 //
-import {isMac} from './browser.js';
+import {isMac} from '../browser.js';
 
 export default function ($) {
   const win = $(window);
@@ -125,7 +125,7 @@ export default function ($) {
 
         // Disable text selection
         if ($.browser.mozilla) {
-          $('#' + o.menu).each(function () { $(this).css({'MozUserSelect': 'none'}); });
+          $('#' + o.menu).each(function () { $(this).css({MozUserSelect: 'none'}); });
         } else if ($.browser.msie) {
           $('#' + o.menu).each(function () { $(this).bind('selectstart.disableTextSelect', function () { return false; }); });
         } else {

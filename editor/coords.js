@@ -6,9 +6,6 @@
  *
  */
 
-// Dependencies:
-// 1) jquery.min.js
-
 import './pathseg.js';
 import {
   snapToGrid, assignAttributes, getBBox, getRefElem, findDefs

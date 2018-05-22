@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>Unit Tests for contextmenu.js</title>
   <link rel="icon" type="image/png" href="../editor/images/logo.png"/>
-  <link rel="stylesheet" href="qunit/qunit.css"/>
+  <link rel="stylesheet" href="../node_modules/qunit/qunit/qunit.css"/>
   <script src="../editor/jquery.min.js"></script>
   <script>
   // Mock for browser.js
@@ -12,15 +12,14 @@
       ready () {}
   };
   </script>
-  <script src="../editor/contextmenu.js"></script>
-  <script src="qunit/qunit.js"></script>
-  <script defer="defer" src="contextmenu_test.js"></script>
+  <script src="../node_modules/qunit/qunit/qunit.js"></script>
+  <script type="module" src="contextmenu_test.js"></script>
 </head>
 <body>
   <h1 id="qunit-header">Unit Tests for contextmenu.js</h1>
   <h2 id="qunit-banner"></h2>
   <h2 id="qunit-userAgent"></h2>
   <ol id="qunit-tests"></ol>
-  <div id="svgroot" style="visibility:hidden"></div>
+  <div id="svgroot" style="visibility: hidden;"></div>
 </body>
 </html>

@@ -1,4 +1,4 @@
-/* globals jQuery, svgEditor, svgCanvas */
+/* globals jQuery */
 /*
  * ext-storage.js
  *
@@ -29,15 +29,19 @@ TODOS
 2. We might provide control of storage settings through the UI besides the
     initial (or URL-forced) dialog.
 */
+// Todo: We might use dynamic `import()` later instead, based on detected locale
 import confirmSetStorage from './ext-locale/storage.js';
+import svgEditor from '../svg-editor.js';
 
 svgEditor.addExtension('storage', function () {
   const $ = jQuery;
+  const svgCanvas = svgEditor.canvas;
+
   // We could empty any already-set data for users when they decline storage,
   //  but it would be a risk for users who wanted to store but accidentally
   // said "no"; instead, we'll let those who already set it, delete it themselves;
   // to change, set the "emptyStorageOnDecline" config setting to true
-  // in config.js.
+  // in svgedit-config-iife.js/svgedit-config-es.js.
   const {
     emptyStorageOnDecline,
     // When the code in svg-editor.js prevents local storage on load per
@@ -48,7 +52,7 @@ svgEditor.addExtension('storage', function () {
     //  would thereby be set with an empty value, erasing any of the
     // user's prior work. To change this behavior so that no use of storage
     // or adding of new storage takes place regardless of settings, set
-    // the "noStorageOnLoad" config setting to true in config.js.
+    // the "noStorageOnLoad" config setting to true in svgedit-config-iife.js.
     noStorageOnLoad,
     forceStorage
   } = svgEditor.curConfig;

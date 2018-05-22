@@ -70,170 +70,172 @@ let listMap_ = {};
 //    NOT IMPLEMENTED: SVGTransform consolidate (  );
 //  }
 // **************************************************************************************
-export const SVGTransformList = function (elem) {
-  this._elem = elem || null;
-  this._xforms = [];
-  // TODO: how do we capture the undo-ability in the changed transform list?
-  this._update = function () {
-    let tstr = '';
-    /* const concatMatrix = */ svgroot.createSVGMatrix();
-    for (let i = 0; i < this.numberOfItems; ++i) {
-      const xform = this._list.getItem(i);
-      tstr += transformToString(xform) + ' ';
-    }
-    this._elem.setAttribute('transform', tstr);
-  };
-  this._list = this;
-  this._init = function () {
-    // Transform attribute parser
-    let str = this._elem.getAttribute('transform');
-    if (!str) { return; }
-
-    // TODO: Add skew support in future
-    const re = /\s*((scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/;
-    let m = true;
-    while (m) {
-      m = str.match(re);
-      str = str.replace(re, '');
-      if (m && m[1]) {
-        const x = m[1];
-        const bits = x.split(/\s*\(/);
-        const name = bits[0];
-        const valBits = bits[1].match(/\s*(.*?)\s*\)/);
-        valBits[1] = valBits[1].replace(/(\d)-/g, '$1 -');
-        const valArr = valBits[1].split(/[, ]+/);
-        const letters = 'abcdef'.split('');
-        const mtx = svgroot.createSVGMatrix();
-        Object.values(valArr).forEach(function (item, i) {
-          valArr[i] = parseFloat(item);
-          if (name === 'matrix') {
-            mtx[letters[i]] = valArr[i];
-          }
-        });
-        const xform = svgroot.createSVGTransform();
-        const fname = 'set' + name.charAt(0).toUpperCase() + name.slice(1);
-        const values = name === 'matrix' ? [mtx] : valArr;
-
-        if (name === 'scale' && values.length === 1) {
-          values.push(values[0]);
-        } else if (name === 'translate' && values.length === 1) {
-          values.push(0);
-        } else if (name === 'rotate' && values.length === 1) {
-          values.push(0, 0);
-        }
-        xform[fname].apply(xform, values);
-        this._list.appendItem(xform);
+export class SVGTransformList {
+  constructor (elem) {
+    this._elem = elem || null;
+    this._xforms = [];
+    // TODO: how do we capture the undo-ability in the changed transform list?
+    this._update = function () {
+      let tstr = '';
+      /* const concatMatrix = */ svgroot.createSVGMatrix();
+      for (let i = 0; i < this.numberOfItems; ++i) {
+        const xform = this._list.getItem(i);
+        tstr += transformToString(xform) + ' ';
       }
-    }
-  };
-  this._removeFromOtherLists = function (item) {
-    if (item) {
-      // Check if this transform is already in a transformlist, and
-      // remove it if so.
-      let found = false;
-      for (const id in listMap_) {
-        const tl = listMap_[id];
-        for (let i = 0, len = tl._xforms.length; i < len; ++i) {
-          if (tl._xforms[i] === item) {
-            found = true;
-            tl.removeItem(i);
+      this._elem.setAttribute('transform', tstr);
+    };
+    this._list = this;
+    this._init = function () {
+      // Transform attribute parser
+      let str = this._elem.getAttribute('transform');
+      if (!str) { return; }
+
+      // TODO: Add skew support in future
+      const re = /\s*((scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/;
+      let m = true;
+      while (m) {
+        m = str.match(re);
+        str = str.replace(re, '');
+        if (m && m[1]) {
+          const x = m[1];
+          const bits = x.split(/\s*\(/);
+          const name = bits[0];
+          const valBits = bits[1].match(/\s*(.*?)\s*\)/);
+          valBits[1] = valBits[1].replace(/(\d)-/g, '$1 -');
+          const valArr = valBits[1].split(/[, ]+/);
+          const letters = 'abcdef'.split('');
+          const mtx = svgroot.createSVGMatrix();
+          Object.values(valArr).forEach(function (item, i) {
+            valArr[i] = parseFloat(item);
+            if (name === 'matrix') {
+              mtx[letters[i]] = valArr[i];
+            }
+          });
+          const xform = svgroot.createSVGTransform();
+          const fname = 'set' + name.charAt(0).toUpperCase() + name.slice(1);
+          const values = name === 'matrix' ? [mtx] : valArr;
+
+          if (name === 'scale' && values.length === 1) {
+            values.push(values[0]);
+          } else if (name === 'translate' && values.length === 1) {
+            values.push(0);
+          } else if (name === 'rotate' && values.length === 1) {
+            values.push(0, 0);
+          }
+          xform[fname].apply(xform, values);
+          this._list.appendItem(xform);
+        }
+      }
+    };
+    this._removeFromOtherLists = function (item) {
+      if (item) {
+        // Check if this transform is already in a transformlist, and
+        // remove it if so.
+        let found = false;
+        for (const id in listMap_) {
+          const tl = listMap_[id];
+          for (let i = 0, len = tl._xforms.length; i < len; ++i) {
+            if (tl._xforms[i] === item) {
+              found = true;
+              tl.removeItem(i);
+              break;
+            }
+          }
+          if (found) {
             break;
           }
         }
-        if (found) {
-          break;
+      }
+    };
+
+    this.numberOfItems = 0;
+    this.clear = function () {
+      this.numberOfItems = 0;
+      this._xforms = [];
+    };
+
+    this.initialize = function (newItem) {
+      this.numberOfItems = 1;
+      this._removeFromOtherLists(newItem);
+      this._xforms = [newItem];
+    };
+
+    this.getItem = function (index) {
+      if (index < this.numberOfItems && index >= 0) {
+        return this._xforms[index];
+      }
+      const err = new Error('DOMException with code=INDEX_SIZE_ERR');
+      err.code = 1;
+      throw err;
+    };
+
+    this.insertItemBefore = function (newItem, index) {
+      let retValue = null;
+      if (index >= 0) {
+        if (index < this.numberOfItems) {
+          this._removeFromOtherLists(newItem);
+          const newxforms = new Array(this.numberOfItems + 1);
+          // TODO: use array copying and slicing
+          let i;
+          for (i = 0; i < index; ++i) {
+            newxforms[i] = this._xforms[i];
+          }
+          newxforms[i] = newItem;
+          for (let j = i + 1; i < this.numberOfItems; ++j, ++i) {
+            newxforms[j] = this._xforms[i];
+          }
+          this.numberOfItems++;
+          this._xforms = newxforms;
+          retValue = newItem;
+          this._list._update();
+        } else {
+          retValue = this._list.appendItem(newItem);
         }
       }
-    }
-  };
+      return retValue;
+    };
 
-  this.numberOfItems = 0;
-  this.clear = function () {
-    this.numberOfItems = 0;
-    this._xforms = [];
-  };
-
-  this.initialize = function (newItem) {
-    this.numberOfItems = 1;
-    this._removeFromOtherLists(newItem);
-    this._xforms = [newItem];
-  };
-
-  this.getItem = function (index) {
-    if (index < this.numberOfItems && index >= 0) {
-      return this._xforms[index];
-    }
-    const err = new Error('DOMException with code=INDEX_SIZE_ERR');
-    err.code = 1;
-    throw err;
-  };
-
-  this.insertItemBefore = function (newItem, index) {
-    let retValue = null;
-    if (index >= 0) {
-      if (index < this.numberOfItems) {
+    this.replaceItem = function (newItem, index) {
+      let retValue = null;
+      if (index < this.numberOfItems && index >= 0) {
         this._removeFromOtherLists(newItem);
-        const newxforms = new Array(this.numberOfItems + 1);
-        // TODO: use array copying and slicing
+        this._xforms[index] = newItem;
+        retValue = newItem;
+        this._list._update();
+      }
+      return retValue;
+    };
+
+    this.removeItem = function (index) {
+      if (index < this.numberOfItems && index >= 0) {
+        const retValue = this._xforms[index];
+        const newxforms = new Array(this.numberOfItems - 1);
         let i;
         for (i = 0; i < index; ++i) {
           newxforms[i] = this._xforms[i];
         }
-        newxforms[i] = newItem;
-        for (let j = i + 1; i < this.numberOfItems; ++j, ++i) {
-          newxforms[j] = this._xforms[i];
+        for (let j = i; j < this.numberOfItems - 1; ++j, ++i) {
+          newxforms[j] = this._xforms[i + 1];
         }
-        this.numberOfItems++;
+        this.numberOfItems--;
         this._xforms = newxforms;
-        retValue = newItem;
         this._list._update();
-      } else {
-        retValue = this._list.appendItem(newItem);
+        return retValue;
       }
-    }
-    return retValue;
-  };
+      const err = new Error('DOMException with code=INDEX_SIZE_ERR');
+      err.code = 1;
+      throw err;
+    };
 
-  this.replaceItem = function (newItem, index) {
-    let retValue = null;
-    if (index < this.numberOfItems && index >= 0) {
+    this.appendItem = function (newItem) {
       this._removeFromOtherLists(newItem);
-      this._xforms[index] = newItem;
-      retValue = newItem;
+      this._xforms.push(newItem);
+      this.numberOfItems++;
       this._list._update();
-    }
-    return retValue;
-  };
-
-  this.removeItem = function (index) {
-    if (index < this.numberOfItems && index >= 0) {
-      const retValue = this._xforms[index];
-      const newxforms = new Array(this.numberOfItems - 1);
-      let i;
-      for (i = 0; i < index; ++i) {
-        newxforms[i] = this._xforms[i];
-      }
-      for (let j = i; j < this.numberOfItems - 1; ++j, ++i) {
-        newxforms[j] = this._xforms[i + 1];
-      }
-      this.numberOfItems--;
-      this._xforms = newxforms;
-      this._list._update();
-      return retValue;
-    }
-    const err = new Error('DOMException with code=INDEX_SIZE_ERR');
-    err.code = 1;
-    throw err;
-  };
-
-  this.appendItem = function (newItem) {
-    this._removeFromOtherLists(newItem);
-    this._xforms.push(newItem);
-    this.numberOfItems++;
-    this._list._update();
-    return newItem;
-  };
-};
+      return newItem;
+    };
+  }
+}
 
 export const resetListMap = function () {
   listMap_ = {};
@@ -244,7 +246,7 @@ export const resetListMap = function () {
  * Parameters:
  * elem - a DOM Element
  */
-export const removeElementFromListMap = function (elem) {
+export let removeElementFromListMap = function (elem) {
   if (elem.id && listMap_[elem.id]) {
     delete listMap_[elem.id];
   }
@@ -277,4 +279,9 @@ export const getTransformList = function (elem) {
   }
 
   return null;
+};
+
+// For unit-testing
+export const changeRemoveElementFromListMap = function (cb) {
+  removeElementFromListMap = cb;
 };

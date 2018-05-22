@@ -1,15 +1,15 @@
 /* eslint-env qunit */
-/* globals svgedit, equals */
+import * as units from '../editor/units.js';
 
 // log function
-QUnit.log = function (details) {
+QUnit.log(function (details) {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }
-};
+});
 
 function setUp () {
-  svgedit.units.init({
+  units.init({
     getBaseUnit () { return 'cm'; },
     getHeight () { return 600; },
     getWidth () { return 800; },
@@ -18,64 +18,64 @@ function setUp () {
   });
 }
 
-test('Test svgedit.units package', function () {
-  expect(2);
-  ok(svgedit.units);
-  equals(typeof svgedit.units, typeof {});
+QUnit.test('Test svgedit.units package', function (assert) {
+  assert.expect(2);
+  assert.ok(units);
+  assert.equal(typeof units, typeof {});
 });
 
-test('Test svgedit.units.shortFloat()', function () {
-  expect(7);
+QUnit.test('Test svgedit.units.shortFloat()', function (assert) {
+  assert.expect(7);
 
   setUp();
 
-  ok(svgedit.units.shortFloat);
-  equals(typeof svgedit.units.shortFloat, typeof function () {});
+  assert.ok(units.shortFloat);
+  assert.equal(typeof units.shortFloat, typeof function () {});
 
-  const {shortFloat} = svgedit.units;
-  equals(shortFloat(0.00000001), 0);
-  equals(shortFloat(1), 1);
-  equals(shortFloat(3.45678), 3.4568);
-  equals(shortFloat(1.23443), 1.2344);
-  equals(shortFloat(1.23455), 1.2346);
+  const {shortFloat} = units;
+  assert.equal(shortFloat(0.00000001), 0);
+  assert.equal(shortFloat(1), 1);
+  assert.equal(shortFloat(3.45678), 3.4568);
+  assert.equal(shortFloat(1.23443), 1.2344);
+  assert.equal(shortFloat(1.23455), 1.2346);
 });
 
-test('Test svgedit.units.isValidUnit()', function () {
-  expect(18);
+QUnit.test('Test svgedit.units.isValidUnit()', function (assert) {
+  assert.expect(18);
 
   setUp();
 
-  ok(svgedit.units.isValidUnit);
-  equals(typeof svgedit.units.isValidUnit, typeof function () {});
+  assert.ok(units.isValidUnit);
+  assert.equal(typeof units.isValidUnit, typeof function () {});
 
-  const {isValidUnit} = svgedit.units;
-  ok(isValidUnit('0'));
-  ok(isValidUnit('1'));
-  ok(isValidUnit('1.1'));
-  ok(isValidUnit('-1.1'));
-  ok(isValidUnit('.6mm'));
-  ok(isValidUnit('-.6cm'));
-  ok(isValidUnit('6000in'));
-  ok(isValidUnit('6px'));
-  ok(isValidUnit('6.3pc'));
-  ok(isValidUnit('-0.4em'));
-  ok(isValidUnit('-0.ex'));
-  ok(isValidUnit('40.123%'));
+  const {isValidUnit} = units;
+  assert.ok(isValidUnit('0'));
+  assert.ok(isValidUnit('1'));
+  assert.ok(isValidUnit('1.1'));
+  assert.ok(isValidUnit('-1.1'));
+  assert.ok(isValidUnit('.6mm'));
+  assert.ok(isValidUnit('-.6cm'));
+  assert.ok(isValidUnit('6000in'));
+  assert.ok(isValidUnit('6px'));
+  assert.ok(isValidUnit('6.3pc'));
+  assert.ok(isValidUnit('-0.4em'));
+  assert.ok(isValidUnit('-0.ex'));
+  assert.ok(isValidUnit('40.123%'));
 
-  equals(isValidUnit('id', 'uniqueId', document.getElementById('uniqueId')), true);
-  equals(isValidUnit('id', 'newId', document.getElementById('uniqueId')), true);
-  equals(isValidUnit('id', 'uniqueId'), false);
-  equals(isValidUnit('id', 'uniqueId', document.getElementById('nonUniqueId')), false);
+  assert.equal(isValidUnit('id', 'uniqueId', document.getElementById('uniqueId')), true);
+  assert.equal(isValidUnit('id', 'newId', document.getElementById('uniqueId')), true);
+  assert.equal(isValidUnit('id', 'uniqueId'), false);
+  assert.equal(isValidUnit('id', 'uniqueId', document.getElementById('nonUniqueId')), false);
 });
 
-test('Test svgedit.units.convertUnit()', function () {
-  expect(4);
+QUnit.test('Test svgedit.units.convertUnit()', function (assert) {
+  assert.expect(4);
 
   setUp();
 
-  ok(svgedit.units.convertUnit);
-  equals(typeof svgedit.units.convertUnit, typeof function () {});
+  assert.ok(units.convertUnit);
+  assert.equal(typeof units.convertUnit, typeof function () {});
   // cm in default setup
-  equals(svgedit.units.convertUnit(42), 1.1113);
-  equals(svgedit.units.convertUnit(42, 'px'), 42);
+  assert.equal(units.convertUnit(42), 1.1113);
+  assert.equal(units.convertUnit(42, 'px'), 42);
 });

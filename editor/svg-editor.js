@@ -12,15 +12,7 @@
  *
  */
 
-// Dependencies:
-// 1) browser.js
-// 2) svgcanvas.js
-
-/*
-TODOS
-1. JSDoc
-*/
-
+import './touch.js';
 import {NS} from './svgedit.js';
 import {isWebkit, isGecko, isIE, isMac, isTouch} from './browser.js';
 import * as Utils from './svgutils.js';
@@ -35,17 +27,37 @@ import Layer from './layer.js';
 import jqPluginJSHotkeys from './js-hotkeys/jquery.hotkeys.min.js';
 import jqPluginBBQ from './jquerybbq/jquery.bbq.min.js';
 import jqPluginSVGIcons from './svgicons/jquery.svgicons.js';
-import jqPluginJGraduate from './jgraduate/jquery.jgraduate.min.js';
-import jqPluginSpinBtn from './spinbtn/JQuerySpinBtn.min.js';
-import jqPluginSVG from './jquery-svg.js';
+import jqPluginJGraduate from './jgraduate/jquery.jgraduate.js';
+import jqPluginSpinBtn from './spinbtn/JQuerySpinBtn.js';
+import jqPluginSVG from './jquery-svg.js'; // Needed for SVG attribute setting and array form with `attr`
 import jqPluginContextMenu from './contextmenu/jquery.contextMenu.js';
-import jqPluginJPicker from './jgraduate/jpicker.min.js';
-import {init as localeInit} from './locale/locale.js';
+import jqPluginJPicker from './jgraduate/jpicker.js';
+import {
+  readLang, putLocale,
+  init as localeInit
+} from './locale/locale.js';
+import loadStylesheets from './external/load-stylesheets/index-es.js';
 
 const $ = [
   jqPluginJSHotkeys, jqPluginBBQ, jqPluginSVGIcons, jqPluginJGraduate,
   jqPluginSpinBtn, jqPluginSVG, jqPluginContextMenu, jqPluginJPicker
 ].reduce(($, cb) => cb($), jQuery);
+
+/*
+if (!$.loadingStylesheets) {
+  $.loadingStylesheets = [];
+}
+*/
+const stylesheet = 'svg-editor.css';
+if (!$.loadingStylesheets.includes(stylesheet)) {
+  $.loadingStylesheets.push(stylesheet);
+}
+const favicon = 'images/logo.png';
+if ($.loadingStylesheets.some((item) => {
+  return Array.isArray(item) && item[0] === favicon;
+})) {
+  $.loadingStylesheets.push([favicon, {favicon: true}]);
+}
 
 const editor = {};
 
@@ -119,8 +131,9 @@ const callbacks = [],
     // PATH CONFIGURATION
     // The following path configuration items are disallowed in the URL (as should any future path configurations)
     imgPath: 'images/',
-    langPath: 'locale/',
-    extPath: 'extensions/',
+    langPath: 'locale/', // Default will be changed if this is a modular load
+    extPath: 'extensions/', // Default will be changed if this is a modular load
+    extIconsPath: 'extensions/',
     jGraduatePath: 'jgraduate/images/',
     // DOCUMENT PROPERTIES
     // Change the following to a preference (already in the Document Properties dialog)?
@@ -137,7 +150,7 @@ const callbacks = [],
     preventURLContentLoading: false,
     // EXTENSION CONFIGURATION (see also preventAllURLConfig)
     lockExtensions: false, // Disallowed in URL setting
-    noDefaultExtensions: false, // noDefaultExtensions can only be meaningfully used in config.js or in the URL
+    noDefaultExtensions: false, // noDefaultExtensions can only be meaningfully used in `svgedit-config-iife.js` or in the URL
     // EXTENSION-RELATED (GRID)
     showGrid: false, // Set by ext-grid.js
     // EXTENSION-RELATED (STORAGE)
@@ -162,6 +175,7 @@ let svgCanvas, urldata,
     // We do not put on defaultConfig to simplify object copying
     //   procedures (we obtain instead from defaultExtensions)
     extensions: [],
+    stylesheets: [],
     /**
     * Can use window.location.origin to indicate the current
     * origin. Can contain a '*' to allow all domains or 'null' (as
@@ -218,31 +232,39 @@ $.pref = function (key, val) {
 
 /**
 * EDITOR PUBLIC METHODS
-* locale.js also adds "putLocale" and "readLang" as editor methods
 * @todo Sort these methods per invocation order, ideally with init at the end
 * @todo Prevent execution until init executes if dependent on it?
 */
+editor.putLocale = putLocale;
+editor.readLang = readLang;
 
 /**
 * Where permitted, sets canvas and/or defaultPrefs based on previous
 *  storage. This will override URL settings (for security reasons) but
-*  not config.js configuration (unless initial user overriding is explicitly
-*  permitted there via allowInitialUserOverride).
-* @todo Split allowInitialUserOverride into allowOverrideByURL and
-*  allowOverrideByUserStorage so config.js can disallow some
+*  not `svgedit-config-iife.js` configuration (unless initial user
+*  overriding is explicitly permitted there via `allowInitialUserOverride`).
+* @todo Split `allowInitialUserOverride` into `allowOverrideByURL` and
+*  `allowOverrideByUserStorage` so `svgedit-config-iife.js` can disallow some
 *  individual items for URL setting but allow for user storage AND/OR
 *  change URL setting so that it always uses a different namespace,
 *  so it won't affect pre-existing user storage (but then if users saves
 *  that, it will then be subject to tampering
 */
 editor.loadContentAndPrefs = function () {
-  if (!curConfig.forceStorage && (curConfig.noStorageOnLoad || !document.cookie.match(/(?:^|;\s*)store=(?:prefsAndContent|prefsOnly)/))) {
+  if (!curConfig.forceStorage &&
+    (curConfig.noStorageOnLoad ||
+        !document.cookie.match(/(?:^|;\s*)store=(?:prefsAndContent|prefsOnly)/)
+    )
+  ) {
     return;
   }
 
   // LOAD CONTENT
   if (editor.storage && // Cookies do not have enough available memory to hold large documents
-    (curConfig.forceStorage || (!curConfig.noStorageOnLoad && document.cookie.match(/(?:^|;\s*)store=prefsAndContent/)))
+    (curConfig.forceStorage ||
+      (!curConfig.noStorageOnLoad &&
+        document.cookie.match(/(?:^|;\s*)store=prefsAndContent/))
+    )
   ) {
     const name = 'svgedit-' + curConfig.canvasName;
     const cached = editor.storage.getItem(name);
@@ -273,7 +295,8 @@ editor.loadContentAndPrefs = function () {
 /**
 * Allows setting of preferences or configuration (including extensions).
 * @param {Object} opts The preferences or configuration (including extensions)
-* @param {Object} [cfgCfg] Describes configuration which applies to the particular batch of supplied options
+* @param {Object} [cfgCfg] Describes configuration which applies to the
+*    particular batch of supplied options
 * @param {boolean} [cfgCfg.allowInitialUserOverride=false] Set to true if you wish
 *  to allow initial overriding of settings by the user via the URL
 *  (if permitted) or previously stored preferences (if permitted);
@@ -283,10 +306,10 @@ editor.loadContentAndPrefs = function () {
 * @param {boolean} [cfgCfg.overwrite=true] Set to false if you wish to
 *  prevent the overwriting of prior-set preferences or configuration
 *  (URL settings will always follow this requirement for security
-*  reasons, so config.js settings cannot be overridden unless it
-*  explicitly permits via "allowInitialUserOverride" but extension config
+*  reasons, so `svgedit-config-iife.js` settings cannot be overridden unless it
+*  explicitly permits via `allowInitialUserOverride` but extension config
 *  can be overridden as they will run after URL settings). Should
-*   not be needed in config.js.
+*   not be needed in `svgedit-config-iife.js`.
 */
 editor.setConfig = function (opts, cfgCfg) {
   cfgCfg = cfgCfg || {};
@@ -312,11 +335,11 @@ editor.setConfig = function (opts, cfgCfg) {
         } else {
           $.pref(key, val);
         }
-      } else if (['extensions', 'allowedOrigins'].includes(key)) {
+      } else if (['extensions', 'stylesheets', 'allowedOrigins'].includes(key)) {
         if (cfgCfg.overwrite === false &&
           (
             curConfig.preventAllURLConfig ||
-            key === 'allowedOrigins' ||
+            ['allowedOrigins', 'stylesheets'].includes(key) ||
             (key === 'extensions' && curConfig.lockExtensions)
           )
         ) {
@@ -399,6 +422,16 @@ editor.randomizeIds = function () {
 };
 
 editor.init = function () {
+  const modularVersion = !('svgEditor' in window) ||
+    !window.svgEditor ||
+    window.svgEditor.modules !== false;
+  if (!modularVersion) {
+    Object.assign(defaultConfig, {
+      langPath: '../dist/locale/',
+      extPath: '../dist/extensions/'
+    });
+  }
+
   // const host = location.hostname,
   //  onWeb = host && host.includes('.');
   // Some FF versions throw security errors here when directly accessing
@@ -427,7 +460,7 @@ editor.init = function () {
       curConfig.extensions = curConfig.extensions.concat(defaultExtensions);
     }
     // ...and remove any dupes
-    $.each(['extensions', 'allowedOrigins'], function (i, cfg) {
+    $.each(['extensions', 'stylesheets', 'allowedOrigins'], function (i, cfg) {
       curConfig[cfg] = $.grep(curConfig[cfg], function (n, i) { // Supposedly faster than filter per http://amandeep1986.blogspot.hk/2015/02/jquery-grep-vs-js-filter.html
         return i === curConfig[cfg].indexOf(n);
       });
@@ -459,7 +492,7 @@ editor.init = function () {
       // ways with other script resources
       $.each(
         [
-          'extPath', 'imgPath',
+          'extPath', 'imgPath', 'extIconsPath',
           'langPath', 'jGraduatePath'
         ],
         function (pathConfig) {
@@ -520,6 +553,14 @@ editor.init = function () {
       if (!extname.match(/^ext-.*\.js/)) { // Ensure URL cannot specify some other unintended file in the extPath
         return;
       }
+      const s = document.createElement('script');
+      if (modularVersion) {
+        s.type = 'module'; // Make this the default when widely supported
+      }
+      const url = curConfig.extPath + extname;
+      s.src = url;
+      document.querySelector('head').appendChild(s);
+      /*
       // Todo: Insert script with type=module instead when modules widely supported
       $.getScript(curConfig.extPath + extname, function (d) {
         // Fails locally in Chrome 5
@@ -531,10 +572,11 @@ editor.init = function () {
       }).fail((jqxhr, settings, exception) => {
         console.log(exception);
       });
+      */
     });
 
     // const lang = ('lang' in curPrefs) ? curPrefs.lang : null;
-    editor.putLocale(null, goodLangs);
+    editor.putLocale(null, goodLangs, curConfig);
   };
 
   // Load extensions
@@ -730,17 +772,31 @@ editor.init = function () {
         }
       });
 
-      editor.runCallbacks();
+      let stylesheets = $.loadingStylesheets;
+      if (curConfig.stylesheets.length) {
+        // Ensure a copy with unique items
+        stylesheets = [...new Set(curConfig.stylesheets)];
+        const idx = stylesheets.indexOf('@default');
+        if (idx > -1) {
+          stylesheets.splice(idx, 1, ...$.loadingStylesheets);
+        }
+      }
+      loadStylesheets(stylesheets).then(() => {
+        editor.runCallbacks();
 
-      setTimeout(function () {
-        $('.flyout_arrow_horiz:empty').each(function () {
-          $(this).append($.getSvgIcon('arrow_right').width(5).height(5));
-        });
-      }, 1);
+        setTimeout(function () {
+          $('.flyout_arrow_horiz:empty').each(function () {
+            $(this).append($.getSvgIcon('arrow_right').width(5).height(5));
+          });
+        }, 1);
+      });
     }
   });
 
-  editor.canvas = svgCanvas = new SvgCanvas(document.getElementById('svgcanvas'), curConfig);
+  editor.canvas = svgCanvas = new SvgCanvas(
+    document.getElementById('svgcanvas'),
+    curConfig
+  );
   const palette = [ // Todo: Make into configuration item?
       '#000000', '#3f3f3f', '#7f7f7f', '#bfbfbf', '#ffffff',
       '#ff0000', '#ff7f00', '#ffff00', '#7fff00',
@@ -788,7 +844,10 @@ editor.init = function () {
   // In the future we may want to add additional types of dialog boxes, since
   // they should be easy to handle this way.
   (function () {
-    $('#dialog_container').draggable({cancel: '#dialog_content, #dialog_buttons *', containment: 'window'});
+    $('#dialog_container').draggable({
+      cancel: '#dialog_content, #dialog_buttons *',
+      containment: 'window'
+    }).css('position', 'absolute');
     const box = $('#dialog_box'),
       btnHolder = $('#dialog_buttons'),
       dialogContent = $('#dialog_content'),
@@ -2192,7 +2251,7 @@ editor.init = function () {
     // $('.tools_flyout').each(function () {
     //   const pos = $(this).position();
     //   console.log($(this), pos.left+(34 * scale));
-    //   $(this).css({'left': pos.left+(34 * scale), 'top': pos.top+(77 * scale)});
+    //   $(this).css({left: pos.left+(34 * scale), top: pos.top+(77 * scale)});
     //   console.log('l', $(this).css('left'));
     // });
     //
@@ -2232,52 +2291,52 @@ editor.init = function () {
       // .disabled,\
       // .icon_label,\
       // .tools_flyout .tool_button': {
-      //   'width': {s: '16px', l: '32px', xl: '48px'},
-      //   'height': {s: '16px', l: '32px', xl: '48px'},
-      //   'padding': {s: '1px', l: '2px', xl: '3px'}
+      //   width: {s: '16px', l: '32px', xl: '48px'},
+      //   height: {s: '16px', l: '32px', xl: '48px'},
+      //   padding: {s: '1px', l: '2px', xl: '3px'}
       // },
       // '.tool_sep': {
-      //   'height': {s: '16px', l: '32px', xl: '48px'},
-      //   'margin': {s: '2px 2px', l: '2px 5px', xl: '2px 8px'}
+      //   height: {s: '16px', l: '32px', xl: '48px'},
+      //   margin: {s: '2px 2px', l: '2px 5px', xl: '2px 8px'}
       // },
       // '#main_icon': {
-      //   'width': {s: '31px', l: '53px', xl: '75px'},
-      //   'height': {s: '22px', l: '42px', xl: '64px'}
+      //   width: {s: '31px', l: '53px', xl: '75px'},
+      //   height: {s: '22px', l: '42px', xl: '64px'}
       // },
       '#tools_top': {
-        'left': 50 + $('#main_button').width(),
-        'height': 72
+        left: 50 + $('#main_button').width(),
+        height: 72
       },
       '#tools_left': {
-        'width': 31,
-        'top': 74
+        width: 31,
+        top: 74
       },
       'div#workarea': {
-        'left': 38,
-        'top': 74
+        left: 38,
+        top: 74
       }
       // '#tools_bottom': {
-      //   'left': {s: '27px', l: '46px', xl: '65px'},
-      //   'height': {s: '58px', l: '98px', xl: '145px'}
+      //   left: {s: '27px', l: '46px', xl: '65px'},
+      //   height: {s: '58px', l: '98px', xl: '145px'}
       // },
       // '#color_tools': {
       //   'border-spacing': {s: '0 1px'},
       //   'margin-top': {s: '-1px'}
       // },
       // '#color_tools .icon_label': {
-      //   'width': {l:'43px', xl: '60px'}
+      //   width: {l:'43px', xl: '60px'}
       // },
       // '.color_tool': {
-      //   'height': {s: '20px'}
+      //   height: {s: '20px'}
       // },
       // '#tool_opacity': {
-      //   'top': {s: '1px'},
-      //   'height': {s: 'auto', l:'auto', xl:'auto'}
+      //   top: {s: '1px'},
+      //   height: {s: 'auto', l:'auto', xl:'auto'}
       // },
       // '#tools_top input, #tools_bottom input': {
       //   'margin-top': {s: '2px', l: '4px', xl: '5px'},
-      //   'height': {s: 'auto', l: 'auto', xl: 'auto'},
-      //   'border': {s: '1px solid #555', l: 'auto', xl: 'auto'},
+      //   height: {s: 'auto', l: 'auto', xl: 'auto'},
+      //   border: {s: '1px solid #555', l: 'auto', xl: 'auto'},
       //   'font-size': {s: '.9em', l: '1.2em', xl: '1.4em'}
       // },
       // '#zoom_panel': {
@@ -2288,41 +2347,41 @@ editor.init = function () {
       //   'line-height': {s: '15px'}
       // },
       // '#tools_bottom_2': {
-      //   'width': {l: '295px', xl: '355px'},
-      //   'top': {s: '4px'}
+      //   width: {l: '295px', xl: '355px'},
+      //   top: {s: '4px'}
       // },
       // '#tools_top > div, #tools_top': {
       //   'line-height': {s: '17px', l: '34px', xl: '50px'}
       // },
       // '.dropdown button': {
-      //   'height': {s: '18px', l: '34px', xl: '40px'},
+      //   height: {s: '18px', l: '34px', xl: '40px'},
       //   'line-height': {s: '18px', l: '34px', xl: '40px'},
       //   'margin-top': {s: '3px'}
       // },
       // '#tools_top label, #tools_bottom label': {
       //   'font-size': {s: '1em', l: '1.5em', xl: '2em'},
-      //   'height': {s: '25px', l: '42px', xl: '64px'}
+      //   height: {s: '25px', l: '42px', xl: '64px'}
       // },
       // 'div.toolset': {
-      //   'height': {s: '25px', l: '42px', xl: '64px'}
+      //   height: {s: '25px', l: '42px', xl: '64px'}
       // },
       // '#tool_bold, #tool_italic': {
       //   'font-size': {s: '1.5em', l: '3em', xl: '4.5em'}
       // },
       // '#sidepanels': {
-      //   'top': {s: '50px', l: '88px', xl: '125px'},
-      //   'bottom': {s: '51px', l: '68px', xl: '65px'}
+      //   top: {s: '50px', l: '88px', xl: '125px'},
+      //   bottom: {s: '51px', l: '68px', xl: '65px'}
       // },
       // '#layerbuttons': {
-      //   'width': {l: '130px', xl: '175px'},
-      //   'height': {l: '24px', xl: '30px'}
+      //   width: {l: '130px', xl: '175px'},
+      //   height: {l: '24px', xl: '30px'}
       // },
       // '#layerlist': {
-      //   'width': {l: '128px', xl: '150px'}
+      //   width: {l: '128px', xl: '150px'}
       // },
       // '.layer_button': {
-      //   'width': {l: '19px', xl: '28px'},
-      //   'height': {l: '19px', xl: '28px'}
+      //   width: {l: '19px', xl: '28px'},
+      //   height: {l: '19px', xl: '28px'}
       // },
       // 'input.spin-button': {
       //   'background-image': {l: 'url('images/spinbtn_updn_big.png')', xl: 'url('images/spinbtn_updn_big.png')'},
@@ -2336,7 +2395,7 @@ editor.init = function () {
       //   'background-position': {l: '100% -85px', xl: '100% -82px'}
       // },
       // '#position_opts': {
-      //   'width': {all: (size_num*4) +'px'}
+      //   width: {all: (size_num*4) +'px'}
       // }
     };
 
@@ -2838,6 +2897,10 @@ editor.init = function () {
     exportWindow.location.href = data.dataurlstring;
   });
   svgCanvas.bind('zoomed', zoomChanged);
+  svgCanvas.bind('zoomDone', zoomDone);
+  svgCanvas.bind('updateCanvas', function (win, {center, newCtr}) {
+    updateCanvas(center, newCtr);
+  });
   svgCanvas.bind('contextset', contextChanged);
   svgCanvas.bind('extension_added', extAdded);
   svgCanvas.textActions.setInputElem($('#text')[0]);
@@ -3571,8 +3634,8 @@ editor.init = function () {
   const clickSave = function () {
     // In the future, more options can be provided here
     const saveOpts = {
-      'images': $.pref('img_save'),
-      'round_digits': 6
+      images: $.pref('img_save'),
+      round_digits: 6
     };
     svgCanvas.save(saveOpts);
   };
@@ -3836,7 +3899,7 @@ editor.init = function () {
     // set language
     const lang = $('#lang_select').val();
     if (lang !== $.pref('lang')) {
-      editor.putLocale(lang, goodLangs);
+      editor.putLocale(lang, goodLangs, curConfig);
     }
 
     // set icon size
@@ -3999,7 +4062,7 @@ editor.init = function () {
     let {paint} = paintBox[picker];
     $('#color_picker')
       .draggable({cancel: '.jGraduate_tabs, .jGraduate_colPick, .jGraduate_gradPick, .jPicker', containment: 'window'})
-      .css(curConfig.colorPickerCSS || {'left': pos.left - 140, 'bottom': 40})
+      .css(curConfig.colorPickerCSS || {left: pos.left - 140, bottom: 40})
       .jGraduate(
         {
           paint,
@@ -4430,7 +4493,7 @@ editor.init = function () {
   // function setResolution (w, h, center) {
   //   updateCanvas();
   //   // w -= 0; h -= 0;
-  //   // $('#svgcanvas').css({'width': w, 'height': h});
+  //   // $('#svgcanvas').css({width: w, height: h});
   //   // $('#canvas_width').val(w);
   //   // $('#canvas_height').val(h);
   //   //
@@ -5028,10 +5091,10 @@ editor.init = function () {
   //  $('#copyright')[0].setAttribute('title', revnums);
 
   // For Compatibility with older extensions
-  $(function () {
-    window.svgCanvas = svgCanvas;
-    svgCanvas.ready = editor.ready;
-  });
+  // $(function () {
+  window.svgCanvas = svgCanvas;
+  svgCanvas.ready = editor.ready;
+  // });
 
   const setLang = editor.setLang = function (lang, allStrings) {
     editor.langChanged = true;
@@ -5040,12 +5103,13 @@ editor.init = function () {
     if (!allStrings) {
       return;
     }
+    $.extend(uiStrings, allStrings);
+
     // const notif = allStrings.notification; // Currently unused
     // $.extend will only replace the given strings
     const oldLayerName = $('#layerlist tr.layersel td.layername').text();
     const renameLayer = (oldLayerName === uiStrings.common.layer + ' 1');
 
-    $.extend(uiStrings, allStrings);
     svgCanvas.setUiStrings(allStrings);
     Actions.setTitles();
 
@@ -5087,7 +5151,7 @@ editor.init = function () {
   };
   localeInit({
     addLangData (langParam) {
-      editor.canvas.runExtensions('addlangData', langParam, true);
+      return editor.canvas.runExtensions('addlangData', langParam, true);
     },
     curConfig,
     setLang
@@ -5103,10 +5167,13 @@ editor.ready = function (cb) {
 };
 
 editor.runCallbacks = function () {
-  $.each(callbacks, function () {
-    this();
+  // Todo: See if there is any benefit to refactoring some
+  //   of the existing `editor.ready()` calls to return Promises
+  Promise.all(callbacks.map((cb) => {
+    return cb();
+  })).then(() => {
+    isReady = true;
   });
-  isReady = true;
 };
 
 editor.loadFromString = function (str) {
@@ -5174,9 +5241,9 @@ editor.addExtension = function () {
 
   // Note that we don't want this on editor.ready since some extensions
   // may want to run before then (like server_opensave).
-  $(function () {
-    if (svgCanvas) { svgCanvas.addExtension.apply(this, args); }
-  });
+  // $(function () {
+  if (svgCanvas) { svgCanvas.addExtension.apply(this, args); }
+  // });
 };
 
 // Defer injection to wait out initial menu processing. This probably goes
@@ -5186,6 +5253,10 @@ editor.ready(() => {
 });
 
 // Run init once DOM is loaded
-jQuery(editor.init);
+// jQuery(editor.init);
+Promise.resolve().then(() => {
+  // We wait a micro-task to let the svgEditor variable be defined for module checks
+  editor.init();
+});
 
 export default editor;

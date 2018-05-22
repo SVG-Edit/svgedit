@@ -1,26 +1,39 @@
+/* globals sinon, sinonTest */
 /* eslint-env qunit */
-/* globals svgedit, equals */
+import {NS} from '../editor/svgedit.js';
+import * as draw from '../editor/draw.js';
+import * as units from '../editor/units.js';
+import sinonQunit from './sinon/sinon-qunit.js';
+
+sinon.test = sinonTest(sinon, {
+  injectIntoThis: true,
+  injectInto: null,
+  properties: ['spy', 'stub', 'mock', 'clock', 'sandbox'],
+  useFakeTimers: false,
+  useFakeServer: false
+});
+sinonQunit({sinon, QUnit});
 
 // log function
-QUnit.log = function (details) {
+QUnit.log(function (details) {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }
-};
-const {NS} = svgedit;
-const LAYER_CLASS = svgedit.draw.Layer.CLASS_NAME;
+});
+
+const LAYER_CLASS = draw.Layer.CLASS_NAME;
 const NONCE = 'foo';
 const LAYER1 = 'Layer 1';
 const LAYER2 = 'Layer 2';
 const LAYER3 = 'Layer 3';
 const PATH_ATTR = {
   // clone will convert relative to absolute, so the test for equality fails.
-  // 'd':    'm7.38867,57.38867c0,-27.62431 22.37569,-50 50,-50c27.62431,0 50,22.37569 50,50c0,27.62431 -22.37569,50 -50,50c-27.62431,0 -50,-22.37569 -50,-50z',
-  'd': 'M7.389,57.389C7.389,29.764 29.764,7.389 57.389,7.389C85.013,7.389 107.389,29.764 107.389,57.389C107.389,85.013 85.013,107.389 57.389,107.389C29.764,107.389 7.389,85.013 7.389,57.389z',
-  'transform': 'rotate(45 57.388671875000036,57.388671874999986) ',
+  // d:    'm7.38867,57.38867c0,-27.62431 22.37569,-50 50,-50c27.62431,0 50,22.37569 50,50c0,27.62431 -22.37569,50 -50,50c-27.62431,0 -50,-22.37569 -50,-50z',
+  d: 'M7.389,57.389C7.389,29.764 29.764,7.389 57.389,7.389C85.013,7.389 107.389,29.764 107.389,57.389C107.389,85.013 85.013,107.389 57.389,107.389C29.764,107.389 7.389,85.013 7.389,57.389z',
+  transform: 'rotate(45 57.388671875000036,57.388671874999986) ',
   'stroke-width': '5',
-  'stroke': '#660000',
-  'fill': '#ff0000'
+  stroke: '#660000',
+  fill: '#ff0000'
 };
 
 const svg = document.createElementNS(NS.SVG, 'svg');
@@ -33,13 +46,27 @@ const svgN = document.createElementNS(NS.SVG, 'svg');
 svgN.setAttributeNS(NS.XMLNS, 'xmlns:se', NS.SE);
 svgN.setAttributeNS(NS.SE, 'se:nonce', NONCE);
 
-svgedit.units.init({
-  // used by svgedit.units.shortFloat - call path: cloneLayer -> copyElem -> convertPath -> pathDSegment -> shortFloat
+units.init({
+  // used by units.shortFloat - call path: cloneLayer -> copyElem -> convertPath -> pathDSegment -> shortFloat
   getRoundDigits () { return 3; }
 });
 
+// Simplifying from svgcanvas.js usage
+const idprefix = 'svg_';
+const svgcontent = document.createElementNS(NS.SVG, 'svg');
+const currentDrawing_ = new draw.Drawing(svgcontent, idprefix);
+const getCurrentDrawing = function () {
+  return currentDrawing_;
+};
+const setCurrentGroup = (cg) => {
+};
+draw.init({
+  getCurrentDrawing,
+  setCurrentGroup
+});
+
 function createSVGElement (jsonMap) {
-  const elem = document.createElementNS(svgedit.NS.SVG, jsonMap['element']);
+  const elem = document.createElementNS(NS.SVG, jsonMap['element']);
   for (const attr in jsonMap['attr']) {
     elem.setAttribute(attr, jsonMap['attr'][attr]);
   }
@@ -70,29 +97,29 @@ const setupSvgWith3Layers = function (svgElem) {
 
 const createSomeElementsInGroup = function (group) {
   group.appendChild(createSVGElement({
-    'element': 'path',
-    'attr': PATH_ATTR
+    element: 'path',
+    attr: PATH_ATTR
   }));
   // group.appendChild(createSVGElement({
-  //    'element': 'path',
-  //    'attr': {'d': 'M0,1L2,3'}
+  //    element: 'path',
+  //    attr: {d: 'M0,1L2,3'}
   //  }));
   group.appendChild(createSVGElement({
-    'element': 'rect',
-    'attr': {'x': '0', 'y': '1', 'width': '5', 'height': '10'}
+    element: 'rect',
+    attr: {x: '0', y: '1', width: '5', height: '10'}
   }));
   group.appendChild(createSVGElement({
-    'element': 'line',
-    'attr': {'x1': '0', 'y1': '1', 'x2': '5', 'y2': '6'}
+    element: 'line',
+    attr: {x1: '0', y1: '1', x2: '5', y2: '6'}
   }));
 
   const g = createSVGElement({
-    'element': 'g',
-    'attr': {}
+    element: 'g',
+    attr: {}
   });
   g.appendChild(createSVGElement({
-    'element': 'rect',
-    'attr': {'x': '0', 'y': '1', 'width': '5', 'height': '10'}
+    element: 'rect',
+    attr: {x: '0', y: '1', width: '5', height: '10'}
   }));
   group.appendChild(g);
   return 4;
@@ -102,107 +129,107 @@ const cleanupSvg = function (svgElem) {
   while (svgElem.firstChild) { svgElem.removeChild(svgElem.firstChild); }
 };
 
-module('svgedit.draw.Drawing', {
-  setup () {
+QUnit.module('svgedit.draw.Drawing', {
+  beforeEach () {
   },
-  teardown () {
+  afterEach () {
   }
 });
 
-test('Test draw module', function () {
-  expect(4);
+QUnit.test('Test draw module', function (assert) {
+  assert.expect(4);
 
-  ok(svgedit.draw);
-  equals(typeof svgedit.draw, typeof {});
+  assert.ok(draw);
+  assert.equal(typeof draw, typeof {});
 
-  ok(svgedit.draw.Drawing);
-  equals(typeof svgedit.draw.Drawing, typeof function () {});
+  assert.ok(draw.Drawing);
+  assert.equal(typeof draw.Drawing, typeof function () {});
 });
 
-test('Test document creation', function () {
-  expect(3);
+QUnit.test('Test document creation', function (assert) {
+  assert.expect(3);
 
   let doc;
   try {
-    doc = new svgedit.draw.Drawing();
-    ok(false, 'Created drawing without a valid <svg> element');
+    doc = new draw.Drawing();
+    assert.ok(false, 'Created drawing without a valid <svg> element');
   } catch (e) {
-    ok(true);
+    assert.ok(true);
   }
 
   try {
-    doc = new svgedit.draw.Drawing(svg);
-    ok(doc);
-    equals(typeof doc, typeof {});
+    doc = new draw.Drawing(svg);
+    assert.ok(doc);
+    assert.equal(typeof doc, typeof {});
   } catch (e) {
-    ok(false, 'Could not create document from valid <svg> element: ' + e);
+    assert.ok(false, 'Could not create document from valid <svg> element: ' + e);
   }
 });
 
-test('Test nonce', function () {
-  expect(7);
+QUnit.test('Test nonce', function (assert) {
+  assert.expect(7);
 
-  let doc = new svgedit.draw.Drawing(svg);
-  equals(doc.getNonce(), '');
+  let doc = new draw.Drawing(svg);
+  assert.equal(doc.getNonce(), '');
 
-  doc = new svgedit.draw.Drawing(svgN);
-  equals(doc.getNonce(), NONCE);
-  equals(doc.getSvgElem().getAttributeNS(NS.SE, 'nonce'), NONCE);
+  doc = new draw.Drawing(svgN);
+  assert.equal(doc.getNonce(), NONCE);
+  assert.equal(doc.getSvgElem().getAttributeNS(NS.SE, 'nonce'), NONCE);
 
   doc.clearNonce();
-  ok(!doc.getNonce());
-  ok(!doc.getSvgElem().getAttributeNS(NS.SE, 'se:nonce'));
+  assert.ok(!doc.getNonce());
+  assert.ok(!doc.getSvgElem().getAttributeNS(NS.SE, 'se:nonce'));
 
   doc.setNonce(NONCE);
-  equals(doc.getNonce(), NONCE);
-  equals(doc.getSvgElem().getAttributeNS(NS.SE, 'nonce'), NONCE);
+  assert.equal(doc.getNonce(), NONCE);
+  assert.equal(doc.getSvgElem().getAttributeNS(NS.SE, 'nonce'), NONCE);
 });
 
-test('Test getId() and getNextId() without nonce', function () {
-  expect(7);
+QUnit.test('Test getId() and getNextId() without nonce', function (assert) {
+  assert.expect(7);
 
   const elem2 = document.createElementNS(NS.SVG, 'circle');
   elem2.id = 'svg_2';
   svg.appendChild(elem2);
 
-  const doc = new svgedit.draw.Drawing(svg);
+  const doc = new draw.Drawing(svg);
 
-  equals(doc.getId(), 'svg_0');
+  assert.equal(doc.getId(), 'svg_0');
 
-  equals(doc.getNextId(), 'svg_1');
-  equals(doc.getId(), 'svg_1');
+  assert.equal(doc.getNextId(), 'svg_1');
+  assert.equal(doc.getId(), 'svg_1');
 
-  equals(doc.getNextId(), 'svg_3');
-  equals(doc.getId(), 'svg_3');
+  assert.equal(doc.getNextId(), 'svg_3');
+  assert.equal(doc.getId(), 'svg_3');
 
-  equals(doc.getNextId(), 'svg_4');
-  equals(doc.getId(), 'svg_4');
+  assert.equal(doc.getNextId(), 'svg_4');
+  assert.equal(doc.getId(), 'svg_4');
   // clean out svg document
   cleanupSvg(svg);
 });
 
-test('Test getId() and getNextId() with prefix without nonce', function () {
-  expect(7);
+QUnit.test('Test getId() and getNextId() with prefix without nonce', function (assert) {
+  assert.expect(7);
 
   const prefix = 'Bar-';
-  const doc = new svgedit.draw.Drawing(svg, prefix);
+  const doc = new draw.Drawing(svg, prefix);
 
-  equals(doc.getId(), prefix + '0');
+  assert.equal(doc.getId(), prefix + '0');
 
-  equals(doc.getNextId(), prefix + '1');
-  equals(doc.getId(), prefix + '1');
+  assert.equal(doc.getNextId(), prefix + '1');
+  assert.equal(doc.getId(), prefix + '1');
 
-  equals(doc.getNextId(), prefix + '2');
-  equals(doc.getId(), prefix + '2');
+  assert.equal(doc.getNextId(), prefix + '2');
+  assert.equal(doc.getId(), prefix + '2');
 
-  equals(doc.getNextId(), prefix + '3');
-  equals(doc.getId(), prefix + '3');
+  assert.equal(doc.getNextId(), prefix + '3');
+  assert.equal(doc.getId(), prefix + '3');
 
   cleanupSvg(svg);
 });
 
-test('Test getId() and getNextId() with nonce', function () {
-  expect(7);
+QUnit.test('Test getId() and getNextId() with nonce', function (assert) {
+  assert.expect(7);
 
   const prefix = 'svg_' + NONCE;
 
@@ -210,146 +237,146 @@ test('Test getId() and getNextId() with nonce', function () {
   elem2.id = prefix + '_2';
   svgN.appendChild(elem2);
 
-  const doc = new svgedit.draw.Drawing(svgN);
+  const doc = new draw.Drawing(svgN);
 
-  equals(doc.getId(), prefix + '_0');
+  assert.equal(doc.getId(), prefix + '_0');
 
-  equals(doc.getNextId(), prefix + '_1');
-  equals(doc.getId(), prefix + '_1');
+  assert.equal(doc.getNextId(), prefix + '_1');
+  assert.equal(doc.getId(), prefix + '_1');
 
-  equals(doc.getNextId(), prefix + '_3');
-  equals(doc.getId(), prefix + '_3');
+  assert.equal(doc.getNextId(), prefix + '_3');
+  assert.equal(doc.getId(), prefix + '_3');
 
-  equals(doc.getNextId(), prefix + '_4');
-  equals(doc.getId(), prefix + '_4');
+  assert.equal(doc.getNextId(), prefix + '_4');
+  assert.equal(doc.getId(), prefix + '_4');
 
   cleanupSvg(svgN);
 });
 
-test('Test getId() and getNextId() with prefix with nonce', function () {
-  expect(7);
+QUnit.test('Test getId() and getNextId() with prefix with nonce', function (assert) {
+  assert.expect(7);
 
   const PREFIX = 'Bar-';
-  const doc = new svgedit.draw.Drawing(svgN, PREFIX);
+  const doc = new draw.Drawing(svgN, PREFIX);
 
   const prefix = PREFIX + NONCE + '_';
-  equals(doc.getId(), prefix + '0');
+  assert.equal(doc.getId(), prefix + '0');
 
-  equals(doc.getNextId(), prefix + '1');
-  equals(doc.getId(), prefix + '1');
+  assert.equal(doc.getNextId(), prefix + '1');
+  assert.equal(doc.getId(), prefix + '1');
 
-  equals(doc.getNextId(), prefix + '2');
-  equals(doc.getId(), prefix + '2');
+  assert.equal(doc.getNextId(), prefix + '2');
+  assert.equal(doc.getId(), prefix + '2');
 
-  equals(doc.getNextId(), prefix + '3');
-  equals(doc.getId(), prefix + '3');
+  assert.equal(doc.getNextId(), prefix + '3');
+  assert.equal(doc.getId(), prefix + '3');
 
   cleanupSvg(svgN);
 });
 
-test('Test releaseId()', function () {
-  expect(6);
+QUnit.test('Test releaseId()', function (assert) {
+  assert.expect(6);
 
-  const doc = new svgedit.draw.Drawing(svg);
+  const doc = new draw.Drawing(svg);
 
   const firstId = doc.getNextId();
   /* const secondId = */ doc.getNextId();
 
   const result = doc.releaseId(firstId);
-  ok(result);
-  equals(doc.getNextId(), firstId);
-  equals(doc.getNextId(), 'svg_3');
+  assert.ok(result);
+  assert.equal(doc.getNextId(), firstId);
+  assert.equal(doc.getNextId(), 'svg_3');
 
-  ok(!doc.releaseId('bad-id'));
-  ok(doc.releaseId(firstId));
-  ok(!doc.releaseId(firstId));
+  assert.ok(!doc.releaseId('bad-id'));
+  assert.ok(doc.releaseId(firstId));
+  assert.ok(!doc.releaseId(firstId));
 
   cleanupSvg(svg);
 });
 
-test('Test getNumLayers', function () {
-  expect(3);
-  const drawing = new svgedit.draw.Drawing(svg);
-  equals(typeof drawing.getNumLayers, typeof function () {});
-  equals(drawing.getNumLayers(), 0);
+QUnit.test('Test getNumLayers', function (assert) {
+  assert.expect(3);
+  const drawing = new draw.Drawing(svg);
+  assert.equal(typeof drawing.getNumLayers, typeof function () {});
+  assert.equal(drawing.getNumLayers(), 0);
 
   setupSvgWith3Layers(svg);
   drawing.identifyLayers();
 
-  equals(drawing.getNumLayers(), 3);
+  assert.equal(drawing.getNumLayers(), 3);
 
   cleanupSvg(svg);
 });
 
-test('Test hasLayer', function () {
-  expect(5);
+QUnit.test('Test hasLayer', function (assert) {
+  assert.expect(5);
 
   setupSvgWith3Layers(svg);
-  const drawing = new svgedit.draw.Drawing(svg);
+  const drawing = new draw.Drawing(svg);
   drawing.identifyLayers();
 
-  equals(typeof drawing.hasLayer, typeof function () {});
-  ok(!drawing.hasLayer('invalid-layer'));
+  assert.equal(typeof drawing.hasLayer, typeof function () {});
+  assert.ok(!drawing.hasLayer('invalid-layer'));
 
-  ok(drawing.hasLayer(LAYER3));
-  ok(drawing.hasLayer(LAYER2));
-  ok(drawing.hasLayer(LAYER1));
+  assert.ok(drawing.hasLayer(LAYER3));
+  assert.ok(drawing.hasLayer(LAYER2));
+  assert.ok(drawing.hasLayer(LAYER1));
 
   cleanupSvg(svg);
 });
 
-test('Test identifyLayers() with empty document', function () {
-  expect(11);
+QUnit.test('Test identifyLayers() with empty document', function (assert) {
+  assert.expect(11);
 
-  const drawing = new svgedit.draw.Drawing(svg);
-  equals(drawing.getCurrentLayer(), null);
+  const drawing = new draw.Drawing(svg);
+  assert.equal(drawing.getCurrentLayer(), null);
   // By default, an empty document gets an empty group created.
   drawing.identifyLayers();
 
   // Check that <svg> element now has one child node
-  ok(drawing.getSvgElem().hasChildNodes());
-  equals(drawing.getSvgElem().childNodes.length, 1);
+  assert.ok(drawing.getSvgElem().hasChildNodes());
+  assert.equal(drawing.getSvgElem().childNodes.length, 1);
 
   // Check that all_layers are correctly set up.
-  equals(drawing.getNumLayers(), 1);
+  assert.equal(drawing.getNumLayers(), 1);
   const emptyLayer = drawing.all_layers[0];
-  ok(emptyLayer);
+  assert.ok(emptyLayer);
   const layerGroup = emptyLayer.getGroup();
-  equals(layerGroup, drawing.getSvgElem().firstChild);
-  equals(layerGroup.tagName, 'g');
-  equals(layerGroup.getAttribute('class'), LAYER_CLASS);
-  ok(layerGroup.hasChildNodes());
-  equals(layerGroup.childNodes.length, 1);
+  assert.equal(layerGroup, drawing.getSvgElem().firstChild);
+  assert.equal(layerGroup.tagName, 'g');
+  assert.equal(layerGroup.getAttribute('class'), LAYER_CLASS);
+  assert.ok(layerGroup.hasChildNodes());
+  assert.equal(layerGroup.childNodes.length, 1);
   const firstChild = layerGroup.childNodes.item(0);
-  equals(firstChild.tagName, 'title');
+  assert.equal(firstChild.tagName, 'title');
 
   cleanupSvg(svg);
 });
 
-test('Test identifyLayers() with some layers', function () {
-  expect(8);
+QUnit.test('Test identifyLayers() with some layers', function (assert) {
+  assert.expect(8);
 
-  const drawing = new svgedit.draw.Drawing(svg);
+  const drawing = new draw.Drawing(svg);
   setupSvgWith3Layers(svg);
 
-  equals(svg.childNodes.length, 3);
+  assert.equal(svg.childNodes.length, 3);
 
   drawing.identifyLayers();
 
-  equals(drawing.getNumLayers(), 3);
-  equals(drawing.all_layers[0].getGroup(), svg.childNodes.item(0));
-  equals(drawing.all_layers[1].getGroup(), svg.childNodes.item(1));
-  equals(drawing.all_layers[2].getGroup(), svg.childNodes.item(2));
+  assert.equal(drawing.getNumLayers(), 3);
+  assert.equal(drawing.all_layers[0].getGroup(), svg.childNodes.item(0));
+  assert.equal(drawing.all_layers[1].getGroup(), svg.childNodes.item(1));
+  assert.equal(drawing.all_layers[2].getGroup(), svg.childNodes.item(2));
 
-  equals(drawing.all_layers[0].getGroup().getAttribute('class'), LAYER_CLASS);
-  equals(drawing.all_layers[1].getGroup().getAttribute('class'), LAYER_CLASS);
-  equals(drawing.all_layers[2].getGroup().getAttribute('class'), LAYER_CLASS);
+  assert.equal(drawing.all_layers[0].getGroup().getAttribute('class'), LAYER_CLASS);
+  assert.equal(drawing.all_layers[1].getGroup().getAttribute('class'), LAYER_CLASS);
+  assert.equal(drawing.all_layers[2].getGroup().getAttribute('class'), LAYER_CLASS);
 
   cleanupSvg(svg);
 });
 
-test('Test identifyLayers() with some layers and orphans', function () {
-  expect(14);
+QUnit.test('Test identifyLayers() with some layers and orphans', function (assert) {
+  assert.expect(14);
 
   setupSvgWith3Layers(svg);
 
@@ -358,115 +385,115 @@ test('Test identifyLayers() with some layers and orphans', function () {
   svg.appendChild(orphan1);
   svg.appendChild(orphan2);
 
-  equals(svg.childNodes.length, 5);
+  assert.equal(svg.childNodes.length, 5);
 
-  const drawing = new svgedit.draw.Drawing(svg);
+  const drawing = new draw.Drawing(svg);
   drawing.identifyLayers();
 
-  equals(drawing.getNumLayers(), 4);
-  equals(drawing.all_layers[0].getGroup(), svg.childNodes.item(0));
-  equals(drawing.all_layers[1].getGroup(), svg.childNodes.item(1));
-  equals(drawing.all_layers[2].getGroup(), svg.childNodes.item(2));
-  equals(drawing.all_layers[3].getGroup(), svg.childNodes.item(3));
+  assert.equal(drawing.getNumLayers(), 4);
+  assert.equal(drawing.all_layers[0].getGroup(), svg.childNodes.item(0));
+  assert.equal(drawing.all_layers[1].getGroup(), svg.childNodes.item(1));
+  assert.equal(drawing.all_layers[2].getGroup(), svg.childNodes.item(2));
+  assert.equal(drawing.all_layers[3].getGroup(), svg.childNodes.item(3));
 
-  equals(drawing.all_layers[0].getGroup().getAttribute('class'), LAYER_CLASS);
-  equals(drawing.all_layers[1].getGroup().getAttribute('class'), LAYER_CLASS);
-  equals(drawing.all_layers[2].getGroup().getAttribute('class'), LAYER_CLASS);
-  equals(drawing.all_layers[3].getGroup().getAttribute('class'), LAYER_CLASS);
+  assert.equal(drawing.all_layers[0].getGroup().getAttribute('class'), LAYER_CLASS);
+  assert.equal(drawing.all_layers[1].getGroup().getAttribute('class'), LAYER_CLASS);
+  assert.equal(drawing.all_layers[2].getGroup().getAttribute('class'), LAYER_CLASS);
+  assert.equal(drawing.all_layers[3].getGroup().getAttribute('class'), LAYER_CLASS);
 
   const layer4 = drawing.all_layers[3].getGroup();
-  equals(layer4.tagName, 'g');
-  equals(layer4.childNodes.length, 3);
-  equals(layer4.childNodes.item(1), orphan1);
-  equals(layer4.childNodes.item(2), orphan2);
+  assert.equal(layer4.tagName, 'g');
+  assert.equal(layer4.childNodes.length, 3);
+  assert.equal(layer4.childNodes.item(1), orphan1);
+  assert.equal(layer4.childNodes.item(2), orphan2);
 
   cleanupSvg(svg);
 });
 
-test('Test getLayerName()', function () {
-  expect(4);
+QUnit.test('Test getLayerName()', function (assert) {
+  assert.expect(4);
 
-  const drawing = new svgedit.draw.Drawing(svg);
+  const drawing = new draw.Drawing(svg);
   setupSvgWith3Layers(svg);
 
   drawing.identifyLayers();
 
-  equals(drawing.getNumLayers(), 3);
-  equals(drawing.getLayerName(0), LAYER1);
-  equals(drawing.getLayerName(1), LAYER2);
-  equals(drawing.getLayerName(2), LAYER3);
+  assert.equal(drawing.getNumLayers(), 3);
+  assert.equal(drawing.getLayerName(0), LAYER1);
+  assert.equal(drawing.getLayerName(1), LAYER2);
+  assert.equal(drawing.getLayerName(2), LAYER3);
 
   cleanupSvg(svg);
 });
 
-test('Test getCurrentLayer()', function () {
-  expect(4);
+QUnit.test('Test getCurrentLayer()', function (assert) {
+  assert.expect(4);
 
-  const drawing = new svgedit.draw.Drawing(svg);
+  const drawing = new draw.Drawing(svg);
   setupSvgWith3Layers(svg);
   drawing.identifyLayers();
 
-  ok(drawing.getCurrentLayer);
-  equals(typeof drawing.getCurrentLayer, typeof function () {});
-  ok(drawing.getCurrentLayer());
-  equals(drawing.getCurrentLayer(), drawing.all_layers[2].getGroup());
+  assert.ok(drawing.getCurrentLayer);
+  assert.equal(typeof drawing.getCurrentLayer, typeof function () {});
+  assert.ok(drawing.getCurrentLayer());
+  assert.equal(drawing.getCurrentLayer(), drawing.all_layers[2].getGroup());
 
   cleanupSvg(svg);
 });
 
-test('Test setCurrentLayer() and getCurrentLayerName()', function () {
-  expect(6);
+QUnit.test('Test setCurrentLayer() and getCurrentLayerName()', function (assert) {
+  assert.expect(6);
 
-  const drawing = new svgedit.draw.Drawing(svg);
+  const drawing = new draw.Drawing(svg);
   setupSvgWith3Layers(svg);
   drawing.identifyLayers();
 
-  ok(drawing.setCurrentLayer);
-  equals(typeof drawing.setCurrentLayer, typeof function () {});
+  assert.ok(drawing.setCurrentLayer);
+  assert.equal(typeof drawing.setCurrentLayer, typeof function () {});
 
   drawing.setCurrentLayer(LAYER2);
-  equals(drawing.getCurrentLayerName(), LAYER2);
-  equals(drawing.getCurrentLayer(), drawing.all_layers[1].getGroup());
+  assert.equal(drawing.getCurrentLayerName(), LAYER2);
+  assert.equal(drawing.getCurrentLayer(), drawing.all_layers[1].getGroup());
 
   drawing.setCurrentLayer(LAYER3);
-  equals(drawing.getCurrentLayerName(), LAYER3);
-  equals(drawing.getCurrentLayer(), drawing.all_layers[2].getGroup());
+  assert.equal(drawing.getCurrentLayerName(), LAYER3);
+  assert.equal(drawing.getCurrentLayer(), drawing.all_layers[2].getGroup());
 
   cleanupSvg(svg);
 });
 
-test('Test setCurrentLayerName()', function () {
+QUnit.test('Test setCurrentLayerName()', function (assert) {
   const mockHrService = {
     changeElement: this.spy()
   };
 
-  const drawing = new svgedit.draw.Drawing(svg);
+  const drawing = new draw.Drawing(svg);
   setupSvgWith3Layers(svg);
   drawing.identifyLayers();
 
-  ok(drawing.setCurrentLayerName);
-  equals(typeof drawing.setCurrentLayerName, typeof function () {});
+  assert.ok(drawing.setCurrentLayerName);
+  assert.equal(typeof drawing.setCurrentLayerName, typeof function () {});
 
   const oldName = drawing.getCurrentLayerName();
   const newName = 'New Name';
-  ok(drawing.layer_map[oldName]);
-  equals(drawing.layer_map[newName], undefined); // newName shouldn't exist.
+  assert.ok(drawing.layer_map[oldName]);
+  assert.equal(drawing.layer_map[newName], undefined); // newName shouldn't exist.
   const result = drawing.setCurrentLayerName(newName, mockHrService);
-  equals(result, newName);
-  equals(drawing.getCurrentLayerName(), newName);
+  assert.equal(result, newName);
+  assert.equal(drawing.getCurrentLayerName(), newName);
   // Was the map updated?
-  equals(drawing.layer_map[oldName], undefined);
-  equals(drawing.layer_map[newName], drawing.current_layer);
+  assert.equal(drawing.layer_map[oldName], undefined);
+  assert.equal(drawing.layer_map[newName], drawing.current_layer);
   // Was mockHrService called?
-  ok(mockHrService.changeElement.calledOnce);
-  equals(oldName, mockHrService.changeElement.getCall(0).args[1]['#text']);
-  equals(newName, mockHrService.changeElement.getCall(0).args[0].textContent);
+  assert.ok(mockHrService.changeElement.calledOnce);
+  assert.equal(oldName, mockHrService.changeElement.getCall(0).args[1]['#text']);
+  assert.equal(newName, mockHrService.changeElement.getCall(0).args[0].textContent);
 
   cleanupSvg(svg);
 });
 
-test('Test createLayer()', function () {
-  expect(10);
+QUnit.test('Test createLayer()', function (assert) {
+  assert.expect(10);
 
   const mockHrService = {
     startBatchCommand: this.spy(),
@@ -474,29 +501,29 @@ test('Test createLayer()', function () {
     insertElement: this.spy()
   };
 
-  const drawing = new svgedit.draw.Drawing(svg);
+  const drawing = new draw.Drawing(svg);
   setupSvgWith3Layers(svg);
   drawing.identifyLayers();
 
-  ok(drawing.createLayer);
-  equals(typeof drawing.createLayer, typeof function () {});
+  assert.ok(drawing.createLayer);
+  assert.equal(typeof drawing.createLayer, typeof function () {});
 
   const NEW_LAYER_NAME = 'Layer A';
   const layerG = drawing.createLayer(NEW_LAYER_NAME, mockHrService);
-  equals(drawing.getNumLayers(), 4);
-  equals(layerG, drawing.getCurrentLayer());
-  equals(layerG.getAttribute('class'), LAYER_CLASS);
-  equals(NEW_LAYER_NAME, drawing.getCurrentLayerName());
-  equals(NEW_LAYER_NAME, drawing.getLayerName(3));
+  assert.equal(drawing.getNumLayers(), 4);
+  assert.equal(layerG, drawing.getCurrentLayer());
+  assert.equal(layerG.getAttribute('class'), LAYER_CLASS);
+  assert.equal(NEW_LAYER_NAME, drawing.getCurrentLayerName());
+  assert.equal(NEW_LAYER_NAME, drawing.getLayerName(3));
 
-  equals(layerG, mockHrService.insertElement.getCall(0).args[0]);
-  ok(mockHrService.startBatchCommand.calledOnce);
-  ok(mockHrService.endBatchCommand.calledOnce);
+  assert.equal(layerG, mockHrService.insertElement.getCall(0).args[0]);
+  assert.ok(mockHrService.startBatchCommand.calledOnce);
+  assert.ok(mockHrService.endBatchCommand.calledOnce);
 
   cleanupSvg(svg);
 });
 
-test('Test mergeLayer()', function () {
+QUnit.test('Test mergeLayer()', function (assert) {
   const mockHrService = {
     startBatchCommand: this.spy(),
     endBatchCommand: this.spy(),
@@ -504,35 +531,35 @@ test('Test mergeLayer()', function () {
     removeElement: this.spy()
   };
 
-  const drawing = new svgedit.draw.Drawing(svg);
+  const drawing = new draw.Drawing(svg);
   const layers = setupSvgWith3Layers(svg);
   const elementCount = createSomeElementsInGroup(layers[2]) + 1; // +1 for title element
-  equals(layers[1].childElementCount, 1);
-  equals(layers[2].childElementCount, elementCount);
+  assert.equal(layers[1].childElementCount, 1);
+  assert.equal(layers[2].childElementCount, elementCount);
   drawing.identifyLayers();
-  equals(drawing.getCurrentLayer(), layers[2]);
+  assert.equal(drawing.getCurrentLayer(), layers[2]);
 
-  ok(drawing.mergeLayer);
-  equals(typeof drawing.mergeLayer, typeof function () {});
+  assert.ok(drawing.mergeLayer);
+  assert.equal(typeof drawing.mergeLayer, typeof function () {});
 
   drawing.mergeLayer(mockHrService);
 
-  equals(drawing.getNumLayers(), 2);
-  equals(svg.childElementCount, 2);
-  equals(drawing.getCurrentLayer(), layers[1]);
-  equals(layers[1].childElementCount, elementCount);
+  assert.equal(drawing.getNumLayers(), 2);
+  assert.equal(svg.childElementCount, 2);
+  assert.equal(drawing.getCurrentLayer(), layers[1]);
+  assert.equal(layers[1].childElementCount, elementCount);
 
   // check history record
-  ok(mockHrService.startBatchCommand.calledOnce);
-  ok(mockHrService.endBatchCommand.calledOnce);
-  equals(mockHrService.startBatchCommand.getCall(0).args[0], 'Merge Layer');
-  equals(mockHrService.moveElement.callCount, elementCount - 1); // -1 because the title was not moved.
-  equals(mockHrService.removeElement.callCount, 2); // remove group and title.
+  assert.ok(mockHrService.startBatchCommand.calledOnce);
+  assert.ok(mockHrService.endBatchCommand.calledOnce);
+  assert.equal(mockHrService.startBatchCommand.getCall(0).args[0], 'Merge Layer');
+  assert.equal(mockHrService.moveElement.callCount, elementCount - 1); // -1 because the title was not moved.
+  assert.equal(mockHrService.removeElement.callCount, 2); // remove group and title.
 
   cleanupSvg(svg);
 });
 
-test('Test mergeLayer() when no previous layer to merge', function () {
+QUnit.test('Test mergeLayer() when no previous layer to merge', function (assert) {
   const mockHrService = {
     startBatchCommand: this.spy(),
     endBatchCommand: this.spy(),
@@ -540,31 +567,31 @@ test('Test mergeLayer() when no previous layer to merge', function () {
     removeElement: this.spy()
   };
 
-  const drawing = new svgedit.draw.Drawing(svg);
+  const drawing = new draw.Drawing(svg);
   const layers = setupSvgWith3Layers(svg);
   drawing.identifyLayers();
   drawing.setCurrentLayer(LAYER1);
-  equals(drawing.getCurrentLayer(), layers[0]);
+  assert.equal(drawing.getCurrentLayer(), layers[0]);
 
   drawing.mergeLayer(mockHrService);
 
-  equals(drawing.getNumLayers(), 3);
-  equals(svg.childElementCount, 3);
-  equals(drawing.getCurrentLayer(), layers[0]);
-  equals(layers[0].childElementCount, 1);
-  equals(layers[1].childElementCount, 1);
-  equals(layers[2].childElementCount, 1);
+  assert.equal(drawing.getNumLayers(), 3);
+  assert.equal(svg.childElementCount, 3);
+  assert.equal(drawing.getCurrentLayer(), layers[0]);
+  assert.equal(layers[0].childElementCount, 1);
+  assert.equal(layers[1].childElementCount, 1);
+  assert.equal(layers[2].childElementCount, 1);
 
   // check history record
-  equals(mockHrService.startBatchCommand.callCount, 0);
-  equals(mockHrService.endBatchCommand.callCount, 0);
-  equals(mockHrService.moveElement.callCount, 0);
-  equals(mockHrService.removeElement.callCount, 0);
+  assert.equal(mockHrService.startBatchCommand.callCount, 0);
+  assert.equal(mockHrService.endBatchCommand.callCount, 0);
+  assert.equal(mockHrService.moveElement.callCount, 0);
+  assert.equal(mockHrService.removeElement.callCount, 0);
 
   cleanupSvg(svg);
 });
 
-test('Test mergeAllLayers()', function () {
+QUnit.test('Test mergeAllLayers()', function (assert) {
   const mockHrService = {
     startBatchCommand: this.spy(),
     endBatchCommand: this.spy(),
@@ -572,221 +599,221 @@ test('Test mergeAllLayers()', function () {
     removeElement: this.spy()
   };
 
-  const drawing = new svgedit.draw.Drawing(svg);
+  const drawing = new draw.Drawing(svg);
   const layers = setupSvgWith3Layers(svg);
   const elementCount = createSomeElementsInGroup(layers[0]) + 1; // +1 for title element
   createSomeElementsInGroup(layers[1]);
   createSomeElementsInGroup(layers[2]);
-  equals(layers[0].childElementCount, elementCount);
-  equals(layers[1].childElementCount, elementCount);
-  equals(layers[2].childElementCount, elementCount);
+  assert.equal(layers[0].childElementCount, elementCount);
+  assert.equal(layers[1].childElementCount, elementCount);
+  assert.equal(layers[2].childElementCount, elementCount);
   drawing.identifyLayers();
 
-  ok(drawing.mergeAllLayers);
-  equals(typeof drawing.mergeAllLayers, typeof function () {});
+  assert.ok(drawing.mergeAllLayers);
+  assert.equal(typeof drawing.mergeAllLayers, typeof function () {});
 
   drawing.mergeAllLayers(mockHrService);
 
-  equals(drawing.getNumLayers(), 1);
-  equals(svg.childElementCount, 1);
-  equals(drawing.getCurrentLayer(), layers[0]);
-  equals(layers[0].childElementCount, elementCount * 3 - 2); // -2 because two titles were deleted.
+  assert.equal(drawing.getNumLayers(), 1);
+  assert.equal(svg.childElementCount, 1);
+  assert.equal(drawing.getCurrentLayer(), layers[0]);
+  assert.equal(layers[0].childElementCount, elementCount * 3 - 2); // -2 because two titles were deleted.
 
   // check history record
-  equals(mockHrService.startBatchCommand.callCount, 3); // mergeAllLayers + 2 * mergeLayer
-  equals(mockHrService.endBatchCommand.callCount, 3);
-  equals(mockHrService.startBatchCommand.getCall(0).args[0], 'Merge all Layers');
-  equals(mockHrService.startBatchCommand.getCall(1).args[0], 'Merge Layer');
-  equals(mockHrService.startBatchCommand.getCall(2).args[0], 'Merge Layer');
+  assert.equal(mockHrService.startBatchCommand.callCount, 3); // mergeAllLayers + 2 * mergeLayer
+  assert.equal(mockHrService.endBatchCommand.callCount, 3);
+  assert.equal(mockHrService.startBatchCommand.getCall(0).args[0], 'Merge all Layers');
+  assert.equal(mockHrService.startBatchCommand.getCall(1).args[0], 'Merge Layer');
+  assert.equal(mockHrService.startBatchCommand.getCall(2).args[0], 'Merge Layer');
   // moveElement count is times 3 instead of 2, because one layer's elements were moved twice.
   // moveElement count is minus 3 because the three titles were not moved.
-  equals(mockHrService.moveElement.callCount, elementCount * 3 - 3);
-  equals(mockHrService.removeElement.callCount, 2 * 2); // remove group and title twice.
+  assert.equal(mockHrService.moveElement.callCount, elementCount * 3 - 3);
+  assert.equal(mockHrService.removeElement.callCount, 2 * 2); // remove group and title twice.
 
   cleanupSvg(svg);
 });
 
-test('Test cloneLayer()', function () {
+QUnit.test('Test cloneLayer()', function (assert) {
   const mockHrService = {
     startBatchCommand: this.spy(),
     endBatchCommand: this.spy(),
     insertElement: this.spy()
   };
 
-  const drawing = new svgedit.draw.Drawing(svg);
+  const drawing = new draw.Drawing(svg);
   const layers = setupSvgWith3Layers(svg);
   const layer3 = layers[2];
   const elementCount = createSomeElementsInGroup(layer3) + 1; // +1 for title element
-  equals(layer3.childElementCount, elementCount);
+  assert.equal(layer3.childElementCount, elementCount);
   drawing.identifyLayers();
 
-  ok(drawing.cloneLayer);
-  equals(typeof drawing.cloneLayer, typeof function () {});
+  assert.ok(drawing.cloneLayer);
+  assert.equal(typeof drawing.cloneLayer, typeof function () {});
 
   const clone = drawing.cloneLayer('clone', mockHrService);
 
-  equals(drawing.getNumLayers(), 4);
-  equals(svg.childElementCount, 4);
-  equals(drawing.getCurrentLayer(), clone);
-  equals(clone.childElementCount, elementCount);
+  assert.equal(drawing.getNumLayers(), 4);
+  assert.equal(svg.childElementCount, 4);
+  assert.equal(drawing.getCurrentLayer(), clone);
+  assert.equal(clone.childElementCount, elementCount);
 
   // check history record
-  ok(mockHrService.startBatchCommand.calledOnce); // mergeAllLayers + 2 * mergeLayer
-  ok(mockHrService.endBatchCommand.calledOnce);
-  equals(mockHrService.startBatchCommand.getCall(0).args[0], 'Duplicate Layer');
-  equals(mockHrService.insertElement.callCount, 1);
-  equals(mockHrService.insertElement.getCall(0).args[0], clone);
+  assert.ok(mockHrService.startBatchCommand.calledOnce); // mergeAllLayers + 2 * mergeLayer
+  assert.ok(mockHrService.endBatchCommand.calledOnce);
+  assert.equal(mockHrService.startBatchCommand.getCall(0).args[0], 'Duplicate Layer');
+  assert.equal(mockHrService.insertElement.callCount, 1);
+  assert.equal(mockHrService.insertElement.getCall(0).args[0], clone);
 
   // check that path is cloned properly
-  equals(clone.childNodes.length, elementCount);
+  assert.equal(clone.childNodes.length, elementCount);
   const path = clone.childNodes[1];
-  equals(path.id, 'svg_1');
-  equals(path.getAttribute('d'), PATH_ATTR.d);
-  equals(path.getAttribute('transform'), PATH_ATTR.transform);
-  equals(path.getAttribute('fill'), PATH_ATTR.fill);
-  equals(path.getAttribute('stroke'), PATH_ATTR.stroke);
-  equals(path.getAttribute('stroke-width'), PATH_ATTR['stroke-width']);
+  assert.equal(path.id, 'svg_1');
+  assert.equal(path.getAttribute('d'), PATH_ATTR.d);
+  assert.equal(path.getAttribute('transform'), PATH_ATTR.transform);
+  assert.equal(path.getAttribute('fill'), PATH_ATTR.fill);
+  assert.equal(path.getAttribute('stroke'), PATH_ATTR.stroke);
+  assert.equal(path.getAttribute('stroke-width'), PATH_ATTR['stroke-width']);
 
   // check that g is cloned properly
   const g = clone.childNodes[4];
-  equals(g.childNodes.length, 1);
-  equals(g.id, 'svg_4');
+  assert.equal(g.childNodes.length, 1);
+  assert.equal(g.id, 'svg_4');
 
   cleanupSvg(svg);
 });
 
-test('Test getLayerVisibility()', function () {
-  expect(5);
+QUnit.test('Test getLayerVisibility()', function (assert) {
+  assert.expect(5);
 
-  const drawing = new svgedit.draw.Drawing(svg);
+  const drawing = new draw.Drawing(svg);
   setupSvgWith3Layers(svg);
   drawing.identifyLayers();
 
-  ok(drawing.getLayerVisibility);
-  equals(typeof drawing.getLayerVisibility, typeof function () {});
-  ok(drawing.getLayerVisibility(LAYER1));
-  ok(drawing.getLayerVisibility(LAYER2));
-  ok(drawing.getLayerVisibility(LAYER3));
+  assert.ok(drawing.getLayerVisibility);
+  assert.equal(typeof drawing.getLayerVisibility, typeof function () {});
+  assert.ok(drawing.getLayerVisibility(LAYER1));
+  assert.ok(drawing.getLayerVisibility(LAYER2));
+  assert.ok(drawing.getLayerVisibility(LAYER3));
 
   cleanupSvg(svg);
 });
 
-test('Test setLayerVisibility()', function () {
-  expect(6);
+QUnit.test('Test setLayerVisibility()', function (assert) {
+  assert.expect(6);
 
-  const drawing = new svgedit.draw.Drawing(svg);
+  const drawing = new draw.Drawing(svg);
   setupSvgWith3Layers(svg);
   drawing.identifyLayers();
 
-  ok(drawing.setLayerVisibility);
-  equals(typeof drawing.setLayerVisibility, typeof function () {});
+  assert.ok(drawing.setLayerVisibility);
+  assert.equal(typeof drawing.setLayerVisibility, typeof function () {});
 
   drawing.setLayerVisibility(LAYER3, false);
   drawing.setLayerVisibility(LAYER2, true);
   drawing.setLayerVisibility(LAYER1, false);
 
-  ok(!drawing.getLayerVisibility(LAYER1));
-  ok(drawing.getLayerVisibility(LAYER2));
-  ok(!drawing.getLayerVisibility(LAYER3));
+  assert.ok(!drawing.getLayerVisibility(LAYER1));
+  assert.ok(drawing.getLayerVisibility(LAYER2));
+  assert.ok(!drawing.getLayerVisibility(LAYER3));
 
   drawing.setLayerVisibility(LAYER3, 'test-string');
-  ok(!drawing.getLayerVisibility(LAYER3));
+  assert.ok(!drawing.getLayerVisibility(LAYER3));
 
   cleanupSvg(svg);
 });
 
-test('Test getLayerOpacity()', function () {
-  expect(5);
+QUnit.test('Test getLayerOpacity()', function (assert) {
+  assert.expect(5);
 
-  const drawing = new svgedit.draw.Drawing(svg);
+  const drawing = new draw.Drawing(svg);
   setupSvgWith3Layers(svg);
   drawing.identifyLayers();
 
-  ok(drawing.getLayerOpacity);
-  equals(typeof drawing.getLayerOpacity, typeof function () {});
-  ok(drawing.getLayerOpacity(LAYER1) === 1.0);
-  ok(drawing.getLayerOpacity(LAYER2) === 1.0);
-  ok(drawing.getLayerOpacity(LAYER3) === 1.0);
+  assert.ok(drawing.getLayerOpacity);
+  assert.equal(typeof drawing.getLayerOpacity, typeof function () {});
+  assert.strictEqual(drawing.getLayerOpacity(LAYER1), 1.0);
+  assert.strictEqual(drawing.getLayerOpacity(LAYER2), 1.0);
+  assert.strictEqual(drawing.getLayerOpacity(LAYER3), 1.0);
 
   cleanupSvg(svg);
 });
 
-test('Test setLayerOpacity()', function () {
-  expect(6);
+QUnit.test('Test setLayerOpacity()', function (assert) {
+  assert.expect(6);
 
-  const drawing = new svgedit.draw.Drawing(svg);
+  const drawing = new draw.Drawing(svg);
   setupSvgWith3Layers(svg);
   drawing.identifyLayers();
 
-  ok(drawing.setLayerOpacity);
-  equals(typeof drawing.setLayerOpacity, typeof function () {});
+  assert.ok(drawing.setLayerOpacity);
+  assert.equal(typeof drawing.setLayerOpacity, typeof function () {});
 
   drawing.setLayerOpacity(LAYER1, 0.4);
   drawing.setLayerOpacity(LAYER2, 'invalid-string');
   drawing.setLayerOpacity(LAYER3, -1.4);
 
-  ok(drawing.getLayerOpacity(LAYER1) === 0.4);
-  QUnit.log({result: 'layer2 opacity', message: drawing.getLayerOpacity(LAYER2)});
-  ok(drawing.getLayerOpacity(LAYER2) === 1.0);
-  ok(drawing.getLayerOpacity(LAYER3) === 1.0);
+  assert.strictEqual(drawing.getLayerOpacity(LAYER1), 0.4);
+  console.log('layer2 opacity ' + drawing.getLayerOpacity(LAYER2));
+  assert.strictEqual(drawing.getLayerOpacity(LAYER2), 1.0);
+  assert.strictEqual(drawing.getLayerOpacity(LAYER3), 1.0);
 
   drawing.setLayerOpacity(LAYER3, 100);
-  ok(drawing.getLayerOpacity(LAYER3) === 1.0);
+  assert.strictEqual(drawing.getLayerOpacity(LAYER3), 1.0);
 
   cleanupSvg(svg);
 });
 
-test('Test deleteCurrentLayer()', function () {
-  expect(6);
+QUnit.test('Test deleteCurrentLayer()', function (assert) {
+  assert.expect(6);
 
-  const drawing = new svgedit.draw.Drawing(svg);
+  const drawing = new draw.Drawing(svg);
   setupSvgWith3Layers(svg);
   drawing.identifyLayers();
 
   drawing.setCurrentLayer(LAYER2);
 
   const curLayer = drawing.getCurrentLayer();
-  equals(curLayer, drawing.all_layers[1].getGroup());
+  assert.equal(curLayer, drawing.all_layers[1].getGroup());
   const deletedLayer = drawing.deleteCurrentLayer();
 
-  equals(curLayer, deletedLayer);
-  equals(2, drawing.getNumLayers());
-  equals(LAYER1, drawing.all_layers[0].getName());
-  equals(LAYER3, drawing.all_layers[1].getName());
-  equals(drawing.getCurrentLayer(), drawing.all_layers[1].getGroup());
+  assert.equal(curLayer, deletedLayer);
+  assert.equal(drawing.getNumLayers(), 2);
+  assert.equal(LAYER1, drawing.all_layers[0].getName());
+  assert.equal(LAYER3, drawing.all_layers[1].getName());
+  assert.equal(drawing.getCurrentLayer(), drawing.all_layers[1].getGroup());
 });
 
-test('Test svgedit.draw.randomizeIds()', function () {
-  expect(9);
+QUnit.test('Test svgedit.draw.randomizeIds()', function (assert) {
+  assert.expect(9);
 
   // Confirm in LET_DOCUMENT_DECIDE mode that the document decides
   // if there is a nonce.
-  let drawing = new svgedit.draw.Drawing(svgN.cloneNode(true));
-  ok(!!drawing.getNonce());
+  let drawing = new draw.Drawing(svgN.cloneNode(true));
+  assert.ok(!!drawing.getNonce());
 
-  drawing = new svgedit.draw.Drawing(svg.cloneNode(true));
-  ok(!drawing.getNonce());
+  drawing = new draw.Drawing(svg.cloneNode(true));
+  assert.ok(!drawing.getNonce());
 
   // Confirm that a nonce is set once we're in ALWAYS_RANDOMIZE mode.
-  svgedit.draw.randomizeIds(true, drawing);
-  ok(!!drawing.getNonce());
+  draw.randomizeIds(true, drawing);
+  assert.ok(!!drawing.getNonce());
 
   // Confirm new drawings in ALWAYS_RANDOMIZE mode have a nonce.
-  drawing = new svgedit.draw.Drawing(svg.cloneNode(true));
-  ok(!!drawing.getNonce());
+  drawing = new draw.Drawing(svg.cloneNode(true));
+  assert.ok(!!drawing.getNonce());
 
   drawing.clearNonce();
-  ok(!drawing.getNonce());
+  assert.ok(!drawing.getNonce());
 
   // Confirm new drawings in NEVER_RANDOMIZE mode do not have a nonce
   // but that their se:nonce attribute is left alone.
-  svgedit.draw.randomizeIds(false, drawing);
-  ok(!drawing.getNonce());
-  ok(!!drawing.getSvgElem().getAttributeNS(NS.SE, 'nonce'));
+  draw.randomizeIds(false, drawing);
+  assert.ok(!drawing.getNonce());
+  assert.ok(!!drawing.getSvgElem().getAttributeNS(NS.SE, 'nonce'));
 
-  drawing = new svgedit.draw.Drawing(svg.cloneNode(true));
-  ok(!drawing.getNonce());
+  drawing = new draw.Drawing(svg.cloneNode(true));
+  assert.ok(!drawing.getNonce());
 
-  drawing = new svgedit.draw.Drawing(svgN.cloneNode(true));
-  ok(!drawing.getNonce());
+  drawing = new draw.Drawing(svgN.cloneNode(true));
+  assert.ok(!drawing.getNonce());
 });

@@ -1,4 +1,4 @@
-/* globals svgEditor */
+import svgEditor from '../svg-editor.js';
 svgEditor.readLang({
   lang: 'lang',
   dir: 'dir',

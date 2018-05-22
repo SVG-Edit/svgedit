@@ -6,7 +6,7 @@ As of version 2.5, SVG-Edit has support for extensions. This an (in-progress) gu
 
 SVG-Edit plugins are standalone JavaScript files that can be either included in the HTML file or loaded using setConfig or through the URL (see ConfigOptions for usage).
 
-Note that if you create a `config.js` file in the "editor" directory, this will be used to execute commands before extensions are loaded, e.g., if you wish to make configuration changes which affect extension loading behavior. Normally, however, it should be preferable for modularity to use the extension mechanism, as this can allow you or users to customize which extensions are loaded (whereas `config.js` will always run if present).
+Note that if you create a `svgedit-config-iife.js` file in the project root directory, this will be used to execute commands before extensions are loaded, e.g., if you wish to make configuration changes which affect extension loading behavior. Normally, however, it should be preferable for modularity to use the extension mechanism, as this can allow you or users to customize which extensions are loaded (whereas `svgedit-config-iife.js` will always run if present).
 
 This is the general format for an extension:
 
@@ -60,7 +60,7 @@ Each button is an object with the following properties (added to the array "butt
 | `list` (string) | Points to the "id" of a context_tools item of type "button-select" into which the button will be added as a panel list item | No |
 | `position` (integer) | The numeric index for placement; defaults to last position (as of the time of extension addition) if not present | No |
 | `panel` (string) | The ID of the context panel to be included, if type is "context". | Only if type is "context" |
-| `events` (object) | DOM event names with associated functions. Example: {'click': function() { alert('Button was clicked') } } | Yes |
+| `events` (object) | DOM event names with associated functions. Example: {click: function() { alert('Button was clicked') } } | Yes |
 | `includeWith` (object) | Object with flyout menu data (see following properties) | No |
 | `includeWith[button]` (string) | jQuery selector of the existing button to be joined. Example: '#tool_line' | Yes (if includeWith is used) |
 | `includeWith[isDefault]` (boolean) | Option indicating whether button is default in flyout list or not | No |
@@ -88,8 +88,8 @@ These are added by the extension returning an object with the property "context_
 | `container_id` (string) | The ID to be given to the tool's container element | No |
 | `type` (string) | The type of tool being added. Must be one of the following: 'tool_button', 'select', 'input' | Yes |
 | `id` (string) | The ID of the actual tool element | Yes |
-| `events` (object) | DOM event names with associated functions. Example: {'change': function() { alert('Option was changed') } } | Yes |
-| `options` (object) | List of options and their labels for select tools. Example: `{'1': 'One', '2': 'Two', 'all': 'All' } | Only for "select" tools |
+| `events` (object) | DOM event names with associated functions. Example: {change: function() { alert('Option was changed') } } | Yes |
+| `options` (object) | List of options and their labels for select tools. Example: `{1: 'One', 2: 'Two', all: 'All' } | Only for "select" tools |
 | `defval` (string) | Default value | No |
 | `label` (string) | Label associated with the tool, visible in the UI | No |
 | `title` (string) | The tooltip text that will appear when the user hovers over the tool | Yes |

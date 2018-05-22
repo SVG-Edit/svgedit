@@ -4,30 +4,11 @@
   <meta charset="utf-8" />
   <title>Unit Tests for SvgCanvas</title>
   <link rel="icon" type="image/png" href="../editor/images/logo.png"/>
-  <link rel="stylesheet" href="qunit/qunit.css"/>
+  <link rel="stylesheet" href="../node_modules/qunit/qunit/qunit.css"/>
   <script src="../editor/jquery.min.js"></script>
-  <script src="../editor/jquerybbq/jquery.bbq.min.js"></script>
   <script src="../editor/jquery-ui/jquery-ui-1.8.custom.min.js"></script>
-  <script src="../editor/svgedit.js"></script>
-  <script src="../editor/svgicons/jquery.svgicons.js"></script>
-  <script src="../editor/pathseg.js"></script>
-  <script src="../editor/browser.js"></script>
-  <script src="../editor/svgtransformlist.js"></script>
-  <script src="../editor/math.js"></script>
-  <script src="../editor/units.js"></script>
-  <script src="../editor/svgutils.js"></script>
-  <script src="../editor/sanitize.js"></script>
-  <script src="../editor/history.js"></script>
-  <script src="../editor/coords.js"></script>
-  <script src="../editor/recalculate.js"></script>
-  <script src="../editor/select.js"></script>
-  <script src="../editor/draw.js"></script>
-  <script src="../editor/path.js"></script>
-  <script src="../editor/svgcanvas.js"></script>
-  <script src="../editor/svg-editor.js"></script>
-  <script src="../editor/locale/locale.js"></script>
-  <script src="qunit/qunit.js"></script>
-  <script defer="defer" src="test1.js"></script>
+  <script src="../node_modules/qunit/qunit/qunit.js"></script>
+  <script type="module" src="test1.js"></script>
 </head>
 <body>
   <h1 id="qunit-header">Unit Tests for SvgCanvas</h1>
@@ -36,7 +17,7 @@
   <ol id="qunit-tests"></ol>
   <div id="svg_editor">
     <div id="workarea">
-      <div id="svgcanvas" style="visibility:hidden"></div>
+      <div id="svgcanvas" style="visibility: hidden;"></div>
     </div>
     <div id="tools_left"></div>
     <div class="tools_flyout"></div>

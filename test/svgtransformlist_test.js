@@ -1,33 +1,25 @@
 /* eslint-env qunit */
-/* globals svgedit, equals */
+
+import {NS} from '../editor/svgedit.js';
+import * as transformlist from '../editor/svgtransformlist.js';
+import {disableSupportsNativeTransformLists} from '../editor/browser.js';
+import almostEqualsPlugin from './qunit/qunit-assert-almostEquals.js';
+import expectOutOfBoundsExceptionPlugin from './qunit/qunit-assert-expectOutOfBoundsException.js';
+
+almostEqualsPlugin(QUnit);
+expectOutOfBoundsExceptionPlugin(QUnit);
+
+disableSupportsNativeTransformLists();
 
 // log function
-QUnit.log = function (details) {
+QUnit.log(function (details) {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }
-};
-const {NS} = svgedit;
+});
+
 const svgroot = document.querySelector('#svgroot');
 let svgcontent, rect, circle;
-
-const NEAR_ZERO = 5e-6; // 0.000005, Firefox fails at higher levels of precision.
-function almostEquals (a, b, msg) {
-  msg = msg || (a + ' did not equal ' + b);
-  ok(Math.abs(a - b) < NEAR_ZERO, msg);
-}
-
-function checkOutOfBoundsException (obj, fn, arg1) {
-  let caughtException = false;
-  try {
-    obj[fn](arg1);
-  } catch (e) {
-    if (e.code === 1) {
-      caughtException = true;
-    }
-  }
-  ok(caughtException, 'Caugh an INDEX_SIZE_ERR exception');
-}
 
 function setUp () {
   svgcontent = svgroot.appendChild(document.createElementNS(NS.SVG, 'svg'));
@@ -38,145 +30,145 @@ function setUp () {
 }
 
 function tearDown () {
-  svgedit.transformlist.resetListMap();
+  transformlist.resetListMap();
   while (svgroot.hasChildNodes()) {
     svgroot.removeChild(svgroot.firstChild);
   }
 }
 
-module('svgedit.svgtransformlist');
+QUnit.module('svgedit.svgtransformlist');
 
-test('Test svgedit.transformlist package', function () {
-  expect(2);
+QUnit.test('Test svgedit.transformlist package', function (assert) {
+  assert.expect(2);
 
-  ok(svgedit.transformlist);
-  ok(svgedit.transformlist.getTransformList);
+  assert.ok(transformlist);
+  assert.ok(transformlist.getTransformList);
 });
 
-test('Test svgedit.transformlist.getTransformList() function', function () {
-  expect(4);
+QUnit.test('Test svgedit.transformlist.getTransformList() function', function (assert) {
+  assert.expect(4);
   setUp();
 
-  const rxform = svgedit.transformlist.getTransformList(rect);
-  const cxform = svgedit.transformlist.getTransformList(circle);
+  const rxform = transformlist.getTransformList(rect);
+  const cxform = transformlist.getTransformList(circle);
 
-  ok(rxform);
-  ok(cxform);
-  equals(typeof rxform, typeof {});
-  equals(typeof cxform, typeof {});
+  assert.ok(rxform);
+  assert.ok(cxform);
+  assert.equal(typeof rxform, typeof {});
+  assert.equal(typeof cxform, typeof {});
 
   tearDown();
 });
 
-test('Test SVGTransformList.numberOfItems property', function () {
-  expect(2);
+QUnit.test('Test SVGTransformList.numberOfItems property', function (assert) {
+  assert.expect(2);
   setUp();
 
-  const rxform = svgedit.transformlist.getTransformList(rect);
+  const rxform = transformlist.getTransformList(rect);
 
-  equals(typeof rxform.numberOfItems, typeof 0);
-  equals(rxform.numberOfItems, 0);
+  assert.equal(typeof rxform.numberOfItems, typeof 0);
+  assert.equal(rxform.numberOfItems, 0);
 
   tearDown();
 });
 
-test('Test SVGTransformList.initialize()', function () {
-  expect(6);
+QUnit.test('Test SVGTransformList.initialize()', function (assert) {
+  assert.expect(6);
   setUp();
 
-  const rxform = svgedit.transformlist.getTransformList(rect);
-  const cxform = svgedit.transformlist.getTransformList(circle);
+  const rxform = transformlist.getTransformList(rect);
+  const cxform = transformlist.getTransformList(circle);
 
   const t = svgcontent.createSVGTransform();
-  ok(t);
-  ok(rxform.initialize);
-  equals(typeof rxform.initialize, typeof function () {});
+  assert.ok(t);
+  assert.ok(rxform.initialize);
+  assert.equal(typeof rxform.initialize, typeof function () {});
   rxform.initialize(t);
-  equals(rxform.numberOfItems, 1);
-  equals(cxform.numberOfItems, 0);
+  assert.equal(rxform.numberOfItems, 1);
+  assert.equal(cxform.numberOfItems, 0);
 
   // If a transform was already in a transform list, this should
   // remove it from its old list and add it to this list.
   cxform.initialize(t);
   // This also fails in Firefox native.
-  // equals(rxform.numberOfItems, 0, 'Did not remove transform from list before initializing another transformlist');
-  equals(cxform.numberOfItems, 1);
+  // assert.equal(rxform.numberOfItems, 0, 'Did not remove transform from list before initializing another transformlist');
+  assert.equal(cxform.numberOfItems, 1);
 
   tearDown();
 });
 
-test('Test SVGTransformList.appendItem() and getItem()', function () {
-  expect(12);
+QUnit.test('Test SVGTransformList.appendItem() and getItem()', function (assert) {
+  assert.expect(12);
   setUp();
 
-  const rxform = svgedit.transformlist.getTransformList(rect);
-  const cxform = svgedit.transformlist.getTransformList(circle);
+  const rxform = transformlist.getTransformList(rect);
+  const cxform = transformlist.getTransformList(circle);
 
   const t1 = svgcontent.createSVGTransform(),
     t2 = svgcontent.createSVGTransform(),
     t3 = svgcontent.createSVGTransform();
 
-  ok(rxform.appendItem);
-  ok(rxform.getItem);
-  equals(typeof rxform.appendItem, typeof function () {});
-  equals(typeof rxform.getItem, typeof function () {});
+  assert.ok(rxform.appendItem);
+  assert.ok(rxform.getItem);
+  assert.equal(typeof rxform.appendItem, typeof function () {});
+  assert.equal(typeof rxform.getItem, typeof function () {});
 
   rxform.appendItem(t1);
   rxform.appendItem(t2);
   rxform.appendItem(t3);
 
-  equals(rxform.numberOfItems, 3);
+  assert.equal(rxform.numberOfItems, 3);
   const rxf = rxform.getItem(0);
-  equals(rxf, t1);
-  equals(rxform.getItem(1), t2);
-  equals(rxform.getItem(2), t3);
+  assert.equal(rxf, t1);
+  assert.equal(rxform.getItem(1), t2);
+  assert.equal(rxform.getItem(2), t3);
 
-  checkOutOfBoundsException(rxform, 'getItem', -1);
-  checkOutOfBoundsException(rxform, 'getItem', 3);
+  assert.expectOutOfBoundsException(rxform, 'getItem', -1);
+  assert.expectOutOfBoundsException(rxform, 'getItem', 3);
   cxform.appendItem(t1);
   // These also fail in Firefox native.
-  // equals(rxform.numberOfItems, 2, 'Did not remove a transform from a list before appending it to a new transformlist');
-  // equals(rxform.getItem(0), t2, 'Found the wrong transform in a transformlist');
-  // equals(rxform.getItem(1), t3, 'Found the wrong transform in a transformlist');
+  // assert.equal(rxform.numberOfItems, 2, 'Did not remove a transform from a list before appending it to a new transformlist');
+  // assert.equal(rxform.getItem(0), t2, 'Found the wrong transform in a transformlist');
+  // assert.equal(rxform.getItem(1), t3, 'Found the wrong transform in a transformlist');
 
-  equals(cxform.numberOfItems, 1);
-  equals(cxform.getItem(0), t1);
+  assert.equal(cxform.numberOfItems, 1);
+  assert.equal(cxform.getItem(0), t1);
   tearDown();
 });
 
-test('Test SVGTransformList.removeItem()', function () {
-  expect(7);
+QUnit.test('Test SVGTransformList.removeItem()', function (assert) {
+  assert.expect(7);
   setUp();
 
-  const rxform = svgedit.transformlist.getTransformList(rect);
+  const rxform = transformlist.getTransformList(rect);
 
   const t1 = svgcontent.createSVGTransform(),
     t2 = svgcontent.createSVGTransform();
-  ok(rxform.removeItem);
-  equals(typeof rxform.removeItem, typeof function () {});
+  assert.ok(rxform.removeItem);
+  assert.equal(typeof rxform.removeItem, typeof function () {});
   rxform.appendItem(t1);
   rxform.appendItem(t2);
 
   const removedTransform = rxform.removeItem(0);
-  equals(rxform.numberOfItems, 1);
-  equals(removedTransform, t1);
-  equals(rxform.getItem(0), t2);
+  assert.equal(rxform.numberOfItems, 1);
+  assert.equal(removedTransform, t1);
+  assert.equal(rxform.getItem(0), t2);
 
-  checkOutOfBoundsException(rxform, 'removeItem', -1);
-  checkOutOfBoundsException(rxform, 'removeItem', 1);
+  assert.expectOutOfBoundsException(rxform, 'removeItem', -1);
+  assert.expectOutOfBoundsException(rxform, 'removeItem', 1);
 
   tearDown();
 });
 
-test('Test SVGTransformList.replaceItem()', function () {
-  expect(8);
+QUnit.test('Test SVGTransformList.replaceItem()', function (assert) {
+  assert.expect(8);
   setUp();
 
-  const rxform = svgedit.transformlist.getTransformList(rect);
-  const cxform = svgedit.transformlist.getTransformList(circle);
+  const rxform = transformlist.getTransformList(rect);
+  const cxform = transformlist.getTransformList(circle);
 
-  ok(rxform.replaceItem);
-  equals(typeof rxform.replaceItem, typeof function () {});
+  assert.ok(rxform.replaceItem);
+  assert.equal(typeof rxform.replaceItem, typeof function () {});
 
   const t1 = svgcontent.createSVGTransform(),
     t2 = svgcontent.createSVGTransform(),
@@ -187,33 +179,33 @@ test('Test SVGTransformList.replaceItem()', function () {
   cxform.appendItem(t3);
 
   const newItem = rxform.replaceItem(t3, 0);
-  equals(rxform.numberOfItems, 2);
-  equals(newItem, t3);
-  equals(rxform.getItem(0), t3);
-  equals(rxform.getItem(1), t2);
+  assert.equal(rxform.numberOfItems, 2);
+  assert.equal(newItem, t3);
+  assert.equal(rxform.getItem(0), t3);
+  assert.equal(rxform.getItem(1), t2);
   // Fails in Firefox native
-  // equals(cxform.numberOfItems, 0);
+  // assert.equal(cxform.numberOfItems, 0);
 
   // test replaceItem within a list
   rxform.appendItem(t1);
   rxform.replaceItem(t1, 0);
   // Fails in Firefox native
-  // equals(rxform.numberOfItems, 2);
-  equals(rxform.getItem(0), t1);
-  equals(rxform.getItem(1), t2);
+  // assert.equal(rxform.numberOfItems, 2);
+  assert.equal(rxform.getItem(0), t1);
+  assert.equal(rxform.getItem(1), t2);
 
   tearDown();
 });
 
-test('Test SVGTransformList.insertItemBefore()', function () {
-  expect(10);
+QUnit.test('Test SVGTransformList.insertItemBefore()', function (assert) {
+  assert.expect(10);
   setUp();
 
-  const rxform = svgedit.transformlist.getTransformList(rect);
-  const cxform = svgedit.transformlist.getTransformList(circle);
+  const rxform = transformlist.getTransformList(rect);
+  const cxform = transformlist.getTransformList(circle);
 
-  ok(rxform.insertItemBefore);
-  equals(typeof rxform.insertItemBefore, typeof function () {});
+  assert.ok(rxform.insertItemBefore);
+  assert.equal(typeof rxform.insertItemBefore, typeof function () {});
 
   const t1 = svgcontent.createSVGTransform(),
     t2 = svgcontent.createSVGTransform(),
@@ -224,129 +216,129 @@ test('Test SVGTransformList.insertItemBefore()', function () {
   cxform.appendItem(t3);
 
   const newItem = rxform.insertItemBefore(t3, 0);
-  equals(rxform.numberOfItems, 3);
-  equals(newItem, t3);
-  equals(rxform.getItem(0), t3);
-  equals(rxform.getItem(1), t1);
-  equals(rxform.getItem(2), t2);
+  assert.equal(rxform.numberOfItems, 3);
+  assert.equal(newItem, t3);
+  assert.equal(rxform.getItem(0), t3);
+  assert.equal(rxform.getItem(1), t1);
+  assert.equal(rxform.getItem(2), t2);
   // Fails in Firefox native
-  // equals(cxform.numberOfItems, 0);
+  // assert.equal(cxform.numberOfItems, 0);
 
   rxform.insertItemBefore(t2, 1);
   // Fails in Firefox native (they make copies of the transforms)
-  // equals(rxform.numberOfItems, 3);
-  equals(rxform.getItem(0), t3);
-  equals(rxform.getItem(1), t2);
-  equals(rxform.getItem(2), t1);
+  // assert.equal(rxform.numberOfItems, 3);
+  assert.equal(rxform.getItem(0), t3);
+  assert.equal(rxform.getItem(1), t2);
+  assert.equal(rxform.getItem(2), t1);
   tearDown();
 });
 
-test('Test SVGTransformList.init() for translate(200,100)', function () {
-  expect(8);
+QUnit.test('Test SVGTransformList.init() for translate(200,100)', function (assert) {
+  assert.expect(8);
   setUp();
   rect.setAttribute('transform', 'translate(200,100)');
 
-  const rxform = svgedit.transformlist.getTransformList(rect);
-  equals(1, rxform.numberOfItems);
+  const rxform = transformlist.getTransformList(rect);
+  assert.equal(rxform.numberOfItems, 1);
 
   const translate = rxform.getItem(0);
-  equals(translate.type, 2);
+  assert.equal(translate.type, 2);
 
   const m = translate.matrix;
-  equals(m.a, 1);
-  equals(m.b, 0);
-  equals(m.c, 0);
-  equals(m.d, 1);
-  equals(m.e, 200);
-  equals(m.f, 100);
+  assert.equal(m.a, 1);
+  assert.equal(m.b, 0);
+  assert.equal(m.c, 0);
+  assert.equal(m.d, 1);
+  assert.equal(m.e, 200);
+  assert.equal(m.f, 100);
 
   tearDown();
 });
 
-test('Test SVGTransformList.init() for scale(4)', function () {
-  expect(8);
+QUnit.test('Test SVGTransformList.init() for scale(4)', function (assert) {
+  assert.expect(8);
   setUp();
   rect.setAttribute('transform', 'scale(4)');
 
-  const rxform = svgedit.transformlist.getTransformList(rect);
-  equals(1, rxform.numberOfItems);
+  const rxform = transformlist.getTransformList(rect);
+  assert.equal(rxform.numberOfItems, 1);
 
   const scale = rxform.getItem(0);
-  equals(3, scale.type);
+  assert.equal(scale.type, 3);
 
   const m = scale.matrix;
-  equals(m.a, 4);
-  equals(m.b, 0);
-  equals(m.c, 0);
-  equals(m.d, 4);
-  equals(m.e, 0);
-  equals(m.f, 0);
+  assert.equal(m.a, 4);
+  assert.equal(m.b, 0);
+  assert.equal(m.c, 0);
+  assert.equal(m.d, 4);
+  assert.equal(m.e, 0);
+  assert.equal(m.f, 0);
 
   tearDown();
 });
 
-test('Test SVGTransformList.init() for scale(4,3)', function () {
-  expect(8);
+QUnit.test('Test SVGTransformList.init() for scale(4,3)', function (assert) {
+  assert.expect(8);
   setUp();
   rect.setAttribute('transform', 'scale(4,3)');
 
-  const rxform = svgedit.transformlist.getTransformList(rect);
-  equals(1, rxform.numberOfItems);
+  const rxform = transformlist.getTransformList(rect);
+  assert.equal(rxform.numberOfItems, 1);
 
   const scale = rxform.getItem(0);
-  equals(3, scale.type);
+  assert.equal(scale.type, 3);
 
   const m = scale.matrix;
-  equals(m.a, 4);
-  equals(m.b, 0);
-  equals(m.c, 0);
-  equals(m.d, 3);
-  equals(m.e, 0);
-  equals(m.f, 0);
+  assert.equal(m.a, 4);
+  assert.equal(m.b, 0);
+  assert.equal(m.c, 0);
+  assert.equal(m.d, 3);
+  assert.equal(m.e, 0);
+  assert.equal(m.f, 0);
 
   tearDown();
 });
 
-test('Test SVGTransformList.init() for rotate(45)', function () {
-  expect(9);
+QUnit.test('Test SVGTransformList.init() for rotate(45)', function (assert) {
+  assert.expect(9);
   setUp();
   rect.setAttribute('transform', 'rotate(45)');
 
-  const rxform = svgedit.transformlist.getTransformList(rect);
-  equals(1, rxform.numberOfItems);
+  const rxform = transformlist.getTransformList(rect);
+  assert.equal(rxform.numberOfItems, 1);
 
   const rotate = rxform.getItem(0);
-  equals(4, rotate.type);
-  equals(45, rotate.angle);
+  assert.equal(rotate.type, 4);
+  assert.equal(rotate.angle, 45);
 
   const m = rotate.matrix;
-  almostEquals(m.a, 1 / Math.sqrt(2));
-  almostEquals(m.b, 1 / Math.sqrt(2));
-  almostEquals(m.c, -1 / Math.sqrt(2));
-  almostEquals(m.d, 1 / Math.sqrt(2));
-  equals(m.e, 0);
-  equals(m.f, 0);
+  assert.almostEquals(1 / Math.sqrt(2), m.a);
+  assert.almostEquals(1 / Math.sqrt(2), m.b);
+  assert.almostEquals(-1 / Math.sqrt(2), m.c);
+  assert.almostEquals(1 / Math.sqrt(2), m.d);
+  assert.equal(m.e, 0);
+  assert.equal(m.f, 0);
 
   tearDown();
 });
 
-test('Test SVGTransformList.init() for rotate(45, 100, 200)', function () {
-  expect(9);
+QUnit.test('Test SVGTransformList.init() for rotate(45, 100, 200)', function (assert) {
+  assert.expect(9);
   setUp();
   rect.setAttribute('transform', 'rotate(45, 100, 200)');
 
-  const rxform = svgedit.transformlist.getTransformList(rect);
-  equals(1, rxform.numberOfItems);
+  const rxform = transformlist.getTransformList(rect);
+  assert.equal(rxform.numberOfItems, 1);
 
   const rotate = rxform.getItem(0);
-  equals(4, rotate.type);
-  equals(45, rotate.angle);
+  assert.equal(rotate.type, 4);
+  assert.equal(rotate.angle, 45);
 
   const m = rotate.matrix;
-  almostEquals(m.a, 1 / Math.sqrt(2));
-  almostEquals(m.b, 1 / Math.sqrt(2));
-  almostEquals(m.c, -1 / Math.sqrt(2));
-  almostEquals(m.d, 1 / Math.sqrt(2));
+  assert.almostEquals(m.a, 1 / Math.sqrt(2));
+  assert.almostEquals(m.b, 1 / Math.sqrt(2));
+  assert.almostEquals(m.c, -1 / Math.sqrt(2));
+  assert.almostEquals(m.d, 1 / Math.sqrt(2));
 
   const r = svgcontent.createSVGMatrix();
   r.a = 1 / Math.sqrt(2); r.b = 1 / Math.sqrt(2);
@@ -360,30 +352,30 @@ test('Test SVGTransformList.init() for rotate(45, 100, 200)', function () {
 
   const result = t_.multiply(r).multiply(t);
 
-  almostEquals(m.e, result.e);
-  almostEquals(m.f, result.f);
+  assert.almostEquals(m.e, result.e);
+  assert.almostEquals(m.f, result.f);
 
   tearDown();
 });
 
-test('Test SVGTransformList.init() for matrix(1, 2, 3, 4, 5, 6)', function () {
-  expect(8);
+QUnit.test('Test SVGTransformList.init() for matrix(1, 2, 3, 4, 5, 6)', function (assert) {
+  assert.expect(8);
   setUp();
   rect.setAttribute('transform', 'matrix(1,2,3,4,5,6)');
 
-  const rxform = svgedit.transformlist.getTransformList(rect);
-  equals(1, rxform.numberOfItems);
+  const rxform = transformlist.getTransformList(rect);
+  assert.equal(rxform.numberOfItems, 1);
 
   const mt = rxform.getItem(0);
-  equals(1, mt.type);
+  assert.equal(mt.type, 1);
 
   const m = mt.matrix;
-  equals(m.a, 1);
-  equals(m.b, 2);
-  equals(m.c, 3);
-  equals(m.d, 4);
-  equals(m.e, 5);
-  equals(m.f, 6);
+  assert.equal(m.a, 1);
+  assert.equal(m.b, 2);
+  assert.equal(m.c, 3);
+  assert.equal(m.d, 4);
+  assert.equal(m.e, 5);
+  assert.equal(m.f, 6);
 
   tearDown();
 });

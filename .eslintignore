@@ -1,15 +1,20 @@
 node_modules
 
+dist
+svgedit-config-es.js
+svgedit-config-iife.js
+svgedit-config-sample-iife.js
+svgedit-custom.css
+
 # Vendor/minified files
 editor/jquery.min.js
 editor/jquery-ui
 
-editor/jgraduate/jpicker.min.js
-editor/jgraduate/jquery.jgraduate.min.js
-
+# Previously minified though exporting
 editor/jquerybbq
+
+# Previously minified though exporting
 editor/js-hotkeys
-editor/spinbtn/JQuerySpinBtn.min.js
 
 editor/jspdf/jspdf.min.js
 editor/jspdf/underscore-min.js
@@ -17,5 +22,4 @@ editor/jspdf/underscore-min.js
 editor/extensions/imagelib/jquery.min.js
 editor/extensions/mathjax
 
-test/qunit
-test/sinon
+editor/external

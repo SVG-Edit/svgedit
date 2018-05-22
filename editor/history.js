@@ -6,7 +6,7 @@
  * Copyright(c) 2010 Jeff Schiller
  */
 
-import {getHref, setHref, getRotationAngle} from 'svgutils.js';
+import {getHref, setHref, getRotationAngle} from './svgutils.js';
 import {removeElementFromListMap} from './svgtransformlist.js';
 
 // Group: Undo/Redo history management
@@ -123,7 +123,7 @@ export class InsertElementCommand {
 
   type () {
     return 'svgedit.history.InsertElementCommand';
-  };
+  }
 
   getText () {
     return this.text;
@@ -257,7 +257,7 @@ export class ChangeElementCommand {
   }
   type () {
     return 'svgedit.history.ChangeElementCommand';
-  };
+  }
 
   getText () {
     return this.text;

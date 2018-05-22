@@ -273,11 +273,11 @@ export default function ($) {
           holder = $('#' + id);
           const icon = $(new Image())
             .attr({
-              'class': 'svg_icon',
+              class: 'svg_icon',
               src: path + imgsrc,
-              'width': iconW,
-              'height': iconH,
-              'alt': 'icon'
+              width: iconW,
+              height: iconH,
+              alt: 'icon'
             });
 
           addIcon(icon, id);
@@ -325,7 +325,7 @@ export default function ($) {
             tempHolder.empty().append(svgroot);
             const str = dataPre + encode64(unescape(encodeURIComponent(new XMLSerializer().serializeToString(svgroot))));
             icon = $(new Image())
-              .attr({'class': 'svg_icon', src: str});
+              .attr({class: 'svg_icon', src: str});
           } else {
             icon = fixIDs($(svgroot), i);
           }

@@ -7,9 +7,6 @@
  * Copyright(c) 2010 Jeff Schiller
  */
 
-// Dependencies:
-// None.
-
 /**
 * @typedef AngleCoord45
 * @type {Object}
@@ -52,11 +49,10 @@ export const isIdentity = function (m) {
 /**
  * This function tries to return a SVGMatrix that is the multiplication m1*m2.
  * We also round to zero when it's near zero
- * @param {SVGMatrix} matr - First matrix object to multiply
- * @param {...SVGMatrix} args - Second or more matrix object to multiply
+ * @param {...SVGMatrix} args - Matrix objects to multiply
  * @returns {SVGMatrix} The matrix object resulting from the calculation
 */
-export const matrixMultiply = function (matr, ...args) {
+export const matrixMultiply = function (...args) {
   const m = args.reduceRight((prev, m1) => {
     return m1.multiply(prev);
   });

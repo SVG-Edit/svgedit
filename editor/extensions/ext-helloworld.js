@@ -1,4 +1,4 @@
-/* globals jQuery, svgEditor, svgCanvas */
+/* globals jQuery */
 /*
  * ext-helloworld.js
  *
@@ -13,14 +13,15 @@
   the left panel. Clicking on the button, and then the canvas will show the
   user the point on the canvas that was clicked on.
 */
-
+import svgEditor from '../svg-editor.js';
 svgEditor.addExtension('Hello World', function () {
   const $ = jQuery;
+  const svgCanvas = svgEditor.canvas;
   return {
     name: 'Hello World',
     // For more notes on how to make an icon file, see the source of
     // the helloworld-icon.xml
-    svgicons: svgEditor.curConfig.extPath + 'helloworld-icon.xml',
+    svgicons: svgEditor.curConfig.extIconsPath + 'helloworld-icon.xml',
 
     // Multiple buttons can be added in this array
     buttons: [{

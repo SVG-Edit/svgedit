@@ -1,4 +1,4 @@
-/* globals jQuery, svgEditor, svgedit */
+/* globals jQuery */
 /*
  * ext-overview_window.js
  *
@@ -7,13 +7,14 @@
  * Copyright(c) 2013 James Sacksteder
  *
  */
+import svgEditor from '../svg-editor.js';
 
-svgEditor.addExtension('overview_window', function () {
+svgEditor.addExtension('overview_window', function ({isChrome, isIE}) {
   const $ = jQuery;
   const overviewWindowGlobals = {};
   // Disabled in Chrome 48-, see https://github.com/SVG-Edit/svgedit/issues/26 and
   // https://code.google.com/p/chromium/issues/detail?id=565120.
-  if (svgedit.browser.isChrome()) {
+  if (isChrome()) {
     const verIndex = navigator.userAgent.indexOf('Chrome/') + 7;
     const chromeVersion = parseInt(navigator.userAgent.substring(verIndex), 10);
     if (chromeVersion < 49) {
@@ -72,7 +73,7 @@ svgEditor.addExtension('overview_window', function () {
 
     let viewX = 640;
     let viewY = 480;
-    if (svgedit.browser.isIE()) {
+    if (isIE()) {
       // This has only been tested with Firefox 10 and IE 9 (without chrome frame).
       // I am not sure if if is Firefox or IE that is being non compliant here.
       // Either way the one that is noncompliant may become more compliant later.
