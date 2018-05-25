@@ -1,6 +1,5 @@
 /* globals jQuery */
 import EmbeddedSVGEdit from './embedapi.js';
-import svgEditor from './svg-editor.js';
 
 const $ = jQuery;
 
@@ -24,32 +23,36 @@ function saveSvg () {
 }
 
 function exportPNG () {
-  const str = svgEditor.uiStrings.notification.loadingImage;
+  svgCanvas.getUIStrings()(function (uiStrings) {
+    const str = uiStrings.notification.loadingImage;
 
-  const exportWindow = window.open(
-    'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
-    'svg-edit-exportWindow'
-  );
-  svgCanvas.rasterExport('PNG', null, exportWindow.name);
+    const exportWindow = window.open(
+      'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
+      'svg-edit-exportWindow'
+    );
+    svgCanvas.rasterExport('PNG', null, exportWindow.name);
+  });
 }
 
 function exportPDF () {
-  const str = svgEditor.uiStrings.notification.loadingImage;
+  svgCanvas.getUIStrings()(function (uiStrings) {
+    const str = uiStrings.notification.loadingImage;
 
-  /**
-  // If you want to handle the PDF blob yourself, do as follows
-  svgCanvas.bind('exportedPDF', function (win, data) {
-    alert(data.dataurlstring);
+    /**
+    // If you want to handle the PDF blob yourself, do as follows
+    svgCanvas.bind('exportedPDF', function (win, data) {
+      alert(data.dataurlstring);
+    });
+    svgCanvas.exportPDF(); // Accepts two args: optionalWindowName supplied back to bound exportPDF handler and optionalOutputType (defaults to dataurlstring)
+    return;
+    */
+
+    const exportWindow = window.open(
+      'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
+      'svg-edit-exportWindow'
+    );
+    svgCanvas.exportPDF(exportWindow.name);
   });
-  svgCanvas.exportPDF(); // Accepts two args: optionalWindowName supplied back to bound exportPDF handler and optionalOutputType (defaults to dataurlstring)
-  return;
-  */
-
-  const exportWindow = window.open(
-    'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
-    'svg-edit-exportWindow'
-  );
-  svgCanvas.exportPDF(exportWindow.name);
 }
 
 // Add event handlers
@@ -58,9 +61,9 @@ $('#save').click(saveSvg);
 $('#exportPNG').click(exportPNG);
 $('#exportPDF').click(exportPDF);
 
-const iframe = $('<iframe src="svg-editor.html?extensions=ext-xdomain-messaging.js' +
+const iframe = $('<iframe src="svg-editor-es.html?extensions=ext-xdomain-messaging.js' +
   window.location.href.replace(/\?(.*)$/, '&$1') + // Append arguments to this file onto the iframe
-  '" width="900px" height="600px" id="svgedit" onload="initEmbed();"></iframe>'
+  '" width="900px" height="600px" id="svgedit""></iframe>'
 );
 iframe[0].addEventListener('load', function () {
   svgCanvas = new EmbeddedSVGEdit(frame);

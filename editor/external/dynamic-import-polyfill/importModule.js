@@ -23,7 +23,7 @@ export function importScript(url) {
       destructor();
     };
     script.onload = () => {
-      resolve(window[vector]);
+      resolve();
       destructor();
     };
     script.src = url;

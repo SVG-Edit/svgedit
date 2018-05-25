@@ -2615,7 +2615,7 @@
         destructor();
       };
       script.onload = function () {
-        resolve(window[vector]);
+        resolve();
         destructor();
       };
       script.src = url;
@@ -7546,11 +7546,11 @@
             return importer(script);
           });
         }, Promise.resolve()).then(function () {
-          loadedScripts[name] = true;
           endCallback();
           loadedScripts[name].forEach(function (cb) {
             cb();
           });
+          loadedScripts[name] = true;
         })();
       }
     };
@@ -8243,7 +8243,6 @@
 
     // transforms
     svg.Transform = function (v) {
-      var that = this;
       this.Type = {};
 
       // translate
@@ -8313,10 +8312,8 @@
         function _class2(s) {
           classCallCheck(this, _class2);
 
-          var _this2 = possibleConstructorReturn(this, (_class2.__proto__ || Object.getPrototypeOf(_class2)).call(this));
+          var _this2 = possibleConstructorReturn(this, (_class2.__proto__ || Object.getPrototypeOf(_class2)).call(this, s));
 
-          _this2.base = that.Type.matrix;
-          _this2.base(s);
           _this2.angle = new svg.Property('angle', s);
           return _this2;
         }
@@ -8330,10 +8327,8 @@
         function _class3(s) {
           classCallCheck(this, _class3);
 
-          var _this3 = possibleConstructorReturn(this, (_class3.__proto__ || Object.getPrototypeOf(_class3)).call(this));
+          var _this3 = possibleConstructorReturn(this, (_class3.__proto__ || Object.getPrototypeOf(_class3)).call(this, s));
 
-          _this3.base = that.Type.SkewBase;
-          _this3.base(s);
           _this3.m = [1, 0, Math.tan(_this3.angle.toRadians()), 1, 0, 0];
           return _this3;
         }
@@ -8347,10 +8342,8 @@
         function _class4(s) {
           classCallCheck(this, _class4);
 
-          var _this4 = possibleConstructorReturn(this, (_class4.__proto__ || Object.getPrototypeOf(_class4)).call(this));
+          var _this4 = possibleConstructorReturn(this, (_class4.__proto__ || Object.getPrototypeOf(_class4)).call(this, s));
 
-          _this4.base = that.Type.SkewBase;
-          _this4.base(s);
           _this4.m = [1, Math.tan(_this4.angle.toRadians()), 0, 1, 0, 0];
           return _this4;
         }
@@ -8618,10 +8611,7 @@
       function _class5(node) {
         classCallCheck(this, _class5);
 
-        var _this5 = possibleConstructorReturn(this, (_class5.__proto__ || Object.getPrototypeOf(_class5)).call(this));
-
-        _this5.base = svg.Element.ElementBase;
-        _this5.base(node);
+        var _this5 = possibleConstructorReturn(this, (_class5.__proto__ || Object.getPrototypeOf(_class5)).call(this, node));
 
         _this5.setContext = function (ctx) {
           // fill
@@ -8714,10 +8704,7 @@
       function _class6(node) {
         classCallCheck(this, _class6);
 
-        var _this6 = possibleConstructorReturn(this, (_class6.__proto__ || Object.getPrototypeOf(_class6)).call(this));
-
-        _this6.base = svg.Element.RenderedElementBase;
-        _this6.base(node);
+        var _this6 = possibleConstructorReturn(this, (_class6.__proto__ || Object.getPrototypeOf(_class6)).call(this, node));
 
         _this6.path = function (ctx) {
           if (ctx != null) ctx.beginPath();
@@ -8775,10 +8762,7 @@
       function _class7(node) {
         classCallCheck(this, _class7);
 
-        var _this7 = possibleConstructorReturn(this, (_class7.__proto__ || Object.getPrototypeOf(_class7)).call(this));
-
-        _this7.base = svg.Element.RenderedElementBase;
-        _this7.base(node);
+        var _this7 = possibleConstructorReturn(this, (_class7.__proto__ || Object.getPrototypeOf(_class7)).call(this, node));
 
         _this7.baseClearContext = _this7.clearContext;
         _this7.clearContext = function (ctx) {
@@ -8859,10 +8843,7 @@
       function _class8(node) {
         classCallCheck(this, _class8);
 
-        var _this8 = possibleConstructorReturn(this, (_class8.__proto__ || Object.getPrototypeOf(_class8)).call(this));
-
-        _this8.base = svg.Element.PathElementBase;
-        _this8.base(node);
+        var _this8 = possibleConstructorReturn(this, (_class8.__proto__ || Object.getPrototypeOf(_class8)).call(this, node));
 
         _this8.path = function (ctx) {
           var x = this.attribute('x').toPixels('x');
@@ -8904,10 +8885,7 @@
       function _class9(node) {
         classCallCheck(this, _class9);
 
-        var _this9 = possibleConstructorReturn(this, (_class9.__proto__ || Object.getPrototypeOf(_class9)).call(this));
-
-        _this9.base = svg.Element.PathElementBase;
-        _this9.base(node);
+        var _this9 = possibleConstructorReturn(this, (_class9.__proto__ || Object.getPrototypeOf(_class9)).call(this, node));
 
         _this9.path = function (ctx) {
           var cx = this.attribute('cx').toPixels('x');
@@ -8935,10 +8913,7 @@
       function _class10(node) {
         classCallCheck(this, _class10);
 
-        var _this10 = possibleConstructorReturn(this, (_class10.__proto__ || Object.getPrototypeOf(_class10)).call(this));
-
-        _this10.base = svg.Element.PathElementBase;
-        _this10.base(node);
+        var _this10 = possibleConstructorReturn(this, (_class10.__proto__ || Object.getPrototypeOf(_class10)).call(this, node));
 
         _this10.path = function (ctx) {
           var KAPPA = 4 * ((Math.sqrt(2) - 1) / 3);
@@ -8972,10 +8947,7 @@
       function _class11(node) {
         classCallCheck(this, _class11);
 
-        var _this11 = possibleConstructorReturn(this, (_class11.__proto__ || Object.getPrototypeOf(_class11)).call(this));
-
-        _this11.base = svg.Element.PathElementBase;
-        _this11.base(node);
+        var _this11 = possibleConstructorReturn(this, (_class11.__proto__ || Object.getPrototypeOf(_class11)).call(this, node));
 
         _this11.getPoints = function () {
           return [new svg.Point(this.attribute('x1').toPixels('x'), this.attribute('y1').toPixels('y')), new svg.Point(this.attribute('x2').toPixels('x'), this.attribute('y2').toPixels('y'))];
@@ -9011,10 +8983,7 @@
       function _class12(node) {
         classCallCheck(this, _class12);
 
-        var _this12 = possibleConstructorReturn(this, (_class12.__proto__ || Object.getPrototypeOf(_class12)).call(this));
-
-        _this12.base = svg.Element.PathElementBase;
-        _this12.base(node);
+        var _this12 = possibleConstructorReturn(this, (_class12.__proto__ || Object.getPrototypeOf(_class12)).call(this, node));
 
         _this12.points = svg.CreatePath(_this12.attribute('points').value);
         _this12.path = function (ctx) {
@@ -9051,10 +9020,7 @@
       function _class13(node) {
         classCallCheck(this, _class13);
 
-        var _this13 = possibleConstructorReturn(this, (_class13.__proto__ || Object.getPrototypeOf(_class13)).call(this));
-
-        _this13.base = svg.Element.polyline;
-        _this13.base(node);
+        var _this13 = possibleConstructorReturn(this, (_class13.__proto__ || Object.getPrototypeOf(_class13)).call(this, node));
 
         _this13.basePath = _this13.path;
         _this13.path = function (ctx) {
@@ -9078,10 +9044,7 @@
       function _class14(node) {
         classCallCheck(this, _class14);
 
-        var _this14 = possibleConstructorReturn(this, (_class14.__proto__ || Object.getPrototypeOf(_class14)).call(this));
-
-        _this14.base = svg.Element.PathElementBase;
-        _this14.base(node);
+        var _this14 = possibleConstructorReturn(this, (_class14.__proto__ || Object.getPrototypeOf(_class14)).call(this, node));
 
         var d = _this14.attribute('d').value;
         // TODO: convert to real lexer based on https://www.w3.org/TR/SVG11/paths.html#PathDataBNF
@@ -9424,10 +9387,7 @@
       function _class15(node) {
         classCallCheck(this, _class15);
 
-        var _this15 = possibleConstructorReturn(this, (_class15.__proto__ || Object.getPrototypeOf(_class15)).call(this));
-
-        _this15.base = svg.Element.ElementBase;
-        _this15.base(node);
+        var _this15 = possibleConstructorReturn(this, (_class15.__proto__ || Object.getPrototypeOf(_class15)).call(this, node));
 
         _this15.createPattern = function (ctx, element) {
           var width = this.attribute('width').toPixels('x', true);
@@ -9473,10 +9433,7 @@
       function _class16(node) {
         classCallCheck(this, _class16);
 
-        var _this16 = possibleConstructorReturn(this, (_class16.__proto__ || Object.getPrototypeOf(_class16)).call(this));
-
-        _this16.base = svg.Element.ElementBase;
-        _this16.base(node);
+        var _this16 = possibleConstructorReturn(this, (_class16.__proto__ || Object.getPrototypeOf(_class16)).call(this, node));
 
         _this16.baseRender = _this16.render;
         _this16.render = function (ctx, point, angle) {
@@ -9515,10 +9472,7 @@
       function _class17(node) {
         classCallCheck(this, _class17);
 
-        var _this17 = possibleConstructorReturn(this, (_class17.__proto__ || Object.getPrototypeOf(_class17)).call(this));
-
-        _this17.base = svg.Element.ElementBase;
-        _this17.base(node);
+        var _this17 = possibleConstructorReturn(this, (_class17.__proto__ || Object.getPrototypeOf(_class17)).call(this, node));
 
         _this17.render = function (ctx) {
           // NOOP
@@ -9536,10 +9490,7 @@
       function _class18(node) {
         classCallCheck(this, _class18);
 
-        var _this18 = possibleConstructorReturn(this, (_class18.__proto__ || Object.getPrototypeOf(_class18)).call(this));
-
-        _this18.base = svg.Element.ElementBase;
-        _this18.base(node);
+        var _this18 = possibleConstructorReturn(this, (_class18.__proto__ || Object.getPrototypeOf(_class18)).call(this, node));
 
         _this18.gradientUnits = _this18.attribute('gradientUnits').valueOrDefault('objectBoundingBox');
 
@@ -9615,10 +9566,7 @@
       function _class19(node) {
         classCallCheck(this, _class19);
 
-        var _this19 = possibleConstructorReturn(this, (_class19.__proto__ || Object.getPrototypeOf(_class19)).call(this));
-
-        _this19.base = svg.Element.GradientBase;
-        _this19.base(node);
+        var _this19 = possibleConstructorReturn(this, (_class19.__proto__ || Object.getPrototypeOf(_class19)).call(this, node));
 
         _this19.getGradient = function (ctx, element) {
           var bb = this.gradientUnits === 'objectBoundingBox' ? element.getBoundingBox() : null;
@@ -9651,10 +9599,7 @@
       function _class20(node) {
         classCallCheck(this, _class20);
 
-        var _this20 = possibleConstructorReturn(this, (_class20.__proto__ || Object.getPrototypeOf(_class20)).call(this));
-
-        _this20.base = svg.Element.GradientBase;
-        _this20.base(node);
+        var _this20 = possibleConstructorReturn(this, (_class20.__proto__ || Object.getPrototypeOf(_class20)).call(this, node));
 
         _this20.getGradient = function (ctx, element) {
           var bb = element.getBoundingBox();
@@ -9692,10 +9637,7 @@
       function _class21(node) {
         classCallCheck(this, _class21);
 
-        var _this21 = possibleConstructorReturn(this, (_class21.__proto__ || Object.getPrototypeOf(_class21)).call(this));
-
-        _this21.base = svg.Element.ElementBase;
-        _this21.base(node);
+        var _this21 = possibleConstructorReturn(this, (_class21.__proto__ || Object.getPrototypeOf(_class21)).call(this, node));
 
         _this21.offset = _this21.attribute('offset').numValue();
         if (_this21.offset < 0) _this21.offset = 0;
@@ -9719,10 +9661,7 @@
       function _class22(node) {
         classCallCheck(this, _class22);
 
-        var _this22 = possibleConstructorReturn(this, (_class22.__proto__ || Object.getPrototypeOf(_class22)).call(this));
-
-        _this22.base = svg.Element.ElementBase;
-        _this22.base(node);
+        var _this22 = possibleConstructorReturn(this, (_class22.__proto__ || Object.getPrototypeOf(_class22)).call(this, node));
 
         svg.Animations.push(_this22);
 
@@ -9826,10 +9765,7 @@
       function _class23(node) {
         classCallCheck(this, _class23);
 
-        var _this23 = possibleConstructorReturn(this, (_class23.__proto__ || Object.getPrototypeOf(_class23)).call(this));
-
-        _this23.base = svg.Element.AnimateBase;
-        _this23.base(node);
+        var _this23 = possibleConstructorReturn(this, (_class23.__proto__ || Object.getPrototypeOf(_class23)).call(this, node));
 
         _this23.calcValue = function () {
           var p = this.progress();
@@ -9851,10 +9787,7 @@
       function _class24(node) {
         classCallCheck(this, _class24);
 
-        var _this24 = possibleConstructorReturn(this, (_class24.__proto__ || Object.getPrototypeOf(_class24)).call(this));
-
-        _this24.base = svg.Element.AnimateBase;
-        _this24.base(node);
+        var _this24 = possibleConstructorReturn(this, (_class24.__proto__ || Object.getPrototypeOf(_class24)).call(this, node));
 
         _this24.calcValue = function () {
           var p = this.progress();
@@ -9883,10 +9816,7 @@
       function _class25(node) {
         classCallCheck(this, _class25);
 
-        var _this25 = possibleConstructorReturn(this, (_class25.__proto__ || Object.getPrototypeOf(_class25)).call(this));
-
-        _this25.base = svg.Element.AnimateBase;
-        _this25.base(node);
+        var _this25 = possibleConstructorReturn(this, (_class25.__proto__ || Object.getPrototypeOf(_class25)).call(this, node));
 
         _this25.calcValue = function () {
           var p = this.progress();
@@ -9913,10 +9843,7 @@
       function _class26(node) {
         classCallCheck(this, _class26);
 
-        var _this26 = possibleConstructorReturn(this, (_class26.__proto__ || Object.getPrototypeOf(_class26)).call(this));
-
-        _this26.base = svg.Element.ElementBase;
-        _this26.base(node);
+        var _this26 = possibleConstructorReturn(this, (_class26.__proto__ || Object.getPrototypeOf(_class26)).call(this, node));
 
         _this26.horizAdvX = _this26.attribute('horiz-adv-x').numValue();
 
@@ -9960,10 +9887,7 @@
       function _class27(node) {
         classCallCheck(this, _class27);
 
-        var _this27 = possibleConstructorReturn(this, (_class27.__proto__ || Object.getPrototypeOf(_class27)).call(this));
-
-        _this27.base = svg.Element.ElementBase;
-        _this27.base(node);
+        var _this27 = possibleConstructorReturn(this, (_class27.__proto__ || Object.getPrototypeOf(_class27)).call(this, node));
 
         _this27.ascent = _this27.attribute('ascent').value;
         _this27.descent = _this27.attribute('descent').value;
@@ -9981,10 +9905,7 @@
       function _class28(node) {
         classCallCheck(this, _class28);
 
-        var _this28 = possibleConstructorReturn(this, (_class28.__proto__ || Object.getPrototypeOf(_class28)).call(this));
-
-        _this28.base = svg.Element.path;
-        _this28.base(node);
+        var _this28 = possibleConstructorReturn(this, (_class28.__proto__ || Object.getPrototypeOf(_class28)).call(this, node));
 
         _this28.horizAdvX = 0;
         return _this28;
@@ -10000,10 +9921,7 @@
       function _class29(node) {
         classCallCheck(this, _class29);
 
-        var _this29 = possibleConstructorReturn(this, (_class29.__proto__ || Object.getPrototypeOf(_class29)).call(this));
-
-        _this29.base = svg.Element.path;
-        _this29.base(node);
+        var _this29 = possibleConstructorReturn(this, (_class29.__proto__ || Object.getPrototypeOf(_class29)).call(this, node));
 
         _this29.horizAdvX = _this29.attribute('horiz-adv-x').numValue();
         _this29.unicode = _this29.attribute('unicode').value;
@@ -10021,11 +9939,9 @@
       function _class30(node) {
         classCallCheck(this, _class30);
 
-        var _this30 = possibleConstructorReturn(this, (_class30.__proto__ || Object.getPrototypeOf(_class30)).call(this));
+        var _this30 = possibleConstructorReturn(this, (_class30.__proto__ || Object.getPrototypeOf(_class30)).call(this, node));
 
         _this30.captureTextNodes = true;
-        _this30.base = svg.Element.RenderedElementBase;
-        _this30.base(node);
 
         _this30.baseSetContext = _this30.setContext;
         _this30.setContext = function (ctx) {
@@ -10107,10 +10023,7 @@
       function _class31(node) {
         classCallCheck(this, _class31);
 
-        var _this31 = possibleConstructorReturn(this, (_class31.__proto__ || Object.getPrototypeOf(_class31)).call(this));
-
-        _this31.base = svg.Element.RenderedElementBase;
-        _this31.base(node);
+        var _this31 = possibleConstructorReturn(this, (_class31.__proto__ || Object.getPrototypeOf(_class31)).call(this, node));
 
         _this31.getGlyph = function (font, text, i) {
           var c = text[i];
@@ -10221,11 +10134,9 @@
       function _class32(node) {
         classCallCheck(this, _class32);
 
-        var _this32 = possibleConstructorReturn(this, (_class32.__proto__ || Object.getPrototypeOf(_class32)).call(this));
+        var _this32 = possibleConstructorReturn(this, (_class32.__proto__ || Object.getPrototypeOf(_class32)).call(this, node));
 
         _this32.captureTextNodes = true;
-        _this32.base = svg.Element.TextElementBase;
-        _this32.base(node);
 
         _this32.text = node.nodeValue || node.text || '';
         _this32.getText = function () {
@@ -10244,10 +10155,7 @@
       function _class33(node) {
         classCallCheck(this, _class33);
 
-        var _this33 = possibleConstructorReturn(this, (_class33.__proto__ || Object.getPrototypeOf(_class33)).call(this));
-
-        _this33.base = svg.Element.TextElementBase;
-        _this33.base(node);
+        var _this33 = possibleConstructorReturn(this, (_class33.__proto__ || Object.getPrototypeOf(_class33)).call(this, node));
 
         _this33.getText = function () {
           var element = this.getHrefAttribute().getDefinition();
@@ -10266,10 +10174,7 @@
       function _class34(node) {
         classCallCheck(this, _class34);
 
-        var _this34 = possibleConstructorReturn(this, (_class34.__proto__ || Object.getPrototypeOf(_class34)).call(this));
-
-        _this34.base = svg.Element.TextElementBase;
-        _this34.base(node);
+        var _this34 = possibleConstructorReturn(this, (_class34.__proto__ || Object.getPrototypeOf(_class34)).call(this, node));
 
         _this34.hasText = true;
         for (var i = 0, childNode; childNode = node.childNodes[i]; i++) {
@@ -10318,10 +10223,7 @@
       function _class35(node) {
         classCallCheck(this, _class35);
 
-        var _this35 = possibleConstructorReturn(this, (_class35.__proto__ || Object.getPrototypeOf(_class35)).call(this));
-
-        _this35.base = svg.Element.RenderedElementBase;
-        _this35.base(node);
+        var _this35 = possibleConstructorReturn(this, (_class35.__proto__ || Object.getPrototypeOf(_class35)).call(this, node));
 
         var href = _this35.getHrefAttribute().value;
         if (href === '') {
@@ -10388,10 +10290,7 @@
       function _class36(node) {
         classCallCheck(this, _class36);
 
-        var _this36 = possibleConstructorReturn(this, (_class36.__proto__ || Object.getPrototypeOf(_class36)).call(this));
-
-        _this36.base = svg.Element.RenderedElementBase;
-        _this36.base(node);
+        var _this36 = possibleConstructorReturn(this, (_class36.__proto__ || Object.getPrototypeOf(_class36)).call(this, node));
 
         _this36.getBoundingBox = function () {
           var bb = new svg.BoundingBox();
@@ -10413,10 +10312,7 @@
       function _class37(node) {
         classCallCheck(this, _class37);
 
-        var _this37 = possibleConstructorReturn(this, (_class37.__proto__ || Object.getPrototypeOf(_class37)).call(this));
-
-        _this37.base = svg.Element.RenderedElementBase;
-        _this37.base(node);
+        var _this37 = possibleConstructorReturn(this, (_class37.__proto__ || Object.getPrototypeOf(_class37)).call(this, node));
 
         _this37.render = function (ctx) {
           // NO RENDER
@@ -10434,12 +10330,9 @@
       function _class38(node) {
         classCallCheck(this, _class38);
 
-        var _this38 = possibleConstructorReturn(this, (_class38.__proto__ || Object.getPrototypeOf(_class38)).call(this));
-
-        _this38.base = svg.Element.ElementBase;
-        _this38.base(node);
-
         // text, or spaces then CDATA
+        var _this38 = possibleConstructorReturn(this, (_class38.__proto__ || Object.getPrototypeOf(_class38)).call(this, node));
+
         var css = '';
         for (var i = 0, childNode; childNode = node.childNodes[i]; i++) {
           css += childNode.nodeValue;
@@ -10499,10 +10392,7 @@
       function _class39(node) {
         classCallCheck(this, _class39);
 
-        var _this39 = possibleConstructorReturn(this, (_class39.__proto__ || Object.getPrototypeOf(_class39)).call(this));
-
-        _this39.base = svg.Element.RenderedElementBase;
-        _this39.base(node);
+        var _this39 = possibleConstructorReturn(this, (_class39.__proto__ || Object.getPrototypeOf(_class39)).call(this, node));
 
         _this39.baseSetContext = _this39.setContext;
         _this39.setContext = function (ctx) {
@@ -10557,10 +10447,7 @@
       function _class40(node) {
         classCallCheck(this, _class40);
 
-        var _this40 = possibleConstructorReturn(this, (_class40.__proto__ || Object.getPrototypeOf(_class40)).call(this));
-
-        _this40.base = svg.Element.ElementBase;
-        _this40.base(node);
+        var _this40 = possibleConstructorReturn(this, (_class40.__proto__ || Object.getPrototypeOf(_class40)).call(this, node));
 
         _this40.apply = function (ctx, element) {
           // render as temp svg
@@ -10622,10 +10509,7 @@
       function _class41(node) {
         classCallCheck(this, _class41);
 
-        var _this41 = possibleConstructorReturn(this, (_class41.__proto__ || Object.getPrototypeOf(_class41)).call(this));
-
-        _this41.base = svg.Element.ElementBase;
-        _this41.base(node);
+        var _this41 = possibleConstructorReturn(this, (_class41.__proto__ || Object.getPrototypeOf(_class41)).call(this, node));
 
         _this41.apply = function (ctx) {
           for (var i = 0; i < this.children.length; i++) {
@@ -10661,10 +10545,7 @@
       function _class42(node) {
         classCallCheck(this, _class42);
 
-        var _this42 = possibleConstructorReturn(this, (_class42.__proto__ || Object.getPrototypeOf(_class42)).call(this));
-
-        _this42.base = svg.Element.ElementBase;
-        _this42.base(node);
+        var _this42 = possibleConstructorReturn(this, (_class42.__proto__ || Object.getPrototypeOf(_class42)).call(this, node));
 
         _this42.apply = function (ctx, element) {
           // render as temp svg
@@ -10720,10 +10601,7 @@
       function _class43(node) {
         classCallCheck(this, _class43);
 
-        var _this43 = possibleConstructorReturn(this, (_class43.__proto__ || Object.getPrototypeOf(_class43)).call(this));
-
-        _this43.base = svg.Element.ElementBase;
-        _this43.base(node);
+        var _this43 = possibleConstructorReturn(this, (_class43.__proto__ || Object.getPrototypeOf(_class43)).call(this, node));
 
         _this43.apply = function (ctx, x, y, width, height) {
           // TODO: implement
@@ -10740,10 +10618,7 @@
       function _class44(node) {
         classCallCheck(this, _class44);
 
-        var _this44 = possibleConstructorReturn(this, (_class44.__proto__ || Object.getPrototypeOf(_class44)).call(this));
-
-        _this44.base = svg.Element.ElementBase;
-        _this44.base(node);
+        var _this44 = possibleConstructorReturn(this, (_class44.__proto__ || Object.getPrototypeOf(_class44)).call(this, node));
 
         _this44.apply = function (ctx, x, y, width, height) {
           // TODO: implement
@@ -10760,10 +10635,7 @@
       function _class45(node) {
         classCallCheck(this, _class45);
 
-        var _this45 = possibleConstructorReturn(this, (_class45.__proto__ || Object.getPrototypeOf(_class45)).call(this));
-
-        _this45.base = svg.Element.ElementBase;
-        _this45.base(node);
+        var _this45 = possibleConstructorReturn(this, (_class45.__proto__ || Object.getPrototypeOf(_class45)).call(this, node));
 
         var matrix = svg.ToNumberArray(_this45.attribute('values').value);
         switch (_this45.attribute('type').valueOrDefault('matrix')) {// https://www.w3.org/TR/SVG/filters.html#feColorMatrixElement
@@ -10826,10 +10698,7 @@
       function _class46(node) {
         classCallCheck(this, _class46);
 
-        var _this46 = possibleConstructorReturn(this, (_class46.__proto__ || Object.getPrototypeOf(_class46)).call(this));
-
-        _this46.base = svg.Element.ElementBase;
-        _this46.base(node);
+        var _this46 = possibleConstructorReturn(this, (_class46.__proto__ || Object.getPrototypeOf(_class46)).call(this, node));
 
         _this46.blurRadius = Math.floor(_this46.attribute('stdDeviation').numValue());
         _this46.extraFilterDistance = _this46.blurRadius;
@@ -25956,13 +25825,250 @@
       editor.putLocale(null, goodLangs, curConfig);
     };
 
-    // Load extensions
-    // Bit of a hack to run extensions in local Opera/IE9
-    if (document.location.protocol === 'file:') {
-      setTimeout(extFunc, 100);
-    } else {
-      extFunc();
-    }
+    var stateObj = { tool_scale: editor.tool_scale };
+
+    var setFlyoutPositions = function setFlyoutPositions() {
+      $$b('.tools_flyout').each(function () {
+        var shower = $$b('#' + this.id + '_show');
+        var pos = shower.offset();
+        var w = shower.outerWidth();
+        $$b(this).css({ left: (pos.left + w) * editor.tool_scale, top: pos.top });
+      });
+    };
+
+    var scaleElements = function scaleElements(elems, scale) {
+      // const prefix = '-' + uaPrefix.toLowerCase() + '-'; // Currently unused
+      var sides = ['top', 'left', 'bottom', 'right'];
+
+      elems.each(function () {
+        // Handled in CSS
+        // this.style[uaPrefix + 'Transform'] = 'scale(' + scale + ')';
+        var el = $$b(this);
+        var w = el.outerWidth() * (scale - 1);
+        var h = el.outerHeight() * (scale - 1);
+        // const margins = {}; // Currently unused
+
+        for (var i = 0; i < 4; i++) {
+          var s = sides[i];
+          var cur = el.data('orig_margin-' + s);
+          if (cur == null) {
+            cur = parseInt(el.css('margin-' + s), 10);
+            // Cache the original margin
+            el.data('orig_margin-' + s, cur);
+          }
+          var val = cur * scale;
+          if (s === 'right') {
+            val += w;
+          } else if (s === 'bottom') {
+            val += h;
+          }
+
+          el.css('margin-' + s, val);
+          // el.css('outline', '1px solid red');
+        }
+      });
+    };
+
+    var setIconSize = editor.setIconSize = function (size) {
+      // const elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
+      var selToscale = '#tools_top .toolset, #editor_panel > *, #history_panel > *,' + '        #main_button, #tools_left > *, #path_node_panel > *, #multiselected_panel > *,' + '        #g_panel > *, #tool_font_size > *, .tools_flyout';
+
+      var elems = $$b(selToscale);
+
+      var scale = 1;
+      if (typeof size === 'number') {
+        scale = size;
+      } else {
+        var iconSizes = { s: 0.75, m: 1, l: 1.25, xl: 1.5 };
+        scale = iconSizes[size];
+      }
+
+      stateObj.tool_scale = editor.tool_scale = scale;
+
+      setFlyoutPositions();
+      // $('.tools_flyout').each(function () {
+      //   const pos = $(this).position();
+      //   console.log($(this), pos.left+(34 * scale));
+      //   $(this).css({left: pos.left+(34 * scale), top: pos.top+(77 * scale)});
+      //   console.log('l', $(this).css('left'));
+      // });
+      //
+      // const scale = .75;
+
+      var hiddenPs = elems.parents(':hidden');
+      hiddenPs.css('visibility', 'hidden').show();
+      scaleElements(elems, scale);
+      hiddenPs.css('visibility', 'visible').hide();
+      // return;
+
+      $$b.pref('iconsize', size);
+      $$b('#iconsize').val(size);
+
+      // Change icon size
+      // $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open')
+      // .find('> svg, > img').each(function () {
+      //   this.setAttribute('width',size_num);
+      //   this.setAttribute('height',size_num);
+      // });
+      //
+      // $.resizeSvgIcons({
+      //   '.flyout_arrow_horiz > svg, .flyout_arrow_horiz > img': size_num / 5,
+      //   '#logo > svg, #logo > img': size_num * 1.3,
+      //   '#tools_bottom .icon_label > *': (size_num === 16 ? 18 : size_num * .75)
+      // });
+      // if (size != 's') {
+      //   $.resizeSvgIcons({'#layerbuttons svg, #layerbuttons img': size_num * .6});
+      // }
+
+      // Note that all rules will be prefixed with '#svg_editor' when parsed
+      var cssResizeRules = {
+        // '.tool_button,\
+        // .push_button,\
+        // .tool_button_current,\
+        // .push_button_pressed,\
+        // .disabled,\
+        // .icon_label,\
+        // .tools_flyout .tool_button': {
+        //   width: {s: '16px', l: '32px', xl: '48px'},
+        //   height: {s: '16px', l: '32px', xl: '48px'},
+        //   padding: {s: '1px', l: '2px', xl: '3px'}
+        // },
+        // '.tool_sep': {
+        //   height: {s: '16px', l: '32px', xl: '48px'},
+        //   margin: {s: '2px 2px', l: '2px 5px', xl: '2px 8px'}
+        // },
+        // '#main_icon': {
+        //   width: {s: '31px', l: '53px', xl: '75px'},
+        //   height: {s: '22px', l: '42px', xl: '64px'}
+        // },
+        '#tools_top': {
+          left: 50 + $$b('#main_button').width(),
+          height: 72
+        },
+        '#tools_left': {
+          width: 31,
+          top: 74
+        },
+        'div#workarea': {
+          left: 38,
+          top: 74
+          // '#tools_bottom': {
+          //   left: {s: '27px', l: '46px', xl: '65px'},
+          //   height: {s: '58px', l: '98px', xl: '145px'}
+          // },
+          // '#color_tools': {
+          //   'border-spacing': {s: '0 1px'},
+          //   'margin-top': {s: '-1px'}
+          // },
+          // '#color_tools .icon_label': {
+          //   width: {l:'43px', xl: '60px'}
+          // },
+          // '.color_tool': {
+          //   height: {s: '20px'}
+          // },
+          // '#tool_opacity': {
+          //   top: {s: '1px'},
+          //   height: {s: 'auto', l:'auto', xl:'auto'}
+          // },
+          // '#tools_top input, #tools_bottom input': {
+          //   'margin-top': {s: '2px', l: '4px', xl: '5px'},
+          //   height: {s: 'auto', l: 'auto', xl: 'auto'},
+          //   border: {s: '1px solid #555', l: 'auto', xl: 'auto'},
+          //   'font-size': {s: '.9em', l: '1.2em', xl: '1.4em'}
+          // },
+          // '#zoom_panel': {
+          //   'margin-top': {s: '3px', l: '4px', xl: '5px'}
+          // },
+          // '#copyright, #tools_bottom .label': {
+          //   'font-size': {l: '1.5em', xl: '2em'},
+          //   'line-height': {s: '15px'}
+          // },
+          // '#tools_bottom_2': {
+          //   width: {l: '295px', xl: '355px'},
+          //   top: {s: '4px'}
+          // },
+          // '#tools_top > div, #tools_top': {
+          //   'line-height': {s: '17px', l: '34px', xl: '50px'}
+          // },
+          // '.dropdown button': {
+          //   height: {s: '18px', l: '34px', xl: '40px'},
+          //   'line-height': {s: '18px', l: '34px', xl: '40px'},
+          //   'margin-top': {s: '3px'}
+          // },
+          // '#tools_top label, #tools_bottom label': {
+          //   'font-size': {s: '1em', l: '1.5em', xl: '2em'},
+          //   height: {s: '25px', l: '42px', xl: '64px'}
+          // },
+          // 'div.toolset': {
+          //   height: {s: '25px', l: '42px', xl: '64px'}
+          // },
+          // '#tool_bold, #tool_italic': {
+          //   'font-size': {s: '1.5em', l: '3em', xl: '4.5em'}
+          // },
+          // '#sidepanels': {
+          //   top: {s: '50px', l: '88px', xl: '125px'},
+          //   bottom: {s: '51px', l: '68px', xl: '65px'}
+          // },
+          // '#layerbuttons': {
+          //   width: {l: '130px', xl: '175px'},
+          //   height: {l: '24px', xl: '30px'}
+          // },
+          // '#layerlist': {
+          //   width: {l: '128px', xl: '150px'}
+          // },
+          // '.layer_button': {
+          //   width: {l: '19px', xl: '28px'},
+          //   height: {l: '19px', xl: '28px'}
+          // },
+          // 'input.spin-button': {
+          //   'background-image': {l: 'url('images/spinbtn_updn_big.png')', xl: 'url('images/spinbtn_updn_big.png')'},
+          //   'background-position': {l: '100% -5px', xl: '100% -2px'},
+          //   'padding-right': {l: '24px', xl: '24px' }
+          // },
+          // 'input.spin-button.up': {
+          //   'background-position': {l: '100% -45px', xl: '100% -42px'}
+          // },
+          // 'input.spin-button.down': {
+          //   'background-position': {l: '100% -85px', xl: '100% -82px'}
+          // },
+          // '#position_opts': {
+          //   width: {all: (size_num*4) +'px'}
+          // }
+        } };
+
+      var ruleElem = $$b('#tool_size_rules');
+      if (!ruleElem.length) {
+        ruleElem = $$b('<style id="tool_size_rules"></style>').appendTo('head');
+      } else {
+        ruleElem.empty();
+      }
+
+      if (size !== 'm') {
+        var styleStr = '';
+        $$b.each(cssResizeRules, function (selector, rules) {
+          selector = '#svg_editor ' + selector.replace(/,/g, ', #svg_editor');
+          styleStr += selector + '{';
+          $$b.each(rules, function (prop, values) {
+            var val = void 0;
+            if (typeof values === 'number') {
+              val = values * scale + 'px';
+            } else if (values[size] || values.all) {
+              val = values[size] || values.all;
+            }
+            styleStr += prop + ':' + val + ';';
+          });
+          styleStr += '}';
+        });
+        // this.style[uaPrefix + 'Transform'] = 'scale(' + scale + ')';
+        var prefix = '-' + uaPrefix.toLowerCase() + '-';
+        styleStr += selToscale + '{' + prefix + 'transform: scale(' + scale + ');}' + ' #svg_editor div.toolset .toolset {' + prefix + 'transform: scale(1); margin: 1px !important;}' + // Hack for markers
+        ' #svg_editor .ui-slider {' + prefix + 'transform: scale(' + 1 / scale + ');}' // Hack for sliders
+        ;
+        ruleElem.text(styleStr);
+      }
+
+      setFlyoutPositions();
+    };
     $$b.svgIcons(curConfig.imgPath + 'svg_edit_icons.svg', {
       w: 24, h: 24,
       id_match: false,
@@ -27459,15 +27565,6 @@
       });
     };
 
-    var setFlyoutPositions = function setFlyoutPositions() {
-      $$b('.tools_flyout').each(function () {
-        var shower = $$b('#' + this.id + '_show');
-        var pos = shower.offset();
-        var w = shower.outerWidth();
-        $$b(this).css({ left: (pos.left + w) * editor.tool_scale, top: pos.top });
-      });
-    };
-
     var setupFlyouts = function setupFlyouts(holders) {
       $$b.each(holders, function (holdSel, btnOpts) {
         var buttons = $$b(holdSel).children();
@@ -27608,240 +27705,6 @@
 
       return '';
     }();
-
-    var scaleElements = function scaleElements(elems, scale) {
-      // const prefix = '-' + uaPrefix.toLowerCase() + '-'; // Currently unused
-      var sides = ['top', 'left', 'bottom', 'right'];
-
-      elems.each(function () {
-        // Handled in CSS
-        // this.style[uaPrefix + 'Transform'] = 'scale(' + scale + ')';
-        var el = $$b(this);
-        var w = el.outerWidth() * (scale - 1);
-        var h = el.outerHeight() * (scale - 1);
-        // const margins = {}; // Currently unused
-
-        for (var _i2 = 0; _i2 < 4; _i2++) {
-          var s = sides[_i2];
-          var cur = el.data('orig_margin-' + s);
-          if (cur == null) {
-            cur = parseInt(el.css('margin-' + s), 10);
-            // Cache the original margin
-            el.data('orig_margin-' + s, cur);
-          }
-          var val = cur * scale;
-          if (s === 'right') {
-            val += w;
-          } else if (s === 'bottom') {
-            val += h;
-          }
-
-          el.css('margin-' + s, val);
-          // el.css('outline', '1px solid red');
-        }
-      });
-    };
-
-    var setIconSize = editor.setIconSize = function (size) {
-      // const elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
-      var selToscale = '#tools_top .toolset, #editor_panel > *, #history_panel > *,' + '        #main_button, #tools_left > *, #path_node_panel > *, #multiselected_panel > *,' + '        #g_panel > *, #tool_font_size > *, .tools_flyout';
-
-      var elems = $$b(selToscale);
-
-      var scale = 1;
-      if (typeof size === 'number') {
-        scale = size;
-      } else {
-        var iconSizes = { s: 0.75, m: 1, l: 1.25, xl: 1.5 };
-        scale = iconSizes[size];
-      }
-
-      stateObj.tool_scale = editor.tool_scale = scale;
-
-      setFlyoutPositions();
-      // $('.tools_flyout').each(function () {
-      //   const pos = $(this).position();
-      //   console.log($(this), pos.left+(34 * scale));
-      //   $(this).css({left: pos.left+(34 * scale), top: pos.top+(77 * scale)});
-      //   console.log('l', $(this).css('left'));
-      // });
-      //
-      // const scale = .75;
-
-      var hiddenPs = elems.parents(':hidden');
-      hiddenPs.css('visibility', 'hidden').show();
-      scaleElements(elems, scale);
-      hiddenPs.css('visibility', 'visible').hide();
-      // return;
-
-      $$b.pref('iconsize', size);
-      $$b('#iconsize').val(size);
-
-      // Change icon size
-      // $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open')
-      // .find('> svg, > img').each(function () {
-      //   this.setAttribute('width',size_num);
-      //   this.setAttribute('height',size_num);
-      // });
-      //
-      // $.resizeSvgIcons({
-      //   '.flyout_arrow_horiz > svg, .flyout_arrow_horiz > img': size_num / 5,
-      //   '#logo > svg, #logo > img': size_num * 1.3,
-      //   '#tools_bottom .icon_label > *': (size_num === 16 ? 18 : size_num * .75)
-      // });
-      // if (size != 's') {
-      //   $.resizeSvgIcons({'#layerbuttons svg, #layerbuttons img': size_num * .6});
-      // }
-
-      // Note that all rules will be prefixed with '#svg_editor' when parsed
-      var cssResizeRules = {
-        // '.tool_button,\
-        // .push_button,\
-        // .tool_button_current,\
-        // .push_button_pressed,\
-        // .disabled,\
-        // .icon_label,\
-        // .tools_flyout .tool_button': {
-        //   width: {s: '16px', l: '32px', xl: '48px'},
-        //   height: {s: '16px', l: '32px', xl: '48px'},
-        //   padding: {s: '1px', l: '2px', xl: '3px'}
-        // },
-        // '.tool_sep': {
-        //   height: {s: '16px', l: '32px', xl: '48px'},
-        //   margin: {s: '2px 2px', l: '2px 5px', xl: '2px 8px'}
-        // },
-        // '#main_icon': {
-        //   width: {s: '31px', l: '53px', xl: '75px'},
-        //   height: {s: '22px', l: '42px', xl: '64px'}
-        // },
-        '#tools_top': {
-          left: 50 + $$b('#main_button').width(),
-          height: 72
-        },
-        '#tools_left': {
-          width: 31,
-          top: 74
-        },
-        'div#workarea': {
-          left: 38,
-          top: 74
-          // '#tools_bottom': {
-          //   left: {s: '27px', l: '46px', xl: '65px'},
-          //   height: {s: '58px', l: '98px', xl: '145px'}
-          // },
-          // '#color_tools': {
-          //   'border-spacing': {s: '0 1px'},
-          //   'margin-top': {s: '-1px'}
-          // },
-          // '#color_tools .icon_label': {
-          //   width: {l:'43px', xl: '60px'}
-          // },
-          // '.color_tool': {
-          //   height: {s: '20px'}
-          // },
-          // '#tool_opacity': {
-          //   top: {s: '1px'},
-          //   height: {s: 'auto', l:'auto', xl:'auto'}
-          // },
-          // '#tools_top input, #tools_bottom input': {
-          //   'margin-top': {s: '2px', l: '4px', xl: '5px'},
-          //   height: {s: 'auto', l: 'auto', xl: 'auto'},
-          //   border: {s: '1px solid #555', l: 'auto', xl: 'auto'},
-          //   'font-size': {s: '.9em', l: '1.2em', xl: '1.4em'}
-          // },
-          // '#zoom_panel': {
-          //   'margin-top': {s: '3px', l: '4px', xl: '5px'}
-          // },
-          // '#copyright, #tools_bottom .label': {
-          //   'font-size': {l: '1.5em', xl: '2em'},
-          //   'line-height': {s: '15px'}
-          // },
-          // '#tools_bottom_2': {
-          //   width: {l: '295px', xl: '355px'},
-          //   top: {s: '4px'}
-          // },
-          // '#tools_top > div, #tools_top': {
-          //   'line-height': {s: '17px', l: '34px', xl: '50px'}
-          // },
-          // '.dropdown button': {
-          //   height: {s: '18px', l: '34px', xl: '40px'},
-          //   'line-height': {s: '18px', l: '34px', xl: '40px'},
-          //   'margin-top': {s: '3px'}
-          // },
-          // '#tools_top label, #tools_bottom label': {
-          //   'font-size': {s: '1em', l: '1.5em', xl: '2em'},
-          //   height: {s: '25px', l: '42px', xl: '64px'}
-          // },
-          // 'div.toolset': {
-          //   height: {s: '25px', l: '42px', xl: '64px'}
-          // },
-          // '#tool_bold, #tool_italic': {
-          //   'font-size': {s: '1.5em', l: '3em', xl: '4.5em'}
-          // },
-          // '#sidepanels': {
-          //   top: {s: '50px', l: '88px', xl: '125px'},
-          //   bottom: {s: '51px', l: '68px', xl: '65px'}
-          // },
-          // '#layerbuttons': {
-          //   width: {l: '130px', xl: '175px'},
-          //   height: {l: '24px', xl: '30px'}
-          // },
-          // '#layerlist': {
-          //   width: {l: '128px', xl: '150px'}
-          // },
-          // '.layer_button': {
-          //   width: {l: '19px', xl: '28px'},
-          //   height: {l: '19px', xl: '28px'}
-          // },
-          // 'input.spin-button': {
-          //   'background-image': {l: 'url('images/spinbtn_updn_big.png')', xl: 'url('images/spinbtn_updn_big.png')'},
-          //   'background-position': {l: '100% -5px', xl: '100% -2px'},
-          //   'padding-right': {l: '24px', xl: '24px' }
-          // },
-          // 'input.spin-button.up': {
-          //   'background-position': {l: '100% -45px', xl: '100% -42px'}
-          // },
-          // 'input.spin-button.down': {
-          //   'background-position': {l: '100% -85px', xl: '100% -82px'}
-          // },
-          // '#position_opts': {
-          //   width: {all: (size_num*4) +'px'}
-          // }
-        } };
-
-      var ruleElem = $$b('#tool_size_rules');
-      if (!ruleElem.length) {
-        ruleElem = $$b('<style id="tool_size_rules"></style>').appendTo('head');
-      } else {
-        ruleElem.empty();
-      }
-
-      if (size !== 'm') {
-        var styleStr = '';
-        $$b.each(cssResizeRules, function (selector, rules) {
-          selector = '#svg_editor ' + selector.replace(/,/g, ', #svg_editor');
-          styleStr += selector + '{';
-          $$b.each(rules, function (prop, values) {
-            var val = void 0;
-            if (typeof values === 'number') {
-              val = values * scale + 'px';
-            } else if (values[size] || values.all) {
-              val = values[size] || values.all;
-            }
-            styleStr += prop + ':' + val + ';';
-          });
-          styleStr += '}';
-        });
-        // this.style[uaPrefix + 'Transform'] = 'scale(' + scale + ')';
-        var prefix = '-' + uaPrefix.toLowerCase() + '-';
-        styleStr += selToscale + '{' + prefix + 'transform: scale(' + scale + ');}' + ' #svg_editor div.toolset .toolset {' + prefix + 'transform: scale(1); margin: 1px !important;}' + // Hack for markers
-        ' #svg_editor .ui-slider {' + prefix + 'transform: scale(' + 1 / scale + ');}' // Hack for sliders
-        ;
-        ruleElem.text(styleStr);
-      }
-
-      setFlyoutPositions();
-    };
 
     // TODO: Combine this with addDropDown or find other way to optimize
     var addAltDropDown = function addAltDropDown(elem, list, callback, opts) {
@@ -29493,9 +29356,9 @@
     // in Opera and Chrome
     if (isMac() && !window.opera) {
       var shortcutButtons = ['tool_clear', 'tool_save', 'tool_source', 'tool_undo', 'tool_redo', 'tool_clone'];
-      var _i3 = shortcutButtons.length;
-      while (_i3--) {
-        var button = document.getElementById(shortcutButtons[_i3]);
+      var _i2 = shortcutButtons.length;
+      while (_i2--) {
+        var button = document.getElementById(shortcutButtons[_i2]);
         if (button) {
           var title = button.title;
 
@@ -29596,10 +29459,10 @@
               var childs = selectedElement.getElementsByTagName('*');
 
               var gPaint = null;
-              for (var _i4 = 0, len = childs.length; _i4 < len; _i4++) {
-                var elem = childs[_i4];
+              for (var _i3 = 0, len = childs.length; _i3 < len; _i3++) {
+                var elem = childs[_i3];
                 var p = elem.getAttribute(type);
-                if (_i4 === 0) {
+                if (_i3 === 0) {
                   gPaint = p;
                 } else if (gPaint !== p) {
                   gPaint = null;
@@ -30297,7 +30160,6 @@
     });
 
     // init SpinButtons
-    var stateObj = { tool_scale: editor.tool_scale };
     $$b('#rect_rx').SpinButton({ min: 0, max: 1000, stateObj: stateObj, callback: changeRectRadius });
     $$b('#stroke_width').SpinButton({ min: 0, max: 99, smallStep: 0.1, stateObj: stateObj, callback: changeStrokeWidth });
     $$b('#angle').SpinButton({ min: -180, max: 180, step: 5, stateObj: stateObj, callback: changeRotationAngle });
@@ -30412,6 +30274,10 @@
         return uiStrings$1.notification.unsavedChanges;
       }
     }, false);
+
+    editor.canvas.getUIStrings = function () {
+      return uiStrings$1;
+    };
 
     editor.openPrep = function (func) {
       $$b('#main_menu').hide();
@@ -30620,6 +30486,13 @@
       curConfig: curConfig,
       setLang: setLang
     });
+    // Load extensions
+    // Bit of a hack to run extensions in local Opera/IE9
+    if (document.location.protocol === 'file:') {
+      setTimeout(extFunc, 100);
+    } else {
+      extFunc();
+    }
   };
 
   editor.ready = function (cb) {

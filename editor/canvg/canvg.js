@@ -495,7 +495,6 @@ function build (opts) {
 
   // transforms
   svg.Transform = function (v) {
-    const that = this;
     this.Type = {};
 
     // translate
@@ -561,27 +560,21 @@ function build (opts) {
 
     this.Type.SkewBase = class extends this.Type.matrix {
       constructor (s) {
-        super();
-        this.base = that.Type.matrix;
-        this.base(s);
+        super(s);
         this.angle = new svg.Property('angle', s);
       }
     };
 
     this.Type.skewX = class extends this.Type.SkewBase {
       constructor (s) {
-        super();
-        this.base = that.Type.SkewBase;
-        this.base(s);
+        super(s);
         this.m = [1, 0, Math.tan(this.angle.toRadians()), 1, 0, 0];
       }
     };
 
     this.Type.skewY = class extends this.Type.SkewBase {
       constructor (s) {
-        super();
-        this.base = that.Type.SkewBase;
-        this.base(s);
+        super(s);
         this.m = [1, Math.tan(this.angle.toRadians()), 0, 1, 0, 0];
       }
     };
@@ -833,9 +826,7 @@ function build (opts) {
 
   svg.Element.RenderedElementBase = class extends svg.Element.ElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.ElementBase;
-      this.base(node);
+      super(node);
 
       this.setContext = function (ctx) {
         // fill
@@ -926,9 +917,7 @@ function build (opts) {
 
   svg.Element.PathElementBase = class extends svg.Element.RenderedElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.RenderedElementBase;
-      this.base(node);
+      super(node);
 
       this.path = function (ctx) {
         if (ctx != null) ctx.beginPath();
@@ -979,9 +968,7 @@ function build (opts) {
   // svg element
   svg.Element.svg = class extends svg.Element.RenderedElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.RenderedElementBase;
-      this.base(node);
+      super(node);
 
       this.baseClearContext = this.clearContext;
       this.clearContext = function (ctx) {
@@ -1066,9 +1053,7 @@ function build (opts) {
   // rect element
   svg.Element.rect = class extends svg.Element.PathElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.PathElementBase;
-      this.base(node);
+      super(node);
 
       this.path = function (ctx) {
         const x = this.attribute('x').toPixels('x');
@@ -1103,9 +1088,7 @@ function build (opts) {
   // circle element
   svg.Element.circle = class extends svg.Element.PathElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.PathElementBase;
-      this.base(node);
+      super(node);
 
       this.path = function (ctx) {
         const cx = this.attribute('cx').toPixels('x');
@@ -1126,9 +1109,7 @@ function build (opts) {
   // ellipse element
   svg.Element.ellipse = class extends svg.Element.PathElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.PathElementBase;
-      this.base(node);
+      super(node);
 
       this.path = function (ctx) {
         const KAPPA = 4 * ((Math.sqrt(2) - 1) / 3);
@@ -1155,9 +1136,7 @@ function build (opts) {
   // line element
   svg.Element.line = class extends svg.Element.PathElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.PathElementBase;
-      this.base(node);
+      super(node);
 
       this.getPoints = function () {
         return [
@@ -1188,9 +1167,7 @@ function build (opts) {
   // polyline element
   svg.Element.polyline = class extends svg.Element.PathElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.PathElementBase;
-      this.base(node);
+      super(node);
 
       this.points = svg.CreatePath(this.attribute('points').value);
       this.path = function (ctx) {
@@ -1220,9 +1197,7 @@ function build (opts) {
   // polygon element
   svg.Element.polygon = class extends svg.Element.polyline {
     constructor (node) {
-      super();
-      this.base = svg.Element.polyline;
-      this.base(node);
+      super(node);
 
       this.basePath = this.path;
       this.path = function (ctx) {
@@ -1239,9 +1214,7 @@ function build (opts) {
   // path element
   svg.Element.path = class extends svg.Element.PathElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.PathElementBase;
-      this.base(node);
+      super(node);
 
       let d = this.attribute('d').value;
       // TODO: convert to real lexer based on https://www.w3.org/TR/SVG11/paths.html#PathDataBNF
@@ -1580,9 +1553,7 @@ function build (opts) {
   // pattern element
   svg.Element.pattern = class extends svg.Element.ElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.ElementBase;
-      this.base(node);
+      super(node);
 
       this.createPattern = function (ctx, element) {
         const width = this.attribute('width').toPixels('x', true);
@@ -1621,9 +1592,7 @@ function build (opts) {
   // marker element
   svg.Element.marker = class extends svg.Element.ElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.ElementBase;
-      this.base(node);
+      super(node);
 
       this.baseRender = this.render;
       this.render = function (ctx, point, angle) {
@@ -1655,9 +1624,7 @@ function build (opts) {
   // definitions element
   svg.Element.defs = class extends svg.Element.ElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.ElementBase;
-      this.base(node);
+      super(node);
 
       this.render = function (ctx) {
         // NOOP
@@ -1668,9 +1635,7 @@ function build (opts) {
   // base for gradients
   svg.Element.GradientBase = class extends svg.Element.ElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.ElementBase;
-      this.base(node);
+      super(node);
 
       this.gradientUnits = this.attribute('gradientUnits').valueOrDefault('objectBoundingBox');
 
@@ -1741,9 +1706,7 @@ function build (opts) {
   // linear gradient element
   svg.Element.linearGradient = class extends svg.Element.GradientBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.GradientBase;
-      this.base(node);
+      super(node);
 
       this.getGradient = function (ctx, element) {
         const bb = this.gradientUnits === 'objectBoundingBox'
@@ -1783,9 +1746,7 @@ function build (opts) {
   // radial gradient element
   svg.Element.radialGradient = class extends svg.Element.GradientBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.GradientBase;
-      this.base(node);
+      super(node);
 
       this.getGradient = function (ctx, element) {
         const bb = element.getBoundingBox();
@@ -1826,9 +1787,7 @@ function build (opts) {
   // gradient stop element
   svg.Element.stop = class extends svg.Element.ElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.ElementBase;
-      this.base(node);
+      super(node);
 
       this.offset = this.attribute('offset').numValue();
       if (this.offset < 0) this.offset = 0;
@@ -1845,9 +1804,7 @@ function build (opts) {
   // animation base element
   svg.Element.AnimateBase = class extends svg.Element.ElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.ElementBase;
-      this.base(node);
+      super(node);
 
       svg.Animations.push(this);
 
@@ -1944,9 +1901,7 @@ function build (opts) {
   // animate element
   svg.Element.animate = class extends svg.Element.AnimateBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.AnimateBase;
-      this.base(node);
+      super(node);
 
       this.calcValue = function () {
         const p = this.progress();
@@ -1961,9 +1916,7 @@ function build (opts) {
   // animate color element
   svg.Element.animateColor = class extends svg.Element.AnimateBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.AnimateBase;
-      this.base(node);
+      super(node);
 
       this.calcValue = function () {
         const p = this.progress();
@@ -1985,9 +1938,7 @@ function build (opts) {
   // animate transform element
   svg.Element.animateTransform = class extends svg.Element.animate {
     constructor (node) {
-      super();
-      this.base = svg.Element.AnimateBase;
-      this.base(node);
+      super(node);
 
       this.calcValue = function () {
         const p = this.progress();
@@ -2007,9 +1958,7 @@ function build (opts) {
   // font element
   svg.Element.font = class extends svg.Element.ElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.ElementBase;
-      this.base(node);
+      super(node);
 
       this.horizAdvX = this.attribute('horiz-adv-x').numValue();
 
@@ -2046,9 +1995,7 @@ function build (opts) {
   // font-face element
   svg.Element.fontface = class extends svg.Element.ElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.ElementBase;
-      this.base(node);
+      super(node);
 
       this.ascent = this.attribute('ascent').value;
       this.descent = this.attribute('descent').value;
@@ -2059,9 +2006,7 @@ function build (opts) {
   // missing-glyph element
   svg.Element.missingglyph = class extends svg.Element.path {
     constructor (node) {
-      super();
-      this.base = svg.Element.path;
-      this.base(node);
+      super(node);
 
       this.horizAdvX = 0;
     }
@@ -2070,9 +2015,7 @@ function build (opts) {
   // glyph element
   svg.Element.glyph = class extends svg.Element.path {
     constructor (node) {
-      super();
-      this.base = svg.Element.path;
-      this.base(node);
+      super(node);
 
       this.horizAdvX = this.attribute('horiz-adv-x').numValue();
       this.unicode = this.attribute('unicode').value;
@@ -2083,10 +2026,8 @@ function build (opts) {
   // text element
   svg.Element.text = class extends svg.Element.RenderedElementBase {
     constructor (node) {
-      super();
+      super(node);
       this.captureTextNodes = true;
-      this.base = svg.Element.RenderedElementBase;
-      this.base(node);
 
       this.baseSetContext = this.setContext;
       this.setContext = function (ctx) {
@@ -2161,9 +2102,7 @@ function build (opts) {
   // text base
   svg.Element.TextElementBase = class extends svg.Element.RenderedElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.RenderedElementBase;
-      this.base(node);
+      super(node);
 
       this.getGlyph = function (font, text, i) {
         const c = text[i];
@@ -2264,10 +2203,8 @@ function build (opts) {
   // tspan
   svg.Element.tspan = class extends svg.Element.TextElementBase {
     constructor (node) {
-      super();
+      super(node);
       this.captureTextNodes = true;
-      this.base = svg.Element.TextElementBase;
-      this.base(node);
 
       this.text = node.nodeValue || node.text || '';
       this.getText = function () {
@@ -2279,9 +2216,7 @@ function build (opts) {
   // tref
   svg.Element.tref = class extends svg.Element.TextElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.TextElementBase;
-      this.base(node);
+      super(node);
 
       this.getText = function () {
         const element = this.getHrefAttribute().getDefinition();
@@ -2293,9 +2228,7 @@ function build (opts) {
   // a element
   svg.Element.a = class extends svg.Element.TextElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.TextElementBase;
-      this.base(node);
+      super(node);
 
       this.hasText = true;
       for (let i = 0, childNode; (childNode = node.childNodes[i]); i++) {
@@ -2337,9 +2270,7 @@ function build (opts) {
   // image element
   svg.Element.image = class extends svg.Element.RenderedElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.RenderedElementBase;
-      this.base(node);
+      super(node);
 
       const href = this.getHrefAttribute().value;
       if (href === '') {
@@ -2402,9 +2333,7 @@ function build (opts) {
   // group element
   svg.Element.g = class extends svg.Element.RenderedElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.RenderedElementBase;
-      this.base(node);
+      super(node);
 
       this.getBoundingBox = function () {
         const bb = new svg.BoundingBox();
@@ -2419,9 +2348,7 @@ function build (opts) {
   // symbol element
   svg.Element.symbol = class extends svg.Element.RenderedElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.RenderedElementBase;
-      this.base(node);
+      super(node);
 
       this.render = function (ctx) {
         // NO RENDER
@@ -2432,9 +2359,7 @@ function build (opts) {
   // style element
   svg.Element.style = class extends svg.Element.ElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.ElementBase;
-      this.base(node);
+      super(node);
 
       // text, or spaces then CDATA
       let css = '';
@@ -2489,9 +2414,7 @@ function build (opts) {
   // use element
   svg.Element.use = class extends svg.Element.RenderedElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.RenderedElementBase;
-      this.base(node);
+      super(node);
 
       this.baseSetContext = this.setContext;
       this.setContext = function (ctx) {
@@ -2539,9 +2462,7 @@ function build (opts) {
   // mask element
   svg.Element.mask = class extends svg.Element.ElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.ElementBase;
-      this.base(node);
+      super(node);
 
       this.apply = function (ctx, element) {
         // render as temp svg
@@ -2596,9 +2517,7 @@ function build (opts) {
   // clip element
   svg.Element.clipPath = class extends svg.Element.ElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.ElementBase;
-      this.base(node);
+      super(node);
 
       this.apply = function (ctx) {
         for (let i = 0; i < this.children.length; i++) {
@@ -2625,9 +2544,7 @@ function build (opts) {
   // filters
   svg.Element.filter = class extends svg.Element.ElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.ElementBase;
-      this.base(node);
+      super(node);
 
       this.apply = function (ctx, element) {
         // render as temp svg
@@ -2675,9 +2592,7 @@ function build (opts) {
 
   svg.Element.feMorphology = class extends svg.Element.ElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.ElementBase;
-      this.base(node);
+      super(node);
 
       this.apply = function (ctx, x, y, width, height) {
         // TODO: implement
@@ -2687,9 +2602,7 @@ function build (opts) {
 
   svg.Element.feComposite = class extends svg.Element.ElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.ElementBase;
-      this.base(node);
+      super(node);
 
       this.apply = function (ctx, x, y, width, height) {
         // TODO: implement
@@ -2699,9 +2612,7 @@ function build (opts) {
 
   svg.Element.feColorMatrix = class extends svg.Element.ElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.ElementBase;
-      this.base(node);
+      super(node);
 
       let matrix = svg.ToNumberArray(this.attribute('values').value);
       switch (this.attribute('type').valueOrDefault('matrix')) { // https://www.w3.org/TR/SVG/filters.html#feColorMatrixElement
@@ -2773,9 +2684,7 @@ function build (opts) {
 
   svg.Element.feGaussianBlur = class extends svg.Element.ElementBase {
     constructor (node) {
-      super();
-      this.base = svg.Element.ElementBase;
-      this.base(node);
+      super(node);
 
       this.blurRadius = Math.floor(this.attribute('stdDeviation').numValue());
       this.extraFilterDistance = this.blurRadius;

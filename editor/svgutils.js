@@ -1156,11 +1156,11 @@ export const executeAfterLoads = function (name, scripts, cb, options = {globals
         // Todo: Once `import()` and modules widely supported, switch to it
         return oldProm.then(() => importer(script));
       }, Promise.resolve()).then(function () {
-        loadedScripts[name] = true;
         endCallback();
         loadedScripts[name].forEach((cb) => {
           cb();
         });
+        loadedScripts[name] = true;
       })();
     }
   };
