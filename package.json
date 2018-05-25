@@ -1,6 +1,6 @@
 {
   "name": "svgedit",
-  "version": "3.0.0-alpha.1",
+  "version": "3.0.0-alpha.2",
   "description": "Powerful SVG-Editor for your browser ",
   "main": "editor/svg-editor.js",
   "directories": {
