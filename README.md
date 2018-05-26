@@ -10,6 +10,11 @@ SVG-edit is a fast, web-based, javascript-driven SVG drawing editor that works i
 
 ## Installation
 
+Note that steps 1-2 below are only necessary if you wish to integrate
+SVG-edit into your own npm package; otherwise, you can skip those steps
+and instead of looking within `node_modules/svgedit`, look within your
+copy of the svgedit Git repo.
+
 1. Set up an npm package of your own: `npm init` (complete the fields).
 1. Install SVG-edit into your package: `npm i svgedit`
 1. Copy `svgedit-config-sample-es.js` (in the SVG-edit project root;
