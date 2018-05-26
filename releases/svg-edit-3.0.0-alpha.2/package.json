@@ -1,0 +1,115 @@
+{
+  "_from": "svgedit",
+  "_id": "svgedit@3.0.0-alpha.2",
+  "_inBundle": false,
+  "_integrity": "sha512-pr7RXzkQJuvU1hnX/kxbDYh4aOMnN9m2T/pYoGe8l+WOFlp+e/NHjnG7Cc4sA0N6fZQH7lptHnSgr2Bx14I0XQ==",
+  "_location": "/svgedit",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "svgedit",
+    "name": "svgedit",
+    "escapedName": "svgedit",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/svgedit/-/svgedit-3.0.0-alpha.2.tgz",
+  "_shasum": "b9a21868a206eea343e006c4a32ba6ad02a912a5",
+  "_spec": "svgedit",
+  "_where": "/Users/brett/svgedit/releases/svg-edit-3.0.0-alpha.2",
+  "author": {
+    "name": "Narendra Sisodiya"
+  },
+  "bugs": {
+    "url": "https://github.com/SVG-Edit/svgedit/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "Pavol Rusnak"
+    },
+    {
+      "name": "Jeff Schiller"
+    },
+    {
+      "name": "Vidar Hokstad"
+    },
+    {
+      "name": "Alexis Deveria"
+    },
+    {
+      "name": "Brett Zamir"
+    }
+  ],
+  "dependencies": {},
+  "deprecated": false,
+  "description": "Powerful SVG-Editor for your browser ",
+  "devDependencies": {
+    "babel-core": "6.26.3",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "eslint": "4.19.1",
+    "eslint-config-standard": "11.0.0",
+    "eslint-plugin-import": "2.12.0",
+    "eslint-plugin-node": "6.0.1",
+    "eslint-plugin-promise": "3.7.0",
+    "eslint-plugin-qunit": "^3.2.1",
+    "eslint-plugin-standard": "3.1.0",
+    "imageoptim-cli": "^2.0.2",
+    "load-stylesheets": "^0.4.0",
+    "node-static": "^0.7.10",
+    "opn-cli": "^3.1.0",
+    "qunit": "^2.6.1",
+    "rollup": "0.59.2",
+    "rollup-plugin-babel": "^3.0.4",
+    "rollup-plugin-commonjs": "^9.1.3",
+    "rollup-plugin-json": "^3.0.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-re": "^1.0.7",
+    "rollup-plugin-uglify": "^4.0.0",
+    "sinon": "^5.0.10",
+    "sinon-test": "^2.1.3",
+    "uglify-es": "^3.3.9"
+  },
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "test": "test"
+  },
+  "engines": {},
+  "homepage": "https://github.com/SVG-Edit/svgedit#readme",
+  "keywords": [
+    "svg-editor",
+    "javascript",
+    "svg-edit",
+    "svg"
+  ],
+  "license": "MIT",
+  "main": "editor/svg-editor.js",
+  "name": "svgedit",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SVG-Edit/svgedit.git"
+  },
+  "scripts": {
+    "build-config": "rollup -c rollup-config.config.js",
+    "build-html": "node build-html.js",
+    "compress-images": "imageoptim 'chrome-app/*.png' && imageoptim 'editor/extensions/*.png' && imageoptim 'editor/spinbtn/*.png' && imageoptim 'editor/jgraduate/images/*.{png,gif}' && imageoptim 'editor/images/*.png'",
+    "copy-deps": "cp node_modules/load-stylesheets/dist/index-es.js editor/external/load-stylesheets/index-es.js && cp node_modules/babel-polyfill/dist/polyfill.min.js editor/external/babel-polyfill/polyfill.min.js && cp node_modules/babel-polyfill/dist/polyfill.js editor/external/babel-polyfill/polyfill.js",
+    "eslint": "eslint .",
+    "rollup": "rollup -c",
+    "start": "echo \"Open file to http://localhost:8000/test/all_tests.html\" && static -p 8000",
+    "test": "npm run eslint && npm run build-html && npm run rollup && npm run build-config && opn http://localhost:8000/test/all_tests.html && static -p 8000",
+    "test-no-build": "npm run eslint && npm run build-html && npm run build-config && opn http://localhost:8000/test/all_tests.html && static -p 8000"
+  },
+  "version": "3.0.0-alpha.2"
+}

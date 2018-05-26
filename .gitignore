@@ -1,0 +1,4 @@
+# Convenient to use npm to install releases, but we don't
+#  want this repo to contain the meta-data
+package-lock.json
+node_modules
