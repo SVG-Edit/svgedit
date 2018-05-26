@@ -10,7 +10,7 @@ SVG-edit is a fast, web-based, javascript-driven SVG drawing editor that works i
 
 ## Installation
 
-1. `npm i svgeditor`
+1. `npm i svgedit`
 1. Copy `svgedit-config-sample-es.js` (in project root) to `svgedit-config-es.js`.
   1. This will enable `svg-editor-es.html` to work, an HTML file directly
     using ES6 modules. Note that this file only works on modern browsers.
