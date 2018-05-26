@@ -1,12 +1,30 @@
-![alt text](https://svg-edit.github.io/svgedit/images/logo48x48.svg "svg-edit logo of a pencil") SVG-edit
-===
+# ![alt text](https://svg-edit.github.io/svgedit/images/logo48x48.svg "svg-edit logo of a pencil") SVG-edit
+
 SVG-edit is a fast, web-based, javascript-driven SVG drawing editor that works in any modern browser.
+
+## Demo
 
 ### [Try SVG-edit here](https://svg-edit.github.io/svgedit/releases/svg-edit-2.8.1/svg-editor.html)
 
 (Also available as a [download](https://github.com/SVG-Edit/svgedit/releases/download/svg-edit-2.8.1/svg-edit-2.8.1.zip) in [releases](https://github.com/SVG-Edit/svgedit/releases)).
 
+## Installation
+
+1. `npm i svgeditor`
+1. Copy `svgedit-config-sample-es.js` (in project root) to `svgedit-config-es.js`.
+  1. This will enable `svg-editor-es.html` to work, an HTML file directly
+    using ES6 modules. Note that this file only works on modern browsers.
+    The config file now imports the SVG edit code, minimizing the scripts
+    that need to be referenced in the HTML file.
+1. Run `npm run build-config` to also build a rolled-up, Babelified,
+  non-ES Modules (IIFE) JavaScript file which will allow `svg-editor.html`
+  to work, a file which does not rely on ES6 Modules support.
+1. If you wish to make changes to the HTML, modify `svg-editor-es.html` and
+  then run `npm run build-html` to have the changes properly copied to
+  `svg-editor.html`.
+
 ## Recent news
+  * 2018-05-26 Published 3.0.0-alpha.2 with ES6 Modules support
   * 2017-07 Added to Packagist: https://packagist.org/packages/svg-edit/svgedit
   * 2015-12-02 SVG-edit 2.8.1 was released.
   * 2015-11-24 SVG-edit 2.8 was released.
