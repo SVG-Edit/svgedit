@@ -3632,22 +3632,23 @@ const convertToGroup = this.convertToGroup = function (elem) {
   }
 };
 
-//
-// Function: setSvgString
-// This function sets the current drawing as the input SVG XML.
-//
-// Parameters:
-// xmlString - The SVG as XML text.
-// preventUndo - Boolean (defaults to false) indicating if we want to do the
-// changes without adding them to the undo stack - e.g. for initializing a
-// drawing on page load.
-//
-// Returns:
-// This function returns false if the set was unsuccessful, true otherwise.
+/**
+* This function sets the current drawing as the input SVG XML.
+* @param {String} xmlString - The SVG as XML text.
+* @param {Boolean} [preventUndo=false] - Indicates if we want to do the
+* changes without adding them to the undo stack - e.g. for initializing a
+* drawing on page load.
+* @returns {Boolean} This function returns false if the set was
+*     unsuccessful, true otherwise.
+*/
 this.setSvgString = function (xmlString, preventUndo) {
   try {
     // convert string into XML document
     const newDoc = text2xml(xmlString);
+    if (newDoc.firstElementChild &&
+      newDoc.firstElementChild.namespaceURI !== NS.SVG) {
+      return false;
+    }
 
     this.prepareSvg(newDoc);
 
