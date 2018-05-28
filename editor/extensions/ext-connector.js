@@ -60,7 +60,9 @@ svgEditor.addExtension('Connector', function (S) {
     if (slope < bb.height / bb.width) {
       ratio = (bb.width / 2) / Math.abs(lenX);
     } else {
-      ratio = (bb.height / 2) / Math.abs(lenY);
+      ratio = lenY
+        ? (bb.height / 2) / Math.abs(lenY)
+        : 0;
     }
 
     return {
