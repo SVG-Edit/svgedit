@@ -12,7 +12,7 @@ import svgEditor from '../svg-editor.js';
 svgEditor.addExtension('Connector', function (S) {
   const $ = jQuery;
   const svgCanvas = svgEditor.canvas;
-  const {svgroot, getNextId, getElem, curConfig} = S,
+  const {svgroot, getNextId, getElem} = S,
     addElem = S.addSvgElementFromJson,
     selManager = S.selectorManager,
     connSel = '.se_connector',
@@ -340,6 +340,7 @@ svgEditor.addExtension('Connector', function (S) {
       startX = opts.start_x;
       startY = opts.start_y;
       const mode = svgCanvas.getMode();
+      const {curConfig: {initStroke}} = svgEditor;
 
       if (mode === 'connector') {
         if (started) { return; }
@@ -366,10 +367,12 @@ svgEditor.addExtension('Connector', function (S) {
             attr: {
               id: getNextId(),
               points: (x + ',' + y + ' ' + x + ',' + y + ' ' + startX + ',' + startY),
-              stroke: '#' + curConfig.initStroke.color,
-              'stroke-width': (!startElem.stroke_width || startElem.stroke_width === 0) ? curConfig.initStroke.width : startElem.stroke_width,
+              stroke: '#' + initStroke.color,
+              'stroke-width': (!startElem.stroke_width || startElem.stroke_width === 0)
+                ? initStroke.width
+                : startElem.stroke_width,
               fill: 'none',
-              opacity: curConfig.initStroke.opacity,
+              opacity: initStroke.opacity,
               style: 'pointer-events:none'
             }
           });
