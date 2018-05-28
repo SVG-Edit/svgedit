@@ -1462,11 +1462,15 @@ editor.init = function () {
     svgCanvas.setBackground(color, url);
   }
 
-  function promptImgURL () {
+  function promptImgURL ({cancelDeletes = false} = {}) {
     let curhref = svgCanvas.getHref(selectedElement);
     curhref = curhref.startsWith('data:') ? '' : curhref;
     $.prompt(uiStrings.notification.enterNewImgURL, curhref, function (url) {
-      if (url) { setImageURL(url); }
+      if (url) {
+        setImageURL(url);
+      } else if (cancelDeletes) {
+        svgCanvas.deleteSelectedElements();
+      }
     });
   }
 
@@ -1852,7 +1856,7 @@ editor.init = function () {
         if (elname === 'image' && svgCanvas.getMode() === 'image') {
           // Prompt for URL if not a data URL
           if (!svgCanvas.getHref(elem).startsWith('data:')) {
-            promptImgURL();
+            promptImgURL({cancelDeletes: true});
           }
         }
         /* else if (elname == 'text') {
