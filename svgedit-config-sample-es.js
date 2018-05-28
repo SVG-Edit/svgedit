@@ -67,7 +67,7 @@ svgEditor.setConfig({
 
 // STYLESHEET CONFIG
 svgEditor.setConfig({
-  stylesheets: ['@default', 'svgedit-custom.css']
+  stylesheets: ['@default', '../svgedit-custom.css']
 });
 
 // OTHER CONFIG
