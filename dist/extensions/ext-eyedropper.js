@@ -97,6 +97,7 @@ var svgEditorExtension_eyedropper = (function () {
                 };
                 buttons = [{
                   id: 'tool_eyedropper',
+                  icon: svgEditor.curConfig.extIconsPath + 'eyedropper.png',
                   type: 'mode',
                   events: {
                     click: function click() {

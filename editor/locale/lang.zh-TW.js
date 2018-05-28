@@ -2,9 +2,9 @@ export default {
   lang: 'zh-TW',
   dir: 'ltr',
   common: {
-    ok: 'OK',
+    ok: '确定',
     cancel: 'Cancel',
-    key_backspace: 'Backspace',
+    key_backspace: 'backspace',
     key_del: 'Del',
     key_down: 'Down',
     key_up: 'Up',

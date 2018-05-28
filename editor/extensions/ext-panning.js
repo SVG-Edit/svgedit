@@ -17,6 +17,7 @@ export default {
     const svgCanvas = svgEditor.canvas;
     const buttons = [{
       id: 'ext-panning',
+      icon: svgEditor.curConfig.extIconsPath + 'panning.png',
       type: 'mode',
       events: {
         click () {

@@ -2,7 +2,7 @@ export default {
   lang: 'zh-HK',
   dir: 'ltr',
   common: {
-    ok: 'OK',
+    ok: '确定',
     cancel: 'Cancel',
     key_backspace: 'Backspace',
     key_del: 'Del',

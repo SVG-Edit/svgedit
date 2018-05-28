@@ -99,11 +99,12 @@ var svgEditorExtension_markers = (function () {
                   $.each(mtypes, function (k, pos) {
                     var listname = pos + '_marker_list';
                     var def = true;
-                    $.each(markerTypes, function (id, v) {
+                    Object.keys(markerTypes).forEach(function (id) {
                       var title = getTitle(String(id));
                       buttons.push({
                         id: idPrefix + pos + '_' + id,
                         svgicon: id,
+                        icon: svgEditor.curConfig.extIconsPath + 'markers-' + id + '.png',
                         title: title,
                         type: 'context',
                         events: { click: setArrowFromButton },
@@ -486,7 +487,7 @@ var svgEditorExtension_markers = (function () {
 
                 // duplicate shapes to support unfilled (open) marker types with an _o suffix
 
-                $.each(['leftarrow', 'rightarrow', 'box', 'star', 'mcircle', 'triangle'], function (i, v) {
+                ['leftarrow', 'rightarrow', 'box', 'star', 'mcircle', 'triangle'].forEach(function (v) {
                   markerTypes[v + '_o'] = markerTypes[v];
                 });
 

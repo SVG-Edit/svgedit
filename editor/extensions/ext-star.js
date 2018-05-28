@@ -56,6 +56,7 @@ export default {
     */
     const buttons = [{
       id: 'tool_star',
+      icon: svgEditor.curConfig.extIconsPath + 'star.png',
       type: 'mode',
       position: 12,
       events: {

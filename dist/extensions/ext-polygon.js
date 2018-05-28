@@ -148,6 +148,7 @@ var svgEditorExtension_polygon = (function () {
                 */
                 buttons = [{
                   id: 'tool_polygon',
+                  icon: svgEditor.curConfig.extIconsPath + 'polygon.png',
                   type: 'mode',
                   position: 11,
                   events: {

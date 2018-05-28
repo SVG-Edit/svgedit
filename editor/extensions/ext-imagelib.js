@@ -364,6 +364,7 @@ export default {
     const buttons = [{
       id: 'tool_imagelib',
       type: 'app_menu', // _flyout
+      icon: svgEditor.curConfig.extIconsPath + 'imagelib.png',
       position: 4,
       events: {
         mouseup: showBrowser

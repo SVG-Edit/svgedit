@@ -60,6 +60,7 @@ var svgEditorExtension_panning = (function () {
                 svgCanvas = svgEditor.canvas;
                 buttons = [{
                   id: 'ext-panning',
+                  icon: svgEditor.curConfig.extIconsPath + 'panning.png',
                   type: 'mode',
                   events: {
                     click: function click() {

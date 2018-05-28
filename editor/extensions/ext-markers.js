@@ -75,7 +75,7 @@ export default {
     };
 
     // duplicate shapes to support unfilled (open) marker types with an _o suffix
-    $.each(['leftarrow', 'rightarrow', 'box', 'star', 'mcircle', 'triangle'], function (i, v) {
+    ['leftarrow', 'rightarrow', 'box', 'star', 'mcircle', 'triangle'].forEach((v) => {
       markerTypes[v + '_o'] = markerTypes[v];
     });
 
@@ -432,11 +432,12 @@ export default {
       $.each(mtypes, function (k, pos) {
         const listname = pos + '_marker_list';
         let def = true;
-        $.each(markerTypes, function (id, v) {
+        Object.keys(markerTypes).forEach(function (id) {
           const title = getTitle(String(id));
           buttons.push({
             id: idPrefix + pos + '_' + id,
             svgicon: id,
+            icon: svgEditor.curConfig.extIconsPath + 'markers-' + id + '.png',
             title,
             type: 'context',
             events: {click: setArrowFromButton},

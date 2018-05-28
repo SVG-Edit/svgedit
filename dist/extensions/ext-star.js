@@ -89,6 +89,7 @@ var svgEditorExtension_star = (function () {
                 */
                 buttons = [{
                   id: 'tool_star',
+                  icon: svgEditor.curConfig.extIconsPath + 'star.png',
                   type: 'mode',
                   position: 12,
                   events: {

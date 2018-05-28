@@ -91,6 +91,7 @@ export default {
 
     const buttons = [{
       id: 'tool_foreign',
+      icon: svgEditor.curConfig.extIconsPath + 'foreignobject-tool.png',
       type: 'mode',
       events: {
         click () {
@@ -99,6 +100,7 @@ export default {
       }
     }, {
       id: 'edit_foreign',
+      icon: svgEditor.curConfig.extIconsPath + 'foreignobject-edit.png',
       type: 'context',
       panel: 'foreignObject_panel',
       events: {

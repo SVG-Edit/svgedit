@@ -97,6 +97,7 @@ var svgEditorExtension_closepath = (function () {
 
                 buttons = [{
                   id: 'tool_openpath',
+                  icon: svgEditor.curConfig.extIconsPath + 'openpath.png',
                   type: 'context',
                   panel: 'closepath_panel',
                   events: {
@@ -106,6 +107,7 @@ var svgEditorExtension_closepath = (function () {
                   }
                 }, {
                   id: 'tool_closepath',
+                  icon: svgEditor.curConfig.extIconsPath + 'closepath.png',
                   type: 'context',
                   panel: 'closepath_panel',
                   events: {

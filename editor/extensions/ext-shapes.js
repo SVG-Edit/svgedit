@@ -125,6 +125,7 @@ export default {
     }
     const buttons = [{
       id: 'tool_shapelib',
+      icon: svgEditor.curConfig.extIconsPath + 'shapes.png',
       type: 'mode_flyout', // _flyout
       position: 6,
       events: {

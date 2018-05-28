@@ -14,8 +14,19 @@ const plugins = [
       },
       {
         match: /svgedit-config-es\.js/,
-        test: '// <CONDITIONAL-ADD>: ', // Sets `svgEditor` global for extensions/locales
-        replace: ''
+        test: "import svgEditor from './editor/svg-editor.js';", // Sets `svgEditor` global for extensions/locales
+        replace: `import svgEditor from './editor/svg-editor.js';
+window.svgEditor = svgEditor;
+window.svgEditor.modules = false;
+        `
+      },
+      {
+        match: /xdomain-svgedit-config-es\.js/,
+        test: "import svgEditor from './svg-editor.js';",
+        replace: `import svgEditor from './svg-editor.js';
+window.svgEditor = svgEditor;
+window.svgEditor.modules = false;
+`
       }
     ]
   }),

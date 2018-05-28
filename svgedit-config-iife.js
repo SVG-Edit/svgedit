@@ -25017,7 +25017,7 @@
   * @name module:SVGEditor~defaultExtensions
   * @type {string[]}
   */
-  defaultExtensions = ['ext-overview_window.js', 'ext-markers.js', 'ext-connector.js', 'ext-eyedropper.js', 'ext-shapes.js', 'ext-imagelib.js', 'ext-grid.js', 'ext-polygon.js', 'ext-star.js', 'ext-panning.js', 'ext-storage.js'],
+  defaultExtensions = ['ext-connector.js', 'ext-eyedropper.js', 'ext-grid.js', 'ext-imagelib.js', 'ext-markers.js', 'ext-overview_window.js', 'ext-panning.js', 'ext-polygon.js', 'ext-shapes.js', 'ext-star.js', 'ext-storage.js'],
 
   /**
   * @typedef {"@default"|string} module:SVGEditor.Stylesheet `@default` will automatically load all of the default CSS paths for SVGEditor
@@ -26079,42 +26079,68 @@
       no_img: !isWebkit(), // Opera & Firefox 4 gives odd behavior w/images
       fallback_path: curConfig.imgPath,
       fallback: {
-        new_image: 'clear.png',
-        save: 'save.png',
-        open: 'open.png',
-        source: 'source.png',
-        docprops: 'document-properties.png',
-        wireframe: 'wireframe.png',
-
-        undo: 'undo.png',
-        redo: 'redo.png',
+        logo: 'logo.png',
 
         select: 'select.png',
         select_node: 'select_node.png',
-        pencil: 'fhpath.png',
-        pen: 'line.png',
+
         square: 'square.png',
         rect: 'rect.png',
         fh_rect: 'freehand-square.png',
         circle: 'circle.png',
         ellipse: 'ellipse.png',
         fh_ellipse: 'freehand-circle.png',
-        path: 'path.png',
+        pencil: 'fhpath.png',
+        pen: 'line.png',
         text: 'text.png',
+        path: 'path.png',
+        add_subpath: 'add_subpath.png',
+        close_path: 'closepath.png',
+        open_path: 'openpath.png',
+
         image: 'image.png',
         zoom: 'zoom.png',
 
+        arrow_right: 'flyouth.png',
+        arrow_right_big: 'arrow_right_big.png',
+        arrow_down: 'dropdown.gif',
+        fill: 'fill.png',
+        stroke: 'stroke.png',
+        opacity: 'opacity.png',
+
+        new_image: 'clear.png',
+        save: 'save.png',
+        export: 'export.png',
+        open: 'open.png',
+        import: 'import.png',
+        docprops: 'document-properties.png',
+        source: 'source.png',
+        wireframe: 'wireframe.png',
+
+        undo: 'undo.png',
+        redo: 'redo.png',
+
         clone: 'clone.png',
-        node_clone: 'node_clone.png',
         delete: 'delete.png',
-        node_delete: 'node_delete.png',
-        group: 'shape_group_elements.png',
-        ungroup: 'shape_ungroup.png',
-        move_top: 'move_top.png',
+        go_up: 'go-up.png',
+        go_down: 'go-down.png',
+        context_menu: 'context_menu.png',
         move_bottom: 'move_bottom.png',
+        move_top: 'move_top.png',
         to_path: 'to_path.png',
         link_controls: 'link_controls.png',
         reorient: 'reorient.png',
+        group_elements: 'shape_group_elements.png',
+
+        ungroup: 'shape_ungroup.png',
+        unlink_use: 'unlink_use.png',
+        width: 'width.png',
+        height: 'height.png',
+        c_radius: 'c_radius.png',
+        angle: 'angle.png',
+        blur: 'blur.png',
+        fontsize: 'fontsize.png',
+        align: 'align.png',
 
         align_left: 'align-left.png',
         align_center: 'align-center.png',
@@ -26123,14 +26149,23 @@
         align_middle: 'align-middle.png',
         align_bottom: 'align-bottom.png',
 
-        go_up: 'go-up.png',
-        go_down: 'go-down.png',
+        linecap_butt: 'linecap_butt.png',
+        linecap_square: 'linecap_square.png',
+        linecap_round: 'linecap_round.png',
+        linejoin_miter: 'linejoin_miter.png',
+        linejoin_bevel: 'linejoin_bevel.png',
+        linejoin_round: 'linejoin_round.png',
+        eye: 'eye.png',
+        no_color: 'no_color.png',
 
         ok: 'save.png',
         cancel: 'cancel.png',
+        warning: 'warning.png',
 
-        arrow_right: 'flyouth.png',
-        arrow_down: 'dropdown.gif'
+        node_delete: 'node_delete.png',
+        node_clone: 'node_clone.png',
+
+        globe_link: 'globe_link.png'
       },
       placement: {
         '#logo': 'logo',
@@ -31021,9 +31056,8 @@
   });
 
   //  TO BUILD AN IIFE VERSION OF THIS FILE (AS CAN WORK ON OLDER BROWSERS),
-
-  window.svgEditor = editor; // DO NOT DELETE THIS LINE: USED BY AUTOMATED SCRIPT
-  window.svgEditor.modules = false; // DO NOT DELETE THIS LINE: USED BY AUTOMATED SCRIPT
+  window.svgEditor = editor;
+  window.svgEditor.modules = false;
 
   // URL OVERRIDE CONFIG
   editor.setConfig({

@@ -2,19 +2,19 @@ export default {
   lang: 'zh-CN',
   dir: 'ltr',
   common: {
-    ok: 'OK',
-    cancel: 'Cancel',
-    key_backspace: 'Backspace',
-    key_del: 'Del',
-    key_down: 'Down',
-    key_up: 'Up',
-    more_opts: 'more_opts',
-    url: 'url',
-    width: 'width',
-    height: 'height'
+    ok: '确定',
+    cancel: '取消',
+    key_backspace: '退格',
+    key_del: '删除',
+    key_down: '下',
+    key_up: '上',
+    more_opts: '更多选项',
+    url: 'URL',
+    width: '宽度',
+    height: '高度'
   },
   misc: {
-    powered_by: 'powered_by'
+    powered_by: 'Powered by'
   },
   ui: {
     toggle_stroke_tools: 'toggle_stroke_tools',

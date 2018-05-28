@@ -120,6 +120,7 @@ export default {
     const buttons = [{
       id: 'tool_mathjax',
       type: 'mode',
+      icon: svgEditor.curConfig.extIconsPath + 'mathjax.png',
       events: {
         click () {
           // Only load Mathjax when needed, we don't want to strain Svg-Edit any more.

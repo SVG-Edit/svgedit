@@ -4051,7 +4051,7 @@ var canvg = (function (exports) {
           ctx.canvas.id = svg.UniqueId();
           ctx.canvas.style.display = 'none';
           document.body.append(ctx.canvas);
-          canvasRGBA_(ctx.canvas.id, x, y, width, height, this.blurRadius);
+          canvasRGBA_(ctx.canvas, x, y, width, height, this.blurRadius);
           ctx.canvas.remove();
         }
       }]);

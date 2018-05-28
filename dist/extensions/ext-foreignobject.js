@@ -130,6 +130,7 @@ var svgEditorExtension_foreignobject = (function () {
 
                 buttons = [{
                   id: 'tool_foreign',
+                  icon: svgEditor.curConfig.extIconsPath + 'foreignobject-tool.png',
                   type: 'mode',
                   events: {
                     click: function click() {
@@ -138,6 +139,7 @@ var svgEditorExtension_foreignobject = (function () {
                   }
                 }, {
                   id: 'edit_foreign',
+                  icon: svgEditor.curConfig.extIconsPath + 'foreignobject-edit.png',
                   type: 'context',
                   panel: 'foreignObject_panel',
                   events: {

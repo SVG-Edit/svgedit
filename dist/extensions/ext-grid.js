@@ -179,6 +179,7 @@ var svgEditorExtension_grid = (function () {
 
                 buttons = [{
                   id: 'view_grid',
+                  icon: svgEditor.curConfig.extIconsPath + 'grid.png',
                   type: 'context',
                   panel: 'editor_panel',
                   events: {

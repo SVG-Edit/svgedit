@@ -8,14 +8,17 @@
 - Fix: Ensure SVG icon of flyout right-arrow is cloned to can be applied to
   more than one extension
 - Fix: Ensure line tool shows as selected when "L" key command is used
+- Fix: Add images (and references) for fallback (#135)
 - Fix (svgIcons plugin): Race condition
 - Fix (canvg): Regression for `text` and `tspan` elements as far as
   `captureTextNodes` with canvg (inheriting class had set
   `captureTextNodes` too late)
+- Fix (canvg): Regression on blur
 - Fix (canvg): Avoid errors for `tspan` passed to `getGradient`
 - i18n: picking stroke/fill paint and opacity
 - Enhancement: Create xdomain file build which works without ES6 Modules
 - Enhancement: Build xdomain files dynamically
+- Optimize: Further image optimizing
 - Optimize: Avoid rewriting `points` attribute for free-hand path;
   incorporates #176 (fixes #175)
 - Refactoring: Avoid passing on `undefined` var. (#147)

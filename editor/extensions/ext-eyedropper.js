@@ -59,6 +59,7 @@ export default {
     const buttons = [
       {
         id: 'tool_eyedropper',
+        icon: svgEditor.curConfig.extIconsPath + 'eyedropper.png',
         type: 'mode',
         events: {
           click () {

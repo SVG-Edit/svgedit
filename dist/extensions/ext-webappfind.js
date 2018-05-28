@@ -117,6 +117,7 @@ var svgEditorExtension_webappfind = (function () {
                 */
                 buttons = [{
                   id: 'webappfind_save', //
+                  icon: svgEditor.curConfig.extIconsPath + 'webappfind.png',
                   type: 'app_menu',
                   position: 4, // Before 0-based index position 4 (after the regular "Save Image (S)")
                   events: {

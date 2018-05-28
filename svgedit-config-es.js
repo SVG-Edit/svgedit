@@ -20,9 +20,6 @@ For default config and extensions (and available options) available to
 
 import svgEditor from './editor/svg-editor.js';
 
-// <CONDITIONAL-ADD>: window.svgEditor = svgEditor; // DO NOT DELETE THIS LINE: USED BY AUTOMATED SCRIPT
-// <CONDITIONAL-ADD>: window.svgEditor.modules = false; // DO NOT DELETE THIS LINE: USED BY AUTOMATED SCRIPT
-
 // URL OVERRIDE CONFIG
 svgEditor.setConfig({
   /**
