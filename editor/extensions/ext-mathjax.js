@@ -179,7 +179,7 @@ svgEditor.addExtension('mathjax', function () {
             s.src = curConfig.extPath + mathjaxSrcSecure;
             // See `executeAfterLoads` in `svgutils.js`
             */
-            $.getScript(mathjaxSrcSecure)
+            $.getScript(svgEditor.curConfig.extIconsPath + mathjaxSrcSecure)
               .done(function (script, textStatus) {
                 // When MathJax is loaded get the div where the math will be rendered.
                 MathJax.Hub.queue.Push(function () {
