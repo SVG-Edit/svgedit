@@ -248,10 +248,11 @@ const getJsonFromSvgElement = this.getJsonFromSvgElement = function (data) {
 * The element will be ran through cleanupElement before being returned
 *
 * @param data - Object with the following keys/values:
-* @param data.element - tag name of the SVG element to create
-* @paramdata.attr - Object with attributes key-values to assign to the new element
-* @param data.curStyles - Boolean indicating that current style attributes should be applied first
-* @param data.children - Optional array with data objects to be added recursively as children
+* @param {String} data.element - tag name of the SVG element to create
+* @param {Object} data.attr - Has key-value attributes to assign to the new element
+* @param {Boolean} [data.curStyles] - Indicates whether current style attributes should be applied first
+* @param {Array} [data.children] - Data objects to be added recursively as children
+* @param {String} [data.namespace="http://www.w3.org/2000/svg"] - Indicate a (non-SVG) namespace
 *
 * @returns The new element
 */
@@ -266,7 +267,8 @@ const addSvgElementFromJson = this.addSvgElementFromJson = function (data) {
     shape = null;
   }
   if (!shape) {
-    shape = svgdoc.createElementNS(NS.SVG, data.element);
+    const ns = data.namespace || NS.SVG;
+    shape = svgdoc.createElementNS(ns, data.element);
     if (currentLayer) {
       (currentGroup || currentLayer).appendChild(shape);
     }
