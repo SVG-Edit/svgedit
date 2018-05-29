@@ -9,7 +9,9 @@
 import {getHref, setHref, getRotationAngle} from './svgutils.js';
 import {removeElementFromListMap} from './svgtransformlist.js';
 
-// Group: Undo/Redo history management
+/**
+* Group: Undo/Redo history management
+*/
 export const HistoryEventTypes = {
   BEFORE_APPLY: 'before_apply',
   AFTER_APPLY: 'after_apply',
@@ -99,19 +101,22 @@ export class MoveElementCommand {
     }
   }
 
-  // Returns array with element associated with this command
+  /**
+  * @returns {Array} Array with element associated with this command
+  */
   elements () {
     return [this.elem];
   }
 }
 MoveElementCommand.type = MoveElementCommand.prototype.type;
 
-// implements svgedit.history.HistoryCommand
-// History command for an element that was added to the DOM
-//
-// Parameters:
-// elem - The newly added DOM element
-// text - An optional string visible to user related to this change
+/**
+* @implements svgedit.history.HistoryCommand
+* History command for an element that was added to the DOM
+*
+* @param elem - The newly added DOM element
+* @param text - An optional string visible to user related to this change
+*/
 export class InsertElementCommand {
   constructor (elem, text) {
     this.elem = elem;
@@ -155,21 +160,23 @@ export class InsertElementCommand {
     }
   }
 
-  // Returns array with element associated with this command
+  /**
+  * @returns {Array} Array with element associated with this command
+  */
   elements () {
     return [this.elem];
   }
 }
 InsertElementCommand.type = InsertElementCommand.prototype.type;
 
-// implements svgedit.history.HistoryCommand
-// History command for an element removed from the DOM
-//
-// Parameters:
-// elem - The removed DOM element
-// oldNextSibling - the DOM element's nextSibling when it was in the DOM
-// oldParent - The DOM element's parent
-// text - An optional string visible to user related to this change
+/**
+* @implements svgedit.history.HistoryCommand
+* History command for an element removed from the DOM
+* @param elem - The removed DOM element
+* @param oldNextSibling - The DOM element's nextSibling when it was in the DOM
+* @param oldParent - The DOM element's parent
+* @param {String} [text] - An optional string visible to user related to this change
+*/
 export class RemoveElementCommand {
   constructor (elem, oldNextSibling, oldParent, text) {
     this.elem = elem;
@@ -222,22 +229,23 @@ export class RemoveElementCommand {
     }
   }
 
-  // Function: RemoveElementCommand.elements
-  // Returns array with element associated with this command
+  /**
+  * @returns {Array} Array with element associated with this command
+  */
   elements () {
     return [this.elem];
   }
 }
 RemoveElementCommand.type = RemoveElementCommand.prototype.type;
 
-// implements svgedit.history.HistoryCommand
-// History command to make a change to an element.
-// Usually an attribute change, but can also be textcontent.
-//
-// Parameters:
-// elem - The DOM element that was changed
-// attrs - An object with the attributes to be changed and the values they had *before* the change
-// text - An optional string visible to user related to this change
+/**
+* @implements svgedit.history.HistoryCommand
+* History command to make a change to an element.
+* Usually an attribute change, but can also be textcontent.
+* @param elem - The DOM element that was changed
+* @param attrs - An object with the attributes to be changed and the values they had *before* the change
+* @param {String} text - An optional string visible to user related to this change
+*/
 export class ChangeElementCommand {
   constructor (elem, attrs, text) {
     this.elem = elem;
@@ -360,7 +368,9 @@ export class ChangeElementCommand {
     return true;
   }
 
-  // Returns array with element associated with this command
+  /**
+  * @returns {Array} Array with element associated with this command
+  */
   elements () {
     return [this.elem];
   }
@@ -371,11 +381,11 @@ ChangeElementCommand.type = ChangeElementCommand.prototype.type;
 // if a new Typing command is created and the top command on the stack is also a Typing
 // and they both affect the same element, then collapse the two commands into one
 
-// implements svgedit.history.HistoryCommand
-// History command that can contain/execute multiple other commands
-//
-// Parameters:
-// text - An optional string visible to user related to this change
+/**
+* @implements svgedit.history.HistoryCommand
+* History command that can contain/execute multiple other commands
+* @param {String} [text] - An optional string visible to user related to this change
+*/
 export class BatchCommand {
   constructor (text) {
     this.text = text || 'Batch Command';
@@ -435,24 +445,27 @@ export class BatchCommand {
     return elems;
   }
 
-  // Adds a given command to the history stack
-  //
-  // Parameters:
-  // cmd - The undo command object to add
+  /**
+  * Adds a given command to the history stack
+  * @param cmd - The undo command object to add
+  */
   addSubCommand (cmd) {
     this.stack.push(cmd);
   }
 
-  // Returns a boolean indicating whether or not the batch command is empty
+  /**
+  * @returns {Boolean} Indicates whether or not the batch command is empty
+  */
   isEmpty () {
     return !this.stack.length;
   }
 }
 BatchCommand.type = BatchCommand.prototype.type;
 
-// Parameters:
-// historyEventHandler - an object that conforms to the HistoryEventHandler interface
-// (see above)
+/**
+* @param historyEventHandler - an object that conforms to the HistoryEventHandler interface
+* (see above)
+*/
 export class UndoManager {
   constructor (historyEventHandler) {
     this.handler_ = historyEventHandler || null;
@@ -471,26 +484,30 @@ export class UndoManager {
     this.undoStackPointer = 0;
   }
 
-  // Returns:
-  // Integer with the current size of the undo history stack
+  /**
+  * @returns {Number} Integer with the current size of the undo history stack
+  */
   getUndoStackSize () {
     return this.undoStackPointer;
   }
 
-  // Returns:
-  // Integer with the current size of the redo history stack
+  /**
+  * @returns {Number} Integer with the current size of the redo history stack
+  */
   getRedoStackSize () {
     return this.undoStack.length - this.undoStackPointer;
   }
 
-  // Returns:
-  // String associated with the next undo command
+  /**
+  * @returns {String} String associated with the next undo command
+  */
   getNextUndoCommandText () {
     return this.undoStackPointer > 0 ? this.undoStack[this.undoStackPointer - 1].getText() : '';
   }
 
-  // Returns:
-  // String associated with the next redo command
+  /**
+  * @returns {String} String associated with the next redo command
+  */
   getNextRedoCommandText () {
     return this.undoStackPointer < this.undoStack.length ? this.undoStack[this.undoStackPointer].getText() : '';
   }
@@ -530,15 +547,15 @@ export class UndoManager {
     this.undoStackPointer = this.undoStack.length;
   }
 
-  // This function tells the canvas to remember the old values of the
-  // attrName attribute for each element sent in.  The elements and values
-  // are stored on a stack, so the next call to finishUndoableChange() will
-  // pop the elements and old values off the stack, gets the current values
-  // from the DOM and uses all of these to construct the undo-able command.
-  //
-  // Parameters:
-  // attrName - The name of the attribute being changed
-  // elems - Array of DOM elements being changed
+  /**
+  * This function tells the canvas to remember the old values of the
+  * attrName attribute for each element sent in.  The elements and values
+  * are stored on a stack, so the next call to finishUndoableChange() will
+  * pop the elements and old values off the stack, gets the current values
+  * from the DOM and uses all of these to construct the undo-able command.
+  * @param attrName - The name of the attribute being changed
+  * @param elems - Array of DOM elements being changed
+  */
   beginUndoableChange (attrName, elems) {
     const p = ++this.undoChangeStackPointer;
     let i = elems.length;
@@ -556,12 +573,12 @@ export class UndoManager {
     };
   }
 
-  // This function returns a BatchCommand object which summarizes the
-  // change since beginUndoableChange was called.  The command can then
-  // be added to the command history
-  //
-  // Returns:
-  // Batch command object with resulting changes
+  /**
+  * This function returns a BatchCommand object which summarizes the
+  * change since beginUndoableChange was called.  The command can then
+  * be added to the command history
+  * @returns Batch command object with resulting changes
+  */
   finishUndoableChange () {
     const p = this.undoChangeStackPointer--;
     const changeset = this.undoableChangeStack[p];

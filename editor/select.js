@@ -20,12 +20,12 @@ let config_;
 let selectorManager_; // A Singleton
 const gripRadius = isTouch() ? 10 : 4;
 
-// Private class for DOM element selection boxes
-//
-// Parameters:
-// id - integer to internally indentify the selector
-// elem - DOM element associated with this selector
-// bbox - Optional bbox to use for initialization (prevents duplicate getBBox call).
+/**
+* Private class for DOM element selection boxes
+* @param id - integer to internally indentify the selector
+* @param elem - DOM element associated with this selector
+* @param bbox - Optional bbox to use for initialization (prevents duplicate getBBox call).
+*/
 export class Selector {
   constructor (id, elem, bbox) {
     // this is the selector's unique number
@@ -74,11 +74,11 @@ export class Selector {
     this.reset(this.selectedElement, bbox);
   }
 
-  // Used to reset the id and element that the selector is attached to
-  //
-  // Parameters:
-  // e - DOM element associated with this selector
-  // bbox - Optional bbox to use for reset (prevents duplicate getBBox call).
+  /**
+  * Used to reset the id and element that the selector is attached to
+  * @param e - DOM element associated with this selector
+  * @param bbox - Optional bbox to use for reset (prevents duplicate getBBox call).
+  */
   reset (e, bbox) {
     this.locked = true;
     this.selectedElement = e;
@@ -86,10 +86,10 @@ export class Selector {
     this.selectorGroup.setAttribute('display', 'inline');
   }
 
-  // Updates cursors for corner grips on rotation so arrows point the right way
-  //
-  // Parameters:
-  // angle - Float indicating current rotation angle in degrees
+  /**
+  * Updates cursors for corner grips on rotation so arrows point the right way
+  * @param {Number} angle - Float indicating current rotation angle in degrees
+  */
   updateGripCursors (angle) {
     let dir;
     const dirArr = [];

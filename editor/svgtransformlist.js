@@ -252,11 +252,10 @@ export let removeElementFromListMap = function (elem) {
   }
 };
 
-// Function: getTransformList
-// Returns an object that behaves like a SVGTransformList for the given DOM element
-//
-// Parameters:
-// elem - DOM element to get a transformlist from
+/**
+* Returns an object that behaves like a SVGTransformList for the given DOM element
+* @param elem - DOM element to get a transformlist from
+*/
 export const getTransformList = function (elem) {
   if (!supportsNativeTransformLists()) {
     const id = elem.id || 'temp';

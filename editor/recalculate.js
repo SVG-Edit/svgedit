@@ -33,12 +33,12 @@ export const init = function (editorContext) {
   context_ = editorContext;
 };
 
-// Updates a <clipPath>s values based on the given translation of an element
-//
-// Parameters:
-// attr - The clip-path attribute value with the clipPath's ID
-// tx - The translation's x value
-// ty - The translation's y value
+/**
+* Updates a <clipPath>s values based on the given translation of an element
+* @param attr - The clip-path attribute value with the clipPath's ID
+* @param tx - The translation's x value
+* @param ty - The translation's y value
+*/
 export const updateClipPath = function (attr, tx, ty) {
   const path = getRefElem(attr).firstChild;
   const cpXform = getTransformList(path);
@@ -51,13 +51,11 @@ export const updateClipPath = function (attr, tx, ty) {
   recalculateDimensions(path);
 };
 
-// Decides the course of action based on the element's transform list
-//
-// Parameters:
-// selected - The DOM element to recalculate
-//
-// Returns:
-// Undo command object with the resulting change
+/**
+* Decides the course of action based on the element's transform list
+* @param selected - The DOM element to recalculate
+* @returns Undo command object with the resulting change
+*/
 export const recalculateDimensions = function (selected) {
   if (selected == null) { return null; }
 

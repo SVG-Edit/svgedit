@@ -370,16 +370,13 @@ export const getSegSelector = function (seg, update) {
   return segLine;
 };
 
-// Function: smoothControlPoints
-// Takes three points and creates a smoother line based on them
-//
-// Parameters:
-// ct1 - Object with x and y values (first control point)
-// ct2 - Object with x and y values (second control point)
-// pt - Object with x and y values (third point)
-//
-// Returns:
-// Array of two "smoothed" point objects
+/**
+* Takes three points and creates a smoother line based on them
+* @param ct1 - Object with x and y values (first control point)
+* @param ct2 - Object with x and y values (second control point)
+* @param pt - Object with x and y values (third point)
+* @returns Array of two "smoothed" point objects
+*/
 export const smoothControlPoints = function (ct1, ct2, pt) {
   // each point must not be the origin
   const x1 = ct1.x - pt.x,
@@ -1279,8 +1276,10 @@ function pathDSegment (letter, points, morePoints, lastPoint) {
   return segment;
 }
 
-// Group: Path edit functions
-// Functions relating to editing path elements
+/**
+* Group: Path edit functions
+* Functions relating to editing path elements
+*/
 export const pathActions = (function () {
   let subpath = false;
   let newPoint, firstCtrl;

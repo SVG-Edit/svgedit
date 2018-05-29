@@ -79,13 +79,11 @@ if (window.opera) {
   window.console.dir = function (str) {};
 }
 
-// Class: SvgCanvas
-// The main SvgCanvas class that manages all SVG-related functions
-//
-// Parameters:
-// container - The container HTML element that should hold the SVG root element
-// config - An object that contains configuration data
-
+/**
+* The main SvgCanvas class that manages all SVG-related functions
+* @param container - The container HTML element that should hold the SVG root element
+* @param {Object} config - An object that contains configuration data
+*/
 export default class {
   constructor (container, config) {
 // Alias Namespace constants
@@ -161,11 +159,10 @@ clearSvgContentElement();
 // Prefix string for element IDs
 let idprefix = 'svg_';
 
-// Function: setIdPrefix
-// Changes the ID prefix to the given value
-//
-// Parameters:
-// p - String with the new prefix
+/**
+* Changes the ID prefix to the given value
+* @param {String} p - String with the new prefix
+*/
 canvas.setIdPrefix = function (p) {
   idprefix = p;
 };
@@ -174,9 +171,10 @@ canvas.setIdPrefix = function (p) {
 // @type {svgedit.draw.Drawing}
 canvas.current_drawing_ = new draw.Drawing(svgcontent, idprefix);
 
-// Function: getCurrentDrawing
-// Returns the current Drawing.
-// @return {svgedit.draw.Drawing}
+/**
+* Returns the current Drawing.
+* @returns {svgedit.draw.Drawing}
+*/
 const getCurrentDrawing = canvas.getCurrentDrawing = function () {
   return canvas.current_drawing_;
 };
@@ -320,7 +318,9 @@ canvas.convertToNum = convertToNum;
 
 const getSVGContent = () => { return svgcontent; };
 
-// Returns the array with selected DOM elements
+/**
+* @returns {Array} the array with selected DOM elements
+*/
 const getSelectedElements = this.getSelectedElems = function () {
   return selectedElements;
 };
@@ -434,7 +434,9 @@ const addCommandToHistory = function (cmd) {
   canvas.undoMgr.addCommandToHistory(cmd);
 };
 
-// Returns the current zoom level
+/**
+* @returns The current zoom level
+*/
 const getCurrentZoom = this.getZoom = function () { return currentZoom; };
 
 // This method rounds the incoming value to the nearest value based on the currentZoom
@@ -455,14 +457,14 @@ const selectorManager = this.selectorManager = getSelectorManager();
 const getNextId = canvas.getNextId = function () { return getCurrentDrawing().getNextId(); };
 const getId = canvas.getId = function () { return getCurrentDrawing().getId(); };
 
-// Run the callback function associated with the given event
-//
-// Parameters:
-// event - String with the event name
-// arg - Argument to pass through to the callback function
-const call = function (event, arg) {
-  if (events[event]) {
-    return events[event](window, arg);
+/**
+* Run the callback function associated with the given event
+* @param ev - String with the event name
+* @param arg - Argument to pass through to the callback function
+*/
+const call = function (ev, arg) {
+  if (events[ev]) {
+    return events[ev](window, arg);
   }
 };
 
@@ -481,11 +483,11 @@ const clearSelection = function (noCall) {
   if (!noCall) { call('selected', selectedElements); }
 };
 
-// Adds a list of elements to the selection. The 'selected' handler is then called.
-//
-// Parameters:
-// elemsToAdd - an array of DOM elements to add to the selection
-// showGrips - a boolean flag indicating whether the resize grips should be shown
+/**
+* Adds a list of elements to the selection. The 'selected' handler is then called.
+* @param {Array} elemsToAdd - An array of DOM elements to add to the selection
+* @param {Boolean} showGrips - Indicates whether the resize grips should be shown
+*/
 const addToSelection = function (elemsToAdd, showGrips) {
   if (!elemsToAdd.length) { return; }
   // find the first null in our selectedElements array
@@ -555,13 +557,11 @@ const getOpacity = function () {
   return curShape.opacity;
 };
 
-// Gets the desired element from a mouse event
-//
-// Parameters:
-// evt - Event object from the mouse event
-//
-// Returns:
-// DOM element we want
+/**
+* Gets the desired element from a mouse event
+* @param evt - Event object from the mouse event
+* @returns DOM element we want
+*/
 const getMouseTarget = this.getMouseTarget = function (evt) {
   if (evt == null) {
     return null;
@@ -795,12 +795,11 @@ const runExtensions = this.runExtensions = function (action, vars, returnArray) 
   return result;
 };
 
-// Function: addExtension
-// Add an extension to the editor
-//
-// Parameters:
-// name - String with the ID of the extension
-// extFunc - Function supplied by the extension with its data
+/**
+* Add an extension to the editor
+* @param {String} name - String with the ID of the extension
+* @param {Function} extFunc - Function supplied by the extension with its data
+*/
 this.addExtension = function (name, extFunc) {
   let ext;
   if (!(name in extensions)) {
@@ -892,18 +891,15 @@ this.getStrokedBBox = getStrokedBBoxDefaultVisible;
 
 this.getVisibleElements = getVisibleElements;
 
-// Function: getVisibleElementsAndBBoxes
-// Get all elements that have a BBox (excludes <defs>, <title>, etc).
-// Note that 0-opacity, off-screen etc elements are still considered "visible"
-// for this function
-//
-// Parameters:
-// parent - The parent DOM element to search within
-//
-// Returns:
-// An array with objects that include:
-// * elem - The element
-// * bbox - The element's BBox as retrieved from getStrokedBBoxDefaultVisible
+/**
+* Get all elements that have a BBox (excludes &lt;defs>, &lt;title>, etc).
+* Note that 0-opacity, off-screen etc elements are still considered "visible"
+* for this function
+* @param parent - The parent DOM element to search within
+* @returns {Array} An array with objects that include:
+* - elem - The element
+* - bbox - The element's BBox as retrieved from `getStrokedBBoxDefaultVisible`
+*/
 const getVisibleElementsAndBBoxes = this.getVisibleElementsAndBBoxes = function (parent) {
   if (!parent) {
     parent = $(svgcontent).children(); // Prevent layers from being included
@@ -917,11 +913,10 @@ const getVisibleElementsAndBBoxes = this.getVisibleElementsAndBBoxes = function 
   return contentElems.reverse();
 };
 
-// Function: groupSvgElem
-// Wrap an SVG element into a group element, mark the group as 'gsvg'
-//
-// Parameters:
-// elem - SVG element to wrap
+/**
+* Wrap an SVG element into a group element, mark the group as 'gsvg'
+* @param elem - SVG element to wrap
+*/
 const groupSvgElem = this.groupSvgElem = function (elem) {
   const g = document.createElementNS(NS.SVG, 'g');
   elem.parentNode.replaceChild(g, elem);
@@ -935,26 +930,22 @@ const events = {};
 
 canvas.call = call;
 
-// Function: bind
-// Attaches a callback function to an event
-//
-// Parameters:
-// event - String indicating the name of the event
-// f - The callback function to bind to the event
-//
-// Return:
-// The previous event
-canvas.bind = function (event, f) {
-  const old = events[event];
-  events[event] = f;
+/**
+* Attaches a callback function to an event
+* @param {String} ev - String indicating the name of the event
+* @param {Function} f - The callback function to bind to the event
+* @returns The previous event
+*/
+canvas.bind = function (ev, f) {
+  const old = events[ev];
+  events[ev] = f;
   return old;
 };
 
-// Function: canvas.prepareSvg
-// Runs the SVG Document through the sanitizer and then updates its paths.
-//
-// Parameters:
-// newDoc - The SVG DOM document
+/**
+* Runs the SVG Document through the sanitizer and then updates its paths.
+* @param newDoc - The SVG DOM document
+*/
 this.prepareSvg = function (newDoc) {
   this.sanitizeSvg(newDoc.documentElement);
 
@@ -967,15 +958,15 @@ this.prepareSvg = function (newDoc) {
   }
 };
 
-// Function: ffClone
-// Hack for Firefox bugs where text element features aren't updated or get
-// messed up. See issue 136 and issue 137.
-// This function clones the element and re-selects it
-// TODO: Test for this bug on load and add it to "support" object instead of
-// browser sniffing
-//
-// Parameters:
-// elem - The (text) DOM element to clone
+/**
+* Hack for Firefox bugs where text element features aren't updated or get
+* messed up. See issue 136 and issue 137.
+* This function clones the element and re-selects it
+* @todo Test for this bug on load and add it to "support" object instead of
+* browser sniffing
+* @param elem - The (text) DOM element to clone
+* @returns Cloned element
+*/
 const ffClone = function (elem) {
   if (!isGecko()) { return elem; }
   const clone = elem.cloneNode(true);
@@ -994,13 +985,12 @@ const ffClone = function (elem) {
 //  $(svgroot).children().each(cb);
 // };
 
-// Function: setRotationAngle
-// Removes any old rotations if present, prepends a new rotation at the
-// transformed center
-//
-// Parameters:
-// val - The new rotation angle in degrees
-// preventUndo - Boolean indicating whether the action should be undoable or not
+/**
+* Removes any old rotations if present, prepends a new rotation at the
+* transformed center
+* @param val - The new rotation angle in degrees
+* @param {Boolean} preventUndo - Indicates whether the action should be undoable or not
+*/
 this.setRotationAngle = function (val, preventUndo) {
   // ensure val is the proper type
   val = parseFloat(val);
@@ -1048,7 +1038,6 @@ this.setRotationAngle = function (val, preventUndo) {
   selector.updateGripCursors(val);
 };
 
-// Function: recalculateAllSelectedDimensions
 // Runs recalculateDimensions on the selected elements,
 // adding the changes to a single batch command
 const recalculateAllSelectedDimensions = this.recalculateAllSelectedDimensions = function () {
@@ -1079,7 +1068,9 @@ const logMatrix = function (m) {
 // Root Current Transformation Matrix in user units
 let rootSctm = null;
 
-// Group: Selection
+/**
+* Group: Selection
+*/
 
 this.clearSelection = clearSelection;
 
@@ -1087,11 +1078,10 @@ this.clearSelection = clearSelection;
 
 this.addToSelection = addToSelection;
 
-// Function: selectOnly()
-// Selects only the given elements, shortcut for clearSelection(); addToSelection()
-//
-// Parameters:
-// elems - an array of DOM elements to be selected
+/**
+* Selects only the given elements, shortcut for clearSelection(); addToSelection()
+* @param {Array} elems - an array of DOM elements to be selected
+*/
 const selectOnly = this.selectOnly = function (elems, showGrips) {
   clearSelection(true);
   addToSelection(elems, showGrips);
@@ -1100,11 +1090,10 @@ const selectOnly = this.selectOnly = function (elems, showGrips) {
 // TODO: could use slice here to make this faster?
 // TODO: should the 'selected' handler
 
-// Function: removeFromSelection
-// Removes elements from the selection.
-//
-// Parameters:
-// elemsToRemove - an array of elements to remove from selection
+/**
+* Removes elements from the selection.
+* @param {Array} elemsToRemove - an array of elements to remove from selection
+*/
 /* const removeFromSelection = */ this.removeFromSelection = function (elemsToRemove) {
   if (selectedElements[0] == null) { return; }
   if (!elemsToRemove.length) { return; }
@@ -1130,7 +1119,6 @@ const selectOnly = this.selectOnly = function (elems, showGrips) {
   selectedElements = newSelectedItems;
 };
 
-// Function: selectAllInCurrentLayer
 // Clears the selection, then adds all elements in the current layer to the selection.
 this.selectAllInCurrentLayer = function () {
   const currentLayer = getCurrentDrawing().getCurrentLayer();
@@ -2450,8 +2438,10 @@ $(container).bind('mousewheel DOMMouseScroll', function (e) {
 });
 }());
 
-// Group: Text edit functions
-// Functions relating to editing text elements
+/**
+* Group: Text edit functions
+* Functions relating to editing text elements
+*/
 const textActions = canvas.textActions = (function () {
 let curtext;
 let textinput;
@@ -2847,14 +2837,15 @@ return {
 };
 }());
 
-// Group: Serialization
+/**
+* Group: Serialization
+*/
 
-// Function: removeUnusedDefElems
-// Looks at DOM elements inside the <defs> to see if they are referred to,
-// removes them from the DOM if they are not.
-//
-// Returns:
-// The amount of elements that were removed
+/**
+* Looks at DOM elements inside the <defs> to see if they are referred to,
+* removes them from the DOM if they are not.
+* @returns The amount of elements that were removed
+*/
 const removeUnusedDefElems = this.removeUnusedDefElems = function () {
   const defs = svgcontent.getElementsByTagNameNS(NS.SVG, 'defs');
   if (!defs || !defs.length) { return 0; }
@@ -2902,11 +2893,10 @@ const removeUnusedDefElems = this.removeUnusedDefElems = function () {
   return numRemoved;
 };
 
-// Function: svgCanvasToString
-// Main function to set up the SVG content for output
-//
-// Returns:
-// String containing the SVG image for output
+/**
+* Main function to set up the SVG content for output
+* @returns {String} The SVG image for output
+*/
 this.svgCanvasToString = function () {
   // keep calling it until there are none to remove
   while (removeUnusedDefElems() > 0) {}
@@ -2956,15 +2946,12 @@ this.svgCanvasToString = function () {
   return output;
 };
 
-// Function: svgToString
-// Sub function ran on each SVG element to convert it to a string as desired
-//
-// Parameters:
-// elem - The SVG element to convert
-// indent - Integer with the amount of spaces to indent this tag
-//
-// Returns:
-// String with the given element as an SVG tag
+/**
+* Sub function ran on each SVG element to convert it to a string as desired
+* @param elem - The SVG element to convert
+* @param {Number} indent - Integer with the amount of spaces to indent this tag
+* @returns {String} The given element as an SVG tag
+*/
 this.svgToString = function (elem, indent) {
   const out = [];
   const unit = curConfig.baseUnit;
@@ -3131,13 +3118,12 @@ this.svgToString = function (elem, indent) {
   return out.join('');
 }; // end svgToString()
 
-// Function: embedImage
-// Converts a given image file to a data URL when possible, then runs a given callback
-//
-// Parameters:
-// val - String with the path/URL of the image
-// callback - Optional function to run when image data is found, supplies the
-// result (data URL or false) as first parameter.
+/**
+* Converts a given image file to a data URL when possible, then runs a given callback
+* @param {String} val - String with the path/URL of the image
+* @param {Function} callback - Optional function to run when image data is found, supplies the
+* result (data URL or false) as first parameter.
+*/
 this.embedImage = function (val, callback) {
   // load in the image and once it's loaded, get the dimensions
   $(new Image()).load(function () {
@@ -3160,23 +3146,25 @@ this.embedImage = function (val, callback) {
   }).attr('src', val);
 };
 
-// Function: setGoodImage
-// Sets a given URL to be a "last good image" URL
+/**
+* Sets a given URL to be a "last good image" URL
+*/
 this.setGoodImage = function (val) {
   lastGoodImgUrl = val;
 };
 
+/**
+*
+*/
 this.open = function () {
   // Nothing by default, handled by optional widget/extension
 };
 
-// Function: save
-// Serializes the current drawing into SVG XML text and returns it to the 'saved' handler.
-// This function also includes the XML prolog. Clients of the SvgCanvas bind their save
-// function to the 'saved' event.
-//
-// Returns:
-// Nothing
+/**
+* Serializes the current drawing into SVG XML text and returns it to the 'saved' handler.
+* This function also includes the XML prolog. Clients of the SvgCanvas bind their save
+* function to the 'saved' event.
+*/
 this.save = function (opts) {
   // remove the selected outline before serializing
   clearSelection();
@@ -3220,7 +3208,6 @@ function getIssues ({codesOnly = false} = {}) {
   return issues;
 }
 
-// Function: rasterExport
 // Generates a Data URL based on the current image, then calls "exported"
 // with an object including the string, image information, and any issues found
 this.rasterExport = function (imgType, quality, exportWindowName) {
@@ -3290,27 +3277,24 @@ this.exportPDF = function (exportWindowName, outputType) {
   })();
 };
 
-// Function: getSvgString
-// Returns the current drawing as raw SVG XML text.
-//
-// Returns:
-// The current drawing as raw SVG XML text.
+/**
+* Returns the current drawing as raw SVG XML text.
+* @returns The current drawing as raw SVG XML text.
+*/
 this.getSvgString = function () {
   saveOptions.apply = false;
   return this.svgCanvasToString();
 };
 
-// Function: randomizeIds
-// This function determines whether to use a nonce in the prefix, when
-// generating IDs for future documents in SVG-Edit.
-//
-// Parameters:
-// an optional boolean, which, if true, adds a nonce to the prefix. Thus
-// svgCanvas.randomizeIds() <==> svgCanvas.randomizeIds(true)
-//
-// if you're controlling SVG-Edit externally, and want randomized IDs, call
-// this BEFORE calling svgCanvas.setSvgString
-//
+/**
+* This function determines whether to use a nonce in the prefix, when
+* generating IDs for future documents in SVG-Edit.
+* @param {Boolean} [enableRandomization] If true, adds a nonce to the prefix. Thus
+* svgCanvas.randomizeIds() <==> svgCanvas.randomizeIds(true)
+*
+* if you're controlling SVG-Edit externally, and want randomized IDs, call
+* this BEFORE calling svgCanvas.setSvgString
+*/
 this.randomizeIds = function (enableRandomization) {
   if (arguments.length > 0 && enableRandomization === false) {
     draw.randomizeIds(false, getCurrentDrawing());
@@ -3319,11 +3303,10 @@ this.randomizeIds = function (enableRandomization) {
   }
 };
 
-// Function: uniquifyElems
-// Ensure each element has a unique ID
-//
-// Parameters:
-// g - The parent element of the tree to give unique IDs
+/**
+* Ensure each element has a unique ID
+* @param g - The parent element of the tree to give unique IDs
+*/
 const uniquifyElems = this.uniquifyElems = function (g) {
   const ids = {};
   // TODO: Handle markers and connectors. These are not yet re-identified properly
@@ -3412,8 +3395,9 @@ const uniquifyElems = this.uniquifyElems = function (g) {
   }
 };
 
-// Function setUseData
-// Assigns reference data for each use element
+/**
+* Assigns reference data for each use element
+*/
 const setUseData = this.setUseData = function (parent) {
   let elems = $(parent);
 
@@ -3432,8 +3416,10 @@ const setUseData = this.setUseData = function (parent) {
   });
 };
 
-// Function convertGradients
-// Converts gradients from userSpaceOnUse to objectBoundingBox
+/**
+* Converts gradients from userSpaceOnUse to objectBoundingBox
+* @param elem
+*/
 const convertGradients = this.convertGradients = function (elem) {
   let elems = $(elem).find('linearGradient, radialGradient');
   if (!elems.length && isWebkit()) {
@@ -3506,8 +3492,10 @@ const convertGradients = this.convertGradients = function (elem) {
   });
 };
 
-// Function: convertToGroup
-// Converts selected/given <use> or child SVG element to a group
+/**
+* Converts selected/given <use> or child SVG element to a group
+* @param elem
+*/
 const convertToGroup = this.convertToGroup = function (elem) {
   if (!elem) {
     elem = selectedElements[0];
@@ -3807,22 +3795,19 @@ this.setSvgString = function (xmlString, preventUndo) {
   return true;
 };
 
-// Function: importSvgString
-// This function imports the input SVG XML as a <symbol> in the <defs>, then adds a
-// <use> to the current layer.
-//
-// Parameters:
-// xmlString - The SVG as XML text.
-//
-// Returns:
-// This function returns null if the import was unsuccessful, or the element otherwise.
-// TODO:
-// * properly handle if namespace is introduced by imported content (must add to svgcontent
-// and update all prefixes in the imported node)
-// * properly handle recalculating dimensions, recalculateDimensions() doesn't handle
-// arbitrary transform lists, but makes some assumptions about how the transform list
-// was obtained
-// * import should happen in top-left of current zoomed viewport
+/**
+* This function imports the input SVG XML as a &lt;symbol> in the &lt;defs>, then adds a
+* &lt;use> to the current layer.
+* @param {String} xmlString - The SVG as XML text.
+* @returns This function returns null if the import was unsuccessful, or the element otherwise.
+* @todo
+* - properly handle if namespace is introduced by imported content (must add to svgcontent
+* and update all prefixes in the imported node)
+* - properly handle recalculating dimensions, recalculateDimensions() doesn't handle
+* arbitrary transform lists, but makes some assumptions about how the transform list
+* was obtained
+* - import should happen in top-left of current zoomed viewport
+*/
 this.importSvgString = function (xmlString) {
   let j, ts, useEl;
   try {
@@ -3972,10 +3957,13 @@ draw.init({
   }
 });
 
-// Group: Document functions
+/**
+* Group: Document functions
+*/
 
-// Function: clear
-// Clears the current document. This is not an undoable action.
+/**
+* Clears the current document. This is not an undoable action.
+*/
 this.clear = function () {
   pathActions.clear();
 
@@ -4002,20 +3990,24 @@ this.clear = function () {
   call('cleared');
 };
 
-// Function: linkControlPoints
-// Alias function
+/**
+* Alias function
+*/
 this.linkControlPoints = pathActions.linkControlPoints;
 
-// Function: getContentElem
-// Returns the content DOM element
+/**
+* @returns The content DOM element
+*/
 this.getContentElem = function () { return svgcontent; };
 
-// Function: getRootElem
-// Returns the root DOM element
+/**
+* @returns The root DOM element
+*/
 this.getRootElem = function () { return svgroot; };
 
-// Function: getResolution
-// Returns the current dimensions and zoom level in an object
+/**
+* @returns {Object} The current dimensions and zoom level in an object
+*/
 const getResolution = this.getResolution = function () {
 //    const vb = svgcontent.getAttribute('viewBox').split(' ');
 //    return {w:vb[2], h:vb[3], zoom: currentZoom};
@@ -4030,12 +4022,14 @@ const getResolution = this.getResolution = function () {
   };
 };
 
-// Function: getSnapToGrid
-// Returns the current snap to grid setting
+/**
+* @returns The current snap to grid setting
+*/
 this.getSnapToGrid = function () { return curConfig.gridSnapping; };
 
-// Function: getVersion
-// Returns a string which describes the revision number of SvgCanvas.
+/**
+* @returns {String} A string which describes the revision number of SvgCanvas.
+*/
 this.getVersion = function () {
   return 'svgcanvas.js ($Rev$)';
 };
@@ -4049,17 +4043,18 @@ this.setUiStrings = function (strs) {
   pathModule.setUiStrings(strs);
 };
 
-// Function: setConfig
-// Update configuration options with given values
-//
-// Parameters:
-// opts - Object with options (see curConfig for examples)
+/**
+* Update configuration options with given values
+* @param {Object} opts - Object with options (see curConfig for examples)
+*/
 this.setConfig = function (opts) {
   Object.assign(curConfig, opts);
 };
 
-// Function: getTitle
-// Returns the current group/SVG's title contents
+/**
+* @param elem
+* @returns {String|undefined} the current group/SVG's title contents
+*/
 this.getTitle = function (elem) {
   elem = elem || selectedElements[0];
   if (!elem) { return; }
@@ -4073,9 +4068,11 @@ this.getTitle = function (elem) {
   return '';
 };
 
-// Function: setGroupTitle
-// Sets the group/SVG's title content
-// TODO: Combine this with setDocumentTitle
+/**
+* Sets the group/SVG's title content
+* @param val
+* @todo Combine this with `setDocumentTitle`
+*/
 this.setGroupTitle = function (val) {
   let elem = selectedElements[0];
   elem = $(elem).data('gsvg') || elem;
@@ -4106,18 +4103,18 @@ this.setGroupTitle = function (val) {
   addCommandToHistory(batchCmd);
 };
 
-// Function: getDocumentTitle
-// Returns the current document title or an empty string if not found
+/**
+* @returns {String|undefined} The current document title or an empty string if not found
+*/
 const getDocumentTitle = this.getDocumentTitle = function () {
   return canvas.getTitle(svgcontent);
 };
 
-// Function: setDocumentTitle
-// Adds/updates a title element for the document with the given name.
-// This is an undoable action
-//
-// Parameters:
-// newtitle - String with the new title
+/**
+* Adds/updates a title element for the document with the given name.
+* This is an undoable action
+* @param {String} newtitle - String with the new title
+*/
 this.setDocumentTitle = function (newtitle) {
   const childs = svgcontent.childNodes;
   let docTitle = false, oldTitle = '';
@@ -4146,11 +4143,11 @@ this.setDocumentTitle = function (newtitle) {
   addCommandToHistory(batchCmd);
 };
 
-// Function: getEditorNS
-// Returns the editor's namespace URL, optionally adds it to root element
-//
-// Parameters:
-// add - Boolean to indicate whether or not to add the namespace value
+/**
+* Returns the editor's namespace URL, optionally adds it to root element
+* @param {Boolean} add - Indicates whether or not to add the namespace value
+* @returns {String} The editor's namespace URL
+*/
 this.getEditorNS = function (add) {
   if (add) {
     svgcontent.setAttribute('xmlns:se', NS.SE);
@@ -4158,17 +4155,14 @@ this.getEditorNS = function (add) {
   return NS.SE;
 };
 
-// Function: setResolution
-// Changes the document's dimensions to the given size
-//
-// Parameters:
-// x - Number with the width of the new dimensions in user units.
-// Can also be the string "fit" to indicate "fit to content"
-// y - Number with the height of the new dimensions in user units.
-//
-// Returns:
-// Boolean to indicate if resolution change was succesful.
-// It will fail on "fit to content" option with no content to fit to.
+/**
+* Changes the document's dimensions to the given size
+* @param x - Number with the width of the new dimensions in user units.
+* Can also be the string "fit" to indicate "fit to content"
+* @param y - Number with the height of the new dimensions in user units.
+* @returns {Boolean} Indicates if resolution change was succesful.
+* It will fail on "fit to content" option with no content to fit to.
+*/
 this.setResolution = function (x, y) {
   const res = getResolution();
   const {w, h} = res;
@@ -4222,20 +4216,21 @@ this.setResolution = function (x, y) {
   return true;
 };
 
-// Function: getOffset
-// Returns an object with x, y values indicating the svgcontent element's
-// position in the editor's canvas.
+/**
+* @returns An object with x, y values indicating the svgcontent element's
+* position in the editor's canvas.
+*/
 this.getOffset = function () {
   return $(svgcontent).attr(['x', 'y']);
 };
 
-// Function: setBBoxZoom
-// Sets the zoom level on the canvas-side based on the given value
-//
-// Parameters:
-// val - Bounding box object to zoom to or string indicating zoom option
-// editorW - Integer with the editor's workarea box's width
-// editorH - Integer with the editor's workarea box's height
+/**
+* Sets the zoom level on the canvas-side based on the given value
+* @param val - Bounding box object to zoom to or string indicating zoom option
+* @param {Number} editorW - Integer with the editor's workarea box's width
+* @param {Number} editorH - Integer with the editor's workarea box's height
+* @returns {Object|undefined}
+*/
 this.setBBoxZoom = function (val, editorW, editorH) {
   let spacer = 0.85;
   let bb;
@@ -4281,11 +4276,10 @@ this.setBBoxZoom = function (val, editorW, editorH) {
   return calcZoom(bb);
 };
 
-// Function: setZoom
-// Sets the zoom to the given level
-//
-// Parameters:
-// zoomlevel - Float indicating the zoom level to change to
+/**
+* Sets the zoom to the given level
+* @param {Number} zoomlevel - Float indicating the zoom level to change to
+*/
 this.setZoom = function (zoomlevel) {
   const res = getResolution();
   svgcontent.setAttribute('viewBox', '0 0 ' + res.w / zoomlevel + ' ' + res.h / zoomlevel);
@@ -4298,17 +4292,17 @@ this.setZoom = function (zoomlevel) {
   runExtensions('zoomChanged', zoomlevel);
 };
 
-// Function: getMode
-// Returns the current editor mode string
+/**
+* @returns {String} The current editor mode string
+*/
 this.getMode = function () {
   return currentMode;
 };
 
-// Function: setMode
-// Sets the editor's mode to the given string
-//
-// Parameters:
-// name - String with the new mode to change to
+/**
+* Sets the editor's mode to the given string
+* @param {String} name - String with the new mode to change to
+*/
 this.setMode = function (name) {
   pathActions.clear(true);
   textActions.clear();
@@ -4316,21 +4310,23 @@ this.setMode = function (name) {
   currentMode = name;
 };
 
-// Group: Element Styling
+/**
+* Group: Element Styling
+*/
 
-// Function: getColor
-// Returns the current fill/stroke option
+/**
+* @returns The current fill/stroke option
+*/
 this.getColor = function (type) {
   return curProperties[type];
 };
 
-// Function: setColor
-// Change the current stroke/fill color/gradient value
-//
-// Parameters:
-// type - String indicating fill or stroke
-// val - The value to set the stroke attribute to
-// preventUndo - Boolean indicating whether or not this should be and undoable option
+/**
+* Change the current stroke/fill color/gradient value
+* @param {String} type - String indicating fill or stroke
+* @param val - The value to set the stroke attribute to
+* @param {Boolean} preventUndo - Boolean indicating whether or not this should be and undoable option
+*/
 this.setColor = function (type, val, preventUndo) {
   curShape[type] = val;
   curProperties[type + '_paint'] = {type: 'solidColor'};
@@ -4367,7 +4363,6 @@ this.setColor = function (type, val, preventUndo) {
   }
 };
 
-// Function: setGradient
 // Apply the current gradient to selected element's fill or stroke
 //
 // Parameters
@@ -4390,14 +4385,11 @@ const setGradient = this.setGradient = function (type) {
   canvas.setColor(type, 'url(#' + grad.id + ')');
 };
 
-// Function: findDuplicateGradient
-// Check if exact gradient already exists
-//
-// Parameters:
-// grad - The gradient DOM element to compare to others
-//
-// Returns:
-// The existing gradient if found, null if not
+/**
+* Check if exact gradient already exists
+* @param grad - The gradient DOM element to compare to others
+* @returns The existing gradient if found, null if not
+*/
 const findDuplicateGradient = function (grad) {
   const defs = findDefs();
   const existingGrads = $(defs).find('linearGradient, radialGradient');
@@ -4453,12 +4445,11 @@ const findDuplicateGradient = function (grad) {
   return null;
 };
 
-// Function: setPaint
-// Set a color/gradient to a fill/stroke
-//
-// Parameters:
-// type - String with "fill" or "stroke"
-// paint - The jGraduate paint object to apply
+/**
+* Set a color/gradient to a fill/stroke
+* @param {"fill"|"stroke"} type - String with "fill" or "stroke"
+* @param paint - The jGraduate paint object to apply
+*/
 this.setPaint = function (type, paint) {
   // make a copy
   const p = new $.jGraduate.Paint(paint);
@@ -4487,18 +4478,18 @@ this.setFillPaint = function (paint) {
   this.setPaint('fill', paint);
 };
 
-// Function: getStrokeWidth
-// Returns the current stroke-width value
+/**
+* @returns The current stroke-width value
+*/
 this.getStrokeWidth = function () {
   return curProperties.stroke_width;
 };
 
-// Function: setStrokeWidth
-// Sets the stroke width for the current selected elements
-// When attempting to set a line's width to 0, this changes it to 1 instead
-//
-// Parameters:
-// val - A Float indicating the new stroke width value
+/**
+* Sets the stroke width for the current selected elements
+* When attempting to set a line's width to 0, this changes it to 1 instead
+* @param {Number} val - A Float indicating the new stroke width value
+*/
 this.setStrokeWidth = function (val) {
   if (val === 0 && ['line', 'path'].includes(currentMode)) {
     canvas.setStrokeWidth(1);
@@ -4529,12 +4520,11 @@ this.setStrokeWidth = function (val) {
   }
 };
 
-// Function: setStrokeAttr
-// Set the given stroke-related attribute the given value for selected elements
-//
-// Parameters:
-// attr - String with the attribute name
-// val - String or number with the attribute value
+/**
+* Set the given stroke-related attribute the given value for selected elements
+* @param {String} attr - String with the attribute name
+* @param {String|Number} val - String or number with the attribute value
+*/
 this.setStrokeAttr = function (attr, val) {
   curShape[attr.replace('-', '_')] = val;
   const elems = [];
@@ -4556,41 +4546,47 @@ this.setStrokeAttr = function (attr, val) {
   }
 };
 
-// Function: getStyle
-// Returns current style options
+/**
+* @returns current style options
+*/
 this.getStyle = function () {
   return curShape;
 };
 
-// Returns the current opacity
+/**
+* @returns the current opacity
+*/
 this.getOpacity = getOpacity;
 
-// Function: setOpacity
-// Sets the given opacity to the current selected elements
+/**
+* Sets the given opacity to the current selected elements
+* @param val
+*/
 this.setOpacity = function (val) {
   curShape.opacity = val;
   changeSelectedAttribute('opacity', val);
 };
 
-// Function: getOpacity
-// Returns the current fill opacity
+/**
+* @returns the current fill opacity
+*/
 this.getFillOpacity = function () {
   return curShape.fill_opacity;
 };
 
-// Function: getStrokeOpacity
-// Returns the current stroke opacity
+/**
+* @returns the current stroke opacity
+*/
 this.getStrokeOpacity = function () {
   return curShape.stroke_opacity;
 };
 
-// Function: setPaintOpacity
-// Sets the current fill/stroke opacity
-//
-// Parameters:
-// type - String with "fill" or "stroke"
-// val - Float with the new opacity value
-// preventUndo - Boolean indicating whether or not this should be an undoable action
+/**
+* Sets the current fill/stroke opacity
+* @param {String} type - String with "fill" or "stroke"
+* @param {Number} val - Float with the new opacity value
+* @param {Boolean} preventUndo - Indicates whether or not this should be an undoable action
+*/
 this.setPaintOpacity = function (type, val, preventUndo) {
   curShape[type + '_opacity'] = val;
   if (!preventUndo) {
@@ -4600,20 +4596,20 @@ this.setPaintOpacity = function (type, val, preventUndo) {
   }
 };
 
-// Function: getPaintOpacity
-// Gets the current fill/stroke opacity
-//
-// Parameters:
-// type - String with "fill" or "stroke"
+/**
+* Gets the current fill/stroke opacity
+* @param {"fill"|"stroke"} type - String with "fill" or "stroke"
+* @returns Fill/stroke opacity
+*/
 this.getPaintOpacity = function (type) {
   return type === 'fill' ? this.getFillOpacity() : this.getStrokeOpacity();
 };
 
-// Function: getBlur
-// Gets the stdDeviation blur value of the given element
-//
-// Parameters:
-// elem - The element to check the blur value for
+/**
+* Gets the stdDeviation blur value of the given element
+* @param elem - The element to check the blur value for
+* @returns stdDeviation blur attribute value
+*/
 this.getBlur = function (elem) {
   let val = 0;
   // const elem = selectedElements[0];
@@ -4635,11 +4631,10 @@ let curCommand = null;
 let filter = null;
 let filterHidden = false;
 
-// Function: setBlurNoUndo
-// Sets the stdDeviation blur value on the selected element without being undoable
-//
-// Parameters:
-// val - The new stdDeviation value
+/**
+* Sets the stdDeviation blur value on the selected element without being undoable
+* @param val - The new stdDeviation value
+*/
 canvas.setBlurNoUndo = function (val) {
   if (!filter) {
     canvas.setBlur(val);
@@ -4673,13 +4668,12 @@ function finishChange () {
   filter = null;
 }
 
-// Function: setBlurOffsets
-// Sets the x, y, with, height values of the filter element in order to
-// make the blur not be clipped. Removes them if not neeeded
-//
-// Parameters:
-// filter - The filter DOM element to update
-// stdDev - The standard deviation value on which to base the offset size
+/**
+* Sets the x, y, with, height values of the filter element in order to
+* make the blur not be clipped. Removes them if not neeeded
+* @param filter - The filter DOM element to update
+* @param stdDev - The standard deviation value on which to base the offset size
+*/
 canvas.setBlurOffsets = function (filter, stdDev) {
   if (stdDev > 3) {
     // TODO: Create algorithm here where size is based on expected blur
@@ -4700,12 +4694,11 @@ canvas.setBlurOffsets = function (filter, stdDev) {
   }
 };
 
-// Function: setBlur
-// Adds/updates the blur filter to the selected element
-//
-// Parameters:
-// val - Float with the new stdDeviation blur value
-// complete - Boolean indicating whether or not the action should be completed (to add to the undo manager)
+/**
+* Adds/updates the blur filter to the selected element
+* @param {Number} val - Float with the new stdDeviation blur value
+* @param {Boolean} complete - Boolean indicating whether or not the action should be completed (to add to the undo manager)
+*/
 canvas.setBlur = function (val, complete) {
   if (curCommand) {
     finishChange();
@@ -4768,11 +4761,10 @@ canvas.setBlur = function (val, complete) {
 };
 }());
 
-// Function: getBold
-// Check whether selected element is bold or not
-//
-// Returns:
-// Boolean indicating whether or not element is bold
+/**
+* Check whether selected element is bold or not
+* @returns {Boolean} Indicates whether or not element is bold
+*/
 this.getBold = function () {
   // should only have one element selected
   const selected = selectedElements[0];
@@ -4783,11 +4775,10 @@ this.getBold = function () {
   return false;
 };
 
-// Function: setBold
-// Make the selected element bold or normal
-//
-// Parameters:
-// b - Boolean indicating bold (true) or normal (false)
+/**
+* Make the selected element bold or normal
+* @param {Boolean} b - Indicates bold (true) or normal (false)
+*/
 this.setBold = function (b) {
   const selected = selectedElements[0];
   if (selected != null && selected.tagName === 'text' &&
@@ -4799,11 +4790,10 @@ this.setBold = function (b) {
   }
 };
 
-// Function: getItalic
-// Check whether selected element is italic or not
-//
-// Returns:
-// Boolean indicating whether or not element is italic
+/**
+* Check whether selected element is italic or not
+* @returns {Boolean} Indicates whether or not element is italic
+*/
 this.getItalic = function () {
   const selected = selectedElements[0];
   if (selected != null && selected.tagName === 'text' &&
@@ -4813,11 +4803,10 @@ this.getItalic = function () {
   return false;
 };
 
-// Function: setItalic
-// Make the selected element italic or normal
-//
-// Parameters:
-// b - Boolean indicating italic (true) or normal (false)
+/**
+* Make the selected element italic or normal
+* @param {Boolean} b - Indicates italic (true) or normal (false)
+*/
 this.setItalic = function (i) {
   const selected = selectedElements[0];
   if (selected != null && selected.tagName === 'text' &&
@@ -4829,17 +4818,17 @@ this.setItalic = function (i) {
   }
 };
 
-// Function: getFontFamily
-// Returns the current font family
+/**
+* @returns The current font family
+*/
 this.getFontFamily = function () {
   return curText.font_family;
 };
 
-// Function: setFontFamily
-// Set the new font family
-//
-// Parameters:
-// val - String with the new font family
+/**
+* Set the new font family
+* @param {String} val - String with the new font family
+*/
 this.setFontFamily = function (val) {
   curText.font_family = val;
   changeSelectedAttribute('font-family', val);
@@ -4848,33 +4837,33 @@ this.setFontFamily = function (val) {
   }
 };
 
-// Function: setFontColor
-// Set the new font color
-//
-// Parameters:
-// val - String with the new font color
+/**
+* Set the new font color
+* @param {String} val - String with the new font color
+*/
 this.setFontColor = function (val) {
   curText.fill = val;
   changeSelectedAttribute('fill', val);
 };
 
-// Function: getFontColor
-// Returns the current font color
+/**
+* @returns The current font color
+*/
 this.getFontColor = function () {
   return curText.fill;
 };
 
-// Function: getFontSize
-// Returns the current font size
+/**
+* Returns the current font size
+*/
 this.getFontSize = function () {
   return curText.font_size;
 };
 
-// Function: setFontSize
-// Applies the given font size to the selected element
-//
-// Parameters:
-// val - Float with the new font size
+/**
+* Applies the given font size to the selected element
+* @param {Number} val - Float with the new font size
+*/
 this.setFontSize = function (val) {
   curText.font_size = val;
   changeSelectedAttribute('font-size', val);
@@ -4883,31 +4872,30 @@ this.setFontSize = function (val) {
   }
 };
 
-// Function: getText
-// Returns the current text (textContent) of the selected element
+/**
+* @returns The current text (textContent) of the selected element
+*/
 this.getText = function () {
   const selected = selectedElements[0];
   if (selected == null) { return ''; }
   return selected.textContent;
 };
 
-// Function: setTextContent
-// Updates the text element with the given string
-//
-// Parameters:
-// val - String with the new text
+/**
+* Updates the text element with the given string
+* @param {String} val - String with the new text
+*/
 this.setTextContent = function (val) {
   changeSelectedAttribute('#text', val);
   textActions.init(val);
   textActions.setCursor();
 };
 
-// Function: setImageURL
-// Sets the new image URL for the selected image element. Updates its size if
-// a new URL is given
-//
-// Parameters:
-// val - String with the image URL/path
+/**
+* Sets the new image URL for the selected image element. Updates its size if
+* a new URL is given
+* @param {String} val - String with the image URL/path
+*/
 this.setImageURL = function (val) {
   const elem = selectedElements[0];
   if (!elem) { return; }
@@ -4949,11 +4937,10 @@ this.setImageURL = function (val) {
   }
 };
 
-// Function: setLinkURL
-// Sets the new link URL for the selected anchor element.
-//
-// Parameters:
-// val - String with the link URL/path
+/**
+* Sets the new link URL for the selected anchor element.
+* @param {String} val - String with the link URL/path
+*/
 this.setLinkURL = function (val) {
   let elem = selectedElements[0];
   if (!elem) { return; }
@@ -4981,11 +4968,10 @@ this.setLinkURL = function (val) {
   addCommandToHistory(batchCmd);
 };
 
-// Function: setRectRadius
-// Sets the rx & ry values to the selected rect element to change its corner radius
-//
-// Parameters:
-// val - The new radius
+/**
+* Sets the rx & ry values to the selected rect element to change its corner radius
+* @param val - The new radius
+*/
 this.setRectRadius = function (val) {
   const selected = selectedElements[0];
   if (selected != null && selected.tagName === 'rect') {
@@ -4999,8 +4985,10 @@ this.setRectRadius = function (val) {
   }
 };
 
-// Function: makeHyperlink
-// Wraps the selected element(s) in an anchor element or converts group to one
+/**
+* Wraps the selected element(s) in an anchor element or converts group to one
+* @param url
+*/
 this.makeHyperlink = function (url) {
   canvas.groupSelectedElements('a', url);
 
@@ -5008,34 +4996,34 @@ this.makeHyperlink = function (url) {
   //  if (selectedElements.length > 1 && selectedElements[1]) {
 };
 
-// Function: removeHyperlink
+/**
+*
+*/
 this.removeHyperlink = function () {
   canvas.ungroupSelectedElement();
 };
 
-// Group: Element manipulation
+/**
+* Group: Element manipulation
+*/
 
-// Function: setSegType
-// Sets the new segment type to the selected segment(s).
-//
-// Parameters:
-// new_type - Integer with the new segment type
-// See https://www.w3.org/TR/SVG/paths.html#InterfaceSVGPathSeg for list
+/**
+* Sets the new segment type to the selected segment(s).
+* @param {Number} newType - Integer with the new segment type
+* See https://www.w3.org/TR/SVG/paths.html#InterfaceSVGPathSeg for list
+*/
 this.setSegType = function (newType) {
   pathActions.setSegType(newType);
 };
 
-// TODO(codedread): Remove the getBBox argument and split this function into two.
-// Function: convertToPath
-// Convert selected element to a path, or get the BBox of an element-as-path
-//
-// Parameters:
-// elem - The DOM element to be converted
-// getBBox - Boolean on whether or not to only return the path's BBox
-//
-// Returns:
-// If the getBBox flag is true, the resulting path's bounding box object.
-// Otherwise the resulting path element is returned.
+/**
+* @todo (codedread): Remove the getBBox argument and split this function into two.
+* Convert selected element to a path, or get the BBox of an element-as-path
+* @param elem - The DOM element to be converted
+* @param getBBox - Boolean on whether or not to only return the path's BBox
+* @returns If the getBBox flag is true, the resulting path's bounding box object.
+* Otherwise the resulting path element is returned.
+*/
 this.convertToPath = function (elem, getBBox) {
   if (elem == null) {
     const elems = selectedElements;
@@ -5065,14 +5053,13 @@ this.convertToPath = function (elem, getBBox) {
   }
 };
 
-// Function: changeSelectedAttributeNoUndo
-// This function makes the changes to the elements. It does not add the change
-// to the history stack.
-//
-// Parameters:
-// attr - String with the attribute name
-// newValue - String or number with the new attribute value
-// elems - The DOM elements to apply the change to
+/**
+* This function makes the changes to the elements. It does not add the change
+* to the history stack.
+* @param {String} attr - Attribute name
+* @param {String|Number} newValue - String or number with the new attribute value
+* @param elems - The DOM elements to apply the change to
+*/
 const changeSelectedAttributeNoUndo = function (attr, newValue, elems) {
   if (currentMode === 'pathedit') {
     // Editing node
@@ -5186,16 +5173,15 @@ const changeSelectedAttributeNoUndo = function (attr, newValue, elems) {
   } // for each elem
 };
 
-// Function: changeSelectedAttribute
-// Change the given/selected element and add the original value to the history stack
-// If you want to change all selectedElements, ignore the elems argument.
-// If you want to change only a subset of selectedElements, then send the
-// subset to this function in the elems argument.
-//
-// Parameters:
-// attr - String with the attribute name
-// newValue - String or number with the new attribute value
-// elems - The DOM elements to apply the change to
+/**
+* Change the given/selected element and add the original value to the history stack
+* If you want to change all selectedElements, ignore the elems argument.
+* If you want to change only a subset of selectedElements, then send the
+* subset to this function in the elems argument.
+* @param {String} attr - String with the attribute name
+* @param {String|Number} newValue - String or number with the new attribute value
+* @param elems - The DOM elements to apply the change to
+*/
 const changeSelectedAttribute = this.changeSelectedAttribute = function (attr, val, elems) {
   elems = elems || selectedElements;
   canvas.undoMgr.beginUndoableChange(attr, elems);
@@ -5209,7 +5195,6 @@ const changeSelectedAttribute = this.changeSelectedAttribute = function (attr, v
   }
 };
 
-// Function: deleteSelectedElements
 // Removes all selected elements from the DOM and adds the change to the
 // history stack
 this.deleteSelectedElements = function () {
@@ -5343,11 +5328,10 @@ this.pasteElements = function (type, x, y) {
   call('changed', pasted);
 };
 
-// Function: groupSelectedElements
-// Wraps all the selected elements in a group (g) element
-
-// Parameters:
-// type - type of element to group into, defaults to <g>
+/**
+* Wraps all the selected elements in a group (g) element
+* @param type - type of element to group into, defaults to &lt;g>
+*/
 this.groupSelectedElements = function (type, urlArg) {
   if (!type) { type = 'g'; }
   let cmdStr = '';
@@ -5403,7 +5387,6 @@ this.groupSelectedElements = function (type, urlArg) {
   selectOnly([g], true);
 };
 
-// Function: pushGroupProperties
 // Pushes all appropriate parent group properties down to its children, then
 // removes them from the group
 const pushGroupProperties = this.pushGroupProperties = function (g, undoable) {
@@ -5585,9 +5568,10 @@ const pushGroupProperties = this.pushGroupProperties = function (g, undoable) {
   }
 };
 
-// Function: ungroupSelectedElement
-// Unwraps all the elements in a selected group (g) element. This requires
-// significant recalculations to apply group's transforms, etc to its children
+/**
+* Unwraps all the elements in a selected group (g) element. This requires
+* significant recalculations to apply group's transforms, etc to its children
+*/
 this.ungroupSelectedElement = function () {
   let g = selectedElements[0];
   if (!g) {
@@ -5653,9 +5637,10 @@ this.ungroupSelectedElement = function () {
   }
 };
 
-// Function: moveToTopSelectedElement
-// Repositions the selected element to the bottom in the DOM to appear on top of
-// other elements
+/**
+* Repositions the selected element to the bottom in the DOM to appear on top of
+* other elements
+*/
 this.moveToTopSelectedElement = function () {
   const selected = selectedElements[0];
   if (selected != null) {
@@ -5672,9 +5657,10 @@ this.moveToTopSelectedElement = function () {
   }
 };
 
-// Function: moveToBottomSelectedElement
-// Repositions the selected element to the top in the DOM to appear under
-// other elements
+/**
+* Repositions the selected element to the top in the DOM to appear under
+* other elements
+*/
 this.moveToBottomSelectedElement = function () {
   const selected = selectedElements[0];
   if (selected != null) {
@@ -5700,12 +5686,11 @@ this.moveToBottomSelectedElement = function () {
   }
 };
 
-// Function: moveUpDownSelected
-// Moves the select element up or down the stack, based on the visibly
-// intersecting elements
-//
-// Parameters:
-// dir - String that's either 'Up' or 'Down'
+/**
+* Moves the select element up or down the stack, based on the visibly
+* intersecting elements
+* @param {"Up"|"Down"} dir - String that's either 'Up' or 'Down'
+*/
 this.moveUpDownSelected = function (dir) {
   const selected = selectedElements[0];
   if (!selected) { return; }
@@ -5740,16 +5725,13 @@ this.moveUpDownSelected = function (dir) {
   }
 };
 
-// Function: moveSelectedElements
-// Moves selected elements on the X/Y axis
-//
-// Parameters:
-// dx - Float with the distance to move on the x-axis
-// dy - Float with the distance to move on the y-axis
-// undoable - Boolean indicating whether or not the action should be undoable
-//
-// Returns:
-// Batch command for the move
+/**
+* Moves selected elements on the X/Y axis
+* @param {Number} dx - Float with the distance to move on the x-axis
+* @param {Number} dy - Float with the distance to move on the y-axis
+* @param {Boolean} undoable - Boolean indicating whether or not the action should be undoable
+* @returns Batch command for the move
+*/
 this.moveSelectedElements = function (dx, dy, undoable) {
   // if undoable is not sent, default to true
   // if single values, scale them to the zoom
@@ -5811,9 +5793,10 @@ this.moveSelectedElements = function (dx, dy, undoable) {
   }
 };
 
-// Function: cloneSelectedElements
-// Create deep DOM copies (clones) of all selected elements and move them slightly
-// from their originals
+/**
+* Create deep DOM copies (clones) of all selected elements and move them slightly
+* from their originals
+*/
 this.cloneSelectedElements = function (x, y) {
   let i, elem;
   const batchCmd = new BatchCommand('Clone Elements');
@@ -5848,13 +5831,11 @@ this.cloneSelectedElements = function (x, y) {
   }
 };
 
-// Function: alignSelectedElements
-// Aligns selected elements
-//
-// Parameters:
-// type - String with single character indicating the alignment type
-// relativeTo - String that must be one of the following:
-// "selected", "largest", "smallest", "page"
+/**
+* Aligns selected elements
+* @param {String} type - String with single character indicating the alignment type
+* @param {"selected"|"largest"|"smallest"|"page"} relativeTo
+*/
 this.alignSelectedElements = function (type, relativeTo) {
   const bboxes = []; // angles = [];
   const len = selectedElements.length;
@@ -5945,26 +5926,25 @@ this.alignSelectedElements = function (type, relativeTo) {
   this.moveSelectedElements(dx, dy);
 };
 
-// Group: Additional editor tools
+/**
+* Group: Additional editor tools
+*/
 
 this.contentW = getResolution().w;
 this.contentH = getResolution().h;
 
-// Function: updateCanvas
-// Updates the editor canvas width/height/position after a zoom has occurred
-//
-// Parameters:
-// w - Float with the new width
-// h - Float with the new height
-//
-// Returns:
-// Object with the following values:
-// * x - The canvas' new x coordinate
-// * y - The canvas' new y coordinate
-// * oldX - The canvas' old x coordinate
-// * oldY - The canvas' old y coordinate
-// * d_x - The x position difference
-// * d_y - The y position difference
+/**
+* Updates the editor canvas width/height/position after a zoom has occurred
+* @param {Number} w - Float with the new width
+* @param {Number} h - Float with the new height
+* @returns Object with the following values:
+* - x - The canvas' new x coordinate
+* - y - The canvas' new y coordinate
+* - oldX - The canvas' old x coordinate
+* - oldY - The canvas' old y coordinate
+* - d_x - The x position difference
+* - d_y - The y position difference
+*/
 this.updateCanvas = function (w, h) {
   svgroot.setAttribute('width', w);
   svgroot.setAttribute('height', h);
@@ -6002,12 +5982,11 @@ this.updateCanvas = function (w, h) {
   return {x, y, old_x: oldX, old_y: oldY, d_x: x - oldX, d_y: y - oldY};
 };
 
-// Function: setBackground
-// Set the background of the editor (NOT the actual document)
-//
-// Parameters:
-// color - String with fill color to apply
-// url - URL or path to image to use
+/**
+* Set the background of the editor (NOT the actual document)
+* @param {String} color - String with fill color to apply
+* @param url - URL or path to image to use
+*/
 this.setBackground = function (color, url) {
   const bg = getElem('canvasBackground');
   const border = $(bg).find('rect')[0];
@@ -6031,11 +6010,10 @@ this.setBackground = function (color, url) {
   }
 };
 
-// Function: cycleElement
-// Select the next/previous element within the current layer
-//
-// Parameters:
-// next - Boolean where true = next and false = previous element
+/**
+* Select the next/previous element within the current layer
+* @param {Boolean} next - true = next and false = previous element
+*/
 this.cycleElement = function (next) {
   let num;
   const curElem = selectedElements[0];
@@ -6066,14 +6044,16 @@ this.cycleElement = function (next) {
 
 this.clear();
 
-// DEPRECATED: getPrivateMethods
-// Since all methods are/should be public somehow, this function should be removed;
-//  we might require `import` in place of this in the future once ES6 Modules
-//  widespread
+/**
+* @deprecated getPrivateMethods
+* Since all methods are/should be public somehow, this function should be removed;
+*  we might require `import` in place of this in the future once ES6 Modules
+*  widespread
 
-// Being able to access private methods publicly seems wrong somehow,
-// but currently appears to be the best way to allow testing and provide
-// access to them to plugins.
+* Being able to access private methods publicly seems wrong somehow,
+* but currently appears to be the best way to allow testing and provide
+* access to them to plugins.
+*/
 this.getPrivateMethods = function () {
   const obj = {
     addCommandToHistory,

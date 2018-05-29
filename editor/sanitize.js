@@ -98,7 +98,6 @@ Object.entries(svgWhiteList_).forEach(function ([elt, atts]) {
   svgWhiteListNS_[elt] = attNS;
 });
 
-// Function: svgedit.sanitize.sanitizeSvg
 /**
 * Sanitizes the input node and its children
 * It only keeps what is allowed from our whitelist defined above

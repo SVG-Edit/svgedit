@@ -47,29 +47,24 @@ export const init = function (editorContext) {
   svgroot_ = editorContext.getSVGRoot();
 };
 
-// Converts characters in a string to XML-friendly entities.
-//
-// Example: '&' becomes '&amp;'
-//
-// Parameters:
-// str - The string to be converted
-//
-// Returns:
-// The converted string
+/**
+* Converts characters in a string to XML-friendly entities.
+* @example: '&' becomes '&amp;'
+* @param str - The string to be converted
+* @returns {String} The converted string
+*/
 export const toXml = function (str) {
   // &apos; is ok in XML, but not HTML
   // &gt; does not normally need escaping, though it can if within a CDATA expression (and preceded by "]]")
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/, '&#x27;');
 };
 
-// Converts XML entities in a string to single characters.
-// Example: '&amp;' becomes '&'
-//
-// Parameters:
-// str - The string to be converted
-//
-// Returns:
-// The converted string
+/**
+* Converts XML entities in a string to single characters.
+* @example '&amp;amp;' becomes '&amp;'
+* @param str - The string to be converted
+* @returns The converted string
+*/
 export const fromXml = function (str) {
   return $('<p/>').html(str).text();
 };
@@ -244,13 +239,11 @@ export const text2xml = function (sXML) {
   return out;
 };
 
-// Converts a SVGRect into an object.
-//
-// Parameters:
-// bbox - a SVGRect
-//
-// Returns:
-// An object with properties names x, y, width, height.
+/**
+* Converts a SVGRect into an object.
+* @param bbox - a SVGRect
+* @returns An object with properties names x, y, width, height.
+*/
 export const bboxToObj = function (bbox) {
   return {
     x: bbox.x,
@@ -260,11 +253,11 @@ export const bboxToObj = function (bbox) {
   };
 };
 
-// Walks the tree and executes the callback on each element in a top-down fashion
-//
-// Parameters:
-// elem - DOM element to traverse
-// cbFn - Callback function to run on each element
+/**
+* Walks the tree and executes the callback on each element in a top-down fashion
+* @param elem - DOM element to traverse
+* @param {Function} cbFn - Callback function to run on each element
+*/
 export const walkTree = function (elem, cbFn) {
   if (elem && elem.nodeType === 1) {
     cbFn(elem);
@@ -275,12 +268,12 @@ export const walkTree = function (elem, cbFn) {
   }
 };
 
-// Walks the tree and executes the callback on each element in a depth-first fashion
-// TODO: FIXME: Shouldn't this be calling walkTreePost?
-//
-// Parameters:
-// elem - DOM element to traverse
-// cbFn - Callback function to run on each element
+/**
+* Walks the tree and executes the callback on each element in a depth-first fashion
+* @todo FIXME: Shouldn't this be calling walkTreePost?
+* @param elem - DOM element to traverse
+* @param {Function} cbFn - Callback function to run on each element
+*/
 export const walkTreePost = function (elem, cbFn) {
   if (elem && elem.nodeType === 1) {
     let i = elem.childNodes.length;
@@ -291,17 +284,15 @@ export const walkTreePost = function (elem, cbFn) {
   }
 };
 
-// Extracts the URL from the url(...) syntax of some attributes.
-// Three variants:
-//  * <circle fill="url(someFile.svg#foo)" />
-//  * <circle fill="url('someFile.svg#foo')" />
-//  * <circle fill='url("someFile.svg#foo")' />
-//
-// Parameters:
-// attrVal - The attribute value as a string
-//
-// Returns:
-// String with just the URL, like someFile.svg#foo
+/**
+* Extracts the URL from the url(...) syntax of some attributes.
+* Three variants:
+*  - <circle fill="url(someFile.svg#foo)" />
+*  - <circle fill="url('someFile.svg#foo')" />
+*  - <circle fill='url("someFile.svg#foo")' />
+* @param attrVal - The attribute value as a string
+* @returns {String} String with just the URL, like "someFile.svg#foo"
+*/
 export const getUrlFromAttr = function (attrVal) {
   if (attrVal) {
     // url("#somegrad")
@@ -319,18 +310,25 @@ export const getUrlFromAttr = function (attrVal) {
   return null;
 };
 
-// Returns the given element's xlink:href value
+/**
+* @returns The given element's xlink:href value
+*/
 export let getHref = function (elem) {
   return elem.getAttributeNS(NS.XLINK, 'href');
 };
 
-// Sets the given element's xlink:href value
+/**
+* Sets the given element's xlink:href value
+* @param elem
+* @param {String} val
+*/
 export let setHref = function (elem, val) {
   elem.setAttributeNS(NS.XLINK, 'xlink:href', val);
 };
 
-// Returns:
-// The document's <defs> element, create it first if necessary
+/**
+* @returns The document's &lt;defs> element, create it first if necessary
+*/
 export const findDefs = function () {
   const svgElement = editorContext_.getSVGContent();
   let defs = svgElement.getElementsByTagNameNS(NS.SVG, 'defs');
@@ -350,15 +348,13 @@ export const findDefs = function () {
 
 // TODO(codedread): Consider moving the next to functions to bbox.js
 
-// Get correct BBox for a path in Webkit
-// Converted from code found here:
-// http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html
-//
-// Parameters:
-// path - The path DOM element to get the BBox for
-//
-// Returns:
-// A BBox-like object
+/**
+* Get correct BBox for a path in Webkit
+* Converted from code found here:
+* http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html
+* @param path - The path DOM element to get the BBox for
+* @returns A BBox-like object
+*/
 export const getPathBBox = function (path) {
   const seglist = path.pathSegList;
   const tot = seglist.numberOfItems;
@@ -429,13 +425,14 @@ export const getPathBBox = function (path) {
   };
 };
 
-// Get the given/selected element's bounding box object, checking for
-// horizontal/vertical lines (see issue 717)
-// Note that performance is currently terrible, so some way to improve would
-// be great.
-//
-// Parameters:
-// selected - Container or <use> DOM element
+/**
+* Get the given/selected element's bounding box object, checking for
+* horizontal/vertical lines (see issue 717)
+* Note that performance is currently terrible, so some way to improve would
+* be great.
+* @param selected - Container or &lt;use> DOM element
+* @returns Bounding box object
+*/
 function groupBBFix (selected) {
   if (supportsHVLineContainerBBox()) {
     try { return selected.getBBox(); } catch (e) {}
@@ -475,11 +472,12 @@ function groupBBFix (selected) {
   return ret;
 }
 
-// Get the given/selected element's bounding box object, convert it to be more
-// usable when necessary
-//
-// Parameters:
-// elem - Optional DOM element to get the BBox for
+/**
+* Get the given/selected element's bounding box object, convert it to be more
+* usable when necessary
+* @param elem - Optional DOM element to get the BBox for
+* @returns Bounding box object
+*/
 export const getBBox = function (elem) {
   const selected = elem || editorContext_.geSelectedElements()[0];
   if (elem.nodeType !== 1) { return null; }
@@ -560,14 +558,12 @@ export const getBBox = function (elem) {
   return ret;
 };
 
-// Create a path 'd' attribute from path segments.
-// Each segment is an array of the form: [singleChar, [x,y, x,y, ...]]
-//
-// Parameters:
-// pathSegments - An array of path segments to be converted
-//
-// Returns:
-// The converted path d attribute.
+/**
+* Create a path 'd' attribute from path segments.
+* Each segment is an array of the form: [singleChar, [x,y, x,y, ...]]
+* @param pathSegments - An array of path segments to be converted
+* @returns The converted path d attribute.
+*/
 export const getPathDFromSegments = function (pathSegments) {
   let d = '';
 
@@ -582,13 +578,11 @@ export const getPathDFromSegments = function (pathSegments) {
   return d;
 };
 
-// Make a path 'd' attribute from a simple SVG element shape.
-//
-// Parameters:
-// elem - The element to be converted
-//
-// Returns:
-// The path d attribute or `undefined` if the element type is unknown.
+/**
+* Make a path 'd' attribute from a simple SVG element shape.
+* @param elem - The element to be converted
+* @returns The path d attribute or `undefined` if the element type is unknown.
+*/
 export const getPathDFromElement = function (elem) {
   // Possibly the cubed root of 6, but 1.81 works best
   let num = 1.81;
@@ -664,13 +658,11 @@ export const getPathDFromElement = function (elem) {
   return d;
 };
 
-// Get a set of attributes from an element that is useful for convertToPath.
-//
-// Parameters:
-// elem - The element to be probed
-//
-// Returns:
-// An object with attributes.
+/**
+* Get a set of attributes from an element that is useful for convertToPath.
+* @param elem - The element to be probed
+* @returns {Object} An object with attributes.
+*/
 export const getExtraAttributesForConvertToPath = function (elem) {
   const attrs = {};
   // TODO: make this list global so that we can properly maintain it
@@ -684,15 +676,13 @@ export const getExtraAttributesForConvertToPath = function (elem) {
   return attrs;
 };
 
-// Get the BBox of an element-as-path
-//
-// Parameters:
-// elem - The DOM element to be probed
-// addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJson
-// pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
-//
-// Returns:
-// The resulting path's bounding box object.
+/**
+* Get the BBox of an element-as-path
+* @param elem - The DOM element to be probed
+* @param addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJson
+* @param pathActions - If a transform exists, `pathActions.resetOrientation()` is used. See: canvas.pathActions.
+* @returns The resulting path's bounding box object.
+*/
 export const getBBoxOfElementAsPath = function (elem, addSvgElementFromJson, pathActions) {
   const path = addSvgElementFromJson({
     element: 'path',
@@ -727,20 +717,18 @@ export const getBBoxOfElementAsPath = function (elem, addSvgElementFromJson, pat
   return bb;
 };
 
-// Convert selected element to a path.
-//
-// Parameters:
-// elem - The DOM element to be converted
-// attrs - Apply attributes to new path. see canvas.convertToPath
-// addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJson
-// pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
-// clearSelection - see canvas.clearSelection
-// addToSelection - see canvas.addToSelection
-// history - see svgedit.history
-// addCommandToHistory - see canvas.addCommandToHistory
-//
-// Returns:
-// The converted path element or null if the DOM element was not recognized.
+/**
+* Convert selected element to a path.
+* @param elem - The DOM element to be converted
+* @param attrs - Apply attributes to new path. see canvas.convertToPath
+* @param addSvgElementFromJson - Function to add the path element to the current layer. See canvas.addSvgElementFromJson
+* @param pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
+* @param clearSelection - see canvas.clearSelection
+* @param addToSelection - see canvas.addToSelection
+* @param history - see svgedit.history
+* @param addCommandToHistory - see canvas.addCommandToHistory
+* @returns The converted path element or null if the DOM element was not recognized.
+*/
 export const convertToPath = function (elem, attrs, addSvgElementFromJson, pathActions, clearSelection, addToSelection, history, addCommandToHistory) {
   const batchCmd = new history.BatchCommand('Convert element to Path');
 
@@ -799,27 +787,26 @@ export const convertToPath = function (elem, attrs, addSvgElementFromJson, pathA
   }
 };
 
-// Can the bbox be optimized over the native getBBox? The optimized bbox is the same as the native getBBox when
-// the rotation angle is a multiple of 90 degrees and there are no complex transforms.
-// Getting an optimized bbox can be dramatically slower, so we want to make sure it's worth it.
-//
-// The best example for this is a circle rotate 45 degrees. The circle doesn't get wider or taller when rotated
-// about it's center.
-//
-// The standard, unoptimized technique gets the native bbox of the circle, rotates the box 45 degrees, uses
-// that width and height, and applies any transforms to get the final bbox. This means the calculated bbox
-// is much wider than the original circle. If the angle had been 0, 90, 180, etc. both techniques render the
-// same bbox.
-//
-// The optimization is not needed if the rotation is a multiple 90 degrees. The default technique is to call
-// getBBox then apply the angle and any transforms.
-//
-// Parameters:
-// angle - The rotation angle in degrees
-// hasMatrixTransform - True if there is a matrix transform
-//
-// Returns:
-// True if the bbox can be optimized.
+/**
+* Can the bbox be optimized over the native getBBox? The optimized bbox is the same as the native getBBox when
+* the rotation angle is a multiple of 90 degrees and there are no complex transforms.
+* Getting an optimized bbox can be dramatically slower, so we want to make sure it's worth it.
+*
+* The best example for this is a circle rotate 45 degrees. The circle doesn't get wider or taller when rotated
+* about it's center.
+*
+* The standard, unoptimized technique gets the native bbox of the circle, rotates the box 45 degrees, uses
+* that width and height, and applies any transforms to get the final bbox. This means the calculated bbox
+* is much wider than the original circle. If the angle had been 0, 90, 180, etc. both techniques render the
+* same bbox.
+*
+* The optimization is not needed if the rotation is a multiple 90 degrees. The default technique is to call
+* getBBox then apply the angle and any transforms.
+*
+* @param angle - The rotation angle in degrees
+* @param {Boolean} hasMatrixTransform - True if there is a matrix transform
+* @returns {Boolean} True if the bbox can be optimized.
+*/
 function bBoxCanBeOptimizedOverNativeGetBBox (angle, hasMatrixTransform) {
   const angleModulo90 = angle % 90;
   const closeTo90 = angleModulo90 < -89.99 || angleModulo90 > 89.99;
@@ -954,7 +941,7 @@ export const getStrokedBBox = function (elems, addSvgElementFromJson, pathAction
 };
 
 /**
-* Get all elements that have a BBox (excludes <defs>, <title>, etc).
+* Get all elements that have a BBox (excludes `&lt;defs>`, `&lt;title>`, etc).
 * Note that 0-opacity, off-screen etc elements are still considered "visible"
 * for this function
 * @param parent - The parent DOM element to search within
@@ -988,14 +975,12 @@ export const getStrokedBBoxDefaultVisible = function (elems) {
   );
 };
 
-// Get the rotation angle of the given transform list.
-//
-// Parameters:
-// tlist - List of transforms
-// toRad - Boolean that when true returns the value in radians rather than degrees
-//
-// Returns:
-// Float with the angle in degrees or radians
+/**
+* Get the rotation angle of the given transform list.
+* @param tlist - List of transforms
+* @param {Boolean} toRad - When true returns the value in radians rather than degrees
+* @returns {Number} Float with the angle in degrees or radians
+*/
 export const getRotationAngleFromTransformList = function (tlist, toRad) {
   if (!tlist) { return 0; } // <svg> elements have no tlist
   const N = tlist.numberOfItems;
@@ -1008,14 +993,12 @@ export const getRotationAngleFromTransformList = function (tlist, toRad) {
   return 0.0;
 };
 
-// Get the rotation angle of the given/selected DOM element
-//
-// Parameters:
-// elem - Optional DOM element to get the angle for
-// toRad - Boolean that when true returns the value in radians rather than degrees
-//
-// Returns:
-// Float with the angle in degrees or radians
+/**
+* Get the rotation angle of the given/selected DOM element
+* @param elem - Optional DOM element to get the angle for
+* @param {Boolean} toRad - When true returns the value in radians rather than degrees
+* @returns {Number} Float with the angle in degrees or radians
+*/
 export let getRotationAngle = function (elem, toRad) {
   const selected = elem || editorContext_.getSelectedElements()[0];
   // find the rotation transform (if any) and set it
@@ -1023,19 +1006,19 @@ export let getRotationAngle = function (elem, toRad) {
   return getRotationAngleFromTransformList(tlist, toRad);
 };
 
-// Function getRefElem
-// Get the reference element associated with the given attribute value
-//
-// Parameters:
-// attrVal - The attribute value as a string
+/**
+* Get the reference element associated with the given attribute value
+* @param {String} attrVal - The attribute value as a string
+* @returns Reference element
+*/
 export const getRefElem = function (attrVal) {
   return getElem(getUrlFromAttr(attrVal).substr(1));
 };
 
-// Get a DOM element by ID within the SVG root element.
-//
-// Parameters:
-// id - String with the element's new ID
+/**
+* Get a DOM element by ID within the SVG root element.
+* @param {String} id - String with the element's new ID
+*/
 export const getElem = (supportsSelectors())
   ? function (id) {
     // querySelector lookup
@@ -1055,13 +1038,13 @@ export const getElem = (supportsSelectors())
       return $(svgroot_).find('[id=' + id + ']')[0];
     };
 
-// Assigns multiple attributes to an element.
-//
-// Parameters:
-// node - DOM element to apply new attribute values to
-// attrs - Object with attribute keys/values
-// suspendLength - Optional integer of milliseconds to suspend redraw
-// unitCheck - Boolean to indicate the need to use svgedit.units.setUnitAttr
+/**
+* Assigns multiple attributes to an element.
+* @param node - DOM element to apply new attribute values to
+* @param {Object} attrs - Object with attribute keys/values
+* @param {Number} suspendLength - Optional integer of milliseconds to suspend redraw
+* @param {Boolean} unitCheck - Boolean to indicate the need to use svgedit.units.setUnitAttr
+*/
 export const assignAttributes = function (node, attrs, suspendLength, unitCheck) {
   for (const i in attrs) {
     const ns = (i.substr(0, 4) === 'xml:'
@@ -1078,10 +1061,10 @@ export const assignAttributes = function (node, attrs, suspendLength, unitCheck)
   }
 };
 
-// Remove unneeded (default) attributes, makes resulting SVG smaller
-//
-// Parameters:
-// element - DOM element to clean up
+/**
+* Remove unneeded (default) attributes, makes resulting SVG smaller
+* @param element - DOM element to clean up
+*/
 export const cleanupElement = function (element) {
   const defaults = {
     'fill-opacity': 1,

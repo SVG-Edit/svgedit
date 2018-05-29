@@ -674,7 +674,9 @@ export const randomizeIds = function (enableRandomization, currentDrawing) {
 
 // Layer API Functions
 
-// Group: Layers
+/**
+* Group: Layers
+*/
 
 let canvas_;
 export const init = function (canvas) {

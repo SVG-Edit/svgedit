@@ -77,7 +77,9 @@ export const init = function (elementContainer) {
   };
 };
 
-// Group: Unit conversion functions
+/**
+* Group: Unit conversion functions
+*/
 
 /**
 * @returns The unit object with values for each unit
