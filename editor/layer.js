@@ -185,12 +185,12 @@ export default class Layer {
   }
 }
 /**
- * @type {string} CLASS_NAME - class attribute assigned to all layer groups.
+ * @property {string} CLASS_NAME - class attribute assigned to all layer groups.
  */
 Layer.CLASS_NAME = 'layer';
 
 /**
- * @type {RegExp} CLASS_REGEX - Used to test presence of class Layer.CLASS_NAME
+ * @property {RegExp} CLASS_REGEX - Used to test presence of class Layer.CLASS_NAME
  */
 Layer.CLASS_REGEX = new RegExp('(\\s|^)' + Layer.CLASS_NAME + '(\\s|$)');
 

@@ -72,7 +72,7 @@ function getNewLayerName (existingLayerNames) {
  * @param {SVGSVGElement} svgElem - The SVG DOM Element that this JS object
  *     encapsulates.  If the svgElem has a se:nonce attribute on it, then
  *     IDs will use the nonce as they are generated.
- * @param {String=svg_} [optIdPrefix] - The ID prefix to use.
+ * @param {String} [optIdPrefix=svg_] - The ID prefix to use.
  */
 export class Drawing {
   constructor (svgElem, optIdPrefix) {

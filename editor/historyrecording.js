@@ -155,7 +155,6 @@ export default class HistoryRecordingService {
   }
 }
 /**
- * @type {svgedit.history.HistoryRecordingService} NO_HISTORY - Singleton that can be passed
- *    in to functions that record history, but the caller requires that no history be recorded.
+ * @property {HistoryRecordingService} NO_HISTORY - Singleton that can be passed to functions that record history, but the caller requires that no history be recorded.
  */
 HistoryRecordingService.NO_HISTORY = new HistoryRecordingService();

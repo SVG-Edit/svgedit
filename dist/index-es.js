@@ -3197,8 +3197,7 @@ var HistoryEventTypes = {
 
 /**
  * An interface that all command objects must implement.
- * @typedef svgedit.history.HistoryCommand
- * @type {Object}
+ * @typedef {Object} svgedit.history.HistoryCommand
  *   void apply(svgedit.history.HistoryEventHandler);
  *   void unapply(svgedit.history.HistoryEventHandler);
  *   Element[] elements();
@@ -11214,7 +11213,7 @@ var Layer = function () {
 Layer.CLASS_NAME = 'layer';
 
 /**
- * @type {RegExp} CLASS_REGEX - Used to test presence of class Layer.CLASS_NAME
+ * @property {RegExp} CLASS_REGEX Used to test presence of class Layer.CLASS_NAME
  */
 Layer.CLASS_REGEX = new RegExp('(\\s|^)' + Layer.CLASS_NAME + '(\\s|$)');
 
@@ -11482,7 +11481,7 @@ function getNewLayerName(existingLayerNames) {
  * @param {SVGSVGElement} svgElem - The SVG DOM Element that this JS object
  *     encapsulates.  If the svgElem has a se:nonce attribute on it, then
  *     IDs will use the nonce as they are generated.
- * @param {String=svg_} [optIdPrefix] - The ID prefix to use.
+ * @param {String} [optIdPrefix=svg_] - The ID prefix to use.
  */
 var Drawing = function () {
   function Drawing(svgElem, optIdPrefix) {

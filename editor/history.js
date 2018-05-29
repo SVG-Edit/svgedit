@@ -21,8 +21,7 @@ export const HistoryEventTypes = {
 
 /**
  * An interface that all command objects must implement.
- * @typedef svgedit.history.HistoryCommand
- * @type {Object}
+ * @typedef {Object} svgedit.history.HistoryCommand
  *   void apply(svgedit.history.HistoryEventHandler);
  *   void unapply(svgedit.history.HistoryEventHandler);
  *   Element[] elements();
@@ -69,7 +68,7 @@ export class MoveElementCommand {
 
   /**
    * Re-positions the element
-   * @param {handleHistoryEvent: function}
+   * @param {{handleHistoryEvent: function}} handler
   */
   apply (handler) {
     // TODO(codedread): Refactor this common event code into a base HistoryCommand class.
@@ -86,7 +85,7 @@ export class MoveElementCommand {
 
   /**
    * Positions the element back to its original location
-   * @param {handleHistoryEvent: function}
+   * @param {{handleHistoryEvent: function}} handler
   */
   unapply (handler) {
     if (handler) {
