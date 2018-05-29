@@ -124,7 +124,7 @@
 
       if (!lib) {
         $('#shape_buttons').html('Loading...');
-        $.getJSON(svgEditor.curConfig.extPath + 'shapelib/' + catId + '.json', function (result) {
+        $.getJSON(svgEditor.curConfig.extIconsPath + 'shapelib/' + catId + '.json', function (result) {
           curLib = library[catId] = {
             data: result.data,
             size: result.size,

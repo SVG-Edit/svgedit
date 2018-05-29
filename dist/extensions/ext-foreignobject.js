@@ -48,15 +48,12 @@
         newFO = void 0,
         editingforeign = false;
 
-    // Function: setForeignString(xmlString, elt)
-    // This function sets the content of element elt to the input XML.
-    //
-    // Parameters:
-    // xmlString - The XML text.
-    // elt - the parent element to append to
-    //
-    // Returns:
-    // This function returns false if the set was unsuccessful, true otherwise.
+    /**
+    * This function sets the content of element elt to the input XML.
+    * @param {String} xmlString - The XML text.
+    * @param elt - the parent element to append to
+    * @returns {Boolean} This function returns false if the set was unsuccessful, true otherwise.
+    */
     function setForeignString(xmlString) {
       var elt = selElems[0];
       try {

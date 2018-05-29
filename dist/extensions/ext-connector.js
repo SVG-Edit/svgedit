@@ -17,7 +17,6 @@
     var svgroot = S.svgroot,
         getNextId = S.getNextId,
         getElem = S.getElem,
-        curConfig = S.curConfig,
         addElem = S.addSvgElementFromJson,
         selManager = S.selectorManager,
         connSel = '.se_connector',
@@ -60,7 +59,7 @@
       if (slope < bb.height / bb.width) {
         ratio = bb.width / 2 / Math.abs(lenX);
       } else {
-        ratio = bb.height / 2 / Math.abs(lenY);
+        ratio = lenY ? bb.height / 2 / Math.abs(lenY) : 0;
       }
 
       return {
@@ -340,6 +339,9 @@
         startX = opts.start_x;
         startY = opts.start_y;
         var mode = svgCanvas.getMode();
+        var _svgEditor = svgEditor,
+            initStroke = _svgEditor.curConfig.initStroke;
+
 
         if (mode === 'connector') {
           if (started) {
@@ -368,10 +370,10 @@
               attr: {
                 id: getNextId(),
                 points: x + ',' + y + ' ' + x + ',' + y + ' ' + startX + ',' + startY,
-                stroke: '#' + curConfig.initStroke.color,
-                'stroke-width': !startElem.stroke_width || startElem.stroke_width === 0 ? curConfig.initStroke.width : startElem.stroke_width,
+                stroke: '#' + initStroke.color,
+                'stroke-width': !startElem.stroke_width || startElem.stroke_width === 0 ? initStroke.width : startElem.stroke_width,
                 fill: 'none',
-                opacity: curConfig.initStroke.opacity,
+                opacity: initStroke.opacity,
                 style: 'pointer-events:none'
               }
             });

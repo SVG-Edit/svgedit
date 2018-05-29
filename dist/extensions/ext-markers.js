@@ -73,9 +73,11 @@
       markerTypes[v + '_o'] = markerTypes[v];
     });
 
-    // elem = a graphic element will have an attribute like marker-start
-    // attr - marker-start, marker-mid, or marker-end
-    // returns the marker element that is linked to the graphic element
+    /**
+    * @param elem - A graphic element will have an attribute like marker-start
+    * @param attr - marker-start, marker-mid, or marker-end
+    * @returns The marker element that is linked to the graphic element
+    */
     function getLinked(elem, attr) {
       var str = elem.getAttribute(attr);
       if (!str) {
