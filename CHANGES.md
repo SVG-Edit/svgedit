@@ -1,3 +1,24 @@
+# 3.0.0-alpha.3
+
+- Change: Default to stylesheet above `editor` directory
+- Docs: Installation steps
+- Fix regression (Connector extension): Get config object when available
+- Fix regression (Extensions): Use `extIconsPath` for now given
+  that `extPath` will not work relative to `dist`
+- Fix regression: Enforce stylesheet ordering sequence
+- Fix regression: Ensure SVG-edit hidden until stylesheets loaded
+- Fix regression: Avoid abandoning stylesheet loading if one load fails
+- Fix (ext-connector): Handle case of 2 connecting elements with
+  same y-coordinate (fixes #210 ; thanks, @iuyiuy!)
+- Enhancement: Delete the imge upon cancel if it is a new image (fixes #177)
+- Enhancement: Allow `addSvgElementFromJson` to accept non-SVG namespaces
+  with explicit `namespace` property as well as the default SVG namespace
+  (fixes #155); document
+- Optimization: For `setSvgString`, if element content is not SVG,
+  return `false` earlier (Fixes #152); thanks iuyiuy!
+- Demos: Add svgcanvas demo (Neil Fraser)
+- npm: Update devDeps
+
 # 3.0.0-alpha.2
 
 - Licensing: Indicate MIT is license type of rgbcolor and rename
