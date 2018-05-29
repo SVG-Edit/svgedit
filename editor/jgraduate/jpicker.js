@@ -19,7 +19,7 @@ Math.precision = function (value, precision) {
   return Math.round(value * Math.pow(10, precision)) / Math.pow(10, precision);
 };
 
-export default function ($) {
+const jPicker = function ($) {
   if (!$.loadingStylesheets) {
     $.loadingStylesheets = [];
   }
@@ -1885,3 +1885,5 @@ export default function ($) {
   };
   return $;
 }
+
+export default jPicker;

@@ -49,7 +49,7 @@ import {
  *     A value of null is valid for cases where no history recording is required.
  *     See singleton: HistoryRecordingService.NO_HISTORY
  */
-export default class HistoryRecordingService {
+class HistoryRecordingService {
   constructor (undoManager) {
     this.undoManager_ = undoManager;
     this.currentBatchCommand_ = null;
@@ -158,3 +158,4 @@ export default class HistoryRecordingService {
  * @property {HistoryRecordingService} NO_HISTORY - Singleton that can be passed to functions that record history, but the caller requires that no history be recorded.
  */
 HistoryRecordingService.NO_HISTORY = new HistoryRecordingService();
+export default HistoryRecordingService;

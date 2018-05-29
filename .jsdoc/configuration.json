@@ -17,6 +17,7 @@
   },
   "opts":{
     "recurse": true,
+    "verbose": true,
     "destination": ".jsdoc/out"
   }
 }
