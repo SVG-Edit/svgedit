@@ -1013,7 +1013,28 @@ editor.init = function () {
         }
       });
 
-      let stylesheets = $.loadingStylesheets;
+      function getStylesheetPriority (stylesheet) {
+        switch (stylesheet) {
+        case 'jgraduate/css/jPicker.css':
+          return 1;
+        case 'jgraduate/css/jgraduate.css':
+          return 2;
+        case 'svg-editor.css':
+          return 3;
+        case 'spinbtn/JQuerySpinBtn.css':
+          return 4;
+        default:
+          return Infinity;
+        }
+      }
+      let stylesheets = $.loadingStylesheets.sort((a, b) => {
+        const priorityA = getStylesheetPriority(a);
+        const priorityB = getStylesheetPriority(b);
+        if (priorityA === priorityB) {
+          return 0;
+        }
+        return priorityA > priorityB;
+      });
       if (curConfig.stylesheets.length) {
         // Ensure a copy with unique items
         stylesheets = [...new Set(curConfig.stylesheets)];
@@ -1022,7 +1043,14 @@ editor.init = function () {
           stylesheets.splice(idx, 1, ...$.loadingStylesheets);
         }
       }
-      loadStylesheets(stylesheets).then(() => {
+      loadStylesheets(stylesheets, {acceptErrors: ({stylesheetURL, reject, resolve}) => {
+        if ($.loadingStylesheets.includes(stylesheetURL)) {
+          reject(new Error(`Missing expected stylesheet: ${stylesheetURL}`));
+          return;
+        }
+        resolve();
+      }}).then(() => {
+        $('#svg_container')[0].style.visibility = 'visible';
         editor.runCallbacks();
 
         setTimeout(function () {
