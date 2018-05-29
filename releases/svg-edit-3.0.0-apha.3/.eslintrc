@@ -1,0 +1,22 @@
+{
+  "extends": ["standard", "plugin:qunit/recommended"],
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "plugins": ["qunit"],
+  "env": {
+    "node": false,
+    "browser": true
+  },
+  "rules": {
+    "semi": [2, "always"],
+    "indent": ["error", 2, {"outerIIFEBody": 0}],
+    "no-tabs": 0,
+    "object-property-newline": 0,
+    "one-var": 0,
+    "no-var": 2,
+    "prefer-const": 2,
+    "no-extra-semi": 2,
+    "quote-props": [2, "as-needed"]
+  }
+}

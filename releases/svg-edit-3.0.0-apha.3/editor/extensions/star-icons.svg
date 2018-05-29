@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <g id="tool_star">
+     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-1 -1 26 26">
+       <defs>
+    <linearGradient y2="1" x2="1" y1="0.10156" x1="0.36328" id="svg_i22">
+      <stop stop-opacity="1" stop-color="#ffffff" offset="0"/>
+      <stop stop-opacity="1" stop-color="#666666" offset="1"/>
+    </linearGradient>
+    </defs>
+    <polygon points="12.4062,1.55891 15.0578,9.39339 23.3283,9.49422 16.6965,14.4371 19.1564,22.3338 12.4062,17.5543 5.65596,22.3338 8.11588,14.4371 1.48406,9.49422 9.75455,9.39339" stroke="#000000" fill="url(#svg_i22)"/>   </svg>
+  </g>
+
+  <g id="svg_eof"/>
+</svg>
