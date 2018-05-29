@@ -84,7 +84,7 @@ if (window.opera) {
 * @param container - The container HTML element that should hold the SVG root element
 * @param {Object} config - An object that contains configuration data
 */
-export default class {
+class SvgCanvas {
   constructor (container, config) {
 // Alias Namespace constants
 
@@ -6111,3 +6111,5 @@ this.getPrivateMethods = function () {
 };
   } // End constructor
 } // End class
+
+export default SvgCanvas;

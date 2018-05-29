@@ -4,8 +4,7 @@
     "exclude": [
       "node_modules",
       "dist"
-    ],
-    "excludePattern": "^svgedit-config-"
+    ]
   },
   "sourceType": "module",
   "tags": {

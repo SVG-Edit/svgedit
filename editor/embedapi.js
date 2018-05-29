@@ -95,7 +95,8 @@ function getMessageListener (t) {
 *   messages will be allowed when same origin is not used; defaults to none.
 *   If supplied, it should probably be the same as svgEditor's allowedOrigins
 */
-export default class EmbeddedSVGEdit {
+
+class EmbeddedSVGEdit {
   constructor (frame, allowedOrigins) {
     this.allowedOrigins = allowedOrigins || [];
     // Initialize communication
@@ -167,3 +168,5 @@ export default class EmbeddedSVGEdit {
     return cbid;
   }
 }
+
+export default EmbeddedSVGEdit;

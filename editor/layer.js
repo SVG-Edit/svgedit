@@ -28,7 +28,7 @@ const $ = jQuery;
  * @param {SVGGElement=} svgElem - The SVG DOM element. If defined, use this to add
  *     a new layer to the document.
  */
-export default class Layer {
+class Layer {
   constructor (name, group, svgElem) {
     this.name_ = name;
     this.group_ = svgElem ? null : group;
@@ -208,3 +208,5 @@ function addLayerClass (elem) {
     elem.setAttribute('class', classes + ' ' + Layer.CLASS_NAME);
   }
 }
+
+export default Layer;
