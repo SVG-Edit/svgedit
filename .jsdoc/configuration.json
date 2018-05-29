@@ -1,0 +1,21 @@
+{
+  "recurseDepth": 10,
+  "source": {
+    "exclude": [
+      "node_modules",
+      "dist"
+    ]
+  },
+  "sourceType": "module",
+  "tags": {
+    "allowUnknownTags": true
+  },
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false
+  },
+  "opts":{
+    "recurse": true,
+    "destination": ".jsdoc/out"
+  }
+}
