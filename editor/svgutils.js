@@ -295,7 +295,7 @@ export const walkTreePost = function (elem, cbFn) {
 */
 export const getUrlFromAttr = function (attrVal) {
   if (attrVal) {
-    // url("#somegrad")
+    // url('#somegrad')
     if (attrVal.startsWith('url("')) {
       return attrVal.substring(5, attrVal.indexOf('"', 6));
     }

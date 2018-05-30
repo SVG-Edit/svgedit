@@ -2145,8 +2145,8 @@ editor.init = function () {
         break;
 
       // TODO: Update values that change on move/resize, etc
-      // case "select":
-      // case "resize":
+      // case 'select':
+      // case 'resize':
       //   break;
       }
     }
@@ -5121,7 +5121,7 @@ editor.init = function () {
   updateCanvas(true);
   // });
 
-  //  const revnums = "svg-editor.js ($Rev$) ";
+  //  const revnums = 'svg-editor.js ($Rev$) ';
   //  revnums += svgCanvas.getVersion();
   //  $('#copyright')[0].setAttribute('title', revnums);
 

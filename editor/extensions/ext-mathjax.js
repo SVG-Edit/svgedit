@@ -15,28 +15,28 @@ svgEditor.addExtension('mathjax', function () {
   // Configuration of the MathJax extention.
 
   // This will be added to the head tag before MathJax is loaded.
-  const /* mathjaxConfiguration = '<script type="text/x-mathjax-config">\
-        MathJax.Hub.Config({\
-          extensions: ["tex2jax.js"],\
-          jax: ["input/TeX","output/SVG"],\
-          showProcessingMessages: true,\
-          showMathMenu: false,\
-          showMathMenuMSIE: false,\
-          errorSettings: {\
-            message: ["[Math Processing Error]"],\
-            style: {color: "#CC0000", "font-style":"italic"}\
-          },\
-          elements: [],\
-            tex2jax: {\
-            ignoreClass: "tex2jax_ignore2", processClass: "tex2jax_process2",\
-          },\
-          TeX: {\
-            extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"]\
-          },\
-          "SVG": {\
-          }\
-      });\
-      </script>', */
+  const /* mathjaxConfiguration = `<script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ['tex2jax.js'],
+        jax: ['input/TeX', 'output/SVG'],
+        showProcessingMessages: true,
+        showMathMenu: false,
+        showMathMenuMSIE: false,
+        errorSettings: {
+          message: ['[Math Processing Error]'],
+          style: {color: '#CC0000', 'font-style': 'italic'}
+        },
+        elements: [],
+          tex2jax: {
+          ignoreClass: 'tex2jax_ignore2', processClass: 'tex2jax_process2',
+        },
+        TeX: {
+          extensions: ['AMSmath.js', 'AMSsymbols.js', 'noErrors.js', 'noUndefined.js']
+        },
+        SVG: {
+        }
+    });
+    </script>`, */
     // mathjaxSrc = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
     // Had been on https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG.js
     // Obtained Text-AMS-MML_SVG.js from https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/config/TeX-AMS-MML_SVG.js

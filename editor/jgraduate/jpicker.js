@@ -785,7 +785,7 @@ const jPicker = function ($) {
         return { r: this.hexToInt(r), g: this.hexToInt(g), b: this.hexToInt(b), a: this.hexToInt(a) };
       },
       validateHex (hex) {
-        // if (typeof hex === "object") return "";
+        // if (typeof hex === 'object') return '';
         hex = hex.toLowerCase().replace(/[^a-f0-9]/g, '');
         if (hex.length > 8) hex = hex.substring(0, 8);
         return hex;

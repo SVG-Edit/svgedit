@@ -4,7 +4,7 @@
   //   files to your server which may cause disk space or possibly security problems
   require('savefile_config.php');
   if (!isset($_POST['output_svg'])) {
-    print "You must supply output_svg";
+    print 'You must supply output_svg';
     exit;
   }
   $svg = $_POST['output_svg'];

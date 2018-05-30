@@ -57,12 +57,12 @@ const removeAttributes = function (node, attributes) {
 
 const svgElementToPdf = function (element, pdf, options) {
   // pdf is a jsPDF object
-  // console.log("options =", options);
+  // console.log('options =', options);
   const remove = (options.removeInvalid === undefined ? false : options.removeInvalid);
   const k = (options.scale === undefined ? 1.0 : options.scale);
   let colorMode = null;
   [].forEach.call(element.children, function (node) {
-    // console.log("passing: ", node);
+    // console.log('passing: ', node);
     // let hasStrokeColor = false;
     let hasFillColor = false;
     let fillRGB;
@@ -192,7 +192,7 @@ const svgElementToPdf = function (element, pdf, options) {
         x = parseInt(node.getAttribute('x'), 10) - xOffset;
         y = parseInt(node.getAttribute('y'), 10);
       }
-      // console.log("fontSize:", pdfFontSize, "text:", node.textContent);
+      // console.log('fontSize:', pdfFontSize, 'text:', node.textContent);
       pdf.setFontSize(pdfFontSize).text(
         k * x,
         k * y,
