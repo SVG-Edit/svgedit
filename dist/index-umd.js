@@ -25329,7 +25329,7 @@
   }
   var favicon = 'images/logo.png';
   if ($$b.loadingStylesheets.some(function (item) {
-    return Array.isArray(item) && item[0] === favicon;
+    return !Array.isArray(item) || item[0] !== favicon;
   })) {
     $$b.loadingStylesheets.push([favicon, { favicon: true }]);
   }

@@ -54,7 +54,7 @@ if (!$.loadingStylesheets.includes(stylesheet)) {
 }
 const favicon = 'images/logo.png';
 if ($.loadingStylesheets.some((item) => {
-  return Array.isArray(item) && item[0] === favicon;
+  return !Array.isArray(item) || item[0] !== favicon;
 })) {
   $.loadingStylesheets.push([favicon, {favicon: true}]);
 }
