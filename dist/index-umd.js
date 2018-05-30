@@ -11218,6 +11218,11 @@
     }]);
     return Layer;
   }();
+  /**
+   * @property {string} CLASS_NAME - class attribute assigned to all layer groups.
+   */
+
+
   Layer.CLASS_NAME = 'layer';
 
   /**
@@ -11433,6 +11438,11 @@
     }]);
     return HistoryRecordingService;
   }();
+  /**
+   * @property {HistoryRecordingService} NO_HISTORY - Singleton that can be passed to functions that record history, but the caller requires that no history be recorded.
+   */
+
+
   HistoryRecordingService.NO_HISTORY = new HistoryRecordingService();
 
   /* globals jQuery */
@@ -14390,8 +14400,8 @@
   * @param {Object} config - An object that contains configuration data
   */
 
-  var _class = function _class(container, config) {
-    classCallCheck(this, _class);
+  var SvgCanvas = function SvgCanvas(container, config) {
+    classCallCheck(this, SvgCanvas);
 
     // Alias Namespace constants
 
@@ -15021,7 +15031,7 @@
       getCurrentMode: function getCurrentMode() {
         return currentMode;
       },
-      setCurrentmode: function setCurrentmode(cm) {
+      setCurrentMode: function setCurrentMode(cm) {
         currentMode = cm;
         return currentMode;
       },
@@ -23077,7 +23087,7 @@
     return Math.round(value * Math.pow(10, precision)) / Math.pow(10, precision);
   };
 
-  function jqPluginJPicker ($) {
+  var jPicker = function jPicker($) {
     if (!$.loadingStylesheets) {
       $.loadingStylesheets = [];
     }
@@ -24875,7 +24885,7 @@
       }
     };
     return $;
-  }
+  };
 
   /* globals jQuery */
   /*
@@ -25304,7 +25314,7 @@
 
   /* globals jQuery */
 
-  var $$b = [jqPluginJSHotkeys, jqPluginBBQ, jqPluginSVGIcons, jqPluginJGraduate, jqPluginSpinBtn, jqPluginSVG, jqPluginContextMenu, jqPluginJPicker].reduce(function ($, cb) {
+  var $$b = [jqPluginJSHotkeys, jqPluginBBQ, jqPluginSVGIcons, jqPluginJGraduate, jqPluginSpinBtn, jqPluginSVG, jqPluginContextMenu, jPicker].reduce(function ($, cb) {
     return cb($);
   }, jQuery);
 
@@ -26299,7 +26309,7 @@
       }
     });
 
-    editor.canvas = svgCanvas = new _class(document.getElementById('svgcanvas'), curConfig);
+    editor.canvas = svgCanvas = new SvgCanvas(document.getElementById('svgcanvas'), curConfig);
     var palette = [// Todo: Make into configuration item?
     '#000000', '#3f3f3f', '#7f7f7f', '#bfbfbf', '#ffffff', '#ff0000', '#ff7f00', '#ffff00', '#7fff00', '#00ff00', '#00ff7f', '#00ffff', '#007fff', '#0000ff', '#7f00ff', '#ff00ff', '#ff007f', '#7f0000', '#7f3f00', '#7f7f00', '#3f7f00', '#007f00', '#007f3f', '#007f7f', '#003f7f', '#00007f', '#3f007f', '#7f007f', '#7f003f', '#ffaaaa', '#ffd4aa', '#ffffaa', '#d4ffaa', '#aaffaa', '#aaffd4', '#aaffff', '#aad4ff', '#aaaaff', '#d4aaff', '#ffaaff', '#ffaad4'],
         modKey = isMac() ? 'meta+' : 'ctrl+',

@@ -1884,6 +1884,6 @@ const jPicker = function ($) {
     }
   };
   return $;
-}
+};
 
 export default jPicker;

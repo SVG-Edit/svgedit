@@ -664,7 +664,7 @@ pathModule.init({
   getCurrentMode () {
     return currentMode;
   },
-  setCurrentmode (cm) {
+  setCurrentMode (cm) {
     currentMode = cm;
     return currentMode;
   },
