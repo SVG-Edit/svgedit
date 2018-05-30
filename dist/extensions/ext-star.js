@@ -157,7 +157,7 @@
               fill = c.fill,
               strokecolor = c.strokecolor,
               strokeWidth = c.strokeWidth,
-              radialShift = c.radialShift,
+              radialshift = c.radialshift,
               point = c.point,
               orient = c.orient,
               circumradius = Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy)) / 1.5,
@@ -187,7 +187,7 @@
               } else if (orient === 'edge') {
                 angle = angle + Math.PI / point - Math.PI / 2;
               }
-              angle += radialShift;
+              angle += radialshift;
 
               x = inradius * Math.cos(angle) + cx;
               y = inradius * Math.sin(angle) + cy;

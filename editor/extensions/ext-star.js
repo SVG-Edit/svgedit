@@ -149,7 +149,7 @@ svgEditor.addExtension('star', function (S) {
 
         let x = opts.mouse_x;
         let y = opts.mouse_y;
-        const {cx, cy, fill, strokecolor, strokeWidth, radialShift, point, orient} = c,
+        const {cx, cy, fill, strokecolor, strokeWidth, radialshift, point, orient} = c,
           circumradius = (Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy))) / 1.5,
           inradius = circumradius / document.getElementById('starRadiusMulitplier').value;
         newFO.setAttributeNS(null, 'r', circumradius);
@@ -176,7 +176,7 @@ svgEditor.addExtension('star', function (S) {
             } else if (orient === 'edge') {
               angle = (angle + (Math.PI / point)) - (Math.PI / 2);
             }
-            angle += radialShift;
+            angle += radialshift;
 
             x = (inradius * Math.cos(angle)) + cx;
             y = (inradius * Math.sin(angle)) + cy;
