@@ -1,3 +1,12 @@
+# 3.0.0-alpha.4
+
+- Docs: Convert more docs to JSDoc and add JSDoc script (thanks, tetedacier!)
+- Fix `main` on `package.json` to reference UMD distribution and `module`
+  to point to ES6 Module dist
+- Fix (regression): Bad name on function passed to `path.js`
+- Fix (regression): Star tool (radialshift)
+- Fix (regression): Favicon setting
+
 # 3.0.0-alpha.3
 
 - Change: Default to stylesheet above `editor` directory

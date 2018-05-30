@@ -8,6 +8,8 @@ SVG-edit is a fast, web-based, javascript-driven SVG drawing editor that works i
 
 (Also available as a [download](https://github.com/SVG-Edit/svgedit/releases/download/svg-edit-2.8.1/svg-edit-2.8.1.zip) in [releases](https://github.com/SVG-Edit/svgedit/releases)).
 
+You may also try the [pre-release](https://svg-edit.github.io/svgedit/releases/svg-edit-3.0.0-alpha.4/editor/svg-editor.html) (or the [ES6-Module](https://svg-edit.github.io/svgedit/releases/svg-edit-3.0.0-alpha.4/editor/svg-editor.html) version, assuming a modern browser).
+
 ## Installation
 
 Note that steps 1-2 below are only necessary if you wish to integrate
