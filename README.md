@@ -63,7 +63,7 @@ The following browsers had been tested for 2.6 or earlier and will probably cont
 
 ## Further reading and more information
 
- * See [docs](docs/) for more documentation.
+ * See [docs](docs/) for more documentation. See the [JSDocs for our latest release](https://svg-edit.github.io/svgedit/releases/svg-edit-3.0.0-alpha.4/docs/jsdoc/index.html).
  * [Acknowledgements](docs/Acknowledgements.md) lists open source projects used in svg-edit.
  * See [AUTHORS](AUTHORS) file for authors.
  * [Stackoverflow](https://stackoverflow.com/tags/svg-edit) group.
