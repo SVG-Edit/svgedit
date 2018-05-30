@@ -4951,15 +4951,21 @@ editor.init = function () {
   $('#cmenu_canvas li').disableContextMenu();
   canvMenu.enableContextMenuItems('#delete,#cut,#copy');
 
-  canvMenu[(localStorage.getItem('svgedit_clipboard') ? 'en' : 'dis') + 'ableContextMenuItems'](
-    '#paste,#paste_in_place'
-  );
-  window.addEventListener('storage', function (e) {
-    if (e.key !== 'svgedit_clipboard') return;
-
-    canvMenu[(localStorage.getItem('svgedit_clipboard') ? 'en' : 'dis') + 'ableContextMenuItems'](
+  function enableOrDisableClipboard () {
+    let svgeditClipboard;
+    try {
+      svgeditClipboard = localStorage.getItem('svgedit_clipboard');
+    } catch (err) {}
+    canvMenu[(svgeditClipboard ? 'en' : 'dis') + 'ableContextMenuItems'](
       '#paste,#paste_in_place'
     );
+  }
+  enableOrDisableClipboard();
+
+  window.addEventListener('storage', function (e) {
+    if (e.key !== 'svgedit_clipboard') { return; }
+
+    enableOrDisableClipboard();
   });
 
   window.addEventListener('beforeunload', function (e) {

@@ -19838,6 +19838,11 @@
       $$9('#cmenu_canvas').enableContextMenuItems('#paste,#paste_in_place');
     };
 
+    /**
+    * @param {"in_place"|"point"|undefined} type
+    * @param {Number|undefined} x Expected if type is "point"
+    * @param {Number|undefined} y Expected if type is "point"
+    */
     this.pasteElements = function (type, x, y) {
       var cb = JSON.parse(localStorage.getItem('svgedit_clipboard'));
       var len = cb.length;
@@ -30308,11 +30313,21 @@
     $$b('#cmenu_canvas li').disableContextMenu();
     canvMenu.enableContextMenuItems('#delete,#cut,#copy');
 
-    canvMenu[(localStorage.getItem('svgedit_clipboard') ? 'en' : 'dis') + 'ableContextMenuItems']('#paste,#paste_in_place');
-    window.addEventListener('storage', function (e) {
-      if (e.key !== 'svgedit_clipboard') return;
+    function enableOrDisableClipboard() {
+      var svgeditClipboard = void 0;
+      try {
+        svgeditClipboard = localStorage.getItem('svgedit_clipboard');
+      } catch (err) {}
+      canvMenu[(svgeditClipboard ? 'en' : 'dis') + 'ableContextMenuItems']('#paste,#paste_in_place');
+    }
+    enableOrDisableClipboard();
 
-      canvMenu[(localStorage.getItem('svgedit_clipboard') ? 'en' : 'dis') + 'ableContextMenuItems']('#paste,#paste_in_place');
+    window.addEventListener('storage', function (e) {
+      if (e.key !== 'svgedit_clipboard') {
+        return;
+      }
+
+      enableOrDisableClipboard();
     });
 
     window.addEventListener('beforeunload', function (e) {

@@ -297,7 +297,12 @@ class EmbeddedSVGEdit {
         *   made compatile with all API functionality
         */
         // We accept and post strings for the sake of IE9 support
-        if (window.location.origin === t.frame.contentWindow.location.origin) {
+        let sameOrigin = false;
+        try {
+          sameOrigin = window.location.origin === t.frame.contentWindow.location.origin;
+        } catch (err) {}
+
+        if (sameOrigin) {
           // Although we do not really need this API if we are working same
           //  domain, it could allow us to write in a way that would work
           //  cross-domain as well, assuming we stick to the argument limitations

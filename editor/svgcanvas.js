@@ -5270,6 +5270,11 @@ this.copySelectedElements = function () {
   $('#cmenu_canvas').enableContextMenuItems('#paste,#paste_in_place');
 };
 
+/**
+* @param {"in_place"|"point"|undefined} type
+* @param {Number|undefined} x Expected if type is "point"
+* @param {Number|undefined} y Expected if type is "point"
+*/
 this.pasteElements = function (type, x, y) {
   let cb = JSON.parse(localStorage.getItem('svgedit_clipboard'));
   let len = cb.length;

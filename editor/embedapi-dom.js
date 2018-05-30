@@ -62,13 +62,21 @@ $('#exportPNG').click(exportPNG);
 $('#exportPDF').click(exportPDF);
 
 const iframe = $('<iframe src="svg-editor-es.html?extensions=ext-xdomain-messaging.js' +
-  window.location.href.replace(/\?(.*)$/, '&$1') + // Append arguments to this file onto the iframe
+  (location.href.includes('?')
+    ? location.href.replace(/\?(.*)$/, '&$1')
+    : '') + // Append arguments to this file onto the iframe
   '" width="900px" height="600px" id="svgedit""></iframe>'
 );
 iframe[0].addEventListener('load', function () {
   svgCanvas = new EmbeddedSVGEdit(frame);
   // Hide main button, as we will be controlling new, load, save, etc. from the host document
-  const doc = frame.contentDocument || frame.contentWindow.document;
+  let doc;
+  try {
+    doc = frame.contentDocument || frame.contentWindow.document;
+  } catch (err) {
+    console.log('Blocked from accessing document');
+    return;
+  }
   const mainButton = doc.getElementById('main_button');
   mainButton.style.display = 'none';
 });
