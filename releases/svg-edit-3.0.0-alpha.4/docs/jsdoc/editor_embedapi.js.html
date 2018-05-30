@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: editor/embedapi.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: editor/embedapi.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+Embedded SVG-edit API
+
+General usage:
+- Have an iframe somewhere pointing to a version of svg-edit > r1000
+- Initialize the magic with:
+const svgCanvas = new EmbeddedSVGEdit(window.frames.svgedit);
+- Pass functions in this format:
+svgCanvas.setSvgString('string')
+- Or if a callback is needed:
+svgCanvas.setSvgString('string')(function(data, error){
+  if (error){
+  // There was an error
+  } else{
+  // Handle data
+  }
+})
+
+Everything is done with the same API as the real svg-edit,
+and all documentation is unchanged.
+
+However, this file depends on the postMessage API which
+can only support JSON-serializable arguments and
+return values, so, for example, arguments whose value is
+'undefined', a function, a non-finite number, or a built-in
+object like Date(), RegExp(), etc. will most likely not behave
+as expected. In such a case one may need to host
+the SVG editor on the same domain and reference the
+JavaScript methods on the frame itself.
+
+The only other difference is
+when handling returns: the callback notation is used instead.
+
+const blah = new EmbeddedSVGEdit(window.frames.svgedit);
+blah.clearSelection('woot', 'blah', 1337, [1, 2, 3, 4, 5, 'moo'], -42, {a: 'tree',b:6, c: 9})(function(){console.log('GET DATA',arguments)})
+*/
+
+let cbid = 0;
+
+function getCallbackSetter (d) {
+  return function () {
+    const t = this, // New callback
+      args = [].slice.call(arguments),
+      cbid = t.send(d, args, function () {}); // The callback (currently it's nothing, but will be set later)
+
+    return function (newcallback) {
+      t.callbacks[cbid] = newcallback; // Set callback
+    };
+  };
+}
+
+/*
+* Having this separate from messageListener allows us to
+* avoid using JSON parsing (and its limitations) in the case
+* of same domain control
+*/
+function addCallback (t, data) {
+  const result = data.result || data.error,
+    cbid = data.id;
+  if (t.callbacks[cbid]) {
+    if (data.result) {
+      t.callbacks[cbid](result);
+    } else {
+      t.callbacks[cbid](result, 'error');
+    }
+  }
+}
+
+function messageListener (e) {
+  // We accept and post strings as opposed to objects for the sake of IE9 support; this
+  //   will most likely be changed in the future
+  if (typeof e.data !== 'string') {
+    return;
+  }
+  const {allowedOrigins} = this,
+    data = e.data &amp;&amp; JSON.parse(e.data);
+  if (!data || typeof data !== 'object' || data.namespace !== 'svg-edit' ||
+    e.source !== this.frame.contentWindow ||
+    (!allowedOrigins.includes('*') &amp;&amp; !allowedOrigins.includes(e.origin))
+  ) {
+    return;
+  }
+  addCallback(this, data);
+}
+
+function getMessageListener (t) {
+  return function (e) {
+    messageListener.call(t, e);
+  };
+}
+
+/**
+* @param {HTMLIFrameElement} frame
+* @param {array} [allowedOrigins=[]] Array of origins from which incoming
+*   messages will be allowed when same origin is not used; defaults to none.
+*   If supplied, it should probably be the same as svgEditor's allowedOrigins
+*/
+
+class EmbeddedSVGEdit {
+  constructor (frame, allowedOrigins) {
+    this.allowedOrigins = allowedOrigins || [];
+    // Initialize communication
+    this.frame = frame;
+    this.callbacks = {};
+    // List of functions extracted with this:
+    // Run in firebug on http://svg-edit.googlecode.com/svn/trunk/docs/files/svgcanvas-js.html
+
+    // for (const i=0,q=[],f = document.querySelectorAll('div.CFunction h3.CTitle a'); i &lt; f.length; i++) { q.push(f[i].name); }; q
+    // const functions = ['clearSelection', 'addToSelection', 'removeFromSelection', 'open', 'save', 'getSvgString', 'setSvgString',
+    // 'createLayer', 'deleteCurrentLayer', 'setCurrentLayer', 'renameCurrentLayer', 'setCurrentLayerPosition', 'setLayerVisibility',
+    // 'moveSelectedToLayer', 'clear'];
+
+    // Newer, well, it extracts things that aren't documented as well. All functions accessible through the normal thingy can now be accessed though the API
+    // const {svgCanvas} = frame.contentWindow;
+    // const l = [];
+    // for (const i in svgCanvas) { if (typeof svgCanvas[i] === 'function') { l.push(i);} };
+    // alert("['" + l.join("', '") + "']");
+    // Run in svgedit itself
+    const functions = [
+      'clearSvgContentElement', 'setIdPrefix', 'getCurrentDrawing', 'addSvgElementFromJson', 'getTransformList', 'matrixMultiply', 'hasMatrixTransform', 'transformListToTransform', 'convertToNum', 'findDefs', 'getUrlFromAttr', 'getHref', 'setHref', 'getBBox', 'getRotationAngle', 'getElem', 'getRefElem', 'assignAttributes', 'cleanupElement', 'remapElement', 'recalculateDimensions', 'sanitizeSvg', 'runExtensions', 'addExtension', 'round', 'getIntersectionList', 'getStrokedBBox', 'getVisibleElements', 'getVisibleElementsAndBBoxes', 'groupSvgElem', 'getId', 'getNextId', 'call', 'bind', 'prepareSvg', 'setRotationAngle', 'recalculateAllSelectedDimensions', 'clearSelection', 'addToSelection', 'selectOnly', 'removeFromSelection', 'selectAllInCurrentLayer', 'getMouseTarget', 'removeUnusedDefElems', 'svgCanvasToString', 'svgToString', 'embedImage', 'setGoodImage', 'open', 'save', 'rasterExport', 'exportPDF', 'getSvgString', 'randomizeIds', 'uniquifyElems', 'setUseData', 'convertGradients', 'convertToGroup', 'setSvgString', 'importSvgString', 'identifyLayers', 'createLayer', 'cloneLayer', 'deleteCurrentLayer', 'setCurrentLayer', 'renameCurrentLayer', 'setCurrentLayerPosition', 'setLayerVisibility', 'moveSelectedToLayer', 'mergeLayer', 'mergeAllLayers', 'leaveContext', 'setContext', 'clear', 'linkControlPoints', 'getContentElem', 'getRootElem', 'getSelectedElems', 'getResolution', 'getZoom', 'getVersion', 'setUiStrings', 'setConfig', 'getTitle', 'setGroupTitle', 'getDocumentTitle', 'setDocumentTitle', 'getEditorNS', 'setResolution', 'getOffset', 'setBBoxZoom', 'setZoom', 'getMode', 'setMode', 'getColor', 'setColor', 'setGradient', 'setPaint', 'setStrokePaint', 'setFillPaint', 'getStrokeWidth', 'setStrokeWidth', 'setStrokeAttr', 'getStyle', 'getOpacity', 'setOpacity', 'getFillOpacity', 'getStrokeOpacity', 'setPaintOpacity', 'getPaintOpacity', 'getBlur', 'setBlurNoUndo', 'setBlurOffsets', 'setBlur', 'getBold', 'setBold', 'getItalic', 'setItalic', 'getFontFamily', 'setFontFamily', 'setFontColor', 'getFontColor', 'getFontSize', 'setFontSize', 'getText', 'setTextContent', 'setImageURL', 'setLinkURL', 'setRectRadius', 'makeHyperlink', 'removeHyperlink', 'setSegType', 'convertToPath', 'changeSelectedAttribute', 'deleteSelectedElements', 'cutSelectedElements', 'copySelectedElements', 'pasteElements', 'groupSelectedElements', 'pushGroupProperties', 'ungroupSelectedElement', 'moveToTopSelectedElement', 'moveToBottomSelectedElement', 'moveUpDownSelected', 'moveSelectedElements', 'cloneSelectedElements', 'alignSelectedElements', 'updateCanvas', 'setBackground', 'cycleElement', 'getPrivateMethods', 'zoomChanged', 'ready', 'getUIStrings'
+    ];
+
+    // TODO: rewrite the following, it's pretty scary.
+    for (let i = 0; i &lt; functions.length; i++) {
+      this[functions[i]] = getCallbackSetter(functions[i]);
+    }
+
+    // Older IE may need a polyfill for addEventListener, but so it would for SVG
+    window.addEventListener('message', getMessageListener(this), false);
+  }
+
+  send (name, args, callback) {
+    const t = this;
+    cbid++;
+
+    this.callbacks[cbid] = callback;
+    setTimeout((function (cbid) {
+      return function () { // Delay for the callback to be set in case its synchronous
+        /*
+        * Todo: Handle non-JSON arguments and return values (undefined,
+        *   nonfinite numbers, functions, and built-in objects like Date,
+        *   RegExp), etc.? Allow promises instead of callbacks? Review
+        *   SVG-Edit functions for whether JSON-able parameters can be
+        *   made compatile with all API functionality
+        */
+        // We accept and post strings for the sake of IE9 support
+        if (window.location.origin === t.frame.contentWindow.location.origin) {
+          // Although we do not really need this API if we are working same
+          //  domain, it could allow us to write in a way that would work
+          //  cross-domain as well, assuming we stick to the argument limitations
+          //  of the current JSON-based communication API (e.g., not passing
+          //  callbacks). We might be able to address these shortcomings; see
+          //  the todo elsewhere in this file.
+          const message = {id: cbid},
+            {svgCanvas} = t.frame.contentWindow;
+          try {
+            message.result = svgCanvas[name].apply(svgCanvas, args);
+          } catch (err) {
+            message.error = err.message;
+          }
+          addCallback(t, message);
+        } else { // Requires the ext-xdomain-messaging.js extension
+          t.frame.contentWindow.postMessage(JSON.stringify({namespace: 'svgCanvas', id: cbid, name, args}), '*');
+        }
+      };
+    }(cbid)), 0);
+
+    return cbid;
+  }
+}
+
+export default EmbeddedSVGEdit;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BatchCommand.html">BatchCommand</a></li><li><a href="ChangeElementCommand.html">ChangeElementCommand</a></li><li><a href="Drawing.html">Drawing</a></li><li><a href="EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="HistoryRecordingService.html">HistoryRecordingService</a></li><li><a href="InsertElementCommand.html">InsertElementCommand</a></li><li><a href="Layer.html">Layer</a></li><li><a href="RemoveElementCommand.html">RemoveElementCommand</a></li><li><a href="Selector.html">Selector</a></li><li><a href="SelectorManager.html">SelectorManager</a></li><li><a href="SvgCanvas.html">SvgCanvas</a></li><li><a href="svgedit.history.MoveElementCommand.html">MoveElementCommand</a></li><li><a href="UndoManager.html">UndoManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addCtrlGrip">addCtrlGrip</a></li><li><a href="global.html#addLayerClass">addLayerClass</a></li><li><a href="global.html#addPointGrip">addPointGrip</a></li><li><a href="global.html#assignAttributes">assignAttributes</a></li><li><a href="global.html#bBoxCanBeOptimizedOverNativeGetBBox">bBoxCanBeOptimizedOverNativeGetBBox</a></li><li><a href="global.html#bboxToObj">bboxToObj</a></li><li><a href="global.html#blankPageObjectURL">blankPageObjectURL</a></li><li><a href="global.html#canvas_">canvas_</a></li><li><a href="global.html#cleanupElement">cleanupElement</a></li><li><a href="global.html#cloneLayer">cloneLayer</a></li><li><a href="global.html#close">close</a></li><li><a href="global.html#closePercent">closePercent</a></li><li><a href="global.html#convertAttrs">convertAttrs</a></li><li><a href="global.html#convertPath">convertPath</a></li><li><a href="global.html#convertToNum">convertToNum</a></li><li><a href="global.html#convertToPath">convertToPath</a></li><li><a href="global.html#convertUnit">convertUnit</a></li><li><a href="global.html#copyElem">copyElem</a></li><li><a href="global.html#createLayer">createLayer</a></li><li><a href="global.html#createObjectURL">createObjectURL</a></li><li><a href="global.html#dataURLToObjectURL">dataURLToObjectURL</a></li><li><a href="global.html#defaultPrefs">defaultPrefs</a></li><li><a href="global.html#deleteCurrentLayer">deleteCurrentLayer</a></li><li><a href="global.html#executeAfterLoads">executeAfterLoads</a></li><li><a href="global.html#findDefs">findDefs</a></li><li><a href="global.html#findLayerNameInGroup">findLayerNameInGroup</a></li><li><a href="global.html#fromXml">fromXml</a></li><li><a href="global.html#getBBox">getBBox</a></li><li><a href="global.html#getBBoxOfElementAsPath">getBBoxOfElementAsPath</a></li><li><a href="global.html#getBBoxWithTransform">getBBoxWithTransform</a></li><li><a href="global.html#getElem">getElem</a></li><li><a href="global.html#getExtraAttributesForConvertToPath">getExtraAttributesForConvertToPath</a></li><li><a href="global.html#getHref">getHref</a></li><li><a href="global.html#getMatrix">getMatrix</a></li><li><a href="global.html#getNewLayerName">getNewLayerName</a></li><li><a href="global.html#getPathBBox">getPathBBox</a></li><li><a href="global.html#getPathDFromElement">getPathDFromElement</a></li><li><a href="global.html#getPathDFromSegments">getPathDFromSegments</a></li><li><a href="global.html#getRefElem">getRefElem</a></li><li><a href="global.html#getReverseNS">getReverseNS</a></li><li><a href="global.html#getRotationAngle">getRotationAngle</a></li><li><a href="global.html#getRotationAngleFromTransformList">getRotationAngleFromTransformList</a></li><li><a href="global.html#getSelectorManager">getSelectorManager</a></li><li><a href="global.html#getStrokedBBox">getStrokedBBox</a></li><li><a href="global.html#getStrokedBBoxDefaultVisible">getStrokedBBoxDefaultVisible</a></li><li><a href="global.html#getTransformList">getTransformList</a></li><li><a href="global.html#getTypeMap">getTypeMap</a></li><li><a href="global.html#getUrlFromAttr">getUrlFromAttr</a></li><li><a href="global.html#getVisibleElements">getVisibleElements</a></li><li><a href="global.html#groupBBFix">groupBBFix</a></li><li><a href="global.html#hasMatrixTransform">hasMatrixTransform</a></li><li><a href="global.html#HistoryEventTypes">HistoryEventTypes</a></li><li><a href="global.html#historyRecordingService">historyRecordingService</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#isIdentity">isIdentity</a></li><li><a href="global.html#isValidUnit">isValidUnit</a></li><li><a href="global.html#listMap_">listMap_</a></li><li><a href="global.html#matrixMultiply">matrixMultiply</a></li><li><a href="global.html#moveSelectedToLayer">moveSelectedToLayer</a></li><li><a href="global.html#notClose">notClose</a></li><li><a href="global.html#notClosePercent">notClosePercent</a></li><li><a href="global.html#NS">NS</a></li><li><a href="global.html#ns">ns</a></li><li><a href="global.html#pathActions">pathActions</a></li><li><a href="global.html#pathDSegment">pathDSegment</a></li><li><a href="global.html#preventClickDefault">preventClickDefault</a></li><li><a href="global.html#randomizeIds">randomizeIds</a></li><li><a href="global.html#recalculateDimensions">recalculateDimensions</a></li><li><a href="global.html#rectsIntersect">rectsIntersect</a></li><li><a href="global.html#remapElement">remapElement</a></li><li><a href="global.html#removeElementFromListMap">removeElementFromListMap</a></li><li><a href="global.html#renameCurrentLayer">renameCurrentLayer</a></li><li><a href="global.html#sanitizeSvg">sanitizeSvg</a></li><li><a href="global.html#setCurrentLayer">setCurrentLayer</a></li><li><a href="global.html#setCurrentLayerPosition">setCurrentLayerPosition</a></li><li><a href="global.html#setHref">setHref</a></li><li><a href="global.html#setLayerVisibility">setLayerVisibility</a></li><li><a href="global.html#setUnitAttr">setUnitAttr</a></li><li><a href="global.html#shortFloat">shortFloat</a></li><li><a href="global.html#smoothControlPoints">smoothControlPoints</a></li><li><a href="global.html#snapToAngle">snapToAngle</a></li><li><a href="global.html#toXml">toXml</a></li><li><a href="global.html#transformBox">transformBox</a></li><li><a href="global.html#transformListToTransform">transformListToTransform</a></li><li><a href="global.html#transformPoint">transformPoint</a></li><li><a href="global.html#typeMap_">typeMap_</a></li><li><a href="global.html#uiStrings">uiStrings</a></li><li><a href="global.html#updateClipPath">updateClipPath</a></li><li><a href="global.html#walkTree">walkTree</a></li><li><a href="global.html#walkTreePost">walkTreePost</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed May 30 2018 05:42:22 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

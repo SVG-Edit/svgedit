@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: editor/svgedit.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: editor/svgedit.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ *
+ * Licensed under the MIT License
+ */
+
+/**
+* Common namepaces constants in alpha order
+*/
+export const NS = {
+  HTML: 'http://www.w3.org/1999/xhtml',
+  MATH: 'http://www.w3.org/1998/Math/MathML',
+  SE: 'http://svg-edit.googlecode.com',
+  SVG: 'http://www.w3.org/2000/svg',
+  XLINK: 'http://www.w3.org/1999/xlink',
+  XML: 'http://www.w3.org/XML/1998/namespace',
+  XMLNS: 'http://www.w3.org/2000/xmlns/' // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
+};
+
+/**
+* @returns The NS with key values switched and lowercase
+*/
+export const getReverseNS = function () {
+  const reverseNS = {};
+  Object.entries(NS).forEach(([name, URI]) => {
+    reverseNS[URI] = name.toLowerCase();
+  });
+  return reverseNS;
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BatchCommand.html">BatchCommand</a></li><li><a href="ChangeElementCommand.html">ChangeElementCommand</a></li><li><a href="Drawing.html">Drawing</a></li><li><a href="EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="HistoryRecordingService.html">HistoryRecordingService</a></li><li><a href="InsertElementCommand.html">InsertElementCommand</a></li><li><a href="Layer.html">Layer</a></li><li><a href="RemoveElementCommand.html">RemoveElementCommand</a></li><li><a href="Selector.html">Selector</a></li><li><a href="SelectorManager.html">SelectorManager</a></li><li><a href="SvgCanvas.html">SvgCanvas</a></li><li><a href="svgedit.history.MoveElementCommand.html">MoveElementCommand</a></li><li><a href="UndoManager.html">UndoManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addCtrlGrip">addCtrlGrip</a></li><li><a href="global.html#addLayerClass">addLayerClass</a></li><li><a href="global.html#addPointGrip">addPointGrip</a></li><li><a href="global.html#assignAttributes">assignAttributes</a></li><li><a href="global.html#bBoxCanBeOptimizedOverNativeGetBBox">bBoxCanBeOptimizedOverNativeGetBBox</a></li><li><a href="global.html#bboxToObj">bboxToObj</a></li><li><a href="global.html#blankPageObjectURL">blankPageObjectURL</a></li><li><a href="global.html#canvas_">canvas_</a></li><li><a href="global.html#cleanupElement">cleanupElement</a></li><li><a href="global.html#cloneLayer">cloneLayer</a></li><li><a href="global.html#close">close</a></li><li><a href="global.html#closePercent">closePercent</a></li><li><a href="global.html#convertAttrs">convertAttrs</a></li><li><a href="global.html#convertPath">convertPath</a></li><li><a href="global.html#convertToNum">convertToNum</a></li><li><a href="global.html#convertToPath">convertToPath</a></li><li><a href="global.html#convertUnit">convertUnit</a></li><li><a href="global.html#copyElem">copyElem</a></li><li><a href="global.html#createLayer">createLayer</a></li><li><a href="global.html#createObjectURL">createObjectURL</a></li><li><a href="global.html#dataURLToObjectURL">dataURLToObjectURL</a></li><li><a href="global.html#defaultPrefs">defaultPrefs</a></li><li><a href="global.html#deleteCurrentLayer">deleteCurrentLayer</a></li><li><a href="global.html#executeAfterLoads">executeAfterLoads</a></li><li><a href="global.html#findDefs">findDefs</a></li><li><a href="global.html#findLayerNameInGroup">findLayerNameInGroup</a></li><li><a href="global.html#fromXml">fromXml</a></li><li><a href="global.html#getBBox">getBBox</a></li><li><a href="global.html#getBBoxOfElementAsPath">getBBoxOfElementAsPath</a></li><li><a href="global.html#getBBoxWithTransform">getBBoxWithTransform</a></li><li><a href="global.html#getElem">getElem</a></li><li><a href="global.html#getExtraAttributesForConvertToPath">getExtraAttributesForConvertToPath</a></li><li><a href="global.html#getHref">getHref</a></li><li><a href="global.html#getMatrix">getMatrix</a></li><li><a href="global.html#getNewLayerName">getNewLayerName</a></li><li><a href="global.html#getPathBBox">getPathBBox</a></li><li><a href="global.html#getPathDFromElement">getPathDFromElement</a></li><li><a href="global.html#getPathDFromSegments">getPathDFromSegments</a></li><li><a href="global.html#getRefElem">getRefElem</a></li><li><a href="global.html#getReverseNS">getReverseNS</a></li><li><a href="global.html#getRotationAngle">getRotationAngle</a></li><li><a href="global.html#getRotationAngleFromTransformList">getRotationAngleFromTransformList</a></li><li><a href="global.html#getSelectorManager">getSelectorManager</a></li><li><a href="global.html#getStrokedBBox">getStrokedBBox</a></li><li><a href="global.html#getStrokedBBoxDefaultVisible">getStrokedBBoxDefaultVisible</a></li><li><a href="global.html#getTransformList">getTransformList</a></li><li><a href="global.html#getTypeMap">getTypeMap</a></li><li><a href="global.html#getUrlFromAttr">getUrlFromAttr</a></li><li><a href="global.html#getVisibleElements">getVisibleElements</a></li><li><a href="global.html#groupBBFix">groupBBFix</a></li><li><a href="global.html#hasMatrixTransform">hasMatrixTransform</a></li><li><a href="global.html#HistoryEventTypes">HistoryEventTypes</a></li><li><a href="global.html#historyRecordingService">historyRecordingService</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#isIdentity">isIdentity</a></li><li><a href="global.html#isValidUnit">isValidUnit</a></li><li><a href="global.html#listMap_">listMap_</a></li><li><a href="global.html#matrixMultiply">matrixMultiply</a></li><li><a href="global.html#moveSelectedToLayer">moveSelectedToLayer</a></li><li><a href="global.html#notClose">notClose</a></li><li><a href="global.html#notClosePercent">notClosePercent</a></li><li><a href="global.html#NS">NS</a></li><li><a href="global.html#ns">ns</a></li><li><a href="global.html#pathActions">pathActions</a></li><li><a href="global.html#pathDSegment">pathDSegment</a></li><li><a href="global.html#preventClickDefault">preventClickDefault</a></li><li><a href="global.html#randomizeIds">randomizeIds</a></li><li><a href="global.html#recalculateDimensions">recalculateDimensions</a></li><li><a href="global.html#rectsIntersect">rectsIntersect</a></li><li><a href="global.html#remapElement">remapElement</a></li><li><a href="global.html#removeElementFromListMap">removeElementFromListMap</a></li><li><a href="global.html#renameCurrentLayer">renameCurrentLayer</a></li><li><a href="global.html#sanitizeSvg">sanitizeSvg</a></li><li><a href="global.html#setCurrentLayer">setCurrentLayer</a></li><li><a href="global.html#setCurrentLayerPosition">setCurrentLayerPosition</a></li><li><a href="global.html#setHref">setHref</a></li><li><a href="global.html#setLayerVisibility">setLayerVisibility</a></li><li><a href="global.html#setUnitAttr">setUnitAttr</a></li><li><a href="global.html#shortFloat">shortFloat</a></li><li><a href="global.html#smoothControlPoints">smoothControlPoints</a></li><li><a href="global.html#snapToAngle">snapToAngle</a></li><li><a href="global.html#toXml">toXml</a></li><li><a href="global.html#transformBox">transformBox</a></li><li><a href="global.html#transformListToTransform">transformListToTransform</a></li><li><a href="global.html#transformPoint">transformPoint</a></li><li><a href="global.html#typeMap_">typeMap_</a></li><li><a href="global.html#uiStrings">uiStrings</a></li><li><a href="global.html#updateClipPath">updateClipPath</a></li><li><a href="global.html#walkTree">walkTree</a></li><li><a href="global.html#walkTreePost">walkTreePost</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed May 30 2018 05:42:22 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

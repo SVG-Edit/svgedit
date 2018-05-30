@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: editor/coords.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: editor/coords.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* globals jQuery */
+/**
+ * Coords.
+ *
+ * Licensed under the MIT License
+ *
+ */
+
+import './pathseg.js';
+import {
+  snapToGrid, assignAttributes, getBBox, getRefElem, findDefs
+} from './svgutils.js';
+import {
+  transformPoint, transformListToTransform, matrixMultiply, transformBox
+} from './math.js';
+import {getTransformList} from './svgtransformlist.js';
+
+const $ = jQuery;
+
+// this is how we map paths to our preferred relative segment types
+const pathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a',
+  'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
+
+/**
+ * @typedef editorContext
+ * @type {?object}
+ * @property {function} getGridSnapping
+ * @property {function} getDrawing
+*/
+let editorContext_ = null;
+
+/**
+* @param {editorContext} editorContext
+*/
+export const init = function (editorContext) {
+  editorContext_ = editorContext;
+};
+
+/**
+ * Applies coordinate changes to an element based on the given matrix
+ * @param {Element} selected - DOM element to be changed
+ * @param {Object} changes - Object with changes to be remapped
+ * @param {SVGMatrix} m - Matrix object to use for remapping coordinates
+*/
+export const remapElement = function (selected, changes, m) {
+  const remap = function (x, y) { return transformPoint(x, y, m); },
+    scalew = function (w) { return m.a * w; },
+    scaleh = function (h) { return m.d * h; },
+    doSnapping = editorContext_.getGridSnapping() &amp;&amp; selected.parentNode.parentNode.localName === 'svg',
+    finishUp = function () {
+      if (doSnapping) {
+        for (const o in changes) {
+          changes[o] = snapToGrid(changes[o]);
+        }
+      }
+      assignAttributes(selected, changes, 1000, true);
+    },
+    box = getBBox(selected);
+
+  for (let i = 0; i &lt; 2; i++) {
+    const type = i === 0 ? 'fill' : 'stroke';
+    const attrVal = selected.getAttribute(type);
+    if (attrVal &amp;&amp; attrVal.startsWith('url(')) {
+      if (m.a &lt; 0 || m.d &lt; 0) {
+        const grad = getRefElem(attrVal);
+        const newgrad = grad.cloneNode(true);
+        if (m.a &lt; 0) {
+          // flip x
+          const x1 = newgrad.getAttribute('x1');
+          const x2 = newgrad.getAttribute('x2');
+          newgrad.setAttribute('x1', -(x1 - 1));
+          newgrad.setAttribute('x2', -(x2 - 1));
+        }
+
+        if (m.d &lt; 0) {
+          // flip y
+          const y1 = newgrad.getAttribute('y1');
+          const y2 = newgrad.getAttribute('y2');
+          newgrad.setAttribute('y1', -(y1 - 1));
+          newgrad.setAttribute('y2', -(y2 - 1));
+        }
+        newgrad.id = editorContext_.getDrawing().getNextId();
+        findDefs().appendChild(newgrad);
+        selected.setAttribute(type, 'url(#' + newgrad.id + ')');
+      }
+
+      // Not really working :(
+      // if (selected.tagName === 'path') {
+      //   reorientGrads(selected, m);
+      // }
+    }
+  }
+
+  const elName = selected.tagName;
+  if (elName === 'g' || elName === 'text' || elName === 'tspan' || elName === 'use') {
+    // if it was a translate, then just update x,y
+    if (m.a === 1 &amp;&amp; m.b === 0 &amp;&amp; m.c === 0 &amp;&amp; m.d === 1 &amp;&amp; (m.e !== 0 || m.f !== 0)) {
+      // [T][M] = [M][T']
+      // therefore [T'] = [M_inv][T][M]
+      const existing = transformListToTransform(selected).matrix,
+        tNew = matrixMultiply(existing.inverse(), m, existing);
+      changes.x = parseFloat(changes.x) + tNew.e;
+      changes.y = parseFloat(changes.y) + tNew.f;
+    } else {
+      // we just absorb all matrices into the element and don't do any remapping
+      const chlist = getTransformList(selected);
+      const mt = editorContext_.getSVGRoot().createSVGTransform();
+      mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix, m));
+      chlist.clear();
+      chlist.appendItem(mt);
+    }
+  }
+
+  // now we have a set of changes and an applied reduced transform list
+  // we apply the changes directly to the DOM
+  switch (elName) {
+  case 'foreignObject':
+  case 'rect':
+  case 'image': {
+    // Allow images to be inverted (give them matrix when flipped)
+    if (elName === 'image' &amp;&amp; (m.a &lt; 0 || m.d &lt; 0)) {
+      // Convert to matrix
+      const chlist = getTransformList(selected);
+      const mt = editorContext_.getSVGRoot().createSVGTransform();
+      mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix, m));
+      chlist.clear();
+      chlist.appendItem(mt);
+    } else {
+      const pt1 = remap(changes.x, changes.y);
+      changes.width = scalew(changes.width);
+      changes.height = scaleh(changes.height);
+      changes.x = pt1.x + Math.min(0, changes.width);
+      changes.y = pt1.y + Math.min(0, changes.height);
+      changes.width = Math.abs(changes.width);
+      changes.height = Math.abs(changes.height);
+    }
+    finishUp();
+    break;
+  } case 'ellipse': {
+    const c = remap(changes.cx, changes.cy);
+    changes.cx = c.x;
+    changes.cy = c.y;
+    changes.rx = scalew(changes.rx);
+    changes.ry = scaleh(changes.ry);
+    changes.rx = Math.abs(changes.rx);
+    changes.ry = Math.abs(changes.ry);
+    finishUp();
+    break;
+  } case 'circle': {
+    const c = remap(changes.cx, changes.cy);
+    changes.cx = c.x;
+    changes.cy = c.y;
+    // take the minimum of the new selected box's dimensions for the new circle radius
+    const tbox = transformBox(box.x, box.y, box.width, box.height, m);
+    const w = tbox.tr.x - tbox.tl.x, h = tbox.bl.y - tbox.tl.y;
+    changes.r = Math.min(w / 2, h / 2);
+
+    if (changes.r) { changes.r = Math.abs(changes.r); }
+    finishUp();
+    break;
+  } case 'line': {
+    const pt1 = remap(changes.x1, changes.y1);
+    const pt2 = remap(changes.x2, changes.y2);
+    changes.x1 = pt1.x;
+    changes.y1 = pt1.y;
+    changes.x2 = pt2.x;
+    changes.y2 = pt2.y;
+  } // Fallthrough
+  case 'text':
+  case 'tspan':
+  case 'use': {
+    finishUp();
+    break;
+  } case 'g': {
+    const gsvg = $(selected).data('gsvg');
+    if (gsvg) {
+      assignAttributes(gsvg, changes, 1000, true);
+    }
+    break;
+  } case 'polyline':
+  case 'polygon': {
+    const len = changes.points.length;
+    for (let i = 0; i &lt; len; ++i) {
+      const pt = changes.points[i];
+      const {x, y} = remap(pt.x, pt.y);
+      changes.points[i].x = x;
+      changes.points[i].y = y;
+    }
+
+    // const len = changes.points.length;
+    let pstr = '';
+    for (let i = 0; i &lt; len; ++i) {
+      const pt = changes.points[i];
+      pstr += pt.x + ',' + pt.y + ' ';
+    }
+    selected.setAttribute('points', pstr);
+    break;
+  } case 'path': {
+    const segList = selected.pathSegList;
+    let len = segList.numberOfItems;
+    changes.d = [];
+    for (let i = 0; i &lt; len; ++i) {
+      const seg = segList.getItem(i);
+      changes.d[i] = {
+        type: seg.pathSegType,
+        x: seg.x,
+        y: seg.y,
+        x1: seg.x1,
+        y1: seg.y1,
+        x2: seg.x2,
+        y2: seg.y2,
+        r1: seg.r1,
+        r2: seg.r2,
+        angle: seg.angle,
+        largeArcFlag: seg.largeArcFlag,
+        sweepFlag: seg.sweepFlag
+      };
+    }
+
+    len = changes.d.length;
+    const firstseg = changes.d[0],
+      currentpt = remap(firstseg.x, firstseg.y);
+    changes.d[0].x = currentpt.x;
+    changes.d[0].y = currentpt.y;
+    for (let i = 1; i &lt; len; ++i) {
+      const seg = changes.d[i];
+      const {type} = seg;
+      // if absolute or first segment, we want to remap x, y, x1, y1, x2, y2
+      // if relative, we want to scalew, scaleh
+      if (type % 2 === 0) { // absolute
+        const thisx = (seg.x !== undefined) ? seg.x : currentpt.x, // for V commands
+          thisy = (seg.y !== undefined) ? seg.y : currentpt.y; // for H commands
+        const pt = remap(thisx, thisy);
+        const pt1 = remap(seg.x1, seg.y1);
+        const pt2 = remap(seg.x2, seg.y2);
+        seg.x = pt.x;
+        seg.y = pt.y;
+        seg.x1 = pt1.x;
+        seg.y1 = pt1.y;
+        seg.x2 = pt2.x;
+        seg.y2 = pt2.y;
+        seg.r1 = scalew(seg.r1);
+        seg.r2 = scaleh(seg.r2);
+      } else { // relative
+        seg.x = scalew(seg.x);
+        seg.y = scaleh(seg.y);
+        seg.x1 = scalew(seg.x1);
+        seg.y1 = scaleh(seg.y1);
+        seg.x2 = scalew(seg.x2);
+        seg.y2 = scaleh(seg.y2);
+        seg.r1 = scalew(seg.r1);
+        seg.r2 = scaleh(seg.r2);
+      }
+    } // for each segment
+
+    let dstr = '';
+    len = changes.d.length;
+    for (let i = 0; i &lt; len; ++i) {
+      const seg = changes.d[i];
+      const {type} = seg;
+      dstr += pathMap[type];
+      switch (type) {
+      case 13: // relative horizontal line (h)
+      case 12: // absolute horizontal line (H)
+        dstr += seg.x + ' ';
+        break;
+      case 15: // relative vertical line (v)
+      case 14: // absolute vertical line (V)
+        dstr += seg.y + ' ';
+        break;
+      case 3: // relative move (m)
+      case 5: // relative line (l)
+      case 19: // relative smooth quad (t)
+      case 2: // absolute move (M)
+      case 4: // absolute line (L)
+      case 18: // absolute smooth quad (T)
+        dstr += seg.x + ',' + seg.y + ' ';
+        break;
+      case 7: // relative cubic (c)
+      case 6: // absolute cubic (C)
+        dstr += seg.x1 + ',' + seg.y1 + ' ' + seg.x2 + ',' + seg.y2 + ' ' +
+          seg.x + ',' + seg.y + ' ';
+        break;
+      case 9: // relative quad (q)
+      case 8: // absolute quad (Q)
+        dstr += seg.x1 + ',' + seg.y1 + ' ' + seg.x + ',' + seg.y + ' ';
+        break;
+      case 11: // relative elliptical arc (a)
+      case 10: // absolute elliptical arc (A)
+        dstr += seg.r1 + ',' + seg.r2 + ' ' + seg.angle + ' ' + (+seg.largeArcFlag) +
+          ' ' + (+seg.sweepFlag) + ' ' + seg.x + ',' + seg.y + ' ';
+        break;
+      case 17: // relative smooth cubic (s)
+      case 16: // absolute smooth cubic (S)
+        dstr += seg.x2 + ',' + seg.y2 + ' ' + seg.x + ',' + seg.y + ' ';
+        break;
+      }
+    }
+
+    selected.setAttribute('d', dstr);
+    break;
+  }
+  }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BatchCommand.html">BatchCommand</a></li><li><a href="ChangeElementCommand.html">ChangeElementCommand</a></li><li><a href="Drawing.html">Drawing</a></li><li><a href="EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="HistoryRecordingService.html">HistoryRecordingService</a></li><li><a href="InsertElementCommand.html">InsertElementCommand</a></li><li><a href="Layer.html">Layer</a></li><li><a href="RemoveElementCommand.html">RemoveElementCommand</a></li><li><a href="Selector.html">Selector</a></li><li><a href="SelectorManager.html">SelectorManager</a></li><li><a href="SvgCanvas.html">SvgCanvas</a></li><li><a href="svgedit.history.MoveElementCommand.html">MoveElementCommand</a></li><li><a href="UndoManager.html">UndoManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addCtrlGrip">addCtrlGrip</a></li><li><a href="global.html#addLayerClass">addLayerClass</a></li><li><a href="global.html#addPointGrip">addPointGrip</a></li><li><a href="global.html#assignAttributes">assignAttributes</a></li><li><a href="global.html#bBoxCanBeOptimizedOverNativeGetBBox">bBoxCanBeOptimizedOverNativeGetBBox</a></li><li><a href="global.html#bboxToObj">bboxToObj</a></li><li><a href="global.html#blankPageObjectURL">blankPageObjectURL</a></li><li><a href="global.html#canvas_">canvas_</a></li><li><a href="global.html#cleanupElement">cleanupElement</a></li><li><a href="global.html#cloneLayer">cloneLayer</a></li><li><a href="global.html#close">close</a></li><li><a href="global.html#closePercent">closePercent</a></li><li><a href="global.html#convertAttrs">convertAttrs</a></li><li><a href="global.html#convertPath">convertPath</a></li><li><a href="global.html#convertToNum">convertToNum</a></li><li><a href="global.html#convertToPath">convertToPath</a></li><li><a href="global.html#convertUnit">convertUnit</a></li><li><a href="global.html#copyElem">copyElem</a></li><li><a href="global.html#createLayer">createLayer</a></li><li><a href="global.html#createObjectURL">createObjectURL</a></li><li><a href="global.html#dataURLToObjectURL">dataURLToObjectURL</a></li><li><a href="global.html#defaultPrefs">defaultPrefs</a></li><li><a href="global.html#deleteCurrentLayer">deleteCurrentLayer</a></li><li><a href="global.html#executeAfterLoads">executeAfterLoads</a></li><li><a href="global.html#findDefs">findDefs</a></li><li><a href="global.html#findLayerNameInGroup">findLayerNameInGroup</a></li><li><a href="global.html#fromXml">fromXml</a></li><li><a href="global.html#getBBox">getBBox</a></li><li><a href="global.html#getBBoxOfElementAsPath">getBBoxOfElementAsPath</a></li><li><a href="global.html#getBBoxWithTransform">getBBoxWithTransform</a></li><li><a href="global.html#getElem">getElem</a></li><li><a href="global.html#getExtraAttributesForConvertToPath">getExtraAttributesForConvertToPath</a></li><li><a href="global.html#getHref">getHref</a></li><li><a href="global.html#getMatrix">getMatrix</a></li><li><a href="global.html#getNewLayerName">getNewLayerName</a></li><li><a href="global.html#getPathBBox">getPathBBox</a></li><li><a href="global.html#getPathDFromElement">getPathDFromElement</a></li><li><a href="global.html#getPathDFromSegments">getPathDFromSegments</a></li><li><a href="global.html#getRefElem">getRefElem</a></li><li><a href="global.html#getReverseNS">getReverseNS</a></li><li><a href="global.html#getRotationAngle">getRotationAngle</a></li><li><a href="global.html#getRotationAngleFromTransformList">getRotationAngleFromTransformList</a></li><li><a href="global.html#getSelectorManager">getSelectorManager</a></li><li><a href="global.html#getStrokedBBox">getStrokedBBox</a></li><li><a href="global.html#getStrokedBBoxDefaultVisible">getStrokedBBoxDefaultVisible</a></li><li><a href="global.html#getTransformList">getTransformList</a></li><li><a href="global.html#getTypeMap">getTypeMap</a></li><li><a href="global.html#getUrlFromAttr">getUrlFromAttr</a></li><li><a href="global.html#getVisibleElements">getVisibleElements</a></li><li><a href="global.html#groupBBFix">groupBBFix</a></li><li><a href="global.html#hasMatrixTransform">hasMatrixTransform</a></li><li><a href="global.html#HistoryEventTypes">HistoryEventTypes</a></li><li><a href="global.html#historyRecordingService">historyRecordingService</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#isIdentity">isIdentity</a></li><li><a href="global.html#isValidUnit">isValidUnit</a></li><li><a href="global.html#listMap_">listMap_</a></li><li><a href="global.html#matrixMultiply">matrixMultiply</a></li><li><a href="global.html#moveSelectedToLayer">moveSelectedToLayer</a></li><li><a href="global.html#notClose">notClose</a></li><li><a href="global.html#notClosePercent">notClosePercent</a></li><li><a href="global.html#NS">NS</a></li><li><a href="global.html#ns">ns</a></li><li><a href="global.html#pathActions">pathActions</a></li><li><a href="global.html#pathDSegment">pathDSegment</a></li><li><a href="global.html#preventClickDefault">preventClickDefault</a></li><li><a href="global.html#randomizeIds">randomizeIds</a></li><li><a href="global.html#recalculateDimensions">recalculateDimensions</a></li><li><a href="global.html#rectsIntersect">rectsIntersect</a></li><li><a href="global.html#remapElement">remapElement</a></li><li><a href="global.html#removeElementFromListMap">removeElementFromListMap</a></li><li><a href="global.html#renameCurrentLayer">renameCurrentLayer</a></li><li><a href="global.html#sanitizeSvg">sanitizeSvg</a></li><li><a href="global.html#setCurrentLayer">setCurrentLayer</a></li><li><a href="global.html#setCurrentLayerPosition">setCurrentLayerPosition</a></li><li><a href="global.html#setHref">setHref</a></li><li><a href="global.html#setLayerVisibility">setLayerVisibility</a></li><li><a href="global.html#setUnitAttr">setUnitAttr</a></li><li><a href="global.html#shortFloat">shortFloat</a></li><li><a href="global.html#smoothControlPoints">smoothControlPoints</a></li><li><a href="global.html#snapToAngle">snapToAngle</a></li><li><a href="global.html#toXml">toXml</a></li><li><a href="global.html#transformBox">transformBox</a></li><li><a href="global.html#transformListToTransform">transformListToTransform</a></li><li><a href="global.html#transformPoint">transformPoint</a></li><li><a href="global.html#typeMap_">typeMap_</a></li><li><a href="global.html#uiStrings">uiStrings</a></li><li><a href="global.html#updateClipPath">updateClipPath</a></li><li><a href="global.html#walkTree">walkTree</a></li><li><a href="global.html#walkTreePost">walkTreePost</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed May 30 2018 05:42:22 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

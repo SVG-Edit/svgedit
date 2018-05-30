@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: editor/math.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: editor/math.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Package: svedit.math
+ *
+ * Licensed under the MIT License
+ *
+ * Copyright(c) 2010 Alexis Deveria
+ * Copyright(c) 2010 Jeff Schiller
+ */
+
+/**
+* @typedef AngleCoord45
+* @type {Object}
+* @property {number} x - The angle-snapped x value
+* @property {number} y - The angle-snapped y value
+* @property {number} a - The angle at which to snap
+*/
+
+import {NS} from './svgedit.js';
+import {getTransformList} from './svgtransformlist.js';
+
+// Constants
+const NEAR_ZERO = 1e-14;
+
+// Throw away SVGSVGElement used for creating matrices/transforms.
+const svg = document.createElementNS(NS.SVG, 'svg');
+
+/**
+ * A (hopefully) quicker function to transform a point by a matrix
+ * (this function avoids any DOM calls and just does the math)
+ * @param {number} x - Float representing the x coordinate
+ * @param {number} y - Float representing the y coordinate
+ * @param {SVGMatrix} m - Matrix object to transform the point with
+ * @returns {Object} An x, y object representing the transformed point
+*/
+export const transformPoint = function (x, y, m) {
+  return {x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f};
+};
+
+/**
+ * Helper function to check if the matrix performs no actual transform
+ * (i.e. exists for identity purposes)
+ * @param {SVGMatrix} m - The matrix object to check
+ * @returns {boolean} Indicates whether or not the matrix is 1,0,0,1,0,0
+*/
+export const isIdentity = function (m) {
+  return (m.a === 1 &amp;&amp; m.b === 0 &amp;&amp; m.c === 0 &amp;&amp; m.d === 1 &amp;&amp; m.e === 0 &amp;&amp; m.f === 0);
+};
+
+/**
+ * This function tries to return a SVGMatrix that is the multiplication m1*m2.
+ * We also round to zero when it's near zero
+ * @param {...SVGMatrix} args - Matrix objects to multiply
+ * @returns {SVGMatrix} The matrix object resulting from the calculation
+*/
+export const matrixMultiply = function (...args) {
+  const m = args.reduceRight((prev, m1) => {
+    return m1.multiply(prev);
+  });
+
+  if (Math.abs(m.a) &lt; NEAR_ZERO) { m.a = 0; }
+  if (Math.abs(m.b) &lt; NEAR_ZERO) { m.b = 0; }
+  if (Math.abs(m.c) &lt; NEAR_ZERO) { m.c = 0; }
+  if (Math.abs(m.d) &lt; NEAR_ZERO) { m.d = 0; }
+  if (Math.abs(m.e) &lt; NEAR_ZERO) { m.e = 0; }
+  if (Math.abs(m.f) &lt; NEAR_ZERO) { m.f = 0; }
+
+  return m;
+};
+
+/**
+ * See if the given transformlist includes a non-indentity matrix transform
+ * @param {Object} [tlist] - The transformlist to check
+ * @returns {boolean} Whether or not a matrix transform was found
+*/
+export const hasMatrixTransform = function (tlist) {
+  if (!tlist) { return false; }
+  let num = tlist.numberOfItems;
+  while (num--) {
+    const xform = tlist.getItem(num);
+    if (xform.type === 1 &amp;&amp; !isIdentity(xform.matrix)) { return true; }
+  }
+  return false;
+};
+
+/**
+ * Transforms a rectangle based on the given matrix
+ * @param {number} l - Float with the box's left coordinate
+ * @param {number} t - Float with the box's top coordinate
+ * @param {number} w - Float with the box width
+ * @param {number} h - Float with the box height
+ * @param {SVGMatrix} m - Matrix object to transform the box by
+ * @returns {Object} An object with the following values:
+ * tl - The top left coordinate (x,y object)
+ * tr - The top right coordinate (x,y object)
+ * bl - The bottom left coordinate (x,y object)
+ * br - The bottom right coordinate (x,y object)
+ * aabox - Object with the following values:
+ * x - Float with the axis-aligned x coordinate
+ * y - Float with the axis-aligned y coordinate
+ * width - Float with the axis-aligned width coordinate
+ * height - Float with the axis-aligned height coordinate
+*/
+export const transformBox = function (l, t, w, h, m) {
+  const tl = transformPoint(l, t, m),
+    tr = transformPoint((l + w), t, m),
+    bl = transformPoint(l, (t + h), m),
+    br = transformPoint((l + w), (t + h), m),
+
+    minx = Math.min(tl.x, tr.x, bl.x, br.x),
+    maxx = Math.max(tl.x, tr.x, bl.x, br.x),
+    miny = Math.min(tl.y, tr.y, bl.y, br.y),
+    maxy = Math.max(tl.y, tr.y, bl.y, br.y);
+
+  return {
+    tl,
+    tr,
+    bl,
+    br,
+    aabox: {
+      x: minx,
+      y: miny,
+      width: (maxx - minx),
+      height: (maxy - miny)
+    }
+  };
+};
+
+/**
+ * This returns a single matrix Transform for a given Transform List
+ * (this is the equivalent of SVGTransformList.consolidate() but unlike
+ * that method, this one does not modify the actual SVGTransformList)
+ * This function is very liberal with its min, max arguments
+ * @param {Object} tlist - The transformlist object
+ * @param {integer} [min=0] - Optional integer indicating start transform position
+ * @param {integer} [max] - Optional integer indicating end transform position;
+ *   defaults to one less than the tlist's numberOfItems
+ * @returns {Object} A single matrix transform object
+*/
+export const transformListToTransform = function (tlist, min, max) {
+  if (tlist == null) {
+    // Or should tlist = null have been prevented before this?
+    return svg.createSVGTransformFromMatrix(svg.createSVGMatrix());
+  }
+  min = min || 0;
+  max = max || (tlist.numberOfItems - 1);
+  min = parseInt(min, 10);
+  max = parseInt(max, 10);
+  if (min > max) { const temp = max; max = min; min = temp; }
+  let m = svg.createSVGMatrix();
+  for (let i = min; i &lt;= max; ++i) {
+    // if our indices are out of range, just use a harmless identity matrix
+    const mtom = (i >= 0 &amp;&amp; i &lt; tlist.numberOfItems
+      ? tlist.getItem(i).matrix
+      : svg.createSVGMatrix());
+    m = matrixMultiply(m, mtom);
+  }
+  return svg.createSVGTransformFromMatrix(m);
+};
+
+/**
+ * Get the matrix object for a given element
+ * @param {Element} elem - The DOM element to check
+ * @returns {SVGMatrix} The matrix object associated with the element's transformlist
+*/
+export const getMatrix = function (elem) {
+  const tlist = getTransformList(elem);
+  return transformListToTransform(tlist).matrix;
+};
+
+/**
+ * Returns a 45 degree angle coordinate associated with the two given
+ * coordinates
+ * @param {number} x1 - First coordinate's x value
+ * @param {number} x2 - Second coordinate's x value
+ * @param {number} y1 - First coordinate's y value
+ * @param {number} y2 - Second coordinate's y value
+ * @returns {AngleCoord45}
+*/
+export const snapToAngle = function (x1, y1, x2, y2) {
+  const snap = Math.PI / 4; // 45 degrees
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const angle = Math.atan2(dy, dx);
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const snapangle = Math.round(angle / snap) * snap;
+
+  return {
+    x: x1 + dist * Math.cos(snapangle),
+    y: y1 + dist * Math.sin(snapangle),
+    a: snapangle
+  };
+};
+
+/**
+ * Check if two rectangles (BBoxes objects) intersect each other
+ * @param {SVGRect} r1 - The first BBox-like object
+ * @param {SVGRect} r2 - The second BBox-like object
+ * @returns {boolean} True if rectangles intersect
+ */
+export const rectsIntersect = function (r1, r2) {
+  return r2.x &lt; (r1.x + r1.width) &amp;&amp;
+    (r2.x + r2.width) > r1.x &amp;&amp;
+    r2.y &lt; (r1.y + r1.height) &amp;&amp;
+    (r2.y + r2.height) > r1.y;
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BatchCommand.html">BatchCommand</a></li><li><a href="ChangeElementCommand.html">ChangeElementCommand</a></li><li><a href="Drawing.html">Drawing</a></li><li><a href="EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="HistoryRecordingService.html">HistoryRecordingService</a></li><li><a href="InsertElementCommand.html">InsertElementCommand</a></li><li><a href="Layer.html">Layer</a></li><li><a href="RemoveElementCommand.html">RemoveElementCommand</a></li><li><a href="Selector.html">Selector</a></li><li><a href="SelectorManager.html">SelectorManager</a></li><li><a href="SvgCanvas.html">SvgCanvas</a></li><li><a href="svgedit.history.MoveElementCommand.html">MoveElementCommand</a></li><li><a href="UndoManager.html">UndoManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addCtrlGrip">addCtrlGrip</a></li><li><a href="global.html#addLayerClass">addLayerClass</a></li><li><a href="global.html#addPointGrip">addPointGrip</a></li><li><a href="global.html#assignAttributes">assignAttributes</a></li><li><a href="global.html#bBoxCanBeOptimizedOverNativeGetBBox">bBoxCanBeOptimizedOverNativeGetBBox</a></li><li><a href="global.html#bboxToObj">bboxToObj</a></li><li><a href="global.html#blankPageObjectURL">blankPageObjectURL</a></li><li><a href="global.html#canvas_">canvas_</a></li><li><a href="global.html#cleanupElement">cleanupElement</a></li><li><a href="global.html#cloneLayer">cloneLayer</a></li><li><a href="global.html#close">close</a></li><li><a href="global.html#closePercent">closePercent</a></li><li><a href="global.html#convertAttrs">convertAttrs</a></li><li><a href="global.html#convertPath">convertPath</a></li><li><a href="global.html#convertToNum">convertToNum</a></li><li><a href="global.html#convertToPath">convertToPath</a></li><li><a href="global.html#convertUnit">convertUnit</a></li><li><a href="global.html#copyElem">copyElem</a></li><li><a href="global.html#createLayer">createLayer</a></li><li><a href="global.html#createObjectURL">createObjectURL</a></li><li><a href="global.html#dataURLToObjectURL">dataURLToObjectURL</a></li><li><a href="global.html#defaultPrefs">defaultPrefs</a></li><li><a href="global.html#deleteCurrentLayer">deleteCurrentLayer</a></li><li><a href="global.html#executeAfterLoads">executeAfterLoads</a></li><li><a href="global.html#findDefs">findDefs</a></li><li><a href="global.html#findLayerNameInGroup">findLayerNameInGroup</a></li><li><a href="global.html#fromXml">fromXml</a></li><li><a href="global.html#getBBox">getBBox</a></li><li><a href="global.html#getBBoxOfElementAsPath">getBBoxOfElementAsPath</a></li><li><a href="global.html#getBBoxWithTransform">getBBoxWithTransform</a></li><li><a href="global.html#getElem">getElem</a></li><li><a href="global.html#getExtraAttributesForConvertToPath">getExtraAttributesForConvertToPath</a></li><li><a href="global.html#getHref">getHref</a></li><li><a href="global.html#getMatrix">getMatrix</a></li><li><a href="global.html#getNewLayerName">getNewLayerName</a></li><li><a href="global.html#getPathBBox">getPathBBox</a></li><li><a href="global.html#getPathDFromElement">getPathDFromElement</a></li><li><a href="global.html#getPathDFromSegments">getPathDFromSegments</a></li><li><a href="global.html#getRefElem">getRefElem</a></li><li><a href="global.html#getReverseNS">getReverseNS</a></li><li><a href="global.html#getRotationAngle">getRotationAngle</a></li><li><a href="global.html#getRotationAngleFromTransformList">getRotationAngleFromTransformList</a></li><li><a href="global.html#getSelectorManager">getSelectorManager</a></li><li><a href="global.html#getStrokedBBox">getStrokedBBox</a></li><li><a href="global.html#getStrokedBBoxDefaultVisible">getStrokedBBoxDefaultVisible</a></li><li><a href="global.html#getTransformList">getTransformList</a></li><li><a href="global.html#getTypeMap">getTypeMap</a></li><li><a href="global.html#getUrlFromAttr">getUrlFromAttr</a></li><li><a href="global.html#getVisibleElements">getVisibleElements</a></li><li><a href="global.html#groupBBFix">groupBBFix</a></li><li><a href="global.html#hasMatrixTransform">hasMatrixTransform</a></li><li><a href="global.html#HistoryEventTypes">HistoryEventTypes</a></li><li><a href="global.html#historyRecordingService">historyRecordingService</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#isIdentity">isIdentity</a></li><li><a href="global.html#isValidUnit">isValidUnit</a></li><li><a href="global.html#listMap_">listMap_</a></li><li><a href="global.html#matrixMultiply">matrixMultiply</a></li><li><a href="global.html#moveSelectedToLayer">moveSelectedToLayer</a></li><li><a href="global.html#notClose">notClose</a></li><li><a href="global.html#notClosePercent">notClosePercent</a></li><li><a href="global.html#NS">NS</a></li><li><a href="global.html#ns">ns</a></li><li><a href="global.html#pathActions">pathActions</a></li><li><a href="global.html#pathDSegment">pathDSegment</a></li><li><a href="global.html#preventClickDefault">preventClickDefault</a></li><li><a href="global.html#randomizeIds">randomizeIds</a></li><li><a href="global.html#recalculateDimensions">recalculateDimensions</a></li><li><a href="global.html#rectsIntersect">rectsIntersect</a></li><li><a href="global.html#remapElement">remapElement</a></li><li><a href="global.html#removeElementFromListMap">removeElementFromListMap</a></li><li><a href="global.html#renameCurrentLayer">renameCurrentLayer</a></li><li><a href="global.html#sanitizeSvg">sanitizeSvg</a></li><li><a href="global.html#setCurrentLayer">setCurrentLayer</a></li><li><a href="global.html#setCurrentLayerPosition">setCurrentLayerPosition</a></li><li><a href="global.html#setHref">setHref</a></li><li><a href="global.html#setLayerVisibility">setLayerVisibility</a></li><li><a href="global.html#setUnitAttr">setUnitAttr</a></li><li><a href="global.html#shortFloat">shortFloat</a></li><li><a href="global.html#smoothControlPoints">smoothControlPoints</a></li><li><a href="global.html#snapToAngle">snapToAngle</a></li><li><a href="global.html#toXml">toXml</a></li><li><a href="global.html#transformBox">transformBox</a></li><li><a href="global.html#transformListToTransform">transformListToTransform</a></li><li><a href="global.html#transformPoint">transformPoint</a></li><li><a href="global.html#typeMap_">typeMap_</a></li><li><a href="global.html#uiStrings">uiStrings</a></li><li><a href="global.html#updateClipPath">updateClipPath</a></li><li><a href="global.html#walkTree">walkTree</a></li><li><a href="global.html#walkTreePost">walkTreePost</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed May 30 2018 05:42:22 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

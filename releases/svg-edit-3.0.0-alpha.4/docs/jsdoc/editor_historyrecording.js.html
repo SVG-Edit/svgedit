@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: editor/historyrecording.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: editor/historyrecording.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Package: svgedit.history
+ *
+ * Licensed under the MIT License
+ *
+ * Copyright(c) 2016 Flint O'Brien
+ */
+
+import {
+  BatchCommand, MoveElementCommand, InsertElementCommand, RemoveElementCommand,
+  ChangeElementCommand
+} from './history.js';
+
+/**
+ * History recording service.
+ *
+ * A self-contained service interface for recording history. Once injected, no other dependencies
+ * or globals are required (example: UndoManager, command types, etc.). Easy to mock for unit tests.
+ * Built on top of history classes in history.js.
+ *
+ * There is a simple start/end interface for batch commands.
+ *
+ * HistoryRecordingService.NO_HISTORY is a singleton that can be passed in to functions
+ * that record history. This helps when the caller requires that no history be recorded.
+ *
+ * Usage:
+ * The following will record history: insert, batch, insert.
+ * ```
+ * hrService = new svgedit.history.HistoryRecordingService(this.undoMgr);
+ * hrService.insertElement(elem, text);         // add simple command to history.
+ * hrService.startBatchCommand('create two elements');
+ * hrService.changeElement(elem, attrs, text);  // add to batchCommand
+ * hrService.changeElement(elem, attrs2, text); // add to batchCommand
+ * hrService.endBatchCommand();                  // add batch command with two change commands to history.
+ * hrService.insertElement(elem, text);         // add simple command to history.
+ * ```
+ *
+ * Note that all functions return this, so commands can be chained, like so:
+ *
+ * ```
+ * hrService
+ *   .startBatchCommand('create two elements')
+ *   .insertElement(elem, text)
+ *   .changeElement(elem, attrs, text)
+ *   .endBatchCommand();
+ * ```
+ *
+ * @param {svgedit.history.UndoManager} undoManager - The undo manager.
+ *     A value of null is valid for cases where no history recording is required.
+ *     See singleton: HistoryRecordingService.NO_HISTORY
+ */
+class HistoryRecordingService {
+  constructor (undoManager) {
+    this.undoManager_ = undoManager;
+    this.currentBatchCommand_ = null;
+    this.batchCommandStack_ = [];
+  }
+
+  /**
+   * Start a batch command so multiple commands can recorded as a single history command.
+   * Requires a corresponding call to endBatchCommand. Start and end commands can be nested.
+   *
+   * @param {string} text - Optional string describing the batch command.
+   * @returns {svgedit.history.HistoryRecordingService}
+   */
+  startBatchCommand (text) {
+    if (!this.undoManager_) { return this; }
+    this.currentBatchCommand_ = new BatchCommand(text);
+    this.batchCommandStack_.push(this.currentBatchCommand_);
+    return this;
+  }
+
+  /**
+   * End a batch command and add it to the history or a parent batch command.
+   * @returns {svgedit.history.HistoryRecordingService}
+   */
+  endBatchCommand () {
+    if (!this.undoManager_) { return this; }
+    if (this.currentBatchCommand_) {
+      const batchCommand = this.currentBatchCommand_;
+      this.batchCommandStack_.pop();
+      const {length} = this.batchCommandStack_;
+      this.currentBatchCommand_ = length ? this.batchCommandStack_[length - 1] : null;
+      this.addCommand_(batchCommand);
+    }
+    return this;
+  }
+
+  /**
+   * Add a MoveElementCommand to the history or current batch command
+   * @param {Element} elem - The DOM element that was moved
+   * @param {Element} oldNextSibling - The element's next sibling before it was moved
+   * @param {Element} oldParent - The element's parent before it was moved
+   * @param {string} [text] - An optional string visible to user related to this change
+   * @returns {svgedit.history.HistoryRecordingService}
+   */
+  moveElement (elem, oldNextSibling, oldParent, text) {
+    if (!this.undoManager_) { return this; }
+    this.addCommand_(new MoveElementCommand(elem, oldNextSibling, oldParent, text));
+    return this;
+  }
+
+  /**
+   * Add an InsertElementCommand to the history or current batch command
+   * @param {Element} elem - The DOM element that was added
+   * @param {string} [text] - An optional string visible to user related to this change
+   * @returns {svgedit.history.HistoryRecordingService}
+   */
+  insertElement (elem, text) {
+    if (!this.undoManager_) { return this; }
+    this.addCommand_(new InsertElementCommand(elem, text));
+    return this;
+  }
+
+  /**
+   * Add a RemoveElementCommand to the history or current batch command
+   * @param {Element} elem - The DOM element that was removed
+   * @param {Element} oldNextSibling - The element's next sibling before it was removed
+   * @param {Element} oldParent - The element's parent before it was removed
+   * @param {string} [text] - An optional string visible to user related to this change
+   * @returns {svgedit.history.HistoryRecordingService}
+   */
+  removeElement (elem, oldNextSibling, oldParent, text) {
+    if (!this.undoManager_) { return this; }
+    this.addCommand_(new RemoveElementCommand(elem, oldNextSibling, oldParent, text));
+    return this;
+  }
+
+  /**
+   * Add a ChangeElementCommand to the history or current batch command
+   * @param {Element} elem - The DOM element that was changed
+   * @param {Object} attrs - An object with the attributes to be changed and the values they had *before* the change
+   * @param {string} [text] - An optional string visible to user related to this change
+   * @returns {svgedit.history.HistoryRecordingService}
+   */
+  changeElement (elem, attrs, text) {
+    if (!this.undoManager_) { return this; }
+    this.addCommand_(new ChangeElementCommand(elem, attrs, text));
+    return this;
+  }
+
+  /**
+   * Private function to add a command to the history or current batch command.
+   * @param cmd
+   * @returns {svgedit.history.HistoryRecordingService}
+   * @private
+   */
+  addCommand_ (cmd) {
+    if (!this.undoManager_) { return this; }
+    if (this.currentBatchCommand_) {
+      this.currentBatchCommand_.addSubCommand(cmd);
+    } else {
+      this.undoManager_.addCommandToHistory(cmd);
+    }
+  }
+}
+/**
+ * @property {HistoryRecordingService} NO_HISTORY - Singleton that can be passed to functions that record history, but the caller requires that no history be recorded.
+ */
+HistoryRecordingService.NO_HISTORY = new HistoryRecordingService();
+export default HistoryRecordingService;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BatchCommand.html">BatchCommand</a></li><li><a href="ChangeElementCommand.html">ChangeElementCommand</a></li><li><a href="Drawing.html">Drawing</a></li><li><a href="EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="HistoryRecordingService.html">HistoryRecordingService</a></li><li><a href="InsertElementCommand.html">InsertElementCommand</a></li><li><a href="Layer.html">Layer</a></li><li><a href="RemoveElementCommand.html">RemoveElementCommand</a></li><li><a href="Selector.html">Selector</a></li><li><a href="SelectorManager.html">SelectorManager</a></li><li><a href="SvgCanvas.html">SvgCanvas</a></li><li><a href="svgedit.history.MoveElementCommand.html">MoveElementCommand</a></li><li><a href="UndoManager.html">UndoManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addCtrlGrip">addCtrlGrip</a></li><li><a href="global.html#addLayerClass">addLayerClass</a></li><li><a href="global.html#addPointGrip">addPointGrip</a></li><li><a href="global.html#assignAttributes">assignAttributes</a></li><li><a href="global.html#bBoxCanBeOptimizedOverNativeGetBBox">bBoxCanBeOptimizedOverNativeGetBBox</a></li><li><a href="global.html#bboxToObj">bboxToObj</a></li><li><a href="global.html#blankPageObjectURL">blankPageObjectURL</a></li><li><a href="global.html#canvas_">canvas_</a></li><li><a href="global.html#cleanupElement">cleanupElement</a></li><li><a href="global.html#cloneLayer">cloneLayer</a></li><li><a href="global.html#close">close</a></li><li><a href="global.html#closePercent">closePercent</a></li><li><a href="global.html#convertAttrs">convertAttrs</a></li><li><a href="global.html#convertPath">convertPath</a></li><li><a href="global.html#convertToNum">convertToNum</a></li><li><a href="global.html#convertToPath">convertToPath</a></li><li><a href="global.html#convertUnit">convertUnit</a></li><li><a href="global.html#copyElem">copyElem</a></li><li><a href="global.html#createLayer">createLayer</a></li><li><a href="global.html#createObjectURL">createObjectURL</a></li><li><a href="global.html#dataURLToObjectURL">dataURLToObjectURL</a></li><li><a href="global.html#defaultPrefs">defaultPrefs</a></li><li><a href="global.html#deleteCurrentLayer">deleteCurrentLayer</a></li><li><a href="global.html#executeAfterLoads">executeAfterLoads</a></li><li><a href="global.html#findDefs">findDefs</a></li><li><a href="global.html#findLayerNameInGroup">findLayerNameInGroup</a></li><li><a href="global.html#fromXml">fromXml</a></li><li><a href="global.html#getBBox">getBBox</a></li><li><a href="global.html#getBBoxOfElementAsPath">getBBoxOfElementAsPath</a></li><li><a href="global.html#getBBoxWithTransform">getBBoxWithTransform</a></li><li><a href="global.html#getElem">getElem</a></li><li><a href="global.html#getExtraAttributesForConvertToPath">getExtraAttributesForConvertToPath</a></li><li><a href="global.html#getHref">getHref</a></li><li><a href="global.html#getMatrix">getMatrix</a></li><li><a href="global.html#getNewLayerName">getNewLayerName</a></li><li><a href="global.html#getPathBBox">getPathBBox</a></li><li><a href="global.html#getPathDFromElement">getPathDFromElement</a></li><li><a href="global.html#getPathDFromSegments">getPathDFromSegments</a></li><li><a href="global.html#getRefElem">getRefElem</a></li><li><a href="global.html#getReverseNS">getReverseNS</a></li><li><a href="global.html#getRotationAngle">getRotationAngle</a></li><li><a href="global.html#getRotationAngleFromTransformList">getRotationAngleFromTransformList</a></li><li><a href="global.html#getSelectorManager">getSelectorManager</a></li><li><a href="global.html#getStrokedBBox">getStrokedBBox</a></li><li><a href="global.html#getStrokedBBoxDefaultVisible">getStrokedBBoxDefaultVisible</a></li><li><a href="global.html#getTransformList">getTransformList</a></li><li><a href="global.html#getTypeMap">getTypeMap</a></li><li><a href="global.html#getUrlFromAttr">getUrlFromAttr</a></li><li><a href="global.html#getVisibleElements">getVisibleElements</a></li><li><a href="global.html#groupBBFix">groupBBFix</a></li><li><a href="global.html#hasMatrixTransform">hasMatrixTransform</a></li><li><a href="global.html#HistoryEventTypes">HistoryEventTypes</a></li><li><a href="global.html#historyRecordingService">historyRecordingService</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#isIdentity">isIdentity</a></li><li><a href="global.html#isValidUnit">isValidUnit</a></li><li><a href="global.html#listMap_">listMap_</a></li><li><a href="global.html#matrixMultiply">matrixMultiply</a></li><li><a href="global.html#moveSelectedToLayer">moveSelectedToLayer</a></li><li><a href="global.html#notClose">notClose</a></li><li><a href="global.html#notClosePercent">notClosePercent</a></li><li><a href="global.html#NS">NS</a></li><li><a href="global.html#ns">ns</a></li><li><a href="global.html#pathActions">pathActions</a></li><li><a href="global.html#pathDSegment">pathDSegment</a></li><li><a href="global.html#preventClickDefault">preventClickDefault</a></li><li><a href="global.html#randomizeIds">randomizeIds</a></li><li><a href="global.html#recalculateDimensions">recalculateDimensions</a></li><li><a href="global.html#rectsIntersect">rectsIntersect</a></li><li><a href="global.html#remapElement">remapElement</a></li><li><a href="global.html#removeElementFromListMap">removeElementFromListMap</a></li><li><a href="global.html#renameCurrentLayer">renameCurrentLayer</a></li><li><a href="global.html#sanitizeSvg">sanitizeSvg</a></li><li><a href="global.html#setCurrentLayer">setCurrentLayer</a></li><li><a href="global.html#setCurrentLayerPosition">setCurrentLayerPosition</a></li><li><a href="global.html#setHref">setHref</a></li><li><a href="global.html#setLayerVisibility">setLayerVisibility</a></li><li><a href="global.html#setUnitAttr">setUnitAttr</a></li><li><a href="global.html#shortFloat">shortFloat</a></li><li><a href="global.html#smoothControlPoints">smoothControlPoints</a></li><li><a href="global.html#snapToAngle">snapToAngle</a></li><li><a href="global.html#toXml">toXml</a></li><li><a href="global.html#transformBox">transformBox</a></li><li><a href="global.html#transformListToTransform">transformListToTransform</a></li><li><a href="global.html#transformPoint">transformPoint</a></li><li><a href="global.html#typeMap_">typeMap_</a></li><li><a href="global.html#uiStrings">uiStrings</a></li><li><a href="global.html#updateClipPath">updateClipPath</a></li><li><a href="global.html#walkTree">walkTree</a></li><li><a href="global.html#walkTreePost">walkTreePost</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed May 30 2018 05:42:22 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
