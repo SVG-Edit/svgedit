@@ -1,0 +1,23 @@
+{
+  "recurseDepth": 10,
+  "source": {
+    "exclude": [
+      "node_modules",
+      "dist"
+    ],
+    "excludePattern": "^svgedit-config-"
+  },
+  "sourceType": "module",
+  "tags": {
+    "allowUnknownTags": true
+  },
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false
+  },
+  "opts":{
+    "recurse": true,
+    "verbose": true,
+    "destination": ".jsdoc/out"
+  }
+}

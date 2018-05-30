@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+    <link rel="icon" type="image/png" href="images/logo.png"/>
+    <link rel="stylesheet" href="svg-editor.css"/>
+    <title>Browser does not support SVG | SVG-edit</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+      p {
+        font-size: 0.8em;
+        font-family: Verdana, Helvetica, Arial;
+        color: #000;
+        padding: 8px;
+        margin: 0;
+      }
+      #logo {
+        float: left;
+        padding: 10px;
+      }
+      #caniuse {
+        position: absolute;
+        top: 7em;
+        bottom: 0;
+        width: 100%;
+      }
+      #caniuse > iframe {
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <img id="logo" src="images/logo.png" width="48" height="48" alt="SVG-edit logo" />
+    <p>Sorry, but your browser does not support SVG. Below is a list of
+        alternate browsers and versions that support SVG and SVG-edit
+        (from <a href="https://caniuse.com/#cats=SVG">caniuse.com</a>).
+    </p>
+    <p>Try the latest version of
+        <a href="https://www.getfirefox.com">Firefox</a>,
+        <a href="https://www.google.com/chrome/">Chrome</a>,
+        <a href="https://www.apple.com/safari/">Safari</a>,
+        <a href="https://www.opera.com/download">Opera</a> or
+        <a href="https://support.microsoft.com/en-us/help/17621/internet-explorer-downloads">Internet Explorer</a>.
+    </p>
+    <div id="caniuse">
+      <iframe src="https://caniuse.com/#cats=SVG"></iframe>
+    </div>
+  </body>
+</html>
