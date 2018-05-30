@@ -34,7 +34,7 @@
 
     var imgLibs = [{
       name: 'Demo library (local)',
-      url: svgEditor.curConfig.extPath + 'imagelib/index' + (modularVersion ? '-es' : '') + '.html',
+      url: svgEditor.curConfig.extIconsPath + 'imagelib/index' + (modularVersion ? '-es' : '') + '.html',
       description: 'Demonstration library for SVG-edit on this server'
     }, {
       name: 'IAN Symbol Libraries',

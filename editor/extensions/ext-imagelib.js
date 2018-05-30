@@ -30,7 +30,7 @@ svgEditor.addExtension('imagelib', function ({decode64}) {
   const imgLibs = [
     {
       name: 'Demo library (local)',
-      url: svgEditor.curConfig.extPath +
+      url: svgEditor.curConfig.extIconsPath +
         'imagelib/index' + (modularVersion ? '-es' : '') + '.html',
       description: 'Demonstration library for SVG-edit on this server'
     },

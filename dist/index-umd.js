@@ -14778,7 +14778,11 @@
       return currentZoom;
     };
 
-    // This method rounds the incoming value to the nearest value based on the currentZoom
+    /**
+    * This method rounds the incoming value to the nearest value based on the `currentZoom`
+    * @param {Number} val
+    * @returns Rounded value to nearest value based on `currentZoom`
+    */
     var round = this.round = function (val) {
       return parseInt(val * currentZoom, 10) / currentZoom;
     };
@@ -15208,13 +15212,17 @@
       }
     };
 
-    // This method sends back an array or a NodeList full of elements that
-    // intersect the multi-select rubber-band-box on the currentLayer only.
-    //
-    // We brute-force getIntersectionList for browsers that do not support it (Firefox).
-    //
-    // Reference:
-    // Firefox does not implement getIntersectionList(), see https://bugzilla.mozilla.org/show_bug.cgi?id=501421
+    /**
+    * This method sends back an array or a NodeList full of elements that
+    * intersect the multi-select rubber-band-box on the currentLayer only.
+    *
+    * We brute-force getIntersectionList for browsers that do not support it (Firefox).
+    *
+    * Reference:
+    * Firefox does not implement getIntersectionList(), see https://bugzilla.mozilla.org/show_bug.cgi?id=501421
+    * @param rect
+    * @returns {Array|NodeList} Bbox elements
+    */
     var getIntersectionList = this.getIntersectionList = function (rect) {
       if (rubberBox == null) {
         return null;
