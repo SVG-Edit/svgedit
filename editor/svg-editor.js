@@ -1397,7 +1397,7 @@ editor.init = function () {
     if (done !== 'all') {
       let note = uiStrings.notification.saveFromBrowser.replace('%s', data.type);
 
-      // Check if there's issues
+      // Check if there are issues
       if (issues.length) {
         const pre = '\n \u2022 ';
         note += ('\n\n' + uiStrings.notification.noteTheseIssues + pre + issues.join(pre));

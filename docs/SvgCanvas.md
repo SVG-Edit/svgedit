@@ -153,7 +153,8 @@ Function | Description
 [`svgToString`](#svgtostring) | Sub function ran on each SVG element to convert it to a string as desired
 [`embedImage`](#embedimage) | Converts a given image file to a data URL when possible, then runs a given callback
 [`save`](#save) | Serializes the current drawing into SVG XML text and returns it to the ‘saved’ handler.
-[`rasterExport`](#rasterexport) | Generates a PNG Data URL based on the current image, then calls “exported” with an object including the string and any issues found
+[`rasterExport`](#rasterexport) | Generates a PNG (or JPG, BMP, WEBP) Data URL based on the current image, then calls “exported” with an object including the string and any issues found
+[`exportPDF`](#exportPDF) | Generates a PDF based on the current image, then calls "exportedPDF" with an object including the string, the data URL, and any issues found
 [`getSvgString`](#getsvgstring) | Returns the current drawing as raw SVG XML text.
 [`setSvgString`](#setsvgstring) | This function sets the current drawing as the input SVG XML.
 [`importSvgString`](#importsvgstring) | This function imports the input SVG XML into the current layer in the drawing
@@ -1217,6 +1218,8 @@ Nothing
     this.rasterExport = function ()
 
 Generates a PNG Data URL based on the current image, then calls “exported” with an object including the string and any issues found
+
+## `exportPDF`
 
 ## `getSvgString`
 

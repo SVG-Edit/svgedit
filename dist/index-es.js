@@ -17688,73 +17688,90 @@ var SvgCanvas = function SvgCanvas(container, config) {
 
   // Generates a Data URL based on the current image, then calls "exported"
   // with an object including the string, image information, and any issues found
-  this.rasterExport = function (imgType, quality, exportWindowName) {
+  this.rasterExport = function (imgType, quality, exportWindowName, cb) {
     var mimeType = 'image/' + imgType.toLowerCase();
     var issues = getIssues();
     var issueCodes = getIssues({ codesOnly: true });
     var str = this.svgCanvasToString();
 
-    buildCanvgCallback(function () {
-      var type = imgType || 'PNG';
-      if (!$$9('#export_canvas').length) {
-        $$9('<canvas>', { id: 'export_canvas' }).hide().appendTo('body');
-      }
-      var c = $$9('#export_canvas')[0];
-      c.width = canvas.contentW;
-      c.height = canvas.contentH;
-
-      canvg(c, str, {
-        renderCallback: function renderCallback() {
-          var dataURLType = (type === 'ICO' ? 'BMP' : type).toLowerCase();
-          var datauri = quality ? c.toDataURL('image/' + dataURLType, quality) : c.toDataURL('image/' + dataURLType);
-          if (c.toBlob) {
-            c.toBlob(function (blob) {
-              var bloburl = createObjectURL(blob);
-              call('exported', { datauri: datauri, bloburl: bloburl, svg: str, issues: issues, issueCodes: issueCodes, type: imgType, mimeType: mimeType, quality: quality, exportWindowName: exportWindowName });
-            }, mimeType, quality);
-            return;
-          }
-          var bloburl = dataURLToObjectURL(datauri);
-          call('exported', { datauri: datauri, bloburl: bloburl, svg: str, issues: issues, issueCodes: issueCodes, type: imgType, mimeType: mimeType, quality: quality, exportWindowName: exportWindowName });
+    return new Promise(function (resolve, reject) {
+      buildCanvgCallback(function () {
+        var type = imgType || 'PNG';
+        if (!$$9('#export_canvas').length) {
+          $$9('<canvas>', { id: 'export_canvas' }).hide().appendTo('body');
         }
-      });
-    })();
+        var c = $$9('#export_canvas')[0];
+        c.width = canvas.contentW;
+        c.height = canvas.contentH;
+
+        canvg(c, str, {
+          renderCallback: function renderCallback() {
+            var dataURLType = (type === 'ICO' ? 'BMP' : type).toLowerCase();
+            var datauri = quality ? c.toDataURL('image/' + dataURLType, quality) : c.toDataURL('image/' + dataURLType);
+            var bloburl = void 0;
+            function done() {
+              var obj = { datauri: datauri, bloburl: bloburl, svg: str, issues: issues, issueCodes: issueCodes, type: imgType, mimeType: mimeType, quality: quality, exportWindowName: exportWindowName };
+              call('exported', obj);
+              if (cb) {
+                cb(obj);
+              }
+              resolve(obj);
+            }
+            if (c.toBlob) {
+              c.toBlob(function (blob) {
+                bloburl = createObjectURL(blob);
+                done();
+              }, mimeType, quality);
+              return;
+            }
+            bloburl = dataURLToObjectURL(datauri);
+            done();
+          }
+        });
+      })();
+    });
   };
 
-  this.exportPDF = function (exportWindowName, outputType) {
+  this.exportPDF = function (exportWindowName, outputType, cb) {
     var that = this;
-    buildJSPDFCallback(function () {
-      var res = getResolution();
-      var orientation = res.w > res.h ? 'landscape' : 'portrait';
-      var unit = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
-      var doc = jsPDF({
-        orientation: orientation,
-        unit: unit,
-        format: [res.w, res.h]
-        // , compressPdf: true
-      }); // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
-      var docTitle = getDocumentTitle();
-      doc.setProperties({
-        title: docTitle /* ,
-                        subject: '',
-                        author: '',
-                        keywords: '',
-                        creator: '' */
-      });
-      var issues = getIssues();
-      var issueCodes = getIssues({ codesOnly: true });
-      var str = that.svgCanvasToString();
-      doc.addSVG(str, 0, 0);
+    return new Promise(function (resolve, reject) {
+      buildJSPDFCallback(function () {
+        var res = getResolution();
+        var orientation = res.w > res.h ? 'landscape' : 'portrait';
+        var unit = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
+        var doc = jsPDF({
+          orientation: orientation,
+          unit: unit,
+          format: [res.w, res.h]
+          // , compressPdf: true
+        }); // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
+        var docTitle = getDocumentTitle();
+        doc.setProperties({
+          title: docTitle /* ,
+                          subject: '',
+                          author: '',
+                          keywords: '',
+                          creator: '' */
+        });
+        var issues = getIssues();
+        var issueCodes = getIssues({ codesOnly: true });
+        var str = that.svgCanvasToString();
+        doc.addSVG(str, 0, 0);
 
-      // doc.output('save'); // Works to open in a new
-      //  window; todo: configure this and other export
-      //  options to optionally work in this manner as
-      //  opposed to opening a new tab
-      var obj = { svg: str, issues: issues, issueCodes: issueCodes, exportWindowName: exportWindowName };
-      var method = outputType || 'dataurlstring';
-      obj[method] = doc.output(method);
-      call('exportedPDF', obj);
-    })();
+        // doc.output('save'); // Works to open in a new
+        //  window; todo: configure this and other export
+        //  options to optionally work in this manner as
+        //  opposed to opening a new tab
+        var obj = { svg: str, issues: issues, issueCodes: issueCodes, exportWindowName: exportWindowName };
+        var method = outputType || 'dataurlstring';
+        obj[method] = doc.output(method);
+        if (cb) {
+          cb(obj);
+        }
+        resolve(obj);
+        call('exportedPDF', obj);
+      })();
+    });
   };
 
   /**
@@ -26641,7 +26658,7 @@ editor.init = function () {
     if (done !== 'all') {
       var note = uiStrings$1.notification.saveFromBrowser.replace('%s', data.type);
 
-      // Check if there's issues
+      // Check if there are issues
       if (issues.length) {
         var pre = '\n \u2022 ';
         note += '\n\n' + uiStrings$1.notification.noteTheseIssues + pre + issues.join(pre);
