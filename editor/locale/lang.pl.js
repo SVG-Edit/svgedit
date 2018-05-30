@@ -229,7 +229,7 @@ svgEditor.readLang({
     enterNewImgURL: 'Enter the new image URL',
     defsFailOnSave: 'NOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.',
     loadingImage: 'Loading image, please wait...',
-    saveFromBrowser: 'Select \'Save As...\' in your browser to save this image as a %s file.',
+    saveFromBrowser: 'Select \'Save As...\' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.',
     noteTheseIssues: 'Also note the following issues: ',
     unsavedChanges: 'There are unsaved changes.',
     enterNewLinkURL: 'Enter the new hyperlink URL',

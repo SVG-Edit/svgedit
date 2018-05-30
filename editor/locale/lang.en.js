@@ -224,7 +224,7 @@ svgEditor.readLang({
     QwantToOpen: 'Do you want to open a new file?\nThis will also erase your undo history!',
     QerrorsRevertToSource: 'There were parsing errors in your SVG source.\nRevert back to original SVG source?',
     QignoreSourceChanges: 'Ignore changes made to SVG source?',
-    saveFromBrowser: 'Select \'Save As...\' in your browser to save this image as a %s file.',
+    saveFromBrowser: 'Select \'Save As...\' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.',
     noteTheseIssues: 'Also note the following issues: ',
     unsavedChanges: 'There are unsaved changes.',
     enterNewLinkURL: 'Enter the new hyperlink URL',
