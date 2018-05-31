@@ -655,6 +655,7 @@ pathModule.init({
     // TODO: Correct this:
     pathActions.canDeleteNodes = true;
     pathActions.closed_subpath = closedSubpath;
+    call('pointsAdded', {closedSubpath, grips});
     call('selected', grips);
   },
   endChanges ({cmd, elem}) {
