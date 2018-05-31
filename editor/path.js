@@ -1094,7 +1094,7 @@ const pathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a',
   'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
 
 /**
- * TODO: move to pathActions.js when migrating rest of pathActions out of svgcanvas.js
+ * TODO: move to pathActions.js
  * Convert a path to one with only absolute or relative values
  * @param {Object} path - the path to convert
  * @param {boolean} toRel - true of convert to relative
