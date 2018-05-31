@@ -5125,12 +5125,6 @@ editor.init = function () {
   //  revnums += svgCanvas.getVersion();
   //  $('#copyright')[0].setAttribute('title', revnums);
 
-  // For Compatibility with older extensions
-  // $(function () {
-  window.svgCanvas = svgCanvas;
-  svgCanvas.ready = editor.ready;
-  // });
-
   const setLang = editor.setLang = function (lang, allStrings) {
     editor.langChanged = true;
     $.pref('lang', lang);

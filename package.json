@@ -11,6 +11,7 @@
   },
   "engines": {},
   "scripts": {
+    "prepare": "npm test",
     "build-config": "rollup -c rollup-config.config.js",
     "build-doc": "rm -rf docs/jsdoc/*;jsdoc -d docs/jsdoc -c docs/jsdoc-config.json .",
     "build-html": "node build-html.js",

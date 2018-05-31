@@ -5309,7 +5309,7 @@
   var pathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a', 'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
 
   /**
-   * TODO: move to pathActions.js when migrating rest of pathActions out of svgcanvas.js
+   * TODO: move to pathActions.js
    * Convert a path to one with only absolute or relative values
    * @param {Object} path - the path to convert
    * @param {boolean} toRel - true of convert to relative
@@ -6686,7 +6686,7 @@
   */
   var getUrlFromAttr = function getUrlFromAttr(attrVal) {
     if (attrVal) {
-      // url("#somegrad")
+      // url('#somegrad')
       if (attrVal.startsWith('url("')) {
         return attrVal.substring(5, attrVal.indexOf('"', 6));
       }
@@ -15018,6 +15018,7 @@
         // TODO: Correct this:
         pathActions$$1.canDeleteNodes = true;
         pathActions$$1.closed_subpath = closedSubpath;
+        call('pointsAdded', { closedSubpath: closedSubpath, grips: grips });
         call('selected', grips);
       },
       endChanges: function endChanges(_ref2) {
@@ -21546,8 +21547,8 @@
 
   where options is an object literal:
     {
-      window: { title: "Pick the start color and opacity for the gradient" },
-      images: { clientPath: "images/" },
+      window: { title: 'Pick the start color and opacity for the gradient' },
+      images: { clientPath: 'images/' },
       paint: a Paint object,
       newstop: String of value "same", "inverse", "black" or "white"
            OR object with one or both values {color: #Hex color, opac: number 0-1}
@@ -21564,10 +21565,10 @@
 
   $.jGraduate.Paint() -> constructs a 'none' color
   $.jGraduate.Paint({copy: o}) -> creates a copy of the paint o
-  $.jGraduate.Paint({hex: "#rrggbb"}) -> creates a solid color paint with hex = "#rrggbb"
+  $.jGraduate.Paint({hex: '#rrggbb'}) -> creates a solid color paint with hex = "#rrggbb"
   $.jGraduate.Paint({linearGradient: o, a: 50}) -> creates a linear gradient paint with opacity=0.5
   $.jGraduate.Paint({radialGradient: o, a: 7}) -> creates a radial gradient paint with opacity=0.07
-  $.jGraduate.Paint({hex: "#rrggbb", linearGradient: o}) -> throws an exception?
+  $.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}) -> throws an exception?
 
   - picker accepts the following object as input:
     {
@@ -23904,7 +23905,7 @@
           return { r: this.hexToInt(r), g: this.hexToInt(g), b: this.hexToInt(b), a: this.hexToInt(a) };
         },
         validateHex: function validateHex(hex) {
-          // if (typeof hex === "object") return "";
+          // if (typeof hex === 'object') return '';
           hex = hex.toLowerCase().replace(/[^a-f0-9]/g, '');
           if (hex.length > 8) hex = hex.substring(0, 8);
           return hex;
@@ -27448,8 +27449,8 @@
             break;
 
           // TODO: Update values that change on move/resize, etc
-          // case "select":
-          // case "resize":
+          // case 'select':
+          // case 'resize':
           //   break;
         }
       }
@@ -30492,15 +30493,9 @@
     updateCanvas(true);
     // });
 
-    //  const revnums = "svg-editor.js ($Rev$) ";
+    //  const revnums = 'svg-editor.js ($Rev$) ';
     //  revnums += svgCanvas.getVersion();
     //  $('#copyright')[0].setAttribute('title', revnums);
-
-    // For Compatibility with older extensions
-    // $(function () {
-    window.svgCanvas = svgCanvas;
-    svgCanvas.ready = editor.ready;
-    // });
 
     var setLang = editor.setLang = function (lang, allStrings) {
       editor.langChanged = true;
