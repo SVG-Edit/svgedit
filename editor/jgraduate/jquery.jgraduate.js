@@ -14,8 +14,8 @@ jGraduate(options, okCallback, cancelCallback)
 
 where options is an object literal:
   {
-    window: { title: "Pick the start color and opacity for the gradient" },
-    images: { clientPath: "images/" },
+    window: { title: 'Pick the start color and opacity for the gradient' },
+    images: { clientPath: 'images/' },
     paint: a Paint object,
     newstop: String of value "same", "inverse", "black" or "white"
          OR object with one or both values {color: #Hex color, opac: number 0-1}
@@ -32,10 +32,10 @@ where options is an object literal:
 
 $.jGraduate.Paint() -> constructs a 'none' color
 $.jGraduate.Paint({copy: o}) -> creates a copy of the paint o
-$.jGraduate.Paint({hex: "#rrggbb"}) -> creates a solid color paint with hex = "#rrggbb"
+$.jGraduate.Paint({hex: '#rrggbb'}) -> creates a solid color paint with hex = "#rrggbb"
 $.jGraduate.Paint({linearGradient: o, a: 50}) -> creates a linear gradient paint with opacity=0.5
 $.jGraduate.Paint({radialGradient: o, a: 7}) -> creates a radial gradient paint with opacity=0.07
-$.jGraduate.Paint({hex: "#rrggbb", linearGradient: o}) -> throws an exception?
+$.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}) -> throws an exception?
 
 - picker accepts the following object as input:
   {
