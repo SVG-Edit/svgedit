@@ -113,8 +113,9 @@ Most plugins will want to run functions when certain events are triggered. This 
 | `langChanged` | The language was changed | Two-letter code of the new language | None |
 | `langReady` | Invoked as soon as the locale is ready | An object with properties "lang" containing the two-letter language code and "uiStrings" as an alias for svgEditor.uiStrings | None |
 | `addlangData` | Means for an extension to add locale data | The two-letter language code | Object with "data" property set to an object containing two-letter language codes keyed to an array of objects with "id" and "title" or "textContent" properties |
-| `callback` | Invoked upon addition of the extension, or, if svgicons are set, then after the icons are ready | None | None |
+| `callback` | Invoked upon addition of the extension, or, if svgicons are set, then after the icons are ready | None | None (IS THIS STILL PRESENT?) |
 | `canvasUpdated` | Invoked upon updates to the canvas | Object with properties: new_x, new_y, old_x, old_y, d_x, d_y | None |
+| `IDsUpdated` |	When `pasteElements` called from paste action (context menu or key) | An object with `elems` array and `changes` object (mapping past ID (on attribute) to current ID) 	Object with `remove` array containing string IDs (used by `ext-connector.js`)
 | `onNewDocument` | Called when new image is created | None | None |
 | `workareaResized` | Called when sidepanel is resized or toggled | None | None |
 

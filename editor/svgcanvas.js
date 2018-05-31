@@ -3217,8 +3217,15 @@ function getIssues ({codesOnly = false} = {}) {
   return issues;
 }
 
-// Generates a Data URL based on the current image, then calls "exported"
-// with an object including the string, image information, and any issues found
+/**
+* Generates a Data URL based on the current image, then calls "exported"
+* with an object including the string, image information, and any issues found
+* @param {String} [imgType="PNG"]
+* @param {Number} [quality] Between 0 and 1
+* @param {String} [exportWindowName]
+* @param {Function} [cb]
+* @returns {Promise}
+*/
 this.rasterExport = function (imgType, quality, exportWindowName, cb) {
   const mimeType = 'image/' + imgType.toLowerCase();
   const issues = getIssues();
@@ -3261,6 +3268,12 @@ this.rasterExport = function (imgType, quality, exportWindowName, cb) {
   });
 };
 
+/**
+* @param {String} exportWindowName
+* @param outputType Needed?
+* @param {Function} cb
+* @returns {Promise}
+*/
 this.exportPDF = function (exportWindowName, outputType, cb) {
   const that = this;
   return new Promise((resolve, reject) => {

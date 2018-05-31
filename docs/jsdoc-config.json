@@ -3,9 +3,13 @@
   "source": {
     "exclude": [
       "node_modules",
-      "dist"
+      "dist",
+      "firefox-extension",
+      "opera-widget",
+      "screencasts",
+      "test"
     ],
-    "excludePattern": "^svgedit-config-"
+    "excludePattern": "svgedit-config-*|build-html.js|rollup*"
   },
   "sourceType": "module",
   "tags": {

@@ -17701,8 +17701,15 @@
       return issues;
     }
 
-    // Generates a Data URL based on the current image, then calls "exported"
-    // with an object including the string, image information, and any issues found
+    /**
+    * Generates a Data URL based on the current image, then calls "exported"
+    * with an object including the string, image information, and any issues found
+    * @param {String} [imgType="PNG"]
+    * @param {Number} [quality] Between 0 and 1
+    * @param {String} [exportWindowName]
+    * @param {Function} [cb]
+    * @returns {Promise}
+    */
     this.rasterExport = function (imgType, quality, exportWindowName, cb) {
       var mimeType = 'image/' + imgType.toLowerCase();
       var issues = getIssues();
@@ -17747,6 +17754,12 @@
       });
     };
 
+    /**
+    * @param {String} exportWindowName
+    * @param outputType Needed?
+    * @param {Function} cb
+    * @returns {Promise}
+    */
     this.exportPDF = function (exportWindowName, outputType, cb) {
       var that = this;
       return new Promise(function (resolve, reject) {
@@ -26714,11 +26727,16 @@
       $$b(opt).addClass('current').siblings().removeClass('current');
     }
 
-    // This is a common function used when a tool has been clicked (chosen)
-    // It does several common things:
-    // - removes the tool_button_current class from whatever tool currently has it
-    // - hides any flyouts
-    // - adds the tool_button_current class to the button passed in
+    /**
+    * This is a common function used when a tool has been clicked (chosen)
+    * It does several common things:
+    * - removes the `tool_button_current` class from whatever tool currently has it
+    * - hides any flyouts
+    * - adds the `tool_button_current` class to the button passed in
+    * @param {String|Element} button The DOM element or string selector representing the toolbar button
+    * @param {Boolean} noHiding Whether not to hide any flyouts
+    * @returns {Boolean} Whether the button was disabled or not
+    */
     var toolButtonClick = editor.toolButtonClick = function (button, noHiding) {
       if ($$b(button).hasClass('disabled')) {
         return false;
@@ -26737,6 +26755,10 @@
       return true;
     };
 
+    /**
+    * Unless the select toolbar button is disabled, sets the button
+    * and sets the select mode and cursor styles.
+    */
     var clickSelect = editor.clickSelect = function () {
       if (toolButtonClick('#tool_select')) {
         svgCanvas.setMode('select');
@@ -26744,6 +26766,10 @@
       }
     };
 
+    /**
+    * Set a selected image's URL
+    * @param {String} url
+    */
     var setImageURL = editor.setImageURL = function (url) {
       if (!url) {
         url = defaultImageURL;
@@ -26955,6 +26981,10 @@
       }
     }
 
+    /**
+    * @param center
+    * @param newCtr
+    */
     var updateCanvas = editor.updateCanvas = function (center, newCtr) {
       var zoom = svgCanvas.getZoom();
       var wArea = workarea;
@@ -28515,6 +28545,9 @@
         }
       });
 
+      /**
+      * @param {Boolean} active
+      */
       editor.setPanning = function (active) {
         svgCanvas.spaceKey = keypan = active;
       };
@@ -28601,10 +28634,15 @@
     })();
     // Made public for UI customization.
     // TODO: Group UI functions into a public editor.ui interface.
+    /**
+    * @param {Element|String} elem DOM Element or selector
+    * @param {Function} callback Mouseup callback
+    * @param {Boolean} dropUp
+    */
     editor.addDropDown = function (elem, callback, dropUp) {
       if (!$$b(elem).length) {
         return;
-      } // Quit if called on non-existant element
+      } // Quit if called on non-existent element
       var button = $$b(elem).find('button');
       var list = $$b(elem).find('ul').attr('id', $$b(elem)[0].id + '-list');
       if (dropUp) {
@@ -29269,6 +29307,9 @@
       hideDocProperties();
     };
 
+    /**
+    * Save user preferences based on current values in the UI
+    */
     var savePreferences = editor.savePreferences = function () {
       // Set background
       var color = $$b('#bg_blocks div.cur_background').css('background-color') || '#FFF';
@@ -30353,10 +30394,16 @@
       }
     }, false);
 
+    /**
+    * Expose the uiStrings
+    */
     editor.canvas.getUIStrings = function () {
       return uiStrings$1;
     };
 
+    /**
+    * @param {Function} func Confirmation dialog callback
+    */
     editor.openPrep = function (func) {
       $$b('#main_menu').hide();
       if (undoMgr.getUndoStackSize() === 0) {
@@ -30497,6 +30544,10 @@
     //  revnums += svgCanvas.getVersion();
     //  $('#copyright')[0].setAttribute('title', revnums);
 
+    /**
+    * @param {String} lang The language code
+    * @param {Object} allStrings
+    */
     var setLang = editor.setLang = function (lang, allStrings) {
       editor.langChanged = true;
       $$b.pref('lang', lang);
@@ -30567,6 +30618,12 @@
     }
   };
 
+  /**
+  * Queues a callback to be invoked when the editor is ready (or
+  *   to be invoked immediately if it is already ready)--i.e.,
+  *   once all callbacks set by `svgEditor.runCallbacks` have been run
+  * @param {Function} cb Callback to be queued to invoke
+  */
   editor.ready = function (cb) {
     if (!isReady) {
       callbacks.push(cb);
@@ -30575,6 +30632,9 @@
     }
   };
 
+  /**
+  * Invokes the callbacks previous set by `svgEditor.ready`
+  */
   editor.runCallbacks = function () {
     // Todo: See if there is any benefit to refactoring some
     //   of the existing `editor.ready()` calls to return Promises
@@ -30585,12 +30645,19 @@
     });
   };
 
+  /**
+  * @param {String} str The SVG string to load
+  */
   editor.loadFromString = function (str) {
     editor.ready(function () {
       loadSvgString(str);
     });
   };
 
+  /**
+  * Not presently in use
+  * @param featList
+  */
   editor.disableUI = function (featList) {
     // $(function () {
     //   $('#tool_wireframe, #tool_image, #main_button, #tool_source, #sidepanels').remove();
@@ -30598,6 +30665,10 @@
     // });
   };
 
+  /**
+  * @param url URL from which to load an SVG string via Ajax
+  * @param {Object} [opts] May contain properties: `cache`, `callback` (invoked with `true` or `false` depending on success)
+  */
   editor.loadFromURL = function (url, opts) {
     if (!opts) {
       opts = {};
@@ -30633,6 +30704,9 @@
     });
   };
 
+  /**
+  * @param {String} str The Data URI to base64-decode (if relevant) and load
+  */
   editor.loadFromDataURI = function (str) {
     editor.ready(function () {
       var base64 = false;
@@ -30650,13 +30724,18 @@
     });
   };
 
+  /**
+  * @param {...*} args Arguments to pass to `svgCanvas.addExtension` (though invoked on `svgEditor`)
+  */
   editor.addExtension = function () {
-    var args = arguments;
-
     // Note that we don't want this on editor.ready since some extensions
     // may want to run before then (like server_opensave).
     // $(function () {
     if (svgCanvas) {
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
       svgCanvas.addExtension.apply(this, args);
     }
     // });
