@@ -3189,12 +3189,13 @@ this.save = function (opts) {
 /**
 * Codes only is useful for locale-independent detection
 */
-function getIssues ({codesOnly = false} = {}) {
+function getIssues () {
   // remove the selected outline before serializing
   clearSelection();
 
   // Check for known CanVG issues
   const issues = [];
+  const issueCodes = [];
 
   // Selector and notice
   const issueList = {
@@ -3211,10 +3212,11 @@ function getIssues ({codesOnly = false} = {}) {
 
   $.each(issueList, function (sel, descr) {
     if (content.find(sel).length) {
-      issues.push(codesOnly ? sel : descr);
+      issueCodes.push(sel);
+      issues.push(descr);
     }
   });
-  return issues;
+  return {issues, issueCodes};
 }
 
 /**
@@ -3228,9 +3230,8 @@ function getIssues ({codesOnly = false} = {}) {
 */
 this.rasterExport = function (imgType, quality, exportWindowName, cb) {
   const mimeType = 'image/' + imgType.toLowerCase();
-  const issues = getIssues();
-  const issueCodes = getIssues({codesOnly: true});
-  const str = this.svgCanvasToString();
+  const {issues, issueCodes} = getIssues();
+  const svg = this.svgCanvasToString();
 
   return new Promise((resolve, reject) => {
     buildCanvgCallback(function () {
@@ -3242,12 +3243,17 @@ this.rasterExport = function (imgType, quality, exportWindowName, cb) {
       c.width = canvas.contentW;
       c.height = canvas.contentH;
 
-      canvg(c, str, {renderCallback () {
+      canvg(c, svg, {renderCallback () {
         const dataURLType = (type === 'ICO' ? 'BMP' : type).toLowerCase();
-        const datauri = quality ? c.toDataURL('image/' + dataURLType, quality) : c.toDataURL('image/' + dataURLType);
+        const datauri = quality
+          ? c.toDataURL('image/' + dataURLType, quality)
+          : c.toDataURL('image/' + dataURLType);
         let bloburl;
         function done () {
-          const obj = {datauri, bloburl, svg: str, issues, issueCodes, type: imgType, mimeType, quality, exportWindowName};
+          const obj = {
+            datauri, bloburl, svg, issues, issueCodes, type: imgType,
+            mimeType, quality, exportWindowName
+          };
           call('exported', obj);
           if (cb) {
             cb(obj);
@@ -3295,16 +3301,15 @@ this.exportPDF = function (exportWindowName, outputType, cb) {
         keywords: '',
         creator: '' */
       });
-      const issues = getIssues();
-      const issueCodes = getIssues({codesOnly: true});
-      const str = that.svgCanvasToString();
-      doc.addSVG(str, 0, 0);
+      const {issues, issueCodes} = getIssues();
+      const svg = that.svgCanvasToString();
+      doc.addSVG(svg, 0, 0);
 
       // doc.output('save'); // Works to open in a new
       //  window; todo: configure this and other export
       //  options to optionally work in this manner as
       //  opposed to opening a new tab
-      const obj = {svg: str, issues, issueCodes, exportWindowName};
+      const obj = {svg, issues, issueCodes, exportWindowName};
       const method = outputType || 'dataurlstring';
       obj[method] = doc.output(method);
       if (cb) {

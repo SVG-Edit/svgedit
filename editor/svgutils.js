@@ -1179,7 +1179,7 @@ export const preventClickDefault = function (img) {
 /**
  * Create a clone of an element, updating its ID and its children's IDs when needed
  * @param {Element} el - DOM element to clone
- * @param {function()} getNextId - function the get the next unique ID.
+ * @param {Function} getNextId - The getter of the next unique ID.
  * @returns {Element}
  */
 export const copyElem = function (el, getNextId) {
