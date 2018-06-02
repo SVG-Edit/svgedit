@@ -20,6 +20,7 @@ import {getTypeMap, convertUnit, isValidUnit} from './units.js';
 import {
   hasCustomHandler, getCustomHandler, injectExtendedContextMenuItemsIntoDom
 } from './contextmenu.js';
+import {importSetGlobalDefault} from './external/dynamic-import-polyfill/importModule.js';
 
 import SvgCanvas from './svgcanvas.js';
 import Layer from './layer.js';
@@ -133,6 +134,8 @@ const callbacks = [],
     imgPath: 'images/',
     langPath: 'locale/', // Default will be changed if this is a modular load
     extPath: 'extensions/', // Default will be changed if this is a modular load
+    canvgPath: 'canvg/', // Default will be changed if this is a modular load
+    jspdfPath: 'jspdf/', // Default will be changed if this is a modular load
     extIconsPath: 'extensions/',
     jGraduatePath: 'jgraduate/images/',
     // DOCUMENT PROPERTIES
@@ -428,7 +431,9 @@ editor.init = function () {
   if (!modularVersion) {
     Object.assign(defaultConfig, {
       langPath: '../dist/locale/',
-      extPath: '../dist/extensions/'
+      extPath: '../dist/extensions/',
+      canvgPath: '../dist/',
+      jspdfPath: '../dist/'
     });
   }
 
@@ -492,8 +497,8 @@ editor.init = function () {
       // ways with other script resources
       $.each(
         [
-          'extPath', 'imgPath', 'extIconsPath',
-          'langPath', 'jGraduatePath'
+          'extPath', 'imgPath', 'extIconsPath', 'canvgPath',
+          'langPath', 'jGraduatePath', 'jspdfPath'
         ],
         function (pathConfig) {
           if (urldata[pathConfig]) {
@@ -547,36 +552,30 @@ editor.init = function () {
     $(elem).empty().append(icon);
   };
 
-  const extFunc = function () {
-    $.each(curConfig.extensions, function () {
-      const extname = this;
-      if (!extname.match(/^ext-.*\.js/)) { // Ensure URL cannot specify some other unintended file in the extPath
-        return;
-      }
-      const s = document.createElement('script');
-      if (modularVersion) {
-        s.type = 'module'; // Make this the default when widely supported
-      }
-      const url = curConfig.extPath + extname;
-      s.src = url;
-      document.querySelector('head').appendChild(s);
-      /*
-      // Todo: Insert script with type=module instead when modules widely supported
-      $.getScript(curConfig.extPath + extname, function (d) {
-        // Fails locally in Chrome 5
-        if (!d) {
-          const s = document.createElement('script');
-          s.src = curConfig.extPath + extname;
-          document.querySelector('head').appendChild(s);
-        }
-      }).fail((jqxhr, settings, exception) => {
-        console.log(exception);
-      });
-      */
-    });
+  const extFunc = async function () {
+    try {
+      await Promise.all(
+        curConfig.extensions.map(async (extname) => {
+          const extName = extname.match(/^ext-(.+)\.js/);
+          if (!extName) { // Ensure URL cannot specify some other unintended file in the extPath
+            return;
+          }
+          const url = curConfig.extPath + extname;
+          // Todo: Replace this with `return import(url);` when
+          //   `import()` widely supported
+          const imported = await importSetGlobalDefault(url, {
+            global: 'svgEditorExtension_' + extName[1].replace(/-/g, '_')
+          });
+          const {name, init} = imported;
+          return editor.addExtension(name, (init && init.bind(editor)) || imported);
+        })
+      );
+    } catch (err) {
+      console.log(err);
+    }
 
     // const lang = ('lang' in curPrefs) ? curPrefs.lang : null;
-    editor.putLocale(null, goodLangs, curConfig);
+    return editor.putLocale(null, goodLangs, curConfig);
   };
 
   const stateObj = {tool_scale: editor.tool_scale};
@@ -589,6 +588,23 @@ editor.init = function () {
       $(this).css({left: (pos.left + w) * editor.tool_scale, top: pos.top});
     });
   };
+
+  const uaPrefix = (function () {
+    const regex = /^(Moz|Webkit|Khtml|O|ms|Icab)(?=[A-Z])/;
+    const someScript = document.getElementsByTagName('script')[0];
+    for (const prop in someScript.style) {
+      if (regex.test(prop)) {
+        // test is faster than match, so it's better to perform
+        // that on the lot and match only when necessary
+        return prop.match(regex)[0];
+      }
+    }
+    // Nothing found so far?
+    if ('WebkitOpacity' in someScript.style) { return 'Webkit'; }
+    if ('KhtmlOpacity' in someScript.style) { return 'Khtml'; }
+
+    return '';
+  }());
 
   const scaleElements = function (elems, scale) {
     // const prefix = '-' + uaPrefix.toLowerCase() + '-'; // Currently unused
@@ -1567,7 +1583,7 @@ editor.init = function () {
         for (i = 1; i < ctxArrNum; i++) {
           hcanv[lentype] = limit;
           copy = hcanv.cloneNode(true);
-          hcanv.parentNode.appendChild(copy);
+          hcanv.parentNode.append(copy);
           ctxArr[i] = copy.getContext('2d');
         }
 
@@ -2459,24 +2475,6 @@ editor.init = function () {
     return div;
   };
 
-  const uaPrefix = (function () {
-    let prop;
-    const regex = /^(Moz|Webkit|Khtml|O|ms|Icab)(?=[A-Z])/;
-    const someScript = document.getElementsByTagName('script')[0];
-    for (prop in someScript.style) {
-      if (regex.test(prop)) {
-        // test is faster than match, so it's better to perform
-        // that on the lot and match only when necessary
-        return prop.match(regex)[0];
-      }
-    }
-    // Nothing found so far?
-    if ('WebkitOpacity' in someScript.style) { return 'Webkit'; }
-    if ('KhtmlOpacity' in someScript.style) { return 'Khtml'; }
-
-    return '';
-  }());
-
   // TODO: Combine this with addDropDown or find other way to optimize
   const addAltDropDown = function (elem, list, callback, opts) {
     const button = $(elem);
@@ -2570,7 +2568,7 @@ editor.init = function () {
     const runCallback = function () {
       if (ext.callback && !cbCalled && cbReady) {
         cbCalled = true;
-        ext.callback();
+        ext.callback.call(editor);
       }
     };
 
@@ -2936,6 +2934,10 @@ editor.init = function () {
     const {exportWindowName} = data;
     if (exportWindowName) {
       exportWindow = window.open('', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
+    }
+    if (!exportWindow || exportWindow.closed) {
+      $.alert(uiStrings.notification.popupWindowBlocked);
+      return;
     }
     exportWindow.location.href = data.dataurlstring;
   });
@@ -3810,7 +3812,10 @@ editor.init = function () {
     updateWireFrame();
   };
 
-  $('#svg_docprops_container, #svg_prefs_container').draggable({cancel: 'button,fieldset', containment: 'window'});
+  $('#svg_docprops_container, #svg_prefs_container').draggable({
+    cancel: 'button,fieldset',
+    containment: 'window'
+  }).css('position', 'absolute');
 
   let docprops = false;
   let preferences = false;
@@ -4115,7 +4120,10 @@ editor.init = function () {
     const pos = elem.offset();
     let {paint} = paintBox[picker];
     $('#color_picker')
-      .draggable({cancel: '.jGraduate_tabs, .jGraduate_colPick, .jGraduate_gradPick, .jPicker', containment: 'window'})
+      .draggable({
+        cancel: '.jGraduate_tabs, .jGraduate_colPick, .jGraduate_gradPick, .jPicker',
+        containment: 'window'
+      })
       .css(curConfig.colorPickerCSS || {left: pos.left - 140, bottom: 40})
       .jGraduate(
         {
@@ -4168,7 +4176,7 @@ editor.init = function () {
         break;
       case 'linearGradient':
       case 'radialGradient':
-        this.defs.removeChild(this.grad);
+        this.grad.remove();
         this.grad = this.defs.appendChild(paint[ptype]);
         const id = this.grad.id = 'gradbox_' + this.type;
         fillAttr = 'url(#' + id + ')';
@@ -5228,6 +5236,7 @@ editor.init = function () {
   if (document.location.protocol === 'file:') {
     setTimeout(extFunc, 100);
   } else {
+    // Returns a promise (if we wanted to fire 'extensions-loaded' event)
     extFunc();
   }
 };
@@ -5252,7 +5261,7 @@ editor.ready = function (cb) {
 editor.runCallbacks = function () {
   // Todo: See if there is any benefit to refactoring some
   //   of the existing `editor.ready()` calls to return Promises
-  Promise.all(callbacks.map((cb) => {
+  return Promise.all(callbacks.map((cb) => {
     return cb();
   })).then(() => {
     isReady = true;

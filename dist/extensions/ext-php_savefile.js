@@ -1,12 +1,14 @@
-(function () {
+var svgEditorExtension_php_savefile = (function () {
   'use strict';
 
   /* globals jQuery */
   // TODO: Might add support for "exportImage" custom
   //   handler as in "ext-server_opensave.js" (and in savefile.php)
 
-  svgEditor.addExtension('php_savefile', {
+  var extPhp_savefile = {
+    name: 'php_savefile',
     callback: function callback() {
+      var svgEditor = this;
       var $ = jQuery;
       var svgCanvas = svgEditor.canvas;
       function getFileNameFromTitle() {
@@ -23,6 +25,8 @@
         }
       });
     }
-  });
+  };
+
+  return extPhp_savefile;
 
 }());

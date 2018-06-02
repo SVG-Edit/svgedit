@@ -110,7 +110,7 @@ export const sanitizeSvg = function (node) {
     node.nodeValue = node.nodeValue.replace(/^\s+|\s+$/g, '');
     // Remove if empty
     if (!node.nodeValue.length) {
-      node.parentNode.removeChild(node);
+      node.remove();
     }
   }
 
@@ -182,8 +182,8 @@ export const sanitizeSvg = function (node) {
       }
     }
 
-    Object.values(seAttrs).forEach(function (attr) {
-      node.setAttributeNS(NS.SE, attr[0], attr[1]);
+    Object.values(seAttrs).forEach(([att, val]) => {
+      node.setAttributeNS(NS.SE, att, val);
     });
 
     // for some elements that have a xlink:href, ensure the URI refers to a local element
@@ -202,7 +202,7 @@ export const sanitizeSvg = function (node) {
 
     // Safari crashes on a <use> without a xlink:href, so we just remove the node here
     if (node.nodeName === 'use' && !getHref(node)) {
-      parent.removeChild(node);
+      node.remove();
       return;
     }
     // if the element has attributes pointing to a non-local reference,
@@ -232,7 +232,7 @@ export const sanitizeSvg = function (node) {
     }
 
     // remove this node from the document altogether
-    parent.removeChild(node);
+    node.remove();
 
     // call sanitizeSvg on each of those children
     let i = children.length;

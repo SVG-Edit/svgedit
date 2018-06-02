@@ -6,7 +6,7 @@ import * as coords from '../editor/coords.js';
 import * as recalculate from '../editor/recalculate.js';
 
 // log function
-QUnit.log(function (details) {
+QUnit.log((details) => {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }
@@ -15,9 +15,9 @@ QUnit.log(function (details) {
 const root = document.getElementById('root');
 const svgroot = document.createElementNS(NS.SVG, 'svg');
 svgroot.id = 'svgroot';
-root.appendChild(svgroot);
+root.append(svgroot);
 const svg = document.createElementNS(NS.SVG, 'svg');
-svgroot.appendChild(svg);
+svgroot.append(svg);
 
 let elemId = 1;
 function setUp () {
@@ -50,7 +50,7 @@ function setUpRect () {
   elem.setAttribute('y', '150');
   elem.setAttribute('width', '250');
   elem.setAttribute('height', '120');
-  svg.appendChild(elem);
+  svg.append(elem);
 }
 
 function setUpTextWithTspan () {
@@ -64,14 +64,14 @@ function setUpTextWithTspan () {
   tspan.setAttribute('y', '150');
 
   const theText = document.createTextNode('Foo bar');
-  tspan.appendChild(theText);
-  elem.appendChild(tspan);
-  svg.appendChild(elem);
+  tspan.append(theText);
+  elem.append(tspan);
+  svg.append(elem);
 }
 
 function tearDown () {
   while (svg.hasChildNodes()) {
-    svg.removeChild(svg.firstChild);
+    svg.firstChild.remove();
   }
 }
 

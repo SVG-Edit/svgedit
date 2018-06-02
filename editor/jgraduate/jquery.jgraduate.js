@@ -150,7 +150,9 @@ export default function ($) {
   function mkElem (name, attrs, newparent) {
     const elem = document.createElementNS(ns.svg, name);
     setAttrs(elem, attrs);
-    if (newparent) newparent.appendChild(elem);
+    if (newparent) {
+      newparent.append(elem);
+    }
     return elem;
   }
 
@@ -521,7 +523,7 @@ export default function ($) {
           opac = stopElem.getAttribute('stop-opacity');
           n = stopElem.getAttribute('offset');
         } else {
-          curGradient.appendChild(stop);
+          curGradient.append(stop);
         }
         if (opac === null) opac = 1;
 
@@ -619,7 +621,7 @@ export default function ($) {
         if (curStop) curStop.setAttribute('stroke', '#000');
         item.setAttribute('stroke', 'blue');
         curStop = item;
-        curStop.parentNode.appendChild(curStop);
+        curStop.parentNode.append(curStop);
         //   stops = $('stop');
         //   opac_select.val(curStop.attr('fill-opacity') || 1);
         //   root.append(delStop);
@@ -720,7 +722,7 @@ export default function ($) {
       });
 
       $(stopMakerSVG).mouseover(function () {
-        stopMakerSVG.appendChild(delStop);
+        stopMakerSVG.append(delStop);
       });
 
       stopGroup = mkElem('g', {}, stopMakerSVG);
@@ -805,7 +807,7 @@ export default function ($) {
       // if there are not at least two stops, then
       if (numstops < 2) {
         while (numstops < 2) {
-          curGradient.appendChild(document.createElementNS(ns.svg, 'stop'));
+          curGradient.append(document.createElementNS(ns.svg, 'stop'));
           ++numstops;
         }
         stops = curGradient.getElementsByTagNameNS(ns.svg, 'stop');
@@ -883,7 +885,7 @@ export default function ($) {
       // if there are not at least two stops, then
       if (numstops < 2) {
         while (numstops < 2) {
-          curGradient.appendChild(document.createElementNS(ns.svg, 'stop'));
+          curGradient.append(document.createElementNS(ns.svg, 'stop'));
           ++numstops;
         }
         stops = curGradient.getElementsByTagNameNS(ns.svg, 'stop');
@@ -1161,7 +1163,7 @@ export default function ($) {
       $this.show();
 
       // jPicker will try to show after a 0ms timeout, so need to fire this after that
-      setTimeout(function () {
+      setTimeout(() => {
         tab.addClass('jGraduate_tab_current').click();
       }, 10);
     });

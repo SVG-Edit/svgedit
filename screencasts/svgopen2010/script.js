@@ -93,7 +93,7 @@ Slide.prototype = {
     const c = doc.createElement('span');
     c.innerHTML = this._count;
     c.className = 'counter';
-    this._node.appendChild(c);
+    this._node.append(c);
   },
   _makeBuildList () {
     this._buildList = [];

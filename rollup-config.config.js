@@ -26,7 +26,9 @@ export default [
           }
         ]
       }),
-      babel()
+      babel({
+        plugins: ['transform-object-rest-spread']
+      })
     ]
   }
 ];

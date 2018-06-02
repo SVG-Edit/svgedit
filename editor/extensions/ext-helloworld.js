@@ -13,66 +13,70 @@
   the left panel. Clicking on the button, and then the canvas will show the
   user the point on the canvas that was clicked on.
 */
-import svgEditor from '../svg-editor.js';
-svgEditor.addExtension('Hello World', function () {
-  const $ = jQuery;
-  const svgCanvas = svgEditor.canvas;
-  return {
-    name: 'Hello World',
-    // For more notes on how to make an icon file, see the source of
-    // the helloworld-icon.xml
-    svgicons: svgEditor.curConfig.extIconsPath + 'helloworld-icon.xml',
 
-    // Multiple buttons can be added in this array
-    buttons: [{
-      // Must match the icon ID in helloworld-icon.xml
-      id: 'hello_world',
+export default {
+  name: 'Hello World',
+  init () {
+    const svgEditor = this;
+    const $ = jQuery;
+    const svgCanvas = svgEditor.canvas;
+    return {
+      name: 'Hello World',
+      // For more notes on how to make an icon file, see the source of
+      // the helloworld-icon.xml
+      svgicons: svgEditor.curConfig.extIconsPath + 'helloworld-icon.xml',
 
-      // This indicates that the button will be added to the "mode"
-      // button panel on the left side
-      type: 'mode',
+      // Multiple buttons can be added in this array
+      buttons: [{
+        // Must match the icon ID in helloworld-icon.xml
+        id: 'hello_world',
 
-      // Tooltip text
-      title: "Say 'Hello World'",
+        // This indicates that the button will be added to the "mode"
+        // button panel on the left side
+        type: 'mode',
 
-      // Events
-      events: {
-        click () {
-          // The action taken when the button is clicked on.
-          // For "mode" buttons, any other button will
-          // automatically be de-pressed.
-          svgCanvas.setMode('hello_world');
+        // Tooltip text
+        title: "Say 'Hello World'",
+
+        // Events
+        events: {
+          click () {
+            // The action taken when the button is clicked on.
+            // For "mode" buttons, any other button will
+            // automatically be de-pressed.
+            svgCanvas.setMode('hello_world');
+          }
+        }
+      }],
+      // This is triggered when the main mouse button is pressed down
+      // on the editor canvas (not the tool panels)
+      mouseDown () {
+        // Check the mode on mousedown
+        if (svgCanvas.getMode() === 'hello_world') {
+          // The returned object must include "started" with
+          // a value of true in order for mouseUp to be triggered
+          return {started: true};
+        }
+      },
+
+      // This is triggered from anywhere, but "started" must have been set
+      // to true (see above). Note that "opts" is an object with event info
+      mouseUp (opts) {
+        // Check the mode on mouseup
+        if (svgCanvas.getMode() === 'hello_world') {
+          const zoom = svgCanvas.getZoom();
+
+          // Get the actual coordinate by dividing by the zoom value
+          const x = opts.mouse_x / zoom;
+          const y = opts.mouse_y / zoom;
+
+          const text = 'Hello World!\n\nYou clicked here: ' +
+            x + ', ' + y;
+
+          // Show the text using the custom alert function
+          $.alert(text);
         }
       }
-    }],
-    // This is triggered when the main mouse button is pressed down
-    // on the editor canvas (not the tool panels)
-    mouseDown () {
-      // Check the mode on mousedown
-      if (svgCanvas.getMode() === 'hello_world') {
-        // The returned object must include "started" with
-        // a value of true in order for mouseUp to be triggered
-        return {started: true};
-      }
-    },
-
-    // This is triggered from anywhere, but "started" must have been set
-    // to true (see above). Note that "opts" is an object with event info
-    mouseUp (opts) {
-      // Check the mode on mouseup
-      if (svgCanvas.getMode() === 'hello_world') {
-        const zoom = svgCanvas.getZoom();
-
-        // Get the actual coordinate by dividing by the zoom value
-        const x = opts.mouse_x / zoom;
-        const y = opts.mouse_y / zoom;
-
-        const text = 'Hello World!\n\nYou clicked here: ' +
-          x + ', ' + y;
-
-        // Show the text using the custom alert function
-        $.alert(text);
-      }
-    }
-  };
-});
+    };
+  }
+};

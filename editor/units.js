@@ -54,14 +54,14 @@ export const init = function (elementContainer) {
 
   // Get correct em/ex values by creating a temporary SVG.
   const svg = document.createElementNS(NS.SVG, 'svg');
-  document.body.appendChild(svg);
+  document.body.append(svg);
   const rect = document.createElementNS(NS.SVG, 'rect');
   rect.setAttribute('width', '1em');
   rect.setAttribute('height', '1ex');
   rect.setAttribute('x', '1in');
-  svg.appendChild(rect);
+  svg.append(rect);
   const bb = rect.getBBox();
-  document.body.removeChild(svg);
+  svg.remove();
 
   const inch = bb.x;
   typeMap_ = {

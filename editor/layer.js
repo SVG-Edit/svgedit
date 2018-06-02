@@ -39,11 +39,11 @@ class Layer {
       this.group_ = svgdoc.createElementNS(NS.SVG, 'g');
       const layerTitle = svgdoc.createElementNS(NS.SVG, 'title');
       layerTitle.textContent = name;
-      this.group_.appendChild(layerTitle);
+      this.group_.append(layerTitle);
       if (group) {
         $(group).after(this.group_);
       } else {
-        svgElem.appendChild(this.group_);
+        svgElem.append(this.group_);
       }
     }
 
@@ -134,7 +134,7 @@ class Layer {
    */
   appendChildren (children) {
     for (let i = 0; i < children.length; ++i) {
-      this.group_.appendChild(children[i]);
+      this.group_.append(children[i]);
     }
   }
 

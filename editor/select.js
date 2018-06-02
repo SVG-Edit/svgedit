@@ -120,7 +120,7 @@ export class Selector {
     const elem = this.selectedElement;
     this.hasGrips = show;
     if (elem && show) {
-      this.selectorGroup.appendChild(selectorManager_.selectorGripsGroup);
+      this.selectorGroup.append(selectorManager_.selectorGripsGroup);
       this.updateGripCursors(getRotationAngle(elem));
     }
   }
@@ -301,7 +301,7 @@ export class SelectorManager {
   initGroup () {
     // remove old selector parent group if it existed
     if (this.selectorParentGroup && this.selectorParentGroup.parentNode) {
-      this.selectorParentGroup.parentNode.removeChild(this.selectorParentGroup);
+      this.selectorParentGroup.remove();
     }
 
     // create parent selector group and add it to svgroot
@@ -313,8 +313,8 @@ export class SelectorManager {
       element: 'g',
       attr: {display: 'none'}
     });
-    this.selectorParentGroup.appendChild(this.selectorGripsGroup);
-    svgFactory_.svgRoot().appendChild(this.selectorParentGroup);
+    this.selectorParentGroup.append(this.selectorGripsGroup);
+    svgFactory_.svgRoot().append(this.selectorParentGroup);
 
     this.selectorMap = {};
     this.selectors = [];
@@ -403,8 +403,9 @@ export class SelectorManager {
     // Both Firefox and WebKit are too slow with this filter region (especially at higher
     // zoom levels) and Opera has at least one bug
     // if (!isOpera()) rect.setAttribute('filter', 'url(#canvashadow)');
-    canvasbg.appendChild(rect);
+    canvasbg.append(rect);
     svgFactory_.svgRoot().insertBefore(canvasbg, svgFactory_.svgContent());
+    // Ok to replace above with `svgFactory_.svgContent().before(canvasbg);`?
   }
 
   /**
@@ -432,7 +433,7 @@ export class SelectorManager {
     }
     // if we reached here, no available selectors were found, we create one
     this.selectors[N] = new Selector(N, elem, bbox);
-    this.selectorParentGroup.appendChild(this.selectors[N].selectorGroup);
+    this.selectorParentGroup.append(this.selectors[N].selectorGroup);
     this.selectorMap[elem.id] = this.selectors[N];
     return this.selectors[N];
   }

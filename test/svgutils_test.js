@@ -5,7 +5,7 @@ import * as utilities from '../editor/svgutils.js';
 import * as browser from '../editor/browser.js';
 
 // log function
-QUnit.log(function (details) {
+QUnit.log((details) => {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }
@@ -20,7 +20,7 @@ function mockCreateSVGElement (jsonMap) {
 }
 function mockAddSvgElementFromJson (json) {
   const elem = mockCreateSVGElement(json);
-  svgroot.appendChild(elem);
+  svgroot.append(elem);
   return elem;
 }
 const mockPathActions = {resetOrientation () {}};
@@ -61,7 +61,7 @@ const svgroot = mockCreateSVGElement({
   element: 'svg',
   attr: {id: 'svgroot'}
 });
-sandbox.appendChild(svgroot);
+sandbox.append(svgroot);
 
 QUnit.module('svgedit.utilities', {
   beforeEach () {
@@ -210,50 +210,50 @@ QUnit.test('Test getPathDFromElement', function (assert) {
     element: 'path',
     attr: {id: 'path', d: 'M0,1 Z'}
   });
-  svgroot.appendChild(elem);
+  svgroot.append(elem);
   assert.equal(getPathDFromElement(elem), 'M0,1 Z');
-  svgroot.removeChild(elem);
+  elem.remove();
 
   elem = mockCreateSVGElement({
     element: 'rect',
     attr: {id: 'rect', x: '0', y: '1', width: '5', height: '10'}
   });
-  svgroot.appendChild(elem);
+  svgroot.append(elem);
   assert.equal(getPathDFromElement(elem), 'M0,1 L5,1 L5,11 L0,11 L0,1 Z');
-  svgroot.removeChild(elem);
+  elem.remove();
 
   elem = mockCreateSVGElement({
     element: 'rect',
     attr: {id: 'roundrect', x: '0', y: '1', rx: '2', ry: '3', width: '10', height: '11'}
   });
-  svgroot.appendChild(elem);
+  svgroot.append(elem);
   const closeEnough = new RegExp('M0,4 C0,2.3[0-9]* 0.9[0-9]*,1 2,1 L8,1 C9.0[0-9]*,1 10,2.3[0-9]* 10,4 L10,9 C10,10.6[0-9]* 9.08675799086758,12 8,12 L2,12 C0.9[0-9]*,12 0,10.6[0-9]* 0,9 L0,4 Z');
   assert.equal(closeEnough.test(getPathDFromElement(elem)), true);
-  svgroot.removeChild(elem);
+  elem.remove();
 
   elem = mockCreateSVGElement({
     element: 'line',
     attr: {id: 'line', x1: '0', y1: '1', x2: '5', y2: '6'}
   });
-  svgroot.appendChild(elem);
+  svgroot.append(elem);
   assert.equal(getPathDFromElement(elem), 'M0,1L5,6');
-  svgroot.removeChild(elem);
+  elem.remove();
 
   elem = mockCreateSVGElement({
     element: 'circle',
     attr: {id: 'circle', cx: '10', cy: '11', rx: '5', ry: '10'}
   });
-  svgroot.appendChild(elem);
+  svgroot.append(elem);
   assert.equal(getPathDFromElement(elem), 'M10,11 C10,11 10,11 10,11 C10,11 10,11 10,11 C10,11 10,11 10,11 C10,11 10,11 10,11 Z');
-  svgroot.removeChild(elem);
+  elem.remove();
 
   elem = mockCreateSVGElement({
     element: 'polyline',
     attr: {id: 'polyline', points: '0,1 5,1 5,11 0,11'}
   });
-  svgroot.appendChild(elem);
+  svgroot.append(elem);
   assert.equal(getPathDFromElement(elem), 'M0,1 5,1 5,11 0,11');
-  svgroot.removeChild(elem);
+  elem.remove();
 
   assert.equal(getPathDFromElement({tagName: 'something unknown'}), undefined);
 });
@@ -268,28 +268,28 @@ QUnit.test('Test getBBoxOfElementAsPath', function (assert) {
     element: 'path',
     attr: {id: 'path', d: 'M0,1 Z'}
   });
-  svgroot.appendChild(elem);
+  svgroot.append(elem);
   let bbox = getBBoxOfElementAsPath(elem, mockAddSvgElementFromJson, mockPathActions);
   assert.deepEqual(bbox, {x: 0, y: 1, width: 0, height: 0});
-  svgroot.removeChild(elem);
+  elem.remove();
 
   elem = mockCreateSVGElement({
     element: 'rect',
     attr: {id: 'rect', x: '0', y: '1', width: '5', height: '10'}
   });
-  svgroot.appendChild(elem);
+  svgroot.append(elem);
   bbox = getBBoxOfElementAsPath(elem, mockAddSvgElementFromJson, mockPathActions);
   assert.deepEqual(bbox, {x: 0, y: 1, width: 5, height: 10});
-  svgroot.removeChild(elem);
+  elem.remove();
 
   elem = mockCreateSVGElement({
     element: 'line',
     attr: {id: 'line', x1: '0', y1: '1', x2: '5', y2: '6'}
   });
-  svgroot.appendChild(elem);
+  svgroot.append(elem);
   bbox = getBBoxOfElementAsPath(elem, mockAddSvgElementFromJson, mockPathActions);
   assert.deepEqual(bbox, {x: 0, y: 1, width: 5, height: 5});
-  svgroot.removeChild(elem);
+  elem.remove();
 
   // TODO: test element with transform. Need resetOrientation above to be working or mock it.
 });
@@ -307,7 +307,7 @@ QUnit.test('Test convertToPath rect', function (assert) {
     element: 'rect',
     attr: {id: 'rect', x: '0', y: '1', width: '5', height: '10'}
   });
-  svgroot.appendChild(elem);
+  svgroot.append(elem);
   const path = convertToPath(elem, attrs, mockAddSvgElementFromJson, mockPathActions, mockClearSelection, mockAddToSelection, mockHistory, mockAddCommandToHistory);
   assert.equal(path.getAttribute('d'), 'M0,1 L5,1 L5,11 L0,11 L0,1 Z');
   assert.equal(path.getAttribute('visibilituy'), null);
@@ -318,7 +318,7 @@ QUnit.test('Test convertToPath rect', function (assert) {
   assert.equal(mockCount.clearSelection, 1);
   assert.equal(mockCount.addToSelection, 1);
   assert.equal(mockCount.addCommandToHistory, 1);
-  svgroot.removeChild(path);
+  path.remove();
 });
 
 QUnit.test('Test convertToPath unknown element', function (assert) {

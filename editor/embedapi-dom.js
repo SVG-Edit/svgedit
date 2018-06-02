@@ -61,7 +61,7 @@ $('#save').click(saveSvg);
 $('#exportPNG').click(exportPNG);
 $('#exportPDF').click(exportPDF);
 
-const iframe = $('<iframe src="svg-editor-es.html?extensions=ext-xdomain-messaging.js' +
+const iframe = $('<iframe src="svg-editor.html?extensions=ext-xdomain-messaging.js' +
   (location.href.includes('?')
     ? location.href.replace(/\?(.*)$/, '&$1')
     : '') + // Append arguments to this file onto the iframe

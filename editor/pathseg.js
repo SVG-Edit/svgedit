@@ -465,7 +465,7 @@ if (!('SVGPathSegList' in window) || !('appendItem' in SVGPathSegList.prototype)
         return;
       }
       let hasPathMutations = false;
-      mutationRecords.forEach(function (record) {
+      mutationRecords.forEach((record) => {
         if (record.attributeName === 'd') {
           hasPathMutations = true;
         }
@@ -490,7 +490,7 @@ if (!('SVGPathSegList' in window) || !('appendItem' in SVGPathSegList.prototype)
     clear () {
       this._checkPathSynchronizedToList();
 
-      this._list.forEach(function (pathSeg) {
+      this._list.forEach((pathSeg) => {
         pathSeg._owningPathSegList = null;
       });
       this._list = [];
@@ -922,7 +922,7 @@ if (!('SVGPathSegList' in window) || !('appendItem' in SVGPathSegList.prototype)
   SVGPathSegList._pathSegArrayAsString = function (pathSegArray) {
     let string = '';
     let first = true;
-    pathSegArray.forEach(function (pathSeg) {
+    pathSegArray.forEach((pathSeg) => {
       if (first) {
         first = false;
         string += pathSeg._asPathString();

@@ -1,7 +1,6 @@
-import svgEditor from '../svg-editor.js';
-svgEditor.readLang({
-  lang: 'lang',
-  dir: 'dir',
+export default {
+  lang: 'th',
+  dir: 'ltr',
   common: {
     ok: 'OK',
     cancel: 'Cancel',
@@ -205,13 +204,6 @@ svgEditor.readLang({
     raphael_1: 'raphael_1',
     raphael_2: 'raphael_2'
   },
-  imagelib: {
-    select_lib: 'select_lib',
-    show_list: 'show_list',
-    import_single: 'import_single',
-    import_multi: 'import_multi',
-    open: 'open'
-  },
   notification: {
     invalidAttrValGiven: 'Invalid value given',
     noContentToFitTo: 'No content to fit to',
@@ -240,4 +232,4 @@ svgEditor.readLang({
     exportNoDashArray: 'Strokes will appear filled',
     exportNoText: 'Text may not appear as expected'
   }
-});
+};

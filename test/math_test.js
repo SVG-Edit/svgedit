@@ -3,7 +3,7 @@ import {NS} from '../editor/svgedit.js';
 import * as math from '../editor/math.js';
 
 // log function
-QUnit.log(function (details) {
+QUnit.log((details) => {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }

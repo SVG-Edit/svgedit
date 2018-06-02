@@ -3,7 +3,7 @@ import {NS} from '../editor/svgedit.js';
 import * as select from '../editor/select.js';
 
 // log function
-QUnit.log(function (details) {
+QUnit.log((details) => {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }
@@ -52,7 +52,7 @@ function setUp () {
       }
     })
   );
-  sandbox.appendChild(svgroot);
+  sandbox.append(svgroot);
 }
 
 /*
@@ -64,7 +64,7 @@ function setUpWithInit () {
 
 function tearDown () {
   while (sandbox.hasChildNodes()) {
-    sandbox.removeChild(sandbox.firstChild);
+    sandbox.firstChild.remove();
   }
 }
 

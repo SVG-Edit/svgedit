@@ -8,7 +8,7 @@ import * as history from '../editor/history.js';
 // TODO(codedread): Write tests for handling history events.
 
 // Mocked out methods.
-transformlist.changeRemoveElementFromListMap(function (elem) {});
+transformlist.changeRemoveElementFromListMap((elem) => {});
 
 utilities.mock({
   getHref (elem) { return '#foo'; },
@@ -17,7 +17,7 @@ utilities.mock({
 });
 
 // log function
-QUnit.log(function (details) {
+QUnit.log((details) => {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }

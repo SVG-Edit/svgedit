@@ -16,21 +16,23 @@
 `convertToGroup` use of `:data()` selector
 */
 
+// Todo: Obtain/adapt latest jsPDF to utilize ES Module for `jsPDF`/avoid global
+
 import './pathseg.js';
-import canvg from './canvg/canvg.js';
 import jqPluginSVG from './jquery-svg.js'; // Needed for SVG attribute setting and array form with `attr`
 
 import * as draw from './draw.js';
 import * as pathModule from './path.js';
 import {sanitizeSvg} from './sanitize.js';
 import {getReverseNS, NS} from './svgedit.js';
+import {importSetGlobal, importScript} from './external/dynamic-import-polyfill/importModule.js';
 import {
   text2xml, assignAttributes, cleanupElement, getElem, getUrlFromAttr,
   findDefs, getHref, setHref, getRefElem, getRotationAngle, getPathBBox,
   preventClickDefault, snapToGrid, walkTree, walkTreePost,
   getBBoxOfElementAsPath, convertToPath, toXml, encode64, decode64,
-  buildJSPDFCallback, dataURLToObjectURL, createObjectURL,
-  buildCanvgCallback, getVisibleElements, executeAfterLoads,
+  dataURLToObjectURL, createObjectURL,
+  getVisibleElements,
   init as utilsInit, getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible
 } from './svgutils.js';
 import * as history from './history.js';
@@ -128,7 +130,7 @@ const svgroot = svgdoc.importNode(
   ).documentElement,
   true
 );
-container.appendChild(svgroot);
+container.append(svgroot);
 
 // The actual element that represents the final output SVG element
 let svgcontent = svgdoc.createElementNS(NS.SVG, 'svg');
@@ -152,7 +154,7 @@ const clearSvgContentElement = canvas.clearSvgContentElement = function () {
 
   // TODO: make this string optional and set by the client
   const comment = svgdoc.createComment(' Created with SVG-edit - https://github.com/SVG-Edit/svgedit');
-  svgcontent.appendChild(comment);
+  svgcontent.append(comment);
 };
 clearSvgContentElement();
 
@@ -261,14 +263,14 @@ const addSvgElementFromJson = this.addSvgElementFromJson = function (data) {
   // if shape is a path but we need to create a rect/ellipse, then remove the path
   const currentLayer = getCurrentDrawing().getCurrentLayer();
   if (shape && data.element !== shape.tagName) {
-    currentLayer.removeChild(shape);
+    shape.remove();
     shape = null;
   }
   if (!shape) {
     const ns = data.namespace || NS.SVG;
     shape = svgdoc.createElementNS(ns, data.element);
     if (currentLayer) {
-      (currentGroup || currentLayer).appendChild(shape);
+      (currentGroup || currentLayer).append(shape);
     }
   }
   if (data.curStyles) {
@@ -290,8 +292,8 @@ const addSvgElementFromJson = this.addSvgElementFromJson = function (data) {
 
   // Children
   if (data.children) {
-    data.children.forEach(function (child) {
-      shape.appendChild(addSvgElementFromJson(child));
+    data.children.forEach((child) => {
+      shape.append(addSvgElementFromJson(child));
     });
   }
 
@@ -422,8 +424,9 @@ const undoMgr = canvas.undoMgr = new UndoManager({
         //  if (!elem.getAttribute('x') && !elem.getAttribute('y')) {
         //    const parent = elem.parentNode;
         //    const sib = elem.nextSibling;
-        //    parent.removeChild(elem);
+        //    elem.remove();
         //    parent.insertBefore(elem, sib);
+        //    // Ok to replace above with this? `sib.before(elem);`
         //  }
         // }
       }
@@ -709,7 +712,7 @@ const restoreRefElems = function (elem) {
       const id = getUrlFromAttr(val).substr(1);
       const ref = getElem(id);
       if (!ref) {
-        findDefs().appendChild(removedElements[id]);
+        findDefs().append(removedElements[id]);
         delete removedElements[id];
       }
     }
@@ -730,7 +733,7 @@ const restoreRefElems = function (elem) {
 //  svgthumb.setAttribute('width', '100');
 //  svgthumb.setAttribute('height', '100');
 //  setHref(svgthumb, '#svgcontent');
-//  svgroot.appendChild(svgthumb);
+//  svgroot.append(svgthumb);
 // }());
 
 // Object to contain image data for raster images that were found encodable
@@ -928,7 +931,7 @@ const getVisibleElementsAndBBoxes = this.getVisibleElementsAndBBoxes = function 
 */
 const groupSvgElem = this.groupSvgElem = function (elem) {
   const g = document.createElementNS(NS.SVG, 'g');
-  elem.parentNode.replaceChild(g, elem);
+  elem.replaceWith(g);
   $(g).append(elem).data('gsvg', elem)[0].id = getNextId();
 };
 
@@ -979,8 +982,8 @@ this.prepareSvg = function (newDoc) {
 const ffClone = function (elem) {
   if (!isGecko()) { return elem; }
   const clone = elem.cloneNode(true);
-  elem.parentNode.insertBefore(clone, elem);
-  elem.parentNode.removeChild(elem);
+  elem.before(clone);
+  elem.remove();
   selectorManager.releaseSelector(elem);
   selectedElements[0] = clone;
   selectorManager.requestSelector(clone).showGrips(true);
@@ -2244,7 +2247,7 @@ const mouseUp = function (evt) {
 
   if (!keep && element != null) {
     getCurrentDrawing().releaseId(getId());
-    element.parentNode.removeChild(element);
+    element.remove();
     element = null;
 
     t = evt.target;
@@ -2529,7 +2532,7 @@ function setSelection (start, end, skipInput) {
       opacity: 0.5,
       style: 'pointer-events:none'
     });
-    getElem('selectorParentGroup').appendChild(selblock);
+    getElem('selectorParentGroup').append(selblock);
   }
 
   const startbb = chardata[start];
@@ -2891,7 +2894,7 @@ const removeUnusedDefElems = this.removeUnusedDefElems = function () {
     if (!defelemUses.includes(id)) {
       // Not found, so remove (but remember)
       removedElements[id] = defelem;
-      defelem.parentNode.removeChild(defelem);
+      defelem.remove();
       numRemoved++;
     }
   }
@@ -2912,7 +2915,7 @@ this.svgCanvasToString = function () {
   // Keep SVG-Edit comment on top
   $.each(svgcontent.childNodes, function (i, node) {
     if (i && node.nodeType === 8 && node.data.includes('Created with')) {
-      svgcontent.insertBefore(node, svgcontent.firstChild);
+      svgcontent.firstChild.before(node);
     }
   });
 
@@ -3217,6 +3220,7 @@ function getIssues () {
   return {issues, issueCodes};
 }
 
+let canvg;
 /**
 * Generates a Data URL based on the current image, then calls "exported"
 * with an object including the string, image information, and any issues found
@@ -3231,44 +3235,46 @@ this.rasterExport = function (imgType, quality, exportWindowName, cb) {
   const {issues, issueCodes} = getIssues();
   const svg = this.svgCanvasToString();
 
-  return new Promise((resolve, reject) => {
-    buildCanvgCallback(function () {
-      const type = imgType || 'PNG';
-      if (!$('#export_canvas').length) {
-        $('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
-      }
-      const c = $('#export_canvas')[0];
-      c.width = canvas.contentW;
-      c.height = canvas.contentH;
+  return new Promise(async (resolve, reject) => {
+    if (!canvg) {
+      ({canvg} = await importSetGlobal(curConfig.canvgPath + 'canvg.js', {
+        global: 'canvg'
+      }));
+    }
+    const type = imgType || 'PNG';
+    if (!$('#export_canvas').length) {
+      $('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
+    }
+    const c = $('#export_canvas')[0];
+    c.width = canvas.contentW;
+    c.height = canvas.contentH;
 
-      canvg(c, svg, {renderCallback () {
-        const dataURLType = (type === 'ICO' ? 'BMP' : type).toLowerCase();
-        const datauri = quality
-          ? c.toDataURL('image/' + dataURLType, quality)
-          : c.toDataURL('image/' + dataURLType);
-        let bloburl;
-        function done () {
-          const obj = {
-            datauri, bloburl, svg, issues, issueCodes, type: imgType,
-            mimeType, quality, exportWindowName
-          };
-          call('exported', obj);
-          if (cb) {
-            cb(obj);
-          }
-          resolve(obj);
-        }
-        if (c.toBlob) {
-          c.toBlob(function (blob) {
-            bloburl = createObjectURL(blob);
-            done();
-          }, mimeType, quality);
-          return;
-        }
-        bloburl = dataURLToObjectURL(datauri);
+    await canvg(c, svg);
+    const dataURLType = (type === 'ICO' ? 'BMP' : type).toLowerCase();
+    const datauri = quality
+      ? c.toDataURL('image/' + dataURLType, quality)
+      : c.toDataURL('image/' + dataURLType);
+    let bloburl;
+    function done () {
+      const obj = {
+        datauri, bloburl, svg, issues, issueCodes, type: imgType,
+        mimeType, quality, exportWindowName
+      };
+      call('exported', obj);
+      if (cb) {
+        cb(obj);
+      }
+      resolve(obj);
+    }
+    if (c.toBlob) {
+      c.toBlob((blob) => {
+        bloburl = createObjectURL(blob);
         done();
-      }});
-    })();
+      }, mimeType, quality);
+      return;
+    }
+    bloburl = dataURLToObjectURL(datauri);
+    done();
   });
 };
 
@@ -3280,42 +3286,61 @@ this.rasterExport = function (imgType, quality, exportWindowName, cb) {
 */
 this.exportPDF = function (exportWindowName, outputType, cb) {
   const that = this;
-  return new Promise((resolve, reject) => {
-    buildJSPDFCallback(function () {
-      const res = getResolution();
-      const orientation = res.w > res.h ? 'landscape' : 'portrait';
-      const unit = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
-      const doc = jsPDF({
-        orientation,
-        unit,
-        format: [res.w, res.h]
-        // , compressPdf: true
-      }); // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
-      const docTitle = getDocumentTitle();
-      doc.setProperties({
-        title: docTitle /* ,
-        subject: '',
-        author: '',
-        keywords: '',
-        creator: '' */
-      });
-      const {issues, issueCodes} = getIssues();
-      const svg = that.svgCanvasToString();
-      doc.addSVG(svg, 0, 0);
+  return new Promise(async (resolve, reject) => {
+    if (!window.jsPDF) {
+      // Todo: Switch to `import()` when widely supported and available (also allow customization of path)
+      await importScript([
+        // We do not currently have these paths configurable as they are
+        //   currently global-only, so not Rolled-up
+        'jspdf/underscore-min.js',
+        'jspdf/jspdf.min.js'
+      ]);
 
-      // doc.output('save'); // Works to open in a new
-      //  window; todo: configure this and other export
-      //  options to optionally work in this manner as
-      //  opposed to opening a new tab
-      const obj = {svg, issues, issueCodes, exportWindowName};
-      const method = outputType || 'dataurlstring';
-      obj[method] = doc.output(method);
-      if (cb) {
-        cb(obj);
-      }
-      resolve(obj);
-      call('exportedPDF', obj);
-    })();
+      const modularVersion = !('svgEditor' in window) ||
+        !window.svgEditor ||
+        window.svgEditor.modules !== false;
+      // Todo: Switch to `import()` when widely supported and available (also allow customization of path)
+      await importScript(curConfig.jspdfPath + 'jspdf.plugin.svgToPdf.js', {
+        type: modularVersion
+          ? 'module'
+          : 'text/javascript'
+      });
+      // await importModule('jspdf/jspdf.plugin.svgToPdf.js');
+    }
+
+    const res = getResolution();
+    const orientation = res.w > res.h ? 'landscape' : 'portrait';
+    const unit = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
+    const doc = jsPDF({
+      orientation,
+      unit,
+      format: [res.w, res.h]
+      // , compressPdf: true
+    }); // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
+    const docTitle = getDocumentTitle();
+    doc.setProperties({
+      title: docTitle /* ,
+      subject: '',
+      author: '',
+      keywords: '',
+      creator: '' */
+    });
+    const {issues, issueCodes} = getIssues();
+    const svg = that.svgCanvasToString();
+    doc.addSVG(svg, 0, 0);
+
+    // doc.output('save'); // Works to open in a new
+    //  window; todo: configure this and other export
+    //  options to optionally work in this manner as
+    //  opposed to opening a new tab
+    const obj = {svg, issues, issueCodes, exportWindowName};
+    const method = outputType || 'dataurlstring';
+    obj[method] = doc.output(method);
+    if (cb) {
+      cb(obj);
+    }
+    resolve(obj);
+    call('exportedPDF', obj);
   });
 };
 
@@ -3591,7 +3616,7 @@ const convertToGroup = this.convertToGroup = function (elem) {
 
     let i;
     for (i = 0; i < childs.length; i++) {
-      g.appendChild(childs[i].cloneNode(true));
+      g.append(childs[i].cloneNode(true));
     }
 
     // Duplicate the gradients for Gecko, since they weren't included in the <symbol>
@@ -3622,7 +3647,7 @@ const convertToGroup = this.convertToGroup = function (elem) {
       if (!hasMore) {
         // remove symbol/svg element
         const {nextSibling} = elem;
-        parent.removeChild(elem);
+        elem.remove();
         batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
       }
       batchCmd.addSubCommand(new InsertElementCommand(g));
@@ -3699,7 +3724,7 @@ this.setSvgString = function (xmlString, preventUndo) {
       svgcontent = svgdoc.importNode(newDoc.documentElement, true);
     }
 
-    svgroot.appendChild(svgcontent);
+    svgroot.append(svgcontent);
     const content = $(svgcontent);
 
     canvas.current_drawing_ = new draw.Drawing(svgcontent, idprefix);
@@ -3825,7 +3850,7 @@ this.setSvgString = function (xmlString, preventUndo) {
     resetListMap();
     clearSelection();
     pathModule.clearData();
-    svgroot.appendChild(selectorManager.selectorParentGroup);
+    svgroot.append(selectorManager.selectorParentGroup);
 
     if (!preventUndo) addCommandToHistory(batchCmd);
     call('changed', [svgcontent]);
@@ -3921,7 +3946,7 @@ this.importSvgString = function (xmlString) {
 
       while (svg.firstChild) {
         const first = svg.firstChild;
-        symbol.appendChild(first);
+        symbol.append(first);
       }
       const attrs = svg.attributes;
       for (let i = 0; i < attrs.length; i++) {
@@ -3936,7 +3961,7 @@ this.importSvgString = function (xmlString) {
         xform: ts
       };
 
-      findDefs().appendChild(symbol);
+      findDefs().append(symbol);
       batchCmd.addSubCommand(new InsertElementCommand(symbol));
     }
 
@@ -3944,7 +3969,7 @@ this.importSvgString = function (xmlString) {
     useEl.id = getNextId();
     setHref(useEl, '#' + symbol.id);
 
-    (currentGroup || getCurrentDrawing().getCurrentLayer()).appendChild(useEl);
+    (currentGroup || getCurrentDrawing().getCurrentLayer()).append(useEl);
     batchCmd.addSubCommand(new InsertElementCommand(useEl));
     clearSelection();
 
@@ -4173,13 +4198,14 @@ this.setDocumentTitle = function (newtitle) {
   if (!docTitle) {
     docTitle = svgdoc.createElementNS(NS.SVG, 'title');
     svgcontent.insertBefore(docTitle, svgcontent.firstChild);
+    // svgcontent.firstChild.before(docTitle); // Ok to replace above with this?
   }
 
   if (newtitle.length) {
     docTitle.textContent = newtitle;
   } else {
     // No title given, so element is not necessary
-    docTitle.parentNode.removeChild(docTitle);
+    docTitle.remove();
   }
   batchCmd.addSubCommand(new ChangeElementCommand(docTitle, {'#text': oldTitle}));
   addCommandToHistory(batchCmd);
@@ -4776,8 +4802,8 @@ canvas.setBlur = function (val, complete) {
       }
     });
 
-    filter.appendChild(newblur);
-    findDefs().appendChild(filter);
+    filter.append(newblur);
+    findDefs().append(filter);
 
     batchCmd.addSubCommand(new InsertElementCommand(filter));
   }
@@ -5425,7 +5451,7 @@ this.groupSelectedElements = function (type, urlArg) {
 
     const oldNextSibling = elem.nextSibling;
     const oldParent = elem.parentNode;
-    g.appendChild(elem);
+    g.append(elem);
     batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
   }
   if (!batchCmd.isEmpty()) { addCommandToHistory(batchCmd); }
@@ -5489,7 +5515,7 @@ const pushGroupProperties = this.pushGroupProperties = function (g, undoable) {
         } else {
           // Clone the group's filter
           gfilter = drawing.copyElem(gfilter);
-          findDefs().appendChild(gfilter);
+          findDefs().append(gfilter);
         }
       } else {
         gfilter = getRefElem(elem.getAttribute('filter'));
@@ -5661,7 +5687,7 @@ this.ungroupSelectedElement = function () {
       if (elem.tagName === 'title') {
         const {nextSibling} = elem;
         batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, oldParent));
-        oldParent.removeChild(elem);
+        elem.remove();
         continue;
       }
 
@@ -5867,7 +5893,7 @@ this.cloneSelectedElements = function (x, y) {
   while (i--) {
     // clone each element and replace it within copiedElements
     elem = copiedElements[i] = drawing.copyElem(copiedElements[i]);
-    (currentGroup || drawing.getCurrentLayer()).appendChild(elem);
+    (currentGroup || drawing.getCurrentLayer()).append(elem);
     batchCmd.addSubCommand(new InsertElementCommand(elem));
   }
 
@@ -6051,9 +6077,9 @@ this.setBackground = function (color, url) {
       });
     }
     setHref(bgImg, url);
-    bg.appendChild(bgImg);
+    bg.append(bgImg);
   } else if (bgImg) {
-    bgImg.parentNode.removeChild(bgImg);
+    bgImg.remove();
   }
 };
 
@@ -6108,14 +6134,11 @@ this.getPrivateMethods = function () {
     addSvgElementFromJson,
     assignAttributes,
     BatchCommand,
-    buildCanvgCallback,
     call,
-    canvg,
     ChangeElementCommand,
     copyElem (elem) { return getCurrentDrawing().copyElem(elem); },
     decode64,
     encode64,
-    executeAfterLoads,
     ffClone,
     findDefs,
     findDuplicateGradient,

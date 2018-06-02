@@ -15,7 +15,7 @@ sinon.test = sinonTest(sinon, {
 sinonQunit({sinon, QUnit});
 
 // log function
-QUnit.log(function (details) {
+QUnit.log((details) => {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }
@@ -39,7 +39,7 @@ const PATH_ATTR = {
 const svg = document.createElementNS(NS.SVG, 'svg');
 const sandbox = document.getElementById('sandbox');
 // Firefox throws exception in getBBox() when svg is not attached to DOM.
-sandbox.appendChild(svg);
+sandbox.append(svg);
 
 // Set up <svg> with nonce.
 const svgN = document.createElementNS(NS.SVG, 'svg');
@@ -76,57 +76,59 @@ function createSVGElement (jsonMap) {
 const setupSvgWith3Layers = function (svgElem) {
   const layer1 = document.createElementNS(NS.SVG, 'g');
   const layer1Title = document.createElementNS(NS.SVG, 'title');
-  layer1Title.appendChild(document.createTextNode(LAYER1));
-  layer1.appendChild(layer1Title);
-  svgElem.appendChild(layer1);
+  layer1Title.append(document.createTextNode(LAYER1));
+  layer1.append(layer1Title);
+  svgElem.append(layer1);
 
   const layer2 = document.createElementNS(NS.SVG, 'g');
   const layer2Title = document.createElementNS(NS.SVG, 'title');
-  layer2Title.appendChild(document.createTextNode(LAYER2));
-  layer2.appendChild(layer2Title);
-  svgElem.appendChild(layer2);
+  layer2Title.append(document.createTextNode(LAYER2));
+  layer2.append(layer2Title);
+  svgElem.append(layer2);
 
   const layer3 = document.createElementNS(NS.SVG, 'g');
   const layer3Title = document.createElementNS(NS.SVG, 'title');
-  layer3Title.appendChild(document.createTextNode(LAYER3));
-  layer3.appendChild(layer3Title);
-  svgElem.appendChild(layer3);
+  layer3Title.append(document.createTextNode(LAYER3));
+  layer3.append(layer3Title);
+  svgElem.append(layer3);
 
   return [layer1, layer2, layer3];
 };
 
 const createSomeElementsInGroup = function (group) {
-  group.appendChild(createSVGElement({
-    element: 'path',
-    attr: PATH_ATTR
-  }));
-  // group.appendChild(createSVGElement({
-  //    element: 'path',
-  //    attr: {d: 'M0,1L2,3'}
-  //  }));
-  group.appendChild(createSVGElement({
-    element: 'rect',
-    attr: {x: '0', y: '1', width: '5', height: '10'}
-  }));
-  group.appendChild(createSVGElement({
-    element: 'line',
-    attr: {x1: '0', y1: '1', x2: '5', y2: '6'}
-  }));
+  group.append(
+    createSVGElement({
+      element: 'path',
+      attr: PATH_ATTR
+    }),
+    // createSVGElement({
+    //    element: 'path',
+    //    attr: {d: 'M0,1L2,3'}
+    // }),
+    createSVGElement({
+      element: 'rect',
+      attr: {x: '0', y: '1', width: '5', height: '10'}
+    }),
+    createSVGElement({
+      element: 'line',
+      attr: {x1: '0', y1: '1', x2: '5', y2: '6'}
+    })
+  );
 
   const g = createSVGElement({
     element: 'g',
     attr: {}
   });
-  g.appendChild(createSVGElement({
+  g.append(createSVGElement({
     element: 'rect',
     attr: {x: '0', y: '1', width: '5', height: '10'}
   }));
-  group.appendChild(g);
+  group.append(g);
   return 4;
 };
 
 const cleanupSvg = function (svgElem) {
-  while (svgElem.firstChild) { svgElem.removeChild(svgElem.firstChild); }
+  while (svgElem.firstChild) { svgElem.firstChild.remove(); }
 };
 
 QUnit.module('svgedit.draw.Drawing', {
@@ -190,7 +192,7 @@ QUnit.test('Test getId() and getNextId() without nonce', function (assert) {
 
   const elem2 = document.createElementNS(NS.SVG, 'circle');
   elem2.id = 'svg_2';
-  svg.appendChild(elem2);
+  svg.append(elem2);
 
   const doc = new draw.Drawing(svg);
 
@@ -235,7 +237,7 @@ QUnit.test('Test getId() and getNextId() with nonce', function (assert) {
 
   const elem2 = document.createElementNS(NS.SVG, 'circle');
   elem2.id = prefix + '_2';
-  svgN.appendChild(elem2);
+  svgN.append(elem2);
 
   const doc = new draw.Drawing(svgN);
 
@@ -382,8 +384,7 @@ QUnit.test('Test identifyLayers() with some layers and orphans', function (asser
 
   const orphan1 = document.createElementNS(NS.SVG, 'rect');
   const orphan2 = document.createElementNS(NS.SVG, 'rect');
-  svg.appendChild(orphan1);
-  svg.appendChild(orphan2);
+  svg.append(orphan1, orphan2);
 
   assert.equal(svg.childNodes.length, 5);
 

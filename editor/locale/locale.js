@@ -9,14 +9,15 @@
  *
  */
 
+import {importSetGlobalDefault} from '../external/dynamic-import-polyfill/importModule.js';
+
 const $ = jQuery;
 
 let langParam;
 function setStrings (type, obj, ids) {
   // Root element to look for element from
   const parent = $('#svg_editor').parent();
-  for (let sel in obj) {
-    const val = obj[sel];
+  Object.entries(obj).forEach(([sel, val]) => {
     if (!val) { console.log(sel); }
 
     if (ids) { sel = '#' + sel; }
@@ -41,7 +42,7 @@ function setStrings (type, obj, ids) {
     } else {
       console.log('Missing: ' + sel);
     }
-  }
+  });
 }
 
 let editor_;
@@ -122,7 +123,6 @@ export const readLang = function (langData) {
     tool_docprops: tools.docprops,
     tool_export: tools.export_img,
     tool_import: tools.import_doc,
-    tool_imagelib: tools.imagelib,
     tool_open: tools.open_doc,
     tool_save: tools.save_doc,
 
@@ -143,7 +143,7 @@ export const readLang = function (langData) {
   }
 
   // TODO: Find way to make this run after shapelib ext has loaded
-  setTimeout(function () {
+  setTimeout(() => {
     setStrings('content', cats);
   }, 2000);
 
@@ -268,7 +268,7 @@ export const readLang = function (langData) {
   editor_.setLang(langParam, langData);
 };
 
-export const putLocale = function (givenParam, goodLangs, conf) {
+export const putLocale = async function (givenParam, goodLangs, conf) {
   if (givenParam) {
     langParam = givenParam;
   } else {
@@ -295,19 +295,12 @@ export const putLocale = function (givenParam, goodLangs, conf) {
     // if (langParam.startsWith('en')) {return;}
   }
 
-  // $.getScript(url, function (d) {
-  // Fails locally in Chrome 5+
-  // if (!d) {
-  const s = document.createElement('script');
-  const modularVersion = !('svgEditor' in window) ||
-    !window.svgEditor ||
-    window.svgEditor.modules !== false;
   const url = conf.langPath + 'lang.' + langParam + '.js';
-  if (modularVersion) {
-    s.type = 'module'; // Make this the default when widely supported
-  }
-  s.src = url;
-  document.querySelector('head').appendChild(s);
-  // }
-  // });
+  return readLang(
+    // Todo: Replace this with `return import(url);` when
+    //   `import()` widely supported
+    await importSetGlobalDefault(url, {
+      global: 'svgEditorLang_' + langParam.replace(/-/g, '_')
+    })
+  );
 };

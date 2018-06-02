@@ -2024,42 +2024,41 @@
   var supportsGoodTextCharPos_ = function () {
     var svgroot = document.createElementNS(NS.SVG, 'svg');
     var svgcontent = document.createElementNS(NS.SVG, 'svg');
-    document.documentElement.appendChild(svgroot);
+    document.documentElement.append(svgroot);
     svgcontent.setAttribute('x', 5);
-    svgroot.appendChild(svgcontent);
+    svgroot.append(svgcontent);
     var text = document.createElementNS(NS.SVG, 'text');
     text.textContent = 'a';
-    svgcontent.appendChild(text);
+    svgcontent.append(text);
     var pos = text.getStartPositionOfChar(0).x;
-    document.documentElement.removeChild(svgroot);
+    svgroot.remove();
     return pos === 0;
   }();
 
   var supportsPathBBox_ = function () {
     var svgcontent = document.createElementNS(NS.SVG, 'svg');
-    document.documentElement.appendChild(svgcontent);
+    document.documentElement.append(svgcontent);
     var path = document.createElementNS(NS.SVG, 'path');
     path.setAttribute('d', 'M0,0 C0,0 10,10 10,0');
-    svgcontent.appendChild(path);
+    svgcontent.append(path);
     var bbox = path.getBBox();
-    document.documentElement.removeChild(svgcontent);
+    svgcontent.remove();
     return bbox.height > 4 && bbox.height < 5;
   }();
 
   // Support for correct bbox sizing on groups with horizontal/vertical lines
   var supportsHVLineContainerBBox_ = function () {
     var svgcontent = document.createElementNS(NS.SVG, 'svg');
-    document.documentElement.appendChild(svgcontent);
+    document.documentElement.append(svgcontent);
     var path = document.createElementNS(NS.SVG, 'path');
     path.setAttribute('d', 'M0,0 10,0');
     var path2 = document.createElementNS(NS.SVG, 'path');
     path2.setAttribute('d', 'M5,0 15,0');
     var g = document.createElementNS(NS.SVG, 'g');
-    g.appendChild(path);
-    g.appendChild(path2);
-    svgcontent.appendChild(g);
+    g.append(path, path2);
+    svgcontent.append(g);
     var bbox = g.getBBox();
-    document.documentElement.removeChild(svgcontent);
+    svgcontent.remove();
     // Webkit gives 0, FF gives 10, Opera (correctly) gives 15
     return bbox.width === 15;
   }();

@@ -50,7 +50,7 @@ const removeAttributes = function (node, attributes) {
     }
   });
 
-  toRemove.forEach(function (a) {
+  toRemove.forEach((a) => {
     node.removeAttribute(a.name);
   });
 };
@@ -204,7 +204,7 @@ const svgElementToPdf = function (element, pdf, options) {
     default:
       if (remove) {
         console.log("can't translate to pdf:", node);
-        node.parentNode.removeChild(node);
+        node.remove();
       }
     }
   });

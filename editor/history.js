@@ -222,7 +222,7 @@ export class RemoveElementCommand {
         console.log('Error: reference element was lost');
       }
     }
-    this.parent.insertBefore(this.elem, this.nextSibling);
+    this.parent.insertBefore(this.elem, this.nextSibling); // Don't use `before` or `prepend` as `this.nextSibling` may be `null`
 
     if (handler) {
       handler.handleHistoryEvent(HistoryEventTypes.AFTER_UNAPPLY, this);

@@ -223,7 +223,7 @@ export const addCtrlGrip = function (id) {
     atts['xlink:title'] = uiStrings.pathCtrlPtTooltip;
   }
   assignAttributes(pointGrip, atts);
-  getGripContainer().appendChild(pointGrip);
+  getGripContainer().append(pointGrip);
   return pointGrip;
 };
 
@@ -238,7 +238,7 @@ export const getCtrlLine = function (id) {
     'stroke-width': 1,
     style: 'pointer-events:none'
   });
-  getGripContainer().appendChild(ctrlLine);
+  getGripContainer().append(ctrlLine);
   return ctrlLine;
 };
 
@@ -344,7 +344,7 @@ export const getSegSelector = function (seg, update) {
       style: 'pointer-events:none',
       d: 'M0,0 0,0'
     });
-    pointGripContainer.appendChild(segLine);
+    pointGripContainer.append(segLine);
   }
 
   if (update) {
@@ -1082,7 +1082,7 @@ export const reorientGrads = function (elem, m) {
         $(newgrad).attr(gCoords);
 
         newgrad.id = editorContext_.getNextId();
-        findDefs().appendChild(newgrad);
+        findDefs().append(newgrad);
         elem.setAttribute(type, 'url(#' + newgrad.id + ')');
       }
     }

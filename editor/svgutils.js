@@ -1,4 +1,4 @@
-/* globals jQuery, ActiveXObject */
+/* globals jQuery */
 /**
  * Package: svgedit.utilities
  *
@@ -9,9 +9,7 @@
  */
 
 import './pathseg.js';
-import RGBColor from './canvg/rgbcolor.js';
 import jqPluginSVG from './jquery-svg.js'; // Needed for SVG attribute setting and array form with `attr`
-import {importScript, importModule} from './external/dynamic-import-polyfill/importModule.js';
 import {NS} from './svgedit.js';
 import {getTransformList} from './svgtransformlist.js';
 import {setUnitAttr, getTypeMap} from './units.js';
@@ -224,7 +222,7 @@ export const text2xml = function (sXML) {
 
   let out, dXML;
   try {
-    dXML = (window.DOMParser) ? new DOMParser() : new ActiveXObject('Microsoft.XMLDOM');
+    dXML = (window.DOMParser) ? new DOMParser() : new window.ActiveXObject('Microsoft.XMLDOM');
     dXML.async = false;
   } catch (e) {
     throw new Error('XML Parser could not be instantiated');
@@ -339,8 +337,9 @@ export const findDefs = function () {
     if (svgElement.firstChild) {
       // first child is a comment, so call nextSibling
       svgElement.insertBefore(defs, svgElement.firstChild.nextSibling);
+      // svgElement.firstChild.nextSibling.before(defs); // Not safe
     } else {
-      svgElement.appendChild(defs);
+      svgElement.append(defs);
     }
   }
   return defs;
@@ -696,14 +695,17 @@ export const getBBoxOfElementAsPath = function (elem, addSvgElementFromJson, pat
 
   const parent = elem.parentNode;
   if (elem.nextSibling) {
-    parent.insertBefore(path, elem);
+    elem.before(path);
   } else {
-    parent.appendChild(path);
+    parent.append(path);
   }
 
   const d = getPathDFromElement(elem);
-  if (d) path.setAttribute('d', d);
-  else path.parentNode.removeChild(path);
+  if (d) {
+    path.setAttribute('d', d);
+  } else {
+    path.remove();
+  }
 
   // Get the correct BBox of the new path, then discard it
   pathActions.resetOrientation(path);
@@ -713,7 +715,7 @@ export const getBBoxOfElementAsPath = function (elem, addSvgElementFromJson, pat
   } catch (e) {
     // Firefox fails
   }
-  path.parentNode.removeChild(path);
+  path.remove();
   return bb;
 };
 
@@ -748,9 +750,9 @@ export const convertToPath = function (elem, attrs, addSvgElementFromJson, pathA
   const {id} = elem;
   const parent = elem.parentNode;
   if (elem.nextSibling) {
-    parent.insertBefore(path, elem);
+    elem.before(path);
   } else {
-    parent.appendChild(path);
+    parent.append(path);
   }
 
   const d = getPathDFromElement(elem);
@@ -772,7 +774,7 @@ export const convertToPath = function (elem, attrs, addSvgElementFromJson, pathA
     batchCmd.addSubCommand(new history.InsertElementCommand(path));
 
     clearSelection();
-    elem.parentNode.removeChild(elem);
+    elem.remove();
     path.setAttribute('id', id);
     path.removeAttribute('visibility');
     addToSelection([path], true);
@@ -782,7 +784,7 @@ export const convertToPath = function (elem, attrs, addSvgElementFromJson, pathA
     return path;
   } else {
     // the elem.tagName was not recognized, so no "d" attribute. Remove it, so we've haven't changed anything.
-    path.parentNode.removeChild(path);
+    path.remove();
     return null;
   }
 };
@@ -867,10 +869,10 @@ export const getBBoxWithTransform = function (elem, addSvgElementFromJson, pathA
       // const clone = elem.cloneNode(true);
       // const g = document.createElementNS(NS.SVG, 'g');
       // const parent = elem.parentNode;
-      // parent.appendChild(g);
-      // g.appendChild(clone);
+      // parent.append(g);
+      // g.append(clone);
       // const bb2 = bboxToObj(g.getBBox());
-      // parent.removeChild(g);
+      // g.remove();
     }
   }
   return bb;
@@ -1110,64 +1112,6 @@ export const regexEscape = function (str, delimiter) {
   return String(str).replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]', 'g'), '\\$&');
 };
 
-const loadedScripts = {};
-/**
-* @param {string} name A global which can be used to determine if the script is already loaded
-* @param {array} scripts An array of scripts to preload (in order)
-* @param {function} cb The callback to execute upon load.
-* @param {object} options Object with `globals` boolean property (if it is not a module)
-*/
-export const executeAfterLoads = function (name, scripts, cb, options = {globals: false}) {
-  return function () {
-    const args = arguments;
-    function endCallback () {
-      cb.apply(null, args);
-    }
-    const modularVersion = !('svgEditor' in window) ||
-      !window.svgEditor ||
-      window.svgEditor.modules !== false;
-    if (loadedScripts[name] === true) {
-      endCallback();
-    } else if (Array.isArray(loadedScripts[name])) { // Still loading
-      loadedScripts[name].push(endCallback);
-    } else {
-      loadedScripts[name] = [];
-      const importer = modularVersion && !options.globals
-        ? importModule
-        : importScript;
-      scripts.reduce(function (oldProm, script) {
-        // Todo: Once `import()` and modules widely supported, switch to it
-        return oldProm.then(() => importer(script));
-      }, Promise.resolve()).then(function () {
-        endCallback();
-        loadedScripts[name].forEach((cb) => {
-          cb();
-        });
-        loadedScripts[name] = true;
-      })();
-    }
-  };
-};
-
-export const buildCanvgCallback = function (callCanvg) {
-  return executeAfterLoads('canvg', ['canvg/rgbcolor.js', 'canvg/canvg.js'], callCanvg);
-};
-
-export const buildJSPDFCallback = function (callJSPDF) {
-  return executeAfterLoads('RGBColor', ['canvg/rgbcolor.js'], () => {
-    const arr = [];
-    if (!RGBColor || RGBColor.ok === undefined) { // It's not our RGBColor, so we'll need to load it
-      arr.push('canvg/rgbcolor.js');
-    }
-    executeAfterLoads('jsPDF', [
-      ...arr,
-      'jspdf/underscore-min.js',
-      'jspdf/jspdf.min.js',
-      'jspdf/jspdf.plugin.svgToPdf.js'
-    ], callJSPDF, {globals: true})();
-  });
-};
-
 /**
  * Prevents default browser click behaviour on the given element
  * @param img - The DOM element to prevent the click on
@@ -1205,7 +1149,7 @@ export const copyElem = function (el, getNextId) {
   $.each(el.childNodes, function (i, child) {
     switch (child.nodeType) {
     case 1: // element node
-      newEl.appendChild(copyElem(child, getNextId));
+      newEl.append(copyElem(child, getNextId));
       break;
     case 3: // text node
       newEl.textContent = child.nodeValue;

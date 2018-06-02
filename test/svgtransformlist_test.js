@@ -12,7 +12,7 @@ expectOutOfBoundsExceptionPlugin(QUnit);
 disableSupportsNativeTransformLists();
 
 // log function
-QUnit.log(function (details) {
+QUnit.log((details) => {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }
@@ -32,7 +32,7 @@ function setUp () {
 function tearDown () {
   transformlist.resetListMap();
   while (svgroot.hasChildNodes()) {
-    svgroot.removeChild(svgroot.firstChild);
+    svgroot.firstChild.remove();
   }
 }
 

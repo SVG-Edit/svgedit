@@ -1,9 +1,9 @@
-(function () {
+var svgEditorLang_it = (function () {
   'use strict';
 
-  svgEditor.readLang({
-    lang: 'lang',
-    dir: 'dir',
+  var lang_it = {
+    lang: 'it',
+    dir: 'ltr',
     common: {
       ok: 'OK',
       cancel: 'Cancel',
@@ -207,13 +207,6 @@
       raphael_1: 'raphael_1',
       raphael_2: 'raphael_2'
     },
-    imagelib: {
-      select_lib: 'select_lib',
-      show_list: 'show_list',
-      import_single: 'import_single',
-      import_multi: 'import_multi',
-      open: 'open'
-    },
     notification: {
       invalidAttrValGiven: 'Invalid value given',
       noContentToFitTo: "Non c'è contenuto cui adeguarsi",
@@ -242,6 +235,8 @@
       exportNoDashArray: 'Strokes will appear filled',
       exportNoText: 'Text may not appear as expected'
     }
-  });
+  };
+
+  return lang_it;
 
 }());

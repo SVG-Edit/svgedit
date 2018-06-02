@@ -34,7 +34,6 @@ when handling returns: the callback notation is used instead.
 const blah = new EmbeddedSVGEdit(window.frames.svgedit);
 blah.clearSelection('woot', 'blah', 1337, [1, 2, 3, 4, 5, 'moo'], -42, {a: 'tree',b:6, c: 9})(function(){console.log('GET DATA',arguments)})
 */
-
 let cbid = 0;
 
 function getCallbackSetter (d) {
@@ -98,6 +97,7 @@ function getMessageListener (t) {
 
 class EmbeddedSVGEdit {
   constructor (frame, allowedOrigins) {
+    const t = this;
     this.allowedOrigins = allowedOrigins || [];
     // Initialize communication
     this.frame = frame;
@@ -280,6 +280,16 @@ class EmbeddedSVGEdit {
 
     // Older IE may need a polyfill for addEventListener, but so it would for SVG
     window.addEventListener('message', getMessageListener(this), false);
+    window.addEventListener('keydown', (e) => {
+      const {key, keyCode, charCode, which} = e;
+      if (e.key === 'Backspace') {
+        e.preventDefault();
+        const keyboardEvent = new KeyboardEvent(e.type, {
+          key, keyCode, charCode, which
+        });
+        t.frame.contentDocument.dispatchEvent(keyboardEvent);
+      }
+    });
   }
 
   send (name, args, callback) {
@@ -310,7 +320,7 @@ class EmbeddedSVGEdit {
           //  callbacks). We might be able to address these shortcomings; see
           //  the todo elsewhere in this file.
           const message = {id: cbid},
-            {svgCanvas} = t.frame.contentWindow;
+            {svgEditor: {canvas: svgCanvas}} = t.frame.contentWindow;
           try {
             message.result = svgCanvas[name].apply(svgCanvas, args);
           } catch (err) {

@@ -80,7 +80,7 @@ export const remapElement = function (selected, changes, m) {
           newgrad.setAttribute('y2', -(y2 - 1));
         }
         newgrad.id = editorContext_.getDrawing().getNextId();
-        findDefs().appendChild(newgrad);
+        findDefs().append(newgrad);
         selected.setAttribute(type, 'url(#' + newgrad.id + ')');
       }
 

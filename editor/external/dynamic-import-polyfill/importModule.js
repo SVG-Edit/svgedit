@@ -1,23 +1,52 @@
 // MIT License
 // From: https://github.com/uupaa/dynamic-import-polyfill/blob/master/importModule.js
 
-function toAbsoluteURL(url) {
-  const a = document.createElement("a");
-  a.setAttribute("href", url);    // <a href="hoge.html">
+function toAbsoluteURL (url) {
+  const a = document.createElement('a');
+  a.setAttribute('href', url); // <a href="hoge.html">
   return a.cloneNode(false).href; // -> "http://example.com/hoge.html"
 }
 
-// My own addition
-export function importScript(url) {
+function addScriptAtts (script, atts) {
+  ['id', 'class', 'type'].forEach((prop) => {
+    if (prop in atts) {
+      script[prop] = atts[prop];
+    }
+  });
+}
+
+// Additions by Brett
+export async function importSetGlobalDefault (url, config) {
+  return importSetGlobal(url, {...config, returnDefault: true});
+}
+export async function importSetGlobal (url, {global, returnDefault}) {
+  // Todo: Replace calls to this function with `import()` when supported
+  const modularVersion = !('svgEditor' in window) ||
+    !window.svgEditor ||
+    window.svgEditor.modules !== false;
+  if (modularVersion) {
+    return importModule(url, undefined, {returnDefault});
+  }
+  await importScript(url);
+  return window[global];
+}
+// Addition by Brett
+export function importScript (url, atts = {}) {
+  if (Array.isArray(url)) {
+    return Promise.all(url.map((u) => {
+      return importScript(u, atts);
+    }));
+  }
   return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
+    const script = document.createElement('script');
     const destructor = () => {
       script.onerror = null;
       script.onload = null;
       script.remove();
-      script.src = "";
+      script.src = '';
     };
-    script.defer = "defer";
+    script.defer = 'defer';
+    addScriptAtts(script, atts);
     script.onerror = () => {
       reject(new Error(`Failed to import: ${url}`));
       destructor();
@@ -28,24 +57,30 @@ export function importScript(url) {
     };
     script.src = url;
 
-    document.head.appendChild(script);
+    document.head.append(script);
   });
 }
 
-export function importModule(url) {
+export function importModule (url, atts = {}, {returnDefault = false} = {}) {
+  if (Array.isArray(url)) {
+    return Promise.all(url.map((u) => {
+      return importModule(u, atts);
+    }));
+  }
   return new Promise((resolve, reject) => {
-    const vector = "$importModule$" + Math.random().toString(32).slice(2);
-    const script = document.createElement("script");
+    const vector = '$importModule$' + Math.random().toString(32).slice(2);
+    const script = document.createElement('script');
     const destructor = () => {
       delete window[vector];
       script.onerror = null;
       script.onload = null;
       script.remove();
       URL.revokeObjectURL(script.src);
-      script.src = "";
+      script.src = '';
     };
-    script.defer = "defer";
-    script.type = "module";
+    addScriptAtts(script, atts);
+    script.defer = 'defer';
+    script.type = 'module';
     script.onerror = () => {
       reject(new Error(`Failed to import: ${url}`));
       destructor();
@@ -55,11 +90,11 @@ export function importModule(url) {
       destructor();
     };
     const absURL = toAbsoluteURL(url);
-    const loader = `import * as m from "${absURL}"; window.${vector} = m;`; // export Module
-    const blob = new Blob([loader], { type: "text/javascript" });
+    const loader = `import * as m from '${absURL.replace(/'/g, "\\'")}'; window.${vector} = ${returnDefault ? 'm.default || ' : ''}m;`; // export Module
+    const blob = new Blob([loader], { type: 'text/javascript' });
     script.src = URL.createObjectURL(blob);
 
-    document.head.appendChild(script);
+    document.head.append(script);
   });
 }
 

@@ -7,10 +7,12 @@
  * Copyright(c) 2010 Alexis Deveria
  *
  */
-import svgEditor from '../svg-editor.js';
+import {canvg} from '../canvg/canvg.js';
 
-svgEditor.addExtension('server_opensave', {
-  callback ({canvg, decode64, encode64, buildCanvgCallback}) {
+export default {
+  name: 'server_opensave',
+  callback ({decode64, encode64}) {
+    const svgEditor = this;
     const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
     function getFileNameFromTitle () {
@@ -76,7 +78,7 @@ svgEditor.addExtension('server_opensave', {
           .submit().remove();
       },
       // Todo: Integrate this extension with a new built-in exportWindowType, "download"
-      exportImage (win, data) {
+      async exportImage (win, data) {
         const {issues, mimeType, quality} = data;
 
         if (!$('#export_canvas').length) {
@@ -86,40 +88,37 @@ svgEditor.addExtension('server_opensave', {
 
         c.width = svgCanvas.contentW;
         c.height = svgCanvas.contentH;
-        buildCanvgCallback(function () {
-          canvg(c, data.svg, {renderCallback () {
-            const datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType);
-            // {uiStrings} = svgEditor;
+        await canvg(c, data.svg);
+        const datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType);
+        // {uiStrings} = svgEditor;
 
-            // Check if there are issues
-            let pre, note = '';
-            if (issues.length) {
-              pre = '\n \u2022 ';
-              note += ('\n\n' + pre + issues.join(pre));
-            }
+        // Check if there are issues
+        let pre, note = '';
+        if (issues.length) {
+          pre = '\n \u2022 ';
+          note += ('\n\n' + pre + issues.join(pre));
+        }
 
-            if (note.length) {
-              alert(note);
-            }
+        if (note.length) {
+          alert(note);
+        }
 
-            const filename = getFileNameFromTitle();
-            const suffix = '.' + data.type.toLowerCase();
+        const filename = getFileNameFromTitle();
+        const suffix = '.' + data.type.toLowerCase();
 
-            if (clientDownloadSupport(filename, suffix, datauri)) {
-              return;
-            }
+        if (clientDownloadSupport(filename, suffix, datauri)) {
+          return;
+        }
 
-            $('<form>').attr({
-              method: 'post',
-              action: saveImgAction,
-              target: 'output_frame'
-            }).append('<input type="hidden" name="output_img" value="' + datauri + '">')
-              .append('<input type="hidden" name="mime" value="' + mimeType + '">')
-              .append('<input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">')
-              .appendTo('body')
-              .submit().remove();
-          }});
-        })();
+        $('<form>').attr({
+          method: 'post',
+          action: saveImgAction,
+          target: 'output_frame'
+        }).append('<input type="hidden" name="output_img" value="' + datauri + '">')
+          .append('<input type="hidden" name="mime" value="' + mimeType + '">')
+          .append('<input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">')
+          .appendTo('body')
+          .submit().remove();
       }
     });
 
@@ -222,4 +221,4 @@ svgEditor.addExtension('server_opensave', {
     $('#tool_import').show().prepend(importSvgForm);
     $('#tool_image').prepend(importImgForm);
   }
-});
+};

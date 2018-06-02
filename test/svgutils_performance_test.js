@@ -6,7 +6,7 @@ import * as transformlist from '../editor/svgtransformlist.js';
 import * as math from '../editor/math.js';
 
 // log function
-QUnit.log(function (details) {
+QUnit.log((details) => {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }
@@ -23,7 +23,7 @@ function mockCreateSVGElement (jsonMap) {
 }
 function mockAddSvgElementFromJson (json) {
   const elem = mockCreateSVGElement(json);
-  currentLayer.appendChild(elem);
+  currentLayer.append(elem);
   return elem;
 }
 
@@ -38,7 +38,7 @@ function fillDocumentByCloningElement (elem, count) {
     // Make sure you set a unique ID like a real document.
     clone.setAttribute('id', elemId + index);
     const parent = elem.parentNode;
-    parent.appendChild(clone);
+    parent.append(clone);
   }
 }
 

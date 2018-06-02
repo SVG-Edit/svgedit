@@ -318,7 +318,7 @@ export default function ($) {
           // With cloning, causes issue in Opera/Win/Non-EN
           if (!isOpera) svg = svg.cloneNode(true);
 
-          svgroot.appendChild(svg);
+          svgroot.append(svg);
 
           let icon;
           if (toImage) {

@@ -1,9 +1,9 @@
-(function () {
+var svgEditorLang_en = (function () {
   'use strict';
 
-  svgEditor.readLang({
-    lang: 'lang',
-    dir: 'dir',
+  var lang_en = {
+    lang: 'en',
+    dir: 'ltr',
     common: {
       ok: 'OK',
       cancel: 'Cancel',
@@ -207,13 +207,6 @@
       raphael_1: 'raphaeljs.com set 1',
       raphael_2: 'raphaeljs.com set 2'
     },
-    imagelib: {
-      select_lib: 'Select an image library',
-      show_list: 'Show library list',
-      import_single: 'Import single',
-      import_multi: 'Import multiple',
-      open: 'Open as new document'
-    },
     notification: {
       invalidAttrValGiven: 'Invalid value given',
       noContentToFitTo: 'No content to fit to',
@@ -243,6 +236,8 @@
       exportNoDashArray: 'Strokes will appear filled',
       exportNoText: 'Text may not appear as expected'
     }
-  });
+  };
+
+  return lang_en;
 
 }());

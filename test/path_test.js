@@ -5,7 +5,7 @@ import * as utilities from '../editor/svgutils.js';
 import * as pathModule from '../editor/path.js';
 
 // log function
-QUnit.log(function (details) {
+QUnit.log((details) => {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }
@@ -15,7 +15,7 @@ function getMockContext (svg) {
   svg = svg || document.createElementNS(NS.SVG, 'svg');
   const selectorParentGroup = document.createElementNS(NS.SVG, 'g');
   selectorParentGroup.setAttribute('id', 'selectorParentGroup');
-  svg.appendChild(selectorParentGroup);
+  svg.append(selectorParentGroup);
   return {
     getDOMDocument () { return svg; },
     getDOMContainer () { return svg; },
@@ -80,7 +80,7 @@ QUnit.test('Test svgedit.path.Segment.setType with control points', function (as
   const svg = document.createElementNS(NS.SVG, 'svg');
   const path = document.createElementNS(NS.SVG, 'path');
   path.setAttribute('d', 'M0,0 C11,12 13,14 15,16 Z');
-  svg.appendChild(path);
+  svg.append(path);
 
   const mockContext = getMockContext(svg);
   pathModule.init(mockContext);

@@ -72,42 +72,41 @@ return false;
 const supportsGoodTextCharPos_ = (function () {
 const svgroot = document.createElementNS(NS.SVG, 'svg');
 const svgcontent = document.createElementNS(NS.SVG, 'svg');
-document.documentElement.appendChild(svgroot);
+document.documentElement.append(svgroot);
 svgcontent.setAttribute('x', 5);
-svgroot.appendChild(svgcontent);
+svgroot.append(svgcontent);
 const text = document.createElementNS(NS.SVG, 'text');
 text.textContent = 'a';
-svgcontent.appendChild(text);
+svgcontent.append(text);
 const pos = text.getStartPositionOfChar(0).x;
-document.documentElement.removeChild(svgroot);
+svgroot.remove();
 return (pos === 0);
 }());
 
 const supportsPathBBox_ = (function () {
 const svgcontent = document.createElementNS(NS.SVG, 'svg');
-document.documentElement.appendChild(svgcontent);
+document.documentElement.append(svgcontent);
 const path = document.createElementNS(NS.SVG, 'path');
 path.setAttribute('d', 'M0,0 C0,0 10,10 10,0');
-svgcontent.appendChild(path);
+svgcontent.append(path);
 const bbox = path.getBBox();
-document.documentElement.removeChild(svgcontent);
+svgcontent.remove();
 return (bbox.height > 4 && bbox.height < 5);
 }());
 
 // Support for correct bbox sizing on groups with horizontal/vertical lines
 const supportsHVLineContainerBBox_ = (function () {
 const svgcontent = document.createElementNS(NS.SVG, 'svg');
-document.documentElement.appendChild(svgcontent);
+document.documentElement.append(svgcontent);
 const path = document.createElementNS(NS.SVG, 'path');
 path.setAttribute('d', 'M0,0 10,0');
 const path2 = document.createElementNS(NS.SVG, 'path');
 path2.setAttribute('d', 'M5,0 15,0');
 const g = document.createElementNS(NS.SVG, 'g');
-g.appendChild(path);
-g.appendChild(path2);
-svgcontent.appendChild(g);
+g.append(path, path2);
+svgcontent.append(g);
 const bbox = g.getBBox();
-document.documentElement.removeChild(svgcontent);
+svgcontent.remove();
 // Webkit gives 0, FF gives 10, Opera (correctly) gives 15
 return (bbox.width === 15);
 }());

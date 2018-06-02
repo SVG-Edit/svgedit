@@ -16,6 +16,9 @@ fs.readFile('editor/svg-editor-es.html', 'utf8', (err, data) => {
     ).replace(
       '<script type="module" src="../svgedit-config-es.js"></script>',
       '<script defer="defer" src="../svgedit-config-iife.js"></script>'
+    ).replace(
+      '<script src="external/dom-polyfill/dom-polyfill.js"></script>',
+      '<script src="../dist/dom-polyfill.js"></script>'
     );
   fs.writeFile('editor/svg-editor.html', data, (err) => {
     if (err) {

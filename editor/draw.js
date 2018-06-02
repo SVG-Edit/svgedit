@@ -364,7 +364,7 @@ export class Drawing {
       } else {
         refGroup = this.all_layers[newpos].getGroup();
       }
-      this.svgElem_.insertBefore(currentGroup, refGroup);
+      this.svgElem_.insertBefore(currentGroup, refGroup); // Ok to replace with `refGroup.before(currentGroup);`?
 
       this.identifyLayers();
       this.setCurrentLayer(this.getLayerName(newpos));
@@ -391,11 +391,11 @@ export class Drawing {
       const child = currentGroup.firstChild;
       if (child.localName === 'title') {
         hrService.removeElement(child, child.nextSibling, currentGroup);
-        currentGroup.removeChild(child);
+        child.remove();
         continue;
       }
       const oldNextSibling = child.nextSibling;
-      prevGroup.appendChild(child);
+      prevGroup.append(child);
       hrService.moveElement(child, oldNextSibling, currentGroup);
     }
 
@@ -562,7 +562,7 @@ export class Drawing {
     for (let index = 0; index < children.length; index++) {
       const ch = children[index];
       if (ch.localName === 'title') { continue; }
-      group.appendChild(this.copyElem(ch));
+      group.append(this.copyElem(ch));
     }
 
     if (hrService) {
@@ -847,7 +847,7 @@ export const moveSelectedToLayer = function (layername) {
     const oldNextSibling = elem.nextSibling;
     // TODO: this is pretty brittle!
     const oldLayer = elem.parentNode;
-    layer.appendChild(elem);
+    layer.append(elem);
     batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldLayer));
   }
 

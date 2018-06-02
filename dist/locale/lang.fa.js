@@ -1,9 +1,9 @@
-(function () {
+var svgEditorLang_fa = (function () {
   'use strict';
 
-  svgEditor.readLang({
+  var lang_fa = {
     lang: 'fa',
-    dir: 'ltr',
+    dir: 'rtl',
     common: {
       ok: '‫تأیید‬',
       cancel: '‫لغو‬',
@@ -204,13 +204,6 @@
       raphael_1: 'raphaeljs.com set 1',
       raphael_2: 'raphaeljs.com set 2'
     },
-    imagelib: {
-      select_lib: 'Select an image library',
-      show_list: 'Show library list',
-      import_single: 'Import single',
-      import_multi: 'Import multiple',
-      open: 'Open as new document'
-    },
     notification: {
       invalidAttrValGiven: '‫مقدار داده شده نامعتبر است‬',
       noContentToFitTo: '‫محتوایی برای هم اندازه شدن وجود ندارد‬',
@@ -235,6 +228,8 @@
       URLloadFail: 'Unable to load from URL',
       retrieving: 'Retrieving "%s"...'
     }
-  });
+  };
+
+  return lang_fa;
 
 }());

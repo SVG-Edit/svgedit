@@ -4,7 +4,7 @@ import * as utilities from '../editor/svgutils.js';
 import * as coords from '../editor/coords.js';
 
 // log function
-QUnit.log(function (details) {
+QUnit.log((details) => {
   if (window.console && window.console.log) {
     window.console.log(details.result + ' :: ' + details.message);
   }
@@ -13,9 +13,9 @@ QUnit.log(function (details) {
 const root = document.getElementById('root');
 const svgroot = document.createElementNS(NS.SVG, 'svg');
 svgroot.id = 'svgroot';
-root.appendChild(svgroot);
+root.append(svgroot);
 const svg = document.createElementNS(NS.SVG, 'svg');
-svgroot.appendChild(svg);
+svgroot.append(svg);
 
 let elemId = 1;
 function setUp () {
@@ -37,7 +37,7 @@ function setUp () {
 
 function tearDown () {
   while (svg.hasChildNodes()) {
-    svg.removeChild(svg.firstChild);
+    svg.firstChild.remove();
   }
 }
 
@@ -51,7 +51,7 @@ QUnit.test('Test remapElement(translate) for rect', function (assert) {
   rect.setAttribute('y', '150');
   rect.setAttribute('width', '250');
   rect.setAttribute('height', '120');
-  svg.appendChild(rect);
+  svg.append(rect);
 
   const attrs = {
     x: '200',
@@ -83,7 +83,7 @@ QUnit.test('Test remapElement(scale) for rect', function (assert) {
   const rect = document.createElementNS(NS.SVG, 'rect');
   rect.setAttribute('width', '250');
   rect.setAttribute('height', '120');
-  svg.appendChild(rect);
+  svg.append(rect);
 
   const attrs = {
     x: '0',
@@ -116,7 +116,7 @@ QUnit.test('Test remapElement(translate) for circle', function (assert) {
   circle.setAttribute('cx', '200');
   circle.setAttribute('cy', '150');
   circle.setAttribute('r', '125');
-  svg.appendChild(circle);
+  svg.append(circle);
 
   const attrs = {
     cx: '200',
@@ -147,7 +147,7 @@ QUnit.test('Test remapElement(scale) for circle', function (assert) {
   circle.setAttribute('cx', '200');
   circle.setAttribute('cy', '150');
   circle.setAttribute('r', '250');
-  svg.appendChild(circle);
+  svg.append(circle);
 
   const attrs = {
     cx: '200',
@@ -180,7 +180,7 @@ QUnit.test('Test remapElement(translate) for ellipse', function (assert) {
   ellipse.setAttribute('cy', '150');
   ellipse.setAttribute('rx', '125');
   ellipse.setAttribute('ry', '75');
-  svg.appendChild(ellipse);
+  svg.append(ellipse);
 
   const attrs = {
     cx: '200',
@@ -214,7 +214,7 @@ QUnit.test('Test remapElement(scale) for ellipse', function (assert) {
   ellipse.setAttribute('cy', '150');
   ellipse.setAttribute('rx', '250');
   ellipse.setAttribute('ry', '120');
-  svg.appendChild(ellipse);
+  svg.append(ellipse);
 
   const attrs = {
     cx: '200',
@@ -248,7 +248,7 @@ QUnit.test('Test remapElement(translate) for line', function (assert) {
   line.setAttribute('y1', '100');
   line.setAttribute('x2', '120');
   line.setAttribute('y2', '200');
-  svg.appendChild(line);
+  svg.append(line);
 
   const attrs = {
     x1: '50',
@@ -282,7 +282,7 @@ QUnit.test('Test remapElement(scale) for line', function (assert) {
   line.setAttribute('y1', '100');
   line.setAttribute('x2', '120');
   line.setAttribute('y2', '200');
-  svg.appendChild(line);
+  svg.append(line);
 
   const attrs = {
     x1: '50',
@@ -314,7 +314,7 @@ QUnit.test('Test remapElement(translate) for text', function (assert) {
   const text = document.createElementNS(NS.SVG, 'text');
   text.setAttribute('x', '50');
   text.setAttribute('y', '100');
-  svg.appendChild(text);
+  svg.append(text);
 
   const attrs = {
     x: '50',
