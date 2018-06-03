@@ -2968,9 +2968,10 @@ this.svgToString = function (elem, indent) {
 
   if (elem) {
     cleanupElement(elem);
-    const attrs = elem.attributes;
-    let attr, i;
+    const attrs = Array.from(elem.attributes);
+    let i;
     const childs = elem.childNodes;
+    attrs.sort((a, b) => a.name > b.name ? -1 : 1);
 
     for (i = 0; i < indent; i++) { out.push(' '); }
     out.push('<'); out.push(elem.nodeName);
@@ -3022,7 +3023,7 @@ this.svgToString = function (elem, indent) {
       i = attrs.length;
       const attrNames = ['width', 'height', 'xmlns', 'x', 'y', 'viewBox', 'id', 'overflow'];
       while (i--) {
-        attr = attrs.item(i);
+        let attr = attrs[i];
         const attrVal = toXml(attr.value);
 
         // Namespaces have already been dealt with, so skip
@@ -3043,7 +3044,7 @@ this.svgToString = function (elem, indent) {
 
       const mozAttrs = ['-moz-math-font-style', '_moz-math-font-style'];
       for (i = attrs.length - 1; i >= 0; i--) {
-        attr = attrs.item(i);
+        let attr = attrs[i];
         let attrVal = toXml(attr.value);
         // remove bogus attributes added by Gecko
         if (mozAttrs.includes(attr.localName)) { continue; }
