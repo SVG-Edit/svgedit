@@ -7585,7 +7585,7 @@
   /**
    * Create a clone of an element, updating its ID and its children's IDs when needed
    * @param {Element} el - DOM element to clone
-   * @param {function()} getNextId - function the get the next unique ID.
+   * @param {Function} getNextId - The getter of the next unique ID.
    * @returns {Element}
    */
   var copyElem = function copyElem(el, getNextId) {
@@ -17426,10 +17426,12 @@
 
       if (elem) {
         cleanupElement(elem);
-        var attrs = elem.attributes;
-        var attr = void 0,
-            i = void 0;
+        var attrs = Array.from(elem.attributes);
+        var i = void 0;
         var childs = elem.childNodes;
+        attrs.sort(function (a, b) {
+          return a.name > b.name ? -1 : 1;
+        });
 
         for (i = 0; i < indent; i++) {
           out.push(' ');
@@ -17483,7 +17485,7 @@
           i = attrs.length;
           var attrNames = ['width', 'height', 'xmlns', 'x', 'y', 'viewBox', 'id', 'overflow'];
           while (i--) {
-            attr = attrs.item(i);
+            var attr = attrs[i];
             var attrVal = toXml(attr.value);
 
             // Namespaces have already been dealt with, so skip
@@ -17508,21 +17510,21 @@
 
           var mozAttrs = ['-moz-math-font-style', '_moz-math-font-style'];
           for (i = attrs.length - 1; i >= 0; i--) {
-            attr = attrs.item(i);
-            var _attrVal = toXml(attr.value);
+            var _attr = attrs[i];
+            var _attrVal = toXml(_attr.value);
             // remove bogus attributes added by Gecko
-            if (mozAttrs.includes(attr.localName)) {
+            if (mozAttrs.includes(_attr.localName)) {
               continue;
             }
             if (_attrVal !== '') {
               if (_attrVal.startsWith('pointer-events')) {
                 continue;
               }
-              if (attr.localName === 'class' && _attrVal.startsWith('se_')) {
+              if (_attr.localName === 'class' && _attrVal.startsWith('se_')) {
                 continue;
               }
               out.push(' ');
-              if (attr.localName === 'd') {
+              if (_attr.localName === 'd') {
                 _attrVal = pathActions$$1.convertPath(elem, true);
               }
               if (!isNaN(_attrVal)) {
@@ -17532,7 +17534,7 @@
               }
 
               // Embed images when saving
-              if (saveOptions.apply && elem.nodeName === 'image' && attr.localName === 'href' && saveOptions.images && saveOptions.images === 'embed') {
+              if (saveOptions.apply && elem.nodeName === 'image' && _attr.localName === 'href' && saveOptions.images && saveOptions.images === 'embed') {
                 var img = encodableImages[_attrVal];
                 if (img) {
                   _attrVal = img;
@@ -17541,8 +17543,8 @@
 
               // map various namespaces to our fixed namespace prefixes
               // (the default xmlns attribute itself does not get a prefix)
-              if (!attr.namespaceURI || attr.namespaceURI === NS.SVG || nsMap[attr.namespaceURI]) {
-                out.push(attr.nodeName);out.push('="');
+              if (!_attr.namespaceURI || _attr.namespaceURI === NS.SVG || nsMap[_attr.namespaceURI]) {
+                out.push(_attr.nodeName);out.push('="');
                 out.push(_attrVal);out.push('"');
               }
             }
@@ -17670,15 +17672,12 @@
     * Codes only is useful for locale-independent detection
     */
     function getIssues() {
-      var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-          _ref3$codesOnly = _ref3.codesOnly,
-          codesOnly = _ref3$codesOnly === undefined ? false : _ref3$codesOnly;
-
       // remove the selected outline before serializing
       clearSelection();
 
       // Check for known CanVG issues
       var issues = [];
+      var issueCodes = [];
 
       // Selector and notice
       var issueList = {
@@ -17695,10 +17694,11 @@
 
       $$9.each(issueList, function (sel, descr) {
         if (content.find(sel).length) {
-          issues.push(codesOnly ? sel : descr);
+          issueCodes.push(sel);
+          issues.push(descr);
         }
       });
-      return issues;
+      return { issues: issues, issueCodes: issueCodes };
     }
 
     /**
@@ -17712,9 +17712,12 @@
     */
     this.rasterExport = function (imgType, quality, exportWindowName, cb) {
       var mimeType = 'image/' + imgType.toLowerCase();
-      var issues = getIssues();
-      var issueCodes = getIssues({ codesOnly: true });
-      var str = this.svgCanvasToString();
+
+      var _getIssues = getIssues(),
+          issues = _getIssues.issues,
+          issueCodes = _getIssues.issueCodes;
+
+      var svg = this.svgCanvasToString();
 
       return new Promise(function (resolve, reject) {
         buildCanvgCallback(function () {
@@ -17726,13 +17729,16 @@
           c.width = canvas.contentW;
           c.height = canvas.contentH;
 
-          canvg(c, str, {
+          canvg(c, svg, {
             renderCallback: function renderCallback() {
               var dataURLType = (type === 'ICO' ? 'BMP' : type).toLowerCase();
               var datauri = quality ? c.toDataURL('image/' + dataURLType, quality) : c.toDataURL('image/' + dataURLType);
               var bloburl = void 0;
               function done() {
-                var obj = { datauri: datauri, bloburl: bloburl, svg: str, issues: issues, issueCodes: issueCodes, type: imgType, mimeType: mimeType, quality: quality, exportWindowName: exportWindowName };
+                var obj = {
+                  datauri: datauri, bloburl: bloburl, svg: svg, issues: issues, issueCodes: issueCodes, type: imgType,
+                  mimeType: mimeType, quality: quality, exportWindowName: exportWindowName
+                };
                 call('exported', obj);
                 if (cb) {
                   cb(obj);
@@ -17781,16 +17787,19 @@
                             keywords: '',
                             creator: '' */
           });
-          var issues = getIssues();
-          var issueCodes = getIssues({ codesOnly: true });
-          var str = that.svgCanvasToString();
-          doc.addSVG(str, 0, 0);
+
+          var _getIssues2 = getIssues(),
+              issues = _getIssues2.issues,
+              issueCodes = _getIssues2.issueCodes;
+
+          var svg = that.svgCanvasToString();
+          doc.addSVG(svg, 0, 0);
 
           // doc.output('save'); // Works to open in a new
           //  window; todo: configure this and other export
           //  options to optionally work in this manner as
           //  opposed to opening a new tab
-          var obj = { svg: str, issues: issues, issueCodes: issueCodes, exportWindowName: exportWindowName };
+          var obj = { svg: svg, issues: issues, issueCodes: issueCodes, exportWindowName: exportWindowName };
           var method = outputType || 'dataurlstring';
           obj[method] = doc.output(method);
           if (cb) {
