@@ -1,5 +1,5 @@
 /* eslint-env qunit */
-import {NS} from '../editor/svgedit.js';
+import {NS} from '../editor/namespaces.js';
 import * as sanitize from '../editor/sanitize.js';
 
 // log function

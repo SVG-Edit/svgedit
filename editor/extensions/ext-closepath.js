@@ -1,19 +1,20 @@
 /* globals jQuery */
-/*
+/**
  * ext-closepath.js
  *
- * Licensed under the MIT License
+ * @license MIT
  *
- * Copyright(c) 2010 Jeff Schiller
+ * @copyright 2010 Jeff Schiller
  *
  */
-import '../pathseg.js';
+import '../svgpathseg.js';
 
 // This extension adds a simple button to the contextual panel for paths
 // The button toggles whether the path is open or closed
 export default {
-  name: 'ClosePath',
-  init () {
+  name: 'closepath',
+  async init ({importLocale}) {
+    const strings = await importLocale();
     const $ = jQuery;
     const svgEditor = this;
     let selElems;
@@ -47,14 +48,11 @@ export default {
       }
     };
 
-    return {
-      name: 'ClosePath',
-      svgicons: svgEditor.curConfig.extIconsPath + 'closepath_icons.svg',
-      buttons: [{
+    const buttons = [
+      {
         id: 'tool_openpath',
         type: 'context',
         panel: 'closepath_panel',
-        title: 'Open path',
         events: {
           click () {
             toggleClosed();
@@ -65,13 +63,20 @@ export default {
         id: 'tool_closepath',
         type: 'context',
         panel: 'closepath_panel',
-        title: 'Close path',
         events: {
           click () {
             toggleClosed();
           }
         }
-      }],
+      }
+    ];
+
+    return {
+      name: strings.name,
+      svgicons: svgEditor.curConfig.extIconsPath + 'closepath_icons.svg',
+      buttons: strings.buttons.map((button, i) => {
+        return Object.assign(buttons[i], button);
+      }),
       callback () {
         $('#closepath_panel').hide();
       },

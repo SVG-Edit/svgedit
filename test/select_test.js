@@ -1,5 +1,5 @@
 /* eslint-env qunit */
-import {NS} from '../editor/svgedit.js';
+import {NS} from '../editor/namespaces.js';
 import * as select from '../editor/select.js';
 
 // log function
@@ -17,6 +17,10 @@ let svgcontent;
 const mockConfig = {
   dimensions: [640, 480]
 };
+
+/**
+* @implements {module:select.SVGFactory}
+*/
 const mockFactory = {
   createSVGElement (jsonMap) {
     const elem = document.createElementNS(NS.SVG, jsonMap['element']);

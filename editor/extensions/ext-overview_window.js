@@ -1,10 +1,10 @@
 /* globals jQuery */
-/*
+/**
  * ext-overview_window.js
  *
- * Licensed under the MIT License
+ * @license MIT
  *
- * Copyright(c) 2013 James Sacksteder
+ * @copyright 2013 James Sacksteder
  *
  */
 export default {

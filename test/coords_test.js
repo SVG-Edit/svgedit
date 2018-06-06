@@ -1,6 +1,6 @@
 /* eslint-env qunit */
-import {NS} from '../editor/svgedit.js';
-import * as utilities from '../editor/svgutils.js';
+import {NS} from '../editor/namespaces.js';
+import * as utilities from '../editor/utilities.js';
 import * as coords from '../editor/coords.js';
 
 // log function
@@ -20,19 +20,29 @@ svgroot.append(svg);
 let elemId = 1;
 function setUp () {
   // Mock out editor context.
-  utilities.init({
-    getSVGRoot () { return svg; },
-    getDOMDocument () { return null; },
-    getDOMContainer () { return null; }
-  });
-  coords.init({
-    getGridSnapping () { return false; },
-    getDrawing () {
-      return {
-        getNextId () { return '' + elemId++; }
-      };
+  utilities.init(
+    /**
+    * @implements {module:utilities.EditorContext}
+    */
+    {
+      getSVGRoot () { return svg; },
+      getDOMDocument () { return null; },
+      getDOMContainer () { return null; }
     }
-  });
+  );
+  coords.init(
+    /**
+    * @implements {module:coords.EditorContext}
+    */
+    {
+      getGridSnapping () { return false; },
+      getDrawing () {
+        return {
+          getNextId () { return '' + elemId++; }
+        };
+      }
+    }
+  );
 }
 
 function tearDown () {

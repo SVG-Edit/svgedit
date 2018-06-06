@@ -4,7 +4,7 @@
 
 export default {
   name: 'php_savefile',
-  callback () {
+  init () {
     const svgEditor = this;
     const $ = jQuery;
     const svgCanvas = svgEditor.canvas;

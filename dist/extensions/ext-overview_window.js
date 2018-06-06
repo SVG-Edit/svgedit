@@ -2,12 +2,12 @@ var svgEditorExtension_overview_window = (function () {
   'use strict';
 
   /* globals jQuery */
-  /*
+  /**
    * ext-overview_window.js
    *
-   * Licensed under the MIT License
+   * @license MIT
    *
-   * Copyright(c) 2013 James Sacksteder
+   * @copyright 2013 James Sacksteder
    *
    */
   var extOverview_window = {

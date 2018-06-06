@@ -176,7 +176,7 @@ export default [
             ...[
               // For now, we'll replace with globals
               // We'll still make at least one import: editor/ext-locale/storage/
-              `import '../pathseg.js';`
+              `import '../svgpathseg.js';`
             ].map((test) => {
               return {
                 match: /editor\/extensions/,

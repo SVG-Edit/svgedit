@@ -1,16 +1,16 @@
 /* globals jQuery */
-/*
+/**
  * ext-shapes.js
  *
- * Licensed under the MIT License
+ * @license MIT
  *
- * Copyright(c) 2010 Christian Tzurcanu
- * Copyright(c) 2010 Alexis Deveria
+ * @copyright 2010 Christian Tzurcanu, 2010 Alexis Deveria
  *
  */
 export default {
   name: 'shapes',
-  init () {
+  async init ({importLocale}) {
+    const strings = await importLocale();
     const svgEditor = this;
     const $ = jQuery;
     const canv = svgEditor.canvas;
@@ -18,22 +18,7 @@ export default {
     let lastBBox = {};
 
     // This populates the category list
-    const categories = {
-      basic: 'Basic',
-      object: 'Objects',
-      symbol: 'Symbols',
-      arrow: 'Arrows',
-      flowchart: 'Flowchart',
-      animal: 'Animals',
-      game: 'Cards & Chess',
-      dialog_balloon: 'Dialog balloons',
-      electronics: 'Electronics',
-      math: 'Mathematical',
-      music: 'Music',
-      misc: 'Miscellaneous',
-      raphael_1: 'raphaeljs.com set 1',
-      raphael_2: 'raphaeljs.com set 2'
-    };
+    const {categories} = strings;
 
     const library = {
       basic: {
@@ -89,7 +74,10 @@ export default {
       const vb = [-off, -off, size + off * 2, size + off * 2].join(' ');
       const stroke = fill ? 0 : (size / 30);
       const shapeIcon = new DOMParser().parseFromString(
-        '<svg xmlns="http://www.w3.org/2000/svg"><svg viewBox="' + vb + '"><path fill="' + (fill ? '#333' : 'none') + '" stroke="#000" stroke-width="' + stroke + '" /></svg></svg>',
+        '<svg xmlns="http://www.w3.org/2000/svg">' +
+          '<svg viewBox="' + vb + '">' +
+            '<path fill="' + (fill ? '#333' : 'none') +
+              '" stroke="#000" stroke-width="' + stroke + '" /></svg></svg>',
         'text/xml');
 
       const width = 24;
@@ -119,7 +107,7 @@ export default {
       const lib = library[catId];
 
       if (!lib) {
-        $('#shape_buttons').html('Loading...');
+        $('#shape_buttons').html(strings.loading);
         $.getJSON(svgEditor.curConfig.extIconsPath + 'shapelib/' + catId + '.json', function (result) {
           curLib = library[catId] = {
             data: result.data,
@@ -135,20 +123,22 @@ export default {
       if (!lib.buttons.length) { makeButtons(catId, lib); }
       loadIcons();
     }
+    const buttons = [{
+      id: 'tool_shapelib',
+      type: 'mode_flyout', // _flyout
+      position: 6,
+      events: {
+        click () {
+          canv.setMode(modeId);
+        }
+      }
+    }];
 
     return {
       svgicons: svgEditor.curConfig.extIconsPath + 'ext-shapes.xml',
-      buttons: [{
-        id: 'tool_shapelib',
-        type: 'mode_flyout', // _flyout
-        position: 6,
-        title: 'Shape library',
-        events: {
-          click () {
-            canv.setMode(modeId);
-          }
-        }
-      }],
+      buttons: strings.buttons.map((button, i) => {
+        return Object.assign(buttons[i], button);
+      }),
       callback () {
         $('<style>').text(
           '#shape_buttons {' +
@@ -236,6 +226,12 @@ export default {
           'margin-top': -(h / 2 - 15),
           'margin-left': 3
         });
+        // Now add shape categories from locale
+        const cats = {};
+        for (const o in categories) {
+          cats['#shape_cats [data-cat="' + o + '"]'] = categories[o];
+        }
+        this.setStrings('content', cats);
       },
       mouseDown (opts) {
         const mode = canv.getMode();
@@ -250,7 +246,7 @@ export default {
         startClientPos.x = opts.event.clientX;
         startClientPos.y = opts.event.clientY;
 
-        curShape = canv.addSvgElementFromJson({
+        curShape = canv.addSVGElementFromJson({
           element: 'path',
           curStyles: true,
           attr: {

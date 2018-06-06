@@ -1,11 +1,10 @@
 /* globals jQuery */
-/*
+/**
  * ext-markers.js
  *
- * Licensed under the Apache License, Version 2
+ * @license Apache-2.0
  *
- * Copyright(c) 2010 Will Schleter
- *   based on ext-arrows.js by Copyright(c) 2010 Alexis Deveria
+ * @copyright 2010 Will Schleter based on ext-arrows.js by Copyright(c) 2010 Alexis Deveria
  *
  * This extension provides for the addition of markers to the either end
  * or the middle of a line, polyline, path, polygon.
@@ -24,21 +23,21 @@
  *    an application specific attribute - se_type - is added to each marker element
  *        to store the type of marker
  *
- * TODO:
+ * @todo
  *    remove some of the restrictions above
  *    add option for keeping text aligned to horizontal
  *    add support for dimension extension lines
  *
- */
-
+*/
 export default {
-  name: 'Markers',
-  init (S) {
+  name: 'markers',
+  async init (S) {
+    const strings = await S.importLocale();
     const svgEditor = this;
     const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
     const // {svgcontent} = S,
-      addElem = S.addSvgElementFromJson;
+      addElem = S.addSVGElementFromJson;
     const mtypes = ['start', 'mid', 'end'];
     const markerPrefix = 'se_marker_';
     const idPrefix = 'mkr_';
@@ -75,41 +74,15 @@ export default {
         {element: 'circle', attr: {r: 30, cx: 50, cy: 50}}
     };
 
-    const langList = {
-      en: [
-        {id: 'start_marker_list', title: 'Select start marker type'},
-        {id: 'mid_marker_list', title: 'Select mid marker type'},
-        {id: 'end_marker_list', title: 'Select end marker type'},
-        {id: 'nomarker', title: 'No Marker'},
-        {id: 'leftarrow', title: 'Left Arrow'},
-        {id: 'rightarrow', title: 'Right Arrow'},
-        {id: 'textmarker', title: 'Text Marker'},
-        {id: 'forwardslash', title: 'Forward Slash'},
-        {id: 'reverseslash', title: 'Reverse Slash'},
-        {id: 'verticalslash', title: 'Vertical Slash'},
-        {id: 'box', title: 'Box'},
-        {id: 'star', title: 'Star'},
-        {id: 'xmark', title: 'X'},
-        {id: 'triangle', title: 'Triangle'},
-        {id: 'mcircle', title: 'Circle'},
-        {id: 'leftarrow_o', title: 'Open Left Arrow'},
-        {id: 'rightarrow_o', title: 'Open Right Arrow'},
-        {id: 'box_o', title: 'Open Box'},
-        {id: 'star_o', title: 'Open Star'},
-        {id: 'triangle_o', title: 'Open Triangle'},
-        {id: 'mcircle_o', title: 'Open Circle'}
-      ]
-    };
-
     // duplicate shapes to support unfilled (open) marker types with an _o suffix
     $.each(['leftarrow', 'rightarrow', 'box', 'star', 'mcircle', 'triangle'], function (i, v) {
       markerTypes[v + '_o'] = markerTypes[v];
     });
 
     /**
-    * @param elem - A graphic element will have an attribute like marker-start
-    * @param attr - marker-start, marker-mid, or marker-end
-    * @returns The marker element that is linked to the graphic element
+    * @param {Element} elem - A graphic element will have an attribute like marker-start
+    * @param {"marker-start"|"marker-mid"|"marker-end"} attr
+    * @returns {Element} The marker element that is linked to the graphic element
     */
     function getLinked (elem, attr) {
       const str = elem.getAttribute(attr);
@@ -421,14 +394,12 @@ export default {
       }
     }
 
-    function getTitle (lang = 'en', id) {
-      const list = langList[lang];
-      for (const i in list) {
-        if (list.hasOwnProperty(i) && list[i].id === id) {
-          return list[i].title;
-        }
-      }
-      return id;
+    function getTitle (id) {
+      const {langList} = strings;
+      const item = langList.find((item) => {
+        return item.id === id;
+      });
+      return item ? item.title : id;
     }
 
     // build the toolbar button array from the marker definitions
@@ -462,7 +433,7 @@ export default {
         const listname = pos + '_marker_list';
         let def = true;
         $.each(markerTypes, function (id, v) {
-          const title = getTitle(lang, String(id));
+          const title = getTitle(String(id));
           buttons.push({
             id: idPrefix + pos + '_' + id,
             svgicon: id,
@@ -479,16 +450,55 @@ export default {
       return buttons;
     }
 
-    let currentLang;
-    const ret = {
-      name: 'Markers',
+    const contextTools = [
+      {
+        type: 'input',
+        panel: 'marker_panel',
+        id: 'start_marker',
+        size: 3,
+        events: { change: setMarker }
+      }, {
+        type: 'button-select',
+        panel: 'marker_panel',
+        id: 'start_marker_list',
+        colnum: 3,
+        events: { change: setArrowFromButton }
+      }, {
+        type: 'input',
+        panel: 'marker_panel',
+        id: 'mid_marker',
+        defval: '',
+        size: 3,
+        events: { change: setMarker }
+      }, {
+        type: 'button-select',
+        panel: 'marker_panel',
+        id: 'mid_marker_list',
+        colnum: 3,
+        events: { change: setArrowFromButton }
+      }, {
+        type: 'input',
+        panel: 'marker_panel',
+        id: 'end_marker',
+        size: 3,
+        events: { change: setMarker }
+      }, {
+        type: 'button-select',
+        panel: 'marker_panel',
+        id: 'end_marker_list',
+        colnum: 3,
+        events: { change: setArrowFromButton }
+      }
+    ];
+
+    return {
+      name: strings.name,
       svgicons: svgEditor.curConfig.extIconsPath + 'markers-icons.xml',
       callback () {
         $('#marker_panel').addClass('toolset').hide();
       },
-      addLangData (lang) {
-        currentLang = lang;
-        return { data: langList[lang] };
+      async addLangData ({importLocale, lang}) {
+        return { data: strings.langList };
       },
       selectedChanged (opts) {
         // Use this to update the current selected elements
@@ -524,69 +534,9 @@ export default {
           updateReferences(elem);
         }
         // changing_flag = false; // Not apparently in use
-      }
-    };
-    // Todo: Check if the lang will be available in time
-    Object.defineProperties(ret, {
-      buttons: {
-        get () {
-          return buildButtonList(currentLang);
-        }
       },
-      context_tools: {
-        get () {
-          return [
-            {
-              type: 'input',
-              panel: 'marker_panel',
-              title: 'Start marker',
-              id: 'start_marker',
-              label: 's',
-              size: 3,
-              events: { change: setMarker }
-            }, {
-              type: 'button-select',
-              panel: 'marker_panel',
-              title: getTitle(currentLang, 'start_marker_list'),
-              id: 'start_marker_list',
-              colnum: 3,
-              events: { change: setArrowFromButton }
-            }, {
-              type: 'input',
-              panel: 'marker_panel',
-              title: 'Middle marker',
-              id: 'mid_marker',
-              label: 'm',
-              defval: '',
-              size: 3,
-              events: { change: setMarker }
-            }, {
-              type: 'button-select',
-              panel: 'marker_panel',
-              title: getTitle(currentLang, 'mid_marker_list'),
-              id: 'mid_marker_list',
-              colnum: 3,
-              events: { change: setArrowFromButton }
-            }, {
-              type: 'input',
-              panel: 'marker_panel',
-              title: 'End marker',
-              id: 'end_marker',
-              label: 'e',
-              size: 3,
-              events: { change: setMarker }
-            }, {
-              type: 'button-select',
-              panel: 'marker_panel',
-              title: getTitle(currentLang, 'end_marker_list'),
-              id: 'end_marker_list',
-              colnum: 3,
-              events: { change: setArrowFromButton }
-            }
-          ];
-        }
-      }
-    });
-    return ret;
+      buttons: buildButtonList(),
+      context_tools: contextTools
+    };
   }
 };

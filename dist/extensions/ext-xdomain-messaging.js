@@ -28,7 +28,7 @@ var svgEditorExtension_xdomain_messaging = (function () {
             return;
           }
           // The default is not to allow any origins, including even the same domain or if run on a file:// URL
-          //  See config-sample.js for an example of how to configure
+          //  See svgedit-config-es.js for an example of how to configure
           var allowedOrigins = svgEditor.curConfig.allowedOrigins;
 
           if (!allowedOrigins.includes('*') && !allowedOrigins.includes(e.origin)) {

@@ -7,15 +7,12 @@ var svgEditorExtensionLocale_imagelib_fr = (function () {
     import_single: 'import_single',
     import_multi: 'import_multi',
     open: 'open',
+    buttons: [{
+      title: 'Image library'
+    }],
     imgLibs: [{
       name: 'Demo library (local)',
-      url: function url(_ref) {
-        var path = _ref.path,
-            modularVersion = _ref.modularVersion;
-
-        return path + 'imagelib/index' + (modularVersion ? '-es' : '') + '.html';
-      },
-
+      url: '{path}imagelib/index{modularVersion}.html',
       description: 'Demonstration library for SVG-edit on this server'
     }, {
       name: 'IAN Symbol Libraries',

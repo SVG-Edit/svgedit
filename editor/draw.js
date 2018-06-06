@@ -1,21 +1,20 @@
 /* globals jQuery */
 /**
- * Package: svgedit.draw
- *
- * Licensed under the MIT License
- *
- * Copyright(c) 2011 Jeff Schiller
+ * Tools for drawing
+ * @module draw
+ * @license MIT
+ * @copyright 2011 Jeff Schiller
  */
 
 import Layer from './layer.js';
 import HistoryRecordingService from './historyrecording.js';
 
-import {NS} from './svgedit.js';
+import {NS} from './namespaces.js';
 import {isOpera} from './browser.js';
 import {
   toXml, getElem,
   copyElem as utilCopyElem
-} from './svgutils.js';
+} from './utilities.js';
 import {
   BatchCommand, RemoveElementCommand, MoveElementCommand, ChangeElementCommand
 } from './history.js';
@@ -35,8 +34,8 @@ let disabledElems = [];
 
 /**
  * Get a HistoryRecordingService.
- * @param {svgedit.history.HistoryRecordingService=} hrService - if exists, return it instead of creating a new service.
- * @returns {svgedit.history.HistoryRecordingService}
+ * @param {module:history.HistoryRecordingService} [hrService] - if exists, return it instead of creating a new service.
+ * @returns {module:history.HistoryRecordingService}
  */
 function historyRecordingService (hrService) {
   return hrService || new HistoryRecordingService(canvas_.undoMgr);
@@ -44,7 +43,7 @@ function historyRecordingService (hrService) {
 
 /**
  * Find the layer name in a group element.
- * @param group The group element to search in.
+ * @param {Element} group The group element to search in.
  * @returns {string} The layer name or empty string.
  */
 function findLayerNameInGroup (group) {
@@ -57,7 +56,7 @@ function findLayerNameInGroup (group) {
 
 /**
  * Given a set of names, return a new unique name.
- * @param {Array.<string>} existingLayerNames - Existing layer names.
+ * @param {string[]} existingLayerNames - Existing layer names.
  * @returns {string} - The new name.
  */
 function getNewLayerName (existingLayerNames) {
@@ -69,12 +68,15 @@ function getNewLayerName (existingLayerNames) {
 
 /**
  * This class encapsulates the concept of a SVG-edit drawing
- * @param {SVGSVGElement} svgElem - The SVG DOM Element that this JS object
- *     encapsulates.  If the svgElem has a se:nonce attribute on it, then
- *     IDs will use the nonce as they are generated.
- * @param {String} [optIdPrefix=svg_] - The ID prefix to use.
  */
 export class Drawing {
+  /**
+  * @param {SVGSVGElement} svgElem - The SVG DOM Element that this JS object
+  *     encapsulates.  If the svgElem has a se:nonce attribute on it, then
+  *     IDs will use the nonce as they are generated.
+  * @param {string} [optIdPrefix=svg_] - The ID prefix to use.
+  * @throws {Error} If not initialized with an SVG element
+  */
   constructor (svgElem, optIdPrefix) {
     if (!svgElem || !svgElem.tagName || !svgElem.namespaceURI ||
       svgElem.tagName !== 'svg' || svgElem.namespaceURI !== NS.SVG) {
@@ -89,19 +91,19 @@ export class Drawing {
 
     /**
     * The latest object number used in this drawing.
-    * @type {number}
+    * @type {Integer}
     */
     this.obj_num = 0;
 
     /**
     * The prefix to prepend to each element id in the drawing.
-    * @type {String}
+    * @type {string}
     */
     this.idPrefix = optIdPrefix || 'svg_';
 
     /**
     * An array of released element ids to immediately reuse.
-    * @type {Array.<number>}
+    * @type {Integer[]}
     */
     this.releasedNums = [];
 
@@ -109,7 +111,7 @@ export class Drawing {
     * The z-ordered array of Layer objects. Each layer has a name
     * and group element.
     * The first layer is the one at the bottom of the rendering.
-    * @type {Array.<Layer>}
+    * @type {Layer[]}
     */
     this.all_layers = [];
 
@@ -119,7 +121,7 @@ export class Drawing {
     * Note: Layers are ordered, but referenced externally by name; so, we need both container
     * types depending on which function is called (i.e. all_layers and layer_map).
     *
-    * @type {Object.<string, Layer>}
+    * @type {PlainObject.<string, Layer>}
     */
     this.layer_map = {};
 
@@ -165,14 +167,15 @@ export class Drawing {
   }
 
   /**
-   * @returns {!string|number} The previously set nonce
+   * @returns {!(string|Integer)} The previously set nonce
    */
   getNonce () {
     return this.nonce_;
   }
 
   /**
-   * @param {!string|number} n The nonce to set
+   * @param {!(string|Integer)} n The nonce to set
+   * @returns {undefined}
    */
   setNonce (n) {
     this.svgElem_.setAttributeNS(NS.XMLNS, 'xmlns:se', NS.SE);
@@ -182,6 +185,7 @@ export class Drawing {
 
   /**
    * Clears any previously set nonce
+   * @returns {undefined}
    */
   clearNonce () {
     // We deliberately leave any se:nonce attributes alone,
@@ -191,7 +195,7 @@ export class Drawing {
 
   /**
    * Returns the latest object id as a string.
-   * @return {String} The latest object Id.
+   * @returns {string} The latest object Id.
    */
   getId () {
     return this.nonce_
@@ -201,7 +205,7 @@ export class Drawing {
 
   /**
    * Returns the next object Id as a string.
-   * @return {String} The next object Id to use.
+   * @returns {string} The next object Id to use.
    */
   getNextId () {
     const oldObjNum = this.obj_num;
@@ -265,7 +269,7 @@ export class Drawing {
 
   /**
    * Returns the number of layers in the current drawing.
-   * @returns {integer} The number of layers in the current drawing.
+   * @returns {Integer} The number of layers in the current drawing.
   */
   getNumLayers () {
     return this.all_layers.length;
@@ -274,6 +278,7 @@ export class Drawing {
   /**
    * Check if layer with given name already exists
    * @param {string} name - The layer name to check
+   * @returns {boolean}
   */
   hasLayer (name) {
     return this.layer_map[name] !== undefined;
@@ -281,7 +286,7 @@ export class Drawing {
 
   /**
    * Returns the name of the ith layer. If the index is out of range, an empty string is returned.
-   * @param {integer} i - The zero-based index of the layer you are querying.
+   * @param {Integer} i - The zero-based index of the layer you are querying.
    * @returns {string} The name of the ith layer (or the empty string if none found)
   */
   getLayerName (i) {
@@ -289,7 +294,7 @@ export class Drawing {
   }
 
   /**
-   * @returns {SVGGElement} The SVGGElement representing the current layer.
+   * @returns {SVGGElement|null} The SVGGElement representing the current layer.
    */
   getCurrentLayer () {
     return this.current_layer ? this.current_layer.getGroup() : null;
@@ -316,7 +321,7 @@ export class Drawing {
   /**
    * Set the current layer's name.
    * @param {string} name - The new name.
-   * @param {svgedit.history.HistoryRecordingService} hrService - History recording service
+   * @param {module:history.HistoryRecordingService} hrService - History recording service
    * @returns {string|null} The new name if changed; otherwise, null.
    */
   setCurrentLayerName (name, hrService) {
@@ -334,8 +339,8 @@ export class Drawing {
 
   /**
    * Set the current layer's position.
-   * @param {number} newpos - The zero-based index of the new position of the layer. Range should be 0 to layers-1
-   * @returns {Object} If the name was changed, returns {title:SVGGElement, previousName:string}; otherwise null.
+   * @param {Integer} newpos - The zero-based index of the new position of the layer. Range should be 0 to layers-1
+   * @returns {{title: SVGGElement, previousName: string}|null} If the name was changed, returns {title:SVGGElement, previousName:string}; otherwise null.
    */
   setCurrentLayerPosition (newpos) {
     const layerCount = this.getNumLayers();
@@ -377,6 +382,10 @@ export class Drawing {
     return null;
   }
 
+  /**
+  * @param {module:history.HistoryRecordingService} hrService
+  * @returns {undefined}
+  */
   mergeLayer (hrService) {
     const currentGroup = this.current_layer.getGroup();
     const prevGroup = $(currentGroup).prev()[0];
@@ -413,6 +422,10 @@ export class Drawing {
     hrService.endBatchCommand();
   }
 
+  /**
+  * @param {module:history.HistoryRecordingService} hrService
+  * @returns {undefined}
+  */
   mergeAllLayers (hrService) {
     // Set the current layer to the last layer.
     this.current_layer = this.all_layers[this.all_layers.length - 1];
@@ -426,10 +439,10 @@ export class Drawing {
 
   /**
    * Sets the current layer. If the name is not a valid layer name, then this
-   * function returns false. Otherwise it returns true. This is not an
+   * function returns `false`. Otherwise it returns `true`. This is not an
    * undo-able action.
    * @param {string} name - The name of the layer you want to switch to.
-   * @returns {boolean} true if the current layer was switched, otherwise false
+   * @returns {boolean} `true` if the current layer was switched, otherwise `false`
    */
   setCurrentLayer (name) {
     const layer = this.layer_map[name];
@@ -447,6 +460,7 @@ export class Drawing {
   /**
    * Deletes the current layer from the drawing and then clears the selection.
    * This function then calls the 'changed' handler.  This is an undoable action.
+   * @todo Does this actually call the 'changed' handler?
    * @returns {SVGGElement} The SVGGElement of the layer removed or null.
    */
   deleteCurrentLayer () {
@@ -460,7 +474,8 @@ export class Drawing {
 
   /**
    * Updates layer system and sets the current layer to the
-   * top-most layer (last <g> child of this drawing).
+   * top-most layer (last `<g>` child of this drawing).
+   * @returns {undefined}
   */
   identifyLayers () {
     this.all_layers = [];
@@ -509,7 +524,7 @@ export class Drawing {
    * Creates a new top-level layer in the drawing with the given name and
    * makes it the current layer.
    * @param {string} name - The given name. If the layer name exists, a new name will be generated.
-   * @param {svgedit.history.HistoryRecordingService} hrService - History recording service
+   * @param {module:history.HistoryRecordingService} hrService - History recording service
    * @returns {SVGGElement} The SVGGElement of the new layer, which is
    *     also the current layer of this drawing.
   */
@@ -540,7 +555,7 @@ export class Drawing {
   /**
    * Creates a copy of the current layer with the given name and makes it the current layer.
    * @param {string} name - The given name. If the layer name exists, a new name will be generated.
-   * @param {svgedit.history.HistoryRecordingService} hrService - History recording service
+   * @param {module:history.HistoryRecordingService} hrService - History recording service
    * @returns {SVGGElement} The SVGGElement of the new layer, which is
    *     also the current layer of this drawing.
   */
@@ -585,42 +600,42 @@ export class Drawing {
 
   /**
    * Returns whether the layer is visible.  If the layer name is not valid,
-   * then this function returns false.
-   * @param {string} layername - The name of the layer which you want to query.
-   * @returns {boolean} The visibility state of the layer, or false if the layer name was invalid.
+   * then this function returns `false`.
+   * @param {string} layerName - The name of the layer which you want to query.
+   * @returns {boolean} The visibility state of the layer, or `false` if the layer name was invalid.
   */
-  getLayerVisibility (layername) {
-    const layer = this.layer_map[layername];
+  getLayerVisibility (layerName) {
+    const layer = this.layer_map[layerName];
     return layer ? layer.isVisible() : false;
   }
 
   /**
    * Sets the visibility of the layer. If the layer name is not valid, this
-   * function returns false, otherwise it returns true. This is an
-   * undo-able action.
-   * @param {string} layername - The name of the layer to change the visibility
+   * function returns `null`, otherwise it returns the `SVGElement` representing
+   * the layer. This is an undo-able action.
+   * @param {string} layerName - The name of the layer to change the visibility
    * @param {boolean} bVisible - Whether the layer should be visible
    * @returns {?SVGGElement} The SVGGElement representing the layer if the
-   *   layername was valid, otherwise null.
+   *   `layerName` was valid, otherwise `null`.
   */
-  setLayerVisibility (layername, bVisible) {
+  setLayerVisibility (layerName, bVisible) {
     if (typeof bVisible !== 'boolean') {
       return null;
     }
-    const layer = this.layer_map[layername];
+    const layer = this.layer_map[layerName];
     if (!layer) { return null; }
     layer.setVisible(bVisible);
     return layer.getGroup();
   }
 
   /**
-   * Returns the opacity of the given layer.  If the input name is not a layer, null is returned.
-   * @param {string} layername - name of the layer on which to get the opacity
-   * @returns {?number} The opacity value of the given layer.  This will be a value between 0.0 and 1.0, or null
-   * if layername is not a valid layer
+   * Returns the opacity of the given layer.  If the input name is not a layer, `null` is returned.
+   * @param {string} layerName - name of the layer on which to get the opacity
+   * @returns {?Float} The opacity value of the given layer.  This will be a value between 0.0 and 1.0, or `null`
+   * if `layerName` is not a valid layer
   */
-  getLayerOpacity (layername) {
-    const layer = this.layer_map[layername];
+  getLayerOpacity (layerName) {
+    const layer = this.layer_map[layerName];
     if (!layer) { return null; }
     return layer.getOpacity();
   }
@@ -629,14 +644,19 @@ export class Drawing {
    * Sets the opacity of the given layer.  If the input name is not a layer,
    * nothing happens. If opacity is not a value between 0.0 and 1.0, then
    * nothing happens.
-   * @param {string} layername - Name of the layer on which to set the opacity
-   * @param {number} opacity - A float value in the range 0.0-1.0
+   * NOTE: this function exists solely to apply a highlighting/de-emphasis
+   * effect to a layer. When it is possible for a user to affect the opacity
+   * of a layer, we will need to allow this function to produce an undo-able
+   * action.
+   * @param {string} layerName - Name of the layer on which to set the opacity
+   * @param {Float} opacity - A float value in the range 0.0-1.0
+   * @returns {undefined}
   */
-  setLayerOpacity (layername, opacity) {
+  setLayerOpacity (layerName, opacity) {
     if (typeof opacity !== 'number' || opacity < 0.0 || opacity > 1.0) {
       return;
     }
-    const layer = this.layer_map[layername];
+    const layer = this.layer_map[layerName];
     if (layer) {
       layer.setOpacity(opacity);
     }
@@ -657,8 +677,10 @@ export class Drawing {
 /**
  * Called to ensure that drawings will or will not have randomized ids.
  * The currentDrawing will have its nonce set if it doesn't already.
+ * @function module:draw.randomizeIds
  * @param {boolean} enableRandomization - flag indicating if documents should have randomized ids
- * @param {svgedit.draw.Drawing} currentDrawing
+ * @param {draw.Drawing} currentDrawing
+ * @returns {undefined}
  */
 export const randomizeIds = function (enableRandomization, currentDrawing) {
   randIds = enableRandomization === false
@@ -678,12 +700,77 @@ export const randomizeIds = function (enableRandomization, currentDrawing) {
 * Group: Layers
 */
 
+/**
+ * @see {@link https://api.jquery.com/jQuery.data/}
+ * @name external:jQuery.data
+ */
+
+/**
+ * @interface module:draw.DrawCanvasInit
+ * @property {module:path.pathActions} pathActions
+ * @property {external:jQuery.data} elData
+ * @property {module:history.UndoManager} undoMgr
+ */
+/**
+ * @function module:draw.DrawCanvasInit#getCurrentGroup
+ * @returns {Element}
+ */
+/**
+ * @function module:draw.DrawCanvasInit#setCurrentGroup
+ * @param {Element} cg
+ * @returns {undefined}
+*/
+/**
+ * @function module:draw.DrawCanvasInit#getSelectedElements
+ * @returns {Element[]} the array with selected DOM elements
+*/
+/**
+ * @function module:draw.DrawCanvasInit#getSVGContent
+ * @returns {SVGSVGElement}
+ */
+/**
+ * @function module:draw.DrawCanvasInit#getCurrentDrawing
+ * @returns {module:draw.Drawing}
+ */
+/**
+ * @function module:draw.DrawCanvasInit#clearSelection
+ * @param {boolean} [noCall] - When `true`, does not call the "selected" handler
+ * @returns {undefined}
+*/
+/**
+ * Run the callback function associated with the given event
+ * @function module:draw.DrawCanvasInit#call
+ * @param {"changed"|"contextset"} ev - String with the event name
+ * @param {module:svgcanvas.SvgCanvas#event:changed|module:svgcanvas.SvgCanvas#event:contextset} arg - Argument to pass through to the callback
+ * function. If the event is "changed", a (single-item) array of `Element`s is
+ * passed. If the event is "contextset", the arg is `null` or `Element`.
+ * @returns {undefined}
+ */
+/**
+ * @function module:draw.DrawCanvasInit#addCommandToHistory
+ * @param {Command} cmd
+ * @returns {undefined}
+*/
+/**
+ * @function module:draw.DrawCanvasInit#changeSVGContent
+ * @returns {undefined}
+ */
+
 let canvas_;
+/**
+* @function module:draw.init
+* @param {module:draw.DrawCanvasInit} canvas
+* @returns {undefined}
+*/
 export const init = function (canvas) {
   canvas_ = canvas;
 };
 
-// Updates layer system
+/**
+* Updates layer system
+* @function module:draw.identifyLayers
+* @returns {undefined}
+*/
 export const identifyLayers = function () {
   leaveContext();
   canvas_.getCurrentDrawing().identifyLayers();
@@ -693,8 +780,11 @@ export const identifyLayers = function () {
 * Creates a new top-level layer in the drawing with the given name, sets the current layer
 * to it, and then clears the selection. This function then calls the 'changed' handler.
 * This is an undoable action.
-* @param name - The given name
-* @param hrService
+* @function module:draw.createLayer
+* @param {string} name - The given name
+* @param {module:history.HistoryRecordingService} hrService
+* @fires module:svgcanvas.SvgCanvas#event:changed
+* @returns {undefined}
 */
 export const createLayer = function (name, hrService) {
   const newLayer = canvas_.getCurrentDrawing().createLayer(
@@ -709,8 +799,11 @@ export const createLayer = function (name, hrService) {
  * Creates a new top-level layer in the drawing with the given name, copies all the current layer's contents
  * to it, and then clears the selection. This function then calls the 'changed' handler.
  * This is an undoable action.
+ * @function module:draw.cloneLayer
  * @param {string} name - The given name. If the layer name exists, a new name will be generated.
- * @param {svgedit.history.HistoryRecordingService} hrService - History recording service
+ * @param {module:history.HistoryRecordingService} hrService - History recording service
+ * @fires module:svgcanvas.SvgCanvas#event:changed
+ * @returns {undefined}
  */
 export const cloneLayer = function (name, hrService) {
   // Clone the current layer and make the cloned layer the new current layer
@@ -724,6 +817,9 @@ export const cloneLayer = function (name, hrService) {
 /**
 * Deletes the current layer from the drawing and then clears the selection. This function
 * then calls the 'changed' handler. This is an undoable action.
+* @function module:draw.deleteCurrentLayer
+* @fires module:svgcanvas.SvgCanvas#event:changed
+* @returns {boolean} `true` if an old layer group was found to delete
 */
 export const deleteCurrentLayer = function () {
   let currentLayer = canvas_.getCurrentDrawing().getCurrentLayer();
@@ -745,9 +841,9 @@ export const deleteCurrentLayer = function () {
 /**
 * Sets the current layer. If the name is not a valid layer name, then this function returns
 * false. Otherwise it returns true. This is not an undo-able action.
-* @param name - The name of the layer you want to switch to.
-*
-* @returns true if the current layer was switched, otherwise false
+* @function module:draw.setCurrentLayer
+* @param {string} name - The name of the layer you want to switch to.
+* @returns {boolean} true if the current layer was switched, otherwise false
 */
 export const setCurrentLayer = function (name) {
   const result = canvas_.getCurrentDrawing().setCurrentLayer(toXml(name));
@@ -759,17 +855,18 @@ export const setCurrentLayer = function (name) {
 
 /**
 * Renames the current layer. If the layer name is not valid (i.e. unique), then this function
-* does nothing and returns false, otherwise it returns true. This is an undo-able action.
-*
-* @param newname - the new name you want to give the current layer. This name must be unique
-* among all layer names.
-* @returns {Boolean} Whether the rename succeeded
+* does nothing and returns `false`, otherwise it returns `true`. This is an undo-able action.
+* @function module:draw.renameCurrentLayer
+* @param {string} newName - the new name you want to give the current layer. This name must
+* be unique among all layer names.
+* @fires module:svgcanvas.SvgCanvas#event:changed
+* @returns {boolean} Whether the rename succeeded
 */
-export const renameCurrentLayer = function (newname) {
+export const renameCurrentLayer = function (newName) {
   const drawing = canvas_.getCurrentDrawing();
   const layer = drawing.getCurrentLayer();
   if (layer) {
-    const result = drawing.setCurrentLayerName(newname, historyRecordingService());
+    const result = drawing.setCurrentLayerName(newName, historyRecordingService());
     if (result) {
       canvas_.call('changed', [layer]);
       return true;
@@ -782,14 +879,14 @@ export const renameCurrentLayer = function (newname) {
 * Changes the position of the current layer to the new value. If the new index is not valid,
 * this function does nothing and returns false, otherwise it returns true. This is an
 * undo-able action.
-* @param newpos - The zero-based index of the new position of the layer. This should be between
+* @function module:draw.setCurrentLayerPosition
+* @param {Integer} newPos - The zero-based index of the new position of the layer. This should be between
 * 0 and (number of layers - 1)
-*
-* @returns {Boolean} true if the current layer position was changed, false otherwise.
+* @returns {boolean} `true` if the current layer position was changed, `false` otherwise.
 */
-export const setCurrentLayerPosition = function (newpos) {
+export const setCurrentLayerPosition = function (newPos) {
   const drawing = canvas_.getCurrentDrawing();
-  const result = drawing.setCurrentLayerPosition(newpos);
+  const result = drawing.setCurrentLayerPosition(newPos);
   if (result) {
     canvas_.addCommandToHistory(new MoveElementCommand(result.currentGroup, result.oldNextSibling, canvas_.getSVGContent()));
     return true;
@@ -799,15 +896,16 @@ export const setCurrentLayerPosition = function (newpos) {
 
 /**
 * Sets the visibility of the layer. If the layer name is not valid, this function return
-* false, otherwise it returns true. This is an undo-able action.
-* @param layername - The name of the layer to change the visibility
-* @param {Boolean} bVisible - Whether the layer should be visible
-* @returns {Boolean} true if the layer's visibility was set, false otherwise
+* `false`, otherwise it returns `true`. This is an undo-able action.
+* @function module:draw.setLayerVisibility
+* @param {string} layerName - The name of the layer to change the visibility
+* @param {boolean} bVisible - Whether the layer should be visible
+* @returns {boolean} true if the layer's visibility was set, false otherwise
 */
-export const setLayerVisibility = function (layername, bVisible) {
+export const setLayerVisibility = function (layerName, bVisible) {
   const drawing = canvas_.getCurrentDrawing();
-  const prevVisibility = drawing.getLayerVisibility(layername);
-  const layer = drawing.setLayerVisibility(layername, bVisible);
+  const prevVisibility = drawing.getLayerVisibility(layerName);
+  const layer = drawing.setLayerVisibility(layerName, bVisible);
   if (layer) {
     const oldDisplay = prevVisibility ? 'inline' : 'none';
     canvas_.addCommandToHistory(new ChangeElementCommand(layer, {display: oldDisplay}, 'Layer Visibility'));
@@ -824,16 +922,16 @@ export const setLayerVisibility = function (layername, bVisible) {
 };
 
 /**
-* Moves the selected elements to layername. If the name is not a valid layer name, then false
-* is returned. Otherwise it returns true. This is an undo-able action.
-*
-* @param layername - The name of the layer you want to which you want to move the selected elements
-* @returns {Boolean} Whether the selected elements were moved to the layer.
+* Moves the selected elements to layerName. If the name is not a valid layer name, then `false`
+* is returned. Otherwise it returns `true`. This is an undo-able action.
+* @function module:draw.moveSelectedToLayer
+* @param {string} layerName - The name of the layer you want to which you want to move the selected elements
+* @returns {boolean} Whether the selected elements were moved to the layer.
 */
-export const moveSelectedToLayer = function (layername) {
+export const moveSelectedToLayer = function (layerName) {
   // find the layer
   const drawing = canvas_.getCurrentDrawing();
-  const layer = drawing.getLayerByName(layername);
+  const layer = drawing.getLayerByName(layerName);
   if (!layer) { return false; }
 
   const batchCmd = new BatchCommand('Move Elements to Layer');
@@ -856,22 +954,37 @@ export const moveSelectedToLayer = function (layername) {
   return true;
 };
 
+/**
+* @function module:draw.mergeLayer
+* @param {module:history.HistoryRecordingService} hrService
+* @returns {undefined}
+*/
 export const mergeLayer = function (hrService) {
   canvas_.getCurrentDrawing().mergeLayer(historyRecordingService(hrService));
   canvas_.clearSelection();
   leaveContext();
-  canvas_.changeSvgcontent();
+  canvas_.changeSVGContent();
 };
 
+/**
+* @function module:draw.mergeAllLayers
+* @param {module:history.HistoryRecordingService} hrService
+* @returns {undefined}
+*/
 export const mergeAllLayers = function (hrService) {
   canvas_.getCurrentDrawing().mergeAllLayers(historyRecordingService(hrService));
   canvas_.clearSelection();
   leaveContext();
-  canvas_.changeSvgcontent();
+  canvas_.changeSVGContent();
 };
 
-// Return from a group context to the regular kind, make any previously
-// disabled elements enabled again
+/**
+* Return from a group context to the regular kind, make any previously
+* disabled elements enabled again
+* @function module:draw.leaveContext
+* @fires module:svgcanvas.SvgCanvas#event:contextset
+* @returns {undefined}
+*/
 export const leaveContext = function () {
   const len = disabledElems.length;
   if (len) {
@@ -892,7 +1005,13 @@ export const leaveContext = function () {
   canvas_.setCurrentGroup(null);
 };
 
-// Set the current context (for in-group editing)
+/**
+* Set the current context (for in-group editing)
+* @function module:draw.setContext
+* @param {Element} elem
+* @fires module:svgcanvas.SvgCanvas#event:contextset
+* @returns {undefined}
+*/
 export const setContext = function (elem) {
   leaveContext();
   if (typeof elem === 'string') {
@@ -916,4 +1035,9 @@ export const setContext = function (elem) {
   canvas_.call('contextset', canvas_.getCurrentGroup());
 };
 
+/**
+* @memberof module:draw
+* @class Layer
+* @see {@link module:layer.Layer}
+*/
 export {Layer};

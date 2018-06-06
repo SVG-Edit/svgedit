@@ -1,17 +1,18 @@
 /* globals jQuery */
-/*
+/**
  * ext-server_opensave.js
  *
- * Licensed under the MIT License
+ * @license MIT
  *
- * Copyright(c) 2010 Alexis Deveria
+ * @copyright 2010 Alexis Deveria
  *
  */
 import {canvg} from '../canvg/canvg.js';
 
 export default {
   name: 'server_opensave',
-  callback ({decode64, encode64}) {
+  async init ({decode64, encode64, importLocale}) {
+    const strings = await importLocale();
     const svgEditor = this;
     const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
@@ -63,7 +64,7 @@ export default {
       },
       exportPDF (win, data) {
         const filename = getFileNameFromTitle(),
-          datauri = data.dataurlstring;
+          datauri = data.output;
         if (clientDownloadSupport(filename, '.pdf', datauri)) {
           return;
         }
@@ -186,7 +187,7 @@ export default {
         form.submit();
 
         rebuildInput(form);
-        $.process_cancel('Uploading...', function () {
+        $.process_cancel(strings.uploading, function () {
           cancelled = true;
           $('#dialog_box').hide();
         });

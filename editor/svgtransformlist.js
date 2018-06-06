@@ -1,13 +1,13 @@
 /**
- * SVGTransformList
+ * Partial polyfill of `SVGTransformList`
+ * @module SVGTransformList
  *
- * Licensed under the MIT License
+ * @license MIT
  *
- * Copyright(c) 2010 Alexis Deveria
- * Copyright(c) 2010 Jeff Schiller
+ * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import {NS} from './svgedit.js';
+import {NS} from './namespaces.js';
 import {supportsNativeTransformLists} from './browser.js';
 
 const svgroot = document.createElementNS(NS.SVG, 'svg');
@@ -51,26 +51,74 @@ function transformToString (xform) {
  */
 let listMap_ = {};
 
-// **************************************************************************************
-// SVGTransformList implementation for Webkit
-// These methods do not currently raise any exceptions.
-// These methods also do not check that transforms are being inserted.  This is basically
-// implementing as much of SVGTransformList that we need to get the job done.
-//
-//  interface SVGEditTransformList {
-//    attribute unsigned long numberOfItems;
-//    void   clear (  )
-//    SVGTransform initialize ( in SVGTransform newItem )
-//    SVGTransform getItem ( in unsigned long index ) (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
-//    SVGTransform insertItemBefore ( in SVGTransform newItem, in unsigned long index ) (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
-//    SVGTransform replaceItem ( in SVGTransform newItem, in unsigned long index ) (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
-//    SVGTransform removeItem ( in unsigned long index ) (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
-//    SVGTransform appendItem ( in SVGTransform newItem )
-//    NOT IMPLEMENTED: SVGTransform createSVGTransformFromMatrix ( in SVGMatrix matrix );
-//    NOT IMPLEMENTED: SVGTransform consolidate (  );
-//  }
-// **************************************************************************************
+/**
+* @interface module:SVGTransformList.SVGEditTransformList
+* @property {Integer} numberOfItems unsigned long
+*/
+/**
+* @function module:SVGTransformList.SVGEditTransformList#clear
+* @returns {undefined}
+*/
+/**
+* @function module:SVGTransformList.SVGEditTransformList#initialize
+* @param {SVGTransform} newItem
+* @returns {SVGTransform}
+*/
+/**
+* (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+* @function module:SVGTransformList.SVGEditTransformList#getItem
+* @param {Integer} index unsigned long
+* @returns {SVGTransform}
+*/
+/**
+* (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+* @function module:SVGTransformList.SVGEditTransformList#insertItemBefore
+* @param {SVGTransform} newItem
+* @param {Integer} index unsigned long
+* @returns {SVGTransform}
+*/
+/**
+* (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+* @function module:SVGTransformList.SVGEditTransformList#replaceItem
+* @param {SVGTransform} newItem
+* @param {Integer} index unsigned long
+* @returns {SVGTransform}
+*/
+/**
+* (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+* @function module:SVGTransformList.SVGEditTransformList#removeItem
+* @param {Integer} index unsigned long
+* @returns {SVGTransform}
+*/
+/**
+* @function module:SVGTransformList.SVGEditTransformList#appendItem
+* @param {SVGTransform} newItem
+* @returns {SVGTransform}
+*/
+/**
+* NOT IMPLEMENTED
+* @ignore
+* @function module:SVGTransformList.SVGEditTransformList#createSVGTransformFromMatrix
+* @param {SVGMatrix} matrix
+* @returns {SVGTransform}
+*/
+/**
+* NOT IMPLEMENTED
+* @ignore
+* @function module:SVGTransformList.SVGEditTransformList#consolidate
+* @returns {SVGTransform}
+*/
+
+/**
+* SVGTransformList implementation for Webkit.
+* These methods do not currently raise any exceptions.
+* These methods also do not check that transforms are being inserted.  This is basically
+* implementing as much of SVGTransformList that we need to get the job done.
+*/
 export class SVGTransformList {
+  /**
+  * @param {Element} elem
+  */
   constructor (elem) {
     this._elem = elem || null;
     this._xforms = [];
@@ -149,102 +197,138 @@ export class SVGTransformList {
     };
 
     this.numberOfItems = 0;
-    this.clear = function () {
-      this.numberOfItems = 0;
-      this._xforms = [];
-    };
+  }
+  /**
+  * @returns {undefined}
+  */
+  clear () {
+    this.numberOfItems = 0;
+    this._xforms = [];
+  }
 
-    this.initialize = function (newItem) {
-      this.numberOfItems = 1;
-      this._removeFromOtherLists(newItem);
-      this._xforms = [newItem];
-    };
+  /**
+  * @param {SVGTransform} newItem
+  * @returns {SVGTransform}
+  */
+  initialize (newItem) {
+    this.numberOfItems = 1;
+    this._removeFromOtherLists(newItem);
+    this._xforms = [newItem];
+  }
 
-    this.getItem = function (index) {
-      if (index < this.numberOfItems && index >= 0) {
-        return this._xforms[index];
-      }
-      const err = new Error('DOMException with code=INDEX_SIZE_ERR');
-      err.code = 1;
-      throw err;
-    };
+  /**
+  * @param {Integer} index unsigned long
+  * @throws {Error}
+  * @returns {SVGTransform}
+  */
+  getItem (index) {
+    if (index < this.numberOfItems && index >= 0) {
+      return this._xforms[index];
+    }
+    const err = new Error('DOMException with code=INDEX_SIZE_ERR');
+    err.code = 1;
+    throw err;
+  }
 
-    this.insertItemBefore = function (newItem, index) {
-      let retValue = null;
-      if (index >= 0) {
-        if (index < this.numberOfItems) {
-          this._removeFromOtherLists(newItem);
-          const newxforms = new Array(this.numberOfItems + 1);
-          // TODO: use array copying and slicing
-          let i;
-          for (i = 0; i < index; ++i) {
-            newxforms[i] = this._xforms[i];
-          }
-          newxforms[i] = newItem;
-          for (let j = i + 1; i < this.numberOfItems; ++j, ++i) {
-            newxforms[j] = this._xforms[i];
-          }
-          this.numberOfItems++;
-          this._xforms = newxforms;
-          retValue = newItem;
-          this._list._update();
-        } else {
-          retValue = this._list.appendItem(newItem);
-        }
-      }
-      return retValue;
-    };
-
-    this.replaceItem = function (newItem, index) {
-      let retValue = null;
-      if (index < this.numberOfItems && index >= 0) {
+  /**
+  * @param {SVGTransform} newItem
+  * @param {Integer} index unsigned long
+  * @returns {SVGTransform}
+  */
+  insertItemBefore (newItem, index) {
+    let retValue = null;
+    if (index >= 0) {
+      if (index < this.numberOfItems) {
         this._removeFromOtherLists(newItem);
-        this._xforms[index] = newItem;
-        retValue = newItem;
-        this._list._update();
-      }
-      return retValue;
-    };
-
-    this.removeItem = function (index) {
-      if (index < this.numberOfItems && index >= 0) {
-        const retValue = this._xforms[index];
-        const newxforms = new Array(this.numberOfItems - 1);
+        const newxforms = new Array(this.numberOfItems + 1);
+        // TODO: use array copying and slicing
         let i;
         for (i = 0; i < index; ++i) {
           newxforms[i] = this._xforms[i];
         }
-        for (let j = i; j < this.numberOfItems - 1; ++j, ++i) {
-          newxforms[j] = this._xforms[i + 1];
+        newxforms[i] = newItem;
+        for (let j = i + 1; i < this.numberOfItems; ++j, ++i) {
+          newxforms[j] = this._xforms[i];
         }
-        this.numberOfItems--;
+        this.numberOfItems++;
         this._xforms = newxforms;
+        retValue = newItem;
         this._list._update();
-        return retValue;
+      } else {
+        retValue = this._list.appendItem(newItem);
       }
-      const err = new Error('DOMException with code=INDEX_SIZE_ERR');
-      err.code = 1;
-      throw err;
-    };
+    }
+    return retValue;
+  }
 
-    this.appendItem = function (newItem) {
+  /**
+  * @param {SVGTransform} newItem
+  * @param {Integer} index unsigned long
+  * @returns {SVGTransform}
+  */
+  replaceItem (newItem, index) {
+    let retValue = null;
+    if (index < this.numberOfItems && index >= 0) {
       this._removeFromOtherLists(newItem);
-      this._xforms.push(newItem);
-      this.numberOfItems++;
+      this._xforms[index] = newItem;
+      retValue = newItem;
       this._list._update();
-      return newItem;
-    };
+    }
+    return retValue;
+  }
+
+  /**
+  * @param {Integer} index unsigned long
+  * @throws {Error}
+  * @returns {SVGTransform}
+  */
+  removeItem (index) {
+    if (index < this.numberOfItems && index >= 0) {
+      const retValue = this._xforms[index];
+      const newxforms = new Array(this.numberOfItems - 1);
+      let i;
+      for (i = 0; i < index; ++i) {
+        newxforms[i] = this._xforms[i];
+      }
+      for (let j = i; j < this.numberOfItems - 1; ++j, ++i) {
+        newxforms[j] = this._xforms[i + 1];
+      }
+      this.numberOfItems--;
+      this._xforms = newxforms;
+      this._list._update();
+      return retValue;
+    }
+    const err = new Error('DOMException with code=INDEX_SIZE_ERR');
+    err.code = 1;
+    throw err;
+  }
+
+  /**
+  * @param {SVGTransform} newItem
+  * @returns {SVGTransform}
+  */
+  appendItem (newItem) {
+    this._removeFromOtherLists(newItem);
+    this._xforms.push(newItem);
+    this.numberOfItems++;
+    this._list._update();
+    return newItem;
   }
 }
 
+/**
+* @function module:SVGTransformList.resetListMap
+* @returns {undefined}
+*/
 export const resetListMap = function () {
   listMap_ = {};
 };
 
 /**
  * Removes transforms of the given element from the map.
- * Parameters:
- * elem - a DOM Element
+ * @function module:SVGTransformList.removeElementFromListMap
+ * @param {Element} elem - a DOM Element
+ * @returns {undefined}
  */
 export let removeElementFromListMap = function (elem) {
   if (elem.id && listMap_[elem.id]) {
@@ -253,8 +337,11 @@ export let removeElementFromListMap = function (elem) {
 };
 
 /**
-* Returns an object that behaves like a SVGTransformList for the given DOM element
-* @param elem - DOM element to get a transformlist from
+* Returns an object that behaves like a `SVGTransformList` for the given DOM element
+* @function module:SVGTransformList.getTransformList
+* @param {Element} elem - DOM element to get a transformlist from
+* @todo The polyfill should have `SVGAnimatedTransformList` and this should use it
+* @returns {SVGAnimatedTransformList|SVGTransformList}
 */
 export const getTransformList = function (elem) {
   if (!supportsNativeTransformLists()) {
@@ -280,7 +367,16 @@ export const getTransformList = function (elem) {
   return null;
 };
 
-// For unit-testing
+/**
+* @callback module:SVGTransformList.removeElementFromListMap
+* @param {Element} elem
+*/
+/**
+* For unit-testing
+* @function module:SVGTransformList.changeRemoveElementFromListMap
+* @param {module:SVGTransformList.removeElementFromListMap} cb Passed a single argument `elem`
+* @returns {undefined}
+*/
 export const changeRemoveElementFromListMap = function (cb) {
   removeElementFromListMap = cb;
 };

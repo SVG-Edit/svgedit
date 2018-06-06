@@ -7,7 +7,7 @@ var svgEditorExtension_php_savefile = (function () {
 
   var extPhp_savefile = {
     name: 'php_savefile',
-    callback: function callback() {
+    init: function init() {
       var svgEditor = this;
       var $ = jQuery;
       var svgCanvas = svgEditor.canvas;

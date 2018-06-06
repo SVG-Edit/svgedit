@@ -1,15 +1,14 @@
 /* globals jQuery */
 /**
- * Coords.
- *
- * Licensed under the MIT License
- *
+ * Manipulating coordinates
+ * @module coords
+ * @license MIT
  */
 
-import './pathseg.js';
+import './svgpathseg.js';
 import {
   snapToGrid, assignAttributes, getBBox, getRefElem, findDefs
-} from './svgutils.js';
+} from './utilities.js';
 import {
   transformPoint, transformListToTransform, matrixMultiply, transformBox
 } from './math.js';
@@ -22,15 +21,26 @@ const pathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a',
   'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
 
 /**
- * @typedef editorContext
- * @type {?object}
- * @property {function} getGridSnapping
- * @property {function} getDrawing
+ * @interface module:coords.EditorContext
+ */
+/**
+ * @function module:coords.EditorContext#getGridSnapping
+ * @returns {boolean}
+ */
+/**
+ * @function module:coords.EditorContext#getDrawing
+ * @returns {module:draw.Drawing}
 */
+/**
+ * @function module:coords.EditorContext#getSVGRoot
+ * @returns {SVGSVGElement}
+*/
+
 let editorContext_ = null;
 
 /**
-* @param {editorContext} editorContext
+* @function module:coords.init
+* @param {module:coords.EditorContext} editorContext
 */
 export const init = function (editorContext) {
   editorContext_ = editorContext;
@@ -38,9 +48,8 @@ export const init = function (editorContext) {
 
 /**
  * Applies coordinate changes to an element based on the given matrix
- * @param {Element} selected - DOM element to be changed
- * @param {Object} changes - Object with changes to be remapped
- * @param {SVGMatrix} m - Matrix object to use for remapping coordinates
+ * @function module:coords.remapElement
+ * @implements {module:path.EditorContext#remapElement}
 */
 export const remapElement = function (selected, changes, m) {
   const remap = function (x, y) { return transformPoint(x, y, m); },

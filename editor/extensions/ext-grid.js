@@ -1,17 +1,17 @@
 /* globals jQuery */
-/*
+/**
  * ext-grid.js
  *
- * Licensed under the Apache License, Version 2
+ * @license Apache-2.0
  *
- * Copyright(c) 2010 Redou Mine
- * Copyright(c) 2010 Alexis Deveria
+ * @copyright 2010 Redou Mine, 2010 Alexis Deveria
  *
  */
 
 export default {
-  name: 'view_grid',
-  init ({NS, getTypeMap}) {
+  name: 'grid',
+  async init ({NS, getTypeMap, importLocale}) {
+    const strings = await importLocale();
     const svgEditor = this;
     const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
@@ -131,8 +131,19 @@ export default {
       $('#canvasGrid').toggle(showGrid);
       $('#view_grid').toggleClass('push_button_pressed tool_button');
     }
+    const buttons = [{
+      id: 'view_grid',
+      type: 'context',
+      panel: 'editor_panel',
+      events: {
+        click () {
+          svgEditor.curConfig.showGrid = showGrid = !showGrid;
+          gridUpdate();
+        }
+      }
+    }];
     return {
-      name: 'view_grid',
+      name: strings.name,
       svgicons: svgEditor.curConfig.extIconsPath + 'grid-icon.xml',
 
       zoomChanged (zoom) {
@@ -143,18 +154,9 @@ export default {
           gridUpdate();
         }
       },
-      buttons: [{
-        id: 'view_grid',
-        type: 'context',
-        panel: 'editor_panel',
-        title: 'Show/Hide Grid',
-        events: {
-          click () {
-            svgEditor.curConfig.showGrid = showGrid = !showGrid;
-            gridUpdate();
-          }
-        }
-      }]
+      buttons: strings.buttons.map((button, i) => {
+        return Object.assign(buttons[i], button);
+      })
     };
   }
 };

@@ -1,13 +1,12 @@
 /**
- * Package: svgedit.units
+ * Tools for working with units
+ * @module units
+ * @license MIT
  *
- * Licensed under the MIT License
- *
- * Copyright(c) 2010 Alexis Deveria
- * Copyright(c) 2010 Jeff Schiller
+ * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import {NS} from './svgedit.js';
+import {NS} from './namespaces.js';
 
 const wAttrs = ['x', 'x1', 'cx', 'rx', 'width'];
 const hAttrs = ['y', 'y1', 'cy', 'ry', 'height'];
@@ -29,25 +28,52 @@ const unitNumMap = {
 // Container of elements.
 let elementContainer_;
 
-/**
- * Stores mapping of unit type to user coordinates.
- */
+// Stores mapping of unit type to user coordinates.
 let typeMap_ = {};
 
 /**
- * ElementContainer interface
- *
- * function getBaseUnit() - Returns a string of the base unit type of the container ('em')
- * function getElement() - Returns an element in the container given an id
- * function getHeight() - Returns the container's height
- * function getWidth() - Returns the container's width
- * function getRoundDigits() - Returns the number of digits number should be rounded to
+ * @interface module:units.ElementContainer
+ */
+/**
+ * @function module:units.ElementContainer#getBaseUnit
+ * @returns {string} The base unit type of the container ('em')
+ */
+/**
+ * @function module:units.ElementContainer#getElement
+ * @returns {Element} An element in the container given an id
+ */
+/**
+ * @function module:units.ElementContainer#getHeight
+ * @returns {Float} The container's height
+ */
+/**
+ * @function module:units.ElementContainer#getWidth
+ * @returns {Float} The container's width
+ */
+/**
+ * @function module:units.ElementContainer#getRoundDigits
+ * @returns {Integer} The number of digits number should be rounded to
+ */
+
+/**
+ * @typedef {PlainObject} module:units.TypeMap
+ * @property {Float} em
+ * @property {Float} ex
+ * @property {Float} in
+ * @property {Float} cm
+ * @property {Float} mm
+ * @property {Float} pt
+ * @property {Float} pc
+ * @property {Integer} px
+ * @property {0} %
  */
 
 /**
  * Initializes this module.
  *
- * @param elementContainer - An object implementing the ElementContainer interface.
+ * @function module:units.init
+ * @param {module:units.ElementContainer} elementContainer - An object implementing the ElementContainer interface.
+ * @returns {undefined}
  */
 export const init = function (elementContainer) {
   elementContainer_ = elementContainer;
@@ -82,19 +108,27 @@ export const init = function (elementContainer) {
 */
 
 /**
-* @returns The unit object with values for each unit
+ * @function module:units.getTypeMap
+ * @returns {module:units.TypeMap} The unit object with values for each unit
 */
 export const getTypeMap = function () {
   return typeMap_;
 };
 
 /**
-* Rounds a given value to a float with number of digits defined in save_options
+* @typedef {GenericArray} module:units.CompareNumbers
+* @property {Integer} length 2
+* @property {Float} 0
+* @property {Float} 1
+*/
+
+/**
+* Rounds a given value to a float with number of digits defined in
+* `round_digits` of `saveOptions`
 *
-* @param val - The value as a String, Number or Array of two numbers to be rounded
-*
-* @returns
-* If a string/number was given, returns a Float. If an array, return a string
+* @function module:units.shortFloat
+* @param {string|Float|module:units.CompareNumbers} val - The value (or Array of two numbers) to be rounded
+* @returns {Float|string} If a string/number was given, returns a Float. If an array, return a string
 * with comma-separated floats
 */
 export const shortFloat = function (val) {
@@ -111,7 +145,8 @@ export const shortFloat = function (val) {
 
 /**
 * Converts the number to given unit or baseUnit
-* @returns {number}
+* @function module:units.convertUnit
+* @returns {Float}
 */
 export const convertUnit = function (val, unit) {
   unit = unit || elementContainer_.getBaseUnit();
@@ -124,9 +159,11 @@ export const convertUnit = function (val, unit) {
 /**
 * Sets an element's attribute based on the unit in its current value.
 *
-* @param elem - DOM element to be changed
-* @param attr - String with the name of the attribute associated with the value
-* @param val - String with the attribute value to convert
+* @function module:units.setUnitAttr
+* @param {Element} elem - DOM element to be changed
+* @param {string} attr - Name of the attribute associated with the value
+* @param {string} val - Attribute value to convert
+* @returns {undefined}
 */
 export const setUnitAttr = function (elem, attr, val) {
   //  if (!isNaN(val)) {
@@ -176,7 +213,9 @@ const attrsToConvert = {
 
 /**
 * Converts all applicable attributes to the configured baseUnit
-* @param element - A DOM element whose attributes should be converted
+* @function module:units.convertAttrs
+* @param {Element} element - A DOM element whose attributes should be converted
+* @returns {undefined}
 */
 export const convertAttrs = function (element) {
   const elName = element.tagName;
@@ -203,8 +242,10 @@ export const convertAttrs = function (element) {
 * Converts given values to numbers. Attributes must be supplied in
 * case a percentage is given
 *
-* @param attr - String with the name of the attribute associated with the value
-* @param val - String with the attribute value to convert
+* @function module:units.convertToNum
+* @param {string} attr - Name of the attribute associated with the value
+* @param {string} val - Attribute value to convert
+* @returns {Float} The converted number
 */
 export const convertToNum = function (attr, val) {
   // Return a number if that's what it already is
@@ -231,8 +272,10 @@ export const convertToNum = function (attr, val) {
 
 /**
 * Check if an attribute's value is in a valid format
-* @param attr - String with the name of the attribute associated with the value
-* @param val - String with the attribute value to check
+* @function module:units.isValidUnit
+* @param {string} attr - The name of the attribute associated with the value
+* @param {string} val - The attribute value to check
+* @returns {boolean} Whether the unit is valid
 */
 export const isValidUnit = function (attr, val, selectedElement) {
   if (unitAttrs.includes(attr)) {

@@ -1,29 +1,22 @@
 /* globals jQuery */
-/*
+/**
  * ext-arrows.js
  *
- * Licensed under the MIT License
+ * @license MIT
  *
- * Copyright(c) 2010 Alexis Deveria
+ * @copyright 2010 Alexis Deveria
  *
  */
 export default {
-  name: 'Arrows',
-  init (S) {
+  name: 'arrows',
+  async init (S) {
+    const strings = await S.importLocale();
     const svgEditor = this;
     const svgCanvas = svgEditor.canvas;
     const $ = jQuery;
     const // {svgcontent} = S,
-      addElem = S.addSvgElementFromJson,
+      addElem = S.addSVGElementFromJson,
       {nonce} = S,
-      langList = {
-        en: [
-          {id: 'arrow_none', textContent: 'No arrow'}
-        ],
-        fr: [
-          {id: 'arrow_none', textContent: 'Sans flèche'}
-        ]
-      },
       prefix = 'se_arrow_';
 
     let selElems, arrowprefix, randomizeIds = S.randomize_ids;
@@ -226,34 +219,32 @@ export default {
       });
     }
 
-    return {
-      name: 'Arrows',
-      context_tools: [{
+    const contextTools = [
+      {
         type: 'select',
         panel: 'arrow_panel',
-        title: 'Select arrow type',
         id: 'arrow_list',
-        options: {
-          none: 'No arrow',
-          end: '----&gt;',
-          start: '&lt;----',
-          both: '&lt;---&gt;',
-          mid: '--&gt;--',
-          mid_bk: '--&lt;--'
-        },
         defval: 'none',
         events: {
           change: setArrow
         }
-      }],
+      }
+    ];
+
+    return {
+      name: strings.name,
+      context_tools: strings.contextTools.map((contextTool, i) => {
+        return Object.assign(contextTools[i], contextTool);
+      }),
       callback () {
         $('#arrow_panel').hide();
         // Set ID so it can be translated in locale file
         $('#arrow_list option')[0].id = 'connector_no_arrow';
       },
-      addLangData (lang) {
+      async addLangData ({lang, importLocale}) {
+        const strings = await importLocale();
         return {
-          data: langList[lang]
+          data: strings.langList
         };
       },
       selectedChanged (opts) {

@@ -1,8 +1,8 @@
 /* eslint-env qunit */
 
-import {NS} from '../editor/svgedit.js';
+import {NS} from '../editor/namespaces.js';
 import * as transformlist from '../editor/svgtransformlist.js';
-import * as utilities from '../editor/svgutils.js';
+import * as utilities from '../editor/utilities.js';
 import * as history from '../editor/history.js';
 
 // TODO(codedread): Write tests for handling history events.

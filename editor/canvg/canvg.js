@@ -1,33 +1,64 @@
 /* eslint-disable new-cap */
-/*
+// Todo: Compare with latest canvg (add any improvements of ours) and add full JSDocs (denoting links to standard APIs and which are custom): https://github.com/canvg/canvg
+/**
  * canvg.js - Javascript SVG parser and renderer on Canvas
- * MIT Licensed
- * Gabe Lerner (gabelerner@gmail.com)
- * http://code.google.com/p/canvg/
+ * @module canvg
+ * @license MIT
+ * @author Gabe Lerner <gabelerner@gmail.com>
+ * @see https://github.com/canvg/canvg
  */
 
 import RGBColor from './rgbcolor.js';
+import {canvasRGBA} from './StackBlur.js';
 
-let stackBlurCanvasRGBA;
-export const setStackBlurCanvasRGBA = (value) => {
-  stackBlurCanvasRGBA = value;
+let canvasRGBA_ = canvasRGBA;
+
+/**
+* @callback module:canvg.StackBlurCanvasRGBA
+* @param {string} id
+* @param {Float} x
+* @param {Float} y
+* @param {Float} width
+* @param {Float} height
+* @param {Float} blurRadius
+*/
+
+/**
+* @callback module:canvg.ForceRedraw
+* @returns {boolean}
+*/
+
+/**
+* @function module:canvg.setStackBlurCanvasRGBA
+* @param {module:canvg.StackBlurCanvasRGBA} cb Will be passed the canvas ID, x, y, width, height, blurRadius
+*/
+export const setStackBlurCanvasRGBA = (cb) => {
+  canvasRGBA_ = cb;
 };
 
-// canvg(target, s)
-// empty parameters: replace all 'svg' elements on page with 'canvas' elements
-// target: canvas element or the id of a canvas element
-// s: svg string, url to svg file, or xml document
-// opts: optional hash of options
-//     ignoreMouse: true => ignore mouse events
-//     ignoreAnimation: true => ignore animations
-//     ignoreDimensions: true => does not try to resize canvas
-//     ignoreClear: true => does not clear canvas
-//     offsetX: int => draws at a x offset
-//     offsetY: int => draws at a y offset
-//     scaleWidth: int => scales horizontally to width
-//     scaleHeight: int => scales vertically to height
-//     forceRedraw: function => will call the function on every frame, if it returns true, will redraw
-// returns all the function after the first render is completed with dom
+/**
+* @typedef {PlainObject} module:canvg.CanvgOptions
+* @property {boolean} opts.ignoreMouse true => ignore mouse events
+* @property {boolean} opts.ignoreAnimation true => ignore animations
+* @property {boolean} opts.ignoreDimensions true => does not try to resize canvas
+* @property {boolean} opts.ignoreClear true => does not clear canvas
+* @property {Integer} opts.offsetX int => draws at a x offset
+* @property {Integer} opts.offsetY int => draws at a y offset
+* @property {Integer} opts.scaleWidth int => scales horizontally to width
+* @property {Integer} opts.scaleHeight int => scales vertically to height
+* @property {module:canvg.ForceRedraw} opts.forceRedraw function => will call the function on every frame, if it returns true, will redraw
+* @property {boolean} opts.log Adds log function
+* @property {boolean} opts.useCORS Whether to set CORS `crossOrigin` for the image to `Anonymous`
+*/
+
+/**
+* If called with no arguments, it will replace all `<svg>` elements on the page with `<canvas>` elements
+* @function module:canvg.canvg
+* @param {HTMLCanvasElement|string} target canvas element or the id of a canvas element
+* @param {string|XMLDocument} s: svg string, url to svg file, or xml document
+* @param {module:canvg.CanvgOptions} [opts] Optional hash of options
+* @returns {Promise} All the function after the first render is completed with dom
+*/
 export const canvg = function (target, s, opts) {
   // no parameters
   if (target == null && s == null && opts == null) {
@@ -69,6 +100,11 @@ export const canvg = function (target, s, opts) {
   return svg.load(ctx, s);
 };
 
+/**
+* @param {module:canvg.CanvgOptions} opts
+* @returns {object}
+* @todo Flesh out exactly what object is returned here (after updating to latest and reincluding our changes here and those of StackBlur)
+*/
 function build (opts) {
   const svg = {opts};
 
@@ -2644,16 +2680,17 @@ function build (opts) {
     }
 
     apply (ctx, x, y, width, height) {
-      if (typeof stackBlurCanvasRGBA === 'undefined') {
+      if (typeof canvasRGBA_ === 'undefined') {
         svg.log('ERROR: `setStackBlurCanvasRGBA` must be run for blur to work');
         return;
       }
 
+      // Todo: This might not be a problem anymore with out `instanceof` fix
       // StackBlur requires canvas be on document
       ctx.canvas.id = svg.UniqueId();
       ctx.canvas.style.display = 'none';
       document.body.append(ctx.canvas);
-      stackBlurCanvasRGBA(ctx.canvas.id, x, y, width, height, this.blurRadius);
+      canvasRGBA_(ctx.canvas.id, x, y, width, height, this.blurRadius);
       ctx.canvas.remove();
     }
   };

@@ -1,7 +1,7 @@
 /* eslint-env qunit */
 
-import {NS} from '../editor/svgedit.js';
-import * as utilities from '../editor/svgutils.js';
+import {NS} from '../editor/namespaces.js';
+import * as utilities from '../editor/utilities.js';
 import * as coords from '../editor/coords.js';
 import * as recalculate from '../editor/recalculate.js';
 
@@ -21,24 +21,39 @@ svgroot.append(svg);
 
 let elemId = 1;
 function setUp () {
-  utilities.init({
-    getSVGRoot () { return svg; },
-    getDOMDocument () { return null; },
-    getDOMContainer () { return null; }
-  });
-  coords.init({
-    getGridSnapping () { return false; },
-    getDrawing () {
-      return {
-        getNextId () { return '' + elemId++; }
-      };
+  utilities.init(
+    /**
+    * @implements {module:utilities.EditorContext}
+    */
+    {
+      getSVGRoot () { return svg; },
+      getDOMDocument () { return null; },
+      getDOMContainer () { return null; }
     }
-  });
-  recalculate.init({
-    getSVGRoot () { return svg; },
-    getStartTransform () { return ''; },
-    setStartTransform () {}
-  });
+  );
+  coords.init(
+    /**
+    * @implements {module:coords.EditorContext}
+    */
+    {
+      getGridSnapping () { return false; },
+      getDrawing () {
+        return {
+          getNextId () { return '' + elemId++; }
+        };
+      }
+    }
+  );
+  recalculate.init(
+    /**
+    * @implements {module:recalculate.EditorContext}
+    */
+    {
+      getSVGRoot () { return svg; },
+      getStartTransform () { return ''; },
+      setStartTransform () {}
+    }
+  );
 }
 
 let elem;

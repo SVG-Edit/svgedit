@@ -1,20 +1,20 @@
 /* globals jQuery */
-/*
+/**
  * ext-star.js
  *
  *
- * Copyright(c) 2010 CloudCanvas, Inc.
- * All rights reserved
+ * @copyright 2010 CloudCanvas, Inc. All rights reserved
  *
  */
 export default {
   name: 'star',
-  init (S) {
+  async init (S) {
     const svgEditor = this;
     const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
 
-    let // {svgcontent} = S,
+    const {importLocale} = S; // {svgcontent},
+    let
       selElems,
       // editingitex = false,
       // svgdoc = S.svgroot.parentNode.ownerDocument,
@@ -24,7 +24,7 @@ export default {
       // newFOG, newFOGParent, newDef, newImageName, newMaskID,
       // undoCommand = 'Not image',
       // modeChangeG, ccZoom, wEl, hEl, wOffset, hOffset, ccRgbEl, brushW, brushH;
-
+    const strings = await importLocale();
     function showPanel (on) {
       let fcRules = $('#fc_rules');
       if (!fcRules.length) {
@@ -54,58 +54,56 @@ export default {
       return 1 / Math.cos(n);
     }
     */
+    const buttons = [{
+      id: 'tool_star',
+      type: 'mode',
+      position: 12,
+      events: {
+        click () {
+          showPanel(true);
+          svgCanvas.setMode('star');
+        }
+      }
+    }];
+    const contextTools = [{
+      type: 'input',
+      panel: 'star_panel',
+      id: 'starNumPoints',
+      size: 3,
+      defval: 5,
+      events: {
+        change () {
+          setAttr('point', this.value);
+        }
+      }
+    }, {
+      type: 'input',
+      panel: 'star_panel',
+      id: 'starRadiusMulitplier',
+      size: 3,
+      defval: 2.5
+    }, {
+      type: 'input',
+      panel: 'star_panel',
+      id: 'radialShift',
+      size: 3,
+      defval: 0,
+      events: {
+        change () {
+          setAttr('radialshift', this.value);
+        }
+      }
+    }];
 
     return {
-      name: 'star',
+      name: strings.name,
       svgicons: svgEditor.curConfig.extIconsPath + 'star-icons.svg',
-      buttons: [{
-        id: 'tool_star',
-        type: 'mode',
-        title: 'Star Tool',
-        position: 12,
-        events: {
-          click () {
-            showPanel(true);
-            svgCanvas.setMode('star');
-          }
-        }
-      }],
-
-      context_tools: [{
-        type: 'input',
-        panel: 'star_panel',
-        title: 'Number of Sides',
-        id: 'starNumPoints',
-        label: 'points',
-        size: 3,
-        defval: 5,
-        events: {
-          change () {
-            setAttr('point', this.value);
-          }
-        }
-      }, {
-        type: 'input',
-        panel: 'star_panel',
-        title: 'Pointiness',
-        id: 'starRadiusMulitplier',
-        label: 'Pointiness',
-        size: 3,
-        defval: 2.5
-      }, {
-        type: 'input',
-        panel: 'star_panel',
-        title: 'Twists the star',
-        id: 'radialShift',
-        label: 'Radial Shift',
-        size: 3,
-        defval: 0,
-        events: {
-          change () {
-            setAttr('radialshift', this.value);
-          }
-        }
-      }],
+      buttons: strings.buttons.map((button, i) => {
+        return Object.assign(buttons[i], button);
+      }),
+      context_tools: strings.contextTools.map((contextTool, i) => {
+        return Object.assign(contextTools[i], contextTool);
+      }),
       callback () {
         $('#star_panel').hide();
         // const endChanges = function(){};
@@ -120,7 +118,7 @@ export default {
         if (svgCanvas.getMode() === 'star') {
           started = true;
 
-          newFO = S.addSvgElementFromJson({
+          newFO = S.addSVGElementFromJson({
             element: 'polygon',
             attr: {
               cx: opts.start_x,

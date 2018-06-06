@@ -105,7 +105,6 @@ export default {
     mode_circle: '‫دایره‬',
     mode_fhellipse: '‫بیضی با قابلیت تغییر پویا‬',
     mode_path: '‫ابزار مسیر ‬',
-    mode_shapelib: 'Shape library',
     mode_text: '‫ابزار متن ‬',
     mode_image: '‫ابزار تصویر ‬',
     mode_zoom: '‫ابزار بزرگ نمایی ‬',
@@ -115,7 +114,6 @@ export default {
     redo: '‫ازنو ‬',
     tool_source: '‫ویرایش منبع ‬',
     wireframe_mode: '‫حالت نمایش لبه ها ‬',
-    toggle_grid: 'Show/Hide Grid',
     clone: 'Clone Element(s)',
     del: 'Delete Element(s)',
     group_elements: '‫قرار دادن عناصر در گروه ‬',
@@ -184,22 +182,6 @@ export default {
     snapping_onoff: 'Snapping on/off',
     snapping_stepsize: 'Snapping Step-Size:',
     grid_color: 'Grid color'
-  },
-  shape_cats: {
-    basic: 'Basic',
-    object: 'Objects',
-    symbol: 'Symbols',
-    arrow: 'Arrows',
-    flowchart: 'Flowchart',
-    animal: 'Animals',
-    game: 'Cards & Chess',
-    dialog_balloon: 'Dialog balloons',
-    electronics: 'Electronics',
-    math: 'Mathematical',
-    music: 'Music',
-    misc: 'Miscellaneous',
-    raphael_1: 'raphaeljs.com set 1',
-    raphael_2: 'raphaeljs.com set 2'
   },
   notification: {
     invalidAttrValGiven: '‫مقدار داده شده نامعتبر است‬',

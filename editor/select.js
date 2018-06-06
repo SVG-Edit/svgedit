@@ -1,15 +1,14 @@
 /* globals jQuery */
 /**
- * Package: svedit.select
+ * DOM element selection box tools
+ * @module select
+ * @license MIT
  *
- * Licensed under the MIT License
- *
- * Copyright(c) 2010 Alexis Deveria
- * Copyright(c) 2010 Jeff Schiller
+ * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
 import {isTouch, isWebkit} from './browser.js'; // , isOpera
-import {getRotationAngle, getBBox, getStrokedBBox} from './svgutils.js';
+import {getRotationAngle, getBBox, getStrokedBBox} from './utilities.js';
 import {transformListToTransform, transformBox, transformPoint} from './math.js';
 import {getTransformList} from './svgtransformlist.js';
 
@@ -22,11 +21,13 @@ const gripRadius = isTouch() ? 10 : 4;
 
 /**
 * Private class for DOM element selection boxes
-* @param id - integer to internally indentify the selector
-* @param elem - DOM element associated with this selector
-* @param bbox - Optional bbox to use for initialization (prevents duplicate getBBox call).
 */
 export class Selector {
+  /**
+  * @param {Integer} id - Internally identify the selector
+  * @param {Element} elem - DOM element associated with this selector
+  * @param {module:utilities.BBoxObject} [bbox] - Optional bbox to use for initialization (prevents duplicate `getBBox` call).
+  */
   constructor (id, elem, bbox) {
     // this is the selector's unique number
     this.id = id;
@@ -76,8 +77,8 @@ export class Selector {
 
   /**
   * Used to reset the id and element that the selector is attached to
-  * @param e - DOM element associated with this selector
-  * @param bbox - Optional bbox to use for reset (prevents duplicate getBBox call).
+  * @param {Element} e - DOM element associated with this selector
+  * @param {module:utilities.BBoxObject} bbox - Optional bbox to use for reset (prevents duplicate getBBox call).
   */
   reset (e, bbox) {
     this.locked = true;
@@ -88,7 +89,7 @@ export class Selector {
 
   /**
   * Updates cursors for corner grips on rotation so arrows point the right way
-  * @param {Number} angle - Float indicating current rotation angle in degrees
+  * @param {Float} angle - Current rotation angle in degrees
   */
   updateGripCursors (angle) {
     let dir;
@@ -112,7 +113,7 @@ export class Selector {
   /**
   * Show the resize grips of this selector
   *
-  * @param {Boolean} show - Indicates whether grips should be shown or not
+  * @param {boolean} show - Indicates whether grips should be shown or not
   */
   showGrips (show) {
     const bShow = show ? 'inline' : 'none';
@@ -127,7 +128,7 @@ export class Selector {
 
   /**
   * Updates the selector to match the element's size
-  * @param bbox - Optional bbox to use for resize (prevents duplicate getBBox call).
+  * @param {module:utilities.BBoxObject} [bbox] - BBox to use for resize (prevents duplicate getBBox call).
   */
   resize (bbox) {
     const selectedBox = this.selectorRect,
@@ -260,7 +261,7 @@ export class Selector {
 }
 
 /**
-*
+* Manage all selector objects (selection boxes)
 */
 export class SelectorManager {
   constructor () {
@@ -372,13 +373,13 @@ export class SelectorManager {
 
     if ($('#canvasBackground').length) { return; }
 
-    const dims = config_.dimensions;
+    const [width, height] = config_.dimensions;
     const canvasbg = svgFactory_.createSVGElement({
       element: 'svg',
       attr: {
         id: 'canvasBackground',
-        width: dims[0],
-        height: dims[1],
+        width,
+        height,
         x: 0,
         y: 0,
         overflow: (isWebkit() ? 'none' : 'visible'), // Chrome 7 has a problem with this when zooming out
@@ -410,9 +411,9 @@ export class SelectorManager {
 
   /**
   *
-  * @param elem - DOM element to get the selector for
-  * @param [bbox] - Optional bbox to use for reset (prevents duplicate getBBox call).
-  * @returns The selector based on the given element
+  * @param {Element} elem - DOM element to get the selector for
+  * @param {module:utilities.BBoxObject} [bbox] - Optional bbox to use for reset (prevents duplicate getBBox call).
+  * @returns {Selector} The selector based on the given element
   */
   requestSelector (elem, bbox) {
     if (elem == null) { return null; }
@@ -441,7 +442,7 @@ export class SelectorManager {
   /**
   * Removes the selector of the given element (hides selection box)
   *
-  * @param elem - DOM element to remove the selector for
+  * @param {Element} elem - DOM element to remove the selector for
   */
   releaseSelector (elem) {
     if (elem == null) { return; }
@@ -469,7 +470,7 @@ export class SelectorManager {
   }
 
   /**
-  * @returns The rubberBandBox DOM element. This is the rectangle drawn by
+  * @returns {SVGRectElement} The rubberBandBox DOM element. This is the rectangle drawn by
   * the user for selecting/zooming
   */
   getRubberBandBox () {
@@ -496,20 +497,44 @@ export class SelectorManager {
 /**
  * An object that creates SVG elements for the canvas.
  *
- * interface svgedit.select.SVGFactory {
- *   SVGElement createSVGElement(jsonMap);
- *   SVGSVGElement svgRoot();
- *   SVGSVGElement svgContent();
- *
- *   Number currentZoom();
- * }
+ * @interface module:select.SVGFactory
+ */
+/**
+ * @function module:select.SVGFactory#createSVGElement
+ * @param {module:utilities.EditorContext#addSVGElementFromJson} jsonMap
+ * @returns {SVGElement}
+ */
+/**
+ * @function module:select.SVGFactory#svgRoot
+ * @returns {SVGSVGElement}
+ */
+/**
+ * @function module:select.SVGFactory#svgContent
+ * @returns {SVGSVGElement}
+ */
+/**
+ * @function module:select.SVGFactory#getCurrentZoom
+ * @returns {Float}
+ */
+
+/**
+ * @typedef {GenericArray} module:select.Dimensions
+ * @property {Integer} length 2
+ * @property {Float} 0 Width
+ * @property {Float} 1 Height
+ */
+/**
+ * @typedef {PlainObject} module:select.Config
+ * @property {string} imgPath
+ * @property {module:select.Dimensions} dimensions
  */
 
 /**
  * Initializes this module.
- *
- * @param config - An object containing configurable parameters (imgPath)
- * @param svgFactory - An object implementing the SVGFactory interface (see above).
+ * @function module:select.init
+ * @param {module:select.Config} config - An object containing configurable parameters (imgPath)
+ * @param {module:select.SVGFactory} svgFactory - An object implementing the SVGFactory interface.
+ * @returns {undefined}
  */
 export const init = function (config, svgFactory) {
   config_ = config;
@@ -518,7 +543,7 @@ export const init = function (config, svgFactory) {
 };
 
 /**
- *
- * @returns The SelectorManager instance.
+ * @function module:select.getSelectorManager
+ * @returns {module:select.SelectorManager} The SelectorManager instance.
  */
 export const getSelectorManager = () => selectorManager_;

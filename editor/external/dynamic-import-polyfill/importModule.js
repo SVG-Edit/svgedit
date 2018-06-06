@@ -1,6 +1,10 @@
 // MIT License
 // From: https://github.com/uupaa/dynamic-import-polyfill/blob/master/importModule.js
 
+/**
+ * @module importModule
+ */
+
 function toAbsoluteURL (url) {
   const a = document.createElement('a');
   a.setAttribute('href', url); // <a href="hoge.html">
@@ -16,9 +20,26 @@ function addScriptAtts (script, atts) {
 }
 
 // Additions by Brett
+/**
+* @typedef {PlainObject} module:importModule.ImportConfig
+* @property {string} global The variable name to set on `window` (when not using the modular version)
+* @property {boolean} [returnDefault=false]
+*/
+/**
+* @function module:importModule.importSetGlobalDefault
+* @param {string} url
+* @param {module:importModule.ImportConfig} config
+* @returns {*} The return depends on the export of the targeted module.
+*/
 export async function importSetGlobalDefault (url, config) {
   return importSetGlobal(url, {...config, returnDefault: true});
 }
+/**
+* @function module:importModule.importSetGlobal
+* @param {string} url
+* @param {module:importModule.ImportConfig} config
+* @returns {ArbitraryModule|*} The return depends on the export of the targeted module.
+*/
 export async function importSetGlobal (url, {global, returnDefault}) {
   // Todo: Replace calls to this function with `import()` when supported
   const modularVersion = !('svgEditor' in window) ||

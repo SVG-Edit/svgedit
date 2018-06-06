@@ -1,57 +1,48 @@
-/*
-Embedded SVG-edit API
-
-General usage:
-- Have an iframe somewhere pointing to a version of svg-edit > r1000
-- Initialize the magic with:
-const svgCanvas = new EmbeddedSVGEdit(window.frames.svgedit);
-- Pass functions in this format:
-svgCanvas.setSvgString('string')
-- Or if a callback is needed:
-svgCanvas.setSvgString('string')(function(data, error){
-  if (error){
-  // There was an error
-  } else{
-  // Handle data
-  }
-})
-
-Everything is done with the same API as the real svg-edit,
-and all documentation is unchanged.
-
-However, this file depends on the postMessage API which
-can only support JSON-serializable arguments and
-return values, so, for example, arguments whose value is
-'undefined', a function, a non-finite number, or a built-in
-object like Date(), RegExp(), etc. will most likely not behave
-as expected. In such a case one may need to host
-the SVG editor on the same domain and reference the
-JavaScript methods on the frame itself.
-
-The only other difference is
-when handling returns: the callback notation is used instead.
-
-const blah = new EmbeddedSVGEdit(window.frames.svgedit);
-blah.clearSelection('woot', 'blah', 1337, [1, 2, 3, 4, 5, 'moo'], -42, {a: 'tree',b:6, c: 9})(function(){console.log('GET DATA',arguments)})
+/**
+* Handles underlying communication between the embedding window and the editor frame
+* @module EmbeddedSVGEdit
 */
+
 let cbid = 0;
 
-function getCallbackSetter (d) {
-  return function () {
-    const t = this, // New callback
-      args = [].slice.call(arguments),
-      cbid = t.send(d, args, function () {}); // The callback (currently it's nothing, but will be set later)
+/**
+* @callback module:EmbeddedSVGEdit.GenericCallback
+* @param {...*} args Signature dependent on the function
+* @returns {*} Return dependent on the function
+*/
+/**
+* @callback module:EmbeddedSVGEdit.CallbackSetter
+* @param {module:EmbeddedSVGEdit.GenericCallback} newCallback Callback to be stored (signature dependent on function)
+* @returns {undefined}
+*/
+/**
+* @callback module:EmbeddedSVGEdit.CallbackSetGetter
+* @param {...*} args Signature dependent on the function
+* @returns {module:EmbeddedSVGEdit.CallbackSetter}
+*/
 
-    return function (newcallback) {
-      t.callbacks[cbid] = newcallback; // Set callback
+/**
+* @param {string} d
+* @returns {module:EmbeddedSVGEdit.CallbackSetGetter}
+*/
+function getCallbackSetter (funcName) {
+  return function (...args) {
+    const t = this, // New callback
+      cbid = t.send(funcName, args, function () {}); // The callback (currently it's nothing, but will be set later)
+
+    return function (newCallback) {
+      t.callbacks[cbid] = newCallback; // Set callback
     };
   };
 }
 
-/*
+/**
 * Having this separate from messageListener allows us to
 * avoid using JSON parsing (and its limitations) in the case
 * of same domain control
+* @param {module:EmbeddedSVGEdit.EmbeddedSVGEdit} t The `this` value
+* @param {JSON} data
+* @returns {undefined}
 */
 function addCallback (t, data) {
   const result = data.result || data.error,
@@ -65,6 +56,10 @@ function addCallback (t, data) {
   }
 }
 
+/**
+* @param {Event} e
+* @returns {undefined}
+*/
 function messageListener (e) {
   // We accept and post strings as opposed to objects for the sake of IE9 support; this
   //   will most likely be changed in the future
@@ -82,6 +77,15 @@ function messageListener (e) {
   addCallback(this, data);
 }
 
+/**
+* @callback module:EmbeddedSVGEdit.MessageListener
+* @param {MessageEvent} e
+* @returns {undefined}
+*/
+/**
+* @param {module:EmbeddedSVGEdit.EmbeddedSVGEdit} t The `this` value
+* @returns {module:EmbeddedSVGEdit.MessageListener} Event listener
+*/
 function getMessageListener (t) {
   return function (e) {
     messageListener.call(t, e);
@@ -89,13 +93,52 @@ function getMessageListener (t) {
 }
 
 /**
-* @param {HTMLIFrameElement} frame
-* @param {array} [allowedOrigins=[]] Array of origins from which incoming
-*   messages will be allowed when same origin is not used; defaults to none.
-*   If supplied, it should probably be the same as svgEditor's allowedOrigins
-*/
+* Embedded SVG-edit API
+* General usage:
+- Have an iframe somewhere pointing to a version of svg-edit > r1000
+* @example
 
+// Initialize the magic with:
+const svgCanvas = new EmbeddedSVGEdit(window.frames.svgedit);
+
+// Pass functions in this format:
+svgCanvas.setSvgString('string');
+
+// Or if a callback is needed:
+svgCanvas.setSvgString('string')(function(data, error){
+  if (error){
+  // There was an error
+  } else{
+  // Handle data
+  }
+});
+
+// Everything is done with the same API as the real svg-edit,
+// and all documentation is unchanged.
+
+// However, this file depends on the postMessage API which
+// can only support JSON-serializable arguments and
+// return values, so, for example, arguments whose value is
+// 'undefined', a function, a non-finite number, or a built-in
+// object like Date(), RegExp(), etc. will most likely not behave
+// as expected. In such a case one may need to host
+// the SVG editor on the same domain and reference the
+// JavaScript methods on the frame itself.
+
+// The only other difference is
+// when handling returns: the callback notation is used instead.
+const blah = new EmbeddedSVGEdit(window.frames.svgedit);
+blah.clearSelection('woot', 'blah', 1337, [1, 2, 3, 4, 5, 'moo'], -42, {a: 'tree',b:6, c: 9})(function(){console.log('GET DATA',arguments)})
+*
+* @memberof module:EmbeddedSVGEdit
+*/
 class EmbeddedSVGEdit {
+  /**
+  * @param {HTMLIFrameElement} frame
+  * @param {string[]} [allowedOrigins=[]] Array of origins from which incoming
+  *   messages will be allowed when same origin is not used; defaults to none.
+  *   If supplied, it should probably be the same as svgEditor's allowedOrigins
+  */
   constructor (frame, allowedOrigins) {
     const t = this;
     this.allowedOrigins = allowedOrigins || [];
@@ -118,7 +161,7 @@ class EmbeddedSVGEdit {
     // Run in svgedit itself
     const functions = [
       'addExtension',
-      'addSvgElementFromJson',
+      'addSVGElementFromJson',
       'addToSelection',
       'alignSelectedElements',
       'assignAttributes',
@@ -292,6 +335,11 @@ class EmbeddedSVGEdit {
     });
   }
 
+  /**
+  * @param {string} name
+  * @param {ArgumentsArray} args Signature dependent on function
+  * @param {module:EmbeddedSVGEdit.GenericCallback} callback
+  */
   send (name, args, callback) {
     const t = this;
     cbid++;

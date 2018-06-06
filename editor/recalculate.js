@@ -1,20 +1,16 @@
 /* globals jQuery */
 /**
  * Recalculate.
- *
- * Licensed under the MIT License
- *
+ * @module recalculate
+ * @license MIT
  */
 
-// Dependencies:
-// 1) jquery-svg.js
-
-import jqPluginSVG from './jquery-svg.js'; // Needed for SVG attribute setting and array form with `attr`
-import {NS} from './svgedit.js';
+import jqPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
+import {NS} from './namespaces.js';
 import {convertToNum} from './units.js';
 import {isWebkit} from './browser.js';
 import {getTransformList} from './svgtransformlist.js';
-import {getRotationAngle, getHref, getBBox, getRefElem} from './svgutils.js';
+import {getRotationAngle, getHref, getBBox, getRefElem} from './utilities.js';
 import {BatchCommand, ChangeElementCommand} from './history.js';
 import {remapElement} from './coords.js';
 import {
@@ -27,17 +23,38 @@ const $ = jqPluginSVG(jQuery);
 let context_;
 
 /**
-* @param editorContext
+* @interface module:recalculate.EditorContext
+*/
+/**
+ * @function module:recalculate.EditorContext#getSVGRoot
+ * @returns {SVGSVGElement} The root DOM element
+ */
+/**
+ * @function module:recalculate.EditorContext#getStartTransform
+ * @returns {string}
+*/
+/**
+ * @function module:recalculate.EditorContext#setStartTransform
+ * @param {string} transform
+ * @returns {undefined}
+ */
+
+/**
+* @function module:recalculate.init
+* @param {module:recalculate.EditorContext} editorContext
+* @returns {undefined}
 */
 export const init = function (editorContext) {
   context_ = editorContext;
 };
 
 /**
-* Updates a <clipPath>s values based on the given translation of an element
-* @param attr - The clip-path attribute value with the clipPath's ID
-* @param tx - The translation's x value
-* @param ty - The translation's y value
+* Updates a `<clipPath>`s values based on the given translation of an element
+* @function module:recalculate.updateClipPath
+* @param {string} attr - The clip-path attribute value with the clipPath's ID
+* @param {Float} tx - The translation's x value
+* @param {Float} ty - The translation's y value
+* @returns {undefined}
 */
 export const updateClipPath = function (attr, tx, ty) {
   const path = getRefElem(attr).firstChild;
@@ -53,8 +70,9 @@ export const updateClipPath = function (attr, tx, ty) {
 
 /**
 * Decides the course of action based on the element's transform list
-* @param selected - The DOM element to recalculate
-* @returns Undo command object with the resulting change
+* @function module:recalculate.recalculateDimensions
+* @param {Element} selected - The DOM element to recalculate
+* @returns {Command} Undo command object with the resulting change
 */
 export const recalculateDimensions = function (selected) {
   if (selected == null) { return null; }
@@ -629,7 +647,7 @@ export const recalculateDimensions = function (selected) {
 
     // Check if it has a gradient with userSpaceOnUse, in which case
     // adjust it by recalculating the matrix transform.
-    // TODO: Make this work in Webkit using svgedit.transformlist.SVGTransformList
+    // TODO: Make this work in Webkit using transformlist.SVGTransformList
     if (!isWebkit()) {
       const fill = selected.getAttribute('fill');
       if (fill && fill.startsWith('url(')) {

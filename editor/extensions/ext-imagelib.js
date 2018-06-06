@@ -1,19 +1,17 @@
 /* globals jQuery */
-/*
+/**
  * ext-imagelib.js
  *
- * Licensed under the MIT License
+ * @license MIT
  *
- * Copyright(c) 2010 Alexis Deveria
+ * @copyright 2010 Alexis Deveria
  *
  */
-import {importSetGlobalDefault} from '../external/dynamic-import-polyfill/importModule.js';
-
 export default {
   name: 'imagelib',
-  init ({decode64}) {
+  async init ({decode64, importLocale}) {
+    const imagelibStrings = await importLocale();
     const svgEditor = this;
-    let imagelibStrings;
 
     const $ = jQuery;
     const {uiStrings, canvas: svgCanvas} = svgEditor;
@@ -23,7 +21,7 @@ export default {
     }
 
     function importImage (url) {
-      const newImage = svgCanvas.addSvgElementFromJson({
+      const newImage = svgCanvas.addSVGElementFromJson({
         element: 'image',
         attr: {
           x: 0,
@@ -340,10 +338,19 @@ export default {
             .appendTo(libOpts)
             .text(name)
             .on('click touchend', function () {
-              frame.attr('src', url({
-                path: svgEditor.curConfig.extIconsPath,
-                modularVersion
-              })).show();
+              frame.attr(
+                'src',
+                // Todo: Adopt some standard formatting library like `fluent.js` instead
+                url.replace(
+                  '{path}',
+                  svgEditor.curConfig.extIconsPath
+                ).replace(
+                  '{modularVersion}',
+                  modularVersion
+                    ? (imagelibStrings.moduleEnding || '-es')
+                    : ''
+                )
+              ).show();
               header.text(name);
               libOpts.hide();
               back.show();
@@ -354,30 +361,20 @@ export default {
       }
     }
 
+    const buttons = [{
+      id: 'tool_imagelib',
+      type: 'app_menu', // _flyout
+      position: 4,
+      events: {
+        mouseup: showBrowser
+      }
+    }];
+
     return {
       svgicons: svgEditor.curConfig.extIconsPath + 'ext-imagelib.xml',
-      buttons: [{
-        id: 'tool_imagelib',
-        type: 'app_menu', // _flyout
-        position: 4,
-        title: 'Image library',
-        events: {
-          mouseup: showBrowser
-        }
-      }],
-      async langReady ({lang}) {
-        async function tryImport (lang) {
-          const url = `${svgEditor.curConfig.extPath}ext-locale/imagelib/${lang}.js`;
-          imagelibStrings = await importSetGlobalDefault(url, {
-            global: 'svgEditorExtensionLocale_imagelib_' + lang
-          });
-        }
-        try {
-          await tryImport(lang);
-        } catch (err) {
-          await tryImport('en');
-        }
-      },
+      buttons: imagelibStrings.buttons.map((button, i) => {
+        return Object.assign(buttons[i], button);
+      }),
       callback () {
         $('<style>').text(
           '#imgbrowse_holder {' +

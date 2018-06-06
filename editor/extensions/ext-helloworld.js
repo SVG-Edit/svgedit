@@ -1,27 +1,28 @@
 /* globals jQuery */
-/*
+/**
  * ext-helloworld.js
  *
- * Licensed under the MIT License
+ * @license MIT
  *
- * Copyright(c) 2010 Alexis Deveria
+ * @copyright 2010 Alexis Deveria
  *
  */
 
-/*
-  This is a very basic SVG-Edit extension. It adds a "Hello World" button in
-  the left panel. Clicking on the button, and then the canvas will show the
-  user the point on the canvas that was clicked on.
+/**
+* This is a very basic SVG-Edit extension. It adds a "Hello World" button in
+*  the left ("mode") panel. Clicking on the button, and then the canvas
+*  will show the user the point on the canvas that was clicked on.
 */
-
 export default {
-  name: 'Hello World',
-  init () {
+  name: 'helloworld',
+  async init ({importLocale}) {
+    // See `/editor/extensions/ext-locale/helloworld/`
+    const strings = await importLocale();
     const svgEditor = this;
     const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
     return {
-      name: 'Hello World',
+      name: strings.name,
       // For more notes on how to make an icon file, see the source of
       // the helloworld-icon.xml
       svgicons: svgEditor.curConfig.extIconsPath + 'helloworld-icon.xml',
@@ -36,7 +37,7 @@ export default {
         type: 'mode',
 
         // Tooltip text
-        title: "Say 'Hello World'",
+        title: strings.buttons[0].title,
 
         // Events
         events: {
@@ -70,8 +71,14 @@ export default {
           const x = opts.mouse_x / zoom;
           const y = opts.mouse_y / zoom;
 
-          const text = 'Hello World!\n\nYou clicked here: ' +
-            x + ', ' + y;
+          // We do our own formatting
+          let {text} = strings;
+          [
+            ['x', x],
+            ['y', y]
+          ].forEach(([prop, val]) => {
+            text = text.replace('{' + prop + '}', val);
+          });
 
           // Show the text using the custom alert function
           $.alert(text);

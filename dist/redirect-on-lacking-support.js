@@ -49,13 +49,15 @@
     return call && (typeof call === "object" || typeof call === "function") ? call : self;
   };
 
-  // SVGPathSeg API polyfill
-  // https://github.com/progers/pathseg
-  //
-  // This is a drop-in replacement for the SVGPathSeg and SVGPathSegList APIs that were removed from
-  // SVG2 (https://lists.w3.org/Archives/Public/www-svg/2015Jun/0044.html), including the latest spec
-  // changes which were implemented in Firefox 43 and Chrome 46.
-
+  /**
+  * SVGPathSeg API polyfill
+  * https://github.com/progers/pathseg
+  *
+  * This is a drop-in replacement for the `SVGPathSeg` and `SVGPathSegList` APIs
+  * that were removed from SVG2 ({@link https://lists.w3.org/Archives/Public/www-svg/2015Jun/0044.html}),
+  * including the latest spec changes which were implemented in Firefox 43 and
+  * Chrome 46.
+  */
   (function () {
     if (!('SVGPathSeg' in window)) {
       // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGPathSeg
@@ -1944,12 +1946,16 @@
   })();
 
   /**
-   *
-   * Licensed under the MIT License
-   */
+   * Namespaces or tools therefor
+   * @module namespaces
+   * @license MIT
+  */
 
   /**
   * Common namepaces constants in alpha order
+  * @enum {string}
+  * @type {PlainObject}
+  * @memberof module:namespaces
   */
   var NS = {
     HTML: 'http://www.w3.org/1999/xhtml',
@@ -1965,12 +1971,16 @@
 
   var $ = jQuery;
 
-  var supportsSvg_ = function () {
+  var supportsSVG_ = function () {
     return !!document.createElementNS && !!document.createElementNS(NS.SVG, 'svg').createSVGRect;
   }();
 
+  /**
+   * @function module:browser.supportsSvg
+   * @returns {boolean}
+  */
   var supportsSvg = function supportsSvg() {
-    return supportsSvg_;
+    return supportsSVG_;
   };
 
   var _navigator = navigator,

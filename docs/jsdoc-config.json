@@ -1,4 +1,8 @@
 {
+  "plugins": ["plugins/markdown"],
+  "markdown": {
+    "tags": []
+  },
   "recurseDepth": 10,
   "source": {
     "exclude": [
@@ -13,16 +17,19 @@
   },
   "sourceType": "module",
   "tags": {
-    "allowUnknownTags": true
+    "allowUnknownTags": false
   },
   "templates": {
-    "cleverLinks": false,
-    "monospaceLinks": false
+    "cleverLinks": true,
+    "monospaceLinks": false,
+    "default": {
+      "layoutFile": "docs/layout.tmpl"
+    }
   },
   "opts":{
     "recurse": true,
     "verbose": true,
-    "destination": ".jsdoc/out"
-  },
-  "plugins": ["plugins/markdown"]
+    "destination": "docs/jsdoc",
+    "tutorials": "docs/tutorials"
+  }
 }

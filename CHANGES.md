@@ -1,5 +1,37 @@
 # ?
 
+- Security fix: 'extPath', 'imgPath', 'extIconsPath', 'canvgPath',
+  'langPath', 'jGraduatePath', and 'jspdfPath' were not being prevented
+- Breaking change: Rename "svgutils.js" to "utilities.js" (make in
+  conformity with JSDoc module naming convention)
+- Breaking change: Rename "svgedit.js" to "namespaces.js" (to make clear
+  purpose and avoid confusing with editor)
+- Breaking change: Rename "jquery-svg.js" to "jQuery.attr.js"
+- Breaking change: Rename "jquery.contextMenu.js" to "jQuery.contextMenu.js"
+- Breaking change: Rename "jquery.jpicker.js" to "jQuery.jPicker.js"
+- Breaking change: Rename "JQuerySpinBtn.css" to "jQuery.SpinButton.css"
+- Breaking change: Rename "JQuerySpinBtn.js" to "jQuery.SpinButton.js" (to
+  have file name more closely reflect name)
+- Breaking change: Rename "jquery.svgicons.js" to "jQuery.svgIcons.js"
+- Breaking change: Rename "jquery.jgraduate.js" to "jQuery.jGraduate.js"
+- Breaking change: Rename "pathseg.js" to "svgpathseg.js" (as it is a
+  poyfill of SVGPathSeg)
+- Breaking change: Rename `addSvgElementFromJson()` to `addSVGElementFromJson`
+  for consistency
+- Breaking change: Rename `changeSvgContent()` to `changeSVGContent()` for
+  consistency
+- Breaking change: Have `exportPDF` resolve with `output` and `outputType`
+  rather than `dataurlstring` (as type may vary)
+- Breaking change: Rename `extensions/mathjax/MathJax.js` to
+  `extensions/mathjax/MathJax.min.js`
+- Breaking change: Avoid recent change to have editor ready callbacks
+  return Promises (we're not using and advantageous to keep sequential)
+- Breaking change: Avoid recent addition of locale-side function in
+  ext-imagelib for l10n
+- Breaking change: Change name of `ext-arrows.js` from `Arrows` to `arrows`
+  for sake of file path (not localized anyways).
+- Breaking change: Change `addlangData` extension event to `addLangData`
+  for consistency with method name
 - Breaking change: In interests of modularity/removing globals,
   remove `window.svgCanvas` and `svgCanvas.ready` as used by older
   extensions; use `svgEditor.canvas` and `svgEditor.ready` instead
@@ -13,14 +45,19 @@
   (`setStackBlurCanvasRGBA`) rather than global; `canvg` now a named export
 - Breaking change: Avoid passing `canvg`/`buildCanvgCallback` to extensions
   (have them import)
+- Breaking change: Have `readLang`  return lang and data but do not call
+  `setLang`
 - npm: Add `prepublishOnly` script to ensure building/testing before publish
-- npm: Update devDep Rollup, Sinon
+- npm: Update devDeps including Rollup, Sinon
 - Fix: Remove redundant (and incorrect) length set. (#256 ; fixes #255)
 - Fix: Detection of whether to keep ellipse (rx and ry when just created
   are now returning 0 instead of null); also with rectangle/square;
   fixes #262
 - Fix: Avoid erring during resize on encountering MathML (which have no
   `style`)
+- Fix: Have general locales load first so extensions may use
+- Fix: Provide `importLocale` to extensions `init` so it may delay
+  adding of the extension until locale data loaded
 - Fix: i18nize imaglib more deeply
 - Fix: Positioning of Document Properties dialog (Fixes #246)
 - Fix (regression): PDF Export (Fixes #249)
@@ -31,15 +68,37 @@
 - Fix (embedded editor): Fix backspace key in Firefox so it doesn't navigate
   out of frame
 - Fix: Alert if no `exportWindow` for PDF (e.g., if blocked)
+- Fix: Ensure call to `rasterExport` without `imgType` properly sets MIME
+  type to PNG
+- Fix: Wrong name for moinsave
 - Fix (Embedded API): Cross-domain may fail to even access `origin` or
   `contentDocument`
 - Fix (Embedded API): Avoid adding URL to iframe src if there are no arguments
 - Fix (Cross-domain usage): Recover from exceptions with `localStorage`
 - Fix regression (Imagelib): Fix path for non-module version
+- Update: Update WebAppFind per new API changes
+- Enhancement: Make `setStrings` public on editor for late setting (used
+  by `ext-shapes.js`)
+- Enhancement: Add `extensions_added` event
+- Enhancement: Add `message` event (Relay messages including those which
+  have been been received prior to extension load)
 - Enhancement: Sort SVG attributes alphabetically (#252 @Neil Fraser)
 - Enhancement: Allow callback argument and return promise
   for canvas methods: `rasterExport` and `exportPDF`
 - Enhancement: Add `pointsAdded` canvas event (Fixes #141)
+- Enhancement: Allow SVGEdit to work out of the box--avoid need for copying
+  sample config file. Should also help with Github-based file servers
+- Enhancement: Allow avoiding "name" in extension export (just extract out
+  of file name)
+- Enhancement: Add stack blur to canvg by default (and refactoring it)
+- Enhancement: Return `Promise` for `embedImage` (as with some other loading
+  methods)
+- Enhancement: Supply `importLocale` to `langReady` to facilitate extension
+  locale loading
+- Enhancement: Recover if an extension fails to load (just log and otherwise
+  ignore)
+- Enhancement: More i18n of extensions
+- Enhancement: Allowing importing of locales within `addLangData`
 - i18n: Clarify locale messages (where still available as English) to reflect
   fact that Chrome only has "Save as" via context menu/right-click, not via
   file menu (toward #192)
@@ -59,19 +118,55 @@
 - Refactoring: Fix `lang` and `dir` for locales (though not in use
   currently anyways)
 - Refactoring: Provide path config for canvg, jspdf
+- Refactoring: Drop code for extension as function (already requiring export
+  to be an object)
+- Refactoring: Object destructuring, `Object.entries`, Object shorthand,
+  array extras, more camelCase variable names
+- Refactoring: Add a `Command` base class
+- Refactoring: Simplify svgicons `callback` ready detection
+- Refactoring: Put `let` or `const` closer to scope
+- Refactoring: Remove unneeded `delimiter` from regex escaping utility
+- Refactoring: Clearer variable names
+- Refactoring: Use (non-deprecated) Event constructors
 - Refactoring (minor): variadic args through ellipsis
 - Refactoring (minor): `getIssues` to return codes and strings, lbs
 - Refactoring (minor): Use single quotes in PHP
 - Docs (Code comments): Coding standards within
-- Docs: Move jsdoc output to public directory so may be visible on releases
-  (while still having in a `.gitignore`)
-- Docs (JSDoc): Add items; fix table layout
-- Docs: Exclusions from jsdoc
 - Docs: Transfer some changes from ExtensionDocs on wiki (need to fully
   reconcile)
 - Docs: Reference JSDocs in README
 - Docs (ReleaseInstructions): Update
+- Docs: Migrate copies of all old wiki pages to docs/from-old-wiki
+  folder; intended for a possible move to Markdown, so raw HTML
+  (with formatting) was not preserved, though named links were carried over
+  with absolute URLs
+- Docs: Begin deleting `SvgCanvas.md` as ensuring jsdoc has replacements
+- Docs: Add Edtior doc file for help to general users
+- Docs: Clarify/simplify install instructions
+- Docs: Generally update/improve docs (fixes #92)
+- Docs: Update links to `latest` path (Avoid needing to update such
+  references upon each release)
+- Docs: 80 chars max
+- npm/Docs (JSDoc): Add script to check for overly generic types
+- Docs (JSDoc): Move jsdoc output to public directory so may be visible
+  on releases (while still having in a `.gitignore`)
+- Docs (JSDoc): Exclusions
+- Docs (JSDoc): Add items; fix table layout
+- Docs (JSDoc): For config/prefs and extension creating, link to tutorials
+  (moved tutorials to own directory to avoid recursion problems by jsdoc)
+- Docs (JSDoc): Add modules (upper case for usual main entrance files or
+  regular names)
+- Docs (JSDoc): Fill out missing areas; indicate return of `undefined`;
+  consistency with `@returns`
+- Docs (JSDoc): Use Markdown plugin over HTML
+- Docs (JSDoc): Add our own layout template to support overflow
+- Docs (JSDoc): Use cleverLinks and disallow unknown tags
+- Docs (JSDoc): Insist on "pedantic" flag; put output directory in config
+- Docs (JSDoc): Use more precise Integer/Float over number, the specific type
+  of array/function/object
+- Docs (JSDoc): Use `@throws`, `@enum`, `@event`/`@fires`/`@listens`
 - Linting (ESLint): Avoid linting jsdoc folder
+- Testing: Use new Sinon
 
 # 3.0.0-alpha.4
 
@@ -333,7 +428,7 @@ git log 4bb15e0..253b4bf
 - Potentially breaking API changes:
     * Disallowed "extPath", "imgPath", "langPath", and "jGraduatePath" setting via URL and prevent cross-domain/cross-folder extensions being set by URL (security enhancement)
     * Deprecated "pngsave" option called by setCustomHandlers() in favor of "exportImage" (to accommodate export of other image types). Second argument will now supply, in addition to "issues" and "svg", the properties "type" (currently 'PNG', 'JPEG', 'BMP', 'WEBP'), "mimeType", and "quality" (for 'JPEG' and 'WEBP' types).
-    * Default extensions will now always load (along with those supplied in the URL unless the latter is prohibited by configuration), so if you do not wish your old code to load all of the default extensions, you will need to add &noDefaultExtensions=true to the URL (or add equivalent configuration in config.js). ext-overview_window.js can now be excluded though it is still a default.
+    * Default extensions will now always load (along with those supplied in the URL unless the latter is prohibited by configuration), so if you do not wish your old code to load all of the default extensions, you will need to add `&noDefaultExtensions=true` to the URL (or add equivalent configuration in config.js). ext-overview_window.js can now be excluded though it is still a default.
     * Preferences and configuration options must be within the list supplied within svg-editor.js (should include those of all documented extensions).
     * Embedded messaging will no longer work by default for privacy/data integrity reasons. One must include the "ext-xdomain-messaging.js" extension and supply an array configuration item, "allowedOrigins" with potential values including: "\*" (to allow all domains--strongly discouraged!), "null" as a string to allow file:// access, window.location.origin (to allow same domain access), or specific trusted origins. The embedded editor works without the extension if the main editor is on the same domain, but if cross-domain control is needed, the "allowedOrigins" array must be supplied by a call to svgEditor.setConfig({allowedOrigins: [origin1, origin2, etc.]}) in the new config.js file.
 
@@ -357,7 +452,7 @@ git log 4bb15e0..253b4bf
 - Open Local Files (Firefox 3.6+ only)
 - Import SVG into Drawing (Firefox 3.6+ only)
 - Ability to create extensions/plugins
-- Main menu and overal interface improvements
+- Main menu and overall interface improvements
 - Create and select elements outside the canvas
 - Base support for the svg:use element
 - Add/Edit Sub-paths

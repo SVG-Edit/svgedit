@@ -1,6 +1,6 @@
 /* eslint-env qunit */
 
-import '../editor/pathseg.js';
+import '../editor/svgpathseg.js';
 import SvgCanvas from '../editor/svgcanvas.js';
 
 // log function

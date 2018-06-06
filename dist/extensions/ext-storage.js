@@ -30,174 +30,29 @@ var svgEditorExtension_storage = (function () {
     };
   };
 
-  var _extends = Object.assign || function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
-    }
-
-    return target;
-  };
-
-  // MIT License
-  // From: https://github.com/uupaa/dynamic-import-polyfill/blob/master/importModule.js
-
-  function toAbsoluteURL(url) {
-    var a = document.createElement('a');
-    a.setAttribute('href', url); // <a href="hoge.html">
-    return a.cloneNode(false).href; // -> "http://example.com/hoge.html"
-  }
-
-  function addScriptAtts(script, atts) {
-    ['id', 'class', 'type'].forEach(function (prop) {
-      if (prop in atts) {
-        script[prop] = atts[prop];
-      }
-    });
-  }
-
-  // Additions by Brett
-  var importSetGlobalDefault = function () {
-    var _ref = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(url, config) {
-      return regeneratorRuntime.wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              return _context.abrupt('return', importSetGlobal(url, _extends({}, config, { returnDefault: true })));
-
-            case 1:
-            case 'end':
-              return _context.stop();
-          }
-        }
-      }, _callee, this);
-    }));
-
-    return function importSetGlobalDefault(_x, _x2) {
-      return _ref.apply(this, arguments);
-    };
-  }();
-  var importSetGlobal = function () {
-    var _ref3 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(url, _ref2) {
-      var global = _ref2.global,
-          returnDefault = _ref2.returnDefault;
-      var modularVersion;
-      return regeneratorRuntime.wrap(function _callee2$(_context2) {
-        while (1) {
-          switch (_context2.prev = _context2.next) {
-            case 0:
-              // Todo: Replace calls to this function with `import()` when supported
-              modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false;
-
-              if (!modularVersion) {
-                _context2.next = 3;
-                break;
-              }
-
-              return _context2.abrupt('return', importModule(url, undefined, { returnDefault: returnDefault }));
-
-            case 3:
-              _context2.next = 5;
-              return importScript(url);
-
-            case 5:
-              return _context2.abrupt('return', window[global]);
-
-            case 6:
-            case 'end':
-              return _context2.stop();
-          }
-        }
-      }, _callee2, this);
-    }));
-
-    return function importSetGlobal(_x3, _x4) {
-      return _ref3.apply(this, arguments);
-    };
-  }();
-  // Addition by Brett
-  function importScript(url) {
-    var atts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    if (Array.isArray(url)) {
-      return Promise.all(url.map(function (u) {
-        return importScript(u, atts);
-      }));
-    }
-    return new Promise(function (resolve, reject) {
-      var script = document.createElement('script');
-      var destructor = function destructor() {
-        script.onerror = null;
-        script.onload = null;
-        script.remove();
-        script.src = '';
-      };
-      script.defer = 'defer';
-      addScriptAtts(script, atts);
-      script.onerror = function () {
-        reject(new Error('Failed to import: ' + url));
-        destructor();
-      };
-      script.onload = function () {
-        resolve();
-        destructor();
-      };
-      script.src = url;
-
-      document.head.append(script);
-    });
-  }
-
-  function importModule(url) {
-    var atts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    var _ref4 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-        _ref4$returnDefault = _ref4.returnDefault,
-        returnDefault = _ref4$returnDefault === undefined ? false : _ref4$returnDefault;
-
-    if (Array.isArray(url)) {
-      return Promise.all(url.map(function (u) {
-        return importModule(u, atts);
-      }));
-    }
-    return new Promise(function (resolve, reject) {
-      var vector = '$importModule$' + Math.random().toString(32).slice(2);
-      var script = document.createElement('script');
-      var destructor = function destructor() {
-        delete window[vector];
-        script.onerror = null;
-        script.onload = null;
-        script.remove();
-        URL.revokeObjectURL(script.src);
-        script.src = '';
-      };
-      addScriptAtts(script, atts);
-      script.defer = 'defer';
-      script.type = 'module';
-      script.onerror = function () {
-        reject(new Error('Failed to import: ' + url));
-        destructor();
-      };
-      script.onload = function () {
-        resolve(window[vector]);
-        destructor();
-      };
-      var absURL = toAbsoluteURL(url);
-      var loader = 'import * as m from \'' + absURL.replace(/'/g, "\\'") + '\'; window.' + vector + ' = ' + (returnDefault ? 'm.default || ' : '') + 'm;'; // export Module
-      var blob = new Blob([loader], { type: 'text/javascript' });
-      script.src = URL.createObjectURL(blob);
-
-      document.head.append(script);
-    });
-  }
-
   /* globals jQuery */
-
+  /**
+   * ext-storage.js
+   *
+   * This extension allows automatic saving of the SVG canvas contents upon
+   *  page unload (which can later be automatically retrieved upon future
+   *  editor loads).
+   *
+   *  The functionality was originally part of the SVG Editor, but moved to a
+   *  separate extension to make the setting behavior optional, and adapted
+   *  to inform the user of its setting of local data.
+   * Dependencies:
+   *
+   * 1. jQuery BBQ (for deparam)
+   * @license MIT
+   *
+   * @copyright 2010 Brett Zamir
+   * @todo Revisit on whether to use $.pref over directly setting curConfig in all
+   *   extensions for a more public API (not only for extPath and imagePath,
+   *   but other currently used config in the extensions)
+   * @todo We might provide control of storage settings through the UI besides the
+   *   initial (or URL-forced) dialog. *
+  */
   var extStorage = {
     name: 'storage',
     init: function init() {
@@ -312,74 +167,34 @@ var svgEditorExtension_storage = (function () {
       return {
         name: 'storage',
         langReady: function () {
-          var _ref2 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(_ref) {
-            var tryImport = function () {
-              var _ref3 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(lang) {
-                var url;
-                return regeneratorRuntime.wrap(function _callee$(_context) {
-                  while (1) {
-                    switch (_context.prev = _context.next) {
-                      case 0:
-                        url = svgEditor.curConfig.extPath + 'ext-locale/storage/' + lang + '.js';
-                        _context.next = 3;
-                        return importSetGlobalDefault(url, {
-                          global: 'svgEditorExtensionLocale_storage_' + lang
-                        });
+          var _ref2 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref) {
+            var importLocale = _ref.importLocale;
 
-                      case 3:
-                        confirmSetStorage = _context.sent;
+            var _$$deparam$querystrin, storagePrompt, confirmSetStorage, message, storagePrefsAndContent, storagePrefsOnly, storagePrefs, storageNoPrefsOrContent, storageNoPrefs, rememberLabel, rememberTooltip, options, oldContainerWidth, oldContainerMarginLeft, oldContentHeight, oldContainerHeight;
 
-                      case 4:
-                      case 'end':
-                        return _context.stop();
-                    }
-                  }
-                }, _callee, this);
-              }));
-
-              return function tryImport(_x2) {
-                return _ref3.apply(this, arguments);
-              };
-            }();
-
-            var lang = _ref.lang;
-
-            var _$$deparam$querystrin, storagePrompt, confirmSetStorage, _confirmSetStorage, message, storagePrefsAndContent, storagePrefsOnly, storagePrefs, storageNoPrefsOrContent, storageNoPrefs, rememberLabel, rememberTooltip, options, oldContainerWidth, oldContainerMarginLeft, oldContentHeight, oldContainerHeight;
-
-            return regeneratorRuntime.wrap(function _callee2$(_context2) {
+            return regeneratorRuntime.wrap(function _callee$(_context) {
               while (1) {
-                switch (_context2.prev = _context2.next) {
+                switch (_context.prev = _context.next) {
                   case 0:
                     _$$deparam$querystrin = $.deparam.querystring(true), storagePrompt = _$$deparam$querystrin.storagePrompt;
-                    confirmSetStorage = void 0;
-                    _context2.prev = 2;
-                    _context2.next = 5;
-                    return tryImport(lang);
+                    _context.next = 3;
+                    return importLocale();
 
-                  case 5:
-                    _context2.next = 11;
-                    break;
-
-                  case 7:
-                    _context2.prev = 7;
-                    _context2.t0 = _context2['catch'](2);
-                    _context2.next = 11;
-                    return tryImport('en');
-
-                  case 11:
-                    _confirmSetStorage = confirmSetStorage, message = _confirmSetStorage.message, storagePrefsAndContent = _confirmSetStorage.storagePrefsAndContent, storagePrefsOnly = _confirmSetStorage.storagePrefsOnly, storagePrefs = _confirmSetStorage.storagePrefs, storageNoPrefsOrContent = _confirmSetStorage.storageNoPrefsOrContent, storageNoPrefs = _confirmSetStorage.storageNoPrefs, rememberLabel = _confirmSetStorage.rememberLabel, rememberTooltip = _confirmSetStorage.rememberTooltip;
+                  case 3:
+                    confirmSetStorage = _context.sent;
+                    message = confirmSetStorage.message, storagePrefsAndContent = confirmSetStorage.storagePrefsAndContent, storagePrefsOnly = confirmSetStorage.storagePrefsOnly, storagePrefs = confirmSetStorage.storagePrefs, storageNoPrefsOrContent = confirmSetStorage.storageNoPrefsOrContent, storageNoPrefs = confirmSetStorage.storageNoPrefs, rememberLabel = confirmSetStorage.rememberLabel, rememberTooltip = confirmSetStorage.rememberTooltip;
 
                     // No need to run this one-time dialog again just because the user
                     //   changes the language
 
                     if (!loaded) {
-                      _context2.next = 14;
+                      _context.next = 7;
                       break;
                     }
 
-                    return _context2.abrupt('return');
+                    return _context.abrupt('return');
 
-                  case 14:
+                  case 7:
                     loaded = true;
 
                     // Note that the following can load even if "noStorageOnLoad" is
@@ -476,12 +291,12 @@ var svgEditorExtension_storage = (function () {
                       setupBeforeUnloadListener();
                     }
 
-                  case 16:
+                  case 9:
                   case 'end':
-                    return _context2.stop();
+                    return _context.stop();
                 }
               }
-            }, _callee2, this, [[2, 7]]);
+            }, _callee, this);
           }));
 
           function langReady(_x) {

@@ -1,9 +1,8 @@
 /**
- * Package: svgedit.history
- *
- * Licensed under the MIT License
- *
- * Copyright(c) 2016 Flint O'Brien
+ * HistoryRecordingService component of history
+ * @module history
+ * @license MIT
+ * @copyright 2016 Flint O'Brien
  */
 
 import {
@@ -23,33 +22,32 @@ import {
  * HistoryRecordingService.NO_HISTORY is a singleton that can be passed in to functions
  * that record history. This helps when the caller requires that no history be recorded.
  *
- * Usage:
  * The following will record history: insert, batch, insert.
- * ```
- * hrService = new svgedit.history.HistoryRecordingService(this.undoMgr);
+ * @example
+ * hrService = new history.HistoryRecordingService(this.undoMgr);
  * hrService.insertElement(elem, text);         // add simple command to history.
  * hrService.startBatchCommand('create two elements');
  * hrService.changeElement(elem, attrs, text);  // add to batchCommand
  * hrService.changeElement(elem, attrs2, text); // add to batchCommand
  * hrService.endBatchCommand();                  // add batch command with two change commands to history.
  * hrService.insertElement(elem, text);         // add simple command to history.
- * ```
  *
- * Note that all functions return this, so commands can be chained, like so:
- *
- * ```
+ * @example
+ * // Note that all functions return this, so commands can be chained, like so:
  * hrService
  *   .startBatchCommand('create two elements')
  *   .insertElement(elem, text)
  *   .changeElement(elem, attrs, text)
  *   .endBatchCommand();
- * ```
  *
- * @param {svgedit.history.UndoManager} undoManager - The undo manager.
- *     A value of null is valid for cases where no history recording is required.
- *     See singleton: HistoryRecordingService.NO_HISTORY
+ * @memberof module:history
  */
 class HistoryRecordingService {
+  /**
+  * @param {history.UndoManager|null} undoManager - The undo manager.
+  *     A value of `null` is valid for cases where no history recording is required.
+  *     See singleton: {@link module:history.HistoryRecordingService.HistoryRecordingService.NO_HISTORY}
+  */
   constructor (undoManager) {
     this.undoManager_ = undoManager;
     this.currentBatchCommand_ = null;
@@ -61,7 +59,7 @@ class HistoryRecordingService {
    * Requires a corresponding call to endBatchCommand. Start and end commands can be nested.
    *
    * @param {string} text - Optional string describing the batch command.
-   * @returns {svgedit.history.HistoryRecordingService}
+   * @returns {module:history.HistoryRecordingService}
    */
   startBatchCommand (text) {
     if (!this.undoManager_) { return this; }
@@ -72,7 +70,7 @@ class HistoryRecordingService {
 
   /**
    * End a batch command and add it to the history or a parent batch command.
-   * @returns {svgedit.history.HistoryRecordingService}
+   * @returns {module:history.HistoryRecordingService}
    */
   endBatchCommand () {
     if (!this.undoManager_) { return this; }
@@ -92,7 +90,7 @@ class HistoryRecordingService {
    * @param {Element} oldNextSibling - The element's next sibling before it was moved
    * @param {Element} oldParent - The element's parent before it was moved
    * @param {string} [text] - An optional string visible to user related to this change
-   * @returns {svgedit.history.HistoryRecordingService}
+   * @returns {module:history.HistoryRecordingService}
    */
   moveElement (elem, oldNextSibling, oldParent, text) {
     if (!this.undoManager_) { return this; }
@@ -104,7 +102,7 @@ class HistoryRecordingService {
    * Add an InsertElementCommand to the history or current batch command
    * @param {Element} elem - The DOM element that was added
    * @param {string} [text] - An optional string visible to user related to this change
-   * @returns {svgedit.history.HistoryRecordingService}
+   * @returns {module:history.HistoryRecordingService}
    */
   insertElement (elem, text) {
     if (!this.undoManager_) { return this; }
@@ -118,7 +116,7 @@ class HistoryRecordingService {
    * @param {Element} oldNextSibling - The element's next sibling before it was removed
    * @param {Element} oldParent - The element's parent before it was removed
    * @param {string} [text] - An optional string visible to user related to this change
-   * @returns {svgedit.history.HistoryRecordingService}
+   * @returns {module:history.HistoryRecordingService}
    */
   removeElement (elem, oldNextSibling, oldParent, text) {
     if (!this.undoManager_) { return this; }
@@ -129,9 +127,9 @@ class HistoryRecordingService {
   /**
    * Add a ChangeElementCommand to the history or current batch command
    * @param {Element} elem - The DOM element that was changed
-   * @param {Object} attrs - An object with the attributes to be changed and the values they had *before* the change
+   * @param {module:history.CommandAttributes} attrs - An object with the attributes to be changed and the values they had *before* the change
    * @param {string} [text] - An optional string visible to user related to this change
-   * @returns {svgedit.history.HistoryRecordingService}
+   * @returns {module:history.HistoryRecordingService}
    */
   changeElement (elem, attrs, text) {
     if (!this.undoManager_) { return this; }
@@ -141,9 +139,9 @@ class HistoryRecordingService {
 
   /**
    * Private function to add a command to the history or current batch command.
-   * @param cmd
-   * @returns {svgedit.history.HistoryRecordingService}
    * @private
+   * @param {Command} cmd
+   * @returns {module:history.HistoryRecordingService}
    */
   addCommand_ (cmd) {
     if (!this.undoManager_) { return this; }
@@ -155,7 +153,8 @@ class HistoryRecordingService {
   }
 }
 /**
- * @property {HistoryRecordingService} NO_HISTORY - Singleton that can be passed to functions that record history, but the caller requires that no history be recorded.
+ * @memberof module:history.HistoryRecordingService
+ * @property {module:history.HistoryRecordingService} NO_HISTORY - Singleton that can be passed to functions that record history, but the caller requires that no history be recorded.
  */
 HistoryRecordingService.NO_HISTORY = new HistoryRecordingService();
 export default HistoryRecordingService;

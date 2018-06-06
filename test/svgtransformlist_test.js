@@ -1,6 +1,6 @@
 /* eslint-env qunit */
 
-import {NS} from '../editor/svgedit.js';
+import {NS} from '../editor/namespaces.js';
 import * as transformlist from '../editor/svgtransformlist.js';
 import {disableSupportsNativeTransformLists} from '../editor/browser.js';
 import almostEqualsPlugin from './qunit/qunit-assert-almostEquals.js';

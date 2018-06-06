@@ -1,10 +1,10 @@
 /* globals jQuery, MathJax */
-/*
+/**
  * ext-mathjax.js
  *
- * Licensed under the Apache License
+ * @license Apache
  *
- * Copyright(c) 2013 Jo Segaert
+ * @copyright 2013 Jo Segaert
  *
  */
 // Todo: Wait for Mathjax 3.0 to get ES Module/avoid global
@@ -12,7 +12,8 @@ import {importScript} from '../external/dynamic-import-polyfill/importModule.js'
 
 export default {
   name: 'mathjax',
-  init () {
+  async init ({importLocale}) {
+    const strings = await importLocale();
     const svgEditor = this;
     const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
@@ -45,7 +46,7 @@ export default {
       // mathjaxSrc = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
       // Had been on https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG.js
       // Obtained Text-AMS-MML_SVG.js from https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/config/TeX-AMS-MML_SVG.js
-      mathjaxSrcSecure = 'mathjax/MathJax.js?config=TeX-AMS-MML_SVG.js',
+      mathjaxSrcSecure = 'mathjax/MathJax.min.js?config=TeX-AMS-MML_SVG.js',
       {uiStrings} = svgEditor;
     let
       math,
@@ -72,15 +73,15 @@ export default {
 
       /*
        * The MathJax library doesn't want to bloat your webpage so it creates
-       * every symbol (glymph) you need only once. These are saved in a <svg> on
+       * every symbol (glymph) you need only once. These are saved in a `<svg>` on
        * the top of your html document, just under the body tag. Each glymph has
-       * its unique id and is saved as a <path> in the <defs> tag of the <svg>
+       * its unique id and is saved as a `<path>` in the `<defs>` tag of the `<svg>`
        *
        * Then when the symbols are needed in the rest of your html document they
-       * are refferd to by a <use> tag.
+       * are refferd to by a `<use>` tag.
        * Because of bug 1076 we can't just grab the defs tag on the top and add it
-       * to your formula's <svg> and copy the lot. So we have to replace each
-       * <use> tag by it's <path>.
+       * to your formula's `<svg>` and copy the lot. So we have to replace each
+       * `<use>` tag by its `<path>`.
        */
       MathJax.Hub.queue.Push(
         function () {
@@ -116,99 +117,102 @@ export default {
       );
     }
 
-    return {
-      name: 'MathJax',
-      svgicons: svgEditor.curConfig.extIconsPath + 'mathjax-icons.xml',
-      buttons: [{
-        id: 'tool_mathjax',
-        type: 'mode',
-        title: 'Add Mathematics',
-        events: {
-          click () {
-            // Only load Mathjax when needed, we don't want to strain Svg-Edit any more.
-            // From this point on it is very probable that it will be needed, so load it.
-            if (mathjaxLoaded === false) {
-              $('<div id="mathjax">' +
-                '<!-- Here is where MathJax creates the math -->' +
-                  '<div id="mathjax_creator" class="tex2jax_process" style="display:none">' +
-                    '$${}$$' +
+    const buttons = [{
+      id: 'tool_mathjax',
+      type: 'mode',
+      events: {
+        click () {
+          // Only load Mathjax when needed, we don't want to strain Svg-Edit any more.
+          // From this point on it is very probable that it will be needed, so load it.
+          if (mathjaxLoaded === false) {
+            $('<div id="mathjax">' +
+              '<!-- Here is where MathJax creates the math -->' +
+                '<div id="mathjax_creator" class="tex2jax_process" style="display:none">' +
+                  '$${}$$' +
+                '</div>' +
+                '<div id="mathjax_overlay"></div>' +
+                '<div id="mathjax_container">' +
+                  '<div id="tool_mathjax_back" class="toolbar_button">' +
+                    '<button id="tool_mathjax_save">OK</button>' +
+                    '<button id="tool_mathjax_cancel">Cancel</button>' +
                   '</div>' +
-                  '<div id="mathjax_overlay"></div>' +
-                  '<div id="mathjax_container">' +
-                    '<div id="tool_mathjax_back" class="toolbar_button">' +
-                      '<button id="tool_mathjax_save">OK</button>' +
-                      '<button id="tool_mathjax_cancel">Cancel</button>' +
-                    '</div>' +
-                    '<fieldset>' +
-                      '<legend id="mathjax_legend">Mathematics Editor</legend>' +
-                      '<label>' +
-                        '<span id="mathjax_explication">Please type your mathematics in ' +
-                        '<a href="https://en.wikipedia.org/wiki/Help:Displaying_a_formula" target="_blank">TeX</a> code.</span></label>' +
-                      '<textarea id="mathjax_code_textarea" spellcheck="false"></textarea>' +
-                    '</fieldset>' +
-                  '</div>' +
-                '</div>'
-              ).insertAfter('#svg_prefs').hide();
+                  '<fieldset>' +
+                    '<legend id="mathjax_legend">Mathematics Editor</legend>' +
+                    '<label>' +
+                      '<span id="mathjax_explication">Please type your mathematics in ' +
+                      '<a href="https://en.wikipedia.org/wiki/Help:Displaying_a_formula" target="_blank">TeX</a> code.</span></label>' +
+                    '<textarea id="mathjax_code_textarea" spellcheck="false"></textarea>' +
+                  '</fieldset>' +
+                '</div>' +
+              '</div>'
+            ).insertAfter('#svg_prefs').hide();
 
-              // Make the MathEditor draggable.
-              $('#mathjax_container').draggable({
-                cancel: 'button,fieldset',
-                containment: 'window'
+            // Make the MathEditor draggable.
+            $('#mathjax_container').draggable({
+              cancel: 'button,fieldset',
+              containment: 'window'
+            });
+
+            // Add functionality and picture to cancel button.
+            $('#tool_mathjax_cancel').prepend($.getSvgIcon('cancel', true))
+              .on('click touched', function () {
+                $('#mathjax').hide();
               });
 
-              // Add functionality and picture to cancel button.
-              $('#tool_mathjax_cancel').prepend($.getSvgIcon('cancel', true))
-                .on('click touched', function () {
-                  $('#mathjax').hide();
-                });
-
-              // Add functionality and picture to the save button.
-              $('#tool_mathjax_save').prepend($.getSvgIcon('ok', true))
-                .on('click touched', function () {
-                  saveMath();
-                  $('#mathjax').hide();
-                });
-
-              // MathJax preprocessing has to ignore most of the page.
-              $('body').addClass('tex2jax_ignore');
-
-              // Now get (and run) the MathJax Library.
-              // Todo: insert script with modules once widely supported
-              //   and if MathJax (and its `TeX-AMS-MML_SVG.js` dependency) ends up
-              //   providing an ES6 module export: https://github.com/mathjax/MathJax/issues/1998
-              /*
-              const modularVersion = !('svgEditor' in window) ||
-                !window.svgEditor ||
-                window.svgEditor.modules !== false;
-              // Add as second argument to `importScript`
-              {
-                type: modularVersion
-                  ? 'module' // Make this the default when widely supported
-                  : 'text/javascript'
-              }
-              // If only using modules, just use this:
-              const {default: MathJax} = await importModule( // or `import()` when widely supported
-                svgEditor.curConfig.extIconsPath + mathjaxSrcSecure
-              );
-              */
-              importScript(svgEditor.curConfig.extIconsPath + mathjaxSrcSecure).then(() => {
-                // When MathJax is loaded get the div where the math will be rendered.
-                MathJax.Hub.queue.Push(function () {
-                  math = MathJax.Hub.getAllJax('#mathjax_creator')[0];
-                  console.log(math);
-                  mathjaxLoaded = true;
-                  console.log('MathJax Loaded');
-                });
-              }).catch(() => {
-                console.log('Failed loadeing MathJax.');
-                $.alert('Failed loading MathJax. You will not be able to change the mathematics.');
+            // Add functionality and picture to the save button.
+            $('#tool_mathjax_save').prepend($.getSvgIcon('ok', true))
+              .on('click touched', function () {
+                saveMath();
+                $('#mathjax').hide();
               });
+
+            // MathJax preprocessing has to ignore most of the page.
+            $('body').addClass('tex2jax_ignore');
+
+            // Now get (and run) the MathJax Library.
+            // Todo: insert script with modules once widely supported
+            //   and if MathJax (and its `TeX-AMS-MML_SVG.js` dependency) ends up
+            //   providing an ES6 module export: https://github.com/mathjax/MathJax/issues/1998
+            /*
+            const modularVersion = !('svgEditor' in window) ||
+              !window.svgEditor ||
+              window.svgEditor.modules !== false;
+            // Add as second argument to `importScript`
+            {
+              type: modularVersion
+                ? 'module' // Make this the default when widely supported
+                : 'text/javascript'
             }
-            // Set the mode.
-            svgCanvas.setMode('mathjax');
+            // If only using modules, just use this:
+            const {default: MathJax} = await importModule( // or `import()` when widely supported
+              svgEditor.curConfig.extIconsPath + mathjaxSrcSecure
+            );
+            */
+            importScript(svgEditor.curConfig.extIconsPath + mathjaxSrcSecure).then(() => {
+              // When MathJax is loaded get the div where the math will be rendered.
+              MathJax.Hub.queue.Push(function () {
+                math = MathJax.Hub.getAllJax('#mathjax_creator')[0];
+                console.log(math);
+                mathjaxLoaded = true;
+                console.log('MathJax Loaded');
+              });
+            }).catch(() => {
+              console.log('Failed loadeing MathJax.');
+              $.alert('Failed loading MathJax. You will not be able to change the mathematics.');
+            });
           }
+          // Set the mode.
+          svgCanvas.setMode('mathjax');
         }
-      }],
+      }
+    }];
+
+    return {
+      name: strings.name,
+      svgicons: svgEditor.curConfig.extIconsPath + 'mathjax-icons.xml',
+      buttons: strings.buttons.map((button, i) => {
+        return Object.assign(buttons[i], button);
+      }),
 
       mouseDown () {
         if (svgCanvas.getMode() === 'mathjax') {

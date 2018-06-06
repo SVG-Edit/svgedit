@@ -1,34 +1,35 @@
-/*
+/**
  * ext-panning.js
  *
- * Licensed under the MIT License
+ * @license MIT
  *
- * Copyright(c) 2013 Luis Aguirre
+ * @copyright 2013 Luis Aguirre
  *
  */
-
 /*
   This is a very basic SVG-Edit extension to let tablet/mobile devices pan without problem
 */
-
 export default {
-  name: 'ext-panning',
-  init () {
+  name: 'panning',
+  async init ({importLocale}) {
+    const strings = await importLocale();
     const svgEditor = this;
     const svgCanvas = svgEditor.canvas;
-    return {
-      name: 'Extension Panning',
-      svgicons: svgEditor.curConfig.extIconsPath + 'ext-panning.xml',
-      buttons: [{
-        id: 'ext-panning',
-        type: 'mode',
-        title: 'Panning',
-        events: {
-          click () {
-            svgCanvas.setMode('ext-panning');
-          }
+    const buttons = [{
+      id: 'ext-panning',
+      type: 'mode',
+      events: {
+        click () {
+          svgCanvas.setMode('ext-panning');
         }
-      }],
+      }
+    }];
+    return {
+      name: strings.name,
+      svgicons: svgEditor.curConfig.extIconsPath + 'ext-panning.xml',
+      buttons: strings.buttons.map((button, i) => {
+        return Object.assign(buttons[i], button);
+      }),
       mouseDown () {
         if (svgCanvas.getMode() === 'ext-panning') {
           svgEditor.setPanning(true);

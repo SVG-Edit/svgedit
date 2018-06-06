@@ -73,6 +73,13 @@
     }
   };
 
+  /**
+   * For parsing color values
+   * @module RGBColor
+   * @author Stoyan Stefanov <sstoo@gmail.com>
+   * @see https://www.phpied.com/rgb-color-parser-in-javascript/
+   * @license MIT
+  */
   var simpleColors = {
     aliceblue: 'f0f8ff',
     antiquewhite: 'faebd7',
@@ -242,12 +249,12 @@
 
   /**
    * A class to parse color values
-   * @author Stoyan Stefanov <sstoo@gmail.com>
-   * @link   https://www.phpied.com/rgb-color-parser-in-javascript/
-   * @license MIT
    */
 
   var RGBColor = function () {
+    /**
+    * @param {string} colorString
+    */
     function RGBColor(colorString) {
       classCallCheck(this, RGBColor);
 
@@ -294,6 +301,9 @@
     }
 
     // some getters
+    /**
+    * @returns {string}
+    */
 
 
     createClass(RGBColor, [{
@@ -301,6 +311,11 @@
       value: function toRGB() {
         return 'rgb(' + this.r + ', ' + this.g + ', ' + this.b + ')';
       }
+
+      /**
+      * @returns {string}
+      */
+
     }, {
       key: 'toHex',
       value: function toHex() {
@@ -319,7 +334,10 @@
         return '#' + r + g + b;
       }
 
-      // help
+      /**
+      * help
+      * @returns {HTMLUListElement}
+      */
 
     }, {
       key: 'getHelpXML',

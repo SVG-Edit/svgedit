@@ -1,26 +1,29 @@
 /* globals jQuery */
 /**
- * Package: svgedit.browser
+ * Browser detection
+ * @module browser
+ * @license MIT
  *
- * Licensed under the MIT License
- *
- * Copyright(c) 2010 Jeff Schiller
- * Copyright(c) 2010 Alexis Deveria
+ * @copyright 2010 Jeff Schiller, 2010 Alexis Deveria
  */
 
 // Dependencies:
 // 1) jQuery (for $.alert())
 
-import './pathseg.js';
-import {NS} from './svgedit.js';
+import './svgpathseg.js';
+import {NS} from './namespaces.js';
 
 const $ = jQuery;
 
-const supportsSvg_ = (function () {
+const supportsSVG_ = (function () {
 return !!document.createElementNS && !!document.createElementNS(NS.SVG, 'svg').createSVGRect;
 }());
 
-export const supportsSvg = () => supportsSvg_;
+/**
+ * @function module:browser.supportsSvg
+ * @returns {boolean}
+*/
+export const supportsSvg = () => supportsSVG_;
 
 const {userAgent} = navigator;
 const svg = document.createElementNS(NS.SVG, 'svg');
@@ -155,29 +158,118 @@ return r1 instanceof SVGTransform && t1 instanceof SVGTransform &&
 
 // Public API
 
+/**
+ * @function module:browser.isOpera
+ * @returns {boolean}
+*/
 export const isOpera = () => isOpera_;
+/**
+ * @function module:browser.isWebkit
+ * @returns {boolean}
+*/
 export const isWebkit = () => isWebkit_;
+/**
+ * @function module:browser.isGecko
+ * @returns {boolean}
+*/
 export const isGecko = () => isGecko_;
+/**
+ * @function module:browser.isIE
+ * @returns {boolean}
+*/
 export const isIE = () => isIE_;
+/**
+ * @function module:browser.isChrome
+ * @returns {boolean}
+*/
 export const isChrome = () => isChrome_;
+/**
+ * @function module:browser.isWindows
+ * @returns {boolean}
+*/
 export const isWindows = () => isWindows_;
+/**
+ * @function module:browser.isMac
+ * @returns {boolean}
+*/
 export const isMac = () => isMac_;
+/**
+ * @function module:browser.isTouch
+ * @returns {boolean}
+*/
 export const isTouch = () => isTouch_;
 
+/**
+ * @function module:browser.supportsSelectors
+ * @returns {boolean}
+*/
 export const supportsSelectors = () => supportsSelectors_;
+
+/**
+ * @function module:browser.supportsXpath
+ * @returns {boolean}
+*/
 export const supportsXpath = () => supportsXpath_;
 
+/**
+ * @function module:browser.supportsPathReplaceItem
+ * @returns {boolean}
+*/
 export const supportsPathReplaceItem = () => supportsPathReplaceItem_;
+
+/**
+ * @function module:browser.supportsPathInsertItemBefore
+ * @returns {boolean}
+*/
 export const supportsPathInsertItemBefore = () => supportsPathInsertItemBefore_;
+
+/**
+ * @function module:browser.supportsPathBBox
+ * @returns {boolean}
+*/
 export const supportsPathBBox = () => supportsPathBBox_;
+
+/**
+ * @function module:browser.supportsHVLineContainerBBox
+ * @returns {boolean}
+*/
 export const supportsHVLineContainerBBox = () => supportsHVLineContainerBBox_;
+
+/**
+ * @function module:browser.supportsGoodTextCharPos
+ * @returns {boolean}
+*/
 export const supportsGoodTextCharPos = () => supportsGoodTextCharPos_;
+
+/**
+* @function module:browser.supportsEditableText
+ * @returns {boolean}
+*/
 export const supportsEditableText = () => supportsEditableText_;
+
+/**
+ * @function module:browser.supportsGoodDecimals
+ * @returns {boolean}
+*/
 export const supportsGoodDecimals = () => supportsGoodDecimals_;
+
+/**
+* @function module:browser.supportsNonScalingStroke
+* @returns {boolean}
+*/
 export const supportsNonScalingStroke = () => supportsNonScalingStroke_;
+
+/**
+* @function module:browser.supportsNativeTransformLists
+* @returns {boolean}
+*/
 export const supportsNativeTransformLists = () => supportsNativeSVGTransformLists_;
 
-// Using for unit testing
+/**
+ * Set `supportsNativeSVGTransformLists_` to `false` (for unit testing)
+ * @function module:browser.disableSupportsNativeTransformLists
+ * @returns {undefined}
+*/
 export const disableSupportsNativeTransformLists = () => {
   supportsNativeSVGTransformLists_ = false;
 };

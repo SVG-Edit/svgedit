@@ -1,25 +1,26 @@
 /* globals jQuery */
-/*
+/**
  * ext-connector.js
  *
- * Licensed under the MIT License
+ * @license MIT
  *
- * Copyright(c) 2010 Alexis Deveria
+ * @copyright 2010 Alexis Deveria
  *
  */
 
 export default {
-  name: 'Connector',
-  init (S) {
+  name: 'connector',
+  async init (S) {
     const $ = jQuery;
     const svgEditor = this;
     const svgCanvas = svgEditor.canvas;
-    const {svgroot, getNextId, getElem} = S,
-      addElem = S.addSvgElementFromJson,
+    const {svgroot, getNextId, getElem, importLocale} = S,
+      addElem = S.addSVGElementFromJson,
       selManager = S.selectorManager,
       connSel = '.se_connector',
       // connect_str = '-SE_CONNECT-',
       elData = $.data;
+    const strings = await importLocale();
 
     let startX,
       startY,
@@ -31,15 +32,6 @@ export default {
       started = false,
       connections = [],
       selElems = [];
-
-    const langList = {
-      en: [
-        {id: 'mode_connect', title: 'Connect two objects'}
-      ],
-      fr: [
-        {id: 'mode_connect', title: 'Connecter deux objets'}
-      ]
-    };
 
     function getBBintersect (x, y, bb, offset) {
       if (offset) {
@@ -155,7 +147,7 @@ export default {
 
     /**
     *
-    * @param {array} [elem=selElems] Array of elements
+    * @param {Element[]} [elem=selElems] Array of elements
     */
     function findConnectors (elems = selElems) {
       const connectors = $(svgcontent).find(connSel);
@@ -315,28 +307,31 @@ export default {
     // // }
     // });
 
-    return {
-      name: 'Connector',
-      svgicons: svgEditor.curConfig.imgPath + 'conn.svg',
-      buttons: [{
-        id: 'mode_connect',
-        type: 'mode',
-        icon: svgEditor.curConfig.imgPath + 'cut.png',
-        title: 'Connect two objects',
-        includeWith: {
-          button: '#tool_line',
-          isDefault: false,
-          position: 1
-        },
-        events: {
-          click () {
-            svgCanvas.setMode('connector');
-          }
+    const buttons = [{
+      id: 'mode_connect',
+      type: 'mode',
+      icon: svgEditor.curConfig.imgPath + 'cut.png',
+      includeWith: {
+        button: '#tool_line',
+        isDefault: false,
+        position: 1
+      },
+      events: {
+        click () {
+          svgCanvas.setMode('connector');
         }
-      }],
-      addLangData (lang) {
+      }
+    }];
+
+    return {
+      name: strings.name,
+      svgicons: svgEditor.curConfig.imgPath + 'conn.svg',
+      buttons: strings.buttons.map((button, i) => {
+        return Object.assign(buttons[i], button);
+      }),
+      async addLangData ({lang, importLocale}) {
         return {
-          data: langList[lang]
+          data: strings.langList
         };
       },
       mouseDown (opts) {

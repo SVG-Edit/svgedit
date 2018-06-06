@@ -1,16 +1,17 @@
 /* globals jQuery */
-/*
+/**
  * ext-eyedropper.js
  *
- * Licensed under the MIT License
+ * @license MIT
  *
- * Copyright(c) 2010 Jeff Schiller
+ * @copyright 2010 Jeff Schiller
  *
  */
 
 export default {
   name: 'eyedropper',
-  init (S) {
+  async init (S) {
+    const strings = await S.importLocale();
     const svgEditor = this;
     const $ = jQuery;
     const {ChangeElementCommand} = S, // , svgcontent,
@@ -55,20 +56,24 @@ export default {
       }
     }
 
-    return {
-      name: 'eyedropper',
-      svgicons: svgEditor.curConfig.extIconsPath + 'eyedropper-icon.xml',
-      buttons: [{
+    const buttons = [
+      {
         id: 'tool_eyedropper',
         type: 'mode',
-        title: 'Eye Dropper Tool',
-        key: 'I',
         events: {
           click () {
             svgCanvas.setMode('eyedropper');
           }
         }
-      }],
+      }
+    ];
+
+    return {
+      name: strings.name,
+      svgicons: svgEditor.curConfig.extIconsPath + 'eyedropper-icon.xml',
+      buttons: strings.buttons.map((button, i) => {
+        return Object.assign(buttons[i], button);
+      }),
 
       // if we have selected an element, grab its paint and enable the eye dropper button
       selectedChanged: getStyle,

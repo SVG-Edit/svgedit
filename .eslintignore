@@ -5,7 +5,6 @@ docs/jsdoc
 
 svgedit-config-es.js
 svgedit-config-iife.js
-svgedit-config-sample-iife.js
 svgedit-custom.css
 
 # Vendor/minified files

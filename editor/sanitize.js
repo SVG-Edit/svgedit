@@ -1,15 +1,14 @@
 /**
- * Package: svgedit.sanitize
+ * Tools for SVG sanitization
+ * @module sanitize
+ * @license MIT
  *
- * Licensed under the MIT License
- *
- * Copyright(c) 2010 Alexis Deveria
- * Copyright(c) 2010 Jeff Schiller
+ * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import {getReverseNS, NS} from './svgedit.js';
+import {getReverseNS, NS} from './namespaces.js';
 import {isGecko} from './browser.js';
-import {getHref, setHref, getUrlFromAttr} from './svgutils.js';
+import {getHref, setHref, getUrlFromAttr} from './utilities.js';
 
 const REVERSE_NS = getReverseNS();
 
@@ -99,9 +98,11 @@ Object.entries(svgWhiteList_).forEach(function ([elt, atts]) {
 });
 
 /**
-* Sanitizes the input node and its children
-* It only keeps what is allowed from our whitelist defined above
-* @param node - The DOM element to be checked (we'll also check its children)
+* Sanitizes the input node and its children.
+* It only keeps what is allowed from our whitelist defined above.
+* @function module:sanitize.sanitizeSvg
+* @param {Text|Element} node - The DOM element to be checked (we'll also check its children) or text node to be cleaned up
+* @returns {undefined}
 */
 export const sanitizeSvg = function (node) {
   // Cleanup text nodes

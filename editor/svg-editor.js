@@ -1,21 +1,9 @@
 /* globals jQuery */
-/*
- * svg-editor.js
- *
- * Licensed under the MIT License
- *
- * Copyright(c) 2010 Alexis Deveria
- * Copyright(c) 2010 Pavol Rusnak
- * Copyright(c) 2010 Jeff Schiller
- * Copyright(c) 2010 Narendra Sisodiya
- * Copyright(c) 2014 Brett Zamir
- *
- */
 
 import './touch.js';
-import {NS} from './svgedit.js';
+import {NS} from './namespaces.js';
 import {isWebkit, isGecko, isIE, isMac, isTouch} from './browser.js';
-import * as Utils from './svgutils.js';
+import * as Utils from './utilities.js';
 import {getTypeMap, convertUnit, isValidUnit} from './units.js';
 import {
   hasCustomHandler, getCustomHandler, injectExtendedContextMenuItemsIntoDom
@@ -27,17 +15,35 @@ import Layer from './layer.js';
 
 import jqPluginJSHotkeys from './js-hotkeys/jquery.hotkeys.min.js';
 import jqPluginBBQ from './jquerybbq/jquery.bbq.min.js';
-import jqPluginSVGIcons from './svgicons/jquery.svgicons.js';
-import jqPluginJGraduate from './jgraduate/jquery.jgraduate.js';
-import jqPluginSpinBtn from './spinbtn/JQuerySpinBtn.js';
-import jqPluginSVG from './jquery-svg.js'; // Needed for SVG attribute setting and array form with `attr`
-import jqPluginContextMenu from './contextmenu/jquery.contextMenu.js';
-import jqPluginJPicker from './jgraduate/jpicker.js';
+import jqPluginSVGIcons from './svgicons/jQuery.svgIcons.js';
+import jqPluginJGraduate from './jgraduate/jQuery.jGraduate.js';
+import jqPluginSpinBtn from './spinbtn/jQuery.SpinButton.js';
+import jqPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
+import jqPluginContextMenu from './contextmenu/jQuery.contextMenu.js';
+import jqPluginJPicker from './jgraduate/jQuery.jPicker.js';
 import {
   readLang, putLocale,
+  setStrings,
   init as localeInit
 } from './locale/locale.js';
 import loadStylesheets from './external/load-stylesheets/index-es.js';
+
+/**
+* The main module for the visual SVG Editor
+*
+* @license MIT
+*
+* @copyright 2010 Alexis Deveria
+* 2010 Pavol Rusnak
+* 2010 Jeff Schiller
+* 2010 Narendra Sisodiya
+* 2014 Brett Zamir
+* @exports module:SVGEditor
+* @borrows module:locale.putLocale as putLocale
+* @borrows module:locale.readLang as readLang
+* @borrows module:locale.setStrings as setStrings
+*/
+const editor = {};
 
 const $ = [
   jqPluginJSHotkeys, jqPluginBBQ, jqPluginSVGIcons, jqPluginJGraduate,
@@ -60,27 +66,64 @@ if ($.loadingStylesheets.some((item) => {
   $.loadingStylesheets.push([favicon, {favicon: true}]);
 }
 
-const editor = {};
-
 // EDITOR PROPERTIES: (defined below)
 //    curPrefs, curConfig, canvas, storage, uiStrings
 //
 // STATE MAINTENANCE PROPERTIES
-editor.tool_scale = 1; // Dependent on icon size, so any use to making configurable instead? Used by JQuerySpinBtn.js
+/**
+* @type {Float}
+*/
+editor.tool_scale = 1; // Dependent on icon size, so any use to making configurable instead? Used by `jQuery.SpinButton.js`
+/**
+* @type {Integer}
+*/
 editor.exportWindowCt = 0;
+/**
+* @type {boolean}
+*/
 editor.langChanged = false;
+/**
+* @type {boolean}
+*/
 editor.showSaveWarning = false;
+/**
+* @type {boolean}
+*/
 editor.storagePromptClosed = false; // For use with ext-storage.js
 
 const callbacks = [],
   /**
-  * PREFS AND CONFIG
+  * @typedef {"s"|"m"|"l"|"xl"|Float} module:SVGEditor.IconSize
+  */
+  /**
+  * Preferences
+  * @interface module:SVGEditor.Prefs
+  * @property {string} [lang="en"] Two-letter language code. The language must exist in the Editor Preferences language list. Defaults to "en" if `locale.js` detection does not detect another language.
+  * @property {module:SVGEditor.IconSize} [iconsize="s"|"m"] Size of the toolbar icons. Will default to 's' if the window height is smaller than the minimum height and 'm' otherwise.
+  * @property {string} [bkgd_color="#FFF"] Color hex for canvas background color. Defaults to white.
+  * @property {string} [bkgd_url=""] Background raster image URL. This image will fill the background of the document; useful for tracing purposes.
+  * @property {"embed"|"ref"} [img_save="embed"] Defines whether included raster images should be saved as Data URIs when possible, or as URL references. Settable in the Document Properties dialog.
+  * @property {boolean} [save_notice_done=false] Used to track alert status
+  * @property {boolean} [export_notice_done=false] Used to track alert status
+  * @todo `save_notice_done` and `export_notice_done` should be changed to flags rather than preferences
+  */
+  /**
+  * @namespace {module:SVGEditor.Prefs} defaultPrefs
+  * @memberof module:SVGEditor~
+  * @implements {module:SVGEditor.Prefs}
   */
   // The iteration algorithm for defaultPrefs does not currently support array/objects
-  defaultPrefs = {
+  defaultPrefs = /** @lends module:SVGEditor~defaultPrefs */ {
     // EDITOR OPTIONS (DIALOG)
-    lang: '', // Default to "en" if locale.js detection does not detect another language
-    iconsize: '', // Will default to 's' if the window height is smaller than the minimum height and 'm' otherwise
+    /**
+    * Default to "en" if locale.js detection does not detect another language
+    */
+    lang: '',
+    /**
+    * Will default to 's' if the window height is smaller than the minimum height and
+    * 'm' otherwise
+    */
+    iconsize: '',
     bkgd_color: '#FFF',
     bkgd_url: '',
     // DOCUMENT PROPERTIES (DIALOG)
@@ -90,6 +133,10 @@ const callbacks = [],
     save_notice_done: false,
     export_notice_done: false
   },
+  /**
+  * @name module:SVGEditor~defaultExtensions
+  * @type {string[]}
+  */
   defaultExtensions = [
     'ext-overview_window.js',
     'ext-markers.js',
@@ -103,9 +150,73 @@ const callbacks = [],
     'ext-panning.js',
     'ext-storage.js'
   ],
+  /**
+  * @typedef {"@default"|string} module:SVGEditor.Stylesheet `@default` will automatically load all of the default CSS paths for SVGEditor
+  */
+  /**
+  * @typedef {GenericArray} module:SVGEditor.XYDimensions
+  * @property {Integer} length 2
+  * @property {Float} 0
+  * @property {Float} 1
+  */
+  /**
+  * @tutorial ConfigOptions
+  * @interface module:SVGEditor.Config
+  * @property {string} [canvasName="default"] Used to namespace storage provided via `ext-storage.js`; you can use this if you wish to have multiple independent instances of SVG Edit on the same domain
+  * @property {boolean} [no_save_warning=false] If `true`, prevents the warning dialog box from appearing when closing/reloading the page. Mostly useful for testing.
+  * @property {string} [imgPath="images/"] The path where the SVG icons are located, with trailing slash. Note that as of version 2.7, this is not configurable by URL for security reasons.
+  * @property {string} [langPath="locale/"] The path where the language files are located, with trailing slash. Default will be changed to `../dist/locale/` if this is a modular load. Note that as of version 2.7, this is not configurable by URL for security reasons.
+  * @property {string} [extPath="extensions/"] The path used for extension files, with trailing slash. Default will be changed to `../dist/extensions/` if this is a modular load. Note that as of version 2.7, this is not configurable by URL for security reasons.
+  * @property {string} [canvgPath="canvg/"] The path used for `canvg` files, with trailing slash. Default will be changed to `../dist/` if this is a modular load.
+  * @property {string} [jspdfPath="jspdf/"] The path used for `jsPDF` files, with trailing slash. Default will be changed to `../dist/` if this is a modular load.
+  * @property {string} [extIconsPath="extensions/"] The path used for extension icons, with trailing slash.
+  * @property {string} [jGraduatePath="jgraduate/images/"] The path where jGraduate images are located. Note that as of version 2.7, this is not configurable by URL for security reasons.
+  * @property {boolean} [preventAllURLConfig=false] Set to `true` to override the ability for URLs to set non-content configuration (including extension config). Must be set early, i.e., in `svgedit-config-iife.js`; extension loading is too late!
+  * @property {boolean} [preventURLContentLoading=false] Set to `true` to override the ability for URLs to set URL-based SVG content. Must be set early, i.e., in `svgedit-config-iife.js`; extension loading is too late!
+  * @property {boolean} [lockExtensions=false] Set to `true` to override the ability for URLs to set their own extensions; disallowed in URL setting. There is no need for this when `preventAllURLConfig` is used. Must be set early, i.e., in `svgedit-config-iife.js`; extension loading is too late!
+  * @property {boolean} [noDefaultExtensions=false] If set to `true`, prohibits automatic inclusion of default extensions (though "extensions" can still be used to add back any desired default extensions along with any other extensions). This can only be meaningfully used in `svgedit-config-iife.js` or in the URL
+  * @property {boolean} [noStorageOnLoad=false] Some interaction with `ext-storage.js`; prevent even the loading of previously saved local storage.
+  * @property {boolean} [forceStorage=false] Some interaction with `ext-storage.js`; strongly discouraged from modification as it bypasses user privacy by preventing them from choosing whether to keep local storage or not (and may be required by law in some regions)
+  * @property {boolean} [emptyStorageOnDecline=false] Used by `ext-storage.js`; empty any prior storage if the user declines to store
+  * @property {string[]} [extensions=module:SVGEditor~defaultExtensions] Extensions to load on startup. Use an array in `setConfig` and comma separated file names in the URL. Extension names must begin with "ext-". Note that as of version 2.7, paths containing "/", "\", or ":", are disallowed for security reasons. Although previous versions of this list would entirely override the default list, as of version 2.7, the defaults will always be added to this explicit list unless the configuration `noDefaultExtensions` is included.
+  * @property {module:SVGEditor.Stylesheet[]} [stylesheets=["@default"]] An array of required stylesheets to load in parallel; include the value `"@default"` within this array to ensure all default stylesheets are loaded.
+  * @property {string[]} [allowedOrigins=[]] Used by `ext-xdomain-messaging.js` to indicate which origins are permitted for cross-domain messaging (e.g., between the embedded editor and main editor code). Besides explicit domains, one might add '' to allow all domains (not recommended for privacy/data integrity of your user's content!), `window.location.origin` for allowing the same origin (should be safe if you trust all apps on your domain), 'null' to allow `file://` URL usage
+  * @property {null|PlainObject} [colorPickerCSS=null] Object of CSS properties mapped to values (for jQuery) to apply to the color picker. See {@link http://api.jquery.com/css/#css-properties}. A `null` value (the default) will cause the CSS to default to `left` with a position equal to that of the `fill_color` or `stroke_color` element minus 140, and a `bottom` equal to 40
+  * @property {string} [paramurl] This was available via URL only. Allowed an un-encoded URL within the query string (use "url" or "source" with a data: URI instead)
+  * @property {Float} [canvas_expansion=3] The minimum area visible outside the canvas, as a multiple of the image dimensions. The larger the number, the more one can scroll outside the canvas.
+  * @property {PlainObject} [initFill] Init fill properties
+  * @property {string} [initFill.color="FF0000"] The initial fill color. Must be a hex code string. Defaults to solid red.
+  * @property {Float} [initFill.opacity=1] The initial fill opacity. Must be a number between 0 and 1
+  * @property {PlainObject} [initStroke] Init stroke properties
+  * @property {Float} [initStroke.width=5] The initial stroke width. Must be a positive number.
+  * @property {string} [initStroke.color="000000"] The initial stroke color. Must be a hex code. Defaults to solid black.
+  * @property {Float} [initStroke.opacity=1] The initial stroke opacity. Must be a number between 0 and 1.
+  * @property {PlainObject} text Text style properties
+  * @property {Float} [text.stroke_width=0] Text stroke width
+  * @property {Float} [text.font_size=24] Text font size
+  * @property {string} [text.font_family="serif"] Text font family
+  * @property {Float} [initOpacity=1] Initial opacity (multiplied by 100)
+  * @property {module:SVGEditor.XYDimensions} [dimensions=[640, 480]] The default width/height of a new document. Use an array in `setConfig` (e.g., `[800, 600]`) and comma separated numbers in the URL.
+  * @property {boolean} [gridSnapping=false] Enable snap to grid by default. Set in Editor Options.
+  * @property {string} [gridColor="#000"] Accepts hex, e.g., '#000'. Set in Editor Options. Defaults to black.
+  * @property {string} [baseUnit="px"] Set in Editor Options.
+  * @property {Float} [snappingStep=10] Set the default grid snapping value. Set in Editor Options.
+  * @property {boolean} [showRulers=true] Initial state of ruler display (v2.6). Set in Editor Options.
+  * @property {string} [initTool="select"] The initially selected tool. Must be either the ID of the button for the tool, or the ID without `tool_` prefix (e.g., "select").
+  * @property {boolean} [wireframe=false] Start in wireframe mode
+  * @property {boolean} [showlayers=false] Open the layers side-panel by default.
+  * @property {"new"|"same"} [exportWindowType="new"] Can be "new" or "same" to indicate whether new windows will be generated for each export; the `window.name` of the export window is namespaced based on the `canvasName` (and incremented if "new" is selected as the type). Introduced 2.8.
+  * @property {boolean} [showGrid=false] Set by `ext-grid.js`; determines whether or not to show the grid by default
+  * @property {boolean} [show_outside_canvas=true] Defines whether or not elements outside the canvas should be visible. Set and used in `svgcanvas.js`.
+  * @property {boolean} [selectNew=true] If true, will replace the selection with the current element and automatically select element objects (when not in "path" mode) after they are created, showing their grips (v2.6). Set and used in `svgcanvas.js` (`mouseUp`).
+  * @todo Some others could be preferences as well (e.g., preventing URL changing of extensions, defaultExtensions, stylesheets, colorPickerCSS); Change the following to preferences and add pref controls where missing to the UI (e.g., `canvas_expansion`, `initFill`, `initStroke`, `text`, `initOpacity`, `dimensions`, `initTool`, `wireframe`, `showlayers`, `gridSnapping`, `gridColor`, `baseUnit`, `snappingStep`, `showRulers`, `exportWindowType`, `showGrid`, `show_outside_canvas`, `selectNew`)?
+  */
+  /**
+  * @namespace {module:SVGEditor.Config} defaultConfig
+  * @memberof module:SVGEditor~
+  * @implements {module:SVGEditor.Config}
+  */
   defaultConfig = {
-    // Todo: svgcanvas.js also sets and checks: show_outside_canvas, selectNew; add here?
-    // Change the following to preferences and add pref controls to the UI (e.g., initTool, wireframe, showlayers)?
     canvasName: 'default',
     canvas_expansion: 3,
     initFill: {
@@ -163,6 +274,8 @@ const callbacks = [],
   },
   /**
   * LOCALE
+  * @name module:SVGEditor.uiStrings
+  * @type {PlainObject}
   */
   uiStrings = editor.uiStrings = {};
 
@@ -209,6 +322,34 @@ function loadSvgString (str, callback) {
 }
 
 /**
+ * @function module:SVGEditor~getImportLocale
+ * @param {string} defaultLang
+ * @param {string} defaultName
+ * @returns {module:SVGEditor~ImportLocale}
+ */
+function getImportLocale ({defaultLang, defaultName}) {
+  /**
+   * @function module:SVGEditor~ImportLocale
+   * @param {string} [name] Defaults to `defaultName` of {@link module:SVGEditor~getImportLocale}
+   * @param {string} [lang=defaultLang] Defaults to `defaultLang` of {@link module:SVGEditor~getImportLocale}
+   * @returns {Promise} Resolves to {@link module:locale.LocaleStrings}
+   */
+  return async function importLocale ({name = defaultName, lang = defaultLang} = {}) {
+    async function importLocale (lang) {
+      const url = `${curConfig.extPath}ext-locale/${name}/${lang}.js`;
+      return importSetGlobalDefault(url, {
+        global: `svgEditorExtensionLocale_${name}_${lang}`
+      });
+    }
+    try {
+      return importLocale(lang);
+    } catch (err) {
+      return importLocale('en');
+    }
+  };
+}
+
+/**
 * EXPORTS
 */
 
@@ -219,30 +360,36 @@ function loadSvgString (str, callback) {
 * @returns {string} If val is missing or falsey, the value of the previously stored preference will be returned.
 * @todo Can we change setting on the jQuery namespace (onto editor) to avoid conflicts?
 * @todo Review whether any remaining existing direct references to
-*  getting curPrefs can be changed to use $.pref() getting to ensure
-*  defaultPrefs fallback (also for sake of allowInitialUserOverride); specifically, bkgd_color could be changed so that
-*  the pref dialog has a button to auto-calculate background, but otherwise uses $.pref() to be able to get default prefs
+*  getting `curPrefs` can be changed to use `$.pref()` getting to ensure
+*  `defaultPrefs` fallback (also for sake of `allowInitialUserOverride`); specifically, `bkgd_color` could be changed so that
+*  the pref dialog has a button to auto-calculate background, but otherwise uses `$.pref()` to be able to get default prefs
 *  or overridable settings
 */
 $.pref = function (key, val) {
   if (val) {
     curPrefs[key] = val;
+    /**
+    * @name curPrefs
+    * @memberof module:SVGEditor
+    * @implements {module:SVGEditor.Prefs}
+    */
     editor.curPrefs = curPrefs; // Update exported value
     return;
   }
   return (key in curPrefs) ? curPrefs[key] : defaultPrefs[key];
 };
 
-/**
+/*
 * EDITOR PUBLIC METHODS
-* @todo Sort these methods per invocation order, ideally with init at the end
-* @todo Prevent execution until init executes if dependent on it?
+// Todo: Sort these methods per invocation order, ideally with init at the end
+// Todo: Prevent execution until init executes if dependent on it?
 */
 editor.putLocale = putLocale;
 editor.readLang = readLang;
+editor.setStrings = setStrings;
 
 /**
-* Where permitted, sets canvas and/or defaultPrefs based on previous
+* Where permitted, sets canvas and/or `defaultPrefs` based on previous
 *  storage. This will override URL settings (for security reasons) but
 *  not `svgedit-config-iife.js` configuration (unless initial user
 *  overriding is explicitly permitted there via `allowInitialUserOverride`).
@@ -252,6 +399,7 @@ editor.readLang = readLang;
 *  change URL setting so that it always uses a different namespace,
 *  so it won't affect pre-existing user storage (but then if users saves
 *  that, it will then be subject to tampering
+* @returns {undefined}
 */
 editor.loadContentAndPrefs = function () {
   if (!curConfig.forceStorage &&
@@ -297,8 +445,8 @@ editor.loadContentAndPrefs = function () {
 
 /**
 * Allows setting of preferences or configuration (including extensions).
-* @param {Object} opts The preferences or configuration (including extensions)
-* @param {Object} [cfgCfg] Describes configuration which applies to the
+* @param {module:SVGEditor.Config|module:SVGEditor.Prefs} opts The preferences or configuration (including extensions). See the tutorial on {@tutorial ConfigOptions} for info on config and preferences.
+* @param {PlainObject} [cfgCfg] Describes configuration which applies to the
 *    particular batch of supplied options
 * @param {boolean} [cfgCfg.allowInitialUserOverride=false] Set to true if you wish
 *  to allow initial overriding of settings by the user via the URL
@@ -313,6 +461,7 @@ editor.loadContentAndPrefs = function () {
 *  explicitly permits via `allowInitialUserOverride` but extension config
 *  can be overridden as they will run after URL settings). Should
 *   not be needed in `svgedit-config-iife.js`.
+* @returns {undefined}
 */
 editor.setConfig = function (opts, cfgCfg) {
   cfgCfg = cfgCfg || {};
@@ -378,25 +527,65 @@ editor.setConfig = function (opts, cfgCfg) {
       }
     }
   });
+  /**
+  * @name curConfig
+  * @memberof module:SVGEditor
+  * @implements {module:SVGEditor.Config}
+  */
   editor.curConfig = curConfig; // Update exported value
 };
 
 /**
-* @param {Object} opts Extension mechanisms may call setCustomHandlers with three functions: opts.open, opts.save, and opts.exportImage
-* opts.open's responsibilities are:
+* All methods are optional
+* @interface module:SVGEditor.CustomHandler
+* @type {PlainObject}
+*/
+/**
+* Its responsibilities are:
 *  - invoke a file chooser dialog in 'open' mode
 *  - let user pick a SVG file
-*  - calls svgCanvas.setSvgString() with the string contents of that file
-*  opts.save's responsibilities are:
+*  - calls [svgCanvas.setSvgString()]{@link module:svgcanvas.SvgCanvas#setSvgString} with the string contents of that file.
+* Not passed any parameters.
+* @function module:SVGEditor.CustomHandler#open
+* @returns {undefined}
+*/
+/**
+* Its responsibilities are:
 *  - accept the string contents of the current document
 *  - invoke a file chooser dialog in 'save' mode
 *  - save the file to location chosen by the user
-*  opts.exportImage's responsibilities (with regard to the object it is supplied in its 2nd argument) are:
+* @function module:SVGEditor.CustomHandler#save
+* @param {external:Window} win
+* @param {module:svgcanvas.SvgCanvas#event:saved} svgStr A string of the SVG
+* @listens module:svgcanvas.SvgCanvas#event:saved
+* @returns {undefined}
+*/
+/**
+* Its responsibilities (with regard to the object it is supplied in its 2nd argument) are:
 *  - inform user of any issues supplied via the "issues" property
 *  - convert the "svg" property SVG string into an image for export;
 *    utilize the properties "type" (currently 'PNG', 'JPEG', 'BMP',
 *    'WEBP', 'PDF'), "mimeType", and "quality" (for 'JPEG' and 'WEBP'
 *    types) to determine the proper output.
+* @function module:SVGEditor.CustomHandler#exportImage
+* @param {external:Window} win
+* @param {module:svgcanvas.SvgCanvas#event:exported} data
+* @listens module:svgcanvas.SvgCanvas#event:exported
+* @returns {undefined}
+*/
+/**
+* @function module:SVGEditor.CustomHandler#exportPDF
+* @param {external:Window} win
+* @param {module:svgcanvas.SvgCanvas#event:exportedPDF} data
+* @listens module:svgcanvas.SvgCanvas#event:exportedPDF
+* @returns {undefined}
+*/
+
+/**
+* Allows one to override default SVGEdit `open`, `save`, and
+* `export` editor behaviors.
+* @param {module:SVGEditor.CustomHandler} opts Extension mechanisms may call `setCustomHandlers` with three functions: `opts.open`, `opts.save`, and `opts.exportImage`
+* @returns {undefined}
 */
 editor.setCustomHandlers = function (opts) {
   editor.ready(function () {
@@ -420,10 +609,18 @@ editor.setCustomHandlers = function (opts) {
   });
 };
 
-editor.randomizeIds = function () {
-  svgCanvas.randomizeIds(arguments);
+/**
+* @param {boolean} arg
+* @returns {undefined}
+*/
+editor.randomizeIds = function (arg) {
+  return svgCanvas.randomizeIds(arg);
 };
 
+/**
+* Auto-run after a Promise microtask
+* @returns {undefined}
+*/
 editor.init = function () {
   const modularVersion = !('svgEditor' in window) ||
     !window.svgEditor ||
@@ -442,11 +639,20 @@ editor.init = function () {
   // Some FF versions throw security errors here when directly accessing
   try {
     if ('localStorage' in window) { // && onWeb removed so Webkit works locally
+      /**
+      * The built-in interface implemented by `localStorage`
+      * @external Storage
+      */
+      /**
+      * @name storage
+      * @memberof module:SVGEditor
+      * @type {external:Storage}
+      */
       editor.storage = localStorage;
     }
   } catch (err) {}
 
-  // Todo: Avoid var-defined functions and group functions together, etc. where possible
+  // Todo: Avoid const-defined functions and group functions together, etc. where possible
   const goodLangs = [];
   $('#lang_select option').each(function () {
     goodLangs.push(this.value);
@@ -465,7 +671,7 @@ editor.init = function () {
       curConfig.extensions = curConfig.extensions.concat(defaultExtensions);
     }
     // ...and remove any dupes
-    $.each(['extensions', 'stylesheets', 'allowedOrigins'], function (i, cfg) {
+    ['extensions', 'stylesheets', 'allowedOrigins'].forEach(function (cfg) {
       curConfig[cfg] = $.grep(curConfig[cfg], function (n, i) { // Supposedly faster than filter per http://amandeep1986.blogspot.hk/2015/02/jquery-grep-vs-js-filter.html
         return i === curConfig[cfg].indexOf(n);
       });
@@ -495,17 +701,14 @@ editor.init = function () {
       // security reasons, even for same-domain
       // ones given potential to interact in undesirable
       // ways with other script resources
-      $.each(
-        [
-          'extPath', 'imgPath', 'extIconsPath', 'canvgPath',
-          'langPath', 'jGraduatePath', 'jspdfPath'
-        ],
-        function (pathConfig) {
-          if (urldata[pathConfig]) {
-            delete urldata[pathConfig];
-          }
+      [
+        'extPath', 'imgPath', 'extIconsPath', 'canvgPath',
+        'langPath', 'jGraduatePath', 'jspdfPath'
+      ].forEach(function (pathConfig) {
+        if (urldata[pathConfig]) {
+          delete urldata[pathConfig];
         }
-      );
+      });
 
       editor.setConfig(urldata, {overwrite: false}); // Note: source and url (as with storagePrompt later) are not set on config but are used below
 
@@ -535,14 +738,20 @@ editor.init = function () {
       if (!urldata.noStorageOnLoad || curConfig.forceStorage) {
         editor.loadContentAndPrefs();
       }
-      setupCurPrefs();
     } else {
       setupCurConfig();
       editor.loadContentAndPrefs();
-      setupCurPrefs();
     }
+    setupCurPrefs();
   })();
 
+  /**
+  * Called internally
+  * @param {string|Element|external:jQuery} elem
+  * @param {string|external:jQuery} iconId
+  * @param {Float} forcedSize Not in use
+  * @returns {undefined}
+  */
   const setIcon = editor.setIcon = function (elem, iconId, forcedSize) {
     const icon = (typeof iconId === 'string') ? $.getSvgIcon(iconId, true) : iconId.clone();
     if (!icon) {
@@ -552,7 +761,18 @@ editor.init = function () {
     $(elem).empty().append(icon);
   };
 
-  const extFunc = async function () {
+  /**
+   * @fires module:svgcanvas.SvgCanvas#event:ext-addLangData
+   * @fires module:svgcanvas.SvgCanvas#event:ext-langReady
+   * @fires module:svgcanvas.SvgCanvas#event:ext-langChanged
+   * @fires module:svgcanvas.SvgCanvas#event:extensions_added
+   * @returns {Promise} Resolves to result of {@link module:locale.readLang}
+   */
+  const extAndLocaleFunc = async function () {
+    // const lang = ('lang' in curPrefs) ? curPrefs.lang : null;
+    const {langParam, langData} = await editor.putLocale(null, goodLangs, curConfig);
+    setLang(langParam, langData);
+
     try {
       await Promise.all(
         curConfig.extensions.map(async (extname) => {
@@ -563,19 +783,53 @@ editor.init = function () {
           const url = curConfig.extPath + extname;
           // Todo: Replace this with `return import(url);` when
           //   `import()` widely supported
-          const imported = await importSetGlobalDefault(url, {
-            global: 'svgEditorExtension_' + extName[1].replace(/-/g, '_')
-          });
-          const {name, init} = imported;
-          return editor.addExtension(name, (init && init.bind(editor)) || imported);
+          /**
+           * @tutorial ExtensionDocs
+           * @typedef {PlainObject} module:SVGEditor.ExtensionObject
+           * @property {string} [name] Name of the extension. Used internally; no need for i18n. Defaults to extension name without beginning "ext-" or ending ".js".
+           * @property {module:svgcanvas.ExtensionInitCallback} [init]
+           */
+          try {
+            /**
+             * @type {module:SVGEditor.ExtensionObject}
+             */
+            const imported = await importSetGlobalDefault(url, {
+              global: 'svgEditorExtension_' + extName[1].replace(/-/g, '_')
+            });
+            const {name = extName[1], init} = imported;
+            const importLocale = getImportLocale({defaultLang: langParam, defaultName: name});
+            return editor.addExtension(name, (init && init.bind(editor)), importLocale);
+          } catch (err) {
+            console.log(err);
+            console.error('Extension failed to load: ' + extname + '; ' + err);
+          }
         })
       );
+      svgCanvas.bind('extensions_added',
+        /**
+        * @param {external:Window} win
+        * @param {module:svgcanvas.SvgCanvas#event:extensions_added} data
+        * @listens module:svgcanvas.SvgCanvas#event:extensions_added
+        * @returns {undefined}
+        */
+        (win, data) => {
+          extensionsAdded = true;
+          messageQueue.forEach(
+            /**
+             * @param {module:svgcanvas.SvgCanvas#event:message} messageObj
+             * @fires module:svgcanvas.SvgCanvas#event:message
+             * @returns {undefined}
+             */
+            (messageObj) => {
+              svgCanvas.call('message', messageObj);
+            }
+          );
+        }
+      );
+      svgCanvas.call('extensions_added');
     } catch (err) {
       console.log(err);
     }
-
-    // const lang = ('lang' in curPrefs) ? curPrefs.lang : null;
-    return editor.putLocale(null, goodLangs, curConfig);
   };
 
   const stateObj = {tool_scale: editor.tool_scale};
@@ -639,6 +893,11 @@ editor.init = function () {
     });
   };
 
+  /**
+  * Called internally.
+  * @param {module:SVGEditor.IconSize} size
+  * @returns {undefined}
+  */
   const setIconSize = editor.setIconSize = function (size) {
     // const elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
     const selToscale = '#tools_top .toolset, #editor_panel > *, #history_panel > *,' +
@@ -1033,11 +1292,11 @@ editor.init = function () {
         switch (stylesheet) {
         case 'jgraduate/css/jPicker.css':
           return 1;
-        case 'jgraduate/css/jgraduate.css':
+        case 'jgraduate/css/jGraduate.css':
           return 2;
         case 'svg-editor.css':
           return 3;
-        case 'spinbtn/JQuerySpinBtn.css':
+        case 'spinbtn/jQuery.SpinButton.css':
           return 4;
         default:
           return Infinity;
@@ -1078,6 +1337,10 @@ editor.init = function () {
     }
   });
 
+  /**
+  * @name module:SVGEditor.canvas
+  * @type {module:svgcanvas.SvgCanvas}
+  */
   editor.canvas = svgCanvas = new SvgCanvas(
     document.getElementById('svgcanvas'),
     curConfig
@@ -1113,11 +1376,24 @@ editor.init = function () {
   (function () {
     // let the opener know SVG Edit is ready (now that config is set up)
     const w = window.opener || window.parent;
-    let svgEditorReadyEvent;
     if (w) {
       try {
-        svgEditorReadyEvent = w.document.createEvent('Event');
-        svgEditorReadyEvent.initEvent('svgEditorReady', true, true);
+        /**
+         * Triggered on a containing `document` (of `window.opener`
+         * or `window.parent`) when the editor is loaded.
+         * @event module:SVGEditor#event:svgEditorReadyEvent
+         * @type {Event}
+         * @property {true} bubbles
+         * @property {true} cancelable
+         */
+        /**
+         * @name module:SVGEditor.svgEditorReadyEvent
+         * @type {module:SVGEditor#event:svgEditorReadyEvent}
+         */
+        const svgEditorReadyEvent = new w.CustomEvent('svgEditorReady', {
+          bubbles: true,
+          cancelable: true
+        });
         w.document.documentElement.dispatchEvent(svgEditorReadyEvent);
       } catch (e) {}
     }
@@ -1350,6 +1626,13 @@ editor.init = function () {
     }
   };
 
+  /**
+   * @type {module:svgcanvas.EventHandler}
+   * @param {external:Window} wind
+   * @param {module:svgcanvas.SvgCanvas#event:saved} svg The SVG source
+   * @listens module:svgcanvas.SvgCanvas#event:saved
+   * @returns {undefined}
+   */
   const saveHandler = function (wind, svg) {
     editor.showSaveWarning = false;
 
@@ -1396,6 +1679,12 @@ editor.init = function () {
     }
   };
 
+  /**
+   * @param {external:Window} win
+   * @param {module:svgcanvas.SvgCanvas#event:exported} data
+   * @listens module:svgcanvas.SvgCanvas#event:exported
+   * @returns {undefined}
+   */
   const exportHandler = function (win, data) {
     const {issues, exportWindowName} = data;
 
@@ -1454,9 +1743,10 @@ editor.init = function () {
   * - removes the `tool_button_current` class from whatever tool currently has it
   * - hides any flyouts
   * - adds the `tool_button_current` class to the button passed in
-  * @param {String|Element} button The DOM element or string selector representing the toolbar button
-  * @param {Boolean} noHiding Whether not to hide any flyouts
-  * @returns {Boolean} Whether the button was disabled or not
+  * @function module:SVGEDitor.toolButtonClick
+  * @param {string|Element} button The DOM element or string selector representing the toolbar button
+  * @param {boolean} noHiding Whether not to hide any flyouts
+  * @returns {boolean} Whether the button was disabled or not
   */
   const toolButtonClick = editor.toolButtonClick = function (button, noHiding) {
     if ($(button).hasClass('disabled')) { return false; }
@@ -1475,6 +1765,8 @@ editor.init = function () {
   /**
   * Unless the select toolbar button is disabled, sets the button
   * and sets the select mode and cursor styles.
+  * @function module:SVGEditor.clickSelect
+  * @returns {undefined}
   */
   const clickSelect = editor.clickSelect = function () {
     if (toolButtonClick('#tool_select')) {
@@ -1485,7 +1777,9 @@ editor.init = function () {
 
   /**
   * Set a selected image's URL
-  * @param {String} url
+  * @function module:SVGEditor.setImageURL
+  * @param {string} url
+  * @returns {undefined}
   */
   const setImageURL = editor.setImageURL = function (url) {
     if (!url) {
@@ -1688,8 +1982,10 @@ editor.init = function () {
   }
 
   /**
-  * @param center
-  * @param newCtr
+  * @function module:SVGEditor.updateCanvas
+  * @param {boolean} center
+  * @param {module:math.XYObject} newCtr
+  * @returns {undefined}
   */
   const updateCanvas = editor.updateCanvas = function (center, newCtr) {
     const zoom = svgCanvas.getZoom();
@@ -1764,6 +2060,10 @@ editor.init = function () {
     }
   };
 
+  /**
+   * @fires module:svgcanvas.SvgCanvas#event:ext-toolButtonStateUpdate
+   * @returns {undefined}
+   */
   const updateToolButtonState = function () {
     let index, button;
     const bNoFill = (svgCanvas.getColor('fill') === 'none');
@@ -1800,7 +2100,7 @@ editor.init = function () {
       }
     }
 
-    svgCanvas.runExtensions('toolButtonStateUpdate', {
+    svgCanvas.runExtensions('toolButtonStateUpdate', /** @type {module:svgcanvas.SvgCanvas#event:ext-toolButtonStateUpdate} */ {
       nofill: bNoFill,
       nostroke: bNoStroke
     });
@@ -2125,8 +2425,11 @@ editor.init = function () {
   // called when we've selected a different element
   /**
   *
-  * @param win
-  * @param elems Array of elements that were selected
+  * @param {external:Window} win
+  * @param {module:svgcanvas.SvgCanvas#event:selected} elems Array of elements that were selected
+  * @listens module:svgcanvas.SvgCanvas#event:selected
+  * @fires module:svgcanvas.SvgCanvas#event:ext-selectedChanged
+  * @returns {undefined}
   */
   const selectedChanged = function (win, elems) {
     const mode = svgCanvas.getMode();
@@ -2150,7 +2453,7 @@ editor.init = function () {
     // Deal with pathedit mode
     togglePathEditMode(isNode, elems);
     updateContextPanel();
-    svgCanvas.runExtensions('selectedChanged', {
+    svgCanvas.runExtensions('selectedChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext-selectedChanged} */ {
       elems,
       selectedElement,
       multiselected
@@ -2159,6 +2462,13 @@ editor.init = function () {
 
   // Call when part of element is in process of changing, generally
   // on mousemove actions like rotate, move, etc.
+  /**
+   * @param {external:Window} win
+   * @param {module:svgcanvas.SvgCanvas#event:transition} elems
+   * @listens module:svgcanvas.SvgCanvas#event:transition
+   * @fires module:svgcanvas.SvgCanvas#event:ext-elementTransition
+   * @returns {undefined}
+   */
   const elementTransition = function (win, elems) {
     const mode = svgCanvas.getMode();
     const elem = elems[0];
@@ -2183,7 +2493,7 @@ editor.init = function () {
       //   break;
       }
     }
-    svgCanvas.runExtensions('elementTransition', {
+    svgCanvas.runExtensions('elementTransition', /** @type {module:svgcanvas.SvgCanvas#event:ext-elementTransition} */ {
       elems
     });
   };
@@ -2198,6 +2508,13 @@ editor.init = function () {
   }
 
   // called when any element has changed
+  /**
+   * @param {external:Window} win
+   * @param {module:svgcanvas.SvgCanvas#event:changed} elems
+   * @listens module:svgcanvas.SvgCanvas#event:changed
+   * @fires module:svgcanvas.SvgCanvas#event:ext-elementChanged
+   * @returns {undefined}
+   */
   const elementChanged = function (win, elems) {
     const mode = svgCanvas.getMode();
     if (mode === 'select') {
@@ -2239,16 +2556,38 @@ editor.init = function () {
       paintBox.stroke.update();
     }
 
-    svgCanvas.runExtensions('elementChanged', {
+    svgCanvas.runExtensions('elementChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext-elementChanged} */ {
       elems
     });
   };
 
+  /**
+   * @returns {undefined}
+   */
   const zoomDone = function () {
     updateWireFrame();
     // updateCanvas(); // necessary?
   };
 
+  /**
+  * @typedef {PlainObject} module:SVGEditor.BBoxObjectWithFactor (like `DOMRect`)
+  * @property {Float} x
+  * @property {Float} y
+  * @property {Float} width
+  * @property {Float} height
+  * @property {Float} [factor] Needed if width or height are 0
+  * @property {Float} [zoom]
+  * @see module:svgcanvas.SvgCanvas#event:zoomed
+  */
+
+  /**
+  * @function module:svgcanvas.SvgCanvas#zoomChanged
+  * @param {external:Window} win
+  * @param {module:svgcanvas.SvgCanvas#event:zoomed} bbox
+  * @param {boolean} autoCenter
+  * @listens module:svgcanvas.SvgCanvas#event:zoomed
+  * @returns {undefined}
+  */
   const zoomChanged = svgCanvas.zoomChanged = function (win, bbox, autoCenter) {
     const scrbar = 15,
       // res = svgCanvas.getResolution(), // Currently unused
@@ -2310,6 +2649,12 @@ editor.init = function () {
     return false;
   });
 
+  /**
+   * @param {external:Window} win
+   * @param {module:svgcanvas.SvgCanvas#event:contextset} context
+   * @listens module:svgcanvas.SvgCanvas#event:contextset
+   * @returns {undefined}
+   */
   const contextChanged = function (win, context) {
     let linkStr = '';
     if (context) {
@@ -2535,18 +2880,27 @@ editor.init = function () {
   };
 
   const extsPreLang = [];
+  /**
+   * @param {external:Window} win
+   * @param {module:svgcanvas.SvgCanvas#event:extension_added} ext
+   * @listens module:svgcanvas.SvgCanvas#event:extension_added
+   * @returns {undefined}
+   */
   const extAdded = function (win, ext) {
     if (!ext) {
       return;
     }
     let cbCalled = false;
     let resizeDone = false;
-    let cbReady = true; // Set to false to delay callback (e.g. wait for $.svgIcons)
 
     if (ext.langReady) {
       if (editor.langChanged) { // We check for this since the "lang" pref could have been set by storage
         const lang = $.pref('lang');
-        ext.langReady({lang, uiStrings});
+        ext.langReady({
+          lang,
+          uiStrings,
+          importLocale: getImportLocale({defaultLang: lang, defaultName: ext.name})
+        });
       } else {
         extsPreLang.push(ext);
       }
@@ -2566,7 +2920,7 @@ editor.init = function () {
     }
 
     const runCallback = function () {
-      if (ext.callback && !cbCalled && cbReady) {
+      if (ext.callback && !cbCalled) {
         cbCalled = true;
         ext.callback.call(editor);
       }
@@ -2574,6 +2928,21 @@ editor.init = function () {
 
     const btnSelects = [];
 
+    /**
+    * @typedef {PlainObject} module:SVGEditor.ContextTool
+    * @property {string} panel The ID of the existing panel to which the tool is being added. Required.
+    * @property {string} id The ID of the actual tool element. Required.
+    * @property {PlainObject.<string, external:jQuery.Function>|PlainObject.<"change", external:jQuery.Function>} events DOM event names keyed to associated functions. Example: `{change () { alert('Option was changed') } }`. "change" event is one specifically handled for the "button-select" type. Required.
+    * @property {string} title The tooltip text that will appear when the user hovers over the tool. Required.
+    * @property {"tool_button"|"select"|"button-select"|"input"|string} type The type of tool being added. Expected.
+    * @property {PlainObject.<string, string>} [options] List of options and their labels for select tools. Example: `{1: 'One', 2: 'Two', all: 'All' }`. Required by "select" tools.
+    * @property {string} [container_id] The ID to be given to the tool's container element.
+    * @property {string} [defval] Default value
+    * @property {string|Integer} [colnum] Added as part of the option list class.
+    * @property {string} [label] Label associated with the tool, visible in the UI
+    * @property {Integer} [size] Value of the "size" attribute of the tool input
+    * @property {module:jQuerySpinButton.SpinButtonConfig} [spindata] When added to a tool of type "input", this tool becomes a "spinner" which allows the number to be in/decreased.
+    */
     if (ext.context_tools) {
       $.each(ext.context_tools, function (i, tool) {
         // Add select tool
@@ -2663,16 +3032,40 @@ editor.init = function () {
       });
     }
 
+    const {svgicons} = ext;
     if (ext.buttons) {
       const fallbackObj = {},
         placementObj = {},
-        {svgicons} = ext,
         holders = {};
 
+      /**
+      * @typedef {GenericArray} module:SVGEditor.KeyArray
+      * @property {string} 0
+      * @property {boolean} 1 Whether to `preventDefault` on the `keydown` event
+      */
+      /**
+       * @typedef {string|module:SVGEditor.KeyArray} module:SVGEditor.Key
+       */
+      /**
+      * @typedef {PlainObject} module:SVGEditor.Button
+      * @property {string} id A unique identifier for this button. If SVG icons are used, this must match the ID used in the icon file. Required.
+      * @property {"mode_flyout"|"mode"|"context"|"app_menu"} type Type of button. Required.
+      * @property {string} title The tooltip text that will appear when the user hovers over the icon. Required.
+      * @property {PlainObject.<string, external:jQuery.Function>|PlainObject.<"click", external:jQuery.Function>} events DOM event names with associated functions. Example: `{click () { alert('Button was clicked') } }`. Click is used with `includeWith` and `type` of "mode_flyout" (and "mode"); any events may be added if `list` is not present. Expected.
+      * @property {string} panel The ID of the context panel to be included, if type is "context". Required only if type is "context".
+      * @property {string} icon The file path to the raster version of the icon image source. Required only if no `svgicon` is supplied.
+      * @property {string} [svgicon] If absent, will utilize the button "id"; used to set "placement" on the `svgIcons` call
+      * @property {string} [list] Points to the "id" of a `context_tools` item of type "button-select" into which the button will be added as a panel list item
+      * @property {Integer} [position] The numeric index for placement; defaults to last position (as of the time of extension addition) if not present. For use with {@link http://api.jquery.com/eq/}.
+      * @property {boolean} [isDefault] Whether or not the button is the default. Used with `list`.
+      * @property {PlainObject} [includeWith] Object with flyout menu data
+      * @property {boolean} [includeWith.isDefault] Indicates whether button is default in flyout list or not.
+      * @property {string} includeWith.button jQuery selector of the existing button to be joined. Example: '#tool_line'. Required if `includeWith` is used.
+      * @property {"last"|Integer} [includeWith.position] Position of icon in flyout list; will be added to end if not indicated. Integer is for use with {@link http://api.jquery.com/eq/}.
+      * @property {module:SVGEditor.Key} [key] The key to bind to the button
+      */
       // Add buttons given by extension
       $.each(ext.buttons, function (i, btn) {
-        let icon, svgicon, tlsId;
-
         let {id} = btn;
         let num = i;
         // Give button a unique ID
@@ -2680,11 +3073,12 @@ editor.init = function () {
           id = btn.id + '_' + (++num);
         }
 
+        let icon;
         if (!svgicons) {
           icon = $('<img src="' + btn.icon + '">');
         } else {
           fallbackObj[id] = btn.icon;
-          svgicon = btn.svgicon || btn.id;
+          const svgicon = btn.svgicon || btn.id;
           if (btn.type === 'app_menu') {
             placementObj['#' + id + ' > div'] = svgicon;
           } else {
@@ -2738,6 +3132,7 @@ editor.init = function () {
 
             flyoutHolder = refBtn.parent();
             // Create a flyout menu if there isn't one already
+            let tlsId;
             if (!refBtn.parent().hasClass('tools_flyout')) {
               // Create flyout placeholder
               tlsId = refBtn[0].id.replace('tool_', 'tools_');
@@ -2787,7 +3182,7 @@ editor.init = function () {
           $('#' + btn.list + '_opts').append(button);
           if (btn.isDefault) {
             $('#cur_' + btn.list).append(button.children().clone());
-            svgicon = btn.svgicon || btn.id;
+            const svgicon = btn.svgicon || btn.id;
             placementObj['#cur_' + btn.list] = svgicon;
           }
         } else if (btn.includeWith) {
@@ -2798,6 +3193,7 @@ editor.init = function () {
 
           flyoutHolder = refBtn.parent();
           // Create a flyout menu if there isn't one already
+          let tlsId;
           if (!refBtn.parent().hasClass('tools_flyout')) {
             // Create flyout placeholder
             tlsId = refBtn[0].id.replace('tool_', 'tools_');
@@ -2878,28 +3274,26 @@ editor.init = function () {
       });
 
       if (svgicons) {
-        cbReady = false; // Delay callback
-      }
-
-      $.svgIcons(svgicons, {
-        w: 24, h: 24,
-        id_match: false,
-        no_img: (!isWebkit()),
-        fallback: fallbackObj,
-        placement: placementObj,
-        callback (icons) {
-          // Non-ideal hack to make the icon match the current size
-          // if (curPrefs.iconsize && curPrefs.iconsize !== 'm') {
-          if ($.pref('iconsize') !== 'm') {
-            prepResize();
+        $.svgIcons(svgicons, {
+          w: 24, h: 24,
+          id_match: false,
+          no_img: (!isWebkit()),
+          fallback: fallbackObj,
+          placement: placementObj,
+          callback (icons) {
+            // Non-ideal hack to make the icon match the current size
+            // if (curPrefs.iconsize && curPrefs.iconsize !== 'm') {
+            if ($.pref('iconsize') !== 'm') {
+              prepResize();
+            }
+            runCallback();
           }
-          cbReady = true; // Ready for callback
-          runCallback();
-        }
-      });
+        });
+      }
     }
-
-    runCallback();
+    if (!svgicons) {
+      runCallback();
+    }
   };
 
   const getPaint = function (color, opac, type) {
@@ -2939,13 +3333,23 @@ editor.init = function () {
       $.alert(uiStrings.notification.popupWindowBlocked);
       return;
     }
-    exportWindow.location.href = data.dataurlstring;
+    exportWindow.location.href = data.output;
   });
   svgCanvas.bind('zoomed', zoomChanged);
   svgCanvas.bind('zoomDone', zoomDone);
-  svgCanvas.bind('updateCanvas', function (win, {center, newCtr}) {
-    updateCanvas(center, newCtr);
-  });
+  svgCanvas.bind(
+    'updateCanvas',
+    /**
+     * @param {external:Window} win
+     * @param {false} center
+     * @param {module:math.XYObject} newCtr
+     * @listens module:svgcanvas.SvgCanvas#event:updateCanvas
+     * @returns {undefined}
+     */
+    function (win, {center, newCtr}) {
+      updateCanvas(center, newCtr);
+    }
+  );
   svgCanvas.bind('contextset', contextChanged);
   svgCanvas.bind('extension_added', extAdded);
   svgCanvas.textActions.setInputElem($('#text')[0]);
@@ -3204,7 +3608,8 @@ editor.init = function () {
     });
 
     /**
-    * @param {Boolean} active
+    * @param {boolean} active
+    * @returns {undefined}
     */
     editor.setPanning = function (active) {
       svgCanvas.spaceKey = keypan = active;
@@ -3293,9 +3698,17 @@ editor.init = function () {
   // Made public for UI customization.
   // TODO: Group UI functions into a public editor.ui interface.
   /**
-  * @param {Element|String} elem DOM Element or selector
-  * @param {Function} callback Mouseup callback
-  * @param {Boolean} dropUp
+   * See {@link http://api.jquery.com/bind/#bind-eventType-eventData-handler}
+   * @callback module:SVGEditor.DropDownCallback
+   * @param {external:jQuery.Event} ev See {@link http://api.jquery.com/Types/#Event}
+   * @listens external:jQuery.Event
+   * @returns {undefined|boolean} Calls `preventDefault()` and `stopPropagation()`
+  */
+  /**
+   * @param {Element|string} elem DOM Element or selector
+   * @param {module:SVGEditor.DropDownCallback} callback Mouseup callback
+   * @param {boolean} dropUp
+   * @returns {undefined}
   */
   editor.addDropDown = function (elem, callback, dropUp) {
     if (!$(elem).length) { return; } // Quit if called on non-existent element
@@ -3656,6 +4069,10 @@ editor.init = function () {
     updateContextPanel();
   };
 
+  /**
+   * @fires module:svgcanvas.SvgCanvas#event:ext-onNewDocument
+   * @returns {undefined}
+   */
   const clickClear = function () {
     const dims = curConfig.dimensions;
     $.confirm(uiStrings.notification.QwantToClear, function (ok) {
@@ -3949,6 +4366,8 @@ editor.init = function () {
 
   /**
   * Save user preferences based on current values in the UI
+  * @function module:SVGEditor.savePreferences
+  * @returns {undefined}
   */
   const savePreferences = editor.savePreferences = function () {
     // Set background
@@ -4445,6 +4864,11 @@ editor.init = function () {
   const SIDEPANEL_OPENWIDTH = 150;
   let sidedrag = -1, sidedragging = false, allowmove = false;
 
+  /**
+   * @param {Float} delta
+   * @fires module:svgcanvas.SvgCanvas#event:ext-workareaResized
+   * @returns {undefined}
+   */
   const changeSidePanelWidth = function (delta) {
     const rulerX = $('#ruler_x');
     $('#sidepanels').width('+=' + delta);
@@ -5020,13 +5444,21 @@ editor.init = function () {
 
   /**
   * Expose the uiStrings
+  * @function module:SVGEditor.canvas.getUIStrings
+  * @returns {module:SVGEditor.uiStrings}
   */
   editor.canvas.getUIStrings = function () {
     return uiStrings;
   };
 
   /**
-  * @param {Function} func Confirmation dialog callback
+  * @callback module:SVGEditor.OpenPrepCallback
+  * @param {boolean} noChanges
+  * @returns {undefined}
+  */
+  /**
+  * @param {module:SVGEditor.OpenPrepCallback} func Confirmation dialog callback
+  * @returns {undefined}
   */
   editor.openPrep = function (func) {
     $('#main_menu').hide();
@@ -5097,7 +5529,7 @@ editor.init = function () {
           reader.onloadend = function (e) {
             // let's insert the new image until we know its dimensions
             const insertNewImage = function (width, height) {
-              const newImage = svgCanvas.addSvgElementFromJson({
+              const newImage = svgCanvas.addSVGElementFromJson({
                 element: 'image',
                 attr: {
                   x: 0,
@@ -5168,8 +5600,12 @@ editor.init = function () {
   //  $('#copyright')[0].setAttribute('title', revnums);
 
   /**
-  * @param {String} lang The language code
-  * @param {Object} allStrings
+  * @function module:SVGEditor.setLang
+  * @param {string} lang The language code
+  * @param {module:locale.LocaleStrings} allStrings See {@tutorial LocaleDocs}
+  * @fires module:svgcanvas.SvgCanvas#event:ext-langReady
+  * @fires module:svgcanvas.SvgCanvas#event:ext-langChanged
+  * @returns {undefined}
   */
   const setLang = editor.setLang = function (lang, allStrings) {
     editor.langChanged = true;
@@ -5197,12 +5633,16 @@ editor.init = function () {
     if (extsPreLang.length) {
       while (extsPreLang.length) {
         const ext = extsPreLang.shift();
-        ext.langReady({lang, uiStrings});
+        ext.langReady({
+          lang,
+          uiStrings,
+          importLocale: getImportLocale({defaultLang: lang, defaultName: ext.name})
+        });
       }
     } else {
-      svgCanvas.runExtensions('langReady', {lang, uiStrings});
+      svgCanvas.runExtensions('langReady', /** @type {module:svgcanvas.SvgCanvas#event:ext-langReady} */ {lang, uiStrings});
     }
-    svgCanvas.runExtensions('langChanged', lang);
+    svgCanvas.runExtensions('langChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext-langChanged} */ lang);
 
     // Update flyout tooltips
     setFlyoutTitles();
@@ -5224,28 +5664,62 @@ editor.init = function () {
       $('#tool_pos' + this.id.substr(10))[0].title = this.title;
     });
   };
-  localeInit({
-    addLangData (langParam) {
-      return editor.canvas.runExtensions('addlangData', langParam, true);
-    },
-    curConfig,
-    setLang
-  });
+  localeInit(
+    /**
+    * @implements {module:locale.LocaleEditorInit}
+    */
+    {
+      /**
+      * Gets an array of results from extensions with a `addLangData` method
+      * returning an object with a `data` property set to its locales (to be
+      * merged with regular locales)
+      * @param {string} langParam
+      * @fires module:svgcanvas.SvgCanvas#event:ext-addLangData
+      * @todo Can we forego this in favor of `langReady` (or forego `langReady`)?
+      * @returns {module:locale.AddLangExtensionLocaleData[]}
+      */
+      addLangData (langParam) {
+        return svgCanvas.runExtensions(
+          'addLangData',
+          /**
+           * @function
+           * @type {module:svgcanvas.ExtensionVarBuilder}
+           * @param {string} defaultLang
+           * @param {string} defaultName
+           * @returns {module:svgcanvas.SvgCanvas#event:ext-addLangData}
+           */
+          (name) => { // We pass in a function as we don't know the extension name here when defining this `addLangData` method
+            return {
+              lang: langParam,
+              importLocale: getImportLocale({defaultLang: langParam, defaultName: name})
+            };
+          },
+          true
+        );
+      },
+      curConfig
+    }
+  );
   // Load extensions
   // Bit of a hack to run extensions in local Opera/IE9
   if (document.location.protocol === 'file:') {
-    setTimeout(extFunc, 100);
+    setTimeout(extAndLocaleFunc, 100);
   } else {
-    // Returns a promise (if we wanted to fire 'extensions-loaded' event)
-    extFunc();
+    // Returns a promise (if we wanted to fire 'extensions-loaded' event, potentially useful to hide interface as some extension locales are only available after this)
+    extAndLocaleFunc();
   }
 };
 
 /**
+* @callback module:SVGEditor.ReadyCallback
+* @returns {undefined}
+*/
+/**
 * Queues a callback to be invoked when the editor is ready (or
-*   to be invoked immediately if it is already ready)--i.e.,
-*   once all callbacks set by `svgEditor.runCallbacks` have been run
-* @param {Function} cb Callback to be queued to invoke
+*   to be invoked immediately if it is already ready--i.e.,
+*   if `svgEditor.runCallbacks` has been run)
+* @param {module:SVGEditor.ReadyCallback} cb Callback to be queued to invoke
+* @returns {undefined}
 */
 editor.ready = function (cb) {
   if (!isReady) {
@@ -5257,19 +5731,18 @@ editor.ready = function (cb) {
 
 /**
 * Invokes the callbacks previous set by `svgEditor.ready`
+* @returns {undefined}
 */
 editor.runCallbacks = function () {
-  // Todo: See if there is any benefit to refactoring some
-  //   of the existing `editor.ready()` calls to return Promises
-  return Promise.all(callbacks.map((cb) => {
-    return cb();
-  })).then(() => {
-    isReady = true;
+  callbacks.forEach((cb) => {
+    cb();
   });
+  isReady = true;
 };
 
 /**
-* @param {String} str The SVG string to load
+* @param {string} str The SVG string to load
+* @returns {undefined}
 */
 editor.loadFromString = function (str) {
   editor.ready(function () {
@@ -5279,7 +5752,8 @@ editor.loadFromString = function (str) {
 
 /**
 * Not presently in use
-* @param featList
+* @param {PlainObject} featList
+* @returns {undefined}
 */
 editor.disableUI = function (featList) {
   // $(function () {
@@ -5289,8 +5763,16 @@ editor.disableUI = function (featList) {
 };
 
 /**
-* @param url URL from which to load an SVG string via Ajax
-* @param {Object} [opts] May contain properties: `cache`, `callback` (invoked with `true` or `false` depending on success)
+ * @callback module:SVGEditor.URLLoadCallback
+ * @param {boolean} success
+ * @returns {undefined}
+ */
+/**
+* @param {string} url URL from which to load an SVG string via Ajax
+* @param {PlainObject} [opts] May contain properties: `cache`, `callback`
+* @param {boolean} opts.cache
+* @param {module:SVGEditor.URLLoadCallback} opts.callback Invoked with `true` or `false` depending on success
+* @returns {undefined}
 */
 editor.loadFromURL = function (url, opts) {
   if (!opts) { opts = {}; }
@@ -5323,7 +5805,8 @@ editor.loadFromURL = function (url, opts) {
 };
 
 /**
-* @param {String} str The Data URI to base64-decode (if relevant) and load
+* @param {string} str The Data URI to base64-decode (if relevant) and load
+* @returns {undefined}
 */
 editor.loadFromDataURI = function (str) {
   editor.ready(function () {
@@ -5343,13 +5826,20 @@ editor.loadFromDataURI = function (str) {
 };
 
 /**
-* @param {...*} args Arguments to pass to `svgCanvas.addExtension` (though invoked on `svgEditor`)
+ * @param {string} name Used internally; no need for i18n.
+ * @param {module:svgcanvas.ExtensionInitCallback} init Config to be invoked on this module
+ * @param {module:SVGEditor~ImportLocale} importLocale Importer defaulting to pth with current extension name and locale
+ * @throws {Error} If called too early
+ * @returns {Promise} Resolves to `undefined`
 */
-editor.addExtension = function (...args) {
+editor.addExtension = function (name, init, importLocale) {
   // Note that we don't want this on editor.ready since some extensions
   // may want to run before then (like server_opensave).
   // $(function () {
-  if (svgCanvas) { svgCanvas.addExtension.apply(this, args); }
+  if (!svgCanvas) {
+    throw new Error('Extension added too early');
+  }
+  return svgCanvas.addExtension.call(this, name, init, importLocale);
   // });
 };
 
@@ -5358,6 +5848,27 @@ editor.addExtension = function (...args) {
 editor.ready(() => {
   injectExtendedContextMenuItemsIntoDom();
 });
+
+let extensionsAdded = false;
+const messageQueue = [];
+/**
+ * @param {Any} data
+ * @param {string} origin
+ * @fires module:svgcanvas.SvgCanvas#event:message
+ * @returns {undefined}
+ */
+const messageListener = ({data, origin}) => {
+  // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
+  const messageObj = {data, origin};
+  if (!extensionsAdded) {
+    messageQueue.push(messageObj);
+  } else {
+    // Extensions can handle messages at this stage with their own
+    //  canvas `message` listeners
+    svgCanvas.call('message', messageObj);
+  }
+};
+window.addEventListener('message', messageListener);
 
 // Run init once DOM is loaded
 // jQuery(editor.init);

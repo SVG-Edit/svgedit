@@ -4,10 +4,10 @@
  *
  * @example assert.close(3.141, Math.PI, 0.001);
  *
- * @param Number actual
- * @param Number expected
- * @param Number maxDifference (the maximum inclusive difference allowed between the actual and expected numbers)
- * @param String message (optional)
+ * @param {Float} actual
+ * @param {Float} expected
+ * @param {Float} maxDifference (the maximum inclusive difference allowed between the actual and expected numbers)
+ * @param {string} [message] Defaults to structured message
  */
 function close (actual, expected, maxDifference, message) {
   const actualDiff = (actual === expected) ? 0 : Math.abs(actual - expected),
@@ -22,10 +22,10 @@ function close (actual, expected, maxDifference, message) {
  *
  * @example assert.close.percent(155, 150, 3.4);  // Difference is ~3.33%
  *
- * @param Number actual
- * @param Number expected
- * @param Number maxPercentDifference (the maximum inclusive difference percentage allowed between the actual and expected numbers)
- * @param String message (optional)
+ * @param {Float} actual
+ * @param {Float} expected
+ * @param {Float} maxPercentDifference (the maximum inclusive difference percentage allowed between the actual and expected numbers)
+ * @param {string} [message] Defaults to a structured message
  */
 function closePercent (actual, expected, maxPercentDifference, message) {
   let actualDiff, result;
@@ -51,10 +51,10 @@ function closePercent (actual, expected, maxPercentDifference, message) {
  *
  * @example assert.notClose(3.1, Math.PI, 0.001);
  *
- * @param Number actual
- * @param Number expected
- * @param Number minDifference (the minimum exclusive difference allowed between the actual and expected numbers)
- * @param String message (optional)
+ * @param {Float} actual
+ * @param {Float} expected
+ * @param {Float} minDifference (the minimum exclusive difference allowed between the actual and expected numbers)
+ * @param {string} [message] Defaults to structured message
  */
 function notClose (actual, expected, minDifference, message) {
   const actualDiff = Math.abs(actual - expected),
@@ -69,10 +69,10 @@ function notClose (actual, expected, minDifference, message) {
  *
  * @example assert.notClose.percent(156, 150, 3.5);  // Difference is 4.0%
  *
- * @param Number actual
- * @param Number expected
- * @param Number minPercentDifference (the minimum exclusive difference percentage allowed between the actual and expected numbers)
- * @param String message (optional)
+ * @param {Float} actual
+ * @param {Float} expected
+ * @param {Float} minPercentDifference (the minimum exclusive difference percentage allowed between the actual and expected numbers)
+ * @param {string} [message] Defaults to a structured message
  */
 function notClosePercent (actual, expected, minPercentDifference, message) {
   let actualDiff, result;

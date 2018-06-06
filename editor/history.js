@@ -1,12 +1,11 @@
 /**
- * Package: svedit.history
- *
- * Licensed under the MIT License
- *
- * Copyright(c) 2010 Jeff Schiller
+ * For command history tracking and undo functionality
+ * @module history
+ * @license MIT
+ * @copyright 2010 Jeff Schiller
  */
 
-import {getHref, setHref, getRotationAngle} from './svgutils.js';
+import {getHref, setHref, getRotationAngle} from './utilities.js';
 import {removeElementFromListMap} from './svgtransformlist.js';
 
 /**
@@ -22,38 +21,92 @@ export const HistoryEventTypes = {
 // const removedElements = {};
 
 /**
+* Base class for commands
+*/
+class Command {
+  /**
+  * @returns {string}
+  */
+  getText () {
+    return this.text;
+  }
+}
+
+// Todo: Figure out why the interface members aren't showing
+//   up (with or without modules applied), despite our apparently following
+//   http://usejsdoc.org/tags-interface.html#virtual-comments
+
+/**
  * An interface that all command objects must implement.
- * @typedef {Object} svgedit.history.HistoryCommand
- *   void apply(svgedit.history.HistoryEventHandler);
- *   void unapply(svgedit.history.HistoryEventHandler);
- *   Element[] elements();
- *   String getText();
+ * @interface module:history.HistoryCommand
+*/
+/**
+ * Applies
  *
- *   static String type();
- * }
+ * @function module:history.HistoryCommand#apply
+ * @param {module:history.HistoryEventHandler}
+ * @fires module:history~Command#event:history
+ * @returns {undefined|true}
+ */
+/**
  *
- * Interface: svgedit.history.HistoryEventHandler
- * An interface for objects that will handle history events.
- *
- * interface svgedit.history.HistoryEventHandler {
- *   void handleHistoryEvent(eventType, command);
- * }
- *
- * eventType is a string conforming to one of the HistoryEvent types.
- * command is an object fulfilling the HistoryCommand interface.
+ * Unapplies
+ * @function module:history.HistoryCommand#unapply
+ * @param {module:history.HistoryEventHandler}
+ * @fires module:history~Command#event:history
+ * @returns {undefined|true}
+ */
+/**
+ * Returns the elements
+ * @function module:history.HistoryCommand#elements
+ * @returns {Element[]}
+ */
+/**
+ * Gets the text
+ * @function module:history.HistoryCommand#getText
+ * @returns {string}
+ */
+/**
+ * Gives the type
+ * @function module:history.HistoryCommand.type
+ * @returns {string}
+ */
+/**
+ * Gives the type
+ * @function module:history.HistoryCommand#type
+ * @returns {string}
+*/
+
+/**
+ * @event module:history~Command#event:history
+ * @type {module:history.HistoryCommand}
  */
 
 /**
- * @class svgedit.history.MoveElementCommand
- * @implements svgedit.history.HistoryCommand
+ * An interface for objects that will handle history events.
+ * @interface module:history.HistoryEventHandler
+ */
+/**
+ *
+ * @function module:history.HistoryEventHandler#handleHistoryEvent
+ * @param {string} eventType One of the HistoryEvent types
+ * @param {module:history~Command#event:history} command
+ * @listens module:history~Command#event:history
+ * @returns {undefined}
+ *
+ */
+
+/**
  * History command for an element that had its DOM position changed
+ * @implements {module:history.HistoryCommand}
  * @param {Element} elem - The DOM element that was moved
  * @param {Element} oldNextSibling - The element's next sibling before it was moved
  * @param {Element} oldParent - The element's parent before it was moved
  * @param {string} [text] - An optional string visible to user related to this change
 */
-export class MoveElementCommand {
+export class MoveElementCommand extends Command {
   constructor (elem, oldNextSibling, oldParent, text) {
+    super();
     this.elem = elem;
     this.text = text ? ('Move ' + elem.tagName + ' to ' + text) : ('Move ' + elem.tagName);
     this.oldNextSibling = oldNextSibling;
@@ -61,16 +114,15 @@ export class MoveElementCommand {
     this.newNextSibling = elem.nextSibling;
     this.newParent = elem.parentNode;
   }
-  getText () {
-    return this.text;
-  }
   type () {
     return 'svgedit.history.MoveElementCommand';
   }
 
   /**
    * Re-positions the element
-   * @param {{handleHistoryEvent: function}} handler
+   * @param {module:history.HistoryEventHandler} handler
+   * @fires module:history~Command#event:history
+   * @returns {undefined}
   */
   apply (handler) {
     // TODO(codedread): Refactor this common event code into a base HistoryCommand class.
@@ -87,7 +139,9 @@ export class MoveElementCommand {
 
   /**
    * Positions the element back to its original location
-   * @param {{handleHistoryEvent: function}} handler
+   * @param {module:history.HistoryEventHandler} handler
+   * @fires module:history~Command#event:history
+   * @returns {undefined}
   */
   unapply (handler) {
     if (handler) {
@@ -102,7 +156,7 @@ export class MoveElementCommand {
   }
 
   /**
-  * @returns {Array} Array with element associated with this command
+  * @returns {Element[]} Array with element associated with this command
   */
   elements () {
     return [this.elem];
@@ -111,14 +165,15 @@ export class MoveElementCommand {
 MoveElementCommand.type = MoveElementCommand.prototype.type;
 
 /**
-* @implements svgedit.history.HistoryCommand
 * History command for an element that was added to the DOM
+* @implements {module:history.HistoryCommand}
 *
-* @param elem - The newly added DOM element
-* @param text - An optional string visible to user related to this change
+* @param {Element} elem - The newly added DOM element
+* @param {string} text - An optional string visible to user related to this change
 */
-export class InsertElementCommand {
+export class InsertElementCommand extends Command {
   constructor (elem, text) {
+    super();
     this.elem = elem;
     this.text = text || ('Create ' + elem.tagName);
     this.parent = elem.parentNode;
@@ -129,11 +184,12 @@ export class InsertElementCommand {
     return 'svgedit.history.InsertElementCommand';
   }
 
-  getText () {
-    return this.text;
-  }
-
-  // Re-Inserts the new element
+  /**
+  * Re-inserts the new element
+  * @param {module:history.HistoryEventHandler} handler
+  * @fires module:history~Command#event:history
+  * @returns {undefined}
+  */
   apply (handler) {
     if (handler) {
       handler.handleHistoryEvent(HistoryEventTypes.BEFORE_APPLY, this);
@@ -146,7 +202,12 @@ export class InsertElementCommand {
     }
   }
 
-  // Removes the element
+  /**
+  * Removes the element
+  * @param {module:history.HistoryEventHandler} handler
+  * @fires module:history~Command#event:history
+  * @returns {undefined}
+  */
   unapply (handler) {
     if (handler) {
       handler.handleHistoryEvent(HistoryEventTypes.BEFORE_UNAPPLY, this);
@@ -161,7 +222,7 @@ export class InsertElementCommand {
   }
 
   /**
-  * @returns {Array} Array with element associated with this command
+  * @returns {Element[]} Array with element associated with this command
   */
   elements () {
     return [this.elem];
@@ -170,15 +231,16 @@ export class InsertElementCommand {
 InsertElementCommand.type = InsertElementCommand.prototype.type;
 
 /**
-* @implements svgedit.history.HistoryCommand
 * History command for an element removed from the DOM
-* @param elem - The removed DOM element
-* @param oldNextSibling - The DOM element's nextSibling when it was in the DOM
-* @param oldParent - The DOM element's parent
-* @param {String} [text] - An optional string visible to user related to this change
+* @implements {module:history.HistoryCommand}
+* @param {Element} elem - The removed DOM element
+* @param {Node} oldNextSibling - The DOM element's nextSibling when it was in the DOM
+* @param {Element} oldParent - The DOM element's parent
+* @param {string} [text] - An optional string visible to user related to this change
 */
-export class RemoveElementCommand {
+export class RemoveElementCommand extends Command {
   constructor (elem, oldNextSibling, oldParent, text) {
+    super();
     this.elem = elem;
     this.text = text || ('Delete ' + elem.tagName);
     this.nextSibling = oldNextSibling;
@@ -191,11 +253,12 @@ export class RemoveElementCommand {
     return 'svgedit.history.RemoveElementCommand';
   }
 
-  getText () {
-    return this.text;
-  }
-
-  // Re-removes the new element
+  /**
+  * Re-removes the new element
+  * @param {module:history.HistoryEventHandler} handler
+  * @fires module:history~Command#event:history
+  * @returns {undefined}
+  */
   apply (handler) {
     if (handler) {
       handler.handleHistoryEvent(HistoryEventTypes.BEFORE_APPLY, this);
@@ -210,7 +273,12 @@ export class RemoveElementCommand {
     }
   }
 
-  // Re-adds the new element
+  /**
+  * Re-adds the new element
+  * @param {module:history.HistoryEventHandler} handler
+  * @fires module:history~Command#event:history
+  * @returns {undefined}
+  */
   unapply (handler) {
     if (handler) {
       handler.handleHistoryEvent(HistoryEventTypes.BEFORE_UNAPPLY, this);
@@ -230,7 +298,7 @@ export class RemoveElementCommand {
   }
 
   /**
-  * @returns {Array} Array with element associated with this command
+  * @returns {Element[]} Array with element associated with this command
   */
   elements () {
     return [this.elem];
@@ -239,15 +307,23 @@ export class RemoveElementCommand {
 RemoveElementCommand.type = RemoveElementCommand.prototype.type;
 
 /**
-* @implements svgedit.history.HistoryCommand
+* @typedef {"#text"|"#href"|string} module:history.CommandAttributeName
+*/
+/**
+* @typedef {PlainObject.<module:history.CommandAttributeName, string>} module:history.CommandAttributes
+*/
+
+/**
 * History command to make a change to an element.
 * Usually an attribute change, but can also be textcontent.
-* @param elem - The DOM element that was changed
-* @param attrs - An object with the attributes to be changed and the values they had *before* the change
-* @param {String} text - An optional string visible to user related to this change
+* @implements {module:history.HistoryCommand}
+* @param {Element} elem - The DOM element that was changed
+* @param {module:history.CommandAttributes} attrs - Attributes to be changed with the values they had *before* the change
+* @param {string} text - An optional string visible to user related to this change
 */
-export class ChangeElementCommand {
+export class ChangeElementCommand extends Command {
   constructor (elem, attrs, text) {
+    super();
     this.elem = elem;
     this.text = text ? ('Change ' + elem.tagName + ' ' + text) : ('Change ' + elem.tagName);
     this.newValues = {};
@@ -266,11 +342,12 @@ export class ChangeElementCommand {
     return 'svgedit.history.ChangeElementCommand';
   }
 
-  getText () {
-    return this.text;
-  }
-
-  // Performs the stored change action
+  /**
+  * Performs the stored change action
+  * @param {module:history.HistoryEventHandler} handler
+  * @fires module:history~Command#event:history
+  * @returns {true}
+  */
   apply (handler) {
     if (handler) {
       handler.handleHistoryEvent(HistoryEventTypes.BEFORE_APPLY, this);
@@ -319,7 +396,12 @@ export class ChangeElementCommand {
     return true;
   }
 
-  // Reverses the stored change action
+  /**
+  * Reverses the stored change action
+  * @param {module:history.HistoryEventHandler} handler
+  * @fires module:history~Command#event:history
+  * @returns {true}
+  */
   unapply (handler) {
     if (handler) {
       handler.handleHistoryEvent(HistoryEventTypes.BEFORE_UNAPPLY, this);
@@ -369,7 +451,7 @@ export class ChangeElementCommand {
   }
 
   /**
-  * @returns {Array} Array with element associated with this command
+  * @returns {Element[]} Array with element associated with this command
   */
   elements () {
     return [this.elem];
@@ -382,12 +464,15 @@ ChangeElementCommand.type = ChangeElementCommand.prototype.type;
 // and they both affect the same element, then collapse the two commands into one
 
 /**
-* @implements svgedit.history.HistoryCommand
 * History command that can contain/execute multiple other commands
-* @param {String} [text] - An optional string visible to user related to this change
+* @implements {module:history.HistoryCommand}
 */
-export class BatchCommand {
+export class BatchCommand extends Command {
+  /**
+  * @param {string} [text] - An optional string visible to user related to this change
+  */
   constructor (text) {
+    super();
     this.text = text || 'Batch Command';
     this.stack = [];
   }
@@ -396,11 +481,12 @@ export class BatchCommand {
     return 'svgedit.history.BatchCommand';
   }
 
-  getText () {
-    return this.text;
-  }
-
-  // Runs "apply" on all subcommands
+  /**
+  * Runs "apply" on all subcommands
+  * @param {module:history.HistoryEventHandler} handler
+  * @fires module:history~Command#event:history
+  * @returns {undefined}
+  */
   apply (handler) {
     if (handler) {
       handler.handleHistoryEvent(HistoryEventTypes.BEFORE_APPLY, this);
@@ -416,7 +502,12 @@ export class BatchCommand {
     }
   }
 
-  // Runs "unapply" on all subcommands
+  /**
+  * Runs "unapply" on all subcommands
+  * @param {module:history.HistoryEventHandler} handler
+  * @fires module:history~Command#event:history
+  * @returns {undefined}
+  */
   unapply (handler) {
     if (handler) {
       handler.handleHistoryEvent(HistoryEventTypes.BEFORE_UNAPPLY, this);
@@ -431,7 +522,10 @@ export class BatchCommand {
     }
   }
 
-  // Iterate through all our subcommands and returns all the elements we are changing
+  /**
+  * Iterate through all our subcommands
+  * @returns {Element[]} All the elements we are changing
+  */
   elements () {
     const elems = [];
     let cmd = this.stack.length;
@@ -447,14 +541,14 @@ export class BatchCommand {
 
   /**
   * Adds a given command to the history stack
-  * @param cmd - The undo command object to add
+  * @param {Command} cmd - The undo command object to add
   */
   addSubCommand (cmd) {
     this.stack.push(cmd);
   }
 
   /**
-  * @returns {Boolean} Indicates whether or not the batch command is empty
+  * @returns {boolean} Indicates whether or not the batch command is empty
   */
   isEmpty () {
     return !this.stack.length;
@@ -463,10 +557,12 @@ export class BatchCommand {
 BatchCommand.type = BatchCommand.prototype.type;
 
 /**
-* @param historyEventHandler - an object that conforms to the HistoryEventHandler interface
-* (see above)
+*
 */
 export class UndoManager {
+  /**
+  * @param {module:history.HistoryEventHandler} historyEventHandler
+  */
   constructor (historyEventHandler) {
     this.handler_ = historyEventHandler || null;
     this.undoStackPointer = 0;
@@ -478,41 +574,47 @@ export class UndoManager {
     this.undoableChangeStack = [];
   }
 
-  // Resets the undo stack, effectively clearing the undo/redo history
+  /**
+  * Resets the undo stack, effectively clearing the undo/redo history
+  * @returns {undefined}
+  */
   resetUndoStack () {
     this.undoStack = [];
     this.undoStackPointer = 0;
   }
 
   /**
-  * @returns {Number} Integer with the current size of the undo history stack
+  * @returns {Integer} Current size of the undo history stack
   */
   getUndoStackSize () {
     return this.undoStackPointer;
   }
 
   /**
-  * @returns {Number} Integer with the current size of the redo history stack
+  * @returns {Integer} Current size of the redo history stack
   */
   getRedoStackSize () {
     return this.undoStack.length - this.undoStackPointer;
   }
 
   /**
-  * @returns {String} String associated with the next undo command
+  * @returns {string} String associated with the next undo command
   */
   getNextUndoCommandText () {
     return this.undoStackPointer > 0 ? this.undoStack[this.undoStackPointer - 1].getText() : '';
   }
 
   /**
-  * @returns {String} String associated with the next redo command
+  * @returns {string} String associated with the next redo command
   */
   getNextRedoCommandText () {
     return this.undoStackPointer < this.undoStack.length ? this.undoStack[this.undoStackPointer].getText() : '';
   }
 
-  // Performs an undo step
+  /**
+  * Performs an undo step
+  * @returns {undefined}
+  */
   undo () {
     if (this.undoStackPointer > 0) {
       const cmd = this.undoStack[--this.undoStackPointer];
@@ -520,7 +622,10 @@ export class UndoManager {
     }
   }
 
-  // Performs a redo step
+  /**
+  * Performs a redo step
+  * @returns {undefined}
+  */
   redo () {
     if (this.undoStackPointer < this.undoStack.length && this.undoStack.length > 0) {
       const cmd = this.undoStack[this.undoStackPointer++];
@@ -530,7 +635,8 @@ export class UndoManager {
 
   /**
   * Adds a command object to the undo history stack
-  * @param cmd - The command object to add
+  * @param {Command} cmd - The command object to add
+  * @returns {undefined}
   */
   addCommandToHistory (cmd) {
     // FIXME: we MUST compress consecutive text changes to the same element
@@ -549,12 +655,13 @@ export class UndoManager {
 
   /**
   * This function tells the canvas to remember the old values of the
-  * attrName attribute for each element sent in.  The elements and values
-  * are stored on a stack, so the next call to finishUndoableChange() will
+  * `attrName` attribute for each element sent in.  The elements and values
+  * are stored on a stack, so the next call to `finishUndoableChange()` will
   * pop the elements and old values off the stack, gets the current values
   * from the DOM and uses all of these to construct the undo-able command.
-  * @param attrName - The name of the attribute being changed
-  * @param elems - Array of DOM elements being changed
+  * @param {string} attrName - The name of the attribute being changed
+  * @param {Element[]} elems - Array of DOM elements being changed
+  * @returns {undefined}
   */
   beginUndoableChange (attrName, elems) {
     const p = ++this.undoChangeStackPointer;
@@ -574,10 +681,10 @@ export class UndoManager {
   }
 
   /**
-  * This function returns a BatchCommand object which summarizes the
-  * change since beginUndoableChange was called.  The command can then
+  * This function returns a `BatchCommand` object which summarizes the
+  * change since `beginUndoableChange` was called.  The command can then
   * be added to the command history
-  * @returns Batch command object with resulting changes
+  * @returns {BatchCommand} Batch command object with resulting changes
   */
   finishUndoableChange () {
     const p = this.undoChangeStackPointer--;

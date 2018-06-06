@@ -1,15 +1,14 @@
 /* globals jQuery */
 /**
- * Package: svgedit.path
+ * Path functionality
+ * @module path
+ * @license MIT
  *
- * Licensed under the MIT License
- *
- * Copyright(c) 2011 Alexis Deveria
- * Copyright(c) 2011 Jeff Schiller
+ * @copyright 2011 Alexis Deveria, 2011 Jeff Schiller
  */
 
-import './pathseg.js';
-import {NS} from './svgedit.js';
+import './svgpathseg.js';
+import {NS} from './namespaces.js';
 import {getTransformList} from './svgtransformlist.js';
 import {shortFloat} from './units.js';
 import {ChangeElementCommand, BatchCommand} from './history.js';
@@ -21,7 +20,7 @@ import {
   assignAttributes, getElem, getRotationAngle, getBBox,
   getRefElem, findDefs, snapToGrid,
   getBBox as utilsGetBBox
-} from './svgutils.js';
+} from './utilities.js';
 import {
   supportsPathInsertItemBefore, supportsPathReplaceItem, isWebkit
 } from './browser.js';
@@ -29,18 +28,29 @@ import {
 const $ = jQuery;
 
 const segData = {
-  2: ['x', 'y'],
-  4: ['x', 'y'],
-  6: ['x', 'y', 'x1', 'y1', 'x2', 'y2'],
-  8: ['x', 'y', 'x1', 'y1'],
-  10: ['x', 'y', 'r1', 'r2', 'angle', 'largeArcFlag', 'sweepFlag'],
-  12: ['x'],
-  14: ['y'],
-  16: ['x', 'y', 'x2', 'y2'],
-  18: ['x', 'y']
+  2: ['x', 'y'], // PATHSEG_MOVETO_ABS
+  4: ['x', 'y'], // PATHSEG_LINETO_ABS
+  6: ['x', 'y', 'x1', 'y1', 'x2', 'y2'], // PATHSEG_CURVETO_CUBIC_ABS
+  8: ['x', 'y', 'x1', 'y1'], // PATHSEG_CURVETO_QUADRATIC_ABS
+  10: ['x', 'y', 'r1', 'r2', 'angle', 'largeArcFlag', 'sweepFlag'], // PATHSEG_ARC_ABS
+  12: ['x'], // PATHSEG_LINETO_HORIZONTAL_ABS
+  14: ['y'], // PATHSEG_LINETO_VERTICAL_ABS
+  16: ['x', 'y', 'x2', 'y2'], // PATHSEG_CURVETO_CUBIC_SMOOTH_ABS
+  18: ['x', 'y'] // PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS
 };
 
+/**
+ * @tutorial LocaleDocs
+ * @typedef {module:locale.LocaleStrings|PlainObject} module:path.uiStrings
+ * @property {PlainObject.<string, string>} ui
+*/
+
 const uiStrings = {};
+/**
+* @function module:path.setUiStrings
+* @param {module:path.uiStrings} strs
+* @returns {undefined}
+*/
 export const setUiStrings = function (strs) {
   Object.assign(uiStrings, strs.ui);
 };
@@ -53,14 +63,179 @@ let linkControlPts = true;
 // TODO: Make this cross-document happy.
 let pathData = {};
 
+/**
+* @function module:path.setLinkControlPoints
+* @param {boolean} lcp
+* @returns {undefined}
+*/
 export const setLinkControlPoints = function (lcp) {
   linkControlPts = lcp;
 };
 
+/**
+ * @name module:path.path
+ * @type {null|module:path.Path}
+ * @memberof module:path
+*/
 export let path = null;
 
 let editorContext_ = null;
 
+/**
+* @external MouseEvent
+*/
+
+/**
+* Object with the following keys/values
+* @typedef {PlainObject} module:path.SVGElementJSON
+* @property {string} element - Tag name of the SVG element to create
+* @property {PlainObject.<string, string>} attr - Has key-value attributes to assign to the new element
+* @property {boolean} [curStyles=false] - Indicates whether current style attributes should be applied first
+* @property {module:path.SVGElementJSON[]} [children] - Data objects to be added recursively as children
+* @property {string} [namespace="http://www.w3.org/2000/svg"] - Indicate a (non-SVG) namespace
+*/
+/**
+ * @interface module:path.EditorContext
+ * @property {module:select.SelectorManager} selectorManager
+ * @property {module:svgcanvas.SvgCanvas} canvas
+ */
+/**
+ * @function module:path.EditorContext#call
+ * @param {"selected"|"changed"} ev - String with the event name
+ * @param {module:svgcanvas.SvgCanvas#event:selected|module:svgcanvas.SvgCanvas#event:changed} arg - Argument to pass through to the callback function. If the event is "changed", an array of `Element`s is passed; if "selected", a single-item array of `Element` is passed.
+ * @returns {undefined}
+ */
+/**
+ * @function module:path.EditorContext#resetD
+ * @param {SVGPathElement} p
+ * @returns {undefined}
+*/
+/**
+ * Note: This doesn't round to an integer necessarily
+ * @function module:path.EditorContext#round
+ * @param {Float} val
+ * @returns {Float} Rounded value to nearest value based on `currentZoom`
+ */
+/**
+ * @function module:path.EditorContext#clearSelection
+ * @param {boolean} [noCall] - When `true`, does not call the "selected" handler
+ * @returns {undefined}
+*/
+/**
+ * @function module:path.EditorContext#addToSelection
+ * @param {Element[]} elemsToAdd - An array of DOM elements to add to the selection
+ * @param {boolean} showGrips - Indicates whether the resize grips should be shown
+ * @returns {undefined}
+*/
+/**
+ * @function module:path.EditorContext#addCommandToHistory
+ * @param {Command} cmd
+ * @returns {undefined}
+ */
+/**
+ * @function module:path.EditorContext#remapElement
+ * @param {Element} selected - DOM element to be changed
+ * @param {PlainObject.<string, string>} changes - Object with changes to be remapped
+ * @param {SVGMatrix} m - Matrix object to use for remapping coordinates
+ * @returns {undefined}
+ */
+/**
+ * @function module:path.EditorContext#addSVGElementFromJson
+ * @param {module:path.SVGElementJSON} data
+ * @returns {Element} The new element
+*/
+/**
+ * @function module:path.EditorContext#getGridSnapping
+ * @returns {boolean}
+ */
+/**
+ * @function module:path.EditorContext#getOpacity
+ * @returns {Float}
+ */
+/**
+ * @function module:path.EditorContext#getSelectedElements
+ * @returns {Element[]} the array with selected DOM elements
+*/
+/**
+ * @function module:path.EditorContext#getContainer
+ * @returns {Element}
+ */
+/**
+ * @function module:path.EditorContext#setStarted
+ * @param {boolean} s
+ * @returns {undefined}
+ */
+/**
+ * @function module:path.EditorContext#getRubberBox
+ * @returns {SVGRectElement}
+*/
+/**
+ * @function module:path.EditorContext#setRubberBox
+ * @param {SVGRectElement} rb
+ * @returns {SVGRectElement} Same as parameter passed in
+ */
+/**
+ * @function module:path.EditorContext#addPtsToSelection
+ * @param {PlainObject} cfg
+ * @param {boolean} cfg.closedSubpath
+ * @param {SVGCircleElement[]} cfg.grips
+ * @returns {undefined}
+ */
+/**
+ * @function module:path.EditorContext#endChanges
+ * @param {PlainObject} cfg
+ * @param {string} cfg.cmd
+ * @param {Element} cfg.elem
+ * @returns {undefined}
+*/
+/**
+ * @function module:path.EditorContext#getCurrentZoom
+ * @returns {Float} The current zoom level
+ */
+/**
+ * Returns the last created DOM element ID string
+ * @function module:path.EditorContext#getId
+ * @returns {string}
+ */
+/**
+ * Creates and returns a unique ID string for a DOM element
+ * @function module:path.EditorContext#getNextId
+ * @returns {string}
+*/
+/**
+ * Gets the desired element from a mouse event
+ * @function module:path.EditorContext#getMouseTarget
+ * @param {external:MouseEvent} evt - Event object from the mouse event
+ * @returns {Element} DOM element we want
+ */
+/**
+ * @function module:path.EditorContext#getCurrentMode
+ * @returns {string}
+ */
+/**
+ * @function module:path.EditorContext#setCurrentMode
+ * @param {string} cm The mode
+ * @returns {string} The same mode as passed in
+*/
+/**
+ * @function module:path.EditorContext#getDrawnPath
+ * @returns {SVGPathElement|null}
+ */
+/**
+ * @function module:path.EditorContext#setDrawnPath
+ * @param {SVGPathElement|null} dp
+ * @returns {SVGPathElement|null} The same value as passed in
+ */
+/**
+ * @function module:path.EditorContext#getSVGRoot
+ * @returns {SVGSVGElement}
+*/
+
+/**
+* @function module:path.init
+* @param {module:path.EditorContext} editorContext
+* @returns {undefined}
+*/
 export const init = function (editorContext) {
   editorContext_ = editorContext;
 
@@ -73,6 +248,13 @@ export const init = function (editorContext) {
   });
 };
 
+/**
+* @function module:path.insertItemBefore
+* @param {Element} elem
+* @param {Segment} newseg
+* @param {Integer} index
+* @returns {undefined}
+*/
 export const insertItemBefore = function (elem, newseg, index) {
   // Support insertItemBefore on paths for FF2
   const list = elem.pathSegList;
@@ -96,16 +278,26 @@ export const insertItemBefore = function (elem, newseg, index) {
   }
 };
 
-// TODO: See if this should just live in replacePathSeg
+/**
+* @function module:path.ptObjToArr
+* @todo See if this should just live in `replacePathSeg`
+* @param {string} type
+* @param {SVGPathSegMovetoAbs|SVGPathSegLinetoAbs|SVGPathSegCurvetoCubicAbs|SVGPathSegCurvetoQuadraticAbs|SVGPathSegArcAbs|SVGPathSegLinetoHorizontalAbs|SVGPathSegLinetoVerticalAbs|SVGPathSegCurvetoCubicSmoothAbs|SVGPathSegCurvetoQuadraticSmoothAbs} segItem
+* @returns {ArgumentsArray}
+*/
 export const ptObjToArr = function (type, segItem) {
-  const arr = segData[type], len = arr.length;
-  const out = [];
-  for (let i = 0; i < len; i++) {
-    out[i] = segItem[arr[i]];
-  }
-  return out;
+  const props = segData[type];
+  return props.map((prop) => {
+    return segItem[prop];
+  });
 };
 
+/**
+* @function module:path.getGripPt
+* @param {Segment} seg
+* @param {module:math.XYObject} altPt
+* @returns {module:math.XYObject}
+*/
 export const getGripPt = function (seg, altPt) {
   const {path} = seg;
   let out = {
@@ -125,6 +317,12 @@ export const getGripPt = function (seg, altPt) {
   return out;
 };
 
+/**
+* @function module:path.getPointFromGrip
+* @param {module:math.XYObject} pt
+* @param {module:path.Path} path
+* @returns {module:math.XYObject}
+*/
 export const getPointFromGrip = function (pt, path) {
   const out = {
     x: pt.x,
@@ -147,6 +345,11 @@ export const getPointFromGrip = function (pt, path) {
 /**
 * Requires prior call to `setUiStrings` if `xlink:title`
 *    to be set on the grip
+* @function module:path.addPointGrip
+* @param {Integer} index
+* @param {Integer} x
+* @param {Integer} y
+* @returns {SVGCircleElement}
 */
 export const addPointGrip = function (index, x, y) {
   // create the container of all the point grips
@@ -190,6 +393,10 @@ export const addPointGrip = function (index, x, y) {
   return pointGrip;
 };
 
+/**
+* @function module:path.getGripContainer
+* @returns {Element}
+*/
 export const getGripContainer = function () {
   let c = getElem('pathpointgrip_container');
   if (!c) {
@@ -203,6 +410,9 @@ export const getGripContainer = function () {
 /**
 * Requires prior call to `setUiStrings` if `xlink:title`
 *    to be set on the grip
+* @function module:path.addCtrlGrip
+* @param {string} id
+* @returns {SVGCircleElement}
 */
 export const addCtrlGrip = function (id) {
   let pointGrip = getElem('ctrlpointgrip_' + id);
@@ -227,6 +437,11 @@ export const addCtrlGrip = function (id) {
   return pointGrip;
 };
 
+/**
+* @function module:path.getCtrlLine
+* @param {string} id
+* @returns {SVGLineElement}
+*/
 export const getCtrlLine = function (id) {
   let ctrlLine = getElem('ctrlLine_' + id);
   if (ctrlLine) { return ctrlLine; }
@@ -242,6 +457,12 @@ export const getCtrlLine = function (id) {
   return ctrlLine;
 };
 
+/**
+* @function module:path.getPointGrip
+* @param {Segment} seg
+* @param {boolean} update
+* @returns {SVGCircleElement}
+*/
 export const getPointGrip = function (seg, update) {
   const {index} = seg;
   const pointGrip = addPointGrip(index);
@@ -258,6 +479,11 @@ export const getPointGrip = function (seg, update) {
   return pointGrip;
 };
 
+/**
+* @function module:path.getControlPoints
+* @param {Segment} seg
+* @returns {PlainObject.<string, SVGLineElement|SVGCircleElement>}
+*/
 export const getControlPoints = function (seg) {
   const {item, index} = seg;
   if (!('x1' in item) || !('x2' in item)) { return null; }
@@ -300,7 +526,14 @@ export const getControlPoints = function (seg) {
   return cpt;
 };
 
-// This replaces the segment at the given index. Type is given as number.
+/**
+* This replaces the segment at the given index. Type is given as number.
+* @function module:path.replacePathSeg
+* @param {Integer} type Possible values set during {@link module:path.init}
+* @param {Integer} index
+* @param {ArgumentsArray} pts
+* @param {SVGPathElement} elem
+*/
 export const replacePathSeg = function (type, index, pts, elem) {
   const pth = elem || path.elem;
 
@@ -328,6 +561,12 @@ export const replacePathSeg = function (type, index, pts, elem) {
   }
 };
 
+/**
+* @function module:path.getSegSelector
+* @param {Segment} seg
+* @param {boolean} update
+* @returns {SVGPathElement}
+*/
 export const getSegSelector = function (seg, update) {
   const {index} = seg;
   let segLine = getElem('segline_' + index);
@@ -371,11 +610,18 @@ export const getSegSelector = function (seg, update) {
 };
 
 /**
+ * @typedef {PlainObject} Point
+ * @property {Integer} x The x value
+ * @property {Integer} y The y value
+ */
+
+/**
 * Takes three points and creates a smoother line based on them
-* @param ct1 - Object with x and y values (first control point)
-* @param ct2 - Object with x and y values (second control point)
-* @param pt - Object with x and y values (third point)
-* @returns Array of two "smoothed" point objects
+* @function module:path.smoothControlPoints
+* @param {Point} ct1 - Object with x and y values (first control point)
+* @param {Point} ct2 - Object with x and y values (second control point)
+* @param {Point} pt - Object with x and y values (third point)
+* @returns {Point[]} Array of two "smoothed" point objects
 */
 export const smoothControlPoints = function (ct1, ct2, pt) {
   // each point must not be the origin
@@ -418,7 +664,15 @@ export const smoothControlPoints = function (ct1, ct2, pt) {
   return undefined;
 };
 
+/**
+*
+*/
 export class Segment {
+  /**
+  * @param {Integer} index
+  * @param {SVGPathSeg} item
+  * @todo Is `item` be more constrained here?
+  */
   constructor (index, item) {
     this.selected = false;
     this.index = index;
@@ -430,6 +684,10 @@ export class Segment {
     this.segsel = null;
   }
 
+  /**
+   * @param {boolean} y
+   * @returns {undefined}
+   */
   showCtrlPts (y) {
     for (const i in this.ctrlpts) {
       if (this.ctrlpts.hasOwnProperty(i)) {
@@ -438,11 +696,19 @@ export class Segment {
     }
   }
 
+  /**
+   * @param {boolean} y
+   * @returns {undefined}
+   */
   selectCtrls (y) {
     $('#ctrlpointgrip_' + this.index + 'c1, #ctrlpointgrip_' + this.index + 'c2')
       .attr('fill', y ? '#0FF' : '#EEE');
   }
 
+  /**
+   * @param {boolean} y
+   * @returns {undefined}
+   */
   show (y) {
     if (this.ptgrip) {
       this.ptgrip.setAttribute('display', y ? 'inline' : 'none');
@@ -452,6 +718,10 @@ export class Segment {
     }
   }
 
+  /**
+   * @param {boolean} y
+   * @returns {undefined}
+   */
   select (y) {
     if (this.ptgrip) {
       this.ptgrip.setAttribute('stroke', y ? '#0FF' : '#00F');
@@ -463,12 +733,19 @@ export class Segment {
     }
   }
 
+  /**
+   * @returns {undefined}
+   */
   addGrip () {
     this.ptgrip = getPointGrip(this, true);
     this.ctrlpts = getControlPoints(this, true);
     this.segsel = getSegSelector(this, true);
   }
 
+  /**
+   * @param {boolean} full
+   * @returns {undefined}
+   */
   update (full) {
     if (this.ptgrip) {
       const pt = getGripPt(this);
@@ -490,6 +767,11 @@ export class Segment {
     }
   }
 
+  /**
+   * @param {Integer} dx
+   * @param {Integer} dy
+   * @returns {undefined}
+   */
   move (dx, dy) {
     const {item} = this;
 
@@ -521,6 +803,10 @@ export class Segment {
     if (this.next) { this.next.update(true); }
   }
 
+  /**
+   * @param {Integer} num
+   * @returns {undefined}
+   */
   setLinked (num) {
     let seg, anum, pt;
     if (num === 2) {
@@ -547,6 +833,12 @@ export class Segment {
     seg.update(true);
   }
 
+  /**
+   * @param {Integer} num
+   * @param {Integer} dx
+   * @param {Integer} dy
+   * @returns {undefined}
+   */
   moveCtrl (num, dx, dy) {
     const {item} = this;
     item['x' + num] += dx;
@@ -559,6 +851,10 @@ export class Segment {
     this.update(true);
   }
 
+  /**
+   * @param {Integer} newType Possible values set during {@link module:path.init}
+   * @param {ArgumentsArray} pts
+   */
   setType (newType, pts) {
     replacePathSeg(newType, this.index, pts);
     this.type = newType;
@@ -569,7 +865,14 @@ export class Segment {
   }
 }
 
+/**
+*
+*/
 export class Path {
+  /**
+  * @param {SVGPathElement}
+  * @throws {Error} If constructed without a path element
+  */
   constructor (elem) {
     if (!elem || elem.tagName !== 'path') {
       throw new Error('svgedit.path.Path constructed without a <path> element');
@@ -583,7 +886,10 @@ export class Path {
     this.init();
   }
 
-  // Reset path data
+  /**
+  * Reset path data
+  * @returns {module:path.Path}
+  */
   init () {
     // Hide all grips, etc
 
@@ -665,6 +971,16 @@ export class Path {
     return this;
   }
 
+  /**
+  * @callback module:path.PathEachSegCallback
+  * @this module:path.Segment
+  * @param {Integer} i The index of the seg being iterated
+  * @returns {boolean} Will stop execution of `eachSeg` if returns `false`
+  */
+  /**
+  * @param {module:path.PathEachSegCallback} fn
+  * @returns {undefined}
+  */
   eachSeg (fn) {
     const len = this.segs.length;
     for (let i = 0; i < len; i++) {
@@ -673,6 +989,10 @@ export class Path {
     }
   }
 
+  /**
+  * @param {Integer} index
+  * @returns {undefined}
+  */
   addSeg (index) {
     // Adds a new segment
     const seg = this.segs[index];
@@ -710,6 +1030,10 @@ export class Path {
     insertItemBefore(this.elem, newseg, index);
   }
 
+  /**
+  * @param {Integer} index
+  * @returns {undefined}
+  */
   deleteSeg (index) {
     const seg = this.segs[index];
     const list = this.elem.pathSegList;
@@ -736,6 +1060,10 @@ export class Path {
     }
   }
 
+  /**
+  * @param {Integer} index
+  * @returns {boolean}
+  */
   subpathIsClosed (index) {
     let closed = false;
     // Check if subpath is already open
@@ -755,6 +1083,10 @@ export class Path {
     return closed;
   }
 
+  /**
+  * @param {Integer} index
+  * @returns {undefined}
+  */
   removePtFromSelection (index) {
     const pos = this.selected_pts.indexOf(index);
     if (pos === -1) {
@@ -764,6 +1096,9 @@ export class Path {
     this.selected_pts.splice(pos, 1);
   }
 
+  /**
+  * @returns {undefined}
+  */
   clearSelection () {
     this.eachSeg(function () {
       // 'this' is the segment here
@@ -772,10 +1107,17 @@ export class Path {
     this.selected_pts = [];
   }
 
+  /**
+  * @returns {undefined}
+  */
   storeD () {
     this.last_d = this.elem.getAttribute('d');
   }
 
+  /**
+  * @param {Integer} y
+  * @returns {undefined}
+  */
   show (y) {
     // Shows this path's segment grips
     this.eachSeg(function () {
@@ -788,7 +1130,12 @@ export class Path {
     return this;
   }
 
-  // Move selected points
+  /**
+  * Move selected points
+  * @param {Integer} dx
+  * @param {Integer} dy
+  * @returns {undefined}
+  */
   movePts (dx, dy) {
     let i = this.selected_pts.length;
     while (i--) {
@@ -797,6 +1144,11 @@ export class Path {
     }
   }
 
+  /**
+  * @param {Integer} dx
+  * @param {Integer} dy
+  * @returns {undefined}
+  */
   moveCtrl (dx, dy) {
     const seg = this.segs[this.selected_pts[0]];
     seg.moveCtrl(this.dragctrl, dx, dy);
@@ -805,6 +1157,10 @@ export class Path {
     }
   }
 
+  /**
+  * @param {?Integer} newType See {@link https://www.w3.org/TR/SVG/single-page.html#paths-InterfaceSVGPathSeg}
+  * @returns {undefined}
+  */
   setSegType (newType) {
     this.storeD();
     let i = this.selected_pts.length;
@@ -870,6 +1226,11 @@ export class Path {
     path.endChanges(text);
   }
 
+  /**
+  * @param {Integer} pt
+  * @param {Integer} ctrlNum
+  * @returns {undefined}
+  */
   selectPt (pt, ctrlNum) {
     this.clearSelection();
     if (pt == null) {
@@ -890,7 +1251,10 @@ export class Path {
     }
   }
 
-  // Update position of all points
+  /**
+  * Update position of all points
+  * @returns {Path}
+  */
   update () {
     const {elem} = this;
     if (getRotationAngle(elem)) {
@@ -909,12 +1273,20 @@ export class Path {
     return this;
   }
 
+  /**
+  * @param {string} text
+  * @returns {undefined}
+  */
   endChanges (text) {
     if (isWebkit()) { editorContext_.resetD(this.elem); }
     const cmd = new ChangeElementCommand(this.elem, {d: this.last_d}, text);
     editorContext_.endChanges({cmd, elem: this.elem});
   }
 
+  /**
+  * @param {Integer|Integer[]} indexes
+  * @returns {undefined}
+  */
   addPtsToSelection (indexes) {
     if (!Array.isArray(indexes)) { indexes = [indexes]; }
     for (let i = 0; i < indexes.length; i++) {
@@ -943,6 +1315,11 @@ export class Path {
   }
 }
 
+/**
+* @function module:path.getPath_
+* @param {SVGPathElement} elem
+* @returns {module:path.Path}
+*/
 export const getPath_ = function (elem) {
   let p = pathData[elem.id];
   if (!p) {
@@ -951,6 +1328,11 @@ export const getPath_ = function (elem) {
   return p;
 };
 
+/**
+* @function module:path.removePath_
+* @param {string} id
+* @returns {undefined}
+*/
 export const removePath_ = function (id) {
   if (id in pathData) { delete pathData[id]; }
 };
@@ -986,8 +1368,12 @@ const getRotVals = function (x, y) {
 // its old center, then determine the new center, then rotate it back
 // This is because we want the path to remember its rotation
 
-// TODO: This is still using ye olde transform methods, can probably
-// be optimized or even taken care of by `recalculateDimensions`
+/**
+* @function module:path.recalcRotatedPath
+* @todo This is still using ye olde transform methods, can probably
+* be optimized or even taken care of by `recalculateDimensions`
+* @returns {undefined}
+*/
 export const recalcRotatedPath = function () {
   const currentPath = path.elem;
   angle = getRotationAngle(currentPath, true);
@@ -1042,11 +1428,21 @@ export const recalcRotatedPath = function () {
 // ====================================
 // Public API starts here
 
+/**
+* @function module:path.clearData
+* @returns {undefined}
+*/
 export const clearData = function () {
   pathData = {};
 };
 
 // Making public for mocking
+/**
+* @function module:path.reorientGrads
+* @param {Element} elem
+* @param {SVGMatrix} m
+* @returns {undefined}
+*/
 export const reorientGrads = function (elem, m) {
   const bb = utilsGetBBox(elem);
   for (let i = 0; i < 2; i++) {
@@ -1089,14 +1485,19 @@ export const reorientGrads = function (elem, m) {
   }
 };
 
-// this is how we map paths to our preferred relative segment types
+/**
+* This is how we map paths to our preferred relative segment types
+* @name module:path.pathMap
+* @type {GenericArray}
+*/
 const pathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a',
   'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
 
 /**
- * TODO: move to pathActions.js
  * Convert a path to one with only absolute or relative values
- * @param {Object} path - the path to convert
+ * @todo move to pathActions.js
+ * @function module:path.convertPath
+ * @param {SVGPathElement} path - the path to convert
  * @param {boolean} toRel - true of convert to relative
  * @returns {string}
  */
@@ -1256,10 +1657,10 @@ export const convertPath = function (path, toRel) {
 /**
  * TODO: refactor callers in convertPath to use getPathDFromSegments instead of this function.
  * Legacy code refactored from svgcanvas.pathActions.convertPath
- * @param letter - path segment command
- * @param {Array.<Array.<number>>} points - x,y points.
- * @param {Array.<Array.<number>>=} morePoints - x,y points
- * @param {Array.<number>=}lastPoint - x,y point
+ * @param {string} letter - path segment command (letter in potentially either case from {@link module:path.pathMap}; see [SVGPathSeg#pathSegTypeAsLetter]{@link https://www.w3.org/TR/SVG/single-page.html#paths-__svg__SVGPathSeg__pathSegTypeAsLetter})
+ * @param {Integer[][]} points - x,y points
+ * @param {Integer[][]} [morePoints] - x,y points
+ * @param {Integer[]} [lastPoint] - x,y point
  * @returns {string}
  */
 function pathDSegment (letter, points, morePoints, lastPoint) {
@@ -1279,6 +1680,8 @@ function pathDSegment (letter, points, morePoints, lastPoint) {
 /**
 * Group: Path edit functions
 * Functions relating to editing path elements
+* @namespace {PlainObject} pathActions
+* @memberof module:path
 */
 export const pathActions = (function () {
   let subpath = false;
@@ -1289,9 +1692,14 @@ export const pathActions = (function () {
   // No `editorContext_` yet but should be ok as is `null` by default
   // editorContext_.setDrawnPath(null);
 
-  // This function converts a polyline (created by the fh_path tool) into
-  // a path element and coverts every three line segments into a single bezier
-  // curve in an attempt to smooth out the free-hand
+  /**
+  * This function converts a polyline (created by the fh_path tool) into
+  * a path element and coverts every three line segments into a single bezier
+  * curve in an attempt to smooth out the free-hand
+  * @function smoothPolylineIntoPath
+  * @param {Element} element
+  * @returns {Element}
+  */
   const smoothPolylineIntoPath = function (element) {
     let i;
     const {points} = element;
@@ -1346,7 +1754,7 @@ export const pathActions = (function () {
       d = d.join(' ');
 
       // create new path element
-      element = editorContext_.addSvgElementFromJson({
+      element = editorContext_.addSVGElementFromJson({
         element: 'path',
         curStyles: true,
         attr: {
@@ -1360,7 +1768,14 @@ export const pathActions = (function () {
     return element;
   };
 
-  return {
+  return (/** @lends module:path.pathActions */ {
+    /**
+    * @param {MouseEvent} evt
+    * @param {Element} mouseTarget
+    * @param {Float} startX
+    * @param {Float} startY
+    * @returns {undefined}
+    */
     mouseDown (evt, mouseTarget, startX, startY) {
       let id;
       if (editorContext_.getCurrentMode() === 'path') {
@@ -1398,7 +1813,7 @@ export const pathActions = (function () {
         let drawnPath = editorContext_.getDrawnPath();
         if (!drawnPath) {
           const dAttr = 'M' + x + ',' + y + ' '; // Was this meant to work with the other `dAttr`? (was defined globally so adding `var` to at least avoid a global)
-          drawnPath = editorContext_.setDrawnPath(editorContext_.addSvgElementFromJson({
+          drawnPath = editorContext_.setDrawnPath(editorContext_.addSVGElementFromJson({
             element: 'path',
             curStyles: true,
             attr: {
@@ -1605,6 +2020,11 @@ export const pathActions = (function () {
         }, 100);
       }
     },
+    /**
+    * @param {Float} mouseX
+    * @param {Float} mouseY
+    * @returns {undefined}
+    */
     mouseMove (mouseX, mouseY) {
       const currentZoom = editorContext_.getCurrentZoom();
       hasMoved = true;
@@ -1728,6 +2148,13 @@ export const pathActions = (function () {
         });
       }
     },
+    /**
+    * @param {Event} evt
+    * @param {Element} element
+    * @param {Float} mouseX
+    * @param {Float} mouseY
+    * @returns {undefined}
+    */
     mouseUp (evt, element, mouseX, mouseY) {
       const drawnPath = editorContext_.getDrawnPath();
       // Create mode
@@ -1775,6 +2202,10 @@ export const pathActions = (function () {
       }
       hasMoved = false;
     },
+    /**
+    * @param {Element} element
+    * @returns {undefined}
+    */
     toEditMode (element) {
       path = getPath_(element);
       editorContext_.setCurrentMode('pathedit');
@@ -1783,6 +2214,11 @@ export const pathActions = (function () {
       path.oldbbox = utilsGetBBox(path.elem);
       subpath = false;
     },
+    /**
+    * @param {Element} element
+    * @fires module:svgcanvas.SvgCanvas#event:selected
+    * @returns {undefined}
+    */
     toSelectMode (elem) {
       const selPath = (elem === path.elem);
       editorContext_.setCurrentMode('select');
@@ -1800,6 +2236,10 @@ export const pathActions = (function () {
         editorContext_.addToSelection([elem], true);
       }
     },
+    /**
+    * @param {boolean} on
+    * @returns {undefined}
+    */
     addSubPath (on) {
       if (on) {
         // Internally we go into "path" mode, but in the UI it will
@@ -1811,6 +2251,10 @@ export const pathActions = (function () {
         pathActions.toEditMode(path.elem);
       }
     },
+    /**
+    * @param {Element} target
+    * @returns {undefined}
+    */
     select (target) {
       if (currentPath === target) {
         pathActions.toEditMode(target);
@@ -1820,6 +2264,10 @@ export const pathActions = (function () {
         currentPath = target;
       }
     },
+    /**
+    * @fires module:svgcanvas.SvgCanvas#event:changed
+    * @returns {undefined}
+    */
     reorient () {
       const elem = editorContext_.getSelectedElements()[0];
       if (!elem) { return; }
@@ -1846,6 +2294,10 @@ export const pathActions = (function () {
       editorContext_.call('changed', editorContext_.getSelectedElements());
     },
 
+    /**
+    * @param {boolean} remove Not in use
+    * @returns {undefined}
+    */
     clear (remove) {
       const drawnPath = editorContext_.getDrawnPath();
       currentPath = null;
@@ -1862,6 +2314,10 @@ export const pathActions = (function () {
       }
       if (path) { path.init().show(false); }
     },
+    /**
+    * @param {?(Element|SVGPathElement)} pth
+    * @returns {false|undefined}
+    */
     resetOrientation (pth) {
       if (pth == null || pth.nodeName !== 'path') { return false; }
       const tlist = getTransformList(pth);
@@ -1900,11 +2356,23 @@ export const pathActions = (function () {
 
       reorientGrads(pth, m);
     },
+    /**
+    * @returns {undefined}
+    */
     zoomChange () {
       if (editorContext_.getCurrentMode() === 'pathedit') {
         path.update();
       }
     },
+    /**
+    * @typedef {PlainObject} module:path.NodePoint
+    * @property {Float} x
+    * @property {Float} y
+    * @property {Integer} type
+    */
+    /**
+    * @returns {module:path.NodePoint}
+    */
     getNodePoint () {
       const selPt = path.selected_pts.length ? path.selected_pts[0] : 1;
 
@@ -1915,9 +2383,16 @@ export const pathActions = (function () {
         type: seg.type
       };
     },
+    /**
+    * @param {boolean} linkPoints
+    * @returns {undefined}
+    */
     linkControlPoints (linkPoints) {
       setLinkControlPoints(linkPoints);
     },
+    /**
+    * @returns {undefined}
+    */
     clonePathNode () {
       path.storeD();
 
@@ -1938,6 +2413,9 @@ export const pathActions = (function () {
 
       path.endChanges('Clone path node(s)');
     },
+    /**
+    * @returns {undefined}
+    */
     opencloseSubPath () {
       const selPts = path.selected_pts;
       // Only allow one selected node for now
@@ -2046,6 +2524,9 @@ export const pathActions = (function () {
 
       path.init().selectPt(0);
     },
+    /**
+    * @returns {undefined}
+    */
     deletePathNode () {
       if (!pathActions.canDeleteNodes) { return; }
       path.storeD();
@@ -2125,10 +2606,24 @@ export const pathActions = (function () {
       }
       path.endChanges('Delete path node(s)');
     },
+    // Can't seem to use `@borrows` here, so using `@see`
+    /**
+    * Smooth polyline into path
+    * @function module:path.pathActions.smoothPolylineIntoPath
+    * @see module:path~smoothPolylineIntoPath
+    */
     smoothPolylineIntoPath,
+    /**
+    * @returns {undefined}
+    */
     setSegType (v) {
       path.setSegType(v);
     },
+    /**
+    * @param {string} attr
+    * @param {Float} newValue
+    * @returns {undefined}
+    */
     moveNode (attr, newValue) {
       const selPts = path.selected_pts;
       if (!selPts.length) { return; }
@@ -2143,6 +2638,10 @@ export const pathActions = (function () {
       seg.move(diff.x, diff.y);
       path.endChanges('Move path point');
     },
+    /**
+    * @param {Element} elem
+    * @returns {undefined}
+    */
     fixEnd (elem) {
       // Adds an extra segment if the last seg before a Z doesn't end
       // at its M point
@@ -2170,8 +2669,13 @@ export const pathActions = (function () {
       }
       if (isWebkit()) { editorContext_.resetD(elem); }
     },
-    // Convert a path to one with only absolute or relative values
+    // Can't seem to use `@borrows` here, so using `@see`
+    /**
+    * Convert a path to one with only absolute or relative values
+    * @function module:path.pathActions.convertPath
+    * @see module:path.convertPath
+    */
     convertPath
-  };
+  });
 })();
 // end pathActions

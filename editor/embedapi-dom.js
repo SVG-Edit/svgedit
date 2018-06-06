@@ -1,4 +1,8 @@
 /* globals jQuery */
+/**
+* Attaches items to DOM for Embedded SVG support
+* @module EmbeddedSVGEditDOM
+*/
 import EmbeddedSVGEdit from './embedapi.js';
 
 const $ = jQuery;
@@ -41,9 +45,9 @@ function exportPDF () {
     /**
     // If you want to handle the PDF blob yourself, do as follows
     svgCanvas.bind('exportedPDF', function (win, data) {
-      alert(data.dataurlstring);
+      alert(data.output);
     });
-    svgCanvas.exportPDF(); // Accepts two args: optionalWindowName supplied back to bound exportPDF handler and optionalOutputType (defaults to dataurlstring)
+    svgCanvas.exportPDF(); // Accepts two args: optionalWindowName supplied back to bound exportPDF handler and optional outputType (defaults to dataurlstring)
     return;
     */
 

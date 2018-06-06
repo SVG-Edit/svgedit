@@ -1,36 +1,26 @@
 /* globals jQuery */
-/*
+/**
  * ext-storage.js
  *
- * Licensed under the MIT License
+ * This extension allows automatic saving of the SVG canvas contents upon
+ *  page unload (which can later be automatically retrieved upon future
+ *  editor loads).
  *
- * Copyright(c) 2010 Brett Zamir
+ *  The functionality was originally part of the SVG Editor, but moved to a
+ *  separate extension to make the setting behavior optional, and adapted
+ *  to inform the user of its setting of local data.
+ * Dependencies:
  *
- */
-/**
-* This extension allows automatic saving of the SVG canvas contents upon
-*  page unload (which can later be automatically retrieved upon future
-*  editor loads).
-*
-*  The functionality was originally part of the SVG Editor, but moved to a
-*  separate extension to make the setting behavior optional, and adapted
-*  to inform the user of its setting of local data.
+ * 1. jQuery BBQ (for deparam)
+ * @license MIT
+ *
+ * @copyright 2010 Brett Zamir
+ * @todo Revisit on whether to use $.pref over directly setting curConfig in all
+ *   extensions for a more public API (not only for extPath and imagePath,
+ *   but other currently used config in the extensions)
+ * @todo We might provide control of storage settings through the UI besides the
+ *   initial (or URL-forced) dialog. *
 */
-/*
-Dependencies:
-
-1. jQuery BBQ (for deparam)
-*/
-/*
-TODOS
-1. Revisit on whether to use $.pref over directly setting curConfig in all
-  extensions for a more public API (not only for extPath and imagePath,
-  but other currently used config in the extensions)
-2. We might provide control of storage settings through the UI besides the
-    initial (or URL-forced) dialog.
-*/
-import {importSetGlobalDefault} from '../external/dynamic-import-polyfill/importModule.js';
-
 export default {
   name: 'storage',
   init () {
@@ -151,23 +141,10 @@ export default {
     let loaded = false;
     return {
       name: 'storage',
-      async langReady ({lang}) {
+      async langReady ({importLocale}) {
         const {storagePrompt} = $.deparam.querystring(true);
 
-        let confirmSetStorage;
-        async function tryImport (lang) {
-          const url = `${svgEditor.curConfig.extPath}ext-locale/storage/${lang}.js`;
-          confirmSetStorage = await importSetGlobalDefault(url, {
-            global: 'svgEditorExtensionLocale_storage_' + lang
-          });
-        }
-
-        try {
-          await tryImport(lang);
-        } catch (err) {
-          await tryImport('en');
-        }
-
+        const confirmSetStorage = await importLocale();
         const {
           message, storagePrefsAndContent, storagePrefsOnly,
           storagePrefs, storageNoPrefsOrContent, storageNoPrefs,

@@ -1,12 +1,26 @@
 /* globals jQuery */
-/*
+/**
  * Localizing script for SVG-edit UI
+ * @module locale
+ * @license MIT
  *
- * Licensed under the MIT License
+ * @copyright 2010 Narendra Sisodya
+ * @copyright 2010 Alexis Deveria
  *
- * Copyright(c) 2010 Narendra Sisodya
- * Copyright(c) 2010 Alexis Deveria
- *
+ */
+
+/**
+ * Used, for example, in the ImageLibs extension, to present libraries (with name/URL/description) in order
+ * @typedef {GenericArray.<module:locale.LocaleStrings>} module:locale.LocaleArray
+*/
+/**
+ * The string keys of the object are two-letter language codes
+ * @tutorial LocaleDocs
+ * @typedef {PlainObject.<string, string|module:locale.LocaleStrings|module:locale.LocaleArray>} module:locale.LocaleStrings
+ */
+// keyed to an array of objects with "id" and "title" or "textContent" properties
+/**
+ * @typedef {PlainObject.<string, string>} module:locale.LocaleSelectorValue
  */
 
 import {importSetGlobalDefault} from '../external/dynamic-import-polyfill/importModule.js';
@@ -14,7 +28,14 @@ import {importSetGlobalDefault} from '../external/dynamic-import-polyfill/import
 const $ = jQuery;
 
 let langParam;
-function setStrings (type, obj, ids) {
+
+/**
+* @param {"content"|"title"} type
+* @param {module:locale.LocaleSelectorValue} obj
+* @param {boolean} ids
+* @returns {undefined}
+*/
+export const setStrings = function (type, obj, ids) {
   // Root element to look for element from
   const parent = $('#svg_editor').parent();
   Object.entries(obj).forEach(([sel, val]) => {
@@ -43,15 +64,49 @@ function setStrings (type, obj, ids) {
       console.log('Missing: ' + sel);
     }
   });
-}
+};
+
+/**
+* The "data" property is generally set to an an array of objects with
+* "id" and "title" or "textContent" properties
+* @typedef {PlainObject} module:locale.AddLangExtensionLocaleData
+* @property {module:locale.LocaleStrings[]} data See {@tutorial LocaleDocs}
+*/
+
+/**
+* @interface module:locale.LocaleEditorInit
+*/
+/**
+ * @function module:locale.LocaleEditorInit#addLangData
+ * @param {string} langParam
+ * @returns {module:locale.AddLangExtensionLocaleData}
+*/
 
 let editor_;
+/**
+* @function init
+* @memberof module:locale
+* @param {module:locale.LocaleEditorInit} editor
+* @returns {undefined}
+*/
 export const init = (editor) => {
   editor_ = editor;
 };
 
-export const readLang = function (langData) {
-  const more = editor_.addLangData(langParam);
+/**
+* @typedef {PlainObject} module:locale.LangAndData
+* @property {string} langParam
+* @property {module:locale.LocaleStrings} langData
+*/
+
+/**
+* @function module:locale.readLang
+* @param {module:locale.LocaleStrings} langData See {@tutorial LocaleDocs}
+* @fires module:svgcanvas.SvgCanvas#event:ext-addLangData
+* @returns {Promise} Resolves to [`LangAndData`]{@link module:locale.LangAndData}
+*/
+export const readLang = async function (langData) {
+  const more = await editor_.addLangData(langParam);
   $.each(more, function (i, m) {
     if (m.data) {
       langData = $.merge(langData, m.data);
@@ -136,17 +191,6 @@ export const readLang = function (langData) {
     svginfo_grid_color: config.grid_color
   }, true);
 
-  // Shape categories
-  const cats = {};
-  for (const o in langData.shape_cats) {
-    cats['#shape_cats [data-cat="' + o + '"]'] = langData.shape_cats[o];
-  }
-
-  // TODO: Find way to make this run after shapelib ext has loaded
-  setTimeout(() => {
-    setStrings('content', cats);
-  }, 2000);
-
   // Context menus
   const opts = {};
   $.each(['cut', 'copy', 'paste', 'paste_in_place', 'delete', 'group', 'ungroup', 'move_front', 'move_up', 'move_down', 'move_back'], function () {
@@ -194,8 +238,6 @@ export const readLang = function (langData) {
     linejoin_miter: properties.linejoin_miter,
     linejoin_round: properties.linejoin_round,
     main_icon: tools.main_menu,
-    mode_connect: tools.mode_connect,
-    tools_shapelib_show: tools.mode_shapelib,
     palette: ui.palette_info,
     zoom_panel: ui.zoom_level,
     path_node_x: properties.node_x,
@@ -228,7 +270,6 @@ export const readLang = function (langData) {
     tool_delete: tools.del,
     tool_delete_multi: tools.del,
     tool_ellipse: tools.mode_ellipse,
-    tool_eyedropper: tools.mode_eyedropper,
     tool_fhellipse: tools.mode_fhellipse,
     tool_fhpath: tools.mode_fhpath,
     tool_fhrect: tools.mode_fhrect,
@@ -259,15 +300,24 @@ export const readLang = function (langData) {
     tool_undo: tools.undo,
     tool_ungroup: tools.ungroup,
     tool_wireframe: tools.wireframe_mode,
-    view_grid: tools.toggle_grid,
     tool_zoom: tools.mode_zoom,
     url_notice: tools.no_embed
 
   }, true);
 
-  editor_.setLang(langParam, langData);
+  return {langParam, langData};
 };
 
+/**
+* @function module:locale.putLocale
+* @param {string} givenParam
+* @param {string[]} goodLangs
+* @param {{langPath: string}} conf
+* @fires module:svgcanvas.SvgCanvas#event:ext-addLangData
+* @fires module:svgcanvas.SvgCanvas#event:ext-langReady
+* @fires module:svgcanvas.SvgCanvas#event:ext-langChanged
+* @returns {Promise} Resolves to result of {@link module:locale.readLang}
+*/
 export const putLocale = async function (givenParam, goodLangs, conf) {
   if (givenParam) {
     langParam = givenParam;

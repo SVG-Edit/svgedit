@@ -1,25 +1,25 @@
 /* globals jQuery */
-/*
+/**
  * ext-foreignobject.js
  *
- * Licensed under the Apache License, Version 2
+ * @license Apache-2.0
  *
- * Copyright(c) 2010 Jacques Distler
- * Copyright(c) 2010 Alexis Deveria
+ * @copyright 2010 Jacques Distler, 2010 Alexis Deveria
  *
  */
 
 export default {
-  name: 'foreignObject',
-  init (S) {
+  name: 'foreignobject',
+  async init (S) {
     const svgEditor = this;
-    const {text2xml, NS} = S;
+    const {text2xml, NS, importLocale} = S;
     const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
     const
       // {svgcontent} = S,
-      // addElem = S.addSvgElementFromJson,
+      // addElem = S.addSVGElementFromJson,
       svgdoc = S.svgroot.parentNode.ownerDocument;
+    const strings = await importLocale();
 
     const properlySourceSizeTextArea = function () {
       // TODO: remove magic numbers here and get values from CSS
@@ -48,9 +48,9 @@ export default {
 
     /**
     * This function sets the content of element elt to the input XML.
-    * @param {String} xmlString - The XML text.
-    * @param elt - the parent element to append to
-    * @returns {Boolean} This function returns false if the set was unsuccessful, true otherwise.
+    * @param {string} xmlString - The XML text
+    * @param {Element} elt - the parent element to append to
+    * @returns {boolean} This function returns false if the set was unsuccessful, true otherwise.
     */
     function setForeignString (xmlString) {
       const elt = selElems[0];
@@ -89,36 +89,30 @@ export default {
       S.call('changed', selElems);
     }
 
-    return {
-      name: 'foreignObject',
-      svgicons: svgEditor.curConfig.extIconsPath + 'foreignobject-icons.xml',
-      buttons: [{
-        id: 'tool_foreign',
-        type: 'mode',
-        title: 'Foreign Object Tool',
-        events: {
-          click () {
-            svgCanvas.setMode('foreign');
-          }
+    const buttons = [{
+      id: 'tool_foreign',
+      type: 'mode',
+      events: {
+        click () {
+          svgCanvas.setMode('foreign');
         }
-      }, {
-        id: 'edit_foreign',
-        type: 'context',
-        panel: 'foreignObject_panel',
-        title: 'Edit ForeignObject Content',
-        events: {
-          click () {
-            showForeignEditor();
-          }
+      }
+    }, {
+      id: 'edit_foreign',
+      type: 'context',
+      panel: 'foreignObject_panel',
+      events: {
+        click () {
+          showForeignEditor();
         }
-      }],
+      }
+    }];
 
-      context_tools: [{
+    const contextTools = [
+      {
         type: 'input',
         panel: 'foreignObject_panel',
-        title: "Change foreignObject's width",
         id: 'foreign_width',
-        label: 'w',
         size: 3,
         events: {
           change () {
@@ -128,9 +122,7 @@ export default {
       }, {
         type: 'input',
         panel: 'foreignObject_panel',
-        title: "Change foreignObject's height",
         id: 'foreign_height',
-        label: 'h',
         events: {
           change () {
             setAttr('height', this.value);
@@ -139,9 +131,7 @@ export default {
       }, {
         type: 'input',
         panel: 'foreignObject_panel',
-        title: "Change foreignObject's font size",
         id: 'foreign_font_size',
-        label: 'font-size',
         size: 2,
         defval: 16,
         events: {
@@ -150,8 +140,17 @@ export default {
           }
         }
       }
+    ];
 
-      ],
+    return {
+      name: strings.name,
+      svgicons: svgEditor.curConfig.extIconsPath + 'foreignobject-icons.xml',
+      buttons: strings.buttons.map((button, i) => {
+        return Object.assign(buttons[i], button);
+      }),
+      context_tools: strings.contextTools.map((contextTool, i) => {
+        return Object.assign(contextTools[i], contextTool);
+      }),
       callback () {
         $('#foreignObject_panel').hide();
 
@@ -193,7 +192,7 @@ export default {
 
         if (svgCanvas.getMode() === 'foreign') {
           started = true;
-          newFO = S.addSvgElementFromJson({
+          newFO = S.addSVGElementFromJson({
             element: 'foreignObject',
             attr: {
               x: opts.start_x,

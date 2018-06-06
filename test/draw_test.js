@@ -1,8 +1,10 @@
-/* globals sinon, sinonTest */
 /* eslint-env qunit */
-import {NS} from '../editor/svgedit.js';
+import {NS} from '../editor/namespaces.js';
 import * as draw from '../editor/draw.js';
 import * as units from '../editor/units.js';
+
+import sinon from '../node_modules/sinon/pkg/sinon-esm.js';
+import sinonTest from '../node_modules/sinon-test/dist/sinon-test-es.js';
 import sinonQunit from './sinon/sinon-qunit.js';
 
 sinon.test = sinonTest(sinon, {
@@ -46,10 +48,15 @@ const svgN = document.createElementNS(NS.SVG, 'svg');
 svgN.setAttributeNS(NS.XMLNS, 'xmlns:se', NS.SE);
 svgN.setAttributeNS(NS.SE, 'se:nonce', NONCE);
 
-units.init({
-  // used by units.shortFloat - call path: cloneLayer -> copyElem -> convertPath -> pathDSegment -> shortFloat
-  getRoundDigits () { return 3; }
-});
+units.init(
+  /**
+  * @implements {module:units.ElementContainer}
+  */
+  {
+    // used by units.shortFloat - call path: cloneLayer -> copyElem -> convertPath -> pathDSegment -> shortFloat
+    getRoundDigits () { return 3; }
+  }
+);
 
 // Simplifying from svgcanvas.js usage
 const idprefix = 'svg_';
@@ -60,10 +67,15 @@ const getCurrentDrawing = function () {
 };
 const setCurrentGroup = (cg) => {
 };
-draw.init({
-  getCurrentDrawing,
-  setCurrentGroup
-});
+draw.init(
+  /**
+  * @implements {module:draw.DrawCanvasInit}
+  */
+  {
+    getCurrentDrawing,
+    setCurrentGroup
+  }
+);
 
 function createSVGElement (jsonMap) {
   const elem = document.createElementNS(NS.SVG, jsonMap['element']);
@@ -73,7 +85,7 @@ function createSVGElement (jsonMap) {
   return elem;
 }
 
-const setupSvgWith3Layers = function (svgElem) {
+const setupSVGWith3Layers = function (svgElem) {
   const layer1 = document.createElementNS(NS.SVG, 'g');
   const layer1Title = document.createElementNS(NS.SVG, 'title');
   layer1Title.append(document.createTextNode(LAYER1));
@@ -127,7 +139,7 @@ const createSomeElementsInGroup = function (group) {
   return 4;
 };
 
-const cleanupSvg = function (svgElem) {
+const cleanupSVG = function (svgElem) {
   while (svgElem.firstChild) { svgElem.firstChild.remove(); }
 };
 
@@ -207,7 +219,7 @@ QUnit.test('Test getId() and getNextId() without nonce', function (assert) {
   assert.equal(doc.getNextId(), 'svg_4');
   assert.equal(doc.getId(), 'svg_4');
   // clean out svg document
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test getId() and getNextId() with prefix without nonce', function (assert) {
@@ -227,7 +239,7 @@ QUnit.test('Test getId() and getNextId() with prefix without nonce', function (a
   assert.equal(doc.getNextId(), prefix + '3');
   assert.equal(doc.getId(), prefix + '3');
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test getId() and getNextId() with nonce', function (assert) {
@@ -252,7 +264,7 @@ QUnit.test('Test getId() and getNextId() with nonce', function (assert) {
   assert.equal(doc.getNextId(), prefix + '_4');
   assert.equal(doc.getId(), prefix + '_4');
 
-  cleanupSvg(svgN);
+  cleanupSVG(svgN);
 });
 
 QUnit.test('Test getId() and getNextId() with prefix with nonce', function (assert) {
@@ -273,7 +285,7 @@ QUnit.test('Test getId() and getNextId() with prefix with nonce', function (asse
   assert.equal(doc.getNextId(), prefix + '3');
   assert.equal(doc.getId(), prefix + '3');
 
-  cleanupSvg(svgN);
+  cleanupSVG(svgN);
 });
 
 QUnit.test('Test releaseId()', function (assert) {
@@ -293,7 +305,7 @@ QUnit.test('Test releaseId()', function (assert) {
   assert.ok(doc.releaseId(firstId));
   assert.ok(!doc.releaseId(firstId));
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test getNumLayers', function (assert) {
@@ -302,18 +314,18 @@ QUnit.test('Test getNumLayers', function (assert) {
   assert.equal(typeof drawing.getNumLayers, typeof function () {});
   assert.equal(drawing.getNumLayers(), 0);
 
-  setupSvgWith3Layers(svg);
+  setupSVGWith3Layers(svg);
   drawing.identifyLayers();
 
   assert.equal(drawing.getNumLayers(), 3);
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test hasLayer', function (assert) {
   assert.expect(5);
 
-  setupSvgWith3Layers(svg);
+  setupSVGWith3Layers(svg);
   const drawing = new draw.Drawing(svg);
   drawing.identifyLayers();
 
@@ -324,7 +336,7 @@ QUnit.test('Test hasLayer', function (assert) {
   assert.ok(drawing.hasLayer(LAYER2));
   assert.ok(drawing.hasLayer(LAYER1));
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test identifyLayers() with empty document', function (assert) {
@@ -352,14 +364,14 @@ QUnit.test('Test identifyLayers() with empty document', function (assert) {
   const firstChild = layerGroup.childNodes.item(0);
   assert.equal(firstChild.tagName, 'title');
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test identifyLayers() with some layers', function (assert) {
   assert.expect(8);
 
   const drawing = new draw.Drawing(svg);
-  setupSvgWith3Layers(svg);
+  setupSVGWith3Layers(svg);
 
   assert.equal(svg.childNodes.length, 3);
 
@@ -374,13 +386,13 @@ QUnit.test('Test identifyLayers() with some layers', function (assert) {
   assert.equal(drawing.all_layers[1].getGroup().getAttribute('class'), LAYER_CLASS);
   assert.equal(drawing.all_layers[2].getGroup().getAttribute('class'), LAYER_CLASS);
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test identifyLayers() with some layers and orphans', function (assert) {
   assert.expect(14);
 
-  setupSvgWith3Layers(svg);
+  setupSVGWith3Layers(svg);
 
   const orphan1 = document.createElementNS(NS.SVG, 'rect');
   const orphan2 = document.createElementNS(NS.SVG, 'rect');
@@ -408,14 +420,14 @@ QUnit.test('Test identifyLayers() with some layers and orphans', function (asser
   assert.equal(layer4.childNodes.item(1), orphan1);
   assert.equal(layer4.childNodes.item(2), orphan2);
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test getLayerName()', function (assert) {
   assert.expect(4);
 
   const drawing = new draw.Drawing(svg);
-  setupSvgWith3Layers(svg);
+  setupSVGWith3Layers(svg);
 
   drawing.identifyLayers();
 
@@ -424,14 +436,14 @@ QUnit.test('Test getLayerName()', function (assert) {
   assert.equal(drawing.getLayerName(1), LAYER2);
   assert.equal(drawing.getLayerName(2), LAYER3);
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test getCurrentLayer()', function (assert) {
   assert.expect(4);
 
   const drawing = new draw.Drawing(svg);
-  setupSvgWith3Layers(svg);
+  setupSVGWith3Layers(svg);
   drawing.identifyLayers();
 
   assert.ok(drawing.getCurrentLayer);
@@ -439,14 +451,14 @@ QUnit.test('Test getCurrentLayer()', function (assert) {
   assert.ok(drawing.getCurrentLayer());
   assert.equal(drawing.getCurrentLayer(), drawing.all_layers[2].getGroup());
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test setCurrentLayer() and getCurrentLayerName()', function (assert) {
   assert.expect(6);
 
   const drawing = new draw.Drawing(svg);
-  setupSvgWith3Layers(svg);
+  setupSVGWith3Layers(svg);
   drawing.identifyLayers();
 
   assert.ok(drawing.setCurrentLayer);
@@ -460,7 +472,7 @@ QUnit.test('Test setCurrentLayer() and getCurrentLayerName()', function (assert)
   assert.equal(drawing.getCurrentLayerName(), LAYER3);
   assert.equal(drawing.getCurrentLayer(), drawing.all_layers[2].getGroup());
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test setCurrentLayerName()', function (assert) {
@@ -469,7 +481,7 @@ QUnit.test('Test setCurrentLayerName()', function (assert) {
   };
 
   const drawing = new draw.Drawing(svg);
-  setupSvgWith3Layers(svg);
+  setupSVGWith3Layers(svg);
   drawing.identifyLayers();
 
   assert.ok(drawing.setCurrentLayerName);
@@ -490,7 +502,7 @@ QUnit.test('Test setCurrentLayerName()', function (assert) {
   assert.equal(oldName, mockHrService.changeElement.getCall(0).args[1]['#text']);
   assert.equal(newName, mockHrService.changeElement.getCall(0).args[0].textContent);
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test createLayer()', function (assert) {
@@ -503,7 +515,7 @@ QUnit.test('Test createLayer()', function (assert) {
   };
 
   const drawing = new draw.Drawing(svg);
-  setupSvgWith3Layers(svg);
+  setupSVGWith3Layers(svg);
   drawing.identifyLayers();
 
   assert.ok(drawing.createLayer);
@@ -521,7 +533,7 @@ QUnit.test('Test createLayer()', function (assert) {
   assert.ok(mockHrService.startBatchCommand.calledOnce);
   assert.ok(mockHrService.endBatchCommand.calledOnce);
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test mergeLayer()', function (assert) {
@@ -533,7 +545,7 @@ QUnit.test('Test mergeLayer()', function (assert) {
   };
 
   const drawing = new draw.Drawing(svg);
-  const layers = setupSvgWith3Layers(svg);
+  const layers = setupSVGWith3Layers(svg);
   const elementCount = createSomeElementsInGroup(layers[2]) + 1; // +1 for title element
   assert.equal(layers[1].childElementCount, 1);
   assert.equal(layers[2].childElementCount, elementCount);
@@ -557,7 +569,7 @@ QUnit.test('Test mergeLayer()', function (assert) {
   assert.equal(mockHrService.moveElement.callCount, elementCount - 1); // -1 because the title was not moved.
   assert.equal(mockHrService.removeElement.callCount, 2); // remove group and title.
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test mergeLayer() when no previous layer to merge', function (assert) {
@@ -569,7 +581,7 @@ QUnit.test('Test mergeLayer() when no previous layer to merge', function (assert
   };
 
   const drawing = new draw.Drawing(svg);
-  const layers = setupSvgWith3Layers(svg);
+  const layers = setupSVGWith3Layers(svg);
   drawing.identifyLayers();
   drawing.setCurrentLayer(LAYER1);
   assert.equal(drawing.getCurrentLayer(), layers[0]);
@@ -589,7 +601,7 @@ QUnit.test('Test mergeLayer() when no previous layer to merge', function (assert
   assert.equal(mockHrService.moveElement.callCount, 0);
   assert.equal(mockHrService.removeElement.callCount, 0);
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test mergeAllLayers()', function (assert) {
@@ -601,7 +613,7 @@ QUnit.test('Test mergeAllLayers()', function (assert) {
   };
 
   const drawing = new draw.Drawing(svg);
-  const layers = setupSvgWith3Layers(svg);
+  const layers = setupSVGWith3Layers(svg);
   const elementCount = createSomeElementsInGroup(layers[0]) + 1; // +1 for title element
   createSomeElementsInGroup(layers[1]);
   createSomeElementsInGroup(layers[2]);
@@ -631,7 +643,7 @@ QUnit.test('Test mergeAllLayers()', function (assert) {
   assert.equal(mockHrService.moveElement.callCount, elementCount * 3 - 3);
   assert.equal(mockHrService.removeElement.callCount, 2 * 2); // remove group and title twice.
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test cloneLayer()', function (assert) {
@@ -642,7 +654,7 @@ QUnit.test('Test cloneLayer()', function (assert) {
   };
 
   const drawing = new draw.Drawing(svg);
-  const layers = setupSvgWith3Layers(svg);
+  const layers = setupSVGWith3Layers(svg);
   const layer3 = layers[2];
   const elementCount = createSomeElementsInGroup(layer3) + 1; // +1 for title element
   assert.equal(layer3.childElementCount, elementCount);
@@ -680,14 +692,14 @@ QUnit.test('Test cloneLayer()', function (assert) {
   assert.equal(g.childNodes.length, 1);
   assert.equal(g.id, 'svg_4');
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test getLayerVisibility()', function (assert) {
   assert.expect(5);
 
   const drawing = new draw.Drawing(svg);
-  setupSvgWith3Layers(svg);
+  setupSVGWith3Layers(svg);
   drawing.identifyLayers();
 
   assert.ok(drawing.getLayerVisibility);
@@ -696,14 +708,14 @@ QUnit.test('Test getLayerVisibility()', function (assert) {
   assert.ok(drawing.getLayerVisibility(LAYER2));
   assert.ok(drawing.getLayerVisibility(LAYER3));
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test setLayerVisibility()', function (assert) {
   assert.expect(6);
 
   const drawing = new draw.Drawing(svg);
-  setupSvgWith3Layers(svg);
+  setupSVGWith3Layers(svg);
   drawing.identifyLayers();
 
   assert.ok(drawing.setLayerVisibility);
@@ -720,14 +732,14 @@ QUnit.test('Test setLayerVisibility()', function (assert) {
   drawing.setLayerVisibility(LAYER3, 'test-string');
   assert.ok(!drawing.getLayerVisibility(LAYER3));
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test getLayerOpacity()', function (assert) {
   assert.expect(5);
 
   const drawing = new draw.Drawing(svg);
-  setupSvgWith3Layers(svg);
+  setupSVGWith3Layers(svg);
   drawing.identifyLayers();
 
   assert.ok(drawing.getLayerOpacity);
@@ -736,14 +748,14 @@ QUnit.test('Test getLayerOpacity()', function (assert) {
   assert.strictEqual(drawing.getLayerOpacity(LAYER2), 1.0);
   assert.strictEqual(drawing.getLayerOpacity(LAYER3), 1.0);
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test setLayerOpacity()', function (assert) {
   assert.expect(6);
 
   const drawing = new draw.Drawing(svg);
-  setupSvgWith3Layers(svg);
+  setupSVGWith3Layers(svg);
   drawing.identifyLayers();
 
   assert.ok(drawing.setLayerOpacity);
@@ -761,14 +773,14 @@ QUnit.test('Test setLayerOpacity()', function (assert) {
   drawing.setLayerOpacity(LAYER3, 100);
   assert.strictEqual(drawing.getLayerOpacity(LAYER3), 1.0);
 
-  cleanupSvg(svg);
+  cleanupSVG(svg);
 });
 
 QUnit.test('Test deleteCurrentLayer()', function (assert) {
   assert.expect(6);
 
   const drawing = new draw.Drawing(svg);
-  setupSvgWith3Layers(svg);
+  setupSVGWith3Layers(svg);
   drawing.identifyLayers();
 
   drawing.setCurrentLayer(LAYER2);

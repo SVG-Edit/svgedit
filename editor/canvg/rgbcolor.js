@@ -1,3 +1,10 @@
+/**
+ * For parsing color values
+ * @module RGBColor
+ * @author Stoyan Stefanov <sstoo@gmail.com>
+ * @see https://www.phpied.com/rgb-color-parser-in-javascript/
+ * @license MIT
+*/
 const simpleColors = {
   aliceblue: 'f0f8ff',
   antiquewhite: 'faebd7',
@@ -183,11 +190,11 @@ const colorDefs = [
 
 /**
  * A class to parse color values
- * @author Stoyan Stefanov <sstoo@gmail.com>
- * @link   https://www.phpied.com/rgb-color-parser-in-javascript/
- * @license MIT
  */
-class RGBColor {
+export default class RGBColor {
+  /**
+  * @param {string} colorString
+  */
   constructor (colorString) {
     this.ok = false;
 
@@ -225,10 +232,16 @@ class RGBColor {
   }
 
   // some getters
+  /**
+  * @returns {string}
+  */
   toRGB () {
     return 'rgb(' + this.r + ', ' + this.g + ', ' + this.b + ')';
   }
 
+  /**
+  * @returns {string}
+  */
   toHex () {
     let r = this.r.toString(16);
     let g = this.g.toString(16);
@@ -239,7 +252,10 @@ class RGBColor {
     return '#' + r + g + b;
   }
 
-  // help
+  /**
+  * help
+  * @returns {HTMLUListElement}
+  */
   getHelpXML () {
     const examples = [];
     // add regexps
@@ -274,4 +290,3 @@ color: ${listColor.toHex()};`
     return xml;
   }
 }
-export default RGBColor;

@@ -1,5 +1,17 @@
 # Creating a new svg-edit release
 
+## Prepare
+
+1. `npm test` - Ensure tests are passing
+1. `npm run build-doc` - Ensure JSDoc can build
+1. `npm run grep-doc` - For JSDoc, we ensure that a minimum of generic types
+    have been added (e.g., "number" should instead be "Float" or "Array",
+    and "object", "function", or "array" should be replaced by more specific
+    `@interface`s, `@typdef`s, or `@callback`. Deriving types can use
+    `PlainObject` or `GenericArray` to indicate the simple base type was
+    intentional. `*` should also be checked. The script reports all failing
+    matches within `editor`. There should be none.
+
 ## Update the main project
 <!--
 1. Update the VERSION variable in Makefile.
@@ -22,8 +34,8 @@ The above steps can be done on a fork and committed via a pull request.
 
 1. Ensure you are on the `master` branch with `git checkout master`.
 1. Switch to the `gh-pages` branch with `git checkout gh-pages`.
-1. Copy the `svg-edit-X.Y` directory to `releases/svg-edit-X.Y` (minus
-  `.git` and `.gitignore` and including the working built
+1. Copy the `svg-edit-X.Y` directory to `releases/svg-edit-X.Y` and to
+  `latest/` (minus `.git` and `.gitignore` and including the working built
   `svgedit-config-es.js` and `svgedit-config-iife.js` files).
 1. Commit these changes with `git commit -m "Updating files for release X.Y"`.
 1. Switch back to the `master` branch with `git checkout master`.
@@ -55,4 +67,6 @@ You will need to be a member of the SVG-Edit GitHub group to do this step.
 
 ## Update the project docs
 
-Update `README.md` with references and links to the shiny new release.
+Ensure `README.md` has references and links to the shiny new release.
+This will probably not be needed if the `latest` directory continues to
+be preferred over hard-coding links to particular releases.

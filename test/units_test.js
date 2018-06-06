@@ -9,13 +9,18 @@ QUnit.log((details) => {
 });
 
 function setUp () {
-  units.init({
-    getBaseUnit () { return 'cm'; },
-    getHeight () { return 600; },
-    getWidth () { return 800; },
-    getRoundDigits () { return 4; },
-    getElement (elementId) { return document.getElementById(elementId); }
-  });
+  units.init(
+    /**
+    * @implements {module:units.ElementContainer}
+    */
+    {
+      getBaseUnit () { return 'cm'; },
+      getHeight () { return 600; },
+      getWidth () { return 800; },
+      getRoundDigits () { return 4; },
+      getElement (elementId) { return document.getElementById(elementId); }
+    }
+  );
 }
 
 QUnit.test('Test svgedit.units package', function (assert) {

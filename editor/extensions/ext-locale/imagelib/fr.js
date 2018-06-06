@@ -4,12 +4,15 @@ export default {
   import_single: 'import_single',
   import_multi: 'import_multi',
   open: 'open',
+  buttons: [
+    {
+      title: 'Image library'
+    }
+  ],
   imgLibs: [
     {
       name: 'Demo library (local)',
-      url ({path, modularVersion}) {
-        return path + 'imagelib/index' + (modularVersion ? '-es' : '') + '.html';
-      },
+      url: '{path}imagelib/index{modularVersion}.html',
       description: 'Demonstration library for SVG-edit on this server'
     },
     {

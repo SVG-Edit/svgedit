@@ -1,21 +1,21 @@
 /* globals jQuery */
-/*
+/**
  * ext-polygon.js
  *
  *
- * Copyright(c) 2010 CloudCanvas, Inc.
- * All rights reserved
+ * @copyright 2010 CloudCanvas, Inc. All rights reserved
  *
  */
 export default {
   name: 'polygon',
-  init (S) {
+  async init (S) {
     const svgEditor = this;
     const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
-    const // {svgcontent} = S,
-      // addElem = S.addSvgElementFromJson,
+    const {importLocale} = S, // {svgcontent}
+      // addElem = S.addSVGElementFromJson,
       editingitex = false;
+    const strings = await importLocale();
     let selElems,
       // svgdoc = S.svgroot.parentNode.ownerDocument,
       // newFOG, newFOGParent, newDef, newImageName, newMaskID, modeChangeG,
@@ -71,7 +71,7 @@ export default {
     * This function sets the content of of the currently-selected foreignObject element,
     *   based on the itex contained in string.
     * @param {string} tex The itex text.
-    * @returns This function returns false if the set was unsuccessful, true otherwise.
+    * @returns {boolean} This function returns false if the set was unsuccessful, true otherwise.
     */
     /*
     function setItexString(tex) {
@@ -110,36 +110,38 @@ export default {
       return true;
     }
     */
+    const buttons = [{
+      id: 'tool_polygon',
+      type: 'mode',
+      position: 11,
+      events: {
+        click () {
+          svgCanvas.setMode('polygon');
+          showPanel(true);
+        }
+      }
+    }];
+    const contextTools = [{
+      type: 'input',
+      panel: 'polygon_panel',
+      id: 'polySides',
+      size: 3,
+      defval: 5,
+      events: {
+        change () {
+          setAttr('sides', this.value);
+        }
+      }
+    }];
     return {
-      name: 'polygon',
+      name: strings.name,
       svgicons: svgEditor.curConfig.extIconsPath + 'polygon-icons.svg',
-      buttons: [{
-        id: 'tool_polygon',
-        type: 'mode',
-        title: 'Polygon Tool',
-        position: 11,
-        events: {
-          click () {
-            svgCanvas.setMode('polygon');
-            showPanel(true);
-          }
-        }
-      }],
-
-      context_tools: [{
-        type: 'input',
-        panel: 'polygon_panel',
-        title: 'Number of Sides',
-        id: 'polySides',
-        label: 'sides',
-        size: 3,
-        defval: 5,
-        events: {
-          change () {
-            setAttr('sides', this.value);
-          }
-        }
-      }],
+      buttons: strings.buttons.map((button, i) => {
+        return Object.assign(buttons[i], button);
+      }),
+      context_tools: strings.contextTools.map((contextTool, i) => {
+        return Object.assign(contextTools[i], contextTool);
+      }),
 
       callback () {
         $('#polygon_panel').hide();
@@ -185,7 +187,7 @@ export default {
         if (svgCanvas.getMode() === 'polygon') {
           started = true;
 
-          newFO = S.addSvgElementFromJson({
+          newFO = S.addSVGElementFromJson({
             element: 'polygon',
             attr: {
               cx: opts.start_x,

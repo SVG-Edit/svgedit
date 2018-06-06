@@ -19,7 +19,7 @@ export default {
           return;
         }
         // The default is not to allow any origins, including even the same domain or if run on a file:// URL
-        //  See config-sample.js for an example of how to configure
+        //  See svgedit-config-es.js for an example of how to configure
         const {allowedOrigins} = svgEditor.curConfig;
         if (!allowedOrigins.includes('*') && !allowedOrigins.includes(e.origin)) {
           return;

@@ -1,7 +1,7 @@
 /* eslint-env qunit */
-import '../editor/pathseg.js';
-import {NS} from '../editor/svgedit.js';
-import * as utilities from '../editor/svgutils.js';
+import '../editor/svgpathseg.js';
+import {NS} from '../editor/namespaces.js';
+import * as utilities from '../editor/utilities.js';
 import * as pathModule from '../editor/path.js';
 
 // log function
@@ -11,17 +11,32 @@ QUnit.log((details) => {
   }
 });
 
-function getMockContext (svg) {
+/**
+* @param {SVGSVGElement} [svg]
+* @returns {Array}
+*/
+function getMockContexts (svg) {
   svg = svg || document.createElementNS(NS.SVG, 'svg');
   const selectorParentGroup = document.createElementNS(NS.SVG, 'g');
   selectorParentGroup.setAttribute('id', 'selectorParentGroup');
   svg.append(selectorParentGroup);
-  return {
-    getDOMDocument () { return svg; },
-    getDOMContainer () { return svg; },
-    getSVGRoot () { return svg; },
-    getCurrentZoom () { return 1; }
-  };
+  return [
+    /**
+    * @implements {module:path.EditorContext}
+    */
+    {
+      getSVGRoot () { return svg; },
+      getCurrentZoom () { return 1; }
+    },
+    /**
+    * @implements {module:utilities.EditorContext}
+    */
+    {
+      getDOMDocument () { return svg; },
+      getDOMContainer () { return svg; },
+      getSVGRoot () { return svg; }
+    }
+  ];
 }
 
 QUnit.test('Test svgedit.path.replacePathSeg', function (assert) {
@@ -30,9 +45,9 @@ QUnit.test('Test svgedit.path.replacePathSeg', function (assert) {
   const path = document.createElementNS(NS.SVG, 'path');
   path.setAttribute('d', 'M0,0 L10,11 L20,21Z');
 
-  const mockContext = getMockContext();
-  pathModule.init(mockContext);
-  utilities.init(mockContext);
+  const [mockPathContext, mockUtilitiesContext] = getMockContexts();
+  pathModule.init(mockPathContext);
+  utilities.init(mockUtilitiesContext);
   new pathModule.Path(path); // eslint-disable-line no-new
 
   assert.equal(path.pathSegList.getItem(1).pathSegTypeAsLetter, 'L');
@@ -52,9 +67,9 @@ QUnit.test('Test svgedit.path.Segment.setType simple', function (assert) {
   const path = document.createElementNS(NS.SVG, 'path');
   path.setAttribute('d', 'M0,0 L10,11 L20,21Z');
 
-  const mockContext = getMockContext();
-  pathModule.init(mockContext);
-  utilities.init(mockContext);
+  const [mockPathContext, mockUtilitiesContext] = getMockContexts();
+  pathModule.init(mockPathContext);
+  utilities.init(mockUtilitiesContext);
   new pathModule.Path(path); // eslint-disable-line no-new
 
   assert.equal(path.pathSegList.getItem(1).pathSegTypeAsLetter, 'L');
@@ -82,9 +97,9 @@ QUnit.test('Test svgedit.path.Segment.setType with control points', function (as
   path.setAttribute('d', 'M0,0 C11,12 13,14 15,16 Z');
   svg.append(path);
 
-  const mockContext = getMockContext(svg);
-  pathModule.init(mockContext);
-  utilities.init(mockContext);
+  const [mockPathContext, mockUtilitiesContext] = getMockContexts(svg);
+  pathModule.init(mockPathContext);
+  utilities.init(mockUtilitiesContext);
   const segment = new pathModule.Segment(1, path.pathSegList.getItem(1));
   segment.path = new pathModule.Path(path);
 
@@ -112,9 +127,9 @@ QUnit.test('Test svgedit.path.Segment.move', function (assert) {
   const path = document.createElementNS(NS.SVG, 'path');
   path.setAttribute('d', 'M0,0 L10,11 L20,21Z');
 
-  const mockContext = getMockContext();
-  pathModule.init(mockContext);
-  utilities.init(mockContext);
+  const [mockPathContext, mockUtilitiesContext] = getMockContexts();
+  pathModule.init(mockPathContext);
+  utilities.init(mockUtilitiesContext);
   new pathModule.Path(path); // eslint-disable-line no-new
 
   assert.equal(path.pathSegList.getItem(1).pathSegTypeAsLetter, 'L');
@@ -134,9 +149,9 @@ QUnit.test('Test svgedit.path.Segment.moveCtrl', function (assert) {
   const path = document.createElementNS(NS.SVG, 'path');
   path.setAttribute('d', 'M0,0 C11,12 13,14 15,16 Z');
 
-  const mockContext = getMockContext();
-  pathModule.init(mockContext);
-  utilities.init(mockContext);
+  const [mockPathContext, mockUtilitiesContext] = getMockContexts();
+  pathModule.init(mockPathContext);
+  utilities.init(mockUtilitiesContext);
   new pathModule.Path(path); // eslint-disable-line no-new
 
   assert.equal(path.pathSegList.getItem(1).pathSegTypeAsLetter, 'C');

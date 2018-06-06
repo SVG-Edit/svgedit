@@ -108,7 +108,6 @@ export default {
     mode_circle: 'Circle',
     mode_fhellipse: 'Free-Hand Ellipse',
     mode_path: 'Path Tool',
-    mode_shapelib: 'Shape library',
     mode_text: 'Text Tool',
     mode_image: 'Image Tool',
     mode_zoom: 'Zoom Tool [Ctrl+Up/Down]',
@@ -118,7 +117,6 @@ export default {
     redo: 'Redo [Y]',
     tool_source: 'Edit Source [U]',
     wireframe_mode: 'Wireframe Mode [F]',
-    toggle_grid: 'Show/Hide Grid',
     clone: 'Duplicate Element [D]',
     del: 'Delete Element [Delete/Backspace]',
     group_elements: 'Group Elements [G]',
@@ -187,22 +185,6 @@ export default {
     snapping_onoff: 'Snapping on/off',
     snapping_stepsize: 'Snapping Step-Size:',
     grid_color: 'Grid color:'
-  },
-  shape_cats: {
-    basic: 'basic',
-    object: 'object',
-    symbol: 'symbol',
-    arrow: 'arrow',
-    flowchart: 'flowchart',
-    animal: 'animal',
-    game: 'game',
-    dialog_balloon: 'Dialog balloons',
-    electronics: 'Electronics',
-    math: 'Mathematical',
-    music: 'Music',
-    misc: 'Miscellaneous',
-    raphael_1: 'raphaeljs.com set 1',
-    raphael_2: 'raphaeljs.com set 2'
   },
   notification: {
     invalidAttrValGiven: 'Invalid value given',
