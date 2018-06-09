@@ -1108,7 +1108,6 @@ const selectOnly = this.selectOnly = function (elems, showGrips) {
   if (!elemsToRemove.length) { return; }
 
   // find every element and remove it from our array copy
-  let j = 0;
   const newSelectedItems = [],
     len = selectedElements.length;
   for (let i = 0; i < len; ++i) {
@@ -1116,8 +1115,7 @@ const selectOnly = this.selectOnly = function (elems, showGrips) {
     if (elem) {
       // keep the item
       if (!elemsToRemove.includes(elem)) {
-        newSelectedItems[j] = elem;
-        j++;
+        newSelectedItems.push(elem);
       } else { // remove the item and its selector
         selectorManager.releaseSelector(elem);
       }
