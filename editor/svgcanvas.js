@@ -1111,7 +1111,6 @@ const selectOnly = this.selectOnly = function (elems, showGrips) {
   let j = 0;
   const newSelectedItems = [],
     len = selectedElements.length;
-  newSelectedItems.length = len;
   for (let i = 0; i < len; ++i) {
     const elem = selectedElements[i];
     if (elem) {
