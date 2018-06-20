@@ -105,7 +105,8 @@ These are added by the extension returning an object with the property "context_
 
 Most plugins will want to run functions when certain events are triggered. This is a list of the current events that can be hooked onto. All events are optional.
 
-| Event | Description | Parameters | Return value expected | |:------|:------------|:-----------|:----------------------|
+| Event | Description | Parameters | Return value expected |
+|:------|:------------|:-----------|:----------------------|
 | `mouseDown` | The main (left) mouse button is held down on the canvas area | Supplies an object with these properties: `evt` (the event object), `start_x` (x coordinate on canvas), `start_y` (y coordinate on canvas), `selectedElements` (an array of the selected Elements) | An optional object with started: true to indicate that creating/editing has started |
 | `mouseMove` | The mouse is moved on the canvas area | Same as for `mouseDown`, but with a selected property that refers to the first selected element | None |
 | `mouseUp` | The main (left) mouse button is released (anywhere) | Same as for `mouseDown` | An optional object with these properties: `element` (the element being affected), `keep` (boolean that indicates if the current element should be kept) `started` (boolean that indicates if editing should still be considered as "started") |
