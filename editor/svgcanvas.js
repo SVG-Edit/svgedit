@@ -2144,7 +2144,7 @@ const mouseUp = function (evt) {
   case 'image':
     attrs = $(element).attr(['width', 'height']);
     // Image should be kept regardless of size (use inherit dimensions later)
-    keep = (attrs.width !== '0' || attrs.height !== '0') || currentMode === 'image';
+    keep = (attrs.width || attrs.height) || currentMode === 'image';
     break;
   case 'circle':
     keep = (element.getAttribute('r') !== '0');
