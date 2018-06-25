@@ -2151,7 +2151,7 @@ const mouseUp = function (evt) {
     break;
   case 'ellipse':
     attrs = $(element).attr(['rx', 'ry']);
-    keep = (attrs.rx != null || attrs.ry != null);
+    keep = (attrs.rx || attrs.ry);
     break;
   case 'fhellipse':
     if ((freehand.maxx - freehand.minx) > 0 &&

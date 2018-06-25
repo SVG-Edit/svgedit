@@ -235,21 +235,19 @@ export const convertToNum = function (attr, val) {
 * @param val - String with the attribute value to check
 */
 export const isValidUnit = function (attr, val, selectedElement) {
-  let valid = false;
   if (unitAttrs.includes(attr)) {
     // True if it's just a number
     if (!isNaN(val)) {
-      valid = true;
-    } else {
-    // Not a number, check if it has a valid unit
-      val = val.toLowerCase();
-      Object.keys(typeMap_).forEach((unit) => {
-        if (valid) { return; }
-        const re = new RegExp('^-?[\\d\\.]+' + unit + '$');
-        if (re.test(val)) { valid = true; }
-      });
+      return true;
     }
-  } else if (attr === 'id') {
+    // Not a number, check if it has a valid unit
+    val = val.toLowerCase();
+    return Object.keys(typeMap_).some((unit) => {
+      const re = new RegExp('^-?[\\d\\.]+' + unit + '$');
+      return re.test(val);
+    });
+  }
+  if (attr === 'id') {
     // if we're trying to change the id, make sure it's not already present in the doc
     // and the id value is valid.
 
@@ -264,7 +262,5 @@ export const isValidUnit = function (attr, val, selectedElement) {
     } catch (e) {}
     return result;
   }
-  valid = true;
-
-  return valid;
+  return true;
 };
