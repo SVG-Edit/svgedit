@@ -1390,6 +1390,9 @@ const mouseDown = function (evt) {
         const all = mouseTarget.getElementsByTagName('*'),
           len = all.length;
         for (i = 0; i < len; i++) {
+          if (!all[i].style) { // mathML
+            continue;
+          }
           all[i].style.vectorEffect = 'non-scaling-stroke';
           if (iswebkit) { delayedStroke(all[i]); }
         }
