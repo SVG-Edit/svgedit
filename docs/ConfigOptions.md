@@ -38,7 +38,8 @@ If an `allowInitialUserOverride` boolean is set to true, it will allow subsequen
 
 Note that those items marked as preferences are configuration items which can also be set via the UI (and specifically via Editor Options except where mentioned). Those items which appear in the UI but are not treated internally as preferences are marked with "Maybe" as their status may change.
 
-| Property | Description | Default | Preference | |:---------|:------------|:--------|:-----------|
+| Property | Description | Default | Preference |
+|:---------|:------------|:--------|:-----------|
 | `lang` | Two-letter language code. The language must exist in the Editor Preferences language list | Default to "en" if `locale.js` detection does not detect another language | Yes |
 | `bkgd_url` | Background raster image URL. This image will fill the background of the document, useful for tracing purposes | (none) | Yes |
 | `img_save` | Defines whether included raster images should be saved as Data URIs when possible, or as URL references. Must be either 'embed' or 'ref'. Settable in the Document Properties dialog. | embed | Yes |
