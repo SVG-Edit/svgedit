@@ -1,3 +1,75 @@
+# ?
+
+- Breaking change: In interests of modularity/removing globals,
+  remove `window.svgCanvas` and `svgCanvas.ready` as used by older
+  extensions; use `svgEditor.canvas` and `svgEditor.ready` instead
+- Breaking change: Extension now formatted as export (and `this`
+    is set to editor, including for `callback`)
+- Breaking change: Locale now formatted as export
+- Breaking change: Moved out remaining modular i18n (imagelib) to own folder
+- Breaking change: Drop `executeAfterLoads` (and getJSPDF/getCanvg)
+- Breaking change: `RGBColor` must accept `new`
+- Breaking change: canvg - `stackBlurCanvasRGBA` must be set now by function
+  (`setStackBlurCanvasRGBA`) rather than global; `canvg` now a named export
+- Breaking change: Avoid passing `canvg`/`buildCanvgCallback` to extensions
+  (have them import)
+- npm: Add `prepare` script to ensure building/testing before publish
+- npm: Update devDep Rollup
+- Fix: Remove redundant (and incorrect) length set. (#256 ; fixes #255)
+- Fix: Detection of whether to keep ellipse (rx and ry when just created
+    are now returning 0 instead of null); fixes #262
+- Fix: i18nize imaglib more deeply
+- Fix: Positioning of Document Properties dialog (Fixes #246)
+- Fix (regression): PDF Export (Fixes #249)
+- Fix (regression): Add polyfill for `ChildNode`/`ParentNode` (and use further)
+- Fix (regression): Apply Babel universally to dependencies
+- Fix (regression): Ordering of `uaPrefix` function in `svgEditor.js`
+- Fix (regression): Embedded API
+- Fix (embedded editor): Fix backspace key in Firefox so it doesn't navigate
+  out of frame
+- Fix: Alert if no `exportWindow` for PDF (e.g., if blocked)
+- Fix (Embedded API): Cross-domain may fail to even access `origin` or
+  `contentDocument`
+- Fix (Embedded API): Avoid adding URL to iframe src if there are no arguments
+- Fix (Cross-domain usage): Recover from exceptions with `localStorage`
+- Fix regression (Imagelib): Fix path for non-module version
+- Enhancement: Sort SVG attributes alphabetically (#252 @Neil Fraser)
+- Enhancement: Allow callback argument and return promise
+  for canvas methods: `rasterExport` and `exportPDF`
+- Enhancement: Add `pointsAdded` canvas event (Fixes #141)
+- i18n: Clarify locale messages (where still available as English) to reflect
+  fact that Chrome only has "Save as" via context menu/right-click, not via
+  file menu (toward #192)
+- Refactoring: Sort Embedded functions alphabetically and add lbs for better
+  visibility in code
+- Refactoring: Simplify `isValidUnit`
+- Refactoring( RGBColor) `RGBColor` as class, without rebuilding
+  constants, optimize string replacement, move methods to prototype,
+  use templates and object literals, use `Object.keys`
+- Refactoring (canvg) Use classes more internally, use shorthand objects;
+  array extras, return to lazy-loading
+- Refactoring: Use Promises in place of `$.getScript`; always return
+  Promises in case deciding to await resolving
+- Refactoring: Avoid importing `RGBColor` into `svgutils.js` (jsPDF imports
+  it itself)
+- Refactoring: Arrow functions, destructuring, shorter property references
+- Refactoring: Fix `lang` and `dir` for locales (though not in use
+  currently anyways)
+- Refactoring: Provide path config for canvg, jspdf
+- Refactoring (minor): variadic args through ellipsis
+- Refactoring (minor): `getIssues` to return codes and strings, lbs
+- Refactoring (minor): Use single quotes in PHP
+- Docs (Code comments): Coding standards within
+- Docs: Move jsdoc output to public directory so may be visible on releases
+  (while still having in a `.gitignore`)
+- Docs (JSDoc): Add
+- Docs: Exclusions from jsdoc
+- Docs: Transfer some changes from ExtensionDocs on wiki (need to fully
+  reconcile)
+- Docs: Reference JSDocs in README
+- Docs (ReleaseInstructions): Update
+- Linting (ESLint): Avoid linting jsdoc folder
+
 # 3.0.0-alpha.4
 
 - Docs: Convert more docs to JSDoc and add JSDoc script (thanks, tetedacier!)
