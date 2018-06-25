@@ -4,7 +4,7 @@
   remove `window.svgCanvas` and `svgCanvas.ready` as used by older
   extensions; use `svgEditor.canvas` and `svgEditor.ready` instead
 - Breaking change: Extension now formatted as export (and `this`
-    is set to editor, including for `callback`)
+  is set to editor, including for `callback`)
 - Breaking change: Locale now formatted as export
 - Breaking change: Moved out remaining modular i18n (imagelib) to own folder
 - Breaking change: Drop `executeAfterLoads` (and getJSPDF/getCanvg)
@@ -13,11 +13,14 @@
   (`setStackBlurCanvasRGBA`) rather than global; `canvg` now a named export
 - Breaking change: Avoid passing `canvg`/`buildCanvgCallback` to extensions
   (have them import)
-- npm: Add `prepare` script to ensure building/testing before publish
-- npm: Update devDep Rollup
+- npm: Add `prepublishOnly` script to ensure building/testing before publish
+- npm: Update devDep Rollup, Sinon
 - Fix: Remove redundant (and incorrect) length set. (#256 ; fixes #255)
 - Fix: Detection of whether to keep ellipse (rx and ry when just created
-    are now returning 0 instead of null); fixes #262
+  are now returning 0 instead of null); also with rectangle/square;
+  fixes #262
+- Fix: Avoid erring during resize on encountering MathML (which have no
+  `style`)
 - Fix: i18nize imaglib more deeply
 - Fix: Positioning of Document Properties dialog (Fixes #246)
 - Fix (regression): PDF Export (Fixes #249)
@@ -62,7 +65,7 @@
 - Docs (Code comments): Coding standards within
 - Docs: Move jsdoc output to public directory so may be visible on releases
   (while still having in a `.gitignore`)
-- Docs (JSDoc): Add
+- Docs (JSDoc): Add items; fix table layout
 - Docs: Exclusions from jsdoc
 - Docs: Transfer some changes from ExtensionDocs on wiki (need to fully
   reconcile)

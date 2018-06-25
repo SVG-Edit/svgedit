@@ -2851,25 +2851,19 @@
   * @param val - String with the attribute value to check
   */
   var isValidUnit = function isValidUnit(attr, val, selectedElement) {
-    var valid = false;
     if (unitAttrs.includes(attr)) {
       // True if it's just a number
       if (!isNaN(val)) {
-        valid = true;
-      } else {
-        // Not a number, check if it has a valid unit
-        val = val.toLowerCase();
-        Object.keys(typeMap_).forEach(function (unit) {
-          if (valid) {
-            return;
-          }
-          var re = new RegExp('^-?[\\d\\.]+' + unit + '$');
-          if (re.test(val)) {
-            valid = true;
-          }
-        });
+        return true;
       }
-    } else if (attr === 'id') {
+      // Not a number, check if it has a valid unit
+      val = val.toLowerCase();
+      return Object.keys(typeMap_).some(function (unit) {
+        var re = new RegExp('^-?[\\d\\.]+' + unit + '$');
+        return re.test(val);
+      });
+    }
+    if (attr === 'id') {
       // if we're trying to change the id, make sure it's not already present in the doc
       // and the id value is valid.
 
@@ -2884,9 +2878,7 @@
       } catch (e) {}
       return result;
     }
-    valid = true;
-
-    return valid;
+    return true;
   };
 
   /**
@@ -11985,17 +11977,14 @@
       }
 
       // find every element and remove it from our array copy
-      var j = 0;
       var newSelectedItems = [],
           len = selectedElements.length;
-      newSelectedItems.length = len;
       for (var i = 0; i < len; ++i) {
         var elem = selectedElements[i];
         if (elem) {
           // keep the item
           if (!elemsToRemove.includes(elem)) {
-            newSelectedItems[j] = elem;
-            j++;
+            newSelectedItems.push(elem);
           } else {
             // remove the item and its selector
             selectorManager.releaseSelector(elem);
@@ -12265,6 +12254,10 @@
                 var all = mouseTarget.getElementsByTagName('*'),
                     len = all.length;
                 for (i = 0; i < len; i++) {
+                  if (!all[i].style) {
+                    // mathML
+                    continue;
+                  }
                   all[i].style.vectorEffect = 'non-scaling-stroke';
                   if (iswebkit) {
                     delayedStroke(all[i]);
@@ -13073,14 +13066,14 @@
           case 'image':
             attrs = $$9(element).attr(['width', 'height']);
             // Image should be kept regardless of size (use inherit dimensions later)
-            keep = attrs.width !== '0' || attrs.height !== '0' || currentMode === 'image';
+            keep = attrs.width || attrs.height || currentMode === 'image';
             break;
           case 'circle':
             keep = element.getAttribute('r') !== '0';
             break;
           case 'ellipse':
             attrs = $$9(element).attr(['rx', 'ry']);
-            keep = attrs.rx != null || attrs.ry != null;
+            keep = attrs.rx || attrs.ry;
             break;
           case 'fhellipse':
             if (freehand.maxx - freehand.minx > 0 && freehand.maxy - freehand.miny > 0) {

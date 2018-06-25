@@ -11,7 +11,7 @@
   },
   "engines": {},
   "scripts": {
-    "prepare": "npm test",
+    "prepublishOnly": "npm run test-prep",
     "build-config": "rollup -c rollup-config.config.js",
     "build-doc": "rm -rf docs/jsdoc/*;jsdoc -d docs/jsdoc -c docs/jsdoc-config.json .",
     "build-html": "node build-html.js",
@@ -21,7 +21,8 @@
     "rollup": "rollup -c",
     "start": "echo \"Open file to http://localhost:8000/test/all_tests.html\" && static -p 8000",
     "test-no-build": "npm run eslint && npm run build-html && npm run build-config && opn http://localhost:8000/test/all_tests.html && static -p 8000",
-    "test": "npm run eslint && npm run build-html && npm run rollup && npm run build-config && opn http://localhost:8000/test/all_tests.html && static -p 8000"
+    "test-prep": "npm run eslint && npm run build-html && npm run rollup && npm run build-config",
+    "test": "npm run test-prep && opn http://localhost:8000/test/all_tests.html && static -p 8000"
   },
   "repository": {
     "type": "git",
@@ -75,7 +76,7 @@
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-re": "^1.0.7",
     "rollup-plugin-uglify": "^4.0.0",
-    "sinon": "^5.0.10",
+    "sinon": "^6.0.1",
     "sinon-test": "^2.2.0",
     "uglify-es": "^3.3.9"
   }
