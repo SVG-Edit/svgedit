@@ -23,5 +23,6 @@
     "recurse": true,
     "verbose": true,
     "destination": ".jsdoc/out"
-  }
+  },
+  "plugins": ["plugins/markdown"]
 }
