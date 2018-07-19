@@ -75,7 +75,7 @@ const iframe = $(`<iframe src="${frameBase}${framePath}` +
   '" width="900px" height="600px" id="svgedit""></iframe>'
 );
 iframe[0].addEventListener('load', function () {
-  svgCanvas = new EmbeddedSVGEdit(frame, [frameBase]);
+  svgCanvas = new EmbeddedSVGEdit(frame, [new URL(frameBase).origin]);
   // Hide main button, as we will be controlling new, load, save, etc. from the host document
   let doc;
   try {
