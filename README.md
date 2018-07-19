@@ -9,7 +9,8 @@ works in any modern browser.
 
 (Also available as a download in [releases](https://github.com/SVG-Edit/svgedit/releases)).
 
-You may also try the [pre-release](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html) (or its [ES6-Module](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html) version, assuming a modern browser).
+You may also try the latest
+[pre-release](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html) (or its [ES6-Module](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html) version, assuming a modern browser).
 
 And for testing the latest version in `master`, you may try <https://rawgit.com/SVG-Edit/svgedit/master/editor/svg-editor.html> or
 <https://raw.githack.com/SVG-Edit/svgedit/master/editor/svg-editor.html>.
