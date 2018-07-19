@@ -1,4 +1,4 @@
-# ?
+# 3.0.0-rc.1
 
 - Security fix: 'extPath', 'imgPath', 'extIconsPath', 'canvgPath',
   'langPath', 'jGraduatePath', and 'jspdfPath' were not being prevented

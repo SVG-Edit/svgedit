@@ -81,14 +81,17 @@ incorporating SVGEdit.
       to have the changes properly copied to `svg-editor.html`.
 
 ## Recent news
-  * 2018-05-26 Published 3.0.0-alpha.2 with ES6 Modules support
-  * 2017-07 Added to Packagist: https://packagist.org/packages/svg-edit/svgedit
-  * 2015-12-02 SVG-edit 2.8.1 was released.
-  * 2015-11-24 SVG-edit 2.8 was released.
-  * 2015-11-24 Code, issue tracking, and docs are being moved to github (previously [code.google.com](https://code.google.com/p/svg-edit)).
-  * 2014-04-17 2.7 and stable branches updated to reflect 2.7.1 important bug fixes for the embedded editor.
-  * 2014-04-07 SVG-edit 2.7 was released.
-  * 2013-01-15 SVG-edit 2.6 was released.
+
+- 2018-07-19 Published 3.0.0-rc.1 allowing for extensions and locales to be
+  expressed as modules
+- 2018-05-26 Published 3.0.0-alpha.2 with ES6 Modules support
+- 2017-07 Added to Packagist: https://packagist.org/packages/svg-edit/svgedit
+- 2015-12-02 SVG-edit 2.8.1 was released.
+- 2015-11-24 SVG-edit 2.8 was released.
+- 2015-11-24 Code, issue tracking, and docs are being moved to github (previously [code.google.com](https://code.google.com/p/svg-edit)).
+- 2014-04-17 2.7 and stable branches updated to reflect 2.7.1 important bug fixes for the embedded editor.
+- 2014-04-07 SVG-edit 2.7 was released.
+- 2013-01-15 SVG-edit 2.6 was released.
 
 ## Videos
 

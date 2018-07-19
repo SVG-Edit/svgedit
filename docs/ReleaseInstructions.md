@@ -11,6 +11,9 @@
     `PlainObject` or `GenericArray` to indicate the simple base type was
     intentional. `*` should also be checked. The script reports all failing
     matches within `editor`. There should be none.
+1. Preview which files will be included once published (taking into
+    account `.npmignore`), by using `npm pack` (taking care to remove
+    the `.tgz` tarball file that it creates).
 
 ## Update the main project
 <!--
@@ -18,8 +21,7 @@
 -->
 1. Update `version` in `package.json` (and `package-lock.json` (via `npm i`)).
 1. Update the CHANGES file with a summary of all changes.
-1. Update the README references to `svg-edit.github.io` to point to the
-  current version (note that it will not be available until the steps below).
+1. Add new release info to `Recent news` section in README
 1. Commit these changes
 <!-- with `git commit -m "Updating Makefile and CHANGES for release X.Y"`-->.
 1. Tag the version, prefixed by "v", e.g., `v3.0.1`.
@@ -39,9 +41,10 @@ The above steps can be done on a fork and committed via a pull request.
   `svgedit-config-es.js` and `svgedit-config-iife.js` files).
 1. Commit these changes with `git commit -m "Updating files for release X.Y"`.
 1. Switch back to the `master` branch with `git checkout master`.
-1. Ensure this step worked by visiting <https://svgedit.github.io/svgedit/releases/svg-edit-X.Y/svg-editor.html>
-  (and in an ES6-Module-compliant browser,
-  <https://svgedit.github.io/svgedit/releases/svg-edit-X.Y/svg-editor-es.html>).
+1. Ensure this step worked by visiting
+    <https://svgedit.github.io/svgedit/releases/svg-edit-X.Y/svg-editor.html>
+    (and in an ES6-Module-compliant browser,
+    <https://svgedit.github.io/svgedit/releases/svg-edit-X.Y/svg-editor-es.html>).
 
 The above steps can be done on a fork and committed via a pull request.
 
@@ -63,13 +66,4 @@ You will need to be a member of the SVG-Edit GitHub group to do this step.
 
 ## Publish to npm
 
-1. To preview which files will be included once published (taking into
-    account `.npmignore`), you may use `npm pack` (taking care to remove
-    the `.tgz` tarball file that it creates).
 1. `npm publish`
-
-## Update the project docs
-
-Ensure `README.md` has references and links to the shiny new release.
-This will probably not be needed if the `latest` directory continues to
-be preferred over hard-coding links to particular releases.
