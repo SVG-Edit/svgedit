@@ -74,9 +74,11 @@
 - Fix (Embedded API): Cross-domain may fail to even access `origin` or
   `contentDocument`
 - Fix (Embedded API): Avoid adding URL to iframe src if there are no arguments
+- Fix (Embedded API): Handle origin issues (fixes #173)
 - Fix (Cross-domain usage): Recover from exceptions with `localStorage`
 - Fix regression (Imagelib): Fix path for non-module version
 - Update: Update WebAppFind per new API changes
+- Enhancement: Link to rawgit/raw.githack for live master demos (fixes #43)
 - Enhancement: Make `setStrings` public on editor for late setting (used
   by `ext-shapes.js`)
 - Enhancement: Add `extensions_added` event
