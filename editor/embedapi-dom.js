@@ -34,7 +34,7 @@ function exportPNG () {
       'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
       'svg-edit-exportWindow'
     );
-    svgCanvas.rasterExport('PNG', null, exportWindow.name);
+    svgCanvas.rasterExport('PNG', null, exportWindow && exportWindow.name);
   });
 }
 
@@ -55,7 +55,7 @@ function exportPDF () {
       'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
       'svg-edit-exportWindow'
     );
-    svgCanvas.exportPDF(exportWindow.name);
+    svgCanvas.exportPDF(exportWindow && exportWindow.name);
   });
 }
 
