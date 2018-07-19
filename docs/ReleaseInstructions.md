@@ -36,9 +36,7 @@ The above steps can be done on a fork and committed via a pull request.
 
 1. Ensure you are on the `master` branch with `git checkout master`.
 1. Switch to the `gh-pages` branch with `git checkout gh-pages`.
-1. Copy the `svg-edit-X.Y` directory to `releases/svg-edit-X.Y` and to
-  `latest/` (minus `.git` and `.gitignore` and including the working built
-  `svgedit-config-es.js` and `svgedit-config-iife.js` files).
+1. Run the `build.js` executable
 1. Commit these changes with `git commit -m "Updating files for release X.Y"`.
 1. Switch back to the `master` branch with `git checkout master`.
 1. Ensure this step worked by visiting
