@@ -18,10 +18,12 @@ export default {
         if (!data || typeof data !== 'object' || data.namespace !== 'svgCanvas') {
           return;
         }
-        // The default is not to allow any origins, including even the same domain or if run on a file:// URL
-        //  See svgedit-config-es.js for an example of how to configure
+        // The default is not to allow any origins, including even the same domain or
+        //  if run on a file:// URL See svgedit-config-es.js for an example of how
+        //  to configure
         const {allowedOrigins} = svgEditor.curConfig;
         if (!allowedOrigins.includes('*') && !allowedOrigins.includes(e.origin)) {
+          console.log(`Origin ${e.origin} not whitelisted for posting to ${window.origin}`);
           return;
         }
         const cbid = data.id;

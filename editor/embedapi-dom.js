@@ -65,14 +65,17 @@ $('#save').click(saveSvg);
 $('#exportPNG').click(exportPNG);
 $('#exportPDF').click(exportPDF);
 
-const iframe = $('<iframe src="svg-editor.html?extensions=ext-xdomain-messaging.js' +
+const frameBase = 'https://raw.githack.com/SVG-Edit/svgedit/master';
+// const frameBase = 'http://localhost:8001';
+const framePath = '/editor/xdomain-svg-editor-es.html?extensions=ext-xdomain-messaging.js';
+const iframe = $(`<iframe src="${frameBase}${framePath}` +
   (location.href.includes('?')
     ? location.href.replace(/\?(.*)$/, '&$1')
     : '') + // Append arguments to this file onto the iframe
   '" width="900px" height="600px" id="svgedit""></iframe>'
 );
 iframe[0].addEventListener('load', function () {
-  svgCanvas = new EmbeddedSVGEdit(frame);
+  svgCanvas = new EmbeddedSVGEdit(frame, [frameBase]);
   // Hide main button, as we will be controlling new, load, save, etc. from the host document
   let doc;
   try {

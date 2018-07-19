@@ -20,6 +20,7 @@
     "copy-deps": "cp node_modules/load-stylesheets/dist/index-es.js editor/external/load-stylesheets/index-es.js && cp node_modules/babel-polyfill/dist/polyfill.min.js editor/external/babel-polyfill/polyfill.min.js && cp node_modules/babel-polyfill/dist/polyfill.js editor/external/babel-polyfill/polyfill.js",
     "eslint": "eslint .",
     "rollup": "rollup -c",
+    "start-embedded": "echo \"Open file to http://localhost:8000/editor/embedapi.html\" && static -p 8000 | static -p 8001 -H '{\"Access-Control-Allow-Origin\": \"*\"}'",
     "start": "echo \"Open file to http://localhost:8000/test/all_tests.html\" && static -p 8000",
     "test-no-build": "npm run eslint && npm run build-html && npm run build-config && opn http://localhost:8000/test/all_tests.html && static -p 8000",
     "test-prep": "npm run eslint && npm run build-html && npm run rollup && npm run build-config",
