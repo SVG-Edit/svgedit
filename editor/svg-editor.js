@@ -3053,7 +3053,7 @@ editor.init = function () {
       * @property {string} title The tooltip text that will appear when the user hovers over the icon. Required.
       * @property {PlainObject.<string, external:jQuery.Function>|PlainObject.<"click", external:jQuery.Function>} events DOM event names with associated functions. Example: `{click () { alert('Button was clicked') } }`. Click is used with `includeWith` and `type` of "mode_flyout" (and "mode"); any events may be added if `list` is not present. Expected.
       * @property {string} panel The ID of the context panel to be included, if type is "context". Required only if type is "context".
-      * @property {string} icon The file path to the raster version of the icon image source. Required only if no `svgicon` is supplied.
+      * @property {string} icon The file path to the raster version of the icon image source. Required only if no `svgicons` is supplied from [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse}.
       * @property {string} [svgicon] If absent, will utilize the button "id"; used to set "placement" on the `svgIcons` call
       * @property {string} [list] Points to the "id" of a `context_tools` item of type "button-select" into which the button will be added as a panel list item
       * @property {Integer} [position] The numeric index for placement; defaults to last position (as of the time of extension addition) if not present. For use with {@link http://api.jquery.com/eq/}.
