@@ -47,6 +47,14 @@
   (have them import)
 - Breaking change: Have `readLang`  return lang and data but do not call
   `setLang`
+- Breaking change: Avoid adding `assignAttributes`, `addSVGElementFromJson`,
+  `call`, `copyElem`, `findDefs`, `getElem`, `getId`, `getIntersectionList`,
+  `getMouseTarget`, `getNextId`, `getUrlFromAttr`, `hasMatrixTransform`,
+  `matrixMultiply`, `recalculateAllSelectedDimensions`,
+  `recalculateDimensions`, `remapElement`, `removeUnusedDefElems`, `round`,
+  `runExtensions`, `sanitizeSvg`, `setGradient` `transformListToTransform`
+  (and mistaken `toString` export) to `getPrivateMethods` (passed to
+  extensions) as available as public ones
 - npm: Add `prepublishOnly` script to ensure building/testing before publish
 - npm: Update devDeps including Rollup, Sinon
 - Fix: Remove redundant (and incorrect) length set. (#256 ; fixes #255)
@@ -70,7 +78,8 @@
 - Fix: Alert if no `exportWindow` for PDF (e.g., if blocked)
 - Fix: Ensure call to `rasterExport` without `imgType` properly sets MIME
   type to PNG
-- Fix: Wrong name for moinsave
+- Fix (extension): Wrong name for moinsave
+- Fix (extension): ForeignObject editor
 - Fix (Embedded API): Cross-domain may fail to even access `origin` or
   `contentDocument`
 - Fix (Embedded API): Avoid adding URL to iframe src if there are no arguments

@@ -15,7 +15,7 @@ export default {
     const svgCanvas = svgEditor.canvas;
     const $ = jQuery;
     const // {svgcontent} = S,
-      addElem = S.addSVGElementFromJson,
+      addElem = svgCanvas.addSVGElementFromJson,
       {nonce} = S,
       prefix = 'se_arrow_';
 
@@ -56,7 +56,7 @@ export default {
       if (!m || m.length !== 2) {
         return null;
       }
-      return S.getElem(m[1]);
+      return svgCanvas.getElem(m[1]);
     }
 
     function showPanel (on) {
@@ -105,7 +105,7 @@ export default {
         data.refx = 5;
       }
 
-      let marker = S.getElem(id);
+      let marker = svgCanvas.getElem(id);
       if (!marker) {
         marker = addElem({
           element: 'marker',
@@ -128,7 +128,7 @@ export default {
           }
         });
         marker.append(arrow);
-        S.findDefs().append(marker);
+        svgCanvas.findDefs().append(marker);
       }
 
       marker.setAttribute('refX', data.refx);
@@ -160,13 +160,13 @@ export default {
 
       addMarker(dir, type);
       svgCanvas.changeSelectedAttribute('marker-' + type, 'url(#' + pathdata[dir].id + ')');
-      S.call('changed', selElems);
+      svgCanvas.call('changed', selElems);
     }
 
     function colorChanged (elem) {
       const color = elem.getAttribute('stroke');
       const mtypes = ['start', 'mid', 'end'];
-      const defs = S.findDefs();
+      const defs = svgCanvas.findDefs();
 
       $.each(mtypes, function (i, type) {
         const marker = getLinked(elem, 'marker-' + type);

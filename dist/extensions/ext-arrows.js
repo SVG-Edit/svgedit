@@ -51,7 +51,7 @@ var svgEditorExtension_arrows = (function () {
                 colorChanged = function colorChanged(elem) {
                   var color = elem.getAttribute('stroke');
                   var mtypes = ['start', 'mid', 'end'];
-                  var defs = S.findDefs();
+                  var defs = svgCanvas.findDefs();
 
                   $.each(mtypes, function (i, type) {
                     var marker = getLinked(elem, 'marker-' + type);
@@ -134,7 +134,7 @@ var svgEditorExtension_arrows = (function () {
 
                   addMarker(dir, type);
                   svgCanvas.changeSelectedAttribute('marker-' + type, 'url(#' + pathdata[dir].id + ')');
-                  S.call('changed', selElems);
+                  svgCanvas.call('changed', selElems);
                 };
 
                 addMarker = function addMarker(dir, type, id) {
@@ -147,7 +147,7 @@ var svgEditorExtension_arrows = (function () {
                     data.refx = 5;
                   }
 
-                  var marker = S.getElem(id);
+                  var marker = svgCanvas.getElem(id);
                   if (!marker) {
                     marker = addElem({
                       element: 'marker',
@@ -170,7 +170,7 @@ var svgEditorExtension_arrows = (function () {
                       }
                     });
                     marker.append(arrow);
-                    S.findDefs().append(marker);
+                    svgCanvas.findDefs().append(marker);
                   }
 
                   marker.setAttribute('refX', data.refx);
@@ -223,7 +223,7 @@ var svgEditorExtension_arrows = (function () {
                   if (!m || m.length !== 2) {
                     return null;
                   }
-                  return S.getElem(m[1]);
+                  return svgCanvas.getElem(m[1]);
                 };
 
                 unsetArrowNonce = function unsetArrowNonce(window) {
@@ -249,7 +249,7 @@ var svgEditorExtension_arrows = (function () {
                 svgCanvas = svgEditor.canvas;
                 $ = jQuery;
                 // {svgcontent} = S,
-                addElem = S.addSVGElementFromJson, nonce = S.nonce, prefix = 'se_arrow_';
+                addElem = svgCanvas.addSVGElementFromJson, nonce = S.nonce, prefix = 'se_arrow_';
                 selElems = void 0, arrowprefix = void 0, randomizeIds = S.randomize_ids;
 
 

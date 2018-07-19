@@ -27,11 +27,13 @@ var svgEditorExtension_xdomain_messaging = (function () {
           if (!data || (typeof data === 'undefined' ? 'undefined' : _typeof(data)) !== 'object' || data.namespace !== 'svgCanvas') {
             return;
           }
-          // The default is not to allow any origins, including even the same domain or if run on a file:// URL
-          //  See svgedit-config-es.js for an example of how to configure
+          // The default is not to allow any origins, including even the same domain or
+          //  if run on a file:// URL See svgedit-config-es.js for an example of how
+          //  to configure
           var allowedOrigins = svgEditor.curConfig.allowedOrigins;
 
           if (!allowedOrigins.includes('*') && !allowedOrigins.includes(e.origin)) {
+            console.log('Origin ' + e.origin + ' not whitelisted for posting to ' + window.origin);
             return;
           }
           var cbid = data.id;

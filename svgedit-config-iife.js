@@ -13738,6 +13738,7 @@
     * Hack for Firefox bugs where text element features aren't updated or get
     * messed up. See issue 136 and issue 137.
     * This function clones the element and re-selects it.
+    * @function module:svgcanvas~ffClone
     * @todo Test for this bug on load and add it to "support" object instead of
     * browser sniffing
     * @param {Element} elem - The (text) DOM element to clone
@@ -13847,7 +13848,12 @@
       }
     };
 
-    // Debug tool to easily see the current matrix in the browser's console
+    /**
+     * Debug tool to easily see the current matrix in the browser's console
+     * @function module:svgcanvas~logMatrix
+     * @param {SVGMatrix} m The matrix
+     * @returns {undefined}
+     */
     var logMatrix = function logMatrix(m) {
       console.log([m.a, m.b, m.c, m.d, m.e, m.f]);
     };
@@ -17808,6 +17814,7 @@
 
     /**
     * Check if exact gradient already exists
+    * @function module:svgcanvas~findDuplicateGradient
     * @param {SVGGradientElement} grad - The gradient DOM element to compare to others
     * @returns {SVGGradientElement} The existing gradient if found, `null` if not
     */
@@ -19742,9 +19749,31 @@
 
     /**
     * @interface module:svgcanvas.PrivateMethods
-    * @type {object}
-    * @todo If keeping, should document this interface
-    * @see The source
+    * @type {PlainObject}
+    * @property {module:svgcanvas~addCommandToHistory} addCommandToHistory
+    * @property {module:history.HistoryCommand} BatchCommand
+    * @property {module:history.HistoryCommand} ChangeElementCommand
+    * @property {module:utilities.decode64} decode64
+    * @property {module:utilities.encode64} encode64
+    * @property {module:svgcanvas~ffClone} ffClone
+    * @property {module:svgcanvas~findDuplicateGradient} findDuplicateGradient
+    * @property {module:utilities.getPathBBox} getPathBBox
+    * @property {module:units.getTypeMap} getTypeMap
+    * @property {module:draw.identifyLayers} identifyLayers
+    * @property {module:history.HistoryCommand} InsertElementCommand
+    * @property {module:browser.isChrome} isChrome
+    * @property {module:math.isIdentity} isIdentity
+    * @property {module:browser.isIE} isIE
+    * @property {module:svgcanvas~logMatrix} logMatrix
+    * @property {module:history.HistoryCommand} MoveElementCommand
+    * @property {module:namespaces.NS} NS
+    * @property {module:utilities.preventClickDefault} preventClickDefault
+    * @property {module:history.HistoryCommand} RemoveElementCommand
+    * @property {module:SVGTransformList.SVGEditTransformList} SVGEditTransformList
+    * @property {module:utilities.text2xml} text2xml
+    * @property {module:math.transformBox} transformBox
+    * @property {module:math.transformPoint} transformPoint
+    * @property {module:utilities.walkTree} walkTree
     */
     /**
     * @deprecated getPrivateMethods
@@ -19757,58 +19786,34 @@
     * access to them to plugins.
     * @function module:svgcanvas.SvgCanvas#getPrivateMethods
     * @returns {module:svgcanvas.PrivateMethods}
-    * @see Source for the methods
     */
     this.getPrivateMethods = function () {
       var obj = {
         addCommandToHistory: addCommandToHistory,
-        setGradient: setGradient,
-        addSVGElementFromJson: addSVGElementFromJson,
-        assignAttributes: assignAttributes,
         BatchCommand: BatchCommand$1,
-        call: call,
         ChangeElementCommand: ChangeElementCommand$1,
-        copyElem: function copyElem$$1(elem) {
-          return getCurrentDrawing().copyElem(elem);
-        },
-
         decode64: decode64,
         encode64: encode64,
         ffClone: ffClone,
         findDefs: findDefs,
         findDuplicateGradient: findDuplicateGradient,
         getElem: getElem,
-        getId: getId,
-        getIntersectionList: getIntersectionList,
-        getMouseTarget: getMouseTarget,
-        getNextId: getNextId,
         getPathBBox: getPathBBox,
         getTypeMap: getTypeMap,
         getUrlFromAttr: getUrlFromAttr,
-        hasMatrixTransform: hasMatrixTransform,
         identifyLayers: identifyLayers,
         InsertElementCommand: InsertElementCommand$1,
         isChrome: isChrome,
         isIdentity: isIdentity,
         isIE: isIE,
         logMatrix: logMatrix,
-        matrixMultiply: matrixMultiply,
         MoveElementCommand: MoveElementCommand$1,
         NS: NS,
         preventClickDefault: preventClickDefault,
-        recalculateAllSelectedDimensions: recalculateAllSelectedDimensions,
-        recalculateDimensions: recalculateDimensions,
-        remapElement: remapElement,
         RemoveElementCommand: RemoveElementCommand$1,
-        removeUnusedDefElems: removeUnusedDefElems,
-        round: round,
-        runExtensions: runExtensions,
-        sanitizeSvg: sanitizeSvg,
         SVGEditTransformList: SVGTransformList,
         text2xml: text2xml,
-        toString: toString,
         transformBox: transformBox,
-        transformListToTransform: transformListToTransform,
         transformPoint: transformPoint,
         walkTree: walkTree
       };

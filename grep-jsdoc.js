@@ -71,7 +71,8 @@ function reduceFalseMatches (file, res) {
       return ![
         '* @typedef {number} Float',
         '* @typedef {object} ArbitraryObject',
-        '* @typedef {object} ArbitraryModule'
+        '* @typedef {object} ArbitraryModule',
+        '* @typedef {*} Any'
       ].includes(line);
     });
     break;

@@ -44,7 +44,7 @@ var svgEditorExtension_connector = (function () {
     name: 'connector',
     init: function () {
       var _ref = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(S) {
-        var $, svgEditor, svgCanvas, svgroot, getNextId, getElem, importLocale, addElem, selManager, connSel, elData, strings, startX, startY, curLine, startElem, endElem, seNs, svgcontent, started, connections, selElems, getBBintersect, getOffset, showPanel, setPoint, updateLine, findConnectors, updateConnectors, init, buttons;
+        var $, svgEditor, svgCanvas, getElem, svgroot, importLocale, addElem, selManager, connSel, elData, strings, startX, startY, curLine, startElem, endElem, seNs, svgcontent, started, connections, selElems, getBBintersect, getOffset, showPanel, setPoint, updateLine, findConnectors, updateConnectors, init, buttons;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -288,11 +288,12 @@ var svgEditorExtension_connector = (function () {
                 $ = jQuery;
                 svgEditor = this;
                 svgCanvas = svgEditor.canvas;
-                svgroot = S.svgroot, getNextId = S.getNextId, getElem = S.getElem, importLocale = S.importLocale, addElem = S.addSVGElementFromJson, selManager = S.selectorManager, connSel = '.se_connector', elData = $.data;
-                _context2.next = 14;
+                getElem = svgCanvas.getElem;
+                svgroot = S.svgroot, importLocale = S.importLocale, addElem = svgCanvas.addSVGElementFromJson, selManager = S.selectorManager, connSel = '.se_connector', elData = $.data;
+                _context2.next = 15;
                 return importLocale();
 
-              case 14:
+              case 15:
                 strings = _context2.sent;
                 startX = void 0, startY = void 0, curLine = void 0, startElem = void 0, endElem = void 0, seNs = void 0, svgcontent = S.svgcontent, started = false, connections = [], selElems = [];
 
@@ -415,7 +416,7 @@ var svgEditorExtension_connector = (function () {
                         curLine = addElem({
                           element: 'polyline',
                           attr: {
-                            id: getNextId(),
+                            id: svgCanvas.getNextId(),
                             points: x + ',' + y + ' ' + x + ',' + y + ' ' + startX + ',' + startY,
                             stroke: '#' + initStroke.color,
                             'stroke-width': !startElem.stroke_width || startElem.stroke_width === 0 ? initStroke.width : startElem.stroke_width,
@@ -660,7 +661,7 @@ var svgEditorExtension_connector = (function () {
                   }
                 });
 
-              case 19:
+              case 20:
               case 'end':
                 return _context2.stop();
             }

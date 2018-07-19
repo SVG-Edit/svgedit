@@ -49,7 +49,7 @@ var svgEditorExtension_star = (function () {
               case 0:
                 setAttr = function setAttr(attr, val) {
                   svgCanvas.changeSelectedAttribute(attr, val);
-                  S.call('changed', selElems);
+                  svgCanvas.call('changed', selElems);
                 };
 
                 showPanel = function showPanel(on) {
@@ -150,12 +150,12 @@ var svgEditorExtension_star = (function () {
                     if (svgCanvas.getMode() === 'star') {
                       started = true;
 
-                      newFO = S.addSVGElementFromJson({
+                      newFO = svgCanvas.addSVGElementFromJson({
                         element: 'polygon',
                         attr: {
                           cx: opts.start_x,
                           cy: opts.start_y,
-                          id: S.getNextId(),
+                          id: svgCanvas.getNextId(),
                           shape: 'star',
                           point: document.getElementById('starNumPoints').value,
                           r: 0,

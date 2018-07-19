@@ -17,7 +17,7 @@ export default {
     const svgCanvas = svgEditor.canvas;
     const
       // {svgcontent} = S,
-      // addElem = S.addSVGElementFromJson,
+      // addElem = svgCanvas.addSVGElementFromJson,
       svgdoc = S.svgroot.parentNode.ownerDocument;
     const strings = await importLocale();
 
@@ -58,9 +58,9 @@ export default {
         // convert string into XML document
         const newDoc = text2xml('<svg xmlns="' + NS.SVG + '" xmlns:xlink="' + NS.XLINK + '">' + xmlString + '</svg>');
         // run it through our sanitizer to remove anything we do not support
-        S.sanitizeSvg(newDoc.documentElement);
+        svgCanvas.sanitizeSvg(newDoc.documentElement);
         elt.replaceWith(svgdoc.importNode(newDoc.documentElement.firstChild, true));
-        S.call('changed', [elt]);
+        svgCanvas.call('changed', [elt]);
         svgCanvas.clearSelection();
       } catch (e) {
         console.log(e);
@@ -77,7 +77,7 @@ export default {
       toggleSourceButtons(true);
       elt.removeAttribute('fill');
 
-      const str = S.svgToString(elt, 0);
+      const str = svgCanvas.svgToString(elt, 0);
       $('#svg_source_textarea').val(str);
       $('#svg_source_editor').fadeIn();
       properlySourceSizeTextArea();
@@ -86,7 +86,7 @@ export default {
 
     function setAttr (attr, val) {
       svgCanvas.changeSelectedAttribute(attr, val);
-      S.call('changed', selElems);
+      svgCanvas.call('changed', selElems);
     }
 
     const buttons = [{
@@ -192,12 +192,12 @@ export default {
 
         if (svgCanvas.getMode() === 'foreign') {
           started = true;
-          newFO = S.addSVGElementFromJson({
+          newFO = svgCanvas.addSVGElementFromJson({
             element: 'foreignObject',
             attr: {
               x: opts.start_x,
               y: opts.start_y,
-              id: S.getNextId(),
+              id: svgCanvas.getNextId(),
               'font-size': 16, // cur_text.font_size,
               width: '48',
               height: '20',

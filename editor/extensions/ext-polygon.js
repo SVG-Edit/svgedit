@@ -13,7 +13,7 @@ export default {
     const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
     const {importLocale} = S, // {svgcontent}
-      // addElem = S.addSVGElementFromJson,
+      // addElem = svgCanvas.addSVGElementFromJson,
       editingitex = false;
     const strings = await importLocale();
     let selElems,
@@ -55,7 +55,7 @@ export default {
 
     function setAttr (attr, val) {
       svgCanvas.changeSelectedAttribute(attr, val);
-      S.call('changed', selElems);
+      svgCanvas.call('changed', selElems);
     }
 
     function cot (n) {
@@ -96,11 +96,11 @@ export default {
           while (children.length > 0) {
              mrow.append(svgdoc.adoptNode(children[0], true));
           }
-          S.sanitizeSvg(math);
-          S.call('changed', [elt]);
+          svgCanvas.sanitizeSvg(math);
+          svgCanvas.call('changed', [elt]);
         });
         elt.firstChild.replaceWith(math);
-        S.call('changed', [elt]);
+        svgCanvas.call('changed', [elt]);
         svgCanvas.clearSelection();
       } catch(e) {
         console.log(e);
@@ -187,12 +187,12 @@ export default {
         if (svgCanvas.getMode() === 'polygon') {
           started = true;
 
-          newFO = S.addSVGElementFromJson({
+          newFO = svgCanvas.addSVGElementFromJson({
             element: 'polygon',
             attr: {
               cx: opts.start_x,
               cy: opts.start_y,
-              id: S.getNextId(),
+              id: svgCanvas.getNextId(),
               shape: 'regularPoly',
               sides: document.getElementById('polySides').value,
               orient: 'x',

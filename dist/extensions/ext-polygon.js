@@ -57,7 +57,7 @@ var svgEditorExtension_polygon = (function () {
 
                 setAttr = function setAttr(attr, val) {
                   svgCanvas.changeSelectedAttribute(attr, val);
-                  S.call('changed', selElems);
+                  svgCanvas.call('changed', selElems);
                 };
 
                 showPanel = function showPanel(on) {
@@ -133,11 +133,11 @@ var svgEditorExtension_polygon = (function () {
                       while (children.length > 0) {
                          mrow.append(svgdoc.adoptNode(children[0], true));
                       }
-                      S.sanitizeSvg(math);
-                      S.call('changed', [elt]);
+                      svgCanvas.sanitizeSvg(math);
+                      svgCanvas.call('changed', [elt]);
                     });
                     elt.firstChild.replaceWith(math);
-                    S.call('changed', [elt]);
+                    svgCanvas.call('changed', [elt]);
                     svgCanvas.clearSelection();
                   } catch(e) {
                     console.log(e);
@@ -208,12 +208,12 @@ var svgEditorExtension_polygon = (function () {
                     if (svgCanvas.getMode() === 'polygon') {
                       started = true;
 
-                      newFO = S.addSVGElementFromJson({
+                      newFO = svgCanvas.addSVGElementFromJson({
                         element: 'polygon',
                         attr: {
                           cx: opts.start_x,
                           cy: opts.start_y,
-                          id: S.getNextId(),
+                          id: svgCanvas.getNextId(),
                           shape: 'regularPoly',
                           sides: document.getElementById('polySides').value,
                           orient: 'x',

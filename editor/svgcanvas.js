@@ -1425,6 +1425,7 @@ this.prepareSvg = function (newDoc) {
 * Hack for Firefox bugs where text element features aren't updated or get
 * messed up. See issue 136 and issue 137.
 * This function clones the element and re-selects it.
+* @function module:svgcanvas~ffClone
 * @todo Test for this bug on load and add it to "support" object instead of
 * browser sniffing
 * @param {Element} elem - The (text) DOM element to clone
@@ -1531,7 +1532,12 @@ const recalculateAllSelectedDimensions = this.recalculateAllSelectedDimensions =
   }
 };
 
-// Debug tool to easily see the current matrix in the browser's console
+/**
+ * Debug tool to easily see the current matrix in the browser's console
+ * @function module:svgcanvas~logMatrix
+ * @param {SVGMatrix} m The matrix
+ * @returns {undefined}
+ */
 const logMatrix = function (m) {
   console.log([m.a, m.b, m.c, m.d, m.e, m.f]);
 };
@@ -5278,6 +5284,7 @@ const setGradient = this.setGradient = function (type) {
 
 /**
 * Check if exact gradient already exists
+* @function module:svgcanvas~findDuplicateGradient
 * @param {SVGGradientElement} grad - The gradient DOM element to compare to others
 * @returns {SVGGradientElement} The existing gradient if found, `null` if not
 */
@@ -7114,9 +7121,31 @@ this.clear();
 
 /**
 * @interface module:svgcanvas.PrivateMethods
-* @type {object}
-* @todo If keeping, should document this interface
-* @see The source
+* @type {PlainObject}
+* @property {module:svgcanvas~addCommandToHistory} addCommandToHistory
+* @property {module:history.HistoryCommand} BatchCommand
+* @property {module:history.HistoryCommand} ChangeElementCommand
+* @property {module:utilities.decode64} decode64
+* @property {module:utilities.encode64} encode64
+* @property {module:svgcanvas~ffClone} ffClone
+* @property {module:svgcanvas~findDuplicateGradient} findDuplicateGradient
+* @property {module:utilities.getPathBBox} getPathBBox
+* @property {module:units.getTypeMap} getTypeMap
+* @property {module:draw.identifyLayers} identifyLayers
+* @property {module:history.HistoryCommand} InsertElementCommand
+* @property {module:browser.isChrome} isChrome
+* @property {module:math.isIdentity} isIdentity
+* @property {module:browser.isIE} isIE
+* @property {module:svgcanvas~logMatrix} logMatrix
+* @property {module:history.HistoryCommand} MoveElementCommand
+* @property {module:namespaces.NS} NS
+* @property {module:utilities.preventClickDefault} preventClickDefault
+* @property {module:history.HistoryCommand} RemoveElementCommand
+* @property {module:SVGTransformList.SVGEditTransformList} SVGEditTransformList
+* @property {module:utilities.text2xml} text2xml
+* @property {module:math.transformBox} transformBox
+* @property {module:math.transformPoint} transformPoint
+* @property {module:utilities.walkTree} walkTree
 */
 /**
 * @deprecated getPrivateMethods
@@ -7129,55 +7158,34 @@ this.clear();
 * access to them to plugins.
 * @function module:svgcanvas.SvgCanvas#getPrivateMethods
 * @returns {module:svgcanvas.PrivateMethods}
-* @see Source for the methods
 */
 this.getPrivateMethods = function () {
   const obj = {
     addCommandToHistory,
-    setGradient,
-    addSVGElementFromJson,
-    assignAttributes,
     BatchCommand,
-    call,
     ChangeElementCommand,
-    copyElem (elem) { return getCurrentDrawing().copyElem(elem); },
     decode64,
     encode64,
     ffClone,
     findDefs,
     findDuplicateGradient,
     getElem,
-    getId,
-    getIntersectionList,
-    getMouseTarget,
-    getNextId,
     getPathBBox,
     getTypeMap,
     getUrlFromAttr,
-    hasMatrixTransform,
     identifyLayers: draw.identifyLayers,
     InsertElementCommand,
     isChrome,
     isIdentity,
     isIE,
     logMatrix,
-    matrixMultiply,
     MoveElementCommand,
     NS,
     preventClickDefault,
-    recalculateAllSelectedDimensions,
-    recalculateDimensions,
-    remapElement,
     RemoveElementCommand,
-    removeUnusedDefElems,
-    round,
-    runExtensions,
-    sanitizeSvg,
     SVGEditTransformList,
     text2xml,
-    toString,
     transformBox,
-    transformListToTransform,
     transformPoint,
     walkTree
   };

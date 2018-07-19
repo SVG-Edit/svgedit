@@ -14,8 +14,9 @@ export default {
     const $ = jQuery;
     const svgEditor = this;
     const svgCanvas = svgEditor.canvas;
-    const {svgroot, getNextId, getElem, importLocale} = S,
-      addElem = S.addSVGElementFromJson,
+    const {getElem} = svgCanvas;
+    const {svgroot, importLocale} = S,
+      addElem = svgCanvas.addSVGElementFromJson,
       selManager = S.selectorManager,
       connSel = '.se_connector',
       // connect_str = '-SE_CONNECT-',
@@ -364,7 +365,7 @@ export default {
             curLine = addElem({
               element: 'polyline',
               attr: {
-                id: getNextId(),
+                id: svgCanvas.getNextId(),
                 points: (x + ',' + y + ' ' + x + ',' + y + ' ' + startX + ',' + startY),
                 stroke: '#' + initStroke.color,
                 'stroke-width': (!startElem.stroke_width || startElem.stroke_width === 0)

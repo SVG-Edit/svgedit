@@ -37,7 +37,7 @@ export default {
     const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
     const // {svgcontent} = S,
-      addElem = S.addSVGElementFromJson;
+      addElem = svgCanvas.addSVGElementFromJson;
     const mtypes = ['start', 'mid', 'end'];
     const markerPrefix = 'se_marker_';
     const idPrefix = 'mkr_';
@@ -91,7 +91,7 @@ export default {
       if (!m || m.length !== 2) {
         return null;
       }
-      return S.getElem(m[1]);
+      return svgCanvas.getElem(m[1]);
     }
 
     function setIcon (pos, id) {
@@ -140,7 +140,7 @@ export default {
       const txtBoxBorder = 'none';
       const txtBoxStrokeWidth = 0;
 
-      let marker = S.getElem(id);
+      let marker = svgCanvas.getElem(id);
       if (marker) { return; }
 
       if (val === '' || val === '\\nomarker') { return; }
@@ -228,7 +228,7 @@ export default {
       marker.setAttribute('markerHeight', markerHeight);
       marker.setAttribute('refX', refX);
       marker.setAttribute('refY', refY);
-      S.findDefs().append(marker);
+      svgCanvas.findDefs().append(marker);
 
       return marker;
     }
@@ -287,7 +287,7 @@ export default {
       if (val === '') { val = '\\nomarker'; }
       if (val === '\\nomarker') {
         setIcon(pos, val);
-        S.call('changed', selElems);
+        svgCanvas.call('changed', selElems);
         return;
       }
       // Set marker on element
@@ -295,7 +295,7 @@ export default {
       addMarker(id, val);
       svgCanvas.changeSelectedAttribute(markerName, 'url(#' + id + ')');
       if (el.tagName === 'line' && pos === 'mid') { el = convertline(el); }
-      S.call('changed', selElems);
+      svgCanvas.call('changed', selElems);
       setIcon(pos, val);
     }
 
@@ -334,7 +334,7 @@ export default {
             addMarker(id, val);
             svgCanvas.changeSelectedAttribute(markerName, 'url(#' + id + ')');
             if (el.tagName === 'line' && pos === 'mid') { el = convertline(el); }
-            S.call('changed', selElems);
+            svgCanvas.call('changed', selElems);
           }
         }
       });

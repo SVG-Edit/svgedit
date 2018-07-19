@@ -3,7 +3,7 @@
 ## Prepare
 
 1. `npm test` - Ensure tests are passing
-1. `npm run build-doc` - Ensure JSDoc can build
+1. `npm run build-doc` - Ensure JSDoc can build and is available for site build
 1. `npm run grep-doc` - For JSDoc, we ensure that a minimum of generic types
     have been added (e.g., "number" should instead be "Float" or "Array",
     and "object", "function", or "array" should be replaced by more specific
@@ -63,6 +63,9 @@ You will need to be a member of the SVG-Edit GitHub group to do this step.
 
 ## Publish to npm
 
+1. To preview which files will be included once published (taking into
+    account `.npmignore`), you may use `npm pack` (taking care to remove
+    the `.tgz` tarball file that it creates).
 1. `npm publish`
 
 ## Update the project docs

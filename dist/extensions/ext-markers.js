@@ -180,7 +180,7 @@ var svgEditorExtension_markers = (function () {
                         if (el.tagName === 'line' && pos === 'mid') {
                           el = convertline(el);
                         }
-                        S.call('changed', selElems);
+                        svgCanvas.call('changed', selElems);
                       }
                     }
                   });
@@ -228,7 +228,7 @@ var svgEditorExtension_markers = (function () {
                   }
                   if (val === '\\nomarker') {
                     setIcon(pos, val);
-                    S.call('changed', selElems);
+                    svgCanvas.call('changed', selElems);
                     return;
                   }
                   // Set marker on element
@@ -238,7 +238,7 @@ var svgEditorExtension_markers = (function () {
                   if (el.tagName === 'line' && pos === 'mid') {
                     el = convertline(el);
                   }
-                  S.call('changed', selElems);
+                  svgCanvas.call('changed', selElems);
                   setIcon(pos, val);
                 };
 
@@ -295,7 +295,7 @@ var svgEditorExtension_markers = (function () {
                   var txtBoxBorder = 'none';
                   var txtBoxStrokeWidth = 0;
 
-                  var marker = S.getElem(id);
+                  var marker = svgCanvas.getElem(id);
                   if (marker) {
                     return;
                   }
@@ -389,7 +389,7 @@ var svgEditorExtension_markers = (function () {
                   marker.setAttribute('markerHeight', markerHeight);
                   marker.setAttribute('refX', refX);
                   marker.setAttribute('refY', refY);
-                  S.findDefs().append(marker);
+                  svgCanvas.findDefs().append(marker);
 
                   return marker;
                 };
@@ -446,7 +446,7 @@ var svgEditorExtension_markers = (function () {
                   if (!m || m.length !== 2) {
                     return null;
                   }
-                  return S.getElem(m[1]);
+                  return svgCanvas.getElem(m[1]);
                 };
 
                 _context2.next = 15;
@@ -457,7 +457,7 @@ var svgEditorExtension_markers = (function () {
                 svgEditor = this;
                 $ = jQuery;
                 svgCanvas = svgEditor.canvas;
-                addElem = S.addSVGElementFromJson;
+                addElem = svgCanvas.addSVGElementFromJson;
                 mtypes = ['start', 'mid', 'end'];
                 markerPrefix = 'se_marker_';
                 idPrefix = 'mkr_';
