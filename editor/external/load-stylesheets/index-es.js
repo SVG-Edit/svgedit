@@ -29,8 +29,9 @@ function loadStylesheets(stylesheets, {
 
         const link = document.createElement('link');
         return new Promise((resolve, reject) => {
+            let rej = reject;
             if (acceptErrors) {
-                reject = typeof acceptErrors === 'function' ? error => {
+                rej = typeof acceptErrors === 'function' ? error => {
                     acceptErrors({ error, stylesheetURL, options, resolve, reject });
                 } : resolve;
             }
@@ -72,7 +73,7 @@ function loadStylesheets(stylesheets, {
             link.href = stylesheetURL;
             addLink();
             link.addEventListener('error', error => {
-                reject(error);
+                rej(error);
             });
             link.addEventListener('load', () => {
                 resolve(link);

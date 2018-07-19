@@ -24846,8 +24846,9 @@
 
           var link = document.createElement('link');
           return new Promise(function (resolve, reject) {
+              var rej = reject;
               if (acceptErrors) {
-                  reject = typeof acceptErrors === 'function' ? function (error) {
+                  rej = typeof acceptErrors === 'function' ? function (error) {
                       acceptErrors({ error: error, stylesheetURL: stylesheetURL, options: options, resolve: resolve, reject: reject });
                   } : resolve;
               }
@@ -24889,7 +24890,7 @@
               link.href = stylesheetURL;
               addLink();
               link.addEventListener('error', function (error) {
-                  reject(error);
+                  rej(error);
               });
               link.addEventListener('load', function () {
                   resolve(link);

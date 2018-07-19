@@ -66,7 +66,7 @@
     "find-in-files": "^0.5.0",
     "imageoptim-cli": "^2.0.3",
     "jsdoc": "^3.5.5",
-    "load-stylesheets": "^0.6.1",
+    "load-stylesheets": "^0.7.0",
     "node-static": "^0.7.10",
     "opn-cli": "^3.1.0",
     "qunit": "^2.6.1",
