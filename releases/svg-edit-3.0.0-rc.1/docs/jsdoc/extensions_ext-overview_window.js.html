@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: extensions/ext-overview_window.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <!-- The one customization we are adding for SVGEdit;
+    `module-SVGEditor.Config.html` was otherwise overflowing -->
+    <style>
+    #main {
+      overflow: auto;
+    }
+    </style>
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: extensions/ext-overview_window.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* globals jQuery */
+/**
+ * ext-overview_window.js
+ *
+ * @license MIT
+ *
+ * @copyright 2013 James Sacksteder
+ *
+ */
+export default {
+  name: 'overview_window',
+  init ({isChrome, isIE}) {
+    const $ = jQuery;
+    const overviewWindowGlobals = {};
+    // Disabled in Chrome 48-, see https://github.com/SVG-Edit/svgedit/issues/26 and
+    // https://code.google.com/p/chromium/issues/detail?id=565120.
+    if (isChrome()) {
+      const verIndex = navigator.userAgent.indexOf('Chrome/') + 7;
+      const chromeVersion = parseInt(navigator.userAgent.substring(verIndex), 10);
+      if (chromeVersion &lt; 49) {
+        return;
+      }
+    }
+
+    // Define and insert the base html element.
+    const propsWindowHtml =
+      '&lt;div id="overview_window_content_pane" style="width:100%; word-wrap:break-word;  display:inline-block; margin-top:20px;">' +
+        '&lt;div id="overview_window_content" style="position:relative; left:12px; top:0px;">' +
+          '&lt;div style="background-color:#A0A0A0; display:inline-block; overflow:visible;">' +
+            '&lt;svg id="overviewMiniView" width="150" height="100" x="0" y="0" viewBox="0 0 4800 3600" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">' +
+              '&lt;use x="0" y="0" xlink:href="#svgroot"> &lt;/use>' +
+            '&lt;/svg>' +
+            '&lt;div id="overview_window_view_box" style="min-width:50px; min-height:50px; position:absolute; top:30px; left:30px; z-index:5; background-color:rgba(255,0,102,0.3);">' +
+            '&lt;/div>' +
+          '&lt;/div>' +
+        '&lt;/div>' +
+      '&lt;/div>';
+    $('#sidepanels').append(propsWindowHtml);
+
+    // Define dynamic animation of the view box.
+    const updateViewBox = function () {
+      const portHeight = parseFloat($('#workarea').css('height'));
+      const portWidth = parseFloat($('#workarea').css('width'));
+      const portX = $('#workarea').scrollLeft();
+      const portY = $('#workarea').scrollTop();
+      const windowWidth = parseFloat($('#svgcanvas').css('width'));
+      const windowHeight = parseFloat($('#svgcanvas').css('height'));
+      const overviewWidth = $('#overviewMiniView').attr('width');
+      const overviewHeight = $('#overviewMiniView').attr('height');
+
+      const viewBoxX = portX / windowWidth * overviewWidth;
+      const viewBoxY = portY / windowHeight * overviewHeight;
+      const viewBoxWidth = portWidth / windowWidth * overviewWidth;
+      const viewBoxHeight = portHeight / windowHeight * overviewHeight;
+
+      $('#overview_window_view_box').css('min-width', viewBoxWidth + 'px');
+      $('#overview_window_view_box').css('min-height', viewBoxHeight + 'px');
+      $('#overview_window_view_box').css('top', viewBoxY + 'px');
+      $('#overview_window_view_box').css('left', viewBoxX + 'px');
+    };
+    $('#workarea').scroll(function () {
+      if (!(overviewWindowGlobals.viewBoxDragging)) {
+        updateViewBox();
+      }
+    });
+    $('#workarea').resize(updateViewBox);
+    updateViewBox();
+
+    // Compensate for changes in zoom and canvas size.
+    const updateViewDimensions = function () {
+      const viewWidth = $('#svgroot').attr('width');
+      const viewHeight = $('#svgroot').attr('height');
+
+      let viewX = 640;
+      let viewY = 480;
+      if (isIE()) {
+        // This has only been tested with Firefox 10 and IE 9 (without chrome frame).
+        // I am not sure if if is Firefox or IE that is being non compliant here.
+        // Either way the one that is noncompliant may become more compliant later.
+        // TAG:HACK
+        // TAG:VERSION_DEPENDENT
+        // TAG:BROWSER_SNIFFING
+        viewX = 0;
+        viewY = 0;
+      }
+
+      const svgWidthOld = $('#overviewMiniView').attr('width');
+      const svgHeightNew = viewHeight / viewWidth * svgWidthOld;
+      $('#overviewMiniView').attr('viewBox', viewX + ' ' + viewY + ' ' + viewWidth + ' ' + viewHeight);
+      $('#overviewMiniView').attr('height', svgHeightNew);
+      updateViewBox();
+    };
+    updateViewDimensions();
+
+    // Set up the overview window as a controller for the view port.
+    overviewWindowGlobals.viewBoxDragging = false;
+    const updateViewPortFromViewBox = function () {
+      const windowWidth = parseFloat($('#svgcanvas').css('width'));
+      const windowHeight = parseFloat($('#svgcanvas').css('height'));
+      const overviewWidth = $('#overviewMiniView').attr('width');
+      const overviewHeight = $('#overviewMiniView').attr('height');
+      const viewBoxX = parseFloat($('#overview_window_view_box').css('left'));
+      const viewBoxY = parseFloat($('#overview_window_view_box').css('top'));
+
+      const portX = viewBoxX / overviewWidth * windowWidth;
+      const portY = viewBoxY / overviewHeight * windowHeight;
+
+      $('#workarea').scrollLeft(portX);
+      $('#workarea').scrollTop(portY);
+    };
+    $('#overview_window_view_box').draggable({
+      containment: 'parent',
+      drag: updateViewPortFromViewBox,
+      start () { overviewWindowGlobals.viewBoxDragging = true; },
+      stop () { overviewWindowGlobals.viewBoxDragging = false; }
+    });
+    $('#overviewMiniView').click(function (evt) {
+      // Firefox doesn't support evt.offsetX and evt.offsetY.
+      const mouseX = (evt.offsetX || evt.originalEvent.layerX);
+      const mouseY = (evt.offsetY || evt.originalEvent.layerY);
+      const overviewWidth = $('#overviewMiniView').attr('width');
+      const overviewHeight = $('#overviewMiniView').attr('height');
+      const viewBoxWidth = parseFloat($('#overview_window_view_box').css('min-width'));
+      const viewBoxHeight = parseFloat($('#overview_window_view_box').css('min-height'));
+
+      let viewBoxX = mouseX - 0.5 * viewBoxWidth;
+      let viewBoxY = mouseY - 0.5 * viewBoxHeight;
+      // deal with constraints
+      if (viewBoxX &lt; 0) {
+        viewBoxX = 0;
+      }
+      if (viewBoxY &lt; 0) {
+        viewBoxY = 0;
+      }
+      if (viewBoxX + viewBoxWidth > overviewWidth) {
+        viewBoxX = overviewWidth - viewBoxWidth;
+      }
+      if (viewBoxY + viewBoxHeight > overviewHeight) {
+        viewBoxY = overviewHeight - viewBoxHeight;
+      }
+
+      $('#overview_window_view_box').css('top', viewBoxY + 'px');
+      $('#overview_window_view_box').css('left', viewBoxX + 'px');
+      updateViewPortFromViewBox();
+    });
+
+    return {
+      name: 'overview window',
+      canvasUpdated: updateViewDimensions,
+      workareaResized: updateViewBox
+    };
+  }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-browser.html">browser</a></li><li><a href="module-canvg.html">canvg</a></li><li><a href="module-contextmenu.html">contextmenu</a></li><li><a href="module-coords.html">coords</a></li><li><a href="module-draw.html">draw</a></li><li><a href="module-EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="module-EmbeddedSVGEditDOM.html">EmbeddedSVGEditDOM</a></li><li><a href="module-history.html">history</a></li><li><a href="module-importModule.html">importModule</a></li><li><a href="module-jGraduate.html">jGraduate</a></li><li><a href="module-jPicker.html">jPicker</a></li><li><a href="module-jQueryAttr.html">jQueryAttr</a></li><li><a href="module-jQueryContextMenu.html">jQueryContextMenu</a></li><li><a href="module-jQuerySpinButton.html">jQuerySpinButton</a></li><li><a href="module-jQuerySVGIcons.html">jQuerySVGIcons</a></li><li><a href="module-layer.html">layer</a></li><li><a href="module-locale.html">locale</a></li><li><a href="module-math.html">math</a></li><li><a href="module-namespaces.html">namespaces</a></li><li><a href="module-path.html">path</a></li><li><a href="module-recalculate.html">recalculate</a></li><li><a href="module-RGBColor.html">RGBColor</a></li><li><a href="module-sanitize.html">sanitize</a></li><li><a href="module-select.html">select</a></li><li><a href="module-StackBlur.html">StackBlur</a></li><li><a href="module-svgcanvas.html">svgcanvas</a></li><li><a href="module-SVGEditor.html">SVGEditor</a></li><li><a href="module-SVGTransformList.html">SVGTransformList</a></li><li><a href="module-units.html">units</a></li><li><a href="module-utilities.html">utilities</a></li></ul><h3>Externals</h3><ul><li><a href="external-jQuery.html">jQuery</a></li><li><a href="external-jsPDF.html">jsPDF</a></li><li><a href="external-Math.html">Math</a></li><li><a href="external-MouseEvent.html">MouseEvent</a></li><li><a href="external-Storage.html">Storage</a></li><li><a href="external-Window.html">Window</a></li></ul><h3>Classes</h3><ul><li><a href="external-jQuery.jGraduate.Paint.html">Paint</a></li><li><a href="external-jQuery.jPicker.Color.html">Color</a></li><li><a href="module-draw.Drawing.html">Drawing</a></li><li><a href="module-draw.Layer.html">Layer</a></li><li><a href="module-EmbeddedSVGEdit.EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="module-history.BatchCommand.html">BatchCommand</a></li><li><a href="module-history.ChangeElementCommand.html">ChangeElementCommand</a></li><li><a href="module-history.HistoryRecordingService.html">HistoryRecordingService</a></li><li><a href="module-history.InsertElementCommand.html">InsertElementCommand</a></li><li><a href="module-history.MoveElementCommand.html">MoveElementCommand</a></li><li><a href="module-history.RemoveElementCommand.html">RemoveElementCommand</a></li><li><a href="module-history.UndoManager.html">UndoManager</a></li><li><a href="module-history-Command.html">Command</a></li><li><a href="module-jGraduate-Paint.html">Paint</a></li><li><a href="module-layer.Layer.html">Layer</a></li><li><a href="module-path.Path.html">Path</a></li><li><a href="module-path.Segment.html">Segment</a></li><li><a href="module-RGBColor.html">RGBColor</a></li><li><a href="module-select.Selector.html">Selector</a></li><li><a href="module-select.SelectorManager.html">SelectorManager</a></li><li><a href="module-StackBlur.BlurStack.html">BlurStack</a></li><li><a href="module-StackBlur.canvasRGB.html">canvasRGB</a></li><li><a href="module-StackBlur.canvasRGBA.html">canvasRGBA</a></li><li><a href="module-StackBlur.image.html">image</a></li><li><a href="module-StackBlur.imageDataRGB.html">imageDataRGB</a></li><li><a href="module-StackBlur.imageDataRGBA.html">imageDataRGBA</a></li><li><a href="module-svgcanvas.SvgCanvas.html">SvgCanvas</a></li><li><a href="module-SVGTransformList.SVGTransformList.html">SVGTransformList</a></li></ul><h3>Events</h3><ul><li><a href="module-history-Command.html#event:event:history">history</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:changed">changed</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:cleared">cleared</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:contextset">contextset</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:exported">exported</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:exportedPDF">exportedPDF</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-addLangData">ext-addLangData</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-callback">ext-callback</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-canvasUpdated">ext-canvasUpdated</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-elementChanged">ext-elementChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-elementTransition">ext-elementTransition</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-IDsUpdated">ext-IDsUpdated</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langChanged">ext-langChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langReady">ext-langReady</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseDown">ext-mouseDown</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseMove">ext-mouseMove</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseUp">ext-mouseUp</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-onNewDocument">ext-onNewDocument</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-selectedChanged">ext-selectedChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-toolButtonStateUpdate">ext-toolButtonStateUpdate</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-workareaResized">ext-workareaResized</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-zoomChanged">ext-zoomChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:extension_added">extension_added</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:extensions_added">extensions_added</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:GenericCanvasEvent">GenericCanvasEvent</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:message">message</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:pointsAdded">pointsAdded</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:saved">saved</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:selected">selected</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:setnonce">setnonce</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:transition">transition</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:unsetnonce">unsetnonce</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:updateCanvas">updateCanvas</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:zoomDone">zoomDone</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:zoomed">zoomed</a></li><li><a href="module-SVGEditor.html#event:event:svgEditorReadyEvent">svgEditorReadyEvent</a></li></ul><h3>Namespaces</h3><ul><li><a href="external-jQuery.fn.html">fn</a></li><li><a href="external-jQuery.fn.$.fn.jPicker.html">$.fn.jPicker</a></li><li><a href="external-jQuery.fn.$.fn.jPicker.defaults.html">defaults</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.html">jGraduateDefaults</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.images.html">images</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.window.html">window</a></li><li><a href="external-jQuery.jGraduate.html">jGraduate</a></li><li><a href="external-jQuery.jPicker.html">jPicker</a></li><li><a href="external-jQuery.jPicker.ColorMethods.html">ColorMethods</a></li><li><a href="module-path.pathActions.html">pathActions</a></li><li><a href="module-svgcanvas.SvgCanvas_pathActions.html">pathActions</a></li><li><a href="module-svgcanvas.SvgCanvas_textActions.html">textActions</a></li><li><a href="module-SVGEditor-defaultConfig.html">defaultConfig</a></li><li><a href="module-SVGEditor-defaultPrefs.html">defaultPrefs</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-CanvasAPI.html">CanvasAPI</a></li><li><a href="tutorial-Editor.html">Editor</a></li><li><a href="tutorial-EditorAPI.html">EditorAPI</a></li><li><a href="tutorial-Events.html">Events</a></li><li><a href="tutorial-FrequentlyAskedQuestions.html">Frequently Asked Questions (FAQ)</a></li></ul><h3>Interfaces</h3><ul><li><a href="module-coords.EditorContext.html">EditorContext</a></li><li><a href="module-draw.DrawCanvasInit.html">DrawCanvasInit</a></li><li><a href="module-history.HistoryCommand.html">HistoryCommand</a></li><li><a href="module-history.HistoryEventHandler.html">HistoryEventHandler</a></li><li><a href="module-locale.LocaleEditorInit.html">LocaleEditorInit</a></li><li><a href="module-path.EditorContext.html">EditorContext</a></li><li><a href="module-recalculate.EditorContext.html">EditorContext</a></li><li><a href="module-select.SVGFactory.html">SVGFactory</a></li><li><a href="module-svgcanvas.ExtensionInitResponse.html">ExtensionInitResponse</a></li><li><a href="module-svgcanvas.PrivateMethods.html">PrivateMethods</a></li><li><a href="module-SVGEditor.Config.html">Config</a></li><li><a href="module-SVGEditor.CustomHandler.html">CustomHandler</a></li><li><a href="module-SVGEditor.Prefs.html">Prefs</a></li><li><a href="module-SVGTransformList.SVGEditTransformList.html">SVGEditTransformList</a></li><li><a href="module-units.ElementContainer.html">ElementContainer</a></li><li><a href="module-utilities.EditorContext.html">EditorContext</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Jul 19 2018 14:57:08 GMT-0700 (MST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

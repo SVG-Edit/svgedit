@@ -1,0 +1,34 @@
+{
+  "name": "svgedit-gh-pages",
+  "version": "1.0.0",
+  "description": "House gh-pages branch of SVG-Edit",
+  "main": "build.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "imageoptim-cli": "^2.0.2",
+    "ncp": "^2.0.0",
+    "node-static": "^0.7.10",
+    "qunit": "^2.6.1",
+    "uglify-es": "^3.3.9"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Brett Zamir",
+  "contributors": [],
+  "keywords": [
+    "svg",
+    "svgedit"
+  ],
+  "engines": {
+    "node": "*"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/brettz9/svgedit/issues"
+  },
+  "homepage": "https://github.com/brettz9/svgedit#readme"
+}

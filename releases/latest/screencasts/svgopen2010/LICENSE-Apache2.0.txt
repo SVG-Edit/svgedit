@@ -1,0 +1,1 @@
+See the license information in `index.html`

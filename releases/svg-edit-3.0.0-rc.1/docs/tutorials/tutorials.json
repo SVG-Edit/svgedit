@@ -1,0 +1,17 @@
+{
+   "ExtensionDocs": {
+     "title": "Extension Docs"
+   },
+   "ConfigOptions": {
+     "title": "Config Options"
+   },
+   "Editor": {
+     "children": ["ConfigOptions", "ExtensionDocs", "LocaleDocs"]
+   },
+   "FrequentlyAskedQuestions": {
+     "title": "Frequently Asked Questions (FAQ)"
+   },
+   "LocaleDocs": {
+      "title": "Locale Docs"
+   }
+ }
