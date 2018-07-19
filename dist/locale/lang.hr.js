@@ -188,22 +188,6 @@ var svgEditorLang_hr = (function () {
       snapping_stepsize: 'snapping_stepsize',
       grid_color: 'grid_color'
     },
-    shape_cats: {
-      basic: 'basic',
-      object: 'object',
-      symbol: 'symbol',
-      arrow: 'arrow',
-      flowchart: 'flowchart',
-      animal: 'animal',
-      game: 'game',
-      dialog_balloon: 'dialog_balloon',
-      electronics: 'electronics',
-      math: 'math',
-      music: 'music',
-      misc: 'misc',
-      raphael_1: 'raphael_1',
-      raphael_2: 'raphael_2'
-    },
     notification: {
       invalidAttrValGiven: 'Invalid value given',
       noContentToFitTo: 'No content to fit to',

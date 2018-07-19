@@ -238,6 +238,12 @@ var svgEditorExtension_shapes = (function () {
                       'margin-top': -(h / 2 - 15),
                       'margin-left': 3
                     });
+                    // Now add shape categories from locale
+                    var cats = {};
+                    for (var o in categories) {
+                      cats['#shape_cats [data-cat="' + o + '"]'] = categories[o];
+                    }
+                    this.setStrings('content', cats);
                   },
                   mouseDown: function mouseDown(opts) {
                     var mode = canv.getMode();

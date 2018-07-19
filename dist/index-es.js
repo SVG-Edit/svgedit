@@ -12838,7 +12838,7 @@ function SvgCanvas(container, config) {
   * The "implements" should really be an intersection applying to all types rather than a union
   * @function module:svgcanvas.SvgCanvas#call
   * @implements {module:draw.DrawCanvasInit#call|module:path.EditorContext#call}
-  * @param {"selected"|"changed"|"contextset"|"pointsAdded"|"extension_added"|"transition"|"zoomed"|"updateCanvas"|"zoomDone"|"saved"|"exported"|"exportedPDF"|"setnonce"|"unsetnonce"|"cleared"} ev - String with the event name
+  * @param {"selected"|"changed"|"contextset"|"pointsAdded"|"extension_added"|"extensions_added"|"message"|"transition"|"zoomed"|"updateCanvas"|"zoomDone"|"saved"|"exported"|"exportedPDF"|"setnonce"|"unsetnonce"|"cleared"} ev - String with the event name
   * @param {module:svgcanvas.SvgCanvas#event:GenericCanvasEvent} arg - Argument to pass through to the callback function.
   * @returns {undefined}
   */
@@ -13645,6 +13645,19 @@ function SvgCanvas(container, config) {
    * @type {module:svgcanvas.ExtensionInitResponsePlusName|undefined}
    */
   /**
+   * @event module:svgcanvas.SvgCanvas#event:extensions_added
+   * @type {undefined}
+  */
+  /**
+   * @typedef {PlainObject} module:svgcanvas.Message
+   * @property {Any} data The data
+   * @property {string} origin The origin
+   */
+  /**
+   * @event module:svgcanvas.SvgCanvas#event:message
+   * @type {module:svgcanvas.Message}
+   */
+  /**
    * SVG canvas converted to string
    * @event module:svgcanvas.SvgCanvas#event:saved
    * @type {string}
@@ -13676,9 +13689,9 @@ function SvgCanvas(container, config) {
    */
   /**
    * Creating a cover-all class until {@link https://github.com/jsdoc3/jsdoc/issues/1545} may be supported.
-   * `undefined` may be returned by {@link module:svgcanvas.SvgCanvas#event:extension_added} if the extension's `init` returns `undefined` It is also the type for the following events "zoomDone", "unsetnonce", "cleared".
+   * `undefined` may be returned by {@link module:svgcanvas.SvgCanvas#event:extension_added} if the extension's `init` returns `undefined` It is also the type for the following events "zoomDone", "unsetnonce", "cleared", and "extensions_added".
    * @event module:svgcanvas.SvgCanvas#event:GenericCanvasEvent
-   * @type {module:svgcanvas.SvgCanvas#event:selected|module:svgcanvas.SvgCanvas#event:changed|module:svgcanvas.SvgCanvas#event:contextset|module:svgcanvas.SvgCanvas#event:pointsAdded|module:svgcanvas.SvgCanvas#event:extension_added|module:svgcanvas.SvgCanvas#event:transition|module:svgcanvas.SvgCanvas#event:zoomed|module:svgcanvas.SvgCanvas#event:updateCanvas|module:svgcanvas.SvgCanvas#event:saved|module:svgcanvas.SvgCanvas#event:exported|module:svgcanvas.SvgCanvas#event:exportedPDF|module:svgcanvas.SvgCanvas#event:setnonce|module:svgcanvas.SvgCanvas#event:unsetnonce|undefined}
+   * @type {module:svgcanvas.SvgCanvas#event:selected|module:svgcanvas.SvgCanvas#event:changed|module:svgcanvas.SvgCanvas#event:contextset|module:svgcanvas.SvgCanvas#event:pointsAdded|module:svgcanvas.SvgCanvas#event:extension_added|module:svgcanvas.SvgCanvas#event:extensions_added|module:svgcanvas.SvgCanvas#event:message|module:svgcanvas.SvgCanvas#event:transition|module:svgcanvas.SvgCanvas#event:zoomed|module:svgcanvas.SvgCanvas#event:updateCanvas|module:svgcanvas.SvgCanvas#event:saved|module:svgcanvas.SvgCanvas#event:exported|module:svgcanvas.SvgCanvas#event:exportedPDF|module:svgcanvas.SvgCanvas#event:setnonce|module:svgcanvas.SvgCanvas#event:unsetnonce|undefined}
    */
 
   /**
@@ -13691,7 +13704,7 @@ function SvgCanvas(container, config) {
   /**
   * Attaches a callback function to an event
   * @function module:svgcanvas.SvgCanvas#bind
-  * @param {"changed"|"contextset"|"selected"|"pointsAdded"|"extension_added"|"transition"|"zoomed"|"updateCanvas"|"zoomDone"|"saved"|"exported"|"exportedPDF"|"setnonce"|"unsetnonce"|"cleared"} ev - String indicating the name of the event
+  * @param {"changed"|"contextset"|"selected"|"pointsAdded"|"extension_added"|"extensions_added"|"message"|"transition"|"zoomed"|"updateCanvas"|"zoomDone"|"saved"|"exported"|"exportedPDF"|"setnonce"|"unsetnonce"|"cleared"} ev - String indicating the name of the event
   * @param {module:svgcanvas.EventHandler} f - The callback function to bind to the event
   * @returns {module:svgcanvas.EventHandler} The previous event
   */
@@ -24400,7 +24413,7 @@ var langParam = void 0;
 * @param {boolean} ids
 * @returns {undefined}
 */
-function setStrings(type, obj, ids) {
+var setStrings = function setStrings(type, obj, ids) {
   // Root element to look for element from
   var parent = $$a('#svg_editor').parent();
   Object.entries(obj).forEach(function (_ref) {
@@ -24437,7 +24450,7 @@ function setStrings(type, obj, ids) {
       console.log('Missing: ' + sel);
     }
   });
-}
+};
 
 /**
 * The "data" property is generally set to an an array of objects with
@@ -24480,7 +24493,7 @@ var init$7 = function init(editor) {
 */
 var readLang = function () {
   var _ref3 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(langData) {
-    var more, _langData, tools, properties, config, layers, common, ui, cats, o, opts;
+    var more, _langData, tools, properties, config, layers, common, ui, opts;
 
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -24579,20 +24592,6 @@ var readLang = function () {
               svginfo_snap_step: config.snapping_stepsize,
               svginfo_grid_color: config.grid_color
             }, true);
-
-            // Shape categories
-            cats = {};
-
-            for (o in langData.shape_cats) {
-              cats['#shape_cats [data-cat="' + o + '"]'] = langData.shape_cats[o];
-            }
-
-            // TODO: Find way to make this run after shapelib ext has loaded;
-            //    may be possible now as Promise within the extension using
-            //    `importLocale`
-            setTimeout(function () {
-              setStrings('content', cats);
-            }, 2000);
 
             // Context menus
             opts = {};
@@ -24711,7 +24710,7 @@ var readLang = function () {
 
             return _context.abrupt('return', { langParam: langParam, langData: langData });
 
-          case 18:
+          case 15:
           case 'end':
             return _context.stop();
         }
@@ -24910,6 +24909,7 @@ function loadStylesheets(stylesheets) {
 * @exports module:SVGEditor
 * @borrows module:locale.putLocale as putLocale
 * @borrows module:locale.readLang as readLang
+* @borrows module:locale.setStrings as setStrings
 */
 var editor = {};
 
@@ -25296,9 +25296,10 @@ $$b.pref = function (key, val) {
 */
 editor.putLocale = putLocale;
 editor.readLang = readLang;
+editor.setStrings = setStrings;
 
 /**
-* Where permitted, sets canvas and/or defaultPrefs based on previous
+* Where permitted, sets canvas and/or `defaultPrefs` based on previous
 *  storage. This will override URL settings (for security reasons) but
 *  not `svgedit-config-iife.js` configuration (unless initial user
 *  overriding is explicitly permitted there via `allowInitialUserOverride`).
@@ -25654,6 +25655,7 @@ editor.init = function () {
    * @fires module:svgcanvas.SvgCanvas#event:ext-addLangData
    * @fires module:svgcanvas.SvgCanvas#event:ext-langReady
    * @fires module:svgcanvas.SvgCanvas#event:ext-langChanged
+   * @fires module:svgcanvas.SvgCanvas#event:extensions_added
    * @returns {Promise} Resolves to result of {@link module:locale.readLang}
    */
   var extAndLocaleFunc = function () {
@@ -25739,21 +25741,41 @@ editor.init = function () {
               }()));
 
             case 9:
-              _context4.next = 14;
+              svgCanvas.bind('extensions_added',
+              /**
+              * @param {external:Window} win
+              * @param {module:svgcanvas.SvgCanvas#event:extensions_added} data
+              * @listens module:svgcanvas.SvgCanvas#event:extensions_added
+              * @returns {undefined}
+              */
+              function (win, data) {
+                extensionsAdded = true;
+                messageQueue.forEach(
+                /**
+                 * @param {module:svgcanvas.SvgCanvas#event:message} messageObj
+                 * @fires module:svgcanvas.SvgCanvas#event:message
+                 * @returns {undefined}
+                 */
+                function (messageObj) {
+                  svgCanvas.call('message', messageObj);
+                });
+              });
+              svgCanvas.call('extensions_added');
+              _context4.next = 16;
               break;
 
-            case 11:
-              _context4.prev = 11;
+            case 13:
+              _context4.prev = 13;
               _context4.t0 = _context4['catch'](6);
 
               console.log(_context4.t0);
 
-            case 14:
+            case 16:
             case 'end':
               return _context4.stop();
           }
         }
-      }, _callee4, this, [[6, 11]]);
+      }, _callee4, this, [[6, 13]]);
     }));
 
     return function extAndLocaleFunc() {
@@ -30854,15 +30876,17 @@ editor.loadFromDataURI = function (str) {
  * @param {string} name Used internally; no need for i18n.
  * @param {module:svgcanvas.ExtensionInitCallback} init Config to be invoked on this module
  * @param {module:SVGEditor~ImportLocale} importLocale Importer defaulting to pth with current extension name and locale
- * @returns {undefined}
+ * @throws {Error} If called too early
+ * @returns {Promise} Resolves to `undefined`
 */
 editor.addExtension = function (name, init$$1, importLocale) {
   // Note that we don't want this on editor.ready since some extensions
   // may want to run before then (like server_opensave).
   // $(function () {
-  if (svgCanvas) {
-    svgCanvas.addExtension.call(this, name, init$$1, importLocale);
+  if (!svgCanvas) {
+    throw new Error('Extension added too early');
   }
+  return svgCanvas.addExtension.call(this, name, init$$1, importLocale);
   // });
 };
 
@@ -30871,6 +30895,30 @@ editor.addExtension = function (name, init$$1, importLocale) {
 editor.ready(function () {
   injectExtendedContextMenuItemsIntoDom();
 });
+
+var extensionsAdded = false;
+var messageQueue = [];
+/**
+ * @param {Any} data
+ * @param {string} origin
+ * @fires module:svgcanvas.SvgCanvas#event:message
+ * @returns {undefined}
+ */
+var messageListener = function messageListener(_ref11) {
+  var data = _ref11.data,
+      origin = _ref11.origin;
+
+  // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
+  var messageObj = { data: data, origin: origin };
+  if (!extensionsAdded) {
+    messageQueue.push(messageObj);
+  } else {
+    // Extensions can handle messages at this stage with their own
+    //  canvas `message` listeners
+    svgCanvas.call('message', messageObj);
+  }
+};
+window.addEventListener('message', messageListener);
 
 // Run init once DOM is loaded
 // jQuery(editor.init);

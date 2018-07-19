@@ -70,7 +70,7 @@
     "node-static": "^0.7.10",
     "opn-cli": "^3.1.0",
     "qunit": "^2.6.1",
-    "rollup": "0.62.0",
+    "rollup": "0.63.2",
     "rollup-plugin-babel": "^3.0.7",
     "rollup-plugin-commonjs": "^9.1.3",
     "rollup-plugin-json": "^3.0.0",
@@ -78,7 +78,7 @@
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-re": "^1.0.7",
     "rollup-plugin-uglify": "^4.0.0",
-    "sinon": "^6.1.0",
+    "sinon": "^6.1.3",
     "sinon-test": "https://github.com/brettz9/sinon-test#es6-modules",
     "uglify-es": "^3.3.9"
   }

@@ -189,22 +189,6 @@ var svgEditorLang_en = (function () {
       snapping_stepsize: 'Snapping Step-Size:',
       grid_color: 'Grid color:'
     },
-    shape_cats: {
-      basic: 'basic',
-      object: 'object',
-      symbol: 'symbol',
-      arrow: 'arrow',
-      flowchart: 'flowchart',
-      animal: 'animal',
-      game: 'game',
-      dialog_balloon: 'Dialog balloons',
-      electronics: 'Electronics',
-      math: 'Mathematical',
-      music: 'Music',
-      misc: 'Miscellaneous',
-      raphael_1: 'raphaeljs.com set 1',
-      raphael_2: 'raphaeljs.com set 2'
-    },
     notification: {
       invalidAttrValGiven: 'Invalid value given',
       noContentToFitTo: 'No content to fit to',

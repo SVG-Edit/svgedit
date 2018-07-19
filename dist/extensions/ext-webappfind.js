@@ -53,40 +53,68 @@ var svgEditorExtension_webappfind = (function () {
               case 2:
                 strings = _context.sent;
                 svgEditor = this;
-                // Todo: Update to new API once released
+                saveMessage = 'save', readMessage = 'read', excludedMessages = [readMessage, saveMessage];
+                pathID = void 0;
 
-                window.addEventListener('message', function (e) {
-                  if (e.origin !== window.location.origin || // PRIVACY AND SECURITY! (for viewing and saving, respectively)
-                  !Array.isArray(e.data) || excludedMessages.includes(e.data[0]) // Validate format and avoid our post below
-                  ) {
-                      return;
-                    }
-                  var messageType = e.data[0];
-                  var svgString = void 0;
-                  switch (messageType) {
-                    case 'webapp-view':
+                this.canvas.bind('message',
+                /**
+                * @param {external:Window} win
+                * @param {module:svgcanvas.SvgCanvas#event:message} data
+                * @listens module:svgcanvas.SvgCanvas#event:message
+                * @throws {Error} Unexpected event type
+                * @returns {undefined}
+                */
+                function (win, _ref3) {
+                  var data = _ref3.data,
+                      origin = _ref3.origin;
+
+                  // console.log('data, origin', data, origin);
+                  var type = void 0,
+                      content = void 0;
+                  try {
+                    // May throw if data is not an object
+                    var _data$webappfind = data.webappfind;
+                    type = _data$webappfind.type;
+                    pathID = _data$webappfind.pathID;
+                    content = _data$webappfind.content;
+                    if (origin !== location.origin || // We are only interested in a message sent as though within this URL by our browser add-on
+                    excludedMessages.includes(type) // Avoid our post below (other messages might be possible in the future which may also need to be excluded if your subsequent code makes assumptions on the type of message this is)
+                    ) {
+                        return;
+                      }
+                  } catch (err) {
+                    return;
+                  }
+
+                  switch (type) {
+                    case 'view':
                       // Populate the contents
-                      pathID = e.data[1];
-
-                      svgString = e.data[2];
-                      svgEditor.loadFromString(svgString);
+                      svgEditor.loadFromString(content);
 
                       /* if ($('#tool_save_file')) {
                         $('#tool_save_file').disabled = false;
                       } */
                       break;
-                    case 'webapp-save-end':
-                      alert('save complete for pathID ' + e.data[1] + '!');
+                    case 'save-end':
+                      alert('save complete for pathID ' + pathID + '!');
                       break;
                     default:
-                      throw new Error('Unexpected mode');
+                      throw new Error('Unexpected WebAppFind event type');
                   }
-                }, false);
-                saveMessage = 'webapp-save', readMessage = 'webapp-read', excludedMessages = [readMessage, saveMessage];
-                pathID = void 0;
+                });
 
-
-                window.postMessage([readMessage], window.location.origin !== 'null' ? window.location.origin : '*'); // Avoid "null" string error for file: protocol (even though file protocol not currently supported by add-on)
+                /*
+                window.postMessage({
+                  webappfind: {
+                    type: readMessage
+                  }
+                }, window.location.origin === 'null'
+                  // Avoid "null" string error for `file:` protocol (even though
+                  //  file protocol not currently supported by Firefox)
+                  ? '*'
+                  : window.location.origin
+                );
+                */
                 buttons = [{
                   id: 'webappfind_save', //
                   type: 'app_menu',
@@ -97,7 +125,16 @@ var svgEditorExtension_webappfind = (function () {
                         // Not ready yet as haven't received first payload
                         return;
                       }
-                      window.postMessage([saveMessage, pathID, svgEditor.canvas.getSvgString()], window.location.origin);
+                      window.postMessage({
+                        webappfind: {
+                          type: saveMessage,
+                          pathID: pathID,
+                          content: svgEditor.canvas.getSvgString()
+                        }
+                      }, window.location.origin === 'null'
+                      // Avoid "null" string error for `file:` protocol (even
+                      //  though file protocol not currently supported by add-on)
+                      ? '*' : window.location.origin);
                     }
                   }
                 }];
@@ -109,7 +146,7 @@ var svgEditorExtension_webappfind = (function () {
                   })
                 });
 
-              case 10:
+              case 9:
               case 'end':
                 return _context.stop();
             }
