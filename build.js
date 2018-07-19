@@ -8,7 +8,7 @@ const {version} = JSON.parse(packageJSONString);
 const newDir = `svg-edit-${version}`;
 const opts = {
   filter (name) {
-      return !(/(\.git|node_modules)\//).test(name);
+      return !(/(\.git\/|node_modules\/|\.gitignore)/).test(name);
   },
   // filter: /copyOnlyThese/ or (name) => true/false
   // transform: (read, write) => { read.pipe(write); }

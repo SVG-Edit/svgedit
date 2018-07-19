@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: extensions/ext-imagelib.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <!-- The one customization we are adding for SVGEdit;
+    `module-SVGEditor.Config.html` was otherwise overflowing -->
+    <style>
+    #main {
+      overflow: auto;
+    }
+    </style>
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: extensions/ext-imagelib.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* globals jQuery */
+/**
+ * ext-imagelib.js
+ *
+ * @license MIT
+ *
+ * @copyright 2010 Alexis Deveria
+ *
+ */
+export default {
+  name: 'imagelib',
+  async init ({decode64, importLocale}) {
+    const imagelibStrings = await importLocale();
+    const svgEditor = this;
+
+    const $ = jQuery;
+    const {uiStrings, canvas: svgCanvas} = svgEditor;
+
+    function closeBrowser () {
+      $('#imgbrowse_holder').hide();
+    }
+
+    function importImage (url) {
+      const newImage = svgCanvas.addSVGElementFromJson({
+        element: 'image',
+        attr: {
+          x: 0,
+          y: 0,
+          width: 0,
+          height: 0,
+          id: svgCanvas.getNextId(),
+          style: 'pointer-events:inherit'
+        }
+      });
+      svgCanvas.clearSelection();
+      svgCanvas.addToSelection([newImage]);
+      svgCanvas.setImageURL(url);
+    }
+
+    const pending = {};
+
+    let mode = 's';
+    let multiArr = [];
+    let transferStopped = false;
+    let preview, submit;
+
+    window.addEventListener('message', function (evt) {
+      // Receive `postMessage` data
+      let response = evt.data;
+
+      if (!response || typeof response !== 'string') {
+        // Do nothing
+        return;
+      }
+      try {
+        // Todo: This block can be removed (and the above check changed to
+        //   insist on an object) if embedAPI moves away from a string to
+        //   an object (if IE9 support not needed)
+        response = JSON.parse(response);
+        if (response.namespace !== 'imagelib') {
+          return;
+        }
+      } catch (e) {
+        return;
+      }
+
+      const hasName = 'name' in response;
+      const hasHref = 'href' in response;
+
+      if (!hasName &amp;&amp; transferStopped) {
+        transferStopped = false;
+        return;
+      }
+
+      let id;
+      if (hasHref) {
+        id = response.href;
+        response = response.data;
+      }
+
+      // Hide possible transfer dialog box
+      $('#dialog_box').hide();
+      let entry, curMeta, svgStr, imgStr;
+      const type = hasName
+        ? 'meta'
+        : response.charAt(0);
+      switch (type) {
+      case 'meta': {
+        // Metadata
+        transferStopped = false;
+        curMeta = response;
+
+        pending[curMeta.id] = curMeta;
+
+        const name = (curMeta.name || 'file');
+
+        const message = uiStrings.notification.retrieving.replace('%s', name);
+
+        if (mode !== 'm') {
+          $.process_cancel(message, function () {
+            transferStopped = true;
+            // Should a message be sent back to the frame?
+
+            $('#dialog_box').hide();
+          });
+        } else {
+          entry = $('&lt;div>' + message + '&lt;/div>').data('id', curMeta.id);
+          preview.append(entry);
+          curMeta.entry = entry;
+        }
+
+        return;
+      }
+      case '&lt;':
+        svgStr = true;
+        break;
+      case 'd': {
+        if (response.startsWith('data:image/svg+xml')) {
+          const pre = 'data:image/svg+xml;base64,';
+          const src = response.substring(pre.length);
+          response = decode64(src);
+          svgStr = true;
+          break;
+        } else if (response.startsWith('data:image/')) {
+          imgStr = true;
+          break;
+        }
+      }
+      // Else fall through
+      default:
+        // TODO: See if there's a way to base64 encode the binary data stream
+        // const str = 'data:;base64,' + svgedit.utilities.encode64(response, true);
+
+        // Assume it's raw image data
+        // importImage(str);
+
+        // Don't give warning as postMessage may have been used by something else
+        if (mode !== 'm') {
+          closeBrowser();
+        } else {
+          pending[id].entry.remove();
+        }
+        // $.alert('Unexpected data was returned: ' + response, function() {
+        //   if (mode !== 'm') {
+        //     closeBrowser();
+        //   } else {
+        //     pending[id].entry.remove();
+        //   }
+        // });
+        return;
+      }
+
+      switch (mode) {
+      case 's':
+        // Import one
+        if (svgStr) {
+          svgCanvas.importSvgString(response);
+        } else if (imgStr) {
+          importImage(response);
+        }
+        closeBrowser();
+        break;
+      case 'm':
+        // Import multiple
+        multiArr.push([(svgStr ? 'svg' : 'img'), response]);
+        curMeta = pending[id];
+        let title;
+        if (svgStr) {
+          if (curMeta &amp;&amp; curMeta.name) {
+            title = curMeta.name;
+          } else {
+            // Try to find a title
+            const xml = new DOMParser().parseFromString(response, 'text/xml').documentElement;
+            title = $(xml).children('title').first().text() || '(SVG #' + response.length + ')';
+          }
+          if (curMeta) {
+            preview.children().each(function () {
+              if ($(this).data('id') === id) {
+                if (curMeta.preview_url) {
+                  $(this).html('&lt;img src="' + curMeta.preview_url + '">' + title);
+                } else {
+                  $(this).text(title);
+                }
+                submit.removeAttr('disabled');
+              }
+            });
+          } else {
+            preview.append('&lt;div>' + title + '&lt;/div>');
+            submit.removeAttr('disabled');
+          }
+        } else {
+          if (curMeta &amp;&amp; curMeta.preview_url) {
+            title = curMeta.name || '';
+          }
+          if (curMeta &amp;&amp; curMeta.preview_url) {
+            entry = '&lt;img src="' + curMeta.preview_url + '">' + title;
+          } else {
+            entry = '&lt;img src="' + response + '">';
+          }
+
+          if (curMeta) {
+            preview.children().each(function () {
+              if ($(this).data('id') === id) {
+                $(this).html(entry);
+                submit.removeAttr('disabled');
+              }
+            });
+          } else {
+            preview.append($('&lt;div>').append(entry));
+            submit.removeAttr('disabled');
+          }
+        }
+        break;
+      case 'o':
+        // Open
+        if (!svgStr) { break; }
+        svgEditor.openPrep(function (ok) {
+          if (!ok) { return; }
+          svgCanvas.clear();
+          svgCanvas.setSvgString(response);
+          // updateCanvas();
+        });
+        closeBrowser();
+        break;
+      }
+    }, true);
+
+    function toggleMulti (show) {
+      $('#lib_framewrap, #imglib_opts').css({right: (show ? 200 : 10)});
+      if (!preview) {
+        preview = $('&lt;div id=imglib_preview>').css({
+          position: 'absolute',
+          top: 45,
+          right: 10,
+          width: 180,
+          bottom: 45,
+          background: '#fff',
+          overflow: 'auto'
+        }).insertAfter('#lib_framewrap');
+
+        submit = $('&lt;button disabled>Import selected&lt;/button>')
+          .appendTo('#imgbrowse')
+          .on('click touchend', function () {
+            $.each(multiArr, function (i) {
+              const type = this[0];
+              const data = this[1];
+              if (type === 'svg') {
+                svgCanvas.importSvgString(data);
+              } else {
+                importImage(data);
+              }
+              svgCanvas.moveSelectedElements(i * 20, i * 20, false);
+            });
+            preview.empty();
+            multiArr = [];
+            $('#imgbrowse_holder').hide();
+          }).css({
+            position: 'absolute',
+            bottom: 10,
+            right: -10
+          });
+      }
+
+      preview.toggle(show);
+      submit.toggle(show);
+    }
+
+    function showBrowser () {
+      let browser = $('#imgbrowse');
+      if (!browser.length) {
+        $('&lt;div id=imgbrowse_holder>&lt;div id=imgbrowse class=toolbar_button>' +
+        '&lt;/div>&lt;/div>').insertAfter('#svg_docprops');
+        browser = $('#imgbrowse');
+
+        const allLibs = imagelibStrings.select_lib;
+
+        const libOpts = $('&lt;ul id=imglib_opts>').appendTo(browser);
+        const frame = $('&lt;iframe/>').prependTo(browser).hide().wrap('&lt;div id=lib_framewrap>');
+
+        const header = $('&lt;h1>').prependTo(browser).text(allLibs).css({
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%'
+        });
+
+        const cancel = $('&lt;button>' + uiStrings.common.cancel + '&lt;/button>')
+          .appendTo(browser)
+          .on('click touchend', function () {
+            $('#imgbrowse_holder').hide();
+          }).css({
+            position: 'absolute',
+            top: 5,
+            right: -10
+          });
+
+        const leftBlock = $('&lt;span>').css({position: 'absolute', top: 5, left: 10}).appendTo(browser);
+
+        const back = $('&lt;button hidden>' + imagelibStrings.show_list + '&lt;/button>')
+          .appendTo(leftBlock)
+          .on('click touchend', function () {
+            frame.attr('src', 'about:blank').hide();
+            libOpts.show();
+            header.text(allLibs);
+            back.hide();
+          }).css({
+            'margin-right': 5
+          }).hide();
+
+        /* const type = */ $('&lt;select>&lt;option value=s>' +
+          imagelibStrings.import_single + '&lt;/option>&lt;option value=m>' +
+          imagelibStrings.import_multi + '&lt;/option>&lt;option value=o>' +
+          imagelibStrings.open + '&lt;/option>&lt;/select>').appendTo(leftBlock).change(function () {
+          mode = $(this).val();
+          switch (mode) {
+          case 's':
+          case 'o':
+            toggleMulti(false);
+            break;
+
+          case 'm':
+            // Import multiple
+            toggleMulti(true);
+            break;
+          }
+        }).css({
+          'margin-top': 10
+        });
+
+        cancel.prepend($.getSvgIcon('cancel', true));
+        back.prepend($.getSvgIcon('tool_imagelib', true));
+
+        const modularVersion = !('svgEditor' in window) ||
+          !window.svgEditor ||
+          window.svgEditor.modules !== false;
+        $.each(imagelibStrings.imgLibs, function (i, {name, url, description}) {
+          $('&lt;li>')
+            .appendTo(libOpts)
+            .text(name)
+            .on('click touchend', function () {
+              frame.attr(
+                'src',
+                // Todo: Adopt some standard formatting library like `fluent.js` instead
+                url.replace(
+                  '{path}',
+                  svgEditor.curConfig.extIconsPath
+                ).replace(
+                  '{modularVersion}',
+                  modularVersion
+                    ? (imagelibStrings.moduleEnding || '-es')
+                    : ''
+                )
+              ).show();
+              header.text(name);
+              libOpts.hide();
+              back.show();
+            }).append(`&lt;span>${description}&lt;/span>`);
+        });
+      } else {
+        $('#imgbrowse_holder').show();
+      }
+    }
+
+    const buttons = [{
+      id: 'tool_imagelib',
+      type: 'app_menu', // _flyout
+      position: 4,
+      events: {
+        mouseup: showBrowser
+      }
+    }];
+
+    return {
+      svgicons: svgEditor.curConfig.extIconsPath + 'ext-imagelib.xml',
+      buttons: imagelibStrings.buttons.map((button, i) => {
+        return Object.assign(buttons[i], button);
+      }),
+      callback () {
+        $('&lt;style>').text(
+          '#imgbrowse_holder {' +
+            'position: absolute;' +
+            'top: 0;' +
+            'left: 0;' +
+            'width: 100%;' +
+            'height: 100%;' +
+            'background-color: rgba(0, 0, 0, .5);' +
+            'z-index: 5;' +
+          '}' +
+          '#imgbrowse {' +
+            'position: absolute;' +
+            'top: 25px;' +
+            'left: 25px;' +
+            'right: 25px;' +
+            'bottom: 25px;' +
+            'min-width: 300px;' +
+            'min-height: 200px;' +
+            'background: #B0B0B0;' +
+            'border: 1px outset #777;' +
+          '}' +
+          '#imgbrowse h1 {' +
+            'font-size: 20px;' +
+            'margin: .4em;' +
+            'text-align: center;' +
+          '}' +
+          '#lib_framewrap,' +
+          '#imgbrowse > ul {' +
+            'position: absolute;' +
+            'top: 45px;' +
+            'left: 10px;' +
+            'right: 10px;' +
+            'bottom: 10px;' +
+            'background: white;' +
+            'margin: 0;' +
+            'padding: 0;' +
+          '}' +
+          '#imgbrowse > ul {' +
+            'overflow: auto;' +
+          '}' +
+          '#imgbrowse > div {' +
+            'border: 1px solid #666;' +
+          '}' +
+          '#imglib_preview > div {' +
+            'padding: 5px;' +
+            'font-size: 12px;' +
+          '}' +
+          '#imglib_preview img {' +
+            'display: block;' +
+            'margin: 0 auto;' +
+            'max-height: 100px;' +
+          '}' +
+          '#imgbrowse li {' +
+            'list-style: none;' +
+            'padding: .5em;' +
+            'background: #E8E8E8;' +
+            'border-bottom: 1px solid #B0B0B0;' +
+            'line-height: 1.2em;' +
+            'font-style: sans-serif;' +
+            '}' +
+          '#imgbrowse li > span {' +
+            'color: #666;' +
+            'font-size: 15px;' +
+            'display: block;' +
+            '}' +
+          '#imgbrowse li:hover {' +
+            'background: #FFC;' +
+            'cursor: pointer;' +
+            '}' +
+          '#imgbrowse iframe {' +
+            'width: 100%;' +
+            'height: 100%;' +
+            'border: 0;' +
+          '}'
+        ).appendTo('head');
+      }
+    };
+  }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-browser.html">browser</a></li><li><a href="module-canvg.html">canvg</a></li><li><a href="module-contextmenu.html">contextmenu</a></li><li><a href="module-coords.html">coords</a></li><li><a href="module-draw.html">draw</a></li><li><a href="module-EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="module-EmbeddedSVGEditDOM.html">EmbeddedSVGEditDOM</a></li><li><a href="module-history.html">history</a></li><li><a href="module-importModule.html">importModule</a></li><li><a href="module-jGraduate.html">jGraduate</a></li><li><a href="module-jPicker.html">jPicker</a></li><li><a href="module-jQueryAttr.html">jQueryAttr</a></li><li><a href="module-jQueryContextMenu.html">jQueryContextMenu</a></li><li><a href="module-jQuerySpinButton.html">jQuerySpinButton</a></li><li><a href="module-jQuerySVGIcons.html">jQuerySVGIcons</a></li><li><a href="module-layer.html">layer</a></li><li><a href="module-locale.html">locale</a></li><li><a href="module-math.html">math</a></li><li><a href="module-namespaces.html">namespaces</a></li><li><a href="module-path.html">path</a></li><li><a href="module-recalculate.html">recalculate</a></li><li><a href="module-RGBColor.html">RGBColor</a></li><li><a href="module-sanitize.html">sanitize</a></li><li><a href="module-select.html">select</a></li><li><a href="module-StackBlur.html">StackBlur</a></li><li><a href="module-svgcanvas.html">svgcanvas</a></li><li><a href="module-SVGEditor.html">SVGEditor</a></li><li><a href="module-SVGTransformList.html">SVGTransformList</a></li><li><a href="module-units.html">units</a></li><li><a href="module-utilities.html">utilities</a></li></ul><h3>Externals</h3><ul><li><a href="external-jQuery.html">jQuery</a></li><li><a href="external-jsPDF.html">jsPDF</a></li><li><a href="external-Math.html">Math</a></li><li><a href="external-MouseEvent.html">MouseEvent</a></li><li><a href="external-Storage.html">Storage</a></li><li><a href="external-Window.html">Window</a></li></ul><h3>Classes</h3><ul><li><a href="external-jQuery.jGraduate.Paint.html">Paint</a></li><li><a href="external-jQuery.jPicker.Color.html">Color</a></li><li><a href="module-draw.Drawing.html">Drawing</a></li><li><a href="module-draw.Layer.html">Layer</a></li><li><a href="module-EmbeddedSVGEdit.EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="module-history.BatchCommand.html">BatchCommand</a></li><li><a href="module-history.ChangeElementCommand.html">ChangeElementCommand</a></li><li><a href="module-history.HistoryRecordingService.html">HistoryRecordingService</a></li><li><a href="module-history.InsertElementCommand.html">InsertElementCommand</a></li><li><a href="module-history.MoveElementCommand.html">MoveElementCommand</a></li><li><a href="module-history.RemoveElementCommand.html">RemoveElementCommand</a></li><li><a href="module-history.UndoManager.html">UndoManager</a></li><li><a href="module-history-Command.html">Command</a></li><li><a href="module-jGraduate-Paint.html">Paint</a></li><li><a href="module-layer.Layer.html">Layer</a></li><li><a href="module-path.Path.html">Path</a></li><li><a href="module-path.Segment.html">Segment</a></li><li><a href="module-RGBColor.html">RGBColor</a></li><li><a href="module-select.Selector.html">Selector</a></li><li><a href="module-select.SelectorManager.html">SelectorManager</a></li><li><a href="module-StackBlur.BlurStack.html">BlurStack</a></li><li><a href="module-StackBlur.canvasRGB.html">canvasRGB</a></li><li><a href="module-StackBlur.canvasRGBA.html">canvasRGBA</a></li><li><a href="module-StackBlur.image.html">image</a></li><li><a href="module-StackBlur.imageDataRGB.html">imageDataRGB</a></li><li><a href="module-StackBlur.imageDataRGBA.html">imageDataRGBA</a></li><li><a href="module-svgcanvas.SvgCanvas.html">SvgCanvas</a></li><li><a href="module-SVGTransformList.SVGTransformList.html">SVGTransformList</a></li></ul><h3>Events</h3><ul><li><a href="module-history-Command.html#event:event:history">history</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:changed">changed</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:cleared">cleared</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:contextset">contextset</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:exported">exported</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:exportedPDF">exportedPDF</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-addLangData">ext-addLangData</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-callback">ext-callback</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-canvasUpdated">ext-canvasUpdated</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-elementChanged">ext-elementChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-elementTransition">ext-elementTransition</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-IDsUpdated">ext-IDsUpdated</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langChanged">ext-langChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langReady">ext-langReady</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseDown">ext-mouseDown</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseMove">ext-mouseMove</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseUp">ext-mouseUp</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-onNewDocument">ext-onNewDocument</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-selectedChanged">ext-selectedChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-toolButtonStateUpdate">ext-toolButtonStateUpdate</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-workareaResized">ext-workareaResized</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-zoomChanged">ext-zoomChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:extension_added">extension_added</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:extensions_added">extensions_added</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:GenericCanvasEvent">GenericCanvasEvent</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:message">message</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:pointsAdded">pointsAdded</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:saved">saved</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:selected">selected</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:setnonce">setnonce</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:transition">transition</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:unsetnonce">unsetnonce</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:updateCanvas">updateCanvas</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:zoomDone">zoomDone</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:zoomed">zoomed</a></li><li><a href="module-SVGEditor.html#event:event:svgEditorReadyEvent">svgEditorReadyEvent</a></li></ul><h3>Namespaces</h3><ul><li><a href="external-jQuery.fn.html">fn</a></li><li><a href="external-jQuery.fn.$.fn.jPicker.html">$.fn.jPicker</a></li><li><a href="external-jQuery.fn.$.fn.jPicker.defaults.html">defaults</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.html">jGraduateDefaults</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.images.html">images</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.window.html">window</a></li><li><a href="external-jQuery.jGraduate.html">jGraduate</a></li><li><a href="external-jQuery.jPicker.html">jPicker</a></li><li><a href="external-jQuery.jPicker.ColorMethods.html">ColorMethods</a></li><li><a href="module-path.pathActions.html">pathActions</a></li><li><a href="module-svgcanvas.SvgCanvas_pathActions.html">pathActions</a></li><li><a href="module-svgcanvas.SvgCanvas_textActions.html">textActions</a></li><li><a href="module-SVGEditor-defaultConfig.html">defaultConfig</a></li><li><a href="module-SVGEditor-defaultPrefs.html">defaultPrefs</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-CanvasAPI.html">CanvasAPI</a></li><li><a href="tutorial-Editor.html">Editor</a></li><li><a href="tutorial-EditorAPI.html">EditorAPI</a></li><li><a href="tutorial-Events.html">Events</a></li><li><a href="tutorial-FrequentlyAskedQuestions.html">Frequently Asked Questions (FAQ)</a></li></ul><h3>Interfaces</h3><ul><li><a href="module-coords.EditorContext.html">EditorContext</a></li><li><a href="module-draw.DrawCanvasInit.html">DrawCanvasInit</a></li><li><a href="module-history.HistoryCommand.html">HistoryCommand</a></li><li><a href="module-history.HistoryEventHandler.html">HistoryEventHandler</a></li><li><a href="module-locale.LocaleEditorInit.html">LocaleEditorInit</a></li><li><a href="module-path.EditorContext.html">EditorContext</a></li><li><a href="module-recalculate.EditorContext.html">EditorContext</a></li><li><a href="module-select.SVGFactory.html">SVGFactory</a></li><li><a href="module-svgcanvas.ExtensionInitResponse.html">ExtensionInitResponse</a></li><li><a href="module-svgcanvas.PrivateMethods.html">PrivateMethods</a></li><li><a href="module-SVGEditor.Config.html">Config</a></li><li><a href="module-SVGEditor.CustomHandler.html">CustomHandler</a></li><li><a href="module-SVGEditor.Prefs.html">Prefs</a></li><li><a href="module-SVGTransformList.SVGEditTransformList.html">SVGEditTransformList</a></li><li><a href="module-units.ElementContainer.html">ElementContainer</a></li><li><a href="module-utilities.EditorContext.html">EditorContext</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Jul 19 2018 16:20:21 GMT-0700 (MST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

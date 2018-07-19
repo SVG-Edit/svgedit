@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Tutorial: Events</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <!-- The one customization we are adding for SVGEdit;
+    `module-SVGEditor.Config.html` was otherwise overflowing -->
+    <style>
+    #main {
+      overflow: auto;
+    }
+    </style>
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Tutorial: Events</h1>
+
+    <section>
+
+<header>
+    
+
+    <h2>Events</h2>
+</header>
+
+<article>
+    <h1>Introduction</h1><h2><code>save</code>, <code>open</code>, <code>exportImage</code> (<code>setCustomHandlers</code>)</h2><p>You can hook to the save event (e.g. in an extension), to handle saving
+the SVG file differently:</p>
+<h3>Example</h3><pre class="prettyprint source lang-js"><code>svgEditor.setCustomHandlers({
+ save (win, data) {
+  // Save svg
+ }
+});</code></pre><p>Other methods corresponding to UI events that may be supplied are <code>open</code>
+and <code>exportImage</code>.</p>
+<p>See <a href="module-SVGEditor.CustomHandler.html"><code><code>CustomHandler</code></code></a> for the required
+format of the object to be passed to
+<a href="module-SVGEditor.html#.setCustomHandlers"><code><code>setCustomHandlers</code></code></a>.</p>
+<h2>Parent/Opening window events</h2><h3><code>svgEditorReady</code></h3><p>The <code>svgEditorReady</code> event is triggered on a containing <code>document</code> (of
+<code>window.opener</code> or <code>window.parent</code>) when the editor is loaded.</p>
+<p>See <a href="module-SVGEditor.html#event:event:svgEditorReadyEvent"><code>svgEditorReadyEvent</code></a>
+for the JSDocs.</p>
+<h3>Example</h3><pre class="prettyprint source lang-js"><code>$(document).bind('svgEditorReady', function () {
+  const svg = `
+    &lt;!DOCTYPE svg PUBLIC &quot;-//W3C//DTD SVG 1.1//EN&quot;
+      &quot;http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd&quot;>
+    &lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;100&quot; height=&quot;50&quot;>
+      &lt;ellipse cx=&quot;50&quot; cy=&quot;25&quot; rx=&quot;50&quot; ry=&quot;25&quot; style=&quot;fill:blue;&quot;/>
+    &lt;/svg>`;
+  $('iframe.svgedit')[0].contentWindow.svgCanvas.setSvgString(svg);
+});</code></pre><p>If you are acting within the frame, you may use <code>svgEditor.ready</code>
+(see <a href="#Editor-within-frame-events-svgEditor">Within-frame events</a> below).</p>
+<h2>Editor (within-frame) events (<code>svgEditor</code>)</h2><h3><code>svgEditor.canvas</code></h3><ul>
+<li>Canvas object. See <a href="#Canvas-events">Canvas events</a>.</li>
+</ul>
+<h3><code>svgEditor.canvas.bind(eventName, function () {})</code></h3><ul>
+<li>Method for listening to canvas events. See <a href="#Canvas-events">Canvas events</a>.</li>
+</ul>
+<h3><code>svgEditor.ready(function () {})</code></h3><p>Method for listening to editor callbacks. Used internally as well.</p>
+<p>No arguments passed to callback.</p>
+<p>See <a href="module-SVGEditor.html#.ready"><code><code>SVGEditor.ready</code></code></a>.</p>
+<h2>Extension events</h2><p>Most extensions will want to run functions when certain events are
+triggered. This is a list of the current events that can be hooked
+onto. All events are optional.</p>
+<p>See the <code>vars</code> param of
+<a href="module-svgcanvas.SvgCanvas.html#runExtensions"><code><code>runExtensions</code></code></a>
+for some of the available extension events and their descriptions and types.</p>
+<p>See <a href="module-svgcanvas.html#.ExtensionStatus"><code><code>ExtensionStatus</code></code></a> for the
+values to be returned by the corresponding extension methods listening
+for these extension event types.</p>
+<h2>Canvas events</h2><p>Canvas events are listened to with the bind method
+(<a href="module-svgcanvas.SvgCanvas.html#bind"><code>JSDocs API</code></a>):</p>
+<pre class="prettyprint source lang-js"><code>canvas.bind(eventName, callback);</code></pre><p>Canvas events are passed between the editor and canvas and should mostly
+only of be of interest to those working with the <a href="tutorial-CanvasAPI.html">Canvas</a>
+alone or those developing SVGEdit).</p>
+<p><code>callback</code> (see <a href="module-svgcanvas.html#.EventHandler"><code><code>EventHandler</code></code></a>) will be passed the
+<code>window</code> object and a single argument specific to the event
+(see <a href="module-svgcanvas.SvgCanvas.html#event:event:GenericCanvasEvent"><code><code>GenericCanvasEvent</code></code></a>).</p>
+<p>The <code>bind</code> method will return any previous callback attached to the given
+event name.</p>
+<p>The method used to trigger these bound events is <code>call()</code>
+(<a href="module-svgcanvas.SvgCanvas.html#call"><code>JSDocs</code></a>).</p>
+<p>All events below are currently called from within <code>svgcanvas.js</code> except where
+noted. All events are also defined internally within <code>svg-editor.js</code> except
+where noted.</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Where bound/defined (besides editor)</th>
+<th>Where called/triggered (besides canvas)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>changed</code></td>
+<td></td>
+<td>(Also called from <code>draw.js</code>, <code>ext-arrows.js</code>, <code>ext-foreignObject.js</code>, <code>ext-markers.js</code>, <code>ext-polygon.js</code>, <code>ext-star.js</code>, and <code>path.js</code>)</td>
+</tr>
+<tr>
+<td><code>cleared</code></td>
+<td>Not bound/defined in SVGEdit.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>contextset</code></td>
+<td></td>
+<td>Only called from <code>draw.js</code></td>
+</tr>
+<tr>
+<td><code>exported</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>exportedPDF</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>extension_added</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>extensions_added</code></td>
+<td></td>
+<td>Only called from <code>svg-editor.js</code></td>
+</tr>
+<tr>
+<td><code>message</code></td>
+<td>Only bound/defined in <code>ext-webappfind.js</code></td>
+<td>Only called from <code>svg-editor.js</code></td>
+</tr>
+<tr>
+<td><code>pointsAdded</code></td>
+<td>Not bound/defined in SVGEdit.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>saved</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>selected</code></td>
+<td></td>
+<td>Also called from <code>path.js</code></td>
+</tr>
+<tr>
+<td><code>setnonce</code></td>
+<td>Only bound/defined in <code>ext-arrows.js</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>transition</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>updateCanvas</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>unsetnonce</code></td>
+<td>Only bound/defined in <code>ext-arrows.js</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>zoomed</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>zoomDone</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</article>
+
+</section>
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-browser.html">browser</a></li><li><a href="module-canvg.html">canvg</a></li><li><a href="module-contextmenu.html">contextmenu</a></li><li><a href="module-coords.html">coords</a></li><li><a href="module-draw.html">draw</a></li><li><a href="module-EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="module-EmbeddedSVGEditDOM.html">EmbeddedSVGEditDOM</a></li><li><a href="module-history.html">history</a></li><li><a href="module-importModule.html">importModule</a></li><li><a href="module-jGraduate.html">jGraduate</a></li><li><a href="module-jPicker.html">jPicker</a></li><li><a href="module-jQueryAttr.html">jQueryAttr</a></li><li><a href="module-jQueryContextMenu.html">jQueryContextMenu</a></li><li><a href="module-jQuerySpinButton.html">jQuerySpinButton</a></li><li><a href="module-jQuerySVGIcons.html">jQuerySVGIcons</a></li><li><a href="module-layer.html">layer</a></li><li><a href="module-locale.html">locale</a></li><li><a href="module-math.html">math</a></li><li><a href="module-namespaces.html">namespaces</a></li><li><a href="module-path.html">path</a></li><li><a href="module-recalculate.html">recalculate</a></li><li><a href="module-RGBColor.html">RGBColor</a></li><li><a href="module-sanitize.html">sanitize</a></li><li><a href="module-select.html">select</a></li><li><a href="module-StackBlur.html">StackBlur</a></li><li><a href="module-svgcanvas.html">svgcanvas</a></li><li><a href="module-SVGEditor.html">SVGEditor</a></li><li><a href="module-SVGTransformList.html">SVGTransformList</a></li><li><a href="module-units.html">units</a></li><li><a href="module-utilities.html">utilities</a></li></ul><h3>Externals</h3><ul><li><a href="external-jQuery.html">jQuery</a></li><li><a href="external-jsPDF.html">jsPDF</a></li><li><a href="external-Math.html">Math</a></li><li><a href="external-MouseEvent.html">MouseEvent</a></li><li><a href="external-Storage.html">Storage</a></li><li><a href="external-Window.html">Window</a></li></ul><h3>Classes</h3><ul><li><a href="external-jQuery.jGraduate.Paint.html">Paint</a></li><li><a href="external-jQuery.jPicker.Color.html">Color</a></li><li><a href="module-draw.Drawing.html">Drawing</a></li><li><a href="module-draw.Layer.html">Layer</a></li><li><a href="module-EmbeddedSVGEdit.EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="module-history.BatchCommand.html">BatchCommand</a></li><li><a href="module-history.ChangeElementCommand.html">ChangeElementCommand</a></li><li><a href="module-history.HistoryRecordingService.html">HistoryRecordingService</a></li><li><a href="module-history.InsertElementCommand.html">InsertElementCommand</a></li><li><a href="module-history.MoveElementCommand.html">MoveElementCommand</a></li><li><a href="module-history.RemoveElementCommand.html">RemoveElementCommand</a></li><li><a href="module-history.UndoManager.html">UndoManager</a></li><li><a href="module-history-Command.html">Command</a></li><li><a href="module-jGraduate-Paint.html">Paint</a></li><li><a href="module-layer.Layer.html">Layer</a></li><li><a href="module-path.Path.html">Path</a></li><li><a href="module-path.Segment.html">Segment</a></li><li><a href="module-RGBColor.html">RGBColor</a></li><li><a href="module-select.Selector.html">Selector</a></li><li><a href="module-select.SelectorManager.html">SelectorManager</a></li><li><a href="module-StackBlur.BlurStack.html">BlurStack</a></li><li><a href="module-StackBlur.canvasRGB.html">canvasRGB</a></li><li><a href="module-StackBlur.canvasRGBA.html">canvasRGBA</a></li><li><a href="module-StackBlur.image.html">image</a></li><li><a href="module-StackBlur.imageDataRGB.html">imageDataRGB</a></li><li><a href="module-StackBlur.imageDataRGBA.html">imageDataRGBA</a></li><li><a href="module-svgcanvas.SvgCanvas.html">SvgCanvas</a></li><li><a href="module-SVGTransformList.SVGTransformList.html">SVGTransformList</a></li></ul><h3>Events</h3><ul><li><a href="module-history-Command.html#event:event:history">history</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:changed">changed</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:cleared">cleared</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:contextset">contextset</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:exported">exported</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:exportedPDF">exportedPDF</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-addLangData">ext-addLangData</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-callback">ext-callback</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-canvasUpdated">ext-canvasUpdated</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-elementChanged">ext-elementChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-elementTransition">ext-elementTransition</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-IDsUpdated">ext-IDsUpdated</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langChanged">ext-langChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langReady">ext-langReady</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseDown">ext-mouseDown</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseMove">ext-mouseMove</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseUp">ext-mouseUp</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-onNewDocument">ext-onNewDocument</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-selectedChanged">ext-selectedChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-toolButtonStateUpdate">ext-toolButtonStateUpdate</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-workareaResized">ext-workareaResized</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-zoomChanged">ext-zoomChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:extension_added">extension_added</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:extensions_added">extensions_added</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:GenericCanvasEvent">GenericCanvasEvent</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:message">message</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:pointsAdded">pointsAdded</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:saved">saved</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:selected">selected</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:setnonce">setnonce</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:transition">transition</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:unsetnonce">unsetnonce</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:updateCanvas">updateCanvas</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:zoomDone">zoomDone</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:zoomed">zoomed</a></li><li><a href="module-SVGEditor.html#event:event:svgEditorReadyEvent">svgEditorReadyEvent</a></li></ul><h3>Namespaces</h3><ul><li><a href="external-jQuery.fn.html">fn</a></li><li><a href="external-jQuery.fn.$.fn.jPicker.html">$.fn.jPicker</a></li><li><a href="external-jQuery.fn.$.fn.jPicker.defaults.html">defaults</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.html">jGraduateDefaults</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.images.html">images</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.window.html">window</a></li><li><a href="external-jQuery.jGraduate.html">jGraduate</a></li><li><a href="external-jQuery.jPicker.html">jPicker</a></li><li><a href="external-jQuery.jPicker.ColorMethods.html">ColorMethods</a></li><li><a href="module-path.pathActions.html">pathActions</a></li><li><a href="module-svgcanvas.SvgCanvas_pathActions.html">pathActions</a></li><li><a href="module-svgcanvas.SvgCanvas_textActions.html">textActions</a></li><li><a href="module-SVGEditor-defaultConfig.html">defaultConfig</a></li><li><a href="module-SVGEditor-defaultPrefs.html">defaultPrefs</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-CanvasAPI.html">CanvasAPI</a></li><li><a href="tutorial-Editor.html">Editor</a></li><li><a href="tutorial-EditorAPI.html">EditorAPI</a></li><li><a href="tutorial-Events.html">Events</a></li><li><a href="tutorial-FrequentlyAskedQuestions.html">Frequently Asked Questions (FAQ)</a></li></ul><h3>Interfaces</h3><ul><li><a href="module-coords.EditorContext.html">EditorContext</a></li><li><a href="module-draw.DrawCanvasInit.html">DrawCanvasInit</a></li><li><a href="module-history.HistoryCommand.html">HistoryCommand</a></li><li><a href="module-history.HistoryEventHandler.html">HistoryEventHandler</a></li><li><a href="module-locale.LocaleEditorInit.html">LocaleEditorInit</a></li><li><a href="module-path.EditorContext.html">EditorContext</a></li><li><a href="module-recalculate.EditorContext.html">EditorContext</a></li><li><a href="module-select.SVGFactory.html">SVGFactory</a></li><li><a href="module-svgcanvas.ExtensionInitResponse.html">ExtensionInitResponse</a></li><li><a href="module-svgcanvas.PrivateMethods.html">PrivateMethods</a></li><li><a href="module-SVGEditor.Config.html">Config</a></li><li><a href="module-SVGEditor.CustomHandler.html">CustomHandler</a></li><li><a href="module-SVGEditor.Prefs.html">Prefs</a></li><li><a href="module-SVGTransformList.SVGEditTransformList.html">SVGEditTransformList</a></li><li><a href="module-units.ElementContainer.html">ElementContainer</a></li><li><a href="module-utilities.EditorContext.html">EditorContext</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Jul 19 2018 16:20:23 GMT-0700 (MST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

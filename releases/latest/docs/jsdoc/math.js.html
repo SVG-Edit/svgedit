@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: math.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <!-- The one customization we are adding for SVGEdit;
+    `module-SVGEditor.Config.html` was otherwise overflowing -->
+    <style>
+    #main {
+      overflow: auto;
+    }
+    </style>
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: math.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Mathematical utilities
+ * @module math
+ * @license MIT
+ *
+ * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
+ */
+
+/**
+* @typedef {PlainObject} module:math.AngleCoord45
+* @property {Float} x - The angle-snapped x value
+* @property {Float} y - The angle-snapped y value
+* @property {Integer} a - The angle at which to snap
+*/
+
+/**
+* @typedef {PlainObject} module:math.XYObject
+* @property {Float} x
+* @property {Float} y
+*/
+
+import {NS} from './namespaces.js';
+import {getTransformList} from './svgtransformlist.js';
+
+// Constants
+const NEAR_ZERO = 1e-14;
+
+// Throw away SVGSVGElement used for creating matrices/transforms.
+const svg = document.createElementNS(NS.SVG, 'svg');
+
+/**
+ * A (hopefully) quicker function to transform a point by a matrix
+ * (this function avoids any DOM calls and just does the math)
+ * @function module:math.transformPoint
+ * @param {Float} x - Float representing the x coordinate
+ * @param {Float} y - Float representing the y coordinate
+ * @param {SVGMatrix} m - Matrix object to transform the point with
+ * @returns {module:math.XYObject} An x, y object representing the transformed point
+*/
+export const transformPoint = function (x, y, m) {
+  return {x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f};
+};
+
+/**
+ * Helper function to check if the matrix performs no actual transform
+ * (i.e. exists for identity purposes)
+ * @function module:math.isIdentity
+ * @param {SVGMatrix} m - The matrix object to check
+ * @returns {boolean} Indicates whether or not the matrix is 1,0,0,1,0,0
+*/
+export const isIdentity = function (m) {
+  return (m.a === 1 &amp;&amp; m.b === 0 &amp;&amp; m.c === 0 &amp;&amp; m.d === 1 &amp;&amp; m.e === 0 &amp;&amp; m.f === 0);
+};
+
+/**
+ * This function tries to return a `SVGMatrix` that is the multiplication `m1 * m2`.
+ * We also round to zero when it's near zero
+ * @function module:math.matrixMultiply
+ * @param {...SVGMatrix} args - Matrix objects to multiply
+ * @returns {SVGMatrix} The matrix object resulting from the calculation
+*/
+export const matrixMultiply = function (...args) {
+  const m = args.reduceRight((prev, m1) => {
+    return m1.multiply(prev);
+  });
+
+  if (Math.abs(m.a) &lt; NEAR_ZERO) { m.a = 0; }
+  if (Math.abs(m.b) &lt; NEAR_ZERO) { m.b = 0; }
+  if (Math.abs(m.c) &lt; NEAR_ZERO) { m.c = 0; }
+  if (Math.abs(m.d) &lt; NEAR_ZERO) { m.d = 0; }
+  if (Math.abs(m.e) &lt; NEAR_ZERO) { m.e = 0; }
+  if (Math.abs(m.f) &lt; NEAR_ZERO) { m.f = 0; }
+
+  return m;
+};
+
+/**
+ * See if the given transformlist includes a non-indentity matrix transform
+ * @function module:math.hasMatrixTransform
+ * @param {SVGTransformList} [tlist] - The transformlist to check
+ * @returns {boolean} Whether or not a matrix transform was found
+*/
+export const hasMatrixTransform = function (tlist) {
+  if (!tlist) { return false; }
+  let num = tlist.numberOfItems;
+  while (num--) {
+    const xform = tlist.getItem(num);
+    if (xform.type === 1 &amp;&amp; !isIdentity(xform.matrix)) { return true; }
+  }
+  return false;
+};
+
+/**
+* @typedef {PlainObject} module:math.TransformedBox An object with the following values
+* @property {module:math.XYObject} tl - The top left coordinate
+* @property {module:math.XYObject} tr - The top right coordinate
+* @property {module:math.XYObject} bl - The bottom left coordinate
+* @property {module:math.XYObject} br - The bottom right coordinate
+* @property {PlainObject} aabox - Object with the following values:
+* @property {Float} aabox.x - Float with the axis-aligned x coordinate
+* @property {Float} aabox.y - Float with the axis-aligned y coordinate
+* @property {Float} aabox.width - Float with the axis-aligned width coordinate
+* @property {Float} aabox.height - Float with the axis-aligned height coordinate
+*/
+
+/**
+ * Transforms a rectangle based on the given matrix
+ * @function module:math.transformBox
+ * @param {Float} l - Float with the box's left coordinate
+ * @param {Float} t - Float with the box's top coordinate
+ * @param {Float} w - Float with the box width
+ * @param {Float} h - Float with the box height
+ * @param {SVGMatrix} m - Matrix object to transform the box by
+ * @returns {module:math.TransformedBox}
+*/
+export const transformBox = function (l, t, w, h, m) {
+  const tl = transformPoint(l, t, m),
+    tr = transformPoint((l + w), t, m),
+    bl = transformPoint(l, (t + h), m),
+    br = transformPoint((l + w), (t + h), m),
+
+    minx = Math.min(tl.x, tr.x, bl.x, br.x),
+    maxx = Math.max(tl.x, tr.x, bl.x, br.x),
+    miny = Math.min(tl.y, tr.y, bl.y, br.y),
+    maxy = Math.max(tl.y, tr.y, bl.y, br.y);
+
+  return {
+    tl,
+    tr,
+    bl,
+    br,
+    aabox: {
+      x: minx,
+      y: miny,
+      width: (maxx - minx),
+      height: (maxy - miny)
+    }
+  };
+};
+
+/**
+ * This returns a single matrix Transform for a given Transform List
+ * (this is the equivalent of `SVGTransformList.consolidate()` but unlike
+ * that method, this one does not modify the actual `SVGTransformList`).
+ * This function is very liberal with its `min`, `max` arguments
+ * @function module:math.transformListToTransform
+ * @param {SVGTransformList} tlist - The transformlist object
+ * @param {Integer} [min=0] - Optional integer indicating start transform position
+ * @param {Integer} [max] - Optional integer indicating end transform position;
+ *   defaults to one less than the tlist's `numberOfItems`
+ * @returns {SVGTransform} A single matrix transform object
+*/
+export const transformListToTransform = function (tlist, min, max) {
+  if (tlist == null) {
+    // Or should tlist = null have been prevented before this?
+    return svg.createSVGTransformFromMatrix(svg.createSVGMatrix());
+  }
+  min = min || 0;
+  max = max || (tlist.numberOfItems - 1);
+  min = parseInt(min, 10);
+  max = parseInt(max, 10);
+  if (min > max) { const temp = max; max = min; min = temp; }
+  let m = svg.createSVGMatrix();
+  for (let i = min; i &lt;= max; ++i) {
+    // if our indices are out of range, just use a harmless identity matrix
+    const mtom = (i >= 0 &amp;&amp; i &lt; tlist.numberOfItems
+      ? tlist.getItem(i).matrix
+      : svg.createSVGMatrix());
+    m = matrixMultiply(m, mtom);
+  }
+  return svg.createSVGTransformFromMatrix(m);
+};
+
+/**
+ * Get the matrix object for a given element
+ * @function module:math.getMatrix
+ * @param {Element} elem - The DOM element to check
+ * @returns {SVGMatrix} The matrix object associated with the element's transformlist
+*/
+export const getMatrix = function (elem) {
+  const tlist = getTransformList(elem);
+  return transformListToTransform(tlist).matrix;
+};
+
+/**
+ * Returns a 45 degree angle coordinate associated with the two given
+ * coordinates
+ * @function module:math.snapToAngle
+ * @param {Integer} x1 - First coordinate's x value
+ * @param {Integer} x2 - Second coordinate's x value
+ * @param {Integer} y1 - First coordinate's y value
+ * @param {Integer} y2 - Second coordinate's y value
+ * @returns {module:math.AngleCoord45}
+*/
+export const snapToAngle = function (x1, y1, x2, y2) {
+  const snap = Math.PI / 4; // 45 degrees
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const angle = Math.atan2(dy, dx);
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const snapangle = Math.round(angle / snap) * snap;
+
+  return {
+    x: x1 + dist * Math.cos(snapangle),
+    y: y1 + dist * Math.sin(snapangle),
+    a: snapangle
+  };
+};
+
+/**
+ * Check if two rectangles (BBoxes objects) intersect each other
+ * @function module:math.rectsIntersect
+ * @param {SVGRect} r1 - The first BBox-like object
+ * @param {SVGRect} r2 - The second BBox-like object
+ * @returns {boolean} True if rectangles intersect
+ */
+export const rectsIntersect = function (r1, r2) {
+  return r2.x &lt; (r1.x + r1.width) &amp;&amp;
+    (r2.x + r2.width) > r1.x &amp;&amp;
+    r2.y &lt; (r1.y + r1.height) &amp;&amp;
+    (r2.y + r2.height) > r1.y;
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-browser.html">browser</a></li><li><a href="module-canvg.html">canvg</a></li><li><a href="module-contextmenu.html">contextmenu</a></li><li><a href="module-coords.html">coords</a></li><li><a href="module-draw.html">draw</a></li><li><a href="module-EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="module-EmbeddedSVGEditDOM.html">EmbeddedSVGEditDOM</a></li><li><a href="module-history.html">history</a></li><li><a href="module-importModule.html">importModule</a></li><li><a href="module-jGraduate.html">jGraduate</a></li><li><a href="module-jPicker.html">jPicker</a></li><li><a href="module-jQueryAttr.html">jQueryAttr</a></li><li><a href="module-jQueryContextMenu.html">jQueryContextMenu</a></li><li><a href="module-jQuerySpinButton.html">jQuerySpinButton</a></li><li><a href="module-jQuerySVGIcons.html">jQuerySVGIcons</a></li><li><a href="module-layer.html">layer</a></li><li><a href="module-locale.html">locale</a></li><li><a href="module-math.html">math</a></li><li><a href="module-namespaces.html">namespaces</a></li><li><a href="module-path.html">path</a></li><li><a href="module-recalculate.html">recalculate</a></li><li><a href="module-RGBColor.html">RGBColor</a></li><li><a href="module-sanitize.html">sanitize</a></li><li><a href="module-select.html">select</a></li><li><a href="module-StackBlur.html">StackBlur</a></li><li><a href="module-svgcanvas.html">svgcanvas</a></li><li><a href="module-SVGEditor.html">SVGEditor</a></li><li><a href="module-SVGTransformList.html">SVGTransformList</a></li><li><a href="module-units.html">units</a></li><li><a href="module-utilities.html">utilities</a></li></ul><h3>Externals</h3><ul><li><a href="external-jQuery.html">jQuery</a></li><li><a href="external-jsPDF.html">jsPDF</a></li><li><a href="external-Math.html">Math</a></li><li><a href="external-MouseEvent.html">MouseEvent</a></li><li><a href="external-Storage.html">Storage</a></li><li><a href="external-Window.html">Window</a></li></ul><h3>Classes</h3><ul><li><a href="external-jQuery.jGraduate.Paint.html">Paint</a></li><li><a href="external-jQuery.jPicker.Color.html">Color</a></li><li><a href="module-draw.Drawing.html">Drawing</a></li><li><a href="module-draw.Layer.html">Layer</a></li><li><a href="module-EmbeddedSVGEdit.EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="module-history.BatchCommand.html">BatchCommand</a></li><li><a href="module-history.ChangeElementCommand.html">ChangeElementCommand</a></li><li><a href="module-history.HistoryRecordingService.html">HistoryRecordingService</a></li><li><a href="module-history.InsertElementCommand.html">InsertElementCommand</a></li><li><a href="module-history.MoveElementCommand.html">MoveElementCommand</a></li><li><a href="module-history.RemoveElementCommand.html">RemoveElementCommand</a></li><li><a href="module-history.UndoManager.html">UndoManager</a></li><li><a href="module-history-Command.html">Command</a></li><li><a href="module-jGraduate-Paint.html">Paint</a></li><li><a href="module-layer.Layer.html">Layer</a></li><li><a href="module-path.Path.html">Path</a></li><li><a href="module-path.Segment.html">Segment</a></li><li><a href="module-RGBColor.html">RGBColor</a></li><li><a href="module-select.Selector.html">Selector</a></li><li><a href="module-select.SelectorManager.html">SelectorManager</a></li><li><a href="module-StackBlur.BlurStack.html">BlurStack</a></li><li><a href="module-StackBlur.canvasRGB.html">canvasRGB</a></li><li><a href="module-StackBlur.canvasRGBA.html">canvasRGBA</a></li><li><a href="module-StackBlur.image.html">image</a></li><li><a href="module-StackBlur.imageDataRGB.html">imageDataRGB</a></li><li><a href="module-StackBlur.imageDataRGBA.html">imageDataRGBA</a></li><li><a href="module-svgcanvas.SvgCanvas.html">SvgCanvas</a></li><li><a href="module-SVGTransformList.SVGTransformList.html">SVGTransformList</a></li></ul><h3>Events</h3><ul><li><a href="module-history-Command.html#event:event:history">history</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:changed">changed</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:cleared">cleared</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:contextset">contextset</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:exported">exported</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:exportedPDF">exportedPDF</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-addLangData">ext-addLangData</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-callback">ext-callback</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-canvasUpdated">ext-canvasUpdated</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-elementChanged">ext-elementChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-elementTransition">ext-elementTransition</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-IDsUpdated">ext-IDsUpdated</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langChanged">ext-langChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langReady">ext-langReady</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseDown">ext-mouseDown</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseMove">ext-mouseMove</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseUp">ext-mouseUp</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-onNewDocument">ext-onNewDocument</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-selectedChanged">ext-selectedChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-toolButtonStateUpdate">ext-toolButtonStateUpdate</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-workareaResized">ext-workareaResized</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-zoomChanged">ext-zoomChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:extension_added">extension_added</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:extensions_added">extensions_added</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:GenericCanvasEvent">GenericCanvasEvent</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:message">message</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:pointsAdded">pointsAdded</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:saved">saved</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:selected">selected</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:setnonce">setnonce</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:transition">transition</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:unsetnonce">unsetnonce</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:updateCanvas">updateCanvas</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:zoomDone">zoomDone</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:zoomed">zoomed</a></li><li><a href="module-SVGEditor.html#event:event:svgEditorReadyEvent">svgEditorReadyEvent</a></li></ul><h3>Namespaces</h3><ul><li><a href="external-jQuery.fn.html">fn</a></li><li><a href="external-jQuery.fn.$.fn.jPicker.html">$.fn.jPicker</a></li><li><a href="external-jQuery.fn.$.fn.jPicker.defaults.html">defaults</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.html">jGraduateDefaults</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.images.html">images</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.window.html">window</a></li><li><a href="external-jQuery.jGraduate.html">jGraduate</a></li><li><a href="external-jQuery.jPicker.html">jPicker</a></li><li><a href="external-jQuery.jPicker.ColorMethods.html">ColorMethods</a></li><li><a href="module-path.pathActions.html">pathActions</a></li><li><a href="module-svgcanvas.SvgCanvas_pathActions.html">pathActions</a></li><li><a href="module-svgcanvas.SvgCanvas_textActions.html">textActions</a></li><li><a href="module-SVGEditor-defaultConfig.html">defaultConfig</a></li><li><a href="module-SVGEditor-defaultPrefs.html">defaultPrefs</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-CanvasAPI.html">CanvasAPI</a></li><li><a href="tutorial-Editor.html">Editor</a></li><li><a href="tutorial-EditorAPI.html">EditorAPI</a></li><li><a href="tutorial-Events.html">Events</a></li><li><a href="tutorial-FrequentlyAskedQuestions.html">Frequently Asked Questions (FAQ)</a></li></ul><h3>Interfaces</h3><ul><li><a href="module-coords.EditorContext.html">EditorContext</a></li><li><a href="module-draw.DrawCanvasInit.html">DrawCanvasInit</a></li><li><a href="module-history.HistoryCommand.html">HistoryCommand</a></li><li><a href="module-history.HistoryEventHandler.html">HistoryEventHandler</a></li><li><a href="module-locale.LocaleEditorInit.html">LocaleEditorInit</a></li><li><a href="module-path.EditorContext.html">EditorContext</a></li><li><a href="module-recalculate.EditorContext.html">EditorContext</a></li><li><a href="module-select.SVGFactory.html">SVGFactory</a></li><li><a href="module-svgcanvas.ExtensionInitResponse.html">ExtensionInitResponse</a></li><li><a href="module-svgcanvas.PrivateMethods.html">PrivateMethods</a></li><li><a href="module-SVGEditor.Config.html">Config</a></li><li><a href="module-SVGEditor.CustomHandler.html">CustomHandler</a></li><li><a href="module-SVGEditor.Prefs.html">Prefs</a></li><li><a href="module-SVGTransformList.SVGEditTransformList.html">SVGEditTransformList</a></li><li><a href="module-units.ElementContainer.html">ElementContainer</a></li><li><a href="module-utilities.EditorContext.html">EditorContext</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Jul 19 2018 16:20:21 GMT-0700 (MST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

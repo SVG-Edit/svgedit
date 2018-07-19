@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Tutorial: Extension Docs</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <!-- The one customization we are adding for SVGEdit;
+    `module-SVGEditor.Config.html` was otherwise overflowing -->
+    <style>
+    #main {
+      overflow: auto;
+    }
+    </style>
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Tutorial: Extension Docs</h1>
+
+    <section>
+
+<header>
+    
+
+    <h2>Extension Docs</h2>
+</header>
+
+<article>
+    <h1>Introduction</h1><p>SVG-Edit has support for extensions (as of v2.5). This is a guide for
+creating SVG-Edit extensions.</p>
+<h2>Means to have extensions loaded</h2><p>SVG-Edit extensions are standalone JavaScript files that can be either
+included in the HTML file, loaded using <code>setConfig</code>, or indicated through
+the URL (see <a href="tutorial-ConfigOptions.html">ConfigOptions</a> for usage).</p>
+<p>Note that, as of v3.0, if you create a <code>svgedit-config-iife.js</code> file in
+the project root directory (<code>config.js</code> in the <code>editor</code> directory for
+v2.8), this will be used to execute commands before extensions are loaded,
+e.g., if you wish to make configuration changes which affect extension
+loading behavior. Normally, however, it should be preferable for modularity
+to use the extension mechanism, as this can allow you or users to customize
+which extensions are loaded (whereas <code>svgedit-config-iife.js</code> will always
+run if present).</p>
+<h2>Basic format</h2><p>This is the general format for an extension:</p>
+<pre class="prettyprint source lang-js"><code>export default {
+  name: 'extensionname',
+  init (methods) {
+    return extensionData;
+  }
+};</code></pre><p>Extensions must export an object. (For the API docs of this object, see
+<a href="module-SVGEditor.html#.ExtensionObject"><code>ExtensionObject</code></a>.)</p>
+<p>The first property on the object exported above, <code>name</code>, is the unique
+ID for this extension. It can actually be omitted, in which case the
+ID (not shown visually) will instead be determined from the file name
+(omitting the initial &quot;ext-&quot; and ending &quot;.js&quot;). These are not displayed
+visually, so the only purpose is to avoid name conflicts with other
+extensions.</p>
+<p>The other property above (<code>init</code>) is a function (see
+<a href="module-svgcanvas.html#.ExtensionInitCallback"><code><code>ExtensionInitCallback</code></code></a>
+for its API) that is supplied methods and variables from svgCanvas (see
+<a href="module-svgcanvas.html#.ExtensionArgumentObject"><code><code>ExtensionArgumentObject</code></code></a>)
+and can return an object that includes properties and functions that may
+be required for further processing by
+the extension, depending on the type of methods desired by the extension
+being added. See <a href="module-svgcanvas.ExtensionInitResponse.html"><code><code>ExtensionInitResponse</code></code></a>
+for API documentation on the response type(s) available for <code>init</code>.</p>
+<p>Its <code>this</code> value is bound to the editor, so
+<a href="module-SVGEditor.html"><code>those methods</code></a> are also available.</p>
+<p>In order to await execution of set-up such as calls to <code>langReady</code> and
+<code>svgIcons</code>, the callback <code>callback</code> can be added to the object returned with
+the call to <code>init</code>. The callback is invoked upon addition of the extension,
+or, if svgicons are set, then after the icons are ready. See
+<a href="module-svgcanvas.ExtensionInitResponse.html#callback"><code><code>ExtensionInitResponse#callback</code></code></a>
+in the API for more on this.</p>
+<h2>Example</h2><p>The basic Hello world extension (in <code>/editor/extensions/ext-helloworld.js</code>)
+can be seen as an example on how to create a basic extension. This extension
+adds a &quot;mode&quot; button to the bottom of the left panel that changes the mode,
+then shows a &quot;Hello world&quot; message whenever the canvas is clicked on. See
+<a href="https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html?extensions=ext-helloworld.js">extension in action</a>.</p>
+<p>The basic structure of this extension looks like this:</p>
+<pre class="prettyprint source lang-js"><code>export default {
+  name: 'helloworld',
+  init () {
+    return {
+        svgicons: 'extensions/helloworld-icon.xml',
+        buttons: [{...}],
+        mouseDown () {
+            ...
+        },
+        mouseUp (opts) {
+            ...
+        }
+    };
+  }
+};</code></pre><p>Note how the returned properties may include information on the buttons,
+as well as the functions that should be run when certain events take place.</p>
+<p>The &quot;Hello World&quot; extension also demonstrates internationalization (see
+the next section).</p>
+<h2>Internationalization of extensions</h2><p>The locale files for extensions (which need translation as with the main
+locales) are hosted in <code>editor/extensions/ext-locale/&lt;ext name&gt;/</code>.</p>
+<p>Both <code>addLangData</code>
+(<a href="module-svgcanvas.ExtensionInitResponse.html#addLangData"><code>JSDocs</code></a>)
+(invoked early)
+and <code>langReady</code>
+(<a href="module-svgcanvas.ExtensionInitResponse.html#langReady"><code>JSDocs</code></a>)
+are passed objects with an <code>importLocale</code> function
+(<a href="module-SVGEditor.html#~ImportLocale"><code>JSDocs</code></a>) that you can use to
+import your own extension locales hosted in the above-mentioned directory.</p>
+<p>The <code>importLocale</code> function will use the detected locale and detected
+extension name by default (no need for arguments), and returns a
+<code>Promise</code> that will resolve to the locale strings found within a
+file you place at:</p>
+<p><code>${svgEditor.curConfig.extPath}ext-locale/&lt;extNameWithoutExtPrefix&gt;/&lt;lang&gt;.js</code>
+(<code>&lt;lang&gt;</code> is the detected <code>lang</code> returned on
+<code><code>langReady</code></code> and
+<code>&lt;extNameWithoutExtPrefix&gt;</code> is your extension name without the initial
+required &quot;ext-&quot; prefix and without the trailing &quot;.js&quot;).</p>
+<p>The resolved <code>Promise</code> value is expected to adhere to
+<a href="module-locale.html#.LocaleStrings"><code><code>LocaleStrings</code></code></a> (as with SVGEdit's
+global locale files).</p>
+<p>You could also use your own means to store and retrieve locale data for
+your extension (and
+<a href="module-importModule.html#.importSetGlobalDefault"><code><code>importSetGlobalDefault</code></code></a>
+is available should this be of assistance) in which case the <code>global</code>
+property should follow the format
+<code>svgEditorExtensionLocale_&lt;extNameWithoutExtPrefix&gt;_&lt;lang&gt;</code> to avoid global
+naming conflicts in the non-modular version of SVGEdit.</p>
+<pre class="prettyprint source lang-js"><code>import {importSetGlobalDefault} from '../external/dynamic-import-polyfill/importModule.js';
+
+// ...
+
+(async () => {
+
+const url = `${svgEditor.curConfig.extPath}ext-locale/&lt;extNameWithoutExtPrefix>/&lt;lang>.js`;
+const localeStrings = await importSetGlobalDefault(url, {
+  global: 'svgEditorExtensionLocale_imagelib_' + lang
+});
+
+// Use `localeStrings`
+
+})();</code></pre><p>In addition to your own extension's locale strings,
+<a href="module-svgcanvas.ExtensionInitResponse.html#langReady"><code><code>langReady</code></code></a>
+also has access to the global internationalization strings through the
+<code>uiStrings</code> property on the object passed to it (see
+<a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langReady"><code>event:ext-langReady</code></a>).</p>
+<p>See also <a href="tutorial-LocaleDocs.html">LocaleDocs</a>, including for information on
+formatting of locale strings (the current lack of any standard beyond a
+convention of using brackets for variables).</p>
+<h2>Creating buttons</h2><p>Buttons can appear either in the &quot;mode&quot; panel (left panel) or the &quot;context&quot;
+panel (top panel, changes depending on selection). Their icons can
+either consist of SVG icons (recommended) or just raster images.</p>
+<p>Each button is an object (added to the
+array &quot;buttons&quot; on the object returned by the extension's <code>init</code> method).
+Its properties are outlined at
+<a href="module-SVGEditor.html#.Button"><code><code>SVGEditor.Button</code></code></a>.</p>
+<h2>Creating SVG icons</h2><p>The SVG-Edit project uses icons created using basic SVG (generally
+using SVG-Edit as design tool), and extensions are encouraged to do so
+too. This allows the interface toolbars to be resized and icons to be
+reused at various sizes. If your extension uses multiple icons, they can
+all be stored in the same file. To specify icon file used, set the path
+under the extension's returned <code>svgicons</code> property.</p>
+<p>An SVG icon file is an XML document that consists of a root SVG element
+with child group elements (<code>&lt;g&gt;&lt;/g&gt;</code>). Each of these has an ID that
+should match the ID specified in the associated button object.
+Its content should be the SVG source of the icon. See the &quot;Hello World&quot;
+icon as an example.</p>
+<p>For further information, see the SVG Icon Loader project.</p>
+<h2>Creating context tools</h2><p>Context tools appear in the top toolbar whenever a certain type of
+element is selected.</p>
+<p>These are added by the extension returning an object with the
+property &quot;context_tools&quot;. See <a href="module-SVGEditor.html#.ContextTool"><code>this object's API</code></a>
+for details.</p>
+<h2>SVG-Edit extension events</h2><p>See <a href="tutorial-Events.html">Events</a> for the events that lead to the triggering
+of extension callbacks. (Mostly of relevance for developers of SVGEdit itself.)</p>
+<h2>Helpers</h2><p>A variety of properties and methods can be accessed within extensions.</p>
+<h3><code>svgCanvas</code> properties and methods</h3><p>These are supplied in an object through the first parameter of the
+extension function (see &quot;methods&quot; variable in above example).</p>
+<p>See
+<a href="module-svgcanvas.html#.ExtensionArgumentObject"><code><code>ExtensionArgumentObject</code></code></a>.
+Note that this object also has these
+<a href="module-svgcanvas.PrivateMethods.html"><code>surfaced private methods and properties from Canvas</code></a>.</p>
+<h3><code>svgEditor</code> public properties and methods</h3><p>The <code>this</code> value of the <code>init</code>
+(<a href="module-svgcanvas.html#.ExtensionInitCallback"><code>JSDocs</code></a>) method
+is the <a href="module-SVGEditor.html"><code>Editor object</code></a>. Its methods may be invoked
+from on <code>this</code> within that method.</p>
+</article>
+
+</section>
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-browser.html">browser</a></li><li><a href="module-canvg.html">canvg</a></li><li><a href="module-contextmenu.html">contextmenu</a></li><li><a href="module-coords.html">coords</a></li><li><a href="module-draw.html">draw</a></li><li><a href="module-EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="module-EmbeddedSVGEditDOM.html">EmbeddedSVGEditDOM</a></li><li><a href="module-history.html">history</a></li><li><a href="module-importModule.html">importModule</a></li><li><a href="module-jGraduate.html">jGraduate</a></li><li><a href="module-jPicker.html">jPicker</a></li><li><a href="module-jQueryAttr.html">jQueryAttr</a></li><li><a href="module-jQueryContextMenu.html">jQueryContextMenu</a></li><li><a href="module-jQuerySpinButton.html">jQuerySpinButton</a></li><li><a href="module-jQuerySVGIcons.html">jQuerySVGIcons</a></li><li><a href="module-layer.html">layer</a></li><li><a href="module-locale.html">locale</a></li><li><a href="module-math.html">math</a></li><li><a href="module-namespaces.html">namespaces</a></li><li><a href="module-path.html">path</a></li><li><a href="module-recalculate.html">recalculate</a></li><li><a href="module-RGBColor.html">RGBColor</a></li><li><a href="module-sanitize.html">sanitize</a></li><li><a href="module-select.html">select</a></li><li><a href="module-StackBlur.html">StackBlur</a></li><li><a href="module-svgcanvas.html">svgcanvas</a></li><li><a href="module-SVGEditor.html">SVGEditor</a></li><li><a href="module-SVGTransformList.html">SVGTransformList</a></li><li><a href="module-units.html">units</a></li><li><a href="module-utilities.html">utilities</a></li></ul><h3>Externals</h3><ul><li><a href="external-jQuery.html">jQuery</a></li><li><a href="external-jsPDF.html">jsPDF</a></li><li><a href="external-Math.html">Math</a></li><li><a href="external-MouseEvent.html">MouseEvent</a></li><li><a href="external-Storage.html">Storage</a></li><li><a href="external-Window.html">Window</a></li></ul><h3>Classes</h3><ul><li><a href="external-jQuery.jGraduate.Paint.html">Paint</a></li><li><a href="external-jQuery.jPicker.Color.html">Color</a></li><li><a href="module-draw.Drawing.html">Drawing</a></li><li><a href="module-draw.Layer.html">Layer</a></li><li><a href="module-EmbeddedSVGEdit.EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="module-history.BatchCommand.html">BatchCommand</a></li><li><a href="module-history.ChangeElementCommand.html">ChangeElementCommand</a></li><li><a href="module-history.HistoryRecordingService.html">HistoryRecordingService</a></li><li><a href="module-history.InsertElementCommand.html">InsertElementCommand</a></li><li><a href="module-history.MoveElementCommand.html">MoveElementCommand</a></li><li><a href="module-history.RemoveElementCommand.html">RemoveElementCommand</a></li><li><a href="module-history.UndoManager.html">UndoManager</a></li><li><a href="module-history-Command.html">Command</a></li><li><a href="module-jGraduate-Paint.html">Paint</a></li><li><a href="module-layer.Layer.html">Layer</a></li><li><a href="module-path.Path.html">Path</a></li><li><a href="module-path.Segment.html">Segment</a></li><li><a href="module-RGBColor.html">RGBColor</a></li><li><a href="module-select.Selector.html">Selector</a></li><li><a href="module-select.SelectorManager.html">SelectorManager</a></li><li><a href="module-StackBlur.BlurStack.html">BlurStack</a></li><li><a href="module-StackBlur.canvasRGB.html">canvasRGB</a></li><li><a href="module-StackBlur.canvasRGBA.html">canvasRGBA</a></li><li><a href="module-StackBlur.image.html">image</a></li><li><a href="module-StackBlur.imageDataRGB.html">imageDataRGB</a></li><li><a href="module-StackBlur.imageDataRGBA.html">imageDataRGBA</a></li><li><a href="module-svgcanvas.SvgCanvas.html">SvgCanvas</a></li><li><a href="module-SVGTransformList.SVGTransformList.html">SVGTransformList</a></li></ul><h3>Events</h3><ul><li><a href="module-history-Command.html#event:event:history">history</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:changed">changed</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:cleared">cleared</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:contextset">contextset</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:exported">exported</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:exportedPDF">exportedPDF</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-addLangData">ext-addLangData</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-callback">ext-callback</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-canvasUpdated">ext-canvasUpdated</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-elementChanged">ext-elementChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-elementTransition">ext-elementTransition</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-IDsUpdated">ext-IDsUpdated</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langChanged">ext-langChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langReady">ext-langReady</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseDown">ext-mouseDown</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseMove">ext-mouseMove</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseUp">ext-mouseUp</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-onNewDocument">ext-onNewDocument</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-selectedChanged">ext-selectedChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-toolButtonStateUpdate">ext-toolButtonStateUpdate</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-workareaResized">ext-workareaResized</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-zoomChanged">ext-zoomChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:extension_added">extension_added</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:extensions_added">extensions_added</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:GenericCanvasEvent">GenericCanvasEvent</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:message">message</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:pointsAdded">pointsAdded</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:saved">saved</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:selected">selected</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:setnonce">setnonce</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:transition">transition</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:unsetnonce">unsetnonce</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:updateCanvas">updateCanvas</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:zoomDone">zoomDone</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:zoomed">zoomed</a></li><li><a href="module-SVGEditor.html#event:event:svgEditorReadyEvent">svgEditorReadyEvent</a></li></ul><h3>Namespaces</h3><ul><li><a href="external-jQuery.fn.html">fn</a></li><li><a href="external-jQuery.fn.$.fn.jPicker.html">$.fn.jPicker</a></li><li><a href="external-jQuery.fn.$.fn.jPicker.defaults.html">defaults</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.html">jGraduateDefaults</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.images.html">images</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.window.html">window</a></li><li><a href="external-jQuery.jGraduate.html">jGraduate</a></li><li><a href="external-jQuery.jPicker.html">jPicker</a></li><li><a href="external-jQuery.jPicker.ColorMethods.html">ColorMethods</a></li><li><a href="module-path.pathActions.html">pathActions</a></li><li><a href="module-svgcanvas.SvgCanvas_pathActions.html">pathActions</a></li><li><a href="module-svgcanvas.SvgCanvas_textActions.html">textActions</a></li><li><a href="module-SVGEditor-defaultConfig.html">defaultConfig</a></li><li><a href="module-SVGEditor-defaultPrefs.html">defaultPrefs</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-CanvasAPI.html">CanvasAPI</a></li><li><a href="tutorial-Editor.html">Editor</a></li><li><a href="tutorial-EditorAPI.html">EditorAPI</a></li><li><a href="tutorial-Events.html">Events</a></li><li><a href="tutorial-FrequentlyAskedQuestions.html">Frequently Asked Questions (FAQ)</a></li></ul><h3>Interfaces</h3><ul><li><a href="module-coords.EditorContext.html">EditorContext</a></li><li><a href="module-draw.DrawCanvasInit.html">DrawCanvasInit</a></li><li><a href="module-history.HistoryCommand.html">HistoryCommand</a></li><li><a href="module-history.HistoryEventHandler.html">HistoryEventHandler</a></li><li><a href="module-locale.LocaleEditorInit.html">LocaleEditorInit</a></li><li><a href="module-path.EditorContext.html">EditorContext</a></li><li><a href="module-recalculate.EditorContext.html">EditorContext</a></li><li><a href="module-select.SVGFactory.html">SVGFactory</a></li><li><a href="module-svgcanvas.ExtensionInitResponse.html">ExtensionInitResponse</a></li><li><a href="module-svgcanvas.PrivateMethods.html">PrivateMethods</a></li><li><a href="module-SVGEditor.Config.html">Config</a></li><li><a href="module-SVGEditor.CustomHandler.html">CustomHandler</a></li><li><a href="module-SVGEditor.Prefs.html">Prefs</a></li><li><a href="module-SVGTransformList.SVGEditTransformList.html">SVGEditTransformList</a></li><li><a href="module-units.ElementContainer.html">ElementContainer</a></li><li><a href="module-utilities.EditorContext.html">EditorContext</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Jul 19 2018 16:20:23 GMT-0700 (MST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
