@@ -23,7 +23,7 @@
 1. Update the CHANGES file with a summary of all changes.
 1. Add new release info to `Recent news` section in README
 1. Commit these changes
-<!-- with `git commit -m "Updating Makefile and CHANGES for release X.Y"`-->.
+<!-- with `git commit -m "Updating Makefile and CHANGES for release X.Y.Z"`-->.
 1. Tag the version, prefixed by "v", e.g., `v3.0.1`.
 
 The above steps can be done on a fork and committed via a pull request.
@@ -31,24 +31,24 @@ The above steps can be done on a fork and committed via a pull request.
 ## Create the release on `gh-pages`
 <!--
 2. From the root directory run `make`.
-3. Copy `build/svg-edit-X.Y/`, `build/svg-edit-X.Y-src.tar.gz`, and `build/svg-edit-X.Y.zip` to a temporary directory.
+3. Copy `build/svg-edit-X.Y.Z/`, `build/svg-edit-X.Y.Z-src.tar.gz`, and `build/svg-edit-X.Y.Z.zip` to a temporary directory.
 -->
 
 1. Ensure you are on the `master` branch with `git checkout master`.
 1. Switch to the `gh-pages` branch with `git checkout gh-pages`.
 1. Run the `build.js` executable
-1. Commit these changes with `git commit -m "Updating files for release X.Y"`.
+1. Commit these changes with `git commit -m "Updating files for release X.Y.Z"`.
 1. Switch back to the `master` branch with `git checkout master`.
 1. Ensure this step worked by visiting
-    <https://svgedit.github.io/svgedit/releases/svg-edit-X.Y/svg-editor.html>
+    <https://svg-edit.github.io/svgedit/releases/svg-edit-X.Y.Z/editor/svg-editor.html>
     (and in an ES6-Module-compliant browser,
-    <https://svgedit.github.io/svgedit/releases/svg-edit-X.Y/svg-editor-es.html>).
+    <https://svg-edit.github.io/svgedit/releases/svg-edit-X.Y.Z/editor/svg-editor-es.html>).
 
 The above steps can be done on a fork and committed via a pull request.
 
 ## Create the release on GitHub
 <!--
-4. Attach the `svg-edit-X.Y-src.tar.gz` and `build/svg-edit-X.Y.zip` files to the release.
+4. Attach the `svg-edit-X.Y.Z-src.tar.gz` and `build/svg-edit-X.Y.Z.zip` files to the release.
 -->
 1. Go to <https://github.com/SVG-Edit/svgedit/releases> and select
   `Draft a new release`.
@@ -56,7 +56,7 @@ The above steps can be done on a fork and committed via a pull request.
   changes were updated.
 1. Write a short description of the release and include a link to the live
   version:
-  <https://svgedit.github.io/svgedit/releases/svg-edit-X.Y/svg-editor.html>.
+  <https://svg-edit.github.io/svgedit/releases/svg-edit-X.Y.Z/editor/svg-editor.html>.
   See the previous releases for the format.
 1. Create the release!
 
