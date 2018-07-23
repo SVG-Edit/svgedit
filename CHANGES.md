@@ -1,3 +1,10 @@
+# 3.0.0-rc.2
+
+- Fix: Regression for `text` and `tspan` elements as far as
+  `captureTextNodes` with canvg (inheriting class had set
+  `captureTextNodes` too late)
+- Fix: Avoid errors for tspan passed to `getGradient`
+
 # 3.0.0-rc.1
 
 - Security fix: 'extPath', 'imgPath', 'extIconsPath', 'canvgPath',

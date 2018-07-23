@@ -721,6 +721,7 @@ function build (opts) {
 
   svg.Element.ElementBase = class {
     constructor (node) {
+      this.captureTextNodes = arguments[1]; // Argument from inheriting class
       this.attributes = {};
       this.styles = {};
       this.children = [];
@@ -1740,7 +1741,8 @@ function build (opts) {
   // linear gradient element
   svg.Element.linearGradient = class extends svg.Element.GradientBase {
     getGradient (ctx, element) {
-      const bb = this.gradientUnits === 'objectBoundingBox'
+      const useBB = this.gradientUnits === 'objectBoundingBox' && element.getBoundingBox;
+      const bb = useBB
         ? element.getBoundingBox()
         : null;
 
@@ -1755,16 +1757,16 @@ function build (opts) {
         this.attribute('y2', true).value = 0;
       }
 
-      const x1 = (this.gradientUnits === 'objectBoundingBox'
+      const x1 = (useBB
         ? bb.x() + bb.width() * this.attribute('x1').numValue()
         : this.attribute('x1').toPixels('x'));
-      const y1 = (this.gradientUnits === 'objectBoundingBox'
+      const y1 = (useBB
         ? bb.y() + bb.height() * this.attribute('y1').numValue()
         : this.attribute('y1').toPixels('y'));
-      const x2 = (this.gradientUnits === 'objectBoundingBox'
+      const x2 = (useBB
         ? bb.x() + bb.width() * this.attribute('x2').numValue()
         : this.attribute('x2').toPixels('x'));
-      const y2 = (this.gradientUnits === 'objectBoundingBox'
+      const y2 = (useBB
         ? bb.y() + bb.height() * this.attribute('y2').numValue()
         : this.attribute('y2').toPixels('y'));
 
@@ -1776,33 +1778,34 @@ function build (opts) {
   // radial gradient element
   svg.Element.radialGradient = class extends svg.Element.GradientBase {
     getGradient (ctx, element) {
-      const bb = element.getBoundingBox();
+      const useBB = this.gradientUnits === 'objectBoundingBox' && element.getBoundingBox;
+      const bb = useBB ? element.getBoundingBox() : null;
 
       if (!this.attribute('cx').hasValue()) this.attribute('cx', true).value = '50%';
       if (!this.attribute('cy').hasValue()) this.attribute('cy', true).value = '50%';
       if (!this.attribute('r').hasValue()) this.attribute('r', true).value = '50%';
 
-      const cx = (this.gradientUnits === 'objectBoundingBox'
+      const cx = (useBB
         ? bb.x() + bb.width() * this.attribute('cx').numValue()
         : this.attribute('cx').toPixels('x'));
-      const cy = (this.gradientUnits === 'objectBoundingBox'
+      const cy = (useBB
         ? bb.y() + bb.height() * this.attribute('cy').numValue()
         : this.attribute('cy').toPixels('y'));
 
       let fx = cx;
       let fy = cy;
       if (this.attribute('fx').hasValue()) {
-        fx = (this.gradientUnits === 'objectBoundingBox'
+        fx = (useBB
           ? bb.x() + bb.width() * this.attribute('fx').numValue()
           : this.attribute('fx').toPixels('x'));
       }
       if (this.attribute('fy').hasValue()) {
-        fy = (this.gradientUnits === 'objectBoundingBox'
+        fy = (useBB
           ? bb.y() + bb.height() * this.attribute('fy').numValue()
           : this.attribute('fy').toPixels('y'));
       }
 
-      const r = (this.gradientUnits === 'objectBoundingBox'
+      const r = (useBB
         ? (bb.width() + bb.height()) / 2.0 * this.attribute('r').numValue()
         : this.attribute('r').toPixels());
 
@@ -2039,8 +2042,7 @@ function build (opts) {
   // text element
   svg.Element.text = class extends svg.Element.RenderedElementBase {
     constructor (node) {
-      super(node);
-      this.captureTextNodes = true;
+      super(node, true);
     }
 
     setContext (ctx) {
@@ -2211,8 +2213,7 @@ function build (opts) {
   // tspan
   svg.Element.tspan = class extends svg.Element.TextElementBase {
     constructor (node) {
-      super(node);
-      this.captureTextNodes = true;
+      super(node, true);
 
       this.text = node.nodeValue || node.text || '';
     }
