@@ -4074,12 +4074,12 @@ editor.init = function () {
    * @returns {undefined}
    */
   const clickClear = function () {
-    const dims = curConfig.dimensions;
+    const [x, y] = curConfig.dimensions;
     $.confirm(uiStrings.notification.QwantToClear, function (ok) {
       if (!ok) { return; }
       setSelectMode();
       svgCanvas.clear();
-      svgCanvas.setResolution(dims[0], dims[1]);
+      svgCanvas.setResolution(x, y);
       updateCanvas(true);
       zoomImage();
       populateLayers();
@@ -4133,7 +4133,13 @@ editor.init = function () {
         if (loadingURL) {
           popURL = loadingURL;
         } else {
-          popHTML = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + str + '</title></head><body><h1>' + str + '</h1></body><html>';
+          popHTML = `<!DOCTYPE html><html>
+            <head>
+              <meta charset="utf-8">
+              <title>${str}</title>
+            </head>
+            <body><h1>${str}</h1></body>
+          <html>`;
           if (typeof URL && URL.createObjectURL) {
             const blob = new Blob([popHTML], {type: 'text/html'});
             popURL = URL.createObjectURL(blob);
@@ -4534,7 +4540,9 @@ editor.init = function () {
   const colorPicker = function (elem) {
     const picker = elem.attr('id') === 'stroke_color' ? 'stroke' : 'fill';
     // const opacity = (picker == 'stroke' ? $('#stroke_opacity') : $('#fill_opacity'));
-    const title = (picker === 'stroke' ? 'Pick a Stroke Paint and Opacity' : 'Pick a Fill Paint and Opacity');
+    const title = picker === 'stroke'
+      ? uiStrings.ui.pick_stroke_paint_opacity
+      : uiStrings.ui.pick_fill_paint_opacity;
     // let wasNone = false; // Currently unused
     const pos = elem.offset();
     let {paint} = paintBox[picker];
@@ -4568,9 +4576,13 @@ editor.init = function () {
     const cur = curConfig[type === 'fill' ? 'initFill' : 'initStroke'];
     // set up gradients to be used for the buttons
     const svgdocbox = new DOMParser().parseFromString(
-      '<svg xmlns="http://www.w3.org/2000/svg"><rect width="16.5" height="16.5"' +
-'          fill="#' + cur.color + '" opacity="' + cur.opacity + '"/>' +
-'          <defs><linearGradient id="gradbox_"/></defs></svg>', 'text/xml');
+      `<svg xmlns="http://www.w3.org/2000/svg">
+        <rect width="16.5" height="16.5"
+          fill="#${cur.color}" opacity="${cur.opacity}"/>
+        <defs><linearGradient id="gradbox_"/></defs>
+      </svg>`,
+      'text/xml'
+    );
 
     let docElem = svgdocbox.documentElement;
     docElem = $(container)[0].appendChild(document.importNode(docElem, true));

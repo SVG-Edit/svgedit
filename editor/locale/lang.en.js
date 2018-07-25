@@ -23,7 +23,9 @@ export default {
     panel_drag: 'Drag left/right to resize side panel',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
-    pathCtrlPtTooltip: 'Drag control point to adjust curve properties'
+    pathCtrlPtTooltip: 'Drag control point to adjust curve properties',
+    pick_stroke_paint_opacity: 'Pick a Stroke Paint and Opacity',
+    pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity'
   },
   properties: {
     id: 'id',
