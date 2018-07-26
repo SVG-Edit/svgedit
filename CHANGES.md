@@ -4,6 +4,9 @@
   `captureTextNodes` with canvg (inheriting class had set
   `captureTextNodes` too late)
 - Fix: Avoid errors for tspan passed to `getGradient`
+- i18n: picking stroke/fill paint and opacity
+- Optimize: Avoid rewriting `points` attribute for free-hand path;
+  incorporates #176 (fixes #175)
 
 # 3.0.0-rc.1
 

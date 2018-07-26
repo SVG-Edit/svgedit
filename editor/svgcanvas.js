@@ -2390,9 +2390,13 @@ const mouseMove = function (evt) {
         bSpline = getBsplinePoint(parameter);
         sumDistance += Math.sqrt((nextPos.x - bSpline.x) * (nextPos.x - bSpline.x) + (nextPos.y - bSpline.y) * (nextPos.y - bSpline.y));
         if (sumDistance > THRESHOLD_DIST) {
-          dAttr += +bSpline.x + ',' + bSpline.y + ' ';
-          shape.setAttributeNS(null, 'points', dAttr);
           sumDistance -= THRESHOLD_DIST;
+
+          // Faster than completely re-writing the points attribute.
+          const point = svgcontent.createSVGPoint();
+          point.x = bSpline.x;
+          point.y = bSpline.y;
+          shape.points.appendItem(point);
         }
       }
     }
