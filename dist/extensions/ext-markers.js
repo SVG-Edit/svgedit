@@ -464,7 +464,7 @@ var svgEditorExtension_markers = (function () {
 
                 // note - to add additional marker types add them below with a unique id
                 // and add the associated icon(s) to marker-icons.svg
-                // the geometry is normallized to a 100x100 box with the origin at lower left
+                // the geometry is normalized to a 100x100 box with the origin at lower left
                 // Safari did not like negative values for low left of viewBox
                 // remember that the coordinate system has +y downward
 

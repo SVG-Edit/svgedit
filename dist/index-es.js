@@ -14748,9 +14748,13 @@ function SvgCanvas(container, config) {
                 bSpline = getBsplinePoint(parameter);
                 sumDistance += Math.sqrt((nextPos.x - bSpline.x) * (nextPos.x - bSpline.x) + (nextPos.y - bSpline.y) * (nextPos.y - bSpline.y));
                 if (sumDistance > THRESHOLD_DIST) {
-                  dAttr += +bSpline.x + ',' + bSpline.y + ' ';
-                  shape.setAttributeNS(null, 'points', dAttr);
                   sumDistance -= THRESHOLD_DIST;
+
+                  // Faster than completely re-writing the points attribute.
+                  var point = svgcontent.createSVGPoint();
+                  point.x = bSpline.x;
+                  point.y = bSpline.y;
+                  shape.points.appendItem(point);
                 }
               }
             }
@@ -28045,7 +28049,7 @@ editor.init = function () {
       * @property {string} title The tooltip text that will appear when the user hovers over the icon. Required.
       * @property {PlainObject.<string, external:jQuery.Function>|PlainObject.<"click", external:jQuery.Function>} events DOM event names with associated functions. Example: `{click () { alert('Button was clicked') } }`. Click is used with `includeWith` and `type` of "mode_flyout" (and "mode"); any events may be added if `list` is not present. Expected.
       * @property {string} panel The ID of the context panel to be included, if type is "context". Required only if type is "context".
-      * @property {string} icon The file path to the raster version of the icon image source. Required only if no `svgicon` is supplied.
+      * @property {string} icon The file path to the raster version of the icon image source. Required only if no `svgicons` is supplied from [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse}.
       * @property {string} [svgicon] If absent, will utilize the button "id"; used to set "placement" on the `svgIcons` call
       * @property {string} [list] Points to the "id" of a `context_tools` item of type "button-select" into which the button will be added as a panel list item
       * @property {Integer} [position] The numeric index for placement; defaults to last position (as of the time of extension addition) if not present. For use with {@link http://api.jquery.com/eq/}.
@@ -29090,14 +29094,17 @@ editor.init = function () {
    * @returns {undefined}
    */
   var clickClear = function clickClear() {
-    var dims = curConfig.dimensions;
+    var _curConfig$dimensions = slicedToArray(curConfig.dimensions, 2),
+        x = _curConfig$dimensions[0],
+        y = _curConfig$dimensions[1];
+
     $$b.confirm(uiStrings$1.notification.QwantToClear, function (ok) {
       if (!ok) {
         return;
       }
       setSelectMode();
       svgCanvas.clear();
-      svgCanvas.setResolution(dims[0], dims[1]);
+      svgCanvas.setResolution(x, y);
       updateCanvas(true);
       zoomImage();
       populateLayers();
@@ -29151,7 +29158,7 @@ editor.init = function () {
         if (loadingURL) {
           popURL = loadingURL;
         } else {
-          popHTML = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + str + '</title></head><body><h1>' + str + '</h1></body><html>';
+          popHTML = '<!DOCTYPE html><html>\n            <head>\n              <meta charset="utf-8">\n              <title>' + str + '</title>\n            </head>\n            <body><h1>' + str + '</h1></body>\n          <html>';
           if ((typeof URL === 'undefined' ? 'undefined' : _typeof(URL)) && URL.createObjectURL) {
             var blob = new Blob([popHTML], { type: 'text/html' });
             popURL = URL.createObjectURL(blob);
@@ -29571,7 +29578,7 @@ editor.init = function () {
   var colorPicker = function colorPicker(elem) {
     var picker = elem.attr('id') === 'stroke_color' ? 'stroke' : 'fill';
     // const opacity = (picker == 'stroke' ? $('#stroke_opacity') : $('#fill_opacity'));
-    var title = picker === 'stroke' ? 'Pick a Stroke Paint and Opacity' : 'Pick a Fill Paint and Opacity';
+    var title = picker === 'stroke' ? uiStrings$1.ui.pick_stroke_paint_opacity : uiStrings$1.ui.pick_fill_paint_opacity;
     // let wasNone = false; // Currently unused
     var pos = elem.offset();
     var paint = paintBox[picker].paint;
@@ -29599,15 +29606,15 @@ editor.init = function () {
         paintOpacity = void 0;
     var cur = curConfig[type === 'fill' ? 'initFill' : 'initStroke'];
     // set up gradients to be used for the buttons
-    var svgdocbox = new DOMParser().parseFromString('<svg xmlns="http://www.w3.org/2000/svg"><rect width="16.5" height="16.5"' + '          fill="#' + cur.color + '" opacity="' + cur.opacity + '"/>' + '          <defs><linearGradient id="gradbox_"/></defs></svg>', 'text/xml');
+    var svgdocbox = new DOMParser().parseFromString('<svg xmlns="http://www.w3.org/2000/svg">\n        <rect width="16.5" height="16.5"\n          fill="#' + cur.color + '" opacity="' + cur.opacity + '"/>\n        <defs><linearGradient id="gradbox_"/></defs>\n      </svg>', 'text/xml');
 
     var docElem = svgdocbox.documentElement;
     docElem = $$b(container)[0].appendChild(document.importNode(docElem, true));
     docElem.setAttribute('width', 16.5);
 
-    this.rect = docElem.firstChild;
+    this.rect = docElem.firstElementChild;
     this.defs = docElem.getElementsByTagName('defs')[0];
-    this.grad = this.defs.firstChild;
+    this.grad = this.defs.firstElementChild;
     this.paint = new $$b.jGraduate.Paint({ solidColor: cur.color });
     this.type = type;
 

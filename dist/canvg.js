@@ -1668,6 +1668,7 @@ var canvg = (function (exports) {
 
         classCallCheck(this, _class4);
 
+        this.captureTextNodes = arguments[1]; // Argument from inheriting class
         this.attributes = {};
         this.styles = {};
         this.children = [];
@@ -2851,7 +2852,8 @@ var canvg = (function (exports) {
       createClass(_class19, [{
         key: 'getGradient',
         value: function getGradient(ctx, element) {
-          var bb = this.gradientUnits === 'objectBoundingBox' ? element.getBoundingBox() : null;
+          var useBB = this.gradientUnits === 'objectBoundingBox' && element.getBoundingBox;
+          var bb = useBB ? element.getBoundingBox() : null;
 
           if (!this.attribute('x1').hasValue() && !this.attribute('y1').hasValue() && !this.attribute('x2').hasValue() && !this.attribute('y2').hasValue()) {
             this.attribute('x1', true).value = 0;
@@ -2860,10 +2862,10 @@ var canvg = (function (exports) {
             this.attribute('y2', true).value = 0;
           }
 
-          var x1 = this.gradientUnits === 'objectBoundingBox' ? bb.x() + bb.width() * this.attribute('x1').numValue() : this.attribute('x1').toPixels('x');
-          var y1 = this.gradientUnits === 'objectBoundingBox' ? bb.y() + bb.height() * this.attribute('y1').numValue() : this.attribute('y1').toPixels('y');
-          var x2 = this.gradientUnits === 'objectBoundingBox' ? bb.x() + bb.width() * this.attribute('x2').numValue() : this.attribute('x2').toPixels('x');
-          var y2 = this.gradientUnits === 'objectBoundingBox' ? bb.y() + bb.height() * this.attribute('y2').numValue() : this.attribute('y2').toPixels('y');
+          var x1 = useBB ? bb.x() + bb.width() * this.attribute('x1').numValue() : this.attribute('x1').toPixels('x');
+          var y1 = useBB ? bb.y() + bb.height() * this.attribute('y1').numValue() : this.attribute('y1').toPixels('y');
+          var x2 = useBB ? bb.x() + bb.width() * this.attribute('x2').numValue() : this.attribute('x2').toPixels('x');
+          var y2 = useBB ? bb.y() + bb.height() * this.attribute('y2').numValue() : this.attribute('y2').toPixels('y');
 
           if (x1 === x2 && y1 === y2) return null;
           return ctx.createLinearGradient(x1, y1, x2, y2);
@@ -2884,25 +2886,26 @@ var canvg = (function (exports) {
       createClass(_class20, [{
         key: 'getGradient',
         value: function getGradient(ctx, element) {
-          var bb = element.getBoundingBox();
+          var useBB = this.gradientUnits === 'objectBoundingBox' && element.getBoundingBox;
+          var bb = useBB ? element.getBoundingBox() : null;
 
           if (!this.attribute('cx').hasValue()) this.attribute('cx', true).value = '50%';
           if (!this.attribute('cy').hasValue()) this.attribute('cy', true).value = '50%';
           if (!this.attribute('r').hasValue()) this.attribute('r', true).value = '50%';
 
-          var cx = this.gradientUnits === 'objectBoundingBox' ? bb.x() + bb.width() * this.attribute('cx').numValue() : this.attribute('cx').toPixels('x');
-          var cy = this.gradientUnits === 'objectBoundingBox' ? bb.y() + bb.height() * this.attribute('cy').numValue() : this.attribute('cy').toPixels('y');
+          var cx = useBB ? bb.x() + bb.width() * this.attribute('cx').numValue() : this.attribute('cx').toPixels('x');
+          var cy = useBB ? bb.y() + bb.height() * this.attribute('cy').numValue() : this.attribute('cy').toPixels('y');
 
           var fx = cx;
           var fy = cy;
           if (this.attribute('fx').hasValue()) {
-            fx = this.gradientUnits === 'objectBoundingBox' ? bb.x() + bb.width() * this.attribute('fx').numValue() : this.attribute('fx').toPixels('x');
+            fx = useBB ? bb.x() + bb.width() * this.attribute('fx').numValue() : this.attribute('fx').toPixels('x');
           }
           if (this.attribute('fy').hasValue()) {
-            fy = this.gradientUnits === 'objectBoundingBox' ? bb.y() + bb.height() * this.attribute('fy').numValue() : this.attribute('fy').toPixels('y');
+            fy = useBB ? bb.y() + bb.height() * this.attribute('fy').numValue() : this.attribute('fy').toPixels('y');
           }
 
-          var r = this.gradientUnits === 'objectBoundingBox' ? (bb.width() + bb.height()) / 2.0 * this.attribute('r').numValue() : this.attribute('r').toPixels();
+          var r = useBB ? (bb.width() + bb.height()) / 2.0 * this.attribute('r').numValue() : this.attribute('r').toPixels();
 
           return ctx.createRadialGradient(fx, fy, 0, cx, cy, r);
         }
@@ -3224,11 +3227,7 @@ var canvg = (function (exports) {
 
       function _class30(node) {
         classCallCheck(this, _class30);
-
-        var _this33 = possibleConstructorReturn(this, (_class30.__proto__ || Object.getPrototypeOf(_class30)).call(this, node));
-
-        _this33.captureTextNodes = true;
-        return _this33;
+        return possibleConstructorReturn(this, (_class30.__proto__ || Object.getPrototypeOf(_class30)).call(this, node, true));
       }
 
       createClass(_class30, [{
@@ -3431,9 +3430,7 @@ var canvg = (function (exports) {
       function _class32(node) {
         classCallCheck(this, _class32);
 
-        var _this36 = possibleConstructorReturn(this, (_class32.__proto__ || Object.getPrototypeOf(_class32)).call(this, node));
-
-        _this36.captureTextNodes = true;
+        var _this36 = possibleConstructorReturn(this, (_class32.__proto__ || Object.getPrototypeOf(_class32)).call(this, node, true));
 
         _this36.text = node.nodeValue || node.text || '';
         return _this36;
