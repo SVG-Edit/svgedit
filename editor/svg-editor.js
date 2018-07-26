@@ -4576,11 +4576,9 @@ editor.init = function () {
     const cur = curConfig[type === 'fill' ? 'initFill' : 'initStroke'];
     // set up gradients to be used for the buttons
     const svgdocbox = new DOMParser().parseFromString(
-      `<svg xmlns="http://www.w3.org/2000/svg">
-        <rect width="16.5" height="16.5"
+      `<svg xmlns="http://www.w3.org/2000/svg"><rect width="16.5" height="16.5"
           fill="#${cur.color}" opacity="${cur.opacity}"/>
-        <defs><linearGradient id="gradbox_"/></defs>
-      </svg>`,
+        <defs><linearGradient id="gradbox_"/></defs></svg>`,
       'text/xml'
     );
 
