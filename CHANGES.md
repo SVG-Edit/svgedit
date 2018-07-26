@@ -1,12 +1,25 @@
 # 3.0.0-rc.2
 
-- Fix: Regression for `text` and `tspan` elements as far as
+- Fix: Avoid extension `includeWith` button conflicts/redundancies;
+  Incorporates #147
+- Fix: Ensure shift-key cycling through flyouts works with extension-added
+  `includeWith` as well as toolbarbuttons
+- Fix: Apply flyout arrows after extensions callback
+- Fix: Ensure SVG icon of flyout right-arrow is cloned to can be applied to
+  more than one extension
+- Fix: Ensure line tool shows as selected when "L" key command is used
+- Fix (canvg): Regression for `text` and `tspan` elements as far as
   `captureTextNodes` with canvg (inheriting class had set
   `captureTextNodes` too late)
-- Fix: Avoid errors for tspan passed to `getGradient`
+- Fix (canvg): Avoid errors for `tspan` passed to `getGradient`
 - i18n: picking stroke/fill paint and opacity
 - Optimize: Avoid rewriting `points` attribute for free-hand path;
   incorporates #176 (fixes #175)
+- Refactoring: Avoid passing on `undefined` var. (#147)
+- Refactoring: lbs; avoid indent in connector, destructuring, use map over push
+- Docs: Clarify nature of fixes
+- Docs: JSDoc for `setupFlyouts`, `Actions`, `toggleSidePanel`; missing for
+  ToolbarButton
 
 # 3.0.0-rc.1
 

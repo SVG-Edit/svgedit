@@ -814,6 +814,11 @@ editor.init = function () {
         */
         (win, data) => {
           extensionsAdded = true;
+          Actions.setAll();
+
+          $('.flyout_arrow_horiz:empty').each(function () {
+            $(this).append($.getSvgIcon('arrow_right', true).width(5).height(5));
+          });
           messageQueue.forEach(
             /**
              * @param {module:svgcanvas.SvgCanvas#event:message} messageObj
@@ -837,9 +842,9 @@ editor.init = function () {
   const setFlyoutPositions = function () {
     $('.tools_flyout').each(function () {
       const shower = $('#' + this.id + '_show');
-      const pos = shower.offset();
+      const {left, top} = shower.offset();
       const w = shower.outerWidth();
-      $(this).css({left: (pos.left + w) * editor.tool_scale, top: pos.top});
+      $(this).css({left: (left + w) * editor.tool_scale, top});
     });
   };
 
@@ -1327,12 +1332,6 @@ editor.init = function () {
       }}).then(() => {
         $('#svg_container')[0].style.visibility = 'visible';
         editor.runCallbacks();
-
-        setTimeout(function () {
-          $('.flyout_arrow_horiz:empty').each(function () {
-            $(this).append($.getSvgIcon('arrow_right').width(5).height(5));
-          });
-        }, 1);
       });
     }
   });
@@ -2696,46 +2695,68 @@ editor.init = function () {
         return;
       }
 
-      const tooltips = [];
-      $(this).children().each(function () {
-        tooltips.push(this.title);
-      });
+      const tooltips = $(this).children().map(function () {
+        return this.title;
+      }).get();
       shower[0].title = tooltips.join(' / ');
     });
   };
 
+  const allHolders = {};
+  /**
+   * @param {Object.<string, module:SVGEditor.ToolButton>} holders Key is a selector
+   * @returns {undefined}
+   */
   const setupFlyouts = function (holders) {
     $.each(holders, function (holdSel, btnOpts) {
-      const buttons = $(holdSel).children();
+      if (!allHolders[holdSel]) {
+        allHolders[holdSel] = [];
+      }
+      allHolders[holdSel].push(...btnOpts);
+
+      const buttons = $(holdSel).children().not('.tool_button_evt_handled');
       const showSel = holdSel + '_show';
       const shower = $(showSel);
       let def = false;
-      buttons.addClass('tool_button')
+      buttons.addClass('tool_button tool_button_evt_handled')
         .unbind('click mousedown mouseup') // may not be necessary
-        .each(function (i) {
-          // Get this buttons options
-          const opts = btnOpts[i];
+        .each(function () {
+          // Get this button's options
+          const idSel = '#' + this.getAttribute('id');
+          const [i, opts] = Object.entries(btnOpts).find(([i, {sel}]) => {
+            return sel === idSel;
+          });
 
           // Remember the function that goes with this ID
           flyoutFuncs[opts.sel] = opts.fn;
 
           if (opts.isDefault) { def = i; }
 
-          // Clicking the icon in flyout should set this set's icon
-          const func = function (event) {
+          /**
+           * Clicking the icon in flyout should set this set's icon
+           * @param {Event} ev
+           * @returns {undefined}
+           */
+          const flyoutAction = function (ev) {
             let options = opts;
             // Find the currently selected tool if comes from keystroke
-            if (event.type === 'keydown') {
+            if (ev.type === 'keydown') {
               const flyoutIsSelected = $(options.parent + '_show').hasClass('tool_button_current');
               const currentOperation = $(options.parent + '_show').attr('data-curopt');
-              $.each(holders[opts.parent], function (i, tool) {
-                if (tool.sel === currentOperation) {
-                  if (!event.shiftKey || !flyoutIsSelected) {
-                    options = tool;
-                  } else {
-                    options = holders[opts.parent][i + 1] || holders[opts.parent][0];
-                  }
+              Object.entries(holders[opts.parent]).some(([i, tool]) => {
+                if (tool.sel !== currentOperation) {
+                  return;
                 }
+                if (!ev.shiftKey || !flyoutIsSelected) {
+                  options = tool;
+                } else {
+                  // If flyout is selected, allow shift key to iterate through subitems
+                  i = parseInt(i, 10);
+                  // Use `allHolders` to include both extension `includeWith` and toolbarButtons
+                  options = allHolders[opts.parent][i + 1] ||
+                    holders[opts.parent][0];
+                }
+                return true;
               });
             }
             if ($(this).hasClass('disabled')) { return false; }
@@ -2755,10 +2776,10 @@ editor.init = function () {
             shower.append(icon).attr('data-curopt', options.sel); // This sets the current mode
           };
 
-          $(this).mouseup(func);
+          $(this).mouseup(flyoutAction);
 
           if (opts.key) {
-            $(document).bind('keydown', opts.key[0] + ' shift+' + opts.key[0], func);
+            $(document).bind('keydown', opts.key[0] + ' shift+' + opts.key[0], flyoutAction);
           }
         });
 
@@ -2884,7 +2905,7 @@ editor.init = function () {
    * @param {external:Window} win
    * @param {module:svgcanvas.SvgCanvas#event:extension_added} ext
    * @listens module:svgcanvas.SvgCanvas#event:extension_added
-   * @returns {undefined}
+   * @returns {Promise} Resolves to `undefined`
    */
   const extAdded = function (win, ext) {
     if (!ext) {
@@ -3040,8 +3061,9 @@ editor.init = function () {
 
       /**
       * @typedef {GenericArray} module:SVGEditor.KeyArray
-      * @property {string} 0
+      * @property {string} 0 The key to bind (on `keydown`)
       * @property {boolean} 1 Whether to `preventDefault` on the `keydown` event
+      * @property {boolean} 2 Not apparently in use (NoDisableInInput)
       */
       /**
        * @typedef {string|module:SVGEditor.KeyArray} module:SVGEditor.Key
@@ -3065,7 +3087,7 @@ editor.init = function () {
       * @property {module:SVGEditor.Key} [key] The key to bind to the button
       */
       // Add buttons given by extension
-      $.each(ext.buttons, function (i, btn) {
+      $.each(ext.buttons, function (i, /** @type {module:SVGEditor.Button} */ btn) {
         let {id} = btn;
         let num = i;
         // Give button a unique ID
@@ -3159,7 +3181,7 @@ editor.init = function () {
               icon: btn.id,
               // key: btn.key,
               isDefault: true
-            }, refData];
+            }]; // , refData
             //
             // // {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
             //
@@ -3202,7 +3224,6 @@ editor.init = function () {
               .append($('<div>', {class: 'flyout_arrow_horiz'}));
 
             refBtn.before(showBtn);
-
             // Create a flyout div
             flyoutHolder = makeFlyoutHolder(tlsId, refBtn);
           }
@@ -3220,7 +3241,7 @@ editor.init = function () {
             fn: btn.events.click,
             icon: btn.id,
             key: btn.key,
-            isDefault: btn.includeWith ? btn.includeWith.isDefault : 0
+            isDefault: Boolean(btn.includeWith && btn.includeWith.isDefault)
           }, refData];
 
           // {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
@@ -3274,26 +3295,27 @@ editor.init = function () {
       });
 
       if (svgicons) {
-        $.svgIcons(svgicons, {
-          w: 24, h: 24,
-          id_match: false,
-          no_img: (!isWebkit()),
-          fallback: fallbackObj,
-          placement: placementObj,
-          callback (icons) {
-            // Non-ideal hack to make the icon match the current size
-            // if (curPrefs.iconsize && curPrefs.iconsize !== 'm') {
-            if ($.pref('iconsize') !== 'm') {
-              prepResize();
+        return new Promise((resolve, reject) => {
+          $.svgIcons(svgicons, {
+            w: 24, h: 24,
+            id_match: false,
+            no_img: (!isWebkit()),
+            fallback: fallbackObj,
+            placement: placementObj,
+            callback (icons) {
+              // Non-ideal hack to make the icon match the current size
+              // if (curPrefs.iconsize && curPrefs.iconsize !== 'm') {
+              if ($.pref('iconsize') !== 'm') {
+                prepResize();
+              }
+              runCallback();
+              resolve();
             }
-            runCallback();
-          }
+          });
         });
       }
     }
-    if (!svgicons) {
-      runCallback();
-    }
+    return runCallback();
   };
 
   const getPaint = function (color, opac, type) {
@@ -4908,8 +4930,11 @@ editor.init = function () {
     changeSidePanelWidth(deltaX);
   };
 
-  // if width is non-zero, then fully close it, otherwise fully open it
-  // the optional close argument forces the side panel closed
+  /**
+   * If width is non-zero, then fully close it, otherwise fully open it
+   * @param {boolean} close Forces the side panel closed
+   * @returns {undefined}
+   */
   const toggleSidePanel = function (close) {
     const w = $('#sidepanels').width();
     const deltaX = (w > 2 || close ? 2 : SIDEPANEL_OPENWIDTH) - w;
@@ -5023,19 +5048,43 @@ editor.init = function () {
   // Prevent browser from erroneously repopulating fields
   $('input,select').attr('autocomplete', 'off');
 
-  // Associate all button actions as well as non-button keyboard shortcuts
+  /**
+   * Associate all button actions as well as non-button keyboard shortcuts
+   * @namespace {PlainObject} module:SVGEditor~Actions
+   */
   const Actions = (function () {
-    // sel:'selector', fn:function, evt:'event', key:[key, preventDefault, NoDisableInInput]
+    /**
+    * @typedef {PlainObject} module:SVGEditor.ToolButton
+    * @property {string} sel The CSS selector for the tool
+    * @property {external:jQuery.Function} fn A handler to be attached to the `evt`
+    * @property {string} evt The event for which the `fn` listener will be added
+    * @property {module:SVGEditor.Key} [key] [key, preventDefault, NoDisableInInput]
+    * @property {string} [parent] Selector
+    * @property {boolean} [hidekey] Whether to show key value in title
+    * @property {string} [icon] The button ID
+    * @property {boolean} isDefault For flyout holders
+    */
+    /**
+     *
+     * @name module:SVGEditor~ToolButtons
+     * @type {module:SVGEditor.ToolButton[]}
+     */
     const toolButtons = [
       {sel: '#tool_select', fn: clickSelect, evt: 'click', key: ['V', true]},
       {sel: '#tool_fhpath', fn: clickFHPath, evt: 'click', key: ['Q', true]},
-      {sel: '#tool_line', fn: clickLine, evt: 'click', key: ['L', true]},
-      {sel: '#tool_rect', fn: clickRect, evt: 'mouseup', key: ['R', true], parent: '#tools_rect', icon: 'rect'},
-      {sel: '#tool_square', fn: clickSquare, evt: 'mouseup', parent: '#tools_rect', icon: 'square'},
-      {sel: '#tool_fhrect', fn: clickFHRect, evt: 'mouseup', parent: '#tools_rect', icon: 'fh_rect'},
-      {sel: '#tool_ellipse', fn: clickEllipse, evt: 'mouseup', key: ['E', true], parent: '#tools_ellipse', icon: 'ellipse'},
-      {sel: '#tool_circle', fn: clickCircle, evt: 'mouseup', parent: '#tools_ellipse', icon: 'circle'},
-      {sel: '#tool_fhellipse', fn: clickFHEllipse, evt: 'mouseup', parent: '#tools_ellipse', icon: 'fh_ellipse'},
+      {sel: '#tool_line', fn: clickLine, evt: 'click', key: ['L', true], parent: '#tools_line', prepend: true},
+      {sel: '#tool_rect', fn: clickRect, evt: 'mouseup',
+        key: ['R', true], parent: '#tools_rect', icon: 'rect'},
+      {sel: '#tool_square', fn: clickSquare, evt: 'mouseup',
+        parent: '#tools_rect', icon: 'square'},
+      {sel: '#tool_fhrect', fn: clickFHRect, evt: 'mouseup',
+        parent: '#tools_rect', icon: 'fh_rect'},
+      {sel: '#tool_ellipse', fn: clickEllipse, evt: 'mouseup',
+        key: ['E', true], parent: '#tools_ellipse', icon: 'ellipse'},
+      {sel: '#tool_circle', fn: clickCircle, evt: 'mouseup',
+        parent: '#tools_ellipse', icon: 'circle'},
+      {sel: '#tool_fhellipse', fn: clickFHEllipse, evt: 'mouseup',
+        parent: '#tools_ellipse', icon: 'fh_ellipse'},
       {sel: '#tool_path', fn: clickPath, evt: 'click', key: ['P', true]},
       {sel: '#tool_text', fn: clickText, evt: 'click', key: ['T', true]},
       {sel: '#tool_image', fn: clickImage, evt: 'mouseup'},
@@ -5053,13 +5102,15 @@ editor.init = function () {
       {sel: '#tool_import', fn: clickImport, evt: 'mouseup'},
       {sel: '#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
       {sel: '#tool_wireframe', fn: clickWireframe, evt: 'click', key: ['F', true]},
-      {sel: '#tool_source_cancel,.overlay,#tool_docprops_cancel,#tool_prefs_cancel', fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
+      {sel: '#tool_source_cancel,.overlay,#tool_docprops_cancel,#tool_prefs_cancel',
+        fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
       {sel: '#tool_source_save', fn: saveSourceEditor, evt: 'click'},
       {sel: '#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
       {sel: '#tool_docprops', fn: showDocProperties, evt: 'mouseup'},
       {sel: '#tool_prefs_save', fn: savePreferences, evt: 'click'},
       {sel: '#tool_prefs_option', fn () { showPreferences(); return false; }, evt: 'mouseup'},
-      {sel: '#tool_delete,#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
+      {sel: '#tool_delete,#tool_delete_multi', fn: deleteSelected,
+        evt: 'click', key: ['del/backspace', true]},
       {sel: '#tool_reorient', fn: reorientPath, evt: 'click'},
       {sel: '#tool_node_link', fn: linkControlPoints, evt: 'click'},
       {sel: '#tool_node_clone', fn: clonePathNode, evt: 'click'},
@@ -5131,7 +5182,10 @@ editor.init = function () {
       '5/Shift+5': '#tools_ellipse_show'
     };
 
-    return {
+    return { /** @lends module:SVGEditor~Actions */
+      /**
+       * @returns {undefined}
+       */
       setAll () {
         const flyouts = {};
 
@@ -5154,8 +5208,10 @@ editor.init = function () {
               if (!fH.length) {
                 fH = makeFlyoutHolder(opts.parent.substr(1));
               }
-
-              fH.append(btn);
+              if (opts.prepend) {
+                btn[0].style.margin = 'initial';
+              }
+              fH[opts.prepend ? 'prepend' : 'append'](btn);
 
               if (!Array.isArray(flyouts[opts.parent])) {
                 flyouts[opts.parent] = [];
@@ -5230,6 +5286,9 @@ editor.init = function () {
 
         $('#tool_zoom').dblclick(dblclickZoom);
       },
+      /**
+       * @returns {undefined}
+       */
       setTitles () {
         $.each(keyAssocs, function (keyval, sel) {
           const menu = ($(sel).parents('#main_menu').length);
@@ -5260,17 +5319,17 @@ editor.init = function () {
           });
         });
       },
+      /**
+       * @param {string} sel Selector to match
+       * @returns {module:SVGEditor.ToolButton}
+       */
       getButtonData (sel) {
-        let b;
-        $.each(toolButtons, function (i, btn) {
-          if (btn.sel === sel) { b = btn; }
+        return Object.values(toolButtons).find((btn) => {
+          return btn.sel === sel;
         });
-        return b;
       }
     };
   }());
-
-  Actions.setAll();
 
   // Select given tool
   editor.ready(function () {

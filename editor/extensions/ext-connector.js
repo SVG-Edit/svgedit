@@ -431,73 +431,74 @@ export default {
         // , y = opts.mouse_y / zoom,
         let mouseTarget = e.target;
 
-        if (svgCanvas.getMode() === 'connector') {
-          const fo = $(mouseTarget).closest('foreignObject');
-          if (fo.length) { mouseTarget = fo[0]; }
+        if (svgCanvas.getMode() !== 'connector') {
+          return;
+        }
+        const fo = $(mouseTarget).closest('foreignObject');
+        if (fo.length) { mouseTarget = fo[0]; }
 
-          const parents = $(mouseTarget).parents();
+        const parents = $(mouseTarget).parents();
 
-          if (mouseTarget === startElem) {
-            // Start line through click
-            started = true;
-            return {
-              keep: true,
-              element: null,
-              started
-            };
-          }
-          if ($.inArray(svgcontent, parents) === -1) {
-            // Not a valid target element, so remove line
-            $(curLine).remove();
-            started = false;
-            return {
-              keep: false,
-              element: null,
-              started
-            };
-          }
-          // Valid end element
-          endElem = mouseTarget;
-
-          const startId = startElem.id, endId = endElem.id;
-          const connStr = startId + ' ' + endId;
-          const altStr = endId + ' ' + startId;
-          // Don't create connector if one already exists
-          const dupe = $(svgcontent).find(connSel).filter(function () {
-            const conn = this.getAttributeNS(seNs, 'connector');
-            if (conn === connStr || conn === altStr) { return true; }
-          });
-          if (dupe.length) {
-            $(curLine).remove();
-            return {
-              keep: false,
-              element: null,
-              started: false
-            };
-          }
-
-          const bb = svgCanvas.getStrokedBBox([endElem]);
-
-          const pt = getBBintersect(startX, startY, bb, getOffset('start', curLine));
-          setPoint(curLine, 'end', pt.x, pt.y, true);
-          $(curLine)
-            .data('c_start', startId)
-            .data('c_end', endId)
-            .data('end_bb', bb);
-          seNs = svgCanvas.getEditorNS(true);
-          curLine.setAttributeNS(seNs, 'se:connector', connStr);
-          curLine.setAttribute('class', connSel.substr(1));
-          curLine.setAttribute('opacity', 1);
-          svgCanvas.addToSelection([curLine]);
-          svgCanvas.moveToBottomSelectedElement();
-          selManager.requestSelector(curLine).showGrips(false);
-          started = false;
+        if (mouseTarget === startElem) {
+          // Start line through click
+          started = true;
           return {
             keep: true,
-            element: curLine,
+            element: null,
             started
           };
         }
+        if ($.inArray(svgcontent, parents) === -1) {
+          // Not a valid target element, so remove line
+          $(curLine).remove();
+          started = false;
+          return {
+            keep: false,
+            element: null,
+            started
+          };
+        }
+        // Valid end element
+        endElem = mouseTarget;
+
+        const startId = startElem.id, endId = endElem.id;
+        const connStr = startId + ' ' + endId;
+        const altStr = endId + ' ' + startId;
+        // Don't create connector if one already exists
+        const dupe = $(svgcontent).find(connSel).filter(function () {
+          const conn = this.getAttributeNS(seNs, 'connector');
+          if (conn === connStr || conn === altStr) { return true; }
+        });
+        if (dupe.length) {
+          $(curLine).remove();
+          return {
+            keep: false,
+            element: null,
+            started: false
+          };
+        }
+
+        const bb = svgCanvas.getStrokedBBox([endElem]);
+
+        const pt = getBBintersect(startX, startY, bb, getOffset('start', curLine));
+        setPoint(curLine, 'end', pt.x, pt.y, true);
+        $(curLine)
+          .data('c_start', startId)
+          .data('c_end', endId)
+          .data('end_bb', bb);
+        seNs = svgCanvas.getEditorNS(true);
+        curLine.setAttributeNS(seNs, 'se:connector', connStr);
+        curLine.setAttribute('class', connSel.substr(1));
+        curLine.setAttribute('opacity', 1);
+        svgCanvas.addToSelection([curLine]);
+        svgCanvas.moveToBottomSelectedElement();
+        selManager.requestSelector(curLine).showGrips(false);
+        started = false;
+        return {
+          keep: true,
+          element: curLine,
+          started
+        };
       },
       selectedChanged (opts) {
         // TODO: Find better way to skip operations if no connectors are in use

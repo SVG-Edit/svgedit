@@ -1156,7 +1156,7 @@ this.addExtension = async function (name, extInitFunc, importLocale) {
     }
 
     extensions[name] = extObj;
-    call('extension_added', extObj);
+    return call('extension_added', extObj);
   } else {
     console.log('Cannot add extension "' + name + '", an extension by that name already exists.');
   }
