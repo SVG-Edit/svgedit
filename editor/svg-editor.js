@@ -4576,9 +4576,11 @@ editor.init = function () {
     const cur = curConfig[type === 'fill' ? 'initFill' : 'initStroke'];
     // set up gradients to be used for the buttons
     const svgdocbox = new DOMParser().parseFromString(
-      `<svg xmlns="http://www.w3.org/2000/svg"><rect width="16.5" height="16.5"
+      `<svg xmlns="http://www.w3.org/2000/svg">
+        <rect width="16.5" height="16.5"
           fill="#${cur.color}" opacity="${cur.opacity}"/>
-        <defs><linearGradient id="gradbox_"/></defs></svg>`,
+        <defs><linearGradient id="gradbox_"/></defs>
+      </svg>`,
       'text/xml'
     );
 
@@ -4586,9 +4588,9 @@ editor.init = function () {
     docElem = $(container)[0].appendChild(document.importNode(docElem, true));
     docElem.setAttribute('width', 16.5);
 
-    this.rect = docElem.firstChild;
+    this.rect = docElem.firstElementChild;
     this.defs = docElem.getElementsByTagName('defs')[0];
-    this.grad = this.defs.firstChild;
+    this.grad = this.defs.firstElementChild;
     this.paint = new $.jGraduate.Paint({solidColor: cur.color});
     this.type = type;
 
