@@ -70,6 +70,7 @@
     "load-stylesheets": "^0.7.0",
     "node-static": "^0.7.10",
     "opn-cli": "^3.1.0",
+    "promise-fs": "^1.3.0",
     "qunit": "^2.6.1",
     "rollup": "0.63.2",
     "rollup-plugin-babel": "^3.0.7",

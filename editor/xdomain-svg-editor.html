@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- AUTO-GENERATED FROM xdomain-svg-editor-es.html; DO NOT EDIT; use build-html.js to build -->
 <html>
 <head>
     <meta charset="utf-8"/>
@@ -17,18 +18,18 @@
     <!--{endif}-->
     <!-- We keep this next module external to avoid the need to
       load further scripts if not supported -->
-    <script type="module" src="redirect-on-lacking-support.js"></script>
+    <script defer="defer" src="../dist/redirect-on-lacking-support.js"></script>
     <!-- always minified scripts -->
     <script src="jquery-ui/jquery-ui-1.8.17.custom.min.js"></script>
     <!-- The following could be removed for more modern browsers -->
-    <script src="external/dom-polyfill/dom-polyfill.js"></script>
+    <script src="../dist/dom-polyfill.js"></script>
     <!-- The following could be removed for more modern browsers; currently
       using for at least `String.prototype.includes`, `Array.prototype.includes`,
       `String.prototype.startsWith` -->
     <script src="external/babel-polyfill/polyfill.min.js"></script>
     <!-- If you do not wish to add extensions by URL, you can load them
     by creating the following file and adding by calls to svgEditor.setConfig -->
-    <script type="module" src="xdomain-svgedit-config-es.js"></script>
+    <script defer="defer" src="xdomain-svgedit-config-iife.js"></script>
 
     <!-- FEEDS -->
     <link rel="alternate" type="application/atom+xml"

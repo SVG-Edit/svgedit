@@ -229,7 +229,7 @@ export default function ($) {
       }
     }
 
-    const setIcon = function (target, icon, id, setID) {
+    function setIcon (target, icon, id, setID) {
       if (isOpera) icon.css('visibility', 'hidden');
       if (opts.replace) {
         if (setID) icon.attr('id', id);
@@ -244,15 +244,15 @@ export default function ($) {
           icon.removeAttr('style');
         }, 1);
       }
-    };
+    }
 
     let holder;
-    const addIcon = function (icon, id) {
+    function addIcon (icon, id) {
       if (opts.id_match === undefined || opts.id_match !== false) {
         setIcon(holder, icon, id, true);
       }
       svgIcons[id] = icon;
-    };
+    }
 
     function makeIcons (toImage, fallback) {
       if (iconsMade) return;
