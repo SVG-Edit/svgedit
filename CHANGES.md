@@ -16,6 +16,10 @@
 - Fix (canvg): Regression on blur
 - Fix (canvg): Avoid errors for `tspan` passed to `getGradient`
 - i18n: picking stroke/fill paint and opacity
+- i18n: Remove eyedropper reference from main locale (in extension locale now)
+- i18n: Add placeholders for `pick_stroke_paint_opacity`, `pick_fill_paint_opacity`, `popupWindowBlocked`
+- i18n: Update `saveFromBrowser`
+- i18n: Reapply locale strings
 - Enhancement: Create xdomain file build which works without ES6 Modules
 - Enhancement: Build xdomain files dynamically
 - Optimize: Further image optimizing

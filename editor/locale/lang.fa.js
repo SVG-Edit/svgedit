@@ -20,7 +20,12 @@ export default {
     toggle_stroke_tools: 'Show/hide more stroke tools',
     palette_info: '‫برای تغییر رنگ، کلیک کنید. برای تغییر رنگ لبه، کلید تبدیل (shift) را فشرده و کلیک کنید‬',
     zoom_level: '‫تغییر بزرگ نمایی‬',
-    panel_drag: 'Drag left/right to resize side panel'
+    panel_drag: 'Drag left/right to resize side panel',
+    quality: 'Quality:',
+    pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
+    pathCtrlPtTooltip: 'Drag control point to adjust curve properties',
+    pick_stroke_paint_opacity: 'Pick a Stroke Paint and Opacity',
+    pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity'
   },
   properties: {
     id: 'Identify the element',
@@ -97,7 +102,6 @@ export default {
     mode_select: '‫ابزار انتخاب ‬',
     mode_fhpath: '‫ابزار مداد ‬',
     mode_line: '‫ابزار خط ‬',
-    mode_connect: 'Connect two objects',
     mode_rect: 'Rectangle Tool',
     mode_square: 'Square Tool',
     mode_fhrect: '‫مستطیل با قابلیت تغییر پویا‬',
@@ -108,7 +112,6 @@ export default {
     mode_text: '‫ابزار متن ‬',
     mode_image: '‫ابزار تصویر ‬',
     mode_zoom: '‫ابزار بزرگ نمایی ‬',
-    mode_eyedropper: 'Eye Dropper Tool',
     no_embed: 'NOTE: This image cannot be embedded. It will depend on this path to be displayed',
     undo: '‫واگرد ‬',
     redo: '‫ازنو ‬',
@@ -199,12 +202,17 @@ export default {
     enterNewImgURL: '‫نشانی وب (url) تصویر جدید را وارد کنید‬',
     defsFailOnSave: 'NOTE: Due to a bug in your browser, this image may appear wrong (missing gradients or elements). It will however appear correct once actually saved.',
     loadingImage: 'Loading image, please wait...',
-    saveFromBrowser: 'Select "Save As..." in your browser to save this image as a %s file.',
+    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.",
     noteTheseIssues: 'Also note the following issues: ',
     unsavedChanges: 'There are unsaved changes.',
     enterNewLinkURL: 'Enter the new hyperlink URL',
     errorLoadingSVG: 'Error: Unable to load SVG data',
     URLloadFail: 'Unable to load from URL',
-    retrieving: 'Retrieving "%s"...'
+    retrieving: "Retrieving '%s' ...",
+    popupWindowBlocked: 'Popup window may be blocked by browser',
+    exportNoBlur: 'Blurred elements will appear as un-blurred',
+    exportNoforeignObject: 'foreignObject elements will not appear',
+    exportNoDashArray: 'Strokes will appear filled',
+    exportNoText: 'Text may not appear as expected'
   }
 };
