@@ -2,7 +2,7 @@
 
 ## Prepare
 
-1. `npm test` - Ensure tests are passing
+1. `npm test` - Ensure build steps occur and tests are passing
 1. `npm run build-doc` - Ensure JSDoc can build and is available for site build
 1. `npm run grep-doc` - For JSDoc, we ensure that a minimum of generic types
     have been added (e.g., "number" should instead be "Float" or "Array",

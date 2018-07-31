@@ -50,6 +50,9 @@ console.log(`${output}\nTotal failures found: ${total}.\n`);
 
 function reduceFalseMatches (file, res) {
   switch (file) {
+  case 'editor/xdomain-svgedit-config-iife.js': // Ignore
+    res.line = [];
+    break;
   case 'editor/external/dynamic-import-polyfill/importModule.js':
     res.line = res.line.filter((line) => {
       return ![

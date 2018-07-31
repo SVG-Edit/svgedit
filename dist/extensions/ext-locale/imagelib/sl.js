@@ -1,14 +1,14 @@
-var svgEditorExtensionLocale_imagelib_fr = (function () {
+var svgEditorExtensionLocale_imagelib_sl = (function () {
   'use strict';
 
-  var fr = {
-    select_lib: "Choisir une bibliothèque d'images",
-    show_list: 'show_list',
-    import_single: 'import_single',
-    import_multi: 'import_multi',
-    open: 'open',
+  var sl = {
+    select_lib: 'Select an image library',
+    show_list: 'Show library list',
+    import_single: 'Import single',
+    import_multi: 'Import multiple',
+    open: 'Open as new document',
     buttons: [{
-      title: "Bibliothèque d'images"
+      title: 'Knjižnica slik'
     }],
     imgLibs: [{
       name: 'Demo library (local)',
@@ -25,6 +25,6 @@ var svgEditorExtensionLocale_imagelib_fr = (function () {
     }]
   };
 
-  return fr;
+  return sl;
 
 }());

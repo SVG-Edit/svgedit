@@ -6,6 +6,7 @@ docs/jsdoc
 svgedit-config-es.js
 svgedit-config-iife.js
 svgedit-custom.css
+editor/xdomain-svgedit-config-iife.js
 
 # Vendor/minified files
 editor/jquery.min.js
