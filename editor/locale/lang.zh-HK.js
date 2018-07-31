@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Ungroup Elements',
     docprops: '文档属性',
-    imagelib: 'Image Library',
     move_bottom: '移至底部',
     move_top: '移动到顶部',
     node_clone: 'Clone Node',

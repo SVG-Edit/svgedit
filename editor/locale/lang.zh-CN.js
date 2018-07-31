@@ -126,7 +126,6 @@ export default {
     reorient_path: '调整路径',
     ungroup: '取消组合元素',
     docprops: '文档属性',
-    imagelib: '图像库',
     move_bottom: '移至底部',
     move_top: '移至顶部',
     node_clone: '复制节点',

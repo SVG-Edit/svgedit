@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Szétbont elemei',
     docprops: 'Dokumentum tulajdonságai',
-    imagelib: 'Image Library',
     move_bottom: 'Mozgatás lefelé',
     move_top: 'Move to Top',
     node_clone: 'Clone Node',

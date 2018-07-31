@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient pot',
     ungroup: 'Razdruži elemente',
     docprops: 'Lastnosti dokumenta',
-    imagelib: 'Knjižnica slik',
     move_bottom: 'Premakni na dno',
     move_top: 'Premakni na vrh',
     node_clone: 'Kloniraj oglišče',

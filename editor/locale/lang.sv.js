@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Dela Elements',
     docprops: 'Dokumentegenskaper',
-    imagelib: 'Image Library',
     move_bottom: 'Move to Bottom',
     move_top: 'Flytta till början',
     node_clone: 'Clone Node',

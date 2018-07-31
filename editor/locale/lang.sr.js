@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Разгрупирање Елементи',
     docprops: 'Особине документа',
-    imagelib: 'Image Library',
     move_bottom: 'Премести на доле',
     move_top: 'Премести на врх',
     node_clone: 'Clone Node',

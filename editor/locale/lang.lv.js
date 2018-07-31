@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Atgrupēt Elements',
     docprops: 'Document Properties',
-    imagelib: 'Image Library',
     move_bottom: 'Pārvietot uz leju',
     move_top: 'Pārvietot uz augšu',
     node_clone: 'Clone Node',

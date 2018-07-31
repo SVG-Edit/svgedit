@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'องค์ประกอบ Ungroup',
     docprops: 'คุณสมบัติของเอกสาร',
-    imagelib: 'Image Library',
     move_bottom: 'ย้ายไปด้านล่าง',
     move_top: 'ย้ายไปด้านบน',
     node_clone: 'Clone Node',

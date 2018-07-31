@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Ungroup Elements [G]',
     docprops: 'Document Properties [D]',
-    imagelib: 'Image Library',
     move_bottom: 'Send to Back [ Ctrl+Shift+[ ]',
     move_top: 'Bring to Front [ Ctrl+Shift+] ]',
     node_clone: 'Clone Node',

@@ -126,7 +126,6 @@ export default {
     reorient_path: '‫جهت دهی مجدد مسیر‬',
     ungroup: '‫خارج کردن عناصر از گروه ‬',
     docprops: '‫مشخصات سند ‬',
-    imagelib: 'Image Library',
     move_bottom: '‫انتقال به پایین ترین ‬',
     move_top: '‫انتقال به بالاترین ‬',
     node_clone: '‫ایجاد کپی از نقطه‬',

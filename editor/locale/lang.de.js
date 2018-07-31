@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Neuausrichtung des Pfades',
     ungroup: 'Gruppierung aufheben',
     docprops: 'Dokument-Eigenschaften',
-    imagelib: 'Bilder-Bibliothek',
     move_bottom: 'Die gewählten Objekte nach ganz unten verschieben',
     move_top: 'Die gewählten Objekte nach ganz oben verschieben',
     node_clone: 'Klone den Knoten',

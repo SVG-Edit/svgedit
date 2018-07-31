@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Išgrupuoti elementai',
     docprops: 'Document Properties',
-    imagelib: 'Image Library',
     move_bottom: 'Perkelti į apačią',
     move_top: 'Perkelti į viršų',
     node_clone: 'Clone Node',

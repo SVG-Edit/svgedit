@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Riallinea',
     ungroup: 'Separa gli elementi',
     docprops: 'Proprietà del documento',
-    imagelib: 'Image Library',
     move_bottom: 'Sposta in fondo',
     move_top: 'Sposta in cima',
     node_clone: 'Clona nodo',

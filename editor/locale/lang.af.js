@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Ungroup Elemente',
     docprops: 'Document Properties',
-    imagelib: 'Image Library',
     move_bottom: 'Skuif na Bottom',
     move_top: 'Skuif na bo',
     node_clone: 'Clone Node',

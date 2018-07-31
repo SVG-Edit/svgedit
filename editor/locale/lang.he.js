@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'אלמנטים פרק קבוצה',
     docprops: 'מאפייני מסמך',
-    imagelib: 'Image Library',
     move_bottom: 'הזז למטה',
     move_top: 'עבור לראש הדף',
     node_clone: 'Clone Node',

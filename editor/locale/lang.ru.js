@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Изменить ориентацию контура',
     ungroup: 'Разгруппировать элементы',
     docprops: 'Свойства документа',
-    imagelib: 'Image Library',
     move_bottom: 'Опустить',
     move_top: 'Поднять',
     node_clone: 'Создать копию узла',

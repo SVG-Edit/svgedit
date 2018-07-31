@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Paad opnij orientearje',
     ungroup: 'Groepering opheffe',
     docprops: 'Dokuminteigenskippen',
-    imagelib: 'Image Library',
     move_bottom: 'Nei eftergrûn',
     move_top: 'Nei foargrûn',
     node_clone: 'Knooppunt duplisearje',

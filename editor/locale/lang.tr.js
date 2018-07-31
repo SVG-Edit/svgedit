@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Çöz Elemanları',
     docprops: 'Belge Özellikleri',
-    imagelib: 'Image Library',
     move_bottom: 'Altına gider',
     move_top: 'Üste taşı',
     node_clone: 'Clone Node',

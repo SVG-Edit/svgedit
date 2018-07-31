@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Eilimintí Díghrúpáil',
     docprops: 'Doiciméad Airíonna',
-    imagelib: 'Image Library',
     move_bottom: 'Téigh go Bun',
     move_top: 'Téigh go Barr',
     node_clone: 'Clone Node',

@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Ungroup Sangkap',
     docprops: 'Document Katangian',
-    imagelib: 'Image Library',
     move_bottom: 'Ilipat sa Ibaba',
     move_top: 'Ilipat sa Tuktok',
     node_clone: 'Clone Node',

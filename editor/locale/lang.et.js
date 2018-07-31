@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Lõhu Elements',
     docprops: 'Dokumendi omadused',
-    imagelib: 'Image Library',
     move_bottom: 'Liiguta alla',
     move_top: 'Liiguta üles',
     node_clone: 'Clone Node',

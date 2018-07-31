@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Opdel Elements',
     docprops: 'Document Properties',
-    imagelib: 'Image Library',
     move_bottom: 'Flyt til bund',
     move_top: 'Flyt til toppen',
     node_clone: 'Clone Node',

@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Herorienteer pad',
     ungroup: 'Groepering opheffen',
     docprops: 'Documenteigenschappen',
-    imagelib: 'Image Library',
     move_bottom: 'Naar achtergrond',
     move_top: 'Naar voorgrond',
     node_clone: 'Kloon knooppunt',

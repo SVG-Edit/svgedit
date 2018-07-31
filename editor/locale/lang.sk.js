@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Zmeniť orientáciu krivky',
     ungroup: 'Zrušiť skupinu',
     docprops: 'Vlastnosti dokumentu',
-    imagelib: 'Knižnica obrázkov',
     move_bottom: 'Presunúť spodok',
     move_top: 'Presunúť na vrch',
     node_clone: 'Klonovať uzol',

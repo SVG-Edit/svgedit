@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Změna orientace křivky',
     ungroup: 'Zrušit seskupení',
     docprops: 'Vlastnosti dokumentu',
-    imagelib: 'Image Library',
     move_bottom: 'Vrstvu úplně dospodu',
     move_top: 'Vrstvu úplně nahoru',
     node_clone: 'Vložit nový uzel',

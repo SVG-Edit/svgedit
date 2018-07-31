@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorientar contorno',
     ungroup: 'Desagrupar Elementos',
     docprops: 'Propriedades',
-    imagelib: 'Biblioteca de Imagens',
     move_bottom: 'Mover para o fundo',
     move_top: 'Mover para o topo',
     node_clone: 'Clonar Aresta',

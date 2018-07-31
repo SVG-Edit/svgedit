@@ -1,12 +1,12 @@
 export default {
-  select_lib: "Choisir une bibliothèque d'images",
-  show_list: 'show_list',
-  import_single: 'import_single',
-  import_multi: 'import_multi',
-  open: 'open',
+  select_lib: 'Select an image library',
+  show_list: 'Show library list',
+  import_single: 'Import single',
+  import_multi: 'Import multiple',
+  open: 'Open as new document',
   buttons: [
     {
-      title: "Bibliothèque d'images"
+      title: '图像库'
     }
   ],
   imgLibs: [

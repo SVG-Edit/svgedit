@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Разгрупирай Елементи',
     docprops: 'Document Properties',
-    imagelib: 'Image Library',
     move_bottom: 'Премести надолу',
     move_top: 'Премести в началото',
     node_clone: 'Clone Node',

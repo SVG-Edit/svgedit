@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: '그룹 해제 요소',
     docprops: '문서 속성',
-    imagelib: 'Image Library',
     move_bottom: '아래로 이동',
     move_top: '상단으로 이동',
     node_clone: 'Clone Node',

@@ -16,8 +16,10 @@
 - Fix (canvg): Regression on blur
 - Fix (canvg): Avoid errors for `tspan` passed to `getGradient`
 - i18n: picking stroke/fill paint and opacity
-- i18n: Remove eyedropper reference from main locale (in extension locale now)
-- i18n: Add placeholders for `pick_stroke_paint_opacity`, `pick_fill_paint_opacity`, `popupWindowBlocked`
+- i18n: Remove eyedropper and imagelib references from main locale (in
+  extension locale now)
+- i18n: Add placeholders for `pick_stroke_paint_opacity`,
+  `pick_fill_paint_opacity`, `popupWindowBlocked`
 - i18n: Update `saveFromBrowser`
 - i18n: Reapply locale strings
 - Enhancement: Create xdomain file build which works without ES6 Modules
@@ -26,7 +28,8 @@
 - Optimize: Avoid rewriting `points` attribute for free-hand path;
   incorporates #176 (fixes #175)
 - Refactoring: Avoid passing on `undefined` var. (#147)
-- Refactoring: lbs; avoid indent in connector, destructuring, use map over push
+- Refactoring: lbs; avoid indent in connector, destructuring, use map
+  over push
 - Docs: Clarify nature of fixes
 - Docs: JSDoc for `setupFlyouts`, `Actions`, `toggleSidePanel`; missing for
   ToolbarButton

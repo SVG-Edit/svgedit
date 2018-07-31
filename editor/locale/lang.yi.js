@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'ונגראָופּ עלעמענץ',
     docprops: 'דאָקומענט פּראָפּערטיעס',
-    imagelib: 'Image Library',
     move_bottom: 'מאַך צו באָטטאָם',
     move_top: 'באַוועגן צו Top',
     node_clone: 'Clone Node',

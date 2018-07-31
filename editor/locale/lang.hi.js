@@ -126,7 +126,6 @@ export default {
     reorient_path: 'पथ को नई दिशा दें',
     ungroup: 'अंश को समूह से अलग करें',
     docprops: 'दस्तावेज़ गुण',
-    imagelib: 'Image Library',
     move_bottom: 'नीचे ले जाएँ',
     move_top: 'ऊपर ले जाएँ',
     node_clone: 'नोड क्लोन',

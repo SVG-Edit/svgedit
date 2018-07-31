@@ -126,7 +126,6 @@ export default {
     reorient_path: 'Reorientar el trazado',
     ungroup: 'Desagrupar objetos',
     docprops: 'Propiedades del documento',
-    imagelib: 'Image Library',
     move_bottom: 'Mover abajo',
     move_top: 'Mover arriba',
     node_clone: 'Clonar nodo',
