@@ -15,6 +15,7 @@
     "uglify-es": "^3.3.9"
   },
   "scripts": {
+    "build": "node build.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Brett Zamir",
