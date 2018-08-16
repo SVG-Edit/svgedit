@@ -8,15 +8,15 @@ ZIP=zip
 # All files that will be compiled by the Closure compiler.
 
 JS_FILES=\
-	svgedit.js \
-	jquery-svg.js \
-	contextmenu/jquery.contextMenu.js \
-	pathseg.js \
+	namespaces.js \
+	jQuery.attr.js \
+	contextmenu/jQuery.contextMenu.js \
+	svgpathseg.js \
 	browser.js \
 	svgtransformlist.js \
 	math.js \
 	units.js \
-	svgutils.js \
+	utilities.js \
 	sanitize.js \
 	history.js \
 	historyrecording.js \
@@ -93,7 +93,7 @@ chrome:
 	cd build ; $(ZIP) -r $(PACKAGE)-crx.zip svgedit_app ; rm -rf svgedit_app; cd ..
 
 jgraduate:
-	java -jar $(CLOSURE) --js editor/jgraduate/jquery.jgraduate.js --js_output_file editor/jgraduate/jquery.jgraduate.min.js
+	java -jar $(CLOSURE) --js editor/jgraduate/jquery.jGraduate.js --js_output_file editor/jgraduate/jquery.jgraduate.min.js
 clean:
 	rm -rf config
 	rm -rf build/$(PACKAGE)

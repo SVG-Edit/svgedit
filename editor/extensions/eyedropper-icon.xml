@@ -2,7 +2,7 @@
 
 <g id="tool_eyedropper">
 <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
- <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <!-- Created with SVG-edit - https://github.com/SVG-Edit/svgedit -->
  <defs>
   <radialGradient id="eyedropper_svg_6" cx="0.5" cy="0.5" r="0.5">
    <stop offset="0" stop-color="#ffffff" stop-opacity="1"/>
@@ -29,6 +29,6 @@
  </g>
 </svg>
 </g>
-	
-	<g id="svg_eof"/>
+
+  <g id="svg_eof"/>
 </svg>

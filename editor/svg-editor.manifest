@@ -1,18 +1,22 @@
+# To-do: Change to a sample service-worker
+
 ﻿CACHE MANIFEST
 svg-editor.html
 images/logo.png
 jgraduate/css/jPicker.css
-jgraduate/css/jgraduate.css
+jgraduate/css/jGraduate.css
 svg-editor.css
-spinbtn/JQuerySpinBtn.css
-jquery.js
-config.js
-custom.css
+spinbtn/jQuery.SpinButton.css
+jquery.min.js
+svgedit-config-es.js
+svgedit-config-iife.js
+svgedit-custom.css
+editor/xdomain-svgedit-config-iife.js
 js-hotkeys/jquery.hotkeys.min.js
 jquery-ui/jquery-ui-1.8.17.custom.min.js
-jgraduate/jpicker.min.js
-jgraduate/jquery.jgraduate.min.js
-spinbtn/JQuerySpinBtn.js
+jgraduate/jQuery.jPicker.js
+jgraduate/jQuery.jGraduate.js
+spinbtn/jQuery.SpinButton.js
 svgcanvas.js
 svg-editor.js
 images/align-bottom.png
@@ -63,7 +67,6 @@ images/square.png
 images/text.png
 images/undo.png
 images/view-refresh.png
-images/wave.png
 images/zoom.png
 locale/locale.js
 locale/lang.af.js
@@ -126,7 +129,7 @@ locale/lang.zh.js
 canvg/canvg.js
 canvg/rgbcolor.js
 jspdf/underscore-min.js
-jspdf/jspdf.js
+jspdf/jspdf.min.js
 jspdf/jspdf.plugin.svgToPdf.js
 
 # Extensions (todo: add other dependency files)
@@ -151,4 +154,3 @@ extensions/ext-star.js
 extensions/ext-storage.js
 extensions/ext-webappfind.js
 extensions/ext-xdomain-messaging.js
-

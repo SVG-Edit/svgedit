@@ -1,188 +1,275 @@
-/*globals $, svgedit*/
-/*jslint vars: true, eqeq: true*/
+/* globals jQuery */
 /**
- * Package: svgedit.browser
+ * Browser detection
+ * @module browser
+ * @license MIT
  *
- * Licensed under the MIT License
- *
- * Copyright(c) 2010 Jeff Schiller
- * Copyright(c) 2010 Alexis Deveria
+ * @copyright 2010 Jeff Schiller, 2010 Alexis Deveria
  */
 
 // Dependencies:
 // 1) jQuery (for $.alert())
 
-(function() {'use strict';
+import './svgpathseg.js';
+import {NS} from './namespaces.js';
 
-if (!svgedit.browser) {
-	svgedit.browser = {};
-}
+const $ = jQuery;
 
-// alias
-var NS = svgedit.NS;
-
-var supportsSvg_ = (function() {
-	return !!document.createElementNS && !!document.createElementNS(NS.SVG, 'svg').createSVGRect;
+const supportsSVG_ = (function () {
+return !!document.createElementNS && !!document.createElementNS(NS.SVG, 'svg').createSVGRect;
 }());
 
-svgedit.browser.supportsSvg = function() { return supportsSvg_; };
-if(!svgedit.browser.supportsSvg()) {
-	window.location = 'browser-not-supported.html';
-	return;
-}
+/**
+ * @function module:browser.supportsSvg
+ * @returns {boolean}
+*/
+export const supportsSvg = () => supportsSVG_;
 
-var userAgent = navigator.userAgent;
-var svg = document.createElementNS(NS.SVG, 'svg');
+const {userAgent} = navigator;
+const svg = document.createElementNS(NS.SVG, 'svg');
 
 // Note: Browser sniffing should only be used if no other detection method is possible
-var isOpera_ = !!window.opera;
-var isWebkit_ = userAgent.indexOf('AppleWebKit') >= 0;
-var isGecko_ = userAgent.indexOf('Gecko/') >= 0;
-var isIE_ = userAgent.indexOf('MSIE') >= 0;
-var isChrome_ = userAgent.indexOf('Chrome/') >= 0;
-var isWindows_ = userAgent.indexOf('Windows') >= 0;
-var isMac_ = userAgent.indexOf('Macintosh') >= 0;
-var isTouch_ = 'ontouchstart' in window;
+const isOpera_ = !!window.opera;
+const isWebkit_ = userAgent.includes('AppleWebKit');
+const isGecko_ = userAgent.includes('Gecko/');
+const isIE_ = userAgent.includes('MSIE');
+const isChrome_ = userAgent.includes('Chrome/');
+const isWindows_ = userAgent.includes('Windows');
+const isMac_ = userAgent.includes('Macintosh');
+const isTouch_ = 'ontouchstart' in window;
 
-var supportsSelectors_ = (function() {
-	return !!svg.querySelector;
+const supportsSelectors_ = (function () {
+return !!svg.querySelector;
 }());
 
-var supportsXpath_ = (function() {
-	return !!document.evaluate;
+const supportsXpath_ = (function () {
+return !!document.evaluate;
 }());
 
 // segList functions (for FF1.5 and 2.0)
-var supportsPathReplaceItem_ = (function() {
-	var path = document.createElementNS(NS.SVG, 'path');
-	path.setAttribute('d', 'M0,0 10,10');
-	var seglist = path.pathSegList;
-	var seg = path.createSVGPathSegLinetoAbs(5,5);
-	try {
-		seglist.replaceItem(seg, 1);
-		return true;
-	} catch(err) {}
-	return false;
+const supportsPathReplaceItem_ = (function () {
+const path = document.createElementNS(NS.SVG, 'path');
+path.setAttribute('d', 'M0,0 10,10');
+const seglist = path.pathSegList;
+const seg = path.createSVGPathSegLinetoAbs(5, 5);
+try {
+  seglist.replaceItem(seg, 1);
+  return true;
+} catch (err) {}
+return false;
 }());
 
-var supportsPathInsertItemBefore_ = (function() {
-	var path = document.createElementNS(NS.SVG, 'path');
-	path.setAttribute('d', 'M0,0 10,10');
-	var seglist = path.pathSegList;
-	var seg = path.createSVGPathSegLinetoAbs(5,5);
-	try {
-		seglist.insertItemBefore(seg, 1);
-		return true;
-	} catch(err) {}
-	return false;
+const supportsPathInsertItemBefore_ = (function () {
+const path = document.createElementNS(NS.SVG, 'path');
+path.setAttribute('d', 'M0,0 10,10');
+const seglist = path.pathSegList;
+const seg = path.createSVGPathSegLinetoAbs(5, 5);
+try {
+  seglist.insertItemBefore(seg, 1);
+  return true;
+} catch (err) {}
+return false;
 }());
 
 // text character positioning (for IE9)
-var supportsGoodTextCharPos_ = (function() {
-	var svgroot = document.createElementNS(NS.SVG, 'svg');
-	var svgcontent = document.createElementNS(NS.SVG, 'svg');
-	document.documentElement.appendChild(svgroot);
-	svgcontent.setAttribute('x', 5);
-	svgroot.appendChild(svgcontent);
-	var text = document.createElementNS(NS.SVG, 'text');
-	text.textContent = 'a';
-	svgcontent.appendChild(text);
-	var pos = text.getStartPositionOfChar(0).x;
-	document.documentElement.removeChild(svgroot);
-	return (pos === 0);
+const supportsGoodTextCharPos_ = (function () {
+const svgroot = document.createElementNS(NS.SVG, 'svg');
+const svgcontent = document.createElementNS(NS.SVG, 'svg');
+document.documentElement.append(svgroot);
+svgcontent.setAttribute('x', 5);
+svgroot.append(svgcontent);
+const text = document.createElementNS(NS.SVG, 'text');
+text.textContent = 'a';
+svgcontent.append(text);
+const pos = text.getStartPositionOfChar(0).x;
+svgroot.remove();
+return (pos === 0);
 }());
 
-var supportsPathBBox_ = (function() {
-	var svgcontent = document.createElementNS(NS.SVG, 'svg');
-	document.documentElement.appendChild(svgcontent);
-	var path = document.createElementNS(NS.SVG, 'path');
-	path.setAttribute('d', 'M0,0 C0,0 10,10 10,0');
-	svgcontent.appendChild(path);
-	var bbox = path.getBBox();
-	document.documentElement.removeChild(svgcontent);
-	return (bbox.height > 4 && bbox.height < 5);
+const supportsPathBBox_ = (function () {
+const svgcontent = document.createElementNS(NS.SVG, 'svg');
+document.documentElement.append(svgcontent);
+const path = document.createElementNS(NS.SVG, 'path');
+path.setAttribute('d', 'M0,0 C0,0 10,10 10,0');
+svgcontent.append(path);
+const bbox = path.getBBox();
+svgcontent.remove();
+return (bbox.height > 4 && bbox.height < 5);
 }());
 
 // Support for correct bbox sizing on groups with horizontal/vertical lines
-var supportsHVLineContainerBBox_ = (function() {
-	var svgcontent = document.createElementNS(NS.SVG, 'svg');
-	document.documentElement.appendChild(svgcontent);
-	var path = document.createElementNS(NS.SVG, 'path');
-	path.setAttribute('d', 'M0,0 10,0');
-	var path2 = document.createElementNS(NS.SVG, 'path');
-	path2.setAttribute('d', 'M5,0 15,0');
-	var g = document.createElementNS(NS.SVG, 'g');
-	g.appendChild(path);
-	g.appendChild(path2);
-	svgcontent.appendChild(g);
-	var bbox = g.getBBox();
-	document.documentElement.removeChild(svgcontent);
-	// Webkit gives 0, FF gives 10, Opera (correctly) gives 15
-	return (bbox.width == 15);
+const supportsHVLineContainerBBox_ = (function () {
+const svgcontent = document.createElementNS(NS.SVG, 'svg');
+document.documentElement.append(svgcontent);
+const path = document.createElementNS(NS.SVG, 'path');
+path.setAttribute('d', 'M0,0 10,0');
+const path2 = document.createElementNS(NS.SVG, 'path');
+path2.setAttribute('d', 'M5,0 15,0');
+const g = document.createElementNS(NS.SVG, 'g');
+g.append(path, path2);
+svgcontent.append(g);
+const bbox = g.getBBox();
+svgcontent.remove();
+// Webkit gives 0, FF gives 10, Opera (correctly) gives 15
+return (bbox.width === 15);
 }());
 
-var supportsEditableText_ = (function() {
-	// TODO: Find better way to check support for this
-	return isOpera_;
+const supportsEditableText_ = (function () {
+// TODO: Find better way to check support for this
+return isOpera_;
 }());
 
-var supportsGoodDecimals_ = (function() {
-	// Correct decimals on clone attributes (Opera < 10.5/win/non-en)
-	var rect = document.createElementNS(NS.SVG, 'rect');
-	rect.setAttribute('x', 0.1);
-	var crect = rect.cloneNode(false);
-	var retValue = (crect.getAttribute('x').indexOf(',') == -1);
-	if(!retValue) {
-		$.alert('NOTE: This version of Opera is known to contain bugs in SVG-edit.\n'+
-		'Please upgrade to the <a href="http://opera.com">latest version</a> in which the problems have been fixed.');
-	}
-	return retValue;
+const supportsGoodDecimals_ = (function () {
+// Correct decimals on clone attributes (Opera < 10.5/win/non-en)
+const rect = document.createElementNS(NS.SVG, 'rect');
+rect.setAttribute('x', 0.1);
+const crect = rect.cloneNode(false);
+const retValue = (!crect.getAttribute('x').includes(','));
+if (!retValue) {
+  // Todo: i18nize or remove
+  $.alert('NOTE: This version of Opera is known to contain bugs in SVG-edit.\n' +
+	'Please upgrade to the <a href="http://opera.com">latest version</a> in which the problems have been fixed.');
+}
+return retValue;
 }());
 
-var supportsNonScalingStroke_ = (function() {
-	var rect = document.createElementNS(NS.SVG, 'rect');
-	rect.setAttribute('style', 'vector-effect:non-scaling-stroke');
-	return rect.style.vectorEffect === 'non-scaling-stroke';
+const supportsNonScalingStroke_ = (function () {
+const rect = document.createElementNS(NS.SVG, 'rect');
+rect.setAttribute('style', 'vector-effect:non-scaling-stroke');
+return rect.style.vectorEffect === 'non-scaling-stroke';
 }());
 
-var supportsNativeSVGTransformLists_ = (function() {
-	var rect = document.createElementNS(NS.SVG, 'rect');
-	var rxform = rect.transform.baseVal;
-	var t1 = svg.createSVGTransform();
-	rxform.appendItem(t1);
-	var r1 = rxform.getItem(0);
-	return r1 instanceof SVGTransform && t1 instanceof SVGTransform &&
-		r1.type == t1.type && r1.angle == t1.angle &&
-		r1.matrix.a == t1.matrix.a &&
-		r1.matrix.b == t1.matrix.b &&
-		r1.matrix.c == t1.matrix.c &&
-		r1.matrix.d == t1.matrix.d &&
-		r1.matrix.e == t1.matrix.e &&
-		r1.matrix.f == t1.matrix.f;
+let supportsNativeSVGTransformLists_ = (function () {
+const rect = document.createElementNS(NS.SVG, 'rect');
+const rxform = rect.transform.baseVal;
+const t1 = svg.createSVGTransform();
+rxform.appendItem(t1);
+const r1 = rxform.getItem(0);
+// Todo: Do frame-independent instance checking
+return r1 instanceof SVGTransform && t1 instanceof SVGTransform &&
+	r1.type === t1.type && r1.angle === t1.angle &&
+	r1.matrix.a === t1.matrix.a &&
+	r1.matrix.b === t1.matrix.b &&
+	r1.matrix.c === t1.matrix.c &&
+	r1.matrix.d === t1.matrix.d &&
+	r1.matrix.e === t1.matrix.e &&
+	r1.matrix.f === t1.matrix.f;
 }());
 
 // Public API
 
-svgedit.browser.isOpera = function() { return isOpera_; };
-svgedit.browser.isWebkit = function() { return isWebkit_; };
-svgedit.browser.isGecko = function() { return isGecko_; };
-svgedit.browser.isIE = function() { return isIE_; };
-svgedit.browser.isChrome = function() { return isChrome_; };
-svgedit.browser.isWindows = function() { return isWindows_; };
-svgedit.browser.isMac = function() { return isMac_; };
-svgedit.browser.isTouch = function() { return isTouch_; };
+/**
+ * @function module:browser.isOpera
+ * @returns {boolean}
+*/
+export const isOpera = () => isOpera_;
+/**
+ * @function module:browser.isWebkit
+ * @returns {boolean}
+*/
+export const isWebkit = () => isWebkit_;
+/**
+ * @function module:browser.isGecko
+ * @returns {boolean}
+*/
+export const isGecko = () => isGecko_;
+/**
+ * @function module:browser.isIE
+ * @returns {boolean}
+*/
+export const isIE = () => isIE_;
+/**
+ * @function module:browser.isChrome
+ * @returns {boolean}
+*/
+export const isChrome = () => isChrome_;
+/**
+ * @function module:browser.isWindows
+ * @returns {boolean}
+*/
+export const isWindows = () => isWindows_;
+/**
+ * @function module:browser.isMac
+ * @returns {boolean}
+*/
+export const isMac = () => isMac_;
+/**
+ * @function module:browser.isTouch
+ * @returns {boolean}
+*/
+export const isTouch = () => isTouch_;
 
-svgedit.browser.supportsSelectors = function() { return supportsSelectors_; };
-svgedit.browser.supportsXpath = function() { return supportsXpath_; };
+/**
+ * @function module:browser.supportsSelectors
+ * @returns {boolean}
+*/
+export const supportsSelectors = () => supportsSelectors_;
 
-svgedit.browser.supportsPathReplaceItem = function() { return supportsPathReplaceItem_; };
-svgedit.browser.supportsPathInsertItemBefore = function() { return supportsPathInsertItemBefore_; };
-svgedit.browser.supportsPathBBox = function() { return supportsPathBBox_; };
-svgedit.browser.supportsHVLineContainerBBox = function() { return supportsHVLineContainerBBox_; };
-svgedit.browser.supportsGoodTextCharPos = function() { return supportsGoodTextCharPos_; };
-svgedit.browser.supportsEditableText = function() { return supportsEditableText_; };
-svgedit.browser.supportsGoodDecimals = function() { return supportsGoodDecimals_; };
-svgedit.browser.supportsNonScalingStroke = function() { return supportsNonScalingStroke_; };
-svgedit.browser.supportsNativeTransformLists = function() { return supportsNativeSVGTransformLists_; };
+/**
+ * @function module:browser.supportsXpath
+ * @returns {boolean}
+*/
+export const supportsXpath = () => supportsXpath_;
 
-}());
+/**
+ * @function module:browser.supportsPathReplaceItem
+ * @returns {boolean}
+*/
+export const supportsPathReplaceItem = () => supportsPathReplaceItem_;
+
+/**
+ * @function module:browser.supportsPathInsertItemBefore
+ * @returns {boolean}
+*/
+export const supportsPathInsertItemBefore = () => supportsPathInsertItemBefore_;
+
+/**
+ * @function module:browser.supportsPathBBox
+ * @returns {boolean}
+*/
+export const supportsPathBBox = () => supportsPathBBox_;
+
+/**
+ * @function module:browser.supportsHVLineContainerBBox
+ * @returns {boolean}
+*/
+export const supportsHVLineContainerBBox = () => supportsHVLineContainerBBox_;
+
+/**
+ * @function module:browser.supportsGoodTextCharPos
+ * @returns {boolean}
+*/
+export const supportsGoodTextCharPos = () => supportsGoodTextCharPos_;
+
+/**
+* @function module:browser.supportsEditableText
+ * @returns {boolean}
+*/
+export const supportsEditableText = () => supportsEditableText_;
+
+/**
+ * @function module:browser.supportsGoodDecimals
+ * @returns {boolean}
+*/
+export const supportsGoodDecimals = () => supportsGoodDecimals_;
+
+/**
+* @function module:browser.supportsNonScalingStroke
+* @returns {boolean}
+*/
+export const supportsNonScalingStroke = () => supportsNonScalingStroke_;
+
+/**
+* @function module:browser.supportsNativeTransformLists
+* @returns {boolean}
+*/
+export const supportsNativeTransformLists = () => supportsNativeSVGTransformLists_;
+
+/**
+ * Set `supportsNativeSVGTransformLists_` to `false` (for unit testing)
+ * @function module:browser.disableSupportsNativeTransformLists
+ * @returns {undefined}
+*/
+export const disableSupportsNativeTransformLists = () => {
+  supportsNativeSVGTransformLists_ = false;
+};
