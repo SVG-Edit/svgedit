@@ -179,13 +179,31 @@ const svgElementToPdf = function (element, pdf, options) {
         ? parseInt(node.getAttribute('font-size'), 10)
         : 16;
 
-      const box = node.getBBox();
+      const getWidth = (node) => {
+        let box;
+        try{
+          box = node.getBBox(); //Firefox on MacOS will raise error here
+        }catch(err){
+          //copy and append to body so that getBBox is available
+          let nodeCopy = node.cloneNode(true);
+          let svg = node.ownerSVGElement.cloneNode(false);
+          svg.appendChild(nodeCopy);
+          document.body.appendChild(svg);
+          try{
+            box = nodeCopy.getBBox();
+          }catch(err){
+            box = {width: 0};
+          }
+          document.body.removeChild(svg);
+        }
+        return box.width;
+      };
       // FIXME: use more accurate positioning!!
       let x, y, xOffset = 0;
       if (node.hasAttribute('text-anchor')) {
         switch (node.getAttribute('text-anchor')) {
-        case 'end': xOffset = box.width; break;
-        case 'middle': xOffset = box.width / 2; break;
+        case 'end': xOffset = getWidth(node); break;
+        case 'middle': xOffset = getWidth(node) / 2; break;
         case 'start': break;
         case 'default': node.setAttribute('text-anchor', 'start'); break;
         }
