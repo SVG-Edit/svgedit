@@ -4015,7 +4015,7 @@ this.exportPDF = function (exportWindowName, outputType, cb) {
     //  opposed to opening a new tab
     outputType = outputType || 'dataurlstring';
     const obj = {svg, issues, issueCodes, exportWindowName, outputType};
-    obj.output = doc.output(outputType);
+    obj.output = doc.output(outputType, outputType === 'save' ? 'Download.pdf' : void 0);
     if (cb) {
       cb(obj);
     }

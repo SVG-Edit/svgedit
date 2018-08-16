@@ -3382,15 +3382,6 @@ editor.init = function () {
   svgCanvas.bind('saved', saveHandler);
   svgCanvas.bind('exported', exportHandler);
   svgCanvas.bind('exportedPDF', function (win, data) {
-    const {exportWindowName} = data;
-    if (exportWindowName) {
-      exportWindow = window.open('', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
-    }
-    if (!exportWindow || exportWindow.closed) {
-      $.alert(uiStrings.notification.popupWindowBlocked);
-      return;
-    }
-    exportWindow.location.href = data.output;
   });
   svgCanvas.bind('zoomed', zoomChanged);
   svgCanvas.bind('zoomDone', zoomDone);
@@ -4208,10 +4199,7 @@ editor.init = function () {
         exportWindow = window.open(popURL, exportWindowName);
       }
       if (imgType === 'PDF') {
-        if (!customExportPDF) {
-          openExportWindow();
-        }
-        svgCanvas.exportPDF(exportWindowName);
+        svgCanvas.exportPDF(exportWindowName, 'save');
       } else {
         if (!customExportImage) {
           openExportWindow();
