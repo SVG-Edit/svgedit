@@ -1,3 +1,8 @@
+# ?
+
+- npm: Point to official sinon-test package now that ES6 Modules
+    support landed
+
 # 3.0.0-rc.2
 
 - Fix: Avoid extension `includeWith` button conflicts/redundancies;
