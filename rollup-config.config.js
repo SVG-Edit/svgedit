@@ -1,8 +1,6 @@
 /* eslint-env node */
 import babel from 'rollup-plugin-babel';
 import replace from 'rollup-plugin-re';
-// import {minify} from 'uglify-es';
-// import {uglify} from 'rollup-plugin-uglify';
 
 const plugins = [
   replace({

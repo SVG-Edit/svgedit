@@ -112,7 +112,7 @@ export function importModule (url, atts = {}, {returnDefault = false} = {}) {
     };
     const absURL = toAbsoluteURL(url);
     const loader = `import * as m from '${absURL.replace(/'/g, "\\'")}'; window.${vector} = ${returnDefault ? 'm.default || ' : ''}m;`; // export Module
-    const blob = new Blob([loader], { type: 'text/javascript' });
+    const blob = new Blob([loader], {type: 'text/javascript'});
     script.src = URL.createObjectURL(blob);
 
     document.head.append(script);

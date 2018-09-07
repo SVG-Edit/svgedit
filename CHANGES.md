@@ -1,7 +1,11 @@
 # ?
 
+- npm: Update devDeps
 - npm: Point to official sinon-test package now that ES6 Modules
     support landed
+- Build: Switch to `terser` plugin with `uglify` plugin not
+    supporting ES6+-capable minifier
+- Linting (ESLint): Consistent spacing; new "standard"
 
 # 3.0.0-rc.2
 

@@ -76,7 +76,7 @@ if (!window.console) {
 }
 
 if (window.opera) {
-  window.console.log = function (str) { opera.postError(str); };
+  window.console.log = function (str) { window.opera.postError(str); };
   window.console.dir = function (str) {};
 }
 
@@ -5670,14 +5670,14 @@ canvas.setBlur = function (val, complete) {
     }
   } else {
     // Not found, so create
-    const newblur = addSVGElementFromJson({ element: 'feGaussianBlur',
+    const newblur = addSVGElementFromJson({element: 'feGaussianBlur',
       attr: {
         in: 'SourceGraphic',
         stdDeviation: val
       }
     });
 
-    filter = addSVGElementFromJson({ element: 'filter',
+    filter = addSVGElementFromJson({element: 'filter',
       attr: {
         id: elemId + '_blur'
       }

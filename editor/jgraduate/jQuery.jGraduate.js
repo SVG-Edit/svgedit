@@ -656,9 +656,9 @@ export default function ($) {
           while (thisAlpha.length < 2) { thisAlpha = '0' + thisAlpha; }
           color = stopColor.substr(1) + thisAlpha;
           $('#' + id + '_jGraduate_stopPicker').css({left: 100, bottom: 15}).jPicker({
-            window: { title: 'Pick the start color and opacity for the gradient' },
-            images: { clientPath: $settings.images.clientPath },
-            color: { active: color, alphaSupport: true }
+            window: {title: 'Pick the start color and opacity for the gradient'},
+            images: {clientPath: $settings.images.clientPath},
+            color: {active: color, alphaSupport: true}
           }, function (color, arg2) {
             stopColor = color.val('hex') ? ('#' + color.val('hex')) : 'none';
             stopOpacity = color.val('a') !== null ? color.val('a') / 256 : 1;
@@ -1188,9 +1188,9 @@ export default function ($) {
 
       colPicker.jPicker(
         {
-          window: { title: $settings.window.pickerTitle },
-          images: { clientPath: $settings.images.clientPath },
-          color: { active: color, alphaSupport: true }
+          window: {title: $settings.window.pickerTitle},
+          images: {clientPath: $settings.images.clientPath},
+          color: {active: color, alphaSupport: true}
         },
         function (color) {
           $this.paint.type = 'solidColor';

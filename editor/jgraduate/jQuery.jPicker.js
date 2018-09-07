@@ -112,7 +112,7 @@ const jPicker = function ($) {
       else if (locX > barW) locX = barW;
       if (locY < 0) locY = 0;
       else if (locY > barH) locY = barH;
-      val.call($this, 'xy', { x: ((locX / barW) * rangeX) + minX, y: ((locY / barH) * rangeY) + minY });
+      val.call($this, 'xy', {x: ((locX / barW) * rangeX) + minX, y: ((locY / barH) * rangeY) + minY});
     }
     function draw () {
       const
@@ -140,7 +140,7 @@ const jPicker = function ($) {
         if (arrowH >= barH) arrowOffsetY = (barH >> 1) - (arrowH >> 1);
         else arrowOffsetY -= arrowH >> 1;
         // set the arrow position based on these offsets
-        arrow.css({ left: arrowOffsetX + 'px', top: arrowOffsetY + 'px' });
+        arrow.css({left: arrowOffsetX + 'px', top: arrowOffsetY + 'px'});
       }, 0);
     }
     function val (name, value, context) {
@@ -151,7 +151,7 @@ const jPicker = function ($) {
         case 'x': return x;
         case 'y': return y;
         case 'xy':
-        default: return { x, y };
+        default: return {x, y};
         }
       }
       if (context != null && context === $this) return;
@@ -197,12 +197,12 @@ const jPicker = function ($) {
         switch (name.toLowerCase()) {
         case 'minx': return minX;
         case 'maxx': return maxX;
-        case 'rangex': return { minX, maxX, rangeX };
+        case 'rangex': return {minX, maxX, rangeX};
         case 'miny': return minY;
         case 'maxy': return maxY;
-        case 'rangey': return { minY, maxY, rangeY };
+        case 'rangey': return {minY, maxY, rangeY};
         case 'all':
-        default: return { minX, maxX, rangeX, minY, maxY, rangeY };
+        default: return {minX, maxX, rangeX, minY, maxY, rangeY};
         }
       }
       let // changed = false,
@@ -586,9 +586,9 @@ const jPicker = function ($) {
           if (name === undefined || name == null || name === '') name = 'all';
           if (r == null) return null;
           switch (name.toLowerCase()) {
-          case 'ahex': return ColorMethods.rgbaToHex({ r, g, b, a });
+          case 'ahex': return ColorMethods.rgbaToHex({r, g, b, a});
           case 'hex': return val('ahex').substring(0, 6);
-          case 'all': return { r, g, b, a, h, s, v, hex: val.call($this, 'hex'), ahex: val.call($this, 'ahex') };
+          case 'all': return {r, g, b, a, h, s, v, hex: val.call($this, 'hex'), ahex: val.call($this, 'ahex')};
           default:
             let ret = {};
             for (let i = 0; i < name.length; i++) {
@@ -666,7 +666,7 @@ const jPicker = function ($) {
         case 'ahex':
         case 'hex':
           const ret = ColorMethods.hexToRgba((value && (value.ahex || value.hex)) || value || 'none');
-          val.call($this, 'rgba', { r: ret.r, g: ret.g, b: ret.b, a: name === 'ahex' ? ret.a : a != null ? a : 255 }, context);
+          val.call($this, 'rgba', {r: ret.r, g: ret.g, b: ret.b, a: name === 'ahex' ? ret.a : a != null ? a : 255}, context);
           break;
         default:
           if (value && (value.ahex != null || value.hex != null)) {
@@ -766,13 +766,13 @@ const jPicker = function ($) {
               r = r || 0;
               g = g || 0;
               b = b || 0;
-              const ret = ColorMethods.rgbToHsv({ r, g, b });
+              const ret = ColorMethods.rgbToHsv({r, g, b});
               ({h, s, v} = ret);
             } else if (hsv) {
               h = h || 0;
               s = s != null ? s : 100;
               v = v != null ? v : 100;
-              const ret = ColorMethods.hsvToRgb({ h, s, v });
+              const ret = ColorMethods.hsvToRgb({h, s, v});
               ({r, g, b} = ret);
             }
             a = a != null ? a : 255;
@@ -843,7 +843,7 @@ const jPicker = function ($) {
       * @returns {module:jPicker.RGBA}
       */
       hexToRgba (hex) {
-        if (hex === '' || hex === 'none') return { r: null, g: null, b: null, a: null };
+        if (hex === '' || hex === 'none') return {r: null, g: null, b: null, a: null};
         hex = this.validateHex(hex);
         let r = '00', g = '00', b = '00', a = '255';
         if (hex.length === 6) hex += 'ff';
@@ -911,7 +911,7 @@ const jPicker = function ($) {
       * @returns {module:jPicker.HSV}
       */
       rgbToHsv (rgb) {
-        const r = rgb.r / 255, g = rgb.g / 255, b = rgb.b / 255, hsv = { h: 0, s: 0, v: 0 };
+        const r = rgb.r / 255, g = rgb.g / 255, b = rgb.b / 255, hsv = {h: 0, s: 0, v: 0};
         let min = 0, max = 0;
         if (r >= g && r >= b) {
           max = r;
@@ -1026,11 +1026,11 @@ const jPicker = function ($) {
           }
         });
         if ($($this).val() === '') {
-          settings.color.active = new Color({ hex: null });
-          settings.color.current = new Color({ hex: null });
+          settings.color.active = new Color({hex: null});
+          settings.color.current = new Color({hex: null});
         } else if (ColorMethods.validateHex($($this).val())) {
-          settings.color.active = new Color({ hex: $($this).val(), a: settings.color.active.val('a') });
-          settings.color.current = new Color({ hex: $($this).val(), a: settings.color.active.val('a') });
+          settings.color.active = new Color({hex: $($this).val(), a: settings.color.active.val('a')});
+          settings.color.current = new Color({hex: $($this).val(), a: settings.color.active.val('a')});
         }
       }
       if (settings.window.expandable) {
@@ -1071,10 +1071,10 @@ const jPicker = function ($) {
             setImgLoc.call($this, colorBarL6, 260);
             setAlpha.call($this, colorBarL6, 100);
           }, 0);
-          colorMap.range('all', { minX: 0, maxX: 100, minY: 0, maxY: 100 });
-          colorBar.range('rangeY', { minY: 0, maxY: 360 });
+          colorMap.range('all', {minX: 0, maxX: 100, minY: 0, maxY: 100});
+          colorBar.range('rangeY', {minY: 0, maxY: 360});
           if (active.val('ahex') == null) break;
-          colorMap.val('xy', { x: active.val('s'), y: 100 - active.val('v') }, colorMap);
+          colorMap.val('xy', {x: active.val('s'), y: 100 - active.val('v')}, colorMap);
           colorBar.val('y', 360 - active.val('h'), colorBar);
           break;
         case 's':
@@ -1087,10 +1087,10 @@ const jPicker = function ($) {
             setImgLoc.call($this, colorBarL6, 260);
             setAlpha.call($this, colorBarL6, 100);
           }, 0);
-          colorMap.range('all', { minX: 0, maxX: 360, minY: 0, maxY: 100 });
-          colorBar.range('rangeY', { minY: 0, maxY: 100 });
+          colorMap.range('all', {minX: 0, maxX: 360, minY: 0, maxY: 100});
+          colorBar.range('rangeY', {minY: 0, maxY: 100});
           if (active.val('ahex') == null) break;
-          colorMap.val('xy', { x: active.val('h'), y: 100 - active.val('v') }, colorMap);
+          colorMap.val('xy', {x: active.val('h'), y: 100 - active.val('v')}, colorMap);
           colorBar.val('y', 100 - active.val('s'), colorBar);
           break;
         case 'v':
@@ -1105,37 +1105,37 @@ const jPicker = function ($) {
             setImgLoc.call($this, colorBarL6, 260);
             setAlpha.call($this, colorBarL6, 100);
           }, 0);
-          colorMap.range('all', { minX: 0, maxX: 360, minY: 0, maxY: 100 });
-          colorBar.range('rangeY', { minY: 0, maxY: 100 });
+          colorMap.range('all', {minX: 0, maxX: 360, minY: 0, maxY: 100});
+          colorBar.range('rangeY', {minY: 0, maxY: 100});
           if (active.val('ahex') == null) break;
-          colorMap.val('xy', { x: active.val('h'), y: 100 - active.val('s') }, colorMap);
+          colorMap.val('xy', {x: active.val('h'), y: 100 - active.val('s')}, colorMap);
           colorBar.val('y', 100 - active.val('v'), colorBar);
           break;
         case 'r':
           rgbMap = -1040;
           rgbBar = -780;
-          colorMap.range('all', { minX: 0, maxX: 255, minY: 0, maxY: 255 });
-          colorBar.range('rangeY', { minY: 0, maxY: 255 });
+          colorMap.range('all', {minX: 0, maxX: 255, minY: 0, maxY: 255});
+          colorBar.range('rangeY', {minY: 0, maxY: 255});
           if (active.val('ahex') == null) break;
-          colorMap.val('xy', { x: active.val('b'), y: 255 - active.val('g') }, colorMap);
+          colorMap.val('xy', {x: active.val('b'), y: 255 - active.val('g')}, colorMap);
           colorBar.val('y', 255 - active.val('r'), colorBar);
           break;
         case 'g':
           rgbMap = -1560;
           rgbBar = -1820;
-          colorMap.range('all', { minX: 0, maxX: 255, minY: 0, maxY: 255 });
-          colorBar.range('rangeY', { minY: 0, maxY: 255 });
+          colorMap.range('all', {minX: 0, maxX: 255, minY: 0, maxY: 255});
+          colorBar.range('rangeY', {minY: 0, maxY: 255});
           if (active.val('ahex') == null) break;
-          colorMap.val('xy', { x: active.val('b'), y: 255 - active.val('r') }, colorMap);
+          colorMap.val('xy', {x: active.val('b'), y: 255 - active.val('r')}, colorMap);
           colorBar.val('y', 255 - active.val('g'), colorBar);
           break;
         case 'b':
           rgbMap = -2080;
           rgbBar = -2860;
-          colorMap.range('all', { minX: 0, maxX: 255, minY: 0, maxY: 255 });
-          colorBar.range('rangeY', { minY: 0, maxY: 255 });
+          colorMap.range('all', {minX: 0, maxX: 255, minY: 0, maxY: 255});
+          colorBar.range('rangeY', {minY: 0, maxY: 255});
           if (active.val('ahex') == null) break;
-          colorMap.val('xy', { x: active.val('r'), y: 255 - active.val('g') }, colorMap);
+          colorMap.val('xy', {x: active.val('r'), y: 255 - active.val('g')}, colorMap);
           colorBar.val('y', 255 - active.val('b'), colorBar);
           break;
         case 'a':
@@ -1149,10 +1149,10 @@ const jPicker = function ($) {
             setImgLoc.call($this, colorBarL6, 0);
             setAlpha.call($this, colorBarL6, 100);
           }, 0);
-          colorMap.range('all', { minX: 0, maxX: 360, minY: 0, maxY: 100 });
-          colorBar.range('rangeY', { minY: 0, maxY: 255 });
+          colorMap.range('all', {minX: 0, maxX: 360, minY: 0, maxY: 100});
+          colorBar.range('rangeY', {minY: 0, maxY: 255});
           if (active.val('ahex') == null) break;
-          colorMap.val('xy', { x: active.val('h'), y: 100 - active.val('v') }, colorMap);
+          colorMap.val('xy', {x: active.val('h'), y: 100 - active.val('v')}, colorMap);
           colorBar.val('y', 255 - active.val('a'), colorBar);
           break;
         default:
@@ -1211,23 +1211,23 @@ const jPicker = function ($) {
         const xy = ui.val('all');
         switch (settings.color.mode) {
         case 'h':
-          active.val('sv', { s: xy.x, v: 100 - xy.y }, context);
+          active.val('sv', {s: xy.x, v: 100 - xy.y}, context);
           break;
         case 's':
         case 'a':
-          active.val('hv', { h: xy.x, v: 100 - xy.y }, context);
+          active.val('hv', {h: xy.x, v: 100 - xy.y}, context);
           break;
         case 'v':
-          active.val('hs', { h: xy.x, s: 100 - xy.y }, context);
+          active.val('hs', {h: xy.x, s: 100 - xy.y}, context);
           break;
         case 'r':
-          active.val('gb', { g: 255 - xy.y, b: xy.x }, context);
+          active.val('gb', {g: 255 - xy.y, b: xy.x}, context);
           break;
         case 'g':
-          active.val('rb', { r: 255 - xy.y, b: xy.x }, context);
+          active.val('rb', {r: 255 - xy.y, b: xy.x}, context);
           break;
         case 'b':
-          active.val('rg', { r: xy.x, g: 255 - xy.y }, context);
+          active.val('rg', {r: xy.x, g: 255 - xy.y}, context);
           break;
         }
       }
@@ -1237,22 +1237,22 @@ const jPicker = function ($) {
         if (context !== colorBar && active.val() == null) return;
         switch (settings.color.mode) {
         case 'h':
-          active.val('h', { h: 360 - ui.val('y') }, context);
+          active.val('h', {h: 360 - ui.val('y')}, context);
           break;
         case 's':
-          active.val('s', { s: 100 - ui.val('y') }, context);
+          active.val('s', {s: 100 - ui.val('y')}, context);
           break;
         case 'v':
-          active.val('v', { v: 100 - ui.val('y') }, context);
+          active.val('v', {v: 100 - ui.val('y')}, context);
           break;
         case 'r':
-          active.val('r', { r: 255 - ui.val('y') }, context);
+          active.val('r', {r: 255 - ui.val('y')}, context);
           break;
         case 'g':
-          active.val('g', { g: 255 - ui.val('y') }, context);
+          active.val('g', {g: 255 - ui.val('y')}, context);
           break;
         case 'b':
-          active.val('b', { b: 255 - ui.val('y') }, context);
+          active.val('b', {b: 255 - ui.val('y')}, context);
           break;
         case 'a':
           active.val('a', 255 - ui.val('y'), context);
@@ -1265,28 +1265,28 @@ const jPicker = function ($) {
           switch (settings.color.mode) {
           case 'h':
             const sv = ui.val('sv');
-            colorMap.val('xy', { x: sv != null ? sv.s : 100, y: 100 - (sv != null ? sv.v : 100) }, context);
+            colorMap.val('xy', {x: sv != null ? sv.s : 100, y: 100 - (sv != null ? sv.v : 100)}, context);
             break;
           case 's':
           case 'a':
             const hv = ui.val('hv');
-            colorMap.val('xy', { x: (hv && hv.h) || 0, y: 100 - (hv != null ? hv.v : 100) }, context);
+            colorMap.val('xy', {x: (hv && hv.h) || 0, y: 100 - (hv != null ? hv.v : 100)}, context);
             break;
           case 'v':
             const hs = ui.val('hs');
-            colorMap.val('xy', { x: (hs && hs.h) || 0, y: 100 - (hs != null ? hs.s : 100) }, context);
+            colorMap.val('xy', {x: (hs && hs.h) || 0, y: 100 - (hs != null ? hs.s : 100)}, context);
             break;
           case 'r':
             const bg = ui.val('bg');
-            colorMap.val('xy', { x: (bg && bg.b) || 0, y: 255 - ((bg && bg.g) || 0) }, context);
+            colorMap.val('xy', {x: (bg && bg.b) || 0, y: 255 - ((bg && bg.g) || 0)}, context);
             break;
           case 'g':
             const br = ui.val('br');
-            colorMap.val('xy', { x: (br && br.b) || 0, y: 255 - ((br && br.r) || 0) }, context);
+            colorMap.val('xy', {x: (br && br.b) || 0, y: 255 - ((br && br.r) || 0)}, context);
             break;
           case 'b':
             const rg = ui.val('rg');
-            colorMap.val('xy', { x: (rg && rg.r) || 0, y: 255 - ((rg && rg.g) || 0) }, context);
+            colorMap.val('xy', {x: (rg && rg.r) || 0, y: 255 - ((rg && rg.g) || 0)}, context);
             break;
           }
         }
@@ -1322,14 +1322,14 @@ const jPicker = function ($) {
       function updatePreview (ui) {
         try {
           const all = ui.val('all');
-          activePreview.css({ backgroundColor: (all && '#' + all.hex) || 'transparent' });
+          activePreview.css({backgroundColor: (all && '#' + all.hex) || 'transparent'});
           setAlpha.call($this, activePreview, (all && Math.precision((all.a * 100) / 255, 4)) || 0);
         } catch (e) { }
       }
       function updateMapVisuals (ui) {
         switch (settings.color.mode) {
         case 'h':
-          setBG.call($this, colorMapDiv, new Color({ h: ui.val('h') || 0, s: 100, v: 100 }).val('hex'));
+          setBG.call($this, colorMapDiv, new Color({h: ui.val('h') || 0, s: 100, v: 100}).val('hex'));
           break;
         case 's':
         case 'a':
@@ -1361,14 +1361,14 @@ const jPicker = function ($) {
           break;
         case 's':
           const hva = ui.val('hva'),
-            saturatedColor = new Color({ h: (hva && hva.h) || 0, s: 100, v: hva != null ? hva.v : 100 });
+            saturatedColor = new Color({h: (hva && hva.h) || 0, s: 100, v: hva != null ? hva.v : 100});
           setBG.call($this, colorBarDiv, saturatedColor.val('hex'));
           setAlpha.call($this, colorBarL2, 100 - (hva != null ? hva.v : 100));
           setAlpha.call($this, colorBarL5, Math.precision(((255 - ((hva && hva.a) || 0)) * 100) / 255, 4));
           break;
         case 'v':
           const hsa = ui.val('hsa'),
-            valueColor = new Color({ h: (hsa && hsa.h) || 0, s: hsa != null ? hsa.s : 100, v: 100 });
+            valueColor = new Color({h: (hsa && hsa.h) || 0, s: hsa != null ? hsa.s : 100, v: 100});
           setBG.call($this, colorBarDiv, valueColor.val('hex'));
           setAlpha.call($this, colorBarL5, Math.precision(((255 - ((hsa && hsa.a) || 0)) * 100) / 255, 4));
           break;
@@ -1408,32 +1408,32 @@ const jPicker = function ($) {
       function setImg (img, src) {
         if (isLessThanIE7 && (src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png'))) {
           img.attr('pngSrc', src);
-          img.css({ backgroundImage: 'none', filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\')' });
-        } else img.css({ backgroundImage: 'url(\'' + src + '\')' });
+          img.css({backgroundImage: 'none', filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\')'});
+        } else img.css({backgroundImage: 'url(\'' + src + '\')'});
       }
       function setImgLoc (img, y) {
-        img.css({ top: y + 'px' });
+        img.css({top: y + 'px'});
       }
       function setAlpha (obj, alpha) {
-        obj.css({ visibility: alpha > 0 ? 'visible' : 'hidden' });
+        obj.css({visibility: alpha > 0 ? 'visible' : 'hidden'});
         if (alpha > 0 && alpha < 100) {
           if (isLessThanIE7) {
             const src = obj.attr('pngSrc');
             if (src != null && (
               src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png')
             )) {
-              obj.css({ filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\') progid:DXImageTransform.Microsoft.Alpha(opacity=' + alpha + ')' });
-            } else obj.css({ opacity: Math.precision(alpha / 100, 4) });
-          } else obj.css({ opacity: Math.precision(alpha / 100, 4) });
+              obj.css({filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\') progid:DXImageTransform.Microsoft.Alpha(opacity=' + alpha + ')'});
+            } else obj.css({opacity: Math.precision(alpha / 100, 4)});
+          } else obj.css({opacity: Math.precision(alpha / 100, 4)});
         } else if (alpha === 0 || alpha === 100) {
           if (isLessThanIE7) {
             const src = obj.attr('pngSrc');
             if (src != null && (
               src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png')
             )) {
-              obj.css({ filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\')' });
-            } else obj.css({ opacity: '' });
-          } else obj.css({ opacity: '' });
+              obj.css({filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\')'});
+            } else obj.css({opacity: ''});
+          } else obj.css({opacity: ''});
         }
       }
       // revert color to original color when opened
@@ -1466,13 +1466,13 @@ const jPicker = function ($) {
       }
       function currentColorChanged (ui, context) {
         const hex = ui.val('hex');
-        currentPreview.css({ backgroundColor: (hex && '#' + hex) || 'transparent' });
+        currentPreview.css({backgroundColor: (hex && '#' + hex) || 'transparent'});
         setAlpha.call($this, currentPreview, Math.precision(((ui.val('a') || 0) * 100) / 255, 4));
       }
       function expandableColorChanged (ui, context) {
         const hex = ui.val('hex');
         const va = ui.val('va');
-        iconColor.css({ backgroundColor: (hex && '#' + hex) || 'transparent' });
+        iconColor.css({backgroundColor: (hex && '#' + hex) || 'transparent'});
         setAlpha.call($this, iconAlpha, Math.precision(((255 - ((va && va.a) || 0)) * 100) / 255, 4));
         if (settings.window.bindToInput && settings.window.updateInputColor) {
           settings.window.input.css({
@@ -1493,8 +1493,8 @@ const jPicker = function ($) {
         e.preventDefault(); // prevent attempted dragging of the column
       }
       function documentMouseMove (e) {
-        container.css({ left: elementStartX - (pageStartX - e.pageX) + 'px', top: elementStartY - (pageStartY - e.pageY) + 'px' });
-        if (settings.window.expandable && !$.support.boxModel) container.prev().css({ left: container.css('left'), top: container.css('top') });
+        container.css({left: elementStartX - (pageStartX - e.pageX) + 'px', top: elementStartY - (pageStartY - e.pageY) + 'px'});
+        if (settings.window.expandable && !$.support.boxModel) container.prev().css({left: container.css('left'), top: container.css('top')});
         e.stopPropagation();
         e.preventDefault();
         return false;
@@ -1538,7 +1538,7 @@ const jPicker = function ($) {
       }
       function hide () {
         function removeIFrame () {
-          if (settings.window.expandable) container.css({ zIndex: 10 });
+          if (settings.window.expandable) container.css({zIndex: 10});
           if (!settings.window.expandable || $.support.boxModel) return;
           container.prev().remove();
         }
@@ -1657,8 +1657,8 @@ const jPicker = function ($) {
         const hex = all != null ? all.hex : null,
           preview = tbody.find('.Preview'),
           button = tbody.find('.Button');
-        activePreview = preview.find('.Active:first').css({ backgroundColor: (hex && '#' + hex) || 'transparent' });
-        currentPreview = preview.find('.Current:first').css({ backgroundColor: (hex && '#' + hex) || 'transparent' }).bind('click', currentClicked);
+        activePreview = preview.find('.Active:first').css({backgroundColor: (hex && '#' + hex) || 'transparent'});
+        currentPreview = preview.find('.Current:first').css({backgroundColor: (hex && '#' + hex) || 'transparent'}).bind('click', currentClicked);
         setAlpha.call($this, currentPreview, Math.precision(color.current.val('a') * 100) / 255, 4);
         okButton = button.find('.Ok:first').bind('click', okClicked);
         cancelButton = button.find('.Cancel:first').bind('click', cancelClicked);
@@ -1681,7 +1681,7 @@ const jPicker = function ($) {
           let html = '';
           for (let i = 0; i < color.quickList.length; i++) {
             /* if default colors are hex strings, change them to color objects */
-            if ((typeof (color.quickList[i])).toString().toLowerCase() === 'string') color.quickList[i] = new Color({ hex: color.quickList[i] });
+            if ((typeof (color.quickList[i])).toString().toLowerCase() === 'string') color.quickList[i] = new Color({hex: color.quickList[i]});
             const alpha = color.quickList[i].val('a');
             let ahex = color.quickList[i].val('ahex');
             if (!win.alphaSupport && ahex) ahex = ahex.substring(0, 6) + 'ff';
@@ -1700,7 +1700,7 @@ const jPicker = function ($) {
         // bind to input
         if (win.expandable) {
           $this.icon = popup.parents('.Icon:first');
-          iconColor = $this.icon.find('.Color:first').css({ backgroundColor: (hex && '#' + hex) || 'transparent' });
+          iconColor = $this.icon.find('.Color:first').css({backgroundColor: (hex && '#' + hex) || 'transparent'});
           iconAlpha = $this.icon.find('.Alpha:first');
           setImg.call($this, iconAlpha, images.clientPath + 'bar-opacity.png');
           setAlpha.call($this, iconAlpha, Math.precision(((255 - (all != null ? all.a : 0)) * 100) / 255, 4));
@@ -1937,77 +1937,77 @@ const jPicker = function ($) {
       mode: 'h',
       active: new Color({ahex: '#ffcc00ff'}),
       quickList: [
-        new Color({ h: 360, s: 33, v: 100 }),
-        new Color({ h: 360, s: 66, v: 100 }),
-        new Color({ h: 360, s: 100, v: 100 }),
-        new Color({ h: 360, s: 100, v: 75 }),
-        new Color({ h: 360, s: 100, v: 50 }),
-        new Color({ h: 180, s: 0, v: 100 }),
-        new Color({ h: 30, s: 33, v: 100 }),
-        new Color({ h: 30, s: 66, v: 100 }),
-        new Color({ h: 30, s: 100, v: 100 }),
-        new Color({ h: 30, s: 100, v: 75 }),
-        new Color({ h: 30, s: 100, v: 50 }),
-        new Color({ h: 180, s: 0, v: 90 }),
-        new Color({ h: 60, s: 33, v: 100 }),
-        new Color({ h: 60, s: 66, v: 100 }),
-        new Color({ h: 60, s: 100, v: 100 }),
-        new Color({ h: 60, s: 100, v: 75 }),
-        new Color({ h: 60, s: 100, v: 50 }),
-        new Color({ h: 180, s: 0, v: 80 }),
-        new Color({ h: 90, s: 33, v: 100 }),
-        new Color({ h: 90, s: 66, v: 100 }),
-        new Color({ h: 90, s: 100, v: 100 }),
-        new Color({ h: 90, s: 100, v: 75 }),
-        new Color({ h: 90, s: 100, v: 50 }),
-        new Color({ h: 180, s: 0, v: 70 }),
-        new Color({ h: 120, s: 33, v: 100 }),
-        new Color({ h: 120, s: 66, v: 100 }),
-        new Color({ h: 120, s: 100, v: 100 }),
-        new Color({ h: 120, s: 100, v: 75 }),
-        new Color({ h: 120, s: 100, v: 50 }),
-        new Color({ h: 180, s: 0, v: 60 }),
-        new Color({ h: 150, s: 33, v: 100 }),
-        new Color({ h: 150, s: 66, v: 100 }),
-        new Color({ h: 150, s: 100, v: 100 }),
-        new Color({ h: 150, s: 100, v: 75 }),
-        new Color({ h: 150, s: 100, v: 50 }),
-        new Color({ h: 180, s: 0, v: 50 }),
-        new Color({ h: 180, s: 33, v: 100 }),
-        new Color({ h: 180, s: 66, v: 100 }),
-        new Color({ h: 180, s: 100, v: 100 }),
-        new Color({ h: 180, s: 100, v: 75 }),
-        new Color({ h: 180, s: 100, v: 50 }),
-        new Color({ h: 180, s: 0, v: 40 }),
-        new Color({ h: 210, s: 33, v: 100 }),
-        new Color({ h: 210, s: 66, v: 100 }),
-        new Color({ h: 210, s: 100, v: 100 }),
-        new Color({ h: 210, s: 100, v: 75 }),
-        new Color({ h: 210, s: 100, v: 50 }),
-        new Color({ h: 180, s: 0, v: 30 }),
-        new Color({ h: 240, s: 33, v: 100 }),
-        new Color({ h: 240, s: 66, v: 100 }),
-        new Color({ h: 240, s: 100, v: 100 }),
-        new Color({ h: 240, s: 100, v: 75 }),
-        new Color({ h: 240, s: 100, v: 50 }),
-        new Color({ h: 180, s: 0, v: 20 }),
-        new Color({ h: 270, s: 33, v: 100 }),
-        new Color({ h: 270, s: 66, v: 100 }),
-        new Color({ h: 270, s: 100, v: 100 }),
-        new Color({ h: 270, s: 100, v: 75 }),
-        new Color({ h: 270, s: 100, v: 50 }),
-        new Color({ h: 180, s: 0, v: 10 }),
-        new Color({ h: 300, s: 33, v: 100 }),
-        new Color({ h: 300, s: 66, v: 100 }),
-        new Color({ h: 300, s: 100, v: 100 }),
-        new Color({ h: 300, s: 100, v: 75 }),
-        new Color({ h: 300, s: 100, v: 50 }),
-        new Color({ h: 180, s: 0, v: 0 }),
-        new Color({ h: 330, s: 33, v: 100 }),
-        new Color({ h: 330, s: 66, v: 100 }),
-        new Color({ h: 330, s: 100, v: 100 }),
-        new Color({ h: 330, s: 100, v: 75 }),
-        new Color({ h: 330, s: 100, v: 50 }),
+        new Color({h: 360, s: 33, v: 100}),
+        new Color({h: 360, s: 66, v: 100}),
+        new Color({h: 360, s: 100, v: 100}),
+        new Color({h: 360, s: 100, v: 75}),
+        new Color({h: 360, s: 100, v: 50}),
+        new Color({h: 180, s: 0, v: 100}),
+        new Color({h: 30, s: 33, v: 100}),
+        new Color({h: 30, s: 66, v: 100}),
+        new Color({h: 30, s: 100, v: 100}),
+        new Color({h: 30, s: 100, v: 75}),
+        new Color({h: 30, s: 100, v: 50}),
+        new Color({h: 180, s: 0, v: 90}),
+        new Color({h: 60, s: 33, v: 100}),
+        new Color({h: 60, s: 66, v: 100}),
+        new Color({h: 60, s: 100, v: 100}),
+        new Color({h: 60, s: 100, v: 75}),
+        new Color({h: 60, s: 100, v: 50}),
+        new Color({h: 180, s: 0, v: 80}),
+        new Color({h: 90, s: 33, v: 100}),
+        new Color({h: 90, s: 66, v: 100}),
+        new Color({h: 90, s: 100, v: 100}),
+        new Color({h: 90, s: 100, v: 75}),
+        new Color({h: 90, s: 100, v: 50}),
+        new Color({h: 180, s: 0, v: 70}),
+        new Color({h: 120, s: 33, v: 100}),
+        new Color({h: 120, s: 66, v: 100}),
+        new Color({h: 120, s: 100, v: 100}),
+        new Color({h: 120, s: 100, v: 75}),
+        new Color({h: 120, s: 100, v: 50}),
+        new Color({h: 180, s: 0, v: 60}),
+        new Color({h: 150, s: 33, v: 100}),
+        new Color({h: 150, s: 66, v: 100}),
+        new Color({h: 150, s: 100, v: 100}),
+        new Color({h: 150, s: 100, v: 75}),
+        new Color({h: 150, s: 100, v: 50}),
+        new Color({h: 180, s: 0, v: 50}),
+        new Color({h: 180, s: 33, v: 100}),
+        new Color({h: 180, s: 66, v: 100}),
+        new Color({h: 180, s: 100, v: 100}),
+        new Color({h: 180, s: 100, v: 75}),
+        new Color({h: 180, s: 100, v: 50}),
+        new Color({h: 180, s: 0, v: 40}),
+        new Color({h: 210, s: 33, v: 100}),
+        new Color({h: 210, s: 66, v: 100}),
+        new Color({h: 210, s: 100, v: 100}),
+        new Color({h: 210, s: 100, v: 75}),
+        new Color({h: 210, s: 100, v: 50}),
+        new Color({h: 180, s: 0, v: 30}),
+        new Color({h: 240, s: 33, v: 100}),
+        new Color({h: 240, s: 66, v: 100}),
+        new Color({h: 240, s: 100, v: 100}),
+        new Color({h: 240, s: 100, v: 75}),
+        new Color({h: 240, s: 100, v: 50}),
+        new Color({h: 180, s: 0, v: 20}),
+        new Color({h: 270, s: 33, v: 100}),
+        new Color({h: 270, s: 66, v: 100}),
+        new Color({h: 270, s: 100, v: 100}),
+        new Color({h: 270, s: 100, v: 75}),
+        new Color({h: 270, s: 100, v: 50}),
+        new Color({h: 180, s: 0, v: 10}),
+        new Color({h: 300, s: 33, v: 100}),
+        new Color({h: 300, s: 66, v: 100}),
+        new Color({h: 300, s: 100, v: 100}),
+        new Color({h: 300, s: 100, v: 75}),
+        new Color({h: 300, s: 100, v: 50}),
+        new Color({h: 180, s: 0, v: 0}),
+        new Color({h: 330, s: 33, v: 100}),
+        new Color({h: 330, s: 66, v: 100}),
+        new Color({h: 330, s: 100, v: 100}),
+        new Color({h: 330, s: 100, v: 75}),
+        new Color({h: 330, s: 100, v: 50}),
         new Color()
       ]
     },

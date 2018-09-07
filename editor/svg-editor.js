@@ -3355,7 +3355,7 @@ editor.init = function () {
 
   const getPaint = function (color, opac, type) {
     // update the editor's fill paint
-    const opts = { alpha: opac };
+    const opts = {alpha: opac};
     if (color.startsWith('url(#')) {
       let refElem = svgCanvas.getRefElem(color);
       if (refElem) {
@@ -4612,8 +4612,8 @@ editor.init = function () {
       .jGraduate(
         {
           paint,
-          window: { pickerTitle: title },
-          images: { clientPath: curConfig.jGraduatePath },
+          window: {pickerTitle: title},
+          images: {clientPath: curConfig.jGraduatePath},
           newstop: 'inverse'
         },
         function (p) {

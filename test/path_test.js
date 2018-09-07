@@ -1,4 +1,5 @@
 /* eslint-env qunit */
+/* globals SVGPathSeg */
 import '../editor/svgpathseg.js';
 import {NS} from '../editor/namespaces.js';
 import * as utilities from '../editor/utilities.js';

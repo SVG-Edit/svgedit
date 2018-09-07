@@ -238,6 +238,15 @@
     return reverseNS;
   };
 
+  /* globals SVGPathSeg, SVGPathSegMovetoRel, SVGPathSegMovetoAbs,
+      SVGPathSegMovetoRel, SVGPathSegLinetoRel, SVGPathSegLinetoAbs,
+      SVGPathSegLinetoHorizontalRel, SVGPathSegLinetoHorizontalAbs,
+      SVGPathSegLinetoVerticalRel, SVGPathSegLinetoVerticalAbs,
+      SVGPathSegClosePath, SVGPathSegCurvetoCubicRel,
+      SVGPathSegCurvetoCubicAbs, SVGPathSegCurvetoCubicSmoothRel,
+      SVGPathSegCurvetoCubicSmoothAbs, SVGPathSegCurvetoQuadraticRel,
+      SVGPathSegCurvetoQuadraticAbs, SVGPathSegCurvetoQuadraticSmoothRel,
+      SVGPathSegCurvetoQuadraticSmoothAbs, SVGPathSegArcRel, SVGPathSegArcAbs */
   /**
   * SVGPathSeg API polyfill
   * https://github.com/progers/pathseg
@@ -1548,11 +1557,11 @@
     // The second check for appendItem is specific to Firefox 59+ which removed only parts of the
     // SVGPathSegList API (e.g., appendItem). In this case we need to re-implement the entire API
     // so the polyfill data (i.e., _list) is used throughout.
-    if (!('SVGPathSegList' in window) || !('appendItem' in SVGPathSegList.prototype)) {
+    if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.prototype)) {
       // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGPathSegList
-      var _SVGPathSegList = function () {
-        function _SVGPathSegList(pathElement) {
-          classCallCheck(this, _SVGPathSegList);
+      var SVGPathSegList = function () {
+        function SVGPathSegList(pathElement) {
+          classCallCheck(this, SVGPathSegList);
 
           this._pathElement = pathElement;
           this._list = this._parsePath(this._pathElement.getAttribute('d'));
@@ -1567,7 +1576,7 @@
         // MutationObservers are not synchronous so we can have pending asynchronous mutations.
 
 
-        createClass(_SVGPathSegList, [{
+        createClass(SVGPathSegList, [{
           key: '_checkPathSynchronizedToList',
           value: function _checkPathSynchronizedToList() {
             this._updateListFromPathMutations(this._pathElementMutationObserver.takeRecords());
@@ -1595,7 +1604,7 @@
           key: '_writeListToPath',
           value: function _writeListToPath() {
             this._pathElementMutationObserver.disconnect();
-            this._pathElement.setAttribute('d', _SVGPathSegList._pathSegArrayAsString(this._list));
+            this._pathElement.setAttribute('d', SVGPathSegList._pathSegArrayAsString(this._list));
             this._pathElementMutationObserver.observe(this._pathElement, this._mutationObserverConfig);
           }
 
@@ -2072,12 +2081,12 @@
             return builder.pathSegList;
           }
         }]);
-        return _SVGPathSegList;
+        return SVGPathSegList;
       }();
 
-      _SVGPathSegList.prototype.classname = 'SVGPathSegList';
+      SVGPathSegList.prototype.classname = 'SVGPathSegList';
 
-      Object.defineProperty(_SVGPathSegList.prototype, 'numberOfItems', {
+      Object.defineProperty(SVGPathSegList.prototype, 'numberOfItems', {
         get: function get$$1() {
           this._checkPathSynchronizedToList();
           return this._list.length;
@@ -2086,7 +2095,7 @@
         enumerable: true
       });
 
-      _SVGPathSegList._pathSegArrayAsString = function (pathSegArray) {
+      SVGPathSegList._pathSegArrayAsString = function (pathSegArray) {
         var string = '';
         var first = true;
         pathSegArray.forEach(function (pathSeg) {
@@ -2106,7 +2115,7 @@
         pathSegList: {
           get: function get$$1() {
             if (!this._pathSegList) {
-              this._pathSegList = new _SVGPathSegList(this);
+              this._pathSegList = new SVGPathSegList(this);
             }
             return this._pathSegList;
           },
@@ -2130,7 +2139,7 @@
           },
           enumerable: true }
       });
-      window.SVGPathSegList = _SVGPathSegList;
+      window.SVGPathSegList = SVGPathSegList;
     }
   })();
 
@@ -12295,7 +12304,7 @@
 
   if (window.opera) {
     window.console.log = function (str) {
-      opera.postError(str);
+      window.opera.postError(str);
     };
     window.console.dir = function (str) {};
   }

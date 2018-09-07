@@ -131,7 +131,7 @@ function build (opts) {
     svg.ViewPort = {
       viewPorts: [],
       Clear () { this.viewPorts = []; },
-      SetCurrent (width, height) { this.viewPorts.push({ width, height }); },
+      SetCurrent (width, height) { this.viewPorts.push({width, height}); },
       RemoveCurrent () { this.viewPorts.pop(); },
       Current () { return this.viewPorts[this.viewPorts.length - 1]; },
       width () { return this.Current().width; },
@@ -1912,7 +1912,7 @@ function build (opts) {
 
     // fraction of duration we've covered
     progress () {
-      const ret = { progress: (this.duration - this.begin) / (this.maxDuration - this.begin) };
+      const ret = {progress: (this.duration - this.begin) / (this.maxDuration - this.begin)};
       if (this.values.hasValue()) {
         const p = ret.progress * (this.values.value.length - 1);
         const lb = Math.floor(p), ub = Math.ceil(p);

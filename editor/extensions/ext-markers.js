@@ -457,38 +457,38 @@ export default {
         panel: 'marker_panel',
         id: 'start_marker',
         size: 3,
-        events: { change: setMarker }
+        events: {change: setMarker}
       }, {
         type: 'button-select',
         panel: 'marker_panel',
         id: 'start_marker_list',
         colnum: 3,
-        events: { change: setArrowFromButton }
+        events: {change: setArrowFromButton}
       }, {
         type: 'input',
         panel: 'marker_panel',
         id: 'mid_marker',
         defval: '',
         size: 3,
-        events: { change: setMarker }
+        events: {change: setMarker}
       }, {
         type: 'button-select',
         panel: 'marker_panel',
         id: 'mid_marker_list',
         colnum: 3,
-        events: { change: setArrowFromButton }
+        events: {change: setArrowFromButton}
       }, {
         type: 'input',
         panel: 'marker_panel',
         id: 'end_marker',
         size: 3,
-        events: { change: setMarker }
+        events: {change: setMarker}
       }, {
         type: 'button-select',
         panel: 'marker_panel',
         id: 'end_marker_list',
         colnum: 3,
-        events: { change: setArrowFromButton }
+        events: {change: setArrowFromButton}
       }
     ];
 
@@ -499,7 +499,7 @@ export default {
         $('#marker_panel').addClass('toolset').hide();
       },
       async addLangData ({importLocale, lang}) {
-        return { data: strings.langList };
+        return {data: strings.langList};
       },
       selectedChanged (opts) {
         // Use this to update the current selected elements
