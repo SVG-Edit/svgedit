@@ -640,7 +640,9 @@ var svgEditorExtension_markers = (function () {
                   },
 
                   buttons: buildButtonList(),
-                  context_tools: contextTools
+                  context_tools: strings.contextTools.map(function (contextTool, i) {
+                    return Object.assign(contextTools[i], contextTool);
+                  })
                 });
 
               case 28:

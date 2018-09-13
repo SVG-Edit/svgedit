@@ -537,7 +537,9 @@ export default {
         // changing_flag = false; // Not apparently in use
       },
       buttons: buildButtonList(),
-      context_tools: contextTools
+      context_tools: strings.contextTools.map((contextTool, i) => {
+        return Object.assign(contextTools[i], contextTool);
+      })
     };
   }
 };
