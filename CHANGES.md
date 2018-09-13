@@ -8,7 +8,9 @@
   PDF as export (#273 @cuixiping); fixes #124 and #254
 - Fix (image import): Put src after onload to avoid missing event;
   check other width/height properties in case offset is 0; fixes #278
-- Fix (image export) Export in Chrome; fixes #282
+- Fix (image export): Export in Chrome; fixes #282
+- Fix (Context menus): Avoid showing double shortcuts (#285); add some
+  missing ones
 - npm: Update devDeps
 - npm: Point to official sinon-test package now that ES6 Modules
     support landed
