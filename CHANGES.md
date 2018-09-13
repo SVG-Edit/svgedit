@@ -1,5 +1,6 @@
 # ?
 
+- Known regression for 3.\*: Image libraries [broken](https://github.com/SVG-Edit/svgedit/issues/274)
 - Breaking change (minor): Change export to check `exportWindowName`
   for filename and change default from `download` to `svg.pdf` to
   distinguish from other downloads
