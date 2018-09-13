@@ -4146,6 +4146,7 @@ var canvg = (function (exports) {
     };
 
     svg.loadXmlDoc = function (ctx, dom) {
+      var res = void 0;
       svg.init(ctx);
 
       var mapXY = function mapXY(p) {
@@ -4293,7 +4294,7 @@ var canvg = (function (exports) {
 
         // render if needed
         if (needUpdate) {
-          draw();
+          draw(res);
           svg.Mouse.runEvents(); // run and clear our events
         }
       }, 1000 / svg.FRAMERATE);
@@ -4301,7 +4302,9 @@ var canvg = (function (exports) {
         if (svg.ImagesLoaded()) {
           waitingForImages = false;
           draw(resolve);
+          return;
         }
+        res = resolve;
       });
     };
 

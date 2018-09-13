@@ -29230,48 +29230,81 @@
       $$b.select('Select an image type for export: ', [
       // See http://kangax.github.io/jstests/toDataUrl_mime_type_test/ for a useful list of MIME types and browser support
       // 'ICO', // Todo: Find a way to preserve transparency in SVG-Edit if not working presently and do full packaging for x-icon; then switch back to position after 'PNG'
-      'PNG', 'JPEG', 'BMP', 'WEBP', 'PDF'], function (imgType) {
-        // todo: replace hard-coded msg with uiStrings.notification.
-        if (!imgType) {
-          return;
-        }
-        // Open placeholder window (prevents popup)
-        var exportWindowName = void 0;
-        function openExportWindow() {
-          var str = uiStrings$1.notification.loadingImage;
-          if (curConfig.exportWindowType === 'new') {
-            editor.exportWindowCt++;
-          }
-          exportWindowName = curConfig.canvasName + editor.exportWindowCt;
-          var popHTML = void 0,
-              popURL = void 0;
-          if (loadingURL) {
-            popURL = loadingURL;
-          } else {
-            popHTML = '<!DOCTYPE html><html>\n            <head>\n              <meta charset="utf-8">\n              <title>' + str + '</title>\n            </head>\n            <body><h1>' + str + '</h1></body>\n          <html>';
-            if ((typeof URL === 'undefined' ? 'undefined' : _typeof(URL)) && URL.createObjectURL) {
-              var blob = new Blob([popHTML], { type: 'text/html' });
-              popURL = URL.createObjectURL(blob);
-            } else {
-              popURL = 'data:text/html;base64;charset=utf-8,' + encode64(popHTML);
+      'PNG', 'JPEG', 'BMP', 'WEBP', 'PDF'], function () {
+        var _ref15 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(imgType) {
+          var exportWindowName, openExportWindow, chrome, quality;
+          return regeneratorRuntime.wrap(function _callee5$(_context5) {
+            while (1) {
+              switch (_context5.prev = _context5.next) {
+                case 0:
+                  openExportWindow = function openExportWindow() {
+                    var str = uiStrings$1.notification.loadingImage;
+                    if (curConfig.exportWindowType === 'new') {
+                      editor.exportWindowCt++;
+                    }
+                    exportWindowName = curConfig.canvasName + editor.exportWindowCt;
+                    var popHTML = void 0,
+                        popURL = void 0;
+                    if (loadingURL) {
+                      popURL = loadingURL;
+                    } else {
+                      popHTML = '<!DOCTYPE html><html>\n            <head>\n              <meta charset="utf-8">\n              <title>' + str + '</title>\n            </head>\n            <body><h1>' + str + '</h1></body>\n          <html>';
+                      if ((typeof URL === 'undefined' ? 'undefined' : _typeof(URL)) && URL.createObjectURL) {
+                        var blob = new Blob([popHTML], { type: 'text/html' });
+                        popURL = URL.createObjectURL(blob);
+                      } else {
+                        popURL = 'data:text/html;base64;charset=utf-8,' + encode64(popHTML);
+                      }
+                      loadingURL = popURL;
+                    }
+                    exportWindow = window.open(popURL, exportWindowName);
+                  };
+
+                  if (imgType) {
+                    _context5.next = 3;
+                    break;
+                  }
+
+                  return _context5.abrupt('return');
+
+                case 3:
+                  // Open placeholder window (prevents popup)
+                  exportWindowName = void 0;
+                  chrome = isChrome();
+
+                  if (!(imgType === 'PDF')) {
+                    _context5.next = 10;
+                    break;
+                  }
+
+                  if (!customExportPDF && !chrome) {
+                    openExportWindow();
+                  }
+                  svgCanvas.exportPDF(exportWindowName, chrome ? 'save' : undefined);
+                  _context5.next = 14;
+                  break;
+
+                case 10:
+                  if (!customExportImage) {
+                    openExportWindow();
+                  }
+                  quality = parseInt($$b('#image-slider').val(), 10) / 100;
+                  /* const results = */
+                  _context5.next = 14;
+                  return svgCanvas.rasterExport(imgType, quality, exportWindowName);
+
+                case 14:
+                case 'end':
+                  return _context5.stop();
+              }
             }
-            loadingURL = popURL;
-          }
-          exportWindow = window.open(popURL, exportWindowName);
-        }
-        if (imgType === 'PDF') {
-          if (!customExportPDF && !isChrome()) {
-            openExportWindow();
-          }
-          svgCanvas.exportPDF(exportWindowName, isChrome() ? 'save' : undefined);
-        } else {
-          if (!customExportImage) {
-            openExportWindow();
-          }
-          var quality = parseInt($$b('#image-slider').val(), 10) / 100;
-          svgCanvas.rasterExport(imgType, quality, exportWindowName);
-        }
-      }, function () {
+          }, _callee5, this);
+        }));
+
+        return function (_x5) {
+          return _ref15.apply(this, arguments);
+        };
+      }(), function () {
         var sel = $$b(this);
         if (sel.val() === 'JPEG' || sel.val() === 'WEBP') {
           if (!$$b('#image-slider').length) {
@@ -30709,8 +30742,8 @@
           } else {
             // bitmap handling
             reader = new FileReader();
-            reader.onloadend = function (_ref15) {
-              var result = _ref15.target.result;
+            reader.onloadend = function (_ref16) {
+              var result = _ref16.target.result;
 
               // let's insert the new image until we know its dimensions
               var insertNewImage = function insertNewImage(width, height) {
@@ -31047,9 +31080,9 @@
    * @fires module:svgcanvas.SvgCanvas#event:message
    * @returns {undefined}
    */
-  var messageListener = function messageListener(_ref16) {
-    var data = _ref16.data,
-        origin = _ref16.origin;
+  var messageListener = function messageListener(_ref17) {
+    var data = _ref17.data,
+        origin = _ref17.origin;
 
     // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
     var messageObj = { data: data, origin: origin };
