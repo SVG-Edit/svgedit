@@ -181,17 +181,17 @@ const svgElementToPdf = function (element, pdf, options) {
 
       const getWidth = (node) => {
         let box;
-        try{
-          box = node.getBBox(); //Firefox on MacOS will raise error here
-        }catch(err){
-          //copy and append to body so that getBBox is available
-          let nodeCopy = node.cloneNode(true);
-          let svg = node.ownerSVGElement.cloneNode(false);
+        try {
+          box = node.getBBox(); // Firefox on MacOS will raise error here
+        } catch (err) {
+          // copy and append to body so that getBBox is available
+          const nodeCopy = node.cloneNode(true);
+          const svg = node.ownerSVGElement.cloneNode(false);
           svg.appendChild(nodeCopy);
           document.body.appendChild(svg);
-          try{
+          try {
             box = nodeCopy.getBBox();
-          }catch(err){
+          } catch (err) {
             box = {width: 0};
           }
           document.body.removeChild(svg);

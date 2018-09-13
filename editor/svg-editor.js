@@ -2,7 +2,7 @@
 
 import './touch.js';
 import {NS} from './namespaces.js';
-import {isWebkit, isGecko, isIE, isMac, isTouch} from './browser.js';
+import {isWebkit, isChrome, isGecko, isIE, isMac, isTouch} from './browser.js';
 import * as Utils from './utilities.js';
 import {getTypeMap, convertUnit, isValidUnit} from './units.js';
 import {
@@ -3382,6 +3382,18 @@ editor.init = function () {
   svgCanvas.bind('saved', saveHandler);
   svgCanvas.bind('exported', exportHandler);
   svgCanvas.bind('exportedPDF', function (win, data) {
+    if (!data.output) { // Ignore Chrome
+      return;
+    }
+    const {exportWindowName} = data;
+    if (exportWindowName) {
+      exportWindow = window.open('', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
+    }
+    if (!exportWindow || exportWindow.closed) {
+      $.alert(uiStrings.notification.popupWindowBlocked);
+      return;
+    }
+    exportWindow.location.href = data.output;
   });
   svgCanvas.bind('zoomed', zoomChanged);
   svgCanvas.bind('zoomDone', zoomDone);
@@ -4199,7 +4211,10 @@ editor.init = function () {
         exportWindow = window.open(popURL, exportWindowName);
       }
       if (imgType === 'PDF') {
-        svgCanvas.exportPDF(exportWindowName, 'save');
+        if (!customExportPDF && !isChrome()) {
+          openExportWindow();
+        }
+        svgCanvas.exportPDF(exportWindowName, isChrome() ? 'save' : undefined);
       } else {
         if (!customExportImage) {
           openExportWindow();
