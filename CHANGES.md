@@ -1,5 +1,10 @@
 # ?
 
+- Breaking change (minor): Change export to check `exportWindowName`
+  for filename and change default from `download` to `svg.pdf` to
+  distinguish from other downloads
+- Fix: Given lack of support now for dataURI export in Chrome, provide
+  PDF as export (#273 @cuixiping); fixes #124 and #254
 - npm: Update devDeps
 - npm: Point to official sinon-test package now that ES6 Modules
     support landed
