@@ -4177,7 +4177,7 @@ editor.init = function () {
       // 'ICO', // Todo: Find a way to preserve transparency in SVG-Edit if not working presently and do full packaging for x-icon; then switch back to position after 'PNG'
       'PNG',
       'JPEG', 'BMP', 'WEBP', 'PDF'
-    ], function (imgType) { // todo: replace hard-coded msg with uiStrings.notification.
+    ], async function (imgType) { // todo: replace hard-coded msg with uiStrings.notification.
       if (!imgType) {
         return;
       }
@@ -4210,17 +4210,18 @@ editor.init = function () {
         }
         exportWindow = window.open(popURL, exportWindowName);
       }
+      const chrome = isChrome();
       if (imgType === 'PDF') {
-        if (!customExportPDF && !isChrome()) {
+        if (!customExportPDF && !chrome) {
           openExportWindow();
         }
-        svgCanvas.exportPDF(exportWindowName, isChrome() ? 'save' : undefined);
+        svgCanvas.exportPDF(exportWindowName, chrome ? 'save' : undefined);
       } else {
         if (!customExportImage) {
           openExportWindow();
         }
         const quality = parseInt($('#image-slider').val(), 10) / 100;
-        svgCanvas.rasterExport(imgType, quality, exportWindowName);
+        /* const results = */ await svgCanvas.rasterExport(imgType, quality, exportWindowName);
       }
     }, function () {
       const sel = $(this);

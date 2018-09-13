@@ -2745,6 +2745,7 @@ function build (opts) {
   };
 
   svg.loadXmlDoc = function (ctx, dom) {
+    let res;
     svg.init(ctx);
 
     const mapXY = function (p) {
@@ -2888,7 +2889,7 @@ function build (opts) {
 
       // render if needed
       if (needUpdate) {
-        draw();
+        draw(res);
         svg.Mouse.runEvents(); // run and clear our events
       }
     }, 1000 / svg.FRAMERATE);
@@ -2896,7 +2897,9 @@ function build (opts) {
       if (svg.ImagesLoaded()) {
         waitingForImages = false;
         draw(resolve);
+        return;
       }
+      res = resolve;
     });
   };
 
