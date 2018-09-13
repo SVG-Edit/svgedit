@@ -5635,7 +5635,7 @@ editor.init = function () {
         } else {
           // bitmap handling
           reader = new FileReader();
-          reader.onloadend = function (e) {
+          reader.onloadend = function ({target: {result}}) {
             // let's insert the new image until we know its dimensions
             const insertNewImage = function (width, height) {
               const newImage = svgCanvas.addSVGElementFromJson({
@@ -5649,7 +5649,7 @@ editor.init = function () {
                   style: 'pointer-events:inherit'
                 }
               });
-              svgCanvas.setHref(newImage, e.target.result);
+              svgCanvas.setHref(newImage, result);
               svgCanvas.selectOnly([newImage]);
               svgCanvas.alignSelectedElements('m', 'page');
               svgCanvas.alignSelectedElements('c', 'page');
@@ -5660,13 +5660,13 @@ editor.init = function () {
             let imgWidth = 100;
             let imgHeight = 100;
             const img = new Image();
-            img.src = e.target.result;
             img.style.opacity = 0;
             img.onload = function () {
-              imgWidth = img.offsetWidth;
-              imgHeight = img.offsetHeight;
+              imgWidth = img.offsetWidth || img.naturalWidth || img.width;
+              imgHeight = img.offsetHeight || img.naturalHeight || img.height;
               insertNewImage(imgWidth, imgHeight);
             };
+            img.src = result;
           };
           reader.readAsDataURL(file);
         }

@@ -16421,7 +16421,7 @@
     * Generates a PDF based on the current image, then calls "exportedPDF" with
     * an object including the string, the data URL, and any issues found
     * @function module:svgcanvas.SvgCanvas#exportPDF
-    * @param {string} exportWindowName
+    * @param {string} exportWindowName Will also be used for the download file name here
     * @param {external:jsPDF.OutputType} [outputType="dataurlstring"]
     * @param {module:svgcanvas.PDFExportedCallback} cb
     * @fires module:svgcanvas.SvgCanvas#event:exportedPDF
@@ -16493,7 +16493,7 @@
                   outputType = outputType || 'dataurlstring';
                   obj = { svg: svg, issues: issues, issueCodes: issueCodes, exportWindowName: exportWindowName, outputType: outputType };
 
-                  obj.output = doc.output(outputType);
+                  obj.output = doc.output(outputType, outputType === 'save' ? exportWindowName || 'svg.pdf' : undefined);
                   if (cb) {
                     cb(obj);
                   }
@@ -28406,6 +28406,10 @@
     svgCanvas.bind('saved', saveHandler);
     svgCanvas.bind('exported', exportHandler);
     svgCanvas.bind('exportedPDF', function (win, data) {
+      if (!data.output) {
+        // Ignore Chrome
+        return;
+      }
       var exportWindowName = data.exportWindowName;
 
       if (exportWindowName) {
@@ -29256,10 +29260,10 @@
           exportWindow = window.open(popURL, exportWindowName);
         }
         if (imgType === 'PDF') {
-          if (!customExportPDF) {
+          if (!customExportPDF && !isChrome()) {
             openExportWindow();
           }
-          svgCanvas.exportPDF(exportWindowName);
+          svgCanvas.exportPDF(exportWindowName, isChrome() ? 'save' : undefined);
         } else {
           if (!customExportImage) {
             openExportWindow();
@@ -30705,7 +30709,9 @@
           } else {
             // bitmap handling
             reader = new FileReader();
-            reader.onloadend = function (e) {
+            reader.onloadend = function (_ref15) {
+              var result = _ref15.target.result;
+
               // let's insert the new image until we know its dimensions
               var insertNewImage = function insertNewImage(width, height) {
                 var newImage = svgCanvas.addSVGElementFromJson({
@@ -30719,7 +30725,7 @@
                     style: 'pointer-events:inherit'
                   }
                 });
-                svgCanvas.setHref(newImage, e.target.result);
+                svgCanvas.setHref(newImage, result);
                 svgCanvas.selectOnly([newImage]);
                 svgCanvas.alignSelectedElements('m', 'page');
                 svgCanvas.alignSelectedElements('c', 'page');
@@ -30730,13 +30736,13 @@
               var imgWidth = 100;
               var imgHeight = 100;
               var img = new Image();
-              img.src = e.target.result;
               img.style.opacity = 0;
               img.onload = function () {
-                imgWidth = img.offsetWidth;
-                imgHeight = img.offsetHeight;
+                imgWidth = img.offsetWidth || img.naturalWidth || img.width;
+                imgHeight = img.offsetHeight || img.naturalHeight || img.height;
                 insertNewImage(imgWidth, imgHeight);
               };
+              img.src = result;
             };
             reader.readAsDataURL(file);
           }
@@ -31041,9 +31047,9 @@
    * @fires module:svgcanvas.SvgCanvas#event:message
    * @returns {undefined}
    */
-  var messageListener = function messageListener(_ref15) {
-    var data = _ref15.data,
-        origin = _ref15.origin;
+  var messageListener = function messageListener(_ref16) {
+    var data = _ref16.data,
+        origin = _ref16.origin;
 
     // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
     var messageObj = { data: data, origin: origin };

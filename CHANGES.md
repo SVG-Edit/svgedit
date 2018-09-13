@@ -6,6 +6,8 @@
   distinguish from other downloads
 - Fix: Given lack of support now for dataURI export in Chrome, provide
   PDF as export (#273 @cuixiping); fixes #124 and #254
+- Fix (image import): Put src after onload to avoid missing event;
+  check other width/height properties in case offset is 0; fixes #278
 - npm: Update devDeps
 - npm: Point to official sinon-test package now that ES6 Modules
     support landed
