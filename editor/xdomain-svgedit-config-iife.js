@@ -235,6 +235,15 @@
     return reverseNS;
   };
 
+  /* globals SVGPathSeg, SVGPathSegMovetoRel, SVGPathSegMovetoAbs,
+      SVGPathSegMovetoRel, SVGPathSegLinetoRel, SVGPathSegLinetoAbs,
+      SVGPathSegLinetoHorizontalRel, SVGPathSegLinetoHorizontalAbs,
+      SVGPathSegLinetoVerticalRel, SVGPathSegLinetoVerticalAbs,
+      SVGPathSegClosePath, SVGPathSegCurvetoCubicRel,
+      SVGPathSegCurvetoCubicAbs, SVGPathSegCurvetoCubicSmoothRel,
+      SVGPathSegCurvetoCubicSmoothAbs, SVGPathSegCurvetoQuadraticRel,
+      SVGPathSegCurvetoQuadraticAbs, SVGPathSegCurvetoQuadraticSmoothRel,
+      SVGPathSegCurvetoQuadraticSmoothAbs, SVGPathSegArcRel, SVGPathSegArcAbs */
   /**
   * SVGPathSeg API polyfill
   * https://github.com/progers/pathseg
@@ -1545,11 +1554,11 @@
     // The second check for appendItem is specific to Firefox 59+ which removed only parts of the
     // SVGPathSegList API (e.g., appendItem). In this case we need to re-implement the entire API
     // so the polyfill data (i.e., _list) is used throughout.
-    if (!('SVGPathSegList' in window) || !('appendItem' in SVGPathSegList.prototype)) {
+    if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.prototype)) {
       // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGPathSegList
-      var _SVGPathSegList = function () {
-        function _SVGPathSegList(pathElement) {
-          classCallCheck(this, _SVGPathSegList);
+      var SVGPathSegList = function () {
+        function SVGPathSegList(pathElement) {
+          classCallCheck(this, SVGPathSegList);
 
           this._pathElement = pathElement;
           this._list = this._parsePath(this._pathElement.getAttribute('d'));
@@ -1564,7 +1573,7 @@
         // MutationObservers are not synchronous so we can have pending asynchronous mutations.
 
 
-        createClass(_SVGPathSegList, [{
+        createClass(SVGPathSegList, [{
           key: '_checkPathSynchronizedToList',
           value: function _checkPathSynchronizedToList() {
             this._updateListFromPathMutations(this._pathElementMutationObserver.takeRecords());
@@ -1592,7 +1601,7 @@
           key: '_writeListToPath',
           value: function _writeListToPath() {
             this._pathElementMutationObserver.disconnect();
-            this._pathElement.setAttribute('d', _SVGPathSegList._pathSegArrayAsString(this._list));
+            this._pathElement.setAttribute('d', SVGPathSegList._pathSegArrayAsString(this._list));
             this._pathElementMutationObserver.observe(this._pathElement, this._mutationObserverConfig);
           }
 
@@ -2069,12 +2078,12 @@
             return builder.pathSegList;
           }
         }]);
-        return _SVGPathSegList;
+        return SVGPathSegList;
       }();
 
-      _SVGPathSegList.prototype.classname = 'SVGPathSegList';
+      SVGPathSegList.prototype.classname = 'SVGPathSegList';
 
-      Object.defineProperty(_SVGPathSegList.prototype, 'numberOfItems', {
+      Object.defineProperty(SVGPathSegList.prototype, 'numberOfItems', {
         get: function get$$1() {
           this._checkPathSynchronizedToList();
           return this._list.length;
@@ -2083,7 +2092,7 @@
         enumerable: true
       });
 
-      _SVGPathSegList._pathSegArrayAsString = function (pathSegArray) {
+      SVGPathSegList._pathSegArrayAsString = function (pathSegArray) {
         var string = '';
         var first = true;
         pathSegArray.forEach(function (pathSeg) {
@@ -2103,7 +2112,7 @@
         pathSegList: {
           get: function get$$1() {
             if (!this._pathSegList) {
-              this._pathSegList = new _SVGPathSegList(this);
+              this._pathSegList = new SVGPathSegList(this);
             }
             return this._pathSegList;
           },
@@ -2127,7 +2136,7 @@
           },
           enumerable: true }
       });
-      window.SVGPathSegList = _SVGPathSegList;
+      window.SVGPathSegList = SVGPathSegList;
     }
   })();
 
@@ -12292,7 +12301,7 @@
 
   if (window.opera) {
     window.console.log = function (str) {
-      opera.postError(str);
+      window.opera.postError(str);
     };
     window.console.dir = function (str) {};
   }
@@ -16412,7 +16421,7 @@
     * Generates a PDF based on the current image, then calls "exportedPDF" with
     * an object including the string, the data URL, and any issues found
     * @function module:svgcanvas.SvgCanvas#exportPDF
-    * @param {string} exportWindowName
+    * @param {string} exportWindowName Will also be used for the download file name here
     * @param {external:jsPDF.OutputType} [outputType="dataurlstring"]
     * @param {module:svgcanvas.PDFExportedCallback} cb
     * @fires module:svgcanvas.SvgCanvas#event:exportedPDF
@@ -16484,7 +16493,7 @@
                   outputType = outputType || 'dataurlstring';
                   obj = { svg: svg, issues: issues, issueCodes: issueCodes, exportWindowName: exportWindowName, outputType: outputType };
 
-                  obj.output = doc.output(outputType);
+                  obj.output = doc.output(outputType, outputType === 'save' ? exportWindowName || 'svg.pdf' : undefined);
                   if (cb) {
                     cb(obj);
                   }
@@ -28397,6 +28406,10 @@
     svgCanvas.bind('saved', saveHandler);
     svgCanvas.bind('exported', exportHandler);
     svgCanvas.bind('exportedPDF', function (win, data) {
+      if (!data.output) {
+        // Ignore Chrome
+        return;
+      }
       var exportWindowName = data.exportWindowName;
 
       if (exportWindowName) {
@@ -29217,48 +29230,81 @@
       $$b.select('Select an image type for export: ', [
       // See http://kangax.github.io/jstests/toDataUrl_mime_type_test/ for a useful list of MIME types and browser support
       // 'ICO', // Todo: Find a way to preserve transparency in SVG-Edit if not working presently and do full packaging for x-icon; then switch back to position after 'PNG'
-      'PNG', 'JPEG', 'BMP', 'WEBP', 'PDF'], function (imgType) {
-        // todo: replace hard-coded msg with uiStrings.notification.
-        if (!imgType) {
-          return;
-        }
-        // Open placeholder window (prevents popup)
-        var exportWindowName = void 0;
-        function openExportWindow() {
-          var str = uiStrings$1.notification.loadingImage;
-          if (curConfig.exportWindowType === 'new') {
-            editor.exportWindowCt++;
-          }
-          exportWindowName = curConfig.canvasName + editor.exportWindowCt;
-          var popHTML = void 0,
-              popURL = void 0;
-          if (loadingURL) {
-            popURL = loadingURL;
-          } else {
-            popHTML = '<!DOCTYPE html><html>\n            <head>\n              <meta charset="utf-8">\n              <title>' + str + '</title>\n            </head>\n            <body><h1>' + str + '</h1></body>\n          <html>';
-            if ((typeof URL === 'undefined' ? 'undefined' : _typeof(URL)) && URL.createObjectURL) {
-              var blob = new Blob([popHTML], { type: 'text/html' });
-              popURL = URL.createObjectURL(blob);
-            } else {
-              popURL = 'data:text/html;base64;charset=utf-8,' + encode64(popHTML);
+      'PNG', 'JPEG', 'BMP', 'WEBP', 'PDF'], function () {
+        var _ref15 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(imgType) {
+          var exportWindowName, openExportWindow, chrome, quality;
+          return regeneratorRuntime.wrap(function _callee5$(_context5) {
+            while (1) {
+              switch (_context5.prev = _context5.next) {
+                case 0:
+                  openExportWindow = function openExportWindow() {
+                    var str = uiStrings$1.notification.loadingImage;
+                    if (curConfig.exportWindowType === 'new') {
+                      editor.exportWindowCt++;
+                    }
+                    exportWindowName = curConfig.canvasName + editor.exportWindowCt;
+                    var popHTML = void 0,
+                        popURL = void 0;
+                    if (loadingURL) {
+                      popURL = loadingURL;
+                    } else {
+                      popHTML = '<!DOCTYPE html><html>\n            <head>\n              <meta charset="utf-8">\n              <title>' + str + '</title>\n            </head>\n            <body><h1>' + str + '</h1></body>\n          <html>';
+                      if ((typeof URL === 'undefined' ? 'undefined' : _typeof(URL)) && URL.createObjectURL) {
+                        var blob = new Blob([popHTML], { type: 'text/html' });
+                        popURL = URL.createObjectURL(blob);
+                      } else {
+                        popURL = 'data:text/html;base64;charset=utf-8,' + encode64(popHTML);
+                      }
+                      loadingURL = popURL;
+                    }
+                    exportWindow = window.open(popURL, exportWindowName);
+                  };
+
+                  if (imgType) {
+                    _context5.next = 3;
+                    break;
+                  }
+
+                  return _context5.abrupt('return');
+
+                case 3:
+                  // Open placeholder window (prevents popup)
+                  exportWindowName = void 0;
+                  chrome = isChrome();
+
+                  if (!(imgType === 'PDF')) {
+                    _context5.next = 10;
+                    break;
+                  }
+
+                  if (!customExportPDF && !chrome) {
+                    openExportWindow();
+                  }
+                  svgCanvas.exportPDF(exportWindowName, chrome ? 'save' : undefined);
+                  _context5.next = 14;
+                  break;
+
+                case 10:
+                  if (!customExportImage) {
+                    openExportWindow();
+                  }
+                  quality = parseInt($$b('#image-slider').val(), 10) / 100;
+                  /* const results = */
+                  _context5.next = 14;
+                  return svgCanvas.rasterExport(imgType, quality, exportWindowName);
+
+                case 14:
+                case 'end':
+                  return _context5.stop();
+              }
             }
-            loadingURL = popURL;
-          }
-          exportWindow = window.open(popURL, exportWindowName);
-        }
-        if (imgType === 'PDF') {
-          if (!customExportPDF) {
-            openExportWindow();
-          }
-          svgCanvas.exportPDF(exportWindowName);
-        } else {
-          if (!customExportImage) {
-            openExportWindow();
-          }
-          var quality = parseInt($$b('#image-slider').val(), 10) / 100;
-          svgCanvas.rasterExport(imgType, quality, exportWindowName);
-        }
-      }, function () {
+          }, _callee5, this);
+        }));
+
+        return function (_x5) {
+          return _ref15.apply(this, arguments);
+        };
+      }(), function () {
         var sel = $$b(this);
         if (sel.val() === 'JPEG' || sel.val() === 'WEBP') {
           if (!$$b('#image-slider').length) {
@@ -30696,7 +30742,9 @@
           } else {
             // bitmap handling
             reader = new FileReader();
-            reader.onloadend = function (e) {
+            reader.onloadend = function (_ref16) {
+              var result = _ref16.target.result;
+
               // let's insert the new image until we know its dimensions
               var insertNewImage = function insertNewImage(width, height) {
                 var newImage = svgCanvas.addSVGElementFromJson({
@@ -30710,7 +30758,7 @@
                     style: 'pointer-events:inherit'
                   }
                 });
-                svgCanvas.setHref(newImage, e.target.result);
+                svgCanvas.setHref(newImage, result);
                 svgCanvas.selectOnly([newImage]);
                 svgCanvas.alignSelectedElements('m', 'page');
                 svgCanvas.alignSelectedElements('c', 'page');
@@ -30721,13 +30769,13 @@
               var imgWidth = 100;
               var imgHeight = 100;
               var img = new Image();
-              img.src = e.target.result;
               img.style.opacity = 0;
               img.onload = function () {
-                imgWidth = img.offsetWidth;
-                imgHeight = img.offsetHeight;
+                imgWidth = img.offsetWidth || img.naturalWidth || img.width;
+                imgHeight = img.offsetHeight || img.naturalHeight || img.height;
                 insertNewImage(imgWidth, imgHeight);
               };
+              img.src = result;
             };
             reader.readAsDataURL(file);
           }
@@ -31032,9 +31080,9 @@
    * @fires module:svgcanvas.SvgCanvas#event:message
    * @returns {undefined}
    */
-  var messageListener = function messageListener(_ref15) {
-    var data = _ref15.data,
-        origin = _ref15.origin;
+  var messageListener = function messageListener(_ref17) {
+    var data = _ref17.data,
+        origin = _ref17.origin;
 
     // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
     var messageObj = { data: data, origin: origin };

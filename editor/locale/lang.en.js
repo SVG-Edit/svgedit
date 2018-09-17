@@ -124,10 +124,10 @@ export default {
     set_link_url: 'Set link URL (leave empty to remove)',
     to_path: 'Convert to Path',
     reorient_path: 'Reorient path',
-    ungroup: 'Ungroup Elements [G]',
+    ungroup: 'Ungroup Elements',
     docprops: 'Document Properties [D]',
-    move_bottom: 'Send to Back [ Ctrl+Shift+[ ]',
-    move_top: 'Bring to Front [ Ctrl+Shift+] ]',
+    move_bottom: 'Send to Back',
+    move_top: 'Bring to Front',
     node_clone: 'Clone Node',
     node_delete: 'Delete Node',
     node_link: 'Link Control Points',
@@ -140,10 +140,10 @@ export default {
     paste_in_place: 'Paste in Place',
     delete: 'Delete',
     group: 'Group',
-    move_front: 'Bring to Front [ Ctrl-Shift+] ]',
-    move_up: 'Bring Forward [ Ctrl+] ]',
-    move_down: 'Send Backward [ Ctrl+[ ]',
-    move_back: 'Send to Back [ Ctrl+Shift+[ ]'
+    move_front: 'Bring to Front',
+    move_up: 'Bring Forward',
+    move_down: 'Send Backward',
+    move_back: 'Send to Back'
   },
   layers: {
     layer: 'Layer',

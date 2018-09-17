@@ -2,7 +2,7 @@
 
 import './touch.js';
 import {NS} from './namespaces.js';
-import {isWebkit, isGecko, isIE, isMac, isTouch} from './browser.js';
+import {isWebkit, isChrome, isGecko, isIE, isMac, isTouch} from './browser.js';
 import * as Utils from './utilities.js';
 import {getTypeMap, convertUnit, isValidUnit} from './units.js';
 import {
@@ -3355,7 +3355,7 @@ editor.init = function () {
 
   const getPaint = function (color, opac, type) {
     // update the editor's fill paint
-    const opts = { alpha: opac };
+    const opts = {alpha: opac};
     if (color.startsWith('url(#')) {
       let refElem = svgCanvas.getRefElem(color);
       if (refElem) {
@@ -3382,6 +3382,9 @@ editor.init = function () {
   svgCanvas.bind('saved', saveHandler);
   svgCanvas.bind('exported', exportHandler);
   svgCanvas.bind('exportedPDF', function (win, data) {
+    if (!data.output) { // Ignore Chrome
+      return;
+    }
     const {exportWindowName} = data;
     if (exportWindowName) {
       exportWindow = window.open('', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
@@ -4174,7 +4177,7 @@ editor.init = function () {
       // 'ICO', // Todo: Find a way to preserve transparency in SVG-Edit if not working presently and do full packaging for x-icon; then switch back to position after 'PNG'
       'PNG',
       'JPEG', 'BMP', 'WEBP', 'PDF'
-    ], function (imgType) { // todo: replace hard-coded msg with uiStrings.notification.
+    ], async function (imgType) { // todo: replace hard-coded msg with uiStrings.notification.
       if (!imgType) {
         return;
       }
@@ -4207,17 +4210,18 @@ editor.init = function () {
         }
         exportWindow = window.open(popURL, exportWindowName);
       }
+      const chrome = isChrome();
       if (imgType === 'PDF') {
-        if (!customExportPDF) {
+        if (!customExportPDF && !chrome) {
           openExportWindow();
         }
-        svgCanvas.exportPDF(exportWindowName);
+        svgCanvas.exportPDF(exportWindowName, chrome ? 'save' : undefined);
       } else {
         if (!customExportImage) {
           openExportWindow();
         }
         const quality = parseInt($('#image-slider').val(), 10) / 100;
-        svgCanvas.rasterExport(imgType, quality, exportWindowName);
+        /* const results = */ await svgCanvas.rasterExport(imgType, quality, exportWindowName);
       }
     }, function () {
       const sel = $(this);
@@ -4612,8 +4616,8 @@ editor.init = function () {
       .jGraduate(
         {
           paint,
-          window: { pickerTitle: title },
-          images: { clientPath: curConfig.jGraduatePath },
+          window: {pickerTitle: title},
+          images: {clientPath: curConfig.jGraduatePath},
           newstop: 'inverse'
         },
         function (p) {
@@ -5632,7 +5636,7 @@ editor.init = function () {
         } else {
           // bitmap handling
           reader = new FileReader();
-          reader.onloadend = function (e) {
+          reader.onloadend = function ({target: {result}}) {
             // let's insert the new image until we know its dimensions
             const insertNewImage = function (width, height) {
               const newImage = svgCanvas.addSVGElementFromJson({
@@ -5646,7 +5650,7 @@ editor.init = function () {
                   style: 'pointer-events:inherit'
                 }
               });
-              svgCanvas.setHref(newImage, e.target.result);
+              svgCanvas.setHref(newImage, result);
               svgCanvas.selectOnly([newImage]);
               svgCanvas.alignSelectedElements('m', 'page');
               svgCanvas.alignSelectedElements('c', 'page');
@@ -5657,13 +5661,13 @@ editor.init = function () {
             let imgWidth = 100;
             let imgHeight = 100;
             const img = new Image();
-            img.src = e.target.result;
             img.style.opacity = 0;
             img.onload = function () {
-              imgWidth = img.offsetWidth;
-              imgHeight = img.offsetHeight;
+              imgWidth = img.offsetWidth || img.naturalWidth || img.width;
+              imgHeight = img.offsetHeight || img.naturalHeight || img.height;
               insertNewImage(imgWidth, imgHeight);
             };
+            img.src = result;
           };
           reader.readAsDataURL(file);
         }

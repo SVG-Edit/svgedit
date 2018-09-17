@@ -5,8 +5,7 @@
 //   user entrance file
 
 import babel from 'rollup-plugin-babel';
-import {uglify} from 'rollup-plugin-uglify';
-import {minify} from 'uglify-es';
+import {terser} from 'rollup-plugin-terser';
 import replace from 'rollup-plugin-re';
 
 const {lstatSync, readdirSync} = require('fs');
@@ -44,7 +43,7 @@ function getRollupObject ({minifying, format = 'umd'} = {}) {
     ]
   };
   if (minifying) {
-    nonMinified.plugins.push(uglify(null, minify));
+    nonMinified.plugins.push(terser());
   }
   return nonMinified;
 }

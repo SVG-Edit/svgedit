@@ -17,6 +17,7 @@
     "no-var": 2,
     "prefer-const": 2,
     "no-extra-semi": 2,
-    "quote-props": [2, "as-needed"]
+    "quote-props": [2, "as-needed"],
+    "object-curly-spacing": ["error", "never"]
   }
 }

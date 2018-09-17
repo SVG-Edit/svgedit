@@ -1,3 +1,23 @@
+# ?
+
+- Known regression for 3.\*: Image libraries [broken](https://github.com/SVG-Edit/svgedit/issues/274)
+- Breaking change (minor): Change export to check `exportWindowName`
+  for filename and change default from `download` to `svg.pdf` to
+  distinguish from other downloads
+- Fix: Given lack of support now for dataURI export in Chrome, provide
+  PDF as export (#273 @cuixiping); fixes #124 and #254
+- Fix (image import): Put src after onload to avoid missing event;
+  check other width/height properties in case offset is 0; fixes #278
+- Fix (image export): Export in Chrome; fixes #282
+- Fix (Context menus): Avoid showing double shortcuts (#285); add some
+  missing ones
+- npm: Update devDeps
+- npm: Point to official sinon-test package now that ES6 Modules
+    support landed
+- Build: Switch to `terser` plugin with `uglify` plugin not
+    supporting ES6+-capable minifier
+- Linting (ESLint): Consistent spacing; new "standard"
+
 # 3.0.0-rc.2
 
 - Fix: Avoid extension `includeWith` button conflicts/redundancies;

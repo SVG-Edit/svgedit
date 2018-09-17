@@ -511,7 +511,25 @@
           pdf.setFontType(fontType);
           var pdfFontSize = node.hasAttribute('font-size') ? parseInt(node.getAttribute('font-size'), 10) : 16;
 
-          var box = node.getBBox();
+          var getWidth = function getWidth(node) {
+            var box = void 0;
+            try {
+              box = node.getBBox(); // Firefox on MacOS will raise error here
+            } catch (err) {
+              // copy and append to body so that getBBox is available
+              var nodeCopy = node.cloneNode(true);
+              var svg = node.ownerSVGElement.cloneNode(false);
+              svg.appendChild(nodeCopy);
+              document.body.appendChild(svg);
+              try {
+                box = nodeCopy.getBBox();
+              } catch (err) {
+                box = { width: 0 };
+              }
+              document.body.removeChild(svg);
+            }
+            return box.width;
+          };
           // FIXME: use more accurate positioning!!
           var x = void 0,
               y = void 0,
@@ -519,9 +537,9 @@
           if (node.hasAttribute('text-anchor')) {
             switch (node.getAttribute('text-anchor')) {
               case 'end':
-                xOffset = box.width;break;
+                xOffset = getWidth(node);break;
               case 'middle':
-                xOffset = box.width / 2;break;
+                xOffset = getWidth(node) / 2;break;
               case 'start':
                 break;
               case 'default':

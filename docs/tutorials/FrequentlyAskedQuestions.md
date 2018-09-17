@@ -1,40 +1,38 @@
-**NOTE: The following may contain outdated content.**
+**NOTE: The following may contain or reference outdated content.**
 
-**Q: Why doesn't SVG-edit work in Internet Explorer 6-7-8?**
+**Q: Why am I not able to export?**
 
-A: SVG-edit only works in IE6-7-8 if you have installed the Google Chrome
-Frame plugin. Internet Explorer 8 and under do not natively support Scalable
-Vector Graphics (SVG), however IE9+ does, and thus is supported starting
-in SVG-edit 2.6
-
-In theory there are several other possibilities that could allow SVG-edit
-to work in IE:
-
-* someone gets it to work with the SVG Web shim
-* someone gets it to work with IE and the Adobe SVG Viewer
-* someone gets it to work with another SVG plugin
+A: It is possible you have a popup-blocker such as AdBlock Plus installed.
 
 **Q: How can I make SVG-edit save files on my server?**
 
 A: As of SVG-edit 2.5.1, an extension is available that overrides the
 default open/save behavior and instead uses PHP files to allow proper
 open/save dialog boxes. You can include the extension by adding
-`ext-server_opensave.js` to the `curConfig.extension` array in
-`svg-editor.js` or through other methods mentioned on our ConfigOptions page.
+`ext-server_opensave.js` to the `curConfig.extension` array
+or through other methods mentioned on our [ConfigOptions]{@tutorial ConfigOptions} page.
 
-For other server-saving behavior you'll want to modify
+For other server-saving behavior you may wish to modify
 `ext-server_opensave.js` or the `filesave.php` file, both available
 under `editor/extensions/`.
+
+**Q: How can I serve SVG graphic editor from my own server?**
+
+A: You need to download the latest version to your server and unzip.
+The exact commands/instructions are here: <http://howik.com/Improve_your_user%27s_experience_by_adding_svg_graphic_editor_to_your_website_in_less_than_2_minutes>
+
+**Q: How can I help?**
+
+A: See [Testing]{@tutorial Testing} and [ReleaseInstructions]{@tutorial ReleaseInstructions}
+
+<!-- The remaining should be moved to Editor.md as documentation,
+  assuming they are still valid -->
 
 **Q: How can I set the stroke to 'none'?**
 
 A: Shift-clicking palette squares sets the Stroke paint value. Thus,
 you can `shift-click` on the None box (red x on white background) to
 clear the Stroke paint.
-
-**Q: How can I help?**
-
-A: See How to participate
 
 **Q: How can I select an element when it's hidden or behind another one?**
 
@@ -59,15 +57,6 @@ A: Yes, there are two methods you can use as of SVG-edit 2.4.
   and enter your URL. Use the layer above this one to trace over the image
   without moving. Note that you can also hide/show layers to help your work.
 
-**Q: How do I use the Wave Gadget?**
-
-A: (Note that this information refers to the SVG-edit 2.3 Wave Gadget,
-  the Wave Gadget has not been worked on for years though) Go to this wave
-  wavesandbox.com!w+W7VzCLZk%A and there will be a button on the bottom
-  that says "Install" and when you are editing things, you will see a
-  SVG-edit icon in your toolbar that you can click to include the gadget
-  into any blip.
-
 **Q: How do I copy the style of an object to other(s)?**
 
 A:
@@ -82,8 +71,3 @@ A:
 - Hit "Ok" in the colorpicker
 
 The other objects will get the Fill or the Stroke of the first object.
-
-**Q: How can I serve SVG graphic editor from my own server?**
-
-A: You need to download the latest version to your server and unzip.
-The exact commands/instructions are here: <http://howik.com/Improve_your_user%27s_experience_by_adding_svg_graphic_editor_to_your_website_in_less_than_2_minutes>

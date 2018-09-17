@@ -76,7 +76,7 @@ if (!window.console) {
 }
 
 if (window.opera) {
-  window.console.log = function (str) { opera.postError(str); };
+  window.console.log = function (str) { window.opera.postError(str); };
   window.console.dir = function (str) {};
 }
 
@@ -3956,7 +3956,7 @@ this.rasterExport = function (imgType, quality, exportWindowName, cb) {
 * Generates a PDF based on the current image, then calls "exportedPDF" with
 * an object including the string, the data URL, and any issues found
 * @function module:svgcanvas.SvgCanvas#exportPDF
-* @param {string} exportWindowName
+* @param {string} exportWindowName Will also be used for the download file name here
 * @param {external:jsPDF.OutputType} [outputType="dataurlstring"]
 * @param {module:svgcanvas.PDFExportedCallback} cb
 * @fires module:svgcanvas.SvgCanvas#event:exportedPDF
@@ -4015,7 +4015,7 @@ this.exportPDF = function (exportWindowName, outputType, cb) {
     //  opposed to opening a new tab
     outputType = outputType || 'dataurlstring';
     const obj = {svg, issues, issueCodes, exportWindowName, outputType};
-    obj.output = doc.output(outputType);
+    obj.output = doc.output(outputType, outputType === 'save' ? (exportWindowName || 'svg.pdf') : undefined);
     if (cb) {
       cb(obj);
     }
@@ -5670,14 +5670,14 @@ canvas.setBlur = function (val, complete) {
     }
   } else {
     // Not found, so create
-    const newblur = addSVGElementFromJson({ element: 'feGaussianBlur',
+    const newblur = addSVGElementFromJson({element: 'feGaussianBlur',
       attr: {
         in: 'SourceGraphic',
         stdDeviation: val
       }
     });
 
-    filter = addSVGElementFromJson({ element: 'filter',
+    filter = addSVGElementFromJson({element: 'filter',
       attr: {
         id: elemId + '_blur'
       }
