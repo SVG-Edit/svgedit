@@ -30,6 +30,8 @@ const pdfSvgAttr = {
   rect: ['x', 'y', 'width', 'height', 'stroke', 'fill', 'stroke-width'],
   ellipse: ['cx', 'cy', 'rx', 'ry', 'stroke', 'fill', 'stroke-width'],
   circle: ['cx', 'cy', 'r', 'stroke', 'fill', 'stroke-width'],
+  polygon: ['points', 'stroke', 'fill', 'stroke-width'],
+  //polyline attributes is same as polygon
   text: ['x', 'y', 'font-size', 'font-family', 'text-anchor', 'font-weight', 'font-style', 'fill']
 };
 
@@ -60,13 +62,34 @@ const svgElementToPdf = function (element, pdf, options) {
   // console.log('options =', options);
   const remove = (options.removeInvalid === undefined ? false : options.removeInvalid);
   const k = (options.scale === undefined ? 1.0 : options.scale);
+  const numRgx = /[+-]?(?:\d+\.\d*|\d+|\.\d+)(?:[eE][+-]?\d+)?/g;
   let colorMode = null;
+  let getLinesOptionsOfPoly = function (node) {
+      let nums = node.getAttribute('points');
+      nums = nums.match(numRgx) || [];
+      if (nums && nums.length) {
+          nums = [].map.call(nums, Number);
+          if (nums.length % 2) {
+              nums.length -= 1;
+          }
+      }
+      if (nums.length < 4) {
+          console.log('invalid points attribute:', node);
+          return;
+      }
+      let x = nums[0], y = nums[1], lines = [];
+      for (let i = 2; i < nums.length; i += 2) {
+          lines.push([nums[i] - nums[i - 2], nums[i + 1] - nums[i - 1]]);
+      }
+      return {x, y, lines};
+  };
   [].forEach.call(element.children, function (node) {
     // console.log('passing: ', node);
     // let hasStrokeColor = false;
     let hasFillColor = false;
     let fillRGB;
-    if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle', 'text'])) {
+    let linesOptions;
+    if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle', 'polygon', 'polyline', 'text'])) {
       const fillColor = node.getAttribute('fill');
       if (attributeIsNotEmpty(fillColor)) {
         fillRGB = new RGBColor(fillColor);
@@ -78,7 +101,7 @@ const svgElementToPdf = function (element, pdf, options) {
         }
       }
     }
-    if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle'])) {
+    if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle', 'polygon', 'polyline'])) {
       if (hasFillColor) {
         pdf.setFillColor(fillRGB.r, fillRGB.g, fillRGB.b);
       }
@@ -94,14 +117,15 @@ const svgElementToPdf = function (element, pdf, options) {
           if (colorMode === 'F') {
             colorMode = 'FD';
           } else {
-            colorMode = null;
+            colorMode = 'S';
           }
         } else {
           colorMode = null;
         }
       }
     }
-    switch (node.tagName.toLowerCase()) {
+    let tag = node.tagName.toLowerCase();
+    switch (tag) {
     case 'svg':
     case 'a':
     case 'g':
@@ -146,6 +170,22 @@ const svgElementToPdf = function (element, pdf, options) {
       );
       removeAttributes(node, pdfSvgAttr.circle);
       break;
+    case 'polygon':
+    case 'polyline':
+      linesOptions = getLinesOptionsOfPoly(node);
+      if (linesOptions) {
+          pdf.lines(
+              linesOptions.lines,
+              k * linesOptions.x,
+              k * linesOptions.y,
+              [k, k],
+              colorMode,
+              tag === 'polygon' //polygon is closed, polyline is not closed
+          );
+      }
+      removeAttributes(node, pdfSvgAttr.polygon);
+      break;
+    // TODO: path
     case 'text':
       if (node.hasAttribute('font-family')) {
         switch ((node.getAttribute('font-family') || '').toLowerCase()) {
