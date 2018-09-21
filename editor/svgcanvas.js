@@ -1126,7 +1126,6 @@ this.addExtension = async function (name, extInitFunc, importLocale) {
   if (typeof extInitFunc !== 'function') {
     throw new TypeError('Function argument expected for `svgcanvas.addExtension`');
   }
-  let extObj = {};
   if (!(name in extensions)) {
     // Provide private vars/funcs here. Is there a better way to do this?
     /**
@@ -1148,9 +1147,7 @@ this.addExtension = async function (name, extInitFunc, importLocale) {
       nonce: getCurrentDrawing().getNonce(),
       selectorManager
     });
-    if (extInitFunc) {
-      extObj = await extInitFunc(argObj);
-    }
+    const extObj = await extInitFunc(argObj);
     if (extObj) {
       extObj.name = name;
     }
@@ -1881,7 +1878,8 @@ const mouseDown = function (evt) {
     start.y = realY;
     started = true;
     dAttr = realX + ',' + realY + ' ';
-    strokeW = parseFloat(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
+    // Commented out as doing nothing now:
+    // strokeW = parseFloat(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
     addSVGElementFromJson({
       element: 'polyline',
       curStyles: true,
@@ -2104,10 +2102,13 @@ const mouseMove = function (evt) {
         dy = snapToGrid(dy);
       }
 
+      /*
+      // Commenting out as currently has no effect
       if (evt.shiftKey) {
         xya = snapToAngle(startX, startY, x, y);
         ({x, y} = xya);
       }
+      */
 
       if (dx !== 0 || dy !== 0) {
         len = selectedElements.length;
@@ -5871,14 +5872,14 @@ this.setImageURL = function (val) {
   if (!elem) { return; }
 
   const attrs = $(elem).attr(['width', 'height']);
-  let setsize = (!attrs.width || !attrs.height);
+  const setsize = (!attrs.width || !attrs.height);
 
   const curHref = getHref(elem);
 
   // Do nothing if no URL change or size change
-  if (curHref !== val) {
-    setsize = true;
-  } else if (!setsize) { return; }
+  if (curHref === val && !setsize) {
+    return;
+  }
 
   const batchCmd = new BatchCommand('Change Image URL');
 
@@ -5887,24 +5888,20 @@ this.setImageURL = function (val) {
     '#href': curHref
   }));
 
-  if (setsize) {
-    $(new Image()).load(function () {
-      const changes = $(elem).attr(['width', 'height']);
+  $(new Image()).load(function () {
+    const changes = $(elem).attr(['width', 'height']);
 
-      $(elem).attr({
-        width: this.width,
-        height: this.height
-      });
+    $(elem).attr({
+      width: this.width,
+      height: this.height
+    });
 
-      selectorManager.requestSelector(elem).resize();
+    selectorManager.requestSelector(elem).resize();
 
-      batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
-      addCommandToHistory(batchCmd);
-      call('changed', [elem]);
-    }).attr('src', val);
-  } else {
+    batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
     addCommandToHistory(batchCmd);
-  }
+    call('changed', [elem]);
+  }).attr('src', val);
 };
 
 /**

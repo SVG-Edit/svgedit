@@ -597,7 +597,7 @@ export const getSegSelector = function (seg, update) {
     // Set start point
     replacePathSeg(2, 0, [pt.x, pt.y], segLine);
 
-    const pts = ptObjToArr(seg.type, seg.item, true);
+    const pts = ptObjToArr(seg.type, seg.item); // , true);
     for (let i = 0; i < pts.length; i += 2) {
       const pt = getGripPt(seg, {x: pts[i], y: pts[i + 1]});
       pts[i] = pt.x;
@@ -738,7 +738,7 @@ export class Segment {
    */
   addGrip () {
     this.ptgrip = getPointGrip(this, true);
-    this.ctrlpts = getControlPoints(this, true);
+    this.ctrlpts = getControlPoints(this); // , true);
     this.segsel = getSegSelector(this, true);
   }
 
@@ -1382,7 +1382,7 @@ export const recalcRotatedPath = function () {
   const oldbox = path.oldbbox; // selectedBBoxes[0],
   oldcx = oldbox.x + oldbox.width / 2;
   oldcy = oldbox.y + oldbox.height / 2;
-  let box = getBBox(currentPath);
+  const box = getBBox(currentPath);
   newcx = box.x + box.width / 2;
   newcy = box.y + box.height / 2;
 
@@ -1414,7 +1414,7 @@ export const recalcRotatedPath = function () {
     replacePathSeg(type, i, points);
   } // loop for each point
 
-  box = getBBox(currentPath);
+  /* box = */ getBBox(currentPath);
   // selectedBBoxes[0].x = box.x; selectedBBoxes[0].y = box.y;
   // selectedBBoxes[0].width = box.width; selectedBBoxes[0].height = box.height;
 
@@ -1810,10 +1810,10 @@ export const pathActions = (function () {
         let keep = null;
         let index;
         // if pts array is empty, create path element with M at current point
-        let drawnPath = editorContext_.getDrawnPath();
+        const drawnPath = editorContext_.getDrawnPath();
         if (!drawnPath) {
           const dAttr = 'M' + x + ',' + y + ' '; // Was this meant to work with the other `dAttr`? (was defined globally so adding `var` to at least avoid a global)
-          drawnPath = editorContext_.setDrawnPath(editorContext_.addSVGElementFromJson({
+          /* drawnPath = */ editorContext_.setDrawnPath(editorContext_.addSVGElementFromJson({
             element: 'path',
             curStyles: true,
             attr: {
@@ -1892,7 +1892,7 @@ export const pathActions = (function () {
 
             // This will signal to commit the path
             // const element = newpath; // Other event handlers define own `element`, so this was probably not meant to interact with them or one which shares state (as there were none); I therefore adding a missing `var` to avoid a global
-            drawnPath = editorContext_.setDrawnPath(null);
+            /* drawnPath = */ editorContext_.setDrawnPath(null);
             editorContext_.setStarted(false);
 
             if (subpath) {

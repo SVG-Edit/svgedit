@@ -170,7 +170,7 @@ export default {
 
             polyPoints += x + ',' + y + ' ';
 
-            if (inradius != null) {
+            if (!isNaN(inradius)) {
               angle = (2.0 * Math.PI * (s / point)) + (Math.PI / point);
               if (orient === 'point') {
                 angle -= (Math.PI / 2);

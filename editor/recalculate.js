@@ -262,7 +262,7 @@ export const recalculateDimensions = function (selected) {
       box.y + box.height / 2,
       transformListToTransform(tlist).matrix
     );
-    let m = svgroot.createSVGMatrix();
+    // let m = svgroot.createSVGMatrix();
 
     // temporarily strip off the rotate and save the old center
     const gangle = getRotationAngle(selected);
@@ -407,7 +407,7 @@ export const recalculateDimensions = function (selected) {
       tlist.removeItem(N - 3);
     } else if (N >= 3 && tlist.getItem(N - 1).type === 1) {
       operation = 3; // scale
-      m = transformListToTransform(tlist).matrix;
+      const m = transformListToTransform(tlist).matrix;
       const e2t = svgroot.createSVGTransform();
       e2t.setMatrix(m);
       tlist.clear();
@@ -611,7 +611,7 @@ export const recalculateDimensions = function (selected) {
 
     if (!box && selected.tagName !== 'path') return null;
 
-    let m = svgroot.createSVGMatrix();
+    let m; // = svgroot.createSVGMatrix();
     // temporarily strip off the rotate and save the old center
     const angle = getRotationAngle(selected);
     if (angle) {
@@ -737,7 +737,7 @@ export const recalculateDimensions = function (selected) {
     // if it was a rotation, put the rotate back and return without a command
     // (this function has zero work to do for a rotate())
     } else {
-      operation = 4; // rotation
+      // operation = 4; // rotation
       if (angle) {
         const newRot = svgroot.createSVGTransform();
         newRot.setRotate(angle, newcenter.x, newcenter.y);

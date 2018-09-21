@@ -172,7 +172,7 @@ export class Selector {
 
     // apply the transforms
     const l = bbox.x, t = bbox.y, w = bbox.width, h = bbox.height;
-    bbox = {x: l, y: t, width: w, height: h};
+    // bbox = {x: l, y: t, width: w, height: h}; // Not in use
 
     // we need to handle temporary transforms too
     // if skewed, get its transformed box, then find its axis-aligned bbox

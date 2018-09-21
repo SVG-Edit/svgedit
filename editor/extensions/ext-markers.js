@@ -279,7 +279,7 @@ export default {
       const poslist = {start_marker: 'start', mid_marker: 'mid', end_marker: 'end'};
       const pos = poslist[this.id];
       const markerName = 'marker-' + pos;
-      let el = selElems[0];
+      const el = selElems[0];
       const marker = getLinked(el, markerName);
       if (marker) { $(marker).remove(); }
       el.removeAttribute(markerName);
@@ -294,7 +294,9 @@ export default {
       const id = markerPrefix + pos + '_' + el.id;
       addMarker(id, val);
       svgCanvas.changeSelectedAttribute(markerName, 'url(#' + id + ')');
-      if (el.tagName === 'line' && pos === 'mid') { el = convertline(el); }
+      if (el.tagName === 'line' && pos === 'mid') {
+        convertline(el);
+      }
       svgCanvas.call('changed', selElems);
       setIcon(pos, val);
     }

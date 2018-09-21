@@ -112,7 +112,7 @@ export const init = function (editorContext) {
 export const toXml = function (str) {
   // &apos; is ok in XML, but not HTML
   // &gt; does not normally need escaping, though it can if within a CDATA expression (and preceded by "]]")
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/, '&#x27;');
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;'); // Note: `&apos;` is XML only
 };
 
 /**
@@ -619,7 +619,7 @@ export const getBBox = function (elem) {
   default:
 
     if (elname === 'use') {
-      ret = groupBBFix(selected, true);
+      ret = groupBBFix(selected); // , true);
     }
     if (elname === 'use' || (elname === 'foreignObject' && isWebkit())) {
       if (!ret) { ret = selected.getBBox(); }

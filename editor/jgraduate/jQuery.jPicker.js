@@ -687,7 +687,7 @@ const jPicker = function ($) {
             case 'r':
               if (hsv) continue;
               rgb = true;
-              newV.r = (value && value.r && value.r | 0) || (value && value | 0) || 0;
+              newV.r = (value.r && value.r | 0) || (value | 0) || 0;
               if (newV.r < 0) newV.r = 0;
               else if (newV.r > 255) newV.r = 255;
               if (r !== newV.r) {
@@ -740,7 +740,7 @@ const jPicker = function ($) {
             case 's':
               if (rgb) continue;
               hsv = true;
-              newV.s = value && value.s != null ? value.s | 0 : value != null ? value | 0 : 100;
+              newV.s = value.s != null ? value.s | 0 : value | 0;
               if (newV.s < 0) newV.s = 0;
               else if (newV.s > 100) newV.s = 100;
               if (s !== newV.s) {
@@ -751,7 +751,7 @@ const jPicker = function ($) {
             case 'v':
               if (rgb) continue;
               hsv = true;
-              newV.v = value && value.v != null ? value.v | 0 : value != null ? value | 0 : 100;
+              newV.v = value.v != null ? value.v | 0 : value | 0;
               if (newV.v < 0) newV.v = 0;
               else if (newV.v > 100) newV.v = 100;
               if (v !== newV.v) {
@@ -1659,7 +1659,7 @@ const jPicker = function ($) {
           button = tbody.find('.Button');
         activePreview = preview.find('.Active:first').css({backgroundColor: (hex && '#' + hex) || 'transparent'});
         currentPreview = preview.find('.Current:first').css({backgroundColor: (hex && '#' + hex) || 'transparent'}).bind('click', currentClicked);
-        setAlpha.call($this, currentPreview, Math.precision(color.current.val('a') * 100) / 255, 4);
+        setAlpha.call($this, currentPreview, Math.precision((color.current.val('a') * 100) / 255, 4));
         okButton = button.find('.Ok:first').bind('click', okClicked);
         cancelButton = button.find('.Cancel:first').bind('click', cancelClicked);
         grid = button.find('.Grid:first');
@@ -1687,7 +1687,7 @@ const jPicker = function ($) {
             if (!win.alphaSupport && ahex) ahex = ahex.substring(0, 6) + 'ff';
             const quickHex = color.quickList[i].val('hex');
             if (!ahex) ahex = '00000000';
-            html += '<span class="QuickColor"' + ((ahex && ' title="#' + ahex + '"') || 'none') + ' style="background-color:' + ((quickHex && '#' + quickHex) || '') + ';' + (quickHex ? '' : 'background-image:url(' + images.clientPath + 'NoColor.png)') + (win.alphaSupport && alpha && alpha < 255 ? ';opacity:' + Math.precision(alpha / 255, 4) + ';filter:Alpha(opacity=' + Math.precision(alpha / 2.55, 4) + ')' : '') + '">&nbsp;</span>';
+            html += '<span class="QuickColor"' + (' title="#' + ahex + '"') + ' style="background-color:' + ((quickHex && '#' + quickHex) || '') + ';' + (quickHex ? '' : 'background-image:url(' + images.clientPath + 'NoColor.png)') + (win.alphaSupport && alpha && alpha < 255 ? ';opacity:' + Math.precision(alpha / 255, 4) + ';filter:Alpha(opacity=' + Math.precision(alpha / 2.55, 4) + ')' : '') + '">&nbsp;</span>';
           }
           setImg.call($this, grid, images.clientPath + 'bar-opacity.png');
           grid.html(html);

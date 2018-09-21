@@ -3165,7 +3165,7 @@ editor.init = function () {
           parent = '#main_menu ul';
           break;
         }
-        let flyoutHolder, curH, showBtn, refData, refBtn;
+        let flyoutHolder, showBtn, refData, refBtn;
         const button = $((btn.list || btn.type === 'app_menu') ? '<li/>' : '<div/>')
           .attr('id', id)
           .attr('title', btn.title)
@@ -3210,7 +3210,7 @@ editor.init = function () {
             // TODO: Find way to set the current icon using the iconloader if this is not default
 
             // Include data for extension button as well as ref button
-            curH = holders['#' + flyoutHolder[0].id] = [{
+            /* curH = */ holders['#' + flyoutHolder[0].id] = [{
               sel: '#' + id,
               fn: btn.events.click,
               icon: btn.id,
@@ -3271,7 +3271,7 @@ editor.init = function () {
           // TODO: Find way to set the current icon using the iconloader if this is not default
 
           // Include data for extension button as well as ref button
-          curH = holders['#' + flyoutHolder[0].id] = [{
+          const curH = holders['#' + flyoutHolder[0].id] = [{
             sel: '#' + id,
             fn: btn.events.click,
             icon: btn.id,
@@ -4200,7 +4200,7 @@ editor.init = function () {
             </head>
             <body><h1>${str}</h1></body>
           <html>`;
-          if (typeof URL && URL.createObjectURL) {
+          if (typeof URL !== 'undefined' && URL.createObjectURL) {
             const blob = new Blob([popHTML], {type: 'text/html'});
             popURL = URL.createObjectURL(blob);
           } else {
@@ -4286,9 +4286,9 @@ editor.init = function () {
     workarea.toggleClass('wireframe');
 
     if (supportsNonSS) { return; }
-    let wfRules = $('#wireframe_rules');
+    const wfRules = $('#wireframe_rules');
     if (!wfRules.length) {
-      wfRules = $('<style id="wireframe_rules"></style>').appendTo('head');
+      /* wfRules = */ $('<style id="wireframe_rules"></style>').appendTo('head');
     } else {
       wfRules.empty();
     }
@@ -4956,13 +4956,13 @@ editor.init = function () {
     if (sidedrag === -1) { return; }
     sidedragging = true;
     let deltaX = sidedrag - evt.pageX;
-    let sideWidth = $('#sidepanels').width();
+    const sideWidth = $('#sidepanels').width();
     if (sideWidth + deltaX > SIDEPANEL_MAXWIDTH) {
       deltaX = SIDEPANEL_MAXWIDTH - sideWidth;
-      sideWidth = SIDEPANEL_MAXWIDTH;
+      // sideWidth = SIDEPANEL_MAXWIDTH;
     } else if (sideWidth + deltaX < 2) {
       deltaX = 2 - sideWidth;
-      sideWidth = 2;
+      // sideWidth = 2;
     }
     if (deltaX === 0) { return; }
     sidedrag -= deltaX;

@@ -125,7 +125,7 @@ export class SVGTransformList {
     // TODO: how do we capture the undo-ability in the changed transform list?
     this._update = function () {
       let tstr = '';
-      /* const concatMatrix = */ svgroot.createSVGMatrix();
+      // /* const concatMatrix = */ svgroot.createSVGMatrix();
       for (let i = 0; i < this.numberOfItems; ++i) {
         const xform = this._list.getItem(i);
         tstr += transformToString(xform) + ' ';

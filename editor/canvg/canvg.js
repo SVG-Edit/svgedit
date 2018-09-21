@@ -168,9 +168,6 @@ function build (opts) {
     const AJAX = window.XMLHttpRequest
       ? new XMLHttpRequest()
       : new window.ActiveXObject('Microsoft.XMLHTTP');
-    if (!AJAX) {
-      return null;
-    }
     if (asynch) {
       return new Promise((resolve, reject) => {
         const req = AJAX.open('GET', url, true);

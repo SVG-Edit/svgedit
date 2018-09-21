@@ -272,7 +272,7 @@ SlideShow.prototype = {
 };
 
 // Initialize
-const slideshow = new SlideShow(query('.slide')); // eslint-disable-line no-unused-vars
+/* const slideshow = */ new SlideShow(query('.slide')); // eslint-disable-line no-new
 
 document.querySelector('#toggle-counter').addEventListener('click', toggleCounter, false);
 document.querySelector('#toggle-size').addEventListener('click', toggleSize, false);
