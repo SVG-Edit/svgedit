@@ -7,6 +7,16 @@ var svgEditorExtension_xdomain_messaging = (function () {
     return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
   };
 
+  var toConsumableArray = function (arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+      return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  };
+
   /**
   * Should not be needed for same domain control (just call via child frame),
   *  but an API common for cross-domain and same domain use can be found
@@ -45,7 +55,9 @@ var svgEditorExtension_xdomain_messaging = (function () {
             id: cbid
           };
           try {
-            message.result = svgCanvas[name].apply(svgCanvas, args);
+            // Now that we know the origin is trusted, we perform otherwise
+            //   unsafe arbitrary canvas method execution
+            message.result = svgCanvas[name].apply(svgCanvas, toConsumableArray(args)); // lgtm [js/remote-property-injection]
           } catch (err) {
             message.error = err.message;
           }

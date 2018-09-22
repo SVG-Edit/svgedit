@@ -33,7 +33,9 @@ export default {
           id: cbid
         };
         try {
-          message.result = svgCanvas[name].apply(svgCanvas, args);
+          // Now that we know the origin is trusted, we perform otherwise
+          //   unsafe arbitrary canvas method execution
+          message.result = svgCanvas[name](...args); // lgtm [js/remote-property-injection]
         } catch (err) {
           message.error = err.message;
         }

@@ -44,14 +44,14 @@ function getCallbackSetter (funcName) {
 * @param {JSON} data
 * @returns {undefined}
 */
-function addCallback (t, data) {
-  const result = data.result || data.error,
-    cbid = data.id;
-  if (t.callbacks[cbid]) {
-    if (data.result) {
+function addCallback (t, {result, error, id: cbid}) {
+  if (typeof cbid === 'number' && t.callbacks[cbid]) {
+    // These should be safe both because we check `cbid` is numeric and
+    //   because the calls are from trusted origins
+    if (result) {
       t.callbacks[cbid](result);
     } else {
-      t.callbacks[cbid](result, 'error');
+      t.callbacks[cbid](error, 'error');
     }
   }
 }
@@ -340,6 +340,7 @@ class EmbeddedSVGEdit {
   * @param {string} name
   * @param {ArgumentsArray} args Signature dependent on function
   * @param {module:EmbeddedSVGEdit.GenericCallback} callback
+  * @returns {Integer}
   */
   send (name, args, callback) {
     const t = this;

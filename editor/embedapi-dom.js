@@ -68,12 +68,12 @@ $('#exportPDF').click(exportPDF);
 const frameBase = 'https://raw.githack.com/SVG-Edit/svgedit/master';
 // const frameBase = 'http://localhost:8001';
 const framePath = '/editor/xdomain-svg-editor-es.html?extensions=ext-xdomain-messaging.js';
-const iframe = $(`<iframe src="${frameBase}${framePath}` +
+const iframe = $('<iframe width="900px" height="600px" id="svgedit"></iframe>');
+iframe[0].src = frameBase + framePath +
   (location.href.includes('?')
     ? location.href.replace(/\?(.*)$/, '&$1')
-    : '') + // Append arguments to this file onto the iframe
-  '" width="900px" height="600px" id="svgedit""></iframe>'
-);
+    : ''); // Append arguments to this file onto the iframe
+
 iframe[0].addEventListener('load', function () {
   svgCanvas = new EmbeddedSVGEdit(frame, [new URL(frameBase).origin]);
   // Hide main button, as we will be controlling new, load, save, etc. from the host document
