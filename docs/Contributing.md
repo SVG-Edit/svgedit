@@ -3,6 +3,7 @@
 1. Prefix every change in the commit with one of the following types (and
   sort into this order):
   - `Security fix: `
+  - `Known regression: `
   - `Breaking change: `
   - `Fix: `
   - `Fix (<component>): ` Component may be an extension, locale, etc.

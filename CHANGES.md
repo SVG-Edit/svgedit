@@ -1,5 +1,11 @@
 # ?
 
+- Security fix (minor): For embedded API, avoid chance for arbitrary
+  property setting (though this was only for trusted origins anyways)
+- Security fix (minor): For embedded API example, copy params to iframe
+  source without XSS risk (though params should already be XML-safe
+  given `encodeURIComponent` and lack of a single quote attribute
+  context)
 - Known regression for 3.\*: Image libraries
   [broken](https://github.com/SVG-Edit/svgedit/issues/274)
 - Breaking change (minor): Change export to check `exportWindowName`
@@ -9,6 +15,7 @@
   PDF as export (#273 @cuixiping); fixes #124 and #254
 - Fix: Ensure all apostrophes are escaped for `toXml` utility
 - Fix: Avoid error if `URL` is not defined
+- Fix (jPicker): Avoid setting `Math.precision` pseudo-global
 - Fix (jPicker): Precision argument had not been passed in previously
 - Fix (image import): Put src after onload to avoid missing event;
   check other width/height properties in case offset is 0; fixes #278
@@ -18,10 +25,15 @@
 - Fix (Star extension): Minor: Avoid erring if `inradius` is `NaN`
 - Refactoring: Avoid passing unused arguments, setting unused variables,
   and making unnecessary checks; avoid useless call to `createSVGMatrix`
+- Refactoring: Avoid useless assignment (courtesty lgtm)
+- Refactoring: Destructuring, ellipsis
+- Refactoring (jPicker): Use ES6 templates; avoid unnecessary check
 - Linting (LGTM): Add `lgtm.yml` file (still some remaining items flagged
   but hoping for in-code flagging)
+- Linting (LGTM): Flag origin-checked item as safe
 - Linting (ESLint): Consistent spacing; new "standard"
 - Docs: Contributing file
+- Docs (JSDoc): Missing return value
 - Build: Switch to `terser` plugin with `uglify` plugin not
   supporting ES6+-capable minifier
 - npm: Update devDeps
