@@ -237,7 +237,7 @@ var svgEditorExtension_markers = (function () {
                   addMarker(id, val);
                   svgCanvas.changeSelectedAttribute(markerName, 'url(#' + id + ')');
                   if (el.tagName === 'line' && pos === 'mid') {
-                    el = convertline(el);
+                    convertline(el);
                   }
                   svgCanvas.call('changed', selElems);
                   setIcon(pos, val);

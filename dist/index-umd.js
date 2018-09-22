@@ -2634,7 +2634,7 @@
       // TODO: how do we capture the undo-ability in the changed transform list?
       this._update = function () {
         var tstr = '';
-        /* const concatMatrix = */svgroot.createSVGMatrix();
+        // /* const concatMatrix = */ svgroot.createSVGMatrix();
         for (var i = 0; i < this.numberOfItems; ++i) {
           var xform = this._list.getItem(i);
           tstr += transformToString(xform) + ' ';
@@ -4867,7 +4867,7 @@
       // Set start point
       replacePathSeg(2, 0, [pt.x, pt.y], segLine);
 
-      var pts = ptObjToArr(seg.type, seg.item, true);
+      var pts = ptObjToArr(seg.type, seg.item); // , true);
       for (var i = 0; i < pts.length; i += 2) {
         var _pt = getGripPt(seg, { x: pts[i], y: pts[i + 1] });
         pts[i] = _pt.x;
@@ -5029,7 +5029,7 @@
       key: 'addGrip',
       value: function addGrip() {
         this.ptgrip = getPointGrip(this, true);
-        this.ctrlpts = getControlPoints(this, true);
+        this.ctrlpts = getControlPoints(this); // , true);
         this.segsel = getSegSelector(this, true);
       }
 
@@ -5815,7 +5815,7 @@
       replacePathSeg(type, i, points);
     } // loop for each point
 
-    box = getBBox(currentPath);
+    /* box = */getBBox(currentPath);
     // selectedBBoxes[0].x = box.x; selectedBBoxes[0].y = box.y;
     // selectedBBoxes[0].width = box.width; selectedBBoxes[0].height = box.height;
 
@@ -6231,7 +6231,7 @@
             var drawnPath = editorContext_.getDrawnPath();
             if (!drawnPath) {
               var dAttr = 'M' + x + ',' + y + ' '; // Was this meant to work with the other `dAttr`? (was defined globally so adding `var` to at least avoid a global)
-              drawnPath = editorContext_.setDrawnPath(editorContext_.addSVGElementFromJson({
+              /* drawnPath = */editorContext_.setDrawnPath(editorContext_.addSVGElementFromJson({
                 element: 'path',
                 curStyles: true,
                 attr: {
@@ -6302,7 +6302,7 @@
 
                 // This will signal to commit the path
                 // const element = newpath; // Other event handlers define own `element`, so this was probably not meant to interact with them or one which shares state (as there were none); I therefore adding a missing `var` to avoid a global
-                drawnPath = editorContext_.setDrawnPath(null);
+                /* drawnPath = */editorContext_.setDrawnPath(null);
                 editorContext_.setStarted(false);
 
                 if (subpath) {
@@ -7234,7 +7234,7 @@
   var toXml = function toXml(str) {
     // &apos; is ok in XML, but not HTML
     // &gt; does not normally need escaping, though it can if within a CDATA expression (and preceded by "]]")
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/, '&#x27;');
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;'); // Note: `&apos;` is XML only
   };
 
   // This code was written by Tyler Akins and has been placed in the
@@ -7743,7 +7743,7 @@
       default:
 
         if (elname === 'use') {
-          ret = groupBBFix(selected, true);
+          ret = groupBBFix(selected); // , true);
         }
         if (elname === 'use' || elname === 'foreignObject' && isWebkit()) {
           if (!ret) {
@@ -11143,7 +11143,7 @@
 
       oldcenter = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
       newcenter = transformPoint(box.x + box.width / 2, box.y + box.height / 2, transformListToTransform(tlist).matrix);
-      var _m = svgroot.createSVGMatrix();
+      // let m = svgroot.createSVGMatrix();
 
       // temporarily strip off the rotate and save the old center
       var gangle = getRotationAngle(selected);
@@ -11203,7 +11203,7 @@
               continue;
             }
 
-            var _m2 = transformListToTransform(childTlist).matrix;
+            var _m = transformListToTransform(childTlist).matrix;
 
             // Convert a matrix to a scale if applicable
             // if (hasMatrixTransform(childTlist) && childTlist.numberOfItems == 1) {
@@ -11226,7 +11226,7 @@
             context_.setStartTransform(child.getAttribute('transform'));
             if (angle || hasMatrixTransform(childTlist)) {
               var e2t = svgroot.createSVGTransform();
-              e2t.setMatrix(matrixMultiply(tm, sm, tmn, _m2));
+              e2t.setMatrix(matrixMultiply(tm, sm, tmn, _m));
               childTlist.clear();
               childTlist.appendItem(e2t);
               // if not rotated or skewed, push the [T][S][-T] down to the child
@@ -11239,7 +11239,7 @@
               // (only bringing [-T] to the right of [M])
               // [T][S][-T][M] = [T][S][M][-T2]
               // [-T2] = [M_inv][-T][M]
-              var t2n = matrixMultiply(_m2.inverse(), tmn, _m2);
+              var t2n = matrixMultiply(_m.inverse(), tmn, _m);
               // [T2] is always negative translation of [-T2]
               var t2 = svgroot.createSVGMatrix();
               t2.e = -t2n.e;
@@ -11247,7 +11247,7 @@
 
               // [T][S][-T][M] = [M][T2][S2][-T2]
               // [S2] = [T2_inv][M_inv][T][S][-T][M][-T2_inv]
-              var s2 = matrixMultiply(t2.inverse(), _m2.inverse(), tm, sm, tmn, _m2, t2n.inverse());
+              var s2 = matrixMultiply(t2.inverse(), _m.inverse(), tm, sm, tmn, _m, t2n.inverse());
 
               var translateOrigin = svgroot.createSVGTransform(),
                   scale = svgroot.createSVGTransform(),
@@ -11286,9 +11286,9 @@
         tlist.removeItem(N - 3);
       } else if (N >= 3 && tlist.getItem(N - 1).type === 1) {
         operation = 3; // scale
-        _m = transformListToTransform(tlist).matrix;
+        var _m2 = transformListToTransform(tlist).matrix;
         var _e2t = svgroot.createSVGTransform();
-        _e2t.setMatrix(_m);
+        _e2t.setMatrix(_m2);
         tlist.clear();
         tlist.appendItem(_e2t);
         // next, check if the first transform was a translate
@@ -11310,7 +11310,6 @@
           var _c = _children.length;
 
           var clipPathsDone = [];
-
           while (_c--) {
             var _child = _children.item(_c);
             if (_child.nodeType === 1) {
@@ -11357,8 +11356,6 @@
               }
             }
           }
-
-          clipPathsDone = [];
           context_.setStartTransform(oldStartTransform);
         }
         // else, a matrix imposition from a parent group
@@ -11491,7 +11488,7 @@
 
       if (!_box && selected.tagName !== 'path') return null;
 
-      var _m5 = svgroot.createSVGMatrix();
+      var _m5 = void 0; // = svgroot.createSVGMatrix();
       // temporarily strip off the rotate and save the old center
       var _angle = getRotationAngle(selected);
       if (_angle) {
@@ -11610,7 +11607,7 @@
         // if it was a rotation, put the rotate back and return without a command
         // (this function has zero work to do for a rotate())
       } else {
-        _operation = 4; // rotation
+        // operation = 4; // rotation
         if (_angle) {
           var _newRot2 = svgroot.createSVGTransform();
           _newRot2.setRotate(_angle, newcenter.x, newcenter.y);
@@ -11883,7 +11880,7 @@
             t = bbox.y,
             w = bbox.width,
             h = bbox.height;
-        bbox = { x: l, y: t, width: w, height: h };
+        // bbox = {x: l, y: t, width: w, height: h}; // Not in use
 
         // we need to handle temporary transforms too
         // if skewed, get its transformed box, then find its axis-aligned bbox
@@ -13405,7 +13402,7 @@
     */
     this.addExtension = function () {
       var _ref3 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(name, extInitFunc, importLocale) {
-        var extObj, argObj;
+        var argObj, extObj;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -13418,10 +13415,8 @@
                 throw new TypeError('Function argument expected for `svgcanvas.addExtension`');
 
               case 2:
-                extObj = {};
-
                 if (name in extensions) {
-                  _context.next = 14;
+                  _context.next = 12;
                   break;
                 }
 
@@ -13445,19 +13440,12 @@
                   nonce: getCurrentDrawing().getNonce(),
                   selectorManager: selectorManager
                 });
-
-                if (!extInitFunc) {
-                  _context.next = 9;
-                  break;
-                }
-
-                _context.next = 8;
+                _context.next = 6;
                 return extInitFunc(argObj);
 
-              case 8:
+              case 6:
                 extObj = _context.sent;
 
-              case 9:
                 if (extObj) {
                   extObj.name = name;
                 }
@@ -13465,10 +13453,10 @@
                 extensions[name] = extObj;
                 return _context.abrupt('return', call('extension_added', extObj));
 
-              case 14:
+              case 12:
                 console.log('Cannot add extension "' + name + '", an extension by that name already exists.');
 
-              case 15:
+              case 13:
               case 'end':
                 return _context.stop();
             }
@@ -14212,7 +14200,8 @@
             start.y = realY;
             started = true;
             dAttr = realX + ',' + realY + ' ';
-            strokeW = parseFloat(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
+            // Commented out as doing nothing now:
+            // strokeW = parseFloat(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
             addSVGElementFromJson({
               element: 'polyline',
               curStyles: true,
@@ -14448,12 +14437,13 @@
                   dy = snapToGrid(dy);
                 }
 
+                /*
+                // Commenting out as currently has no effect
                 if (evt.shiftKey) {
                   xya = snapToAngle(startX, startY, x, y);
-                  var _xya = xya;
-                  x = _xya.x;
-                  y = _xya.y;
+                  ({x, y} = xya);
                 }
+                */
 
                 if (dx !== 0 || dy !== 0) {
                   len = selectedElements.length;
@@ -14803,9 +14793,9 @@
                   y1 = startY;
                 }
                 xya = snapToAngle(x1, y1, x, y);
-                var _xya2 = xya;
-                x = _xya2.x;
-                y = _xya2.y;
+                var _xya = xya;
+                x = _xya.x;
+                y = _xya.y;
               }
 
               if (rubberBox && rubberBox.getAttribute('display') !== 'none') {
@@ -18422,9 +18412,7 @@
       var curHref = getHref(elem);
 
       // Do nothing if no URL change or size change
-      if (curHref !== val) {
-        setsize = true;
-      } else if (!setsize) {
+      if (curHref === val && !setsize) {
         return;
       }
 
@@ -18435,24 +18423,20 @@
         '#href': curHref
       }));
 
-      if (setsize) {
-        $$9(new Image()).load(function () {
-          var changes = $$9(elem).attr(['width', 'height']);
+      $$9(new Image()).load(function () {
+        var changes = $$9(elem).attr(['width', 'height']);
 
-          $$9(elem).attr({
-            width: this.width,
-            height: this.height
-          });
+        $$9(elem).attr({
+          width: this.width,
+          height: this.height
+        });
 
-          selectorManager.requestSelector(elem).resize();
+        selectorManager.requestSelector(elem).resize();
 
-          batchCmd.addSubCommand(new ChangeElementCommand$1(elem, changes));
-          addCommandToHistory(batchCmd);
-          call('changed', [elem]);
-        }).attr('src', val);
-      } else {
+        batchCmd.addSubCommand(new ChangeElementCommand$1(elem, changes));
         addCommandToHistory(batchCmd);
-      }
+        call('changed', [elem]);
+      }).attr('src', val);
     };
 
     /**
@@ -22417,10 +22401,10 @@
   * @param {Float} precision
   * @returns {Float}
   */
-  Math.precision = function (value, precision) {
+  function toFixedNumeric(value, precision) {
     if (precision === undefined) precision = 0;
     return Math.round(value * Math.pow(10, precision)) / Math.pow(10, precision);
-  };
+  }
 
   /**
   * @function module:jPicker.jPicker
@@ -22755,11 +22739,11 @@
             switch (e.keyCode) {
               case 38:
                 alpha.val(setValueInRange.call($this, parseFloat(alpha.val()) + 1, 0, 100));
-                color.val('a', Math.precision(alpha.val() * 255 / 100, alphaPrecision), e.target);
+                color.val('a', toFixedNumeric(alpha.val() * 255 / 100, alphaPrecision), e.target);
                 return false;
               case 40:
                 alpha.val(setValueInRange.call($this, parseFloat(alpha.val()) - 1, 0, 100));
-                color.val('a', Math.precision(alpha.val() * 255 / 100, alphaPrecision), e.target);
+                color.val('a', toFixedNumeric(alpha.val() * 255 / 100, alphaPrecision), e.target);
                 return false;
             }
             break;
@@ -22820,7 +22804,7 @@
             break;
           case alpha && alpha.get(0):
             alpha.val(setValueInRange.call($this, alpha.val(), 0, 100));
-            color.val('a', Math.precision(alpha.val() * 255 / 100, alphaPrecision), e.target);
+            color.val('a', toFixedNumeric(alpha.val() * 255 / 100, alphaPrecision), e.target);
             break;
           case hue.get(0):
             hue.val(setValueInRange.call($this, hue.val(), 0, 360));
@@ -22861,7 +22845,7 @@
             case blue.get(0):
               blue.val(color.val('b'));break;
             case alpha && alpha.get(0):
-              alpha.val(Math.precision(color.val('a') * 100 / 255, alphaPrecision));break;
+              alpha.val(toFixedNumeric(color.val('a') * 100 / 255, alphaPrecision));break;
             case hue.get(0):
               hue.val(color.val('h'));break;
             case saturation.get(0):
@@ -22904,7 +22888,7 @@
         if (context !== red.get(0)) red.val(all != null ? all.r : '');
         if (context !== green.get(0)) green.val(all != null ? all.g : '');
         if (context !== blue.get(0)) blue.val(all != null ? all.b : '');
-        if (alpha && context !== alpha.get(0)) alpha.val(all != null ? Math.precision(all.a * 100 / 255, alphaPrecision) : '');
+        if (alpha && context !== alpha.get(0)) alpha.val(all != null ? toFixedNumeric(all.a * 100 / 255, alphaPrecision) : '');
         if (context !== hue.get(0)) hue.val(all != null ? all.h : '');
         if (context !== saturation.get(0)) saturation.val(all != null ? all.s : '');
         if (context !== value.get(0)) value.val(all != null ? all.v : '');
@@ -23092,7 +23076,7 @@
                   case 'r':
                     if (hsv) continue;
                     rgb = true;
-                    newV.r = value && value.r && value.r | 0 || value && value | 0 || 0;
+                    newV.r = value.r && value.r | 0 || value | 0 || 0;
                     if (newV.r < 0) newV.r = 0;else if (newV.r > 255) newV.r = 255;
                     if (r !== newV.r) {
                       r = newV.r;
@@ -23123,7 +23107,7 @@
                     }
                     break;
                   case 'a':
-                    newV.a = value && value.a != null ? value.a | 0 : value != null ? value | 0 : 255;
+                    newV.a = value && value.a != null ? value.a | 0 : value | 0;
                     if (newV.a < 0) newV.a = 0;else if (newV.a > 255) newV.a = 255;
                     if (a !== newV.a) {
                       a = newV.a;
@@ -23145,7 +23129,7 @@
                   case 's':
                     if (rgb) continue;
                     hsv = true;
-                    newV.s = value && value.s != null ? value.s | 0 : value != null ? value | 0 : 100;
+                    newV.s = value.s != null ? value.s | 0 : value | 0;
                     if (newV.s < 0) newV.s = 0;else if (newV.s > 100) newV.s = 100;
                     if (s !== newV.s) {
                       s = newV.s;
@@ -23156,7 +23140,7 @@
                   case 'v':
                     if (rgb) continue;
                     hsv = true;
-                    newV.v = value && value.v != null ? value.v | 0 : value != null ? value | 0 : 100;
+                    newV.v = value.v != null ? value.v | 0 : value | 0;
                     if (newV.v < 0) newV.v = 0;else if (newV.v > 100) newV.v = 100;
                     if (v !== newV.v) {
                       v = newV.v;
@@ -23754,7 +23738,7 @@
           try {
             var all = ui.val('all');
             activePreview.css({ backgroundColor: all && '#' + all.hex || 'transparent' });
-            setAlpha.call($this, activePreview, all && Math.precision(all.a * 100 / 255, 4) || 0);
+            setAlpha.call($this, activePreview, all && toFixedNumeric(all.a * 100 / 255, 4) || 0);
           } catch (e) {}
         }
         function updateMapVisuals(ui) {
@@ -23772,36 +23756,36 @@
               setAlpha.call($this, colorMapL1, v != null ? v : 100);
               break;
             case 'r':
-              setAlpha.call($this, colorMapL2, Math.precision((ui.val('r') || 0) / 255 * 100, 4));
+              setAlpha.call($this, colorMapL2, toFixedNumeric((ui.val('r') || 0) / 255 * 100, 4));
               break;
             case 'g':
-              setAlpha.call($this, colorMapL2, Math.precision((ui.val('g') || 0) / 255 * 100, 4));
+              setAlpha.call($this, colorMapL2, toFixedNumeric((ui.val('g') || 0) / 255 * 100, 4));
               break;
             case 'b':
-              setAlpha.call($this, colorMapL2, Math.precision((ui.val('b') || 0) / 255 * 100));
+              setAlpha.call($this, colorMapL2, toFixedNumeric((ui.val('b') || 0) / 255 * 100));
               break;
           }
           var a = ui.val('a');
-          setAlpha.call($this, colorMapL3, Math.precision((255 - (a || 0)) * 100 / 255, 4));
+          setAlpha.call($this, colorMapL3, toFixedNumeric((255 - (a || 0)) * 100 / 255, 4));
         }
         function updateBarVisuals(ui) {
           switch (settings.color.mode) {
             case 'h':
               var a = ui.val('a');
-              setAlpha.call($this, colorBarL5, Math.precision((255 - (a || 0)) * 100 / 255, 4));
+              setAlpha.call($this, colorBarL5, toFixedNumeric((255 - (a || 0)) * 100 / 255, 4));
               break;
             case 's':
               var hva = ui.val('hva'),
                   saturatedColor = new Color({ h: hva && hva.h || 0, s: 100, v: hva != null ? hva.v : 100 });
               setBG.call($this, colorBarDiv, saturatedColor.val('hex'));
               setAlpha.call($this, colorBarL2, 100 - (hva != null ? hva.v : 100));
-              setAlpha.call($this, colorBarL5, Math.precision((255 - (hva && hva.a || 0)) * 100 / 255, 4));
+              setAlpha.call($this, colorBarL5, toFixedNumeric((255 - (hva && hva.a || 0)) * 100 / 255, 4));
               break;
             case 'v':
               var hsa = ui.val('hsa'),
                   valueColor = new Color({ h: hsa && hsa.h || 0, s: hsa != null ? hsa.s : 100, v: 100 });
               setBG.call($this, colorBarDiv, valueColor.val('hex'));
-              setAlpha.call($this, colorBarL5, Math.precision((255 - (hsa && hsa.a || 0)) * 100 / 255, 4));
+              setAlpha.call($this, colorBarL5, toFixedNumeric((255 - (hsa && hsa.a || 0)) * 100 / 255, 4));
               break;
             case 'r':
             case 'g':
@@ -23820,10 +23804,10 @@
                 vValue = rgba && rgba.g || 0;
               }
               var middle = vValue > hValue ? hValue : vValue;
-              setAlpha.call($this, colorBarL2, hValue > vValue ? Math.precision((hValue - vValue) / (255 - vValue) * 100, 4) : 0);
-              setAlpha.call($this, colorBarL3, vValue > hValue ? Math.precision((vValue - hValue) / (255 - hValue) * 100, 4) : 0);
-              setAlpha.call($this, colorBarL4, Math.precision(middle / 255 * 100, 4));
-              setAlpha.call($this, colorBarL5, Math.precision((255 - (rgba && rgba.a || 0)) * 100 / 255, 4));
+              setAlpha.call($this, colorBarL2, hValue > vValue ? toFixedNumeric((hValue - vValue) / (255 - vValue) * 100, 4) : 0);
+              setAlpha.call($this, colorBarL3, vValue > hValue ? toFixedNumeric((vValue - hValue) / (255 - hValue) * 100, 4) : 0);
+              setAlpha.call($this, colorBarL4, toFixedNumeric(middle / 255 * 100, 4));
+              setAlpha.call($this, colorBarL5, toFixedNumeric((255 - (rgba && rgba.a || 0)) * 100 / 255, 4));
               break;
             case 'a':
               {
@@ -23854,8 +23838,8 @@
               var src = obj.attr('pngSrc');
               if (src != null && (src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png'))) {
                 obj.css({ filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\') progid:DXImageTransform.Microsoft.Alpha(opacity=' + alpha + ')' });
-              } else obj.css({ opacity: Math.precision(alpha / 100, 4) });
-            } else obj.css({ opacity: Math.precision(alpha / 100, 4) });
+              } else obj.css({ opacity: toFixedNumeric(alpha / 100, 4) });
+            } else obj.css({ opacity: toFixedNumeric(alpha / 100, 4) });
           } else if (alpha === 0 || alpha === 100) {
             if (isLessThanIE7) {
               var _src = obj.attr('pngSrc');
@@ -23896,13 +23880,13 @@
         function currentColorChanged(ui, context) {
           var hex = ui.val('hex');
           currentPreview.css({ backgroundColor: hex && '#' + hex || 'transparent' });
-          setAlpha.call($this, currentPreview, Math.precision((ui.val('a') || 0) * 100 / 255, 4));
+          setAlpha.call($this, currentPreview, toFixedNumeric((ui.val('a') || 0) * 100 / 255, 4));
         }
         function expandableColorChanged(ui, context) {
           var hex = ui.val('hex');
           var va = ui.val('va');
           iconColor.css({ backgroundColor: hex && '#' + hex || 'transparent' });
-          setAlpha.call($this, iconAlpha, Math.precision((255 - (va && va.a || 0)) * 100 / 255, 4));
+          setAlpha.call($this, iconAlpha, toFixedNumeric((255 - (va && va.a || 0)) * 100 / 255, 4));
           if (settings.window.bindToInput && settings.window.updateInputColor) {
             settings.window.input.css({
               backgroundColor: hex && '#' + hex || 'transparent',
@@ -23997,7 +23981,7 @@
           // this control really is tabular data, so I believe it is the right move
           var all = color.active.val('all');
           if (win.alphaPrecision < 0) win.alphaPrecision = 0;else if (win.alphaPrecision > 2) win.alphaPrecision = 2;
-          var controlHtml = '<table class="jPicker" cellpadding="0" cellspacing="0"><tbody>' + (win.expandable ? '<tr><td class="Move" colspan="5">&nbsp;</td></tr>' : '') + '<tr><td rowspan="9"><h2 class="Title">' + (win.title || localization.text.title) + '</h2><div class="Map"><span class="Map1">&nbsp;</span><span class="Map2">&nbsp;</span><span class="Map3">&nbsp;</span><img src="' + images.clientPath + images.colorMap.arrow.file + '" class="Arrow"/></div></td><td rowspan="9"><div class="Bar"><span class="Map1">&nbsp;</span><span class="Map2">&nbsp;</span><span class="Map3">&nbsp;</span><span class="Map4">&nbsp;</span><span class="Map5">&nbsp;</span><span class="Map6">&nbsp;</span><img src="' + images.clientPath + images.colorBar.arrow.file + '" class="Arrow"/></div></td><td colspan="2" class="Preview">' + localization.text.newColor + '<div><span class="Active" title="' + localization.tooltips.colors.newColor + '">&nbsp;</span><span class="Current" title="' + localization.tooltips.colors.currentColor + '">&nbsp;</span></div>' + localization.text.currentColor + '</td><td rowspan="9" class="Button"><input type="button" class="Ok" value="' + localization.text.ok + '" title="' + localization.tooltips.buttons.ok + '"/><input type="button" class="Cancel" value="' + localization.text.cancel + '" title="' + localization.tooltips.buttons.cancel + '"/><hr/><div class="Grid">&nbsp;</div></td></tr><tr class="Hue"><td class="Radio"><label title="' + localization.tooltips.hue.radio + '"><input type="radio" value="h"' + (settings.color.mode === 'h' ? ' checked="checked"' : '') + '/>H:</label></td><td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.h : '') + '" title="' + localization.tooltips.hue.textbox + '"/>&nbsp;&deg;</td></tr><tr class="Saturation"><td class="Radio"><label title="' + localization.tooltips.saturation.radio + '"><input type="radio" value="s"' + (settings.color.mode === 's' ? ' checked="checked"' : '') + '/>S:</label></td><td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.s : '') + '" title="' + localization.tooltips.saturation.textbox + '"/>&nbsp;%</td></tr><tr class="Value"><td class="Radio"><label title="' + localization.tooltips.value.radio + '"><input type="radio" value="v"' + (settings.color.mode === 'v' ? ' checked="checked"' : '') + '/>V:</label><br/><br/></td><td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.v : '') + '" title="' + localization.tooltips.value.textbox + '"/>&nbsp;%<br/><br/></td></tr><tr class="Red"><td class="Radio"><label title="' + localization.tooltips.red.radio + '"><input type="radio" value="r"' + (settings.color.mode === 'r' ? ' checked="checked"' : '') + '/>R:</label></td><td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.r : '') + '" title="' + localization.tooltips.red.textbox + '"/></td></tr><tr class="Green"><td class="Radio"><label title="' + localization.tooltips.green.radio + '"><input type="radio" value="g"' + (settings.color.mode === 'g' ? ' checked="checked"' : '') + '/>G:</label></td><td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.g : '') + '" title="' + localization.tooltips.green.textbox + '"/></td></tr><tr class="Blue"><td class="Radio"><label title="' + localization.tooltips.blue.radio + '"><input type="radio" value="b"' + (settings.color.mode === 'b' ? ' checked="checked"' : '') + '/>B:</label></td><td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.b : '') + '" title="' + localization.tooltips.blue.textbox + '"/></td></tr><tr class="Alpha"><td class="Radio">' + (win.alphaSupport ? '<label title="' + localization.tooltips.alpha.radio + '"><input type="radio" value="a"' + (settings.color.mode === 'a' ? ' checked="checked"' : '') + '/>A:</label>' : '&nbsp;') + '</td><td class="Text">' + (win.alphaSupport ? '<input type="text" maxlength="' + (3 + win.alphaPrecision) + '" value="' + (all != null ? Math.precision(all.a * 100 / 255, win.alphaPrecision) : '') + '" title="' + localization.tooltips.alpha.textbox + '"/>&nbsp;%' : '&nbsp;') + '</td></tr><tr class="Hex"><td colspan="2" class="Text"><label title="' + localization.tooltips.hex.textbox + '">#:<input type="text" maxlength="6" class="Hex" value="' + (all != null ? all.hex : '') + '"/></label>' + (win.alphaSupport ? '<input type="text" maxlength="2" class="AHex" value="' + (all != null ? all.ahex.substring(6) : '') + '" title="' + localization.tooltips.hex.alpha + '"/></td>' : '&nbsp;') + '</tr></tbody></table>';
+          var controlHtml = '<table class="jPicker" cellpadding="0" cellspacing="0">\n          <tbody>\n            ' + (win.expandable ? '<tr><td class="Move" colspan="5">&nbsp;</td></tr>' : '') + '\n            <tr>\n              <td rowspan="9"><h2 class="Title">' + (win.title || localization.text.title) + '</h2><div class="Map"><span class="Map1">&nbsp;</span><span class="Map2">&nbsp;</span><span class="Map3">&nbsp;</span><img src="' + (images.clientPath + images.colorMap.arrow.file) + '" class="Arrow"/></div></td>\n              <td rowspan="9"><div class="Bar"><span class="Map1">&nbsp;</span><span class="Map2">&nbsp;</span><span class="Map3">&nbsp;</span><span class="Map4">&nbsp;</span><span class="Map5">&nbsp;</span><span class="Map6">&nbsp;</span><img src="' + (images.clientPath + images.colorBar.arrow.file) + '" class="Arrow"/></div></td>\n              <td colspan="2" class="Preview">' + localization.text.newColor + '<div><span class="Active" title="' + localization.tooltips.colors.newColor + '">&nbsp;</span><span class="Current" title="' + localization.tooltips.colors.currentColor + '">&nbsp;</span></div>' + localization.text.currentColor + '</td>\n              <td rowspan="9" class="Button"><input type="button" class="Ok" value="' + localization.text.ok + '" title="' + localization.tooltips.buttons.ok + '"/><input type="button" class="Cancel" value="' + localization.text.cancel + '" title="' + localization.tooltips.buttons.cancel + '"/><hr/><div class="Grid">&nbsp;</div></td>\n            </tr>\n            <tr class="Hue">\n              <td class="Radio"><label title="' + localization.tooltips.hue.radio + '"><input type="radio" value="h"' + (settings.color.mode === 'h' ? ' checked="checked"' : '') + '/>H:</label></td>\n              <td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.h : '') + '" title="' + localization.tooltips.hue.textbox + '"/>&nbsp;&deg;</td>\n            </tr>\n            <tr class="Saturation">\n              <td class="Radio"><label title="' + localization.tooltips.saturation.radio + '"><input type="radio" value="s"' + (settings.color.mode === 's' ? ' checked="checked"' : '') + '/>S:</label></td>\n              <td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.s : '') + '" title="' + localization.tooltips.saturation.textbox + '"/>&nbsp;%</td>\n            </tr>\n            <tr class="Value">\n              <td class="Radio"><label title="' + localization.tooltips.value.radio + '"><input type="radio" value="v"' + (settings.color.mode === 'v' ? ' checked="checked"' : '') + '/>V:</label><br/><br/></td>\n              <td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.v : '') + '" title="' + localization.tooltips.value.textbox + '"/>&nbsp;%<br/><br/></td>\n            </tr>\n            <tr class="Red">\n              <td class="Radio"><label title="' + localization.tooltips.red.radio + '"><input type="radio" value="r"' + (settings.color.mode === 'r' ? ' checked="checked"' : '') + '/>R:</label></td>\n              <td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.r : '') + '" title="' + localization.tooltips.red.textbox + '"/></td>\n            </tr>\n            <tr class="Green">\n              <td class="Radio"><label title="' + localization.tooltips.green.radio + '"><input type="radio" value="g"' + (settings.color.mode === 'g' ? ' checked="checked"' : '') + '/>G:</label></td>\n              <td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.g : '') + '" title="' + localization.tooltips.green.textbox + '"/></td>\n            </tr>\n            <tr class="Blue">\n              <td class="Radio"><label title="' + localization.tooltips.blue.radio + '"><input type="radio" value="b"' + (settings.color.mode === 'b' ? ' checked="checked"' : '') + '/>B:</label></td>\n              <td class="Text"><input type="text" maxlength="3" value="' + (all != null ? all.b : '') + '" title="' + localization.tooltips.blue.textbox + '"/></td>\n            </tr>\n            <tr class="Alpha">\n              <td class="Radio">' + (win.alphaSupport ? '<label title="' + localization.tooltips.alpha.radio + '"><input type="radio" value="a"' + (settings.color.mode === 'a' ? ' checked="checked"' : '') + '/>A:</label>' : '&nbsp;') + '</td>\n              <td class="Text">' + (win.alphaSupport ? '<input type="text" maxlength="' + (3 + win.alphaPrecision) + '" value="' + (all != null ? toFixedNumeric(all.a * 100 / 255, win.alphaPrecision) : '') + '" title="' + localization.tooltips.alpha.textbox + '"/>&nbsp;%' : '&nbsp;') + '</td>\n            </tr>\n            <tr class="Hex">\n              <td colspan="2" class="Text"><label title="' + localization.tooltips.hex.textbox + '">#:<input type="text" maxlength="6" class="Hex" value="' + (all != null ? all.hex : '') + '"/></label>' + (win.alphaSupport ? '<input type="text" maxlength="2" class="AHex" value="' + (all != null ? all.ahex.substring(6) : '') + '" title="' + localization.tooltips.hex.alpha + '"/></td>' : '&nbsp;') + '\n            </tr>\n          </tbody></table>';
           if (win.expandable) {
             container.html(controlHtml);
             if (!$(document.body).children('div.jPicker.Container').length) {
@@ -24065,7 +24049,7 @@
               button = tbody.find('.Button');
           activePreview = preview.find('.Active:first').css({ backgroundColor: hex && '#' + hex || 'transparent' });
           currentPreview = preview.find('.Current:first').css({ backgroundColor: hex && '#' + hex || 'transparent' }).bind('click', currentClicked);
-          setAlpha.call($this, currentPreview, Math.precision(color.current.val('a') * 100) / 255, 4);
+          setAlpha.call($this, currentPreview, toFixedNumeric(color.current.val('a') * 100 / 255, 4));
           okButton = button.find('.Ok:first').bind('click', okClicked);
           cancelButton = button.find('.Cancel:first').bind('click', cancelClicked);
           grid = button.find('.Grid:first');
@@ -24093,7 +24077,7 @@
               if (!win.alphaSupport && ahex) ahex = ahex.substring(0, 6) + 'ff';
               var quickHex = color.quickList[i].val('hex');
               if (!ahex) ahex = '00000000';
-              html += '<span class="QuickColor"' + (ahex && ' title="#' + ahex + '"' || 'none') + ' style="background-color:' + (quickHex && '#' + quickHex || '') + ';' + (quickHex ? '' : 'background-image:url(' + images.clientPath + 'NoColor.png)') + (win.alphaSupport && alpha && alpha < 255 ? ';opacity:' + Math.precision(alpha / 255, 4) + ';filter:Alpha(opacity=' + Math.precision(alpha / 2.55, 4) + ')' : '') + '">&nbsp;</span>';
+              html += '<span class="QuickColor"' + (' title="#' + ahex + '"') + ' style="background-color:' + (quickHex && '#' + quickHex || '') + ';' + (quickHex ? '' : 'background-image:url(' + images.clientPath + 'NoColor.png)') + (win.alphaSupport && alpha && alpha < 255 ? ';opacity:' + toFixedNumeric(alpha / 255, 4) + ';filter:Alpha(opacity=' + toFixedNumeric(alpha / 2.55, 4) + ')' : '') + '">&nbsp;</span>';
             }
             setImg.call($this, grid, images.clientPath + 'bar-opacity.png');
             grid.html(html);
@@ -24109,7 +24093,7 @@
             iconColor = $this.icon.find('.Color:first').css({ backgroundColor: hex && '#' + hex || 'transparent' });
             iconAlpha = $this.icon.find('.Alpha:first');
             setImg.call($this, iconAlpha, images.clientPath + 'bar-opacity.png');
-            setAlpha.call($this, iconAlpha, Math.precision((255 - (all != null ? all.a : 0)) * 100 / 255, 4));
+            setAlpha.call($this, iconAlpha, toFixedNumeric((255 - (all != null ? all.a : 0)) * 100 / 255, 4));
             iconImage = $this.icon.find('.Image:first').css({
               backgroundImage: 'url(\'' + images.clientPath + images.picker.file + '\')'
             }).bind('click', iconImageClicked);
@@ -28196,7 +28180,6 @@
               break;
           }
           var flyoutHolder = void 0,
-              curH = void 0,
               showBtn = void 0,
               refData = void 0,
               refBtn = void 0;
@@ -28239,7 +28222,7 @@
               // TODO: Find way to set the current icon using the iconloader if this is not default
 
               // Include data for extension button as well as ref button
-              curH = holders['#' + flyoutHolder[0].id] = [{
+              /* curH = */holders['#' + flyoutHolder[0].id] = [{
                 sel: '#' + id,
                 fn: btn.events.click,
                 icon: btn.id,
@@ -28298,7 +28281,7 @@
             // TODO: Find way to set the current icon using the iconloader if this is not default
 
             // Include data for extension button as well as ref button
-            curH = holders['#' + flyoutHolder[0].id] = [{
+            var curH = holders['#' + flyoutHolder[0].id] = [{
               sel: '#' + id,
               fn: btn.events.click,
               icon: btn.id,
@@ -29252,7 +29235,7 @@
                       popURL = loadingURL;
                     } else {
                       popHTML = '<!DOCTYPE html><html>\n            <head>\n              <meta charset="utf-8">\n              <title>' + str + '</title>\n            </head>\n            <body><h1>' + str + '</h1></body>\n          <html>';
-                      if ((typeof URL === 'undefined' ? 'undefined' : _typeof(URL)) && URL.createObjectURL) {
+                      if (typeof URL !== 'undefined' && URL.createObjectURL) {
                         var blob = new Blob([popHTML], { type: 'text/html' });
                         popURL = URL.createObjectURL(blob);
                       } else {
@@ -29370,7 +29353,7 @@
       }
       var wfRules = $$b('#wireframe_rules');
       if (!wfRules.length) {
-        wfRules = $$b('<style id="wireframe_rules"></style>').appendTo('head');
+        /* wfRules = */$$b('<style id="wireframe_rules"></style>').appendTo('head');
       } else {
         wfRules.empty();
       }
@@ -30064,10 +30047,10 @@
       var sideWidth = $$b('#sidepanels').width();
       if (sideWidth + deltaX > SIDEPANEL_MAXWIDTH) {
         deltaX = SIDEPANEL_MAXWIDTH - sideWidth;
-        sideWidth = SIDEPANEL_MAXWIDTH;
+        // sideWidth = SIDEPANEL_MAXWIDTH;
       } else if (sideWidth + deltaX < 2) {
         deltaX = 2 - sideWidth;
-        sideWidth = 2;
+        // sideWidth = 2;
       }
       if (deltaX === 0) {
         return;

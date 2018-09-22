@@ -431,8 +431,7 @@ export const recalculateDimensions = function (selected) {
         const children = selected.childNodes;
         let c = children.length;
 
-        let clipPathsDone = [];
-
+        const clipPathsDone = [];
         while (c--) {
           const child = children.item(c);
           if (child.nodeType === 1) {
@@ -479,8 +478,6 @@ export const recalculateDimensions = function (selected) {
             }
           }
         }
-
-        clipPathsDone = [];
         context_.setStartTransform(oldStartTransform);
       }
     // else, a matrix imposition from a parent group

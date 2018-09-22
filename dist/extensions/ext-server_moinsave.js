@@ -958,9 +958,6 @@ var svgEditorExtension_server_moinsave = (function () {
     // ajax
     svg.ajax = function (url, asynch) {
       var AJAX = window.XMLHttpRequest ? new XMLHttpRequest() : new window.ActiveXObject('Microsoft.XMLHTTP');
-      if (!AJAX) {
-        return null;
-      }
       if (asynch) {
         return new Promise(function (resolve, reject) {
           var req = AJAX.open('GET', url, true);
