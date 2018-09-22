@@ -31,7 +31,7 @@ const pdfSvgAttr = {
   ellipse: ['cx', 'cy', 'rx', 'ry', 'stroke', 'fill', 'stroke-width'],
   circle: ['cx', 'cy', 'r', 'stroke', 'fill', 'stroke-width'],
   polygon: ['points', 'stroke', 'fill', 'stroke-width'],
-  //polyline attributes is same as polygon
+  // polyline attributes are the same as those of polygon
   text: ['x', 'y', 'font-size', 'font-family', 'text-anchor', 'font-weight', 'font-style', 'fill']
 };
 
@@ -57,38 +57,38 @@ const removeAttributes = function (node, attributes) {
   });
 };
 
+const numRgx = /[+-]?(?:\d+\.\d*|\d+|\.\d+)(?:[eE][+-]?\d+)?/g;
+const getLinesOptionsOfPoly = function (node) {
+  let nums = node.getAttribute('points');
+  nums = (nums && nums.match(numRgx)) || [];
+  if (nums && nums.length) {
+    nums = nums.map(Number);
+    if (nums.length % 2) {
+      nums.length--;
+    }
+  }
+  if (nums.length < 4) {
+    console.log('invalid points attribute:', node);
+    return;
+  }
+  const [x, y] = nums, lines = [];
+  for (let i = 2; i < nums.length; i += 2) {
+    lines.push([nums[i] - nums[i - 2], nums[i + 1] - nums[i - 1]]);
+  }
+  return {x, y, lines};
+};
+
 const svgElementToPdf = function (element, pdf, options) {
   // pdf is a jsPDF object
   // console.log('options =', options);
   const remove = (options.removeInvalid === undefined ? false : options.removeInvalid);
   const k = (options.scale === undefined ? 1.0 : options.scale);
-  const numRgx = /[+-]?(?:\d+\.\d*|\d+|\.\d+)(?:[eE][+-]?\d+)?/g;
   let colorMode = null;
-  let getLinesOptionsOfPoly = function (node) {
-      let nums = node.getAttribute('points');
-      nums = nums.match(numRgx) || [];
-      if (nums && nums.length) {
-          nums = [].map.call(nums, Number);
-          if (nums.length % 2) {
-              nums.length -= 1;
-          }
-      }
-      if (nums.length < 4) {
-          console.log('invalid points attribute:', node);
-          return;
-      }
-      let x = nums[0], y = nums[1], lines = [];
-      for (let i = 2; i < nums.length; i += 2) {
-          lines.push([nums[i] - nums[i - 2], nums[i + 1] - nums[i - 1]]);
-      }
-      return {x, y, lines};
-  };
   [].forEach.call(element.children, function (node) {
     // console.log('passing: ', node);
     // let hasStrokeColor = false;
     let hasFillColor = false;
     let fillRGB;
-    let linesOptions;
     if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle', 'polygon', 'polyline', 'text'])) {
       const fillColor = node.getAttribute('fill');
       if (attributeIsNotEmpty(fillColor)) {
@@ -124,7 +124,7 @@ const svgElementToPdf = function (element, pdf, options) {
         }
       }
     }
-    let tag = node.tagName.toLowerCase();
+    const tag = node.tagName.toLowerCase();
     switch (tag) {
     case 'svg':
     case 'a':
@@ -172,16 +172,16 @@ const svgElementToPdf = function (element, pdf, options) {
       break;
     case 'polygon':
     case 'polyline':
-      linesOptions = getLinesOptionsOfPoly(node);
+      const linesOptions = getLinesOptionsOfPoly(node);
       if (linesOptions) {
-          pdf.lines(
-              linesOptions.lines,
-              k * linesOptions.x,
-              k * linesOptions.y,
-              [k, k],
-              colorMode,
-              tag === 'polygon' //polygon is closed, polyline is not closed
-          );
+        pdf.lines(
+          linesOptions.lines,
+          k * linesOptions.x,
+          k * linesOptions.y,
+          [k, k],
+          colorMode,
+          tag === 'polygon' // polygon is closed, polyline is not closed
+        );
       }
       removeAttributes(node, pdfSvgAttr.polygon);
       break;

@@ -384,6 +384,8 @@
     rect: ['x', 'y', 'width', 'height', 'stroke', 'fill', 'stroke-width'],
     ellipse: ['cx', 'cy', 'rx', 'ry', 'stroke', 'fill', 'stroke-width'],
     circle: ['cx', 'cy', 'r', 'stroke', 'fill', 'stroke-width'],
+    polygon: ['points', 'stroke', 'fill', 'stroke-width'],
+    // polyline attributes are the same as those of polygon
     text: ['x', 'y', 'font-size', 'font-family', 'text-anchor', 'font-weight', 'font-style', 'fill']
   };
 
@@ -409,6 +411,33 @@
     });
   };
 
+  var numRgx = /[+-]?(?:\d+\.\d*|\d+|\.\d+)(?:[eE][+-]?\d+)?/g;
+  var getLinesOptionsOfPoly = function getLinesOptionsOfPoly(node) {
+    var nums = node.getAttribute('points');
+    nums = nums && nums.match(numRgx) || [];
+    if (nums && nums.length) {
+      nums = nums.map(Number);
+      if (nums.length % 2) {
+        nums.length--;
+      }
+    }
+    if (nums.length < 4) {
+      console.log('invalid points attribute:', node);
+      return;
+    }
+
+    var _nums = nums,
+        _nums2 = slicedToArray(_nums, 2),
+        x = _nums2[0],
+        y = _nums2[1],
+        lines = [];
+
+    for (var i = 2; i < nums.length; i += 2) {
+      lines.push([nums[i] - nums[i - 2], nums[i + 1] - nums[i - 1]]);
+    }
+    return { x: x, y: y, lines: lines };
+  };
+
   var svgElementToPdf = function svgElementToPdf(element, pdf, options) {
     // pdf is a jsPDF object
     // console.log('options =', options);
@@ -420,7 +449,7 @@
       // let hasStrokeColor = false;
       var hasFillColor = false;
       var fillRGB = void 0;
-      if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle', 'text'])) {
+      if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle', 'polygon', 'polyline', 'text'])) {
         var fillColor = node.getAttribute('fill');
         if (attributeIsNotEmpty(fillColor)) {
           fillRGB = new RGBColor(fillColor);
@@ -432,7 +461,7 @@
           }
         }
       }
-      if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle'])) {
+      if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle', 'polygon', 'polyline'])) {
         if (hasFillColor) {
           pdf.setFillColor(fillRGB.r, fillRGB.g, fillRGB.b);
         }
@@ -448,14 +477,15 @@
             if (colorMode === 'F') {
               colorMode = 'FD';
             } else {
-              colorMode = null;
+              colorMode = 'S';
             }
           } else {
             colorMode = null;
           }
         }
       }
-      switch (node.tagName.toLowerCase()) {
+      var tag = node.tagName.toLowerCase();
+      switch (tag) {
         case 'svg':
         case 'a':
         case 'g':
@@ -478,6 +508,16 @@
           pdf.circle(k * parseInt(node.getAttribute('cx'), 10), k * parseInt(node.getAttribute('cy'), 10), k * parseInt(node.getAttribute('r'), 10), colorMode);
           removeAttributes(node, pdfSvgAttr.circle);
           break;
+        case 'polygon':
+        case 'polyline':
+          var linesOptions = getLinesOptionsOfPoly(node);
+          if (linesOptions) {
+            pdf.lines(linesOptions.lines, k * linesOptions.x, k * linesOptions.y, [k, k], colorMode, tag === 'polygon' // polygon is closed, polyline is not closed
+            );
+          }
+          removeAttributes(node, pdfSvgAttr.polygon);
+          break;
+        // TODO: path
         case 'text':
           if (node.hasAttribute('font-family')) {
             switch ((node.getAttribute('font-family') || '').toLowerCase()) {
