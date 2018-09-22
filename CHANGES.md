@@ -13,6 +13,7 @@
   distinguish from other downloads
 - Fix: Given lack of support now for dataURI export in Chrome, provide
   PDF as export (#273 @cuixiping); fixes #124 and #254
+- Fix: Polygon/polyline in PDF export (#287 @cuixiping); fixes #280
 - Fix: Ensure all apostrophes are escaped for `toXml` utility
 - Fix: Avoid error if `URL` is not defined
 - Fix (jPicker): Avoid setting `Math.precision` pseudo-global
