@@ -49,9 +49,9 @@ function addCallback (t, {result, error, id: cbid}) {
     // These should be safe both because we check `cbid` is numeric and
     //   because the calls are from trusted origins
     if (result) {
-      t.callbacks[cbid](result);
+      t.callbacks[cbid](result); // lgtm [js/remote-property-injection]
     } else {
-      t.callbacks[cbid](error, 'error');
+      t.callbacks[cbid](error, 'error'); // lgtm [js/remote-property-injection]
     }
   }
 }
