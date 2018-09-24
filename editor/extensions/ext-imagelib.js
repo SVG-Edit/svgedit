@@ -15,6 +15,12 @@ export default {
     const modularVersion = !('svgEditor' in window) ||
       !window.svgEditor ||
       window.svgEditor.modules !== false;
+
+    const svgEditor = this;
+
+    const $ = jQuery;
+    const {uiStrings, canvas: svgCanvas, curConfig: {extIconsPath}} = svgEditor;
+
     imagelibStrings.imgLibs = imagelibStrings.imgLibs.map(({name, url, description}) => {
       url = url
         .replace(/\{path\}/g, extIconsPath)
@@ -25,13 +31,12 @@ export default {
       return {name, url, description};
     });
     const allowedImageLibOrigins = imagelibStrings.imgLibs.map(({url}) => {
-      return new URL(url).origin;
+      try {
+        return new URL(url).origin;
+      } catch (err) {
+        return location.origin;
+      }
     });
-
-    const svgEditor = this;
-
-    const $ = jQuery;
-    const {uiStrings, canvas: svgCanvas, curConfig: {extIconsPath}} = svgEditor;
 
     function closeBrowser () {
       $('#imgbrowse_holder').hide();

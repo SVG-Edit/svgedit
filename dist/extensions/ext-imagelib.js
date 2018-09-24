@@ -52,7 +52,7 @@ var svgEditorExtension_imagelib = (function () {
         var decode64 = _ref.decode64,
             importLocale = _ref.importLocale,
             dropXMLInternalSubset = _ref.dropXMLInternalSubset;
-        var imagelibStrings, modularVersion, allowedImageLibOrigins, svgEditor, $, uiStrings, svgCanvas, extIconsPath, closeBrowser, importImage, pending, mode, multiArr, transferStopped, preview, submit, toggleMulti, showBrowser, buttons;
+        var imagelibStrings, modularVersion, svgEditor, $, uiStrings, svgCanvas, extIconsPath, allowedImageLibOrigins, closeBrowser, importImage, pending, mode, multiArr, transferStopped, preview, submit, toggleMulti, showBrowser, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -198,6 +198,10 @@ var svgEditorExtension_imagelib = (function () {
               case 6:
                 imagelibStrings = _context.sent;
                 modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false;
+                svgEditor = this;
+                $ = jQuery;
+                uiStrings = svgEditor.uiStrings, svgCanvas = svgEditor.canvas, extIconsPath = svgEditor.curConfig.extIconsPath;
+
 
                 imagelibStrings.imgLibs = imagelibStrings.imgLibs.map(function (_ref3) {
                   var name = _ref3.name,
@@ -210,11 +214,12 @@ var svgEditorExtension_imagelib = (function () {
                 allowedImageLibOrigins = imagelibStrings.imgLibs.map(function (_ref4) {
                   var url = _ref4.url;
 
-                  return new URL(url).origin;
+                  try {
+                    return new URL(url).origin;
+                  } catch (err) {
+                    return location.origin;
+                  }
                 });
-                svgEditor = this;
-                $ = jQuery;
-                uiStrings = svgEditor.uiStrings, svgCanvas = svgEditor.canvas, extIconsPath = svgEditor.curConfig.extIconsPath;
                 pending = {};
                 mode = 's';
                 multiArr = [];
