@@ -63,7 +63,7 @@ export default {
 
     // Receive `postMessage` data
     window.addEventListener('message', function ({origin, data: response}) {
-      if (!response || typeof response !== 'string') {
+      if (!response || !['string', 'object'].includes(typeof response)) {
         // Do nothing
         return;
       }
@@ -71,8 +71,14 @@ export default {
         // Todo: This block can be removed (and the above check changed to
         //   insist on an object) if embedAPI moves away from a string to
         //   an object (if IE9 support not needed)
-        response = JSON.parse(response);
-        if (response.namespace !== 'imagelib') {
+        response = typeof response === 'object' ? response : JSON.parse(response);
+        if (response.namespace !== 'imagelib' &&
+          // Allow this alternative per https://github.com/SVG-Edit/svgedit/issues/274
+          //   so that older libraries may post with `namespace-key` and not
+          //   break older SVG-Edit versions which insisted on the *absence*
+          //   of a `namespace` property
+          response['namespace-key'] !== 'imagelib'
+        ) {
           return;
         }
         if (!allowedImageLibOrigins.includes('*') && !allowedImageLibOrigins.includes(origin)) {

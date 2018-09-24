@@ -31,6 +31,12 @@
 - Fix (Context menus): Avoid showing double shortcuts (#285); add some
   missing ones
 - Fix (Star extension): Minor: Avoid erring if `inradius` is `NaN`
+- Forward compatibility enhancement: Once IE9 support may be dropped,
+  we may post messages as objects, so don't break if objects received
+  (embedded API, xdomain, Imagelib)
+- Imagelib backward compatibility enhancement: Allow `namespace-key` as
+  alternative to `namespace` so as not to break old SVG-Edit which fail
+  at *presence* of `namespace` (fixes #274)
 - Refactoring: Avoid passing unused arguments, setting unused variables,
   and making unnecessary checks; avoid useless call to `createSVGMatrix`
 - Refactoring: Avoid useless assignment (courtesty lgtm)

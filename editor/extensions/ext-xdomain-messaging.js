@@ -11,10 +11,10 @@ export default {
     try {
       window.addEventListener('message', function (e) {
         // We accept and post strings for the sake of IE9 support
-        if (typeof e.data !== 'string' || e.data.charAt() === '|') {
+        if (!e.data || !['string', 'object'].includes(typeof e.data) || e.data.charAt() === '|') {
           return;
         }
-        const data = JSON.parse(e.data);
+        const data = typeof e.data === 'object' ? e.data : JSON.parse(e.data);
         if (!data || typeof data !== 'object' || data.namespace !== 'svgCanvas') {
           return;
         }

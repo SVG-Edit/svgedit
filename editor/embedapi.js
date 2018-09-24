@@ -63,11 +63,11 @@ function addCallback (t, {result, error, id: cbid}) {
 function messageListener (e) {
   // We accept and post strings as opposed to objects for the sake of IE9 support; this
   //   will most likely be changed in the future
-  if (typeof e.data !== 'string') {
+  if (!e.data || !['string', 'object'].includes(typeof e.data)) {
     return;
   }
   const {allowedOrigins} = this,
-    data = e.data && JSON.parse(e.data);
+    data = typeof e.data === 'object' ? e.data : JSON.parse(e.data);
   if (!data || typeof data !== 'object' || data.namespace !== 'svg-edit' ||
     e.source !== this.frame.contentWindow ||
     (!allowedOrigins.includes('*') && !allowedOrigins.includes(e.origin))
