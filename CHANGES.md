@@ -1,8 +1,7 @@
 # ?
 
-- Security fix/Breaking change (Imagelib): Require `allowedImageLibOrigins`
-  config array be set with safe origins or otherwise reject `postMessage`
-  messages in case from untrusted sources
+- Security fix/Breaking change (Imagelib): Only allow origins within
+  `imgLibs` to be accepted for `message` listener
 - Security fix/Breaking change (xdomain): Namespace xdomain file to avoid
   it being used to modify non-xdomain storage
 - Security fix (Imagelib): Avoid XSS

@@ -92,7 +92,6 @@ svgEditor.setConfig({
   data privacy and integrity.
   */
   // allowedOrigins: [location.origin || 'null'], // May be 'null' (as a string) when used as a `file:///` URL
-  // allowedImageLibOrigins: [location.origin || 'null'], // May be 'null' (as a string) when used as a `file:///` URL
   // DOCUMENT PROPERTIES
   // dimensions: [640, 480],
   // EDITOR OPTIONS

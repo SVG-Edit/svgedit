@@ -11,10 +11,27 @@ export default {
   name: 'imagelib',
   async init ({decode64, importLocale, dropXMLInternalSubset}) {
     const imagelibStrings = await importLocale();
+
+    const modularVersion = !('svgEditor' in window) ||
+      !window.svgEditor ||
+      window.svgEditor.modules !== false;
+    imagelibStrings.imgLibs = imagelibStrings.imgLibs.map(({name, url, description}) => {
+      url = url
+        .replace(/\{path\}/g, extIconsPath)
+        .replace(/\{modularVersion\}/g, modularVersion
+          ? (imagelibStrings.moduleEnding || '-es')
+          : ''
+        );
+      return {name, url, description};
+    });
+    const allowedImageLibOrigins = imagelibStrings.imgLibs.map(({url}) => {
+      return new URL(url).origin;
+    });
+
     const svgEditor = this;
 
     const $ = jQuery;
-    const {uiStrings, canvas: svgCanvas, curConfig: {allowedImageLibOrigins}} = svgEditor;
+    const {uiStrings, canvas: svgCanvas, curConfig: {extIconsPath}} = svgEditor;
 
     function closeBrowser () {
       $('#imgbrowse_holder').hide();
@@ -344,10 +361,7 @@ export default {
         cancel.prepend($.getSvgIcon('cancel', true));
         back.prepend($.getSvgIcon('tool_imagelib', true));
 
-        const modularVersion = !('svgEditor' in window) ||
-          !window.svgEditor ||
-          window.svgEditor.modules !== false;
-        $.each(imagelibStrings.imgLibs, function (i, {name, url, description}) {
+        imagelibStrings.imgLibs.forEach(function ({name, url, description}) {
           $('<li>')
             .appendTo(libOpts)
             .text(name)
@@ -355,15 +369,7 @@ export default {
               frame.attr(
                 'src',
                 // Todo: Adopt some standard formatting library like `fluent.js` instead
-                url.replace(
-                  '{path}',
-                  svgEditor.curConfig.extIconsPath
-                ).replace(
-                  '{modularVersion}',
-                  modularVersion
-                    ? (imagelibStrings.moduleEnding || '-es')
-                    : ''
-                )
+                url
               ).show();
               header.text(name);
               libOpts.hide();
@@ -378,7 +384,7 @@ export default {
     const buttons = [{
       id: 'tool_imagelib',
       type: 'app_menu', // _flyout
-      icon: svgEditor.curConfig.extIconsPath + 'imagelib.png',
+      icon: extIconsPath + 'imagelib.png',
       position: 4,
       events: {
         mouseup: showBrowser
@@ -386,7 +392,7 @@ export default {
     }];
 
     return {
-      svgicons: svgEditor.curConfig.extIconsPath + 'ext-imagelib.xml',
+      svgicons: extIconsPath + 'ext-imagelib.xml',
       buttons: imagelibStrings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);
       }),
