@@ -1,5 +1,12 @@
 # ?
 
+- Security fix/Breaking change (Imagelib): Require `allowedImageLibOrigins`
+  config array be set with safe origins or otherwise reject `postMessage`
+  messages in case from untrusted sources
+- Security fix/Breaking change (xdomain): Namespace xdomain file to avoid
+  it being used to modify non-xdomain storage
+- Security fix (Imagelib): Expose `dropXMLInternalSubset` to extensions
+  for preventing billion laughs attack (and use in Imagelib)
 - Security fix (minor): For embedded API, avoid chance for arbitrary
   property setting (though this was only for trusted origins anyways)
 - Security fix (minor): For embedded API example, copy params to iframe
@@ -520,7 +527,7 @@ git log 4bb15e0..253b4bf
     * Deprecated "pngsave" option called by setCustomHandlers() in favor of "exportImage" (to accommodate export of other image types). Second argument will now supply, in addition to "issues" and "svg", the properties "type" (currently 'PNG', 'JPEG', 'BMP', 'WEBP'), "mimeType", and "quality" (for 'JPEG' and 'WEBP' types).
     * Default extensions will now always load (along with those supplied in the URL unless the latter is prohibited by configuration), so if you do not wish your old code to load all of the default extensions, you will need to add `&noDefaultExtensions=true` to the URL (or add equivalent configuration in config.js). ext-overview_window.js can now be excluded though it is still a default.
     * Preferences and configuration options must be within the list supplied within svg-editor.js (should include those of all documented extensions).
-    * Embedded messaging will no longer work by default for privacy/data integrity reasons. One must include the "ext-xdomain-messaging.js" extension and supply an array configuration item, "allowedOrigins" with potential values including: "\*" (to allow all domains--strongly discouraged!), "null" as a string to allow file:// access, window.location.origin (to allow same domain access), or specific trusted origins. The embedded editor works without the extension if the main editor is on the same domain, but if cross-domain control is needed, the "allowedOrigins" array must be supplied by a call to svgEditor.setConfig({allowedOrigins: [origin1, origin2, etc.]}) in the new config.js file.
+    * Embedded messaging will no longer work by default for privacy/data integrity reasons. One must include the "ext-xdomain-messaging.js" extension and supply an array configuration item, "allowedOrigins" with potential values including: "\*" (to allow all domains--strongly discouraged!), "null" as a string to allow `file:///` access, window.location.origin (to allow same domain access), or specific trusted origins. The embedded editor works without the extension if the main editor is on the same domain, but if cross-domain control is needed, the "allowedOrigins" array must be supplied by a call to svgEditor.setConfig({allowedOrigins: [origin1, origin2, etc.]}) in the new config.js file.
 
 # 2.6 (Cycloid) - January 15th, 2013
 

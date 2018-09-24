@@ -32,7 +32,7 @@ export default {
         // Must match the icon ID in helloworld-icon.xml
         id: 'hello_world',
 
-        // Fallback, e.g., for `file://` access
+        // Fallback, e.g., for `file:///` access
         icon: svgEditor.curConfig.extIconsPath + 'helloworld.png',
 
         // This indicates that the button will be added to the "mode"

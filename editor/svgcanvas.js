@@ -31,7 +31,7 @@ import {
   preventClickDefault, snapToGrid, walkTree, walkTreePost,
   getBBoxOfElementAsPath, convertToPath, toXml, encode64, decode64,
   dataURLToObjectURL, createObjectURL,
-  getVisibleElements,
+  getVisibleElements, dropXMLInteralSubset,
   init as utilsInit, getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible
 } from './utilities.js';
 import * as history from './history.js';
@@ -7127,6 +7127,7 @@ this.clear();
 * @property {module:history.HistoryCommand} BatchCommand
 * @property {module:history.HistoryCommand} ChangeElementCommand
 * @property {module:utilities.decode64} decode64
+* @property {module:utilities.dropXMLInteralSubset} dropXMLInteralSubset
 * @property {module:utilities.encode64} encode64
 * @property {module:svgcanvas~ffClone} ffClone
 * @property {module:svgcanvas~findDuplicateGradient} findDuplicateGradient
@@ -7166,6 +7167,7 @@ this.getPrivateMethods = function () {
     BatchCommand,
     ChangeElementCommand,
     decode64,
+    dropXMLInteralSubset,
     encode64,
     ffClone,
     findDefs,

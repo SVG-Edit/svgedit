@@ -9,12 +9,12 @@
  */
 export default {
   name: 'imagelib',
-  async init ({decode64, importLocale}) {
+  async init ({decode64, importLocale, dropXMLInteralSubset}) {
     const imagelibStrings = await importLocale();
     const svgEditor = this;
 
     const $ = jQuery;
-    const {uiStrings, canvas: svgCanvas} = svgEditor;
+    const {uiStrings, canvas: svgCanvas, curConfig: {allowedImageLibOrigins}} = svgEditor;
 
     function closeBrowser () {
       $('#imgbrowse_holder').hide();
@@ -44,10 +44,8 @@ export default {
     let transferStopped = false;
     let preview, submit;
 
-    window.addEventListener('message', function (evt) {
-      // Receive `postMessage` data
-      let response = evt.data;
-
+    // Receive `postMessage` data
+    window.addEventListener('message', function ({origin, data: response}) {
       if (!response || typeof response !== 'string') {
         // Do nothing
         return;
@@ -58,6 +56,10 @@ export default {
         //   an object (if IE9 support not needed)
         response = JSON.parse(response);
         if (response.namespace !== 'imagelib') {
+          return;
+        }
+        if (!allowedImageLibOrigins.includes('*') && !allowedImageLibOrigins.includes(origin)) {
+          console.log(`Origin ${origin} not whitelisted for posting to ${window.origin}`);
           return;
         }
       } catch (e) {
@@ -90,7 +92,8 @@ export default {
         transferStopped = false;
         curMeta = response;
 
-        pending[curMeta.id] = curMeta;
+        // Should be safe to add dynamic property as passed metadata
+        pending[curMeta.id] = curMeta; // lgtm [js/remote-property-injection]
 
         const name = (curMeta.name || 'file');
 
@@ -170,7 +173,8 @@ export default {
             title = curMeta.name;
           } else {
             // Try to find a title
-            const xml = new DOMParser().parseFromString(response, 'text/xml').documentElement;
+            // `dropXMLInteralSubset` is to help prevent the billion laughs attack
+            const xml = new DOMParser().parseFromString(dropXMLInteralSubset(response), 'text/xml').documentElement; // lgtm [js/xml-bomb]
             title = $(xml).children('title').first().text() || '(SVG #' + response.length + ')';
           }
           if (curMeta) {

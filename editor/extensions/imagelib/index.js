@@ -31,7 +31,7 @@ $('a').click(function () {
       try {
         data = canvas.toDataURL();
       } catch (err) {
-        // This fails in Firefox with file:// URLs :(
+        // This fails in Firefox with `file:///` URLs :(
         alert('Data URL conversion failed: ' + err);
         data = '';
       }
