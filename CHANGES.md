@@ -5,6 +5,7 @@
   messages in case from untrusted sources
 - Security fix/Breaking change (xdomain): Namespace xdomain file to avoid
   it being used to modify non-xdomain storage
+- Security fix (Imagelib): Avoid XSS
 - Security fix (Imagelib): Expose `dropXMLInternalSubset` to extensions
   for preventing billion laughs attack (and use in Imagelib)
 - Security fix (minor): For embedded API, avoid chance for arbitrary

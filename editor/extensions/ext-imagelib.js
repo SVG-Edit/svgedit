@@ -9,7 +9,7 @@
  */
 export default {
   name: 'imagelib',
-  async init ({decode64, importLocale, dropXMLInteralSubset}) {
+  async init ({decode64, importLocale, dropXMLInternalSubset}) {
     const imagelibStrings = await importLocale();
     const svgEditor = this;
 
@@ -107,7 +107,7 @@ export default {
             $('#dialog_box').hide();
           });
         } else {
-          entry = $('<div>' + message + '</div>').data('id', curMeta.id);
+          entry = $('<div>').text(message).data('id', curMeta.id);
           preview.append(entry);
           curMeta.entry = entry;
         }
@@ -173,15 +173,20 @@ export default {
             title = curMeta.name;
           } else {
             // Try to find a title
-            // `dropXMLInteralSubset` is to help prevent the billion laughs attack
-            const xml = new DOMParser().parseFromString(dropXMLInteralSubset(response), 'text/xml').documentElement; // lgtm [js/xml-bomb]
+            // `dropXMLInternalSubset` is to help prevent the billion laughs attack
+            const xml = new DOMParser().parseFromString(dropXMLInternalSubset(response), 'text/xml').documentElement; // lgtm [js/xml-bomb]
             title = $(xml).children('title').first().text() || '(SVG #' + response.length + ')';
           }
           if (curMeta) {
             preview.children().each(function () {
               if ($(this).data('id') === id) {
                 if (curMeta.preview_url) {
-                  $(this).html('<img src="' + curMeta.preview_url + '">' + title);
+                  $(this).html(
+                    $('<span>').append(
+                      $('<img>').attr('src', curMeta.preview_url),
+                      document.createTextNode(title)
+                    )
+                  );
                 } else {
                   $(this).text(title);
                 }
@@ -189,7 +194,9 @@ export default {
               }
             });
           } else {
-            preview.append('<div>' + title + '</div>');
+            preview.append(
+              $('<div>').text(title)
+            );
             submit.removeAttr('disabled');
           }
         } else {
@@ -197,9 +204,12 @@ export default {
             title = curMeta.name || '';
           }
           if (curMeta && curMeta.preview_url) {
-            entry = '<img src="' + curMeta.preview_url + '">' + title;
+            entry = $('<span>').append(
+              $('<img>').attr('src', curMeta.preview_url),
+              document.createTextNode(title)
+            );
           } else {
-            entry = '<img src="' + response + '">';
+            entry = $('<img>').attr('src', response);
           }
 
           if (curMeta) {
