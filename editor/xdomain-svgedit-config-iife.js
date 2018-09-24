@@ -7222,6 +7222,17 @@
   };
 
   /**
+   * Used to prevent the [Billion laughs attack]{@link https://en.wikipedia.org/wiki/Billion_laughs_attack}
+   * @function module:utilities.dropXMLInteralSubset
+   * @param {string} str String to be processed
+   * @returns {string} The string with entity declarations in the internal subset removed
+   * @todo This might be needed in other places `parseFromString` is used even without LGTM flagging
+   */
+  var dropXMLInteralSubset = function dropXMLInteralSubset(str) {
+    return str.replace(/(<!DOCTYPE\s+\w*\s*\[).*(\?\]>)/, '$1$2');
+  };
+
+  /**
   * Converts characters in a string to XML-friendly entities.
   * @function module:utilities.toXml
   * @example `&` becomes `&amp;`
@@ -19749,6 +19760,7 @@
     * @property {module:history.HistoryCommand} BatchCommand
     * @property {module:history.HistoryCommand} ChangeElementCommand
     * @property {module:utilities.decode64} decode64
+    * @property {module:utilities.dropXMLInteralSubset} dropXMLInteralSubset
     * @property {module:utilities.encode64} encode64
     * @property {module:svgcanvas~ffClone} ffClone
     * @property {module:svgcanvas~findDuplicateGradient} findDuplicateGradient
@@ -19788,6 +19800,7 @@
         BatchCommand: BatchCommand$1,
         ChangeElementCommand: ChangeElementCommand$1,
         decode64: decode64,
+        dropXMLInteralSubset: dropXMLInteralSubset,
         encode64: encode64,
         ffClone: ffClone,
         findDefs: findDefs,
@@ -25042,7 +25055,7 @@
   * @property {boolean} [emptyStorageOnDecline=false] Used by `ext-storage.js`; empty any prior storage if the user declines to store
   * @property {string[]} [extensions=module:SVGEditor~defaultExtensions] Extensions to load on startup. Use an array in `setConfig` and comma separated file names in the URL. Extension names must begin with "ext-". Note that as of version 2.7, paths containing "/", "\", or ":", are disallowed for security reasons. Although previous versions of this list would entirely override the default list, as of version 2.7, the defaults will always be added to this explicit list unless the configuration `noDefaultExtensions` is included.
   * @property {module:SVGEditor.Stylesheet[]} [stylesheets=["@default"]] An array of required stylesheets to load in parallel; include the value `"@default"` within this array to ensure all default stylesheets are loaded.
-  * @property {string[]} [allowedOrigins=[]] Used by `ext-xdomain-messaging.js` to indicate which origins are permitted for cross-domain messaging (e.g., between the embedded editor and main editor code). Besides explicit domains, one might add '' to allow all domains (not recommended for privacy/data integrity of your user's content!), `window.location.origin` for allowing the same origin (should be safe if you trust all apps on your domain), 'null' to allow `file://` URL usage
+  * @property {string[]} [allowedOrigins=[]] Used by `ext-xdomain-messaging.js` to indicate which origins are permitted for cross-domain messaging (e.g., between the embedded editor and main editor code). Besides explicit domains, one might add '*' to allow all domains (not recommended for privacy/data integrity of your user's content!), `window.location.origin` for allowing the same origin (should be safe if you trust all apps on your domain), 'null' to allow `file:///` URL usage
   * @property {null|PlainObject} [colorPickerCSS=null] Object of CSS properties mapped to values (for jQuery) to apply to the color picker. See {@link http://api.jquery.com/css/#css-properties}. A `null` value (the default) will cause the CSS to default to `left` with a position equal to that of the `fill_color` or `stroke_color` element minus 140, and a `bottom` equal to 40
   * @property {string} [paramurl] This was available via URL only. Allowed an un-encoded URL within the query string (use "url" or "source" with a data: URI instead)
   * @property {Float} [canvas_expansion=3] The minimum area visible outside the canvas, as a multiple of the image dimensions. The larger the number, the more one can scroll outside the canvas.
@@ -25158,17 +25171,17 @@
     extensions: [],
     stylesheets: [],
     /**
-    * Can use window.location.origin to indicate the current
+    * Can use `location.origin` to indicate the current
     * origin. Can contain a '*' to allow all domains or 'null' (as
-    * a string) to support all file:// URLs. Cannot be set by
+    * a string) to support all `file:///` URLs. Cannot be set by
     * URL for security reasons (not safe, at least for
     * privacy or data integrity of SVG content).
     * Might have been fairly safe to allow
-    *   `new URL(window.location.href).origin` by default but
+    *   `new URL(location.href).origin` by default but
     *   avoiding it ensures some more security that even third
     *   party apps on the same domain also cannot communicate
     *   with this app by default.
-    * For use with ext-xdomain-messaging.js
+    * For use with `ext-xdomain-messaging.js`
     * @todo We might instead make as a user-facing preference.
     */
     allowedOrigins: []
@@ -31090,6 +31103,7 @@
   window.svgEditor.modules = false;
 
   editor.setConfig({
+    canvasName: 'xdomain', // Namespace this
     allowedOrigins: ['*']
   });
 

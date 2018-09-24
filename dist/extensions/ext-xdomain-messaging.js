@@ -30,15 +30,15 @@ var svgEditorExtension_xdomain_messaging = (function () {
       try {
         window.addEventListener('message', function (e) {
           // We accept and post strings for the sake of IE9 support
-          if (typeof e.data !== 'string' || e.data.charAt() === '|') {
+          if (!e.data || !['string', 'object'].includes(_typeof(e.data)) || e.data.charAt() === '|') {
             return;
           }
-          var data = JSON.parse(e.data);
+          var data = _typeof(e.data) === 'object' ? e.data : JSON.parse(e.data);
           if (!data || (typeof data === 'undefined' ? 'undefined' : _typeof(data)) !== 'object' || data.namespace !== 'svgCanvas') {
             return;
           }
           // The default is not to allow any origins, including even the same domain or
-          //  if run on a file:// URL See svgedit-config-es.js for an example of how
+          //  if run on a `file:///` URL. See `svgedit-config-es.js` for an example of how
           //  to configure
           var allowedOrigins = svgEditor.curConfig.allowedOrigins;
 

@@ -1,6 +1,12 @@
 var svgEditorExtension_imagelib = (function () {
   'use strict';
 
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  };
+
   var asyncToGenerator = function (fn) {
     return function () {
       var gen = fn.apply(this, arguments);
@@ -44,8 +50,9 @@ var svgEditorExtension_imagelib = (function () {
     init: function () {
       var _ref2 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref) {
         var decode64 = _ref.decode64,
-            importLocale = _ref.importLocale;
-        var imagelibStrings, svgEditor, $, uiStrings, svgCanvas, closeBrowser, importImage, pending, mode, multiArr, transferStopped, preview, submit, toggleMulti, showBrowser, buttons;
+            importLocale = _ref.importLocale,
+            dropXMLInternalSubset = _ref.dropXMLInternalSubset;
+        var imagelibStrings, modularVersion, allowedImageLibOrigins, svgEditor, $, uiStrings, svgCanvas, extIconsPath, closeBrowser, importImage, pending, mode, multiArr, transferStopped, preview, submit, toggleMulti, showBrowser, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -107,16 +114,15 @@ var svgEditorExtension_imagelib = (function () {
                     cancel.prepend($.getSvgIcon('cancel', true));
                     back.prepend($.getSvgIcon('tool_imagelib', true));
 
-                    var modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false;
-                    $.each(imagelibStrings.imgLibs, function (i, _ref3) {
-                      var name = _ref3.name,
-                          url = _ref3.url,
-                          description = _ref3.description;
+                    imagelibStrings.imgLibs.forEach(function (_ref6) {
+                      var name = _ref6.name,
+                          url = _ref6.url,
+                          description = _ref6.description;
 
                       $('<li>').appendTo(libOpts).text(name).on('click touchend', function () {
                         frame.attr('src',
                         // Todo: Adopt some standard formatting library like `fluent.js` instead
-                        url.replace('{path}', svgEditor.curConfig.extIconsPath).replace('{modularVersion}', modularVersion ? imagelibStrings.moduleEnding || '-es' : '')).show();
+                        url).show();
                         header.text(name);
                         libOpts.hide();
                         back.show();
@@ -191,21 +197,37 @@ var svgEditorExtension_imagelib = (function () {
 
               case 6:
                 imagelibStrings = _context.sent;
+                modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false;
+
+                imagelibStrings.imgLibs = imagelibStrings.imgLibs.map(function (_ref3) {
+                  var name = _ref3.name,
+                      url = _ref3.url,
+                      description = _ref3.description;
+
+                  url = url.replace(/\{path\}/g, extIconsPath).replace(/\{modularVersion\}/g, modularVersion ? imagelibStrings.moduleEnding || '-es' : '');
+                  return { name: name, url: url, description: description };
+                });
+                allowedImageLibOrigins = imagelibStrings.imgLibs.map(function (_ref4) {
+                  var url = _ref4.url;
+
+                  return new URL(url).origin;
+                });
                 svgEditor = this;
                 $ = jQuery;
-                uiStrings = svgEditor.uiStrings, svgCanvas = svgEditor.canvas;
+                uiStrings = svgEditor.uiStrings, svgCanvas = svgEditor.canvas, extIconsPath = svgEditor.curConfig.extIconsPath;
                 pending = {};
                 mode = 's';
                 multiArr = [];
                 transferStopped = false;
                 preview = void 0, submit = void 0;
 
+                // Receive `postMessage` data
 
-                window.addEventListener('message', function (evt) {
-                  // Receive `postMessage` data
-                  var response = evt.data;
+                window.addEventListener('message', function (_ref5) {
+                  var origin = _ref5.origin,
+                      response = _ref5.data;
 
-                  if (!response || typeof response !== 'string') {
+                  if (!response || !['string', 'object'].includes(typeof response === 'undefined' ? 'undefined' : _typeof(response))) {
                     // Do nothing
                     return;
                   }
@@ -213,8 +235,17 @@ var svgEditorExtension_imagelib = (function () {
                     // Todo: This block can be removed (and the above check changed to
                     //   insist on an object) if embedAPI moves away from a string to
                     //   an object (if IE9 support not needed)
-                    response = JSON.parse(response);
-                    if (response.namespace !== 'imagelib') {
+                    response = (typeof response === 'undefined' ? 'undefined' : _typeof(response)) === 'object' ? response : JSON.parse(response);
+                    if (response.namespace !== 'imagelib' &&
+                    // Allow this alternative per https://github.com/SVG-Edit/svgedit/issues/274
+                    //   so that older libraries may post with `namespace-key` and not
+                    //   break older SVG-Edit versions which insisted on the *absence*
+                    //   of a `namespace` property
+                    response['namespace-key'] !== 'imagelib') {
+                      return;
+                    }
+                    if (!allowedImageLibOrigins.includes('*') && !allowedImageLibOrigins.includes(origin)) {
+                      console.log('Origin ' + origin + ' not whitelisted for posting to ' + window.origin);
                       return;
                     }
                   } catch (e) {
@@ -249,7 +280,8 @@ var svgEditorExtension_imagelib = (function () {
                         transferStopped = false;
                         curMeta = response;
 
-                        pending[curMeta.id] = curMeta;
+                        // Should be safe to add dynamic property as passed metadata
+                        pending[curMeta.id] = curMeta; // lgtm [js/remote-property-injection]
 
                         var name = curMeta.name || 'file';
 
@@ -263,7 +295,7 @@ var svgEditorExtension_imagelib = (function () {
                             $('#dialog_box').hide();
                           });
                         } else {
-                          entry = $('<div>' + message + '</div>').data('id', curMeta.id);
+                          entry = $('<div>').text(message).data('id', curMeta.id);
                           preview.append(entry);
                           curMeta.entry = entry;
                         }
@@ -330,14 +362,15 @@ var svgEditorExtension_imagelib = (function () {
                           title = curMeta.name;
                         } else {
                           // Try to find a title
-                          var xml = new DOMParser().parseFromString(response, 'text/xml').documentElement;
+                          // `dropXMLInternalSubset` is to help prevent the billion laughs attack
+                          var xml = new DOMParser().parseFromString(dropXMLInternalSubset(response), 'text/xml').documentElement; // lgtm [js/xml-bomb]
                           title = $(xml).children('title').first().text() || '(SVG #' + response.length + ')';
                         }
                         if (curMeta) {
                           preview.children().each(function () {
                             if ($(this).data('id') === id) {
                               if (curMeta.preview_url) {
-                                $(this).html('<img src="' + curMeta.preview_url + '">' + title);
+                                $(this).html($('<span>').append($('<img>').attr('src', curMeta.preview_url), document.createTextNode(title)));
                               } else {
                                 $(this).text(title);
                               }
@@ -345,7 +378,7 @@ var svgEditorExtension_imagelib = (function () {
                             }
                           });
                         } else {
-                          preview.append('<div>' + title + '</div>');
+                          preview.append($('<div>').text(title));
                           submit.removeAttr('disabled');
                         }
                       } else {
@@ -353,9 +386,9 @@ var svgEditorExtension_imagelib = (function () {
                           title = curMeta.name || '';
                         }
                         if (curMeta && curMeta.preview_url) {
-                          entry = '<img src="' + curMeta.preview_url + '">' + title;
+                          entry = $('<span>').append($('<img>').attr('src', curMeta.preview_url), document.createTextNode(title));
                         } else {
-                          entry = '<img src="' + response + '">';
+                          entry = $('<img>').attr('src', response);
                         }
 
                         if (curMeta) {
@@ -392,14 +425,14 @@ var svgEditorExtension_imagelib = (function () {
                 buttons = [{
                   id: 'tool_imagelib',
                   type: 'app_menu', // _flyout
-                  icon: svgEditor.curConfig.extIconsPath + 'imagelib.png',
+                  icon: extIconsPath + 'imagelib.png',
                   position: 4,
                   events: {
                     mouseup: showBrowser
                   }
                 }];
                 return _context.abrupt('return', {
-                  svgicons: svgEditor.curConfig.extIconsPath + 'ext-imagelib.xml',
+                  svgicons: extIconsPath + 'ext-imagelib.xml',
                   buttons: imagelibStrings.buttons.map(function (button, i) {
                     return Object.assign(buttons[i], button);
                   }),
@@ -408,7 +441,7 @@ var svgEditorExtension_imagelib = (function () {
                   }
                 });
 
-              case 18:
+              case 21:
               case 'end':
                 return _context.stop();
             }
