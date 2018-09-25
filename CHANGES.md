@@ -13,8 +13,9 @@
   source without XSS risk (though params should already be XML-safe
   given `encodeURIComponent` and lack of a single quote attribute
   context)
-- Known regression for 3.\*: Image libraries
-  [broken](https://github.com/SVG-Edit/svgedit/issues/274)
+- Known regression: Remove Openclipart as its site's now setting of
+  `X-Frame-Options` to `"sameorigin"` makes it unusable on our end
+  for our cross-origin uses
 - Breaking change (minor): Change export to check `exportWindowName`
   for filename and change default from `download` to `svg.pdf` to
   distinguish from other downloads
@@ -34,9 +35,14 @@
 - Forward compatibility enhancement: Once IE9 support may be dropped,
   we may post messages as objects, so don't break if objects received
   (embedded API, xdomain, Imagelib)
-- Imagelib backward compatibility enhancement: Allow `namespace-key` as
-  alternative to `namespace` so as not to break old SVG-Edit which fail
-  at *presence* of `namespace` (fixes #274)
+- Forward compatibility enhancement: For IAN image library, add
+  `svgedit=3` param to URL so that it can keep using old API for
+  SVG-Edit versions before 3, while conditionally using new object-based
+  API now (and if we switch exclusively to the object-based API in the
+  future, this site will continue to work)
+- Imagelib backward compatibility enhancement: Allow string based API
+  again so as not to break old SVG-Edit which fail at *presence* of
+  `namespace` (fixes #274)
 - Refactoring: Avoid passing unused arguments, setting unused variables,
   and making unnecessary checks; avoid useless call to `createSVGMatrix`
 - Refactoring: Avoid useless assignment (courtesty lgtm)

@@ -120,9 +120,7 @@ var svgEditorExtension_imagelib = (function () {
                           description = _ref6.description;
 
                       $('<li>').appendTo(libOpts).text(name).on('click touchend', function () {
-                        frame.attr('src',
-                        // Todo: Adopt some standard formatting library like `fluent.js` instead
-                        url).show();
+                        frame.attr('src', url).show();
                         header.text(name);
                         libOpts.hide();
                         back.show();
@@ -208,6 +206,7 @@ var svgEditorExtension_imagelib = (function () {
                       url = _ref3.url,
                       description = _ref3.description;
 
+                  // Todo: Adopt some standard formatting library like `fluent.js` instead
                   url = url.replace(/\{path\}/g, extIconsPath).replace(/\{modularVersion\}/g, modularVersion ? imagelibStrings.moduleEnding || '-es' : '');
                   return { name: name, url: url, description: description };
                 });
@@ -236,48 +235,60 @@ var svgEditorExtension_imagelib = (function () {
                     // Do nothing
                     return;
                   }
+                  var id = void 0;
+                  var type = void 0;
                   try {
                     // Todo: This block can be removed (and the above check changed to
                     //   insist on an object) if embedAPI moves away from a string to
                     //   an object (if IE9 support not needed)
                     response = (typeof response === 'undefined' ? 'undefined' : _typeof(response)) === 'object' ? response : JSON.parse(response);
-                    if (response.namespace !== 'imagelib' &&
-                    // Allow this alternative per https://github.com/SVG-Edit/svgedit/issues/274
-                    //   so that older libraries may post with `namespace-key` and not
-                    //   break older SVG-Edit versions which insisted on the *absence*
-                    //   of a `namespace` property
-                    response['namespace-key'] !== 'imagelib') {
+                    if (response.namespace !== 'imagelib') {
                       return;
                     }
                     if (!allowedImageLibOrigins.includes('*') && !allowedImageLibOrigins.includes(origin)) {
                       console.log('Origin ' + origin + ' not whitelisted for posting to ' + window.origin);
                       return;
                     }
+                    var hasName = 'name' in response;
+                    var hasHref = 'href' in response;
+
+                    if (!hasName && transferStopped) {
+                      transferStopped = false;
+                      return;
+                    }
+
+                    if (hasHref) {
+                      id = response.href;
+                      response = response.data;
+                    }
+
+                    // Hide possible transfer dialog box
+                    $('#dialog_box').hide();
+                    type = hasName ? 'meta' : response.charAt(0);
                   } catch (e) {
+                    // This block is for backward compatibility (for IAN and Openclipart)
+                    if (typeof response === 'string') {
+                      var char1 = response.charAt(0);
+
+                      if (char1 !== '{' && transferStopped) {
+                        transferStopped = false;
+                        return;
+                      }
+
+                      if (char1 === '|') {
+                        var secondpos = response.indexOf('|', 1);
+                        id = response.substr(1, secondpos - 1);
+                        response = response.substr(secondpos + 1);
+                        type = response.charAt(0);
+                      }
+                    }
                     return;
                   }
 
-                  var hasName = 'name' in response;
-                  var hasHref = 'href' in response;
-
-                  if (!hasName && transferStopped) {
-                    transferStopped = false;
-                    return;
-                  }
-
-                  var id = void 0;
-                  if (hasHref) {
-                    id = response.href;
-                    response = response.data;
-                  }
-
-                  // Hide possible transfer dialog box
-                  $('#dialog_box').hide();
                   var entry = void 0,
                       curMeta = void 0,
                       svgStr = void 0,
                       imgStr = void 0;
-                  var type = hasName ? 'meta' : response.charAt(0);
                   switch (type) {
                     case 'meta':
                       {

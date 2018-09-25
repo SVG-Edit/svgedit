@@ -22,6 +22,7 @@ export default {
     const {uiStrings, canvas: svgCanvas, curConfig: {extIconsPath}} = svgEditor;
 
     imagelibStrings.imgLibs = imagelibStrings.imgLibs.map(({name, url, description}) => {
+      // Todo: Adopt some standard formatting library like `fluent.js` instead
       url = url
         .replace(/\{path\}/g, extIconsPath)
         .replace(/\{modularVersion\}/g, modularVersion
@@ -72,48 +73,59 @@ export default {
         // Do nothing
         return;
       }
+      let id;
+      let type;
       try {
         // Todo: This block can be removed (and the above check changed to
         //   insist on an object) if embedAPI moves away from a string to
         //   an object (if IE9 support not needed)
         response = typeof response === 'object' ? response : JSON.parse(response);
-        if (response.namespace !== 'imagelib' &&
-          // Allow this alternative per https://github.com/SVG-Edit/svgedit/issues/274
-          //   so that older libraries may post with `namespace-key` and not
-          //   break older SVG-Edit versions which insisted on the *absence*
-          //   of a `namespace` property
-          response['namespace-key'] !== 'imagelib'
-        ) {
+        if (response.namespace !== 'imagelib') {
           return;
         }
         if (!allowedImageLibOrigins.includes('*') && !allowedImageLibOrigins.includes(origin)) {
           console.log(`Origin ${origin} not whitelisted for posting to ${window.origin}`);
           return;
         }
+        const hasName = 'name' in response;
+        const hasHref = 'href' in response;
+
+        if (!hasName && transferStopped) {
+          transferStopped = false;
+          return;
+        }
+
+        if (hasHref) {
+          id = response.href;
+          response = response.data;
+        }
+
+        // Hide possible transfer dialog box
+        $('#dialog_box').hide();
+        type = hasName
+          ? 'meta'
+          : response.charAt(0);
       } catch (e) {
+        // This block is for backward compatibility (for IAN and Openclipart)
+        if (typeof response === 'string') {
+          const char1 = response.charAt(0);
+
+          if (char1 !== '{' && transferStopped) {
+            transferStopped = false;
+            return;
+          }
+
+          if (char1 === '|') {
+            const secondpos = response.indexOf('|', 1);
+            id = response.substr(1, secondpos - 1);
+            response = response.substr(secondpos + 1);
+            type = response.charAt(0);
+          }
+        }
         return;
       }
 
-      const hasName = 'name' in response;
-      const hasHref = 'href' in response;
-
-      if (!hasName && transferStopped) {
-        transferStopped = false;
-        return;
-      }
-
-      let id;
-      if (hasHref) {
-        id = response.href;
-        response = response.data;
-      }
-
-      // Hide possible transfer dialog box
-      $('#dialog_box').hide();
       let entry, curMeta, svgStr, imgStr;
-      const type = hasName
-        ? 'meta'
-        : response.charAt(0);
       switch (type) {
       case 'meta': {
         // Metadata
@@ -379,7 +391,6 @@ export default {
             .on('click touchend', function () {
               frame.attr(
                 'src',
-                // Todo: Adopt some standard formatting library like `fluent.js` instead
                 url
               ).show();
               header.text(name);

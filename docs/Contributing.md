@@ -7,6 +7,7 @@
   - `Breaking change: `
   - `Fix: `
   - `Fix (<component>): ` Component may be an extension, locale, etc.
+  - `Forward compatibility enhancement: `
   - `Enhancement: `
   - `Refactoring: `
   - `Linting (<type>):` - Linting by type, e.g., "ESLint"
