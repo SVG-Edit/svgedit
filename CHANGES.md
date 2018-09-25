@@ -23,7 +23,9 @@
   PDF as export (#273 @cuixiping); fixes #124 and #254
 - Fix: Polygon/polyline in PDF export (#287 @cuixiping); fixes #280
 - Fix: Ensure all apostrophes are escaped for `toXml` utility
-- Fix: Avoid error if `URL` is not defined
+- Fix: Avoid error if `URL` is not defined (export)
+- Fix: Ensure repeated selection of same file overwrites with that
+  file's contents (fix #289)
 - Fix (jPicker): Avoid setting `Math.precision` pseudo-global
 - Fix (jPicker): Precision argument had not been passed in previously
 - Fix (image import): Put src after onload to avoid missing event;

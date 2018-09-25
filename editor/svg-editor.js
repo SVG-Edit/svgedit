@@ -5679,7 +5679,7 @@ editor.init = function () {
     workarea[0].addEventListener('dragleave', onDragLeave, false);
     workarea[0].addEventListener('drop', importImage, false);
 
-    const open = $('<input type="file">').change(function () {
+    const open = $('<input type="file">').click(function () {
       const f = this;
       editor.openPrep(function (ok) {
         if (!ok) { return; }

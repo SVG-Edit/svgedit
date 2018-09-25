@@ -30780,7 +30780,7 @@ editor.init = function () {
     workarea[0].addEventListener('dragleave', onDragLeave, false);
     workarea[0].addEventListener('drop', importImage, false);
 
-    var open = $$b('<input type="file">').change(function () {
+    var open = $$b('<input type="file">').click(function () {
       var f = this;
       editor.openPrep(function (ok) {
         if (!ok) {
