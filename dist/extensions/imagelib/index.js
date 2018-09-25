@@ -35,7 +35,7 @@
       name: $(this).text(),
       id: href
     });
-    if (!this.href.includes('.svg')) {
+    if (!href.includes('.svg')) {
       var img = new Image();
       img.onload = function () {
         var canvas = document.createElement('canvas');

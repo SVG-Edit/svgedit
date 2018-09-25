@@ -18,7 +18,7 @@ $('a').click(function () {
     name: $(this).text(),
     id: href
   });
-  if (!this.href.includes('.svg')) {
+  if (!href.includes('.svg')) {
     const img = new Image();
     img.onload = function () {
       const canvas = document.createElement('canvas');

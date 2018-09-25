@@ -56,6 +56,7 @@
 - Linting (ESLint): Consistent spacing; new "standard"
 - Docs: Contributing file
 - Docs (JSDoc): Missing return value
+- Update (Imagelib): Remove extra (and more outdated) jQuery copy
 - Build: Switch to `terser` plugin with `uglify` plugin not
   supporting ES6+-capable minifier
 - npm: Update devDeps

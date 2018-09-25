@@ -1,7 +1,7 @@
 # Contributing
 
-1. Prefix every change in the commit with one of the following types (and
-  sort into this order):
+1. Prefix every change in the commit (and change log) with one of the
+  following types (and sort in both places into this order):
   - `Security fix: `
   - `Known regression: `
   - `Breaking change: `
