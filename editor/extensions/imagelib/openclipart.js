@@ -32,6 +32,7 @@ jml('div', [
 
         if (!json || json.msg !== 'success') {
           alert('There was a problem downloading the results');
+          return;
         }
         console.log('json', json);
         const {payload, info: {
@@ -57,7 +58,10 @@ jml('div', [
 
         // Unused properties:
         // - `svg_filesize` always 0?
-        // - `dimensions: {png_thumb: {width, height}, png_full_lossy: {width, height}}` object of relevance?
+        // - `dimensions: {
+        //      png_thumb: {width, height},
+        //      png_full_lossy: {width, height}
+        //    }` object of relevance?
         // - No need for `tags` with `tags_array`
         // - `svg`'s: `png_thumb`, `png_full_lossy`, `png_2400px`
         jml(results, [
@@ -172,7 +176,9 @@ jml('div', [
     ['div', {class: 'control'}, [
       ['label', [
         'Results per page: ',
-        ['input', {id: 'amount', name: 'amount', value: 10, type: 'number', min: 1, max: 200, step: 1, pattern: '\\d+'}]
+        ['input', {
+          id: 'amount', name: 'amount', value: 10,
+          type: 'number', min: 1, max: 200, step: 1, pattern: '\\d+'}]
       ]]
     ]],
     ['div', {class: 'control'}, [
