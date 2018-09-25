@@ -266,7 +266,8 @@ var svgEditorExtension_imagelib = (function () {
                     $('#dialog_box').hide();
                     type = hasName ? 'meta' : response.charAt(0);
                   } catch (e) {
-                    // This block is for backward compatibility (for IAN and Openclipart)
+                    // This block is for backward compatibility (for IAN and Openclipart);
+                    //   should otherwise return
                     if (typeof response === 'string') {
                       var char1 = response.charAt(0);
 
@@ -282,7 +283,6 @@ var svgEditorExtension_imagelib = (function () {
                         type = response.charAt(0);
                       }
                     }
-                    return;
                   }
 
                   var entry = void 0,

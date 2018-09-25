@@ -106,7 +106,8 @@ export default {
           ? 'meta'
           : response.charAt(0);
       } catch (e) {
-        // This block is for backward compatibility (for IAN and Openclipart)
+        // This block is for backward compatibility (for IAN and Openclipart);
+        //   should otherwise return
         if (typeof response === 'string') {
           const char1 = response.charAt(0);
 
@@ -122,7 +123,6 @@ export default {
             type = response.charAt(0);
           }
         }
-        return;
       }
 
       let entry, curMeta, svgStr, imgStr;
