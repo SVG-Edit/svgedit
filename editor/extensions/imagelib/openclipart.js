@@ -75,12 +75,26 @@ async function processResults (url) {
             e.preventDefault();
             const {value: svgURL, id} = this.dataset;
             console.log('this', id, svgURL);
-            /*
+            const post = (message) => {
+              // Todo: Make origin customizable as set by opening window
+              // Todo: If dropping IE9, avoid stringifying
+              window.parent.postMessage(JSON.stringify({
+                namespace: 'imagelib',
+                ...message
+              }), '*');
+            };
+            // Send metadata (also indicates file is about to be sent)
+            post({
+              name: title,
+              id: svgURL
+            });
             const result = await fetch(svgURL);
             const svg = await result.text();
-            console.log('svg', svg);
-            */
-            // Todo: Pass to our API
+            console.log('h', svgURL, svg);
+            post({
+              href: svgURL,
+              data: svg
+            });
           }
         }}, [
           // If we wanted interactive versions despite security risk:

@@ -19,12 +19,12 @@ var svgEditorExtensionLocale_imagelib_pl = (function () {
       url: 'https://ian.umces.edu/symbols/catalog/svgedit/album_chooser.php?svgedit=3',
       description: 'Free library of illustrations'
       /*
-      // See message in "en" locale as to why disabling
+      // See message in "en" locale for further details
       ,
       {
         name: 'Openclipart',
         url: 'https://openclipart.org/svgedit',
-        description: 'Share and Use Images. Over 50,000 Public Domain SVG Images and Growing.'
+        description: 'Share and Use Images. Over 100,000 Public Domain SVG Images and Growing.'
       }
       */
     }]

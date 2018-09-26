@@ -42,6 +42,20 @@
     }
   };
 
+  var _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
   var inherits = function (subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
       throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
@@ -2182,7 +2196,7 @@
                 return ['div', [['button', { style: 'margin-right: 8px; border: 2px solid black;', dataset: { id: id, value: svgURL }, $on: {
                     click: function () {
                       var _ref3 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(e) {
-                        var _dataset, svgURL, id;
+                        var _dataset, svgURL, id, post, result, svg;
 
                         return regeneratorRuntime.wrap(function _callee$(_context) {
                           while (1) {
@@ -2192,14 +2206,39 @@
                                 _dataset = this.dataset, svgURL = _dataset.value, id = _dataset.id;
 
                                 console.log('this', id, svgURL);
-                                /*
-                                const result = await fetch(svgURL);
-                                const svg = await result.text();
-                                console.log('svg', svg);
-                                */
-                                // Todo: Pass to our API
 
-                              case 3:
+                                post = function post(message) {
+                                  // Todo: Make origin customizable as set by opening window
+                                  // Todo: If dropping IE9, avoid stringifying
+                                  window.parent.postMessage(JSON.stringify(_extends({
+                                    namespace: 'imagelib'
+                                  }, message)), '*');
+                                };
+                                // Send metadata (also indicates file is about to be sent)
+
+
+                                post({
+                                  name: title,
+                                  id: svgURL
+                                });
+                                _context.next = 7;
+                                return fetch(svgURL);
+
+                              case 7:
+                                result = _context.sent;
+                                _context.next = 10;
+                                return result.text();
+
+                              case 10:
+                                svg = _context.sent;
+
+                                console.log('h', svgURL, svg);
+                                post({
+                                  href: svgURL,
+                                  data: svg
+                                });
+
+                              case 13:
                               case 'end':
                                 return _context.stop();
                             }
@@ -2213,7 +2252,10 @@
 
                       return click;
                     }()
-                  } }, [['img', { src: svgURL, style: 'width: ' + imgHW + '; height: ' + imgHW + ';' }]]], ['b', [title]], ' ', ['i', [description]], ' ', ['span', ['(ID: ', ['a', {
+                  } }, [
+                // If we wanted interactive versions despite security risk:
+                // ['object', {data: svgURL, type: 'image/svg+xml'}]
+                ['img', { src: svgURL, style: 'width: ' + imgHW + '; height: ' + imgHW + ';' }]]], ['b', [title]], ' ', ['i', [description]], ' ', ['span', ['(ID: ', ['a', {
                   href: 'javascript: void(0);',
                   dataset: { value: id },
                   $on: {
