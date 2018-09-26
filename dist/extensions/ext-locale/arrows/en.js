@@ -3,7 +3,10 @@ var svgEditorExtensionLocale_arrows_en = (function () {
 
   var en = {
     name: 'Arrows',
-    langList: [{ id: 'arrow_none', textContent: 'No arrow' }],
+    langList: [{
+      id: 'arrow_none',
+      textContent: 'No arrow'
+    }],
     contextTools: [{
       title: 'Select arrow type',
       options: {

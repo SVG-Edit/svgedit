@@ -114,9 +114,7 @@ export default [
     },
     plugins: [
       babel({
-        plugins: ['transform-object-rest-spread', ['babel-plugin-transform-builtin-extend', {
-          globals: ['Array']
-        }]]
+        plugins: ['transform-object-rest-spread']
       })
     ]
   },

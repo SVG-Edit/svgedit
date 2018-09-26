@@ -27,6 +27,7 @@ var svgEditorExtensionLocale_imagelib_zh_CN = (function () {
         description: 'Share and Use Images. Over 100,000 Public Domain SVG Images and Growing.'
       }
       */
+
     }]
   };
 
