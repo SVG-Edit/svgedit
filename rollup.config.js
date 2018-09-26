@@ -107,6 +107,20 @@ export default [
     ]
   },
   {
+    input: 'editor/extensions/imagelib/openclipart.js',
+    output: {
+      format: 'iife',
+      file: 'dist/extensions/imagelib/openclipart.js'
+    },
+    plugins: [
+      babel({
+        plugins: ['transform-object-rest-spread', ['babel-plugin-transform-builtin-extend', {
+          globals: ['Array']
+        }]]
+      })
+    ]
+  },
+  {
     input: 'editor/external/dom-polyfill/dom-polyfill.js',
     output: {
       format: 'iife',

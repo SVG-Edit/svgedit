@@ -5,6 +5,7 @@
   - `Security fix: `
   - `Known regression: `
   - `Breaking change: `
+  - `Compatibility fix: `
   - `Fix: `
   - `Fix (<component>): ` Component may be an extension, locale, etc.
   - `Forward compatibility enhancement: `

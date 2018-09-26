@@ -59,6 +59,25 @@ const filesAndReplacements = [
     ]
   },
   {
+    input: 'editor/extensions/imagelib/openclipart-es.html',
+    output: 'editor/extensions/imagelib/openclipart.html',
+    replacements: [
+      [
+        '<!DOCTYPE html>',
+        `<!DOCTYPE html>
+<!-- AUTO-GENERATED FROM imagelib/openclipart-es.html; DO NOT EDIT; use build-html.js to build -->`
+      ],
+      [
+        '<script src="../../external/dom-polyfill/dom-polyfill.js"></script>',
+        '<script src="../../../dist/dom-polyfill.js"></script>'
+      ],
+      [
+        '<script type="module" src="openclipart.js"></script>',
+        '<script defer="defer" src="../../../dist/extensions/imagelib/openclipart.js"></script>'
+      ]
+    ]
+  },
+  {
     input: 'editor/extensions/imagelib/index-es.html',
     output: 'editor/extensions/imagelib/index.html',
     replacements: [

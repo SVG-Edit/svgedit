@@ -83,6 +83,8 @@ async function processResults (url) {
             // Todo: Pass to our API
           }
         }}, [
+          // If we wanted interactive versions despite security risk:
+          // ['object', {data: svgURL, type: 'image/svg+xml'}]
           ['img', {src: svgURL, style: `width: ${imgHW}; height: ${imgHW};`}]
         ]],
         ['b', [title]],
