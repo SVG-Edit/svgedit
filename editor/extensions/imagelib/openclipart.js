@@ -1,4 +1,8 @@
-import {jml, $, body} from '../../external/jamilih/jml-es.js';
+import {jml, body} from '../../external/jamilih/jml-es.js';
+
+import $ from '../../../node_modules/query-result/esm/index.js';
+import {manipulation} from '../../../node_modules/qr-manipulation/dist/index-es.js';
+manipulation($, jml);
 
 jml('div', [
   ['style', [
@@ -16,15 +20,11 @@ jml('div', [
     $custom: {
       async $submit () {
         console.log('submit2');
-        const results = $('#results');
-        while (results.hasChildNodes()) {
-          results.firstChild.remove();
-        }
         const url = new URL('https://openclipart.org/search/json/');
         [
           'query', 'sort', 'amount', 'page'
         ].forEach((prop) => {
-          const {value} = $('#' + prop);
+          const {value} = $('#' + prop)[0];
           url.searchParams.set(prop, value);
         });
         const r = await fetch(url);
@@ -41,8 +41,8 @@ jml('div', [
           current_page: currentPage
         }} = json;
 
-        // $('#page').value = currentPage;
-        // $('#page').max = pages;
+        // $('#page')[0].value = currentPage;
+        // $('#page')[0].max = pages;
 
         function queryLink (uploader) {
           return ['a', {
@@ -64,7 +64,7 @@ jml('div', [
         //    }` object of relevance?
         // - No need for `tags` with `tags_array`
         // - `svg`'s: `png_thumb`, `png_full_lossy`, `png_2400px`
-        jml(results, [
+        $('#results').htmlJML([
           ['span', [
             'Number of results: ',
             numResults
