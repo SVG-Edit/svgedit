@@ -1251,7 +1251,8 @@
 
                 for (var p in val) {
                   if (val.hasOwnProperty(p)) {
-                    procValue.push(p + '=' + '"' + val[p].replace(/"/g, '\\"') + '"');
+                    procValue.push(p + '=' + '"' + // https://www.w3.org/TR/xml-stylesheet/#NT-PseudoAttValue
+                    val[p].replace(/"/g, '&quot;') + '"');
                   }
                 }
 
@@ -1813,7 +1814,7 @@
               name: node.nodeName
             }
           };
-          addExternalID(start.$NOTATION, node, true);
+          addExternalID(start.$NOTATION, node);
           set$$1(start);
           break;
 
