@@ -34,7 +34,6 @@ The above steps can be done on a fork and committed via a pull request.
 3. Copy `build/svg-edit-X.Y.Z/`, `build/svg-edit-X.Y.Z-src.tar.gz`, and `build/svg-edit-X.Y.Z.zip` to a temporary directory.
 -->
 
-1. Ensure you are on the `master` branch with `git checkout master`.
 1. Switch to the `gh-pages` branch with `git checkout gh-pages`.
 1. Run the `build.js` executable (`npm run build` if within the project root
     directory).
