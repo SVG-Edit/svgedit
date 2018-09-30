@@ -52,12 +52,12 @@ The above steps can be done on a fork and committed via a pull request.
 -->
 1. Go to <https://github.com/SVG-Edit/svgedit/releases> and select
   `Draft a new release`.
-1. Make the release target point at the commit where the <!-- makefile and -->
+1. Make the release target point at the tag where the <!-- makefile and -->
   changes were updated.
 1. Write a short description of the release and include a link to the live
-  version:
+  version (in another tab, you may wish to see the source for a previous
+  release):
   <https://svg-edit.github.io/svgedit/releases/svg-edit-X.Y.Z/editor/svg-editor.html>.
-  See the previous releases for the format.
 1. Create the release!
 
 You will need to be a member of the SVG-Edit GitHub group to do this step.
