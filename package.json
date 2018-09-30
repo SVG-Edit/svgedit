@@ -1,5 +1,6 @@
 {
   "name": "svgedit-gh-pages",
+  "private": true,
   "version": "1.0.0",
   "description": "House gh-pages branch of SVG-Edit",
   "main": "build.js",
