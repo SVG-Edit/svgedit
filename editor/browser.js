@@ -71,7 +71,7 @@ try {
 return false;
 }());
 
-// text character positioning (for IE9)
+// text character positioning (for IE9 and now Chrome)
 const supportsGoodTextCharPos_ = (function () {
 const svgroot = document.createElementNS(NS.SVG, 'svg');
 const svgcontent = document.createElementNS(NS.SVG, 'svg');
@@ -81,9 +81,14 @@ svgroot.append(svgcontent);
 const text = document.createElementNS(NS.SVG, 'text');
 text.textContent = 'a';
 svgcontent.append(text);
-const pos = text.getStartPositionOfChar(0).x;
-svgroot.remove();
-return (pos === 0);
+try { // Chrome now fails here
+  const pos = text.getStartPositionOfChar(0).x;
+  return (pos === 0);
+} catch (err) {
+  return false;
+} finally {
+  svgroot.remove();
+}
 }());
 
 const supportsPathBBox_ = (function () {

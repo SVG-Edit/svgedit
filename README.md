@@ -89,6 +89,7 @@ incorporating SVGEdit.
 
 ## Recent news
 
+- 2018-09-30 Published 3.0.0-rc.3 with security and other fixes
 - 2018-07-31 Published 3.0.0-rc.2 with misc. fixes
 - 2018-07-19 Published 3.0.0-rc.1 allowing for extensions and locales to be
   expressed as modules

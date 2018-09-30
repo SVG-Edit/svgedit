@@ -1,9 +1,9 @@
 {
-  "extends": ["standard", "plugin:qunit/recommended"],
+  "extends": ["standard", "plugin:qunit/recommended", "plugin:testcafe/recommended"],
   "parserOptions": {
     "sourceType": "module"
   },
-  "plugins": ["qunit"],
+  "plugins": ["qunit", "testcafe"],
   "env": {
     "node": false,
     "browser": true

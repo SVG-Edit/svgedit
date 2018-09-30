@@ -50,6 +50,7 @@ console.log(`${output}\nTotal failures found: ${total}.\n`);
 
 function reduceFalseMatches (file, res) {
   switch (file) {
+  case 'editor/external/jamilih/jml-es.js':
   case 'editor/xdomain-svgedit-config-iife.js': // Ignore
     res.line = [];
     break;

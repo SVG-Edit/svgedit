@@ -1,4 +1,4 @@
-# ?
+# 3.0.0-rc.3
 
 - Security fix/Breaking change (Imagelib): Only allow origins within
   `imgLibs` to be accepted for `message` listener
@@ -26,6 +26,7 @@
 - Fix: Avoid error if `URL` is not defined (export)
 - Fix: Ensure repeated selection of same file overwrites with that
   file's contents (fix #289)
+- Fix: Avoid errors occurring in Chrome now for `supportsGoodTextCharPos`
 - Fix (jPicker): Avoid setting `Math.precision` pseudo-global
 - Fix (jPicker): Precision argument had not been passed in previously
 - Fix (image import): Put src after onload to avoid missing event;
@@ -54,6 +55,8 @@
   but hoping for in-code flagging)
 - Linting (LGTM): Flag origin-checked item as safe
 - Linting (ESLint): Consistent spacing; new "standard"
+- Testing: Add testcafe (ESLint plugin/rules, accessibility test
+  (failing), ui test beginnings (passing))
 - Docs: Contributing file
 - Docs (JSDoc): Missing return value
 - Update (Imagelib): Remove extra (and more outdated) jQuery copy

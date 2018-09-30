@@ -12,6 +12,7 @@
   - `Enhancement: `
   - `Refactoring: `
   - `Linting (<type>):` - Linting by type, e.g., "ESLint"
+  - `Testing:`
   - `Docs: `
   - `Update: ` - e.g., if updating a bundled library
   - `Build: `
