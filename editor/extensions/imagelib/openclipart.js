@@ -1,7 +1,7 @@
 import {jml, body, nbsp} from '../../external/jamilih/jml-es.js';
 
-import $ from '../../../node_modules/query-result/esm/index.js';
-import {manipulation} from '../../../node_modules/qr-manipulation/dist/index-es.js';
+import $ from '../../external/query-result/esm/index.js';
+import {manipulation} from '../../external/qr-manipulation/dist/index-es.js';
 manipulation($, jml);
 
 const baseAPIURL = 'https://openclipart.org/search/json/';
