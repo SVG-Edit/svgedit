@@ -1,0 +1,35 @@
+{
+  "plugins": ["plugins/markdown"],
+  "markdown": {
+    "tags": []
+  },
+  "recurseDepth": 10,
+  "source": {
+    "exclude": [
+      "node_modules",
+      "dist",
+      "firefox-extension",
+      "opera-widget",
+      "screencasts",
+      "test"
+    ],
+    "excludePattern": "svgedit-config-*|build-html.js|rollup*|external/babel-polyfill|extensions/mathjax|imagelib/jquery.min.js|jspdf/jspdf.min.js|jspdf/underscore-min.js|jquery-ui|jquery.min.js|jquerybbq|js-hotkeys"
+  },
+  "sourceType": "module",
+  "tags": {
+    "allowUnknownTags": false
+  },
+  "templates": {
+    "cleverLinks": true,
+    "monospaceLinks": false,
+    "default": {
+      "layoutFile": "docs/layout.tmpl"
+    }
+  },
+  "opts":{
+    "recurse": true,
+    "verbose": true,
+    "destination": "docs/jsdoc",
+    "tutorials": "docs/tutorials"
+  }
+}
