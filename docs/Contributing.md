@@ -10,10 +10,11 @@
   - `Fix (<component>): ` Component may be an extension, locale, etc.
   - `Forward compatibility enhancement: `
   - `Enhancement: `
+  - `Update: ` - e.g., if updating a bundled library or updating code per a
+    dependency's updated new API
   - `Refactoring: `
   - `Linting (<type>):` - Linting by type, e.g., "ESLint"
   - `Testing:`
   - `Docs: `
-  - `Update: ` - e.g., if updating a bundled library
   - `Build: `
   - `npm` - Updates to dependencies, npm version, etc.
