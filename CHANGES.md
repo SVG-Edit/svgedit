@@ -1,3 +1,8 @@
+# ?
+
+- Enhancement: Allow "Escape" to work with hotkeys within text boxes;
+  allows escaping out of source textarea (part of #291)
+
 # 3.0.0-rc.3
 
 - Security fix/Breaking change (Imagelib): Only allow origins within
