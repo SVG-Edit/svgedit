@@ -21193,6 +21193,7 @@ function SvgCanvas(container, config) {
  * Original idea by:
  * Binny V A, http://www.openjs.com/scripts/events/keyboard_shortcuts/
 */
+// We *do* want to allow the escape key within textareas (and possibly tab too), so add the condition `n.which !== 27`
 function jqPluginJSHotkeys (b) {
   b.hotkeys = {
     version: "0.8",
@@ -21283,7 +21284,7 @@ function jqPluginJSHotkeys (b) {
         e = d.data.toLowerCase().split(" ");
 
     d.handler = function (n) {
-      if (this !== n.target && (/textarea|select/i.test(n.target.nodeName) || n.target.type === "text")) {
+      if (this !== n.target && (n.which !== 27 && /textarea|select/i.test(n.target.nodeName) || n.target.type === "text")) {
         return;
       }
 
