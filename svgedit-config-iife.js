@@ -33407,9 +33407,19 @@
           svgCanvas.cloneSelectedElements(10, 0);
         }
       }, {
-        key: 'A',
+        key: 'a',
         fn: function fn() {
           svgCanvas.selectAllInCurrentLayer();
+        }
+      }, {
+        key: modKey + 'a',
+        fn: function fn() {
+          svgCanvas.selectAllInCurrentLayer();
+        }
+      }, {
+        key: ['esc', false, false],
+        fn: function fn() {
+          svgCanvas.clearSelection();
         }
       }, // Standard shortcuts
       {

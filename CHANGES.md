@@ -2,6 +2,11 @@
 
 - Enhancement: Allow "Escape" to work with hotkeys within text boxes;
   allows escaping out of source textarea (part of #291)
+- Enhancement: Allow 'a' also with meta key (command in Mac, ctrl otherwise)
+  to select all (part of #291)
+- Enhancement: Add a global escape key listener to clear the selection
+- Refactoring: Change 'a' to lower case in key command to avoid impression
+  that shift is needed
 
 # 3.0.0-rc.3
 

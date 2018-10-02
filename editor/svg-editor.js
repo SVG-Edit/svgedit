@@ -5203,7 +5203,9 @@ editor.init = function () {
       {key: ['alt+shift+down', true], fn () { svgCanvas.cloneSelectedElements(0, 10); }},
       {key: ['alt+shift+left', true], fn () { svgCanvas.cloneSelectedElements(-10, 0); }},
       {key: ['alt+shift+right', true], fn () { svgCanvas.cloneSelectedElements(10, 0); }},
-      {key: 'A', fn () { svgCanvas.selectAllInCurrentLayer(); }},
+      {key: 'a', fn () { svgCanvas.selectAllInCurrentLayer(); }},
+      {key: modKey + 'a', fn () { svgCanvas.selectAllInCurrentLayer(); }},
+      {key: ['esc', false, false], fn () { svgCanvas.clearSelection(); }},
 
       // Standard shortcuts
       {key: modKey + 'z', fn: clickUndo},
