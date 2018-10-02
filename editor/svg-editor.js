@@ -5087,6 +5087,7 @@ editor.init = function () {
   // Prevent browser from erroneously repopulating fields
   $('input,select').attr('autocomplete', 'off');
 
+  const dialogSelectors = ['#tool_source_cancel', '#tool_docprops_cancel', '#tool_prefs_cancel', '.overlay'];
   /**
    * Associate all button actions as well as non-button keyboard shortcuts
    * @namespace {PlainObject} module:SVGEditor~Actions
@@ -5141,8 +5142,19 @@ editor.init = function () {
       {sel: '#tool_import', fn: clickImport, evt: 'mouseup'},
       {sel: '#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
       {sel: '#tool_wireframe', fn: clickWireframe, evt: 'click', key: ['F', true]},
-      {sel: '#tool_source_cancel,.overlay,#tool_docprops_cancel,#tool_prefs_cancel',
-        fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
+      {
+        key: ['esc', false, false],
+        fn () {
+          if (dialogSelectors.every((sel) => {
+            return $(sel + ':hidden').length;
+          })) {
+            svgCanvas.clearSelection();
+          }
+        },
+        hidekey: true
+      },
+      {sel: dialogSelectors.join(','), fn: cancelOverlays, evt: 'click',
+        key: ['esc', false, false], hidekey: true},
       {sel: '#tool_source_save', fn: saveSourceEditor, evt: 'click'},
       {sel: '#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
       {sel: '#tool_docprops', fn: showDocProperties, evt: 'mouseup'},
@@ -5205,7 +5217,6 @@ editor.init = function () {
       {key: ['alt+shift+right', true], fn () { svgCanvas.cloneSelectedElements(10, 0); }},
       {key: 'a', fn () { svgCanvas.selectAllInCurrentLayer(); }},
       {key: modKey + 'a', fn () { svgCanvas.selectAllInCurrentLayer(); }},
-      {key: ['esc', false, false], fn () { svgCanvas.clearSelection(); }},
 
       // Standard shortcuts
       {key: modKey + 'z', fn: clickUndo},

@@ -21290,7 +21290,7 @@
           e = d.data.toLowerCase().split(" ");
 
       d.handler = function (n) {
-        if (this !== n.target && (n.which !== 27 && /textarea|select/i.test(n.target.nodeName) || n.target.type === "text")) {
+        if (this !== n.target && n.which !== 27 && (/textarea|select/i.test(n.target.nodeName) || n.target.type === "text")) {
           return;
         }
 
@@ -33021,6 +33021,7 @@
     }); // Prevent browser from erroneously repopulating fields
 
     $$b('input,select').attr('autocomplete', 'off');
+    var dialogSelectors = ['#tool_source_cancel', '#tool_docprops_cancel', '#tool_prefs_cancel', '.overlay'];
     /**
      * Associate all button actions as well as non-button keyboard shortcuts
      * @namespace {PlainObject} module:SVGEditor~Actions
@@ -33158,7 +33159,17 @@
         evt: 'click',
         key: ['F', true]
       }, {
-        sel: '#tool_source_cancel,.overlay,#tool_docprops_cancel,#tool_prefs_cancel',
+        key: ['esc', false, false],
+        fn: function fn() {
+          if (dialogSelectors.every(function (sel) {
+            return $$b(sel + ':hidden').length;
+          })) {
+            svgCanvas.clearSelection();
+          }
+        },
+        hidekey: true
+      }, {
+        sel: dialogSelectors.join(','),
         fn: cancelOverlays,
         evt: 'click',
         key: ['esc', false, false],
@@ -33418,11 +33429,6 @@
         key: modKey + 'a',
         fn: function fn() {
           svgCanvas.selectAllInCurrentLayer();
-        }
-      }, {
-        key: ['esc', false, false],
-        fn: function fn() {
-          svgCanvas.clearSelection();
         }
       }, // Standard shortcuts
       {
