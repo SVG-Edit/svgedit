@@ -17,9 +17,11 @@ works in any modern browser.
 See the [latest release](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html)
 (or its [ES6-Module](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html) version, which requires a modern browser).
 
+You may also try it at <https://unpkg.com/svgedit/editor/svg-editor.html>.
+
 Also available as a download in [releases](https://github.com/SVG-Edit/svgedit/releases).
 
-For testing the latest version in `master`, you may use <https://unpkg.com/svgedit/editor/svg-editor.html> or
+For testing the latest version in `master`, you may use
 <https://raw.githack.com/SVG-Edit/svgedit/master/editor/svg-editor.html>.
 
 ## Installation
