@@ -12,6 +12,7 @@
 - Enhancement: Add a global escape key listener to clear the selection
 - Refactoring: Change 'a' to lower case in key command to avoid impression
   that shift is needed
+- npm: Update devDeps
 
 # 3.0.0-rc.3
 
