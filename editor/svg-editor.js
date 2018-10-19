@@ -3301,6 +3301,11 @@ editor.init = function () {
           // Add given events to button
           $.each(btn.events, function (name, func) {
             if (name === 'click' && btn.type === 'mode') {
+              // `touch.js` changes `touchstart` to `mousedown`,
+              //   so we must map extension click events as well
+              if (isTouch() && name === 'click') {
+                name = 'mousedown';
+              }
               if (btn.includeWith) {
                 button.bind(name, func);
               } else {
@@ -5248,6 +5253,8 @@ editor.init = function () {
             btn = $(opts.sel);
             if (!btn.length) { return true; } // Skip if markup does not exist
             if (opts.evt) {
+              // `touch.js` changes `touchstart` to `mousedown`,
+              //   so we must map tool button click events as well
               if (isTouch() && opts.evt === 'click') {
                 opts.evt = 'mousedown';
               }

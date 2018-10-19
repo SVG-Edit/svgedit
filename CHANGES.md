@@ -1,5 +1,10 @@
 # ?
 
+- Fix: Map extension click events to "mousedown" so they can be received
+    on touch devices (since `touch.js` changes `touchstart` to
+    `mousedown`) (@ClemArt); closes #168
+- Fix: Ensure extension `mouseup` events run on "zoom" and "select"
+  modes (@iuyiuy); closes #159
 - Enhancement: Allow "Escape" to work with hotkeys within text boxes;
   allows escaping out of source textarea (part of #291)
 - Enhancement: Allow 'a' also with meta key (command in Mac, ctrl otherwise)

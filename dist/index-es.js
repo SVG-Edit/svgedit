@@ -16059,7 +16059,7 @@ function SvgCanvas(container, config) {
             }
           }
 
-          return;
+          break;
 
         case 'zoom':
           if (rubberBox != null) {
@@ -16074,7 +16074,7 @@ function SvgCanvas(container, config) {
             height: Math.abs(realY - rStartY),
             factor: factor
           });
-          return;
+          break;
 
         case 'fhpath':
           // Check that the path contains at least 2 points; a degenerate one-point path
@@ -31090,6 +31090,12 @@ editor.init = function () {
           // Add given events to button
           $$b.each(btn.events, function (name, func) {
             if (name === 'click' && btn.type === 'mode') {
+              // `touch.js` changes `touchstart` to `mousedown`,
+              //   so we must map extension click events as well
+              if (isTouch() && name === 'click') {
+                name = 'mousedown';
+              }
+
               if (btn.includeWith) {
                 button.bind(name, func);
               } else {
@@ -33470,6 +33476,8 @@ editor.init = function () {
 
 
             if (opts.evt) {
+              // `touch.js` changes `touchstart` to `mousedown`,
+              //   so we must map tool button click events as well
               if (isTouch() && opts.evt === 'click') {
                 opts.evt = 'mousedown';
               }
