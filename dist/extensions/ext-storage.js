@@ -307,7 +307,7 @@ var svgEditorExtension_storage = (function () {
                         svgEditor.storagePromptClosed = true;
                       }, null, null, {
                         label: rememberLabel,
-                        checked: false,
+                        checked: true,
                         tooltip: rememberTooltip
                       });
                     } else if (!noStorageOnLoad || forceStorage) {

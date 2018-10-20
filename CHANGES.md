@@ -12,6 +12,7 @@
 - Fix: Allow language to be properly set back to a different locale and
   retaining preference (and ensure language changes are available before
   dialog closed)
+- Fix: Centering of canvas wasn't being set at proper time; fixes #272
 - Fix (regression): Extension locale loading for non-English locales
 - Enhancement: Allow "Escape" to work with hotkeys within text boxes;
   allows escaping out of source textarea (part of #291)
@@ -20,6 +21,7 @@
 - Enhancement: Add a global escape key listener to clear the selection
 - Refactoring: Change 'a' to lower case in key command to avoid impression
   that shift is needed
+- Refactoring: Avoid unneeded internal IIFEs; simplify w/h formula
 - Refactoring: array extra/spread operator
 - npm: Update devDeps
 

@@ -7005,8 +7005,8 @@ this.updateCanvas = function (w, h) {
   const bg = $('#canvasBackground')[0];
   const oldX = svgcontent.getAttribute('x');
   const oldY = svgcontent.getAttribute('y');
-  const x = (w / 2 - this.contentW * currentZoom / 2);
-  const y = (h / 2 - this.contentH * currentZoom / 2);
+  const x = ((w - this.contentW * currentZoom) / 2);
+  const y = ((h - this.contentH * currentZoom) / 2);
 
   assignAttributes(svgcontent, {
     width: this.contentW * currentZoom,
@@ -7032,6 +7032,7 @@ this.updateCanvas = function (w, h) {
   }
 
   selectorManager.selectorParentGroup.setAttribute('transform', 'translate(' + x + ',' + y + ')');
+
   /**
   * Invoked upon updates to the canvas.
   * @event module:svgcanvas.SvgCanvas#event:ext-canvasUpdated

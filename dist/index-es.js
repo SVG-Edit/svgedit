@@ -20962,8 +20962,8 @@ function SvgCanvas(container, config) {
     var bg = $$9('#canvasBackground')[0];
     var oldX = svgcontent.getAttribute('x');
     var oldY = svgcontent.getAttribute('y');
-    var x = w / 2 - this.contentW * currentZoom / 2;
-    var y = h / 2 - this.contentH * currentZoom / 2;
+    var x = (w - this.contentW * currentZoom) / 2;
+    var y = (h - this.contentH * currentZoom) / 2;
     assignAttributes(svgcontent, {
       width: this.contentW * currentZoom,
       height: this.contentH * currentZoom,
@@ -28450,6 +28450,7 @@ editor.init = function () {
                 $$b('.flyout_arrow_horiz:empty').each(function () {
                   $$b(this).append($$b.getSvgIcon('arrow_right', true).width(5).height(5));
                 });
+                updateCanvas(true);
                 messageQueue.forEach(
                 /**
                  * @param {module:svgcanvas.SvgCanvas#event:message} messageObj
@@ -32441,33 +32442,31 @@ editor.init = function () {
   }; // Fix for Issue 781: Drawing area jumps to top-left corner on window resize (IE9)
 
   if (isIE()) {
-    (function () {
-      resetScrollPos = function resetScrollPos() {
-        if (workarea[0].scrollLeft === 0 && workarea[0].scrollTop === 0) {
-          workarea[0].scrollLeft = curScrollPos.left;
-          workarea[0].scrollTop = curScrollPos.top;
-        }
-      };
+    resetScrollPos = function resetScrollPos() {
+      if (workarea[0].scrollLeft === 0 && workarea[0].scrollTop === 0) {
+        workarea[0].scrollLeft = curScrollPos.left;
+        workarea[0].scrollTop = curScrollPos.top;
+      }
+    };
 
+    curScrollPos = {
+      left: workarea[0].scrollLeft,
+      top: workarea[0].scrollTop
+    };
+    $$b(window).resize(resetScrollPos);
+    editor.ready(function () {
+      // TODO: Find better way to detect when to do this to minimize
+      // flickering effect
+      setTimeout(function () {
+        resetScrollPos();
+      }, 500);
+    });
+    workarea.scroll(function () {
       curScrollPos = {
         left: workarea[0].scrollLeft,
         top: workarea[0].scrollTop
       };
-      $$b(window).resize(resetScrollPos);
-      editor.ready(function () {
-        // TODO: Find better way to detect when to do this to minimize
-        // flickering effect
-        setTimeout(function () {
-          resetScrollPos();
-        }, 500);
-      });
-      workarea.scroll(function () {
-        curScrollPos = {
-          left: workarea[0].scrollLeft,
-          top: workarea[0].scrollTop
-        };
-      });
-    })();
+    });
   }
 
   $$b(window).resize(function (evt) {
@@ -32478,20 +32477,16 @@ editor.init = function () {
     });
     setFlyoutPositions();
   });
+  workarea.scroll(function () {
+    // TODO: jQuery's scrollLeft/Top() wouldn't require a null check
+    if ($$b('#ruler_x').length) {
+      $$b('#ruler_x')[0].scrollLeft = workarea[0].scrollLeft;
+    }
 
-  (function () {
-    workarea.scroll(function () {
-      // TODO: jQuery's scrollLeft/Top() wouldn't require a null check
-      if ($$b('#ruler_x').length) {
-        $$b('#ruler_x')[0].scrollLeft = workarea[0].scrollLeft;
-      }
-
-      if ($$b('#ruler_y').length) {
-        $$b('#ruler_y')[0].scrollTop = workarea[0].scrollTop;
-      }
-    });
-  })();
-
+    if ($$b('#ruler_y').length) {
+      $$b('#ruler_y')[0].scrollTop = workarea[0].scrollTop;
+    }
+  });
   $$b('#url_notice').click(function () {
     $$b.alert(this.title);
   });
@@ -34047,13 +34042,10 @@ editor.init = function () {
     $$b('#tool_open').show().prepend(open);
     var imgImport = $$b('<input type="file">').change(importImage);
     $$b('#tool_import').show().prepend(imgImport);
-  } // $(function () {
-
-
-  updateCanvas(true); // });
-  //  const revnums = 'svg-editor.js ($Rev$) ';
+  } //  const revnums = 'svg-editor.js ($Rev$) ';
   //  revnums += svgCanvas.getVersion();
   //  $('#copyright')[0].setAttribute('title', revnums);
+
 
   var loadedExtensionNames = [];
   /**
