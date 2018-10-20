@@ -1,6 +1,9 @@
 # 3.0.0
 
 - See pre-release version notes for other changes that occurred with 3.0.0
+- Breaking change: For checkbox for persisting choice of initial use storage
+  approval in storage extension dialog, turn on by default for convenience of
+  most users (must still hit "ok" and users can still turn off the checkbox)
 - Fix: Map extension click events to "mousedown" so they can be received
     on touch devices (since `touch.js` changes `touchstart` to
     `mousedown`) (@ClemArt); closes #168

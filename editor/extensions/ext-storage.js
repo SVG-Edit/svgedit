@@ -261,7 +261,7 @@ export default {
             null,
             {
               label: rememberLabel,
-              checked: false,
+              checked: true,
               tooltip: rememberTooltip
             }
           );
