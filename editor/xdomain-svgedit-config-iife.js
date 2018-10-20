@@ -27036,12 +27036,12 @@
 
         switch (type) {
           case 'content':
-            for (var i = 0, node; node = elem.childNodes[i]; i++) {
+            _toConsumableArray(elem.childNodes).some(function (node) {
               if (node.nodeType === 3 && node.textContent.trim()) {
                 node.textContent = val;
-                break;
+                return true;
               }
-            }
+            });
 
             break;
 
@@ -27882,19 +27882,23 @@
 
                   _ref2 = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : {}, _ref2$name = _ref2.name, name = _ref2$name === void 0 ? defaultName : _ref2$name, _ref2$lang = _ref2.lang, lang = _ref2$lang === void 0 ? defaultLang : _ref2$lang;
                   _context2.prev = 3;
-                  return _context2.abrupt("return", importLocale(lang));
+                  _context2.next = 6;
+                  return importLocale(lang);
 
-                case 7:
-                  _context2.prev = 7;
+                case 6:
+                  return _context2.abrupt("return", _context2.sent);
+
+                case 9:
+                  _context2.prev = 9;
                   _context2.t0 = _context2["catch"](3);
                   return _context2.abrupt("return", importLocale('en'));
 
-                case 10:
+                case 12:
                 case "end":
                   return _context2.stop();
               }
             }
-          }, _callee2, this, [[3, 7]]);
+          }, _callee2, this, [[3, 9]]);
         }));
 
         return function importLocale() {
@@ -30743,6 +30747,7 @@
               defaultName: ext.name
             })
           });
+          loadedExtensionNames.push(ext.name);
         } else {
           extsPreLang.push(ext);
         }
@@ -32343,35 +32348,63 @@
     */
 
 
-    var savePreferences = editor.savePreferences = function () {
-      // Set background
-      var color = $$b('#bg_blocks div.cur_background').css('background-color') || '#FFF';
-      setBackground(color, $$b('#canvas_bg_url').val()); // set language
+    var savePreferences = editor.savePreferences =
+    /*#__PURE__*/
+    _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee6() {
+      var color, lang, _ref18, langParam, langData;
 
-      var lang = $$b('#lang_select').val();
+      return regeneratorRuntime.wrap(function _callee6$(_context6) {
+        while (1) {
+          switch (_context6.prev = _context6.next) {
+            case 0:
+              // Set background
+              color = $$b('#bg_blocks div.cur_background').css('background-color') || '#FFF';
+              setBackground(color, $$b('#canvas_bg_url').val()); // set language
 
-      if (lang !== $$b.pref('lang')) {
-        editor.putLocale(lang, goodLangs, curConfig);
-      } // set icon size
+              lang = $$b('#lang_select').val();
 
+              if (!(lang !== $$b.pref('lang'))) {
+                _context6.next = 10;
+                break;
+              }
 
-      setIconSize($$b('#iconsize').val()); // set grid setting
+              _context6.next = 6;
+              return editor.putLocale(lang, goodLangs, curConfig);
 
-      curConfig.gridSnapping = $$b('#grid_snapping_on')[0].checked;
-      curConfig.snappingStep = $$b('#grid_snapping_step').val();
-      curConfig.gridColor = $$b('#grid_color').val();
-      curConfig.showRulers = $$b('#show_rulers')[0].checked;
-      $$b('#rulers').toggle(curConfig.showRulers);
+            case 6:
+              _ref18 = _context6.sent;
+              langParam = _ref18.langParam;
+              langData = _ref18.langData;
+              setLang(langParam, langData);
 
-      if (curConfig.showRulers) {
-        updateRulers();
-      }
+            case 10:
+              // set icon size
+              setIconSize($$b('#iconsize').val()); // set grid setting
 
-      curConfig.baseUnit = $$b('#base_unit').val();
-      svgCanvas.setConfig(curConfig);
-      updateCanvas();
-      hidePreferences();
-    };
+              curConfig.gridSnapping = $$b('#grid_snapping_on')[0].checked;
+              curConfig.snappingStep = $$b('#grid_snapping_step').val();
+              curConfig.gridColor = $$b('#grid_color').val();
+              curConfig.showRulers = $$b('#show_rulers')[0].checked;
+              $$b('#rulers').toggle(curConfig.showRulers);
+
+              if (curConfig.showRulers) {
+                updateRulers();
+              }
+
+              curConfig.baseUnit = $$b('#base_unit').val();
+              svgCanvas.setConfig(curConfig);
+              updateCanvas();
+              hidePreferences();
+
+            case 21:
+            case "end":
+              return _context6.stop();
+          }
+        }
+      }, _callee6, this);
+    }));
 
     var resetScrollPos = $$b.noop;
 
@@ -33944,8 +33977,8 @@
             // bitmap handling
             reader = new FileReader();
 
-            reader.onloadend = function (_ref17) {
-              var result = _ref17.target.result;
+            reader.onloadend = function (_ref19) {
+              var result = _ref19.target.result;
 
               // let's insert the new image until we know its dimensions
               var insertNewImage = function insertNewImage(width, height) {
@@ -34025,6 +34058,7 @@
     //  revnums += svgCanvas.getVersion();
     //  $('#copyright')[0].setAttribute('title', revnums);
 
+    var loadedExtensionNames = [];
     /**
     * @function module:SVGEditor.setLang
     * @param {string} lang The language code
@@ -34060,6 +34094,7 @@
       if (extsPreLang.length) {
         while (extsPreLang.length) {
           var ext = extsPreLang.shift();
+          loadedExtensionNames.push(ext.name);
           ext.langReady({
             lang: lang,
             uiStrings: uiStrings$1,
@@ -34070,11 +34105,17 @@
           });
         }
       } else {
-        svgCanvas.runExtensions('langReady',
-        /** @type {module:svgcanvas.SvgCanvas#event:ext-langReady} */
-        {
-          lang: lang,
-          uiStrings: uiStrings$1
+        loadedExtensionNames.forEach(function (loadedExtensionName) {
+          svgCanvas.runExtensions('langReady',
+          /** @type {module:svgcanvas.SvgCanvas#event:ext-langReady} */
+          {
+            lang: lang,
+            uiStrings: uiStrings$1,
+            importLocale: getImportLocale({
+              defaultLang: lang,
+              defaultName: loadedExtensionName
+            })
+          });
         });
       }
 
@@ -34306,9 +34347,9 @@
    * @returns {undefined}
    */
 
-  var messageListener = function messageListener(_ref18) {
-    var data = _ref18.data,
-        origin = _ref18.origin;
+  var messageListener = function messageListener(_ref20) {
+    var data = _ref20.data,
+        origin = _ref20.origin;
     // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
     var messageObj = {
       data: data,

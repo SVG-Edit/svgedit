@@ -342,7 +342,7 @@ function getImportLocale ({defaultLang, defaultName}) {
       });
     }
     try {
-      return importLocale(lang);
+      return await importLocale(lang);
     } catch (err) {
       return importLocale('en');
     }
@@ -2957,6 +2957,7 @@ editor.init = function () {
           uiStrings,
           importLocale: getImportLocale({defaultLang: lang, defaultName: ext.name})
         });
+        loadedExtensionNames.push(ext.name);
       } else {
         extsPreLang.push(ext);
       }
@@ -4441,7 +4442,7 @@ editor.init = function () {
   * @function module:SVGEditor.savePreferences
   * @returns {undefined}
   */
-  const savePreferences = editor.savePreferences = function () {
+  const savePreferences = editor.savePreferences = async function () {
     // Set background
     const color = $('#bg_blocks div.cur_background').css('background-color') || '#FFF';
     setBackground(color, $('#canvas_bg_url').val());
@@ -4449,7 +4450,8 @@ editor.init = function () {
     // set language
     const lang = $('#lang_select').val();
     if (lang !== $.pref('lang')) {
-      editor.putLocale(lang, goodLangs, curConfig);
+      const {langParam, langData} = await editor.putLocale(lang, goodLangs, curConfig);
+      setLang(langParam, langData);
     }
 
     // set icon size
@@ -5729,6 +5731,7 @@ editor.init = function () {
   //  revnums += svgCanvas.getVersion();
   //  $('#copyright')[0].setAttribute('title', revnums);
 
+  const loadedExtensionNames = [];
   /**
   * @function module:SVGEditor.setLang
   * @param {string} lang The language code
@@ -5763,6 +5766,7 @@ editor.init = function () {
     if (extsPreLang.length) {
       while (extsPreLang.length) {
         const ext = extsPreLang.shift();
+        loadedExtensionNames.push(ext.name);
         ext.langReady({
           lang,
           uiStrings,
@@ -5770,7 +5774,11 @@ editor.init = function () {
         });
       }
     } else {
-      svgCanvas.runExtensions('langReady', /** @type {module:svgcanvas.SvgCanvas#event:ext-langReady} */ {lang, uiStrings});
+      loadedExtensionNames.forEach((loadedExtensionName) => {
+        svgCanvas.runExtensions('langReady', /** @type {module:svgcanvas.SvgCanvas#event:ext-langReady} */ {
+          lang, uiStrings, importLocale: getImportLocale({defaultLang: lang, defaultName: loadedExtensionName})
+        });
+      });
     }
     svgCanvas.runExtensions('langChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext-langChanged} */ lang);
 

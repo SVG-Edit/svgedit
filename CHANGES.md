@@ -1,10 +1,15 @@
-# ?
+# 3.0.0
 
+- See pre-release version notes for other changes that occurred with 3.0.0
 - Fix: Map extension click events to "mousedown" so they can be received
     on touch devices (since `touch.js` changes `touchstart` to
     `mousedown`) (@ClemArt); closes #168
 - Fix: Ensure extension `mouseup` events run on "zoom" and "select"
   modes (@iuyiuy); closes #159
+- Fix: Allow language to be properly set back to a different locale and
+  retaining preference (and ensure language changes are available before
+  dialog closed)
+- Fix (regression): Extension locale loading for non-English locales
 - Enhancement: Allow "Escape" to work with hotkeys within text boxes;
   allows escaping out of source textarea (part of #291)
 - Enhancement: Allow 'a' also with meta key (command in Mac, ctrl otherwise)
@@ -12,6 +17,7 @@
 - Enhancement: Add a global escape key listener to clear the selection
 - Refactoring: Change 'a' to lower case in key command to avoid impression
   that shift is needed
+- Refactoring: array extra/spread operator
 - npm: Update devDeps
 
 # 3.0.0-rc.3

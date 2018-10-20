@@ -48,12 +48,12 @@ export const setStrings = function (type, obj, ids) {
 
       switch (type) {
       case 'content':
-        for (let i = 0, node; (node = elem.childNodes[i]); i++) {
+        [...elem.childNodes].some((node) => {
           if (node.nodeType === 3 && node.textContent.trim()) {
             node.textContent = val;
-            break;
+            return true;
           }
-        }
+        });
         break;
 
       case 'title':

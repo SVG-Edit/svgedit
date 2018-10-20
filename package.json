@@ -90,7 +90,7 @@
     "rollup-plugin-re": "^1.0.7",
     "rollup-plugin-terser": "^3.0.0",
     "sinon": "^7.0.0",
-    "sinon-test": "^2.3.0",
+    "sinon-test": "^2.4.0",
     "testcafe": "^0.22.0"
   }
 }
