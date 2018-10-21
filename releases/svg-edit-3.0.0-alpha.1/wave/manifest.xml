@@ -1,0 +1,7 @@
+<extension location="Toolbar">
+   <info text="SVG-edit"
+         description="Click to insert the SVG-edit gadget."
+         imageUrl="http://svg-edit.googlecode.com/svn/trunk/editor/images/logo.png"/>
+   <insertGadget url="http://svg-edit.googlecode.com/svn/trunk/wave/svg-edit.xml"/>
+ </extension>
+

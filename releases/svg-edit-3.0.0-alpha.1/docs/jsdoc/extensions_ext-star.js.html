@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: extensions/ext-star.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <!-- The one customization we are adding for SVGEdit;
+    `module-SVGEditor.Config.html` was otherwise overflowing -->
+    <style>
+    #main {
+      overflow: auto;
+    }
+    </style>
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: extensions/ext-star.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* globals jQuery */
+/**
+ * ext-star.js
+ *
+ *
+ * @copyright 2010 CloudCanvas, Inc. All rights reserved
+ *
+ */
+export default {
+  name: 'star',
+  async init (S) {
+    const svgEditor = this;
+    const $ = jQuery;
+    const svgCanvas = svgEditor.canvas;
+
+    const {importLocale} = S; // {svgcontent},
+    let
+      selElems,
+      // editingitex = false,
+      // svgdoc = S.svgroot.parentNode.ownerDocument,
+      started,
+      newFO;
+      // edg = 0,
+      // newFOG, newFOGParent, newDef, newImageName, newMaskID,
+      // undoCommand = 'Not image',
+      // modeChangeG, ccZoom, wEl, hEl, wOffset, hOffset, ccRgbEl, brushW, brushH;
+    const strings = await importLocale();
+    function showPanel (on) {
+      let fcRules = $('#fc_rules');
+      if (!fcRules.length) {
+        fcRules = $('&lt;style id="fc_rules">&lt;/style>').appendTo('head');
+      }
+      fcRules.text(!on ? '' : ' #tool_topath { display: none !important; }');
+      $('#star_panel').toggle(on);
+    }
+
+    /*
+    function toggleSourceButtons(on){
+      $('#star_save, #star_cancel').toggle(on);
+    }
+    */
+
+    function setAttr (attr, val) {
+      svgCanvas.changeSelectedAttribute(attr, val);
+      svgCanvas.call('changed', selElems);
+    }
+
+    /*
+    function cot(n){
+      return 1 / Math.tan(n);
+    }
+
+    function sec(n){
+      return 1 / Math.cos(n);
+    }
+    */
+    const buttons = [{
+      id: 'tool_star',
+      icon: svgEditor.curConfig.extIconsPath + 'star.png',
+      type: 'mode',
+      position: 12,
+      events: {
+        click () {
+          showPanel(true);
+          svgCanvas.setMode('star');
+        }
+      }
+    }];
+    const contextTools = [{
+      type: 'input',
+      panel: 'star_panel',
+      id: 'starNumPoints',
+      size: 3,
+      defval: 5,
+      events: {
+        change () {
+          setAttr('point', this.value);
+        }
+      }
+    }, {
+      type: 'input',
+      panel: 'star_panel',
+      id: 'starRadiusMulitplier',
+      size: 3,
+      defval: 2.5
+    }, {
+      type: 'input',
+      panel: 'star_panel',
+      id: 'radialShift',
+      size: 3,
+      defval: 0,
+      events: {
+        change () {
+          setAttr('radialshift', this.value);
+        }
+      }
+    }];
+
+    return {
+      name: strings.name,
+      svgicons: svgEditor.curConfig.extIconsPath + 'star-icons.svg',
+      buttons: strings.buttons.map((button, i) => {
+        return Object.assign(buttons[i], button);
+      }),
+      context_tools: strings.contextTools.map((contextTool, i) => {
+        return Object.assign(contextTools[i], contextTool);
+      }),
+      callback () {
+        $('#star_panel').hide();
+        // const endChanges = function(){};
+      },
+      mouseDown (opts) {
+        const rgb = svgCanvas.getColor('fill');
+        // const ccRgbEl = rgb.substring(1, rgb.length);
+        const sRgb = svgCanvas.getColor('stroke');
+        // const ccSRgbEl = sRgb.substring(1, rgb.length);
+        const sWidth = svgCanvas.getStrokeWidth();
+
+        if (svgCanvas.getMode() === 'star') {
+          started = true;
+
+          newFO = svgCanvas.addSVGElementFromJson({
+            element: 'polygon',
+            attr: {
+              cx: opts.start_x,
+              cy: opts.start_y,
+              id: svgCanvas.getNextId(),
+              shape: 'star',
+              point: document.getElementById('starNumPoints').value,
+              r: 0,
+              radialshift: document.getElementById('radialShift').value,
+              r2: 0,
+              orient: 'point',
+              fill: rgb,
+              strokecolor: sRgb,
+              strokeWidth: sWidth
+            }
+          });
+          return {
+            started: true
+          };
+        }
+      },
+      mouseMove (opts) {
+        if (!started) {
+          return;
+        }
+        if (svgCanvas.getMode() === 'star') {
+          const c = $(newFO).attr(['cx', 'cy', 'point', 'orient', 'fill', 'strokecolor', 'strokeWidth', 'radialshift']);
+
+          let x = opts.mouse_x;
+          let y = opts.mouse_y;
+          const {cx, cy, fill, strokecolor, strokeWidth, radialshift, point, orient} = c,
+            circumradius = (Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy))) / 1.5,
+            inradius = circumradius / document.getElementById('starRadiusMulitplier').value;
+          newFO.setAttributeNS(null, 'r', circumradius);
+          newFO.setAttributeNS(null, 'r2', inradius);
+
+          let polyPoints = '';
+          for (let s = 0; point >= s; s++) {
+            let angle = 2.0 * Math.PI * (s / point);
+            if (orient === 'point') {
+              angle -= (Math.PI / 2);
+            } else if (orient === 'edge') {
+              angle = (angle + (Math.PI / point)) - (Math.PI / 2);
+            }
+
+            x = (circumradius * Math.cos(angle)) + cx;
+            y = (circumradius * Math.sin(angle)) + cy;
+
+            polyPoints += x + ',' + y + ' ';
+
+            if (!isNaN(inradius)) {
+              angle = (2.0 * Math.PI * (s / point)) + (Math.PI / point);
+              if (orient === 'point') {
+                angle -= (Math.PI / 2);
+              } else if (orient === 'edge') {
+                angle = (angle + (Math.PI / point)) - (Math.PI / 2);
+              }
+              angle += radialshift;
+
+              x = (inradius * Math.cos(angle)) + cx;
+              y = (inradius * Math.sin(angle)) + cy;
+
+              polyPoints += x + ',' + y + ' ';
+            }
+          }
+          newFO.setAttributeNS(null, 'points', polyPoints);
+          newFO.setAttributeNS(null, 'fill', fill);
+          newFO.setAttributeNS(null, 'stroke', strokecolor);
+          newFO.setAttributeNS(null, 'stroke-width', strokeWidth);
+          /* const shape = */ newFO.getAttributeNS(null, 'shape');
+
+          return {
+            started: true
+          };
+        }
+      },
+      mouseUp () {
+        if (svgCanvas.getMode() === 'star') {
+          const attrs = $(newFO).attr(['r']);
+          // svgCanvas.addToSelection([newFO], true);
+          return {
+            keep: (attrs.r !== '0'),
+            element: newFO
+          };
+        }
+      },
+      selectedChanged (opts) {
+        // Use this to update the current selected elements
+        selElems = opts.elems;
+
+        let i = selElems.length;
+        while (i--) {
+          const elem = selElems[i];
+          if (elem &amp;&amp; elem.getAttributeNS(null, 'shape') === 'star') {
+            if (opts.selectedElement &amp;&amp; !opts.multiselected) {
+              // $('#starRadiusMulitplier').val(elem.getAttribute('r2'));
+              $('#starNumPoints').val(elem.getAttribute('point'));
+              $('#radialShift').val(elem.getAttribute('radialshift'));
+              showPanel(true);
+            } else {
+              showPanel(false);
+            }
+          } else {
+            showPanel(false);
+          }
+        }
+      },
+      elementChanged (opts) {
+        // const elem = opts.elems[0];
+      }
+    };
+  }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-browser.html">browser</a></li><li><a href="module-canvg.html">canvg</a></li><li><a href="module-contextmenu.html">contextmenu</a></li><li><a href="module-coords.html">coords</a></li><li><a href="module-draw.html">draw</a></li><li><a href="module-EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="module-EmbeddedSVGEditDOM.html">EmbeddedSVGEditDOM</a></li><li><a href="module-history.html">history</a></li><li><a href="module-importModule.html">importModule</a></li><li><a href="module-jGraduate.html">jGraduate</a></li><li><a href="module-jPicker.html">jPicker</a></li><li><a href="module-jQueryAttr.html">jQueryAttr</a></li><li><a href="module-jQueryContextMenu.html">jQueryContextMenu</a></li><li><a href="module-jQuerySpinButton.html">jQuerySpinButton</a></li><li><a href="module-jQuerySVGIcons.html">jQuerySVGIcons</a></li><li><a href="module-layer.html">layer</a></li><li><a href="module-locale.html">locale</a></li><li><a href="module-math.html">math</a></li><li><a href="module-namespaces.html">namespaces</a></li><li><a href="module-path.html">path</a></li><li><a href="module-recalculate.html">recalculate</a></li><li><a href="module-RGBColor.html">RGBColor</a></li><li><a href="module-sanitize.html">sanitize</a></li><li><a href="module-select.html">select</a></li><li><a href="module-StackBlur.html">StackBlur</a></li><li><a href="module-svgcanvas.html">svgcanvas</a></li><li><a href="module-SVGEditor.html">SVGEditor</a></li><li><a href="module-SVGTransformList.html">SVGTransformList</a></li><li><a href="module-units.html">units</a></li><li><a href="module-utilities.html">utilities</a></li></ul><h3>Externals</h3><ul><li><a href="external-jQuery.html">jQuery</a></li><li><a href="external-jsPDF.html">jsPDF</a></li><li><a href="external-Math.html">Math</a></li><li><a href="external-MouseEvent.html">MouseEvent</a></li><li><a href="external-Storage.html">Storage</a></li><li><a href="external-Window.html">Window</a></li></ul><h3>Classes</h3><ul><li><a href="external-jQuery.jGraduate.Paint.html">Paint</a></li><li><a href="external-jQuery.jPicker.Color.html">Color</a></li><li><a href="module-draw.Drawing.html">Drawing</a></li><li><a href="module-draw.Layer.html">Layer</a></li><li><a href="module-EmbeddedSVGEdit.EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="module-history.BatchCommand.html">BatchCommand</a></li><li><a href="module-history.ChangeElementCommand.html">ChangeElementCommand</a></li><li><a href="module-history.HistoryRecordingService.html">HistoryRecordingService</a></li><li><a href="module-history.InsertElementCommand.html">InsertElementCommand</a></li><li><a href="module-history.MoveElementCommand.html">MoveElementCommand</a></li><li><a href="module-history.RemoveElementCommand.html">RemoveElementCommand</a></li><li><a href="module-history.UndoManager.html">UndoManager</a></li><li><a href="module-history-Command.html">Command</a></li><li><a href="module-jGraduate-Paint.html">Paint</a></li><li><a href="module-layer.Layer.html">Layer</a></li><li><a href="module-path.Path.html">Path</a></li><li><a href="module-path.Segment.html">Segment</a></li><li><a href="module-RGBColor.html">RGBColor</a></li><li><a href="module-select.Selector.html">Selector</a></li><li><a href="module-select.SelectorManager.html">SelectorManager</a></li><li><a href="module-StackBlur.BlurStack.html">BlurStack</a></li><li><a href="module-StackBlur.canvasRGB.html">canvasRGB</a></li><li><a href="module-StackBlur.canvasRGBA.html">canvasRGBA</a></li><li><a href="module-StackBlur.image.html">image</a></li><li><a href="module-StackBlur.imageDataRGB.html">imageDataRGB</a></li><li><a href="module-StackBlur.imageDataRGBA.html">imageDataRGBA</a></li><li><a href="module-svgcanvas.SvgCanvas.html">SvgCanvas</a></li><li><a href="module-SVGTransformList.SVGTransformList.html">SVGTransformList</a></li></ul><h3>Events</h3><ul><li><a href="module-history-Command.html#event:event:history">history</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:changed">changed</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:cleared">cleared</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:contextset">contextset</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:exported">exported</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:exportedPDF">exportedPDF</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-addLangData">ext-addLangData</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-callback">ext-callback</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-canvasUpdated">ext-canvasUpdated</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-elementChanged">ext-elementChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-elementTransition">ext-elementTransition</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-IDsUpdated">ext-IDsUpdated</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langChanged">ext-langChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langReady">ext-langReady</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseDown">ext-mouseDown</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseMove">ext-mouseMove</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseUp">ext-mouseUp</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-onNewDocument">ext-onNewDocument</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-selectedChanged">ext-selectedChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-toolButtonStateUpdate">ext-toolButtonStateUpdate</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-workareaResized">ext-workareaResized</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-zoomChanged">ext-zoomChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:extension_added">extension_added</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:extensions_added">extensions_added</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:GenericCanvasEvent">GenericCanvasEvent</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:message">message</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:pointsAdded">pointsAdded</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:saved">saved</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:selected">selected</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:setnonce">setnonce</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:transition">transition</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:unsetnonce">unsetnonce</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:updateCanvas">updateCanvas</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:zoomDone">zoomDone</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:zoomed">zoomed</a></li><li><a href="module-SVGEditor.html#event:event:svgEditorReadyEvent">svgEditorReadyEvent</a></li></ul><h3>Namespaces</h3><ul><li><a href="external-jQuery.fn.html">fn</a></li><li><a href="external-jQuery.fn.$.fn.jPicker.html">$.fn.jPicker</a></li><li><a href="external-jQuery.fn.$.fn.jPicker.defaults.html">defaults</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.html">jGraduateDefaults</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.images.html">images</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.window.html">window</a></li><li><a href="external-jQuery.jGraduate.html">jGraduate</a></li><li><a href="external-jQuery.jPicker.html">jPicker</a></li><li><a href="external-jQuery.jPicker.ColorMethods.html">ColorMethods</a></li><li><a href="module-path.pathActions.html">pathActions</a></li><li><a href="module-svgcanvas.SvgCanvas_pathActions.html">pathActions</a></li><li><a href="module-svgcanvas.SvgCanvas_textActions.html">textActions</a></li><li><a href="module-SVGEditor-Actions.html">Actions</a></li><li><a href="module-SVGEditor-defaultConfig.html">defaultConfig</a></li><li><a href="module-SVGEditor-defaultPrefs.html">defaultPrefs</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-CanvasAPI.html">CanvasAPI</a></li><li><a href="tutorial-Editor.html">Editor</a></li><li><a href="tutorial-EditorAPI.html">EditorAPI</a></li><li><a href="tutorial-Events.html">Events</a></li><li><a href="tutorial-FrequentlyAskedQuestions.html">Frequently Asked Questions (FAQ)</a></li></ul><h3>Interfaces</h3><ul><li><a href="module-coords.EditorContext.html">EditorContext</a></li><li><a href="module-draw.DrawCanvasInit.html">DrawCanvasInit</a></li><li><a href="module-history.HistoryCommand.html">HistoryCommand</a></li><li><a href="module-history.HistoryEventHandler.html">HistoryEventHandler</a></li><li><a href="module-locale.LocaleEditorInit.html">LocaleEditorInit</a></li><li><a href="module-path.EditorContext.html">EditorContext</a></li><li><a href="module-recalculate.EditorContext.html">EditorContext</a></li><li><a href="module-select.SVGFactory.html">SVGFactory</a></li><li><a href="module-svgcanvas.ExtensionInitResponse.html">ExtensionInitResponse</a></li><li><a href="module-svgcanvas.PrivateMethods.html">PrivateMethods</a></li><li><a href="module-SVGEditor.Config.html">Config</a></li><li><a href="module-SVGEditor.CustomHandler.html">CustomHandler</a></li><li><a href="module-SVGEditor.Prefs.html">Prefs</a></li><li><a href="module-SVGTransformList.SVGEditTransformList.html">SVGEditTransformList</a></li><li><a href="module-units.ElementContainer.html">ElementContainer</a></li><li><a href="module-utilities.EditorContext.html">EditorContext</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_addEvent">_addEvent</a></li><li><a href="global.html#_applyAnyStylesheet">_applyAnyStylesheet</a></li><li><a href="global.html#_createSafeReference">_createSafeReference</a></li><li><a href="global.html#_getHTMLNodeName">_getHTMLNodeName</a></li><li><a href="global.html#_upperCase">_upperCase</a></li><li><a href="global.html#jml">jml</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Oct 21 2018 18:46:21 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
