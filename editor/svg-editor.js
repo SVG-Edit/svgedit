@@ -87,9 +87,10 @@ editor.langChanged = false;
 */
 editor.showSaveWarning = false;
 /**
-* @type {boolean}
+ * Will be set to a boolean by `ext-storage.js`
+ * @type {"ignore"|"waiting"|"closed"}
 */
-editor.storagePromptClosed = false; // For use with ext-storage.js
+editor.storagePromptState = 'ignore';
 
 const callbacks = [],
   /**
@@ -771,7 +772,7 @@ editor.init = function () {
   const extAndLocaleFunc = async function () {
     // const lang = ('lang' in curPrefs) ? curPrefs.lang : null;
     const {langParam, langData} = await editor.putLocale(null, goodLangs, curConfig);
-    setLang(langParam, langData);
+    await setLang(langParam, langData);
 
     try {
       await Promise.all(
@@ -819,7 +820,11 @@ editor.init = function () {
           $('.flyout_arrow_horiz:empty').each(function () {
             $(this).append($.getSvgIcon('arrow_right', true).width(5).height(5));
           });
-          updateCanvas(true);
+
+          if (editor.storagePromptState === 'ignore') {
+            updateCanvas(true);
+          }
+
           messageQueue.forEach(
             /**
              * @param {module:svgcanvas.SvgCanvas#event:message} messageObj
@@ -2091,7 +2096,7 @@ editor.init = function () {
       workarea.scroll();
     }
 
-    if (urldata.storagePrompt !== true && !editor.storagePromptClosed) {
+    if (urldata.storagePrompt !== true && editor.storagePromptState === 'ignore') {
       $('#dialog_box').hide();
     }
   };
@@ -2944,7 +2949,7 @@ editor.init = function () {
    * @listens module:svgcanvas.SvgCanvas#event:extension_added
    * @returns {Promise} Resolves to `undefined`
    */
-  const extAdded = function (win, ext) {
+  const extAdded = async function (win, ext) {
     if (!ext) {
       return;
     }
@@ -2954,7 +2959,7 @@ editor.init = function () {
     if (ext.langReady) {
       if (editor.langChanged) { // We check for this since the "lang" pref could have been set by storage
         const lang = $.pref('lang');
-        ext.langReady({
+        await ext.langReady({
           lang,
           uiStrings,
           importLocale: getImportLocale({defaultLang: lang, defaultName: ext.name})
@@ -4453,7 +4458,7 @@ editor.init = function () {
     const lang = $('#lang_select').val();
     if (lang !== $.pref('lang')) {
       const {langParam, langData} = await editor.putLocale(lang, goodLangs, curConfig);
-      setLang(langParam, langData);
+      await setLang(langParam, langData);
     }
 
     // set icon size
@@ -5721,6 +5726,7 @@ editor.init = function () {
     $('#tool_import').show().prepend(imgImport);
   }
 
+  updateCanvas(true);
   //  const revnums = 'svg-editor.js ($Rev$) ';
   //  revnums += svgCanvas.getVersion();
   //  $('#copyright')[0].setAttribute('title', revnums);
@@ -5732,9 +5738,9 @@ editor.init = function () {
   * @param {module:locale.LocaleStrings} allStrings See {@tutorial LocaleDocs}
   * @fires module:svgcanvas.SvgCanvas#event:ext-langReady
   * @fires module:svgcanvas.SvgCanvas#event:ext-langChanged
-  * @returns {undefined}
+  * @returns {Promise} A Promise which resolves to `undefined`
   */
-  const setLang = editor.setLang = function (lang, allStrings) {
+  const setLang = editor.setLang = async function (lang, allStrings) {
     editor.langChanged = true;
     $.pref('lang', lang);
     $('#lang_select').val(lang);
@@ -5761,7 +5767,7 @@ editor.init = function () {
       while (extsPreLang.length) {
         const ext = extsPreLang.shift();
         loadedExtensionNames.push(ext.name);
-        ext.langReady({
+        await ext.langReady({
           lang,
           uiStrings,
           importLocale: getImportLocale({defaultLang: lang, defaultName: ext.name})

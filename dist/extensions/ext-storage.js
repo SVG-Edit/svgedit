@@ -76,7 +76,8 @@ var svgEditorExtension_storage = (function () {
           emptyStorageOnDecline = _svgEditor$curConfig.emptyStorageOnDecline,
           noStorageOnLoad = _svgEditor$curConfig.noStorageOnLoad,
           forceStorage = _svgEditor$curConfig.forceStorage;
-      var storage = svgEditor.storage;
+      var storage = svgEditor.storage,
+          updateCanvas = svgEditor.updateCanvas;
 
       function replaceStoragePrompt(val) {
         val = val ? 'storagePrompt=' + val : '';
@@ -304,12 +305,14 @@ var svgEditorExtension_storage = (function () {
                         //   the prompt gives the user the option to store data
 
                         setupBeforeUnloadListener();
-                        svgEditor.storagePromptClosed = true;
+                        svgEditor.storagePromptState = 'closed';
+                        updateCanvas(true);
                       }, null, null, {
                         label: rememberLabel,
                         checked: true,
                         tooltip: rememberTooltip
                       });
+                      svgEditor.storagePromptState = 'waiting';
                     } else if (!noStorageOnLoad || forceStorage) {
                       setupBeforeUnloadListener();
                     }

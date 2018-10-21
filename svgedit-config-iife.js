@@ -27564,11 +27564,11 @@
 
   editor.showSaveWarning = false;
   /**
-  * @type {boolean}
+   * Will be set to a boolean by `ext-storage.js`
+   * @type {"ignore"|"waiting"|"closed"}
   */
 
-  editor.storagePromptClosed = false; // For use with ext-storage.js
-
+  editor.storagePromptState = 'ignore';
   var callbacks = [],
 
   /**
@@ -28370,9 +28370,12 @@
                 _ref6 = _context4.sent;
                 langParam = _ref6.langParam;
                 langData = _ref6.langData;
-                setLang(langParam, langData);
-                _context4.prev = 6;
-                _context4.next = 9;
+                _context4.next = 7;
+                return setLang(langParam, langData);
+
+              case 7:
+                _context4.prev = 7;
+                _context4.next = 10;
                 return Promise.all(curConfig.extensions.map(
                 /*#__PURE__*/
                 function () {
@@ -28439,7 +28442,7 @@
                   };
                 }()));
 
-              case 9:
+              case 10:
                 svgCanvas.bind('extensions_added',
                 /**
                 * @param {external:Window} win
@@ -28453,7 +28456,11 @@
                   $$b('.flyout_arrow_horiz:empty').each(function () {
                     $$b(this).append($$b.getSvgIcon('arrow_right', true).width(5).height(5));
                   });
-                  updateCanvas(true);
+
+                  if (editor.storagePromptState === 'ignore') {
+                    updateCanvas(true);
+                  }
+
                   messageQueue.forEach(
                   /**
                    * @param {module:svgcanvas.SvgCanvas#event:message} messageObj
@@ -28465,20 +28472,20 @@
                   });
                 });
                 svgCanvas.call('extensions_added');
-                _context4.next = 16;
+                _context4.next = 17;
                 break;
 
-              case 13:
-                _context4.prev = 13;
-                _context4.t0 = _context4["catch"](6);
+              case 14:
+                _context4.prev = 14;
+                _context4.t0 = _context4["catch"](7);
                 console.log(_context4.t0);
 
-              case 16:
+              case 17:
               case "end":
                 return _context4.stop();
             }
           }
-        }, _callee4, this, [[6, 13]]);
+        }, _callee4, this, [[7, 14]]);
       }));
 
       return function extAndLocaleFunc() {
@@ -29800,7 +29807,7 @@
         workarea.scroll();
       }
 
-      if (urldata.storagePrompt !== true && !editor.storagePromptClosed) {
+      if (urldata.storagePrompt !== true && editor.storagePromptState === 'ignore') {
         $$b('#dialog_box').hide();
       }
     };
@@ -30728,440 +30735,484 @@
      * @returns {Promise} Resolves to `undefined`
      */
 
-    var extAdded = function extAdded(win, ext) {
-      if (!ext) {
-        return;
-      }
-
-      var cbCalled = false;
-      var resizeDone = false;
-
-      if (ext.langReady) {
-        if (editor.langChanged) {
-          // We check for this since the "lang" pref could have been set by storage
-          var lang = $$b.pref('lang');
-          ext.langReady({
-            lang: lang,
-            uiStrings: uiStrings$1,
-            importLocale: getImportLocale({
-              defaultLang: lang,
-              defaultName: ext.name
-            })
-          });
-          loadedExtensionNames.push(ext.name);
-        } else {
-          extsPreLang.push(ext);
-        }
-      }
-
-      function prepResize() {
-        if (resizeTimer) {
-          clearTimeout(resizeTimer);
-          resizeTimer = null;
-        }
-
-        if (!resizeDone) {
-          resizeTimer = setTimeout(function () {
-            resizeDone = true;
-            setIconSize($$b.pref('iconsize'));
-          }, 50);
-        }
-      }
-
-      var runCallback = function runCallback() {
-        if (ext.callback && !cbCalled) {
-          cbCalled = true;
-          ext.callback.call(editor);
-        }
-      };
-
-      var btnSelects = [];
-      /**
-      * @typedef {PlainObject} module:SVGEditor.ContextTool
-      * @property {string} panel The ID of the existing panel to which the tool is being added. Required.
-      * @property {string} id The ID of the actual tool element. Required.
-      * @property {PlainObject.<string, external:jQuery.Function>|PlainObject.<"change", external:jQuery.Function>} events DOM event names keyed to associated functions. Example: `{change () { alert('Option was changed') } }`. "change" event is one specifically handled for the "button-select" type. Required.
-      * @property {string} title The tooltip text that will appear when the user hovers over the tool. Required.
-      * @property {"tool_button"|"select"|"button-select"|"input"|string} type The type of tool being added. Expected.
-      * @property {PlainObject.<string, string>} [options] List of options and their labels for select tools. Example: `{1: 'One', 2: 'Two', all: 'All' }`. Required by "select" tools.
-      * @property {string} [container_id] The ID to be given to the tool's container element.
-      * @property {string} [defval] Default value
-      * @property {string|Integer} [colnum] Added as part of the option list class.
-      * @property {string} [label] Label associated with the tool, visible in the UI
-      * @property {Integer} [size] Value of the "size" attribute of the tool input
-      * @property {module:jQuerySpinButton.SpinButtonConfig} [spindata] When added to a tool of type "input", this tool becomes a "spinner" which allows the number to be in/decreased.
-      */
-
-      if (ext.context_tools) {
-        $$b.each(ext.context_tools, function (i, tool) {
-          // Add select tool
-          var contId = tool.container_id ? ' id="' + tool.container_id + '"' : '';
-          var panel = $$b('#' + tool.panel); // create the panel if it doesn't exist
-
-          if (!panel.length) {
-            panel = $$b('<div>', {
-              id: tool.panel
-            }).appendTo('#tools_top');
-          }
-
-          var html; // TODO: Allow support for other types, or adding to existing tool
-
-          switch (tool.type) {
-            case 'tool_button':
-              html = '<div class="tool_button">' + tool.id + '</div>';
-              var div = $$b(html).appendTo(panel);
-
-              if (tool.events) {
-                $$b.each(tool.events, function (evt, func) {
-                  $$b(div).bind(evt, func);
-                });
-              }
-
-              break;
-
-            case 'select':
-              html = '<label' + contId + '>' + '<select id="' + tool.id + '">';
-              $$b.each(tool.options, function (val, text) {
-                var sel = val === tool.defval ? ' selected' : '';
-                html += '<option value="' + val + '"' + sel + '>' + text + '</option>';
-              });
-              html += '</select></label>'; // Creates the tool, hides & adds it, returns the select element
-
-              var sel = $$b(html).appendTo(panel).find('select');
-              $$b.each(tool.events, function (evt, func) {
-                $$b(sel).bind(evt, func);
-              });
-              break;
-
-            case 'button-select':
-              html = '<div id="' + tool.id + '" class="dropdown toolset" title="' + tool.title + '">' + '<div id="cur_' + tool.id + '" class="icon_label"></div><button></button></div>';
-              var list = $$b('<ul id="' + tool.id + '_opts"></ul>').appendTo('#option_lists');
-
-              if (tool.colnum) {
-                list.addClass('optcols' + tool.colnum);
-              } // Creates the tool, hides & adds it, returns the select element
-
-              /* const dropdown = */
-
-
-              $$b(html).appendTo(panel).children();
-              btnSelects.push({
-                elem: '#' + tool.id,
-                list: '#' + tool.id + '_opts',
-                title: tool.title,
-                callback: tool.events.change,
-                cur: '#cur_' + tool.id
-              });
-              break;
-
-            case 'input':
-              html = '<label' + contId + '>' + '<span id="' + tool.id + '_label">' + tool.label + ':</span>' + '<input id="' + tool.id + '" title="' + tool.title + '" size="' + (tool.size || '4') + '" value="' + (tool.defval || '') + '" type="text"/></label>'; // Creates the tool, hides & adds it, returns the select element
-              // Add to given tool.panel
-
-              var inp = $$b(html).appendTo(panel).find('input');
-
-              if (tool.spindata) {
-                inp.SpinButton(tool.spindata);
-              }
-
-              if (tool.events) {
-                $$b.each(tool.events, function (evt, func) {
-                  inp.bind(evt, func);
-                });
-              }
-
-              break;
-
-            default:
-              break;
-          }
-        });
-      }
-
-      var svgicons = ext.svgicons;
-
-      if (ext.buttons) {
-        var fallbackObj = {},
-            placementObj = {},
-            holders = {};
-        /**
-        * @typedef {GenericArray} module:SVGEditor.KeyArray
-        * @property {string} 0 The key to bind (on `keydown`)
-        * @property {boolean} 1 Whether to `preventDefault` on the `keydown` event
-        * @property {boolean} 2 Not apparently in use (NoDisableInInput)
-        */
-
-        /**
-         * @typedef {string|module:SVGEditor.KeyArray} module:SVGEditor.Key
-         */
-
-        /**
-        * @typedef {PlainObject} module:SVGEditor.Button
-        * @property {string} id A unique identifier for this button. If SVG icons are used, this must match the ID used in the icon file. Required.
-        * @property {"mode_flyout"|"mode"|"context"|"app_menu"} type Type of button. Required.
-        * @property {string} title The tooltip text that will appear when the user hovers over the icon. Required.
-        * @property {PlainObject.<string, external:jQuery.Function>|PlainObject.<"click", external:jQuery.Function>} events DOM event names with associated functions. Example: `{click () { alert('Button was clicked') } }`. Click is used with `includeWith` and `type` of "mode_flyout" (and "mode"); any events may be added if `list` is not present. Expected.
-        * @property {string} panel The ID of the context panel to be included, if type is "context". Required only if type is "context".
-        * @property {string} icon The file path to the raster version of the icon image source. Required only if no `svgicons` is supplied from [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse}.
-        * @property {string} [svgicon] If absent, will utilize the button "id"; used to set "placement" on the `svgIcons` call
-        * @property {string} [list] Points to the "id" of a `context_tools` item of type "button-select" into which the button will be added as a panel list item
-        * @property {Integer} [position] The numeric index for placement; defaults to last position (as of the time of extension addition) if not present. For use with {@link http://api.jquery.com/eq/}.
-        * @property {boolean} [isDefault] Whether or not the button is the default. Used with `list`.
-        * @property {PlainObject} [includeWith] Object with flyout menu data
-        * @property {boolean} [includeWith.isDefault] Indicates whether button is default in flyout list or not.
-        * @property {string} includeWith.button jQuery selector of the existing button to be joined. Example: '#tool_line'. Required if `includeWith` is used.
-        * @property {"last"|Integer} [includeWith.position] Position of icon in flyout list; will be added to end if not indicated. Integer is for use with {@link http://api.jquery.com/eq/}.
-        * @property {module:SVGEditor.Key} [key] The key to bind to the button
-        */
-        // Add buttons given by extension
-
-        $$b.each(ext.buttons, function (i,
-        /** @type {module:SVGEditor.Button} */
-        btn) {
-          var id = btn.id;
-          var num = i; // Give button a unique ID
-
-          while ($$b('#' + id).length) {
-            id = btn.id + '_' + ++num;
-          }
-
-          var icon;
-
-          if (!svgicons) {
-            icon = $$b('<img src="' + btn.icon + '">');
-          } else {
-            fallbackObj[id] = btn.icon;
-            var svgicon = btn.svgicon || btn.id;
-
-            if (btn.type === 'app_menu') {
-              placementObj['#' + id + ' > div'] = svgicon;
-            } else {
-              placementObj['#' + id] = svgicon;
-            }
-          }
-
-          var cls, parent; // Set button up according to its type
-
-          switch (btn.type) {
-            case 'mode_flyout':
-            case 'mode':
-              cls = 'tool_button';
-              parent = '#tools_left';
-              break;
-
-            case 'context':
-              cls = 'tool_button';
-              parent = '#' + btn.panel; // create the panel if it doesn't exist
-
-              if (!$$b(parent).length) {
-                $$b('<div>', {
-                  id: btn.panel
-                }).appendTo('#tools_top');
-              }
-
-              break;
-
-            case 'app_menu':
-              cls = '';
-              parent = '#main_menu ul';
-              break;
-          }
-
-          var flyoutHolder, showBtn, refData, refBtn;
-          var button = $$b(btn.list || btn.type === 'app_menu' ? '<li/>' : '<div/>').attr('id', id).attr('title', btn.title).addClass(cls);
-
-          if (!btn.includeWith && !btn.list) {
-            if ('position' in btn) {
-              if ($$b(parent).children().eq(btn.position).length) {
-                $$b(parent).children().eq(btn.position).before(button);
-              } else {
-                $$b(parent).children().last().before(button);
-              }
-            } else {
-              button.appendTo(parent);
-            }
-
-            if (btn.type === 'mode_flyout') {
-              // Add to flyout menu / make flyout menu
-              // const opts = btn.includeWith;
-              // // opts.button, default, position
-              refBtn = $$b(button);
-              flyoutHolder = refBtn.parent(); // Create a flyout menu if there isn't one already
-
-              var tlsId;
-
-              if (!refBtn.parent().hasClass('tools_flyout')) {
-                // Create flyout placeholder
-                tlsId = refBtn[0].id.replace('tool_', 'tools_');
-                showBtn = refBtn.clone().attr('id', tlsId + '_show').append($$b('<div>', {
-                  class: 'flyout_arrow_horiz'
-                }));
-                refBtn.before(showBtn); // Create a flyout div
-
-                flyoutHolder = makeFlyoutHolder(tlsId, refBtn);
-                flyoutHolder.data('isLibrary', true);
-                showBtn.data('isLibrary', true);
-              } // refData = Actions.getButtonData(opts.button);
-
-
-              placementObj['#' + tlsId + '_show'] = btn.id; // TODO: Find way to set the current icon using the iconloader if this is not default
-              // Include data for extension button as well as ref button
-
-              /* curH = */
-
-              holders['#' + flyoutHolder[0].id] = [{
-                sel: '#' + id,
-                fn: btn.events.click,
-                icon: btn.id,
-                // key: btn.key,
-                isDefault: true
-              }]; // , refData
-              //
-              // // {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
-              //
-              // const pos = ('position' in opts)?opts.position:'last';
-              // const len = flyoutHolder.children().length;
-              //
-              // // Add at given position or end
-              // if (!isNaN(pos) && pos >= 0 && pos < len) {
-              //   flyoutHolder.children().eq(pos).before(button);
-              // } else {
-              //   flyoutHolder.append(button);
-              //   curH.reverse();
-              // }
-            } else if (btn.type === 'app_menu') {
-              button.append('<div>').append(btn.title);
-            }
-          } else if (btn.list) {
-            // Add button to list
-            button.addClass('push_button');
-            $$b('#' + btn.list + '_opts').append(button);
-
-            if (btn.isDefault) {
-              $$b('#cur_' + btn.list).append(button.children().clone());
-
-              var _svgicon = btn.svgicon || btn.id;
-
-              placementObj['#cur_' + btn.list] = _svgicon;
-            }
-          } else if (btn.includeWith) {
-            // Add to flyout menu / make flyout menu
-            var opts = btn.includeWith; // opts.button, default, position
-
-            refBtn = $$b(opts.button);
-            flyoutHolder = refBtn.parent(); // Create a flyout menu if there isn't one already
-
-            var _tlsId;
-
-            if (!refBtn.parent().hasClass('tools_flyout')) {
-              // Create flyout placeholder
-              _tlsId = refBtn[0].id.replace('tool_', 'tools_');
-              showBtn = refBtn.clone().attr('id', _tlsId + '_show').append($$b('<div>', {
-                class: 'flyout_arrow_horiz'
-              }));
-              refBtn.before(showBtn); // Create a flyout div
-
-              flyoutHolder = makeFlyoutHolder(_tlsId, refBtn);
-            }
-
-            refData = Actions.getButtonData(opts.button);
-
-            if (opts.isDefault) {
-              placementObj['#' + _tlsId + '_show'] = btn.id;
-            } // TODO: Find way to set the current icon using the iconloader if this is not default
-            // Include data for extension button as well as ref button
-
-
-            var curH = holders['#' + flyoutHolder[0].id] = [{
-              sel: '#' + id,
-              fn: btn.events.click,
-              icon: btn.id,
-              key: btn.key,
-              isDefault: Boolean(btn.includeWith && btn.includeWith.isDefault)
-            }, refData]; // {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
-
-            var pos = 'position' in opts ? opts.position : 'last';
-            var len = flyoutHolder.children().length; // Add at given position or end
-
-            if (!isNaN(pos) && pos >= 0 && pos < len) {
-              flyoutHolder.children().eq(pos).before(button);
-            } else {
-              flyoutHolder.append(button);
-              curH.reverse();
-            }
-          }
-
-          if (!svgicons) {
-            button.append(icon);
-          }
-
-          if (!btn.list) {
-            // Add given events to button
-            $$b.each(btn.events, function (name, func) {
-              if (name === 'click' && btn.type === 'mode') {
-                // `touch.js` changes `touchstart` to `mousedown`,
-                //   so we must map extension click events as well
-                if (isTouch() && name === 'click') {
-                  name = 'mousedown';
+    var extAdded =
+    /*#__PURE__*/
+    function () {
+      var _ref14 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee5(win, ext) {
+        var cbCalled, resizeDone, lang, prepResize, runCallback, btnSelects, svgicons, fallbackObj, placementObj, holders;
+        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                prepResize = function _ref15() {
+                  if (resizeTimer) {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = null;
+                  }
+
+                  if (!resizeDone) {
+                    resizeTimer = setTimeout(function () {
+                      resizeDone = true;
+                      setIconSize($$b.pref('iconsize'));
+                    }, 50);
+                  }
+                };
+
+                if (ext) {
+                  _context5.next = 3;
+                  break;
                 }
 
-                if (btn.includeWith) {
-                  button.bind(name, func);
-                } else {
-                  button.bind(name, function () {
-                    if (toolButtonClick(button)) {
-                      func();
+                return _context5.abrupt("return");
+
+              case 3:
+                cbCalled = false;
+                resizeDone = false;
+
+                if (!ext.langReady) {
+                  _context5.next = 14;
+                  break;
+                }
+
+                if (!editor.langChanged) {
+                  _context5.next = 13;
+                  break;
+                }
+
+                // We check for this since the "lang" pref could have been set by storage
+                lang = $$b.pref('lang');
+                _context5.next = 10;
+                return ext.langReady({
+                  lang: lang,
+                  uiStrings: uiStrings$1,
+                  importLocale: getImportLocale({
+                    defaultLang: lang,
+                    defaultName: ext.name
+                  })
+                });
+
+              case 10:
+                loadedExtensionNames.push(ext.name);
+                _context5.next = 14;
+                break;
+
+              case 13:
+                extsPreLang.push(ext);
+
+              case 14:
+                runCallback = function runCallback() {
+                  if (ext.callback && !cbCalled) {
+                    cbCalled = true;
+                    ext.callback.call(editor);
+                  }
+                };
+
+                btnSelects = [];
+                /**
+                * @typedef {PlainObject} module:SVGEditor.ContextTool
+                * @property {string} panel The ID of the existing panel to which the tool is being added. Required.
+                * @property {string} id The ID of the actual tool element. Required.
+                * @property {PlainObject.<string, external:jQuery.Function>|PlainObject.<"change", external:jQuery.Function>} events DOM event names keyed to associated functions. Example: `{change () { alert('Option was changed') } }`. "change" event is one specifically handled for the "button-select" type. Required.
+                * @property {string} title The tooltip text that will appear when the user hovers over the tool. Required.
+                * @property {"tool_button"|"select"|"button-select"|"input"|string} type The type of tool being added. Expected.
+                * @property {PlainObject.<string, string>} [options] List of options and their labels for select tools. Example: `{1: 'One', 2: 'Two', all: 'All' }`. Required by "select" tools.
+                * @property {string} [container_id] The ID to be given to the tool's container element.
+                * @property {string} [defval] Default value
+                * @property {string|Integer} [colnum] Added as part of the option list class.
+                * @property {string} [label] Label associated with the tool, visible in the UI
+                * @property {Integer} [size] Value of the "size" attribute of the tool input
+                * @property {module:jQuerySpinButton.SpinButtonConfig} [spindata] When added to a tool of type "input", this tool becomes a "spinner" which allows the number to be in/decreased.
+                */
+
+                if (ext.context_tools) {
+                  $$b.each(ext.context_tools, function (i, tool) {
+                    // Add select tool
+                    var contId = tool.container_id ? ' id="' + tool.container_id + '"' : '';
+                    var panel = $$b('#' + tool.panel); // create the panel if it doesn't exist
+
+                    if (!panel.length) {
+                      panel = $$b('<div>', {
+                        id: tool.panel
+                      }).appendTo('#tools_top');
+                    }
+
+                    var html; // TODO: Allow support for other types, or adding to existing tool
+
+                    switch (tool.type) {
+                      case 'tool_button':
+                        html = '<div class="tool_button">' + tool.id + '</div>';
+                        var div = $$b(html).appendTo(panel);
+
+                        if (tool.events) {
+                          $$b.each(tool.events, function (evt, func) {
+                            $$b(div).bind(evt, func);
+                          });
+                        }
+
+                        break;
+
+                      case 'select':
+                        html = '<label' + contId + '>' + '<select id="' + tool.id + '">';
+                        $$b.each(tool.options, function (val, text) {
+                          var sel = val === tool.defval ? ' selected' : '';
+                          html += '<option value="' + val + '"' + sel + '>' + text + '</option>';
+                        });
+                        html += '</select></label>'; // Creates the tool, hides & adds it, returns the select element
+
+                        var sel = $$b(html).appendTo(panel).find('select');
+                        $$b.each(tool.events, function (evt, func) {
+                          $$b(sel).bind(evt, func);
+                        });
+                        break;
+
+                      case 'button-select':
+                        html = '<div id="' + tool.id + '" class="dropdown toolset" title="' + tool.title + '">' + '<div id="cur_' + tool.id + '" class="icon_label"></div><button></button></div>';
+                        var list = $$b('<ul id="' + tool.id + '_opts"></ul>').appendTo('#option_lists');
+
+                        if (tool.colnum) {
+                          list.addClass('optcols' + tool.colnum);
+                        } // Creates the tool, hides & adds it, returns the select element
+
+                        /* const dropdown = */
+
+
+                        $$b(html).appendTo(panel).children();
+                        btnSelects.push({
+                          elem: '#' + tool.id,
+                          list: '#' + tool.id + '_opts',
+                          title: tool.title,
+                          callback: tool.events.change,
+                          cur: '#cur_' + tool.id
+                        });
+                        break;
+
+                      case 'input':
+                        html = '<label' + contId + '>' + '<span id="' + tool.id + '_label">' + tool.label + ':</span>' + '<input id="' + tool.id + '" title="' + tool.title + '" size="' + (tool.size || '4') + '" value="' + (tool.defval || '') + '" type="text"/></label>'; // Creates the tool, hides & adds it, returns the select element
+                        // Add to given tool.panel
+
+                        var inp = $$b(html).appendTo(panel).find('input');
+
+                        if (tool.spindata) {
+                          inp.SpinButton(tool.spindata);
+                        }
+
+                        if (tool.events) {
+                          $$b.each(tool.events, function (evt, func) {
+                            inp.bind(evt, func);
+                          });
+                        }
+
+                        break;
+
+                      default:
+                        break;
                     }
                   });
                 }
 
-                if (btn.key) {
-                  $$b(document).bind('keydown', btn.key, func);
+                svgicons = ext.svgicons;
 
-                  if (btn.title) {
-                    button.attr('title', btn.title + ' [' + btn.key + ']');
+                if (!ext.buttons) {
+                  _context5.next = 24;
+                  break;
+                }
+
+                fallbackObj = {}, placementObj = {}, holders = {};
+                /**
+                * @typedef {GenericArray} module:SVGEditor.KeyArray
+                * @property {string} 0 The key to bind (on `keydown`)
+                * @property {boolean} 1 Whether to `preventDefault` on the `keydown` event
+                * @property {boolean} 2 Not apparently in use (NoDisableInInput)
+                */
+
+                /**
+                 * @typedef {string|module:SVGEditor.KeyArray} module:SVGEditor.Key
+                 */
+
+                /**
+                * @typedef {PlainObject} module:SVGEditor.Button
+                * @property {string} id A unique identifier for this button. If SVG icons are used, this must match the ID used in the icon file. Required.
+                * @property {"mode_flyout"|"mode"|"context"|"app_menu"} type Type of button. Required.
+                * @property {string} title The tooltip text that will appear when the user hovers over the icon. Required.
+                * @property {PlainObject.<string, external:jQuery.Function>|PlainObject.<"click", external:jQuery.Function>} events DOM event names with associated functions. Example: `{click () { alert('Button was clicked') } }`. Click is used with `includeWith` and `type` of "mode_flyout" (and "mode"); any events may be added if `list` is not present. Expected.
+                * @property {string} panel The ID of the context panel to be included, if type is "context". Required only if type is "context".
+                * @property {string} icon The file path to the raster version of the icon image source. Required only if no `svgicons` is supplied from [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse}.
+                * @property {string} [svgicon] If absent, will utilize the button "id"; used to set "placement" on the `svgIcons` call
+                * @property {string} [list] Points to the "id" of a `context_tools` item of type "button-select" into which the button will be added as a panel list item
+                * @property {Integer} [position] The numeric index for placement; defaults to last position (as of the time of extension addition) if not present. For use with {@link http://api.jquery.com/eq/}.
+                * @property {boolean} [isDefault] Whether or not the button is the default. Used with `list`.
+                * @property {PlainObject} [includeWith] Object with flyout menu data
+                * @property {boolean} [includeWith.isDefault] Indicates whether button is default in flyout list or not.
+                * @property {string} includeWith.button jQuery selector of the existing button to be joined. Example: '#tool_line'. Required if `includeWith` is used.
+                * @property {"last"|Integer} [includeWith.position] Position of icon in flyout list; will be added to end if not indicated. Integer is for use with {@link http://api.jquery.com/eq/}.
+                * @property {module:SVGEditor.Key} [key] The key to bind to the button
+                */
+                // Add buttons given by extension
+
+                $$b.each(ext.buttons, function (i,
+                /** @type {module:SVGEditor.Button} */
+                btn) {
+                  var id = btn.id;
+                  var num = i; // Give button a unique ID
+
+                  while ($$b('#' + id).length) {
+                    id = btn.id + '_' + ++num;
                   }
+
+                  var icon;
+
+                  if (!svgicons) {
+                    icon = $$b('<img src="' + btn.icon + '">');
+                  } else {
+                    fallbackObj[id] = btn.icon;
+                    var svgicon = btn.svgicon || btn.id;
+
+                    if (btn.type === 'app_menu') {
+                      placementObj['#' + id + ' > div'] = svgicon;
+                    } else {
+                      placementObj['#' + id] = svgicon;
+                    }
+                  }
+
+                  var cls, parent; // Set button up according to its type
+
+                  switch (btn.type) {
+                    case 'mode_flyout':
+                    case 'mode':
+                      cls = 'tool_button';
+                      parent = '#tools_left';
+                      break;
+
+                    case 'context':
+                      cls = 'tool_button';
+                      parent = '#' + btn.panel; // create the panel if it doesn't exist
+
+                      if (!$$b(parent).length) {
+                        $$b('<div>', {
+                          id: btn.panel
+                        }).appendTo('#tools_top');
+                      }
+
+                      break;
+
+                    case 'app_menu':
+                      cls = '';
+                      parent = '#main_menu ul';
+                      break;
+                  }
+
+                  var flyoutHolder, showBtn, refData, refBtn;
+                  var button = $$b(btn.list || btn.type === 'app_menu' ? '<li/>' : '<div/>').attr('id', id).attr('title', btn.title).addClass(cls);
+
+                  if (!btn.includeWith && !btn.list) {
+                    if ('position' in btn) {
+                      if ($$b(parent).children().eq(btn.position).length) {
+                        $$b(parent).children().eq(btn.position).before(button);
+                      } else {
+                        $$b(parent).children().last().before(button);
+                      }
+                    } else {
+                      button.appendTo(parent);
+                    }
+
+                    if (btn.type === 'mode_flyout') {
+                      // Add to flyout menu / make flyout menu
+                      // const opts = btn.includeWith;
+                      // // opts.button, default, position
+                      refBtn = $$b(button);
+                      flyoutHolder = refBtn.parent(); // Create a flyout menu if there isn't one already
+
+                      var tlsId;
+
+                      if (!refBtn.parent().hasClass('tools_flyout')) {
+                        // Create flyout placeholder
+                        tlsId = refBtn[0].id.replace('tool_', 'tools_');
+                        showBtn = refBtn.clone().attr('id', tlsId + '_show').append($$b('<div>', {
+                          class: 'flyout_arrow_horiz'
+                        }));
+                        refBtn.before(showBtn); // Create a flyout div
+
+                        flyoutHolder = makeFlyoutHolder(tlsId, refBtn);
+                        flyoutHolder.data('isLibrary', true);
+                        showBtn.data('isLibrary', true);
+                      } // refData = Actions.getButtonData(opts.button);
+
+
+                      placementObj['#' + tlsId + '_show'] = btn.id; // TODO: Find way to set the current icon using the iconloader if this is not default
+                      // Include data for extension button as well as ref button
+
+                      /* curH = */
+
+                      holders['#' + flyoutHolder[0].id] = [{
+                        sel: '#' + id,
+                        fn: btn.events.click,
+                        icon: btn.id,
+                        // key: btn.key,
+                        isDefault: true
+                      }]; // , refData
+                      //
+                      // // {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
+                      //
+                      // const pos = ('position' in opts)?opts.position:'last';
+                      // const len = flyoutHolder.children().length;
+                      //
+                      // // Add at given position or end
+                      // if (!isNaN(pos) && pos >= 0 && pos < len) {
+                      //   flyoutHolder.children().eq(pos).before(button);
+                      // } else {
+                      //   flyoutHolder.append(button);
+                      //   curH.reverse();
+                      // }
+                    } else if (btn.type === 'app_menu') {
+                      button.append('<div>').append(btn.title);
+                    }
+                  } else if (btn.list) {
+                    // Add button to list
+                    button.addClass('push_button');
+                    $$b('#' + btn.list + '_opts').append(button);
+
+                    if (btn.isDefault) {
+                      $$b('#cur_' + btn.list).append(button.children().clone());
+
+                      var _svgicon = btn.svgicon || btn.id;
+
+                      placementObj['#cur_' + btn.list] = _svgicon;
+                    }
+                  } else if (btn.includeWith) {
+                    // Add to flyout menu / make flyout menu
+                    var opts = btn.includeWith; // opts.button, default, position
+
+                    refBtn = $$b(opts.button);
+                    flyoutHolder = refBtn.parent(); // Create a flyout menu if there isn't one already
+
+                    var _tlsId;
+
+                    if (!refBtn.parent().hasClass('tools_flyout')) {
+                      // Create flyout placeholder
+                      _tlsId = refBtn[0].id.replace('tool_', 'tools_');
+                      showBtn = refBtn.clone().attr('id', _tlsId + '_show').append($$b('<div>', {
+                        class: 'flyout_arrow_horiz'
+                      }));
+                      refBtn.before(showBtn); // Create a flyout div
+
+                      flyoutHolder = makeFlyoutHolder(_tlsId, refBtn);
+                    }
+
+                    refData = Actions.getButtonData(opts.button);
+
+                    if (opts.isDefault) {
+                      placementObj['#' + _tlsId + '_show'] = btn.id;
+                    } // TODO: Find way to set the current icon using the iconloader if this is not default
+                    // Include data for extension button as well as ref button
+
+
+                    var curH = holders['#' + flyoutHolder[0].id] = [{
+                      sel: '#' + id,
+                      fn: btn.events.click,
+                      icon: btn.id,
+                      key: btn.key,
+                      isDefault: Boolean(btn.includeWith && btn.includeWith.isDefault)
+                    }, refData]; // {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
+
+                    var pos = 'position' in opts ? opts.position : 'last';
+                    var len = flyoutHolder.children().length; // Add at given position or end
+
+                    if (!isNaN(pos) && pos >= 0 && pos < len) {
+                      flyoutHolder.children().eq(pos).before(button);
+                    } else {
+                      flyoutHolder.append(button);
+                      curH.reverse();
+                    }
+                  }
+
+                  if (!svgicons) {
+                    button.append(icon);
+                  }
+
+                  if (!btn.list) {
+                    // Add given events to button
+                    $$b.each(btn.events, function (name, func) {
+                      if (name === 'click' && btn.type === 'mode') {
+                        // `touch.js` changes `touchstart` to `mousedown`,
+                        //   so we must map extension click events as well
+                        if (isTouch() && name === 'click') {
+                          name = 'mousedown';
+                        }
+
+                        if (btn.includeWith) {
+                          button.bind(name, func);
+                        } else {
+                          button.bind(name, function () {
+                            if (toolButtonClick(button)) {
+                              func();
+                            }
+                          });
+                        }
+
+                        if (btn.key) {
+                          $$b(document).bind('keydown', btn.key, func);
+
+                          if (btn.title) {
+                            button.attr('title', btn.title + ' [' + btn.key + ']');
+                          }
+                        }
+                      } else {
+                        button.bind(name, func);
+                      }
+                    });
+                  }
+
+                  setupFlyouts(holders);
+                });
+                $$b.each(btnSelects, function () {
+                  addAltDropDown(this.elem, this.list, this.callback, {
+                    seticon: true
+                  });
+                });
+
+                if (!svgicons) {
+                  _context5.next = 24;
+                  break;
                 }
-              } else {
-                button.bind(name, func);
-              }
-            });
+
+                return _context5.abrupt("return", new Promise(function (resolve, reject) {
+                  $$b.svgIcons(svgicons, {
+                    w: 24,
+                    h: 24,
+                    id_match: false,
+                    no_img: !isWebkit(),
+                    fallback: fallbackObj,
+                    placement: placementObj,
+                    callback: function callback(icons) {
+                      // Non-ideal hack to make the icon match the current size
+                      // if (curPrefs.iconsize && curPrefs.iconsize !== 'm') {
+                      if ($$b.pref('iconsize') !== 'm') {
+                        prepResize();
+                      }
+
+                      runCallback();
+                      resolve();
+                    }
+                  });
+                }));
+
+              case 24:
+                return _context5.abrupt("return", runCallback());
+
+              case 25:
+              case "end":
+                return _context5.stop();
+            }
           }
+        }, _callee5, this);
+      }));
 
-          setupFlyouts(holders);
-        });
-        $$b.each(btnSelects, function () {
-          addAltDropDown(this.elem, this.list, this.callback, {
-            seticon: true
-          });
-        });
-
-        if (svgicons) {
-          return new Promise(function (resolve, reject) {
-            $$b.svgIcons(svgicons, {
-              w: 24,
-              h: 24,
-              id_match: false,
-              no_img: !isWebkit(),
-              fallback: fallbackObj,
-              placement: placementObj,
-              callback: function callback(icons) {
-                // Non-ideal hack to make the icon match the current size
-                // if (curPrefs.iconsize && curPrefs.iconsize !== 'm') {
-                if ($$b.pref('iconsize') !== 'm') {
-                  prepResize();
-                }
-
-                runCallback();
-                resolve();
-              }
-            });
-          });
-        }
-      }
-
-      return runCallback();
-    };
+      return function extAdded(_x3, _x4) {
+        return _ref14.apply(this, arguments);
+      };
+    }();
 
     var getPaint = function getPaint(color, opac, type) {
       // update the editor's fill paint
@@ -31225,9 +31276,9 @@
      * @listens module:svgcanvas.SvgCanvas#event:updateCanvas
      * @returns {undefined}
      */
-    function (win, _ref14) {
-      var center = _ref14.center,
-          newCtr = _ref14.newCtr;
+    function (win, _ref16) {
+      var center = _ref16.center,
+          newCtr = _ref16.newCtr;
       updateCanvas(center, newCtr);
     });
     svgCanvas.bind('contextset', contextChanged);
@@ -32035,15 +32086,15 @@
       'PNG', 'JPEG', 'BMP', 'WEBP', 'PDF'],
       /*#__PURE__*/
       function () {
-        var _ref15 = _asyncToGenerator(
+        var _ref17 = _asyncToGenerator(
         /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee5(imgType) {
+        regeneratorRuntime.mark(function _callee6(imgType) {
           var exportWindowName, openExportWindow, chrome, quality;
-          return regeneratorRuntime.wrap(function _callee5$(_context5) {
+          return regeneratorRuntime.wrap(function _callee6$(_context6) {
             while (1) {
-              switch (_context5.prev = _context5.next) {
+              switch (_context6.prev = _context6.next) {
                 case 0:
-                  openExportWindow = function _ref16() {
+                  openExportWindow = function _ref18() {
                     var str = uiStrings$1.notification.loadingImage;
 
                     if (curConfig.exportWindowType === 'new') {
@@ -32074,17 +32125,17 @@
                   };
 
                   if (imgType) {
-                    _context5.next = 3;
+                    _context6.next = 3;
                     break;
                   }
 
-                  return _context5.abrupt("return");
+                  return _context6.abrupt("return");
 
                 case 3:
                   chrome = isChrome();
 
                   if (!(imgType === 'PDF')) {
-                    _context5.next = 9;
+                    _context6.next = 9;
                     break;
                   }
 
@@ -32093,7 +32144,7 @@
                   }
 
                   svgCanvas.exportPDF(exportWindowName, chrome ? 'save' : undefined);
-                  _context5.next = 13;
+                  _context6.next = 13;
                   break;
 
                 case 9:
@@ -32104,19 +32155,19 @@
                   quality = parseInt($$b('#image-slider').val(), 10) / 100;
                   /* const results = */
 
-                  _context5.next = 13;
+                  _context6.next = 13;
                   return svgCanvas.rasterExport(imgType, quality, exportWindowName);
 
                 case 13:
                 case "end":
-                  return _context5.stop();
+                  return _context6.stop();
               }
             }
-          }, _callee5, this);
+          }, _callee6, this);
         }));
 
-        return function (_x3) {
-          return _ref15.apply(this, arguments);
+        return function (_x5) {
+          return _ref17.apply(this, arguments);
         };
       }(), function () {
         var sel = $$b(this);
@@ -32353,12 +32404,12 @@
     /*#__PURE__*/
     _asyncToGenerator(
     /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee6() {
-      var color, lang, _ref18, langParam, langData;
+    regeneratorRuntime.mark(function _callee7() {
+      var color, lang, _ref20, langParam, langData;
 
-      return regeneratorRuntime.wrap(function _callee6$(_context6) {
+      return regeneratorRuntime.wrap(function _callee7$(_context7) {
         while (1) {
-          switch (_context6.prev = _context6.next) {
+          switch (_context7.prev = _context7.next) {
             case 0:
               // Set background
               color = $$b('#bg_blocks div.cur_background').css('background-color') || '#FFF';
@@ -32367,20 +32418,21 @@
               lang = $$b('#lang_select').val();
 
               if (!(lang !== $$b.pref('lang'))) {
-                _context6.next = 10;
+                _context7.next = 11;
                 break;
               }
 
-              _context6.next = 6;
+              _context7.next = 6;
               return editor.putLocale(lang, goodLangs, curConfig);
 
             case 6:
-              _ref18 = _context6.sent;
-              langParam = _ref18.langParam;
-              langData = _ref18.langData;
-              setLang(langParam, langData);
+              _ref20 = _context7.sent;
+              langParam = _ref20.langParam;
+              langData = _ref20.langData;
+              _context7.next = 11;
+              return setLang(langParam, langData);
 
-            case 10:
+            case 11:
               // set icon size
               setIconSize($$b('#iconsize').val()); // set grid setting
 
@@ -32399,12 +32451,12 @@
               updateCanvas();
               hidePreferences();
 
-            case 21:
+            case 22:
             case "end":
-              return _context6.stop();
+              return _context7.stop();
           }
         }
-      }, _callee6, this);
+      }, _callee7, this);
     }));
 
     var resetScrollPos = $$b.noop;
@@ -33972,8 +34024,8 @@
             // bitmap handling
             reader = new FileReader();
 
-            reader.onloadend = function (_ref19) {
-              var result = _ref19.target.result;
+            reader.onloadend = function (_ref21) {
+              var result = _ref21.target.result;
 
               // let's insert the new image until we know its dimensions
               var insertNewImage = function insertNewImage(width, height) {
@@ -34045,10 +34097,11 @@
       $$b('#tool_open').show().prepend(open);
       var imgImport = $$b('<input type="file">').change(importImage);
       $$b('#tool_import').show().prepend(imgImport);
-    } //  const revnums = 'svg-editor.js ($Rev$) ';
+    }
+
+    updateCanvas(true); //  const revnums = 'svg-editor.js ($Rev$) ';
     //  revnums += svgCanvas.getVersion();
     //  $('#copyright')[0].setAttribute('title', revnums);
-
 
     var loadedExtensionNames = [];
     /**
@@ -34057,80 +34110,124 @@
     * @param {module:locale.LocaleStrings} allStrings See {@tutorial LocaleDocs}
     * @fires module:svgcanvas.SvgCanvas#event:ext-langReady
     * @fires module:svgcanvas.SvgCanvas#event:ext-langChanged
-    * @returns {undefined}
+    * @returns {Promise} A Promise which resolves to `undefined`
     */
 
-    var setLang = editor.setLang = function (lang, allStrings) {
-      editor.langChanged = true;
-      $$b.pref('lang', lang);
-      $$b('#lang_select').val(lang);
+    var setLang = editor.setLang =
+    /*#__PURE__*/
+    function () {
+      var _ref22 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee8(lang, allStrings) {
+        var oldLayerName, renameLayer, ext, elems;
+        return regeneratorRuntime.wrap(function _callee8$(_context8) {
+          while (1) {
+            switch (_context8.prev = _context8.next) {
+              case 0:
+                editor.langChanged = true;
+                $$b.pref('lang', lang);
+                $$b('#lang_select').val(lang);
 
-      if (!allStrings) {
-        return;
-      }
+                if (allStrings) {
+                  _context8.next = 5;
+                  break;
+                }
 
-      $$b.extend(uiStrings$1, allStrings); // const notif = allStrings.notification; // Currently unused
-      // $.extend will only replace the given strings
+                return _context8.abrupt("return");
 
-      var oldLayerName = $$b('#layerlist tr.layersel td.layername').text();
-      var renameLayer = oldLayerName === uiStrings$1.common.layer + ' 1';
-      svgCanvas.setUiStrings(allStrings);
-      Actions.setTitles();
+              case 5:
+                $$b.extend(uiStrings$1, allStrings); // const notif = allStrings.notification; // Currently unused
+                // $.extend will only replace the given strings
 
-      if (renameLayer) {
-        svgCanvas.renameCurrentLayer(uiStrings$1.common.layer + ' 1');
-        populateLayers();
-      } // In case extensions loaded before the locale, now we execute a callback on them
+                oldLayerName = $$b('#layerlist tr.layersel td.layername').text();
+                renameLayer = oldLayerName === uiStrings$1.common.layer + ' 1';
+                svgCanvas.setUiStrings(allStrings);
+                Actions.setTitles();
+
+                if (renameLayer) {
+                  svgCanvas.renameCurrentLayer(uiStrings$1.common.layer + ' 1');
+                  populateLayers();
+                } // In case extensions loaded before the locale, now we execute a callback on them
 
 
-      if (extsPreLang.length) {
-        while (extsPreLang.length) {
-          var ext = extsPreLang.shift();
-          loadedExtensionNames.push(ext.name);
-          ext.langReady({
-            lang: lang,
-            uiStrings: uiStrings$1,
-            importLocale: getImportLocale({
-              defaultLang: lang,
-              defaultName: ext.name
-            })
-          });
-        }
-      } else {
-        loadedExtensionNames.forEach(function (loadedExtensionName) {
-          svgCanvas.runExtensions('langReady',
-          /** @type {module:svgcanvas.SvgCanvas#event:ext-langReady} */
-          {
-            lang: lang,
-            uiStrings: uiStrings$1,
-            importLocale: getImportLocale({
-              defaultLang: lang,
-              defaultName: loadedExtensionName
-            })
-          });
-        });
-      }
+                if (!extsPreLang.length) {
+                  _context8.next = 21;
+                  break;
+                }
 
-      svgCanvas.runExtensions('langChanged',
-      /** @type {module:svgcanvas.SvgCanvas#event:ext-langChanged} */
-      lang); // Update flyout tooltips
+              case 12:
+                if (!extsPreLang.length) {
+                  _context8.next = 19;
+                  break;
+                }
 
-      setFlyoutTitles(); // Copy title for certain tool elements
+                ext = extsPreLang.shift();
+                loadedExtensionNames.push(ext.name);
+                _context8.next = 17;
+                return ext.langReady({
+                  lang: lang,
+                  uiStrings: uiStrings$1,
+                  importLocale: getImportLocale({
+                    defaultLang: lang,
+                    defaultName: ext.name
+                  })
+                });
 
-      var elems = {
-        '#stroke_color': '#tool_stroke .icon_label, #tool_stroke .color_block',
-        '#fill_color': '#tool_fill label, #tool_fill .color_block',
-        '#linejoin_miter': '#cur_linejoin',
-        '#linecap_butt': '#cur_linecap'
+              case 17:
+                _context8.next = 12;
+                break;
+
+              case 19:
+                _context8.next = 22;
+                break;
+
+              case 21:
+                loadedExtensionNames.forEach(function (loadedExtensionName) {
+                  svgCanvas.runExtensions('langReady',
+                  /** @type {module:svgcanvas.SvgCanvas#event:ext-langReady} */
+                  {
+                    lang: lang,
+                    uiStrings: uiStrings$1,
+                    importLocale: getImportLocale({
+                      defaultLang: lang,
+                      defaultName: loadedExtensionName
+                    })
+                  });
+                });
+
+              case 22:
+                svgCanvas.runExtensions('langChanged',
+                /** @type {module:svgcanvas.SvgCanvas#event:ext-langChanged} */
+                lang); // Update flyout tooltips
+
+                setFlyoutTitles(); // Copy title for certain tool elements
+
+                elems = {
+                  '#stroke_color': '#tool_stroke .icon_label, #tool_stroke .color_block',
+                  '#fill_color': '#tool_fill label, #tool_fill .color_block',
+                  '#linejoin_miter': '#cur_linejoin',
+                  '#linecap_butt': '#cur_linecap'
+                };
+                $$b.each(elems, function (source, dest) {
+                  $$b(dest).attr('title', $$b(source)[0].title);
+                }); // Copy alignment titles
+
+                $$b('#multiselected_panel div[id^=tool_align]').each(function () {
+                  $$b('#tool_pos' + this.id.substr(10))[0].title = this.title;
+                });
+
+              case 27:
+              case "end":
+                return _context8.stop();
+            }
+          }
+        }, _callee8, this);
+      }));
+
+      return function (_x6, _x7) {
+        return _ref22.apply(this, arguments);
       };
-      $$b.each(elems, function (source, dest) {
-        $$b(dest).attr('title', $$b(source)[0].title);
-      }); // Copy alignment titles
-
-      $$b('#multiselected_panel div[id^=tool_align]').each(function () {
-        $$b('#tool_pos' + this.id.substr(10))[0].title = this.title;
-      });
-    };
+    }();
 
     init$7(
     /**
@@ -34339,9 +34436,9 @@
    * @returns {undefined}
    */
 
-  var messageListener = function messageListener(_ref20) {
-    var data = _ref20.data,
-        origin = _ref20.origin;
+  var messageListener = function messageListener(_ref23) {
+    var data = _ref23.data,
+        origin = _ref23.origin;
     // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
     var messageObj = {
       data: data,

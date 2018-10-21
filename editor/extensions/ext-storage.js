@@ -47,7 +47,7 @@ export default {
       noStorageOnLoad,
       forceStorage
     } = svgEditor.curConfig;
-    const {storage} = svgEditor;
+    const {storage, updateCanvas} = svgEditor;
 
     function replaceStoragePrompt (val) {
       val = val ? 'storagePrompt=' + val : '';
@@ -255,7 +255,8 @@ export default {
               //   the prompt gives the user the option to store data
               setupBeforeUnloadListener();
 
-              svgEditor.storagePromptClosed = true;
+              svgEditor.storagePromptState = 'closed';
+              updateCanvas(true);
             },
             null,
             null,
@@ -265,6 +266,7 @@ export default {
               tooltip: rememberTooltip
             }
           );
+          svgEditor.storagePromptState = 'waiting';
         } else if (!noStorageOnLoad || forceStorage) {
           setupBeforeUnloadListener();
         }

@@ -4,6 +4,8 @@
 - Breaking change: For checkbox for persisting choice of initial use storage
   approval in storage extension dialog, turn on by default for convenience of
   most users (must still hit "ok" and users can still turn off the checkbox)
+- Breaking change: Remove `storagePromptClosed` state boolean in favor of
+    `storagePromptState`; used by `ext-storage.js`
 - Fix: Map extension click events to "mousedown" so they can be received
     on touch devices (since `touch.js` changes `touchstart` to
     `mousedown`) (@ClemArt); closes #168
@@ -13,6 +15,14 @@
   retaining preference (and ensure language changes are available before
   dialog closed)
 - Fix: Centering of canvas wasn't being set at proper time; fixes #272
+- Fix (extensions): Ensure `langReady` changes are available by time prefs
+  dialog is closed and that its changes have occurred by time extensions
+  have first loaded (`setLang` now returns a Promise rather than `undefined`
+  as it waits for extension's `langReady` to resolve); this is also useful
+  with `ext-storage.js` so we know that `extensions_loaded` (which
+  conditionally updates the canvas based on `storagePromptState`) has seen
+  `langReady` and the storage extension hasn't set a `storagePromptState`
+  of "waiting"
 - Fix (regression): Extension locale loading for non-English locales
 - Enhancement: Allow "Escape" to work with hotkeys within text boxes;
   allows escaping out of source textarea (part of #291)
