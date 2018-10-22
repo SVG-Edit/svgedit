@@ -7,9 +7,11 @@
   - `Breaking change: `
   - `Compatibility fix: `
   - `Fix: `
-  - `Fix (<component>): ` Component may be an extension, locale, etc.
+  - `Fix (<component>): ` - Component may be an extension, locale, etc.
   - `Forward compatibility enhancement: `
   - `Enhancement: `
+  - `Optimization: ` - Performance enhancements
+  - `Localization:`
   - `Update: ` - e.g., if updating a bundled library or updating code per a
     dependency's updated new API
   - `Refactoring: `

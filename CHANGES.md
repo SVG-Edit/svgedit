@@ -493,9 +493,79 @@ also in preparation for future switch to ES6 modules for tests)
 
 # 3.0.0-alpha.1
 
-(Only released on npm)
+(Only released on npm for reserving name rather than being intended as a testable
+release; the list below, however, does list the fixes it includes)
 
-- Provide `package.json` for npm to reserve name (reflecting current state of `master`)
+- Fix: Hide Overview panel in Chrome < 49 (rendering and performance issues);
+  see #26 and <https://code.google.com/p/chromium/issues/detail?id=565120>;
+  PR #44 and #46
+- Fix: Multiselect not working after zoom in Firefox (#55; PR #56)
+- Fix: Rubberband box is not placed properly (left and top) for imported SVG
+  images when moved multiple times (#48; PR #49)
+- Fix: Remove double-bind of keypresses Z and Y (#59; PR #60)
+- Fix: For import SVG image leading to unattached dragtool (PR #7)
+- Fix `browser.js` error messages when testing whether `replaceItem` and
+  `insertItemBefore` work, since paths must start with M commands
+- Fix: IE11 bug with `NoModificationAllowedError` upon selecting multiple
+  elements (#54, PR #57)
+- Fix: Some browsers (IE, Chrome) require objects passed to `getInsectionList`
+  to be of correct the type; PR #67
+- Fix: Remove fix that cloned path segments and add tests to show it works;
+  PR #69
+- Fix: Preserve rx ry attributes on ellipse elements for batik compatibility;
+  do not strip `rx=0` and `ry=0` from ellipse elements as these values are not
+  default and hold a special meaning for ellipses (a value of 0 disables
+  rendering of the element); PR #71
+- Fix: Hidden font-size label/inability to set font size; #62; PR #83
+- Fix: Check for deleted defs after paste; pasting a line with markers
+  produces invalid SVG if original line was deleted; #82; PR #90
+- Fix: Update layers panel on programatic call to `createLayer`; #104;
+  PR #106
+- Fix: Trigger `svgEditorReady` after the canvas is ready (PR #96) and
+  when opened through an iframe (#93; PR #127)
+- Fix: Change the text input bindings to catch more input events (`input` as
+  well as `keyup`; e.g., trigger for `ALT+keycode`); PR #85
+- Fix: Layers in svgcanvas; PR #107
+- Fix: `createSVGRect()` in `getIntersectionList`; `createSVGRect()` does not
+  have parameters, they must be set on the object after; PR #138
+- Fix: Resizing an element would set `stroke="null"` on it; PR #148
+- Fix: No longer saving or exporting in Chrome >= 60 and Opera; #193; PR #201
+- Fix: Importing complex paths (paths with several "M/m" and "Z/z"); PR #195
+- Fix: Update `pathseg.js` to latest version with a fix for Firefox 59.
+  Firefox 58, Chrome 65, and Safari Tech Preview all confirmed to edit paths
+  correctly; #216; PR #217
+- Fix: Improve `supportsNativeTransformLists` detection beyond Firefox;
+  PR #158
+- Fix: Overcome browsers blocking data URIs by Blob URLs where available;
+  #222; PR #224
+- Enhancement: Add ability to set SVG drawings without adding to the undo
+  stack; PR #208
+- Enhancement: Clipboard that works across tabs and windows; PR #206
+- Enhancement: Add config options for text (font size and family,
+  stroke width); PR #91
+- Enhancement: Expose current zoom level (`getSnapToGrid`) through canvas for
+  extensions; PR #87
+- Enhancement: Insist on "image" mode for select image dialog to show,
+  allowing extensions to add images without this behavior; PR #86
+- Enhancement: Log errors from extensions to the browser console; PR #150
+- Enhancement (i18n): zh-CN language option; PR #125
+- Enhancement: Add `composer.json` to let PHP developers keep track of
+  svgedit on `packagist.org`; PR #174.
+- Optimization: `getBBox` performance improvements; PR #103
+- Optimization: Loading time (by removing unnecessary code); PR #148
+- Localization: French (PR #132) and German (PR #111) updates
+- Refactoring: Added `HistoryRecordingService` and separate `layer.js`
+  file; PR #107
+- Refactoring: Migrate more to `draw.js` and utilities; PR #109
+- Refactoring: `addSvgElementFromJson` expansion; PR #130
+- Testing: Draw; PR #109
+- Docs: Fix reference link in comment; PR #105
+- Docs: Complete Markdown converted SvgCanvas docs; #92; PR #99
+- Docs: Fix documentation Markdown headings; PR #188
+- Git: Add `build` to ignore; PR #125
+- Build: Additions/changes for Makefile; PR #89 and #108
+- Build: Provide `package.json` for npm to reserve name (reflecting current
+  state of `master`)
 
 # 2.8.1 (Ellipse) - December 2nd, 2015
 
