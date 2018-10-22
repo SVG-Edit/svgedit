@@ -1,5 +1,7 @@
-# ?
+# 3.0.1
 
+- Fix: Revert fix to have extension `mouseup` events run on "zoom" and
+  "select" modes (#159); breaks polygon selection
 - Fix (jgraduate->jpicker): Actually fix issue with color val check when no
   other proper results (equal to "all"); prior fix had not covered
   original intention

@@ -92,6 +92,7 @@ incorporating SVGEdit.
 
 ## Recent news
 
+- 2018-10-22 Published 3.0.1 (Revert fix affecting polygon selection)
 - 2018-10-21 Published 3.0.0 (misc. improvements including centering canvas and
   key locale fixes since last RC)
 - 2018-09-30 Published 3.0.0-rc.3 with security and other fixes

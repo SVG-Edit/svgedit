@@ -16065,7 +16065,7 @@
               }
             }
 
-            break;
+            return;
 
           case 'zoom':
             if (rubberBox != null) {
@@ -16080,7 +16080,7 @@
               height: Math.abs(realY - rStartY),
               factor: factor
             });
-            break;
+            return;
 
           case 'fhpath':
             // Check that the path contains at least 2 points; a degenerate one-point path
