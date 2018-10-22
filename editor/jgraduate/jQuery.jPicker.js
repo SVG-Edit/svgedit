@@ -591,39 +591,42 @@ const jPicker = function ($) {
           case 'all': return {r, g, b, a, h, s, v, hex: val.call($this, 'hex'), ahex: val.call($this, 'ahex')};
           default:
             let ret = {};
-            for (let i = 0; i < name.length; i++) {
+            const nameLength = name.length;
+            for (let i = 0; i < nameLength; i++) {
               switch (name.charAt(i)) {
               case 'r':
-                if (name.length === 1) ret = r;
+                if (nameLength === 1) ret = r;
                 else ret.r = r;
                 break;
               case 'g':
-                if (name.length === 1) ret = g;
+                if (nameLength === 1) ret = g;
                 else ret.g = g;
                 break;
               case 'b':
-                if (name.length === 1) ret = b;
+                if (nameLength === 1) ret = b;
                 else ret.b = b;
                 break;
               case 'a':
-                if (name.length === 1) ret = a;
+                if (nameLength === 1) ret = a;
                 else ret.a = a;
                 break;
               case 'h':
-                if (name.length === 1) ret = h;
+                if (nameLength === 1) ret = h;
                 else ret.h = h;
                 break;
               case 's':
-                if (name.length === 1) ret = s;
+                if (nameLength === 1) ret = s;
                 else ret.s = s;
                 break;
               case 'v':
-                if (name.length === 1) ret = v;
+                if (nameLength === 1) ret = v;
                 else ret.v = v;
                 break;
               }
             }
-            return !name.length ? val.call($this, 'all') : ret;
+            return typeof ret === 'object' && !Object.keys(ret).length
+              ? val.call($this, 'all')
+              : ret;
           }
         }
         if (context != null && context === $this) return;

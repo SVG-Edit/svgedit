@@ -24868,40 +24868,41 @@ var jPicker = function jPicker($) {
 
             default:
               var ret = {};
+              var nameLength = name.length;
 
-              for (var i = 0; i < name.length; i++) {
+              for (var i = 0; i < nameLength; i++) {
                 switch (name.charAt(i)) {
                   case 'r':
-                    if (name.length === 1) ret = r;else ret.r = r;
+                    if (nameLength === 1) ret = r;else ret.r = r;
                     break;
 
                   case 'g':
-                    if (name.length === 1) ret = g;else ret.g = g;
+                    if (nameLength === 1) ret = g;else ret.g = g;
                     break;
 
                   case 'b':
-                    if (name.length === 1) ret = b;else ret.b = b;
+                    if (nameLength === 1) ret = b;else ret.b = b;
                     break;
 
                   case 'a':
-                    if (name.length === 1) ret = a;else ret.a = a;
+                    if (nameLength === 1) ret = a;else ret.a = a;
                     break;
 
                   case 'h':
-                    if (name.length === 1) ret = h;else ret.h = h;
+                    if (nameLength === 1) ret = h;else ret.h = h;
                     break;
 
                   case 's':
-                    if (name.length === 1) ret = s;else ret.s = s;
+                    if (nameLength === 1) ret = s;else ret.s = s;
                     break;
 
                   case 'v':
-                    if (name.length === 1) ret = v;else ret.v = v;
+                    if (nameLength === 1) ret = v;else ret.v = v;
                     break;
                 }
               }
 
-              return !name.length ? val.call($this, 'all') : ret;
+              return _typeof(ret) === 'object' && !Object.keys(ret).length ? val.call($this, 'all') : ret;
           }
         }
 
